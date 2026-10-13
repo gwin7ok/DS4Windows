@@ -34,6 +34,21 @@ namespace DS4WindowsTests
             "FormWidth",
             "FormHeight",
             "UseLang",
+            // Step8-3（G2〜G8）→ IProfileRepository／IProfileSettingsService／各 ViewModel
+            "ProfilePath",
+            "LoadBlankDevProfile",
+            "ProfileActions",
+            "LSModInfo",
+            "RSModInfo",
+            "outDevTypeTemp",
+            "SaveProfile",
+            "InverseRumbleMotors",
+            "OutContType",
+            "ProfileSettingsServiceInstance",
+            "GetAction",
+            "CacheExtraProfileInfo",
+            "CacheProfileCustomsFlags",
+            "appdatapath",
         };
 
         private string ReadSourceWithoutComments(string relativePath)
@@ -71,14 +86,14 @@ namespace DS4WindowsTests
             string editor = ReadSourceWithoutComments("DS4Windows/DS4Forms/ProfileEditor.xaml.cs");
             if (editor == null) return;
 
-            Assert.Contains("public ProfileEditor(int targetDevice, IAppSettingsService appSettingsService)", editor);
+            Assert.Contains("public ProfileEditor(int targetDevice, IAppSettingsService appSettingsService, IProfileSettingsService profileSettingsService)", editor);
             Assert.Contains("throw new ArgumentNullException(nameof(appSettingsService))", editor);
             Assert.Contains("appSettingsService.UseLang", editor);
 
             string main = ReadSourceWithoutComments("DS4Windows/DS4Forms/MainWindow.xaml.cs");
             if (main == null) return;
 
-            Assert.Contains("new ProfileEditor(targetDevice, appSettingsService)", main);
+            Assert.Contains("new ProfileEditor(targetDevice, appSettingsService, profileSettingsService)", main);
         }
     }
 }

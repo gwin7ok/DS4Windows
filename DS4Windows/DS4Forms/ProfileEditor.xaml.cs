@@ -161,6 +161,8 @@ namespace DS4WinWPF.DS4Forms
         private readonly int targetDevice = NoTargetDevice;
         // Phase6-Step8-2: レイアウト・言語設定（コンストラクタ注入。Global.ProfileEditor*Width 等の置換先）
         private readonly IAppSettingsService appSettingsService;
+        // Phase6-Step8-3: 編集スロットの LS／RS 補正値・出力種別の読み書き先（Global.LSModInfo 等の置換先）
+        private readonly IProfileSettingsService profileSettingsService;
 
         /// <summary>実機（targetDevice）が指定され、かつ有効なコントローラースロットの範囲内であるか。</summary>
         private bool HasTargetDevice =>
@@ -282,10 +284,14 @@ namespace DS4WinWPF.DS4Forms
         /// Phase6-Step8-2: エディタ画面のレイアウト（左右幅・Special Actions の列幅・ウィンドウサイズ）と表示言語の設定。
         /// MainWindow から渡す（Global の直接参照を置換）
         /// </param>
-        public ProfileEditor(int targetDevice, IAppSettingsService appSettingsService)
+        /// <param name="profileSettingsService">
+        /// Phase6-Step8-3: プロファイル設定（LSModInfo／RSModInfo／OutContType）。MainWindow から渡す
+        /// </param>
+        public ProfileEditor(int targetDevice, IAppSettingsService appSettingsService, IProfileSettingsService profileSettingsService)
         {
             this.targetDevice = targetDevice;
             this.appSettingsService = appSettingsService ?? throw new ArgumentNullException(nameof(appSettingsService));
+            this.profileSettingsService = profileSettingsService ?? throw new ArgumentNullException(nameof(profileSettingsService));
             AppLogger.LogDebug($"[ProfileEditor] Opened profile editor for device={deviceNum}, targetDevice={targetDevice}");
 
             InitializeComponent();
@@ -1123,7 +1129,7 @@ namespace DS4WinWPF.DS4Forms
             if (profile != null)
             {
                 currentProfile = profile;
-                Global.ProfilePath[Global.TEST_PROFILE_INDEX] = profile.Name;
+                profileRepository.ProfilePath[Global.TEST_PROFILE_INDEX] = profile.Name;
 
                 profileRepository.LoadProfile(deviceNum, profile.Name);
                 profileNameTxt.Text = profile.Name;
@@ -1137,13 +1143,13 @@ namespace DS4WinWPF.DS4Forms
                 presetWin.ShowDialog();
                 if (presetWin.Result == MessageBoxResult.Cancel)
                 {
-                    Global.LoadBlankDevProfile(deviceNum, false, controlService, false);
+                    profileRepository.LoadBlankProfile(deviceNum, false, controlService, false);
                 }
             }
 
             // プロファイルロード完了後に、XMLから読み込まれた ProfileActions を使ってリストを初期化・復元
-            List<string> currentActionsList = Global.ProfileActions != null && Global.ProfileActions.Length > deviceNum
-                ? Global.ProfileActions[deviceNum]
+            List<string> currentActionsList = profileRepository.ProfileActions != null && profileRepository.ProfileActions.Length > deviceNum
+                ? profileRepository.ProfileActions[deviceNum]
                 : null;
             string currentProfileActions = currentActionsList != null ? string.Join("/", currentActionsList) : string.Empty;
             specialActionsVM.LoadActions(currentProfile == null, currentProfileActions);
@@ -1158,8 +1164,8 @@ namespace DS4WinWPF.DS4Forms
             contReadingsTab.IsEnabled = true;
 
             conReadingsUserCon.EnableControl(false);
-            axialLSStickControl.UseDevice(Global.LSModInfo[deviceNum]);
-            axialRSStickControl.UseDevice(Global.RSModInfo[deviceNum]);
+            axialLSStickControl.UseDevice(profileSettingsService.LSModInfo[deviceNum]);
+            axialRSStickControl.UseDevice(profileSettingsService.RSModInfo[deviceNum]);
 
             mappingListVM.UpdateMappings();
             profileSettingsVM.UpdateLateProperties();
@@ -1176,7 +1182,7 @@ namespace DS4WinWPF.DS4Forms
             specialActionsTab.DataContext = specialActionsVM;
             lightbarRect.DataContext = profileSettingsVM;
 
-            StickDeadZoneInfo lsMod = Global.LSModInfo[deviceNum];
+            StickDeadZoneInfo lsMod = profileSettingsService.LSModInfo[deviceNum];
             if (lsMod.deadzoneType == StickDeadZoneInfo.DeadZoneType.Radial)
             {
                 conReadingsUserCon.LsDeadX = profileSettingsVM.LSDeadZone;
@@ -1188,7 +1194,7 @@ namespace DS4WinWPF.DS4Forms
                 conReadingsUserCon.LsDeadY = axialLSStickControl.AxialVM.DeadZoneY;
             }
 
-            StickDeadZoneInfo rsMod = Global.RSModInfo[deviceNum];
+            StickDeadZoneInfo rsMod = profileSettingsService.RSModInfo[deviceNum];
             if (rsMod.deadzoneType == StickDeadZoneInfo.DeadZoneType.Radial)
             {
                 conReadingsUserCon.RsDeadX = profileSettingsVM.RSDeadZone;
@@ -1279,7 +1285,7 @@ namespace DS4WinWPF.DS4Forms
                 controlService.setRumble(0, 0, profileSettingsVM.FuncDevNum);
             }
 
-            Global.outDevTypeTemp[deviceNum] = OutContType.X360;
+            profileSettingsVM.ResetOutDevTypeTemp();
             // Phase6-Step7b: 編集は作業スロットに対して行っており、コントローラーのスロットには届いていないため、
             // 元のプロファイルを読み込み直して取り消す処理は不要（旧: HaltReportingRunAction 内で LoadProfile していた）。
             // 作業スロットは次に編集画面を開いたときに読み込み直される
@@ -1296,7 +1302,7 @@ namespace DS4WinWPF.DS4Forms
             window.ShowDialog();
             mpControl.UpdateMappingName();
             UpdateHighlightLabel(mpControl);
-            Global.CacheProfileCustomsFlags(profileSettingsVM.Device);
+            profileRepository.CacheProfileCustomsFlags(profileSettingsVM.Device);
         }
 
         private void InputControlHighlight(Button control)
@@ -1386,20 +1392,13 @@ namespace DS4WinWPF.DS4Forms
             if (specialActionsVM != null)
             {
                 specialActionsVM.SyncProfileActionsString();
-                Global.ProfileActions[deviceNum] = specialActionsVM.GetEnabledActionNames();
+                profileRepository.ProfileActions[deviceNum] = specialActionsVM.GetEnabledActionNames();
             }
 
             SaveSplitterAndColumnWidths();
 
-            bool saved = false;
-            if (profileRepository != null)
-            {
-                saved = profileRepository.SaveProfile(deviceNum, profileName);
-            }
-            else
-            {
-                saved = Global.SaveProfile(deviceNum, profileName);
-            }
+            // Phase6-Step8-3: profileRepository はコンストラクタで必ず非 null（Global.SaveProfile へのフォールバックを削除）
+            bool saved = profileRepository.SaveProfile(deviceNum, profileName);
 
             if (saved)
             {
@@ -1520,7 +1519,7 @@ namespace DS4WinWPF.DS4Forms
                 {
                     RumbleType type;
                     var btn = sender as Button;
-                    if (!Global.InverseRumbleMotors[deviceNum])
+                    if (!profileSettingsVM.InverseRumbleMotors)
                     {
                         type = btn.Name == "heavyRumbleTestBtn" ? RumbleType.Heavy : RumbleType.Light;
                     }
@@ -1564,14 +1563,14 @@ namespace DS4WinWPF.DS4Forms
 
                         if (type == RumbleType.Heavy)
                         {
-                            if (!Global.InverseRumbleMotors[deviceNum])
+                            if (!profileSettingsVM.InverseRumbleMotors)
                                 heavyRumbleTestBtn.Content = Properties.Resources.StopHText;
                             else
                                 lightRumbleTestBtn.Content = Properties.Resources.StopLText;
                         }
                         else
                         {
-                            if (!Global.InverseRumbleMotors[deviceNum])
+                            if (!profileSettingsVM.InverseRumbleMotors)
                                 lightRumbleTestBtn.Content = Properties.Resources.StopLText;
                             else
                                 heavyRumbleTestBtn.Content = Properties.Resources.StopHText;
@@ -1583,7 +1582,7 @@ namespace DS4WinWPF.DS4Forms
                         {
                             profileSettingsVM.HeavyRumbleActive = false;
                             d.setRumble(d.RightLightFastRumble, 0);
-                            if (!Global.InverseRumbleMotors[deviceNum])
+                            if (!profileSettingsVM.InverseRumbleMotors)
                                 heavyRumbleTestBtn.Content = Properties.Resources.TestHText;
                             else
                                 lightRumbleTestBtn.Content = Properties.Resources.TestLText;
@@ -1592,7 +1591,7 @@ namespace DS4WinWPF.DS4Forms
                         {
                             profileSettingsVM.LightRumbleActive = false;
                             d.setRumble(0, d.LeftHeavySlowRumble);
-                            if (!Global.InverseRumbleMotors[deviceNum])
+                            if (!profileSettingsVM.InverseRumbleMotors)
                                 lightRumbleTestBtn.Content = Properties.Resources.TestLText;
                             else
                                 heavyRumbleTestBtn.Content = Properties.Resources.TestHText;
@@ -1778,11 +1777,9 @@ namespace DS4WinWPF.DS4Forms
                 return;
 
             OutContType selected = outConTypeCombo.SelectedIndex == 1 ? OutContType.DS4 : OutContType.X360;
-            Global.OutContType[deviceNum] = selected;
-            if (Global.ProfileSettingsServiceInstance != null)
-            {
-                Global.ProfileSettingsServiceInstance.OutContType[deviceNum] = selected;
-            }
+            // Phase6-Step8-3（決定5＝O1）: Global.OutContType と ProfileSettingsServiceInstance.OutContType は同じ配列で、
+            // 2 回書いていた。注入済みの IProfileSettingsService への 1 回にした
+            profileSettingsService.OutContType[deviceNum] = selected;
 
             if (profileSettingsVM != null)
             {
@@ -1810,7 +1807,7 @@ namespace DS4WinWPF.DS4Forms
             };
             actEditor.Saved += (sender2, actionName) =>
             {
-                SpecialAction action = Global.GetAction(actionName);
+                SpecialAction action = specialActionsVM.GetActionOrPlaceholder(actionName);
                 SpecialActionItem newitem = specialActionsVM.CreateActionItem(action);
                 newitem.Active = true;
                 int lastIdx = specialActionsVM.ActionCol.Count;
@@ -1853,7 +1850,7 @@ namespace DS4WinWPF.DS4Forms
                     // Update current profile's references from oldName -> newName
                     try
                     {
-                        var pa = DS4Windows.Global.ProfileActions; // List<string>[]
+                        var pa = profileRepository.ProfileActions; // List<string>[]
                         if (pa != null && pa.Length > deviceNum && pa[deviceNum] != null)
                         {
                             var list = pa[deviceNum];
@@ -1865,7 +1862,7 @@ namespace DS4WinWPF.DS4Forms
                                 }
                             }
                         }
-                        DS4Windows.Global.CacheExtraProfileInfo(deviceNum);
+                        profileRepository.CacheExtraProfileInfo(deviceNum);
                     }
                     catch { }
 
@@ -1876,7 +1873,7 @@ namespace DS4WinWPF.DS4Forms
                         idx = currentIndex;
                     }
 
-                    DS4Windows.SpecialAction action = DS4Windows.Global.GetAction(newName);
+                    DS4Windows.SpecialAction action = specialActionsVM.GetActionOrPlaceholder(newName);
                     SpecialActionItem newitem = specialActionsVM.CreateActionItem(action);
                     newitem.Active = item.Active;
                     newitem.Index = idx;
@@ -1921,7 +1918,7 @@ namespace DS4WinWPF.DS4Forms
             if (specialActionsVM != null)
             {
                 specialActionsVM.SyncProfileActionsString();
-                Global.ProfileActions[deviceNum] = specialActionsVM.GetEnabledActionNames();
+                profileRepository.ProfileActions[deviceNum] = specialActionsVM.GetEnabledActionNames();
             }
         }
         private void Ds4LightbarColorBtn_MouseEnter(object sender, MouseEventArgs e)
@@ -2037,7 +2034,7 @@ namespace DS4WinWPF.DS4Forms
             // EmitMissingActionLogsForDevice when they want messages emitted.
             try
             {
-                Global.CacheExtraProfileInfo(profileSettingsVM.Device);
+                profileRepository.CacheExtraProfileInfo(profileSettingsVM.Device);
             }
             catch { }
             UnregisterEvents();
@@ -2064,7 +2061,7 @@ namespace DS4WinWPF.DS4Forms
             window.ShowDialog();
             mpControl.UpdateMappingName();
             UpdateHighlightLabel(mpControl);
-            Global.CacheProfileCustomsFlags(profileSettingsVM.Device);
+            profileRepository.CacheProfileCustomsFlags(profileSettingsVM.Device);
         }
 
         private void MappingListBox_MouseDoubleClick(object sender, MouseButtonEventArgs e)
@@ -2128,7 +2125,7 @@ namespace DS4WinWPF.DS4Forms
             window.ShowDialog();
             mpControl.UpdateMappingName();
             UpdateHighlightLabel(mpControl);
-            Global.CacheProfileCustomsFlags(profileSettingsVM.Device);
+            profileRepository.CacheProfileCustomsFlags(profileSettingsVM.Device);
         }
 
         // Special Actions の GridViewColumn に DataTemplate を割り当て、
@@ -2255,7 +2252,7 @@ namespace DS4WinWPF.DS4Forms
             window.ShowDialog();
             mpControl.UpdateMappingName();
             UpdateHighlightLabel(mpControl);
-            Global.CacheProfileCustomsFlags(profileSettingsVM.Device);
+            profileRepository.CacheProfileCustomsFlags(profileSettingsVM.Device);
         }
 
         private void ConBtn_MouseRightButtonUp(object sender, MouseButtonEventArgs e)
@@ -2285,7 +2282,7 @@ namespace DS4WinWPF.DS4Forms
                     mpControl.UpdateMappingName();
                 }
 
-                Global.CacheProfileCustomsFlags(profileSettingsVM.Device);
+                profileRepository.CacheProfileCustomsFlags(profileSettingsVM.Device);
                 highlightControlDisplayLb.Content = "";
             }
         }
@@ -2324,7 +2321,7 @@ namespace DS4WinWPF.DS4Forms
             window.Owner = App.Current.MainWindow;
             window.ShowDialog();
             mpControl.UpdateMappingName();
-            Global.CacheProfileCustomsFlags(profileSettingsVM.Device);
+            profileRepository.CacheProfileCustomsFlags(profileSettingsVM.Device);
         }
 
         private void GyroCalibration_Click(object sender, RoutedEventArgs e)
@@ -2367,7 +2364,7 @@ namespace DS4WinWPF.DS4Forms
             window.Owner = App.Current.MainWindow;
             window.ShowDialog();
             mpControl.UpdateMappingName();
-            Global.CacheProfileCustomsFlags(profileSettingsVM.Device);
+            profileRepository.CacheProfileCustomsFlags(profileSettingsVM.Device);
         }
 
         private void GyroControlsTrigBtn_Click(object sender, RoutedEventArgs e)
@@ -2400,7 +2397,7 @@ namespace DS4WinWPF.DS4Forms
             window.Owner = App.Current.MainWindow;
             window.ShowDialog();
             mpControl.UpdateMappingName();
-            Global.CacheProfileCustomsFlags(profileSettingsVM.Device);
+            profileRepository.CacheProfileCustomsFlags(profileSettingsVM.Device);
         }
 
         private void CalibrateStick_OnClick(object sender, RoutedEventArgs e)
@@ -2442,7 +2439,7 @@ namespace DS4WinWPF.DS4Forms
             dialog.Filter = "DS4Windows Special Actions (*.xml)|*.xml";
             if (dialog.ShowDialog() == DialogResult.OK)
             {
-                var profileStream = new StreamReader(@$"{Global.appdatapath}\Actions.xml").BaseStream;
+                var profileStream = new StreamReader(specialActionsVM.ActionsFilePath).BaseStream;
                 var dialogStream = dialog.OpenFile();
                 profileStream.CopyTo(dialogStream);
                 profileStream.Close();

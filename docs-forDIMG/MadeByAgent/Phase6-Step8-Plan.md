@@ -3,7 +3,7 @@
 作成日: 2026-09-11  
 改訂日: 2026-09-18（Phase6-Step1 再監査エビデンスに基づく案3-A［段階的MVVM移設による Fat View 解体・Pure DI 推進］採用・全面拡充改訂）
 再改訂日: 2026-10-13（Step7b 完了後の現行コード［HEAD `e022684b`］との突き合わせ。§0A を追加し、台帳の作り直し・決定事項・マイクロステップ・実機確認項目を改訂）    
-状態: **Step8-0 完了（2026-10-13）。決定1〜6 確定（すべて推奨案、2026-10-13）。Step8-1（契約 B8・B10 の追加）完了確定（ビルド・テストビルド・テスト実行成功、反映済み）。Step8-2（レイアウト・言語 23 件）実装済み・ビルド／テスト確認待ち**。現行の正は §0A。§2〜§5 は旧版（2026-09-18）  
+状態: **Step8-0 完了（2026-10-13）。決定1〜6 確定（すべて推奨案、2026-10-13）。Step8-1（契約 B8・B10 の追加）完了確定（ビルド・テストビルド・テスト実行成功、反映済み）。Step8-2（レイアウト・言語 23 件）完了確定（ビルド・テスト・実機確認 1・2 成功、反映済み）。Step8-3（G2〜G8、35 件）実装済み・ビルド／テスト確認待ち**。現行の正は §0A。§2〜§5 は旧版（2026-09-18）  
 対象ブランチ: `For-DI-migration-work`  
 上位計画書: `docs-forDIMG/MadeByAgent/Phase6-Plan.md`  
 準拠指針: `.github/copilot-instructions.md`, `docs-forDIMG/DI-App-Wide-Migration-Plan.md`, `docs-forDIMG/Model-Diagram/02-Layer-Architecture-Diagram.md`  
@@ -168,11 +168,16 @@
   - 既存の `IProfileRepository`／`ISpecialActionRepository` の実装は各 1 件のみ（テスト用の自前実装なし）。`ProfileEditor.xaml.cs` はまだ変更していない（呼び出し側の置換は Step8-2 以降）。
   - `ISpecialActionRepository.GetActionOrPlaceholder`（決定3）、`IProfileRepository.LoadBlankProfile`（決定4）。
   - テスト: 未発見時に placeholder（`"null"` ×4）を返すこと、`Trim` と大文字小文字の無視、`Global.GetAction` と同じ結果であること。`LoadBlankProfile` が `Global.LoadBlankDevProfile` と同じ副作用（既定アクション、一時プロファイルのクリア）を持つこと。
-- **Step8-2（実装済み 2026-10-13、ビルド・テスト確認待ち）**: レイアウト・言語 23 件の置換（G1。決定2）
+- **Step8-2（完了確定 2026-10-13。ビルド・テスト成功、反映済み。実機確認項目 2・3 のうちスプリッター／列幅の保存・復元とリセットボタンは問題なし）**: レイアウト・言語 23 件の置換（G1。決定2）
   - `ProfileEditor` のコンストラクタを `ProfileEditor(int targetDevice, IAppSettingsService appSettingsService)` にした（必須。`null` は `ArgumentNullException`）。`MainWindow.ShowProfileEditor` の 1 箇所だけが `appSettingsService`（`MainWindow` が保持済み）を渡す。
   - 置換: 列幅 20 式（リセット・保存・保存ログ・復元）、`FormWidth`／`FormHeight`、`UseLang`（コンストラクタのカルチャ設定）。`AppSettingsService` の各プロパティは `Global.*` の get／set をそのまま通すため、読み書きの値は同じ（setter は値が変わったときだけ `SettingChanged` を通知）。
   - テスト: 新規ガード `ProfileEditorGlobalReferenceGuardTests`（解消済みメンバーの再混入と、コンストラクタ注入を検査。以後のステップで `ResolvedMembers` を追加）。`ProfileEditorTargetDeviceGuardTests` の生成呼び出しの文字列を更新。
-- **Step8-3**: 編集スロットの読み込み・保存・キャンセル・ランブル・種別・スペシャルアクション・キャッシュ・エクスポートの置換（G2〜G8、35 件。B8・B10 を使う 3 件を含む）。ガードテスト `ProfileEditorTargetDeviceGuardTests`（154 行）の更新を同じコミットに含める。
+- **Step8-3（実装済み 2026-10-13、ビルド・テスト確認待ち）**: G2〜G8（35 件）の置換。`ProfileEditor.xaml.cs` の非定数 `Global.` 参照は **0 件**になった（コメント中の言及のみ）。
+  - コンストラクタは `ProfileEditor(int targetDevice, IAppSettingsService appSettingsService, IProfileSettingsService profileSettingsService)`（必須。`MainWindow` が保持済みの 2 サービスを渡す）。**計画（決定2）からの追加**: `IProfileSettingsService` を 1 つ増やした。`LSModInfo`／`RSModInfo`／`OutContType` を、置換前と同じ配列・同じタイミングで読み書きするため（`ProfileSettingsViewModel` 経由だと、ViewModel 生成前の `OutConTypeCombo_SelectionChanged` の書き込みが落ちる）。
+  - `profileRepository`（コンストラクタで必ず非 null）へ置換: `ProfilePath`（1 件）、`LoadBlankProfile`（B10、1 件）、`ProfileActions`（6 件）、`CacheProfileCustomsFlags`（8 件）、`CacheExtraProfileInfo`（2 件）。`SaveProfile` の `else`（`Global.SaveProfile` へのフォールバック）は削除。
+  - `profileSettingsService` へ置換: `LSModInfo`／`RSModInfo`（4 件）、`OutContType`（決定5＝O1。二重書き込みを 1 回に）。
+  - ViewModel 経由へ置換: `InverseRumbleMotors`（5 件。`profileSettingsVM.InverseRumbleMotors`、編集スロットの値）、`outDevTypeTemp`（`ProfileSettingsViewModel.ResetOutDevTypeTemp()` を新設）、`GetAction`（2 件。`SpecialActionsListViewModel.GetActionOrPlaceholder` を新設。B8）、`appdatapath`（`SpecialActionsListViewModel.ActionsFilePath` を新設。`ISpecialActionRepository.ActionsPath`）。
+  - テスト: `ProfileEditorGlobalReferenceGuardTests.ResolvedMembers` に G2〜G8 のメンバーを追加。コンストラクタ・生成呼び出しの検査文字列を更新（`ProfileEditorTargetDeviceGuardTests` も）。
 - **Step8-4**: 決定6＝M-A の後半（保存の一連・ブランク読み込みの VM 移設）とテスト
 - **Step8-5**: 完了確認（`ProfileEditor.xaml.cs` の非定数 `Global.` が 0 件であることのソース走査ガード、全テスト、実機確認、`Phase6-Status.md`／`Phase6-Plan.md`／モデル図 03・04 の更新、完了報告書 `Phase6-Step8-Completion-Report.md`）
 

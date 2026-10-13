@@ -210,6 +210,20 @@ namespace DS4WinWPF.DS4Forms.ViewModels
             }
         }
 
+        /// <summary>
+        /// Phase6-Step8-3: 名前からアクションを取得する（前後の空白・大文字小文字を無視、未発見は placeholder）。
+        /// ProfileEditor の <c>Global.GetAction</c> の置換（<see cref="ISpecialActionRepository.GetActionOrPlaceholder"/>）。
+        /// </summary>
+        public SpecialAction GetActionOrPlaceholder(string actionName)
+        {
+            return specialActionRepo.GetActionOrPlaceholder(actionName);
+        }
+
+        /// <summary>
+        /// Phase6-Step8-3: Actions.xml のファイルパス（エクスポートのコピー元。ProfileEditor の <c>Global.appdatapath</c> の置換）。
+        /// </summary>
+        public string ActionsFilePath => specialActionRepo.ActionsPath;
+
         public SpecialActionItem CreateActionItem(SpecialAction action)
         {
             SpecialActionItem item = new SpecialActionItem(action, GetActionDisplayName(action), actionCol.Count);
