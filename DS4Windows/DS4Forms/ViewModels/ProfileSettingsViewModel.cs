@@ -826,6 +826,37 @@ namespace DS4WinWPF.DS4Forms.ViewModels
             outputSlotService.OutDevTypeTemp[device] = OutContType.X360;
         }
 
+        // ---- Phase6-Step8-4: ProfileEditor のバックエンド操作（保存・ブランク読み込み・キャッシュ更新）----
+        // 編集スロット（device）に対する操作だけを行い、コントローラーのスロットへの再適用はしない
+        // （再適用は ProfileSaved を受けた MainWindow.SyncProfileListAndControllers の責務。Step7b 決定8）。
+
+        /// <summary>編集スロットの内容を、プロファイル <paramref name="profileName"/> として保存する。保存の成否を返す。</summary>
+        public bool SaveProfile(string profileName)
+        {
+            return profileRepo.SaveProfile(device, profileName);
+        }
+
+        /// <summary>
+        /// 編集スロットへ空のプロファイルを読み込む（新規作成でプリセット選択をキャンセルしたとき）。
+        /// 呼び出し元（ProfileEditor）が使っている <see cref="ControlService"/> をそのまま渡す。
+        /// </summary>
+        public void LoadBlankProfile(ControlService control)
+        {
+            profileRepo.LoadBlankProfile(device, false, control, false);
+        }
+
+        /// <summary>編集スロットのカスタムフラグのキャッシュを更新する（ボタン設定画面を閉じた後など）。</summary>
+        public void RefreshCustomsFlags()
+        {
+            profileRepo.CacheProfileCustomsFlags(device);
+        }
+
+        /// <summary>編集スロットの拡張プロファイル情報（スペシャルアクション参照など）のキャッシュを更新する。</summary>
+        public void RefreshExtraProfileInfo()
+        {
+            profileRepo.CacheExtraProfileInfo(device);
+        }
+
         public int GyroOutModeIndex
         {
             get

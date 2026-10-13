@@ -151,7 +151,7 @@ namespace DS4WindowsTests
             Assert.Single(Regex.Matches(body, @"ProfileSaved\?\.Invoke\("));
             Assert.DoesNotContain("if (!isApply)", body);
             // 保存は作業スロットから行う
-            Assert.Contains("SaveProfile(deviceNum,", body);
+            Assert.Contains("profileSettingsVM.SaveProfile(profileName)", body);
 
             // ProfileEditor のどこからも、コントローラーのスロットへ直接適用しない
             Assert.DoesNotContain("ApplyProfileToSlot(", text);

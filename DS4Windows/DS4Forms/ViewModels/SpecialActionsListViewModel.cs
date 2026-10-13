@@ -224,6 +224,16 @@ namespace DS4WinWPF.DS4Forms.ViewModels
         /// </summary>
         public string ActionsFilePath => specialActionRepo.ActionsPath;
 
+        /// <summary>
+        /// Phase6-Step8-4: 有効（チェック済み）なアクション名を、編集スロットの <c>ProfileActions</c> へ反映する。
+        /// 保存時とチェック切り替え時の共通処理（ProfileEditor の同じ 2 行の重複を集約）。
+        /// </summary>
+        public void CommitEnabledActionsToProfile()
+        {
+            SyncProfileActionsString();
+            profileRepo.ProfileActions[deviceNum] = GetEnabledActionNames();
+        }
+
         public SpecialActionItem CreateActionItem(SpecialAction action)
         {
             SpecialActionItem item = new SpecialActionItem(action, GetActionDisplayName(action), actionCol.Count);

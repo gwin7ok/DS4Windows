@@ -1143,7 +1143,7 @@ namespace DS4WinWPF.DS4Forms
                 presetWin.ShowDialog();
                 if (presetWin.Result == MessageBoxResult.Cancel)
                 {
-                    profileRepository.LoadBlankProfile(deviceNum, false, controlService, false);
+                    profileSettingsVM.LoadBlankProfile(controlService);
                 }
             }
 
@@ -1302,7 +1302,7 @@ namespace DS4WinWPF.DS4Forms
             window.ShowDialog();
             mpControl.UpdateMappingName();
             UpdateHighlightLabel(mpControl);
-            profileRepository.CacheProfileCustomsFlags(profileSettingsVM.Device);
+            profileSettingsVM.RefreshCustomsFlags();
         }
 
         private void InputControlHighlight(Button control)
@@ -1391,14 +1391,13 @@ namespace DS4WinWPF.DS4Forms
             // Phase 5 Step 14: SpecialActionsListViewModel から有効なアクション名リストを取得し、Global.ProfileActions に確実に反映
             if (specialActionsVM != null)
             {
-                specialActionsVM.SyncProfileActionsString();
-                profileRepository.ProfileActions[deviceNum] = specialActionsVM.GetEnabledActionNames();
+                specialActionsVM.CommitEnabledActionsToProfile();
             }
 
             SaveSplitterAndColumnWidths();
 
             // Phase6-Step8-3: profileRepository はコンストラクタで必ず非 null（Global.SaveProfile へのフォールバックを削除）
-            bool saved = profileRepository.SaveProfile(deviceNum, profileName);
+            bool saved = profileSettingsVM.SaveProfile(profileName);
 
             if (saved)
             {
@@ -1862,7 +1861,7 @@ namespace DS4WinWPF.DS4Forms
                                 }
                             }
                         }
-                        profileRepository.CacheExtraProfileInfo(deviceNum);
+                        profileSettingsVM.RefreshExtraProfileInfo();
                     }
                     catch { }
 
@@ -1917,8 +1916,7 @@ namespace DS4WinWPF.DS4Forms
             // Phase 5 Step 14: ViewModel 側の ProfileActions 文字列を即時再同期
             if (specialActionsVM != null)
             {
-                specialActionsVM.SyncProfileActionsString();
-                profileRepository.ProfileActions[deviceNum] = specialActionsVM.GetEnabledActionNames();
+                specialActionsVM.CommitEnabledActionsToProfile();
             }
         }
         private void Ds4LightbarColorBtn_MouseEnter(object sender, MouseEventArgs e)
@@ -2034,7 +2032,7 @@ namespace DS4WinWPF.DS4Forms
             // EmitMissingActionLogsForDevice when they want messages emitted.
             try
             {
-                profileRepository.CacheExtraProfileInfo(profileSettingsVM.Device);
+                profileSettingsVM.RefreshExtraProfileInfo();
             }
             catch { }
             UnregisterEvents();
@@ -2061,7 +2059,7 @@ namespace DS4WinWPF.DS4Forms
             window.ShowDialog();
             mpControl.UpdateMappingName();
             UpdateHighlightLabel(mpControl);
-            profileRepository.CacheProfileCustomsFlags(profileSettingsVM.Device);
+            profileSettingsVM.RefreshCustomsFlags();
         }
 
         private void MappingListBox_MouseDoubleClick(object sender, MouseButtonEventArgs e)
@@ -2125,7 +2123,7 @@ namespace DS4WinWPF.DS4Forms
             window.ShowDialog();
             mpControl.UpdateMappingName();
             UpdateHighlightLabel(mpControl);
-            profileRepository.CacheProfileCustomsFlags(profileSettingsVM.Device);
+            profileSettingsVM.RefreshCustomsFlags();
         }
 
         // Special Actions の GridViewColumn に DataTemplate を割り当て、
@@ -2252,7 +2250,7 @@ namespace DS4WinWPF.DS4Forms
             window.ShowDialog();
             mpControl.UpdateMappingName();
             UpdateHighlightLabel(mpControl);
-            profileRepository.CacheProfileCustomsFlags(profileSettingsVM.Device);
+            profileSettingsVM.RefreshCustomsFlags();
         }
 
         private void ConBtn_MouseRightButtonUp(object sender, MouseButtonEventArgs e)
@@ -2282,7 +2280,7 @@ namespace DS4WinWPF.DS4Forms
                     mpControl.UpdateMappingName();
                 }
 
-                profileRepository.CacheProfileCustomsFlags(profileSettingsVM.Device);
+                profileSettingsVM.RefreshCustomsFlags();
                 highlightControlDisplayLb.Content = "";
             }
         }
@@ -2321,7 +2319,7 @@ namespace DS4WinWPF.DS4Forms
             window.Owner = App.Current.MainWindow;
             window.ShowDialog();
             mpControl.UpdateMappingName();
-            profileRepository.CacheProfileCustomsFlags(profileSettingsVM.Device);
+            profileSettingsVM.RefreshCustomsFlags();
         }
 
         private void GyroCalibration_Click(object sender, RoutedEventArgs e)
@@ -2364,7 +2362,7 @@ namespace DS4WinWPF.DS4Forms
             window.Owner = App.Current.MainWindow;
             window.ShowDialog();
             mpControl.UpdateMappingName();
-            profileRepository.CacheProfileCustomsFlags(profileSettingsVM.Device);
+            profileSettingsVM.RefreshCustomsFlags();
         }
 
         private void GyroControlsTrigBtn_Click(object sender, RoutedEventArgs e)
@@ -2397,7 +2395,7 @@ namespace DS4WinWPF.DS4Forms
             window.Owner = App.Current.MainWindow;
             window.ShowDialog();
             mpControl.UpdateMappingName();
-            profileRepository.CacheProfileCustomsFlags(profileSettingsVM.Device);
+            profileSettingsVM.RefreshCustomsFlags();
         }
 
         private void CalibrateStick_OnClick(object sender, RoutedEventArgs e)
