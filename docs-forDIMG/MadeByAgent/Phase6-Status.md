@@ -21,7 +21,7 @@
 | **Step 7** | `App.xaml.cs` Post-Host DI化 | `App.xaml.cs` | 39件（温存15。2026-09-24 再集計） | **完了（2026-09-25）** | `Phase6-Step7-Plan.md`、`Phase6-Step7-Completion-Report.md` | Step7-0〜7-5 完了（実機確認の3項目は Step11 へ先送り） |
 | **Step 7b** | プロファイル編集の即時反映廃止（保存・適用時に一括反映） | `ProfileEditor.xaml.cs`, `MainWindow.xaml.cs`, `ProfileSettingsViewModel.cs` ほか | 編集スロット固定＋`targetDevice`導入 | **完了（2026-09-26）** | `Phase6-Step7b-Plan.md`、`Phase6-Step7b-Completion-Report.md` | Step7b-0〜7b-4 完了（ステアリングホイール校正は Step11 へ先送り、K7b-1 は先送り） |
 | **Step 8** | `ProfileEditor` のバックエンド操作の ViewModel 移設と Global 参照解消 | `ProfileEditor.xaml.cs` 等 | 58箇所（2026-10-13 再集計。定数37を除く） | **完了（2026-10-13）** | `Phase6-Step8-Plan.md`、`Phase6-Step8-Completion-Report.md` | Step8-0〜8-5 完了 |
-| **Step 9** | 主要4大ViewModel Pure DI化 | `SettingsVM`, `MainWindowVM` 等 | 79箇所 | 計画確定・承認待ち | `Phase6-Step9-Plan.md` | 未着手 (PR-1〜6) |
+| **Step 9** | 主要4大ViewModel Pure DI化 | `SettingsVM`, `MainWindowVM` 等 | 114箇所（2026-10-13 再集計。定数13を除く） | **Step9-0 完了（2026-10-13、決定1〜8 確定）**、次は Step9-1 | `Phase6-Step9-Plan.md`（§0A が現行の正） | Step9-1〜9-5 |
 | **Step 10**| 小型UI/ViewModel ドメイン別DI化| 小型View 11, 小型VM 12 等 | 72箇所 | 計画確定・承認待ち | `Phase6-Step10-Plan.md` | 未着手 (PR-1〜4) |
 | **Step 10b**| 1ファイル1型の全数是正 | 複数型55ファイル（新設203） | 分割のみ | 計画確定・承認待ち | `Phase6-Step10b-Plan.md` | Step10 の後・Step11 の前（Step13 の後に実施） |
 | **Step 11**| 2層構造・階層化総合検証 | 全自動テスト ＋ 実機検証 | - | 計画確定・承認待ち | `Phase6-Step11-Plan.md` | 未着手 |
@@ -222,8 +222,9 @@
 
 ---
 
-### Phase6-Step9: 主要4大ViewModelのPure DI徹底 ＆ カテゴリ別移行【計画確定・承認待ち】
-- **進捗率**: **0%（未着手・計画確定済み）**
+### Phase6-Step9: 主要4大ViewModelのPure DI徹底 ＆ カテゴリ別移行【Step9-0 完了、実装は Step9-1 から】
+- **Step9-0 完了（2026-10-13、HEAD `f13d5c7c`）**: 現行コードで台帳を再集計し（`Global.` 114 件。Settings 89、MainWindows 9、Tray 6、ProfileSettings 10）、`Phase6-Step9-Plan.md` に §0A（現行の正）を追加。決定 1〜8 を確定（すべて推奨案）: S9-A（`Global.` 全件＋コンストラクタのフォールバック解消、依存は必須引数）、C1（`Func<ControlService>`）、P2（`IPathService.ProgramDirectory` 新設）、B1（`IAppearanceSettingsService.BatteryChanged`）、A1（`IProfileSettingsService.RefreshActionAlias`）、D1（呼出元 0 件の更新関連メンバーを削除）、T1（後始末のない既存テストを修正）、K1（K7b-1 は Step11 まで先送り、異常終了時のみ `f13d5c7c` で判別）。
+- **進捗率**: Step9-1〜9-5 は未着手
 - **確定方針**: **選択肢1（主要4大ViewModel集中 ＋ カテゴリ別移行・Pure DI徹底）の採用**。
 - **対象**: 実参照式79箇所（`Settings`: 55, `MainWindow`: 8, `TrayIcon`: 6, `ProfileSettings`: 10、const除外14）。
 - **計画ハイライト**:
