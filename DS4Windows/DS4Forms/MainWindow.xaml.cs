@@ -126,7 +126,7 @@ namespace DS4WinWPF.DS4Forms
             if (mainWinVM == null)
             {
                 DS4Windows.AppLogger.LogTrace("[Legacy] ViewModel fallback: screen=MainWindow, viewModel=MainWindowsViewModel");
-                mainWinVM = new DS4WinWPF.DS4Forms.ViewModels.MainWindowsViewModel();
+                mainWinVM = new DS4WinWPF.DS4Forms.ViewModels.MainWindowsViewModel(environmentService, pathService);
             }
             DataContext = mainWinVM;
 
@@ -157,7 +157,8 @@ namespace DS4WinWPF.DS4Forms
             view.SortDescriptions.Add(new SortDescription("DevIndex", ListSortDirection.Ascending));
             view.Refresh();
 
-            trayIconVM = new TrayIconViewModel(controlService, profileListHolder);
+            trayIconVM = new TrayIconViewModel(controlService, profileListHolder,
+                appearanceSettingsService, profileRepo, environmentService, pathService);
 
             // Need to define before calling TaskbarIcon.ForceCreate
             notifyIcon.DataContext = trayIconVM;

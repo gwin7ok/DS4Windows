@@ -201,7 +201,7 @@
 
 ### 0A.5 マイクロステップ（決定1〜8 の確定により確定）
 - **Step9-0（今回）**: 着手前確認、台帳の再作成、決定事項の提示（本節）。
-- **Step9-1（契約の追加と後始末。実装済み 2026-10-13、ユーザーのビルド・テスト確認待ち）**
+- **Step9-1（契約の追加と後始末。完了確定 2026-10-13。ビルド・テストビルド・テスト実行成功、コミット・反映済み）**
   - 実装内容: `IAppSettingsService` に `UseCustomSteamFolder`／`CustomSteamFolder`／`FakeExeName`／`LogMaxArchiveFiles`、`IEnvironmentService` に `IsViGEmBusInstalled`／`IsRunningSupportedViGEmBus`／`IsUsingMinViGEm117333`／`AdminNeeded`、`IPathService.ProgramDirectory`、`IAppearanceSettingsService.BatteryChanged`、`IProfileSettingsService.RefreshActionAlias`。実装はいずれも `Global` への薄い委譲（実装クラスは各 1 つ。テスト用の自前実装は無いことを確認済み）。`FakeExeName` は、`Global.FakeExeName` が不正なファイル名を黙って無視するため、値が実際に変わったときだけ通知する。
   - テスト: 新規 `Phase6Step9ContractExtensionTests`（12 件）、`ProfileSettingsServiceSubSettingsTests.ProfileActions_GetSet_ShouldPersistAndNotify` を `finally` で元の配列へ戻すよう修正（決定7＝T1）。
   - 計画からの変更: コンストラクタの `[DI]` Trace ログ（0A.7）は、対象のコンストラクタを変更する Step9-2〜9-4 で追加する。モデル図 03・04 の更新（追加した契約のメンバー記述）は Step9-5 で行う。
@@ -209,7 +209,10 @@
   - 既存の実装クラス以外に、これらの契約を実装するテスト用の自前クラスが無いことは確認済み（Step9-1 の着手時に再確認する）。
   - 決定7 の修正（`finally` で元に戻す）。
   - テスト: 新規 `Phase6Step9ContractExtensionTests`（各メンバーが `Global` の値と一致すること、書き込みが `Global` に届くこと、`BatteryChanged` が `InvokeBatteryChanged` の送信元・引数で届くこと）。
-- **Step9-2（`MainWindowsViewModel` と `TrayIconViewModel`）**
+- **Step9-2（`MainWindowsViewModel` と `TrayIconViewModel`。実装済み 2026-10-13、ユーザーのビルド・テスト・実機確認待ち）**
+  - 実装内容: `MainWindowsViewModel` は、呼出元 0 件のメンバー（6 件。再確認でも外部の参照は xaml・テストを含め 0 件）を削除し、コンストラクタを `(IEnvironmentService, IPathService)` の必須引数にした（`CheckDrivers` は `IsViGEmBusInstalled`／`IsRunningSupportedViGEmBus`／`ExecutablePath`）。`Global.` 参照は 0 件。`TrayIconViewModel` のコンストラクタは `(ControlService, ProfileList, IAppearanceSettingsService, IProfileRepository, IEnvironmentService, IPathService)`（必須。null は `ArgumentNullException`）。`trayTitle` はインスタンスの値（`ApplicationVersion`）、アイコンは `GetIconResourcePath`、購読は `appearanceSettings.BatteryChanged`、プロファイル名は `profileRepository.ProfilePath`、プログラムフォルダは `pathService.ProgramDirectory`。残る `Global.` は定数 `RESOURCES_PREFIX` のみ。生成側は `MainWindow.xaml.cs` の 2 箇所（フォールバックの `new MainWindowsViewModel(environmentService, pathService)` と `new TrayIconViewModel(…)`）。
+  - `[DI]` Trace ログ（追加）: `[DI] MainWindowsViewModel: created (IEnvironmentService, IPathService injected)`、`[DI] TrayIconViewModel: subscribed BatteryChanged via IAppearanceSettingsService`。
+  - テスト: 新規 `MainWindowsAndTrayViewModelGlobalReferenceGuardTests`（ソース走査、必須引数、DI 解決）。トレイの動作そのもの（`ContextMenu` を生成するため STA が必要）は単体テストを書かず、契約テスト（Step9-1 の `BatteryChanged`）とソース走査で代え、実機確認（0A.7-5）で確認する。
   - `MainWindowsViewModel`: 呼出元 0 件のメンバーの削除（決定6＝D1。`RunUpdaterCheck`、`DownloadUpstreamVersionInfo`、`LauchDS4Updater`、`IsNET8Available`、`DownloadUpstreamUpdaterVersion`、`updaterExe`。削除の前に `git log -S` と呼出元 0 件を再確認する）と、コンストラクタへの `IEnvironmentService`／`IPathService` の必須引数化。`MainWindow` のフォールバック（129 行）の呼び出しを合わせる。
   - `TrayIconViewModel`: コンストラクタに `IAppearanceSettingsService`／`IProfileRepository`／`IEnvironmentService`／`IPathService` を必須引数で追加。`trayTitle` をインスタンスの値にする。`MainWindow` の生成呼び出し（160 行）を合わせる。
   - テスト: ソース走査ガード（`Global.` の再混入の検査。定数 `RESOURCES_PREFIX` は許可）。`TrayIconViewModel` は WPF の `ContextMenu`／`MenuItem` を生成するため、単体テストの実行環境（STA スレッド）の制約を確認し、動作テストが書けない場合は、契約テスト（Step9-1）とソース走査で代える。

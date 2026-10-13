@@ -24,6 +24,7 @@ using System.Threading;
 using System.Windows;
 using System.Windows.Controls;
 using DS4Windows;
+using DS4Windows.DI;
 
 namespace DS4WinWPF.DS4Forms.ViewModels
 {
@@ -32,7 +33,9 @@ namespace DS4WinWPF.DS4Forms.ViewModels
         private string tooltipText = "DS4Windows";
         private string iconSource;
         public const string ballonTitle = "DS4Windows";
-        public static string trayTitle = $"DS4Windows v{Global.exeversion}";
+        // Phase6-Step9-2: static の初期化子（Global.exeversion）から、コンストラクタで解決するインスタンスの値へ変更
+        // （利用者は PopulateToolText のみ。静的初期化から Global を呼ばない）。
+        private readonly string trayTitle;
         private ContextMenu contextMenu;
         private MenuItem changeServiceItem;
         private MenuItem openItem;
@@ -84,19 +87,33 @@ namespace DS4WinWPF.DS4Forms.ViewModels
         private List<ControllerHolder> controllerList = new List<ControllerHolder>();
         private ProfileList profileListHolder;
         private ControlService controlService;
+        private readonly IAppearanceSettingsService appearanceSettings;
+        private readonly IProfileRepository profileRepository;
+        private readonly IPathService pathService;
 
         public delegate void ProfileSelectedHandler(TrayIconViewModel sender,
             ControllerHolder item, string profile);
         public event ProfileSelectedHandler ProfileSelected;
 
         //public TrayIconViewModel(Tester tester)
-        public TrayIconViewModel(ControlService service, ProfileList profileListHolder)
+        public TrayIconViewModel(ControlService service, ProfileList profileListHolder,
+            IAppearanceSettingsService appearanceSettings, IProfileRepository profileRepository,
+            IEnvironmentService environmentService, IPathService pathService)
         {
+            // Phase6-Step9-2: 依存はすべて必須引数（Pure DI。決定1＝S9-A）
+            this.appearanceSettings = appearanceSettings ?? throw new ArgumentNullException(nameof(appearanceSettings));
+            this.profileRepository = profileRepository ?? throw new ArgumentNullException(nameof(profileRepository));
+            this.pathService = pathService ?? throw new ArgumentNullException(nameof(pathService));
+            if (environmentService == null) throw new ArgumentNullException(nameof(environmentService));
+
             this.profileListHolder = profileListHolder;
             this.controlService = service;
+            trayTitle = $"DS4Windows v{environmentService.ApplicationVersion}";
             contextMenu = new ContextMenu();
-            iconSource = Global.iconChoiceResources[Global.UseIconChoice];
-            Global.BatteryChanged += UpdateTrayBattery;
+            iconSource = appearanceSettings.GetIconResourcePath(appearanceSettings.UseIconChoice);
+            appearanceSettings.BatteryChanged += UpdateTrayBattery;
+            if (AppLogger.IsTraceEnabled)
+                AppLogger.LogTrace("[DI] TrayIconViewModel: subscribed BatteryChanged via IAppearanceSettingsService");
             changeServiceItem = new MenuItem() { Header = "Start" };
             changeServiceItem.Click += ChangeControlServiceItem_Click;
             changeServiceItem.IsEnabled = false;
@@ -196,7 +213,7 @@ namespace DS4WinWPF.DS4Forms.ViewModels
                     item.Tag = idx;
                     //item.ContextMenu = new ContextMenu();
                     ItemCollection subitems = item.Items;
-                    string currentProfile = Global.ProfilePath[idx];
+                    string currentProfile = profileRepository.ProfilePath[idx];
                     foreach (ProfileEntity entry in profileListHolder.ProfileListCol)
                     {
                         // Need to escape profile name to disable Access Keys for control
@@ -252,7 +269,7 @@ namespace DS4WinWPF.DS4Forms.ViewModels
 
         private void OpenProgramFolderItem_Click(object sender, System.Windows.RoutedEventArgs e)
         {
-            ProcessStartInfo startInfo = new ProcessStartInfo(Global.exedirpath);
+            ProcessStartInfo startInfo = new ProcessStartInfo(pathService.ProgramDirectory);
             startInfo.UseShellExecute = true;
             using (Process temp = Process.Start(startInfo))
             {
