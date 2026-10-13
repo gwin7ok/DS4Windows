@@ -11,22 +11,38 @@ namespace DS4Windows
         private readonly IProfileSettingsService _profileSettings;
         private readonly IProfileRepository _profileRepo;
         private readonly ISpecialActionRepository _actionRepo;
+        private readonly IOutputSlotService _outputSlotService;
+        private readonly IEnvironmentService _environmentService;
+        private readonly IPathService _pathService;
+        private readonly Func<ControlService> _controlServiceAccessor;
 
+        // Phase6-Step9-4: 依存はすべて必須引数（Pure DI。決定1＝S9-A）。
+        // ControlService は、構築時ではなく生成のたびに Func で遅延解決する（決定2＝C1。Step2 決定D1 と同じ形。
+        // 明示的なホスト構築より前に ControlService を解決しない: Phase6-Status.md K7-1）。
         public ViewModelFactory(
-            IProfileSettingsService profileSettings = null,
-            IProfileRepository profileRepo = null,
-            ISpecialActionRepository actionRepo = null)
+            IProfileSettingsService profileSettings,
+            IProfileRepository profileRepo,
+            ISpecialActionRepository actionRepo,
+            IOutputSlotService outputSlotService,
+            IEnvironmentService environmentService,
+            IPathService pathService,
+            Func<ControlService> controlServiceAccessor)
         {
-            _profileSettings = profileSettings ?? DS4WinWPF.AppHost.GetService<IProfileSettingsService>();
-            _profileRepo = profileRepo ?? DS4WinWPF.AppHost.GetService<IProfileRepository>();
-            _actionRepo = actionRepo ?? DS4WinWPF.AppHost.GetService<ISpecialActionRepository>();
+            _profileSettings = profileSettings ?? throw new ArgumentNullException(nameof(profileSettings));
+            _profileRepo = profileRepo ?? throw new ArgumentNullException(nameof(profileRepo));
+            _actionRepo = actionRepo ?? throw new ArgumentNullException(nameof(actionRepo));
+            _outputSlotService = outputSlotService ?? throw new ArgumentNullException(nameof(outputSlotService));
+            _environmentService = environmentService ?? throw new ArgumentNullException(nameof(environmentService));
+            _pathService = pathService ?? throw new ArgumentNullException(nameof(pathService));
+            _controlServiceAccessor = controlServiceAccessor ?? throw new ArgumentNullException(nameof(controlServiceAccessor));
         }
 
         public ProfileSettingsViewModel CreateProfileSettingsViewModel(int device, int targetDevice = -1)
         {
             if (AppLogger.IsTraceEnabled)
                 AppLogger.LogTrace($"[DI] ViewModelFactory: Created ProfileSettingsViewModel for Device {device}, targetDevice {targetDevice}");
-            return new ProfileSettingsViewModel(device, _profileSettings, targetDevice: targetDevice);
+            return new ProfileSettingsViewModel(device, _profileSettings, _controlServiceAccessor(),
+                _outputSlotService, _profileRepo, _environmentService, _pathService, targetDevice);
         }
 
         public RecordBoxViewModel CreateRecordBoxViewModel(int device, DS4ControlSettings controlSettings, bool recordMacro = true, bool extraHold = false, int targetDevice = -1)

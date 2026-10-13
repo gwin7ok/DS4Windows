@@ -47,7 +47,7 @@ namespace DS4WindowsTests
             {
                 // 1. 初期状態: X360
                 service.OutContType[device] = OutContType.X360;
-                var vm = new ProfileSettingsViewModel(device, service);
+                var vm = ProfileSettingsViewModelTestFactory.Create(device, service);
                 Assert.Equal(0, vm.ControllerTypeIndex);
                 Assert.Equal(OutContType.X360, vm.ContType);
 
@@ -78,7 +78,7 @@ namespace DS4WindowsTests
             try
             {
                 service.OutContType[device] = OutContType.DS4;
-                var vm = new ProfileSettingsViewModel(device, service);
+                var vm = ProfileSettingsViewModelTestFactory.Create(device, service);
                 vm.UpdateLateProperties();
                 Assert.Equal(1, vm.TempControllerIndex);
 
@@ -109,7 +109,7 @@ namespace DS4WindowsTests
             OutContType original = service.OutContType[device];
             try
             {
-                var vm = new ProfileSettingsViewModel(device, service, outputSlotService: outputSlotService);
+                var vm = ProfileSettingsViewModelTestFactory.Create(device, service, outputSlotService: outputSlotService);
 
                 // EnableOutputDataToDS4 (DS4にデータを出力する) が有効であっても干渉しないこと
                 vm.EnableOutputDataToDS4 = true;

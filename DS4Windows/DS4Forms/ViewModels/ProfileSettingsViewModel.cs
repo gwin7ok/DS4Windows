@@ -54,6 +54,8 @@ namespace DS4WinWPF.DS4Forms.ViewModels
         public int Device { get => device; }
         private readonly IProfileSettingsService profileSettings;
         private readonly ControlService controlService;
+        private readonly IEnvironmentService environmentService;
+        private readonly IPathService pathService;
         private readonly IOutputSlotService outputSlotService;
         private readonly IProfileRepository profileRepo;
 
@@ -2910,7 +2912,7 @@ namespace DS4WinWPF.DS4Forms.ViewModels
 
         public bool UsingMinViGEm173333
         {
-            get => Global.IsUsingMinViGEm117333();
+            get => environmentService.IsUsingMinViGEm117333();
         }
 
 
@@ -2920,18 +2922,28 @@ namespace DS4WinWPF.DS4Forms.ViewModels
             set => profileSettings.InverseRumbleMotors[device] = value;
         }
 
-        public ProfileSettingsViewModel(int device, IProfileSettingsService profileSettings = null,
-            ControlService controlService = null,
-            IOutputSlotService outputSlotService = null,
-            IProfileRepository profileRepo = null,
+        // Phase6-Step9-4: 依存はコンストラクタで必須引数として受け取る（Pure DI。決定1＝S9-A）。
+        // 以前は ?? AppHost.GetService／Global.*Instance／Program.rootHub のフォールバックを持っていた。
+        // controlService は、ジャイロ系 setter が IProfileSettingsService へ渡す引数としてだけ使われ、従来も
+        // Program.rootHub が null の環境（テスト等）では null だったため、null を許容する（決定2＝C1: 生成側の
+        // ViewModelFactory が Func<ControlService> で遅延解決して渡す）。
+        // targetDevice は、編集スロット（device）と実機を分けて渡す引数（Phase6-Step7b）。変更しない。
+        public ProfileSettingsViewModel(int device, IProfileSettingsService profileSettings,
+            ControlService controlService,
+            IOutputSlotService outputSlotService,
+            IProfileRepository profileRepo,
+            IEnvironmentService environmentService,
+            IPathService pathService,
             int targetDevice = -1)
         {
             this.device = device;
             this.targetDevice = targetDevice;
-            this.profileSettings = profileSettings ?? Global.ProfileSettingsServiceInstance;
-            this.controlService = controlService ?? Program.rootHub;
-            this.outputSlotService = outputSlotService ?? DS4WinWPF.AppHost.GetService<IOutputSlotService>() ?? Global.OutputSlotServiceInstance;
-            this.profileRepo = profileRepo ?? DS4WinWPF.AppHost.GetService<IProfileRepository>() ?? Global.ProfileRepositoryInstance;
+            this.profileSettings = profileSettings ?? throw new ArgumentNullException(nameof(profileSettings));
+            this.controlService = controlService;
+            this.outputSlotService = outputSlotService ?? throw new ArgumentNullException(nameof(outputSlotService));
+            this.profileRepo = profileRepo ?? throw new ArgumentNullException(nameof(profileRepo));
+            this.environmentService = environmentService ?? throw new ArgumentNullException(nameof(environmentService));
+            this.pathService = pathService ?? throw new ArgumentNullException(nameof(pathService));
             // Phase6-Step7b: 実機を使う機能（ランブルテスト、校正、入力ハイライト等）の対象。
             // 実機なし（-1）の場合は、プロファイル一覧から開いたときの従来動作（コントローラー0）を維持する
             funcDevNum = HasTargetDevice ? targetDevice : 0;
@@ -3596,10 +3608,10 @@ namespace DS4WinWPF.DS4Forms.ViewModels
 
                 // Launch custom bezier editor webapp using a default browser executable command or via a default shell command. The default shell exeution doesn't support query parameters.
                 if (!String.IsNullOrEmpty(defaultBrowserCmd))
-                    System.Diagnostics.Process.Start(defaultBrowserCmd, $"\"file:///{Global.exedirpath}\\BezierCurveEditor\\index.html?curve={customDefinition.Replace(" ", "")}\"");
+                    System.Diagnostics.Process.Start(defaultBrowserCmd, $"\"file:///{pathService.ProgramDirectory}\\BezierCurveEditor\\index.html?curve={customDefinition.Replace(" ", "")}\"");
                 else
                 {
-                    System.Diagnostics.ProcessStartInfo startInfo = new System.Diagnostics.ProcessStartInfo($"{Global.exedirpath}\\BezierCurveEditor\\index.html");
+                    System.Diagnostics.ProcessStartInfo startInfo = new System.Diagnostics.ProcessStartInfo($"{pathService.ProgramDirectory}\\BezierCurveEditor\\index.html");
                     startInfo.UseShellExecute = true;
                     using (System.Diagnostics.Process temp = System.Diagnostics.Process.Start(startInfo))
                     {
@@ -3608,7 +3620,7 @@ namespace DS4WinWPF.DS4Forms.ViewModels
             }
             catch (Exception ex)
             {
-                AppLogger.LogToGui($"ERROR. Failed to open {Global.exedirpath}\\BezierCurveEditor\\index.html web app. Check that the web file exits or launch it outside of DS4Windows application. {ex.Message}", true);
+                AppLogger.LogToGui($"ERROR. Failed to open {pathService.ProgramDirectory}\\BezierCurveEditor\\index.html web app. Check that the web file exits or launch it outside of DS4Windows application. {ex.Message}", true);
             }
         }
 
@@ -3675,10 +3687,11 @@ namespace DS4WinWPF.DS4Forms.ViewModels
         private int deviceNum;
         private readonly IProfileSettingsService profileSettings;
 
-        public PresetMenuHelper(int device, IProfileSettingsService profileSettings = null)
+        // Phase6-Step9-4: 依存は必須引数（Pure DI）
+        public PresetMenuHelper(int device, IProfileSettingsService profileSettings)
         {
             deviceNum = device;
-            this.profileSettings = profileSettings ?? Global.ProfileSettingsServiceInstance;
+            this.profileSettings = profileSettings ?? throw new ArgumentNullException(nameof(profileSettings));
         }
 
         public ControlSelection PresetTagIndex(DS4Controls control)
@@ -4082,6 +4095,8 @@ namespace DS4WinWPF.DS4Forms.ViewModels
                     break;
             }
 
+            // GetDefaultButtonMapping() は複製を返すため、ループの前に 1 回だけ取得する
+            X360Controls[] defaultButtonMapping = profileSettings.GetDefaultButtonMapping();
             int idx = 0;
             foreach (DS4Controls dsControl in inputControls)
             {
@@ -4090,11 +4105,11 @@ namespace DS4WinWPF.DS4Forms.ViewModels
                 if (idx < actionBtns.Count && actionBtns[idx] != null)
                 {
                     object outAct = actionBtns[idx];
-                    X360Controls defaultControl = Global.defaultButtonMapping[(int)dsControl];
+                    X360Controls defaultControl = defaultButtonMapping[(int)dsControl];
                     if (!(outAct is X360Controls) || defaultControl != (X360Controls)outAct)
                     {
                         setting.UpdateSettings(false, outAct, null, DS4KeyType.None);
-                        Global.RefreshActionAlias(setting, false);
+                        profileSettings.RefreshActionAlias(setting, false);
                     }
                 }
 

@@ -73,6 +73,10 @@ namespace DS4Windows.DI
             services.AddSingleton<IVirtualKBMLifecycle, OutputKBMHandlerLifecycle>();
             services.AddSingleton<IMacroPlayer, DefaultMacroPlayer>();
 
+            // Phase6-Step9-4（決定2＝C1）: ViewModelFactory が ControlService を生成のたびに遅延解決するための Func
+            // （ControlService は Singleton。明示的なホスト構築より前に解決しないため、構築時には解決しない）
+            services.AddSingleton<Func<ControlService>>(sp => () => sp.GetRequiredService<ControlService>());
+
             // Phase 4: UI層 ViewModel ファクトリの登録
             services.AddSingleton<IViewModelFactory, ViewModelFactory>();
 

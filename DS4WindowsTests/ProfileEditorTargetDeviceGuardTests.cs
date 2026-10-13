@@ -193,7 +193,6 @@ namespace DS4WindowsTests
                 ("new BindingWindow(", 7),
                 ("new SpecialActionEditor(", 2),
                 ("CreateProfileSettingsViewModel(", 1),
-                ("new ProfileSettingsViewModel(", 1),
             };
 
             foreach (var (call, minCount) in checks)
@@ -205,6 +204,9 @@ namespace DS4WindowsTests
                     Assert.True(a.Contains("targetDevice"), $"{call}{a}) に targetDevice が渡されていない");
                 }
             }
+
+            // Phase6-Step9-4: ファクトリ以外での ProfileSettingsViewModel の生成（レガシーフォールバック）は無い
+            Assert.DoesNotContain("new ProfileSettingsViewModel(", text);
 
             // スティック再校正は、実機がなければ不可とし、ウィンドウには実機（targetDevice）を渡す
             // （StickCalibrationWindow は型を省略した new(...) で生成している）

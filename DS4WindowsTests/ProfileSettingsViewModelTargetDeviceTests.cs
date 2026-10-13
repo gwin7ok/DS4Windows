@@ -68,7 +68,7 @@ namespace DS4WindowsTests
             // Global.ProfileSettingsServiceInstance は差し替えない（引数で明示的に渡す）
             var service = new ProfileSettingsService();
             var outputSlotService = new OutputSlotService();
-            return new ProfileSettingsViewModel(device, service,
+            return ProfileSettingsViewModelTestFactory.Create(device, service,
                 outputSlotService: outputSlotService, targetDevice: targetDevice);
         }
 
@@ -111,7 +111,7 @@ namespace DS4WindowsTests
         {
             using var scope = new StaticStateScope();
 
-            var vm = new ProfileSettingsViewModel(Global.TEST_PROFILE_INDEX, new ProfileSettingsService(),
+            var vm = ProfileSettingsViewModelTestFactory.Create(Global.TEST_PROFILE_INDEX, new ProfileSettingsService(),
                 outputSlotService: new OutputSlotService());
 
             Assert.Equal(-1, vm.TargetDevice);

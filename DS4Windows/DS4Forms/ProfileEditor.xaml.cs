@@ -310,14 +310,11 @@ namespace DS4WinWPF.DS4Forms
             System.Threading.Thread.CurrentThread.CurrentCulture = ci;
 
             emptyColorGB.Visibility = Visibility.Collapsed;
-            var vmFactory = DS4WinWPF.AppHost.GetService<DS4Windows.DI.IViewModelFactory>();
-            if (vmFactory != null)
-                profileSettingsVM = vmFactory.CreateProfileSettingsViewModel(deviceNum, targetDevice);
-            else
-            {
-                DS4Windows.AppLogger.LogTrace("[Legacy] ViewModel fallback: screen=ProfileEditor, viewModel=ProfileSettingsViewModel");
-                profileSettingsVM = new ProfileSettingsViewModel(deviceNum, targetDevice: targetDevice);
-            }
+            // Phase6-Step9-4: ファクトリが解決できない場合のレガシーフォールバック（new ProfileSettingsViewModel）は削除した
+            // （ViewModel の依存を必須引数にしたため、ファクトリ以外に組み立てる経路が無い）
+            var vmFactory = DS4WinWPF.AppHost.GetService<DS4Windows.DI.IViewModelFactory>()
+                ?? throw new InvalidOperationException("IViewModelFactory is not registered.");
+            profileSettingsVM = vmFactory.CreateProfileSettingsViewModel(deviceNum, targetDevice);
             picBoxHover.Visibility = Visibility.Hidden;
             picBoxHover2.Visibility = Visibility.Hidden;
 
