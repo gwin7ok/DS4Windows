@@ -14,6 +14,13 @@
 
 ---
 
+> **Step8 からの申し送り（2026-10-13 追記。Step9-0 で必ず確認すること）**
+> - **ProfileSettingsViewModel の台帳は作り直しが必要**: Step8 で `ProfileSettingsViewModel.cs` に `SaveProfile`・`LoadBlankProfile`・`RefreshCustomsFlags`・`RefreshExtraProfileInfo`・`ResetOutDevTypeTemp` を追加し、行番号が変わった。本書の表4（C9-P01〜P10、実参照 10 箇所）は使えない。2026-10-13 時点の現行コードでは、定数・コメントを除く `Global.` 参照は 11 箇所（`IsUsingMinViGEm117333`、`ProfileSettingsServiceInstance` 2 件［コンストラクタ 2 箇所］、`OutputSlotServiceInstance`、`ProfileRepositoryInstance`、`exedirpath` 3 件、`defaultButtonMapping`、`RefreshActionAlias`）。
+> - **Step8 で追加した ViewModel メソッドは `profileRepo`／`outputSlotService` のみを使い、新しい `Global.` 参照を増やしていない**。Step9 の「コンストラクタ注入済みのフィールドへ一本化」の対象はそのまま。
+> - **`ProfileEditor` のコンストラクタ**は `ProfileEditor(int targetDevice, IAppSettingsService, IProfileSettingsService)`。ViewModel を Pure DI 化してファクトリの契約（`IViewModelFactory`）を変える場合は、`ProfileEditor` の生成側（`MainWindow.ShowProfileEditor`）とモデル図 03・04 も確認すること。
+> - **`SpecialActionsListViewModel`**（`Global.GetActions()`、`Global.RemoveAction`）、`MappingListViewModel` の `Global.` 参照は Step10 のグループ2・3 の範囲（Step8 では触れていない）。
+> - 詳細は `Phase6-Step8-Plan.md` §0A、`Phase6-Step8-Completion-Report.md`。
+
 ## 0. 背景と方針確定（推奨案: 選択肢1の採用）
 
 ### 0.1 暫定39件から実質79箇所への精査結果

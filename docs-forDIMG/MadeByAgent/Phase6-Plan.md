@@ -1,7 +1,7 @@
 # フェーズ6計画書: 残存 `Global` 実利用箇所の解体と4層構造DI化の完成
 
 作成日: 2026-09-09  
-改定日: 2026-09-26（Step7b［プロファイル編集の即時反映廃止］の追加と完了）／2026-09-20（Step13［.cs ファイル配置の統一］、Step10b［1ファイル1型の全数是正］を新設）／2026-09-19（Step1再監査および全ステップ［Step2〜Step12］確定実装計画書に基づく全面改訂）  
+改定日: 2026-10-13（Step8［ProfileEditor の ViewModel 移設と Global 参照解消］の完了）／2026-09-26（Step7b［プロファイル編集の即時反映廃止］の追加と完了）／2026-09-20（Step13［.cs ファイル配置の統一］、Step10b［1ファイル1型の全数是正］を新設）／2026-09-19（Step1再監査および全ステップ［Step2〜Step12］確定実装計画書に基づく全面改訂）  
 対象ブランチ: `For-DI-migration-work`  
 前フェーズ: `Phase5-Plan.md`（Step1〜15、ドメイン集約型・完了済み）  
 全体計画書: `docs-forDIMG/DI-App-Wide-Migration-Plan.md`  
@@ -33,7 +33,7 @@ Phase6 では、アプリケーション全域に残存する呼び出し元側�
 | **Step 6** | `ProfileEditor.xaml.cs` / `IOutputSlotService` | 2行追加＋TODO書き換え（2026-09-24 実装完了） | **案1採用（2026-09-24 改訂）**: マッピング一覧機種表示追従バグ是正 ＋ 呼出元0件の未接続APIを温存し Step10 で接続 ＋ 実働ホットスワップ温存 |
 | **Step 7** | `App.xaml.cs` | 39件（温存15、2026-09-24 再集計。**完了**、2026-09-25） | **選択肢1採用**: Pre-Host領域（12件）厳格保護 ＋ Post-Host Composition Root解決 ＋ 既存サービス集約 |
 | **Step 7b** | `ProfileEditor.xaml.cs`, `MainWindow.xaml.cs`, `ProfileSettingsViewModel.cs` ほか | 編集スロット固定＋`targetDevice` 導入（**完了**、2026-09-26） | プロファイル編集の即時反映を廃止（ユーザー承認の機能廃止、K4-3）。編集は作業スロット、実機は `targetDevice`、Save／Apply は同じ再適用（違いは画面を閉じるかどうか） |
-| **Step 8** | `ProfileEditor.xaml.cs` | 60箇所 | **案3-A採用**: 段階的MVVM移設（ロジックを `ProfileSettingsViewModel` へ集約）＋ `MainWindow` 解体推進 ＋ 契約差B8, B9, B10吸収 |
+| **Step 8** | `ProfileEditor.xaml.cs` | 58箇所（**完了**、2026-10-13。定数37を除く） | **案3-A採用（決定6＝M-A）**: Global 参照を既存契約へ置換し、保存の一連・ブランク読み込みを `ProfileSettingsViewModel` へ移設。契約差 B8（`GetActionOrPlaceholder`）・B10（`LoadBlankProfile`）を追加。B3 は Step7-1 で追加済み、B9 は呼び出し元が消えたため不要 |
 | **Step 9** | 主要4大ViewModel (`Settings`, `MainWindow`, `TrayIcon`, `ProfileSettings`) | 79箇所 | **選択肢1採用**: 中枢4大ViewModel集中 ＋ 機能カテゴリ別段階的移行 ＋ Pure DI徹底（残存小型VMはStep10へ引き継ぎ） |
 | **Step 10** | 残存小型View (11) & 小型ViewModel (12) & `PresetOption` | 72箇所 | **選択肢A採用**: 機能ドメイン別3グループ分割 ＋ View/ViewModelペアPure DI化 ＋ 全域直参照ゼロ化 |
 | **合計** | **ソリューション全域** | **約404箇所** | **全呼び出し元の Pure DI 完全移行** |
@@ -66,7 +66,7 @@ Phase6 では、アプリケーション全域に残存する呼び出し元側�
 ── [ドメイン3: 起動・UI層] ──
 ├─ Phase6-Step7: App.xaml.cs Post-Host領域のPure DI化（39件、温存15件［Pre-Host12件を含む］。2026-09-25 完了）
 ├─ Phase6-Step7b: プロファイル編集画面の即時反映廃止（編集は作業スロット、保存・適用時に一括反映。2026-09-26 完了）
-├─ Phase6-Step8: ProfileEditor.xaml.cs の段階的MVVM移設 ＆ MainWindow解体推進（60箇所）
+├─ Phase6-Step8: ProfileEditor.xaml.cs のバックエンド操作の ViewModel 移設 ＆ Global 参照解消（58箇所、完了 2026-10-13）
 ├─ Phase6-Step9: 主要4大ViewModelのPure DI徹底 ＆ カテゴリ別移行（79箇所）
 ├─ Phase6-Step10: 残存小型UI・小型ViewModel・補助クラスのドメイン別ペアPure DI化（72箇所）
 └─ Phase6-Step10b: 1ファイル1型（原則1）の全数是正（55ファイル・新設203ファイル。Step10 の後・Step11 の前。Step13 の後に実施）
@@ -152,7 +152,8 @@ Phase6 では、アプリケーション全域に残存する呼び出し元側�
 - **マイクロステップ**: 7b-1（VM・ファクトリ拡張）→ 7b-2（サブ画面への受け渡し）→ 7b-3（編集スロット固定と保存・適用・キャンセル整理）→ 7b-4（文書・実機確認・完了報告）。
 - **持ち越し**: K7b-1（実機確認中の異常終了。原因未特定、切り分けを含めて先送り。`Phase6-Status.md` §6.5）。ステアリングホイール校正の実機確認は Step11 へ先送り。
 
-#### Phase6-Step8: `ProfileEditor.xaml.cs` の段階的MVVM移設 ＆ `MainWindow` 解体推進
+#### Phase6-Step8: `ProfileEditor.xaml.cs` の段階的MVVM移設 ＆ `MainWindow` 解体推進【完了、2026-10-13】
+- **結果（2026-10-13）**: 下記の確定方針（案3-A）のうち、`ProfileEditor` の Global 参照 58 件の解消と、保存の一連・ブランク読み込みの ViewModel 移設を実施（決定6＝M-A）。B9（`ApplyProfileToSlot`）は Step7b 決定8 で呼び出し元が消えたため不要。`MainWindow` のバケツリレー撤廃は、Pure DI を優先（決定2＝L2）して 2 サービスを渡す形とし、`MainWindow` の解体は Step9／Step10 の範囲。詳細は `Phase6-Step8-Completion-Report.md`。以下は 2026-09-18 時点の確定方針。
 - **対象**: 実参照式60箇所（const除外38箇所）。
 - **確定方針（案3-A）**:
   - View に書かれていたプロファイル保存（`SaveProfile`）、ブランク読込（`LoadBlankDevProfile`）、スロット適用（`ApplyProfileToSlot`）等のバックエンド操作を **`ProfileSettingsViewModel` へ移設**（Dumb View 化）。

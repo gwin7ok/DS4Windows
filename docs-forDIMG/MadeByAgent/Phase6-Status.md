@@ -1,7 +1,7 @@
 # フェーズ6 進捗管理文書: 残存 `Global` 実利用箇所の解体と4層構造DI化の完成
 
 最終更新日: 2026-09-26  
-状態: **最新: Step4〜Step7b 完了（Step7b は 2026-09-26）、次は Step8** / Phase6-Step1 完了 / **Step2 完了（2026-09-21 確定）** / **Step13（配置整理 44件）完了（2026-09-21 確定）** / **Step3-1・Step3-2 完了確定（ともにビルド・テスト・実機確認済み、2026-09-22〜23）** / **Step3-3 対象消滅（2026-09-23、Abs Mouse機能削除に伴い対象コード自体を撤去。詳細は §6.8）** / Step10b（1ファイル1型の全数是正）新設 / **Phase8（Controls/SpecialActions統合ディスパッチ）新設（2026-09-23、Phase7完了後に独立フェーズとして着手。詳細は §6.7）** / **Step3-4 完了確定（2026-09-24、`SetCurveAndDeadzone` のスティック・トリガー系27件を解消。ビルド・テスト・実機確認済み）** / **Step3-5 完了確定（2026-09-24、ジャイロ系13件・`ApplyStickCalibration` 8件・`Commit` 24件の計45件を解消。ビルド・テストビルド・テスト実行成功、実機確認済み）** / **Step3-6 は 3-6a／3-6b／3-6c に分割（2026-09-24決定）、Step3-6a 完了確定（グループ A の24件＋契約追加 R1。ビルド・テストビルド・テスト実行成功、実機確認済み［ステアリングホイールエミュレーションのみ Step11 へ先送り］）、Step3-6b 完了確定（グループ B の12件、方針 P2。ビルド・テストビルド・テスト実行成功、実機確認済み）、Step3-6c 完了確定（グループ C の19件、方針 P2。ビルド・テストビルド・テスト実行成功、実機確認済み）** / **Step3-7 完了確定（2026-09-24、温存3件にTODOコメント付与、§2.4.3の選択は既定K-1採用、`using static DS4Windows.Global;`の削除可否判定は見送りで確定。ビルド・テストビルド・テスト実行成功、コミット `c6eb492f`。これで Step3 は完了確定。詳細は §3.8）** / Step4〜Step7b は完了、Step8〜Step12 は計画確定・承認待ち（**次は Step8**） / BindingWindow のテンキー右端欠けを修正・完了確定（2026-09-24、UI 微修正。詳細は §6.9）  
+状態: **最新: Step4〜Step8 完了（Step8 は 2026-10-13）、次は Step9** / Phase6-Step1 完了 / **Step2 完了（2026-09-21 確定）** / **Step13（配置整理 44件）完了（2026-09-21 確定）** / **Step3-1・Step3-2 完了確定（ともにビルド・テスト・実機確認済み、2026-09-22〜23）** / **Step3-3 対象消滅（2026-09-23、Abs Mouse機能削除に伴い対象コード自体を撤去。詳細は §6.8）** / Step10b（1ファイル1型の全数是正）新設 / **Phase8（Controls/SpecialActions統合ディスパッチ）新設（2026-09-23、Phase7完了後に独立フェーズとして着手。詳細は §6.7）** / **Step3-4 完了確定（2026-09-24、`SetCurveAndDeadzone` のスティック・トリガー系27件を解消。ビルド・テスト・実機確認済み）** / **Step3-5 完了確定（2026-09-24、ジャイロ系13件・`ApplyStickCalibration` 8件・`Commit` 24件の計45件を解消。ビルド・テストビルド・テスト実行成功、実機確認済み）** / **Step3-6 は 3-6a／3-6b／3-6c に分割（2026-09-24決定）、Step3-6a 完了確定（グループ A の24件＋契約追加 R1。ビルド・テストビルド・テスト実行成功、実機確認済み［ステアリングホイールエミュレーションのみ Step11 へ先送り］）、Step3-6b 完了確定（グループ B の12件、方針 P2。ビルド・テストビルド・テスト実行成功、実機確認済み）、Step3-6c 完了確定（グループ C の19件、方針 P2。ビルド・テストビルド・テスト実行成功、実機確認済み）** / **Step3-7 完了確定（2026-09-24、温存3件にTODOコメント付与、§2.4.3の選択は既定K-1採用、`using static DS4Windows.Global;`の削除可否判定は見送りで確定。ビルド・テストビルド・テスト実行成功、コミット `c6eb492f`。これで Step3 は完了確定。詳細は §3.8）** / Step4〜Step7b は完了、Step8〜Step12 は計画確定・承認待ち（**次は Step8**） / BindingWindow のテンキー右端欠けを修正・完了確定（2026-09-24、UI 微修正。詳細は §6.9）  
 対象ブランチ: `For-DI-migration-work`  
 前フェーズ完了状況: **Phase5 完了（Step1〜15 完了済み、SSOT確立・Issue 7根本解消完了）**  
 上位計画書: `docs-forDIMG/MadeByAgent/Phase6-Plan.md`  
@@ -20,7 +20,7 @@
 | **Step 6** | 出力切替UI表示追従・未接続API整理 | `ProfileEditor.xaml.cs`, `OutputSlotService.cs` 等 | 台帳再作成（2026-09-24、方針確定） | **完了（2026-09-24）** | `Phase6-Step6-Plan.md`、`Phase6-Step6-Completion-Report.md` | Step6-0〜6-3 完了 |
 | **Step 7** | `App.xaml.cs` Post-Host DI化 | `App.xaml.cs` | 39件（温存15。2026-09-24 再集計） | **完了（2026-09-25）** | `Phase6-Step7-Plan.md`、`Phase6-Step7-Completion-Report.md` | Step7-0〜7-5 完了（実機確認の3項目は Step11 へ先送り） |
 | **Step 7b** | プロファイル編集の即時反映廃止（保存・適用時に一括反映） | `ProfileEditor.xaml.cs`, `MainWindow.xaml.cs`, `ProfileSettingsViewModel.cs` ほか | 編集スロット固定＋`targetDevice`導入 | **完了（2026-09-26）** | `Phase6-Step7b-Plan.md`、`Phase6-Step7b-Completion-Report.md` | Step7b-0〜7b-4 完了（ステアリングホイール校正は Step11 へ先送り、K7b-1 は先送り） |
-| **Step 8** | `ProfileEditor` 段階的MVVM移設 | `ProfileEditor.xaml.cs` 等 | 60箇所 | 計画確定・承認待ち | `Phase6-Step8-Plan.md` | 未着手 (PR-1〜5) |
+| **Step 8** | `ProfileEditor` のバックエンド操作の ViewModel 移設と Global 参照解消 | `ProfileEditor.xaml.cs` 等 | 58箇所（2026-10-13 再集計。定数37を除く） | **完了（2026-10-13）** | `Phase6-Step8-Plan.md`、`Phase6-Step8-Completion-Report.md` | Step8-0〜8-5 完了 |
 | **Step 9** | 主要4大ViewModel Pure DI化 | `SettingsVM`, `MainWindowVM` 等 | 79箇所 | 計画確定・承認待ち | `Phase6-Step9-Plan.md` | 未着手 (PR-1〜6) |
 | **Step 10**| 小型UI/ViewModel ドメイン別DI化| 小型View 11, 小型VM 12 等 | 72箇所 | 計画確定・承認待ち | `Phase6-Step10-Plan.md` | 未着手 (PR-1〜4) |
 | **Step 10b**| 1ファイル1型の全数是正 | 複数型55ファイル（新設203） | 分割のみ | 計画確定・承認待ち | `Phase6-Step10b-Plan.md` | Step10 の後・Step11 の前（Step13 の後に実施） |
@@ -200,6 +200,17 @@
 
 ---
 
+### Phase6-Step8: `ProfileEditor` のバックエンド操作の ViewModel 移設と Global 参照解消【完了】
+- **完了（2026-10-13）**: Step8-0〜8-5。完了報告書 `Phase6-Step8-Completion-Report.md`。各マイクロステップでビルド・テストビルド・テスト実行成功、実機確認済み。
+- **結果**: `ProfileEditor.xaml.cs` の非定数 `Global.` 参照 58 件を解消（残りは定数 37 件）。レイアウト・言語 23 件は `IAppSettingsService`、`ProfilePath`／`ProfileActions`／ブランク読み込み／キャッシュ更新は `IProfileRepository`、LS／RS 補正値・出力種別は `IProfileSettingsService` 経由。保存の一連・ブランク読み込み・キャッシュ更新・アクション名の反映は ViewModel のメソッドになった（再適用は従来どおり `ProfileSaved` を受けた `MainWindow`）。
+- **決定（2026-10-13、すべて推奨案）**: 決定1＝S1（`Global.` 58 件のみ。`App.logHolder`・コンストラクタの Service Locator は Step10 の台帳へ）、決定2＝L2（`IAppSettingsService` をコンストラクタ必須引数に。実装時に `IProfileSettingsService` を 1 つ追加）、決定3＝B8-1（`GetActionOrPlaceholder`）、決定4＝B10-1（`LoadBlankProfile`）、決定5＝O1（出力種別の二重書き込みを 1 回に）、決定6＝M-A（置換＋保存・ブランク読み込みのみ移設）。
+- **契約の追加**: `ISpecialActionRepository.GetActionOrPlaceholder`、`IProfileRepository.LoadBlankProfile`。B3 は Step7-1 で追加済み、B9 は呼び出し元が消えたため作らなかった。
+- **旧計画との主な違い**: 旧 §3.1 の「保存後に `ApplyProfileToSlot` を呼ぶ」設計は Step7b 決定8 に反するため採用せず。台帳は 60→58 件。
+- **Step9 への申し送り**: `ProfileSettingsViewModel.cs` の `Global.` 参照（定数・コメントを除く）は 11 箇所（`IsUsingMinViGEm117333`、`ProfileSettingsServiceInstance` 2、`OutputSlotServiceInstance`、`ProfileRepositoryInstance`、`exedirpath` 3、`defaultButtonMapping`、`RefreshActionAlias`）。Step8 でメソッドを追加したため行番号が変わっており、Step9-0 で台帳を作り直す（`Phase6-Step9-Plan.md` 冒頭に記載）。
+- **持ち越し**: 既存テスト `ProfileSettingsServiceSubSettingsTests.ProfileActions_GetSet_ShouldPersistAndNotify` が `Global.store.profileActions` を 8 要素の配列に置き換えたまま戻さない（後始末のない既存テスト。§6.5 の既存項目に該当。実行順によって `Global.ProfileActions[8]` が範囲外になる）。
+
+---
+
 ### Phase6-Step8: `ProfileEditor.xaml.cs` 段階的MVVM移設 ＆ `MainWindow` 解体推進【計画確定・承認待ち】
 - **進捗率**: **0%（未着手・計画確定済み）**
 - **確定方針**: **案3-A（段階的MVVM移設 ＋ MainWindow解体推進）の採用**。
@@ -317,6 +328,7 @@
 
 ## 5. 直近の次アクション
 
+0. **（2026-10-13 時点の最新）** Step8 は完了確定（2026-10-13、`Phase6-Step8-Completion-Report.md`）。次は **Step9**（主要4大 ViewModel の Pure DI 化。Step9-0 で、Step8 後のコードから台帳を作り直すことから始める）→ Step10 → Step10b → Step11 → Step12 の順。持ち越し K7b-1（異常終了）は先送り。
 0. **（2026-09-26 時点の最新）** Step7b は完了確定（2026-09-26、`Phase6-Step7b-Completion-Report.md`）。次は **Step8**（`ProfileEditor.xaml.cs` の段階的MVVM移設。Step8-0 で、Step7b 後のコードから台帳を作り直すことから始める）→ Step9 → Step10 → Step10b → Step11 → Step12 の順。持ち越し K7b-1（異常終了）は先送り。
 0. **（2026-09-25 時点の最新）** Step3〜Step7 は完了確定（Step7 は 2026-09-25、`Phase6-Step7-Completion-Report.md`）。次は **Step7b**（プロファイル編集画面の即時反映廃止。Step7b-0 の事前調査は完了済みのため、着手時に現行コードとの再確認から始める）→ Step8 → Step9 → Step10 → Step10b → Step11 → Step12 の順。以下の 1. は Step3 当時の記録。
 1. **Step3-6c**（非同期マクロ経路19件、方針 P2）は完了確定（2026-09-24、ユーザーのビルド・テスト・実機確認完了、`Phase6-Step3-Plan.md` §3.7）。**Step3-7**（温存3件の最終処理、§2.4.3の選択［既定K-1採用］と `using static DS4Windows.Global;` の削除可否判定［見送りで確定］）は実装済み。ユーザーのビルド・テスト確認を経てコミットする（`Phase6-Step3-Plan.md` §3.8）。確認後、Step3 完了確定 → Step4 へ進む。

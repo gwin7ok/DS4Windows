@@ -3,7 +3,7 @@
 作成日: 2026-09-11  
 改訂日: 2026-09-18（Phase6-Step1 再監査エビデンスに基づく案3-A［段階的MVVM移設による Fat View 解体・Pure DI 推進］採用・全面拡充改訂）
 再改訂日: 2026-10-13（Step7b 完了後の現行コード［HEAD `e022684b`］との突き合わせ。§0A を追加し、台帳の作り直し・決定事項・マイクロステップ・実機確認項目を改訂）    
-状態: **Step8-0 完了（2026-10-13）。決定1〜6 確定（すべて推奨案、2026-10-13）。Step8-1（契約 B8・B10 の追加）完了確定（ビルド・テストビルド・テスト実行成功、反映済み）。Step8-2（レイアウト・言語 23 件）完了確定（ビルド・テスト・実機確認 1・2 成功、反映済み）。Step8-3（G2〜G8、35 件）完了確定（ビルド・テスト・実機確認成功、反映済み）。Step8-4（保存・ブランク読み込み等の ViewModel 移設）実装済み・ビルド／テスト確認待ち**。現行の正は §0A。§2〜§5 は旧版（2026-09-18）  
+状態: **完了（2026-10-13）**。Step8-0〜8-5 完了。完了報告書 `Phase6-Step8-Completion-Report.md`。（経過: Step8-0 完了、決定1〜6 確定［すべて推奨案］。Step8-1（契約 B8・B10 の追加）完了確定（ビルド・テストビルド・テスト実行成功、反映済み）。Step8-2（レイアウト・言語 23 件）完了確定（ビルド・テスト・実機確認 1・2 成功、反映済み）。Step8-3（G2〜G8、35 件）完了確定（ビルド・テスト・実機確認成功、反映済み）。Step8-4（保存・ブランク読み込み等の ViewModel 移設）完了確定。Step8-5 完了確認済み**。現行の正は §0A。§2〜§5 は旧版（2026-09-18）  
 対象ブランチ: `For-DI-migration-work`  
 上位計画書: `docs-forDIMG/MadeByAgent/Phase6-Plan.md`  
 準拠指針: `.github/copilot-instructions.md`, `docs-forDIMG/DI-App-Wide-Migration-Plan.md`, `docs-forDIMG/Model-Diagram/02-Layer-Architecture-Diagram.md`  
@@ -178,13 +178,17 @@
   - `profileSettingsService` へ置換: `LSModInfo`／`RSModInfo`（4 件）、`OutContType`（決定5＝O1。二重書き込みを 1 回に）。
   - ViewModel 経由へ置換: `InverseRumbleMotors`（5 件。`profileSettingsVM.InverseRumbleMotors`、編集スロットの値）、`outDevTypeTemp`（`ProfileSettingsViewModel.ResetOutDevTypeTemp()` を新設）、`GetAction`（2 件。`SpecialActionsListViewModel.GetActionOrPlaceholder` を新設。B8）、`appdatapath`（`SpecialActionsListViewModel.ActionsFilePath` を新設。`ISpecialActionRepository.ActionsPath`）。
   - テスト: `ProfileEditorGlobalReferenceGuardTests.ResolvedMembers` に G2〜G8 のメンバーを追加。コンストラクタ・生成呼び出しの検査文字列を更新（`ProfileEditorTargetDeviceGuardTests` も）。
-- **Step8-4（実装済み 2026-10-13、ビルド・テスト確認待ち）**: 決定6＝M-A の後半（ViewModel への移設）
+- **Step8-4（完了確定 2026-10-13。ビルド・テスト・実機確認成功、反映済み）**: 決定6＝M-A の後半（ViewModel への移設）
   - `ProfileSettingsViewModel` に追加: `SaveProfile(profileName)`（編集スロットを保存。再適用はしない）、`LoadBlankProfile(ControlService control)`（呼び出し元の `ControlService` をそのまま渡す。`profileRepo.LoadBlankProfile(device, false, control, false)`）、`RefreshCustomsFlags()`、`RefreshExtraProfileInfo()`。
   - `SpecialActionsListViewModel` に追加: `CommitEnabledActionsToProfile()`（`SyncProfileActionsString()` ＋ `ProfileActions[deviceNum] = GetEnabledActionNames()`。保存時とチェック切り替え時の重複 2 箇所を集約）。
   - `ProfileEditor.xaml.cs`: 上記を呼ぶだけにした。`CacheProfileCustomsFlags` 8 件・`CacheExtraProfileInfo` 2 件は `profileSettingsVM.Refresh*()` へ集約（決定として再提示しない小さな整理）。`profileRepository` の直接利用は `LoadProfile`／`ProfilePath`／`ProfileActions` の参照だけになった。
   - **計画との差**: 「LS／RS 補正値の初期化」は、`Reload` 内の読み取りが軸別スティック設定の画面部品（`axialLSStickControl.UseDevice` 等）と Controller Readings のデッドゾーン表示の初期化＝UI の配線であるため、View に残した（ViewModel に移す価値がない）。
   - テスト: 新規 `ProfileEditorBackendViewModelTests`（`CommitEnabledActionsToProfile` が編集スロットだけに書くことの動作検証［既存テスト `ProfileActions_GetSet_ShouldPersistAndNotify` が `Global.store.profileActions` を 8 要素の配列に置き換えたまま戻さないため、このテストは独立した 9 要素の配列へ差し替えて実行順に依存しないようにした。後始末のない既存テストの 1 件として §6.5 の持ち越しに該当］、ViewModel のメソッドの委譲形と再適用がないことのソース走査、View が repository を直接呼ばないことのガード）。`ProfileEditorTargetDeviceGuardTests` の保存呼び出しの検査文字列を更新。
-- **Step8-5**: 完了確認（`ProfileEditor.xaml.cs` の非定数 `Global.` が 0 件であることのソース走査ガード、全テスト、実機確認、`Phase6-Status.md`／`Phase6-Plan.md`／モデル図 03・04 の更新、完了報告書 `Phase6-Step8-Completion-Report.md`）
+- **Step8-5（完了 2026-10-13）**: 完了確認と文書更新
+  - `ProfileEditor.xaml.cs` の非定数 `Global.` 参照が 0 件（コメント中の言及と定数 37 件のみ）であることをソース走査ガードで固定済み。
+  - モデル図 03・04: `ProfileEditor` のコンストラクタ引数・追加メンバーに関する記述はなく、変更不要（確認済み）。
+  - `MainWindow` のスリム化: 決定2＝L2 により、`MainWindow` は 2 サービスを渡す形になった（バケツリレーの撤廃ではなく、Pure DI の原則を優先）。`MainWindow` の解体は Step9／Step10 の範囲。
+  - `Phase6-Status.md`／`Phase6-Plan.md`／`Phase6-Step9-Plan.md`（申し送り）／`Phase6-Step11-Plan.md` §3.3 を更新し、完了報告書を作成。
 
 ### 0A.6 実機確認項目（案。`Phase6-Step11-Plan.md` §3.3 の先送り台帳に登録可能なものは登録する）
 Step7 の教訓として、各項目に「見るログ」を併記する。
@@ -212,6 +216,15 @@ Step7 の教訓として、各項目に「見るログ」を併記する。
 - **B8 の `null` と placeholder の取り違え**: 置換後に `null` が返ると `CreateActionItem(null)` で例外になる。Step8-1 のテストで固定する。
 - **Step9 との境界**: `ProfileSettingsViewModel` の `Global.` 19 件・`?? Global.…` フォールバックは Step9。Step8 では触れない。
 - **Step10b**: `ProfileEditor.xaml.cs` には `HoverImageInfo`、`RumbleType`、`ResourcePaths`、`ControlIndexCheck` などの複数型がある。分割は Step10b で行い、本 Step で型を追加しない（§3.3 原則1）。
+
+### 0A.8 完了判定チェックリスト（現行、2026-10-13 完了）
+- [x] `ProfileEditor.xaml.cs` の非定数 `Global.` 参照が 0 件（58 件を解消。`ProfileEditorGlobalReferenceGuardTests`）
+- [x] B8（`ISpecialActionRepository.GetActionOrPlaceholder`）、B10（`IProfileRepository.LoadBlankProfile`）が追加され、`Global` と同じ契約であることをテストで固定（`Phase6Step8ContractExtensionTests`）。B3 は Step7-1 で追加済み。B9 は呼び出し元が消えたため作らない
+- [x] 保存の一連・ブランク読み込み・キャッシュ更新が ViewModel のメソッドになり、UI なしで検証できる（`ProfileEditorBackendViewModelTests`）。再適用は `ProfileSaved` を受けた `MainWindow` のまま（Step7b 決定8）
+- [x] `ProfileEditorMappingDevTypeGuardTests`・`ProfileEditorTargetDeviceGuardTests` を含む既存テストと新規テストが全件成功（`dotnet build`、`dotnet test`）
+- [x] 実機確認（レイアウト保存・復元、プロファイルを開く、New Profile のプリセットキャンセル、Save／Apply、スペシャルアクションの保存）問題なし
+- [x] 先送り（Step11 §3.3）: Actions.xml のエクスポートを、保存場所が 2 つある環境で確認していない場合のみ登録（0A.6-11）
+- [x] 文書更新（Status／Plan／Step9 申し送り／Step11 台帳）、完了報告書の作成
 
 ---
 
@@ -494,7 +507,7 @@ Step1 で特定された意味差・契約差を確実に吸収するシムを�
 
 ---
 
-## 7. 完了判定チェックリスト
+## 7. 完了判定チェックリスト 【旧版・2026-09-18。現行は §0A.8】
 
 - [ ] `ProfileEditor.xaml.cs` 内のバックエンド操作ロジックが `ProfileSettingsViewModel` へ移設されていること。
 - [ ] 表1に定義された全60箇所の実利用 Global 直接参照が完全に解消されていること。
