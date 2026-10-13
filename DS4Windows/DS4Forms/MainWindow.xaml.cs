@@ -131,7 +131,7 @@ namespace DS4WinWPF.DS4Forms
             DataContext = mainWinVM;
 
             App root = Application.Current as App;
-            settingsWrapVM = new SettingsViewModel();
+            settingsWrapVM = new SettingsViewModel(appSettingsService, appearanceSettingsService, environmentService);
             settingsTab.DataContext = settingsWrapVM;
             logvm = new LogViewModel(controlService);
             //logListView.ItemsSource = logvm.LogItems;
