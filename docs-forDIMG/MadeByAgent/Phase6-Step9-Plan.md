@@ -227,6 +227,12 @@
   - 修正（ユーザー承認 2026-10-14）: `ControlService` に null 安全な `SendOsc` を追加し、`oscSender.Send(` の 26 箇所をすべて置換。無効化時はフィールドを先に null にしてから閉じる。通常時の動作は同じ（送信側が未生成の間は送信しない）。
   - テスト: 新規 `ControlServiceOscSenderRaceTests`（未生成時の `OSCPreMappingStep` が例外にならないこと、無効化、ソース走査）。
   - 実機確認: OSC 送信のオン／オフでクラッシュしないこと。ログ: `OSC SENDER STARTED AT IP: … PORT: …`／`OSC SENDER STOPPED`（GUI ログ）。受信側のアプリが無い場合は、送信先ポートが開いていなくても UDP のため例外にならない。
+- **Step9-3d（追加。実装済み 2026-10-14、ユーザーのビルド・テスト確認待ち）: 偽装 exe 名の既存不具合の修正（K9-2）**
+  - 発見の経緯: Step9-3b の実機確認で、偽装 exe 名を設定すると exe だけが作られ（`.runtimeconfig.json`／`.deps.json` が作られない）、名前を変えても古いファイルが消えなかった。
+  - 原因: `CreateFakeExe` が設定ファイルの元を `{exelocation}.runtimeconfig.json`（＝`DS4Windows.exe.runtimeconfig.json`。実在しない）から組み立て、`File.Copy` が `FileNotFoundException` になる。この例外は WPF のバインディングが握りつぶすためアプリは落ちず、setter が `FakeExeNameChanged`（作成）の後に呼ぶ `FakeExeNameChangeCompare`（古いファイルの削除）が実行されなかった。2021-05-09（`56408101`、`2e128dcd`）から変わっておらず、Step9 の置換（`Global.exelocation`→`IPathService.ExecutablePath`、同じ値）による回帰ではない。
+  - 修正（ユーザー承認 2026-10-14）: 設定ファイルの元を拡張子を除いた `実行ファイル名.runtimeconfig.json`／`.deps.json` にし、元が無ければコピーを省略。古いファイルの削除を新規作成より先に行う（setter の呼び出し順を入れ替え）。コピーは上書き可。作成・削除は `SettingsViewModel` の公開静的メソッド（`CreateFakeExeFiles`／`DeleteFakeExeFiles`）にして、一時フォルダでテスト可能にした。
+  - テスト: 新規 `SettingsViewModelFakeExeTests`（6 件）。
+  - 実機確認: 偽装 exe 名（拡張子は付けない。例 `TestFake`）を設定 → プログラムフォルダに `TestFake.exe`、`TestFake.runtimeconfig.json`、`TestFake.deps.json` ができる。名前を変更（例 `TestFake2`）→ 古い 3 ファイルが消え、新しい 3 ファイルができる。名前を空にする → 古い 3 ファイルが消える。
 - **Step9-4（`ProfileSettingsViewModel`・`PresetMenuHelper`・生成側）**
   - `Global.` 10 件の置換、コンストラクタの必須引数化（`IProfileSettingsService`、`ControlService`［決定2］、`IOutputSlotService`、`IProfileRepository`、`IEnvironmentService`、`IPathService`）。`targetDevice` の分離（編集スロットと実機）は変えない。
   - `ViewModelFactory`（必須引数の供給）、`ProfileEditor.xaml.cs` のレガシーフォールバックの削除、`ServiceRegistration`（`Func<ControlService>`）。

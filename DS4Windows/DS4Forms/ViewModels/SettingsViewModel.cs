@@ -367,8 +367,10 @@ namespace DS4WinWPF.DS4Forms.ViewModels
                 string temp = _appSettings.FakeExeName;
                 if (temp == value) return;
                 _appSettings.FakeExeName = value;
-                FakeExeNameChanged?.Invoke(this, EventArgs.Empty);
+                // Phase6-Step9-3d（K9-2）: 古いファイルの削除（Compare）を、新しいファイルの作成（Changed）より先に行う。
+                // 作成が例外になっても、古いファイルが残らないようにする（以前は作成が先で、例外で削除が実行されなかった）。
                 FakeExeNameChangeCompare?.Invoke(this, temp, value);
+                FakeExeNameChanged?.Invoke(this, EventArgs.Empty);
             }
         }
         public event EventHandler FakeExeNameChanged;
@@ -522,26 +524,37 @@ namespace DS4WinWPF.DS4Forms.ViewModels
         private void SettingsViewModel_FakeExeNameChangeCompare(SettingsViewModel sender,
             string oldvalue, string newvalue)
         {
-            string old_exefile = Path.Combine(_pathService.ProgramDirectory, $"{oldvalue}.exe");
-            string old_conf_file = Path.Combine(_pathService.ProgramDirectory, $"{oldvalue}.runtimeconfig.json");
-            string old_deps_file = Path.Combine(_pathService.ProgramDirectory, $"{oldvalue}.deps.json");
+            DeleteFakeExeFiles(_pathService.ProgramDirectory, oldvalue);
+        }
 
-            if (!string.IsNullOrEmpty(oldvalue))
+        /// <summary>
+        /// 偽装 exe 名の古いファイル（<c>名前.exe</c>／<c>.runtimeconfig.json</c>／<c>.deps.json</c>）を削除する。
+        /// 名前が空の場合は何もしない。
+        /// </summary>
+        public static void DeleteFakeExeFiles(string programDirectory, string fakeName)
+        {
+            if (string.IsNullOrEmpty(fakeName))
             {
-                if (File.Exists(old_exefile))
-                {
-                    File.Delete(old_exefile);
-                }
+                return;
+            }
 
-                if (File.Exists(old_conf_file))
-                {
-                    File.Delete(old_conf_file);
-                }
+            string old_exefile = Path.Combine(programDirectory, $"{fakeName}.exe");
+            string old_conf_file = Path.Combine(programDirectory, $"{fakeName}.runtimeconfig.json");
+            string old_deps_file = Path.Combine(programDirectory, $"{fakeName}.deps.json");
 
-                if (File.Exists(old_deps_file))
-                {
-                    File.Delete(old_deps_file);
-                }
+            if (File.Exists(old_exefile))
+            {
+                File.Delete(old_exefile);
+            }
+
+            if (File.Exists(old_conf_file))
+            {
+                File.Delete(old_conf_file);
+            }
+
+            if (File.Exists(old_deps_file))
+            {
+                File.Delete(old_deps_file);
             }
         }
 
@@ -622,18 +635,37 @@ namespace DS4WinWPF.DS4Forms.ViewModels
 
         public void CreateFakeExe(string filename)
         {
-            string exefile = Path.Combine(_pathService.ProgramDirectory, $"{filename}.exe");
-            string current_conf_file_path = $"{_pathService.ExecutablePath}.runtimeconfig.json";
-            string current_deps_file_path = $"{_pathService.ExecutablePath}.deps.json";
+            CreateFakeExeFiles(_pathService.ProgramDirectory, _pathService.ExecutablePath, filename);
+        }
 
-            string fake_conf_file = Path.Combine(_pathService.ProgramDirectory, $"{filename}.runtimeconfig.json");
-            string fake_deps_file = Path.Combine(_pathService.ProgramDirectory, $"{filename}.deps.json");
+        /// <summary>
+        /// 偽装名の exe と、その設定ファイル（<c>.runtimeconfig.json</c>／<c>.deps.json</c>）を作る。
+        /// Phase6-Step9-3d（K9-2）: 設定ファイルの元は、<c>実行ファイル名.exe.runtimeconfig.json</c>（実在しない）ではなく、
+        /// 拡張子を除いた <c>実行ファイル名.runtimeconfig.json</c>／<c>.deps.json</c>。元が無い場合は、コピーを省略する。
+        /// </summary>
+        public static void CreateFakeExeFiles(string programDirectory, string exeLocation, string fakeName)
+        {
+            string exeBase = Path.Combine(Path.GetDirectoryName(exeLocation),
+                Path.GetFileNameWithoutExtension(exeLocation));
+            string current_conf_file_path = $"{exeBase}.runtimeconfig.json";
+            string current_deps_file_path = $"{exeBase}.deps.json";
 
-            File.Copy(_pathService.ExecutablePath, exefile); // Copy exe
+            string exefile = Path.Combine(programDirectory, $"{fakeName}.exe");
+            string fake_conf_file = Path.Combine(programDirectory, $"{fakeName}.runtimeconfig.json");
+            string fake_deps_file = Path.Combine(programDirectory, $"{fakeName}.deps.json");
+
+            File.Copy(exeLocation, exefile, true); // Copy exe
 
             // Copy needed app config and deps files
-            File.Copy(current_conf_file_path, fake_conf_file);
-            File.Copy(current_deps_file_path, fake_deps_file);
+            if (File.Exists(current_conf_file_path))
+            {
+                File.Copy(current_conf_file_path, fake_conf_file, true);
+            }
+
+            if (File.Exists(current_deps_file_path))
+            {
+                File.Copy(current_deps_file_path, fake_deps_file, true);
+            }
         }
 
         public void DriverCheckRefresh()
