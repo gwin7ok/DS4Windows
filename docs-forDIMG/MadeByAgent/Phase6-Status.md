@@ -224,7 +224,8 @@
 
 ### Phase6-Step9: 主要4大ViewModelのPure DI徹底 ＆ カテゴリ別移行【Step9-0 完了、実装は Step9-1 から】
 - **Step9-0 完了（2026-10-13、HEAD `f13d5c7c`）**: 現行コードで台帳を再集計し（`Global.` 114 件。Settings 89、MainWindows 9、Tray 6、ProfileSettings 10）、`Phase6-Step9-Plan.md` に §0A（現行の正）を追加。決定 1〜8 を確定（すべて推奨案）: S9-A（`Global.` 全件＋コンストラクタのフォールバック解消、依存は必須引数）、C1（`Func<ControlService>`）、P2（`IPathService.ProgramDirectory` 新設）、B1（`IAppearanceSettingsService.BatteryChanged`）、A1（`IProfileSettingsService.RefreshActionAlias`）、D1（呼出元 0 件の更新関連メンバーを削除）、T1（後始末のない既存テストを修正）、K1（K7b-1 は Step11 まで先送り、異常終了時のみ `f13d5c7c` で判別）。
-- **進捗率**: Step9-1〜9-5 は未着手
+- **Step9-1〜9-3b 実装・確認済み（2026-10-13〜14）**。Step9-3b の実機確認で **K9-1**（OSC 送信を有効にするとアプリが終了。`oscSender` 生成前に入力スレッドが送信する既存の競合。Step2 より前から存在、Step9 の回帰ではない）を発見し、ユーザー承認のうえ **Step9-3c** として `ControlService.SendOsc`（null 安全）で修正（`Phase6-Step9-Plan.md` §0A.5）。これは Step2-PR-1 から先送りされていた OSC／UDP の実機確認（`Phase6-Step11-Plan.md` §3.3）の一部を前倒しで確認した形。
+- **進捗率**: Step9-4〜9-5 は未着手
 - **確定方針**: **選択肢1（主要4大ViewModel集中 ＋ カテゴリ別移行・Pure DI徹底）の採用**。
 - **対象**: 実参照式79箇所（`Settings`: 55, `MainWindow`: 8, `TrayIcon`: 6, `ProfileSettings`: 10、const除外14）。
 - **計画ハイライト**:

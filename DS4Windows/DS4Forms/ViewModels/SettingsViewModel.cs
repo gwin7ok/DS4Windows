@@ -40,6 +40,7 @@ namespace DS4WinWPF.DS4Forms.ViewModels
         private readonly IAppSettingsService _appSettings;
         private readonly IAppearanceSettingsService _appearanceSettings;
         private readonly IEnvironmentService _environmentService;
+        private readonly IPathService _pathService;
 
         // Re-Enable Ex Mode
         public bool HideDS4Controller
@@ -323,10 +324,10 @@ namespace DS4WinWPF.DS4Forms.ViewModels
 
         public bool UseCustomSteamFolder
         {
-            get => DS4Windows.Global.UseCustomSteamFolder;
+            get => _appSettings.UseCustomSteamFolder;
             set
             {
-                DS4Windows.Global.UseCustomSteamFolder = value;
+                _appSettings.UseCustomSteamFolder = value;
                 UseCustomSteamFolderChanged?.Invoke(this, EventArgs.Empty);
             }
         }
@@ -334,14 +335,14 @@ namespace DS4WinWPF.DS4Forms.ViewModels
 
         public string CustomSteamFolder
         {
-            get => DS4Windows.Global.CustomSteamFolder;
+            get => _appSettings.CustomSteamFolder;
             set
             {
-                string temp = DS4Windows.Global.CustomSteamFolder;
+                string temp = _appSettings.CustomSteamFolder;
                 if (temp == value) return;
                 if (Directory.Exists(value) || value == string.Empty)
                 {
-                    DS4Windows.Global.CustomSteamFolder = value;
+                    _appSettings.CustomSteamFolder = value;
                 }
             }
         }
@@ -360,12 +361,12 @@ namespace DS4WinWPF.DS4Forms.ViewModels
 
         public string FakeExeName
         {
-            get => DS4Windows.Global.FakeExeName;
+            get => _appSettings.FakeExeName;
             set
             {
-                string temp = DS4Windows.Global.FakeExeName;
+                string temp = _appSettings.FakeExeName;
                 if (temp == value) return;
-                DS4Windows.Global.FakeExeName = value;
+                _appSettings.FakeExeName = value;
                 FakeExeNameChanged?.Invoke(this, EventArgs.Empty);
                 FakeExeNameChangeCompare?.Invoke(this, temp, value);
             }
@@ -403,11 +404,12 @@ namespace DS4WinWPF.DS4Forms.ViewModels
 
         // Phase6-Step9-3: 依存はコンストラクタで必須引数として受け取る（Pure DI。決定1＝S9-A）。
         public SettingsViewModel(IAppSettingsService appSettings, IAppearanceSettingsService appearanceSettings,
-            IEnvironmentService environmentService)
+            IEnvironmentService environmentService, IPathService pathService)
         {
             _appSettings = appSettings ?? throw new ArgumentNullException(nameof(appSettings));
             _appearanceSettings = appearanceSettings ?? throw new ArgumentNullException(nameof(appearanceSettings));
             _environmentService = environmentService ?? throw new ArgumentNullException(nameof(environmentService));
+            _pathService = pathService ?? throw new ArgumentNullException(nameof(pathService));
 
             if (AppLogger.IsTraceEnabled)
                 AppLogger.LogTrace("[DI] SettingsViewModel: created");
@@ -520,9 +522,9 @@ namespace DS4WinWPF.DS4Forms.ViewModels
         private void SettingsViewModel_FakeExeNameChangeCompare(SettingsViewModel sender,
             string oldvalue, string newvalue)
         {
-            string old_exefile = Path.Combine(DS4Windows.Global.exedirpath, $"{oldvalue}.exe");
-            string old_conf_file = Path.Combine(DS4Windows.Global.exedirpath, $"{oldvalue}.runtimeconfig.json");
-            string old_deps_file = Path.Combine(DS4Windows.Global.exedirpath, $"{oldvalue}.deps.json");
+            string old_exefile = Path.Combine(_pathService.ProgramDirectory, $"{oldvalue}.exe");
+            string old_conf_file = Path.Combine(_pathService.ProgramDirectory, $"{oldvalue}.runtimeconfig.json");
+            string old_deps_file = Path.Combine(_pathService.ProgramDirectory, $"{oldvalue}.deps.json");
 
             if (!string.IsNullOrEmpty(oldvalue))
             {
@@ -620,14 +622,14 @@ namespace DS4WinWPF.DS4Forms.ViewModels
 
         public void CreateFakeExe(string filename)
         {
-            string exefile = Path.Combine(DS4Windows.Global.exedirpath, $"{filename}.exe");
-            string current_conf_file_path = $"{DS4Windows.Global.exelocation}.runtimeconfig.json";
-            string current_deps_file_path = $"{DS4Windows.Global.exelocation}.deps.json";
+            string exefile = Path.Combine(_pathService.ProgramDirectory, $"{filename}.exe");
+            string current_conf_file_path = $"{_pathService.ExecutablePath}.runtimeconfig.json";
+            string current_deps_file_path = $"{_pathService.ExecutablePath}.deps.json";
 
-            string fake_conf_file = Path.Combine(DS4Windows.Global.exedirpath, $"{filename}.runtimeconfig.json");
-            string fake_deps_file = Path.Combine(DS4Windows.Global.exedirpath, $"{filename}.deps.json");
+            string fake_conf_file = Path.Combine(_pathService.ProgramDirectory, $"{filename}.runtimeconfig.json");
+            string fake_deps_file = Path.Combine(_pathService.ProgramDirectory, $"{filename}.deps.json");
 
-            File.Copy(DS4Windows.Global.exelocation, exefile); // Copy exe
+            File.Copy(_pathService.ExecutablePath, exefile); // Copy exe
 
             // Copy needed app config and deps files
             File.Copy(current_conf_file_path, fake_conf_file);
@@ -641,12 +643,12 @@ namespace DS4WinWPF.DS4Forms.ViewModels
 
         public int LogMaxArchiveFiles
         {
-            get => DS4Windows.Global.LogMaxArchiveFiles;
+            get => _appSettings.LogMaxArchiveFiles;
             set
             {
-                if (DS4Windows.Global.LogMaxArchiveFiles != value)
+                if (_appSettings.LogMaxArchiveFiles != value)
                 {
-                    DS4Windows.Global.LogMaxArchiveFiles = value;
+                    _appSettings.LogMaxArchiveFiles = value;
                     DS4WinWPF.App.logHolder?.UpdateLogSettings();
                     DS4WinWPF.App.logHolder?.UpdateNLogConfig(value);
                     _appSettings?.Save();

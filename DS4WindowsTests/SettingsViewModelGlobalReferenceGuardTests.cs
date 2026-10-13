@@ -13,7 +13,7 @@ namespace DS4WindowsTests
     /// <summary>
     /// Phase6-Step9-3: <c>SettingsViewModel</c> の Global 直接参照解消の回帰ガード
     /// （<c>Phase6-Step9-Plan.md</c> §0A.2 表A、決定1＝S9-A、決定6＝D1）。
-    /// - Step9-3a で DI サービス経由へ置換した 69 件のメンバーが、<c>Global.</c> として再混入していないこと。
+    /// - Step9-3a・3b で DI サービス経由へ置換した 89 件のメンバーが、<c>Global.</c> として再混入していないこと。
     /// - コンストラクタの依存が必須であり、Service Locator（<c>AppHost</c>）を持たないこと。
     /// - 削除した呼出元 0 件のハンドラが戻っていないこと。
     /// - 置換後も、設定の読み書きが <c>Global</c> と同じ実体に届くこと（薄い委譲の動作確認）。
@@ -23,7 +23,7 @@ namespace DS4WindowsTests
     {
         private const string VmPath = "DS4Windows/DS4Forms/ViewModels/SettingsViewModel.cs";
 
-        // Step9-3a で置換済み。Step9-3b で Steam／偽装 exe／パス／LogMaxArchiveFiles を追加する。
+        // Step9-3a・3b で置換済み（SettingsViewModel の非定数 Global 参照は 0 件。定数も使っていない）。
         private static readonly string[] ResolvedMembers =
         {
             "UseExclusiveMode", "SwipeProfiles", "ProfileChangedNotification", "DCBTatStop",
@@ -37,6 +37,8 @@ namespace DS4WindowsTests
             "getUDPServerPortNum", "setUDPServerPort", "UseUDPSeverSmoothing",
             "UDPServerSmoothingMincutoff", "UDPServerSmoothingBeta",
             "hidHideInstalled", "ProcessPriority", "IsAdministrator", "LogMinLevel",
+            "UseCustomSteamFolder", "CustomSteamFolder", "FakeExeName", "LogMaxArchiveFiles",
+            "exedirpath", "exelocation",
         };
 
         private readonly ITestOutputHelper _output;
@@ -78,6 +80,15 @@ namespace DS4WindowsTests
         }
 
         [Fact]
+        public void NoGlobalReferencesRemain()
+        {
+            string text = ReadSourceWithoutComments();
+            if (text == null) return;
+
+            Assert.DoesNotMatch(@"Global\.", text);
+        }
+
+        [Fact]
         public void Constructor_HasNoServiceLocator_AndRequiresServices()
         {
             string text = ReadSourceWithoutComments();
@@ -89,9 +100,11 @@ namespace DS4WindowsTests
             var env = new EnvironmentService();
             var appearance = new DS4Windows.Services.AppearanceSettingsService();
             var app = new DS4Windows.Services.AppSettingsService();
-            Assert.Throws<ArgumentNullException>(() => new SettingsViewModel(null, appearance, env));
-            Assert.Throws<ArgumentNullException>(() => new SettingsViewModel(app, null, env));
-            Assert.Throws<ArgumentNullException>(() => new SettingsViewModel(app, appearance, null));
+            var path = new PathService();
+            Assert.Throws<ArgumentNullException>(() => new SettingsViewModel(null, appearance, env, path));
+            Assert.Throws<ArgumentNullException>(() => new SettingsViewModel(app, null, env, path));
+            Assert.Throws<ArgumentNullException>(() => new SettingsViewModel(app, appearance, null, path));
+            Assert.Throws<ArgumentNullException>(() => new SettingsViewModel(app, appearance, env, null));
         }
 
         [Fact]
