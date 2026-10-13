@@ -32,10 +32,10 @@
 | **基盤** | `IAppSettingsService` | `AppSettingsService` | **Singleton** | `AppSettings.xml` の永続化・設定値管理 | `IPathService`, `XmlIoLock` |
 | **基盤** | `IAppearanceSettingsService`| `AppearanceSettingsService` | **Singleton** | UIテーマ（Dark/Default）、フォントスケール、トレイアイコン選択・バッテリー変化通知 | `IAppSettingsService` |
 | **基盤** | `IProfileXmlStore` | `ProfileXmlStore` | **Singleton** | プロファイルXMLのシリアライズ・デシリアライズ | `IPathService`, `XmlIoLock` |
-| **基盤** | `IProfileRepository` | `ProfileRepository` | **Singleton** | プロファイル名一覧の保持、CRUD、存在検証、リンクプロファイル解決 | `IProfileXmlStore`, `IPathService` |
+| **基盤** | `IProfileRepository` | `ProfileRepository` | **Singleton** | プロファイル名一覧の保持、CRUD、存在検証、リンクプロファイル解決、ブランクプロファイル読込（`LoadBlankProfile`） | `IProfileXmlStore`, `IPathService` |
 | **基盤** | `IProfileSettingsService` | `ProfileSettingsService` | **Singleton** | ロード済みプロファイルのインメモリ設定値管理 | `IProfileXmlStore` |
 | **基盤** | `IDeviceOptionRepository` | `DeviceOptionRepository` | **Singleton** | 機種別オプション（`*ControllerOptsDTO`）の管理 | `IPathService`, `XmlIoLock` |
-| **基盤** | `ISpecialActionRepository` | `SpecialActionRepository` | **Singleton** | `Actions.xml` のCRUDおよび定義管理 | `IPathService`, `XmlIoLock` |
+| **基盤** | `ISpecialActionRepository` | `SpecialActionRepository` | **Singleton** | `Actions.xml` のCRUDおよび定義管理、名前によるアクション取得（未発見は placeholder を返す `GetActionOrPlaceholder`） | `IPathService`, `XmlIoLock` |
 | **基盤** | `IOutputSlotStore` | `OutputSlotStore` | **Singleton** | スロット永続化設定（`OutputSlots.xml`）の管理 | `IPathService`, `XmlIoLock` |
 | **1.入力**| `IDeviceHotplugMonitor` | `DeviceHotplugMonitor` | **Singleton** | Win32 RAW/HID デバイス到着・抜去イベントの検知 | なし |
 | **1.入力**| `IDs4DeviceRegistry` | `Ds4DeviceRegistryAdapter` | **Singleton** | コントローラーの列挙・保持、通信ハンドルの監視 | `IDeviceHotplugMonitor` |
@@ -73,11 +73,11 @@
 | **4.UI** | `SettingsViewModel` | `SettingsViewModel` | **Transient** | アプリ全般設定画面（開くたびに最新値取得） | `IAppSettingsService`, `IAppearanceSettingsService` |
 | **4.UI** | `LogViewModel` | `LogViewModel` | **Transient** | ログ表示画面 | なし |
 | **4.UI** | `AboutViewModel` | `AboutViewModel` | **Transient** | バージョン・クレジット表示画面 | `IEnvironmentService` |
-| **4.UI** | `ProfileSettingsViewModel` | `ProfileSettingsViewModel` | **Factory生成 (親Mediator)**| プロファイル編集画面（配下の各サブVMを調停・集約） | サブVM群, `IProfileSettingsService` |
+| **4.UI** | `ProfileSettingsViewModel` | `ProfileSettingsViewModel` | **Factory生成 (親Mediator)**| プロファイル編集画面（配下の各サブVMを調停・集約。編集スロットの保存・ブランク読込・キャッシュ更新） | サブVM群, `IProfileSettingsService`, `IProfileRepository` |
 | **4.UI** | `StickSettingsSubViewModel` | `StickSettingsSubViewModel` | **Factory生成 (サブVM)** | スティック感度・カーブ・デッドゾーン設定タブ | `IProfileSettingsService` |
 | **4.UI** | `TriggerSettingsSubViewModel`| `TriggerSettingsSubViewModel`| **Factory生成 (サブVM)** | トリガー感度・2段階設定・モーター設定タブ | `IProfileSettingsService` |
 | **4.UI** | `ButtonMappingSubViewModel` | `ButtonMappingSubViewModel` | **Factory生成 (サブVM)** | ボタン割り当て・シフトモディファイア設定タブ | `IProfileSettingsService` |
-| **4.UI** | `SpecialActionsSubViewModel`| `SpecialActionsSubViewModel`| **Factory生成 (サブVM)** | スペシャルアクション一覧・登録タブ | `ISpecialActionRepository`, `IDs4DeviceRegistry` |
+| **4.UI** | `SpecialActionsSubViewModel`| `SpecialActionsSubViewModel`| **Factory生成 (サブVM)** | スペシャルアクション一覧・登録タブ（有効アクション名の編集スロットへの反映を含む） | `ISpecialActionRepository`, `IProfileRepository`, `IDs4DeviceRegistry` |
 
 ※1 `ControlService` は過渡期に `IOutputSlotService` を直接ではなく `Func<IOutputSlotService>`（遅延解決）で受け取る。理由は §4 を参照。目標構造は直接注入であり、変更しない。
 
@@ -139,3 +139,8 @@
 %% 注釈補強（2026-09-26 Phase6-Step7b 決定3＝案M1 反映）
 %% - §1-3（Factory 生成）に、プロファイル編集画面では編集対象と実機（`targetDevice`）を分けて渡す旨を追記した。`IViewModelFactory` のライフタイム・依存（§2）は変わらない。現行コードの契約は `CreateProfileSettingsViewModel(int device, int targetDevice = -1)`／`CreateRecordBoxViewModel(…, int targetDevice = -1)`。
 %% - 詳細は `03-Class-Interface-Diagram.md` の 2026-09-26 の注釈と `Phase6-Step7b-Plan.md` §2A 決定3。
+%% 注釈補強（2026-10-13 Phase6-Step8 反映）
+%% - §2 の `IProfileRepository`（ブランクプロファイル読込）、`ISpecialActionRepository`（`GetActionOrPlaceholder`）の責務記述と、`ProfileSettingsViewModel`・`SpecialActionsSubViewModel` の依存（`IProfileRepository` を追加）を現行コードに合わせて更新した。ライフタイム（Singleton／Factory生成）は変わらない。
+%% - `ProfileEditor`（View）は、`IAppSettingsService`（レイアウト・言語）と `IProfileSettingsService`（編集スロットの補正値・出力種別）をコンストラクタ引数で受け取る。`MainWindow` が保持済みのサービスを渡す。View 自体はライフタイム管理の対象ではない（Window／UserControl）。
+%% - 保存の再適用は、保存の通知を受けた `MainWindow`（`IProfileApplicationService` 経由）に残している（Step7b 決定8）。ViewModel の `SaveProfile` は編集スロットの保存だけを行う。
+%% - 詳細は `03-Class-Interface-Diagram.md` の 2026-10-13 の注釈と `Phase6-Step8-Plan.md` §0A。

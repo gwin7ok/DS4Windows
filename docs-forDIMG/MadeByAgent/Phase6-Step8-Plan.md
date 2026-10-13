@@ -186,7 +186,7 @@
   - テスト: 新規 `ProfileEditorBackendViewModelTests`（`CommitEnabledActionsToProfile` が編集スロットだけに書くことの動作検証［既存テスト `ProfileActions_GetSet_ShouldPersistAndNotify` が `Global.store.profileActions` を 8 要素の配列に置き換えたまま戻さないため、このテストは独立した 9 要素の配列へ差し替えて実行順に依存しないようにした。後始末のない既存テストの 1 件として §6.5 の持ち越しに該当］、ViewModel のメソッドの委譲形と再適用がないことのソース走査、View が repository を直接呼ばないことのガード）。`ProfileEditorTargetDeviceGuardTests` の保存呼び出しの検査文字列を更新。
 - **Step8-5（完了 2026-10-13）**: 完了確認と文書更新
   - `ProfileEditor.xaml.cs` の非定数 `Global.` 参照が 0 件（コメント中の言及と定数 37 件のみ）であることをソース走査ガードで固定済み。
-  - モデル図 03・04: `ProfileEditor` のコンストラクタ引数・追加メンバーに関する記述はなく、変更不要（確認済み）。
+  - モデル図 01〜04: 確認のうえ、03（`ProfileSettingsViewModel`・`SpecialActionsSubViewModel` のメンバー・依存と注釈）、04（§2 の責務・依存と注釈）を更新。01・02 は構造変更なしで注釈のみ追記。
   - `MainWindow` のスリム化: 決定2＝L2 により、`MainWindow` は 2 サービスを渡す形になった（バケツリレーの撤廃ではなく、Pure DI の原則を優先）。`MainWindow` の解体は Step9／Step10 の範囲。
   - `Phase6-Status.md`／`Phase6-Plan.md`／`Phase6-Step9-Plan.md`（申し送り）／`Phase6-Step11-Plan.md` §3.3 を更新し、完了報告書を作成。
 

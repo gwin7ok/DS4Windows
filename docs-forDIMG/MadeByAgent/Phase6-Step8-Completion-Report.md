@@ -58,4 +58,4 @@
 ## 7. 後続への影響
 - `ProfileEditor` のコンストラクタは `ProfileEditor(int targetDevice, IAppSettingsService, IProfileSettingsService)`。生成箇所は `MainWindow.ShowProfileEditor` の 1 箇所。
 - ソース走査ガード `ProfileEditorGlobalReferenceGuardTests.ResolvedMembers` により、解消済みの `Global.` 参照が `ProfileEditor.xaml.cs` に再び入るとテストが失敗する。
-- モデル図 03・04 は、本 Step の変更に関する記述がないため変更不要（確認済み）。
+- モデル図 01〜04 を 2026-10-13 に確認し、03（`ProfileSettingsViewModel`・`SpecialActionsSubViewModel` のメンバーと依存、注釈）、04（§2 の `IProfileRepository`／`ISpecialActionRepository` の責務、2 つの ViewModel の依存、注釈）を更新した。01・02 は構造変更なしで注釈のみ追記。

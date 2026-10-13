@@ -134,3 +134,5 @@
 %% - ScpUtil.cs（255件静的宣言）の横断基盤層への分解は理想構造と一致するが、参照と宣言の区別を維持（§2抽出問題記録済み）。
 %% - Phase5証跡（Step14/15未完了）の前提条件を維持（証跡存在確認済み、内容検証別途必要：Phase5-Evidence-Check.md 参照）。
 %% - c除外（≈304件）の改修対象外原則を維持（Classification-Metrics.md, C-Classification-Count.md 参照）。
+%% 注釈補強（2026-10-13 Phase6-Step8 反映、構造変更なし）
+%% - `ProfileEditor`（View）の Global 直接参照を解消し、保存・ブランク読込・キャッシュ更新を親 `ProfileSettingsViewModel`（Mediator）へ移した。親が保存を調停し、コントローラーへの再適用は保存の通知を受けた `MainWindow` が行う（Step7b 決定8）。View が設定サービス（`IAppSettingsService`／`IProfileSettingsService`）を直接受け取る辺があるが、これは画面のレイアウトと編集スロットの補正値の参照で、依存方向（UI→下位層）に反しない。図の構造は変更しない。

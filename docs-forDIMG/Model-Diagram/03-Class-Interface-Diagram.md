@@ -193,7 +193,9 @@ classDiagram
         +TriggerSettingsSubViewModel TriggerSubVM
         +ButtonMappingSubViewModel ButtonSubVM
         +SpecialActionsSubViewModel ActionSubVM
-        +SaveProfile()
+        -IProfileRepository _profileRepo
+        +SaveProfile(string profileName) bool
+        +LoadBlankProfile(ControlService control)
         +ApplyPreset(PresetOption opt)
     }
     class StickSettingsSubViewModel {
@@ -213,7 +215,10 @@ classDiagram
     }
     class SpecialActionsSubViewModel {
         -ISpecialActionRepository _actionRepo
+        -IProfileRepository _profileRepo
         +LoadActions(string profileName)
+        +GetActionOrPlaceholder(string actionName) SpecialAction
+        +CommitEnabledActionsToProfile()
     }
 
     ProfileSettingsViewModel *-- StickSettingsSubViewModel : mediates
@@ -304,4 +309,7 @@ classDiagram
 %% 注釈補強（2026-09-26 Phase6-Step7b 決定3＝案M1 反映）
 %% - `IViewModelFactory.CreateProfileSettingsVM` の理想形のシグネチャに `int targetDevice` を追加した。プロファイル編集画面では、編集対象（プロファイル。編集内容は作業領域に保持し、保存・適用を押すまで実機へ反映しない）と、ランブルテスト・ライトバーのプレビュー・校正などで使う実機（`targetDevice`。-1 は実機なし）を分けて渡す。現行コードは `CreateProfileSettingsViewModel(int device, int targetDevice = -1)`（`device` は作業スロット `Global.TEST_PROFILE_INDEX`）で、`CreateRecordBoxViewModel` にも同じ `targetDevice` を追加した。
 %% - Step8 以降の MVVM 移設でも、編集スロットと実機を同じ番号で兼用しないこと（兼用すると、編集中の変更が保存前にコントローラーへ即時反映される。Phase6-Status.md K4-3）。詳細は `Phase6-Step7b-Plan.md` §2A 決定3、`04-Service-Lifecycle-Spec.md` §1-3。
-
+%% 注釈補強（2026-10-13 Phase6-Step8 反映）
+%% - `ProfileSettingsViewModel` に、編集スロットに対するバックエンド操作（`SaveProfile(profileName)`、`LoadBlankProfile(control)`、キャッシュ更新）を持たせた。保存はコントローラーのスロットへの再適用をしない（再適用は保存の通知［`ProfileSaved`］を受けた `MainWindow` の責務。Step7b 決定8）。`SpecialActionsSubViewModel` には、有効なアクション名を編集スロットの ProfileActions へ反映する `CommitEnabledActionsToProfile()`、名前からの取得（未発見は placeholder）の `GetActionOrPlaceholder`、依存の `IProfileRepository` を追加した。クラス名は理想形の名称で、現行コードでは `SpecialActionsListViewModel` が相当する。
+%% - `IProfileRepository` に `LoadBlankProfile`（空のプロファイルの読み込み。既定アクション作成・一時プロファイルのクリアを含む）、`ISpecialActionRepository` に `GetActionOrPlaceholder`（前後の空白と大文字小文字を無視し、未発見は `null` ではなく placeholder を返す）を追加した。どちらも現行は `Global` への薄い委譲。本図にはこれらのインターフェースのメンバー一覧がないため、一覧の変更はない。
+%% - View（`ProfileEditor`）は、レイアウト・言語の設定（`IAppSettingsService`）と、編集スロットの LS／RS 補正値・出力種別（`IProfileSettingsService`）をコンストラクタ引数で受け取る（Pure DI）。生成は `MainWindow.ShowProfileEditor` の 1 箇所。詳細は `Phase6-Step8-Plan.md` §0A、`Phase6-Step8-Completion-Report.md`。
