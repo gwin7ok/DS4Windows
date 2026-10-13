@@ -24,16 +24,16 @@
 
 | 分類 | サービス（インターフェース） | 具象クラス（実装） | ライフタイム | 責務 / 役割 | 主な依存注入引数 |
 | :--- | :--- | :--- | :--- | :--- | :--- |
-| **基盤** | `IPathService` | `PathService` | **Singleton** | プロファイル・アプリデータ保存先パスの動的解決 | なし |
-| **基盤** | `IEnvironmentService` | `EnvironmentService` | **Singleton** | OS種別、管理者権限、ディスプレイ解像度情報、HidHide／FakerInput の導入状態、デバイスインスタンスID解決、コントローラースロット上限（同時に扱えるスロット数の上限。接続台数ではない）の提供 | なし |
+| **基盤** | `IPathService` | `PathService` | **Singleton** | プロファイル・アプリデータ保存先パスの動的解決。プログラムフォルダ（`ProgramDirectory`。ジャンクション解決済みの実行ファイルの親フォルダで、`ExecutableDirectory`＝`AppContext.BaseDirectory` とは別） | なし |
+| **基盤** | `IEnvironmentService` | `EnvironmentService` | **Singleton** | OS種別、管理者権限、ディスプレイ解像度情報、HidHide／FakerInput の導入状態、デバイスインスタンスID解決、コントローラースロット上限（同時に扱えるスロット数の上限。接続台数ではない）、ViGEmBus の導入・サポートバージョン・最小バージョン判定、プログラムフォルダへの書き込みに管理者権限が要るかの判定の提供 | なし |
 | **基盤** | `INotificationService` | `AppNotificationService` | **Singleton** | OSトースト通知、ステータス通知の統一発行 | なし |
 | **基盤** | `IStartupArguments` | `StartupArguments` | **Singleton** | アプリの起動引数（`ArgumentParser`）の保持役。`AppHost.CreateHost(config, parser)` が値を設定し、`ControlService` の生成時に渡す（Phase6-Step7-4） | なし |
 | **基盤** | `XmlIoLock` | `XmlIoLock` | **Singleton** | プロセス内・スレッド間のファイル排他制御ロック | なし |
-| **基盤** | `IAppSettingsService` | `AppSettingsService` | **Singleton** | `AppSettings.xml` の永続化・設定値管理 | `IPathService`, `XmlIoLock` |
-| **基盤** | `IAppearanceSettingsService`| `AppearanceSettingsService` | **Singleton** | UIテーマ（Dark/Default）、フォントスケール、トレイアイコン選択・バッテリー変化通知 | `IAppSettingsService` |
+| **基盤** | `IAppSettingsService` | `AppSettingsService` | **Singleton** | `AppSettings.xml` の永続化・設定値管理（OSC・UDP・Steam フォルダ・偽装 exe 名・ログ保持数などを含む） | `IPathService`, `XmlIoLock` |
+| **基盤** | `IAppearanceSettingsService`| `AppearanceSettingsService` | **Singleton** | UIテーマ（Dark/Default）、フォントスケール、トレイアイコン選択、バッテリー変化通知（発行 `InvokeBatteryChanged`／購読 `BatteryChanged`） | `IAppSettingsService` |
 | **基盤** | `IProfileXmlStore` | `ProfileXmlStore` | **Singleton** | プロファイルXMLのシリアライズ・デシリアライズ | `IPathService`, `XmlIoLock` |
 | **基盤** | `IProfileRepository` | `ProfileRepository` | **Singleton** | プロファイル名一覧の保持、CRUD、存在検証、リンクプロファイル解決、ブランクプロファイル読込（`LoadBlankProfile`） | `IProfileXmlStore`, `IPathService` |
-| **基盤** | `IProfileSettingsService` | `ProfileSettingsService` | **Singleton** | ロード済みプロファイルのインメモリ設定値管理 | `IProfileXmlStore` |
+| **基盤** | `IProfileSettingsService` | `ProfileSettingsService` | **Singleton** | ロード済みプロファイルのインメモリ設定値管理（出力 KBM マッピングによる仮想キーの別名更新 `RefreshActionAlias` を含む） | `IProfileXmlStore` |
 | **基盤** | `IDeviceOptionRepository` | `DeviceOptionRepository` | **Singleton** | 機種別オプション（`*ControllerOptsDTO`）の管理 | `IPathService`, `XmlIoLock` |
 | **基盤** | `ISpecialActionRepository` | `SpecialActionRepository` | **Singleton** | `Actions.xml` のCRUDおよび定義管理、名前によるアクション取得（未発見は placeholder を返す `GetActionOrPlaceholder`） | `IPathService`, `XmlIoLock` |
 | **基盤** | `IOutputSlotStore` | `OutputSlotStore` | **Singleton** | スロット永続化設定（`OutputSlots.xml`）の管理 | `IPathService`, `XmlIoLock` |
@@ -67,13 +67,14 @@
 | **3.出力**| `IProcessInspector` | `DefaultProcessInspector` | **Singleton** | 実行中プロセスのパス・ウィンドウ名調査 | なし |
 | **3.出力**| `IProfileSwitcher` | `DefaultProfileSwitcher` | **Singleton** | アクションからのプロファイル切替実行 | `IProfileApplicationService` |
 | **3.出力**| `IUdpServerService` | `UdpServerService` | **Singleton** | Cemuhook 互換 UDP モーションデータ配信 | `IAppSettingsService` |
-| **4.UI** | `IViewModelFactory` | `ViewModelFactory` | **Singleton** | パラメータ付きViewModel / 複合ViewModelの生成ファクトリ | `IServiceProvider` |
-| **4.UI** | `MainWindowsViewModel` | `MainWindowsViewModel` | **Singleton** | メインウィンドウ（ヘッダー、タブ切替、ステータス） | `IAppSettingsService`, `ControlService` |
+| **4.UI** | `IViewModelFactory` | `ViewModelFactory` | **Singleton** | パラメータ付きViewModel / 複合ViewModelの生成ファクトリ | `IProfileSettingsService`, `IProfileRepository`, `ISpecialActionRepository`, `IOutputSlotService`, `IEnvironmentService`, `IPathService`, `Func<ControlService>`（生成のたびに遅延解決） |
+| **4.UI** | `MainWindowsViewModel` | `MainWindowsViewModel` | **Singleton** | メインウィンドウ（ヘッダー、タブ切替、ステータス、ViGEmBus ドライバーの確認） | `IEnvironmentService`, `IPathService` |
 | **4.UI** | `ControllersViewModel` | `ControllersViewModel` | **Singleton** | コントローラー接続スロット一覧表示画面 | `IDs4DeviceRegistry`, `IProfileApplicationService` |
-| **4.UI** | `SettingsViewModel` | `SettingsViewModel` | **Transient** | アプリ全般設定画面（開くたびに最新値取得） | `IAppSettingsService`, `IAppearanceSettingsService` |
+| **4.UI** | `SettingsViewModel` | `SettingsViewModel` | **Transient** | アプリ全般設定画面（開くたびに最新値取得） | `IAppSettingsService`, `IAppearanceSettingsService`, `IEnvironmentService`, `IPathService` |
+| **4.UI** | `TrayIconViewModel` | `TrayIconViewModel` | **`MainWindow` が生成（アプリ存続期間）** | タスクトレイのアイコン・ツールチップ・コンテキストメニュー（バッテリー表示、プロファイル選択） | `ControlService`, `ProfileList`, `IAppearanceSettingsService`, `IProfileRepository`, `IEnvironmentService`, `IPathService` |
 | **4.UI** | `LogViewModel` | `LogViewModel` | **Transient** | ログ表示画面 | なし |
 | **4.UI** | `AboutViewModel` | `AboutViewModel` | **Transient** | バージョン・クレジット表示画面 | `IEnvironmentService` |
-| **4.UI** | `ProfileSettingsViewModel` | `ProfileSettingsViewModel` | **Factory生成 (親Mediator)**| プロファイル編集画面（配下の各サブVMを調停・集約。編集スロットの保存・ブランク読込・キャッシュ更新） | サブVM群, `IProfileSettingsService`, `IProfileRepository` |
+| **4.UI** | `ProfileSettingsViewModel` | `ProfileSettingsViewModel` | **Factory生成 (親Mediator)**| プロファイル編集画面（配下の各サブVMを調停・集約。編集スロットの保存・ブランク読込・キャッシュ更新） | サブVM群, `IProfileSettingsService`, `IProfileRepository`, `IOutputSlotService`, `IEnvironmentService`, `IPathService`, `ControlService`（ジャイロ系 setter への引数。null 許容） |
 | **4.UI** | `StickSettingsSubViewModel` | `StickSettingsSubViewModel` | **Factory生成 (サブVM)** | スティック感度・カーブ・デッドゾーン設定タブ | `IProfileSettingsService` |
 | **4.UI** | `TriggerSettingsSubViewModel`| `TriggerSettingsSubViewModel`| **Factory生成 (サブVM)** | トリガー感度・2段階設定・モーター設定タブ | `IProfileSettingsService` |
 | **4.UI** | `ButtonMappingSubViewModel` | `ButtonMappingSubViewModel` | **Factory生成 (サブVM)** | ボタン割り当て・シフトモディファイア設定タブ | `IProfileSettingsService` |
@@ -144,3 +145,8 @@
 %% - `ProfileEditor`（View）は、`IAppSettingsService`（レイアウト・言語）と `IProfileSettingsService`（編集スロットの補正値・出力種別）をコンストラクタ引数で受け取る。`MainWindow` が保持済みのサービスを渡す。View 自体はライフタイム管理の対象ではない（Window／UserControl）。
 %% - 保存の再適用は、保存の通知を受けた `MainWindow`（`IProfileApplicationService` 経由）に残している（Step7b 決定8）。ViewModel の `SaveProfile` は編集スロットの保存だけを行う。
 %% - 詳細は `03-Class-Interface-Diagram.md` の 2026-10-13 の注釈と `Phase6-Step8-Plan.md` §0A。
+%% 注釈補強（2026-10-14 Phase6-Step9 反映）
+%% - §2 の `MainWindowsViewModel`・`SettingsViewModel`・`ProfileSettingsViewModel`・`IViewModelFactory` の依存を、現行コードに合わせて更新した（旧記載の `MainWindowsViewModel`＝`IAppSettingsService`, `ControlService` は実際には使っていなかった）。`TrayIconViewModel` の行を追加した（DI 登録ではなく、`MainWindow` が生成する）。
+%% - 4 つの ViewModel の依存はすべてコンストラクタの必須引数。`ViewModelFactory` は `Func<ControlService>` で `ControlService` を生成のたびに遅延解決する（`ServiceRegistration` に `Func<ControlService>` を登録）。ライフタイムは変わらない。
+%% - `IPathService`／`IEnvironmentService`／`IAppearanceSettingsService`／`IAppSettingsService`／`IProfileSettingsService` の責務記述に、Step9 で追加した契約（`ProgramDirectory`、ViGEmBus 判定と `AdminNeeded`、`BatteryChanged`、Steam フォルダ・偽装 exe 名・ログ保持数、`RefreshActionAlias`）を追記した。
+%% - 詳細は `03-Class-Interface-Diagram.md` の 2026-10-14 の注釈と `Phase6-Step9-Plan.md` §0A。

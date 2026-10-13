@@ -1,7 +1,7 @@
 # フェーズ6計画書: 残存 `Global` 実利用箇所の解体と4層構造DI化の完成
 
 作成日: 2026-09-09  
-改定日: 2026-10-13（Step8［ProfileEditor の ViewModel 移設と Global 参照解消］の完了）／2026-09-26（Step7b［プロファイル編集の即時反映廃止］の追加と完了）／2026-09-20（Step13［.cs ファイル配置の統一］、Step10b［1ファイル1型の全数是正］を新設）／2026-09-19（Step1再監査および全ステップ［Step2〜Step12］確定実装計画書に基づく全面改訂）  
+改定日: 2026-10-14（Step9［主要4大ViewModelのPure DI化］の完了）／2026-10-13（Step8［ProfileEditor の ViewModel 移設と Global 参照解消］の完了）／2026-09-26（Step7b［プロファイル編集の即時反映廃止］の追加と完了）／2026-09-20（Step13［.cs ファイル配置の統一］、Step10b［1ファイル1型の全数是正］を新設）／2026-09-19（Step1再監査および全ステップ［Step2〜Step12］確定実装計画書に基づく全面改訂）  
 対象ブランチ: `For-DI-migration-work`  
 前フェーズ: `Phase5-Plan.md`（Step1〜15、ドメイン集約型・完了済み）  
 全体計画書: `docs-forDIMG/DI-App-Wide-Migration-Plan.md`  
@@ -34,7 +34,7 @@ Phase6 では、アプリケーション全域に残存する呼び出し元側�
 | **Step 7** | `App.xaml.cs` | 39件（温存15、2026-09-24 再集計。**完了**、2026-09-25） | **選択肢1採用**: Pre-Host領域（12件）厳格保護 ＋ Post-Host Composition Root解決 ＋ 既存サービス集約 |
 | **Step 7b** | `ProfileEditor.xaml.cs`, `MainWindow.xaml.cs`, `ProfileSettingsViewModel.cs` ほか | 編集スロット固定＋`targetDevice` 導入（**完了**、2026-09-26） | プロファイル編集の即時反映を廃止（ユーザー承認の機能廃止、K4-3）。編集は作業スロット、実機は `targetDevice`、Save／Apply は同じ再適用（違いは画面を閉じるかどうか） |
 | **Step 8** | `ProfileEditor.xaml.cs` | 58箇所（**完了**、2026-10-13。定数37を除く） | **案3-A採用（決定6＝M-A）**: Global 参照を既存契約へ置換し、保存の一連・ブランク読み込みを `ProfileSettingsViewModel` へ移設。契約差 B8（`GetActionOrPlaceholder`）・B10（`LoadBlankProfile`）を追加。B3 は Step7-1 で追加済み、B9 は呼び出し元が消えたため不要 |
-| **Step 9** | 主要4大ViewModel (`Settings`, `MainWindow`, `TrayIcon`, `ProfileSettings`) | 79箇所 | **選択肢1採用**: 中枢4大ViewModel集中 ＋ 機能カテゴリ別段階的移行 ＋ Pure DI徹底（残存小型VMはStep10へ引き継ぎ） |
+| **Step 9** | 主要4大ViewModel (`Settings`, `MainWindow`, `TrayIcon`, `ProfileSettings`) | 114箇所（**完了**、2026-10-14。定数13を除く） | **選択肢1採用・S9-A**: `Global.` 全件の解消と、4 ViewModel（と `PresetMenuHelper`、`ViewModelFactory`）のコンストラクタのフォールバック解消（依存は必須引数）。契約 `IAppSettingsService` 4・`IEnvironmentService` 4・`IPathService.ProgramDirectory`・`IAppearanceSettingsService.BatteryChanged`・`IProfileSettingsService.RefreshActionAlias` を追加。実機確認で既存不具合 K9-1（OSC 送信の競合）・K9-2（偽装 exe 名）を発見・修正 |
 | **Step 10** | 残存小型View (11) & 小型ViewModel (12) & `PresetOption` | 72箇所 | **選択肢A採用**: 機能ドメイン別3グループ分割 ＋ View/ViewModelペアPure DI化 ＋ 全域直参照ゼロ化 |
 | **合計** | **ソリューション全域** | **約404箇所** | **全呼び出し元の Pure DI 完全移行** |
 
@@ -67,7 +67,7 @@ Phase6 では、アプリケーション全域に残存する呼び出し元側�
 ├─ Phase6-Step7: App.xaml.cs Post-Host領域のPure DI化（39件、温存15件［Pre-Host12件を含む］。2026-09-25 完了）
 ├─ Phase6-Step7b: プロファイル編集画面の即時反映廃止（編集は作業スロット、保存・適用時に一括反映。2026-09-26 完了）
 ├─ Phase6-Step8: ProfileEditor.xaml.cs のバックエンド操作の ViewModel 移設 ＆ Global 参照解消（58箇所、完了 2026-10-13）
-├─ Phase6-Step9: 主要4大ViewModelのPure DI徹底 ＆ カテゴリ別移行（79箇所）
+├─ Phase6-Step9: 主要4大ViewModelのPure DI徹底 ＆ カテゴリ別移行（114箇所、完了 2026-10-14）
 ├─ Phase6-Step10: 残存小型UI・小型ViewModel・補助クラスのドメイン別ペアPure DI化（72箇所）
 └─ Phase6-Step10b: 1ファイル1型（原則1）の全数是正（55ファイル・新設203ファイル。Step10 の後・Step11 の前。Step13 の後に実施）
 
@@ -160,7 +160,8 @@ Phase6 では、アプリケーション全域に残存する呼び出し元側�
   - `MainWindow.xaml.cs` がサービスを横流しするバケツリレーを撤廃し、`MainWindow` の解体・スリム化を強力に推進。
   - Step1 で判明した重要契約差（B8: `GetActionOrPlaceholder`、B9: `ApplyProfileToSlot`、B10: `LoadBlankDevProfile`）をシムで完全吸収。
 
-#### Phase6-Step9: 主要4大ViewModelのPure DI徹底 ＆ カテゴリ別移行
+#### Phase6-Step9: 主要4大ViewModelのPure DI徹底 ＆ カテゴリ別移行【完了、2026-10-14】
+- **結果（2026-10-14）**: 現行コードで再集計した 114 件（`Settings` 89、`MainWindow` 9、`TrayIcon` 6、`ProfileSettings` 10）の `Global.` 参照を解消し、4 ViewModel のコンストラクタの依存を必須引数にした（決定1＝S9-A）。呼出元 0 件の更新関連メンバーを削除（決定6＝D1）。実機確認で見つかった既存不具合 K9-1（OSC 送信）・K9-2（偽装 exe 名）を修正。詳細は `Phase6-Step9-Completion-Report.md`。以下は 2026-09-18 時点の確定方針。
 - **対象**: 実参照式79箇所（`Settings`: 55, `MainWindow`: 8, `TrayIcon`: 6, `ProfileSettings`: 10、const除外14）。
 - **確定方針（選択肢1、2026-09-18。改訂後も維持）**:
   - アプリの中枢4大ViewModelにスコープを限定。コンストラクタ引数注入（Pure DI）を徹底。

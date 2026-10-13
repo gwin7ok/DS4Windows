@@ -194,6 +194,8 @@ classDiagram
         +ButtonMappingSubViewModel ButtonSubVM
         +SpecialActionsSubViewModel ActionSubVM
         -IProfileRepository _profileRepo
+        -IEnvironmentService _environmentService
+        -IPathService _pathService
         +SaveProfile(string profileName) bool
         +LoadBlankProfile(ControlService control)
         +ApplyPreset(PresetOption opt)
@@ -221,6 +223,23 @@ classDiagram
         +CommitEnabledActionsToProfile()
     }
 
+    class MainWindowsViewModel {
+        -IEnvironmentService _environmentService
+        -IPathService _pathService
+        +CheckDrivers()
+    }
+    class SettingsViewModel {
+        -IAppSettingsService _appSettings
+        -IAppearanceSettingsService _appearanceSettings
+        -IEnvironmentService _environmentService
+        -IPathService _pathService
+    }
+    class TrayIconViewModel {
+        -IAppearanceSettingsService _appearanceSettings
+        -IProfileRepository _profileRepository
+        -IPathService _pathService
+    }
+
     ProfileSettingsViewModel *-- StickSettingsSubViewModel : mediates
     ProfileSettingsViewModel *-- TriggerSettingsSubViewModel : mediates
     ProfileSettingsViewModel *-- ButtonMappingSubViewModel : mediates
@@ -231,7 +250,13 @@ classDiagram
         +CreateProfileSettingsVM(string profileName, int targetDevice) ProfileSettingsViewModel
     }
     class ViewModelFactory {
-        -IServiceProvider _sp
+        -IProfileSettingsService _profileSettings
+        -IProfileRepository _profileRepo
+        -ISpecialActionRepository _actionRepo
+        -IOutputSlotService _outputSlotService
+        -IEnvironmentService _environmentService
+        -IPathService _pathService
+        -Func~ControlService~ _controlServiceAccessor
     }
     IViewModelFactory <|.. ViewModelFactory : implements
     ViewModelFactory ..> ProfileSettingsViewModel : creates
@@ -313,3 +338,8 @@ classDiagram
 %% - `ProfileSettingsViewModel` に、編集スロットに対するバックエンド操作（`SaveProfile(profileName)`、`LoadBlankProfile(control)`、キャッシュ更新）を持たせた。保存はコントローラーのスロットへの再適用をしない（再適用は保存の通知［`ProfileSaved`］を受けた `MainWindow` の責務。Step7b 決定8）。`SpecialActionsSubViewModel` には、有効なアクション名を編集スロットの ProfileActions へ反映する `CommitEnabledActionsToProfile()`、名前からの取得（未発見は placeholder）の `GetActionOrPlaceholder`、依存の `IProfileRepository` を追加した。クラス名は理想形の名称で、現行コードでは `SpecialActionsListViewModel` が相当する。
 %% - `IProfileRepository` に `LoadBlankProfile`（空のプロファイルの読み込み。既定アクション作成・一時プロファイルのクリアを含む）、`ISpecialActionRepository` に `GetActionOrPlaceholder`（前後の空白と大文字小文字を無視し、未発見は `null` ではなく placeholder を返す）を追加した。どちらも現行は `Global` への薄い委譲。本図にはこれらのインターフェースのメンバー一覧がないため、一覧の変更はない。
 %% - View（`ProfileEditor`）は、レイアウト・言語の設定（`IAppSettingsService`）と、編集スロットの LS／RS 補正値・出力種別（`IProfileSettingsService`）をコンストラクタ引数で受け取る（Pure DI）。生成は `MainWindow.ShowProfileEditor` の 1 箇所。詳細は `Phase6-Step8-Plan.md` §0A、`Phase6-Step8-Completion-Report.md`。
+%% 注釈補強（2026-10-14 Phase6-Step9 反映）
+%% - 主要 4 大 ViewModel（`SettingsViewModel`、`MainWindowsViewModel`、`TrayIconViewModel`、`ProfileSettingsViewModel`）の依存を、コンストラクタの必須引数（Pure DI）にした。`AppHost.GetService`／`Global.*Instance`／`Program.rootHub` のフォールバックは削除。図に `MainWindowsViewModel`・`SettingsViewModel`・`TrayIconViewModel` のクラスを追加し、`ProfileSettingsViewModel` に `IEnvironmentService`・`IPathService` を追加した。
+%% - `ViewModelFactory` の依存を、実コードに合わせて明示した（`IServiceProvider` の保持ではなく、必須のコンストラクタ引数）。`ControlService` は `Func<ControlService>` で生成のたびに遅延解決する（Step2 決定D1 と同じ形）。`IViewModelFactory` の契約（`CreateProfileSettingsViewModel(int device, int targetDevice = -1)`）は変更なし。
+%% - 追加した契約: `IAppSettingsService`（`UseCustomSteamFolder`、`CustomSteamFolder`、`FakeExeName`、`LogMaxArchiveFiles`）、`IEnvironmentService`（`IsViGEmBusInstalled`、`IsRunningSupportedViGEmBus`、`IsUsingMinViGEm117333`、`AdminNeeded`）、`IPathService.ProgramDirectory`（`Global.exedirpath` と同じ値。`ExecutableDirectory`＝`AppContext.BaseDirectory` とは値が異なりうる）、`IAppearanceSettingsService.BatteryChanged`（購読。発行の `InvokeBatteryChanged` と対）、`IProfileSettingsService.RefreshActionAlias`。いずれも `Global` への薄い委譲。
+%% - 詳細は `Phase6-Step9-Plan.md` §0A、`Phase6-Step9-Completion-Report.md`。

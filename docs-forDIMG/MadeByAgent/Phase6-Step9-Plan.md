@@ -2,7 +2,7 @@
 
 作成日: 2026-09-11  
 改訂日: 2026-10-13（Step9-0 着手前再確認。冒頭に §0A［現行の正］を追加。§0〜§8 は 2026-09-18 版の旧記載として残す）。2026-09-18（Phase6-Step1 再監査エビデンスに基づく推奨案［主要4大ViewModel集中 ＋ カテゴリ別段階的移行・Pure DI徹底］採用・全面拡充改訂）  
-状態: Step9-0 完了（2026-10-13、決定1〜8 確定）。次は Step9-1（契約の追加と後始末）。実装未着手  
+状態: **完了（2026-10-14）**。Step9-0〜9-5（3c・3d を追加）。完了報告書 `Phase6-Step9-Completion-Report.md`。次は Step10  
 対象ブランチ: `For-DI-migration-work`  
 上位計画書: `docs-forDIMG/MadeByAgent/Phase6-Plan.md`  
 準拠指針: `.github/copilot-instructions.md`, `docs-forDIMG/DI-App-Wide-Migration-Plan.md`, `docs-forDIMG/Model-Diagram/02-Layer-Architecture-Diagram.md`  
@@ -243,7 +243,8 @@
   - `Global.` 10 件の置換、コンストラクタの必須引数化（`IProfileSettingsService`、`ControlService`［決定2］、`IOutputSlotService`、`IProfileRepository`、`IEnvironmentService`、`IPathService`）。`targetDevice` の分離（編集スロットと実機）は変えない。
   - `ViewModelFactory`（必須引数の供給）、`ProfileEditor.xaml.cs` のレガシーフォールバックの削除、`ServiceRegistration`（`Func<ControlService>`）。
   - テスト修正: `ProfileSettingsViewModelTests`、`ProfileSettingsViewModelTargetDeviceTests`、`ProfileEditorTargetDeviceGuardTests`。維持する検査: `ProfileEditorGlobalReferenceGuardTests`、`ProfileEditorMappingDevTypeGuardTests`、`ProfileEditorBackendViewModelTests`。
-- **Step9-5（完了確認と文書更新）**: ソース走査ガードの確定、モデル図 03・04 の更新（04 §2 の `MainWindowsViewModel`／`SettingsViewModel`／`ProfileSettingsViewModel`／`TrayIconViewModel` の依存、`IViewModelFactory`／`ViewModelFactory` の依存、追加した契約のメンバー記述）、`Phase6-Status.md`／`Phase6-Plan.md`、`Phase6-Step10-Plan.md` 冒頭への申し送り、`Phase6-Step11-Plan.md` §3.3 への先送り登録、完了報告書 `Phase6-Step9-Completion-Report.md`。
+- **Step9-5（完了 2026-10-14）**: 完了確認と文書更新（モデル図 03・04、Status／Plan、Step10 への申し送り、Step11 の先送り台帳、完了報告書）。元の計画:
+  - **（元の記載）**: ソース走査ガードの確定、モデル図 03・04 の更新（04 §2 の `MainWindowsViewModel`／`SettingsViewModel`／`ProfileSettingsViewModel`／`TrayIconViewModel` の依存、`IViewModelFactory`／`ViewModelFactory` の依存、追加した契約のメンバー記述）、`Phase6-Status.md`／`Phase6-Plan.md`、`Phase6-Step10-Plan.md` 冒頭への申し送り、`Phase6-Step11-Plan.md` §3.3 への先送り登録、完了報告書 `Phase6-Step9-Completion-Report.md`。
 
 ### 0A.6 Step9 と Step10 の境界
 - **Step9 の範囲（本節の台帳）**: `SettingsViewModel`、`MainWindowsViewModel`、`TrayIconViewModel`、`ProfileSettingsViewModel`（と同じファイルの `PresetMenuHelper`）。および、これらの生成側の呼び出し合わせのみ（`MainWindow.xaml.cs` の 3 行、`ViewModelFactory`、`ProfileEditor.xaml.cs` の 1 箇所、`ServiceRegistration`）。
@@ -278,12 +279,12 @@ Step7 の教訓として、各項目に判定に使うログ・値を併記す�
 - **Step10b**: `ProfileSettingsViewModel.cs` には複数の型（`PresetMenuHelper`、`TriggerModeChoice` など）がある。分割は Step10b で行い、本 Step で型を追加しない（§3.3 原則1）。
 
 ### 0A.9 完了判定チェックリスト（案）
-- [ ] 4 つの ViewModel の非定数 `Global.` 参照が 0 件（ソース走査ガードで固定）
-- [ ] 4 つの ViewModel（と `PresetMenuHelper`）のコンストラクタに `AppHost.GetService`／`Global.*Instance`／`Program.rootHub` のフォールバックが無い（決定1＝S9-A の場合）
-- [ ] 追加した契約（`IAppSettingsService` 4、`IEnvironmentService` 4、決定3・4・5 の各 1）が `Global` と同じ値・同じ動作であることをテストで固定
-- [ ] 後始末のない既存テストの修正（決定7）、既存テストと新規テストが全件成功（`dotnet build`、`dotnet test`）
-- [ ] 実機確認（0A.7）問題なし。先送りは `Phase6-Step11-Plan.md` §3.3 へ登録
-- [ ] モデル図 03・04 の更新、`Phase6-Status.md`／`Phase6-Plan.md`／`Phase6-Step10-Plan.md`（申し送り）の更新、完了報告書の作成
+- [x] 4 つの ViewModel の非定数 `Global.` 参照が 0 件（ソース走査ガードで固定）
+- [x] 4 つの ViewModel（と `PresetMenuHelper`）のコンストラクタに `AppHost.GetService`／`Global.*Instance`／`Program.rootHub` のフォールバックが無い（決定1＝S9-A の場合）
+- [x] 追加した契約（`IAppSettingsService` 4、`IEnvironmentService` 4、決定3・4・5 の各 1）が `Global` と同じ値・同じ動作であることをテストで固定
+- [x] 後始末のない既存テストの修正（決定7）、既存テストと新規テストが全件成功（`dotnet build`、`dotnet test`）
+- [x] 実機確認（0A.7）問題なし（K9-1・K9-2 は修正して再確認、K9-3 は先送り）。先送りは `Phase6-Step11-Plan.md` §3.3 へ登録
+- [x] モデル図 03・04 の更新、`Phase6-Status.md`／`Phase6-Plan.md`／`Phase6-Step10-Plan.md`（申し送り）の更新、完了報告書の作成
 
 ---
 

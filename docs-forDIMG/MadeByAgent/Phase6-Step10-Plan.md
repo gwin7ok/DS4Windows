@@ -14,6 +14,22 @@
 
 ---
 
+> **Step9 からの申し送り（2026-10-14 追記。Step10-0 で必ず確認すること）**
+> - **台帳は作り直しが必要**: 本書の行番号・件数は 2026-09-18 版。Step9 の変更（下記）で変わった箇所がある。Step10-0 で、現行コードから再集計すること（Step9 のやり方は `Phase6-Step9-Plan.md` §0A）。
+> - **Step9 で追加した契約（Step10 の置換先として使う）**:
+>   - `IPathService.ProgramDirectory`（`Global.exedirpath` と同じ値）: `SaveWhere.xaml.cs`（5 件）、`Util.cs`（2 件、`Global.exedirpath`）、`StartupMethods`（4 件、静的クラス）の置換先。`IPathService.ExecutableDirectory`（`AppContext.BaseDirectory`）は値が異なるため、`exedirpath` の置換には使わない。
+>   - `IProfileSettingsService.RefreshActionAlias(DS4ControlSettings, bool)`: `BindingWindowViewModel.cs` の `Global.RefreshActionAlias`（706、770 行）の置換先。
+>   - `IAppSettingsService`: `UseCustomSteamFolder`、`CustomSteamFolder`（`AutoProfiles.xaml.cs` の 80〜82 行付近の置換先）、`FakeExeName`、`LogMaxArchiveFiles`。
+>   - `IEnvironmentService`: `IsViGEmBusInstalled`、`IsRunningSupportedViGEmBus`、`IsUsingMinViGEm117333`、`AdminNeeded`。
+>   - `IAppearanceSettingsService.BatteryChanged`（購読）。
+> - **`MainWindow.xaml.cs` の生成呼び出しが変わった**（Step9 で、保持済みのサービスを渡す形に合わせた）: `new SettingsViewModel(appSettingsService, appearanceSettingsService, environmentService, pathService)`、`new TrayIconViewModel(controlService, profileListHolder, appearanceSettingsService, profileRepo, environmentService, pathService)`、`new MainWindowsViewModel(environmentService, pathService)`（フォールバック。通常は DI から解決）。コンストラクタ内の `AppHost.GetService` の並び（サービス解決 10 件以上）と `Program.rootHub`／`Global.*Instance` のフォールバックは Step10 の範囲のまま。
+> - **`ViewModelFactory` のコンストラクタが必須引数になった**（`IProfileSettingsService`、`IProfileRepository`、`ISpecialActionRepository`、`IOutputSlotService`、`IEnvironmentService`、`IPathService`、`Func<ControlService>`）。`CreateRecordBoxViewModel`／`CreateSpecialActEditorViewModel`／`CreateAutoProfilesViewModel` は変更していない（Step10 でそれぞれの ViewModel の依存を必須にする際に、ファクトリの必須引数へ追加する）。`ProfileEditor.xaml.cs` のレガシーフォールバック（`new ProfileSettingsViewModel`）は削除済み。
+> - **Step9 で削除したもの**: `MainWindowsViewModel` の `RunUpdaterCheck`、`DownloadUpstreamVersionInfo`、`LauchDS4Updater`、`IsNET8Available`、`DownloadUpstreamUpdaterVersion`、`updaterExe`、`SettingsViewModel_CheckForUpdatesChanged`（いずれも呼出元 0 件）。更新の機能は `UpdaterWindow`（本 Step の対象）が担う。
+> - **Step9 で触れていない静的結合（Step10 の台帳）**: `SettingsViewModel` の `App.logHolder`（5 箇所）・`StartupMethods.*`（静的クラス、16 行）・`Util.GetHidHideClientPath()`、`TrayIconViewModel` の `App.Current.Dispatcher`。
+> - **維持が必要なソース走査ガード**: `SettingsViewModelGlobalReferenceGuardTests`、`MainWindowsAndTrayViewModelGlobalReferenceGuardTests`、`ProfileSettingsViewModelGlobalReferenceGuardTests`（`ViewModelFactory` のコンストラクタに `AppHost` と `= null` が無いことを検査）。`ViewModelFactory` に引数を足すときは、ガードの `Func<ControlService>` の検査（コンストラクタの文字列範囲）を確認すること。
+> - **持ち越し**: K9-3（プリセットメニューのサブメニュー）。`ProfileEditor.xaml`／`MainWindow.xaml` を Step10 で触るときに、単一モニター・同一 DPI の環境で再現するかを確認する案（`Phase6-Status.md` §6.5）。
+> - 詳細は `Phase6-Step9-Plan.md` §0A、`Phase6-Step9-Completion-Report.md`。
+
 ## 0. 背景と改訂の経緯
 
 ### 0.1 旧計画書からの精査とStep9からの引き継ぎ合意

@@ -1,7 +1,7 @@
 # フェーズ6 進捗管理文書: 残存 `Global` 実利用箇所の解体と4層構造DI化の完成
 
-最終更新日: 2026-09-26  
-状態: **最新: Step4〜Step8 完了（Step8 は 2026-10-13）、次は Step9** / Phase6-Step1 完了 / **Step2 完了（2026-09-21 確定）** / **Step13（配置整理 44件）完了（2026-09-21 確定）** / **Step3-1・Step3-2 完了確定（ともにビルド・テスト・実機確認済み、2026-09-22〜23）** / **Step3-3 対象消滅（2026-09-23、Abs Mouse機能削除に伴い対象コード自体を撤去。詳細は §6.8）** / Step10b（1ファイル1型の全数是正）新設 / **Phase8（Controls/SpecialActions統合ディスパッチ）新設（2026-09-23、Phase7完了後に独立フェーズとして着手。詳細は §6.7）** / **Step3-4 完了確定（2026-09-24、`SetCurveAndDeadzone` のスティック・トリガー系27件を解消。ビルド・テスト・実機確認済み）** / **Step3-5 完了確定（2026-09-24、ジャイロ系13件・`ApplyStickCalibration` 8件・`Commit` 24件の計45件を解消。ビルド・テストビルド・テスト実行成功、実機確認済み）** / **Step3-6 は 3-6a／3-6b／3-6c に分割（2026-09-24決定）、Step3-6a 完了確定（グループ A の24件＋契約追加 R1。ビルド・テストビルド・テスト実行成功、実機確認済み［ステアリングホイールエミュレーションのみ Step11 へ先送り］）、Step3-6b 完了確定（グループ B の12件、方針 P2。ビルド・テストビルド・テスト実行成功、実機確認済み）、Step3-6c 完了確定（グループ C の19件、方針 P2。ビルド・テストビルド・テスト実行成功、実機確認済み）** / **Step3-7 完了確定（2026-09-24、温存3件にTODOコメント付与、§2.4.3の選択は既定K-1採用、`using static DS4Windows.Global;`の削除可否判定は見送りで確定。ビルド・テストビルド・テスト実行成功、コミット `c6eb492f`。これで Step3 は完了確定。詳細は §3.8）** / Step4〜Step7b は完了、Step8〜Step12 は計画確定・承認待ち（**次は Step8**） / BindingWindow のテンキー右端欠けを修正・完了確定（2026-09-24、UI 微修正。詳細は §6.9）  
+最終更新日: 2026-10-14  
+状態: **最新: Step4〜Step9 完了（Step9 は 2026-10-14）、次は Step10** / Phase6-Step1 完了 / **Step2 完了（2026-09-21 確定）** / **Step13（配置整理 44件）完了（2026-09-21 確定）** / **Step3-1・Step3-2 完了確定（ともにビルド・テスト・実機確認済み、2026-09-22〜23）** / **Step3-3 対象消滅（2026-09-23、Abs Mouse機能削除に伴い対象コード自体を撤去。詳細は §6.8）** / Step10b（1ファイル1型の全数是正）新設 / **Phase8（Controls/SpecialActions統合ディスパッチ）新設（2026-09-23、Phase7完了後に独立フェーズとして着手。詳細は §6.7）** / **Step3-4 完了確定（2026-09-24、`SetCurveAndDeadzone` のスティック・トリガー系27件を解消。ビルド・テスト・実機確認済み）** / **Step3-5 完了確定（2026-09-24、ジャイロ系13件・`ApplyStickCalibration` 8件・`Commit` 24件の計45件を解消。ビルド・テストビルド・テスト実行成功、実機確認済み）** / **Step3-6 は 3-6a／3-6b／3-6c に分割（2026-09-24決定）、Step3-6a 完了確定（グループ A の24件＋契約追加 R1。ビルド・テストビルド・テスト実行成功、実機確認済み［ステアリングホイールエミュレーションのみ Step11 へ先送り］）、Step3-6b 完了確定（グループ B の12件、方針 P2。ビルド・テストビルド・テスト実行成功、実機確認済み）、Step3-6c 完了確定（グループ C の19件、方針 P2。ビルド・テストビルド・テスト実行成功、実機確認済み）** / **Step3-7 完了確定（2026-09-24、温存3件にTODOコメント付与、§2.4.3の選択は既定K-1採用、`using static DS4Windows.Global;`の削除可否判定は見送りで確定。ビルド・テストビルド・テスト実行成功、コミット `c6eb492f`。これで Step3 は完了確定。詳細は §3.8）** / Step4〜Step7b は完了、Step8〜Step12 は計画確定・承認待ち（**次は Step8**） / BindingWindow のテンキー右端欠けを修正・完了確定（2026-09-24、UI 微修正。詳細は §6.9）  
 対象ブランチ: `For-DI-migration-work`  
 前フェーズ完了状況: **Phase5 完了（Step1〜15 完了済み、SSOT確立・Issue 7根本解消完了）**  
 上位計画書: `docs-forDIMG/MadeByAgent/Phase6-Plan.md`  
@@ -21,7 +21,7 @@
 | **Step 7** | `App.xaml.cs` Post-Host DI化 | `App.xaml.cs` | 39件（温存15。2026-09-24 再集計） | **完了（2026-09-25）** | `Phase6-Step7-Plan.md`、`Phase6-Step7-Completion-Report.md` | Step7-0〜7-5 完了（実機確認の3項目は Step11 へ先送り） |
 | **Step 7b** | プロファイル編集の即時反映廃止（保存・適用時に一括反映） | `ProfileEditor.xaml.cs`, `MainWindow.xaml.cs`, `ProfileSettingsViewModel.cs` ほか | 編集スロット固定＋`targetDevice`導入 | **完了（2026-09-26）** | `Phase6-Step7b-Plan.md`、`Phase6-Step7b-Completion-Report.md` | Step7b-0〜7b-4 完了（ステアリングホイール校正は Step11 へ先送り、K7b-1 は先送り） |
 | **Step 8** | `ProfileEditor` のバックエンド操作の ViewModel 移設と Global 参照解消 | `ProfileEditor.xaml.cs` 等 | 58箇所（2026-10-13 再集計。定数37を除く） | **完了（2026-10-13）** | `Phase6-Step8-Plan.md`、`Phase6-Step8-Completion-Report.md` | Step8-0〜8-5 完了 |
-| **Step 9** | 主要4大ViewModel Pure DI化 | `SettingsVM`, `MainWindowVM` 等 | 114箇所（2026-10-13 再集計。定数13を除く） | **Step9-0 完了（2026-10-13、決定1〜8 確定）**、次は Step9-1 | `Phase6-Step9-Plan.md`（§0A が現行の正） | Step9-1〜9-5 |
+| **Step 9** | 主要4大ViewModel Pure DI化 | `SettingsVM`, `MainWindowVM`, `TrayIconVM`, `ProfileSettingsVM` | 114箇所（2026-10-13 再集計。定数13を除く） | **完了（2026-10-14）** | `Phase6-Step9-Plan.md`（§0A が現行の正）、`Phase6-Step9-Completion-Report.md` | Step9-0〜9-5（3c・3d を追加） |
 | **Step 10**| 小型UI/ViewModel ドメイン別DI化| 小型View 11, 小型VM 12 等 | 72箇所 | 計画確定・承認待ち | `Phase6-Step10-Plan.md` | 未着手 (PR-1〜4) |
 | **Step 10b**| 1ファイル1型の全数是正 | 複数型55ファイル（新設203） | 分割のみ | 計画確定・承認待ち | `Phase6-Step10b-Plan.md` | Step10 の後・Step11 の前（Step13 の後に実施） |
 | **Step 11**| 2層構造・階層化総合検証 | 全自動テスト ＋ 実機検証 | - | 計画確定・承認待ち | `Phase6-Step11-Plan.md` | 未着手 |
@@ -222,19 +222,14 @@
 
 ---
 
-### Phase6-Step9: 主要4大ViewModelのPure DI徹底 ＆ カテゴリ別移行【Step9-0 完了、実装は Step9-1 から】
-- **Step9-0 完了（2026-10-13、HEAD `f13d5c7c`）**: 現行コードで台帳を再集計し（`Global.` 114 件。Settings 89、MainWindows 9、Tray 6、ProfileSettings 10）、`Phase6-Step9-Plan.md` に §0A（現行の正）を追加。決定 1〜8 を確定（すべて推奨案）: S9-A（`Global.` 全件＋コンストラクタのフォールバック解消、依存は必須引数）、C1（`Func<ControlService>`）、P2（`IPathService.ProgramDirectory` 新設）、B1（`IAppearanceSettingsService.BatteryChanged`）、A1（`IProfileSettingsService.RefreshActionAlias`）、D1（呼出元 0 件の更新関連メンバーを削除）、T1（後始末のない既存テストを修正）、K1（K7b-1 は Step11 まで先送り、異常終了時のみ `f13d5c7c` で判別）。
-- **Step9-1〜9-3b 実装・確認済み（2026-10-13〜14）**。Step9-3b の実機確認で **K9-1**（OSC 送信を有効にするとアプリが終了。`oscSender` 生成前に入力スレッドが送信する既存の競合。Step2 より前から存在、Step9 の回帰ではない）を発見し、ユーザー承認のうえ **Step9-3c** として `ControlService.SendOsc`（null 安全）で修正（`Phase6-Step9-Plan.md` §0A.5）。これは Step2-PR-1 から先送りされていた OSC／UDP の実機確認（`Phase6-Step11-Plan.md` §3.3）の一部を前倒しで確認した形。
-- 同じ確認で **K9-2**（偽装 exe 名で `.runtimeconfig.json`／`.deps.json` が作られず、古いファイルも消えない。2021 年からの既存不具合。設定ファイルの元のパス誤り）も発見し、ユーザー承認のうえ **Step9-3d** として修正（`Phase6-Step9-Plan.md` §0A.5）。
-- **進捗率**: Step9-4〜9-5 は未着手
-- **確定方針**: **選択肢1（主要4大ViewModel集中 ＋ カテゴリ別移行・Pure DI徹底）の採用**。
-- **対象**: 実参照式79箇所（`Settings`: 55, `MainWindow`: 8, `TrayIcon`: 6, `ProfileSettings`: 10、const除外14）。
-- **計画ハイライト**:
-  - `SettingsViewModel`（55箇所）を機能カテゴリ別に3つのサブPRで安全に置換。
-  - クラス内部でのサービスロケータ都度解決を完全排除し、コンストラクタ注入（Pure DI）を徹底。
-  - 残存する小型ViewModel（12ファイル）は Step10 で対応する View とペアで Pure DI 化する方針を確定。
-
----
+### Phase6-Step9: 主要4大ViewModelのPure DI徹底 ＆ カテゴリ別移行【完了】
+- **完了（2026-10-14）**: Step9-0〜9-5（Step9-3c・3d を追加）。完了報告書 `Phase6-Step9-Completion-Report.md`。各マイクロステップでビルド・テストビルド・テスト実行成功、実機確認済み。
+- **結果**: `SettingsViewModel` 89 件、`MainWindowsViewModel` 9 件、`TrayIconViewModel` 6 件、`ProfileSettingsViewModel` 10 件の計 114 件の `Global.` 参照を解消（残りは定数のみ）。4 つの ViewModel（と `PresetMenuHelper`、`ViewModelFactory`）のコンストラクタの依存を必須引数にし、`AppHost.GetService`／`Global.*Instance`／`Program.rootHub` のフォールバックを削除。
+- **決定（2026-10-13、すべて推奨案）**: 決定1＝S9-A、決定2＝C1（`Func<ControlService>`）、決定3＝P2（`IPathService.ProgramDirectory`）、決定4＝B1（`IAppearanceSettingsService.BatteryChanged`）、決定5＝A1（`IProfileSettingsService.RefreshActionAlias`）、決定6＝D1（呼出元 0 件の更新関連メンバーを削除）、決定7＝T1（後始末のない既存テストを修正）、決定8＝K1（K7b-1 は先送り）。
+- **契約の追加**: `IAppSettingsService` 4（Steam フォルダ 2、偽装 exe 名、ログ保持数）、`IEnvironmentService` 4（ViGEmBus 判定 3、`AdminNeeded`）、`IPathService.ProgramDirectory`、`IAppearanceSettingsService.BatteryChanged`、`IProfileSettingsService.RefreshActionAlias`。
+- **実機確認で見つかった既存不具合の修正**: K9-1（OSC 送信を有効にするとアプリが終了。`oscSender` 生成前に入力スレッドが送信する競合。Step9-3c で `ControlService.SendOsc` により修正）、K9-2（偽装 exe 名で設定ファイルが作られず、古いファイルも消えない。設定ファイルの元のパスの誤り。Step9-3d で修正）。いずれも Step9 の回帰ではない（Step2 以前、2021 年からの既存）。
+- **持ち越し**: K9-3（コントローラー図の右クリックのプリセットメニューで、サブメニューへマウスを移すと消える。キーボード操作では選べる。Step9 で変更していない部分で、ベースラインでの再現確認が未実施）。K7b-1 は先送りのまま。§6.5 を参照。
+- **Step10 への申し送り**: `Phase6-Step10-Plan.md` 冒頭を参照（`ProgramDirectory`、`RefreshActionAlias` の置換先、`MainWindow` の生成呼び出し、残る静的結合）。
 
 ### Phase6-Step10: 残存小型UI・小型ViewModel・補助クラスのドメイン別ペアPure DI化【計画確定・承認待ち】
 - **進捗率**: **0%（未着手・計画確定済み）**
@@ -331,6 +326,7 @@
 
 ## 5. 直近の次アクション
 
+0. **（2026-10-14 時点の最新）** Step9 は完了確定（2026-10-14、`Phase6-Step9-Completion-Report.md`）。次は **Step10**（残存小型 View・ViewModel のドメイン別ペア Pure DI 化。Step10-0 で、Step9 後のコードから台帳を作り直すことから始める。`Phase6-Step10-Plan.md` 冒頭の申し送りを確認）→ Step10b → Step11 → Step12 の順。持ち越し K7b-1（異常終了）・K9-3（プリセットメニュー）は先送り。
 0. **（2026-10-13 時点の最新）** Step8 は完了確定（2026-10-13、`Phase6-Step8-Completion-Report.md`）。次は **Step9**（主要4大 ViewModel の Pure DI 化。Step9-0 で、Step8 後のコードから台帳を作り直すことから始める）→ Step10 → Step10b → Step11 → Step12 の順。持ち越し K7b-1（異常終了）は先送り。
 0. **（2026-09-26 時点の最新）** Step7b は完了確定（2026-09-26、`Phase6-Step7b-Completion-Report.md`）。次は **Step8**（`ProfileEditor.xaml.cs` の段階的MVVM移設。Step8-0 で、Step7b 後のコードから台帳を作り直すことから始める）→ Step9 → Step10 → Step10b → Step11 → Step12 の順。持ち越し K7b-1（異常終了）は先送り。
 0. **（2026-09-25 時点の最新）** Step3〜Step7 は完了確定（Step7 は 2026-09-25、`Phase6-Step7-Completion-Report.md`）。次は **Step7b**（プロファイル編集画面の即時反映廃止。Step7b-0 の事前調査は完了済みのため、着手時に現行コードとの再確認から始める）→ Step8 → Step9 → Step10 → Step10b → Step11 → Step12 の順。以下の 1. は Step3 当時の記録。
@@ -392,6 +388,12 @@
 - **Step7b との関係**: 再現手順の経路（一覧経由の Controller Readings は Step7b 前から「コントローラー0 の入力をスロット 8 の設定で再計算」、ライトバーのプレビューは実機に触れない）は Step7b で変わっておらず、Step7b で変更したコードにポインタ操作や非同期 I/O はない。Step7b の回帰である証拠はないが、未検証。なお Step7b により、Edit ボタン経由でも Controller Readings が再計算の経路を通るようになった。
 - **先送りした切り分け手順（着手時にこの順で実施）**: (1) Step7b 着手前のコミット `360cb75b` のビルドで同じ手順を 10 回程度試し、再現するか確認する（再現すれば Step7b と無関係と確定）、(2) 左ペインを Controls のままにして同じ手順を試し、Controller Readings が条件かを確認する、(3) Controller Readings が条件なら `24ded790` の直前のビルドでも試す、(4) それでも絞れない場合は環境変数 `DOTNET_HeapVerify=1` で起動し、ヒープを壊した直後に検出させる。
 - **対応時期**: 未定（ユーザー判断）。Step7b の完了判定からは切り離す（`Phase6-Step7b-Plan.md` §4 の記録を参照）。
+
+**K9-1（新規、2026-10-14、解決済み）**: OSC 送信（設定タブの「Enable Monitoring Service」）を有効にするとアプリが未処理の `NullReferenceException`（`ControlService.OSCPreMappingStep`）で終了する。`UseOscSender` が先に true になり、`oscSender` の生成（View の Click → `ChangeOSCSenderStatus(true)`）が終わる前に、入力スレッドが送信する競合。Step2 の直前のコミットにも同じ構造があった既存不具合（Step2-PR-1 から先送りされていた OSC の実機確認で露見）。ユーザー承認のうえ Step9-3c で、null 安全な `ControlService.SendOsc` に置き換えて修正（`oscSender.Send(` 26 箇所）。回帰テスト `ControlServiceOscSenderRaceTests`。ビルド・テスト・実機確認済み。
+
+**K9-2（新規、2026-10-14、解決済み）**: 偽装 exe 名を設定しても、exe だけが作られ（`.runtimeconfig.json`／`.deps.json` は作られない）、名前を変えても古いファイルが消えない。`CreateFakeExe` が設定ファイルの元を `{exelocation}.runtimeconfig.json`（＝`DS4Windows.exe.runtimeconfig.json`。実在しない）から組み立てて `File.Copy` が例外になり、WPF のバインディングが握りつぶしていた（2021-05-09 の `56408101`／`2e128dcd` から）。Step9-3d で、拡張子を除いた名前から組み立て、元が無ければコピーを省略し、古いファイルの削除を新規作成より先に行うよう修正。回帰テスト `SettingsViewModelFakeExeTests`。ビルド・テスト・実機確認済み。
+
+**K9-3（新規、2026-10-14、先送り。原因未調査）**: プロファイル編集画面の Controls タブで、コントローラー図のボタンを右クリックして出るプリセットのコンテキストメニューで、「Left Stick」などの親項目を選ぶと出るサブメニューへマウスを移すと、サブメニューが消えて選べない（キーボードのカーソルキーなら選べ、選んだ設定の内容は正常）。Step9 では、この経路（`ConBtn_MouseRightButtonUp`、`presetMenu` の XAML）を変更していない（`git diff f13d5c7c` で `ProfileEditor.xaml` に変更なし、`ProfileEditor.xaml.cs` の変更はファクトリのフォールバック削除のみ）。ベースライン（`f13d5c7c` 以前）のビルドで再現するかは未確認。観察: 環境はモニターごとの DPI が異なる複数モニター（ウィンドウは 1.25 倍のモニターから 1.0 倍のモニターへ配置されている）。WPF のポップアップの配置と DPI の相互作用が疑われるが、未検証の仮説。対応時期はユーザー判断（Step11 の実機確認で、単一モニター・同一 DPI の環境でも確認する案）。
 
 ### 6.6 Step3 着手時の確認事項
 - （着手前の想定。実地確認で150件に更新済み。下段参照）対象は `Mapping.cs` の Global 直接参照。Phase7（`Mapping.cs` の完全 instance 化）の下地として、静的結合を段階的に減らす方針（`DI-App-Wide-Migration-Plan.md` §5.5・§6.9）。
