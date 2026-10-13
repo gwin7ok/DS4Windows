@@ -54,6 +54,15 @@ namespace DS4Windows.DI
 
         X360Controls[] GetDefaultButtonMapping();
         DS4Controls[] GetReverseX360ButtonMapping();
+
+        // ---- Phase6-Step9-1: PresetMenuHelper／BindingWindowViewModel の Global.RefreshActionAlias 参照の置換先 ----
+        /// <summary>
+        /// 仮想キーの別名（actionAlias）を、現在の出力 KBM マッピング（<see cref="OutputKBMMapping"/>）で更新する
+        /// （<c>Global.RefreshActionAlias</c> と同じ動作）。
+        /// </summary>
+        /// <param name="setting">編集中の <see cref="DS4ControlSettings"/></param>
+        /// <param name="shift">シフト側のアクションを更新するか</param>
+        void RefreshActionAlias(DS4ControlSettings setting, bool shift);
         /// <summary>
         /// Xbox360 ボタン → DS4 ボタンの逆引き表そのもの（<c>Global.reverseX360ButtonMapping</c>）を、コピーせずに返す。
         /// 起動時に1回作られて以後変化しない定数表で、毎入力レポートの経路（<c>Mapping.ProcessControlSettingAction</c>）から引かれるため、

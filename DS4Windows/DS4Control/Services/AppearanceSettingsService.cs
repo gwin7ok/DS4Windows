@@ -24,5 +24,12 @@ namespace DS4Windows.Services
         // ---- Phase6-Step2-5 (PR-5): バッテリー残量の変化通知 ----
         // Global.BatteryChanged（static イベント）の購読者へ、従来と同一の送信元・引数で通知する。
         public void InvokeBatteryChanged(byte percentage) => Global.InvokeBatteryChanged(percentage);
+
+        // ---- Phase6-Step9-1: 購読は Global.BatteryChanged へそのまま転送する（送信元・引数は従来と同一）----
+        public event System.EventHandler<byte> BatteryChanged
+        {
+            add => Global.BatteryChanged += value;
+            remove => Global.BatteryChanged -= value;
+        }
     }
 }

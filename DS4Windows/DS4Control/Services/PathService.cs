@@ -34,6 +34,9 @@ namespace DS4Windows
 
         public string ExecutableDirectory => AppContext.BaseDirectory;
 
+        // Phase6-Step9-1: Global.exedirpath への薄い委譲（ExecutableDirectory とは値が異なりうる。IPathService の注記を参照）
+        public string ProgramDirectory => Global.exedirpath;
+
         /// <summary>
         /// 実行ファイルのフルパスを取得します。Scoop等のジャンクションシンボリックリンク解決ロジックを
         /// 含む Global.exelocation への薄い委譲です（Phase5-Step14前クリーンアップ）。

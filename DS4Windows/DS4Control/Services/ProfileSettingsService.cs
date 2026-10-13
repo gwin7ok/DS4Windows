@@ -604,6 +604,10 @@ namespace DS4Windows
             return (X360Controls[])Global.defaultButtonMapping.Clone();
         }
 
+        // Phase6-Step9-1: Global.RefreshActionAlias への薄い委譲
+        public void RefreshActionAlias(DS4ControlSettings setting, bool shift) =>
+            Global.RefreshActionAlias(setting, shift);
+
         public DS4Controls[] GetReverseX360ButtonMapping()
         {
             return (DS4Controls[])Global.reverseX360ButtonMapping.Clone();

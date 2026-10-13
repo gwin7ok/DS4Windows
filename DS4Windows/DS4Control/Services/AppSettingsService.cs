@@ -604,5 +604,63 @@ namespace DS4Windows.Services
                 }
             }
         }
+
+        // ---- Phase6-Step9-1: SettingsViewModel の Global 直接参照解消（Global への薄い委譲。独自フィールドは持たない）----
+        public bool UseCustomSteamFolder
+        {
+            get => Global.UseCustomSteamFolder;
+            set
+            {
+                if (Global.UseCustomSteamFolder != value)
+                {
+                    Global.UseCustomSteamFolder = value;
+                    NotifyChanged(nameof(UseCustomSteamFolder));
+                }
+            }
+        }
+
+        public string CustomSteamFolder
+        {
+            get => Global.CustomSteamFolder;
+            set
+            {
+                if (Global.CustomSteamFolder != value)
+                {
+                    Global.CustomSteamFolder = value;
+                    NotifyChanged(nameof(CustomSteamFolder));
+                }
+            }
+        }
+
+        // Global.FakeExeName の setter は、ファイル名に使えない文字を含む値を黙って無視する（従来の動作）。
+        // 値が実際に変わったときだけ通知する。
+        public string FakeExeName
+        {
+            get => Global.FakeExeName;
+            set
+            {
+                if (Global.FakeExeName != value)
+                {
+                    Global.FakeExeName = value;
+                    if (Global.FakeExeName == value)
+                    {
+                        NotifyChanged(nameof(FakeExeName));
+                    }
+                }
+            }
+        }
+
+        public int LogMaxArchiveFiles
+        {
+            get => Global.LogMaxArchiveFiles;
+            set
+            {
+                if (Global.LogMaxArchiveFiles != value)
+                {
+                    Global.LogMaxArchiveFiles = value;
+                    NotifyChanged(nameof(LogMaxArchiveFiles));
+                }
+            }
+        }
     }
 }

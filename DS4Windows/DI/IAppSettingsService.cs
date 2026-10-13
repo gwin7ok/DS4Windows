@@ -93,5 +93,15 @@ namespace DS4Windows.DI
         // ---- Phase6-Step2-5 (PR-5): 入力処理ホットパスで参照する設定（Global への薄い委譲。独自のキャッシュは持たない）----
         bool UseUdpServerSmoothing { get; set; }
         int FlashWhenLateAt { get; set; }
+
+        // ---- Phase6-Step9-1: SettingsViewModel の Global 直接参照解消（Global への薄い委譲）----
+        bool UseCustomSteamFolder { get; set; }
+        string CustomSteamFolder { get; set; }
+        /// <summary>
+        /// 偽装 exe 名（拡張子なし）。ファイル名に使えない文字を含む値は <c>Global.FakeExeName</c> と同じく黙って無視される
+        /// （読み戻すと値は変わらない）。
+        /// </summary>
+        string FakeExeName { get; set; }
+        int LogMaxArchiveFiles { get; set; }
     }
 }

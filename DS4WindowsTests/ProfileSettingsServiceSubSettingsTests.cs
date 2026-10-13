@@ -179,11 +179,22 @@ namespace DS4WindowsTests
                 reportedSetting = e.SettingName;
             };
 
-            service.ProfileActions = newActions;
+            // Phase6-Step9-1: ProfileActions の setter は Global.store.profileActions の配列そのものを置き換える。
+            // 戻さないと、後続のテストが編集スロット（Global.TEST_PROFILE_INDEX = 8）を引いたときに範囲外になる
+            // （Phase6-Status.md §6.4-1）。置き換え前の配列へ必ず戻す。
+            List<string>[] originalActions = Global.store.profileActions;
+            try
+            {
+                service.ProfileActions = newActions;
 
-            Assert.Equal("ProfileActions", reportedSetting);
-            Assert.NotNull(service.ProfileActions);
-            Assert.Equal("Action_0_A", service.ProfileActions[0][0]);
+                Assert.Equal("ProfileActions", reportedSetting);
+                Assert.NotNull(service.ProfileActions);
+                Assert.Equal("Action_0_A", service.ProfileActions[0][0]);
+            }
+            finally
+            {
+                Global.store.profileActions = originalActions;
+            }
         }
 
         /// <summary>

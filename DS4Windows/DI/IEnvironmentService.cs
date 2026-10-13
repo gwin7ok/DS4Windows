@@ -44,5 +44,15 @@
 
         // ---- Phase6-Step2-3 (PR-3): FakerInput 導入バージョン（Global への薄い委譲。利用者は IVirtualKBMLifecycle 実装）----
         string FakerInputVersion { get; }
+
+        // ---- Phase6-Step9-1: MainWindowsViewModel／ProfileSettingsViewModel の Global 直接参照解消（Global への薄い委譲）----
+        /// <summary>ViGEmBus が導入済みか（<c>Global.IsViGEmBusInstalled</c>）。</summary>
+        bool IsViGEmBusInstalled();
+        /// <summary>導入済みの ViGEmBus が、サポートする最小バージョン以上か（<c>Global.IsRunningSupportedViGEmBus</c>）。</summary>
+        bool IsRunningSupportedViGEmBus();
+        /// <summary>ViGEmBus がタッチパッド Passthru に必要な最小バージョン以上か（<c>Global.IsUsingMinViGEm117333</c>）。</summary>
+        bool IsUsingMinViGEm117333();
+        /// <summary>プログラムフォルダへの書き込みに管理者権限が要るか（<c>Global.AdminNeeded</c>。テストファイルの作成・削除を試す）。</summary>
+        bool AdminNeeded();
     }
 }

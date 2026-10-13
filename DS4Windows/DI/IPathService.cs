@@ -25,5 +25,14 @@ namespace DS4Windows.DI
         /// 起動時の <c>Global.FindConfigLocation</c> が設定する。
         /// </summary>
         bool HasMultipleSaveLocations { get; }
+
+        // ---- Phase6-Step9-1: ViewModel の Global.exedirpath 参照の置換先（Global への薄い委譲）----
+        /// <summary>
+        /// プログラムフォルダ（<c>Global.exedirpath</c> と同じ値。ジャンクション解決済みの実行ファイルの親フォルダ。末尾の区切りなし）。
+        /// <see cref="ExecutableDirectory"/>（<c>AppContext.BaseDirectory</c>。末尾に区切りが付き、ジャンクションは解決されない）とは
+        /// 値が異なりうるため、<c>exedirpath</c> の置換には本メンバーを使う。
+        /// TODO(技術的負債): <see cref="ExecutableDirectory"/> との統合は Phase6-Step12 で判断する。
+        /// </summary>
+        string ProgramDirectory { get; }
     }
 }

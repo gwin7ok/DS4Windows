@@ -49,6 +49,15 @@ namespace DS4Windows
         // ---- Phase6-Step2-3 (PR-3): FakerInput 導入バージョン ----
         public string FakerInputVersion => Global.fakerInputVersion;
 
+        // ---- Phase6-Step9-1: Global への薄い委譲 ----
+        public bool IsViGEmBusInstalled() => Global.IsViGEmBusInstalled();
+
+        public bool IsRunningSupportedViGEmBus() => Global.IsRunningSupportedViGEmBus();
+
+        public bool IsUsingMinViGEm117333() => Global.IsUsingMinViGEm117333();
+
+        public bool AdminNeeded() => Global.AdminNeeded();
+
         // 静的初期化の循環を避けるため、この計算は Global のメソッド（Global.IsWin8OrGreater 等）を呼ばず自己完結させる。
         // Global は明示的な静的コンストラクタを持ち、その初期化中に OutputSlotManager（→ ControlService.CURRENT_DS4_CONTROLLER_LIMIT
         // → 本クラスの ProcessControllerSlotLimit）が生成される。本クラスの静的初期化から Global の静的初期化を起こすと、

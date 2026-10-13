@@ -19,5 +19,12 @@ namespace DS4Windows.DI
 
         // ---- Phase6-Step2-5 (PR-5): バッテリー残量の変化通知（Global.BatteryChanged への薄い委譲）----
         void InvokeBatteryChanged(byte percentage);
+
+        // ---- Phase6-Step9-1: バッテリー残量の変化の購読（Global.BatteryChanged への薄い委譲）----
+        /// <summary>
+        /// バッテリー残量が変化したときの通知（<see cref="InvokeBatteryChanged"/> と対）。
+        /// 購読は <c>Global.BatteryChanged</c> へそのまま転送され、送信元（<c>typeof(Global)</c>）・引数は従来と同じ。
+        /// </summary>
+        event System.EventHandler<byte> BatteryChanged;
     }
 }
