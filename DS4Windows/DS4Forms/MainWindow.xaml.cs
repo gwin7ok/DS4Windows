@@ -1927,7 +1927,7 @@ Suspend support not enabled.", true);
                 //     this.Height = WindowLayoutDefaults.PROFILE_EDITOR_HEIGHT;
                 // }
 
-                editor = new ProfileEditor(targetDevice);
+                editor = new ProfileEditor(targetDevice, appSettingsService);
                 editor.ProfileSaved += Editor_ProfileSaved;
                 editor.Closed += ProfileEditor_Closed;
                 profDockPanel.Children.Add(editor);

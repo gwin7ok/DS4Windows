@@ -260,7 +260,7 @@ namespace DS4WindowsTests
                     $"ShowProfileEditor({a}) に編集スロットが渡されている（編集スロットは ProfileEditor 内部で決める）");
             }
 
-            Assert.Contains("new ProfileEditor(targetDevice)", text);
+            Assert.Contains("new ProfileEditor(targetDevice, appSettingsService)", text);
             Assert.Contains("editor.Reload(entity)", text);
         }
 

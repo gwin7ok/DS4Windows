@@ -159,6 +159,8 @@ namespace DS4WinWPF.DS4Forms
         // NoTargetDevice（-1）は「実機なし」。設定の読み書き先 deviceNum とは別に持つ。
         // ViewModel をこの値で生成するため、コンストラクタでだけ設定する
         private readonly int targetDevice = NoTargetDevice;
+        // Phase6-Step8-2: レイアウト・言語設定（コンストラクタ注入。Global.ProfileEditor*Width 等の置換先）
+        private readonly IAppSettingsService appSettingsService;
 
         /// <summary>実機（targetDevice）が指定され、かつ有効なコントローラースロットの範囲内であるか。</summary>
         private bool HasTargetDevice =>
@@ -276,9 +278,14 @@ namespace DS4WinWPF.DS4Forms
         /// Phase6-Step7b: Edit／New Profile ボタンを押したコントローラーのスロット番号。
         /// プロファイル一覧から開いた場合は NoTargetDevice（-1）。編集スロットは常に Global.TEST_PROFILE_INDEX
         /// </param>
-        public ProfileEditor(int targetDevice)
+        /// <param name="appSettingsService">
+        /// Phase6-Step8-2: エディタ画面のレイアウト（左右幅・Special Actions の列幅・ウィンドウサイズ）と表示言語の設定。
+        /// MainWindow から渡す（Global の直接参照を置換）
+        /// </param>
+        public ProfileEditor(int targetDevice, IAppSettingsService appSettingsService)
         {
             this.targetDevice = targetDevice;
+            this.appSettingsService = appSettingsService ?? throw new ArgumentNullException(nameof(appSettingsService));
             AppLogger.LogDebug($"[ProfileEditor] Opened profile editor for device={deviceNum}, targetDevice={targetDevice}");
 
             InitializeComponent();
@@ -290,7 +297,7 @@ namespace DS4WinWPF.DS4Forms
             controlService = DS4WinWPF.AppHost.GetService<DS4Windows.ControlService>() ?? DS4Windows.Program.rootHub;
 
             // SpecialActionsリスト表示前にカルチャを明示的に再設定
-            var lang = DS4Windows.Global.UseLang;
+            var lang = appSettingsService.UseLang;
             var ci = System.Globalization.CultureInfo.GetCultureInfo(lang);
             DS4WinWPF.Properties.Resources.Culture = ci;
             System.Threading.Thread.CurrentThread.CurrentUICulture = ci;
@@ -337,7 +344,7 @@ namespace DS4WinWPF.DS4Forms
             // アクティブになったときに行うよう遅延させます。不要な起動時の検索/置換を避けるため。
             initialHeaderUpdated = false;
         }
-        // Splitter位置とSpecial Actions列幅の保存・復元はGlobal経由で統一
+        // Splitter位置とSpecial Actions列幅の保存・復元は IAppSettingsService 経由で統一
 
         // ウィンドウサイズ初期化ボタンのクリックイベント
         // すべての初期値は WindowLayoutDefaults から取得される（BackingStore経由）
@@ -345,16 +352,16 @@ namespace DS4WinWPF.DS4Forms
         {
             // 初期値にリセット（左右領域・列幅）
             // これらは WindowLayoutDefaults.PROFILE_EDITOR_* の値を参照している
-            Global.ProfileEditorLeftWidth = BackingStore.DEFAULT_PROFILE_EDITOR_LEFT_WIDTH;
-            Global.ProfileEditorRightWidth = BackingStore.DEFAULT_PROFILE_EDITOR_RIGHT_WIDTH;
-            Global.SpecialActionNameColWidth = BackingStore.DEFAULT_SPECIAL_ACTION_NAME_COL_WIDTH;
-            Global.SpecialActionTriggerColWidth = BackingStore.DEFAULT_SPECIAL_ACTION_TRIGGER_COL_WIDTH;
-            Global.SpecialActionDetailColWidth = BackingStore.DEFAULT_SPECIAL_ACTION_DETAIL_COL_WIDTH;
+            appSettingsService.ProfileEditorLeftWidth = BackingStore.DEFAULT_PROFILE_EDITOR_LEFT_WIDTH;
+            appSettingsService.ProfileEditorRightWidth = BackingStore.DEFAULT_PROFILE_EDITOR_RIGHT_WIDTH;
+            appSettingsService.SpecialActionNameColWidth = BackingStore.DEFAULT_SPECIAL_ACTION_NAME_COL_WIDTH;
+            appSettingsService.SpecialActionTriggerColWidth = BackingStore.DEFAULT_SPECIAL_ACTION_TRIGGER_COL_WIDTH;
+            appSettingsService.SpecialActionDetailColWidth = BackingStore.DEFAULT_SPECIAL_ACTION_DETAIL_COL_WIDTH;
 
             // ウィンドウ自体のサイズも初期値にリセット（ポジションは変更しない）
             // これらは WindowLayoutDefaults.MAIN_WINDOW_* の値を参照している
-            Global.FormWidth = BackingStore.DEFAULT_FORM_WIDTH;
-            Global.FormHeight = BackingStore.DEFAULT_FORM_HEIGHT;
+            appSettingsService.FormWidth = BackingStore.DEFAULT_FORM_WIDTH;
+            appSettingsService.FormHeight = BackingStore.DEFAULT_FORM_HEIGHT;
 
             var win = Window.GetWindow(this);
             if (win != null)
@@ -383,16 +390,16 @@ namespace DS4WinWPF.DS4Forms
             {
                 try
                 {
-                    // Global経由で保存
-                    Global.ProfileEditorLeftWidth = (int)leftWidth;
-                    Global.ProfileEditorRightWidth = (int)rightWidth;
+                    // IAppSettingsService 経由で保存
+                    appSettingsService.ProfileEditorLeftWidth = (int)leftWidth;
+                    appSettingsService.ProfileEditorRightWidth = (int)rightWidth;
                     // columns: 0=Active,1=Name,2=Trigger,3=Detail
-                    Global.SpecialActionNameColWidth = (int)gridView.Columns[1].Width;
-                    Global.SpecialActionTriggerColWidth = (int)gridView.Columns[2].Width;
-                    Global.SpecialActionDetailColWidth = (int)gridView.Columns[3].Width;
+                    appSettingsService.SpecialActionNameColWidth = (int)gridView.Columns[1].Width;
+                    appSettingsService.SpecialActionTriggerColWidth = (int)gridView.Columns[2].Width;
+                    appSettingsService.SpecialActionDetailColWidth = (int)gridView.Columns[3].Width;
                     // 必要なら他の列も追加
 
-                    App.logHolder?.Logger?.Debug($"[SaveSplitterAndColumnWidths] Saved left={Global.ProfileEditorLeftWidth} right={Global.ProfileEditorRightWidth} nameCol={Global.SpecialActionNameColWidth} trigCol={Global.SpecialActionTriggerColWidth} detailCol={Global.SpecialActionDetailColWidth}");
+                    App.logHolder?.Logger?.Debug($"[SaveSplitterAndColumnWidths] Saved left={appSettingsService.ProfileEditorLeftWidth} right={appSettingsService.ProfileEditorRightWidth} nameCol={appSettingsService.SpecialActionNameColWidth} trigCol={appSettingsService.SpecialActionTriggerColWidth} detailCol={appSettingsService.SpecialActionDetailColWidth}");
                 }
                 catch (Exception ex)
                 {
@@ -408,8 +415,8 @@ namespace DS4WinWPF.DS4Forms
                 var grid = this.Content as Grid ?? this.FindName("baseGrid") as Grid;
                 if (grid != null && grid.ColumnDefinitions.Count >= 3)
                 {
-                    double left = Global.ProfileEditorLeftWidth;
-                    double right = Global.ProfileEditorRightWidth;
+                    double left = appSettingsService.ProfileEditorLeftWidth;
+                    double right = appSettingsService.ProfileEditorRightWidth;
                     if (IsValidWidth(left))
                         grid.ColumnDefinitions[0].Width = new GridLength(left);
                     if (IsValidWidth(right))
@@ -422,9 +429,9 @@ namespace DS4WinWPF.DS4Forms
                     // Active 列はプロファイルに永続化しない初期幅を毎回適用する（BackingStore の定数を使用）
                     gridView.Columns[0].Width = BackingStore.DEFAULT_SPECIAL_ACTION_ACTIVE_COL_WIDTH;
 
-                    double nameW = Global.SpecialActionNameColWidth;
-                    double trigW = Global.SpecialActionTriggerColWidth;
-                    double detailW = Global.SpecialActionDetailColWidth;
+                    double nameW = appSettingsService.SpecialActionNameColWidth;
+                    double trigW = appSettingsService.SpecialActionTriggerColWidth;
+                    double detailW = appSettingsService.SpecialActionDetailColWidth;
                     // columns: 0=Active,1=Name,2=Trigger,3=Detail
                     if (IsValidWidth(nameW))
                         gridView.Columns[1].Width = nameW;
