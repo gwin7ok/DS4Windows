@@ -204,6 +204,17 @@ namespace DS4Windows
                 AppLogger.LogTrace("[DI] SpecialActionRepository.CreateStandardActions: standard actions created via DI");
         }
 
+        // ---- Phase6-Step8-1: ProfileEditor.xaml.cs の Global 直接参照解消 ----
+        // Global.GetAction（m_Config.GetAction）と同じ実体 BackingStore.GetAction への薄い委譲。
+        // 本リポジトリの _config は通常 Global.store（= m_Config）なので結果は Global.GetAction と一致する。
+        public SpecialAction GetActionOrPlaceholder(string actionName)
+        {
+            if (_config == null)
+                return new SpecialAction("null", "null", "null", "null");
+
+            return _config.GetAction(actionName);
+        }
+
         protected virtual void OnActionsChanged()
         {
             ActionsChanged?.Invoke(this, EventArgs.Empty);

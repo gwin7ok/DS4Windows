@@ -307,6 +307,10 @@ namespace DS4Windows
         public bool LoadLinkedProfiles()
             => Global.LoadLinkedProfiles();
 
+        // ---- Phase6-Step8-1: ProfileEditor.xaml.cs の Global 直接参照解消 ----
+        public void LoadBlankProfile(int deviceIndex, bool launchProgram, ControlService control, bool xinputChange = true, bool postLoad = true)
+            => Global.LoadBlankDevProfile(deviceIndex, launchProgram, control, xinputChange, postLoad);
+
 
         // ---- Phase6-Step2-2 (PR-2): リンクプロファイル解決 ----
         public bool ContainsLinkedProfile(string serial) => Global.containsLinkedProfile(serial);

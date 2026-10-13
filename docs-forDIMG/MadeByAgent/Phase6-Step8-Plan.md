@@ -1,8 +1,9 @@
 # Phase6-Step8 計画書: `ProfileEditor.xaml.cs` の段階的MVVM移設と `MainWindow.xaml.cs` 解体推進
 
 作成日: 2026-09-11  
-改訂日: 2026-09-18（Phase6-Step1 再監査エビデンスに基づく案3-A［段階的MVVM移設による Fat View 解体・Pure DI 推進］採用・全面拡充改訂）  
-状態: 計画書改訂・承認待ち（実装未着手）  
+改訂日: 2026-09-18（Phase6-Step1 再監査エビデンスに基づく案3-A［段階的MVVM移設による Fat View 解体・Pure DI 推進］採用・全面拡充改訂）
+再改訂日: 2026-10-13（Step7b 完了後の現行コード［HEAD `e022684b`］との突き合わせ。§0A を追加し、台帳の作り直し・決定事項・マイクロステップ・実機確認項目を改訂）    
+状態: **Step8-0 完了（2026-10-13）。決定1〜6 確定（すべて推奨案、2026-10-13）。Step8-1（契約 B8・B10 の追加）実装済み・ビルド／テスト確認待ち**。現行の正は §0A。§2〜§5 は旧版（2026-09-18）  
 対象ブランチ: `For-DI-migration-work`  
 上位計画書: `docs-forDIMG/MadeByAgent/Phase6-Plan.md`  
 準拠指針: `.github/copilot-instructions.md`, `docs-forDIMG/DI-App-Wide-Migration-Plan.md`, `docs-forDIMG/Model-Diagram/02-Layer-Architecture-Diagram.md`  
@@ -30,6 +31,176 @@
 > - **維持が必要なソース走査ガード**: `ProfileEditorTargetDeviceGuardTests`（作業スロットの固定、キャンセル、Save／Apply の通知、`targetDevice` の受け渡し、削除したコードの再混入）、`ProfileEditorMappingDevTypeGuardTests`（`Reload`／`RefreshEditorBindings` の `UpdateMappingDevType`）、`RecordBoxExtraButtonsVisibilityGuardTests`、`StickDeadZoneBindingGuardTests`。ロジックを ViewModel へ移すときは、これらのガードを移設先に合わせて書き換えること（検査の意図は維持する）。
 > - **持ち越し K7b-1**: 実機確認中の異常終了（原因未特定、先送り）。`ProfileEditor` の操作中に発生したが、Step7b の回帰である証拠はない。`Phase6-Status.md` §6.5。
 > - 詳細は `Phase6-Step7b-Plan.md`、`Phase6-Step7b-Completion-Report.md`。
+
+## 0A. 着手前再確認（Step8-0、2026-10-13、HEAD `e022684b`）
+
+> **本節が現行の正**。§2（旧台帳）・§3（旧設計）・§4（旧マイクロステップ）・§5（旧テスト計画）は 2026-09-18 版で、Step7b 完了後の現行コードと合わないため、下記 0A.1〜0A.6 で置き換える（旧記載は経緯として残す）。決定事項（0A.3）はユーザー確認後に確定する。
+
+### 0A.1 旧計画との乖離（現行コードとの突き合わせ結果）
+1. **件数**: 実移行対象は旧 60 件 → 現行 **58 件**。除外の定数は旧 38 件 → 現行 **37 件**（`ASSEMBLY_RESOURCE_PREFIX` 29、`RESOURCES_PREFIX` 5、`TEST_PROFILE_INDEX` 3）。行番号はすべて変わっている（正は 0A.2）。`ProfileEditor.xaml.cs` は 2,498 行。
+2. **旧 C8-44（`ApplyProfileToSlot`）は消滅**。Step7b 決定8 で、保存・適用のどちらでも `ProfileSaved` を通知するだけになり、`ProfileEditor` から `ApplyProfileToSlot` を呼ぶ箇所はなくなった。
+3. **旧 §3.1 の `SaveProfile` 設計は採用できない**。旧設計は「保存後に `ApplyProfileToSlot(DeviceIndex, true)` を呼ぶ」ものだが、決定8 に反する（再適用は `MainWindow.SyncProfileListAndControllers` の責務。`ProfileEditorTargetDeviceGuardTests` が `ApplyProfileToSlot(` の不在を検査している）。
+4. **契約差の吸収シムは B8 と B10 だけが必要**。
+   - B3（`UseLang`）: Step7-1 で `IAppSettingsService.UseLang` として追加済み。
+   - B9（`ApplyProfileToSlot`）: 呼び出し元が消えたため不要（作らない。§2.4 の考え方に従い、使わない API は増やさない）。
+   - B8（`GetActionOrPlaceholder`）: 必要。`Global.GetAction` は、名前を `Trim` して大文字小文字を無視して探し、見つからなければ **`new SpecialAction("null","null","null","null")` を返す**。一方 `ISpecialActionRepository.GetAction` は、`Trim` せず、見つからなければ **`null` を返す**。呼び出し元（`CreateActionItem(action)`）は `null` を想定していないため、同じ契約の新メンバーが必要。
+   - B10（`LoadBlankDevProfile`）: 必要。ただし旧計画の `LoadBlankDevProfile(int deviceIndex)` では不足。`Global.LoadBlankDevProfile(device, launchprogram, control, xinputChange, postLoad)` は、(a) 空プロファイルの読み込み、(b) 既定スペシャルアクションの作成、(c) `CacheExtraProfileInfo`、(d) 一時プロファイル名・使用フラグ・`tempprofileDistance` のクリア、まで行う。呼び出しは `(deviceNum, false, controlService, false)`。同じ呼び出しが `DS4Control/PresetOption.cs:76` にもある。
+5. **新規サービスの追加はほぼ不要**。58 件のうち 55 件は、すでに存在する契約への置換で足りる（0A.2）。旧計画が想定した「VM への大規模移設」は、Step5〜7b で `profileRepository`・`IProfileSettingsService` 経由への置換が先に進んだため、残りは **フォールバック経路と直接参照の置換**が中心になっている。
+6. **旧計画に無かった静的結合**（本 Step の件数 58 には含まれない）:
+   - `App.logHolder`（24 箇所）、コンストラクタ内の `AppHost.GetService`（4 箇所）と `Program.rootHub` へのフォールバック（1 箇所）、`App.Current.MainWindow`（`window.Owner`、7 箇所）。決定1。
+7. **`ProfileSettingsViewModel.InverseRumbleMotors`（2877 行）が既にある**。`RumbleTestBtn_Click` の 5 箇所は、編集スロットの値を返すこの VM のプロパティへ置換でき（Step7b 決定4＝I1 と同じ値）、新規契約は要らない。
+8. **`ProfileSettingsViewModel` 側にも `Global.` が 19 件**（`?? Global.ProfileSettingsServiceInstance` 等のフォールバック）ある。これは Step9（C9-P01〜P10）の対象で、本 Step では触れない。
+9. **`OutConTypeCombo_SelectionChanged` の二重書き込み**: `Global.OutContType`（`m_Config.outputDevType`）と `Global.ProfileSettingsServiceInstance.OutContType`（`SafeConfig?.outputDevType`）は同じ配列を指すため、同じ値を 2 回書いている（動作は同じ）。置換時に 1 回へ整理する（決定5）。
+10. **ガードテストの更新が必要**: `ProfileEditorTargetDeviceGuardTests` の `Assert.Contains("SaveProfile(deviceNum,", body)`（154 行）は、保存呼び出しの書き方を変えると失敗する。該当するマイクロステップで、同じコミット内に更新する。
+
+### 0A.2 再確認した台帳（現行 `ProfileEditor.xaml.cs`、実移行対象 58 件）
+矢印の右は本 Step での置換先（案）。「編集スロット」は常に `TEST_PROFILE_INDEX`（`deviceNum`）。
+
+#### G1. レイアウト・言語（23 件）
+- `UseLang`（293）→ `IAppSettingsService.UseLang`
+- `FormWidth`／`FormHeight`（356、357）→ `IAppSettingsService`（既存）
+- 既定値へのリセット（348〜352）、保存（387〜392）、保存ログ内の読み取り（395）、復元（411〜427）の列幅 20 式 → `IAppSettingsService`（既存。`ProfileEditorLeftWidth`／`RightWidth`、`SpecialActionName`／`Trigger`／`DetailColWidth`）
+- 受け取り方は決定2。
+
+#### G2. 編集スロットの読み込み（Reload。9 件）
+- `Global.ProfilePath[TEST_PROFILE_INDEX] = profile.Name`（1119）→ `IProfileRepository.ProfilePath`（既存）
+- `Global.LoadBlankDevProfile(deviceNum, false, controlService, false)`（1133）→ B10（決定4）
+- `Global.ProfileActions`（1138 ×2、1139）→ `IProfileRepository.ProfileActions`（既存）
+- `Global.LSModInfo[deviceNum]`／`RSModInfo[deviceNum]`（1154、1155、1172、1184）→ `IProfileSettingsService.LSModInfo`／`RSModInfo`（既存）。4 件。
+
+#### G3. 保存・キャンセル（3 件）
+- `Global.ProfileActions[deviceNum] = …`（1382、`ExecuteSaveOrApply`）→ `IProfileRepository.ProfileActions`
+- `Global.SaveProfile(deviceNum, profileName)`（1394）→ `else` のフォールバック。`profileRepository` はコンストラクタで必ず非 null（`?? new ProfileRepository()`）なので、`else` を削除
+- `Global.outDevTypeTemp[deviceNum] = X360`（1275、`CancelBtn_Click`）→ `IOutputSlotService.OutDevTypeTemp`（既存）
+
+#### G4. ランブルテスト（5 件）
+- `Global.InverseRumbleMotors[deviceNum]`（1516、1560、1567、1579、1588、`RumbleTestBtn_Click`）→ `profileSettingsVM.InverseRumbleMotors`（既存。編集スロットの値＝Step7b 決定4）
+
+#### G5. 出力コントローラー種別（3 件）
+- `Global.OutContType[deviceNum] = selected`（1774）、`Global.ProfileSettingsServiceInstance.OutContType[deviceNum] = selected`（1775、1777）→ `IProfileSettingsService.OutContType`（既存）。二重書き込みを 1 回へ（決定5）。
+
+#### G6. スペシャルアクション（5 件）
+- `Global.GetAction`（1806、1872）→ B8（`ISpecialActionRepository.GetActionOrPlaceholder`。決定3）
+- `Global.ProfileActions`（1849、`EditActionBtn_Click` の Saved、名前の置換）、同（1917、`SpecialActionCheckBox_Click`）→ `IProfileRepository.ProfileActions`
+- `Global.CacheExtraProfileInfo(deviceNum)`（1861）→ `IProfileRepository.CacheExtraProfileInfo`（既存）
+
+#### G7. キャッシュ更新（9 件）
+- `Global.CacheProfileCustomsFlags(profileSettingsVM.Device)` 8 件（1292、2060、2124、2251、2281、2320、2363、2396。いずれも `BindingWindow` を閉じた後）→ `IProfileRepository.CacheProfileCustomsFlags`（既存）
+- `Global.CacheExtraProfileInfo(profileSettingsVM.Device)`（2033、`ProfileEditor_Closed`）→ `IProfileRepository.CacheExtraProfileInfo`
+
+#### G8. エクスポート（1 件）
+- `Global.appdatapath`（2438、`ExportActionsXml` 相当）→ `IPathService.AppDataPath`（既存）
+
+#### 合計
+- G1 23＋G2 9＋G3 3＋G4 5＋G5 3＋G6 5＋G7 9＋G8 1＝**58 件**（`grep` での確認値と一致）。
+- 既存の契約への置換で足りるのは 55 件。新しい契約が要るのは B8（`GetAction` 2 件）と B10（`LoadBlankDevProfile` 1 件）の 3 件。
+- 除外（定数）は別に 37 件。
+
+### 0A.3 決定事項（2026-10-13 確定: 決定1＝S1、決定2＝L2、決定3＝B8-1、決定4＝B10-1、決定5＝O1、決定6＝M-A。すべて推奨案）
+
+> 確定時の補足（決定3）: `GetActionOrPlaceholder` の委譲先は、`Global.GetAction` そのものではなく、その実体である `BackingStore.GetAction`（`SpecialActionRepository._config`。既定は `Global.store`＝`m_Config`）にした。結果は `Global.GetAction` と一致し、リポジトリが自身のストアを使うためテストでも検証できる。
+
+以下は提示時の前提・選択肢・推奨理由の記録。
+
+#### 決定1: Step8 の対象範囲（静的結合をどこまで解消するか）
+- **前提**: `ProfileEditor.xaml.cs` には、`Global.` の 58 件（本 Step の台帳）のほかに、`App.logHolder`（24）、コンストラクタ内の `AppHost.GetService`（4）と `Program.rootHub` フォールバック（1）、`App.Current.MainWindow`（7）がある。`App.logHolder` と App の公開メンバーは Step7 で変更しておらず、`MainWindow` のコンストラクタ周りは Step9／Step10 の範囲。
+- **案S1（推奨）: `Global.` の 58 件だけを本 Step で解消する**
+  - 理由: 全体計画（Step8 の目的 4）と件数が一致し、差分が小さい。`App.logHolder` はログ基盤（Step7 決定）、コンストラクタの `AppHost.GetService` は `MainWindow` の解体（Step9／10）と一緒に直すのが筋で、ここで先に変えると二度手間になる。残る静的結合は Step10 の台帳へ登録する。
+- **案S2: コンストラクタの `AppHost.GetService`／`Program.rootHub` も解消する**
+  - 利点: `ProfileEditor` が Service Locator を持たなくなる。欠点: `MainWindow` の生成呼び出し（A1〜A5、`ShowProfileEditor`）が必須引数だらけになり、旧計画が避けようとした「バケツリレー」になる。
+- **案S3: `App.logHolder` まで含めて解消する**
+  - 欠点: ログ基盤の入れ替えになり、Step8 の範囲を超える（ログ出力は §2.3 により完全維持が必要で、検証コストが大きい）。
+
+#### 決定2: レイアウト設定（列幅・ウィンドウサイズ・言語。23 件）の受け取り方
+- **前提**: これらはエディタ画面自体の見た目の設定で、編集中のプロファイルとは無関係。`ProfileEditor` は View で、`new ProfileEditor(targetDevice)` で生成され、コンストラクタで `IProfileRepository` 等を `AppHost.GetService` で解決している（Step7b 時点）。`MainWindow` は `IAppSettingsService appSettingsService` を既にフィールドで持っている。
+- **案L1: `ProfileEditor` のコンストラクタで `AppHost.GetService<IAppSettingsService>()` を解決する**
+  - 利点: 既存の流儀と同じで、生成呼び出しは変わらない。欠点: Service Locator が 1 件増える（Pure DI の原則 §3.1 に反する）。
+- **案L2（推奨）: `ProfileEditor` のコンストラクタに `IAppSettingsService` を必須引数で追加し、`MainWindow` から渡す**
+  - 利点: Pure DI の原則に沿う。渡し忘れはコンパイラが検出する。`MainWindow` は既に持っているため、追加の解決は不要。呼び出し箇所は `ShowProfileEditor` の 1 箇所（`new ProfileEditor(...)`）だけ。
+  - 欠点: `Phase6-Step8-Plan.md` §0.2 が避けた「サービスの横流し」が 1 つ発生する（1 サービスのみ）。
+- **案L3: `ProfileSettingsViewModel` へレイアウト用のプロパティを追加する**
+  - 欠点: 編集対象のプロファイルと無関係な設定が、プロファイル編集 VM に入り、責務が混ざる。ファクトリの契約（モデル図 03・04）の再変更も必要。
+- **推奨理由**: 責務の分離（レイアウトはプロファイルと無関係）と Pure DI の原則の両方を満たすのは L2 で、変更も 1 サービス・1 箇所に収まる。
+
+#### 決定3: B8（`GetActionOrPlaceholder`）の追加先と名前
+- **前提**: 0A.1-4 のとおり、`Global.GetAction`（placeholder を返す）と `ISpecialActionRepository.GetAction`（`null` を返す）は契約が違う。
+- **案B8-1（推奨）: `ISpecialActionRepository` に `GetActionOrPlaceholder(string name)` を追加し、`Global.GetAction` へ委譲する薄いシムとして実装する**
+  - 理由: 既存の `GetAction` の契約（`null`）を変えず、呼び出し元 2 件（1806、1872）が同じ動作を保てる。§2.1 の「薄いシム」に沿う。
+- **案B8-2: 呼び出し側で `GetAction(name) ?? placeholder` と書く**
+  - 欠点: placeholder の定義（`"null"` ×4）が View に複製される。`Trim`・大文字小文字の差も残る。
+
+#### 決定4: B10（ブランクプロファイル読み込み）の契約
+- **前提**: 0A.1-4 のとおり、現行の呼び出しは `(device, launchprogram=false, control, xinputChange=false)` で、`ControlService` を渡す。`IProfileRepository.LoadTempProfile(..., ControlService control, ...)` に前例がある。`PresetOption.cs:76` にも同じ呼び出しがある。
+- **案B10-1（推奨）: `IProfileRepository` に `LoadBlankProfile(int deviceIndex, bool launchProgram, ControlService control, bool xinputChange = true, bool postLoad = true)` を追加し、`Global.LoadBlankDevProfile` へ委譲する薄いシムとして実装する**
+  - 理由: 既存の呼び出しの引数と、(a)〜(d) の副作用をそのまま保てる。`LoadTempProfile` と同じ形で、`PresetOption.cs` も後で同じ契約へ置換できる（本 Step では `PresetOption.cs` は変更しない。Step10 の台帳へ登録）。
+- **案B10-2: `ControlService` を取らない `LoadBlankProfile(int deviceIndex)` にして、シムの内部で `Program.rootHub` を使う**
+  - 欠点: シムの内部に静的結合を持ち込む。
+
+#### 決定5: `OutConTypeCombo_SelectionChanged` の二重書き込み
+- **前提**: 0A.1-9 のとおり、同じ配列に同じ値を 2 回書いている。
+- **案O1（推奨）: `IProfileSettingsService.OutContType[deviceNum] = selected` の 1 回にする**
+  - 動作は同じ（同じ配列）。実機確認でログ（`OutContType` の変更ログがあれば）を比較する。
+- **案O2: 2 回のまま、それぞれを DI 経由へ置換する**
+  - 利点: 差分が機械的。欠点: 冗長な書き込みが残る。
+
+#### 決定6: MVVM 移設をどこまでやるか
+- **前提**: 旧計画の目的は、`ProfileEditor` のバックエンド操作を `ProfileSettingsViewModel` へ移すこと（案3-A）。ただし 0A.1-5 のとおり、置換先のサービスはほぼ存在する。移設の価値は「UI なしで検証できること」にある。
+- **案M-A（推奨）: 二段構え**
+  1. 前半: `Global.` 58 件を、既存・追加契約への置換で解消する（機械的で、動作中立）。
+  2. 後半: 次の 2 つだけを `ProfileSettingsViewModel`／`SpecialActionsListViewModel` へ移す。
+     - 保存の一連の処理（有効アクション名の `ProfileActions` への反映 → `IProfileRepository.SaveProfile`。再適用はしない）。
+     - ブランクプロファイル読み込みと LS／RS 補正値の初期化。
+  - 8 件の `CacheProfileCustomsFlags` は、VM のメソッド 1 つ（`RefreshCustomsFlags()` 相当）へ集約するかを、実装時の差分を見て決める（決定として再提示しない小さな整理）。
+  - 理由: 全体計画の目的（テスト可能性）を満たしつつ、View の見た目・イベントの順序に関わる変更を最小にできる。
+- **案M-B: 旧計画どおり、全面的に VM へ移設する**
+  - 欠点: `SaveSplitterAndColumnWidths()`（UI 依存）、`specialActionsVM`（別 VM）との結合など、View に残すべきものまで動かす必要があり、Step7b で確定した順序（`UpdateMappingDevType` の呼び出し順など）を崩す危険がある。
+- **案M-C: 置換のみ（移設は Step9 以降へ）**
+  - 利点: 最小。欠点: 全体計画の「UI なしで保存を検証する」目的が達成されない。
+
+### 0A.4 呼出元 0 件・未使用コードの確認（§2.4）
+- **旧計画の B9 シム（`IProfileApplicationService.ApplyProfileToSlot`）**: 本 Step では追加しない（呼び出し元が消えたため）。既存の `IProfileApplicationService` の他のメンバーは触れない。
+- 本 Step で新たに見つかった呼出元 0 件のメンバーは、現時点ではない（置換作業中に見つけたら、§2.4 に従い経緯を調べて提案する）。
+
+### 0A.5 マイクロステップ（決定1〜6 の確定により確定）
+- **Step8-0（完了）**: 着手前確認、台帳の再作成、決定事項の提示（本節）。
+- **Step8-1（実装済み 2026-10-13、ビルド・テスト確認待ち）**: 契約の追加（B8、B10）とテスト
+  - 変更: `DI/ISpecialActionRepository.cs`（`GetActionOrPlaceholder`）、`DS4Control/Services/SpecialActionRepository.cs`、`DI/IProfileRepository.cs`（`LoadBlankProfile`）、`DS4Control/Services/ProfileRepository.cs`、新規テスト `DS4WindowsTests/Phase6Step8ContractExtensionTests.cs`。
+  - 既存の `IProfileRepository`／`ISpecialActionRepository` の実装は各 1 件のみ（テスト用の自前実装なし）。`ProfileEditor.xaml.cs` はまだ変更していない（呼び出し側の置換は Step8-2 以降）。
+  - `ISpecialActionRepository.GetActionOrPlaceholder`（決定3）、`IProfileRepository.LoadBlankProfile`（決定4）。
+  - テスト: 未発見時に placeholder（`"null"` ×4）を返すこと、`Trim` と大文字小文字の無視、`Global.GetAction` と同じ結果であること。`LoadBlankProfile` が `Global.LoadBlankDevProfile` と同じ副作用（既定アクション、一時プロファイルのクリア）を持つこと。
+- **Step8-2**: レイアウト・言語 23 件の置換（G1。決定2）
+- **Step8-3**: 編集スロットの読み込み・保存・キャンセル・ランブル・種別・スペシャルアクション・キャッシュ・エクスポートの置換（G2〜G8、35 件。B8・B10 を使う 3 件を含む）。ガードテスト `ProfileEditorTargetDeviceGuardTests`（154 行）の更新を同じコミットに含める。
+- **Step8-4**: 決定6＝M-A の後半（保存の一連・ブランク読み込みの VM 移設）とテスト
+- **Step8-5**: 完了確認（`ProfileEditor.xaml.cs` の非定数 `Global.` が 0 件であることのソース走査ガード、全テスト、実機確認、`Phase6-Status.md`／`Phase6-Plan.md`／モデル図 03・04 の更新、完了報告書 `Phase6-Step8-Completion-Report.md`）
+
+### 0A.6 実機確認項目（案。`Phase6-Step11-Plan.md` §3.3 の先送り台帳に登録可能なものは登録する）
+Step7 の教訓として、各項目に「見るログ」を併記する。
+
+1. **起動と編集画面の表示**: Edit ボタン／一覧のダブルクリックで開く。
+   - ログ: `[ProfileEditor] Opened profile editor for device=8, targetDevice=N`、`[ProfileEditor] Reload: editSlot=8, targetDevice=N, profile=…`（Step7b 決定6）。
+2. **レイアウトの保存・復元（G1）**: スプリッターと、スペシャルアクションの列幅を変えて閉じ、再度開く。アプリを再起動して再度開く。
+   - ログ: `[SaveSplitterAndColumnWidths] Saved left=… right=… nameCol=…`（`App.logHolder` の Debug ログ）の値と、再度開いたときの `[RestoreSplitterAndColumnWidths]` 系の値が一致する。
+3. **言語（G1）**: 言語を切り替えて、エディタを開いたときにスペシャルアクションの一覧の見出しが現在の言語になっていること。
+4. **新規作成（New Profile）→ ブランク読み込み（G2、B10）**: プリセット選択でキャンセルしたとき、空のプロファイルになり、スペシャルアクションが既定（Disconnect Controller 等）になること。
+5. **保存・適用（G3）**: 編集して Save／Apply。Step7b §4.2 と同じ結果（そのプロファイルを使っている全コントローラーに再適用）。`ProfileActions` の変更（スペシャルアクションのチェック）が保存されること。
+   - ログ: `[ProfileEditor] Save: profile '名前' saved; …` と `ApplyProfile CALLED: device=…`。
+6. **キャンセル（G3）**: 出力種別の一時値が元に戻り、コントローラーに影響しないこと。
+   - ログ: `[ProfileEditor] Cancel: edit slot 8 discarded; …`。
+7. **ランブルテスト（G4）**: Inverse Rumble Motors をオン／オフして、左右が入れ替わること。
+8. **出力コントローラー種別（G5）**: Xbox 360 ⇄ DS4 を切り替えて、ボタン名の表記が追従し、保存後に反映されること（Step6 と同じ）。
+9. **スペシャルアクション（G6）**: 新規作成・編集（名前の変更）・削除・チェックの切り替えと、保存後の一覧の復元。名前を変更したとき、プロファイル側の参照が新しい名前になること。
+10. **ボタン設定画面を閉じた後のフラグ更新（G7）**: BindingWindow を閉じた後、マッピングの表示・出力が最新になること（カスタムフラグの更新漏れがないこと）。
+11. **Actions.xml のエクスポート（G8）**: Special Actions タブのエクスポートで、保存場所の `Actions.xml` が複製されること。AppData とプログラムフォルダのどちらの保存場所でも確認する（保存場所が 2 つある環境がなければ、片方のみとし、もう一方を Step11 の台帳へ登録）。
+12. **一覧経由の編集の回帰（Step7b §4.6）**: 一覧の Edit／New で開き、編集・保存できる。ライトバーのプレビューは従来どおり動かない。
+
+### 0A.7 リスクと対策（追加分）
+- **順序の崩れ**: `Reload` 内の `LSModInfo`／`ProfileActions` の取得順、`UpdateMappingDevType`（`UpdateLateProperties()` の直後）を変えない。`ProfileEditorMappingDevTypeGuardTests` を維持する。
+- **フォールバックの削除**: `Global.SaveProfile` の `else` を消しても、`profileRepository` が null にならないこと（コンストラクタの `?? new ProfileRepository()`）を、テストまたはソース走査で確認する。
+- **B8 の `null` と placeholder の取り違え**: 置換後に `null` が返ると `CreateActionItem(null)` で例外になる。Step8-1 のテストで固定する。
+- **Step9 との境界**: `ProfileSettingsViewModel` の `Global.` 19 件・`?? Global.…` フォールバックは Step9。Step8 では触れない。
+- **Step10b**: `ProfileEditor.xaml.cs` には `HoverImageInfo`、`RumbleType`、`ResourcePaths`、`ControlIndexCheck` などの複数型がある。分割は Step10b で行い、本 Step で型を追加しない（§3.3 原則1）。
+
+---
 
 ## 0. 背景と改訂の経緯
 
@@ -63,7 +234,7 @@
 
 ---
 
-## 2. 全件参照台帳（全60箇所・完全カタログ）
+## 2. 全件参照台帳（全60箇所・完全カタログ） 【旧版・2026-09-18。現行は §0A】
 
 ### 表1: 実移行対象台帳（ID: C8-01 〜 C8-60、計60箇所）
 
@@ -99,7 +270,7 @@
 
 ---
 
-## 3. アーキテクチャ設計: 案3-A（MVVM 移設と契約差吸収）
+## 3. アーキテクチャ設計: 案3-A（MVVM 移設と契約差吸収） 【旧版・2026-09-18。現行は §0A】
 
 ### 3.1 `ProfileSettingsViewModel` への責務集約設計
 バックエンド操作およびデータ永続化の責務を、View から `ProfileSettingsViewModel` へ移設する。
@@ -206,7 +377,7 @@ Step1 で特定された意味差・契約差を確実に吸収するシムを�
 
 ---
 
-## 4. PR分割計画とマイクロステップ
+## 4. PR分割計画とマイクロステップ 【旧版・2026-09-18。現行は §0A】
 
 変更規模とリスクを完全に制御するため、以下の**5つのサブPR（マイクロステップ）**に分割して実装を進める。
 
@@ -283,7 +454,7 @@ Step1 で特定された意味差・契約差を確実に吸収するシムを�
 
 ---
 
-## 5. テスト・実機動作検証計画
+## 5. テスト・実機動作検証計画 【旧版・2026-09-18。現行は §0A】
 
 ### 5.1 自動単体テスト計画
 `DS4WindowsTests` に以下のテストクラスを追加する（1ファイル1型）：

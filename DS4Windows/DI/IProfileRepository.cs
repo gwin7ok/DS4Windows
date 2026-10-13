@@ -66,5 +66,13 @@ namespace DS4Windows.DI
 
         /// <summary>LinkedProfiles.xml（コントローラーとプロファイルの紐付け）を読み込む。</summary>
         bool LoadLinkedProfiles();
+
+        // ---- Phase6-Step8-1: ProfileEditor.xaml.cs の Global 直接参照解消（Global への薄い委譲）----
+        /// <summary>
+        /// スロットへ空のプロファイルを読み込む（<c>Global.LoadBlankDevProfile</c> と同じ動作）。
+        /// 空プロファイルの読み込みに加えて、既定スペシャルアクションの作成、<see cref="CacheExtraProfileInfo"/> 相当の
+        /// キャッシュ更新、一時プロファイル名・使用フラグ・距離フラグのクリアまで行う。
+        /// </summary>
+        void LoadBlankProfile(int deviceIndex, bool launchProgram, ControlService control, bool xinputChange = true, bool postLoad = true);
     }
 }
