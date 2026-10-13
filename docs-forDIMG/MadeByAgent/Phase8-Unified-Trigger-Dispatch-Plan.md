@@ -215,3 +215,9 @@ D1〜D5の決定が確定したため、具体的な変更案（新設インタ�
 見直し、`IActionBinding`/`IInputAction`/`IOutputAction`/`IActionRegistry`のモデル図03への追加、
 Step2で確定する`KeyOutputAction`の委譲構造の反映等）は、Step2（詳細設計）で具体的に作成します。
 **モデル図の実際の変更は、Step2でのご提示内容についてご指示をいただいてから行います。**
+
+---
+
+## 追記（2026-10-14）: PR #1 の Copilot レビュー指摘のうち、系統A（`Actions/Default*`、`IActionBinding` 系）に関するもの
+- 指摘 F02（`IManagedActionManager` の未登録）、F03（`MouseOutputAction` がマウスイベントを出さない）、F05（`DefaultMacroPlayer` が 4 スロット固定）、F06（`LaunchProcessAction` がすべて非表示で起動）、F01（`DefaultProfileSwitcher` のデバウンス欠落）は、本 Phase の統合対象である系統A／B の型に関わる。
+- `Phase6-Step9b-Plan.md` の Step9b-0 で、各件が稼働経路か（分類A）、未配線で実害がないか（分類B）を検証する。分類A は Step9b で修正する。**分類B は修正せず、TODO コメント（§3.3 原則4）を付けて本 Phase へ送る**。本 Phase の着手時は、送られた TODO を確認し、統合の設計（D1〜D5）に反映すること。

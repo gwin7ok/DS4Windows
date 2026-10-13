@@ -1,7 +1,7 @@
 # フェーズ6計画書: 残存 `Global` 実利用箇所の解体と4層構造DI化の完成
 
 作成日: 2026-09-09  
-改定日: 2026-10-14（Step9［主要4大ViewModelのPure DI化］の完了）／2026-10-13（Step8［ProfileEditor の ViewModel 移設と Global 参照解消］の完了）／2026-09-26（Step7b［プロファイル編集の即時反映廃止］の追加と完了）／2026-09-20（Step13［.cs ファイル配置の統一］、Step10b［1ファイル1型の全数是正］を新設）／2026-09-19（Step1再監査および全ステップ［Step2〜Step12］確定実装計画書に基づく全面改訂）  
+改定日: 2026-10-14（Step9b［PR #1 の Copilot レビュー指摘の検証と是正］の追加）／2026-10-14（Step9［主要4大ViewModelのPure DI化］の完了）／2026-10-13（Step8［ProfileEditor の ViewModel 移設と Global 参照解消］の完了）／2026-09-26（Step7b［プロファイル編集の即時反映廃止］の追加と完了）／2026-09-20（Step13［.cs ファイル配置の統一］、Step10b［1ファイル1型の全数是正］を新設）／2026-09-19（Step1再監査および全ステップ［Step2〜Step12］確定実装計画書に基づく全面改訂）  
 対象ブランチ: `For-DI-migration-work`  
 前フェーズ: `Phase5-Plan.md`（Step1〜15、ドメイン集約型・完了済み）  
 全体計画書: `docs-forDIMG/DI-App-Wide-Migration-Plan.md`  
@@ -35,6 +35,7 @@ Phase6 では、アプリケーション全域に残存する呼び出し元側�
 | **Step 7b** | `ProfileEditor.xaml.cs`, `MainWindow.xaml.cs`, `ProfileSettingsViewModel.cs` ほか | 編集スロット固定＋`targetDevice` 導入（**完了**、2026-09-26） | プロファイル編集の即時反映を廃止（ユーザー承認の機能廃止、K4-3）。編集は作業スロット、実機は `targetDevice`、Save／Apply は同じ再適用（違いは画面を閉じるかどうか） |
 | **Step 8** | `ProfileEditor.xaml.cs` | 58箇所（**完了**、2026-10-13。定数37を除く） | **案3-A採用（決定6＝M-A）**: Global 参照を既存契約へ置換し、保存の一連・ブランク読み込みを `ProfileSettingsViewModel` へ移設。契約差 B8（`GetActionOrPlaceholder`）・B10（`LoadBlankProfile`）を追加。B3 は Step7-1 で追加済み、B9 は呼び出し元が消えたため不要 |
 | **Step 9** | 主要4大ViewModel (`Settings`, `MainWindow`, `TrayIcon`, `ProfileSettings`) | 114箇所（**完了**、2026-10-14。定数13を除く） | **選択肢1採用・S9-A**: `Global.` 全件の解消と、4 ViewModel（と `PresetMenuHelper`、`ViewModelFactory`）のコンストラクタのフォールバック解消（依存は必須引数）。契約 `IAppSettingsService` 4・`IEnvironmentService` 4・`IPathService.ProgramDirectory`・`IAppearanceSettingsService.BatteryChanged`・`IProfileSettingsService.RefreshActionAlias` を追加。実機確認で既存不具合 K9-1（OSC 送信の競合）・K9-2（偽装 exe 名）を発見・修正 |
+| **Step 9b** | PR #1 の Copilot レビュー指摘（14 件）の検証と是正 | 14 件（本 Step 11、Step10 へ 2、Step10b へ 2。F12・F13 は Step10b の台帳に既出） | **追加 Step（2026-10-14）**: まず検証（稼働経路か、置換前の実装と比べて回帰か）して分類 A／B／C に分け、A のみ修正。B（未配線）は TODO を付けて Phase8 へ。F01 デバウンス・F04 ログ設定を優先 |
 | **Step 10** | 残存小型View (11) & 小型ViewModel (12) & `PresetOption` | 72箇所 | **選択肢A採用**: 機能ドメイン別3グループ分割 ＋ View/ViewModelペアPure DI化 ＋ 全域直参照ゼロ化 |
 | **合計** | **ソリューション全域** | **約404箇所** | **全呼び出し元の Pure DI 完全移行** |
 
@@ -68,6 +69,7 @@ Phase6 では、アプリケーション全域に残存する呼び出し元側�
 ├─ Phase6-Step7b: プロファイル編集画面の即時反映廃止（編集は作業スロット、保存・適用時に一括反映。2026-09-26 完了）
 ├─ Phase6-Step8: ProfileEditor.xaml.cs のバックエンド操作の ViewModel 移設 ＆ Global 参照解消（58箇所、完了 2026-10-13）
 ├─ Phase6-Step9: 主要4大ViewModelのPure DI徹底 ＆ カテゴリ別移行（114箇所、完了 2026-10-14）
+├─ Phase6-Step9b: PR #1 の Copilot レビュー指摘 14 件の検証と是正（2026-10-14 追加。Step10 の前）
 ├─ Phase6-Step10: 残存小型UI・小型ViewModel・補助クラスのドメイン別ペアPure DI化（72箇所）
 └─ Phase6-Step10b: 1ファイル1型（原則1）の全数是正（55ファイル・新設203ファイル。Step10 の後・Step11 の前。Step13 の後に実施）
 
@@ -167,6 +169,12 @@ Phase6 では、アプリケーション全域に残存する呼び出し元側�
   - アプリの中枢4大ViewModelにスコープを限定。コンストラクタ引数注入（Pure DI）を徹底。
   - `SettingsViewModel`（55箇所）を「①基本/テーマ/ログ」「②OSC/UDP/平滑化」「③環境/パス/外部」の3サブPRに分割。
   - `BatteryChanged`（B12シム）を `IDeviceStateService` に実装。残存小型ViewModel（12ファイル）は Step10 へ引き継ぎ。
+
+#### Phase6-Step9b: PR #1 の Copilot レビュー指摘 14 件の検証と是正【追加、2026-10-14】
+- **経緯**: 2026-10-13、PR #1 に Copilot の自動レビューが付いた（指摘 14 件。High 4、Medium 7、Low 3）。一部は §2.2（機能の完全維持。250ms デバウンスなどの安全弁）に反する可能性がある。Step10 以降でさらに積み上げる前に、検証と是正を行う。
+- **方針**: 検証して分類（A: 稼働経路で実害、B: 未配線で実害なし→TODO＋Phase8、C: 誤検出）。A のみ修正。配分は、本 Step 11 件（F01〜F07、F10、F11、F14）、Step10 へ 2 件（F08 サービスのコンストラクタのフォールバック、F09 `ControllersViewModel`）、Step10b へ 2 件（F12、F13。台帳に既出）。
+- **マイクロステップ**: 9b-0（検証・実装なし）→ 9b-1（F04 ログ設定）→ 9b-2（F01 デバウンス、F07）→ 9b-3（F02、F03、F05、F06）→ 9b-4（テスト品質 F10、F11、F14）→ 9b-5（文書・完了報告）。
+- **計画書**: `Phase6-Step9b-Plan.md`。
 
 #### Phase6-Step10: 残存小型UI・小型ViewModel・補助クラスのドメイン別ペアPure DI化
 - **対象**: 小型View 11ファイル、小型ViewModel 12ファイル＋SpecialActions、`PresetOption.cs`（実参照式計72箇所、除外9箇所）。

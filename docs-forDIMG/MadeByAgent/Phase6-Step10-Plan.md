@@ -30,6 +30,11 @@
 > - **持ち越し**: K9-3（プリセットメニューのサブメニュー）。`ProfileEditor.xaml`／`MainWindow.xaml` を Step10 で触るときに、単一モニター・同一 DPI の環境で再現するかを確認する案（`Phase6-Status.md` §6.5）。
 > - 詳細は `Phase6-Step9-Plan.md` §0A、`Phase6-Step9-Completion-Report.md`。
 
+> **Step9b（PR #1 の Copilot レビュー）からの申し送り（2026-10-14 追記。Step10-0 で台帳に組み込むこと）**
+> - **F09**: `ControllersViewModel` のコンストラクタが任意引数（`= null`）＋ `AppHost.GetService` のフォールバック（`ControllersViewModel.cs:18〜23`）。Step9 の決定1＝S9-A と同じ方針（依存を必須引数にし、null を拒否する）で解消する。DI には Singleton で登録済み。
+> - **F08**: サービス実装のコンストラクタにも同じフォールバックがある。`ProfileActionChainService.cs:15`（`?? AppHost.GetService<IMappingActionDispatcher>() ?? new MappingActionDispatcher()`）、`ProfileApplicationService`（`_deviceState`／`_control`／`_profileRepo` など）。Step10-0 で、サービス実装のコンストラクタの `AppHost.GetService`／`new` フォールバックを洗い出し、グループとして台帳に載せる（`copilot-instructions.md` §3.1 は「ViewModel やサービス」の両方を対象にしている）。
+> - 詳細は `Phase6-Step9b-Plan.md` §1。
+
 ## 0. 背景と改訂の経緯
 
 ### 0.1 旧計画書からの精査とStep9からの引き継ぎ合意

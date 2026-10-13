@@ -6,6 +6,11 @@
 関連: `Phase6-Step13-Plan.md`（配置統一。本 Step の**前**に完了させる）、`.github/copilot-instructions.md` §3.3 原則1・原則2  
 実地確認の基準: HEAD `949c957`（2026-09-20）。Step13 の 13-1〜13-5 は未実施の状態
 
+
+> **Step9b（PR #1 の Copilot レビュー）からの申し送り（2026-10-14 追記）**
+> - Copilot が、本 Step の台帳に既にある次の 2 ファイルを、1ファイル1型（`copilot-instructions.md` §3.3 原則1）の違反として指摘した（Low）。**F12**: `DS4Windows/DI/INotificationService.cs`（`NotificationEventArgs` と `INotificationService`。`NotificationEventArgs.cs` へ分割）、**F13**: `DS4Windows/DS4Control/Trigger.cs`（`TriggerContext`、`TriggerType`、`ITrigger`、`SingleButtonTrigger`。ファイル名がどの型名とも不一致）。いずれも本 Step の付録 B の分割対象（Step9b では変更しない）。
+> - 詳細は `Phase6-Step9b-Plan.md` §1。
+
 ---
 
 ## 0. 位置づけ
