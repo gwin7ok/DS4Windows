@@ -173,6 +173,14 @@
 - **F03**: 分類B のため動作は変えず、`MouseOutputAction` クラスと `Mapping.cs` の 2 箇所に TODO（登録してはならない理由、Phase8 で完成）を付与。`Phase8-Unified-Trigger-Dispatch-Plan.md` 末尾へ、F01〜F03・F06 の申し送りを追記。
 - **実機確認（案）**: (1) スペシャルアクション「プログラム起動」で、(a) 引数なしの exe、(b) `$hidden` なしの引数付き exe（引数が渡る）、(c) `$hidden` 付きの `.bat`（ウィンドウが出ない）、(d) ショートカット（.lnk）やドキュメントの起動、を確認する。Trace ログに `LaunchProcessAction.Execute: … hidden=…` が出る。(2) 8 スロット拡張（設定タブの 8 台対応）にしている場合のみ、デバイス 5 以降（インデックス 4〜7）でスペシャルアクションのマクロが再生されること（実機が 5 台目を持てなければ、Step11 の先送り台帳へ登録）。
 
+### Step9b-3 の実機確認結果（2026-10-14）
+- プログラム起動（引数なし・引数付き・`$hidden`・ショートカット等）は問題なし。8 スロット拡張時のデバイス 4〜7 のマクロは、実機（5 台目以降）がないため先送り（`Phase6-Step11-Plan.md` §3.3 に登録、単体テストで固定済み）。あわせて、実機確認中の指示で「Launch Program」タブのプログラム名ラベルの固定幅 150 を解消した（`SpecialActionEditor.xaml`。親の幅いっぱいを使い、アイコンは右端、長い名前は末尾を省略）。
+
+### Step9b-4（F10・F11・F14）【実装済み・ユーザーのビルド・テスト待ち。本番コードの変更なし】
+- **F10**: `ProfileSettingsServiceSubSettingsTests` の 6 テストで、前提が満たされないと `return` で成功扱いになっていた条件分岐を `Assert.NotNull` に置き換えた。`BackingStore` の該当配列（`lsModInfo` など）はフィールド初期化子で常に生成されるため、通常は通る（null なら検証されていなかったことが、失敗として表に出る）。
+- **F11**: `SpecialActionsListViewModelTests` の監査テストを、動作による検証に置き換えた。購読は発行側（サービス）のデリゲートに保持されるため、購読者のフィールドの型を見る旧テストでは検出できなかった。発行側のバッキングフィールドの購読者（`Delegate.Target`）を調べる `CountSubscriptions` を作り、(1) 偽の発行側・購読者で検出器自身を検証、(2) 実際の Singleton（`ISpecialActionRepository`、`IProfileRepository`、`IOutputSlotService`、`IProfileSettingsService`、`IManagedActionManager`、`ActionManager`・`Global` の静的イベント）に ViewModel が購読していないことを確認する。なお当該 ViewModel は `IDisposable` ではなく、サービスのイベントを購読していない（自身の `actionCol.CollectionChanged` と各項目の `PropertyChanged` のみ）。そのため、計画書 §1 F11 の「購読と解除（`Dispose`）を動作で検証する」は、「購読していないことの検証」に置き換えた。
+- **F14**: `StandaloneTests.ScpUtilAndUtil_NormalizeConsistent` を、`Util.NormalizeActionName` と `Global.NormalizeActionName`（独立した 2 つの実装）の比較（複数の入力）と、期待値の固定に書き直した。
+
 ## 3. マイクロステップ（案。Step9b-0 の結果と決定で確定）
 - **Step9b-0（実装なし）**: F01〜F07、F10、F11、F14 の検証。稼働経路か（分類A／B／C）、置換前の実装との比較（`git log -S`、`git show`）、決定の提示。結果を本書 §1 に追記する。
 - **Step9b-1**: F04（ログ設定の `NullReferenceException`）。テスト＋実機確認。独立していて確実なため先に行う。

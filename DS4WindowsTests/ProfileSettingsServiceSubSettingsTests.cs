@@ -13,8 +13,9 @@ namespace DS4WindowsTests
         public void SubSettingChange_TriggerDeadZone_ShouldFireProfileSettingChanged()
         {
             var service = new ProfileSettingsService();
-            if (service.L2ModInfo == null || service.L2ModInfo[0] == null)
-                return; // 環境未初期化時はスキップ
+            // Phase6-Step9b-4（F10）: 前提が満たされないときに return で成功扱いにしない（検証されないまま通るため）
+            Assert.NotNull(service.L2ModInfo);
+            Assert.NotNull(service.L2ModInfo[0]);
 
             service.WireSubSettingsEvents(0);
 
@@ -38,8 +39,9 @@ namespace DS4WindowsTests
         public void SubSettingChange_StickAxisDeadZone_ShouldFireProfileSettingChanged()
         {
             var service = new ProfileSettingsService();
-            if (service.LSModInfo == null || service.LSModInfo[1] == null)
-                return;
+            Assert.NotNull(service.LSModInfo);
+            Assert.NotNull(service.LSModInfo[1]);
+            Assert.NotNull(service.LSModInfo[1].xAxisDeadInfo);
 
             service.WireSubSettingsEvents(1);
 
@@ -63,8 +65,9 @@ namespace DS4WindowsTests
         public void WireSubSettingsEvents_MultipleCalls_ShouldNotAccumulateHandlers()
         {
             var service = new ProfileSettingsService();
-            if (service.LSModInfo == null || service.LSModInfo[0] == null || service.LSModInfo[0].xAxisDeadInfo == null)
-                return;
+            Assert.NotNull(service.LSModInfo);
+            Assert.NotNull(service.LSModInfo[0]);
+            Assert.NotNull(service.LSModInfo[0].xAxisDeadInfo);
 
             // 複数回 WireSubSettingsEvents を呼び出して多重購読を試みる
             service.WireSubSettingsEvents(0);
@@ -91,8 +94,9 @@ namespace DS4WindowsTests
         public void UnwireSubSettingsEvents_ShouldStopNotifications()
         {
             var service = new ProfileSettingsService();
-            if (service.LSModInfo == null || service.LSModInfo[0] == null || service.LSModInfo[0].xAxisDeadInfo == null)
-                return;
+            Assert.NotNull(service.LSModInfo);
+            Assert.NotNull(service.LSModInfo[0]);
+            Assert.NotNull(service.LSModInfo[0].xAxisDeadInfo);
 
             service.WireSubSettingsEvents(0);
             // 購読全解除
@@ -115,9 +119,9 @@ namespace DS4WindowsTests
         public void SubSettingChange_DeltaAccel_ShouldFireProfileSettingChanged()
         {
             var service = new ProfileSettingsService();
-            if (service.LSOutputSettings == null || service.LSOutputSettings[0] == null ||
-                service.LSOutputSettings[0].outputSettings?.controlSettings?.deltaAccelSettings == null)
-                return;
+            Assert.NotNull(service.LSOutputSettings);
+            Assert.NotNull(service.LSOutputSettings[0]);
+            Assert.NotNull(service.LSOutputSettings[0].outputSettings?.controlSettings?.deltaAccelSettings);
 
             service.WireSubSettingsEvents(0);
 
@@ -141,8 +145,8 @@ namespace DS4WindowsTests
         public void SubSettingChange_RumbleSettings_ShouldFireProfileSettingChanged()
         {
             var service = new ProfileSettingsService();
-            if (service.RumbleSettings == null || service.RumbleSettings[0] == null)
-                return;
+            Assert.NotNull(service.RumbleSettings);
+            Assert.NotNull(service.RumbleSettings[0]);
 
             service.WireSubSettingsEvents(0);
 
