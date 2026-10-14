@@ -121,3 +121,12 @@
   - `MainWindow`: `SyncProfileListAndControllers` に `targetProfiles`（複数のプロファイル名）を追加した。既存の呼び出し（保存・リネーム）の動作は変えない。`Editor_ProfilesUpdatedExternally` は、この同じ経路を呼ぶだけで、再適用（`Global.ApplyProfileToSlot`）の実装箇所は増えていない（ガードテストで 2 箇所＝既存のまま、を検査）。
   - テスト: 除去が `Actions.xml` とメモリの両方から削除すること、グレーの項目ではファイルを書き換えないこと、除去の流れ（確認・参照の削除・通知・再適用の経路）のソース検査。
   - 名前変更時の反映は 3b-4。
+- **Step10-3b-3**: 完了（ビルド・テスト実行成功、実機確認問題なし）。
+- **Step10-3b-4（名前変更時の参照の置換と通知）**: 実装済み・ビルド、テスト、実機確認の結果待ち。
+  - `ProfileEditor` の編集画面の `Saved` ハンドラー（`EditActionBtn_Click`）: 旧名と新名が異なるとき、`IProfileRepository.ReplaceActionReference(oldName, newName)` で全プロファイルの XML の参照を新名へ置換し、書き換えたプロファイル名を `ProfilesUpdatedExternally` で通知する。再適用は、3b-3 と同じ `MainWindow.SyncProfileListAndControllers` の 1 か所の経路。編集中のプロファイルのメモリ上の参照の置換（従来の処理）は、そのまま残している。
+  - 編集中のプロファイル自身のファイルも置換の対象に含まれるため、保存せずに編集をキャンセルしても、`Actions.xml` と整合する。
+  - ガードテスト: 名前変更も同じ通知の経路を使うこと（`ReplaceActionReference(` の呼び出しの検査）を追加した。
+- **Step10-3b の完了条件**: 3b-4 の実機確認（下記）が通ること。
+  - 2 つ以上のプロファイルが同じアクションを使っている状態で、アクション名を変えて保存し、他のプロファイルを開いても新名で有効であること（ログに `invalid special action…` が出ない）。
+  - 接続中のコントローラーに適用中のプロファイルが、名前変更の直後に再適用され、新名のアクションが発火すること。
+  - 名前を変えずに内容だけ変えて保存したときは、他のプロファイルの XML が書き換わらないこと。

@@ -1912,6 +1912,14 @@ namespace DS4WinWPF.DS4Forms
                     // current sort so any name/type changes are reflected
                     // according to the current sort column and direction.
                     SortSpecialActionsList(specialActionsVM.CurrentSortColumn, specialActionsVM.CurrentSortAscending);
+
+                    // Phase6-Step10-3b-4: 名前が変わったときは、編集中以外も含むすべてのプロファイルの XML の参照を
+                    // 新名へ置換し、書き換えたプロファイルを使っているスロットへ再適用する（MainWindow の 1 か所の経路）。
+                    // 編集中のプロファイルのメモリ上の参照は、上で置換済み。
+                    if (!string.IsNullOrEmpty(oldName) && !string.Equals(oldName, newName, StringComparison.Ordinal))
+                    {
+                        NotifyProfilesUpdated(profileRepository.ReplaceActionReference(oldName, newName));
+                    }
                 };
             }
         }

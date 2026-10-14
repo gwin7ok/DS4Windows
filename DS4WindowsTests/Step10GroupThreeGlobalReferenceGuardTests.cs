@@ -139,6 +139,8 @@ namespace DS4WindowsTests
             Assert.Contains("MessageBoxButton.YesNo", editor);
             Assert.Contains("profileRepository.RemoveActionReference(", editor);
             Assert.Contains("ProfilesUpdatedExternally?.Invoke(", editor);
+            // 名前変更も、同じ通知の経路を使う
+            Assert.Contains("profileRepository.ReplaceActionReference(", editor);
 
             // 再適用の実装は SyncProfileListAndControllers の 1 か所だけ（外部更新は、その経路を呼ぶだけ）
             Assert.Contains("SyncProfileListAndControllers(targetProfiles: profiles)", main);
