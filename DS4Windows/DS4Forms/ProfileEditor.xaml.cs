@@ -1185,6 +1185,9 @@ namespace DS4WinWPF.DS4Forms
             mappingListBox.DataContext = mappingListVM;
             specialActionsTab.DataContext = specialActionsVM;
             lightbarRect.DataContext = profileSettingsVM;
+            // 読み込んだプロファイルのタッチパッド出力モードに合わせて、Button Activation Mode の表示位置を揃える
+            // （コンストラクタでの配置は読み込み前の値で行われ、TouchpadOutputIndex の setter を通らない変更では更新されない）
+            TouchpadButtonControlDisplaySetup();
 
             StickDeadZoneInfo lsMod = profileSettingsService.LSModInfo[deviceNum];
             if (lsMod.deadzoneType == StickDeadZoneInfo.DeadZoneType.Radial)
@@ -1270,6 +1273,8 @@ namespace DS4WinWPF.DS4Forms
             specialActionsTab.DataContext = specialActionsVM;
             lightbarRect.DataContext = profileSettingsVM;
             touchButtonUC.RegisterDataContext();
+            // プリセット適用でタッチパッド出力モードが変わっても、Button Activation Mode の表示位置が追従するようにする
+            TouchpadButtonControlDisplaySetup();
 
             conReadingsUserCon.LsDeadX = profileSettingsVM.LSDeadZone;
             conReadingsUserCon.RsDeadX = profileSettingsVM.RSDeadZone;
