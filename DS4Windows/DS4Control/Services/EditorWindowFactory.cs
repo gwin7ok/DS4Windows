@@ -18,6 +18,7 @@ namespace DS4Windows.Services
         private readonly IOutputSlotService _outputSlotService;
         private readonly IPathService _pathService;
         private readonly IViewModelFactory _viewModelFactory;
+        private readonly IProfilePresetLoader _presetLoader;
         private readonly Func<ControlService> _controlServiceAccessor;
 
         public EditorWindowFactory(
@@ -25,12 +26,14 @@ namespace DS4Windows.Services
             IOutputSlotService outputSlotService,
             IPathService pathService,
             IViewModelFactory viewModelFactory,
+            IProfilePresetLoader presetLoader,
             Func<ControlService> controlServiceAccessor)
         {
             _profileSettings = profileSettings ?? throw new ArgumentNullException(nameof(profileSettings));
             _outputSlotService = outputSlotService ?? throw new ArgumentNullException(nameof(outputSlotService));
             _pathService = pathService ?? throw new ArgumentNullException(nameof(pathService));
             _viewModelFactory = viewModelFactory ?? throw new ArgumentNullException(nameof(viewModelFactory));
+            _presetLoader = presetLoader ?? throw new ArgumentNullException(nameof(presetLoader));
             _controlServiceAccessor = controlServiceAccessor ?? throw new ArgumentNullException(nameof(controlServiceAccessor));
         }
 
@@ -49,7 +52,7 @@ namespace DS4Windows.Services
             => new RecordBoxWindow(deviceNum, settings, targetDevice, this, repeatable);
 
         public PresetOptionWindow CreatePresetOptionWindow()
-            => new PresetOptionWindow();
+            => new PresetOptionWindow(_presetLoader, _controlServiceAccessor());
 
         public StickCalibrationWindow CreateStickCalibrationWindow(Stick stick, int device,
             ProfileSettingsViewModel profileSettingsViewModel)

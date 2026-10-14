@@ -124,7 +124,7 @@
   - ウィンドウ内部（`ControlService` の取得、`Global` 参照）は未変更。2-4b で行う。
   - ガードテスト `ProfileEditorTargetDeviceGuardTests`／`ProfileEditorGlobalReferenceGuardTests` を、窓口の呼び出し（`CreateBindingWindow(` など）の検査へ更新した。`targetDevice` を渡していることの検査の趣旨は維持。
   - 実機確認で、ジャイロ画面の「Gyro Calibration」ボタンが、押しても何も起きない（校正のリセットのみ。置換前からの仕様）ことが分かったため、表示名を「Reset Gyro Calibration」に変え、幅を可変（最小 100）にした（`ProfileEditor.xaml` の 5 か所）。
-- **Step10-2-4b（ウィンドウ内部の依存の必須化）**: 実装済み・ビルド、テスト、実機確認の結果待ち。
+- **Step10-2-4b（ウィンドウ内部の依存の必須化）**: 完了（ビルド・テスト実行成功、実機確認問題なし）。付随: `Macros` フォルダが作られておらず保存・読込ダイアログがデスクトップを開いていた（置換前からの仕様）ため、`Application_Startup` で毎回作成するようにした。
   - `BindingWindowViewModel`: `IProfileSettingsService`（`RefreshActionAlias`）と `IOutputSlotService`（`OutDevTypeTemp`）を必須引数にした（`Global.outDevTypeTemp`／`Global.RefreshActionAlias` を削除）。
   - `BindingWindow`: `IProfileSettingsService`（`GetDefaultButtonMapping`／`InverseRumbleMotors`）、`IOutputSlotService`、`ControlService` を必須引数にした（`AppHost`／`Program.rootHub`／`Global.defaultButtonMapping`／`Global.InverseRumbleMotors` を削除）。
   - `RecordBoxViewModel`: `IProfileSettingsService` を必須引数にし、`ControlService` は引数で受け取る（`AppHost`／`Global.ProfileSettingsServiceInstance`／`Program.rootHub` のフォールバックを削除。null は単体テスト用で、入力の取り込みだけが使う）。
@@ -133,3 +133,9 @@
   - `EditorWindowFactory`: `IProfileSettingsService`、`IOutputSlotService`、`IPathService`、`IViewModelFactory`、`Func<ControlService>` を必須引数で保持し、生成のたびに `ControlService` を遅延解決して渡す。
   - 温存: `RESOURCES_PREFIX`／`ASSEMBLY_RESOURCE_PREFIX`（定数）、`ds4inputNames`／`xboxDefaultNames`／`ds4DefaultNames`／`macroDS4Values`（不変の静的表）。
   - テスト: `Step10GroupTwoGlobalReferenceGuardTests` に 6 ファイルを追加、必須引数の検査 2 件を追加。`BindingWindowViewModelTargetDeviceTests`／`RecordBoxViewModelTargetDeviceTests` を新しいコンストラクタに合わせた。
+- **Step10-2-5（`MappingListViewModel`／`MappedControl`／`TouchButtonUserControl(ViewModel)`／プリセット一式／`ControllerReadingsControl`）**: 実装済み・ビルド、テスト、実機確認の結果待ち。
+  - `MappingListViewModel`／入れ子の `MappedControl`: `IProfileSettingsService` を必須引数にした（`Global.GetDS4CSetting`→`GetDS4CSetting`、`Global.defaultButtonMapping`→`GetDefaultButtonMapping()`）。温存: `Global.getX360ControlString`（名前表を引くだけの純粋関数）。
+  - `TouchButtonUserControl`／`TouchButtonUserControlViewModel`: `IProfileSettingsService` を必須引数にした（`Global.TouchpadButtonMode`→`TouchpadButtonMode`）。
+  - `PresetOption`（基底とサブクラス 6 種）／`PresetOptionViewModel`／`PresetOptionWindow`: `IProfilePresetLoader` と `ControlService` を必須引数にした（`Global.Load…Profile`→`IProfilePresetLoader`、`Program.rootHub` のフォールバックを削除）。`EditorWindowFactory` が `IProfilePresetLoader` を保持して渡す。
+  - `ControllerReadingsControl`（XAML から生成）: `Initialize(ControlService)` を追加し、`AppHost`／`Program.rootHub` の後退を削除した。`ProfileEditor` が、`ControlService` の取得直後に呼ぶ。
+  - テスト: `Step10GroupTwoGlobalReferenceGuardTests` に 7 ファイルを追加、必須引数の検査を追加。

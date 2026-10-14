@@ -41,6 +41,8 @@ namespace DS4WinWPF.DS4Control
         // これらのPresetクラスはPresetOptionViewModelで new() 経由でパラメータレスに生成されるため、
         // サブクラス側の変更は不要(既定のフォールバック付きコンストラクタが暗黙的に呼ばれる)。
         protected readonly DS4Windows.ControlService controlService;
+        // Phase6-Step10-2-5: Global.Load…Profile への直接呼び出しを、プリセット読み込みの契約経由に置き換えた（必須引数）。
+        protected readonly DS4Windows.DI.IProfilePresetLoader presetLoader;
 
         public string Name { get => name; }
         public string Description { get => description; }
@@ -51,9 +53,10 @@ namespace DS4WinWPF.DS4Control
             set => outputCont = value;
         }
 
-        protected PresetOption(DS4Windows.ControlService controlService = null)
+        protected PresetOption(DS4Windows.DI.IProfilePresetLoader presetLoader, DS4Windows.ControlService controlService)
         {
-            this.controlService = controlService ?? DS4Windows.Program.rootHub;
+            this.presetLoader = presetLoader ?? throw new ArgumentNullException(nameof(presetLoader));
+            this.controlService = controlService ?? throw new ArgumentNullException(nameof(controlService));
         }
 
         public abstract void ApplyPreset(int idx);
@@ -61,7 +64,8 @@ namespace DS4WinWPF.DS4Control
 
     public class GamepadPreset : PresetOption
     {
-        public GamepadPreset()
+        public GamepadPreset(DS4Windows.DI.IProfilePresetLoader presetLoader, DS4Windows.ControlService controlService)
+            : base(presetLoader, controlService)
         {
             name = Translations.Strings.GamepadPresetName;
             description = Translations.Strings.GamepadPresetDescription;
@@ -73,18 +77,19 @@ namespace DS4WinWPF.DS4Control
         {
             if (outputCont == OutputContChoice.Xbox360)
             {
-                DS4Windows.Global.LoadBlankDevProfile(idx, false, controlService, false);
+                presetLoader.LoadBlank(idx, false, controlService, false);
             }
             else if (outputCont == OutputContChoice.DualShock4)
             {
-                DS4Windows.Global.LoadBlankDS4Profile(idx, false, controlService, false);
+                presetLoader.LoadBlankDS4(idx, false, controlService, false);
             }
         }
     }
 
     public class GamepadGyroCamera : PresetOption
     {
-        public GamepadGyroCamera()
+        public GamepadGyroCamera(DS4Windows.DI.IProfilePresetLoader presetLoader, DS4Windows.ControlService controlService)
+            : base(presetLoader, controlService)
         {
             name = Translations.Strings.GamepadGyroCameraName;
             description = Translations.Strings.GamepadGyroCameraDescription;
@@ -96,18 +101,19 @@ namespace DS4WinWPF.DS4Control
         {
             if (outputCont == OutputContChoice.Xbox360)
             {
-                DS4Windows.Global.LoadDefaultGamepadGyroProfile(idx, false, controlService, false);
+                presetLoader.LoadDefaultGamepadGyro(idx, false, controlService, false);
             }
             else if (outputCont == OutputContChoice.DualShock4)
             {
-                DS4Windows.Global.LoadDefaultDS4GamepadGyroProfile(idx, false, controlService, false);
+                presetLoader.LoadDefaultDS4GamepadGyro(idx, false, controlService, false);
             }
         }
     }
 
     public class MixedPreset : PresetOption
     {
-        public MixedPreset()
+        public MixedPreset(DS4Windows.DI.IProfilePresetLoader presetLoader, DS4Windows.ControlService controlService)
+            : base(presetLoader, controlService)
         {
             name = Translations.Strings.MixedPresetName;
             description = Translations.Strings.MixedPresetDescription;
@@ -119,18 +125,19 @@ namespace DS4WinWPF.DS4Control
         {
             if (outputCont == OutputContChoice.Xbox360)
             {
-                DS4Windows.Global.LoadDefaultMixedControlsProfile(idx, false, controlService, false);
+                presetLoader.LoadDefaultMixedControls(idx, false, controlService, false);
             }
             else if (outputCont == OutputContChoice.DualShock4)
             {
-                DS4Windows.Global.LoadDefaultDS4MixedControlsProfile(idx, false, controlService, false);
+                presetLoader.LoadDefaultDS4MixedControls(idx, false, controlService, false);
             }
         }
     }
 
     public class MixedGyroMousePreset : PresetOption
     {
-        public MixedGyroMousePreset()
+        public MixedGyroMousePreset(DS4Windows.DI.IProfilePresetLoader presetLoader, DS4Windows.ControlService controlService)
+            : base(presetLoader, controlService)
         {
             name = Translations.Strings.MixedGyroMousePresetName;
             description = Translations.Strings.MixedGyroMousePresetDescription;
@@ -142,18 +149,19 @@ namespace DS4WinWPF.DS4Control
         {
             if (outputCont == OutputContChoice.Xbox360)
             {
-                DS4Windows.Global.LoadDefaultMixedGyroMouseProfile(idx, false, controlService, false);
+                presetLoader.LoadDefaultMixedGyroMouse(idx, false, controlService, false);
             }
             else if (outputCont == OutputContChoice.DualShock4)
             {
-                DS4Windows.Global.LoadDefaultDS4MixedGyroMouseProfile(idx, false, controlService, false);
+                presetLoader.LoadDefaultDS4MixedGyroMouse(idx, false, controlService, false);
             }
         }
     }
 
     public class KBMPreset : PresetOption
     {
-        public KBMPreset()
+        public KBMPreset(DS4Windows.DI.IProfilePresetLoader presetLoader, DS4Windows.ControlService controlService)
+            : base(presetLoader, controlService)
         {
             name = Translations.Strings.KBMPresetName;
             description = Translations.Strings.KBMPresetDescription;
@@ -161,13 +169,14 @@ namespace DS4WinWPF.DS4Control
 
         public override void ApplyPreset(int idx)
         {
-            DS4Windows.Global.LoadDefaultKBMProfile(idx, false, controlService, false);
+            presetLoader.LoadDefaultKBM(idx, false, controlService, false);
         }
     }
 
     public class KBMGyroMouse : PresetOption
     {
-        public KBMGyroMouse()
+        public KBMGyroMouse(DS4Windows.DI.IProfilePresetLoader presetLoader, DS4Windows.ControlService controlService)
+            : base(presetLoader, controlService)
         {
             name = Translations.Strings.KBMGyroMouseName;
             description = Translations.Strings.KBMGyroMouseDescription;
@@ -175,7 +184,7 @@ namespace DS4WinWPF.DS4Control
 
         public override void ApplyPreset(int idx)
         {
-            DS4Windows.Global.LoadDefaultKBMGyroMouseProfile(idx, false, controlService, false);
+            presetLoader.LoadDefaultKBMGyroMouse(idx, false, controlService, false);
         }
     }
 }

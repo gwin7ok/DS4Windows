@@ -228,13 +228,17 @@ namespace DS4WinWPF.DS4Forms
         private int lastProcDelayInt = -1;
         private long lastCalibrating = -1;
 
-        // Phase5-Step15-2-b: Program.rootHub直接参照を廃止し、他View/ViewModelと同じDIフォールバックパターンを導入する。
-        // 動作は完全に同一（フォールバック先が同じProgram.rootHubのため）で、実行時の挙動に変化はない。
-        private readonly DS4Windows.ControlService controlService;
+        // Phase6-Step10-2-5: XAML から生成されるため、ControlService は Initialize で受け取る（AppHost/Program.rootHub の後退を廃止）。
+        // Initialize の前は null（null の間は、ControlService を使う処理をすべてスキップする既存の null 検査が働く）。
+        private DS4Windows.ControlService controlService;
+
+        public void Initialize(DS4Windows.ControlService controlService)
+        {
+            this.controlService = controlService ?? throw new ArgumentNullException(nameof(controlService));
+        }
 
         public ControllerReadingsControl()
         {
-            controlService = DS4WinWPF.AppHost.GetService<DS4Windows.ControlService>() ?? Program.rootHub;
             InitializeComponent();
             inputContNum.Content = $"#{deviceNum + 1}";
             exposeState = new DS4StateExposed(baseState);

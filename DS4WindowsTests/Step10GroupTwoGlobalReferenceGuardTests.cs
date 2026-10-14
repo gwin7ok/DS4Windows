@@ -7,6 +7,7 @@ using Xunit;
 using Xunit.Abstractions;
 using DS4Windows;
 using DS4Windows.DI;
+using DS4WinWPF;
 using DS4WinWPF.DS4Forms.ViewModels;
 
 namespace DS4WindowsTests
@@ -43,6 +44,14 @@ namespace DS4WindowsTests
             ["DS4Windows/DS4Forms/ViewModels/RecordBoxViewModel.cs"] = new[] { "RESOURCES_PREFIX", "macroDS4Values" },
             ["DS4Windows/DS4Forms/StickCalibrationWindow.xaml.cs"] = new string[0],
             ["DS4Windows/DS4Control/Services/EditorWindowFactory.cs"] = new string[0],
+            // Step10-2-5（getX360ControlString は、名前表を引くだけの純粋関数のため温存）
+            ["DS4Windows/DS4Forms/ViewModels/MappingListViewModel.cs"] = new[] { "getX360ControlString" },
+            ["DS4Windows/DS4Forms/ViewModels/TouchButtonUserControlViewModel.cs"] = new string[0],
+            ["DS4Windows/DS4Forms/TouchButtonUserControl.xaml.cs"] = new string[0],
+            ["DS4Windows/DS4Control/PresetOption.cs"] = new string[0],
+            ["DS4Windows/DS4Forms/PresetOptionWindow.xaml.cs"] = new string[0],
+            ["DS4Windows/DS4Forms/ViewModels/PresetOptionViewModel.cs"] = new string[0],
+            ["DS4Windows/DS4Forms/ControllerReadingsControl.xaml.cs"] = new string[0],
         };
 
         private readonly ITestOutputHelper _output;
@@ -165,11 +174,31 @@ namespace DS4WindowsTests
             var slots = new OutputSlotService();
             var path = new PathService();
             Func<ControlService> cs = () => null;
+            var loader = new DS4Windows.Services.ProfilePresetLoader();
 
-            Assert.Throws<ArgumentNullException>(() => new DS4Windows.Services.EditorWindowFactory(null, slots, path, null, cs));
-            Assert.Throws<ArgumentNullException>(() => new DS4Windows.Services.EditorWindowFactory(settings, null, path, null, cs));
-            Assert.Throws<ArgumentNullException>(() => new DS4Windows.Services.EditorWindowFactory(settings, slots, null, null, cs));
-            Assert.Throws<ArgumentNullException>(() => new DS4Windows.Services.EditorWindowFactory(settings, slots, path, null, cs));
+            Assert.Throws<ArgumentNullException>(() => new DS4Windows.Services.EditorWindowFactory(null, slots, path, null, loader, cs));
+            Assert.Throws<ArgumentNullException>(() => new DS4Windows.Services.EditorWindowFactory(settings, null, path, null, loader, cs));
+            Assert.Throws<ArgumentNullException>(() => new DS4Windows.Services.EditorWindowFactory(settings, slots, null, null, loader, cs));
+            Assert.Throws<ArgumentNullException>(() => new DS4Windows.Services.EditorWindowFactory(settings, slots, path, null, loader, cs));
+            Assert.Throws<ArgumentNullException>(() => new DS4Windows.Services.EditorWindowFactory(settings, slots, path, new NullViewModelFactory(), null, cs));
+            Assert.Throws<ArgumentNullException>(() => new DS4Windows.Services.EditorWindowFactory(settings, slots, path, new NullViewModelFactory(), loader, null));
+        }
+
+        private class NullViewModelFactory : IViewModelFactory
+        {
+            public ProfileSettingsViewModel CreateProfileSettingsViewModel(int device, int targetDevice = -1) => null;
+            public RecordBoxViewModel CreateRecordBoxViewModel(int device, DS4ControlSettings controlSettings, bool recordMacro = true, bool extraHold = false, int targetDevice = -1) => null;
+            public SpecialActEditorViewModel CreateSpecialActEditorViewModel(int device, SpecialAction action = null) => null;
+            public AutoProfilesViewModel CreateAutoProfilesViewModel(AutoProfileHolder autoProfileHolder, ProfileList profileList) => null;
+        }
+
+        [Fact]
+        public void PresetAndMappingViewModels_RequireServices()
+        {
+            Assert.Throws<ArgumentNullException>(() => new PresetOptionViewModel(null, null));
+            Assert.Throws<ArgumentNullException>(() => new PresetOptionViewModel(new DS4Windows.Services.ProfilePresetLoader(), null));
+            Assert.Throws<ArgumentNullException>(() => new MappingListViewModel(0, OutContType.X360, null));
+            Assert.Throws<ArgumentNullException>(() => new TouchButtonUserControlViewModel(0, null));
         }
 
         [Fact]

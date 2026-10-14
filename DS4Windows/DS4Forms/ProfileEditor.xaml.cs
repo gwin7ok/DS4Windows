@@ -306,6 +306,8 @@ namespace DS4WinWPF.DS4Forms
             profileSwitcher = DS4WinWPF.AppHost.GetService<DS4Windows.Actions.IProfileSwitcher>()
                 ?? new DefaultProfileSwitcher();
             controlService = DS4WinWPF.AppHost.GetService<DS4Windows.ControlService>() ?? DS4Windows.Program.rootHub;
+            // Phase6-Step10-2-5: ControllerReadingsControl は XAML から生成されるため、ControlService を Initialize で渡す
+            conReadingsUserCon.Initialize(controlService);
 
             // SpecialActionsリスト表示前にカルチャを明示的に再設定
             var lang = appSettingsService.UseLang;
@@ -323,10 +325,10 @@ namespace DS4WinWPF.DS4Forms
             picBoxHover.Visibility = Visibility.Hidden;
             picBoxHover2.Visibility = Visibility.Hidden;
 
-            mappingListVM = new MappingListViewModel(deviceNum, profileSettingsVM.ContType);
+            mappingListVM = new MappingListViewModel(deviceNum, profileSettingsVM.ContType, profileSettingsService);
             specialActionsVM = new SpecialActionsListViewModel(deviceNum);
 
-            touchButtonUC = new TouchButtonUserControl(deviceNum);
+            touchButtonUC = new TouchButtonUserControl(deviceNum, profileSettingsService);
             TouchpadButtonControlDisplaySetup();
 
             RemoveHoverBtnText();
