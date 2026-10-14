@@ -232,7 +232,8 @@
 ---
 
 ### Phase6-Step10: 残存小型UI・小型ViewModel・補助クラスのドメイン別ペアPure DI化【計画確定・承認待ち】
-- **進捗率**: **0%（未着手・計画確定済み）**
+- **進捗率**: **Step10-0（台帳の作り直し）完了（2026-10-14）。実装は未着手**
+- **Step10-0 の結果（2026-10-14）**: 現行コードで再集計し、旧台帳（72箇所）を作り直した（約 95 箇所＋フォールバック約 50 箇所）。決定1〜6 はすべて推奨案で承認（静的表は温存、F08 は Step10-4、View の依存は親から必須引数、`StartupMethods` は引数化、§8 は Step10-5、全域ゼロは「温存項目を除く」）。ステップ構成は Step10-1〜3（グループ別）→ Step10-4（F08・全域再走査）→ Step10-5（§8）。契約の追加が必要なもの（`SaveWhere`／`SaveDefault`、`LastVersionChecked`、`SetCulture`、`UseMoonlight`、`SaveAction`、`CreateAutoProfiles` ほか）は `Phase6-Step10-Plan.md` §0A.7。
 - **確定方針**: **選択肢A（機能ドメイン別 3グループ分割・View/ViewModelペアPure DI化）の採用**。
 - **対象**: 小型View 11ファイル、小型ViewModel 12ファイル＋SpecialActions、`PresetOption.cs`（実参照式計72箇所、除外9箇所）。
 - **計画ハイライト**:

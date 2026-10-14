@@ -36,6 +36,79 @@
 > - **付随の整理項目（Step9b で判明。Step10-0 の台帳へ）**: (1) `SpecialActionsListViewModel` の `actionManager` フィールドは代入のみで未使用（`IManagedActionManager` を `AppHost.GetService` で任意引数のフォールバック取得。F09 と同じ Pure DI の整理対象）。(2) `ProfileApplicationService` の `deviceIndex >= 4` の拒否（既知の K1。F05 と同じ「4 スロット固定」の前提で、8 スロット拡張時に影響）。(3) `IManagedActionManager`／`IControllerRegistry` は Step9b-2 で再登録済み（`ServiceRegistration`）。F08 の洗い出しでは、`DefaultActionManager` のコンストラクタの `AppHost.GetService<IActionFactory>() ?? new DefaultActionFactory()` も対象に含めること。
 > - 詳細は `Phase6-Step9b-Plan.md` §1。
 
+## 0A. Step10-0 台帳（2026-10-14 作成。現行コードの grep による再集計。§2 の旧台帳［72箇所］は参考扱いとし、本節を正とする）
+
+### 0A.1 決定事項（2026-10-14、すべて推奨案で承認）
+- **決定1＝A**: 変わらない静的データ表・純粋関数（`ds4inputNames`、`xboxDefaultNames`、`ds4DefaultNames`、`macroDS4Values`、`getX360ControlString`、`configFileDecimalCulture`、`Clamp`、`getDS4ControlsByName` など）は、定数と同じ扱いで「温存項目」とし、置換しない。理由は、実行中に値が変わらず、サービス化しても動作の利点がないため。
+- **決定2＝B**: F08（サービス実装のコンストラクタのフォールバック）は、View・ViewModel（Step10-1〜3）の完了後に、Step10-4 として個別に扱う。
+- **決定3＝A**: View の依存は、親のウィンドウが保持するサービスをコンストラクタの必須引数で渡す。`AppHost.GetService` のフォールバックは置かない。
+- **決定4＝A**: `StartupMethods`（静的クラス）は静的のまま、パスを引数で受け取る形にする。呼び出し側が `IPathService.ProgramDirectory` を渡す。
+- **決定5＝B**: §8（`PluginSlot`／`UnplugSlot` の接続）は Step10-5 として、Step10-4 の後に行う。
+- **決定6＝分類を進める**: 「全域ゼロ」は、下記 0A.6 の分類の結果、「温存項目を除いてゼロ」と読み替える。
+
+### 0A.2 グループ1【起動・環境系】
+- `WelcomeDialog.xaml.cs`: 8 件（`IsWin10OrGreater`×2、`IsWin8OrGreater`×2、`RefreshViGEmBusInfo`、`IsViGEmBusInstalled`、`IsHidHideInstalled`、`IsFakerInputInstalled`）。除外 2 件（`FindConfigLocation`、`Load`。Pre-Host の手動分岐）。定数 `RESOURCES_PREFIX` は温存。
+- `SaveWhere.xaml.cs`: 10 行（`AdminNeeded`、`SaveWhere()`×2、`SaveDefault`×2、`exedirpath`×5、`appDataPpath`×4）。置換先: `IEnvironmentService.AdminNeeded`、`IPathService.ProgramDirectory`（`exedirpath`）。`SaveWhere()`／`SaveDefault()`／`appDataPpath` の契約は無い（契約追加が必要。`IPathService.RoamingAppDataPath` の値を確認してから決める）。
+- `About.xaml.cs`、`AboutViewModel.cs`、`LogViewModel.cs`: 各 1 件（`exeversion` → `IEnvironmentService.ApplicationVersion`）。`AboutViewModel` の `_pathService` の `AppHost` フォールバックも外す。
+- `UpdaterWindow.xaml.cs`: 2 件（`IsAdministrator` → `IEnvironmentService`）。
+- `UpdaterWindowViewModel.cs`: 2 件（`LastVersionChecked`。`IAppSettingsService` には `LastVersionCheckedNum` しかない。文字列の契約を追加）。
+- `LanguageSelectDialog.xaml.cs`: 3 行（`UseLang`、`SetCulture`、ログ内の `UseLang`）。`SetCulture` の契約は無い。
+- `LanguagePackControl.xaml.cs`: 1 件（`Save`）。`LanguagePackViewModel.cs`: 3 件（`UseLang`）。定数 `PROBING_PATH`・`LANGUAGE_ASSEMBLY_NAME` は温存。
+- 静的結合（Step9 から）: `SettingsViewModel` の `App.logHolder`×5、`StartupMethods.*`×16、`Util.GetHidHideClientPath()`、`TrayIconViewModel` の `App.Current.Dispatcher`。`StartupMethods.cs` 自身: `exedirpath`×5、`exelocation`×3、`exeFileName`×1。`Util.cs`: `exedirpath`×2 ほか。
+
+### 0A.3 グループ2【プロファイル・マッピング系】
+- `BindingWindow.xaml.cs`: Global 7 件（`ds4inputNames`［温存］、`xboxDefaultNames`［温存］、`ds4DefaultNames`［温存］、`defaultButtonMapping`×3、`InverseRumbleMotors`）と `Program.rootHub` フォールバック 1。
+- `BindingWindowViewModel.cs`: 3 件（`outDevTypeTemp` → `IOutputSlotService.OutDevTypeTemp`、`RefreshActionAlias`×2 → `IProfileSettingsService.RefreshActionAlias`）。
+- `AutoProfiles.xaml.cs`: 4 件（`CreateAutoProfiles`、`UseCustomSteamFolder`、`CustomSteamFolder`×2）。`PathServiceInstance`／`AppHost` のフォールバック。
+- `AutoProfilesViewModel.cs`: `?? Global.…` のフォールバック 4 件と `Program.rootHub`。
+- `DupBox.xaml.cs`: 2 件、`RenameProfileViewModel.cs`: 1 件（いずれも `appdatapath` → `IPathService.AppDataPath`）。
+- `RecordBox.xaml.cs`: 2 件（`appdatapath`）＋ `rootHub` フォールバック。`RecordBoxViewModel.cs`: `ProfileSettingsServiceInstance` 1、`macroDS4Values`［温存］、`rootHub` フォールバック。
+- `TouchButtonUserControlViewModel.cs`: 2 件（`TouchpadButtonMode`）。
+- `MappingListViewModel.cs`: `GetDS4CSetting`、`defaultButtonMapping`×2、`getX360ControlString`［温存］×3。
+- `ControllerListViewModel.cs`: `*Instance` フォールバック 4、`AppHost` 5。
+- `ControllerRegDeviceOptsViewModel.cs`: 7 件（`UseMoonlight`×3、`UseAdvancedMoonlight`×3、`SaveControllerConfigs`）。契約は `UseMoonlight`／`UseAdvancedMoonlight` が無い。`SaveControllerConfigsForDevice` は `IProfileXmlStore` にある。
+- `ControllersViewModel.cs`（F09）: 任意引数＋`AppHost` 3 件。
+- `PresetOption.cs`: `Load*Profile`×10＋`Program.rootHub` フォールバック。`IProfileRepository` には `LoadBlankProfile` しかない。他の 9 種の契約を確認する。
+- 旧台帳に無かったもの: `ControllerReadingsControl.xaml.cs`、`StickCalibrationWindow.xaml.cs` の `Program.rootHub` フォールバック（各 1）。
+
+### 0A.4 グループ3【スペシャルアクション系】
+- `SpecialActionEditor.xaml.cs`: `RemoveAction` 1。`SpecialActEditorViewModel.cs`: `GetActions` 1。
+- `SpecialActionsListViewModel.cs`: `*Instance` フォールバック 3、`RemoveAction`、`GetActions`。未使用の `actionManager` フィールドも整理（F09 と同じ）。
+- `SpecialActions/*`: `SaveAction`×8（Check、LaunchProgram、LoadProfile、Macro、MultiActButton、PressKey×2、SpecialActionViewModel）。契約が無い（追加）。`configFileDecimalCulture`［温存］×3。`PressKeyViewModel`: `getX360ControlString`［温存］、`OutContType`×3、`outDevTypeTemp`×1。
+
+### 0A.5 補助グループ（F08。Step10-4）
+- `AutoProfileService`（`new AutoProfileHolder()`、`new EnvironmentService()`、`AppHost`×3）、`OutputSlotService`（`new OutputSlotManager`、`new OutputSlotStore`）、`OutputSlotStore`（`new PathService`）、`ProfileActionChainService`、`ProfileApplicationService`（`AppHost`×5。K1 の `deviceIndex >= 4` を含む）、`ProfileSettingsService`（`new EnvironmentService`）、`ProfileRepository`（遅延取得）、`DefaultActionManager`、`DefaultMacroPlayer`、`LaunchProcessAction`、`MacroAction`（3）、`MouseOutputAction`、`ProfileSwitchAction`（3）、`AutoProfileChecker`。
+- `Actions/*Action` は、利用側が `new` する箇所と DI の外で生成される経路を突き合わせてから判断する（必須引数化するか、理由を書いて温存するか）。
+
+### 0A.6 グループ外の Global 参照の暫定分類（決定6。Step10-4 の最終走査で確定する）
+- **温存（定数・不変データ・純粋関数）**: `MAX_DS4_CONTROLLER_COUNT`、`TEST_PROFILE_INDEX`／`TEST_PROFILE_ITEM_COUNT`、`RESOURCES_PREFIX`、`ASSEMBLY_RESOURCE_PREFIX`、`CONFIG_VERSION`／`APP_CONFIG_VERSION`、`OLD_XINPUT_CONTROLLER_COUNT`、`Clamp`、`getDS4ControlsByName`、`getX360ControlsByName`、`configFileDecimalCulture`、各名前表。
+- **温存（Pre-Host。ホスト生成前に動く処理）**: `App.xaml.cs`（`FindConfigLocation`、`Load`、`RefreshViGEmBusInfo`、`UseLang`／`SetCulture`、`appdatapath` など）、`LoggerHolder.cs`（`appdatapath`、`LogMaxArchiveFiles`、`LogMinLevel`）。
+- **温存（§2.1 の薄いシム。サービス実装が Global の実体へ委譲）**: `AppSettingsService`、`AppearanceSettingsService`、`EnvironmentService`、`PathService`、`ProfileSettingsService`、`ProfileRepository`、`SpecialActionRepository`、`OutputKBMHandlerAdapter`／`OutputKBMHandlerLifecycle`、`DeviceStateService`、`ProfileActionProvider`、`ProfileApplicationService`、`OutputSlotService`、`AutoProfileService`、`AppNotificationService`、各 DTO（`ProfileDTO`、`AppSettingsDTO`、`ActionsDTO` など）。`ScpUtil.cs` の実体の解体は Phase6 の範囲外。
+- **要個別判断（Step10-4 で、各ファイルの既存ガードテストと突き合わせて確定。Step12 へ送る候補を含む）**:
+  - `ControlService.cs`: `ProfileSettingsServiceInstance`、`ApplyProfileToSlot`、`activeOutDevType`、`tempprofile*`／`useTempProfile`、`vigem*`、`LightbarSettingsInfo`、`TouchOutMode`、`getOSCServerPortNum`
+  - `Mapping.cs`: `ProfileSettingsServiceInstance`×2、`outputKBMHandler`×2、`ApplyProfile`、`ProfileActions`、`TouchOutMode`、`IsUsingSAForControls`、`GetGyroMouseStickInfo`／`GetTouchMouseStickInfo`
+  - `Mouse.cs`: `getTrackballMode`、`GyroMouseStickInf`、`GetGyroMouseStickInfo`
+  - `DS4Devices.cs`: `UseMoonlight`／`UseAdvancedMoonlight`、`CheckIfVirtualDevice`、`GetInstanceIdFromDevicePath`
+  - `DS4Device.cs`: `DebouncingMs`。`DS4Sixaxis.cs`: `UseDs3PitchRollSim`。`DS4OutDeviceBasic`／`DS4OutDeviceExt`: `GetSASteeringWheelEmulationAxis`
+  - `OutputSlotManager.cs`: `vigemBusVersionInfo`。`OutputSlotPersist.cs`: `appdatapath`、`exeversion`。`AutoProfileHolder.cs`: `appdatapath`。`AutoProfileService.cs`: `ProfilePath`
+  - `MainWindow.xaml.cs`: `*Instance`×5、`ApplyProfileToSlot`、`ProfilePath`、`OlderProfilePath`、`CompileVersionNumberFromString`（Step9 のガードテストの許容範囲を確認）
+  - `Log.cs`: `NotificationServiceInstance`。`DefaultElevatedProcessLauncher.cs`: `exelocation`。`ProfileEditor.xaml.cs`: `LSModInfo`
+  - 以上を、ファイル別に「温存＋理由」「Step10 で置換」「Step12 送り」へ確定する。
+
+### 0A.7 契約が存在しない置換先（Step10 で契約の追加が必要）
+- `SaveWhere()`／`SaveDefault()`／`appDataPpath`（`SaveWhere` 画面）。`exelocation`／`exeFileName`（`StartupMethods`）
+- `IAppSettingsService`: `LastVersionChecked`（文字列）、`SetCulture`、`UseMoonlight`、`UseAdvancedMoonlight`
+- `ISpecialActionRepository`: `SaveAction`、`GetActions`（`ActionList` はある）
+- `IAutoProfileService`（または他）: `CreateAutoProfiles`
+- `IProfileRepository`: `LoadBlankProfile` 以外の `Load*Profile` 9 種
+- 新しい契約は、`Global` への薄い委譲にし、契約テストで同じ値・同じ動作を固定する（Step9 と同じ）。
+
+### 0A.8 集計
+- Step10-1〜3 の Global 直接参照: 約 95 箇所（旧台帳 72。うち温存の静的表が約 12）。フォールバック（`rootHub`／`AppHost`／`*Instance`）は別に約 50 箇所。
+- マイクロステップ: Step10-1（グループ1）→ Step10-2（グループ2）→ Step10-3（グループ3）→ Step10-4（F08＋全域の再走査・ガードテスト）→ Step10-5（§8）。
+
+---
+
 ## 0. 背景と改訂の経緯
 
 ### 0.1 旧計画書からの精査とStep9からの引き継ぎ合意
