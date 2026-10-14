@@ -49,6 +49,8 @@ namespace DS4WinWPF.DS4Forms
             new Dictionary<DS4Windows.X360Controls, Button>();
         private BindingWindowViewModel bindingVM;
         private readonly DS4Windows.ControlService controlService;
+        // Phase6-Step10-2-4a: RecordBox の生成を窓口へ依頼する（必須引数）
+        private readonly DS4Windows.DI.IEditorWindowFactory editorWindowFactory;
         private Button highlightBtn;
         private ExposeMode expose;
 
@@ -66,8 +68,10 @@ namespace DS4WinWPF.DS4Forms
         /// 渡し忘れをコンパイルで検出するため必須引数とする（Phase6-Step7b-Plan.md 決定2）
         /// </param>
         public BindingWindow(int deviceNum, DS4Windows.DS4ControlSettings settings, int targetDevice,
+            DS4Windows.DI.IEditorWindowFactory editorWindowFactory,
             ExposeMode expose = ExposeMode.Full)
         {
+            this.editorWindowFactory = editorWindowFactory ?? throw new ArgumentNullException(nameof(editorWindowFactory));
             InitializeComponent();
 
             controlService = DS4WinWPF.AppHost.GetService<DS4Windows.ControlService>() ?? DS4Windows.Program.rootHub;
@@ -934,7 +938,7 @@ namespace DS4WinWPF.DS4Forms
 
         private void RecordMacroBtn_Click(object sender, RoutedEventArgs e)
         {
-            RecordBox box = new RecordBox(bindingVM.DeviceNum, bindingVM.Settings,
+            RecordBox box = editorWindowFactory.CreateRecordBox(bindingVM.DeviceNum, bindingVM.Settings,
                 bindingVM.ActionBinding.IsShift(), bindingVM.TargetDevice);
             box.Visibility = Visibility.Visible;
             mapBindingPanel.Visibility = Visibility.Collapsed;

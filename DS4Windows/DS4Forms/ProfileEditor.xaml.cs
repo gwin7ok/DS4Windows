@@ -163,6 +163,8 @@ namespace DS4WinWPF.DS4Forms
         private readonly IAppSettingsService appSettingsService;
         // Phase6-Step8-3: 編集スロットの LS／RS 補正値・出力種別の読み書き先（Global.LSModInfo 等の置換先）
         private readonly IProfileSettingsService profileSettingsService;
+        // Phase6-Step10-2-4a: 補助ウィンドウ（ボタン割り当て、プリセット、スティック校正、スペシャルアクション編集）の生成の窓口
+        private readonly DS4Windows.DI.IEditorWindowFactory editorWindowFactory;
 
         /// <summary>実機（targetDevice）が指定され、かつ有効なコントローラースロットの範囲内であるか。</summary>
         private bool HasTargetDevice =>
@@ -287,8 +289,11 @@ namespace DS4WinWPF.DS4Forms
         /// <param name="profileSettingsService">
         /// Phase6-Step8-3: プロファイル設定（LSModInfo／RSModInfo／OutContType）。MainWindow から渡す
         /// </param>
-        public ProfileEditor(int targetDevice, IAppSettingsService appSettingsService, IProfileSettingsService profileSettingsService)
+        public ProfileEditor(int targetDevice, IAppSettingsService appSettingsService, IProfileSettingsService profileSettingsService,
+            DS4Windows.DI.IEditorWindowFactory editorWindowFactory)
         {
+            // Phase6-Step10-2-4a: 補助ウィンドウの生成を窓口へ依頼する（必須引数）
+            this.editorWindowFactory = editorWindowFactory ?? throw new ArgumentNullException(nameof(editorWindowFactory));
             this.targetDevice = targetDevice;
             this.appSettingsService = appSettingsService ?? throw new ArgumentNullException(nameof(appSettingsService));
             this.profileSettingsService = profileSettingsService ?? throw new ArgumentNullException(nameof(profileSettingsService));
@@ -1135,7 +1140,7 @@ namespace DS4WinWPF.DS4Forms
             else
             {
                 currentProfile = null;
-                PresetOptionWindow presetWin = new PresetOptionWindow();
+                PresetOptionWindow presetWin = editorWindowFactory.CreatePresetOptionWindow();
                 presetWin.SetupData(deviceNum);
                 presetWin.ShowDialog();
                 if (presetWin.Result == MessageBoxResult.Cancel)
@@ -1294,7 +1299,7 @@ namespace DS4WinWPF.DS4Forms
         private void HoverConBtn_Click(object sender, RoutedEventArgs e)
         {
             MappedControl mpControl = mappingListVM.Mappings[mappingListVM.SelectedIndex];
-            BindingWindow window = new BindingWindow(deviceNum, mpControl.Setting, targetDevice);
+            BindingWindow window = editorWindowFactory.CreateBindingWindow(deviceNum, mpControl.Setting, targetDevice);
             window.Owner = App.Current.MainWindow;
             window.ShowDialog();
             mpControl.UpdateMappingName();
@@ -1793,7 +1798,7 @@ namespace DS4WinWPF.DS4Forms
         {
             baseSpeActPanel.Visibility = Visibility.Collapsed;
             ProfileList profList = (Application.Current.MainWindow as MainWindow).ProfileListHolder;
-            SpecialActionEditor actEditor = new SpecialActionEditor(deviceNum, profList, targetDevice, null);
+            SpecialActionEditor actEditor = editorWindowFactory.CreateSpecialActionEditor(deviceNum, profList, targetDevice, null);
             specialActionDockPanel.Children.Add(actEditor);
             actEditor.Visibility = Visibility.Visible;
             actEditor.Cancel += (sender2, args) =>
@@ -1830,7 +1835,7 @@ namespace DS4WinWPF.DS4Forms
                 //SpecialActionItem item = specialActionsVM.ActionCol[currentIndex];
                 baseSpeActPanel.Visibility = Visibility.Collapsed;
                 ProfileList profList = (Application.Current.MainWindow as MainWindow).ProfileListHolder;
-                SpecialActionEditor actEditor = new SpecialActionEditor(deviceNum, profList, targetDevice, item.SpecialAction);
+                SpecialActionEditor actEditor = editorWindowFactory.CreateSpecialActionEditor(deviceNum, profList, targetDevice, item.SpecialAction);
                 specialActionDockPanel.Children.Add(actEditor);
                 actEditor.Visibility = Visibility.Visible;
                 actEditor.Cancel += (sender2, args) =>
@@ -2051,7 +2056,7 @@ namespace DS4WinWPF.DS4Forms
         private void ShowControlBindingWindow()
         {
             MappedControl mpControl = mappingListVM.Mappings[mappingListVM.SelectedIndex];
-            BindingWindow window = new BindingWindow(deviceNum, mpControl.Setting, targetDevice);
+            BindingWindow window = editorWindowFactory.CreateBindingWindow(deviceNum, mpControl.Setting, targetDevice);
             window.Owner = App.Current.MainWindow;
             window.ShowDialog();
             mpControl.UpdateMappingName();
@@ -2115,7 +2120,7 @@ namespace DS4WinWPF.DS4Forms
             Button btn = sender as Button;
             DS4Controls control = (DS4Controls)Convert.ToInt32(btn.Tag);
             MappedControl mpControl = mappingListVM.ControlMap[control];
-            BindingWindow window = new BindingWindow(deviceNum, mpControl.Setting, targetDevice);
+            BindingWindow window = editorWindowFactory.CreateBindingWindow(deviceNum, mpControl.Setting, targetDevice);
             window.Owner = App.Current.MainWindow;
             window.ShowDialog();
             mpControl.UpdateMappingName();
@@ -2242,7 +2247,7 @@ namespace DS4WinWPF.DS4Forms
             Button btn = sender as Button;
             DS4Controls control = (DS4Controls)Convert.ToInt32(btn.Tag);
             MappedControl mpControl = mappingListVM.ControlMap[control];
-            BindingWindow window = new BindingWindow(deviceNum, mpControl.Setting, targetDevice);
+            BindingWindow window = editorWindowFactory.CreateBindingWindow(deviceNum, mpControl.Setting, targetDevice);
             window.Owner = App.Current.MainWindow;
             window.ShowDialog();
             mpControl.UpdateMappingName();
@@ -2286,7 +2291,7 @@ namespace DS4WinWPF.DS4Forms
         {
             sidebarTabControl.SelectedIndex = 0;
 
-            PresetOptionWindow presetWin = new PresetOptionWindow();
+            PresetOptionWindow presetWin = editorWindowFactory.CreatePresetOptionWindow();
             presetWin.SetupData(deviceNum);
             presetWin.ToPresetsScreen();
             presetWin.DelayPresetApply = true;
@@ -2312,7 +2317,7 @@ namespace DS4WinWPF.DS4Forms
 
             //DS4ControlSettings setting = Global.getDS4CSetting(tag, ds4control);
             MappedControl mpControl = mappingListVM.ControlMap[ds4control];
-            BindingWindow window = new BindingWindow(deviceNum, mpControl.Setting, targetDevice);
+            BindingWindow window = editorWindowFactory.CreateBindingWindow(deviceNum, mpControl.Setting, targetDevice);
             window.Owner = App.Current.MainWindow;
             window.ShowDialog();
             mpControl.UpdateMappingName();
@@ -2355,7 +2360,7 @@ namespace DS4WinWPF.DS4Forms
             Button btn = sender as Button;
             DS4Controls control = (DS4Controls)Convert.ToInt32(btn.Tag);
             MappedControl mpControl = mappingListVM.ControlMap[control];
-            BindingWindow window = new BindingWindow(deviceNum, mpControl.Setting, targetDevice);
+            BindingWindow window = editorWindowFactory.CreateBindingWindow(deviceNum, mpControl.Setting, targetDevice);
             window.Owner = App.Current.MainWindow;
             window.ShowDialog();
             mpControl.UpdateMappingName();
@@ -2388,7 +2393,7 @@ namespace DS4WinWPF.DS4Forms
 
             //DS4ControlSettings setting = Global.getDS4CSetting(tag, ds4control);
             MappedControl mpControl = mappingListVM.ControlMap[ds4control];
-            BindingWindow window = new BindingWindow(deviceNum, mpControl.Setting, targetDevice);
+            BindingWindow window = editorWindowFactory.CreateBindingWindow(deviceNum, mpControl.Setting, targetDevice);
             window.Owner = App.Current.MainWindow;
             window.ShowDialog();
             mpControl.UpdateMappingName();
@@ -2418,10 +2423,8 @@ namespace DS4WinWPF.DS4Forms
             };
 
             // 実機（targetDevice）の現在の入力を読み、補正値は profileSettingsVM 経由で作業スロットへ書く
-            StickCalibrationWindow window = new(stick, targetDevice, profileSettingsVM)
-            {
-                Owner = Application.Current.MainWindow,
-            };
+            StickCalibrationWindow window = editorWindowFactory.CreateStickCalibrationWindow(stick, targetDevice, profileSettingsVM);
+            window.Owner = Application.Current.MainWindow;
             window.ShowDialog();
         }
 

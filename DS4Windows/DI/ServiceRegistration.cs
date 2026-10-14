@@ -94,6 +94,9 @@ namespace DS4Windows.DI
             // Phase 4: UI層 ViewModel ファクトリの登録
             services.AddSingleton<IViewModelFactory, ViewModelFactory>();
 
+            // Phase6-Step10-2（決定 E1＝A）: 補助ウィンドウ（ボタン割り当て、マクロ記録、プリセット、スティック校正、スペシャルアクション編集）の生成の窓口
+            services.AddSingleton<IEditorWindowFactory, EditorWindowFactory>();
+
             // Phase6-Step10-1-5（決定D7＝A）: ログ設定の反映の窓口。LoggerHolder は設定の読み込み後にしか生成できないため、
             // 遅延接続のプロキシを登録し、App が LoggerHolder の生成直後に Attach する。
             services.AddSingleton<LogSettingsApplierProxy>();

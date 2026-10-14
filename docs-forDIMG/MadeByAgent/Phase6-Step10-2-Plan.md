@@ -116,3 +116,10 @@
   - `ViewModelFactory`: `IAppSettingsService` と `Func<IAutoProfileService>`（遅延解決。`IAutoProfileService` は生成時に `AutoProfileHolder` を読むため、`ControlService` と同じ形）を必須引数に追加。`CreateAutoProfilesViewModel` が渡す。
   - `DupBox`（XAML から生成）: `Initialize(IPathService)`。`RenameProfileWindow`／`RenameProfileViewModel`: `IPathService` を必須引数で受け取る。
   - `MainWindow`: `_autoProfileService` の解決を、`autoProfControl.Initialize` の前へ移した（解決先は同じ）。
+- **Step10-2-3**: 完了（ビルド・テスト実行成功、実機確認問題なし）。
+- **Step10-2-4 は 2-4a／2-4b に分割**（2026-10-14、承認済み）。当初案の「窓口の新設とウィンドウ内部の変更を同時に行う」より、**生成の経路の置き換え（2-4a）と、ウィンドウ内部の依存の必須化（2-4b）を分ける**形に改めた（2-4a の完了時点でビルド・テスト・実機確認ができ、2-4b の変更が内部のみになるため）。`SpecialActionEditor` のコンストラクタへの窓口の追加は、承認のとおり 2-4a に含める（その他の Pure DI 化は Step10-3）。
+- **Step10-2-4a（生成の窓口の新設）**: 実装済み・ビルド、テスト、実機確認の結果待ち。
+  - 新設: `IEditorWindowFactory`（`DI/`）、`EditorWindowFactory`（`DS4Control/Services/`）。`BindingWindow`／`RecordBox`／`RecordBoxWindow`／`PresetOptionWindow`／`StickCalibrationWindow`／`SpecialActionEditor` の 6 種を生成する。
+  - 窓口を必須引数で受け取る: `ProfileEditor`、`BindingWindow`、`RecordBoxWindow`、`SpecialActionEditor`。`ProfileEditor`（`new BindingWindow` 7、`new SpecialActionEditor` 2、`new PresetOptionWindow` 2、`new(stick…)` 1）、`BindingWindow`（`RecordBox`）、`RecordBoxWindow`（`RecordBox`）、`SpecialActionEditor`（`BindingWindow` 1、`RecordBoxWindow` 4）の生成を窓口へ置き換えた。`MainWindow` は `ProfileEditor` に窓口を渡す。
+  - ウィンドウ内部（`ControlService` の取得、`Global` 参照）は未変更。2-4b で行う。
+  - ガードテスト `ProfileEditorTargetDeviceGuardTests`／`ProfileEditorGlobalReferenceGuardTests` を、窓口の呼び出し（`CreateBindingWindow(` など）の検査へ更新した。`targetDevice` を渡していることの検査の趣旨は維持。

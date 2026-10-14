@@ -43,11 +43,14 @@ namespace DS4WinWPF.DS4Forms
         /// Phase6-Step7b: マクロ記録で使う実機のスロット番号。-1 は実機なし。
         /// 渡し忘れをコンパイルで検出するため必須引数とする（Phase6-Step7b-Plan.md 決定2）
         /// </param>
-        public RecordBoxWindow(int deviceNum, DS4Windows.DS4ControlSettings settings, int targetDevice, bool repeatable = true)
+        // Phase6-Step10-2-4a: RecordBox の生成を窓口へ依頼する（必須引数）
+        public RecordBoxWindow(int deviceNum, DS4Windows.DS4ControlSettings settings, int targetDevice,
+            DS4Windows.DI.IEditorWindowFactory editorWindowFactory, bool repeatable = true)
         {
+            if (editorWindowFactory == null) throw new ArgumentNullException(nameof(editorWindowFactory));
             InitializeComponent();
 
-            RecordBox box = new RecordBox(deviceNum, settings, false, targetDevice, repeatable: repeatable);
+            RecordBox box = editorWindowFactory.CreateRecordBox(deviceNum, settings, false, targetDevice, repeatable: repeatable);
             mainPanel.Children.Add(box);
 
             box.Save += RecordBox_Save;

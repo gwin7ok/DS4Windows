@@ -75,6 +75,8 @@ namespace DS4WinWPF.DS4Forms
         private readonly DS4Windows.DI.IAppSettingsService appSettingsService;
         // Phase6-Step10-2-2: ControllerRegisterOptionsWindow（コントローラー固有設定の保存）へ渡す
         private readonly DS4Windows.DI.IProfileXmlStore profileXmlStore;
+        // Phase6-Step10-2-4a: ProfileEditor へ渡す、補助ウィンドウの生成の窓口
+        private readonly DS4Windows.DI.IEditorWindowFactory editorWindowFactory;
         private readonly DS4Windows.DI.IPathService pathService;
         private readonly DS4Windows.DI.IEnvironmentService environmentService;
         private readonly DS4Windows.DI.IAppearanceSettingsService appearanceSettingsService;
@@ -112,6 +114,7 @@ namespace DS4WinWPF.DS4Forms
             profileSettingsService = DS4WinWPF.AppHost.GetService<DS4Windows.DI.IProfileSettingsService>() ?? Global.ProfileSettingsServiceInstance;
             appSettingsService = DS4WinWPF.AppHost.GetService<DS4Windows.DI.IAppSettingsService>();
             profileXmlStore = DS4WinWPF.AppHost.GetService<DS4Windows.DI.IProfileXmlStore>();
+            editorWindowFactory = DS4WinWPF.AppHost.GetService<DS4Windows.DI.IEditorWindowFactory>();
             pathService = DS4WinWPF.AppHost.GetService<DS4Windows.DI.IPathService>() ?? Global.PathServiceInstance;
             environmentService = DS4WinWPF.AppHost.GetService<DS4Windows.DI.IEnvironmentService>() ?? Global.EnvironmentServiceInstance;
             appearanceSettingsService = DS4WinWPF.AppHost.GetService<DS4Windows.DI.IAppearanceSettingsService>() ?? new DS4Windows.Services.AppearanceSettingsService();
@@ -1941,7 +1944,7 @@ Suspend support not enabled.", true);
                 //     this.Height = WindowLayoutDefaults.PROFILE_EDITOR_HEIGHT;
                 // }
 
-                editor = new ProfileEditor(targetDevice, appSettingsService, profileSettingsService);
+                editor = new ProfileEditor(targetDevice, appSettingsService, profileSettingsService, editorWindowFactory);
                 editor.ProfileSaved += Editor_ProfileSaved;
                 editor.Closed += ProfileEditor_Closed;
                 profDockPanel.Children.Add(editor);

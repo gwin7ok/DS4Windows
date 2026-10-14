@@ -190,8 +190,8 @@ namespace DS4WindowsTests
 
             var checks = new (string Call, int MinCount)[]
             {
-                ("new BindingWindow(", 7),
-                ("new SpecialActionEditor(", 2),
+                ("CreateBindingWindow(", 7),
+                ("CreateSpecialActionEditor(", 2),
                 ("CreateProfileSettingsViewModel(", 1),
             };
 
@@ -209,10 +209,10 @@ namespace DS4WindowsTests
             Assert.DoesNotContain("new ProfileSettingsViewModel(", text);
 
             // スティック再校正は、実機がなければ不可とし、ウィンドウには実機（targetDevice）を渡す
-            // （StickCalibrationWindow は型を省略した new(...) で生成している）
+            // （Phase6-Step10-2-4a: StickCalibrationWindow は IEditorWindowFactory 経由で生成する）
             string calibrate = ExtractMethod(text, "private void CalibrateStick_OnClick(");
             Assert.Contains("if (!HasTargetDevice)", calibrate);
-            Assert.Contains("new(stick, targetDevice, profileSettingsVM)", calibrate);
+            Assert.Contains("CreateStickCalibrationWindow(stick, targetDevice, profileSettingsVM)", calibrate);
         }
 
         [Fact]
@@ -262,7 +262,7 @@ namespace DS4WindowsTests
                     $"ShowProfileEditor({a}) に編集スロットが渡されている（編集スロットは ProfileEditor 内部で決める）");
             }
 
-            Assert.Contains("new ProfileEditor(targetDevice, appSettingsService, profileSettingsService)", text);
+            Assert.Contains("new ProfileEditor(targetDevice, appSettingsService, profileSettingsService, editorWindowFactory)", text);
             Assert.Contains("editor.Reload(entity)", text);
         }
 
@@ -271,13 +271,13 @@ namespace DS4WindowsTests
         {
             var checks = new (string File, string Call)[]
             {
-                ("DS4Windows/DS4Forms/BindingWindow.xaml.cs", "new RecordBox("),
+                ("DS4Windows/DS4Forms/BindingWindow.xaml.cs", "CreateRecordBox("),
                 ("DS4Windows/DS4Forms/BindingWindow.xaml.cs", "new BindingWindowViewModel("),
-                ("DS4Windows/DS4Forms/RecordBoxWindow.xaml.cs", "new RecordBox("),
+                ("DS4Windows/DS4Forms/RecordBoxWindow.xaml.cs", "CreateRecordBox("),
                 ("DS4Windows/DS4Forms/RecordBox.xaml.cs", "CreateRecordBoxViewModel("),
                 ("DS4Windows/DS4Forms/RecordBox.xaml.cs", "new RecordBoxViewModel("),
-                ("DS4Windows/DS4Forms/SpecialActionEditor.xaml.cs", "new RecordBoxWindow("),
-                ("DS4Windows/DS4Forms/SpecialActionEditor.xaml.cs", "new BindingWindow("),
+                ("DS4Windows/DS4Forms/SpecialActionEditor.xaml.cs", "CreateRecordBoxWindow("),
+                ("DS4Windows/DS4Forms/SpecialActionEditor.xaml.cs", "CreateBindingWindow("),
             };
 
             foreach (var group in checks.GroupBy(c => c.File))

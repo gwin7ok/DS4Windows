@@ -65,9 +65,15 @@ namespace DS4WinWPF.DS4Forms
         /// Phase6-Step7b: 実機のスロット番号。-1 は実機なし。
         /// 渡し忘れをコンパイルで検出するため必須引数とする（Phase6-Step7b-Plan.md 決定2）
         /// </param>
+        // Phase6-Step10-2-4a: BindingWindow／RecordBoxWindow の生成を窓口へ依頼する（必須引数）。
+        // 本画面自体の Pure DI 化（RemoveAction など）は Step10-3 で行う。
+        private readonly DS4Windows.DI.IEditorWindowFactory editorWindowFactory;
+
         public SpecialActionEditor(int deviceNum, ProfileList profileList, int targetDevice,
+            DS4Windows.DI.IEditorWindowFactory editorWindowFactory,
             DS4Windows.SpecialAction specialAction = null)
         {
+            this.editorWindowFactory = editorWindowFactory ?? throw new ArgumentNullException(nameof(editorWindowFactory));
             InitializeComponent();
             this.targetDevice = targetDevice;
 
@@ -426,7 +432,7 @@ namespace DS4WinWPF.DS4Forms
         private void RecordMacroBtn_Click(object sender, RoutedEventArgs e)
         {
             DS4Windows.DS4ControlSettings settings = macroActVM.PrepareSettings();
-            RecordBoxWindow recordWin = new RecordBoxWindow(specialActVM.DeviceNum, settings, targetDevice);
+            RecordBoxWindow recordWin = editorWindowFactory.CreateRecordBoxWindow(specialActVM.DeviceNum, settings, targetDevice);
             recordWin.Saved += (sender2, args) =>
             {
                 macroActVM.Macro.Clear();
@@ -480,7 +486,7 @@ namespace DS4WinWPF.DS4Forms
         private void MultiTapTrigBtn_Click(object sender, RoutedEventArgs e)
         {
             DS4Windows.DS4ControlSettings settings = multiActButtonVM.PrepareTapSettings();
-            RecordBoxWindow recordWin = new RecordBoxWindow(specialActVM.DeviceNum, settings, targetDevice, false);
+            RecordBoxWindow recordWin = editorWindowFactory.CreateRecordBoxWindow(specialActVM.DeviceNum, settings, targetDevice, false);
             recordWin.Saved += (sender2, args) =>
             {
                 multiActButtonVM.TapMacro.Clear();
@@ -494,7 +500,7 @@ namespace DS4WinWPF.DS4Forms
         private void MultiHoldTapTrigBtn_Click(object sender, RoutedEventArgs e)
         {
             DS4Windows.DS4ControlSettings settings = multiActButtonVM.PrepareHoldSettings();
-            RecordBoxWindow recordWin = new RecordBoxWindow(specialActVM.DeviceNum, settings, targetDevice, false);
+            RecordBoxWindow recordWin = editorWindowFactory.CreateRecordBoxWindow(specialActVM.DeviceNum, settings, targetDevice, false);
             recordWin.Saved += (sender2, args) =>
             {
                 multiActButtonVM.HoldMacro.Clear();
@@ -508,7 +514,7 @@ namespace DS4WinWPF.DS4Forms
         private void MultiDoubleTapTrigBtn_Click(object sender, RoutedEventArgs e)
         {
             DS4Windows.DS4ControlSettings settings = multiActButtonVM.PrepareDoubleTapSettings();
-            RecordBoxWindow recordWin = new RecordBoxWindow(specialActVM.DeviceNum, settings, targetDevice, false);
+            RecordBoxWindow recordWin = editorWindowFactory.CreateRecordBoxWindow(specialActVM.DeviceNum, settings, targetDevice, false);
             recordWin.Saved += (sender2, args) =>
             {
                 multiActButtonVM.DoubleTapMacro.Clear();
@@ -538,7 +544,7 @@ namespace DS4WinWPF.DS4Forms
         private void PressKeySelectBtn_Click(object sender, RoutedEventArgs e)
         {
             DS4Windows.DS4ControlSettings settings = pressKeyVM.PrepareSettings();
-            BindingWindow window = new BindingWindow(specialActVM.DeviceNum, settings, targetDevice,
+            BindingWindow window = editorWindowFactory.CreateBindingWindow(specialActVM.DeviceNum, settings, targetDevice,
                 BindingWindow.ExposeMode.ForPressToggle);
             window.Owner = App.Current.MainWindow;
             window.ShowDialog();
