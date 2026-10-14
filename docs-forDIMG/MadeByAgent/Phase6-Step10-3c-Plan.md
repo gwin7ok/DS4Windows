@@ -79,3 +79,27 @@
   2. Switch Mode を Toggle にして保存し、開き直しても Toggle のままであること。
   3. Toggle で保存したアクションが、実機（GamePadTester など）で Toggle として動作すること（1 回押すと押しっぱなしの状態になり、もう 1 回押すと解除される）。
   4. Press で保存したアクションは、従来どおり動作すること。
+
+## 7. 実機確認の結果と、新たに判明した問題（2026-10-15）
+- **確認できたこと（§6 の項目 1・2）**: 戻った直後のボタン名の表示、Toggle の保存・再読込（ログの `isToggle=True`）は、期待どおり。
+- **問題 3（実行時に、ボタンの Toggle が機能しない）**: Toggle で保存したボタンのアクションを実行しても、Press としてしか動作しない。
+  - **原因（コードの読解とユーザーのログによる）**: ボタン種別（`Button`）のスペシャルアクションの出力は、`Mapping.cs` の Stage3（「Synchronous Button SpecialAction handling」。3226 行付近）が、トリガーが成立している間だけ `outputfieldMapping.buttons[...] = true` を設定する実装のみ。Toggle（押すたびに ON／OFF を切り替える）の状態を持つ処理が存在しない。
+  - **`KeyButtonActionController` の経路は出力に寄与していない**: `DefaultActionFactory`／`ActionFactory` は、`Key`／`Program`／`Macro`／`Profile` にしか `Action` の実装を作らない（`Button` は `null`）。そのため、ログの `BUTTON press delegated to KeyButtonActionController`（`Mapping.cs` 5324 行付近の `TryDispatchSATriggerEstablished`）は、コントローラーを生成してログを出すだけで、実際のボタン出力も、キーボード出力も行わない（SwitchMode が `isToggle=True` と表示されるのは、コントローラーの生成時の判定のみ）。
+  - **つまり**: Toggle は、保存・読込の経路（本 Step で是正）と、実行時の動作（未実装）の両方が欠けていた機能。`SpecialAction` コンストラクターの Button の SwitchMode 解釈と、`KeyButtonSwitchMode` の参照は、実装途中のまま残っている。
+- **性質**: DI 化の範囲外の機能追加（`Mapping.cs` のホットパスの変更）。
+- **選択肢（要判断）**:
+  - A: Stage3 に Toggle の状態を追加する（`device:actionname` ごとの ON／OFF を、トリガーの立ち上がりで反転し、ON の間は出力する。プロファイルの適用・切断時に状態をクリアする）。実機確認が必須。
+  - B: 当面、ボタンの割り当てでは Switch Mode を Press に固定し、Toggle を選べないようにする（画面の変更のみ。誤解を防ぐ）。Toggle の実装は、別途計画する。
+  - C: 何もせず、先送り台帳に記録する。
+
+## 8. 決定と実施時期（2026-10-15、ユーザー承認）
+- **決定**: 問題 3（ボタンの Toggle が実行時に機能しない）は、**案 A（Toggle の実装）**で進める。
+- **実施時期**: **Step10 の残り（Step10-4、Step10-5）の後**に実施する（本書の §6 の是正［表示の更新、SwitchMode の保存・読込］は、実施・確認済み）。
+- **設計上の条件（ユーザー指示）**: 構造が複雑にならないよう、**キーボード・マウス（KBM）の Toggle モードと共通化した形**で実装する。
+  - 方針案（実施時に、現行コードで検証してから確定する）:
+    - 現行の KBM の Toggle は、`ActionManager` の「アクションごとの `IsToggledOn`（`SetToggledOn`／`ToggledOnChanged`）」と、`KeyAction`／`ToggleActionController`／`KeyButtonActionController` の `ToggleImpl` が担っている（`Mapping` は `IsToggledOn` を直接書き換えない設計）。
+    - ボタン種別には `Action` の実装が無い（`DefaultActionFactory`／`ActionFactory` が `null` を返す）ため、Toggle の状態を持つ場所が無い。ここに、`Button` 用の `Action` 実装（立ち上がりで `IsToggledOn` を反転する）を足し、Stage3 が、トリガー成立中（Press）または `IsToggledOn`（Toggle）の間だけ出力ボタンを ON にする形を第一候補とする。状態の保持と、プロファイル適用・切断時のクリア（`ClearAllEntries`、`ToggledOnChanged` による解除）は、既存の KBM と同じ仕組みを使う。
+    - Stage3 と、`Mapping.cs` 5324 行付近の `TryDispatchSATriggerEstablished`（出力に寄与していないログのみの呼び出し）の二重の経路も、この際に整理する。
+  - 新しい状態の辞書（`lastButtonTriggerState` のような静的辞書の追加）は、極力作らない。
+- **実機確認（案）**: Toggle で保存したボタンのアクションで、1 回押すと押しっぱなし、もう 1 回押すと解除されること（GamePadTester）。Press のアクションと、KBM の Toggle のアクションに影響がないこと。プロファイルの切替・コントローラーの切断で、Toggle の状態がクリアされること。
+- **計画書**: 実施時に、`Phase6-Step10-3d-Plan.md`（仮称）を新規作成する。それまでは、本書 §7・§8 を正とする。

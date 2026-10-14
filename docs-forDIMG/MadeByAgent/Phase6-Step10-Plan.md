@@ -410,3 +410,4 @@ public partial class SaveWhere : Window
   - **Step10-5**: §8（`PluginSlot`／`UnplugSlot` の接続）。
   - **完了報告書**: `Phase6-Step10-Completion-Report.md`、`Phase6-Step10b-Plan.md`・`Phase6-Step11-Plan.md` への引き継ぎ（複数型ファイルの分割は Step10b。`PresetOption.cs`、`MappingListViewModel.cs` など）。
 - **先送り台帳**: `Phase6-Step11-Plan.md` §3.3（Step10-1-3 の更新通知、Step10-3-2 の SA キー押下のボタン割り当て）。
+- **追記（2026-10-15）**: Step10-3c の調査で、SA の「キー押下」のボタンの割り当ては動作していることを確認し、表示の更新と SwitchMode の保存・読込の不具合を是正した（`Phase6-Step10-3c-Plan.md` §5〜6、実機確認済み）。実行時の Toggle の未実装（`Phase6-Step10-3c-Plan.md` §7）は、**Step10-4・10-5 の後に、KBM の Toggle と共通化した形で実装する**ことに決定した（§8。計画書は実施時に作成）。
