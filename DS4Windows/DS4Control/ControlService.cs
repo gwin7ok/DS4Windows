@@ -271,7 +271,7 @@ namespace DS4Windows
             this._deviceRegistry = deviceRegistry;
             // TODO(技術的負債): 過渡期の防御コード。DI 経由の生成（ServiceRegistration）では profileSettings は常に非 null。
             // 旧シグネチャ（profileSettings = null）との互換のために残している。Phase6-Step12 で削除判断（Phase6-Step2-Plan.md 決定D2）。
-            this._profileSettings = profileSettings ?? Global.ProfileSettingsServiceInstance;
+            this._profileSettings = profileSettings ?? throw new ArgumentNullException(nameof(profileSettings)); // Phase6-Step10-4-5: Global のフォールバックを廃止
             this._appSettings = appSettings ?? throw new ArgumentNullException(nameof(appSettings));
             this._environmentService = environmentService ?? throw new ArgumentNullException(nameof(environmentService));
             this._pathService = pathService ?? throw new ArgumentNullException(nameof(pathService));
@@ -1132,8 +1132,8 @@ namespace DS4Windows
         private void StartViGEm()
         {
             // Refresh internal ViGEmBus info
-            Global.RefreshViGEmBusInfo();
-            if (Global.IsRunningSupportedViGEmBus())
+            _environmentService.RefreshViGEmBusInfo();
+            if (_environmentService.IsRunningSupportedViGEmBus())
             {
                 tempThread = new Thread(() =>
                 {
@@ -1708,7 +1708,7 @@ namespace DS4Windows
                 }
 
                 LogDebug($"Using output KB+M handler: {_virtualKBM.GetFullDisplayName()}");
-                LogDebug($"Connection to ViGEmBus {Global.vigembusVersion} established");
+                LogDebug($"Connection to ViGEmBus {_environmentService.ViGEmBusVersion} established");
 
                 _deviceRegistry.IsExclusiveMode = _appSettings.UseExclusiveMode; //Re-enable Exclusive Mode
 
@@ -1833,13 +1833,13 @@ namespace DS4Windows
             else
             {
                 string logMessage = string.Empty;
-                if (!Global.vigemInstalled)
+                if (!_environmentService.IsViGEmBusInstalled())
                 {
                     logMessage = "ViGEmBus is not installed";
                 }
-                else if (!Global.IsRunningSupportedViGEmBus())
+                else if (!_environmentService.IsRunningSupportedViGEmBus())
                 {
-                    logMessage = string.Format("Unsupported ViGEmBus found ({0}). Please install at least ViGEmBus 1.17.333.0", Global.vigembusVersion);
+                    logMessage = string.Format("Unsupported ViGEmBus found ({0}). Please install at least ViGEmBus 1.17.333.0", _environmentService.ViGEmBusVersion);
                 }
                 else
                 {

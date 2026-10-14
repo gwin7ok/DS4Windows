@@ -421,3 +421,36 @@
   - S5（§2.4 の判断記録）: 削除 — `AutoProfileChecker`（廃止済み機能の残骸。2026-09-08 `22ba46d4`）、`IMappingActionDispatcher`／`MappingActionDispatcher`（連鎖の廃止で呼出元 0 件。2026-09-04 `874fb025`）、DI 登録、`MainWindow` の未使用オーバーロード（`AutoprofileChecker_RequestServiceChange(AutoProfileChecker, bool)`。ハンドラーを 1 つに統合）。`Mapping.DispatchProfileActionEdge`（静的）は残す。
 - **テスト**: `TestRepositoryFactory.CreateDefaultActionFactory`、`Step10FourTwoGlobalReferenceGuardTests` に Actions の 9 ファイルと必須引数、工場の受け渡しを追加。`DefaultActionManagerTests`／`VirtualKBMTests` の生成箇所を更新。
 - **実機確認項目**: キー押下（Press／Toggle）、マクロ、プログラム起動、プロファイル切替、ボタン割り当てのスペシャルアクション、自動プロファイル（`MainWindow` のハンドラーの統合の回帰確認）。
+
+## 30. Step10-4-4 の完了と、Step10-4-5（MainWindow・ControlService）の計画。2026-10-15
+- **Step10-4-4**: ビルド・テストビルド・テスト実行成功。実機確認（キー押下の Press／Toggle、マクロ、プログラム起動、プロファイル切替、自動プロファイル）問題なし。経緯: `Mapping.cs` の旧コンストラクター呼び出し 2 か所（`LaunchProcessAction`、`ProfileSwitchAction`）と、ミニの DI コンテナを組むテスト 2 件、`new DefaultActionManager()` のテスト 7 件を、必須引数に合わせて更新した。
+
+### 30.1 現行コードの再確認（コメントを除く）
+- **MainWindow.xaml.cs**
+  - コンストラクターのフォールバック 7 件: `Global.ProfileSettingsServiceInstance`／`PathServiceInstance`／`EnvironmentServiceInstance`／`OutputSlotServiceInstance`／`ProfileRepositoryInstance`／`NotificationServiceInstance`、`Program.rootHub`。
+  - `Global.ProfilePath`×3、`Global.OlderProfilePath`×1（`SyncProfileListAndControllers`）。`IProfileRepository` に同名の契約がある。
+  - `Global.ApplyProfileToSlot`×2（`SelectProfCombo_SelectionChanged`、`SyncProfileListAndControllers`）。`IProfileSlotApplier.ApplyToSlot`（Global への薄い委譲）がある。
+  - 定数（`RESOURCES_PREFIX`×6、`TEST_PROFILE_INDEX`×1）は温存。
+- **ControlService.cs**
+  - `Global.ProfileSettingsServiceInstance` のフォールバック 1 件（引数 `profileSettings`）。
+  - ViGEm 関連: `Global.RefreshViGEmBusInfo`×1、`IsRunningSupportedViGEmBus`×2、`vigemInstalled`×1、`vigembusVersion`×2。`IEnvironmentService` に `RefreshViGEmBusInfo`／`IsRunningSupportedViGEmBus`／`IsViGEmBusInstalled`／`ViGEmBusVersion` が既にある。
+  - 定数（`MAX_DS4_CONTROLLER_COUNT`、`TEST_PROFILE_INDEX`）は温存。`ControlService` の生成は DI のみ（テストでの直接生成なし）。
+
+### 30.2 方針（案）
+- **T1（MainWindow）**: フォールバック 7 件を削除し、未登録なら例外にする。`Global.ProfilePath`／`OlderProfilePath` は `profileRepo` の同名のプロパティへ、`Global.ApplyProfileToSlot` は `IProfileSlotApplier.ApplyToSlot` へ置換する（`IProfileSlotApplier` は `AppHost` から解決。MainWindow は Composition Root に隣接する窓のため、`AppHost` の使用は従来どおり）。
+- **T2（ControlService）**: ViGEm 関連 6 件を `_environmentService` へ置換。`profileSettings` のフォールバックを削除し、必須にする。ログの文言は維持（バージョンは `Version.ToString()`。実デバイス情報の 4 要素の書式で、従来の文字列と同じ）。
+- **テスト**: `ProfileEditorTargetDeviceGuardTests`（182 行）と `Step10GroupThreeGlobalReferenceGuardTests`（148 行）の、`Global.ApplyProfileToSlot(` を数える検査を、`profileSlotApplier.ApplyToSlot(` に更新。新規のガードを `Step10FourTwoGlobalReferenceGuardTests` に追加（`ControlService` の許可リストは、定数のみ）。
+- **実機確認項目**: 起動時のログ（ViGEmBus のバージョン表示）、プロファイル一覧の選択による適用、プロファイル編集画面での保存・名前変更の反映（`SyncProfileListAndControllers`）、サービスの開始・停止。
+
+### 30.3 決定事項（要承認）
+- **T1**: MainWindow のフォールバック削除と置換を行う（A）／温存する（B）。
+- **T2**: ControlService の ViGEm 関連と `profileSettings` を置換する（A）／温存する（B）。
+
+## 31. Step10-4-5 の実装記録。2026-10-15
+- **決定**: T1＝A、T2＝A（推奨案）。
+- **変更**
+  - `MainWindow`: コンストラクターのフォールバック 7 件（`Global.*Instance`×6、`Program.rootHub`）を削除。`Global.ProfilePath`×3／`OlderProfilePath`×1 を `profileRepo` へ、`Global.ApplyProfileToSlot`×2 を `IProfileSlotApplier.ApplyToSlot` へ置換（`IProfileSlotApplier` は `AppHost` から解決）。
+  - `ControlService`: `profileSettings` のフォールバックを削除（必須）。ViGEm 関連 6 件（`RefreshViGEmBusInfo`／`IsRunningSupportedViGEmBus`×2／`vigemInstalled`／`vigembusVersion`×2）を `_environmentService` へ置換。
+- **テスト**: `ProfileEditorTargetDeviceGuardTests`（182 行）と `Step10GroupThreeGlobalReferenceGuardTests`（148 行）の検査を、`profileSlotApplier.ApplyToSlot(` に更新。`Step10FourTwoGlobalReferenceGuardTests` に、`MainWindow`／`ControlService` が定数以外の `Global` と `Program.rootHub` を持たない検査を追加。
+- **実機確認項目**: 起動時のログ（ViGEmBus のバージョン表示）、プロファイル一覧の選択による適用、編集画面の保存・名前変更の反映、サービスの開始・停止。
+- **テスト更新（2026-10-15）**: `ControlServiceGlobalReferenceGuardTests` の許容リストから、置換済みの 6 項目（`ProfileSettingsServiceInstance`、`RefreshViGEmBusInfo`、`IsRunningSupportedViGEmBus`、`vigembusVersion`、`vigemInstalled`）を除き、定数 2 件（`MAX_DS4_CONTROLLER_COUNT`、`TEST_PROFILE_INDEX`）のみとした。

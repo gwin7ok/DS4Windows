@@ -83,6 +83,8 @@ namespace DS4WinWPF.DS4Forms
         private readonly DS4Windows.DI.IProfileApplicationService profileAppService;
         private readonly DS4Windows.DI.IOutputSlotService outputSlotService;
         private readonly DS4Windows.DI.IProfileRepository profileRepo;
+        // Phase6-Step10-4-5: Global.ApplyProfileToSlot の直接呼び出しの置換先（Global への薄い委譲）
+        private readonly DS4Windows.Services.IProfileSlotApplier profileSlotApplier;
         private readonly DS4Windows.DI.INotificationService notificationService;
         private readonly ControlService controlService;
         private ProfileEditor editor;
@@ -111,19 +113,20 @@ namespace DS4WinWPF.DS4Forms
             Height = WindowLayoutDefaults.MAIN_WINDOW_HEIGHT;
 
             InitializeComponent();
-            profileSettingsService = DS4WinWPF.AppHost.GetService<DS4Windows.DI.IProfileSettingsService>() ?? Global.ProfileSettingsServiceInstance;
+            profileSettingsService = DS4WinWPF.AppHost.GetService<DS4Windows.DI.IProfileSettingsService>();
             appSettingsService = DS4WinWPF.AppHost.GetService<DS4Windows.DI.IAppSettingsService>();
             profileXmlStore = DS4WinWPF.AppHost.GetService<DS4Windows.DI.IProfileXmlStore>();
             editorWindowFactory = DS4WinWPF.AppHost.GetService<DS4Windows.DI.IEditorWindowFactory>();
-            pathService = DS4WinWPF.AppHost.GetService<DS4Windows.DI.IPathService>() ?? Global.PathServiceInstance;
+            pathService = DS4WinWPF.AppHost.GetService<DS4Windows.DI.IPathService>();
             profileListHolder = new ProfileList(pathService);
-            environmentService = DS4WinWPF.AppHost.GetService<DS4Windows.DI.IEnvironmentService>() ?? Global.EnvironmentServiceInstance;
+            environmentService = DS4WinWPF.AppHost.GetService<DS4Windows.DI.IEnvironmentService>();
             appearanceSettingsService = DS4WinWPF.AppHost.GetService<DS4Windows.DI.IAppearanceSettingsService>() ?? new DS4Windows.Services.AppearanceSettingsService();
             profileAppService = DS4WinWPF.AppHost.GetService<DS4Windows.DI.IProfileApplicationService>();
-            outputSlotService = DS4WinWPF.AppHost.GetService<DS4Windows.DI.IOutputSlotService>() ?? Global.OutputSlotServiceInstance;
-            profileRepo = DS4WinWPF.AppHost.GetService<DS4Windows.DI.IProfileRepository>() ?? Global.ProfileRepositoryInstance;
-            notificationService = DS4WinWPF.AppHost.GetService<DS4Windows.DI.INotificationService>() ?? Global.NotificationServiceInstance;
-            controlService = DS4WinWPF.AppHost.GetService<DS4Windows.ControlService>() ?? Program.rootHub;
+            outputSlotService = DS4WinWPF.AppHost.GetService<DS4Windows.DI.IOutputSlotService>();
+            profileRepo = DS4WinWPF.AppHost.GetService<DS4Windows.DI.IProfileRepository>();
+            notificationService = DS4WinWPF.AppHost.GetService<DS4Windows.DI.INotificationService>();
+            controlService = DS4WinWPF.AppHost.GetService<DS4Windows.ControlService>();
+            profileSlotApplier = DS4WinWPF.AppHost.GetService<DS4Windows.Services.IProfileSlotApplier>();
 
             // Initialize log settings ComboBox
             logMinLevelComboBox.ItemsSource = new string[] { "Trace", "Debug", "Info", "Warn", "Error", "Fatal" };
@@ -1089,7 +1092,7 @@ Suspend support not enabled.", true);
                     DS4Windows.AppLogger.LogDebug($"SelectProfCombo_SelectionChanged: Applying profile '{prof}' for device {idx}");
 
                     // ★共通適用窓口 ApplyProfileToSlot を呼び出す（すべての切り替え手段を統一）
-                    Global.ApplyProfileToSlot(idx, prof, ProfileChangeSource.Manual);
+                    profileSlotApplier.ApplyToSlot(idx, prof, ProfileChangeSource.Manual);
 
                     trayIconVM.PopulateContextMenu();
                 }
@@ -1988,7 +1991,7 @@ Suspend support not enabled.", true);
             {
                 for (int i = 0; i < slotCount; i++)
                 {
-                    activeProfiles[i] = Global.ProfilePath[i] ?? string.Empty;
+                    activeProfiles[i] = profileRepo.ProfilePath[i] ?? string.Empty;
                 }
 
                 // ② 【SSOT 再構築 (Rebuild)】
@@ -2000,8 +2003,8 @@ Suspend support not enabled.", true);
                         if (string.Equals(activeProfiles[i], oldProfile, StringComparison.CurrentCultureIgnoreCase))
                         {
                             activeProfiles[i] = newProfile;
-                            Global.ProfilePath[i] = newProfile;
-                            Global.OlderProfilePath[i] = newProfile;
+                            profileRepo.ProfilePath[i] = newProfile;
+                            profileRepo.OlderProfilePath[i] = newProfile;
                         }
                     }
                 }
@@ -2016,7 +2019,7 @@ Suspend support not enabled.", true);
                 {
                     if (!string.IsNullOrEmpty(activeProfiles[i]))
                     {
-                        Global.ProfilePath[i] = activeProfiles[i];
+                        profileRepo.ProfilePath[i] = activeProfiles[i];
                     }
                 }
             }
@@ -2036,7 +2039,7 @@ Suspend support not enabled.", true);
                       string.Equals(activeProfiles[i], targetProfile, StringComparison.CurrentCultureIgnoreCase);
                 if (matches)
                 {
-                    Global.ApplyProfileToSlot(i, activeProfiles[i], ProfileChangeSource.Manual);
+                    profileSlotApplier.ApplyToSlot(i, activeProfiles[i], ProfileChangeSource.Manual);
                 }
             }
         }

@@ -273,6 +273,31 @@ namespace DS4WindowsTests
         }
 
         [Fact]
+        public void MainWindow_And_ControlService_UseOnlyConstGlobalMembers()
+        {
+            var allowed = new Dictionary<string, string[]>
+            {
+                // 定数のみ（RESOURCES_PREFIX/TEST_PROFILE_INDEX/MAX_DS4_CONTROLLER_COUNT）
+                ["DS4Windows/DS4Forms/MainWindow.xaml.cs"] = new[] { "RESOURCES_PREFIX", "TEST_PROFILE_INDEX" },
+                ["DS4Windows/DS4Control/ControlService.cs"] = new[] { "MAX_DS4_CONTROLLER_COUNT", "TEST_PROFILE_INDEX" },
+            };
+
+            foreach (var entry in allowed)
+            {
+                string text = ReadWithoutComments(entry.Key);
+                if (text == null) continue;
+
+                var unexpected = Regex.Matches(text, @"Global.(w+)")
+                    .Cast<Match>().Select(m => m.Groups[1].Value)
+                    .Where(n => !entry.Value.Contains(n)).Distinct().ToList();
+                Assert.True(unexpected.Count == 0,
+                    $"{entry.Key} に温存項目以外の Global 参照がある: {string.Join(", ", unexpected)}");
+
+                Assert.DoesNotContain("Program.rootHub", text);
+            }
+        }
+
+        [Fact]
         public void ProfileApplicationService_RequiresAllDependencies()
         {
             var settings = TestRepositoryFactory.CreateProfileSettingsService();

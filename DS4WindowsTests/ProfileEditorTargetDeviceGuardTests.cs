@@ -179,7 +179,7 @@ namespace DS4WindowsTests
 
             string sync = ExtractMethod(text, "private void SyncProfileListAndControllers(");
             Assert.Contains("string.Equals(activeProfiles[i], targetProfile, StringComparison.CurrentCultureIgnoreCase)", sync);
-            Assert.Contains("Global.ApplyProfileToSlot(i, activeProfiles[i], ProfileChangeSource.Manual)", sync);
+            Assert.Contains("profileSlotApplier.ApplyToSlot(i, activeProfiles[i], ProfileChangeSource.Manual)", sync);
         }
 
         [Fact]

@@ -29,13 +29,9 @@ namespace DS4WindowsTests
             { "MAX_DS4_CONTROLLER_COUNT", 1 },
             // C2-EX03: 真の定数
             { "TEST_PROFILE_INDEX", 1 },
-            // C2-02（決定D2）: 過渡期の防御コード。Phase6-Step12 で削除判断
-            { "ProfileSettingsServiceInstance", 1 },
-            // C2-EX04〜EX07: ViGEm クライアント直接依存（Phase6 の除外対象）
-            { "RefreshViGEmBusInfo", 1 },
-            { "IsRunningSupportedViGEmBus", 2 },
-            { "vigembusVersion", 2 },
-            { "vigemInstalled", 1 },
+            // Phase6-Step10-4-5: C2-02（`Global.ProfileSettingsServiceInstance` のフォールバック）と、
+            // C2-EX04〜EX07（ViGEm 関連の 6 件）は、IEnvironmentService へ置換し、許容リストから除いた。
+            // 以後、ControlService の Global 参照は定数のみ。
         };
 
         private static string FindControlServiceSource()

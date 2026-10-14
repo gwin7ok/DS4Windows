@@ -145,7 +145,7 @@ namespace DS4WindowsTests
             // 再適用の実装は SyncProfileListAndControllers の 1 か所だけ（外部更新は、その経路を呼ぶだけ）
             Assert.Contains("SyncProfileListAndControllers(targetProfiles: profiles)", main);
             Assert.Equal(2, System.Text.RegularExpressions.Regex.Matches(main,
-                System.Text.RegularExpressions.Regex.Escape("Global.ApplyProfileToSlot(")).Count);
+                System.Text.RegularExpressions.Regex.Escape("profileSlotApplier.ApplyToSlot(")).Count);
         }
 
         [Fact]
