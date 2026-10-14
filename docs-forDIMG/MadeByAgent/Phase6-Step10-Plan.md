@@ -33,6 +33,7 @@
 > **Step9b（PR #1 の Copilot レビュー）からの申し送り（2026-10-14 追記。Step10-0 で台帳に組み込むこと）**
 > - **F09**: `ControllersViewModel` のコンストラクタが任意引数（`= null`）＋ `AppHost.GetService` のフォールバック（`ControllersViewModel.cs:18〜23`）。Step9 の決定1＝S9-A と同じ方針（依存を必須引数にし、null を拒否する）で解消する。DI には Singleton で登録済み。
 > - **F08**: サービス実装のコンストラクタにも同じフォールバックがある。`ProfileActionChainService.cs:15`（`?? AppHost.GetService<IMappingActionDispatcher>() ?? new MappingActionDispatcher()`）、`ProfileApplicationService`（`_deviceState`／`_control`／`_profileRepo` など）。Step10-0 で、サービス実装のコンストラクタの `AppHost.GetService`／`new` フォールバックを洗い出し、グループとして台帳に載せる（`copilot-instructions.md` §3.1 は「ViewModel やサービス」の両方を対象にしている）。
+> - **付随の整理項目（Step9b で判明。Step10-0 の台帳へ）**: (1) `SpecialActionsListViewModel` の `actionManager` フィールドは代入のみで未使用（`IManagedActionManager` を `AppHost.GetService` で任意引数のフォールバック取得。F09 と同じ Pure DI の整理対象）。(2) `ProfileApplicationService` の `deviceIndex >= 4` の拒否（既知の K1。F05 と同じ「4 スロット固定」の前提で、8 スロット拡張時に影響）。(3) `IManagedActionManager`／`IControllerRegistry` は Step9b-2 で再登録済み（`ServiceRegistration`）。F08 の洗い出しでは、`DefaultActionManager` のコンストラクタの `AppHost.GetService<IActionFactory>() ?? new DefaultActionFactory()` も対象に含めること。
 > - 詳細は `Phase6-Step9b-Plan.md` §1。
 
 ## 0. 背景と改訂の経緯

@@ -1,7 +1,7 @@
 # フェーズ6 進捗管理文書: 残存 `Global` 実利用箇所の解体と4層構造DI化の完成
 
 最終更新日: 2026-10-14（全体計画書・Phase6-Plan との整合を再点検。Step3 の「101件引き継ぎ」撤回、Step8 の古い節、進捗マップを是正）  
-状態: **最新: Step4〜Step9 完了（Step9 は 2026-10-14）、次は Step9b（PR #1 の Copilot レビュー指摘 14 件の検証と是正。2026-10-14 追加）→ Step10** / Phase6-Step1 完了 / **Step2 完了（2026-09-21 確定）** / **Step13（配置整理 44件）完了（2026-09-21 確定）** / **Step3-1・Step3-2 完了確定（ともにビルド・テスト・実機確認済み、2026-09-22〜23）** / **Step3-3 対象消滅（2026-09-23、Abs Mouse機能削除に伴い対象コード自体を撤去。詳細は §6.8）** / Step10b（1ファイル1型の全数是正）新設 / **Phase8（Controls/SpecialActions統合ディスパッチ）新設（2026-09-23、Phase7完了後に独立フェーズとして着手。詳細は §6.7）** / **Step3-4 完了確定（2026-09-24、`SetCurveAndDeadzone` のスティック・トリガー系27件を解消。ビルド・テスト・実機確認済み）** / **Step3-5 完了確定（2026-09-24、ジャイロ系13件・`ApplyStickCalibration` 8件・`Commit` 24件の計45件を解消。ビルド・テストビルド・テスト実行成功、実機確認済み）** / **Step3-6 は 3-6a／3-6b／3-6c に分割（2026-09-24決定）、Step3-6a 完了確定（グループ A の24件＋契約追加 R1。ビルド・テストビルド・テスト実行成功、実機確認済み［ステアリングホイールエミュレーションのみ Step11 へ先送り］）、Step3-6b 完了確定（グループ B の12件、方針 P2。ビルド・テストビルド・テスト実行成功、実機確認済み）、Step3-6c 完了確定（グループ C の19件、方針 P2。ビルド・テストビルド・テスト実行成功、実機確認済み）** / **Step3-7 完了確定（2026-09-24、温存3件にTODOコメント付与、§2.4.3の選択は既定K-1採用、`using static DS4Windows.Global;`の削除可否判定は見送りで確定。ビルド・テストビルド・テスト実行成功、コミット `c6eb492f`。これで Step3 は完了確定。詳細は §3.8）** / Step4〜Step9 と Step7b は完了、Step9b は計画書作成済み・実施前、Step10〜Step12 は計画確定・承認待ち（**次は Step9b-0**） / BindingWindow のテンキー右端欠けを修正・完了確定（2026-09-24、UI 微修正。詳細は §6.9）  
+状態: **最新: Step4〜Step9・Step9b 完了（Step9・Step9b は 2026-10-14）、次は Step10** / Phase6-Step1 完了 / **Step2 完了（2026-09-21 確定）** / **Step13（配置整理 44件）完了（2026-09-21 確定）** / **Step3-1・Step3-2 完了確定（ともにビルド・テスト・実機確認済み、2026-09-22〜23）** / **Step3-3 対象消滅（2026-09-23、Abs Mouse機能削除に伴い対象コード自体を撤去。詳細は §6.8）** / Step10b（1ファイル1型の全数是正）新設 / **Phase8（Controls/SpecialActions統合ディスパッチ）新設（2026-09-23、Phase7完了後に独立フェーズとして着手。詳細は §6.7）** / **Step3-4 完了確定（2026-09-24、`SetCurveAndDeadzone` のスティック・トリガー系27件を解消。ビルド・テスト・実機確認済み）** / **Step3-5 完了確定（2026-09-24、ジャイロ系13件・`ApplyStickCalibration` 8件・`Commit` 24件の計45件を解消。ビルド・テストビルド・テスト実行成功、実機確認済み）** / **Step3-6 は 3-6a／3-6b／3-6c に分割（2026-09-24決定）、Step3-6a 完了確定（グループ A の24件＋契約追加 R1。ビルド・テストビルド・テスト実行成功、実機確認済み［ステアリングホイールエミュレーションのみ Step11 へ先送り］）、Step3-6b 完了確定（グループ B の12件、方針 P2。ビルド・テストビルド・テスト実行成功、実機確認済み）、Step3-6c 完了確定（グループ C の19件、方針 P2。ビルド・テストビルド・テスト実行成功、実機確認済み）** / **Step3-7 完了確定（2026-09-24、温存3件にTODOコメント付与、§2.4.3の選択は既定K-1採用、`using static DS4Windows.Global;`の削除可否判定は見送りで確定。ビルド・テストビルド・テスト実行成功、コミット `c6eb492f`。これで Step3 は完了確定。詳細は §3.8）** / Step4〜Step9 と Step7b は完了、Step9b は完了（2026-10-14）、Step10〜Step12 は計画確定・承認待ち（**次は Step10**） / BindingWindow のテンキー右端欠けを修正・完了確定（2026-09-24、UI 微修正。詳細は §6.9）  
 対象ブランチ: `For-DI-migration-work`  
 前フェーズ完了状況: **Phase5 完了（Step1〜15 完了済み、SSOT確立・Issue 7根本解消完了）**  
 上位計画書: `docs-forDIMG/MadeByAgent/Phase6-Plan.md`  
@@ -22,13 +22,13 @@
 | **Step 7b** | プロファイル編集の即時反映廃止（保存・適用時に一括反映） | `ProfileEditor.xaml.cs`, `MainWindow.xaml.cs`, `ProfileSettingsViewModel.cs` ほか | 編集スロット固定＋`targetDevice`導入 | **完了（2026-09-26）** | `Phase6-Step7b-Plan.md`、`Phase6-Step7b-Completion-Report.md` | Step7b-0〜7b-4 完了（ステアリングホイール校正は Step11 へ先送り、K7b-1 は先送り） |
 | **Step 8** | `ProfileEditor` のバックエンド操作の ViewModel 移設と Global 参照解消 | `ProfileEditor.xaml.cs` 等 | 58箇所（2026-10-13 再集計。定数37を除く） | **完了（2026-10-13）** | `Phase6-Step8-Plan.md`、`Phase6-Step8-Completion-Report.md` | Step8-0〜8-5 完了 |
 | **Step 9** | 主要4大ViewModel Pure DI化 | `SettingsVM`, `MainWindowVM`, `TrayIconVM`, `ProfileSettingsVM` | 114箇所（2026-10-13 再集計。定数13を除く） | **完了（2026-10-14）** | `Phase6-Step9-Plan.md`（§0A が現行の正）、`Phase6-Step9-Completion-Report.md` | Step9-0〜9-5（3c・3d を追加） |
-| **Step 9b** | PR #1 の Copilot レビュー指摘 14 件の検証と是正（Step7b と同様の追加 Step） | `DefaultProfileSwitcher`、`DefaultActionManager`、`MouseOutputAction`、`LoggerHolder`／`NLog.config`、`DefaultMacroPlayer`、`LaunchProcessAction` ほか | 指摘 14 件（High 4、Medium 7、Low 3。うち本 Step は 11 件、Step10 へ 2 件、Step10b へ 2 件［F12・F13 は台帳に既出］） | 計画書作成済み・承認待ち（Step9b-0 の検証から） | `Phase6-Step9b-Plan.md` | Step10 の前 |
+| **Step 9b** | PR #1 の Copilot レビュー指摘 14 件の検証と是正（Step7b と同様の追加 Step） | `DefaultProfileSwitcher`、`DefaultActionManager`、`MouseOutputAction`、`LoggerHolder`／`NLog.config`、`DefaultMacroPlayer`、`LaunchProcessAction` ほか | 指摘 14 件（High 4、Medium 7、Low 3。うち本 Step は 11 件、Step10 へ 2 件、Step10b へ 2 件［F12・F13 は台帳に既出］） | **完了（2026-10-14）** | `Phase6-Step9b-Plan.md`、`Phase6-Step9b-Completion-Report.md` | Step9b-0〜9b-5 完了（実機確認の 8 スロット項目のみ Step11 へ先送り） |
 | **Step 10**| 小型UI/ViewModel ドメイン別DI化| 小型View 11, 小型VM 12 等 | 72箇所 | 計画確定・承認待ち | `Phase6-Step10-Plan.md` | 未着手 (PR-1〜4) |
 | **Step 10b**| 1ファイル1型の全数是正 | 複数型55ファイル（新設203） | 分割のみ | 計画確定・承認待ち | `Phase6-Step10b-Plan.md` | Step10 の後・Step11 の前（Step13 の後に実施） |
 | **Step 11**| 2層構造・階層化総合検証 | 全自動テスト ＋ 実機検証 | - | 計画確定・承認待ち | `Phase6-Step11-Plan.md` | 未着手 |
 | **Step 12**| 旧シム物理削除 ＆ 完了判定 | `ScpUtil.cs` | 呼出元0件ラッパー | 計画確定・承認待ち | `Phase6-Step12-Plan.md` | 未着手 (PR-1〜4) |
 | **Step 13**| `.cs` ファイル配置の統一 | `DS4Windows/` 配下の44ファイル | git mv のみ | **完了（44/44、2026-09-21 確定）** | `Phase6-Step13-Plan.md` | 13-6 は Phase6 範囲外（最終クリーンアップ） |
-| **合計** | **Phase6 全域** | **約40ファイル ＋ 配置統一44ファイル ＋ 分割55ファイル** | **約404箇所** | **計画策定100% / 実装: Step1〜Step9・Step7b・Step13 完了（2026-10-14 時点。Step9b〜Step12 は未着手）** | **全Step計画書完備（Step13 を含む）** | - |
+| **合計** | **Phase6 全域** | **約40ファイル ＋ 配置統一44ファイル ＋ 分割55ファイル** | **約404箇所** | **計画策定100% / 実装: Step1〜Step9・Step7b・Step9b・Step13 完了（2026-10-14 時点。Step10〜Step12 は未着手）** | **全Step計画書完備（Step13 を含む）** | - |
 
 ---
 
@@ -221,12 +221,13 @@
 - **持ち越し**: K9-3（コントローラー図の右クリックのプリセットメニューで、サブメニューへマウスを移すと消える。キーボード操作では選べる。Step9 で変更していない部分で、ベースラインでの再現確認が未実施）。K7b-1 は先送りのまま。§6.5 を参照。
 - **Step10 への申し送り**: `Phase6-Step10-Plan.md` 冒頭を参照（`ProgramDirectory`、`RefreshActionAlias` の置換先、`MainWindow` の生成呼び出し、残る静的結合）。
 
-### Phase6-Step9b: PR #1 の Copilot レビュー指摘 14 件の検証と是正【追加、計画書作成済み・承認待ち】
-- **経緯（2026-10-14）**: 2026-10-13 22:46 JST に gwin7ok アカウントから PR #1 へ Copilot のレビューを依頼し、22:54 に指摘 14 件（High 4、Medium 7、Low 3）が付いた。現行ブランチで簡易確認し、該当箇所はほぼすべて残っている（自動レビューのため、実害は未検証）。
-- **High**: F01 プロファイル切替の 250ms デバウンス欠落（`DefaultProfileSwitcher`）、F02 `IManagedActionManager` の未登録、F03 `MouseOutputAction` がマウスイベントを出さない、F04 `NLog.config` の `async="false"` でログ設定変更が `NullReferenceException`（`LoggerHolder`）。
-- **配分**: 本 Step 11 件（F01〜F07、F10、F11、F14）、Step10 へ 2 件（F08、F09）、Step10b へ 2 件（F12、F13。台帳に既出）。
-- **マイクロステップ**: 9b-0（検証・分類 A／B／C、実装なし）→ 9b-1（F04）→ 9b-2（F01、F07）→ 9b-3（F02、F03、F05、F06）→ 9b-4（テスト F10、F11、F14）→ 9b-5（文書・完了報告）。
-- **計画書**: `Phase6-Step9b-Plan.md`。
+### Phase6-Step9b: PR #1 の Copilot レビュー指摘 14 件の検証と是正【完了】
+- **完了（2026-10-14）**: Step9b-0〜9b-5。完了報告書 `Phase6-Step9b-Completion-Report.md`。各マイクロステップでビルド・テストビルド・テスト実行成功、実機確認済み（8 スロット拡張時のマクロのみ Step11 へ先送り）。
+- **経緯**: 2026-10-13、PR #1 に Copilot の自動レビューが付いた（指摘 14 件。High 4、Medium 7、Low 3）。Step9b-0 で、稼働経路か・置換前と比べて回帰かを検証して分類した。
+- **結果**: 分類A（修正）4 件＝F02（`IManagedActionManager`／`IControllerRegistry` の登録欠落、2026-09-04 の巻き込み削除）、F04（ログ設定の `NullReferenceException`、設定が保存されない）、F05（`DefaultMacroPlayer` の 4 スロット固定）、F06（プログラム起動の仕様が置換前と異なる）。分類B（TODO のみ）2 件＝F03（`MouseOutputAction` 未完成・未登録）、F07（`GetRequiredService`。呼び出し元 0 件のため名前どおりの実装に是正）。分類C（誤検出）1 件＝F01（250ms デバウンスは Fresh-press ガードに置き換え済みで、実機確認済み）。テスト品質 3 件（F10、F11、F14）を是正。F08・F09 は Step10、F12・F13 は Step10b の台帳へ。
+- **決定（2026-10-14）**: 決定1＝A（F03 は TODO のみ）、決定2＝A（再登録）、決定3＝A（F07 は例外を投げる実装）、決定4＝A（F06 は置換前の仕様へ）、決定5＝B（PR への返信は提示して許可を得たものだけ書き込む。Step9b 完了後にまとめて）、決定6＝A（`copilot-instructions.md` §2.2 を現行の機構へ更新）。
+- **付随の変更**: `DefaultActionManager.ClearDeviceState` を静的ファサード版に揃えた（`Mapping.HandleDeviceDisconnect`。再登録で、プロファイル適用時の押しっぱなし合成キーの解放が失われる回帰を防止）。`ProfileSettingsViewModelGlobalReferenceGuardTests` の `Application` 準備（実行順依存の失敗の是正）。「Launch Program」タブのプログラム名ラベルを親の幅いっぱいに変更（実機確認中の指示）。`ServiceProviderHolder` を差し替えるテストを同じ xUnit コレクションで直列化。モデル図 04 に 2 行を追記。`Phase8-Unified-Trigger-Dispatch-Plan.md` へ申し送り。
+- **計画書・報告書**: `Phase6-Step9b-Plan.md`、`Phase6-Step9b-Completion-Report.md`。
 
 ---
 
@@ -327,7 +328,8 @@
 
 ## 5. 直近の次アクション
 
-0. **（2026-10-14 追記）** Step10 の前に **Step9b**（PR #1 の Copilot レビュー指摘 14 件の検証と是正）を挿入した。まず Step9b-0（検証・実装なし）から。詳細は `Phase6-Step9b-Plan.md`。順序は Step9b → Step10 → Step10b → Step11 → Step12。
+0. **（2026-10-14 時点の最新）** Step9b は完了確定（2026-10-14、`Phase6-Step9b-Completion-Report.md`）。次は **Step10**（残存小型 View・ViewModel のドメイン別ペア Pure DI 化。Step10-0 で現行コードから台帳を作り直し、`Phase6-Step10-Plan.md` 冒頭の Step9・Step9b からの申し送り［F08・F09 を含む］を組み込む）→ Step10b → Step11 → Step12。
+0. **（2026-10-14 追記・済）** Step10 の前に **Step9b**（PR #1 の Copilot レビュー指摘 14 件の検証と是正）を挿入した。まず Step9b-0（検証・実装なし）から。詳細は `Phase6-Step9b-Plan.md`。順序は Step9b → Step10 → Step10b → Step11 → Step12。
 0. **（2026-10-14 時点の最新）** Step9 は完了確定（2026-10-14、`Phase6-Step9-Completion-Report.md`）。次は **Step10**（残存小型 View・ViewModel のドメイン別ペア Pure DI 化。Step10-0 で、Step9 後のコードから台帳を作り直すことから始める。`Phase6-Step10-Plan.md` 冒頭の申し送りを確認）→ Step10b → Step11 → Step12 の順。持ち越し K7b-1（異常終了）・K9-3（プリセットメニュー）は先送り。
 0. **（2026-10-13 時点の最新）** Step8 は完了確定（2026-10-13、`Phase6-Step8-Completion-Report.md`）。次は **Step9**（主要4大 ViewModel の Pure DI 化。Step9-0 で、Step8 後のコードから台帳を作り直すことから始める）→ Step10 → Step10b → Step11 → Step12 の順。持ち越し K7b-1（異常終了）は先送り。
 0. **（2026-09-26 時点の最新）** Step7b は完了確定（2026-09-26、`Phase6-Step7b-Completion-Report.md`）。次は **Step8**（`ProfileEditor.xaml.cs` の段階的MVVM移設。Step8-0 で、Step7b 後のコードから台帳を作り直すことから始める）→ Step9 → Step10 → Step10b → Step11 → Step12 の順。持ち越し K7b-1（異常終了）は先送り。
@@ -346,7 +348,7 @@
 - Step3-5（ジャイロ系13件＋`ApplyStickCalibration` 8件＋`Commit` 24件）は完了確定（2026-09-24、ビルド・テスト・実機確認済み、§2 Step3 の実装内容参照）。Step3 の残実参照数は 73。
 - Step3-6a（`ctrl` から読める経路の24件＋契約追加 R1）は完了確定（2026-09-24）。Step3-6b（判定補助メソッド群12件、P2）は完了確定（2026-09-24）。Step3-6c（非同期マクロ経路19件、P2）は完了確定（2026-09-24、ビルド・テスト・実機確認済み）。Step3 の残実参照数は 3（Step3-7 の温存3件のみ）。
 - Step3-7（温存3件へのTODO付与、§2.4.3の選択はK-1採用、`using static DS4Windows.Global;` の削除可否は見送りで確定）は実装済み（2026-09-24、`Phase6-Step3-Plan.md` §3.8）。ビルド・テスト成功、`c6eb492f` で完了確定（2026-10-13 の整合で反映）。これで Step3 は完了確定。
-- 次: （2026-10-14 時点）Step3〜Step9・Step7b は完了。Step9b（Copilot レビュー指摘の検証と是正）→ Step10 → Step10b（1ファイル1型）→ Step11（総合検証）→ Step12（旧シム削除）。Phase6完了後は Phase7、その後 Phase8（新設、§6.7）。
+- 次: （2026-10-14 時点）Step3〜Step9・Step7b・Step9b は完了。Step10 → Step10b（1ファイル1型）→ Step11（総合検証）→ Step12（旧シム削除）。Phase6完了後は Phase7、その後 Phase8（新設、§6.7）。
 
 ### 6.2 確定済みの決定事項（要約）
 - **Step2**: D1（`Func<IOutputSlotService>` の遅延解決）、D2（新規コンストラクタ引数はすべて必須の Pure DI）、D3（`IVirtualKBMLifecycle`）、O1=B／O4=B-2（`IProfileSlotApplier`）、O2=C／O3=A（スロット上限のサービス化と段階移行）。詳細は `Phase6-Step2-Plan.md` §0.3.2。

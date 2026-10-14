@@ -15,3 +15,12 @@
 - [ ] `dotnet publish` による Release ビルド成功
 - [ ] `dotnet test` の全件パス
 - [ ] 実機での 5-3（プロファイル切換ループ）テストで、1回押すごとに1段階のみ切り替わること
+
+## 5. 【追記 2026-10-14】その後の経緯（Phase5・Phase6-Step9b）
+本書 §3 の「`DefaultProfileSwitcher.cs` のデバウンス保護ガード（250ms）」は、`94066f3c`（2026-09-16、通知レガシー経路の削除）で `SwitchProfile` を `IProfileApplicationService` への委譲に一本化した際に、`DefaultProfileSwitcher` から消えている。現在の連鎖発火防止は、次の機構に置き換わっている（Phase5-Step14 の Issue8-1 とカスケードループの根本解決。実機確認済み。`Phase5-Status.md` §2.1）。
+
+- Fresh-press ガード: `ActionInstanceState.RequiresFreshPressAfterReset`。プロファイル適用で `ClearDeviceState` が状態を新品にし、トリガーが `FreshPressReleaseHoldMs`（80ms）連続して未成立になるまで新規成立とみなさない。
+- 実行中の再実行防止: `ActionInstanceState.IsExecuting`。
+- `ProfileActionChainService` の Profile 型チェーンのスキップ。
+
+Phase6-Step9b-0（`Phase6-Step9b-Plan.md` F01）で、稼働経路は `Mapping.cs` の上流のガードを必ず通ることを確認し、「250ms デバウンスの欠落」は誤検出（分類C）とした。`copilot-instructions.md` §2.2 の記述も現行の機構へ更新した。

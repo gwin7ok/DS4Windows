@@ -35,7 +35,7 @@ Phase6 では、アプリケーション全域に残存する呼び出し元側�
 | **Step 7b** | `ProfileEditor.xaml.cs`, `MainWindow.xaml.cs`, `ProfileSettingsViewModel.cs` ほか | 編集スロット固定＋`targetDevice` 導入（**完了**、2026-09-26） | プロファイル編集の即時反映を廃止（ユーザー承認の機能廃止、K4-3）。編集は作業スロット、実機は `targetDevice`、Save／Apply は同じ再適用（違いは画面を閉じるかどうか） |
 | **Step 8** | `ProfileEditor.xaml.cs` | 58箇所（**完了**、2026-10-13。定数37を除く） | **案3-A採用（決定6＝M-A）**: Global 参照を既存契約へ置換し、保存の一連・ブランク読み込みを `ProfileSettingsViewModel` へ移設。契約差 B8（`GetActionOrPlaceholder`）・B10（`LoadBlankProfile`）を追加。B3 は Step7-1 で追加済み、B9 は呼び出し元が消えたため不要 |
 | **Step 9** | 主要4大ViewModel (`Settings`, `MainWindow`, `TrayIcon`, `ProfileSettings`) | 114箇所（**完了**、2026-10-14。定数13を除く） | **選択肢1採用・S9-A**: `Global.` 全件の解消と、4 ViewModel（と `PresetMenuHelper`、`ViewModelFactory`）のコンストラクタのフォールバック解消（依存は必須引数）。契約 `IAppSettingsService` 4・`IEnvironmentService` 4・`IPathService.ProgramDirectory`・`IAppearanceSettingsService.BatteryChanged`・`IProfileSettingsService.RefreshActionAlias` を追加。実機確認で既存不具合 K9-1（OSC 送信の競合）・K9-2（偽装 exe 名）を発見・修正 |
-| **Step 9b** | PR #1 の Copilot レビュー指摘（14 件）の検証と是正 | 14 件（本 Step 11、Step10 へ 2、Step10b へ 2。F12・F13 は Step10b の台帳に既出） | **追加 Step（2026-10-14）**: まず検証（稼働経路か、置換前の実装と比べて回帰か）して分類 A／B／C に分け、A のみ修正。B（未配線）は TODO を付けて Phase8 へ。F01 デバウンス・F04 ログ設定を優先 |
+| **Step 9b** | PR #1 の Copilot レビュー指摘（14 件）の検証と是正 | 14 件（本 Step 11、Step10 へ 2、Step10b へ 2。F12・F13 は Step10b の台帳に既出） | **完了（2026-10-14）**: 検証して分類 A（F02 登録欠落、F04 ログ設定、F05 8 スロット、F06 プログラム起動）を修正、B（F03、F07）は TODO／是正のみ、C（F01 デバウンスは Fresh-press ガードに置き換え済み）は変更なし。テスト品質 F10・F11・F14 を是正 |
 | **Step 10** | 残存小型View (11) & 小型ViewModel (12) & `PresetOption` | 72箇所 | **選択肢A採用**: 機能ドメイン別3グループ分割 ＋ View/ViewModelペアPure DI化 ＋ 全域直参照ゼロ化 |
 | **合計** | **ソリューション全域** | **約404箇所** | **全呼び出し元の Pure DI 完全移行** |
 
@@ -69,7 +69,7 @@ Phase6 では、アプリケーション全域に残存する呼び出し元側�
 ├─ Phase6-Step7b: プロファイル編集画面の即時反映廃止（編集は作業スロット、保存・適用時に一括反映。2026-09-26 完了）
 ├─ Phase6-Step8: ProfileEditor.xaml.cs のバックエンド操作の ViewModel 移設 ＆ Global 参照解消（58箇所、完了 2026-10-13）
 ├─ Phase6-Step9: 主要4大ViewModelのPure DI徹底 ＆ カテゴリ別移行（114箇所、完了 2026-10-14）
-├─ Phase6-Step9b: PR #1 の Copilot レビュー指摘 14 件の検証と是正（2026-10-14 追加。Step10 の前）
+├─ Phase6-Step9b: PR #1 の Copilot レビュー指摘 14 件の検証と是正（2026-10-14 追加・完了）
 ├─ Phase6-Step10: 残存小型UI・小型ViewModel・補助クラスのドメイン別ペアPure DI化（72箇所）
 └─ Phase6-Step10b: 1ファイル1型（原則1）の全数是正（55ファイル・新設203ファイル。Step10 の後・Step11 の前。Step13 の後に実施）
 
@@ -172,7 +172,8 @@ Phase6 では、アプリケーション全域に残存する呼び出し元側�
   - `SettingsViewModel`（55箇所）を「①基本/テーマ/ログ」「②OSC/UDP/平滑化」「③環境/パス/外部」の3サブPRに分割。
   - `BatteryChanged`（B12シム）を `IDeviceStateService` に実装。残存小型ViewModel（12ファイル）は Step10 へ引き継ぎ。
 
-#### Phase6-Step9b: PR #1 の Copilot レビュー指摘 14 件の検証と是正【追加、2026-10-14】
+#### Phase6-Step9b: PR #1 の Copilot レビュー指摘 14 件の検証と是正【完了、2026-10-14】
+- **結果（2026-10-14）**: 分類A 4 件（F02 `IManagedActionManager`／`IControllerRegistry` の再登録、F04 ログ設定、F05 `DefaultMacroPlayer` の 8 スロット、F06 `LaunchProcessAction` の置換前仕様への復元）を修正。分類B（F03 TODO、F07 `GetRequiredService` の是正）、分類C（F01）、テスト品質 F10・F11・F14。F08・F09 は Step10、F12・F13 は Step10b へ。詳細は `Phase6-Step9b-Completion-Report.md`。
 - **経緯**: 2026-10-13、PR #1 に Copilot の自動レビューが付いた（指摘 14 件。High 4、Medium 7、Low 3）。一部は §2.2（機能の完全維持。250ms デバウンスなどの安全弁）に反する可能性がある。Step10 以降でさらに積み上げる前に、検証と是正を行う。
 - **方針**: 検証して分類（A: 稼働経路で実害、B: 未配線で実害なし→TODO＋Phase8、C: 誤検出）。A のみ修正。配分は、本 Step 11 件（F01〜F07、F10、F11、F14）、Step10 へ 2 件（F08 サービスのコンストラクタのフォールバック、F09 `ControllersViewModel`）、Step10b へ 2 件（F12、F13。台帳に既出）。
 - **マイクロステップ**: 9b-0（検証・実装なし）→ 9b-1（F04 ログ設定）→ 9b-2（F01 デバウンス、F07）→ 9b-3（F02、F03、F05、F06）→ 9b-4（テスト品質 F10、F11、F14）→ 9b-5（文書・完了報告）。
@@ -272,14 +273,14 @@ Phase6 では、アプリケーション全域に残存する呼び出し元側�
 - **合計想定工数**: 約17〜22日（Step10b・Step13 を含む。順次マイクロステップPR運用）
 
 ### 5.2 全体プロジェクト（Phase 0 〜 Phase 7）における位置づけ
-- **全体進捗率**: **約 75〜80%**（2026-10-14 時点。Phase0〜5完了 ＋ Phase6-Step1〜9・7b・13 完了）。Phase6 の残りは Step9b、Step10、Step10b、Step11、Step12。
+- **全体進捗率**: **約 75〜80%**（2026-10-14 時点。Phase0〜5完了 ＋ Phase6-Step1〜9・7b・9b・13 完了）。Phase6 の残りは Step10、Step10b、Step11、Step12。
 - **設計・リスク消化度**: **約 85% 以上**（SSOT確立、全参照走査完了、Step2〜9 の実装と実機確認を経て、不確実性は Step10 以降の小型 View・ViewModel と Step11 の実機検証に限られる）。
 
 ---
 
 ## 6. 次のアクション（2026-10-14 時点）
 
-1. **Phase6-Step9b**（PR #1 の Copilot レビュー指摘14件の検証と是正）: 9b-0（検証・実装なし）から。`Phase6-Step9b-Plan.md`。
+1. **Phase6-Step9b** は完了（2026-10-14）。PR #1 への返信は、完了報告書の文面案を提示し、許可を得たものだけ書き込む（決定5＝B）。
 2. **Phase6-Step10**（残存小型 View・ViewModel のドメイン別ペア Pure DI 化、72箇所）: Step10-0 で台帳を作り直す。`Phase6-Step10-Plan.md` 冒頭の申し送りを確認。
 3. Step10b → Step11 → Step12 の順（Step11・Step12 の計画書は着手時に、現行コードと突き合わせて台帳を作り直す）。
 4. Phase6 完了後に Phase7（`Mapping.cs` の完全 instance 化）の個別計画書を作成し、Phase8（`Phase8-Unified-Trigger-Dispatch-Plan.md`）へ。
