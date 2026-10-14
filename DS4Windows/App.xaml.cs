@@ -385,6 +385,17 @@ namespace DS4WinWPF
                 return;
             }
 
+            // マクロの保存・読込ダイアログの初期フォルダ（RecordBox が <保存場所>\Macros を指定する）。
+            // CreateConfDirSkeleton は初回起動時しか呼ばれないため、既存の環境にも作られるよう毎回確認する。
+            // 作成できなくても（書き込み権限がない場合など）起動は続ける。
+            try
+            {
+                Directory.CreateDirectory(Path.Combine(_pathService.AppDataPath, "Macros"));
+            }
+            catch (Exception)
+            {
+            }
+
             // Load Profiles.xml BEFORE creating LoggerHolder so log settings are available
             bool readAppConfig = _appSettingsService.Load();
 
@@ -606,9 +617,7 @@ namespace DS4WinWPF
                 Directory.CreateDirectory(appDataPath);
                 Directory.CreateDirectory(appDataPath + @"\Profiles\");
                 Directory.CreateDirectory(appDataPath + @"\Logs\");
-                // マクロの保存・読込ダイアログの初期フォルダ（RecordBox が <保存場所>\Macros を指定する）。
-                // 以前はコメントアウトされており、フォルダが無いためダイアログがデスクトップなどを開いていた。
-                Directory.CreateDirectory(appDataPath + @"\Macros\");
+                // Macros フォルダは、毎回の起動で Application_Startup が作成する（初回起動時に限らないため）
             }
             catch (UnauthorizedAccessException)
             {
