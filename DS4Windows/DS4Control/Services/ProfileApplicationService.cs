@@ -13,22 +13,26 @@ namespace DS4Windows
         // Phase6-Step10-4-2a: ControlService は遅延解決（Func）で受け取る（Program.rootHub/AppHost 参照の廃止。決定 D4-3）
         private ControlService _control => _controlProvider();
         private readonly IProfileRepository _profileRepo;
+        // Phase6-Step10-4-2f（K1 是正）: スロット上限は、固定の 4 ではなく、環境（Windows 8 以上は 8）から取得する
+        private readonly IEnvironmentService _environmentService;
 
         public ProfileApplicationService(
             IProfileSettingsService profileSettings,
             IDeviceStateService deviceState,
             Func<ControlService> controlProvider,
-            IProfileRepository profileRepo)
+            IProfileRepository profileRepo,
+            IEnvironmentService environmentService)
         {
             _profileSettings = profileSettings ?? throw new ArgumentNullException(nameof(profileSettings));
             _deviceState = deviceState ?? throw new ArgumentNullException(nameof(deviceState));
             _controlProvider = controlProvider ?? throw new ArgumentNullException(nameof(controlProvider));
             _profileRepo = profileRepo ?? throw new ArgumentNullException(nameof(profileRepo));
+            _environmentService = environmentService ?? throw new ArgumentNullException(nameof(environmentService));
         }
 
         public void ApplyFromAction(int deviceIndex, SpecialAction action)
         {
-            if (deviceIndex < 0 || deviceIndex >= 4 || action == null)
+            if (deviceIndex < 0 || deviceIndex >= _environmentService.ControllerSlotLimit || action == null)
                 return;
 
             DS4Device device = _control?.DS4Controllers?[deviceIndex];
@@ -65,7 +69,7 @@ namespace DS4Windows
 
         public bool RestoreFromAction(int deviceIndex)
         {
-            if (deviceIndex < 0 || deviceIndex >= 4)
+            if (deviceIndex < 0 || deviceIndex >= _environmentService.ControllerSlotLimit)
                 return false;
 
             string previousProfile = _profileRepo.OlderProfilePath?[deviceIndex];
@@ -80,7 +84,7 @@ namespace DS4Windows
 
         public void ClearPendingRestore(int deviceIndex)
         {
-            if (deviceIndex < 0 || deviceIndex >= 4)
+            if (deviceIndex < 0 || deviceIndex >= _environmentService.ControllerSlotLimit)
                 return;
 
             if (_profileRepo.OlderProfilePath != null && deviceIndex < _profileRepo.OlderProfilePath.Length)
@@ -99,7 +103,7 @@ namespace DS4Windows
                 return false;
             }
 
-            if (deviceIndex < 0 || deviceIndex >= 4)
+            if (deviceIndex < 0 || deviceIndex >= _environmentService.ControllerSlotLimit)
             {
                 AppLogger.LogWarn($"[DI] ProfileApplicationService.ApplyProfile FAILED: deviceIndex {deviceIndex} is out of bounds");
                 return false;
@@ -113,9 +117,8 @@ namespace DS4Windows
                 Action applyAction = () =>
                 {
                     // TODO(Phase7): Global.ApplyProfile は ProfileApplicationService の実装本体（Mapping の instance 化とあわせて本サービスへ移す）。
-                    Global.ApplyProfile(deviceIndex, profileName, isTemp, launchProgram,
+                    success = Global.ApplyProfile(deviceIndex, profileName, isTemp, launchProgram,
                         _control, source, prolog);
-                    success = true;
                 };
 
                 if (device != null)

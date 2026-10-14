@@ -134,7 +134,7 @@ namespace DS4WindowsTests
             var settings = TestRepositoryFactory.CreateProfileSettingsService();
             var app = new ProfileApplicationService(settings,
                 new DeviceStateService(), () => null,
-                TestRepositoryFactory.CreateProfileRepository(settings));
+                TestRepositoryFactory.CreateProfileRepository(settings), new EnvironmentService());
             var repo = TestRepositoryFactory.CreateProfileRepository(settings);
             var env = new EnvironmentService();
             var appSettings = new DS4Windows.Services.AppSettingsService();
@@ -192,11 +192,44 @@ namespace DS4WindowsTests
             var state = new DeviceStateService();
             Func<ControlService> control = () => null;
             var repo = TestRepositoryFactory.CreateProfileRepository(settings, null, null);
+            var env = new EnvironmentService();
 
-            Assert.Throws<ArgumentNullException>(() => new ProfileApplicationService(null, state, control, repo));
-            Assert.Throws<ArgumentNullException>(() => new ProfileApplicationService(settings, null, control, repo));
-            Assert.Throws<ArgumentNullException>(() => new ProfileApplicationService(settings, state, null, repo));
-            Assert.Throws<ArgumentNullException>(() => new ProfileApplicationService(settings, state, control, null));
+            Assert.Throws<ArgumentNullException>(() => new ProfileApplicationService(null, state, control, repo, env));
+            Assert.Throws<ArgumentNullException>(() => new ProfileApplicationService(settings, null, control, repo, env));
+            Assert.Throws<ArgumentNullException>(() => new ProfileApplicationService(settings, state, null, repo, env));
+            Assert.Throws<ArgumentNullException>(() => new ProfileApplicationService(settings, state, control, null, env));
+            Assert.Throws<ArgumentNullException>(() => new ProfileApplicationService(settings, state, control, repo, null));
+        }
+
+        [Fact]
+        public void ProfileApplicationService_SlotLimit_FollowsEnvironment_NotFixedFour()
+        {
+            var settings = TestRepositoryFactory.CreateProfileSettingsService();
+            var repo = TestRepositoryFactory.CreateProfileRepository(settings);
+            var env = new EnvironmentService();
+            var service = new ProfileApplicationService(settings, new DeviceStateService(), () => null, repo, env);
+            int limit = env.ControllerSlotLimit;
+            string[] older = repo.OlderProfilePath;
+            string[] backup = (string[])older.Clone();
+            try
+            {
+                // 上限の内側（最後のスロット）は受け入れられ、保留中の復帰先がクリアされる
+                older[limit - 1] = "pending";
+                service.ClearPendingRestore(limit - 1);
+                Assert.Equal(string.Empty, older[limit - 1]);
+
+                // 上限（範囲外）は拒否され、何も変更されない
+                older[limit] = "pending";
+                service.ClearPendingRestore(limit);
+                Assert.Equal("pending", older[limit]);
+
+                Assert.False(service.ApplyProfile(limit, "NoSuchProfile"));
+                Assert.False(service.ApplyProfile(-1, "NoSuchProfile"));
+            }
+            finally
+            {
+                Array.Copy(backup, older, backup.Length);
+            }
         }
     }
 }

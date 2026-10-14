@@ -313,3 +313,27 @@
 - **テスト**: `Step10FourTwoGlobalReferenceGuardTests.Mapping_FreshPressGuard_CoversAllSpecialActionTypes`（ソース走査）。実機確認で動作を確認する。
 - **副作用（仕様）**: プロファイル適用・コントローラー接続の直後に押しっぱなしのボタンは、いったん離すまで、これらの型のアクションが効かない。
 - **実機確認項目**: 切替の直後に、同じトリガーの `DisconnectBT`／キー入力／マクロが実行されないこと。押し直すと実行されること。通常の操作（切替をしない状態でのキー入力・マクロ・バッテリー確認）が従来どおり動くこと。
+
+## 22. Step10-4-2e の完了と、Step10-4-2f（K1 の是正）の計画。2026-10-15
+- **Step10-4-2e**: ビルド・テストビルド・テスト実行成功。実機確認問題なし。ログ上、切替から `zzz_DC`（`DisconnectBT`）の成立までが約 1.5〜2.3 秒（修正前は約 30ms）。切替の直後の即時成立は発生していない。連鎖サービスは動作していない。クラスタ 1（10-4-2a〜2e）は完了。
+
+### 22.1 K1 の現行コード（`Phase6-Status.md` §6.5、`Phase6-Step3-Plan.md` §2.4.3）
+- **K1-a（スロット 5〜8 の拒否）**: `ProfileApplicationService` の 4 か所（`ApplyFromAction`、`RestoreFromAction`、`ClearPendingRestore`、`ApplyProfile`）が `deviceIndex >= 4`。スロット上限は `IEnvironmentService.ControllerSlotLimit`（Windows 8 以上で 8）。配列（`olderProfilePath` など）は 9 要素で、8 スロット分は確保済み。
+- **K1-b（戻り値の破棄）**: `ApplyProfile` は `Global.ApplyProfile` の `bool` を捨て、直後に `success = true` とする（失敗でも成功を返す）。
+- **K1-c（Halt）**: `source == MappingAction` のときは Halt せずに適用する（入れ子の Halt を避けるため。接続処理中の Halt との関係は未整理）。
+- **影響する呼び出し元**: `AutoProfileService`（スロット 5〜8 の自動プロファイルが拒否される）、`DefaultProfileSwitcher`、`Mapping.cs` のプロファイル切替アクション（`ApplyFromAction`。5〜8 番目のコントローラーでは動作しない可能性）。`ProfileSlotApplier`／`Mapping.cs` の `Global.ApplyProfile` フォールバックは、K1 の是正後に置換する予定（Step12 の「フェーズG」）。
+
+### 22.2 方針（案）
+- **M1**: 4 か所の `>= 4` を、`IEnvironmentService.ControllerSlotLimit`（必須の依存として注入）に置き換える。
+- **M2**: `ApplyProfile` は `Global.ApplyProfile` の戻り値を使い、失敗なら `false` を返す（失敗時のログは既存の `[DI]` 接頭辞で維持）。
+- **M3（K1-c）**: Halt の扱いは変更しない。接続処理中の入れ子の Halt は、現行の `Global.ApplyProfileToSlot`／`ProfileSlotApplier` の経路を維持する。
+- **M4**: `Global.ApplyProfile` フォールバックの置換（Mapping／ProfileSlotApplier）は、本ステップでは行わない（Step12 または Phase7）。
+- **テスト**: スロット 4〜7 を受け入れること、範囲外（8 以上、負）を拒否すること、失敗の戻り値が呼び出し元へ伝わること。
+- **実機確認**: 5 台以上のコントローラーが必要なため、確認できない見込み。先送り台帳（`Phase6-Step11-Plan.md` §3.3）へ登録する。1〜4 番目のコントローラーでの、プロファイル切替と復帰（回帰確認）は実施する。
+
+## 23. Step10-4-2f の実装記録（K1 の是正）。2026-10-15
+- **決定**: N1＝A（K1 を是正）、N2＝A（戻り値を使用）。
+- **変更**: `ProfileApplicationService` に `IEnvironmentService` を必須引数として追加。4 か所の `deviceIndex >= 4` を `ControllerSlotLimit` に置換（K1-a）。`ApplyProfile` は `Global.ApplyProfile` の戻り値を `success` に使う（K1-b）。Halt の扱いは変更なし（K1-c は温存）。`ProfileSlotApplier` の TODO コメントを更新。
+- **挙動の変更**: 失敗した適用が、成功として返されなくなる。5〜8 番目のスロットも対象になる。
+- **テスト**: `ProfileApplicationService_SlotLimit_FollowsEnvironment_NotFixedFour`（上限の内側は受け入れ、上限と負の値は拒否）。`ProfileApplicationService_RequiresAllDependencies` に環境サービスを追加。
+- **実機確認項目**: 1〜4 番目のコントローラーでの、プロファイル切替アクションと復帰、自動プロファイル（回帰確認）。5〜8 番目は先送り（`Phase6-Step11-Plan.md` §3.3 に登録）。
