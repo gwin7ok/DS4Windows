@@ -59,9 +59,9 @@
 - **持ち越し（変更なし）**: K7b-1（異常終了。先送り）、K9-3（プリセットメニューのサブメニュー）、K7-1。
 
 ## 7. PR #1 のレビューコメントへの返信文面（確定版）
-- **投稿状況（2026-10-14）**: 14 スレッドとも未返信・未解決。GitHub MCP と `gh` の認証（PAT）のいずれも、レビューコメントへの返信が 403（`Resource not accessible by integration`／`by personal access token`）で拒否されたため、投稿できていない。トークンに `pull_requests: write`（返信）が必要。スレッドの解決（GraphQL `resolveReviewThread`）も同じ権限が必要と見込まれる。権限を付与するか、下記を GitHub の画面から貼り付ける。
+- **投稿状況（2026-10-14）**: 14 スレッドすべてに、下記の返信を投稿し、すべて解決済み（resolved）にした（`gh`、fine-grained PAT。スレッドの解決には、Pull requests に加えて Contents の書き込み権限が必要だった）。
 - スレッドの URL とコメント ID は、`https://github.com/gwin7ok/DS4Windows-Vader4Pro/pull/1#discussion_r<ID>`。
-- **F10 の指摘の実体**: Copilot の指摘位置は `DS4WindowsTests/ProfileUnifiedPersistenceTests.cs`（13〜14 行）で、計画書で想定していた `ProfileSettingsServiceSubSettingsTests.cs` とは別のファイルだった。Step9b-4 では後者のみを直しており、前者は 2026-10-14 に追加で修正した（2 テストの `return` を `Assert.NotNull` に置換。**コミット・テスト実行前**）。返信は、このコミット後に投稿する。
+- **F10 の指摘の実体**: Copilot の指摘位置は `DS4WindowsTests/ProfileUnifiedPersistenceTests.cs`（13〜14 行）で、計画書で想定していた `ProfileSettingsServiceSubSettingsTests.cs` とは別のファイルだった。Step9b-4 では後者のみを直しており、前者は PR 返信の準備中に追加で修正した（2 テストの `return` を `Assert.NotNull` に置換。dc8e16f7、ビルド・テスト成功、反映済み）。
 
 いずれも「返信を投稿し、スレッドを解決済みにする」（ユーザー指示。F08・F09・F12・F13 は後続 Step での対応を明記した返信で解決する）。
 
@@ -119,7 +119,7 @@
 #### F09（コメント ID 4259526566、`ControllersViewModel.cs`）
 ご指摘のとおり、Pure DI 違反です。主要 4 ViewModel と同じ方針（依存を必須引数にし null を拒否する）で、Phase6-Step10 で是正します（`Phase6-Step10-Plan.md` の台帳に登録済み）。コード変更はこの PR の範囲外としています。
 
-#### F10（コメント ID 4259526717、`ProfileUnifiedPersistenceTests.cs`）【コミット・テスト後に投稿】
+#### F10（コメント ID 4259526717、`ProfileUnifiedPersistenceTests.cs`）
 ご指摘のとおりでした。サブ設定が null のときに `return` して成功扱いになる条件分岐を `Assert.NotNull` に置き換え、前提が満たされないときは失敗するようにしました。同じパターンの `ProfileSettingsServiceSubSettingsTests`（6 テスト）も同様に修正しています（Phase6-Step9b-4、6c16b5cb）。
 
 #### F11（コメント ID 4259526850、`SpecialActionsListViewModelTests.cs`）

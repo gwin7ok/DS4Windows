@@ -1,7 +1,7 @@
 # Phase6-Step9b 計画書: Copilot レビュー（PR #1）指摘 14 件の検証と是正
 
 作成日: 2026-10-14  
-状態: **完了（2026-10-14）。Step9b-0〜9b-5。完了報告書 `Phase6-Step9b-Completion-Report.md`。PR #1 への返信は提示のうえ許可を得たものだけ書き込む（決定5＝B）**  
+状態: **完了（2026-10-14）。Step9b-0〜9b-5。完了報告書 `Phase6-Step9b-Completion-Report.md`。PR #1 への返信 14 件の投稿と、スレッドの解決は完了（決定5＝B、2026-10-14）**  
 対象ブランチ: `For-DI-migration-work`  
 位置づけ: Step9 の後・Step10 の前（Step7b と同じく、実機確認・外部レビューで見つかった事項を扱う追加 Step）  
 上位計画書: `docs-forDIMG/MadeByAgent/Phase6-Plan.md`  
