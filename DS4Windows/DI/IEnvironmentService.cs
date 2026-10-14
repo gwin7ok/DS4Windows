@@ -62,6 +62,11 @@
         bool IsWin8OrGreater();
         /// <summary>FakerInput ドライバが導入済みか（<c>Global.IsFakerInputInstalled</c>。導入状態の再確認を行う）。</summary>
         bool IsFakerInputInstalled();
+        /// <summary>
+        /// HidHide ドライバが導入済みかを、その場で確認する（<c>Global.IsHidHideInstalled</c>）。
+        /// キャッシュ値の <see cref="HidHideInstalled"/>（<see cref="RefreshHidHideInfo"/> で更新）とは別物で、状態を更新しない。
+        /// </summary>
+        bool IsHidHideInstalled();
         /// <summary>導入済みの ViGEmBus の情報を取得し直す（<c>Global.RefreshViGEmBusInfo</c>）。</summary>
         void RefreshViGEmBusInfo();
     }

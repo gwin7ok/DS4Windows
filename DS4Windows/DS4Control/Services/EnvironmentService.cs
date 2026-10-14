@@ -66,6 +66,8 @@ namespace DS4Windows
 
         public bool IsFakerInputInstalled() => Global.IsFakerInputInstalled();
 
+        public bool IsHidHideInstalled() => Global.IsHidHideInstalled();
+
         public void RefreshViGEmBusInfo() => Global.RefreshViGEmBusInfo();
 
         // 静的初期化の循環を避けるため、この計算は Global のメソッド（Global.IsWin8OrGreater 等）を呼ばず自己完結させる。

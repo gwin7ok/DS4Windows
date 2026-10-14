@@ -59,10 +59,18 @@ namespace DS4WinWPF.DS4Forms
         Process monitorProc;
         NonFormTimer monitorTimer;
 
-        public WelcomeDialog(bool loadConfig = false)
+        // Phase6-Step10-1-2: Global 直接参照の置換先。呼び出し側（App の -driverinstall 分岐）が渡す（Pure DI）。
+        private readonly DS4Windows.DI.IEnvironmentService _environmentService;
+
+        public WelcomeDialog(DS4Windows.DI.IEnvironmentService environmentService, bool loadConfig = false)
         {
+            _environmentService = environmentService ?? throw new ArgumentNullException(nameof(environmentService));
+
             if (loadConfig)
             {
+                // TODO(温存): Pre-Host の手動分岐。呼び出し側（App.xaml.cs の -driverinstall 分岐）が同じ処理を既に実行しているが、
+                // 重複呼び出しを含めて置換前と同じ動作を維持する。Pre-Host のブートストラップ処理のため Global を直接呼ぶ
+                // （Phase6-Step10-Plan.md §0A.2、Phase6-Step7-Plan.md §1.2）。整理は Phase6-Step12 で判断する。
                 DS4Windows.Global.FindConfigLocation();
                 DS4Windows.Global.Load();
                 //DS4Windows.Global.SetCulture(DS4Windows.Global.UseLang);
@@ -74,7 +82,7 @@ namespace DS4WinWPF.DS4Forms
             installFileName = InstFileNameX64;
 
             // Run checks for compatible version of ViGEmBus
-            if (!DS4Windows.Global.IsWin10OrGreater())
+            if (!_environmentService.IsWin10OrGreater())
             {
                 installDL = InstallerDL1_16;
                 installFileName = InstFileName1_16;
@@ -86,7 +94,7 @@ namespace DS4WinWPF.DS4Forms
             }
 
             // Run checks for FakerInput driver
-            if (DS4Windows.Global.IsWin8OrGreater())
+            if (_environmentService.IsWin8OrGreater())
             {
                 if (Environment.Is64BitOperatingSystem)
                 {
@@ -119,7 +127,7 @@ namespace DS4WinWPF.DS4Forms
         private bool IsHidHideControlCompatible()
         {
             // HidHide requires Windows 10 (or later) x64
-            return DS4Windows.Global.IsWin10OrGreater() &&
+            return _environmentService.IsWin10OrGreater() &&
                 Environment.Is64BitOperatingSystem;
         }
 
@@ -127,7 +135,7 @@ namespace DS4WinWPF.DS4Forms
         {
             // FakerInput works on Windows 8.1 and later. Going to attempt
             // to support x64 and x86 arch
-            return DS4Windows.Global.IsWin8OrGreater();
+            return _environmentService.IsWin8OrGreater();
         }
 
         private void FinishedBtn_Click(object sender, RoutedEventArgs e)
@@ -233,8 +241,8 @@ namespace DS4WinWPF.DS4Forms
             if (monitorProc != null && monitorProc.HasExited)
             {
                 // Retrieve info about installed ViGEmBus device if found
-                DS4Windows.Global.RefreshViGEmBusInfo();
-                if (DS4Windows.Global.IsViGEmBusInstalled())
+                _environmentService.RefreshViGEmBusInfo();
+                if (_environmentService.IsViGEmBusInstalled())
                 {
                     Dispatcher.BeginInvoke((Action)(() =>
                     {
@@ -349,7 +357,7 @@ namespace DS4WinWPF.DS4Forms
             bool finished = false;
             if (monitorProc != null && monitorProc.HasExited)
             {
-                if (DS4Windows.Global.IsHidHideInstalled())
+                if (_environmentService.IsHidHideInstalled())
                 {
                     Dispatcher.BeginInvoke((Action)(() =>
                     {
@@ -455,7 +463,7 @@ namespace DS4WinWPF.DS4Forms
             bool finished = false;
             if (monitorProc != null && monitorProc.HasExited)
             {
-                if (DS4Windows.Global.IsFakerInputInstalled())
+                if (_environmentService.IsFakerInputInstalled())
                 {
                     Dispatcher.BeginInvoke((Action)(() =>
                     {

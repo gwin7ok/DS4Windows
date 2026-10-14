@@ -336,7 +336,7 @@ namespace DS4WinWPF
             // On first run, show language selection dialog first
             if (firstRun)
             {
-                DS4Forms.LanguageSelectDialog langDialog = new DS4Forms.LanguageSelectDialog();
+                DS4Forms.LanguageSelectDialog langDialog = new DS4Forms.LanguageSelectDialog(_appSettingsService);
                 langDialog.ShowDialog();
                 if (!langDialog.ChoiceMade)
                 {
@@ -356,7 +356,7 @@ namespace DS4WinWPF
             if (firstRun)
             {
                 DS4Forms.SaveWhere savewh =
-                    new DS4Forms.SaveWhere(_pathService.HasMultipleSaveLocations);
+                    new DS4Forms.SaveWhere(_pathService.HasMultipleSaveLocations, _pathService, _environmentService);
                 savewh.ShowDialog();
                 if (!savewh.ChoiceMade)
                 {
@@ -676,7 +676,8 @@ namespace DS4WinWPF
                 }
 
                 CreateBaseThread();
-                DS4Forms.WelcomeDialog dialog = new DS4Forms.WelcomeDialog(true);
+                DS4Forms.WelcomeDialog dialog = new DS4Forms.WelcomeDialog(
+                    AppHost.GetService<DS4Windows.DI.IEnvironmentService>(), true);
                 dialog.ShowDialog();
                 runShutdown = false;
                 exitApp = true;

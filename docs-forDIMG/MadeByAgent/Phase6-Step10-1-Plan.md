@@ -87,7 +87,8 @@
 - **D10＝A**: `TrayIconViewModel` は `Dispatcher` をコンストラクタの引数で受け取る。
 
 ### 7.2 進捗
-- Step10-1-1（契約の追加と契約テスト）: 実装済み・ビルドとテスト実行の結果待ち。`IEnvironmentService`（4 件）、`IPathService`（`SetSaveLocation`、`CreateEmptyProfilesFile`）、`IAppSettingsService`（`LastVersionChecked`、`SetCulture`）と、`Phase6Step10GroupOneContractTests`（9 件）。
+- Step10-1-2（`SaveWhere`／`WelcomeDialog`／`LanguageSelectDialog`）: 実装済み・ビルド、テスト、実機確認の結果待ち。`IEnvironmentService.IsHidHideInstalled()` を追加（`Global.IsHidHideInstalled` の再確認。キャッシュ値の `HidHideInstalled` とは別物のため、`RefreshHidHideInfo` + `HidHideInstalled` では置き換えない）。`WelcomeDialog` の `FindConfigLocation`／`Load` は TODO コメント付きで温存。
+- Step10-1-1（契約の追加と契約テスト）: 完了（ビルド・テストビルド・テスト実行成功）。`IEnvironmentService`（4 件）、`IPathService`（`SetSaveLocation`、`CreateEmptyProfilesFile`）、`IAppSettingsService`（`LastVersionChecked`、`SetCulture`）と、`Phase6Step10GroupOneContractTests`（9 件）。
 
 ## 8. リスク
 - `SetSaveLocation` と `AppDataPath` setter の取り違え（保存先が切り替わらず、設定が消えたように見える）。契約テストで防ぐ。

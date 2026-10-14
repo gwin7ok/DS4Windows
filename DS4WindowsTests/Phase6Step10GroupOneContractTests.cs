@@ -37,6 +37,15 @@ namespace DS4WindowsTests
         }
 
         [Fact]
+        public void EnvironmentService_IsHidHideInstalled_MatchesGlobalProbe_AndDoesNotChangeCachedState()
+        {
+            IEnvironmentService service = new EnvironmentService();
+            bool cachedBefore = Global.hidHideInstalled;
+            Assert.Equal(Global.IsHidHideInstalled(), service.IsHidHideInstalled());
+            Assert.Equal(cachedBefore, Global.hidHideInstalled);
+        }
+
+        [Fact]
         public void EnvironmentService_RefreshViGEmBusInfo_KeepsInstalledStateConsistentWithGlobal()
         {
             IEnvironmentService service = new EnvironmentService();
