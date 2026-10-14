@@ -43,18 +43,7 @@ namespace DS4WinWPF
                 throw new InvalidOperationException("NLog configuration is not loaded");
 
             // Support both async wrapper target and direct file target.
-            NLog.Targets.FileTarget fileTarget = null;
-            var wrapTarget = configuration.FindTargetByName<WrapperTargetBase>("logfile") as WrapperTargetBase;
-            if (wrapTarget != null && wrapTarget.WrappedTarget is NLog.Targets.FileTarget ft)
-            {
-                fileTarget = ft;
-            }
-            else
-            {
-                // Try to find a direct FileTarget named 'logfile'
-                var direct = configuration.FindTargetByName("logfile");
-                fileTarget = direct as NLog.Targets.FileTarget;
-            }
+            NLog.Targets.FileTarget fileTarget = FindLogFileTarget(configuration);
 
             if (fileTarget == null)
                 throw new InvalidOperationException("logfile target (FileTarget) not found in NLog configuration");
@@ -180,9 +169,15 @@ namespace DS4WinWPF
         public void UpdateLogSettings()
         {
             var configuration = LogManager.Configuration;
-            var wrapTarget = configuration.FindTargetByName<WrapperTargetBase>("logfile") as WrapperTargetBase;
-            var fileTarget = wrapTarget.WrappedTarget as NLog.Targets.FileTarget;
-            
+            // Phase6-Step9b-1: NLog.config の async="false" では logfile が直接の FileTarget になる。
+            // ラッパー前提の WrappedTarget 参照は NullReferenceException になり、設定の保存も止めていた。
+            var fileTarget = FindLogFileTarget(configuration);
+            if (fileTarget == null)
+            {
+                logger?.Warn("UpdateLogSettings: logfile target (FileTarget) not found; log settings were not applied");
+                return;
+            }
+
             // Ensure archive remains disabled during reconfiguration
             fileTarget.ArchiveOldFileOnStartup = false;
             
@@ -200,11 +195,27 @@ namespace DS4WinWPF
         /// </summary>
         public void RestoreArchiveSetting()
         {
-            var configuration = LogManager.Configuration;
-            var wrapTarget = configuration.FindTargetByName<WrapperTargetBase>("logfile") as WrapperTargetBase;
-            var fileTarget = wrapTarget.WrappedTarget as NLog.Targets.FileTarget;
+            var fileTarget = FindLogFileTarget(LogManager.Configuration);
+            if (fileTarget == null)
+                return;
             // Keep archive disabled; do not re-enable automatic startup archive.
             fileTarget.ArchiveOldFileOnStartup = false;
+        }
+
+        /// <summary>
+        /// 名前 "logfile" の FileTarget を探す。非同期ラッパー（WrapperTargetBase）の内側と、
+        /// 直接の FileTarget（NLog.config の async="false"）の両方に対応する。見つからなければ null。
+        /// </summary>
+        public static NLog.Targets.FileTarget FindLogFileTarget(NLog.Config.LoggingConfiguration configuration)
+        {
+            if (configuration == null)
+                return null;
+
+            var wrapTarget = configuration.FindTargetByName<WrapperTargetBase>("logfile");
+            if (wrapTarget?.WrappedTarget is NLog.Targets.FileTarget wrapped)
+                return wrapped;
+
+            return configuration.FindTargetByName("logfile") as NLog.Targets.FileTarget;
         }
         
         /// <summary>
