@@ -123,13 +123,9 @@ namespace DS4WindowsTests
         {
             var repo = new SpecialActionRepository();
             var profileRepo = new ProfileRepository();
-            var slots = new OutputSlotService();
-            var settings = new ProfileSettingsService();
 
-            Assert.Throws<ArgumentNullException>(() => new SpecialActionsListViewModel(0, null, profileRepo, slots, settings));
-            Assert.Throws<ArgumentNullException>(() => new SpecialActionsListViewModel(0, repo, null, slots, settings));
-            Assert.Throws<ArgumentNullException>(() => new SpecialActionsListViewModel(0, repo, profileRepo, null, settings));
-            Assert.Throws<ArgumentNullException>(() => new SpecialActionsListViewModel(0, repo, profileRepo, slots, null));
+            Assert.Throws<ArgumentNullException>(() => new SpecialActionsListViewModel(0, null, profileRepo));
+            Assert.Throws<ArgumentNullException>(() => new SpecialActionsListViewModel(0, repo, null));
         }
 
         [Fact]

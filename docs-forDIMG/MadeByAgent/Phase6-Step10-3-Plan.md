@@ -148,3 +148,5 @@
   - `IViewModelFactory.CreateSpecialActionsListViewModel(int device)` を追加し、`ViewModelFactory` が保持するサービスを渡す。`ProfileEditor` は、すでに解決している `vmFactory` で生成する。
   - **発見（要判断）**: `outputSlotService` と `profileSettings` のフィールドも、現在はファイル内で読み取られていない（Issue7 の是正で、ボタン名表示の取得元が移った際に未使用になった。コード内の TODO に「削除要否は別途判断」とある）。G3-3 の承認は「4 つの依存を必須引数にし、`actionManager` を削除する」であったため、この 2 つは承認の範囲どおり必須引数として残した。削除するかどうかは、ユーザーの確認後に決める（§2.4）。
   - テスト 4 ファイル（`ProfileActionsSyncTests`、`ProfileEditorBackendViewModelTests`、`Specialactionslistviewmodelsorttests`、`SpecialActionsListViewModelTests`）を新しいコンストラクタに合わせ、`Step10GroupThreeGlobalReferenceGuardTests` に一覧 ViewModel を追加した。
+- **Step10-3-3**: 完了（ビルド・テスト実行成功、実機確認問題なし）。
+- **Step10-3-3 の追補（2026-10-14、ユーザー承認 A）**: `SpecialActionsListViewModel` の未使用の依存 `IOutputSlotService`／`IProfileSettingsService`（フィールドと引数）を削除した。コンストラクタは `(deviceNum, ISpecialActionRepository, IProfileRepository)` になった。`ViewModelFactory`、テスト 6 ファイル、ガードテストを更新した。実装済み・ビルド、テストの結果待ち（画面の動作は変わらない）。

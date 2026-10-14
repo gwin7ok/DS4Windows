@@ -72,7 +72,7 @@ namespace DS4Windows
         {
             if (AppLogger.IsTraceEnabled)
                 AppLogger.LogTrace($"[DI] ViewModelFactory: Created SpecialActionsListViewModel for Device {device}");
-            return new SpecialActionsListViewModel(device, _actionRepo, _profileRepo, _outputSlotService, _profileSettings);
+            return new SpecialActionsListViewModel(device, _actionRepo, _profileRepo);
         }
 
         public AutoProfilesViewModel CreateAutoProfilesViewModel(AutoProfileHolder autoProfileHolder, ProfileList profileList)
