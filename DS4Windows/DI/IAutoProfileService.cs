@@ -33,5 +33,12 @@ namespace DS4Windows.DI
         /// AutoProfile切替時の通知表示方法（Global.autoProfileSwitchNotifyChoiceの薄い委譲）。
         /// </summary>
         AutoProfileDisplayProfileSwitchChoices AutoProfileSwitchNotifyChoice { get; set; }
+
+        // ---- Phase6-Step10-2-1: AutoProfiles 画面の Global.CreateAutoProfiles 参照の置換先（Global への薄い委譲）----
+        /// <summary>
+        /// 空の自動プロファイル設定ファイル（Auto Profiles.xml）を作る（<c>Global.CreateAutoProfiles(path)</c> と同じ動作）。
+        /// 作成に失敗したら false。
+        /// </summary>
+        bool CreateAutoProfilesFile(string path);
     }
 }

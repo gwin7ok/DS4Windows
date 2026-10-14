@@ -42,6 +42,9 @@ namespace DS4Windows
             set => Global.autoProfileSwitchNotifyChoice = value;
         }
 
+        // Phase6-Step10-2-1: Global への薄い委譲
+        public bool CreateAutoProfilesFile(string path) => Global.CreateAutoProfiles(path);
+
         public event Action<bool> RequestServiceChange;
 
         public AutoProfileService(AutoProfileHolder holder = null,

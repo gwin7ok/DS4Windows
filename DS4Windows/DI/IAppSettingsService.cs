@@ -42,6 +42,12 @@ namespace DS4Windows.DI
         /// <summary>UI のカルチャを切り替える（<c>Global.SetCulture</c>。設定ファイルの <see cref="UseLang"/> は変えない）。</summary>
         void SetCulture(string culture);
 
+        // ---- Phase6-Step10-2-1: ControllerRegDeviceOptsViewModel の Global 直接参照解消 ----
+        /// <summary>Moonlight（仮想コントローラーの検出の除外の緩和。<c>Global.UseMoonlight</c>）。</summary>
+        bool UseMoonlight { get; set; }
+        /// <summary>Advanced Moonlight（<c>Global.UseAdvancedMoonlight</c>）。</summary>
+        bool UseAdvancedMoonlight { get; set; }
+
         // ---- Phase5-Step13-7: ウィンドウ位置・サイズ、コントローラー一覧列幅の永続化 ----
         int FormWidth { get; set; }
         int FormHeight { get; set; }

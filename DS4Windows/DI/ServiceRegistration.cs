@@ -31,6 +31,8 @@ namespace DS4Windows.DI
             services.AddSingleton<IProfileSettingsService, ProfileSettingsService>();
             services.AddSingleton<IProfileXmlStore, ProfileXmlStore>();
             services.AddSingleton<IProfileRepository, ProfileRepository>();
+            // Phase6-Step10-2（決定 E2＝A）: プリセットの読み込み（Global.Load…Profile への薄い委譲）
+            services.AddSingleton<IProfilePresetLoader, ProfilePresetLoader>();
             services.AddSingleton<IProfileSlotApplier, ProfileSlotApplier>();
             services.AddSingleton<ISpecialActionRepository, SpecialActionRepository>();
 

@@ -332,6 +332,19 @@ namespace DS4Windows.Services
 
         public void SetCulture(string culture) => Global.SetCulture(culture);
 
+        // ---- Phase6-Step10-2-1: Global への薄い委譲 ----
+        public bool UseMoonlight
+        {
+            get => Global.UseMoonlight;
+            set { if (Global.UseMoonlight != value) { Global.UseMoonlight = value; NotifyChanged(nameof(UseMoonlight)); } }
+        }
+
+        public bool UseAdvancedMoonlight
+        {
+            get => Global.UseAdvancedMoonlight;
+            set { if (Global.UseAdvancedMoonlight != value) { Global.UseAdvancedMoonlight = value; NotifyChanged(nameof(UseAdvancedMoonlight)); } }
+        }
+
         public bool FirstRun
         {
             get => Global.firstRun;
