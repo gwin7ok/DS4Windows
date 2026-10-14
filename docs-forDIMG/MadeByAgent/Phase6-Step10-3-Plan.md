@@ -122,3 +122,8 @@
   - `ISpecialActionRepository`: `SaveAction`（`Global.SaveAction` への薄い委譲）、`RemoveActionAndSave`（`Global.RemoveAction` への薄い委譲。削除前に存在したかを返す）を追加。実装は `SpecialActionRepository`。契約のコメントに、メモリ上のリストだけを変える `AddAction`／`RemoveAction` との違いを明記した。
   - `IViewModelFactory.CreateSpecialActionsListViewModel` は、一覧 ViewModel のコンストラクタ変更と同時に 3-3 で追加する（契約だけ先に足すと、未使用の契約が残るため）。
   - テスト: `Phase6Step10GroupThreeContractTests`（保存、編集、`Global.SaveAction` との一致、保存付き削除、存在しない名前、メモリのみの `RemoveAction` との違い）。一時ディレクトリの `Actions.xml` を使い、`Global.store` の保存先とアクション一覧を退避・復元する。
+- **Step10-3-2（種別ごとの ViewModel と `SpecialActEditorViewModel`、`SpecialActionEditor`）**: 実装済み・ビルド、テスト、実機確認の結果待ち。計画の 3-2 と 3-4 の境界を、コンストラクタの変更がビルドを連鎖させるため調整し、`SpecialActionEditor` の置換も本ステップに含めた（3-4 は、残りがあれば確認と文書のみ）。
+  - 種別ごとの ViewModel 7 クラス（`MacroViewModel`、`LaunchProgramViewModel`、`LoadProfileViewModel`、`CheckBatteryViewModel`、`MultiActButtonViewModel`、`SpecialActionViewModel`、`PressKeyViewModel`）: `ISpecialActionRepository` を必須引数にし、`Global.SaveAction` を `SaveAction` へ置換した。`PressKeyViewModel` は、さらに `IProfileSettingsService`（`OutContType`）と `IOutputSlotService`（`OutDevTypeTemp`）を必須引数にした。温存: `configFileDecimalCulture`、`getX360ControlString`。
+  - `SpecialActEditorViewModel`: `ISpecialActionRepository` を必須引数にし、`Global.GetActions()` を `ActionList` へ置換した。`ViewModelFactory.CreateSpecialActEditorViewModel` が渡す。
+  - `SpecialActionEditor`: `IViewModelFactory`、`ISpecialActionRepository`、`IProfileSettingsService`、`IOutputSlotService` を必須引数にし、`AppHost` と `new SpecialActEditorViewModel` の後退を削除した。名前変更時の旧名の削除は `RemoveActionAndSave` を使う。`EditorWindowFactory` が、`ISpecialActionRepository` を含む必須引数で保持して渡す。
+  - ガードテスト `Step10GroupThreeGlobalReferenceGuardTests`（新規）と、`EditorWindowFactory` の必須引数の検査を更新した。

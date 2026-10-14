@@ -66,14 +66,23 @@ namespace DS4WinWPF.DS4Forms
         /// 渡し忘れをコンパイルで検出するため必須引数とする（Phase6-Step7b-Plan.md 決定2）
         /// </param>
         // Phase6-Step10-2-4a: BindingWindow／RecordBoxWindow の生成を窓口へ依頼する（必須引数）。
-        // 本画面自体の Pure DI 化（RemoveAction など）は Step10-3 で行う。
+        // Phase6-Step10-3-2: 種別ごとの ViewModel の生成と、名前変更時の旧名の削除に必要なサービスも必須引数で受け取る。
         private readonly DS4Windows.DI.IEditorWindowFactory editorWindowFactory;
+        private readonly DS4Windows.DI.ISpecialActionRepository specialActionRepository;
 
         public SpecialActionEditor(int deviceNum, ProfileList profileList, int targetDevice,
             DS4Windows.DI.IEditorWindowFactory editorWindowFactory,
+            DS4Windows.DI.IViewModelFactory viewModelFactory,
+            DS4Windows.DI.ISpecialActionRepository specialActionRepository,
+            DS4Windows.DI.IProfileSettingsService profileSettingsService,
+            DS4Windows.DI.IOutputSlotService outputSlotService,
             DS4Windows.SpecialAction specialAction = null)
         {
             this.editorWindowFactory = editorWindowFactory ?? throw new ArgumentNullException(nameof(editorWindowFactory));
+            if (viewModelFactory == null) throw new ArgumentNullException(nameof(viewModelFactory));
+            this.specialActionRepository = specialActionRepository ?? throw new ArgumentNullException(nameof(specialActionRepository));
+            if (profileSettingsService == null) throw new ArgumentNullException(nameof(profileSettingsService));
+            if (outputSlotService == null) throw new ArgumentNullException(nameof(outputSlotService));
             InitializeComponent();
             this.targetDevice = targetDevice;
 
@@ -106,24 +115,17 @@ namespace DS4WinWPF.DS4Forms
                 unloadSwipeRightTrigCk, unloadTiltUpTrigCk, unloadTiltDownTrigCk, unloadTiltLeftTrigCk,
                 unloadTiltRightTrigCk,unloadTouchStartedTrigCk, unloadTouchEndedTrigCk,
             };
-            var vmFactory = DS4WinWPF.AppHost.GetService<DS4Windows.DI.IViewModelFactory>();
-            if (vmFactory != null)
-                specialActVM = vmFactory.CreateSpecialActEditorViewModel(deviceNum, specialAction);
-            else
-            {
-                DS4Windows.AppLogger.LogTrace("[Legacy] ViewModel fallback: screen=SpecialActionEditor, viewModel=SpecialActEditorViewModel");
-                specialActVM = new SpecialActEditorViewModel(deviceNum, specialAction);
-            }
-            macroActVM = new MacroViewModel();
-            launchProgVM = new LaunchProgramViewModel();
-            loadProfileVM = new LoadProfileViewModel(profileList);
-            pressKeyVM = new PressKeyViewModel();
+            specialActVM = viewModelFactory.CreateSpecialActEditorViewModel(deviceNum, specialAction);
+            macroActVM = new MacroViewModel(specialActionRepository);
+            launchProgVM = new LaunchProgramViewModel(specialActionRepository);
+            loadProfileVM = new LoadProfileViewModel(profileList, specialActionRepository);
+            pressKeyVM = new PressKeyViewModel(specialActionRepository, profileSettingsService, outputSlotService);
             pressKeyVM.SetDeviceNum(deviceNum);
-            disconnectBtVM = new SpecialActionViewModel(5);
-            checkBatteryVM = new CheckBatteryViewModel();
-            multiActButtonVM = new MultiActButtonViewModel();
-            saSteeringWheelVM = new SpecialActionViewModel(8);
-            calibrateGyroVM = new SpecialActionViewModel(9);
+            disconnectBtVM = new SpecialActionViewModel(5, specialActionRepository);
+            checkBatteryVM = new CheckBatteryViewModel(specialActionRepository);
+            multiActButtonVM = new MultiActButtonViewModel(specialActionRepository);
+            saSteeringWheelVM = new SpecialActionViewModel(8, specialActionRepository);
+            calibrateGyroVM = new SpecialActionViewModel(9, specialActionRepository);
 
             // Hide tab headers. Tab content will still be visible
             blankActTab.Visibility = Visibility.Collapsed;
@@ -324,7 +326,8 @@ namespace DS4WinWPF.DS4Forms
                 bool editMode = specialActVM.EditMode;
                 if (editMode && specialActVM.SavedAction.name != specialActVM.ActionName)
                 {
-                    DS4Windows.Global.RemoveAction(specialActVM.SavedAction.name);
+                    // Phase6-Step10-3-2: Global.RemoveAction の置換（Actions.xml への保存と読み直しを含む削除）
+                    specialActionRepository.RemoveActionAndSave(specialActVM.SavedAction.name);
                     editMode = false;
                 }
 

@@ -18,6 +18,7 @@ namespace DS4Windows.Services
         private readonly IOutputSlotService _outputSlotService;
         private readonly IPathService _pathService;
         private readonly IViewModelFactory _viewModelFactory;
+        private readonly ISpecialActionRepository _specialActionRepository;
         private readonly IProfilePresetLoader _presetLoader;
         private readonly Func<ControlService> _controlServiceAccessor;
 
@@ -26,6 +27,7 @@ namespace DS4Windows.Services
             IOutputSlotService outputSlotService,
             IPathService pathService,
             IViewModelFactory viewModelFactory,
+            ISpecialActionRepository specialActionRepository,
             IProfilePresetLoader presetLoader,
             Func<ControlService> controlServiceAccessor)
         {
@@ -33,6 +35,7 @@ namespace DS4Windows.Services
             _outputSlotService = outputSlotService ?? throw new ArgumentNullException(nameof(outputSlotService));
             _pathService = pathService ?? throw new ArgumentNullException(nameof(pathService));
             _viewModelFactory = viewModelFactory ?? throw new ArgumentNullException(nameof(viewModelFactory));
+            _specialActionRepository = specialActionRepository ?? throw new ArgumentNullException(nameof(specialActionRepository));
             _presetLoader = presetLoader ?? throw new ArgumentNullException(nameof(presetLoader));
             _controlServiceAccessor = controlServiceAccessor ?? throw new ArgumentNullException(nameof(controlServiceAccessor));
         }
@@ -60,6 +63,7 @@ namespace DS4Windows.Services
 
         public SpecialActionEditor CreateSpecialActionEditor(int deviceNum, ProfileList profileList, int targetDevice,
             SpecialAction specialAction = null)
-            => new SpecialActionEditor(deviceNum, profileList, targetDevice, this, specialAction);
+            => new SpecialActionEditor(deviceNum, profileList, targetDevice, this, _viewModelFactory,
+                _specialActionRepository, _profileSettings, _outputSlotService, specialAction);
     }
 }

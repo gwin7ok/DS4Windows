@@ -65,7 +65,7 @@ namespace DS4Windows
         {
             if (AppLogger.IsTraceEnabled)
                 AppLogger.LogTrace($"[DI] ViewModelFactory: Created SpecialActEditorViewModel for Device {device}");
-            return new SpecialActEditorViewModel(device, action);
+            return new SpecialActEditorViewModel(device, action, _actionRepo);
         }
 
         public AutoProfilesViewModel CreateAutoProfilesViewModel(AutoProfileHolder autoProfileHolder, ProfileList profileList)

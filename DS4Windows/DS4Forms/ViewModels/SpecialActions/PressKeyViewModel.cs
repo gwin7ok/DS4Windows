@@ -24,6 +24,7 @@ using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Input;
 using DS4Windows;
+using DS4Windows.DI;
 using DS4WinWPF.DS4Forms.ViewModels.Util;
 using System.ComponentModel;
 
@@ -112,9 +113,9 @@ namespace DS4WinWPF.DS4Forms.ViewModels.SpecialActions
                     {
                         // Prefer using editor's device-specific output type when available
                         string btnName;
-                        if (editorDeviceNum >= 0 && editorDeviceNum < Global.OutContType.Length)
+                        if (editorDeviceNum >= 0 && editorDeviceNum < profileSettingsService.OutContType.Length)
                         {
-                            btnName = Global.getX360ControlString((X360Controls)lastActionBtn, Global.OutContType[editorDeviceNum]);
+                            btnName = Global.getX360ControlString((X360Controls)lastActionBtn, profileSettingsService.OutContType[editorDeviceNum]);
                         }
                         else
                         {
@@ -150,9 +151,9 @@ namespace DS4WinWPF.DS4Forms.ViewModels.SpecialActions
             {
                 try
                 {
-                    if (editorDeviceNum >= 0 && editorDeviceNum < Global.OutContType.Length)
+                    if (editorDeviceNum >= 0 && editorDeviceNum < profileSettingsService.OutContType.Length)
                     {
-                        describeText = Global.getX360ControlString((X360Controls)lastActionBtn, Global.OutContType[editorDeviceNum]);
+                        describeText = Global.getX360ControlString((X360Controls)lastActionBtn, profileSettingsService.OutContType[editorDeviceNum]);
                     }
                     else
                     {
@@ -218,7 +219,7 @@ namespace DS4WinWPF.DS4Forms.ViewModels.SpecialActions
                 {
                     if (deviceNum >= 0)
                     {
-                        btnName = Global.getX360ControlString((X360Controls)settings.action.actionBtn, Global.outDevTypeTemp[deviceNum]);
+                        btnName = Global.getX360ControlString((X360Controls)settings.action.actionBtn, outputSlotService.OutDevTypeTemp[deviceNum]);
                     }
                     else
                     {
@@ -250,19 +251,33 @@ namespace DS4WinWPF.DS4Forms.ViewModels.SpecialActions
             UpdateToggleControls();
         }
 
+        // Phase6-Step10-3-2: Global.SaveAction の置換先（必須引数）
+        private readonly ISpecialActionRepository specialActionRepository;
+        private readonly IProfileSettingsService profileSettingsService;
+        private readonly IOutputSlotService outputSlotService;
+
+        public PressKeyViewModel(ISpecialActionRepository specialActionRepository,
+            IProfileSettingsService profileSettingsService, IOutputSlotService outputSlotService)
+        {
+            this.specialActionRepository = specialActionRepository ?? throw new ArgumentNullException(nameof(specialActionRepository));
+            // ボタン名の表示に使う出力コントローラー種別の取得元（profileSettingsService.OutContType／outputSlotService.OutDevTypeTemp の置換先）
+            this.profileSettingsService = profileSettingsService ?? throw new ArgumentNullException(nameof(profileSettingsService));
+            this.outputSlotService = outputSlotService ?? throw new ArgumentNullException(nameof(outputSlotService));
+        }
+
         public void SaveAction(SpecialAction action, bool edit = false)
         {
             // If last binding was a Button, save as Button type
             if (lastActionType == DS4ControlSettings.ActionType.Button && lastActionBtn >= 0)
             {
-                Global.SaveAction(action.name, action.controls, 10, lastActionBtn.ToString(), edit);
+                specialActionRepository.SaveAction(action.name, action.controls, 10, lastActionBtn.ToString(), edit);
                 return;
             }
 
             // Determine SwitchMode to save: use explicit editor selection when available,
             // otherwise fallback to existing keyType flag behavior.
             string modeToSave = !string.IsNullOrEmpty(switchMode) ? switchMode : (keyType.HasFlag(DS4KeyType.Toggle) ? "Toggle" : "Press");
-            Global.SaveAction(action.name, action.controls, 4,
+            specialActionRepository.SaveAction(action.name, action.controls, 4,
                 $"{value}{(keyType.HasFlag(DS4KeyType.ScanCode) ? " Scan Code" : "")}", edit,
                 extras: $"{modeToSave}\n{action.ucontrols}");
         }

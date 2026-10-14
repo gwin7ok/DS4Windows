@@ -24,6 +24,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using DS4Windows;
+using DS4Windows.DI;
 using DS4WinWPF.DS4Forms.ViewModels.Util;
 
 namespace DS4WinWPF.DS4Forms.ViewModels.SpecialActions
@@ -96,6 +97,14 @@ namespace DS4WinWPF.DS4Forms.ViewModels.SpecialActions
             return settings;
         }
 
+        // Phase6-Step10-3-2: Global.SaveAction の置換先（必須引数）
+        private readonly ISpecialActionRepository specialActionRepository;
+
+        public MacroViewModel(ISpecialActionRepository specialActionRepository)
+        {
+            this.specialActionRepository = specialActionRepository ?? throw new ArgumentNullException(nameof(specialActionRepository));
+        }
+
         public void SaveAction(SpecialAction action, bool edit = false)
         {
             List<string> extrasList = new List<string>();
@@ -104,7 +113,7 @@ namespace DS4WinWPF.DS4Forms.ViewModels.SpecialActions
             extrasList.Add(syncRun ? "Sync" : null);
             extrasList.Add(keepKeyState ? "KeepKeyState" : null);
             extrasList.Add(repeatHeld ? "Repeat" : null);
-            Global.SaveAction(action.name, action.controls, 1, string.Join("/", macro), edit,
+            specialActionRepository.SaveAction(action.name, action.controls, 1, string.Join("/", macro), edit,
                 extras: string.Join("/", extrasList.Where(s => !string.IsNullOrEmpty(s))));
         }
 
