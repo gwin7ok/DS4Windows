@@ -12,12 +12,14 @@ public partial class StickCalibrationWindow : Window
     private ProfileSettingsViewModel _profileSettingsVM;
     private readonly ControlService _controlService;
 
-    public StickCalibrationWindow(Stick stick, int device, ProfileSettingsViewModel profileSettingsVm)
+    public StickCalibrationWindow(Stick stick, int device, ProfileSettingsViewModel profileSettingsVm,
+        ControlService controlService)
     {
         _stick = stick;
         _device = device;
         _profileSettingsVM = profileSettingsVm;
-        _controlService = DS4WinWPF.AppHost.GetService<DS4Windows.ControlService>() ?? Program.rootHub;
+        // Phase6-Step10-2-4b: AppHost/Program.rootHub への後退を廃止（必須引数）
+        _controlService = controlService ?? throw new ArgumentNullException(nameof(controlService));
         InitializeComponent();
     }
 

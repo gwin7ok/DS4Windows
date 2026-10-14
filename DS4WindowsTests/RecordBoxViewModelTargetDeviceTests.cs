@@ -153,7 +153,7 @@ namespace DS4WindowsTests
             var settings = CreateIsolatedSettings();
 
             var vm = new RecordBoxViewModel(Global.TEST_PROFILE_INDEX, new DS4ControlSettings(DS4Controls.Cross),
-                false, true, settings);
+                false, true, settings, null);
 
             Assert.Equal(-1, vm.TargetDevice);
             Assert.All(settings.TouchOutMode, m => Assert.Equal(TouchpadOutMode.Mouse, m));

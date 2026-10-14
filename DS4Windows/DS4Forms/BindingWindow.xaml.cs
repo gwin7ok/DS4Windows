@@ -49,6 +49,8 @@ namespace DS4WinWPF.DS4Forms
             new Dictionary<DS4Windows.X360Controls, Button>();
         private BindingWindowViewModel bindingVM;
         private readonly DS4Windows.ControlService controlService;
+        // Phase6-Step10-2-4b: Global.defaultButtonMapping／InverseRumbleMotors の置換先（必須引数）
+        private readonly DS4Windows.DI.IProfileSettingsService profileSettingsService;
         // Phase6-Step10-2-4a: RecordBox の生成を窓口へ依頼する（必須引数）
         private readonly DS4Windows.DI.IEditorWindowFactory editorWindowFactory;
         private Button highlightBtn;
@@ -69,14 +71,19 @@ namespace DS4WinWPF.DS4Forms
         /// </param>
         public BindingWindow(int deviceNum, DS4Windows.DS4ControlSettings settings, int targetDevice,
             DS4Windows.DI.IEditorWindowFactory editorWindowFactory,
+            DS4Windows.DI.IProfileSettingsService profileSettingsService,
+            DS4Windows.DI.IOutputSlotService outputSlotService,
+            DS4Windows.ControlService controlService,
             ExposeMode expose = ExposeMode.Full)
         {
             this.editorWindowFactory = editorWindowFactory ?? throw new ArgumentNullException(nameof(editorWindowFactory));
             InitializeComponent();
 
-            controlService = DS4WinWPF.AppHost.GetService<DS4Windows.ControlService>() ?? DS4Windows.Program.rootHub;
+            this.profileSettingsService = profileSettingsService ?? throw new ArgumentNullException(nameof(profileSettingsService));
+
+            this.controlService = controlService ?? throw new ArgumentNullException(nameof(controlService));
             this.expose = expose;
-            bindingVM = new BindingWindowViewModel(deviceNum, settings, targetDevice);
+            bindingVM = new BindingWindowViewModel(deviceNum, settings, profileSettingsService, outputSlotService, targetDevice);
 
             if (settings.control != DS4Windows.DS4Controls.None)
             {
@@ -207,7 +214,7 @@ namespace DS4WinWPF.DS4Forms
         private void OutputButtonBtn_Click(object sender, RoutedEventArgs e)
         {
             OutBinding binding = bindingVM.ActionBinding;
-            DS4Windows.X360Controls defaultControl = DS4Windows.Global.defaultButtonMapping[(int)binding.input];
+            DS4Windows.X360Controls defaultControl = profileSettingsService.GetDefaultButtonMapping()[(int)binding.input];
             Button button = sender as Button;
             if (associatedBindings.TryGetValue(button, out BindAssociation bind))
             {
@@ -251,7 +258,7 @@ namespace DS4WinWPF.DS4Forms
             OutBinding binding = bindingVM.ActionBinding;
             if (binding.outputType == OutBinding.OutType.Default)
             {
-                DS4Windows.X360Controls defaultBind = DS4Windows.Global.defaultButtonMapping[(int)binding.input];
+                DS4Windows.X360Controls defaultBind = profileSettingsService.GetDefaultButtonMapping()[(int)binding.input];
                 if (!OutBinding.IsMouseRange(defaultBind))
                 {
                     if (conBtnMap.TryGetValue(defaultBind, out Button tempBtn))
@@ -875,7 +882,7 @@ namespace DS4WinWPF.DS4Forms
                     if (!bindingVM.RumbleActive)
                     {
                         bindingVM.RumbleActive = true;
-                        if (Global.InverseRumbleMotors[bindingVM.DeviceNum])
+                        if (profileSettingsService.InverseRumbleMotors[bindingVM.DeviceNum])
                             d.setRumble((byte)Math.Min(255, bindingVM.ActionBinding.HeavyRumble),
                                 (byte)Math.Min(255, bindingVM.ActionBinding.LightRumble));
                         else
@@ -918,7 +925,7 @@ namespace DS4WinWPF.DS4Forms
             if (!actBind.shiftBind)
             {
                 actBind.outputType = OutBinding.OutType.Default;
-                actBind.control = DS4Windows.Global.defaultButtonMapping[(int)actBind.input];
+                actBind.control = profileSettingsService.GetDefaultButtonMapping()[(int)actBind.input];
             }
             else
             {

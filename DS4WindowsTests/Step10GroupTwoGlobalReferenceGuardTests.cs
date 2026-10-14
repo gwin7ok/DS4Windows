@@ -36,6 +36,13 @@ namespace DS4WindowsTests
             ["DS4Windows/DS4Forms/DupBox.xaml.cs"] = new string[0],
             ["DS4Windows/DS4Forms/RenameProfileWindow.xaml.cs"] = new string[0],
             ["DS4Windows/DS4Forms/ViewModels/RenameProfileViewModel.cs"] = new string[0],
+            // Step10-2-4b（RESOURCES_PREFIX・ASSEMBLY_RESOURCE_PREFIX は定数、ds4inputNames などの名前表と macroDS4Values は不変の静的表）
+            ["DS4Windows/DS4Forms/BindingWindow.xaml.cs"] = new[] { "RESOURCES_PREFIX", "ASSEMBLY_RESOURCE_PREFIX", "ds4inputNames", "xboxDefaultNames", "ds4DefaultNames" },
+            ["DS4Windows/DS4Forms/ViewModels/BindingWindowViewModel.cs"] = new string[0],
+            ["DS4Windows/DS4Forms/RecordBox.xaml.cs"] = new[] { "RESOURCES_PREFIX" },
+            ["DS4Windows/DS4Forms/ViewModels/RecordBoxViewModel.cs"] = new[] { "RESOURCES_PREFIX", "macroDS4Values" },
+            ["DS4Windows/DS4Forms/StickCalibrationWindow.xaml.cs"] = new string[0],
+            ["DS4Windows/DS4Control/Services/EditorWindowFactory.cs"] = new string[0],
         };
 
         private readonly ITestOutputHelper _output;
@@ -149,6 +156,28 @@ namespace DS4WindowsTests
             {
                 System.IO.Directory.Delete(dir, true);
             }
+        }
+
+        [Fact]
+        public void EditorWindowFactory_RequiresAllServices()
+        {
+            var settings = new ProfileSettingsService();
+            var slots = new OutputSlotService();
+            var path = new PathService();
+            Func<ControlService> cs = () => null;
+
+            Assert.Throws<ArgumentNullException>(() => new DS4Windows.Services.EditorWindowFactory(null, slots, path, null, cs));
+            Assert.Throws<ArgumentNullException>(() => new DS4Windows.Services.EditorWindowFactory(settings, null, path, null, cs));
+            Assert.Throws<ArgumentNullException>(() => new DS4Windows.Services.EditorWindowFactory(settings, slots, null, null, cs));
+            Assert.Throws<ArgumentNullException>(() => new DS4Windows.Services.EditorWindowFactory(settings, slots, path, null, cs));
+        }
+
+        [Fact]
+        public void BindingAndRecordViewModels_RequireProfileSettingsService()
+        {
+            Assert.Throws<ArgumentNullException>(() => new BindingWindowViewModel(0, new DS4ControlSettings(DS4Controls.Cross), null, new OutputSlotService()));
+            Assert.Throws<ArgumentNullException>(() => new BindingWindowViewModel(0, new DS4ControlSettings(DS4Controls.Cross), new ProfileSettingsService(), null));
+            Assert.Throws<ArgumentNullException>(() => new RecordBoxViewModel(0, new DS4ControlSettings(DS4Controls.Cross), false, true, null, null));
         }
 
         [Fact]

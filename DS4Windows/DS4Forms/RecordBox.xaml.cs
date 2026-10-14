@@ -54,27 +54,24 @@ namespace DS4WinWPF.DS4Forms
         private ColorPickerWindow colorDialog;
         private NonFormTimer ds4 = new NonFormTimer();
 
-        // Phase5-Step15-2-c: Program.rootHub直接参照を廃止し、他View/ViewModelと同じDIフォールバックパターンを導入する。
-        // 動作は完全に同一（フォールバック先が同じProgram.rootHubのため）で、実行時の挙動に変化はない。
+        // Phase6-Step10-2-4b: Program.rootHub／AppHost への後退を廃止し、必要なサービスを必須引数で受け取る。
         private readonly DS4Windows.ControlService controlService;
+        private readonly DS4Windows.DI.IPathService pathService;
 
         /// <param name="targetDevice">
         /// Phase6-Step7b: ライトバーのプレビューと記録中のタッチパッド Passthru で使う実機のスロット番号。-1 は実機なし。
         /// 渡し忘れをコンパイルで検出するため必須引数とする（Phase6-Step7b-Plan.md 決定2）
         /// </param>
         public RecordBox(int deviceNum, DS4Windows.DS4ControlSettings controlSettings, bool shift, int targetDevice,
-            bool showscan = true, bool repeatable = true)
+            bool showscan, bool repeatable,
+            DS4Windows.ControlService controlService, DS4Windows.DI.IPathService pathService,
+            DS4Windows.DI.IViewModelFactory viewModelFactory)
         {
-            controlService = DS4WinWPF.AppHost.GetService<DS4Windows.ControlService>() ?? DS4Windows.Program.rootHub;
+            this.controlService = controlService ?? throw new ArgumentNullException(nameof(controlService));
+            this.pathService = pathService ?? throw new ArgumentNullException(nameof(pathService));
+            if (viewModelFactory == null) throw new ArgumentNullException(nameof(viewModelFactory));
             InitializeComponent();
-            var vmFactory = DS4WinWPF.AppHost.GetService<DS4Windows.DI.IViewModelFactory>();
-            if (vmFactory != null)
-                recordBoxVM = vmFactory.CreateRecordBoxViewModel(deviceNum, controlSettings, shift, repeatable, targetDevice);
-            else
-            {
-                DS4Windows.AppLogger.LogTrace("[Legacy] ViewModel fallback: screen=RecordBox, viewModel=RecordBoxViewModel");
-                recordBoxVM = new RecordBoxViewModel(deviceNum, controlSettings, shift, repeatable, targetDevice: targetDevice);
-            }
+            recordBoxVM = viewModelFactory.CreateRecordBoxViewModel(deviceNum, controlSettings, shift, repeatable, targetDevice);
             mouseButtonsPanel.Visibility = Visibility.Hidden;
             extraConPanel.Visibility = Visibility.Hidden;
             macroModeCombo.IsEnabled = repeatable;
@@ -340,7 +337,7 @@ namespace DS4WinWPF.DS4Forms
             dialog.DefaultExt = ".txt";
             dialog.Filter = "Text Documents (*.txt)|*.txt";
             dialog.Title = "Select Export File";
-            dialog.InitialDirectory = $"{DS4Windows.Global.appdatapath}\\Macros";
+            dialog.InitialDirectory = $"{pathService.AppDataPath}\\Macros";
             if (dialog.ShowDialog() == true)
             {
                 //recordBoxVM.MacroSteps.Clear();
@@ -517,7 +514,7 @@ namespace DS4WinWPF.DS4Forms
             dialog.DefaultExt = ".txt";
             dialog.Filter = "Text Documents (*.txt)|*.txt";
             dialog.Title = "Select Preset File";
-            dialog.InitialDirectory = $"{DS4Windows.Global.appdatapath}\\Macros";
+            dialog.InitialDirectory = $"{pathService.AppDataPath}\\Macros";
             if (dialog.ShowDialog() == true)
             {
                 recordBoxVM.MacroSteps.Clear();

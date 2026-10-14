@@ -127,14 +127,16 @@ namespace DS4WinWPF.DS4Forms.ViewModels
         private bool HasTargetDevice =>
             targetDevice >= 0 && targetDevice < ControlService.CURRENT_DS4_CONTROLLER_LIMIT;
 
-        public RecordBoxViewModel(int deviceNum, DS4ControlSettings controlSettings, bool shift, bool repeatable = true,
-            IProfileSettingsService profileSettingsService = null,
-            ControlService controlService = null,
+        public RecordBoxViewModel(int deviceNum, DS4ControlSettings controlSettings, bool shift, bool repeatable,
+            IProfileSettingsService profileSettingsService,
+            ControlService controlService,
             int targetDevice = -1)
         {
             this.targetDevice = targetDevice;
-            this.profileSettingsService = profileSettingsService ?? DS4WinWPF.AppHost.GetService<IProfileSettingsService>() ?? Global.ProfileSettingsServiceInstance;
-            this.controlService = controlService ?? Program.rootHub;
+            this.profileSettingsService = profileSettingsService ?? throw new ArgumentNullException(nameof(profileSettingsService));
+            // Phase6-Step10-2-4b: Program.rootHub への後退を廃止。ControlService は EditorWindowFactory から渡す。
+            // null は「コントローラーを持たない」（単体テスト）を表し、記録中の入力の取り込み（ProcessDS4Tick）だけが使う。
+            this.controlService = controlService;
 
             if (keydownOverrides == null)
             {
@@ -420,7 +422,7 @@ namespace DS4WinWPF.DS4Forms.ViewModels
 
         public void ProcessDS4Tick()
         {
-            if (controlService.DS4Controllers[0] != null)
+            if (controlService != null && controlService.DS4Controllers[0] != null)
             {
                 DS4Device dev = controlService.DS4Controllers[0];
                 DS4State cState = dev.getCurrentStateRef();

@@ -118,8 +118,18 @@
   - `MainWindow`: `_autoProfileService` の解決を、`autoProfControl.Initialize` の前へ移した（解決先は同じ）。
 - **Step10-2-3**: 完了（ビルド・テスト実行成功、実機確認問題なし）。
 - **Step10-2-4 は 2-4a／2-4b に分割**（2026-10-14、承認済み）。当初案の「窓口の新設とウィンドウ内部の変更を同時に行う」より、**生成の経路の置き換え（2-4a）と、ウィンドウ内部の依存の必須化（2-4b）を分ける**形に改めた（2-4a の完了時点でビルド・テスト・実機確認ができ、2-4b の変更が内部のみになるため）。`SpecialActionEditor` のコンストラクタへの窓口の追加は、承認のとおり 2-4a に含める（その他の Pure DI 化は Step10-3）。
-- **Step10-2-4a（生成の窓口の新設）**: 実装済み・ビルド、テスト、実機確認の結果待ち。
+- **Step10-2-4a（生成の窓口の新設）**: 完了（ビルド・テスト実行成功、実機確認問題なし）。
   - 新設: `IEditorWindowFactory`（`DI/`）、`EditorWindowFactory`（`DS4Control/Services/`）。`BindingWindow`／`RecordBox`／`RecordBoxWindow`／`PresetOptionWindow`／`StickCalibrationWindow`／`SpecialActionEditor` の 6 種を生成する。
   - 窓口を必須引数で受け取る: `ProfileEditor`、`BindingWindow`、`RecordBoxWindow`、`SpecialActionEditor`。`ProfileEditor`（`new BindingWindow` 7、`new SpecialActionEditor` 2、`new PresetOptionWindow` 2、`new(stick…)` 1）、`BindingWindow`（`RecordBox`）、`RecordBoxWindow`（`RecordBox`）、`SpecialActionEditor`（`BindingWindow` 1、`RecordBoxWindow` 4）の生成を窓口へ置き換えた。`MainWindow` は `ProfileEditor` に窓口を渡す。
   - ウィンドウ内部（`ControlService` の取得、`Global` 参照）は未変更。2-4b で行う。
   - ガードテスト `ProfileEditorTargetDeviceGuardTests`／`ProfileEditorGlobalReferenceGuardTests` を、窓口の呼び出し（`CreateBindingWindow(` など）の検査へ更新した。`targetDevice` を渡していることの検査の趣旨は維持。
+  - 実機確認で、ジャイロ画面の「Gyro Calibration」ボタンが、押しても何も起きない（校正のリセットのみ。置換前からの仕様）ことが分かったため、表示名を「Reset Gyro Calibration」に変え、幅を可変（最小 100）にした（`ProfileEditor.xaml` の 5 か所）。
+- **Step10-2-4b（ウィンドウ内部の依存の必須化）**: 実装済み・ビルド、テスト、実機確認の結果待ち。
+  - `BindingWindowViewModel`: `IProfileSettingsService`（`RefreshActionAlias`）と `IOutputSlotService`（`OutDevTypeTemp`）を必須引数にした（`Global.outDevTypeTemp`／`Global.RefreshActionAlias` を削除）。
+  - `BindingWindow`: `IProfileSettingsService`（`GetDefaultButtonMapping`／`InverseRumbleMotors`）、`IOutputSlotService`、`ControlService` を必須引数にした（`AppHost`／`Program.rootHub`／`Global.defaultButtonMapping`／`Global.InverseRumbleMotors` を削除）。
+  - `RecordBoxViewModel`: `IProfileSettingsService` を必須引数にし、`ControlService` は引数で受け取る（`AppHost`／`Global.ProfileSettingsServiceInstance`／`Program.rootHub` のフォールバックを削除。null は単体テスト用で、入力の取り込みだけが使う）。
+  - `RecordBox`: `ControlService`、`IPathService`（マクロの保存先 `AppDataPath`）、`IViewModelFactory` を必須引数にした（`AppHost` と `new RecordBoxViewModel` のフォールバックを削除）。`ViewModelFactory.CreateRecordBoxViewModel` が、保持するサービスを渡す。
+  - `StickCalibrationWindow`: `ControlService` を必須引数にした。
+  - `EditorWindowFactory`: `IProfileSettingsService`、`IOutputSlotService`、`IPathService`、`IViewModelFactory`、`Func<ControlService>` を必須引数で保持し、生成のたびに `ControlService` を遅延解決して渡す。
+  - 温存: `RESOURCES_PREFIX`／`ASSEMBLY_RESOURCE_PREFIX`（定数）、`ds4inputNames`／`xboxDefaultNames`／`ds4DefaultNames`／`macroDS4Values`（不変の静的表）。
+  - テスト: `Step10GroupTwoGlobalReferenceGuardTests` に 6 ファイルを追加、必須引数の検査 2 件を追加。`BindingWindowViewModelTargetDeviceTests`／`RecordBoxViewModelTargetDeviceTests` を新しいコンストラクタに合わせた。

@@ -64,7 +64,8 @@ namespace DS4WindowsTests
         private static BindingWindowViewModel CreateViewModel(int targetDevice)
         {
             return new BindingWindowViewModel(Global.TEST_PROFILE_INDEX,
-                new DS4ControlSettings(DS4Controls.Cross), targetDevice);
+                new DS4ControlSettings(DS4Controls.Cross),
+                new ProfileSettingsService(), new OutputSlotService(), targetDevice);
         }
 
         [Fact]
@@ -80,7 +81,8 @@ namespace DS4WindowsTests
         [Fact]
         public void TargetDeviceIsOptional_DefaultsToNoTargetDevice()
         {
-            var vm = new BindingWindowViewModel(Global.TEST_PROFILE_INDEX, new DS4ControlSettings(DS4Controls.Cross));
+            var vm = new BindingWindowViewModel(Global.TEST_PROFILE_INDEX, new DS4ControlSettings(DS4Controls.Cross),
+                new ProfileSettingsService(), new OutputSlotService());
 
             Assert.Equal(-1, vm.TargetDevice);
             Assert.False(vm.HasTargetDevice);

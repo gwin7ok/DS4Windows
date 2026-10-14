@@ -25,6 +25,7 @@ using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Media;
 using DS4Windows;
+using DS4Windows.DI;
 
 namespace DS4WinWPF.DS4Forms.ViewModels
 {
@@ -54,6 +55,8 @@ namespace DS4WinWPF.DS4Forms.ViewModels
         // Phase6-Step7b: 設定の読み書き先（DeviceNum＝編集スロット）とは別に、ランブルテスト・ライトバーの
         // プレビューで実際に使うコントローラーのスロット番号を持つ。-1 は「実機なし」
         // （プロファイル一覧から開いた場合）。詳細は docs-forDIMG/MadeByAgent/Phase6-Step7b-Plan.md §2.1
+        // Phase6-Step10-2-4b: Global.RefreshActionAlias の置換先（必須引数）
+        private readonly IProfileSettingsService profileSettingsService;
         private readonly int targetDevice;
         public int TargetDevice { get => targetDevice; }
 
@@ -64,11 +67,15 @@ namespace DS4WinWPF.DS4Forms.ViewModels
         public bool HasTargetDevice =>
             targetDevice >= 0 && targetDevice < ControlService.CURRENT_DS4_CONTROLLER_LIMIT;
 
-        public BindingWindowViewModel(int deviceNum, DS4ControlSettings settings, int targetDevice = -1)
+        public BindingWindowViewModel(int deviceNum, DS4ControlSettings settings,
+            IProfileSettingsService profileSettingsService, IOutputSlotService outputSlotService,
+            int targetDevice = -1)
         {
+            this.profileSettingsService = profileSettingsService ?? throw new ArgumentNullException(nameof(profileSettingsService));
+            if (outputSlotService == null) throw new ArgumentNullException(nameof(outputSlotService));
             this.deviceNum = deviceNum;
             this.targetDevice = targetDevice;
-            use360Mode = Global.outDevTypeTemp[deviceNum] == OutContType.X360;
+            use360Mode = outputSlotService.OutDevTypeTemp[deviceNum] == OutContType.X360;
             this.settings = settings;
             currentOutBind = new OutBinding();
             shiftOutBind = new OutBinding();
@@ -175,8 +182,8 @@ namespace DS4WinWPF.DS4Forms.ViewModels
 
         public void WriteBinds()
         {
-            currentOutBind.WriteBind(settings);
-            shiftOutBind.WriteBind(settings);
+            currentOutBind.WriteBind(settings, profileSettingsService);
+            shiftOutBind.WriteBind(settings, profileSettingsService);
         }
 
         // Phase6-Step7b: ライトバー強制色のプレビューは、編集スロット（DeviceNum）ではなく実機（targetDevice）に対して行う
@@ -638,7 +645,7 @@ namespace DS4WinWPF.DS4Forms.ViewModels
             return result;
         }
 
-        public void WriteBind(DS4ControlSettings settings)
+        public void WriteBind(DS4ControlSettings settings, IProfileSettingsService profileSettingsService)
         {
             if (!shiftBind)
             {
@@ -703,7 +710,7 @@ namespace DS4WinWPF.DS4Forms.ViewModels
                 if (LightbarMacro is not null && LightbarMacro.Macro.Count > 0)
                     settings.LightbarMacroString = LightbarMacro.Compile();
 
-                Global.RefreshActionAlias(settings, shiftBind);
+                profileSettingsService.RefreshActionAlias(settings, shiftBind);
             }
             else
             {
@@ -767,7 +774,7 @@ namespace DS4WinWPF.DS4Forms.ViewModels
                     settings.shiftExtras = string.Empty;
                 }
 
-                Global.RefreshActionAlias(settings, shiftBind);
+                profileSettingsService.RefreshActionAlias(settings, shiftBind);
             }
         }
 

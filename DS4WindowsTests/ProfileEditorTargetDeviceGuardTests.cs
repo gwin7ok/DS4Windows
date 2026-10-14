@@ -275,7 +275,6 @@ namespace DS4WindowsTests
                 ("DS4Windows/DS4Forms/BindingWindow.xaml.cs", "new BindingWindowViewModel("),
                 ("DS4Windows/DS4Forms/RecordBoxWindow.xaml.cs", "CreateRecordBox("),
                 ("DS4Windows/DS4Forms/RecordBox.xaml.cs", "CreateRecordBoxViewModel("),
-                ("DS4Windows/DS4Forms/RecordBox.xaml.cs", "new RecordBoxViewModel("),
                 ("DS4Windows/DS4Forms/SpecialActionEditor.xaml.cs", "CreateRecordBoxWindow("),
                 ("DS4Windows/DS4Forms/SpecialActionEditor.xaml.cs", "CreateBindingWindow("),
             };
