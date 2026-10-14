@@ -233,12 +233,28 @@ classDiagram
         -IAppearanceSettingsService _appearanceSettings
         -IEnvironmentService _environmentService
         -IPathService _pathService
+        -ILogSettingsApplier _logSettingsApplier
     }
     class TrayIconViewModel {
         -IAppearanceSettingsService _appearanceSettings
         -IProfileRepository _profileRepository
         -IPathService _pathService
+        -Dispatcher uiDispatcher
     }
+    class ILogSettingsApplier {
+        <<interface>>
+        +UpdateLogSettings()
+        +UpdateNLogConfig(int maxArchiveFiles)
+        +RestoreArchiveSetting()
+    }
+    class LogSettingsApplierProxy {
+        +Attach(ILogSettingsApplier applier)
+    }
+    class LoggerHolder
+    ILogSettingsApplier <|.. LogSettingsApplierProxy : implements
+    ILogSettingsApplier <|.. LoggerHolder : implements
+    LogSettingsApplierProxy --> LoggerHolder : Attach 後に転送
+    SettingsViewModel --> ILogSettingsApplier : ログ設定の反映
 
     ProfileSettingsViewModel *-- StickSettingsSubViewModel : mediates
     ProfileSettingsViewModel *-- TriggerSettingsSubViewModel : mediates
@@ -343,3 +359,8 @@ classDiagram
 %% - `ViewModelFactory` の依存を、実コードに合わせて明示した（`IServiceProvider` の保持ではなく、必須のコンストラクタ引数）。`ControlService` は `Func<ControlService>` で生成のたびに遅延解決する（Step2 決定D1 と同じ形）。`IViewModelFactory` の契約（`CreateProfileSettingsViewModel(int device, int targetDevice = -1)`）は変更なし。
 %% - 追加した契約: `IAppSettingsService`（`UseCustomSteamFolder`、`CustomSteamFolder`、`FakeExeName`、`LogMaxArchiveFiles`）、`IEnvironmentService`（`IsViGEmBusInstalled`、`IsRunningSupportedViGEmBus`、`IsUsingMinViGEm117333`、`AdminNeeded`）、`IPathService.ProgramDirectory`（`Global.exedirpath` と同じ値。`ExecutableDirectory`＝`AppContext.BaseDirectory` とは値が異なりうる）、`IAppearanceSettingsService.BatteryChanged`（購読。発行の `InvokeBatteryChanged` と対）、`IProfileSettingsService.RefreshActionAlias`。いずれも `Global` への薄い委譲。
 %% - 詳細は `Phase6-Step9-Plan.md` §0A、`Phase6-Step9-Completion-Report.md`。
+%% 注釈補強（2026-10-14 Phase6-Step10-1 反映）
+%% - グループ1（起動・環境系）の View／ViewModel（`SaveWhere`、`WelcomeDialog`、`LanguageSelectDialog`、`About`、`UpdaterWindow`、`LanguagePackControl`、`LogViewModel`、`UpdaterWindowViewModel`、`LanguagePackViewModel`、`SettingsViewModel`、`TrayIconViewModel`）の依存を、コンストラクタの必須引数（Pure DI）にした。`LanguagePackControl` は XAML から生成されるため、引数なしコンストラクタを残し `Initialize(IAppSettingsService)` で受け取る。
+%% - 追加した契約: `IEnvironmentService`（`IsWin10OrGreater`、`IsWin8OrGreater`、`IsFakerInputInstalled`、`IsHidHideInstalled`［その場で確認。キャッシュ値の `HidHideInstalled` とは別物］、`RefreshViGEmBusInfo`）、`IPathService`（`SetSaveLocation`＝`Global.SaveWhere`［`AppDataPath` の setter とは別物］、`CreateEmptyProfilesFile`＝`Global.SaveDefault`）、`IAppSettingsService`（`LastVersionChecked`、`SetCulture`）、`ILogSettingsApplier`（`LoggerHolder` が実装。DI へは遅延接続の `LogSettingsApplierProxy` を登録し、`App` が `LoggerHolder` の生成直後に `Attach` する）。いずれも `Global` への薄い委譲。
+%% - `StartupMethods`（静的クラス）は静的のまま、プログラムフォルダと実行ファイルの場所を引数で受け取る形にした。`TrayIconViewModel` は UI スレッドの `Dispatcher` をコンストラクタの引数で受け取る。
+%% - 詳細は `Phase6-Step10-1-Plan.md`。
