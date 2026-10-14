@@ -153,6 +153,16 @@ namespace DS4WinWPF
         /// </summary>
         public void ApplyLanguageSettingPublic(string cultureCode)
         {
+            if (string.IsNullOrEmpty(cultureCode))
+            {
+                // 「No (English UI)」（カルチャ名が空）の選択。ApplyLanguageSetting は空文字を無視して何も変えないため、
+                // 起動時に UseLang が空のときと同じ処理（SetUICulture。空文字はインバリアントカルチャ＝既定の英語 UI）を
+                // 実行時にも行う。これまでは、再起動するまで UI が切り替わらなかった。
+                // Global.UseLang は呼び出し元（LanguagePackViewModel.ChangeLanguagePack）が設定済み。
+                SetUICulture(string.Empty);
+                return;
+            }
+
             ApplyLanguageSetting(cultureCode);
         }
 
