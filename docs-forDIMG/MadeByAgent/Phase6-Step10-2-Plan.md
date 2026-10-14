@@ -109,3 +109,10 @@
   - `ControllerListViewModel`／入れ子の `CompositeDeviceModel`: 任意引数＋`AppHost`／`Global.*Instance` のフォールバックを削除し、必須引数にした。`MainWindow` が保持する `profileSettingsService`／`profileRepo`／`appSettingsService` を渡す。置換前は、`MainWindow` が `profileSettingsService` だけを渡しており、コンストラクタ本体の `profileRepo`（引数）が null のままで `profileRepo.ProfilePath[idx]` を参照していた（起動時にコントローラーが接続済みだと NullReferenceException になり得た潜在的な不具合。必須引数化で解消）。
   - `ControllerRegDeviceOptsViewModel`: `IAppSettingsService`（`UseMoonlight`／`UseAdvancedMoonlight`）と `IProfileXmlStore`（`SaveControllerConfigsForDevice`）を必須引数で受け取る。`ControllerRegisterOptionsWindow` と `MainWindow`（`profileXmlStore` を `AppHost` の並びで解決）を更新。
   - ガードテスト: `Step10GroupTwoGlobalReferenceGuardTests`（新規。各ステップで対象ファイルを追加していく）。
+- **Step10-2-1・10-2-2**: 完了（ビルド・テスト実行成功、実機確認問題なし）。付随の整理: Vader 4 Pro のデバイスサポートを削除した（`Phase6-Step10-V4P-Removal-Plan.md`）。Moonlight の「Virtual Controller Support」が、自己の仮想出力も入力として検出する動作は、置換前からの仕様（`DS4Devices.IsRealDS4` は VID／PID だけで判定し、Advanced Support は検出を 5 秒に 1 台へ抑えるのみ）。
+- **Step10-2-3（`AutoProfiles`／`AutoProfilesViewModel`／`DupBox`／`RenameProfileWindow`／`RenameProfileViewModel`／`ViewModelFactory`）**: 実装済み・ビルド、テスト、実機確認の結果待ち。
+  - `AutoProfiles`（XAML から生成）: 引数なしコンストラクタは `InitializeComponent` のみ。保存先ファイルの作成（`IAutoProfileService.CreateAutoProfilesFile`）、Steam フォルダの判定（`IAppSettingsService`）、`AutoProfileHolder` の取得、行数の調整は `Initialize(IPathService, IAppSettingsService, IAutoProfileService, IViewModelFactory)` へ移した（順序は同じ）。`MainWindow` は、`AutoProfileHolder` を読む前に呼ぶ。`SetupDataContext` の `AppHost`／`new AutoProfilesViewModel` のフォールバックは削除。
+  - `AutoProfilesViewModel`: 3 つの依存（`IAppSettingsService`、`IAutoProfileService`、`ControlService`）を必須引数にし、`Global`／`AppHost`／`Program.rootHub` のフォールバックを削除。
+  - `ViewModelFactory`: `IAppSettingsService` と `Func<IAutoProfileService>`（遅延解決。`IAutoProfileService` は生成時に `AutoProfileHolder` を読むため、`ControlService` と同じ形）を必須引数に追加。`CreateAutoProfilesViewModel` が渡す。
+  - `DupBox`（XAML から生成）: `Initialize(IPathService)`。`RenameProfileWindow`／`RenameProfileViewModel`: `IPathService` を必須引数で受け取る。
+  - `MainWindow`: `_autoProfileService` の解決を、`autoProfControl.Initialize` の前へ移した（解決先は同じ）。

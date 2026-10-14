@@ -88,6 +88,8 @@ namespace DS4Windows.DI
             // Phase6-Step9-4（決定2＝C1）: ViewModelFactory が ControlService を生成のたびに遅延解決するための Func
             // （ControlService は Singleton。明示的なホスト構築より前に解決しないため、構築時には解決しない）
             services.AddSingleton<Func<ControlService>>(sp => () => sp.GetRequiredService<ControlService>());
+            // Phase6-Step10-2-3: IAutoProfileService の遅延解決（AutoProfileHolder は設定の場所が決まった後でなければ生成できない）
+            services.AddSingleton<Func<IAutoProfileService>>(sp => () => sp.GetRequiredService<IAutoProfileService>());
 
             // Phase 4: UI層 ViewModel ファクトリの登録
             services.AddSingleton<IViewModelFactory, ViewModelFactory>();

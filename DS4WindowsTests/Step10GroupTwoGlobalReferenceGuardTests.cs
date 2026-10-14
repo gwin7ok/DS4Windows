@@ -30,6 +30,12 @@ namespace DS4WindowsTests
             ["DS4Windows/DS4Forms/ViewModels/ControllerListViewModel.cs"] = new[] { "RESOURCES_PREFIX" },
             ["DS4Windows/DS4Forms/ViewModels/ControllerRegDeviceOptsViewModel.cs"] = new string[0],
             ["DS4Windows/DS4Forms/ControllerRegisterOptionsWindow.xaml.cs"] = new string[0],
+            // Step10-2-3
+            ["DS4Windows/DS4Forms/AutoProfiles.xaml.cs"] = new string[0],
+            ["DS4Windows/DS4Forms/ViewModels/AutoProfilesViewModel.cs"] = new string[0],
+            ["DS4Windows/DS4Forms/DupBox.xaml.cs"] = new string[0],
+            ["DS4Windows/DS4Forms/RenameProfileWindow.xaml.cs"] = new string[0],
+            ["DS4Windows/DS4Forms/ViewModels/RenameProfileViewModel.cs"] = new string[0],
         };
 
         private readonly ITestOutputHelper _output;
@@ -109,6 +115,40 @@ namespace DS4WindowsTests
             Assert.Throws<ArgumentNullException>(() => new ControllerListViewModel(null, null, null, repo, app));
             Assert.Throws<ArgumentNullException>(() => new ControllerListViewModel(null, null, settings, null, app));
             Assert.Throws<ArgumentNullException>(() => new ControllerListViewModel(null, null, settings, repo, null));
+        }
+
+        [Fact]
+        public void AutoProfilesViewModel_RequiresAllServices()
+        {
+            // 依存の null 検査は、AutoProfileHolder を使う処理より前に行われる（holder／list は null で検証できる）
+            var app = new DS4Windows.Services.AppSettingsService();
+
+            Assert.Throws<ArgumentNullException>(() => new AutoProfilesViewModel(null, null, null, null, null));
+            Assert.Throws<ArgumentNullException>(() => new AutoProfilesViewModel(null, null, app, null, null));
+        }
+
+        [Fact]
+        public void RenameProfileViewModel_RequiresPathService_AndUsesItsAppDataPath()
+        {
+            Assert.Throws<ArgumentNullException>(() => new RenameProfileViewModel(null));
+
+            string dir = System.IO.Path.Combine(System.IO.Path.GetTempPath(), "Phase6Step10_Rename_" + Guid.NewGuid().ToString("N"));
+            System.IO.Directory.CreateDirectory(System.IO.Path.Combine(dir, "Profiles"));
+            try
+            {
+                System.IO.File.WriteAllText(System.IO.Path.Combine(dir, "Profiles", "Existing.xml"), "x");
+                var vm = new RenameProfileViewModel(new PathService(dir));
+
+                vm.ProfileName = "Existing";
+                Assert.True(vm.ProfileFileExists());
+
+                vm.ProfileName = "Missing";
+                Assert.False(vm.ProfileFileExists());
+            }
+            finally
+            {
+                System.IO.Directory.Delete(dir, true);
+            }
         }
 
         [Fact]

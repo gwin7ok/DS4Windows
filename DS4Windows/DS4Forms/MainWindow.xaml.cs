@@ -204,11 +204,16 @@ namespace DS4WinWPF.DS4Forms
             noContLb.Content = string.Format(Strings.NoControllersConnected,
                 ControlService.CURRENT_DS4_CONTROLLER_LIMIT);
 
+            // [Phase 5 Step 13-9] 二重実体化防止: 注入済み _autoProfileService を直接利用するため撤去
+            // Phase6-Step10-2-3: AutoProfiles の Initialize に渡すため、解決を前へ移した（解決先は同じ）
+            _autoProfileService = autoProfileService ?? DS4WinWPF.AppHost.GetService<IAutoProfileService>();
+
+            // Phase6-Step10-2-3: XAML から生成されるコントロールへ、保持済みのサービスを渡す（AutoProfileHolder を読む前に呼ぶ）
+            autoProfControl.Initialize(pathService, appSettingsService, _autoProfileService,
+                DS4WinWPF.AppHost.GetService<DS4Windows.DI.IViewModelFactory>());
+            dupBox.Initialize(pathService);
             autoProfileHolder = autoProfControl.AutoProfileHolder;
             autoProfControl.SetupDataContext(profileListHolder);
-
-            // [Phase 5 Step 13-9] 二重実体化防止: 注入済み _autoProfileService を直接利用するため撤去
-            _autoProfileService = autoProfileService ?? DS4WinWPF.AppHost.GetService<IAutoProfileService>();
 
             slotManControl.SetupDataContext(controlService: controlService,
                 controlService.OutputslotMan);
@@ -2173,7 +2178,7 @@ Suspend support not enabled.", true);
                 if (entity.Name != "Default" &&
                     File.Exists(filename))
                 {
-                    RenameProfileWindow renameWin = new RenameProfileWindow();
+                    RenameProfileWindow renameWin = new RenameProfileWindow(pathService);
                     renameWin.ChangeProfileName(entity.Name);
                     bool? result = renameWin.ShowDialog();
                     if (result.HasValue && result.Value)

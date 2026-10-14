@@ -14,6 +14,8 @@ namespace DS4Windows
         private readonly IOutputSlotService _outputSlotService;
         private readonly IEnvironmentService _environmentService;
         private readonly IPathService _pathService;
+        private readonly IAppSettingsService _appSettings;
+        private readonly Func<IAutoProfileService> _autoProfileServiceAccessor;
         private readonly Func<ControlService> _controlServiceAccessor;
 
         // Phase6-Step9-4: 依存はすべて必須引数（Pure DI。決定1＝S9-A）。
@@ -26,6 +28,8 @@ namespace DS4Windows
             IOutputSlotService outputSlotService,
             IEnvironmentService environmentService,
             IPathService pathService,
+            IAppSettingsService appSettings,
+            Func<IAutoProfileService> autoProfileServiceAccessor,
             Func<ControlService> controlServiceAccessor)
         {
             _profileSettings = profileSettings ?? throw new ArgumentNullException(nameof(profileSettings));
@@ -34,6 +38,10 @@ namespace DS4Windows
             _outputSlotService = outputSlotService ?? throw new ArgumentNullException(nameof(outputSlotService));
             _environmentService = environmentService ?? throw new ArgumentNullException(nameof(environmentService));
             _pathService = pathService ?? throw new ArgumentNullException(nameof(pathService));
+            _appSettings = appSettings ?? throw new ArgumentNullException(nameof(appSettings));
+            // Phase6-Step10-2-3: IAutoProfileService は、生成時に AutoProfileHolder を読む（設定の場所が決まった後でなければ生成できない）
+            // ため、ControlService と同じく生成のたびに Func で遅延解決する。
+            _autoProfileServiceAccessor = autoProfileServiceAccessor ?? throw new ArgumentNullException(nameof(autoProfileServiceAccessor));
             _controlServiceAccessor = controlServiceAccessor ?? throw new ArgumentNullException(nameof(controlServiceAccessor));
         }
 
@@ -63,7 +71,8 @@ namespace DS4Windows
         {
             if (AppLogger.IsTraceEnabled)
                 AppLogger.LogTrace("[DI] ViewModelFactory: Created AutoProfilesViewModel");
-            return new AutoProfilesViewModel(autoProfileHolder, profileList);
+            return new AutoProfilesViewModel(autoProfileHolder, profileList,
+                _appSettings, _autoProfileServiceAccessor(), _controlServiceAccessor());
         }
     }
 }

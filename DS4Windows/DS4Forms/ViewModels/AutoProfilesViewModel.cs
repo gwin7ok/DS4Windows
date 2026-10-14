@@ -76,12 +76,8 @@ namespace DS4WinWPF.DS4Forms.ViewModels
 
         public bool RevertDefaultProfileOnUnknown
         {
-            get => _appSettings?.AutoProfileRevertDefaultProfile ?? Global.AutoProfileRevertDefaultProfile;
-            set
-            {
-                if (_appSettings != null) _appSettings.AutoProfileRevertDefaultProfile = value;
-                else Global.AutoProfileRevertDefaultProfile = value;
-            }
+            get => _appSettings.AutoProfileRevertDefaultProfile;
+            set => _appSettings.AutoProfileRevertDefaultProfile = value;
         }
 
         public bool UsingExpandedControllers
@@ -102,26 +98,24 @@ namespace DS4WinWPF.DS4Forms.ViewModels
 
         public AutoProfileDisplayProfileSwitchChoices ProfileSwitchChoice
         {
-            get => _autoProfileService?.AutoProfileSwitchNotifyChoice ?? Global.autoProfileSwitchNotifyChoice;
-            set
-            {
-                if (_autoProfileService != null) _autoProfileService.AutoProfileSwitchNotifyChoice = value;
-                else Global.autoProfileSwitchNotifyChoice = value;
-            }
+            get => _autoProfileService.AutoProfileSwitchNotifyChoice;
+            set => _autoProfileService.AutoProfileSwitchNotifyChoice = value;
         }
 
+        // Phase6-Step10-2-3: 依存はすべて必須引数（Pure DI。決定1＝S9-A と同じ方針）。
+        // 置換前は任意引数（= null）と、AppHost/Program.rootHub/Global のフォールバックだった。
         public AutoProfilesViewModel(AutoProfileHolder autoProfileHolder, ProfileList profileList,
-            IAppSettingsService appSettings = null,
-            IAutoProfileService autoProfileService = null,
-            ControlService controlService = null)
+            IAppSettingsService appSettings,
+            IAutoProfileService autoProfileService,
+            ControlService controlService)
         {
+            _appSettings = appSettings ?? throw new ArgumentNullException(nameof(appSettings));
+            _autoProfileService = autoProfileService ?? throw new ArgumentNullException(nameof(autoProfileService));
+            _controlService = controlService ?? throw new ArgumentNullException(nameof(controlService));
             programColl = new ObservableCollection<ProgramItem>();
             existingapps = new HashSet<string>();
             this.autoProfileHolder = autoProfileHolder;
             this.profileList = profileList;
-            _appSettings = appSettings ?? DS4WinWPF.AppHost.GetService<IAppSettingsService>();
-            _autoProfileService = autoProfileService ?? DS4WinWPF.AppHost.GetService<IAutoProfileService>();
-            _controlService = controlService ?? Program.rootHub;
             PopulateCurrentEntries();
 
             BindingOperations.EnableCollectionSynchronization(programColl, _colLockobj);

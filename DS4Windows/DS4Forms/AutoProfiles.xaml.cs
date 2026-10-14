@@ -43,12 +43,12 @@ namespace DS4WinWPF.DS4Forms
     /// </summary>
     public partial class AutoProfiles : UserControl
     {
-        // Phase5-Step15-2-a: Global.appdatapath直接参照を廃止し、DIフォールバックパターンでIPathServiceを取得する。
-        // pathServiceの初期化子は静的メンバのみを参照しているため合法だが、m_Profileの初期化子でpathService（インスタンス
-        // フィールド）を参照するとCS0236（フィールド初期化子は非staticメンバーを参照できない）になるため、
-        // m_Profileはここでは宣言のみとし、実際の値はコンストラクタ本体でpathService確定後に設定する。
-        private readonly DS4Windows.DI.IPathService pathService =
-            DS4WinWPF.AppHost.GetService<DS4Windows.DI.IPathService>() ?? DS4Windows.Global.PathServiceInstance;
+        // Phase6-Step10-2-3: 本コントロールは MainWindow.xaml から生成されるため、引数なしのコンストラクタが必要。
+        // 依存は Initialize で受け取る（MainWindow のコンストラクタが、AutoProfileHolder を読む前に 1 回だけ呼ぶ）。
+        private DS4Windows.DI.IPathService pathService;
+        private DS4Windows.DI.IAppSettingsService appSettingsService;
+        private DS4Windows.DI.IAutoProfileService autoProfileService;
+        private DS4Windows.DI.IViewModelFactory viewModelFactory;
         protected String m_Profile;
         public const string steamCommx86Loc = @"C:\Program Files (x86)\Steam\steamapps\common";
         public const string steamCommLoc = @"C:\Program Files\Steam\steamapps\common";
@@ -69,17 +69,35 @@ namespace DS4WinWPF.DS4Forms
 
         public AutoProfiles()
         {
-            m_Profile = pathService.AppDataPath + "\\Auto Profiles.xml";
             InitializeComponent();
+        }
+
+        /// <summary>
+        /// 依存を受け取り、画面の初期化（保存先ファイルの作成、Steam フォルダの判定、AutoProfileHolder の取得、
+        /// 行数の調整）を行う。置換前はコンストラクタで行っていた処理で、順序は同じ。
+        /// MainWindow のコンストラクタから、AutoProfileHolder を読む前に 1 回だけ呼ぶ。
+        /// </summary>
+        public void Initialize(DS4Windows.DI.IPathService pathService,
+            DS4Windows.DI.IAppSettingsService appSettingsService,
+            DS4Windows.DI.IAutoProfileService autoProfileService,
+            DS4Windows.DI.IViewModelFactory viewModelFactory)
+        {
+            if (this.pathService != null) throw new InvalidOperationException("AutoProfiles is already initialized.");
+            this.pathService = pathService ?? throw new ArgumentNullException(nameof(pathService));
+            this.appSettingsService = appSettingsService ?? throw new ArgumentNullException(nameof(appSettingsService));
+            this.autoProfileService = autoProfileService ?? throw new ArgumentNullException(nameof(autoProfileService));
+            this.viewModelFactory = viewModelFactory ?? throw new ArgumentNullException(nameof(viewModelFactory));
+
+            m_Profile = pathService.AppDataPath + "\\Auto Profiles.xml";
 
             if (!File.Exists(pathService.AppDataPath + @"\Auto Profiles.xml"))
-                DS4Windows.Global.CreateAutoProfiles(m_Profile);
+                autoProfileService.CreateAutoProfilesFile(m_Profile);
 
             //LoadP();
 
-            if (DS4Windows.Global.UseCustomSteamFolder &&
-                Directory.Exists(DS4Windows.Global.CustomSteamFolder))
-                steamgamesdir = DS4Windows.Global.CustomSteamFolder;
+            if (appSettingsService.UseCustomSteamFolder &&
+                Directory.Exists(appSettingsService.CustomSteamFolder))
+                steamgamesdir = appSettingsService.CustomSteamFolder;
             else if (Directory.Exists(steamCommx86Loc))
                 steamgamesdir = steamCommx86Loc;
             else if (Directory.Exists(steamCommLoc))
@@ -90,8 +108,7 @@ namespace DS4WinWPF.DS4Forms
             // Phase5-Step13-4: IAutoProfileServiceが監視に使用している唯一のHolderを共有する。
             // 独自に new AutoProfileHolder() すると、本画面での編集・保存がバックグラウンド監視
             // (AutoProfileService.CheckProfiles)に反映されない二重インスタンス問題が発生するため。
-            var autoProfileSvc = DS4WinWPF.AppHost.GetService<DS4Windows.DI.IAutoProfileService>();
-            autoProfileHolder = autoProfileSvc?.Holder ?? new AutoProfileHolder();
+            autoProfileHolder = autoProfileService.Holder;
 
             int currentRowCount = autoProfilesGrid.RowDefinitions.Count;
             if (currentRowCount > DS4Windows.ControlService.CURRENT_DS4_CONTROLLER_LIMIT)
@@ -105,14 +122,7 @@ namespace DS4WinWPF.DS4Forms
 
         public void SetupDataContext(ProfileList profileList)
         {
-            var vmFactory = DS4WinWPF.AppHost.GetService<DS4Windows.DI.IViewModelFactory>();
-            if (vmFactory != null)
-                autoProfVM = vmFactory.CreateAutoProfilesViewModel(autoProfileHolder, profileList);
-            else
-            {
-                DS4Windows.AppLogger.LogTrace("[Legacy] ViewModel fallback: screen=AutoProfiles, viewModel=AutoProfilesViewModel");
-                autoProfVM = new AutoProfilesViewModel(autoProfileHolder, profileList);
-            }
+            autoProfVM = viewModelFactory.CreateAutoProfilesViewModel(autoProfileHolder, profileList);
             programListLV.DataContext = autoProfVM;
             programListLV.ItemsSource = autoProfVM.ProgramColl;
 
