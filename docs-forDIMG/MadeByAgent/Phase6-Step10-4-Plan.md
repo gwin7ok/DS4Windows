@@ -137,3 +137,43 @@
 
 ## 10. 進捗（2026-10-15）
 - **Step10-4-0（分類表の確定）**: 完了（本書 §8〜9。コードの変更なし）。次: Step10-4-1（小さな置換）の計画と実装。
+
+---
+
+## 11. Step10-4-1 の計画（小さな置換）。2026-10-15
+
+### 11.1 対象の再確認（現行コード）
+- **`WindowPlacementHelper.cs`**: `Global.FormLocationX`／`FormLocationY`／`FormWidth`／`FormHeight` を使っているのは、`ApplyPlacement(MainWindow, bool)` だけ（16 件）。`GetPlacement`／`GetLogicalPlacement` は `Global` を使わない。呼び出し元は `MainWindow` の `ApplyPlacement` 1 か所（1197 行）。
+- **`ProfileList.cs`**: `IPathService` を任意引数で受け取り、省略時は `Global.PathServiceInstance`。生成箇所は `MainWindow`（フィールド初期化子）、テスト 2 件（`AutoProfilesViewModelTests`、`PatternCViewModelTests`）。`ProfileEntity` は `ProfileList.AddProfileSort` の 2 か所だけが生成する。
+- **`ProfileEntity.cs`**: `DeleteFile`（`appdatapath`）、`RenameProfile`（`appdatapath`×2）、`SaveProfile`（`Global.SaveProfile`／`Global.CacheExtraProfileInfo`）。呼び出し元: `DeleteFile` は `MainWindow` 1 件、`RenameProfile` は `MainWindow` 1 件、**`SaveProfile` と `FireSaved` は 0 件**（`ProfileSaved` イベントの購読も 0 件。`ProfileDeleted` は `ControllerListViewModel` が購読）。
+- **`AutoProfileHolder.cs`**: `appdatapath`×1。コンストラクターで `Load()` を実行する。生成箇所は、DI の登録、`AutoProfileService` の `new AutoProfileHolder()` のフォールバック、テスト 7 件。
+
+### 11.2 計画の調整（§9.1 からの変更）
+- **`AutoProfileHolder` は、10-4-1 から 10-4-2（クラスタ 1）へ移す**。理由: `AutoProfileService` の `new AutoProfileHolder()` のフォールバック（F08）と同時に直さないと、一時的に別の `Global`／`AppHost` を持ち込むことになるため。10-4-2 で、`IPathService` を必須引数にし、フォールバックと同時に整理する。
+
+### 11.3 変更の内容
+1. **`WindowPlacementHelper.ApplyPlacement`**: `IAppSettingsService` を引数に追加する（`ApplyPlacement(MainWindow, IAppSettingsService, bool)`）。`Global.Form*` を、引数の `FormLocationX` など（`IAppSettingsService` の既存の契約）へ置換する。`MainWindow` が、保持している `appSettingsService` を渡す。
+2. **`ProfileList`**: `IPathService` を必須引数にし、`Global.PathServiceInstance` のフォールバックを削除する（null は拒否）。`MainWindow` のフィールド初期化子（`new ProfileList()`）は、`pathService` を解決した後（コンストラクター内）で生成するように移す。テスト 2 件は `new PathService()` を渡す。
+3. **`ProfileEntity`**: `IPathService` を必須引数にする（`ProfileList` が、自身の `pathService` を渡す）。`DeleteFile`／`RenameProfile` の `Global.appdatapath` を、`pathService.AppDataPath` へ置換する。
+4. **`ProfileEntity.SaveProfile`／`FireSaved`／`ProfileSaved`（呼び出し元 0 件）**: §2.4 に従って判断する（11.4 の決定 E1）。
+
+### 11.4 決定が必要な事項
+- **E1（呼び出し元 0 件の `ProfileEntity.SaveProfile`／`FireSaved`／`ProfileSaved`）**
+  - 経緯: 上流の `DS4Windows` から引き継いだメンバー。現在のプロファイルの保存は、`ProfileEditor` → `ProfileSettingsViewModel.SaveProfile` → `IProfileRepository`（Step8・Step9）に一本化されており、このメンバーは、それと重複する並行実装（`Global.SaveProfile`／`Global.CacheExtraProfileInfo` を直接呼ぶ）で、どこからも使われていない。「本来使うべき API」には当たらない（正規の経路は別にある）。
+  - 案A（推奨）: **削除する**（§2.4 の「使うべきでないもの」）。`Global` への直接参照が 2 件減り、`ProfileEntity` が、パスの操作だけに単純化される。機能廃止（§2.2）には当たらない（呼び出し元が無く、画面の機能ではない）。
+  - 案B: 温存し、TODO（経緯と、Step12 で削除する予定）を付ける。`Global` への参照が残る。
+- **E2（`AutoProfileHolder` を 10-4-2 へ移す）**: 11.2 のとおり。案A（推奨）＝移す。案B＝10-4-1 で、`IPathService` を任意引数（`AppHost` へのフォールバック付き）として足す（フォールバックが増えるため非推奨）。
+
+### 11.5 テスト
+- `Step10FourOneGlobalReferenceGuardTests`（新規）: `WindowPlacementHelper.cs`、`ProfileList.cs`、`ProfileEntity.cs` に、温存項目以外の `Global.`／`AppHost`／`Program.rootHub` が無いこと（`ApplyPlacement` が `IAppSettingsService` を受け取ること）、`ProfileList`／`ProfileEntity` の必須引数の null 拒否。
+- 動作の検査: 一時ディレクトリで、`ProfileList.Refresh`（プロファイルの追加・削除の反映）、`ProfileEntity.DeleteFile`／`RenameProfile` が、注入した `IPathService` の保存先を使うこと。
+- 既存のテスト（`ProfileList`／`AutoProfilesViewModel`／`PatternC`）を、新しいコンストラクターに合わせる。
+
+### 11.6 実機確認
+1. **ウィンドウの位置・サイズ**: ウィンドウを移動・リサイズして終了し、起動し直したときに復元されること。最小化起動（`-m`）でも崩れないこと。
+2. **プロファイル一覧**: メイン画面の「プロファイル」タブの一覧が表示され、新規作成・複製・名前変更・削除が反映されること（名前変更・削除は `ProfileEntity` を通る）。
+3. **コントローラー一覧のプロファイル選択**: 削除したプロファイルが、各コントローラーの選択肢から消えること。
+
+### 11.7 リスク
+- **`MainWindow` の初期化順序**: `profileListHolder` を使う箇所（153 行付近）は、`pathService` の解決より後。生成位置の移動に伴い、他のフィールドの初期化子から参照していないことを確認する。
+- **`WindowPlacementHelper` の起動時の呼び出し**: ウィンドウの表示前（`SourceInitialized` など）に呼ばれる。`appSettingsService` は、コンストラクターで解決済みのため、順序の問題は無い見込み。
