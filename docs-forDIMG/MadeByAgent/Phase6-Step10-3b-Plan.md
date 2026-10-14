@@ -107,3 +107,10 @@
   - 動作: プロファイルのフォルダの `*.xml` を走査し、`DS4Windows/ProfileActions` を `/` で区切った項目と、完全一致（大文字小文字を区別）で比較する。一致したファイルだけを `XmlIoLock` の下で保存し、書き換えたプロファイル名（拡張子なし）を返す。新名が同じプロファイルに既にある場合は重複させない。ファイル 1 つの失敗（読めない XML など）は、`[DI]` の警告ログに記録して、他のファイルの処理を続ける。空白・同名の指定は、何もしない。
   - テスト: `Phase6Step10GroupThreeBContractTests`（全プロファイルの書き換え、部分一致では書き換えない、大文字小文字の区別、重複の防止、無変更時にファイルを触らない、削除、フォルダが無い場合、読めない XML があっても続行）。
   - この時点では、画面からの呼び出しは未接続（3b-3、3b-4 で接続する）。契約に、接続予定の Step をコメントで記載した。
+- **Step10-3b-1**: 完了（ビルド・テスト実行成功）。
+- **Step10-3b-2（グレー表示の復活）**: 実装済み・ビルド、テスト、実機確認の結果待ち。
+  - `SpecialActionsListViewModel.LoadActions`: `Actions.xml` に無く、プロファイルの `ProfileActions` にだけ残っている名前を、ダミーの `SpecialAction`（トリガー・アクション欄が空）で `IsMissing = true`・`Active = true` の項目として追加する。名前の比較は大文字小文字を区別しない（`LoadProfileActionsString` と同じ）。
+  - 取得元: 引数の `profileActionsString` があればそれ、無ければ `IProfileRepository.ProfileActions[deviceNum]`。
+  - 保存時の扱い: チェックしたままなら、プロファイルに残る（`GetEnabledActionNames`）。チェックを外して保存すれば取り除かれる（`40011c12` の仕様どおり）。画面上の同期文字列（`ProfileActions`）は、読み込み直後はプロファイルの内容をそのまま保持し、チェックの切り替え後（`SyncProfileActionsString`）は、存在しないアクションを含めない（現行どおり）。
+  - 見た目: 既存の `MissingToGrayConverter` で名前がグレーになる（XAML の変更なし）。
+  - テスト: `SpecialActionsListViewModelMissingActionTests`（グレー表示、大文字小文字の重複排除、チェック解除による保存対象と同期文字列からの除外）。

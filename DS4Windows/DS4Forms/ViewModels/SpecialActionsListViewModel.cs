@@ -291,6 +291,34 @@ namespace DS4WinWPF.DS4Forms.ViewModels
                     }
                 }
 
+                // Phase6-Step10-3b-2: Actions.xml に無く、プロファイルの XML にだけ残っている名前を、トリガー・アクション欄が空の
+                // グレーの項目として表示する（チェックを外して保存する、または「除去」で取り除ける）。
+                // 40011c12 で実装され、36d124a6 のリファクタ（Actions.xml の一覧だけから一覧を作る形）で失われていた。
+                // チェックしたままのものは、保存してもプロファイルに残る（GetEnabledActionNames）。
+                IEnumerable<string> profileNames = !string.IsNullOrEmpty(profileActionsString)
+                    ? profileActionsString.Split(new[] { '/' }, StringSplitOptions.RemoveEmptyEntries)
+                    : (profileRepo.ProfileActions != null && deviceNum >= 0 && deviceNum < profileRepo.ProfileActions.Length
+                        ? profileRepo.ProfileActions[deviceNum] : null);
+                if (profileNames != null)
+                {
+                    int missingIndex = actionCol.Count;
+                    foreach (string profileActionName in profileNames.Distinct(StringComparer.OrdinalIgnoreCase).ToList())
+                    {
+                        if (string.IsNullOrWhiteSpace(profileActionName) ||
+                            actionCol.Any(a => string.Equals(a.ActionName, profileActionName, StringComparison.OrdinalIgnoreCase)))
+                            continue;
+
+                        var placeholder = new SpecialAction(profileActionName, "", "null", "");
+                        SpecialActionItem missingItem = new SpecialActionItem(placeholder, profileActionName, missingIndex++)
+                        {
+                            IsMissing = true,
+                            Active = true,
+                        };
+                        actionCol.Add(missingItem);
+                        missingItem.PropertyChanged += Item_PropertyChanged;
+                    }
+                }
+
                 if (!string.IsNullOrEmpty(profileActionsString))
                 {
                     LoadProfileActionsString(profileActionsString);
