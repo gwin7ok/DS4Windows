@@ -55,3 +55,4 @@ dotnet_diagnostic.SYSLIB1050.severity = none
 dotnet_diagnostic.SYSLIB1051.severity = none
 dotnet_diagnostic.SYSLIB1052.severity = none
 dotnet_diagnostic.SYSLIB1053.severity = none
+dotnet_diagnostic.SYSLIB1045.severity = none
