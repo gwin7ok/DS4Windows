@@ -88,6 +88,7 @@
 
 ### 7.2 進捗
 - Step10-1-2（`SaveWhere`／`WelcomeDialog`／`LanguageSelectDialog`）: 実装済み・ビルド、テスト、実機確認の結果待ち。`IEnvironmentService.IsHidHideInstalled()` を追加（`Global.IsHidHideInstalled` の再確認。キャッシュ値の `HidHideInstalled` とは別物のため、`RefreshHidHideInfo` + `HidHideInstalled` では置き換えない）。`WelcomeDialog` の `FindConfigLocation`／`Load` は TODO コメント付きで温存。
+- Step10-1-2 の実機確認で判明した既存不具合の是正（案A、2026-10-14 承認。置換前からの不具合で、本 Step の回帰ではない）: 複数の保存場所がある状態で「Appdata」を選ぶと、プログラムフォルダの `Actions.xml`／`ControllerConfigs.xml`／`OutputSlots.xml`（と `LinkedProfiles.xml`）が残った。`Profiles` フォルダが無いと `DirectoryNotFoundException`（未捕捉）にもなり得た。新規の `ProgramFolderSettingsCleaner`（`DS4Forms/`）へ削除を移し、6 つの設定ファイルと `Profiles` フォルダを個別に例外処理して削除する。`Macros`／`Logs` には触れない。テスト: `ProgramFolderSettingsCleanerTests`（5 件）。「チェックなしの既定が削除」の仕様は変更していない（`Phase6-Step11-Plan.md` §3.3 の検討項目）。
 - Step10-1-1（契約の追加と契約テスト）: 完了（ビルド・テストビルド・テスト実行成功）。`IEnvironmentService`（4 件）、`IPathService`（`SetSaveLocation`、`CreateEmptyProfilesFile`）、`IAppSettingsService`（`LastVersionChecked`、`SetCulture`）と、`Phase6Step10GroupOneContractTests`（9 件）。
 
 ## 8. リスク

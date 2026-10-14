@@ -81,13 +81,9 @@ namespace DS4WinWPF.DS4Forms
         {
             if (multisaves && dontDeleteCk.IsChecked == false)
             {
-                try
-                {
-                    Directory.Delete(_pathService.ProgramDirectory + "\\Profiles", true);
-                    File.Delete(_pathService.ProgramDirectory + "\\Profiles.xml");
-                    File.Delete(_pathService.ProgramDirectory + "\\Auto Profiles.xml");
-                }
-                catch (UnauthorizedAccessException)
+                // 置換前は Profiles／Profiles.xml／Auto Profiles.xml の 3 つだけを削除していた（Actions.xml 等が残った）。
+                // 設定フォルダのアプリ管理ファイルをすべて削除する（ProgramFolderSettingsCleaner）。
+                if (!ProgramFolderSettingsCleaner.DeleteSettings(_pathService.ProgramDirectory))
                 {
                     MessageBox.Show("Cannot Delete old settings, please manaully delete", "DS4Windows");
                 }
