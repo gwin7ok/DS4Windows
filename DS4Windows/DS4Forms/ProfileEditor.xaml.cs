@@ -1269,6 +1269,7 @@ namespace DS4WinWPF.DS4Forms
             mappingListBox.DataContext = mappingListVM;
             specialActionsTab.DataContext = specialActionsVM;
             lightbarRect.DataContext = profileSettingsVM;
+            touchButtonUC.RegisterDataContext();
 
             conReadingsUserCon.LsDeadX = profileSettingsVM.LSDeadZone;
             conReadingsUserCon.RsDeadX = profileSettingsVM.RSDeadZone;

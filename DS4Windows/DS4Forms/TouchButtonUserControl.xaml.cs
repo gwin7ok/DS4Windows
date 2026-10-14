@@ -53,5 +53,12 @@ namespace DS4WinWPF.DS4Forms
         {
             DataContext = null;
         }
+
+        // プリセット適用後（StopEditorBindings → RefreshEditorBindings）に、UnregisterDataContext で外した
+        // DataContext を戻す。戻さないと Button Activation Mode の選択肢が空になる（置換前からの不具合）。
+        public void RegisterDataContext()
+        {
+            DataContext = touchButtonVM;
+        }
     }
 }
