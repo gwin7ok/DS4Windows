@@ -21,9 +21,17 @@ namespace DS4WindowsTests
         private sealed class ActionsScope : System.IDisposable
         {
             private readonly List<SpecialAction> _original;
+            private readonly string _originalPath;
+            private readonly string _dir;
 
             public ActionsScope(params string[] names)
             {
+                // Actions.xml の保存先を、一時ディレクトリへ向ける（削除の保存が、実際の設定を書き換えないようにする）
+                _dir = System.IO.Path.Combine(System.IO.Path.GetTempPath(), "Phase6Step10_3b_" + System.Guid.NewGuid().ToString("N"));
+                System.IO.Directory.CreateDirectory(_dir);
+                _originalPath = Global.store.m_Actions;
+                Global.store.m_Actions = System.IO.Path.Combine(_dir, "Actions.xml");
+
                 var list = Global.GetActions();
                 _original = new List<SpecialAction>(list);
                 list.Clear();
@@ -31,13 +39,16 @@ namespace DS4WindowsTests
                 {
                     list.Add(new SpecialAction(name, "Cross", "Program", "C:/a.exe"));
                 }
+                Global.store.SaveActions();
             }
 
             public void Dispose()
             {
+                Global.store.m_Actions = _originalPath;
                 var list = Global.GetActions();
                 list.Clear();
                 list.AddRange(_original);
+                try { System.IO.Directory.Delete(_dir, true); } catch { }
             }
         }
 
@@ -95,5 +106,38 @@ namespace DS4WindowsTests
             Assert.Equal(new[] { "ActA" }, vm.GetEnabledActionNames().ToArray());
             Assert.Equal("ActA", vm.ProfileActions);
         }
+
+        [Fact]
+        public void RemoveAction_ForExistingAction_RemovesFromActionsXmlAndList()
+        {
+            using var scope = new ActionsScope("ActA", "ActB");
+            var vm = CreateVm();
+            vm.LoadActions(false, "ActA/ActB");
+
+            vm.RemoveAction(vm.ActionCol.Single(i => i.ActionName == "ActA"));
+
+            Assert.DoesNotContain(vm.ActionCol, i => i.ActionName == "ActA");
+            Assert.DoesNotContain(Global.GetActions(), a => a.name == "ActA");
+            Assert.Contains(Global.GetActions(), a => a.name == "ActB");
+            string xml = System.IO.File.ReadAllText(Global.store.m_Actions);
+            Assert.DoesNotContain("ActA", xml);
+            Assert.Contains("ActB", xml);
+        }
+
+        [Fact]
+        public void RemoveAction_ForMissingItem_OnlyRemovesFromList()
+        {
+            using var scope = new ActionsScope("ActA");
+            var vm = CreateVm();
+            vm.LoadActions(false, "ActA/Gone");
+            string before = System.IO.File.ReadAllText(Global.store.m_Actions);
+
+            vm.RemoveAction(vm.ActionCol.Single(i => i.ActionName == "Gone"));
+
+            Assert.DoesNotContain(vm.ActionCol, i => i.ActionName == "Gone");
+            Assert.Contains(Global.GetActions(), a => a.name == "ActA");
+            Assert.Equal(before, System.IO.File.ReadAllText(Global.store.m_Actions));
+        }
+
     }
 }

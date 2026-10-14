@@ -194,6 +194,12 @@ namespace DS4WinWPF.DS4Forms
         public delegate void ProfileSavedHandler(ProfileEditor sender, string profile);
         public event ProfileSavedHandler ProfileSaved;
 
+        /// <summary>
+        /// Phase6-Step10-3b-3: アクションの除去・名前変更により、編集中以外も含むプロファイルの XML を書き換えたときに、
+        /// 書き換えたプロファイル名の一覧を通知する。MainWindow が、保存時と同じ再適用の経路（SyncProfileListAndControllers）を呼ぶ。
+        /// </summary>
+        public event Action<IReadOnlyList<string>> ProfilesUpdatedExternally;
+
         private Dictionary<Button, ImageBrush> hoverImages =
             new Dictionary<Button, ImageBrush>();
 
@@ -1910,6 +1916,15 @@ namespace DS4WinWPF.DS4Forms
             }
         }
 
+        // 書き換えたプロファイルがあれば、MainWindow へ通知する（再適用のロジックは MainWindow の 1 か所だけ）
+        private void NotifyProfilesUpdated(IReadOnlyList<string> changedProfiles)
+        {
+            if (changedProfiles != null && changedProfiles.Count > 0)
+            {
+                ProfilesUpdatedExternally?.Invoke(changedProfiles);
+            }
+        }
+
         private void RemoveActionBtn_Click(object sender, RoutedEventArgs e)
         {
             if (specialActionsVM.SpecialActionIndex >= 0)
@@ -1917,7 +1932,18 @@ namespace DS4WinWPF.DS4Forms
                 SpecialActionItem item = specialActionsVM.CurrentSpecialActionItem;
                 //int currentIndex = specialActionsVM.ActionCol[specialActionsVM.SpecialActionIndex].Index;
                 //SpecialActionItem item = specialActionsVM.ActionCol[currentIndex];
+                if (item == null) return;
+
+                // Phase6-Step10-3b-3: 確認のうえ、Actions.xml と、すべてのプロファイルの XML から取り除く
+                MessageBoxResult confirm = MessageBox.Show(
+                    $"Remove special action \"{item.ActionName}\"?\n\n" +
+                    "It will also be removed from every profile.",
+                    "DS4Windows", MessageBoxButton.YesNo, MessageBoxImage.Question, MessageBoxResult.No);
+                if (confirm != MessageBoxResult.Yes) return;
+
+                string removedName = item.ActionName;
                 specialActionsVM.RemoveAction(item);
+                NotifyProfilesUpdated(profileRepository.RemoveActionReference(removedName));
             }
         }
 

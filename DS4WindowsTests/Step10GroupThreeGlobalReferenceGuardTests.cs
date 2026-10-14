@@ -129,6 +129,24 @@ namespace DS4WindowsTests
         }
 
         [Fact]
+        public void RemoveActionFlow_ConfirmsAndPropagatesToAllProfiles_ThroughSingleReapplyPath()
+        {
+            string editor = ReadSourceWithoutComments("DS4Windows/DS4Forms/ProfileEditor.xaml.cs");
+            string main = ReadSourceWithoutComments("DS4Windows/DS4Forms/MainWindow.xaml.cs");
+            if (editor == null || main == null) return;
+
+            // 確認のプロンプトを出し、全プロファイルの参照を取り除き、MainWindow へ通知する
+            Assert.Contains("MessageBoxButton.YesNo", editor);
+            Assert.Contains("profileRepository.RemoveActionReference(", editor);
+            Assert.Contains("ProfilesUpdatedExternally?.Invoke(", editor);
+
+            // 再適用の実装は SyncProfileListAndControllers の 1 か所だけ（外部更新は、その経路を呼ぶだけ）
+            Assert.Contains("SyncProfileListAndControllers(targetProfiles: profiles)", main);
+            Assert.Equal(2, System.Text.RegularExpressions.Regex.Matches(main,
+                System.Text.RegularExpressions.Regex.Escape("Global.ApplyProfileToSlot(")).Count);
+        }
+
+        [Fact]
         public void SpecialActEditorViewModel_RequiresSpecialActionRepository()
         {
             Assert.Throws<ArgumentNullException>(() => new SpecialActEditorViewModel(0, null, null));

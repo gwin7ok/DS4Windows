@@ -387,11 +387,19 @@ namespace DS4WinWPF.DS4Forms.ViewModels
             }
         }
 
+        /// <summary>
+        /// 一覧からアクションを除去する。Actions.xml に存在するアクションは、Actions.xml からも削除して保存する
+        /// （Phase6-Step10-3b-3: <see cref="ISpecialActionRepository.RemoveActionAndSave"/>。従来はメモリ上のリストから外すだけだった）。
+        /// Actions.xml に無い名前（グレーの項目）は、一覧から外すだけ。プロファイルの XML からの参照の削除は呼び出し側が行う。
+        /// </summary>
         public void RemoveAction(SpecialActionItem item)
         {
             if (item == null) return;
 
-            specialActionRepo.RemoveAction(item.ActionName);
+            if (!item.IsMissing)
+            {
+                specialActionRepo.RemoveActionAndSave(item.ActionName);
+            }
 
             actionCol.Remove(item);
 

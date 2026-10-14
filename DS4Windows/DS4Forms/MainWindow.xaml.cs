@@ -1946,6 +1946,7 @@ Suspend support not enabled.", true);
 
                 editor = new ProfileEditor(targetDevice, appSettingsService, profileSettingsService, editorWindowFactory);
                 editor.ProfileSaved += Editor_ProfileSaved;
+                editor.ProfilesUpdatedExternally += Editor_ProfilesUpdatedExternally;
                 editor.Closed += ProfileEditor_Closed;
                 profDockPanel.Children.Add(editor);
                 editor.Reload(entity);
@@ -1980,7 +1981,12 @@ Suspend support not enabled.", true);
         /// </summary>
         /// <param name="oldProfile">Rename時の旧プロファイル名（保存・更新時はnull）</param>
         /// <param name="newProfile">Rename時の新プロファイル名（保存・更新時はnull）</param>
-        private void SyncProfileListAndControllers(string oldProfile = null, string newProfile = null)
+        /// <param name="targetProfiles">
+        /// Phase6-Step10-3b-3: 複数のプロファイルの XML が書き換えられた場合（アクションの除去・名前変更）の対象一覧。
+        /// 指定すると、これらのプロファイルを使っているスロットだけに再適用する（oldProfile／newProfile は null にする）
+        /// </param>
+        private void SyncProfileListAndControllers(string oldProfile = null, string newProfile = null,
+            IReadOnlyCollection<string> targetProfiles = null)
         {
             int slotCount = ControlService.CURRENT_DS4_CONTROLLER_LIMIT;
 
@@ -2030,8 +2036,12 @@ Suspend support not enabled.", true);
             string targetProfile = !string.IsNullOrWhiteSpace(newProfile) ? newProfile : oldProfile;
             for (int i = 0; i < slotCount; i++)
             {
-                if (string.IsNullOrEmpty(targetProfile) ||
-                    string.Equals(activeProfiles[i], targetProfile, StringComparison.CurrentCultureIgnoreCase))
+                bool matches = targetProfiles != null
+                    ? !string.IsNullOrEmpty(activeProfiles[i]) && targetProfiles.Any(p =>
+                        string.Equals(p, activeProfiles[i], StringComparison.CurrentCultureIgnoreCase))
+                    : string.IsNullOrEmpty(targetProfile) ||
+                      string.Equals(activeProfiles[i], targetProfile, StringComparison.CurrentCultureIgnoreCase);
+                if (matches)
                 {
                     Global.ApplyProfileToSlot(i, activeProfiles[i], ProfileChangeSource.Manual);
                 }
@@ -2049,6 +2059,13 @@ Suspend support not enabled.", true);
             // 保存されたプロファイルを対象として、安全にリスト再同期＆該当スロットのホットリロードを実行
             SyncProfileListAndControllers(oldProfile: profile, newProfile: null);
         }
+        // Phase6-Step10-3b-3: アクションの除去・名前変更でプロファイルの XML が書き換わったときも、
+        // 保存時と同じ経路（一覧の読み直し＋該当スロットへの再適用）を使う
+        private void Editor_ProfilesUpdatedExternally(IReadOnlyList<string> profiles)
+        {
+            SyncProfileListAndControllers(targetProfiles: profiles);
+        }
+
         private void ControllerLV_PreviewMouseUp(object sender, MouseButtonEventArgs e)
         {
             // Save column widths when user finishes resizing (similar to form size/position)

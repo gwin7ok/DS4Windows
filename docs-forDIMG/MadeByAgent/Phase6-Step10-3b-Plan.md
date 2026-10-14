@@ -114,3 +114,10 @@
   - 保存時の扱い: チェックしたままなら、プロファイルに残る（`GetEnabledActionNames`）。チェックを外して保存すれば取り除かれる（`40011c12` の仕様どおり）。画面上の同期文字列（`ProfileActions`）は、読み込み直後はプロファイルの内容をそのまま保持し、チェックの切り替え後（`SyncProfileActionsString`）は、存在しないアクションを含めない（現行どおり）。
   - 見た目: 既存の `MissingToGrayConverter` で名前がグレーになる（XAML の変更なし）。
   - テスト: `SpecialActionsListViewModelMissingActionTests`（グレー表示、大文字小文字の重複排除、チェック解除による保存対象と同期文字列からの除外）。
+- **Step10-3b-2**: 完了（ビルド・テスト実行成功、実機確認問題なし）。
+- **Step10-3b-3（「除去」ボタンの流れ）**: 実装済み・ビルド、テスト、実機確認の結果待ち。
+  - `ProfileEditor.RemoveActionBtn_Click`: 確認のプロンプト（はい／いいえ。「いいえ」なら何もしない）→ `SpecialActionsListViewModel.RemoveAction`（`Actions.xml` から保存付きで削除。グレーの項目は一覧から外すだけ）→ `IProfileRepository.RemoveActionReference`（全プロファイルの XML から参照を削除）→ 書き換えたプロファイル名を `ProfilesUpdatedExternally` で通知。
+  - `SpecialActionsListViewModel.RemoveAction`: 従来はメモリ上のリストから外すだけ（`Actions.xml` へは、その後の別のアクションの保存まで反映されなかった）だったが、`RemoveActionAndSave`（`Actions.xml` へ保存）を使うよう変更した（`IsMissing` の項目は呼ばない）。
+  - `MainWindow`: `SyncProfileListAndControllers` に `targetProfiles`（複数のプロファイル名）を追加した。既存の呼び出し（保存・リネーム）の動作は変えない。`Editor_ProfilesUpdatedExternally` は、この同じ経路を呼ぶだけで、再適用（`Global.ApplyProfileToSlot`）の実装箇所は増えていない（ガードテストで 2 箇所＝既存のまま、を検査）。
+  - テスト: 除去が `Actions.xml` とメモリの両方から削除すること、グレーの項目ではファイルを書き換えないこと、除去の流れ（確認・参照の削除・通知・再適用の経路）のソース検査。
+  - 名前変更時の反映は 3b-4。
