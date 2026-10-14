@@ -278,3 +278,29 @@
 - **テスト**: `TestRepositoryFactory.CreateProfileSettingsService`（79 件の生成箇所を置換）、`Step10FourTwoGlobalReferenceGuardTests` に対象を追加。
 - **実機確認項目**: プロファイルの読み込み・保存、振動（DualSense の補正を含む）、振動の自動停止時間の変更の反映。
 - **後続**: クラスタ 1 は完了。続けて、アクション連鎖の廃止（10-4-2d）と K1（`>= 4` の上限）の小ステップを提案し、その後 10-4-3（出力スロット系）へ進む。
+
+## 19. Step10-4-2c の完了と、Step10-4-2d（アクション連鎖の廃止）の計画。2026-10-15
+- **Step10-4-2c**: ビルド・テストビルド・テスト実行成功。実機確認は、プロファイルの読み込み・保存は問題なし。振動（DualSense の補正）と振動の自動停止時間の反映は、デバイスが無いため先送り（`Phase6-Step11-Plan.md` §3.3 に登録）。クラスタ 1 は完了。
+
+### 19.1 対象の再確認（連鎖の廃止。§15 の決定）
+- **使用箇所**: `ProfileApplicationService.ApplyFromAction` の 2 か所（`DispatchNextActions`）だけ。`IProfileActionChainService`／`ProfileActionChainService` の呼び出し元は、他に無い。
+- **`IMappingActionDispatcher.DispatchProfileActionEdge`**／`MappingActionDispatcher`／`Mapping.DispatchProfileActionEdge`: 連鎖の呼び出し元は `ProfileActionChainService` のみ（`Mapping` 内部の呼び出しは別）。連鎖の廃止後も、`Mapping` 内の利用は残る。
+- **`IProfileActionProvider`**: `ControlService` も使うため、残す。
+
+### 19.2 方針（案）
+- **J1**: `ProfileApplicationService` から、`IProfileActionChainService` の依存と `DispatchNextActions` の 2 か所の呼び出しを削除する。プロファイルの適用だけを行う。
+- **J2**: `IProfileActionChainService`／`ProfileActionChainService`／DI 登録／テスト（`ProfileActionChainServiceTests`）を削除する。
+- **J3**: `IMappingActionDispatcher`／`MappingActionDispatcher` は、他に利用者が無いかを再確認し、無ければ §2.4 の手順（経緯の調査と判断記録）で扱う。本ステップでは削除せず、判断を記録する。
+- **J4**: カスケードループ防止（Fresh-press ガード、`IsExecuting`）は、連鎖とは別の機構で、影響しない。ガードの契約テストが通ることを確認する。
+- **実機確認項目**: プロファイル切替アクションの発火後、同じトリガーの別アクションが、再度トリガーを押すまで実行されないこと。切替と元への復帰が正常であること。
+
+## 20. Step10-4-2d の実装記録。2026-10-15
+- **決定**: J2＝A（連鎖の型・DI 登録・テストを削除）、J3＝A（`IMappingActionDispatcher`／`MappingActionDispatcher` は温存し、10-4-4 で整理）。
+- **変更**
+  - `ProfileApplicationService`: `IProfileActionChainService` の依存と、`DispatchNextActions` の 2 か所の呼び出しを削除（引数は 4 つ）。
+  - 削除: `IProfileActionChainService.cs`、`ProfileActionChainService.cs`、`ProfileActionChainServiceTests.cs`、DI 登録。
+  - テスト: `ProfileApplicationServiceTests` の `FakeActionChainService`、`Step10FourTwoGlobalReferenceGuardTests` の連鎖関連を整理。
+- **挙動の変更（承認済み）**: プロファイル切替アクションの後、新プロファイルの同じトリガーのアクションは、トリガーを再成立させない限り実行されない。
+- **§2.4 の判断記録（J3）**: `IMappingActionDispatcher`／`MappingActionDispatcher` は、連鎖の廃止により、`DispatchProfileActionEdge` の呼び出し元が 0 件になった。`Mapping.DispatchProfileActionEdge`（内部の利用あり）への中継であり、10-4-4（Actions／Mapping 境界の整理）で、利用者の有無を再確認して扱いを決める。
+- **実機確認項目**: プロファイル切替アクションの発火後、同じトリガーの別アクションが実行されないこと（再度押すと実行される）。切替と元への復帰が正常。
+- **テストの記録（2026-10-15）**: 全件実行で `ControlServicePr4ShimEquivalenceTests.GetterShims_UsedOnReportPath_DoNotAllocate` が 1 回失敗（10,000 回で 1,128 バイト）。同テストの単独再実行は 3 件とも成功。測定対象の経路は変更しておらず、割り当てが 1 回だけだったため、層別 JIT などによるフレーキーと判断。再発した場合は、原因を調査する。

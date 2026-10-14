@@ -181,6 +181,7 @@ PowerShell または Python スクリプトにより、ソリューション内�
 | Step9b-3 | F05: スロット数を 8 に拡張した環境で、デバイス 5 台目以降（インデックス 4〜7）のスペシャルアクションのマクロが再生されること（`DefaultMacroPlayer`／`Mapping.PlayMacroDirect`／`EndMacroDirect` の 4 スロット固定を `Global.MAX_DS4_CONTROLLER_COUNT` へ変更。単体テスト `DefaultMacroPlayer_HandlesAllControllerSlots_NotJustFour` で固定済み。5 台目以降の実機がないため先送り。既定の 4 スロットでは影響なし） | セクション9（スペシャルアクション・プロファイル） | 未確認 |
 | Step10-1-3 | 更新通知（`UpdaterWindow`）の実機確認: 新しいバージョンが検出される状況が必要で実施できなかった。「Skip Version」を押したバージョンが再通知されないこと（`IAppSettingsService.LastVersionChecked` への置換）、「Install Latest」を押したときの起動モード（admin／user。`IEnvironmentService.IsAdministrator` への置換）が置換前と同じであること。自動テストは `Phase6Step10GroupOneViewModelTests` で値の共有まで確認済み | セクション1（起動・環境・更新） | 未確認 |
 | Step10-3-2 | スペシャルアクションの「キー押下（Press Key）」の割り当てで、ボタン割り当て画面にコントローラーの図は表示されるが、キーボードとマウスしか割り当てられない（コントローラーのボタン［Xbox 360／DS4 の表記］を割り当てられない）。DI 化の範囲外の機能の問題として別 Step で扱う（`Phase6-Step10-3-Plan.md` §12）。確認項目: 割り当てたボタン名が出力種別に合った表記で表示されること | セクション9（スペシャルアクション・プロファイル） | 一部確認済み（2026-10-15: ボタンの割り当て、表示、Toggle の保存・読込）。ボタンの Toggle の実行時の動作は、実装後（Step10-4・10-5 の後。`Phase6-Step10-3c-Plan.md` §8）に確認 |
+| Step10-4-2c | 振動（DualSense の補正を含む）と、振動の自動停止時間の変更が接続中のコントローラーに反映されること。`ProfileSettingsService` の `Program.rootHub` 参照を `Func<ControlService>` に置換したため（`GetRumbleBoost`、`SetRumbleAutostopTime`）。振動するデバイスが無く確認できなかった | 振動・ライトバー系のセクション | 未確認（先送り。2026-10-15） |
 
 ---
 

@@ -47,9 +47,8 @@ namespace DS4Windows.DI
             // アクション発火ディスパッチャー（Mapping.cs境界化）
             services.AddSingleton<IMappingActionDispatcher, MappingActionDispatcher>();
 
-            // プロファイルアクション連鎖サービス（ProfileApplicationServiceの依存先）
+            // プロファイルのアクション取得（ControlService が使用）。Phase6-Step10-4-2d: アクション連鎖サービスは廃止
             services.AddSingleton<IProfileActionProvider>(sp => new ProfileActionProvider(Global.store)); // Phase6-Step10-4-2b: BackingStore は DI 未登録のため、Global.store を渡す
-            services.AddSingleton<IProfileActionChainService, ProfileActionChainService>();
 
             // Phase 5 Step 3: プロファイル適用サービス
             services.AddSingleton<IProfileApplicationService, ProfileApplicationService>();

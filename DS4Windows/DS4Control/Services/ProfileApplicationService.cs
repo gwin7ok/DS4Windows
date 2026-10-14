@@ -8,7 +8,6 @@ namespace DS4Windows
     public class ProfileApplicationService : IProfileApplicationService
     {
         private readonly IProfileSettingsService _profileSettings;
-        private readonly IProfileActionChainService _actionChain;
         private readonly IDeviceStateService _deviceState;
         private readonly Func<ControlService> _controlProvider;
         // Phase6-Step10-4-2a: ControlService は遅延解決（Func）で受け取る（Program.rootHub/AppHost 参照の廃止。決定 D4-3）
@@ -17,13 +16,11 @@ namespace DS4Windows
 
         public ProfileApplicationService(
             IProfileSettingsService profileSettings,
-            IProfileActionChainService actionChain,
             IDeviceStateService deviceState,
             Func<ControlService> controlProvider,
             IProfileRepository profileRepo)
         {
             _profileSettings = profileSettings ?? throw new ArgumentNullException(nameof(profileSettings));
-            _actionChain = actionChain ?? throw new ArgumentNullException(nameof(actionChain));
             _deviceState = deviceState ?? throw new ArgumentNullException(nameof(deviceState));
             _controlProvider = controlProvider ?? throw new ArgumentNullException(nameof(controlProvider));
             _profileRepo = profileRepo ?? throw new ArgumentNullException(nameof(profileRepo));
@@ -43,7 +40,7 @@ namespace DS4Windows
             {
                 if (device != null)
                 {
-                    // C案: HaltReporting の区間内ではプロファイルメモリ適用とアクションチェーンのみを高速実行（1〜2ms以内）。
+                    // C案: HaltReporting の区間内ではプロファイルメモリ適用のみを高速実行（1〜2ms以内）。
                     // 通知表示（独自ウィンドウ／トースト）は CompleteProfileApplication が発火する
                     // LogProfileChanged イベント → MainWindow.OnProfileChanged（Dispatcher.BeginInvoke で
                     // 非同期化済み）→ ShowProfileSwitchNotification の単一経路のみが担う。
@@ -55,7 +52,6 @@ namespace DS4Windows
                         // TODO(Phase7): Global.ApplyProfile は ProfileApplicationService の実装本体（Mapping の instance 化とあわせて本サービスへ移す）。
                         Global.ApplyProfile(deviceIndex, action.details, action.IsTemporaryProfileAction, true, _control,
                             ProfileChangeSource.MappingAction, prolog);
-                        _actionChain?.DispatchNextActions(deviceIndex, action);
                     });
                 }
                 else
@@ -63,7 +59,6 @@ namespace DS4Windows
                     // TODO(Phase7): Global.ApplyProfile は ProfileApplicationService の実装本体（Mapping の instance 化とあわせて本サービスへ移す）。
                     Global.ApplyProfile(deviceIndex, action.details, action.IsTemporaryProfileAction, true, _control,
                         ProfileChangeSource.MappingAction, prolog);
-                    _actionChain?.DispatchNextActions(deviceIndex, action);
                 }
             });
         }

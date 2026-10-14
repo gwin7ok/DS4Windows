@@ -31,7 +31,6 @@ namespace DS4WindowsTests
         private static readonly Dictionary<string, string[]> Allowed = new Dictionary<string, string[]>
         {
             // 10-4-2a
-            ["DS4Windows/DS4Control/Services/ProfileActionChainService.cs"] = new string[0],
             // ApplyProfile: 実装本体が Global にある（Phase7 で Mapping の instance 化とあわせて移す。TODO 付き）
             ["DS4Windows/DS4Control/Services/ProfileApplicationService.cs"] = new[] { "ApplyProfile" },
             // 実行中アクション状態のクリアを含む Global 側の実装への薄い委譲
@@ -81,13 +80,6 @@ namespace DS4WindowsTests
                 Assert.DoesNotContain("AppHost", text);
                 Assert.DoesNotContain("Program.rootHub", text);
             }
-        }
-
-        [Fact]
-        public void ProfileActionChainService_RequiresAllDependencies()
-        {
-            Assert.Throws<ArgumentNullException>(() => new ProfileActionChainService(null, new MappingActionDispatcher()));
-            Assert.Throws<ArgumentNullException>(() => new ProfileActionChainService(TestRepositoryFactory.CreateProfileActionProvider(), null));
         }
 
         [Fact]
@@ -141,7 +133,6 @@ namespace DS4WindowsTests
             var holder = new DS4WinWPF.AutoProfileHolder(path);
             var settings = TestRepositoryFactory.CreateProfileSettingsService();
             var app = new ProfileApplicationService(settings,
-                new ProfileActionChainService(new ProfileActionProvider(Global.store), new MappingActionDispatcher()),
                 new DeviceStateService(), () => null,
                 TestRepositoryFactory.CreateProfileRepository(settings));
             var repo = TestRepositoryFactory.CreateProfileRepository(settings);
@@ -181,16 +172,14 @@ namespace DS4WindowsTests
         public void ProfileApplicationService_RequiresAllDependencies()
         {
             var settings = TestRepositoryFactory.CreateProfileSettingsService();
-            var chain = new ProfileActionChainService(TestRepositoryFactory.CreateProfileActionProvider(), new MappingActionDispatcher());
             var state = new DeviceStateService();
             Func<ControlService> control = () => null;
             var repo = TestRepositoryFactory.CreateProfileRepository(settings, null, null);
 
-            Assert.Throws<ArgumentNullException>(() => new ProfileApplicationService(null, chain, state, control, repo));
-            Assert.Throws<ArgumentNullException>(() => new ProfileApplicationService(settings, null, state, control, repo));
-            Assert.Throws<ArgumentNullException>(() => new ProfileApplicationService(settings, chain, null, control, repo));
-            Assert.Throws<ArgumentNullException>(() => new ProfileApplicationService(settings, chain, state, null, repo));
-            Assert.Throws<ArgumentNullException>(() => new ProfileApplicationService(settings, chain, state, control, null));
+            Assert.Throws<ArgumentNullException>(() => new ProfileApplicationService(null, state, control, repo));
+            Assert.Throws<ArgumentNullException>(() => new ProfileApplicationService(settings, null, control, repo));
+            Assert.Throws<ArgumentNullException>(() => new ProfileApplicationService(settings, state, null, repo));
+            Assert.Throws<ArgumentNullException>(() => new ProfileApplicationService(settings, state, control, null));
         }
     }
 }

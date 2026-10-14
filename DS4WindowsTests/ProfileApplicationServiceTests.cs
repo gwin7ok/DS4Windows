@@ -10,16 +10,6 @@ namespace DS4WindowsTests
 {
     public class ProfileApplicationServiceTests
     {
-        private class FakeActionChainService : IProfileActionChainService
-        {
-            public List<int> DispatchedSlots { get; } = new List<int>();
-
-            public void DispatchNextActions(int deviceIndex, SpecialAction action)
-            {
-                DispatchedSlots.Add(deviceIndex);
-            }
-        }
-
         private record ApplyCall(int DeviceIndex, string ProfileName, bool IsTemp,
                     bool LaunchProgram, ProfileChangeSource Source, string Prolog);
         private record RestoreCall(int Slot);
