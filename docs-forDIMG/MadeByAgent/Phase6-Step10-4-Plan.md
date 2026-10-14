@@ -186,3 +186,43 @@
   - `ProfileEntity` は `IPathService` を必須引数にし、`Global.appdatapath` を置換。未使用の `SaveProfile`／`FireSaved`／`ProfileSaved` を削除。
 - **テスト**: 新規 `Step10FourOneGlobalReferenceGuardTests`（Global 参照の不在、未使用メンバー削除、必須引数、注入パスでの Refresh／Rename／Delete）。`AutoProfilesViewModelTests`／`PatternCViewModelTests` の `new ProfileList()` を更新。
 - **状態**: ビルド・テスト・実機確認（§11.6）の結果待ち。
+
+## 13. Step10-4-1 の完了と Step10-4-2 の計画（クラスタ 1: プロファイル系）。2026-10-15
+- **Step10-4-1**: ビルド・テストビルド・テスト実行成功、実機確認（ウィンドウ位置・サイズ、プロファイル一覧、コントローラー選択肢）問題なし。
+
+### 13.1 現行コードの再確認（クラスタ 1 の 6 クラス）
+- **ProfileRepository**: 引数 3 つ（`IProfileSettingsService`、`IProfileXmlStore`、`IPathService`）が全て省略可。省略時は `Global.*Instance` へフォールバック。さらに `LoadProfile` 内に `AppHost.GetService<ControlService>()` が 1 件。`Global.ProfilePath` などの薄い委譲（約 25 件）は、契約（`IProfileRepository`）の実体なので温存対象。
+- **SpecialActionRepository**: `BackingStore config = null`（省略時 `Global.store`）、`IPathService`（省略時 `Global.PathServiceInstance`）。
+- **ProfileApplicationService**: 引数 5 つ全て省略可。省略時は `AppHost` の 5 件。`ControlService` を直接保持。`Global.ApplyProfile`×3、`Global.OlderProfilePath`×4（`IProfileRepository` に同名の契約がある）。`deviceIndex >= 4` の上限が 4 か所（K1）。
+- **AutoProfileService**: `new AutoProfileHolder()`、`new EnvironmentService()`、`AppHost`×3、`Program.rootHub`×7、`Global.AutoProfileRevertDefaultProfile`×2（`IAppSettingsService` に契約あり）、`Global.ProfilePath`×2（`IProfileRepository`）、`autoProfileSwitchNotifyChoice`／`CreateAutoProfiles`（`IAutoProfileService` の薄い委譲で温存）。
+- **ProfileActionChainService**: `AppHost` と `new MappingActionDispatcher()` のフォールバック。
+- **ProfileSettingsService**: `Program.rootHub`×4（`DualSenseDevice` 判定・デバイス取得）、`new EnvironmentService()`、`Global.store` のフォールバック。薄い委譲（`RefreshActionAlias` ほか）は温存。
+- **生成箇所**: DI 登録、`ScpUtil.cs` の Global 用の静的フォールバック 3 件（714・779・808 行）、`AutoProfileChecker`（フォールバック）、テスト多数（`ProfileSettingsService` 約 80、`ProfileRepository` 約 25、`SpecialActionRepository` 約 30）。
+- **発見（§2.4 の対象）**: `AutoProfileChecker` は `new` する呼出元が 0 件。経緯の調査後、削除可否を 10-4-4 で判断する。
+
+### 13.2 方針（案）
+- **P1**: 省略可の引数を、必須引数（null は `ArgumentNullException`）にする。DI の登録は、すでに全依存を解決できるため、変更不要。
+- **P2**: `Program.rootHub`／`AppHost` の `ControlService` は、`Func<ControlService>`（D4-3）で受け取る。`ProfileSettingsService` は `ControlService` を持たず、`DualSenseDevice` 判定のためだけに使うため、`Func<ControlService>` を使う（`ControlService` → `ProfileSettingsService` の依存循環を避けるため遅延解決）。
+- **P3**: `Global` 用の静的フォールバック（`ScpUtil.cs` 714・779・808 行）は、シム側の実装であり、必須引数に合わせて明示的に引数を渡す形に変える。静的初期化順序のハザード（`Global.store` の初期化前の参照）を、契約テストで確認する。
+- **P4**: `new EnvironmentService()`／`new MappingActionDispatcher()`／`new AutoProfileHolder()` は、必須引数にして削除する。
+- **P5**: `AutoProfileHolder` は `IPathService` を必須引数にする（10-4-1 から移した分）。
+
+### 13.3 テストへの影響
+- テストの生成箇所を、必須引数に合わせて更新する（約 135 件。テスト用の共通ヘルパーを `DS4WindowsTests` に 1 つ用意して、置換を機械化する）。
+- 新規ガード `Step10FourTwoGlobalReferenceGuardTests`: 6 ファイルに温存項目以外の `Global`／`AppHost`／`Program.rootHub` が無いこと、必須引数の null 拒否。
+
+### 13.4 分割の提案
+- 影響が大きいため、10-4-2 を次の 3 つに分けて、それぞれでビルド・テスト・実機確認を行う。
+  - **10-4-2a**: `ProfileActionChainService`、`ProfileApplicationService`、`SpecialActionRepository`（依存が少なく、テストの更新も少ない）。
+  - **10-4-2b**: `ProfileRepository`、`AutoProfileService`＋`AutoProfileHolder`。
+  - **10-4-2c**: `ProfileSettingsService`（テストの更新が約 80 件。`Func<ControlService>` の導入）。
+
+## 14. 決定と Step10-4-2a の実装記録。2026-10-15
+- **決定**: G1＝A（10-4-2 を 2a／2b／2c の 3 分割）、G2＝A（テスト用の共通ヘルパー）、G3＝A（`AutoProfileChecker` は 10-4-4 で判断）。
+- **10-4-2a の変更**
+  - `ProfileActionChainService`: `IProfileActionProvider`／`IMappingActionDispatcher` を必須化。`AppHost` と `new MappingActionDispatcher()` のフォールバックを削除。
+  - `ProfileApplicationService`: 5 引数を全て必須化。`ControlService` は `Func<ControlService>`（遅延解決。D4-3）。`AppHost` の 5 件を削除。`Global.OlderProfilePath`×4 は `IProfileRepository.OlderProfilePath`（同じ実体）へ置換。`Global.ApplyProfile`×3 は実装本体が `Global` にあるため温存し、TODO（Phase7）を付与。
+  - `SpecialActionRepository`: `BackingStore`／`IPathService` を必須化。`Global.store`／`PathServiceInstance`／`appdatapath` のフォールバックを削除。`BackingStore` は DI 未登録のため、`ServiceRegistration` で `Global.store` を渡すファクトリー登録に変更。`Global` 側の静的フォールバックも、明示的に引数を渡す形へ。薄い委譲（`SaveAction` など 4 件）は温存。
+- **テスト**: 新規 `Step10FourTwoGlobalReferenceGuardTests`、共通ヘルパー `TestRepositoryFactory`（約 30 件の生成箇所を置換）。
+- **新たな発見（10-4-2b へ追加）**: `ProfileActionProvider` が `BackingStore config = null`（省略時 `Global.store`）。クラスタ 1 の仲間として、10-4-2b で必須化する。
+- **実機確認項目**: スペシャルアクションの一覧表示・追加・削除・保存、プロファイル切替アクション（ボタン割り当てからの切替と、元のプロファイルへの復帰）、アクション連鎖。

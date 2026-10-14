@@ -12,7 +12,7 @@ namespace DS4WindowsTests
         [Fact]
         public void ActionsPath_ShouldReturnValidPath()
         {
-            var repo = new SpecialActionRepository(new BackingStore());
+            var repo = TestRepositoryFactory.CreateSpecialActionRepository(new BackingStore());
             var path = repo.ActionsPath;
             Assert.False(string.IsNullOrWhiteSpace(path));
             Assert.EndsWith("Actions.xml", path, StringComparison.OrdinalIgnoreCase);
@@ -21,7 +21,7 @@ namespace DS4WindowsTests
         [Fact]
         public void AddAndGetAction_ShouldWorkCorrectly()
         {
-            var repo = new SpecialActionRepository(new BackingStore());
+            var repo = TestRepositoryFactory.CreateSpecialActionRepository(new BackingStore());
             var action = new SpecialAction("TestAction", "Touchpad", "Key", "10", 0);
 
             var added = repo.AddAction(action);
@@ -38,7 +38,7 @@ namespace DS4WindowsTests
         [Fact]
         public void RemoveAction_ShouldRemoveItem()
         {
-            var repo = new SpecialActionRepository(new BackingStore());
+            var repo = TestRepositoryFactory.CreateSpecialActionRepository(new BackingStore());
             var action = new SpecialAction("RemoveTestAction", "Touchpad", "Key", "10", 0);
 
             repo.AddAction(action);
@@ -52,7 +52,7 @@ namespace DS4WindowsTests
         [Fact]
         public void ReplaceAction_ShouldReplaceExistingItem()
         {
-            var repo = new SpecialActionRepository(new BackingStore());
+            var repo = TestRepositoryFactory.CreateSpecialActionRepository(new BackingStore());
             var action1 = new SpecialAction("ReplaceTest", "Touchpad", "Key", "10", 0);
             var action2 = new SpecialAction("ReplaceTest", "Cross", "Macro", "20", 0);
 
@@ -68,7 +68,7 @@ namespace DS4WindowsTests
         public void SpecialActionRepository_Modifications_ShouldReflectInBackingStore()
         {
             var backingStore = new BackingStore();
-            var repo = new SpecialActionRepository(backingStore);
+            var repo = TestRepositoryFactory.CreateSpecialActionRepository(backingStore);
 
             var action = new SpecialAction("BackingStoreTest", "Circle", "Key", "30", 0);
             repo.AddAction(action);
@@ -84,7 +84,7 @@ namespace DS4WindowsTests
         [Fact]
         public void ActionsChangedEvent_ShouldFireOnMutation()
         {
-            var repo = new SpecialActionRepository(new BackingStore());
+            var repo = TestRepositoryFactory.CreateSpecialActionRepository(new BackingStore());
             bool eventFired = false;
             repo.ActionsChanged += (s, e) => eventFired = true;
 
@@ -98,7 +98,7 @@ namespace DS4WindowsTests
         public void GlobalShim_ShouldSynchronizeWithRepository()
         {
             var backingStore = new BackingStore();
-            var repo = new SpecialActionRepository(backingStore);
+            var repo = TestRepositoryFactory.CreateSpecialActionRepository(backingStore);
             Global.SpecialActionRepositoryInstance = repo;
 
             var action = new SpecialAction("ShimActionTest", "Touchpad", "Key", "10", 0);

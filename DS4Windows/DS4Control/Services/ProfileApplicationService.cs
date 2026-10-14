@@ -10,21 +10,23 @@ namespace DS4Windows
         private readonly IProfileSettingsService _profileSettings;
         private readonly IProfileActionChainService _actionChain;
         private readonly IDeviceStateService _deviceState;
-        private readonly ControlService _control;
+        private readonly Func<ControlService> _controlProvider;
+        // Phase6-Step10-4-2a: ControlService は遅延解決（Func）で受け取る（Program.rootHub/AppHost 参照の廃止。決定 D4-3）
+        private ControlService _control => _controlProvider();
         private readonly IProfileRepository _profileRepo;
 
         public ProfileApplicationService(
-            IProfileSettingsService profileSettings = null,
-            IProfileActionChainService actionChain = null,
-            IDeviceStateService deviceState = null,
-            ControlService control = null,
-            IProfileRepository profileRepo = null)
+            IProfileSettingsService profileSettings,
+            IProfileActionChainService actionChain,
+            IDeviceStateService deviceState,
+            Func<ControlService> controlProvider,
+            IProfileRepository profileRepo)
         {
-            _profileSettings = profileSettings ?? DS4WinWPF.AppHost.GetService<IProfileSettingsService>();
-            _actionChain = actionChain ?? DS4WinWPF.AppHost.GetService<IProfileActionChainService>();
-            _deviceState = deviceState ?? DS4WinWPF.AppHost.GetService<IDeviceStateService>();
-            _control = control ?? DS4WinWPF.AppHost.GetService<ControlService>();
-            _profileRepo = profileRepo ?? DS4WinWPF.AppHost.GetService<IProfileRepository>();
+            _profileSettings = profileSettings ?? throw new ArgumentNullException(nameof(profileSettings));
+            _actionChain = actionChain ?? throw new ArgumentNullException(nameof(actionChain));
+            _deviceState = deviceState ?? throw new ArgumentNullException(nameof(deviceState));
+            _controlProvider = controlProvider ?? throw new ArgumentNullException(nameof(controlProvider));
+            _profileRepo = profileRepo ?? throw new ArgumentNullException(nameof(profileRepo));
         }
 
         public void ApplyFromAction(int deviceIndex, SpecialAction action)
@@ -50,6 +52,7 @@ namespace DS4Windows
                     // 呼び足すと同一切替に対して二重表示になるため、以前あった追加呼び出しは撤去した。
                     device.HaltReportingRunAction(() =>
                     {
+                        // TODO(Phase7): Global.ApplyProfile は ProfileApplicationService の実装本体（Mapping の instance 化とあわせて本サービスへ移す）。
                         Global.ApplyProfile(deviceIndex, action.details, action.IsTemporaryProfileAction, true, _control,
                             ProfileChangeSource.MappingAction, prolog);
                         _actionChain?.DispatchNextActions(deviceIndex, action);
@@ -57,6 +60,7 @@ namespace DS4Windows
                 }
                 else
                 {
+                    // TODO(Phase7): Global.ApplyProfile は ProfileApplicationService の実装本体（Mapping の instance 化とあわせて本サービスへ移す）。
                     Global.ApplyProfile(deviceIndex, action.details, action.IsTemporaryProfileAction, true, _control,
                         ProfileChangeSource.MappingAction, prolog);
                     _actionChain?.DispatchNextActions(deviceIndex, action);
@@ -69,7 +73,7 @@ namespace DS4Windows
             if (deviceIndex < 0 || deviceIndex >= 4)
                 return false;
 
-            string previousProfile = Global.OlderProfilePath?[deviceIndex];
+            string previousProfile = _profileRepo.OlderProfilePath?[deviceIndex];
             if (string.IsNullOrWhiteSpace(previousProfile))
             {
                 AppLogger.LogWarn($"[DI] ProfileApplicationService.RestoreFromAction: No OlderProfilePath for device {deviceIndex}");
@@ -84,9 +88,9 @@ namespace DS4Windows
             if (deviceIndex < 0 || deviceIndex >= 4)
                 return;
 
-            if (Global.OlderProfilePath != null && deviceIndex < Global.OlderProfilePath.Length)
+            if (_profileRepo.OlderProfilePath != null && deviceIndex < _profileRepo.OlderProfilePath.Length)
             {
-                Global.OlderProfilePath[deviceIndex] = string.Empty;
+                _profileRepo.OlderProfilePath[deviceIndex] = string.Empty;
             }
         }
 
@@ -113,6 +117,7 @@ namespace DS4Windows
 
                 Action applyAction = () =>
                 {
+                    // TODO(Phase7): Global.ApplyProfile は ProfileApplicationService の実装本体（Mapping の instance 化とあわせて本サービスへ移す）。
                     Global.ApplyProfile(deviceIndex, profileName, isTemp, launchProgram,
                         _control, source, prolog);
                     success = true;

@@ -10,25 +10,25 @@ namespace DS4Windows
     {
         private readonly object _actionLock = new object();
         private readonly BackingStore _config;
-        private IPathService _pathService;
+        private readonly IPathService _pathService;
 
         public event EventHandler ActionsChanged;
 
-        public SpecialActionRepository(BackingStore config = null, IPathService pathService = null)
+        public SpecialActionRepository(BackingStore config, IPathService pathService)
         {
-            _config = config ?? Global.store;
-            _pathService = pathService;
+            _config = config ?? throw new ArgumentNullException(nameof(config));
+            _pathService = pathService ?? throw new ArgumentNullException(nameof(pathService));
         }
 
-        private IPathService PathSvc => _pathService ??= Global.PathServiceInstance;
+        private IPathService PathSvc => _pathService;
 
         public string ActionsPath
         {
             get
             {
-                string baseDir = PathSvc != null && !string.IsNullOrEmpty(PathSvc.AppDataPath)
+                string baseDir = !string.IsNullOrEmpty(PathSvc.AppDataPath)
                     ? PathSvc.AppDataPath
-                    : (!string.IsNullOrEmpty(Global.appdatapath) ? Global.appdatapath : AppContext.BaseDirectory);
+                    : AppContext.BaseDirectory;
                 return Path.Combine(baseDir, "Actions.xml");
             }
         }
@@ -63,7 +63,7 @@ namespace DS4Windows
             {
                 try
                 {
-                    bool result = _config != null ? _config.LoadActions() : Global.LoadActions();
+                    bool result = _config.LoadActions();
                     if (AppLogger.IsTraceEnabled)
                         AppLogger.LogTrace($"[DI] SpecialActionRepository.LoadActions: Actions.xml loaded via DI (result={result})");
                     OnActionsChanged();

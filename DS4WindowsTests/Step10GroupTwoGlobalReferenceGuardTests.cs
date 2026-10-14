@@ -175,7 +175,7 @@ namespace DS4WindowsTests
             var path = new PathService();
             Func<ControlService> cs = () => null;
             var loader = new DS4Windows.Services.ProfilePresetLoader();
-            var repo = new SpecialActionRepository();
+            var repo = TestRepositoryFactory.CreateSpecialActionRepository();
 
             Assert.Throws<ArgumentNullException>(() => new DS4Windows.Services.EditorWindowFactory(null, slots, path, null, repo, loader, cs));
             Assert.Throws<ArgumentNullException>(() => new DS4Windows.Services.EditorWindowFactory(settings, null, path, null, repo, loader, cs));

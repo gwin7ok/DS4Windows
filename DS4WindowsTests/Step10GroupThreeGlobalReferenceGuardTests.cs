@@ -109,7 +109,7 @@ namespace DS4WindowsTests
         [Fact]
         public void PressKeyViewModel_RequiresAllServices()
         {
-            var repo = new SpecialActionRepository();
+            var repo = TestRepositoryFactory.CreateSpecialActionRepository();
             var settings = new ProfileSettingsService();
             var slots = new OutputSlotService();
 
@@ -121,7 +121,7 @@ namespace DS4WindowsTests
         [Fact]
         public void SpecialActionsListViewModel_RequiresAllServices()
         {
-            var repo = new SpecialActionRepository();
+            var repo = TestRepositoryFactory.CreateSpecialActionRepository();
             var profileRepo = new ProfileRepository();
 
             Assert.Throws<ArgumentNullException>(() => new SpecialActionsListViewModel(0, null, profileRepo));

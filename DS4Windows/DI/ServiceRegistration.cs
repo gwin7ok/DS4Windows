@@ -34,7 +34,9 @@ namespace DS4Windows.DI
             // Phase6-Step10-2（決定 E2＝A）: プリセットの読み込み（Global.Load…Profile への薄い委譲）
             services.AddSingleton<IProfilePresetLoader, ProfilePresetLoader>();
             services.AddSingleton<IProfileSlotApplier, ProfileSlotApplier>();
-            services.AddSingleton<ISpecialActionRepository, SpecialActionRepository>();
+            // Phase6-Step10-4-2a: BackingStore は DI 未登録のため、Composition Root で Global.store（設定の唯一の実体）を渡す
+            services.AddSingleton<ISpecialActionRepository>(sp => new SpecialActionRepository(
+                Global.store, sp.GetRequiredService<IPathService>()));
 
             // Phase 3 Step 3-6: プロセス検査・昇格起動サービスの登録
             services.AddSingleton<IProcessInspector, DefaultProcessInspector>();

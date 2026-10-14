@@ -38,7 +38,7 @@ namespace DS4WindowsTests
         public void GetActionOrPlaceholder_FoundByExactName_ReturnsTheAction()
         {
             var store = CreateStoreWithAction("MyAction");
-            var repo = new SpecialActionRepository(store);
+            var repo = TestRepositoryFactory.CreateSpecialActionRepository(store);
 
             SpecialAction result = repo.GetActionOrPlaceholder("MyAction");
 
@@ -52,7 +52,7 @@ namespace DS4WindowsTests
         public void GetActionOrPlaceholder_IgnoresSurroundingWhitespaceAndCase(string requested)
         {
             var store = CreateStoreWithAction("MyAction");
-            var repo = new SpecialActionRepository(store);
+            var repo = TestRepositoryFactory.CreateSpecialActionRepository(store);
 
             SpecialAction result = repo.GetActionOrPlaceholder(requested);
 
@@ -66,7 +66,7 @@ namespace DS4WindowsTests
         public void GetActionOrPlaceholder_WhenNotFound_ReturnsPlaceholderNotNull(string requested)
         {
             var store = CreateStoreWithAction("MyAction");
-            var repo = new SpecialActionRepository(store);
+            var repo = TestRepositoryFactory.CreateSpecialActionRepository(store);
 
             SpecialAction result = repo.GetActionOrPlaceholder(requested);
 
@@ -82,7 +82,7 @@ namespace DS4WindowsTests
         {
             // 契約差の記録: 既存の GetAction は未発見で null を返す。ProfileEditor は placeholder 契約を必要とする。
             var store = CreateStoreWithAction("MyAction");
-            var repo = new SpecialActionRepository(store);
+            var repo = TestRepositoryFactory.CreateSpecialActionRepository(store);
 
             Assert.Null(repo.GetAction("NoSuchAction"));
             Assert.NotNull(repo.GetActionOrPlaceholder("NoSuchAction"));
@@ -92,7 +92,7 @@ namespace DS4WindowsTests
         public void GetActionOrPlaceholder_MatchesGlobalGetAction_ForGlobalStore()
         {
             // 既定の SpecialActionRepository は Global.store（= Global.GetAction の実体）を使う。
-            var repo = new SpecialActionRepository();
+            var repo = TestRepositoryFactory.CreateSpecialActionRepository();
             SpecialAction viaGlobal = Global.GetAction("DefinitelyMissingAction_Step8");
             SpecialAction viaRepo = repo.GetActionOrPlaceholder("DefinitelyMissingAction_Step8");
 

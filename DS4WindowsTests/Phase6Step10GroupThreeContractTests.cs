@@ -77,7 +77,7 @@ namespace DS4WindowsTests
         public void SaveAction_AddsNewAction_SavesFileAndNotifies()
         {
             using var scope = new ActionsStoreScope();
-            var repo = new SpecialActionRepository();
+            var repo = TestRepositoryFactory.CreateSpecialActionRepository();
             int notified = 0;
             repo.ActionsChanged += (s, e) => notified++;
 
@@ -95,7 +95,7 @@ namespace DS4WindowsTests
         public void SaveAction_Edit_ReplacesExistingAction()
         {
             using var scope = new ActionsStoreScope();
-            var repo = new SpecialActionRepository();
+            var repo = TestRepositoryFactory.CreateSpecialActionRepository();
             repo.SaveAction("Step10_3_Edit", "Cross", 2, "C:/a.exe?0", false);
 
             repo.SaveAction("Step10_3_Edit", "Circle", 2, "C:/b.exe?0", true);
@@ -110,7 +110,7 @@ namespace DS4WindowsTests
         public void SaveAction_MatchesGlobalSaveAction()
         {
             using var scope = new ActionsStoreScope();
-            var repo = new SpecialActionRepository();
+            var repo = TestRepositoryFactory.CreateSpecialActionRepository();
 
             Global.SaveAction("Step10_3_ViaGlobal", "Square", 2, "C:/c.exe?0", false);
             repo.SaveAction("Step10_3_ViaRepo", "Square", 2, "C:/c.exe?0", false);
@@ -126,7 +126,7 @@ namespace DS4WindowsTests
         public void RemoveActionAndSave_RemovesFromListAndFile()
         {
             using var scope = new ActionsStoreScope();
-            var repo = new SpecialActionRepository();
+            var repo = TestRepositoryFactory.CreateSpecialActionRepository();
             repo.SaveAction("Step10_3_Remove", "Cross", 2, "C:/a.exe?0", false);
             repo.SaveAction("Step10_3_Keep", "Circle", 2, "C:/d.exe?0", false);
             Assert.Contains("Step10_3_Remove", ActionNamesInFile(scope.ActionsPath));
@@ -145,7 +145,7 @@ namespace DS4WindowsTests
         public void RemoveActionAndSave_ReturnsFalseForUnknownAction()
         {
             using var scope = new ActionsStoreScope();
-            var repo = new SpecialActionRepository();
+            var repo = TestRepositoryFactory.CreateSpecialActionRepository();
             repo.SaveAction("Step10_3_Keep", "Circle", 2, "C:/d.exe?0", false);
 
             Assert.False(repo.RemoveActionAndSave("Step10_3_Missing"));
@@ -157,7 +157,7 @@ namespace DS4WindowsTests
         {
             // 既存の RemoveAction（メモリ上のリストだけ）との違いを固定する
             using var scope = new ActionsStoreScope();
-            var repo = new SpecialActionRepository();
+            var repo = TestRepositoryFactory.CreateSpecialActionRepository();
             repo.SaveAction("Step10_3_MemOnly", "Cross", 2, "C:/a.exe?0", false);
 
             Assert.True(repo.RemoveAction("Step10_3_MemOnly"));
@@ -185,7 +185,7 @@ namespace DS4WindowsTests
         public void ButtonAction_SwitchMode_SurvivesSaveAndReload(string mode, SpecialAction.KeyButtonSwitchModeEnum expected)
         {
             using var scope = new ActionsStoreScope();
-            var repo = new SpecialActionRepository();
+            var repo = TestRepositoryFactory.CreateSpecialActionRepository();
             var vm = CreatePressKeyViewModel(repo);
             vm.SwitchMode = mode;
             vm.ReadSettings(ButtonSettings(X360Controls.A));
@@ -210,7 +210,7 @@ namespace DS4WindowsTests
         {
             // SwitchMode を持たない従来の Actions.xml（Button）は、従来どおり Press として読み込む
             using var scope = new ActionsStoreScope();
-            var repo = new SpecialActionRepository();
+            var repo = TestRepositoryFactory.CreateSpecialActionRepository();
             File.WriteAllText(scope.ActionsPath,
                 "<?xml version=\"1.0\" encoding=\"utf-8\"?><Actions>" +
                 "<Action Name=\"Legacy\"><Trigger>Cross</Trigger><Type>Button</Type><Details>1</Details></Action></Actions>");
@@ -227,7 +227,7 @@ namespace DS4WindowsTests
         [Fact]
         public void ReadSettings_ForButton_RaisesDescribeTextPropertyChanged()
         {
-            var vm = CreatePressKeyViewModel(new SpecialActionRepository());
+            var vm = CreatePressKeyViewModel(TestRepositoryFactory.CreateSpecialActionRepository());
             var changed = new List<string>();
             vm.PropertyChanged += (s, e) => changed.Add(e.PropertyName);
 

@@ -9,10 +9,10 @@ namespace DS4Windows
         private readonly IMappingActionDispatcher _actionDispatcher;
 
         public ProfileActionChainService(IProfileActionProvider actionProvider,
-            IMappingActionDispatcher actionDispatcher = null)
+            IMappingActionDispatcher actionDispatcher)
         {
-            _actionProvider = actionProvider;
-            _actionDispatcher = actionDispatcher ?? DS4WinWPF.AppHost.GetService<IMappingActionDispatcher>() ?? new MappingActionDispatcher();
+            _actionProvider = actionProvider ?? throw new ArgumentNullException(nameof(actionProvider));
+            _actionDispatcher = actionDispatcher ?? throw new ArgumentNullException(nameof(actionDispatcher));
         }
 
         public void DispatchNextActions(int deviceIndex, SpecialAction sourceAction)

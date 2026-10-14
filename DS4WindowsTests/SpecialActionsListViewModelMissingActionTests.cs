@@ -15,7 +15,7 @@ namespace DS4WindowsTests
     public class SpecialActionsListViewModelMissingActionTests
     {
         private static SpecialActionsListViewModel CreateVm() =>
-            new SpecialActionsListViewModel(0, new SpecialActionRepository(), new ProfileRepository());
+            new SpecialActionsListViewModel(0, TestRepositoryFactory.CreateSpecialActionRepository(), new ProfileRepository());
 
         /// <summary>Global.store のアクション一覧を、テスト用の内容へ差し替え、終了時に戻す</summary>
         private sealed class ActionsScope : System.IDisposable

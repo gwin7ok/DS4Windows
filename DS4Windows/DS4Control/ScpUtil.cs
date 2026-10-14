@@ -805,7 +805,7 @@ namespace DS4Windows
         // Phase4-Step3: ISpecialActionRepository DI シム (Strangler Fig 移行用)
         // =========================================================================
         private static DS4Windows.DI.ISpecialActionRepository specialActionRepository = null;
-        private static readonly DS4Windows.DI.ISpecialActionRepository fallbackSpecialActionRepository = new SpecialActionRepository();
+        private static readonly DS4Windows.DI.ISpecialActionRepository fallbackSpecialActionRepository = new SpecialActionRepository(m_Config, new PathService());
 
         public static DS4Windows.DI.ISpecialActionRepository SpecialActionRepositoryInstance
         {

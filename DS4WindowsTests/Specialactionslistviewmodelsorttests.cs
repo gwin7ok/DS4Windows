@@ -19,7 +19,7 @@ namespace DS4WindowsTests
         private static SpecialActionsListViewModel CreateVm(params (string name, bool active)[] items)
         {
             // 依存は必須引数のため、既定の軽量なサービスを渡して生成する（一覧の並べ替えだけを検査する）。
-            var vm = new SpecialActionsListViewModel(0, new SpecialActionRepository(), new ProfileRepository());
+            var vm = new SpecialActionsListViewModel(0, TestRepositoryFactory.CreateSpecialActionRepository(), new ProfileRepository());
             int index = 0;
             foreach (var (name, active) in items)
             {
@@ -111,7 +111,7 @@ namespace DS4WindowsTests
         private static SpecialActionsListViewModel CreateVmWithControlsAndType(
             params (string name, string controls, string typeName)[] items)
         {
-            var vm = new SpecialActionsListViewModel(0, new SpecialActionRepository(), new ProfileRepository());
+            var vm = new SpecialActionsListViewModel(0, TestRepositoryFactory.CreateSpecialActionRepository(), new ProfileRepository());
             int index = 0;
             foreach (var (name, controls, typeName) in items)
             {

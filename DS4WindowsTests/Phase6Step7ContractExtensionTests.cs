@@ -127,7 +127,7 @@ namespace DS4WindowsTests
             {
                 string actionsFile = Path.Combine(dir, "Actions.xml");
                 var store = new BackingStore { m_Actions = actionsFile };
-                var repo = new SpecialActionRepository(store);
+                var repo = TestRepositoryFactory.CreateSpecialActionRepository(store);
 
                 Assert.False(File.Exists(actionsFile));
 
@@ -141,7 +141,7 @@ namespace DS4WindowsTests
 
                 // 作られたファイルを、別の BackingStore から読み込めること。
                 var store2 = new BackingStore { m_Actions = actionsFile };
-                var repo2 = new SpecialActionRepository(store2);
+                var repo2 = TestRepositoryFactory.CreateSpecialActionRepository(store2);
                 Assert.True(repo2.LoadActions());
                 Assert.Contains(store2.actions, a => a.name == "Disconnect Controller");
             }
