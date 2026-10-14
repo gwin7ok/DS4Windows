@@ -299,6 +299,10 @@ classDiagram
     class IViewModelFactory {
         <<interface>>
         +CreateProfileSettingsVM(string profileName, int targetDevice) ProfileSettingsViewModel
+        +CreateRecordBoxViewModel(device, controlSettings, recordMacro, extraHold, targetDevice) RecordBoxViewModel
+        +CreateSpecialActEditorViewModel(device, action) SpecialActEditorViewModel
+        +CreateAutoProfilesViewModel(autoProfileHolder, profileList) AutoProfilesViewModel
+        +CreateSpecialActionsListViewModel(device) SpecialActionsListViewModel
     }
     class ViewModelFactory {
         -IProfileSettingsService _profileSettings
@@ -307,9 +311,21 @@ classDiagram
         -IOutputSlotService _outputSlotService
         -IEnvironmentService _environmentService
         -IPathService _pathService
+        -IAppSettingsService _appSettings
+        -Func~IAutoProfileService~ _autoProfileServiceAccessor
         -Func~ControlService~ _controlServiceAccessor
     }
     IViewModelFactory <|.. ViewModelFactory : implements
+    class ISpecialActionRepository {
+        <<interface>>
+        +ActionList List~SpecialAction~
+        +AddAction(action) bool
+        +RemoveAction(actionName) bool「メモリ上のリストのみ」
+        +SaveAction(name, controls, mode, details, edit, delayTime, extras)「Actions.xml へ保存・読み直し・状態リセット」
+        +RemoveActionAndSave(actionName) bool「Actions.xml へ保存・読み直し」
+        +GetActionOrPlaceholder(actionName) SpecialAction
+    }
+|.. ViewModelFactory : implements
     ViewModelFactory ..> ProfileSettingsViewModel : creates
 
     %% ==========================================
@@ -405,3 +421,10 @@ classDiagram
 %% - 温存: `RESOURCES_PREFIX`／`ASSEMBLY_RESOURCE_PREFIX`（定数）、`ds4inputNames`／`xboxDefaultNames`／`ds4DefaultNames`／`macroDS4Values`（不変の静的表）、`getX360ControlString`（純粋関数）。
 %% - 付随の機能廃止: Flydigi Vader 4 Pro のデバイスサポートを削除した（ユーザー承認。`Phase6-Step10-V4P-Removal-Plan.md`）。
 %% - 詳細は `Phase6-Step10-2-Plan.md`。
+%% 注釈補強（2026-10-14 Phase6-Step10-3 反映）
+%% - グループ3（スペシャルアクション系）の View／ViewModel（`SpecialActionEditor`、`SpecialActEditorViewModel`、`SpecialActionsListViewModel`、`SpecialActions/*` の種別ごとの ViewModel 7 クラス）の依存を、コンストラクタの必須引数（Pure DI）にした。`AppHost.GetService`／`Global.*Instance`／`Program.rootHub` のフォールバックは削除。
+%% - 追加した契約: `ISpecialActionRepository.SaveAction`（`Global.SaveAction` への薄い委譲。Actions.xml への保存、読み直しと検証、キー種別のランタイム状態のリセットを含む）、`RemoveActionAndSave`（`Global.RemoveAction` への薄い委譲。ファイルへの保存と読み直しを含む）。メモリ上のリストだけを変える `AddAction`／`RemoveAction` とは動作が別のため、別メソッドにした。`IViewModelFactory.CreateSpecialActionsListViewModel`。`EditorWindowFactory` に `ISpecialActionRepository` を追加した。
+%% - 削除: `SpecialActionsListViewModel` の未使用の依存（`IManagedActionManager`、`IOutputSlotService`、`IProfileSettingsService`）。
+%% - 温存: `Global.configFileDecimalCulture`（不変の静的値）、`Global.getX360ControlString`（純粋関数）。
+%% - 先送り: SA の「キー押下」でコントローラーのボタンを割り当てられない件（`Phase6-Step10-3-Plan.md` §12。Step10-3c で調査）。
+%% - 詳細は `Phase6-Step10-3-Plan.md`。

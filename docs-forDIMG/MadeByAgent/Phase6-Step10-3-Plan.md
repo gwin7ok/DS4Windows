@@ -150,3 +150,8 @@
   - テスト 4 ファイル（`ProfileActionsSyncTests`、`ProfileEditorBackendViewModelTests`、`Specialactionslistviewmodelsorttests`、`SpecialActionsListViewModelTests`）を新しいコンストラクタに合わせ、`Step10GroupThreeGlobalReferenceGuardTests` に一覧 ViewModel を追加した。
 - **Step10-3-3**: 完了（ビルド・テスト実行成功、実機確認問題なし）。
 - **Step10-3-3 の追補（2026-10-14、ユーザー承認 A）**: `SpecialActionsListViewModel` の未使用の依存 `IOutputSlotService`／`IProfileSettingsService`（フィールドと引数）を削除した。コンストラクタは `(deviceNum, ISpecialActionRepository, IProfileRepository)` になった。`ViewModelFactory`、テスト 6 ファイル、ガードテストを更新した。実装済み・ビルド、テストの結果待ち（画面の動作は変わらない）。
+- **Step10-3-3 の追補**: 完了（ビルド・テスト実行成功）。
+- **Step10-3-4（ガードテストの確認と文書）**: 実施済み。
+  - グループ3の対象 11 ファイル（`SpecialActionEditor`、`SpecialActEditorViewModel`、`SpecialActionsListViewModel`、`SpecialActions/*` の 7 クラス、ほかに `EditorWindowFactory` は Step10-2 の対象）に、温存項目（`configFileDecimalCulture`、`getX360ControlString`）以外の `Global.`、`AppHost`、`Program.rootHub` が無いことを、再走査で確認した。ガードテスト `Step10GroupThreeGlobalReferenceGuardTests` が回帰を検査している。
+  - モデル図 03（`IViewModelFactory` の生成口、`ViewModelFactory` の依存、`ISpecialActionRepository` の保存系メソッド）と 04（§2 の `ISpecialActionRepository`）を更新した。
+- **Step10-3 の完了**。次: Step10-3b（アクションの名前変更・削除の全プロファイルへの反映。`Phase6-Step10-3b-Plan.md`）、Step10-3c（SA のキー押下でボタンを割り当てられない件の調査）、Step10-4。

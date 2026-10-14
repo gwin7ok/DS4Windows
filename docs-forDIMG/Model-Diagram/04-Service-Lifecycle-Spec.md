@@ -35,7 +35,7 @@
 | **基盤** | `IProfileRepository` | `ProfileRepository` | **Singleton** | プロファイル名一覧の保持、CRUD、存在検証、リンクプロファイル解決、ブランクプロファイル読込（`LoadBlankProfile`） | `IProfileXmlStore`, `IPathService` |
 | **基盤** | `IProfileSettingsService` | `ProfileSettingsService` | **Singleton** | ロード済みプロファイルのインメモリ設定値管理（出力 KBM マッピングによる仮想キーの別名更新 `RefreshActionAlias` を含む） | `IProfileXmlStore` |
 | **基盤** | `IDeviceOptionRepository` | `DeviceOptionRepository` | **Singleton** | 機種別オプション（`*ControllerOptsDTO`）の管理 | `IPathService`, `XmlIoLock` |
-| **基盤** | `ISpecialActionRepository` | `SpecialActionRepository` | **Singleton** | `Actions.xml` のCRUDおよび定義管理、名前によるアクション取得（未発見は placeholder を返す `GetActionOrPlaceholder`） | `IPathService`, `XmlIoLock` |
+| **基盤** | `ISpecialActionRepository` | `SpecialActionRepository` | **Singleton** | `Actions.xml` のCRUDおよび定義管理、名前によるアクション取得（未発見は placeholder を返す `GetActionOrPlaceholder`）、保存を伴う `SaveAction`／`RemoveActionAndSave`（`Global` への薄い委譲。メモリ上のリストだけを変える `AddAction`／`RemoveAction` とは別） | `IPathService`, `XmlIoLock` |
 | **基盤** | `IOutputSlotStore` | `OutputSlotStore` | **Singleton** | スロット永続化設定（`OutputSlots.xml`）の管理 | `IPathService`, `XmlIoLock` |
 | **基盤** | `ILogSettingsApplier` | `LogSettingsApplierProxy`（実体は `LoggerHolder`。`App` が生成直後に `Attach`） | **Singleton** | ログ設定（保存数・最小ログレベル）の変更を NLog の構成へ反映する窓口。`LoggerHolder` は設定の読み込み後にしか生成できないため、遅延接続のプロキシを登録する（接続前の呼び出しは何もしない） | なし |
 | **基盤** | `IProfilePresetLoader` | `ProfilePresetLoader` | **Singleton** | プリセット（空・ゲームパッド＋ジャイロ・ミックス・ミックス＋ジャイロマウス・KBM・KBM＋ジャイロマウス。Xbox 360/DS4 別）の読み込み。`Global.Load…Profile` への薄い委譲（独自の状態なし） | なし |
@@ -159,3 +159,7 @@
 %% - `EditorWindowFactory` は、`ControlService` を生成のたびに `Func` で遅延解決する（明示的なホスト構築より前に解決しない。`ViewModelFactory` と同じ形）。補助ウィンドウは UI スレッドで生成する。
 %% - `IAutoProfileService` は生成時に `AutoProfileHolder` を読むため、設定の保存先が決まる前に解決しない（`ViewModelFactory` は `Func` で遅延解決する）。
 %% - 詳細は `03-Class-Interface-Diagram.md` の 2026-10-14（Step10-2）の注釈と `Phase6-Step10-2-Plan.md`。
+%% 注釈補強（2026-10-14 Phase6-Step10-3 反映）
+%% - §2 の `ISpecialActionRepository` に、保存を伴う `SaveAction`／`RemoveActionAndSave` を追記した（ライフタイム・依存は変わらない）。`IViewModelFactory` の生成口に `CreateSpecialActionsListViewModel` が加わった。
+%% - `EditorWindowFactory` の依存に `ISpecialActionRepository` が加わった。
+%% - 詳細は `03-Class-Interface-Diagram.md` の 2026-10-14（Step10-3）の注釈と `Phase6-Step10-3-Plan.md`。
