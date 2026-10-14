@@ -1,7 +1,7 @@
 # Phase6-Step10-3b 計画書: アクションの名前変更・削除を、全プロファイルへ反映する（機能追加）
 
 作成日: 2026-10-14  
-状態: 計画案・承認待ち（実装未着手。Step10-3 の完了後に実施する）  
+状態: **完了（2026-10-14）**（Step10-3b-1〜3b-4、ビルド・テスト・実機確認済み）  
 位置づけ: DI 化（動作を変えない）とは別の、機能追加。Step10-3 の範囲に混ぜず、別のコミットで行う（R3＝B。2026-10-14 承認）  
 準拠: `.github/copilot-instructions.md` §2.2、§2.3、§3.3、§4
 
@@ -135,3 +135,19 @@
   - 対応（ユーザーの要望、案 A: 既存の再適用の経路を使う）: 名前が同じで内容だけ変わった場合も、そのアクションを使っているプロファイル（接続中のスロットに適用中のもの）を、`ProfilesUpdatedExternally` で通知し、`MainWindow.SyncProfileListAndControllers`（保存時と同じ再適用）で再適用する。
   - 追加した契約: `IProfileRepository.GetAppliedProfilesUsingAction(actionName)`（スロットのメモリ上の `ProfileActions` を調べる。ファイルは読まない）。
   - 案 B（再適用せず、スロットのキャッシュだけを更新する）は、`ActionManager` の事前確保など実行時の内部状態に触れるため採らなかった。
+- **Step10-3b-4**: 完了（ビルド・テスト実行成功、実機確認問題なし。内容だけ変わった場合の再適用の追加を含む）。
+
+## 9. 完了報告（2026-10-14）
+- **Step10-3b は完了**。機能追加（DI 化の範囲外）として、Step10-3 とは別のコミットで実施した。
+- **成果**:
+  - 「除去」ボタンに確認のプロンプトを追加し、`Actions.xml` と、すべてのプロファイルの XML から、そのアクションを取り除くようにした。
+  - アクションの名前変更を、すべてのプロファイルの XML へ反映するようにした。
+  - 名前が同じで内容だけが変わったときも、そのアクションを使っているプロファイルを再適用し、接続中のコントローラーへ新しい内容を反映するようにした。
+  - `Actions.xml` に無く、プロファイルの XML にだけ残っている名前を、一覧にグレーで表示する機能（`40011c12`）を復活させた。
+  - 一覧からの「除去」が `Actions.xml` へ保存されない（メモリ上のリストだけ）動作を、保存付きの削除（`RemoveActionAndSave`）へ変更した。
+- **再適用の実装箇所**: `MainWindow.SyncProfileListAndControllers` の 1 か所のまま（保存時、除去、名前変更、内容変更のすべてが、この経路を呼ぶ）。
+- **追加した契約**: `IProfileRepository.ReplaceActionReference`／`RemoveActionReference`／`GetAppliedProfilesUsingAction`（いずれも、Step10-3b の範囲内で使用）、`ISpecialActionRepository.SaveAction`／`RemoveActionAndSave`（Step10-3-1）。
+- **追加したテスト**: `Phase6Step10GroupThreeBContractTests`、`SpecialActionsListViewModelMissingActionTests`、`Step10GroupThreeGlobalReferenceGuardTests` の除去・名前変更の流れの検査。
+- **未実施・引き継ぎ**:
+  - 不要になる可能性のある既存の `ISpecialActionRepository.RemoveAction`（メモリのみ）は、呼び出しが 1 件も残っていない可能性がある。Step10-4 の全域再走査で、§2.4 に従って要否を確認する。
+  - SA の「キー押下」でコントローラーのボタンを割り当てられない件は、Step10-3c で調査する（`Phase6-Step10-3-Plan.md` §12）。

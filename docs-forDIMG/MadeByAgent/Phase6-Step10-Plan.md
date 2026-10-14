@@ -400,3 +400,13 @@ public partial class SaveWhere : Window
 
 ### 8.3 ガードレール
 - ViGEm ネイティブドライバ保護（Phase5-Plan §5.5）: `OutputSlotManager` の非同期キュー（`DeferredPlugin`／`DeferredRemoval`）と破棄順序には手を触れず、`ControlService` の正規 API への中継に留める。
+---
+
+## 進捗の記録（2026-10-14 時点）
+- **完了**: Step10-0（台帳の作り直しと決定）、Step10-1（グループ1。`Phase6-Step10-1-Plan.md`）、Step10-2（グループ2。`Phase6-Step10-2-Plan.md` §10）、Step10-3（グループ3。`Phase6-Step10-3-Plan.md` §14）。付随: Vader 4 Pro のデバイスサポート削除（`Phase6-Step10-V4P-Removal-Plan.md`）、Step10-3b（アクションの名前変更・削除の全プロファイル反映。`Phase6-Step10-3b-Plan.md` §9）。
+- **残り**:
+  - **Step10-3c**: SA の「キー押下」でコントローラーのボタンを割り当てられない件の調査（計画書は `Phase6-Step10-3c-Plan.md`）。
+  - **Step10-4**: F08（サービス実装のコンストラクタのフォールバック 12 クラス）と、全域の再走査・分類・ガードテスト。あわせて、`ISpecialActionRepository.RemoveAction`（メモリのみ）の呼び出し元の有無と、Step10-2／10-3 で `ProfileEditor` 本体に残る `AppHost`／`Program.rootHub` の解決（`profileRepository`、`profileSwitcher`、`controlService`、`vmFactory`）の分類。
+  - **Step10-5**: §8（`PluginSlot`／`UnplugSlot` の接続）。
+  - **完了報告書**: `Phase6-Step10-Completion-Report.md`、`Phase6-Step10b-Plan.md`・`Phase6-Step11-Plan.md` への引き継ぎ（複数型ファイルの分割は Step10b。`PresetOption.cs`、`MappingListViewModel.cs` など）。
+- **先送り台帳**: `Phase6-Step11-Plan.md` §3.3（Step10-1-3 の更新通知、Step10-3-2 の SA キー押下のボタン割り当て）。

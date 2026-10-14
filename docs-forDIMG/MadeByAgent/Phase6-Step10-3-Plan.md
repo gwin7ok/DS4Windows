@@ -1,7 +1,7 @@
 # Phase6-Step10-3 計画書: グループ3【スペシャルアクション系】の View／ViewModel ペア Pure DI 化
 
 作成日: 2026-10-14  
-状態: 計画案。決定 G3-1〜G3-4 は、すべて推奨案で承認済み（2026-10-14）。実装未着手  
+状態: **完了（2026-10-14）**。決定 G3-1〜G3-4 は、すべて推奨案で承認済み。Step10-3-1〜3-4 のビルド・テスト・実機確認が完了（項目の一部は §12 のとおり先送り）  
 上位計画書: `Phase6-Step10-Plan.md`（§0A.4 が本 Step の台帳）、前の Step: `Phase6-Step10-2-Plan.md`（完了）  
 準拠: `.github/copilot-instructions.md` §2.1〜2.4、§3.1、§3.3、§3.4
 
@@ -155,3 +155,9 @@
   - グループ3の対象 11 ファイル（`SpecialActionEditor`、`SpecialActEditorViewModel`、`SpecialActionsListViewModel`、`SpecialActions/*` の 7 クラス、ほかに `EditorWindowFactory` は Step10-2 の対象）に、温存項目（`configFileDecimalCulture`、`getX360ControlString`）以外の `Global.`、`AppHost`、`Program.rootHub` が無いことを、再走査で確認した。ガードテスト `Step10GroupThreeGlobalReferenceGuardTests` が回帰を検査している。
   - モデル図 03（`IViewModelFactory` の生成口、`ViewModelFactory` の依存、`ISpecialActionRepository` の保存系メソッド）と 04（§2 の `ISpecialActionRepository`）を更新した。
 - **Step10-3 の完了**。次: Step10-3b（アクションの名前変更・削除の全プロファイルへの反映。`Phase6-Step10-3b-Plan.md`）、Step10-3c（SA のキー押下でボタンを割り当てられない件の調査）、Step10-4。
+
+## 14. 完了報告（2026-10-14）
+- **Step10-3（グループ3）は完了**。Step10-3-1〜3-4（契約、種別ごとの ViewModel と `SpecialActEditorViewModel`・`SpecialActionEditor`、`SpecialActionsListViewModel`・`IViewModelFactory`・`ProfileEditor`、モデル図と文書）。ビルド・テスト・実機確認済み。
+- **成果**: 対象 11 ファイルの `Global.`／`AppHost`／`Program.rootHub` を、温存項目（`configFileDecimalCulture`、`getX360ControlString`）を除いて解消。未使用の依存（`actionManager`、`outputSlotService`、`profileSettings`）を削除。
+- **付随して実施**: Step10-3b（機能追加。`Phase6-Step10-3b-Plan.md` §9）。
+- **先送り**: SA の「キー押下」でコントローラーのボタンを割り当てられない件（§12。Step10-3c で調査、`Phase6-Step11-Plan.md` §3.3 に台帳登録済み）。
