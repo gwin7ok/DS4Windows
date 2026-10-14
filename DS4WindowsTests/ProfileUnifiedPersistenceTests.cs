@@ -10,8 +10,10 @@ namespace DS4WindowsTests
         public void SubSettings_StickDeadZone_ShouldBubbleToServiceAndMarkDirty()
         {
             var service = new ProfileSettingsService();
-            if (service.LSModInfo == null || service.LSModInfo[0] == null)
-                return;
+            // Phase6-Step9b-4（F10）: 前提が満たされないときに return で成功扱いにしない
+            Assert.NotNull(service.LSModInfo);
+            Assert.NotNull(service.LSModInfo[0]);
+            Assert.NotNull(service.LSModInfo[0].xAxisDeadInfo);
 
             service.WireSubSettingsEvents(0);
 
@@ -38,8 +40,8 @@ namespace DS4WindowsTests
         public void SubSettings_GyroControls_ShouldBubbleToServiceAndMarkDirty()
         {
             var service = new ProfileSettingsService();
-            if (service.GyroControlsInf == null || service.GyroControlsInf[0] == null)
-                return;
+            Assert.NotNull(service.GyroControlsInf);
+            Assert.NotNull(service.GyroControlsInf[0]);
 
             service.WireSubSettingsEvents(0);
 

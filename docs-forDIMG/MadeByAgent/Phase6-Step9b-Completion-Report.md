@@ -34,7 +34,7 @@
 - **F01 プロファイル切替の 250ms デバウンス**: 250ms のデバウンスは 2026-09-16（`94066f3c`）に消えたが、機能上の安全弁は Fresh-press ガード（`RequiresFreshPressAfterReset`、80ms の未成立継続で解除）・`IsExecuting`・`ProfileActionChainService` の Profile 型チェーンのスキップに置き換わっており、稼働経路では `Mapping.cs` の上流で必ず働く（Phase5-Step14 で実機確認済み）。コード変更なし。`copilot-instructions.md` §2.2 の記述が現状と食い違っていたため、現行の機構へ更新した。残る弱点（`IProfileSwitcher` を直接呼ぶ新しい経路では効かない）は Phase8 計画書へ申し送った。
 
 ### テスト品質
-- **F10**: `ProfileSettingsServiceSubSettingsTests` の 6 テストで、前提が満たされないと `return` で成功扱いになる条件分岐を `Assert.NotNull` に置き換えた。
+- **F10**: `ProfileSettingsServiceSubSettingsTests` の 6 テストで、前提が満たされないと `return` で成功扱いになる条件分岐を `Assert.NotNull` に置き換えた。Copilot の指摘位置は `ProfileUnifiedPersistenceTests.cs`（2 テスト、同じパターン）で別ファイルだったため、PR 返信の準備中に追加で修正した（コミット・テスト実行前。§7）。
 - **F11**: `SpecialActionsListViewModelTests` の購読の監査を、発行側（サービス）のデリゲートの購読者を調べる動作による検証に置き換えた。当該 ViewModel は `IDisposable` ではなく、サービスのイベントを購読していない（計画書の「購読と解除の検証」は「購読していないことの検証」に置き換えた）。
 - **F14**: `StandaloneTests` の正規化テストを、`Util` と `Global` の独立した 2 実装の比較と期待値の固定に書き直した。
 
@@ -58,16 +58,80 @@
 - **Phase8**: `MouseOutputAction` の完成、プロファイル切替ガードの統一経路での維持、`IManagedActionManager`／`IControllerRegistry` の再登録の前提、プログラム起動仕様の維持。`Phase8-Unified-Trigger-Dispatch-Plan.md` 末尾に追記済み。
 - **持ち越し（変更なし）**: K7b-1（異常終了。先送り）、K9-3（プリセットメニューのサブメニュー）、K7-1。
 
-## 7. PR #1 のレビューコメントへの返信案（提示のみ。GitHub への書き込みは、ユーザーの許可を得たものだけ行う）
-各スレッドの返信案。いずれも、対応したコミットまたはステップを明記する。
+## 7. PR #1 のレビューコメントへの返信文面（確定版）
+- **投稿状況（2026-10-14）**: 14 スレッドとも未返信・未解決。GitHub MCP と `gh` の認証（PAT）のいずれも、レビューコメントへの返信が 403（`Resource not accessible by integration`／`by personal access token`）で拒否されたため、投稿できていない。トークンに `pull_requests: write`（返信）が必要。スレッドの解決（GraphQL `resolveReviewThread`）も同じ権限が必要と見込まれる。権限を付与するか、下記を GitHub の画面から貼り付ける。
+- スレッドの URL とコメント ID は、`https://github.com/gwin7ok/DS4Windows-Vader4Pro/pull/1#discussion_r<ID>`。
+- **F10 の指摘の実体**: Copilot の指摘位置は `DS4WindowsTests/ProfileUnifiedPersistenceTests.cs`（13〜14 行）で、計画書で想定していた `ProfileSettingsServiceSubSettingsTests.cs` とは別のファイルだった。Step9b-4 では後者のみを直しており、前者は 2026-10-14 に追加で修正した（2 テストの `return` を `Assert.NotNull` に置換。**コミット・テスト実行前**）。返信は、このコミット後に投稿する。
 
-- **F01（DefaultProfileSwitcher のデバウンス）**: 「ご指摘の 250ms デバウンスは 2026-09-16 に撤去しています。連鎖発火の防止は、`ActionInstanceState.RequiresFreshPressAfterReset`（トリガーが 80ms 連続して未成立になるまで新規成立とみなさない）と `IsExecuting`、`ProfileActionChainService` の Profile 型チェーンのスキップに置き換えており、稼働経路は `Mapping.cs` の上流でこれらを必ず通ります（実機で確認済み）。コード変更はなく、ドキュメントの記述（`copilot-instructions.md` §2.2）を現行の機構へ更新しました。」
-- **F02（IManagedActionManager の未登録）**: 「ご指摘のとおりでした（2026-09-04 の別コミットによる巻き込み削除）。`ServiceRegistration` に `IManagedActionManager`／`IControllerRegistry` を再登録し、`DefaultActionManager.ClearDeviceState` を静的版と同じ動作に揃え、回帰テストと実機で確認しました（Phase6-Step9b-2）。」
-- **F03（MouseOutputAction）**: 「`MouseOutputAction` は未登録・未完成で、`GetService` が常に null になるため、従来の `PerformMouseButtonEvent` 経路が動いており実害はありません。登録すると出力が失われるため、登録してはならない旨の TODO を付け、Phase8 で完成させます。」
-- **F04（NLog の async=false）**: 「ご指摘のとおりでした。`FindLogFileTarget` で、ラッパー内と直接の `FileTarget` の両方に対応しました。設定が保存されない副作用も含めて解消し、回帰テストを追加しました（Phase6-Step9b-1）。」
-- **F05（DefaultMacroPlayer の 4 スロット）**: 「`Global.MAX_DS4_CONTROLLER_COUNT`（8）に合わせました。単体テストで固定済みです。8 スロット構成での実機確認は、機材の都合で Step11 に先送りしています（Phase6-Step9b-3）。」
-- **F06（LaunchProcessAction）**: 「置換前の仕様（`$hidden` のときだけ非表示、それ以外は `UseShellExecute=true`）へ戻し、テストを書き直しました。実機でも確認しています（Phase6-Step9b-3）。」
-- **F07（GetRequiredService）**: 「呼び出し元は 0 件でしたが、名前どおり、未設定・未登録なら `InvalidOperationException` を投げる実装にしました（Phase6-Step9b-2）。」
-- **F08（ProfileActionChainService のフォールバック）／F09（ControllersViewModel）**: 「Pure DI の整理として Phase6-Step10 で対応します（台帳に登録済み）。」
-- **F10・F11・F14（テスト）**: 「それぞれ、条件で `return` しない `Assert.NotNull`、発行側の購読者を調べる動作による検証、`Util` と `Global` の独立実装の比較に修正しました（Phase6-Step9b-4）。」
-- **F12・F13（1ファイル1型）**: 「Phase6-Step10b（1ファイル1型の全数是正）で一括して分割します（台帳に登録済み）。」
+いずれも「返信を投稿し、スレッドを解決済みにする」（ユーザー指示。F08・F09・F12・F13 は後続 Step での対応を明記した返信で解決する）。
+
+#### F01（コメント ID 4259525776、`DefaultProfileSwitcher.cs`）
+検証の結果、誤検出（コード変更なし）と判断しました。
+
+ご指摘のとおり、250ms のデバウンスは 2026-09-16（94066f3c、通知レガシー経路の削除）で `DefaultProfileSwitcher` から撤去されています。ただし、連鎖発火（カスケード）の防止は別の機構に置き換わっており、稼働経路では `Mapping.cs` の上流で必ず働きます。
+
+- `ActionInstanceState.RequiresFreshPressAfterReset`: プロファイル適用で `ClearDeviceState` が状態を新品にし、トリガーが 80ms（`FreshPressReleaseHoldMs`）連続して未成立になるまで、新規成立とみなさない
+- `ActionInstanceState.IsExecuting`: 同一アクションの実行中の再実行を防止
+- `ProfileActionChainService`: Profile 型のチェーンをスキップ
+
+`IProfileSwitcher.SwitchProfile` の呼び出し元は `ProfileSwitchAction.Execute` のみで、`Mapping.cs` のゲートを通ります。実機でカスケードしないことを確認済みです（Phase5-Step14）。
+
+`.github/copilot-instructions.md` §2.2 の記述を現行の機構に更新しました。また、統一ディスパッチ（Phase8）で `IProfileSwitcher` を直接呼ぶ経路を作る場合は同等のガードが必要なため、Phase8 計画書へ申し送り済みです（Phase6-Step9b、a3f62132）。
+
+#### F02（コメント ID 4259525859、`IManagedActionManager.cs`）
+ご指摘のとおりでした。2026-09-04 の別コミット（31dddc43）が、`IManagedActionManager`・`IControllerRegistry`・`IActionRegistry` の登録を巻き込み削除していました。
+
+`ServiceRegistration` に `IManagedActionManager`→`DefaultActionManager` と `IControllerRegistry`→`DefaultControllerRegistry` を再登録しました（`IActionRegistry` は実装が静的クラスで呼び出し元もないため対象外）。あわせて、再登録で挙動が変わらないよう、`DefaultActionManager.ClearDeviceState` を静的ファサード版と同じく `Mapping.HandleDeviceDisconnect` を呼ぶ形に揃えました。回帰テスト（登録、`SetToggledOn`、Controls タブ経由の Toggle 遷移）を追加し、実機ログでトグルのオン／オフとプロファイル切替時のキー解放を確認しています（Phase6-Step9b-2、3c4bc504）。
+
+#### F03（コメント ID 4259525929、`MouseOutputAction.cs`）
+ご指摘のとおり、`MouseOutputAction` は未完成です。ただし、現時点では実害はありません。
+
+このクラスは `ServiceRegistration`・`DefaultActionFactory`・`ActionFactory` のいずれにも登録されておらず、`Mapping.cs` の `sp.GetService(typeof(MouseOutputAction))` は常に null になります。そのため、従来の `VirtualKBM.PerformMouseButtonEvent` の経路が実際の出力を行っています。一方、登録すると `mouseHandled=true` となり、左クリックなどが出なくなる危険があります。
+
+動作は変えず、クラスと `Mapping.cs` の 2 箇所に「登録してはならない」旨と完成時期（Phase8: Controls／SpecialActions 統一トリガーディスパッチ）を明記した TODO を付けました。Phase8 計画書にも申し送り済みです（Phase6-Step9b-3、5d756028）。
+
+#### F04（コメント ID 4259525997、`NLog.config`）
+ご指摘のとおりでした（`async="false"` は 2025-12 からの既存の不具合で、DI 移行の回帰ではありません）。
+
+`UpdateLogSettings`／`RestoreArchiveSetting` の例外は、`SettingsViewModel` のセッターで `_appSettings.Save()` より前に起きるため、ログレベルとアーカイブ数の設定が保存されず、NLog.config の更新も行われない副作用がありました。
+
+非同期ラッパー内と直接の `FileTarget` の両方に対応する `LoggerHolder.FindLogFileTarget` を追加し、コンストラクタ・`UpdateLogSettings`・`RestoreArchiveSetting` で共用しました。回帰テスト 4 件を追加し、実機で設定の保存・反映と `Log settings updated:` のログを確認しています（Phase6-Step9b-1、056b5ebc）。
+
+#### F05（コメント ID 4259526075、`DefaultMacroPlayer.cs`）
+ご指摘のとおりでした。`DefaultMacroPlayer` の配列長とガードを `Global.MAX_DS4_CONTROLLER_COUNT`（8）に揃えました。呼び出し先の `Mapping.PlayMacroDirect`／`EndMacroDirect` の `>= 4` も同様に修正しています。既定の 4 スロット構成では挙動は変わりません。
+
+単体テスト（`DefaultMacroPlayer_HandlesAllControllerSlots_NotJustFour`）で固定しました。8 スロット構成のデバイス 4〜7 での実機確認は、機材の都合で Step11 の先送り台帳に登録しています（Phase6-Step9b-3、5d756028）。
+
+#### F06（コメント ID 4259526137、`LaunchProcessAction.cs`）
+ご指摘のとおりでした。DI 移行前の仕様（`Mapping.cs` の `specActionLaunchProc`）と比較したところ、現行の `LaunchProcessAction` が仕様から外れていました。置換前の仕様に戻しています。
+
+- `extra`（Arguments）に `$hidden`（大文字小文字不問）があるときだけ、その語を 1 回取り除き、非表示で起動（`.bat`／`.cmd` は `%COMSPEC% /C "…" 引数`）
+- それ以外は `UseShellExecute=true` の OS の既定動作で起動し、`extra` をそのまま引数に渡す（非表示にしない。ショートカットや書類の起動も維持）
+
+`LaunchProcessActionTests` を新仕様に書き直し、実機で、引数なし・引数付き・`$hidden`・ショートカットの起動を確認しています（Phase6-Step9b-3、5d756028）。
+
+#### F07（コメント ID 4259526216、`ServiceProviderHolder.cs`）
+ご指摘のとおりです。呼び出し元は 0 件で実害はありませんでしたが、名前の契約に合わせて是正しました。プロバイダー未設定、またはサービス未登録のときは、null を返さず `InvalidOperationException` を投げる実装にしています。削除せず契約を保持したのは、全体計画書のシム例が使用を想定している契約のためです。単体テスト 3 件（登録済み／未登録／プロバイダー未設定）を追加しました（Phase6-Step9b-2、3c4bc504）。
+
+#### F08（コメント ID 4259526286、`ProfileActionChainService.cs`）
+ご指摘のとおり、Pure DI 違反です。同じパターンがほかのサービス実装のコンストラクタ（`ProfileApplicationService`、`DefaultActionManager` など）にもあるため、個別には直さず、Phase6-Step10 で洗い出してまとめて是正します（`Phase6-Step10-Plan.md` の台帳に登録済み）。コード変更はこの PR の範囲外としています。
+
+#### F09（コメント ID 4259526566、`ControllersViewModel.cs`）
+ご指摘のとおり、Pure DI 違反です。主要 4 ViewModel と同じ方針（依存を必須引数にし null を拒否する）で、Phase6-Step10 で是正します（`Phase6-Step10-Plan.md` の台帳に登録済み）。コード変更はこの PR の範囲外としています。
+
+#### F10（コメント ID 4259526717、`ProfileUnifiedPersistenceTests.cs`）【コミット・テスト後に投稿】
+ご指摘のとおりでした。サブ設定が null のときに `return` して成功扱いになる条件分岐を `Assert.NotNull` に置き換え、前提が満たされないときは失敗するようにしました。同じパターンの `ProfileSettingsServiceSubSettingsTests`（6 テスト）も同様に修正しています（Phase6-Step9b-4、6c16b5cb）。
+
+#### F11（コメント ID 4259526850、`SpecialActionsListViewModelTests.cs`）
+ご指摘のとおり、旧テストは購読を検出できていませんでした。発行側（サービス）のデリゲートの購読者（`Delegate.Target`）を調べる `CountSubscriptions` に書き換え、(1) 偽の発行側・購読者で検出器自身を検証、(2) 実際の Singleton（`ISpecialActionRepository`、`IProfileRepository`、`IOutputSlotService`、`IProfileSettingsService`、`IManagedActionManager`）と `ActionManager`・`Global` の静的イベントに、ViewModel が購読していないことを検証する形にしました。
+
+なお、この ViewModel は `IDisposable` ではなく、サービスのイベントを購読していないため（購読するのは自身の `actionCol.CollectionChanged` と各項目の `PropertyChanged` のみ）、「購読と解除」ではなく「購読していないこと」を検証しています（Phase6-Step9b-4、6c16b5cb）。
+
+#### F12（コメント ID 4259527009、`INotificationService.cs`）
+ご指摘のとおり、1ファイル1型の違反です。リポジトリ全体の複数型ファイル 55 件（本ファイルを含む）を一括して分割する Phase6-Step10b の台帳に登録済みです。過渡期ルール（`copilot-instructions.md` §3.3 原則1）に従い、機能変更を含む PR では分割せず、Step10b でまとめて対応します。
+
+#### F13（コメント ID 4259527123、`Trigger.cs`）
+ご指摘のとおり、1ファイル1型の違反（ファイル名がどの型名とも不一致）です。リポジトリ全体の複数型ファイル 55 件（本ファイルを含む）を一括して分割する Phase6-Step10b の台帳に登録済みです。機能変更を含む PR では分割しない過渡期ルールに従い、Step10b でまとめて対応します。
+
+#### F14（コメント ID 4259527192、`TestSpecialActionUtils.cs`）
+ご指摘のとおりでした。`Util.NormalizeActionName` と `Global.NormalizeActionName`（独立した 2 つの実装）を、複数の入力（前後の空白・タブ・改行・空文字・null）で比較し、あわせて期待値も固定するテストに書き直しました（Phase6-Step9b-4、6c16b5cb）。
