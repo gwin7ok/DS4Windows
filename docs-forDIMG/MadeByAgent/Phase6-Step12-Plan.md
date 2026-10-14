@@ -3,6 +3,7 @@
 作成日: 2026-09-09  
 改訂日: 2026-09-18（Step2〜Step10確定スコープ・Step11実機総合検証成果統合・選択肢2［安全防壁付き物理削除］採用・全面拡充改訂）  
 状態: 計画書改訂・承認待ち（実装未着手）  
+**2026-10-14 注記（文書整合）**: 本書の「Phase7 引き継ぎ101箇所」「Pre-Host 11箇所」は 2026-09-18 時点の記載で、現行の正と異なる。(1) Step3 は 2026-09-21 に方針を転換し、`Mapping.cs` の実参照150件を全件解消した（2026-09-24 完了）。防壁2の対象は「101箇所」ではなく、`Mapping` の静的 `profileSettings` 束縛（方針P2、TODO 付き）と温存3件である（`Phase6-Step3-Plan.md` §3.8）。(2) Pre-Host 領域は 2026-09-25 の Step7-0 で12箇所に再集計した。(3) Step7 決定6＝N、Step5 の実行時状態配列、K7-1 などの登録は §4 を参照。着手時（Step12-0）に、現行コードで削除候補の台帳を作り直すこと（`Phase6-Status.md` §6.3）。  
 対象ブランチ: `For-DI-migration-work`  
 上位計画書: `docs-forDIMG/MadeByAgent/Phase6-Plan.md`  
 準拠指針: `.github/copilot-instructions.md`, `docs-forDIMG/DI-App-Wide-Migration-Plan.md` §6.12  
