@@ -133,6 +133,8 @@ namespace DS4WinWPF.DS4Forms
             App root = Application.Current as App;
             settingsWrapVM = new SettingsViewModel(appSettingsService, appearanceSettingsService, environmentService, pathService);
             settingsTab.DataContext = settingsWrapVM;
+            // Phase6-Step10-1-4: XAML から生成される LanguagePackControl へ、保持済みのサービスを渡す（Pure DI）。
+            languagePackControl.Initialize(appSettingsService);
             logvm = new LogViewModel(controlService, environmentService);
             //logListView.ItemsSource = logvm.LogItems;
             logListView.DataContext = logvm;

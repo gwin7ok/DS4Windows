@@ -414,7 +414,7 @@
                         </ComboBox>
                     </StackPanel>
                     -->
-                        <local:LanguagePackControl Margin="{StaticResource spaceMargin}" />
+                        <local:LanguagePackControl x:Name="languagePackControl" Margin="{StaticResource spaceMargin}" />
                         <StackPanel Margin="{StaticResource spaceMargin}">
                             <CheckBox x:Name="customSteamCk" Content="{lex:Loc UseCustomSteamFolder}" Margin="{StaticResource spaceMargin}"
                                   IsChecked="{Binding UseCustomSteamFolder}" />

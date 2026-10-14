@@ -68,6 +68,43 @@ namespace DS4WindowsTests
         }
 
         [Fact]
+        public void LanguagePackViewModel_RequiresAppSettingsService()
+        {
+            Assert.Throws<ArgumentNullException>(() => new LanguagePackViewModel(null));
+        }
+
+        [Fact]
+        public void LanguagePackViewModel_ChangeLanguagePack_AppliesSelectedCultureToGlobalUseLang()
+        {
+            // 注意: 一覧は ScanForLangPacks（非同期のファイル走査）が作る。ここでは走査を使わず、
+            // 非公開の一覧フィールドへ直接項目を入れて、選択結果の反映だけを検証する。
+            string original = Global.UseLang;
+            string target = original == "zz-test" ? "yy-test" : "zz-test";
+            try
+            {
+                var vm = new LanguagePackViewModel(new DS4Windows.Services.AppSettingsService());
+                var listField = typeof(LanguagePackViewModel).GetField("langPackList",
+                    System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.NonPublic);
+                listField.SetValue(vm, new System.Collections.Generic.List<LangPackItem>
+                {
+                    new LangPackItem("", "No (English UI)"),
+                    new LangPackItem(target, "Test"),
+                });
+
+                vm.SelectedIndex = 1;
+                Assert.True(vm.ChangeLanguagePack());
+                Assert.Equal(target, Global.UseLang);
+
+                // 同じ値の再適用では変更しない
+                Assert.False(vm.ChangeLanguagePack());
+            }
+            finally
+            {
+                Global.UseLang = original;
+            }
+        }
+
+        [Fact]
         public void LogViewModel_RequiresEnvironmentService()
         {
             Assert.Throws<ArgumentNullException>(() => new LogViewModel(null, null));
