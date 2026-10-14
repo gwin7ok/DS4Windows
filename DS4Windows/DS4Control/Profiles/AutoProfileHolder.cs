@@ -34,14 +34,17 @@ namespace DS4WinWPF
     public class AutoProfileHolder
     {
         private object _colLockobj = new object();
+        // Phase6-Step10-4-2b: Global.appdatapath の直接参照を廃止し、IPathService を必須の依存として受け取る
+        private readonly DS4Windows.DI.IPathService pathService;
         private ObservableCollection<AutoProfileEntity> autoProfileColl;
         public ObservableCollection<AutoProfileEntity> AutoProfileColl { get => autoProfileColl; }
         //public Dictionary<string, AutoProfileEntity> AutoProfileDict { get => autoProfileDict; }
 
         //private Dictionary<string, AutoProfileEntity> autoProfileDict;
 
-        public AutoProfileHolder()
+        public AutoProfileHolder(DS4Windows.DI.IPathService pathService)
         {
+            this.pathService = pathService ?? throw new System.ArgumentNullException(nameof(pathService));
             autoProfileColl = new ObservableCollection<AutoProfileEntity>();
             //autoProfileDict = new Dictionary<string, AutoProfileEntity>();
             Load();
@@ -51,7 +54,7 @@ namespace DS4WinWPF
 
         private void Load()
         {
-            string configFile = Path.Combine(Global.appdatapath, "Auto Profiles.xml");
+            string configFile = Path.Combine(pathService.AppDataPath, "Auto Profiles.xml");
             if (!File.Exists(configFile))
                 return;
 

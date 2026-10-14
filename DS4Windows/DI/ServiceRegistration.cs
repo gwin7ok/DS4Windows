@@ -46,7 +46,7 @@ namespace DS4Windows.DI
             services.AddSingleton<IMappingActionDispatcher, MappingActionDispatcher>();
 
             // プロファイルアクション連鎖サービス（ProfileApplicationServiceの依存先）
-            services.AddSingleton<IProfileActionProvider, ProfileActionProvider>();
+            services.AddSingleton<IProfileActionProvider>(sp => new ProfileActionProvider(Global.store)); // Phase6-Step10-4-2b: BackingStore は DI 未登録のため、Global.store を渡す
             services.AddSingleton<IProfileActionChainService, ProfileActionChainService>();
 
             // Phase 5 Step 3: プロファイル適用サービス

@@ -122,7 +122,7 @@ namespace DS4WindowsTests
         public void SpecialActionsListViewModel_RequiresAllServices()
         {
             var repo = TestRepositoryFactory.CreateSpecialActionRepository();
-            var profileRepo = new ProfileRepository();
+            var profileRepo = TestRepositoryFactory.CreateProfileRepository();
 
             Assert.Throws<ArgumentNullException>(() => new SpecialActionsListViewModel(0, null, profileRepo));
             Assert.Throws<ArgumentNullException>(() => new SpecialActionsListViewModel(0, repo, null));

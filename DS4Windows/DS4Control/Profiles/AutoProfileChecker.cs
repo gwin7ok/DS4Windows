@@ -34,7 +34,9 @@ namespace DS4WinWPF
             }
             else
             {
-                _service = new AutoProfileService(holder, null, profileSettings);
+                // Phase6-Step10-4-2b: AutoProfileService の依存を必須化したため、ここで new はできない。
+                // TODO(Step10-4-4): 本クラスは呼出元 0 件。経緯の調査後、削除の可否を判断する（規約 §2.4）。
+                throw new System.InvalidOperationException("IAutoProfileService is not registered.");
             }
 
             _service.RequestServiceChange += (state) =>

@@ -308,7 +308,7 @@ namespace DS4WinWPF.DS4Forms
             InitializeComponent();
 
             profileRepository = DS4WinWPF.AppHost.GetService<DS4Windows.DI.IProfileRepository>()
-                ?? new DS4Windows.ProfileRepository();
+                ?? throw new InvalidOperationException("IProfileRepository is not registered.");
             profileSwitcher = DS4WinWPF.AppHost.GetService<DS4Windows.Actions.IProfileSwitcher>()
                 ?? new DefaultProfileSwitcher();
             controlService = DS4WinWPF.AppHost.GetService<DS4Windows.ControlService>() ?? DS4Windows.Program.rootHub;

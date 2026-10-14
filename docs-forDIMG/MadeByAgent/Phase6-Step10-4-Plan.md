@@ -241,3 +241,16 @@
 - **AutoProfileChecker（決定 H1）**: `AutoProfileService` の必須化に合わせ、`AutoProfileService` を `new` する分岐（呼出元 0 件）が、そのままではコンパイルできない。案A（推奨）: 型は温存し、`IAutoProfileService` が解決できない場合は例外にする（削除の判断は 10-4-4）。案B: 本ステップで削除する。
 - **テスト**: `TestRepositoryFactory` に `CreateProfileRepository` ほかを追加（約 25＋10 件）。`Step10FourTwoGlobalReferenceGuardTests` に対象を追加。
 - **実機確認項目**: プロファイルの選択・保存・読み込み、自動プロファイル（Auto Profiles 画面での編集と、対象プロセス起動時の切替、終了時の復帰、「サービスを一時停止」の動作）。
+
+## 16. Step10-4-2b の実装記録。2026-10-15
+- **決定**: H1＝A（`AutoProfileChecker` は型を温存し、`IAutoProfileService` が未解決なら例外。削除の判断は 10-4-4）、H3＝A（K1 は 10-4-2 では触れず、別の小ステップで提案）。
+- **変更**
+  - `ProfileRepository`: 4 引数（`IProfileSettingsService`、`IProfileXmlStore`、`IPathService`、`Func<ControlService>`）を必須化。`AppHost`／`Global.*Instance` のフォールバックを削除。`Global.ProfilePath`／`ProfileActions` の内部参照は自身のプロパティへ。薄い委譲は温存。
+  - `ProfileActionProvider`: `BackingStore` を必須化（`ServiceRegistration` で `Global.store` を渡す）。
+  - `AutoProfileHolder`: `IPathService` を必須化（`Global.appdatapath` を置換）。
+  - `AutoProfileService`: 8 引数を全て必須化。`new`／`AppHost` を削除。`Program.rootHub`×7 → `Func<ControlService>`、`Global.AutoProfileRevertDefaultProfile`×2 → `IAppSettingsService`、`Global.ProfilePath`×2 → `IProfileRepository`。
+  - `AutoProfileChecker`: `new AutoProfileService` の分岐を例外に変更（TODO 付き）。
+  - `ProfileEditor`: `?? new ProfileRepository()` のフォールバックを例外に変更（DI 登録済みのため挙動は同じ）。
+  - `Global` の `fallbackProfileRepository`: 初回アクセス時の生成に変更。
+- **注意（挙動の差）**: `AutoProfileService` が `ControlService` を `Func`（DI の解決）経由で取得するため、`Program.rootHub` が未設定の時点で呼ばれると、DI が `ControlService` を生成する可能性がある。実機では、起動後のタイマーから呼ばれるため `rootHub` は設定済みの見込み。実機確認で、自動プロファイルの動作を確認する。
+- **テスト**: `TestRepositoryFactory` に `CreateProfileRepository` ほか 3 つを追加し、生成箇所を置換。`Step10FourTwoGlobalReferenceGuardTests` に 4 ファイルの `Global`／`AppHost` 不在、必須引数、注入パスでの `AutoProfileHolder` の読み込みを追加。

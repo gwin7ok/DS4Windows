@@ -13,19 +13,23 @@ namespace DS4Windows
         private readonly object _fileLock = new object();
         private readonly IProfileSettingsService _profileSettings;
         private readonly IProfileXmlStore _profileXmlStore;
-        private IPathService _pathService;
+        private readonly IPathService _pathService;
 
-        public ProfileRepository(IProfileSettingsService profileSettings = null,
-            IProfileXmlStore profileXmlStore = null, IPathService pathService = null)
+        // Phase6-Step10-4-2b: 全ての依存を必須化（Global.*Instance／AppHost のフォールバックを廃止）。
+        // ControlService は ControlService → IProfileRepository の依存循環を避けるため、遅延解決（Func）で受け取る。
+        private readonly Func<ControlService> _controlProvider;
+
+        public ProfileRepository(IProfileSettingsService profileSettings,
+            IProfileXmlStore profileXmlStore, IPathService pathService,
+            Func<ControlService> controlProvider)
         {
-            _profileSettings = profileSettings ?? Global.ProfileSettingsServiceInstance;
-            _profileXmlStore = profileXmlStore ?? Global.ProfileXmlStoreInstance;
-            // Phase5-Step2: IPathServiceは静的フィールド初期化順序ハザード回避のため
-            // コンストラクタでは解決せず、初回プロパティアクセス時に遅延解決する
-            _pathService = pathService;
+            _profileSettings = profileSettings ?? throw new ArgumentNullException(nameof(profileSettings));
+            _profileXmlStore = profileXmlStore ?? throw new ArgumentNullException(nameof(profileXmlStore));
+            _pathService = pathService ?? throw new ArgumentNullException(nameof(pathService));
+            _controlProvider = controlProvider ?? throw new ArgumentNullException(nameof(controlProvider));
         }
 
-        private IPathService PathSvc => _pathService ??= Global.PathServiceInstance;
+        private IPathService PathSvc => _pathService;
 
         public string ProfilesPath => PathSvc.ProfilesPath;
 
@@ -76,8 +80,8 @@ namespace DS4Windows
                         return false;
 
                     string normalizedName = Path.GetFileNameWithoutExtension(profileName);
-                    Global.ProfilePath[deviceIndex] = normalizedName;
-                    ControlService control = DS4WinWPF.AppHost.GetService<ControlService>();
+                    ProfilePath[deviceIndex] = normalizedName;
+                    ControlService control = _controlProvider();
                     if (control == null)
                         return false;
 
@@ -331,8 +335,8 @@ namespace DS4Windows
             if (string.IsNullOrWhiteSpace(actionName))
                 return result;
 
-            List<string>[] actions = Global.ProfileActions;
-            string[] paths = Global.ProfilePath;
+            List<string>[] actions = ProfileActions;
+            string[] paths = ProfilePath;
             if (actions == null || paths == null)
                 return result;
 

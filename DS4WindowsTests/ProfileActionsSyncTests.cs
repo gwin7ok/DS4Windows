@@ -54,7 +54,7 @@ namespace DS4WindowsTests
         [Fact]
         public void SpecialActionsListViewModel_ItemActiveChange_ShouldAutoUpdateProfileActionsString()
         {
-            var vm = new SpecialActionsListViewModel(0, TestRepositoryFactory.CreateSpecialActionRepository(), new ProfileRepository());
+            var vm = new SpecialActionsListViewModel(0, TestRepositoryFactory.CreateSpecialActionRepository(), TestRepositoryFactory.CreateProfileRepository());
 
             var act1 = new SpecialAction("ActA", "Cross", "Macro", "");
             var act2 = new SpecialAction("ActB", "Circle", "Macro", "");
@@ -87,7 +87,7 @@ namespace DS4WindowsTests
         [Fact]
         public void SpecialActionsListViewModel_LoadProfileActionsString_ShouldRestoreCheckStates()
         {
-            var vm = new SpecialActionsListViewModel(0, TestRepositoryFactory.CreateSpecialActionRepository(), new ProfileRepository());
+            var vm = new SpecialActionsListViewModel(0, TestRepositoryFactory.CreateSpecialActionRepository(), TestRepositoryFactory.CreateProfileRepository());
 
             var act1 = new SpecialAction("Jump", "Cross", "Key", "");
             var act2 = new SpecialAction("Fire", "R2", "Key", "");

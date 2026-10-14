@@ -16,7 +16,7 @@ namespace DS4WindowsTests
     {
         private readonly AppSettingsService _appSettings = new AppSettingsService();
         private readonly DeviceStateService _deviceState = new DeviceStateService();
-        private readonly ProfileRepository _profileRepository = new ProfileRepository();
+        private readonly ProfileRepository _profileRepository = TestRepositoryFactory.CreateProfileRepository();
         private readonly ProfileSlotApplier _slotApplier = new ProfileSlotApplier();
 
         [Fact]

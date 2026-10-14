@@ -16,7 +16,7 @@ namespace DS4WindowsTests
         private readonly AppSettingsService _appSettings = new AppSettingsService();
         private readonly AppearanceSettingsService _appearance = new AppearanceSettingsService();
         private readonly ProfileSettingsService _profileSettings = new ProfileSettingsService();
-        private readonly ProfileActionProvider _actionProvider = new ProfileActionProvider();
+        private readonly ProfileActionProvider _actionProvider = TestRepositoryFactory.CreateProfileActionProvider();
 
         [Fact]
         public void UseUdpServerSmoothing_SharesStateWithGlobal()

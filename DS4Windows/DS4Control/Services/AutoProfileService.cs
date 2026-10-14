@@ -47,18 +47,30 @@ namespace DS4Windows
 
         public event Action<bool> RequestServiceChange;
 
-        public AutoProfileService(AutoProfileHolder holder = null,
-            IProfileApplicationService profileAppService = null,
-            IProfileSettingsService profileSettings = null,
-            IProcessInspector processInspector = null,
-            IEnvironmentService environmentService = null)
+        // Phase6-Step10-4-2b: 全ての依存を必須化（new／AppHost／Program.rootHub／Global の設定参照を廃止）。
+        // ControlService は、起動順序と依存循環を避けるため、遅延解決（Func）で受け取る（決定 D4-3）。
+        private readonly Func<ControlService> _controlProvider;
+        private readonly IAppSettingsService _appSettings;
+        private readonly IProfileRepository _profileRepository;
+        private ControlService Control => _controlProvider();
+
+        public AutoProfileService(AutoProfileHolder holder,
+            IProfileApplicationService profileAppService,
+            IProfileSettingsService profileSettings,
+            IProcessInspector processInspector,
+            IEnvironmentService environmentService,
+            IAppSettingsService appSettings,
+            IProfileRepository profileRepository,
+            Func<ControlService> controlProvider)
         {
-            _holder = holder ?? new AutoProfileHolder();
-            _profileAppService = profileAppService ?? DS4WinWPF.AppHost.GetService<IProfileApplicationService>();
-            _profileSettings = profileSettings ?? DS4WinWPF.AppHost.GetService<IProfileSettingsService>();
-            _processInspector = processInspector ?? DS4WinWPF.AppHost.GetService<IProcessInspector>();
-            // 省略時は状態を持たない既定実装を用いる（新規の AppHost.Services 参照は追加しない）。
-            _environmentService = environmentService ?? new EnvironmentService();
+            _holder = holder ?? throw new ArgumentNullException(nameof(holder));
+            _profileAppService = profileAppService ?? throw new ArgumentNullException(nameof(profileAppService));
+            _profileSettings = profileSettings ?? throw new ArgumentNullException(nameof(profileSettings));
+            _processInspector = processInspector ?? throw new ArgumentNullException(nameof(processInspector));
+            _environmentService = environmentService ?? throw new ArgumentNullException(nameof(environmentService));
+            _appSettings = appSettings ?? throw new ArgumentNullException(nameof(appSettings));
+            _profileRepository = profileRepository ?? throw new ArgumentNullException(nameof(profileRepository));
+            _controlProvider = controlProvider ?? throw new ArgumentNullException(nameof(controlProvider));
         }
 
         public void CheckProfiles()
@@ -106,7 +118,7 @@ namespace DS4Windows
                         {
                             bool useTemp = _profileSettings?.GetUseTempProfile(j) ?? false;
                             string currentTemp = _profileSettings?.GetTempProfileName(j) ?? string.Empty;
-                            string currentProfile = Global.ProfilePath[j];
+                            string currentProfile = _profileRepository.ProfilePath[j];
 
                             if ((useTemp && tempname != currentTemp) ||
                                 (!useTemp && tempname != currentProfile) ||
@@ -119,7 +131,7 @@ namespace DS4Windows
 
                                 // Step 3 & Step 4 申し送り事項:
                                 // IProfileApplicationService.ApplyProfile を呼び出す。
-                                // Halt ガード（§5.2）はサービス内に内包され、Program.rootHub 直参照は排除。
+                                // Halt ガード（§5.2）はサービス内に内包され、ControlService の直参照は排除。
                                 // displayNotification は null を指定して _profileSettings.ProfileChangedNotification を自動解決（Step 4）。
                                 _profileAppService.ApplyProfile(j, tempname, isTemp: true, launchProgram: true,
                                     source: ProfileChangeSource.AutoProfile, prolog: prolog);
@@ -134,7 +146,7 @@ namespace DS4Windows
                     if (turnOffDS4WinApp)
                     {
                         _turnOffTemp = true;
-                        if (Program.rootHub != null && Program.rootHub.running)
+                        if (Control != null && Control.running)
                         {
                             if (AutoProfileDebugLogLevel > 0)
                                 AppLogger.LogToGui("DEBUG: Auto-Profile. Turning DS4Windows temporarily off", false, true);
@@ -146,10 +158,10 @@ namespace DS4Windows
                 }
                 else if (_tempAutoProfile != null)
                 {
-                    if (_turnOffTemp && Global.AutoProfileRevertDefaultProfile)
+                    if (_turnOffTemp && _appSettings.AutoProfileRevertDefaultProfile)
                     {
                         _turnOffTemp = false;
-                        if (Program.rootHub != null && !Program.rootHub.running)
+                        if (Control != null && !Control.running)
                         {
                             if (AutoProfileDebugLogLevel > 0)
                                 AppLogger.LogToGui("DEBUG: Auto-Profile. Turning DS4Windows on before reverting to default profile", false, true);
@@ -163,9 +175,9 @@ namespace DS4Windows
                         bool useTemp = _profileSettings?.GetUseTempProfile(j) ?? false;
                         if (useTemp)
                         {
-                            if (Global.AutoProfileRevertDefaultProfile)
+                            if (_appSettings.AutoProfileRevertDefaultProfile)
                             {
-                                string defaultProfile = Global.ProfilePath[j];
+                                string defaultProfile = _profileRepository.ProfilePath[j];
                                 if (AutoProfileDebugLogLevel > 0)
                                     AppLogger.LogToGui($"DEBUG: Auto-Profile. Unknown process. Reverting to default profile. Controller {j + 1}={defaultProfile} (default)", false, true);
 
@@ -189,11 +201,11 @@ namespace DS4Windows
 
         private void SetAndWaitServiceStatus(bool serviceRunningStatus)
         {
-            if (Program.rootHub != null && Program.rootHub.running != serviceRunningStatus)
+            if (Control != null && Control.running != serviceRunningStatus)
             {
                 RequestServiceChange?.Invoke(serviceRunningStatus);
                 Stopwatch sw = Stopwatch.StartNew();
-                while (Program.rootHub.running != serviceRunningStatus && sw.Elapsed.TotalSeconds < 10)
+                while (Control.running != serviceRunningStatus && sw.Elapsed.TotalSeconds < 10)
                 {
                     Thread.SpinWait(1000);
                 }
@@ -210,4 +222,4 @@ namespace DS4Windows
             }
         }
     }
-}
+}

@@ -177,7 +177,7 @@ namespace DS4WindowsTests
         public void ProfileActionProvider_DirectBackingStore_ReturnsCorrectActions()
         {
             var backingStore = new BackingStore();
-            var provider = new ProfileActionProvider(backingStore);
+            var provider = TestRepositoryFactory.CreateProfileActionProvider(backingStore);
 
             var action = new SpecialAction("ProviderTest", "Triangle", "Key", "Key", 0);
             backingStore.profileActions[0].Add("ProviderTest");

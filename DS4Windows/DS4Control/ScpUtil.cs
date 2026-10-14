@@ -776,7 +776,8 @@ namespace DS4Windows
         // Phase4-Step2: IProfileRepository DI シム (Strangler Fig 移行用)
         // =========================================================================
         private static DS4Windows.DI.IProfileRepository profileRepository = null;
-        private static readonly DS4Windows.DI.IProfileRepository fallbackProfileRepository = new ProfileRepository(ProfileSettingsServiceInstance);
+        // Phase6-Step10-4-2b: 必須引数の依存（ProfileXmlStoreInstance ほか）を、静的初期化順序に依存せず解決するため、初回アクセス時に生成する
+        private static DS4Windows.DI.IProfileRepository fallbackProfileRepository;
 
         public static DS4Windows.DI.IProfileRepository ProfileRepositoryInstance
         {
@@ -796,7 +797,8 @@ namespace DS4Windows
 
                 AppLogger.LogTrace("[Legacy] Global.ProfileRepositoryInstance: Fallback instance used");
                 AppLogger.LogToGui("[Legacy] Global.ProfileRepositoryInstance: Fallback instance used", false, true);
-                return fallbackProfileRepository;
+                return fallbackProfileRepository ??= new ProfileRepository(ProfileSettingsServiceInstance,
+                    ProfileXmlStoreInstance, new PathService(), () => Program.rootHub);
             }
             set => profileRepository = value;
         }

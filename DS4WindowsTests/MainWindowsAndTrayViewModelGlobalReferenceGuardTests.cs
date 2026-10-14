@@ -116,7 +116,7 @@ namespace DS4WindowsTests
             var env = new EnvironmentService();
             var path = new PathService();
             var appearance = new DS4Windows.Services.AppearanceSettingsService();
-            var repo = new ProfileRepository();
+            var repo = TestRepositoryFactory.CreateProfileRepository();
 
             Assert.Throws<ArgumentNullException>(() =>
                 new TrayIconViewModel(null, null, null, repo, env, path, System.Windows.Threading.Dispatcher.CurrentDispatcher));

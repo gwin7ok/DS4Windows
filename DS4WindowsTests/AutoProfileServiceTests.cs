@@ -64,8 +64,8 @@ namespace DS4WindowsTests
         {
             var mockInspector = new MockProcessInspector { ReturnSuccess = false };
             var mockAppService = new MockProfileAppService();
-            var holder = new AutoProfileHolder();
-            var service = new AutoProfileService(holder, mockAppService, new ProfileSettingsService(), mockInspector);
+            var holder = TestRepositoryFactory.CreateAutoProfileHolder();
+            var service = TestRepositoryFactory.CreateAutoProfileService(holder, mockAppService, new ProfileSettingsService(), mockInspector);
 
             service.CheckProfiles();
 
@@ -83,13 +83,13 @@ namespace DS4WindowsTests
             };
             var mockAppService = new MockProfileAppService();
             var settings = new ProfileSettingsService();
-            var holder = new AutoProfileHolder();
+            var holder = TestRepositoryFactory.CreateAutoProfileHolder();
 
             var entity = new AutoProfileEntity(@"c:\games\testgame.exe", "test game window");
             entity.ProfileNames[0] = "GameProfile";
             holder.AutoProfileColl.Add(entity);
 
-            var service = new AutoProfileService(holder, mockAppService, settings, mockInspector);
+            var service = TestRepositoryFactory.CreateAutoProfileService(holder, mockAppService, settings, mockInspector);
 
             service.CheckProfiles();
 
@@ -111,13 +111,13 @@ namespace DS4WindowsTests
             };
             var mockAppService = new MockProfileAppService();
             var settings = new ProfileSettingsService();
-            var holder = new AutoProfileHolder();
+            var holder = TestRepositoryFactory.CreateAutoProfileHolder();
 
             var entity = new AutoProfileEntity(@"c:\games\testgame.exe", "test game window");
             entity.ProfileNames[0] = "GameProfile";
             holder.AutoProfileColl.Add(entity);
 
-            var service = new AutoProfileService(holder, mockAppService, settings, mockInspector);
+            var service = TestRepositoryFactory.CreateAutoProfileService(holder, mockAppService, settings, mockInspector);
 
             // 1回目のチェック: ゲーム起動
             service.CheckProfiles();
@@ -144,11 +144,11 @@ namespace DS4WindowsTests
         [Fact]
         public void AutoProfileSwitchNotifyChoice_ShouldReadWriteSameEntityAsGlobal()
         {
-            var holder = new AutoProfileHolder();
+            var holder = TestRepositoryFactory.CreateAutoProfileHolder();
             var settings = new ProfileSettingsService();
             var mockInspector = new MockProcessInspector();
             var mockAppService = new MockProfileAppService();
-            var service = new AutoProfileService(holder, mockAppService, settings, mockInspector);
+            var service = TestRepositoryFactory.CreateAutoProfileService(holder, mockAppService, settings, mockInspector);
 
             var original = Global.autoProfileSwitchNotifyChoice;
             try

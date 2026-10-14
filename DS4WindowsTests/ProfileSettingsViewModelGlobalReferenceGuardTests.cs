@@ -133,7 +133,7 @@ namespace DS4WindowsTests
         {
             var settings = new ProfileSettingsService();
             var outputSlots = new OutputSlotService();
-            var repo = new ProfileRepository();
+            var repo = TestRepositoryFactory.CreateProfileRepository();
             var env = new EnvironmentService();
             var path = new PathService();
 

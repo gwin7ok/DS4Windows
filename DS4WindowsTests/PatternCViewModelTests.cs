@@ -187,7 +187,7 @@ namespace DS4WindowsTests
             Assert.NotNull(factory);
 
             var profileList = new ProfileList(DS4WinWPF.AppHost.GetService<DS4Windows.DI.IPathService>());
-            var holder = new AutoProfileHolder();
+            var holder = TestRepositoryFactory.CreateAutoProfileHolder();
             var vm = factory.CreateAutoProfilesViewModel(holder, profileList);
             Assert.NotNull(vm);
         }

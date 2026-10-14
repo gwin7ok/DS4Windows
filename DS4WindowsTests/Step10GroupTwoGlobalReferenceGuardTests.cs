@@ -113,7 +113,7 @@ namespace DS4WindowsTests
         public void ControllersViewModel_RequiresAllServices()
         {
             var settings = new ProfileSettingsService();
-            var repo = new ProfileRepository();
+            var repo = TestRepositoryFactory.CreateProfileRepository();
 
             Assert.Throws<ArgumentNullException>(() => new ControllersViewModel(null, settings, repo));
             Assert.Throws<ArgumentNullException>(() => new ControllersViewModel(new DeviceStateService(), null, repo));
@@ -124,7 +124,7 @@ namespace DS4WindowsTests
         public void ControllerListViewModel_RequiresAllServices()
         {
             var settings = new ProfileSettingsService();
-            var repo = new ProfileRepository();
+            var repo = TestRepositoryFactory.CreateProfileRepository();
             var app = new DS4Windows.Services.AppSettingsService();
 
             // 依存の null 検査は、ControlService を使う処理より前に行われる

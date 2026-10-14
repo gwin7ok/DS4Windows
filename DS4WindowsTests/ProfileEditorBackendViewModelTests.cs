@@ -43,7 +43,7 @@ namespace DS4WindowsTests
                 var sentinel = new List<string> { "keep" };
                 profileActions[0] = sentinel;
 
-                var vm = new SpecialActionsListViewModel(editSlot, TestRepositoryFactory.CreateSpecialActionRepository(), new ProfileRepository());
+                var vm = new SpecialActionsListViewModel(editSlot, TestRepositoryFactory.CreateSpecialActionRepository(), TestRepositoryFactory.CreateProfileRepository());
                 var itemA = vm.CreateActionItem(new SpecialAction("ActA", "Cross", "Macro", ""), "ActA");
                 var itemB = vm.CreateActionItem(new SpecialAction("ActB", "Circle", "Macro", ""), "ActB");
                 var itemC = vm.CreateActionItem(new SpecialAction("ActC", "Square", "Macro", ""), "ActC");

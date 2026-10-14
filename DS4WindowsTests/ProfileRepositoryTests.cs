@@ -40,7 +40,7 @@ namespace DS4WindowsTests
         public void ProfilesPath_ShouldReturnValidPath()
         {
             var settings = new ProfileSettingsService();
-            var repository = new ProfileRepository(settings);
+            var repository = TestRepositoryFactory.CreateProfileRepository(settings);
 
             var path = repository.ProfilesPath;
             Assert.False(string.IsNullOrWhiteSpace(path));
@@ -51,7 +51,7 @@ namespace DS4WindowsTests
         public void GetProfilePath_ShouldAppendXmlExtension()
         {
             var settings = new ProfileSettingsService();
-            var repository = new ProfileRepository(settings);
+            var repository = TestRepositoryFactory.CreateProfileRepository(settings);
 
             var path1 = repository.GetProfilePath("Default");
             var path2 = repository.GetProfilePath("Default.xml");
@@ -68,7 +68,7 @@ namespace DS4WindowsTests
         public void LoadDefaultProfile_ShouldResetSlotSettings()
         {
             var settings = new ProfileSettingsService();
-            var repository = new ProfileRepository(settings);
+            var repository = TestRepositoryFactory.CreateProfileRepository(settings);
 
             settings.SetTouchpadActive(0, false);
             settings.SetUseTempProfile(0, true);
@@ -84,7 +84,7 @@ namespace DS4WindowsTests
         public void ApplyAndRestoreProfileDirect_ShouldUpdateSettingsService()
         {
             var settings = new ProfileSettingsService();
-            var repository = new ProfileRepository(settings);
+            var repository = TestRepositoryFactory.CreateProfileRepository(settings);
 
             repository.ApplyProfileDirect(1, "TemporaryTest");
 
@@ -101,7 +101,7 @@ namespace DS4WindowsTests
         public void GlobalShim_ShouldSynchronizeWithRepository()
         {
             var settings = new ProfileSettingsService();
-            var repository = new ProfileRepository(settings);
+            var repository = TestRepositoryFactory.CreateProfileRepository(settings);
             Global.ProfileRepositoryInstance = repository;
             Global.ProfileSettingsServiceInstance = settings;
 
@@ -123,7 +123,7 @@ namespace DS4WindowsTests
 
             var settings = new ProfileSettingsService();
             var fakeXmlStore = new FakeProfileXmlStore();
-            var repository = new ProfileRepository(settings, fakeXmlStore);
+            var repository = TestRepositoryFactory.CreateProfileRepository(settings, fakeXmlStore);
 
             string profileName = "Phase5Step2_LoadProfileTest";
             string path = repository.GetProfilePath(profileName);
@@ -156,7 +156,7 @@ namespace DS4WindowsTests
         {
             var settings = new ProfileSettingsService();
             var fakeXmlStore = new FakeProfileXmlStore();
-            var repository = new ProfileRepository(settings, fakeXmlStore);
+            var repository = TestRepositoryFactory.CreateProfileRepository(settings, fakeXmlStore);
 
             bool result = repository.SaveProfile(0, "Phase5Step2_SaveProfileTest");
             Assert.True(result);
@@ -172,7 +172,7 @@ namespace DS4WindowsTests
         [Fact]
         public void ProfilePath_ShouldReferenceSameArrayAsGlobal()
         {
-            var repository = new ProfileRepository(new ProfileSettingsService());
+            var repository = TestRepositoryFactory.CreateProfileRepository(new ProfileSettingsService());
             Assert.Same(Global.ProfilePath, repository.ProfilePath);
             Assert.Same(Global.OlderProfilePath, repository.OlderProfilePath);
             Assert.Same(Global.SelectedProfile, repository.SelectedProfile);
@@ -182,7 +182,7 @@ namespace DS4WindowsTests
         [Fact]
         public void SelectedProfileChanged_ShouldFireOnRaise()
         {
-            var repository = new ProfileRepository(new ProfileSettingsService());
+            var repository = TestRepositoryFactory.CreateProfileRepository(new ProfileSettingsService());
             int? receivedDevice = null;
             string receivedProfile = null;
             EventHandler<SelectedProfileChangedEventArgs> handler = (s, e) =>
@@ -207,7 +207,7 @@ namespace DS4WindowsTests
         [Fact]
         public void LinkedProfile_ChangeAndRemove_ShouldNotThrowAndShouldPersist()
         {
-            var repository = new ProfileRepository(new ProfileSettingsService());
+            var repository = TestRepositoryFactory.CreateProfileRepository(new ProfileSettingsService());
             const string testSerial = "00:11:22:33:44:99"; // テスト専用の架空シリアル
 
             try
@@ -229,14 +229,14 @@ namespace DS4WindowsTests
         [Fact]
         public void ProfileActions_ShouldReferenceSameArrayAsGlobal()
         {
-            var repository = new ProfileRepository(new ProfileSettingsService());
+            var repository = TestRepositoryFactory.CreateProfileRepository(new ProfileSettingsService());
             Assert.Same(Global.ProfileActions, repository.ProfileActions);
         }
 
         [Fact]
         public void CacheExtraProfileInfo_And_CacheProfileCustomsFlags_ShouldNotThrow()
         {
-            var repository = new ProfileRepository(new ProfileSettingsService());
+            var repository = TestRepositoryFactory.CreateProfileRepository(new ProfileSettingsService());
 
             var ex1 = Record.Exception(() => repository.CacheExtraProfileInfo(7));
             Assert.Null(ex1);
@@ -248,7 +248,7 @@ namespace DS4WindowsTests
         [Fact]
         public void EmitMissingActionLogsForDevice_ShouldNotThrow()
         {
-            var repository = new ProfileRepository(new ProfileSettingsService());
+            var repository = TestRepositoryFactory.CreateProfileRepository(new ProfileSettingsService());
 
             var ex = Record.Exception(() => repository.EmitMissingActionLogsForDevice(7, forceEmit: true, overrideProfileName: "Phase5Step13-9_Test"));
             Assert.Null(ex);

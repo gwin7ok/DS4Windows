@@ -6,6 +6,7 @@ using System.Text.RegularExpressions;
 using Xunit;
 using DS4Windows;
 using DS4Windows.DI;
+using DS4Windows.Services;
 
 namespace DS4WindowsTests
 {
@@ -13,6 +14,17 @@ namespace DS4WindowsTests
     /// Phase6-Step10-4-2: クラスタ 1（プロファイル系サービス）の Global／AppHost／Program.rootHub 直接参照解消の回帰ガード
     /// （<c>Phase6-Step10-4-Plan.md</c> §13）。10-4-2b／2c で、対象のファイルを追加していく。
     /// </summary>
+    internal class NullProcessInspector : IProcessInspector
+    {
+        public bool IsProcessRunning(string exePath) => false;
+        public bool GetForegroundProcessInfo(out string processPath, out string windowTitle)
+        {
+            processPath = string.Empty;
+            windowTitle = string.Empty;
+            return false;
+        }
+    }
+
     public class Step10FourTwoGlobalReferenceGuardTests
     {
         // ファイルごとに、使ってよい Global メンバー（薄い委譲・本体が Global にあるもの）
@@ -25,6 +37,18 @@ namespace DS4WindowsTests
             // 実行中アクション状態のクリアを含む Global 側の実装への薄い委譲
             ["DS4Windows/DS4Control/Services/SpecialActionRepository.cs"] =
                 new[] { "CreateStdActions", "SaveAction", "RemoveAction", "SaveActions" },
+            // 10-4-2b
+            // 薄い委譲（IProfileRepository の契約の実体。Global 側に実装がある）と、読み込み前のクリア対象
+            ["DS4Windows/DS4Control/Services/ProfileRepository.cs"] = new[]
+            {
+                "ProfilePath", "OlderProfilePath", "SelectedProfile", "LinkedProfileUI", "SelectedProfileChanged",
+                "RaiseSelectedProfileChanged", "changeLinkedProfile", "removeLinkedProfile", "SaveLinkedProfiles",
+                "ProfileActions", "CacheExtraProfileInfo", "CacheProfileCustomsFlags", "LoadTempProfile", "store",
+                "LoadLinkedProfiles", "LoadBlankDevProfile", "containsLinkedProfile", "getLinkedProfile", "loggedInvalidActions",
+            },
+            ["DS4Windows/DS4Control/Services/ProfileActionProvider.cs"] = new string[0],
+            ["DS4Windows/DS4Control/Profiles/AutoProfileHolder.cs"] = new[] { "MAX_DS4_CONTROLLER_COUNT" },
+            ["DS4Windows/DS4Control/Services/AutoProfileService.cs"] = new[] { "autoProfileSwitchNotifyChoice", "CreateAutoProfiles" },
         };
 
         private static string ReadWithoutComments(string relativePath)
@@ -60,7 +84,7 @@ namespace DS4WindowsTests
         public void ProfileActionChainService_RequiresAllDependencies()
         {
             Assert.Throws<ArgumentNullException>(() => new ProfileActionChainService(null, new MappingActionDispatcher()));
-            Assert.Throws<ArgumentNullException>(() => new ProfileActionChainService(new ProfileActionProvider(), null));
+            Assert.Throws<ArgumentNullException>(() => new ProfileActionChainService(TestRepositoryFactory.CreateProfileActionProvider(), null));
         }
 
         [Fact]
@@ -71,13 +95,72 @@ namespace DS4WindowsTests
         }
 
         [Fact]
+        public void ProfileRepository_ProfileActionProvider_AutoProfileHolder_RequireDependencies()
+        {
+            var settings = new ProfileSettingsService();
+            var store = new ProfileXmlStore();
+            var path = new PathService();
+            Func<ControlService> control = () => null;
+
+            Assert.Throws<ArgumentNullException>(() => new ProfileRepository(null, store, path, control));
+            Assert.Throws<ArgumentNullException>(() => new ProfileRepository(settings, null, path, control));
+            Assert.Throws<ArgumentNullException>(() => new ProfileRepository(settings, store, null, control));
+            Assert.Throws<ArgumentNullException>(() => new ProfileRepository(settings, store, path, null));
+            Assert.Throws<ArgumentNullException>(() => new ProfileActionProvider(null));
+            Assert.Throws<ArgumentNullException>(() => new DS4WinWPF.AutoProfileHolder(null));
+        }
+
+        [Fact]
+        public void AutoProfileService_RequiresAllDependencies()
+        {
+            var path = new PathService();
+            var holder = new DS4WinWPF.AutoProfileHolder(path);
+            var settings = new ProfileSettingsService();
+            var app = new ProfileApplicationService(settings,
+                new ProfileActionChainService(new ProfileActionProvider(Global.store), new MappingActionDispatcher()),
+                new DeviceStateService(), () => null,
+                TestRepositoryFactory.CreateProfileRepository(settings));
+            var repo = TestRepositoryFactory.CreateProfileRepository(settings);
+            var env = new EnvironmentService();
+            var appSettings = new DS4Windows.Services.AppSettingsService();
+            Func<ControlService> control = () => null;
+            IProcessInspector inspector = new NullProcessInspector();
+
+            Assert.Throws<ArgumentNullException>(() => new AutoProfileService(null, app, settings, inspector, env, appSettings, repo, control));
+            Assert.Throws<ArgumentNullException>(() => new AutoProfileService(holder, null, settings, inspector, env, appSettings, repo, control));
+            Assert.Throws<ArgumentNullException>(() => new AutoProfileService(holder, app, null, inspector, env, appSettings, repo, control));
+            Assert.Throws<ArgumentNullException>(() => new AutoProfileService(holder, app, settings, null, env, appSettings, repo, control));
+            Assert.Throws<ArgumentNullException>(() => new AutoProfileService(holder, app, settings, inspector, null, appSettings, repo, control));
+            Assert.Throws<ArgumentNullException>(() => new AutoProfileService(holder, app, settings, inspector, env, null, repo, control));
+            Assert.Throws<ArgumentNullException>(() => new AutoProfileService(holder, app, settings, inspector, env, appSettings, null, control));
+            Assert.Throws<ArgumentNullException>(() => new AutoProfileService(holder, app, settings, inspector, env, appSettings, repo, null));
+        }
+
+        [Fact]
+        public void AutoProfileHolder_LoadsFromInjectedPath()
+        {
+            string dir = System.IO.Path.Combine(System.IO.Path.GetTempPath(), "ds4w-step10-4-2b-" + Guid.NewGuid().ToString("N"));
+            System.IO.Directory.CreateDirectory(dir);
+            try
+            {
+                // 設定ファイルが無い場合は空で生成される（注入されたパスを参照し、Global.appdatapath を参照しない）
+                var holder = new DS4WinWPF.AutoProfileHolder(new PathService(dir));
+                Assert.Empty(holder.AutoProfileColl);
+            }
+            finally
+            {
+                try { System.IO.Directory.Delete(dir, true); } catch { }
+            }
+        }
+
+        [Fact]
         public void ProfileApplicationService_RequiresAllDependencies()
         {
             var settings = new ProfileSettingsService();
-            var chain = new ProfileActionChainService(new ProfileActionProvider(), new MappingActionDispatcher());
+            var chain = new ProfileActionChainService(TestRepositoryFactory.CreateProfileActionProvider(), new MappingActionDispatcher());
             var state = new DeviceStateService();
             Func<ControlService> control = () => null;
-            var repo = new ProfileRepository(settings, null, null);
+            var repo = TestRepositoryFactory.CreateProfileRepository(settings, null, null);
 
             Assert.Throws<ArgumentNullException>(() => new ProfileApplicationService(null, chain, state, control, repo));
             Assert.Throws<ArgumentNullException>(() => new ProfileApplicationService(settings, null, state, control, repo));

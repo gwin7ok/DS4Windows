@@ -9,9 +9,9 @@ namespace DS4Windows
     {
         private readonly BackingStore _config;
 
-        public ProfileActionProvider(BackingStore config = null)
+        public ProfileActionProvider(BackingStore config)
         {
-            _config = config ?? Global.store;
+            _config = config ?? throw new ArgumentNullException(nameof(config));
         }
 
         public IReadOnlyList<string> GetProfileActionNames(int deviceIndex)
