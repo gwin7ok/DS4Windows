@@ -5009,7 +5009,28 @@ namespace DS4Windows
                                 ResetToDefaultValue(dc, MappedState, outputfieldMapping);
                             }
 
-                            if (action.typeID == SpecialAction.ActionTypeId.Program)
+                            // Phase6-Step10-4-2e: Fresh-press ガードを、Program／Profile／GyroCalibrate 以外の型にも適用する。
+                            // プロファイル適用・コントローラー接続の直後に押しっぱなしのトリガーが、新プロファイルの
+                            // アクション（DisconnectBT／Macro／Button／Key／BatteryCheck／ステアリング較正）を
+                            // 「新規成立」と誤認して実行しないよう、トリガーが FreshPressReleaseHoldMs 連続して未成立になるまで
+                            // 動作だけを止める（ボタンの抑制は上で済んでいるため維持される）。
+                            bool freshPressBlockedOtherTypes = false;
+                            if (action.typeID == SpecialAction.ActionTypeId.Macro
+                                || action.typeID == SpecialAction.ActionTypeId.Button
+                                || action.typeID == SpecialAction.ActionTypeId.Key
+                                || action.typeID == SpecialAction.ActionTypeId.DisconnectBT
+                                || action.typeID == SpecialAction.ActionTypeId.BatteryCheck
+                                || action.typeID == SpecialAction.ActionTypeId.SASteeringWheelEmulationCalibrate)
+                            {
+                                var otherTypeGateState = ActionManager.GetStateFor(action, device);
+                                freshPressBlockedOtherTypes = otherTypeGateState != null && otherTypeGateState.RequiresFreshPressAfterReset;
+                            }
+
+                            if (freshPressBlockedOtherTypes)
+                            {
+                                actionFound = true;
+                            }
+                            else if (action.typeID == SpecialAction.ActionTypeId.Program)
                             {
                                 actionFound = true;
 

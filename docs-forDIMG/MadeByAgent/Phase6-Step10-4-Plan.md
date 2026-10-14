@@ -304,3 +304,12 @@
 - **§2.4 の判断記録（J3）**: `IMappingActionDispatcher`／`MappingActionDispatcher` は、連鎖の廃止により、`DispatchProfileActionEdge` の呼び出し元が 0 件になった。`Mapping.DispatchProfileActionEdge`（内部の利用あり）への中継であり、10-4-4（Actions／Mapping 境界の整理）で、利用者の有無を再確認して扱いを決める。
 - **実機確認項目**: プロファイル切替アクションの発火後、同じトリガーの別アクションが実行されないこと（再度押すと実行される）。切替と元への復帰が正常。
 - **テストの記録（2026-10-15）**: 全件実行で `ControlServicePr4ShimEquivalenceTests.GetterShims_UsedOnReportPath_DoNotAllocate` が 1 回失敗（10,000 回で 1,128 バイト）。同テストの単独再実行は 3 件とも成功。測定対象の経路は変更しておらず、割り当てが 1 回だけだったため、層別 JIT などによるフレーキーと判断。再発した場合は、原因を調査する。
+
+## 21. Step10-4-2d の実機確認結果と、Step10-4-2e（Fresh-press ガードの全型への適用）。2026-10-15
+- **Step10-4-2d**: ビルド・テストビルド・テスト実行成功。切替と元への復帰は問題なし。連鎖の廃止の確認では、切替の直後に同じトリガーの `zzz_DC`（`DisconnectBT`）が実行された。
+- **原因（ログ解析）**: 連鎖サービスは動作しておらず（廃止は有効）、**通常のマッピング評価**が、押しっぱなしのトリガーを新プロファイルの `DisconnectBT` の新規成立と判断して実行した。Fresh-press ガード（`RequiresFreshPressAfterReset`）は `Mapping.cs` の `Program`／`Profile`／`GyroCalibrate` にだけあり、`DisconnectBT`／`Macro`／`Button`／`Key`／`BatteryCheck`／`SASteeringWheelEmulationCalibrate` には無かった。**移行前から存在する動作**（回帰ではない）。
+- **決定**: 案A（ガードを全型へ拡張）。ユーザー承認済み（2026-10-15）。
+- **変更**: `Mapping.cs` の型ごとの分岐の直前に、上記 6 型のガード（`freshPressBlockedOtherTypes`）を追加。ガード中は動作だけを止め、ボタンの抑制は維持される。解除条件は既存と同じ（トリガーが `FreshPressReleaseHoldMs`＝80ms 連続して未成立）。
+- **テスト**: `Step10FourTwoGlobalReferenceGuardTests.Mapping_FreshPressGuard_CoversAllSpecialActionTypes`（ソース走査）。実機確認で動作を確認する。
+- **副作用（仕様）**: プロファイル適用・コントローラー接続の直後に押しっぱなしのボタンは、いったん離すまで、これらの型のアクションが効かない。
+- **実機確認項目**: 切替の直後に、同じトリガーの `DisconnectBT`／キー入力／マクロが実行されないこと。押し直すと実行されること。通常の操作（切替をしない状態でのキー入力・マクロ・バッテリー確認）が従来どおり動くこと。
