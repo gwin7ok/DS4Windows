@@ -1920,6 +1920,13 @@ namespace DS4WinWPF.DS4Forms
                     {
                         NotifyProfilesUpdated(profileRepository.ReplaceActionReference(oldName, newName));
                     }
+                    else
+                    {
+                        // 名前が同じで内容だけ変わった場合は、プロファイルの XML の書き換えは不要。ただし、接続中のコントローラーは、
+                        // プロファイルの適用時に取り込んだ古い内容のアクションを保持している（Actions.xml の読み直しでは更新されない）。
+                        // そのアクションを使っているプロファイルを、保存時と同じ再適用の経路で再適用して、新しい内容を反映する。
+                        NotifyProfilesUpdated(profileRepository.GetAppliedProfilesUsingAction(newName));
+                    }
                 };
             }
         }

@@ -141,5 +141,31 @@ namespace DS4WindowsTests
             Assert.Equal(new[] { "A" }, changed.ToArray());
             Assert.Equal("New", ReadActions("A"));
         }
+
+        [Fact]
+        public void GetAppliedProfilesUsingAction_ReturnsProfilesOfSlotsThatUseTheAction()
+        {
+            // Global の実行時状態（スロット別のプロファイル名とアクション一覧）を退避し、必ず戻す
+            string[] paths = Global.ProfilePath;
+            List<string>[] actions = Global.ProfileActions;
+            string path0 = paths[0], path1 = paths[1], path2 = paths[2];
+            List<string> actions0 = actions[0], actions1 = actions[1], actions2 = actions[2];
+            try
+            {
+                paths[0] = "P0"; actions[0] = new List<string> { "ActA", "ActB" };
+                paths[1] = "P1"; actions[1] = new List<string> { "ActB" };
+                paths[2] = "P0"; actions[2] = new List<string> { "ActA" };   // 同じプロファイルは 1 回だけ
+
+                Assert.Equal(new[] { "P0" }, _repo.GetAppliedProfilesUsingAction("ActA").ToArray());
+                Assert.Equal(new[] { "P0", "P1" }, _repo.GetAppliedProfilesUsingAction("ActB").ToArray());
+                Assert.Empty(_repo.GetAppliedProfilesUsingAction("Act"));      // 部分一致はしない
+                Assert.Empty(_repo.GetAppliedProfilesUsingAction(""));
+            }
+            finally
+            {
+                paths[0] = path0; paths[1] = path1; paths[2] = path2;
+                actions[0] = actions0; actions[1] = actions1; actions[2] = actions2;
+            }
+        }
     }
 }

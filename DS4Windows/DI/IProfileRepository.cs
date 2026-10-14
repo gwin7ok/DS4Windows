@@ -95,5 +95,13 @@ namespace DS4Windows.DI
         /// </summary>
         /// <returns>書き換えたプロファイル名（拡張子なし）の一覧</returns>
         IReadOnlyList<string> RemoveActionReference(string name);
+
+        /// <summary>
+        /// 接続中のコントローラーのスロットに適用されているプロファイルのうち、アクション <paramref name="actionName"/> を
+        /// 使っているもの（スロットのメモリ上の <c>ProfileActions</c> に含まれるもの）の名前の一覧を返す。
+        /// アクションの内容だけが変わったとき（XML の書き換えは不要）に、実行時のキャッシュを更新するための再適用の対象を求める。
+        /// ファイルは読まない。比較は完全一致（大文字小文字を区別）。
+        /// </summary>
+        IReadOnlyList<string> GetAppliedProfilesUsingAction(string actionName);
     }
 }

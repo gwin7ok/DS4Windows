@@ -325,6 +325,31 @@ namespace DS4Windows
             return UpdateActionReferences(name, null);
         }
 
+        public IReadOnlyList<string> GetAppliedProfilesUsingAction(string actionName)
+        {
+            var result = new List<string>();
+            if (string.IsNullOrWhiteSpace(actionName))
+                return result;
+
+            List<string>[] actions = Global.ProfileActions;
+            string[] paths = Global.ProfilePath;
+            if (actions == null || paths == null)
+                return result;
+
+            int slotCount = Math.Min(ControlService.CURRENT_DS4_CONTROLLER_LIMIT, Math.Min(actions.Length, paths.Length));
+            for (int i = 0; i < slotCount; i++)
+            {
+                if (actions[i] != null && !string.IsNullOrEmpty(paths[i]) &&
+                    actions[i].Contains(actionName, StringComparer.Ordinal) &&
+                    !result.Contains(paths[i], StringComparer.OrdinalIgnoreCase))
+                {
+                    result.Add(paths[i]);
+                }
+            }
+
+            return result;
+        }
+
         // newName が null のときは、oldName を取り除く。
         // XmlIoLock（同一 XML 排他ロック）の下で、プロファイルごとに読み込み → 置換 → 保存を行う。
         private IReadOnlyList<string> UpdateActionReferences(string oldName, string newName)
