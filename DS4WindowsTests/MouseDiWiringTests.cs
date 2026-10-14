@@ -40,7 +40,7 @@ namespace DS4WindowsTests
         [Fact]
         public void Constructor_NullVirtualKbm_Throws()
         {
-            var settings = new ProfileSettingsService(new BackingStore());
+            var settings = TestRepositoryFactory.CreateProfileSettingsService(new BackingStore());
             Assert.Throws<ArgumentNullException>(() =>
                 new Mouse(Slot, CreateUninitializedDevice(), settings, null));
         }
@@ -48,7 +48,7 @@ namespace DS4WindowsTests
         [Fact]
         public void Constructor_PropagatesServicesToCursorAndWheel()
         {
-            var settings = new ProfileSettingsService(new BackingStore());
+            var settings = TestRepositoryFactory.CreateProfileSettingsService(new BackingStore());
             var kbm = new RecordingVirtualKbm();
 
             var mouse = new Mouse(Slot, CreateUninitializedDevice(), settings, kbm);

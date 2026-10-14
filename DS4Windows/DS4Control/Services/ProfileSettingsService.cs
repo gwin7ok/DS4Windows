@@ -22,18 +22,24 @@ namespace DS4Windows
         // Step10-2-A: m_Config(BackingStore)委譲用。Global.storeと同一インスタンスを参照する
         // (データの二重管理を避けるため、専用バックアップ配列は持たない)
         private readonly BackingStore _config;
-        private BackingStore SafeConfig => _config ?? Global.store;
+        private BackingStore SafeConfig => _config;
 
         // Phase6-Step2-1c (決定O2=C/O3=A): スロット上限（現在接続台数ではない）を IEnvironmentService から取得する。
         // 既存の生成箇所（テスト・Global のフォールバック）を変更しないよう省略可能とし、
         // 省略時は状態を持たない既定実装を用いる（AppHost.Services は使用しない）。
         private readonly IEnvironmentService _environmentService;
 
-        public ProfileSettingsService(BackingStore backingStore = null,
-            IEnvironmentService environmentService = null)
+        // Phase6-Step10-4-2c: 全ての依存を必須化（Global.store／new EnvironmentService／Program.rootHub の参照を廃止）。
+        // ControlService は ControlService → IProfileSettingsService の依存循環を避けるため、遅延解決（Func）で受け取る（決定 D4-3）。
+        private readonly Func<ControlService> _controlProvider;
+
+        public ProfileSettingsService(BackingStore backingStore,
+            IEnvironmentService environmentService,
+            Func<ControlService> controlProvider)
         {
-            _config = backingStore ?? Global.store;
-            _environmentService = environmentService ?? new EnvironmentService();
+            _config = backingStore ?? throw new ArgumentNullException(nameof(backingStore));
+            _environmentService = environmentService ?? throw new ArgumentNullException(nameof(environmentService));
+            _controlProvider = controlProvider ?? throw new ArgumentNullException(nameof(controlProvider));
         }
 
         public CultureInfo ConfigDecimalCulture { get; } = new CultureInfo("en-US");
@@ -437,8 +443,7 @@ namespace DS4Windows
 
         public byte GetRumbleBoost(int deviceIndex)
         {
-            if (Program.rootHub != null && Program.rootHub.DS4Controllers != null &&
-                Program.rootHub.DS4Controllers[deviceIndex] is DualSenseDevice &&
+            if (_controlProvider()?.GetController(deviceIndex) is DualSenseDevice &&
                 UseGenericRumbleStrRescaleForDualSenses != null &&
                 !UseGenericRumbleStrRescaleForDualSenses[deviceIndex])
                 return 100;
@@ -473,7 +478,7 @@ namespace DS4Windows
             if (SafeConfig != null && SafeConfig.rumbleAutostopTime != null && index < SafeConfig.rumbleAutostopTime.Length)
             {
                 SafeConfig.rumbleAutostopTime[index] = value;
-                DS4Device tempDev = Program.rootHub?.DS4Controllers?[index];
+                DS4Device tempDev = _controlProvider()?.GetController(index);
                 if (tempDev != null && tempDev.isSynced())
                     tempDev.RumbleAutostopTime = value;
             }
@@ -549,19 +554,12 @@ namespace DS4Windows
         // 課題④: ProfileActions のインターフェース実装
         public List<string>[] ProfileActions
         {
-            get => SafeConfig?.profileActions ?? Global.ProfileActions;
+            get => SafeConfig?.profileActions;
             set
             {
                 if (SafeConfig != null)
                 {
                     SafeConfig.profileActions = value;
-                }
-                if (value != null && Global.ProfileActions != null)
-                {
-                    for (int i = 0; i < Math.Min(value.Length, Global.ProfileActions.Length); i++)
-                    {
-                        Global.ProfileActions[i] = value[i];
-                    }
                 }
                 OnProfileSettingChanged(-1, nameof(ProfileActions), null, value);
             }

@@ -12,7 +12,7 @@ namespace DS4WindowsTests
         [Fact]
         public void SubSettingChange_TriggerDeadZone_ShouldFireProfileSettingChanged()
         {
-            var service = new ProfileSettingsService();
+            var service = TestRepositoryFactory.CreateProfileSettingsService();
             // Phase6-Step9b-4（F10）: 前提が満たされないときに return で成功扱いにしない（検証されないまま通るため）
             Assert.NotNull(service.L2ModInfo);
             Assert.NotNull(service.L2ModInfo[0]);
@@ -38,7 +38,7 @@ namespace DS4WindowsTests
         [Fact]
         public void SubSettingChange_StickAxisDeadZone_ShouldFireProfileSettingChanged()
         {
-            var service = new ProfileSettingsService();
+            var service = TestRepositoryFactory.CreateProfileSettingsService();
             Assert.NotNull(service.LSModInfo);
             Assert.NotNull(service.LSModInfo[1]);
             Assert.NotNull(service.LSModInfo[1].xAxisDeadInfo);
@@ -64,7 +64,7 @@ namespace DS4WindowsTests
         [Fact]
         public void WireSubSettingsEvents_MultipleCalls_ShouldNotAccumulateHandlers()
         {
-            var service = new ProfileSettingsService();
+            var service = TestRepositoryFactory.CreateProfileSettingsService();
             Assert.NotNull(service.LSModInfo);
             Assert.NotNull(service.LSModInfo[0]);
             Assert.NotNull(service.LSModInfo[0].xAxisDeadInfo);
@@ -93,7 +93,7 @@ namespace DS4WindowsTests
         [Fact]
         public void UnwireSubSettingsEvents_ShouldStopNotifications()
         {
-            var service = new ProfileSettingsService();
+            var service = TestRepositoryFactory.CreateProfileSettingsService();
             Assert.NotNull(service.LSModInfo);
             Assert.NotNull(service.LSModInfo[0]);
             Assert.NotNull(service.LSModInfo[0].xAxisDeadInfo);
@@ -118,7 +118,7 @@ namespace DS4WindowsTests
         [Fact]
         public void SubSettingChange_DeltaAccel_ShouldFireProfileSettingChanged()
         {
-            var service = new ProfileSettingsService();
+            var service = TestRepositoryFactory.CreateProfileSettingsService();
             Assert.NotNull(service.LSOutputSettings);
             Assert.NotNull(service.LSOutputSettings[0]);
             Assert.NotNull(service.LSOutputSettings[0].outputSettings?.controlSettings?.deltaAccelSettings);
@@ -144,7 +144,7 @@ namespace DS4WindowsTests
         [Fact]
         public void SubSettingChange_RumbleSettings_ShouldFireProfileSettingChanged()
         {
-            var service = new ProfileSettingsService();
+            var service = TestRepositoryFactory.CreateProfileSettingsService();
             Assert.NotNull(service.RumbleSettings);
             Assert.NotNull(service.RumbleSettings[0]);
 
@@ -169,7 +169,7 @@ namespace DS4WindowsTests
         [Fact]
         public void ProfileActions_GetSet_ShouldPersistAndNotify()
         {
-            var service = new ProfileSettingsService();
+            var service = TestRepositoryFactory.CreateProfileSettingsService();
 
             var newActions = new List<string>[Global.MAX_DS4_CONTROLLER_COUNT];
             for (int i = 0; i < Global.MAX_DS4_CONTROLLER_COUNT; i++)
@@ -209,7 +209,7 @@ namespace DS4WindowsTests
         [Fact]
         public void WireSubSettings_DeclarativeList_Completeness_IntegrityTest()
         {
-            var service = new ProfileSettingsService();
+            var service = TestRepositoryFactory.CreateProfileSettingsService();
             const int devIndex = 0;
 
             // 1. 宣言的記述子リストから取得できる ProfileSubSettingBase インスタンス群を収集

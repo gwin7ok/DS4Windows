@@ -17,7 +17,7 @@ namespace DS4WindowsTests
     public class Phase6Step3ContractExtensionTests
     {
         private readonly ProfileActionProvider _actionProvider = TestRepositoryFactory.CreateProfileActionProvider();
-        private readonly ProfileSettingsService _profileSettings = new ProfileSettingsService();
+        private readonly ProfileSettingsService _profileSettings = TestRepositoryFactory.CreateProfileSettingsService();
 
         // ---- IProfileActionProvider.GetProfileActionIndexOf / GetProfileActionsRaw ----
 

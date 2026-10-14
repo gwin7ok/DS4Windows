@@ -54,7 +54,7 @@ namespace DS4WindowsTests
         [Fact]
         public void SetCurveAndDeadzone_DoesNotAllocate()
         {
-            var settings = new ProfileSettingsService(new BackingStore());
+            var settings = TestRepositoryFactory.CreateProfileSettingsService(new BackingStore());
             var cState = new DS4State();
             var dState = new DS4State();
 
@@ -82,7 +82,7 @@ namespace DS4WindowsTests
             store.gyroOutMode[Slot] = GyroOutMode.Controls;
             store.setSXOutCurveMode(Slot, 2); // 出力カーブの分岐も通す
             store.setSZOutCurveMode(Slot, 2);
-            var settings = new ProfileSettingsService(store);
+            var settings = TestRepositoryFactory.CreateProfileSettingsService(store);
 
             var cState = new DS4State();
             var motion = new SixAxis(0, 0, 0, 0, 0, 0, 0.0);
@@ -116,7 +116,7 @@ namespace DS4WindowsTests
             store.rightStickDriftYAxis[Slot] = -3;
             store.leftStickDriftXAxis[Slot] = 5;
             store.leftStickDriftYAxis[Slot] = -5;
-            var settings = new ProfileSettingsService(store);
+            var settings = TestRepositoryFactory.CreateProfileSettingsService(store);
             var state = new DS4State();
 
             int sink = 0;

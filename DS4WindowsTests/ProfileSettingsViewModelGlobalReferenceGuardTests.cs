@@ -131,7 +131,7 @@ namespace DS4WindowsTests
         [Fact]
         public void Constructor_RequiresServices_ExceptControlService()
         {
-            var settings = new ProfileSettingsService();
+            var settings = TestRepositoryFactory.CreateProfileSettingsService();
             var outputSlots = new OutputSlotService();
             var repo = TestRepositoryFactory.CreateProfileRepository();
             var env = new EnvironmentService();

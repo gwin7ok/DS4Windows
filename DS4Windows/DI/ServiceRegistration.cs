@@ -28,7 +28,9 @@ namespace DS4Windows.DI
             services.AddSingleton<IOutputSlotStore, OutputSlotStore>();
             services.AddSingleton<IOutputSlotService, OutputSlotService>();
 
-            services.AddSingleton<IProfileSettingsService, ProfileSettingsService>();
+            // Phase6-Step10-4-2c: BackingStore は DI 未登録のため、Global.store を渡す。ControlService は遅延解決（循環の回避）
+            services.AddSingleton<IProfileSettingsService>(sp => new ProfileSettingsService(
+                Global.store, sp.GetRequiredService<IEnvironmentService>(), sp.GetRequiredService<Func<ControlService>>()));
             services.AddSingleton<IProfileXmlStore, ProfileXmlStore>();
             services.AddSingleton<IProfileRepository, ProfileRepository>();
             // Phase6-Step10-2（決定 E2＝A）: プリセットの読み込み（Global.Load…Profile への薄い委譲）

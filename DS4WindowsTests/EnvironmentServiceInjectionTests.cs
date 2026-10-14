@@ -29,7 +29,7 @@ namespace DS4WindowsTests
         [Fact]
         public void ProfileSettingsService_AcceptsInjectedEnvironmentService()
         {
-            var service = new ProfileSettingsService(null, new EnvironmentService());
+            var service = TestRepositoryFactory.CreateProfileSettingsService(null, new EnvironmentService());
 
             Assert.NotNull(service);
         }
@@ -37,7 +37,7 @@ namespace DS4WindowsTests
         [Fact]
         public void ProfileSettingsService_DefaultConstruction_StillWorks()
         {
-            var service = new ProfileSettingsService();
+            var service = TestRepositoryFactory.CreateProfileSettingsService();
 
             Assert.NotNull(service);
         }

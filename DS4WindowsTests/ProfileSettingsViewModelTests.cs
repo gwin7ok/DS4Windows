@@ -38,7 +38,7 @@ namespace DS4WindowsTests
         [Fact]
         public void ControllerTypeIndex_ShouldSupportBidirectionalSwitching()
         {
-            var service = new ProfileSettingsService();
+            var service = TestRepositoryFactory.CreateProfileSettingsService();
             Global.ProfileSettingsServiceInstance = service;
 
             const int device = 0;
@@ -70,7 +70,7 @@ namespace DS4WindowsTests
         [Fact]
         public void TempControllerIndex_ShouldUpdateSSOTAndBidirectionalState()
         {
-            var service = new ProfileSettingsService();
+            var service = TestRepositoryFactory.CreateProfileSettingsService();
             Global.ProfileSettingsServiceInstance = service;
 
             const int device = 0;
@@ -100,7 +100,7 @@ namespace DS4WindowsTests
         [Fact]
         public void UpdateLateProperties_ShouldSyncBidirectionally_RegardlessOfEnableOutputDataToDS4()
         {
-            var service = new ProfileSettingsService();
+            var service = TestRepositoryFactory.CreateProfileSettingsService();
             var outputSlotService = new OutputSlotService();
             Global.ProfileSettingsServiceInstance = service;
             Global.OutputSlotServiceInstance = outputSlotService;

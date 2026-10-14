@@ -65,7 +65,7 @@ namespace DS4WindowsTests
             var mockInspector = new MockProcessInspector { ReturnSuccess = false };
             var mockAppService = new MockProfileAppService();
             var holder = TestRepositoryFactory.CreateAutoProfileHolder();
-            var service = TestRepositoryFactory.CreateAutoProfileService(holder, mockAppService, new ProfileSettingsService(), mockInspector);
+            var service = TestRepositoryFactory.CreateAutoProfileService(holder, mockAppService, TestRepositoryFactory.CreateProfileSettingsService(), mockInspector);
 
             service.CheckProfiles();
 
@@ -82,7 +82,7 @@ namespace DS4WindowsTests
                 ReturnSuccess = true
             };
             var mockAppService = new MockProfileAppService();
-            var settings = new ProfileSettingsService();
+            var settings = TestRepositoryFactory.CreateProfileSettingsService();
             var holder = TestRepositoryFactory.CreateAutoProfileHolder();
 
             var entity = new AutoProfileEntity(@"c:\games\testgame.exe", "test game window");
@@ -110,7 +110,7 @@ namespace DS4WindowsTests
                 ReturnSuccess = true
             };
             var mockAppService = new MockProfileAppService();
-            var settings = new ProfileSettingsService();
+            var settings = TestRepositoryFactory.CreateProfileSettingsService();
             var holder = TestRepositoryFactory.CreateAutoProfileHolder();
 
             var entity = new AutoProfileEntity(@"c:\games\testgame.exe", "test game window");
@@ -145,7 +145,7 @@ namespace DS4WindowsTests
         public void AutoProfileSwitchNotifyChoice_ShouldReadWriteSameEntityAsGlobal()
         {
             var holder = TestRepositoryFactory.CreateAutoProfileHolder();
-            var settings = new ProfileSettingsService();
+            var settings = TestRepositoryFactory.CreateProfileSettingsService();
             var mockInspector = new MockProcessInspector();
             var mockAppService = new MockProfileAppService();
             var service = TestRepositoryFactory.CreateAutoProfileService(holder, mockAppService, settings, mockInspector);

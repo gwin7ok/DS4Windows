@@ -15,7 +15,7 @@ namespace DS4WindowsTests
     {
         private readonly AppSettingsService _appSettings = new AppSettingsService();
         private readonly AppearanceSettingsService _appearance = new AppearanceSettingsService();
-        private readonly ProfileSettingsService _profileSettings = new ProfileSettingsService();
+        private readonly ProfileSettingsService _profileSettings = TestRepositoryFactory.CreateProfileSettingsService();
         private readonly ProfileActionProvider _actionProvider = TestRepositoryFactory.CreateProfileActionProvider();
 
         [Fact]
@@ -166,7 +166,7 @@ namespace DS4WindowsTests
         public void TouchpadActiveArray_OfDiSingleton_IsTheSameArrayAsGlobalTouchActive()
         {
             // TouchpadActiveArray はサービスのインスタンスが保持する状態（BackingStore ではない）。
-            // new ProfileSettingsService() で作った別インスタンスではなく、ControlService が実際に受け取る
+            // TestRepositoryFactory.CreateProfileSettingsService() で作った別インスタンスではなく、ControlService が実際に受け取る
             // DI の Singleton を対象にする。本番では Global.ProfileSettingsServiceInstance も同じ Singleton を返すため、
             // CheckForTouchToggle／StartTPOff が書き換える配列と、Global.TouchActive／touchpadActive の読み取りは同一になる。
             IProfileSettingsService service = DS4WinWPF.AppHost.GetService<IProfileSettingsService>();

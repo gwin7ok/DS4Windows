@@ -18,7 +18,7 @@ namespace DS4WindowsTests
         {
             var store = new BackingStore();
             store.touchSensitivity[Slot] = 100;
-            var settings = new ProfileSettingsService(store);
+            var settings = TestRepositoryFactory.CreateProfileSettingsService(store);
             var kbm = new RecordingVirtualKbm { Recording = false };
             var cursor = new MouseCursor(Slot, null, settings, kbm);
 

@@ -21,7 +21,7 @@ namespace DS4WindowsTests
             store = new BackingStore();
             store.touchSensitivity[Slot] = touchSensitivity;
             store.touchpadInvert[Slot] = touchpadInvert;
-            return new ProfileSettingsService(store);
+            return TestRepositoryFactory.CreateProfileSettingsService(store);
         }
 
         private static MouseCursor CreateCursor(ProfileSettingsService settings, RecordingVirtualKbm kbm)

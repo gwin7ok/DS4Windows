@@ -9,7 +9,7 @@ namespace DS4WindowsTests
         [Fact]
         public void SubSettings_StickDeadZone_ShouldBubbleToServiceAndMarkDirty()
         {
-            var service = new ProfileSettingsService();
+            var service = TestRepositoryFactory.CreateProfileSettingsService();
             // Phase6-Step9b-4（F10）: 前提が満たされないときに return で成功扱いにしない
             Assert.NotNull(service.LSModInfo);
             Assert.NotNull(service.LSModInfo[0]);
@@ -39,7 +39,7 @@ namespace DS4WindowsTests
         [Fact]
         public void SubSettings_GyroControls_ShouldBubbleToServiceAndMarkDirty()
         {
-            var service = new ProfileSettingsService();
+            var service = TestRepositoryFactory.CreateProfileSettingsService();
             Assert.NotNull(service.GyroControlsInf);
             Assert.NotNull(service.GyroControlsInf[0]);
 

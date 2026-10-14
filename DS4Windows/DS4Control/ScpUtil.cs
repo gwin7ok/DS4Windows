@@ -711,7 +711,7 @@ namespace DS4Windows
         // Phase4-Step1: IProfileSettingsService DI シム (Strangler Fig 移行用)
         // =========================================================================
         private static DS4Windows.DI.IProfileSettingsService profileSettingsService = null;
-        private static readonly DS4Windows.DI.IProfileSettingsService fallbackProfileSettingsService = new ProfileSettingsService();
+        private static readonly DS4Windows.DI.IProfileSettingsService fallbackProfileSettingsService = new ProfileSettingsService(m_Config, new EnvironmentService(), () => Program.rootHub);
 
         public static DS4Windows.DI.IProfileSettingsService ProfileSettingsServiceInstance
         {

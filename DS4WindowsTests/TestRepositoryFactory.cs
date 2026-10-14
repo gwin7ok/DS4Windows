@@ -27,6 +27,14 @@ namespace DS4WindowsTests
                 control ?? new Func<ControlService>(() => DS4WinWPF.AppHost.GetService<ControlService>()));
         }
 
+        public static ProfileSettingsService CreateProfileSettingsService(BackingStore store = null,
+            IEnvironmentService environmentService = null, Func<ControlService> control = null)
+        {
+            return new ProfileSettingsService(store ?? Global.store,
+                environmentService ?? new EnvironmentService(),
+                control ?? new Func<ControlService>(() => Program.rootHub));
+        }
+
         public static ProfileActionProvider CreateProfileActionProvider(BackingStore store = null)
         {
             return new ProfileActionProvider(store ?? Global.store);

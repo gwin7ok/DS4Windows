@@ -23,7 +23,7 @@ namespace DS4WindowsTests
         private static ProfileSettingsService CreateIsolatedService(out BackingStore store)
         {
             store = new BackingStore();
-            return new ProfileSettingsService(store);
+            return TestRepositoryFactory.CreateProfileSettingsService(store);
         }
 
         private static DS4State Run(ProfileSettingsService settings,

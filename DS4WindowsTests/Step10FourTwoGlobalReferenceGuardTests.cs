@@ -49,6 +49,9 @@ namespace DS4WindowsTests
             ["DS4Windows/DS4Control/Services/ProfileActionProvider.cs"] = new string[0],
             ["DS4Windows/DS4Control/Profiles/AutoProfileHolder.cs"] = new[] { "MAX_DS4_CONTROLLER_COUNT" },
             ["DS4Windows/DS4Control/Services/AutoProfileService.cs"] = new[] { "autoProfileSwitchNotifyChoice", "CreateAutoProfiles" },
+            // 10-4-2c: 薄い委譲（実装本体が Global にあるもの）と、不変の定数表
+            ["DS4Windows/DS4Control/Services/ProfileSettingsService.cs"] =
+                new[] { "RefreshActionAlias", "RefreshExtrasButtons", "defaultButtonMapping", "reverseX360ButtonMapping" },
         };
 
         private static string ReadWithoutComments(string relativePath)
@@ -97,7 +100,7 @@ namespace DS4WindowsTests
         [Fact]
         public void ProfileRepository_ProfileActionProvider_AutoProfileHolder_RequireDependencies()
         {
-            var settings = new ProfileSettingsService();
+            var settings = TestRepositoryFactory.CreateProfileSettingsService();
             var store = new ProfileXmlStore();
             var path = new PathService();
             Func<ControlService> control = () => null;
@@ -111,11 +114,32 @@ namespace DS4WindowsTests
         }
 
         [Fact]
+        public void ProfileSettingsService_RequiresAllDependencies()
+        {
+            var store = new BackingStore();
+            var env = new EnvironmentService();
+            Func<ControlService> control = () => null;
+
+            Assert.Throws<ArgumentNullException>(() => new ProfileSettingsService(null, env, control));
+            Assert.Throws<ArgumentNullException>(() => new ProfileSettingsService(store, null, control));
+            Assert.Throws<ArgumentNullException>(() => new ProfileSettingsService(store, env, null));
+        }
+
+        [Fact]
+        public void ProfileSettingsService_GetRumbleBoost_UsesInjectedControlProvider()
+        {
+            var settings = TestRepositoryFactory.CreateProfileSettingsService(new BackingStore(), null, () => null);
+            // コントローラーが無い場合も、注入された関数だけを参照して例外なく値を返す（Program.rootHub を参照しない）
+            var ex = Record.Exception(() => settings.GetRumbleBoost(0));
+            Assert.Null(ex);
+        }
+
+        [Fact]
         public void AutoProfileService_RequiresAllDependencies()
         {
             var path = new PathService();
             var holder = new DS4WinWPF.AutoProfileHolder(path);
-            var settings = new ProfileSettingsService();
+            var settings = TestRepositoryFactory.CreateProfileSettingsService();
             var app = new ProfileApplicationService(settings,
                 new ProfileActionChainService(new ProfileActionProvider(Global.store), new MappingActionDispatcher()),
                 new DeviceStateService(), () => null,
@@ -156,7 +180,7 @@ namespace DS4WindowsTests
         [Fact]
         public void ProfileApplicationService_RequiresAllDependencies()
         {
-            var settings = new ProfileSettingsService();
+            var settings = TestRepositoryFactory.CreateProfileSettingsService();
             var chain = new ProfileActionChainService(TestRepositoryFactory.CreateProfileActionProvider(), new MappingActionDispatcher());
             var state = new DeviceStateService();
             Func<ControlService> control = () => null;

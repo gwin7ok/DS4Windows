@@ -23,7 +23,7 @@ namespace DS4WindowsTests
         private readonly ITestOutputHelper _output;
         private readonly AppSettingsService _appSettings = new AppSettingsService();
         private readonly AppearanceSettingsService _appearance = new AppearanceSettingsService();
-        private readonly ProfileSettingsService _profileSettings = new ProfileSettingsService();
+        private readonly ProfileSettingsService _profileSettings = TestRepositoryFactory.CreateProfileSettingsService();
         private readonly ProfileActionProvider _actionProvider = TestRepositoryFactory.CreateProfileActionProvider();
 
         public ControlServiceHotPathAllocationTests(ITestOutputHelper output)

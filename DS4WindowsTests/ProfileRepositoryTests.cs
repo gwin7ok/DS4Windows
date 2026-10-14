@@ -39,7 +39,7 @@ namespace DS4WindowsTests
         [Fact]
         public void ProfilesPath_ShouldReturnValidPath()
         {
-            var settings = new ProfileSettingsService();
+            var settings = TestRepositoryFactory.CreateProfileSettingsService();
             var repository = TestRepositoryFactory.CreateProfileRepository(settings);
 
             var path = repository.ProfilesPath;
@@ -50,7 +50,7 @@ namespace DS4WindowsTests
         [Fact]
         public void GetProfilePath_ShouldAppendXmlExtension()
         {
-            var settings = new ProfileSettingsService();
+            var settings = TestRepositoryFactory.CreateProfileSettingsService();
             var repository = TestRepositoryFactory.CreateProfileRepository(settings);
 
             var path1 = repository.GetProfilePath("Default");
@@ -67,7 +67,7 @@ namespace DS4WindowsTests
         [Fact]
         public void LoadDefaultProfile_ShouldResetSlotSettings()
         {
-            var settings = new ProfileSettingsService();
+            var settings = TestRepositoryFactory.CreateProfileSettingsService();
             var repository = TestRepositoryFactory.CreateProfileRepository(settings);
 
             settings.SetTouchpadActive(0, false);
@@ -83,7 +83,7 @@ namespace DS4WindowsTests
         [Fact]
         public void ApplyAndRestoreProfileDirect_ShouldUpdateSettingsService()
         {
-            var settings = new ProfileSettingsService();
+            var settings = TestRepositoryFactory.CreateProfileSettingsService();
             var repository = TestRepositoryFactory.CreateProfileRepository(settings);
 
             repository.ApplyProfileDirect(1, "TemporaryTest");
@@ -100,7 +100,7 @@ namespace DS4WindowsTests
         [Fact]
         public void GlobalShim_ShouldSynchronizeWithRepository()
         {
-            var settings = new ProfileSettingsService();
+            var settings = TestRepositoryFactory.CreateProfileSettingsService();
             var repository = TestRepositoryFactory.CreateProfileRepository(settings);
             Global.ProfileRepositoryInstance = repository;
             Global.ProfileSettingsServiceInstance = settings;
@@ -121,7 +121,7 @@ namespace DS4WindowsTests
         {
             DS4WinWPF.AppHost.CreateHost();
 
-            var settings = new ProfileSettingsService();
+            var settings = TestRepositoryFactory.CreateProfileSettingsService();
             var fakeXmlStore = new FakeProfileXmlStore();
             var repository = TestRepositoryFactory.CreateProfileRepository(settings, fakeXmlStore);
 
@@ -154,7 +154,7 @@ namespace DS4WindowsTests
         [Fact]
         public void SaveProfile_ShouldPropagateXmlStoreSuccessResult()
         {
-            var settings = new ProfileSettingsService();
+            var settings = TestRepositoryFactory.CreateProfileSettingsService();
             var fakeXmlStore = new FakeProfileXmlStore();
             var repository = TestRepositoryFactory.CreateProfileRepository(settings, fakeXmlStore);
 
@@ -172,7 +172,7 @@ namespace DS4WindowsTests
         [Fact]
         public void ProfilePath_ShouldReferenceSameArrayAsGlobal()
         {
-            var repository = TestRepositoryFactory.CreateProfileRepository(new ProfileSettingsService());
+            var repository = TestRepositoryFactory.CreateProfileRepository(TestRepositoryFactory.CreateProfileSettingsService());
             Assert.Same(Global.ProfilePath, repository.ProfilePath);
             Assert.Same(Global.OlderProfilePath, repository.OlderProfilePath);
             Assert.Same(Global.SelectedProfile, repository.SelectedProfile);
@@ -182,7 +182,7 @@ namespace DS4WindowsTests
         [Fact]
         public void SelectedProfileChanged_ShouldFireOnRaise()
         {
-            var repository = TestRepositoryFactory.CreateProfileRepository(new ProfileSettingsService());
+            var repository = TestRepositoryFactory.CreateProfileRepository(TestRepositoryFactory.CreateProfileSettingsService());
             int? receivedDevice = null;
             string receivedProfile = null;
             EventHandler<SelectedProfileChangedEventArgs> handler = (s, e) =>
@@ -207,7 +207,7 @@ namespace DS4WindowsTests
         [Fact]
         public void LinkedProfile_ChangeAndRemove_ShouldNotThrowAndShouldPersist()
         {
-            var repository = TestRepositoryFactory.CreateProfileRepository(new ProfileSettingsService());
+            var repository = TestRepositoryFactory.CreateProfileRepository(TestRepositoryFactory.CreateProfileSettingsService());
             const string testSerial = "00:11:22:33:44:99"; // テスト専用の架空シリアル
 
             try
@@ -229,14 +229,14 @@ namespace DS4WindowsTests
         [Fact]
         public void ProfileActions_ShouldReferenceSameArrayAsGlobal()
         {
-            var repository = TestRepositoryFactory.CreateProfileRepository(new ProfileSettingsService());
+            var repository = TestRepositoryFactory.CreateProfileRepository(TestRepositoryFactory.CreateProfileSettingsService());
             Assert.Same(Global.ProfileActions, repository.ProfileActions);
         }
 
         [Fact]
         public void CacheExtraProfileInfo_And_CacheProfileCustomsFlags_ShouldNotThrow()
         {
-            var repository = TestRepositoryFactory.CreateProfileRepository(new ProfileSettingsService());
+            var repository = TestRepositoryFactory.CreateProfileRepository(TestRepositoryFactory.CreateProfileSettingsService());
 
             var ex1 = Record.Exception(() => repository.CacheExtraProfileInfo(7));
             Assert.Null(ex1);
@@ -248,7 +248,7 @@ namespace DS4WindowsTests
         [Fact]
         public void EmitMissingActionLogsForDevice_ShouldNotThrow()
         {
-            var repository = TestRepositoryFactory.CreateProfileRepository(new ProfileSettingsService());
+            var repository = TestRepositoryFactory.CreateProfileRepository(TestRepositoryFactory.CreateProfileSettingsService());
 
             var ex = Record.Exception(() => repository.EmitMissingActionLogsForDevice(7, forceEmit: true, overrideProfileName: "Phase5Step13-9_Test"));
             Assert.Null(ex);

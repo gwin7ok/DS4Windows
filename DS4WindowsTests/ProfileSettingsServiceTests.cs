@@ -11,7 +11,7 @@ namespace DS4WindowsTests
         [Fact]
         public void Defaults_ShouldMatchInitialValues()
         {
-            var service = new ProfileSettingsService();
+            var service = TestRepositoryFactory.CreateProfileSettingsService();
 
             Assert.Equal(new CultureInfo("en-US"), service.ConfigDecimalCulture);
             Assert.Equal(9, service.TouchpadActiveArray.Length);
@@ -39,7 +39,7 @@ namespace DS4WindowsTests
         [Fact]
         public void SetAndGet_ShouldUpdateCorrectSlot()
         {
-            var service = new ProfileSettingsService();
+            var service = TestRepositoryFactory.CreateProfileSettingsService();
 
             service.SetTouchpadActive(2, false);
             service.SetUseTempProfile(3, true);
@@ -65,7 +65,7 @@ namespace DS4WindowsTests
         [Fact]
         public void SettingChangedEvent_ShouldFire()
         {
-            var service = new ProfileSettingsService();
+            var service = TestRepositoryFactory.CreateProfileSettingsService();
             ProfileSettingChangedEventArgs eventArgs = null;
             service.ProfileSettingChanged += (s, e) => eventArgs = e;
 
@@ -81,7 +81,7 @@ namespace DS4WindowsTests
         [Fact]
         public void ResetToDefaults_ShouldRestoreValues()
         {
-            var service = new ProfileSettingsService();
+            var service = TestRepositoryFactory.CreateProfileSettingsService();
 
             service.SetTouchpadActive(0, false);
             service.SetUseTempProfile(0, true);
@@ -99,7 +99,7 @@ namespace DS4WindowsTests
         [Fact]
         public void GlobalShim_ShouldSynchronizeWithService()
         {
-            var service = new ProfileSettingsService();
+            var service = TestRepositoryFactory.CreateProfileSettingsService();
             Global.ProfileSettingsServiceInstance = service;
 
             Global.touchpadActive[2] = false;
@@ -115,7 +115,7 @@ namespace DS4WindowsTests
         [Fact]
         public void OutOfBounds_ShouldBeHandledSafely()
         {
-            var service = new ProfileSettingsService();
+            var service = TestRepositoryFactory.CreateProfileSettingsService();
 
             var touchpad = service.GetTouchpadActive(99);
             Assert.True(touchpad);
@@ -128,7 +128,7 @@ namespace DS4WindowsTests
         [Fact]
         public void TriggerSettings_ShouldShareBackingStoreWithGlobalShim()
         {
-            var service = new ProfileSettingsService();
+            var service = TestRepositoryFactory.CreateProfileSettingsService();
             Global.ProfileSettingsServiceInstance = service;
 
             Assert.Same(service.L2ModInfo, Global.L2ModInfo);
@@ -146,7 +146,7 @@ namespace DS4WindowsTests
         [Fact]
         public void TriggerCurveMode_ShouldDelegateThroughServiceAndGlobalShim()
         {
-            var service = new ProfileSettingsService();
+            var service = TestRepositoryFactory.CreateProfileSettingsService();
             Global.ProfileSettingsServiceInstance = service;
 
             service.SetL2OutCurveMode(0, 2);
@@ -170,7 +170,7 @@ namespace DS4WindowsTests
             // Global.OutContType（m_Config.outputDevType）と同一の実体を参照していることを
             // 意図的に確認する（copilot-instructions.md §3.3-4 における「孤立プロパティ」検知の
             // ためのテストであり、削除・書き換えを行ってはならない）。
-            var service = new ProfileSettingsService();
+            var service = TestRepositoryFactory.CreateProfileSettingsService();
             Global.ProfileSettingsServiceInstance = service;
 
             Assert.Same(service.OutContType, Global.OutContType);

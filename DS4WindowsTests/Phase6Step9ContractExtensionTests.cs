@@ -216,7 +216,7 @@ namespace DS4WindowsTests
         [Fact]
         public void RefreshActionAlias_NonKeyAction_ResetsAliasToZero_LikeGlobal()
         {
-            var service = new ProfileSettingsService();
+            var service = TestRepositoryFactory.CreateProfileSettingsService();
             var viaService = new DS4ControlSettings(DS4Controls.Cross);
             var viaGlobal = new DS4ControlSettings(DS4Controls.Cross);
             viaService.action.actionAlias = 99;
@@ -238,7 +238,7 @@ namespace DS4WindowsTests
         [Fact]
         public void RefreshActionAlias_KeyAction_UsesOutputKbmMapping_LikeGlobal()
         {
-            var service = new ProfileSettingsService();
+            var service = TestRepositoryFactory.CreateProfileSettingsService();
             VirtualKBMMapping originalMapping = Global.outputKBMMapping;
             try
             {

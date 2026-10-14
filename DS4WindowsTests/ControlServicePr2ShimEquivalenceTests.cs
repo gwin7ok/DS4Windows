@@ -146,7 +146,7 @@ namespace DS4WindowsTests
         [Fact]
         public void ProfileSettingsService_RefreshExtrasButtons_WithNull_DoesNotThrow()
         {
-            var service = new ProfileSettingsService();
+            var service = TestRepositoryFactory.CreateProfileSettingsService();
 
             var ex = Record.Exception(() => service.RefreshExtrasButtons(0, null));
 

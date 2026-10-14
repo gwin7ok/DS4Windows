@@ -254,3 +254,27 @@
   - `Global` の `fallbackProfileRepository`: 初回アクセス時の生成に変更。
 - **注意（挙動の差）**: `AutoProfileService` が `ControlService` を `Func`（DI の解決）経由で取得するため、`Program.rootHub` が未設定の時点で呼ばれると、DI が `ControlService` を生成する可能性がある。実機では、起動後のタイマーから呼ばれるため `rootHub` は設定済みの見込み。実機確認で、自動プロファイルの動作を確認する。
 - **テスト**: `TestRepositoryFactory` に `CreateProfileRepository` ほか 3 つを追加し、生成箇所を置換。`Step10FourTwoGlobalReferenceGuardTests` に 4 ファイルの `Global`／`AppHost` 不在、必須引数、注入パスでの `AutoProfileHolder` の読み込みを追加。
+
+## 17. Step10-4-2b の完了と、Step10-4-2c の計画（ProfileSettingsService）。2026-10-15
+- **Step10-4-2b**: ビルド・テストビルド・テスト実行成功、実機確認（プロファイル、自動プロファイル、サービスの一時停止）問題なし。
+
+### 17.1 現行コードの再確認
+- **ProfileSettingsService**: 引数 `BackingStore backingStore = null`（省略時 `Global.store`）、`IEnvironmentService environmentService = null`（省略時 `new EnvironmentService()`）。`SafeConfig => _config ?? Global.store`。
+- **`Program.rootHub`×4**（2 メソッド）: `GetRumbleBoost`（DualSense の判定。レポートごとの経路）と `SetRumbleAutostopTime`（接続中のデバイスへの反映）。いずれも、スロット番号のデバイスを取るだけ。`ControlService.GetController(int)` が同じ値を、範囲外安全に返す。
+- **`Global.ProfileActions`**: `ProfileActions` プロパティの取得のフォールバックと、設定時の同期ループ。`SafeConfig` が `Global.store` と同一なら、同期ループは同じ配列への代入で、何も起きない。
+- **生成箇所**: DI 登録（`BackingStore` が未登録）、`ScpUtil.cs` 714 行の静的フォールバック、テスト約 80 件（引数なし約 60、`BackingStore` 指定約 15、環境サービス指定数件）。
+- 薄い委譲（`RefreshActionAlias`、`RefreshExtrasButtons`、`defaultButtonMapping`、`reverseX360ButtonMapping`）は温存。
+
+### 17.2 方針（案）
+- **I1**: `BackingStore`／`IEnvironmentService` を必須化。DI は `ServiceRegistration` で `Global.store` を渡すファクトリー登録。`Global` の静的フォールバックは、明示的に渡す。
+- **I2**: `Program.rootHub` の 4 件は、`Func<ControlService>`（D4-3）で受け取り、`GetController(index)` で取得する。`ControlService` の生成が `IProfileSettingsService` に依存するため、遅延解決が必須。レポートごとの経路（`GetRumbleBoost`）では、1 回の `Func` 呼び出し（DI の Singleton の取得）が増える。割り当てテスト（`MappingHotPathAllocationTests` など）で確認する。
+- **I3**: `Global.ProfileActions` のフォールバックと同期ループは、削除する（`SafeConfig` が非 null になるため。本番では同じ実体で、挙動は変わらない）。
+- **テスト**: `TestRepositoryFactory.CreateProfileSettingsService(store = null, env = null, control = null)`（既定: `Global.store`、`new EnvironmentService()`、`() => null`）で、約 80 件の生成箇所を置換。ガードテストに対象を追加。
+- **実機確認項目**: プロファイルの読み込み・保存、振動（DualSense を含む。DualSense の振動強度の補正）、振動の自動停止時間の設定変更が、接続中のコントローラーに反映されること。
+
+## 18. Step10-4-2c の実装記録。2026-10-15
+- **決定**: I1（必須化）、I2＝A（`Func<ControlService>`）、I3＝A（`Global.ProfileActions` の同期ループとフォールバックを削除）。
+- **変更**: `ProfileSettingsService` は、`BackingStore`／`IEnvironmentService`／`Func<ControlService>` を必須化。`Program.rootHub`×4 を `GetController(index)` へ、`Global.store`／`new EnvironmentService()` のフォールバックを削除。`ServiceRegistration` はファクトリー登録（`Global.store` を渡す）。`Global` の静的フォールバックは、明示的に引数を渡す形へ。
+- **テスト**: `TestRepositoryFactory.CreateProfileSettingsService`（79 件の生成箇所を置換）、`Step10FourTwoGlobalReferenceGuardTests` に対象を追加。
+- **実機確認項目**: プロファイルの読み込み・保存、振動（DualSense の補正を含む）、振動の自動停止時間の変更の反映。
+- **後続**: クラスタ 1 は完了。続けて、アクション連鎖の廃止（10-4-2d）と K1（`>= 4` の上限）の小ステップを提案し、その後 10-4-3（出力スロット系）へ進む。

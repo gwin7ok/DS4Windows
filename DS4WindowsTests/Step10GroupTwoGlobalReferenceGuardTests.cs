@@ -112,7 +112,7 @@ namespace DS4WindowsTests
         [Fact]
         public void ControllersViewModel_RequiresAllServices()
         {
-            var settings = new ProfileSettingsService();
+            var settings = TestRepositoryFactory.CreateProfileSettingsService();
             var repo = TestRepositoryFactory.CreateProfileRepository();
 
             Assert.Throws<ArgumentNullException>(() => new ControllersViewModel(null, settings, repo));
@@ -123,7 +123,7 @@ namespace DS4WindowsTests
         [Fact]
         public void ControllerListViewModel_RequiresAllServices()
         {
-            var settings = new ProfileSettingsService();
+            var settings = TestRepositoryFactory.CreateProfileSettingsService();
             var repo = TestRepositoryFactory.CreateProfileRepository();
             var app = new DS4Windows.Services.AppSettingsService();
 
@@ -170,7 +170,7 @@ namespace DS4WindowsTests
         [Fact]
         public void EditorWindowFactory_RequiresAllServices()
         {
-            var settings = new ProfileSettingsService();
+            var settings = TestRepositoryFactory.CreateProfileSettingsService();
             var slots = new OutputSlotService();
             var path = new PathService();
             Func<ControlService> cs = () => null;
@@ -208,7 +208,7 @@ namespace DS4WindowsTests
         public void BindingAndRecordViewModels_RequireProfileSettingsService()
         {
             Assert.Throws<ArgumentNullException>(() => new BindingWindowViewModel(0, new DS4ControlSettings(DS4Controls.Cross), null, new OutputSlotService()));
-            Assert.Throws<ArgumentNullException>(() => new BindingWindowViewModel(0, new DS4ControlSettings(DS4Controls.Cross), new ProfileSettingsService(), null));
+            Assert.Throws<ArgumentNullException>(() => new BindingWindowViewModel(0, new DS4ControlSettings(DS4Controls.Cross), TestRepositoryFactory.CreateProfileSettingsService(), null));
             Assert.Throws<ArgumentNullException>(() => new RecordBoxViewModel(0, new DS4ControlSettings(DS4Controls.Cross), false, true, null, null));
         }
 

@@ -110,7 +110,7 @@ namespace DS4WindowsTests
         public void PressKeyViewModel_RequiresAllServices()
         {
             var repo = TestRepositoryFactory.CreateSpecialActionRepository();
-            var settings = new ProfileSettingsService();
+            var settings = TestRepositoryFactory.CreateProfileSettingsService();
             var slots = new OutputSlotService();
 
             Assert.Throws<ArgumentNullException>(() => new PressKeyViewModel(null, settings, slots));
