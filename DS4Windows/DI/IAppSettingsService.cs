@@ -36,6 +36,12 @@ namespace DS4Windows.DI
         /// <summary>UI の言語（カルチャ名。<c>Global.UseLang</c>）。</summary>
         string UseLang { get; set; }
 
+        // ---- Phase6-Step10-1-1: UpdaterWindowViewModel／LanguageSelectDialog の Global 直接参照解消 ----
+        /// <summary>最後に確認（スキップ）した更新バージョン（<c>Global.LastVersionChecked</c>）。代入すると <see cref="LastVersionCheckedNum"/> も更新される。</summary>
+        string LastVersionChecked { get; set; }
+        /// <summary>UI のカルチャを切り替える（<c>Global.SetCulture</c>。設定ファイルの <see cref="UseLang"/> は変えない）。</summary>
+        void SetCulture(string culture);
+
         // ---- Phase5-Step13-7: ウィンドウ位置・サイズ、コントローラー一覧列幅の永続化 ----
         int FormWidth { get; set; }
         int FormHeight { get; set; }

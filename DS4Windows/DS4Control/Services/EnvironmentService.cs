@@ -58,6 +58,16 @@ namespace DS4Windows
 
         public bool AdminNeeded() => Global.AdminNeeded();
 
+        // ---- Phase6-Step10-1-1: Global への薄い委譲（メソッド本体の中でのみ Global を参照する。
+        // 静的初期化の循環を起こさない。ガード: EnvironmentServiceStaticInitGuardTests）----
+        public bool IsWin10OrGreater() => Global.IsWin10OrGreater();
+
+        public bool IsWin8OrGreater() => Global.IsWin8OrGreater();
+
+        public bool IsFakerInputInstalled() => Global.IsFakerInputInstalled();
+
+        public void RefreshViGEmBusInfo() => Global.RefreshViGEmBusInfo();
+
         // 静的初期化の循環を避けるため、この計算は Global のメソッド（Global.IsWin8OrGreater 等）を呼ばず自己完結させる。
         // Global は明示的な静的コンストラクタを持ち、その初期化中に OutputSlotManager（→ ControlService.CURRENT_DS4_CONTROLLER_LIMIT
         // → 本クラスの ProcessControllerSlotLimit）が生成される。本クラスの静的初期化から Global の静的初期化を起こすと、

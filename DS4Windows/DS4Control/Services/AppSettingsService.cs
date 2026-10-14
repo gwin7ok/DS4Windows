@@ -315,6 +315,23 @@ namespace DS4Windows.Services
         // 本シムも読み取り専用として公開する。
         public ulong LastVersionCheckedNum => Global.LastVersionCheckedNum;
 
+        // ---- Phase6-Step10-1-1: Global への薄い委譲 ----
+        public string LastVersionChecked
+        {
+            get => Global.LastVersionChecked;
+            set
+            {
+                if (Global.LastVersionChecked != value)
+                {
+                    Global.LastVersionChecked = value;
+                    NotifyChanged(nameof(LastVersionChecked));
+                    NotifyChanged(nameof(LastVersionCheckedNum));
+                }
+            }
+        }
+
+        public void SetCulture(string culture) => Global.SetCulture(culture);
+
         public bool FirstRun
         {
             get => Global.firstRun;

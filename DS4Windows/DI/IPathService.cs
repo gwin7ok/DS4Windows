@@ -34,5 +34,19 @@ namespace DS4Windows.DI
         /// TODO(技術的負債): <see cref="ExecutableDirectory"/> との統合は Phase6-Step12 で判断する。
         /// </summary>
         string ProgramDirectory { get; }
+
+        // ---- Phase6-Step10-1-1: SaveWhere 画面の Global 直接参照の置換先（Global への薄い委譲）----
+        /// <summary>
+        /// 設定ファイルの保存先を決める（<c>Global.SaveWhere(path)</c> と同じ動作）。
+        /// 保存先のフォルダに加え、Profiles／Actions／LinkedProfiles／ControllerConfigs の各ファイルのパスも更新する。
+        /// 注意: <see cref="AppDataPath"/> の setter は PathService 内部のフィールドを変えるだけで、これらは更新しない。
+        /// 保存先の決定には必ず本メソッドを使うこと。
+        /// </summary>
+        void SetSaveLocation(string path);
+
+        /// <summary>
+        /// 空のプロファイル一覧ファイルを作る（<c>Global.SaveDefault(path)</c> と同じ動作）。作成に失敗したら false。
+        /// </summary>
+        bool CreateEmptyProfilesFile(string path);
     }
 }

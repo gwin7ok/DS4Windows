@@ -79,5 +79,10 @@ namespace DS4Windows
         public string RoamingAppDataPath => Global.appDataPpath;
 
         public bool HasMultipleSaveLocations => Global.multisavespots;
+
+        // ---- Phase6-Step10-1-1: Global への薄い委譲（AppDataPath の setter とは別物。IPathService の注記を参照）----
+        public void SetSaveLocation(string path) => Global.SaveWhere(path);
+
+        public bool CreateEmptyProfilesFile(string path) => Global.SaveDefault(path);
     }
 }

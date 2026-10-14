@@ -54,5 +54,15 @@
         bool IsUsingMinViGEm117333();
         /// <summary>プログラムフォルダへの書き込みに管理者権限が要るか（<c>Global.AdminNeeded</c>。テストファイルの作成・削除を試す）。</summary>
         bool AdminNeeded();
+
+        // ---- Phase6-Step10-1-1: WelcomeDialog の Global 直接参照解消（Global への薄い委譲）----
+        /// <summary>Windows 10 以降か（<c>Global.IsWin10OrGreater</c>）。</summary>
+        bool IsWin10OrGreater();
+        /// <summary>Windows 8 以降か（<c>Global.IsWin8OrGreater</c>）。</summary>
+        bool IsWin8OrGreater();
+        /// <summary>FakerInput ドライバが導入済みか（<c>Global.IsFakerInputInstalled</c>。導入状態の再確認を行う）。</summary>
+        bool IsFakerInputInstalled();
+        /// <summary>導入済みの ViGEmBus の情報を取得し直す（<c>Global.RefreshViGEmBusInfo</c>）。</summary>
+        void RefreshViGEmBusInfo();
     }
 }
