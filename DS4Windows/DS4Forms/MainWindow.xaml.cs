@@ -133,7 +133,7 @@ namespace DS4WinWPF.DS4Forms
             App root = Application.Current as App;
             settingsWrapVM = new SettingsViewModel(appSettingsService, appearanceSettingsService, environmentService, pathService);
             settingsTab.DataContext = settingsWrapVM;
-            logvm = new LogViewModel(controlService);
+            logvm = new LogViewModel(controlService, environmentService);
             //logListView.ItemsSource = logvm.LogItems;
             logListView.DataContext = logvm;
             lastMsgLb.DataContext = lastLogMsg;
@@ -290,7 +290,7 @@ namespace DS4WinWPF.DS4Forms
             MessageBoxResult result = MessageBoxResult.No;
             Dispatcher.Invoke(() =>
             {
-                var updaterWin = new UpdaterWindow(version);
+                var updaterWin = new UpdaterWindow(version, environmentService, appSettingsService);
                 updaterWin.ShowDialog();
                 result = updaterWin.Result;
             });
@@ -922,7 +922,7 @@ Suspend support not enabled.", true);
 
         private void AboutBtn_Click(object sender, RoutedEventArgs e)
         {
-            About aboutWin = new About();
+            About aboutWin = new About(environmentService);
             aboutWin.Owner = this;
             aboutWin.ShowDialog();
         }

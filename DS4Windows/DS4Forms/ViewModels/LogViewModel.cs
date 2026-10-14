@@ -18,9 +18,13 @@ namespace DS4WinWPF.DS4Forms.ViewModels
 
         public ReaderWriterLockSlim LogListLocker => _logListLocker;
 
-        public LogViewModel(DS4Windows.ControlService service)
+        // Phase6-Step10-1-3: Global.exeversion の置換先（必須引数）。引数なしのコンストラクタは、DI の解決テスト
+        // （PatternAViewModelTests）と ServiceRegistration の Transient 登録のために残している。
+        public LogViewModel(DS4Windows.ControlService service, DS4Windows.DI.IEnvironmentService environmentService)
         {
-            string version = DS4Windows.Global.exeversion;
+            if (environmentService == null) throw new ArgumentNullException(nameof(environmentService));
+
+            string version = environmentService.ApplicationVersion;
             logItems.Add(new LogItem { Datetime = DateTime.Now, Message = $"DS4Windows version {version}" });
             logItems.Add(new LogItem { Datetime = DateTime.Now, Message = $"DS4Windows Assembly Architecture: {(Environment.Is64BitProcess ? "x64" : "x86")}" });
             logItems.Add(new LogItem { Datetime = DateTime.Now, Message = $"OS Version: {Environment.OSVersion}" });
