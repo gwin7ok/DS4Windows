@@ -7,6 +7,7 @@ using Xunit;
 using Xunit.Abstractions;
 using DS4Windows;
 using DS4Windows.DI;
+using DS4WinWPF.DS4Forms.ViewModels.SpecialActions;
 
 namespace DS4WindowsTests
 {
@@ -163,6 +164,77 @@ namespace DS4WindowsTests
 
             Assert.False(repo.ActionExists("Step10_3_MemOnly"));
             Assert.Contains("Step10_3_MemOnly", ActionNamesInFile(scope.ActionsPath));
+        }
+
+        // ---- Phase6-Step10-3c: ボタン（Button）の割り当てでの SwitchMode の保存・読込、戻った直後の表示 ----
+
+        private static DS4ControlSettings ButtonSettings(X360Controls button)
+        {
+            var settings = new DS4ControlSettings(DS4Controls.None);
+            settings.actionType = DS4ControlSettings.ActionType.Button;
+            settings.action.actionBtn = button;
+            return settings;
+        }
+
+        private static PressKeyViewModel CreatePressKeyViewModel(ISpecialActionRepository repo) =>
+            new PressKeyViewModel(repo, new ProfileSettingsService(), new OutputSlotService());
+
+        [Theory]
+        [InlineData("Toggle", SpecialAction.KeyButtonSwitchModeEnum.Toggle)]
+        [InlineData("Press", SpecialAction.KeyButtonSwitchModeEnum.Press)]
+        public void ButtonAction_SwitchMode_SurvivesSaveAndReload(string mode, SpecialAction.KeyButtonSwitchModeEnum expected)
+        {
+            using var scope = new ActionsStoreScope();
+            var repo = new SpecialActionRepository();
+            var vm = CreatePressKeyViewModel(repo);
+            vm.SwitchMode = mode;
+            vm.ReadSettings(ButtonSettings(X360Controls.A));
+
+            vm.SaveAction(new SpecialAction("Step10_3c_Btn", "Cross", "Program", "C:/a.exe"), false);
+
+            // SaveAction は Actions.xml の読み直しまで行うため、取得できる内容は、保存・読み込みを経たもの
+            SpecialAction saved = repo.GetAction("Step10_3c_Btn");
+            Assert.Equal(SpecialAction.ActionTypeId.Button, saved.typeID);
+            Assert.Equal(((int)X360Controls.A).ToString(), saved.details);
+            Assert.True(saved.KeyButtonSwitchMode.HasValue);
+            Assert.Equal(expected, saved.KeyButtonSwitchMode.Value);
+
+            // 編集画面を開き直したときの SwitchMode
+            var reopened = CreatePressKeyViewModel(repo);
+            reopened.LoadAction(saved);
+            Assert.Equal(mode, reopened.SwitchMode);
+        }
+
+        [Fact]
+        public void ButtonAction_WithoutSwitchModeInFile_LoadsAsPress()
+        {
+            // SwitchMode を持たない従来の Actions.xml（Button）は、従来どおり Press として読み込む
+            using var scope = new ActionsStoreScope();
+            var repo = new SpecialActionRepository();
+            File.WriteAllText(scope.ActionsPath,
+                "<?xml version=\"1.0\" encoding=\"utf-8\"?><Actions>" +
+                "<Action Name=\"Legacy\"><Trigger>Cross</Trigger><Type>Button</Type><Details>1</Details></Action></Actions>");
+            Global.store.LoadActions();
+
+            SpecialAction legacy = repo.GetAction("Legacy");
+            Assert.Equal(SpecialAction.ActionTypeId.Button, legacy.typeID);
+
+            var vm = CreatePressKeyViewModel(repo);
+            vm.LoadAction(legacy);
+            Assert.Equal("Press", vm.SwitchMode);
+        }
+
+        [Fact]
+        public void ReadSettings_ForButton_RaisesDescribeTextPropertyChanged()
+        {
+            var vm = CreatePressKeyViewModel(new SpecialActionRepository());
+            var changed = new List<string>();
+            vm.PropertyChanged += (s, e) => changed.Add(e.PropertyName);
+
+            vm.ReadSettings(ButtonSettings(X360Controls.A));
+
+            Assert.Contains(nameof(PressKeyViewModel.DescribeText), changed);
+            Assert.NotEqual("Select a Key", vm.DescribeText);
         }
     }
 }

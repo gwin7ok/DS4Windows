@@ -86,6 +86,12 @@ namespace DS4WinWPF.DS4Control.DTOXml
                         actionSerializer.Trigger = action.controls;
                         actionSerializer.TypeString = "Button";
                         actionSerializer.Details = action.details;
+                        // Phase6-Step10-3c: SwitchMode（Press／Toggle）を保存する（Key と同じ。従来は書き出していなかった）
+                        if (!string.IsNullOrEmpty(action.extra))
+                        {
+                            string[] btnExts = action.extra.Split('\n');
+                            actionSerializer.SwitchMode = btnExts.Length > 0 ? btnExts[0] : string.Empty;
+                        }
                         break;
 
                     case SpecialAction.ActionTypeId.DisconnectBT:
@@ -176,9 +182,11 @@ namespace DS4WinWPF.DS4Control.DTOXml
 
                         break;
                         case "Button":
+                            // Phase6-Step10-3c: SwitchMode（Press／Toggle）を読み込む。無い場合は従来どおり Press
                             tempAction = new SpecialAction(actionSerializer.Name,
                                 actionSerializer.Trigger, actionSerializer.TypeString,
-                                actionSerializer.Details);
+                                actionSerializer.Details, 0,
+                                string.IsNullOrEmpty(actionSerializer.SwitchMode) ? string.Empty : $"{actionSerializer.SwitchMode}\n");
                             break;
                     case "DisconnectBT":
                         {
@@ -344,7 +352,8 @@ namespace DS4WinWPF.DS4Control.DTOXml
         public string SwitchMode { get; set; } = string.Empty;
         public bool ShouldSerializeSwitchMode()
         {
-            return TypeString == "Key" && !string.IsNullOrEmpty(SwitchMode);
+            // Phase6-Step10-3c: Button（コントローラーのボタンの割り当て）も、Press／Toggle を保存する
+            return (TypeString == "Key" || TypeString == "Button") && !string.IsNullOrEmpty(SwitchMode);
         }
     }
 }

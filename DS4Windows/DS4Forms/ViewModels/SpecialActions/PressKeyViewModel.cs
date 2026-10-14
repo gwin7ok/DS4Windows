@@ -235,7 +235,10 @@ namespace DS4WinWPF.DS4Forms.ViewModels.SpecialActions
                 // clear numeric key value since this is a button mapping
                 value = 0;
                 keyType = 0;
-                DescribeTextChanged?.Invoke(this, EventArgs.Empty);
+                // Phase6-Step10-3c: 画面が購読している PropertyChanged（DescribeText）も発行して、戻った直後の表示を更新する
+                // （従来は DescribeTextChanged だけを発行していたため、保存して開き直すまで古い表示のままだった）
+                UpdateDescribeText();
+                UpdateToggleControls();
                 return;
             }
 
@@ -267,16 +270,18 @@ namespace DS4WinWPF.DS4Forms.ViewModels.SpecialActions
 
         public void SaveAction(SpecialAction action, bool edit = false)
         {
-            // If last binding was a Button, save as Button type
-            if (lastActionType == DS4ControlSettings.ActionType.Button && lastActionBtn >= 0)
-            {
-                specialActionRepository.SaveAction(action.name, action.controls, 10, lastActionBtn.ToString(), edit);
-                return;
-            }
-
             // Determine SwitchMode to save: use explicit editor selection when available,
             // otherwise fallback to existing keyType flag behavior.
             string modeToSave = !string.IsNullOrEmpty(switchMode) ? switchMode : (keyType.HasFlag(DS4KeyType.Toggle) ? "Toggle" : "Press");
+
+            // If last binding was a Button, save as Button type
+            // （Phase6-Step10-3c: SwitchMode（Press／Toggle）も保存する。従来は渡しておらず、Toggle を選んでも Press になっていた）
+            if (lastActionType == DS4ControlSettings.ActionType.Button && lastActionBtn >= 0)
+            {
+                specialActionRepository.SaveAction(action.name, action.controls, 10, lastActionBtn.ToString(), edit,
+                    extras: $"{modeToSave}\n{action.ucontrols}");
+                return;
+            }
             specialActionRepository.SaveAction(action.name, action.controls, 4,
                 $"{value}{(keyType.HasFlag(DS4KeyType.ScanCode) ? " Scan Code" : "")}", edit,
                 extras: $"{modeToSave}\n{action.ucontrols}");
