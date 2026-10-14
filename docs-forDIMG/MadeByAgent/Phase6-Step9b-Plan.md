@@ -1,7 +1,7 @@
 # Phase6-Step9b 計画書: Copilot レビュー（PR #1）指摘 14 件の検証と是正
 
 作成日: 2026-10-14  
-状態: **Step9b-0（検証）完了、決定1〜6 確定（2026-10-14、§2A）。Step9b-1（F04）実装済み・ユーザーのビルド・テスト・実機確認待ち**  
+状態: **Step9b-0（検証）完了、決定1〜6 確定（2026-10-14、§2A）。Step9b-1（F04）完了、Step9b-2（F02・F07）実装済み・ユーザーのビルド・テスト・実機確認待ち**  
 対象ブランチ: `For-DI-migration-work`  
 位置づけ: Step9 の後・Step10 の前（Step7b と同じく、実機確認・外部レビューで見つかった事項を扱う追加 Step）  
 上位計画書: `docs-forDIMG/MadeByAgent/Phase6-Plan.md`  
@@ -149,6 +149,20 @@
 - **決定2**: F02 の方針。案: `DefaultActionManager` を登録する／`ActionManager` ファサード側の利用をやめる。
 - **決定3**: F07 の方針。案: 例外を投げる実装に変え、呼び出し側を確認・修正する／名前を `GetService` 相当に変える。
 - **決定4**: PR #1 のレビューコメントへの返信・解決済みマーク（GitHub への書き込み）は、ユーザーの明示的な許可を得て行うか、ユーザー自身が行うか。
+
+## 2B. 実施記録
+### Step9b-1（F04）【完了、2026-10-14】
+- `LoggerHolder.FindLogFileTarget`（ラッパー内と直接の `FileTarget` の両方に対応）を追加し、`UpdateLogSettings`／`RestoreArchiveSetting`／コンストラクタが共用。未検出時は例外ではなく警告ログ。
+- 回帰テスト `LoggerHolderFindLogFileTargetTests`（4 件）。ビルド・テストビルド・テスト実行成功、コミット・反映済み。実機確認（ログ設定の保存・反映・`Log settings updated:` のログ）問題なし。
+
+### Step9b-2（F02・F07）【実装済み・ユーザーのビルド・テスト・実機確認待ち】
+- **F02**: `ServiceRegistration` に `IManagedActionManager`→`DefaultActionManager`、`IControllerRegistry`→`DefaultControllerRegistry` を再登録（`IActionRegistry` は実装が静的クラスで呼び出し元もないため対象外）。
+- **再登録で挙動が変わる点の是正（実装前の突き合わせで判明）**: 2026-09-04 以降は静的な `ActionManager` のフォールバックで実機確認が行われていた。その `ClearDeviceState` は `Mapping.HandleDeviceDisconnect`（保持中の合成キーの解放、カスタムマッピング／マクロキューのクリア、コントローラー破棄）を呼ぶが、`DefaultActionManager.ClearDeviceState` は `ClearKeyButtonControllersForDevice` のみだった。再登録でプロファイル適用時に押しっぱなしの合成キーが解放されなくなる回帰を避けるため、`DefaultActionManager.ClearDeviceState` も `HandleDeviceDisconnect` を呼ぶよう揃えた（`ClearKeyButtonControllersForDevice` は `HandleDeviceDisconnect` に内包）。
+- **F07**: `ServiceProviderHolder.GetRequiredService<T>` を、プロバイダー未設定・未登録のとき `InvalidOperationException` を投げる実装に変更（呼び出し元 0 件）。
+- **テスト**: `ManagedActionManagerRegistrationTests`（6 件。登録とシングルトン、`SetToggledOn` が状態を変える、Controls タブ経由［合成 SpecialAction］の Toggle が `ActionManager.DispatchTriggerEdge` で「押下でオン、解放で維持、再押下でオフ」と遷移する、`GetRequiredService` の 3 ケース）。モデル図 04 の §2 に 2 行を追記。
+- **Controls タブと SpecialActions タブの経路**: Controls タブの Key 割り当ては合成 SpecialAction（`Synthetic_Key_…`）に変換され、SpecialActions タブと同じ `ActionManager.DispatchTriggerEdge` → `KeyAction` → `KeyButtonActionController`（Toggle）→ `ToggleImpl` を通るため、どちらも本修正の対象。Controls タブでマウスボタンに割り当てた Toggle（`currentClicks.toggle`）と Macro の Toggle は別の状態管理で、対象外（変更なし）。
+- **テスト実行での失敗（既存テストの実行順依存）**: `ProfileSettingsViewModelGlobalReferenceGuardTests.ViewModelFactory_ResolvedFromContainer_CreatesViewModelWithEnvironmentService` が `UriFormatException: Invalid port specified`（`ProfileSettingsViewModel` コンストラクタの `pack://application:,,,/…` の `new Uri`）で失敗。`pack` スキームは `System.Windows.Application` の生成で登録されるが、このクラスは `Application` を生成する準備を持たず、ほかのテストクラスが先に生成したかどうか（実行順）に依存していた。今回の変更（再登録・`GetRequiredService`）とは無関係で、新しいテストクラスの追加で実行順が変わって顕在化したと推定される。他の ViewModel テストと同じ準備（`Application` の生成と `ResourceAssembly`）をこのクラスの静的コンストラクタに追加して修正。
+- **実機確認（案）**: (1) Toggle 型のキー割り当て（コントロールタブの Toggle、またはスペシャルアクションの Key 型トグル）で、1 回目の押下でオン（リピート）、2 回目の押下でオフになること。Trace ログ（設定タブのログ設定で Trace に変更 → 再起動、`ds4windows_log.txt`）で `ToggledOnChanged` の `old=False new=True`／`old=True new=False` が出ること。確認後は元のログレベルへ戻す。(2) プロファイル切替（スペシャルアクション）で、押しっぱなしのキー出力が切替時に解放されること。(3) 起動・終了（コントローラー接続／切断を含む）で例外やハングがないこと、終了時の破棄で問題がないこと。
 
 ## 3. マイクロステップ（案。Step9b-0 の結果と決定で確定）
 - **Step9b-0（実装なし）**: F01〜F07、F10、F11、F14 の検証。稼働経路か（分類A／B／C）、置換前の実装との比較（`git log -S`、`git show`）、決定の提示。結果を本書 §1 に追記する。

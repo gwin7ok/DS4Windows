@@ -54,7 +54,8 @@
 | **2.変換**| `IProfileActionChainService` | `ProfileActionChainService` | **Singleton** | アクションの連鎖実行・ライフサイクル管理 | `IProfileActionProvider` |
 | **2.変換**| `IAutoProfileService` | `AutoProfileService` | **Singleton** | フォアグラウンドアプリ監視とプロファイル自動切替 | `IProcessInspector`, `IProfileApplicationService` |
 | **2.変換**| `IMappingActionDispatcher` | `MappingActionDispatcher` | **Singleton** | パイプラインからのアクション発火要求の非同期分配 | `IManagedActionManager` |
-| **2.変換**| `IManagedActionManager` | `DefaultActionManager` | **Singleton** | マクロ・キー・プロファイル切替アクションの実行統括 | `IActionFactory` |
+| **2.変換**| `IManagedActionManager` | `DefaultActionManager` | **Singleton** | マクロ・キー・プロファイル切替アクションの実行統括。2026-09-04〜2026-10-14 は登録が欠落していた（Phase6-Step9b-2 で再登録） | `IActionFactory` |
+| **2.変換**| `IControllerRegistry` | `DefaultControllerRegistry` | **Singleton** | `KeyButtonActionController` の登録と、デバイス単位・終了時の破棄（Phase6-Step9b-2 で再登録） | なし |
 | **2.変換**| `ControlService` | `ControlService` | **Singleton** | 入力・変換・出力パイプライン全体の開始・停止統括（ファサード） | `IDs4DeviceRegistry`, `IInputLoopCoordinator`, `IOutputSlotService`※1, `IProfileSettingsService`, `IAppSettingsService`, `IEnvironmentService`, `IPathService`, `IVirtualKBM`, `IVirtualKBMLifecycle`, `IProfileRepository`, `IDeviceStateService`, `IAppearanceSettingsService`, `IProfileXmlStore`, `IProfileActionProvider`, `IProfileSlotApplier` |
 | **3.出力**| `IOutputSlotService` | `OutputSlotService` | **Singleton** | 仮想Xbox360/DS4（ViGEm）の生成、割当、切替 | `IOutputSlotStore` |
 | **3.出力**| `IVirtualKBM` | `OutputKBMHandlerAdapter` | **Singleton** | SendInput / FakerInput によるキー・マウス送出 | なし |

@@ -73,6 +73,16 @@ namespace DS4Windows.DI
             services.AddSingleton<IVirtualKBMLifecycle, OutputKBMHandlerLifecycle>();
             services.AddSingleton<IMacroPlayer, DefaultMacroPlayer>();
 
+            // Phase6-Step9b-2（F02）: IManagedActionManager と IControllerRegistry の再登録。
+            // 2026-09-04（31dddc43、自動プロファイル設定コレクションの追加）で、無関係な差分として 3 件（ほかに IActionRegistry）が
+            // 巻き込み削除されていた。IManagedActionManager が未登録だと、ActionManager.SetToggledOn が例外を投げ
+            // （KeyButtonActionController が握りつぶす）IsToggledOn が true にならず、IControllerRegistry が未登録だと
+            // KeyButtonActionController の登録と終了時の破棄が行われない。
+            // AppHost.PreallocateActionEntries は、登録された DefaultActionManager を前提にしている。
+            // IActionRegistry（系統A）は、実装が静的クラスで呼び出し元もないため再登録しない。
+            services.AddSingleton<IManagedActionManager, DefaultActionManager>();
+            services.AddSingleton<IControllerRegistry, DefaultControllerRegistry>();
+
             // Phase6-Step9-4（決定2＝C1）: ViewModelFactory が ControlService を生成のたびに遅延解決するための Func
             // （ControlService は Singleton。明示的なホスト構築より前に解決しないため、構築時には解決しない）
             services.AddSingleton<Func<ControlService>>(sp => () => sp.GetRequiredService<ControlService>());

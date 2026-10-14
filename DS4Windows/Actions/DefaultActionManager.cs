@@ -221,7 +221,13 @@ namespace DS4Windows.Actions
                     }
                 }
 
-                try { Mapping.ClearKeyButtonControllersForDevice(device); } catch { }
+                // Phase6-Step9b-2（F02）: 静的ファサード ActionManager.ClearDeviceState のフォールバック実装と同じく
+                // Mapping.HandleDeviceDisconnect を呼ぶ（保持中の合成キーの解放、カスタムマッピングキューとマクロキューの
+                // クリア、KeyButtonActionController の破棄［ClearKeyButtonControllersForDevice を内包］）。
+                // 2026-09-04（31dddc43）から本クラスは未登録で静的実装が使われ、実機確認はその挙動で行われていたため、
+                // 再登録で挙動が変わらないよう揃えた（以前の ClearKeyButtonControllersForDevice 単体では、
+                // 押しっぱなしの合成キーが解放されない）。
+                try { Mapping.HandleDeviceDisconnect(device); } catch { }
             }
             catch { }
         }

@@ -42,6 +42,8 @@ namespace DS4Windows.Actions.Tests
         public override string GetFullDisplayName() => "FakeKBM";
     }
 
+    // ServiceProviderHolder（静的）を差し替えるテストは同じコレクションで直列に実行する
+    [Collection("ServiceProviderHolder")]
     public class ToggleAndToggledOnTests
     {
         [Fact]

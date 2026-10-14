@@ -24,6 +24,36 @@ namespace DS4WindowsTests
 
         private readonly ITestOutputHelper _output;
 
+        // ProfileSettingsViewModel のコンストラクタは pack://application URI（Uri／BitmapImage）を生成する。
+        // pack スキームは System.Windows.Application の生成で登録されるため、ほかのテストクラスが先に Application を
+        // 生成したかどうか（実行順）によって、このクラスの ViewModelFactory 経由のテストが
+        // UriFormatException（Invalid port specified）で失敗していた。ほかの ViewModel テストと同じ準備を明示する。
+        static ProfileSettingsViewModelGlobalReferenceGuardTests()
+        {
+            if (string.IsNullOrEmpty(Global.appdatapath))
+            {
+                Global.appdatapath = AppContext.BaseDirectory;
+            }
+
+            if (System.Windows.Application.Current == null)
+            {
+                try
+                {
+                    _ = new System.Windows.Application();
+                }
+                catch { }
+            }
+
+            if (System.Windows.Application.ResourceAssembly == null)
+            {
+                try
+                {
+                    System.Windows.Application.ResourceAssembly = typeof(DS4WinWPF.AppHost).Assembly;
+                }
+                catch { }
+            }
+        }
+
         public ProfileSettingsViewModelGlobalReferenceGuardTests(ITestOutputHelper output)
         {
             _output = output;
