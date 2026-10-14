@@ -38,6 +38,7 @@
 | **基盤** | `ISpecialActionRepository` | `SpecialActionRepository` | **Singleton** | `Actions.xml` のCRUDおよび定義管理、名前によるアクション取得（未発見は placeholder を返す `GetActionOrPlaceholder`） | `IPathService`, `XmlIoLock` |
 | **基盤** | `IOutputSlotStore` | `OutputSlotStore` | **Singleton** | スロット永続化設定（`OutputSlots.xml`）の管理 | `IPathService`, `XmlIoLock` |
 | **基盤** | `ILogSettingsApplier` | `LogSettingsApplierProxy`（実体は `LoggerHolder`。`App` が生成直後に `Attach`） | **Singleton** | ログ設定（保存数・最小ログレベル）の変更を NLog の構成へ反映する窓口。`LoggerHolder` は設定の読み込み後にしか生成できないため、遅延接続のプロキシを登録する（接続前の呼び出しは何もしない） | なし |
+| **基盤** | `IProfilePresetLoader` | `ProfilePresetLoader` | **Singleton** | プリセット（空・ゲームパッド＋ジャイロ・ミックス・ミックス＋ジャイロマウス・KBM・KBM＋ジャイロマウス。Xbox 360/DS4 別）の読み込み。`Global.Load…Profile` への薄い委譲（独自の状態なし） | なし |
 | **1.入力**| `IDeviceHotplugMonitor` | `DeviceHotplugMonitor` | **Singleton** | Win32 RAW/HID デバイス到着・抜去イベントの検知 | なし |
 | **1.入力**| `IDs4DeviceRegistry` | `Ds4DeviceRegistryAdapter` | **Singleton** | コントローラーの列挙・保持、通信ハンドルの監視 | `IDeviceHotplugMonitor` |
 | **1.入力**| `IDeviceStateService` | `DeviceStateService` | **Singleton** | 接続中デバイスのバッテリー残量、通信種別管理、初回接続判定・シリアル変更通知 | `IDs4DeviceRegistry` |
@@ -69,7 +70,8 @@
 | **3.出力**| `IProcessInspector` | `DefaultProcessInspector` | **Singleton** | 実行中プロセスのパス・ウィンドウ名調査 | なし |
 | **3.出力**| `IProfileSwitcher` | `DefaultProfileSwitcher` | **Singleton** | アクションからのプロファイル切替実行 | `IProfileApplicationService` |
 | **3.出力**| `IUdpServerService` | `UdpServerService` | **Singleton** | Cemuhook 互換 UDP モーションデータ配信 | `IAppSettingsService` |
-| **4.UI** | `IViewModelFactory` | `ViewModelFactory` | **Singleton** | パラメータ付きViewModel / 複合ViewModelの生成ファクトリ | `IProfileSettingsService`, `IProfileRepository`, `ISpecialActionRepository`, `IOutputSlotService`, `IEnvironmentService`, `IPathService`, `Func<ControlService>`（生成のたびに遅延解決） |
+| **4.UI** | `IViewModelFactory` | `ViewModelFactory` | **Singleton** | パラメータ付きViewModel / 複合ViewModelの生成ファクトリ | `IProfileSettingsService`, `IProfileRepository`, `ISpecialActionRepository`, `IOutputSlotService`, `IEnvironmentService`, `IPathService`, `IAppSettingsService`, `Func<IAutoProfileService>`・`Func<ControlService>`（生成のたびに遅延解決） |
+| **4.UI** | `IEditorWindowFactory` | `EditorWindowFactory` | **Singleton** | 補助ウィンドウ（ボタン割り当て・マクロ記録・プリセット・スティック校正・スペシャルアクション編集）の生成の窓口。UI スレッドで生成する | `IProfileSettingsService`, `IOutputSlotService`, `IPathService`, `IViewModelFactory`, `IProfilePresetLoader`, `Func<ControlService>`（生成のたびに遅延解決） |
 | **4.UI** | `MainWindowsViewModel` | `MainWindowsViewModel` | **Singleton** | メインウィンドウ（ヘッダー、タブ切替、ステータス、ViGEmBus ドライバーの確認） | `IEnvironmentService`, `IPathService` |
 | **4.UI** | `ControllersViewModel` | `ControllersViewModel` | **Singleton** | コントローラー接続スロット一覧表示画面 | `IDs4DeviceRegistry`, `IProfileApplicationService` |
 | **4.UI** | `SettingsViewModel` | `SettingsViewModel` | **Transient** | アプリ全般設定画面（開くたびに最新値取得） | `IAppSettingsService`, `IAppearanceSettingsService`, `IEnvironmentService`, `IPathService`, `ILogSettingsApplier` |
@@ -152,3 +154,8 @@
 %% - 4 つの ViewModel の依存はすべてコンストラクタの必須引数。`ViewModelFactory` は `Func<ControlService>` で `ControlService` を生成のたびに遅延解決する（`ServiceRegistration` に `Func<ControlService>` を登録）。ライフタイムは変わらない。
 %% - `IPathService`／`IEnvironmentService`／`IAppearanceSettingsService`／`IAppSettingsService`／`IProfileSettingsService` の責務記述に、Step9 で追加した契約（`ProgramDirectory`、ViGEmBus 判定と `AdminNeeded`、`BatteryChanged`、Steam フォルダ・偽装 exe 名・ログ保持数、`RefreshActionAlias`）を追記した。
 %% - 詳細は `03-Class-Interface-Diagram.md` の 2026-10-14 の注釈と `Phase6-Step9-Plan.md` §0A。
+%% 注釈補強（2026-10-14 Phase6-Step10-2 反映）
+%% - §2 に `IProfilePresetLoader`（基盤・Singleton。`Global.Load…Profile` への薄い委譲）と `IEditorWindowFactory`（4.UI・Singleton）を追加し、`IViewModelFactory` の依存に `IAppSettingsService` と `Func<IAutoProfileService>` を追加した。
+%% - `EditorWindowFactory` は、`ControlService` を生成のたびに `Func` で遅延解決する（明示的なホスト構築より前に解決しない。`ViewModelFactory` と同じ形）。補助ウィンドウは UI スレッドで生成する。
+%% - `IAutoProfileService` は生成時に `AutoProfileHolder` を読むため、設定の保存先が決まる前に解決しない（`ViewModelFactory` は `Func` で遅延解決する）。
+%% - 詳細は `03-Class-Interface-Diagram.md` の 2026-10-14（Step10-2）の注釈と `Phase6-Step10-2-Plan.md`。

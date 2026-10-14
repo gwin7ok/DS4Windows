@@ -139,3 +139,10 @@
   - `PresetOption`（基底とサブクラス 6 種）／`PresetOptionViewModel`／`PresetOptionWindow`: `IProfilePresetLoader` と `ControlService` を必須引数にした（`Global.Load…Profile`→`IProfilePresetLoader`、`Program.rootHub` のフォールバックを削除）。`EditorWindowFactory` が `IProfilePresetLoader` を保持して渡す。
   - `ControllerReadingsControl`（XAML から生成）: `Initialize(ControlService)` を追加し、`AppHost`／`Program.rootHub` の後退を削除した。`ProfileEditor` が、`ControlService` の取得直後に呼ぶ。
   - テスト: `Step10GroupTwoGlobalReferenceGuardTests` に 7 ファイルを追加、必須引数の検査を追加。
+- **Step10-2-5**: 完了（ビルド・テスト実行成功、実機確認問題なし）。付随の修正（いずれも置換前からの不具合。ユーザー承認のうえ修正）:
+  - プリセット適用後に、Touchpad タブの「Button Activation Mode」の選択肢が空になる → `TouchButtonUserControl.RegisterDataContext()` を追加し、`RefreshEditorBindings` で戻す。
+  - プリセット適用後・プロファイルの読み込み後に、Output Mode が変わっても「Button Activation Mode」の表示位置が追従しない → `RefreshEditorBindings`／`Reload` で `TouchpadButtonControlDisplaySetup()` を呼ぶ。
+- **Step10-2-6（ガードテストと文書）**: 実施済み・結果待ち。
+  - ガードテスト `Step10GroupTwoGlobalReferenceGuardTests`: 各ステップで追加した 22 ファイルを対象に、温存項目以外の `Global.`、`AppHost`、`Program.rootHub` が無いこと、必須引数の null 拒否を検査している（2-6 での追加はなし）。
+  - モデル図: `03-Class-Interface-Diagram.md`（`IProfilePresetLoader`、`IEditorWindowFactory`、`EditorWindowFactory` を追加し、注釈を補強）、`04-Service-Lifecycle-Spec.md`（§2 に 2 契約を追加し、`IViewModelFactory` の依存を更新）。
+  - 残項目（Step10-2 の範囲外へ引き継ぎ）: `SpecialActionEditor` の `Global.RemoveAction` と `AppHost`（Step10-3）、`ProfileEditor` 本体に残る `AppHost`／`Program.rootHub` の解決（`profileRepository`、`profileSwitcher`、`controlService`、`vmFactory`。Step10-4 の全域再走査で分類）、`PresetOption.cs`・`MappingListViewModel.cs` は複数型ファイルのため分割は Step10b。

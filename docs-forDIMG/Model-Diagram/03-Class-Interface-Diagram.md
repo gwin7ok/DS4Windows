@@ -256,6 +256,41 @@ classDiagram
     LogSettingsApplierProxy --> LoggerHolder : Attach 後に転送
     SettingsViewModel --> ILogSettingsApplier : ログ設定の反映
 
+    class IProfilePresetLoader {
+        <<interface>>
+        +LoadBlank(deviceIndex, launchProgram, control, xinputChange, postLoad)
+        +LoadBlankDS4(...)
+        +LoadDefaultGamepadGyro(...)
+        +LoadDefaultDS4GamepadGyro(...)
+        +LoadDefaultMixedControls(...)
+        +LoadDefaultDS4MixedControls(...)
+        +LoadDefaultMixedGyroMouse(...)
+        +LoadDefaultDS4MixedGyroMouse(...)
+        +LoadDefaultKBM(...)
+        +LoadDefaultKBMGyroMouse(...)
+    }
+    class ProfilePresetLoader
+    IProfilePresetLoader <|.. ProfilePresetLoader : implements（Global.Load…Profile への薄い委譲）
+    class IEditorWindowFactory {
+        <<interface>>
+        +CreateBindingWindow(deviceNum, settings, targetDevice, expose)
+        +CreateRecordBox(deviceNum, controlSettings, shift, targetDevice, showscan, repeatable)
+        +CreateRecordBoxWindow(deviceNum, settings, targetDevice, repeatable)
+        +CreatePresetOptionWindow()
+        +CreateStickCalibrationWindow(stick, device, profileSettingsViewModel)
+        +CreateSpecialActionEditor(deviceNum, profileList, targetDevice, specialAction)
+    }
+    class EditorWindowFactory {
+        -IProfileSettingsService _profileSettings
+        -IOutputSlotService _outputSlotService
+        -IPathService _pathService
+        -IViewModelFactory _viewModelFactory
+        -IProfilePresetLoader _presetLoader
+        -Func~ControlService~ _controlServiceAccessor
+    }
+    IEditorWindowFactory <|.. EditorWindowFactory : implements
+    EditorWindowFactory --> IProfilePresetLoader : プリセットを PresetOptionWindow へ渡す
+
     ProfileSettingsViewModel *-- StickSettingsSubViewModel : mediates
     ProfileSettingsViewModel *-- TriggerSettingsSubViewModel : mediates
     ProfileSettingsViewModel *-- ButtonMappingSubViewModel : mediates
@@ -364,3 +399,9 @@ classDiagram
 %% - 追加した契約: `IEnvironmentService`（`IsWin10OrGreater`、`IsWin8OrGreater`、`IsFakerInputInstalled`、`IsHidHideInstalled`［その場で確認。キャッシュ値の `HidHideInstalled` とは別物］、`RefreshViGEmBusInfo`）、`IPathService`（`SetSaveLocation`＝`Global.SaveWhere`［`AppDataPath` の setter とは別物］、`CreateEmptyProfilesFile`＝`Global.SaveDefault`）、`IAppSettingsService`（`LastVersionChecked`、`SetCulture`）、`ILogSettingsApplier`（`LoggerHolder` が実装。DI へは遅延接続の `LogSettingsApplierProxy` を登録し、`App` が `LoggerHolder` の生成直後に `Attach` する）。いずれも `Global` への薄い委譲。
 %% - `StartupMethods`（静的クラス）は静的のまま、プログラムフォルダと実行ファイルの場所を引数で受け取る形にした。`TrayIconViewModel` は UI スレッドの `Dispatcher` をコンストラクタの引数で受け取る。
 %% - 詳細は `Phase6-Step10-1-Plan.md`。
+%% 注釈補強（2026-10-14 Phase6-Step10-2 反映）
+%% - グループ2（プロファイル・マッピング系）の View／ViewModel（`ControllersViewModel`、`ControllerListViewModel`、`ControllerRegDeviceOptsViewModel`、`ControllerRegisterOptionsWindow`、`AutoProfiles`、`AutoProfilesViewModel`、`DupBox`、`RenameProfileWindow`、`RenameProfileViewModel`、`BindingWindow`、`BindingWindowViewModel`、`RecordBox`、`RecordBoxViewModel`、`StickCalibrationWindow`、`MappingListViewModel`、`TouchButtonUserControl(ViewModel)`、`PresetOption` 一式、`ControllerReadingsControl`）の依存を、コンストラクタの必須引数（XAML から生成される `AutoProfiles`／`DupBox`／`ControllerReadingsControl` は `Initialize`）にした。`AppHost.GetService`／`Global.*Instance`／`Program.rootHub` のフォールバックは削除。
+%% - 追加した契約: `IProfilePresetLoader`（`PresetOption` が使うプリセットの読み込み 10 メソッド。`Global.Load…Profile` への薄い委譲）、`IEditorWindowFactory`（`ProfileEditor`／`BindingWindow`／`RecordBoxWindow`／`SpecialActionEditor` が補助ウィンドウを生成する窓口。実装 `EditorWindowFactory` が必要なサービスを必須引数で保持し、`ControlService` は生成のたびに `Func` で遅延解決する）。`IAppSettingsService`（`UseMoonlight`、`UseAdvancedMoonlight`）、`IAutoProfileService`（`CreateAutoProfilesFile`）。`ViewModelFactory` に `IAppSettingsService` と `Func<IAutoProfileService>` を追加した。
+%% - 温存: `RESOURCES_PREFIX`／`ASSEMBLY_RESOURCE_PREFIX`（定数）、`ds4inputNames`／`xboxDefaultNames`／`ds4DefaultNames`／`macroDS4Values`（不変の静的表）、`getX360ControlString`（純粋関数）。
+%% - 付随の機能廃止: Flydigi Vader 4 Pro のデバイスサポートを削除した（ユーザー承認。`Phase6-Step10-V4P-Removal-Plan.md`）。
+%% - 詳細は `Phase6-Step10-2-Plan.md`。
