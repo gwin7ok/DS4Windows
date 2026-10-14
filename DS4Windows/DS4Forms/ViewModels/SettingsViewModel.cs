@@ -405,9 +405,13 @@ namespace DS4WinWPF.DS4Forms.ViewModels
         public event EventHandler ProcessPriorityIndexChanged;
 
         // Phase6-Step9-3: 依存はコンストラクタで必須引数として受け取る（Pure DI。決定1＝S9-A）。
+        // Phase6-Step10-1-5（決定D7＝A）: App.logHolder（静的フィールド）の直接参照の置換先。必須引数（null は拒否する）。
+        private readonly ILogSettingsApplier _logSettingsApplier;
+
         public SettingsViewModel(IAppSettingsService appSettings, IAppearanceSettingsService appearanceSettings,
-            IEnvironmentService environmentService, IPathService pathService)
+            IEnvironmentService environmentService, IPathService pathService, ILogSettingsApplier logSettingsApplier)
         {
+            _logSettingsApplier = logSettingsApplier ?? throw new ArgumentNullException(nameof(logSettingsApplier));
             _appSettings = appSettings ?? throw new ArgumentNullException(nameof(appSettings));
             _appearanceSettings = appearanceSettings ?? throw new ArgumentNullException(nameof(appearanceSettings));
             _environmentService = environmentService ?? throw new ArgumentNullException(nameof(environmentService));
@@ -469,13 +473,13 @@ namespace DS4WinWPF.DS4Forms.ViewModels
 
             if (runAtStartup && runStartProg)
             {
-                bool locChange = StartupMethods.CheckStartupExeLocation();
+                bool locChange = StartupMethods.CheckStartupExeLocation(_pathService.ExecutablePath);
                 if (locChange)
                 {
                     if (StartupMethods.CanWriteStartEntry())
                     {
                         StartupMethods.DeleteStartProgEntry();
-                        StartupMethods.WriteStartProgEntry();
+                        StartupMethods.WriteStartProgEntry(_pathService.ExecutablePath, _pathService.ProgramDirectory);
                     }
                     else
                     {
@@ -488,8 +492,9 @@ namespace DS4WinWPF.DS4Forms.ViewModels
             {
                 if (canWriteTask)
                 {
-                    StartupMethods.DeleteOldTaskEntry();
-                    StartupMethods.WriteTaskEntry();
+                    StartupMethods.DeleteOldTaskEntry(_pathService.ProgramDirectory);
+                    StartupMethods.WriteTaskEntry(_pathService.ProgramDirectory,
+                        System.IO.Path.GetFileName(_pathService.ExecutablePath));
                 }
             }
 
@@ -571,7 +576,8 @@ namespace DS4WinWPF.DS4Forms.ViewModels
         {
             if (runStartTask)
             {
-                StartupMethods.WriteTaskEntry();
+                StartupMethods.WriteTaskEntry(_pathService.ProgramDirectory,
+                        System.IO.Path.GetFileName(_pathService.ExecutablePath));
             }
             else
             {
@@ -583,7 +589,7 @@ namespace DS4WinWPF.DS4Forms.ViewModels
         {
             if (runStartProg)
             {
-                StartupMethods.WriteStartProgEntry();
+                StartupMethods.WriteStartProgEntry(_pathService.ExecutablePath, _pathService.ProgramDirectory);
             }
             else
             {
@@ -681,10 +687,10 @@ namespace DS4WinWPF.DS4Forms.ViewModels
                 if (_appSettings.LogMaxArchiveFiles != value)
                 {
                     _appSettings.LogMaxArchiveFiles = value;
-                    DS4WinWPF.App.logHolder?.UpdateLogSettings();
-                    DS4WinWPF.App.logHolder?.UpdateNLogConfig(value);
+                    _logSettingsApplier.UpdateLogSettings();
+                    _logSettingsApplier.UpdateNLogConfig(value);
                     _appSettings?.Save();
-                    DS4WinWPF.App.logHolder?.RestoreArchiveSetting(); // Restore after all updates
+                    _logSettingsApplier.RestoreArchiveSetting(); // Restore after all updates
                     LogMaxArchiveFilesChanged?.Invoke(this, EventArgs.Empty);
                 }
             }
@@ -698,9 +704,9 @@ namespace DS4WinWPF.DS4Forms.ViewModels
                 if (_appSettings.LogMinLevel != value)
                 {
                     _appSettings.LogMinLevel = value;
-                    DS4WinWPF.App.logHolder?.UpdateLogSettings();
+                    _logSettingsApplier.UpdateLogSettings();
                     _appSettings?.Save();
-                    DS4WinWPF.App.logHolder?.RestoreArchiveSetting(); // Restore after all updates
+                    _logSettingsApplier.RestoreArchiveSetting(); // Restore after all updates
                     LogMinLevelChanged?.Invoke(this, EventArgs.Empty);
                 }
             }

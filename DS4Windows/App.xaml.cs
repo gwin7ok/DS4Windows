@@ -396,6 +396,8 @@ namespace DS4WinWPF
             }
 
             logHolder = new LoggerHolder(DS4Windows.Program.rootHub);
+            // Phase6-Step10-1-5（決定D7＝A）: 設定画面がログ設定の変更を反映する窓口（ILogSettingsApplier）へ、生成した LoggerHolder を接続する
+            AppHost.GetService<DS4Windows.Services.LogSettingsApplierProxy>()?.Attach(logHolder);
             DispatcherUnhandledException += App_DispatcherUnhandledException;
             AppDomain.CurrentDomain.UnhandledException += CurrentDomain_UnhandledException;
             string version = _environmentService.ApplicationVersion;

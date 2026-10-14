@@ -90,6 +90,8 @@ namespace DS4WinWPF.DS4Forms.ViewModels
         private readonly IAppearanceSettingsService appearanceSettings;
         private readonly IProfileRepository profileRepository;
         private readonly IPathService pathService;
+        // Phase6-Step10-1-5（決定D10＝A）: UI スレッドの Dispatcher（コンストラクタの必須引数）
+        private readonly System.Windows.Threading.Dispatcher uiDispatcher;
 
         public delegate void ProfileSelectedHandler(TrayIconViewModel sender,
             ControllerHolder item, string profile);
@@ -98,8 +100,11 @@ namespace DS4WinWPF.DS4Forms.ViewModels
         //public TrayIconViewModel(Tester tester)
         public TrayIconViewModel(ControlService service, ProfileList profileListHolder,
             IAppearanceSettingsService appearanceSettings, IProfileRepository profileRepository,
-            IEnvironmentService environmentService, IPathService pathService)
+            IEnvironmentService environmentService, IPathService pathService,
+            System.Windows.Threading.Dispatcher dispatcher)
         {
+            // Phase6-Step10-1-5（決定D10＝A）: UI スレッドの Dispatcher は引数で受け取る（App.Current／Application.Current の直接参照を廃止）
+            this.uiDispatcher = dispatcher ?? throw new ArgumentNullException(nameof(dispatcher));
             // Phase6-Step9-2: 依存はすべて必須引数（Pure DI。決定1＝S9-A）
             this.appearanceSettings = appearanceSettings ?? throw new ArgumentNullException(nameof(appearanceSettings));
             this.profileRepository = profileRepository ?? throw new ArgumentNullException(nameof(profileRepository));
@@ -153,7 +158,7 @@ namespace DS4WinWPF.DS4Forms.ViewModels
         private void Service_RunningChanged(object sender, EventArgs e)
         {
             string temp = controlService.running ? "Stop" : "Start";
-            App.Current.Dispatcher.BeginInvoke((Action)(() =>
+            uiDispatcher.BeginInvoke((Action)(() =>
             {
                 changeServiceItem.Header = temp;
                 changeServiceItem.IsEnabled = true;
@@ -335,7 +340,7 @@ namespace DS4WinWPF.DS4Forms.ViewModels
 
         private void StartPopulateText(object sender, EventArgs e)
         {
-            Application.Current.Dispatcher.BeginInvoke(() =>
+            uiDispatcher.BeginInvoke(() =>
             {
                 PopulateToolText();
             });
@@ -425,7 +430,7 @@ namespace DS4WinWPF.DS4Forms.ViewModels
         private void UpdateForBattery(object sender, EventArgs e)
         {
             // Force invoke from GUI thread
-            Application.Current.Dispatcher.BeginInvoke(() =>
+            uiDispatcher.BeginInvoke(() =>
             {
                 PopulateToolText();
             });
@@ -433,7 +438,7 @@ namespace DS4WinWPF.DS4Forms.ViewModels
 
         private void ClearToolText(object sender, EventArgs e)
         {
-            Application.Current.Dispatcher.BeginInvoke(() =>
+            uiDispatcher.BeginInvoke(() =>
             {
                 TooltipText = "DS4Windows";
             });

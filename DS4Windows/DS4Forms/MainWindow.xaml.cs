@@ -131,7 +131,10 @@ namespace DS4WinWPF.DS4Forms
             DataContext = mainWinVM;
 
             App root = Application.Current as App;
-            settingsWrapVM = new SettingsViewModel(appSettingsService, appearanceSettingsService, environmentService, pathService);
+            // Phase6-Step10-1-5（決定D7＝A）: ログ設定の反映の窓口（App が LoggerHolder の生成直後に接続する）
+            var logSettingsApplier = DS4WinWPF.AppHost.GetService<DS4Windows.DI.ILogSettingsApplier>();
+            settingsWrapVM = new SettingsViewModel(appSettingsService, appearanceSettingsService, environmentService, pathService,
+                logSettingsApplier);
             settingsTab.DataContext = settingsWrapVM;
             // Phase6-Step10-1-4: XAML から生成される LanguagePackControl へ、保持済みのサービスを渡す（Pure DI）。
             languagePackControl.Initialize(appSettingsService);
@@ -160,7 +163,7 @@ namespace DS4WinWPF.DS4Forms
             view.Refresh();
 
             trayIconVM = new TrayIconViewModel(controlService, profileListHolder,
-                appearanceSettingsService, profileRepo, environmentService, pathService);
+                appearanceSettingsService, profileRepo, environmentService, pathService, Dispatcher);
 
             // Need to define before calling TaskbarIcon.ForceCreate
             notifyIcon.DataContext = trayIconVM;

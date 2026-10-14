@@ -60,23 +60,33 @@ namespace DS4WindowsTests
         {
             IPathService service = new PathService();
             string original = Global.appdatapath;
+            // Global.SaveWhere は appdatapath のほかに、設定ファイル 4 つのパス（BackingStore）も書き換える。
+            // 他のテスト（ProfileRepositoryTests など）へ影響を残さないよう、4 つとも元の値へ戻す。
+            var store = Global.store;
+            string originalProfile = store.m_Profile;
+            string originalActions = store.m_Actions;
+            string originalLinkedProfiles = store.m_linkedProfiles;
+            string originalControllerConfigs = store.m_controllerConfigs;
             string target = Path.Combine(Path.GetTempPath(), "Phase6Step10_SaveWhere_" + Guid.NewGuid().ToString("N"));
             try
             {
                 service.SetSaveLocation(target);
                 Assert.Equal(target, Global.appdatapath);
                 Assert.Equal(target, service.AppDataPath);
+
+                // 設定ファイルのパスも更新されること（AppDataPath の setter では更新されない）
+                Assert.Equal(Path.Combine(target, "Profiles.xml"), store.m_Profile);
+                Assert.Equal(Path.Combine(target, "Actions.xml"), store.m_Actions);
+                Assert.Equal(Path.Combine(target, "LinkedProfiles.xml"), store.m_linkedProfiles);
+                Assert.Equal(Path.Combine(target, "ControllerConfigs.xml"), store.m_controllerConfigs);
             }
             finally
             {
-                if (original != null)
-                {
-                    Global.SaveWhere(original);
-                }
-                else
-                {
-                    Global.appdatapath = null;
-                }
+                Global.appdatapath = original;
+                store.m_Profile = originalProfile;
+                store.m_Actions = originalActions;
+                store.m_linkedProfiles = originalLinkedProfiles;
+                store.m_controllerConfigs = originalControllerConfigs;
             }
         }
 

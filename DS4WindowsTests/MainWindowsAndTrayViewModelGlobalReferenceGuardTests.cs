@@ -119,13 +119,15 @@ namespace DS4WindowsTests
             var repo = new ProfileRepository();
 
             Assert.Throws<ArgumentNullException>(() =>
-                new TrayIconViewModel(null, null, null, repo, env, path));
+                new TrayIconViewModel(null, null, null, repo, env, path, System.Windows.Threading.Dispatcher.CurrentDispatcher));
             Assert.Throws<ArgumentNullException>(() =>
-                new TrayIconViewModel(null, null, appearance, null, env, path));
+                new TrayIconViewModel(null, null, appearance, null, env, path, System.Windows.Threading.Dispatcher.CurrentDispatcher));
             Assert.Throws<ArgumentNullException>(() =>
-                new TrayIconViewModel(null, null, appearance, repo, null, path));
+                new TrayIconViewModel(null, null, appearance, repo, null, path, System.Windows.Threading.Dispatcher.CurrentDispatcher));
             Assert.Throws<ArgumentNullException>(() =>
-                new TrayIconViewModel(null, null, appearance, repo, env, null));
+                new TrayIconViewModel(null, null, appearance, repo, env, null, System.Windows.Threading.Dispatcher.CurrentDispatcher));
+            Assert.Throws<ArgumentNullException>(() =>
+                new TrayIconViewModel(null, null, appearance, repo, env, path, null));
         }
 
         [Fact]

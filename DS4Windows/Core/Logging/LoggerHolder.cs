@@ -30,7 +30,7 @@ using NLog.Targets.Wrappers;
 
 namespace DS4WinWPF
 {
-    public class LoggerHolder
+    public class LoggerHolder : DS4Windows.DI.ILogSettingsApplier
     {
         private Logger logger;// = LogManager.GetCurrentClassLogger();
         public Logger Logger { get => logger; }

@@ -101,10 +101,12 @@ namespace DS4WindowsTests
             var appearance = new DS4Windows.Services.AppearanceSettingsService();
             var app = new DS4Windows.Services.AppSettingsService();
             var path = new PathService();
-            Assert.Throws<ArgumentNullException>(() => new SettingsViewModel(null, appearance, env, path));
-            Assert.Throws<ArgumentNullException>(() => new SettingsViewModel(app, null, env, path));
-            Assert.Throws<ArgumentNullException>(() => new SettingsViewModel(app, appearance, null, path));
-            Assert.Throws<ArgumentNullException>(() => new SettingsViewModel(app, appearance, env, null));
+            var logApplier = new DS4Windows.Services.LogSettingsApplierProxy();
+            Assert.Throws<ArgumentNullException>(() => new SettingsViewModel(null, appearance, env, path, logApplier));
+            Assert.Throws<ArgumentNullException>(() => new SettingsViewModel(app, null, env, path, logApplier));
+            Assert.Throws<ArgumentNullException>(() => new SettingsViewModel(app, appearance, null, path, logApplier));
+            Assert.Throws<ArgumentNullException>(() => new SettingsViewModel(app, appearance, env, null, logApplier));
+            Assert.Throws<ArgumentNullException>(() => new SettingsViewModel(app, appearance, env, path, null));
         }
 
         [Fact]
