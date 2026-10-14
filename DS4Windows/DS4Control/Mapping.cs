@@ -1264,6 +1264,8 @@ namespace DS4Windows
                 AppLogger.LogTrace($"SYNTHETIC TRACE device={device} event=MouseLeftDown");
                 AppLogger.LogDebug($"EVENT SENT [SYNTHETIC] device={device} event=MouseLeftDown");
                 // C2 MouseOutputAction integration (§2.1修正版: new DI route + fallback preserved)
+                // TODO(Phase6-Step9b-3, F03 分類B／Phase8): MouseOutputAction は未登録・未完成のため GetService は常に null で、
+                // 下のフォールバック（PerformMouseButtonEvent）が実際の出力経路。MouseOutputAction を登録しないこと（MouseOutputAction.cs の TODO 参照）。
                 bool mouseHandled = false;
                 try
                 {
@@ -1341,6 +1343,8 @@ namespace DS4Windows
                     AppLogger.LogTrace($"SYNTHETIC TRACE device={device} event=MouseLeftDown");
                     AppLogger.LogDebug($"EVENT SENT [SYNTHETIC] device={device} event=MouseLeftDown");
                     // C2 MouseOutputAction integration (§2.1修正版: new DI route + fallback preserved)
+                    // TODO(Phase6-Step9b-3, F03 分類B／Phase8): MouseOutputAction は未登録・未完成のため GetService は常に null で、
+                    // 下のフォールバック（PerformMouseButtonEvent）が実際の出力経路。MouseOutputAction を登録しないこと（MouseOutputAction.cs の TODO 参照）。
                     bool mouseHandled = false;
                     try
                     {
@@ -6015,7 +6019,8 @@ namespace DS4Windows
         /// </summary>
         internal static void PlayMacroDirect(int device, SpecialAction action)
         {
-            if (device < 0 || device >= 4 || action == null) return;
+            // Phase6-Step9b-3（F05）: 4 スロット固定だと、拡張スロット数が 8 のときデバイス 4〜7 のマクロが再生されなかった。
+            if (device < 0 || device >= Global.MAX_DS4_CONTROLLER_COUNT || action == null) return;
             PlayMacro(device, new bool[4], String.Empty, action.macro, null, DS4Controls.None, action.keyType, action, null);
         }
 
@@ -6024,7 +6029,7 @@ namespace DS4Windows
         /// </summary>
         internal static void EndMacroDirect(int device)
         {
-            if (device < 0 || device >= 4) return;
+            if (device < 0 || device >= Global.MAX_DS4_CONTROLLER_COUNT) return;
             EndMacro(device, new bool[4], string.Empty, DS4Controls.None);
         }
 

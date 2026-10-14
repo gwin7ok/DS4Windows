@@ -167,6 +167,12 @@
 - **テスト実行での失敗（既存テストの実行順依存）**: `ProfileSettingsViewModelGlobalReferenceGuardTests.ViewModelFactory_ResolvedFromContainer_CreatesViewModelWithEnvironmentService` が `UriFormatException: Invalid port specified`（`ProfileSettingsViewModel` コンストラクタの `pack://application:,,,/…` の `new Uri`）で失敗。`pack` スキームは `System.Windows.Application` の生成で登録されるが、このクラスは `Application` を生成する準備を持たず、ほかのテストクラスが先に生成したかどうか（実行順）に依存していた。今回の変更（再登録・`GetRequiredService`）とは無関係で、新しいテストクラスの追加で実行順が変わって顕在化したと推定される。他の ViewModel テストと同じ準備（`Application` の生成と `ResourceAssembly`）をこのクラスの静的コンストラクタに追加して修正。
 - **実機確認（案）**: (1) Toggle 型のキー割り当て（コントロールタブの Toggle、またはスペシャルアクションの Key 型トグル）で、1 回目の押下でオン（リピート）、2 回目の押下でオフになること。Trace ログ（設定タブのログ設定で Trace に変更 → 再起動、`ds4windows_log.txt`）で `ToggledOnChanged` の `old=False new=True`／`old=True new=False` が出ること。確認後は元のログレベルへ戻す。(2) プロファイル切替（スペシャルアクション）で、押しっぱなしのキー出力が切替時に解放されること。(3) 起動・終了（コントローラー接続／切断を含む）で例外やハングがないこと、終了時の破棄で問題がないこと。
 
+### Step9b-3（F06・F05・F03）【実装済み・ユーザーのビルド・テスト・実機確認待ち】
+- **F06**: `LaunchProcessAction` を置換前の仕様へ戻した。`extra` に `$hidden`（大文字小文字不問）があるときだけ、その語を 1 回取り除き `hidden=true` で起動（`.bat`／`.cmd` は `%COMSPEC% /C "<details>" <引数>`）。それ以外は `UseShellExecute=true`、非表示にせず `extra` をそのまま引数に渡す。`LaunchProcessActionTests` を、新仕様に合わせて書き直した（旧 T4 は `$hidden` なしの `.bat` が `cmd.exe` になる現行仕様を固定していた。5 ケース＋T6）。
+- **F05**: `DefaultMacroPlayer` の配列長と範囲判定を `Global.MAX_DS4_CONTROLLER_COUNT`（const、8）にし、`Mapping.PlayMacroDirect`／`EndMacroDirect` の `>= 4` も揃えた（`macrocontrol` 引数は内部で静的 `macroControl` を使うため、`new bool[4]` はダミーで影響なし）。テスト `DefaultMacroPlayer_HandlesAllControllerSlots_NotJustFour`。既定の 4 スロットでは挙動に変化なし。
+- **F03**: 分類B のため動作は変えず、`MouseOutputAction` クラスと `Mapping.cs` の 2 箇所に TODO（登録してはならない理由、Phase8 で完成）を付与。`Phase8-Unified-Trigger-Dispatch-Plan.md` 末尾へ、F01〜F03・F06 の申し送りを追記。
+- **実機確認（案）**: (1) スペシャルアクション「プログラム起動」で、(a) 引数なしの exe、(b) `$hidden` なしの引数付き exe（引数が渡る）、(c) `$hidden` 付きの `.bat`（ウィンドウが出ない）、(d) ショートカット（.lnk）やドキュメントの起動、を確認する。Trace ログに `LaunchProcessAction.Execute: … hidden=…` が出る。(2) 8 スロット拡張（設定タブの 8 台対応）にしている場合のみ、デバイス 5 以降（インデックス 4〜7）でスペシャルアクションのマクロが再生されること（実機が 5 台目を持てなければ、Step11 の先送り台帳へ登録）。
+
 ## 3. マイクロステップ（案。Step9b-0 の結果と決定で確定）
 - **Step9b-0（実装なし）**: F01〜F07、F10、F11、F14 の検証。稼働経路か（分類A／B／C）、置換前の実装との比較（`git log -S`、`git show`）、決定の提示。結果を本書 §1 に追記する。
 - **Step9b-1**: F04（ログ設定の `NullReferenceException`）。テスト＋実機確認。独立していて確実なため先に行う。

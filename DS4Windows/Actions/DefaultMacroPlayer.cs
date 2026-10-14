@@ -13,7 +13,8 @@ namespace DS4Windows.Actions
     /// </summary>
     public class DefaultMacroPlayer : IMacroPlayer
     {
-        private readonly bool[] _isPlaying = new bool[4];
+        // Phase6-Step9b-3（F05）: 4 スロット固定だと、拡張スロット数が 8 のときデバイス 4〜7 のマクロが再生されなかった。
+        private readonly bool[] _isPlaying = new bool[Global.MAX_DS4_CONTROLLER_COUNT];
         private readonly object _lock = new object();
         private readonly IVirtualKBM _virtualKBM;
 
@@ -24,7 +25,7 @@ namespace DS4Windows.Actions
 
         public bool IsPlaying(int deviceIndex)
         {
-            if (deviceIndex < 0 || deviceIndex >= 4) return false;
+            if (deviceIndex < 0 || deviceIndex >= _isPlaying.Length) return false;
             lock (_lock)
             {
                 return _isPlaying[deviceIndex];
@@ -33,7 +34,7 @@ namespace DS4Windows.Actions
 
         public void Play(int deviceIndex, SpecialAction action, CancellationToken cancellationToken = default)
         {
-            if (deviceIndex < 0 || deviceIndex >= 4 || action == null) return;
+            if (deviceIndex < 0 || deviceIndex >= _isPlaying.Length || action == null) return;
 
             lock (_lock)
             {
@@ -45,7 +46,7 @@ namespace DS4Windows.Actions
 
         public void Stop(int deviceIndex)
         {
-            if (deviceIndex < 0 || deviceIndex >= 4) return;
+            if (deviceIndex < 0 || deviceIndex >= _isPlaying.Length) return;
 
             lock (_lock)
             {

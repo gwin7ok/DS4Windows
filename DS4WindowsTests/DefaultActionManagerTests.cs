@@ -192,5 +192,28 @@ namespace DS4WindowsTests
             player.Stop(0);
             Assert.False(player.IsPlaying(0));
         }
+
+        /// <summary>
+        /// Phase6-Step9b-3（F05）: 4 スロット固定だと、拡張スロット数が 8 のとき、デバイス 4〜7 のマクロが再生されなかった。
+        /// </summary>
+        [Fact]
+        public void DefaultMacroPlayer_HandlesAllControllerSlots_NotJustFour()
+        {
+            var player = new DefaultMacroPlayer(new MockVirtualKBM());
+
+            var field = typeof(DefaultMacroPlayer).GetField("_isPlaying",
+                System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.NonPublic);
+            var states = (bool[])field.GetValue(player);
+            Assert.Equal(DS4Windows.Global.MAX_DS4_CONTROLLER_COUNT, states.Length);
+            Assert.True(states.Length >= 8);
+
+            // 範囲内の最後のスロット（7）は範囲内として扱い、範囲外（8）は常に false
+            states[7] = true;
+            Assert.True(player.IsPlaying(7));
+            Assert.False(player.IsPlaying(DS4Windows.Global.MAX_DS4_CONTROLLER_COUNT));
+
+            player.Stop(7);
+            Assert.False(player.IsPlaying(7));
+        }
     }
 }
