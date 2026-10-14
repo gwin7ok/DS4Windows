@@ -606,7 +606,9 @@ namespace DS4WinWPF
                 Directory.CreateDirectory(appDataPath);
                 Directory.CreateDirectory(appDataPath + @"\Profiles\");
                 Directory.CreateDirectory(appDataPath + @"\Logs\");
-                //Directory.CreateDirectory(DS4Windows.Global.appdatapath + @"\Macros\");
+                // マクロの保存・読込ダイアログの初期フォルダ（RecordBox が <保存場所>\Macros を指定する）。
+                // 以前はコメントアウトされており、フォルダが無いためダイアログがデスクトップなどを開いていた。
+                Directory.CreateDirectory(appDataPath + @"\Macros\");
             }
             catch (UnauthorizedAccessException)
             {
