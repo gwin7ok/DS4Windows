@@ -74,5 +74,26 @@ namespace DS4Windows.DI
         /// キャッシュ更新、一時プロファイル名・使用フラグ・距離フラグのクリアまで行う。
         /// </summary>
         void LoadBlankProfile(int deviceIndex, bool launchProgram, ControlService control, bool xinputChange = true, bool postLoad = true);
+
+        // ---- Phase6-Step10-3b-1: アクションの名前変更・削除の、全プロファイルへの反映（機能追加）----
+        // TODO(Step10-3b-3/3b-4 で接続予定): 画面（ProfileEditor の「除去」ボタン、アクションの名前変更）からの呼び出しは
+        // 未接続。Phase6-Step10-3b-Plan.md §7 のとおり、書き換えたプロファイルの一覧を MainWindow へ通知し、
+        // 既存の SyncProfileListAndControllers（保存時と同じ再適用）を 1 回呼ぶ。
+
+        /// <summary>
+        /// すべてのプロファイル XML の <c>&lt;ProfileActions&gt;</c> について、アクション名 <paramref name="oldName"/> を
+        /// <paramref name="newName"/> へ置換する。<c>/</c> で区切った項目と完全一致（大文字小文字を区別）で比較する。
+        /// 一致したファイルだけを保存する。ファイル 1 つの失敗は、他のファイルの処理を止めない。
+        /// 新名が同じプロファイルに既にある場合は、重複させない。
+        /// </summary>
+        /// <returns>書き換えたプロファイル名（拡張子なし）の一覧</returns>
+        IReadOnlyList<string> ReplaceActionReference(string oldName, string newName);
+
+        /// <summary>
+        /// すべてのプロファイル XML の <c>&lt;ProfileActions&gt;</c> から、アクション名 <paramref name="name"/> を取り除く。
+        /// 比較・保存・失敗時の扱いは <see cref="ReplaceActionReference"/> と同じ。
+        /// </summary>
+        /// <returns>書き換えたプロファイル名（拡張子なし）の一覧</returns>
+        IReadOnlyList<string> RemoveActionReference(string name);
     }
 }

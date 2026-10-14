@@ -307,6 +307,87 @@ namespace DS4Windows
         public bool LoadLinkedProfiles()
             => Global.LoadLinkedProfiles();
 
+        // ---- Phase6-Step10-3b-1: アクションの名前変更・削除の、全プロファイルへの反映 ----
+        public IReadOnlyList<string> ReplaceActionReference(string oldName, string newName)
+        {
+            if (string.IsNullOrWhiteSpace(oldName) || string.IsNullOrWhiteSpace(newName) ||
+                string.Equals(oldName, newName, StringComparison.Ordinal))
+                return Array.Empty<string>();
+
+            return UpdateActionReferences(oldName, newName);
+        }
+
+        public IReadOnlyList<string> RemoveActionReference(string name)
+        {
+            if (string.IsNullOrWhiteSpace(name))
+                return Array.Empty<string>();
+
+            return UpdateActionReferences(name, null);
+        }
+
+        // newName が null のときは、oldName を取り除く。
+        // XmlIoLock（同一 XML 排他ロック）の下で、プロファイルごとに読み込み → 置換 → 保存を行う。
+        private IReadOnlyList<string> UpdateActionReferences(string oldName, string newName)
+        {
+            var changed = new List<string>();
+            string[] files;
+            try
+            {
+                if (!Directory.Exists(ProfilesPath))
+                    return changed;
+                files = Directory.GetFiles(ProfilesPath, "*.xml");
+            }
+            catch (Exception ex)
+            {
+                AppLogger.LogToGui($"[DI] ProfileRepository: cannot enumerate profiles for action reference update: {ex.Message}", true);
+                return changed;
+            }
+
+            foreach (string file in files)
+            {
+                try
+                {
+                    lock (ProfileXmlStore.XmlIoLock)
+                    {
+                        var doc = new System.Xml.XmlDocument { PreserveWhitespace = true };
+                        doc.Load(file);
+                        System.Xml.XmlNode node = doc.SelectSingleNode("DS4Windows/ProfileActions");
+                        if (node == null || string.IsNullOrEmpty(node.InnerText))
+                            continue;
+
+                        string[] names = node.InnerText.Split('/');
+                        if (!names.Contains(oldName, StringComparer.Ordinal))
+                            continue;
+
+                        var result = new List<string>();
+                        foreach (string n in names)
+                        {
+                            string value = string.Equals(n, oldName, StringComparison.Ordinal) ? newName : n;
+                            if (value == null || result.Contains(value, StringComparer.Ordinal))
+                                continue;
+                            result.Add(value);
+                        }
+
+                        node.InnerText = string.Join("/", result);
+                        doc.Save(file);
+                        changed.Add(Path.GetFileNameWithoutExtension(file));
+                    }
+                }
+                catch (Exception ex)
+                {
+                    AppLogger.LogToGui($"[DI] ProfileRepository: failed to update action reference in '{Path.GetFileName(file)}': {ex.Message}", true);
+                }
+            }
+
+            if (changed.Count > 0)
+            {
+                string action = newName == null ? $"removed '{oldName}'" : $"renamed '{oldName}' to '{newName}'";
+                AppLogger.LogToGui($"[DI] Action reference {action} in {changed.Count} profile(s): {string.Join(", ", changed)}", false);
+            }
+
+            return changed;
+        }
+
         // ---- Phase6-Step8-1: ProfileEditor.xaml.cs の Global 直接参照解消 ----
         public void LoadBlankProfile(int deviceIndex, bool launchProgram, ControlService control, bool xinputChange = true, bool postLoad = true)
             => Global.LoadBlankDevProfile(deviceIndex, launchProgram, control, xinputChange, postLoad);
