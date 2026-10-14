@@ -1,6 +1,7 @@
 using System;
 using DS4WinWPF;
 using DS4Windows;
+using DS4Windows.Actions;
 using DS4Windows.DI;
 using DS4Windows.Services;
 
@@ -33,6 +34,12 @@ namespace DS4WindowsTests
             return new ProfileSettingsService(store ?? Global.store,
                 environmentService ?? new EnvironmentService(),
                 control ?? new Func<ControlService>(() => Program.rootHub));
+        }
+
+        public static DefaultActionFactory CreateDefaultActionFactory()
+        {
+            return new DefaultActionFactory(new DefaultMacroPlayer(new MockVirtualKBM()),
+                new DefaultProcessLauncher(), new DefaultProfileSwitcher());
         }
 
         public static OutputSlotManager CreateOutputSlotManager()

@@ -18,9 +18,9 @@ namespace DS4Windows.Actions
         private readonly object _lock = new object();
         private readonly IVirtualKBM _virtualKBM;
 
-        public DefaultMacroPlayer(IVirtualKBM virtualKBM = null)
+        public DefaultMacroPlayer(IVirtualKBM virtualKBM)
         {
-            _virtualKBM = virtualKBM ?? DS4WinWPF.AppHost.GetService<IVirtualKBM>();
+            _virtualKBM = virtualKBM ?? throw new ArgumentNullException(nameof(virtualKBM)); // Phase6-Step10-4-4: 必須の依存
         }
 
         public bool IsPlaying(int deviceIndex)

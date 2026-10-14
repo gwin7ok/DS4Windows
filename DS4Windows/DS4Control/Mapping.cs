@@ -5069,7 +5069,8 @@ namespace DS4Windows
                                             try { SetBeingTriggeredIf(-1, action, device, true); } catch { }
 
                                             // フォールバック: DI未登録時も LaunchProcessAction に集約して安全に実行
-                                            new DS4Windows.Actions.LaunchProcessAction(action).Execute(null);
+                                            new DS4Windows.Actions.LaunchProcessAction(action,
+                                                DS4WinWPF.AppHost.GetService<DS4Windows.Actions.IProcessLauncher>() ?? new DS4Windows.Actions.DefaultProcessLauncher()).Execute(null);
                                         }
                                     }
                                     finally
@@ -5962,7 +5963,8 @@ namespace DS4Windows
                                 }
                             }
 
-                            new DS4Windows.Actions.ProfileSwitchAction(action, device).Stop(null);
+                            new DS4Windows.Actions.ProfileSwitchAction(action, device,
+                                DS4WinWPF.AppHost.GetService<DS4Windows.Actions.IProfileSwitcher>() ?? new DS4Windows.Actions.DefaultProfileSwitcher()).Stop(null);
                         }
                     }
                 }

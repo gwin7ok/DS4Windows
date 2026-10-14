@@ -591,14 +591,16 @@ namespace DS4Windows
         {
             try
             {
-                var profileActions = Global.getProfileActions(device);
+                var provider = DS4Windows.DI.ServiceProviderHolder.Provider?.GetService(typeof(DS4Windows.DI.IProfileActionProvider)) as DS4Windows.DI.IProfileActionProvider;
+                if (provider == null) return;
+                var profileActions = provider.GetProfileActionNames(device);
                 if (profileActions == null) return;
 
                 foreach (var actionName in profileActions)
                 {
                     try
                     {
-                        var sa = Global.GetProfileAction(device, actionName);
+                        var sa = provider.GetProfileAction(device, actionName);
                         if (sa == null) continue;
 
                         try { GetActionByName(sa.name); } catch { }

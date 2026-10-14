@@ -552,16 +552,8 @@ Suspend support not enabled.", true);
             CheckAutoProfileStatus();
         }
 
+        // Phase6-Step10-4-4: 廃止済みの AutoProfileChecker を引数に持つオーバーロードを削除し、1 つに統合した
         private void AutoprofileChecker_RequestServiceChange(bool state)
-
-        {
-
-            AutoprofileChecker_RequestServiceChange(null, state);
-
-        }
-
-
-        private void AutoprofileChecker_RequestServiceChange(AutoProfileChecker sender, bool state)
         {
             Dispatcher.BeginInvoke((Action)(() =>
             {

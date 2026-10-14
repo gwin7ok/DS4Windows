@@ -1,7 +1,6 @@
 using System;
 using DS4Windows.DS4Control;
 using DS4Windows.Services;
-using DS4WinWPF;
 
 namespace DS4Windows.Actions
 {
@@ -25,10 +24,10 @@ namespace DS4Windows.Actions
         private readonly SpecialAction sa;
         private readonly IVirtualKBM _virtualKBM;
 
-        public MouseOutputAction(SpecialAction sa, IVirtualKBM virtualKBM = null)
+        public MouseOutputAction(SpecialAction sa, IVirtualKBM virtualKBM)
         {
             this.sa = sa;
-            this._virtualKBM = virtualKBM ?? AppHost.GetService<IVirtualKBM>();
+            this._virtualKBM = virtualKBM ?? throw new ArgumentNullException(nameof(virtualKBM)); // Phase6-Step10-4-4: 必須の依存
         }
 
         public string Id => sa?.name ?? "MouseOutput";

@@ -7,11 +7,6 @@ namespace DS4Windows.Actions
     {
         private readonly ProfileSwitchAction _inner;
 
-        public ProfileSwitchActionAdapter(SpecialAction sa, int index) : base(sa, index)
-        {
-            _inner = new ProfileSwitchAction(sa, index, null);
-        }
-
         public ProfileSwitchActionAdapter(SpecialAction sa, IProfileSwitcher profileSwitcher) : base(sa, -1)
         {
             _inner = new ProfileSwitchAction(sa, -1, profileSwitcher);

@@ -60,7 +60,7 @@ namespace DS4WindowsTests
         [Fact]
         public void DefaultMacroPlayer_StateTracking_WorksProperly()
         {
-            var player = new DefaultMacroPlayer();
+            var player = new DefaultMacroPlayer(new MockVirtualKBM());
 
             Assert.False(player.IsPlaying(0));
             Assert.False(player.IsPlaying(-1));

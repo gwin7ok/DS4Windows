@@ -385,3 +385,39 @@
 - **対応**: テストの冒頭で `AppHost.CreateHost()` を明示的に呼ぶ。本番は `App` が明示的にホストを構築するため影響しない。
 - **関連**: ホストの生成を `Global` の静的初期化に頼らない整理は、K7-1（`Phase6-Status.md` §6.5）の持ち越しに含まれる。
 - **確認（2026-10-15）**: 修正後、`ActionDoneFlagRoundtrip` が成功。原因の推定（ホストの生成タイミングへの暗黙の依存）が裏づけられた。
+
+## 28. Step10-4-3 の完了と、Step10-4-4（クラスタ 3: Actions/*）の計画。2026-10-15
+- **Step10-4-3**: ビルド・テストビルド・テスト実行成功、実機確認（Plug／Unplug、Permanent の保存と復元）問題なし。副産物として、`OutputSlotPersist.WriteConfig` の戻り値の是正（§26）と、`StandaloneTests` のホスト生成タイミング依存の是正（§27）を実施。
+
+### 28.1 現行コードの再確認
+- **葉のクラス（フォールバックで `AppHost`／`new` を使う）**: `LaunchProcessAction`（`IProcessLauncher`）、`MacroAction`（`IMacroPlayer`。3 か所）、`ProfileSwitchAction`（`IProfileSwitcher`。3 か所）、`MouseOutputAction`（`IVirtualKBM`）、`DefaultMacroPlayer`（`IVirtualKBM`）、`DefaultActionManager`（`IActionFactory`）。
+- **生成の流れ**: `DefaultActionFactory`（DI の Singleton）が、`new KeyActionAdapter／LaunchProcessActionAdapter／MacroActionAdapter／ProfileSwitchActionAdapter(sa, index)` を生成し、アダプタの内部で、葉のクラスが `AppHost` を引いて依存を解決している（Service Locator）。
+- **静的な互換の入口**: `ActionFactory`（静的。`ServiceProviderHolder.Provider` が無い場合の最小フォールバックで、アダプタを `new`）、`ActionManager`（静的ファサード。`ServiceProviderHolder.Provider`×12、`Global.getProfileActions`／`GetProfileAction`×2）。`ServiceProviderHolder` は D4-4 により Phase7／Phase8 へ温存済み。
+- **`MouseOutputAction`**: 本番の呼び出し元は `Mapping.cs` の `GetService`（常に null。Step9b-3 の F03 で「未登録・未完成。登録しない」と判断済み）とテストのみ。TODO 付きで温存済みのため、引数だけ必須化する。
+- **`AutoProfileChecker`**（§2.4 の調査結果）: 2026-09-08（`22ba46d4`）に「`IAutoProfileService` を直接使うため、AutoProfileChecker を廃止」としたが、型だけが残った。呼出元は 0 件。`MainWindow.xaml.cs:564` の、未使用のハンドラーのオーバーロード（`AutoProfileChecker sender` を引数に持つ）が型を参照しているだけ。→「廃止済み機能の残骸」（使うべきでないもの）に当たる。
+- **`IMappingActionDispatcher`／`MappingActionDispatcher`**（J3）: 2026-09-04（`874fb025`）に、`ProfileActionChainService` のために作られた。連鎖の廃止（10-4-2d）で、呼出元が 0 件。→「正規の経路と重複するだけの並行実装」（使うべきでないもの）に当たる。`Mapping.DispatchProfileActionEdge`（静的）は、`Mapping` 内部で使われており、そのまま残す。
+
+### 28.2 方針（案）
+- **S1（葉のクラスの必須化）**: 上記 6 クラスの依存を必須引数にし、`AppHost`／`new Default*` のフォールバックと、依存を省略する旧コンストラクターを削除する。
+- **S2（`DefaultActionFactory`）**: `IMacroPlayer`、`IProcessLauncher`、`IProfileSwitcher`（いずれも DI 登録済み）を、コンストラクターで受け取り、アダプタ経由で葉のクラスへ渡す。アダプタには、依存を受け取るコンストラクターのみを残す。
+- **S3（静的 `ActionFactory` のフォールバック）**: DI の依存を作れないため、ホストが無い場合は `Key` 型（`KeyAction`。DI を要しない）のみを返し、それ以外は `null` を返す（ホストが無い状態は、テスト等に限られる。TODO を付ける）。
+- **S4（`ActionManager.PreallocateForProfileApply`）**: `Global.getProfileActions`／`GetProfileAction` を、`ServiceProviderHolder` 経由の `IProfileActionProvider` に置換する。
+- **S5（`AutoProfileChecker`／`IMappingActionDispatcher`）**: 規約 §2.4 に従い、上記の調査結果を根拠として削除する（型、DI 登録、`MainWindow` の未使用オーバーロード）。
+- **テスト**: 既存テストの生成箇所（`DefaultActionManagerTests`、`MacroActionTests`、`LaunchProcessActionTests`、`VirtualKBMTests` など）を更新。ガードテストを追加。
+- **実機確認項目**: マクロの実行、プログラム起動アクション、プロファイル切替アクション、キー押下アクション（Press／Toggle）、ボタン割り当てが、従来どおり動くこと。
+
+### 28.3 決定事項（要承認）
+- **S1**: 葉のクラスの依存を必須化する（A）／温存する（B）。
+- **S2・S3**: `DefaultActionFactory` で依存を受け取り、静的フォールバックは `Key` 型のみにする（A）／静的フォールバックでも `new Default*` を維持する（B）。
+- **S5**: `AutoProfileChecker`、`IMappingActionDispatcher`／`MappingActionDispatcher` を削除する（A）／温存して TODO を付ける（B）。
+
+## 29. Step10-4-4 の実装記録。2026-10-15
+- **決定**: S1＝A、S2・S3＝A、S4（置換）、S5＝A（すべて推奨案）。
+- **変更**
+  - S1: `MacroAction`、`ProfileSwitchAction`、`LaunchProcessAction`、`MouseOutputAction`、`DefaultMacroPlayer`、`DefaultActionManager` の依存を必須化。`AppHost`／`new Default*` のフォールバックと、依存を省略する旧コンストラクターを削除。
+  - S2: `DefaultActionFactory` が `IMacroPlayer`／`IProcessLauncher`／`IProfileSwitcher` を受け取り、アダプタ経由で各アクションへ渡す。アダプタの、依存を省略するコンストラクターを削除。
+  - S3: 静的 `ActionFactory` のホストが無い場合のフォールバックは、`Key` 型のみ返す（TODO: Phase7／Phase8 で `DefaultActionFactory` へ統合）。
+  - S4: `ActionManager.PreallocateForProfileApply` が、`Global.getProfileActions`／`GetProfileAction` の代わりに、`ServiceProviderHolder` 経由の `IProfileActionProvider` を使う。
+  - S5（§2.4 の判断記録）: 削除 — `AutoProfileChecker`（廃止済み機能の残骸。2026-09-08 `22ba46d4`）、`IMappingActionDispatcher`／`MappingActionDispatcher`（連鎖の廃止で呼出元 0 件。2026-09-04 `874fb025`）、DI 登録、`MainWindow` の未使用オーバーロード（`AutoprofileChecker_RequestServiceChange(AutoProfileChecker, bool)`。ハンドラーを 1 つに統合）。`Mapping.DispatchProfileActionEdge`（静的）は残す。
+- **テスト**: `TestRepositoryFactory.CreateDefaultActionFactory`、`Step10FourTwoGlobalReferenceGuardTests` に Actions の 9 ファイルと必須引数、工場の受け渡しを追加。`DefaultActionManagerTests`／`VirtualKBMTests` の生成箇所を更新。
+- **実機確認項目**: キー押下（Press／Toggle）、マクロ、プログラム起動、プロファイル切替、ボタン割り当てのスペシャルアクション、自動プロファイル（`MainWindow` のハンドラーの統合の回帰確認）。

@@ -12,9 +12,9 @@ namespace DS4Windows.Actions
     {
         private readonly LaunchProcessAction inner;
 
-        public LaunchProcessActionAdapter(SpecialAction sa, int index) : base(sa, index)
+        public LaunchProcessActionAdapter(SpecialAction sa, int index, IProcessLauncher launcher) : base(sa, index)
         {
-            inner = new LaunchProcessAction(sa);
+            inner = new LaunchProcessAction(sa, launcher);
         }
 
         public override void OnTrigger(int device, MappingContext ctx)

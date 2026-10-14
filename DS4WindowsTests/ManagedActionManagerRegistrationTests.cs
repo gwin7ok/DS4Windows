@@ -47,7 +47,7 @@ namespace DS4WindowsTests
             try
             {
                 var services = new ServiceCollection();
-                services.AddSingleton<IActionFactory, DefaultActionFactory>();
+                services.AddSingleton<IActionFactory>(TestRepositoryFactory.CreateDefaultActionFactory()); // Phase6-Step10-4-4: 工場は部品（マクロ再生役ほか）を必須とする
                 services.AddSingleton<IManagedActionManager, DefaultActionManager>();
                 ServiceProviderHolder.SetProvider(services.BuildServiceProvider());
 
@@ -79,7 +79,7 @@ namespace DS4WindowsTests
             try
             {
                 var services = new ServiceCollection();
-                services.AddSingleton<IActionFactory, DefaultActionFactory>();
+                services.AddSingleton<IActionFactory>(TestRepositoryFactory.CreateDefaultActionFactory()); // Phase6-Step10-4-4: 工場は部品（マクロ再生役ほか）を必須とする
                 services.AddSingleton<IManagedActionManager, DefaultActionManager>();
                 services.AddSingleton<IControllerRegistry, DefaultControllerRegistry>();
                 ServiceProviderHolder.SetProvider(services.BuildServiceProvider());

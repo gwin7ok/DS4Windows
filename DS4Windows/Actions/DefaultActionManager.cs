@@ -21,9 +21,9 @@ namespace DS4Windows.Actions
 
         public event Action<SpecialAction, int, bool, bool> ToggledOnChanged;
 
-        public DefaultActionManager(IActionFactory actionFactory = null)
+        public DefaultActionManager(IActionFactory actionFactory)
         {
-            _actionFactory = actionFactory ?? DS4WinWPF.AppHost.GetService<IActionFactory>() ?? new DefaultActionFactory();
+            _actionFactory = actionFactory ?? throw new ArgumentNullException(nameof(actionFactory)); // Phase6-Step10-4-4: 必須の依存
         }
 
         private static ActionEntry GetOrCreateEntryInternal(Dictionary<string, ActionEntry> actionsDict, SpecialAction action, IActionFactory factory)

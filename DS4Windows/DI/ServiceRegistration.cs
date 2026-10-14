@@ -48,8 +48,6 @@ namespace DS4Windows.DI
             services.AddSingleton<IProcessInspector, DefaultProcessInspector>();
             services.AddSingleton<IElevatedProcessLauncher, DefaultElevatedProcessLauncher>();
 
-            // アクション発火ディスパッチャー（Mapping.cs境界化）
-            services.AddSingleton<IMappingActionDispatcher, MappingActionDispatcher>();
 
             // プロファイルのアクション取得（ControlService が使用）。Phase6-Step10-4-2d: アクション連鎖サービスは廃止
             services.AddSingleton<IProfileActionProvider>(sp => new ProfileActionProvider(Global.store)); // Phase6-Step10-4-2b: BackingStore は DI 未登録のため、Global.store を渡す

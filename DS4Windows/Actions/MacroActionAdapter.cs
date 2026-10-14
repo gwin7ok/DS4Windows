@@ -7,11 +7,6 @@ namespace DS4Windows.Actions
     {
         private readonly MacroAction _inner;
 
-        public MacroActionAdapter(SpecialAction sa, int index) : base(sa, index)
-        {
-            _inner = new MacroAction(sa, index, null);
-        }
-
         public MacroActionAdapter(SpecialAction sa, IMacroPlayer macroPlayer) : base(sa, -1)
         {
             _inner = new MacroAction(sa, -1, macroPlayer);

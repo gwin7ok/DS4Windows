@@ -5,6 +5,7 @@ using System.Linq;
 using System.Text.RegularExpressions;
 using Xunit;
 using DS4Windows;
+using DS4Windows.Actions;
 using DS4Windows.DI;
 using DS4Windows.Services;
 
@@ -54,6 +55,16 @@ namespace DS4WindowsTests
             ["DS4Windows/DS4Control/Services/OutputSlotStore.cs"] = new string[0],
             ["DS4Windows/DS4Control/OutputSlotManager.cs"] = new string[0],
             ["DS4Windows/DS4Control/OutputSlotPersist.cs"] = new[] { "exeversion" },
+            // 10-4-4: Actions/*（ServiceProviderHolder は D4-4 により Phase7/Phase8 へ温存。MAX_DS4_CONTROLLER_COUNT は定数）
+            ["DS4Windows/Actions/MacroAction.cs"] = new string[0],
+            ["DS4Windows/Actions/ProfileSwitchAction.cs"] = new string[0],
+            ["DS4Windows/Actions/LaunchProcessAction.cs"] = new string[0],
+            ["DS4Windows/Actions/MouseOutputAction.cs"] = new string[0],
+            ["DS4Windows/Actions/DefaultActionFactory.cs"] = new string[0],
+            ["DS4Windows/Actions/ActionFactory.cs"] = new string[0],
+            ["DS4Windows/Actions/DefaultMacroPlayer.cs"] = new[] { "MAX_DS4_CONTROLLER_COUNT" },
+            ["DS4Windows/Actions/DefaultActionManager.cs"] = new[] { "MAX_DS4_CONTROLLER_COUNT" },
+            ["DS4Windows/Actions/ActionManager.cs"] = new[] { "MAX_DS4_CONTROLLER_COUNT" },
             ["DS4Windows/DS4Control/Services/ProfileSettingsService.cs"] =
                 new[] { "RefreshActionAlias", "RefreshExtrasButtons", "defaultButtonMapping", "reverseX360ButtonMapping" },
         };
@@ -230,6 +241,35 @@ namespace DS4WindowsTests
             var manager = new OutputSlotManager(() => { calls++; return new Version(1, 0, 0, 0); });
             Assert.NotNull(manager);
             Assert.Equal(0, calls); // 生成時には読まない（割り当て時に都度読み取る）
+        }
+
+        [Fact]
+        public void Actions_RequireAllDependencies()
+        {
+            var sa = new SpecialAction("a", "Cross", "Key", "1", 0);
+            var player = new DefaultMacroPlayer(new MockVirtualKBM());
+            var launcher = new DefaultProcessLauncher();
+            var switcher = new DefaultProfileSwitcher();
+
+            Assert.Throws<ArgumentNullException>(() => new MacroAction(sa, (IMacroPlayer)null));
+            Assert.Throws<ArgumentNullException>(() => new ProfileSwitchAction(sa, (IProfileSwitcher)null));
+            Assert.Throws<ArgumentNullException>(() => new LaunchProcessAction(sa, null));
+            Assert.Throws<ArgumentNullException>(() => new MouseOutputAction(sa, null));
+            Assert.Throws<ArgumentNullException>(() => new DefaultMacroPlayer(null));
+            Assert.Throws<ArgumentNullException>(() => new DefaultActionManager(null));
+            Assert.Throws<ArgumentNullException>(() => new DefaultActionFactory(null, launcher, switcher));
+            Assert.Throws<ArgumentNullException>(() => new DefaultActionFactory(player, null, switcher));
+            Assert.Throws<ArgumentNullException>(() => new DefaultActionFactory(player, launcher, null));
+        }
+
+        [Fact]
+        public void DefaultActionFactory_PassesInjectedDependencies_ToActions()
+        {
+            var factory = TestRepositoryFactory.CreateDefaultActionFactory();
+            Assert.NotNull(factory.CreateFrom(new SpecialAction("k", "Cross", "Key", "1", 0) { typeID = SpecialAction.ActionTypeId.Key }, 0));
+            Assert.IsType<MacroActionAdapter>(factory.CreateFrom(new SpecialAction("m", "Cross", "Macro", "1", 0) { typeID = SpecialAction.ActionTypeId.Macro }, 0));
+            Assert.IsType<ProfileSwitchActionAdapter>(factory.CreateFrom(new SpecialAction("p", "Cross", "Profile", "x", 0) { typeID = SpecialAction.ActionTypeId.Profile }, 0));
+            Assert.IsType<LaunchProcessActionAdapter>(factory.CreateFrom(new SpecialAction("l", "Cross", "Program", "x", 0) { typeID = SpecialAction.ActionTypeId.Program }, 0));
         }
 
         [Fact]

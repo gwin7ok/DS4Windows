@@ -1,7 +1,6 @@
 using System;
 using System.IO;
 using DS4Windows.Services;
-using DS4WinWPF;
 
 namespace DS4Windows.Actions
 {
@@ -10,10 +9,10 @@ namespace DS4Windows.Actions
         private readonly SpecialAction sa;
         private readonly IProcessLauncher _launcher;
 
-        public LaunchProcessAction(SpecialAction sa, IProcessLauncher launcher = null)
+        public LaunchProcessAction(SpecialAction sa, IProcessLauncher launcher)
         {
             this.sa = sa;
-            this._launcher = launcher ?? AppHost.GetService<IProcessLauncher>() ?? new DefaultProcessLauncher();
+            this._launcher = launcher ?? throw new ArgumentNullException(nameof(launcher)); // Phase6-Step10-4-4: 必須の依存
         }
 
         public string Id => sa?.name ?? "LaunchProcess";

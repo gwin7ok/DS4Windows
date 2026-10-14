@@ -25,20 +25,14 @@ namespace DS4Windows.Actions
             }
             catch { }
 
-            // Fallback to minimal static behavior
-            // Fallback to minimal static behavior
-            // Fallback to minimal static behavior
+            // Fallback to minimal static behavior（DI ホストが無い場合のみ。テスト等に限られる）
+            // Phase6-Step10-4-4: マクロ再生役・プログラム起動役・プロファイル切替役は、DI の部品が必要なため、
+            // ホストが無い場合は作らない（null）。DI を要しないキー押下（Key 型）のみ返す。
+            // TODO(Phase7/Phase8): 静的な ActionFactory 自体を、DefaultActionFactory へ統合して廃止する（D4-4）。
             switch (sa.typeID)
             {
                 case SpecialAction.ActionTypeId.Key:
                     return new KeyActionAdapter(sa, index);
-                case SpecialAction.ActionTypeId.Program:
-                    return new LaunchProcessActionAdapter(sa, index);
-                case SpecialAction.ActionTypeId.Macro:
-                    return new MacroActionAdapter(sa, index);
-                case SpecialAction.ActionTypeId.Profile:
-                    return new ProfileSwitchActionAdapter(sa, index);
-                // Add other mappings as needed
                 default:
                     return null;
             }
