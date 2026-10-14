@@ -405,10 +405,18 @@
                                 </StackPanel>
                                 <Button x:Name="launchProgBrowseBtn" Content="{lex:Loc Browse}" Margin="{StaticResource spaceMargin}"
                                         Click="LaunchProgBrowseBtn_Click" />
-                                <StackPanel Orientation="Horizontal" Margin="{StaticResource spaceMargin}">
-                                    <Label Content="{Binding ProgramName}" ToolTip="{Binding Filepath}" Width="150" HorizontalContentAlignment="Center" />
-                                    <Image Source="{Binding ProgramIcon}" Width="32" Height="32" Margin="10,0,0,0" />
-                                </StackPanel>
+                                <!-- 参照ボタンと同じ幅（親の StackPanel の幅いっぱい）を使い、アイコンは右端に固定する。
+                                     固定幅 150 では長いファイル名が切れていたため、残りの幅をプログラム名に割り当てる -->
+                                <Grid Margin="{StaticResource spaceMargin}">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="*" />
+                                        <ColumnDefinition Width="Auto" />
+                                    </Grid.ColumnDefinitions>
+                                    <TextBlock Grid.Column="0" Text="{Binding ProgramName}" ToolTip="{Binding Filepath}"
+                                               Padding="5" HorizontalAlignment="Center" VerticalAlignment="Center"
+                                               TextTrimming="CharacterEllipsis" />
+                                    <Image Grid.Column="1" Source="{Binding ProgramIcon}" Width="32" Height="32" Margin="10,0,0,0" />
+                                </Grid>
                                 <StackPanel Margin="{StaticResource spaceMargin}">
                                     <Label Content="Arguments"/>
                                     <TextBox Text="{Binding Arguments}" />
