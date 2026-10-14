@@ -19,5 +19,7 @@ namespace DS4Windows.DI
         RecordBoxViewModel CreateRecordBoxViewModel(int device, DS4ControlSettings controlSettings, bool recordMacro = true, bool extraHold = false, int targetDevice = -1);
         SpecialActEditorViewModel CreateSpecialActEditorViewModel(int device, SpecialAction action = null);
         AutoProfilesViewModel CreateAutoProfilesViewModel(AutoProfileHolder autoProfileHolder, ProfileList profileList);
+        /// <param name="device">設定を読み書きするスロット（プロファイル編集画面では編集用の作業スロット）</param>
+        SpecialActionsListViewModel CreateSpecialActionsListViewModel(int device);
     }
 }

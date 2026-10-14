@@ -1,3 +1,4 @@
+using DS4Windows;
 using System.ComponentModel;
 using System.Linq;
 using Xunit;
@@ -17,8 +18,8 @@ namespace DS4WindowsTests
     {
         private static SpecialActionsListViewModel CreateVm(params (string name, bool active)[] items)
         {
-            // 実サービスに依存しないコンストラクタ引数（すべて null）で軽量に生成する。
-            var vm = new SpecialActionsListViewModel(0, null, null, null, null, null);
+            // 依存は必須引数のため、既定の軽量なサービスを渡して生成する（一覧の並べ替えだけを検査する）。
+            var vm = new SpecialActionsListViewModel(0, new SpecialActionRepository(), new ProfileRepository(), new OutputSlotService(), new ProfileSettingsService());
             int index = 0;
             foreach (var (name, active) in items)
             {
@@ -110,7 +111,7 @@ namespace DS4WindowsTests
         private static SpecialActionsListViewModel CreateVmWithControlsAndType(
             params (string name, string controls, string typeName)[] items)
         {
-            var vm = new SpecialActionsListViewModel(0, null, null, null, null, null);
+            var vm = new SpecialActionsListViewModel(0, new SpecialActionRepository(), new ProfileRepository(), new OutputSlotService(), new ProfileSettingsService());
             int index = 0;
             foreach (var (name, controls, typeName) in items)
             {

@@ -326,7 +326,7 @@ namespace DS4WinWPF.DS4Forms
             picBoxHover2.Visibility = Visibility.Hidden;
 
             mappingListVM = new MappingListViewModel(deviceNum, profileSettingsVM.ContType, profileSettingsService);
-            specialActionsVM = new SpecialActionsListViewModel(deviceNum);
+            specialActionsVM = vmFactory.CreateSpecialActionsListViewModel(deviceNum);
 
             touchButtonUC = new TouchButtonUserControl(deviceNum, profileSettingsService);
             TouchpadButtonControlDisplaySetup();

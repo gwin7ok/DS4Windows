@@ -192,6 +192,7 @@ namespace DS4WindowsTests
             public RecordBoxViewModel CreateRecordBoxViewModel(int device, DS4ControlSettings controlSettings, bool recordMacro = true, bool extraHold = false, int targetDevice = -1) => null;
             public SpecialActEditorViewModel CreateSpecialActEditorViewModel(int device, SpecialAction action = null) => null;
             public AutoProfilesViewModel CreateAutoProfilesViewModel(AutoProfileHolder autoProfileHolder, ProfileList profileList) => null;
+            public SpecialActionsListViewModel CreateSpecialActionsListViewModel(int device) => null;
         }
 
         [Fact]

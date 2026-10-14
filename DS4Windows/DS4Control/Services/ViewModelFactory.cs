@@ -68,6 +68,13 @@ namespace DS4Windows
             return new SpecialActEditorViewModel(device, action, _actionRepo);
         }
 
+        public SpecialActionsListViewModel CreateSpecialActionsListViewModel(int device)
+        {
+            if (AppLogger.IsTraceEnabled)
+                AppLogger.LogTrace($"[DI] ViewModelFactory: Created SpecialActionsListViewModel for Device {device}");
+            return new SpecialActionsListViewModel(device, _actionRepo, _profileRepo, _outputSlotService, _profileSettings);
+        }
+
         public AutoProfilesViewModel CreateAutoProfilesViewModel(AutoProfileHolder autoProfileHolder, ProfileList profileList)
         {
             if (AppLogger.IsTraceEnabled)

@@ -82,7 +82,7 @@ namespace DS4WindowsTests
             var profileSettings = DS4WinWPF.AppHost.GetService<IProfileSettingsService>();
             var actionManager = DS4WinWPF.AppHost.GetService<IManagedActionManager>();
 
-            var vm = new SpecialActionsListViewModel(0, specialActionRepo, profileRepo, actionManager, outputSlotService, profileSettings);
+            var vm = new SpecialActionsListViewModel(0, specialActionRepo, profileRepo, outputSlotService, profileSettings);
 
             var publishers = new List<(object instance, Type type)>
             {
@@ -114,9 +114,10 @@ namespace DS4WindowsTests
             var specialActionRepo = DS4WinWPF.AppHost.GetService<ISpecialActionRepository>();
             var profileRepo = DS4WinWPF.AppHost.GetService<IProfileRepository>();
             var outputSlotService = DS4WinWPF.AppHost.GetService<IOutputSlotService>();
+            var profileSettings = DS4WinWPF.AppHost.GetService<IProfileSettingsService>();
 
             // コンストラクタへの DI サービス直接注入による ViewModel 生成を検証
-            var vm = new SpecialActionsListViewModel(0, specialActionRepo, profileRepo, null, outputSlotService);
+            var vm = new SpecialActionsListViewModel(0, specialActionRepo, profileRepo, outputSlotService, profileSettings);
 
             Assert.NotNull(vm);
             Assert.NotNull(vm.ActionCol);

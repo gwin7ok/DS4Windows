@@ -42,12 +42,13 @@ namespace DS4WinWPF.DS4Forms.ViewModels
         private int deviceNum;
         private readonly ISpecialActionRepository specialActionRepo;
         private readonly IProfileRepository profileRepo;
-        private readonly IManagedActionManager actionManager;
         // TODO(技術的負債・削除要否は別途判断): Issue7是正（タスク3）により、本フィールドを
         // 参照していたボタン名表示ロジックは profileSettings.OutContType 経由に置き換えられ、
         // 本ファイル内では現在未使用となっている。Fix-Plan.md タスク3の方針に従い、本タスクでは
         // 参照差し替えのみを行い、フィールド自体の削除要否は別途（Phase5-Step14タスク7の全体確認、
         // またはPhase6）で判断する。
+        // Phase6-Step10-3-3: 依存は必須引数にした。本フィールド（outputSlotService）と profileSettings は、現在もファイル内で
+        // 読み取られていない（actionManager は未使用のため削除した）。削除要否は Step10-3 の完了報告書で判断する。
         private readonly IOutputSlotService outputSlotService;
         // Issue7是正（Phase5-Step14-Issue7-Fix-Plan.md タスク3）:
         // ボタン名表示の参照先を outputSlotService.GetOutputDeviceType から
@@ -80,18 +81,16 @@ namespace DS4WinWPF.DS4Forms.ViewModels
         }
 
         public SpecialActionsListViewModel(int deviceNum,
-            ISpecialActionRepository specialActionRepo = null,
-            IProfileRepository profileRepo = null,
-            IManagedActionManager actionManager = null,
-            IOutputSlotService outputSlotService = null,
-            IProfileSettingsService profileSettings = null)
+            ISpecialActionRepository specialActionRepo,
+            IProfileRepository profileRepo,
+            IOutputSlotService outputSlotService,
+            IProfileSettingsService profileSettings)
         {
             this.deviceNum = deviceNum;
-            this.specialActionRepo = specialActionRepo ?? DS4WinWPF.AppHost.GetService<ISpecialActionRepository>() ?? Global.SpecialActionRepositoryInstance;
-            this.profileRepo = profileRepo ?? DS4WinWPF.AppHost.GetService<IProfileRepository>() ?? Global.ProfileRepositoryInstance;
-            this.actionManager = actionManager ?? DS4WinWPF.AppHost.GetService<IManagedActionManager>();
-            this.outputSlotService = outputSlotService ?? DS4WinWPF.AppHost.GetService<IOutputSlotService>() ?? Global.OutputSlotServiceInstance;
-            this.profileSettings = profileSettings ?? DS4WinWPF.AppHost.GetService<IProfileSettingsService>() ?? Global.ProfileSettingsServiceInstance;
+            this.specialActionRepo = specialActionRepo ?? throw new ArgumentNullException(nameof(specialActionRepo));
+            this.profileRepo = profileRepo ?? throw new ArgumentNullException(nameof(profileRepo));
+            this.outputSlotService = outputSlotService ?? throw new ArgumentNullException(nameof(outputSlotService));
+            this.profileSettings = profileSettings ?? throw new ArgumentNullException(nameof(profileSettings));
 
             actionCol.CollectionChanged += ActionCol_CollectionChanged;
         }
@@ -294,7 +293,7 @@ namespace DS4WinWPF.DS4Forms.ViewModels
                 }
                 actionCol.Clear();
 
-                var actions = specialActionRepo != null ? specialActionRepo.ActionList : Global.GetActions();
+                var actions = specialActionRepo.ActionList;
                 if (actions != null)
                 {
                     int index = 0;
@@ -379,14 +378,7 @@ namespace DS4WinWPF.DS4Forms.ViewModels
         {
             if (item == null) return;
 
-            if (specialActionRepo != null)
-            {
-                specialActionRepo.RemoveAction(item.ActionName);
-            }
-            else
-            {
-                Global.RemoveAction(item.ActionName);
-            }
+            specialActionRepo.RemoveAction(item.ActionName);
 
             actionCol.Remove(item);
 

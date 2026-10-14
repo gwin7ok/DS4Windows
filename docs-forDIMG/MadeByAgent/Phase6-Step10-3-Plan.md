@@ -127,3 +127,24 @@
   - `SpecialActEditorViewModel`: `ISpecialActionRepository` を必須引数にし、`Global.GetActions()` を `ActionList` へ置換した。`ViewModelFactory.CreateSpecialActEditorViewModel` が渡す。
   - `SpecialActionEditor`: `IViewModelFactory`、`ISpecialActionRepository`、`IProfileSettingsService`、`IOutputSlotService` を必須引数にし、`AppHost` と `new SpecialActEditorViewModel` の後退を削除した。名前変更時の旧名の削除は `RemoveActionAndSave` を使う。`EditorWindowFactory` が、`ISpecialActionRepository` を含む必須引数で保持して渡す。
   - ガードテスト `Step10GroupThreeGlobalReferenceGuardTests`（新規）と、`EditorWindowFactory` の必須引数の検査を更新した。
+- **Step10-3-2 の実機確認（2026-10-14）**: 項目 1・2・4・5 は問題なし。項目 3（キー押下の割り当てで、ボタン名が出力種別に合った表記で表示されること）は、確認できなかった（下記 §12）。
+
+---
+
+## 12. 先送り事項（2026-10-14）
+
+### 12.1 スペシャルアクションの「キー押下」の割り当てで、コントローラーのボタンを割り当てられない
+- 現象: スペシャルアクションの編集画面の「Press Key」で開くボタン割り当て画面（`SpecialActionEditor.PressKeySelectBtn_Click` → `BindingWindow.ExposeMode.ForPressToggle`）に、コントローラーの図は表示されるが、キーボードとマウスしか割り当てられない。コントローラーのボタン（Xbox 360／DS4 の表記）が選べない。
+- 位置づけ: DI 化の範囲外の機能の問題の可能性がある。置換前から存在した不具合か、リファクタ（Phase5 以前）で失われた機能かは未確認。`ExposeMode.ForPressToggle` は、コントローラーのボタンの割り当て（`InitButtonBindings`）を有効にする設計で、`PressKeyViewModel` も `ActionType.Button`（`SaveAction` の `mode == 10`）を扱えるため、機能としては存在する。
+- 扱い:
+  - 現時点では変更しない（ユーザー判断、2026-10-14）。
+  - 実機確認の項目としては、`Phase6-Step11-Plan.md` §3.3 の台帳へ登録した。
+  - 是正の計画は、**Step10-3b の後に、`Phase6-Step10-3c-Plan.md`（仮称）として作成する**。内容: 原因の調査（`git log -S` で `ForPressToggle` の経緯、`BindingWindow` の `ForPressToggle` 分岐［116〜135 行付近］の実行状況の確認）、置換前からの不具合か否かの判定、是正の可否の確認。
+
+## 13. 進捗（続き）
+- **Step10-3-2**: 完了（ビルド・テスト実行成功、実機確認問題なし。項目 3 は §12 のとおり先送り）。
+- **Step10-3-3（`SpecialActionsListViewModel`、`IViewModelFactory`、`ProfileEditor`）**: 実装済み・ビルド、テスト、実機確認の結果待ち。
+  - `SpecialActionsListViewModel`: 4 つの依存（`ISpecialActionRepository`、`IProfileRepository`、`IOutputSlotService`、`IProfileSettingsService`）を必須引数にし（null は拒否）、`AppHost`／`Global.*Instance` のフォールバックと、`specialActionRepo` が null のときの `Global.GetActions()`／`Global.RemoveAction` の後退を削除した。未使用の `actionManager`（フィールドと引数）を削除した（G3-3＝A）。
+  - `IViewModelFactory.CreateSpecialActionsListViewModel(int device)` を追加し、`ViewModelFactory` が保持するサービスを渡す。`ProfileEditor` は、すでに解決している `vmFactory` で生成する。
+  - **発見（要判断）**: `outputSlotService` と `profileSettings` のフィールドも、現在はファイル内で読み取られていない（Issue7 の是正で、ボタン名表示の取得元が移った際に未使用になった。コード内の TODO に「削除要否は別途判断」とある）。G3-3 の承認は「4 つの依存を必須引数にし、`actionManager` を削除する」であったため、この 2 つは承認の範囲どおり必須引数として残した。削除するかどうかは、ユーザーの確認後に決める（§2.4）。
+  - テスト 4 ファイル（`ProfileActionsSyncTests`、`ProfileEditorBackendViewModelTests`、`Specialactionslistviewmodelsorttests`、`SpecialActionsListViewModelTests`）を新しいコンストラクタに合わせ、`Step10GroupThreeGlobalReferenceGuardTests` に一覧 ViewModel を追加した。

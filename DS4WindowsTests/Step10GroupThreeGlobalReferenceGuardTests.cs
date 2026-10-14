@@ -36,6 +36,8 @@ namespace DS4WindowsTests
             ["DS4Windows/DS4Forms/ViewModels/SpecialActions/PressKeyViewModel.cs"] = new[] { "getX360ControlString" },
             ["DS4Windows/DS4Forms/ViewModels/SpecialActions/SpecialActionViewModel.cs"] = new[] { "configFileDecimalCulture" },
             ["DS4Windows/DS4Forms/SpecialActionEditor.xaml.cs"] = new string[0],
+            // Step10-3-3
+            ["DS4Windows/DS4Forms/ViewModels/SpecialActionsListViewModel.cs"] = new string[0],
         };
 
         private readonly ITestOutputHelper _output;
@@ -114,6 +116,20 @@ namespace DS4WindowsTests
             Assert.Throws<ArgumentNullException>(() => new PressKeyViewModel(null, settings, slots));
             Assert.Throws<ArgumentNullException>(() => new PressKeyViewModel(repo, null, slots));
             Assert.Throws<ArgumentNullException>(() => new PressKeyViewModel(repo, settings, null));
+        }
+
+        [Fact]
+        public void SpecialActionsListViewModel_RequiresAllServices()
+        {
+            var repo = new SpecialActionRepository();
+            var profileRepo = new ProfileRepository();
+            var slots = new OutputSlotService();
+            var settings = new ProfileSettingsService();
+
+            Assert.Throws<ArgumentNullException>(() => new SpecialActionsListViewModel(0, null, profileRepo, slots, settings));
+            Assert.Throws<ArgumentNullException>(() => new SpecialActionsListViewModel(0, repo, null, slots, settings));
+            Assert.Throws<ArgumentNullException>(() => new SpecialActionsListViewModel(0, repo, profileRepo, null, settings));
+            Assert.Throws<ArgumentNullException>(() => new SpecialActionsListViewModel(0, repo, profileRepo, slots, null));
         }
 
         [Fact]
