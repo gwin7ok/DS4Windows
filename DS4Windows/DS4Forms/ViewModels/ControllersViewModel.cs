@@ -14,17 +14,19 @@ namespace DS4WinWPF.DS4Forms.ViewModels
 
         public event PropertyChangedEventHandler PropertyChanged;
 
+        // Phase6-Step10-2-2（F09）: 依存はすべて必須引数（Pure DI。決定1＝S9-A と同じ方針）。
+        // 置換前は任意引数（= null）と AppHost.GetService のフォールバックだった。DI には Singleton で登録済み。
         public ControllersViewModel(
-            IDeviceStateService deviceStateService = null,
-            IProfileSettingsService profileSettingsService = null,
-            IProfileRepository profileRepository = null)
+            IDeviceStateService deviceStateService,
+            IProfileSettingsService profileSettingsService,
+            IProfileRepository profileRepository)
         {
-            _deviceStateService = deviceStateService ?? DS4WinWPF.AppHost.GetService<IDeviceStateService>();
-            _profileSettingsService = profileSettingsService ?? DS4WinWPF.AppHost.GetService<IProfileSettingsService>();
-            _profileRepository = profileRepository ?? DS4WinWPF.AppHost.GetService<IProfileRepository>();
+            _deviceStateService = deviceStateService ?? throw new ArgumentNullException(nameof(deviceStateService));
+            _profileSettingsService = profileSettingsService ?? throw new ArgumentNullException(nameof(profileSettingsService));
+            _profileRepository = profileRepository ?? throw new ArgumentNullException(nameof(profileRepository));
         }
 
-        public bool HasControllers => _deviceStateService != null && _deviceStateService.ConnectedControllersCount > 0;
+        public bool HasControllers => _deviceStateService.ConnectedControllersCount > 0;
 
         protected virtual void OnPropertyChanged([CallerMemberName] string propertyName = null)
         {

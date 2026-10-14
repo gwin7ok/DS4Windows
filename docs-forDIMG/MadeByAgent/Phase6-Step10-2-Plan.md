@@ -98,3 +98,14 @@
 - 対象ファイルに、温存項目（定数、不変の静的表、純粋関数）を除く `Global.`、`AppHost.GetService`、`Program.rootHub` が無い。
 - 追加した契約の契約テストとガードテストが通り、`dotnet test` が全件合格する。
 - 実機確認の結果が記録され、確認できない項目が先送り台帳へ登録されている。
+
+---
+
+## 10. 進捗（2026-10-14）
+- **決定（承認済み、すべて推奨案）**: E1＝A（`IEditorWindowFactory`。Step10-2-4 で追加）、E2＝A（`IProfilePresetLoader`。Step10-2-1 で追加）、E3＝使用中と確認（`ProfileEditor.xaml.cs:2421` が target-typed new で生成。削除せず窓口で生成）。
+- **Step10-2-1（契約の追加と契約テスト）**: 完了（ビルド・テストビルド・テスト実行成功）。`IAppSettingsService.UseMoonlight`／`UseAdvancedMoonlight`、`IAutoProfileService.CreateAutoProfilesFile`、`IProfilePresetLoader`（10 メソッド）。テスト: `Phase6Step10GroupTwoContractTests`。
+- **Step10-2-2（`ControllersViewModel`［F09］／`ControllerListViewModel`／`ControllerRegDeviceOptsViewModel`／`ControllerRegisterOptionsWindow`）**: 実装済み・ビルド、テスト、実機確認の結果待ち。
+  - `ControllersViewModel`: 3 つの依存を必須引数（null は拒否）にした。`AppHost` のフォールバックを削除。
+  - `ControllerListViewModel`／入れ子の `CompositeDeviceModel`: 任意引数＋`AppHost`／`Global.*Instance` のフォールバックを削除し、必須引数にした。`MainWindow` が保持する `profileSettingsService`／`profileRepo`／`appSettingsService` を渡す。置換前は、`MainWindow` が `profileSettingsService` だけを渡しており、コンストラクタ本体の `profileRepo`（引数）が null のままで `profileRepo.ProfilePath[idx]` を参照していた（起動時にコントローラーが接続済みだと NullReferenceException になり得た潜在的な不具合。必須引数化で解消）。
+  - `ControllerRegDeviceOptsViewModel`: `IAppSettingsService`（`UseMoonlight`／`UseAdvancedMoonlight`）と `IProfileXmlStore`（`SaveControllerConfigsForDevice`）を必須引数で受け取る。`ControllerRegisterOptionsWindow` と `MainWindow`（`profileXmlStore` を `AppHost` の並びで解決）を更新。
+  - ガードテスト: `Step10GroupTwoGlobalReferenceGuardTests`（新規。各ステップで対象ファイルを追加していく）。

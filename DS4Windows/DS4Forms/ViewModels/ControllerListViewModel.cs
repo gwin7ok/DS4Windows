@@ -64,15 +64,18 @@ namespace DS4WinWPF.DS4Forms.ViewModels
         public Dictionary<int, CompositeDeviceModel> ControllerDict { get => controllerDict; set => controllerDict = value; }
 
         public ControllerListViewModel(ControlService service, ProfileList profileListHolder,
-            IProfileSettingsService profileSettingsService = null,
-            IProfileRepository profileRepo = null,
-            IAppSettingsService appSettings = null)
+            IProfileSettingsService profileSettingsService,
+            IProfileRepository profileRepo,
+            IAppSettingsService appSettings)
         {
+            // Phase6-Step10-2-2: 依存はすべて必須引数（Pure DI。決定1＝S9-A と同じ方針）。
+            // 置換前は、任意引数の null を AppHost/Global.*Instance で補っていた。さらに、コンストラクタ本体の
+            // profileRepo（引数）が null のままだと NullReferenceException になる状態だった。
+            this.profileSettingsService = profileSettingsService ?? throw new ArgumentNullException(nameof(profileSettingsService));
+            this.profileRepo = profileRepo ?? throw new ArgumentNullException(nameof(profileRepo));
+            this.appSettings = appSettings ?? throw new ArgumentNullException(nameof(appSettings));
             this.profileListHolder = profileListHolder;
             this.controlService = service;
-            this.profileSettingsService = profileSettingsService ?? DS4WinWPF.AppHost.GetService<IProfileSettingsService>() ?? Global.ProfileSettingsServiceInstance;
-            this.profileRepo = profileRepo ?? DS4WinWPF.AppHost.GetService<IProfileRepository>() ?? Global.ProfileRepositoryInstance;
-            this.appSettings = appSettings ?? DS4WinWPF.AppHost.GetService<IAppSettingsService>();
             service.ServiceStarted += ControllersChanged;
             service.PreServiceStop += ClearControllerList;
             service.HotplugController += Service_HotplugController;
@@ -600,16 +603,17 @@ namespace DS4WinWPF.DS4Forms.ViewModels
         public event CustomColorHandler RequestColorPicker;
 
         public CompositeDeviceModel(DS4Device device, int devIndex, string profile,
-            ProfileList collection, IProfileSettingsService profileSettingsService = null,
-            IProfileRepository profileRepo = null)
+            ProfileList collection, IProfileSettingsService profileSettingsService,
+            IProfileRepository profileRepo)
         {
+            // Phase6-Step10-2-2: 必須引数（null は拒否する）
+            this.profileSettingsService = profileSettingsService ?? throw new ArgumentNullException(nameof(profileSettingsService));
+            this.profileRepo = profileRepo ?? throw new ArgumentNullException(nameof(profileRepo));
             this.device = device;
             device.BatteryChanged += (sender, e) => BatteryStateChanged?.Invoke(this, e);
             device.ChargingChanged += (sender, e) => BatteryStateChanged?.Invoke(this, e);
             device.MacAddressChanged += (sender, e) => IdTextChanged?.Invoke(this, e);
             this.devIndex = devIndex;
-            this.profileSettingsService = profileSettingsService ?? DS4WinWPF.AppHost.GetService<IProfileSettingsService>() ?? Global.ProfileSettingsServiceInstance;
-            this.profileRepo = profileRepo ?? DS4WinWPF.AppHost.GetService<IProfileRepository>() ?? Global.ProfileRepositoryInstance;
             this.selectedProfile = profile;
             profileListHolder = collection;
             if (!string.IsNullOrEmpty(selectedProfile))

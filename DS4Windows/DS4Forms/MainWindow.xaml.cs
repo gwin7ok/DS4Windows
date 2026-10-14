@@ -73,6 +73,8 @@ namespace DS4WinWPF.DS4Forms
         private readonly IAutoProfileService _autoProfileService;
         private readonly DS4Windows.DI.IProfileSettingsService profileSettingsService;
         private readonly DS4Windows.DI.IAppSettingsService appSettingsService;
+        // Phase6-Step10-2-2: ControllerRegisterOptionsWindow（コントローラー固有設定の保存）へ渡す
+        private readonly DS4Windows.DI.IProfileXmlStore profileXmlStore;
         private readonly DS4Windows.DI.IPathService pathService;
         private readonly DS4Windows.DI.IEnvironmentService environmentService;
         private readonly DS4Windows.DI.IAppearanceSettingsService appearanceSettingsService;
@@ -109,6 +111,7 @@ namespace DS4WinWPF.DS4Forms
             InitializeComponent();
             profileSettingsService = DS4WinWPF.AppHost.GetService<DS4Windows.DI.IProfileSettingsService>() ?? Global.ProfileSettingsServiceInstance;
             appSettingsService = DS4WinWPF.AppHost.GetService<DS4Windows.DI.IAppSettingsService>();
+            profileXmlStore = DS4WinWPF.AppHost.GetService<DS4Windows.DI.IProfileXmlStore>();
             pathService = DS4WinWPF.AppHost.GetService<DS4Windows.DI.IPathService>() ?? Global.PathServiceInstance;
             environmentService = DS4WinWPF.AppHost.GetService<DS4Windows.DI.IEnvironmentService>() ?? Global.EnvironmentServiceInstance;
             appearanceSettingsService = DS4WinWPF.AppHost.GetService<DS4Windows.DI.IAppearanceSettingsService>() ?? new DS4Windows.Services.AppearanceSettingsService();
@@ -151,7 +154,7 @@ namespace DS4WinWPF.DS4Forms
                 Translations.Strings.StartText;
 
             conLvViewModel = new ControllerListViewModel(controlService, profileListHolder,
-                DS4WinWPF.AppHost.GetService<DS4Windows.DI.IProfileSettingsService>());
+                profileSettingsService, profileRepo, appSettingsService);
             controllerLV.DataContext = conLvViewModel;
             controllerLV.ItemsSource = conLvViewModel.ControllerCol;
             ChangeControllerPanel();
@@ -2150,7 +2153,8 @@ Suspend support not enabled.", true);
         private void DeviceOptionSettingsBtn_Click(object sender, RoutedEventArgs e)
         {
             ControllerRegisterOptionsWindow optsWindow =
-                new ControllerRegisterOptionsWindow(controlService.DeviceOptions, controlService);
+                new ControllerRegisterOptionsWindow(controlService.DeviceOptions, controlService,
+                    appSettingsService, profileXmlStore);
 
             optsWindow.Owner = this;
             optsWindow.Show();

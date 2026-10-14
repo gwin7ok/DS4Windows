@@ -22,6 +22,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using DS4Windows;
+using DS4Windows.DI;
 using DS4WinWPF.DS4Forms.ViewModels.Util;
 using LEDBarMode = DS4Windows.DualSenseControllerOptions.LEDBarMode;
 using MuteLEDMode = DS4Windows.DualSenseControllerOptions.MuteLEDMode;
@@ -60,21 +61,21 @@ namespace DS4WinWPF.DS4Forms.ViewModels
 
         public bool UseMoonlight
         {
-            get => Global.UseMoonlight;
+            get => appSettings.UseMoonlight;
             set
             {
-                UseMoonlightChanged = value != Global.UseMoonlight;
-                Global.UseMoonlight = value;
+                UseMoonlightChanged = value != appSettings.UseMoonlight;
+                appSettings.UseMoonlight = value;
             }
         }
 
         public bool UseAdvancedMoonlight
         {
-            get => Global.UseAdvancedMoonlight;
+            get => appSettings.UseAdvancedMoonlight;
             set
             {
-                UseMoonlightChanged = value != Global.UseAdvancedMoonlight;
-                Global.UseAdvancedMoonlight = value;
+                UseMoonlightChanged = value != appSettings.UseAdvancedMoonlight;
+                appSettings.UseAdvancedMoonlight = value;
             }
         }
 
@@ -137,9 +138,15 @@ namespace DS4WinWPF.DS4Forms.ViewModels
         }
         public event EventHandler CurrentTabSelectedIndexChanged;
 
+        // Phase6-Step10-2-2: Global.UseMoonlight／UseAdvancedMoonlight／SaveControllerConfigs の置換先（必須引数。null は拒否する）
+        private readonly IAppSettingsService appSettings;
+        private readonly IProfileXmlStore profileXmlStore;
+
         public ControllerRegDeviceOptsViewModel(ControlServiceDeviceOptions serviceDeviceOpts,
-            ControlService service)
+            ControlService service, IAppSettingsService appSettings, IProfileXmlStore profileXmlStore)
         {
+            this.appSettings = appSettings ?? throw new ArgumentNullException(nameof(appSettings));
+            this.profileXmlStore = profileXmlStore ?? throw new ArgumentNullException(nameof(profileXmlStore));
             this.serviceDeviceOpts = serviceDeviceOpts;
 
             int idx = 0;
@@ -229,7 +236,7 @@ namespace DS4WinWPF.DS4Forms.ViewModels
         {
             foreach (DeviceListItem item in currentInputDevices)
             {
-                Global.SaveControllerConfigs(item.Device);
+                profileXmlStore.SaveControllerConfigsForDevice(item.Device);
             }
         }
     }
