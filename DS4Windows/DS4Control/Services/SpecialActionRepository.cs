@@ -215,6 +215,31 @@ namespace DS4Windows
             return _config.GetAction(actionName);
         }
 
+        // ---- Phase6-Step10-3-1: スペシャルアクション編集画面の Global 直接参照解消 ----
+        // Global.SaveAction / Global.RemoveAction への薄い委譲。これらは、実行中のアクション状態のクリア、
+        // Actions.xml への書き込み、読み直しと検証（SaveAction ではキー種別のランタイム状態のリセットも）を行う。
+        // メモリ上のリストだけを変える AddAction/RemoveAction とは動作が異なるため、別メソッドにしている。
+        // 対象は Global.store（Global.m_Config と同じ実体）。本リポジトリの _config が Global.store 以外の場合でも、
+        // Global と同じ実体に対して動作する。
+        public void SaveAction(string name, string controls, int mode, string details, bool edit,
+            double delayTime = 0.0, string extras = "")
+        {
+            Global.SaveAction(name, controls, mode, details, edit, delayTime, extras);
+            if (AppLogger.IsTraceEnabled)
+                AppLogger.LogTrace($"[DI] SpecialActionRepository.SaveAction: Action '{name}' saved via DI (mode={mode}, edit={edit})");
+            OnActionsChanged();
+        }
+
+        public bool RemoveActionAndSave(string actionName)
+        {
+            bool existed = ActionExists(actionName);
+            Global.RemoveAction(actionName);
+            if (AppLogger.IsTraceEnabled)
+                AppLogger.LogTrace($"[DI] SpecialActionRepository.RemoveActionAndSave: Action '{actionName}' removed and saved via DI (existed={existed})");
+            OnActionsChanged();
+            return existed;
+        }
+
         protected virtual void OnActionsChanged()
         {
             ActionsChanged?.Invoke(this, EventArgs.Empty);

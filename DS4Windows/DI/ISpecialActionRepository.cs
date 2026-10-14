@@ -36,6 +36,26 @@ namespace DS4Windows.DI
         /// </summary>
         SpecialAction GetActionOrPlaceholder(string actionName);
 
+        // ---- Phase6-Step10-3-1: スペシャルアクション編集画面の Global 直接参照解消（Global への薄い委譲）----
+
+        /// <summary>
+        /// アクションを保存する（<c>Global.SaveAction</c> と同じ動作）。
+        /// 実行中のアクション状態のクリア、<c>Actions.xml</c> への書き込み、読み直しと件数の検証、
+        /// キー種別（<paramref name="mode"/>＝4）のランタイム状態のリセットまでを含む。
+        /// メモリ上のリストを変えるだけの <see cref="AddAction"/>／<see cref="ReplaceAction"/> とは別物。
+        /// </summary>
+        /// <param name="mode">種別（1:マクロ、2:プログラム、3:プロファイル、4:キー、5:切断、6:バッテリー、7:複数アクション、8:ステアリング校正、9:ジャイロ校正、10:ボタン）</param>
+        void SaveAction(string name, string controls, int mode, string details, bool edit,
+            double delayTime = 0.0, string extras = "");
+
+        /// <summary>
+        /// アクションを削除して <c>Actions.xml</c> へ保存する（<c>Global.RemoveAction</c> と同じ動作）。
+        /// 実行中のアクション状態のクリア、ファイルへの保存、読み直しと件数の検証を含む。
+        /// メモリ上のリストから外すだけの <see cref="RemoveAction"/> とは別物。
+        /// </summary>
+        /// <returns>削除前に、その名前のアクションが存在していれば true</returns>
+        bool RemoveActionAndSave(string actionName);
+
         event EventHandler ActionsChanged;
     }
 }

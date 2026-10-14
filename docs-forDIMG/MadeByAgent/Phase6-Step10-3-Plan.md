@@ -116,3 +116,9 @@
 ## 10. 決定の記録（2026-10-14）
 - G3-1＝A、G3-2＝A、G3-3＝A、G3-4＝A（すべて推奨案で承認）。
 - 追加の要望（名前変更・削除を全プロファイルへ反映し、接続中のコントローラーへ再適用する）は、**R3＝B** により、Step10-3 の完了後に別の機能追加として実施する。計画は `Phase6-Step10-3b-Plan.md`。Step10-3 では、G3-2 の `RemoveActionAndSave` を追加するだけで、参照の書き換えは行わない。
+
+## 11. 進捗（2026-10-14）
+- **Step10-3-1（契約の追加と契約テスト）**: 実装済み・ビルド、テスト、実機確認の結果待ち。
+  - `ISpecialActionRepository`: `SaveAction`（`Global.SaveAction` への薄い委譲）、`RemoveActionAndSave`（`Global.RemoveAction` への薄い委譲。削除前に存在したかを返す）を追加。実装は `SpecialActionRepository`。契約のコメントに、メモリ上のリストだけを変える `AddAction`／`RemoveAction` との違いを明記した。
+  - `IViewModelFactory.CreateSpecialActionsListViewModel` は、一覧 ViewModel のコンストラクタ変更と同時に 3-3 で追加する（契約だけ先に足すと、未使用の契約が残るため）。
+  - テスト: `Phase6Step10GroupThreeContractTests`（保存、編集、`Global.SaveAction` との一致、保存付き削除、存在しない名前、メモリのみの `RemoveAction` との違い）。一時ディレクトリの `Actions.xml` を使い、`Global.store` の保存先とアクション一覧を退避・復元する。
