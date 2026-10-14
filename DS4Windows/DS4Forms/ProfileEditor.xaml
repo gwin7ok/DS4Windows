@@ -1773,7 +1773,7 @@
                                     </GroupBox>
 
                                     <StackPanel Orientation="Horizontal" Margin="0,8,0,8">
-                                        <Button x:Name="gyroCalBtn" Content="Gyro Calibration" Width="100"  Click="GyroCalibration_Click" />
+                                        <Button x:Name="gyroCalBtn" Content="Reset Gyro Calibration" MinWidth="100" Padding="10,2" Click="GyroCalibration_Click" />
                                     </StackPanel>
                                 </StackPanel>
                             </TabItem>
@@ -1874,7 +1874,7 @@
                                     </GroupBox>
 
                                     <StackPanel Orientation="Horizontal" Margin="0,8,0,8">
-                                        <Button x:Name="gyroCalBtn4" Content="Gyro Calibration" Width="100"  Click="GyroCalibration_Click" />
+                                        <Button x:Name="gyroCalBtn4" Content="Reset Gyro Calibration" MinWidth="100" Padding="10,2" Click="GyroCalibration_Click" />
                                     </StackPanel>
                                 </StackPanel>
                             </TabItem>
@@ -2003,7 +2003,7 @@
                                     </GroupBox>
 
                                     <StackPanel Orientation="Horizontal" Margin="0,8,0,8">
-                                        <Button x:Name="gyroCalBtn1" Content="Gyro Calibration" Width="100"  Click="GyroCalibration_Click" />
+                                        <Button x:Name="gyroCalBtn1" Content="Reset Gyro Calibration" MinWidth="100" Padding="10,2" Click="GyroCalibration_Click" />
                                     </StackPanel>
                                 </StackPanel>
                             </TabItem>
@@ -2082,7 +2082,7 @@
                                     </StackPanel>
 
                                     <StackPanel Orientation="Horizontal" Margin="0,8,0,8">
-                                        <Button x:Name="gyroCalBtn2" Content="Gyro Calibration" Width="100"  Click="GyroCalibration_Click" />
+                                        <Button x:Name="gyroCalBtn2" Content="Reset Gyro Calibration" MinWidth="100" Padding="10,2" Click="GyroCalibration_Click" />
                                     </StackPanel>
                                 </StackPanel>
                             </TabItem>
@@ -2095,7 +2095,7 @@
                                     </TextBlock>
 
                                     <StackPanel Orientation="Horizontal" Margin="0,8,0,8">
-                                        <Button x:Name="gyroCalBtn3" Content="Gyro Calibration" Width="100"  Click="GyroCalibration_Click" />
+                                        <Button x:Name="gyroCalBtn3" Content="Reset Gyro Calibration" MinWidth="100" Padding="10,2" Click="GyroCalibration_Click" />
                                     </StackPanel>
                                 </StackPanel>
                             </TabItem>
