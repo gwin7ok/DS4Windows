@@ -40,14 +40,21 @@ namespace DS4WinWPF
         }
 
         public event EventHandler NameChanged;
-        public event EventHandler ProfileSaved;
+        // Phase6-Step10-4-1: Global.appdatapath の直接参照を廃止し、IPathService を ProfileList から受け取る
+        private readonly DS4Windows.DI.IPathService pathService;
+
+        public ProfileEntity(DS4Windows.DI.IPathService pathService)
+        {
+            this.pathService = pathService ?? throw new ArgumentNullException(nameof(pathService));
+        }
+
         public event EventHandler ProfileDeleted;
 
         public void DeleteFile()
         {
             if (!string.IsNullOrWhiteSpace(name))
             {
-                string filepath = DS4Windows.Global.appdatapath + @"\Profiles\" + name + ".xml";
+                string filepath = pathService.AppDataPath + @"\Profiles\" + name + ".xml";
                 if (File.Exists(filepath))
                 {
                     File.Delete(filepath);
@@ -56,26 +63,12 @@ namespace DS4WinWPF
             }
         }
 
-        public void SaveProfile(int deviceNum)
-        {
-            if (!string.IsNullOrWhiteSpace(name))
-            {
-                DS4Windows.Global.SaveProfile(deviceNum, name);
-                DS4Windows.Global.CacheExtraProfileInfo(deviceNum);
-            }
-        }
-
-        public void FireSaved()
-        {
-            ProfileSaved?.Invoke(this, EventArgs.Empty);
-        }
-
         public void RenameProfile(string newProfileName)
         {
-            string oldFilePath = Path.Combine(DS4Windows.Global.appdatapath,
+            string oldFilePath = Path.Combine(pathService.AppDataPath,
                 "Profiles", $"{name}.xml");
 
-            string newFilePath = Path.Combine(DS4Windows.Global.appdatapath,
+            string newFilePath = Path.Combine(pathService.AppDataPath,
                 "Profiles", $"{newProfileName}.xml");
 
             if (File.Exists(oldFilePath) && !File.Exists(newFilePath))

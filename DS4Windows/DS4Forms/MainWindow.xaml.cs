@@ -57,7 +57,7 @@ namespace DS4WinWPF.DS4Forms
 
         private MainWindowsViewModel mainWinVM;
         private StatusLogMsg lastLogMsg = new StatusLogMsg();
-        private ProfileList profileListHolder = new ProfileList();
+        private ProfileList profileListHolder;
         private LogViewModel logvm;
         private ControllerListViewModel conLvViewModel;
         private TrayIconViewModel trayIconVM;
@@ -116,6 +116,7 @@ namespace DS4WinWPF.DS4Forms
             profileXmlStore = DS4WinWPF.AppHost.GetService<DS4Windows.DI.IProfileXmlStore>();
             editorWindowFactory = DS4WinWPF.AppHost.GetService<DS4Windows.DI.IEditorWindowFactory>();
             pathService = DS4WinWPF.AppHost.GetService<DS4Windows.DI.IPathService>() ?? Global.PathServiceInstance;
+            profileListHolder = new ProfileList(pathService);
             environmentService = DS4WinWPF.AppHost.GetService<DS4Windows.DI.IEnvironmentService>() ?? Global.EnvironmentServiceInstance;
             appearanceSettingsService = DS4WinWPF.AppHost.GetService<DS4Windows.DI.IAppearanceSettingsService>() ?? new DS4Windows.Services.AppearanceSettingsService();
             profileAppService = DS4WinWPF.AppHost.GetService<DS4Windows.DI.IProfileApplicationService>();
@@ -1194,7 +1195,7 @@ Suspend support not enabled.", true);
 
             if (!appSettingsService.FirstRun)
             {
-                WindowPlacementHelper.ApplyPlacement(this, startMinimized);
+                WindowPlacementHelper.ApplyPlacement(this, appSettingsService, startMinimized);
 
                 // ApplyPlacement 後に WPF 側でサイズや位置が変更される可能性があるため、
                 // レイアウト完了後に実際のウィンドウ矩形と WPF プロパティをログに残す。

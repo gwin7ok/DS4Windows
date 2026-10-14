@@ -186,7 +186,7 @@ namespace DS4WindowsTests
             var factory = DS4WinWPF.AppHost.GetService<IViewModelFactory>();
             Assert.NotNull(factory);
 
-            var profileList = new ProfileList();
+            var profileList = new ProfileList(DS4WinWPF.AppHost.GetService<DS4Windows.DI.IPathService>());
             var holder = new AutoProfileHolder();
             var vm = factory.CreateAutoProfilesViewModel(holder, profileList);
             Assert.NotNull(vm);

@@ -177,3 +177,12 @@
 ### 11.7 リスク
 - **`MainWindow` の初期化順序**: `profileListHolder` を使う箇所（153 行付近）は、`pathService` の解決より後。生成位置の移動に伴い、他のフィールドの初期化子から参照していないことを確認する。
 - **`WindowPlacementHelper` の起動時の呼び出し**: ウィンドウの表示前（`SourceInitialized` など）に呼ばれる。`appSettingsService` は、コンストラクターで解決済みのため、順序の問題は無い見込み。
+
+## 12. Step10-4-1 の実装記録。2026-10-15
+- **決定**: E1＝A（`ProfileEntity.SaveProfile`／`FireSaved`／`ProfileSaved` を削除。呼出元 0 件、正規の保存経路と重複する並行実装）、E2＝A（`AutoProfileHolder` は 10-4-2 へ移す）。
+- **変更**
+  - `WindowPlacementHelper.ApplyPlacement` に `IAppSettingsService` を引数追加し、`Global.Form*` 16 件を置換。`MainWindow` は `appSettingsService` を渡す。
+  - `ProfileList` は `IPathService` を必須引数にし、`Global.PathServiceInstance` のフォールバックを削除。`MainWindow` の生成位置を、`pathService` 解決後（コンストラクター内）へ移動。
+  - `ProfileEntity` は `IPathService` を必須引数にし、`Global.appdatapath` を置換。未使用の `SaveProfile`／`FireSaved`／`ProfileSaved` を削除。
+- **テスト**: 新規 `Step10FourOneGlobalReferenceGuardTests`（Global 参照の不在、未使用メンバー削除、必須引数、注入パスでの Refresh／Rename／Delete）。`AutoProfilesViewModelTests`／`PatternCViewModelTests` の `new ProfileList()` を更新。
+- **状態**: ビルド・テスト・実機確認（§11.6）の結果待ち。
