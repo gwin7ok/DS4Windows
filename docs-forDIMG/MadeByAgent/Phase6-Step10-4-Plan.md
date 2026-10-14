@@ -226,3 +226,18 @@
 - **テスト**: 新規 `Step10FourTwoGlobalReferenceGuardTests`、共通ヘルパー `TestRepositoryFactory`（約 30 件の生成箇所を置換）。
 - **新たな発見（10-4-2b へ追加）**: `ProfileActionProvider` が `BackingStore config = null`（省略時 `Global.store`）。クラスタ 1 の仲間として、10-4-2b で必須化する。
 - **実機確認項目**: スペシャルアクションの一覧表示・追加・削除・保存、プロファイル切替アクション（ボタン割り当てからの切替と、元のプロファイルへの復帰）、アクション連鎖。
+
+## 15. Step10-4-2a の完了と、Step10-4-2b の計画。2026-10-15
+- **Step10-4-2a**: ビルド・テストビルド・テスト実行成功。実機確認（スペシャルアクションの一覧・追加・削除・保存、プロファイル切替と元への復帰）問題なし。アクション連鎖の確認は、下記の決定により省略。
+- **決定（アクション連鎖の廃止＝案A）**: 「プロファイル切替アクションの後に、新プロファイルの同じトリガーのアクションを続けて発火させる」連鎖（`ProfileActionChainService`。移行前の `Mapping.cs` の処理を `b8c914c2` で切り出したもの）は、トリガーを再成立させない限り追加のアクションを実行しない仕様へ変更する。実施は 10-4-2 の完了後に、別の計画（Step10-4-2d として提案）で行う。2a は挙動を維持した。
+- **K1 の再確認（現行コード）**: `ProfileApplicationService`（4 か所）と `ProfileActionChainService`（1 か所）が `deviceIndex >= 4` で弾いている。一方、スロットの上限は `IEnvironmentService.ControllerSlotLimit`（最大 8）。移行前の `Mapping.cs` も `device >= 4` であり、**移行前から存在する上限**（回帰ではない）。5〜8 番目のコントローラーでは、プロファイル切替アクションと復帰が動かない可能性がある。是正の可否はユーザー判断（10-4-2b の決定 H3）。
+
+### 15.1 Step10-4-2b の対象と方針（案）
+- **ProfileRepository**: 引数 3 つを必須化し、`Func<ControlService>` を追加（`LoadProfile` 内の `AppHost` を置換）。`Global.ProfilePath` は自身の `ProfilePath`（同じ実体）へ置換。`Global.loggedInvalidActions.Clear()` は温存（TODO）。他の薄い委譲は温存。
+- **ProfileActionProvider**: `BackingStore` を必須化（`ServiceRegistration` で `Global.store` を渡すファクトリー登録）。
+- **AutoProfileHolder**: `IPathService` を必須化（`Global.appdatapath` の置換）。
+- **AutoProfileService**: 全引数を必須化し、`new AutoProfileHolder()`／`new EnvironmentService()`／`AppHost` を削除。`Program.rootHub`×7 は `Func<ControlService>`、`Global.AutoProfileRevertDefaultProfile`×2 は `IAppSettingsService`、`Global.ProfilePath`×2 は `IProfileRepository` へ。`autoProfileSwitchNotifyChoice`／`CreateAutoProfiles` は薄い委譲として温存。
+- **`Global` 側の静的フォールバック**（`fallbackProfileRepository`）: 必須引数に合わせ、遅延生成（初回アクセス時）に変更する。静的初期化順序のハザードを避けるため。
+- **AutoProfileChecker（決定 H1）**: `AutoProfileService` の必須化に合わせ、`AutoProfileService` を `new` する分岐（呼出元 0 件）が、そのままではコンパイルできない。案A（推奨）: 型は温存し、`IAutoProfileService` が解決できない場合は例外にする（削除の判断は 10-4-4）。案B: 本ステップで削除する。
+- **テスト**: `TestRepositoryFactory` に `CreateProfileRepository` ほかを追加（約 25＋10 件）。`Step10FourTwoGlobalReferenceGuardTests` に対象を追加。
+- **実機確認項目**: プロファイルの選択・保存・読み込み、自動プロファイル（Auto Profiles 画面での編集と、対象プロセス起動時の切替、終了時の復帰、「サービスを一時停止」の動作）。
