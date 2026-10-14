@@ -111,7 +111,7 @@ namespace DS4WindowsTests
         {
             var repo = TestRepositoryFactory.CreateSpecialActionRepository();
             var settings = TestRepositoryFactory.CreateProfileSettingsService();
-            var slots = new OutputSlotService();
+            var slots = TestRepositoryFactory.CreateOutputSlotService();
 
             Assert.Throws<ArgumentNullException>(() => new PressKeyViewModel(null, settings, slots));
             Assert.Throws<ArgumentNullException>(() => new PressKeyViewModel(repo, null, slots));

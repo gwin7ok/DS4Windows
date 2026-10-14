@@ -65,7 +65,7 @@ namespace DS4WindowsTests
         {
             return new BindingWindowViewModel(Global.TEST_PROFILE_INDEX,
                 new DS4ControlSettings(DS4Controls.Cross),
-                TestRepositoryFactory.CreateProfileSettingsService(), new OutputSlotService(), targetDevice);
+                TestRepositoryFactory.CreateProfileSettingsService(), TestRepositoryFactory.CreateOutputSlotService(), targetDevice);
         }
 
         [Fact]
@@ -82,7 +82,7 @@ namespace DS4WindowsTests
         public void TargetDeviceIsOptional_DefaultsToNoTargetDevice()
         {
             var vm = new BindingWindowViewModel(Global.TEST_PROFILE_INDEX, new DS4ControlSettings(DS4Controls.Cross),
-                TestRepositoryFactory.CreateProfileSettingsService(), new OutputSlotService());
+                TestRepositoryFactory.CreateProfileSettingsService(), TestRepositoryFactory.CreateOutputSlotService());
 
             Assert.Equal(-1, vm.TargetDevice);
             Assert.False(vm.HasTargetDevice);

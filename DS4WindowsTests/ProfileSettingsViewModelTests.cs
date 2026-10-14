@@ -101,7 +101,7 @@ namespace DS4WindowsTests
         public void UpdateLateProperties_ShouldSyncBidirectionally_RegardlessOfEnableOutputDataToDS4()
         {
             var service = TestRepositoryFactory.CreateProfileSettingsService();
-            var outputSlotService = new OutputSlotService();
+            var outputSlotService = TestRepositoryFactory.CreateOutputSlotService();
             Global.ProfileSettingsServiceInstance = service;
             Global.OutputSlotServiceInstance = outputSlotService;
 

@@ -177,7 +177,7 @@ namespace DS4WindowsTests
         }
 
         private static PressKeyViewModel CreatePressKeyViewModel(ISpecialActionRepository repo) =>
-            new PressKeyViewModel(repo, TestRepositoryFactory.CreateProfileSettingsService(), new OutputSlotService());
+            new PressKeyViewModel(repo, TestRepositoryFactory.CreateProfileSettingsService(), TestRepositoryFactory.CreateOutputSlotService());
 
         [Theory]
         [InlineData("Toggle", SpecialAction.KeyButtonSwitchModeEnum.Toggle)]

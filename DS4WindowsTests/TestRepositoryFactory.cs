@@ -35,6 +35,22 @@ namespace DS4WindowsTests
                 control ?? new Func<ControlService>(() => Program.rootHub));
         }
 
+        public static OutputSlotManager CreateOutputSlotManager()
+        {
+            return new OutputSlotManager(() => Global.vigemBusVersionInfo);
+        }
+
+        public static OutputSlotService CreateOutputSlotService(OutputSlotManager manager = null,
+            IOutputSlotStore store = null, ControlService control = null)
+        {
+            // 従来（生成時に Program.rootHub から取得）と同じく、生成時点の値を保持する
+            ControlService ctl = control ?? Program.rootHub;
+            OutputSlotManager mgr = manager ?? ctl?.OutputslotMan ?? CreateOutputSlotManager();
+            return new OutputSlotService(() => mgr,
+                store ?? new OutputSlotStore(new PathService()),
+                () => ctl);
+        }
+
         public static ProfileActionProvider CreateProfileActionProvider(BackingStore store = null)
         {
             return new ProfileActionProvider(store ?? Global.store);

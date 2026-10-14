@@ -10,6 +10,10 @@ namespace StandaloneTests
         [TestMethod]
         public void ActionDoneFlagRoundtrip()
         {
+            // Phase6-Step10-4-3: DI ホストの生成が Global の静的初期化の副作用に依存していた（K7-1）。
+            // 1 回目と 2 回目の GetStateFor が同じ管理先を使うよう、ホストを先に明示的に構築する。
+            DS4WinWPF.AppHost.CreateHost();
+
             // Arrange: create a lightweight SpecialAction
             var sa = TestHelpers.CreateKeyAction("smoke_test", "L1", "32");
 

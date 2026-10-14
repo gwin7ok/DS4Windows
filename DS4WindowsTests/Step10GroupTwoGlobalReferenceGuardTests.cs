@@ -171,7 +171,7 @@ namespace DS4WindowsTests
         public void EditorWindowFactory_RequiresAllServices()
         {
             var settings = TestRepositoryFactory.CreateProfileSettingsService();
-            var slots = new OutputSlotService();
+            var slots = TestRepositoryFactory.CreateOutputSlotService();
             var path = new PathService();
             Func<ControlService> cs = () => null;
             var loader = new DS4Windows.Services.ProfilePresetLoader();
@@ -207,7 +207,7 @@ namespace DS4WindowsTests
         [Fact]
         public void BindingAndRecordViewModels_RequireProfileSettingsService()
         {
-            Assert.Throws<ArgumentNullException>(() => new BindingWindowViewModel(0, new DS4ControlSettings(DS4Controls.Cross), null, new OutputSlotService()));
+            Assert.Throws<ArgumentNullException>(() => new BindingWindowViewModel(0, new DS4ControlSettings(DS4Controls.Cross), null, TestRepositoryFactory.CreateOutputSlotService()));
             Assert.Throws<ArgumentNullException>(() => new BindingWindowViewModel(0, new DS4ControlSettings(DS4Controls.Cross), TestRepositoryFactory.CreateProfileSettingsService(), null));
             Assert.Throws<ArgumentNullException>(() => new RecordBoxViewModel(0, new DS4ControlSettings(DS4Controls.Cross), false, true, null, null));
         }

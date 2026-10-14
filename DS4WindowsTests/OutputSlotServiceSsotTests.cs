@@ -18,7 +18,7 @@ namespace DS4WindowsTests
         [Fact]
         public void ThreeStates_AreDistinctArrays()
         {
-            var service = new OutputSlotService();
+            var service = TestRepositoryFactory.CreateOutputSlotService();
             var settings = TestRepositoryFactory.CreateProfileSettingsService(Global.store);
 
             Assert.NotSame(settings.OutContType, service.ActiveOutDevType);
@@ -29,7 +29,7 @@ namespace DS4WindowsTests
         [Fact]
         public void ChangingPersistentSetting_DoesNotAffectRuntimeOrTempState()
         {
-            var service = new OutputSlotService();
+            var service = TestRepositoryFactory.CreateOutputSlotService();
             var settings = TestRepositoryFactory.CreateProfileSettingsService(Global.store);
 
             OutContType originalPersistent = settings.OutContType[Slot];
@@ -53,7 +53,7 @@ namespace DS4WindowsTests
         [Fact]
         public void ChangingRuntimeState_DoesNotAffectPersistentSetting()
         {
-            var service = new OutputSlotService();
+            var service = TestRepositoryFactory.CreateOutputSlotService();
             var settings = TestRepositoryFactory.CreateProfileSettingsService(Global.store);
 
             OutContType originalPersistent = settings.OutContType[Slot];
@@ -75,7 +75,7 @@ namespace DS4WindowsTests
         {
             // 旧計画（SetOutputDeviceType を永続設定へ委譲する案）で懸念された、
             // UnplugSlot 経由で永続設定へ None が書き込まれる事故が起きないことを固定する。
-            var service = new OutputSlotService(new OutputSlotManager());
+            var service = TestRepositoryFactory.CreateOutputSlotService(TestRepositoryFactory.CreateOutputSlotManager());
             var settings = TestRepositoryFactory.CreateProfileSettingsService(Global.store);
 
             OutContType originalPersistent = settings.OutContType[Slot];

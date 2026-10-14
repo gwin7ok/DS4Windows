@@ -69,5 +69,7 @@
         bool IsHidHideInstalled();
         /// <summary>導入済みの ViGEmBus の情報を取得し直す（<c>Global.RefreshViGEmBusInfo</c>）。</summary>
         void RefreshViGEmBusInfo();
+        /// <summary>導入済みの ViGEmBus のバージョン（<c>Global.vigemBusVersionInfo</c> への薄い委譲。<see cref="RefreshViGEmBusInfo"/> で更新される）。</summary>
+        System.Version ViGEmBusVersion { get; }
     }
 }

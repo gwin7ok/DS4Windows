@@ -68,6 +68,9 @@ namespace DS4Windows
 
         public bool IsHidHideInstalled() => Global.IsHidHideInstalled();
 
+        // Phase6-Step10-4-3a: OutputSlotManager が都度読み取る（RefreshViGEmBusInfo で更新されるため、キャッシュしない）
+        public System.Version ViGEmBusVersion => Global.vigemBusVersionInfo;
+
         public void RefreshViGEmBusInfo() => Global.RefreshViGEmBusInfo();
 
         // 静的初期化の循環を避けるため、この計算は Global のメソッド（Global.IsWin8OrGreater 等）を呼ばず自己完結させる。

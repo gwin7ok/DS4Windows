@@ -337,3 +337,51 @@
 - **挙動の変更**: 失敗した適用が、成功として返されなくなる。5〜8 番目のスロットも対象になる。
 - **テスト**: `ProfileApplicationService_SlotLimit_FollowsEnvironment_NotFixedFour`（上限の内側は受け入れ、上限と負の値は拒否）。`ProfileApplicationService_RequiresAllDependencies` に環境サービスを追加。
 - **実機確認項目**: 1〜4 番目のコントローラーでの、プロファイル切替アクションと復帰、自動プロファイル（回帰確認）。5〜8 番目は先送り（`Phase6-Step11-Plan.md` §3.3 に登録）。
+
+## 24. Step10-4-2f の完了と、Step10-4-3（クラスタ 2: 出力スロット系）の計画。2026-10-15
+- **Step10-4-2f**: ビルド・テストビルド・テスト実行成功。実機確認（プロファイル切替と復帰、自動プロファイルの切替と復帰）問題なし。クラスタ 1 は全て完了。
+
+### 24.1 現行コードの再確認
+- **OutputSlotPersist**（静的クラス）: `Global.appdatapath`×2（読み書きの保存先）、`Global.exeversion`×1（ヘッダーのコメント。`OutputSlotPersistDTO` にも 1 件）。呼び出し元は `OutputSlotStore`（2）と `ControlService`（`WriteConfig` と `ReadConfig` の各 1 か所）。
+- **OutputSlotStore**: `IPathService` は省略可（`AppHost`、`new PathService()` のフォールバック）。受け取った `_pathService` は読み書きに使われておらず、保存先は `Persist` 側の `Global.appdatapath` のまま（注入が実質無効）。
+- **OutputSlotManager**: `Global.vigemBusVersionInfo`×2（`AllocateController`）。`ViGEmBus` のバージョンは、実行時に `RefreshViGEmBusInfo` で更新されるため、取得は都度の読み取りが必要。生成箇所は `ControlService`（1）、`OutputSlotService` のフォールバック（1）、テスト（3）。
+- **OutputSlotService**: 全引数が省略可。`Program.rootHub`（`ControlService`）、`control.OutputslotMan`、`AppHost` の `IOutputSlotStore`、`new OutputSlotManager()`、`new OutputSlotStore()` のフォールバック。`Global.outDevTypeTemp`／`activeOutDevType` は Phase7 へ温存済み（Step5 決定）。生成箇所は DI、`ScpUtil.cs` の静的フォールバック、テスト約 20 件。
+- **`IEnvironmentService`** には、ViGEmBus のバージョンを返す契約が無い（`IsViGEmBusInstalled`／`IsRunningSupportedViGEmBus` などのみ）。
+
+### 24.2 方針（案）と分割
+- **10-4-3a（永続化と割り当て）**
+  - **Q1**: `OutputSlotPersist.ReadConfig／WriteConfig` に保存先のディレクトリ（`IPathService.AppDataPath`）を引数として渡す形にし、`Global.appdatapath` を除去する。`OutputSlotStore` は `IPathService` を必須にし、渡す。`ControlService` の 2 か所の呼び出しは、保持している `_pathService` を渡す形に更新する（`ControlService` の他の置換は 10-4-5）。`Global.exeversion`（不変の値）は、温存する。
+  - **Q2**: `IEnvironmentService` に `Version ViGEmBusVersion`（`Global.vigemBusVersionInfo` への薄い委譲）を追加。`OutputSlotManager` は `Func<Version>` を必須引数にし、都度読み取る。`ControlService` が `() => _environmentService.ViGEmBusVersion` を渡す。
+- **10-4-3b（出力スロットサービス）**
+  - **Q3**: `OutputSlotService` の引数を、全て必須にする: `Func<OutputSlotManager>`（スロット管理の取得。`ControlService` が所有する実体を、遅延で取得）、`IOutputSlotStore`、`Func<ControlService>`。`DI` は `sp.GetRequiredService<ControlService>().OutputslotMan` を渡す。`new OutputSlotManager()`／`new OutputSlotStore()`／`Program.rootHub`／`AppHost` を削除。`Global` の静的フォールバックは、遅延生成にする。
+- **テスト**: `TestRepositoryFactory` に出力スロット系の生成ヘルパーを追加し、約 25 件を置換。ガードテストを追加。
+- **実機確認項目**: 出力スロットの管理画面（Output Slots）での、仮想コントローラーの追加・取り外し・状態表示。コントローラー接続時の仮想デバイス（X360／DS4）の生成。出力スロットの設定の保存と、再起動後の復元（`OutputSlots.xml`）。
+
+### 24.3 決定事項（要承認）
+- **Q1**: `OutputSlotPersist` の保存先を引数にする（A）／静的クラスのまま `Global` を温存する（B）。
+- **Q2**: `IEnvironmentService` に `ViGEmBusVersion` を追加し `Func<Version>` で渡す（A）／`OutputSlotManager` を温存する（B）。
+- **Q3**: `OutputSlotService` を `Func<OutputSlotManager>`＋`Func<ControlService>` で必須化する（A）／温存する（B）。
+
+## 25. Step10-4-3（クラスタ 2）の実装記録。2026-10-15
+- **決定**: Q1＝A、Q2＝A、Q3＝A（すべて推奨案）。10-4-3a と 10-4-3b は、コンパイルの依存（`OutputSlotService` が `new OutputSlotManager()` を使うため）から、一括で実装した。
+- **変更**
+  - `OutputSlotPersist`: `ReadConfig`／`WriteConfig` が保存先のディレクトリを引数で受け取る（`Global.appdatapath` を除去）。`Global.exeversion` は温存。
+  - `OutputSlotStore`: `IPathService` を必須化し、保存先として渡す（これまで注入が実質無効だった状態を是正）。
+  - `IEnvironmentService`／`EnvironmentService`: `ViGEmBusVersion` を追加（`Global.vigemBusVersionInfo` への薄い委譲）。
+  - `OutputSlotManager`: `Func<Version>` を必須化し、割り当て時に都度読み取る。`ControlService` は `() => _environmentService.ViGEmBusVersion` を渡し、`OutputSlotPersist` の 2 か所の呼び出しに `_pathService.AppDataPath` を渡す。
+  - `OutputSlotService`: `Func<OutputSlotManager>`／`IOutputSlotStore`／`Func<ControlService>` を必須化。`Program.rootHub`／`AppHost`／`new` を削除（`Phase6-Step10 §8` の TODO を解消）。`ServiceRegistration` はファクトリー登録。`Global` の静的フォールバックは、初回アクセス時の生成に変更。
+- **テスト**: `TestRepositoryFactory` に `CreateOutputSlotManager`／`CreateOutputSlotService` を追加し、生成箇所を置換。`Step10FourTwoGlobalReferenceGuardTests` に対象 4 ファイルと、必須引数・保存先の注入・バージョンの都度読み取りを追加。
+- **実機確認項目**: 出力スロット管理画面（Output Slots）での仮想コントローラーの追加・取り外し・状態表示、コントローラー接続時の仮想デバイス（X360／DS4）の生成、出力スロットの保存と再起動後の復元（`OutputSlots.xml`）。
+
+## 26. Step10-4-3 のテスト失敗と既存の不具合の発見。2026-10-15
+- **事象**: `OutputSlotStore_Save_UsesInjectedPath` が、`store.Save(manager)` の戻り値 `false` で失敗した。
+- **原因**: `OutputSlotPersist.WriteConfig` は、書き込みに成功しても `result` を `true` にせず、常に `false` を返す。**上流（2020-05-21、`8071fcfc`）から存在する不具合**で、今回の移行の回帰ではない。影響: `ControlService` は戻り値を使わず、`IOutputSlotService.SaveOutputSlots()` の呼び出し元は 0 件のため、実害はない。
+- **対応**: テストは、戻り値ではなく、注入された保存先へのファイル出力のみを検証する形に変更した。戻り値の是正は、ユーザーの判断（案A: 書き込み成功時に `result = true`／案B: TODO を付けて温存）を待つ。
+- **決定（2026-10-15）**: 案A。`OutputSlotPersist.WriteConfig` は、書き込み成功時に `result = true` を返す（1 行の是正）。テストは、戻り値の `true` を検証する形に戻した。失敗時（`UnauthorizedAccessException`）は従来どおり `false`。
+
+## 27. StandaloneTests の失敗（ActionDoneFlagRoundtrip）。2026-10-15
+- **事象**: `StandaloneTests.ActionManagerSmokeTests.ActionDoneFlagRoundtrip` が、10-4-3 の後に単独実行でも失敗（`IsToggledOn should be true after set`）。`ActionManager` 自体は未変更。
+- **原因（コード読解による推定。実行による確認は未了）**: 旧 `Global` の静的初期化で、`new OutputSlotService()`（フォールバック）が `AppHost` を触り、DI ホストがテストの最初の `GetStateFor` より前に作られていた（K7-1 の副作用）。10-4-3 でフォールバックを遅延生成にしたため、ホストが `GetStateFor` の途中で初めて作られ、1 回目（静的辞書）と 2 回目（`DefaultActionManager`）で別の状態を返した。テストが、ホストの生成タイミングに暗黙に依存していた。
+- **対応**: テストの冒頭で `AppHost.CreateHost()` を明示的に呼ぶ。本番は `App` が明示的にホストを構築するため影響しない。
+- **関連**: ホストの生成を `Global` の静的初期化に頼らない整理は、K7-1（`Phase6-Status.md` §6.5）の持ち越しに含まれる。
+- **確認（2026-10-15）**: 修正後、`ActionDoneFlagRoundtrip` が成功。原因の推定（ホストの生成タイミングへの暗黙の依存）が裏づけられた。

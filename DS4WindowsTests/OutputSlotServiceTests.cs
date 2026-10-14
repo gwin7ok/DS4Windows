@@ -34,7 +34,7 @@ namespace DS4WindowsTests
         [Fact]
         public void InitialState_ShouldHaveNoOutputDevices()
         {
-            var service = new OutputSlotService();
+            var service = TestRepositoryFactory.CreateOutputSlotService();
 
             for (int i = 0; i < OutputSlotService.MAX_SLOTS; i++)
             {
@@ -46,7 +46,7 @@ namespace DS4WindowsTests
         [Fact]
         public void OutputSlotChangedEvent_ShouldFireOnSetOutputDevice()
         {
-            var service = new OutputSlotService();
+            var service = TestRepositoryFactory.CreateOutputSlotService();
             OutputSlotChangedEventArgs receivedArgs = null;
 
             service.OutputSlotChanged += (s, e) => receivedArgs = e;
@@ -62,7 +62,7 @@ namespace DS4WindowsTests
         [Fact]
         public void SetOutputDevice_OutOfBounds_DoesNotFireEvent()
         {
-            var service = new OutputSlotService();
+            var service = TestRepositoryFactory.CreateOutputSlotService();
             int fired = 0;
             service.OutputSlotChanged += (s, e) => fired++;
 
@@ -75,7 +75,7 @@ namespace DS4WindowsTests
         [Fact]
         public void OutOfBounds_ShouldBeHandledSafely()
         {
-            var service = new OutputSlotService();
+            var service = TestRepositoryFactory.CreateOutputSlotService();
 
             Assert.Null(service.GetOutputDevice(-1));
             Assert.Null(service.GetOutputDevice(8));
@@ -93,7 +93,7 @@ namespace DS4WindowsTests
             var original = Global.OutputSlotServiceInstance;
             try
             {
-                var service = new OutputSlotService();
+                var service = TestRepositoryFactory.CreateOutputSlotService();
                 Global.OutputSlotServiceInstance = service;
 
                 Assert.Same(service, Global.OutputSlotServiceInstance);
@@ -108,7 +108,7 @@ namespace DS4WindowsTests
         public void LoadAndSave_DelegatesToStoreSuccessfully()
         {
             var mockStore = new MockOutputSlotStore();
-            var service = new OutputSlotService(new OutputSlotManager(), mockStore);
+            var service = TestRepositoryFactory.CreateOutputSlotService(TestRepositoryFactory.CreateOutputSlotManager(), mockStore);
 
             bool loadResult = service.LoadOutputSlots();
             Assert.True(loadResult);
@@ -122,7 +122,7 @@ namespace DS4WindowsTests
         [Fact]
         public void OutputSlots_ReturnsInitializedSlots()
         {
-            var service = new OutputSlotService(new OutputSlotManager());
+            var service = TestRepositoryFactory.CreateOutputSlotService(TestRepositoryFactory.CreateOutputSlotManager());
             var slots = service.OutputSlots;
 
             Assert.NotNull(slots);
@@ -134,14 +134,14 @@ namespace DS4WindowsTests
         [Fact]
         public void OutDevTypeTemp_ShouldReferenceSameArrayAsGlobal()
         {
-            var service = new OutputSlotService();
+            var service = TestRepositoryFactory.CreateOutputSlotService();
             Assert.Same(Global.outDevTypeTemp, service.OutDevTypeTemp);
         }
 
         [Fact]
         public void ActiveOutDevType_ShouldReferenceSameArrayAsGlobal()
         {
-            var service = new OutputSlotService();
+            var service = TestRepositoryFactory.CreateOutputSlotService();
             Assert.Same(Global.activeOutDevType, service.ActiveOutDevType);
         }
     }

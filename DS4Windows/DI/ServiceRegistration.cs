@@ -26,7 +26,11 @@ namespace DS4Windows.DI
 
             // Phase 5 Step 12: 出力スロット永続化・管理サービス
             services.AddSingleton<IOutputSlotStore, OutputSlotStore>();
-            services.AddSingleton<IOutputSlotService, OutputSlotService>();
+            // Phase6-Step10-4-3: スロット管理の実体は ControlService が所有する。循環を避けるため、遅延で取得する
+            services.AddSingleton<IOutputSlotService>(sp => new OutputSlotService(
+                () => sp.GetRequiredService<ControlService>().OutputslotMan,
+                sp.GetRequiredService<IOutputSlotStore>(),
+                sp.GetRequiredService<Func<ControlService>>()));
 
             // Phase6-Step10-4-2c: BackingStore は DI 未登録のため、Global.store を渡す。ControlService は遅延解決（循環の回避）
             services.AddSingleton<IProfileSettingsService>(sp => new ProfileSettingsService(

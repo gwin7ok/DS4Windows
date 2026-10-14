@@ -8,9 +8,9 @@ namespace DS4Windows.Services
     {
         private readonly IPathService _pathService;
 
-        public OutputSlotStore(IPathService pathService = null)
+        public OutputSlotStore(IPathService pathService)
         {
-            _pathService = pathService ?? DS4WinWPF.AppHost.GetService<IPathService>() ?? new PathService();
+            _pathService = pathService ?? throw new ArgumentNullException(nameof(pathService));
         }
 
         public bool Load(OutputSlotManager slotManager)
@@ -18,7 +18,7 @@ namespace DS4Windows.Services
             if (slotManager == null) return false;
             try
             {
-                bool result = OutputSlotPersist.ReadConfig(slotManager);
+                bool result = OutputSlotPersist.ReadConfig(slotManager, _pathService.AppDataPath);
                 if (AppLogger.IsTraceEnabled)
                     AppLogger.LogTrace($"[DI] OutputSlotStore.Load: result={result}");
                 return result;
@@ -36,7 +36,7 @@ namespace DS4Windows.Services
             if (slotManager == null) return false;
             try
             {
-                bool result = OutputSlotPersist.WriteConfig(slotManager);
+                bool result = OutputSlotPersist.WriteConfig(slotManager, _pathService.AppDataPath);
                 if (AppLogger.IsTraceEnabled)
                     AppLogger.LogTrace($"[DI] OutputSlotStore.Save: result={result}");
                 return result;

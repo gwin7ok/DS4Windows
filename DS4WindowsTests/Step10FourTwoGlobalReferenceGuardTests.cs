@@ -49,6 +49,11 @@ namespace DS4WindowsTests
             ["DS4Windows/DS4Control/Profiles/AutoProfileHolder.cs"] = new[] { "MAX_DS4_CONTROLLER_COUNT" },
             ["DS4Windows/DS4Control/Services/AutoProfileService.cs"] = new[] { "autoProfileSwitchNotifyChoice", "CreateAutoProfiles" },
             // 10-4-2c: 薄い委譲（実装本体が Global にあるもの）と、不変の定数表
+            // 10-4-3: 実行時配列の実体（Phase7 へ温存。Step5 決定）と、不変の値（実行ファイルのバージョン）
+            ["DS4Windows/DS4Control/Services/OutputSlotService.cs"] = new[] { "outDevTypeTemp", "activeOutDevType" },
+            ["DS4Windows/DS4Control/Services/OutputSlotStore.cs"] = new string[0],
+            ["DS4Windows/DS4Control/OutputSlotManager.cs"] = new string[0],
+            ["DS4Windows/DS4Control/OutputSlotPersist.cs"] = new[] { "exeversion" },
             ["DS4Windows/DS4Control/Services/ProfileSettingsService.cs"] =
                 new[] { "RefreshActionAlias", "RefreshExtrasButtons", "defaultButtonMapping", "reverseX360ButtonMapping" },
         };
@@ -183,6 +188,48 @@ namespace DS4WindowsTests
                 Assert.Contains("ActionTypeId." + type, block);
             }
             Assert.Contains("RequiresFreshPressAfterReset", block);
+        }
+
+        [Fact]
+        public void OutputSlot_Services_RequireAllDependencies()
+        {
+            var store = new OutputSlotStore(new PathService());
+            Func<OutputSlotManager> manager = () => null;
+            Func<ControlService> control = () => null;
+
+            Assert.Throws<ArgumentNullException>(() => new OutputSlotStore(null));
+            Assert.Throws<ArgumentNullException>(() => new OutputSlotManager(null));
+            Assert.Throws<ArgumentNullException>(() => new OutputSlotService(null, store, control));
+            Assert.Throws<ArgumentNullException>(() => new OutputSlotService(manager, null, control));
+            Assert.Throws<ArgumentNullException>(() => new OutputSlotService(manager, store, null));
+        }
+
+        [Fact]
+        public void OutputSlotStore_Save_UsesInjectedPath()
+        {
+            string dir = System.IO.Path.Combine(System.IO.Path.GetTempPath(), "ds4w-step10-4-3-" + Guid.NewGuid().ToString("N"));
+            System.IO.Directory.CreateDirectory(dir);
+            try
+            {
+                var store = new OutputSlotStore(new PathService(dir));
+                var manager = TestRepositoryFactory.CreateOutputSlotManager();
+
+                Assert.True(store.Save(manager)); // 書き込み成功時は true を返す（Phase6-Step10-4-Plan.md §26 で是正）
+                Assert.True(System.IO.File.Exists(System.IO.Path.Combine(dir, "OutputSlots.xml")));
+            }
+            finally
+            {
+                try { System.IO.Directory.Delete(dir, true); } catch { }
+            }
+        }
+
+        [Fact]
+        public void OutputSlotManager_ReadsViGEmBusVersionFromProvider()
+        {
+            int calls = 0;
+            var manager = new OutputSlotManager(() => { calls++; return new Version(1, 0, 0, 0); });
+            Assert.NotNull(manager);
+            Assert.Equal(0, calls); // 生成時には読まない（割り当て時に都度読み取る）
         }
 
         [Fact]

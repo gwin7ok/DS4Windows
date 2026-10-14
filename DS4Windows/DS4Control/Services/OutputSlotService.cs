@@ -9,9 +9,14 @@ namespace DS4Windows
 {
     public class OutputSlotService : IOutputSlotService
     {
-        private readonly OutputSlotManager _slotManager;
+        // Phase6-Step10-4-3: 全ての依存を必須化（Program.rootHub／AppHost／new のフォールバックを廃止。Phase6-Step10 §8 の TODO を解消）。
+        // ControlService は Func<IOutputSlotService> で本サービスへ依存している（Phase6-Step2 決定D1）ため、直接のコンストラクタ注入は
+        // 循環する。Func による遅延解決で受け取る（決定 D4-3）。スロット管理（OutputSlotManager）の実体は ControlService が所有する。
+        private readonly Func<OutputSlotManager> _slotManagerProvider;
         private readonly IOutputSlotStore _store;
-        private readonly ControlService _control;
+        private readonly Func<ControlService> _controlProvider;
+        private OutputSlotManager SlotManager => _slotManagerProvider();
+        private ControlService Control => _controlProvider();
         private readonly object _syncLock = new object();
         public const int MAX_SLOTS = 8;
 
@@ -23,15 +28,12 @@ namespace DS4Windows
         // 実行時接続状態＝ActiveOutDevType、UI一時状態＝OutDevTypeTemp を参照すること。
         private readonly OutputDevice[] _outputDevices = new OutputDevice[MAX_SLOTS];
 
-        public OutputSlotService(OutputSlotManager slotManager = null, IOutputSlotStore store = null, ControlService control = null)
+        public OutputSlotService(Func<OutputSlotManager> slotManagerProvider, IOutputSlotStore store,
+            Func<ControlService> controlProvider)
         {
-            // TODO(技術的負債・Phase6-Step10 §8 で解消予定): ControlService を Program.rootHub（Service Locator 的な
-            // フォールバック）から取得している。ControlService は Func<IOutputSlotService> で本サービスへ依存しているため
-            // （Phase6-Step2 決定D1）、ControlService を直接コンストラクタ注入すると循環する。Func<ControlService> による
-            // 遅延解決、または仮想スロット操作用の出力ポートを導入して Pure DI 化する。
-            _control = control ?? Program.rootHub;
-            _slotManager = slotManager ?? _control?.OutputslotMan ?? new OutputSlotManager();
-            _store = store ?? DS4WinWPF.AppHost.GetService<IOutputSlotStore>() ?? new OutputSlotStore();
+            _slotManagerProvider = slotManagerProvider ?? throw new ArgumentNullException(nameof(slotManagerProvider));
+            _store = store ?? throw new ArgumentNullException(nameof(store));
+            _controlProvider = controlProvider ?? throw new ArgumentNullException(nameof(controlProvider));
         }
 
         public OutputDevice[] OutputDevices
@@ -94,9 +96,9 @@ namespace DS4Windows
         {
             get
             {
-                if (_slotManager?.OutputSlots != null)
+                if (SlotManager?.OutputSlots != null)
                 {
-                    return _slotManager.OutputSlots.ToList().AsReadOnly();
+                    return SlotManager.OutputSlots.ToList().AsReadOnly();
                 }
                 return Array.Empty<OutSlotDevice>();
             }
@@ -105,7 +107,7 @@ namespace DS4Windows
         public OutSlotDevice GetOutSlotDevice(int slotNumber)
         {
             if (slotNumber < 0 || slotNumber >= MAX_SLOTS) return null;
-            return _slotManager?.GetOutSlotDevice(slotNumber);
+            return SlotManager?.GetOutSlotDevice(slotNumber);
         }
 
         // TODO(技術的負債・未接続の DI 契約・Phase6-Step10 §8 で接続予定。詳細は IOutputSlotService.PluginSlot のコメント参照):
@@ -122,9 +124,9 @@ namespace DS4Windows
 
                 // §5.5 最重要ガードレール: ViGEm ネイティブドライバ保護
                 // ControlService の正規公開 API（AttachUnboundOutDev）を経由して安全にプラグイン
-                if (_control != null)
+                if (Control != null)
                 {
-                    _control.AttachUnboundOutDev(slotDevice, devType);
+                    Control.AttachUnboundOutDev(slotDevice, devType);
                 }
 
                 RaiseOutputSlotChanged(slotNumber, devType, GetOutputDevice(slotNumber));
@@ -152,9 +154,9 @@ namespace DS4Windows
 
                 // §5.5 最重要ガードレール: ViGEm ネイティブドライバ保護
                 // ControlService の正規公開 API（DetachUnboundOutDev）を経由して安全にアンプラグ
-                if (_control != null)
+                if (Control != null)
                 {
-                    _control.DetachUnboundOutDev(slotDevice);
+                    Control.DetachUnboundOutDev(slotDevice);
                 }
 
                 SetOutputDevice(slotNumber, null);
@@ -170,14 +172,14 @@ namespace DS4Windows
 
         public bool LoadOutputSlots()
         {
-            if (_slotManager == null || _store == null) return false;
-            return _store.Load(_slotManager);
+            if (SlotManager == null || _store == null) return false;
+            return _store.Load(SlotManager);
         }
 
         public bool SaveOutputSlots()
         {
-            if (_slotManager == null || _store == null) return false;
-            return _store.Save(_slotManager);
+            if (SlotManager == null || _store == null) return false;
+            return _store.Save(SlotManager);
         }
 
         // TODO(技術的負債・Phase7 で解消予定、Phase6-Step5 決定2＝案X で温存、2026-09-24):

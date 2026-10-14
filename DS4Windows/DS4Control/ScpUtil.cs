@@ -862,7 +862,18 @@ namespace DS4Windows
         }
 
         private static DS4Windows.DI.IOutputSlotService outputSlotService = null;
-        private static readonly DS4Windows.DI.IOutputSlotService fallbackOutputSlotService = new OutputSlotService();
+        // Phase6-Step10-4-3: 必須引数の依存を、静的初期化順序に依存せず解決するため、初回アクセス時に生成する。
+        // ControlService（Program.rootHub）が未生成の場合は、独立したスロット管理を 1 つだけ保持して返す（従来と同じ）。
+        private static DS4Windows.DI.IOutputSlotService fallbackOutputSlotService;
+
+        private static DS4Windows.DI.IOutputSlotService CreateFallbackOutputSlotService()
+        {
+            OutputSlotManager standalone = null;
+            return new OutputSlotService(
+                () => Program.rootHub?.OutputslotMan ?? (standalone ??= new OutputSlotManager(() => vigemBusVersionInfo)),
+                new DS4Windows.Services.OutputSlotStore(new PathService()),
+                () => Program.rootHub);
+        }
 
         public static DS4Windows.DI.IOutputSlotService OutputSlotServiceInstance
         {
@@ -882,7 +893,7 @@ namespace DS4Windows
 
                 AppLogger.LogTrace("[Legacy] Global.OutputSlotServiceInstance: Fallback instance used");
                 AppLogger.LogToGui("[Legacy] Global.OutputSlotServiceInstance: Fallback instance used", false, true);
-                return fallbackOutputSlotService;
+                return fallbackOutputSlotService ??= CreateFallbackOutputSlotService();
             }
             set => outputSlotService = value;
         }

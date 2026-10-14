@@ -321,7 +321,7 @@ namespace DS4Windows
                 };
             }
 
-            outputslotMan = new OutputSlotManager();
+            outputslotMan = new OutputSlotManager(() => _environmentService.ViGEmBusVersion);
             //outputslotMan.SlotAssigned += OutputslotMan_SlotAssigned;
             deviceOptions = _appSettings.DeviceOptions;
 
@@ -699,7 +699,7 @@ namespace DS4Windows
         public void ShutDown()
         {
             outputslotMan.ShutDown();
-            OutputSlotPersist.WriteConfig(outputslotMan);
+            OutputSlotPersist.WriteConfig(outputslotMan, _pathService.AppDataPath);
 
             eventDispatcher.InvokeShutdown();
             eventDispatcher = null;
@@ -828,7 +828,7 @@ namespace DS4Windows
 
         public void LoadPermanentSlotsConfig()
         {
-            OutputSlotPersist.ReadConfig(outputslotMan);
+            OutputSlotPersist.ReadConfig(outputslotMan, _pathService.AppDataPath);
         }
 
         public void UpdateHidHideAttributes()
