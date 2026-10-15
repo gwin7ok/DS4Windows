@@ -24,7 +24,7 @@
 | **Step 9** | 主要4大ViewModel Pure DI化 | `SettingsVM`, `MainWindowVM`, `TrayIconVM`, `ProfileSettingsVM` | 114箇所（2026-10-13 再集計。定数13を除く） | **完了（2026-10-14）** | `Phase6-Step9-Plan.md`（§0A が現行の正）、`Phase6-Step9-Completion-Report.md` | Step9-0〜9-5（3c・3d を追加） |
 | **Step 9b** | PR #1 の Copilot レビュー指摘 14 件の検証と是正（Step7b と同様の追加 Step） | `DefaultProfileSwitcher`、`DefaultActionManager`、`MouseOutputAction`、`LoggerHolder`／`NLog.config`、`DefaultMacroPlayer`、`LaunchProcessAction` ほか | 指摘 14 件（High 4、Medium 7、Low 3。うち本 Step は 11 件、Step10 へ 2 件、Step10b へ 2 件［F12・F13 は台帳に既出］） | **完了（2026-10-14）** | `Phase6-Step9b-Plan.md`、`Phase6-Step9b-Completion-Report.md` | Step9b-0〜9b-5 完了（実機確認の 8 スロット項目のみ Step11 へ先送り） |
 | **Step 10**| 小型UI/ViewModel ドメイン別DI化| 小型View 11, 小型VM 12 等 | 72箇所 | 計画確定・承認済み | `Phase6-Step10-Plan.md` | **完了（2026-10-15）**。Step10-0〜10-5・3b・3c・3d 完了（先送り 3 項目は Step11 台帳）。`Phase6-Step10-Completion-Report.md` |
-| **Step 10b**| 1ファイル1型の全数是正 | 複数型55ファイル（新設203） | 分割のみ | 計画確定・承認待ち | `Phase6-Step10b-Plan.md` | Step10 の後・Step11 の前（Step13 の後に実施） |
+| **Step 10b**| 1ファイル1型の全数是正 | 複数型55ファイル（新設196） | 分割のみ | **完了（2026-10-15）** | `Phase6-Step10b-Plan.md`、`Phase6-Step10b-Completion-Report.md` | W1〜W5 と改名を完了（型名 618＝618、複数型 0）。次は Step11 |
 | **Step 11**| 2層構造・階層化総合検証 | 全自動テスト ＋ 実機検証 | - | 計画確定・承認待ち | `Phase6-Step11-Plan.md` | 未着手 |
 | **Step 12**| 旧シム物理削除 ＆ 完了判定 | `ScpUtil.cs` | 呼出元0件ラッパー | 計画確定・承認待ち | `Phase6-Step12-Plan.md` | 未着手 (PR-1〜4) |
 | **Step 13**| `.cs` ファイル配置の統一 | `DS4Windows/` 配下の44ファイル | git mv のみ | **完了（44/44、2026-09-21 確定）** | `Phase6-Step13-Plan.md` | 13-6 は Phase6 範囲外（最終クリーンアップ） |
@@ -245,8 +245,9 @@
 
 ---
 
-### Phase6-Step10b: 1ファイル1型（原則1）の全数是正【計画確定・承認待ち】
-- **進捗率**: **0%（未着手・計画確定済み）**
+### Phase6-Step10b: 1ファイル1型（原則1）の全数是正【完了（2026-10-15）】
+- **完了（2026-10-15）**: W1〜W5 と付録 B の改名を完了。複数型ファイル 55 → 0（新設 196）、型名の一覧は分割前後で一致（618＝618）。ビルド・テスト・起動スモークは各ウェーブで成功。`.github/copilot-instructions.md` §3.3 原則 1 の過渡期ルールを終了。詳細は `Phase6-Step10b-Completion-Report.md`。次は Step11（総合検証）→ Step12。
+- **進捗率**: **100%（2026-10-15 完了）**
 - **確定方針**: 位置は Step10 と Step11 の間（案C）。規約の過渡期ルールを追加（既存の複数型ファイルは本 Step で一括分割し、それまでは分割しない）。
 - **対象**: 複数型ファイル55件、新設203ファイル（class 150、enum 34、struct 12、delegate 6、interface 1）。単一型でファイル名が型名と異なる3件は改名。
 - **ウェーブ**: W1 データ型・補助型（19件）→ W2 DI 層（5件）→ W3 UI 層（20件）→ W4 デバイス・コア層（10件）→ W5 `ScpUtil.cs`（1件・29型）。
