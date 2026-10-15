@@ -125,6 +125,11 @@
   - `IDeviceStateService`／`INotificationService`／`IOutputSlotService`／`IProfileSettingsService`: イベント引数クラス（`DeviceStateChangedEventArgs`、`NotificationEventArgs`、`OutputSlotChangedEventArgs`、`ProfileSettingChangedEventArgs`）を別ファイルへ。
   - ラチェットの基準値: `DI/AppHost.cs` 4＝2＋`DI/Compat/AppHost.cs` 2（合計は不変。`Step10FourGlobalRatchetGuardTests` の失敗を受けて更新）。
   - ソース走査テストの影響: W2 の対象を参照するテストは無い。
+  - **W2 の結果（2026-10-15）**: ビルド・テストビルド・テスト実行成功。
+- **W3（2026-10-15 適用済み。ビルド・テストの結果待ち）**: 19 ファイルを分割し、新設 32 ファイル。複数型ファイルは 30 → 11。型名の一覧は一致（618＝618）。ツールの自己検証は全件 `VERIFY-OK`。
+  - 対象: `BindingWindow.xaml.cs`、`LanguageSelectDialog.xaml.cs`、`MainWindow.xaml.cs`、`ProfileEditor.xaml.cs`、`RecordBox.xaml.cs`、`StickCalibrationWindow.xaml.cs`、`WelcomeDialog.xaml.cs`、ViewModels 12 ファイル。`.xaml.cs` は、`partial class` を元ファイルに残し、同居していた別の型だけを新設ファイルへ移した（XAML は変更なし）。
+  - ラチェットの基準値: `MainWindow` 7＝1＋`ImageLocationPaths` 6、`ProfileEditor` 37＝32＋`ResourcePaths` 5、`ControllerListViewModel` 4＝0＋`CompositeDeviceModel` 4、`MappingListViewModel` 3＝0＋`MappedControl` 3、`RecordBoxViewModel` 7＝1＋`MacroStepItem` 6（合計は不変）。
+  - ソース走査テストの影響: `ProfileSettingsViewModelGlobalReferenceGuardTests` が、`PresetMenuHelper` のコンストラクターを `ProfileSettingsViewModel.cs` から探していたため、`PresetMenuHelper.cs` を読むよう更新。あわせて、分離した型（`PresetMenuHelper`、各 `*Choice`）にも、定数以外の `Global`／`AppHost`／`Program.rootHub` が無いことの検査を広げた。他のガードテストは「許可リスト以外が無い」検査のみのため変更不要。
   - （W1 の補足）ソース走査テストの影響: 確認した範囲では、W1 の対象を参照するテスト（`Step10FourTwoGlobalReferenceGuardTests`、`Step10GroupTwoGlobalReferenceGuardTests`）は、元ファイルに残った型のみを検査しており、変更不要。
 
 ---

@@ -2237,44 +2237,4 @@ Suspend support not enabled.", true);
             process.PriorityClass = selectedPriority;
         }
     }
-
-    public class ImageLocationPaths
-    {
-        public string NewProfile { get => $"{Global.RESOURCES_PREFIX}/{App.Current.FindResource("NewProfileImg")}"; }
-        public event EventHandler NewProfileChanged;
-
-        public string EditProfile { get => $"{Global.RESOURCES_PREFIX}/{App.Current.FindResource("EditImg")}"; }
-        public event EventHandler EditProfileChanged;
-
-        public string DeleteProfile { get => $"{Global.RESOURCES_PREFIX}/{App.Current.FindResource("DeleteImg")}"; }
-        public event EventHandler DeleteProfileChanged;
-
-        public string DuplicateProfile { get => $"{Global.RESOURCES_PREFIX}/{App.Current.FindResource("CopyImg")}"; }
-        public event EventHandler DuplicateProfileChanged;
-
-        public string ExportProfile { get => $"{Global.RESOURCES_PREFIX}/{App.Current.FindResource("ExportImg")}"; }
-        public event EventHandler ExportProfileChanged;
-
-        public string ImportProfile { get => $"{Global.RESOURCES_PREFIX}/{App.Current.FindResource("ImportImg")}"; }
-        public event EventHandler ImportProfileChanged;
-
-        public ImageLocationPaths()
-        {
-            App current = App.Current as App;
-            if (current != null)
-            {
-                current.ThemeChanged += Current_ThemeChanged;
-            }
-        }
-
-        private void Current_ThemeChanged(object sender, EventArgs e)
-        {
-            NewProfileChanged?.Invoke(this, EventArgs.Empty);
-            EditProfileChanged?.Invoke(this, EventArgs.Empty);
-            DeleteProfileChanged?.Invoke(this, EventArgs.Empty);
-            DuplicateProfileChanged?.Invoke(this, EventArgs.Empty);
-            ExportProfileChanged?.Invoke(this, EventArgs.Empty);
-            ImportProfileChanged?.Invoke(this, EventArgs.Empty);
-        }
-    }
 }

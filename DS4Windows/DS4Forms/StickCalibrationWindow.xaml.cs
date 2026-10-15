@@ -60,9 +60,3 @@ public partial class StickCalibrationWindow : Window
         Close();
     }
 }
-
-public enum Stick
-{
-    Left,
-    Right
-}

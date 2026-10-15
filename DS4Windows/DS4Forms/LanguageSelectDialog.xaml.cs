@@ -28,12 +28,6 @@ using System.Windows.Input;
 
 namespace DS4WinWPF.DS4Forms
 {
-    public class LanguageInfo
-    {
-        public string CultureCode { get; set; }
-        public string DisplayName { get; set; }
-        public string NativeName { get; set; }
-    }
 
     /// <summary>
     /// Interaction logic for LanguageSelectDialog.xaml

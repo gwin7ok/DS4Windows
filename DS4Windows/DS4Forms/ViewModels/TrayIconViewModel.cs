@@ -486,18 +486,4 @@ namespace DS4WinWPF.DS4Forms.ViewModels
             RequestShutdown?.Invoke(this, EventArgs.Empty);
         }
     }
-
-    public class ControllerHolder
-    {
-        private DS4Device device;
-        private int index;
-        public DS4Device Device { get => device; }
-        public int Index { get => index; }
-
-        public ControllerHolder(DS4Device device, int index)
-        {
-            this.device = device;
-            this.index = index;
-        }
-    }
 }

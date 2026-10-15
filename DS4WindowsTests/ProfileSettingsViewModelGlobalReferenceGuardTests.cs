@@ -80,14 +80,29 @@ namespace DS4WindowsTests
             string text = ReadSourceWithoutComments(VmPath);
             if (text == null) return;
 
-            foreach (Match m in Regex.Matches(text, @"\bGlobal\.(\w+)"))
+            // Phase6-Step10b W3 で分離した型（PresetMenuHelper、各 Choice）も同じ基準で検査する
+            string[] relatedPaths =
             {
-                Assert.True(m.Groups[1].Value == "ASSEMBLY_RESOURCE_PREFIX",
-                    $"ProfileSettingsViewModel.cs に定数以外の Global 参照が残っている: Global.{m.Groups[1].Value}");
-            }
+                VmPath,
+                "DS4Windows/DS4Forms/ViewModels/PresetMenuHelper.cs",
+                "DS4Windows/DS4Forms/ViewModels/TriggerModeChoice.cs",
+                "DS4Windows/DS4Forms/ViewModels/TwoStageChoice.cs",
+                "DS4Windows/DS4Forms/ViewModels/TriggerEffectChoice.cs",
+            };
+            foreach (string relative in relatedPaths)
+            {
+                string src = relative == VmPath ? text : ReadSourceWithoutComments(relative);
+                if (src == null) continue;
 
-            Assert.DoesNotContain("AppHost", text);
-            Assert.DoesNotContain("Program.rootHub", text);
+                foreach (Match m in Regex.Matches(src, @"\bGlobal\.(\w+)"))
+                {
+                    Assert.True(m.Groups[1].Value == "ASSEMBLY_RESOURCE_PREFIX",
+                        $"{relative} に定数以外の Global 参照が残っている: Global.{m.Groups[1].Value}");
+                }
+
+                Assert.DoesNotContain("AppHost", src);
+                Assert.DoesNotContain("Program.rootHub", src);
+            }
         }
 
         [Fact]
@@ -105,7 +120,10 @@ namespace DS4WindowsTests
             // targetDevice 以外は省略可能にしない（既定値の指定は 1 つだけ）
             Assert.Single(Regex.Matches(args, "="));
 
-            Match helper = Regex.Match(text, @"public PresetMenuHelper\(([^)]*)\)");
+            // PresetMenuHelper は Phase6-Step10b W3 で別ファイルへ分離した
+            string helperText = ReadSourceWithoutComments("DS4Windows/DS4Forms/ViewModels/PresetMenuHelper.cs");
+            if (helperText == null) return;
+            Match helper = Regex.Match(helperText, @"public PresetMenuHelper\(([^)]*)\)");
             Assert.True(helper.Success);
             Assert.DoesNotContain("=", helper.Groups[1].Value);
         }

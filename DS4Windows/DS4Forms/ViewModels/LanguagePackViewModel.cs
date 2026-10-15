@@ -126,19 +126,4 @@ namespace DS4WinWPF.DS4Forms.ViewModels
                 .Count() > 0;
         }
     }
-
-    public class LangPackItem
-    {
-        private string name;
-        private string nativeName;
-
-        public string Name { get => name; }
-        public string NativeName { get => nativeName; }
-
-        public LangPackItem(string name, string nativeName)
-        {
-            this.name = name;
-            this.nativeName = nativeName;
-        }
-    }
 }

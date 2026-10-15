@@ -645,9 +645,4 @@ namespace DS4WinWPF.DS4Forms
             }
         }
     }
-
-    public class RecordBoxResourcePaths
-    {
-        public string LeftTouch { get => $"{DS4Windows.Global.RESOURCES_PREFIX}/left touch.png"; }
-    }
 }
