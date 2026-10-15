@@ -1634,7 +1634,9 @@ namespace DS4Windows
             {
                 DateTime current = DateTime.UtcNow;
                 // Set keydown time to 100 ms for now
-                if (current < (onReleaseTime + TimeSpan.FromMilliseconds(100.0)))
+                // Phase6 fix: 上流の比較が逆（'<'）で、離した直後のフレームでフラグが下りて Mapping に届かなかった。
+                // 100ms 経過後にフラグを下ろす（'>='）。
+                if (current >= (onReleaseTime + TimeSpan.FromMilliseconds(100.0)))
                 {
                     releaseButtonActive = false;
                     releaseButtonChanged = true;

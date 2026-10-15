@@ -184,6 +184,7 @@ PowerShell または Python スクリプトにより、ソリューション内�
 | Step10-4-2c | 振動（DualSense の補正を含む）と、振動の自動停止時間の変更が接続中のコントローラーに反映されること。`ProfileSettingsService` の `Program.rootHub` 参照を `Func<ControlService>` に置換したため（`GetRumbleBoost`、`SetRumbleAutostopTime`）。振動するデバイスが無く確認できなかった | 振動・ライトバー系のセクション | 未確認（先送り。2026-10-15） |
 | Step10-4-2f | K1 是正（`ProfileApplicationService` のスロット上限を `ControllerSlotLimit` に変更）: 5〜8 番目のコントローラーで、プロファイル切替アクション、復帰、自動プロファイルが動作すること。5 台以上のコントローラーが必要で確認できない見込み | プロファイル切替・自動プロファイル | 未確認（先送り。2026-10-15。1〜4 番目の回帰確認は実施） |
 | Step10-5 | UDP コマンド（`outputslot.<n>.unplug`／`plugds4`／`plugx360`）が、`IOutputSlotService` 経由（事前条件の確認と UI スレッドへの切り替え）で動作すること。未接続のスロットへの `unplug` で例外にならないこと。UDP を送る環境が無く確認できなかった | 出力スロット管理・UDP | 未確認（先送り。2026-10-15。画面の Plug／Unplug は確認済み） |
+| 既存不具合の是正（Mouse.cs） | Touchpad Button Activation Mode が Release のとき、Left Touch／Right Touch 等に割り当てたキーが、指を離した後に出ること（`releaseButtonActive` の 100ms 判定の比較反転を `>=` に是正。上流 7b2a69c5 由来で移行による退行ではない。ユーザー承認済み 2026-10-15） | タッチパッド | 実機確認待ち（Click／Touch は従来どおり動作すること） |
 
 ---
 
