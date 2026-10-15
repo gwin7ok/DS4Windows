@@ -2007,6 +2007,8 @@ Suspend support not enabled.", true);
                             profileRepo.OlderProfilePath[i] = newProfile;
                         }
                     }
+                    // Phase6-Step10-4-5b: リンクプロファイル（LinkedProfiles.xml と画面表示用の値）の旧名も、新名へ置き換える
+                    profileRepo.ReplaceLinkedProfileName(oldProfile, newProfile);
                 }
 
                 // ディスク全XMLを正（SSOT）としてプロファイル一覧を再構築
@@ -2199,7 +2201,17 @@ Suspend support not enabled.", true);
                     bool? result = renameWin.ShowDialog();
                     if (result.HasValue && result.Value)
                     {
-                        entity.RenameProfile(renameWin.RenameProfileVM.ProfileName);
+                        string oldProfileName = entity.Name;
+                        string newProfileName = renameWin.RenameProfileVM.ProfileName;
+                        entity.RenameProfile(newProfileName);
+                        // Phase6-Step10-4-5b: 名前変更を、全スロットの現在のプロファイル名・リンクプロファイルへ反映し、再適用する
+                        // （従来はファイルと一覧の名前だけを変えていたため、サービスの再開後に Selected Profile が空欄になった）
+                        if (string.Equals(entity.Name, newProfileName, StringComparison.Ordinal) &&
+                            !string.Equals(oldProfileName, newProfileName, StringComparison.Ordinal))
+                        {
+                            SyncProfileListAndControllers(oldProfile: oldProfileName, newProfile: newProfileName);
+                        }
+
                         trayIconVM.PopulateContextMenu();
                     }
                 }

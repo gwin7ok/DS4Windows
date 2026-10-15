@@ -454,3 +454,15 @@
 - **テスト**: `ProfileEditorTargetDeviceGuardTests`（182 行）と `Step10GroupThreeGlobalReferenceGuardTests`（148 行）の検査を、`profileSlotApplier.ApplyToSlot(` に更新。`Step10FourTwoGlobalReferenceGuardTests` に、`MainWindow`／`ControlService` が定数以外の `Global` と `Program.rootHub` を持たない検査を追加。
 - **実機確認項目**: 起動時のログ（ViGEmBus のバージョン表示）、プロファイル一覧の選択による適用、編集画面の保存・名前変更の反映、サービスの開始・停止。
 - **テスト更新（2026-10-15）**: `ControlServiceGlobalReferenceGuardTests` の許容リストから、置換済みの 6 項目（`ProfileSettingsServiceInstance`、`RefreshViGEmBusInfo`、`IsRunningSupportedViGEmBus`、`vigembusVersion`、`vigemInstalled`）を除き、定数 2 件（`MAX_DS4_CONTROLLER_COUNT`、`TEST_PROFILE_INDEX`）のみとした。
+
+## 32. Step10-4-5 の実機確認結果と、Step10-4-5b（名前変更後の Selected Profile 空欄の是正）。2026-10-15
+- **Step10-4-5**: ビルド・テストビルド・テスト実行成功。実機確認（起動ログ、プロファイル適用、編集画面の反映、サービスの開始・停止）問題なし。
+- **発見**: メイン画面のプロファイル一覧から、接続中のコントローラーに適用中のプロファイルの名前を変更し、サービスを停止→開始すると、コントローラータブの Selected Profile が空欄になる。
+- **原因**: `MainWindow` の名前変更（`entity.RenameProfile`）が、ファイルと一覧の項目名だけを変え、各スロットの現在のプロファイル名（`ProfilePath`／`OlderProfilePath`）と、リンクプロファイル（`LinkedProfiles.xml`）の旧名を更新しない。再接続時に旧名を探して、ファイルが無く空欄になる。上流の 2021-06-18（`d8d1c170`、アプリ内での名前変更の許可）から変わっておらず、**今回の移行の回帰ではない**。プロファイル編集画面の名前変更は、Step10-3b で共通経路（`SyncProfileListAndControllers`）を通るようにしてあり、この不具合は無かった。
+- **決定**: 案A（共通経路へ統合し、リンクプロファイルも更新する）。ユーザー承認済み。
+- **変更**
+  - `MainWindow` の名前変更: 成功時に `SyncProfileListAndControllers(oldProfile, newProfile)` を呼ぶ。
+  - `SyncProfileListAndControllers` の名前変更の分岐: `profileRepo.ReplaceLinkedProfileName(oldProfile, newProfile)` を呼ぶ（編集画面の名前変更でも、リンクプロファイルが更新される）。
+  - `IProfileRepository`／`ProfileRepository`: `ReplaceLinkedProfileName` を追加（`LinkedProfiles.xml` の値と `LinkedProfileUI` の旧名を新名へ置換。接続中でないコントローラーの紐づけも対象。置換があれば保存）。
+- **残る範囲（未対応）**: 自動プロファイル（`Auto Profiles.xml`）の旧名の参照置換は、本ステップでは行わない（別の小ステップとして提案）。
+- **実機確認項目**: 接続中のコントローラーに適用中のプロファイルの名前を、メイン画面の一覧から変更→サービスの停止→開始→Selected Profile に新名が表示されること。リンクプロファイルを有効にしたコントローラーで、アプリを再起動しても新名が使われること。

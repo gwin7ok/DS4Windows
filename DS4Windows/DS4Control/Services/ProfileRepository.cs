@@ -288,6 +288,46 @@ namespace DS4Windows
         public bool SaveLinkedProfiles()
             => Global.SaveLinkedProfiles();
 
+        // Phase6-Step10-4-5b: 名前変更後に、リンクプロファイルの旧名が残って「Selected Profile が空欄になる」不具合の是正
+        public int ReplaceLinkedProfileName(string oldName, string newName)
+        {
+            if (string.IsNullOrWhiteSpace(oldName) || string.IsNullOrWhiteSpace(newName)) return 0;
+
+            int replaced = 0;
+            var linked = Global.store.linkedProfiles;
+            if (linked != null)
+            {
+                foreach (string serial in linked.Keys.ToList())
+                {
+                    if (string.Equals(linked[serial], oldName, StringComparison.CurrentCultureIgnoreCase))
+                    {
+                        linked[serial] = newName;
+                        replaced++;
+                    }
+                }
+            }
+
+            string[] ui = Global.LinkedProfileUI;
+            if (ui != null)
+            {
+                for (int i = 0; i < ui.Length; i++)
+                {
+                    if (string.Equals(ui[i], oldName, StringComparison.CurrentCultureIgnoreCase))
+                    {
+                        ui[i] = newName;
+                        replaced++;
+                    }
+                }
+            }
+
+            if (replaced > 0)
+            {
+                Global.SaveLinkedProfiles();
+            }
+
+            return replaced;
+        }
+
         // ---- Phase5-Step13-5: デバイス別・割当済みSpecialAction名リスト ----
         public List<string>[] ProfileActions => Global.ProfileActions;
         public void CacheExtraProfileInfo(int deviceIndex) => Global.CacheExtraProfileInfo(deviceIndex);

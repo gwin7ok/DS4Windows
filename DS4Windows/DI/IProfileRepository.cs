@@ -39,6 +39,13 @@ namespace DS4Windows.DI
         void ChangeLinkedProfile(string serial, string profile);
         void RemoveLinkedProfile(string serial);
         bool SaveLinkedProfiles();
+
+        /// <summary>
+        /// Phase6-Step10-4-5b: プロファイルの名前変更に伴い、リンクプロファイル（コントローラーとプロファイルの紐づけ）と、
+        /// 画面表示用の <see cref="LinkedProfileUI"/> に残っている旧名を、新名へ置き換える。置き換えた件数を返す。
+        /// 1 件以上置き換えた場合は、LinkedProfiles.xml へ保存する（接続中でないコントローラーの紐づけも対象）。
+        /// </summary>
+        int ReplaceLinkedProfileName(string oldName, string newName);
         // ---- Phase5-Step13-5: デバイス別・割当済みSpecialAction名リスト ----
         List<string>[] ProfileActions { get; }
         void CacheExtraProfileInfo(int deviceIndex);

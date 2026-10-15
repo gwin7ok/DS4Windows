@@ -298,6 +298,29 @@ namespace DS4WindowsTests
         }
 
         [Fact]
+        public void ReplaceLinkedProfileName_ReturnsZero_ForBlankOrUnmatchedNames()
+        {
+            var repo = TestRepositoryFactory.CreateProfileRepository(TestRepositoryFactory.CreateProfileSettingsService());
+
+            // 一致が無い場合は保存（ファイルへの書き込み）をしない
+            Assert.Equal(0, repo.ReplaceLinkedProfileName(null, "b"));
+            Assert.Equal(0, repo.ReplaceLinkedProfileName("a", " "));
+            Assert.Equal(0, repo.ReplaceLinkedProfileName("no-such-profile-" + Guid.NewGuid().ToString("N"), "b"));
+        }
+
+        [Fact]
+        public void MainWindow_Rename_UsesCommonSyncPath_AndReplacesLinkedProfiles()
+        {
+            string text = ReadWithoutComments("DS4Windows/DS4Forms/MainWindow.xaml.cs");
+            if (text == null) return;
+
+            // プロファイル一覧からの名前変更も、全スロットの名前更新・再適用の共通経路を通る
+            Assert.Contains("SyncProfileListAndControllers(oldProfile: oldProfileName, newProfile: newProfileName)", text);
+            // 共通経路の名前変更では、リンクプロファイルの旧名も置き換える
+            Assert.Contains("profileRepo.ReplaceLinkedProfileName(oldProfile, newProfile)", text);
+        }
+
+        [Fact]
         public void ProfileApplicationService_RequiresAllDependencies()
         {
             var settings = TestRepositoryFactory.CreateProfileSettingsService();
