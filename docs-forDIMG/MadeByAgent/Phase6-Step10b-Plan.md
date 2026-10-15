@@ -119,7 +119,13 @@
 - **W1（2026-10-15 適用済み。ビルド・テストの結果待ち）**: 20 ファイルを分割し、新設 96 ファイル（元ファイルの削除 5 件を含む出力 101 ファイル）。型名の一覧は分割前後で一致（618＝618）、複数型ファイルは 55 → 35。
   - 新設・変更の内訳: `OneEuroFilter`、`ReaderWriteLockSlimWrappers`（`ReadLocker`／`WriteLocker`）、`ControlServiceDeviceOptions`、`DS4OutDeviceExtras`、DTOXml（`ActionsDTO`、`AppSettingsDTO`、`AutoProfilesDTO`、`LinkedProfilesDTO`、`OutputSlotPersistDTO`、`ProfileDTO`、`XmlDataUtilities`）、`MacroParser`、`PresetOption`、`ProfilePropGroups`（元ファイルを削除。26 型）、`AutoProfileHolder`、`Trigger`（元ファイルを削除。4 型）、`vJoyFeeder`、テスト 3 ファイル（`NullProcessInspector` ほか）。
   - ラチェットの基準値: `ActionsDTO` 6＝4＋2（`SpecialActionSerializer`）、`AutoProfilesDTO` 4＝0＋4（`AutoProfileEntrySerializer`）、`ProfileDTO` 10＝2＋8（`DS4Control*Serializer` ほか）へ引き継いだ。合計は不変。
-  - ソース走査テストの影響: 確認した範囲では、W1 の対象を参照するテスト（`Step10FourTwoGlobalReferenceGuardTests`、`Step10GroupTwoGlobalReferenceGuardTests`）は、元ファイルに残った型のみを検査しており、変更不要。
+  - **W1 の結果（2026-10-15）**: ビルド・テストビルド・テスト実行成功。
+- **W2（2026-10-15 適用済み。ビルド・テストの結果待ち）**: 5 ファイルを分割し、新設 5 ファイル。複数型ファイルは 35 → 30。型名の一覧は一致（618＝618）。
+  - `DI/AppHost.cs`: 互換ラッパー `DS4Windows.AppHost` を `DI/Compat/AppHost.cs`（名前空間は `DS4Windows` のまま）へ分離。元ファイルは `DS4WinWPF.AppHost` のみ。ツールでは扱えない（名前空間が複数）ため、テキストの切り出しで実施（宣言は一字一句同じ）。
+  - `IDeviceStateService`／`INotificationService`／`IOutputSlotService`／`IProfileSettingsService`: イベント引数クラス（`DeviceStateChangedEventArgs`、`NotificationEventArgs`、`OutputSlotChangedEventArgs`、`ProfileSettingChangedEventArgs`）を別ファイルへ。
+  - ラチェットの基準値: `DI/AppHost.cs` 4＝2＋`DI/Compat/AppHost.cs` 2（合計は不変。`Step10FourGlobalRatchetGuardTests` の失敗を受けて更新）。
+  - ソース走査テストの影響: W2 の対象を参照するテストは無い。
+  - （W1 の補足）ソース走査テストの影響: 確認した範囲では、W1 の対象を参照するテスト（`Step10FourTwoGlobalReferenceGuardTests`、`Step10GroupTwoGlobalReferenceGuardTests`）は、元ファイルに残った型のみを検査しており、変更不要。
 
 ---
 ---

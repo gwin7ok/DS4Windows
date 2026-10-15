@@ -28,7 +28,9 @@ namespace DS4WindowsTests
             ["DS4Windows/Actions/DefaultMacroPlayer.cs"] = (0, 0, 1),
             ["DS4Windows/App.xaml.cs"] = (12, 4, 1),
             ["DS4Windows/BezierCurveEditor/BezierCurve.cs"] = (0, 0, 1),
-            ["DS4Windows/DI/AppHost.cs"] = (0, 4, 0),
+            // Phase6-Step10b W2: DS4Windows.AppHost（互換ラッパー）を DI/Compat/AppHost.cs へ分離。件数を引き継いだ（4＝2＋2。合計は不変）
+            ["DS4Windows/DI/AppHost.cs"] = (0, 2, 0),
+            ["DS4Windows/DI/Compat/AppHost.cs"] = (0, 2, 0),
             ["DS4Windows/DI/ServiceRegistration.cs"] = (1, 0, 3),
             ["DS4Windows/DS4Control/ControlService.cs"] = (0, 1, 2),
             ["DS4Windows/DS4Control/DS4LightBar.cs"] = (0, 0, 7),
