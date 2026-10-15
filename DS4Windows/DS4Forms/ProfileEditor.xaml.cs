@@ -731,7 +731,9 @@ namespace DS4WinWPF.DS4Forms
             hoverIndexes[l3ConBtn] = 16;
             hoverIndexes[r3ConBtn] = 17;
 
-            hoverIndexes[brpConBtn] = 44;
+            // Phase6 是正（ユーザー承認 2026-10-15）: 6f04ecf6 で誤って欠落した Left Touch の登録を復元（ホバーで名前が出ない不具合）。
+            // 同コミットが追加した brpConBtn = 44 は 763 行で 43 に上書きされるため削除。
+            hoverIndexes[leftTouchConBtn] = mappingListVM.ControlIndexMap[DS4Controls.TouchLeft]; // 21
 
             App.logHolder?.Logger?.Debug($"[PopulateHoverIndexes] Populated hoverIndexes count={hoverIndexes.Count}");
             hoverIndexes[rightTouchConBtn] = mappingListVM.ControlIndexMap[DS4Controls.TouchRight]; // 22
