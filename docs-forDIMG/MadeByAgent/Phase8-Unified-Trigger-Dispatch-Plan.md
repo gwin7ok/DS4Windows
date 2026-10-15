@@ -229,3 +229,17 @@ Phase6-Step9b の検証（`Phase6-Step9b-Plan.md` §1）で、本フェーズの
 2. **プロファイル切替の連続発火防止は、`Mapping.cs` の上流にだけある（F01、分類C）**。250ms のデバウンスは 2026-09-16（`94066f3c`）に `DefaultProfileSwitcher` から消え、機能上の安全弁は `RequiresFreshPressAfterReset`（80ms の未成立継続で解除）・`IsExecuting`・`ProfileActionChainService` の Profile 型チェーンのスキップに置き換わっている（実機確認済み）。統一ディスパッチが `IProfileSwitcher.SwitchProfile` を `Mapping.cs` の上流を通らずに直接呼ぶ経路を作る場合、これらのガードが効かないため、統一経路の側に同等のガード（成立エッジのみ・解除後の再成立・実行中の再実行防止）を必ず設けること。
 3. **`IManagedActionManager`／`IControllerRegistry` は 2026-10-14 に再登録した（F02）**。2026-09-04（`31dddc43`）から未登録で、静的な `ActionManager` のフォールバックで動いていた。本フェーズの統一抽象化（系統A の `IActionRegistry` を含む）を設計するときは、この登録を前提にしてよい。`IActionRegistry` は実装が静的クラス（`ActionRegistry`）で、呼び出し元もないため、登録していない。
 4. **`LaunchProcessAction` の仕様（F06）**: プログラム起動は、`extra` の `$hidden` キーワードのときだけ非表示、それ以外は `UseShellExecute=true` の既定動作という置換前の仕様に戻した（2026-10-14）。統一経路へ移すときも、この仕様を維持すること。
+
+---
+
+## 追記（2026-10-15）: キー種別（Key）のスペシャルアクションを、統合トリガーディスパッチへ寄せる検討（Phase6-Step10-3d で分離）
+
+- **経緯**: Phase6-Step10-3d で、ボタン種別（Button）のスペシャルアクションの出力（Press／Toggle）を、Mapping.cs の Stage3（Synchronous Button SpecialAction handling）に一本化した。ユーザーから、「キー種別の Press／Toggle も、Stage3 へ統合できないか」との提案があり、本フェーズの計画として別に扱うことを決定した（案 C）。
+- **現状（キー種別）**: 出力先がゲームパッドの出力（outputfieldMapping）ではなく、仮想キーボード（IVirtualKBM のキーの押下・解放、リピート）。状態管理は KeyAction、KeyButtonActionController（PressImpl／ToggleImpl）、ActionManager（IsToggledOn）が担い、MapCustomAction の Key の分岐が、uTrigger（解除トリガー）、UntriggerIndex、BeingTriggered を併用している。
+- **検討事項**
+  - 出力経路の統一: ゲームパッド出力（Stage3）と、仮想キーボード出力（Commit の fakeKeyRepeat、SyntheticDispatcher）を、どの層で統合するか。
+  - 解除トリガー（uTrigger）、遅延（delayTime）、pressRelease など、Key 固有の仕様の保存。
+  - Press／Toggle の状態を、ボタン種別（ButtonSpecialActionOutput）と共通化できる範囲。
+  - ホットパスの負荷（毎ティックの GetStateFor）と割り当て。
+- **前提となる成果**: ButtonSpecialActionOutput（Phase6-Step10-3d）と、Fresh-press ガードの全型への適用（Phase6-Step10-4-2e）。
+- **関連**: Phase6-Step10-3d-Plan.md §7〜8。

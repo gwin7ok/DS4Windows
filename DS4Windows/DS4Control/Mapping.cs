@@ -3237,6 +3237,10 @@ namespace DS4Windows
 
                         bool triggered = IsSpecialActionTriggered(sa, device, cState, eState, tp, fieldMapping);
 
+                        // Phase6-Step10-3d: 出力を ON にするか。Press＝トリガー成立中のみ。Toggle＝立ち上がりで反転し、ON の間は出力する
+                        // （判定は ButtonSpecialActionOutput。状態はキー種別の Toggle と同じ ActionManager の IsToggledOn）
+                        bool outputActive = ButtonSpecialActionOutput.ResolveOutputActive(sa, device, triggered, prevState);
+
                         // Log only on state change (reduce noise) and avoid building strings when trace disabled
                         if (AppLogger.IsTraceEnabled && triggered != prevState)
                         {
@@ -3246,7 +3250,7 @@ namespace DS4Windows
                                 AppLogger.LogTrace($"Trigger no longer active for Button SA '{actionname}' on device {device}");
                         }
 
-                        if (triggered)
+                        if (outputActive)
                         {
                             if (int.TryParse(sa.details, out int btnVal))
                             {
@@ -5294,69 +5298,11 @@ namespace DS4Windows
                             }
                             else if (action.typeID == SpecialAction.ActionTypeId.Button)
                             {
+                                // Phase6-Step10-3d: ボタン種別の出力（Press／Toggle とも）は、Stage3（Synchronous Button SpecialAction handling）
+                                // に一本化した。ここでは、出力の設定も、KeyButtonActionController へのディスパッチも行わない
+                                // （従来のディスパッチは、キーボードのキー操作を前提にした実装で、出力に寄与しておらず、
+                                // タッチパッド・マウス系は出力が二重に加算されていた。Toggle の二重の反転も防ぐ）。
                                 actionFound = true;
-                                try
-                                {
-                                    // SpecialAction of type Button stores the X360Controls id in action.details
-                                    if (int.TryParse(action.details, out int btnVal))
-                                    {
-                                        X360Controls xboxControl = (X360Controls)btnVal;
-
-                                        // Touchpad click
-                                        if (xboxControl == X360Controls.TouchpadClick)
-                                        {
-                                            outputfieldMapping.outputTouchButton = true;
-                                        }
-                                        // Mouse-like outputs
-                                        else if (xboxControl >= X360Controls.LeftMouse && xboxControl <= X360Controls.WDOWN)
-                                        {
-                                            var sState = Mapping.deviceState[device];
-                                            switch (xboxControl)
-                                            {
-                                                case X360Controls.LeftMouse:
-                                                    sState.currentClicks.leftCount++;
-                                                    break;
-                                                case X360Controls.RightMouse:
-                                                    sState.currentClicks.rightCount++;
-                                                    break;
-                                                case X360Controls.MiddleMouse:
-                                                    sState.currentClicks.middleCount++;
-                                                    break;
-                                                case X360Controls.FourthMouse:
-                                                    sState.currentClicks.fourthCount++;
-                                                    break;
-                                                case X360Controls.FifthMouse:
-                                                    sState.currentClicks.fifthCount++;
-                                                    break;
-                                                case X360Controls.WUP:
-                                                    sState.currentClicks.wUpCount++;
-                                                    break;
-                                                case X360Controls.WDOWN:
-                                                    sState.currentClicks.wDownCount++;
-                                                    break;
-                                            }
-                                        }
-                                        else
-                                        {
-                                            // Normal gamepad buttons (LB..Start, X/Y/A/B etc.)
-                                            if ((int)xboxControl < outputfieldMapping.buttons.Length && xboxControl != X360Controls.None)
-                                            {
-                                                try
-                                                {
-                                                    TryDispatchSATriggerEstablished(action, device, (ushort)btnVal, (uint)btnVal, false, VirtualKBM, () => outputfieldMapping.buttons[(int)xboxControl] = true);
-                                                }
-                                                catch
-                                                {
-                                                    outputfieldMapping.buttons[(int)xboxControl] = true;
-                                                }
-                                            }
-                                        }
-                                    }
-                                }
-                                catch (Exception ex)
-                                {
-                                    AppLogger.LogToGui($"Button SpecialAction execution error: {ex}", true);
-                                }
                             }
                             else if (action.typeID == SpecialAction.ActionTypeId.Key)
                             {

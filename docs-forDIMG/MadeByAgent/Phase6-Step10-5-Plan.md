@@ -48,3 +48,4 @@
   - `MainWindow` の UDP コマンド（`outputslot.<n>.unplug`/`plugds4`/`plugx360`）: `IOutputSlotService` 経由。
   - テスト: `OutputSlotService_PluginAndUnplug_AreRejectedWithoutControlService_AndRaiseNoEvent`、`OutputSlotOperations_GoThroughOutputSlotService_NotControlServiceDirectly`。
 - **実機確認待ち**: 出力スロット管理画面での Plug/Unplug（X360/DS4）、Permanent の保存と復元、UDP コマンド（環境があれば）。
+- **実機確認（2026-10-15）**: ビルド・テストビルド・テスト実行成功。画面の Plug／Unplug、Permanent の保存と復元は問題なし。UDP コマンドは環境が無く先送り（`Phase6-Step11-Plan.md` §3.3 に登録）。Step10-5 は完了。
