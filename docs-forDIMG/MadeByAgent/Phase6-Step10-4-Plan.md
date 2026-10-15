@@ -499,3 +499,11 @@
 - **全域の基準値（`Step10FourGlobalRatchetGuardTests`）**: `Program.rootHub` 6 ファイル 25 件、`AppHost.GetService|Services` 9 ファイル 51 件、`Global.*` 63 ファイル 778 件（薄いシムが過半）。
 - **先送り**: 振動（DualSense の補正）・自動停止時間の反映（10-4-2c）、スロット 5〜8 の切替・自動プロファイル（10-4-2f）→ `Phase6-Step11-Plan.md` §3.3。
 - **残る課題**: `MainWindow` の `AppHost` 17 件（Phase7 または Step12）、`App.xaml.cs` の `Program.rootHub` 12 件（K7-1）、`Mapping`／`SyntheticDispatcher`（Phase7）、静的 `ActionFactory`／`ActionManager` の `ServiceProviderHolder`（D4-4。Phase7／Phase8）、`Global.ApplyProfile` の実装本体（Phase7）。
+
+## 36. Step10-4-5d（名前変更時のプロファイル切替アクションの切替先の置換）。2026-10-15
+- **発見（Step10-3d の実機確認）**: プロファイルの名前を変更すると、プロファイル切替のスペシャルアクションの切替先が、旧名のまま（なし扱い）になる。
+- **原因**: 名前変更の共通経路（`SyncProfileListAndControllers`）は、リンクプロファイル（5b）と自動プロファイル（5c）の旧名を置換していたが、`Actions.xml` のプロファイル切替アクション（`details` に切替先のプロファイル名を保存）は更新していなかった。上流から存在する不具合（回帰ではない）。
+- **変更**: `IProfileRepository.ReplaceProfileSwitchTarget(oldName, newName)` を追加（`Profile` 種別のアクションの `details` の旧名を新名へ置換。大文字小文字は区別しない。1 件以上置換したら `Actions.xml` へ保存）。名前変更の共通経路から呼ぶ。実行時は `action.details` を参照するため、読み込み済みの定義へ即時に反映される。
+- **テスト**: `ProfileRenamePropagationTests.ReplaceProfileSwitchTarget_ReplacesOnlyMatchingProfileActions_AndSaves`。
+- **実機確認項目**: プロファイル切替アクションを作る（切替先に、あるプロファイルを指定）→そのプロファイルの名前を変更→スペシャルアクションの一覧で、切替先に新名が表示され、実行すると新名のプロファイルへ切り替わること。
+- **基準値の更新（2026-10-15）**: `ProfileRepository.cs` の `Global.*` を 24 → 26（`ReplaceProfileSwitchTarget` が `Global.store` へ委譲するため。リポジトリのシムの性質。`Step10FourGlobalRatchetGuardTests`）。

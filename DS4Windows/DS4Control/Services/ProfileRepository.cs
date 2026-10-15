@@ -328,6 +328,38 @@ namespace DS4Windows
             return replaced;
         }
 
+        // Phase6-Step10-4-5d: 名前変更後に、プロファイル切替のスペシャルアクションの切替先が、旧名のまま（なし扱い）になる不具合の是正
+        public int ReplaceProfileSwitchTarget(string oldName, string newName)
+        {
+            if (string.IsNullOrWhiteSpace(oldName) || string.IsNullOrWhiteSpace(newName)) return 0;
+
+            int replaced = 0;
+            var actions = Global.store.actions;
+            if (actions != null)
+            {
+                lock (actions)
+                {
+                    foreach (SpecialAction action in actions)
+                    {
+                        if (action != null && action.typeID == SpecialAction.ActionTypeId.Profile &&
+                            string.Equals(action.details, oldName, StringComparison.CurrentCultureIgnoreCase))
+                        {
+                            // 実行時は action.details を参照する（読み込み済みの定義へ、そのまま反映される）
+                            action.details = newName;
+                            replaced++;
+                        }
+                    }
+                }
+            }
+
+            if (replaced > 0)
+            {
+                Global.store.SaveActions();
+            }
+
+            return replaced;
+        }
+
         // ---- Phase5-Step13-5: デバイス別・割当済みSpecialAction名リスト ----
         public List<string>[] ProfileActions => Global.ProfileActions;
         public void CacheExtraProfileInfo(int deviceIndex) => Global.CacheExtraProfileInfo(deviceIndex);

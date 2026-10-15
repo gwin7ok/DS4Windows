@@ -46,6 +46,12 @@ namespace DS4Windows.DI
         /// 1 件以上置き換えた場合は、LinkedProfiles.xml へ保存する（接続中でないコントローラーの紐づけも対象）。
         /// </summary>
         int ReplaceLinkedProfileName(string oldName, string newName);
+
+        /// <summary>
+        /// Phase6-Step10-4-5d: プロファイルの名前変更に伴い、スペシャルアクション（プロファイル切替）の切替先として
+        /// 保存されている旧名を、新名へ置き換える。置き換えた件数を返す。1 件以上置き換えた場合は、Actions.xml へ保存する。
+        /// </summary>
+        int ReplaceProfileSwitchTarget(string oldName, string newName);
         // ---- Phase5-Step13-5: デバイス別・割当済みSpecialAction名リスト ----
         List<string>[] ProfileActions { get; }
         void CacheExtraProfileInfo(int deviceIndex);
