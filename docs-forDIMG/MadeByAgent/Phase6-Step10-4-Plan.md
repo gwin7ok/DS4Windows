@@ -466,3 +466,10 @@
   - `IProfileRepository`／`ProfileRepository`: `ReplaceLinkedProfileName` を追加（`LinkedProfiles.xml` の値と `LinkedProfileUI` の旧名を新名へ置換。接続中でないコントローラーの紐づけも対象。置換があれば保存）。
 - **残る範囲（未対応）**: 自動プロファイル（`Auto Profiles.xml`）の旧名の参照置換は、本ステップでは行わない（別の小ステップとして提案）。
 - **実機確認項目**: 接続中のコントローラーに適用中のプロファイルの名前を、メイン画面の一覧から変更→サービスの停止→開始→Selected Profile に新名が表示されること。リンクプロファイルを有効にしたコントローラーで、アプリを再起動しても新名が使われること。
+
+## 33. Step10-4-5c（名前変更時の自動プロファイルの旧名の置換）。2026-10-15
+- **Step10-4-5b**: ビルド・テストビルド・テスト実行成功、実機確認問題なし。
+- **追加の要望（ユーザー）**: 自動プロファイル（`Auto Profiles.xml`）が旧名を参照している場合の置換も、今回行う。
+- **変更**: `AutoProfileHolder.ReplaceProfileName(oldName, newName)` を追加（各ルールのコントローラーごとのプロファイル名の旧名を新名へ置換。1 件以上置換したら、注入された `IPathService` の `Auto Profiles.xml` へ保存）。`MainWindow.SyncProfileListAndControllers` の名前変更の分岐から、`_autoProfileService.Holder.ReplaceProfileName` を呼ぶ（監視に使う唯一の `AutoProfileHolder` を共有しているため、バックグラウンド監視にも即時に反映される）。
+- **テスト**: `AutoProfileHolder_ReplaceProfileName_ReplacesAndPersists`（置換、保存、読み直しの往復）、`MainWindow` の呼び出しのソース走査。
+- **実機確認項目**: Auto Profiles 画面でルールを作り、あるプロファイルを割り当てる→そのプロファイルの名前をメイン画面から変更→Auto Profiles 画面（再表示）とアプリの再起動後も、新名が割り当てられていること。対象プロセスの起動時に、新名のプロファイルへ切り替わること。

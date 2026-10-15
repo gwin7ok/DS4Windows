@@ -2009,6 +2009,8 @@ Suspend support not enabled.", true);
                     }
                     // Phase6-Step10-4-5b: リンクプロファイル（LinkedProfiles.xml と画面表示用の値）の旧名も、新名へ置き換える
                     profileRepo.ReplaceLinkedProfileName(oldProfile, newProfile);
+                    // Phase6-Step10-4-5c: 自動プロファイルのルールが参照している旧名も、新名へ置き換える（Auto Profiles.xml へ保存）
+                    _autoProfileService?.Holder?.ReplaceProfileName(oldProfile, newProfile);
                 }
 
                 // ディスク全XMLを正（SSOT）としてプロファイル一覧を再構築

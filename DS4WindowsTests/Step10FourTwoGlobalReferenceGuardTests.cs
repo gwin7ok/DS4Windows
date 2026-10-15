@@ -318,6 +318,37 @@ namespace DS4WindowsTests
             Assert.Contains("SyncProfileListAndControllers(oldProfile: oldProfileName, newProfile: newProfileName)", text);
             // 共通経路の名前変更では、リンクプロファイルの旧名も置き換える
             Assert.Contains("profileRepo.ReplaceLinkedProfileName(oldProfile, newProfile)", text);
+            // 自動プロファイルの旧名も置き換える
+            Assert.Contains("Holder?.ReplaceProfileName(oldProfile, newProfile)", text);
+        }
+
+        [Fact]
+        public void AutoProfileHolder_ReplaceProfileName_ReplacesAndPersists()
+        {
+            string dir = System.IO.Path.Combine(System.IO.Path.GetTempPath(), "ds4w-step10-4-5c-" + Guid.NewGuid().ToString("N"));
+            System.IO.Directory.CreateDirectory(dir);
+            try
+            {
+                var holder = new DS4WinWPF.AutoProfileHolder(new PathService(dir));
+                var rule = new DS4WinWPF.AutoProfileEntity(@"C:\game.exe", "");
+                rule.ProfileNames[0] = "OldName";
+                rule.ProfileNames[1] = "Other";
+                holder.AutoProfileColl.Add(rule);
+
+                Assert.Equal(0, holder.ReplaceProfileName(" ", "x"));
+                Assert.Equal(1, holder.ReplaceProfileName("oldname", "NewName"));
+                Assert.Equal("NewName", rule.ProfileNames[0]);
+                Assert.Equal("Other", rule.ProfileNames[1]);
+
+                // 保存先は注入されたパス。読み直しても新名が残る
+                var reloaded = new DS4WinWPF.AutoProfileHolder(new PathService(dir));
+                Assert.Single(reloaded.AutoProfileColl);
+                Assert.Equal("NewName", reloaded.AutoProfileColl[0].ProfileNames[0]);
+            }
+            finally
+            {
+                try { System.IO.Directory.Delete(dir, true); } catch { }
+            }
         }
 
         [Fact]

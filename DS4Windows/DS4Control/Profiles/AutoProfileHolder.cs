@@ -120,6 +120,41 @@ namespace DS4WinWPF
             return saved;
         }
 
+        /// <summary>
+        /// Phase6-Step10-4-5c: プロファイルの名前変更に伴い、各ルールが参照している旧名（コントローラーごとのプロファイル名）を
+        /// 新名へ置き換える。置き換えた件数を返す。1 件以上置き換えた場合は、Auto Profiles.xml へ保存する。
+        /// </summary>
+        public int ReplaceProfileName(string oldName, string newName)
+        {
+            if (string.IsNullOrWhiteSpace(oldName) || string.IsNullOrWhiteSpace(newName)) return 0;
+
+            int replaced = 0;
+            lock (_colLockobj)
+            {
+                foreach (AutoProfileEntity entity in autoProfileColl)
+                {
+                    string[] names = entity.ProfileNames;
+                    if (names == null) continue;
+
+                    for (int i = 0; i < names.Length; i++)
+                    {
+                        if (string.Equals(names[i], oldName, StringComparison.CurrentCultureIgnoreCase))
+                        {
+                            names[i] = newName;
+                            replaced++;
+                        }
+                    }
+                }
+            }
+
+            if (replaced > 0)
+            {
+                Save(Path.Combine(pathService.AppDataPath, "Auto Profiles.xml"));
+            }
+
+            return replaced;
+        }
+
         public void Remove(AutoProfileEntity item)
         {
             //autoProfileDict.Remove(item.Path);
