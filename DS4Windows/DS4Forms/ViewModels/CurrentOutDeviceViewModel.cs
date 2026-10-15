@@ -107,9 +107,10 @@ namespace DS4WinWPF.DS4Forms.ViewModels
 
         public List<SlotDeviceEntry> SlotDeviceEntries { get => slotDeviceEntries; }
 
-        private ControlService controlService;
+        // Phase6-Step10-5: ControlService の直接呼び出しを廃止し、抜き差しの正式な入口（IOutputSlotService）を使う
+        private readonly DS4Windows.DI.IOutputSlotService outputSlotService;
 
-        public CurrentOutDeviceViewModel(ControlService controlService,
+        public CurrentOutDeviceViewModel(DS4Windows.DI.IOutputSlotService outputSlotService,
             OutputSlotManager outputMan)
         {
             outSlotManager = outputMan;
@@ -125,7 +126,7 @@ namespace DS4WinWPF.DS4Forms.ViewModels
                 idx++;
             }
 
-            this.controlService = controlService;
+            this.outputSlotService = outputSlotService ?? throw new ArgumentNullException(nameof(outputSlotService));
 
             outSlotManager.SlotAssigned += OutSlotManager_SlotAssigned;
             outSlotManager.SlotUnassigned += OutSlotManager_SlotUnassigned;
@@ -143,29 +144,14 @@ namespace DS4WinWPF.DS4Forms.ViewModels
         private void OutSlot_PluginRequest(object sender, EventArgs e)
         {
             SlotDeviceEntry entry = sender as SlotDeviceEntry;
-            if (entry.OutSlotDevice.CurrentAttachedStatus == OutSlotDevice.AttachedStatus.UnAttached &&
-                entry.OutSlotDevice.CurrentInputBound == OutSlotDevice.InputBound.Unbound)
-            {
-                controlService.EventDispatcher.BeginInvoke((Action)(() =>
-                {
-                    controlService.AttachUnboundOutDev(entry.OutSlotDevice, entry.OutSlotDevice.CurrentType);
-                    //SidePanelVisibilityChanged?.Invoke(this, EventArgs.Empty);
-                }));
-            }
+            // 事前条件の確認と UI スレッドへの切り替えは、サービスが行う
+            outputSlotService.PluginSlot(entry.Index, entry.OutSlotDevice.CurrentType);
         }
 
         private void OutSlot_UnplugRequest(object sender, EventArgs e)
         {
             SlotDeviceEntry entry = sender as SlotDeviceEntry;
-            if (entry.OutSlotDevice.CurrentAttachedStatus == OutSlotDevice.AttachedStatus.Attached &&
-                entry.OutSlotDevice.CurrentInputBound == OutSlotDevice.InputBound.Unbound)
-            {
-                controlService.EventDispatcher.BeginInvoke((Action)(() =>
-                {
-                    controlService.DetachUnboundOutDev(entry.OutSlotDevice);
-                    //SidePanelVisibilityChanged?.Invoke(this, EventArgs.Empty);
-                }));
-            }
+            outputSlotService.UnplugSlot(entry.Index);
         }
 
         private void OutSlotManager_SlotUnassigned(OutputSlotManager sender,
@@ -194,6 +180,9 @@ namespace DS4WinWPF.DS4Forms.ViewModels
     {
         private OutSlotDevice outSlotDevice;
         public OutSlotDevice OutSlotDevice { get => outSlotDevice; }
+
+        // Phase6-Step10-5: スロット番号（IOutputSlotService.PluginSlot/UnplugSlot へ渡す）
+        public int Index { get => idx; }
 
         public string CurrentType
         {

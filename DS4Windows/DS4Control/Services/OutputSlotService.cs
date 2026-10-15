@@ -110,9 +110,11 @@ namespace DS4Windows
             return SlotManager?.GetOutSlotDevice(slotNumber);
         }
 
-        // TODO(技術的負債・未接続の DI 契約・Phase6-Step10 §8 で接続予定。詳細は IOutputSlotService.PluginSlot のコメント参照):
-        // UI からの正式な入口として温存する（Phase6-Step6 決定1＝案R）。接続時に、ControlService.EventDispatcher への
-        // ディスパッチと、画面側と同じ事前条件（未接続かつ入力未割り当て）の確認を加えること。
+        // Phase6-Step10-5: UI（出力スロット管理画面）・UDP コマンドから仮想スロットを抜き差しする正式な入口。
+        // 画面の従来の挙動と同等にする: 事前条件（未接続かつ入力未割り当て）を確認し、ControlService.EventDispatcher
+        // （UI スレッド）へ切り替えて ControlService の正規 API を呼ぶ。戻り値は「要求を受け付けたか」。
+        // OutputSlotChanged は、抜き差しの要求を実行した後に発行する。
+        // §5.5 最重要ガードレール: ViGEm ネイティブドライバ保護（OutputSlotManager の非同期キューと破棄順序には触れない）。
         public bool PluginSlot(int slotNumber, OutContType devType)
         {
             if (slotNumber < 0 || slotNumber >= MAX_SLOTS) return false;
@@ -120,16 +122,28 @@ namespace DS4Windows
             try
             {
                 var slotDevice = GetOutSlotDevice(slotNumber);
-                if (slotDevice == null) return false;
+                var control = Control;
+                if (slotDevice == null || control == null) return false;
 
-                // §5.5 最重要ガードレール: ViGEm ネイティブドライバ保護
-                // ControlService の正規公開 API（AttachUnboundOutDev）を経由して安全にプラグイン
-                if (Control != null)
+                if (slotDevice.CurrentAttachedStatus != OutSlotDevice.AttachedStatus.UnAttached ||
+                    slotDevice.CurrentInputBound != OutSlotDevice.InputBound.Unbound)
                 {
-                    Control.AttachUnboundOutDev(slotDevice, devType);
+                    return false;
                 }
 
-                RaiseOutputSlotChanged(slotNumber, devType, GetOutputDevice(slotNumber));
+                control.EventDispatcher.BeginInvoke((System.Action)(() =>
+                {
+                    try
+                    {
+                        control.AttachUnboundOutDev(slotDevice, devType);
+                        RaiseOutputSlotChanged(slotNumber, devType, GetOutputDevice(slotNumber));
+                    }
+                    catch (Exception ex)
+                    {
+                        if (AppLogger.IsTraceEnabled)
+                            AppLogger.LogTrace($"[DI] OutputSlotService.PluginSlot dispatch failed: {ex}");
+                    }
+                }));
                 return true;
             }
             catch (Exception ex)
@@ -140,9 +154,7 @@ namespace DS4Windows
             }
         }
 
-        // TODO(技術的負債・未接続の DI 契約・Phase6-Step10 §8 で接続予定。詳細は IOutputSlotService.PluginSlot のコメント参照):
-        // UI からの正式な入口として温存する（Phase6-Step6 決定1＝案R）。接続時に、ControlService.EventDispatcher への
-        // ディスパッチと、画面側と同じ事前条件（接続中かつ入力未割り当て）の確認を加えること。
+        // Phase6-Step10-5: PluginSlot と同じ方針。事前条件は「接続中かつ入力未割り当て」。
         public bool UnplugSlot(int slotNumber)
         {
             if (slotNumber < 0 || slotNumber >= MAX_SLOTS) return false;
@@ -150,16 +162,28 @@ namespace DS4Windows
             try
             {
                 var slotDevice = GetOutSlotDevice(slotNumber);
-                if (slotDevice == null) return false;
+                var control = Control;
+                if (slotDevice == null || control == null) return false;
 
-                // §5.5 最重要ガードレール: ViGEm ネイティブドライバ保護
-                // ControlService の正規公開 API（DetachUnboundOutDev）を経由して安全にアンプラグ
-                if (Control != null)
+                if (slotDevice.CurrentAttachedStatus != OutSlotDevice.AttachedStatus.Attached ||
+                    slotDevice.CurrentInputBound != OutSlotDevice.InputBound.Unbound)
                 {
-                    Control.DetachUnboundOutDev(slotDevice);
+                    return false;
                 }
 
-                SetOutputDevice(slotNumber, null);
+                control.EventDispatcher.BeginInvoke((System.Action)(() =>
+                {
+                    try
+                    {
+                        control.DetachUnboundOutDev(slotDevice);
+                        SetOutputDevice(slotNumber, null);
+                    }
+                    catch (Exception ex)
+                    {
+                        if (AppLogger.IsTraceEnabled)
+                            AppLogger.LogTrace($"[DI] OutputSlotService.UnplugSlot dispatch failed: {ex}");
+                    }
+                }));
                 return true;
             }
             catch (Exception ex)

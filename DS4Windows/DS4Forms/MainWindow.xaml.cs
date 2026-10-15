@@ -222,7 +222,7 @@ namespace DS4WinWPF.DS4Forms
             autoProfileHolder = autoProfControl.AutoProfileHolder;
             autoProfControl.SetupDataContext(profileListHolder);
 
-            slotManControl.SetupDataContext(controlService: controlService,
+            slotManControl.SetupDataContext(outputSlotService: outputSlotService,
                 controlService.OutputslotMan);
 
             SetupEvents();
@@ -1411,13 +1411,14 @@ Suspend support not enabled.", true);
                                         if (tdevice >= 0 && tdevice < ControlService.MAX_DS4_CONTROLLER_COUNT)
                                         {
                                             strData[2] = strData[2].ToLower();
-                                            DS4Control.OutSlotDevice slotDevice = controlService.OutputslotMan.OutputSlots[tdevice];
+                                            // Phase6-Step10-5: 抜き差しの正式な入口（IOutputSlotService）経由。
+                                            // 事前条件の確認と UI スレッドへの切り替えは、サービスが行う
                                             if (strData[2] == "unplug")
-                                                controlService.DetachUnboundOutDev(slotDevice);
+                                                outputSlotService.UnplugSlot(tdevice);
                                             else if (strData[2] == "plugds4")
-                                                controlService.AttachUnboundOutDev(slotDevice, OutContType.DS4);
+                                                outputSlotService.PluginSlot(tdevice, OutContType.DS4);
                                             else if (strData[2] == "plugx360")
-                                                controlService.AttachUnboundOutDev(slotDevice, OutContType.X360);
+                                                outputSlotService.PluginSlot(tdevice, OutContType.X360);
                                         }
                                     }
                                     else if (strData[0] == "query" && strData.Length >= 3)

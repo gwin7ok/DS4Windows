@@ -352,6 +352,46 @@ namespace DS4WindowsTests
         }
 
         [Fact]
+        public void OutputSlotService_PluginAndUnplug_AreRejectedWithoutControlService_AndRaiseNoEvent()
+        {
+            // ControlService が無い（ホストが無い）場合は、何もできないため false を返し、変更の通知も出さない
+            var service = new OutputSlotService(() => TestRepositoryFactory.CreateOutputSlotManager(),
+                new OutputSlotStore(new PathService()), () => null);
+            int fired = 0;
+            service.OutputSlotChanged += (s, e) => fired++;
+
+            Assert.False(service.PluginSlot(0, OutContType.X360));
+            Assert.False(service.UnplugSlot(0));
+            Assert.False(service.PluginSlot(-1, OutContType.DS4));
+            Assert.False(service.UnplugSlot(OutputSlotService.MAX_SLOTS));
+            Assert.Equal(0, fired);
+        }
+
+        [Fact]
+        public void OutputSlotOperations_GoThroughOutputSlotService_NotControlServiceDirectly()
+        {
+            foreach (string file in new[]
+            {
+                "DS4Windows/DS4Forms/ViewModels/CurrentOutDeviceViewModel.cs",
+                "DS4Windows/DS4Forms/OutputSlotManagerControl.xaml.cs",
+                "DS4Windows/DS4Forms/MainWindow.xaml.cs",
+            })
+            {
+                string text = ReadWithoutComments(file);
+                if (text == null) continue;
+                Assert.DoesNotContain("AttachUnboundOutDev(", text);
+                Assert.DoesNotContain("DetachUnboundOutDev(", text);
+            }
+
+            string vm = ReadWithoutComments("DS4Windows/DS4Forms/ViewModels/CurrentOutDeviceViewModel.cs");
+            if (vm != null)
+            {
+                Assert.Contains("outputSlotService.PluginSlot(", vm);
+                Assert.Contains("outputSlotService.UnplugSlot(", vm);
+            }
+        }
+
+        [Fact]
         public void ProfileApplicationService_RequiresAllDependencies()
         {
             var settings = TestRepositoryFactory.CreateProfileSettingsService();
