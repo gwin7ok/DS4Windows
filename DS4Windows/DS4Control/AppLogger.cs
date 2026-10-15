@@ -121,35 +121,4 @@ namespace DS4Windows
             catch { }
         }
     }
-
-    public enum ProfileChangeSource : byte
-    {
-        Unknown = 0,
-        ControlService,
-        AutoProfile,
-        MappingAction,
-        Hotkey,
-        Manual,
-        Other
-    }
-
-    public class ProfileChangedEventArgs : EventArgs
-    {
-        public int DeviceIndex { get; }
-        public string ProfileName { get; }
-        public bool IsTemp { get; }
-        public ProfileChangeSource Source { get; }
-        public string OriginalMessage { get; }
-        public DateTime Timestamp { get; }
-
-        public ProfileChangedEventArgs(int deviceIndex, string profileName, bool isTemp, ProfileChangeSource source = ProfileChangeSource.Unknown, string originalMessage = null, DateTime? timestamp = null)
-        {
-            DeviceIndex = deviceIndex;
-            ProfileName = profileName ?? string.Empty;
-            IsTemp = isTemp;
-            Source = source;
-            OriginalMessage = originalMessage ?? string.Empty;
-            Timestamp = timestamp ?? DateTime.UtcNow;
-        }
-    }
 }

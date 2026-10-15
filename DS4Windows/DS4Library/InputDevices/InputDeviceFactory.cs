@@ -24,16 +24,6 @@ using System.Threading.Tasks;
 
 namespace DS4Windows.InputDevices
 {
-    public enum InputDeviceType : uint
-    {
-        DS4,
-        SwitchPro,
-        JoyConL,
-        JoyConR,
-        JoyConGrip,
-        DualSense,
-        DS3
-    }
 
     public abstract class InputDeviceFactory
     {

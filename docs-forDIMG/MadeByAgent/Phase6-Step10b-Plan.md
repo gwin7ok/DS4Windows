@@ -130,6 +130,12 @@
   - 対象: `BindingWindow.xaml.cs`、`LanguageSelectDialog.xaml.cs`、`MainWindow.xaml.cs`、`ProfileEditor.xaml.cs`、`RecordBox.xaml.cs`、`StickCalibrationWindow.xaml.cs`、`WelcomeDialog.xaml.cs`、ViewModels 12 ファイル。`.xaml.cs` は、`partial class` を元ファイルに残し、同居していた別の型だけを新設ファイルへ移した（XAML は変更なし）。
   - ラチェットの基準値: `MainWindow` 7＝1＋`ImageLocationPaths` 6、`ProfileEditor` 37＝32＋`ResourcePaths` 5、`ControllerListViewModel` 4＝0＋`CompositeDeviceModel` 4、`MappingListViewModel` 3＝0＋`MappedControl` 3、`RecordBoxViewModel` 7＝1＋`MacroStepItem` 6（合計は不変）。
   - ソース走査テストの影響: `ProfileSettingsViewModelGlobalReferenceGuardTests` が、`PresetMenuHelper` のコンストラクターを `ProfileSettingsViewModel.cs` から探していたため、`PresetMenuHelper.cs` を読むよう更新。あわせて、分離した型（`PresetMenuHelper`、各 `*Choice`）にも、定数以外の `Global`／`AppHost`／`Program.rootHub` が無いことの検査を広げた。他のガードテストは「許可リスト以外が無い」検査のみのため変更不要。
+  - **W3 の結果（2026-10-15）**: ビルド・テストビルド・テスト実行成功、起動スモーク問題なし。
+- **W4（2026-10-15 適用済み。ビルド・テストの結果待ち）**: 10 ファイルを分割し、新設 35 ファイル（`Log.cs`・`DS4Sixaxis.cs` は元ファイルを削除して全型を別名へ）。複数型ファイルは 11 → 1（残りは `ScpUtil.cs` のみ）。型名の一覧は一致（618＝618）。ツールの自己検証は全件 `VERIFY-OK`。
+  - 対象: `Actions/Action.cs`（`MappingContext`）、`Actions/ActionManager.cs`（`ActionInstanceState`、`ActionEntry`）、`DS4Control/Log.cs`（→ `AppLogger.cs`、`ProfileChangeSource.cs`、`ProfileChangedEventArgs.cs`）、`UdpServer.cs`（6 型）、`DS4Device.cs`（5 型）、`DS4Devices.cs`（9 型。デリゲート 4 件を含む）、`DS4Sixaxis.cs`（→ `DS4SixAxis.cs` ほか 6 ファイル）、`DS4Touchpad.cs`、`InputDeviceFactory.cs`、`TriggerEffects.cs`。
+  - ラチェットの基準値: `ActionManager.cs` の 1 件は `ActionEntry.cs` へ、`Log.cs` の 1 件は `AppLogger.cs` へ、`DS4Sixaxis.cs` の (1,0,1) は `DS4SixAxis.cs` へ（`Dictionary` が大文字・小文字を区別するためキーを更新）。合計は不変。
+  - **大文字・小文字のみの改名**（`DS4Sixaxis.cs` → `DS4SixAxis.cs`）: `core.ignorecase=true` のため、通常の `git add` では、インデックスの名前が旧名のまま更新される。コミット前に、次を実行すること: `git rm --cached DS4Windows/DS4Library/DS4Sixaxis.cs` → `git add DS4Windows/DS4Library/DS4SixAxis.cs`。
+  - ソース走査テストの影響: W4 の対象のファイル名を参照するテストは、ラチェットの基準値と、`Step10FourTwoGlobalReferenceGuardTests` の許可リスト（`ActionManager.cs`。不在の検査のみのため変更不要）だけ。
   - （W1 の補足）ソース走査テストの影響: 確認した範囲では、W1 の対象を参照するテスト（`Step10FourTwoGlobalReferenceGuardTests`、`Step10GroupTwoGlobalReferenceGuardTests`）は、元ファイルに残った型のみを検査しており、変更不要。
 
 ---

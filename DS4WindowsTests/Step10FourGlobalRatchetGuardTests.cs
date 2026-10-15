@@ -23,7 +23,8 @@ namespace DS4WindowsTests
         private static readonly Dictionary<string, (int RootHub, int AppHost, int Global)> Baseline =
             new Dictionary<string, (int RootHub, int AppHost, int Global)>
         {
-            ["DS4Windows/Actions/ActionManager.cs"] = (0, 0, 1),
+            // Phase6-Step10b W4: ActionManager.cs の Global 1 件は ActionEntry.cs へ移った（合計は不変）
+            ["DS4Windows/Actions/ActionEntry.cs"] = (0, 0, 1),
             ["DS4Windows/Actions/DefaultActionManager.cs"] = (0, 0, 1),
             ["DS4Windows/Actions/DefaultMacroPlayer.cs"] = (0, 0, 1),
             ["DS4Windows/App.xaml.cs"] = (12, 4, 1),
@@ -49,7 +50,8 @@ namespace DS4WindowsTests
             ["DS4Windows/DS4Control/DTOXml/OutputSlotPersistDTO.cs"] = (0, 0, 1),
             ["DS4Windows/DS4Control/DTOXml/ProfileDTO.cs"] = (0, 0, 2),
             ["DS4Windows/DS4Control/DTOXml/SpecialActionSerializer.cs"] = (0, 0, 2),
-            ["DS4Windows/DS4Control/Log.cs"] = (0, 0, 1),
+            // Phase6-Step10b W4: Log.cs（AppLogger／ProfileChangeSource／ProfileChangedEventArgs）は型ごとに分割。Global 1 件は AppLogger.cs
+            ["DS4Windows/DS4Control/AppLogger.cs"] = (0, 0, 1),
             ["DS4Windows/DS4Control/Mapping.cs"] = (1, 6, 53),
             ["DS4Windows/DS4Control/Mouse.cs"] = (0, 0, 2),
             ["DS4Windows/DS4Control/MouseCursor.cs"] = (0, 0, 2),
@@ -103,7 +105,8 @@ namespace DS4WindowsTests
             ["DS4Windows/DS4Forms/ViewModels/TrayIconViewModel.cs"] = (0, 0, 12),
             ["DS4Windows/DS4Library/DS4Device.cs"] = (0, 0, 3),
             ["DS4Windows/DS4Library/DS4Devices.cs"] = (0, 0, 6),
-            ["DS4Windows/DS4Library/DS4Sixaxis.cs"] = (1, 0, 1),
+            // Phase6-Step10b W4: DS4Sixaxis.cs は DS4SixAxis.cs へ改名（型名に合わせた大文字・小文字の変更。Dictionary は大文字・小文字を区別する）
+            ["DS4Windows/DS4Library/DS4SixAxis.cs"] = (1, 0, 1),
             ["DS4Windows/DS4Library/DS4State.cs"] = (0, 0, 4),
             ["DS4Windows/HidLibrary/HidDevices.cs"] = (0, 0, 2),
         };
