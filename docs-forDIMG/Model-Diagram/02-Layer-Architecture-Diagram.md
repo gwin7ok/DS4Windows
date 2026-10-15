@@ -26,7 +26,7 @@
 │  【ループ統括】 ControlService (ファサード) ──> IInputLoopCoordinator (高速ループ実行エンジン)       │
 │  【状態管理】   MappingPipelineContext Pool (スロット別常駐バッファ: インプレース更新 / Zero-GC)   │
 │  【切替制御】   IProfileApplicationService (適用/復帰/Halt) / IAutoProfileService (自動切替)     │
-│  【アクション】 IManagedActionManager (アクション実行・トグル) ──> IMappingActionDispatcher        │
+│  【アクション】 IManagedActionManager (アクション実行・トグル)                                         │
 │  【マッピング】 IInputMappingPipeline (変換パイプライン親: Context統括)                           │
 │                 ├── IButtonProcessor (ボタン変換・シフト)   IStickProcessor (軸/カーブ/AntiSnap)   │
 │                 ├── ITriggerProcessor (2段階トリガー)      ITouchGyroProcessor (タッチ/ジャイロ)  │

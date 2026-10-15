@@ -99,7 +99,6 @@ classDiagram
         -ITriggerProcessor _trigProc
         -ITouchGyroProcessor _touchGyroProc
         -IMouseEngine _mouseEngine
-        -IMappingActionDispatcher _dispatcher
         +ProcessPipeline(MappingPipelineContext ctx, ProfileEntity profile)
     }
     IInputMappingPipeline <|.. InputMappingPipeline : implements
@@ -428,3 +427,15 @@ classDiagram
 %% - 温存: `Global.configFileDecimalCulture`（不変の静的値）、`Global.getX360ControlString`（純粋関数）。
 %% - 先送り: SA の「キー押下」でコントローラーのボタンを割り当てられない件（`Phase6-Step10-3-Plan.md` §12。Step10-3c で調査）。
 %% - 詳細は `Phase6-Step10-3-Plan.md`。
+%% 注釈補強（2026-10-15 Phase6-Step10-4 反映）
+%% - 削除した型: `IProfileActionChainService`／`ProfileActionChainService`、`IMappingActionDispatcher`／`MappingActionDispatcher`（`InputMappingPipeline` の `_dispatcher` を図から除去）、`AutoProfileChecker`。
+%% - コンストラクターの変更（依存は全て必須。null は `ArgumentNullException`）:
+%%   - `ProfileApplicationService(IProfileSettingsService, IDeviceStateService, Func<ControlService>, IProfileRepository, IEnvironmentService)`（スロット上限は `ControllerSlotLimit`。K1 の是正）。
+%%   - `ProfileRepository(IProfileSettingsService, IProfileXmlStore, IPathService, Func<ControlService>)`。
+%%   - `AutoProfileService(AutoProfileHolder, IProfileApplicationService, IProfileSettingsService, IProcessInspector, IEnvironmentService, IAppSettingsService, IProfileRepository, Func<ControlService>)`。
+%%   - `OutputSlotService(Func<OutputSlotManager>, IOutputSlotStore, Func<ControlService>)`、`OutputSlotStore(IPathService)`、`OutputSlotManager(Func<Version>)`。
+%%   - `DefaultActionFactory(IMacroPlayer, IProcessLauncher, IProfileSwitcher)`、`DefaultActionManager(IActionFactory)`、`DefaultMacroPlayer(IVirtualKBM)`。
+%%   - `SpecialActionRepository(BackingStore, IPathService)`、`ProfileSettingsService(BackingStore, IEnvironmentService, Func<ControlService>)`、`ProfileActionProvider(BackingStore)`、`AutoProfileHolder(IPathService)`、`ProfileList(IPathService)`、`ProfileEntity(IPathService)`。
+%% - 追加した契約: `IEnvironmentService.ViGEmBusVersion`、`IProfileRepository.ReplaceLinkedProfileName`、`AutoProfileHolder.ReplaceProfileName`。`WindowPlacementHelper.ApplyPlacement` は `IAppSettingsService` を引数に取る。
+%% - 温存: `Global.ApplyProfile`（`ProfileApplicationService` の実装本体。Phase7）、静的 `ActionFactory`／`ActionManager` の `ServiceProviderHolder`（D4-4。Phase7／Phase8）。
+%% - 詳細は `Phase6-Step10-4-Plan.md`。

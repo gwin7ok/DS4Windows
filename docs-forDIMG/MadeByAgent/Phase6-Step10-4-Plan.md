@@ -473,3 +473,29 @@
 - **変更**: `AutoProfileHolder.ReplaceProfileName(oldName, newName)` を追加（各ルールのコントローラーごとのプロファイル名の旧名を新名へ置換。1 件以上置換したら、注入された `IPathService` の `Auto Profiles.xml` へ保存）。`MainWindow.SyncProfileListAndControllers` の名前変更の分岐から、`_autoProfileService.Holder.ReplaceProfileName` を呼ぶ（監視に使う唯一の `AutoProfileHolder` を共有しているため、バックグラウンド監視にも即時に反映される）。
 - **テスト**: `AutoProfileHolder_ReplaceProfileName_ReplacesAndPersists`（置換、保存、読み直しの往復）、`MainWindow` の呼び出しのソース走査。
 - **実機確認項目**: Auto Profiles 画面でルールを作り、あるプロファイルを割り当てる→そのプロファイルの名前をメイン画面から変更→Auto Profiles 画面（再表示）とアプリの再起動後も、新名が割り当てられていること。対象プロセスの起動時に、新名のプロファイルへ切り替わること。
+
+## 34. Step10-4-5b／5c の完了と、Step10-4-6（全域のガードと文書更新）の計画。2026-10-15
+- **Step10-4-5b／5c**: ビルド・テストビルド・テスト実行成功、実機確認問題なし（名前変更後の Selected Profile、リンクプロファイル、自動プロファイルの旧名の置換）。
+
+### 34.1 全域の再走査の結果（`DS4Windows` 配下の全 `.cs`、コメントを除く。2026-10-15 時点）
+- **`Program.rootHub`**: 6 ファイル・計 25 件。`App.xaml.cs`（12。起動処理）、`ScpUtil.cs`（9。Global の薄いシム）、`ServiceRegistration.cs`（1。`ControlService` の登録）、`ProfileEditor.xaml.cs`（1）、`Mapping.cs`（1。Phase7）、`DS4Sixaxis.cs`（1。第1層。Step12／Phase7）。
+- **`AppHost.GetService`／`AppHost.Services`**: 9 ファイル・計 51 件。`MainWindow.xaml.cs`（17）、`ScpUtil.cs`（12。シム）、`Mapping.cs`（6）、`App.xaml.cs`（5）、`ProfileEditor.xaml.cs`（4）、`AppHost.cs`（4。自身）、`ControlService.cs`（2）、ほか。
+- **`Global.*`**: 63 ファイル・計 778 件。うち、`ScpUtil.cs`（233）と `AppSettingsService.cs`（185）、`EnvironmentService.cs`（21）などの薄いシム（実装本体が `Global` にあるもの）が過半を占める。置換対象のサービス（`ProfileRepository` 24、`ProfileApplicationService` 3、`AutoProfileService` 3 など）は、薄い委譲・実装本体が `Global` にあるもの・定数のみ。
+
+### 34.2 方針（案）
+- **U1（全域のガードテスト）**: 新規 `Step10FourGlobalRatchetGuardTests` を作る。`DS4Windows` 配下の全 `.cs` を走査し、ファイルごとの `Program.rootHub`／`AppHost.GetService|Services`／`Global.*` の件数（コメントを除く）が、上記の基準値**以下**であることを検査する（減るのは許可。増える・新しいファイルに現れるのは失敗）。以後の Step で、`Global` などへの退行が混入しないことを固定する。
+- **U2（文書の更新）**: `Phase6-Status.md`（Step10-4 の完了と数値）、`Phase6-Step10-Plan.md`（進捗）、`Phase6-Step10-4-Plan.md`（§10 進捗と完了報告）、モデル図 `03-Class-Interface-Diagram.md`（契約・コンストラクターの変更）と `04-Service-Lifecycle-Spec.md`（依存の解決方式）、`DI-App-Wide-Migration-Plan.md`（概要の数値）、`Phase6-Step11-Plan.md`（先送り台帳の追加分は登録済み）。
+- **U3（Step10-4 の完了報告）**: Step10 全体の完了報告書は Step10-5 の後に作成する（既定の計画どおり）。Step10-4 の完了は、`Phase6-Step10-4-Plan.md` の末尾に要約する。
+- **残る課題（Step10-5 以降へ）**: `AppHost` を `MainWindow` が 17 件使っている点（Composition Root の隣接。Phase7 または Step12 で、引数による注入へ）、`Program.rootHub` の `App.xaml.cs` の 12 件（起動順序。K7-1）、`Mapping`／`SyntheticDispatcher`（Phase7）。
+
+### 34.3 決定事項（要承認）
+- **U1**: 全域のガードテストを作る（A）／作らない（B）。
+- **U2**: 上記の文書をすべて更新する（A）／計画書と進捗文書のみ（B）。
+
+## 35. Step10-4 の完了の要約。2026-10-15
+- **完了したマイクロステップ**: 10-4-0（分類表）、10-4-1（小さな置換）、10-4-2a〜2f（クラスタ 1、アクション連鎖の廃止、Fresh-press ガードの全型適用、K1 の是正）、10-4-3（クラスタ 2）、10-4-4（クラスタ 3）、10-4-5（MainWindow・ControlService）、10-4-5b／5c（名前変更時の旧名の置換）、10-4-6（全域の退行ガードと文書）。すべて、ビルド・テストビルド・テスト実行成功、実機確認済み（先送りは下記）。
+- **本ステップで是正した既存の不具合（回帰ではない）**: スロット 5〜8 の拒否と戻り値の破棄（K1）、`OutputSlotPersist.WriteConfig` の戻り値、`DisconnectBT` などの切替直後の即時成立（Fresh-press ガード）、名前変更後に Selected Profile が空欄になる不具合（リンクプロファイル・自動プロファイルの旧名）。
+- **削除した型（規約 §2.4 の判断記録は §28）**: `IProfileActionChainService`／`ProfileActionChainService`、`IMappingActionDispatcher`／`MappingActionDispatcher`、`AutoProfileChecker`。
+- **全域の基準値（`Step10FourGlobalRatchetGuardTests`）**: `Program.rootHub` 6 ファイル 25 件、`AppHost.GetService|Services` 9 ファイル 51 件、`Global.*` 63 ファイル 778 件（薄いシムが過半）。
+- **先送り**: 振動（DualSense の補正）・自動停止時間の反映（10-4-2c）、スロット 5〜8 の切替・自動プロファイル（10-4-2f）→ `Phase6-Step11-Plan.md` §3.3。
+- **残る課題**: `MainWindow` の `AppHost` 17 件（Phase7 または Step12）、`App.xaml.cs` の `Program.rootHub` 12 件（K7-1）、`Mapping`／`SyntheticDispatcher`（Phase7）、静的 `ActionFactory`／`ActionManager` の `ServiceProviderHolder`（D4-4。Phase7／Phase8）、`Global.ApplyProfile` の実装本体（Phase7）。

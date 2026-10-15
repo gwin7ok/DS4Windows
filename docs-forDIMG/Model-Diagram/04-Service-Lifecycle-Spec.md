@@ -53,9 +53,7 @@
 | **2.変換**| `IProfileApplicationService`| `ProfileApplicationService` | **Singleton** | プロファイルのスロット適用・復帰、Halt保護 | `IProfileRepository`, `IOutputSlotService` |
 | **2.変換**| `IProfileSlotApplier` | `ProfileSlotApplier` | **Singleton** | 接続時などにスロットへプロファイルを適用する、`ControlService` 側の出力ポート（依存の逆転）。現状は `Global.ApplyProfileToSlot` へ委譲し、K1 是正後に `IProfileApplicationService` へ委譲する | なし（目標: `IProfileApplicationService`） |
 | **2.変換**| `IProfileActionProvider` | `ProfileActionProvider` | **Singleton** | プロファイルに紐づくアクション定義の解決 | `ISpecialActionRepository` |
-| **2.変換**| `IProfileActionChainService` | `ProfileActionChainService` | **Singleton** | アクションの連鎖実行・ライフサイクル管理 | `IProfileActionProvider` |
 | **2.変換**| `IAutoProfileService` | `AutoProfileService` | **Singleton** | フォアグラウンドアプリ監視とプロファイル自動切替 | `IProcessInspector`, `IProfileApplicationService` |
-| **2.変換**| `IMappingActionDispatcher` | `MappingActionDispatcher` | **Singleton** | パイプラインからのアクション発火要求の非同期分配 | `IManagedActionManager` |
 | **2.変換**| `IManagedActionManager` | `DefaultActionManager` | **Singleton** | マクロ・キー・プロファイル切替アクションの実行統括。2026-09-04〜2026-10-14 は登録が欠落していた（Phase6-Step9b-2 で再登録） | `IActionFactory` |
 | **2.変換**| `IControllerRegistry` | `DefaultControllerRegistry` | **Singleton** | `KeyButtonActionController` の登録と、デバイス単位・終了時の破棄（Phase6-Step9b-2 で再登録） | なし |
 | **2.変換**| `ControlService` | `ControlService` | **Singleton** | 入力・変換・出力パイプライン全体の開始・停止統括（ファサード） | `IDs4DeviceRegistry`, `IInputLoopCoordinator`, `IOutputSlotService`※1, `IProfileSettingsService`, `IAppSettingsService`, `IEnvironmentService`, `IPathService`, `IVirtualKBM`, `IVirtualKBMLifecycle`, `IProfileRepository`, `IDeviceStateService`, `IAppearanceSettingsService`, `IProfileXmlStore`, `IProfileActionProvider`, `IProfileSlotApplier` |
@@ -104,9 +102,9 @@
 
 | 逆依存（現状） | 実装上の根拠 | 影響 | 暫定措置 | 解消予定 |
 | :--- | :--- | :--- | :--- | :--- |
-| `OutputSlotService` → `ControlService` | コンストラクタで `_control = control ?? Program.rootHub`、`_slotManager` を `_control?.OutputslotMan` から取得 | `ControlService` 生成中に解決すると `_control` が null のまま固定され、`OutputSlotManager` が二重化する恐れ | `ControlService` は `Func<IOutputSlotService>` で遅延解決し、`ActiveOutDevType` 配列参照を初回にキャッシュ（決定D1） | Phase6-Step5（`OutputSlotService` 全面SSOT統合）。解消後は直接注入へ戻す |
-| `ProfileApplicationService` → `ControlService` | コンストラクタで `control ?? AppHost.GetService<ControlService>()` | `ControlService` 生成中に解決すると再帰生成の恐れ | `ControlService` からは直接注入しない（C2-47 は決定O1=B／O4=B-2 により、`ControlService` が定義する出力ポート `IProfileSlotApplier` 経由） | 未定（Step2-2 の決定に従い、必要なら担当Stepを追加） |
-| `ProfileRepository` → `ControlService` | メソッド内で `AppHost.GetService<ControlService>()` を実行時に呼ぶ（コンストラクタ依存ではない） | 生成順序の問題は無いが、Service Locator が残る | 現状維持 | 未定 |
+| `OutputSlotService` → `ControlService` | コンストラクタで `Func<OutputSlotManager>`（スロット管理の実体は `ControlService` が所有）と `Func<ControlService>` を受け取り、使用時に解決する（Phase6-Step10-4-3 で `Program.rootHub`／`AppHost`／`new` のフォールバックを廃止） | 生成時の循環と、`OutputSlotManager` の二重化は解消 | `Func` による遅延解決（現行） | 仮想スロット操作用の出力ポートの導入（Phase7 以降で検討） |
+| `ProfileApplicationService` → `ControlService` | コンストラクタで `Func<ControlService>` を受け取り、使用時に解決する（Phase6-Step10-4-2a で `AppHost` のフォールバックを廃止） | 生成時の循環は解消 | `Func` による遅延解決（現行）。`ControlService` からは直接注入しない | `Global.ApplyProfile` の実装本体の移管（Phase7） |
+| `ProfileRepository` → `ControlService` | コンストラクタで `Func<ControlService>` を受け取り、`LoadProfile` で使用時に解決する（Phase6-Step10-4-2b で `AppHost` の呼び出しを廃止） | Service Locator は解消 | `Func` による遅延解決（現行） | 未定 |
 
 %% 注釈補強（2026-09-19 Phase6-Step2 決定O1=B／O4=B-2 反映）
 %% - 新規サービス `IProfileSlotApplier` / `ProfileSlotApplier`（2.変換、Singleton）を追加。`ControlService` の依存に `IProfileSlotApplier` を追加。
@@ -163,3 +161,10 @@
 %% - §2 の `ISpecialActionRepository` に、保存を伴う `SaveAction`／`RemoveActionAndSave` を追記した（ライフタイム・依存は変わらない）。`IViewModelFactory` の生成口に `CreateSpecialActionsListViewModel` が加わった。
 %% - `EditorWindowFactory` の依存に `ISpecialActionRepository` が加わった。
 %% - 詳細は `03-Class-Interface-Diagram.md` の 2026-10-14（Step10-3）の注釈と `Phase6-Step10-3-Plan.md`。
+%% 注釈補強（2026-10-15 Phase6-Step10-4 反映）
+%% - 削除: `IProfileActionChainService`／`ProfileActionChainService`（連鎖の廃止。切替後は、トリガーの押し直しまで同じトリガーのアクションを実行しない）、`IMappingActionDispatcher`／`MappingActionDispatcher`（連鎖の廃止で呼出元が 0 件）、`AutoProfileChecker`（廃止済みの旧部品の残骸）。
+%% - 依存の必須化（`AppHost`／`Program.rootHub`／`new` のフォールバックを廃止）: `ProfileRepository`、`SpecialActionRepository`、`ProfileSettingsService`、`ProfileApplicationService`、`AutoProfileService`、`AutoProfileHolder`、`ProfileActionProvider`、`OutputSlotService`／`OutputSlotStore`／`OutputSlotManager`、`DefaultActionFactory`／`DefaultActionManager`／`DefaultMacroPlayer` と各アクション。`ControlService` は `Func<ControlService>` で遅延解決する（§4 の逆依存の表）。
+%% - `BackingStore` は DI 未登録のため、`ServiceRegistration` が `Global.store` を渡すファクトリー登録とする（`IProfileSettingsService`、`ISpecialActionRepository`、`IProfileActionProvider`）。
+%% - `IEnvironmentService` に `ViGEmBusVersion` を追加（`Global.vigemBusVersionInfo` への薄い委譲）。`IProfileRepository` に `ReplaceLinkedProfileName` を追加（名前変更時のリンクプロファイルの旧名の置換）。
+%% - 全域の退行ガード: `Step10FourGlobalRatchetGuardTests`（ファイルごとの `Program.rootHub`／`AppHost`／`Global.*` の件数が基準値以下）。
+%% - 詳細は `Phase6-Step10-4-Plan.md`。

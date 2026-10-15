@@ -59,7 +59,6 @@ flowchart TD
         Core_SlotApplier["IProfileSlotApplier<br>(接続時プロファイル適用の出力ポート。ControlService が定義)"]:::coreLayer
         Core_AutoProfile["IAutoProfileService<br>(プロセス監視切替)"]:::coreLayer
         Core_ActionMgr["IManagedActionManager<br>(アクション実行管理・トグル状態)"]:::coreLayer
-        Core_Dispatcher["IMappingActionDispatcher<br>(アクション発火中継)"]:::coreLayer
 
         subgraph Mapping_Processors ["Mapping Pipeline & Stateless Processors"]
             Pipe_Master["IInputMappingPipeline<br>(パイプライン親: Context更新統括)"]:::coreLayer
@@ -80,8 +79,7 @@ flowchart TD
         Core_Coordinator --> Pipe_Master
         Core_Coordinator --> Core_SlotApplier
         Core_SlotApplier -. 委譲（フェーズG以降） .-> Core_ProfileApp
-        Pipe_Master --> Core_Dispatcher
-        Core_Dispatcher --> Core_ActionMgr
+        Pipe_Master --> Core_ActionMgr
         Core_AutoProfile --> Core_ProfileApp
     end
 
