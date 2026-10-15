@@ -58,7 +58,10 @@ namespace DS4WindowsTests
             ["DS4Windows/DS4Control/OutputKBM/VirtualKBMFactory.cs"] = (0, 0, 1),
             ["DS4Windows/DS4Control/OutputSlotPersist.cs"] = (0, 0, 1),
             ["DS4Windows/DS4Control/ProfileMigration.cs"] = (0, 0, 4),
-            ["DS4Windows/DS4Control/ScpUtil.cs"] = (9, 12, 233),
+            // Phase6-Step10b W5: ScpUtil.cs（29 型）を型ごとに分割。件数を引き継いだ（Global 233＝Global 47＋BackingStore 182＋Changelog 4、AppHost 12＝11＋1。rootHub 9 は Global。合計は不変）
+            ["DS4Windows/DS4Control/BackingStore.cs"] = (0, 1, 182),
+            ["DS4Windows/DS4Control/Changelog.cs"] = (0, 0, 4),
+            ["DS4Windows/DS4Control/Global.cs"] = (9, 11, 47),
             ["DS4Windows/DS4Control/Services/AppNotificationService.cs"] = (0, 0, 6),
             ["DS4Windows/DS4Control/Services/AppSettingsService.cs"] = (0, 0, 185),
             ["DS4Windows/DS4Control/Services/AppearanceSettingsService.cs"] = (0, 0, 8),
@@ -132,14 +135,14 @@ namespace DS4WindowsTests
         [Fact]
         public void DirectReferences_DoNotExceedStep10FourBaseline()
         {
-            string anchor = SourceFileLocator.Find("DS4Windows/DS4Control/ScpUtil.cs");
+            string anchor = SourceFileLocator.Find("DS4Windows/DS4Control/Global.cs");
             if (anchor == null)
             {
                 _output.WriteLine("ソースが見つからないため検査を省略した。");
                 return;
             }
 
-            // <root>/DS4Windows/DS4Control/ScpUtil.cs → <root>
+            // <root>/DS4Windows/DS4Control/Global.cs → <root>
             string root = Path.GetFullPath(Path.Combine(Path.GetDirectoryName(anchor), "..", ".."));
             string sourceDir = Path.Combine(root, "DS4Windows");
 

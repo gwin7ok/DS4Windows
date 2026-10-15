@@ -136,6 +136,13 @@
   - ラチェットの基準値: `ActionManager.cs` の 1 件は `ActionEntry.cs` へ、`Log.cs` の 1 件は `AppLogger.cs` へ、`DS4Sixaxis.cs` の (1,0,1) は `DS4SixAxis.cs` へ（`Dictionary` が大文字・小文字を区別するためキーを更新）。合計は不変。
   - **大文字・小文字のみの改名**（`DS4Sixaxis.cs` → `DS4SixAxis.cs`）: `core.ignorecase=true` のため、通常の `git add` では、インデックスの名前が旧名のまま更新される。コミット前に、次を実行すること: `git rm --cached DS4Windows/DS4Library/DS4Sixaxis.cs` → `git add DS4Windows/DS4Library/DS4SixAxis.cs`。
   - ソース走査テストの影響: W4 の対象のファイル名を参照するテストは、ラチェットの基準値と、`Step10FourTwoGlobalReferenceGuardTests` の許可リスト（`ActionManager.cs`。不在の検査のみのため変更不要）だけ。
+  - **W4 の結果（2026-10-15）**: ビルド・テストビルド・テスト実行成功、起動スモーク問題なし。
+- **W5 と改名（2026-10-15 適用済み。ビルド・テストの結果待ち）**: `ScpUtil.cs`（29 型・約 11,500 行）を型ごとに分割し、元ファイルを削除（新設 29 ファイル。`Global.cs` 約 3,470 行、`BackingStore.cs` ほか）。複数型ファイルは 1 → **0**。型名の一覧は一致（618＝618）。ツールの自己検証は `VERIFY-OK`。
+  - 静的初期化の順序: 型の宣言を変更せず別ファイルへ移しただけで、型ごとの静的コンストラクター（`beforefieldinit`）の評価は、ファイルの分割に影響されない。Step11 の起動確認で確認する。
+  - ラチェットの基準値: `ScpUtil.cs` の (9,12,233) を `Global.cs` (9,11,47)＋`BackingStore.cs` (0,1,182)＋`Changelog.cs` (0,0,4) へ引き継いだ（合計は不変）。基準値の走査の起点（アンカー）も、`ScpUtil.cs` から `Global.cs` へ変更した（旧パスのままでは、検査が省略されて合格になるため）。
+  - 付録 B の改名（原則 2）: `GitHubRelease.cs`→`GithubRelease.cs`、`EventHandlers.cs`→`PropertyChangingHandler.cs`、`Crc32.cs`→`Crc32Algorithm.cs`、`Specialactionslistviewmodelsorttests.cs`→`SpecialActionsListViewModelSortTests.cs`。大文字・小文字のみの改名（1 件目と 4 件目）は、コミット前に `git rm --cached` と `git add` が必要（W4 と同じ）。
+  - **最終確認（走査）**: ファイル 624、トップレベル型 618。複数型ファイル 0。単一型でファイル名と型名が（大文字・小文字を含めて）一致しないファイル 0。型を持たないファイルは 6（`GlobalSuppressions.cs`、`AssemblyInfo.cs`、`Themes/_.cs`、`UpdaterInstallTrace.cs`［プレースホルダー］、`StressDispatchRaceTests.cs`、`IElevatedProcessLauncher.cs`［走査の誤判定。二重 BOM のため］）。
+  - 残り: 完了条件 5（起動スモーク）、`.github/copilot-instructions.md` §3.3 の過渡期ルールの更新（原則 1 の厳格適用）、完了報告書。
   - （W1 の補足）ソース走査テストの影響: 確認した範囲では、W1 の対象を参照するテスト（`Step10FourTwoGlobalReferenceGuardTests`、`Step10GroupTwoGlobalReferenceGuardTests`）は、元ファイルに残った型のみを検査しており、変更不要。
 
 ---
