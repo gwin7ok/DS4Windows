@@ -35,7 +35,7 @@
 - **ツールによる自己検証（各ファイルの出力ごと）**: 再読み込みして、(1) トップレベル型が 1 つ、(2) 型の宣言テキストが分割前と完全に一致、(3) 構文エラーが 0、(4) BOM が一致。全件 `VERIFY-OK`。
 - **型インベントリの比較**: 各ウェーブの前後で、型名の一覧（ソート済み）が一致。
 - **ビルド・テスト**: 各ウェーブでビルド、テストビルド、`dotnet test`（`DS4WindowsTests`、`StandaloneTests`）が成功。
-- **退行ガードの引き継ぎ**: `Step10FourGlobalRatchetGuardTests` の基準値（ファイル別の `Global.*`／`AppHost`／`Program.rootHub` の件数）を、新設ファイルへ引き継いだ。合計は不変（`Global.*` 778、`AppHost` 51、`rootHub` 25）。ガードの探索の起点も、`ScpUtil.cs` から `Global.cs` へ変更した（旧パスでは検査が省略され合格になるため）。
+- **退行ガードの引き継ぎ**: `Step10FourGlobalRatchetGuardTests` の基準値（ファイル別の `Global.*`／`AppHost`／`Program.rootHub` の件数）を、新設ファイルへ引き継いだ。合計は不変（現行値: `Global.*` 780、`AppHost` 48、`rootHub` 25。Step10-4 完了時の記録 778・51 は集計の誤り）。ガードの探索の起点も、`ScpUtil.cs` から `Global.cs` へ変更した（旧パスでは検査が省略され合格になるため）。
 
 ## 5. 見つかった問題と対応
 

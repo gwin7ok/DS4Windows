@@ -232,7 +232,7 @@
 ---
 
 ### Phase6-Step10: 残存小型UI・小型ViewModel・補助クラスのドメイン別ペアPure DI化【完了（2026-10-15）】
-- **完了（2026-10-15）**: Step10-0〜10-5（3b・3c・3d、Vader 4 Pro 削除を含む）。上流由来の不具合 12 件を承認のうえ是正。全域の退行ガード（`Step10FourGlobalRatchetGuardTests`）で `Program.rootHub` 25 件・`AppHost` 51 件・`Global.*` 778 件を基準値として固定。先送り 3 項目（振動・スロット 5〜8・UDP コマンド）は `Phase6-Step11-Plan.md` §3.3。詳細は `Phase6-Step10-Completion-Report.md`。次は Step10b → Step11。
+- **完了（2026-10-15）**: Step10-0〜10-5（3b・3c・3d、Vader 4 Pro 削除を含む）。上流由来の不具合 12 件を承認のうえ是正。全域の退行ガード（`Step10FourGlobalRatchetGuardTests`）で `Program.rootHub` 25 件・`AppHost` 48 件・`Global.*` 780 件を基準値として固定。先送り 3 項目（振動・スロット 5〜8・UDP コマンド）は `Phase6-Step11-Plan.md` §3.3。詳細は `Phase6-Step10-Completion-Report.md`。次は Step10b → Step11。
 - **Vader 4 Pro のデバイスサポートを削除（2026-10-14、承認済み・結果待ち。`Phase6-Step10-V4P-Removal-Plan.md`）**。
 - **進捗率**: **Step10-0〜Step10-3（グループ1〜3）と Step10-3b（機能追加）は完了（2026-10-14、いずれもビルド・テスト・実機確認済み）。残り: Step10-4（F08＋全域の再走査・ガードテスト）、Step10-5（§8 PluginSlot／UnplugSlot の接続）、完了報告書。詳細は `Phase6-Step10-1-Plan.md`、`Phase6-Step10-2-Plan.md` §10、`Phase6-Step10-3-Plan.md` §11〜13、`Phase6-Step10-3b-Plan.md` を参照**
 - **Step10-0 の結果（2026-10-14）**: 現行コードで再集計し、旧台帳（72箇所）を作り直した（約 95 箇所＋フォールバック約 50 箇所）。決定1〜6 はすべて推奨案で承認（静的表は温存、F08 は Step10-4、View の依存は親から必須引数、`StartupMethods` は引数化、§8 は Step10-5、全域ゼロは「温存項目を除く」）。ステップ構成は Step10-1〜3（グループ別）→ Step10-4（F08・全域再走査）→ Step10-5（§8）。契約の追加が必要なもの（`SaveWhere`／`SaveDefault`、`LastVersionChecked`、`SetCulture`、`UseMoonlight`、`SaveAction`、`CreateAutoProfiles` ほか）は `Phase6-Step10-Plan.md` §0A.7。

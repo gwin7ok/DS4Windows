@@ -55,8 +55,8 @@
 ## 5. 全域の退行ガードの基準値（`Step10FourGlobalRatchetGuardTests`）
 
 - `Program.rootHub`: 6 ファイル・25 件（`App.xaml.cs`、`ScpUtil.cs`、`ServiceRegistration.cs`、`ProfileEditor.xaml.cs`、`Mapping.cs`、`DS4Sixaxis.cs`）。
-- `AppHost.GetService|Services`: 9 ファイル・51 件（`MainWindow.xaml.cs` 17、`ScpUtil.cs` 12 ほか）。
-- `Global.*`: 63 ファイル・778 件（薄いシムが過半。`ProfileRepository.cs` は 24 → 26。`ReplaceProfileSwitchTarget` が `Global.store` へ委譲するため。記録は `Phase6-Step10-4-Plan.md` §36）。
+- `AppHost.GetService|Services`: 9 ファイル・48 件（`MainWindow.xaml.cs` 17、`Global.cs` 11 ほか。Step10b 後の現行値。Step10-4 の完了時は 51 件と記録したが、基準値の集計の誤りで、現行の基準値の合計は 48）。
+- `Global.*`: 75 ファイル・780 件（Step10b の分割でファイル数が増えた。Step10-4 の完了時は 63 ファイル・778 件と記録）（薄いシムが過半。`ProfileRepository.cs` は 24 → 26。`ReplaceProfileSwitchTarget` が `Global.store` へ委譲するため。記録は `Phase6-Step10-4-Plan.md` §36）。
 - 件数が増える変更は、テストが失敗する。基準値を更新するときは、理由を文書化する。
 
 ## 6. 実機確認
