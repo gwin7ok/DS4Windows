@@ -37,27 +37,4 @@ namespace DS4Windows
             _lockerInstance = null;
         }
     }
-
-    public class WriteLocker : IDisposable
-    {
-        private ReaderWriterLockSlim _lockerInstance;
-        private bool IsDisposed => _lockerInstance == null;
-
-        public WriteLocker(ReaderWriterLockSlim lockerInstance)
-        {
-            _lockerInstance = lockerInstance;
-            _lockerInstance.EnterWriteLock();
-        }
-
-        public void Dispose()
-        {
-            if (IsDisposed)
-            {
-                throw new ObjectDisposedException(this.ToString());
-            }
-
-            _lockerInstance.ExitWriteLock();
-            _lockerInstance = null;
-        }
-    }
 }

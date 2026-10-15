@@ -5,42 +5,6 @@ using Xunit;
 
 namespace DS4Windows.Actions.Tests
 {
-    // Lightweight test ServiceProvider that returns a single object for requested service types.
-    class TestServiceProvider : IServiceProvider
-    {
-        private readonly object svc;
-        public TestServiceProvider(object svc) { this.svc = svc; }
-        public object GetService(Type serviceType)
-        {
-            if (svc != null && serviceType.IsInstanceOfType(svc)) return svc;
-            return null;
-        }
-    }
-
-    // Minimal fake KBM handler that reports fakeKeyRepeat=true and no-ops on key events.
-    class FakeKBMHandler : VirtualKBMBase
-    {
-        public FakeKBMHandler()
-        {
-            // Use false so controllers create internal RepeatHelper paths
-            fakeKeyRepeat = false;
-        }
-
-        public override bool Connect() => true;
-        public override bool Disconnect() => true;
-        public override void MoveRelativeMouse(int x, int y) { }
-        public override void PerformMouseWheelEvent(int vertical, int horizontal) { }
-        public override void PerformMouseButtonEvent(uint mouseButton) { }
-        public override void PerformMouseButtonPress(uint mouseButton) { }
-        public override void PerformMouseButtonRelease(uint mouseButton) { }
-        public override void PerformKeyPress(uint key) { }
-        public override void PerformKeyPressAlt(uint key) { }
-        public override void PerformKeyRelease(uint key) { }
-        public override void PerformKeyReleaseAlt(uint key) { }
-        public override string GetDisplayName() => "FakeKBM";
-        public override string GetIdentifier() => "FakeKBM";
-        public override string GetFullDisplayName() => "FakeKBM";
-    }
 
     // ServiceProviderHolder（静的）を差し替えるテストは同じコレクションで直列に実行する
     [Collection("ServiceProviderHolder")]

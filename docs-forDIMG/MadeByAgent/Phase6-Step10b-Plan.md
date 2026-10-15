@@ -18,6 +18,110 @@
 > - 分割で新設するファイルは、`Step10FourGlobalRatchetGuardTests` の基準値に無いファイルとして扱われる。**分割元の件数を新ファイルへ引き継いで、基準値を更新する**こと（件数の合計が増えないこと。`Phase6-Step10-4-Plan.md` §34・§36）。
 > - `Mouse.cs`・`ProfileEditor.xaml.cs` は、Step10 の最後に実機確認済みの状態（`Phase6-Step10-Completion-Report.md` §4 の 9〜12）。
 
+## 0A. Step10b-0 台帳（2026-10-15 作成。現行コードの走査による再集計。付録 A（2026-09-20 版）は参考扱いとし、本節を正とする）
+
+### 0A.1 走査の方法と結果
+- **方法**: DS4Windows・DS4WindowsTests・StandaloneTests の全 .cs（obj／in／自動生成を除く）について、コメント・文字列を除去し、波括弧の深さで、トップレベル型（class／struct／interface／enum／delegate）を数えた。ネスト型は数えない。走査スクリプトは作業用（リポジトリには含めない）。
+- **結果**: 型を持つファイル 423、トップレベル型 619。**複数型を含むファイルは 55**（DS4Windows 52、DS4WindowsTests 3）。分割で新設するファイルは **196**（各ファイルの型数 − 1 の合計）。
+- **付録 A（2026-09-20 版: 55 ファイル・新設 203）との差**
+  - 複数型でなくなった: SettingsViewModel.cs（MonitorChoiceListing を Step9 で削除。1 型）。
+  - 新たに複数型になった（過渡期ルールの逸脱）: DS4WindowsTests/Step10FourTwoGlobalReferenceGuardTests.cs（Step10-4 で NullProcessInspector を同居。もとは 1 型）。W1 で分割する。
+  - 型数が減った: ControllerRegDeviceOptsViewModel.cs 7→6、ControlServiceDeviceOptions.cs 13→11（Vader 4 Pro の削除）、ProfileDTO.cs 22→20、ProfilePropGroups.cs 28→26（Abs Mouse の削除）。
+- **ファイル名と一致する型が無い複数型ファイル（元ファイルを全型の移動後に削除、または最大の型を git mv で改名）**: TestActionControllerTests.cs、ToggleAndPressedOnceTests.cs、ReaderWriteLockSlimWrappers.cs、Log.cs、ProfilePropGroups.cs、ScpUtil.cs、Trigger.cs、DS4Sixaxis.cs。
+- **単一型だがファイル名が型名と異なる（原則2。改名のみ）**: ApiDTO/GitHubRelease.cs（GithubRelease）、DS4Forms/ViewModels/Util/EventHandlers.cs（PropertyChangingHandler）、DS4Library/Crc32.cs（Crc32Algorithm）、DS4WindowsTests/Specialactionslistviewmodelsorttests.cs（SpecialActionsListViewModelSortTests。大文字・小文字のみの差で、今回の走査で追加）。
+- **新設ファイル名の衝突**: 1 件（DS4Library/DS4SixAxis.cs。既存 DS4Sixaxis.cs と、大文字・小文字のみの差。Windows の既定のファイルシステムでは同一ファイルになるため、git mv で DS4Sixaxis.cs を DS4SixAxis.cs へ改名する）。同一フォルダ内の新設ファイル同士の重複: 0 件。
+- **特殊ケース（§7-1）**: DI/AppHost.cs の DS4Windows.AppHost（互換ラッパー）は、DS4Windows 名前空間内の約 12 ファイルが、修飾なしの AppHost.GetService で使用している（Mapping.cs、ControlService.cs、ScpUtil.cs、MainWindow.xaml.cs、ProfileEditor.xaml.cs ほか）。呼び出し元が 0 件ではないため、(b)（別フォルダ DI/Compat/AppHost.cs。名前空間は変更しない）を採る。
+- **ソース走査テストへの影響**: 分割対象のファイル名を参照するテストが約 34 ファイル（MainWindow.xaml.cs 7、ProfileEditor.xaml.cs 8、ProfileSettingsViewModel.cs 4、ScpUtil.cs 2 ほか）。型を別ファイルへ移すと、型の文字列を元のファイルから探すテストが失敗する。各ウェーブで、参照するテストを洗い出し、検査先を更新する。Step10FourGlobalRatchetGuardTests は、ファイルごとの基準値のため、新設ファイルへ件数を引き継ぐ（合計が変わらないことを確認する）。
+
+### 0A.2 現行の全数台帳（ウェーブ別。パスは DS4Windows／DS4WindowsTests 直下からの相対）
+#### W1（20 ファイル・新設 96 ファイル）
+- `DS4Windows/Core/Utilities/OneEuroFilter.cs`: 2 型・106 行 — OneEuroFilter、LowpassFilter
+- `DS4Windows/Core/Utilities/ReaderWriteLockSlimWrappers.cs`: 2 型・63 行（ファイル名と一致する型なし） — ReadLocker、WriteLocker
+- `DS4Windows/DS4Control/ControlServiceDeviceOptions.cs`: 11 型・561 行 — ControlServiceDeviceOptions、ControllerOptionsStore、DS4DeviceOptions、DS3DeviceOptions、DS4ControllerOptions、DualSenseDeviceOptions、DualSenseControllerOptions、SwitchProDeviceOptions、SwitchProControllerOptions、JoyConDeviceOptions、JoyConControllerOptions
+- `DS4Windows/DS4Control/DS4OutDevices/DS4OutDeviceExtras.cs`: 5 型・164 行 — DS4_TOUCH、DS4_REPORT_UNION、DS4_REPORT_EX、DS4OutputBufferData、DS4OutDeviceExtras
+- `DS4Windows/DS4Control/DTOXml/ActionsDTO.cs`: 2 型・360 行 — ActionsDTO、SpecialActionSerializer
+- `DS4Windows/DS4Control/DTOXml/AppSettingsDTO.cs`: 9 型・1235 行 — AppSettingsDTO、UDPSrvSmoothingOptionsGroup、InputDeviceOptions、BaseInputDeviceSettingsGroup、DS4SupportSettingsGroup、DS3SupportSettings、DualSenseSupportSettings、SwitchProSupportSettings、JoyConSupportSettings
+- `DS4Windows/DS4Control/DTOXml/AutoProfilesDTO.cs`: 2 型・190 行 — AutoProfilesDTO、AutoProfileEntrySerializer
+- `DS4Windows/DS4Control/DTOXml/LinkedProfilesDTO.cs`: 2 型・123 行 — LinkedProfilesDTO、LinkedProfileItem
+- `DS4Windows/DS4Control/DTOXml/OutputSlotPersistDTO.cs`: 2 型・101 行 — OutputSlotPersistDTO、OutputSlotSerializer
+- `DS4Windows/DS4Control/DTOXml/ProfileDTO.cs`: 20 型・3713 行 — ProfileDTO、StickAxialDeadOptionsSerializer、StickDeltaAccelSettings、SASteeringWheelSmoothingOptions、GyroControlsSettings、GyroMouseStickSmoothingSettings、GyroMouseSmoothingSettings、GyroSwipeSettings、StickModeOutputSettings、FlickStickSettings、DualSenseControllerSettings、TouchpadMouseStickSerializer、DS4ControlAssignementSerializer、DS4ControlAssignmentSerializerBase、DS4ControlButtonAssignmentSerializer、DS4ControlKeyAssignmentSerializer、DS4ControlMacroAssignmentSerializer、DS4ControlKeyTypeAssignmentSerializer、DS4ControlExtrasAssignmentSerializer、DS4ControlLightbarMacroAssignmentSerializer
+- `DS4Windows/DS4Control/DTOXml/XmlDataUtilities.cs`: 2 型・46 行 — XmlDataUtilities、Utf8StringWriter
+- `DS4Windows/DS4Control/MacroParser.cs`: 2 型・286 行 — MacroParser、MacroStep
+- `DS4Windows/DS4Control/PresetOption.cs`: 7 型・190 行 — PresetOption、GamepadPreset、GamepadGyroCamera、MixedPreset、MixedGyroMousePreset、KBMPreset、KBMGyroMouse
+- `DS4Windows/DS4Control/ProfilePropGroups.cs`: 26 型・1475 行（ファイル名と一致する型なし） — ProfileActions、Sensitivity、SquareStickInfo、StickDeadZoneInfo、StickAntiSnapbackInfo、TriggerDeadZoneZInfo、GyroMouseInfo、GyroMouseStickInfo、GyroDirectionalSwipeInfo、GyroControlsInfo、ButtonMouseInfo、LightbarMode、LightbarDS4WinInfo、LightbarSettingInfo、SteeringWheelSmoothingInfo、TouchpadRelMouseSettings、TouchMouseStickInfo、StickMode、TriggerMode、TwoStageTriggerMode、FlickStickSettings、StickControlSettings、StickModeSettings、StickOutputSetting、TriggerOutputSettings、RumbleSettings
+- `DS4Windows/DS4Control/Profiles/AutoProfileHolder.cs`: 2 型・251 行 — AutoProfileHolder、AutoProfileEntity
+- `DS4Windows/DS4Control/Trigger.cs`: 4 型・55 行（ファイル名と一致する型なし） — TriggerContext、TriggerType、ITrigger、SingleButtonTrigger
+- `DS4Windows/VJoyFeeder/vJoyFeeder.cs`: 8 型・720 行 — HID_USAGES、VjdStat、FFBPType、FFBEType、FFB_CTRL、FFBOP、VJoy、vJoyFeeder
+- `DS4WindowsTests/ActionControllerTests/TestActionControllerTests.cs`: 3 型・105 行（ファイル名と一致する型なし） — MockRepeater、TestActionController、ActionControllerTests
+- `DS4WindowsTests/ActionControllerTests/ToggleAndPressedOnceTests.cs`: 3 型・326 行（ファイル名と一致する型なし） — TestServiceProvider、FakeKBMHandler、ToggleAndToggledOnTests
+- `DS4WindowsTests/Step10FourTwoGlobalReferenceGuardTests.cs`: 2 型・442 行 — NullProcessInspector、Step10FourTwoGlobalReferenceGuardTests
+
+#### W2（5 ファイル・新設 5 ファイル）
+- `DS4Windows/DI/AppHost.cs`: 2 型・212 行 — AppHost、AppHost
+- `DS4Windows/DI/IDeviceStateService.cs`: 2 型・44 行 — DeviceStateChangedEventArgs、IDeviceStateService
+- `DS4Windows/DI/INotificationService.cs`: 2 型・32 行 — NotificationEventArgs、INotificationService
+- `DS4Windows/DI/IOutputSlotService.cs`: 2 型・72 行 — OutputSlotChangedEventArgs、IOutputSlotService
+- `DS4Windows/DI/IProfileSettingsService.cs`: 2 型・283 行 — ProfileSettingChangedEventArgs、IProfileSettingsService
+
+#### W3（19 ファイル・新設 32 ファイル）
+- `DS4Windows/DS4Forms/BindingWindow.xaml.cs`: 3 型・1021 行 — BindingWindow、BindingWinResourcePaths、IntToBoolConverter
+- `DS4Windows/DS4Forms/LanguageSelectDialog.xaml.cs`: 2 型・152 行 — LanguageInfo、LanguageSelectDialog
+- `DS4Windows/DS4Forms/MainWindow.xaml.cs`: 2 型・2280 行 — MainWindow、ImageLocationPaths
+- `DS4Windows/DS4Forms/ProfileEditor.xaml.cs`: 3 型・2552 行 — ProfileEditor、ResourcePaths、ControlIndexCheck
+- `DS4Windows/DS4Forms/RecordBox.xaml.cs`: 2 型・653 行 — RecordBox、RecordBoxResourcePaths
+- `DS4Windows/DS4Forms/StickCalibrationWindow.xaml.cs`: 2 型・68 行 — StickCalibrationWindow、Stick
+- `DS4Windows/DS4Forms/ViewModels/AutoProfilesViewModel.cs`: 3 型・723 行 — AutoProfilesViewModel、ProgramItem、NativeMethods2
+- `DS4Windows/DS4Forms/ViewModels/BindingWindowViewModel.cs`: 4 型・953 行 — BindingWindowViewModel、BindAssociation、OutBinding、LightbarMacro
+- `DS4Windows/DS4Forms/ViewModels/ControllerListViewModel.cs`: 2 型・744 行 — ControllerListViewModel、CompositeDeviceModel
+- `DS4Windows/DS4Forms/ViewModels/ControllerRegDeviceOptsViewModel.cs`: 6 型・357 行 — ControllerRegDeviceOptsViewModel、DeviceListItem、DS4ControllerOptionsWrapper、DualSenseControllerOptionsWrapper、SwitchProControllerOptionsWrapper、JoyConControllerOptionsWrapper
+- `DS4Windows/DS4Forms/ViewModels/CurrentOutDeviceViewModel.cs`: 2 型・493 行 — CurrentOutDeviceViewModel、SlotDeviceEntry
+- `DS4Windows/DS4Forms/ViewModels/LanguagePackViewModel.cs`: 2 型・145 行 — LanguagePackViewModel、LangPackItem
+- `DS4Windows/DS4Forms/ViewModels/LightbarMacroViewModel.cs`: 3 型・92 行 — LightbarMacroViewModel、LightbarMacroElement、LightbarMacroTrigger
+- `DS4Windows/DS4Forms/ViewModels/MappingListViewModel.cs`: 2 型・367 行 — MappingListViewModel、MappedControl
+- `DS4Windows/DS4Forms/ViewModels/ProfileSettingsViewModel.cs`: 5 型・4174 行 — ProfileSettingsViewModel、PresetMenuHelper、TriggerModeChoice、TwoStageChoice、TriggerEffectChoice
+- `DS4Windows/DS4Forms/ViewModels/RecordBoxViewModel.cs`: 2 型・588 行 — RecordBoxViewModel、MacroStepItem
+- `DS4Windows/DS4Forms/ViewModels/SpecialActionsListViewModel.cs`: 2 型・531 行 — SpecialActionsListViewModel、SpecialActionItem
+- `DS4Windows/DS4Forms/ViewModels/TrayIconViewModel.cs`: 2 型・504 行 — TrayIconViewModel、ControllerHolder
+- `DS4Windows/DS4Forms/WelcomeDialog.xaml.cs`: 2 型・525 行 — WelcomeDialog、WelcomeDialogResourcePaths
+
+#### W4（10 ファイル・新設 35 ファイル）
+- `DS4Windows/Actions/Action.cs`: 2 型・29 行 — MappingContext、Action
+- `DS4Windows/Actions/ActionManager.cs`: 3 型・618 行 — ActionInstanceState、ActionEntry、ActionManager
+- `DS4Windows/DS4Control/Log.cs`: 3 型・155 行（ファイル名と一致する型なし） — AppLogger、ProfileChangeSource、ProfileChangedEventArgs
+- `DS4Windows/DS4Control/UdpServer.cs`: 7 型・1051 行 — DsState、DsConnection、DsModel、DsBattery、DualShockPadMeta、PadDataRspPacket、UdpServer
+- `DS4Windows/DS4Library/DS4Device.cs`: 6 型・2170 行 — DS4Color、ConnectionType、DS4ForceFeedbackState、DS4LightbarState、DS4HapticState、DS4Device
+- `DS4Windows/DS4Library/DS4Devices.cs`: 10 型・622 行 — VidPidFeatureSet、VidPidInfo、RequestElevationArgs、RequestElevationDelegate、CheckVirtualInfo、CheckVirtualDelegate、CheckConnectionDelegate、PrepareInitDelegate、CheckPendingDevice、DS4Devices
+- `DS4Windows/DS4Library/DS4Sixaxis.cs`: 6 型・649 行（ファイル名と一致する型なし） — SixAxisHandler、SixAxisEventArgs、SixAxis、CalibData、GyroAverageWindow、DS4SixAxis
+- `DS4Windows/DS4Library/DS4Touchpad.cs`: 3 型・323 行 — TouchpadEventArgs、Touch、DS4Touchpad
+- `DS4Windows/DS4Library/InputDevices/InputDeviceFactory.cs`: 2 型・70 行 — InputDeviceType、InputDeviceFactory
+- `DS4Windows/DS4Library/InputDevices/TriggerEffects.cs`: 3 型・49 行 — TriggerEffects、TriggerId、TriggerEffectSettings
+
+#### W5（1 ファイル・新設 28 ファイル）
+- `DS4Windows/DS4Control/ScpUtil.cs`: 29 型・11194 行（ファイル名と一致する型なし） — DS4KeyType、Ds3PadId、DS4Controls、X360Controls、SASteeringWheelEmulationAxisType、OutContType、GyroOutMode、TouchpadOutMode、TrayIconChoice、AppThemeChoice、ControlActionData、AutoProfileDisplayProfileSwitchChoices、DS4TriggerOutputMode、DS4ControlSettings、ControlSettingsGroup、DebugEventArgs、MappingDoneEventArgs、ReportEventArgs、BatteryReportArgs、ControllerRemovedArgs、DeviceStatusChangeEventArgs、SerialChangeArgs、OneEuroFilterPair、OneEuroFilter3D、SelectedProfileChangedEventArgs、Global、Changelog、BackingStore、SpecialAction
+
+
+
+
+### 0A.3 決定事項（2026-10-15、決定 1〜6 すべて推奨案で承認）
+- **決定1（提供方法・実施者）**: A（推奨）＝分割ツールを PowerShell で作り、**エージェントが手元で実行**する（ファイルの読み書きのみ。ビルド・テストはユーザーが実行）。ツールは、(1) 宣言テキスト（トリビア込み）の一致、(2) 型インベントリの一致、(3) 1 ファイル 1 型・命名の一致を、ウェーブごとにレポートする。B＝Roslyn のコンソールアプリを作り、ユーザーが実行（NuGet の取得と、意味診断まで確認できる。ただしユーザーの作業が増える）。C＝手作業で 1 ファイルずつ分割（203 ファイルは現実的でない）。
+- **決定2（ウェーブの順序と単位）**: W1（データ型・補助型）→ W2（DI 層）→ W3（UI 層）→ W4（デバイス・コア層）→ W5（ScpUtil.cs）。1 ウェーブ＝1 回のビルド・テスト・コミット。W5 は独立。
+- **決定3（AppHost）**: 互換ラッパーを DI/Compat/AppHost.cs（名前空間は DS4Windows のまま）へ分ける（案 b）。
+- **決定4（大文字・小文字のみの改名）**: git mv を 2 段階（一時名を経由）で行う。DS4Sixaxis.cs→DS4SixAxis.cs、Specialactionslistviewmodelsorttests.cs→SpecialActionsListViewModelSortTests.cs、GitHubRelease.cs→GithubRelease.cs。付録 B の他 2 件（EventHandlers.cs、Crc32.cs）も改名。
+- **決定5（W1 の追加）**: Step10FourTwoGlobalReferenceGuardTests.cs の NullProcessInspector を、W1 で別ファイルへ分ける。
+- **決定6（ガードテストの扱い）**: Step10FourGlobalRatchetGuardTests の基準値は、分割後の各新設ファイルの件数へ機械的に置き換える（ツールが出力）。件数の合計が変わらないことを、ウェーブごとに確認する。
+
+### 0A.4 分割ツール（2026-10-15 作成）
+- 場所: `docs-forDIMG/MadeByAgent/tools/Step10b/`（`README.md` に手順）。PowerShell 7 に同梱の Roslyn で、型の宣言（属性・コメント・`#if` を含む前後のトリビア）を一字一句そのまま別ファイルへ移す。ビルドは不要。
+- 実行ごとの自己検証: 出力ファイルを再読み込みし、(1) トップレベル型が 1 つ、(2) 宣言テキストが分割前と一致、(3) 構文エラー 0、(4) BOM が一致、を確認する。分割前後の型名の一覧を走査スクリプトで比較する。
+- 元ファイルの扱い: ファイル名と一致する型があれば、それを元ファイルに残す（履歴を維持）。無ければ元ファイルを削除し、全型を別名のファイルへ書く（最大の型は、内容の類似により git が改名として検出する見込み）。
+
+### 0A.5 進捗
+- **W1（2026-10-15 適用済み。ビルド・テストの結果待ち）**: 20 ファイルを分割し、新設 96 ファイル（元ファイルの削除 5 件を含む出力 101 ファイル）。型名の一覧は分割前後で一致（618＝618）、複数型ファイルは 55 → 35。
+  - 新設・変更の内訳: `OneEuroFilter`、`ReaderWriteLockSlimWrappers`（`ReadLocker`／`WriteLocker`）、`ControlServiceDeviceOptions`、`DS4OutDeviceExtras`、DTOXml（`ActionsDTO`、`AppSettingsDTO`、`AutoProfilesDTO`、`LinkedProfilesDTO`、`OutputSlotPersistDTO`、`ProfileDTO`、`XmlDataUtilities`）、`MacroParser`、`PresetOption`、`ProfilePropGroups`（元ファイルを削除。26 型）、`AutoProfileHolder`、`Trigger`（元ファイルを削除。4 型）、`vJoyFeeder`、テスト 3 ファイル（`NullProcessInspector` ほか）。
+  - ラチェットの基準値: `ActionsDTO` 6＝4＋2（`SpecialActionSerializer`）、`AutoProfilesDTO` 4＝0＋4（`AutoProfileEntrySerializer`）、`ProfileDTO` 10＝2＋8（`DS4Control*Serializer` ほか）へ引き継いだ。合計は不変。
+  - ソース走査テストの影響: 確認した範囲では、W1 の対象を参照するテスト（`Step10FourTwoGlobalReferenceGuardTests`、`Step10GroupTwoGlobalReferenceGuardTests`）は、元ファイルに残った型のみを検査しており、変更不要。
+
+---
 ---
 
 ## 0. 位置づけ
