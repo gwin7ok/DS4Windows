@@ -185,6 +185,8 @@ PowerShell または Python スクリプトにより、ソリューション内�
 | Step10-4-2f | K1 是正（`ProfileApplicationService` のスロット上限を `ControllerSlotLimit` に変更）: 5〜8 番目のコントローラーで、プロファイル切替アクション、復帰、自動プロファイルが動作すること。5 台以上のコントローラーが必要で確認できない見込み | プロファイル切替・自動プロファイル | 未確認（先送り。2026-10-15。1〜4 番目の回帰確認は実施） |
 | Step10-5 | UDP コマンド（`outputslot.<n>.unplug`／`plugds4`／`plugx360`）が、`IOutputSlotService` 経由（事前条件の確認と UI スレッドへの切り替え）で動作すること。未接続のスロットへの `unplug` で例外にならないこと。UDP を送る環境が無く確認できなかった | 出力スロット管理・UDP | 未確認（先送り。2026-10-15。画面の Plug／Unplug は確認済み） |
 | 既存不具合の是正（Mouse.cs） | Touchpad Button Activation Mode が Release のとき、Left Touch／Right Touch 等に割り当てたキーが、指を離した後に出ること（`releaseButtonActive` の 100ms 判定の比較反転を `>=` に是正。上流 7b2a69c5 由来で移行による退行ではない。ユーザー承認済み 2026-10-15） | タッチパッド | 実機確認待ち（Click／Touch は従来どおり動作すること） |
+| 既存仕様の変更（Mouse.cs タップ判定） | Mouse モードでタップ（触れて 感度×2 ms 以内に離す）したとき左クリックが出ること。タップ判定の位置ずれ許容を上流の 10 から 100 に拡大（ユーザー承認 2026-10-15。実機で dx=26/63 の速いタップが不成立だったため。調査用 `[TAP]` Trace を `touchesBegan`／`touchesEnded` に一時追加。確認後に外す） | タッチパッド | 実機確認待ち（Double Tap ON／OFF の両方。Unbound でもタップが出ること） |
+| 既存仕様の変更（Mouse.cs タップクリック保持） | タップの左クリックが、フォーカスされていないウィンドウでもフォーカスを切り替えること（上流は Down/Up がほぼ同時の瞬間クリックで効かなかった。`TapClickHoldMs`=50ms 保持。Double Tap ON の保留クリックも同様に保持し、指を離した後も `touchUnchanged` から処理が続くよう条件に `tappedOnce`／保持中を追加。ユーザー承認 2026-10-15） | タッチパッド | 実機確認待ち（Double Tap ON／OFF。タップ＆ホールドのドラッグ、押し込みクリック、連続タップが従来どおりであること） |
 
 ---
 

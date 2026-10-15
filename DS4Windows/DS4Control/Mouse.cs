@@ -38,6 +38,17 @@ namespace DS4Windows
         private readonly IProfileSettingsService _profileSettings;
         private readonly IVirtualKBM _virtualKBM;
         private bool tappedOnce = false, secondtouchbegin = false;
+        // タップ判定で許容する始点と終点のずれ（タッチパッド座標。上流は 10）
+        private const int TapMaxMoveHw = 100;
+        // タップによる左クリックを押したままにする時間（ms）。
+        // 上流は 1 フレームだけの瞬間的なクリックで、フォーカスの切り替えが効かない環境があったため保持する（Phase6 変更、ユーザー承認 2026-10-15）
+        private const double TapClickHoldMs = 50.0;
+        private DateTime tapClickHoldUntil = DateTime.MinValue;
+
+        private void StartTapClickHold()
+        {
+            tapClickHoldUntil = DateTime.UtcNow + TimeSpan.FromMilliseconds(TapClickHoldMs);
+        }
         public bool swipeLeft, swipeRight, swipeUp, swipeDown;
         public bool priorSwipeLeft, priorSwipeRight, priorSwipeUp, priorSwipeDown;
         public byte swipeLeftB, swipeRightB, swipeUpB, swipeDownB, swipedB;
@@ -1242,6 +1253,8 @@ namespace DS4Windows
             previousTouchDX = previousTouchDY = 0;
             previousUnchangedTouchJoyFrame = false;
             pastTime = arg.TimeStamp;
+            // 調査用 Trace（動作は変えない）: タッチ開始の検出
+            AppLogger.LogTrace($"[TAP] device={deviceNum} touchesBegan touches={arg.Touches?.Length} buttonPressed={arg.TouchButtonPressed}");
             firstTouch.populate(arg.Touches[0].HwX, arg.Touches[0].HwY, arg.Touches[0].TouchID,
                 arg.Touches[0].PreviousTouch);
 
@@ -1275,6 +1288,7 @@ namespace DS4Windows
             previousTouchDX = previousTouchDY = 0;
             previousUnchangedTouchJoyFrame = false;
             byte tapSensitivity = _profileSettings.TapSensitivity[deviceNum];
+            AppLogger.LogTrace($"[TAP] device={deviceNum} touchesEnded outMode={_profileSettings.TouchOutMode[deviceNum]} sens={tapSensitivity}");
             if (tapSensitivity != 0 && _profileSettings.TouchOutMode[deviceNum] == TouchpadOutMode.Mouse)
             {
                 if (secondtouchbegin)
@@ -1284,10 +1298,16 @@ namespace DS4Windows
                 }
 
                 DateTime test = arg.TimeStamp;
+                // 調査用 Trace（動作は変えない）: タップ判定の入力値と成否
+                AppLogger.LogTrace($"[TAP] device={deviceNum} ended sens={tapSensitivity} doubleTap={_profileSettings.GetDoubleTap(deviceNum)} " +
+                    $"elapsedMs={(test - pastTime).TotalMilliseconds:F0} limitMs={tapSensitivity * 2} buttonPressed={arg.TouchButtonPressed} tappedOnce={tappedOnce} " +
+                    $"dx={Math.Abs(firstTouch.HwX - arg.Touches[0].HwX)} dy={Math.Abs(firstTouch.HwY - arg.Touches[0].HwY)}");
                 if (test <= (pastTime + TimeSpan.FromMilliseconds((double)tapSensitivity * 2)) && !arg.TouchButtonPressed && !tappedOnce)
                 {
-                    if (Math.Abs(firstTouch.HwX - arg.Touches[0].HwX) < 10 && Math.Abs(firstTouch.HwY - arg.Touches[0].HwY) < 10)
+                    // Phase6 変更（ユーザー承認 2026-10-15）: 上流の許容 10 は実機で厳しすぎ、タップが成立しなかったため 100 に拡大
+                    if (Math.Abs(firstTouch.HwX - arg.Touches[0].HwX) < TapMaxMoveHw && Math.Abs(firstTouch.HwY - arg.Touches[0].HwY) < TapMaxMoveHw)
                     {
+                        AppLogger.LogTrace($"[TAP] device={deviceNum} tap accepted (doubleTap={_profileSettings.GetDoubleTap(deviceNum)})");
                         if (_profileSettings.GetDoubleTap(deviceNum))
                         {
                             tappedOnce = true;
@@ -1295,7 +1315,7 @@ namespace DS4Windows
                             TimeofEnd = DateTime.Now; //since arg can't be used in synthesizeMouseButtons
                         }
                         else
-                            Mapping.MapClick(deviceNum, Mapping.Click.Left); //this way no delay if disabled
+                            StartTapClickHold(); //this way no delay if disabled (クリックは synthesizeMouseButtons が保持時間の間出し続ける)
                     }
                 }
             }
@@ -1644,8 +1664,11 @@ namespace DS4Windows
                 }
             }
 
+            // tappedOnce（Double Tap の保留クリック）と tapClickHoldUntil（タップクリックの保持中）は、
+            // 指を離した後も処理が必要（Phase6 変更、ユーザー承認 2026-10-15）
             if (s.Touch1Finger || s.TouchButton ||
-                releaseButtonActive || releaseButtonChanged)
+                releaseButtonActive || releaseButtonChanged ||
+                tappedOnce || DateTime.UtcNow < tapClickHoldUntil)
             {
                 synthesizeMouseButtons();
             }
@@ -1847,11 +1870,18 @@ namespace DS4Windows
                     DateTime tester = DateTime.Now;
                     if (tester > (TimeofEnd + TimeSpan.FromMilliseconds((double)(_profileSettings.TapSensitivity[deviceNum]) * 1.5)))
                     {
-                        Mapping.MapClick(deviceNum, Mapping.Click.Left);
+                        StartTapClickHold();
                         tappedOnce = false;
                     }
                     //if it fails the method resets, and tries again with a new tester value (gives tap a delay so tap and hold can work)
                 }
+
+                // タップのクリックを保持時間の間、押したままにする（毎フレーム MapClick。state は毎フレーム消去されるため）
+                if (DateTime.UtcNow < tapClickHoldUntil)
+                {
+                    Mapping.MapClick(deviceNum, Mapping.Click.Left);
+                }
+
                 if (secondtouchbegin) //if tap and hold (also works as double tap)
                 {
                     Mapping.MapClick(deviceNum, Mapping.Click.Left);
