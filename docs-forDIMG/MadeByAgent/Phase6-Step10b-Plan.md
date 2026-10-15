@@ -11,6 +11,13 @@
 > - Copilot が、本 Step の台帳に既にある次の 2 ファイルを、1ファイル1型（`copilot-instructions.md` §3.3 原則1）の違反として指摘した（Low）。**F12**: `DS4Windows/DI/INotificationService.cs`（`NotificationEventArgs` と `INotificationService`。`NotificationEventArgs.cs` へ分割）、**F13**: `DS4Windows/DS4Control/Trigger.cs`（`TriggerContext`、`TriggerType`、`ITrigger`、`SingleButtonTrigger`。ファイル名がどの型名とも不一致）。いずれも本 Step の付録 B の分割対象（Step9b では変更しない）。
 > - 詳細は `Phase6-Step9b-Plan.md` §1。
 
+> **Step10（完了。2026-10-15）からの申し送り**
+> - Step10 で作成した新規ファイル（`ButtonSpecialActionOutput.cs`、各テストファイル）は 1 ファイル 1 型。既存の複数型ファイルは Step10 では分割していない（過渡期ルール）。
+> - Step10 で改修した複数型ファイル（`ScpUtil.cs`、`Mapping.cs`、`Mouse.cs` ほか）に、新しい型は追加していない（定数・メソッドのみ）。
+> - 型の分割を、機能変更を含む PR に混ぜないこと。
+> - 分割で新設するファイルは、`Step10FourGlobalRatchetGuardTests` の基準値に無いファイルとして扱われる。**分割元の件数を新ファイルへ引き継いで、基準値を更新する**こと（件数の合計が増えないこと。`Phase6-Step10-4-Plan.md` §34・§36）。
+> - `Mouse.cs`・`ProfileEditor.xaml.cs` は、Step10 の最後に実機確認済みの状態（`Phase6-Step10-Completion-Report.md` §4 の 9〜12）。
+
 ---
 
 ## 0. 位置づけ

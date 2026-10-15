@@ -187,6 +187,7 @@ PowerShell または Python スクリプトにより、ソリューション内�
 | 既存不具合の是正（Mouse.cs） | Touchpad Button Activation Mode が Release のとき、Left Touch／Right Touch 等に割り当てたキーが、指を離した後に出ること（`releaseButtonActive` の 100ms 判定の比較反転を `>=` に是正。上流 7b2a69c5 由来で移行による退行ではない。ユーザー承認済み 2026-10-15） | タッチパッド | 実機確認待ち（Click／Touch は従来どおり動作すること） |
 | 既存仕様の変更（Mouse.cs タップ判定） | Mouse モードでタップ（触れて 感度×2 ms 以内に離す）したとき左クリックが出ること。タップ判定の位置ずれ許容を上流の 10 から 100 に拡大（ユーザー承認 2026-10-15。実機で dx=26/63 の速いタップが不成立だったため。調査用 `[TAP]` Trace を `touchesBegan`／`touchesEnded` に一時追加。確認後に外す） | タッチパッド | 実機確認待ち（Double Tap ON／OFF の両方。Unbound でもタップが出ること） |
 | 既存不具合の是正（ProfileEditor.xaml.cs ホバー） | プロファイル編集画面のコントローラー画像で、Left Touch の領域にホバーすると「Left Touch」と表示されること（`6f04ecf6`〔2025-11-11〕で `hoverIndexes[leftTouchConBtn]` が誤って欠落していたものを復元。同コミットの不要な `brpConBtn = 44` を削除。移行による退行ではない。ユーザー承認 2026-10-15） | プロファイル編集 | 実機確認待ち（Right Touch／Multitouch／Upper Touch／BRP のホバーも従来どおりであること） |
+| Step10 からの申し送り（Mouse.cs の調査用 Trace） | `Mouse.cs` の `touchesBegan`／`touchesEnded` に、調査用の `[TAP]` Trace（Trace レベルのみ）が残っている。ユーザーの判断（2026-10-15）で残置。Step11 で、残すか外すかを決める | タッチパッド | 判断待ち（実機確認は不要） |
 | 既存仕様の変更（Mouse.cs タップクリック保持） | タップの左クリックが、フォーカスされていないウィンドウでもフォーカスを切り替えること（上流は Down/Up がほぼ同時の瞬間クリックで効かなかった。`TapClickHoldMs`=50ms 保持。Double Tap ON の保留クリックも同様に保持し、指を離した後も `touchUnchanged` から処理が続くよう条件に `tappedOnce`／保持中を追加。ユーザー承認 2026-10-15） | タッチパッド | 実機確認待ち（Double Tap ON／OFF。タップ＆ホールドのドラッグ、押し込みクリック、連続タップが従来どおりであること） |
 
 ---
