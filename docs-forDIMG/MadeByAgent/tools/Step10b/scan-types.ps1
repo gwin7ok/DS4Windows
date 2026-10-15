@@ -1,7 +1,7 @@
 param([string]$Root, [string]$Out)
 
 # トップレベル型を数える簡易スキャナ（コメント・文字列・文字リテラルを除去し、波括弧の深さで判定）
-function Strip-Code([string]$t) {
+function Remove-CodeNoise([string]$t) {
     $sb = New-Object System.Text.StringBuilder
     $i = 0; $n = $t.Length
     while ($i -lt $n) {
@@ -63,7 +63,6 @@ function Strip-Code([string]$t) {
     return $sb.ToString()
 }
 
-$typeRegex = [regex]'(?m)^\s*(?:\[[^\]]*\]\s*)*(?:(?:public|internal|private|protected|static|sealed|abstract|partial|unsafe|readonly|new)\s+)*(class|struct|interface|enum|record|delegate)\s+(?:[\w<>\[\],\.\?\s]*?\s)?(\w+)\s*(?:<[^>]*>)?'
 
 $results = @()
 $files = Get-ChildItem -Path $Root -Recurse -Filter *.cs |
@@ -71,7 +70,7 @@ $files = Get-ChildItem -Path $Root -Recurse -Filter *.cs |
 
 foreach ($f in $files) {
     $text = [System.IO.File]::ReadAllText($f.FullName)
-    $code = Strip-Code $text
+    $code = Remove-CodeNoise $text
     $fileScoped = $code -match '(?m)^\s*namespace\s+[\w\.]+\s*;'
     $types = New-Object System.Collections.Generic.List[string]
     $depth = 0
