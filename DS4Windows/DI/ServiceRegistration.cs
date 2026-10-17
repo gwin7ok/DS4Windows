@@ -31,6 +31,8 @@ namespace DS4Windows.DI
             services.AddSingleton<SyntheticInputState>(_ => SyntheticInputState.Shared);
             // Phase7-Step7 W3（Q3＝A）: マクロの実行時状態の保持クラス。同様に静的な窓口（Shared）と同じ instance を登録する
             services.AddSingleton<MacroRuntimeState>(_ => MacroRuntimeState.Shared);
+            // Phase7-Step7 W4（Q3＝A）: スティック・ジャイロ・トリガーの処理状態の保持クラス。同様に静的な窓口（Shared）と同じ instance を登録する
+            services.AddSingleton<StickMotionState>(_ => StickMotionState.Shared);
             services.AddSingleton<IPathService, PathService>();
             services.AddSingleton<IDeviceStateService, DeviceStateService>();
             services.AddSingleton<IEnvironmentService, EnvironmentService>();

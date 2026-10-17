@@ -31,7 +31,7 @@ namespace DS4WindowsTests
             Assert.True(Regex.Matches(text, @"\bStartTapClickHold\(\)\s*;").Count >= 2);
 
             // 保持中は synthesizeMouseButtons が毎フレーム MapClick(Left) を出す
-            Assert.Matches(@"DateTime\.UtcNow\s*<\s*tapClickHoldUntil\s*\)\s*\{\s*Mapping\.MapClick\(deviceNum,\s*Mapping\.Click\.Left\)", text);
+            Assert.Matches(@"DateTime\.UtcNow\s*<\s*tapClickHoldUntil\s*\)\s*\{\s*Mapping\.MapClick\(deviceNum,\s*Click\.Left\)", text); // Phase7-Step7 W4: Mapping.Click は Click（トップレベル）へ移った
         }
 
         [Fact]

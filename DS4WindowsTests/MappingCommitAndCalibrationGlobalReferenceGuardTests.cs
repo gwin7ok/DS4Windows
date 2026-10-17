@@ -20,7 +20,8 @@ namespace DS4WindowsTests
         private const string CalibrationStart = "public static DS4State ApplyStickCalibration(";
         private const string CalibrationEnd = "private static bool ShiftTrigger(";
         private const string CommitStart = "public static void Commit(";
-        private const string CommitEnd = "public enum Click";
+        // Phase7-Step7 W4: 直後にあった入れ子の enum Click をトップレベルへ移したため、Commit の次のメンバー（MapClick）を終端にする
+        private const string CommitEnd = "public static void MapClick(";
 
         /// <summary>Step3-5 で `IProfileSettingsService` 経由へ置換済みの `Global` メンバ名（ドリフト補正）。</summary>
         private static readonly string[] MigratedCalibrationMembers =

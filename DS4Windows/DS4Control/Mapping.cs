@@ -438,24 +438,6 @@ namespace DS4Windows
             }
         }
 
-        public class PostMapStickData
-        {
-            public bool dirty;
-            public byte LX = 128;
-            public byte LY = 128;
-            public byte RX = 128;
-            public byte RY = 128;
-
-            public void Reset()
-            {
-                dirty = false;
-                LX = 128;
-                LY = 128;
-                RX = 128;
-                RY = 128;
-            }
-        }
-
         public static Queue<DS4TimedStickAxisValue>[][] stickValueHistory = new Queue<DS4TimedStickAxisValue>[Global.TEST_PROFILE_ITEM_COUNT][]
         {
             new Queue<DS4TimedStickAxisValue>[2] { new Queue<DS4TimedStickAxisValue>(), new Queue<DS4TimedStickAxisValue>() },
@@ -476,16 +458,16 @@ namespace DS4Windows
             new DS4SquareStick(),
         };
 
-        public static byte[] gyroStickX = new byte[Global.MAX_DS4_CONTROLLER_COUNT] { 128, 128, 128, 128, 128, 128, 128, 128 };
-        public static byte[] gyroStickY = new byte[Global.MAX_DS4_CONTROLLER_COUNT] { 128, 128, 128, 128, 128, 128, 128, 128 };
+        // Phase7-Step7 W4（Q2＝A・Q3＝A）: 外から触られるスティック・ジャイロ・トリガーの処理状態（gyroStickX／gyroStickY／mapStickActionData／
+        // flickMappingData／l2TwoStageMappingData／r2TwoStageMappingData／wheelFilters／deltaAccelProcessors）の実体は StickMotionState が持つ。
+        // 下の転送は、Mapping 内部のコードを変えないためのもので、状態は持たない。型の初期化時に参照を 1 度だけ保持し、毎レポートの割り当てを増やさない。
+        // TODO(Phase7-Step8): Mapping の instance 化で、保持クラスをコンストラクターで受け取り、この転送と StickMotionState.Shared を削除する。
+        private static readonly StickMotionState stickMotion = StickMotionState.Shared;
+        public static byte[] gyroStickX => stickMotion.GyroStickX;
+        public static byte[] gyroStickY => stickMotion.GyroStickY;
         //public static byte[] touchStickX = new byte[Global.MAX_DS4_CONTROLLER_COUNT] { 128, 128, 128, 128, 128, 128, 128, 128 };
         //public static byte[] touchStickY = new byte[Global.MAX_DS4_CONTROLLER_COUNT] { 128, 128, 128, 128, 128, 128, 128, 128 };
-        public static PostMapStickData[] mapStickActionData = new PostMapStickData[Global.MAX_DS4_CONTROLLER_COUNT]
-        {
-            new PostMapStickData(), new PostMapStickData(), new PostMapStickData(),
-            new PostMapStickData(), new PostMapStickData(), new PostMapStickData(),
-            new PostMapStickData(), new PostMapStickData()
-        };
+        public static PostMapStickData[] mapStickActionData => stickMotion.MapStickActionData;
 
         // [<Device>][<AxisId>]. LX = 0, LY = 1, RX = 2, RY = 3
         public static byte[][] lastStickAxisValues = new byte[Global.TEST_PROFILE_ITEM_COUNT][]
@@ -518,316 +500,15 @@ namespace DS4Windows
         //private static OneEuroFilter wheel360FilterX = new OneEuroFilter(minCutoff: 0.1, beta: 0.02);
         //private static OneEuroFilter wheel360FilterZ = new OneEuroFilter(minCutoff: 0.1, beta: 0.02);
 
-        public static OneEuroFilter[] wheelFilters = new OneEuroFilter[ControlService.MAX_DS4_CONTROLLER_COUNT];
+        public static OneEuroFilter[] wheelFilters => stickMotion.WheelFilters;
 
-        public class FlickStickMappingData
-        {
-            public const double DEFAULT_MINCUTOFF = 0.4;
-            public const double DEFAULT_BETA = 0.4;
+        public static FlickStickMappingData[] flickMappingData => stickMotion.FlickMappingData;
 
-            public const double DEFAULT_FLICK_PROGRESS = 0.0;
-            public const double DEFAULT_FLICK_SIZE = 0.0;
-            public const double DEFAULT_FLICK_ANGLE_REMAINDER = 0.0;
+        public static TwoStageTriggerMappingData[] l2TwoStageMappingData => stickMotion.L2TwoStageMappingData;
 
-            public OneEuroFilter flickFilter = new OneEuroFilter(DEFAULT_MINCUTOFF, DEFAULT_BETA);
-            public double flickProgress = DEFAULT_FLICK_PROGRESS;
-            public double flickSize = DEFAULT_FLICK_SIZE;
-            public double flickAngleRemainder = DEFAULT_FLICK_ANGLE_REMAINDER;
+        public static TwoStageTriggerMappingData[] r2TwoStageMappingData => stickMotion.R2TwoStageMappingData;
 
-            public void Reset()
-            {
-                flickFilter = new OneEuroFilter(DEFAULT_MINCUTOFF, DEFAULT_BETA);
-                flickProgress = DEFAULT_FLICK_PROGRESS;
-                flickSize = DEFAULT_FLICK_SIZE;
-                flickAngleRemainder = DEFAULT_FLICK_ANGLE_REMAINDER;
-            }
-        }
-
-        public static FlickStickMappingData[] flickMappingData = new FlickStickMappingData[Global.MAX_DS4_CONTROLLER_COUNT]
-        {
-            new FlickStickMappingData(), new FlickStickMappingData(), new FlickStickMappingData(),
-            new FlickStickMappingData(), new FlickStickMappingData(), new FlickStickMappingData(),
-            new FlickStickMappingData(), new FlickStickMappingData(),
-        };
-
-        public class TwoStageTriggerMappingData
-        {
-            public enum EngageButtonsMode : uint
-            {
-                None,
-                SoftPullOnly,
-                FullPullOnly,
-                Both,
-            }
-
-            [Flags]
-            public enum ActiveZoneButtons : ushort
-            {
-                None,
-                SoftPull,
-                FullPull
-            }
-
-            public bool startCheck;
-            public DateTime checkTime;
-            public bool outputActive;
-            public bool softPullActActive;
-            public bool fullPullActActive;
-            public EngageButtonsMode actionStateMode = EngageButtonsMode.Both;
-            public ActiveZoneButtons previousActiveButtons = ActiveZoneButtons.None;
-
-            public void StartProcessing()
-            {
-                startCheck = true;
-                checkTime = DateTime.Now;
-                outputActive = false;
-                softPullActActive = false;
-                fullPullActActive = false;
-                actionStateMode = EngageButtonsMode.Both;
-                previousActiveButtons = ActiveZoneButtons.None;
-            }
-
-            public void Reset()
-            {
-                checkTime = DateTime.Now;
-                startCheck = false;
-                outputActive = false;
-                softPullActActive = false;
-                fullPullActActive = false;
-                actionStateMode = EngageButtonsMode.Both;
-                previousActiveButtons = ActiveZoneButtons.None;
-            }
-        }
-
-        public static TwoStageTriggerMappingData[] l2TwoStageMappingData = new TwoStageTriggerMappingData[Global.MAX_DS4_CONTROLLER_COUNT]
-        {
-            new TwoStageTriggerMappingData(), new TwoStageTriggerMappingData(), new TwoStageTriggerMappingData(),
-            new TwoStageTriggerMappingData(), new TwoStageTriggerMappingData(), new TwoStageTriggerMappingData(),
-            new TwoStageTriggerMappingData(), new TwoStageTriggerMappingData(),
-        };
-
-        public static TwoStageTriggerMappingData[] r2TwoStageMappingData = new TwoStageTriggerMappingData[Global.MAX_DS4_CONTROLLER_COUNT]
-        {
-            new TwoStageTriggerMappingData(), new TwoStageTriggerMappingData(), new TwoStageTriggerMappingData(),
-            new TwoStageTriggerMappingData(), new TwoStageTriggerMappingData(), new TwoStageTriggerMappingData(),
-            new TwoStageTriggerMappingData(), new TwoStageTriggerMappingData(),
-        };
-
-        public class DeltaSettingsProcessor
-        {
-            double previousPointerX = 0.0;
-            //double accelHelperX = 0.0;
-            //double accelTravelX = 0.0;
-            //Stopwatch deltaEasingTimeX = new Stopwatch();
-
-            double previousPointerY = 0.0;
-            //double accelHelperY = 0.0;
-            //double accelTravelY = 0.0;
-            //Stopwatch deltaEasingTimeY = new Stopwatch();
-
-            double previousPointerRadial = 0.0;
-            double accelCurrentMultiRadial = 0.0;
-            double accelEasingMultiRadial = 0.0;
-            double accelTravelRadial = 0.0;
-            Stopwatch deltaEasingTimeRadial = new Stopwatch();
-            double totalTravelRadial = 0.0;
-
-            public bool useDeltaAccel = false;
-            public double AccelOutXNorm = 0.0;
-            public double AccelOutYNorm = 0.0;
-
-            public void Process(int device, double axisDirX, double axisDirY,
-                double axisRawDirX, double axisRawDirY,
-                double maxXDir, double maxYDir,
-                DeltaAccelSettings mouseDeltaSettings)
-            {
-                //DeltaAccelSettings mouseDeltaSettings = stickSettings.outputSettings.controlSettings.deltaAccelSettings;
-                // Calculate delta acceleration slope and offset.
-                bool testDeltaAccel = useDeltaAccel = mouseDeltaSettings.enabled;
-                double testAccelMulti = mouseDeltaSettings.multiplier;
-                double testAccelMaxTravel = mouseDeltaSettings.maxTravel;
-                double testAccelMinTravel = mouseDeltaSettings.minTravel;
-                double testAccelEasingDuration = mouseDeltaSettings.easingDuration;
-                double minfactor = Math.Max(1.0, mouseDeltaSettings.minfactor); // default 1.0
-                double minTravelStop = Math.Max(0.1, testAccelMinTravel);
-
-                double accelSlope = (testAccelMulti - minfactor) / (testAccelMaxTravel - testAccelMinTravel);
-                double accelOffset = minfactor - (accelSlope * testAccelMinTravel);
-
-                double outXNorm = (axisDirX) / maxXDir, outYNorm = (axisDirY) / maxYDir;
-                AccelOutXNorm = outXNorm; AccelOutYNorm = outYNorm;
-                double rawXNorm = (axisRawDirX) / maxXDir, rawYNorm = (axisRawDirY) / maxYDir;
-                double absX = Math.Abs(outXNorm);
-                double absY = Math.Abs(outYNorm);
-
-                double hyp = Math.Sqrt((rawXNorm * rawXNorm) + (rawYNorm * rawYNorm));
-
-                if (testDeltaAccel)
-                {
-                    //Trace.WriteLine("DELTA CHECK");
-                    //double tempCheckTravel = !inDuration ? testAccelMinTravel : testAccelMinTravel;
-                    if (hyp > 0.0 &&
-                        Math.Abs(hyp - previousPointerRadial) >= testAccelMinTravel &&
-                        (hyp - previousPointerRadial >= 0.0))
-                    {
-                        double tempTravel = Math.Abs(hyp - previousPointerRadial);
-                        double tempDist = tempTravel;
-
-                        if (totalTravelRadial == 0.0)
-                        {
-                            totalTravelRadial = tempTravel;
-                            accelEasingMultiRadial = (accelSlope * tempDist + accelOffset);
-                        }
-                        else
-                        {
-                            totalTravelRadial += tempDist;
-                            double tempEasingDist = totalTravelRadial;
-                            //tempDist = tempEasingDist;
-                            //tempTravel = tempDist;
-                            accelEasingMultiRadial = (accelSlope * tempEasingDist + accelOffset);
-                        }
-
-                        accelCurrentMultiRadial = (accelSlope * tempDist + accelOffset);
-                        outXNorm = outXNorm * accelCurrentMultiRadial;
-                        outYNorm = outYNorm * accelCurrentMultiRadial;
-                        accelTravelRadial = tempTravel;
-
-                        deltaEasingTimeRadial.Restart();
-                        //currentTime = Stopwatch.GetTimestamp();
-                        //previousTime = currentTime;
-
-                        previousPointerRadial = hyp;
-                        previousPointerX = rawXNorm;
-                        previousPointerY = rawYNorm;
-
-                        //Trace.WriteLine($"WTF {hyp} {accelTravelRadial} {accelCurrentMultiRadial} {accelEasingMultiRadial}");
-                    }
-                    else if (hyp > 0.0 && accelCurrentMultiRadial > 0.0 &&
-                        Math.Abs(previousPointerRadial - hyp) < minTravelStop &&
-                        !(
-                        (previousPointerX >= 0.0) != (rawXNorm >= 0.0) &&
-                        (previousPointerY >= 0.0) != (rawYNorm >= 0.0))
-                        )
-                    {
-                        //Trace.WriteLine("STAY ZONE");
-                        //inDuration = true;
-
-                        double timeElapsed = deltaEasingTimeRadial.ElapsedMilliseconds;
-                        //currentTime = Stopwatch.GetTimestamp();
-                        //double timeElapsed = (currentTime - previousTime) * (1.0 / Stopwatch.Frequency) * 1000.0;
-                        double elapsedDiff = 1.0;
-                        double tempAccel = accelCurrentMultiRadial;
-                        double tempTravel = accelTravelRadial;
-
-                        if (hyp - previousPointerRadial <= 0.0)
-                        {
-                            double tempmix2 = Math.Abs(hyp - previousPointerRadial);
-                            tempmix2 = Math.Min(tempmix2, minTravelStop);
-                            double tempmixslope = (testAccelMinTravel - tempTravel) / minTravelStop;
-                            double tempshitintercept = tempTravel;
-                            double finalmanham = (tempmixslope * tempmix2 + tempshitintercept);
-
-                            tempTravel = finalmanham;
-                            tempAccel = (accelSlope * (tempTravel) + accelOffset);
-                        }
-
-                        double elapsedDuration = testAccelEasingDuration * (accelEasingMultiRadial / testAccelMulti);
-                        //Trace.WriteLine($"TIME ELAPSED: {timeElapsed} {tempAccel} {elapsedDuration}");
-                        if (elapsedDuration > 0.0 && (timeElapsed * 0.001) < elapsedDuration)
-                        {
-                            elapsedDiff = ((timeElapsed * 0.001) / elapsedDuration);
-                            elapsedDiff = (1.0 - tempAccel) * (elapsedDiff * elapsedDiff * elapsedDiff) + tempAccel;
-                            outXNorm = elapsedDiff * outXNorm;
-                            outYNorm = elapsedDiff * outYNorm;
-
-                            //Trace.WriteLine($"CONITNUING {elapsedDiff}");
-                        }
-                        else
-                        {
-                            // Easing time has ended. Reset values.
-                            previousPointerRadial = hyp;
-                            accelCurrentMultiRadial = 0.0;
-                            accelTravelRadial = 0.0;
-                            deltaEasingTimeRadial.Reset();
-                            accelEasingMultiRadial = 0.0;
-                            totalTravelRadial = 0.0;
-                            //previousTime = currentTime;
-                            previousPointerX = rawXNorm;
-                            previousPointerY = rawYNorm;
-                            //inDuration = false;
-
-                            //Trace.WriteLine($"DURATION ENDED");
-                        }
-                    }
-                    else
-                    {
-                        //Trace.WriteLine("NEW RESET");
-                        previousPointerRadial = hyp;
-                        accelCurrentMultiRadial = 0.0;
-                        accelTravelRadial = 0.0;
-                        accelEasingMultiRadial = 0.0;
-                        totalTravelRadial = 0.0;
-                        deltaEasingTimeRadial.Reset();
-                        //currentTime = Stopwatch.GetTimestamp();
-                        //previousTime = currentTime;
-                        previousPointerX = rawXNorm;
-                        previousPointerY = rawYNorm;
-                        //inDuration = false;
-                    }
-                }
-                else
-                {
-                    previousPointerRadial = hyp;
-                    previousPointerX = rawXNorm;
-                    previousPointerY = rawYNorm;
-                    accelCurrentMultiRadial = 0.0;
-                    accelTravelRadial = 0.0;
-                    accelEasingMultiRadial = 0.0;
-                    totalTravelRadial = 0.0;
-                    //inDuration = false;
-                    //currentTime = Stopwatch.GetTimestamp();
-                    //previousTime = currentTime;
-                    //if (deltaEasingTimeRadial.IsRunning)
-                    {
-                        deltaEasingTimeRadial.Reset();
-                    }
-                }
-
-                AccelOutXNorm = outXNorm; AccelOutYNorm = outYNorm;
-                //Trace.WriteLine($"X: {AccelOutXNorm} | Y: {AccelOutYNorm}");
-            }
-
-            public void Reset()
-            {
-                useDeltaAccel = false;
-                AccelOutXNorm = AccelOutYNorm = 0.0;
-
-                previousPointerRadial = 0.0;
-                previousPointerX = 0.0;
-                previousPointerY = 0.0;
-                accelCurrentMultiRadial = 0.0;
-                accelTravelRadial = 0.0;
-                accelEasingMultiRadial = 0.0;
-                totalTravelRadial = 0.0;
-                //inDuration = false;
-                //currentTime = Stopwatch.GetTimestamp();
-                //previousTime = currentTime;
-                deltaEasingTimeRadial.Reset();
-            }
-        }
-
-        public class DeltaSettingsProcessorGroup
-        {
-            public DeltaSettingsProcessor LSProcessor = new DeltaSettingsProcessor();
-            public DeltaSettingsProcessor RSProcessor = new DeltaSettingsProcessor();
-        }
-
-        public static DeltaSettingsProcessorGroup[] deltaAccelProcessors = new DeltaSettingsProcessorGroup[Global.MAX_DS4_CONTROLLER_COUNT]
-        {
-            new DeltaSettingsProcessorGroup(), new DeltaSettingsProcessorGroup(), new DeltaSettingsProcessorGroup(),
-            new DeltaSettingsProcessorGroup(), new DeltaSettingsProcessorGroup(), new DeltaSettingsProcessorGroup(),
-            new DeltaSettingsProcessorGroup(), new DeltaSettingsProcessorGroup(),
-        };
+        public static DeltaSettingsProcessorGroup[] deltaAccelProcessors => stickMotion.DeltaAccelProcessors;
 
         // Phase7-Step7 W2（Q2＝A・Q3＝A）: 合成入力の状態（globalState／deviceState／syncStateLock）の実体は SyntheticInputState が持つ。
         // 下の 3 つは、Mapping 内部のコード（118 箇所）を変えないための転送で、状態は持たない。
@@ -1445,7 +1126,6 @@ namespace DS4Windows
             VirtualKBM.Sync();
         }
 
-        public enum Click { None, Left, Middle, Right, Fourth, Fifth, WUP, WDOWN };
         public static void MapClick(int device, Click mouseClick)
         {
             switch (mouseClick)

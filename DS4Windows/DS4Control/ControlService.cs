@@ -316,12 +316,12 @@ namespace DS4Windows
                 int tempDev = i;
                 _profileSettings.L2OutputSettings[i].TwoStageModeChanged += (sender, e) =>
                 {
-                    Mapping.l2TwoStageMappingData[tempDev].Reset();
+                    StickMotionState.Shared.L2TwoStageMappingData[tempDev].Reset();
                 };
 
                 _profileSettings.R2OutputSettings[i].TwoStageModeChanged += (sender, e) =>
                 {
-                    Mapping.r2TwoStageMappingData[tempDev].Reset();
+                    StickMotionState.Shared.R2TwoStageMappingData[tempDev].Reset();
                 };
             }
 
@@ -2466,7 +2466,7 @@ namespace DS4Windows
             // Set up filter for new input device
             OneEuroFilter tempFilter = new OneEuroFilter(OneEuroFilterPair.DEFAULT_WHEEL_CUTOFF,
                 OneEuroFilterPair.DEFAULT_WHEEL_BETA);
-            Mapping.wheelFilters[ind] = tempFilter;
+            StickMotionState.Shared.WheelFilters[ind] = tempFilter;
 
             // Carry over initial profile wheel smoothing values to filter instances.
             // Set up event hooks to keep values in sync
@@ -2476,11 +2476,11 @@ namespace DS4Windows
 
             FlickStickSettings flickStickSettings = _profileSettings.LSOutputSettings[ind].outputSettings.flickSettings;
             flickStickSettings.RemoveRefreshEvents();
-            flickStickSettings.SetRefreshEvents(Mapping.flickMappingData[ind].flickFilter);
+            flickStickSettings.SetRefreshEvents(StickMotionState.Shared.FlickMappingData[ind].flickFilter);
 
             flickStickSettings = _profileSettings.RSOutputSettings[ind].outputSettings.flickSettings;
             flickStickSettings.RemoveRefreshEvents();
-            flickStickSettings.SetRefreshEvents(Mapping.flickMappingData[ind].flickFilter);
+            flickStickSettings.SetRefreshEvents(StickMotionState.Shared.FlickMappingData[ind].flickFilter);
 
             int tempIdx = ind;
             _profileSettings.L2OutputSettings[ind].ResetEvents();
@@ -2553,11 +2553,11 @@ namespace DS4Windows
             }
 
             // Reset current flick stick progress from previous profile
-            Mapping.flickMappingData[ind].Reset();
+            StickMotionState.Shared.FlickMappingData[ind].Reset();
 
             // Reset delta accel processors for sticks
-            Mapping.deltaAccelProcessors[ind].LSProcessor.Reset();
-            Mapping.deltaAccelProcessors[ind].RSProcessor.Reset();
+            StickMotionState.Shared.DeltaAccelProcessors[ind].LSProcessor.Reset();
+            StickMotionState.Shared.DeltaAccelProcessors[ind].RSProcessor.Reset();
 
             // Reset some elements of current Mouse instance
             touchPad[ind]?.Reset();
