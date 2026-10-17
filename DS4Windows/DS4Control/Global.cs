@@ -192,54 +192,12 @@ namespace DS4Windows
 
         // Phase7-Step10d W2: AdminNeeded／IsAdministrator は AdminCheck へ、GetInstanceIdFromDevicePath／CheckIfVirtualDevice ほかは DevicePathProbe へ移し、削除した（内容は同一）。
 
-        public static void SetCulture(string culture)
-        {
-            try
-            {
-                Thread.CurrentThread.CurrentUICulture = CultureInfo.GetCultureInfo(culture);
-                CultureInfo.DefaultThreadCurrentUICulture = CultureInfo.GetCultureInfo(culture);
-            }
-            catch { /* Skip setting culture that we cannot set */ }
-        }
+        // Phase7-Step10d W4: SetCulture は UiCulture.Set へ移した（内容は同一）。
 
         // Phase7-Step10c W2: CreateStdActions は、唯一の呼び出し元の SpecialActionRepository.CreateStandardActions へ移した（内容は同一）。
 
-        public static bool CreateAutoProfiles(string m_Profile)
-        {
-            bool Saved = true;
-
-            try
-            {
-                XmlNode Node;
-                XmlDocument doc = new XmlDocument();
-
-                Node = doc.CreateXmlDeclaration("1.0", "utf-8", String.Empty);
-                doc.AppendChild(Node);
-
-                Node = doc.CreateComment(string.Format(" Auto-Profile Configuration Data. {0} ", DateTime.Now));
-                doc.AppendChild(Node);
-
-                Node = doc.CreateWhitespace("\r\n");
-                doc.AppendChild(Node);
-
-                Node = doc.CreateNode(XmlNodeType.Element, "Programs", "");
-                doc.AppendChild(Node);
-                doc.Save(m_Profile);
-            }
-            catch { Saved = false; }
-
-            return Saved;
-        }
-
-        public static event EventHandler<SerialChangeArgs> DeviceSerialChange;
-        public static void OnDeviceSerialChange(object sender, int index, string serial)
-        {
-            if (DeviceSerialChange != null)
-            {
-                SerialChangeArgs args = new SerialChangeArgs(index, serial);
-                DeviceSerialChange(sender, args);
-            }
-        }
+        // Phase7-Step10d W4: CreateAutoProfiles は AutoProfileService.CreateAutoProfilesFile へ、DeviceSerialChange／OnDeviceSerialChange は
+        // DeviceStateService へ移した（内容は同一）。
 
         // Phase7-Step10c W3: CompileVersionNumberFromString／CompileVersionNumber は VersionUtil へ移し、Global から削除した（本体は同一）。
 
@@ -281,12 +239,7 @@ namespace DS4Windows
         {
             return m_Config.oscServPort;
         }
-        public static event EventHandler<byte> BatteryChanged;
-
-        public static void InvokeBatteryChanged(byte percentage)
-        {
-            BatteryChanged?.Invoke(typeof(Global), percentage);
-        }
+        // Phase7-Step10d W4: BatteryChanged／InvokeBatteryChanged は AppearanceSettingsService のイベントへ移した。
 
         public static AppThemeChoice UseCurrentTheme
         {

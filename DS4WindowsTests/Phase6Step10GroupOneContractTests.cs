@@ -138,7 +138,7 @@ namespace DS4WindowsTests
         public void LastVersionChecked_SharesStateWithGlobal_UpdatesNum_AndNotifiesOnChange()
         {
             var service = TestRepositoryFactory.CreateAppSettingsService();
-            string original = Global.LastVersionChecked ?? string.Empty;
+            string original = TestGlobals.Store.lastVersionChecked ?? string.Empty;
             var changed = new System.Collections.Generic.List<string>();
             service.SettingChanged += (s, name) => changed.Add(name);
             try
@@ -146,7 +146,7 @@ namespace DS4WindowsTests
                 string newValue = original == "9.8.7" ? "9.8.6" : "9.8.7";
                 service.LastVersionChecked = newValue;
 
-                Assert.Equal(newValue, Global.LastVersionChecked);
+                Assert.Equal(newValue, TestGlobals.Store.lastVersionChecked);
                 Assert.Equal(newValue, service.LastVersionChecked);
                 Assert.Equal(TestGlobals.Store.lastVersionCheckedNum, service.LastVersionCheckedNum);
                 Assert.Contains(nameof(IAppSettingsService.LastVersionChecked), changed);

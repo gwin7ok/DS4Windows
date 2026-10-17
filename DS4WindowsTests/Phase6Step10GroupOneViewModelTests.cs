@@ -50,16 +50,16 @@ namespace DS4WindowsTests
         [Fact]
         public void UpdaterWindowViewModel_SetAndBlankSkippedVersion_UpdateGlobalLastVersionChecked()
         {
-            string original = Global.LastVersionChecked ?? string.Empty;
+            string original = TestGlobals.Store.lastVersionChecked ?? string.Empty;
             try
             {
                 object vm = CreateUpdaterVm("9.8.7", TestRepositoryFactory.CreateAppSettingsService());
 
                 UpdaterVmType.GetMethod("SetSkippedVersion").Invoke(vm, null);
-                Assert.Equal("9.8.7", Global.LastVersionChecked);
+                Assert.Equal("9.8.7", TestGlobals.Store.lastVersionChecked);
 
                 UpdaterVmType.GetMethod("BlankSkippedVersion").Invoke(vm, null);
-                Assert.Equal(string.Empty, Global.LastVersionChecked);
+                Assert.Equal(string.Empty, TestGlobals.Store.lastVersionChecked);
             }
             finally
             {

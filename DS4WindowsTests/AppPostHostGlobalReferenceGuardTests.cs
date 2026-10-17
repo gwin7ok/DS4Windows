@@ -53,8 +53,8 @@ namespace DS4WindowsTests
         private static readonly Dictionary<string, int> ExpectedApplyLanguageSetting = new Dictionary<string, int>
         {
             // E7-13〜E7-14（共用ヘルパー。決定4＝K で温存）
+            // Phase7-Step10d W4: SetCulture は UiCulture.Set へ移した
             ["UseLang"] = 1,
-            ["SetCulture"] = 1,
         };
 
         // Application_Startup の Post-Host（P7-01〜P7-25）は、Step7-2・7-3 ですべて DI サービス経由に置き換えた。

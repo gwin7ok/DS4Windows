@@ -139,7 +139,7 @@ namespace DS4WinWPF
                 // DI 経由と Global 経由の二重経路を作らない。SetCulture はスレッドのカルチャを設定するだけの静的ユーティリティ。
                 // Global の解体（Phase7）で、言語設定の適用処理ごと整理する。
                 DS4Windows.Global.UseLang = cultureCode;
-                DS4Windows.Global.SetCulture(cultureCode);
+                DS4Windows.UiCulture.Set(cultureCode);
 
                 // Ensure thread and default thread cultures are set so UI localization applies
                 try

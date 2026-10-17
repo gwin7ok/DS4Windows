@@ -21,5 +21,8 @@ namespace DS4Windows.DI
 
         // ---- Phase6-Step2-4 (PR-4): デバイスのシリアル（MAC アドレス）変更通知（Global への薄い委譲）----
         void OnDeviceSerialChange(object sender, int slotIndex, string serial);
+
+        // Phase7-Step10d W4: 旧 Global.DeviceSerialChange（static イベント）の移行先。
+        event System.EventHandler<SerialChangeArgs> DeviceSerialChange;
     }
 }

@@ -163,7 +163,7 @@ namespace DS4WindowsTests
         // ---- IAppearanceSettingsService ----
 
         [Fact]
-        public void BatteryChanged_Subscription_ReceivesGlobalInvokeWithSameSenderAndValue()
+        public void BatteryChanged_Subscription_ReceivesInvokeWithTheServiceAsSenderAndSameValue()
         {
             IAppearanceSettingsService service = TestRepositoryFactory.CreateAppearanceSettingsService();
             object receivedSender = null;
@@ -182,7 +182,7 @@ namespace DS4WindowsTests
                 service.InvokeBatteryChanged(37);
 
                 Assert.Equal(1, fired);
-                Assert.Same(typeof(Global), receivedSender);
+                Assert.Same(service, receivedSender);
                 Assert.Equal((byte)37, receivedValue);
             }
             finally
@@ -193,25 +193,6 @@ namespace DS4WindowsTests
             // 購読解除後は通知されない
             service.InvokeBatteryChanged(38);
             Assert.Equal(1, fired);
-        }
-
-        [Fact]
-        public void BatteryChanged_Subscription_ReceivesGlobalInvokeDirectly()
-        {
-            IAppearanceSettingsService service = TestRepositoryFactory.CreateAppearanceSettingsService();
-            int fired = 0;
-            EventHandler<byte> handler = (sender, value) => fired++;
-
-            service.BatteryChanged += handler;
-            try
-            {
-                Global.InvokeBatteryChanged(50);
-                Assert.Equal(1, fired);
-            }
-            finally
-            {
-                service.BatteryChanged -= handler;
-            }
         }
 
         // ---- IProfileSettingsService ----

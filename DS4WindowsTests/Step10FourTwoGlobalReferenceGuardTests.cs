@@ -34,7 +34,7 @@ namespace DS4WindowsTests
             },
             ["DS4Windows/DS4Control/Services/ProfileActionProvider.cs"] = new string[0],
             ["DS4Windows/DS4Control/Profiles/AutoProfileHolder.cs"] = new[] { "MAX_DS4_CONTROLLER_COUNT" },
-            ["DS4Windows/DS4Control/Services/AutoProfileService.cs"] = new[] { "autoProfileSwitchNotifyChoice", "CreateAutoProfiles" },
+            ["DS4Windows/DS4Control/Services/AutoProfileService.cs"] = new[] { "autoProfileSwitchNotifyChoice" },
             // 10-4-2c: 薄い委譲（実装本体が Global にあるもの）と、不変の定数表
             // 10-4-3: 実行時配列の実体は Phase7-Step6 W1 で OutputSlotService へ移した。残るのは配列の長さの定数だけ
             ["DS4Windows/DS4Control/Services/OutputSlotService.cs"] = new[] { "TEST_PROFILE_ITEM_COUNT" },

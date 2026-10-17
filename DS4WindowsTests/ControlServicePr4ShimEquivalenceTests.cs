@@ -37,7 +37,7 @@ namespace DS4WindowsTests
         }
 
         [Fact]
-        public void OnDeviceSerialChange_RaisesGlobalDeviceSerialChangeWithSameArguments()
+        public void OnDeviceSerialChange_RaisesServiceDeviceSerialChangeWithSameArguments()
         {
             object receivedSender = null;
             SerialChangeArgs receivedArgs = null;
@@ -49,7 +49,7 @@ namespace DS4WindowsTests
                 receivedArgs = args;
             };
             object caller = new object();
-            Global.DeviceSerialChange += handler;
+            _deviceState.DeviceSerialChange += handler;
             try
             {
                 _deviceState.OnDeviceSerialChange(caller, 2, "AA:BB:CC:DD:EE:FF");
@@ -61,7 +61,7 @@ namespace DS4WindowsTests
             }
             finally
             {
-                Global.DeviceSerialChange -= handler;
+                _deviceState.DeviceSerialChange -= handler;
             }
         }
 

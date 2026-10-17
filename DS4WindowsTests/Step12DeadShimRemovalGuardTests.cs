@@ -116,7 +116,8 @@ namespace DS4WindowsTests
             // Phase7-Step10a W4: 定数 5 つ・資源パスの定数 2 つ・Clamp は ControllerLimits／ResourcePaths／NumericUtil へ移し、Global から削除した
             // Phase7-Step10b W2: getTransitionedColor／HuetoRGB／applyRatio（→ ColorUtil）、iconChoiceResources（→ TrayIconResources）は Global から削除した
             // Phase7-Step4 W3: multisavespots／FindConfigLocation は PathService へ移した（Phase7Step4PathServiceGuardTests で確認）
-            "appdatapath", "LogMaxArchiveFiles", "LogMinLevel", "SetCulture",
+            "appdatapath", "LogMaxArchiveFiles", "LogMinLevel",
+            // Phase7-Step10d W4: SetCulture は UiCulture.Set へ移した
             // Phase7-Step4 W1: ViGEmBus の調べ物（RefreshViGEmBusInfo／IsRunningSupportedViGEmBus／vigembusVersion／vigemInstalled）は
             // EnvironmentService へ移した。防壁 5 の維持は EnvironmentService 側で確認する（Phase7Step4EnvironmentProbesGuardTests）
         };

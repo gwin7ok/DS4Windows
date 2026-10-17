@@ -45,8 +45,33 @@ namespace DS4Windows
             set => _config.autoProfileSwitchNotifyChoice = value;
         }
 
-        // Phase6-Step10-2-1: Global への薄い委譲
-        public bool CreateAutoProfilesFile(string path) => Global.CreateAutoProfiles(path);
+        // Phase6-Step10-2-1: 画面（AutoProfiles）が使う。Phase7-Step10d W4: 旧 Global.CreateAutoProfiles の本体をここへ移した（内容は同一）
+        public bool CreateAutoProfilesFile(string path)
+        {
+            bool Saved = true;
+
+            try
+            {
+                System.Xml.XmlNode Node;
+                System.Xml.XmlDocument doc = new System.Xml.XmlDocument();
+
+                Node = doc.CreateXmlDeclaration("1.0", "utf-8", String.Empty);
+                doc.AppendChild(Node);
+
+                Node = doc.CreateComment(string.Format(" Auto-Profile Configuration Data. {0} ", DateTime.Now));
+                doc.AppendChild(Node);
+
+                Node = doc.CreateWhitespace("\r\n");
+                doc.AppendChild(Node);
+
+                Node = doc.CreateNode(System.Xml.XmlNodeType.Element, "Programs", "");
+                doc.AppendChild(Node);
+                doc.Save(path);
+            }
+            catch { Saved = false; }
+
+            return Saved;
+        }
 
         public event Action<bool> RequestServiceChange;
 

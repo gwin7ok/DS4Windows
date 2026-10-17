@@ -292,7 +292,7 @@ namespace DS4WinWPF.DS4Forms
                     {
                         try
                         {
-                            if (Changelog.CheckNewerVersionExists(out var version, false, true))
+                            if (Changelog.CheckNewerVersionExists(out var version, appSettingsService.LastVersionChecked, false, true))
                             {
                                 DisplayUpdaterWindow(version.ToString());
                             }
@@ -355,7 +355,7 @@ namespace DS4WinWPF.DS4Forms
                     if (Version.TryParse(newversion, out parsedVersion))
                     {
                         // Temporarily set cached/latest if needed - call helper allowing fresh check
-                        if (Changelog.CheckNewerVersionExists(out var latest, allowCached: false))
+                        if (Changelog.CheckNewerVersionExists(out var latest, appSettingsService.LastVersionChecked, allowCached: false))
                         {
                             Dispatcher.Invoke(() => DisplayUpdaterWindow(latest.ToString()));
                         }
@@ -1683,7 +1683,7 @@ Suspend support not enabled.", true);
                 try
                 {
                     // Manual check should ignore any previously skipped version
-                    if (Changelog.CheckNewerVersionExists(out var version, false, false))
+                    if (Changelog.CheckNewerVersionExists(out var version, appSettingsService.LastVersionChecked, false, false))
                         DisplayUpdaterWindow(version.ToString());
                     else
                         Dispatcher.Invoke(() => MessageBox.Show(Properties.Resources.UpToDate, "DS4Windows Updater"));

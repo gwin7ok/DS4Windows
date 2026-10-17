@@ -30,8 +30,17 @@ namespace DS4Windows
         }
 
         // ---- Phase6-Step2-4 (PR-4): デバイスのシリアル変更通知 ----
-        // Global.DeviceSerialChange（static イベント）の購読者へ、従来と同一の引数で通知する。
+        // Phase7-Step10d W4: 旧 Global.DeviceSerialChange（static イベント）の実体をこのサービスへ移した（通知の内容は同一）。
+        // 本体に購読者はいない（旧 Global のイベントも同様）。
+        public event EventHandler<SerialChangeArgs> DeviceSerialChange;
+
         public void OnDeviceSerialChange(object sender, int slotIndex, string serial)
-            => Global.OnDeviceSerialChange(sender, slotIndex, serial);
+        {
+            if (DeviceSerialChange != null)
+            {
+                SerialChangeArgs args = new SerialChangeArgs(slotIndex, serial);
+                DeviceSerialChange(sender, args);
+            }
+        }
     }
 }

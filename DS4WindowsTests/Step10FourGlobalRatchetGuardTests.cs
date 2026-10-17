@@ -76,7 +76,7 @@ namespace DS4WindowsTests
             // Phase7-Step10c W4: プロファイルの読込（LoadProfile ほか）を LegacyProfileXmlSerializer へ移した（18 → 14）
             // Phase7-Step10c W5: プロファイルの保存（SaveProfile ほか）を LegacyProfileXmlSerializer へ移した（14 → 7）
             ["DS4Windows/DS4Control/BackingStore.cs"] = (0, 0, 7),
-            ["DS4Windows/DS4Control/Changelog.cs"] = (0, 0, 2), // Phase7-Step10d W2: 4 → 2
+            ["DS4Windows/DS4Control/Changelog.cs"] = (0, 0, 0), // Phase7-Step10d W2: 4 → 2、W4: 2 → 0
             // Phase6-Step12 Wave 1: 孤立コード 24 件を削除（Global 47 → 45）。Wave 2: 互換アクセサ 152 件を削除（Global 45 → 38）。Wave 3: *Instance のフォールバック群 19 件を削除（Global 38 → 26、AppHost 11 → 5、rootHub 9 → 6）。Wave 4: BackingStore 直転送ラッパー 58 件を削除（AppHost 5 → 4。(6, 4, 26)）
             // Phase7-Step4 W1: IsUsingMinViGEm117333 の移管で Global.* 2 件を削除（24 → 22）
             // Phase7-Step4 W2: Global.Load の削除で AppHost.GetService を 1 件削除（4 → 3）
@@ -90,12 +90,12 @@ namespace DS4WindowsTests
             ["DS4Windows/DS4Control/Services/AppNotificationService.cs"] = (0, 0, 0),
             // Phase7-Step4 W3: FirstRun は PathService の状態、RunHotPlug はインスタンスの状態にした（8 → 2）
             // Phase7-Step10c W3: CompileVersionNumberFromString を VersionUtil へ移した（2 → 1）
-            ["DS4Windows/DS4Control/Services/AppSettingsService.cs"] = (0, 0, 1),
+            ["DS4Windows/DS4Control/Services/AppSettingsService.cs"] = (0, 0, 0), // Phase7-Step10d W4: 1 → 0
             // Phase7-Step10b W2: iconChoiceResources を TrayIconResources へ移した（4 → 3）
-            ["DS4Windows/DS4Control/Services/AppearanceSettingsService.cs"] = (0, 0, 3),
-            ["DS4Windows/DS4Control/Services/AutoProfileService.cs"] = (0, 0, 1),
+            ["DS4Windows/DS4Control/Services/AppearanceSettingsService.cs"] = (0, 0, 0), // Phase7-Step10d W4: 3 → 0
+            ["DS4Windows/DS4Control/Services/AutoProfileService.cs"] = (0, 0, 0), // Phase7-Step10d W4: 1 → 0
             ["DS4Windows/DS4Control/Services/DefaultElevatedProcessLauncher.cs"] = (0, 0, 0), // Phase7-Step10d W2: 1 → 0
-            ["DS4Windows/DS4Control/Services/DeviceStateService.cs"] = (0, 0, 1),
+            ["DS4Windows/DS4Control/Services/DeviceStateService.cs"] = (0, 0, 0), // Phase7-Step10d W4: 1 → 0
             // Phase7-Step2 W7: IDs4DeviceRegistry.IsHidHideInstalled の削除で Global.IsHidHideInstalled の参照 1 件を削除（1 → 0）
             ["DS4Windows/DS4Control/Services/Ds4DeviceRegistryAdapter.cs"] = (0, 0, 0),
             // Phase7-Step4 W1: 調べ物と状態を EnvironmentService が持つ形に移管（21 → 7: IsAdministrator／exeversion／GetInstanceIdFromDevicePath／AdminNeeded と、スロット上限の定数 3）

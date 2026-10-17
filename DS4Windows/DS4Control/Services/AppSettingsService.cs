@@ -333,7 +333,7 @@ namespace DS4Windows.Services
             }
         }
 
-        public void SetCulture(string culture) => Global.SetCulture(culture);
+        public void SetCulture(string culture) => UiCulture.Set(culture);
 
         // ---- Phase6-Step10-2-1: Global への薄い委譲 ----
         public bool UseMoonlight

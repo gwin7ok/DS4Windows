@@ -63,7 +63,8 @@ namespace DS4Windows
         // passing a string to the function that displays the updater window.
         // I wanted to make this method async, but these can't have an out parameter and this is the signature i wanted
         // it to have
-        public static bool CheckNewerVersionExists(out Version version, bool allowCached = true, bool respectSkip = true)
+        // Phase7-Step10d W4: lastVersionChecked は、旧 Global.LastVersionChecked（スキップ済みの更新バージョン）の値。呼び出し側が IAppSettingsService.LastVersionChecked から渡す。
+        public static bool CheckNewerVersionExists(out Version version, string lastVersionChecked, bool allowCached = true, bool respectSkip = true)
         {
             version = Version.Parse("0.0.0");
 
@@ -93,9 +94,9 @@ namespace DS4Windows
                     {
                         // Prefer comparing Version objects parsed from stored string to avoid
                         // ambiguous numeric compile differences when Revision/Build are missing.
-                        if (!string.IsNullOrEmpty(Global.LastVersionChecked))
+                        if (!string.IsNullOrEmpty(lastVersionChecked))
                         {
-                            if (Version.TryParse(Global.LastVersionChecked, out var skippedVer))
+                            if (Version.TryParse(lastVersionChecked, out var skippedVer))
                             {
                                 AppLogger.LogDebug($"[Changelog] SkippedVersion={skippedVer} LatestCandidate={version}");
                                 if (skippedVer >= version)

@@ -55,7 +55,7 @@ namespace DS4WindowsTests
         }
 
         [Fact]
-        public void InvokeBatteryChanged_RaisesGlobalBatteryChangedWithSameSenderAndValue()
+        public void InvokeBatteryChanged_RaisesServiceBatteryChangedWithTheServiceAsSenderAndSameValue()
         {
             object receivedSender = null;
             byte receivedValue = 0;
@@ -66,18 +66,18 @@ namespace DS4WindowsTests
                 receivedSender = sender;
                 receivedValue = value;
             };
-            Global.BatteryChanged += handler;
+            _appearance.BatteryChanged += handler;
             try
             {
                 _appearance.InvokeBatteryChanged(42);
 
                 Assert.Equal(1, fired);
-                Assert.Same(typeof(Global), receivedSender);
+                Assert.Same(_appearance, receivedSender);
                 Assert.Equal((byte)42, receivedValue);
             }
             finally
             {
-                Global.BatteryChanged -= handler;
+                _appearance.BatteryChanged -= handler;
             }
         }
 

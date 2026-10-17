@@ -82,7 +82,7 @@ namespace DS4WindowsTests
         // ---- IAutoProfileService ----
 
         [Fact]
-        public void CreateAutoProfilesFile_CreatesSameXmlAsGlobal_AndReturnsFalseWhenDirectoryIsMissing()
+        public void CreateAutoProfilesFile_CreatesProgramsXml_AndReturnsFalseWhenDirectoryIsMissing()
         {
             // AutoProfileService のコンストラクタが AutoProfileHolder を生成し、Global.appdatapath を読む。
             // 未設定のテスト環境では ArgumentNullException になるため、AutoProfileServiceTests と同じく既定値を設定する
@@ -103,17 +103,12 @@ namespace DS4WindowsTests
                 Assert.NotNull(service);
 
                 string viaService = Path.Combine(dir, "service.xml");
-                string viaGlobal = Path.Combine(dir, "global.xml");
 
                 Assert.True(service.CreateAutoProfilesFile(viaService));
-                Assert.True(Global.CreateAutoProfiles(viaGlobal));
 
                 var a = new XmlDocument();
-                var b = new XmlDocument();
                 a.Load(viaService);
-                b.Load(viaGlobal);
                 Assert.Equal("Programs", a.DocumentElement.Name);
-                Assert.Equal(b.DocumentElement.Name, a.DocumentElement.Name);
 
                 string missing = Path.Combine(dir, "NoSuchDir", "Auto Profiles.xml");
                 Assert.False(service.CreateAutoProfilesFile(missing));
