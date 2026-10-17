@@ -159,3 +159,15 @@
   - `ProfileSettingsServiceReverseX360ButtonMappingTests`: コピー版の確認テスト 1 件を削除した。
 - ラチェット: `ProfileSettingsService.cs` の `Global.*` 5 → 4。全域は `Global.*` 733 → 732（走査で確認）。`AppHost` 40、`Program.rootHub` 22 は不変。
 - 確認済み: 削除した名前の参照が、本体・テスト・XAML に残っていない（`Step12DeadShimRemovalGuardTests` の文字列は、`Global` 用の名簿）。契約の別の実装クラスは存在しない。
+
+### W2 の実施記録（2026-10-17、W1 のビルド・テストは成功。W2 のビルド・テストはユーザーの実行待ち）
+- 削除（契約 `IProfileSettingsService`）: `ProfileSettingChanged` イベント、`WireSubSettingsEvents`、`UnwireSubSettingsEvents`（と説明文）。
+- 削除（実装 `ProfileSettingsService`、168 行）: イベント、`OnProfileSettingChanged`（**GUI ログ `[DI] ProfileSettingsService.SettingChanged: Slot …` を含む。Q2＝案 A の承認済み**）とその呼び出し 6 箇所（`SetUseTempProfile`／`SetTempProfileName`／`SetTempProfileDistance`／`SetLinkedProfileCheck`／`ProfileActions` の setter／`ResetToDefaults`）、`SubSettingDescriptor`、`SubSettingDescriptors`、`WireSubSettingsEvents`／`UnwireSubSettingsEvents`、`OnSubSettingChanged`、`_subSettingsUnwireMap`、W1 で契約のみ外していた `TempProfileNameArray`／`LinkedProfileCheckArray`（内部の配列 `_tempProfileName`／`_linkedProfileCheck` は残る）。
+- 削除したファイル: `DI/ProfileSettingChangedEventArgs.cs`。
+- 値の更新（`SetUseTempProfile` など）の挙動は、通知を出さなくなった点を除き同一。
+- 残したもの: サブ設定の基底クラス `ProfileSubSettingBase` の `OnSubPropertyChanged` イベント（Step14 のサブ設定クラスが持つ。購読者はいなくなった）。Step10 の `BackingStore` 整理で、不要になったかを再判断する（台帳に登録）。
+- テスト:
+  - 削除: `ProfileSettingsServiceSubSettingsTests`（6 件のイベント中継のテストと、`SubSettingDescriptors` の完全性テスト）、`ProfileUnifiedPersistenceTests`（2 件）、`ProfileSettingsServiceTests.SettingChangedEvent_ShouldFire`。
+  - 移動: `ProfileActions_GetSet_ShouldPersistAndNotify` → `ProfileSettingsServiceTests.ProfileActions_GetSet_ShouldPersist`（通知の確認を除いた）。
+- ラチェット: 変更なし（`Global.*` 732、`AppHost` 40、`Program.rootHub` 22）。
+- コメントだけが残る参照: `EnvironmentServiceInjectionTests`、`ProfileEditorBackendViewModelTests` の注記（削除した旧テストの名前。動作に影響なし）。

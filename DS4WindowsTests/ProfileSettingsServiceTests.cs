@@ -60,19 +60,33 @@ namespace DS4WindowsTests
         }
 
         [Fact]
-        public void SettingChangedEvent_ShouldFire()
+        public void ProfileActions_GetSet_ShouldPersist()
         {
+            // Phase7-Step2 W2: 旧 ProfileSettingsServiceSubSettingsTests.ProfileActions_GetSet_ShouldPersistAndNotify から、
+            // 通知（ProfileSettingChanged）の確認を除いて移した。
             var service = TestRepositoryFactory.CreateProfileSettingsService();
-            ProfileSettingChangedEventArgs eventArgs = null;
-            service.ProfileSettingChanged += (s, e) => eventArgs = e;
 
-            service.SetUseTempProfile(1, true);
+            var newActions = new System.Collections.Generic.List<string>[Global.MAX_DS4_CONTROLLER_COUNT];
+            for (int i = 0; i < Global.MAX_DS4_CONTROLLER_COUNT; i++)
+            {
+                newActions[i] = new System.Collections.Generic.List<string> { $"Action_{i}_A", $"Action_{i}_B" };
+            }
 
-            Assert.NotNull(eventArgs);
-            Assert.Equal(1, eventArgs.DeviceIndex);
-            Assert.Equal(nameof(service.UseTempProfileArray), eventArgs.SettingName);
-            Assert.Equal(false, eventArgs.OldValue);
-            Assert.Equal(true, eventArgs.NewValue);
+            // Phase6-Step9-1: ProfileActions の setter は Global.store.profileActions の配列そのものを置き換える。
+            // 戻さないと、後続のテストが編集スロット（Global.TEST_PROFILE_INDEX = 8）を引いたときに範囲外になる
+            // （Phase6-Status.md §6.4-1）。置き換え前の配列へ必ず戻す。
+            System.Collections.Generic.List<string>[] originalActions = Global.store.profileActions;
+            try
+            {
+                service.ProfileActions = newActions;
+
+                Assert.NotNull(service.ProfileActions);
+                Assert.Equal("Action_0_A", service.ProfileActions[0][0]);
+            }
+            finally
+            {
+                Global.store.profileActions = originalActions;
+            }
         }
 
         [Fact]

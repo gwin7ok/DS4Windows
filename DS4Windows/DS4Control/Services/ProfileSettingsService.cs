@@ -16,9 +16,6 @@ namespace DS4Windows
         public const int TEST_PROFILE_ITEM_COUNT = 9;
         public const int MAX_DS4_CONTROLLER_COUNT = 8;
 
-        // 課題①: スロットごとのサブ設定イベント購読解除アクション一覧
-        private readonly Dictionary<int, List<Action>> _subSettingsUnwireMap = new Dictionary<int, List<Action>>();
-
         // Step10-2-A: m_Config(BackingStore)委譲用。Global.storeと同一インスタンスを参照する
         // (データの二重管理を避けるため、専用バックアップ配列は持たない)
         private readonly BackingStore _config;
@@ -49,8 +46,6 @@ namespace DS4Windows
         private bool[] _useDInputOnly = new bool[TEST_PROFILE_ITEM_COUNT] { true, true, true, true, true, true, true, true, true };
         private bool[] _linkedProfileCheck = new bool[MAX_DS4_CONTROLLER_COUNT] { false, false, false, false, false, false, false, false };
 
-        public event EventHandler<ProfileSettingChangedEventArgs> ProfileSettingChanged;
-
         public bool[] TouchpadActiveArray
         {
             get => _touchpadActive;
@@ -71,18 +66,6 @@ namespace DS4Windows
                 lock (_syncLock)
                 {
                     _useTempProfile = value ?? new bool[TEST_PROFILE_ITEM_COUNT];
-                }
-            }
-        }
-
-        public string[] TempProfileNameArray
-        {
-            get => _tempProfileName;
-            set
-            {
-                lock (_syncLock)
-                {
-                    _tempProfileName = value ?? new string[TEST_PROFILE_ITEM_COUNT];
                 }
             }
         }
@@ -111,18 +94,6 @@ namespace DS4Windows
             }
         }
 
-        public bool[] LinkedProfileCheckArray
-        {
-            get => _linkedProfileCheck;
-            set
-            {
-                lock (_syncLock)
-                {
-                    _linkedProfileCheck = value ?? new bool[MAX_DS4_CONTROLLER_COUNT];
-                }
-            }
-        }
-
         public bool GetTouchpadActive(int deviceIndex)
         {
             if (deviceIndex >= 0 && deviceIndex < _touchpadActive.Length)
@@ -147,7 +118,6 @@ namespace DS4Windows
                     if (old != value)
                     {
                         _useTempProfile[deviceIndex] = value;
-                        OnProfileSettingChanged(deviceIndex, nameof(UseTempProfileArray), old, value);
                     }
                 }
             }
@@ -170,7 +140,6 @@ namespace DS4Windows
                     if (old != value)
                     {
                         _tempProfileName[deviceIndex] = value ?? string.Empty;
-                        OnProfileSettingChanged(deviceIndex, nameof(TempProfileNameArray), old, value);
                     }
                 }
             }
@@ -186,7 +155,6 @@ namespace DS4Windows
                     if (old != value)
                     {
                         _tempProfileDistance[deviceIndex] = value;
-                        OnProfileSettingChanged(deviceIndex, nameof(TempProfileDistanceArray), old, value);
                     }
                 }
             }
@@ -209,7 +177,6 @@ namespace DS4Windows
                     if (old != value)
                     {
                         _linkedProfileCheck[deviceIndex] = value;
-                        OnProfileSettingChanged(deviceIndex, nameof(LinkedProfileCheckArray), old, value);
                     }
                 }
             }
@@ -504,7 +471,6 @@ namespace DS4Windows
                 {
                     SafeConfig.profileActions = value;
                 }
-                OnProfileSettingChanged(-1, nameof(ProfileActions), null, value);
             }
         }
 
@@ -569,142 +535,8 @@ namespace DS4Windows
                     {
                         SafeConfig.rumbleSettings[deviceIndex].Reset();
                     }
-                    OnProfileSettingChanged(deviceIndex, "ResetToDefaults", null, null);
                 }
             }
-        }
-
-        protected virtual void OnProfileSettingChanged(int deviceIndex, string settingName, object oldValue, object newValue)
-        {
-            AppLogger.LogToGui($"[DI] ProfileSettingsService.SettingChanged: Slot {deviceIndex}, {settingName}", false, true);
-            ProfileSettingChanged?.Invoke(this, new ProfileSettingChangedEventArgs(deviceIndex, settingName, oldValue, newValue));
-        }
-
-        // =========================================================================
-        // 宣言的配線（Declarative SubSetting Descriptor）
-        // =========================================================================
-        public sealed class SubSettingDescriptor
-        {
-            public string Prefix { get; }
-            public Func<ProfileSettingsService, int, ProfileSubSettingBase> Accessor { get; }
-
-            public SubSettingDescriptor(string prefix, Func<ProfileSettingsService, int, ProfileSubSettingBase> accessor)
-            {
-                Prefix = prefix;
-                Accessor = accessor;
-            }
-        }
-
-        /// <summary>
-        /// 全サブ設定の配線記述子リスト（完全性検証テストと実行時配線の双方で共通使用）
-        /// </summary>
-        public static readonly IReadOnlyList<SubSettingDescriptor> SubSettingDescriptors = new List<SubSettingDescriptor>
-        {
-            new SubSettingDescriptor("LS_X", (s, dev) => s.LSModInfo != null && s.LSModInfo.Length > dev ? s.LSModInfo[dev]?.xAxisDeadInfo : null),
-            new SubSettingDescriptor("LS_Y", (s, dev) => s.LSModInfo != null && s.LSModInfo.Length > dev ? s.LSModInfo[dev]?.yAxisDeadInfo : null),
-            new SubSettingDescriptor("RS_X", (s, dev) => s.RSModInfo != null && s.RSModInfo.Length > dev ? s.RSModInfo[dev]?.xAxisDeadInfo : null),
-            new SubSettingDescriptor("RS_Y", (s, dev) => s.RSModInfo != null && s.RSModInfo.Length > dev ? s.RSModInfo[dev]?.yAxisDeadInfo : null),
-            new SubSettingDescriptor("L2", (s, dev) => s.L2ModInfo != null && s.L2ModInfo.Length > dev ? s.L2ModInfo[dev] : null),
-            new SubSettingDescriptor("R2", (s, dev) => s.R2ModInfo != null && s.R2ModInfo.Length > dev ? s.R2ModInfo[dev] : null),
-            new SubSettingDescriptor("GyroControls", (s, dev) => s.GyroControlsInf != null && s.GyroControlsInf.Length > dev ? s.GyroControlsInf[dev] : null),
-            new SubSettingDescriptor("GyroMouse", (s, dev) => s.GyroMouseInfo != null && s.GyroMouseInfo.Length > dev ? s.GyroMouseInfo[dev] : null),
-            new SubSettingDescriptor("GyroMouseStick", (s, dev) => s.GyroMouseStickInf != null && s.GyroMouseStickInf.Length > dev ? s.GyroMouseStickInf[dev] : null),
-            new SubSettingDescriptor("TouchMouseStick", (s, dev) => s.TouchMouseStickInf != null && s.TouchMouseStickInf.Length > dev ? s.TouchMouseStickInf[dev] : null),
-            new SubSettingDescriptor("LS_DeltaAccel", (s, dev) => s.LSOutputSettings != null && s.LSOutputSettings.Length > dev ? s.LSOutputSettings[dev]?.outputSettings?.controlSettings?.deltaAccelSettings : null),
-            new SubSettingDescriptor("LS_FlickStick", (s, dev) => s.LSOutputSettings != null && s.LSOutputSettings.Length > dev ? s.LSOutputSettings[dev]?.outputSettings?.flickSettings : null),
-            new SubSettingDescriptor("RS_DeltaAccel", (s, dev) => s.RSOutputSettings != null && s.RSOutputSettings.Length > dev ? s.RSOutputSettings[dev]?.outputSettings?.controlSettings?.deltaAccelSettings : null),
-            new SubSettingDescriptor("RS_FlickStick", (s, dev) => s.RSOutputSettings != null && s.RSOutputSettings.Length > dev ? s.RSOutputSettings[dev]?.outputSettings?.flickSettings : null),
-            new SubSettingDescriptor("Rumble", (s, dev) => s.RumbleSettings != null && s.RumbleSettings.Length > dev ? s.RumbleSettings[dev] : null),
-        };
-
-        /// <summary>
-        /// 課題①: 指定スロット（-1 の場合は全スロット）のネストされたサブ設定オブジェクト群のイベント購読を安全に全解除します。
-        /// </summary>
-        public void UnwireSubSettingsEvents(int deviceIndex = -1)
-        {
-            lock (_syncLock)
-            {
-                int start = deviceIndex >= 0 ? deviceIndex : 0;
-                int end = deviceIndex >= 0 ? deviceIndex + 1 : _environmentService.ControllerSlotLimit;
-
-                for (int dev = start; dev < end && dev < _environmentService.ControllerSlotLimit; dev++)
-                {
-                    if (_subSettingsUnwireMap.TryGetValue(dev, out var unwireList))
-                    {
-                        foreach (var unwire in unwireList)
-                        {
-                            try
-                            {
-                                unwire?.Invoke();
-                            }
-                            catch
-                            {
-                                // 購読解除時の例外は握りつぶし、後続の解除を安全に継続
-                            }
-                        }
-                        unwireList.Clear();
-                        _subSettingsUnwireMap.Remove(dev);
-                    }
-                }
-            }
-        }
-
-        /// <summary>
-        /// ネストされたサブ設定オブジェクト群（スティック、トリガー、ジャイロ、タッチパッド、ランブル等）の
-        /// OnSubPropertyChanged イベントを購読し、ProfileSettingChanged を発火させるように宣言的リストに基づき配線します。
-        /// 課題①: 冒頭で UnwireSubSettingsEvents を実行し、100% の冪等性を保証します。
-        /// </summary>
-        public void WireSubSettingsEvents(int deviceIndex = -1)
-        {
-            try
-            {
-                // 課題①: 既存の購読を全解除してから再登録（冪等化）
-                UnwireSubSettingsEvents(deviceIndex);
-
-                lock (_syncLock)
-                {
-                    int start = deviceIndex >= 0 ? deviceIndex : 0;
-                    int end = deviceIndex >= 0 ? deviceIndex + 1 : _environmentService.ControllerSlotLimit;
-
-                    for (int dev = start; dev < end && dev < _environmentService.ControllerSlotLimit; dev++)
-                    {
-                        int currentDev = dev;
-                        var unwireList = new List<Action>();
-
-                        foreach (var desc in SubSettingDescriptors)
-                        {
-                            ProfileSubSettingBase subSetting = null;
-                            try
-                            {
-                                subSetting = desc.Accessor(this, currentDev);
-                            }
-                            catch
-                            {
-                                subSetting = null;
-                            }
-
-                            if (subSetting != null)
-                            {
-                                string prefix = desc.Prefix;
-                                Action<string> handler = (prop) => OnSubSettingChanged(currentDev, $"{prefix}_{prop}");
-                                subSetting.OnSubPropertyChanged += handler;
-                                unwireList.Add(() => subSetting.OnSubPropertyChanged -= handler);
-                            }
-                        }
-
-                        _subSettingsUnwireMap[currentDev] = unwireList;
-                    }
-                }
-            }
-            catch (Exception ex)
-            {
-                AppLogger.LogDebug($"[ProfileSettingsService] WireSubSettingsEvents safe skip: {ex.Message}");
-            }
-        }
-
-        private void OnSubSettingChanged(int deviceIndex, string settingName)
-        {
-            ProfileSettingChanged?.Invoke(this, new ProfileSettingChangedEventArgs(deviceIndex, settingName, null, null));
         }
 
         // ---- Phase6-Step2-2 (PR-2): 接続時のエクストラボタン再構築 ----
