@@ -1,7 +1,7 @@
 # フェーズ7 進捗管理文書: `Global`／`BackingStore` の解体、起動の近代化、`Mapping` の instance 化
 
 最終更新日: 2026-10-17  
-状態: **Step1・Step2・Step3・Step3c・Step4・Step5・Step6・Step7・Step8・Step9 完了。Step10 は 10a・10b・10c・10d 完了（次は 10e の計画書の作成）。**  
+状態: **Step1・Step2・Step3・Step3c・Step4・Step5・Step6・Step7・Step8・Step9 完了。Step10 は 10a・10b・10c・10d 完了、10e は計画書作成済み・承認待ち。**  
 計画書: `Phase7-Plan.md`。調査: `Phase7-0-Survey.md`。残存台帳: `Phase7-Residual-Ledger.md`
 
 ---
@@ -119,7 +119,7 @@
 - **10b: 完了**。W1 表と変換（`X360ControlTables`／`DS4ControlNames`）、W2 アイコンの表・色の関数（`TrayIconResources`／`ColorUtil`）、W3 契約の整理（`OnSubPropertyChanged` ほか）、W4 `UsingMaxControllers` の接続と孤立定数、W5 文書。`Global.*` 107 → 93。詳細は `Phase7-Step10b-Completion-Report.md`。
 - **10c: 完了**。W1 ゴールデンテスト（11 ファイル）、W2 `Actions`／リンク／コントローラー設定、W3 アプリ設定（`AppSettingsXmlSerializer`）、W4 プロファイルの読込、W5 同 保存（`LegacyProfileXmlSerializer`）、W6 プリセット（`ProfilePresets`）、W7 文書。`BackingStore.cs` 6,522 → 1,660 行、`Global.*` 93 → 69。詳細は `Phase7-Step10c-Completion-Report.md`。
 - **10d: 完了**。W1 テストの移行（`TestGlobals`）、W2 環境・パスの窓口と定数（`AdminCheck`／`DevicePathProbe`／`ConfigFileCulture`）、W3 第 1 層の設定（`IDeviceLayerSettings`）、W4 アプリ層のイベントほか、W5（W6 込み）`BackingStore` のコンストラクター注入・ブートストラップ・`Global` の削除、W7 文書。`Global.*` 69 → 2（ログ文言の文字列のみ）、`Global.cs` を削除。詳細は `Phase7-Step10d-Completion-Report.md`。
-- 10e: 未着手（仕上げと総合検証）。
+- **10e: 計画書作成済み・承認待ち（2026-10-18）**。`Phase7-Step10e-Plan.md`（`CURRENT_DS4_CONTROLLER_LIMIT` の置き換え、`AppHost` の暗黙構築の廃止、孤立コード・0 件メンバーの決着、ラチェットの最終化、文書の最終化、総合検証。Q1〜Q10、W1〜W6）。
 
 ## 4. 実機確認の台帳（`Phase6-Step11-RealDevice-Verification-Checklist.md` §11）
 
@@ -141,5 +141,5 @@
 
 ## 6. 直近の次アクション
 
-1. Step10e の調査と `Phase7-Step10e-Plan.md` の作成。
+1. Step10e（`Phase7-Step10e-Plan.md`）の承認と実装。その後、総合検証と Phase7 完了報告書。
 2. 実機確認 U-11、U-12、U-13、U-14、U-15、U-16、U-17、U-18、U-19、U-20、U-21（任意のタイミング。U-14 は終了時のホスト破棄と初回起動の確認が中心）。
