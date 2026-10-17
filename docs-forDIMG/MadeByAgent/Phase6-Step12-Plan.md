@@ -2,7 +2,7 @@
 
 作成日: 2026-09-09  
 改訂日: 2026-09-18（Step2〜Step10確定スコープ・Step11実機総合検証成果統合・選択肢2［安全防壁付き物理削除］採用・全面拡充改訂）  
-状態: 決定承認済み・§0〜§6 改訂済み（2026-10-17）。Wave 1 着手  
+状態: Wave 1〜5 実装済み（2026-10-17）。最終のビルド・テストと、実機確認（U-8・U-9）の結果待ち  
 **2026-10-14 注記（文書整合）**: 本書の「Phase7 引き継ぎ101箇所」「Pre-Host 11箇所」は 2026-09-18 時点の記載で、現行の正と異なる。(1) Step3 は 2026-09-21 に方針を転換し、`Mapping.cs` の実参照150件を全件解消した（2026-09-24 完了）。防壁2の対象は「101箇所」ではなく、`Mapping` の静的 `profileSettings` 束縛（方針P2、TODO 付き）と温存3件である（`Phase6-Step3-Plan.md` §3.8）。(2) Pre-Host 領域は 2026-09-25 の Step7-0 で12箇所に再集計した。(3) Step7 決定6＝N、Step5 の実行時状態配列、K7-1 などの登録は §4 を参照。着手時（Step12-0）に、現行コードで削除候補の台帳を作り直すこと（`Phase6-Status.md` §6.3）。  
 対象ブランチ: `For-DI-migration-work`  
 上位計画書: `docs-forDIMG/MadeByAgent/Phase6-Plan.md`  
@@ -268,6 +268,19 @@ HEAD は `e0bc8258`（作業ツリーはクリーン）。以降の §0〜§6 �
 
 ---
 
+### 0A.15 Wave 5 の実施記録（2026-10-17、ビルド・テストはユーザーの実行待ち）
+
+- 前提: Wave 4 は、ビルド・テスト成功。
+- 削除:
+  - `DS4Windows.AppHost`（`DI/Compat/AppHost.cs`）の `Host`、`CreateHost`、`GetService(Type)`、`Dispose`、private フィールド `_loggedResolvedTypes`。残したのは `GetService<T>()` のみ（`Mapping.cs:86`、`App.xaml.cs` の呼び出しが使う）。クラスに TODO（Phase7: `Mapping` の instance 化で呼び出しがなくなった時点で、クラスごと削除）を付けた。
+  - `IPathService.AppDataPath`／`PathService.AppDataPath` のセッター（`{ get; set; }` → `{ get; }`）。関連する説明コメントを更新。コンストラクタ引数 `PathService(string appDataPath)` と `_customAppDataPath` は残した。
+- テスト: セッター専用の `Phase6Step10GroupOneContractTests.PathService_AppDataPathSetter_DoesNotChangeGlobalAppDataPath` を**削除**（1 件減）。
+- ラチェット: `DI/Compat/AppHost.cs` = (0, 1, 0)（`AppHost` 2→1）。全域の最終値（走査で確認）: `Global.*` **759**、`AppHost` **40**、`Program.rootHub` **22**。
+- ガード: `Step12DeadShimRemovalGuardTests` に `Wave5_RemovedApiSurface_DoesNotReappear` を追加（`AppDataPath` のセッターが無いこと、互換ラッパーが `GetService<T>` だけであること）。
+- 完了報告書: `Phase6-Step12-Completion-Report.md`、`Phase6-Completion-Report.md` を作成した（最終のビルド・テストの結果と実機確認の記入欄あり）。
+
+---
+
 ## 0. 背景と方針（2026-10-17 改訂。承認済みの決定は §0A.10）
 
 ### 0.1 Step2〜Step11 の完了実績と残存コードの状況
@@ -307,7 +320,7 @@ HEAD は `e0bc8258`（作業ツリーはクリーン）。以降の §0〜§6 �
 - **Wave 2**: ProfileSettings 系の互換アクセサ 150 名（宣言 152 件）。実施済み（§0A.12）。`Global` 45→38。
 - **Wave 3**: `*Instance` のフォールバック群 19 件。実施済み（§0A.13。実機確認待ち）。`Global` 38→26、`AppHost` 11→5、`rootHub` 9→6。**この Wave の後に実機で起動・接続・プロファイル切替を確認**（起動ログ `Host initialized with runtime parser`）。
 - **Wave 4**: `BackingStore` 直転送ラッパー 58 件（`getDefaultX360ControlBinding` を含む）。実施済み（§0A.14）。`AppHost` 5→4。
-- **Wave 5**: 互換 `AppHost`（`DI/Compat/AppHost.cs`）の未使用 5 件、`AppDataPath` のセッター、ガードテストの最終確認、完了報告書（`Phase6-Step12-Completion-Report.md`、`Phase6-Completion-Report.md`）。
+- **Wave 5**: 実施済み（§0A.15）。互換 `AppHost`（`DI/Compat/AppHost.cs`）の未使用 5 件、`AppDataPath` のセッター、ガードテストの最終確認、完了報告書（`Phase6-Step12-Completion-Report.md`、`Phase6-Completion-Report.md`）。
 - **各 Wave の共通作業**:
   - 対象の削除とテストの書き換え（旧シム専用の等価性テストは削除、書き換え可能なものは生存プロパティ・サービスへ）。削除したテストは一覧にして完了報告書へ記録する。
   - `Step10FourGlobalRatchetGuardTests` の `Global.cs` の基準値を更新する。

@@ -139,6 +139,30 @@ namespace DS4WindowsTests
         }
 
         [Fact]
+        public void Wave5_RemovedApiSurface_DoesNotReappear()
+        {
+            string pathServiceInterface = SourceFileLocator.Find("DS4Windows/DI/IPathService.cs");
+            string compatAppHost = SourceFileLocator.Find("DS4Windows/DI/Compat/AppHost.cs");
+            if (pathServiceInterface == null || compatAppHost == null)
+            {
+                _output.WriteLine("ソースが見つからないため検査を省略した。");
+                return;
+            }
+
+            // IPathService.AppDataPath のセッターを再導入しない（Global.appdatapath と連動しない孤立した実装だった）
+            string pathText = StripComments(File.ReadAllText(pathServiceInterface));
+            Assert.Matches(@"string\s+AppDataPath\s*\{\s*get;\s*\}", pathText);
+
+            // 互換ラッパー DS4Windows.AppHost は、GetService<T> だけを持つ（Host／CreateHost／GetService(Type)／Dispose は呼び出し元 0 件で削除済み）
+            string compatText = StripComments(File.ReadAllText(compatAppHost));
+            Assert.DoesNotContain("CreateHost", compatText);
+            Assert.DoesNotContain("Dispose", compatText);
+            Assert.DoesNotContain("IHost Host", compatText);
+            Assert.DoesNotContain("GetService(Type", compatText);
+            Assert.Contains("GetService<T>", compatText);
+        }
+
+        [Fact]
         public void ProtectedMembers_RemainInGlobal()
         {
             string path = SourceFileLocator.Find("DS4Windows/DS4Control/Global.cs");

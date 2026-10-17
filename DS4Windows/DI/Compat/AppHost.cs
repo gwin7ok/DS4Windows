@@ -1,18 +1,13 @@
-using System;
-using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Hosting;
-using DS4Windows;
-
 namespace DS4Windows
 {
+    /// <summary>
+    /// 名前空間 DS4Windows の既存コードが、修飾なしの <c>AppHost.GetService&lt;T&gt;()</c> と書いている箇所のための互換ラッパー。
+    /// 正本は <c>DS4WinWPF.AppHost</c>。
+    /// TODO(Phase7): 唯一の呼び出し元は Mapping.cs:86（<c>VirtualKBM</c>）。Mapping の instance 化（コンストラクタ注入）で呼び出しがなくなった時点で、このクラスごと削除する。
+    /// Phase6-Step12 Wave 5 で、呼び出し元が 0 件だった Host／CreateHost／GetService(Type)／Dispose と、未使用の private フィールドを削除した。
+    /// </summary>
     public static class AppHost
     {
-        private static readonly System.Collections.Generic.HashSet<System.Type> _loggedResolvedTypes = new System.Collections.Generic.HashSet<System.Type>();
-        public static Microsoft.Extensions.Hosting.IHost Host => DS4WinWPF.AppHost.Host;
-        public static Microsoft.Extensions.Hosting.IHost CreateHost(string[] args = null) => DS4WinWPF.AppHost.CreateHost(args);
         public static T GetService<T>() where T : class => DS4WinWPF.AppHost.GetService<T>();
-        public static object GetService(Type serviceType) => DS4WinWPF.AppHost.GetService(serviceType);
-        public static void Dispose() => DS4WinWPF.AppHost.Dispose();
     }
 }

@@ -14,7 +14,7 @@ namespace DS4Windows
         }
 
         /// <summary>
-        /// アプリケーションデータパスを取得または設定します。
+        /// アプリケーションデータパスを取得します（コンストラクタ引数で指定した場合は、その値を返します）。
         /// 固定キャッシュを行わず、常に Global.appdatapath の最新値を On-Demand 評価します（§5.4 ガードレール）。
         /// これにより、起動順序逆転によるパス固定化ハザードを完全に防止します。
         /// </summary>
@@ -29,7 +29,6 @@ namespace DS4Windows
                     ? Global.appdatapath
                     : AppContext.BaseDirectory;
             }
-            set => _customAppDataPath = value;
         }
 
         public string ExecutableDirectory => AppContext.BaseDirectory;

@@ -4,7 +4,7 @@ namespace DS4Windows.DI
 {
     public interface IPathService
     {
-        string AppDataPath { get; set; }
+        string AppDataPath { get; }
         string ExecutableDirectory { get; }
         string ExecutablePath { get; }
         string ProfilesPath { get; }
@@ -39,8 +39,7 @@ namespace DS4Windows.DI
         /// <summary>
         /// 設定ファイルの保存先を決める（<c>Global.SaveWhere(path)</c> と同じ動作）。
         /// 保存先のフォルダに加え、Profiles／Actions／LinkedProfiles／ControllerConfigs の各ファイルのパスも更新する。
-        /// 注意: <see cref="AppDataPath"/> の setter は PathService 内部のフィールドを変えるだけで、これらは更新しない。
-        /// 保存先の決定には必ず本メソッドを使うこと。
+        /// 保存先の決定には必ず本メソッドを使うこと（<see cref="AppDataPath"/> は読み取り専用。Phase6-Step12 Wave 5 でセッターを削除）。
         /// </summary>
         void SetSaveLocation(string path);
 

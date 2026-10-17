@@ -91,17 +91,6 @@ namespace DS4WindowsTests
         }
 
         [Fact]
-        public void PathService_AppDataPathSetter_DoesNotChangeGlobalAppDataPath()
-        {
-            // AppDataPath の setter は PathService 内部のフィールドを変えるだけ（Global.SaveWhere ではない）。
-            // 保存先の決定に使ってはならないことを固定する（IPathService.SetSaveLocation の注記）。
-            var service = new PathService();
-            string original = Global.appdatapath;
-            service.AppDataPath = Path.Combine(Path.GetTempPath(), "Phase6Step10_Setter_" + Guid.NewGuid().ToString("N"));
-            Assert.Equal(original, Global.appdatapath);
-        }
-
-        [Fact]
         public void PathService_CreateEmptyProfilesFile_CreatesSameXmlAsGlobalSaveDefault()
         {
             IPathService service = new PathService();
