@@ -95,8 +95,6 @@ namespace DS4Windows
         private readonly ReaderWriterLockSlim syncStateLock;
         private readonly SyntheticState[] deviceState;
         private readonly bool[] macrodone;
-        private readonly bool[] macroDispatchInFlight;
-        private readonly object macroDispatchLock;
         private readonly bool[] macroControl;
         private readonly Dictionary<string, Task>[] macroTaskQueue;
         private readonly byte[] gyroStickX;
@@ -190,8 +188,6 @@ namespace DS4Windows
             syncStateLock = syntheticInput.SyncStateLock;
             deviceState = syntheticInput.DeviceState;
             macrodone = macroRuntime.MacroDone;
-            macroDispatchInFlight = macroRuntime.DispatchInFlight;
-            macroDispatchLock = macroRuntime.DispatchLock;
             macroControl = macroRuntime.MacroControl;
             macroTaskQueue = macroRuntime.TaskQueue;
             gyroStickX = stickMotion.GyroStickX;
@@ -500,6 +496,8 @@ namespace DS4Windows
         // その単一の実行層で一元的に行われるべきである。Phase7（Mapping.cs 完全 instance 化、
         // DI-App-Wide-Migration-Plan.md §6.9）で、この場当たり的な macroDispatchInFlight を
         // 含めて再設計すること。
+        // Phase7-Step9 W3（K3）: フラグとロックの実体は MacroRuntimeState（TryBeginDispatch／EndDispatch）に包んだ（挙動は同一）。
+        // 上記の恒久対応（実行層の一本化）は Phase8（Actions サブシステム）へ持ち越した。
 
         // debounce for SpecialAction toggle (milliseconds)
         private const int ToggleDebounceMs = 30;
@@ -5454,14 +5452,8 @@ namespace DS4Windows
 
                 if (controlIndexValid)
                 {
-                    lock (macroDispatchLock)
-                    {
-                        controlDispatchInFlight = macroDispatchInFlight[controlDispatchIdx];
-                        if (!controlDispatchInFlight)
-                        {
-                            macroDispatchInFlight[controlDispatchIdx] = true;
-                        }
-                    }
+                    // Phase7-Step9 W3（K3、Q3＝A）: ロックと確保の処理は MacroRuntimeState.TryBeginDispatch に包んだ（挙動は同一）
+                    controlDispatchInFlight = !_macroRuntime.TryBeginDispatch(controlDispatchIdx);
                 }
 
                 bool isRunning = actionRunning || controlDispatchInFlight;
@@ -5715,7 +5707,7 @@ namespace DS4Windows
                 {
                     try
                     {
-                        lock (macroDispatchLock) { macroDispatchInFlight[DS4ControltoInt(control)] = false; }
+                        _macroRuntime.EndDispatch(DS4ControltoInt(control));
                     }
                     catch { }
                 }

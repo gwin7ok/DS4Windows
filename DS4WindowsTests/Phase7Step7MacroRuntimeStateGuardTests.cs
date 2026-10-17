@@ -43,7 +43,6 @@ namespace DS4WindowsTests
             Assert.Equal(52, state.MacroDone.Length);
             Assert.Equal(52, state.DispatchInFlight.Length);
             Assert.Equal(26, state.MacroControl.Length);
-            Assert.NotNull(state.DispatchLock);
             Assert.Equal(DS4Windows.Global.MAX_DS4_CONTROLLER_COUNT, state.TaskQueue.Length);
             Assert.All(state.TaskQueue, q => Assert.NotNull(q));
 
@@ -76,8 +75,9 @@ namespace DS4WindowsTests
             // Phase7-Step8 W2: 転送プロパティは削除し、コンストラクターで受けた保持クラスの配列を readonly で複製して持つ
             Assert.Contains("private readonly MacroRuntimeState _macroRuntime;", mapping);
             Assert.Contains("private readonly bool[] macrodone;", mapping);
-            Assert.Contains("private readonly bool[] macroDispatchInFlight;", mapping);
-            Assert.Contains("private readonly object macroDispatchLock;", mapping);
+            // Phase7-Step9 W3（K3）: 二重実行防止のフラグとロックは MacroRuntimeState.TryBeginDispatch／EndDispatch に包んだ（Mapping は持たない）
+            Assert.DoesNotContain("private readonly bool[] macroDispatchInFlight;", mapping);
+            Assert.DoesNotContain("private readonly object macroDispatchLock;", mapping);
             Assert.Contains("private readonly bool[] macroControl;", mapping);
             Assert.Contains("private readonly Dictionary<string, Task>[] macroTaskQueue;", mapping);
             Assert.Contains("macroTaskQueue = macroRuntime.TaskQueue;", mapping);

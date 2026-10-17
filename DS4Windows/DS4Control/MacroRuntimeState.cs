@@ -21,11 +21,35 @@ namespace DS4Windows
         /// <summary>コントロールごとの「マクロの実行を済ませた」フラグ（旧: <c>macrodone</c>）。</summary>
         public bool[] MacroDone { get; } = new bool[ControlArrayLength];
 
-        // TODO(Phase7-Step9、K3): PlayMacro の二重実行防止の暫定対策（旧: macroDispatchInFlight／macroDispatchLock。
-        // Mapping.cs に書かれていた申し送りのとおり、トリガー判定層とマクロ実行層の分離とあわせて再設計する）。
+        // TODO(Phase8、K3): PlayMacro の二重実行防止の暫定対策（旧: macroDispatchInFlight／macroDispatchLock）。
+        // Phase7-Step9 W3（Q3＝A）で、ロックと配列の直接操作を TryBeginDispatch／EndDispatch に包んだ（挙動は同一）。
+        // 恒久対応は、Mapping.cs に書かれていた申し送りのとおり、トリガー判定層とマクロ実行層の分離（Controls／SpecialActions に
+        // 共通の単一の実行層への一本化。モデル図 02／03 の 2-d マクロの分解）とあわせて、Phase8（Actions サブシステム）で再設計する。
+        // 配列はテストが読み取るために公開（要素の更新は TryBeginDispatch／EndDispatch を使うこと）。
         public bool[] DispatchInFlight { get; } = new bool[ControlArrayLength];
 
-        public object DispatchLock { get; } = new object();
+        private readonly object _dispatchLock = new object();
+
+        /// <summary>
+        /// control 単位の「マクロ実行中」フラグを確保する。既に実行中なら false（フラグは変えない）、未実行なら true にして true を返す。
+        /// 添字が範囲外のときは、旧実装と同じく例外を呼び出し元へ伝える（<c>Mapping.PlayMacro</c> が握りつぶす）。
+        /// </summary>
+        public bool TryBeginDispatch(int controlIndex)
+        {
+            lock (_dispatchLock)
+            {
+                if (DispatchInFlight[controlIndex])
+                    return false;
+                DispatchInFlight[controlIndex] = true;
+                return true;
+            }
+        }
+
+        /// <summary>control 単位の「マクロ実行中」フラグを解除する（マクロ実行の終了時に必ず呼ぶ）。</summary>
+        public void EndDispatch(int controlIndex)
+        {
+            lock (_dispatchLock) { DispatchInFlight[controlIndex] = false; }
+        }
 
         /// <summary>マクロが出力中のボタン等のフラグ（旧: <c>macroControl</c>）。</summary>
         public bool[] MacroControl { get; } = new bool[MacroControlLength];
