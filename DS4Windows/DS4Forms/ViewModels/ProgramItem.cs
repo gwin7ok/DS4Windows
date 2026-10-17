@@ -224,7 +224,7 @@ namespace DS4WinWPF.DS4Forms.ViewModels
             get
             {
                 Visibility temp = Visibility.Visible;
-                if (!ControlService.USING_MAX_CONTROLLERS)
+                if (!usingExpandedControllers)
                 {
                     temp = Visibility.Collapsed;
                 }
@@ -233,9 +233,14 @@ namespace DS4WinWPF.DS4Forms.ViewModels
             }
         }
 
-        public ProgramItem(string path, AutoProfileEntity autoProfileEntity = null)
+        // Phase7-Step10b W4: 旧 ControlService.USING_MAX_CONTROLLERS（静的シム）の置換。拡張コントローラー（8 台）の行を表示するかは、
+        // 生成元（AutoProfilesViewModel）が IEnvironmentService.UsingMaxControllers から得た値を渡す。
+        private readonly bool usingExpandedControllers;
+
+        public ProgramItem(string path, bool usingExpandedControllers, AutoProfileEntity autoProfileEntity = null)
         {
             this.path = path;
+            this.usingExpandedControllers = usingExpandedControllers;
             this.path_lowercase = path.ToLower();
             filename = System.IO.Path.GetFileNameWithoutExtension(path);
             this.matchedAutoProfile = autoProfileEntity;

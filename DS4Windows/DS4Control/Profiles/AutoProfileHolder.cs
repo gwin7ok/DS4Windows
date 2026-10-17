@@ -42,9 +42,15 @@ namespace DS4WinWPF
 
         //private Dictionary<string, AutoProfileEntity> autoProfileDict;
 
-        public AutoProfileHolder(DS4Windows.DI.IPathService pathService)
+        // Phase7-Step10b W4: 旧 ControlService.USING_MAX_CONTROLLERS（静的シム）の置換。保存時（AutoProfilesDTO.MapFrom）に、
+        // 4〜8 番目のコントローラーのプロファイルを書くかの判定に使う。
+        private readonly DS4Windows.DI.IEnvironmentService environmentService;
+        public bool UsingMaxControllers => environmentService.UsingMaxControllers;
+
+        public AutoProfileHolder(DS4Windows.DI.IPathService pathService, DS4Windows.DI.IEnvironmentService environmentService)
         {
             this.pathService = pathService ?? throw new System.ArgumentNullException(nameof(pathService));
+            this.environmentService = environmentService ?? throw new System.ArgumentNullException(nameof(environmentService));
             autoProfileColl = new ObservableCollection<AutoProfileEntity>();
             //autoProfileDict = new Dictionary<string, AutoProfileEntity>();
             Load();

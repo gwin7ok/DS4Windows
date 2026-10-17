@@ -80,9 +80,12 @@ namespace DS4WinWPF.DS4Forms.ViewModels
             set => _appSettings.AutoProfileRevertDefaultProfile = value;
         }
 
+        // Phase7-Step10b W4: 旧 ControlService.USING_MAX_CONTROLLERS（静的シム）を IEnvironmentService.UsingMaxControllers に置き換えた。
+        private readonly IEnvironmentService _environmentService;
+
         public bool UsingExpandedControllers
         {
-            get => ControlService.USING_MAX_CONTROLLERS;
+            get => _environmentService.UsingMaxControllers;
         }
 
         private List<EnumChoiceSelection<AutoProfileDisplayProfileSwitchChoices>> displayProfileSwitchList =
@@ -107,11 +110,13 @@ namespace DS4WinWPF.DS4Forms.ViewModels
         public AutoProfilesViewModel(AutoProfileHolder autoProfileHolder, ProfileList profileList,
             IAppSettingsService appSettings,
             IAutoProfileService autoProfileService,
-            ControlService controlService)
+            ControlService controlService,
+            IEnvironmentService environmentService)
         {
             _appSettings = appSettings ?? throw new ArgumentNullException(nameof(appSettings));
             _autoProfileService = autoProfileService ?? throw new ArgumentNullException(nameof(autoProfileService));
             _controlService = controlService ?? throw new ArgumentNullException(nameof(controlService));
+            _environmentService = environmentService ?? throw new ArgumentNullException(nameof(environmentService));
             programColl = new ObservableCollection<ProgramItem>();
             existingapps = new HashSet<string>();
             this.autoProfileHolder = autoProfileHolder;
@@ -125,7 +130,7 @@ namespace DS4WinWPF.DS4Forms.ViewModels
         {
             foreach (AutoProfileEntity entry in autoProfileHolder.AutoProfileColl)
             {
-                ProgramItem item = new ProgramItem(entry.Path, entry);
+                ProgramItem item = new ProgramItem(entry.Path, UsingExpandedControllers, entry);
 
                 programColl.Add(item);
                 existingapps.Add(entry.Path);
@@ -229,7 +234,7 @@ namespace DS4WinWPF.DS4Forms.ViewModels
                 skip = skip || (checkexisting && existingapps.Contains(target));
                 if (!skip)
                 {
-                    ProgramItem item = new ProgramItem(target);
+                    ProgramItem item = new ProgramItem(target, UsingExpandedControllers);
                     /*if (autoProfileHolder.AutoProfileDict.TryGetValue(target, out AutoProfileEntity autoEntity))
                     {
                         item.MatchedAutoProfile = autoEntity;

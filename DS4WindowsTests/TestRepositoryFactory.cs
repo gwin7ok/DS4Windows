@@ -76,7 +76,7 @@ namespace DS4WindowsTests
 
         public static AutoProfileHolder CreateAutoProfileHolder(IPathService pathService = null)
         {
-            return new AutoProfileHolder(pathService ?? new PathService());
+            return new AutoProfileHolder(pathService ?? new PathService(), new EnvironmentService());
         }
 
         public static AutoProfileService CreateAutoProfileService(AutoProfileHolder holder,

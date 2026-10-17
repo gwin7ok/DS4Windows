@@ -40,10 +40,9 @@
         /// </summary>
         int ControllerSlotLimit { get; }
         /// <summary><see cref="ControllerSlotLimit"/> が拡張スロット数（8）であるか。</summary>
-        // TODO(Phase7-Step2 W4 の調査で「接続」と判断。削除しない): ControllerSlotLimit と同時に Phase6-Step2-1b（2026-09-19、決定 O2=C）で
-        // 追加された、ControlService.USING_MAX_CONTROLLERS（static 互換シム）の置換先。呼び出し側の切り替えが未実施で、本体の呼び出しが 0 件。
-        // 現状の差: AutoProfilesViewModel.cs:85、ProgramItem.cs:227、AutoProfilesDTO.cs:52 が static シムを直接使う。
-        // 接続予定: Phase7-Step10（DTO は静的のため、ProgramItem／AutoProfilesViewModel は注入へ。シムの削除とあわせる）。
+        // Phase7-Step10b W4（接続済み）: Phase7-Step2 W4 の調査で「接続」と判断した契約。ControlService.USING_MAX_CONTROLLERS（static 互換シム）の置換先で、
+        // 呼び出し元 3 箇所を本プロパティの注入に切り替え、シムを削除した。利用者: AutoProfileHolder.UsingMaxControllers（保存時の 4〜8 番目の書き出し）、
+        // AutoProfilesViewModel.UsingExpandedControllers、ProgramItem（生成元が値を渡す）。
         bool UsingMaxControllers { get; }
 
         // ---- Phase6-Step2-3 (PR-3): FakerInput 導入バージョン（Global への薄い委譲。利用者は IVirtualKBMLifecycle 実装）----

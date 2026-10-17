@@ -107,7 +107,7 @@ namespace DS4WindowsTests
             Assert.Throws<ArgumentNullException>(() => new ProfileRepository(config, settings, null, path, control));
             Assert.Throws<ArgumentNullException>(() => new ProfileRepository(config, settings, store, null, control));
             Assert.Throws<ArgumentNullException>(() => new ProfileActionProvider(null));
-            Assert.Throws<ArgumentNullException>(() => new DS4WinWPF.AutoProfileHolder(null));
+            Assert.Throws<ArgumentNullException>(() => new DS4WinWPF.AutoProfileHolder(null, new EnvironmentService()));
         }
 
         [Fact]
@@ -135,7 +135,7 @@ namespace DS4WindowsTests
         public void AutoProfileService_RequiresAllDependencies()
         {
             var path = new PathService();
-            var holder = new DS4WinWPF.AutoProfileHolder(path);
+            var holder = new DS4WinWPF.AutoProfileHolder(path, new EnvironmentService());
             var settings = TestRepositoryFactory.CreateProfileSettingsService();
             var app = TestRepositoryFactory.CreateProfileApplicationService(settings,
                 () => null,
@@ -165,7 +165,7 @@ namespace DS4WindowsTests
             try
             {
                 // 設定ファイルが無い場合は空で生成される（注入されたパスを参照し、Global.appdatapath を参照しない）
-                var holder = new DS4WinWPF.AutoProfileHolder(new PathService(dir));
+                var holder = new DS4WinWPF.AutoProfileHolder(new PathService(dir), new EnvironmentService());
                 Assert.Empty(holder.AutoProfileColl);
             }
             finally
@@ -321,7 +321,7 @@ namespace DS4WindowsTests
             System.IO.Directory.CreateDirectory(dir);
             try
             {
-                var holder = new DS4WinWPF.AutoProfileHolder(new PathService(dir));
+                var holder = new DS4WinWPF.AutoProfileHolder(new PathService(dir), new EnvironmentService());
                 var rule = new DS4WinWPF.AutoProfileEntity(@"C:\game.exe", "");
                 rule.ProfileNames[0] = "OldName";
                 rule.ProfileNames[1] = "Other";
@@ -333,7 +333,7 @@ namespace DS4WindowsTests
                 Assert.Equal("Other", rule.ProfileNames[1]);
 
                 // 保存先は注入されたパス。読み直しても新名が残る
-                var reloaded = new DS4WinWPF.AutoProfileHolder(new PathService(dir));
+                var reloaded = new DS4WinWPF.AutoProfileHolder(new PathService(dir), new EnvironmentService());
                 Assert.Single(reloaded.AutoProfileColl);
                 Assert.Equal("NewName", reloaded.AutoProfileColl[0].ProfileNames[0]);
             }

@@ -83,7 +83,7 @@ namespace DS4Windows
             if (AppLogger.IsTraceEnabled)
                 AppLogger.LogTrace("[DI] ViewModelFactory: Created AutoProfilesViewModel");
             return new AutoProfilesViewModel(autoProfileHolder, profileList,
-                _appSettings, _autoProfileServiceAccessor(), _controlServiceAccessor());
+                _appSettings, _autoProfileServiceAccessor(), _controlServiceAccessor(), _environmentService);
         }
     }
 }

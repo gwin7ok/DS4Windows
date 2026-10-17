@@ -48,7 +48,8 @@ namespace DS4Windows
         // 各呼び出し元はそれぞれの Step で IEnvironmentService の注入へ置換し、最終的に Phase6-Step12 で削除する
         // （Phase6-Step2-Plan.md 決定O2/O3）。ControlService 内部は注入値 _controllerSlotLimit を使用する。
         public static int CURRENT_DS4_CONTROLLER_LIMIT { get; } = EnvironmentService.ProcessControllerSlotLimit;
-        public static bool USING_MAX_CONTROLLERS { get; } = EnvironmentService.ProcessControllerSlotLimit == EXPANDED_CONTROLLER_COUNT;
+        // Phase7-Step10b W4: USING_MAX_CONTROLLERS（静的シム）は、呼び出し元 3 箇所を IEnvironmentService.UsingMaxControllers の注入に替えて削除した。
+        // CURRENT_DS4_CONTROLLER_LIMIT（30 箇所以上が使う）は Phase7-Step10d／10e で同様に置き換える。
         public DS4Device[] DS4Controllers = new DS4Device[MAX_DS4_CONTROLLER_COUNT];
         public DS4Device GetController(int deviceIndex)
         {

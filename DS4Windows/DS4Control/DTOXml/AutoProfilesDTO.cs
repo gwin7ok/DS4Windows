@@ -49,7 +49,7 @@ namespace DS4WinWPF.DS4Control.DTOXml
                     TurnOff = entity.Turnoff,
                 };
 
-                if (ControlService.USING_MAX_CONTROLLERS)
+                if (source.UsingMaxControllers)
                 {
                     temp.Controller4 = entity.ProfileNames[3];
                     temp.Controller5 = entity.ProfileNames[4];

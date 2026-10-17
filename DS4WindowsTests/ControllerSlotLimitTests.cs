@@ -54,10 +54,9 @@ namespace DS4WindowsTests
         }
 
         [Fact]
-        public void ControlServiceStaticShim_SharesValueWithService()
+        public void ControlServiceStaticShim_SharesValueWithService() // Phase7-Step10b W4: USING_MAX_CONTROLLERS は削除済み（CURRENT_DS4_CONTROLLER_LIMIT のみ残る）
         {
             Assert.Equal(_environment.ControllerSlotLimit, ControlService.CURRENT_DS4_CONTROLLER_LIMIT);
-            Assert.Equal(_environment.UsingMaxControllers, ControlService.USING_MAX_CONTROLLERS);
         }
     }
 }

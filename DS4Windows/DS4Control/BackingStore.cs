@@ -129,10 +129,7 @@ namespace DS4Windows
         public const double DEFAULT_TRACKBALL_FRICTION = 10.0;
 
         // Stick output curve consts in place more as a precaution
-        public const string DEFAULT_STICK_OUTPUT_CURVE = "linear";
-        public const int DEFAULT_STICK_OUTPUT_CURVE_ID = 0;
-        public const string DEFAULT_SA_OUTPUT_CURVE = "linear";
-        public const int DEFAULT_SA_OUTPUT_CURVE_ID = 0;
+        // Phase7-Step10b W4: DEFAULT_STICK_OUTPUT_CURVE／_ID、DEFAULT_SA_OUTPUT_CURVE／_ID は削除した（廃止済みの ProfileDTO の既定値の残骸。参照 0 件）。
 
         public String m_Profile = Directory.GetParent(Assembly.GetExecutingAssembly().Location).FullName + "\\Profiles.xml";
         public String m_Actions = Global.appdatapath + "\\Actions.xml";
@@ -541,8 +538,9 @@ namespace DS4Windows
         public const int DEFAULT_CHECK_EVERY_UNIT = 1;
         // New explicit startup update-check persistence fields
         public bool checkUpdateStartup = true;
-        public int checkEveryValue = 1; // default 1 day
-        public int checkEveryUnit = 1; // 0=hours,1=days
+        // Phase7-Step10b W4: 既定値の出所を DEFAULT_CHECK_EVERY_VALUE／_UNIT に一本化した（値は従来と同じ）
+        public int checkEveryValue = DEFAULT_CHECK_EVERY_VALUE; // default 1 day
+        public int checkEveryUnit = DEFAULT_CHECK_EVERY_UNIT; // 0=hours,1=days
 
         public const int DEFAULT_NOTIFICATIONS = 2;
         public int notifications = DEFAULT_NOTIFICATIONS;
