@@ -3,7 +3,7 @@
 作成日: 2026-10-18  
 対象ブランチ: `For-DI-migration-work`  
 上位計画: `Phase7-Step10-Plan.md`（Q1〜Q9 は推奨どおり承認）§3「10c」・Q3・Q4、`Phase7-Step10b-Completion-Report.md` §5、`Phase7-0-Survey.md` §5（D2・D4）  
-状態: **Q1〜Q8 は推奨どおり承認（2026-10-18）。W1〜W3 完了（ビルド・テスト成功）。W4（読込側）・W5（保存側）完了（ビルド・テスト成功）。W6（プリセット）実装済み（ビルド・テスト待ち）。W4／W5 は保存と読込を入れ替えた（LoadProfile が SaveProfile を呼ぶため。逆向きの依存を作らない）。次は W7（文書）。**
+状態: **Q1〜Q8 は推奨どおり承認（2026-10-18）。W1〜W6 完了（ビルド・テスト成功。W4／W5 は保存と読込を入れ替えた）。W7 は文書。10c 完了。完了報告書は `Phase7-Step10c-Completion-Report.md`。**
 
 ---
 
@@ -129,7 +129,7 @@
 
 ## 6. 完了条件
 
-- 7 Wave が完了し、ゴールデンテストが成功（ユーザーが実行）。`BackingStore` から永続化のメソッドが無くなり、`BackingStore.cs` が約 1,500 行になっている。
+- 7 Wave が完了し、ゴールデンテストが成功（ユーザーが実行）。`BackingStore` から永続化のメソッドが無くなり、`BackingStore.cs` が約 1,500 行になっている（実測 1,660 行）。
 - `Global` のシム（`SaveAction` ほか 4 名）が削除されている。新しい型に `Global.appdatapath`／`exedirpath`／`exeversion` の参照がない。ラチェット（合計 93 を超えない。見込みは移動先での減少）。
 - 文書の更新（台帳、モデル図、Status、完了報告書、U-20）。
 

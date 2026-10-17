@@ -150,3 +150,21 @@
 - 新たな持ち越し: `ControlService.CURRENT_DS4_CONTROLLER_LIMIT`（静的シム。30 箇所以上、16 ファイル、テスト 5 件が使う）を `IEnvironmentService.ControllerSlotLimit` の注入に置き換える → `BackingStore` の分は 10d、画面・サービスの分は 10e。
 - 持ち越し（10c）: `configFileDecimalCulture`、`CompileVersionNumber*`、設定の定数（`CONFIG_VERSION` ほか）、`LoadActions`／`SaveAction` などの薄いシム。持ち越し（10d）: `Global.store`、環境・パスの窓口、`ProfileSettingsServiceInstance` 経由の設定の窓口、`using static DS4Windows.Global;`。
 - 実機確認: 10b 単独の項目なし（10e の総合検証に、トレイアイコンの切り替え、自動プロファイル画面［8 台表示］、ライトバーの色の遷移、自動プロファイルの保存を追加）。
+
+## 15. Phase7-Step10c で更新した台帳（2026-10-18）
+
+- `Global.*`: 93 → **69**（W2 −3［`SpecialActionRepository`。基準値の更新を W7 で実施］、W3 −10［`BackingStore` 9、`AppSettingsService` 1］、W4 −4、W5 −7）。`AppHost.GetService|Services` 4、`Program.rootHub` 0、`ServiceProviderHolder` 17 は変更なし。Phase7 開始時（733）からの累計は −664。基準値は `Step10FourGlobalRatchetGuardTests`（合計 0／4／69）。
+- `BackingStore.cs`: **6,522 行 → 1,660 行**（設定の状態［公開のフィールド・プロパティ］と、名前引き・後処理の補助だけ）。切り出した型（いずれも `DS4Control/Services/`、具象クラスの Singleton。`BackingStore` を `store` として受ける）:
+  - `SpecialActionsXmlSerializer`（465 行。`Actions.xml`）、`LinkedProfilesXmlSerializer`（281 行）、`ControllerConfigsXmlSerializer`（186 行）。
+  - `AppSettingsXmlSerializer`（556 行。`Profiles.xml`。`IPathService`／`IEnvironmentService` を受ける）。
+  - `LegacyProfileXmlSerializer`（3,093 行。プロファイルの読込・保存。`IPathService`／`IProfileSettingsService`／`IEnvironmentService` を受ける）。
+  - `ProfilePresets`（604 行。プリセット 10 種と `PrepareBlankingProfile`）。
+  - `VersionUtil`（バージョンの数値化。静的）。
+- 削除（`Global` から）: `SaveAction`／`SaveActions`／`RemoveAction`／`ReloadActionsAndVerify`／`LoadActions`（→ `SpecialActionRepository` のプライベートメソッドと `SpecialActionsXmlSerializer`）、`CreateStdActions`（→ `SpecialActionRepository`）、`CompileVersionNumberFromString`／`CompileVersionNumber`（→ `VersionUtil`）。再導入は `Step12DeadShimRemovalGuardTests` が禁止する。
+- 別名として残した定数（`Global`）: `CUSTOM_EXE_CONFIG_FILENAME`、`CONFIG_VERSION`、`XML_EXTENSION`（実体は各シリアライザーの定数。利用箇所をなくしたら削除 → 10d）。
+- 削除（`BackingStore` から）: 作業用の `m_Xdoc`（各シリアライザーが自分のフィールドとして持つ）。永続化のメソッド 36 個とプリセット関連 11 個。
+- `BackingStore` に残し、公開にした補助: `ResetProfile`／`ResetMouseProperties`／`PostLoadSnippet`／`CheckOldDevicestatus`（`LegacyProfileXmlSerializer` と `ProfilePresets` が呼ぶ）、`RaiseActionsLoaded`（`ActionsLoaded` イベントの発行元）、`PostProcessLoad`。
+- 計画との差: (1) W4＝読込側、W5＝保存側に入れ替えた（`LoadProfile` が `SaveProfile` を呼ぶため。逆向きの依存を作らない）。(2) 移動先の `Global` の参照を、注入された窓口に替えた: `Global.appdatapath` → `IPathService.AppDataPath`（未設定のときの代替が違う。デバッグログとプロファイルの置き場所の組み立てのみで、本番では起きない）、`Global.exedirpath` → `IPathService.ProgramDirectory`、`Global.AdminNeeded`／`IsAdministrator`／`exeversion` → `IEnvironmentService`、`Global.useDInputOnly` → `IProfileSettingsService.UseDInputOnlyArray`、`Global.GetAction`／`GetActionIndexOf` → `store.GetAction`／`GetActionIndexOf`（本体では `Global.store` と同じ実体）。
+- ゴールデンテスト（`DS4WindowsTests/Golden/Phase7Step10c/` の 11 ファイル）: プロファイル（既定／変化させた状態の保存 XML、読込後の状態）、アプリ設定（同）、`Actions.xml`、リンクプロファイル、プリセット 10 種の読込後の状態。**対象外**: コントローラー固有設定（実機のデバイス実体が要る）。
+- 持ち越し（10d）: `BackingStore` に残る `Global` 参照 7（`appdatapath`×3［`m_Actions`／`m_linkedProfiles`／`m_controllerConfigs` の初期化子］、`ProfileSettingsServiceInstance`×2、`useDInputOnly`、`RefreshActionAlias`）、`Global.store`、環境・パスの窓口、`using static DS4Windows.Global;`、別名（上記）、`CURRENT_DS4_CONTROLLER_LIMIT`（`BackingStore` の分 7）。`configFileDecimalCulture`（9 件。DTO と画面）の置き場所。
+- 実機確認: **U-20**（設定ファイルの互換。新設・未）。

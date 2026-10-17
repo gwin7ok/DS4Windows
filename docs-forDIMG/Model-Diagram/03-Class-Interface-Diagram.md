@@ -561,3 +561,10 @@ classDiagram
 %%   - 接続: IEnvironmentService.UsingMaxControllers を AutoProfileHolder（コンストラクター注入）・AutoProfilesViewModel（同）・ProgramItem（生成元が値を渡す）が使う。AutoProfilesDTO.MapFrom は source.UsingMaxControllers を読む。
 %%   - 温存: IOutputSlotService.OutputSlotChanged（Phase8 以降の UI 通知の拡張点）。AppearanceSettingsService → TrayIconResources（サービスから画面側の型への参照。Phase8 以降で整理）。
 %%   - 詳細は Phase7-Step10b-Plan.md、Phase7-Step10b-Completion-Report.md、台帳は Phase7-Residual-Ledger.md §14。
+%%
+%% Phase7-Step10c（2026-10-18）: BackingStore の永続化の切り出し（保存形式は変えない）。
+%%   - BackingStore は、設定の状態（公開のフィールド・プロパティ）と、名前引き・後処理の補助だけを持つ型に絞った（6,522 行 → 1,660 行）。BackingStore は永続化の型を知らない（依存の向きは、シリアライザー → BackingStore）。
+%%   - 新設（DS4Control/Services/、具象クラスの Singleton。BackingStore を store として受ける）: SpecialActionsXmlSerializer（Actions.xml）、LinkedProfilesXmlSerializer（LinkedProfiles.xml）、ControllerConfigsXmlSerializer（ControllerConfigs.xml）、AppSettingsXmlSerializer（Profiles.xml。IPathService・IEnvironmentService）、LegacyProfileXmlSerializer（プロファイル XML の読込・保存。IPathService・IProfileSettingsService・IEnvironmentService）、ProfilePresets（プリセット 10 種）。静的: VersionUtil。
+%%   - 呼び出し元: ProfileXmlStore（IProfileXmlStore の実装。排他ロック XmlIoLock を持つ）→ AppSettings／LegacyProfile／ControllerConfigs、ProfileRepository → LinkedProfiles／SpecialActions／LegacyProfile、SpecialActionRepository → SpecialActions、ProfilePresetLoader → ProfilePresets。
+%%   - Global のアクション保存系のシム（SaveAction ほか）と CreateStdActions を削除。ActionsLoaded イベントの発行元は BackingStore のまま（SpecialActionsXmlSerializer が RaiseActionsLoaded を呼ぶ）。
+%%   - 詳細は Phase7-Step10c-Plan.md、Phase7-Step10c-Completion-Report.md、台帳は Phase7-Residual-Ledger.md §15。

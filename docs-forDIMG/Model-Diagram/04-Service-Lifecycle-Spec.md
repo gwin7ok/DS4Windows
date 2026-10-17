@@ -247,3 +247,8 @@
 %% Phase7-Step10b（2026-10-18）: DI の構成の変更。
 %% - ProfileApplicationService のコンストラクターから IDeviceStateService を外した（8 引数）。AutoProfileHolder は IPathService に加えて IEnvironmentService を受ける。AutoProfilesViewModel（ViewModelFactory 経由）も IEnvironmentService を受ける。
 %% - 静的クラス（DI 登録なし）: X360ControlTables／DS4ControlNames／ColorUtil／TrayIconResources。Global.* は 107 → 93。AppHost.GetService|Services 4、ServiceProviderHolder 17 は変更なし。
+%%
+%% Phase7-Step10c（2026-10-18）: DI の構成の変更（永続化の型の登録）。
+%% - Singleton（具象クラス）: SpecialActionsXmlSerializer、LinkedProfilesXmlSerializer、ControllerConfigsXmlSerializer、AppSettingsXmlSerializer、LegacyProfileXmlSerializer、ProfilePresets（いずれも BackingStore などをコンストラクターで受ける）。
+%% - コンストラクターの変更: ProfileXmlStore（+ControllerConfigs／AppSettings／LegacyProfile）、ProfileRepository（+LinkedProfiles／SpecialActions／LegacyProfile）、SpecialActionRepository（+SpecialActions）、ProfilePresetLoader（+ProfilePresets）。
+%% - Global.* は 93 → 69。AppHost.GetService|Services 4、ServiceProviderHolder 17 は変更なし。

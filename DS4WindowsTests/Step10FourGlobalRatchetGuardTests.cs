@@ -119,7 +119,8 @@ namespace DS4WindowsTests
             // Phase7-Step5 W2: Global.Load/SaveControllerConfigs の削除に伴い、BackingStore を直接呼ぶ形に（2 → 0）
             ["DS4Windows/DS4Control/Services/ProfileXmlStore.cs"] = (0, 0, 0),
             // Phase7-Step2 W7: SaveActions の削除で Global.SaveActions の参照 1 件を削除（4 → 3）
-            ["DS4Windows/DS4Control/Services/SpecialActionRepository.cs"] = (0, 0, 3),
+            // Phase7-Step10c W2: Global.SaveAction／RemoveAction／CreateStdActions の呼び出しを SpecialActionRepository のメソッドに替えた（3 → 0。基準値の更新漏れを W7 で直した）
+            ["DS4Windows/DS4Control/Services/SpecialActionRepository.cs"] = (0, 0, 0),
             // Phase7-Step8 W3（Q6＝A）: SyntheticDispatcher.cs の Global.outputKBMHandler／outputKBMMapping 参照 4 件を削除（出力ハンドラの実体を OutputKBMHandlerAdapter へ）
             ["DS4Windows/DS4Control/Util.cs"] = (0, 0, 1),
             ["DS4Windows/DS4Control/Xbox360OutDevice.cs"] = (0, 0, 1),
