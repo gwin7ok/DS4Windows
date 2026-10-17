@@ -547,3 +547,9 @@ classDiagram
 %%   - 新設: ControllerLimits（コントローラー数・スティックの中点などの定数。静的クラス）、NumericUtil（Clamp。静的クラス）。Mapping と状態の保持クラス 3 つはこれを使い、Global を参照しない。Global の同名の定数は別名、Global.Clamp は委譲するシムとして残す（Step10 で利用箇所を移して削除）。
 %%   - MacroRuntimeState: 二重実行防止のロックと確保を TryBeginDispatch／EndDispatch に包んだ（DispatchLock は非公開）。Mapping はフラグの配列もロックも持たない。恒久の再設計（実行層の一本化）は Phase8。
 %%   - 詳細は Phase7-Step9-Plan.md、Phase7-Step9-Completion-Report.md、台帳は Phase7-Residual-Ledger.md §12。
+%%
+%% Phase7-Step10a（2026-10-18）: Global の定数・資源パス・Clamp の再配置。
+%%   - Global から削除: MAX_DS4_CONTROLLER_COUNT／TEST_PROFILE_ITEM_COUNT／TEST_PROFILE_INDEX／OLD_XINPUT_CONTROLLER_COUNT／DS4_STICK_AXIS_MIDPOINT（→ ControllerLimits）、ASSEMBLY_RESOURCE_PREFIX／RESOURCES_PREFIX（→ 画面側の ResourcePaths.AssemblyResourcePrefix／ResourcesPrefix）、Clamp（→ NumericUtil.Clamp）。
+%%   - 全利用箇所（本体・テスト）を新しい型へ切り替えた。ControlService.MAX_DS4_CONTROLLER_COUNT（公開）と ProfileSettingsService の再宣言は ControllerLimits から値を取る。
+%%   - 一時的な参照: Global.iconChoiceResources（トレイアイコンの表）が ResourcePaths の定数を参照している（Step10b で画面側へ移す）。
+%%   - 詳細は Phase7-Step10a-Plan.md、Phase7-Step10a-Completion-Report.md、台帳は Phase7-Residual-Ledger.md §13。

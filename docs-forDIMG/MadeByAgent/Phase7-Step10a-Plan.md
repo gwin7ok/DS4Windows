@@ -3,7 +3,7 @@
 作成日: 2026-10-18  
 対象ブランチ: `For-DI-migration-work`  
 上位計画: `Phase7-Step10-Plan.md`（Q1〜Q9 は推奨どおり承認）§3「10a」、`Phase7-Step9-Completion-Report.md` §5  
-状態: **Q1〜Q5 は推奨どおり承認（2026-10-18）。W1〜W3 完了（ビルド・テスト成功）。W4 実装済み（ビルド・テスト待ち）。次は W5（文書）。**
+状態: **Q1〜Q5 は推奨どおり承認（2026-10-18）。W1〜W4 完了（ビルド・テスト成功）。W5 は文書。10a 完了。完了報告書は `Phase7-Step10a-Completion-Report.md`。**
 
 ---
 
@@ -11,7 +11,7 @@
 
 - Step9 で新設した `ControllerLimits`（コントローラー数などの定数）と `NumericUtil`（`Clamp`）へ、`Global` の利用箇所をすべて切り替え、`Global` の定数・シムを削除する。あわせて、画面の資源パスの定数（`RESOURCES_PREFIX`、`ASSEMBLY_RESOURCE_PREFIX`）を画面側の `ResourcePaths` へ移す。
 - 機械的な置き換えで、定数の値と `Clamp` の計算は変えない。機能・ログへの影響はない。
-- 目標: `Global.*` **355 → 100**（定数 246＋`Clamp` 9 を削除）。`AppHost` 4、`rootHub` 0、`ServiceProviderHolder` 17 は変わらない。
+- 目標: `Global.*` **355 → 107**（定数・資源パス・`Clamp` を削除。計画時は 100 と見積もったが、数え違いで、実測は 107）。`AppHost` 4、`rootHub` 0、`ServiceProviderHolder` 17 は変わらない。
 
 ---
 
@@ -66,7 +66,7 @@
   - W1: `BackingStore.cs`（132 件。1 ファイル）。
   - W2: 制御層・DTO・サービス・Actions（`AppSettingsDTO`、`DS4LightBar`、`AutoProfileEntrySerializer`、`EnvironmentService`、`ControlService`、`DeviceStateService`、`OutputSlotService`、`App.xaml.cs`、`MainWindow.xaml.cs`、`ProfileSettingsService` のリテラルほか）。
   - W3: 資源パス（`ResourcePaths` の定数新設、画面側 12 ファイル。74 件）。
-  - W4: `Clamp` の残り 9 件、テスト 46 件の置き換え、`Global` の別名とシムの削除、ガードの更新、ラチェットの更新（355 → 100）。
+  - W4: `Clamp` の残り 9 件、テスト 46 件の置き換え、`Global` の別名とシムの削除、ガードの更新、ラチェットの更新（355 → 107）。
   - W5: 文書（台帳 §13、モデル図 03 の注釈、Status、完了報告書）。
 - B: `BackingStore` を最後にする。 → 最大の差分が最後に残り、リスクが後ろに寄る。
 
@@ -110,7 +110,7 @@
 
 ## 7. 完了条件
 
-- `Global` に定数 5 つと `Clamp` が存在しない。`Global.*` 100。画面の資源パスの定数が `ResourcePaths` にある。
+- `Global` に定数 5 つと `Clamp` が存在しない。`Global.*` 107。画面の資源パスの定数が `ResourcePaths` にある。
 - ガード（`Phase7Step10aW2ControllerLimitsGuardTests` ほか）とラチェットが成功（ユーザーが実行）。文書の更新。
 
 ## 8. 持ち越し

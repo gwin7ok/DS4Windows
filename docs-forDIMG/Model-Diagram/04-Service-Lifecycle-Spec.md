@@ -240,3 +240,6 @@
 %% - ControllerLimits／NumericUtil は静的クラス（DI 登録なし。状態を持たない定数・純粋計算）。
 %% - MacroRuntimeState（Singleton）に TryBeginDispatch／EndDispatch を追加（K3 の二重実行防止。挙動は同一）。
 %% - AppHost の暗黙構築と CreationNote は触っていない（Step10 で判断）。
+%%
+%% Phase7-Step10a（2026-10-18）: Global の定数・資源パス・Clamp の再配置（DI 登録の変更なし）。
+%% - ControllerLimits／NumericUtil／ResourcePaths の定数は静的（状態を持たない定数・純粋計算）。Global.* は 355 → 107。AppHost.GetService|Services 4、ServiceProviderHolder 17 は変更なし。

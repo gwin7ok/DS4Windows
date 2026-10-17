@@ -124,3 +124,12 @@
 - 持ち越し（Step10）: `Global` の定数の利用箇所（約 250 件。`BackingStore` 135 が最大）と `Global.Clamp` の残り 10 件（`DS4State` 4、`BezierCurve` 2、`Mouse` 2、`MouseCursor` 2）を `ControllerLimits`／`NumericUtil` へ移し、別名とシムを削除する。静的な純粋関数（`getBool*Mapping`、`DS4ControltoInt`、`remainderCutoff` ほか）の置き場所（Q4＝`Mapping` に残す）。`AppHost` の暗黙構築と `CreationNote`（Q5＝触らない）。`BackingStore` のコンストラクター注入。`Mapping` の依存 11 個の整理。
 - 持ち越し（Phase8）: K3 の恒久対応、静的な `SyntheticDispatcher`、`Actions/` の `ServiceProviderHolder` 17。
 - 実機確認: U-19（未。先送り）。
+
+## 13. Phase7-Step10a で更新した台帳（2026-10-18）
+
+- `Global.*`: 355 → **107**（`BackingStore.cs` 159 → 27、`ProfileEditor.xaml.cs` 32 → 29 → 0 ほか。定数 246 件相当と `Clamp` 9 件を切り替え）。`AppHost.GetService|Services` 4、`Program.rootHub` 0、`ServiceProviderHolder` 17 は変更なし。Phase7 開始時（733）からの累計は −626。基準値は `Step10FourGlobalRatchetGuardTests`（合計 0／4／107）。なお、計画書の目標「100」は数え違いで、正しくは 107。
+- 削除（`Global` から）: 定数 5 つ（`MAX_DS4_CONTROLLER_COUNT`、`TEST_PROFILE_ITEM_COUNT`、`TEST_PROFILE_INDEX`、`OLD_XINPUT_CONTROLLER_COUNT`、`DS4_STICK_AXIS_MIDPOINT`）、資源パスの定数 2 つ（`ASSEMBLY_RESOURCE_PREFIX`、`RESOURCES_PREFIX`）、`Clamp`。再導入は `Step12DeadShimRemovalGuardTests` が禁止する（削除禁止の名簿 `ProtectedInGlobal` から外し、`RemovedFromGlobal` へ移した）。
+- 新設・移動: `ControllerLimits`（Step9 で新設）を全利用箇所が使う。`ResourcePaths.ResourcesPrefix`／`AssemblyResourcePrefix`（画面側。値は従来と同じ）。`NumericUtil.Clamp`（`DS4State`／`Mouse`／`MouseCursor`／`BezierCurve` も切り替え）。`ControlService.MAX_DS4_CONTROLLER_COUNT`（公開の名前は維持）と `ProfileSettingsService` の再宣言は `ControllerLimits` から値を取る。
+- 持ち越し（Step10b）: `Global.iconChoiceResources`（トレイアイコンの表）は画面側の `ResourcePaths` を一時的に参照している（下位層から上位層への参照。TODO を付けた）。表と文字列変換（`getX360ControlString`、`macroDS4Values`、`defaultButtonMapping`、`reverseX360ButtonMapping`、名前表）の再配置、契約の再判断、孤立定数 8 件。
+- 持ち越し（Step10d）: `using static DS4Windows.Global;`（`Mapping.cs`、`DS4LightBar.cs`）の削除と、`MappingStep3FinalGlobalReferenceGuardTests` の更新。
+- 実機確認: 10a 単独の項目なし（10e の総合検証で、トレイアイコン・プロファイル編集の画像の表示を確認項目に加える）。
