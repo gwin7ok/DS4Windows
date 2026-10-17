@@ -79,5 +79,33 @@ namespace DS4WindowsTests
                 try { Directory.Delete(tempDir, true); } catch { }
             }
         }
+
+        [Fact]
+        public void SaveProfile_TouchpadMouseStick_WritesOutputStickAndAxesOnce()
+        {
+            // 上流（2022-10-20）以来、軸が <OutputStick> として 2 回書かれ、<OutputStickAxes> が無かった不具合の再発防止
+            string originalPath = Global.appdatapath;
+            string tempDir = Path.Combine(Path.GetTempPath(), "Phase6Step12_OutputStick_" + Guid.NewGuid().ToString("N"));
+            Directory.CreateDirectory(Path.Combine(tempDir, "Profiles"));
+            try
+            {
+                Global.appdatapath = tempDir;
+                var store = new BackingStore();
+
+                Assert.True(store.SaveProfile(0, "OutputStick"));
+
+                var doc = new XmlDocument();
+                doc.Load(Path.Combine(tempDir, "Profiles", "OutputStick.xml"));
+                XmlNode group = doc.SelectSingleNode("/DS4Windows/TouchpadMouseStick");
+                Assert.NotNull(group);
+                Assert.Equal(1, group.SelectNodes("OutputStick").Count);
+                Assert.Equal(1, group.SelectNodes("OutputStickAxes").Count);
+            }
+            finally
+            {
+                Global.appdatapath = originalPath;
+                try { Directory.Delete(tempDir, true); } catch { }
+            }
+        }
     }
 }

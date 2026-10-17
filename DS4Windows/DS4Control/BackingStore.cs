@@ -1499,7 +1499,7 @@ namespace DS4Windows
                     XmlElement xmlTouchMouseStickDeadZone = m_Xdoc.CreateElement("DeadZone"); xmlTouchMouseStickDeadZone.InnerText = touchMStickInfo[device].deadZone.ToString(); xmlTouchMouseStickGroupEl.AppendChild(xmlTouchMouseStickDeadZone);
                     XmlElement xmlTouchMouseStickMaxZone = m_Xdoc.CreateElement("MaxZone"); xmlTouchMouseStickMaxZone.InnerText = touchMStickInfo[device].maxZone.ToString(); xmlTouchMouseStickGroupEl.AppendChild(xmlTouchMouseStickMaxZone);
                     XmlElement xmlTouchMouseStickOutStick = m_Xdoc.CreateElement("OutputStick"); xmlTouchMouseStickOutStick.InnerText = touchMStickInfo[device].outputStick.ToString(); xmlTouchMouseStickGroupEl.AppendChild(xmlTouchMouseStickOutStick);
-                    XmlElement xmlTouchMouseStickOutStickAxes = m_Xdoc.CreateElement("OutputStick"); xmlTouchMouseStickOutStickAxes.InnerText = touchMStickInfo[device].outputStickDir.ToString(); xmlTouchMouseStickGroupEl.AppendChild(xmlTouchMouseStickOutStickAxes);
+                    XmlElement xmlTouchMouseStickOutStickAxes = m_Xdoc.CreateElement("OutputStickAxes"); xmlTouchMouseStickOutStickAxes.InnerText = touchMStickInfo[device].outputStickDir.ToString(); xmlTouchMouseStickGroupEl.AppendChild(xmlTouchMouseStickOutStickAxes);
                     XmlElement xmlTouchMouseStickAntiDeadX = m_Xdoc.CreateElement("AntiDeadX"); xmlTouchMouseStickAntiDeadX.InnerText = touchMStickInfo[device].antiDeadX.ToString(); xmlTouchMouseStickGroupEl.AppendChild(xmlTouchMouseStickAntiDeadX);
                     XmlElement xmlTouchMouseStickAntiDeadY = m_Xdoc.CreateElement("AntiDeadY"); xmlTouchMouseStickAntiDeadY.InnerText = touchMStickInfo[device].antiDeadY.ToString(); xmlTouchMouseStickGroupEl.AppendChild(xmlTouchMouseStickAntiDeadY);
                     XmlElement xmlTouchMouseStickInvert = m_Xdoc.CreateElement("Invert"); xmlTouchMouseStickInvert.InnerText = touchMStickInfo[device].inverted.ToString(); xmlTouchMouseStickGroupEl.AppendChild(xmlTouchMouseStickInvert);
@@ -3807,6 +3807,13 @@ namespace DS4Windows
                     try
                     {
                         Item = xmlTouchMStickSmoothingElement.SelectSingleNode("OutputStickAxes");
+                        if (Item == null)
+                        {
+                            // Phase6-Step12: 互換。以前の保存（上流の 2022-10-20 以来の不具合）は、軸を 2 つ目の <OutputStick> として書いていた
+                            XmlNodeList legacyOutputStickNodes = xmlTouchMStickSmoothingElement.SelectNodes("OutputStick");
+                            if (legacyOutputStickNodes != null && legacyOutputStickNodes.Count > 1)
+                                Item = legacyOutputStickNodes[1];
+                        }
                         if (Enum.TryParse(Item?.InnerText ?? "",
                             out TouchMouseStickInfo.OutputStickAxes temp))
                         {

@@ -133,7 +133,7 @@ HEAD は `e0bc8258`（作業ツリーはクリーン）。以降の §0〜§6 �
   - Wave 3（`*Instance` のフォールバック群）: 宣言 19 件、非空行 139。`Global` 38→26、`AppHost` 11→5、`rootHub` 9→6。テストの書き換え: 8 ファイル。**実機で起動ログを確認する**。
   - Wave 4（`BackingStore` 直転送ラッパー）: 宣言 62 件＋`getDefaultX360ControlBinding`、非空行 224。`AppHost` 5→4。テストの書き換え: 契約テストほか約 6 ファイル。
   - Wave 5（互換 `AppHost` の未使用 5 件、`AppDataPath` のセッター、ガードテスト、完了報告書）。互換ラッパーの `GetService<T>` は `Mapping.cs:86` が使うので残す。
-  - 最終のラチェット基準値: `Global.cs` = (rootHub 6, AppHost 4, Global 26)。全域では `Global.*` 780→749、`AppHost` 48→40、`Program.rootHub` 25→22（Wave 5・6 を含む最終値）。
+  - 最終のラチェット基準値: `Global.cs` = (rootHub 6, AppHost 4, Global 26)。全域では `Global.*` 780→747、`AppHost` 48→40、`Program.rootHub` 25→22（Wave 5・6 と §0A.21 を含む最終値）。
 - 案 B: 1 回で全削除（コミット 1 つ）。差分が約 1,100 行と大きく、失敗したときの原因の切り分けが難しい。非推奨。
 - 案 C: メンバー単位（約 250 回）。安全だが、ビルド・テストの回数が過大。非推奨。
 
@@ -354,6 +354,21 @@ HEAD は `e0bc8258`（作業ツリーはクリーン）。以降の §0〜§6 �
 
 ---
 
+### 0A.21 既存の課題 3 件への対応（2026-10-17、Wave 6 のビルド・テスト成功後。ビルド・テストはユーザーの実行待ち）
+
+- 前提: U-8 の「再起動後の 500ms の保持」を、ユーザーが確認済み（チェックリスト U-8 を更新）。
+- **課題 2: `TouchpadMouseStick` の `OutputStick` が 2 回書かれる → 修正**。
+  - 原因: `BackingStore.SaveProfile` が、出力軸の要素を `OutputStick` と同じ名前で書いていた。読込は `OutputStickAxes` を読むため、出力軸（XY など）が保存されても読み込まれず、毎回既定値に戻っていた。上流のコミット `858bd549`（2022-10-20）から続く不具合で、移行の回帰ではない。
+  - 修正: 書き出す要素名を `OutputStickAxes` にした。読込は、`OutputStickAxes` が無い古いファイルでは、2 つ目の `<OutputStick>` を軸として読む（すでに保存された値を救済）。
+  - テスト: `ProfileLegacyXmlCompletenessTests.SaveProfile_TouchpadMouseStick_WritesOutputStickAndAxesOnce`（`OutputStick` と `OutputStickAxes` が 1 つずつ）。
+- **課題 3: デバウンスの通知経路 → 削除**。デバウンス時間の更新は、案 A（`CheckProfileOptions`）で行われるため不要。削除: `Global.DebouncingMsHasChanged`、`Global.DebouncingMsChanged`、`DS4Device` の購読ラムダ（静的イベントへの購読が解除されないリークもあった）、`IProfileSettingsService`／`ProfileSettingsService` の `DebouncingMsChanged`・`NotifyDebouncingMsChanged`。`ProfileSettingsViewModel` の `HasDebouncingMsChanged`・`DebouncingMsChanged` は、他の `HasXxxChanged` と同じ型の画面側の仕組みのため残した。ラチェット: `DS4Device.cs` (0,0,3) → (0,0,1)。全域は `Global.*` 747、`AppHost` 40、`Program.rootHub` 22。ガードに名前を追記。
+- **課題 1: 起動ログに `Host initialized with runtime parser` が出ない（K7-1）→ 原因特定の準備**。
+  - 事実: このメッセージは、`AppHost.CreateHost(config, parser)` が**新たに**ホストを作ったときだけ出る。ホストが先に作られていると、`startup arguments applied to IStartupArguments (host already created)` が出る。出ないのは、ホストが、明示的な構築より前に、暗黙に作られているため。
+  - 対応: `AppHost.GetService<T>`／`GetService(Type)` が、ホスト未構築で暗黙にホストを作るとき、解決しようとした型と呼び出し元のスタックを、Trace ログ（`[DI] implicit CreateHost (no parser) triggered by resolving …`）に出すようにした。動作は変わらない（ログのみ）。
+  - 次の作業: 次の起動のログを取り、このログから、暗黙の構築を起こしている呼び出し元を特定する。特定できたら、`Global` の静的初期化（または Pre-Host の経路）を修正して、明示的な構築を最初にする（K7-1 の案 R。Phase7 で予定していたが、原因次第で前倒しできる）。
+
+---
+
 ## 0. 背景と方針（2026-10-17 改訂。承認済みの決定は §0A.10）
 
 ### 0.1 Step2〜Step11 の完了実績と残存コードの状況
@@ -400,7 +415,7 @@ HEAD は `e0bc8258`（作業ツリーはクリーン）。以降の §0〜§6 �
   - `Step10FourGlobalRatchetGuardTests` の `Global.cs` の基準値を更新する。
   - `Step12DeadShimRemovalGuardTests`（1 ファイル 1 型）に、削除した名前を追記する（再混入の禁止）。防壁の名前の存在確認も含める。
   - 検証: ユーザーが `dotnet build` と `dotnet test` を実行（警告 0、全件成功）。
-- **最終のラチェット基準値**: `Global.cs` = (rootHub 6, AppHost 4, Global 26)。全域では `Global.*` 780→749、`AppHost` 48→40、`Program.rootHub` 25→22（Wave 5・6 を含む最終値）。
+- **最終のラチェット基準値**: `Global.cs` = (rootHub 6, AppHost 4, Global 26)。全域では `Global.*` 780→747、`AppHost` 48→40、`Program.rootHub` 25→22（Wave 5・6 と §0A.21 を含む最終値）。
 
 ---
 
@@ -438,7 +453,7 @@ Step12 完了後に残るもの（Phase7 で解体）:
 
 - [ ] 5 つの保護防壁（`BackingStore` の正本、Phase7 持ち越し、Pre-Host 12 箇所、定数・純粋計算、ViGEm 依存）が保護されている。`Step12DeadShimRemovalGuardTests` の存在確認が成功している。
 - [ ] 削除した全メンバーが、削除前の走査で呼び出し元 0 件だった（§0A.8 の名簿と一致）。
-- [ ] `Global.cs` から旧ラッパーが削除され、ラチェットの基準値が `Global.cs` = (6, 4, 26)、全域 749／40／22 になっている。
+- [ ] `Global.cs` から旧ラッパーが削除され、ラチェットの基準値が `Global.cs` = (6, 4, 26)、全域 747／40／22 になっている。
 - [ ] `dotnet build` が警告 0・エラー 0。
 - [ ] `DS4WindowsTests` と `StandaloneTests` の全件が成功している（テスト数の増減は完了報告書に記録）。
 - [ ] Wave 3 の後の実機確認（起動・接続・プロファイル切替）が完了している。

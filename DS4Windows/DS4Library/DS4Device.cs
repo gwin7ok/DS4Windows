@@ -1439,10 +1439,8 @@ namespace DS4Windows
             debouncer.AddDebouncer(nameof(DS4State.DpadDown));
             debouncer.AddDebouncer(nameof(DS4State.DpadLeft));
             debouncer.AddDebouncer(nameof(DS4State.DpadRight));
-            Global.DebouncingMsChanged += (_, _) =>
-            {
-                debouncer.SetDuration(TimeSpan.FromMilliseconds(Global.DebouncingMs[deviceSlotNumber]));
-            };
+            // Phase6-Step12: デバウンス時間の更新は、プロファイルの適用時に ControlService.CheckProfileOptions が行う
+            // （旧: Global.DebouncingMsChanged の購読。発火元が無く、購読が解除されないリークもあったため削除）
             return debouncer;
         }
 

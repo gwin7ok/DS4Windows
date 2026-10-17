@@ -69,6 +69,8 @@ namespace DS4WindowsTests
             "UpdateDS4Extra",
             // Wave 6（プロファイル用 DTO の削除で、呼び出し元が 0 件になった名前引きの転送）
             "getDS4ControlsByName", "getX360ControlsByName",
+            // デバウンス時間の通知経路（案 A の是正後に不要）
+            "DebouncingMsHasChanged", "DebouncingMsChanged",
         };
 
         private static readonly string[] RemovedFiles =

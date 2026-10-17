@@ -267,9 +267,9 @@
 
 ---
 
-### Phase6-Step12: 呼出元0件旧静的シムの安全防壁付き物理削除 ＆ 完了判定【実装完了（2026-10-17）。最終のビルド・テスト、実機確認 U-8・U-9 の結果待ち】
-- **進捗率**: **Wave 1〜5 実装済み（Wave 1〜4 はビルド・テスト成功）**。台帳・決定・各 Wave の記録は `Phase6-Step12-Plan.md` §0A。完了報告書: `Phase6-Step12-Completion-Report.md`、`Phase6-Completion-Report.md`。
-- **結果**: `Global` の不要メンバー 251 名を削除（`Global.cs` 3,472 → 2,414 行）。ラチェット基準値は `Global.*` 759、`AppHost` 40、`Program.rootHub` 22。回帰 1 件（デバウンス時間）と上流由来の不具合 1 件（`Debouncer`）を是正。
+### Phase6-Step12: 呼出元0件旧静的シムの安全防壁付き物理削除 ＆ 完了判定【完了（2026-10-17。Wave 1〜6 のビルド・テスト成功、U-8・U-9 確認済み）】
+- **進捗率**: **100%（Wave 1〜6 完了。すべてビルド・テスト成功）**。台帳・決定・各 Wave の記録は `Phase6-Step12-Plan.md` §0A。完了報告書: `Phase6-Step12-Completion-Report.md`、`Phase6-Completion-Report.md`。
+- **結果**: Wave 6 でプロファイル用 DTO（19 ファイル 4,298 行）も削除（全域 `Global.*` 749、`AppHost` 40、`rootHub` 22）。`Global` の不要メンバー 253 名を削除（`Global.cs` 3,472 → 2,414 行）。ラチェット基準値は `Global.*` 759、`AppHost` 40、`Program.rootHub` 22。回帰 1 件（デバウンス時間）と上流由来の不具合 1 件（`Debouncer`）を是正。
 - **方針決定（2026-10-17）**: プロファイルの保存形式は旧形式に統一し、プロファイル用 DTO は Step12 の Wave 6 で削除する（`Phase6-Step12-Plan.md` §0A.18）。直前に、旧形式の欠落 10 要素の是正（§0A.17）と、安全網のテスト `ProfileLegacyXmlCompletenessTests` の追加を行った。
 - **確定方針（旧記載）**: 選択肢2。以下は計画時の記述（現行の正は Plan §0A・§0〜§6）。
 - **計画ハイライト**:

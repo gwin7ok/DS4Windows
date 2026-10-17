@@ -237,8 +237,6 @@ namespace DS4Windows.DI
         bool ProfileChangedNotification { get; set; }
         int[] DebouncingMs { get; }
         VirtualKBMMapping OutputKBMMapping { get; set; }
-        event EventHandler DebouncingMsChanged;
-        void NotifyDebouncingMsChanged();
 
         event EventHandler<ProfileSettingChangedEventArgs> ProfileSettingChanged;
 

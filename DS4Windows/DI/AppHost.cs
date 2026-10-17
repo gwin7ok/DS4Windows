@@ -128,6 +128,9 @@ namespace DS4WinWPF
                 {
                     if (_host == null)
                     {
+                        // Phase6-Step12（K7-1 の原因特定用）: ホストが明示的な構築より前に、暗黙に作られる箇所を、呼び出し元つきで記録する
+                        if (AppLogger.IsTraceEnabled)
+                            AppLogger.LogTrace($"[DI] implicit CreateHost (no parser) triggered by resolving {typeof(T).Name}. Caller stack:{Environment.NewLine}{Environment.StackTrace}");
                         CreateHost();
                     }
                 }
@@ -155,6 +158,9 @@ namespace DS4WinWPF
                 {
                     if (_host == null)
                     {
+                        // Phase6-Step12（K7-1 の原因特定用）: ホストが明示的な構築より前に、暗黙に作られる箇所を、呼び出し元つきで記録する
+                        if (AppLogger.IsTraceEnabled)
+                            AppLogger.LogTrace($"[DI] implicit CreateHost (no parser) triggered by resolving {serviceType.Name}. Caller stack:{Environment.NewLine}{Environment.StackTrace}");
                         CreateHost();
                     }
                 }

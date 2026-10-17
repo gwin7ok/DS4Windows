@@ -594,8 +594,6 @@ namespace DS4Windows
         }
         public int[] DebouncingMs => SafeConfig?.debouncingMs;
         public VirtualKBMMapping OutputKBMMapping { get; set; }
-        public event EventHandler DebouncingMsChanged;
-        public void NotifyDebouncingMsChanged() => DebouncingMsChanged?.Invoke(this, EventArgs.Empty);
 
         public X360Controls[] GetDefaultButtonMapping()
         {

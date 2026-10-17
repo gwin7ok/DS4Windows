@@ -1620,14 +1620,6 @@ namespace DS4Windows
 
         public static int[] DebouncingMs => ProfileSettingsServiceInstance.DebouncingMs;
 
-        public static void DebouncingMsHasChanged()
-        {
-            ProfileSettingsServiceInstance.NotifyDebouncingMsChanged();
-            DebouncingMsChanged.Invoke(typeof(Global), EventArgs.Empty);
-        }
-
-        public static event EventHandler DebouncingMsChanged;
-
         public static bool UseDs3PitchRollSim
         {
             get => ProfileSettingsServiceInstance.UseDs3PitchRollSim;

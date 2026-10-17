@@ -102,7 +102,8 @@ namespace DS4WindowsTests
             ["DS4Windows/DS4Forms/ViewModels/SpecialActions/PressKeyViewModel.cs"] = (0, 0, 7),
             ["DS4Windows/DS4Forms/ViewModels/SpecialActions/SpecialActionViewModel.cs"] = (0, 0, 1),
             ["DS4Windows/DS4Forms/ViewModels/TrayIconViewModel.cs"] = (0, 0, 12),
-            ["DS4Windows/DS4Library/DS4Device.cs"] = (0, 0, 3),
+            // Phase6-Step12: デバウンス時間の通知経路の削除で、Global.DebouncingMsChanged／DebouncingMs の参照 2 件を削除（3 → 1）
+            ["DS4Windows/DS4Library/DS4Device.cs"] = (0, 0, 1),
             ["DS4Windows/DS4Library/DS4Devices.cs"] = (0, 0, 6),
             // Phase6-Step10b W4: DS4Sixaxis.cs は DS4SixAxis.cs へ改名（型名に合わせた大文字・小文字の変更。Dictionary は大文字・小文字を区別する）
             ["DS4Windows/DS4Library/DS4SixAxis.cs"] = (1, 0, 1),
