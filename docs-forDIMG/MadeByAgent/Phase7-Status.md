@@ -118,7 +118,8 @@
 - **10a: 完了**。W1 `BackingStore.cs` の定数（132）、W2 制御層ほか、W3 資源パス（`ResourcePaths`）、W4 `Clamp` の残り・テスト・`Global` の別名の削除、W5 文書。`Global.*` 355 → 107。詳細は `Phase7-Step10a-Completion-Report.md`。
 - **10b: 完了**。W1 表と変換（`X360ControlTables`／`DS4ControlNames`）、W2 アイコンの表・色の関数（`TrayIconResources`／`ColorUtil`）、W3 契約の整理（`OnSubPropertyChanged` ほか）、W4 `UsingMaxControllers` の接続と孤立定数、W5 文書。`Global.*` 107 → 93。詳細は `Phase7-Step10b-Completion-Report.md`。
 - **10c: 完了**。W1 ゴールデンテスト（11 ファイル）、W2 `Actions`／リンク／コントローラー設定、W3 アプリ設定（`AppSettingsXmlSerializer`）、W4 プロファイルの読込、W5 同 保存（`LegacyProfileXmlSerializer`）、W6 プリセット（`ProfilePresets`）、W7 文書。`BackingStore.cs` 6,522 → 1,660 行、`Global.*` 93 → 69。詳細は `Phase7-Step10c-Completion-Report.md`。
-- 10d〜10e: 未着手（10d＝`BackingStore` の注入と `Global` の廃止、10e＝仕上げと総合検証）。
+- **10d: 計画書作成済み・承認待ち（2026-10-18）**。`Phase7-Step10d-Plan.md`（`BackingStore` のコンストラクター注入と `Global` の削除。Q1〜Q9、W1〜W7）。
+- 10e: 未着手（10d＝`BackingStore` の注入と `Global` の廃止、10e＝仕上げと総合検証）。
 
 ## 4. 実機確認の台帳（`Phase6-Step11-RealDevice-Verification-Checklist.md` §11）
 
@@ -140,5 +141,5 @@
 
 ## 6. 直近の次アクション
 
-1. Step10d（`BackingStore` のコンストラクター注入、`Global.store` の解消、環境・パスの窓口と設定の窓口の廃止、`using static DS4Windows.Global;`、`CURRENT_DS4_CONTROLLER_LIMIT` の `BackingStore` の分）の調査と `Phase7-Step10d-Plan.md` の作成。その後 10e。
+1. Step10d（`Phase7-Step10d-Plan.md`）の承認と実装。その後 10e。
 2. 実機確認 U-11、U-12、U-13、U-14、U-15、U-16、U-17、U-18、U-19、U-20（任意のタイミング。U-14 は終了時のホスト破棄と初回起動の確認が中心）。
