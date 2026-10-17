@@ -699,7 +699,8 @@ namespace DS4Windows
         public void ShutDown()
         {
             outputslotMan.ShutDown();
-            OutputSlotPersist.WriteConfig(outputslotMan, _pathService.AppDataPath);
+            // Phase7-Step5 W3（Q9＝A）: 契約（IOutputSlotService）経由に切り替えた。同じスロット管理と保存先で OutputSlotPersist.WriteConfig を呼ぶ
+            _outputSlotServiceFactory().SaveOutputSlots();
 
             eventDispatcher.InvokeShutdown();
             eventDispatcher = null;
@@ -824,11 +825,6 @@ namespace DS4Windows
                     }
                 }
             }
-        }
-
-        public void LoadPermanentSlotsConfig()
-        {
-            OutputSlotPersist.ReadConfig(outputslotMan, _pathService.AppDataPath);
         }
 
         public void UpdateHidHideAttributes()

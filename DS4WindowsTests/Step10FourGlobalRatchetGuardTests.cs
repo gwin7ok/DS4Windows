@@ -67,7 +67,8 @@ namespace DS4WindowsTests
             // Phase7-Step4 W3: FindConfigLocation／SaveWhere の移管で Global.* 6 件を削除（22 → 16）
             // Phase7-Step4 W5: Program.rootHub の実数は 5（基準値 6 は過大だった）。合計 22 → 21
             // Phase7-Step5 W2: Program.rootHub の参照 5 件を削除（フォールバックのラムダと、Save/LoadControllerConfigs）
-            ["DS4Windows/DS4Control/Global.cs"] = (0, 3, 16),
+            // Phase7-Step5 W3: ProfileXmlStoreInstance／NotificationServiceInstance の削除で AppHost.GetService を 2 件、Global.* を 4 件削除（(0, 3, 16) → (0, 1, 12)）
+            ["DS4Windows/DS4Control/Global.cs"] = (0, 1, 12),
             // Phase7-Step2 W4: INotificationService.NotificationsEnabled／FlashTaskbar の削除で Global.* 5 件を削除（6 → 1）
             ["DS4Windows/DS4Control/Services/AppNotificationService.cs"] = (0, 0, 0),
             // Phase7-Step4 W3: FirstRun は PathService の状態、RunHotPlug はインスタンスの状態にした（8 → 2）

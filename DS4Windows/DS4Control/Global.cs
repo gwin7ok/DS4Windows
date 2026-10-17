@@ -129,61 +129,9 @@ namespace DS4Windows
             set => profileSettingsService = value;
         }
 
-        // =========================================================================
-        // Phase5-Step2: IProfileXmlStore DI シム (Strangler Fig 移行用)
-        // Global.LoadProfile/SaveProfileのフォールバック(ProfileRepository経由)より前に
-        // 静的フィールド初期化される必要があるため、Phase4-Step2ブロックの直前に配置する。
-        // =========================================================================
-        private static DS4Windows.DI.IProfileXmlStore profileXmlStore = null;
-        private static readonly DS4Windows.DI.IProfileXmlStore fallbackProfileXmlStore = new ProfileXmlStore(m_Config);
-
-        public static DS4Windows.DI.IProfileXmlStore ProfileXmlStoreInstance
-        {
-            get
-            {
-                if (profileXmlStore != null) return profileXmlStore;
-                try
-                {
-                    var service = DS4WinWPF.AppHost.GetService<DS4Windows.DI.IProfileXmlStore>();
-                    if (service != null)
-                    {
-                        profileXmlStore = service;
-                        return profileXmlStore;
-                    }
-                }
-                catch { }
-
-                AppLogger.LogTrace("[Legacy] Global.ProfileXmlStoreInstance: Fallback instance used");
-                AppLogger.LogToGui("[Legacy] Global.ProfileXmlStoreInstance: Fallback instance used", false, true);
-                return fallbackProfileXmlStore;
-            }
-            set => profileXmlStore = value;
-        }
-
-        // =========================================================================
-        // Phase4-Step5: INotificationService DI シム（IPathService／IEnvironmentService の静的フォールバックは Phase6-Step12 Wave 3 で削除）
-        // =========================================================================
-        private static DS4Windows.DI.INotificationService notificationService = null;
-        private static readonly DS4Windows.DI.INotificationService fallbackNotificationService = new AppNotificationService(m_Config);
-
-        public static DS4Windows.DI.INotificationService NotificationServiceInstance
-        {
-            get
-            {
-                if (notificationService != null) return notificationService;
-                try
-                {
-                    var service = DS4WinWPF.AppHost.GetService<DS4Windows.DI.INotificationService>();
-                    if (service != null) { notificationService = service; return notificationService; }
-                }
-                catch { }
-
-                AppLogger.LogTrace("[Legacy] Global.NotificationServiceInstance: Fallback instance used");
-                AppLogger.LogToGui("[Legacy] Global.NotificationServiceInstance: Fallback instance used", false, true);
-                return fallbackNotificationService;
-            }
-            set => notificationService = value;
-        }
+        // Phase7-Step5 W3（Q7＝A）: ProfileXmlStoreInstance（本体の使用者が 0 件。テストだけが使っていた）を削除した。
+        // NotificationServiceInstance は AppLogger.NotificationService（App が起動時に設定する静的プロパティ）へ移した。
+        // ProfileSettingsServiceInstance は、Global の静的メンバー・BackingStore・Mapping が使うため、Step7〜9／Step10 まで残す。
 
         public static bool[] useTempProfile
         {

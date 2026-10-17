@@ -25,7 +25,7 @@ namespace DS4WindowsTests
             return new ProfileRepository(
                 store ?? Global.store,
                 settings ?? Global.ProfileSettingsServiceInstance,
-                xmlStore ?? Global.ProfileXmlStoreInstance,
+                xmlStore ?? new ProfileXmlStore(store ?? Global.store),
                 pathService ?? new PathService(),
                 control ?? new Func<ControlService>(() => DS4WinWPF.AppHost.GetService<ControlService>()));
         }
@@ -102,7 +102,7 @@ namespace DS4WindowsTests
             IProfileActionProvider actionProvider = null, BackingStore store = null)
         {
             return new ProfileApplicationService(settings, deviceState, control, profileRepository, environmentService,
-                xmlStore ?? Global.ProfileXmlStoreInstance,
+                xmlStore ?? new ProfileXmlStore(store ?? Global.store),
                 actionProvider ?? CreateProfileActionProvider(store ?? Global.store),
                 store ?? Global.store);
         }

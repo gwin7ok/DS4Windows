@@ -77,6 +77,17 @@ namespace DS4Windows
             Logger.Info(data);
         }
 
+        // Phase7-Step5 W3（Q7＝A）: 旧 Global.NotificationServiceInstance。静的なロガーは注入できないため、App が起動時に
+        // DI のシングルトンを設定する。設定前（ホスト構築より前、テスト）は、BackingStore を使う既定の実装に退避する
+        // （旧: コンテナが無いときのフォールバック）。
+        private static DS4Windows.DI.INotificationService _notificationService;
+
+        public static DS4Windows.DI.INotificationService NotificationService
+        {
+            get => _notificationService ?? (_notificationService = new AppNotificationService(Global.store));
+            set => _notificationService = value;
+        }
+
         public static void LogToTray(string data, bool warning = false, bool ignoreSettings = false)
         {
             // ignoreSettings: 現状も無効（無機能）のパラメータ。旧実装でも受信側(MainWindow)が
@@ -92,7 +103,7 @@ namespace DS4Windows
                 // ここでUI層のクラスへ依存を持ち込む必要がない（下位層→上位層参照の禁止に抵触しないため）。
                 // temporary は旧実装でも LogToTray からは常に false 固定だった（このメソッド自体に
                 // temporary パラメータが存在しなかったため）。挙動を変えないためここでも false 固定とする。
-                Global.NotificationServiceInstance.SendNotification(string.Empty, data, warning: warning, temporary: false);
+                NotificationService.SendNotification(string.Empty, data, warning: warning, temporary: false);
             }
             catch (Exception ex)
             {

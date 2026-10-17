@@ -85,6 +85,7 @@ namespace DS4WinWPF
         private ISpecialActionRepository _specialActionRepository;
         private IAppearanceSettingsService _appearanceSettingsService;
         private IDeviceStateService _deviceStateService;
+        private IOutputSlotService _outputSlotService;
 
         // Phase7-Step5 W2（Q1＝A）: 旧 Program.rootHub。ControlService は CreateControlService の別スレッドで解決して代入し、
         // 呼び出し元がスレッドの終了を待ってから読む（以降は LoggerHolder の生成、起動後の処理、未処理例外の処理、終了処理が使う）。
@@ -556,7 +557,9 @@ namespace DS4WinWPF
                 _controlService.CheckHidHidePresence();
             }
 
-            _controlService.LoadPermanentSlotsConfig();
+            // Phase7-Step5 W3（Q9＝A）: 契約（IOutputSlotService）経由に切り替えた。旧 ControlService.LoadPermanentSlotsConfig と同じ処理
+            // （OutputSlotPersist.ReadConfig を、同じスロット管理と保存先で呼ぶ）
+            _outputSlotService.LoadOutputSlots();
             window.LateChecks(parser);
         }
 
@@ -574,6 +577,9 @@ namespace DS4WinWPF
             _specialActionRepository = ResolvePostHostService<ISpecialActionRepository>();
             _appearanceSettingsService = ResolvePostHostService<IAppearanceSettingsService>();
             _deviceStateService = ResolvePostHostService<IDeviceStateService>();
+            _outputSlotService = ResolvePostHostService<IOutputSlotService>();
+            // Phase7-Step5 W3（Q7＝A）: 静的なロガー（AppLogger.LogToTray）が使う通知サービスを、DI のシングルトンに設定する
+            AppLogger.NotificationService = ResolvePostHostService<INotificationService>();
 
             if (AppLogger.IsTraceEnabled)
                 AppLogger.LogTrace("[DI] App.InitializePostHostServices: Post-Host services resolved");

@@ -211,6 +211,9 @@ namespace DS4WindowsTests
             Assert.NotNull(DS4WinWPF.AppHost.GetService<ISpecialActionRepository>());
             Assert.NotNull(DS4WinWPF.AppHost.GetService<IAppearanceSettingsService>());
             Assert.NotNull(DS4WinWPF.AppHost.GetService<IDeviceStateService>());
+            // Phase7-Step5 W3: 出力スロットの契約（起動後の読込）と、LogToTray が使う通知サービス
+            Assert.NotNull(DS4WinWPF.AppHost.GetService<IOutputSlotService>());
+            Assert.NotNull(DS4WinWPF.AppHost.GetService<INotificationService>());
         }
     }
 }

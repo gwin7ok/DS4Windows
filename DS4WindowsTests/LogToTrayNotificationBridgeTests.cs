@@ -5,18 +5,18 @@ namespace DS4WindowsTests
 {
     /// <summary>
     /// Phase5-Step14 通知経路統合: AppLogger.LogToTray が
-    /// Global.NotificationServiceInstance.SendNotification へ正しく委譲することを検証する。
+    /// AppLogger.NotificationService.SendNotification へ正しく委譲することを検証する。
     /// </summary>
     public class LogToTrayNotificationBridgeTests
     {
         [Fact]
-        public void LogToTray_ShouldDelegateToNotificationServiceInstance()
+        public void LogToTray_ShouldDelegateToNotificationService()
         {
-            var original = Global.NotificationServiceInstance;
+            var original = AppLogger.NotificationService;
             var mock = new MockNotificationService();
             try
             {
-                Global.NotificationServiceInstance = mock;
+                AppLogger.NotificationService = mock;
 
                 AppLogger.LogToTray("hello world", warning: false);
 
@@ -27,18 +27,18 @@ namespace DS4WindowsTests
             }
             finally
             {
-                Global.NotificationServiceInstance = original;
+                AppLogger.NotificationService = original;
             }
         }
 
         [Fact]
         public void LogToTray_ShouldPropagateWarningFlag()
         {
-            var original = Global.NotificationServiceInstance;
+            var original = AppLogger.NotificationService;
             var mock = new MockNotificationService();
             try
             {
-                Global.NotificationServiceInstance = mock;
+                AppLogger.NotificationService = mock;
 
                 AppLogger.LogToTray("warn message", warning: true);
 
@@ -47,7 +47,7 @@ namespace DS4WindowsTests
             }
             finally
             {
-                Global.NotificationServiceInstance = original;
+                AppLogger.NotificationService = original;
             }
         }
 
@@ -55,11 +55,11 @@ namespace DS4WindowsTests
         public void LogToTray_ShouldAlwaysPassTemporaryFalse()
         {
             // LogToTray自体にtemporaryパラメータが存在しないため、常にfalseで渡ることを固定する回帰テスト。
-            var original = Global.NotificationServiceInstance;
+            var original = AppLogger.NotificationService;
             var mock = new MockNotificationService();
             try
             {
-                Global.NotificationServiceInstance = mock;
+                AppLogger.NotificationService = mock;
 
                 AppLogger.LogToTray("temp check");
 
@@ -68,7 +68,7 @@ namespace DS4WindowsTests
             }
             finally
             {
-                Global.NotificationServiceInstance = original;
+                AppLogger.NotificationService = original;
             }
         }
 
@@ -76,11 +76,11 @@ namespace DS4WindowsTests
         public void LogToTray_ShouldPassEmptyTitle()
         {
             // タイトルはUI層(MainWindow)側で解決する仕様のため、LogToTrayからは常に空文字を渡す。
-            var original = Global.NotificationServiceInstance;
+            var original = AppLogger.NotificationService;
             var mock = new MockNotificationService();
             try
             {
-                Global.NotificationServiceInstance = mock;
+                AppLogger.NotificationService = mock;
 
                 AppLogger.LogToTray("title check");
 
@@ -89,7 +89,7 @@ namespace DS4WindowsTests
             }
             finally
             {
-                Global.NotificationServiceInstance = original;
+                AppLogger.NotificationService = original;
             }
         }
     }

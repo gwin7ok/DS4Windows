@@ -45,10 +45,9 @@ namespace DS4Windows.DI
 
         // Phase6-Step10-5: 上記 PluginSlot と同じ方針（実装は ControlService.DetachUnboundOutDev を中継する）。
         bool UnplugSlot(int slotNumber);
-        // TODO(Phase7-Step2 W4 の調査で「接続」と判断。削除しない): 2026-09-05 に OutputSlots.xml の永続化の窓口として追加した契約。
-        // 呼び出し側の切り替えが未実施で、本体の呼び出しが 0 件。現状の差: App.xaml.cs:541 が rootHub.LoadPermanentSlotsConfig() を、
-        // ControlService.cs:702 が OutputSlotPersist.WriteConfig を直接呼ぶ（同じ処理が二重に存在する）。
-        // 接続予定: Phase7-Step5（rootHub の削除時に、App・ControlService がこのサービスを通す）。
+        // Phase7-Step5 W3 で接続した（Phase7-Step2 W4 の調査で「接続」と判断していた契約）: OutputSlots.xml の永続化の窓口。
+        // App の起動後の読込（LoadOutputSlots）と、ControlService.ShutDown の保存（SaveOutputSlots）が、この契約を通す。
+        // 旧 ControlService.LoadPermanentSlotsConfig と、ShutDown の OutputSlotPersist.WriteConfig の直接呼び出しは削除した。
         bool LoadOutputSlots();
         bool SaveOutputSlots();
 
