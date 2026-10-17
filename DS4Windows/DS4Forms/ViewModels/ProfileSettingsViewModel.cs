@@ -822,7 +822,7 @@ namespace DS4WinWPF.DS4Forms.ViewModels
         }
         /// <summary>
         /// Phase6-Step8-3: キャンセル時に、編集中に変えた一時的な出力種別（<c>OutDevTypeTemp</c>）を X360 へ戻す。
-        /// ProfileEditor.CancelBtn_Click の <c>Global.outDevTypeTemp[deviceNum] = X360</c> の置換（同じ配列）。
+        /// ProfileEditor.CancelBtn_Click の 旧 <c>Global.outDevTypeTemp[deviceNum] = X360</c>（現在は OutputSlotService の配列）の置換。
         /// </summary>
         public void ResetOutDevTypeTemp()
         {

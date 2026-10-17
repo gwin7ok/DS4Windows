@@ -118,7 +118,7 @@ namespace DS4Windows
         // ControlService のコンストラクタ内では呼ばない。逆依存の除去は Phase6-Step5 で行い、その時点で直接注入へ戻す。
         private readonly Func<DI.IOutputSlotService> _outputSlotServiceFactory;
         private OutContType[] _activeOutDevType;
-        // ActiveOutDevType の配列参照は再代入されない（Global.activeOutDevType は要素書込みのみ）ため、初回に1回だけ取得する。
+        // ActiveOutDevType の配列参照は再代入されない（OutputSlotService の配列は要素書込みのみ）ため、初回に1回だけ取得する。
         // 以降は null 合体の1分岐のみで、ホットパスでもアロケーションは発生しない。
         private OutContType[] ActiveOutDevType
             => _activeOutDevType ?? (_activeOutDevType = _outputSlotServiceFactory().ActiveOutDevType);

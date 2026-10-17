@@ -176,18 +176,8 @@ namespace DS4Windows
         // collected by UI-time calls. This mechanism was refactored so that
         // removal detection and logging happen at save/apply time; the array has
         // therefore been removed to avoid dead code.
-        // Used to hold device type desired from Profile Editor
-        public static OutContType[] outDevTypeTemp = new OutContType[TEST_PROFILE_ITEM_COUNT] { DS4Windows.OutContType.X360, DS4Windows.OutContType.X360,
-            DS4Windows.OutContType.X360, DS4Windows.OutContType.X360,
-            DS4Windows.OutContType.X360, DS4Windows.OutContType.X360,
-            DS4Windows.OutContType.X360, DS4Windows.OutContType.X360,
-            DS4Windows.OutContType.X360};
-        // Used to hold the currently active controller output type in use for a slot
-        public static OutContType[] activeOutDevType = new OutContType[TEST_PROFILE_ITEM_COUNT] { DS4Windows.OutContType.None, DS4Windows.OutContType.None,
-            DS4Windows.OutContType.None, DS4Windows.OutContType.None,
-            DS4Windows.OutContType.None, DS4Windows.OutContType.None,
-            DS4Windows.OutContType.None, DS4Windows.OutContType.None,
-            DS4Windows.OutContType.None};
+        // Phase7-Step6 W2: 出力デバイス種別の配列（旧 outDevTypeTemp＝編集画面の未確定値、旧 activeOutDevType＝スロットごとの接続中の種別）は
+        // OutputSlotService へ移した（IOutputSlotService.OutDevTypeTemp／ActiveOutDevType）。
 
         // Phase7-Step4 W1: ViGEmBus／HidHide／FakerInput の導入状態（vigemInstalled／vigemBusVersionInfo／hidHideInstalled／
         // fakerInputInstalled／fakerInputVersion と関連する定数）と、その調べ物は EnvironmentService へ移した。

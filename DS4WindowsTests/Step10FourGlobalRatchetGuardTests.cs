@@ -62,7 +62,8 @@ namespace DS4WindowsTests
             // Phase6-Step10b W5: ScpUtil.cs（29 型）を型ごとに分割。件数を引き継いだ（Global 233＝Global 47＋BackingStore 182＋Changelog 4、AppHost 12＝11＋1。rootHub 9 は Global。合計は不変）
             // Phase7-Step1 W1: 孤立メソッド 10 名の削除で Global.* 14 件が減った（182 → 168）
             // Phase7-Step5 W4: IProcessInspector をプロパティ注入にし、AppHost.GetService を削除（1 → 0）
-            ["DS4Windows/DS4Control/BackingStore.cs"] = (0, 0, 166),
+            // Phase7-Step6 W2: activeOutDevType の読み取り 8 件を ActiveOutDevType プロパティへ置換し、既定配列の長さの定数 1 件を追加（166 → 159）
+            ["DS4Windows/DS4Control/BackingStore.cs"] = (0, 0, 159),
             ["DS4Windows/DS4Control/Changelog.cs"] = (0, 0, 4),
             // Phase6-Step12 Wave 1: 孤立コード 24 件を削除（Global 47 → 45）。Wave 2: 互換アクセサ 152 件を削除（Global 45 → 38）。Wave 3: *Instance のフォールバック群 19 件を削除（Global 38 → 26、AppHost 11 → 5、rootHub 9 → 6）。Wave 4: BackingStore 直転送ラッパー 58 件を削除（AppHost 5 → 4。(6, 4, 26)）
             // Phase7-Step4 W1: IsUsingMinViGEm117333 の移管で Global.* 2 件を削除（24 → 22）
@@ -87,7 +88,8 @@ namespace DS4WindowsTests
             // Phase7-Step2 W4: IVirtualKBM.ErrorMessage の削除で Global.outputKBMHandler の参照 1 件を削除（21 → 20）。W7: Version の削除でさらに 1 件削除（20 → 19）
             ["DS4Windows/DS4Control/Services/OutputKBMHandlerAdapter.cs"] = (0, 0, 19),
             ["DS4Windows/DS4Control/Services/OutputKBMHandlerLifecycle.cs"] = (0, 0, 8),
-            ["DS4Windows/DS4Control/Services/OutputSlotService.cs"] = (0, 0, 2),
+            // Phase7-Step6 W2: 配列の実体を持ち、Global の参照は配列の長さの定数 1 件だけ（2 → 1）
+            ["DS4Windows/DS4Control/Services/OutputSlotService.cs"] = (0, 0, 1),
             // Phase7-Step4 W3: 実行ファイル・保存場所の状態を PathService が持つ形に移管（8 → 1: 省略時の Global.store）
             ["DS4Windows/DS4Control/Services/PathService.cs"] = (0, 0, 1),
             ["DS4Windows/DS4Control/Services/ProfileApplicationService.cs"] = (0, 0, 0),
