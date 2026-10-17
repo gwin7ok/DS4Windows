@@ -76,32 +76,22 @@ namespace DS4Windows
 
         protected static BackingStore m_Config = new BackingStore();
         public static BackingStore store => m_Config;
-        // Need to perform extra steps to check if DS4Windows is installed in a junction
-        // directory (done with Scoop). Use real path when available
-        public static string exelocation = new Func<string>(() =>
+        // Phase7-Step4 W3: 実行ファイルの情報と設定の保存場所の実体は PathService へ移した（FindConfigLocation／SaveWhere／
+        // SaveDefault、firstRun／multisavespots／appDataPpath、fileVersion も同様）。下位層（BackingStore／LoggerHolder など）が
+        // 静的に読む次の 4 つは、PathService の状態を指す読み書きの窓口として残す。
+        // TODO(Phase7-Step10): BackingStore の永続化を切り出すときに、下位層へ IPathService を注入して、窓口を廃止する。
+        public static string exelocation => PathService.ExecutableLocationState;
+        public static string exedirpath
         {
-            string filePath = Process.GetCurrentProcess().MainModule.FileName;
-            DirectoryInfo dirInfo = new DirectoryInfo(Path.GetDirectoryName(filePath));
-            // Check if exe is placed in a junction symlink directory (done with Scoop).
-            // Good enough
-            if (dirInfo.Attributes.HasFlag(FileAttributes.ReparsePoint) &&
-                dirInfo.LinkTarget != null)
-            {
-                // App directory is a junction. Find real directory and get proper path
-                // for inserting into HidHide
-                filePath = Path.Combine(dirInfo.LinkTarget, Path.GetFileName(filePath));
-            }
-
-            return filePath;
-        })();
-        public static string exedirpath = Directory.GetParent(exelocation).FullName;
-        public static FileVersionInfo fileVersion = FileVersionInfo.GetVersionInfo(exelocation);
-        public static string exeversion = fileVersion.FileVersion;
-        public static string appdatapath;
-        public static bool firstRun = false;
-        public static bool multisavespots = false;
-        public static string appDataPpath = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) + "\\DS4Windows";
-        public static bool runHotPlug = false;
+            get => PathService.ExecutableDirectoryState;
+            set => PathService.ExecutableDirectoryState = value;
+        }
+        public static string exeversion => PathService.ExecutableVersionState;
+        public static string appdatapath
+        {
+            get => PathService.AppDataPathState;
+            set => PathService.AppDataPathState = value;
+        }
         // =========================================================================
         // Phase4-Step1: IProfileSettingsService DI シム (Strangler Fig 移行用)
         // =========================================================================
@@ -551,45 +541,6 @@ namespace DS4Windows
             [TrayIconChoice.Battery] = $"{RESOURCES_PREFIX}/DS4W.ico"
         };
 
-        public static void SaveWhere(string path)
-        {
-            appdatapath = path;
-            m_Config.m_Profile = appdatapath + "\\Profiles.xml";
-            m_Config.m_Actions = appdatapath + "\\Actions.xml";
-            m_Config.m_linkedProfiles = Global.appdatapath + "\\LinkedProfiles.xml";
-            m_Config.m_controllerConfigs = Global.appdatapath + "\\ControllerConfigs.xml";
-        }
-
-        public static bool SaveDefault(string path)
-        {
-            Boolean Saved = true;
-            XmlDocument m_Xdoc = new XmlDocument();
-            try
-            {
-                XmlNode Node;
-
-                m_Xdoc.RemoveAll();
-
-                Node = m_Xdoc.CreateXmlDeclaration("1.0", "utf-8", String.Empty);
-                m_Xdoc.AppendChild(Node);
-
-                Node = m_Xdoc.CreateComment(string.Format(" Profile Configuration Data. {0} ", DateTime.Now));
-                m_Xdoc.AppendChild(Node);
-
-                Node = m_Xdoc.CreateWhitespace("\r\n");
-                m_Xdoc.AppendChild(Node);
-
-                Node = m_Xdoc.CreateNode(XmlNodeType.Element, "Profile", null);
-
-                m_Xdoc.AppendChild(Node);
-
-                m_Xdoc.Save(path);
-            }
-            catch { Saved = false; }
-
-            return Saved;
-        }
-
         /// <summary>
         /// Check if Admin Rights are needed to write in Appliplation Directory
         /// </summary>
@@ -748,40 +699,6 @@ namespace DS4Windows
             }
 
             return result;
-        }
-
-        public static void FindConfigLocation()
-        {
-            bool programFolderAutoProfilesExists = File.Exists(Path.Combine(exedirpath, "Auto Profiles.xml"));
-            bool appDataAutoProfilesExists = File.Exists(Path.Combine(appDataPpath, "Auto Profiles.xml"));
-            //bool localAppDataAutoProfilesExists = File.Exists(Path.Combine(localAppDataPpath, "Auto Profiles.xml"));
-            //bool systemAppConfigExists = appDataAutoProfilesExists || localAppDataAutoProfilesExists;
-            bool systemAppConfigExists = appDataAutoProfilesExists;
-            bool isSameFolder = appDataAutoProfilesExists && exedirpath == appDataPpath;
-
-            if (programFolderAutoProfilesExists && appDataAutoProfilesExists &&
-                !isSameFolder)
-            {
-                Global.firstRun = true;
-                Global.multisavespots = true;
-            }
-            else if (programFolderAutoProfilesExists)
-            {
-                SaveWhere(exedirpath);
-            }
-            //else if (localAppDataAutoProfilesExists)
-            //{
-            //    SaveWhere(localAppDataPpath);
-            //}
-            else if (appDataAutoProfilesExists)
-            {
-                SaveWhere(appDataPpath);
-            }
-            else if (!programFolderAutoProfilesExists && !appDataAutoProfilesExists)
-            {
-                Global.firstRun = true;
-                Global.multisavespots = false;
-            }
         }
 
         public static void SetCulture(string culture)

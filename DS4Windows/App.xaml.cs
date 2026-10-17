@@ -177,7 +177,7 @@ namespace DS4WinWPF
             // Locate config location and perform startup log rotation as early as possible
             try
             {
-                DS4Windows.Global.FindConfigLocation();
+                new DS4Windows.PathService().FindConfigLocation(); // TODO(Phase7-Step4 W4): ブートストラップで作る PathService を使う
 
                 // Perform deterministic startup rotation as early as possible
                 LogRotator.PerformStartupRotation(DS4Windows.Global.appdatapath, DS4Windows.Global.LogMaxArchiveFiles);
@@ -690,7 +690,7 @@ namespace DS4WinWPF
                 new DS4Windows.EnvironmentService().RefreshViGEmBusInfo();
 
                 // Load DS4Windows config if it exists
-                DS4Windows.Global.FindConfigLocation();
+                new DS4Windows.PathService().FindConfigLocation(); // TODO(Phase7-Step4 W4): ブートストラップで作る PathService を使う
 
                 // Phase7-Step4 W2: 旧 Global.Load() は、中の AppHost.GetService が、起動引数なしでホストを暗黙に作っていた
                 // （K7-1 の残存経路）。ここで、起動引数つきで明示的にホストを作り、設定は IAppSettingsService で読む。

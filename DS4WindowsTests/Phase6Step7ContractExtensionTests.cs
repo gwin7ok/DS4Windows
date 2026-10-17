@@ -32,28 +32,31 @@ namespace DS4WindowsTests
         // ---- IPathService ----
 
         [Fact]
-        public void RoamingAppDataPath_ReturnsGlobalAppDataPpath()
+        public void RoamingAppDataPath_ReturnsRoamingAppDataFolder()
         {
+            // Phase7-Step4 W3: 旧 Global.appDataPpath は PathService へ移した
             var pathService = new PathService();
-            Assert.Equal(Global.appDataPpath, pathService.RoamingAppDataPath);
+            Assert.Equal(PathService.RoamingAppDataPathState, pathService.RoamingAppDataPath);
+            Assert.Equal(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) + "\\DS4Windows",
+                pathService.RoamingAppDataPath);
         }
 
         [Fact]
-        public void HasMultipleSaveLocations_FollowsGlobalMultisavespots()
+        public void HasMultipleSaveLocations_FollowsTheMultipleSaveLocationsState()
         {
             var pathService = new PathService();
-            bool original = Global.multisavespots;
+            bool original = PathService.MultipleSaveLocationsState;
             try
             {
-                Global.multisavespots = true;
+                PathService.MultipleSaveLocationsState = true;
                 Assert.True(pathService.HasMultipleSaveLocations);
 
-                Global.multisavespots = false;
+                PathService.MultipleSaveLocationsState = false;
                 Assert.False(pathService.HasMultipleSaveLocations);
             }
             finally
             {
-                Global.multisavespots = original;
+                PathService.MultipleSaveLocationsState = original;
             }
         }
 

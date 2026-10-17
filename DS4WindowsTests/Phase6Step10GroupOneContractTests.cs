@@ -104,10 +104,11 @@ namespace DS4WindowsTests
             try
             {
                 string viaService = Path.Combine(dir, "service.xml");
-                string viaGlobal = Path.Combine(dir, "global.xml");
+                string viaGlobal = Path.Combine(dir, "second.xml");
 
+                // Phase7-Step4 W3: 旧 Global.SaveDefault は PathService.CreateEmptyProfilesFile へ移した。2 つのインスタンスが同じ XML を作る
                 Assert.True(service.CreateEmptyProfilesFile(viaService));
-                Assert.True(Global.SaveDefault(viaGlobal));
+                Assert.True(new PathService().CreateEmptyProfilesFile(viaGlobal));
 
                 var a = new XmlDocument();
                 var b = new XmlDocument();
@@ -128,7 +129,7 @@ namespace DS4WindowsTests
             IPathService service = new PathService();
             string path = Path.Combine(Path.GetTempPath(), "Phase6Step10_NoDir_" + Guid.NewGuid().ToString("N"), "Profiles.xml");
             Assert.False(service.CreateEmptyProfilesFile(path));
-            Assert.Equal(Global.SaveDefault(path), service.CreateEmptyProfilesFile(path));
+            Assert.False(new PathService().CreateEmptyProfilesFile(path));
         }
 
         // ---- IAppSettingsService ----

@@ -350,8 +350,9 @@ namespace DS4Windows.Services
 
         public bool FirstRun
         {
-            get => Global.firstRun;
-            set { if (Global.firstRun != value) { Global.firstRun = value; NotifyChanged(nameof(FirstRun)); } }
+            // Phase7-Step4 W3: 旧 Global.firstRun。実体は PathService（FindConfigLocation が設定する）
+            get => PathService.FirstRunState;
+            set { if (PathService.FirstRunState != value) { PathService.FirstRunState = value; NotifyChanged(nameof(FirstRun)); } }
         }
 
         // ---- Phase6-Step7-1: App.xaml.cs（Post-Host）の Global 直接参照解消 ----
@@ -362,10 +363,13 @@ namespace DS4Windows.Services
             set { if (_config.useLang != value) { _config.useLang = value; NotifyChanged(nameof(UseLang)); } }
         }
 
+        // Phase7-Step4 W3: 旧 Global.runHotPlug（保存しない実行時のフラグ）。このサービス（DI のシングルトン）のインスタンスの状態にした
+        private bool _runHotPlug;
+
         public bool RunHotPlug
         {
-            get => Global.runHotPlug;
-            set { if (Global.runHotPlug != value) { Global.runHotPlug = value; NotifyChanged(nameof(RunHotPlug)); } }
+            get => _runHotPlug;
+            set { if (_runHotPlug != value) { _runHotPlug = value; NotifyChanged(nameof(RunHotPlug)); } }
         }
 
         // ---- Phase5-Step14: プロファイル編集画面・SpecialAction カラム幅の永続化 ----

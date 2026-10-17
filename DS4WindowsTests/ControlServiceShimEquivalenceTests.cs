@@ -136,22 +136,20 @@ namespace DS4WindowsTests
         }
 
         [Fact]
-        public void RunHotPlug_WriteFromService_IsVisibleToGlobal()
+        public void RunHotPlug_RoundTripsThroughTheService_AndNotifiesOnChange()
         {
             // ControlService.Start/Stop は runHotPlug を IAppSettingsService.RunHotPlug 経由で書き込む。
-            bool original = Global.runHotPlug;
-            try
-            {
-                _appSettings.RunHotPlug = true;
-                Assert.True(Global.runHotPlug);
+            // Phase7-Step4 W3: 旧 Global.runHotPlug は、サービスのインスタンスの状態にした
+            var changed = new System.Collections.Generic.List<string>();
+            _appSettings.SettingChanged += (s, name) => changed.Add(name);
 
-                _appSettings.RunHotPlug = false;
-                Assert.False(Global.runHotPlug);
-            }
-            finally
-            {
-                Global.runHotPlug = original;
-            }
+            _appSettings.RunHotPlug = true;
+            Assert.True(_appSettings.RunHotPlug);
+
+            _appSettings.RunHotPlug = false;
+            Assert.False(_appSettings.RunHotPlug);
+
+            Assert.Equal(2, changed.FindAll(n => n == nameof(DS4Windows.DI.IAppSettingsService.RunHotPlug)).Count);
         }
 
         [Fact]

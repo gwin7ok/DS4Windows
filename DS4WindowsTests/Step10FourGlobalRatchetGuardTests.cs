@@ -61,10 +61,12 @@ namespace DS4WindowsTests
             // Phase6-Step12 Wave 1: 孤立コード 24 件を削除（Global 47 → 45）。Wave 2: 互換アクセサ 152 件を削除（Global 45 → 38）。Wave 3: *Instance のフォールバック群 19 件を削除（Global 38 → 26、AppHost 11 → 5、rootHub 9 → 6）。Wave 4: BackingStore 直転送ラッパー 58 件を削除（AppHost 5 → 4。(6, 4, 26)）
             // Phase7-Step4 W1: IsUsingMinViGEm117333 の移管で Global.* 2 件を削除（24 → 22）
             // Phase7-Step4 W2: Global.Load の削除で AppHost.GetService を 1 件削除（4 → 3）
-            ["DS4Windows/DS4Control/Global.cs"] = (6, 3, 22),
+            // Phase7-Step4 W3: FindConfigLocation／SaveWhere の移管で Global.* 6 件を削除（22 → 16）
+            ["DS4Windows/DS4Control/Global.cs"] = (6, 3, 16),
             // Phase7-Step2 W4: INotificationService.NotificationsEnabled／FlashTaskbar の削除で Global.* 5 件を削除（6 → 1）
             ["DS4Windows/DS4Control/Services/AppNotificationService.cs"] = (0, 0, 0),
-            ["DS4Windows/DS4Control/Services/AppSettingsService.cs"] = (0, 0, 8),
+            // Phase7-Step4 W3: FirstRun は PathService の状態、RunHotPlug はインスタンスの状態にした（8 → 2）
+            ["DS4Windows/DS4Control/Services/AppSettingsService.cs"] = (0, 0, 2),
             ["DS4Windows/DS4Control/Services/AppearanceSettingsService.cs"] = (0, 0, 4),
             ["DS4Windows/DS4Control/Services/AutoProfileService.cs"] = (0, 0, 1),
             ["DS4Windows/DS4Control/Services/DefaultElevatedProcessLauncher.cs"] = (0, 0, 1),
@@ -77,7 +79,8 @@ namespace DS4WindowsTests
             ["DS4Windows/DS4Control/Services/OutputKBMHandlerAdapter.cs"] = (0, 0, 19),
             ["DS4Windows/DS4Control/Services/OutputKBMHandlerLifecycle.cs"] = (0, 0, 8),
             ["DS4Windows/DS4Control/Services/OutputSlotService.cs"] = (0, 0, 2),
-            ["DS4Windows/DS4Control/Services/PathService.cs"] = (0, 0, 8),
+            // Phase7-Step4 W3: 実行ファイル・保存場所の状態を PathService が持つ形に移管（8 → 1: 省略時の Global.store）
+            ["DS4Windows/DS4Control/Services/PathService.cs"] = (0, 0, 1),
             ["DS4Windows/DS4Control/Services/ProfileApplicationService.cs"] = (0, 0, 0),
             ["DS4Windows/DS4Control/Services/ProfilePresetLoader.cs"] = (0, 0, 0),
             // 26: 名前変更の伝播（ReplaceProfileSwitchTarget。Phase6-Step10-4-5d）で、Global.store への委譲を 2 件追加（薄いシムの性質。24 → 26）

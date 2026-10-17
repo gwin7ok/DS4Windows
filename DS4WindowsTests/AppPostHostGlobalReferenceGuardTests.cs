@@ -34,7 +34,7 @@ namespace DS4WindowsTests
         private static readonly Dictionary<string, int> ExpectedStartupPreHost = new Dictionary<string, int>
         {
             // E7-01〜E7-05（起動時ログローテーション・ViGEmBus 情報。温存）
-            ["FindConfigLocation"] = 1,
+            // Phase7-Step4 W3: FindConfigLocation は PathService へ移した（Global 参照 1 → 0）
             ["appdatapath"] = 1,
             ["LogMaxArchiveFiles"] = 1,
             ["LogMinLevel"] = 1,
@@ -44,7 +44,7 @@ namespace DS4WindowsTests
         private static readonly Dictionary<string, int> ExpectedCheckOptions = new Dictionary<string, int>
         {
             // E7-06〜E7-12（-driverinstall 分岐。温存）。Phase7-Step4 W1: RefreshViGEmBusInfo は EnvironmentService へ移した（1 → 0）
-            ["FindConfigLocation"] = 1,
+            // Phase7-Step4 W3: FindConfigLocation は PathService へ移した（Global 参照 1 → 0）
             // Phase7-Step4 W2: Global.Load は IAppSettingsService.Load に置き換えた（1 → 0）
             ["UseLang"] = 2,
             ["UseCurrentTheme"] = 2,
