@@ -55,10 +55,9 @@ namespace DS4WindowsTests
         }
 
         [Fact]
-        public void TheFakeExeFileName_IsUnchanged_AndGlobalPointsToTheSameValue()
+        public void TheFakeExeFileName_IsUnchanged()
         {
             Assert.Equal("custom_exe_name.txt", AppSettingsXmlSerializer.CustomExeConfigFileName);
-            Assert.Equal(AppSettingsXmlSerializer.CustomExeConfigFileName, Global.CUSTOM_EXE_CONFIG_FILENAME);
         }
 
         [Theory]

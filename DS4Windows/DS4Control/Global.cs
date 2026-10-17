@@ -69,7 +69,9 @@ namespace DS4Windows
         // Phase7-Step10a W4: コントローラー数などの定数（MAX_DS4_CONTROLLER_COUNT／TEST_PROFILE_ITEM_COUNT／TEST_PROFILE_INDEX／
         // OLD_XINPUT_CONTROLLER_COUNT／DS4_STICK_AXIS_MIDPOINT）は ControllerLimits へ移し、別名を削除した。
 
-        public static CultureInfo configFileDecimalCulture = new CultureInfo("en-US"); // Loading and Saving decimal values in configuration files should always use en-US decimal format (ie. dot char as decimal separator char, not comma char)
+        // Phase7-Step10d W2（定数）: CONFIG_VERSION／CUSTOM_EXE_CONFIG_FILENAME／XML_EXTENSION の別名は削除（持ち主の定数を直接使う）。APP_CONFIG_VERSION は
+        // AppSettingsDTO.AppConfigVersion、PROBING_PATH／LANGUAGE_ASSEMBLY_NAME は LanguagePackViewModel へ、exelocation／exeversion は PathService の状態を直接使う。
+        // Phase7-Step10d W2: configFileDecimalCulture は ConfigFileCulture.DecimalCulture へ移した。
 
         protected static BackingStore m_Config = new BackingStore();
         public static BackingStore store => m_Config;
@@ -77,13 +79,11 @@ namespace DS4Windows
         // SaveDefault、firstRun／multisavespots／appDataPpath、fileVersion も同様）。下位層（BackingStore／LoggerHolder など）が
         // 静的に読む次の 4 つは、PathService の状態を指す読み書きの窓口として残す。
         // TODO(Phase7-Step10): BackingStore の永続化を切り出すときに、下位層へ IPathService を注入して、窓口を廃止する。
-        public static string exelocation => PathService.ExecutableLocationState;
         public static string exedirpath
         {
             get => PathService.ExecutableDirectoryState;
             set => PathService.ExecutableDirectoryState = value;
         }
-        public static string exeversion => PathService.ExecutableVersionState;
         public static string appdatapath
         {
             get => PathService.AppDataPathState;
@@ -183,184 +183,14 @@ namespace DS4Windows
         // KBM マッピング（旧 outputKBMMapping）は IProfileSettingsService.OutputKBMMapping を直接使う形にした
         // （決定・破棄・フォールバックの操作は OutputKBMHandlerLifecycle）。
 
-        // Phase7-Step10c W5: 実体は LegacyProfileXmlSerializer.ConfigVersion へ移した。以下は同じ値を指す別名（ProfileMigration が使う）。
-        // TODO(Phase7-Step10d): 利用箇所をなくしたら、この別名を削除する。
-        public const int CONFIG_VERSION = Services.LegacyProfileXmlSerializer.ConfigVersion;
-        public const int APP_CONFIG_VERSION = 2;
         // Phase7-Step10a W3・W4: 資源パスの定数（ASSEMBLY_RESOURCE_PREFIX／RESOURCES_PREFIX）は画面側の ResourcePaths へ移し、削除した。
-        // Need to add additional probing path in code starting with .NET 6.
-        public const string PROBING_PATH = "Lang";
-        public const string LANGUAGE_ASSEMBLY_NAME = "DS4Windows.resources.dll";
-        // Phase7-Step10c W3: 実体は AppSettingsXmlSerializer.CustomExeConfigFileName へ移した。以下は同じ値を指す別名（テストが使う）。
-        // TODO(Phase7-Step10d): 利用箇所をなくしたら、この別名を削除する。
-        public const string CUSTOM_EXE_CONFIG_FILENAME = Services.AppSettingsXmlSerializer.CustomExeConfigFileName;
-        // Phase7-Step10c W5: 実体は LegacyProfileXmlSerializer.XmlExtension へ移した（別名。TODO(Phase7-Step10d): 利用箇所がなくなったら削除）。
-        public const string XML_EXTENSION = Services.LegacyProfileXmlSerializer.XmlExtension;
 
         // Phase7-Step10b W1: 既定のボタン割り当て・名前の表・getX360ControlString は X360ControlTables へ、
         // ds4inputNames／macroDS4Values は DS4ControlNames へ移し、Global から削除した（宣言は移動のみで、中身は同一）。
 
         // Phase7-Step10b W2: iconChoiceResources（トレイアイコンの表）は画面側の TrayIconResources へ移し、Global から削除した。
 
-        /// <summary>
-        /// Check if Admin Rights are needed to write in Appliplation Directory
-        /// </summary>
-        /// <returns></returns>
-        public static bool AdminNeeded()
-        {
-            try
-            {
-                File.WriteAllText(exedirpath + "\\test.txt", "test");
-                File.Delete(exedirpath + "\\test.txt");
-                return false;
-            }
-            catch (UnauthorizedAccessException)
-            {
-                return true;
-            }
-        }
-
-        public static bool IsAdministrator()
-        {
-            var identity = WindowsIdentity.GetCurrent();
-            var principal = new WindowsPrincipal(identity);
-            return principal.IsInRole(WindowsBuiltInRole.Administrator);
-        }
-
-        internal static string GetStringDeviceProperty(string deviceInstanceId,
-            NativeMethods.DEVPROPKEY prop)
-        {
-            string result = string.Empty;
-            NativeMethods.SP_DEVINFO_DATA deviceInfoData = new NativeMethods.SP_DEVINFO_DATA();
-            deviceInfoData.cbSize = System.Runtime.InteropServices.Marshal.SizeOf(deviceInfoData);
-            ulong propertyType = 0;
-            var requiredSize = 0;
-
-            Guid hidGuid = new Guid();
-            NativeMethods.HidD_GetHidGuid(ref hidGuid);
-            //IntPtr deviceInfoSet = NativeMethods.SetupDiGetClassDevs(IntPtr.Zero, deviceInstanceId, 0, extraFlags | NativeMethods.DIGCF_DEVICEINTERFACE | NativeMethods.DIGCF_ALLCLASSES);
-            IntPtr deviceInfoSet = NativeMethods.SetupDiCreateDeviceInfoList(IntPtr.Zero, 0);
-            //NativeMethods.SetupDiEnumDeviceInfo(deviceInfoSet, 0, ref deviceInfoData);
-            NativeMethods.SetupDiOpenDeviceInfo(deviceInfoSet, deviceInstanceId, IntPtr.Zero, 0, ref deviceInfoData);
-            NativeMethods.SetupDiGetDeviceProperty(deviceInfoSet, ref deviceInfoData, ref prop, ref propertyType,
-                    null, 0, ref requiredSize, 0);
-
-            if (requiredSize > 0)
-            {
-                byte[] dataBuffer = new byte[requiredSize];
-                NativeMethods.SetupDiGetDeviceProperty(deviceInfoSet, ref deviceInfoData, ref prop, ref propertyType,
-                    dataBuffer, dataBuffer.Length, ref requiredSize, 0);
-
-                result = dataBuffer.ToUTF16String();
-            }
-
-            if (deviceInfoSet.ToInt64() != NativeMethods.INVALID_HANDLE_VALUE)
-            {
-                NativeMethods.SetupDiDestroyDeviceInfoList(deviceInfoSet);
-            }
-
-            return result;
-        }
-
-        public static string GetInstanceIdFromDevicePath(string devicePath)
-        {
-            string result = string.Empty;
-            uint requiredSize = 0;
-            NativeMethods.CM_Get_Device_Interface_Property(devicePath, ref NativeMethods.DEVPKEY_Device_InstanceId, out _, null, ref requiredSize, 0);
-            if (requiredSize > 0)
-            {
-                byte[] buffer = new byte[requiredSize];
-                NativeMethods.CM_Get_Device_Interface_Property(devicePath, ref NativeMethods.DEVPKEY_Device_InstanceId, out _, buffer, ref requiredSize, 0);
-                result = buffer.ToUTF16String();
-            }
-
-            return result;
-        }
-
-        internal static string[] GetStringArrayDeviceProperty(string deviceInstanceId,
-            NativeMethods.DEVPROPKEY prop)
-        {
-            string[] result = null;
-            NativeMethods.SP_DEVINFO_DATA deviceInfoData = new NativeMethods.SP_DEVINFO_DATA();
-            deviceInfoData.cbSize = System.Runtime.InteropServices.Marshal.SizeOf(deviceInfoData);
-            ulong propertyType = 0;
-            var requiredSize = 0;
-
-            IntPtr zero = IntPtr.Zero;
-            //IntPtr deviceInfoSet = NativeMethods.SetupDiGetClassDevs(zero, deviceInstanceId, 0, extraFlags | NativeMethods.DIGCF_DEVICEINTERFACE | NativeMethods.DIGCF_ALLCLASSES);
-            IntPtr deviceInfoSet = NativeMethods.SetupDiCreateDeviceInfoList(IntPtr.Zero, 0);
-            //NativeMethods.SetupDiEnumDeviceInfo(deviceInfoSet, 0, ref deviceInfoData);
-            NativeMethods.SetupDiOpenDeviceInfo(deviceInfoSet, deviceInstanceId, IntPtr.Zero, 0, ref deviceInfoData);
-            NativeMethods.SetupDiGetDeviceProperty(deviceInfoSet, ref deviceInfoData, ref prop, ref propertyType,
-                    null, 0, ref requiredSize, 0);
-
-            if (requiredSize > 0)
-            {
-                byte[] dataBuffer = new byte[requiredSize];
-                NativeMethods.SetupDiGetDeviceProperty(deviceInfoSet, ref deviceInfoData, ref prop, ref propertyType,
-                    dataBuffer, dataBuffer.Length, ref requiredSize, 0);
-
-                string tempStr = Encoding.Unicode.GetString(dataBuffer);
-                string[] hardwareIds = tempStr.TrimEnd(new char[] { '\0', '\0' }).Split('\0');
-                result = hardwareIds;
-            }
-
-            if (deviceInfoSet.ToInt64() != NativeMethods.INVALID_HANDLE_VALUE)
-            {
-                NativeMethods.SetupDiDestroyDeviceInfoList(deviceInfoSet);
-            }
-
-            return result;
-        }
-
-        public static bool CheckIfVirtualDevice(string devicePath)
-        {
-            bool result = false;
-            bool excludeMatchFound = false;
-
-            var instanceId = GetInstanceIdFromDevicePath(devicePath);
-            var testInstanceId = instanceId;
-            while (!string.IsNullOrEmpty(testInstanceId))
-            {
-                var hardwareIds = GetStringArrayDeviceProperty(testInstanceId, NativeMethods.DEVPKEY_Device_HardwareIds);
-                if (hardwareIds != null)
-                {
-                    // hardware IDs of root hubs/controllers that emit supported virtual devices as sources
-                    var excludedIds = new[]
-                    {
-                        @"ROOT\HIDGAMEMAP", // reWASD
-                        @"ROOT\VHUSB3HC", // VirtualHere
-                    };
-
-                    excludeMatchFound = hardwareIds.Any(id => excludedIds.Contains(id.ToUpper()));
-                    if (excludeMatchFound)
-                    {
-                        break;
-                    }
-                }
-
-                // Check for potential non-present device as well
-                string parentInstanceId = GetStringDeviceProperty(testInstanceId, NativeMethods.DEVPKEY_Device_Parent);
-
-                // Found root enumerator. Use instanceId of device one layer lower in final check
-                if (parentInstanceId.Equals(@"HTREE\ROOT\0", StringComparison.OrdinalIgnoreCase))
-                {
-                    break;
-                }
-
-                testInstanceId = parentInstanceId;
-            }
-
-            if (!excludeMatchFound &&
-                !string.IsNullOrEmpty(testInstanceId) &&
-                (testInstanceId.StartsWith(@"ROOT\SYSTEM", StringComparison.OrdinalIgnoreCase)
-                || testInstanceId.StartsWith(@"ROOT\USB", StringComparison.OrdinalIgnoreCase)))
-            {
-                result = true;
-            }
-
-            return result;
-        }
+        // Phase7-Step10d W2: AdminNeeded／IsAdministrator は AdminCheck へ、GetInstanceIdFromDevicePath／CheckIfVirtualDevice ほかは DevicePathProbe へ移し、削除した（内容は同一）。
 
         public static void SetCulture(string culture)
         {

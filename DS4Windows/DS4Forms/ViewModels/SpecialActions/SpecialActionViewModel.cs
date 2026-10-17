@@ -26,7 +26,7 @@ public class SpecialActionViewModel : NotifyDataErrorBase
 
     public void SaveAction(SpecialAction action, bool edit = false)
     {
-        specialActionRepository.SaveAction(action.name, action.controls, actionIndex, $"{holdInterval.ToString("#.##", Global.configFileDecimalCulture)}", edit, holdInterval);
+        specialActionRepository.SaveAction(action.name, action.controls, actionIndex, $"{holdInterval.ToString("#.##", ConfigFileCulture.DecimalCulture)}", edit, holdInterval);
     }
 
     public override bool IsValid(SpecialAction action)

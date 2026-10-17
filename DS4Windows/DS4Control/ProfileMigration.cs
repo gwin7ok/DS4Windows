@@ -83,7 +83,7 @@ namespace DS4Windows
         public bool RequiresMigration()
         {
             bool result = false;
-            if (configFileVersion >= 1 && configFileVersion < Global.CONFIG_VERSION)
+            if (configFileVersion >= 1 && configFileVersion < DS4Windows.Services.LegacyProfileXmlSerializer.ConfigVersion)
             {
                 result = true;
             }
@@ -284,7 +284,7 @@ namespace DS4Windows
 
             // Write replacement root element in XmlWriter
             tempWriter.WriteStartElement("DS4Windows");
-            tempWriter.WriteAttributeString("app_version", Global.exeversion);
+            tempWriter.WriteAttributeString("app_version", PathService.ExecutableVersionState);
             tempWriter.WriteAttributeString("config_version", "4");
 
             // First pass
@@ -421,7 +421,7 @@ namespace DS4Windows
 
             // Write replacement root element in XmlWriter
             tempWriter.WriteStartElement("DS4Windows");
-            tempWriter.WriteAttributeString("app_version", Global.exeversion);
+            tempWriter.WriteAttributeString("app_version", PathService.ExecutableVersionState);
             tempWriter.WriteAttributeString("config_version", "2");
 
             while (!profileReader.EOF)
@@ -502,7 +502,7 @@ namespace DS4Windows
 
             // Write replacement root element in XmlWriter
             tempWriter.WriteStartElement("DS4Windows");
-            tempWriter.WriteAttributeString("app_version", Global.exeversion);
+            tempWriter.WriteAttributeString("app_version", PathService.ExecutableVersionState);
             tempWriter.WriteAttributeString("config_version", "5");
 
             while (!profileReader.EOF)

@@ -17,7 +17,7 @@ namespace DS4WindowsTests
         {
             var service = new EnvironmentService();
 
-            Assert.Equal(Global.exeversion, service.ApplicationVersion);
+            Assert.Equal(DS4Windows.PathService.ExecutableVersionState, service.ApplicationVersion);
         }
 
         [Fact]

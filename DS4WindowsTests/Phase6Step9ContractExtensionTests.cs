@@ -144,7 +144,7 @@ namespace DS4WindowsTests
         {
             var service = new EnvironmentService();
 
-            Assert.Equal(Global.AdminNeeded(), service.AdminNeeded());
+            Assert.Equal(DS4Windows.AdminCheck.AdminNeeded(), service.AdminNeeded());
         }
 
         // ---- IPathService ----

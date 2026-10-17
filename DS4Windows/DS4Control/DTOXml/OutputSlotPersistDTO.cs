@@ -31,7 +31,7 @@ namespace DS4WinWPF.DS4Control.DTOXml
         [XmlAttribute("app_version")]
         public string AppVersion
         {
-            get => Global.exeversion;
+            get => DS4Windows.PathService.ExecutableVersionState;
             set { }
         }
 

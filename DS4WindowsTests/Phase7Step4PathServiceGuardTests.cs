@@ -206,8 +206,6 @@ namespace DS4WindowsTests
                     TestGlobals.ExeDirPath = @"C:\Phase7ExeWindow";
                     Assert.Equal(@"C:\Phase7ExeWindow", PathService.ExecutableDirectoryState);
 
-                    Assert.Equal(PathService.ExecutableLocationState, Global.exelocation);
-                    Assert.Equal(PathService.ExecutableVersionState, Global.exeversion);
                 }
                 finally
                 {

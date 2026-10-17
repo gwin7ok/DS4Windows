@@ -22,6 +22,9 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 public class AppSettingsDTO
 {
+    // Phase7-Step10d W2: 旧 Global.APP_CONFIG_VERSION（利用はこのクラスのみ）。
+    public const int AppConfigVersion = 2;
+
     // ここに既存の全てのプロパティ・メソッド・フィールド・コンストラクタを収める
 
     [XmlElement("formWidth")]
@@ -884,8 +887,8 @@ public class AppSettingsDTO
         LogMinLevel = !string.IsNullOrEmpty(source.logMinLevel) ? source.logMinLevel : BackingStore.DEFAULT_LOG_MIN_LEVEL;
 
         // ルート属性に現在のアプリ/設定バージョンをセット（シリアライザで属性として出力される）
-        AppVersion = Global.exeversion;
-        ConfigVersion = Global.APP_CONFIG_VERSION.ToString();
+        AppVersion = DS4Windows.PathService.ExecutableVersionState;
+        ConfigVersion = AppConfigVersion.ToString();
         UseExclusiveMode = source.useExclusiveMode;
         StartMinimized = source.startMinimized;
         MinimizeToTaskbar = source.minToTaskbar;

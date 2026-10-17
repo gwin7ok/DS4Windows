@@ -26,9 +26,9 @@ namespace DS4Windows
         // 読み取り専用のシステム状態プローブ／実行時操作であり、永続化設定ではない。
         // 管理者権限・書き込み権限・実行ファイルのバージョン・デバイスパスの変換は、他の層（BackingStore／Util／DS4Devices）も
         // 静的に呼ぶため Global に残している（TODO(Phase7-Step4 W3／Step10): パスの所有の移管と、下位層への注入で解消する）。
-        public bool IsAdministrator() => Global.IsAdministrator();
+        public bool IsAdministrator() => AdminCheck.IsAdministrator();
 
-        public string ApplicationVersion => Global.exeversion;
+        public string ApplicationVersion => PathService.ExecutableVersionState;
 
         // ---- Phase7-Step4 W1: 導入状態の保持（旧 Global の static フィールド）----
         // ViGEmBus の既定値は「未導入」。RefreshViGEmBusInfo で更新される。
@@ -84,7 +84,7 @@ namespace DS4Windows
         public bool HidHideInstalled => HidHideInstalledState;
 
         public string GetInstanceIdFromDevicePath(string devicePath) =>
-            Global.GetInstanceIdFromDevicePath(devicePath);
+            DevicePathProbe.GetInstanceIdFromDevicePath(devicePath);
 
         public bool CheckHidHideAffectedStatus(string deviceInstanceId,
             HashSet<string> affectedDevs,
@@ -116,7 +116,7 @@ namespace DS4Windows
         public bool IsUsingMinViGEm117333() =>
             s_vigemBusVersionInfo.CompareTo(new Version(MinTouchpadPassthruViGEmBusVersion)) >= 0;
 
-        public bool AdminNeeded() => Global.AdminNeeded();
+        public bool AdminNeeded() => AdminCheck.AdminNeeded();
 
         // ---- Phase6-Step10-1-1／Phase7-Step4 W1: OS・ドライバーの判定 ----
         // 静的初期化の循環を起こさないこと（ガード: EnvironmentServiceStaticInitGuardTests）。本クラスは Global の静的メンバーを

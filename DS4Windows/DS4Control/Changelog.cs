@@ -67,7 +67,7 @@ namespace DS4Windows
         {
             version = Version.Parse("0.0.0");
 
-            if (!Version.TryParse(Global.exeversion, out var currentVersion)) return false;
+            if (!Version.TryParse(PathService.ExecutableVersionState, out var currentVersion)) return false;
 
             // attempt to limit HTTP requests for reasons of 1. performance 2. GH API rate limit
             if (allowCached && _newerVersionAvailable is not null)
@@ -133,7 +133,7 @@ namespace DS4Windows
         {
             Dictionary<Version, string> dict = new();
 
-            if (!Version.TryParse(Global.exeversion, out var currentVersion)) return dict;
+            if (!Version.TryParse(PathService.ExecutableVersionState, out var currentVersion)) return dict;
 
             var request = await App.requestClient.GetAsync(GITHUB_RELEASES_API_URI);
             var releases = await request.Content.ReadFromJsonAsync<GithubRelease[]>();

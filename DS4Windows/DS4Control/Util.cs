@@ -231,7 +231,7 @@ namespace DS4Windows
         /// <param name="argument">Extra arguments to pass to the launching program</param>
         public static void StartProcessHelper(string path, string arguments = null)
         {
-            if (!Global.IsAdministrator())
+            if (!AdminCheck.IsAdministrator())
             {
                 ProcessStartInfo startInfo = new ProcessStartInfo(path);
                 startInfo.UseShellExecute = true;

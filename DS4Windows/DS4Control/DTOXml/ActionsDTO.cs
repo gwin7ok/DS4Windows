@@ -192,7 +192,7 @@ namespace DS4WinWPF.DS4Control.DTOXml
                         {
                             double delayTime = actionSerializer.Delay;
                             string details = actionSerializer.Details;
-                            double.TryParse(details, System.Globalization.NumberStyles.Float, Global.configFileDecimalCulture, out delayTime);
+                            double.TryParse(details, System.Globalization.NumberStyles.Float, DS4Windows.ConfigFileCulture.DecimalCulture, out delayTime);
 
                             tempAction = new SpecialAction(actionSerializer.Name,
                                 actionSerializer.Trigger, actionSerializer.TypeString,
@@ -204,10 +204,10 @@ namespace DS4WinWPF.DS4Control.DTOXml
                         {
                             double delayTime = actionSerializer.Delay;
                             string details = actionSerializer.Details;
-                            if (double.TryParse(details.Split('|')[0], System.Globalization.NumberStyles.Float, Global.configFileDecimalCulture, out delayTime))
+                            if (double.TryParse(details.Split('|')[0], System.Globalization.NumberStyles.Float, DS4Windows.ConfigFileCulture.DecimalCulture, out delayTime))
                             {
                             }
-                            else if (double.TryParse(details.Split(',')[0], System.Globalization.NumberStyles.Float, Global.configFileDecimalCulture, out delayTime))
+                            else if (double.TryParse(details.Split(',')[0], System.Globalization.NumberStyles.Float, DS4Windows.ConfigFileCulture.DecimalCulture, out delayTime))
                             {
                             }
 
@@ -230,7 +230,7 @@ namespace DS4WinWPF.DS4Control.DTOXml
                             "", actionSerializer.Delay);
                         break;
                     case "GyroCalibration":
-                        double.TryParse(actionSerializer.Details, System.Globalization.NumberStyles.Float, Global.configFileDecimalCulture, out var delay);
+                        double.TryParse(actionSerializer.Details, System.Globalization.NumberStyles.Float, DS4Windows.ConfigFileCulture.DecimalCulture, out var delay);
                         tempAction = new SpecialAction(actionSerializer.Name, actionSerializer.Trigger,
                             actionSerializer.TypeString, actionSerializer.Details, delay);
                         break;

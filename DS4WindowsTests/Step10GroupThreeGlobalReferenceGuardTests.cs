@@ -28,13 +28,13 @@ namespace DS4WindowsTests
         {
             // Step10-3-2
             ["DS4Windows/DS4Forms/ViewModels/SpecialActEditorViewModel.cs"] = new string[0],
-            ["DS4Windows/DS4Forms/ViewModels/SpecialActions/CheckBatteryViewModel.cs"] = new[] { "configFileDecimalCulture" },
-            ["DS4Windows/DS4Forms/ViewModels/SpecialActions/LaunchProgramViewModel.cs"] = new[] { "configFileDecimalCulture" },
+            ["DS4Windows/DS4Forms/ViewModels/SpecialActions/CheckBatteryViewModel.cs"] = new string[0],
+            ["DS4Windows/DS4Forms/ViewModels/SpecialActions/LaunchProgramViewModel.cs"] = new string[0],
             ["DS4Windows/DS4Forms/ViewModels/SpecialActions/LoadProfileViewModel.cs"] = new string[0],
             ["DS4Windows/DS4Forms/ViewModels/SpecialActions/MacroViewModel.cs"] = new string[0],
             ["DS4Windows/DS4Forms/ViewModels/SpecialActions/MultiActButtonViewModel.cs"] = new string[0],
             ["DS4Windows/DS4Forms/ViewModels/SpecialActions/PressKeyViewModel.cs"] = new[] { "getX360ControlString" },
-            ["DS4Windows/DS4Forms/ViewModels/SpecialActions/SpecialActionViewModel.cs"] = new[] { "configFileDecimalCulture" },
+            ["DS4Windows/DS4Forms/ViewModels/SpecialActions/SpecialActionViewModel.cs"] = new string[0],
             ["DS4Windows/DS4Forms/SpecialActionEditor.xaml.cs"] = new string[0],
             // Step10-3-3
             ["DS4Windows/DS4Forms/ViewModels/SpecialActionsListViewModel.cs"] = new string[0],

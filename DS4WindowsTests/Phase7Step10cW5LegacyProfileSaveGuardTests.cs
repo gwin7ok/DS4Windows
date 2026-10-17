@@ -53,12 +53,10 @@ namespace DS4WindowsTests
         }
 
         [Fact]
-        public void TheConstants_AreUnchanged_AndGlobalPointsToTheSameValues()
+        public void TheConstants_AreUnchanged()
         {
             Assert.Equal(5, LegacyProfileXmlSerializer.ConfigVersion);
             Assert.Equal(".xml", LegacyProfileXmlSerializer.XmlExtension);
-            Assert.Equal(LegacyProfileXmlSerializer.ConfigVersion, Global.CONFIG_VERSION);
-            Assert.Equal(LegacyProfileXmlSerializer.XmlExtension, Global.XML_EXTENSION);
         }
 
         [Fact]

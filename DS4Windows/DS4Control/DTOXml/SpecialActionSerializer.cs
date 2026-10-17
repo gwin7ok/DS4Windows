@@ -87,12 +87,12 @@ namespace DS4WinWPF.DS4Control.DTOXml
         {
             get
             {
-                return Delay.ToString(Global.configFileDecimalCulture);
+                return Delay.ToString(DS4Windows.ConfigFileCulture.DecimalCulture);
             }
             set
             {
                 double delayTime = 0.0;
-                if (double.TryParse(value, System.Globalization.NumberStyles.Float, Global.configFileDecimalCulture, out delayTime))
+                if (double.TryParse(value, System.Globalization.NumberStyles.Float, DS4Windows.ConfigFileCulture.DecimalCulture, out delayTime))
                 {
                     Delay = delayTime;
                 }

@@ -118,7 +118,7 @@ namespace DS4Windows
         }
         private static bool IsRealDS4(HidDevice hDevice)
         {
-            if (!Global.UseMoonlight) return !Global.CheckIfVirtualDevice(hDevice.DevicePath);
+            if (!Global.UseMoonlight) return !DevicePathProbe.CheckIfVirtualDevice(hDevice.DevicePath);
             if (!Global.UseAdvancedMoonlight)
             {
                 // this approach should work on most devices, but not on my pc for some reason
@@ -145,7 +145,7 @@ namespace DS4Windows
                     return DetectNewControllers;
                 }
             }
-            return !Global.CheckIfVirtualDevice(hDevice.DevicePath);
+            return !DevicePathProbe.CheckIfVirtualDevice(hDevice.DevicePath);
         }
 
         // Enumerates ds4 controllers in the system
@@ -212,7 +212,7 @@ namespace DS4Windows
                                 {
                                     // Tell the client to launch routine to re-enable a device
                                     RequestElevationArgs eleArgs =
-                                        new RequestElevationArgs(Global.GetInstanceIdFromDevicePath(hDevice.DevicePath));
+                                        new RequestElevationArgs(DevicePathProbe.GetInstanceIdFromDevicePath(hDevice.DevicePath));
                                     RequestElevation?.Invoke(eleArgs);
                                     if (eleArgs.StatusCode == RequestElevationArgs.STATUS_SUCCESS)
                                     {
@@ -221,7 +221,7 @@ namespace DS4Windows
                                 }
                                 else
                                 {
-                                    reEnableDevice(Global.GetInstanceIdFromDevicePath(hDevice.DevicePath));
+                                    reEnableDevice(DevicePathProbe.GetInstanceIdFromDevicePath(hDevice.DevicePath));
                                     hDevice.OpenDevice(isExclusiveMode);
                                 }
                             }

@@ -44,11 +44,11 @@ namespace DS4WindowsTests
             ["DS4Windows/DS4Control/DS4OutDevices/DS4OutDeviceExt.cs"] = (0, 0, 1),
             // Phase6-Step10b W1: 1 ファイル 1 型の分割に伴い、件数を新設ファイルへ引き継いだ（合計は不変: ActionsDTO 6＝4＋2、AutoProfilesDTO 4＝0＋4、ProfileDTO 10＝2＋8）
             // Phase6-Step12 Wave 6: プロファイル用 DTO（ProfileDTO と、ProfileDTO 専用の型 19 ファイル）の削除に伴い、DS4Control*AssignmentSerializer（6 ファイル）と ProfileDTO の基準値（計 10）を除いた
-            ["DS4Windows/DS4Control/DTOXml/ActionsDTO.cs"] = (0, 0, 4),
-            ["DS4Windows/DS4Control/DTOXml/AppSettingsDTO.cs"] = (0, 0, 2),
+            ["DS4Windows/DS4Control/DTOXml/ActionsDTO.cs"] = (0, 0, 0), // Phase7-Step10d W2: 4 → 0
+            ["DS4Windows/DS4Control/DTOXml/AppSettingsDTO.cs"] = (0, 0, 0), // Phase7-Step10d W2: 2 → 0
             ["DS4Windows/DS4Control/DTOXml/AutoProfileEntrySerializer.cs"] = (0, 0, 0),
-            ["DS4Windows/DS4Control/DTOXml/OutputSlotPersistDTO.cs"] = (0, 0, 1),
-            ["DS4Windows/DS4Control/DTOXml/SpecialActionSerializer.cs"] = (0, 0, 2),
+            ["DS4Windows/DS4Control/DTOXml/OutputSlotPersistDTO.cs"] = (0, 0, 0), // Phase7-Step10d W2: 1 → 0
+            ["DS4Windows/DS4Control/DTOXml/SpecialActionSerializer.cs"] = (0, 0, 0), // Phase7-Step10d W2: 2 → 0
             // Phase6-Step10b W4: Log.cs（AppLogger／ProfileChangeSource／ProfileChangedEventArgs）は型ごとに分割。Global 1 件は AppLogger.cs
             ["DS4Windows/DS4Control/AppLogger.cs"] = (0, 0, 1),
             // Phase7-Step5 W2: Program.rootHub のフォールバックを削除（1 → 0）
@@ -65,8 +65,8 @@ namespace DS4WindowsTests
             ["DS4Windows/DS4Control/MouseCursor.cs"] = (0, 0, 0),
             // Phase7-Step4 W1: fakerInputInstalled を EnvironmentService の状態に切り替え（1 → 0）
             ["DS4Windows/DS4Control/OutputKBM/VirtualKBMFactory.cs"] = (0, 0, 0),
-            ["DS4Windows/DS4Control/OutputSlotPersist.cs"] = (0, 0, 1),
-            ["DS4Windows/DS4Control/ProfileMigration.cs"] = (0, 0, 4),
+            ["DS4Windows/DS4Control/OutputSlotPersist.cs"] = (0, 0, 0), // Phase7-Step10d W2: 1 → 0
+            ["DS4Windows/DS4Control/ProfileMigration.cs"] = (0, 0, 0), // Phase7-Step10d W2: 4 → 0
             // Phase6-Step10b W5: ScpUtil.cs（29 型）を型ごとに分割。件数を引き継いだ（Global 233＝Global 47＋BackingStore 182＋Changelog 4、AppHost 12＝11＋1。rootHub 9 は Global。合計は不変）
             // Phase7-Step1 W1: 孤立メソッド 10 名の削除で Global.* 14 件が減った（182 → 168）
             // Phase7-Step5 W4: IProcessInspector をプロパティ注入にし、AppHost.GetService を削除（1 → 0）
@@ -76,7 +76,7 @@ namespace DS4WindowsTests
             // Phase7-Step10c W4: プロファイルの読込（LoadProfile ほか）を LegacyProfileXmlSerializer へ移した（18 → 14）
             // Phase7-Step10c W5: プロファイルの保存（SaveProfile ほか）を LegacyProfileXmlSerializer へ移した（14 → 7）
             ["DS4Windows/DS4Control/BackingStore.cs"] = (0, 0, 7),
-            ["DS4Windows/DS4Control/Changelog.cs"] = (0, 0, 4),
+            ["DS4Windows/DS4Control/Changelog.cs"] = (0, 0, 2), // Phase7-Step10d W2: 4 → 2
             // Phase6-Step12 Wave 1: 孤立コード 24 件を削除（Global 47 → 45）。Wave 2: 互換アクセサ 152 件を削除（Global 45 → 38）。Wave 3: *Instance のフォールバック群 19 件を削除（Global 38 → 26、AppHost 11 → 5、rootHub 9 → 6）。Wave 4: BackingStore 直転送ラッパー 58 件を削除（AppHost 5 → 4。(6, 4, 26)）
             // Phase7-Step4 W1: IsUsingMinViGEm117333 の移管で Global.* 2 件を削除（24 → 22）
             // Phase7-Step4 W2: Global.Load の削除で AppHost.GetService を 1 件削除（4 → 3）
@@ -94,13 +94,13 @@ namespace DS4WindowsTests
             // Phase7-Step10b W2: iconChoiceResources を TrayIconResources へ移した（4 → 3）
             ["DS4Windows/DS4Control/Services/AppearanceSettingsService.cs"] = (0, 0, 3),
             ["DS4Windows/DS4Control/Services/AutoProfileService.cs"] = (0, 0, 1),
-            ["DS4Windows/DS4Control/Services/DefaultElevatedProcessLauncher.cs"] = (0, 0, 1),
+            ["DS4Windows/DS4Control/Services/DefaultElevatedProcessLauncher.cs"] = (0, 0, 0), // Phase7-Step10d W2: 1 → 0
             ["DS4Windows/DS4Control/Services/DeviceStateService.cs"] = (0, 0, 1),
             // Phase7-Step2 W7: IDs4DeviceRegistry.IsHidHideInstalled の削除で Global.IsHidHideInstalled の参照 1 件を削除（1 → 0）
             ["DS4Windows/DS4Control/Services/Ds4DeviceRegistryAdapter.cs"] = (0, 0, 0),
             // Phase7-Step4 W1: 調べ物と状態を EnvironmentService が持つ形に移管（21 → 7: IsAdministrator／exeversion／GetInstanceIdFromDevicePath／AdminNeeded と、スロット上限の定数 3）
             // Phase7-Step10a W2: 定数参照（Global.MAX_DS4_CONTROLLER_COUNT ほか）を ControllerLimits へ切り替え（Actions 3、App 1、ControlService 2、DS4LightBar 7、AppSettingsDTO 14、AutoProfileEntrySerializer 4、DeviceStateService 1、EnvironmentService 3、OutputSlotService 1、MainWindow 1、ProfileEditor 3）
-            ["DS4Windows/DS4Control/Services/EnvironmentService.cs"] = (0, 0, 4),
+            ["DS4Windows/DS4Control/Services/EnvironmentService.cs"] = (0, 0, 0), // Phase7-Step10d W2: 4 → 0
             // Phase7-Step2 W4: IVirtualKBM.ErrorMessage の削除で Global.outputKBMHandler の参照 1 件を削除（21 → 20）。W7: Version の削除でさらに 1 件削除（20 → 19）
             // Phase7-Step8 W3（Q6＝A）: OutputKBMHandlerAdapter.cs の Global.outputKBMHandler／outputKBMMapping 参照 19 件を削除（出力ハンドラの実体を OutputKBMHandlerAdapter へ）
             // Phase7-Step8 W3（Q6＝A）: OutputKBMHandlerLifecycle.cs の Global.outputKBMHandler／outputKBMMapping 参照 8 件を削除（出力ハンドラの実体を OutputKBMHandlerAdapter へ）
@@ -122,7 +122,7 @@ namespace DS4WindowsTests
             // Phase7-Step10c W2: Global.SaveAction／RemoveAction／CreateStdActions の呼び出しを SpecialActionRepository のメソッドに替えた（3 → 0。基準値の更新漏れを W7 で直した）
             ["DS4Windows/DS4Control/Services/SpecialActionRepository.cs"] = (0, 0, 0),
             // Phase7-Step8 W3（Q6＝A）: SyntheticDispatcher.cs の Global.outputKBMHandler／outputKBMMapping 参照 4 件を削除（出力ハンドラの実体を OutputKBMHandlerAdapter へ）
-            ["DS4Windows/DS4Control/Util.cs"] = (0, 0, 1),
+            ["DS4Windows/DS4Control/Util.cs"] = (0, 0, 0), // Phase7-Step10d W2: 1 → 0
             ["DS4Windows/DS4Control/Xbox360OutDevice.cs"] = (0, 0, 1),
             // Phase6-Step10b W3: 1 ファイル 1 型の分割に伴い、件数を新設ファイルへ引き継いだ（合計は不変）
             //   MainWindow 7＝1＋ImageLocationPaths 6、ProfileEditor 37＝32＋ResourcePaths 5、ControllerListViewModel 4＝0＋CompositeDeviceModel 4、
@@ -138,20 +138,20 @@ namespace DS4WindowsTests
             ["DS4Windows/DS4Forms/ResourcePaths.cs"] = (0, 0, 0),
             ["DS4Windows/DS4Forms/ViewModels/CompositeDeviceModel.cs"] = (0, 0, 0),
             ["DS4Windows/DS4Forms/ViewModels/ControllerListViewModel.cs"] = (0, 0, 0),
-            ["DS4Windows/DS4Forms/ViewModels/LanguagePackViewModel.cs"] = (0, 0, 3),
+            ["DS4Windows/DS4Forms/ViewModels/LanguagePackViewModel.cs"] = (0, 0, 1), // Phase7-Step10d W2: 3 → 1
             ["DS4Windows/DS4Forms/ViewModels/MacroStepItem.cs"] = (0, 0, 0),
             ["DS4Windows/DS4Forms/ViewModels/MappedControl.cs"] = (0, 0, 0),
             ["DS4Windows/DS4Forms/ViewModels/MappingListViewModel.cs"] = (0, 0, 0),
             ["DS4Windows/DS4Forms/ViewModels/ProfileSettingsViewModel.cs"] = (0, 0, 0),
             ["DS4Windows/DS4Forms/ViewModels/RecordBoxViewModel.cs"] = (0, 0, 0),
-            ["DS4Windows/DS4Forms/ViewModels/SpecialActions/CheckBatteryViewModel.cs"] = (0, 0, 1),
-            ["DS4Windows/DS4Forms/ViewModels/SpecialActions/LaunchProgramViewModel.cs"] = (0, 0, 1),
+            ["DS4Windows/DS4Forms/ViewModels/SpecialActions/CheckBatteryViewModel.cs"] = (0, 0, 0), // Phase7-Step10d W2: 1 → 0
+            ["DS4Windows/DS4Forms/ViewModels/SpecialActions/LaunchProgramViewModel.cs"] = (0, 0, 0), // Phase7-Step10d W2: 1 → 0
             ["DS4Windows/DS4Forms/ViewModels/SpecialActions/PressKeyViewModel.cs"] = (0, 0, 0),
-            ["DS4Windows/DS4Forms/ViewModels/SpecialActions/SpecialActionViewModel.cs"] = (0, 0, 1),
+            ["DS4Windows/DS4Forms/ViewModels/SpecialActions/SpecialActionViewModel.cs"] = (0, 0, 0), // Phase7-Step10d W2: 1 → 0
             ["DS4Windows/DS4Forms/ViewModels/TrayIconViewModel.cs"] = (0, 0, 0),
             // Phase6-Step12: デバウンス時間の通知経路の削除で、Global.DebouncingMsChanged／DebouncingMs の参照 2 件を削除（3 → 1）
             ["DS4Windows/DS4Library/DS4Device.cs"] = (0, 0, 1),
-            ["DS4Windows/DS4Library/DS4Devices.cs"] = (0, 0, 6),
+            ["DS4Windows/DS4Library/DS4Devices.cs"] = (0, 0, 2), // Phase7-Step10d W2: 6 → 2
             // Phase6-Step10b W4: DS4Sixaxis.cs は DS4SixAxis.cs へ改名（型名に合わせた大文字・小文字の変更。Dictionary は大文字・小文字を区別する）
             // Phase7-Step5 W1: DS3 のジャイロトリガーの判定を関数の注入にし、Program.rootHub の参照を削除（1 → 0）
             ["DS4Windows/DS4Library/DS4SixAxis.cs"] = (0, 0, 1),

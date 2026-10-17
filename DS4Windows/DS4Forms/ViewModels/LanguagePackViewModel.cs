@@ -1,4 +1,4 @@
-﻿/*
+/*
 DS4Windows
 Copyright (C) 2023  Travis Nickles
 
@@ -31,6 +31,11 @@ namespace DS4WinWPF.DS4Forms.ViewModels
 {
     public class LanguagePackViewModel
     {
+        // Phase7-Step10d W2: 旧 Global.PROBING_PATH／LANGUAGE_ASSEMBLY_NAME（利用はこのクラスのみ）。
+        // Need to add additional probing path in code starting with .NET 6.
+        private const string ProbingPath = "Lang";
+        private const string LanguageAssemblyName = "DS4Windows.resources.dll";
+
         private List<LangPackItem> langPackList;
         private const string invariantCultureTextValue = "No (English UI)";
 
@@ -104,7 +109,7 @@ namespace DS4WinWPF.DS4Forms.ViewModels
         {
             // Find the location where application installed.
             string exeLocation = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
-            List<string> lookupPaths = Global.PROBING_PATH.Split(';')
+            List<string> lookupPaths = ProbingPath.Split(';')
                 .Select(path => Path.Combine(exeLocation, path))
                 .Where(path => path != exeLocation)
                 .ToList();
@@ -121,7 +126,7 @@ namespace DS4WinWPF.DS4Forms.ViewModels
         private bool IsLanguageAssemblyAvailable(List<string> lookupPaths, CultureInfo culture)
         {
             return lookupPaths.Select(path => Path.Combine(path, culture.Name,
-                Global.LANGUAGE_ASSEMBLY_NAME))
+                LanguageAssemblyName))
                 .Where(path => File.Exists(path))
                 .Count() > 0;
         }

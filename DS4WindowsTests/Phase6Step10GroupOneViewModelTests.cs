@@ -22,7 +22,7 @@ namespace DS4WindowsTests
         public void AboutViewModel_VersionText_MatchesGlobalExeVersion()
         {
             var vm = new AboutViewModel(new EnvironmentService());
-            Assert.Equal($"v{Global.exeversion}", vm.VersionText);
+            Assert.Equal($"v{PathService.ExecutableVersionState}", vm.VersionText);
         }
 
         // UpdaterWindowViewModel は internal のため、リフレクションで生成・呼び出す（本番コードの可視性は変えない）。

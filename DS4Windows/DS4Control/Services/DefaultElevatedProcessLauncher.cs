@@ -11,7 +11,7 @@ namespace DS4Windows.Services
     {
         public int? RelaunchElevated(string arguments, int timeoutMs = 30000)
         {
-            ProcessStartInfo startInfo = new ProcessStartInfo(Global.exelocation);
+            ProcessStartInfo startInfo = new ProcessStartInfo(DS4Windows.PathService.ExecutableLocationState);
             startInfo.Verb = "runas";
             startInfo.Arguments = arguments;
             startInfo.UseShellExecute = true;

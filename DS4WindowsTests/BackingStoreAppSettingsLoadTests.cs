@@ -27,7 +27,7 @@ namespace DS4WindowsTests
             _originalExeDirPath = TestGlobals.ExeDirPath;
             TestGlobals.ExeDirPath = _tempDir;
             _profilesXml = Path.Combine(_tempDir, "Profiles.xml");
-            _fakeExeFile = Path.Combine(_tempDir, Global.CUSTOM_EXE_CONFIG_FILENAME);
+            _fakeExeFile = Path.Combine(_tempDir, DS4Windows.Services.AppSettingsXmlSerializer.CustomExeConfigFileName);
         }
 
         public void Dispose()
