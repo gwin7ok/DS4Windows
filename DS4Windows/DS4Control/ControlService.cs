@@ -338,7 +338,8 @@ namespace DS4Windows
                 };
             }
 
-            outputslotMan = new OutputSlotManager(() => _environmentService.ViGEmBusVersion);
+            outputslotMan = new OutputSlotManager(() => _environmentService.ViGEmBusVersion,
+                slot => _profileSettings.GetSASteeringWheelEmulationAxis(slot));
             //outputslotMan.SlotAssigned += OutputslotMan_SlotAssigned;
             deviceOptions = _appSettings.DeviceOptions;
 

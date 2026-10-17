@@ -177,7 +177,9 @@ namespace DS4Windows.DI
             services.AddSingleton<MainWindowsViewModel>();
 
             // === 既存Singletonインスタンスの取得登録 ===
-            services.AddSingleton<IDs4DeviceRegistry>(sp => new Ds4DeviceRegistryAdapter());
+            // Phase7-Step10d W3（Q4＝A）: 第 1 層が読む設定値の窓口
+            services.AddSingleton<IDeviceLayerSettings, DeviceLayerSettings>();
+            services.AddSingleton<IDs4DeviceRegistry>(sp => new Ds4DeviceRegistryAdapter(sp.GetRequiredService<IDeviceLayerSettings>()));
             services.AddSingleton<ControlService>(sp =>
             {
                 // Phase7-Step5 W2（Q2＝A）: 旧 Program.rootHub ?? の分岐を削除した。シングルトンの生成は、このファクトリーだけが行う

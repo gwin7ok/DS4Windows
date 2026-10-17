@@ -34,6 +34,9 @@ namespace DS4Windows
         // ControlService が、デバイスをスロットへ接続するときに設定する（旧: App.rootHub.touchPad[device] を静的に参照していた）。
         // 未設定のとき（接続前、テスト）は「無効」として扱い、例外にしない。
         public Func<int, bool> GyroControlsTriggerActive { get; set; }
+
+        // Phase7-Step10d W3（Q4＝A）: DS3 の pitch／roll 疑似計算の設定値。DS4Device.LayerSettings から引き継ぐ。未設定のとき（テスト）は「無効」として扱う。
+        public DS4Windows.DI.IDeviceLayerSettings LayerSettings { get; set; }
         private CalibData[] calibrationData = new CalibData[6] { new CalibData(), new CalibData(),
             new CalibData(), new CalibData(), new CalibData(), new CalibData()
         };
@@ -317,7 +320,7 @@ namespace DS4Windows
                 // Phase7-Step5 W1: DI 移行（コミット 78ae8687）以降、_controlService は常に null で、DS3 の接続中にここで
                 // NullReferenceException になり得た（引数なしコンストラクターが選ばれ、引数つきの方は呼ばれなかった）。移行前と同じ結果を返す。
                 var triggerActive = GyroControlsTriggerActive?.Invoke(device) ?? false;
-                if (Global.UseDs3PitchRollSim && triggerActive)
+                if (LayerSettings != null && LayerSettings.UseDs3PitchRollSim && triggerActive)
                 {
                     _simulatePitchRoll.PushSample(AccelX, AccelY, AccelZ, state.totalMicroSec);
                     _simulatePitchRoll.GetPitchRoll(ref currentPitch, ref currentRoll);

@@ -109,7 +109,7 @@ namespace DS4Windows
             cont.LeftTrigger = state.L2;
             cont.RightTrigger = state.R2;
 
-            SASteeringWheelEmulationAxisType steeringWheelMappedAxis = Global.GetSASteeringWheelEmulationAxis(device);
+            SASteeringWheelEmulationAxisType steeringWheelMappedAxis = GetSteeringWheelEmulationAxis(device);
             switch (steeringWheelMappedAxis)
             {
                 case SASteeringWheelEmulationAxisType.None:

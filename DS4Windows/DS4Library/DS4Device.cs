@@ -400,6 +400,15 @@ namespace DS4Windows
         public DS4Touchpad Touchpad { get { return touchpad; } }
         public DS4SixAxis SixAxis { get { return sixAxis; } }
 
+        // Phase7-Step10d W3（Q4＝A）: デバウンス時間と DS3 の pitch／roll 疑似計算の設定値。DS4Devices が、デバイスの生成直後（入力の開始前）に設定する。
+        // 未設定のとき（テスト）は、デバウンス 0ms・疑似計算なしとして扱う。
+        private DS4Windows.DI.IDeviceLayerSettings layerSettings;
+        public DS4Windows.DI.IDeviceLayerSettings LayerSettings
+        {
+            get => layerSettings;
+            set { layerSettings = value; sixAxis.LayerSettings = value; }
+        }
+
         public static ConnectionType HidConnectionType(HidDevice hidDevice)
         {
             ConnectionType result = ConnectionType.USB;
@@ -1416,7 +1425,7 @@ namespace DS4Windows
 
         protected Debouncer SetupDebouncer()
         {
-            var debouncingMs = TimeSpan.FromMilliseconds(Global.DebouncingMs[deviceSlotNumber]);
+            var debouncingMs = TimeSpan.FromMilliseconds(layerSettings?.GetDebouncingMs(deviceSlotNumber) ?? 0);
             Debouncer debouncer = new(debouncingMs);
             debouncer.AddDebouncer(nameof(DS4State.Cross));
             debouncer.AddDebouncer(nameof(DS4State.Triangle));

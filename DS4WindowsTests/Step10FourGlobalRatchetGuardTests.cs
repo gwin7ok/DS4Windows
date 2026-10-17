@@ -40,8 +40,8 @@ namespace DS4WindowsTests
             // Phase7-Step5 W4: IElevatedProcessLauncher をコンストラクター注入にし、AppHost.GetService を削除（1 → 0）
             ["DS4Windows/DS4Control/ControlService.cs"] = (0, 0, 0),
             ["DS4Windows/DS4Control/DS4LightBar.cs"] = (0, 0, 0),
-            ["DS4Windows/DS4Control/DS4OutDevices/DS4OutDeviceBasic.cs"] = (0, 0, 1),
-            ["DS4Windows/DS4Control/DS4OutDevices/DS4OutDeviceExt.cs"] = (0, 0, 1),
+            ["DS4Windows/DS4Control/DS4OutDevices/DS4OutDeviceBasic.cs"] = (0, 0, 0), // Phase7-Step10d W3: 1 → 0
+            ["DS4Windows/DS4Control/DS4OutDevices/DS4OutDeviceExt.cs"] = (0, 0, 0), // Phase7-Step10d W3: 1 → 0
             // Phase6-Step10b W1: 1 ファイル 1 型の分割に伴い、件数を新設ファイルへ引き継いだ（合計は不変: ActionsDTO 6＝4＋2、AutoProfilesDTO 4＝0＋4、ProfileDTO 10＝2＋8）
             // Phase6-Step12 Wave 6: プロファイル用 DTO（ProfileDTO と、ProfileDTO 専用の型 19 ファイル）の削除に伴い、DS4Control*AssignmentSerializer（6 ファイル）と ProfileDTO の基準値（計 10）を除いた
             ["DS4Windows/DS4Control/DTOXml/ActionsDTO.cs"] = (0, 0, 0), // Phase7-Step10d W2: 4 → 0
@@ -123,7 +123,7 @@ namespace DS4WindowsTests
             ["DS4Windows/DS4Control/Services/SpecialActionRepository.cs"] = (0, 0, 0),
             // Phase7-Step8 W3（Q6＝A）: SyntheticDispatcher.cs の Global.outputKBMHandler／outputKBMMapping 参照 4 件を削除（出力ハンドラの実体を OutputKBMHandlerAdapter へ）
             ["DS4Windows/DS4Control/Util.cs"] = (0, 0, 0), // Phase7-Step10d W2: 1 → 0
-            ["DS4Windows/DS4Control/Xbox360OutDevice.cs"] = (0, 0, 1),
+            ["DS4Windows/DS4Control/Xbox360OutDevice.cs"] = (0, 0, 0), // Phase7-Step10d W3: 1 → 0
             // Phase6-Step10b W3: 1 ファイル 1 型の分割に伴い、件数を新設ファイルへ引き継いだ（合計は不変）
             //   MainWindow 7＝1＋ImageLocationPaths 6、ProfileEditor 37＝32＋ResourcePaths 5、ControllerListViewModel 4＝0＋CompositeDeviceModel 4、
             //   MappingListViewModel 3＝0＋MappedControl 3、RecordBoxViewModel 7＝1＋MacroStepItem 6
@@ -150,13 +150,13 @@ namespace DS4WindowsTests
             ["DS4Windows/DS4Forms/ViewModels/SpecialActions/SpecialActionViewModel.cs"] = (0, 0, 0), // Phase7-Step10d W2: 1 → 0
             ["DS4Windows/DS4Forms/ViewModels/TrayIconViewModel.cs"] = (0, 0, 0),
             // Phase6-Step12: デバウンス時間の通知経路の削除で、Global.DebouncingMsChanged／DebouncingMs の参照 2 件を削除（3 → 1）
-            ["DS4Windows/DS4Library/DS4Device.cs"] = (0, 0, 1),
-            ["DS4Windows/DS4Library/DS4Devices.cs"] = (0, 0, 2), // Phase7-Step10d W2: 6 → 2
+            ["DS4Windows/DS4Library/DS4Device.cs"] = (0, 0, 0), // Phase7-Step10d W3: 1 → 0
+            ["DS4Windows/DS4Library/DS4Devices.cs"] = (0, 0, 0), // Phase7-Step10d W3: 2 → 0 // Phase7-Step10d W2: 6 → 2
             // Phase6-Step10b W4: DS4Sixaxis.cs は DS4SixAxis.cs へ改名（型名に合わせた大文字・小文字の変更。Dictionary は大文字・小文字を区別する）
             // Phase7-Step5 W1: DS3 のジャイロトリガーの判定を関数の注入にし、Program.rootHub の参照を削除（1 → 0）
-            ["DS4Windows/DS4Library/DS4SixAxis.cs"] = (0, 0, 1),
+            ["DS4Windows/DS4Library/DS4SixAxis.cs"] = (0, 0, 0), // Phase7-Step10d W3: 1 → 0
             ["DS4Windows/DS4Library/DS4State.cs"] = (0, 0, 0),
-            ["DS4Windows/HidLibrary/HidDevices.cs"] = (0, 0, 2),
+            ["DS4Windows/HidLibrary/HidDevices.cs"] = (0, 0, 0), // Phase7-Step10d W3: 2 → 0
         };
 
         private static readonly Regex RootHubPattern = new Regex(@"Program\.rootHub", RegexOptions.Compiled);

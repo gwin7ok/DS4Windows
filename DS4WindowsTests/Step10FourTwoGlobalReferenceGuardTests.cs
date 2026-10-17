@@ -209,7 +209,7 @@ namespace DS4WindowsTests
             Func<ControlService> control = () => null;
 
             Assert.Throws<ArgumentNullException>(() => new OutputSlotStore(null));
-            Assert.Throws<ArgumentNullException>(() => new OutputSlotManager(null));
+            Assert.Throws<ArgumentNullException>(() => new OutputSlotManager(null, _ => SASteeringWheelEmulationAxisType.None));
             Assert.Throws<ArgumentNullException>(() => new OutputSlotService(null, store, control));
             Assert.Throws<ArgumentNullException>(() => new OutputSlotService(manager, null, control));
             Assert.Throws<ArgumentNullException>(() => new OutputSlotService(manager, store, null));
@@ -238,7 +238,7 @@ namespace DS4WindowsTests
         public void OutputSlotManager_ReadsViGEmBusVersionFromProvider()
         {
             int calls = 0;
-            var manager = new OutputSlotManager(() => { calls++; return new Version(1, 0, 0, 0); });
+            var manager = new OutputSlotManager(() => { calls++; return new Version(1, 0, 0, 0); }, _ => SASteeringWheelEmulationAxisType.None);
             Assert.NotNull(manager);
             Assert.Equal(0, calls); // 生成時には読まない（割り当て時に都度読み取る）
         }

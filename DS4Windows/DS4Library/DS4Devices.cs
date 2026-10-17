@@ -104,6 +104,10 @@ namespace DS4Windows
         };
 
 
+        // Phase7-Step10d W3（Q4＝A）: 第 1 層が読む設定値（Moonlight／詳細ログ）。Ds4DeviceRegistryAdapter が設定する。
+        // 未設定のとき（テスト）は、Moonlight 無効・詳細ログ無効として扱う（旧: Global が BackingStore の既定値を返していた）。
+        public static DS4Windows.DI.IDeviceLayerSettings LayerSettings { get; set; }
+
         private static bool detectNewControllers = true;
         private static long timestamp;
         private static bool DetectNewControllers
@@ -118,8 +122,9 @@ namespace DS4Windows
         }
         private static bool IsRealDS4(HidDevice hDevice)
         {
-            if (!Global.UseMoonlight) return !DevicePathProbe.CheckIfVirtualDevice(hDevice.DevicePath);
-            if (!Global.UseAdvancedMoonlight)
+            var layerSettings = LayerSettings;
+            if (layerSettings == null || !layerSettings.UseMoonlight) return !DevicePathProbe.CheckIfVirtualDevice(hDevice.DevicePath);
+            if (!layerSettings.UseAdvancedMoonlight)
             {
                 // this approach should work on most devices, but not on my pc for some reason
                 if (hDevice.Attributes.VendorId == 1356 && hDevice.Attributes.ProductId == 1476) return true;
@@ -153,7 +158,7 @@ namespace DS4Windows
         {
             lock (Devices)
             {
-                IEnumerable<HidDevice> hDevices = HidDevices.EnumerateDS4(knownDevices);
+                IEnumerable<HidDevice> hDevices = HidDevices.EnumerateDS4(knownDevices, LayerSettings);
 
                 hDevices = hDevices.Where(d =>
                 {
@@ -298,6 +303,7 @@ namespace DS4Windows
                                 continue;
                             }
 
+                            ds4Device.LayerSettings = LayerSettings;
                             PrepareDS4Init?.Invoke(ds4Device);
                             ds4Device.PostInit();
                             //Thread.Sleep(100);
