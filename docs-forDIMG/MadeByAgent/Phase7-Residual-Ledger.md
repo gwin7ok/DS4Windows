@@ -103,3 +103,14 @@
 - 計画との差: `ControlService` と `Mouse` は、保持クラスを注入ではなく `Shared` から得る（`ControlService` のコンストラクター変更によるテストの改修を避けるため。Step8 で `Mapping` の instance 化と同時に注入へ）。`stickValueHistory`／`lastStickAxisValues`／`outSqrStk`／`lastWheelGyroValues` など `Mapping` 内部だけで使う状態は、Step8 まで `Mapping` に残した。
 - 持ち越し: `Mapping` の `profileSettings`／`profileApplication`／`VirtualKBM` の束縛、`AppHost` 6・`ServiceProviderHolder` 5、`Global.outputKBMHandler`／`outputKBMMapping`（Q6＝A）、`Shared` の削除（Step8）。互換 `AppHost`、`Global` 定数参照 43、K3（`macroDispatchInFlight` の再設計）（Step9）。`Actions/` の `ServiceProviderHolder` 17（Phase8）。
 - 実機確認: U-17（未）。
+
+## 11. Phase7-Step8 で更新した台帳（2026-10-17）
+
+- `Global.*`: 432 → **399**（`OutputKBMHandlerAdapter.cs` 19 → 0、`OutputKBMHandlerLifecycle.cs` 8 → 0、`SyntheticDispatcher.cs` 4 → 0、`Mapping.cs` 43 → 41）。`AppHost.GetService|Services`: 11 → **5**（`Mapping.cs` の 6 件。残りは `App.xaml.cs` 1、`DI/AppHost.cs` 2、`DI/Compat/AppHost.cs` 1、`Global.cs` 1）。`Program.rootHub` 0 のまま。`ServiceProviderHolder`（`Phase7Step1ServiceLocatorRatchetGuardTests` の数え方）: 22 → **17**（`Mapping.cs` の 5 件。残りは `Actions/` の 17 件で Phase8）。Phase7 開始時（733）からの累計は −334。基準値は `Step10FourGlobalRatchetGuardTests`（合計 0／5／399）。
+- 新設: `IMapping`／`Mapping`（Singleton。窓口は 8 メンバー）、`IKeyButtonControllerRegistry`／`KeyButtonControllerRegistry`（旧 `Mapping` の静的な登録簿）、`ISyntheticDispatcher`／`SyntheticDispatcherService`（旧 静的クラスの処理）。`ActionsLoadedRuntimeReset` は静的クラスから instance へ。
+- 削除: 保持クラス 3 つの `Shared`、`Mapping` の転送プロパティ（Step7）、`Global.outputKBMHandler`／`outputKBMMapping`／`InitOutputKBMHandler`／`InitOutputKBMMapping`、`Mapping` の `AppHost`／`ServiceProviderHolder`／`Global` のフォールバック、`MouseOutputAction` の無効な検索（2 箇所）、呼び出しが 0 件だった内部メンバー 4 つ（`DispatchProfileActionEdge`、`TakePendingRestoreProfileName`、`ApplyProfileDirect`、`RestoreProfileDirect`）。`MapClick`／`ResetRuntimeStateForKey` は `SyntheticInputState` へ移した。
+- 付け替え: `Mouse`／`ControlService` は保持クラスをコンストラクターで受ける。`ControlService` は `IMapping` を受け、`MappingService` として公開する（`ControllerReadingsControl`、`RecordBoxViewModel` が使う）。`DefaultActionManager`／`DefaultMacroPlayer` は `Func<IMapping>`（遅延）を受ける。`ProfileApplicationService` は `IKeyButtonControllerRegistry` を受ける。`SpecialActionRepository` は `SyntheticInputState` を受け、キー型の保存後のリセットを `Global.SaveAction` から引き取った。
+- 持ち越し（暫定の橋渡し）: 静的な `SyntheticDispatcher` は、Actions サブシステム（`KeyButtonActionController`、`KeyAction`、`KeyOutputAction`、`RepeatHelper`）が静的に呼ぶための橋渡しとして残した。状態もフォールバックも持たず、DI が作った instance を `Bind` で受ける。→ Phase8 で削除。`ActionManager.cs` の `Mapping` 呼び出し 3 件は、取得済みの `sp` から解決する形に替えた（`ServiceProviderHolder` の語は増えていない）。
+- 持ち越し（Step9）: 互換 `AppHost`（`DI/Compat/AppHost.cs`。`Mapping.cs` が使わなくなったため、呼び出し元は 0 件のはず。削除前に確認）、`Mapping.cs` の `Global` 参照 41（定数・`Clamp`）、K3（`macroDispatchInFlight`）、static のまま残した純粋な関数・定数の最終的な置き場所。
+- 持ち越し（Step10）: `BackingStore` のコンストラクター注入、`Mapping` のコンストラクターの依存（11 個）の整理。
+- 実機確認: U-18（未）。

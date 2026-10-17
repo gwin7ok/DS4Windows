@@ -56,10 +56,17 @@
 | **2.変換**| `IAutoProfileService` | `AutoProfileService` | **Singleton** | フォアグラウンドアプリ監視とプロファイル自動切替 | `IProcessInspector`, `IProfileApplicationService` |
 | **2.変換**| `IManagedActionManager` | `DefaultActionManager` | **Singleton** | マクロ・キー・プロファイル切替アクションの実行統括。2026-09-04〜2026-10-14 は登録が欠落していた（Phase6-Step9b-2 で再登録） | `IActionFactory` |
 | **2.変換**| `IControllerRegistry` | `DefaultControllerRegistry` | **Singleton** | `KeyButtonActionController` の登録と、デバイス単位・終了時の破棄（Phase6-Step9b-2 で再登録） | なし |
+| **2.変換**| `IMapping` | `Mapping` | **Singleton** | 入力の評価（カーブ・割り当て・合成入力の確定・切断の後始末・マクロ）。旧: メンバーのほぼすべてが static（Phase7-Step8）。`DefaultActionManager`／`DefaultMacroPlayer` は `Func<IMapping>` で遅延して受ける | `SyntheticInputState`, `MacroRuntimeState`, `StickMotionState`, `IProfileSettingsService`, `IProfileApplicationService`, `IVirtualKBM`, `IKeyButtonControllerRegistry`, `IProcessLauncher`, `IProfileSwitcher`, `ISyntheticDispatcher`, `Func<IDeviceStateAccessor>`※1 |
+| **2.変換**| `IKeyButtonControllerRegistry` | `KeyButtonControllerRegistry` | **Singleton** | デバイス × アクション名ごとの `KeyButtonActionController` の登録簿（生成・再利用・破棄）。旧: `Mapping` の静的フィールド | `IKeyButtonActionControllerFactory`, `IControllerRegistry` |
+| **2.変換**| `ISyntheticDispatcher` | `SyntheticDispatcherService` | **Singleton** | 合成キーの押下・解放・タイミングのリセット。静的な `SyntheticDispatcher` は、Actions サブシステム用の暫定の橋渡し（Phase8 で削除） | `SyntheticInputState`, `OutputKBMHandlerAdapter`, `IProfileSettingsService` |
+| **2.変換**| `SyntheticInputState` | `SyntheticInputState` | **Singleton** | 合成キー・マウス入力の状態（`GlobalState`／`DeviceState`／`SyncStateLock`） | なし |
+| **2.変換**| `MacroRuntimeState` | `MacroRuntimeState` | **Singleton** | マクロの実行時状態（実行済みフラグ、二重実行防止、出力フラグ、実行 Task の連鎖） | なし |
+| **2.変換**| `StickMotionState` | `StickMotionState` | **Singleton** | スティック・ジャイロ・トリガーの処理状態（フリック、2 段トリガー、ホイールのフィルターほか） | なし |
+| **2.変換**| `ActionsLoadedRuntimeReset` | `ActionsLoadedRuntimeReset` | **Singleton** | `BackingStore.ActionsLoaded` の購読者。Actions.xml の読み込み後に、合成状態・トグル状態・マクロの実行済みフラグをリセット | `SyntheticInputState`, `MacroRuntimeState` |
 | **2.変換**| `ControlService` | `ControlService` | **Singleton** | 入力・変換・出力パイプライン全体の開始・停止統括（ファサード） | `IDs4DeviceRegistry`, `IInputLoopCoordinator`, `IOutputSlotService`※1, `IProfileSettingsService`, `IAppSettingsService`, `IEnvironmentService`, `IPathService`, `IVirtualKBM`, `IVirtualKBMLifecycle`, `IProfileRepository`, `IDeviceStateService`, `IAppearanceSettingsService`, `IProfileXmlStore`, `IProfileActionProvider`, `IProfileSlotApplier` |
 | **3.出力**| `IOutputSlotService` | `OutputSlotService` | **Singleton** | 仮想Xbox360/DS4（ViGEm）の生成、割当、切替 | `IOutputSlotStore` |
-| **3.出力**| `IVirtualKBM` | `OutputKBMHandlerAdapter` | **Singleton** | SendInput / FakerInput によるキー・マウス送出 | なし |
-| **3.出力**| `IVirtualKBMLifecycle` | `OutputKBMHandlerLifecycle` | **Singleton** | KBM出力ハンドラの生成・破棄・フォールバック切替・マッピング初期化（送出は `IVirtualKBM` が担当） | `IEnvironmentService` |
+| **3.出力**| `IVirtualKBM` | `OutputKBMHandlerAdapter` | **Singleton** | SendInput / FakerInput によるキー・マウス送出。出力ハンドラの実体（`Handler`）を所有する（Phase7-Step8 W3。旧 `Global.outputKBMHandler`） | なし |
+| **3.出力**| `IVirtualKBMLifecycle` | `OutputKBMHandlerLifecycle` | **Singleton** | KBM出力ハンドラの生成・破棄・フォールバック切替・マッピング初期化（送出は `IVirtualKBM` が担当） | `IEnvironmentService`, `OutputKBMHandlerAdapter`, `IProfileSettingsService` |
 | **3.出力**| `IMacroPlayer` | `DefaultMacroPlayer` | **Singleton** | 時系列非同期マクロの再生・停止管理 | `IVirtualKBM` |
 | **3.出力**| `ILightbarService` | `LightbarService` | **Singleton** | バッテリー・プロファイル色に応じたLED発光計算 | なし |
 | **3.出力**| `IActionFactory` | `DefaultActionFactory` | **Singleton** | 各種アクションインスタンス（Key/Macro/Launch）の生成 | `IVirtualKBM`, `IMacroPlayer`, `IProcessLauncher` |
@@ -219,3 +226,11 @@
 %% - Actions.xml の読み込み後のリセット: BackingStore.LoadActions が ActionsLoaded イベントを発行し、ServiceRegistration が登録した購読者 ActionsLoadedRuntimeReset.Reset が、合成状態・ActionManager のトグル状態・macrodone をリセットする（従来の順序とログのまま）。BackingStore は Mapping を参照しない。AppHost.CreateHost が複数回呼ばれても購読は 1 つ。
 %% - Step8 で Mapping が instance 化されたら、各保持クラスの Shared（暫定）を削除し、コンストラクター注入にする。
 %% - 詳細は Phase7-Step7-Plan.md、Phase7-Step7-Completion-Report.md、台帳は Phase7-Residual-Ledger.md §10。
+%%
+%% Phase7-Step8（2026-10-17）: Mapping の instance 化と、依存の注入。
+%% - Mapping は DI の Singleton（IMapping）。Mapping の AppHost（6）と ServiceProviderHolder（5）は 0 になった。AppHost.GetService 11 → 5、ServiceProviderHolder 22 → 17（残りは Actions/ の 17 件で Phase8）。
+%% - 循環の避け方: Mapping → IDeviceStateAccessor（＝ControlService）は Func で遅延。DefaultActionManager／DefaultMacroPlayer → Mapping は Func<IMapping> で遅延（PreallocateActionEntries がホスト構築直後に DefaultActionManager を解決するため）。Mapping ⇔ ProfileApplicationService の循環は、登録簿 KeyButtonControllerRegistry を切り出して解消。
+%% - 保持クラス 3 つの Shared を削除（コンテナの Singleton を共有）。BackingStore の登録は、ActionsLoadedRuntimeReset（instance）を購読する。Global.store が静的なため、コンテナの作り直しでも重複購読しないよう、前回の購読者を外してから登録する。
+%% - 出力 KBM: IVirtualKBM と IVirtualKBMLifecycle は同じ OutputKBMHandlerAdapter を共有する（ハンドラの実体はそこ）。ISyntheticDispatcher の登録が、作成時に静的な橋渡し SyntheticDispatcher.Bind を呼び、AppHost.CreateHost がホスト構築直後に解決して有効にする。
+%% - ControlService は IMapping／StickMotionState／SyntheticInputState をコンストラクターで受け、IMapping を MappingService として公開する（ControllerReadingsControl、RecordBoxViewModel が使う）。
+%% - 詳細は Phase7-Step8-Plan.md、Phase7-Step8-Completion-Report.md、台帳は Phase7-Residual-Ledger.md §11。

@@ -159,15 +159,71 @@ classDiagram
     class ProfileSlotApplier
     IProfileSlotApplier <|.. ProfileSlotApplier : implements
     class OutputKBMHandlerAdapter {
+        +VirtualKBMBase Handler
         +PerformKeyPress(uint key)
         +Sync()
     }
     class OutputKBMHandlerLifecycle {
         -IEnvironmentService _environment
+        -OutputKBMHandlerAdapter _handlerOwner
+        -IProfileSettingsService _profileSettings
     }
-    IVirtualKBM <|.. OutputKBMHandlerAdapter : implements
+    IVirtualKBM <|.. OutputKBMHandlerAdapter : implements and owns the handler
     IVirtualKBMLifecycle <|.. OutputKBMHandlerLifecycle : implements
     OutputKBMHandlerLifecycle --> IEnvironmentService : reads FakerInput version
+    OutputKBMHandlerLifecycle --> OutputKBMHandlerAdapter : sets Handler
+    OutputKBMHandlerLifecycle --> IProfileSettingsService : sets OutputKBMMapping
+    class IMapping {
+        <<interface>>
+        +SetCurveAndDeadzone(int device, DS4State cState, DS4State dState, IProfileSettingsService settings) DS4State
+        +MapCustom(int device, DS4State cState, DS4State mapped, DS4StateExposed eState, Mouse tp, ControlService ctrl)
+        +TempMouseJoystick(int device, DS4State mapped)
+        +Commit(int device, IProfileSettingsService settings)
+        +GetBoolMappingExternal(int device, DS4Controls control, DS4State cState, DS4StateExposed eState, Mouse tp) bool
+        +HandleDeviceDisconnect(int device)
+        +PlayMacroDirect(int device, SpecialAction action)
+        +EndMacroDirect(int device)
+    }
+    class Mapping {
+        -SyntheticInputState _syntheticInput
+        -MacroRuntimeState _macroRuntime
+        -StickMotionState _stickMotion
+    }
+    class IKeyButtonControllerRegistry {
+        <<interface>>
+        +GetOrCreate(int device, Mode mode, string actionName) KeyButtonActionController
+        +GetOrCreate(int device, SpecialAction sa) KeyButtonActionController
+        +GetOrCreateForAction(int device, SpecialAction sa) IActionController
+        +ClearForDevice(int device)
+    }
+    class KeyButtonControllerRegistry
+    class ISyntheticDispatcher {
+        <<interface>>
+        +ResolveNativeKey(ushort kvpKey) uint
+        +SendPress(int device, ushort kvpKey, uint nativeKey, bool useScanCode, IVirtualKBM handler)
+        +SendRelease(int device, ushort kvpKey, uint nativeKey, bool useScanCode, IVirtualKBM handler)
+        +ResetKeyTiming(int device, ushort kvpKey)
+    }
+    class SyntheticDispatcherService
+    class SyntheticInputState
+    class MacroRuntimeState
+    class StickMotionState
+    IMapping <|.. Mapping : implements
+    IKeyButtonControllerRegistry <|.. KeyButtonControllerRegistry : implements
+    ISyntheticDispatcher <|.. SyntheticDispatcherService : implements
+    Mapping --> SyntheticInputState : ctor injection
+    Mapping --> MacroRuntimeState : ctor injection
+    Mapping --> StickMotionState : ctor injection
+    Mapping --> IProfileSettingsService
+    Mapping --> IProfileApplicationService
+    Mapping --> IVirtualKBM
+    Mapping --> IKeyButtonControllerRegistry
+    Mapping --> ISyntheticDispatcher
+    ProfileApplicationService --> IKeyButtonControllerRegistry : ClearForDevice
+    SyntheticDispatcherService --> SyntheticInputState
+    SyntheticDispatcherService --> OutputKBMHandlerAdapter : default output (Handler)
+    SyntheticDispatcherService --> IProfileSettingsService : OutputKBMMapping
+    ControlService --> IMapping : MappingService
     class IMacroPlayer {
         <<interface>>
         +PlayMacro(int slot, MacroStep[] steps)
@@ -475,3 +531,13 @@ classDiagram
 %%   - 新設: SyntheticInputState（globalState／deviceState／syncStateLock を保持）、MacroRuntimeState、StickMotionState。いずれも Shared（暫定の静的な窓口）を持ち、DI の Singleton としても登録される。
 %%   - トップレベルへ移した型（旧 Mapping の入れ子）: SyntheticState、PostMapStickData、FlickStickMappingData、TwoStageTriggerMappingData、DeltaSettingsProcessor、DeltaSettingsProcessorGroup、Click。
 %%   - 新設: ActionsLoadedRuntimeReset（Actions.xml 読み込み後のリセットの購読者。静的クラス）、BackingStore.ActionsLoaded（イベント）。依存方向: BackingStore → （イベント）→ ActionsLoadedRuntimeReset → 保持クラス。BackingStore から Mapping への参照はない。
+%%
+%% Phase7-Step8（2026-10-17）: Mapping の instance 化。
+%%   - 新設: IMapping（8 メンバーの窓口）、Mapping（IMapping の実装。DI の Singleton）、IKeyButtonControllerRegistry／KeyButtonControllerRegistry（旧 Mapping の静的な登録簿）、ISyntheticDispatcher／SyntheticDispatcherService（旧 静的クラス SyntheticDispatcher の処理）。
+%%   - 状態の保持クラス 3 つ（SyntheticInputState／MacroRuntimeState／StickMotionState）の Shared（暫定の静的な窓口）を削除。Mapping／Mouse／ControlService／SyntheticDispatcherService／ActionsLoadedRuntimeReset がコンストラクターで受ける。
+%%   - ActionsLoadedRuntimeReset は静的クラスから instance へ（保持クラスをコンストラクターで受ける）。
+%%   - OutputKBMHandlerAdapter が出力ハンドラの実体（Handler）を持つ。削除: Global.outputKBMHandler／outputKBMMapping／InitOutputKBMHandler／InitOutputKBMMapping。KBM マッピングは IProfileSettingsService.OutputKBMMapping を使う。
+%%   - 静的な SyntheticDispatcher は、Actions サブシステム（Phase8 の範囲）が静的に呼ぶための暫定の橋渡し（状態もフォールバックも持たない。DI が作った instance を Bind で受ける）。Phase8 で削除する。
+%%   - DefaultActionManager／DefaultMacroPlayer は Func<IMapping>（遅延）を受ける（ホスト構築時に Mapping を作らない。Phase5-Plan §5.4）。
+%%   - 削除: Mapping の AppHost／ServiceProviderHolder／Global のフォールバック、MouseOutputAction の無効な検索、呼び出しが 0 件だった内部メンバー 4 つ（Step8 W1）。
+%%   - 詳細は Phase7-Step8-Plan.md、Phase7-Step8-Completion-Report.md、台帳は Phase7-Residual-Ledger.md §11。

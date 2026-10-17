@@ -1,7 +1,7 @@
 # フェーズ7 進捗管理文書: `Global`／`BackingStore` の解体、起動の近代化、`Mapping` の instance 化
 
 最終更新日: 2026-10-17  
-状態: **Step1・Step2・Step3・Step3c・Step4・Step5・Step6・Step7 完了。次は Step8（調査と計画書の作成から）。**  
+状態: **Step1・Step2・Step3・Step3c・Step4・Step5・Step6・Step7・Step8 完了。次は Step9（互換 `AppHost` の削除ほか。調査と計画書の作成から）。**  
 計画書: `Phase7-Plan.md`。調査: `Phase7-0-Survey.md`。残存台帳: `Phase7-Residual-Ledger.md`
 
 ---
@@ -19,7 +19,7 @@
 | Step5 | `Program.rootHub` と Service Locator の削除 | **完了**（2026-10-17。Q1〜Q9 推奨どおり承認、DS3 の不具合も修正。W1〜W5 のビルド・テスト成功、W6 は文書。U-15 の実機確認は未。完了報告書あり） | `Phase7-Step5-Plan.md`、`Phase7-Step5-Completion-Report.md` |
 | Step6 | 出力デバイス種別の所有権の移動 | **完了**（2026-10-17。Q1〜Q5 推奨どおり承認。W1・W2 のビルド・テスト成功、W3 は文書。U-16 の実機確認は未。完了報告書あり） | |
 | Step7 | `Mapping` の instance 化（1）特性化テストと状態の切り出し | **完了**（2026-10-17。Q1〜Q6 推奨どおり承認。W1〜W4 のビルド・テスト成功、W5 は文書。U-17 の実機確認は未。完了報告書あり） | |
-| Step8 | `Mapping` の instance 化（2）instance 化と呼び出し元の切り替え | **実装中**（2026-10-17。Q1〜Q9 推奨どおり承認。W1〜W3 完了、W4 実装済み・ビルド・テスト待ち） | `Phase7-Step8-Plan.md` |
+| Step8 | `Mapping` の instance 化（2）instance 化と呼び出し元の切り替え | **完了**（2026-10-17。Q1〜Q9 推奨どおり承認。W1〜W4 のビルド・テスト成功、W5 は文書。U-18 の実機確認は未。完了報告書あり） | `Phase7-Step8-Plan.md`、`Phase7-Step8-Completion-Report.md` |
 | Step9 | `Mapping` の instance 化（3）互換 `AppHost` の削除ほか | 未着手 | |
 | Step10 | 仕上げ（`Global` の残り、永続化の切り出し、総合検証） | 未着手 | |
 
@@ -35,7 +35,8 @@
   - Phase7-Step4 W5 後: 452／39／21／23（`rootHub` は基準値の過大分を直した）
   - Phase7-Step5 W6 後: 446／11／0／22
   - Phase7-Step6 W3 後: 438／11／0／22
-  - Phase7-Step7 W5 後（現在）: **432／11／0／22**
+  - Phase7-Step7 W5 後: 432／11／0／22
+  - Phase7-Step8 W5 後（現在）: **399／5／0／17**
 - ガード: `Step10FourGlobalRatchetGuardTests`（`Global.*`／`AppHost`／`rootHub`）、`Phase7Step1ServiceLocatorRatchetGuardTests`（`ServiceProviderHolder`）、`Phase7Step1DeadMethodGuardTests`（`BackingStore` の削除済みメソッド）。
 - 目標値は、各 Step の計画書で確定し、`Phase7-Residual-Ledger.md` に反映する。
 
@@ -95,20 +96,27 @@
 - W4: `StickMotionState`、入れ子の型 6 つのトップレベル化（`Click` を含む）。
 - W5: 台帳 §10、モデル図、U-17、完了報告書。`Global.*` 438 → 432。詳細は `Phase7-Step7-Completion-Report.md`。
 
-### Phase7-Step8〜Step10【未着手】
+### Phase7-Step8: `Mapping` の instance 化と、呼び出し元の切り替え【完了（2026-10-17）】
+- W1: `Mouse`／`ControlService` が保持クラスをコンストラクターで受ける。`MapClick`／`ResetRuntimeStateForKey` を `SyntheticInputState` へ。呼び出しが 0 件だった `Mapping` の内部メンバー 4 つを削除。
+- W2: `IMapping`／`Mapping`（Singleton）、`KeyButtonControllerRegistry`。`static` の除去、`AppHost` 6・`ServiceProviderHolder` 5 の解消、呼び出し元の切り替え、テストの書き換え。
+- W3: 出力 KBM ハンドラの実体を `OutputKBMHandlerAdapter` へ（`Global.outputKBMHandler`／`outputKBMMapping` の削除）。`SyntheticDispatcherService` と、静的な橋渡し。`ActionsLoadedRuntimeReset` を instance に。
+- W4: 保持クラス 3 つの `Shared` を削除。
+- W5: 台帳 §11、モデル図、U-18、完了報告書。`Global.*` 432 → 399、`AppHost` 11 → 5、`ServiceProviderHolder` 22 → 17。詳細は `Phase7-Step8-Completion-Report.md`。
+
+### Phase7-Step9〜Step10【未着手】
 - 内容と依存関係は `Phase7-Plan.md` §2。
 
 ## 4. 実機確認の台帳（`Phase6-Step11-RealDevice-Verification-Checklist.md` §11）
 
 - U-1〜U-7: 機材・環境が揃うまで未確認（リスク受容）。
 - U-8、U-9: 確認済み（Phase6）。
-- U-11（Step2 後）、U-12（Step3 後）、U-13（Step3c 後）、U-14（Step4 後）、U-15（Step5 後）、U-16（Step6 後）、U-17（Step7 後）: 未（U-13 はユーザー判断で先送り）。
+- U-11（Step2 後）、U-12（Step3 後）、U-13（Step3c 後）、U-14（Step4 後）、U-15（Step5 後）、U-16（Step6 後）、U-17（Step7 後）、U-18（Step8 後）: 未（U-13 はユーザー判断で先送り）。
 - U-10: 確認済み（偽の exe 名の保持。スキップしたバージョンの値の保持）。通知の抑制は、新バージョンの公開時に確認（U-7 とあわせる）。
-- 今後の追加候補: Step6 の後（スロットの付け外し）、Step7〜9 の後（通常入力・スティック・タッチパッド・ジャイロ・マクロ・スペシャルアクション）。
+- 今後の追加候補: Step6 の後（スロットの付け外し）、Step9 の後（互換 `AppHost` の削除に伴う起動の確認）。
 
 ## 5. 持ち越し・保留事項
 
-- K3（マクロの二重ガード）: `Mapping` の instance 化（Step8〜9）の中で、再設計の要否を判断。
+- K3（マクロの二重ガード）: Step9 で、再設計の要否を判断（`Mapping` の instance 化［Step8］では、`MacroRuntimeState` に移しただけで、仕組みは変えていない）。
 - K7-1: 解消済み（通常の起動は Phase6、`-driverinstall` 分岐は Phase7-Step4 W2）。
 - `AppHost.CreationNote` と `[DI] Host creation path` のログ: ユーザー決定により残す。Step5 で Service Locator とあわせて、残すか判断する。
 - DS3 のジャイロトリガー経路の不具合（コミット `78ae8687` からの回帰）: Phase7-Step5 W1 で修正済み（機材での実機確認は難しい可能性。U-15 の注記）。
@@ -118,5 +126,5 @@
 
 ## 6. 直近の次アクション
 
-1. Step8（`Mapping` の instance 化）の調査と `Phase7-Step8-Plan.md` の作成。`outputKBMHandler`／`outputKBMMapping` の移管（Step7 Q6＝A）、`Shared` の削除、呼び出し元（`ControlService`、`Mouse`、`SyntheticDispatcher`、`Actions/*`）の切り替えを含める。
-2. 実機確認 U-11、U-12、U-13、U-14、U-15、U-16、U-17（任意のタイミング。U-14 は終了時のホスト破棄と初回起動の確認が中心）。
+1. Step9（互換 `AppHost` の削除、`Mapping.cs` の `Global` 定数・`Clamp` の再配置、K3 の判断）の調査と `Phase7-Step9-Plan.md` の作成。互換 `AppHost`（`DI/Compat/AppHost.cs`）は `Mapping.cs` が使わなくなったため、呼び出し元の有無を確認する。
+2. 実機確認 U-11、U-12、U-13、U-14、U-15、U-16、U-17、U-18（任意のタイミング。U-14 は終了時のホスト破棄と初回起動の確認が中心）。
