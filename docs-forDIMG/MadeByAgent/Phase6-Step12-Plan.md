@@ -199,6 +199,17 @@ HEAD は `e0bc8258`（作業ツリーはクリーン）。以降の §0〜§6 �
   - 経緯（`git log -S`）: 発火元は上流 `2b357940`（2024-08-26）で追加され、プロファイル編集画面の保存処理が呼んでいた。2026-09-14 の `9da60b85`（ProfileEditor 保存処理の統合）で呼び出しが `Global.ApplyProfile(...)`（ホットリロード）に置き換わり、現在の呼び出し元は 0 件。
   - 懸念: 接続中のコントローラーでデバウンス時間（`DebouncingMs`）を変更して保存したとき、`Debouncer` の持続時間が即時に更新されない可能性がある（再接続で反映）。`ApplyProfile` 側でデバウンサーが更新されるかは未確認。**回帰かどうかの確認が必要**（Phase6 より前の変更）。修正の前にユーザーの承認を得る。確認不能なら §11 の台帳に追記する。
   - 扱い: 温存（Wave 4 の後に、確認の結果を見て削除または修正を判断する）。`DebouncingMsHasChanged` を含む形で名簿 §0A.8 の Wave 1 は 25 件→24 件。
+- **回帰の調査結果（2026-10-17、静的調査）: 回帰を確認。**
+  - 事実: `Debouncer` の持続時間は、デバイスを開くとき（`DS4Device.cs:910` の `SetupDebouncer`、`DS3Device`／`DualSenseDevice`／`JoyConDevice`／`SwitchProDevice` も同様）に `DebouncingMs[スロット]` で決まる。接続中に変える経路は、`Global.DebouncingMsChanged` の購読ラムダ（`DS4Device.cs:1442`）による `SetDuration` だけ。`SetDuration` の呼び出しは、ほかに無い。`ControlService.CheckProfileOptions`（`ApplyProfile` から呼ばれる）にも、デバウンサーの更新は無い。
+  - 事実: このイベントの発火元（`Global.DebouncingMsHasChanged()`）は、プロファイル編集画面の保存処理が `HasDebouncingMsChanged` を見て呼んでいた。`9da60b85`（2026-09-14）で、この呼び出しが `ApplyProfile`（ホットリロード）に置き換わった。`HasDebouncingMsChanged` は今も設定されるが、読む箇所が無い。
+  - 影響: 接続中のコントローラーで、プロファイル編集画面のデバウンス時間を変更して保存・適用しても、再接続するまで反映されない（移行前は即時に反映）。プロファイル切替でも、デバウンス時間が更新されない（上流 `2b357940` 以来の仕様）。
+  - 修正案（承認待ち）: 案 A（推奨）＝`ControlService.CheckProfileOptions` に `device.Debouncer?.SetDuration(...)`（`_profileSettings.DebouncingMs[ind]`）を 1 行追加。`ApplyProfile` の経路（編集画面の保存・適用、プロファイル切替、接続時）のすべてで反映され、Global のイベント・購読ラムダ・`DebouncingMsHasChanged`・サービス側の `NotifyDebouncingMsChanged` を不要にできる（別 Wave で削除）。案 B＝移行前の動作の復元だけ（編集画面の保存後に `IProfileSettingsService.NotifyDebouncingMsChanged()` を呼び、`DS4Device` の購読先をサービス側のイベントへ変更）。案 C＝修正しない。
+- **回帰の是正（案 A、2026-10-17 承認・実施。ビルド・テストはユーザーの実行待ち）**:
+  - `ControlService.CheckProfileOptions` に `device.Debouncer?.SetDuration(TimeSpan.FromMilliseconds(_profileSettings.DebouncingMs[ind]))` を追加した。
+  - 調査中に、**上流（2024-09）から続く別の不具合**を発見し、同じ変更で是正した（回帰ではない。移行前も同じ）: `Debouncer.ProcessInput` の先頭の `duration.TotalMilliseconds == 0` が、コンストラクタ引数（生成時の値）を見ており、`SetDuration` で更新されなかった。デバイスを 0ms（既定）で開いたあとに時間を変えても、デバウンスが働かない。現在の値を持つフィールド `_duration` を追加し、`ProcessInput`・`AddDebouncer`・`SetDuration` で使うようにした（`Debouncer.cs`）。これが無いと、案 A だけでは 0ms → 500ms の変更が効かない。
+  - テスト（新規 `DebouncerSetDurationTests`、3 件）: 0ms で生成して `SetDuration` した場合に働くこと、0 に戻すと無効になること、`CheckProfileOptions` に更新の呼び出しがあること。
+  - 実機の確認（ユーザー）: 接続中に「Other」タブの Debouncing を 500 にして適用し、ボタンの連打が抑えられること。0 に戻すと抑えられなくなること。
+  - 未実施（Wave 4 の後に判断）: `DebouncingMsHasChanged`、`Global.DebouncingMsChanged`、`DS4Device` の購読ラムダ（`DS4Device.cs:1442`）、`IProfileSettingsService.NotifyDebouncingMsChanged`／`DebouncingMsChanged` は、案 A により不要になった。削除は実機確認の後。
 - テストの書き換え: `ControlServicePr4ShimEquivalenceTests`（旧 getter との比較 1 行を削除）、`ControlServicePr5ShimEquivalenceTests`（`IsUsingUDPServerSmoothing()` → `UseUDPSeverSmoothing`、`getFlashWhenLateAt()` → `FlashWhenLateAt`）、`StandaloneTests/TestSpecialActionUtils`（`Util` と `Global` の一致テストを、`Util` の期待値の固定テスト `Util_NormalizeActionName_FixedExpectations` に置換）。削除したテストケースは無し（観点は維持）。
 - ラチェット: `Global.cs` = (rootHub 9, AppHost 11, Global **45**)。全域は `Global.*` 780→778。`Global.cs` の件数は走査で確認済み（45）。
 - 新規ガード: `DS4WindowsTests/Step12DeadShimRemovalGuardTests.cs`（削除済み名の再宣言の禁止、削除済みファイルの不在、防壁の 18 名の存在）。
