@@ -306,6 +306,25 @@ HEAD は `e0bc8258`（作業ツリーはクリーン）。以降の §0〜§6 �
 
 ---
 
+### 0A.18 方針決定: プロファイルの保存形式は旧形式に統一し、プロファイル用 DTO を削除する（2026-10-17、ユーザー決定。実施時期はエージェントが決定）
+
+- **決定（ユーザー）**: 旧形式（3.9.9 互換）を正とし、DTO は最終的に削除して、旧形式だけに統一する。実施時期は、エージェントが最適な箇所で決める。
+- **分析の根拠**（調査結果）:
+  - プロファイル（`Profiles\*.xml`）の読み書きは、すでに旧形式だけが実際に使われている（`ProfileRepository` の DTO 側 `LoadProfile(filePath, …)`／`SaveProfile(filePath, …)` は、呼び出し元もテストも 0 件）。経緯は `6926c563`（2026-08-31 作成）、`576426b8`・`142c24c8`（2025-11-11、旧形式を正に戻した）。削除しても、現行の機能は変わらない。
+  - 旧形式の結合は薄い: `SaveProfile` 557 行（`Global.` 7 件、`control.` 0 件）、`LoadProfile` 2,315 行（`Global.` 7 件、`control.` 5 件）。Pure DI 化の障害にならない（Phase7 で `LegacyProfileXmlSerializer` として切り出す）。
+  - DTO の長所（保存と読込が 1 対、欠落の突き合わせ基準）は、固定した要素一覧のテストと、往復・ゴールデンのテストで代替する。
+- **実施時期の決定**: **Step12 の Wave 6（Phase6 の内側）で、プロファイル用 DTO を削除する。** 理由:
+  1. 呼び出し元 0 件のコードで、方針も決まったため、Step12（呼び出し元 0 件の旧シムの物理削除）の目的に合う。先送りしても、削除の条件（呼び出し元 0 件）は変わらず、台帳に「使われない 2,668 行」が残るだけになる。
+  2. Phase7 の前に消しておくと、`BackingStore` の解体で、旧形式の読み書きの切り出しだけを考えればよくなる（DTO との二重管理を避けられる）。
+  3. 一方で、削除の前に、DTO が担っていた「欠落の検出」を、テストへ移す必要がある。そのため、**削除は、安全網のテストが通った後**に行う。
+- **手順**:
+  - 準備（本節で実施）: `ProfileLegacyXmlCompletenessTests` を追加した。ProfileDTO の 175 要素のうち、読み取り専用の移行用 13 要素を除く **162 要素**の名前を固定し、旧形式の `SaveProfile` がそれらをすべて書くことを確認する（U-8 の 10 要素の再発も検出する）。ビルド・テストはユーザーの実行待ち。通らなければ、DTO の削除に進まず、先に原因（旧形式の欠落）を直す。
+  - Wave 6（テストが通ったら実施）: `ProfileDTO.cs`（2,668 行）、ProfileDTO だけが使う型（`DS4ControlAssignementSerializer` 系、`TouchpadMouseStickSerializer`、`StickAxialDeadOptionsSerializer`、`StickDeltaAccelSettings`、`StickModeOutputSettings` ほか。他から使われる型は、削除前に使用箇所を再確認して残す）、`ProfileRepository` の DTO 側の読み書き、`IProfileRepository` の 2 メンバーを削除。ラチェットの基準値を更新し、削除で呼び出し元が 0 件になった `Global` のメンバー（`getDS4ControlsByName` ほか）を再集計して、削除候補に加える。
+  - Phase7: 旧形式の読み書きを `BackingStore` から切り出し（`LegacyProfileXmlSerializer`）、ゴールデンファイルによる往復テストで固定する。
+- **対象外**（現行の正として使用中のため、この決定では削除しない）: アプリ設定 `Profiles.xml`（`AppSettingsDTO`）、`Actions.xml`（`ActionsDTO`）、`LinkedProfiles.xml`、`Auto Profiles.xml`、`OutputSlots` の DTO。これらは DTO 方式で保存され、旧形式の読込は代替の読み込み（フォールバック）である。「旧形式だけに統一」をこれらへ広げるかは、別途の確認事項（保存形式の統一方針。Phase7 の台帳に登録）。
+
+---
+
 ## 0. 背景と方針（2026-10-17 改訂。承認済みの決定は §0A.10）
 
 ### 0.1 Step2〜Step11 の完了実績と残存コードの状況
@@ -372,6 +391,8 @@ Step12 完了後に残るもの（Phase7 で解体）:
 | `DS4WinWPF.AppHost.Dispose()` | 呼び出し元が互換ラッパーだけ。アプリ終了時のホスト破棄が元から無い | 起動・終了シーケンスの整理で扱う |
 | DI インターフェースの 0 件メンバー 52 件 | §2.4 の個別の経緯調査が必要 | 個別に判断 |
 | K2: `GetProfileActionIndexOf` の未検出時の戻り値 | `ProfileActionProvider` 側に残る | 別途判断 |
+| プロファイル用 DTO（`ProfileDTO` 一式）の削除 | 方針決定済み（旧形式を正とする）。Step12 Wave 6 で削除する（§0A.18） | Wave 6 で完了。Phase7 では、旧形式の読み書きを `LegacyProfileXmlSerializer` として切り出し、ゴールデンテストで固定 |
+| アプリ設定ほかの DTO 方式（`AppSettingsDTO`、`ActionsDTO`、`LinkedProfiles`、`Auto Profiles`、`OutputSlots`） | 現行の正として使用中 | 「旧形式だけに統一」を広げるかを、Phase7 で判断（§0A.18） |
 | 真の定数（`const`、`DS4_STICK_AXIS_MIDPOINT` を含む） | 共通定数値 | ドメインごとの定数クラスへ再配置 |
 
 ---
