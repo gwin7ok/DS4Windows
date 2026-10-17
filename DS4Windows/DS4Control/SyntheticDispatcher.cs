@@ -7,7 +7,7 @@ namespace DS4Windows
 {
     // Minimal SyntheticDispatcher: centralized small wrapper for synthetic sends.
     // Responsibilities (minimal): resolve native key, perform press/release via KBM handler,
-    // update basic timing counters on Mapping.deviceState / Mapping.globalState, and provide ResetKeyTiming.
+    // update basic timing counters on SyntheticInputState (DeviceState / GlobalState), and provide ResetKeyTiming.
     public static class SyntheticDispatcher
     {
         public static uint ResolveNativeKey(ushort kvpKey)
@@ -37,13 +37,13 @@ namespace DS4Windows
                 try
                 {
                     var now = DateTime.UtcNow.Ticks;
-                    if (Mapping.deviceState != null && device >= 0 && device < Mapping.deviceState.Length)
+                    if (SyntheticInputState.Shared.DeviceState != null && device >= 0 && device < SyntheticInputState.Shared.DeviceState.Length)
                     {
-                        var ds = Mapping.deviceState[device];
-                        if (ds.keyPresses == null) ds.keyPresses = new Dictionary<UInt16, Mapping.SyntheticState.KeyPresses>();
+                        var ds = SyntheticInputState.Shared.DeviceState[device];
+                        if (ds.keyPresses == null) ds.keyPresses = new Dictionary<UInt16, SyntheticState.KeyPresses>();
                         if (!ds.keyPresses.TryGetValue(kvpKey, out var kp))
                         {
-                            kp = new Mapping.SyntheticState.KeyPresses();
+                            kp = new SyntheticState.KeyPresses();
                             ds.keyPresses[kvpKey] = kp;
                             try { ds.nativeKeyAlias[kvpKey] = nativeKey; } catch { }
                         }
@@ -51,13 +51,13 @@ namespace DS4Windows
                         kp.current.repeatCount++;
                     }
 
-                    if (Mapping.globalState != null)
+                    if (SyntheticInputState.Shared.GlobalState != null)
                     {
-                        if (Mapping.globalState.keyPresses == null) Mapping.globalState.keyPresses = new Dictionary<UInt16, Mapping.SyntheticState.KeyPresses>();
-                        if (!Mapping.globalState.keyPresses.TryGetValue(kvpKey, out var gkp))
+                        if (SyntheticInputState.Shared.GlobalState.keyPresses == null) SyntheticInputState.Shared.GlobalState.keyPresses = new Dictionary<UInt16, SyntheticState.KeyPresses>();
+                        if (!SyntheticInputState.Shared.GlobalState.keyPresses.TryGetValue(kvpKey, out var gkp))
                         {
-                            gkp = new Mapping.SyntheticState.KeyPresses();
-                            Mapping.globalState.keyPresses[kvpKey] = gkp;
+                            gkp = new SyntheticState.KeyPresses();
+                            SyntheticInputState.Shared.GlobalState.keyPresses[kvpKey] = gkp;
                         }
                         gkp.current.lastSyntheticSendUtcTicks = DateTime.UtcNow.Ticks;
                         gkp.current.repeatCount++;
@@ -87,9 +87,9 @@ namespace DS4Windows
                 {
                     // Mark last send time and clear counts to avoid duplicates
                     var now = DateTime.UtcNow.Ticks;
-                    if (Mapping.deviceState != null && device >= 0 && device < Mapping.deviceState.Length)
+                    if (SyntheticInputState.Shared.DeviceState != null && device >= 0 && device < SyntheticInputState.Shared.DeviceState.Length)
                     {
-                        var ds = Mapping.deviceState[device];
+                        var ds = SyntheticInputState.Shared.DeviceState[device];
                         if (ds.keyPresses != null && ds.keyPresses.TryGetValue(kvpKey, out var kp))
                         {
                             kp.current.lastSyntheticSendUtcTicks = now;
@@ -101,7 +101,7 @@ namespace DS4Windows
                         }
                     }
 
-                    if (Mapping.globalState != null && Mapping.globalState.keyPresses != null && Mapping.globalState.keyPresses.TryGetValue(kvpKey, out var gkp))
+                    if (SyntheticInputState.Shared.GlobalState != null && SyntheticInputState.Shared.GlobalState.keyPresses != null && SyntheticInputState.Shared.GlobalState.keyPresses.TryGetValue(kvpKey, out var gkp))
                     {
                         gkp.current.lastSyntheticSendUtcTicks = now;
                         gkp.current.vkCount = 0;
@@ -124,16 +124,16 @@ namespace DS4Windows
             try
             {
                 var now = DateTime.UtcNow.Ticks;
-                if (Mapping.deviceState != null && device >= 0 && device < Mapping.deviceState.Length)
+                if (SyntheticInputState.Shared.DeviceState != null && device >= 0 && device < SyntheticInputState.Shared.DeviceState.Length)
                 {
-                    var ds = Mapping.deviceState[device];
+                    var ds = SyntheticInputState.Shared.DeviceState[device];
                     if (ds.keyPresses != null && ds.keyPresses.TryGetValue(kvpKey, out var kp))
                     {
                         kp.current.lastSyntheticSendUtcTicks = 0;
                         kp.current.repeatCount = 0;
                     }
                 }
-                if (Mapping.globalState != null && Mapping.globalState.keyPresses != null && Mapping.globalState.keyPresses.TryGetValue(kvpKey, out var gkp))
+                if (SyntheticInputState.Shared.GlobalState != null && SyntheticInputState.Shared.GlobalState.keyPresses != null && SyntheticInputState.Shared.GlobalState.keyPresses.TryGetValue(kvpKey, out var gkp))
                 {
                     gkp.current.lastSyntheticSendUtcTicks = 0;
                     gkp.current.repeatCount = 0;

@@ -92,58 +92,6 @@ namespace DS4Windows
         // {
         //     loggedInvalidActions.Clear();
         // }
-        /*
-         * Represent the synthetic keyboard and mouse events.  Maintain counts for each so we don't duplicate events.
-         */
-        public class SyntheticState
-        {
-            public struct MouseClick
-            {
-                public int leftCount, middleCount, rightCount, fourthCount, fifthCount, wUpCount, wDownCount, toggleCount;
-                public bool toggle;
-            }
-            public MouseClick previousClicks, currentClicks;
-            public struct KeyPress
-            {
-                public int vkCount, scanCodeCount, repeatCount, toggleCount; // repeat takes priority over non-, and scancode takes priority over non-
-                public bool toggle;
-                // pending: indicates a toggle occurred and should be prioritized when committing
-                public bool pending;
-                // timestamp of last toggle (UTC ticks)
-                public long lastToggleTimeUtcTicks;
-                // timestamp of last synthetic send (UTC ticks) used to throttle excessive sends
-                public long lastSyntheticSendUtcTicks;
-            }
-            public class KeyPresses
-            {
-                public KeyPress previous, current;
-            }
-            public Dictionary<UInt16, KeyPresses> keyPresses = new Dictionary<UInt16, KeyPresses>();
-            public Dictionary<ushort, uint> nativeKeyAlias = new Dictionary<ushort, uint>();
-
-            public void SaveToPrevious(bool performClear)
-            {
-                previousClicks = currentClicks;
-                if (performClear)
-                    currentClicks.leftCount = currentClicks.middleCount = currentClicks.rightCount = currentClicks.fourthCount = currentClicks.fifthCount = currentClicks.wUpCount = currentClicks.wDownCount = currentClicks.toggleCount = 0;
-
-                //foreach (KeyPresses kp in keyPresses.Values)
-                Dictionary<ushort, KeyPresses>.ValueCollection keyValues = keyPresses.Values;
-                for (var keyEnum = keyValues.GetEnumerator(); keyEnum.MoveNext();)
-                //for (int i = 0, kpCount = keyValues.Count; i < kpCount; i++)
-                {
-                    //KeyPresses kp = keyValues.ElementAt(i);
-                    KeyPresses kp = keyEnum.Current;
-                    kp.previous = kp.current;
-                    if (performClear)
-                    {
-                        kp.current.repeatCount = kp.current.scanCodeCount = kp.current.vkCount = kp.current.toggleCount = 0;
-                        //kp.current.toggle = false;
-                    }
-                }
-            }
-        }
-
         // ToggleRepeatController removed — replaced by ToggleActionController and per-device controllers.
 
         // Legacy ActionState removed; per-action state lives in ActionManager/ActionInstanceState.
@@ -881,12 +829,18 @@ namespace DS4Windows
             new DeltaSettingsProcessorGroup(), new DeltaSettingsProcessorGroup(),
         };
 
-        static ReaderWriterLockSlim syncStateLock = new ReaderWriterLockSlim();
-
-        public static SyntheticState globalState = new SyntheticState();
-        public static SyntheticState[] deviceState = new SyntheticState[Global.MAX_DS4_CONTROLLER_COUNT]
-            { new SyntheticState(), new SyntheticState(), new SyntheticState(),
-              new SyntheticState(), new SyntheticState(), new SyntheticState(), new SyntheticState(), new SyntheticState() };
+        // Phase7-Step7 W2（Q2＝A・Q3＝A）: 合成入力の状態（globalState／deviceState／syncStateLock）の実体は SyntheticInputState が持つ。
+        // 下の 3 つは、Mapping 内部のコード（118 箇所）を変えないための転送で、状態は持たない。
+        // 型の初期化時に保持クラスの参照を 1 度だけ保持し、毎レポートの割り当てを増やさない。
+        // TODO(Phase7-Step8): Mapping の instance 化で、保持クラスをコンストラクターで受け取り、この転送と SyntheticInputState.Shared を削除する。
+        private static readonly SyntheticInputState syntheticInput = SyntheticInputState.Shared;
+        static ReaderWriterLockSlim syncStateLock => syntheticInput.SyncStateLock;
+        public static SyntheticState globalState
+        {
+            get => syntheticInput.GlobalState;
+            set => syntheticInput.GlobalState = value;
+        }
+        public static SyntheticState[] deviceState => syntheticInput.DeviceState;
 
         public static DS4StateFieldMapping[] fieldMappings = new DS4StateFieldMapping[Global.MAX_DS4_CONTROLLER_COUNT] {
             new DS4StateFieldMapping(), new DS4StateFieldMapping(), new DS4StateFieldMapping(),

@@ -73,7 +73,7 @@ namespace DS4WindowsTests
             Mapping.MapClick(Device, Mapping.Click.WDOWN);
             Mapping.MapClick(Device, Mapping.Click.None);
 
-            var clicks = Mapping.deviceState[Device].currentClicks;
+            var clicks = SyntheticInputState.Shared.DeviceState[Device].currentClicks;
             Assert.Equal(2, clicks.leftCount);
             Assert.Equal(1, clicks.fourthCount);
             Assert.Equal(1, clicks.wDownCount);
@@ -109,12 +109,12 @@ namespace DS4WindowsTests
             const ushort logicalKey = 65;
             const uint nativeKey = 65;
             SyntheticDispatcher.SendPress(Device, logicalKey, nativeKey, false, scope.Recorder);
-            Assert.True(Mapping.deviceState[Device].keyPresses.ContainsKey(logicalKey));
+            Assert.True(SyntheticInputState.Shared.DeviceState[Device].keyPresses.ContainsKey(logicalKey));
 
             Mapping.HandleDeviceDisconnect(Device);
 
             Assert.Contains(nativeKey, scope.Recorder.KeyReleases);
-            Assert.Empty(Mapping.deviceState[Device].keyPresses);
+            Assert.Empty(SyntheticInputState.Shared.DeviceState[Device].keyPresses);
         }
     }
 }

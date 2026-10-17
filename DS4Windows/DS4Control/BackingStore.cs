@@ -5060,6 +5060,15 @@ namespace DS4Windows
             //LoadActions();
         }
 
+        // Phase7-Step7 W2（Q4＝A）: Actions.xml の読み込み（または既定の作成）の後に発行する。BackingStore から Mapping への逆参照をなくすための通知。
+        // コンテナ構築前の読み込みでは購読者がいないが、その時点では実行時状態は新品であり、結果は同じ。
+        public event Action ActionsLoaded;
+
+        private void RaiseActionsLoaded()
+        {
+            ActionsLoaded?.Invoke();
+        }
+
         public bool LoadActions()
         {
             bool loaded = true;
@@ -5079,17 +5088,9 @@ namespace DS4Windows
                     try
                     {
                         try { ActionManager.ClearAllEntries(); } catch { }
-                        Mapping.globalState = new DS4Windows.Mapping.SyntheticState();
-                        for (int d = 0; d < Mapping.deviceState.Length; d++)
-                        {
-                            Mapping.deviceState[d] = new DS4Windows.Mapping.SyntheticState();
-                        }
-                        try { ActionManager.ClearAllToggledOn(); } catch { }
-                        if (Mapping.macrodone != null)
-                        {
-                            for (int i = 0; i < Mapping.macrodone.Length; i++) Mapping.macrodone[i] = false;
-                        }
-                        AppLogger.LogToGui("Runtime synthetic state reset after Actions load", false);
+                        // Phase7-Step7 W2（Q4＝A）: 合成入力・マクロの実行時状態のリセット（旧: Mapping の静的な状態を直接書き換え）は、
+                        // ActionsLoaded の購読者（ServiceRegistration が登録する ActionsLoadedRuntimeReset）が行う。
+                        RaiseActionsLoaded();
                     }
                     catch { }
                 }
@@ -5121,17 +5122,7 @@ namespace DS4Windows
                 try
                 {
                     try { ActionManager.ClearAllEntries(); } catch { }
-                    Mapping.globalState = new DS4Windows.Mapping.SyntheticState();
-                    for (int d = 0; d < Mapping.deviceState.Length; d++)
-                    {
-                        Mapping.deviceState[d] = new DS4Windows.Mapping.SyntheticState();
-                    }
-                    try { ActionManager.ClearAllToggledOn(); } catch { }
-                    if (Mapping.macrodone != null)
-                    {
-                        for (int i = 0; i < Mapping.macrodone.Length; i++) Mapping.macrodone[i] = false;
-                    }
-                    AppLogger.LogToGui("Runtime synthetic state reset after Actions load", false);
+                    RaiseActionsLoaded();
                 }
                 catch { }
             }

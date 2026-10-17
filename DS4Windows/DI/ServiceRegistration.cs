@@ -22,8 +22,13 @@ namespace DS4Windows.DI
             {
                 var store = Global.store;
                 store.ProcessInspector = sp.GetRequiredService<IProcessInspector>();
+                // Phase7-Step7 W2（Q4＝A）: Actions.xml の読み込み後の実行時状態のリセット。AppHost.CreateHost が複数回呼ばれても、購読は 1 つにする（静的メソッドなので -= で外せる）
+                store.ActionsLoaded -= ActionsLoadedRuntimeReset.Reset;
+                store.ActionsLoaded += ActionsLoadedRuntimeReset.Reset;
                 return store;
             });
+            // Phase7-Step7 W2（Q3＝A）: 合成入力の状態の保持クラス。静的な窓口（Shared）と同じ instance を登録する（Step8 で Shared を削除し、コンストラクター注入にする）
+            services.AddSingleton<SyntheticInputState>(_ => SyntheticInputState.Shared);
             services.AddSingleton<IPathService, PathService>();
             services.AddSingleton<IDeviceStateService, DeviceStateService>();
             services.AddSingleton<IEnvironmentService, EnvironmentService>();

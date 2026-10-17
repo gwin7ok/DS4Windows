@@ -19,8 +19,8 @@ namespace DS4WindowsTests
     {
         public const int Device = 5;
 
-        private readonly Mapping.SyntheticState _savedGlobalState;
-        private readonly Mapping.SyntheticState _savedDeviceState;
+        private readonly SyntheticState _savedGlobalState;
+        private readonly SyntheticState _savedDeviceState;
         private readonly DS4Windows.DS4Control.VirtualKBMBase _savedHandler;
         private readonly VirtualKBMMapping _savedMapping;
         private readonly List<DS4Controls> _touched = new List<DS4Controls>();
@@ -36,13 +36,13 @@ namespace DS4WindowsTests
             Settings = DS4WinWPF.AppHost.GetService<IProfileSettingsService>();
             Control = DS4WinWPF.AppHost.GetService<ControlService>();
 
-            _savedGlobalState = Mapping.globalState;
-            _savedDeviceState = Mapping.deviceState[Device];
+            _savedGlobalState = SyntheticInputState.Shared.GlobalState;
+            _savedDeviceState = SyntheticInputState.Shared.DeviceState[Device];
             _savedHandler = Global.outputKBMHandler;
             _savedMapping = Settings.OutputKBMMapping;
 
-            Mapping.globalState = new Mapping.SyntheticState();
-            Mapping.deviceState[Device] = new Mapping.SyntheticState();
+            SyntheticInputState.Shared.GlobalState = new SyntheticState();
+            SyntheticInputState.Shared.DeviceState[Device] = new SyntheticState();
 
             KbmMapping = VirtualKBMFactory.GetMappingInstance();
             KbmMapping.PopulateConstants();
@@ -86,8 +86,8 @@ namespace DS4WindowsTests
             Mapping.HandleDeviceDisconnect(Device);
             Global.outputKBMHandler = _savedHandler;
             Settings.OutputKBMMapping = _savedMapping;
-            Mapping.globalState = _savedGlobalState;
-            Mapping.deviceState[Device] = _savedDeviceState;
+            SyntheticInputState.Shared.GlobalState = _savedGlobalState;
+            SyntheticInputState.Shared.DeviceState[Device] = _savedDeviceState;
         }
     }
 }

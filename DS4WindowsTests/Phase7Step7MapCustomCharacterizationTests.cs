@@ -105,8 +105,8 @@ namespace DS4WindowsTests
             DS4State output = scope.RunMapCustom(input);
 
             Assert.False(output.Square);
-            Assert.Equal(1, Mapping.deviceState[MappingCharacterizationScope.Device].currentClicks.leftCount);
-            Assert.Equal(0, Mapping.deviceState[MappingCharacterizationScope.Device].currentClicks.rightCount);
+            Assert.Equal(1, SyntheticInputState.Shared.DeviceState[MappingCharacterizationScope.Device].currentClicks.leftCount);
+            Assert.Equal(0, SyntheticInputState.Shared.DeviceState[MappingCharacterizationScope.Device].currentClicks.rightCount);
         }
 
         [Fact]
@@ -117,7 +117,7 @@ namespace DS4WindowsTests
 
             scope.RunMapCustom(MappingCharacterizationScope.NeutralState());
 
-            Assert.Equal(0, Mapping.deviceState[MappingCharacterizationScope.Device].currentClicks.rightCount);
+            Assert.Equal(0, SyntheticInputState.Shared.DeviceState[MappingCharacterizationScope.Device].currentClicks.rightCount);
         }
     }
 }
