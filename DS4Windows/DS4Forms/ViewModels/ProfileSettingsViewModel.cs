@@ -2961,10 +2961,10 @@ namespace DS4WinWPF.DS4Forms.ViewModels
 
             /*ImageSourceConverter sourceConverter = new ImageSourceConverter();
             ImageSource temp = sourceConverter.
-                ConvertFromString($"{Global.ASSEMBLY_RESOURCE_PREFIX}component/Resources/rainbowCCrop.png") as ImageSource;
+                ConvertFromString($"{ResourcePaths.AssemblyResourcePrefix}component/Resources/rainbowCCrop.png") as ImageSource;
             lightbarImgBrush.ImageSource = temp.Clone();
             */
-            Uri tempResourceUri = new Uri($"{Global.ASSEMBLY_RESOURCE_PREFIX}component/Resources/rainbowCCrop.png");
+            Uri tempResourceUri = new Uri($"{ResourcePaths.AssemblyResourcePrefix}component/Resources/rainbowCCrop.png");
             BitmapImage tempBitmap = new BitmapImage();
             tempBitmap.BeginInit();
             // Needed for some systems not using the System default color profile

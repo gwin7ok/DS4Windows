@@ -49,22 +49,22 @@ namespace DS4WinWPF.DS4Forms
 
     public class ImageLocationPaths
     {
-        public string NewProfile { get => $"{Global.RESOURCES_PREFIX}/{App.Current.FindResource("NewProfileImg")}"; }
+        public string NewProfile { get => $"{ResourcePaths.ResourcesPrefix}/{App.Current.FindResource("NewProfileImg")}"; }
         public event EventHandler NewProfileChanged;
 
-        public string EditProfile { get => $"{Global.RESOURCES_PREFIX}/{App.Current.FindResource("EditImg")}"; }
+        public string EditProfile { get => $"{ResourcePaths.ResourcesPrefix}/{App.Current.FindResource("EditImg")}"; }
         public event EventHandler EditProfileChanged;
 
-        public string DeleteProfile { get => $"{Global.RESOURCES_PREFIX}/{App.Current.FindResource("DeleteImg")}"; }
+        public string DeleteProfile { get => $"{ResourcePaths.ResourcesPrefix}/{App.Current.FindResource("DeleteImg")}"; }
         public event EventHandler DeleteProfileChanged;
 
-        public string DuplicateProfile { get => $"{Global.RESOURCES_PREFIX}/{App.Current.FindResource("CopyImg")}"; }
+        public string DuplicateProfile { get => $"{ResourcePaths.ResourcesPrefix}/{App.Current.FindResource("CopyImg")}"; }
         public event EventHandler DuplicateProfileChanged;
 
-        public string ExportProfile { get => $"{Global.RESOURCES_PREFIX}/{App.Current.FindResource("ExportImg")}"; }
+        public string ExportProfile { get => $"{ResourcePaths.ResourcesPrefix}/{App.Current.FindResource("ExportImg")}"; }
         public event EventHandler ExportProfileChanged;
 
-        public string ImportProfile { get => $"{Global.RESOURCES_PREFIX}/{App.Current.FindResource("ImportImg")}"; }
+        public string ImportProfile { get => $"{ResourcePaths.ResourcesPrefix}/{App.Current.FindResource("ImportImg")}"; }
         public event EventHandler ImportProfileChanged;
 
         public ImageLocationPaths()

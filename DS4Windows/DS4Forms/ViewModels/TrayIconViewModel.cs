@@ -466,18 +466,18 @@ namespace DS4WinWPF.DS4Forms.ViewModels
         {
             IconSource = percentage switch
             {
-                < 10 => $"{Global.RESOURCES_PREFIX}/0.ico",
-                >= 10 and < 20 => $"{Global.RESOURCES_PREFIX}/10.ico",
-                >= 20 and < 30 => $"{Global.RESOURCES_PREFIX}/20.ico",
-                >= 30 and < 40 => $"{Global.RESOURCES_PREFIX}/30.ico",
-                >= 40 and < 50 => $"{Global.RESOURCES_PREFIX}/40.ico",
-                >= 50 and < 60 => $"{Global.RESOURCES_PREFIX}/50.ico",
-                >= 60 and < 70 => $"{Global.RESOURCES_PREFIX}/60.ico",
-                >= 70 and < 80 => $"{Global.RESOURCES_PREFIX}/70.ico",
-                >= 80 and < 90 => $"{Global.RESOURCES_PREFIX}/80.ico",
-                >= 90 and < 100 => $"{Global.RESOURCES_PREFIX}/90.ico",
-                100 => $"{Global.RESOURCES_PREFIX}/100.ico",
-                _ => $"{Global.RESOURCES_PREFIX}/DS4W.ico"
+                < 10 => $"{ResourcePaths.ResourcesPrefix}/0.ico",
+                >= 10 and < 20 => $"{ResourcePaths.ResourcesPrefix}/10.ico",
+                >= 20 and < 30 => $"{ResourcePaths.ResourcesPrefix}/20.ico",
+                >= 30 and < 40 => $"{ResourcePaths.ResourcesPrefix}/30.ico",
+                >= 40 and < 50 => $"{ResourcePaths.ResourcesPrefix}/40.ico",
+                >= 50 and < 60 => $"{ResourcePaths.ResourcesPrefix}/50.ico",
+                >= 60 and < 70 => $"{ResourcePaths.ResourcesPrefix}/60.ico",
+                >= 70 and < 80 => $"{ResourcePaths.ResourcesPrefix}/70.ico",
+                >= 80 and < 90 => $"{ResourcePaths.ResourcesPrefix}/80.ico",
+                >= 90 and < 100 => $"{ResourcePaths.ResourcesPrefix}/90.ico",
+                100 => $"{ResourcePaths.ResourcesPrefix}/100.ico",
+                _ => $"{ResourcePaths.ResourcesPrefix}/DS4W.ico"
             };
         }
 

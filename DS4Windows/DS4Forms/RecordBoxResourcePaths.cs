@@ -40,6 +40,6 @@ namespace DS4WinWPF.DS4Forms
 
     public class RecordBoxResourcePaths
     {
-        public string LeftTouch { get => $"{DS4Windows.Global.RESOURCES_PREFIX}/left touch.png"; }
+        public string LeftTouch { get => $"{ResourcePaths.ResourcesPrefix}/left touch.png"; }
     }
 }

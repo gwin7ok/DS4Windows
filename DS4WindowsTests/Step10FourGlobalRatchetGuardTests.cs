@@ -80,7 +80,8 @@ namespace DS4WindowsTests
             // Phase7-Step4 W5: Program.rootHub の実数は 5（基準値 6 は過大だった）。合計 22 → 21
             // Phase7-Step5 W2: Program.rootHub の参照 5 件を削除（フォールバックのラムダと、Save/LoadControllerConfigs）
             // Phase7-Step5 W3: ProfileXmlStoreInstance／NotificationServiceInstance の削除で AppHost.GetService を 2 件、Global.* を 4 件削除（(0, 3, 16) → (0, 1, 12)）
-            ["DS4Windows/DS4Control/Global.cs"] = (0, 1, 12),
+            // Phase7-Step10a W3: iconChoiceResources と ASSEMBLY／RESOURCES の自己参照 4 件を ResourcePaths の定数に替えた（12 → 8）
+            ["DS4Windows/DS4Control/Global.cs"] = (0, 1, 8),
             // Phase7-Step2 W4: INotificationService.NotificationsEnabled／FlashTaskbar の削除で Global.* 5 件を削除（6 → 1）
             ["DS4Windows/DS4Control/Services/AppNotificationService.cs"] = (0, 0, 0),
             // Phase7-Step4 W3: FirstRun は PathService の状態、RunHotPlug はインスタンスの状態にした（8 → 2）
@@ -118,27 +119,28 @@ namespace DS4WindowsTests
             // Phase6-Step10b W3: 1 ファイル 1 型の分割に伴い、件数を新設ファイルへ引き継いだ（合計は不変）
             //   MainWindow 7＝1＋ImageLocationPaths 6、ProfileEditor 37＝32＋ResourcePaths 5、ControllerListViewModel 4＝0＋CompositeDeviceModel 4、
             //   MappingListViewModel 3＝0＋MappedControl 3、RecordBoxViewModel 7＝1＋MacroStepItem 6
-            ["DS4Windows/DS4Forms/ImageLocationPaths.cs"] = (0, 0, 6),
+            // Phase7-Step10a W3: 資源パスの定数 Global.RESOURCES_PREFIX／ASSEMBLY_RESOURCE_PREFIX を ResourcePaths へ移した（ImageLocationPaths 6、ProfileEditor 29、ResourcePaths 5、CompositeDeviceModel 4、MacroStepItem 6、ProfileSettingsViewModel 1、TrayIconViewModel 12 → すべて 0）
+            ["DS4Windows/DS4Forms/ImageLocationPaths.cs"] = (0, 0, 0),
             ["DS4Windows/DS4Forms/LanguageSelectDialog.xaml.cs"] = (0, 0, 1),
             // Phase7-Step5 W5: AppHost.GetService の 17 件をコンストラクター引数に（IMainWindowFactory）。17 → 0
             ["DS4Windows/DS4Forms/MainWindow.xaml.cs"] = (0, 0, 0),
             // Phase7-Step5 W2: Program.rootHub のフォールバックを削除（1 → 0）
             // Phase7-Step5 W5: AppHost.GetService の 4 件をコンストラクター引数に（IEditorWindowFactory.CreateProfileEditor）。4 → 0
-            ["DS4Windows/DS4Forms/ProfileEditor.xaml.cs"] = (0, 0, 29),
-            ["DS4Windows/DS4Forms/ResourcePaths.cs"] = (0, 0, 5),
-            ["DS4Windows/DS4Forms/ViewModels/CompositeDeviceModel.cs"] = (0, 0, 4),
+            ["DS4Windows/DS4Forms/ProfileEditor.xaml.cs"] = (0, 0, 0),
+            ["DS4Windows/DS4Forms/ResourcePaths.cs"] = (0, 0, 0),
+            ["DS4Windows/DS4Forms/ViewModels/CompositeDeviceModel.cs"] = (0, 0, 0),
             ["DS4Windows/DS4Forms/ViewModels/ControllerListViewModel.cs"] = (0, 0, 0),
             ["DS4Windows/DS4Forms/ViewModels/LanguagePackViewModel.cs"] = (0, 0, 3),
-            ["DS4Windows/DS4Forms/ViewModels/MacroStepItem.cs"] = (0, 0, 6),
+            ["DS4Windows/DS4Forms/ViewModels/MacroStepItem.cs"] = (0, 0, 0),
             ["DS4Windows/DS4Forms/ViewModels/MappedControl.cs"] = (0, 0, 3),
             ["DS4Windows/DS4Forms/ViewModels/MappingListViewModel.cs"] = (0, 0, 0),
-            ["DS4Windows/DS4Forms/ViewModels/ProfileSettingsViewModel.cs"] = (0, 0, 1),
+            ["DS4Windows/DS4Forms/ViewModels/ProfileSettingsViewModel.cs"] = (0, 0, 0),
             ["DS4Windows/DS4Forms/ViewModels/RecordBoxViewModel.cs"] = (0, 0, 1),
             ["DS4Windows/DS4Forms/ViewModels/SpecialActions/CheckBatteryViewModel.cs"] = (0, 0, 1),
             ["DS4Windows/DS4Forms/ViewModels/SpecialActions/LaunchProgramViewModel.cs"] = (0, 0, 1),
             ["DS4Windows/DS4Forms/ViewModels/SpecialActions/PressKeyViewModel.cs"] = (0, 0, 7),
             ["DS4Windows/DS4Forms/ViewModels/SpecialActions/SpecialActionViewModel.cs"] = (0, 0, 1),
-            ["DS4Windows/DS4Forms/ViewModels/TrayIconViewModel.cs"] = (0, 0, 12),
+            ["DS4Windows/DS4Forms/ViewModels/TrayIconViewModel.cs"] = (0, 0, 0),
             // Phase6-Step12: デバウンス時間の通知経路の削除で、Global.DebouncingMsChanged／DebouncingMs の参照 2 件を削除（3 → 1）
             ["DS4Windows/DS4Library/DS4Device.cs"] = (0, 0, 1),
             ["DS4Windows/DS4Library/DS4Devices.cs"] = (0, 0, 6),

@@ -38,8 +38,8 @@ namespace DS4WinWPF.DS4Forms
 
     public class BindingWinResourcePaths
     {
-        public string Xbox360MapPNG { get => $"{DS4Windows.Global.RESOURCES_PREFIX}/360 map.png"; }
-        public string Xbox360HighlightPNG { get => $"{DS4Windows.Global.RESOURCES_PREFIX}/360 highlight.png"; }
-        public string MousePNG { get => $"{DS4Windows.Global.RESOURCES_PREFIX}/mouse.png"; }
+        public string Xbox360MapPNG { get => $"{ResourcePaths.ResourcesPrefix}/360 map.png"; }
+        public string Xbox360HighlightPNG { get => $"{ResourcePaths.ResourcesPrefix}/360 highlight.png"; }
+        public string MousePNG { get => $"{ResourcePaths.ResourcesPrefix}/mouse.png"; }
     }
 }

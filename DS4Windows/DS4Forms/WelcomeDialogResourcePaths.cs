@@ -29,6 +29,6 @@ namespace DS4WinWPF.DS4Forms
 
     public class WelcomeDialogResourcePaths
     {
-        public string PairmodePNG { get => $"{DS4Windows.Global.RESOURCES_PREFIX}/Pairmode.png"; }
+        public string PairmodePNG { get => $"{ResourcePaths.ResourcesPrefix}/Pairmode.png"; }
     }
 }

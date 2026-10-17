@@ -470,13 +470,15 @@ namespace DS4Windows
             [DS4Controls.TouchEnded] = 288,
         };
 
+        // Phase7-Step10a W3: 資源パスの定数は画面側の ResourcePaths へ移した。この表も画面側の型であり、本来はそこへ置く（下位層から上位層への一時的な参照）。
+        // TODO(Phase7-Step10b): iconChoiceResources を画面側（TrayIcon の資源）へ移したら、この参照は不要になる。
         public static Dictionary<TrayIconChoice, string> iconChoiceResources = new Dictionary<TrayIconChoice, string>
         {
-            [TrayIconChoice.Default] = $"{Global.RESOURCES_PREFIX}/DS4W.ico",
-            [TrayIconChoice.Colored] = $"{Global.RESOURCES_PREFIX}/DS4W.ico",
-            [TrayIconChoice.White] = $"{Global.RESOURCES_PREFIX}/DS4W - White.ico",
-            [TrayIconChoice.Black] = $"{Global.RESOURCES_PREFIX}/DS4W - Black.ico",
-            [TrayIconChoice.Battery] = $"{RESOURCES_PREFIX}/DS4W.ico"
+            [TrayIconChoice.Default] = $"{DS4WinWPF.DS4Forms.ResourcePaths.ResourcesPrefix}/DS4W.ico",
+            [TrayIconChoice.Colored] = $"{DS4WinWPF.DS4Forms.ResourcePaths.ResourcesPrefix}/DS4W.ico",
+            [TrayIconChoice.White] = $"{DS4WinWPF.DS4Forms.ResourcePaths.ResourcesPrefix}/DS4W - White.ico",
+            [TrayIconChoice.Black] = $"{DS4WinWPF.DS4Forms.ResourcePaths.ResourcesPrefix}/DS4W - Black.ico",
+            [TrayIconChoice.Battery] = $"{DS4WinWPF.DS4Forms.ResourcePaths.ResourcesPrefix}/DS4W.ico"
         };
 
         /// <summary>
