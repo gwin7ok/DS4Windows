@@ -78,6 +78,9 @@ namespace DS4Windows.DI
             // プロファイルのアクション取得（ControlService が使用）。Phase6-Step10-4-2d: アクション連鎖サービスは廃止
             services.AddSingleton<IProfileActionProvider>(sp => new ProfileActionProvider(sp.GetRequiredService<BackingStore>()));
 
+            // Phase7-Step8 W2（Q3＝A）: デバイス × アクション名ごとの KeyButtonActionController の登録簿（旧: Mapping の静的フィールド）
+            services.AddSingleton<IKeyButtonControllerRegistry, KeyButtonControllerRegistry>();
+
             // Phase 5 Step 3: プロファイル適用サービス
             services.AddSingleton<IProfileApplicationService, ProfileApplicationService>();
 
@@ -119,6 +122,11 @@ namespace DS4Windows.DI
             // Phase6-Step9-4（決定2＝C1）: ViewModelFactory が ControlService を生成のたびに遅延解決するための Func
             // （ControlService は Singleton。明示的なホスト構築より前に解決しないため、構築時には解決しない）
             services.AddSingleton<Func<ControlService>>(sp => () => sp.GetRequiredService<ControlService>());
+            // Phase7-Step8 W2（Q1＝A・Q4＝A・Q8＝A）: 入力の評価の窓口（Singleton）。Mapping は IDeviceStateAccessor（＝ControlService）を遅延で受け、
+            // DefaultActionManager／DefaultMacroPlayer は Func<IMapping> で受ける（ホスト構築時に Mapping とその依存を作らないため。Phase5-Plan §5.4）。
+            services.AddSingleton<IMapping, Mapping>();
+            services.AddSingleton<Func<IMapping>>(sp => () => sp.GetRequiredService<IMapping>());
+            services.AddSingleton<Func<IDeviceStateAccessor>>(sp => () => sp.GetRequiredService<IDeviceStateAccessor>());
             // Phase6-Step10-2-3: IAutoProfileService の遅延解決（AutoProfileHolder は設定の場所が決まった後でなければ生成できない）
             services.AddSingleton<Func<IAutoProfileService>>(sp => () => sp.GetRequiredService<IAutoProfileService>());
 
@@ -177,7 +185,8 @@ namespace DS4Windows.DI
                     sp.GetRequiredService<IElevatedProcessLauncher>(),
                     // Phase7-Step8 W1: 保持クラスをコンストラクターで受ける（旧: ControlService／Mouse が Shared を参照）
                     sp.GetRequiredService<StickMotionState>(),
-                    sp.GetRequiredService<SyntheticInputState>()
+                    sp.GetRequiredService<SyntheticInputState>(),
+                    sp.GetRequiredService<IMapping>()
                 );
             });
             services.AddSingleton<IDeviceStateAccessor>(sp => sp.GetRequiredService<ControlService>());

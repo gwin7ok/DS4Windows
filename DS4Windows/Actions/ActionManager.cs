@@ -266,7 +266,8 @@ namespace DS4Windows
                     }
                 }
 
-                try { Mapping.HandleDeviceDisconnect(device); } catch { }
+                // Phase7-Step8 W2（Q8＝A）: 旧 Mapping.HandleDeviceDisconnect の静的呼び出し。取得済みの sp から解決する（ホストが無いときは、Mapping も無いので何もしない）
+                try { (sp?.GetService(typeof(DS4Windows.DI.IMapping)) as DS4Windows.DI.IMapping)?.HandleDeviceDisconnect(device); } catch { }
             }
             catch { }
         }
@@ -512,7 +513,8 @@ namespace DS4Windows
                     var mgr = sp.GetService(typeof(DS4Windows.Actions.IManagedActionManager)) as DS4Windows.Actions.IManagedActionManager;
                 }
 
-                return Mapping.GetOrCreateKeyButtonControllerForAction(device, action);
+                // Phase7-Step8 W2（Q8＝A）: 旧 Mapping.GetOrCreateKeyButtonControllerForAction。取得済みの sp から登録簿を解決する
+                return (sp?.GetService(typeof(DS4Windows.DI.IKeyButtonControllerRegistry)) as DS4Windows.DI.IKeyButtonControllerRegistry)?.GetOrCreateForAction(device, action);
             }
             catch { return null; }
         }
@@ -521,8 +523,11 @@ namespace DS4Windows
         {
             try
             {
-                var provider = DS4Windows.DI.ServiceProviderHolder.Provider?.GetService(typeof(DS4Windows.DI.IProfileActionProvider)) as DS4Windows.DI.IProfileActionProvider;
+                var sp = DS4Windows.DI.ServiceProviderHolder.Provider;
+                var provider = sp?.GetService(typeof(DS4Windows.DI.IProfileActionProvider)) as DS4Windows.DI.IProfileActionProvider;
                 if (provider == null) return;
+                // Phase7-Step8 W2（Q8＝A）: 旧 Mapping.GetOrCreateKeyButtonControllerForAction の静的呼び出し
+                var controllerRegistry = sp.GetService(typeof(DS4Windows.DI.IKeyButtonControllerRegistry)) as DS4Windows.DI.IKeyButtonControllerRegistry;
                 var profileActions = provider.GetProfileActionNames(device);
                 if (profileActions == null) return;
 
@@ -535,7 +540,7 @@ namespace DS4Windows
 
                         try { GetActionByName(sa.name); } catch { }
                         try { GetStateFor(sa, device); } catch { }
-                        try { Mapping.GetOrCreateKeyButtonControllerForAction(device, sa); } catch { }
+                        try { controllerRegistry?.GetOrCreateForAction(device, sa); } catch { }
                     }
                     catch { }
                 }

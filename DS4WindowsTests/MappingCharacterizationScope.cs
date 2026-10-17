@@ -28,6 +28,11 @@ namespace DS4WindowsTests
         public RecordingVirtualKbmBase Recorder { get; } = new RecordingVirtualKbmBase();
         public IProfileSettingsService Settings { get; }
         public ControlService Control { get; }
+        /// <summary>コンテナの <c>IMapping</c>（Singleton）。Phase7-Step8 W2 で static から instance になった。</summary>
+        public IMapping Mapper { get; }
+        /// <summary>コンテナの保持クラス（Mapper が使うものと同じ instance）。</summary>
+        public SyntheticInputState Synthetic { get; }
+        private readonly StickMotionState _stickMotion;
         public VirtualKBMMapping KbmMapping { get; }
 
         public MappingCharacterizationScope()
@@ -35,14 +40,17 @@ namespace DS4WindowsTests
             DS4WinWPF.AppHost.CreateHost();
             Settings = DS4WinWPF.AppHost.GetService<IProfileSettingsService>();
             Control = DS4WinWPF.AppHost.GetService<ControlService>();
+            Mapper = DS4WinWPF.AppHost.GetService<IMapping>();
+            Synthetic = DS4WinWPF.AppHost.GetService<SyntheticInputState>();
+            _stickMotion = DS4WinWPF.AppHost.GetService<StickMotionState>();
 
-            _savedGlobalState = SyntheticInputState.Shared.GlobalState;
-            _savedDeviceState = SyntheticInputState.Shared.DeviceState[Device];
+            _savedGlobalState = Synthetic.GlobalState;
+            _savedDeviceState = Synthetic.DeviceState[Device];
             _savedHandler = Global.outputKBMHandler;
             _savedMapping = Settings.OutputKBMMapping;
 
-            SyntheticInputState.Shared.GlobalState = new SyntheticState();
-            SyntheticInputState.Shared.DeviceState[Device] = new SyntheticState();
+            Synthetic.GlobalState = new SyntheticState();
+            Synthetic.DeviceState[Device] = new SyntheticState();
 
             KbmMapping = VirtualKBMFactory.GetMappingInstance();
             KbmMapping.PopulateConstants();
@@ -70,11 +78,11 @@ namespace DS4WindowsTests
         public DS4State RunMapCustom(DS4State input)
         {
             var device = (DS4Device)RuntimeHelpers.GetUninitializedObject(typeof(DS4Device));
-            var mouse = new Mouse(Device, device, Settings, Recorder, StickMotionState.Shared, SyntheticInputState.Shared);
+            var mouse = new Mouse(Device, device, Settings, Recorder, _stickMotion, Synthetic);
             var exposed = new DS4StateExposed(input);
             var mapped = new DS4State();
 
-            Mapping.MapCustom(Device, input, mapped, exposed, mouse, Control);
+            Mapper.MapCustom(Device, input, mapped, exposed, mouse, Control);
             return mapped;
         }
 
@@ -83,11 +91,11 @@ namespace DS4WindowsTests
             foreach (DS4Controls control in _touched)
                 Global.store.GetDS4CSetting(Device, control)?.Reset();
 
-            Mapping.HandleDeviceDisconnect(Device);
+            Mapper.HandleDeviceDisconnect(Device);
             Global.outputKBMHandler = _savedHandler;
             Settings.OutputKBMMapping = _savedMapping;
-            SyntheticInputState.Shared.GlobalState = _savedGlobalState;
-            SyntheticInputState.Shared.DeviceState[Device] = _savedDeviceState;
+            Synthetic.GlobalState = _savedGlobalState;
+            Synthetic.DeviceState[Device] = _savedDeviceState;
         }
     }
 }

@@ -13,6 +13,9 @@ namespace DS4WindowsTests
     /// </summary>
     internal static class TestRepositoryFactory
     {
+        /// <summary>Phase7-Step8 W2: 切断時の後始末などで使う IMapping の遅延プロバイダー（コンテナの Singleton。ホスト構築時に Mapping を作らない）。</summary>
+        public static Func<IMapping> MappingProvider => () => DS4WinWPF.AppHost.GetService<IMapping>();
+
         public static SpecialActionRepository CreateSpecialActionRepository(BackingStore store = null, IPathService pathService = null)
         {
             return new SpecialActionRepository(store ?? Global.store, pathService ?? new PathService(), SyntheticInputState.Shared);
@@ -40,7 +43,7 @@ namespace DS4WindowsTests
 
         public static DefaultActionFactory CreateDefaultActionFactory()
         {
-            return new DefaultActionFactory(new DefaultMacroPlayer(new MockVirtualKBM()),
+            return new DefaultActionFactory(new DefaultMacroPlayer(new MockVirtualKBM(), MappingProvider),
                 new DefaultProcessLauncher(), new DefaultProfileSwitcher());
         }
 
@@ -99,12 +102,14 @@ namespace DS4WindowsTests
         public static ProfileApplicationService CreateProfileApplicationService(IProfileSettingsService settings,
             IDeviceStateService deviceState, Func<ControlService> control, IProfileRepository profileRepository,
             IEnvironmentService environmentService, IProfileXmlStore xmlStore = null,
-            IProfileActionProvider actionProvider = null, BackingStore store = null)
+            IProfileActionProvider actionProvider = null, BackingStore store = null,
+            IKeyButtonControllerRegistry keyButtonControllers = null)
         {
             return new ProfileApplicationService(settings, deviceState, control, profileRepository, environmentService,
                 xmlStore ?? new ProfileXmlStore(store ?? Global.store),
                 actionProvider ?? CreateProfileActionProvider(store ?? Global.store),
-                store ?? Global.store);
+                store ?? Global.store,
+                keyButtonControllers ?? DS4WinWPF.AppHost.GetService<IKeyButtonControllerRegistry>());
         }
 
         public static ProfileSlotApplier CreateProfileSlotApplier(IProfileApplicationService profileApplication = null)

@@ -67,24 +67,28 @@ namespace DS4WindowsTests
         }
 
         [Fact]
-        public void KeepItems_AppearExactlyOnceEachAndAreGlobalQualified()
+        public void KeepItems_AreGone_TheServiceBindingsAreConstructorInjected()
         {
             string text = ReadSourceWithoutComments(out string raw);
             if (text == null) return;
 
-            Assert.Equal(1, CountOccurrences(text, "Global.ProfileSettingsServiceInstance"));
-            Assert.Equal(1, CountOccurrences(text, "Global.outputKBMHandler"));
+            // Phase7-Step8 W2: 温存していた 2 件（DI ホスト未構築時のフォールバック）は、コンストラクター注入に置き換えて削除した
+            Assert.Equal(0, CountOccurrences(text, "Global.ProfileSettingsServiceInstance"));
+            Assert.Equal(0, CountOccurrences(text, "Global.outputKBMHandler"));
+            Assert.Equal(0, CountOccurrences(text, "AppHost"));
+            Assert.Equal(0, CountOccurrences(text, "ServiceProviderHolder"));
             // Phase7-Step3c W4: Global.ApplyProfile は削除し、IProfileApplicationService 経由にした
             Assert.Equal(0, CountOccurrences(text, "Global.ApplyProfile("));
         }
 
         [Fact]
-        public void KeepItems_HaveStep3_7TodoCommentsNearby()
+        public void KeepItems_TodoCommentsAreResolved()
         {
             ReadSourceWithoutComments(out string raw);
             if (raw == null) return;
 
-            Assert.Contains("TODO(Phase6-Step3-7, 温存・決定KEEP): DI ホスト未構築時", raw);
+            // Phase7-Step8 W2: フォールバックの削除とともに、TODO（Phase7 の instance 化で解消する旨）も消えた
+            Assert.DoesNotContain("TODO(Phase6-Step3-7, 温存・決定KEEP): DI ホスト未構築時", raw);
         }
     }
 }

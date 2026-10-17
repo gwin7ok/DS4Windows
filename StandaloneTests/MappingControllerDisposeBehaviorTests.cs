@@ -9,15 +9,49 @@ namespace StandaloneTests
     [TestClass]
     public class MappingControllerDisposeBehaviorTests
     {
+        // Phase7-Step8 W2: 登録簿は Mapping から KeyButtonControllerRegistry へ移った。ActionManager.ClearDeviceState（静的ファサード）は、
+        // コンテナから IMapping を解決して HandleDeviceDisconnect を呼ぶ。ここでは IMapping の代わりに、登録簿を破棄するだけの偽物を差す。
         private class TestServiceProvider : IServiceProvider
         {
             private readonly object factory;
-            public TestServiceProvider(object factory) { this.factory = factory; }
+            private readonly DS4Windows.Services.KeyButtonControllerRegistry registry;
+            private readonly object mapping;
+            public TestServiceProvider(object factory)
+            {
+                this.factory = factory;
+                registry = new DS4Windows.Services.KeyButtonControllerRegistry(
+                    (DS4Windows.Actions.IKeyButtonActionControllerFactory)factory, new DS4Windows.Actions.DefaultControllerRegistry());
+                mapping = new DisconnectOnlyMapping(registry);
+            }
+            public DS4Windows.Services.KeyButtonControllerRegistry Registry => registry;
             public object GetService(Type serviceType)
             {
                 if (serviceType == typeof(DS4Windows.Actions.IKeyButtonActionControllerFactory)) return factory;
+                if (serviceType == typeof(DS4Windows.DI.IKeyButtonControllerRegistry)) return registry;
+                if (serviceType == typeof(DS4Windows.DI.IMapping)) return mapping;
                 return null;
             }
+        }
+
+        private class DisconnectOnlyMapping : DS4Windows.DI.IMapping
+        {
+            private readonly DS4Windows.DI.IKeyButtonControllerRegistry registry;
+            public DisconnectOnlyMapping(DS4Windows.DI.IKeyButtonControllerRegistry registry) { this.registry = registry; }
+            public void HandleDeviceDisconnect(int device) { registry.ClearForDevice(device); }
+            public DS4State SetCurveAndDeadzone(int device, DS4State cState, DS4State dState, DS4Windows.DI.IProfileSettingsService settings) { throw new NotSupportedException(); }
+            public void MapCustom(int device, DS4State cState, DS4State MappedState, DS4StateExposed eState, Mouse tp, ControlService ctrl) { throw new NotSupportedException(); }
+            public void TempMouseJoystick(int device, DS4State MappedState) { throw new NotSupportedException(); }
+            public void Commit(int device, DS4Windows.DI.IProfileSettingsService settings) { throw new NotSupportedException(); }
+            public bool GetBoolMappingExternal(int device, DS4Controls control, DS4State cState, DS4StateExposed eState, Mouse tp) { throw new NotSupportedException(); }
+            public void PlayMacroDirect(int device, SpecialAction action) { throw new NotSupportedException(); }
+            public void EndMacroDirect(int device) { throw new NotSupportedException(); }
+        }
+
+        private static System.Collections.IDictionary ControllersOf(DS4Windows.Services.KeyButtonControllerRegistry registry)
+        {
+            var field = typeof(DS4Windows.Services.KeyButtonControllerRegistry).GetField("_controllers", BindingFlags.Instance | BindingFlags.NonPublic);
+            Assert.IsNotNull(field, "Could not find _controllers field via reflection");
+            return field.GetValue(registry) as System.Collections.IDictionary;
         }
 
         private class TestFactory : DS4Windows.Actions.IKeyButtonActionControllerFactory
@@ -60,20 +94,17 @@ namespace StandaloneTests
             int device = 7;
             // arrange: install service provider returning factory that creates TestKeyButtonActionController
             var factory = new TestFactory((d, m, n) => new TestKeyButtonActionController(d, m, n));
-            DS4Windows.DI.ServiceProviderHolder.SetProvider(new TestServiceProvider(factory));
+            var provider = new TestServiceProvider(factory);
+            DS4Windows.DI.ServiceProviderHolder.SetProvider(provider);
 
             try
             {
-                // create controllers via private Mapping factory
-                var mappingType = typeof(Mapping);
-                var getOrCreate = mappingType.GetMethod("GetOrCreateKeyButtonController", BindingFlags.Static | BindingFlags.NonPublic, null, new Type[] { typeof(int), typeof(KeyButtonActionController.Mode), typeof(string) }, null);
-                Assert.IsNotNull(getOrCreate);
-                getOrCreate.Invoke(null, new object[] { device, KeyButtonActionController.Mode.Press, "t1" });
-                getOrCreate.Invoke(null, new object[] { device, KeyButtonActionController.Mode.Toggle, "t2" });
+                // create controllers via the registry
+                provider.Registry.GetOrCreate(device, KeyButtonActionController.Mode.Press, "t1");
+                provider.Registry.GetOrCreate(device, KeyButtonActionController.Mode.Toggle, "t2");
 
                 // capture instances
-                var dictField = mappingType.GetField("keyButtonControllers", BindingFlags.Static | BindingFlags.NonPublic);
-                var dict = dictField.GetValue(null) as System.Collections.IDictionary;
+                var dict = ControllersOf(provider.Registry);
                 var instances = dict.Values.Cast<object>().Where(v => v is TestKeyButtonActionController).Cast<TestKeyButtonActionController>().ToArray();
                 Assert.IsTrue(instances.Length >= 1);
 
@@ -105,16 +136,14 @@ namespace StandaloneTests
                 return (KeyButtonActionController)normal;
             });
 
-            DS4Windows.DI.ServiceProviderHolder.SetProvider(new TestServiceProvider(factory));
+            var provider = new TestServiceProvider(factory);
+            DS4Windows.DI.ServiceProviderHolder.SetProvider(provider);
             try
             {
-                var mappingType = typeof(Mapping);
-                var getOrCreate = mappingType.GetMethod("GetOrCreateKeyButtonController", BindingFlags.Static | BindingFlags.NonPublic, null, new Type[] { typeof(int), typeof(KeyButtonActionController.Mode), typeof(string) }, null);
-                getOrCreate.Invoke(null, new object[] { device, KeyButtonActionController.Mode.Press, "bad" });
-                getOrCreate.Invoke(null, new object[] { device, KeyButtonActionController.Mode.Toggle, "good" });
+                provider.Registry.GetOrCreate(device, KeyButtonActionController.Mode.Press, "bad");
+                provider.Registry.GetOrCreate(device, KeyButtonActionController.Mode.Toggle, "good");
 
-                var dictField = mappingType.GetField("keyButtonControllers", BindingFlags.Static | BindingFlags.NonPublic);
-                var dict = dictField.GetValue(null) as System.Collections.IDictionary;
+                var dict = ControllersOf(provider.Registry);
 
                 // act
                 ActionManager.ClearDeviceState(device);

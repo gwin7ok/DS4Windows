@@ -18,12 +18,16 @@ namespace DS4Windows.Actions
         private bool[,] buttonStates = null;
         private const int ToggleReleaseHoldMsLocal = 200;
         private readonly IActionFactory _actionFactory;
+        // Phase7-Step8 W2（Q8＝A）: 切断時の後始末（旧: Mapping.HandleDeviceDisconnect の静的呼び出し）。ホスト構築時（PreallocateEntries）に Mapping とその依存を
+        // 作らないよう、遅延（Func）で受ける（Phase5-Plan §5.4）。
+        private readonly Func<DS4Windows.DI.IMapping> _mappingProvider;
 
         public event Action<SpecialAction, int, bool, bool> ToggledOnChanged;
 
-        public DefaultActionManager(IActionFactory actionFactory)
+        public DefaultActionManager(IActionFactory actionFactory, Func<DS4Windows.DI.IMapping> mappingProvider)
         {
             _actionFactory = actionFactory ?? throw new ArgumentNullException(nameof(actionFactory)); // Phase6-Step10-4-4: 必須の依存
+            _mappingProvider = mappingProvider ?? throw new ArgumentNullException(nameof(mappingProvider));
         }
 
         private static ActionEntry GetOrCreateEntryInternal(Dictionary<string, ActionEntry> actionsDict, SpecialAction action, IActionFactory factory)
@@ -227,7 +231,7 @@ namespace DS4Windows.Actions
                 // 2026-09-04（31dddc43）から本クラスは未登録で静的実装が使われ、実機確認はその挙動で行われていたため、
                 // 再登録で挙動が変わらないよう揃えた（以前の ClearKeyButtonControllersForDevice 単体では、
                 // 押しっぱなしの合成キーが解放されない）。
-                try { Mapping.HandleDeviceDisconnect(device); } catch { }
+                try { _mappingProvider().HandleDeviceDisconnect(device); } catch { }
             }
             catch { }
         }

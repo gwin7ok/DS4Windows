@@ -18,6 +18,9 @@ namespace DS4WindowsTests
     /// </summary>
     public class MappingArgumentPassThroughTests
     {
+        // Phase7-Step8 W2: Mapping は instance になった。他のテストと状態を共有しない独立の instance を使う
+        private static readonly Mapping Mapper = TestMappingFactory.Create();
+
         private const int Slot = 0;
 
         private static ProfileSettingsService CreateIsolatedService(out BackingStore store)
@@ -31,7 +34,7 @@ namespace DS4WindowsTests
         {
             var cState = new DS4State { LX = lx, LY = ly, RX = rx, RY = ry, L2 = l2, R2 = r2 };
             var dState = new DS4State();
-            return Mapping.SetCurveAndDeadzone(Slot, cState, dState, settings);
+            return Mapper.SetCurveAndDeadzone(Slot, cState, dState, settings);
         }
 
         [Fact]
@@ -135,7 +138,7 @@ namespace DS4WindowsTests
 
             var dState = new DS4State();
             // SetCurveAndDeadzone は cState.CopyTo(dState) で Motion の参照を共有するため、結果は cState.Motion から読める。
-            Mapping.SetCurveAndDeadzone(Slot, cState, dState, settings);
+            Mapper.SetCurveAndDeadzone(Slot, cState, dState, settings);
             return cState;
         }
 
@@ -256,8 +259,8 @@ namespace DS4WindowsTests
             driftStore.leftStickDriftXAxis[Slot] = 30;
             driftStore.leftStickDriftYAxis[Slot] = 40;
 
-            DS4State a = Mapping.ApplyStickCalibration(Slot, new DS4State { LX = 100, LY = 100, RX = 100, RY = 100 }, neutral);
-            DS4State b = Mapping.ApplyStickCalibration(Slot, new DS4State { LX = 100, LY = 100, RX = 100, RY = 100 }, drifted);
+            DS4State a = Mapper.ApplyStickCalibration(Slot, new DS4State { LX = 100, LY = 100, RX = 100, RY = 100 }, neutral);
+            DS4State b = Mapper.ApplyStickCalibration(Slot, new DS4State { LX = 100, LY = 100, RX = 100, RY = 100 }, drifted);
 
             // 補正なし（対照）: 入力がそのまま出力される
             Assert.Equal(100, a.RX);
@@ -278,7 +281,7 @@ namespace DS4WindowsTests
             var drifted = CreateIsolatedService(out BackingStore driftStore);
             driftStore.leftStickDriftXAxis[Slot] = 50; // 10 - 50 が負になる → 0 に丸める
 
-            DS4State b = Mapping.ApplyStickCalibration(Slot, new DS4State { LX = 10, LY = 128, RX = 128, RY = 128 }, drifted);
+            DS4State b = Mapper.ApplyStickCalibration(Slot, new DS4State { LX = 10, LY = 128, RX = 128, RY = 128 }, drifted);
 
             Assert.Equal(0, b.LX);
         }

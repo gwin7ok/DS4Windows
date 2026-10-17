@@ -61,19 +61,28 @@ namespace DS4WindowsTests
             Assert.NotSame(state.L2TwoStageMappingData[0], state.R2TwoStageMappingData[0]);
         }
 
+        // Phase7-Step8 W2: 転送プロパティは削除した。Mapping のコンストラクターが、受け取った保持クラスの配列を、同じ参照のまま readonly で持つこと
         [Fact]
-        public void MappingForwarders_ReturnTheSameArraysAsTheHolder()
+        public void MappingCopies_ReferenceTheSameArraysAsTheHolder()
         {
-            var state = StickMotionState.Shared;
+            var state = new StickMotionState();
+            var mapper = TestMappingFactory.Create(stickMotion: state);
 
-            Assert.Same(state.GyroStickX, Mapping.gyroStickX);
-            Assert.Same(state.GyroStickY, Mapping.gyroStickY);
-            Assert.Same(state.MapStickActionData, Mapping.mapStickActionData);
-            Assert.Same(state.FlickMappingData, Mapping.flickMappingData);
-            Assert.Same(state.L2TwoStageMappingData, Mapping.l2TwoStageMappingData);
-            Assert.Same(state.R2TwoStageMappingData, Mapping.r2TwoStageMappingData);
-            Assert.Same(state.DeltaAccelProcessors, Mapping.deltaAccelProcessors);
-            Assert.Same(state.WheelFilters, Mapping.wheelFilters);
+            object Field(string name)
+            {
+                var field = typeof(Mapping).GetField(name, System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.NonPublic);
+                Assert.NotNull(field);
+                return field.GetValue(mapper);
+            }
+
+            Assert.Same(state.GyroStickX, Field("gyroStickX"));
+            Assert.Same(state.GyroStickY, Field("gyroStickY"));
+            Assert.Same(state.MapStickActionData, Field("mapStickActionData"));
+            Assert.Same(state.FlickMappingData, Field("flickMappingData"));
+            Assert.Same(state.L2TwoStageMappingData, Field("l2TwoStageMappingData"));
+            Assert.Same(state.R2TwoStageMappingData, Field("r2TwoStageMappingData"));
+            Assert.Same(state.DeltaAccelProcessors, Field("deltaAccelProcessors"));
+            Assert.Same(state.WheelFilters, Field("wheelFilters"));
         }
 
         [Fact]
@@ -82,11 +91,14 @@ namespace DS4WindowsTests
             string mapping = Read("DS4Windows/DS4Control/Mapping.cs");
             if (mapping == null) return;
 
-            Assert.Contains("private static readonly StickMotionState stickMotion = StickMotionState.Shared;", mapping);
-            Assert.Contains("public static byte[] gyroStickX => stickMotion.GyroStickX;", mapping);
-            Assert.Contains("public static PostMapStickData[] mapStickActionData => stickMotion.MapStickActionData;", mapping);
-            Assert.Contains("public static FlickStickMappingData[] flickMappingData => stickMotion.FlickMappingData;", mapping);
-            Assert.Contains("public static DeltaSettingsProcessorGroup[] deltaAccelProcessors => stickMotion.DeltaAccelProcessors;", mapping);
+            // Phase7-Step8 W2: 転送プロパティは削除し、コンストラクターで受けた保持クラスの配列を readonly で複製して持つ
+            Assert.Contains("private readonly StickMotionState _stickMotion;", mapping);
+            Assert.Contains("private readonly byte[] gyroStickX;", mapping);
+            Assert.Contains("private readonly PostMapStickData[] mapStickActionData;", mapping);
+            Assert.Contains("private readonly FlickStickMappingData[] flickMappingData;", mapping);
+            Assert.Contains("private readonly DeltaSettingsProcessorGroup[] deltaAccelProcessors;", mapping);
+            Assert.Contains("gyroStickX = stickMotion.GyroStickX;", mapping);
+            Assert.DoesNotContain("StickMotionState.Shared", mapping);
 
             foreach (string nested in new[]
             {

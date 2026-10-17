@@ -42,15 +42,15 @@ using ThreadState = System.Threading.ThreadState;
 
 namespace DS4Windows
 {
-    public class Mapping
+    public class Mapping : DS4Windows.DI.IMapping
     {
         // ==========================================
         // 【修正後】
         // ==========================================
-        private static readonly System.Collections.Concurrent.ConcurrentDictionary<(int dev, int key, bool toggle, bool useScan), SpecialAction> _syntheticActionCache
+        private readonly System.Collections.Concurrent.ConcurrentDictionary<(int dev, int key, bool toggle, bool useScan), SpecialAction> _syntheticActionCache
             = new System.Collections.Concurrent.ConcurrentDictionary<(int dev, int key, bool toggle, bool useScan), SpecialAction>();
 
-        public static SpecialAction GetOrCreateSyntheticKeyAction(int device, int kvpKey, uint outputKey, bool toggle, bool useScan)
+        public SpecialAction GetOrCreateSyntheticKeyAction(int device, int kvpKey, uint outputKey, bool toggle, bool useScan)
         {
             // キャッシュキーに toggle を含めて Press用と Toggle用のアクションを分離
             var cacheKey = (device, kvpKey, toggle, useScan);
@@ -70,20 +70,42 @@ namespace DS4Windows
                 return sa;
             });
         }
-        public static void ClearSyntheticActionCache()
+        public void ClearSyntheticActionCache()
         {
             _syntheticActionCache.Clear();
         }
-        // TODO(Phase6-Step3-7, 温存・決定KEEP): DI ホスト未構築時（Pre-Host やテストの一部経路）のフォールバックとして
-        // `Global.ProfileSettingsServiceInstance` を残す。Phase7 の `Mapping` instance 化で、この静的束縛自体を解消する。
-        private static readonly DS4Windows.DI.IProfileSettingsService profileSettings =
-            DS4WinWPF.AppHost.GetService<DS4Windows.DI.IProfileSettingsService>()
-            ?? Global.ProfileSettingsServiceInstance;
-        private static readonly DS4Windows.DI.IProfileApplicationService profileApplication =
-            DS4WinWPF.AppHost.GetService<DS4Windows.DI.IProfileApplicationService>();
-        // TODO(Phase6-Step3-7, 温存・決定KEEP): DI ホスト未構築時のフォールバックとして `Global.outputKBMHandler` を残す。
-        // Phase7 の `Mapping` instance 化で、この静的束縛自体を解消する。
-        private static IVirtualKBM VirtualKBM => AppHost.GetService<IVirtualKBM>() ?? Global.outputKBMHandler;
+        // Phase7-Step8 W2: 旧 静的な束縛（AppHost／Global のフォールバックつき）。コンストラクターで受ける（フォールバックは廃止）。
+        private readonly DS4Windows.DI.IProfileSettingsService profileSettings;
+        private readonly DS4Windows.DI.IProfileApplicationService profileApplication;
+        private readonly IVirtualKBM VirtualKBM;
+        private readonly DS4Windows.DI.IKeyButtonControllerRegistry _keyButtonControllers;
+        private readonly DS4Windows.Actions.IProcessLauncher _processLauncher;
+        private readonly DS4Windows.Actions.IProfileSwitcher _profileSwitcher;
+        // ControlService が IDeviceStateAccessor の実装者のため、循環を避けて遅延で取得する（マクロの振動イベントで使う）
+        private readonly Func<IDeviceStateAccessor> _deviceStateAccessor;
+
+        // Phase7-Step8 W2（Q5＝A）: 保持クラス（コンストラクターで受ける）。Step7 の転送プロパティは削除した。
+        // 配列の参照は再代入されない（要素の読み書きのみ）ため、readonly で 1 度だけ複製して持ち、毎レポートの割り当てと間接参照を増やさない。
+        // 差し替わる GlobalState と、更新される MacroCount だけは、保持クラスを直接読み書きする。
+        private readonly SyntheticInputState _syntheticInput;
+        private readonly MacroRuntimeState _macroRuntime;
+        private readonly StickMotionState _stickMotion;
+        private readonly ReaderWriterLockSlim syncStateLock;
+        private readonly SyntheticState[] deviceState;
+        private readonly bool[] macrodone;
+        private readonly bool[] macroDispatchInFlight;
+        private readonly object macroDispatchLock;
+        private readonly bool[] macroControl;
+        private readonly Dictionary<string, Task>[] macroTaskQueue;
+        private readonly byte[] gyroStickX;
+        private readonly byte[] gyroStickY;
+        private readonly PostMapStickData[] mapStickActionData;
+        private readonly OneEuroFilter[] wheelFilters;
+        private readonly FlickStickMappingData[] flickMappingData;
+        private readonly TwoStageTriggerMappingData[] l2TwoStageMappingData;
+        private readonly TwoStageTriggerMappingData[] r2TwoStageMappingData;
+        private readonly DeltaSettingsProcessorGroup[] deltaAccelProcessors;
+
         // SpecialAction名ごとのエラーログ抑制用（1プロファイル切り替えごとに1回だけ）
         // private static HashSet<string> loggedInvalidActions = new HashSet<string>();
 
@@ -109,14 +131,14 @@ namespace DS4Windows
         // SpecialAction名ごとのエラーログ抑制用（1プロファイル切り替えごとに1回だけ）
         // private static HashSet<string> loggedInvalidActions = new HashSet<string>();
 
-        static Queue<ControlToXInput>[] customMapQueue;
+        Queue<ControlToXInput>[] customMapQueue;
         // Cache of last trigger states for Button SpecialActions to reduce logging noise.
-        private static Dictionary<string, bool> lastButtonTriggerState;
+        private Dictionary<string, bool> lastButtonTriggerState;
 
         // Instrumentation counters to help diagnose hot loops
-        private static long mappingEvalSinceLast = 0;
-        private static long setBeingTriggeredCallsSinceLast = 0;
-        private static long mappingLastSummaryUtcTicks = DateTime.UtcNow.Ticks;
+        private long mappingEvalSinceLast = 0;
+        private long setBeingTriggeredCallsSinceLast = 0;
+        private long mappingLastSummaryUtcTicks = DateTime.UtcNow.Ticks;
 
         // プロファイル切り替え時に呼び出すことでエラーログ抑制をリセット
         // public static void ResetLoggedInvalidActions()
@@ -124,15 +146,9 @@ namespace DS4Windows
         //     loggedInvalidActions.Clear();
         // }
 
+        // Phase7-Step8 W2: 静的コンストラクターは、ログ出力だけの購読を 1 度だけ行う（Mapping の instance ごとに購読を増やさない）。
         static Mapping()
         {
-            customMapQueue = new Queue<ControlToXInput>[Global.MAX_DS4_CONTROLLER_COUNT]
-            {
-                new Queue<ControlToXInput>(), new Queue<ControlToXInput>(),
-                new Queue<ControlToXInput>(), new Queue<ControlToXInput>(),
-                new Queue<ControlToXInput>(), new Queue<ControlToXInput>(),
-                new Queue<ControlToXInput>(), new Queue<ControlToXInput>(),
-            };
             try
             {
                 ActionManager.ToggledOnChanged += (sa, dev, oldv, newv) =>
@@ -143,137 +159,60 @@ namespace DS4Windows
             catch { }
         }
 
-        // Per-device×SpecialAction Key/Button controller instances (lazy-created).
-        // Key format: "{device}:{actionName}". If actionName is null use "{device}:<default>" to preserve device-only fallbacks.
-        private static readonly object keyButtonControllerLock = new object();
-        private static readonly Dictionary<string, KeyButtonActionController> keyButtonControllers = new Dictionary<string, KeyButtonActionController>();
-
-        private static string MakeKbcDictKey(int device, string actionName)
+        // Phase7-Step8 W2（Q1＝A）: DI の Singleton（IMapping）。旧: メンバーのほぼすべてが static で、サービスは AppHost／Global の静的な束縛だった。
+        public Mapping(
+            SyntheticInputState syntheticInput,
+            MacroRuntimeState macroRuntime,
+            StickMotionState stickMotion,
+            DS4Windows.DI.IProfileSettingsService profileSettings,
+            DS4Windows.DI.IProfileApplicationService profileApplication,
+            IVirtualKBM virtualKBM,
+            DS4Windows.DI.IKeyButtonControllerRegistry keyButtonControllers,
+            DS4Windows.Actions.IProcessLauncher processLauncher,
+            DS4Windows.Actions.IProfileSwitcher profileSwitcher,
+            Func<IDeviceStateAccessor> deviceStateAccessor)
         {
-            return device + ":" + (string.IsNullOrEmpty(actionName) ? "<default>" : actionName);
-        }
+            _syntheticInput = syntheticInput ?? throw new ArgumentNullException(nameof(syntheticInput));
+            _macroRuntime = macroRuntime ?? throw new ArgumentNullException(nameof(macroRuntime));
+            _stickMotion = stickMotion ?? throw new ArgumentNullException(nameof(stickMotion));
+            this.profileSettings = profileSettings ?? throw new ArgumentNullException(nameof(profileSettings));
+            this.profileApplication = profileApplication ?? throw new ArgumentNullException(nameof(profileApplication));
+            this.VirtualKBM = virtualKBM ?? throw new ArgumentNullException(nameof(virtualKBM));
+            _keyButtonControllers = keyButtonControllers ?? throw new ArgumentNullException(nameof(keyButtonControllers));
+            _processLauncher = processLauncher ?? throw new ArgumentNullException(nameof(processLauncher));
+            _profileSwitcher = profileSwitcher ?? throw new ArgumentNullException(nameof(profileSwitcher));
+            _deviceStateAccessor = deviceStateAccessor ?? throw new ArgumentNullException(nameof(deviceStateAccessor));
 
-        private static KeyButtonActionController GetOrCreateKeyButtonController(int device, KeyButtonActionController.Mode mode, string actionName = null)
-        {
-            try
+            syncStateLock = syntheticInput.SyncStateLock;
+            deviceState = syntheticInput.DeviceState;
+            macrodone = macroRuntime.MacroDone;
+            macroDispatchInFlight = macroRuntime.DispatchInFlight;
+            macroDispatchLock = macroRuntime.DispatchLock;
+            macroControl = macroRuntime.MacroControl;
+            macroTaskQueue = macroRuntime.TaskQueue;
+            gyroStickX = stickMotion.GyroStickX;
+            gyroStickY = stickMotion.GyroStickY;
+            mapStickActionData = stickMotion.MapStickActionData;
+            wheelFilters = stickMotion.WheelFilters;
+            flickMappingData = stickMotion.FlickMappingData;
+            l2TwoStageMappingData = stickMotion.L2TwoStageMappingData;
+            r2TwoStageMappingData = stickMotion.R2TwoStageMappingData;
+            deltaAccelProcessors = stickMotion.DeltaAccelProcessors;
+
+            customMapQueue = new Queue<ControlToXInput>[Global.MAX_DS4_CONTROLLER_COUNT]
             {
-                lock (keyButtonControllerLock)
-                {
-                    string dictKey = MakeKbcDictKey(device, actionName ?? "<mapping>");
-                    if (!keyButtonControllers.TryGetValue(dictKey, out KeyButtonActionController inst) || inst == null)
-                    {
-                        KeyButtonActionController temp = null;
-                        try
-                        {
-                            var sp = DS4Windows.DI.ServiceProviderHolder.Provider;
-                            if (sp != null)
-                            {
-                                var factory = sp.GetService(typeof(DS4Windows.Actions.IKeyButtonActionControllerFactory)) as DS4Windows.Actions.IKeyButtonActionControllerFactory;
-                                if (factory != null) temp = factory.Create(device, mode, actionName ?? "<mapping>");
-                            }
-                        }
-                        catch { }
-
-                        inst = temp ?? new KeyButtonActionController(device, mode, actionName ?? "<mapping>");
-                        keyButtonControllers[dictKey] = inst;
-                        try { AppLogger.LogTrace($"KBC DIAGNOSTIC: Created controller dictKey={dictKey} id={inst.InstanceId} assignedAction={(inst.AssignedActionName ?? "(null)")} mode={mode} device={device}"); } catch { }
-                    }
-                    else
-                    {
-                        try { AppLogger.LogTrace($"KBC DIAGNOSTIC: Reusing existing controller dictKey={dictKey} id={inst.InstanceId} assignedAction={(inst.AssignedActionName ?? "(null)")} mode={mode} device={device}"); } catch { }
-                    }
-                    return inst;
-                }
-            }
-            catch { return null; }
+                new Queue<ControlToXInput>(), new Queue<ControlToXInput>(),
+                new Queue<ControlToXInput>(), new Queue<ControlToXInput>(),
+                new Queue<ControlToXInput>(), new Queue<ControlToXInput>(),
+                new Queue<ControlToXInput>(), new Queue<ControlToXInput>(),
+            };
         }
 
-        private static KeyButtonActionController GetOrCreateKeyButtonController(int device, SpecialAction sa)
-        {
-            try
-            {
-                lock (keyButtonControllerLock)
-                {
-                    string name = sa?.name ?? "<sa>";
-                    string dictKey = MakeKbcDictKey(device, name);
-                    if (!keyButtonControllers.TryGetValue(dictKey, out KeyButtonActionController inst) || inst == null)
-                    {
-                        KeyButtonActionController temp = null;
-                        try
-                        {
-                            var sp = DS4Windows.DI.ServiceProviderHolder.Provider;
-                            if (sp != null)
-                            {
-                                var factory = sp.GetService(typeof(DS4Windows.Actions.IKeyButtonActionControllerFactory)) as DS4Windows.Actions.IKeyButtonActionControllerFactory;
-                                if (factory != null) temp = factory.Create(device, sa, name);
-                            }
-                        }
-                        catch { }
-
-                        inst = temp ?? new KeyButtonActionController(device, sa, name);
-                        keyButtonControllers[dictKey] = inst;
-                        try { AppLogger.LogTrace($"KBC DIAGNOSTIC: Created controller dictKey={dictKey} id={inst.InstanceId} assignedAction={(inst.AssignedActionName ?? "(null)")} device={device}"); } catch { }
-                    }
-                    else
-                    {
-                        try { AppLogger.LogTrace($"KBC DIAGNOSTIC: Reusing existing controller dictKey={dictKey} id={inst.InstanceId} assignedAction={(inst.AssignedActionName ?? "(null)")} device={device}"); } catch { }
-                    }
-                    // additional check: if existing assignedAction differs from requested, log warning
-                    try
-                    {
-                        if (inst != null && !string.Equals(inst.AssignedActionName, name, StringComparison.OrdinalIgnoreCase))
-                        {
-                            AppLogger.LogDebug($"KBC DIAGNOSTIC: assignedAction mismatch for dictKey={dictKey} existing={(inst.AssignedActionName ?? "(null)")} requested={name} device={device}");
-                        }
-                    }
-                    catch { }
-                    return inst;
-                }
-            }
-            catch { return null; }
-        }
-
-        // Legacy actionDone compatibility removed — use ActionManager and ActionInstanceState.
-
-        // Remove and destroy all per-device KeyButtonActionController instances for given device
-        public static void ClearKeyButtonControllersForDevice(int device)
-        {
-            try
-            {
-                lock (keyButtonControllerLock)
-                {
-                    var prefix = device + ":";
-                    var keys = new List<string>(keyButtonControllers.Keys);
-                    foreach (var k in keys)
-                    {
-                        if (k.StartsWith(prefix))
-                        {
-                            try
-                            {
-                                var inst = keyButtonControllers[k];
-                                try { inst?.Dispose(); } catch { }
-                                try
-                                {
-                                    var sp = DS4Windows.DI.ServiceProviderHolder.Provider;
-                                    if (sp != null)
-                                    {
-                                        var reg = sp.GetService(typeof(DS4Windows.Actions.IControllerRegistry)) as DS4Windows.Actions.IControllerRegistry;
-                                        if (reg != null) reg.Unregister(k);
-                                    }
-                                }
-                                catch { }
-                                keyButtonControllers.Remove(k);
-                            }
-                            catch { }
-                        }
-                    }
-                }
-            }
-            catch { }
-        }
+        // Phase7-Step8 W2（Q3＝A）: デバイス × アクション名ごとの KeyButtonActionController の登録簿（旧: keyButtonControllers／
+        // GetOrCreateKeyButtonController／ClearKeyButtonControllersForDevice）は KeyButtonControllerRegistry へ移した。
 
         // Centralized logging helper for SpecialActions. Keeps TRACE formatting and expensive work guarded.
-        private static void LogSpecialActionTrace(string actionName, SpecialAction sa, int device, bool risingEdge,
+        private void LogSpecialActionTrace(string actionName, SpecialAction sa, int device, bool risingEdge,
             DS4StateFieldMapping outputfieldMapping, SyntheticState[] deviceStates)
         {
             if (!AppLogger.IsTraceEnabled) return;
@@ -438,7 +377,7 @@ namespace DS4Windows
             }
         }
 
-        public static Queue<DS4TimedStickAxisValue>[][] stickValueHistory = new Queue<DS4TimedStickAxisValue>[Global.TEST_PROFILE_ITEM_COUNT][]
+        public Queue<DS4TimedStickAxisValue>[][] stickValueHistory = new Queue<DS4TimedStickAxisValue>[Global.TEST_PROFILE_ITEM_COUNT][]
         {
             new Queue<DS4TimedStickAxisValue>[2] { new Queue<DS4TimedStickAxisValue>(), new Queue<DS4TimedStickAxisValue>() },
             new Queue<DS4TimedStickAxisValue>[2] { new Queue<DS4TimedStickAxisValue>(), new Queue<DS4TimedStickAxisValue>() },
@@ -451,7 +390,7 @@ namespace DS4Windows
             new Queue<DS4TimedStickAxisValue>[2] { new Queue<DS4TimedStickAxisValue>(), new Queue<DS4TimedStickAxisValue>() }
         };
 
-        private static DS4SquareStick[] outSqrStk = new DS4SquareStick[Global.TEST_PROFILE_ITEM_COUNT]
+        private DS4SquareStick[] outSqrStk = new DS4SquareStick[Global.TEST_PROFILE_ITEM_COUNT]
         {
             new DS4SquareStick(), new DS4SquareStick(), new DS4SquareStick(), new DS4SquareStick(),
             new DS4SquareStick(), new DS4SquareStick(), new DS4SquareStick(), new DS4SquareStick(),
@@ -460,17 +399,12 @@ namespace DS4Windows
 
         // Phase7-Step7 W4（Q2＝A・Q3＝A）: 外から触られるスティック・ジャイロ・トリガーの処理状態（gyroStickX／gyroStickY／mapStickActionData／
         // flickMappingData／l2TwoStageMappingData／r2TwoStageMappingData／wheelFilters／deltaAccelProcessors）の実体は StickMotionState が持つ。
-        // 下の転送は、Mapping 内部のコードを変えないためのもので、状態は持たない。型の初期化時に参照を 1 度だけ保持し、毎レポートの割り当てを増やさない。
-        // TODO(Phase7-Step8): Mapping の instance 化で、保持クラスをコンストラクターで受け取り、この転送と StickMotionState.Shared を削除する。
-        private static readonly StickMotionState stickMotion = StickMotionState.Shared;
-        public static byte[] gyroStickX => stickMotion.GyroStickX;
-        public static byte[] gyroStickY => stickMotion.GyroStickY;
+        // Phase7-Step8 W2: 転送プロパティは削除した。上のフィールド宣言（保持クラスの配列の readonly の複製）が、その代わりである。
         //public static byte[] touchStickX = new byte[Global.MAX_DS4_CONTROLLER_COUNT] { 128, 128, 128, 128, 128, 128, 128, 128 };
         //public static byte[] touchStickY = new byte[Global.MAX_DS4_CONTROLLER_COUNT] { 128, 128, 128, 128, 128, 128, 128, 128 };
-        public static PostMapStickData[] mapStickActionData => stickMotion.MapStickActionData;
 
         // [<Device>][<AxisId>]. LX = 0, LY = 1, RX = 2, RY = 3
-        public static byte[][] lastStickAxisValues = new byte[Global.TEST_PROFILE_ITEM_COUNT][]
+        public byte[][] lastStickAxisValues = new byte[Global.TEST_PROFILE_ITEM_COUNT][]
         {
             new byte[4] {128, 128, 128, 128}, new byte[4] {128, 128, 128, 128},
             new byte[4] {128, 128, 128, 128}, new byte[4] {128, 128, 128, 128},
@@ -485,7 +419,7 @@ namespace DS4Windows
             public int gyroZ;
         }
 
-        private static LastWheelGyroCoord[] lastWheelGyroValues = new LastWheelGyroCoord[Global.MAX_DS4_CONTROLLER_COUNT]
+        private LastWheelGyroCoord[] lastWheelGyroValues = new LastWheelGyroCoord[Global.MAX_DS4_CONTROLLER_COUNT]
         {
             new LastWheelGyroCoord(), new LastWheelGyroCoord(), new LastWheelGyroCoord(), new LastWheelGyroCoord(),
             new LastWheelGyroCoord(), new LastWheelGyroCoord(), new LastWheelGyroCoord(), new LastWheelGyroCoord()
@@ -500,41 +434,26 @@ namespace DS4Windows
         //private static OneEuroFilter wheel360FilterX = new OneEuroFilter(minCutoff: 0.1, beta: 0.02);
         //private static OneEuroFilter wheel360FilterZ = new OneEuroFilter(minCutoff: 0.1, beta: 0.02);
 
-        public static OneEuroFilter[] wheelFilters => stickMotion.WheelFilters;
 
-        public static FlickStickMappingData[] flickMappingData => stickMotion.FlickMappingData;
 
-        public static TwoStageTriggerMappingData[] l2TwoStageMappingData => stickMotion.L2TwoStageMappingData;
 
-        public static TwoStageTriggerMappingData[] r2TwoStageMappingData => stickMotion.R2TwoStageMappingData;
 
-        public static DeltaSettingsProcessorGroup[] deltaAccelProcessors => stickMotion.DeltaAccelProcessors;
 
-        // Phase7-Step7 W2（Q2＝A・Q3＝A）: 合成入力の状態（globalState／deviceState／syncStateLock）の実体は SyntheticInputState が持つ。
-        // 下の 3 つは、Mapping 内部のコード（118 箇所）を変えないための転送で、状態は持たない。
-        // 型の初期化時に保持クラスの参照を 1 度だけ保持し、毎レポートの割り当てを増やさない。
-        // TODO(Phase7-Step8): Mapping の instance 化で、保持クラスをコンストラクターで受け取り、この転送と SyntheticInputState.Shared を削除する。
-        private static readonly SyntheticInputState syntheticInput = SyntheticInputState.Shared;
-        static ReaderWriterLockSlim syncStateLock => syntheticInput.SyncStateLock;
-        public static SyntheticState globalState
-        {
-            get => syntheticInput.GlobalState;
-            set => syntheticInput.GlobalState = value;
-        }
-        public static SyntheticState[] deviceState => syntheticInput.DeviceState;
+        // Phase7-Step7 W2（Q2＝A・Q3＝A）: 合成入力の状態（_syntheticInput.GlobalState／deviceState／syncStateLock）の実体は SyntheticInputState が持つ。
+        // Phase7-Step8 W2: 転送プロパティは削除した。deviceState／syncStateLock は上のフィールド宣言（readonly の複製）、GlobalState は保持クラスを直接読む。
 
-        public static DS4StateFieldMapping[] fieldMappings = new DS4StateFieldMapping[Global.MAX_DS4_CONTROLLER_COUNT] {
+        public DS4StateFieldMapping[] fieldMappings = new DS4StateFieldMapping[Global.MAX_DS4_CONTROLLER_COUNT] {
             new DS4StateFieldMapping(), new DS4StateFieldMapping(), new DS4StateFieldMapping(),
             new DS4StateFieldMapping(), new DS4StateFieldMapping(), new DS4StateFieldMapping(),
             new DS4StateFieldMapping(), new DS4StateFieldMapping(),
         };
-        public static DS4StateFieldMapping[] outputFieldMappings = new DS4StateFieldMapping[Global.MAX_DS4_CONTROLLER_COUNT]
+        public DS4StateFieldMapping[] outputFieldMappings = new DS4StateFieldMapping[Global.MAX_DS4_CONTROLLER_COUNT]
         {
             new DS4StateFieldMapping(), new DS4StateFieldMapping(), new DS4StateFieldMapping(),
             new DS4StateFieldMapping(), new DS4StateFieldMapping(), new DS4StateFieldMapping(),
             new DS4StateFieldMapping(), new DS4StateFieldMapping(),
         };
-        public static DS4StateFieldMapping[] previousFieldMappings = new DS4StateFieldMapping[Global.MAX_DS4_CONTROLLER_COUNT]
+        public DS4StateFieldMapping[] previousFieldMappings = new DS4StateFieldMapping[Global.MAX_DS4_CONTROLLER_COUNT]
         {
             new DS4StateFieldMapping(), new DS4StateFieldMapping(), new DS4StateFieldMapping(),
             new DS4StateFieldMapping(), new DS4StateFieldMapping(), new DS4StateFieldMapping(),
@@ -542,22 +461,19 @@ namespace DS4Windows
         };
 
         // TODO When we disconnect, process a null/dead state to release any keys or buttons.
-        public static DateTime oldnow = DateTime.UtcNow;
-        private static bool pressagain = false;
-        private static int wheel = 0;
+        public DateTime oldnow = DateTime.UtcNow;
+        private bool pressagain = false;
+        private int wheel = 0;
 
         // Data needed to calculate Stick to Mouse Wheel conversion
-        private static double stickWheel = 0.0, stickWheelRemainder = 0.0;
-        private static bool stickWheelDownDir = false;
+        private double stickWheel = 0.0, stickWheelRemainder = 0.0;
+        private bool stickWheelDownDir = false;
 
         // Phase7-Step7 W3（Q2＝A・Q3＝A）: マクロの実行時状態（macrodone／macroDispatchInFlight／macroDispatchLock／macroControl／
-        // macroCount／macroTaskQueue）の実体は MacroRuntimeState が持つ。下の転送は、Mapping 内部のコードを変えないためのもので、状態は持たない。
-        // 型の初期化時に保持クラスの参照を 1 度だけ保持し、毎レポートの割り当てを増やさない。
-        // TODO(Phase7-Step8): Mapping の instance 化で、保持クラスをコンストラクターで受け取り、この転送と MacroRuntimeState.Shared を削除する。
-        private static readonly MacroRuntimeState macroRuntime = MacroRuntimeState.Shared;
+        // MacroCount／macroTaskQueue）の実体は MacroRuntimeState が持つ。
+        // Phase7-Step8 W2: 転送プロパティは削除した（配列は上のフィールド宣言の readonly の複製、MacroCount は _macroRuntime を直接読み書きする）。
 
         //mapcustom
-        public static bool[] macrodone => macroRuntime.MacroDone;
 
         // ---- 暫定対策（申し送り: 下記コメント参照）----
         // PlayMacro の「二重実行防止ガード」は、SpecialAction 経由（action != null）にしか
@@ -580,8 +496,6 @@ namespace DS4Windows
         // その単一の実行層で一元的に行われるべきである。Phase7（Mapping.cs 完全 instance 化、
         // DI-App-Wide-Migration-Plan.md §6.9）で、この場当たり的な macroDispatchInFlight を
         // 含めて再設計すること。
-        private static bool[] macroDispatchInFlight => macroRuntime.DispatchInFlight;
-        private static object macroDispatchLock => macroRuntime.DispatchLock;
 
         // debounce for SpecialAction toggle (milliseconds)
         private const int ToggleDebounceMs = 30;
@@ -590,22 +504,15 @@ namespace DS4Windows
         // throttle synthetic sends per key (milliseconds)
         // Keep below fakeKeyRepeat internal repeat interval (25ms) to avoid suppressing repeats
         private const int SyntheticSendThrottleMs = 10;
-        static bool[] macroControl => macroRuntime.MacroControl;
-        static uint macroCount
-        {
-            get => macroRuntime.MacroCount;
-            set => macroRuntime.MacroCount = value;
-        }
-        static Dictionary<string, Task>[] macroTaskQueue => macroRuntime.TaskQueue;
 
         //actions
-        public static bool[] extrasRumbleActive = new bool[Global.MAX_DS4_CONTROLLER_COUNT];
-        public static int[] fadetimer = new int[Global.MAX_DS4_CONTROLLER_COUNT] { 0, 0, 0, 0, 0, 0, 0, 0 };
-        public static int[] prevFadetimer = new int[Global.MAX_DS4_CONTROLLER_COUNT] { 0, 0, 0, 0, 0, 0, 0, 0 };
-        public static DS4Color[] lastColor = new DS4Color[Global.MAX_DS4_CONTROLLER_COUNT];
+        public bool[] extrasRumbleActive = new bool[Global.MAX_DS4_CONTROLLER_COUNT];
+        public int[] fadetimer = new int[Global.MAX_DS4_CONTROLLER_COUNT] { 0, 0, 0, 0, 0, 0, 0, 0 };
+        public int[] prevFadetimer = new int[Global.MAX_DS4_CONTROLLER_COUNT] { 0, 0, 0, 0, 0, 0, 0, 0 };
+        public DS4Color[] lastColor = new DS4Color[Global.MAX_DS4_CONTROLLER_COUNT];
         // Legacy `actionDone` list removed — per-action state now lives in ActionManager/ActionInstanceState.
         // Per-device runtime state replacing legacy `untriggeraction`/`untriggerindex` globals
-        public static DeviceRuntimeState[] deviceRuntime = new DeviceRuntimeState[Global.MAX_DS4_CONTROLLER_COUNT]
+        public DeviceRuntimeState[] deviceRuntime = new DeviceRuntimeState[Global.MAX_DS4_CONTROLLER_COUNT]
         {
             new DeviceRuntimeState(), new DeviceRuntimeState(), new DeviceRuntimeState(), new DeviceRuntimeState(),
             new DeviceRuntimeState(), new DeviceRuntimeState(), new DeviceRuntimeState(), new DeviceRuntimeState()
@@ -616,7 +523,7 @@ namespace DS4Windows
         // ここに含まれる間は、当該ボタン自身の通常出力（デフォルト信号／通常マッピング／KBM／機能）を抑制し続ける。
         // トリガー全体の成立/解除（いずれか1つが離れたら解除）とは独立に、ボタン単位で管理する。
         // 詳細: docs-forDIMG/MadeByAgent/Phase5-Step14-Issue8-1-3-Fix-Plan.md §2.1
-        public static HashSet<DS4Controls>[] suppressedTriggerButtons = new HashSet<DS4Controls>[Global.MAX_DS4_CONTROLLER_COUNT]
+        public HashSet<DS4Controls>[] suppressedTriggerButtons = new HashSet<DS4Controls>[Global.MAX_DS4_CONTROLLER_COUNT]
         {
             new HashSet<DS4Controls>(), new HashSet<DS4Controls>(), new HashSet<DS4Controls>(), new HashSet<DS4Controls>(),
             new HashSet<DS4Controls>(), new HashSet<DS4Controls>(), new HashSet<DS4Controls>(), new HashSet<DS4Controls>()
@@ -624,7 +531,7 @@ namespace DS4Windows
 
         // Cache of previous input-level 'established' state per (actionIndex, device).
         // Mapping will use this to detect input-edge (rise/fall) and only call DispatchTriggerEdge when input changed.
-        private static readonly Dictionary<long, bool> prevInputEstablished = new Dictionary<long, bool>();
+        private readonly Dictionary<long, bool> prevInputEstablished = new Dictionary<long, bool>();
 
         private static long MakePrevKey(int index, int device)
         {
@@ -633,7 +540,7 @@ namespace DS4Windows
 
         // Helper: query/set per-action `BeingTriggered` through ActionManager-backed per-action state.
         // New preferred names matching the property: GetBeingTriggered / SetBeingTriggered
-        private static bool GetBeingTriggered(int index, SpecialAction action, int device)
+        private bool GetBeingTriggered(int index, SpecialAction action, int device)
         {
             try
             {
@@ -644,7 +551,7 @@ namespace DS4Windows
             return false;
         }
 
-        private static void SetBeingTriggered(int index, SpecialAction action, int device, bool value)
+        private void SetBeingTriggered(int index, SpecialAction action, int device, bool value)
         {
             try
             {
@@ -681,7 +588,7 @@ namespace DS4Windows
         // NOTE: old wrappers removed — callers must use GetBeingTriggered/SetBeingTriggered.
 
         // Helper: query per-action `IsToggledOn` through ActionManager-backed per-action state.
-        private static bool GetIsToggledOn(int index, SpecialAction action, int device)
+        private bool GetIsToggledOn(int index, SpecialAction action, int device)
         {
             try
             {
@@ -693,7 +600,7 @@ namespace DS4Windows
         }
 
         // Helper: only set BeingTriggered when value differs to avoid redundant work
-        private static void SetBeingTriggeredIf(int index, SpecialAction action, int device, bool value)
+        private void SetBeingTriggeredIf(int index, SpecialAction action, int device, bool value)
         {
             try
             {
@@ -707,7 +614,7 @@ namespace DS4Windows
         }
 
         // Try dispatch via ActionManager.DispatchTriggerEdge; if no Action handled it, fall back to Setting BeingTriggered
-        private static void DispatchOrSetBeingTriggered(SpecialAction action, int device, bool value, ushort logicalValue = 0, uint nativeValue = 0, bool useScan = false, DS4Windows.Services.IVirtualKBM outputHandler = null)
+        private void DispatchOrSetBeingTriggered(SpecialAction action, int device, bool value, ushort logicalValue = 0, uint nativeValue = 0, bool useScan = false, DS4Windows.Services.IVirtualKBM outputHandler = null)
         {
             try
             {
@@ -737,7 +644,7 @@ namespace DS4Windows
 
         // Centralized Mapping-side input-edge handler. Detects input-level rise/fall per (action,device)
         // and only calls ActionManager.DispatchTriggerEdge when an input edge is observed.
-        private static bool DispatchInputEdge(DS4Windows.TriggerContext ctx, int index = -1)
+        private bool DispatchInputEdge(DS4Windows.TriggerContext ctx, int index = -1)
         {
             try
             {
@@ -764,7 +671,7 @@ namespace DS4Windows
         // Mapping must not mutate per-action IsToggledOn state.
 
         // Determine whether it's safe to clear the toggled-on flag for given device/key.
-        private static bool ShouldClearToggledOn(int device, ushort key)
+        private bool ShouldClearToggledOn(int device, ushort key)
         {
             try
             {
@@ -783,10 +690,10 @@ namespace DS4Windows
             catch { }
             return true;
         }
-        public static DateTime[] nowAction = { DateTime.MinValue, DateTime.MinValue, DateTime.MinValue, DateTime.MinValue };
-        public static DateTime[] oldnowAction = { DateTime.MinValue, DateTime.MinValue, DateTime.MinValue, DateTime.MinValue };
+        public DateTime[] nowAction = { DateTime.MinValue, DateTime.MinValue, DateTime.MinValue, DateTime.MinValue };
+        public DateTime[] oldnowAction = { DateTime.MinValue, DateTime.MinValue, DateTime.MinValue, DateTime.MinValue };
         // legacy `untriggerindex` removed; use `deviceRuntime[device].UntriggerIndex`
-        public static DateTime[] oldnowKeyAct = new DateTime[Global.MAX_DS4_CONTROLLER_COUNT] { DateTime.MinValue,
+        public DateTime[] oldnowKeyAct = new DateTime[Global.MAX_DS4_CONTROLLER_COUNT] { DateTime.MinValue,
             DateTime.MinValue, DateTime.MinValue, DateTime.MinValue, DateTime.MinValue, DateTime.MinValue, DateTime.MinValue, DateTime.MinValue };
 
         private const int SHIFT_TRIGGER_MAPPING_LEN = 35;
@@ -871,212 +778,150 @@ namespace DS4Windows
 #pragma warning restore CS0414
 
         // Special macros
-        static bool altTabDone = true;
-        static DateTime altTabNow = DateTime.UtcNow,
+        bool altTabDone = true;
+        DateTime altTabNow = DateTime.UtcNow,
             oldAltTabNow = DateTime.UtcNow - TimeSpan.FromSeconds(1);
 
         // Mouse
-        public static int mcounter = 34;
-        public static int mouseaccel = 0;
-        public static int prevmouseaccel = 0;
-        private static double horizontalRemainder = 0.0, verticalRemainder = 0.0;
+        public int mcounter = 34;
+        public int mouseaccel = 0;
+        public int prevmouseaccel = 0;
+        private double horizontalRemainder = 0.0, verticalRemainder = 0.0;
         public const int MOUSESPEEDFACTOR = 48;
         private const double MOUSESTICKANTIOFFSET = 0.0128;
         private const double MOUSESTICKMINVELOCITY = 67.5;
         //private const double MOUSESTICKMINVELOCITY = 40.0;
 
-        public static void Commit(int device, DS4Windows.DI.IProfileSettingsService settings)
+        public void Commit(int device, DS4Windows.DI.IProfileSettingsService settings)
         {
             SyntheticState state = deviceState[device];
             syncStateLock.EnterWriteLock();
 
-            globalState.currentClicks.leftCount += state.currentClicks.leftCount - state.previousClicks.leftCount;
-            globalState.currentClicks.middleCount += state.currentClicks.middleCount - state.previousClicks.middleCount;
-            globalState.currentClicks.rightCount += state.currentClicks.rightCount - state.previousClicks.rightCount;
-            globalState.currentClicks.fourthCount += state.currentClicks.fourthCount - state.previousClicks.fourthCount;
-            globalState.currentClicks.fifthCount += state.currentClicks.fifthCount - state.previousClicks.fifthCount;
-            globalState.currentClicks.wUpCount += state.currentClicks.wUpCount - state.previousClicks.wUpCount;
-            globalState.currentClicks.wDownCount += state.currentClicks.wDownCount - state.previousClicks.wDownCount;
-            globalState.currentClicks.toggleCount += state.currentClicks.toggleCount - state.previousClicks.toggleCount;
-            globalState.currentClicks.toggle = state.currentClicks.toggle;
+            _syntheticInput.GlobalState.currentClicks.leftCount += state.currentClicks.leftCount - state.previousClicks.leftCount;
+            _syntheticInput.GlobalState.currentClicks.middleCount += state.currentClicks.middleCount - state.previousClicks.middleCount;
+            _syntheticInput.GlobalState.currentClicks.rightCount += state.currentClicks.rightCount - state.previousClicks.rightCount;
+            _syntheticInput.GlobalState.currentClicks.fourthCount += state.currentClicks.fourthCount - state.previousClicks.fourthCount;
+            _syntheticInput.GlobalState.currentClicks.fifthCount += state.currentClicks.fifthCount - state.previousClicks.fifthCount;
+            _syntheticInput.GlobalState.currentClicks.wUpCount += state.currentClicks.wUpCount - state.previousClicks.wUpCount;
+            _syntheticInput.GlobalState.currentClicks.wDownCount += state.currentClicks.wDownCount - state.previousClicks.wDownCount;
+            _syntheticInput.GlobalState.currentClicks.toggleCount += state.currentClicks.toggleCount - state.previousClicks.toggleCount;
+            _syntheticInput.GlobalState.currentClicks.toggle = state.currentClicks.toggle;
 
-            if (globalState.currentClicks.toggleCount != 0 && globalState.previousClicks.toggleCount == 0 && globalState.currentClicks.toggle)
+            if (_syntheticInput.GlobalState.currentClicks.toggleCount != 0 && _syntheticInput.GlobalState.previousClicks.toggleCount == 0 && _syntheticInput.GlobalState.currentClicks.toggle)
             {
                 AppLogger.LogTrace($"SYNTHETIC TRACE device={device} event=MouseLeftDown");
                 AppLogger.LogDebug($"EVENT SENT [SYNTHETIC] device={device} event=MouseLeftDown");
-                // C2 MouseOutputAction integration (§2.1修正版: new DI route + fallback preserved)
-                // TODO(Phase6-Step9b-3, F03 分類B／Phase8): MouseOutputAction は未登録・未完成のため GetService は常に null で、
-                // 下のフォールバック（PerformMouseButtonEvent）が実際の出力経路。MouseOutputAction を登録しないこと（MouseOutputAction.cs の TODO 参照）。
-                bool mouseHandled = false;
-                try
-                {
-                    var mouseCtx = new DS4Windows.TriggerContext
-                    {
-                        ActionDef = null,
-                        Device = device,
-                        LogicalValue = 0,
-                        NativeValue = 0,
-                        UseScanCode = false,
-                        OutputHandler = VirtualKBM,
-                        IsEstablished = true
-                    };
-                    var sp = DS4Windows.DI.ServiceProviderHolder.Provider;
-                    if (sp != null)
-                    {
-                        var mouseAction = sp.GetService(typeof(DS4Windows.Actions.MouseOutputAction)) as DS4Windows.Actions.MouseOutputAction;
-                        if (mouseAction != null)
-                        {
-                            mouseAction.Execute(new DS4Windows.Actions.OutputContextImpl(device, VirtualKBM));
-                            mouseHandled = true;
-                        }
-                    }
-                }
-                catch { mouseHandled = false; }
+                // Phase7-Step8 W2（Q8＝A）: 旧 MouseOutputAction の検索（未登録のため常に null で、下の出力が実際の経路だった）を削除した。
+                VirtualKBM.PerformMouseButtonEvent(settings.OutputKBMMapping.MOUSEEVENTF_LEFTDOWN);
 
-                if (!mouseHandled)
-                {
-                    VirtualKBM.PerformMouseButtonEvent(settings.OutputKBMMapping.MOUSEEVENTF_LEFTDOWN);
-                }
-
-                if (globalState.currentClicks.rightCount != 0 && globalState.previousClicks.rightCount == 0)
+                if (_syntheticInput.GlobalState.currentClicks.rightCount != 0 && _syntheticInput.GlobalState.previousClicks.rightCount == 0)
                 {
                     AppLogger.LogTrace($"SYNTHETIC TRACE device={device} event=MouseRightDown");
                     AppLogger.LogDebug($"EVENT SENT [SYNTHETIC] device={device} event=MouseRightDown");
                     VirtualKBM.PerformMouseButtonEvent(settings.OutputKBMMapping.MOUSEEVENTF_RIGHTDOWN);
                 }
-                if (globalState.currentClicks.middleCount != 0 && globalState.previousClicks.middleCount == 0)
+                if (_syntheticInput.GlobalState.currentClicks.middleCount != 0 && _syntheticInput.GlobalState.previousClicks.middleCount == 0)
                 {
                     AppLogger.LogTrace($"SYNTHETIC TRACE device={device} event=MouseMiddleDown");
                     AppLogger.LogDebug($"EVENT SENT [SYNTHETIC] device={device} event=MouseMiddleDown");
                     VirtualKBM.PerformMouseButtonEvent(settings.OutputKBMMapping.MOUSEEVENTF_MIDDLEDOWN);
                 }
-                if (globalState.currentClicks.fourthCount != 0 && globalState.previousClicks.fourthCount == 0)
+                if (_syntheticInput.GlobalState.currentClicks.fourthCount != 0 && _syntheticInput.GlobalState.previousClicks.fourthCount == 0)
                 {
                     AppLogger.LogTrace($"SYNTHETIC TRACE device={device} event=MouseXButtonDown btn=1");
                     AppLogger.LogDebug($"EVENT SENT [SYNTHETIC] device={device} event=MouseXButtonDown btn=1");
                     VirtualKBM.PerformMouseButtonEventAlt(settings.OutputKBMMapping.MOUSEEVENTF_XBUTTONDOWN, 1);
                 }
-                if (globalState.currentClicks.fifthCount != 0 && globalState.previousClicks.fifthCount == 0)
+                if (_syntheticInput.GlobalState.currentClicks.fifthCount != 0 && _syntheticInput.GlobalState.previousClicks.fifthCount == 0)
                 {
                     AppLogger.LogTrace($"SYNTHETIC TRACE device={device} event=MouseXButtonDown btn=2");
                     AppLogger.LogDebug($"EVENT SENT [SYNTHETIC] device={device} event=MouseXButtonDown btn=2");
                     VirtualKBM.PerformMouseButtonEventAlt(settings.OutputKBMMapping.MOUSEEVENTF_XBUTTONDOWN, 2);
                 }
             }
-            else if (globalState.currentClicks.toggleCount != 0 && globalState.previousClicks.toggleCount == 0 && !globalState.currentClicks.toggle)
+            else if (_syntheticInput.GlobalState.currentClicks.toggleCount != 0 && _syntheticInput.GlobalState.previousClicks.toggleCount == 0 && !_syntheticInput.GlobalState.currentClicks.toggle)
             {
-                if (globalState.currentClicks.leftCount != 0 && globalState.previousClicks.leftCount == 0)
+                if (_syntheticInput.GlobalState.currentClicks.leftCount != 0 && _syntheticInput.GlobalState.previousClicks.leftCount == 0)
                     VirtualKBM.PerformMouseButtonEvent(settings.OutputKBMMapping.MOUSEEVENTF_LEFTUP);
-                if (globalState.currentClicks.rightCount != 0 && globalState.previousClicks.rightCount == 0)
+                if (_syntheticInput.GlobalState.currentClicks.rightCount != 0 && _syntheticInput.GlobalState.previousClicks.rightCount == 0)
                     VirtualKBM.PerformMouseButtonEvent(settings.OutputKBMMapping.MOUSEEVENTF_RIGHTUP);
-                if (globalState.currentClicks.middleCount != 0 && globalState.previousClicks.middleCount == 0)
+                if (_syntheticInput.GlobalState.currentClicks.middleCount != 0 && _syntheticInput.GlobalState.previousClicks.middleCount == 0)
                     VirtualKBM.PerformMouseButtonEvent(settings.OutputKBMMapping.MOUSEEVENTF_MIDDLEUP);
-                if (globalState.currentClicks.fourthCount != 0 && globalState.previousClicks.fourthCount == 0)
+                if (_syntheticInput.GlobalState.currentClicks.fourthCount != 0 && _syntheticInput.GlobalState.previousClicks.fourthCount == 0)
                     VirtualKBM.PerformMouseButtonEventAlt(settings.OutputKBMMapping.MOUSEEVENTF_XBUTTONUP, 1);
-                if (globalState.currentClicks.fifthCount != 0 && globalState.previousClicks.fifthCount == 0)
+                if (_syntheticInput.GlobalState.currentClicks.fifthCount != 0 && _syntheticInput.GlobalState.previousClicks.fifthCount == 0)
                     VirtualKBM.PerformMouseButtonEventAlt(settings.OutputKBMMapping.MOUSEEVENTF_XBUTTONUP, 2);
             }
 
-            if (globalState.currentClicks.toggleCount == 0 && globalState.previousClicks.toggleCount == 0)
+            if (_syntheticInput.GlobalState.currentClicks.toggleCount == 0 && _syntheticInput.GlobalState.previousClicks.toggleCount == 0)
             {
-                if (globalState.currentClicks.leftCount != 0 && globalState.previousClicks.leftCount == 0)
+                if (_syntheticInput.GlobalState.currentClicks.leftCount != 0 && _syntheticInput.GlobalState.previousClicks.leftCount == 0)
                 {
                     AppLogger.LogTrace($"SYNTHETIC TRACE device={device} event=MouseLeftDown");
                     AppLogger.LogDebug($"EVENT SENT [SYNTHETIC] device={device} event=MouseLeftDown");
-                    // C2 MouseOutputAction integration (§2.1修正版: new DI route + fallback preserved)
-                    // TODO(Phase6-Step9b-3, F03 分類B／Phase8): MouseOutputAction は未登録・未完成のため GetService は常に null で、
-                    // 下のフォールバック（PerformMouseButtonEvent）が実際の出力経路。MouseOutputAction を登録しないこと（MouseOutputAction.cs の TODO 参照）。
-                    bool mouseHandled = false;
-                    try
-                    {
-                        var mouseCtx = new DS4Windows.TriggerContext
-                        {
-                            ActionDef = null,
-                            Device = device,
-                            LogicalValue = 0,
-                            NativeValue = 0,
-                            UseScanCode = false,
-                            OutputHandler = VirtualKBM,
-                            IsEstablished = true
-                        };
-                        var sp = DS4Windows.DI.ServiceProviderHolder.Provider;
-                        if (sp != null)
-                        {
-                            var mouseAction = sp.GetService(typeof(DS4Windows.Actions.MouseOutputAction)) as DS4Windows.Actions.MouseOutputAction;
-                            if (mouseAction != null)
-                            {
-                                mouseAction.Execute(new DS4Windows.Actions.OutputContextImpl(device, VirtualKBM));
-                                mouseHandled = true;
-                            }
-                        }
-                    }
-                    catch { mouseHandled = false; }
-
-                    if (!mouseHandled)
-                    {
-                        VirtualKBM.PerformMouseButtonEvent(settings.OutputKBMMapping.MOUSEEVENTF_LEFTDOWN);
-                    }
+                    // Phase7-Step8 W2（Q8＝A）: 旧 MouseOutputAction の検索（未登録のため常に null で、下の出力が実際の経路だった）を削除した。
+                    VirtualKBM.PerformMouseButtonEvent(settings.OutputKBMMapping.MOUSEEVENTF_LEFTDOWN);
                 }
-                else if (globalState.currentClicks.leftCount == 0 && globalState.previousClicks.leftCount != 0)
+                else if (_syntheticInput.GlobalState.currentClicks.leftCount == 0 && _syntheticInput.GlobalState.previousClicks.leftCount != 0)
                 {
                     AppLogger.LogTrace($"SYNTHETIC TRACE device={device} event=MouseLeftUp");
                     AppLogger.LogDebug($"EVENT SENT [SYNTHETIC] device={device} event=MouseLeftUp");
                     VirtualKBM.PerformMouseButtonEvent(settings.OutputKBMMapping.MOUSEEVENTF_LEFTUP);
                 }
 
-                if (globalState.currentClicks.middleCount != 0 && globalState.previousClicks.middleCount == 0)
+                if (_syntheticInput.GlobalState.currentClicks.middleCount != 0 && _syntheticInput.GlobalState.previousClicks.middleCount == 0)
                 {
                     AppLogger.LogTrace($"SYNTHETIC TRACE device={device} event=MouseMiddleDown");
                     AppLogger.LogDebug($"EVENT SENT [SYNTHETIC] device={device} event=MouseMiddleDown");
                     VirtualKBM.PerformMouseButtonEvent(settings.OutputKBMMapping.MOUSEEVENTF_MIDDLEDOWN);
                 }
-                else if (globalState.currentClicks.middleCount == 0 && globalState.previousClicks.middleCount != 0)
+                else if (_syntheticInput.GlobalState.currentClicks.middleCount == 0 && _syntheticInput.GlobalState.previousClicks.middleCount != 0)
                 {
                     AppLogger.LogTrace($"SYNTHETIC TRACE device={device} event=MouseMiddleUp");
                     AppLogger.LogDebug($"EVENT SENT [SYNTHETIC] device={device} event=MouseMiddleUp");
                     VirtualKBM.PerformMouseButtonEvent(settings.OutputKBMMapping.MOUSEEVENTF_MIDDLEUP);
                 }
 
-                if (globalState.currentClicks.rightCount != 0 && globalState.previousClicks.rightCount == 0)
+                if (_syntheticInput.GlobalState.currentClicks.rightCount != 0 && _syntheticInput.GlobalState.previousClicks.rightCount == 0)
                 {
                     AppLogger.LogTrace($"SYNTHETIC TRACE device={device} event=MouseRightDown");
                     AppLogger.LogDebug($"EVENT SENT [SYNTHETIC] device={device} event=MouseRightDown");
                     VirtualKBM.PerformMouseButtonEvent(settings.OutputKBMMapping.MOUSEEVENTF_RIGHTDOWN);
                 }
-                else if (globalState.currentClicks.rightCount == 0 && globalState.previousClicks.rightCount != 0)
+                else if (_syntheticInput.GlobalState.currentClicks.rightCount == 0 && _syntheticInput.GlobalState.previousClicks.rightCount != 0)
                 {
                     AppLogger.LogTrace($"SYNTHETIC TRACE device={device} event=MouseRightUp");
                     AppLogger.LogDebug($"EVENT SENT [SYNTHETIC] device={device} event=MouseRightUp");
                     VirtualKBM.PerformMouseButtonEvent(settings.OutputKBMMapping.MOUSEEVENTF_RIGHTUP);
                 }
 
-                if (globalState.currentClicks.fourthCount != 0 && globalState.previousClicks.fourthCount == 0)
+                if (_syntheticInput.GlobalState.currentClicks.fourthCount != 0 && _syntheticInput.GlobalState.previousClicks.fourthCount == 0)
                 {
                     AppLogger.LogTrace($"SYNTHETIC TRACE device={device} event=MouseXButtonDown btn=1");
                     AppLogger.LogDebug($"EVENT SENT [SYNTHETIC] device={device} event=MouseXButtonDown btn=1");
                     VirtualKBM.PerformMouseButtonEventAlt(settings.OutputKBMMapping.MOUSEEVENTF_XBUTTONDOWN, 1);
                 }
-                else if (globalState.currentClicks.fourthCount == 0 && globalState.previousClicks.fourthCount != 0)
+                else if (_syntheticInput.GlobalState.currentClicks.fourthCount == 0 && _syntheticInput.GlobalState.previousClicks.fourthCount != 0)
                 {
                     AppLogger.LogTrace($"SYNTHETIC TRACE device={device} event=MouseXButtonUp btn=1");
                     AppLogger.LogDebug($"EVENT SENT [SYNTHETIC] device={device} event=MouseXButtonUp btn=1");
                     VirtualKBM.PerformMouseButtonEventAlt(settings.OutputKBMMapping.MOUSEEVENTF_XBUTTONUP, 1);
                 }
 
-                if (globalState.currentClicks.fifthCount != 0 && globalState.previousClicks.fifthCount == 0)
+                if (_syntheticInput.GlobalState.currentClicks.fifthCount != 0 && _syntheticInput.GlobalState.previousClicks.fifthCount == 0)
                 {
                     AppLogger.LogTrace($"SYNTHETIC TRACE device={device} event=MouseXButtonDown btn=2");
                     AppLogger.LogDebug($"EVENT SENT [SYNTHETIC] device={device} event=MouseXButtonDown btn=2");
                     VirtualKBM.PerformMouseButtonEventAlt(settings.OutputKBMMapping.MOUSEEVENTF_XBUTTONDOWN, 2);
                 }
-                else if (globalState.currentClicks.fifthCount == 0 && globalState.previousClicks.fifthCount != 0)
+                else if (_syntheticInput.GlobalState.currentClicks.fifthCount == 0 && _syntheticInput.GlobalState.previousClicks.fifthCount != 0)
                 {
                     AppLogger.LogTrace($"SYNTHETIC TRACE device={device} event=MouseXButtonUp btn=2");
                     AppLogger.LogDebug($"EVENT SENT [SYNTHETIC] device={device} event=MouseXButtonUp btn=2");
                     VirtualKBM.PerformMouseButtonEventAlt(settings.OutputKBMMapping.MOUSEEVENTF_XBUTTONUP, 2);
                 }
 
-                if (globalState.currentClicks.wUpCount != 0 && globalState.previousClicks.wUpCount == 0)
+                if (_syntheticInput.GlobalState.currentClicks.wUpCount != 0 && _syntheticInput.GlobalState.previousClicks.wUpCount == 0)
                 {
                     AppLogger.LogTrace($"SYNTHETIC TRACE device={device} event=MouseWheelUp");
                     AppLogger.LogDebug($"EVENT SENT [SYNTHETIC] device={device} event=MouseWheelUp");
@@ -1084,10 +929,10 @@ namespace DS4Windows
                     oldnow = DateTime.UtcNow;
                     wheel = settings.OutputKBMMapping.WHEEL_TICK_UP;
                 }
-                else if (globalState.currentClicks.wUpCount == 0 && globalState.previousClicks.wUpCount != 0)
+                else if (_syntheticInput.GlobalState.currentClicks.wUpCount == 0 && _syntheticInput.GlobalState.previousClicks.wUpCount != 0)
                     wheel = 0;
 
-                if (globalState.currentClicks.wDownCount != 0 && globalState.previousClicks.wDownCount == 0)
+                if (_syntheticInput.GlobalState.currentClicks.wDownCount != 0 && _syntheticInput.GlobalState.previousClicks.wDownCount == 0)
                 {
                     AppLogger.LogTrace($"SYNTHETIC TRACE device={device} event=MouseWheelDown");
                     AppLogger.LogDebug($"EVENT SENT [SYNTHETIC] device={device} event=MouseWheelDown");
@@ -1095,7 +940,7 @@ namespace DS4Windows
                     oldnow = DateTime.UtcNow;
                     wheel = settings.OutputKBMMapping.WHEEL_TICK_DOWN;
                 }
-                if (globalState.currentClicks.wDownCount == 0 && globalState.previousClicks.wDownCount != 0)
+                if (_syntheticInput.GlobalState.currentClicks.wDownCount == 0 && _syntheticInput.GlobalState.previousClicks.wDownCount != 0)
                     wheel = 0;
             }
 
@@ -1110,7 +955,7 @@ namespace DS4Windows
                 }
             }
 
-            globalState.SaveToPrevious(false);
+            _syntheticInput.GlobalState.SaveToPrevious(false);
 
             syncStateLock.ExitWriteLock();
             state.SaveToPrevious(true);
@@ -1145,7 +990,7 @@ namespace DS4Windows
             return (value < min) ? min : (value > max) ? max : value;
         }
 
-        public static DS4State SetCurveAndDeadzone(int device, DS4State cState, DS4State dState,
+        public DS4State SetCurveAndDeadzone(int device, DS4State cState, DS4State dState,
                 DS4Windows.DI.IProfileSettingsService settings)
         {
             double rotation = /*tempDoubleArray[device] =*/  settings.LSRotation[device];
@@ -2339,7 +2184,7 @@ namespace DS4Windows
             return dState;
         }
 
-        public static DS4State ApplyStickCalibration(int device, DS4State state, DS4Windows.DI.IProfileSettingsService settings)
+        public DS4State ApplyStickCalibration(int device, DS4State state, DS4Windows.DI.IProfileSettingsService settings)
         {
             if (settings.RightStickDriftXAxis[device] != 0)
             {
@@ -2367,7 +2212,7 @@ namespace DS4Windows
             return state;
         }
 
-        private static bool ShiftTrigger(int trigger, int device, DS4State cState, DS4StateExposed eState, Mouse tp, DS4StateFieldMapping fieldMapping)
+        private bool ShiftTrigger(int trigger, int device, DS4State cState, DS4StateExposed eState, Mouse tp, DS4StateFieldMapping fieldMapping)
         {
             bool result = false;
             if (trigger == 0)
@@ -2391,31 +2236,31 @@ namespace DS4Windows
         /// <summary>
         /// Map DS4 Buttons/Axes to other DS4 Buttons/Axes (largely the same as Xinput ones) and to keyboard and mouse buttons.
         /// </summary>
-        static DS4Controls[] held = new DS4Controls[Global.MAX_DS4_CONTROLLER_COUNT];
+        DS4Controls[] held = new DS4Controls[Global.MAX_DS4_CONTROLLER_COUNT];
 
         /*static double previousPointerX = 0.0;
         //double accelHelperX = 0.0;
         //double accelTravelX = 0.0;
         //Stopwatch deltaEasingTimeX = new Stopwatch();
 
-        static double previousPointerY = 0.0;
+        double previousPointerY = 0.0;
         //double accelHelperY = 0.0;
         //double accelTravelY = 0.0;
         //Stopwatch deltaEasingTimeY = new Stopwatch();
 
-        static double previousPointerRadial = 0.0;
-        static double accelCurrentMultiRadial = 0.0;
-        static double accelEasingMultiRadial = 0.0;
-        static double accelTravelRadial = 0.0;
-        static Stopwatch deltaEasingTimeRadial = new Stopwatch();
-        static double totalTravelRadial = 0.0;
+        double previousPointerRadial = 0.0;
+        double accelCurrentMultiRadial = 0.0;
+        double accelEasingMultiRadial = 0.0;
+        double accelTravelRadial = 0.0;
+        Stopwatch deltaEasingTimeRadial = new Stopwatch();
+        double totalTravelRadial = 0.0;
 
-        static double tempOutXNorm = 0.0;
-        static double tempOutYNorm = 0.0;
-        static bool usingDeltaAccel = false;
+        double tempOutXNorm = 0.0;
+        double tempOutYNorm = 0.0;
+        bool usingDeltaAccel = false;
         */
 
-        public static void MapCustom(int device, DS4State cState, DS4State MappedState, DS4StateExposed eState,
+        public void MapCustom(int device, DS4State cState, DS4State MappedState, DS4StateExposed eState,
             Mouse tp, ControlService ctrl)
         {
             /* TODO: This method is slow sauce. Find ways to speed up action execution */
@@ -2445,7 +2290,7 @@ namespace DS4Windows
             //DS4StateFieldMapping fieldMapping = new DS4StateFieldMapping(cState, eState, tp);
             //DS4StateFieldMapping outputfieldMapping = new DS4StateFieldMapping(cState, eState, tp);
 
-            SyntheticState deviceState = Mapping.deviceState[device];
+            SyntheticState deviceState = this.deviceState[device];
             if (ctrl.ProfileActionProvider.GetProfileActionCount(device) > 0 || profileSettings.GetUseTempProfile(device))
                 MapCustomAction(device, cState, MappedState, eState, tp, ctrl, fieldMapping, outputfieldMapping);
             //if (ctrl.DS4Controllers[device] == null) return;
@@ -2962,7 +2807,7 @@ namespace DS4Windows
                         // Centralized SA trace (rising-edge info and per-tick output combo)
                         try
                         {
-                            LogSpecialActionTrace(actionname, sa, device, triggered && !prevState, outputfieldMapping, Mapping.deviceState);
+                            LogSpecialActionTrace(actionname, sa, device, triggered && !prevState, outputfieldMapping, this.deviceState);
                         }
                         catch { }
 
@@ -2983,7 +2828,7 @@ namespace DS4Windows
 
             // MappedState summary TRACE removed as requested.
 
-            if (macroCount > 0)
+            if (_macroRuntime.MacroCount > 0)
             {
                 if (macroControl[00]) MappedState.Cross = true;
                 if (macroControl[01]) MappedState.Circle = true;
@@ -3015,7 +2860,7 @@ namespace DS4Windows
 
             if (ctrl.ProfileSettingsService.GetSASteeringWheelEmulationAxis(device) != SASteeringWheelEmulationAxisType.None)
             {
-                MappedState.SASteeringWheelEmulationUnit = Mapping.Scale360degreeGyroAxis(device, eState, ctrl);
+                MappedState.SASteeringWheelEmulationUnit = this.Scale360degreeGyroAxis(device, eState, ctrl);
             }
 
             PostMapStickData mapStickData = mapStickActionData[device];
@@ -3187,7 +3032,7 @@ namespace DS4Windows
             }
         }
 
-        public static void TempMouseJoystick(int device, DS4State MappedState)
+        public void TempMouseJoystick(int device, DS4State MappedState)
         {
             GyroOutMode imuOutMode = profileSettings.GetGyroOutMode(device);
             if (imuOutMode == GyroOutMode.MouseJoystick)
@@ -3264,7 +3109,7 @@ namespace DS4Windows
         // Handle full device disconnect cleanup: release synthetic keys, clear queues and tasks,
         // and remove any per-device runtime state. This consolidates the shutdown-like cleanup
         // performed when the application exits so it can be used on disconnect as well.
-        public static void HandleDeviceDisconnect(int device)
+        public void HandleDeviceDisconnect(int device)
         {
             try
             {
@@ -3328,22 +3173,13 @@ namespace DS4Windows
                 try { if (deviceRuntime != null && device >= 0 && device < deviceRuntime.Length) deviceRuntime[device] = new DeviceRuntimeState(); } catch { }
 
                 // Finally ensure any per-device controllers are removed (defensive)
-                try { ClearKeyButtonControllersForDevice(device); } catch { }
+                try { _keyButtonControllers.ClearForDevice(device); } catch { }
             }
             catch { }
         }
 
-        // Public wrapper so Action/KeyAction code can reuse Mapping's cached controllers.
-        public static DS4Windows.Actions.IActionController GetOrCreateKeyButtonControllerForAction(int device, SpecialAction sa)
-        {
-            // Wrap existing KeyButtonActionController in adapter implementing IActionController
-            var inner = GetOrCreateKeyButtonController(device, sa);
-            if (inner == null) return null;
-            return new DS4Windows.Actions.KeyButtonActionControllerAdapter(inner);
-        }
-
         // Try to find a SpecialAction that maps to given logical key (used by synthetic sender paths).
-        private static SpecialAction FindSpecialActionForLogicalKey(ushort logicalKey)
+        private SpecialAction FindSpecialActionForLogicalKey(ushort logicalKey)
         {
             try
             {
@@ -3365,7 +3201,7 @@ namespace DS4Windows
 
         // Helper: Dispatch SpecialAction trigger established via KeyButtonActionController if available.
         // If a fallback action is provided it will be executed when no controller exists.
-        private static bool TryDispatchSATriggerEstablished(SpecialAction action, int device, ushort logicalValue, uint nativeValue, bool useScanCode, IVirtualKBM VirtualKBM, Action fallback = null)
+        private bool TryDispatchSATriggerEstablished(SpecialAction action, int device, ushort logicalValue, uint nativeValue, bool useScanCode, IVirtualKBM VirtualKBM, Action fallback = null)
         {
             try
             {
@@ -3397,7 +3233,7 @@ namespace DS4Windows
                     return true;
                 }
 
-                var ctrl = GetOrCreateKeyButtonControllerForAction(device, action);
+                var ctrl = _keyButtonControllers.GetOrCreateForAction(device, action);
                 if (ctrl != null)
                 {
                     // Try a final DispatchTrigger via TriggerContext before calling controller directly
@@ -3451,7 +3287,7 @@ namespace DS4Windows
 
         // Helper: Dispatch SpecialAction trigger release via KeyButtonActionController if available.
         // If a fallback action is provided it will be executed when no controller exists.
-        private static bool TryDispatchSATriggerReleased(SpecialAction action, int device, ushort logicalValue, uint nativeValue, bool useScanCode, IVirtualKBM VirtualKBM, Action fallback = null)
+        private bool TryDispatchSATriggerReleased(SpecialAction action, int device, ushort logicalValue, uint nativeValue, bool useScanCode, IVirtualKBM VirtualKBM, Action fallback = null)
         {
             try
             {
@@ -3482,7 +3318,7 @@ namespace DS4Windows
                     return true;
                 }
 
-                var ctrl = GetOrCreateKeyButtonControllerForAction(device, action);
+                var ctrl = _keyButtonControllers.GetOrCreateForAction(device, action);
                 if (ctrl != null)
                 {
                     bool handledFinal = false;
@@ -3535,7 +3371,7 @@ namespace DS4Windows
             }
         }
 
-        private static void ProcessTwoStageTrigger(int device, DS4State cState, byte triggerValue, byte triggerRawValue,
+        private void ProcessTwoStageTrigger(int device, DS4State cState, byte triggerValue, byte triggerRawValue,
             ref DS4ControlSettings inputSoftPull, ref DS4ControlSettings inputFullPull, TriggerOutputSettings outputSettings,
             TwoStageTriggerMappingData twoStageData, out DS4ControlSettings outputSoftPull, out DS4ControlSettings outputFullPull)
         {
@@ -3731,7 +3567,7 @@ namespace DS4Windows
             outputFullPull = dcsFullPull;
         }
 
-        private static void ProcessFlickStick(int device, DS4State cRawState, byte stickX, byte stickY, byte prevStickX, byte prevStickY, ControlService ctrl, FlickStickSettings flickSettings, ref double tempMouseDeltaX)
+        private void ProcessFlickStick(int device, DS4State cRawState, byte stickX, byte stickY, byte prevStickX, byte prevStickY, ControlService ctrl, FlickStickSettings flickSettings, ref double tempMouseDeltaX)
         {
             FlickStickMappingData tempFlickData = flickMappingData[device];
             double angleChange = HandleFlickStickAngle(cRawState, stickX, stickY, prevStickX, prevStickY,
@@ -3773,7 +3609,7 @@ namespace DS4Windows
             }
         }
 
-        private static double HandleFlickStickAngle(DS4State cState, byte stickX, byte stickY, byte prevStickX, byte prevStickY,
+        private double HandleFlickStickAngle(DS4State cState, byte stickX, byte stickY, byte prevStickX, byte prevStickY,
             FlickStickMappingData flickData, FlickStickSettings flickSettings)
         {
             double result = 0.0;
@@ -3873,11 +3709,11 @@ namespace DS4Windows
             DS4Controls.FnL, DS4Controls.FnR, DS4Controls.BLP, DS4Controls.BRP
         ];
 
-        private static CancellationTokenSource threadCts = new();
-        private static Task lightbarMacroTask;
+        private CancellationTokenSource threadCts = new();
+        private Task lightbarMacroTask;
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        private static void ProcessControlSettingAction(DS4ControlSettings dcs, int device, DS4State cState, DS4State MappedState, DS4StateExposed eState,
+        private void ProcessControlSettingAction(DS4ControlSettings dcs, int device, DS4State cState, DS4State MappedState, DS4StateExposed eState,
             Mouse tp, DS4StateFieldMapping fieldMapping, DS4StateFieldMapping outputfieldMapping, SyntheticState deviceState, ref double tempMouseDeltaX, ref double tempMouseDeltaY,
             ControlService ctrl)
         {
@@ -4282,7 +4118,7 @@ namespace DS4Windows
             }
         }
 
-        private static void RunLightbarMacro(ObservableCollection<LightbarMacroElement> macro, int device, CancellationToken token)
+        private void RunLightbarMacro(ObservableCollection<LightbarMacroElement> macro, int device, CancellationToken token)
         {
             lock (DS4LightBar.forcedColor) lock (DS4LightBar.forcelight)
                 {
@@ -4324,7 +4160,7 @@ namespace DS4Windows
         }
 
         // 注: 呼び出し元のない private メソッド（Phase6-Step3-6a 時点で確認）。Global 参照だけ外し、削除は Phase7 の整理で判断する。
-        private static bool IfAxisIsNotModified(int device, bool shift, DS4Controls dc, DS4Windows.DI.IProfileSettingsService settings)
+        private bool IfAxisIsNotModified(int device, bool shift, DS4Controls dc, DS4Windows.DI.IProfileSettingsService settings)
         {
             return shift ? false : settings.GetDS4CSetting(device, dc).actionType == DS4ControlSettings.ActionType.Default;
         }
@@ -4332,7 +4168,7 @@ namespace DS4Windows
         // InitializeActionDoneList removed — ActionManager owns per-action state initialization.
 
         // ログ用ヘルパー: スペシャルアクションのトリガー成立時に現在の beingTriggered エントリ数を出力
-        private static void LogActionDoneCountOnTrigger(int index, SpecialAction action, int device, ControlService ctrl, string context = "TRIGGER")
+        private void LogActionDoneCountOnTrigger(int index, SpecialAction action, int device, ControlService ctrl, string context = "TRIGGER")
         {
             try
             {
@@ -4352,7 +4188,7 @@ namespace DS4Windows
         /// 1. 完了チェック：10msごとに初期化完了を確認
         /// 2. 完了確認時：スペシャルアクション実行のためループを抜ける
         /// </summary>
-        private static Task<bool> EnsureActionDoneInitialized()
+        private Task<bool> EnsureActionDoneInitialized()
         {
             // Compatibility: legacy callers expect an initialization wait mechanism.
             // The new ActionManager-based model is ready at this point, so simply
@@ -4360,7 +4196,7 @@ namespace DS4Windows
             return Task.FromResult(true);
         }
 
-        private static async void MapCustomAction(int device, DS4State cState, DS4State MappedState,
+        private async void MapCustomAction(int device, DS4State cState, DS4State MappedState,
             DS4StateExposed eState, Mouse tp, ControlService ctrl, DS4StateFieldMapping fieldMapping, DS4StateFieldMapping outputfieldMapping)
         {
             /* TODO: This method is slow sauce. Find ways to speed up action execution */
@@ -4659,7 +4495,7 @@ namespace DS4Windows
                                 if (!GetBeingTriggered(index, action, device) && !programBlockedByFreshPress && !programBlockedByExecuting)
                                 {
                                     // Issue8-3是正: 実行が決定されたこの場所でのみログ出力する（risingEdge判定不要）。
-                                    try { LogSpecialActionTrace(actionname, action, device, true, outputfieldMapping, Mapping.deviceState); } catch { }
+                                    try { LogSpecialActionTrace(actionname, action, device, true, outputfieldMapping, this.deviceState); } catch { }
 
                                     LogActionDoneCountOnTrigger(index, action, device, ctrl, "Program");
 
@@ -4686,7 +4522,7 @@ namespace DS4Windows
 
                                             // フォールバック: DI未登録時も LaunchProcessAction に集約して安全に実行
                                             new DS4Windows.Actions.LaunchProcessAction(action,
-                                                DS4WinWPF.AppHost.GetService<DS4Windows.Actions.IProcessLauncher>() ?? new DS4Windows.Actions.DefaultProcessLauncher()).Execute(null);
+                                                _processLauncher).Execute(null);
                                         }
                                     }
                                     finally
@@ -4712,7 +4548,7 @@ namespace DS4Windows
                                     try
                                     {
                                         // Issue8-3是正: 実行が決定されたこの場所でのみログ出力する（risingEdge判定不要）。
-                                        try { LogSpecialActionTrace(actionname, action, device, true, outputfieldMapping, Mapping.deviceState); } catch { }
+                                        try { LogSpecialActionTrace(actionname, action, device, true, outputfieldMapping, this.deviceState); } catch { }
 
                                         DS4Windows.AppLogger.LogDebug($"SpecialAction PROFILE: Triggered for device {device}, action={action.name}, target={action.details}");
                                         DS4Windows.AppLogger.LogDebug($"SpecialAction PROFILE: beingTriggered={GetBeingTriggered(index, action, device)}, useTempProfile={profileSettings.GetUseTempProfile(device)}");
@@ -4824,7 +4660,7 @@ namespace DS4Windows
                                     if (!GetBeingTriggered(index, action, device))
                                     {
                                         // Issue8-3是正: 実行が決定されたこの場所でのみログ出力する（risingEdge判定不要）。
-                                        try { LogSpecialActionTrace(actionname, action, device, true, outputfieldMapping, Mapping.deviceState); } catch { }
+                                        try { LogSpecialActionTrace(actionname, action, device, true, outputfieldMapping, this.deviceState); } catch { }
 
                                         LogActionDoneCountOnTrigger(index, action, device, ctrl, "Macro");
 
@@ -4870,7 +4706,7 @@ namespace DS4Windows
                                         if (!GetBeingTriggered(index, action, device))
                                         {
                                             // Issue8-3是正: 実行が決定されたこの場所でのみログ出力する（risingEdge判定不要）。
-                                            try { LogSpecialActionTrace(actionname, action, device, true, outputfieldMapping, Mapping.deviceState); } catch { }
+                                            try { LogSpecialActionTrace(actionname, action, device, true, outputfieldMapping, this.deviceState); } catch { }
 
                                             LogActionDoneCountOnTrigger(index, action, device, ctrl, "MacroRelease");
 
@@ -4924,7 +4760,7 @@ namespace DS4Windows
                                     if (!prevActionDone)
                                     {
                                         // Issue8-3是正: 実行が決定されたこの場所でのみログ出力する（risingEdge判定不要）。
-                                        try { LogSpecialActionTrace(actionname, action, device, true, outputfieldMapping, Mapping.deviceState); } catch { }
+                                        try { LogSpecialActionTrace(actionname, action, device, true, outputfieldMapping, this.deviceState); } catch { }
 
                                         LogActionDoneCountOnTrigger(index, action, device, ctrl, "KeyTriggered");
                                         try
@@ -5008,7 +4844,7 @@ namespace DS4Windows
                                     if (deviceConn == ConnectionType.BT)
                                     {
                                         // Issue8-3是正: 実行が決定されたこの場所でのみログ出力する（risingEdge判定不要）。
-                                        try { LogSpecialActionTrace(actionname, action, device, true, outputfieldMapping, Mapping.deviceState); } catch { }
+                                        try { LogSpecialActionTrace(actionname, action, device, true, outputfieldMapping, this.deviceState); } catch { }
 
                                         d.DisconnectBT();
                                         ReleaseActionKeys(action, device, ctrl.ProfileSettingsService);
@@ -5049,7 +4885,7 @@ namespace DS4Windows
                                 // Issue8-3是正: 実行が決定されたこの場所でのみログ出力する（risingEdge判定不要）。
                                 if (!GetBeingTriggered(index, action, device))
                                 {
-                                    try { LogSpecialActionTrace(actionname, action, device, true, outputfieldMapping, Mapping.deviceState); } catch { }
+                                    try { LogSpecialActionTrace(actionname, action, device, true, outputfieldMapping, this.deviceState); } catch { }
                                 }
 
                                 LogActionDoneCountOnTrigger(index, action, device, ctrl, "BatteryCheck");
@@ -5065,7 +4901,7 @@ namespace DS4Windows
                                 if (d.WheelRecalibrateActiveState == 0 && DateTime.UtcNow > (action.firstTap + TimeSpan.FromMilliseconds(3000)))
                                 {
                                     // Issue8-3是正: 実行が決定されたこの場所でのみログ出力する（risingEdge判定不要）。
-                                    try { LogSpecialActionTrace(actionname, action, device, true, outputfieldMapping, Mapping.deviceState); } catch { }
+                                    try { LogSpecialActionTrace(actionname, action, device, true, outputfieldMapping, this.deviceState); } catch { }
 
                                     action.firstTap = DateTime.UtcNow;
                                     d.WheelRecalibrateActiveState = 1;  // Start calibration process
@@ -5073,7 +4909,7 @@ namespace DS4Windows
                                 else if (d.WheelRecalibrateActiveState == 2 && DateTime.UtcNow > (action.firstTap + TimeSpan.FromMilliseconds(3000)))
                                 {
                                     // Issue8-3是正: 実行が決定されたこの場所でのみログ出力する（risingEdge判定不要）。
-                                    try { LogSpecialActionTrace(actionname, action, device, true, outputfieldMapping, Mapping.deviceState); } catch { }
+                                    try { LogSpecialActionTrace(actionname, action, device, true, outputfieldMapping, this.deviceState); } catch { }
 
                                     action.firstTap = DateTime.UtcNow;
                                     d.WheelRecalibrateActiveState = 3;  // Complete calibration process
@@ -5094,7 +4930,7 @@ namespace DS4Windows
                                 if (!GetBeingTriggered(index, action, device) && !gyroBlockedByFreshPress)
                                 {
                                     // Issue8-3是正: 実行が決定されたこの場所でのみログ出力する（risingEdge判定不要）。
-                                    try { LogSpecialActionTrace(actionname, action, device, true, outputfieldMapping, Mapping.deviceState); } catch { }
+                                    try { LogSpecialActionTrace(actionname, action, device, true, outputfieldMapping, this.deviceState); } catch { }
 
                                     var d = ctrl.DS4Controllers[device];
 
@@ -5362,7 +5198,7 @@ namespace DS4Windows
                                         if (macro != "")
                                         {
                                             // Issue8-3是正: 実行が決定されたこの場所でのみログ出力する（risingEdge判定不要）。
-                                            try { LogSpecialActionTrace(actionname, action, device, true, outputfieldMapping, Mapping.deviceState); } catch { }
+                                            try { LogSpecialActionTrace(actionname, action, device, true, outputfieldMapping, this.deviceState); } catch { }
 
                                             PlayMacro(device, macroControl, macro, null, null, DS4Controls.None, DS4KeyType.None);
                                         }
@@ -5393,7 +5229,7 @@ namespace DS4Windows
                                     if (macro != "")
                                     {
                                         // Issue8-3是正: 実行が決定されたこの場所でのみログ出力する（risingEdge判定不要）。
-                                        try { LogSpecialActionTrace(actionname, action, device, true, outputfieldMapping, Mapping.deviceState); } catch { }
+                                        try { LogSpecialActionTrace(actionname, action, device, true, outputfieldMapping, this.deviceState); } catch { }
 
                                         PlayMacro(device, macroControl, macro, null, null, DS4Controls.None, DS4KeyType.None);
                                     }
@@ -5422,7 +5258,7 @@ namespace DS4Windows
                                     if (macro != "")
                                     {
                                         // Issue8-3是正: 実行が決定されたこの場所でのみログ出力する（risingEdge判定不要）。
-                                        try { LogSpecialActionTrace(actionname, action, device, true, outputfieldMapping, Mapping.deviceState); } catch { }
+                                        try { LogSpecialActionTrace(actionname, action, device, true, outputfieldMapping, this.deviceState); } catch { }
 
                                         PlayMacro(device, macroControl, macro, null, null, DS4Controls.None, DS4KeyType.None);
                                     }
@@ -5518,7 +5354,7 @@ namespace DS4Windows
                             }
 
                             new DS4Windows.Actions.ProfileSwitchAction(action, device,
-                                DS4WinWPF.AppHost.GetService<DS4Windows.Actions.IProfileSwitcher>() ?? new DS4Windows.Actions.DefaultProfileSwitcher()).Stop(null);
+                                _profileSwitcher).Stop(null);
                         }
                     }
                 }
@@ -5531,7 +5367,7 @@ namespace DS4Windows
             }
         }
 
-        private static void ReleaseActionKeys(SpecialAction action, int device, DS4Windows.DI.IProfileSettingsService settings)
+        private void ReleaseActionKeys(SpecialAction action, int device, DS4Windows.DI.IProfileSettingsService settings)
         {
             //foreach (DS4Controls dc in action.trigger)
             for (int i = 0, arlen = action.trigger.Count; i < arlen; i++)
@@ -5564,7 +5400,7 @@ namespace DS4Windows
         /// <summary>
         /// DI/IMacroPlayer 用のマクロ実行エントリーポイント
         /// </summary>
-        internal static void PlayMacroDirect(int device, SpecialAction action)
+        public void PlayMacroDirect(int device, SpecialAction action)
         {
             // Phase6-Step9b-3（F05）: 4 スロット固定だと、拡張スロット数が 8 のときデバイス 4〜7 のマクロが再生されなかった。
             if (device < 0 || device >= Global.MAX_DS4_CONTROLLER_COUNT || action == null) return;
@@ -5574,7 +5410,7 @@ namespace DS4Windows
         /// <summary>
         /// DI/IMacroPlayer 用のマクロ停止・キー解放エントリーポイント
         /// </summary>
-        internal static void EndMacroDirect(int device)
+        public void EndMacroDirect(int device)
         {
             if (device < 0 || device >= Global.MAX_DS4_CONTROLLER_COUNT) return;
             EndMacro(device, new bool[4], string.Empty, DS4Controls.None);
@@ -5586,7 +5422,7 @@ namespace DS4Windows
         // Play macro as a background task. Optionally the new macro play waits for completion of a previous macro execution (synchronized macro special action).
         // Macro steps are defined either as macrostr string value, macroLst list<int> object or as macroArr integer array. Only one of these should have a valid macro definition when this method is called.
         // If the macro definition is a macroStr string value then it will be converted as integer array on the fl. If steps are already defined as list or array of integers then there is no need to do type cast conversion.
-        private static void PlayMacro(int device, bool[] macrocontrol, string macroStr, List<int> macroLst, int[] macroArr, DS4Controls control, DS4KeyType keyType, SpecialAction action = null, ActionInstanceState actionDoneState = null)
+        private void PlayMacro(int device, bool[] macrocontrol, string macroStr, List<int> macroLst, int[] macroArr, DS4Controls control, DS4KeyType keyType, SpecialAction action = null, ActionInstanceState actionDoneState = null)
         {
             // If caller didn't provide per-action state, obtain it so we can check for running macro.
             ActionInstanceState st = actionDoneState;
@@ -5653,7 +5489,7 @@ namespace DS4Windows
         }
 
         // Play through a macro. The macro steps are defined either as string, List or Array object (always only one of those parameters is set to a valid value)
-        private static void PlayMacroTask(int device, bool[] macrocontrol, string macroStr, List<int> macroLst, int[] macroArr, DS4Controls control, DS4KeyType keyType, SpecialAction action, ActionInstanceState actionDoneState)
+        private void PlayMacroTask(int device, bool[] macrocontrol, string macroStr, List<int> macroLst, int[] macroArr, DS4Controls control, DS4KeyType keyType, SpecialAction action, ActionInstanceState actionDoneState)
         {
             // Ensure we have the per-action state from ActionManager if not provided by caller
             if (actionDoneState == null && action != null)
@@ -5883,7 +5719,7 @@ namespace DS4Windows
             try { AppLogger.LogTrace($"PlayMacroTask END: action={action?.name} device={device} IsMacroRunning={(actionDoneState != null ? actionDoneState.IsMacroRunning : false)} IsBeingTriggered={(action != null ? ActionManager.IsBeingTriggered(action, device) : false)}"); } catch { }
         }
 
-        private static bool PlayMacroCodeValue(int device, bool[] macrocontrol, DS4KeyType keyType, int macroCodeValue, bool[] keydown)
+        private bool PlayMacroCodeValue(int device, bool[] macrocontrol, DS4KeyType keyType, int macroCodeValue, bool[] keydown)
         {
             // TODO(Phase6-Step3-6c, 決定P2): 非同期マクロ経路（別スレッド、ctrl を持たない連鎖）のため、Mapping の静的 profileSettings から読む。Phase7 の instance 化（コンストラクタ注入）で解消する。
             bool doDelayOnCaller = false;
@@ -5893,12 +5729,12 @@ namespace DS4Windows
                 if (!keydown[macroCodeValue])
                 {
                     macroControl[macroCodeValue - 261] = keydown[macroCodeValue] = true;
-                    macroCount++;
+                    _macroRuntime.MacroCount++;
                 }
                 else
                 {
                     macroControl[macroCodeValue - 261] = keydown[macroCodeValue] = false;
-                    if (macroCount > 0) macroCount--;
+                    if (_macroRuntime.MacroCount > 0) _macroRuntime.MacroCount--;
                 }
             }
             else if (macroCodeValue < 300)
@@ -6024,7 +5860,7 @@ namespace DS4Windows
                 DS4Device d = null;
                 try
                 {
-                    var accessor = DS4WinWPF.AppHost.GetService<DS4Windows.Services.IDeviceStateAccessor>();
+                    var accessor = _deviceStateAccessor();
                     if (accessor != null) d = accessor.GetController(device);
                 }
                 catch { }
@@ -6046,7 +5882,7 @@ namespace DS4Windows
             return doDelayOnCaller;
         }
 
-        private static void EndMacro(int device, bool[] macrocontrol, string macro, DS4Controls control)
+        private void EndMacro(int device, bool[] macrocontrol, string macro, DS4Controls control)
         {
             if ((macro.StartsWith("164/9/9/164") || macro.StartsWith("18/9/9/18")) && !altTabDone)
                 AltTabSwappingRelease();
@@ -6055,7 +5891,7 @@ namespace DS4Windows
                 macrodone[DS4ControltoInt(control)] = false;
         }
 
-        private static void EndMacro(int device, bool[] macrocontrol, List<int> macro, DS4Controls control)
+        private void EndMacro(int device, bool[] macrocontrol, List<int> macro, DS4Controls control)
         {
             if (macro.Count >= 4 && ((macro[0] == 164 && macro[1] == 9 && macro[2] == 9 && macro[3] == 164) || (macro[0] == 18 && macro[1] == 9 && macro[2] == 9 && macro[3] == 18)) && !altTabDone)
                 AltTabSwappingRelease();
@@ -6064,7 +5900,7 @@ namespace DS4Windows
                 macrodone[DS4ControltoInt(control)] = false;
         }
 
-        private static void EndMacro(int device, bool[] macrocontrol, int[] macro, DS4Controls control)
+        private void EndMacro(int device, bool[] macrocontrol, int[] macro, DS4Controls control)
         {
             if (macro.Length >= 4 && ((macro[0] == 164 && macro[1] == 9 && macro[2] == 9 && macro[3] == 164) || (macro[0] == 18 && macro[1] == 9 && macro[2] == 9 && macro[3] == 18)) && !altTabDone)
                 AltTabSwappingRelease();
@@ -6073,7 +5909,7 @@ namespace DS4Windows
                 macrodone[DS4ControltoInt(control)] = false;
         }
 
-        private static void AltTabSwapping(int wait, int device)
+        private void AltTabSwapping(int wait, int device)
         {
             // TODO(Phase6-Step3-6c, 決定P2): 非同期マクロ経路（別スレッド、ctrl を持たない連鎖）のため、Mapping の静的 profileSettings から読む。Phase7 の instance 化（コンストラクタ注入）で解消する。
             if (altTabDone)
@@ -6096,7 +5932,7 @@ namespace DS4Windows
             }
         }
 
-        private static void AltTabSwappingRelease()
+        private void AltTabSwappingRelease()
         {
             // TODO(Phase6-Step3-6c, 決定P2): 非同期マクロ経路（別スレッド、ctrl を持たない連鎖）のため、Mapping の静的 profileSettings から読む。Phase7 の instance 化（コンストラクタ注入）で解消する。
             if (altTabNow < DateTime.UtcNow - TimeSpan.FromMilliseconds(10)) //in case multiple controls are mapped to alt+tab
@@ -6111,7 +5947,7 @@ namespace DS4Windows
             }
         }
 
-        private static void GetMouseWheelMapping(int device, DS4Controls control, DS4State cState,
+        private void GetMouseWheelMapping(int device, DS4Controls control, DS4State cState,
             DS4StateExposed eState, Mouse tp, DS4StateFieldMapping fieldMap, bool down)
         {
             // TODO(Phase6-Step3-6b, 決定P2): ctrl を持たない経路のため、Mapping の静的 profileSettings から読む。Phase7 の instance 化（コンストラクタ注入）で解消する。
@@ -6143,7 +5979,7 @@ namespace DS4Windows
             }
         }
 
-        private static double getMouseMapping(int device, DS4Controls control, DS4State cState, DS4StateExposed eState,
+        private double getMouseMapping(int device, DS4Controls control, DS4State cState, DS4StateExposed eState,
             DS4StateFieldMapping fieldMapping, int mnum, ControlService ctrl)
         {
             int deadzoneL = 0;
@@ -6461,7 +6297,7 @@ namespace DS4Windows
             return value;
         }
 
-        private static void calculateFinalMouseMovement(ref double rawMouseX, ref double rawMouseY,
+        private void calculateFinalMouseMovement(ref double rawMouseX, ref double rawMouseY,
             out int mouseX, out int mouseY)
         {
             if ((rawMouseX > 0.0 && horizontalRemainder > 0.0) || (rawMouseX < 0.0 && horizontalRemainder < 0.0))
@@ -6526,14 +6362,14 @@ namespace DS4Windows
         /// <returns></returns>
         // Phase6-Step3-6b（決定P2）: `Global.IsUsingSAForControls`（m_Config.gyroOutMode[i] == Controls）の置き換え。
         // GetBoolMapping 系（呼び出し元が約50箇所で ctrl を持たない）から呼ばれるため、引数渡しは行わず、
-        // Mapping の静的 profileSettings（IProfileSettingsService.GyroOutputMode。同じ BackingStore の同じ配列）から読む。
-        // TODO(Phase7): Mapping の instance 化（コンストラクタ注入）で、この静的束縛ごと解消する（Phase6-Step3-Plan.md §3.4.1）。
-        private static bool IsUsingGyroForControls(int device)
+        // Mapping の profileSettings（IProfileSettingsService.GyroOutputMode。同じ BackingStore の同じ配列）から読む。
+        // Phase7-Step8 W2: 静的束縛は、コンストラクター注入に置き換えた（旧 TODO(Phase7) の解消。Phase6-Step3-Plan.md §3.4.1）。
+        private bool IsUsingGyroForControls(int device)
         {
             return profileSettings.GyroOutputMode[device] == GyroOutMode.Controls;
         }
 
-        private static byte GetByteMapping(int device, DS4Controls control, DS4State cState, DS4StateExposed eState, Mouse tp,
+        private byte GetByteMapping(int device, DS4Controls control, DS4State cState, DS4StateExposed eState, Mouse tp,
             DS4StateFieldMapping fieldMap)
         {
             byte result = 0;
@@ -6617,7 +6453,7 @@ namespace DS4Windows
         /// <param name="eState">Exposed input state helper</param>
         /// <param name="tp">Mouse object</param>
         /// <returns>Is the specified input considered active</returns>
-        public static bool GetBoolMappingExternal(int device, DS4Controls control,
+        public bool GetBoolMappingExternal(int device, DS4Controls control,
             DS4State cState, DS4StateExposed eState, Mouse tp)
         {
             bool result = false;
@@ -6722,7 +6558,7 @@ namespace DS4Windows
             return result;
         }
 
-        private static bool GetBoolMapping(int device, DS4Controls control,
+        private bool GetBoolMapping(int device, DS4Controls control,
             DS4State cState, DS4StateExposed eState, Mouse tp, DS4StateFieldMapping fieldMap)
         {
             bool result = false;
@@ -6780,7 +6616,7 @@ namespace DS4Windows
 
         // Check if a Special Action is currently triggered (extracted from MapCustomAction logic)
         // Returns true if the Special Action trigger conditions are met
-        private static bool IsSpecialActionTriggered(SpecialAction action, int device, DS4State cState,
+        private bool IsSpecialActionTriggered(SpecialAction action, int device, DS4State cState,
             DS4StateExposed eState, Mouse tp, DS4StateFieldMapping fieldMapping)
         {
             if (action == null || action.typeID == SpecialAction.ActionTypeId.None) return false;
@@ -6852,7 +6688,7 @@ namespace DS4Windows
 
         // Check if the current button press would trigger any Special Action
         // Returns true if a Special Action would be triggered, indicating normal mapping should be suppressed
-        private static bool CheckForSpecialActionSuppression(int device, DS4Controls control,
+        private bool CheckForSpecialActionSuppression(int device, DS4Controls control,
             DS4State cState, DS4StateExposed eState, Mouse tp, DS4StateFieldMapping fieldMap)
         {
             // Issue8-1(3)是正: 「現在トリガーが成立しているか」（IsSpecialActionTriggeredの都度再計算）ではなく、
@@ -6866,7 +6702,7 @@ namespace DS4Windows
             return suppressSet != null && suppressSet.Contains(control);
         }
 
-        private static bool getBoolSpecialActionMapping(int device, DS4Controls control,
+        private bool getBoolSpecialActionMapping(int device, DS4Controls control,
             DS4State cState, DS4StateExposed eState, Mouse tp, DS4StateFieldMapping fieldMap)
         {
             bool result = false;
@@ -6922,7 +6758,7 @@ namespace DS4Windows
             return result;
         }
 
-        private static bool GetBoolActionMapping(int device, DS4Controls control,
+        private bool GetBoolActionMapping(int device, DS4Controls control,
             DS4State cState, DS4StateExposed eState, Mouse tp, DS4StateFieldMapping fieldMap, bool analog = false)
         {
             bool result = false;
@@ -7051,7 +6887,7 @@ namespace DS4Windows
         /// <param name="fieldMap">DS4StateFieldMapping instance for current MapCustom run</param>
         /// <param name="alt">Consider output a positive axis value</param>
         /// <returns></returns>
-        private static byte GetXYAxisMapping(int device, DS4Controls control, DS4State cState,
+        private byte GetXYAxisMapping(int device, DS4Controls control, DS4State cState,
             DS4StateExposed eState, Mouse tp, DS4StateFieldMapping fieldMap, bool alt = false)
         {
             const byte falseVal = 128;
@@ -7156,7 +6992,7 @@ namespace DS4Windows
             return result;
         }
 
-        private static void ResetToDefaultValue(DS4Controls control, DS4State cState,
+        private void ResetToDefaultValue(DS4Controls control, DS4State cState,
             DS4StateFieldMapping fieldMap)
         {
             int controlNum = (int)control;
@@ -7191,9 +7027,9 @@ namespace DS4Windows
         private static readonly DS4Color calibrationColor_2 = new DS4Color { red = 0x00, green = 0x50, blue = 0x50 };
         private static readonly DS4Color calibrationColor_3 = new DS4Color { red = 0x00, green = 0xC0, blue = 0x00 };
 
-        private static DateTime latestDebugMsgTime;
-        private static string latestDebugData;
-        private static void LogToGuiSACalibrationDebugMsg(string data, bool forceOutput = false)
+        private DateTime latestDebugMsgTime;
+        private string latestDebugData;
+        private void LogToGuiSACalibrationDebugMsg(string data, bool forceOutput = false)
         {
             // Print debug calibration log messages only once per 2 secs to avoid flooding the log receiver
             DateTime curTime = DateTime.Now;
@@ -7209,7 +7045,7 @@ namespace DS4Windows
         }
 
         // Return number of bits set in a value
-        protected static int CountNumOfSetBits(int bitValue)
+        protected int CountNumOfSetBits(int bitValue)
         {
             int count = 0;
             while (bitValue != 0)
@@ -7221,7 +7057,7 @@ namespace DS4Windows
         }
 
         // Calculate and return the angle of the controller as -180...0...+180 value.
-        private static Int32 CalculateControllerAngle(int gyroAccelX, int gyroAccelZ, DS4Device controller)
+        private Int32 CalculateControllerAngle(int gyroAccelX, int gyroAccelZ, DS4Device controller)
         {
             Int32 result;
 
@@ -7278,7 +7114,7 @@ namespace DS4Windows
         }
 
         // Calibrate sixaxis steering wheel emulation. Use DS4Windows configuration screen to start a calibration or press a special action key (if defined)
-        private static void SAWheelEmulationCalibration(int device, DS4StateExposed exposedState, ControlService ctrl, DS4State currentDeviceState, DS4Device controller)
+        private void SAWheelEmulationCalibration(int device, DS4StateExposed exposedState, ControlService ctrl, DS4State currentDeviceState, DS4Device controller)
         {
             int gyroAccelX, gyroAccelZ;
             int result;
@@ -7402,7 +7238,7 @@ namespace DS4Windows
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        private static void CalcStickAxisFuzz(int device,
+        private void CalcStickAxisFuzz(int device,
             int stickId, int delta, byte axisXValue, byte axisYValue,
             out byte useAxisX, out byte useAxisY)
         {
@@ -7438,7 +7274,7 @@ namespace DS4Windows
             }
         }
 
-        private static void CalcWheelFuzz(int gyroX, int gyroZ, int lastGyroX, int lastGyroZ,
+        private void CalcWheelFuzz(int gyroX, int gyroZ, int lastGyroX, int lastGyroZ,
             int delta, out int useGyroX, out int useGyroZ)
         {
             useGyroX = lastGyroX;
@@ -7454,7 +7290,7 @@ namespace DS4Windows
             }
         }
 
-        protected static Int32 Scale360degreeGyroAxis(int device, DS4StateExposed exposedState, ControlService ctrl)
+        protected Int32 Scale360degreeGyroAxis(int device, DS4StateExposed exposedState, ControlService ctrl)
         {
             unchecked
             {
@@ -7707,7 +7543,7 @@ namespace DS4Windows
             }
         }
 
-        private static void CalcAntiSnapbackStick(int device,
+        private void CalcAntiSnapbackStick(int device,
             int stickId, double delta, long timeout, byte axisXValue, byte axisYValue,
             out byte useAxisX, out byte useAxisY)
         {

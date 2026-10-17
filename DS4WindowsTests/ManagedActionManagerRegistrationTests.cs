@@ -48,6 +48,8 @@ namespace DS4WindowsTests
             {
                 var services = new ServiceCollection();
                 services.AddSingleton<IActionFactory>(TestRepositoryFactory.CreateDefaultActionFactory()); // Phase6-Step10-4-4: 工場は部品（マクロ再生役ほか）を必須とする
+                // Phase7-Step8 W2: DefaultActionManager は Func<IMapping>（切断時の後始末）を必須とする
+                services.AddSingleton<Func<IMapping>>(_ => TestRepositoryFactory.MappingProvider);
                 services.AddSingleton<IManagedActionManager, DefaultActionManager>();
                 ServiceProviderHolder.SetProvider(services.BuildServiceProvider());
 
@@ -80,13 +82,16 @@ namespace DS4WindowsTests
             {
                 var services = new ServiceCollection();
                 services.AddSingleton<IActionFactory>(TestRepositoryFactory.CreateDefaultActionFactory()); // Phase6-Step10-4-4: 工場は部品（マクロ再生役ほか）を必須とする
+                // Phase7-Step8 W2: DefaultActionManager は Func<IMapping>（切断時の後始末）を必須とする。合成アクションのキャッシュは Mapping の instance が持つ
+                var mapper = TestMappingFactory.Create();
+                services.AddSingleton<Func<IMapping>>(_ => () => mapper);
                 services.AddSingleton<IManagedActionManager, DefaultActionManager>();
                 services.AddSingleton<IControllerRegistry, DefaultControllerRegistry>();
                 ServiceProviderHolder.SetProvider(services.BuildServiceProvider());
 
-                Mapping.ClearSyntheticActionCache();
+                mapper.ClearSyntheticActionCache();
                 // 一意の control 値（ほかのテストの合成アクションとキャッシュ・状態を共有しないため）
-                sa = Mapping.GetOrCreateSyntheticKeyAction(device, 91, 0x41, toggle: true, useScan: false);
+                sa = mapper.GetOrCreateSyntheticKeyAction(device, 91, 0x41, toggle: true, useScan: false);
                 Assert.True(sa.keyType.HasFlag(DS4KeyType.Toggle));
 
                 var kbm = new MockVirtualKBM();

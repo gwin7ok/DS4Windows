@@ -42,9 +42,13 @@ namespace DS4WindowsTests
             Assert.DoesNotContain("public class SyntheticState", mapping);
             Assert.DoesNotContain("new ReaderWriterLockSlim()", mapping);
             Assert.DoesNotContain("new SyntheticState()", mapping);
-            Assert.Contains("private static readonly SyntheticInputState syntheticInput = SyntheticInputState.Shared;", mapping);
-            Assert.Contains("syncStateLock => syntheticInput.SyncStateLock;", mapping);
-            Assert.Contains("public static SyntheticState[] deviceState => syntheticInput.DeviceState;", mapping);
+            // Phase7-Step8 W2: 転送プロパティは削除し、コンストラクターで受けた保持クラスの配列を readonly で複製して持つ
+            Assert.Contains("private readonly SyntheticInputState _syntheticInput;", mapping);
+            Assert.Contains("private readonly ReaderWriterLockSlim syncStateLock;", mapping);
+            Assert.Contains("private readonly SyntheticState[] deviceState;", mapping);
+            Assert.Contains("syncStateLock = syntheticInput.SyncStateLock;", mapping);
+            Assert.Contains("deviceState = syntheticInput.DeviceState;", mapping);
+            Assert.DoesNotContain("SyntheticInputState.Shared", mapping);
         }
 
         [Fact]

@@ -55,7 +55,8 @@ namespace DS4WindowsTests
             // Phase7-Step7 W2: 合成入力の状態の宣言（Global.MAX_DS4_CONTROLLER_COUNT）を SyntheticInputState へ移した（52 → 51）
             // Phase7-Step7 W3: macroTaskQueue の宣言（Global.MAX_DS4_CONTROLLER_COUNT）を MacroRuntimeState へ移した（51 → 50）
             // Phase7-Step7 W4: スティック・ジャイロ・トリガーの処理状態の宣言（Global.MAX_DS4_CONTROLLER_COUNT 7 件）を StickMotionState へ移した（50 → 43。StickMotionState は 1 件）
-            ["DS4Windows/DS4Control/Mapping.cs"] = (0, 6, 43),
+            // Phase7-Step8 W2: AppHost 6 件をコンストラクター注入へ（6 → 0）、フォールバックの Global.ProfileSettingsServiceInstance／Global.outputKBMHandler を削除（43 → 41）
+            ["DS4Windows/DS4Control/Mapping.cs"] = (0, 0, 41),
             ["DS4Windows/DS4Control/StickMotionState.cs"] = (0, 0, 1),
             ["DS4Windows/DS4Control/MacroRuntimeState.cs"] = (0, 0, 1),
             ["DS4Windows/DS4Control/SyntheticInputState.cs"] = (0, 0, 1),

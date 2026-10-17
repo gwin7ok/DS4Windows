@@ -142,6 +142,9 @@ namespace DS4Windows
         // Phase7-Step8 W1: 旧 StickMotionState.Shared／SyntheticInputState.Shared（静的な窓口）。コンストラクターで受ける。
         private readonly StickMotionState _stickMotion;
         private readonly SyntheticInputState _syntheticInput;
+        // Phase7-Step8 W2: 入力の評価の窓口（旧: Mapping の静的メソッド）。画面（ControllerReadingsControl、RecordBoxViewModel）も、これを経由して使う
+        private readonly DI.IMapping _mapping;
+        public DI.IMapping MappingService => _mapping;
         // コントローラースロット上限（現在接続台数ではない）。プロセス内で不変のためコンストラクタで1回だけ取得する。
         private readonly int _controllerSlotLimit;
 
@@ -273,7 +276,8 @@ namespace DS4Windows
             DI.ISpecialActionRepository specialActionRepository,
             Services.IElevatedProcessLauncher elevatedProcessLauncher,
             StickMotionState stickMotion,
-            SyntheticInputState syntheticInput)
+            SyntheticInputState syntheticInput,
+            DI.IMapping mapping)
         {
             this.cmdParser = cmdParser;
             this._deviceRegistry = deviceRegistry;
@@ -297,6 +301,7 @@ namespace DS4Windows
             this._elevatedProcessLauncher = elevatedProcessLauncher ?? throw new ArgumentNullException(nameof(elevatedProcessLauncher));
             this._stickMotion = stickMotion ?? throw new ArgumentNullException(nameof(stickMotion));
             this._syntheticInput = syntheticInput ?? throw new ArgumentNullException(nameof(syntheticInput));
+            this._mapping = mapping ?? throw new ArgumentNullException(nameof(mapping));
 
             Crc32Algorithm.InitializeTable(DS4Device.DefaultPolynomial);
 
@@ -2714,12 +2719,12 @@ namespace DS4Windows
                     // Use Task to reset device synth state and commit it
                     Task.Run(() =>
                     {
-                        Mapping.Commit(ind, _profileSettings);
+                        _mapping.Commit(ind, _profileSettings);
                     }).Wait();
 
                     try
                     {
-                        Mapping.HandleDeviceDisconnect(ind);
+                        _mapping.HandleDeviceDisconnect(ind);
                     }
                     catch { }
 
@@ -2876,7 +2881,7 @@ namespace DS4Windows
                                 // Add new Mapping method and add data to
                                 // parent device state
                                 DS4State tempMapState = MappedState[jointInd];
-                                Mapping.TempMouseJoystick(jointInd, tempMapState);
+                                _mapping.TempMouseJoystick(jointInd, tempMapState);
                                 if (!_profileSettings.UseDInputOnlyArray[jointInd])
                                 {
                                     outputDevices[jointInd]?.ConvertandSendReport(tempMapState, jointInd);
@@ -2901,7 +2906,7 @@ namespace DS4Windows
 
                 cState = device.Debouncer.ProcessInput(cState);
 
-                cState = Mapping.SetCurveAndDeadzone(ind, cState, TempState[ind], _profileSettings);
+                cState = _mapping.SetCurveAndDeadzone(ind, cState, TempState[ind], _profileSettings);
 
                 if (!recordingMacro && (_profileSettings.GetUseTempProfile(ind) ||
                     _profileSettings.ContainsCustomAction(ind) || _profileSettings.ContainsCustomExtras(ind) ||
@@ -2915,7 +2920,7 @@ namespace DS4Windows
                         OSCPreMappingStep(ind, cState, tempMapState, oscMapState);
                     }
 
-                    Mapping.MapCustom(ind, cState, tempMapState, ExposedState[ind], touchPad[ind], this);
+                    _mapping.MapCustom(ind, cState, tempMapState, ExposedState[ind], touchPad[ind], this);
 
                     // Copy current Touchpad and Gyro data
                     // Might change to use new DS4State.CopyExtrasTo method
@@ -3015,7 +3020,7 @@ namespace DS4Windows
                 }
 
                 // Output any synthetic events.
-                Mapping.Commit(ind, _profileSettings);
+                _mapping.Commit(ind, _profileSettings);
 
                 // Update the Lightbar color
                 DS4LightBar.updateLightBar(device, ind);

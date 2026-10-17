@@ -23,10 +23,12 @@ namespace DS4WindowsTests
         private const DS4Controls TestControl = DS4Controls.SwipeLeft;
 
         private static readonly MethodInfo PlayMacroMethod = typeof(Mapping).GetMethod(
-            "PlayMacro", BindingFlags.Static | BindingFlags.NonPublic);
+            "PlayMacro", BindingFlags.Instance | BindingFlags.NonPublic);
 
-        // Phase7-Step7 W3: macroDispatchInFlight の実体は MacroRuntimeState へ移った（Mapping の同名メンバーはその転送）
-        private static bool[] DispatchFlags => MacroRuntimeState.Shared.DispatchInFlight;
+        // Phase7-Step8 W2: Mapping は instance になった。マクロの状態（macroDispatchInFlight の実体）は、このテスト専用の MacroRuntimeState を渡して確認する
+        private static readonly MacroRuntimeState Macro = new MacroRuntimeState();
+        private static readonly Mapping Mapper = TestMappingFactory.Create(macroRuntime: Macro);
+        private static bool[] DispatchFlags => Macro.DispatchInFlight;
 
         private static void InvokePlayMacro(DS4Controls control, DS4KeyType keyType, SpecialAction action = null)
         {
@@ -34,7 +36,7 @@ namespace DS4WindowsTests
 
             // macroLst を空リストにすることで、PlayMacroCodeValue（実際のキー/マウス送信）を
             // 一切呼ばせずに、PlayMacro/PlayMacroTask のガード・後片付けロジックだけを検証する。
-            PlayMacroMethod.Invoke(null, new object[]
+            PlayMacroMethod.Invoke(Mapper, new object[]
             {
                 /* device */ 0,
                 /* macrocontrol */ null,

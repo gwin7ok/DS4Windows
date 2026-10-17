@@ -13,10 +13,13 @@ namespace DS4WindowsTests
     /// </summary>
     public class MappingGyroControlsHelperTests
     {
+        // Phase7-Step8 W2: Mapping は instance になった。他のテストと状態を共有しない独立の instance を使う
+        private static readonly Mapping Mapper = TestMappingFactory.Create();
+
         private const int Slot = 0;
 
         private static readonly MethodInfo HelperMethod = typeof(Mapping).GetMethod(
-            "IsUsingGyroForControls", BindingFlags.Static | BindingFlags.NonPublic);
+            "IsUsingGyroForControls", BindingFlags.Instance | BindingFlags.NonPublic);
 
         [Theory]
         [InlineData(GyroOutMode.Controls)]
@@ -32,7 +35,7 @@ namespace DS4WindowsTests
                 Global.store.gyroOutMode[Slot] = mode;
 
                 bool expected = mode == GyroOutMode.Controls; // Global.IsUsingSAForControls は Phase6-Step12 Wave 4 で削除（同じ判定）
-                bool actual = (bool)HelperMethod.Invoke(null, new object[] { Slot });
+                bool actual = (bool)HelperMethod.Invoke(Mapper, new object[] { Slot });
 
                 Assert.Equal(expected, actual);
                 Assert.Equal(mode == GyroOutMode.Controls, actual);

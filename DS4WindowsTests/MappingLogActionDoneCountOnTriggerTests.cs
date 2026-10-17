@@ -13,8 +13,11 @@ namespace DS4WindowsTests
     /// </summary>
     public class MappingLogActionDoneCountOnTriggerTests
     {
+        // Phase7-Step8 W2: Mapping は instance になった。他のテストと状態を共有しない独立の instance を使う
+        private static readonly Mapping Mapper = TestMappingFactory.Create();
+
         private static MethodInfo Method => typeof(Mapping).GetMethod(
-            "LogActionDoneCountOnTrigger", BindingFlags.Static | BindingFlags.NonPublic);
+            "LogActionDoneCountOnTrigger", BindingFlags.Instance | BindingFlags.NonPublic);
 
         [Fact]
         public void MethodSignature_HasControlServiceParameter()
@@ -30,7 +33,7 @@ namespace DS4WindowsTests
         {
             // ctrl が null でも ctrl?.SpecialActionRepository?.ActionList?.Count ?? 0 により安全に 0 件扱いになる。
             var ex = Record.Exception(() =>
-                Method.Invoke(null, new object[] { 0, null, 0, null, "UnitTest" }));
+                Method.Invoke(Mapper, new object[] { 0, null, 0, null, "UnitTest" }));
 
             Assert.Null(ex);
         }
@@ -42,7 +45,7 @@ namespace DS4WindowsTests
             var controlService = DS4WinWPF.AppHost.GetService<ControlService>();
 
             var ex = Record.Exception(() =>
-                Method.Invoke(null, new object[] { 0, null, 0, controlService, "UnitTest" }));
+                Method.Invoke(Mapper, new object[] { 0, null, 0, controlService, "UnitTest" }));
 
             Assert.Null(ex);
         }

@@ -237,7 +237,7 @@ namespace DS4WindowsTests
         public void Actions_RequireAllDependencies()
         {
             var sa = new SpecialAction("a", "Cross", "Key", "1", 0);
-            var player = new DefaultMacroPlayer(new MockVirtualKBM());
+            var player = new DefaultMacroPlayer(new MockVirtualKBM(), TestRepositoryFactory.MappingProvider);
             var launcher = new DefaultProcessLauncher();
             var switcher = new DefaultProfileSwitcher();
 
@@ -245,8 +245,10 @@ namespace DS4WindowsTests
             Assert.Throws<ArgumentNullException>(() => new ProfileSwitchAction(sa, (IProfileSwitcher)null));
             Assert.Throws<ArgumentNullException>(() => new LaunchProcessAction(sa, null));
             Assert.Throws<ArgumentNullException>(() => new MouseOutputAction(sa, null));
-            Assert.Throws<ArgumentNullException>(() => new DefaultMacroPlayer(null));
-            Assert.Throws<ArgumentNullException>(() => new DefaultActionManager(null));
+            Assert.Throws<ArgumentNullException>(() => new DefaultMacroPlayer(null, TestRepositoryFactory.MappingProvider));
+            Assert.Throws<ArgumentNullException>(() => new DefaultMacroPlayer(new MockVirtualKBM(), null));
+            Assert.Throws<ArgumentNullException>(() => new DefaultActionManager(null, TestRepositoryFactory.MappingProvider));
+            Assert.Throws<ArgumentNullException>(() => new DefaultActionManager(TestRepositoryFactory.CreateDefaultActionFactory(), null));
             Assert.Throws<ArgumentNullException>(() => new DefaultActionFactory(null, launcher, switcher));
             Assert.Throws<ArgumentNullException>(() => new DefaultActionFactory(player, null, switcher));
             Assert.Throws<ArgumentNullException>(() => new DefaultActionFactory(player, launcher, null));

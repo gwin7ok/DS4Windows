@@ -20,13 +20,13 @@ namespace DS4WindowsTests
         /// <summary>検査対象メソッドの宣言（一意に特定できる先頭部分）。</summary>
         private static readonly string[] MethodMarkers =
         {
-            "private static byte GetByteMapping(",
-            "public static bool GetBoolMappingExternal(",
-            "private static bool GetBoolMapping(",
-            "private static bool getBoolSpecialActionMapping(",
-            "private static bool GetBoolActionMapping(",
-            "private static byte GetXYAxisMapping(",
-            "private static void GetMouseWheelMapping(",
+            "private byte GetByteMapping(",
+            "public bool GetBoolMappingExternal(",
+            "private bool GetBoolMapping(",
+            "private bool getBoolSpecialActionMapping(",
+            "private bool GetBoolActionMapping(",
+            "private byte GetXYAxisMapping(",
+            "private void GetMouseWheelMapping(",
         };
 
         /// <summary>Step3-6b で `profileSettings` 経由へ置換済みの `Global` メンバ名。</summary>
@@ -118,7 +118,7 @@ namespace DS4WindowsTests
             string text = ReadSourceWithoutComments();
             if (text == null) return;
 
-            string body = ExtractMethod(text, "private static bool IsUsingGyroForControls(");
+            string body = ExtractMethod(text, "private bool IsUsingGyroForControls(");
 
             Assert.Contains("profileSettings.GyroOutputMode[device] == GyroOutMode.Controls", body);
         }

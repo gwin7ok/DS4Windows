@@ -19,6 +19,8 @@ namespace DS4Windows
         private readonly IProfileXmlStore _profileXmlStore;
         private readonly IProfileActionProvider _profileActionProvider;
         private readonly BackingStore _config;
+        // Phase7-Step8 W2（Q3＝A）: 旧 Mapping.ClearKeyButtonControllersForDevice の静的呼び出し
+        private readonly IKeyButtonControllerRegistry _keyButtonControllers;
 
         public ProfileApplicationService(
             IProfileSettingsService profileSettings,
@@ -28,8 +30,10 @@ namespace DS4Windows
             IEnvironmentService environmentService,
             IProfileXmlStore profileXmlStore,
             IProfileActionProvider profileActionProvider,
-            BackingStore config)
+            BackingStore config,
+            IKeyButtonControllerRegistry keyButtonControllers)
         {
+            _keyButtonControllers = keyButtonControllers ?? throw new ArgumentNullException(nameof(keyButtonControllers));
             _profileXmlStore = profileXmlStore ?? throw new ArgumentNullException(nameof(profileXmlStore));
             _profileActionProvider = profileActionProvider ?? throw new ArgumentNullException(nameof(profileActionProvider));
             _config = config ?? throw new ArgumentNullException(nameof(config));
@@ -259,7 +263,7 @@ namespace DS4Windows
 
             try
             {
-                DS4Windows.Mapping.ClearKeyButtonControllersForDevice(device);
+                _keyButtonControllers.ClearForDevice(device);
                 try { DS4Windows.ActionManager.ClearDeviceState(device); } catch { }
                 AppLogger.LogDebug($"ApplyProfile: Cleared per-device SpecialAction controllers and ActionManager state for device {device}");
             }

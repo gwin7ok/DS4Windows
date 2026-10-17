@@ -22,17 +22,17 @@ namespace DS4WindowsTests
             uint up = scope.KbmMapping.MOUSEEVENTF_LEFTUP;
 
             // 1 ティック目: 押下
-            SyntheticInputState.Shared.CountClick(Device, Click.Left);
-            Mapping.Commit(Device, scope.Settings);
+            scope.Synthetic.CountClick(Device, Click.Left);
+            scope.Mapper.Commit(Device, scope.Settings);
             Assert.Equal(new[] { down }, scope.Recorder.MouseButtonEvents);
 
             // 2 ティック目: 押したまま（毎ティック MapClick が呼ばれる）。新しい出力はない
-            SyntheticInputState.Shared.CountClick(Device, Click.Left);
-            Mapping.Commit(Device, scope.Settings);
+            scope.Synthetic.CountClick(Device, Click.Left);
+            scope.Mapper.Commit(Device, scope.Settings);
             Assert.Equal(new[] { down }, scope.Recorder.MouseButtonEvents);
 
             // 3 ティック目: 離した
-            Mapping.Commit(Device, scope.Settings);
+            scope.Mapper.Commit(Device, scope.Settings);
             Assert.Equal(new[] { down, up }, scope.Recorder.MouseButtonEvents);
         }
 
@@ -41,9 +41,9 @@ namespace DS4WindowsTests
         {
             using var scope = new MappingCharacterizationScope();
 
-            SyntheticInputState.Shared.CountClick(Device, Click.Right);
-            SyntheticInputState.Shared.CountClick(Device, Click.Middle);
-            Mapping.Commit(Device, scope.Settings);
+            scope.Synthetic.CountClick(Device, Click.Right);
+            scope.Synthetic.CountClick(Device, Click.Middle);
+            scope.Mapper.Commit(Device, scope.Settings);
 
             Assert.Contains(scope.KbmMapping.MOUSEEVENTF_RIGHTDOWN, scope.Recorder.MouseButtonEvents);
             Assert.Contains(scope.KbmMapping.MOUSEEVENTF_MIDDLEDOWN, scope.Recorder.MouseButtonEvents);
@@ -55,7 +55,7 @@ namespace DS4WindowsTests
         {
             using var scope = new MappingCharacterizationScope();
 
-            Mapping.Commit(Device, scope.Settings);
+            scope.Mapper.Commit(Device, scope.Settings);
 
             Assert.Empty(scope.Recorder.MouseButtonEvents);
             Assert.Empty(scope.Recorder.MouseButtonAltEvents);
@@ -67,13 +67,13 @@ namespace DS4WindowsTests
         {
             using var scope = new MappingCharacterizationScope();
 
-            SyntheticInputState.Shared.CountClick(Device, Click.Left);
-            SyntheticInputState.Shared.CountClick(Device, Click.Left);
-            SyntheticInputState.Shared.CountClick(Device, Click.Fourth);
-            SyntheticInputState.Shared.CountClick(Device, Click.WDOWN);
-            SyntheticInputState.Shared.CountClick(Device, Click.None);
+            scope.Synthetic.CountClick(Device, Click.Left);
+            scope.Synthetic.CountClick(Device, Click.Left);
+            scope.Synthetic.CountClick(Device, Click.Fourth);
+            scope.Synthetic.CountClick(Device, Click.WDOWN);
+            scope.Synthetic.CountClick(Device, Click.None);
 
-            var clicks = SyntheticInputState.Shared.DeviceState[Device].currentClicks;
+            var clicks = scope.Synthetic.DeviceState[Device].currentClicks;
             Assert.Equal(2, clicks.leftCount);
             Assert.Equal(1, clicks.fourthCount);
             Assert.Equal(1, clicks.wDownCount);
@@ -109,12 +109,12 @@ namespace DS4WindowsTests
             const ushort logicalKey = 65;
             const uint nativeKey = 65;
             SyntheticDispatcher.SendPress(Device, logicalKey, nativeKey, false, scope.Recorder);
-            Assert.True(SyntheticInputState.Shared.DeviceState[Device].keyPresses.ContainsKey(logicalKey));
+            Assert.True(scope.Synthetic.DeviceState[Device].keyPresses.ContainsKey(logicalKey));
 
-            Mapping.HandleDeviceDisconnect(Device);
+            scope.Mapper.HandleDeviceDisconnect(Device);
 
             Assert.Contains(nativeKey, scope.Recorder.KeyReleases);
-            Assert.Empty(SyntheticInputState.Shared.DeviceState[Device].keyPresses);
+            Assert.Empty(scope.Synthetic.DeviceState[Device].keyPresses);
         }
     }
 }

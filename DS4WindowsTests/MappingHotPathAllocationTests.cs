@@ -16,6 +16,9 @@ namespace DS4WindowsTests
     /// </summary>
     public class MappingHotPathAllocationTests
     {
+        // Phase7-Step8 W2: Mapping は instance になった。他のテストと状態を共有しない独立の instance を使う
+        private static readonly Mapping Mapper = TestMappingFactory.Create();
+
         private const int Slot = 0;
         private const int Iterations = 20000;
         private const int MaxRounds = 3;
@@ -65,7 +68,7 @@ namespace DS4WindowsTests
                 // 実際の入力ループと同様、毎回入力値を書き直してから呼び出す（メソッドは cState も書き換えるため）。
                 cState.LX = 200; cState.LY = 140; cState.RX = 60; cState.RY = 180;
                 cState.L2 = 200; cState.R2 = 50;
-                sink += Mapping.SetCurveAndDeadzone(Slot, cState, dState, settings).LX;
+                sink += Mapper.SetCurveAndDeadzone(Slot, cState, dState, settings).LX;
             }
 
             long allocated = MeasureMinAllocatedBytes(RunOnce);
@@ -98,7 +101,7 @@ namespace DS4WindowsTests
             {
                 cState.LX = 200; cState.LY = 140; cState.RX = 60; cState.RY = 180;
                 cState.L2 = 200; cState.R2 = 50;
-                sink += Mapping.SetCurveAndDeadzone(Slot, cState, dState, settings).LX;
+                sink += Mapper.SetCurveAndDeadzone(Slot, cState, dState, settings).LX;
             }
 
             long allocated = MeasureMinAllocatedBytes(RunOnce);
@@ -124,7 +127,7 @@ namespace DS4WindowsTests
             void RunOnce()
             {
                 state.LX = 128; state.LY = 128; state.RX = 128; state.RY = 128;
-                sink += Mapping.ApplyStickCalibration(Slot, state, settings).LX;
+                sink += Mapper.ApplyStickCalibration(Slot, state, settings).LX;
             }
 
             long allocated = MeasureMinAllocatedBytes(RunOnce);

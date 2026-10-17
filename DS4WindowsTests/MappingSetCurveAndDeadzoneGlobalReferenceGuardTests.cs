@@ -16,8 +16,8 @@ namespace DS4WindowsTests
     /// </summary>
     public class MappingSetCurveAndDeadzoneGlobalReferenceGuardTests
     {
-        private const string StartMarker = "public static DS4State SetCurveAndDeadzone(";
-        private const string EndMarker = "public static DS4State ApplyStickCalibration(";
+        private const string StartMarker = "public DS4State SetCurveAndDeadzone(";
+        private const string EndMarker = "public DS4State ApplyStickCalibration(";
 
         /// <summary>Step3-4／3-5 で `IProfileSettingsService` 経由へ置換済みの `Global` メンバ名。</summary>
         private static readonly string[] MigratedGlobalMembers =

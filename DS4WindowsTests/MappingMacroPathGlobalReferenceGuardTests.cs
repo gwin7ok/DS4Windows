@@ -20,9 +20,9 @@ namespace DS4WindowsTests
         /// <summary>検査対象メソッドの宣言（一意に特定できる先頭部分）。</summary>
         private static readonly string[] MethodMarkers =
         {
-            "private static bool PlayMacroCodeValue(",
-            "private static void AltTabSwapping(",
-            "private static void AltTabSwappingRelease(",
+            "private bool PlayMacroCodeValue(",
+            "private void AltTabSwapping(",
+            "private void AltTabSwappingRelease(",
         };
 
         private static readonly Regex BareReference = new Regex(@"(?<![\w.])outputKBMMapping\b");

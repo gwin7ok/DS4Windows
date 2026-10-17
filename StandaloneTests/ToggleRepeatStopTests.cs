@@ -64,7 +64,8 @@ namespace StandaloneTests
         [TestMethod]
         public void Toggle_OnThenOff_StopsRepeater()
         {
-            var dam = new DS4Windows.Actions.DefaultActionManager(DS4WinWPF.AppHost.GetService<DS4Windows.Actions.IActionFactory>());
+            var dam = new DS4Windows.Actions.DefaultActionManager(DS4WinWPF.AppHost.GetService<DS4Windows.Actions.IActionFactory>(),
+                () => DS4WinWPF.AppHost.GetService<DS4Windows.DI.IMapping>());
             var srv = new TestServiceProvider(dam);
             DS4Windows.DI.ServiceProviderHolder.SetProvider(srv);
 

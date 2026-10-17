@@ -21,13 +21,13 @@ namespace DS4WindowsTests
         /// <summary>検査対象メソッドの宣言（一意に特定できる先頭部分）。</summary>
         private static readonly string[] MethodMarkers =
         {
-            "public static void MapCustom(",
-            "private static void ProcessControlSettingAction(",
-            "private static bool IfAxisIsNotModified(",
-            "private static async void MapCustomAction(",
-            "private static void ReleaseActionKeys(",
-            "private static double getMouseMapping(",
-            "protected static Int32 Scale360degreeGyroAxis(",
+            "public void MapCustom(",
+            "private void ProcessControlSettingAction(",
+            "private bool IfAxisIsNotModified(",
+            "private async void MapCustomAction(",
+            "private void ReleaseActionKeys(",
+            "private double getMouseMapping(",
+            "protected Int32 Scale360degreeGyroAxis(",
         };
 
         /// <summary>Step3-6a で `IProfileSettingsService`／`IProfileActionProvider` 経由へ置換済みの `Global` メンバ名。</summary>
@@ -118,8 +118,8 @@ namespace DS4WindowsTests
         }
 
         [Theory]
-        [InlineData("private static bool IfAxisIsNotModified(")]
-        [InlineData("private static void ReleaseActionKeys(")]
+        [InlineData("private bool IfAxisIsNotModified(")]
+        [InlineData("private void ReleaseActionKeys(")]
         public void MethodsWithoutCtrl_TakeProfileSettingsAsParameter(string marker)
         {
             string text = ReadSourceWithoutComments();

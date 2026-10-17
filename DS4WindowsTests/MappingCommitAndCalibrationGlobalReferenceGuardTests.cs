@@ -17,9 +17,9 @@ namespace DS4WindowsTests
     /// </summary>
     public class MappingCommitAndCalibrationGlobalReferenceGuardTests
     {
-        private const string CalibrationStart = "public static DS4State ApplyStickCalibration(";
-        private const string CalibrationEnd = "private static bool ShiftTrigger(";
-        private const string CommitStart = "public static void Commit(";
+        private const string CalibrationStart = "public DS4State ApplyStickCalibration(";
+        private const string CalibrationEnd = "private bool ShiftTrigger(";
+        private const string CommitStart = "public void Commit(";
         // Phase7-Step8 W1: MapClick を SyntheticInputState.CountClick へ移したため、Commit の次のメンバー（DS4ControltoInt）を終端にする
         private const string CommitEnd = "public static int DS4ControltoInt(";
 

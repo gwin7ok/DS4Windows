@@ -396,7 +396,7 @@ namespace DS4WinWPF.DS4Forms
                         tmpinterState.CopyTo(interState);
 
                         if (deviceNum != profileDeviceNum)
-                            Mapping.SetCurveAndDeadzone(profileDeviceNum, baseState, interState, controlService.ProfileSettingsService);
+                            controlService.MappingService.SetCurveAndDeadzone(profileDeviceNum, baseState, interState, controlService.ProfileSettingsService);
                     }
                     finally
                     {

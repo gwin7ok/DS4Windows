@@ -70,12 +70,15 @@ namespace DS4WindowsTests
             string mapping = Read("DS4Windows/DS4Control/Mapping.cs");
             if (mapping == null) return;
 
-            Assert.Contains("private static readonly MacroRuntimeState macroRuntime = MacroRuntimeState.Shared;", mapping);
-            Assert.Contains("public static bool[] macrodone => macroRuntime.MacroDone;", mapping);
-            Assert.Contains("private static bool[] macroDispatchInFlight => macroRuntime.DispatchInFlight;", mapping);
-            Assert.Contains("private static object macroDispatchLock => macroRuntime.DispatchLock;", mapping);
-            Assert.Contains("static bool[] macroControl => macroRuntime.MacroControl;", mapping);
-            Assert.Contains("static Dictionary<string, Task>[] macroTaskQueue => macroRuntime.TaskQueue;", mapping);
+            // Phase7-Step8 W2: 転送プロパティは削除し、コンストラクターで受けた保持クラスの配列を readonly で複製して持つ
+            Assert.Contains("private readonly MacroRuntimeState _macroRuntime;", mapping);
+            Assert.Contains("private readonly bool[] macrodone;", mapping);
+            Assert.Contains("private readonly bool[] macroDispatchInFlight;", mapping);
+            Assert.Contains("private readonly object macroDispatchLock;", mapping);
+            Assert.Contains("private readonly bool[] macroControl;", mapping);
+            Assert.Contains("private readonly Dictionary<string, Task>[] macroTaskQueue;", mapping);
+            Assert.Contains("macroTaskQueue = macroRuntime.TaskQueue;", mapping);
+            Assert.DoesNotContain("MacroRuntimeState.Shared", mapping);
             Assert.Contains("DS4_CONTROL_MACRO_ARRAY_LEN = MacroRuntimeState.ControlArrayLength", mapping);
         }
 
