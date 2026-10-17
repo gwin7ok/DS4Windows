@@ -205,25 +205,25 @@ namespace DS4WindowsTests
         public void UdpServerSettings_ShouldReadWriteSameEntityAsGlobal()
         {
             var service = TestRepositoryFactory.CreateAppSettingsService(new MockProfileXmlStore());
-            bool originalUse = Global.isUsingUDPServer();
-            int originalPort = Global.getUDPServerPortNum();
-            string originalAddr = Global.getUDPServerListenAddress();
+            bool originalUse = Global.store.useUDPServ;
+            int originalPort = Global.store.udpServPort;
+            string originalAddr = Global.store.udpServListenAddress;
             try
             {
                 service.UseUdpServer = !originalUse;
-                Assert.Equal(!originalUse, Global.isUsingUDPServer());
+                Assert.Equal(!originalUse, Global.store.useUDPServ);
 
                 service.UdpServerPort = 27000;
-                Assert.Equal(27000, Global.getUDPServerPortNum());
+                Assert.Equal(27000, Global.store.udpServPort);
 
                 service.UdpServerListenAddress = "192.168.1.1";
-                Assert.Equal("192.168.1.1", Global.getUDPServerListenAddress());
+                Assert.Equal("192.168.1.1", Global.store.udpServListenAddress);
             }
             finally
             {
-                Global.setUsingUDPServer(originalUse);
-                Global.setUDPServerPort(originalPort);
-                Global.setUDPServerListenAddress(originalAddr);
+                Global.store.useUDPServ = originalUse;
+                Global.store.udpServPort = originalPort;
+                Global.store.udpServListenAddress = originalAddr;
             }
         }
 

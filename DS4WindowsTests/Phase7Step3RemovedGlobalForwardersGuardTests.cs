@@ -15,7 +15,7 @@ namespace DS4WindowsTests
     /// </summary>
     public class Phase7Step3RemovedGlobalForwardersGuardTests
     {
-        // Wave ごとに追記する（W2: 画面・ウィンドウの寸法と動作設定）
+        // Wave ごとに追記する（W2: 画面・ウィンドウの寸法と動作設定、W3: 通信と更新確認）
         private static readonly string[] Removed =
         {
             "StartMinimized", "MinToTaskbar", "CloseMini", "UseExclusiveMode", "AutoProfileRevertDefaultProfile",
@@ -27,6 +27,12 @@ namespace DS4WindowsTests
             "SpecialActionNameColWidth", "SpecialActionTriggerColWidth", "SpecialActionDetailColWidth",
             "QuickCharge", "DCBTatStop", "ProcessPriority", "FlashWhenLate", "FlashWhenLateAt",
             "UseUDPSeverSmoothing", "UseCustomSteamFolder", "CustomSteamFolder", "CheckUpdateStartupEnabled",
+            // W3: 通信（UDP／OSC）と更新確認
+            "isUsingUDPServer", "setUsingUDPServer", "getUDPServerPortNum", "setUDPServerPort",
+            "getUDPServerListenAddress", "setUDPServerListenAddress", "isUsingOSCServer", "setUsingOSCServer",
+            "isUsingOSCSender", "setUsingOSCSender", "isInterpretingOscMonitoring", "setInterpretingOscMonitoring",
+            "setOSCServerPort", "getOSCSenderAddress", "setOSCSenderAddress", "getOSCSenderPortNum", "setOSCSenderPort",
+            "CheckEveryValue", "CheckEveryUnit", "LastChecked", "LastVersionCheckedNum",
         };
 
         private readonly ITestOutputHelper _output;
@@ -62,7 +68,7 @@ namespace DS4WindowsTests
             if (text == null) return;
 
             List<string> reappeared = Removed
-                .Where(n => Regex.IsMatch(text, @"(?m)^\s*public\s+static\s+[\w<>\[\],.? ]+\s+" + Regex.Escape(n) + @"\s*(\{|=>|;|=)"))
+                .Where(n => Regex.IsMatch(text, @"(?m)^\s*public\s+static\s+[\w<>\[\],.? ]+\s+" + Regex.Escape(n) + @"\s*(\(|\{|=>|;|=)"))
                 .ToList();
             Assert.True(reappeared.Count == 0, "削除済みの転送メンバーが Global.cs に再び宣言されている: " + string.Join(", ", reappeared));
         }

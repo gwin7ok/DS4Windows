@@ -142,7 +142,7 @@ namespace DS4WindowsTests
 
                 Assert.Equal(newValue, Global.LastVersionChecked);
                 Assert.Equal(newValue, service.LastVersionChecked);
-                Assert.Equal(Global.LastVersionCheckedNum, service.LastVersionCheckedNum);
+                Assert.Equal(Global.store.lastVersionCheckedNum, service.LastVersionCheckedNum);
                 Assert.Contains(nameof(IAppSettingsService.LastVersionChecked), changed);
 
                 // 同じ値の再設定では通知しない

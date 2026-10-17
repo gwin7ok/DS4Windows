@@ -144,7 +144,7 @@ namespace DS4WindowsTests
             finally
             {
                 Global.store.quickCharge = originalQuick;
-                Global.setOSCServerPort(originalOscPort);
+                Global.store.oscServPort = originalOscPort;
                 Global.UDPServerSmoothingBeta = originalBeta;
                 Global.LogMinLevel = originalLevel;
                 vm.Dispose();

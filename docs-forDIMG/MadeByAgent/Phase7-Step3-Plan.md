@@ -115,3 +115,9 @@
   - テスト: 削除した名前の参照 66 件を `Global.store.<field>` に書き換え（等価性テストは削除せず、サービスと `BackingStore` の状態共有を確認する形で残した。計画書 §1.4 の「削除」から変更）。`new AppSettingsService(...)` 34 件を `TestRepositoryFactory.CreateAppSettingsService(...)` に置換。
   - 新規 `Phase7Step3RemovedGlobalForwardersGuardTests`（削除した名前の再宣言禁止と `AppSettingsService` からの参照禁止。以降の Wave で名前を追記する）。
   - ラチェット基準値: `AppSettingsService.cs` 185→80（`Global.*` 合計 715→610）。
+- **W3 実装済み（ビルド・テスト待ち）**
+  - `AppSettingsService`: UDP／OSC のメソッド型の転送 9 組と、更新確認（`CheckEveryValue`／`CheckEveryUnit`／`LastChecked`／`LastVersionCheckedNum`）を `_config.<field>` に置換。アドレス 2 件の `value.Trim()` は維持。他の呼び出し元がある `UseLang`／`LogMinLevel`／`LogMaxArchiveFiles`／`UseMoonlight`／`UseAdvancedMoonlight`／`DeviceOptions` も、サービス側だけ `_config` に切り替えた（`Global` 側は Q5 により残す）。
+  - `Global`: 21 名を削除（メソッド 16、プロパティ 5）。`getOSCServerPortNum` は `ControlService` が参照するため残す（`setOSCServerPort` は削除）。
+  - テスト: 15 件を `Global.store.<field>` に書き換え。`ControlServiceShimEquivalenceTests` の関数参照 5 件はラムダに変更。ガードテストの名前一覧に W3 を追記し、メソッド宣言も検出するよう正規表現を拡張。
+  - `LastVersionChecked`（代入時に番号を算出する処理を持つ）、`SetCulture`、`firstRun`、`runHotPlug`、`ProfileChangedNotification`、UDP 平滑化、`FakeExeName` は W4 以降（処理を持つため）。
+  - ラチェット基準値: `AppSettingsService.cs` 80→27。

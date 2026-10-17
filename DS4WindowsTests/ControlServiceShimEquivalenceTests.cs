@@ -45,7 +45,7 @@ namespace DS4WindowsTests
         public void UseOscServer_SharesStateWithGlobal()
         {
             AssertSharesStateWithGlobal(
-                Global.isUsingOSCServer, Global.setUsingOSCServer,
+                () => Global.store.useOSCServ, v => Global.store.useOSCServ = v,
                 () => _appSettings.UseOscServer, v => _appSettings.UseOscServer = v,
                 true, false);
         }
@@ -54,7 +54,7 @@ namespace DS4WindowsTests
         public void UseOscSender_SharesStateWithGlobal()
         {
             AssertSharesStateWithGlobal(
-                Global.isUsingOSCSender, Global.setUsingOSCSender,
+                () => Global.store.useOSCSend, v => Global.store.useOSCSend = v,
                 () => _appSettings.UseOscSender, v => _appSettings.UseOscSender = v,
                 true, false);
         }
@@ -63,7 +63,7 @@ namespace DS4WindowsTests
         public void InterpretingOscMonitoring_SharesStateWithGlobal()
         {
             AssertSharesStateWithGlobal(
-                Global.isInterpretingOscMonitoring, Global.setInterpretingOscMonitoring,
+                () => Global.store.interpretingOscMonitoring, v => Global.store.interpretingOscMonitoring = v,
                 () => _appSettings.InterpretingOscMonitoring, v => _appSettings.InterpretingOscMonitoring = v,
                 true, false);
         }
@@ -72,7 +72,7 @@ namespace DS4WindowsTests
         public void OscServerPort_SharesStateWithGlobal()
         {
             AssertSharesStateWithGlobal(
-                Global.getOSCServerPortNum, Global.setOSCServerPort,
+                () => Global.store.oscServPort, v => Global.store.oscServPort = v,
                 () => _appSettings.OscServerPort, v => _appSettings.OscServerPort = v,
                 9101, 9102);
         }
@@ -81,7 +81,7 @@ namespace DS4WindowsTests
         public void OscSenderPort_SharesStateWithGlobal()
         {
             AssertSharesStateWithGlobal(
-                Global.getOSCSenderPortNum, Global.setOSCSenderPort,
+                () => Global.store.oscSendPort, v => Global.store.oscSendPort = v,
                 () => _appSettings.OscSenderPort, v => _appSettings.OscSenderPort = v,
                 9103, 9104);
         }
@@ -89,21 +89,21 @@ namespace DS4WindowsTests
         [Fact]
         public void OscSenderAddress_SharesStateWithGlobal_AndKeepsTrimBehavior()
         {
-            string original = Global.getOSCSenderAddress();
+            string original = Global.store.oscSendAddress;
             try
             {
-                Global.setOSCSenderAddress("10.0.0.1");
+                Global.store.oscSendAddress = "10.0.0.1";
                 Assert.Equal("10.0.0.1", _appSettings.OscSenderAddress);
 
                 // Global.setOSCSenderAddress は前後の空白を除去する。サービス経由でも同じ挙動であること。
                 _appSettings.OscSenderAddress = "  10.0.0.2  ";
-                Assert.Equal("10.0.0.2", Global.getOSCSenderAddress());
+                Assert.Equal("10.0.0.2", Global.store.oscSendAddress);
             }
             finally
             {
                 if (original != null)
                 {
-                    Global.setOSCSenderAddress(original);
+                    Global.store.oscSendAddress = original;
                 }
             }
         }

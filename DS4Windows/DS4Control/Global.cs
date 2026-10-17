@@ -1209,26 +1209,8 @@ namespace DS4Windows
 
         // general values
         // -- Re-Enable Exclusive Mode Starts Here --
-        public static DateTime LastChecked
-        {
-            set { m_Config.lastChecked = value; }
-            get { return m_Config.lastChecked; }
-        }
-
         // New explicit startup update-check settings
-        public static int CheckEveryValue
-        {
-            get { return m_Config.checkEveryValue; }
-            set { m_Config.checkEveryValue = value; }
-        }
-
         // 0 = hours, 1 = days
-        public static int CheckEveryUnit
-        {
-            get { return m_Config.checkEveryUnit; }
-            set { m_Config.checkEveryUnit = value; }
-        }
-
         // Legacy `CheckWhen` removed. Use explicit CheckEveryValue/CheckEveryUnit instead.
 
         public static string LastVersionChecked
@@ -1239,11 +1221,6 @@ namespace DS4Windows
                 m_Config.lastVersionChecked = value;
                 m_Config.lastVersionCheckedNum = CompileVersionNumberFromString(value);
             }
-        }
-
-        public static ulong LastVersionCheckedNum
-        {
-            get { return m_Config.lastVersionCheckedNum; }
         }
 
         public static int Notifications
@@ -1276,90 +1253,10 @@ namespace DS4Windows
             get { return m_Config.useLang; }
         }
 
-        public static bool isUsingOSCServer()
-        {
-            return m_Config.useOSCServ;
-        }
-        public static void setUsingOSCServer(bool state)
-        {
-            m_Config.useOSCServ = state;
-        }
-
         public static int getOSCServerPortNum()
         {
             return m_Config.oscServPort;
         }
-        public static void setOSCServerPort(int value)
-        {
-            m_Config.oscServPort = value;
-        }
-
-        public static bool isInterpretingOscMonitoring()
-        {
-            return m_Config.interpretingOscMonitoring;
-        }
-        public static void setInterpretingOscMonitoring(bool state)
-        {
-            m_Config.interpretingOscMonitoring = state;
-        }
-
-        public static bool isUsingOSCSender()
-        {
-            return m_Config.useOSCSend;
-        }
-        public static void setUsingOSCSender(bool state)
-        {
-            m_Config.useOSCSend = state;
-        }
-
-        public static int getOSCSenderPortNum()
-        {
-            return m_Config.oscSendPort;
-        }
-
-        public static void setOSCSenderPort(int value)
-        {
-            m_Config.oscSendPort = value;
-        }
-
-        public static string getOSCSenderAddress()
-        {
-            return m_Config.oscSendAddress;
-        }
-        public static void setOSCSenderAddress(string value)
-        {
-            m_Config.oscSendAddress = value.Trim();
-        }
-
-
-
-        public static bool isUsingUDPServer()
-        {
-            return m_Config.useUDPServ;
-        }
-        public static void setUsingUDPServer(bool state)
-        {
-            m_Config.useUDPServ = state;
-        }
-
-        public static int getUDPServerPortNum()
-        {
-            return m_Config.udpServPort;
-        }
-        public static void setUDPServerPort(int value)
-        {
-            m_Config.udpServPort = value;
-        }
-
-        public static string getUDPServerListenAddress()
-        {
-            return m_Config.udpServListenAddress;
-        }
-        public static void setUDPServerListenAddress(string value)
-        {
-            m_Config.udpServListenAddress = value.Trim();
-        }
-
         public static double UDPServerSmoothingMincutoff
         {
             get => m_Config.udpSmoothingMincutoff;

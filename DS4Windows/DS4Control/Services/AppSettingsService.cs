@@ -108,12 +108,12 @@ namespace DS4Windows.Services
 
         public bool UseUdpServer
         {
-            get => Global.isUsingUDPServer();
+            get => _config.useUDPServ;
             set
             {
-                if (Global.isUsingUDPServer() != value)
+                if (_config.useUDPServ != value)
                 {
-                    Global.setUsingUDPServer(value);
+                    _config.useUDPServ = value;
                     NotifyChanged(nameof(UseUdpServer));
                 }
             }
@@ -121,12 +121,12 @@ namespace DS4Windows.Services
 
         public int UdpServerPort
         {
-            get => Global.getUDPServerPortNum();
+            get => _config.udpServPort;
             set
             {
-                if (Global.getUDPServerPortNum() != value)
+                if (_config.udpServPort != value)
                 {
-                    Global.setUDPServerPort(value);
+                    _config.udpServPort = value;
                     NotifyChanged(nameof(UdpServerPort));
                 }
             }
@@ -134,12 +134,12 @@ namespace DS4Windows.Services
 
         public string UdpServerListenAddress
         {
-            get => Global.getUDPServerListenAddress();
+            get => _config.udpServListenAddress;
             set
             {
-                if (Global.getUDPServerListenAddress() != value)
+                if (_config.udpServListenAddress != value)
                 {
-                    Global.setUDPServerListenAddress(value);
+                    _config.udpServListenAddress = value.Trim();
                     NotifyChanged(nameof(UdpServerListenAddress));
                 }
             }
@@ -285,8 +285,8 @@ namespace DS4Windows.Services
         // Notifications 等と同一パターン（独立フィールドを持たない）。
         public string LogMinLevel
         {
-            get => Global.LogMinLevel;
-            set { if (Global.LogMinLevel != value) { Global.LogMinLevel = value; NotifyChanged(nameof(LogMinLevel)); } }
+            get => _config.logMinLevel;
+            set { if (_config.logMinLevel != value) { _config.logMinLevel = value; NotifyChanged(nameof(LogMinLevel)); } }
         }
 
         public bool CheckUpdateStartupEnabled
@@ -297,25 +297,25 @@ namespace DS4Windows.Services
 
         public int CheckEveryValue
         {
-            get => Global.CheckEveryValue;
-            set { if (Global.CheckEveryValue != value) { Global.CheckEveryValue = value; NotifyChanged(nameof(CheckEveryValue)); } }
+            get => _config.checkEveryValue;
+            set { if (_config.checkEveryValue != value) { _config.checkEveryValue = value; NotifyChanged(nameof(CheckEveryValue)); } }
         }
 
         public int CheckEveryUnit
         {
-            get => Global.CheckEveryUnit;
-            set { if (Global.CheckEveryUnit != value) { Global.CheckEveryUnit = value; NotifyChanged(nameof(CheckEveryUnit)); } }
+            get => _config.checkEveryUnit;
+            set { if (_config.checkEveryUnit != value) { _config.checkEveryUnit = value; NotifyChanged(nameof(CheckEveryUnit)); } }
         }
 
         public DateTime LastChecked
         {
-            get => Global.LastChecked;
-            set { if (Global.LastChecked != value) { Global.LastChecked = value; NotifyChanged(nameof(LastChecked)); } }
+            get => _config.lastChecked;
+            set { if (_config.lastChecked != value) { _config.lastChecked = value; NotifyChanged(nameof(LastChecked)); } }
         }
 
-        // Global.LastVersionCheckedNum は読み取り専用（LastVersionChecked代入時に自動算出）のため、
+        // _config.lastVersionCheckedNum は読み取り専用（LastVersionChecked代入時に自動算出）のため、
         // 本シムも読み取り専用として公開する。
-        public ulong LastVersionCheckedNum => Global.LastVersionCheckedNum;
+        public ulong LastVersionCheckedNum => _config.lastVersionCheckedNum;
 
         // ---- Phase6-Step10-1-1: Global への薄い委譲 ----
         public string LastVersionChecked
@@ -337,14 +337,14 @@ namespace DS4Windows.Services
         // ---- Phase6-Step10-2-1: Global への薄い委譲 ----
         public bool UseMoonlight
         {
-            get => Global.UseMoonlight;
-            set { if (Global.UseMoonlight != value) { Global.UseMoonlight = value; NotifyChanged(nameof(UseMoonlight)); } }
+            get => _config.useMoonlight;
+            set { if (_config.useMoonlight != value) { _config.useMoonlight = value; NotifyChanged(nameof(UseMoonlight)); } }
         }
 
         public bool UseAdvancedMoonlight
         {
-            get => Global.UseAdvancedMoonlight;
-            set { if (Global.UseAdvancedMoonlight != value) { Global.UseAdvancedMoonlight = value; NotifyChanged(nameof(UseAdvancedMoonlight)); } }
+            get => _config.useAdvancedMoonlight;
+            set { if (_config.useAdvancedMoonlight != value) { _config.useAdvancedMoonlight = value; NotifyChanged(nameof(UseAdvancedMoonlight)); } }
         }
 
         public bool FirstRun
@@ -357,8 +357,8 @@ namespace DS4Windows.Services
         // 他のプロパティと同じく Global(m_Config/BackingStore) への正規シム（独立フィールドを持たない）。
         public string UseLang
         {
-            get => Global.UseLang;
-            set { if (Global.UseLang != value) { Global.UseLang = value; NotifyChanged(nameof(UseLang)); } }
+            get => _config.useLang;
+            set { if (_config.useLang != value) { _config.useLang = value; NotifyChanged(nameof(UseLang)); } }
         }
 
         public bool RunHotPlug
@@ -437,12 +437,12 @@ namespace DS4Windows.Services
 
         public bool UseOscServer
         {
-            get => Global.isUsingOSCServer();
+            get => _config.useOSCServ;
             set
             {
-                if (Global.isUsingOSCServer() != value)
+                if (_config.useOSCServ != value)
                 {
-                    Global.setUsingOSCServer(value);
+                    _config.useOSCServ = value;
                     NotifyChanged(nameof(UseOscServer));
                 }
             }
@@ -450,12 +450,12 @@ namespace DS4Windows.Services
 
         public bool UseOscSender
         {
-            get => Global.isUsingOSCSender();
+            get => _config.useOSCSend;
             set
             {
-                if (Global.isUsingOSCSender() != value)
+                if (_config.useOSCSend != value)
                 {
-                    Global.setUsingOSCSender(value);
+                    _config.useOSCSend = value;
                     NotifyChanged(nameof(UseOscSender));
                 }
             }
@@ -463,12 +463,12 @@ namespace DS4Windows.Services
 
         public bool InterpretingOscMonitoring
         {
-            get => Global.isInterpretingOscMonitoring();
+            get => _config.interpretingOscMonitoring;
             set
             {
-                if (Global.isInterpretingOscMonitoring() != value)
+                if (_config.interpretingOscMonitoring != value)
                 {
-                    Global.setInterpretingOscMonitoring(value);
+                    _config.interpretingOscMonitoring = value;
                     NotifyChanged(nameof(InterpretingOscMonitoring));
                 }
             }
@@ -476,12 +476,12 @@ namespace DS4Windows.Services
 
         public int OscServerPort
         {
-            get => Global.getOSCServerPortNum();
+            get => _config.oscServPort;
             set
             {
-                if (Global.getOSCServerPortNum() != value)
+                if (_config.oscServPort != value)
                 {
-                    Global.setOSCServerPort(value);
+                    _config.oscServPort = value;
                     NotifyChanged(nameof(OscServerPort));
                 }
             }
@@ -489,12 +489,12 @@ namespace DS4Windows.Services
 
         public string OscSenderAddress
         {
-            get => Global.getOSCSenderAddress();
+            get => _config.oscSendAddress;
             set
             {
-                if (Global.getOSCSenderAddress() != value)
+                if (_config.oscSendAddress != value)
                 {
-                    Global.setOSCSenderAddress(value);
+                    _config.oscSendAddress = value.Trim();
                     NotifyChanged(nameof(OscSenderAddress));
                 }
             }
@@ -502,12 +502,12 @@ namespace DS4Windows.Services
 
         public int OscSenderPort
         {
-            get => Global.getOSCSenderPortNum();
+            get => _config.oscSendPort;
             set
             {
-                if (Global.getOSCSenderPortNum() != value)
+                if (_config.oscSendPort != value)
                 {
-                    Global.setOSCSenderPort(value);
+                    _config.oscSendPort = value;
                     NotifyChanged(nameof(OscSenderPort));
                 }
             }
@@ -552,7 +552,7 @@ namespace DS4Windows.Services
             }
         }
 
-        public ControlServiceDeviceOptions DeviceOptions => Global.DeviceOptions;
+        public ControlServiceDeviceOptions DeviceOptions => _config.deviceOptions;
 
         // Global 側の static イベントへ購読をそのまま転送する（発火元・引数は従来と完全に同一）。
         public event EventHandler UDPServerSmoothingMincutoffChanged
@@ -684,12 +684,12 @@ namespace DS4Windows.Services
 
         public int LogMaxArchiveFiles
         {
-            get => Global.LogMaxArchiveFiles;
+            get => _config.logMaxArchiveFiles;
             set
             {
-                if (Global.LogMaxArchiveFiles != value)
+                if (_config.logMaxArchiveFiles != value)
                 {
-                    Global.LogMaxArchiveFiles = value;
+                    _config.logMaxArchiveFiles = value;
                     NotifyChanged(nameof(LogMaxArchiveFiles));
                 }
             }
