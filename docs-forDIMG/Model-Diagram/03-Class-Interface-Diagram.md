@@ -450,3 +450,8 @@ classDiagram
 %%   - 追加された注入: `ProfileXmlStore(BackingStore)`、`ProfileRepository(BackingStore, IProfileSettingsService, IProfileXmlStore, IPathService, Func<ControlService>)`、`AppSettingsService(BackingStore, IProfileXmlStore, IPathService)`、`AppearanceSettingsService(BackingStore)`、`DeviceStateService(BackingStore)`、`AppNotificationService(BackingStore)`、`AutoProfileService(…, Func<ControlService>, BackingStore)`。
 %%   - `IAppSettingsService` の `UDPServerSmoothingMincutoffChanged`／`BetaChanged` の発火元は、`AppSettingsService` のインスタンスになった（`Global` の静的イベントを削除）。
 %%   - `Global` から削除した転送メンバー 76 名の一覧は `Phase7Step3RemovedGlobalForwardersGuardTests` を参照。
+%%
+%% Phase7-Step3c（2026-10-17）: プロファイル適用の構成が変わった（クラス間の関係線の変更は下記のとおり）。
+%%   - `ProfileSlotApplier` → `IProfileApplicationService`（新しい依存）。`ProfileApplicationService` → `IProfileXmlStore`／`IProfileActionProvider`／`BackingStore`（新しい依存）。
+%%   - `IProfileApplicationService` に `ApplyProfileWithoutHalt` を追加。`IProfileRepository` から `LoadBlankProfile` を削除。`ProfileSettingsViewModel`／`ViewModelFactory` が `IProfilePresetLoader` を受け取る。
+%%   - `Global` から、プロファイル適用・プリセット・`SelectedProfileChanged` ほか 24 名を削除した（一覧は `Phase7Step3RemovedGlobalForwardersGuardTests`）。

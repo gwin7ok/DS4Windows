@@ -179,3 +179,11 @@
 %% - `BackingStore` を必須の依存として受け取るサービス: `ProfileXmlStore`、`ProfileRepository`、`AppSettingsService`、`AppearanceSettingsService`、`DeviceStateService`、`AppNotificationService`、`AutoProfileService`（`ProfileSettingsService`、`SpecialActionRepository`、`ProfileActionProvider` は以前から）。任意引数や `Global.store` へのフォールバックは廃止した。
 %% - `AppSettingsService` が `UDPServerSmoothing*Changed` イベントの発火元になった（静的イベントから、サービスのインスタンスイベントへ。購読者は `ControlService`）。`FakeExeName` の検証、リンクプロファイルのシリアル正規化もサービスへ移した。
 %% - 詳細は `Phase7-Step3-Plan.md`、`Phase7-Step3-Completion-Report.md`、台帳は `Phase7-Residual-Ledger.md` §5。
+%%
+%% Phase7-Step3c（2026-10-17）: プロファイル適用の処理を `Global` から DI サービスへ移した。
+%% - `ProfileApplicationService`: 適用の核（読み込み → 状態の更新 → ログ → `SelectedProfileChanged` → アクション関連の破棄と作り直し）を持つ。入口は 3 つ: `ApplyProfile`（Halt あり。`MappingAction` のときは Halt しない）、`ApplyFromAction`、`ApplyProfileWithoutHalt`（Halt なし。接続処理中など、呼び出し元がすでに停止している経路用）。依存に `IProfileXmlStore`／`IProfileActionProvider`／`BackingStore` が加わった（`ControlService` は従来どおり `Func` で遅延解決）。
+%% - `ProfileSlotApplier`: `IProfileApplicationService.ApplyProfileWithoutHalt` へ委譲する（スロット範囲・名前の検査は旧 `Global.ApplyProfileToSlot` と同じ）。`ControlService` は引き続き `IProfileSlotApplier` だけを知る（依存の逆転は変わらない）。
+%% - `ProfileRepository`: `LoadTempProfile` を実装として持ち、`SelectedProfileChanged` は自身のインスタンスイベントになった（発火は `ProfileApplicationService` が `RaiseSelectedProfileChanged` を呼ぶ。購読者は `ControllerListViewModel`）。`IProfileRepository.LoadBlankProfile` は削除（`IProfilePresetLoader.LoadBlank` に統合）。
+%% - `ProfilePresetLoader`: `BackingStore` と `IProfileSettingsService` を注入で受け、10 種のプリセットを直接読み込む。`BackingStore` が `loggedInvalidActions` を持つ。
+%% - `Mapping.cs` の特殊アクションの切替は、`Global.ApplyProfile` ではなく `IProfileApplicationService.ApplyProfile`（`MappingAction`）を呼ぶ。
+%% - 詳細は `Phase7-Step3c-Plan.md`、`Phase7-Step3c-Completion-Report.md`、台帳は `Phase7-Residual-Ledger.md` §6。

@@ -1,7 +1,7 @@
 # フェーズ7 進捗管理文書: `Global`／`BackingStore` の解体、起動の近代化、`Mapping` の instance 化
 
 最終更新日: 2026-10-17  
-状態: **Step1・Step2・Step3 完了。Step3c の計画書（`Phase7-Step3c-Plan.md`）を作成済み。Q1〜Q6 の承認待ち。**  
+状態: **Step1・Step2・Step3・Step3c 完了。次は Step4（調査と計画書の作成から）。**  
 計画書: `Phase7-Plan.md`。調査: `Phase7-0-Survey.md`。残存台帳: `Phase7-Residual-Ledger.md`
 
 ---
@@ -14,7 +14,7 @@
 | Step1 | 整理と台帳の確定 | **完了**（2026-10-17。W1〜W4 のビルド・テスト成功、U-10 確認済み） | `Phase7-Step1-Plan.md`、`Phase7-Step1-Completion-Report.md` |
 | Step2 | DI インターフェースの 0 件メンバー（49）の個別判断 | **完了**（2026-10-17。W1〜W7 のビルド・テスト成功。U-11 の実機確認は未。完了報告書あり。判断: 削除 45／接続 3／温存 1。Phase8 へ 12） | `Phase7-Step2-Plan.md` |
 | Step3 | `BackingStore` の DI 化と `Global` の転送の削除 | **完了**（2026-10-17。W1〜W5 のビルド・テスト成功、W6 は文書。U-12 の実機確認は未。完了報告書あり） | `Phase7-Step3-Plan.md` |
-| Step3c | プロファイル適用・プリセット・イベントの `Global` からの移管（Step3 から持ち越し） | **実施中**（Q1〜Q6 承認済み。W4 完了、W5 実装済み・ビルド・テスト待ち） | `Phase7-Step3c-Plan.md` |
+| Step3c | プロファイル適用・プリセット・イベントの `Global` からの移管（Step3 から持ち越し） | **完了**（2026-10-17。W1〜W5 のビルド・テスト成功、W6 は文書。U-13 の実機確認は先送り。完了報告書あり） | `Phase7-Step3c-Plan.md`、`Phase7-Step3c-Completion-Report.md` |
 | Step4 | 起動・終了シーケンスの近代化 | 未着手 | |
 | Step5 | `Program.rootHub` と Service Locator の削除 | 未着手 | |
 | Step6 | 出力スロットの所有権の移動 | 未着手 | |
@@ -30,7 +30,8 @@
   - Phase7-Step1 W1 後: 733／40／22／（未追跡）
   - Phase7-Step1 W4 後: 733／40／22／23
   - Phase7-Step2 W7 後: 723／40／22／23
-  - Phase7-Step3 W5 後（現在）: **516／40／22／23**
+  - Phase7-Step3 W5 後: 516／40／22／23
+  - Phase7-Step3c W5 後（現在）: **488／40／22／23**
 - ガード: `Step10FourGlobalRatchetGuardTests`（`Global.*`／`AppHost`／`rootHub`）、`Phase7Step1ServiceLocatorRatchetGuardTests`（`ServiceProviderHolder`）、`Phase7Step1DeadMethodGuardTests`（`BackingStore` の削除済みメソッド）。
 - 目標値は、各 Step の計画書で確定し、`Phase7-Residual-Ledger.md` に反映する。
 
@@ -55,6 +56,14 @@
 - W6: 台帳、モデル図、U-12、完了報告書。`Global.*` 723 → 516。削除 76 名（計画の約 95 名のうち、他の呼び出し元があるものとプロファイル適用に絡むものは持ち越し）。
 - 持ち越し: Step3c（プロファイル適用・プリセット・イベントの移管。別計画書）。詳細は `Phase7-Step3-Completion-Report.md` §5。
 
+### Phase7-Step3c: プロファイル適用・プリセット・イベントの移管【完了（2026-10-17）】
+- W1: 特性化テスト 9 件（コードの変更なし）。
+- W2: プリセット 10 名を `ProfilePresetLoader` へ。重複する `IProfileRepository.LoadBlankProfile` を削除。
+- W3: 適用の核の準備（`ProfileApplicationService.ApplyCore`、Halt なしの入口、`loggedInvalidActions` を `BackingStore` へ）。
+- W4: 呼び出し元の切り替え（`ProfileSlotApplier`、`Mapping.cs` の 1 呼び出し）。`SelectedProfileChanged` をインスタンスイベントに。`Global` の 12 名を削除。
+- W5: `ProfileChangedNotification`。W6: 台帳、モデル図、完了報告書。
+- `Global.*` 516 → 488。削除 24 名。持ち越し: `tempprofileDistance` ほかの窓口（Step7〜9）、`ActionManager` の静的呼び出し（Phase8）。詳細は `Phase7-Step3c-Completion-Report.md` §5。
+
 ### Phase7-Step4〜Step10【未着手】
 - 内容と依存関係は `Phase7-Plan.md` §2。
 
@@ -76,6 +85,5 @@
 
 ## 6. 直近の次アクション
 
-1. `Phase7-Step3c-Plan.md` §3（Q1〜Q6）の承認。承認後、Step3c を W1（特性化テスト）から実施。
-2. その後、Step4 の調査と `Phase7-Step4-Plan.md` の作成。
-3. 実機確認 U-11、U-12（任意のタイミング）。
+1. Step4 の調査を行い、`Phase7-Step4-Plan.md` を作成する（承認が必要な事項を明記）。
+2. 実機確認 U-11、U-12、U-13（任意のタイミング。U-13 は `Mapping.cs` の変更に関わるため、特殊アクションでのプロファイル切替の確認が重要）。

@@ -3,7 +3,7 @@
 作成日: 2026-10-17  
 対象ブランチ: `For-DI-migration-work`  
 前提: `Phase7-Step3-Completion-Report.md` §5（Step3c への持ち越し）、`Phase7-Plan.md` §2（Step3 の 3c）  
-状態: **調査完了・決定事項 Q1〜Q6 の承認待ち。実装は承認後に Wave 単位で行う。**  
+状態: **実装完了（2026-10-17）。実機確認 U-13 は先送り。完了報告書あり。**  
 ルール: ビルド・テストビルド・テスト実行・コミットはユーザーが行う。エージェントはローカルファイルの編集のみ。
 
 ---
@@ -88,13 +88,13 @@
 
 ## 6. 完了判定チェックリスト
 
-- [ ] W1〜W5 のビルド（警告 0）・テストビルド・テスト実行が成功している。
-- [ ] §1.2 の対象が `Global` から削除され、各サービスが DI で受けた依存を使っている（Q1〜Q6 の承認内容に従う）。
-- [ ] 特性化テストが、移管の前後で同じ結果を示している。
-- [ ] ラチェットの基準値が更新されている。
-- [ ] 台帳、モデル図、`Phase7-Status.md` が更新されている。
-- [ ] 実機確認 U-13。
-- [ ] `Phase7-Step3c-Completion-Report.md` が作成されている。
+- [x] W1〜W5 のビルド（警告 0）・テストビルド・テスト実行が成功している（W6 は文書のみ）。
+- [x] §1.2 の対象（24 名。見積りの約 26 名のうち `ProfileChangedNotification` ほかを含む）が `Global` から削除され、各サービスが DI で受けた依存を使っている。
+- [x] 特性化テストが、移管の前後で同じ結果を示している（W3 で新旧の両方に流し、W4 で移管先だけにした。期待値は W1 から不変）。
+- [x] ラチェットの基準値が更新されている（`Global.*` 516 → 488）。
+- [x] 台帳、モデル図、`Phase7-Status.md` が更新されている。
+- [ ] 実機確認 U-13（ユーザー判断で先送り。チェックリスト §11 に記録済み）。
+- [x] `Phase7-Step3c-Completion-Report.md` が作成されている。
 
 ---
 
@@ -128,3 +128,4 @@
   - ラチェット基準値: `Mapping.cs` 53→52、`ProfileApplicationService.cs` 3→0、`ProfileRepository.cs` 3→0、`ProfileSlotApplier.cs` 1→0（`Global.*` 合計 499→491）。
 - **W5 実装済み（ビルド・テスト待ち）**: `AppSettingsService.ProfileChangedNotification` を `_config.profileChangedNotification` の直接参照に変更し、`Global.ProfileChangedNotification`（`ProfileSettingsServiceInstance` 経由の窓口）を削除。`ProfileSettingsService` が同じフィールドを使うため、値の実体は変わらない。ガードテストに名前を追記。ラチェット基準値: `AppSettingsService.cs` 11→8（`Global.*` 合計 491→488）。
 - **U-13（実機確認）はユーザー判断で先送り**（2026-10-17）。チェックリスト §11 に「未（先送り）」として手順を記録した（U-14 は空き枠）。
+- **W6 実施（文書）**: 台帳 §6、モデル図 03／04、チェックリスト U-13（W5 の時点で記入済み）、完了報告書、本チェックリスト。

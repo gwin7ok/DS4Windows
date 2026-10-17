@@ -49,3 +49,12 @@
 - Step5 へ: `ProfileXmlStore.Load/SaveControllerConfigs`（`Program.rootHub` を走査する）、`MainWindow` などの Service Locator。
 - Step6 へ: `OutputSlotService` の `outDevTypeTemp`／`activeOutDevType`、`OutputKBMHandlerAdapter` の `outputKBMHandler`。
 - 残る Pure DI 違反のフォールバック: `Global.cs` の `new ProfileXmlStore(m_Config)`／`new AppNotificationService(m_Config)`（`*Instance` 系の最後のフォールバック。Step4／Step5 で削除）。
+
+## 6. Phase7-Step3c で更新した台帳（2026-10-17）
+
+- `Global.*`: 516 → **488**（W2 −11、W3 −6、W4 −8、W5 −3。基準値は `Step10FourGlobalRatchetGuardTests`）。`AppHost` 40、`Program.rootHub` 22、`ServiceProviderHolder` 23 は変わらない。Phase7 開始時（733）からの累計は −245。
+- 削除した `Global` のメンバー: 24 名（プリセット 10、`loggedInvalidActions`、プロファイル適用 12、`ProfileChangedNotification`）。契約からも、重複していた `IProfileRepository.LoadBlankProfile` を削除。ガード: `Phase7Step3RemovedGlobalForwardersGuardTests`（Step3 と合わせて 100 名）。
+- 適用の本体は `ProfileApplicationService`（`ApplyCore`／`LoadNormalProfile`／`CompleteProfileApplication`、入口は `ApplyProfile`／`ApplyFromAction`／`ApplyProfileWithoutHalt`）に移った。`ProfileRepository` が `LoadTempProfile` と `SelectedProfileChanged`（インスタンスイベント）を持つ。
+- 静的呼び出しのまま残るもの（適用の本体の中）: `ActionManager.ClearAllEntries`／`ClearDeviceState`／`PreallocateForProfileApply`（→ Phase8）、`Mapping.ClearKeyButtonControllersForDevice`（→ Phase7-Step7〜9）。
+- `Global` に残る、プロファイルに関係する窓口: `tempprofileDistance`／`useTempProfile`／`DistanceProfiles`（`DS4LightBar`／`Mapping` が `using static` で参照。→ Step7〜9）、`ProfileSettingsServiceInstance`／`ProfileXmlStoreInstance`（フォールバックの Service Locator。→ Step4／Step5）。
+- 実機確認: U-13（未。ユーザー判断で先送り）。
