@@ -1218,6 +1218,8 @@ namespace DS4Windows
                 xmlFlashColor.InnerText = lightInfo.m_FlashLed.red.ToString() + "," + lightInfo.m_FlashLed.green.ToString() + "," + lightInfo.m_FlashLed.blue.ToString();
                 rootElement.AppendChild(xmlFlashColor);
                 XmlNode xmlTouchpadJitterCompensation = m_Xdoc.CreateNode(XmlNodeType.Element, "touchpadJitterCompensation", null); xmlTouchpadJitterCompensation.InnerText = touchpadJitterCompensation[device].ToString(); rootElement.AppendChild(xmlTouchpadJitterCompensation);
+                // Phase6-Step12: 旧形式（3.9.9 互換）の保存で欠けていた 10 要素（要素名は ProfileDTO と同じ。旧版は未知の要素を無視する）
+                SaveLegacyExtraSettings(rootElement, device);
                 XmlNode xmlLowerRCOn = m_Xdoc.CreateNode(XmlNodeType.Element, "lowerRCOn", null); xmlLowerRCOn.InnerText = lowerRCOn[device].ToString(); rootElement.AppendChild(xmlLowerRCOn);
                 XmlNode xmlTapSensitivity = m_Xdoc.CreateNode(XmlNodeType.Element, "tapSensitivity", null); xmlTapSensitivity.InnerText = tapSensitivity[device].ToString(); rootElement.AppendChild(xmlTapSensitivity);
                 XmlNode xmlDouble = m_Xdoc.CreateNode(XmlNodeType.Element, "doubleTap", null); xmlDouble.InnerText = doubleTap[device].ToString(); rootElement.AppendChild(xmlDouble);
@@ -2171,6 +2173,10 @@ namespace DS4Windows
 
                 try { Item = m_Xdoc.SelectSingleNode("/" + rootname + "/touchpadJitterCompensation"); bool.TryParse(Item.InnerText, out touchpadJitterCompensation[device]); }
                 catch { missingSetting = true; }
+                // Phase6-Step12: 旧形式の読込で欠けていた 10 要素。要素が無い（古いプロファイル）、または値が不正なときは、
+                // ResetProfile で設定済みの既定値のままにする（missingSetting は立てない）。
+                LoadLegacyExtraSettings(device, rootname);
+
                 try { Item = m_Xdoc.SelectSingleNode("/" + rootname + "/lowerRCOn"); bool.TryParse(Item.InnerText, out lowerRCOn[device]); }
                 catch { missingSetting = true; }
                 try { Item = m_Xdoc.SelectSingleNode("/" + rootname + "/tapSensitivity"); byte.TryParse(Item.InnerText, out tapSensitivity[device]); }
@@ -6087,6 +6093,67 @@ namespace DS4Windows
             return false;
         }
 
+        // Phase6-Step12: 旧形式の保存・読込に欠けていた設定（ProfileDTO にあり、旧形式に無かった 10 要素）の読み書き。
+        public void SaveLegacyExtraSettings(XmlNode rootElement, int device)
+        {
+            AppendLegacyElement(rootElement, "DebouncingMs", debouncingMs[device].ToString());
+            AppendLegacyElement(rootElement, "InverseRumbleMotors", inverseRumbleMotors[device].ToString());
+            AppendLegacyElement(rootElement, "UseDs3PitchRollSim", useDs3PitchRollSim.ToString());
+            AppendLegacyElement(rootElement, "LeftStickDriftXAxis", leftStickDriftXAxis[device].ToString());
+            AppendLegacyElement(rootElement, "LeftStickDriftYAxis", leftStickDriftYAxis[device].ToString());
+            AppendLegacyElement(rootElement, "RightStickDriftXAxis", rightStickDriftXAxis[device].ToString());
+            AppendLegacyElement(rootElement, "RightStickDriftYAxis", rightStickDriftYAxis[device].ToString());
+            AppendLegacyElement(rootElement, "DS4OutputTriggerMode", outputDS4TriggerMode[device].ToString());
+            AppendLegacyElement(rootElement, "GyroMouseJitterCompensation", gyroMouseInfo[device].jitterCompensation.ToString());
+            AppendLegacyElement(rootElement, "GyroMouseStickJitterCompensation", gyroMStickInfo[device].jitterCompensation.ToString());
+        }
+
+        private void AppendLegacyElement(XmlNode parent, string name, string value)
+        {
+            XmlNode node = m_Xdoc.CreateNode(XmlNodeType.Element, name, null);
+            node.InnerText = value;
+            parent.AppendChild(node);
+        }
+
+        private string ReadLegacyElement(string rootname, string name)
+        {
+            return m_Xdoc.SelectSingleNode("/" + rootname + "/" + name)?.InnerText;
+        }
+
+        public void LoadLegacyExtraSettings(int device, string rootname)
+        {
+            if (int.TryParse(ReadLegacyElement(rootname, "DebouncingMs"), out int debounceMs))
+                debouncingMs[device] = Math.Min(Math.Max(debounceMs, 0), 1000);
+
+            if (bool.TryParse(ReadLegacyElement(rootname, "InverseRumbleMotors"), out bool inverseRumble))
+                inverseRumbleMotors[device] = inverseRumble;
+
+            // useDs3PitchRollSim は全体で 1 つの値（ProfileDTO.MapTo と同じ扱い）。要素があるときだけ代入する
+            if (bool.TryParse(ReadLegacyElement(rootname, "UseDs3PitchRollSim"), out bool ds3Sim))
+                useDs3PitchRollSim = ds3Sim;
+
+            if (sbyte.TryParse(ReadLegacyElement(rootname, "LeftStickDriftXAxis"), out sbyte value))
+                leftStickDriftXAxis[device] = value;
+            if (sbyte.TryParse(ReadLegacyElement(rootname, "LeftStickDriftYAxis"), out value))
+                leftStickDriftYAxis[device] = value;
+            if (sbyte.TryParse(ReadLegacyElement(rootname, "RightStickDriftXAxis"), out value))
+                rightStickDriftXAxis[device] = value;
+            if (sbyte.TryParse(ReadLegacyElement(rootname, "RightStickDriftYAxis"), out value))
+                rightStickDriftYAxis[device] = value;
+
+            string triggerMode = ReadLegacyElement(rootname, "DS4OutputTriggerMode");
+            if (triggerMode != null && Enum.TryParse(triggerMode, out DS4TriggerOutputMode mode) &&
+                Enum.IsDefined(typeof(DS4TriggerOutputMode), mode))
+            {
+                outputDS4TriggerMode[device] = mode;
+            }
+
+            if (bool.TryParse(ReadLegacyElement(rootname, "GyroMouseJitterCompensation"), out bool gyroMouseJitter))
+                gyroMouseInfo[device].jitterCompensation = gyroMouseJitter;
+            if (bool.TryParse(ReadLegacyElement(rootname, "GyroMouseStickJitterCompensation"), out bool gyroStickJitter))
+                gyroMStickInfo[device].jitterCompensation = gyroStickJitter;
+        }
+
         private void ResetMouseProperties(int device, ControlService control)
         {
             if (device < Global.MAX_DS4_CONTROLLER_COUNT &&
@@ -6105,6 +6172,15 @@ namespace DS4Windows
             idleDisconnectTimeout[device] = 0;
             enableOutputDataToDS4[device] = DEFAULT_OUTPUT_TO_DS4;
             touchpadJitterCompensation[device] = DEFAULT_TOUCHPAD_JITTER_COMP;
+            // Phase6-Step12: 旧形式の読込に追加した設定の既定値（要素の無いプロファイルで、前の値を引き継がないようにする）。
+            // useDs3PitchRollSim は全体で 1 つの値のため、ここではリセットしない。
+            debouncingMs[device] = 0;
+            inverseRumbleMotors[device] = false;
+            leftStickDriftXAxis[device] = 0;
+            leftStickDriftYAxis[device] = 0;
+            rightStickDriftXAxis[device] = 0;
+            rightStickDriftYAxis[device] = 0;
+            outputDS4TriggerMode[device] = DEFAULT_DS4_TRIGGER_OUTPUT;
             lowerRCOn[device] = false;
             touchClickPassthru[device] = false;
 

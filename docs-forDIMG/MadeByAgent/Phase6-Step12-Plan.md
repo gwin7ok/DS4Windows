@@ -281,6 +281,31 @@ HEAD は `e0bc8258`（作業ツリーはクリーン）。以降の §0〜§6 �
 
 ---
 
+### 0A.16 実機確認 U-8・U-9 の結果と調査（2026-10-17）
+
+- **U-9（起動・接続・プロファイル切替・保存先の読み書き）: ○**。ただし、起動ログの `Host initialized with runtime parser` は出なかった。
+  - 評価: §0A.13 の確認手順 (1) は誤り。`AppHost.CreateHost(config, parser)` は、ホストが**すでに作られている**とき `startup arguments applied to IStartupArguments (host already created)` を出し、`Host initialized with runtime parser` は、その呼び出しで新たに作ったときだけ出る。K7-1（`Global` の静的初期化で、ホストが先に暗黙構築される）が残る現状では、後者は通常の起動で出ない（Wave 3 より前から同じ）。Wave 3 の影響ではないと判断する。前者のログがあれば、期待どおり。
+- **U-8（デバウンス）: 不合格**。500ms にしても、連打が抑えられない（ユーザー提供のログでは、押下から約 140〜180ms で離されたことが、そのまま出力されている）。
+  - 原因（静的調査）: **プロファイルの XML（旧形式。2025-11-11 の `142c24c8` 以降、これを正としている）の保存・読込が、`DebouncingMs` を扱っていない**。`BackingStore.cs` に `debouncingMs` の宣言（649 行）以外の記述が無く、`SaveProfile` も `LoadProfile` も読み書きしない。`ProfileDTO` には要素 `DebouncingMs` があるが、これを使う `ProfileRepository.LoadProfile(filePath, …)` は、実際の読込経路ではない。結果、編集画面で 500 にして保存・適用しても、スロットへの再適用（`LoadProfile`）で 0 に戻る。
+  - Phase6 の変更との関係: 今回の是正（`CheckProfileOptions` と `Debouncer`）は、値が正しく届く場合に必要で、有効。ただし、それだけでは効かない。この読み書きの欠落は、Phase6 より前からの不具合（旧形式を正にした 2025-11-11 以降、設定が保存されていない）。
+  - 同じ欠落の設定（`ProfileDTO` にあり、旧形式の読み書きに無い要素の突き合わせ結果）: `DebouncingMs`、`LeftStickDriftXAxis`／`LeftStickDriftYAxis`／`RightStickDriftXAxis`／`RightStickDriftYAxis`（スティックのドリフト補正）、`InverseRumbleMotors`、`UseDs3PitchRollSim`、`DS4OutputTriggerMode`、`GyroMouseJitterCompensation`、`GyroMouseStickJitterCompensation`。計 10 要素。画面では設定できても、保存されず、適用時に既定値へ戻る（Phase6 の対象外。ユーザーの承認が必要）。
+- 修正案（承認待ち）: 案 1＝`DebouncingMs` だけを、旧形式の `SaveProfile`／`LoadProfile` に追加（要素名 `DebouncingMs`。旧版は未知の要素を無視するため、3.9.9 との互換は保たれる）。案 2＝上記 10 要素すべてを追加（別の Step として扱う。配列・列挙型の変換とテストが要る）。案 3＝修正しない（U-8 を「既知の制限」として台帳に残す）。
+
+---
+
+### 0A.17 U-8 の是正: 旧形式のプロファイル XML に 10 要素を追加（2026-10-17、案 2 を承認・実施。ビルド・テストはユーザーの実行待ち）
+
+- 変更（`BackingStore.cs`）:
+  - 保存: `SaveProfile` が `SaveLegacyExtraSettings(rootElement, device)` を呼び、10 要素（`DebouncingMs`、`InverseRumbleMotors`、`UseDs3PitchRollSim`、`LeftStickDriftXAxis`／`LeftStickDriftYAxis`／`RightStickDriftXAxis`／`RightStickDriftYAxis`、`DS4OutputTriggerMode`、`GyroMouseJitterCompensation`、`GyroMouseStickJitterCompensation`）を書く。要素名は `ProfileDTO` と同じ。旧版は未知の要素を無視するため、3.9.9 との互換は保たれる。
+  - 読込: `LoadProfile` が `LoadLegacyExtraSettings(device, rootname)` を呼ぶ。要素が無い、または値が不正なときは、`ResetProfile` で設定済みの既定値のまま（`missingSetting` は立てない。古い全プロファイルについて「設定が足りない」というログを出さないため）。`DebouncingMs` は 0〜1000（画面の範囲）に収める。`UseDs3PitchRollSim` は全体で 1 つの値のため、要素があるときだけ代入する（`ProfileDTO.MapTo` と同じ扱い）。
+  - リセット: `ResetProfile` に、`DebouncingMs`（0）、`InverseRumbleMotors`（false）、ドリフト補正 4 件（0）、`DS4OutputTriggerMode`（既定）を追加。ジッター補正は、既存の `gyroMouseInfo.Reset()`／`gyroMStickInfo.Reset()` が既定値に戻す。`UseDs3PitchRollSim` はリセットしない（全体で 1 つの値のため）。
+- テスト（新規 `ProfileLegacyXmlRoundTripTests`、5 件）: 保存→読込で 10 要素が戻ること、要素が無い XML では既定値になること、不正な値は無視されること、`DebouncingMs` の上限、`SaveProfile`／`LoadProfile` が補助メソッドを呼んでいること（ソース走査）。
+- 影響: 画面で設定できていたが保存されていなかった 10 設定が、保存・再適用・再起動後も保持される。スティックのドリフト補正と DS4 のトリガー出力モードなど、今まで毎回既定に戻っていた設定が効くようになるため、**既存のプロファイルで、画面上の値と実際の動作が変わることはない**（要素が無い古いプロファイルは既定値＝従来の実際の動作）。保存し直したプロファイルから、新しい値が反映される。
+- 実機確認（ユーザー。U-8 の再実施）: (1) Other タブの Debouncing を 500 にして「適用」。連打が抑えられること。(2) アプリを再起動し、値が 500 のまま残っていること。(3) 0 に戻して「適用」し、抑えられなくなること。(4) 任意: スティックのドリフト補正を変更して保存し、再起動後も保持されること。
+- 持ち越し: デバウンスの通知経路（`DebouncingMsHasChanged` ほか）の削除は、U-8 の再確認の後に判断する。
+
+---
+
 ## 0. 背景と方針（2026-10-17 改訂。承認済みの決定は §0A.10）
 
 ### 0.1 Step2〜Step11 の完了実績と残存コードの状況
