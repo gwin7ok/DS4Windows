@@ -33,7 +33,7 @@ namespace DS4WindowsTests
         {
             var service = CreateService();
 
-            Assert.Same(Global.reverseX360ButtonMapping, service.ReverseX360ButtonMapping);
+            Assert.Same(X360ControlTables.reverseX360ButtonMapping, service.ReverseX360ButtonMapping);
         }
 
         [Fact]

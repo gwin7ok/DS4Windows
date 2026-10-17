@@ -1536,7 +1536,7 @@ namespace DS4Windows
                         }
                         else if (dcs.actionType == DS4ControlSettings.ActionType.Button)
                         {
-                            buttonNode.InnerText = getX360ControlString((X360Controls)dcs.action.actionBtn);
+                            buttonNode.InnerText = X360ControlTables.getX360ControlString((X360Controls)dcs.action.actionBtn);
                             Button.AppendChild(buttonNode);
                         }
                     }
@@ -1860,56 +1860,7 @@ namespace DS4Windows
             return X360Controls.Unbound;
         }
 
-        public string getX360ControlString(X360Controls key)
-        {
-            switch (key)
-            {
-                case X360Controls.Back: return "Back";
-                case X360Controls.LS: return "Left Stick";
-                case X360Controls.RS: return "Right Stick";
-                case X360Controls.Start: return "Start";
-                case X360Controls.DpadUp: return "Up Button";
-                case X360Controls.DpadRight: return "Right Button";
-                case X360Controls.DpadDown: return "Down Button";
-                case X360Controls.DpadLeft: return "Left Button";
-
-                case X360Controls.LB: return "Left Bumper";
-                case X360Controls.RB: return "Right Bumper";
-                case X360Controls.Y: return "Y Button";
-                case X360Controls.B: return "B Button";
-                case X360Controls.A: return "A Button";
-                case X360Controls.X: return "X Button";
-
-                case X360Controls.Guide: return "Guide";
-                case X360Controls.LXNeg: return "Left X-Axis-";
-                case X360Controls.LYNeg: return "Left Y-Axis-";
-                case X360Controls.RXNeg: return "Right X-Axis-";
-                case X360Controls.RYNeg: return "Right Y-Axis-";
-
-                case X360Controls.LXPos: return "Left X-Axis+";
-                case X360Controls.LYPos: return "Left Y-Axis+";
-                case X360Controls.RXPos: return "Right X-Axis+";
-                case X360Controls.RYPos: return "Right Y-Axis+";
-                case X360Controls.LT: return "Left Trigger";
-                case X360Controls.RT: return "Right Trigger";
-                case X360Controls.TouchpadClick: return "Touchpad Click";
-
-                case X360Controls.LeftMouse: return "Left Mouse Button";
-                case X360Controls.RightMouse: return "Right Mouse Button";
-                case X360Controls.MiddleMouse: return "Middle Mouse Button";
-                case X360Controls.FourthMouse: return "4th Mouse Button";
-                case X360Controls.FifthMouse: return "5th Mouse Button";
-                case X360Controls.WUP: return "Mouse Wheel Up";
-                case X360Controls.WDOWN: return "Mouse Wheel Down";
-                case X360Controls.MouseUp: return "Mouse Up";
-                case X360Controls.MouseDown: return "Mouse Down";
-                case X360Controls.MouseLeft: return "Mouse Left";
-                case X360Controls.MouseRight: return "Mouse Right";
-                case X360Controls.Unbound: return "Unbound";
-            }
-
-            return "Unbound";
-        }
+        // Phase7-Step10b W1: getX360ControlString（XML 保存用の名前）は X360ControlTables へ移した。
 
 
 

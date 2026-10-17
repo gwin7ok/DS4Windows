@@ -3,7 +3,7 @@
 作成日: 2026-10-18  
 対象ブランチ: `For-DI-migration-work`  
 上位計画: `Phase7-Step10-Plan.md`（Q1〜Q9 は推奨どおり承認）§3「10b」、`Phase7-Step10a-Completion-Report.md` §5、`Phase7-Residual-Ledger.md` §3・§13  
-状態: **計画書の作成まで（調査完了）。Q1〜Q8 の承認待ち。実装は未着手。**
+状態: **Q1〜Q8 は推奨どおり承認（2026-10-18。Q3 の `OnSubPropertyChanged` の削除を含む）。W1 実装済み（ビルド・テスト待ち）。次は W2。**
 
 ---
 
@@ -100,6 +100,7 @@
 ### Q8. Wave の構成
 - 推奨: **A. 次の 5 Wave。各 Wave の後にユーザーがビルド・テストを実行する**。
   - W1: `X360ControlTables`／`DS4ControlNames`（表と変換の移動。`BackingStore`、`ProfileSettingsService`、画面、テストの切り替え）。
+    - 調査で判明: 1 引数の `getX360ControlString`（XML 保存用の名前。`BackingStore` のインスタンスメソッドへ `Global` が委譲していた）も状態を持たない純粋な switch のため、`X360ControlTables` へ移した（`BackingStore` から削除。呼び出しは `BackingStore.cs:1539` と `PressKeyViewModel`）。
   - W2: `TrayIconResources`／`ColorUtil`（アイコンの表、色の関数）。
   - W3: 契約の整理（`OnSubPropertyChanged` の削除、`ProfileApplicationService` の未使用の依存、`OutputSlotChanged` の TODO 更新）。
   - W4: `UsingMaxControllers` の接続（3 箇所）と `USING_MAX_CONTROLLERS` の削除、孤立定数の整理。

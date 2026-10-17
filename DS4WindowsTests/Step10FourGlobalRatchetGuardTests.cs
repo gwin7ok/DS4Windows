@@ -108,7 +108,8 @@ namespace DS4WindowsTests
             // 26: 名前変更の伝播（ReplaceProfileSwitchTarget。Phase6-Step10-4-5d）で、Global.store への委譲を 2 件追加（薄いシムの性質。24 → 26）
             ["DS4Windows/DS4Control/Services/ProfileRepository.cs"] = (0, 0, 0),
             // Phase7-Step2 W1: コピー版 GetReverseX360ButtonMapping の削除で Global.reverseX360ButtonMapping の参照 1 件を削除（5 → 4）
-            ["DS4Windows/DS4Control/Services/ProfileSettingsService.cs"] = (0, 0, 3),
+            // Phase7-Step10b W1: 表と変換（defaultButtonMapping／reverseX360ButtonMapping／getX360ControlString ほか）を X360ControlTables／DS4ControlNames へ移した（ProfileSettingsService 3 → 1、MappedControl 3 → 0、RecordBoxViewModel 1 → 0、PressKeyViewModel 7 → 0）
+            ["DS4Windows/DS4Control/Services/ProfileSettingsService.cs"] = (0, 0, 1),
             ["DS4Windows/DS4Control/Services/ProfileSlotApplier.cs"] = (0, 0, 0),
             // Phase7-Step5 W2: Global.Load/SaveControllerConfigs の削除に伴い、BackingStore を直接呼ぶ形に（2 → 0）
             ["DS4Windows/DS4Control/Services/ProfileXmlStore.cs"] = (0, 0, 0),
@@ -133,13 +134,13 @@ namespace DS4WindowsTests
             ["DS4Windows/DS4Forms/ViewModels/ControllerListViewModel.cs"] = (0, 0, 0),
             ["DS4Windows/DS4Forms/ViewModels/LanguagePackViewModel.cs"] = (0, 0, 3),
             ["DS4Windows/DS4Forms/ViewModels/MacroStepItem.cs"] = (0, 0, 0),
-            ["DS4Windows/DS4Forms/ViewModels/MappedControl.cs"] = (0, 0, 3),
+            ["DS4Windows/DS4Forms/ViewModels/MappedControl.cs"] = (0, 0, 0),
             ["DS4Windows/DS4Forms/ViewModels/MappingListViewModel.cs"] = (0, 0, 0),
             ["DS4Windows/DS4Forms/ViewModels/ProfileSettingsViewModel.cs"] = (0, 0, 0),
-            ["DS4Windows/DS4Forms/ViewModels/RecordBoxViewModel.cs"] = (0, 0, 1),
+            ["DS4Windows/DS4Forms/ViewModels/RecordBoxViewModel.cs"] = (0, 0, 0),
             ["DS4Windows/DS4Forms/ViewModels/SpecialActions/CheckBatteryViewModel.cs"] = (0, 0, 1),
             ["DS4Windows/DS4Forms/ViewModels/SpecialActions/LaunchProgramViewModel.cs"] = (0, 0, 1),
-            ["DS4Windows/DS4Forms/ViewModels/SpecialActions/PressKeyViewModel.cs"] = (0, 0, 7),
+            ["DS4Windows/DS4Forms/ViewModels/SpecialActions/PressKeyViewModel.cs"] = (0, 0, 0),
             ["DS4Windows/DS4Forms/ViewModels/SpecialActions/SpecialActionViewModel.cs"] = (0, 0, 1),
             ["DS4Windows/DS4Forms/ViewModels/TrayIconViewModel.cs"] = (0, 0, 0),
             // Phase6-Step12: デバウンス時間の通知経路の削除で、Global.DebouncingMsChanged／DebouncingMs の参照 2 件を削除（3 → 1）

@@ -496,7 +496,7 @@ namespace DS4Windows
 
         public X360Controls[] GetDefaultButtonMapping()
         {
-            return (X360Controls[])Global.defaultButtonMapping.Clone();
+            return (X360Controls[])X360ControlTables.defaultButtonMapping.Clone();
         }
 
         // Phase6-Step9-1: Global.RefreshActionAlias への薄い委譲
@@ -505,7 +505,7 @@ namespace DS4Windows
 
         // コピーしない版（Phase6-Step3-6a、決定 R1）。Global.reverseX360ButtonMapping は起動時に作られて以後変化しない定数表。
         // 元の Global.reverseX360ButtonMapping（素の public static 配列）と同じく、参照をそのまま返す。
-        public DS4Controls[] ReverseX360ButtonMapping => Global.reverseX360ButtonMapping;
+        public DS4Controls[] ReverseX360ButtonMapping => X360ControlTables.reverseX360ButtonMapping;
 
         // ---- Phase6-Step2-2 (PR-2): 接続時のエクストラボタン再構築 ----
         public void RefreshExtrasButtons(int deviceIndex, List<DS4Controls> buttons)

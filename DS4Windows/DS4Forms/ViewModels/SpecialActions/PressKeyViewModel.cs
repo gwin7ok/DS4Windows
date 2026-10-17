@@ -115,11 +115,11 @@ namespace DS4WinWPF.DS4Forms.ViewModels.SpecialActions
                         string btnName;
                         if (editorDeviceNum >= 0 && editorDeviceNum < profileSettingsService.OutContType.Length)
                         {
-                            btnName = Global.getX360ControlString((X360Controls)lastActionBtn, profileSettingsService.OutContType[editorDeviceNum]);
+                            btnName = X360ControlTables.getX360ControlString((X360Controls)lastActionBtn, profileSettingsService.OutContType[editorDeviceNum]);
                         }
                         else
                         {
-                            btnName = Global.getX360ControlString((X360Controls)lastActionBtn);
+                            btnName = X360ControlTables.getX360ControlString((X360Controls)lastActionBtn);
                         }
 
                         // Display mode suffix: (Toggle) or (Press)
@@ -153,11 +153,11 @@ namespace DS4WinWPF.DS4Forms.ViewModels.SpecialActions
                 {
                     if (editorDeviceNum >= 0 && editorDeviceNum < profileSettingsService.OutContType.Length)
                     {
-                        describeText = Global.getX360ControlString((X360Controls)lastActionBtn, profileSettingsService.OutContType[editorDeviceNum]);
+                        describeText = X360ControlTables.getX360ControlString((X360Controls)lastActionBtn, profileSettingsService.OutContType[editorDeviceNum]);
                     }
                     else
                     {
-                        describeText = Global.getX360ControlString((X360Controls)lastActionBtn);
+                        describeText = X360ControlTables.getX360ControlString((X360Controls)lastActionBtn);
                     }
                 }
                 catch
@@ -219,16 +219,16 @@ namespace DS4WinWPF.DS4Forms.ViewModels.SpecialActions
                 {
                     if (deviceNum >= 0)
                     {
-                        btnName = Global.getX360ControlString((X360Controls)settings.action.actionBtn, outputSlotService.OutDevTypeTemp[deviceNum]);
+                        btnName = X360ControlTables.getX360ControlString((X360Controls)settings.action.actionBtn, outputSlotService.OutDevTypeTemp[deviceNum]);
                     }
                     else
                     {
-                        btnName = Global.getX360ControlString((X360Controls)settings.action.actionBtn);
+                        btnName = X360ControlTables.getX360ControlString((X360Controls)settings.action.actionBtn);
                     }
                 }
                 catch
                 {
-                    btnName = Global.getX360ControlString((X360Controls)settings.action.actionBtn);
+                    btnName = X360ControlTables.getX360ControlString((X360Controls)settings.action.actionBtn);
                 }
 
                 describeText = btnName;

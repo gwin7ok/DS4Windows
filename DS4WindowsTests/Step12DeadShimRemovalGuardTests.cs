@@ -74,6 +74,8 @@ namespace DS4WindowsTests
             // Phase7-Step10a W4（定数 5 つ・資源パスの定数 2 つ・Clamp。移し先は ControllerLimits／ResourcePaths／NumericUtil）
             "MAX_DS4_CONTROLLER_COUNT", "TEST_PROFILE_ITEM_COUNT", "TEST_PROFILE_INDEX", "OLD_XINPUT_CONTROLLER_COUNT",
             "DS4_STICK_AXIS_MIDPOINT", "ASSEMBLY_RESOURCE_PREFIX", "RESOURCES_PREFIX", "Clamp",
+            // Phase7-Step10b W1（表と変換。移し先は X360ControlTables／DS4ControlNames）
+            "defaultButtonMapping", "reverseX360ButtonMapping", "xboxDefaultNames", "ds4DefaultNames", "ds4inputNames", "macroDS4Values", "getX360ControlString",
         };
 
         private static readonly string[] RemovedFiles =
