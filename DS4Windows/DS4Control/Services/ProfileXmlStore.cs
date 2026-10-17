@@ -10,6 +10,8 @@ namespace DS4Windows
         private readonly Services.ControllerConfigsXmlSerializer _controllerConfigsXml;
         // Phase7-Step10c W3: アプリ設定（Profiles.xml）の保存・読込（旧: BackingStore.Load／Save）
         private readonly Services.AppSettingsXmlSerializer _appSettingsXml;
+        // Phase7-Step10c W4: プロファイル（旧形式の XML）の読込（旧: BackingStore.LoadProfile）
+        private readonly Services.LegacyProfileXmlSerializer _legacyProfileXml;
 
         // Phase 5 ガードレール: Profiles.xml に対する同一プロセス内の並行アクセス競合を防ぐための静的排他ロックオブジェクト
         // (Step6: AppSettingsService との同一ファイル排他ロック共有)
@@ -17,8 +19,9 @@ namespace DS4Windows
 
         // Phase7-Step3 W1: 任意引数＋Global 経由のフォールバックを廃止し、BackingStore を必須にした（Pure DI）。
         public ProfileXmlStore(BackingStore backingStore, Services.ControllerConfigsXmlSerializer controllerConfigsXml,
-            Services.AppSettingsXmlSerializer appSettingsXml)
+            Services.AppSettingsXmlSerializer appSettingsXml, Services.LegacyProfileXmlSerializer legacyProfileXml)
         {
+            _legacyProfileXml = legacyProfileXml ?? throw new ArgumentNullException(nameof(legacyProfileXml));
             _appSettingsXml = appSettingsXml ?? throw new ArgumentNullException(nameof(appSettingsXml));
             _controllerConfigsXml = controllerConfigsXml ?? throw new ArgumentNullException(nameof(controllerConfigsXml));
             _backingStore = backingStore ?? throw new ArgumentNullException(nameof(backingStore));
@@ -31,7 +34,7 @@ namespace DS4Windows
             {
                 try
                 {
-                    return _backingStore.LoadProfile(deviceIndex, launchProgram, control,
+                    return _legacyProfileXml.LoadProfile(deviceIndex, launchProgram, control,
                         overridePath, xinputChange, postLoad);
                 }
                 catch (Exception ex)

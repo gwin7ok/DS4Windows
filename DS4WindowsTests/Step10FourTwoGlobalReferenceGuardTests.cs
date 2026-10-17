@@ -100,19 +100,22 @@ namespace DS4WindowsTests
             var store = TestRepositoryFactory.CreateProfileXmlStore(config);
             var linkedXml = TestRepositoryFactory.CreateLinkedProfilesXml(config);
             var actionsXml = TestRepositoryFactory.CreateActionsXml(config);
+            var legacyXml = TestRepositoryFactory.CreateLegacyProfileXml(config);
             var path = new PathService();
             Func<ControlService> control = () => null;
 
-            Assert.Throws<ArgumentNullException>(() => new ProfileRepository(null, settings, store, path, control, linkedXml, actionsXml));
-            Assert.Throws<ArgumentNullException>(() => new ProfileXmlStore(null, new DS4Windows.Services.ControllerConfigsXmlSerializer(config), TestRepositoryFactory.CreateAppSettingsXml(config)));
-            Assert.Throws<ArgumentNullException>(() => new ProfileXmlStore(config, null, TestRepositoryFactory.CreateAppSettingsXml(config)));
-            Assert.Throws<ArgumentNullException>(() => new ProfileXmlStore(config, new DS4Windows.Services.ControllerConfigsXmlSerializer(config), null));
-            Assert.Throws<ArgumentNullException>(() => new ProfileRepository(config, settings, store, path, null, linkedXml, actionsXml));
-            Assert.Throws<ArgumentNullException>(() => new ProfileRepository(config, null, store, path, control, linkedXml, actionsXml));
-            Assert.Throws<ArgumentNullException>(() => new ProfileRepository(config, settings, null, path, control, linkedXml, actionsXml));
-            Assert.Throws<ArgumentNullException>(() => new ProfileRepository(config, settings, store, null, control, linkedXml, actionsXml));
-            Assert.Throws<ArgumentNullException>(() => new ProfileRepository(config, settings, store, path, control, null, actionsXml));
-            Assert.Throws<ArgumentNullException>(() => new ProfileRepository(config, settings, store, path, control, linkedXml, null));
+            Assert.Throws<ArgumentNullException>(() => new ProfileRepository(null, settings, store, path, control, linkedXml, actionsXml, legacyXml));
+            Assert.Throws<ArgumentNullException>(() => new ProfileXmlStore(null, new DS4Windows.Services.ControllerConfigsXmlSerializer(config), TestRepositoryFactory.CreateAppSettingsXml(config), TestRepositoryFactory.CreateLegacyProfileXml(config)));
+            Assert.Throws<ArgumentNullException>(() => new ProfileXmlStore(config, null, TestRepositoryFactory.CreateAppSettingsXml(config), TestRepositoryFactory.CreateLegacyProfileXml(config)));
+            Assert.Throws<ArgumentNullException>(() => new ProfileXmlStore(config, new DS4Windows.Services.ControllerConfigsXmlSerializer(config), null, TestRepositoryFactory.CreateLegacyProfileXml(config)));
+            Assert.Throws<ArgumentNullException>(() => new ProfileXmlStore(config, new DS4Windows.Services.ControllerConfigsXmlSerializer(config), TestRepositoryFactory.CreateAppSettingsXml(config), null));
+            Assert.Throws<ArgumentNullException>(() => new ProfileRepository(config, settings, store, path, null, linkedXml, actionsXml, legacyXml));
+            Assert.Throws<ArgumentNullException>(() => new ProfileRepository(config, null, store, path, control, linkedXml, actionsXml, legacyXml));
+            Assert.Throws<ArgumentNullException>(() => new ProfileRepository(config, settings, null, path, control, linkedXml, actionsXml, legacyXml));
+            Assert.Throws<ArgumentNullException>(() => new ProfileRepository(config, settings, store, null, control, linkedXml, actionsXml, legacyXml));
+            Assert.Throws<ArgumentNullException>(() => new ProfileRepository(config, settings, store, path, control, null, actionsXml, legacyXml));
+            Assert.Throws<ArgumentNullException>(() => new ProfileRepository(config, settings, store, path, control, linkedXml, null, legacyXml));
+            Assert.Throws<ArgumentNullException>(() => new ProfileRepository(config, settings, store, path, control, linkedXml, actionsXml, null));
             Assert.Throws<ArgumentNullException>(() => new ProfileActionProvider(null));
             Assert.Throws<ArgumentNullException>(() => new DS4WinWPF.AutoProfileHolder(null, new EnvironmentService()));
         }

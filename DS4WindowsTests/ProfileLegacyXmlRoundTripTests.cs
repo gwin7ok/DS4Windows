@@ -20,8 +20,20 @@ namespace DS4WindowsTests
         private static readonly FieldInfo XdocField =
             typeof(BackingStore).GetField("m_Xdoc", BindingFlags.Instance | BindingFlags.NonPublic);
 
+        // Phase7-Step10c W4: 読込（LoadLegacyExtraSettings）は LegacyProfileXmlSerializer へ移した。作業用の XmlDocument はその m_Xdoc
+        private static readonly FieldInfo SerializerXdocField =
+            typeof(DS4Windows.Services.LegacyProfileXmlSerializer).GetField("m_Xdoc", BindingFlags.Instance | BindingFlags.NonPublic);
+
+        private static DS4Windows.Services.LegacyProfileXmlSerializer NewSerializer(BackingStore store, XmlDocument doc)
+        {
+            var serializer = TestRepositoryFactory.CreateLegacyProfileXml(store);
+            SerializerXdocField.SetValue(serializer, doc);
+            return serializer;
+        }
+
+        // ResetProfile は、プロファイルの読込を担う型が呼ぶため公開にした（Phase7-Step10c W4）
         private static readonly MethodInfo ResetProfileMethod =
-            typeof(BackingStore).GetMethod("ResetProfile", BindingFlags.Instance | BindingFlags.NonPublic);
+            typeof(BackingStore).GetMethod("ResetProfile", BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic);
 
         private static XmlDocument NewDocument(BackingStore store)
         {
@@ -55,9 +67,9 @@ namespace DS4WindowsTests
             source.SaveLegacyExtraSettings(doc.DocumentElement, Device);
 
             var target = new BackingStore();
-            XdocField.SetValue(target, doc);
+            var targetXml = NewSerializer(target, doc);
             ResetProfile(target);
-            target.LoadLegacyExtraSettings(Device, Root);
+            targetXml.LoadLegacyExtraSettings(Device, Root);
 
             Assert.Equal(500, target.debouncingMs[Device]);
             Assert.True(target.inverseRumbleMotors[Device]);
@@ -95,9 +107,9 @@ namespace DS4WindowsTests
             store.gyroMouseInfo[Device].jitterCompensation = !GyroMouseInfo.JITTER_COMPENSATION_DEFAULT;
             store.gyroMStickInfo[Device].jitterCompensation = !GyroMouseStickInfo.JITTER_COMPENSATION_DEFAULT;
 
-            NewDocument(store);
+            var xml = NewSerializer(store, NewDocument(store));
             ResetProfile(store);
-            store.LoadLegacyExtraSettings(Device, Root);
+            xml.LoadLegacyExtraSettings(Device, Root);
 
             Assert.Equal(0, store.debouncingMs[Device]);
             Assert.False(store.inverseRumbleMotors[Device]);
@@ -113,6 +125,7 @@ namespace DS4WindowsTests
         {
             var store = new BackingStore();
             XmlDocument doc = NewDocument(store);
+            var xml = NewSerializer(store, doc);
             ResetProfile(store);
 
             void Add(string name, string value)
@@ -127,7 +140,7 @@ namespace DS4WindowsTests
             Add("DS4OutputTriggerMode", "NoSuchMode");
             Add("InverseRumbleMotors", "maybe");
 
-            store.LoadLegacyExtraSettings(Device, Root);
+            xml.LoadLegacyExtraSettings(Device, Root);
 
             Assert.Equal(0, store.debouncingMs[Device]);
             Assert.Equal(0, store.leftStickDriftXAxis[Device]);
@@ -140,13 +153,14 @@ namespace DS4WindowsTests
         {
             var store = new BackingStore();
             XmlDocument doc = NewDocument(store);
+            var xml = NewSerializer(store, doc);
             ResetProfile(store);
 
             XmlElement element = doc.CreateElement("DebouncingMs");
             element.InnerText = "5000";
             doc.DocumentElement.AppendChild(element);
 
-            store.LoadLegacyExtraSettings(Device, Root);
+            xml.LoadLegacyExtraSettings(Device, Root);
 
             Assert.Equal(1000, store.debouncingMs[Device]);
         }
@@ -155,10 +169,12 @@ namespace DS4WindowsTests
         public void SaveProfileAndLoadProfile_CallTheExtraSettingsHelpers()
         {
             // 往復テストは補助メソッド単体の確認。SaveProfile／LoadProfile から呼ばれていることは、ソース走査で固定する。
+            // Phase7-Step10c W4: 読込側は LegacyProfileXmlSerializer へ移した（保存側は W5 まで BackingStore）。両方のソースを合わせて確認する
             string path = SourceFileLocator.Find("DS4Windows/DS4Control/BackingStore.cs");
-            if (path == null) return;
+            string serializerPath = SourceFileLocator.Find("DS4Windows/DS4Control/Services/LegacyProfileXmlSerializer.cs");
+            if (path == null || serializerPath == null) return;
 
-            string text = File.ReadAllText(path);
+            string text = File.ReadAllText(path) + File.ReadAllText(serializerPath);
             Assert.Contains("SaveLegacyExtraSettings(rootElement, device);", text);
             Assert.Contains("LoadLegacyExtraSettings(device, rootname);", text);
         }

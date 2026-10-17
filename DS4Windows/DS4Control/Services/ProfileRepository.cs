@@ -21,12 +21,16 @@ namespace DS4Windows
         // Phase7-Step10c W2: リンクプロファイル・Actions.xml の保存・読込（旧: BackingStore のメソッド）
         private readonly Services.LinkedProfilesXmlSerializer _linkedProfilesXml;
         private readonly Services.SpecialActionsXmlSerializer _actionsXml;
+        // Phase7-Step10c W4: プロファイル（旧形式の XML）の読込（旧: BackingStore.LoadProfile）
+        private readonly Services.LegacyProfileXmlSerializer _legacyProfileXml;
 
         public ProfileRepository(BackingStore config, IProfileSettingsService profileSettings,
             IProfileXmlStore profileXmlStore, IPathService pathService,
             Func<ControlService> controlProvider,
-            Services.LinkedProfilesXmlSerializer linkedProfilesXml, Services.SpecialActionsXmlSerializer actionsXml)
+            Services.LinkedProfilesXmlSerializer linkedProfilesXml, Services.SpecialActionsXmlSerializer actionsXml,
+            Services.LegacyProfileXmlSerializer legacyProfileXml)
         {
+            _legacyProfileXml = legacyProfileXml ?? throw new ArgumentNullException(nameof(legacyProfileXml));
             _linkedProfilesXml = linkedProfilesXml ?? throw new ArgumentNullException(nameof(linkedProfilesXml));
             _actionsXml = actionsXml ?? throw new ArgumentNullException(nameof(actionsXml));
             _config = config ?? throw new ArgumentNullException(nameof(config));
@@ -271,7 +275,7 @@ namespace DS4Windows
         public bool LoadTempProfile(int deviceIndex, string profileName, bool launchProgram, ControlService control, bool xinputChange = true)
         {
             _config.loggedInvalidActions.Clear();
-            bool result = _config.LoadProfile(deviceIndex, launchProgram, control, Path.Combine(ProfilesPath, $"{profileName}.xml"));
+            bool result = _legacyProfileXml.LoadProfile(deviceIndex, launchProgram, control, Path.Combine(ProfilesPath, $"{profileName}.xml"));
             if (result)
             {
                 _profileSettings.SetTempProfileName(deviceIndex, profileName);

@@ -81,6 +81,7 @@ namespace DS4Windows.DI
             services.AddSingleton<LinkedProfilesXmlSerializer>();
             services.AddSingleton<ControllerConfigsXmlSerializer>();
             services.AddSingleton<AppSettingsXmlSerializer>();
+            services.AddSingleton<LegacyProfileXmlSerializer>();
             services.AddSingleton<IProfileXmlStore, ProfileXmlStore>();
             services.AddSingleton<IProfileRepository, ProfileRepository>();
             // Phase6-Step10-2（決定 E2＝A）: プリセットの読み込み（Global.Load…Profile への薄い委譲）

@@ -61,7 +61,10 @@ namespace DS4WindowsTests
             if (store == null) return;
 
             Assert.Matches(@"public\s+OutContType\[\]\s+ActiveOutDevType\s*\{\s*get;\s*set;\s*\}", store);
-            Assert.Equal(8, Regex.Matches(store, @"OutContType oldContType = ActiveOutDevType\[device\];").Count);
+            // Phase7-Step10c W4: プロファイルの読込（1 件）は LegacyProfileXmlSerializer へ移した（store.ActiveOutDevType）。合計は変わらない
+            string serializer = Read("DS4Windows/DS4Control/Services/LegacyProfileXmlSerializer.cs");
+            if (serializer == null) return;
+            Assert.Equal(8, Regex.Matches(store + serializer, @"OutContType oldContType = (store\.)?ActiveOutDevType\[device\];").Count);
         }
 
         [Fact]

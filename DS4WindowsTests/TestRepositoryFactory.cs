@@ -33,7 +33,13 @@ namespace DS4WindowsTests
         /// <summary>Phase7-Step10c W2: ProfileXmlStore（コントローラー固有設定の保存・読込を含む）。</summary>
         public static ProfileXmlStore CreateProfileXmlStore(BackingStore store = null)
             => new ProfileXmlStore(store ?? Global.store, new DS4Windows.Services.ControllerConfigsXmlSerializer(store ?? Global.store),
-                CreateAppSettingsXml(store));
+                CreateAppSettingsXml(store), CreateLegacyProfileXml(store));
+
+        /// <summary>Phase7-Step10c W4: プロファイル（旧形式の XML）の保存・読込（旧: BackingStore のメソッド）。</summary>
+        public static DS4Windows.Services.LegacyProfileXmlSerializer CreateLegacyProfileXml(BackingStore store = null,
+            IProfileSettingsService settings = null, IPathService pathService = null)
+            => new DS4Windows.Services.LegacyProfileXmlSerializer(store ?? Global.store, pathService ?? new PathService(),
+                settings ?? Global.ProfileSettingsServiceInstance);
 
         /// <summary>Phase7-Step10c W3: アプリ設定（Profiles.xml）の保存・読込（旧: BackingStore.Load／Save）。</summary>
         public static DS4Windows.Services.AppSettingsXmlSerializer CreateAppSettingsXml(BackingStore store = null,
@@ -50,7 +56,7 @@ namespace DS4WindowsTests
                 xmlStore ?? CreateProfileXmlStore(store),
                 pathService ?? new PathService(),
                 control ?? new Func<ControlService>(() => DS4WinWPF.AppHost.GetService<ControlService>()),
-                CreateLinkedProfilesXml(store), CreateActionsXml(store));
+                CreateLinkedProfilesXml(store), CreateActionsXml(store), CreateLegacyProfileXml(store, settings, pathService));
         }
 
         public static ProfileSettingsService CreateProfileSettingsService(BackingStore store = null,
