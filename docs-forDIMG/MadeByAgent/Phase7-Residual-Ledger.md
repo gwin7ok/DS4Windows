@@ -168,3 +168,21 @@
 - ゴールデンテスト（`DS4WindowsTests/Golden/Phase7Step10c/` の 11 ファイル）: プロファイル（既定／変化させた状態の保存 XML、読込後の状態）、アプリ設定（同）、`Actions.xml`、リンクプロファイル、プリセット 10 種の読込後の状態。**対象外**: コントローラー固有設定（実機のデバイス実体が要る）。
 - 持ち越し（10d）: `BackingStore` に残る `Global` 参照 7（`appdatapath`×3［`m_Actions`／`m_linkedProfiles`／`m_controllerConfigs` の初期化子］、`ProfileSettingsServiceInstance`×2、`useDInputOnly`、`RefreshActionAlias`）、`Global.store`、環境・パスの窓口、`using static DS4Windows.Global;`、別名（上記）、`CURRENT_DS4_CONTROLLER_LIMIT`（`BackingStore` の分 7）。`configFileDecimalCulture`（9 件。DTO と画面）の置き場所。
 - 実機確認: **U-20**（設定ファイルの互換。新設・未）。
+
+## 16. Phase7-Step10d で更新した台帳（2026-10-18）
+
+- `Global.*`: 69 → **2**（残りはログ文言の文字列 `"Global.UseLang …"` 2 件。ログ内容の維持のため残し、コードの参照ではない）。`AppHost.GetService|Services` 4 → **3**（`Global.cs` の 1 件）、`Program.rootHub` 0、`ServiceProviderHolder` 17 は変更なし。Phase7 開始時（733）からの累計は −731。基準値は `Step10FourGlobalRatchetGuardTests`（`Global.cs` の行は削除。合計 0／3／2）。
+- **削除**: `Global.cs`（`DS4Windows.Global` 型）。`using static DS4Windows.Global;`（`Mapping.cs`、`DS4LightBar.cs`）。
+- **新設・移動先**:
+  - `AdminCheck`（`AdminNeeded`／`IsAdministrator`）、`DevicePathProbe`（`GetInstanceIdFromDevicePath`／`CheckIfVirtualDevice` ほか）、`ConfigFileCulture`（`DecimalCulture`）、`UiCulture`（`Set`）。いずれも `DS4Control/` の状態を持たない静的クラス。
+  - `IDeviceLayerSettings`（`DI/`）／`DeviceLayerSettings`（`DS4Control/Services/`。Singleton）: 第 1 層（`DS4Devices`／`DS4Device`／`DS4SixAxis`／`HidDevices`）が読む Moonlight・詳細ログ・デバウンス・DS3 の pitch／roll 疑似計算。`Ds4DeviceRegistryAdapter` が `DS4Devices.LayerSettings` へ渡す（引数なしのコンストラクターは `-driverinstall` 分岐の再有効化用）。
+  - 出力デバイス: `OutputDevice.SteeringWheelAxisProvider`（`OutputSlotManager` が生成時に設定。`OutputSlotManager` のコンストラクターに関数を追加）。
+  - イベント: `AppearanceSettingsService.BatteryChanged`（送信元はサービス）、`DeviceStateService.DeviceSerialChange`（`IDeviceStateService` に追加。本体に購読者なし）。`AutoProfileService.CreateAutoProfilesFile` は旧 `Global.CreateAutoProfiles` の本体。
+  - 定数: `AppSettingsDTO.AppConfigVersion`、`LanguagePackViewModel` の `ProbingPath`／`LanguageAssemblyName`（private）。`CONFIG_VERSION` ほかの別名は削除（`LegacyProfileXmlSerializer`／`AppSettingsXmlSerializer` の定数を直接使う）。
+  - `Changelog.CheckNewerVersionExists(out version, lastVersionChecked, …)`: スキップ済みバージョンを引数で受ける（呼び出し側は `IAppSettingsService.LastVersionChecked`）。
+  - `LoggerHolder(service, appSettings)`: ログ設定を `IAppSettingsService` から読む。`DS4LightBar.updateLightBar(device, deviceNum, profileSettings)`。`IProfileSettingsService.DistanceProfiles` を追加。
+- **`BackingStore`**: コンストラクターは `BackingStore(IEnvironmentService)`。スロットの上限は注入された `ControllerSlotLimit`（`ControlService.CURRENT_DS4_CONTROLLER_LIMIT` の 7 件を替えた）。`BackingStore.ProfileSettings`（`ProfileSettingsService` が生成時に登録。最初の 1 つが有効。旧 `Global.ProfileSettingsServiceInstance`）。`RefreshActionAlias` の本体は `ProfileSettingsService`。`ProcessInspector`／`ActiveOutDevType` は、理由つきでプロパティ注入のまま（`BackingStore` のコメント）。
+- **生成**: `ServiceRegistration.RegisterServices(services, existingStore = null)`。ブートストラップの `BackingStore`（`App` が最初に作る）があればそれを、なければコンテナが作る。`PathService` の `config` 引数は省略可だが、省略したインスタンスは保存場所の決定が使えない。
+- **挙動の差**: バッテリー通知の送信元（購読者は不使用）。第 1 層の設定が未設定のとき（テスト）の扱い。`ProfileSettings` のフォールバックのログは 1 度だけ。
+- 持ち越し（10e）: `ControlService.CURRENT_DS4_CONTROLLER_LIMIT`（画面・サービスの分）、`AppHost` の暗黙のホスト構築と `CreationNote`、`PathService`／`EnvironmentService` の静的な状態、`ServiceRegistration._subscribedReset`、`ColorUtil` の孤立コード、総合検証。
+- 実機確認: **U-21**（起動直後のログ設定、言語・テーマ、バッテリー表示、Moonlight、デバウンス、ライトバー、`-driverinstall`。新設・未）。

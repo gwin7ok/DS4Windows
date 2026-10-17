@@ -3,7 +3,7 @@
 作成日: 2026-10-18  
 対象ブランチ: `For-DI-migration-work`  
 上位計画: `Phase7-Step10-Plan.md`（Q1〜Q9 は推奨どおり承認。Q6＝「`Global` の削除（ゼロ）が目標」）§3「10d」、`Phase7-Step10c-Completion-Report.md` §5、`Phase7-Residual-Ledger.md` §15  
-状態: **計画書の作成まで（調査完了）。Q1〜Q9 の承認待ち。実装は未着手。**
+状態: **Q1〜Q9 は推奨どおり承認（2026-10-18）。実装完了（`Phase7-Step10d-Completion-Report.md`）。W5 と W6 は一つの Wave にした。**
 
 ---
 

@@ -568,3 +568,8 @@ classDiagram
 %%   - 呼び出し元: ProfileXmlStore（IProfileXmlStore の実装。排他ロック XmlIoLock を持つ）→ AppSettings／LegacyProfile／ControllerConfigs、ProfileRepository → LinkedProfiles／SpecialActions／LegacyProfile、SpecialActionRepository → SpecialActions、ProfilePresetLoader → ProfilePresets。
 %%   - Global のアクション保存系のシム（SaveAction ほか）と CreateStdActions を削除。ActionsLoaded イベントの発行元は BackingStore のまま（SpecialActionsXmlSerializer が RaiseActionsLoaded を呼ぶ）。
 %%   - 詳細は Phase7-Step10c-Plan.md、Phase7-Step10c-Completion-Report.md、台帳は Phase7-Residual-Ledger.md §15。
+%% Phase7-Step10d（2026-10-18）: Global の削除と BackingStore のコンストラクター注入。
+%%   - Global（Global.cs）を削除。BackingStore(IEnvironmentService)。BackingStore.ProfileSettings（ProfileSettingsService が生成時に登録）。
+%%   - 新設: IDeviceLayerSettings／DeviceLayerSettings（第 1 層の設定）、AdminCheck、DevicePathProbe、ConfigFileCulture、UiCulture。
+%%   - イベントの移行: AppearanceSettingsService.BatteryChanged、DeviceStateService.DeviceSerialChange。出力デバイスは SteeringWheelAxisProvider を受ける。
+%%   - 詳細は Phase7-Step10d-Plan.md、Phase7-Step10d-Completion-Report.md、台帳は Phase7-Residual-Ledger.md §16。
