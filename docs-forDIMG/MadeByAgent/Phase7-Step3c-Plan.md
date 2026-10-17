@@ -118,3 +118,11 @@
   - **計画との差**: `SelectedProfileChanged` のインスタンスイベント化は W4 に移した。W3 の時点では `Global.CompleteProfileApplication` がまだ静的イベントを発火するため、`ProfileRepository` の転送を残さないと購読者に届かなくなる。新しい `CompleteProfileApplication` は `_profileRepo.RaiseSelectedProfileChanged` を呼ぶ（W3 の時点では、これが `Global` の静的イベントを発火する）。
   - テスト: 特性化テストの主要 6 件を `[Theory]`（旧 `Global` と移管先の両方で同じ結果になること）に変更し、`ApplyProfileWithoutHalt` の検査テストを追加。`ProfileApplicationService` の生成 7 件を `TestRepositoryFactory.CreateProfileApplicationService` に置換。ガードテストに `loggedInvalidActions` を追記。
   - ラチェット基準値: `BackingStore` 168→166、`Global.cs` 26→24、`ProfileRepository` 5→3（`Global.*` 合計 505→499）。
+- **W4 実装済み（ビルド・テスト待ち）**: 呼び出し元の切り替えと `Global` の旧メンバーの削除。
+  - `ProfileApplicationService`: 3 箇所の `Global.ApplyProfile` を `ApplyCore` に切り替え（Halt の有無は従来どおり）。
+  - `ProfileSlotApplier`: `IProfileApplicationService` を受け取り、スロット範囲・名前の検査のあと `ApplyProfileWithoutHalt` に委譲（Q2＝A。Halt なしの動作を維持）。
+  - `Mapping.cs`: 特殊アクションの `!handled` 経路の `Global.ApplyProfile` を、すでに保持している `profileApplication.ApplyProfile(…, MappingAction, prolog)` に置換（Q3＝A。呼び出し 1 箇所だけ。前後の `HaltReportingRunAction`／`Task.Run`／後続の処理は変更なし）。
+  - `ProfileRepository.SelectedProfileChanged` を、`Global` の静的イベントの転送から、リポジトリ自身のインスタンスイベントに変更（Q5＝A。W3 で見送った分）。
+  - `Global`: `ApplyProfile`／`ApplyProfileToSlot`／`CompleteProfileApplication`／`LoadProfile`／`LoadTempProfile`／`ProfilePath`／`OlderProfilePath`／`SelectedProfile`／`SelectedProfileChanged`／`RaiseSelectedProfileChanged`／`getProfileActions`／`GetProfileAction` の 12 名と、領域マーカーを削除。
+  - テスト: 特性化テストを移管先だけ（`ApplyProfileWithoutHalt`／`ApplyProfile` の両入口、`ProfileSlotApplier`、`ProfileRepository.LoadTempProfile`）に書き換え（期待値は W1 から変更なし）。`ControlServicePr2ShimEquivalenceTests` の `ProfileSlotApplier` の確認から旧 `Global` との比較を除去。`MappingStep3FinalGlobalReferenceGuardTests` は `Global.ApplyProfile(` の出現が 0 件に変更。ほか、`Global.ProfilePath` 系の参照を `Global.store.<field>` に書き換え。ガードテストの名前一覧に 12 名を追記。
+  - ラチェット基準値: `Mapping.cs` 53→52、`ProfileApplicationService.cs` 3→0、`ProfileRepository.cs` 3→0、`ProfileSlotApplier.cs` 1→0（`Global.*` 合計 499→491）。

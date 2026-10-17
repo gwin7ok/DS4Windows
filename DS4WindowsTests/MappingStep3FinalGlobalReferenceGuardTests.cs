@@ -74,7 +74,8 @@ namespace DS4WindowsTests
 
             Assert.Equal(1, CountOccurrences(text, "Global.ProfileSettingsServiceInstance"));
             Assert.Equal(1, CountOccurrences(text, "Global.outputKBMHandler"));
-            Assert.Equal(1, CountOccurrences(text, "Global.ApplyProfile("));
+            // Phase7-Step3c W4: Global.ApplyProfile は削除し、IProfileApplicationService 経由にした
+            Assert.Equal(0, CountOccurrences(text, "Global.ApplyProfile("));
         }
 
         [Fact]
@@ -84,7 +85,6 @@ namespace DS4WindowsTests
             if (raw == null) return;
 
             Assert.Contains("TODO(Phase6-Step3-7, 温存・決定KEEP): DI ホスト未構築時", raw);
-            Assert.Contains("TODO(Phase6-Step3-7, 決定K-1):", raw);
         }
     }
 }

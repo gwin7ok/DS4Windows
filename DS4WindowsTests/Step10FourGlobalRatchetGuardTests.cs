@@ -47,7 +47,7 @@ namespace DS4WindowsTests
             ["DS4Windows/DS4Control/DTOXml/SpecialActionSerializer.cs"] = (0, 0, 2),
             // Phase6-Step10b W4: Log.cs（AppLogger／ProfileChangeSource／ProfileChangedEventArgs）は型ごとに分割。Global 1 件は AppLogger.cs
             ["DS4Windows/DS4Control/AppLogger.cs"] = (0, 0, 1),
-            ["DS4Windows/DS4Control/Mapping.cs"] = (1, 6, 53),
+            ["DS4Windows/DS4Control/Mapping.cs"] = (1, 6, 52),
             ["DS4Windows/DS4Control/Mouse.cs"] = (0, 0, 2),
             ["DS4Windows/DS4Control/MouseCursor.cs"] = (0, 0, 2),
             ["DS4Windows/DS4Control/OutputKBM/VirtualKBMFactory.cs"] = (0, 0, 1),
@@ -74,13 +74,13 @@ namespace DS4WindowsTests
             ["DS4Windows/DS4Control/Services/OutputKBMHandlerLifecycle.cs"] = (0, 0, 8),
             ["DS4Windows/DS4Control/Services/OutputSlotService.cs"] = (0, 0, 2),
             ["DS4Windows/DS4Control/Services/PathService.cs"] = (0, 0, 8),
-            ["DS4Windows/DS4Control/Services/ProfileApplicationService.cs"] = (0, 0, 3),
+            ["DS4Windows/DS4Control/Services/ProfileApplicationService.cs"] = (0, 0, 0),
             ["DS4Windows/DS4Control/Services/ProfilePresetLoader.cs"] = (0, 0, 0),
             // 26: 名前変更の伝播（ReplaceProfileSwitchTarget。Phase6-Step10-4-5d）で、Global.store への委譲を 2 件追加（薄いシムの性質。24 → 26）
-            ["DS4Windows/DS4Control/Services/ProfileRepository.cs"] = (0, 0, 3),
+            ["DS4Windows/DS4Control/Services/ProfileRepository.cs"] = (0, 0, 0),
             // Phase7-Step2 W1: コピー版 GetReverseX360ButtonMapping の削除で Global.reverseX360ButtonMapping の参照 1 件を削除（5 → 4）
             ["DS4Windows/DS4Control/Services/ProfileSettingsService.cs"] = (0, 0, 3),
-            ["DS4Windows/DS4Control/Services/ProfileSlotApplier.cs"] = (0, 0, 1),
+            ["DS4Windows/DS4Control/Services/ProfileSlotApplier.cs"] = (0, 0, 0),
             ["DS4Windows/DS4Control/Services/ProfileXmlStore.cs"] = (0, 0, 2),
             // Phase7-Step2 W7: SaveActions の削除で Global.SaveActions の参照 1 件を削除（4 → 3）
             ["DS4Windows/DS4Control/Services/SpecialActionRepository.cs"] = (0, 0, 3),

@@ -63,15 +63,13 @@ namespace DS4Windows
                     // 呼び足すと同一切替に対して二重表示になるため、以前あった追加呼び出しは撤去した。
                     device.HaltReportingRunAction(() =>
                     {
-                        // TODO(Phase7): Global.ApplyProfile は ProfileApplicationService の実装本体（Mapping の instance 化とあわせて本サービスへ移す）。
-                        Global.ApplyProfile(deviceIndex, action.details, action.IsTemporaryProfileAction, true, _control,
+                        ApplyCore(deviceIndex, action.details, action.IsTemporaryProfileAction, true, _control,
                             ProfileChangeSource.MappingAction, prolog);
                     });
                 }
                 else
                 {
-                    // TODO(Phase7): Global.ApplyProfile は ProfileApplicationService の実装本体（Mapping の instance 化とあわせて本サービスへ移す）。
-                    Global.ApplyProfile(deviceIndex, action.details, action.IsTemporaryProfileAction, true, _control,
+                    ApplyCore(deviceIndex, action.details, action.IsTemporaryProfileAction, true, _control,
                         ProfileChangeSource.MappingAction, prolog);
                 }
             });
@@ -126,8 +124,7 @@ namespace DS4Windows
 
                 Action applyAction = () =>
                 {
-                    // TODO(Phase7): Global.ApplyProfile は ProfileApplicationService の実装本体（Mapping の instance 化とあわせて本サービスへ移す）。
-                    success = Global.ApplyProfile(deviceIndex, profileName, isTemp, launchProgram,
+                    success = ApplyCore(deviceIndex, profileName, isTemp, launchProgram,
                         _control, source, prolog);
                 };
 
@@ -163,7 +160,7 @@ namespace DS4Windows
         }
 
         // ---- Phase7-Step3c W3: 旧 Global.ApplyProfile／LoadProfile／CompleteProfileApplication の処理 ----
-        // 手順・ログ・順序は旧 Global と同一。呼び出し元の切り替え（ProfileSlotApplier／Mapping／本サービスの既存の入口）は W4 で行う。
+        // 手順・ログ・順序は旧 Global と同一。W4 で、呼び出し元（ProfileSlotApplier／Mapping／本サービスの既存の入口）をここへ切り替え、旧 Global の該当メンバーを削除した。
         // 静的な ActionManager／Mapping の呼び出しは、それぞれ Phase8／Phase7-Step7〜9 で解消するまで残す。
 
         private bool ApplyCore(int device, string profileName, bool isTemp, bool launchProgram,

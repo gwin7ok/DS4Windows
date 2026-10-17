@@ -155,9 +155,9 @@ namespace DS4WindowsTests
         public void ProfilePath_ShouldReferenceSameArrayAsGlobal()
         {
             var repository = TestRepositoryFactory.CreateProfileRepository(TestRepositoryFactory.CreateProfileSettingsService());
-            Assert.Same(Global.ProfilePath, repository.ProfilePath);
-            Assert.Same(Global.OlderProfilePath, repository.OlderProfilePath);
-            Assert.Same(Global.SelectedProfile, repository.SelectedProfile);
+            Assert.Same(Global.store.profilePath, repository.ProfilePath);
+            Assert.Same(Global.store.olderProfilePath, repository.OlderProfilePath);
+            Assert.Same(Global.store.selectedProfile, repository.SelectedProfile);
             Assert.Same(Global.store.linkedProfileUI, repository.LinkedProfileUI);
         }
 

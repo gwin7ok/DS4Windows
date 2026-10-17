@@ -5164,12 +5164,9 @@ namespace DS4Windows
 
                                         if (!handled)
                                         {
-                                            // フォールバック: DI未登録時は従来の直接 ApplyProfile 呼び出し
-                                            // TODO(Phase6-Step3-7, 決定K-1): IProfileApplicationService.ApplyProfile の既知の不具合K1
-                                            // （Phase6-Status.md §6.5: deviceIndex>=4 のスロットを拒否・戻り値を捨てて成功扱い・Halt を自身で行わない）が
-                                            // 是正されるまで、このフォールバックは `Global.ApplyProfile` のまま温存する（Phase6-Step3-Plan.md §2.4.3）。
-                                            // K1 是正後に、本ファイル冒頭で解決済みの静的フィールド `profileApplication`（IProfileApplicationService）の
-                                            // `ApplyProfile` 呼び出しへ置換予定。
+                                            // Phase7-Step3c W4: 旧 Global.ApplyProfile の直接呼び出しを、DI の IProfileApplicationService.ApplyProfile に置き換えた。
+                                            // source が MappingAction のときサービスは Halt しない（下の HaltReportingRunAction の内側で、従来と同じ順序で適用する）。
+                                            // K1（スロット 5〜8 の拒否など）は Phase6-Step10-4-2f で是正済み。
                                             DS4Device d = ctrl.DS4Controllers[device];
                                             string prolog = string.Format(DS4WinWPF.Properties.Resources.UsingProfile,
                                                 (device + 1).ToString(), action.details, $"{d.Battery}");
@@ -5179,7 +5176,7 @@ namespace DS4Windows
                                             {
                                                 d.HaltReportingRunAction(() =>
                                                 {
-                                                    Global.ApplyProfile(device, action.details, action.IsTemporaryProfileAction, true, ctrl,
+                                                    profileApplication.ApplyProfile(device, action.details, action.IsTemporaryProfileAction, true,
                                                         DS4Windows.ProfileChangeSource.MappingAction, prolog);
 
                                                     if (action.uTrigger.Count == 0 && !action.automaticUntrigger)

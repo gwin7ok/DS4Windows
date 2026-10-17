@@ -107,6 +107,13 @@ namespace DS4WindowsTests
                 store ?? Global.store);
         }
 
+        public static ProfileSlotApplier CreateProfileSlotApplier(IProfileApplicationService profileApplication = null)
+        {
+            var settings = Global.ProfileSettingsServiceInstance;
+            return new ProfileSlotApplier(profileApplication ?? CreateProfileApplicationService(settings,
+                CreateDeviceStateService(), () => Program.rootHub, CreateProfileRepository(settings), new EnvironmentService()));
+        }
+
         public static AppearanceSettingsService CreateAppearanceSettingsService(BackingStore store = null)
         {
             return new AppearanceSettingsService(store ?? Global.store);

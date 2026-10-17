@@ -47,6 +47,10 @@ namespace DS4WindowsTests
             "LoadDefaultDS4MixedGyroMouseProfile", "LoadDefaultKBMProfile", "LoadDefaultKBMGyroMouseProfile",
             // Step3c W3: BackingStore のインスタンスのフィールドに移した
             "loggedInvalidActions",
+            // Step3c W4: プロファイル適用（ProfileApplicationService／ProfileRepository／ProfileSlotApplier へ移した）
+            "ApplyProfile", "ApplyProfileToSlot", "CompleteProfileApplication", "LoadProfile", "LoadTempProfile",
+            "ProfilePath", "OlderProfilePath", "SelectedProfile", "SelectedProfileChanged", "RaiseSelectedProfileChanged",
+            "getProfileActions", "GetProfileAction",
         };
 
         private readonly ITestOutputHelper _output;

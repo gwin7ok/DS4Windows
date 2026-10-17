@@ -17,7 +17,7 @@ namespace DS4WindowsTests
         private readonly AppSettingsService _appSettings = TestRepositoryFactory.CreateAppSettingsService();
         private readonly DeviceStateService _deviceState = TestRepositoryFactory.CreateDeviceStateService();
         private readonly ProfileRepository _profileRepository = TestRepositoryFactory.CreateProfileRepository();
-        private readonly ProfileSlotApplier _slotApplier = new ProfileSlotApplier();
+        private readonly ProfileSlotApplier _slotApplier = TestRepositoryFactory.CreateProfileSlotApplier();
 
         [Fact]
         public void UDPServerSmoothingMincutoff_SharesStateWithGlobal()
@@ -129,14 +129,12 @@ namespace DS4WindowsTests
         }
 
         [Fact]
-        public void ProfileSlotApplier_InvalidArguments_MatchesGlobalEarlyReturn()
+        public void ProfileSlotApplier_InvalidArguments_ReturnsFalseWithoutSideEffects()
         {
-            // 範囲外スロット・空のプロファイル名は Global.ApplyProfileToSlot が副作用なしで false を返す。
-            // ポート経由でも同じ結果になること（委譲の等価性）。
-            Assert.False(Global.ApplyProfileToSlot(-1, "x", ProfileChangeSource.ControlService));
+            // 範囲外スロット・空のプロファイル名は、副作用なしで false を返す（旧 Global.ApplyProfileToSlot と同じ。
+            // Phase7-Step3c W4 で旧メンバーを削除したため、ポートだけを確認する）。
             Assert.False(_slotApplier.ApplyToSlot(-1, "x", ProfileChangeSource.ControlService));
 
-            Assert.False(Global.ApplyProfileToSlot(0, "  ", ProfileChangeSource.ControlService));
             Assert.False(_slotApplier.ApplyToSlot(0, "  ", ProfileChangeSource.ControlService));
 
             Assert.False(_slotApplier.ApplyToSlot(int.MaxValue, "x", ProfileChangeSource.ControlService));

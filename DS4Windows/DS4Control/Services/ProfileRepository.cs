@@ -153,14 +153,12 @@ namespace DS4Windows
         public string[] SelectedProfile => _config.selectedProfile;
         public string[] LinkedProfileUI => _config.linkedProfileUI;
 
-        public event EventHandler<SelectedProfileChangedEventArgs> SelectedProfileChanged
-        {
-            add => Global.SelectedProfileChanged += value;
-            remove => Global.SelectedProfileChanged -= value;
-        }
+        // Phase7-Step3c W4: Global の静的イベントから、このリポジトリ（DI のシングルトン）のインスタンスイベントにした。
+        // 発火元は ProfileApplicationService（RaiseSelectedProfileChanged 経由）。購読者は ControllerListViewModel のみ。
+        public event EventHandler<SelectedProfileChangedEventArgs> SelectedProfileChanged;
 
         public void RaiseSelectedProfileChanged(int deviceIndex, string profileName)
-            => Global.RaiseSelectedProfileChanged(deviceIndex, profileName);
+            => SelectedProfileChanged?.Invoke(this, new SelectedProfileChangedEventArgs(deviceIndex, profileName));
 
         // ---- Phase5-Step13-2: LinkedProfile（コントローラーMAC単位のプロファイル紐付け）管理 ----
         // Phase7-Step3 W5: 旧 Global.changeLinkedProfile／removeLinkedProfile／containsLinkedProfile／getLinkedProfile の処理

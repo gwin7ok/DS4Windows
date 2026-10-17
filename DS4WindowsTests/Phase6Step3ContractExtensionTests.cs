@@ -61,7 +61,7 @@ namespace DS4WindowsTests
 
                 // Global.getProfileActions と同じ実体参照を返す（ToArray() 等でコピーしない）ことを検証する。
                 Assert.Same(list, _actionProvider.GetProfileActionsRaw(slot));
-                Assert.Same(Global.getProfileActions(slot), _actionProvider.GetProfileActionsRaw(slot));
+                Assert.Same(Global.store.profileActions[slot], _actionProvider.GetProfileActionsRaw(slot));
             }
             finally
             {
