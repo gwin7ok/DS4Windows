@@ -16,11 +16,7 @@ namespace DS4Windows.Services
             {
                 SyntheticInputState.Shared.ResetAll();
                 try { ActionManager.ClearAllToggledOn(); } catch { }
-                // TODO(Phase7-Step7 W3): macrodone は MacroRuntimeState へ移す。
-                if (Mapping.macrodone != null)
-                {
-                    for (int i = 0; i < Mapping.macrodone.Length; i++) Mapping.macrodone[i] = false;
-                }
+                MacroRuntimeState.Shared.ClearMacroDone();
                 AppLogger.LogToGui("Runtime synthetic state reset after Actions load", false);
             }
             catch { }

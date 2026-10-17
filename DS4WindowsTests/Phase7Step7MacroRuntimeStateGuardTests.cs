@@ -1,0 +1,90 @@
+using System.IO;
+using System.Text.RegularExpressions;
+using Xunit;
+using Xunit.Abstractions;
+
+namespace DS4WindowsTests
+{
+    /// <summary>
+    /// Phase7-Step7 W3: マクロの実行時状態（macrodone／macroDispatchInFlight／macroDispatchLock／macroControl／macroCount／macroTaskQueue）を
+    /// <c>MacroRuntimeState</c> へ切り出したことの回帰ガード。
+    /// ソースが見つからない環境では、ソース検査を行わず合格とする。判断の根拠は Phase7-Step7-Plan.md（Q2・Q3）。
+    /// </summary>
+    public class Phase7Step7MacroRuntimeStateGuardTests
+    {
+        private readonly ITestOutputHelper _output;
+
+        public Phase7Step7MacroRuntimeStateGuardTests(ITestOutputHelper output)
+        {
+            _output = output;
+        }
+
+        private string Read(string relativePath)
+        {
+            string path = SourceFileLocator.Find(relativePath);
+            if (path == null)
+            {
+                _output.WriteLine("ソースが見つからないため検査を省略した: " + relativePath);
+                return null;
+            }
+
+            string text = File.ReadAllText(path);
+            text = Regex.Replace(text, @"/\*.*?\*/", string.Empty, RegexOptions.Singleline);
+            return Regex.Replace(text, @"//[^\r\n]*", string.Empty);
+        }
+
+        [Fact]
+        public void Shared_HasTheSameShapeAsTheOldStaticFields()
+        {
+            var state = MacroRuntimeState.Shared;
+
+            Assert.Equal(52, MacroRuntimeState.ControlArrayLength);
+            Assert.Equal(52, state.MacroDone.Length);
+            Assert.Equal(52, state.DispatchInFlight.Length);
+            Assert.Equal(26, state.MacroControl.Length);
+            Assert.NotNull(state.DispatchLock);
+            Assert.Equal(DS4Windows.Global.MAX_DS4_CONTROLLER_COUNT, state.TaskQueue.Length);
+            Assert.All(state.TaskQueue, q => Assert.NotNull(q));
+
+            // 参照は安定（再代入されない）
+            Assert.Same(state.MacroDone, MacroRuntimeState.Shared.MacroDone);
+            Assert.Same(state.TaskQueue, MacroRuntimeState.Shared.TaskQueue);
+        }
+
+        [Fact]
+        public void ClearMacroDone_ResetsEveryFlag()
+        {
+            var state = new MacroRuntimeState();
+            state.MacroDone[0] = true;
+            state.MacroDone[51] = true;
+
+            state.ClearMacroDone();
+
+            Assert.All(state.MacroDone, f => Assert.False(f));
+        }
+
+        [Fact]
+        public void Mapping_HoldsNoMacroStateOfItsOwn_OnlyForwarders()
+        {
+            string mapping = Read("DS4Windows/DS4Control/Mapping.cs");
+            if (mapping == null) return;
+
+            Assert.Contains("private static readonly MacroRuntimeState macroRuntime = MacroRuntimeState.Shared;", mapping);
+            Assert.Contains("public static bool[] macrodone => macroRuntime.MacroDone;", mapping);
+            Assert.Contains("private static bool[] macroDispatchInFlight => macroRuntime.DispatchInFlight;", mapping);
+            Assert.Contains("private static object macroDispatchLock => macroRuntime.DispatchLock;", mapping);
+            Assert.Contains("static bool[] macroControl => macroRuntime.MacroControl;", mapping);
+            Assert.Contains("static Dictionary<string, Task>[] macroTaskQueue => macroRuntime.TaskQueue;", mapping);
+            Assert.Contains("DS4_CONTROL_MACRO_ARRAY_LEN = MacroRuntimeState.ControlArrayLength", mapping);
+        }
+
+        [Fact]
+        public void Registration_RegistersTheSharedState()
+        {
+            string registration = Read("DS4Windows/DI/ServiceRegistration.cs");
+            if (registration == null) return;
+
+            Assert.Contains("services.AddSingleton<MacroRuntimeState>(_ => MacroRuntimeState.Shared);", registration);
+        }
+    }
+}

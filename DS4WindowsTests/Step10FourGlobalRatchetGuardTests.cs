@@ -53,7 +53,9 @@ namespace DS4WindowsTests
             ["DS4Windows/DS4Control/AppLogger.cs"] = (0, 0, 1),
             // Phase7-Step5 W2: Program.rootHub のフォールバックを削除（1 → 0）
             // Phase7-Step7 W2: 合成入力の状態の宣言（Global.MAX_DS4_CONTROLLER_COUNT）を SyntheticInputState へ移した（52 → 51）
-            ["DS4Windows/DS4Control/Mapping.cs"] = (0, 6, 51),
+            // Phase7-Step7 W3: macroTaskQueue の宣言（Global.MAX_DS4_CONTROLLER_COUNT）を MacroRuntimeState へ移した（51 → 50）
+            ["DS4Windows/DS4Control/Mapping.cs"] = (0, 6, 50),
+            ["DS4Windows/DS4Control/MacroRuntimeState.cs"] = (0, 0, 1),
             ["DS4Windows/DS4Control/SyntheticInputState.cs"] = (0, 0, 1),
             ["DS4Windows/DS4Control/Mouse.cs"] = (0, 0, 2),
             ["DS4Windows/DS4Control/MouseCursor.cs"] = (0, 0, 2),

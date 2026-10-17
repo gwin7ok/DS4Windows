@@ -869,8 +869,14 @@ namespace DS4Windows
         private static double stickWheel = 0.0, stickWheelRemainder = 0.0;
         private static bool stickWheelDownDir = false;
 
+        // Phase7-Step7 W3（Q2＝A・Q3＝A）: マクロの実行時状態（macrodone／macroDispatchInFlight／macroDispatchLock／macroControl／
+        // macroCount／macroTaskQueue）の実体は MacroRuntimeState が持つ。下の転送は、Mapping 内部のコードを変えないためのもので、状態は持たない。
+        // 型の初期化時に保持クラスの参照を 1 度だけ保持し、毎レポートの割り当てを増やさない。
+        // TODO(Phase7-Step8): Mapping の instance 化で、保持クラスをコンストラクターで受け取り、この転送と MacroRuntimeState.Shared を削除する。
+        private static readonly MacroRuntimeState macroRuntime = MacroRuntimeState.Shared;
+
         //mapcustom
-        public static bool[] macrodone = new bool[DS4_CONTROL_MACRO_ARRAY_LEN];
+        public static bool[] macrodone => macroRuntime.MacroDone;
 
         // ---- 暫定対策（申し送り: 下記コメント参照）----
         // PlayMacro の「二重実行防止ガード」は、SpecialAction 経由（action != null）にしか
@@ -893,8 +899,8 @@ namespace DS4Windows
         // その単一の実行層で一元的に行われるべきである。Phase7（Mapping.cs 完全 instance 化、
         // DI-App-Wide-Migration-Plan.md §6.9）で、この場当たり的な macroDispatchInFlight を
         // 含めて再設計すること。
-        private static readonly bool[] macroDispatchInFlight = new bool[DS4_CONTROL_MACRO_ARRAY_LEN];
-        private static readonly object macroDispatchLock = new object();
+        private static bool[] macroDispatchInFlight => macroRuntime.DispatchInFlight;
+        private static object macroDispatchLock => macroRuntime.DispatchLock;
 
         // debounce for SpecialAction toggle (milliseconds)
         private const int ToggleDebounceMs = 30;
@@ -903,9 +909,13 @@ namespace DS4Windows
         // throttle synthetic sends per key (milliseconds)
         // Keep below fakeKeyRepeat internal repeat interval (25ms) to avoid suppressing repeats
         private const int SyntheticSendThrottleMs = 10;
-        static bool[] macroControl = new bool[26];
-        static uint macroCount = 0;
-        static Dictionary<string, Task>[] macroTaskQueue = new Dictionary<string, Task>[Global.MAX_DS4_CONTROLLER_COUNT] { new Dictionary<string, Task>(), new Dictionary<string, Task>(), new Dictionary<string, Task>(), new Dictionary<string, Task>(), new Dictionary<string, Task>(), new Dictionary<string, Task>(), new Dictionary<string, Task>(), new Dictionary<string, Task>() };
+        static bool[] macroControl => macroRuntime.MacroControl;
+        static uint macroCount
+        {
+            get => macroRuntime.MacroCount;
+            set => macroRuntime.MacroCount = value;
+        }
+        static Dictionary<string, Task>[] macroTaskQueue => macroRuntime.TaskQueue;
 
         //actions
         public static bool[] extrasRumbleActive = new bool[Global.MAX_DS4_CONTROLLER_COUNT];
@@ -1119,7 +1129,7 @@ namespace DS4Windows
         /// to a direct value from DS4Controls
         /// </summary>
         private const int TOUCH_FINGER_SHIFT_TRIGGER = 26;
-        private const int DS4_CONTROL_MACRO_ARRAY_LEN = 52;
+        private const int DS4_CONTROL_MACRO_ARRAY_LEN = MacroRuntimeState.ControlArrayLength; // Phase7-Step7 W3: 値の定義は MacroRuntimeState へ移した
 
         // Button to index mapping used for macrodone array. Not even sure this
         // is needed. This was originally made to replace a switch test used in the DS4ControlToInt method.

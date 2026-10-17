@@ -25,10 +25,8 @@ namespace DS4WindowsTests
         private static readonly MethodInfo PlayMacroMethod = typeof(Mapping).GetMethod(
             "PlayMacro", BindingFlags.Static | BindingFlags.NonPublic);
 
-        private static readonly FieldInfo DispatchFlagsField = typeof(Mapping).GetField(
-            "macroDispatchInFlight", BindingFlags.Static | BindingFlags.NonPublic);
-
-        private static bool[] DispatchFlags => (bool[])DispatchFlagsField.GetValue(null);
+        // Phase7-Step7 W3: macroDispatchInFlight の実体は MacroRuntimeState へ移った（Mapping の同名メンバーはその転送）
+        private static bool[] DispatchFlags => MacroRuntimeState.Shared.DispatchInFlight;
 
         private static void InvokePlayMacro(DS4Controls control, DS4KeyType keyType, SpecialAction action = null)
         {

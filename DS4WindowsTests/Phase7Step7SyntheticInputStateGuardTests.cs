@@ -53,7 +53,7 @@ namespace DS4WindowsTests
             string store = Read("DS4Windows/DS4Control/BackingStore.cs");
             if (store == null) return;
 
-            Assert.False(Regex.IsMatch(store, @"Mapping\."), "BackingStore が Mapping を参照している");
+            Assert.False(Regex.IsMatch(store, @"\bMapping\."), "BackingStore が Mapping を参照している");
             Assert.Contains("public event Action ActionsLoaded;", store);
             Assert.Equal(2, Regex.Matches(store, @"RaiseActionsLoaded\(\);").Count);
         }
@@ -77,7 +77,7 @@ namespace DS4WindowsTests
 
             int state = reset.IndexOf("SyntheticInputState.Shared.ResetAll();");
             int toggled = reset.IndexOf("ActionManager.ClearAllToggledOn();");
-            int macro = reset.IndexOf("Mapping.macrodone[i] = false;");
+            int macro = reset.IndexOf("MacroRuntimeState.Shared.ClearMacroDone();");
             int log = reset.IndexOf("Runtime synthetic state reset after Actions load");
             Assert.True(state >= 0 && state < toggled && toggled < macro && macro < log);
         }

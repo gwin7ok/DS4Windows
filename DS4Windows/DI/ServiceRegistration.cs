@@ -29,6 +29,8 @@ namespace DS4Windows.DI
             });
             // Phase7-Step7 W2（Q3＝A）: 合成入力の状態の保持クラス。静的な窓口（Shared）と同じ instance を登録する（Step8 で Shared を削除し、コンストラクター注入にする）
             services.AddSingleton<SyntheticInputState>(_ => SyntheticInputState.Shared);
+            // Phase7-Step7 W3（Q3＝A）: マクロの実行時状態の保持クラス。同様に静的な窓口（Shared）と同じ instance を登録する
+            services.AddSingleton<MacroRuntimeState>(_ => MacroRuntimeState.Shared);
             services.AddSingleton<IPathService, PathService>();
             services.AddSingleton<IDeviceStateService, DeviceStateService>();
             services.AddSingleton<IEnvironmentService, EnvironmentService>();
