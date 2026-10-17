@@ -2190,6 +2190,10 @@ namespace DS4Windows
             device.ChargingChanged += CheckQuickCharge;
 
             touchPad[index] = new Mouse(index, device, _profileSettings, _virtualKBM);
+            // Phase7-Step5 W1: DS3 のジャイロトリガー（Controls モード）の判定を、このスロットの Mouse へつなぐ。
+            // DS4SixAxis は ControlService を直接参照しない（旧: Program.rootHub。DI 移行後は参照が失われていた）。
+            device.SixAxis.GyroControlsTriggerActive =
+                slot => touchPad[slot]?.IsGyroTriggerActive(GyroOutMode.Controls) ?? false;
             bool profileLoaded = false;
             bool useAutoProfile = _profileSettings.GetUseTempProfile(index);
 

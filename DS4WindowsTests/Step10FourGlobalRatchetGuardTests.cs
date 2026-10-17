@@ -120,7 +120,8 @@ namespace DS4WindowsTests
             ["DS4Windows/DS4Library/DS4Device.cs"] = (0, 0, 1),
             ["DS4Windows/DS4Library/DS4Devices.cs"] = (0, 0, 6),
             // Phase6-Step10b W4: DS4Sixaxis.cs は DS4SixAxis.cs へ改名（型名に合わせた大文字・小文字の変更。Dictionary は大文字・小文字を区別する）
-            ["DS4Windows/DS4Library/DS4SixAxis.cs"] = (1, 0, 1),
+            // Phase7-Step5 W1: DS3 のジャイロトリガーの判定を関数の注入にし、Program.rootHub の参照を削除（1 → 0）
+            ["DS4Windows/DS4Library/DS4SixAxis.cs"] = (0, 0, 1),
             ["DS4Windows/DS4Library/DS4State.cs"] = (0, 0, 4),
             ["DS4Windows/HidLibrary/HidDevices.cs"] = (0, 0, 2),
         };
