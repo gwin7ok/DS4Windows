@@ -61,7 +61,8 @@ namespace DS4Windows
 
         private Dictionary<int, OutputDevice> deviceDict = new Dictionary<int, OutputDevice>();
         private Dictionary<OutputDevice, int> revDeviceDict = new Dictionary<OutputDevice, int>();
-        private OutputDevice[] outputDevices = new OutputDevice[ControlService.CURRENT_DS4_CONTROLLER_LIMIT];
+        // Phase7-Step10e W1: スロット数の上限は、静的な ControlService.CURRENT_DS4_CONTROLLER_LIMIT ではなく、コンストラクターで受ける
+        private readonly OutputDevice[] outputDevices;
 
         private int queuedTasks = 0;
         private ReaderWriterLockSlim queueLocker;
@@ -89,12 +90,16 @@ namespace DS4Windows
         private readonly System.Func<int, SASteeringWheelEmulationAxisType> steeringWheelAxisProvider;
 
         public OutputSlotManager(System.Func<System.Version> vigemBusVersionProvider,
-            System.Func<int, SASteeringWheelEmulationAxisType> steeringWheelAxisProvider)
+            System.Func<int, SASteeringWheelEmulationAxisType> steeringWheelAxisProvider,
+            int slotLimit)
         {
+            if (slotLimit <= 0)
+                throw new System.ArgumentOutOfRangeException(nameof(slotLimit));
+            outputDevices = new OutputDevice[slotLimit];
             this.steeringWheelAxisProvider = steeringWheelAxisProvider ?? throw new System.ArgumentNullException(nameof(steeringWheelAxisProvider));
             this.vigemBusVersionProvider = vigemBusVersionProvider ?? throw new System.ArgumentNullException(nameof(vigemBusVersionProvider));
-            outputSlots = new OutSlotDevice[ControlService.CURRENT_DS4_CONTROLLER_LIMIT];
-            for (int i = 0; i < ControlService.CURRENT_DS4_CONTROLLER_LIMIT; i++)
+            outputSlots = new OutSlotDevice[slotLimit];
+            for (int i = 0; i < slotLimit; i++)
             {
                 outputSlots[i] = new OutSlotDevice(i);
             }

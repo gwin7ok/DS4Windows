@@ -339,7 +339,8 @@ namespace DS4Windows
             }
 
             outputslotMan = new OutputSlotManager(() => _environmentService.ViGEmBusVersion,
-                slot => _profileSettings.GetSASteeringWheelEmulationAxis(slot));
+                slot => _profileSettings.GetSASteeringWheelEmulationAxis(slot),
+                _controllerSlotLimit);
             //outputslotMan.SlotAssigned += OutputslotMan_SlotAssigned;
             deviceOptions = _appSettings.DeviceOptions;
 

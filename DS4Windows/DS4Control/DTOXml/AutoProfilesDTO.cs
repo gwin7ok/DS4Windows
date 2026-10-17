@@ -73,8 +73,8 @@ namespace DS4WinWPF.DS4Control.DTOXml
                 autoprof.ProfileNames[2] = serializier.Controller3;
                 autoprof.ProfileNames[3] = serializier.Controller4;
 
-                if (ControlService.CURRENT_DS4_CONTROLLER_LIMIT >=
-                    ControlService.MAX_DS4_CONTROLLER_COUNT)
+                // Phase7-Step10e W1: 旧 CURRENT_DS4_CONTROLLER_LIMIT >= MAX_DS4_CONTROLLER_COUNT（上限が 8 のとき）。MapFrom と同じ判定を使う
+                if (destination.UsingMaxControllers)
                 {
                     autoprof.ProfileNames[4] = serializier.Controller5;
                     autoprof.ProfileNames[5] = serializier.Controller6;

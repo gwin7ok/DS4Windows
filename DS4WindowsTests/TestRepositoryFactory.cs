@@ -56,7 +56,7 @@ namespace DS4WindowsTests
                 xmlStore ?? CreateProfileXmlStore(store),
                 pathService ?? new PathService(),
                 control ?? new Func<ControlService>(() => DS4WinWPF.AppHost.GetService<ControlService>()),
-                CreateLinkedProfilesXml(store), CreateActionsXml(store), CreateLegacyProfileXml(store, settings, pathService));
+                CreateLinkedProfilesXml(store), CreateActionsXml(store), CreateLegacyProfileXml(store, settings, pathService), new EnvironmentService());
         }
 
         public static ProfileSettingsService CreateProfileSettingsService(BackingStore store = null,
@@ -75,7 +75,7 @@ namespace DS4WindowsTests
 
         public static OutputSlotManager CreateOutputSlotManager()
         {
-            return new OutputSlotManager(() => EnvironmentService.ViGEmBusVersionState, _ => SASteeringWheelEmulationAxisType.None);
+            return new OutputSlotManager(() => EnvironmentService.ViGEmBusVersionState, _ => SASteeringWheelEmulationAxisType.None, new EnvironmentService().ControllerSlotLimit);
         }
 
         public static OutputSlotService CreateOutputSlotService(OutputSlotManager manager = null,
@@ -143,7 +143,7 @@ namespace DS4WindowsTests
         {
             var settings = TestGlobals.ProfileSettingsServiceInstance;
             return new ProfileSlotApplier(profileApplication ?? CreateProfileApplicationService(settings,
-                () => null, CreateProfileRepository(settings), new EnvironmentService()));
+                () => null, CreateProfileRepository(settings), new EnvironmentService()), new EnvironmentService());
         }
 
         public static AppearanceSettingsService CreateAppearanceSettingsService(BackingStore store = null)

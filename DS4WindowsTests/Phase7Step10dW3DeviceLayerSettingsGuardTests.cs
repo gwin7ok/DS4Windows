@@ -71,7 +71,7 @@ namespace DS4WindowsTests
             DS4WinWPF.AppHost.CreateHost();
             Assert.Throws<ArgumentNullException>(() => new DeviceLayerSettings(null, DS4WinWPF.AppHost.GetService<IProfileSettingsService>()));
             Assert.Throws<ArgumentNullException>(() => new Ds4DeviceRegistryAdapter(null));
-            Assert.Throws<ArgumentNullException>(() => new OutputSlotManager(() => new Version(1, 0), null));
+            Assert.Throws<ArgumentNullException>(() => new OutputSlotManager(() => new Version(1, 0), null, 4));
         }
 
         [Fact]

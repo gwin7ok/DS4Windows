@@ -14,6 +14,8 @@ namespace DS4Windows
         private readonly IProfileSettingsService _profileSettings;
         private readonly IProfileXmlStore _profileXmlStore;
         private readonly IPathService _pathService;
+        // Phase7-Step10e W1: スロット数の上限は、静的な ControlService.CURRENT_DS4_CONTROLLER_LIMIT ではなく、注入された環境サービスから読む
+        private readonly IEnvironmentService _environment;
 
         // Phase6-Step10-4-2b: 全ての依存を必須化（Global.*Instance／AppHost のフォールバックを廃止）。
         // ControlService は ControlService → IProfileRepository の依存循環を避けるため、遅延解決（Func）で受け取る。
@@ -28,8 +30,9 @@ namespace DS4Windows
             IProfileXmlStore profileXmlStore, IPathService pathService,
             Func<ControlService> controlProvider,
             Services.LinkedProfilesXmlSerializer linkedProfilesXml, Services.SpecialActionsXmlSerializer actionsXml,
-            Services.LegacyProfileXmlSerializer legacyProfileXml)
+            Services.LegacyProfileXmlSerializer legacyProfileXml, IEnvironmentService environment)
         {
+            _environment = environment ?? throw new ArgumentNullException(nameof(environment));
             _legacyProfileXml = legacyProfileXml ?? throw new ArgumentNullException(nameof(legacyProfileXml));
             _linkedProfilesXml = linkedProfilesXml ?? throw new ArgumentNullException(nameof(linkedProfilesXml));
             _actionsXml = actionsXml ?? throw new ArgumentNullException(nameof(actionsXml));
@@ -327,7 +330,7 @@ namespace DS4Windows
             if (actions == null || paths == null)
                 return result;
 
-            int slotCount = Math.Min(ControlService.CURRENT_DS4_CONTROLLER_LIMIT, Math.Min(actions.Length, paths.Length));
+            int slotCount = Math.Min(_environment.ControllerSlotLimit, Math.Min(actions.Length, paths.Length));
             for (int i = 0; i < slotCount; i++)
             {
                 if (actions[i] != null && !string.IsNullOrEmpty(paths[i]) &&

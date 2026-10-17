@@ -2106,7 +2106,7 @@ namespace DS4Windows.Services
 
                 // Only change xinput devices under certain conditions. Avoid
                 // performing this upon program startup before loading devices.
-                if (xinputChange && device < ControlService.CURRENT_DS4_CONTROLLER_LIMIT)
+                if (xinputChange && device < _environment.ControllerSlotLimit)
                 {
                     store.CheckOldDevicestatus(device, control, oldContType,
                         out xinputPlug, out xinputStatus);
@@ -2371,7 +2371,7 @@ namespace DS4Windows.Services
                 store.ResetMouseProperties(device, control);
 
                 // Unplug existing output device if requested profile does not exist
-                OutputDevice tempOutDev = device < ControlService.CURRENT_DS4_CONTROLLER_LIMIT ?
+                OutputDevice tempOutDev = device < _environment.ControllerSlotLimit ?
                     control.outputDevices[device] : null;
                 if (tempOutDev != null)
                 {

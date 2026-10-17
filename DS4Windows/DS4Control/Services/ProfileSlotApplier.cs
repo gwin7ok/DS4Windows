@@ -12,15 +12,18 @@ namespace DS4Windows.Services
     public class ProfileSlotApplier : IProfileSlotApplier
     {
         private readonly IProfileApplicationService _profileApplication;
+        // Phase7-Step10e W1: スロット数の上限は、静的な ControlService.CURRENT_DS4_CONTROLLER_LIMIT ではなく、注入された環境サービスから読む
+        private readonly IEnvironmentService _environment;
 
-        public ProfileSlotApplier(IProfileApplicationService profileApplication)
+        public ProfileSlotApplier(IProfileApplicationService profileApplication, IEnvironmentService environment)
         {
             _profileApplication = profileApplication ?? throw new ArgumentNullException(nameof(profileApplication));
+            _environment = environment ?? throw new ArgumentNullException(nameof(environment));
         }
 
         public bool ApplyToSlot(int slotIndex, string profileName, ProfileChangeSource source)
         {
-            if (slotIndex < 0 || slotIndex >= ControlService.CURRENT_DS4_CONTROLLER_LIMIT)
+            if (slotIndex < 0 || slotIndex >= _environment.ControllerSlotLimit)
                 return false;
 
             if (string.IsNullOrWhiteSpace(profileName))

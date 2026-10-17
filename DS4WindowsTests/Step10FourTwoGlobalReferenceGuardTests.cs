@@ -104,18 +104,18 @@ namespace DS4WindowsTests
             var path = new PathService();
             Func<ControlService> control = () => null;
 
-            Assert.Throws<ArgumentNullException>(() => new ProfileRepository(null, settings, store, path, control, linkedXml, actionsXml, legacyXml));
+            Assert.Throws<ArgumentNullException>(() => new ProfileRepository(null, settings, store, path, control, linkedXml, actionsXml, legacyXml, new EnvironmentService()));
             Assert.Throws<ArgumentNullException>(() => new ProfileXmlStore(null, new DS4Windows.Services.ControllerConfigsXmlSerializer(config), TestRepositoryFactory.CreateAppSettingsXml(config), TestRepositoryFactory.CreateLegacyProfileXml(config)));
             Assert.Throws<ArgumentNullException>(() => new ProfileXmlStore(config, null, TestRepositoryFactory.CreateAppSettingsXml(config), TestRepositoryFactory.CreateLegacyProfileXml(config)));
             Assert.Throws<ArgumentNullException>(() => new ProfileXmlStore(config, new DS4Windows.Services.ControllerConfigsXmlSerializer(config), null, TestRepositoryFactory.CreateLegacyProfileXml(config)));
             Assert.Throws<ArgumentNullException>(() => new ProfileXmlStore(config, new DS4Windows.Services.ControllerConfigsXmlSerializer(config), TestRepositoryFactory.CreateAppSettingsXml(config), null));
-            Assert.Throws<ArgumentNullException>(() => new ProfileRepository(config, settings, store, path, null, linkedXml, actionsXml, legacyXml));
-            Assert.Throws<ArgumentNullException>(() => new ProfileRepository(config, null, store, path, control, linkedXml, actionsXml, legacyXml));
-            Assert.Throws<ArgumentNullException>(() => new ProfileRepository(config, settings, null, path, control, linkedXml, actionsXml, legacyXml));
-            Assert.Throws<ArgumentNullException>(() => new ProfileRepository(config, settings, store, null, control, linkedXml, actionsXml, legacyXml));
-            Assert.Throws<ArgumentNullException>(() => new ProfileRepository(config, settings, store, path, control, null, actionsXml, legacyXml));
-            Assert.Throws<ArgumentNullException>(() => new ProfileRepository(config, settings, store, path, control, linkedXml, null, legacyXml));
-            Assert.Throws<ArgumentNullException>(() => new ProfileRepository(config, settings, store, path, control, linkedXml, actionsXml, null));
+            Assert.Throws<ArgumentNullException>(() => new ProfileRepository(config, settings, store, path, null, linkedXml, actionsXml, legacyXml, new EnvironmentService()));
+            Assert.Throws<ArgumentNullException>(() => new ProfileRepository(config, null, store, path, control, linkedXml, actionsXml, legacyXml, new EnvironmentService()));
+            Assert.Throws<ArgumentNullException>(() => new ProfileRepository(config, settings, null, path, control, linkedXml, actionsXml, legacyXml, new EnvironmentService()));
+            Assert.Throws<ArgumentNullException>(() => new ProfileRepository(config, settings, store, null, control, linkedXml, actionsXml, legacyXml, new EnvironmentService()));
+            Assert.Throws<ArgumentNullException>(() => new ProfileRepository(config, settings, store, path, control, null, actionsXml, legacyXml, new EnvironmentService()));
+            Assert.Throws<ArgumentNullException>(() => new ProfileRepository(config, settings, store, path, control, linkedXml, null, legacyXml, new EnvironmentService()));
+            Assert.Throws<ArgumentNullException>(() => new ProfileRepository(config, settings, store, path, control, linkedXml, actionsXml, null, new EnvironmentService()));
             Assert.Throws<ArgumentNullException>(() => new ProfileActionProvider(null));
             Assert.Throws<ArgumentNullException>(() => new DS4WinWPF.AutoProfileHolder(null, new EnvironmentService()));
         }
@@ -209,7 +209,7 @@ namespace DS4WindowsTests
             Func<ControlService> control = () => null;
 
             Assert.Throws<ArgumentNullException>(() => new OutputSlotStore(null));
-            Assert.Throws<ArgumentNullException>(() => new OutputSlotManager(null, _ => SASteeringWheelEmulationAxisType.None));
+            Assert.Throws<ArgumentNullException>(() => new OutputSlotManager(null, _ => SASteeringWheelEmulationAxisType.None, 4));
             Assert.Throws<ArgumentNullException>(() => new OutputSlotService(null, store, control));
             Assert.Throws<ArgumentNullException>(() => new OutputSlotService(manager, null, control));
             Assert.Throws<ArgumentNullException>(() => new OutputSlotService(manager, store, null));
@@ -238,7 +238,7 @@ namespace DS4WindowsTests
         public void OutputSlotManager_ReadsViGEmBusVersionFromProvider()
         {
             int calls = 0;
-            var manager = new OutputSlotManager(() => { calls++; return new Version(1, 0, 0, 0); }, _ => SASteeringWheelEmulationAxisType.None);
+            var manager = new OutputSlotManager(() => { calls++; return new Version(1, 0, 0, 0); }, _ => SASteeringWheelEmulationAxisType.None, 4);
             Assert.NotNull(manager);
             Assert.Equal(0, calls); // 生成時には読まない（割り当て時に都度読み取る）
         }
