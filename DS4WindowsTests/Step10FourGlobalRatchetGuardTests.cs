@@ -39,17 +39,11 @@ namespace DS4WindowsTests
             ["DS4Windows/DS4Control/DS4OutDevices/DS4OutDeviceBasic.cs"] = (0, 0, 1),
             ["DS4Windows/DS4Control/DS4OutDevices/DS4OutDeviceExt.cs"] = (0, 0, 1),
             // Phase6-Step10b W1: 1 ファイル 1 型の分割に伴い、件数を新設ファイルへ引き継いだ（合計は不変: ActionsDTO 6＝4＋2、AutoProfilesDTO 4＝0＋4、ProfileDTO 10＝2＋8）
+            // Phase6-Step12 Wave 6: プロファイル用 DTO（ProfileDTO と、ProfileDTO 専用の型 19 ファイル）の削除に伴い、DS4Control*AssignmentSerializer（6 ファイル）と ProfileDTO の基準値（計 10）を除いた
             ["DS4Windows/DS4Control/DTOXml/ActionsDTO.cs"] = (0, 0, 4),
             ["DS4Windows/DS4Control/DTOXml/AppSettingsDTO.cs"] = (0, 0, 16),
             ["DS4Windows/DS4Control/DTOXml/AutoProfileEntrySerializer.cs"] = (0, 0, 4),
-            ["DS4Windows/DS4Control/DTOXml/DS4ControlButtonAssignmentSerializer.cs"] = (0, 0, 3),
-            ["DS4Windows/DS4Control/DTOXml/DS4ControlExtrasAssignmentSerializer.cs"] = (0, 0, 1),
-            ["DS4Windows/DS4Control/DTOXml/DS4ControlKeyAssignmentSerializer.cs"] = (0, 0, 1),
-            ["DS4Windows/DS4Control/DTOXml/DS4ControlKeyTypeAssignmentSerializer.cs"] = (0, 0, 1),
-            ["DS4Windows/DS4Control/DTOXml/DS4ControlLightbarMacroAssignmentSerializer.cs"] = (0, 0, 1),
-            ["DS4Windows/DS4Control/DTOXml/DS4ControlMacroAssignmentSerializer.cs"] = (0, 0, 1),
             ["DS4Windows/DS4Control/DTOXml/OutputSlotPersistDTO.cs"] = (0, 0, 1),
-            ["DS4Windows/DS4Control/DTOXml/ProfileDTO.cs"] = (0, 0, 2),
             ["DS4Windows/DS4Control/DTOXml/SpecialActionSerializer.cs"] = (0, 0, 2),
             // Phase6-Step10b W4: Log.cs（AppLogger／ProfileChangeSource／ProfileChangedEventArgs）は型ごとに分割。Global 1 件は AppLogger.cs
             ["DS4Windows/DS4Control/AppLogger.cs"] = (0, 0, 1),

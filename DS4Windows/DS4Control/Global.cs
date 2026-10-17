@@ -2009,19 +2009,9 @@ namespace DS4Windows
             m_Config.CacheExtraProfileInfo(device);
         }
 
-        public static X360Controls getX360ControlsByName(string key)
-        {
-            return m_Config.getX360ControlsByName(key);
-        }
-
         public static string getX360ControlString(X360Controls key)
         {
             return m_Config.getX360ControlString(key);
-        }
-
-        public static DS4Controls getDS4ControlsByName(string key)
-        {
-            return m_Config.getDS4ControlsByName(key);
         }
 
         public static bool containsLinkedProfile(string serial)

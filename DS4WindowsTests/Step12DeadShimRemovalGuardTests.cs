@@ -67,6 +67,8 @@ namespace DS4WindowsTests
             "getTouchpadJitterCompensation", "getTouchSensitivity", "HasCustomActions", "HasCustomExtras", "IsUsingSAForControls",
             "IsUsingTouchpadForControls", "Save", "SaveAsProfile", "SaveProfile", "SXAntiDeadzone", "SZAntiDeadzone", "UpdateDS4CSetting",
             "UpdateDS4Extra",
+            // Wave 6（プロファイル用 DTO の削除で、呼び出し元が 0 件になった名前引きの転送）
+            "getDS4ControlsByName", "getX360ControlsByName",
         };
 
         private static readonly string[] RemovedFiles =
@@ -74,6 +76,26 @@ namespace DS4WindowsTests
             "DS4Windows/DS4Control/BatteryReportArgs.cs",
             "DS4Windows/DS4Control/ControllerRemovedArgs.cs",
             "DS4Windows/DS4Control/DeviceStatusChangeEventArgs.cs",
+            // Wave 6（プロファイル用 DTO と、その専用の型）
+            "DS4Windows/DS4Control/DTOXml/DS4ControlAssignementSerializer.cs",
+            "DS4Windows/DS4Control/DTOXml/DS4ControlAssignmentSerializerBase.cs",
+            "DS4Windows/DS4Control/DTOXml/DS4ControlButtonAssignmentSerializer.cs",
+            "DS4Windows/DS4Control/DTOXml/DS4ControlExtrasAssignmentSerializer.cs",
+            "DS4Windows/DS4Control/DTOXml/DS4ControlKeyAssignmentSerializer.cs",
+            "DS4Windows/DS4Control/DTOXml/DS4ControlKeyTypeAssignmentSerializer.cs",
+            "DS4Windows/DS4Control/DTOXml/DS4ControlLightbarMacroAssignmentSerializer.cs",
+            "DS4Windows/DS4Control/DTOXml/DS4ControlMacroAssignmentSerializer.cs",
+            "DS4Windows/DS4Control/DTOXml/DualSenseControllerSettings.cs",
+            "DS4Windows/DS4Control/DTOXml/GyroControlsSettings.cs",
+            "DS4Windows/DS4Control/DTOXml/GyroMouseSmoothingSettings.cs",
+            "DS4Windows/DS4Control/DTOXml/GyroMouseStickSmoothingSettings.cs",
+            "DS4Windows/DS4Control/DTOXml/GyroSwipeSettings.cs",
+            "DS4Windows/DS4Control/DTOXml/ProfileDTO.cs",
+            "DS4Windows/DS4Control/DTOXml/SASteeringWheelSmoothingOptions.cs",
+            "DS4Windows/DS4Control/DTOXml/StickAxialDeadOptionsSerializer.cs",
+            "DS4Windows/DS4Control/DTOXml/StickDeltaAccelSettings.cs",
+            "DS4Windows/DS4Control/DTOXml/StickModeOutputSettings.cs",
+            "DS4Windows/DS4Control/DTOXml/TouchpadMouseStickSerializer.cs",
         };
 
         // 防壁 3（Pre-Host）、防壁 4（定数・純粋計算）、防壁 5（ViGEm クライアント依存）にあたる Global のメンバー

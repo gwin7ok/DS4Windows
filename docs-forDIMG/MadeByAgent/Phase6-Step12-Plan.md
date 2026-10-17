@@ -2,7 +2,7 @@
 
 作成日: 2026-09-09  
 改訂日: 2026-09-18（Step2〜Step10確定スコープ・Step11実機総合検証成果統合・選択肢2［安全防壁付き物理削除］採用・全面拡充改訂）  
-状態: Wave 1〜5 実装済み（2026-10-17）。最終のビルド・テストと、実機確認（U-8・U-9）の結果待ち  
+状態: Wave 1〜6 実装済み（2026-10-17）。最終のビルド・テストと、実機確認（U-8・U-9）の結果待ち  
 **2026-10-14 注記（文書整合）**: 本書の「Phase7 引き継ぎ101箇所」「Pre-Host 11箇所」は 2026-09-18 時点の記載で、現行の正と異なる。(1) Step3 は 2026-09-21 に方針を転換し、`Mapping.cs` の実参照150件を全件解消した（2026-09-24 完了）。防壁2の対象は「101箇所」ではなく、`Mapping` の静的 `profileSettings` 束縛（方針P2、TODO 付き）と温存3件である（`Phase6-Step3-Plan.md` §3.8）。(2) Pre-Host 領域は 2026-09-25 の Step7-0 で12箇所に再集計した。(3) Step7 決定6＝N、Step5 の実行時状態配列、K7-1 などの登録は §4 を参照。着手時（Step12-0）に、現行コードで削除候補の台帳を作り直すこと（`Phase6-Status.md` §6.3）。  
 対象ブランチ: `For-DI-migration-work`  
 上位計画書: `docs-forDIMG/MadeByAgent/Phase6-Plan.md`  
@@ -133,7 +133,7 @@ HEAD は `e0bc8258`（作業ツリーはクリーン）。以降の §0〜§6 �
   - Wave 3（`*Instance` のフォールバック群）: 宣言 19 件、非空行 139。`Global` 38→26、`AppHost` 11→5、`rootHub` 9→6。テストの書き換え: 8 ファイル。**実機で起動ログを確認する**。
   - Wave 4（`BackingStore` 直転送ラッパー）: 宣言 62 件＋`getDefaultX360ControlBinding`、非空行 224。`AppHost` 5→4。テストの書き換え: 契約テストほか約 6 ファイル。
   - Wave 5（互換 `AppHost` の未使用 5 件、`AppDataPath` のセッター、ガードテスト、完了報告書）。互換ラッパーの `GetService<T>` は `Mapping.cs:86` が使うので残す。
-  - 最終のラチェット基準値: `Global.cs` = (rootHub 6, AppHost 4, Global 26)。全域では `Global.*` 780→759、`AppHost` 48→41、`Program.rootHub` 25→22。
+  - 最終のラチェット基準値: `Global.cs` = (rootHub 6, AppHost 4, Global 26)。全域では `Global.*` 780→749、`AppHost` 48→40、`Program.rootHub` 25→22（Wave 5・6 を含む最終値）。
 - 案 B: 1 回で全削除（コミット 1 つ）。差分が約 1,100 行と大きく、失敗したときの原因の切り分けが難しい。非推奨。
 - 案 C: メンバー単位（約 250 回）。安全だが、ビルド・テストの回数が過大。非推奨。
 
@@ -335,6 +335,25 @@ HEAD は `e0bc8258`（作業ツリーはクリーン）。以降の §0〜§6 �
 
 ---
 
+### 0A.20 Wave 6 の実施記録: プロファイル用 DTO の削除（2026-10-17、ビルド・テストはユーザーの実行待ち）
+
+- 前提: 旧形式の欠落 10 要素の是正（§0A.17）と、安全網 `ProfileLegacyXmlCompletenessTests`（162 要素）は、ビルド・テスト成功。デバウンスは実機で効くことを確認済み（§0A.19）。
+- 削除の範囲の確定: `ProfileDTO` を起点に、「他のファイルから参照されなくなった型」を、参照の有無が変わらなくなるまで繰り返して求めた（文字列・コメントを除いた識別子で判定）。結果は **19 ファイル、4,298 行**:
+  - `ProfileDTO.cs`（2,669 行）
+  - `DS4ControlAssignementSerializer.cs`、`DS4ControlAssignmentSerializerBase.cs`、`DS4ControlButtonAssignmentSerializer.cs`、`DS4ControlExtrasAssignmentSerializer.cs`、`DS4ControlKeyAssignmentSerializer.cs`、`DS4ControlKeyTypeAssignmentSerializer.cs`、`DS4ControlLightbarMacroAssignmentSerializer.cs`、`DS4ControlMacroAssignmentSerializer.cs`
+  - `TouchpadMouseStickSerializer.cs`、`StickAxialDeadOptionsSerializer.cs`、`StickDeltaAccelSettings.cs`、`StickModeOutputSettings.cs`
+  - `GyroControlsSettings.cs`、`GyroSwipeSettings.cs`、`GyroMouseSmoothingSettings.cs`、`GyroMouseStickSmoothingSettings.cs`、`SASteeringWheelSmoothingOptions.cs`、`DualSenseControllerSettings.cs`
+  - いずれも `git rm`。ほかから使われる型（`AppSettingsDTO`、`ActionsDTO`、`AutoProfilesDTO`、`XmlDataUtilities`、`FlickStickSettings` ほか）は、残した。
+  - `BackingStore.cs`・`ProfileMigration.cs` にあった型名は、XML の要素名の文字列とコメントだけで、型の参照ではなかった（削除の影響なし）。
+- 削除（コード）: `ProfileRepository` の DTO 側 `LoadProfile(filePath, …)`／`SaveProfile(filePath, …)`（71 行。あわせて `using` 2 件）、`IProfileRepository` の同 2 メンバー。
+- 連鎖で呼び出し元が 0 件になった `Global` の 2 件を削除: `getDS4ControlsByName`、`getX360ControlsByName`（`BackingStore` への転送。`BackingStore` 側の同名メソッドは、旧形式のローダーが使うので残す）。
+- ラチェット基準値: `ProfileDTO.cs`（Global 2）と `DS4Control*AssignmentSerializer` 6 ファイル（計 8）の項目を除いた（Global 計 10 減）。`Global.cs` は (6, 4, 26) のまま。**全域の最終値（走査で確認）: `Global.*` 749、`AppHost` 40、`Program.rootHub` 22。**
+- ガード: `Step12DeadShimRemovalGuardTests` に、削除した 19 ファイルの不在と、2 件の名前を追記。
+- テスト: DTO を参照するテストは無し（変更なし）。テスト数の増減は 0。
+- 残る DTO（現行の正）: アプリ設定（`AppSettingsDTO`）、`ActionsDTO`、`LinkedProfilesDTO`、`AutoProfilesDTO`、`OutputSlotPersistDTO` と、その部品。旧形式への統一の範囲は、Phase7 で判断（§0A.18）。
+
+---
+
 ## 0. 背景と方針（2026-10-17 改訂。承認済みの決定は §0A.10）
 
 ### 0.1 Step2〜Step11 の完了実績と残存コードの状況
@@ -374,13 +393,14 @@ HEAD は `e0bc8258`（作業ツリーはクリーン）。以降の §0〜§6 �
 - **Wave 2**: ProfileSettings 系の互換アクセサ 150 名（宣言 152 件）。実施済み（§0A.12）。`Global` 45→38。
 - **Wave 3**: `*Instance` のフォールバック群 19 件。実施済み（§0A.13。実機確認待ち）。`Global` 38→26、`AppHost` 11→5、`rootHub` 9→6。**この Wave の後に実機で起動・接続・プロファイル切替を確認**（起動ログ `Host initialized with runtime parser`）。
 - **Wave 4**: `BackingStore` 直転送ラッパー 58 件（`getDefaultX360ControlBinding` を含む）。実施済み（§0A.14）。`AppHost` 5→4。
-- **Wave 5**: 実施済み（§0A.15）。互換 `AppHost`（`DI/Compat/AppHost.cs`）の未使用 5 件、`AppDataPath` のセッター、ガードテストの最終確認、完了報告書（`Phase6-Step12-Completion-Report.md`、`Phase6-Completion-Report.md`）。
+- **Wave 5**: 実施済み（§0A.15）。
+- **Wave 6**: プロファイル用 DTO（19 ファイル、4,298 行）と、DTO 側の読み書きの削除。実施済み（§0A.20）。互換 `AppHost`（`DI/Compat/AppHost.cs`）の未使用 5 件、`AppDataPath` のセッター、ガードテストの最終確認、完了報告書（`Phase6-Step12-Completion-Report.md`、`Phase6-Completion-Report.md`）。
 - **各 Wave の共通作業**:
   - 対象の削除とテストの書き換え（旧シム専用の等価性テストは削除、書き換え可能なものは生存プロパティ・サービスへ）。削除したテストは一覧にして完了報告書へ記録する。
   - `Step10FourGlobalRatchetGuardTests` の `Global.cs` の基準値を更新する。
   - `Step12DeadShimRemovalGuardTests`（1 ファイル 1 型）に、削除した名前を追記する（再混入の禁止）。防壁の名前の存在確認も含める。
   - 検証: ユーザーが `dotnet build` と `dotnet test` を実行（警告 0、全件成功）。
-- **最終のラチェット基準値**: `Global.cs` = (rootHub 6, AppHost 4, Global 26)。全域では `Global.*` 780→759、`AppHost` 48→41、`Program.rootHub` 25→22。
+- **最終のラチェット基準値**: `Global.cs` = (rootHub 6, AppHost 4, Global 26)。全域では `Global.*` 780→749、`AppHost` 48→40、`Program.rootHub` 25→22（Wave 5・6 を含む最終値）。
 
 ---
 
@@ -418,7 +438,7 @@ Step12 完了後に残るもの（Phase7 で解体）:
 
 - [ ] 5 つの保護防壁（`BackingStore` の正本、Phase7 持ち越し、Pre-Host 12 箇所、定数・純粋計算、ViGEm 依存）が保護されている。`Step12DeadShimRemovalGuardTests` の存在確認が成功している。
 - [ ] 削除した全メンバーが、削除前の走査で呼び出し元 0 件だった（§0A.8 の名簿と一致）。
-- [ ] `Global.cs` から旧ラッパーが削除され、ラチェットの基準値が `Global.cs` = (6, 4, 26)、全域 759／41／22 になっている。
+- [ ] `Global.cs` から旧ラッパーが削除され、ラチェットの基準値が `Global.cs` = (6, 4, 26)、全域 749／40／22 になっている。
 - [ ] `dotnet build` が警告 0・エラー 0。
 - [ ] `DS4WindowsTests` と `StandaloneTests` の全件が成功している（テスト数の増減は完了報告書に記録）。
 - [ ] Wave 3 の後の実機確認（起動・接続・プロファイル切替）が完了している。

@@ -9,7 +9,7 @@
 ## 1. 目的と結論
 
 - 目的: アプリ全域の静的ファサード `Global`（旧 `ScpUtil.cs`）への直接参照を、コンストラクタ注入された DI サービスへ置き換える。機能・ログ・安全弁は維持する（`.github/copilot-instructions.md` §2）。
-- 結論: 目的を達成した。ただし「直接参照ゼロ」ではなく、**薄いシム（§2.1）と Phase7 持ち越しを温存した、分類済みの残存**（ラチェット基準値: `Global.*` 759、`AppHost` 40、`Program.rootHub` 22）で完了とする。残存の全件は、`Phase6-Step11-Global-Residual-Ledger.md` の分類（A〜H）に属し、根拠がある。
+- 結論: 目的を達成した。ただし「直接参照ゼロ」ではなく、**薄いシム（§2.1）と Phase7 持ち越しを温存した、分類済みの残存**（ラチェット基準値: `Global.*` 749、`AppHost` 40、`Program.rootHub` 22）で完了とする。残存の全件は、`Phase6-Step11-Global-Residual-Ledger.md` の分類（A〜H）に属し、根拠がある。
 
 ## 2. Step ごとの成果
 
@@ -21,7 +21,7 @@
 ## 3. 数値の推移（全域の直接参照）
 
 - Step11 時点: `Global.*` 780、`AppHost` 48、`Program.rootHub` 25。
-- Step12 後: `Global.*` 759、`AppHost` 40、`Program.rootHub` 22。
+- Step12 後: `Global.*` 749、`AppHost` 40、`Program.rootHub` 22。
 - 複数型ファイル: 0。ビルド警告: 0（Wave 4 まで確認）。
 
 ## 4. 確認不能（リスク受容）の項目

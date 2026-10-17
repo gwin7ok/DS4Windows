@@ -12,8 +12,9 @@
 - Step12-0 で現行コードから台帳を作り直し（`Global` 487 名のうち、不要 253 名・宣言 258 件）、5 つの Wave に分けて削除した。
 - 削除した `Global` のメンバー: 251 名（Wave 1: 24、Wave 2: 150、Wave 3: 19、Wave 4: 58。宣言は 255 件）。`Global.cs` は 3,472 行 → 2,414 行（約 30% 減）。
 - 削除したファイル: `BatteryReportArgs.cs`、`ControllerRemovedArgs.cs`、`DeviceStatusChangeEventArgs.cs`（3 型）。
+- Wave 6: プロファイル用 DTO（`ProfileDTO` と専用の型、19 ファイル 4,298 行）と、`ProfileRepository` の DTO 側の読み書きを削除。プロファイルの保存形式は旧形式に統一した（方針は Plan §0A.18）。安全網として、旧形式の保存結果に 162 要素が含まれることを確認するテストを追加した。
 - 削除した周辺: 互換ラッパー `DS4Windows.AppHost` の未使用 5 件、`IPathService.AppDataPath`／`PathService.AppDataPath` のセッター。
-- ラチェット基準値（全域）: `Global.*` 780 → **759**、`AppHost` 48 → **40**、`Program.rootHub` 25 → **22**。`Global.cs` は (9, 11, 47) → **(6, 4, 26)**。
+- ラチェット基準値（全域）: `Global.*` 780 → **749**、`AppHost` 48 → **40**、`Program.rootHub` 25 → **22**。`Global.cs` は (9, 11, 47) → **(6, 4, 26)**。
 - 削除の過程で、**移行前後の回帰 1 件と、上流由来の不具合 1 件**を見つけて是正した（§3）。
 
 ## 2. Wave ごとの実績
