@@ -434,9 +434,11 @@ Step12 完了後に残るもの（Phase7 で解体）:
 | 分類 G（`Mapping` の静的 `profileSettings` 束縛 P2、温存 3 件、`SyntheticDispatcher`、第 1 層） | ホットパス。`Mapping` の instance 化が前提 | `Mapping` の instance 化で解消 |
 | Pre-Host 12 箇所 ＋ 共用ヘルパー 2 件 ＋ `AttemptSave` の `appdatapath = null` | DI コンテナ構築前の起動 | 起動シーケンスの近代化で整理 |
 | `Global.outDevTypeTemp`／`activeOutDevType`（実行時状態の静的配列） | `OutputSlotService` が裏づけとして返す（Step5 の案X） | 所有を `OutputSlotService` へ移す（案Y。`Phase6-Step5-Plan.md` §9） |
-| K7-1: DI ホストの暗黙構築 | `Global` の静的初期化がホストを作りうる。`fallbackProfileRepository` は Step10-4-2b で遅延生成に変更済み。起動引数は `IStartupArguments` で回避済み | `Global` の静的初期化の整理とあわせて解消 |
+| K7-1: DI ホストの暗黙構築（2026-10-17 に解消を確認） | 通常の起動では、`App.xaml.cs` の明示的な `CreateHost(config, parser)` がホストを作る（起動ログ `Host creation path: explicit …` で確認、§0A.21）。`fallbackProfileRepository` は削除済み。残るのは、`-driverinstall` 分岐の `Global.Load()` など、明示的な構築より前に `GetService` が呼ばれる経路だけ（起動引数は `IStartupArguments` 経由で、どちらの順序でも渡る） | 起動シーケンスの近代化（Pre-Host の整理）で扱う |
 | `Program.rootHub`（Step12 後 22 件）と `App.xaml.cs` の Service Locator | 共有の入口。`App` が所有者 | 各利用側をコンストラクタ注入へ切り替え、すべてなくなった時点で削除 |
 | `DS4WinWPF.AppHost.Dispose()` | 呼び出し元が互換ラッパーだけ。アプリ終了時のホスト破棄が元から無い | 起動・終了シーケンスの整理で扱う |
+| `AppHost.CreationNote` と `[DI] Host creation path` の Info ログ | ホストの作成経路の記録。ユーザー決定で残す（2026-10-17、§0A.21） | 起動シーケンスの整理の後に、残すか判断 |
+| `DI/Compat/AppHost.cs`（`GetService<T>()` のみ） | `Mapping.cs:86` が使用中 | 参照が無くなった時点でクラスごと削除 |
 | DI インターフェースの 0 件メンバー 52 件 | §2.4 の個別の経緯調査が必要 | 個別に判断 |
 | K2: `GetProfileActionIndexOf` の未検出時の戻り値 | `ProfileActionProvider` 側に残る | 別途判断 |
 | プロファイル用 DTO（`ProfileDTO` 一式）の削除 | 方針決定済み（旧形式を正とする）。Step12 Wave 6 で削除する（§0A.18） | Wave 6 で完了。Phase7 では、旧形式の読み書きを `LegacyProfileXmlSerializer` として切り出し、ゴールデンテストで固定 |
@@ -454,11 +456,11 @@ Step12 完了後に残るもの（Phase7 で解体）:
 
 ## 6. 完了判定チェックリスト（Phase6 全体の完了ゲート）
 
-- [ ] 5 つの保護防壁（`BackingStore` の正本、Phase7 持ち越し、Pre-Host 12 箇所、定数・純粋計算、ViGEm 依存）が保護されている。`Step12DeadShimRemovalGuardTests` の存在確認が成功している。
-- [ ] 削除した全メンバーが、削除前の走査で呼び出し元 0 件だった（§0A.8 の名簿と一致）。
-- [ ] `Global.cs` から旧ラッパーが削除され、ラチェットの基準値が `Global.cs` = (6, 4, 26)、全域 747／40／22 になっている。
-- [ ] `dotnet build` が警告 0・エラー 0。
-- [ ] `DS4WindowsTests` と `StandaloneTests` の全件が成功している（テスト数の増減は完了報告書に記録）。
-- [ ] Wave 3 の後の実機確認（起動・接続・プロファイル切替）が完了している。
-- [ ] §4 の引き継ぎ台帳が完全に記録されている。
-- [ ] `Phase6-Step12-Completion-Report.md` と `Phase6-Completion-Report.md` が作成されている。
+- [x] 5 つの保護防壁（`BackingStore` の正本、Phase7 持ち越し、Pre-Host 12 箇所、定数・純粋計算、ViGEm 依存）が保護されている。`Step12DeadShimRemovalGuardTests` の存在確認が成功している。
+- [x] 削除した全メンバーが、削除前の走査で呼び出し元 0 件だった（§0A.8 の名簿と一致）。
+- [x] `Global.cs` から旧ラッパーが削除され、ラチェットの基準値が `Global.cs` = (6, 4, 26)、全域 747／40／22 になっている。
+- [x] `dotnet build` が警告 0・エラー 0。
+- [x] `DS4WindowsTests` と `StandaloneTests` の全件が成功している（テスト数の増減は完了報告書に記録）。
+- [x] Wave 3 の後の実機確認（起動・接続・プロファイル切替）が完了している。
+- [x] §4 の引き継ぎ台帳が完全に記録されている。
+- [x] `Phase6-Step12-Completion-Report.md` と `Phase6-Completion-Report.md` が作成されている。
