@@ -86,6 +86,12 @@ namespace DS4WinWPF
         private IAppearanceSettingsService _appearanceSettingsService;
         private IDeviceStateService _deviceStateService;
 
+        // Phase7-Step4 W4（D3＝S1）: コンテナの構築より前に作るブートストラップのサービス。Pre-Host の起動処理（保存場所の決定、
+        // ViGEmBus 情報の取得）で使い、CreateHost に渡して、コンテナへ同じインスタンスを登録する。
+        // 状態は PathService／EnvironmentService の static（プロセス全体で 1 つ）のため、どのインスタンスでも同じ値を見る。
+        private DS4Windows.PathService _bootstrapPathService;
+        private DS4Windows.EnvironmentService _bootstrapEnvironmentService;
+
         private MemoryMappedFile ipcClassNameMMF = null; // MemoryMappedFile for inter-process communication used to hold className of DS4Form window
         private MemoryMappedFile ipcResultDataMMF = null; // MemoryMappedFile for inter-process communication used to exchange string result data between cmdline client process and the background running DS4Windows app
 
@@ -174,13 +180,18 @@ namespace DS4WinWPF
             runShutdown = true;
             skipSave = true;
 
+            // Phase7-Step4 W4: ブートストラップのサービスを、コンテナの構築より前に作る
+            _bootstrapPathService = new DS4Windows.PathService();
+            _bootstrapEnvironmentService = new DS4Windows.EnvironmentService();
+
             // Locate config location and perform startup log rotation as early as possible
             try
             {
-                new DS4Windows.PathService().FindConfigLocation(); // TODO(Phase7-Step4 W4): ブートストラップで作る PathService を使う
+                _bootstrapPathService.FindConfigLocation();
 
                 // Perform deterministic startup rotation as early as possible
-                LogRotator.PerformStartupRotation(DS4Windows.Global.appdatapath, DS4Windows.Global.LogMaxArchiveFiles);
+                // （Phase7-Step4 W4: appdatapath は null の可能性がある（初回起動）ため、AppDataPath（null のとき実行フォルダ）ではなく状態そのものを渡す）
+                LogRotator.PerformStartupRotation(DS4Windows.PathService.AppDataPathState, DS4Windows.Global.LogMaxArchiveFiles);
 
                 // Immediately apply bootstrap minimum log level so early logging honors user-configured min level
                 try
@@ -312,9 +323,8 @@ namespace DS4WinWPF
             catch { }
 
             // Retrieve info about installed ViGEmBus device if found
-            // Phase7-Step4 W1: 調べ物と状態は EnvironmentService（状態は static）が持つ。
-            // TODO(Phase7-Step4 W4): ブートストラップで作る EnvironmentService を使い、ここでの new をやめる。
-            new DS4Windows.EnvironmentService().RefreshViGEmBusInfo();
+            // Phase7-Step4 W1／W4: 調べ物と状態は EnvironmentService（状態は static）が持つ。ブートストラップのインスタンスを使う。
+            _bootstrapEnvironmentService.RefreshViGEmBusInfo();
 
             // Create the Event handle
             threadComEvent = new EventWaitHandle(false, EventResetMode.ManualReset, SingleAppComEventName);
@@ -329,7 +339,8 @@ namespace DS4WinWPF
             // フェーズ0-3: AppHost正式ルート
             try
             {
-                var host = AppHost.CreateHost(new Microsoft.Extensions.Configuration.ConfigurationBuilder().Build(), parser);
+                var host = AppHost.CreateHost(new Microsoft.Extensions.Configuration.ConfigurationBuilder().Build(), parser,
+                    _bootstrapPathService, _bootstrapEnvironmentService);
                 AppLogger.LogInfo("AppHost.CreateHost() called successfully (Phase 0-3 verification)");
                 AppLogger.LogInfo($"[DI] Host creation path: {AppHost.CreationNote}");
             }
@@ -668,7 +679,8 @@ namespace DS4WinWPF
                 // TODO(Phase6-Step7 決定3＝P1): 意図的に Global へ直接書き込む。IPathService.AppDataPath のセッターは
                 // Global.appdatapath を変えない（PathService 内部の上書き用フィールドに保存するだけの孤立実装。呼出元0件）ため、
                 // 置き換え先にならない。セッターは Phase6-Step12 で削除候補とし、保存先の所有を PathService へ移す Phase7 で本行も解消する。
-                DS4Windows.Global.appdatapath = null;
+                // Phase7-Step4 W4: 保存先の所有を PathService へ移した。状態そのものを null に戻す（旧 Global.appdatapath = null と同じ）。
+                DS4Windows.PathService.AppDataPathState = null;
                 skipSave = true;
                 Current.Shutdown();
                 return;
@@ -687,15 +699,16 @@ namespace DS4WinWPF
             {
                 // Retrieve info about installed ViGEmBus device if found.
                 // Might not be needed here
-                new DS4Windows.EnvironmentService().RefreshViGEmBusInfo();
+                _bootstrapEnvironmentService.RefreshViGEmBusInfo();
 
                 // Load DS4Windows config if it exists
-                new DS4Windows.PathService().FindConfigLocation(); // TODO(Phase7-Step4 W4): ブートストラップで作る PathService を使う
+                _bootstrapPathService.FindConfigLocation();
 
                 // Phase7-Step4 W2: 旧 Global.Load() は、中の AppHost.GetService が、起動引数なしでホストを暗黙に作っていた
                 // （K7-1 の残存経路）。ここで、起動引数つきで明示的にホストを作り、設定は IAppSettingsService で読む。
                 var driverInstallHost = AppHost.CreateHost(
-                    new Microsoft.Extensions.Configuration.ConfigurationBuilder().Build(), parser);
+                    new Microsoft.Extensions.Configuration.ConfigurationBuilder().Build(), parser,
+                    _bootstrapPathService, _bootstrapEnvironmentService);
                 var driverInstallSettings = (DS4Windows.DI.IAppSettingsService)driverInstallHost.Services
                     .GetService(typeof(DS4Windows.DI.IAppSettingsService));
                 bool readAppConfig = driverInstallSettings.Load();
@@ -718,7 +731,11 @@ namespace DS4WinWPF
             }
             else if (parser.ReenableDevice)
             {
-                DS4Windows.DS4Devices.reEnableDevice(parser.DeviceInstanceId);
+                // Phase7-Step4 W4（Q4＝A）: 第 1 層の静的な DS4Devices.reEnableDevice の直接呼び出しをやめ、IDs4DeviceRegistry の契約を通す。
+                // この分岐はホストを構築しない昇格した補助プロセスのため、状態を持たないアダプタを直接作る。
+                // 差: デバイスのインスタンス ID が空のときは、アダプタが何もせず戻る（旧: 例外で終了していた。不正な起動引数の場合のみ）。
+                DS4Windows.Services.IDs4DeviceRegistry reEnableRegistry = new DS4Windows.Services.Ds4DeviceRegistryAdapter();
+                reEnableRegistry.ReEnableDevice(parser.DeviceInstanceId);
                 runShutdown = false;
                 exitApp = true;
                 Current.Shutdown();

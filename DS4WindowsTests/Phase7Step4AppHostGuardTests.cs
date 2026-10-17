@@ -72,7 +72,7 @@ namespace DS4WindowsTests
             Assert.DoesNotMatch(@"CreateHost\s*\(\s*string\[\]", text);
             Assert.DoesNotMatch(@"CreateHost\s*\(\s*IConfiguration\s+configuration\s*=\s*null\s*\)", text);
             Assert.Matches(@"public\s+static\s+IHost\s+CreateHost\s*\(\s*\)", text);
-            Assert.Matches(@"public\s+static\s+IHost\s+CreateHost\s*\(\s*IConfiguration\s+configuration\s*,\s*DS4WinWPF\.ArgumentParser\s+parser\s*\)", text);
+            Assert.Matches(@"public\s+static\s+IHost\s+CreateHost\s*\(\s*IConfiguration\s+configuration\s*,\s*DS4WinWPF\.ArgumentParser\s+parser\s*,", text);
         }
 
         [Fact]

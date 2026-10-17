@@ -48,7 +48,7 @@ namespace DS4WinWPF
             if (fileTarget == null)
                 throw new InvalidOperationException("logfile target (FileTarget) not found in NLog configuration");
 
-            fileTarget.FileName = $@"{DS4Windows.Global.appdatapath}\Logs\ds4windows_log.txt";
+            fileTarget.FileName = $@"{DS4Windows.PathService.AppDataPathState}\Logs\ds4windows_log.txt";
 
             // Disable NLog automatic archiving by default. Manual startup rotator performs deterministic
             // archive moves; ArchiveOldFileOnStartup must remain false to avoid double-rotation.

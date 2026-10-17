@@ -35,7 +35,7 @@ namespace DS4WindowsTests
         {
             // E7-01〜E7-05（起動時ログローテーション・ViGEmBus 情報。温存）
             // Phase7-Step4 W3: FindConfigLocation は PathService へ移した（Global 参照 1 → 0）
-            ["appdatapath"] = 1,
+            // Phase7-Step4 W4: appdatapath は PathService の状態を直接読み書きする形にした（Global 参照 1 → 0）
             ["LogMaxArchiveFiles"] = 1,
             ["LogMinLevel"] = 1,
             // Phase7-Step4 W1: RefreshViGEmBusInfo は EnvironmentService へ移した（Global 参照 1 → 0）
@@ -65,7 +65,7 @@ namespace DS4WindowsTests
         private static readonly Dictionary<string, int> ExpectedAttemptSave = new Dictionary<string, int>
         {
             // P7-38（決定3＝P1 で温存。TODO 付き）
-            ["appdatapath"] = 1,
+            // Phase7-Step4 W4: appdatapath は PathService の状態を直接読み書きする形にした（Global 参照 1 → 0）
         };
 
         // P7-39（Save）は Step7-3 で置き換えた。残るのは const の MAX_DS4_CONTROLLER_COUNT（E7-15）だけ。

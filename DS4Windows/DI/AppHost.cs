@@ -52,7 +52,14 @@ namespace DS4WinWPF
             }
         }
 
-        public static IHost CreateHost(IConfiguration configuration, DS4WinWPF.ArgumentParser parser)
+        /// <summary>
+        /// 起動引数つきでホストを作る（本体の起動と -driverinstall 分岐が使う）。
+        /// Phase7-Step4 W4（D3＝S1）: コンテナの構築より前に作ったブートストラップのサービスを渡すと、同じインスタンスをコンテナへ登録する
+        /// （Pre-Host の起動処理と、コンテナから解決するサービスが同じインスタンスになる）。ホストが構築済みのときは、登録は変えられない。
+        /// </summary>
+        public static IHost CreateHost(IConfiguration configuration, DS4WinWPF.ArgumentParser parser,
+            DS4Windows.DI.IPathService bootstrapPathService = null,
+            DS4Windows.DI.IEnvironmentService bootstrapEnvironmentService = null)
         {
             lock (_loggedResolvedTypes) { _loggedResolvedTypes.Clear(); }
             lock (_syncLock)
@@ -78,6 +85,11 @@ namespace DS4WinWPF
                     {
                         DS4Windows.DI.ServiceRegistration.RegisterServices(services);
                         services.AddSingleton(parser);
+                        // 後から登録した実装が、同じ型の解決で優先される（既定の登録を、ブートストラップのインスタンスで置き換える）
+                        if (bootstrapPathService != null)
+                            services.AddSingleton<DS4Windows.DI.IPathService>(bootstrapPathService);
+                        if (bootstrapEnvironmentService != null)
+                            services.AddSingleton<DS4Windows.DI.IEnvironmentService>(bootstrapEnvironmentService);
                     });
 
                 _host = builder.Build();
