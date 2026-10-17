@@ -13,8 +13,8 @@ namespace DS4Windows
     public class ProfileSettingsService : IProfileSettingsService
     {
         private readonly object _syncLock = new object();
-        public const int TEST_PROFILE_ITEM_COUNT = 9;
-        public const int MAX_DS4_CONTROLLER_COUNT = 8;
+        public const int TEST_PROFILE_ITEM_COUNT = ControllerLimits.TestProfileItemCount;
+        public const int MAX_DS4_CONTROLLER_COUNT = ControllerLimits.MaxControllerCount;
 
         // Step10-2-A: m_Config(BackingStore)委譲用。Global.storeと同一インスタンスを参照する
         // (データの二重管理を避けるため、専用バックアップ配列は持たない)

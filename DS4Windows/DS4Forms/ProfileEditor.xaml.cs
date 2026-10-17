@@ -154,7 +154,7 @@ namespace DS4WinWPF.DS4Forms
 
         // Phase6-Step7b: 設定の読み書き先（編集スロット）。常に作業スロット Global.TEST_PROFILE_INDEX を使い、
         // 編集内容は保存・適用を押すまで、接続中のどのコントローラーにも影響しない
-        private readonly int deviceNum = Global.TEST_PROFILE_INDEX;
+        private readonly int deviceNum = ControllerLimits.TestProfileIndex;
         // Phase6-Step7b: ランブルテスト・ライトバーのプレビュー・校正・マクロ記録などで使う実機のスロット番号。
         // NoTargetDevice（-1）は「実機なし」。設定の読み書き先 deviceNum とは別に持つ。
         // ViewModel をこの値で生成するため、コンストラクタでだけ設定する
@@ -1140,7 +1140,7 @@ namespace DS4WinWPF.DS4Forms
             if (profile != null)
             {
                 currentProfile = profile;
-                profileRepository.ProfilePath[Global.TEST_PROFILE_INDEX] = profile.Name;
+                profileRepository.ProfilePath[ControllerLimits.TestProfileIndex] = profile.Name;
 
                 profileRepository.LoadProfile(deviceNum, profile.Name);
                 profileNameTxt.Text = profile.Name;
@@ -1171,7 +1171,7 @@ namespace DS4WinWPF.DS4Forms
             // 作業スロット（編集中の設定）で計算した結果を表示する
             int readingsDevice = profileSettingsVM.FuncDevNum;
             useControllerUD.Value = readingsDevice + 1;
-            conReadingsUserCon.UseDevice(readingsDevice, Global.TEST_PROFILE_INDEX);
+            conReadingsUserCon.UseDevice(readingsDevice, ControllerLimits.TestProfileIndex);
             contReadingsTab.IsEnabled = true;
 
             conReadingsUserCon.EnableControl(false);

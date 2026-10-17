@@ -41,23 +41,23 @@ namespace DS4Windows
             { 0, 0 }     // use on 100%. 0 is for "charging" OR anything sufficiently-"charged"
         };
 
-        static double[] counters = new double[Global.MAX_DS4_CONTROLLER_COUNT] { 0, 0, 0, 0, 0, 0, 0, 0 };
-        public static Stopwatch[] fadewatches = new Stopwatch[Global.MAX_DS4_CONTROLLER_COUNT]
+        static double[] counters = new double[ControllerLimits.MaxControllerCount] { 0, 0, 0, 0, 0, 0, 0, 0 };
+        public static Stopwatch[] fadewatches = new Stopwatch[ControllerLimits.MaxControllerCount]
         {
             new Stopwatch(), new Stopwatch(), new Stopwatch(), new Stopwatch(),
             new Stopwatch(), new Stopwatch(), new Stopwatch(), new Stopwatch(),
         };
 
-        static bool[] fadedirection = new bool[Global.MAX_DS4_CONTROLLER_COUNT] { false, false, false, false, false, false, false, false };
-        static DateTime[] oldnow = new DateTime[Global.MAX_DS4_CONTROLLER_COUNT]
+        static bool[] fadedirection = new bool[ControllerLimits.MaxControllerCount] { false, false, false, false, false, false, false, false };
+        static DateTime[] oldnow = new DateTime[ControllerLimits.MaxControllerCount]
         {
             DateTime.UtcNow, DateTime.UtcNow, DateTime.UtcNow, DateTime.UtcNow,
             DateTime.UtcNow, DateTime.UtcNow, DateTime.UtcNow, DateTime.UtcNow,
         };
 
-        public static bool[] forcelight = new bool[Global.MAX_DS4_CONTROLLER_COUNT] { false, false, false, false, false, false, false, false };
-        public static DS4Color[] forcedColor = new DS4Color[Global.MAX_DS4_CONTROLLER_COUNT];
-        public static byte[] forcedFlash = new byte[Global.MAX_DS4_CONTROLLER_COUNT];
+        public static bool[] forcelight = new bool[ControllerLimits.MaxControllerCount] { false, false, false, false, false, false, false, false };
+        public static DS4Color[] forcedColor = new DS4Color[ControllerLimits.MaxControllerCount];
+        public static byte[] forcedFlash = new byte[ControllerLimits.MaxControllerCount];
         internal const int PULSE_FLASH_DURATION = 2000;
         internal const double PULSE_FLASH_SEGMENTS = PULSE_FLASH_DURATION / 40;
         internal const int PULSE_CHARGING_DURATION = 4000;

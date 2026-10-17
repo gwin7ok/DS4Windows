@@ -14,7 +14,7 @@ namespace DS4Windows.Actions
     public class DefaultMacroPlayer : IMacroPlayer
     {
         // Phase6-Step9b-3（F05）: 4 スロット固定だと、拡張スロット数が 8 のときデバイス 4〜7 のマクロが再生されなかった。
-        private readonly bool[] _isPlaying = new bool[Global.MAX_DS4_CONTROLLER_COUNT];
+        private readonly bool[] _isPlaying = new bool[ControllerLimits.MaxControllerCount];
         private readonly object _lock = new object();
         private readonly IVirtualKBM _virtualKBM;
         // Phase7-Step8 W2: 旧 Mapping.PlayMacroDirect／EndMacroDirect の静的呼び出し。遅延（Func）で受ける（Phase5-Plan §5.4）

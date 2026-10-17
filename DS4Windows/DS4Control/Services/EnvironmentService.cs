@@ -143,9 +143,9 @@ namespace DS4Windows
         private static int CalculateControllerSlotLimit()
         {
 #if FORCE_4_INPUT
-            return Global.OLD_XINPUT_CONTROLLER_COUNT;
+            return ControllerLimits.OldXInputControllerCount;
 #else
-            return IsWin8OrGreaterCore() ? Global.MAX_DS4_CONTROLLER_COUNT : Global.OLD_XINPUT_CONTROLLER_COUNT;
+            return IsWin8OrGreaterCore() ? ControllerLimits.MaxControllerCount : ControllerLimits.OldXInputControllerCount;
 #endif
         }
 

@@ -39,7 +39,7 @@ namespace DS4WinWPF
         private string path_lowercase;
         private string title_lowercase;
         private bool turnoff;
-        private string[] profileNames = new string[DS4Windows.Global.MAX_DS4_CONTROLLER_COUNT] { string.Empty, string.Empty,
+        private string[] profileNames = new string[ControllerLimits.MaxControllerCount] { string.Empty, string.Empty,
             string.Empty, string.Empty, string.Empty, string.Empty, string.Empty, string.Empty };
         public const string NONE_STRING = "(none)";
 

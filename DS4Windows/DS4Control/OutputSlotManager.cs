@@ -33,7 +33,7 @@ namespace DS4Windows
     {
         public int InstanceId => this.GetHashCode();
         public const int DELAY_TIME = 500; // measured in ms
-        private OutSlotDevice[] outputSlots;/* = new OutSlotDevice[Global.MAX_DS4_CONTROLLER_COUNT]
+        private OutSlotDevice[] outputSlots;/* = new OutSlotDevice[ControllerLimits.MaxControllerCount]
         {
             new OutSlotDevice(0), new OutSlotDevice(1),
             new OutSlotDevice(2), new OutSlotDevice(3)

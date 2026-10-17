@@ -23,7 +23,7 @@ namespace DS4Windows
         // ---- Phase6-Step7-1: 起動時の初回接続フラグの一括リセット（App.xaml.cs から使用）----
         public void ResetConnectionFlags()
         {
-            for (int i = 0; i < Global.TEST_PROFILE_ITEM_COUNT; i++)
+            for (int i = 0; i < ControllerLimits.TestProfileItemCount; i++)
             {
                 _config.firstConnectionAfterStartup[i] = true;
             }

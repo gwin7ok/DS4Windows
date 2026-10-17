@@ -42,7 +42,7 @@ namespace DS4Windows
         public ViGEmClient vigemTestClient = null;
         // Might be useful for ScpVBus build
         public const int EXPANDED_CONTROLLER_COUNT = 8;
-        public const int MAX_DS4_CONTROLLER_COUNT = Global.MAX_DS4_CONTROLLER_COUNT;
+        public const int MAX_DS4_CONTROLLER_COUNT = ControllerLimits.MaxControllerCount;
         // TODO(技術的負債): 互換シム。値の SSOT は IEnvironmentService.ControllerSlotLimit / UsingMaxControllers。
         // 未移行の外部呼び出し元（UI・ViewModel・ScpUtil・DTO・OutputSlotManager 等）のために static プロパティとして残す。
         // 各呼び出し元はそれぞれの Step で IEnvironmentService の注入へ置換し、最終的に Phase6-Step12 で削除する
@@ -2559,7 +2559,7 @@ namespace DS4Windows
             //    return;
             //}
             // Skip running for test profile with no mapping data
-            if (ind >= Global.TEST_PROFILE_INDEX)
+            if (ind >= ControllerLimits.TestProfileIndex)
             {
                 return;
             }

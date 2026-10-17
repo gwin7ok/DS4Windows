@@ -1151,7 +1151,7 @@ namespace DS4WinWPF
                 {
                     if (_controllerRegistry != null)
                     {
-                        for (int d = 0; d < Global.MAX_DS4_CONTROLLER_COUNT; d++)
+                        for (int d = 0; d < ControllerLimits.MaxControllerCount; d++)
                         {
                             try { _controllerRegistry.ClearControllersForDevice(d); } catch { }
                         }

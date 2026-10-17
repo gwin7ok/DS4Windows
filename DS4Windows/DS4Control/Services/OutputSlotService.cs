@@ -170,7 +170,7 @@ namespace DS4Windows
 
         private static OutContType[] CreateFilled(OutContType value)
         {
-            var array = new OutContType[Global.TEST_PROFILE_ITEM_COUNT];
+            var array = new OutContType[ControllerLimits.TestProfileItemCount];
             for (int i = 0; i < array.Length; i++) array[i] = value;
             return array;
         }

@@ -24,12 +24,12 @@ namespace DS4WindowsTests
             new Dictionary<string, (int RootHub, int AppHost, int Global)>
         {
             // Phase6-Step10b W4: ActionManager.cs の Global 1 件は ActionEntry.cs へ移った（合計は不変）
-            ["DS4Windows/Actions/ActionEntry.cs"] = (0, 0, 1),
-            ["DS4Windows/Actions/DefaultActionManager.cs"] = (0, 0, 1),
-            ["DS4Windows/Actions/DefaultMacroPlayer.cs"] = (0, 0, 1),
+            ["DS4Windows/Actions/ActionEntry.cs"] = (0, 0, 0),
+            ["DS4Windows/Actions/DefaultActionManager.cs"] = (0, 0, 0),
+            ["DS4Windows/Actions/DefaultMacroPlayer.cs"] = (0, 0, 0),
             // Phase7-Step5 W2: Program.rootHub を App のフィールド _controlService に置き換え（12 → 0）
             // Phase7-Step5 W4: App の AppHost.GetService は ResolvePostHostService の 1 件だけ（4 → 1）
-            ["DS4Windows/App.xaml.cs"] = (0, 1, 1),
+            ["DS4Windows/App.xaml.cs"] = (0, 1, 0),
             ["DS4Windows/BezierCurveEditor/BezierCurve.cs"] = (0, 0, 1),
             // Phase6-Step10b W2: DS4Windows.AppHost（互換ラッパー）を DI/Compat/AppHost.cs へ分離。件数を引き継いだ（4＝2＋2。合計は不変）
             // Phase7-Step9 W1: 互換ラッパー（DI/Compat/AppHost.cs）を削除（呼び出し元 0 件。AppHost 合計 5 → 4）
@@ -37,15 +37,15 @@ namespace DS4WindowsTests
             // Phase7-Step5 W2: Program.rootHub ?? の削除（1 → 0）
             ["DS4Windows/DI/ServiceRegistration.cs"] = (0, 0, 1),
             // Phase7-Step5 W4: IElevatedProcessLauncher をコンストラクター注入にし、AppHost.GetService を削除（1 → 0）
-            ["DS4Windows/DS4Control/ControlService.cs"] = (0, 0, 2),
-            ["DS4Windows/DS4Control/DS4LightBar.cs"] = (0, 0, 7),
+            ["DS4Windows/DS4Control/ControlService.cs"] = (0, 0, 0),
+            ["DS4Windows/DS4Control/DS4LightBar.cs"] = (0, 0, 0),
             ["DS4Windows/DS4Control/DS4OutDevices/DS4OutDeviceBasic.cs"] = (0, 0, 1),
             ["DS4Windows/DS4Control/DS4OutDevices/DS4OutDeviceExt.cs"] = (0, 0, 1),
             // Phase6-Step10b W1: 1 ファイル 1 型の分割に伴い、件数を新設ファイルへ引き継いだ（合計は不変: ActionsDTO 6＝4＋2、AutoProfilesDTO 4＝0＋4、ProfileDTO 10＝2＋8）
             // Phase6-Step12 Wave 6: プロファイル用 DTO（ProfileDTO と、ProfileDTO 専用の型 19 ファイル）の削除に伴い、DS4Control*AssignmentSerializer（6 ファイル）と ProfileDTO の基準値（計 10）を除いた
             ["DS4Windows/DS4Control/DTOXml/ActionsDTO.cs"] = (0, 0, 4),
-            ["DS4Windows/DS4Control/DTOXml/AppSettingsDTO.cs"] = (0, 0, 16),
-            ["DS4Windows/DS4Control/DTOXml/AutoProfileEntrySerializer.cs"] = (0, 0, 4),
+            ["DS4Windows/DS4Control/DTOXml/AppSettingsDTO.cs"] = (0, 0, 2),
+            ["DS4Windows/DS4Control/DTOXml/AutoProfileEntrySerializer.cs"] = (0, 0, 0),
             ["DS4Windows/DS4Control/DTOXml/OutputSlotPersistDTO.cs"] = (0, 0, 1),
             ["DS4Windows/DS4Control/DTOXml/SpecialActionSerializer.cs"] = (0, 0, 2),
             // Phase6-Step10b W4: Log.cs（AppLogger／ProfileChangeSource／ProfileChangedEventArgs）は型ごとに分割。Global 1 件は AppLogger.cs
@@ -88,16 +88,17 @@ namespace DS4WindowsTests
             ["DS4Windows/DS4Control/Services/AppearanceSettingsService.cs"] = (0, 0, 4),
             ["DS4Windows/DS4Control/Services/AutoProfileService.cs"] = (0, 0, 1),
             ["DS4Windows/DS4Control/Services/DefaultElevatedProcessLauncher.cs"] = (0, 0, 1),
-            ["DS4Windows/DS4Control/Services/DeviceStateService.cs"] = (0, 0, 2),
+            ["DS4Windows/DS4Control/Services/DeviceStateService.cs"] = (0, 0, 1),
             // Phase7-Step2 W7: IDs4DeviceRegistry.IsHidHideInstalled の削除で Global.IsHidHideInstalled の参照 1 件を削除（1 → 0）
             ["DS4Windows/DS4Control/Services/Ds4DeviceRegistryAdapter.cs"] = (0, 0, 0),
             // Phase7-Step4 W1: 調べ物と状態を EnvironmentService が持つ形に移管（21 → 7: IsAdministrator／exeversion／GetInstanceIdFromDevicePath／AdminNeeded と、スロット上限の定数 3）
-            ["DS4Windows/DS4Control/Services/EnvironmentService.cs"] = (0, 0, 7),
+            // Phase7-Step10a W2: 定数参照（Global.MAX_DS4_CONTROLLER_COUNT ほか）を ControllerLimits へ切り替え（Actions 3、App 1、ControlService 2、DS4LightBar 7、AppSettingsDTO 14、AutoProfileEntrySerializer 4、DeviceStateService 1、EnvironmentService 3、OutputSlotService 1、MainWindow 1、ProfileEditor 3）
+            ["DS4Windows/DS4Control/Services/EnvironmentService.cs"] = (0, 0, 4),
             // Phase7-Step2 W4: IVirtualKBM.ErrorMessage の削除で Global.outputKBMHandler の参照 1 件を削除（21 → 20）。W7: Version の削除でさらに 1 件削除（20 → 19）
             // Phase7-Step8 W3（Q6＝A）: OutputKBMHandlerAdapter.cs の Global.outputKBMHandler／outputKBMMapping 参照 19 件を削除（出力ハンドラの実体を OutputKBMHandlerAdapter へ）
             // Phase7-Step8 W3（Q6＝A）: OutputKBMHandlerLifecycle.cs の Global.outputKBMHandler／outputKBMMapping 参照 8 件を削除（出力ハンドラの実体を OutputKBMHandlerAdapter へ）
             // Phase7-Step6 W2: 配列の実体を持ち、Global の参照は配列の長さの定数 1 件だけ（2 → 1）
-            ["DS4Windows/DS4Control/Services/OutputSlotService.cs"] = (0, 0, 1),
+            ["DS4Windows/DS4Control/Services/OutputSlotService.cs"] = (0, 0, 0),
             // Phase7-Step4 W3: 実行ファイル・保存場所の状態を PathService が持つ形に移管（8 → 1: 省略時の Global.store）
             ["DS4Windows/DS4Control/Services/PathService.cs"] = (0, 0, 1),
             ["DS4Windows/DS4Control/Services/ProfileApplicationService.cs"] = (0, 0, 0),
@@ -120,10 +121,10 @@ namespace DS4WindowsTests
             ["DS4Windows/DS4Forms/ImageLocationPaths.cs"] = (0, 0, 6),
             ["DS4Windows/DS4Forms/LanguageSelectDialog.xaml.cs"] = (0, 0, 1),
             // Phase7-Step5 W5: AppHost.GetService の 17 件をコンストラクター引数に（IMainWindowFactory）。17 → 0
-            ["DS4Windows/DS4Forms/MainWindow.xaml.cs"] = (0, 0, 1),
+            ["DS4Windows/DS4Forms/MainWindow.xaml.cs"] = (0, 0, 0),
             // Phase7-Step5 W2: Program.rootHub のフォールバックを削除（1 → 0）
             // Phase7-Step5 W5: AppHost.GetService の 4 件をコンストラクター引数に（IEditorWindowFactory.CreateProfileEditor）。4 → 0
-            ["DS4Windows/DS4Forms/ProfileEditor.xaml.cs"] = (0, 0, 32),
+            ["DS4Windows/DS4Forms/ProfileEditor.xaml.cs"] = (0, 0, 29),
             ["DS4Windows/DS4Forms/ResourcePaths.cs"] = (0, 0, 5),
             ["DS4Windows/DS4Forms/ViewModels/CompositeDeviceModel.cs"] = (0, 0, 4),
             ["DS4Windows/DS4Forms/ViewModels/ControllerListViewModel.cs"] = (0, 0, 0),

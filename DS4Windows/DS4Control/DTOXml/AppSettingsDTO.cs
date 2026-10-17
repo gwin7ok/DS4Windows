@@ -152,7 +152,7 @@ public class AppSettingsDTO
     public bool ShouldSerializeController5CurrentProfile()
     {
         return !string.IsNullOrEmpty(Controller5CurrentProfile) &&
-            Global.MAX_DS4_CONTROLLER_COUNT >= 5;
+            ControllerLimits.MaxControllerCount >= 5;
     }
 
     [XmlElement("Controller6")]
@@ -163,7 +163,7 @@ public class AppSettingsDTO
     public bool ShouldSerializeController6CurrentProfile()
     {
         return !string.IsNullOrEmpty(Controller6CurrentProfile) &&
-            Global.MAX_DS4_CONTROLLER_COUNT >= 6;
+            ControllerLimits.MaxControllerCount >= 6;
     }
 
     [XmlElement("Controller7")]
@@ -174,7 +174,7 @@ public class AppSettingsDTO
     public bool ShouldSerializeController7CurrentProfile()
     {
         return !string.IsNullOrEmpty(Controller7CurrentProfile) &&
-            Global.MAX_DS4_CONTROLLER_COUNT >= 7;
+            ControllerLimits.MaxControllerCount >= 7;
     }
 
     [XmlElement("Controller8")]
@@ -185,7 +185,7 @@ public class AppSettingsDTO
     public bool ShouldSerializeController8CurrentProfile()
     {
         return !string.IsNullOrEmpty(Controller8CurrentProfile) &&
-            Global.MAX_DS4_CONTROLLER_COUNT >= 8;
+            ControllerLimits.MaxControllerCount >= 8;
     }
 
     // Selected Profile settings
@@ -207,19 +207,19 @@ public class AppSettingsDTO
 
     [XmlElement("SelectedProfile5")]
     public string SelectedProfile5 { get; set; }
-    public bool ShouldSerializeSelectedProfile5() => !string.IsNullOrEmpty(SelectedProfile5) && Global.MAX_DS4_CONTROLLER_COUNT >= 5;
+    public bool ShouldSerializeSelectedProfile5() => !string.IsNullOrEmpty(SelectedProfile5) && ControllerLimits.MaxControllerCount >= 5;
 
     [XmlElement("SelectedProfile6")]
     public string SelectedProfile6 { get; set; }
-    public bool ShouldSerializeSelectedProfile6() => !string.IsNullOrEmpty(SelectedProfile6) && Global.MAX_DS4_CONTROLLER_COUNT >= 6;
+    public bool ShouldSerializeSelectedProfile6() => !string.IsNullOrEmpty(SelectedProfile6) && ControllerLimits.MaxControllerCount >= 6;
 
     [XmlElement("SelectedProfile7")]
     public string SelectedProfile7 { get; set; }
-    public bool ShouldSerializeSelectedProfile7() => !string.IsNullOrEmpty(SelectedProfile7) && Global.MAX_DS4_CONTROLLER_COUNT >= 7;
+    public bool ShouldSerializeSelectedProfile7() => !string.IsNullOrEmpty(SelectedProfile7) && ControllerLimits.MaxControllerCount >= 7;
 
     [XmlElement("SelectedProfile8")]
     public string SelectedProfile8 { get; set; }
-    public bool ShouldSerializeSelectedProfile8() => !string.IsNullOrEmpty(SelectedProfile8) && Global.MAX_DS4_CONTROLLER_COUNT >= 8;
+    public bool ShouldSerializeSelectedProfile8() => !string.IsNullOrEmpty(SelectedProfile8) && ControllerLimits.MaxControllerCount >= 8;
 
 
     [XmlIgnore]
@@ -772,7 +772,7 @@ public class AppSettingsDTO
     }
     public bool ShouldSerializeCustomLed5String()
     {
-        return Global.MAX_DS4_CONTROLLER_COUNT >= 5;
+        return ControllerLimits.MaxControllerCount >= 5;
     }
 
     [XmlIgnore]
@@ -792,7 +792,7 @@ public class AppSettingsDTO
     }
     public bool ShouldSerializeCustomLed6String()
     {
-        return Global.MAX_DS4_CONTROLLER_COUNT >= 6;
+        return ControllerLimits.MaxControllerCount >= 6;
     }
 
     [XmlIgnore]
@@ -812,7 +812,7 @@ public class AppSettingsDTO
     }
     public bool ShouldSerializeCustomLed7String()
     {
-        return Global.MAX_DS4_CONTROLLER_COUNT > 7;
+        return ControllerLimits.MaxControllerCount > 7;
     }
 
     [XmlIgnore]
@@ -832,7 +832,7 @@ public class AppSettingsDTO
     }
     public bool ShouldSerializeCustomLed8String()
     {
-        return Global.MAX_DS4_CONTROLLER_COUNT >= 8;
+        return ControllerLimits.MaxControllerCount >= 8;
     }
 
     public AppSettingsDTO()
@@ -980,7 +980,7 @@ public class AppSettingsDTO
                 LightbarInfo5, LightbarInfo6, LightbarInfo7, LightbarInfo8,
         };
 
-        for (int i = 0; i < Global.MAX_DS4_CONTROLLER_COUNT; i++)
+        for (int i = 0; i < ControllerLimits.MaxControllerCount; i++)
         {
             LightbarDS4WinInfo lightbarDS4Win = source.ObtainLightbarDS4WinInfo(i);
             LightbarDS4WinInfo tempInstance = tempLightArray[i];
@@ -1094,7 +1094,7 @@ public class AppSettingsDTO
                 LightbarInfo5, LightbarInfo6, LightbarInfo7, LightbarInfo8,
         };
 
-        for (int i = 0; i < Global.MAX_DS4_CONTROLLER_COUNT; i++)
+        for (int i = 0; i < ControllerLimits.MaxControllerCount; i++)
         {
             LightbarDS4WinInfo tempInstance = tempLightArray[i];
             destination.PopulateLightbarDS4WinInfo(i, tempInstance);

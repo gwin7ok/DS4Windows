@@ -1972,7 +1972,7 @@ Suspend support not enabled.", true);
                     // Pass explicit profile name to avoid confusion with device's currently-assigned profile.
                     string profileNameForLog = entity != null ? entity.Name : "(new profile)";
                     // Phase6-Step7b: 読み込んだプロファイルのアクションを調べるため、実機ではなく作業スロットを渡す
-                    profileRepo.EmitMissingActionLogsForDevice(Global.TEST_PROFILE_INDEX, true, profileNameForLog);
+                    profileRepo.EmitMissingActionLogsForDevice(ControllerLimits.TestProfileIndex, true, profileNameForLog);
                 }
                 catch (Exception ex)
                 {

@@ -70,7 +70,7 @@ namespace DS4WinWPF.DS4Control.DTOXml
         } = string.Empty;
         public bool ShouldSerializeController5()
         {
-            return Global.MAX_DS4_CONTROLLER_COUNT >= 5;
+            return ControllerLimits.MaxControllerCount >= 5;
         }
 
         [XmlElement("Controller6")]
@@ -80,7 +80,7 @@ namespace DS4WinWPF.DS4Control.DTOXml
         } = string.Empty;
         public bool ShouldSerializeController6()
         {
-            return Global.MAX_DS4_CONTROLLER_COUNT >= 6;
+            return ControllerLimits.MaxControllerCount >= 6;
         }
 
         [XmlElement("Controller7")]
@@ -90,7 +90,7 @@ namespace DS4WinWPF.DS4Control.DTOXml
         } = string.Empty;
         public bool ShouldSerializeController7()
         {
-            return Global.MAX_DS4_CONTROLLER_COUNT >= 7;
+            return ControllerLimits.MaxControllerCount >= 7;
         }
 
         [XmlElement("Controller8")]
@@ -100,7 +100,7 @@ namespace DS4WinWPF.DS4Control.DTOXml
         } = string.Empty;
         public bool ShouldSerializeController8()
         {
-            return Global.MAX_DS4_CONTROLLER_COUNT >= 8;
+            return ControllerLimits.MaxControllerCount >= 8;
         }
 
         [XmlElement("TurnOff")]

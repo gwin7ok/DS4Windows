@@ -110,7 +110,7 @@ namespace DS4WindowsTests
             string text = ReadSourceWithoutComments("DS4Windows/DS4Forms/ProfileEditor.xaml.cs");
             if (text == null) return;
 
-            Assert.Contains("private readonly int deviceNum = Global.TEST_PROFILE_INDEX;", text);
+            Assert.Contains("private readonly int deviceNum = ControllerLimits.TestProfileIndex;", text);
 
             // フィールド初期化子以外で deviceNum へ代入していない（== や ローカル変数の宣言は対象外）
             int assignments = Regex.Matches(text, @"(?<![\w.])deviceNum\s*=(?!=)").Count;

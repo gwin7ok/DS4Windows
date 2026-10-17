@@ -25,13 +25,10 @@ namespace DS4WindowsTests
         /// <summary>許容される Global 参照（メンバ名 → 出現回数）。</summary>
         private static readonly Dictionary<string, int> AllowedGlobalReferences = new Dictionary<string, int>
         {
-            // C2-EX01: 真の定数
-            { "MAX_DS4_CONTROLLER_COUNT", 1 },
-            // C2-EX03: 真の定数
-            { "TEST_PROFILE_INDEX", 1 },
             // Phase6-Step10-4-5: C2-02（`Global.ProfileSettingsServiceInstance` のフォールバック）と、
             // C2-EX04〜EX07（ViGEm 関連の 6 件）は、IEnvironmentService へ置換し、許容リストから除いた。
-            // 以後、ControlService の Global 参照は定数のみ。
+            // Phase7-Step10a W2: 残っていた真の定数 C2-EX01（MAX_DS4_CONTROLLER_COUNT）と C2-EX03（TEST_PROFILE_INDEX）も
+            // ControllerLimits に替えた。以後、ControlService の Global 参照は 0 件。
         };
 
         private static string FindControlServiceSource()

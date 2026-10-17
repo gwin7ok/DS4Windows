@@ -19,7 +19,7 @@ namespace DS4Windows
         {
             ActionDef = action;
             ActionImpl = factory != null ? factory.CreateFrom(action, -1) : ActionFactory.CreateFrom(action, -1);
-            States = new ActionInstanceState[Global.MAX_DS4_CONTROLLER_COUNT];
+            States = new ActionInstanceState[ControllerLimits.MaxControllerCount];
             for (int i = 0; i < States.Length; ++i) States[i] = new ActionInstanceState();
             try
             {

@@ -68,11 +68,9 @@ namespace DS4WindowsTests
             // Phase7-Step4 W4: appdatapath は PathService の状態を直接読み書きする形にした（Global 参照 1 → 0）
         };
 
-        // P7-39（Save）は Step7-3 で置き換えた。残るのは const の MAX_DS4_CONTROLLER_COUNT（E7-15）だけ。
-        private static readonly Dictionary<string, int> ExpectedCleanShutdown = new Dictionary<string, int>
-        {
-            ["MAX_DS4_CONTROLLER_COUNT"] = 1,
-        };
+        // P7-39（Save）は Step7-3 で置き換えた。Phase7-Step10a W2: 残っていた const の MAX_DS4_CONTROLLER_COUNT（E7-15）も
+        // ControllerLimits.MaxControllerCount に替えた（1 → 0）。
+        private static readonly Dictionary<string, int> ExpectedCleanShutdown = new Dictionary<string, int>();
 
         // ---- ソースの読み取りと領域の切り出し ----
 

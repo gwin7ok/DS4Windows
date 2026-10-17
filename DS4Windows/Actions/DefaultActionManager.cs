@@ -61,7 +61,7 @@ namespace DS4Windows.Actions
                 // Initialize button state table for all devices × supported control indices
                 try
                 {
-                    int devices = Global.MAX_DS4_CONTROLLER_COUNT;
+                    int devices = ControllerLimits.MaxControllerCount;
                     int controls = (int)DS4ControlSettings.LAST_DS4_ACTION + 1;
                     buttonStates = new bool[devices, controls];
                     AppLogger.LogTrace($"DefaultActionManager.PreallocateEntries: allocated buttonStates {devices}x{controls} and {actions.Count} action entries");
