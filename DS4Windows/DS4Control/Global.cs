@@ -256,7 +256,7 @@ namespace DS4Windows
         // 静的フィールド初期化される必要があるため、Phase4-Step2ブロックの直前に配置する。
         // =========================================================================
         private static DS4Windows.DI.IProfileXmlStore profileXmlStore = null;
-        private static readonly DS4Windows.DI.IProfileXmlStore fallbackProfileXmlStore = new ProfileXmlStore();
+        private static readonly DS4Windows.DI.IProfileXmlStore fallbackProfileXmlStore = new ProfileXmlStore(m_Config);
 
         public static DS4Windows.DI.IProfileXmlStore ProfileXmlStoreInstance
         {

@@ -175,7 +175,7 @@ namespace DS4WindowsTests
             string text = ReadSourceWithoutComments("DS4Windows/DS4Control/Services/ProfileRepository.cs");
             if (text == null) return;
 
-            Assert.Matches(@"public bool SaveAsProfile\(int deviceIndex, string profileName\)\s*=>\s*Global\.store\.SaveAsProfile\(deviceIndex, profileName\);", text);
+            Assert.Matches(@"public bool SaveAsProfile\(int deviceIndex, string profileName\)\s*=>\s*_config.SaveAsProfile\(deviceIndex, profileName\);", text);
             Assert.Matches(@"public bool LoadLinkedProfiles\(\)\s*=>\s*Global\.LoadLinkedProfiles\(\);", text);
         }
 

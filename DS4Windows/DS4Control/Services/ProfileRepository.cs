@@ -9,6 +9,8 @@ namespace DS4Windows
     public class ProfileRepository : IProfileRepository
     {
         private readonly object _fileLock = new object();
+        // Phase7-Step3 W1: Global 経由の参照をやめ、Composition Root から注入された BackingStore（設定の唯一の実体）を使う。
+        private readonly BackingStore _config;
         private readonly IProfileSettingsService _profileSettings;
         private readonly IProfileXmlStore _profileXmlStore;
         private readonly IPathService _pathService;
@@ -17,10 +19,11 @@ namespace DS4Windows
         // ControlService は ControlService → IProfileRepository の依存循環を避けるため、遅延解決（Func）で受け取る。
         private readonly Func<ControlService> _controlProvider;
 
-        public ProfileRepository(IProfileSettingsService profileSettings,
+        public ProfileRepository(BackingStore config, IProfileSettingsService profileSettings,
             IProfileXmlStore profileXmlStore, IPathService pathService,
             Func<ControlService> controlProvider)
         {
+            _config = config ?? throw new ArgumentNullException(nameof(config));
             _profileSettings = profileSettings ?? throw new ArgumentNullException(nameof(profileSettings));
             _profileXmlStore = profileXmlStore ?? throw new ArgumentNullException(nameof(profileXmlStore));
             _pathService = pathService ?? throw new ArgumentNullException(nameof(pathService));
@@ -175,7 +178,7 @@ namespace DS4Windows
             if (string.IsNullOrWhiteSpace(oldName) || string.IsNullOrWhiteSpace(newName)) return 0;
 
             int replaced = 0;
-            var linked = Global.store.linkedProfiles;
+            var linked = _config.linkedProfiles;
             if (linked != null)
             {
                 foreach (string serial in linked.Keys.ToList())
@@ -215,7 +218,7 @@ namespace DS4Windows
             if (string.IsNullOrWhiteSpace(oldName) || string.IsNullOrWhiteSpace(newName)) return 0;
 
             int replaced = 0;
-            var actions = Global.store.actions;
+            var actions = _config.actions;
             if (actions != null)
             {
                 lock (actions)
@@ -235,7 +238,7 @@ namespace DS4Windows
 
             if (replaced > 0)
             {
-                Global.store.SaveActions();
+                _config.SaveActions();
             }
 
             return replaced;
@@ -254,12 +257,12 @@ namespace DS4Windows
 
         // ---- Phase5-Step13-7 Tier4: プロファイル未定義アクションの警告ログ出力 ----
         public void EmitMissingActionLogsForDevice(int deviceIndex, bool forceEmit = false, string overrideProfileName = null)
-            => Global.store.EmitMissingActionLogsForDevice(deviceIndex, forceEmit, overrideProfileName);
+            => _config.EmitMissingActionLogsForDevice(deviceIndex, forceEmit, overrideProfileName);
 
         // ---- Phase6-Step7-1: App.xaml.cs（Post-Host）の Global 直接参照解消 ----
         // Global.SaveAsProfile は戻り値を捨てる void のため、同じ実体（BackingStore.SaveAsProfile）を直接呼んで成否を返す。
         public bool SaveAsProfile(int deviceIndex, string profileName)
-            => Global.store.SaveAsProfile(deviceIndex, profileName);
+            => _config.SaveAsProfile(deviceIndex, profileName);
 
         public bool LoadLinkedProfiles()
             => Global.LoadLinkedProfiles();

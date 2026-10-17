@@ -71,10 +71,10 @@ namespace DS4WindowsTests
         }
 
         [Fact]
-        public void Constructor_WithNullBackingStore_ShouldFallBackToGlobalStore()
+        public void Constructor_WithNullBackingStore_Throws()
         {
-            var store = new ProfileXmlStore(null);
-            Assert.NotNull(store);
+            // Phase7-Step3 W1: Global.store へのフォールバックを廃止した
+            Assert.Throws<System.ArgumentNullException>(() => new ProfileXmlStore(null));
         }
     }
 }

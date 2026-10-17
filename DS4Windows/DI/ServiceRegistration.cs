@@ -15,6 +15,8 @@ namespace DS4Windows.DI
         public static IServiceCollection RegisterServices(this IServiceCollection services)
         {
             // === 第4層: 4-c DIサービス群 (Singleton) ===
+            // Phase7-Step3 W1: BackingStore（設定の唯一の実体）を登録する。実体は Global.store と同一（Global の生成は Step10 まで残す）
+            services.AddSingleton<BackingStore>(_ => Global.store);
             services.AddSingleton<IPathService, PathService>();
             services.AddSingleton<IDeviceStateService, DeviceStateService>();
             services.AddSingleton<IEnvironmentService, EnvironmentService>();
@@ -32,17 +34,16 @@ namespace DS4Windows.DI
                 sp.GetRequiredService<IOutputSlotStore>(),
                 sp.GetRequiredService<Func<ControlService>>()));
 
-            // Phase6-Step10-4-2c: BackingStore は DI 未登録のため、Global.store を渡す。ControlService は遅延解決（循環の回避）
+            // ControlService は遅延解決（循環の回避）
             services.AddSingleton<IProfileSettingsService>(sp => new ProfileSettingsService(
-                Global.store, sp.GetRequiredService<IEnvironmentService>(), sp.GetRequiredService<Func<ControlService>>()));
+                sp.GetRequiredService<BackingStore>(), sp.GetRequiredService<IEnvironmentService>(), sp.GetRequiredService<Func<ControlService>>()));
             services.AddSingleton<IProfileXmlStore, ProfileXmlStore>();
             services.AddSingleton<IProfileRepository, ProfileRepository>();
             // Phase6-Step10-2（決定 E2＝A）: プリセットの読み込み（Global.Load…Profile への薄い委譲）
             services.AddSingleton<IProfilePresetLoader, ProfilePresetLoader>();
             services.AddSingleton<IProfileSlotApplier, ProfileSlotApplier>();
-            // Phase6-Step10-4-2a: BackingStore は DI 未登録のため、Composition Root で Global.store（設定の唯一の実体）を渡す
             services.AddSingleton<ISpecialActionRepository>(sp => new SpecialActionRepository(
-                Global.store, sp.GetRequiredService<IPathService>()));
+                sp.GetRequiredService<BackingStore>(), sp.GetRequiredService<IPathService>()));
 
             // Phase 3 Step 3-6: プロセス検査・昇格起動サービスの登録
             services.AddSingleton<IProcessInspector, DefaultProcessInspector>();
@@ -50,7 +51,7 @@ namespace DS4Windows.DI
 
 
             // プロファイルのアクション取得（ControlService が使用）。Phase6-Step10-4-2d: アクション連鎖サービスは廃止
-            services.AddSingleton<IProfileActionProvider>(sp => new ProfileActionProvider(Global.store)); // Phase6-Step10-4-2b: BackingStore は DI 未登録のため、Global.store を渡す
+            services.AddSingleton<IProfileActionProvider>(sp => new ProfileActionProvider(sp.GetRequiredService<BackingStore>()));
 
             // Phase 5 Step 3: プロファイル適用サービス
             services.AddSingleton<IProfileApplicationService, ProfileApplicationService>();

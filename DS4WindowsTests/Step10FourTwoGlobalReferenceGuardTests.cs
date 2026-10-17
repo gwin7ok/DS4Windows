@@ -95,14 +95,17 @@ namespace DS4WindowsTests
         public void ProfileRepository_ProfileActionProvider_AutoProfileHolder_RequireDependencies()
         {
             var settings = TestRepositoryFactory.CreateProfileSettingsService();
-            var store = new ProfileXmlStore();
+            var config = new BackingStore();
+            var store = new ProfileXmlStore(config);
             var path = new PathService();
             Func<ControlService> control = () => null;
 
-            Assert.Throws<ArgumentNullException>(() => new ProfileRepository(null, store, path, control));
-            Assert.Throws<ArgumentNullException>(() => new ProfileRepository(settings, null, path, control));
-            Assert.Throws<ArgumentNullException>(() => new ProfileRepository(settings, store, null, control));
-            Assert.Throws<ArgumentNullException>(() => new ProfileRepository(settings, store, path, null));
+            Assert.Throws<ArgumentNullException>(() => new ProfileRepository(null, settings, store, path, control));
+            Assert.Throws<ArgumentNullException>(() => new ProfileXmlStore(null));
+            Assert.Throws<ArgumentNullException>(() => new ProfileRepository(config, settings, store, path, null));
+            Assert.Throws<ArgumentNullException>(() => new ProfileRepository(config, null, store, path, control));
+            Assert.Throws<ArgumentNullException>(() => new ProfileRepository(config, settings, null, path, control));
+            Assert.Throws<ArgumentNullException>(() => new ProfileRepository(config, settings, store, null, control));
             Assert.Throws<ArgumentNullException>(() => new ProfileActionProvider(null));
             Assert.Throws<ArgumentNullException>(() => new DS4WinWPF.AutoProfileHolder(null));
         }

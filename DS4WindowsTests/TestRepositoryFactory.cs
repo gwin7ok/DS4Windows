@@ -19,9 +19,11 @@ namespace DS4WindowsTests
         }
 
         public static ProfileRepository CreateProfileRepository(IProfileSettingsService settings = null,
-            IProfileXmlStore xmlStore = null, IPathService pathService = null, Func<ControlService> control = null)
+            IProfileXmlStore xmlStore = null, IPathService pathService = null, Func<ControlService> control = null,
+            BackingStore store = null)
         {
             return new ProfileRepository(
+                store ?? Global.store,
                 settings ?? Global.ProfileSettingsServiceInstance,
                 xmlStore ?? Global.ProfileXmlStoreInstance,
                 pathService ?? new PathService(),

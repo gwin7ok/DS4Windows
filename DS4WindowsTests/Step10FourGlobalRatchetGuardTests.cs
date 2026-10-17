@@ -33,7 +33,7 @@ namespace DS4WindowsTests
             ["DS4Windows/DI/AppHost.cs"] = (0, 2, 0),
             // Phase6-Step12 Wave 5: 呼び出し元 0 件の GetService(Type) などを削除（2 → 1）
             ["DS4Windows/DI/Compat/AppHost.cs"] = (0, 1, 0),
-            ["DS4Windows/DI/ServiceRegistration.cs"] = (1, 0, 3),
+            ["DS4Windows/DI/ServiceRegistration.cs"] = (1, 0, 1),
             ["DS4Windows/DS4Control/ControlService.cs"] = (0, 1, 2),
             ["DS4Windows/DS4Control/DS4LightBar.cs"] = (0, 0, 7),
             ["DS4Windows/DS4Control/DS4OutDevices/DS4OutDeviceBasic.cs"] = (0, 0, 1),
@@ -77,11 +77,11 @@ namespace DS4WindowsTests
             ["DS4Windows/DS4Control/Services/ProfileApplicationService.cs"] = (0, 0, 3),
             ["DS4Windows/DS4Control/Services/ProfilePresetLoader.cs"] = (0, 0, 10),
             // 26: 名前変更の伝播（ReplaceProfileSwitchTarget。Phase6-Step10-4-5d）で、Global.store への委譲を 2 件追加（薄いシムの性質。24 → 26）
-            ["DS4Windows/DS4Control/Services/ProfileRepository.cs"] = (0, 0, 26),
+            ["DS4Windows/DS4Control/Services/ProfileRepository.cs"] = (0, 0, 21),
             // Phase7-Step2 W1: コピー版 GetReverseX360ButtonMapping の削除で Global.reverseX360ButtonMapping の参照 1 件を削除（5 → 4）
             ["DS4Windows/DS4Control/Services/ProfileSettingsService.cs"] = (0, 0, 4),
             ["DS4Windows/DS4Control/Services/ProfileSlotApplier.cs"] = (0, 0, 1),
-            ["DS4Windows/DS4Control/Services/ProfileXmlStore.cs"] = (0, 0, 3),
+            ["DS4Windows/DS4Control/Services/ProfileXmlStore.cs"] = (0, 0, 2),
             // Phase7-Step2 W7: SaveActions の削除で Global.SaveActions の参照 1 件を削除（4 → 3）
             ["DS4Windows/DS4Control/Services/SpecialActionRepository.cs"] = (0, 0, 3),
             ["DS4Windows/DS4Control/SyntheticDispatcher.cs"] = (0, 0, 4),

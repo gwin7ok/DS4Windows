@@ -11,9 +11,10 @@ namespace DS4Windows
         // (Step6: AppSettingsService との同一ファイル排他ロック共有)
         public static readonly object XmlIoLock = new object();
 
-        public ProfileXmlStore(BackingStore backingStore = null)
+        // Phase7-Step3 W1: 任意引数＋Global 経由のフォールバックを廃止し、BackingStore を必須にした（Pure DI）。
+        public ProfileXmlStore(BackingStore backingStore)
         {
-            _backingStore = backingStore ?? Global.store;
+            _backingStore = backingStore ?? throw new ArgumentNullException(nameof(backingStore));
         }
 
         public bool LoadProfileXml(int deviceIndex, bool launchProgram, ControlService control,

@@ -97,3 +97,15 @@
 - [ ] 台帳、モデル図、`Phase7-Status.md` が更新されている。
 - [ ] 実機確認 U-12（設定値の保持ほか）。
 - [ ] `Phase7-Step3-Completion-Report.md` が作成されている。
+
+---
+
+## 7. 承認と実行記録
+
+- 承認: 2026-10-17、Q1〜Q5 すべて推奨（A）で承認。
+- **W1 実装済み（ビルド・テスト待ち）**
+  - `ServiceRegistration`: `services.AddSingleton<BackingStore>(_ => Global.store)` を追加。`ProfileSettingsService`／`SpecialActionRepository`／`ProfileActionProvider` のファクトリーは `sp.GetRequiredService<BackingStore>()` に変更。
+  - `ProfileXmlStore`: 引数を必須化（null は `ArgumentNullException`）。`Global.store` のフォールバックを廃止。`Global.fallbackProfileXmlStore` は `new ProfileXmlStore(m_Config)`。
+  - `ProfileRepository`: 第1引数に `BackingStore config` を追加。`Global.store` の 5 箇所を `_config` に置換。
+  - テスト: `TestRepositoryFactory.CreateProfileRepository` に `store` 引数を追加。`ProfileXmlStoreTests`（フォールバック → 例外）、`Step10FourTwoGlobalReferenceGuardTests`（引数の並びと null 検査）、`Phase6Step10GroupThreeBContractTests`／`Step10GroupTwoGlobalReferenceGuardTests`（`new ProfileXmlStore(Global.store)`）を更新。
+  - ラチェット基準値: `ServiceRegistration.cs` 3→1、`ProfileRepository.cs` 26→21、`ProfileXmlStore.cs` 3→2（`Global.*` 合計 723→715）。

@@ -204,7 +204,7 @@ namespace DS4WindowsTests
         public void ControllerRegDeviceOptsViewModel_RequiresAppSettingsAndXmlStore()
         {
             var app = new DS4Windows.Services.AppSettingsService();
-            var xmlStore = new ProfileXmlStore();
+            var xmlStore = new ProfileXmlStore(Global.store);
 
             Assert.Throws<ArgumentNullException>(() => new ControllerRegDeviceOptsViewModel(null, null, null, xmlStore));
             Assert.Throws<ArgumentNullException>(() => new ControllerRegDeviceOptsViewModel(null, null, app, null));
