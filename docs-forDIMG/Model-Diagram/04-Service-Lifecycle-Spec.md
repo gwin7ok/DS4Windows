@@ -204,3 +204,11 @@
 %% - `DS4SixAxis.GyroControlsTriggerActive`: `ControlService` がデバイスをスロットへ接続するときに設定する（DS3 のジャイロトリガー）。
 %% - 残る Locator は `Mapping`（Step7〜9）、`Actions/`（Phase8）、互換 `AppHost`（Step9）、`Global.ProfileSettingsServiceInstance`、`App` の解決の窓口 1 件。
 %% - 詳細は `Phase7-Step5-Plan.md`、`Phase7-Step5-Completion-Report.md`、台帳は `Phase7-Residual-Ledger.md` §8。
+%%
+%% Phase7-Step6（2026-10-17）: 出力デバイス種別の配列の所有権を Global から OutputSlotService へ移した。
+%% - 所有: `OutputSlotService`（Singleton）が `OutDevTypeTemp`（編集画面の未確定値。初期値は全スロット X360）と `ActiveOutDevType`（スロットごとの接続中の種別。初期値は全スロット None）を readonly の配列で持つ。参照は再代入しない。要素の読み書きにロックはない（従来どおり）。
+%% - 書き込み: `ControlService`（`ActiveOutDevType`。初回に 1 回だけ配列の参照を取得して保持）、編集画面の ViewModel（`OutDevTypeTemp`）。
+%% - 読み取り: `BackingStore.ActiveOutDevType`（プロパティ）。`IOutputSlotService` の登録が、`OutputSlotService` の生成時に同じ配列を設定する。設定前（コンテナ構築前の起動処理、コンテナを通らないテスト）は既定の全 None の配列を読む。
+%% - 禁止: `BackingStore` の登録の中で `IOutputSlotService` を解決しない（`IOutputSlotStore` → `IPathService` → `BackingStore` の循環でスタックオーバーフロー）。
+%% - 持ち越し: `Global.outputKBMHandler`／`outputKBMMapping` は Step7〜9（`Mapping` の instance 化）で扱う。
+%% - 詳細は `Phase7-Step6-Plan.md`、`Phase7-Step6-Completion-Report.md`、台帳は `Phase7-Residual-Ledger.md` §9。

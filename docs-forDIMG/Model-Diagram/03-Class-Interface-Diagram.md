@@ -465,3 +465,8 @@ classDiagram
 %%   - 新設: `IMainWindowFactory` ← `MainWindowFactory`（`MainWindow` を生成。17 サービスと `Func<ControlService>`／`Func<IAutoProfileService>` を保持）。`IEditorWindowFactory` に `CreateProfileEditor(int)` を追加（`EditorWindowFactory` が `IAppSettingsService`／`IProfileRepository`／`IProfileSwitcher` を保持）。
 %%   - `MainWindow`（コンストラクター引数 18）、`ProfileEditor`（コンストラクター引数 8）は `AppHost` を参照しない。`ControlService` は `IElevatedProcessLauncher` を受ける。`BackingStore.ProcessInspector`（`IProcessInspector`）はプロパティ注入。`AppLogger.NotificationService`（`INotificationService`）は静的プロパティ。
 %%   - 削除: `Program`（`Program.rootHub`）、`Global.ProfileXmlStoreInstance`／`NotificationServiceInstance`／`SaveControllerConfigs`／`LoadControllerConfigs`、`ControlService.LoadPermanentSlotsConfig`。`ProfileXmlStore` は `BackingStore.Load/SaveControllerConfigsForDevice` を直接呼ぶ。
+%%
+%% Phase7-Step6（2026-10-17）: 出力デバイス種別の配列の所有権の移動。
+%%   - `OutputSlotService` が `OutDevTypeTemp`／`ActiveOutDevType` の配列の実体を持つ（IOutputSlotService の契約は変更なし）。
+%%   - `BackingStore` に `ActiveOutDevType`（OutContType[]、プロパティ注入。Step10 でコンストラクター注入へ）を追加。
+%%   - 削除: `Global.outDevTypeTemp`、`Global.activeOutDevType`。

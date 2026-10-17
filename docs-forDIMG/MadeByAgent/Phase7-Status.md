@@ -1,7 +1,7 @@
 # フェーズ7 進捗管理文書: `Global`／`BackingStore` の解体、起動の近代化、`Mapping` の instance 化
 
 最終更新日: 2026-10-17  
-状態: **Step1・Step2・Step3・Step3c・Step4・Step5 完了。次は Step6（調査と計画書の作成から）。**  
+状態: **Step1・Step2・Step3・Step3c・Step4・Step5・Step6 完了。次は Step7（調査と計画書の作成から）。**  
 計画書: `Phase7-Plan.md`。調査: `Phase7-0-Survey.md`。残存台帳: `Phase7-Residual-Ledger.md`
 
 ---
@@ -17,7 +17,7 @@
 | Step3c | プロファイル適用・プリセット・イベントの `Global` からの移管（Step3 から持ち越し） | **完了**（2026-10-17。W1〜W5 のビルド・テスト成功、W6 は文書。U-13 の実機確認は先送り。完了報告書あり） | `Phase7-Step3c-Plan.md`、`Phase7-Step3c-Completion-Report.md` |
 | Step4 | 起動・終了シーケンスの近代化 | **完了**（2026-10-17。Q1〜Q7 推奨どおり承認。W1〜W4 のビルド・テスト成功、W5 は文書。U-14 の実機確認は未。完了報告書あり） | `Phase7-Step4-Plan.md`、`Phase7-Step4-Completion-Report.md` |
 | Step5 | `Program.rootHub` と Service Locator の削除 | **完了**（2026-10-17。Q1〜Q9 推奨どおり承認、DS3 の不具合も修正。W1〜W5 のビルド・テスト成功、W6 は文書。U-15 の実機確認は未。完了報告書あり） | `Phase7-Step5-Plan.md`、`Phase7-Step5-Completion-Report.md` |
-| Step6 | 出力スロットの所有権の移動 | 未着手 | |
+| Step6 | 出力デバイス種別の所有権の移動 | **完了**（2026-10-17。Q1〜Q5 推奨どおり承認。W1・W2 のビルド・テスト成功、W3 は文書。U-16 の実機確認は未。完了報告書あり） | |
 | Step7 | `Mapping` の instance 化（1）特性化テストと状態の切り出し | 未着手 | |
 | Step8 | `Mapping` の instance 化（2）instance 化と呼び出し元の切り替え | 未着手 | |
 | Step9 | `Mapping` の instance 化（3）互換 `AppHost` の削除ほか | 未着手 | |
@@ -33,7 +33,8 @@
   - Phase7-Step3 W5 後: 516／40／22／23
   - Phase7-Step3c W5 後: 488／40／22／23
   - Phase7-Step4 W5 後: 452／39／21／23（`rootHub` は基準値の過大分を直した）
-  - Phase7-Step5 W6 後（現在）: **446／11／0／22**
+  - Phase7-Step5 W6 後: 446／11／0／22
+  - Phase7-Step6 W3 後（現在）: **438／11／0／22**
 - ガード: `Step10FourGlobalRatchetGuardTests`（`Global.*`／`AppHost`／`rootHub`）、`Phase7Step1ServiceLocatorRatchetGuardTests`（`ServiceProviderHolder`）、`Phase7Step1DeadMethodGuardTests`（`BackingStore` の削除済みメソッド）。
 - 目標値は、各 Step の計画書で確定し、`Phase7-Residual-Ledger.md` に反映する。
 
@@ -81,14 +82,19 @@
 - W5: `IMainWindowFactory`／`MainWindowFactory` の新設、`IEditorWindowFactory.CreateProfileEditor`。`MainWindow`（17）と `ProfileEditor`（4）の Locator を解消。
 - W6: 台帳 §8、モデル図、U-15、完了報告書。`rootHub` 21 → 0、`AppHost.GetService` 39 → 11、`Global.*` 452 → 446。詳細は `Phase7-Step5-Completion-Report.md`。
 
-### Phase7-Step6〜Step10【未着手】
+### Phase7-Step6: 出力デバイス種別の所有権の移動【完了（2026-10-17）】
+- W1: `OutputSlotService` が配列を持つ、`BackingStore.ActiveOutDevType`、`BackingStore` の読み取り 8 件の置き換え。W1 で、`BackingStore` の登録から `IOutputSlotService` を解決して循環（スタックオーバーフロー）したため、受け渡しを `IOutputSlotService` の登録側へ移した。
+- W2: `Global` の 2 配列を削除、テスト更新、`Phase7Step6OutputTypeOwnershipGuardTests`、ラチェット（`BackingStore` 166 → 159、`OutputSlotService` 2 → 1）。
+- W3: 台帳 §9、モデル図、U-16、完了報告書。`Global.*` 446 → 438。詳細は `Phase7-Step6-Completion-Report.md`。
+
+### Phase7-Step7〜Step10【未着手】
 - 内容と依存関係は `Phase7-Plan.md` §2。
 
 ## 4. 実機確認の台帳（`Phase6-Step11-RealDevice-Verification-Checklist.md` §11）
 
 - U-1〜U-7: 機材・環境が揃うまで未確認（リスク受容）。
 - U-8、U-9: 確認済み（Phase6）。
-- U-11（Step2 後）、U-12（Step3 後）、U-13（Step3c 後）、U-14（Step4 後）、U-15（Step5 後）: 未（U-13 はユーザー判断で先送り）。
+- U-11（Step2 後）、U-12（Step3 後）、U-13（Step3c 後）、U-14（Step4 後）、U-15（Step5 後）、U-16（Step6 後）: 未（U-13 はユーザー判断で先送り）。
 - U-10: 確認済み（偽の exe 名の保持。スキップしたバージョンの値の保持）。通知の抑制は、新バージョンの公開時に確認（U-7 とあわせる）。
 - 今後の追加候補: Step6 の後（スロットの付け外し）、Step7〜9 の後（通常入力・スティック・タッチパッド・ジャイロ・マクロ・スペシャルアクション）。
 
@@ -104,5 +110,5 @@
 
 ## 6. 直近の次アクション
 
-1. Step6（出力スロットの所有権の移動）の調査と `Phase7-Step6-Plan.md` の作成。
-2. 実機確認 U-11、U-12、U-13、U-14、U-15（任意のタイミング。U-14 は終了時のホスト破棄と初回起動の確認が中心）。
+1. Step7（`Mapping` の特性化テストと静的状態の切り出し）の調査と `Phase7-Step7-Plan.md` の作成。`outputKBMHandler`／`outputKBMMapping` の移管の扱いも含める。
+2. 実機確認 U-11、U-12、U-13、U-14、U-15、U-16（任意のタイミング。U-14 は終了時のホスト破棄と初回起動の確認が中心）。

@@ -84,3 +84,11 @@
 - 不具合の是正: DS3 コントローラーのジャイロトリガー経路（`DS4SixAxis._controlService` が常に null。コミット `78ae8687` からの DI 移行による回帰）。移行前と同じ結果を返す形に直した（`Phase7-Step5-Plan.md` §1.6、Q3＝A）。DS3 の機材での実機確認は難しい可能性がある（U-15 の注記）。
 - 持ち越し: `Global.ProfileSettingsServiceInstance` とそのフォールバック（→ Step7〜9／Step10）。`AppHost.CreationNote` と暗黙構築の経路（→ Step9 で互換 `AppHost` と同時に判断）。`MainWindow` のコンストラクター引数は 18 個と多い（→ Step10 で、画面ごとの責務の整理とあわせて見直す）。
 - 実機確認: U-15（未）。
+
+## 9. Phase7-Step6 で更新した台帳（2026-10-17）
+
+- `Global.*`: 446 → **438**（`BackingStore.cs` 166 → 159、`OutputSlotService.cs` 2 → 1）。`AppHost.GetService|Services` 11、`Program.rootHub` 0、`ServiceProviderHolder` 22 は変更なし。Phase7 開始時（733）からの累計は −295。基準値は `Step10FourGlobalRatchetGuardTests`（合計 0／11／438）。
+- 移管: `Global.outDevTypeTemp`（編集画面の未確定の出力種別）と `Global.activeOutDevType`（スロットごとの接続中の種別）を削除し、実体を `OutputSlotService` の readonly フィールドへ移した（Q1＝A、Q3＝A）。`BackingStore.ActiveOutDevType`（プロパティ。既定は全スロット None）が、`IOutputSlotService` の登録時に同じ配列を受け取る（Q2＝A）。`BackingStore` の読み取り 8 件を置き換えた。
+- 注意（循環）: `BackingStore` の登録の中で `IOutputSlotService` を解決してはならない（`IOutputSlotStore` → `IPathService` → `BackingStore` と循環し、実行時にスタックオーバーフローになる）。W1 で一度発生し、受け渡しを `IOutputSlotService` の登録側へ移して解消した。`Phase7Step6OutputTypeOwnershipGuardTests` が固定している。
+- 持ち越し: `Global.outputKBMHandler`／`outputKBMMapping`（`OutputKBMHandlerAdapter`、`OutputKBMHandlerLifecycle`、`SyntheticDispatcher`、`Mapping` のフォールバック）は、Q4＝A により Step7〜9（`Mapping` の instance 化）で扱う。`IOutputSlotService.OutputSlotChanged`（購読者 0 件）は、Q5＝A により温存し、TODO の再判断先を Step10 へ更新した。`BackingStore.ActiveOutDevType` のコンストラクター注入は Step10。
+- 実機確認: U-16（未）。
