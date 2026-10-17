@@ -29,7 +29,6 @@ namespace DS4WindowsTests
         private readonly string _dir;
         private readonly string _originalAppData;
         private readonly ControlService _control;
-        private readonly ControlService _originalRootHub;
         private readonly IProfileSettingsService _settings;
         private readonly ProfileRepository _repo;
         private readonly ProfileApplicationService _service;
@@ -52,8 +51,6 @@ namespace DS4WindowsTests
 
             DS4WinWPF.AppHost.CreateHost();
             _control = DS4WinWPF.AppHost.GetService<ControlService>();
-            _originalRootHub = Program.rootHub;
-            Program.rootHub = _control;
             _settings = Global.ProfileSettingsServiceInstance;
 
             _repo = TestRepositoryFactory.CreateProfileRepository(_settings);
@@ -86,7 +83,6 @@ namespace DS4WindowsTests
             _settings.SetUseTempProfile(Slot, _origUseTemp);
             _settings.SetTempProfileName(Slot, _origTempName);
             Global.tempprofileDistance[Slot] = _origDistance;
-            Program.rootHub = _originalRootHub;
             Global.appdatapath = _originalAppData;
             try { Directory.Delete(_dir, true); } catch { }
         }

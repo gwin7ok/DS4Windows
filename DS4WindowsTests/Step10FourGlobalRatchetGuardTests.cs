@@ -27,13 +27,15 @@ namespace DS4WindowsTests
             ["DS4Windows/Actions/ActionEntry.cs"] = (0, 0, 1),
             ["DS4Windows/Actions/DefaultActionManager.cs"] = (0, 0, 1),
             ["DS4Windows/Actions/DefaultMacroPlayer.cs"] = (0, 0, 1),
-            ["DS4Windows/App.xaml.cs"] = (12, 4, 1),
+            // Phase7-Step5 W2: Program.rootHub を App のフィールド _controlService に置き換え（12 → 0）
+            ["DS4Windows/App.xaml.cs"] = (0, 4, 1),
             ["DS4Windows/BezierCurveEditor/BezierCurve.cs"] = (0, 0, 1),
             // Phase6-Step10b W2: DS4Windows.AppHost（互換ラッパー）を DI/Compat/AppHost.cs へ分離。件数を引き継いだ（4＝2＋2。合計は不変）
             ["DS4Windows/DI/AppHost.cs"] = (0, 2, 0),
             // Phase6-Step12 Wave 5: 呼び出し元 0 件の GetService(Type) などを削除（2 → 1）
             ["DS4Windows/DI/Compat/AppHost.cs"] = (0, 1, 0),
-            ["DS4Windows/DI/ServiceRegistration.cs"] = (1, 0, 1),
+            // Phase7-Step5 W2: Program.rootHub ?? の削除（1 → 0）
+            ["DS4Windows/DI/ServiceRegistration.cs"] = (0, 0, 1),
             ["DS4Windows/DS4Control/ControlService.cs"] = (0, 1, 2),
             ["DS4Windows/DS4Control/DS4LightBar.cs"] = (0, 0, 7),
             ["DS4Windows/DS4Control/DS4OutDevices/DS4OutDeviceBasic.cs"] = (0, 0, 1),
@@ -47,7 +49,8 @@ namespace DS4WindowsTests
             ["DS4Windows/DS4Control/DTOXml/SpecialActionSerializer.cs"] = (0, 0, 2),
             // Phase6-Step10b W4: Log.cs（AppLogger／ProfileChangeSource／ProfileChangedEventArgs）は型ごとに分割。Global 1 件は AppLogger.cs
             ["DS4Windows/DS4Control/AppLogger.cs"] = (0, 0, 1),
-            ["DS4Windows/DS4Control/Mapping.cs"] = (1, 6, 52),
+            // Phase7-Step5 W2: Program.rootHub のフォールバックを削除（1 → 0）
+            ["DS4Windows/DS4Control/Mapping.cs"] = (0, 6, 52),
             ["DS4Windows/DS4Control/Mouse.cs"] = (0, 0, 2),
             ["DS4Windows/DS4Control/MouseCursor.cs"] = (0, 0, 2),
             // Phase7-Step4 W1: fakerInputInstalled を EnvironmentService の状態に切り替え（1 → 0）
@@ -63,7 +66,8 @@ namespace DS4WindowsTests
             // Phase7-Step4 W2: Global.Load の削除で AppHost.GetService を 1 件削除（4 → 3）
             // Phase7-Step4 W3: FindConfigLocation／SaveWhere の移管で Global.* 6 件を削除（22 → 16）
             // Phase7-Step4 W5: Program.rootHub の実数は 5（基準値 6 は過大だった）。合計 22 → 21
-            ["DS4Windows/DS4Control/Global.cs"] = (5, 3, 16),
+            // Phase7-Step5 W2: Program.rootHub の参照 5 件を削除（フォールバックのラムダと、Save/LoadControllerConfigs）
+            ["DS4Windows/DS4Control/Global.cs"] = (0, 3, 16),
             // Phase7-Step2 W4: INotificationService.NotificationsEnabled／FlashTaskbar の削除で Global.* 5 件を削除（6 → 1）
             ["DS4Windows/DS4Control/Services/AppNotificationService.cs"] = (0, 0, 0),
             // Phase7-Step4 W3: FirstRun は PathService の状態、RunHotPlug はインスタンスの状態にした（8 → 2）
@@ -89,7 +93,8 @@ namespace DS4WindowsTests
             // Phase7-Step2 W1: コピー版 GetReverseX360ButtonMapping の削除で Global.reverseX360ButtonMapping の参照 1 件を削除（5 → 4）
             ["DS4Windows/DS4Control/Services/ProfileSettingsService.cs"] = (0, 0, 3),
             ["DS4Windows/DS4Control/Services/ProfileSlotApplier.cs"] = (0, 0, 0),
-            ["DS4Windows/DS4Control/Services/ProfileXmlStore.cs"] = (0, 0, 2),
+            // Phase7-Step5 W2: Global.Load/SaveControllerConfigs の削除に伴い、BackingStore を直接呼ぶ形に（2 → 0）
+            ["DS4Windows/DS4Control/Services/ProfileXmlStore.cs"] = (0, 0, 0),
             // Phase7-Step2 W7: SaveActions の削除で Global.SaveActions の参照 1 件を削除（4 → 3）
             ["DS4Windows/DS4Control/Services/SpecialActionRepository.cs"] = (0, 0, 3),
             ["DS4Windows/DS4Control/SyntheticDispatcher.cs"] = (0, 0, 4),
@@ -101,7 +106,8 @@ namespace DS4WindowsTests
             ["DS4Windows/DS4Forms/ImageLocationPaths.cs"] = (0, 0, 6),
             ["DS4Windows/DS4Forms/LanguageSelectDialog.xaml.cs"] = (0, 0, 1),
             ["DS4Windows/DS4Forms/MainWindow.xaml.cs"] = (0, 17, 1),
-            ["DS4Windows/DS4Forms/ProfileEditor.xaml.cs"] = (1, 4, 32),
+            // Phase7-Step5 W2: Program.rootHub のフォールバックを削除（1 → 0）
+            ["DS4Windows/DS4Forms/ProfileEditor.xaml.cs"] = (0, 4, 32),
             ["DS4Windows/DS4Forms/ResourcePaths.cs"] = (0, 0, 5),
             ["DS4Windows/DS4Forms/ViewModels/CompositeDeviceModel.cs"] = (0, 0, 4),
             ["DS4Windows/DS4Forms/ViewModels/ControllerListViewModel.cs"] = (0, 0, 0),

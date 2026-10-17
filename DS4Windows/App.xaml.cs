@@ -86,6 +86,11 @@ namespace DS4WinWPF
         private IAppearanceSettingsService _appearanceSettingsService;
         private IDeviceStateService _deviceStateService;
 
+        // Phase7-Step5 W2（Q1＝A）: 旧 Program.rootHub。ControlService は CreateControlService の別スレッドで解決して代入し、
+        // 呼び出し元がスレッドの終了を待ってから読む（以降は LoggerHolder の生成、起動後の処理、未処理例外の処理、終了処理が使う）。
+        // 別スレッド（未処理例外、セッション終了）からも読まれるため volatile にする。
+        private volatile DS4Windows.ControlService _controlService;
+
         // Phase7-Step4 W4（D3＝S1）: コンテナの構築より前に作るブートストラップのサービス。Pre-Host の起動処理（保存場所の決定、
         // ViGEmBus 情報の取得）で使い、CreateHost に渡して、コンテナへ同じインスタンスを登録する。
         // 状態は PathService／EnvironmentService の static（プロセス全体で 1 つ）のため、どのインスタンスでも同じ値を見る。
@@ -420,7 +425,7 @@ namespace DS4WinWPF
                 _appSettingsService.Save();
             }
 
-            logHolder = new LoggerHolder(DS4Windows.Program.rootHub);
+            logHolder = new LoggerHolder(_controlService);
             // Phase6-Step10-1-5（決定D7＝A）: 設定画面がログ設定の変更を反映する窓口（ILogSettingsApplier）へ、生成した LoggerHolder を接続する
             AppHost.GetService<DS4Windows.Services.LogSettingsApplierProxy>()?.Attach(logHolder);
             DispatcherUnhandledException += App_DispatcherUnhandledException;
@@ -544,14 +549,14 @@ namespace DS4WinWPF
             window.CheckMinStatus();
 
             bool runningAsAdmin = _environmentService.IsAdministrator();
-            DS4Windows.Program.rootHub.LogDebug($"Running as {(runningAsAdmin ? "Admin" : "User")}");
+            _controlService.LogDebug($"Running as {(runningAsAdmin ? "Admin" : "User")}");
 
             if (_environmentService.HidHideInstalled)
             {
-                DS4Windows.Program.rootHub.CheckHidHidePresence();
+                _controlService.CheckHidHidePresence();
             }
 
-            DS4Windows.Program.rootHub.LoadPermanentSlotsConfig();
+            _controlService.LoadPermanentSlotsConfig();
             window.LateChecks(parser);
         }
 
@@ -593,7 +598,7 @@ namespace DS4WinWPF
                 {
                     Dispatcher.Invoke(() =>
                     {
-                        DS4Windows.Program.rootHub?.PrepareAbort();
+                        _controlService?.PrepareAbort();
                         CleanShutdown();
                     });
                 }
@@ -606,7 +611,7 @@ namespace DS4WinWPF
                     AppLogger.LogError($"Thread Crashed with message {exp.Message}");
                     AppLogger.LogError(exp.ToString());
 
-                    DS4Windows.Program.rootHub?.PrepareAbort();
+                    _controlService?.PrepareAbort();
                     CleanShutdown();
                 }
             }
@@ -832,8 +837,8 @@ namespace DS4WinWPF
                 // is called, so GetService should not be null; the null-coalesce is a
                 // startup-order safety net only, and 'new Ds4DeviceRegistryAdapter()' here
                 // is the same adapter class already registered, not a second implementation.
-                DS4Windows.Program.rootHub = AppHost.GetService<DS4Windows.ControlService>();
-                if (DS4Windows.Program.rootHub == null)
+                _controlService = AppHost.GetService<DS4Windows.ControlService>();
+                if (_controlService == null)
                     throw new InvalidOperationException("ControlService could not be resolved from AppHost.");
 
                 requestClient = new HttpClient();
@@ -1093,14 +1098,14 @@ namespace DS4WinWPF
         {
             if (runShutdown)
             {
-                if (DS4Windows.Program.rootHub != null)
+                if (_controlService != null)
                 {
                     Task.Run(() =>
                     {
-                        if (DS4Windows.Program.rootHub.running)
+                        if (_controlService.running)
                         {
-                            DS4Windows.Program.rootHub.Stop(immediateUnplug: true);
-                            DS4Windows.Program.rootHub.ShutDown();
+                            _controlService.Stop(immediateUnplug: true);
+                            _controlService.ShutDown();
                         }
                     }).Wait();
                 }

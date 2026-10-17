@@ -95,10 +95,10 @@ namespace DS4Windows
 
         // ---- Phase6-Step2-2 (PR-2): 接続時のコントローラー固有設定の読込 ----
         public bool LoadControllerConfigsForDevice(DS4Device device)
-            => Global.LoadControllerConfigs(device);
+            => _backingStore.LoadControllerConfigsForDevice(device);
 
         // ---- Phase6-Step3-1: 切断時のコントローラー固有設定の保存 ----
         public bool SaveControllerConfigsForDevice(DS4Device device)
-            => Global.SaveControllerConfigs(device);
+            => _backingStore.SaveControllerConfigsForDevice(device);
     }
 }

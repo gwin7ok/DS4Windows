@@ -35,7 +35,7 @@ namespace DS4WindowsTests
         {
             return new ProfileSettingsService(store ?? Global.store,
                 environmentService ?? new EnvironmentService(),
-                control ?? new Func<ControlService>(() => Program.rootHub));
+                control ?? new Func<ControlService>(() => null));
         }
 
         public static DefaultActionFactory CreateDefaultActionFactory()
@@ -52,8 +52,8 @@ namespace DS4WindowsTests
         public static OutputSlotService CreateOutputSlotService(OutputSlotManager manager = null,
             IOutputSlotStore store = null, ControlService control = null)
         {
-            // 従来（生成時に Program.rootHub から取得）と同じく、生成時点の値を保持する
-            ControlService ctl = control ?? Program.rootHub;
+            // Phase7-Step5 W2: Program.rootHub を削除したため、control を省略したときは ControlService なし（従来のテストの既定と同じ）
+            ControlService ctl = control;
             OutputSlotManager mgr = manager ?? ctl?.OutputslotMan ?? CreateOutputSlotManager();
             return new OutputSlotService(() => mgr,
                 store ?? new OutputSlotStore(new PathService()),
@@ -86,7 +86,7 @@ namespace DS4WindowsTests
                 environmentService ?? new EnvironmentService(),
                 appSettings ?? CreateAppSettingsService(),
                 profileRepository ?? CreateProfileRepository(profileSettings),
-                control ?? new Func<ControlService>(() => Program.rootHub),
+                control ?? new Func<ControlService>(() => null),
                 store ?? Global.store);
         }
 
@@ -111,7 +111,7 @@ namespace DS4WindowsTests
         {
             var settings = Global.ProfileSettingsServiceInstance;
             return new ProfileSlotApplier(profileApplication ?? CreateProfileApplicationService(settings,
-                CreateDeviceStateService(), () => Program.rootHub, CreateProfileRepository(settings), new EnvironmentService()));
+                CreateDeviceStateService(), () => null, CreateProfileRepository(settings), new EnvironmentService()));
         }
 
         public static AppearanceSettingsService CreateAppearanceSettingsService(BackingStore store = null)

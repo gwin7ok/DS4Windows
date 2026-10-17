@@ -311,7 +311,7 @@ namespace DS4WinWPF.DS4Forms
                 ?? throw new InvalidOperationException("IProfileRepository is not registered.");
             profileSwitcher = DS4WinWPF.AppHost.GetService<DS4Windows.Actions.IProfileSwitcher>()
                 ?? new DefaultProfileSwitcher();
-            controlService = DS4WinWPF.AppHost.GetService<DS4Windows.ControlService>() ?? DS4Windows.Program.rootHub;
+            controlService = DS4WinWPF.AppHost.GetService<DS4Windows.ControlService>();
             // Phase6-Step10-2-5: ControllerReadingsControl は XAML から生成されるため、ControlService を Initialize で渡す
             conReadingsUserCon.Initialize(controlService);
 

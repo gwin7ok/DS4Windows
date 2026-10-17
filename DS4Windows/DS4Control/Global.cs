@@ -98,7 +98,8 @@ namespace DS4Windows
         // Phase4-Step1: IProfileSettingsService DI シム (Strangler Fig 移行用)
         // =========================================================================
         private static DS4Windows.DI.IProfileSettingsService profileSettingsService = null;
-        private static readonly DS4Windows.DI.IProfileSettingsService fallbackProfileSettingsService = new ProfileSettingsService(m_Config, new EnvironmentService(), () => Program.rootHub);
+        private static readonly DS4Windows.DI.IProfileSettingsService fallbackProfileSettingsService = // Phase7-Step5 W2: コンテナが無い環境（テスト）用のフォールバック。ControlService は無い（旧: Program.rootHub が null のとき）
+        new ProfileSettingsService(m_Config, new EnvironmentService(), () => null);
 
         public static DS4Windows.DI.IProfileSettingsService ProfileSettingsServiceInstance
         {
@@ -1019,29 +1020,8 @@ namespace DS4Windows
             return m_Config.getX360ControlString(key);
         }
 
-        public static bool SaveControllerConfigs(DS4Device device = null)
-        {
-            if (device != null)
-                return m_Config.SaveControllerConfigsForDevice(device);
-
-            for (int idx = 0; idx < ControlService.MAX_DS4_CONTROLLER_COUNT; idx++)
-                if (Program.rootHub.DS4Controllers[idx] != null)
-                    m_Config.SaveControllerConfigsForDevice(Program.rootHub.DS4Controllers[idx]);
-
-            return true;
-        }
-
-        public static bool LoadControllerConfigs(DS4Device device = null)
-        {
-            if (device != null)
-                return m_Config.LoadControllerConfigsForDevice(device);
-
-            for (int idx = 0; idx < ControlService.MAX_DS4_CONTROLLER_COUNT; idx++)
-                if (Program.rootHub.DS4Controllers[idx] != null)
-                    m_Config.LoadControllerConfigsForDevice(Program.rootHub.DS4Controllers[idx]);
-
-            return true;
-        }
+        // Phase7-Step5 W2（Q8＝A）: SaveControllerConfigs／LoadControllerConfigs を削除した。device を渡す経路は ProfileXmlStore が
+        // BackingStore を直接呼ぶ。引数なし（全コントローラーの走査。Program.rootHub を使う）は呼び出しが 0 件だった。
 
         private static byte applyRatio(byte b1, byte b2, double r)
         {

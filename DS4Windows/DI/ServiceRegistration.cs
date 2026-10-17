@@ -120,7 +120,8 @@ namespace DS4Windows.DI
             services.AddSingleton<IDs4DeviceRegistry>(sp => new Ds4DeviceRegistryAdapter());
             services.AddSingleton<ControlService>(sp =>
             {
-                return Program.rootHub ?? new ControlService(
+                // Phase7-Step5 W2（Q2＝A）: 旧 Program.rootHub ?? の分岐を削除した。シングルトンの生成は、このファクトリーだけが行う
+                return new ControlService(
                     // Phase6-Step7-4（決定5＝A、決定7＝案H）: AppHost.CreateHost(config, parser) が IStartupArguments に
                     // 設定した実際の起動引数を渡す。2026-09-04（4c89cd91）以降は常に空の new ArgumentParser() を渡していたため、
                     // 起動引数 -virtualkbm（キーボード・マウス出力方式の指定）が無視されていた。

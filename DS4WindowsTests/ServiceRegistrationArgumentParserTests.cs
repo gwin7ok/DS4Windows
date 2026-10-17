@@ -61,19 +61,10 @@ namespace DS4WindowsTests
             var parser = CreateVirtualKbmParser();
             provider.GetRequiredService<IStartupArguments>().SetParser(parser);
 
-            ControlService savedRootHub = Program.rootHub;
-            Program.rootHub = null;
-            try
-            {
-                ControlService controlService = provider.GetRequiredService<ControlService>();
+            ControlService controlService = provider.GetRequiredService<ControlService>();
 
-                Assert.Same(parser, GetCmdParser(controlService));
-                Assert.Equal("sendinput", GetCmdParser(controlService).VirtualkbmHandler);
-            }
-            finally
-            {
-                Program.rootHub = savedRootHub;
-            }
+            Assert.Same(parser, GetCmdParser(controlService));
+            Assert.Equal("sendinput", GetCmdParser(controlService).VirtualkbmHandler);
         }
 
         [Fact]
@@ -83,21 +74,12 @@ namespace DS4WindowsTests
             var services = new ServiceCollection();
             services.RegisterServices();
 
-            ControlService savedRootHub = Program.rootHub;
-            Program.rootHub = null;
-            try
-            {
-                ServiceProvider provider = services.BuildServiceProvider();
-                ControlService controlService = provider.GetRequiredService<ControlService>();
+            ServiceProvider provider = services.BuildServiceProvider();
+            ControlService controlService = provider.GetRequiredService<ControlService>();
 
-                ArgumentParser cmdParser = GetCmdParser(controlService);
-                Assert.NotNull(cmdParser);
-                Assert.Equal(VirtualKBMFactory.DEFAULT_IDENTIFIER, cmdParser.VirtualkbmHandler);
-            }
-            finally
-            {
-                Program.rootHub = savedRootHub;
-            }
+            ArgumentParser cmdParser = GetCmdParser(controlService);
+            Assert.NotNull(cmdParser);
+            Assert.Equal(VirtualKBMFactory.DEFAULT_IDENTIFIER, cmdParser.VirtualkbmHandler);
         }
 
         [Fact]
