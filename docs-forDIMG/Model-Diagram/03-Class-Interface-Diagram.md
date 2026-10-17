@@ -541,3 +541,9 @@ classDiagram
 %%   - DefaultActionManager／DefaultMacroPlayer は Func<IMapping>（遅延）を受ける（ホスト構築時に Mapping を作らない。Phase5-Plan §5.4）。
 %%   - 削除: Mapping の AppHost／ServiceProviderHolder／Global のフォールバック、MouseOutputAction の無効な検索、呼び出しが 0 件だった内部メンバー 4 つ（Step8 W1）。
 %%   - 詳細は Phase7-Step8-Plan.md、Phase7-Step8-Completion-Report.md、台帳は Phase7-Residual-Ledger.md §11。
+%%
+%% Phase7-Step9（2026-10-18）: 互換 AppHost の削除と、Mapping の Global 参照の解消。
+%%   - 削除: 互換 DS4Windows.AppHost（DI/Compat/AppHost.cs。呼び出し元 0 件）。正本は DS4WinWPF.AppHost のみ。
+%%   - 新設: ControllerLimits（コントローラー数・スティックの中点などの定数。静的クラス）、NumericUtil（Clamp。静的クラス）。Mapping と状態の保持クラス 3 つはこれを使い、Global を参照しない。Global の同名の定数は別名、Global.Clamp は委譲するシムとして残す（Step10 で利用箇所を移して削除）。
+%%   - MacroRuntimeState: 二重実行防止のロックと確保を TryBeginDispatch／EndDispatch に包んだ（DispatchLock は非公開）。Mapping はフラグの配列もロックも持たない。恒久の再設計（実行層の一本化）は Phase8。
+%%   - 詳細は Phase7-Step9-Plan.md、Phase7-Step9-Completion-Report.md、台帳は Phase7-Residual-Ledger.md §12。

@@ -234,3 +234,9 @@
 %% - 出力 KBM: IVirtualKBM と IVirtualKBMLifecycle は同じ OutputKBMHandlerAdapter を共有する（ハンドラの実体はそこ）。ISyntheticDispatcher の登録が、作成時に静的な橋渡し SyntheticDispatcher.Bind を呼び、AppHost.CreateHost がホスト構築直後に解決して有効にする。
 %% - ControlService は IMapping／StickMotionState／SyntheticInputState をコンストラクターで受け、IMapping を MappingService として公開する（ControllerReadingsControl、RecordBoxViewModel が使う）。
 %% - 詳細は Phase7-Step8-Plan.md、Phase7-Step8-Completion-Report.md、台帳は Phase7-Residual-Ledger.md §11。
+%%
+%% Phase7-Step9（2026-10-18）: 互換 AppHost の削除と、Global 参照の解消。
+%% - 互換 DS4Windows.AppHost を削除した。AppHost.GetService|Services の残りは 4 件（App.xaml.cs の解決の窓口 1、DI/AppHost.cs 自身のログ 2、Global.cs 1）。ServiceProviderHolder は Actions/ の 17 件（Phase8）。
+%% - ControllerLimits／NumericUtil は静的クラス（DI 登録なし。状態を持たない定数・純粋計算）。
+%% - MacroRuntimeState（Singleton）に TryBeginDispatch／EndDispatch を追加（K3 の二重実行防止。挙動は同一）。
+%% - AppHost の暗黙構築と CreationNote は触っていない（Step10 で判断）。

@@ -114,3 +114,13 @@
 - 持ち越し（Step9）: 互換 `AppHost`（`DI/Compat/AppHost.cs`。`Mapping.cs` が使わなくなったため、呼び出し元は 0 件のはず。削除前に確認）、`Mapping.cs` の `Global` 参照 41（定数・`Clamp`）、K3（`macroDispatchInFlight`）、static のまま残した純粋な関数・定数の最終的な置き場所。
 - 持ち越し（Step10）: `BackingStore` のコンストラクター注入、`Mapping` のコンストラクターの依存（11 個）の整理。
 - 実機確認: U-18（未）。
+
+## 12. Phase7-Step9 で更新した台帳（2026-10-18）
+
+- `Global.*`: 399 → **355**（`Mapping.cs` 41 → 0、`SyntheticInputState.cs`／`MacroRuntimeState.cs`／`StickMotionState.cs` 各 1 → 0）。`AppHost.GetService|Services`: 5 → **4**（`DI/Compat/AppHost.cs` 1 → 削除。残りは `App.xaml.cs` 1、`DI/AppHost.cs` 2、`Global.cs` 1）。`Program.rootHub` 0、`ServiceProviderHolder` 17（Actions/ で Phase8）は変更なし。Phase7 開始時（733）からの累計は −378。基準値は `Step10FourGlobalRatchetGuardTests`（合計 0／4／355）。なお、計画書 §7 の「354」は 41＋3 を 45 と数えた誤りで、正しくは 355。
+- 削除: 互換 `DS4Windows.AppHost`（`DI/Compat/AppHost.cs`。呼び出し元 0 件。`DI/Compat/` フォルダーも消えた）。`Mapping` のキャッシュフィールド `macroDispatchInFlight`／`macroDispatchLock`、`MacroRuntimeState.DispatchLock` の公開（非公開にした）。
+- 新設: `ControllerLimits`（コントローラー数などの定数 5 つ）、`NumericUtil`（`Clamp`。本体は旧 `Global.Clamp` と同一で、`AggressiveInlining`）。`Global` の同名の定数は `ControllerLimits` を指す別名、`Global.Clamp` は `NumericUtil.Clamp` へ委譲する薄いシムとして残した。`MacroRuntimeState.TryBeginDispatch`／`EndDispatch`（K3 の二重実行防止のロックと確保を包んだもの。挙動は同一）。
+- K3 の判断（Q3＝A）: 暫定フラグの実体を `MacroRuntimeState` に包んだだけで、仕組みは変えていない。恒久の再設計（トリガー判定層とマクロ実行層の分離、実行層の一本化）は **Phase8** へ持ち越し（TODO を `MacroRuntimeState.cs` と `Mapping.cs` に明記）。
+- 持ち越し（Step10）: `Global` の定数の利用箇所（約 250 件。`BackingStore` 135 が最大）と `Global.Clamp` の残り 10 件（`DS4State` 4、`BezierCurve` 2、`Mouse` 2、`MouseCursor` 2）を `ControllerLimits`／`NumericUtil` へ移し、別名とシムを削除する。静的な純粋関数（`getBool*Mapping`、`DS4ControltoInt`、`remainderCutoff` ほか）の置き場所（Q4＝`Mapping` に残す）。`AppHost` の暗黙構築と `CreationNote`（Q5＝触らない）。`BackingStore` のコンストラクター注入。`Mapping` の依存 11 個の整理。
+- 持ち越し（Phase8）: K3 の恒久対応、静的な `SyntheticDispatcher`、`Actions/` の `ServiceProviderHolder` 17。
+- 実機確認: U-19（未。先送り）。

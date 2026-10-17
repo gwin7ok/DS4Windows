@@ -1,7 +1,7 @@
 # フェーズ7 進捗管理文書: `Global`／`BackingStore` の解体、起動の近代化、`Mapping` の instance 化
 
 最終更新日: 2026-10-17  
-状態: **Step1・Step2・Step3・Step3c・Step4・Step5・Step6・Step7・Step8 完了。次は Step9（互換 `AppHost` の削除ほか。調査と計画書の作成から）。**  
+状態: **Step1・Step2・Step3・Step3c・Step4・Step5・Step6・Step7・Step8・Step9 完了。次は Step10（仕上げ。調査と計画書の作成から）。**  
 計画書: `Phase7-Plan.md`。調査: `Phase7-0-Survey.md`。残存台帳: `Phase7-Residual-Ledger.md`
 
 ---
@@ -20,7 +20,7 @@
 | Step6 | 出力デバイス種別の所有権の移動 | **完了**（2026-10-17。Q1〜Q5 推奨どおり承認。W1・W2 のビルド・テスト成功、W3 は文書。U-16 の実機確認は未。完了報告書あり） | |
 | Step7 | `Mapping` の instance 化（1）特性化テストと状態の切り出し | **完了**（2026-10-17。Q1〜Q6 推奨どおり承認。W1〜W4 のビルド・テスト成功、W5 は文書。U-17 の実機確認は未。完了報告書あり） | |
 | Step8 | `Mapping` の instance 化（2）instance 化と呼び出し元の切り替え | **完了**（2026-10-17。Q1〜Q9 推奨どおり承認。W1〜W4 のビルド・テスト成功、W5 は文書。U-18 の実機確認は未。完了報告書あり） | `Phase7-Step8-Plan.md`、`Phase7-Step8-Completion-Report.md` |
-| Step9 | `Mapping` の instance 化（3）互換 `AppHost` の削除ほか | 未着手 | |
+| Step9 | `Mapping` の instance 化（3）互換 `AppHost` の削除ほか | **完了**（2026-10-18。Q1〜Q5 推奨どおり承認。W1〜W3 のビルド・テスト成功、W4 は文書。U-19 の実機確認は未。完了報告書あり） | `Phase7-Step9-Plan.md`、`Phase7-Step9-Completion-Report.md` |
 | Step10 | 仕上げ（`Global` の残り、永続化の切り出し、総合検証） | 未着手 | |
 
 ## 2. ラチェットの基準値（全域）
@@ -36,7 +36,8 @@
   - Phase7-Step5 W6 後: 446／11／0／22
   - Phase7-Step6 W3 後: 438／11／0／22
   - Phase7-Step7 W5 後: 432／11／0／22
-  - Phase7-Step8 W5 後（現在）: **399／5／0／17**
+  - Phase7-Step8 W5 後: 399／5／0／17
+  - Phase7-Step9 W4 後（現在）: **355／4／0／17**
 - ガード: `Step10FourGlobalRatchetGuardTests`（`Global.*`／`AppHost`／`rootHub`）、`Phase7Step1ServiceLocatorRatchetGuardTests`（`ServiceProviderHolder`）、`Phase7Step1DeadMethodGuardTests`（`BackingStore` の削除済みメソッド）。
 - 目標値は、各 Step の計画書で確定し、`Phase7-Residual-Ledger.md` に反映する。
 
@@ -103,8 +104,11 @@
 - W4: 保持クラス 3 つの `Shared` を削除。
 - W5: 台帳 §11、モデル図、U-18、完了報告書。`Global.*` 432 → 399、`AppHost` 11 → 5、`ServiceProviderHolder` 22 → 17。詳細は `Phase7-Step8-Completion-Report.md`。
 
-### Phase7-Step9: 互換 `AppHost` の削除、`Mapping.cs` の `Global` 参照の再配置、K3【計画書作成済み・承認待ち（2026-10-17）】
-- `Phase7-Step9-Plan.md`（Q1〜Q5 は推奨つき。実装は未着手）。実機確認 U-11〜U-18 はユーザー判断で先送り。
+### Phase7-Step9: 互換 `AppHost` の削除、`Mapping.cs` の `Global` 参照の再配置、K3【完了（2026-10-18）】
+- W1: 互換 `AppHost`（`DI/Compat/AppHost.cs`）の削除。
+- W2: `ControllerLimits`／`NumericUtil` の新設。`Mapping.cs` と保持クラス 3 つの `Global` 参照を切り替え（`Global` は別名・シムとして残す）。
+- W3: K3 の二重実行防止を `MacroRuntimeState.TryBeginDispatch`／`EndDispatch` に包む（挙動は同一。恒久対応は Phase8）。
+- W4: 台帳 §12、モデル図、U-19、完了報告書。`Global.*` 399 → 355、`AppHost` 5 → 4。詳細は `Phase7-Step9-Completion-Report.md`。実機確認 U-11〜U-19 はユーザー判断で先送り。
 
 ### Phase7-Step10【未着手】
 - 内容と依存関係は `Phase7-Plan.md` §2。
@@ -113,13 +117,13 @@
 
 - U-1〜U-7: 機材・環境が揃うまで未確認（リスク受容）。
 - U-8、U-9: 確認済み（Phase6）。
-- U-11（Step2 後）、U-12（Step3 後）、U-13（Step3c 後）、U-14（Step4 後）、U-15（Step5 後）、U-16（Step6 後）、U-17（Step7 後）、U-18（Step8 後）: 未（U-13 はユーザー判断で先送り）。
+- U-11（Step2 後）、U-12（Step3 後）、U-13（Step3c 後）、U-14（Step4 後）、U-15（Step5 後）、U-16（Step6 後）、U-17（Step7 後）、U-18（Step8 後）、U-19（Step9 後）: 未（U-13 はユーザー判断で先送り）。
 - U-10: 確認済み（偽の exe 名の保持。スキップしたバージョンの値の保持）。通知の抑制は、新バージョンの公開時に確認（U-7 とあわせる）。
-- 今後の追加候補: Step6 の後（スロットの付け外し）、Step9 の後（互換 `AppHost` の削除に伴う起動の確認）。
+- 今後の追加候補: Step6 の後（スロットの付け外し）。
 
 ## 5. 持ち越し・保留事項
 
-- K3（マクロの二重ガード）: Step9 で、再設計の要否を判断（`Mapping` の instance 化［Step8］では、`MacroRuntimeState` に移しただけで、仕組みは変えていない）。
+- K3（マクロの二重ガード）: Step9 で `MacroRuntimeState.TryBeginDispatch`／`EndDispatch` に包んだ（仕組みは変えていない）。恒久の再設計は Phase8（実行層の一本化）。
 - K7-1: 解消済み（通常の起動は Phase6、`-driverinstall` 分岐は Phase7-Step4 W2）。
 - `AppHost.CreationNote` と `[DI] Host creation path` のログ: ユーザー決定により残す。Step5 で Service Locator とあわせて、残すか判断する。
 - DS3 のジャイロトリガー経路の不具合（コミット `78ae8687` からの回帰）: Phase7-Step5 W1 で修正済み（機材での実機確認は難しい可能性。U-15 の注記）。
@@ -129,5 +133,5 @@
 
 ## 6. 直近の次アクション
 
-1. Step9（互換 `AppHost` の削除、`Mapping.cs` の `Global` 定数・`Clamp` の再配置、K3 の判断）の調査と `Phase7-Step9-Plan.md` の作成。互換 `AppHost`（`DI/Compat/AppHost.cs`）は `Mapping.cs` が使わなくなったため、呼び出し元の有無を確認する。
-2. 実機確認 U-11、U-12、U-13、U-14、U-15、U-16、U-17、U-18（任意のタイミング。U-14 は終了時のホスト破棄と初回起動の確認が中心）。
+1. Step10（`Global` の残り［定数の利用箇所約 250 件、`Clamp` の残り 10 件］の再配置、静的な純粋関数の置き場所、`AppHost` の暗黙構築と `CreationNote`、`BackingStore` のコンストラクター注入と永続化の切り出し、`Mapping` の依存の整理、モデル図の更新、Phase7 の総合検証）の調査と `Phase7-Step10-Plan.md` の作成。
+2. 実機確認 U-11、U-12、U-13、U-14、U-15、U-16、U-17、U-18、U-19（任意のタイミング。U-14 は終了時のホスト破棄と初回起動の確認が中心）。

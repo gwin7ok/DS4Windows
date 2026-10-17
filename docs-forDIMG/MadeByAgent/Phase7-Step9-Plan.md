@@ -3,7 +3,7 @@
 作成日: 2026-10-17  
 対象ブランチ: `For-DI-migration-work`  
 上位計画: `Phase7-Plan.md` §2（Step7〜9: `Mapping` の instance 化の第 3 段）、`Phase7-Residual-Ledger.md` §8〜§11、`Phase7-Step8-Completion-Report.md` §5・§6  
-状態: **Q1〜Q5 は推奨どおり承認（2026-10-17）。W1 完了（ビルド・テスト成功）。W2 完了（ビルド・テスト成功）。W3 実装済み（ビルド・テスト待ち）。次は W4（文書）。**
+状態: **Q1〜Q5 は推奨どおり承認（2026-10-17）。W1 完了（ビルド・テスト成功）。W2 完了（ビルド・テスト成功）。W3 完了（ビルド・テスト成功）。W4 は文書。Step9 完了。完了報告書は `Phase7-Step9-Completion-Report.md`。**
 
 ---
 
@@ -112,7 +112,7 @@
 - **W2: `ControllerLimits`／`NumericUtil` の新設と切り替え**
   - 新設 2 ファイル。`Global` の const を別名に、`Global.Clamp` をシムに。
   - `Mapping.cs`（41 件）、`SyntheticInputState`／`MacroRuntimeState`／`StickMotionState`（各 1 件）の参照を切り替える。
-  - ラチェット: `Mapping.cs` 41 → 0、保持クラス 3 つ 1 → 0。`Global.*` の合計 399 → **354**。
+  - ラチェット: `Mapping.cs` 41 → 0、保持クラス 3 つ 1 → 0。`Global.*` の合計 399 → **355**。
   - ガード `Phase7Step9W2NoGlobalInMappingGuardTests`: `Mapping.cs` と保持クラス 3 つが `Global.` を参照しないこと。`ControllerLimits` の値が従来と同じこと（8／9／8／4／128）。`NumericUtil.Clamp` の境界値（min 未満、max 超過、範囲内、NaN の扱いが旧と同じ）。
   - 性能: `MappingHotPathAllocationTests` が成功すること。
 - **W3: K3 のカプセル化**
@@ -144,7 +144,7 @@
 ## 7. 完了条件
 
 - 互換 `AppHost` が存在しない。`Mapping.cs` と保持クラス 3 つに `Global.` の参照が無い。
-- ラチェット: `Global.*` 399 → 354、`AppHost.GetService|Services` 5 → 4、`Program.rootHub` 0、`ServiceProviderHolder` 17（変更なし）。
+- ラチェット: `Global.*` 399 → 355、`AppHost.GetService|Services` 5 → 4、`Program.rootHub` 0、`ServiceProviderHolder` 17（変更なし）。
 - K3 のロジックが `MacroRuntimeState` に包まれ、`Mapping` が `DispatchLock` を直接使わない。
 - 単体テストが成功（ユーザーが実行）。文書の更新（台帳、モデル図、Status、完了報告書）。
 
