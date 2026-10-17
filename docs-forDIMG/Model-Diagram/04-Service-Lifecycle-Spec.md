@@ -168,3 +168,8 @@
 %% - `IEnvironmentService` に `ViGEmBusVersion` を追加（`Global.vigemBusVersionInfo` への薄い委譲）。`IProfileRepository` に `ReplaceLinkedProfileName` を追加（名前変更時のリンクプロファイルの旧名の置換）。
 %% - 全域の退行ガード: `Step10FourGlobalRatchetGuardTests`（ファイルごとの `Program.rootHub`／`AppHost`／`Global.*` の件数が基準値以下）。
 %% - 詳細は `Phase6-Step10-4-Plan.md`。
+%%
+%% Phase7-Step1 W4（2026-10-17）: 追跡の対象
+%% - Service Locator は 2 系統ある。1 系統目: `AppHost.GetService|Services` と `Program.rootHub`（`Step10FourGlobalRatchetGuardTests`）。2 系統目: `ServiceProviderHolder.Provider`（23 件。`Phase7Step1ServiceLocatorRatchetGuardTests` を追加）。
+%% - 2 系統目のうち `Actions/` の 17 件は Phase8 の持ち越し。`Mapping`（5）と `App`（1）は Phase7-Step5 で注入へ置き換える。
+%% - 台帳: `docs-forDIMG/MadeByAgent/Phase7-Residual-Ledger.md`。

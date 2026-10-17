@@ -131,3 +131,10 @@
 - テスト: 新規 `BackingStoreAppSettingsLoadTests`（8 件）。`BackingStore.Save` の実出力（DTO）を一時フォルダへ書き、別の `BackingStore` で `Load` する。`Global.exedirpath` は一時フォルダへ向け、終了時に戻す。修正前は、偽の exe 名・`lastVersionCheckedNum`・ポート・Distance のテスト（計 6 件）が失敗する構成（先に特性化テストを書くという計画から、修正と同時に提供した。未検証）。
 - 旧形式の DOM 経路のテストは追加しなかった: `<Profile>` ルートのファイルは、DTO の逆シリアライズに成功するため、フォールバックに到達するのはルートが異なる、または XML が壊れている場合に限られる。この経路の変更は、末尾の切り出し（処理は同一）だけ。
 - 実機（実アプリ）確認: チェックリスト §11 の U-10（追記済み）。
+
+### W4 の実施記録（2026-10-17、W3 のビルド・テストは成功。W4 のビルド・テストはユーザーの実行待ち）
+- 走査（コメントを除く）: `ServiceProviderHolder.Provider|GetRequiredService` は 23 件（`ActionManager` 13、`ActionFactory` 1、`DefaultKeyButtonActionControllerFactory` 2、`KeyActionAdapter` 1、`App.xaml.cs` 1、`Mapping.cs` 5）。`DI/AppHost.cs` の `SetProvider` 3 件は Composition Root の正規の使い方で数えない。`GetRequiredService` の呼び出し元は 0 件。
+- ガード: 新規 `Phase7Step1ServiceLocatorRatchetGuardTests`（上記の基準値。増加または基準値に無いファイルへの出現で失敗）。
+- 台帳: 新規 `Phase7-Residual-Ledger.md`（`Global.*` 733、`AppHost` 40、`Program.rootHub` 22、`ServiceProviderHolder` 23。分類と担当 Step を記載。`Actions/` の 17 件は Phase8 持ち越しと明記）。
+- 全域の再集計（ラチェットと同じ数え方）: `Global.*` 733、`AppHost` 40、`Program.rootHub` 22。W1 の記録（747 → 733）と一致。
+- モデル図: `04-Service-Lifecycle-Spec.md` に、Service Locator の 2 系統の追跡の注記を追記。構造の変更はない。
