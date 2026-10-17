@@ -323,8 +323,8 @@ namespace DS4WinWPF
             // Phase6-Step7: ここまでが Pre-Host 領域（明示的なホスト構築より前に実行される起動処理）。
             // この領域と CheckOptions（-driverinstall 分岐を含む）の Global 参照（起動時ログローテーション・
             // 設定の場所の決定・ViGEmBus 情報など）は、ブートストラップ処理として意図的に静的のまま温存する
-            // （Phase6-Step7-Plan.md §1.2・§2.5）。なお AppHost.GetService はホスト未構築時に暗黙に構築するため、
-            // -driverinstall 分岐の Global.Load() の時点でホストが作られる（同 §0.4）。
+            // （Phase6-Step7-Plan.md §1.2・§2.5）。Phase7-Step4 W2: -driverinstall 分岐は、設定の読込の前に、
+            // CheckOptions の中で CreateHost(config, parser) を明示的に呼ぶ（暗黙のホスト構築はなくなった）。
             // DI サービスは、下の CreateControlService の直後に InitializePostHostServices で解決する。
             // フェーズ0-3: AppHost正式ルート
             try
@@ -691,7 +691,14 @@ namespace DS4WinWPF
 
                 // Load DS4Windows config if it exists
                 DS4Windows.Global.FindConfigLocation();
-                bool readAppConfig = DS4Windows.Global.Load();
+
+                // Phase7-Step4 W2: 旧 Global.Load() は、中の AppHost.GetService が、起動引数なしでホストを暗黙に作っていた
+                // （K7-1 の残存経路）。ここで、起動引数つきで明示的にホストを作り、設定は IAppSettingsService で読む。
+                var driverInstallHost = AppHost.CreateHost(
+                    new Microsoft.Extensions.Configuration.ConfigurationBuilder().Build(), parser);
+                var driverInstallSettings = (DS4Windows.DI.IAppSettingsService)driverInstallHost.Services
+                    .GetService(typeof(DS4Windows.DI.IAppSettingsService));
+                bool readAppConfig = driverInstallSettings.Load();
                 if (readAppConfig)
                 {
                     // Have app use selected culture
@@ -703,7 +710,7 @@ namespace DS4WinWPF
 
                 CreateBaseThread();
                 DS4Forms.WelcomeDialog dialog = new DS4Forms.WelcomeDialog(
-                    AppHost.GetService<DS4Windows.DI.IEnvironmentService>(), true);
+                    AppHost.GetService<DS4Windows.DI.IEnvironmentService>());
                 dialog.ShowDialog();
                 runShutdown = false;
                 exitApp = true;
@@ -1118,6 +1125,15 @@ namespace DS4WinWPF
                             }
                         }
                     }
+                }
+                catch { }
+
+                // Phase7-Step4 W2: ホストを破棄する。ドライバー破棄の順序（防壁 5）を守るため、コントローラーの停止
+                // （rootHub.Stop／ShutDown）と、レジストリの破棄の後に行う。Dispose の後は、GetService が暗黙にホストを
+                // 作り直さない。例外は握る（AppHost.Dispose も握る）。ログのフラッシュより前に行い、破棄中のログも出力する。
+                try
+                {
+                    AppHost.Dispose();
                 }
                 catch { }
 

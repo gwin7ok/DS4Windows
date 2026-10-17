@@ -1102,18 +1102,6 @@ namespace DS4Windows
             return m_Config.getX360ControlString(key);
         }
 
-        //public static bool Load() => m_Config.Load();
-        public static bool Load()
-        {
-            var appSettings = DS4WinWPF.AppHost.GetService<DI.IAppSettingsService>();
-            if (appSettings != null)
-            {
-                return appSettings.Load();
-            }
-
-            return m_Config.Load();
-        }
-
         public static bool SaveControllerConfigs(DS4Device device = null)
         {
             if (device != null)

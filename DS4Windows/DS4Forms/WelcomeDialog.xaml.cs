@@ -62,19 +62,12 @@ namespace DS4WinWPF.DS4Forms
         // Phase6-Step10-1-2: Global 直接参照の置換先。呼び出し側（App の -driverinstall 分岐）が渡す（Pure DI）。
         private readonly DS4Windows.DI.IEnvironmentService _environmentService;
 
-        public WelcomeDialog(DS4Windows.DI.IEnvironmentService environmentService, bool loadConfig = false)
+        // Phase7-Step4 W2: 旧 loadConfig 引数（唯一の呼び出し元 App.xaml.cs の -driverinstall 分岐が true を渡していた）と、
+        // 中の Global.FindConfigLocation／Global.Load を削除した。呼び出し元が、直前に同じ処理（FindConfigLocation と設定の読込）を
+        // すでに実行しているため、重複していた再実行をやめただけで、動作は変わらない。
+        public WelcomeDialog(DS4Windows.DI.IEnvironmentService environmentService)
         {
             _environmentService = environmentService ?? throw new ArgumentNullException(nameof(environmentService));
-
-            if (loadConfig)
-            {
-                // TODO(温存): Pre-Host の手動分岐。呼び出し側（App.xaml.cs の -driverinstall 分岐）が同じ処理を既に実行しているが、
-                // 重複呼び出しを含めて置換前と同じ動作を維持する。Pre-Host のブートストラップ処理のため Global を直接呼ぶ
-                // （Phase6-Step10-Plan.md §0A.2、Phase6-Step7-Plan.md §1.2）。整理は Phase6-Step12 で判断する。
-                DS4Windows.Global.FindConfigLocation();
-                DS4Windows.Global.Load();
-                //DS4Windows.Global.SetCulture(DS4Windows.Global.UseLang);
-            }
 
             InitializeComponent();
 

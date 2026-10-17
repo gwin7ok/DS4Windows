@@ -125,7 +125,8 @@ namespace DS4WindowsTests
             var saveEx = Record.Exception(() => service.Save());
             Assert.Null(saveEx);
 
-            var loadEx = Record.Exception(() => Global.Load());
+            // Phase7-Step4 W2: Global.Load は削除した。サービスの Load が同じ処理（旧 Global.Load の中身）
+            var loadEx = Record.Exception(() => service.Load());
             Assert.Null(loadEx);
         }
 

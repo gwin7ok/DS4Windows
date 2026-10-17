@@ -45,7 +45,7 @@ namespace DS4WindowsTests
         {
             // E7-06〜E7-12（-driverinstall 分岐。温存）。Phase7-Step4 W1: RefreshViGEmBusInfo は EnvironmentService へ移した（1 → 0）
             ["FindConfigLocation"] = 1,
-            ["Load"] = 1,
+            // Phase7-Step4 W2: Global.Load は IAppSettingsService.Load に置き換えた（1 → 0）
             ["UseLang"] = 2,
             ["UseCurrentTheme"] = 2,
         };

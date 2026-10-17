@@ -60,7 +60,8 @@ namespace DS4WindowsTests
             ["DS4Windows/DS4Control/Changelog.cs"] = (0, 0, 4),
             // Phase6-Step12 Wave 1: 孤立コード 24 件を削除（Global 47 → 45）。Wave 2: 互換アクセサ 152 件を削除（Global 45 → 38）。Wave 3: *Instance のフォールバック群 19 件を削除（Global 38 → 26、AppHost 11 → 5、rootHub 9 → 6）。Wave 4: BackingStore 直転送ラッパー 58 件を削除（AppHost 5 → 4。(6, 4, 26)）
             // Phase7-Step4 W1: IsUsingMinViGEm117333 の移管で Global.* 2 件を削除（24 → 22）
-            ["DS4Windows/DS4Control/Global.cs"] = (6, 4, 22),
+            // Phase7-Step4 W2: Global.Load の削除で AppHost.GetService を 1 件削除（4 → 3）
+            ["DS4Windows/DS4Control/Global.cs"] = (6, 3, 22),
             // Phase7-Step2 W4: INotificationService.NotificationsEnabled／FlashTaskbar の削除で Global.* 5 件を削除（6 → 1）
             ["DS4Windows/DS4Control/Services/AppNotificationService.cs"] = (0, 0, 0),
             ["DS4Windows/DS4Control/Services/AppSettingsService.cs"] = (0, 0, 8),
