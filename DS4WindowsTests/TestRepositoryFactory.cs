@@ -90,6 +90,12 @@ namespace DS4WindowsTests
                 store ?? Global.store);
         }
 
+        public static ProfilePresetLoader CreateProfilePresetLoader(BackingStore store = null,
+            IProfileSettingsService profileSettings = null)
+        {
+            return new ProfilePresetLoader(store ?? Global.store, profileSettings ?? Global.ProfileSettingsServiceInstance);
+        }
+
         public static AppearanceSettingsService CreateAppearanceSettingsService(BackingStore store = null)
         {
             return new AppearanceSettingsService(store ?? Global.store);

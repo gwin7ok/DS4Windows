@@ -85,7 +85,7 @@ namespace DS4WindowsTests
             string text = File.ReadAllText(path);
 
             Assert.Matches(new Regex(@"public bool SaveProfile\(string profileName\)\s*\{\s*return profileRepo\.SaveProfile\(device, profileName\);\s*\}"), text);
-            Assert.Matches(new Regex(@"public void LoadBlankProfile\(ControlService control\)\s*\{\s*profileRepo\.LoadBlankProfile\(device, false, control, false\);\s*\}"), text);
+            Assert.Matches(new Regex(@"public void LoadBlankProfile\(ControlService control\)\s*\{\s*presetLoader\.LoadBlank\(device, false, control, false\);\s*\}"), text);
             Assert.Matches(new Regex(@"public void RefreshCustomsFlags\(\)\s*\{\s*profileRepo\.CacheProfileCustomsFlags\(device\);\s*\}"), text);
             Assert.Matches(new Regex(@"public void RefreshExtraProfileInfo\(\)\s*\{\s*profileRepo\.CacheExtraProfileInfo\(device\);\s*\}"), text);
 

@@ -384,9 +384,7 @@ namespace DS4Windows
             return changed;
         }
 
-        // ---- Phase6-Step8-1: ProfileEditor.xaml.cs の Global 直接参照解消 ----
-        public void LoadBlankProfile(int deviceIndex, bool launchProgram, ControlService control, bool xinputChange = true, bool postLoad = true)
-            => Global.LoadBlankDevProfile(deviceIndex, launchProgram, control, xinputChange, postLoad);
+        // Phase7-Step3c W2: LoadBlankProfile は削除した（IProfilePresetLoader.LoadBlank に統合）。
 
 
         // ---- Phase6-Step2-2 (PR-2): リンクプロファイル解決 ----

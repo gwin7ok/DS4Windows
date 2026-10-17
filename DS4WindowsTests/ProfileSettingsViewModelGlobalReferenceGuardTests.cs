@@ -152,19 +152,22 @@ namespace DS4WindowsTests
             var settings = TestRepositoryFactory.CreateProfileSettingsService();
             var outputSlots = TestRepositoryFactory.CreateOutputSlotService();
             var repo = TestRepositoryFactory.CreateProfileRepository();
+            var loader = TestRepositoryFactory.CreateProfilePresetLoader();
             var env = new EnvironmentService();
             var path = new PathService();
 
             Assert.Throws<ArgumentNullException>(() =>
-                new ProfileSettingsViewModel(0, null, null, outputSlots, repo, env, path));
+                new ProfileSettingsViewModel(0, null, null, outputSlots, repo, loader, env, path));
             Assert.Throws<ArgumentNullException>(() =>
-                new ProfileSettingsViewModel(0, settings, null, null, repo, env, path));
+                new ProfileSettingsViewModel(0, settings, null, null, repo, loader, env, path));
             Assert.Throws<ArgumentNullException>(() =>
-                new ProfileSettingsViewModel(0, settings, null, outputSlots, null, env, path));
+                new ProfileSettingsViewModel(0, settings, null, outputSlots, null, loader, env, path));
             Assert.Throws<ArgumentNullException>(() =>
-                new ProfileSettingsViewModel(0, settings, null, outputSlots, repo, null, path));
+                new ProfileSettingsViewModel(0, settings, null, outputSlots, repo, null, env, path));
             Assert.Throws<ArgumentNullException>(() =>
-                new ProfileSettingsViewModel(0, settings, null, outputSlots, repo, env, null));
+                new ProfileSettingsViewModel(0, settings, null, outputSlots, repo, loader, null, path));
+            Assert.Throws<ArgumentNullException>(() =>
+                new ProfileSettingsViewModel(0, settings, null, outputSlots, repo, loader, env, null));
             Assert.Throws<ArgumentNullException>(() => new PresetMenuHelper(0, null));
         }
 

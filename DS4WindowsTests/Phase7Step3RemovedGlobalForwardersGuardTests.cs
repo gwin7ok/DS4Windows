@@ -41,6 +41,10 @@ namespace DS4WindowsTests
             "CacheExtraProfileInfo", "CacheProfileCustomsFlags", "changeLinkedProfile", "removeLinkedProfile",
             "containsLinkedProfile", "getLinkedProfile", "UseIconChoice", "autoProfileSwitchNotifyChoice",
             "IsFirstConnection", "MarkConnected", "ResetConnectionFlags", "RefreshExtrasButtons",
+            // Step3c W2: プリセット（ProfilePresetLoader へ移した）
+            "LoadBlankDevProfile", "LoadBlankDS4Profile", "LoadDefaultGamepadGyroProfile", "LoadDefaultDS4GamepadGyroProfile",
+            "LoadDefaultMixedControlsProfile", "LoadDefaultDS4MixedControlsProfile", "LoadDefaultMixedGyroMouseProfile",
+            "LoadDefaultDS4MixedGyroMouseProfile", "LoadDefaultKBMProfile", "LoadDefaultKBMGyroMouseProfile",
         };
 
         private readonly ITestOutputHelper _output;

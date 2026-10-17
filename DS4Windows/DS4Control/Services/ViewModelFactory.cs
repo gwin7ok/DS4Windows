@@ -10,6 +10,7 @@ namespace DS4Windows
     {
         private readonly IProfileSettingsService _profileSettings;
         private readonly IProfileRepository _profileRepo;
+        private readonly IProfilePresetLoader _presetLoader;
         private readonly ISpecialActionRepository _actionRepo;
         private readonly IOutputSlotService _outputSlotService;
         private readonly IEnvironmentService _environmentService;
@@ -24,6 +25,7 @@ namespace DS4Windows
         public ViewModelFactory(
             IProfileSettingsService profileSettings,
             IProfileRepository profileRepo,
+            IProfilePresetLoader presetLoader,
             ISpecialActionRepository actionRepo,
             IOutputSlotService outputSlotService,
             IEnvironmentService environmentService,
@@ -34,6 +36,7 @@ namespace DS4Windows
         {
             _profileSettings = profileSettings ?? throw new ArgumentNullException(nameof(profileSettings));
             _profileRepo = profileRepo ?? throw new ArgumentNullException(nameof(profileRepo));
+            _presetLoader = presetLoader ?? throw new ArgumentNullException(nameof(presetLoader));
             _actionRepo = actionRepo ?? throw new ArgumentNullException(nameof(actionRepo));
             _outputSlotService = outputSlotService ?? throw new ArgumentNullException(nameof(outputSlotService));
             _environmentService = environmentService ?? throw new ArgumentNullException(nameof(environmentService));
@@ -50,7 +53,7 @@ namespace DS4Windows
             if (AppLogger.IsTraceEnabled)
                 AppLogger.LogTrace($"[DI] ViewModelFactory: Created ProfileSettingsViewModel for Device {device}, targetDevice {targetDevice}");
             return new ProfileSettingsViewModel(device, _profileSettings, _controlServiceAccessor(),
-                _outputSlotService, _profileRepo, _environmentService, _pathService, targetDevice);
+                _outputSlotService, _profileRepo, _presetLoader, _environmentService, _pathService, targetDevice);
         }
 
         public RecordBoxViewModel CreateRecordBoxViewModel(int device, DS4ControlSettings controlSettings, bool recordMacro = true, bool extraHold = false, int targetDevice = -1)

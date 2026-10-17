@@ -73,13 +73,9 @@ namespace DS4Windows.DI
         /// <summary>LinkedProfiles.xml（コントローラーとプロファイルの紐付け）を読み込む。</summary>
         bool LoadLinkedProfiles();
 
-        // ---- Phase6-Step8-1: ProfileEditor.xaml.cs の Global 直接参照解消（Global への薄い委譲）----
-        /// <summary>
-        /// スロットへ空のプロファイルを読み込む（<c>Global.LoadBlankDevProfile</c> と同じ動作）。
-        /// 空プロファイルの読み込みに加えて、既定スペシャルアクションの作成、<see cref="CacheExtraProfileInfo"/> 相当の
-        /// キャッシュ更新、一時プロファイル名・使用フラグ・距離フラグのクリアまで行う。
-        /// </summary>
-        void LoadBlankProfile(int deviceIndex, bool launchProgram, ControlService control, bool xinputChange = true, bool postLoad = true);
+        // Phase7-Step3c W2: LoadBlankProfile は削除した（IProfilePresetLoader.LoadBlank と同じ処理の重複。呼び出し元の
+        // ProfileSettingsViewModel は IProfilePresetLoader を使う）。
+        // 参照: docs-forDIMG/MadeByAgent/Phase7-Step3c-Plan.md Q4
 
         // ---- Phase6-Step10-3b-1: アクションの名前変更・削除の、全プロファイルへの反映（機能追加）----
         // TODO(Step10-3b-3/3b-4 で接続予定): 画面（ProfileEditor の「除去」ボタン、アクションの名前変更）からの呼び出しは

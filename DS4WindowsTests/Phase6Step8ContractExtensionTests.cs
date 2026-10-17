@@ -13,8 +13,7 @@ namespace DS4WindowsTests
     /// - <see cref="ISpecialActionRepository.GetActionOrPlaceholder"/>: <c>Global.GetAction</c> と同じ契約
     ///   （前後の空白と大文字小文字を無視、未発見は <c>null</c> ではなく placeholder）。
     ///   既存の <see cref="ISpecialActionRepository.GetAction"/> は <c>null</c> を返す別契約のため、置換できない。
-    /// - <see cref="IProfileRepository.LoadBlankProfile"/>: <c>Global.LoadBlankDevProfile</c> への薄い委譲であること
-    ///   （Global の静的状態と実機・ControlService が必要なため、ソース走査で固定する）。
+    /// - （<c>IProfileRepository.LoadBlankProfile</c> の確認は、Phase7-Step3c W2 で契約ごと削除した。<c>IProfilePresetLoader.LoadBlank</c> に統合）
     /// Global 状態を変更するテストは、変更を必ず元に戻す（Phase6-Step2 の教訓）。
     /// </summary>
     public class Phase6Step8ContractExtensionTests
@@ -100,22 +99,6 @@ namespace DS4WindowsTests
             Assert.Equal(viaGlobal.controls, viaRepo.controls);
             Assert.Equal(viaGlobal.type, viaRepo.type);
             Assert.Equal(viaGlobal.typeID, viaRepo.typeID);
-        }
-
-        [Fact]
-        public void LoadBlankProfile_DelegatesToGlobalLoadBlankDevProfile_WithSameArguments()
-        {
-            string path = SourceFileLocator.Find("DS4Windows/DS4Control/Services/ProfileRepository.cs");
-            if (path == null)
-            {
-                _output.WriteLine("ProfileRepository.cs が見つからないため検査を省略した。");
-                return;
-            }
-
-            string text = File.ReadAllText(path);
-            Match m = Regex.Match(text,
-                @"public void LoadBlankProfile\(int deviceIndex, bool launchProgram, ControlService control, bool xinputChange = true, bool postLoad = true\)\s*=>\s*Global\.LoadBlankDevProfile\(deviceIndex, launchProgram, control, xinputChange, postLoad\);");
-            Assert.True(m.Success, "LoadBlankProfile は Global.LoadBlankDevProfile へ全引数をそのまま渡す薄い委譲であること");
         }
     }
 }

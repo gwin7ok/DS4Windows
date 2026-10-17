@@ -162,7 +162,7 @@ namespace DS4WindowsTests
             var slots = TestRepositoryFactory.CreateOutputSlotService();
             var path = new PathService();
             Func<ControlService> cs = () => null;
-            var loader = new DS4Windows.Services.ProfilePresetLoader();
+            var loader = TestRepositoryFactory.CreateProfilePresetLoader();
             var repo = TestRepositoryFactory.CreateSpecialActionRepository();
 
             Assert.Throws<ArgumentNullException>(() => new DS4Windows.Services.EditorWindowFactory(null, slots, path, null, repo, loader, cs));
@@ -187,7 +187,7 @@ namespace DS4WindowsTests
         public void PresetAndMappingViewModels_RequireServices()
         {
             Assert.Throws<ArgumentNullException>(() => new PresetOptionViewModel(null, null));
-            Assert.Throws<ArgumentNullException>(() => new PresetOptionViewModel(new DS4Windows.Services.ProfilePresetLoader(), null));
+            Assert.Throws<ArgumentNullException>(() => new PresetOptionViewModel(TestRepositoryFactory.CreateProfilePresetLoader(), null));
             Assert.Throws<ArgumentNullException>(() => new MappingListViewModel(0, OutContType.X360, null));
             Assert.Throws<ArgumentNullException>(() => new TouchButtonUserControlViewModel(0, null));
         }

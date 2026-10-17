@@ -106,3 +106,8 @@
   - 方法: 一時ディレクトリを `Global.appdatapath` に設定し、`Global.store.SaveProfile` で有効なプロファイルを作成。Host を構築して実物の `ControlService` を使い、`Program.rootHub` も一時的に差し替える。終了時にすべて復元する。
   - 副作用の対策: `Global.appdatapath` を書き換える `PathServiceTests` を、同じ `ServiceProviderHolder` コレクションに入れて直列化した。
   - 注意: このテストは W1 の時点で **現行コードに対して成功する** ことが前提（コードは変更していない）。失敗した場合は、テストの前提の誤りであり、移管の前に修正する。
+- **W2 実装済み（ビルド・テスト待ち）**
+  - `ProfilePresetLoader`: `BackingStore` と `IProfileSettingsService` を必須で受け取る。10 名の読み込みを、`BackingStore` の同名の読み込み＋共通の後処理 `CompleteLoad`（既定の特殊アクションの作成、エクストラ情報のキャッシュ、一時プロファイルの名前・使用・距離のクリア）に置き換えた（処理は旧 `Global` と同一。距離のクリアは `tempprofileDistance[...] = false` から `SetTempProfileDistance(..., false)` に変えたが、同じ配列への同じ書き込み）。
+  - `Global`: プリセット 10 名を削除。`IProfileRepository.LoadBlankProfile` とその実装を削除（Q4＝A）。`ProfileSettingsViewModel` と `ViewModelFactory` に `IProfilePresetLoader` を追加し、`LoadBlankProfile(ControlService)` は `presetLoader.LoadBlank` を呼ぶ。
+  - テスト: `TestRepositoryFactory.CreateProfilePresetLoader` を追加し、`ProfileSettingsViewModel` の生成 6 件と `ProfilePresetLoader` の生成 2 件を更新。`Phase6Step10GroupTwoContractTests` の委譲確認は新しい実装の形（`_config.<読み込み>` ＋ `CompleteLoad`）に、`Phase6Step8ContractExtensionTests` の `LoadBlankProfile` の確認は契約ごと削除。特性化テストのプリセットは `ProfilePresetLoader` 経由に変更（期待値は同じ）。ガードテストの名前一覧に 10 名を追記。
+  - ラチェット基準値: `ProfilePresetLoader.cs` 10→0、`ProfileRepository.cs` 6→5（`Global.*` 合計 516→505）。

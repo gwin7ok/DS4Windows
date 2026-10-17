@@ -215,13 +215,14 @@ namespace DS4WindowsTests
         }
 
         [Fact]
-        public void LoadBlankDevProfile_ResetsTempProfileState()
+        public void PresetLoadBlank_ResetsTempProfileState()
         {
             _settings.SetUseTempProfile(Slot, true);
             _settings.SetTempProfileName(Slot, "TempSentinel");
             Global.tempprofileDistance[Slot] = true;
 
-            Global.LoadBlankDevProfile(Slot, false, _control, false, false);
+            // Phase7-Step3c W2: 移管後は ProfilePresetLoader（旧 Global.LoadBlankDevProfile の処理）で同じ結果になる
+            TestRepositoryFactory.CreateProfilePresetLoader().LoadBlank(Slot, false, _control, false, false);
 
             Assert.False(_settings.GetUseTempProfile(Slot));
             Assert.Equal(string.Empty, _settings.GetTempProfileName(Slot));

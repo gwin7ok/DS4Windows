@@ -58,6 +58,7 @@ namespace DS4WinWPF.DS4Forms.ViewModels
         private readonly IPathService pathService;
         private readonly IOutputSlotService outputSlotService;
         private readonly IProfileRepository profileRepo;
+        private readonly IProfilePresetLoader presetLoader;
 
         private int funcDevNum;
         public int FuncDevNum { get => funcDevNum; }
@@ -844,7 +845,7 @@ namespace DS4WinWPF.DS4Forms.ViewModels
         /// </summary>
         public void LoadBlankProfile(ControlService control)
         {
-            profileRepo.LoadBlankProfile(device, false, control, false);
+            presetLoader.LoadBlank(device, false, control, false);
         }
 
         /// <summary>編集スロットのカスタムフラグのキャッシュを更新する（ボタン設定画面を閉じた後など）。</summary>
@@ -2932,6 +2933,7 @@ namespace DS4WinWPF.DS4Forms.ViewModels
             ControlService controlService,
             IOutputSlotService outputSlotService,
             IProfileRepository profileRepo,
+            IProfilePresetLoader presetLoader,
             IEnvironmentService environmentService,
             IPathService pathService,
             int targetDevice = -1)
@@ -2942,6 +2944,7 @@ namespace DS4WinWPF.DS4Forms.ViewModels
             this.controlService = controlService;
             this.outputSlotService = outputSlotService ?? throw new ArgumentNullException(nameof(outputSlotService));
             this.profileRepo = profileRepo ?? throw new ArgumentNullException(nameof(profileRepo));
+            this.presetLoader = presetLoader ?? throw new ArgumentNullException(nameof(presetLoader));
             this.environmentService = environmentService ?? throw new ArgumentNullException(nameof(environmentService));
             this.pathService = pathService ?? throw new ArgumentNullException(nameof(pathService));
             // Phase6-Step7b: 実機を使う機能（ランブルテスト、校正、入力ハイライト等）の対象。
