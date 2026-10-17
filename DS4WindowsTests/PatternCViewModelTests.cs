@@ -102,7 +102,8 @@ namespace DS4WindowsTests
             var factory = DS4WinWPF.AppHost.GetService<IViewModelFactory>();
             Assert.NotNull(factory);
 
-            OutContType savedOutDevTypeTemp = Global.outDevTypeTemp[Global.TEST_PROFILE_INDEX];
+            var outputSlotService = DS4WinWPF.AppHost.GetService<IOutputSlotService>();
+            OutContType savedOutDevTypeTemp = outputSlotService.OutDevTypeTemp[Global.TEST_PROFILE_INDEX];
             try
             {
                 // CURRENT_DS4_CONTROLLER_LIMIT は 4 または 8 のため、どちらでも範囲内の 1 を使う
@@ -114,7 +115,7 @@ namespace DS4WindowsTests
             }
             finally
             {
-                Global.outDevTypeTemp[Global.TEST_PROFILE_INDEX] = savedOutDevTypeTemp;
+                outputSlotService.OutDevTypeTemp[Global.TEST_PROFILE_INDEX] = savedOutDevTypeTemp;
             }
         }
 

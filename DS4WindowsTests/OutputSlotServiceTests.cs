@@ -72,20 +72,33 @@ namespace DS4WindowsTests
             Assert.Equal(8, slots.Count); // OutputSlotManager の既定スロット数は 8
         }
 
-        // Phase5-Step13-6/7で追加: いずれもGlobal(m_Config)への薄い公開アクセサであり、
-        // 同一配列の参照であることを検証する(状態複製がないことの確認)。
+        // Phase7-Step6 W1: 2 つの配列の実体は OutputSlotService が持つ（旧: Global の静的配列への参照）。
+        // 参照は安定し（再代入されない）、初期値は Temp＝全スロット X360、Active＝全スロット None。
         [Fact]
-        public void OutDevTypeTemp_ShouldReferenceSameArrayAsGlobal()
+        public void OutDevTypeTemp_IsOwnedByTheService_AndStable()
         {
             var service = TestRepositoryFactory.CreateOutputSlotService();
-            Assert.Same(Global.outDevTypeTemp, service.OutDevTypeTemp);
+            Assert.Same(service.OutDevTypeTemp, service.OutDevTypeTemp);
+            Assert.Equal(Global.TEST_PROFILE_ITEM_COUNT, service.OutDevTypeTemp.Length);
+            Assert.All(service.OutDevTypeTemp, t => Assert.Equal(OutContType.X360, t));
         }
 
         [Fact]
-        public void ActiveOutDevType_ShouldReferenceSameArrayAsGlobal()
+        public void ActiveOutDevType_IsOwnedByTheService_AndStable()
         {
             var service = TestRepositoryFactory.CreateOutputSlotService();
-            Assert.Same(Global.activeOutDevType, service.ActiveOutDevType);
+            Assert.Same(service.ActiveOutDevType, service.ActiveOutDevType);
+            Assert.Equal(Global.TEST_PROFILE_ITEM_COUNT, service.ActiveOutDevType.Length);
+            Assert.All(service.ActiveOutDevType, t => Assert.Equal(OutContType.None, t));
+        }
+
+        [Fact]
+        public void TwoServices_DoNotShareTheArrays()
+        {
+            var a = TestRepositoryFactory.CreateOutputSlotService();
+            var b = TestRepositoryFactory.CreateOutputSlotService();
+            Assert.NotSame(a.ActiveOutDevType, b.ActiveOutDevType);
+            Assert.NotSame(a.OutDevTypeTemp, b.OutDevTypeTemp);
         }
     }
 }

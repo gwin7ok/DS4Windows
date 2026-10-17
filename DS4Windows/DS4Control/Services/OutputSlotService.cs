@@ -161,21 +161,26 @@ namespace DS4Windows
             return _store.Save(SlotManager);
         }
 
-        // TODO(技術的負債・Phase7 で解消予定、Phase6-Step5 決定2＝案X で温存、2026-09-24):
-        // 以下 2 つの配列の実体は Global の静的配列（Global.outDevTypeTemp／Global.activeOutDevType）であり、
-        // 本サービスは裏づけとして同じ配列参照を返しているだけである（状態の複製はしない）。
-        // 配列は ScpUtil.cs の 8 箇所、ProfileEditor.xaml.cs／BindingWindowViewModel.cs／PressKeyViewModel.cs から直接
-        // 読み書きされ、ControlService は配列参照を 1 回だけキャッシュする前提で使っている（ControlService.cs の ActiveOutDevType）。
-        // Phase7 で、配列の所有を本サービスへ移し、Global 側を転送プロパティ（または削除）にする（案Y）。
-        // 前提条件と詳細: docs-forDIMG/MadeByAgent/Phase6-Step5-Plan.md §9、Phase6-Step12-Plan.md §4。
-        // 配列の参照は再代入しないこと（ControlService のキャッシュが無効になるため）。
+        // Phase7-Step6 W1（Q1＝A）: 2 つの配列の実体を本サービスが持つ（旧 Global.outDevTypeTemp／Global.activeOutDevType）。
+        // 本サービスは Singleton なので、プロセス内で 1 つの配列になる（従来の静的配列と同じ）。要素の読み書きにロックはない（従来どおり）。
+        // 配列の参照は再代入しないこと（ControlService.ActiveOutDevType のキャッシュが無効になるため）。
+        // BackingStore は、ServiceRegistration の登録を通じて ActiveOutDevType の同じ配列を受け取る。
+        private readonly OutContType[] _outDevTypeTemp = CreateFilled(OutContType.X360);
+        private readonly OutContType[] _activeOutDevType = CreateFilled(OutContType.None);
+
+        private static OutContType[] CreateFilled(OutContType value)
+        {
+            var array = new OutContType[Global.TEST_PROFILE_ITEM_COUNT];
+            for (int i = 0; i < array.Length; i++) array[i] = value;
+            return array;
+        }
 
         // ---- Phase5-Step13-6: Profile Editor で選択中の未確定(Temp)出力デバイスタイプ ----
-        // 三態の「UI一時状態」。永続設定（IProfileSettingsService.OutContType）とは別物。
-        public OutContType[] OutDevTypeTemp => Global.outDevTypeTemp;
+        // 三態の「UI一時状態」。永続設定（IProfileSettingsService.OutContType）とは別物。初期値は全スロット X360。
+        public OutContType[] OutDevTypeTemp => _outDevTypeTemp;
 
         // ---- Phase5-Step13-7: スロット別・現在稼働中の出力デバイスタイプ ----
         // 三態の「実行時接続状態」。未接続時は None。永続設定（IProfileSettingsService.OutContType）とは別物。
-        public OutContType[] ActiveOutDevType => Global.activeOutDevType;
+        public OutContType[] ActiveOutDevType => _activeOutDevType;
     }
 }

@@ -52,14 +52,12 @@ namespace DS4WindowsTests
             private readonly bool[] forcelight = (bool[])DS4LightBar.forcelight.Clone();
             private readonly DS4Color[] forcedColor = (DS4Color[])DS4LightBar.forcedColor.Clone();
             private readonly byte[] forcedFlash = (byte[])DS4LightBar.forcedFlash.Clone();
-            private readonly OutContType outDevTypeTempEditSlot = Global.outDevTypeTemp[Global.TEST_PROFILE_INDEX];
 
             public void Dispose()
             {
                 Array.Copy(forcelight, DS4LightBar.forcelight, forcelight.Length);
                 Array.Copy(forcedColor, DS4LightBar.forcedColor, forcedColor.Length);
                 Array.Copy(forcedFlash, DS4LightBar.forcedFlash, forcedFlash.Length);
-                Global.outDevTypeTemp[Global.TEST_PROFILE_INDEX] = outDevTypeTempEditSlot;
             }
         }
 

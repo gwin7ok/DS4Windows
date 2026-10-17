@@ -7,9 +7,9 @@ namespace DS4WindowsTests
     /// Phase6-Step5-3: 出力デバイス種別の三態（永続設定／実行時接続状態／UI一時状態）が、
     /// それぞれ別の配列であり、互いに干渉しないことを固定する。
     /// - 永続設定: IProfileSettingsService.OutContType（BackingStore.outContType）
-    /// - 実行時接続状態: IOutputSlotService.ActiveOutDevType（裏づけは Global.activeOutDevType）
-    /// - UI一時状態: IOutputSlotService.OutDevTypeTemp（裏づけは Global.outDevTypeTemp）
-    /// Global の静的配列を書き換えるテストは、最後に元の値へ戻す（Phase6-Status.md §6.4 の教訓1）。
+    /// - 実行時接続状態: IOutputSlotService.ActiveOutDevType（Phase7-Step6 W1 から、実体は OutputSlotService が持つ）
+    /// - UI一時状態: IOutputSlotService.OutDevTypeTemp（同上）
+    /// 共有の配列を書き換えるテストは、最後に元の値へ戻す（Phase6-Status.md §6.4 の教訓1）。
     /// </summary>
     public class OutputSlotServiceSsotTests
     {

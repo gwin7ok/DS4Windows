@@ -36,10 +36,18 @@ namespace DS4Windows.DI
             // Phase 5 Step 12: 出力スロット永続化・管理サービス
             services.AddSingleton<IOutputSlotStore, OutputSlotStore>();
             // Phase6-Step10-4-3: スロット管理の実体は ControlService が所有する。循環を避けるため、遅延で取得する
-            services.AddSingleton<IOutputSlotService>(sp => new OutputSlotService(
-                () => sp.GetRequiredService<ControlService>().OutputslotMan,
-                sp.GetRequiredService<IOutputSlotStore>(),
-                sp.GetRequiredService<Func<ControlService>>()));
+            // Phase7-Step6 W1: 出力種別の配列は OutputSlotService が持ち、BackingStore へは本サービスの生成時に渡す。
+            // BackingStore の登録側から IOutputSlotService を解決してはならない（IOutputSlotStore → IPathService → BackingStore と循環し、
+            // 実行時にスタックオーバーフローになる）。配列を書き込むのは ControlService だけで、IOutputSlotService を通すため、書き込みの前に必ず接続済みになる。
+            services.AddSingleton<IOutputSlotService>(sp =>
+            {
+                var service = new OutputSlotService(
+                    () => sp.GetRequiredService<ControlService>().OutputslotMan,
+                    sp.GetRequiredService<IOutputSlotStore>(),
+                    sp.GetRequiredService<Func<ControlService>>());
+                sp.GetRequiredService<BackingStore>().ActiveOutDevType = service.ActiveOutDevType;
+                return service;
+            });
 
             // ControlService は遅延解決（循環の回避）
             services.AddSingleton<IProfileSettingsService>(sp => new ProfileSettingsService(

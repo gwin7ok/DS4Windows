@@ -741,6 +741,13 @@ namespace DS4Windows
         // TODO(Phase7-Step10): BackingStore の分割（永続化の切り出し）で、コンストラクター注入にする。
         public DS4Windows.Services.IProcessInspector ProcessInspector { get; set; }
 
+        // Phase7-Step6 W1（Q2＝A）: 旧 Global.activeOutDevType。スロットごとの、現在接続中の出力種別（実体は OutputSlotService が持つ）。
+        // ServiceRegistration の IOutputSlotService の登録が、OutputSlotService の生成時に ActiveOutDevType の配列を設定する。
+        // 設定前（コンテナ構築前の起動処理、コンテナを通らないテスト）は、全スロット None の既定の配列を読む（接続前は元々 None）。
+        // 書き込むのは ControlService だけで、既定の配列は書き換わらない。配列の参照は再代入されない前提で使うこと。
+        // TODO(Phase7-Step10): BackingStore の分割で、コンストラクター注入にする。
+        public OutContType[] ActiveOutDevType { get; set; } = new OutContType[Global.TEST_PROFILE_ITEM_COUNT];
+
         public BackingStore()
         {
             ds4controlSettings = new ControlSettingsGroup[Global.TEST_PROFILE_ITEM_COUNT];
@@ -1962,7 +1969,7 @@ namespace DS4Windows
                     DS4LightBar.forcedFlash[device] = 0;
                 }
 
-                OutContType oldContType = Global.activeOutDevType[device];
+                OutContType oldContType = ActiveOutDevType[device];
                 LightbarSettingInfo lightbarSettings = lightbarSettingInfo[device];
                 LightbarDS4WinInfo lightInfo = lightbarSettings.ds4winSettings;
 
@@ -5940,7 +5947,7 @@ namespace DS4Windows
             xinputPlug = false;
             xinputStatus = false;
 
-            OutContType oldContType = Global.activeOutDevType[device];
+            OutContType oldContType = ActiveOutDevType[device];
 
             // Make sure to reset currently set profile values before parsing
             ResetProfile(device);
@@ -5999,7 +6006,7 @@ namespace DS4Windows
             bool xinputPlug = false;
             bool xinputStatus = false;
 
-            OutContType oldContType = Global.activeOutDevType[device];
+            OutContType oldContType = ActiveOutDevType[device];
 
             // Make sure to reset currently set profile values before parsing
             ResetProfile(device);
@@ -6034,7 +6041,7 @@ namespace DS4Windows
             bool xinputPlug = false;
             bool xinputStatus = false;
 
-            OutContType oldContType = Global.activeOutDevType[device];
+            OutContType oldContType = ActiveOutDevType[device];
 
             // Make sure to reset currently set profile values before parsing
             ResetProfile(device);
@@ -6115,7 +6122,7 @@ namespace DS4Windows
             bool xinputPlug = false;
             bool xinputStatus = false;
 
-            OutContType oldContType = Global.activeOutDevType[device];
+            OutContType oldContType = ActiveOutDevType[device];
 
             // Make sure to reset currently set profile values before parsing
             ResetProfile(device);
@@ -6230,7 +6237,7 @@ namespace DS4Windows
             bool xinputPlug = false;
             bool xinputStatus = false;
 
-            OutContType oldContType = Global.activeOutDevType[device];
+            OutContType oldContType = ActiveOutDevType[device];
 
             // Make sure to reset currently set profile values before parsing
             ResetProfile(device);
@@ -6279,7 +6286,7 @@ namespace DS4Windows
             bool xinputPlug = false;
             bool xinputStatus = false;
 
-            OutContType oldContType = Global.activeOutDevType[device];
+            OutContType oldContType = ActiveOutDevType[device];
 
             // Make sure to reset currently set profile values before parsing
             ResetProfile(device);
@@ -6385,7 +6392,7 @@ namespace DS4Windows
             bool xinputPlug = false;
             bool xinputStatus = false;
 
-            OutContType oldContType = Global.activeOutDevType[device];
+            OutContType oldContType = ActiveOutDevType[device];
 
             // Make sure to reset currently set profile values before parsing
             ResetProfile(device);
