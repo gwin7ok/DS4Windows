@@ -116,3 +116,18 @@
 - 影響の確認: `profileActionDict` と `profileActionIndexDict` は、同じ名前で同時に作られる（`BackingStore.cs` の 827–835、3935–3940）。したがって、定義済みのアクションが「辞書にあるのにインデックスが無い」ことはなく、未検出の名前は、これまで `action == null` で読み飛ばされていた。-1 になると、その前の `index < 0` で読み飛ばされる（結果は同じ。`action == null` 側にログは無かった）。
 - テスト: `Phase6Step3ContractExtensionTests` の該当テストを `GetProfileActionIndexOf_SharesStateWithGlobal_AndReturnsMinusOneWhenMissing` に改名し、未検出と null を -1 とする期待に更新、インデックス 0 の実在する名前が 0 を返すケースを追加。
 - ラチェット: 変更なし（`Global`／`AppHost`／`rootHub` の参照を増減させていない）。
+
+### W3 の実施記録（2026-10-17、W2 のビルド・テストは成功。W3 のビルド・テストはユーザーの実行待ち）
+- 修正（`BackingStore.cs`）:
+  - `Load()` の DTO 経路で、`return` の前に `PostProcessLoad()` と `LoadFakeExeName()` を呼ぶ（従来は「Post processing same as legacy path」のコメントだけで、何も実行されていなかった）。
+  - `Load()` の末尾にあった偽の exe 名の読み込みを、private の `LoadFakeExeName()` に切り出し（処理は同一）。旧形式の経路（末尾）と DTO の経路の両方から呼ぶ。
+  - `PostProcessLoad()` の Distance 判定に、`profilePath[i] != null` の保護を追加（null で例外にならない）。
+  - `Global.*` の参照の件数は不変（切り出しで移動しただけ）。ラチェットの基準値の変更なし。
+- 挙動の差（意図したもの）:
+  - DTO で読み込んだとき、偽の exe 名ファイル（`custom_exe_name.txt`）が復元される。これにより、`Save()` が既存のファイルを空で上書きしなくなる。
+  - `lastVersionCheckedNum` が算出される（不正な文字列は、旧形式の経路と同じく、`lastVersionChecked` を空にして 0 のまま）。
+  - OSC／UDP のポート番号が 1024〜65535 に丸められる。XML に要素が無く 0 のままだったポートは、1024 になる（旧形式の経路と同じ扱い）。
+  - プロファイル名に "distance" を含むスロットの `distanceProfiles` が true になる。
+- テスト: 新規 `BackingStoreAppSettingsLoadTests`（8 件）。`BackingStore.Save` の実出力（DTO）を一時フォルダへ書き、別の `BackingStore` で `Load` する。`Global.exedirpath` は一時フォルダへ向け、終了時に戻す。修正前は、偽の exe 名・`lastVersionCheckedNum`・ポート・Distance のテスト（計 6 件）が失敗する構成（先に特性化テストを書くという計画から、修正と同時に提供した。未検証）。
+- 旧形式の DOM 経路のテストは追加しなかった: `<Profile>` ルートのファイルは、DTO の逆シリアライズに成功するため、フォールバックに到達するのはルートが異なる、または XML が壊れている場合に限られる。この経路の変更は、末尾の切り出し（処理は同一）だけ。
+- 実機（実アプリ）確認: チェックリスト §11 の U-10（追記済み）。

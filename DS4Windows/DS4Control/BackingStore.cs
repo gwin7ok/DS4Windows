@@ -4277,7 +4277,12 @@ namespace DS4Windows
 
                     if (dtoLoaded)
                     {
-                        // Post processing same as legacy path
+                        // Phase7-Step1 W3（不具合 B の是正）: 旧形式の経路と同じ後処理を行う。
+                        // これまでは「Post processing same as legacy path」とコメントされていたが、実際には何も実行されず、
+                        // 偽の exe 名・スキップしたバージョンの数値・ポートの範囲・Distance プロファイルの判定が欠落していた
+                        // （105575a7 〜。移行前から続く不具合で、回帰ではない）。
+                        PostProcessLoad();
+                        LoadFakeExeName();
                         Loaded = true;
                         return Loaded;
                     }
@@ -4629,20 +4634,26 @@ namespace DS4Windows
 
             if (Loaded)
             {
-                string custom_exe_name_path = Path.Combine(Global.exedirpath, Global.CUSTOM_EXE_CONFIG_FILENAME);
-                bool fakeExeFileExists = File.Exists(custom_exe_name_path);
-                if (fakeExeFileExists)
-                {
-                    string fake_exe_name = File.ReadAllText(custom_exe_name_path).Trim();
-                    bool valid = !(fake_exe_name.IndexOfAny(Path.GetInvalidFileNameChars()) >= 0);
-                    if (valid)
-                    {
-                        fakeExeFileName = fake_exe_name;
-                    }
-                }
+                LoadFakeExeName();
             }
 
             return Loaded;
+        }
+
+        // Phase7-Step1 W3: Load() の末尾にあった偽の exe 名の読み込みを切り出した（旧形式の経路と DTO の経路の両方から呼ぶ。処理は同一）
+        private void LoadFakeExeName()
+        {
+            string custom_exe_name_path = Path.Combine(Global.exedirpath, Global.CUSTOM_EXE_CONFIG_FILENAME);
+            bool fakeExeFileExists = File.Exists(custom_exe_name_path);
+            if (fakeExeFileExists)
+            {
+                string fake_exe_name = File.ReadAllText(custom_exe_name_path).Trim();
+                bool valid = !(fake_exe_name.IndexOfAny(Path.GetInvalidFileNameChars()) >= 0);
+                if (valid)
+                {
+                    fakeExeFileName = fake_exe_name;
+                }
+            }
         }
 
         public bool Save()
@@ -4718,7 +4729,7 @@ namespace DS4Windows
             // Check if any set profile names should be considered Distance profiles
             for (int i = 0; i < Global.MAX_DS4_CONTROLLER_COUNT; i++)
             {
-                if (profilePath[i].ToLower().Contains("distance"))
+                if (profilePath[i] != null && profilePath[i].ToLower().Contains("distance"))
                 {
                     distanceProfiles[i] = true;
                 }
