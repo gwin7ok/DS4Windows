@@ -266,11 +266,11 @@ namespace DS4Windows.Services
 
         public bool ProfileChangedNotification
         {
-            get => Global.ProfileChangedNotification;
+            get => _config.profileChangedNotification;
             set
             {
-                if (Global.ProfileChangedNotification == value) return;
-                Global.ProfileChangedNotification = value;
+                if (_config.profileChangedNotification == value) return;
+                _config.profileChangedNotification = value;
                 NotifyChanged(nameof(ProfileChangedNotification));
             }
         }

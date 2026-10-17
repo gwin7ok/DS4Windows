@@ -61,7 +61,7 @@ namespace DS4WindowsTests
             ["DS4Windows/DS4Control/Global.cs"] = (6, 4, 24),
             // Phase7-Step2 W4: INotificationService.NotificationsEnabled／FlashTaskbar の削除で Global.* 5 件を削除（6 → 1）
             ["DS4Windows/DS4Control/Services/AppNotificationService.cs"] = (0, 0, 0),
-            ["DS4Windows/DS4Control/Services/AppSettingsService.cs"] = (0, 0, 11),
+            ["DS4Windows/DS4Control/Services/AppSettingsService.cs"] = (0, 0, 8),
             ["DS4Windows/DS4Control/Services/AppearanceSettingsService.cs"] = (0, 0, 4),
             ["DS4Windows/DS4Control/Services/AutoProfileService.cs"] = (0, 0, 1),
             ["DS4Windows/DS4Control/Services/DefaultElevatedProcessLauncher.cs"] = (0, 0, 1),

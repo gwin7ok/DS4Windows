@@ -51,6 +51,8 @@ namespace DS4WindowsTests
             "ApplyProfile", "ApplyProfileToSlot", "CompleteProfileApplication", "LoadProfile", "LoadTempProfile",
             "ProfilePath", "OlderProfilePath", "SelectedProfile", "SelectedProfileChanged", "RaiseSelectedProfileChanged",
             "getProfileActions", "GetProfileAction",
+            // Step3c W5: AppSettingsService が BackingStore を直接使う
+            "ProfileChangedNotification",
         };
 
         private readonly ITestOutputHelper _output;

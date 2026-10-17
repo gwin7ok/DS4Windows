@@ -1203,12 +1203,6 @@ namespace DS4Windows
             get { return m_Config.notifications; }
         }
 
-        public static bool ProfileChangedNotification
-        {
-            get => ProfileSettingsServiceInstance.ProfileChangedNotification;
-            set => ProfileSettingsServiceInstance.ProfileChangedNotification = value;
-        }
-
         public static bool UseMoonlight
         {
             get => m_Config.useMoonlight;
