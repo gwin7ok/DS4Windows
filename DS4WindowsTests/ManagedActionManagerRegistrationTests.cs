@@ -87,6 +87,9 @@ namespace DS4WindowsTests
                 services.AddSingleton<Func<IMapping>>(_ => () => mapper);
                 services.AddSingleton<IManagedActionManager, DefaultActionManager>();
                 services.AddSingleton<IControllerRegistry, DefaultControllerRegistry>();
+                // Phase7-Step8 W2: KeyAction は ActionManager 経由で IKeyButtonControllerRegistry を解決する
+                services.AddSingleton<IKeyButtonActionControllerFactory, DefaultKeyButtonActionControllerFactory>();
+                services.AddSingleton<IKeyButtonControllerRegistry, DS4Windows.Services.KeyButtonControllerRegistry>();
                 ServiceProviderHolder.SetProvider(services.BuildServiceProvider());
 
                 mapper.ClearSyntheticActionCache();

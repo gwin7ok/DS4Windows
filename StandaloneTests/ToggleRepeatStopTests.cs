@@ -12,11 +12,15 @@ namespace StandaloneTests
     {
         private class TestServiceProvider : IServiceProvider
         {
-            private readonly object svc;
-            public TestServiceProvider(object svc) { this.svc = svc; }
+            private readonly object[] svcs;
+            // Phase7-Step8 W2: KeyAction は ActionManager（静的ファサード）経由で IKeyButtonControllerRegistry を解決するため、複数のサービスを返せるようにした
+            public TestServiceProvider(params object[] svcs) { this.svcs = svcs; }
             public object GetService(Type serviceType)
             {
-                if (svc != null && serviceType.IsInstanceOfType(svc)) return svc;
+                foreach (var svc in svcs)
+                {
+                    if (svc != null && serviceType.IsInstanceOfType(svc)) return svc;
+                }
                 return null;
             }
         }
@@ -66,7 +70,9 @@ namespace StandaloneTests
         {
             var dam = new DS4Windows.Actions.DefaultActionManager(DS4WinWPF.AppHost.GetService<DS4Windows.Actions.IActionFactory>(),
                 () => DS4WinWPF.AppHost.GetService<DS4Windows.DI.IMapping>());
-            var srv = new TestServiceProvider(dam);
+            var registry = new DS4Windows.Services.KeyButtonControllerRegistry(
+                new DS4Windows.Actions.DefaultKeyButtonActionControllerFactory(), new DS4Windows.Actions.DefaultControllerRegistry());
+            var srv = new TestServiceProvider(dam, registry);
             DS4Windows.DI.ServiceProviderHolder.SetProvider(srv);
 
             try

@@ -14,7 +14,9 @@ namespace DS4Windows.Actions.Tests
         public void Toggle_OnTrigger_Toggles_IsToggledOn_State()
         {
             var dam = new DS4Windows.Actions.DefaultActionManager(DS4WinWPF.AppHost.GetService<DS4Windows.Actions.IActionFactory>(), DS4WindowsTests.TestRepositoryFactory.MappingProvider);
-            var srv = new TestServiceProvider(dam);
+            var registry = new DS4Windows.Services.KeyButtonControllerRegistry(
+                new DS4Windows.Actions.DefaultKeyButtonActionControllerFactory(), new DS4Windows.Actions.DefaultControllerRegistry());
+            var srv = new TestServiceProvider(dam, registry);
             DS4Windows.DI.ServiceProviderHolder.SetProvider(srv);
 
             try
@@ -36,9 +38,9 @@ namespace DS4Windows.Actions.Tests
                 Assert.True(stateAfter.IsToggledOn);
 
                 // Simulate explicit Toggle-OFF by invoking controller's OnSATriggerToggleOff
-                var mappingType = typeof(DS4Windows.Mapping);
-                var dictField = mappingType.GetField("keyButtonControllers", System.Reflection.BindingFlags.Static | System.Reflection.BindingFlags.NonPublic);
-                var dict = dictField.GetValue(null) as System.Collections.IDictionary;
+                // Phase7-Step8 W2: 登録簿は Mapping から KeyButtonControllerRegistry へ移った
+                var dictField = typeof(DS4Windows.Services.KeyButtonControllerRegistry).GetField("_controllers", System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.NonPublic);
+                var dict = dictField.GetValue(registry) as System.Collections.IDictionary;
                 // Find controller instance matching action name (sa.name) and invoke ToggleOff
                 if (dict != null)
                 {
@@ -132,7 +134,9 @@ namespace DS4Windows.Actions.Tests
         public void DeterministicRepeater_TriggerViaFake()
         {
             var dam = new DS4Windows.Actions.DefaultActionManager(DS4WinWPF.AppHost.GetService<DS4Windows.Actions.IActionFactory>(), DS4WindowsTests.TestRepositoryFactory.MappingProvider);
-            var srv = new TestServiceProvider(dam);
+            var registry = new DS4Windows.Services.KeyButtonControllerRegistry(
+                new DS4Windows.Actions.DefaultKeyButtonActionControllerFactory(), new DS4Windows.Actions.DefaultControllerRegistry());
+            var srv = new TestServiceProvider(dam, registry);
             DS4Windows.DI.ServiceProviderHolder.SetProvider(srv);
 
             // Install override to create FakeDeterministicRepeater for any adapter constructions
@@ -153,9 +157,9 @@ namespace DS4Windows.Actions.Tests
                 ka.OnTrigger(0, 0, 0, false, handler);
 
                 // Inspect mapping controllers and invoke TriggerOnce on any fake repeater found
-                var mappingType = typeof(DS4Windows.Mapping);
-                var dictField = mappingType.GetField("keyButtonControllers", System.Reflection.BindingFlags.Static | System.Reflection.BindingFlags.NonPublic);
-                var dict = dictField.GetValue(null) as System.Collections.IDictionary;
+                // Phase7-Step8 W2: 登録簿は Mapping から KeyButtonControllerRegistry へ移った
+                var dictField = typeof(DS4Windows.Services.KeyButtonControllerRegistry).GetField("_controllers", System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.NonPublic);
+                var dict = dictField.GetValue(registry) as System.Collections.IDictionary;
                 if (dict != null)
                 {
                     foreach (System.Collections.DictionaryEntry de in dict)
