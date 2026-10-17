@@ -50,7 +50,8 @@ namespace DS4WindowsTests
             ["DS4Windows/DS4Control/Mapping.cs"] = (1, 6, 52),
             ["DS4Windows/DS4Control/Mouse.cs"] = (0, 0, 2),
             ["DS4Windows/DS4Control/MouseCursor.cs"] = (0, 0, 2),
-            ["DS4Windows/DS4Control/OutputKBM/VirtualKBMFactory.cs"] = (0, 0, 1),
+            // Phase7-Step4 W1: fakerInputInstalled を EnvironmentService の状態に切り替え（1 → 0）
+            ["DS4Windows/DS4Control/OutputKBM/VirtualKBMFactory.cs"] = (0, 0, 0),
             ["DS4Windows/DS4Control/OutputSlotPersist.cs"] = (0, 0, 1),
             ["DS4Windows/DS4Control/ProfileMigration.cs"] = (0, 0, 4),
             // Phase6-Step10b W5: ScpUtil.cs（29 型）を型ごとに分割。件数を引き継いだ（Global 233＝Global 47＋BackingStore 182＋Changelog 4、AppHost 12＝11＋1。rootHub 9 は Global。合計は不変）
@@ -58,7 +59,8 @@ namespace DS4WindowsTests
             ["DS4Windows/DS4Control/BackingStore.cs"] = (0, 1, 166),
             ["DS4Windows/DS4Control/Changelog.cs"] = (0, 0, 4),
             // Phase6-Step12 Wave 1: 孤立コード 24 件を削除（Global 47 → 45）。Wave 2: 互換アクセサ 152 件を削除（Global 45 → 38）。Wave 3: *Instance のフォールバック群 19 件を削除（Global 38 → 26、AppHost 11 → 5、rootHub 9 → 6）。Wave 4: BackingStore 直転送ラッパー 58 件を削除（AppHost 5 → 4。(6, 4, 26)）
-            ["DS4Windows/DS4Control/Global.cs"] = (6, 4, 24),
+            // Phase7-Step4 W1: IsUsingMinViGEm117333 の移管で Global.* 2 件を削除（24 → 22）
+            ["DS4Windows/DS4Control/Global.cs"] = (6, 4, 22),
             // Phase7-Step2 W4: INotificationService.NotificationsEnabled／FlashTaskbar の削除で Global.* 5 件を削除（6 → 1）
             ["DS4Windows/DS4Control/Services/AppNotificationService.cs"] = (0, 0, 0),
             ["DS4Windows/DS4Control/Services/AppSettingsService.cs"] = (0, 0, 8),
@@ -68,7 +70,8 @@ namespace DS4WindowsTests
             ["DS4Windows/DS4Control/Services/DeviceStateService.cs"] = (0, 0, 2),
             // Phase7-Step2 W7: IDs4DeviceRegistry.IsHidHideInstalled の削除で Global.IsHidHideInstalled の参照 1 件を削除（1 → 0）
             ["DS4Windows/DS4Control/Services/Ds4DeviceRegistryAdapter.cs"] = (0, 0, 0),
-            ["DS4Windows/DS4Control/Services/EnvironmentService.cs"] = (0, 0, 21),
+            // Phase7-Step4 W1: 調べ物と状態を EnvironmentService が持つ形に移管（21 → 7: IsAdministrator／exeversion／GetInstanceIdFromDevicePath／AdminNeeded と、スロット上限の定数 3）
+            ["DS4Windows/DS4Control/Services/EnvironmentService.cs"] = (0, 0, 7),
             // Phase7-Step2 W4: IVirtualKBM.ErrorMessage の削除で Global.outputKBMHandler の参照 1 件を削除（21 → 20）。W7: Version の削除でさらに 1 件削除（20 → 19）
             ["DS4Windows/DS4Control/Services/OutputKBMHandlerAdapter.cs"] = (0, 0, 19),
             ["DS4Windows/DS4Control/Services/OutputKBMHandlerLifecycle.cs"] = (0, 0, 8),

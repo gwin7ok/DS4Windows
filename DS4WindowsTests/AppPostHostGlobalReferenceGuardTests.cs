@@ -38,13 +38,12 @@ namespace DS4WindowsTests
             ["appdatapath"] = 1,
             ["LogMaxArchiveFiles"] = 1,
             ["LogMinLevel"] = 1,
-            ["RefreshViGEmBusInfo"] = 1,
+            // Phase7-Step4 W1: RefreshViGEmBusInfo は EnvironmentService へ移した（Global 参照 1 → 0）
         };
 
         private static readonly Dictionary<string, int> ExpectedCheckOptions = new Dictionary<string, int>
         {
-            // E7-06〜E7-12（-driverinstall 分岐。温存）
-            ["RefreshViGEmBusInfo"] = 1,
+            // E7-06〜E7-12（-driverinstall 分岐。温存）。Phase7-Step4 W1: RefreshViGEmBusInfo は EnvironmentService へ移した（1 → 0）
             ["FindConfigLocation"] = 1,
             ["Load"] = 1,
             ["UseLang"] = 2,

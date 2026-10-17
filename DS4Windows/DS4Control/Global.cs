@@ -97,33 +97,6 @@ namespace DS4Windows
         public static string exedirpath = Directory.GetParent(exelocation).FullName;
         public static FileVersionInfo fileVersion = FileVersionInfo.GetVersionInfo(exelocation);
         public static string exeversion = fileVersion.FileVersion;
-        public static bool IsWin8OrGreater()
-        {
-            bool result = false;
-            if (Environment.OSVersion.Version.Major > 6)
-            {
-                result = true;
-            }
-            else if (Environment.OSVersion.Version.Major == 6 &&
-                Environment.OSVersion.Version.Minor >= 2)
-            {
-                result = true;
-            }
-
-            return result;
-        }
-
-        public static bool IsWin10OrGreater()
-        {
-            bool result = false;
-            if (Environment.OSVersion.Version.Major >= 10)
-            {
-                result = true;
-            }
-
-            return result;
-        }
-
         public static string appdatapath;
         public static bool firstRun = false;
         public static bool multisavespots = false;
@@ -277,22 +250,8 @@ namespace DS4Windows
             DS4Windows.OutContType.None, DS4Windows.OutContType.None,
             DS4Windows.OutContType.None};
 
-        public const string BLANK_VIGEMBUS_VERSION = "0.0.0.0";
-        public const string MIN_SUPPORTED_VIGEMBUS_VERSION = "1.16.112.0";
-        public const string MIN_TOUCHPAD_PASSTHRU_VIGEMBUS_VERSION = "1.17.333.0";
-
-        //public static bool vigemInstalled = IsViGEmBusInstalled();
-        public static bool vigemInstalled = false;
-        //public static string vigembusVersion = ViGEmBusVersion();
-        public static string vigembusVersion = BLANK_VIGEMBUS_VERSION;
-        public static Version vigemBusVersionInfo =
-            new Version(!string.IsNullOrEmpty(vigembusVersion) ? vigembusVersion :
-                BLANK_VIGEMBUS_VERSION);
-        public static Version minSupportedViGEmBusVersionInfo = new Version(MIN_SUPPORTED_VIGEMBUS_VERSION);
-        public static bool hidHideInstalled = IsHidHideInstalled();
-        public static bool fakerInputInstalled = IsFakerInputInstalled();
-        public const string BLANK_FAKERINPUT_VERSION = "0.0.0.0";
-        public static string fakerInputVersion = FakerInputVersion();
+        // Phase7-Step4 W1: ViGEmBus／HidHide／FakerInput の導入状態（vigemInstalled／vigemBusVersionInfo／hidHideInstalled／
+        // fakerInputInstalled／fakerInputVersion と関連する定数）と、その調べ物は EnvironmentService へ移した。
 
         public static VirtualKBMBase outputKBMHandler = null;
         public static VirtualKBMMapping outputKBMMapping
@@ -656,159 +615,6 @@ namespace DS4Windows
             return principal.IsInRole(WindowsBuiltInRole.Administrator);
         }
 
-        private class ViGEmBusInfo
-        {
-            //public string path;
-            public string instanceId;
-            public string deviceName;
-            public string deviceVersionStr;
-            public Version deviceVersion;
-            public string manufacturer;
-            public string driverProviderName;
-        }
-
-        private static void FindViGEmDeviceInfo()
-        {
-            bool result = false;
-            Guid deviceGuid = Guid.Parse(VIGEMBUS_GUID);
-            NativeMethods.SP_DEVINFO_DATA deviceInfoData =
-                new NativeMethods.SP_DEVINFO_DATA();
-            deviceInfoData.cbSize =
-                System.Runtime.InteropServices.Marshal.SizeOf(deviceInfoData);
-
-            var dataBuffer = new byte[4096];
-            ulong propertyType = 0;
-            var requiredSize = 0;
-
-            // Properties to retrieve
-            NativeMethods.DEVPROPKEY[] lookupProperties = new NativeMethods.DEVPROPKEY[]
-            {
-                NativeMethods.DEVPKEY_Device_DriverVersion, NativeMethods.DEVPKEY_Device_InstanceId,
-                NativeMethods.DEVPKEY_Device_Manufacturer, NativeMethods.DEVPKEY_Device_Provider,
-                NativeMethods.DEVPKEY_Device_DeviceDesc,
-            };
-
-            List<ViGEmBusInfo> tempViGEmBusInfoList = new List<ViGEmBusInfo>();
-
-            IntPtr deviceInfoSet = NativeMethods.SetupDiGetClassDevs(ref deviceGuid, null, 0,
-                NativeMethods.DIGCF_DEVICEINTERFACE);
-            for (int i = 0; !result && NativeMethods.SetupDiEnumDeviceInfo(deviceInfoSet, i, ref deviceInfoData); i++)
-            {
-                ViGEmBusInfo tempBusInfo = new ViGEmBusInfo();
-
-                foreach (NativeMethods.DEVPROPKEY currentDevKey in lookupProperties)
-                {
-                    NativeMethods.DEVPROPKEY tempKey = currentDevKey;
-                    if (NativeMethods.SetupDiGetDeviceProperty(deviceInfoSet, ref deviceInfoData,
-                        ref tempKey, ref propertyType,
-                        dataBuffer, dataBuffer.Length, ref requiredSize, 0))
-                    {
-                        string temp = dataBuffer.ToUTF16String();
-                        if (currentDevKey.fmtid == NativeMethods.DEVPKEY_Device_DriverVersion.fmtid &&
-                            currentDevKey.pid == NativeMethods.DEVPKEY_Device_DriverVersion.pid)
-                        {
-                            try
-                            {
-                                tempBusInfo.deviceVersion = new Version(temp);
-                                tempBusInfo.deviceVersionStr = temp;
-                            }
-                            catch (ArgumentException)
-                            {
-                                // Default to unknown version
-                                tempBusInfo.deviceVersionStr = BLANK_VIGEMBUS_VERSION;
-                                tempBusInfo.deviceVersion = new Version(tempBusInfo.deviceVersionStr);
-                            }
-                        }
-                        else if (currentDevKey.fmtid == NativeMethods.DEVPKEY_Device_InstanceId.fmtid &&
-                            currentDevKey.pid == NativeMethods.DEVPKEY_Device_InstanceId.pid)
-                        {
-                            tempBusInfo.instanceId = temp;
-                        }
-                        else if (currentDevKey.fmtid == NativeMethods.DEVPKEY_Device_Manufacturer.fmtid &&
-                            currentDevKey.pid == NativeMethods.DEVPKEY_Device_Manufacturer.pid)
-                        {
-                            tempBusInfo.manufacturer = temp;
-                        }
-                        else if (currentDevKey.fmtid == NativeMethods.DEVPKEY_Device_Provider.fmtid &&
-                            currentDevKey.pid == NativeMethods.DEVPKEY_Device_Provider.pid)
-                        {
-                            tempBusInfo.driverProviderName = temp;
-                        }
-                        else if (currentDevKey.fmtid == NativeMethods.DEVPKEY_Device_DeviceDesc.fmtid &&
-                            currentDevKey.pid == NativeMethods.DEVPKEY_Device_DeviceDesc.pid)
-                        {
-                            tempBusInfo.deviceName = temp;
-                        }
-                    }
-                }
-
-                tempViGEmBusInfoList.Add(tempBusInfo);
-            }
-
-            if (deviceInfoSet.ToInt64() != NativeMethods.INVALID_HANDLE_VALUE)
-            {
-                NativeMethods.SetupDiDestroyDeviceInfoList(deviceInfoSet);
-            }
-
-            // Iterate over list and find most recent version number
-            //IEnumerable<ViGEmBusInfo> tempResults = tempViGEmBusInfoList.Where(item => minSupportedViGEmBusVersionInfo.CompareTo(item.deviceVersion) <= 0);
-            Version latestKnown = new Version(BLANK_VIGEMBUS_VERSION);
-            string deviceInstanceId = string.Empty;
-            foreach (ViGEmBusInfo item in tempViGEmBusInfoList)
-            {
-                if (latestKnown.CompareTo(item.deviceVersion) <= 0)
-                {
-                    latestKnown = item.deviceVersion;
-                    deviceInstanceId = item.instanceId;
-                }
-            }
-
-            // Get bus info for most recent version found and save info
-            ViGEmBusInfo latestBusInfo =
-                tempViGEmBusInfoList.SingleOrDefault(item => item.instanceId == deviceInstanceId);
-            PopulateFromViGEmBusInfo(latestBusInfo);
-        }
-
-        private static bool CheckForSysDevice(string searchHardwareId)
-        {
-            bool result = false;
-            Guid sysGuid = Guid.Parse("{4d36e97d-e325-11ce-bfc1-08002be10318}");
-            NativeMethods.SP_DEVINFO_DATA deviceInfoData =
-                new NativeMethods.SP_DEVINFO_DATA();
-            deviceInfoData.cbSize =
-                System.Runtime.InteropServices.Marshal.SizeOf(deviceInfoData);
-            var dataBuffer = new byte[4096];
-            ulong propertyType = 0;
-            var requiredSize = 0;
-            IntPtr deviceInfoSet = NativeMethods.SetupDiGetClassDevs(ref sysGuid, null, 0, 0);
-            for (int i = 0; !result && NativeMethods.SetupDiEnumDeviceInfo(deviceInfoSet, i, ref deviceInfoData); i++)
-            {
-                NativeMethods.SetupDiGetDeviceProperty(deviceInfoSet, ref deviceInfoData,
-                    ref NativeMethods.DEVPKEY_Device_HardwareIds, ref propertyType,
-                    null, 0, ref requiredSize, 0);
-
-                if (requiredSize > 0)
-                {
-                    NativeMethods.SetupDiGetDeviceProperty(deviceInfoSet, ref deviceInfoData,
-                        ref NativeMethods.DEVPKEY_Device_HardwareIds, ref propertyType,
-                        dataBuffer, dataBuffer.Length, ref requiredSize, 0);
-
-                    string hardwareId = dataBuffer.ToUTF16String();
-                    //if (hardwareIds.Contains("Virtual Gamepad Emulation Bus"))
-                    //    result = true;
-                    if (hardwareId.Equals(searchHardwareId))
-                        result = true;
-                }
-            }
-
-            if (deviceInfoSet.ToInt64() != NativeMethods.INVALID_HANDLE_VALUE)
-            {
-                NativeMethods.SetupDiDestroyDeviceInfoList(deviceInfoSet);
-            }
-
-            return result;
-        }
-
         internal static string GetStringDeviceProperty(string deviceInstanceId,
             NativeMethods.DEVPROPKEY prop)
         {
@@ -834,108 +640,6 @@ namespace DS4Windows
                     dataBuffer, dataBuffer.Length, ref requiredSize, 0);
 
                 result = dataBuffer.ToUTF16String();
-            }
-
-            if (deviceInfoSet.ToInt64() != NativeMethods.INVALID_HANDLE_VALUE)
-            {
-                NativeMethods.SetupDiDestroyDeviceInfoList(deviceInfoSet);
-            }
-
-            return result;
-        }
-
-        public static bool CheckHidHideAffectedStatus(string deviceInstanceId,
-            HashSet<string> affectedDevs, HashSet<string> exemptedDevices, bool force = false)
-        {
-            bool result = false;
-            string tempDeviceInstanceId = deviceInstanceId.ToUpper();
-            result = affectedDevs.Contains(tempDeviceInstanceId);
-            return result;
-        }
-
-        public static bool IsHidHideInstalled()
-        {
-            return CheckForSysDevice(@"root\HidHide");
-        }
-
-        public static bool IsFakerInputInstalled()
-        {
-            return CheckForSysDevice(@"root\FakerInput");
-        }
-
-        const string VIGEMBUS_GUID = "{96E42B22-F5E9-42F8-B043-ED0F932F014F}";
-        public static bool IsViGEmBusInstalled()
-        {
-            return vigemInstalled;
-        }
-
-        public static bool IsRunningSupportedViGEmBus()
-        {
-            //return vigemInstalled;
-            return vigemInstalled &&
-                minSupportedViGEmBusVersionInfo.CompareTo(vigemBusVersionInfo) <= 0;
-        }
-
-        public static bool IsUsingMinViGEm117333()
-        {
-            bool result = Global.vigemBusVersionInfo.CompareTo(
-                new Version(Global.MIN_TOUCHPAD_PASSTHRU_VIGEMBUS_VERSION)) >= 0;
-            return result;
-        }
-
-        public static void RefreshViGEmBusInfo()
-        {
-            FindViGEmDeviceInfo();
-        }
-
-        public static void RefreshHidHideInfo()
-        {
-            hidHideInstalled = IsHidHideInstalled();
-        }
-
-        private static void PopulateFromViGEmBusInfo(ViGEmBusInfo busInfo)
-        {
-            if (busInfo != null)
-            {
-                vigemInstalled = true;
-                vigembusVersion = busInfo.deviceVersionStr;
-                vigemBusVersionInfo = busInfo.deviceVersion;
-            }
-            else
-            {
-                vigemInstalled = false;
-                vigembusVersion = BLANK_VIGEMBUS_VERSION;
-                vigemBusVersionInfo = new Version(BLANK_VIGEMBUS_VERSION);
-            }
-        }
-
-        private static string FakerInputVersion()
-        {
-            // Start with BLANK_FAKERINPUT_VERSION for result
-            string result = BLANK_FAKERINPUT_VERSION;
-            IntPtr deviceInfoSet = NativeMethods.SetupDiGetClassDevs(ref Util.fakerInputGuid, null, 0, NativeMethods.DIGCF_DEVICEINTERFACE);
-            NativeMethods.SP_DEVINFO_DATA deviceInfoData = new NativeMethods.SP_DEVINFO_DATA();
-            deviceInfoData.cbSize = System.Runtime.InteropServices.Marshal.SizeOf(deviceInfoData);
-            bool foundDev = false;
-            //bool success = NativeMethods.SetupDiEnumDeviceInfo(deviceInfoSet, 0, ref deviceInfoData);
-            for (int i = 0; !foundDev && NativeMethods.SetupDiEnumDeviceInfo(deviceInfoSet, i, ref deviceInfoData); i++)
-            {
-                ulong devPropertyType = 0;
-                int requiredSizeProp = 0;
-                NativeMethods.SetupDiGetDeviceProperty(deviceInfoSet, ref deviceInfoData,
-                    ref NativeMethods.DEVPKEY_Device_DriverVersion, ref devPropertyType, null, 0, ref requiredSizeProp, 0);
-
-                if (requiredSizeProp > 0)
-                {
-                    var versionTextBuffer = new byte[requiredSizeProp];
-                    NativeMethods.SetupDiGetDeviceProperty(deviceInfoSet, ref deviceInfoData,
-                        ref NativeMethods.DEVPKEY_Device_DriverVersion, ref devPropertyType, versionTextBuffer, requiredSizeProp, ref requiredSizeProp, 0);
-
-                    string tmpitnow = System.Text.Encoding.Unicode.GetString(versionTextBuffer);
-                    string tempStrip = tmpitnow.TrimEnd('\0');
-                    foundDev = true;
-                    result = tempStrip;
-                }
             }
 
             if (deviceInfoSet.ToInt64() != NativeMethods.INVALID_HANDLE_VALUE)
@@ -1549,12 +1253,6 @@ namespace DS4Windows
         public static void InitOutputKBMMapping(string identifier)
         {
             outputKBMMapping = VirtualKBMFactory.GetMappingInstance(identifier);
-        }
-
-        public static void RefreshFakerInputInfo()
-        {
-            fakerInputInstalled = IsFakerInputInstalled();
-            fakerInputVersion = FakerInputVersion();
         }
 
         /// <summary>

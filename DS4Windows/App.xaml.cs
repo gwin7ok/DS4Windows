@@ -312,7 +312,9 @@ namespace DS4WinWPF
             catch { }
 
             // Retrieve info about installed ViGEmBus device if found
-            DS4Windows.Global.RefreshViGEmBusInfo();
+            // Phase7-Step4 W1: 調べ物と状態は EnvironmentService（状態は static）が持つ。
+            // TODO(Phase7-Step4 W4): ブートストラップで作る EnvironmentService を使い、ここでの new をやめる。
+            new DS4Windows.EnvironmentService().RefreshViGEmBusInfo();
 
             // Create the Event handle
             threadComEvent = new EventWaitHandle(false, EventResetMode.ManualReset, SingleAppComEventName);
@@ -685,7 +687,7 @@ namespace DS4WinWPF
             {
                 // Retrieve info about installed ViGEmBus device if found.
                 // Might not be needed here
-                DS4Windows.Global.RefreshViGEmBusInfo();
+                new DS4Windows.EnvironmentService().RefreshViGEmBusInfo();
 
                 // Load DS4Windows config if it exists
                 DS4Windows.Global.FindConfigLocation();

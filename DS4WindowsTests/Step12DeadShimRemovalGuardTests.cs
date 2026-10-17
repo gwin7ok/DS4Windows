@@ -106,7 +106,8 @@ namespace DS4WindowsTests
             "MAX_DS4_CONTROLLER_COUNT", "TEST_PROFILE_ITEM_COUNT", "TEST_PROFILE_INDEX", "ASSEMBLY_RESOURCE_PREFIX",
             "RESOURCES_PREFIX", "DS4_STICK_AXIS_MIDPOINT", "Clamp", "getTransitionedColor",
             "appdatapath", "multisavespots", "LogMaxArchiveFiles", "LogMinLevel", "FindConfigLocation", "SetCulture",
-            "RefreshViGEmBusInfo", "IsRunningSupportedViGEmBus", "vigembusVersion", "vigemInstalled",
+            // Phase7-Step4 W1: ViGEmBus の調べ物（RefreshViGEmBusInfo／IsRunningSupportedViGEmBus／vigembusVersion／vigemInstalled）は
+            // EnvironmentService へ移した。防壁 5 の維持は EnvironmentService 側で確認する（Phase7Step4EnvironmentProbesGuardTests）
         };
 
         private readonly ITestOutputHelper _output;

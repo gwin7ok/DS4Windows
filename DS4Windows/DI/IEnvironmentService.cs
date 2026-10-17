@@ -50,30 +50,30 @@
         string FakerInputVersion { get; }
 
         // ---- Phase6-Step9-1: MainWindowsViewModel／ProfileSettingsViewModel の Global 直接参照解消（Global への薄い委譲）----
-        /// <summary>ViGEmBus が導入済みか（<c>Global.IsViGEmBusInstalled</c>）。</summary>
+        /// <summary>ViGEmBus が導入済みか（<c>EnvironmentService.IsViGEmBusInstalled</c>）。</summary>
         bool IsViGEmBusInstalled();
-        /// <summary>導入済みの ViGEmBus が、サポートする最小バージョン以上か（<c>Global.IsRunningSupportedViGEmBus</c>）。</summary>
+        /// <summary>導入済みの ViGEmBus が、サポートする最小バージョン以上か（<c>EnvironmentService.IsRunningSupportedViGEmBus</c>）。</summary>
         bool IsRunningSupportedViGEmBus();
-        /// <summary>ViGEmBus がタッチパッド Passthru に必要な最小バージョン以上か（<c>Global.IsUsingMinViGEm117333</c>）。</summary>
+        /// <summary>ViGEmBus がタッチパッド Passthru に必要な最小バージョン以上か（<c>EnvironmentService.IsUsingMinViGEm117333</c>）。</summary>
         bool IsUsingMinViGEm117333();
         /// <summary>プログラムフォルダへの書き込みに管理者権限が要るか（<c>Global.AdminNeeded</c>。テストファイルの作成・削除を試す）。</summary>
         bool AdminNeeded();
 
         // ---- Phase6-Step10-1-1: WelcomeDialog の Global 直接参照解消（Global への薄い委譲）----
-        /// <summary>Windows 10 以降か（<c>Global.IsWin10OrGreater</c>）。</summary>
+        /// <summary>Windows 10 以降か（<c>EnvironmentService.IsWin10OrGreater</c>）。</summary>
         bool IsWin10OrGreater();
-        /// <summary>Windows 8 以降か（<c>Global.IsWin8OrGreater</c>）。</summary>
+        /// <summary>Windows 8 以降か（<c>EnvironmentService.IsWin8OrGreater</c>）。</summary>
         bool IsWin8OrGreater();
-        /// <summary>FakerInput ドライバが導入済みか（<c>Global.IsFakerInputInstalled</c>。導入状態の再確認を行う）。</summary>
+        /// <summary>FakerInput ドライバが導入済みか（<c>EnvironmentService.IsFakerInputInstalled</c>。導入状態の再確認を行う）。</summary>
         bool IsFakerInputInstalled();
         /// <summary>
-        /// HidHide ドライバが導入済みかを、その場で確認する（<c>Global.IsHidHideInstalled</c>）。
+        /// HidHide ドライバが導入済みかを、その場で確認する（<c>EnvironmentService.IsHidHideInstalled</c>）。
         /// キャッシュ値の <see cref="HidHideInstalled"/>（<see cref="RefreshHidHideInfo"/> で更新）とは別物で、状態を更新しない。
         /// </summary>
         bool IsHidHideInstalled();
-        /// <summary>導入済みの ViGEmBus の情報を取得し直す（<c>Global.RefreshViGEmBusInfo</c>）。</summary>
+        /// <summary>導入済みの ViGEmBus の情報を取得し直す（<c>EnvironmentService.RefreshViGEmBusInfo</c>）。</summary>
         void RefreshViGEmBusInfo();
-        /// <summary>導入済みの ViGEmBus のバージョン（<c>Global.vigemBusVersionInfo</c> への薄い委譲。<see cref="RefreshViGEmBusInfo"/> で更新される）。</summary>
+        /// <summary>導入済みの ViGEmBus のバージョン（<c>EnvironmentService</c> の static 状態。<see cref="RefreshViGEmBusInfo"/> で更新される）。</summary>
         System.Version ViGEmBusVersion { get; }
     }
 }

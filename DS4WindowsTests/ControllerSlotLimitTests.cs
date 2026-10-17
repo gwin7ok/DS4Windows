@@ -18,7 +18,10 @@ namespace DS4WindowsTests
         [Fact]
         public void ControllerSlotLimit_MatchesLegacyCalculation()
         {
-            int expected = Global.IsWin8OrGreater()
+            // Phase7-Step4 W1: 旧 Global.IsWin8OrGreater は EnvironmentService へ移した。ここでは旧実装と同じ式を直接書いて照合する
+            var os = System.Environment.OSVersion.Version;
+            bool win8OrGreater = os.Major > 6 || (os.Major == 6 && os.Minor >= 2);
+            int expected = win8OrGreater
                 ? Global.MAX_DS4_CONTROLLER_COUNT
                 : Global.OLD_XINPUT_CONTROLLER_COUNT;
 

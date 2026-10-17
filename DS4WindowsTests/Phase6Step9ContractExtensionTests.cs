@@ -127,13 +127,16 @@ namespace DS4WindowsTests
         // ---- IEnvironmentService ----
 
         [Fact]
-        public void ViGEmProbes_MatchGlobal()
+        public void ViGEmProbes_AreConsistentWithTheCachedVersion()
         {
+            // Phase7-Step4 W1: 旧 Global.IsViGEmBusInstalled／IsRunningSupportedViGEmBus／IsUsingMinViGEm117333 は EnvironmentService へ移した。
+            // 旧実装と同じ式（最小バージョンとの比較）で照合する
             var service = new EnvironmentService();
+            var version = EnvironmentService.ViGEmBusVersionState;
 
-            Assert.Equal(Global.IsViGEmBusInstalled(), service.IsViGEmBusInstalled());
-            Assert.Equal(Global.IsRunningSupportedViGEmBus(), service.IsRunningSupportedViGEmBus());
-            Assert.Equal(Global.IsUsingMinViGEm117333(), service.IsUsingMinViGEm117333());
+            Assert.Equal(service.IsViGEmBusInstalled() && new Version("1.16.112.0").CompareTo(version) <= 0,
+                service.IsRunningSupportedViGEmBus());
+            Assert.Equal(version.CompareTo(new Version("1.17.333.0")) >= 0, service.IsUsingMinViGEm117333());
         }
 
         [Fact]

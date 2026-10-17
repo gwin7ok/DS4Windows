@@ -46,7 +46,7 @@ namespace DS4WindowsTests
 
         public static OutputSlotManager CreateOutputSlotManager()
         {
-            return new OutputSlotManager(() => Global.vigemBusVersionInfo);
+            return new OutputSlotManager(() => EnvironmentService.ViGEmBusVersionState);
         }
 
         public static OutputSlotService CreateOutputSlotService(OutputSlotManager manager = null,

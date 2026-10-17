@@ -208,9 +208,9 @@ namespace DS4WindowsTests
         }
 
         [Fact]
-        public void HidHideInstalled_ReflectsGlobalValue()
+        public void HidHideInstalled_ReflectsEnvironmentServiceState()
         {
-            Assert.Equal(Global.hidHideInstalled, _environment.HidHideInstalled);
+            Assert.Equal(EnvironmentService.HidHideInstalledState, _environment.HidHideInstalled);
         }
     }
 }

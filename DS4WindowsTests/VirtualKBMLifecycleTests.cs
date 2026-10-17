@@ -102,10 +102,10 @@ namespace DS4WindowsTests
         public void ApplyFakerInputVersion_SetsHandlerVersionFromEnvironmentService()
         {
             var originalHandler = Global.outputKBMHandler;
-            string originalVersion = Global.fakerInputVersion;
+            string originalVersion = EnvironmentService.FakerInputVersionState;
             try
             {
-                Global.fakerInputVersion = "1.2.3.4";
+                EnvironmentService.FakerInputVersionState = "1.2.3.4";
                 Global.outputKBMHandler = VirtualKBMFactory.GetFallbackHandler();
 
                 _lifecycle.ApplyFakerInputVersion();
@@ -114,7 +114,7 @@ namespace DS4WindowsTests
             }
             finally
             {
-                Global.fakerInputVersion = originalVersion;
+                EnvironmentService.FakerInputVersionState = originalVersion;
                 Global.outputKBMHandler = originalHandler;
             }
         }
@@ -156,18 +156,18 @@ namespace DS4WindowsTests
         }
 
         [Fact]
-        public void EnvironmentService_FakerInputVersion_ReflectsGlobalValue()
+        public void EnvironmentService_FakerInputVersion_ReflectsStaticState()
         {
-            string original = Global.fakerInputVersion;
+            string original = EnvironmentService.FakerInputVersionState;
             try
             {
-                Global.fakerInputVersion = "9.8.7.6";
+                EnvironmentService.FakerInputVersionState = "9.8.7.6";
 
                 Assert.Equal("9.8.7.6", new EnvironmentService().FakerInputVersion);
             }
             finally
             {
-                Global.fakerInputVersion = original;
+                EnvironmentService.FakerInputVersionState = original;
             }
         }
     }

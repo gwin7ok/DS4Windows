@@ -22,35 +22,40 @@ namespace DS4WindowsTests
         // ---- IEnvironmentService ----
 
         [Fact]
-        public void EnvironmentService_WindowsVersionChecks_MatchGlobal()
+        public void EnvironmentService_WindowsVersionChecks_MatchLegacyFormula()
         {
+            // Phase7-Step4 W1: 旧 Global.IsWin10OrGreater／IsWin8OrGreater は EnvironmentService へ移した。旧実装と同じ式で照合する
             IEnvironmentService service = new EnvironmentService();
-            Assert.Equal(Global.IsWin10OrGreater(), service.IsWin10OrGreater());
-            Assert.Equal(Global.IsWin8OrGreater(), service.IsWin8OrGreater());
+            var os = Environment.OSVersion.Version;
+            Assert.Equal(os.Major >= 10, service.IsWin10OrGreater());
+            Assert.Equal(os.Major > 6 || (os.Major == 6 && os.Minor >= 2), service.IsWin8OrGreater());
         }
 
         [Fact]
-        public void EnvironmentService_IsFakerInputInstalled_MatchesGlobal()
+        public void EnvironmentService_IsFakerInputInstalled_IsStableAcrossInstances()
         {
+            // Phase7-Step4 W1: 調べ物は EnvironmentService が持つ。どのインスタンスでも同じ結果を返す
             IEnvironmentService service = new EnvironmentService();
-            Assert.Equal(Global.IsFakerInputInstalled(), service.IsFakerInputInstalled());
+            Assert.Equal(new EnvironmentService().IsFakerInputInstalled(), service.IsFakerInputInstalled());
         }
 
         [Fact]
-        public void EnvironmentService_IsHidHideInstalled_MatchesGlobalProbe_AndDoesNotChangeCachedState()
+        public void EnvironmentService_IsHidHideInstalled_DoesNotChangeCachedState()
         {
             IEnvironmentService service = new EnvironmentService();
-            bool cachedBefore = Global.hidHideInstalled;
-            Assert.Equal(Global.IsHidHideInstalled(), service.IsHidHideInstalled());
-            Assert.Equal(cachedBefore, Global.hidHideInstalled);
+            bool cachedBefore = EnvironmentService.HidHideInstalledState;
+            Assert.Equal(new EnvironmentService().IsHidHideInstalled(), service.IsHidHideInstalled());
+            Assert.Equal(cachedBefore, EnvironmentService.HidHideInstalledState);
         }
 
         [Fact]
-        public void EnvironmentService_RefreshViGEmBusInfo_KeepsInstalledStateConsistentWithGlobal()
+        public void EnvironmentService_RefreshViGEmBusInfo_SharesStateAcrossInstances()
         {
+            // Phase7-Step4 W1: 状態は static。更新はどのインスタンスからでも、ほかのインスタンスに見える
             IEnvironmentService service = new EnvironmentService();
             service.RefreshViGEmBusInfo();
-            Assert.Equal(Global.IsViGEmBusInstalled(), service.IsViGEmBusInstalled());
+            Assert.Equal(new EnvironmentService().IsViGEmBusInstalled(), service.IsViGEmBusInstalled());
+            Assert.Equal(EnvironmentService.ViGEmBusVersionState, service.ViGEmBusVersion);
         }
 
         // ---- IPathService ----
