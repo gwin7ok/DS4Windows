@@ -14,7 +14,6 @@ namespace DS4WindowsTests
         /// <summary>false にすると記録しない（割り当て0バイトの計測で、記録用リストの拡張を除外するため）。</summary>
         public bool Recording = true;
 
-        public string ErrorMessage => string.Empty;
         public string Version => "0.0.0.0";
         public bool fakeKeyRepeat { get; set; }
         public bool Connect() => true;

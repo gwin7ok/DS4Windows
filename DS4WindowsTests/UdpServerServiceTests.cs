@@ -14,7 +14,6 @@ namespace DS4WindowsTests
             var service = new UdpServerService();
             Assert.False(service.IsRunning);
             Assert.Equal(26760, service.Port);
-            Assert.Equal("127.0.0.1", service.ListenAddress);
         }
 
         [Fact]

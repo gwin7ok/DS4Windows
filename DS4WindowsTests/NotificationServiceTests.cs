@@ -8,35 +8,13 @@ namespace DS4WindowsTests
     public class NotificationServiceTests
     {
         [Fact]
-        public void Defaults_ShouldSynchronizeWithGlobal()
-        {
-            var origNotifications = Global.Notifications;
-            var origFlash = Global.FlashWhenLate;
-            try
-            {
-                Global.Notifications = 1;
-                Global.FlashWhenLate = false;
-
-                var service = new AppNotificationService();
-
-                Assert.True(service.NotificationsEnabled);
-                Assert.False(service.FlashTaskbar);
-            }
-            finally
-            {
-                Global.Notifications = origNotifications;
-                Global.FlashWhenLate = origFlash;
-            }
-        }
-
-        [Fact]
         public void SendNotification_ShouldFireNotificationTriggered_WhenEnabled()
         {
             var origNotifications = Global.Notifications;
             try
             {
                 var service = new AppNotificationService();
-                service.NotificationsEnabled = true;
+                Global.Notifications = 1;
 
                 NotificationEventArgs eventArgs = null;
                 service.NotificationTriggered += (s, e) => eventArgs = e;
@@ -63,7 +41,7 @@ namespace DS4WindowsTests
             try
             {
                 var service = new AppNotificationService();
-                service.NotificationsEnabled = true;
+                Global.Notifications = 1;
 
                 NotificationEventArgs eventArgs = null;
                 service.NotificationTriggered += (s, e) => eventArgs = e;
@@ -87,7 +65,7 @@ namespace DS4WindowsTests
             try
             {
                 var service = new AppNotificationService();
-                service.NotificationsEnabled = true;
+                Global.Notifications = 1;
 
                 NotificationEventArgs eventArgs = null;
                 service.NotificationTriggered += (s, e) => eventArgs = e;
@@ -114,7 +92,7 @@ namespace DS4WindowsTests
                 bool eventFired = false;
                 service.NotificationTriggered += (s, e) => eventFired = true;
 
-                service.NotificationsEnabled = false;
+                Global.Notifications = 0;
                 // warning/temporary はデフォルト値(false)のまま。シグネチャ拡張後も本テストの意図（無効時は発火しない）に影響しない。
                 service.SendNotification("TitleTest", "MessageTest");
 
@@ -124,54 +102,6 @@ namespace DS4WindowsTests
             finally
             {
                 Global.Notifications = origNotifications;
-            }
-        }
-
-        [Fact]
-        public void GlobalShim_ShouldSynchronizeWithService()
-        {
-            var origFlash = Global.FlashWhenLate;
-            try
-            {
-                var service = new AppNotificationService();
-                Global.NotificationServiceInstance = service;
-
-                Assert.NotNull(Global.NotificationServiceInstance);
-                Global.NotificationServiceInstance.FlashTaskbar = true;
-                Assert.True(service.FlashTaskbar);
-                Assert.True(Global.FlashWhenLate);
-            }
-            finally
-            {
-                Global.FlashWhenLate = origFlash;
-            }
-        }
-
-        [Fact]
-        public void Service_ShouldDirectlyReflectGlobalChanges()
-        {
-            var origNotifications = Global.Notifications;
-            var origFlash = Global.FlashWhenLate;
-            try
-            {
-                var service = new AppNotificationService();
-
-                Global.Notifications = 0;
-                Assert.False(service.NotificationsEnabled);
-
-                Global.Notifications = 1;
-                Assert.True(service.NotificationsEnabled);
-
-                Global.FlashWhenLate = true;
-                Assert.True(service.FlashTaskbar);
-
-                Global.FlashWhenLate = false;
-                Assert.False(service.FlashTaskbar);
-            }
-            finally
-            {
-                Global.Notifications = origNotifications;
-                Global.FlashWhenLate = origFlash;
             }
         }
     }

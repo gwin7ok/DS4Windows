@@ -29,7 +29,6 @@ namespace DS4WindowsTests
             adapter.PerformMouseWheelEvent(120, 0);
             adapter.Sync();
 
-            Assert.Equal(string.Empty, adapter.ErrorMessage);
             Assert.Equal("0.0.0.0", adapter.Version);
         }
 

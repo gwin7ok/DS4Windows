@@ -26,7 +26,6 @@ namespace DS4Windows
         // その読み書き API（GetOutputDeviceType／SetOutputDeviceType）は削除した。
         // 出力デバイス種別の三態は、永続設定＝IProfileSettingsService.OutContType、
         // 実行時接続状態＝ActiveOutDevType、UI一時状態＝OutDevTypeTemp を参照すること。
-        private readonly OutputDevice[] _outputDevices = new OutputDevice[MAX_SLOTS];
 
         public OutputSlotService(Func<OutputSlotManager> slotManagerProvider, IOutputSlotStore store,
             Func<ControlService> controlProvider)
@@ -34,50 +33,6 @@ namespace DS4Windows
             _slotManagerProvider = slotManagerProvider ?? throw new ArgumentNullException(nameof(slotManagerProvider));
             _store = store ?? throw new ArgumentNullException(nameof(store));
             _controlProvider = controlProvider ?? throw new ArgumentNullException(nameof(controlProvider));
-        }
-
-        public OutputDevice[] OutputDevices
-        {
-            get
-            {
-                lock (_syncLock)
-                {
-                    return _outputDevices;
-                }
-            }
-        }
-
-        public OutputDevice GetOutputDevice(int slotIndex)
-        {
-            if (slotIndex < 0 || slotIndex >= MAX_SLOTS)
-                return null;
-
-            lock (_syncLock)
-            {
-                return _outputDevices[slotIndex];
-            }
-        }
-
-        public bool IsSlotPlugin(int slotIndex)
-        {
-            var device = GetOutputDevice(slotIndex);
-            return device != null;
-        }
-
-        public void SetOutputDevice(int slotIndex, OutputDevice outputDevice)
-        {
-            if (slotIndex < 0 || slotIndex >= MAX_SLOTS)
-                return;
-
-            lock (_syncLock)
-            {
-                _outputDevices[slotIndex] = outputDevice;
-                if (AppLogger.IsTraceEnabled)
-                    AppLogger.LogTrace($"[DI] OutputSlotService.SetOutputDevice: Slot {slotIndex} output device updated");
-            }
-
-            // Phase6-Step5-2: 種別は孤立配列からではなく None を通知する（従来も孤立配列の初期値 None が通知されていた）
-            RaiseOutputSlotChanged(slotIndex, OutContType.None, outputDevice);
         }
 
         /// <summary>
@@ -136,7 +91,7 @@ namespace DS4Windows
                     try
                     {
                         control.AttachUnboundOutDev(slotDevice, devType);
-                        RaiseOutputSlotChanged(slotNumber, devType, GetOutputDevice(slotNumber));
+                        RaiseOutputSlotChanged(slotNumber, devType, null);
                     }
                     catch (Exception ex)
                     {
@@ -176,7 +131,7 @@ namespace DS4Windows
                     try
                     {
                         control.DetachUnboundOutDev(slotDevice);
-                        SetOutputDevice(slotNumber, null);
+                        RaiseOutputSlotChanged(slotNumber, OutContType.None, null);
                     }
                     catch (Exception ex)
                     {

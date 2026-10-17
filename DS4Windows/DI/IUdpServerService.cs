@@ -11,7 +11,6 @@ namespace DS4Windows.DI
     {
         bool IsRunning { get; }
         int Port { get; }
-        string ListenAddress { get; }
 
         bool Start(ControlService control, int port = 26760, string listenAddress = "127.0.0.1");
         void Stop();

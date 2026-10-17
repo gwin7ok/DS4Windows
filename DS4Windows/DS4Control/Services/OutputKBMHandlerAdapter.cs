@@ -8,7 +8,6 @@ namespace DS4Windows.Services
     /// </summary>
     public class OutputKBMHandlerAdapter : IVirtualKBM
     {
-        public string ErrorMessage => Global.outputKBMHandler?.ErrorMessage ?? string.Empty;
         public string Version => Global.outputKBMHandler?.Version ?? "0.0.0.0";
         public bool fakeKeyRepeat
         {

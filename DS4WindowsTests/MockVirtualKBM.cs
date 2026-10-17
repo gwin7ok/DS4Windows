@@ -9,7 +9,6 @@ namespace DS4WindowsTests
     /// </summary>
     public class MockVirtualKBM : IVirtualKBM
     {
-        public string ErrorMessage { get; set; } = string.Empty;
         public string Version { get; set; } = "1.0.0.0";
         public bool fakeKeyRepeat { get; set; } = false;
 

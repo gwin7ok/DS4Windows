@@ -181,3 +181,17 @@
 - モデル図: `02-Layer-Architecture-Diagram.md`（Singleton ViewModels から `ControllersViewModel` を除く）、`04-Service-Lifecycle-Spec.md`（`IDeviceStateService` の責務の説明、`ControllersViewModel` の行の削除、注記）を更新。
 - ラチェット: 変更なし（削除したファイルに `Global`／`AppHost`／`rootHub` の参照はなかった。`Global.*` 732、`AppHost` 40、`Program.rootHub` 22）。
 - 気づいた点（未対応）: `ProfileApplicationService` は `IDeviceStateService` を受け取るが、フィールド `_deviceState` を使っていない。依存の整理は Step10（または Step3 の `ProfileApplicationService` の移管）で判断する。
+
+### W4 の実施記録（2026-10-17、W3 のビルド・テストは成功。W4 のビルド・テストはユーザーの実行待ち）
+- **計画からの変更（調査で判明）: `IEnvironmentService.UsingMaxControllers` は「削除」ではなく「接続」に変更した。** 理由: Phase6-Step2-1b（2026-09-19、決定 O2=C）で `ControllerSlotLimit` と同時に追加された、`ControlService.USING_MAX_CONTROLLERS`（static 互換シム）の置換先だった。`ControlService.cs` のコメントに「値の SSOT は `IEnvironmentService`。各呼び出し元は IEnvironmentService の注入へ置換し、最終的に削除する」とあり、呼び出し側（`AutoProfilesViewModel.cs:85`、`ProgramItem.cs:227`、`AutoProfilesDTO.cs:52`）の切り替えが未実施。§2.4 の「使うべきもの」に当たるため、契約に TODO（経緯・差・接続予定 Phase7-Step10）を付けて残した。集計は、削除 44／接続 4／温存 1（Phase8 へ 12）に変わる。
+- 削除（契約と実装）:
+  - `IOutputSlotService`: `OutputDevices`、`GetOutputDevice`、`IsSlotPlugin`。実装の `SetOutputDevice`（と配列 `_outputDevices`）も削除。`UnplugSlot` は `SetOutputDevice(…, null)` の代わりに `RaiseOutputSlotChanged(slot, None, null)` を呼ぶ（イベントの発行は同一）。`PluginSlot` のイベントの `OutputDevice` は、孤立配列が常に null だったため null を渡す（同一）。削除した `SetOutputDevice` の Trace ログ（`[DI] OutputSlotService.SetOutputDevice: Slot … output device updated`）はなくなった（`OutputSlotChanged` の Trace ログは残る）。
+  - `IVirtualKBM.ErrorMessage`（と `OutputKBMHandlerAdapter` の実装）。基底クラス `VirtualKBMBase` の public プロパティ `ErrorMessage` は、上流のコードのため触れない。
+  - `IUdpServerService.ListenAddress`（実装は private の `_listenAddress` を残す）。
+  - `INotificationService.NotificationsEnabled`／`FlashTaskbar`。実装 `AppNotificationService` は、`NotificationsEnabled` を private の判定（`Global.Notifications != 0`）として残し、`FlashTaskbar` を削除した。
+  - `IPathService.GetAutoProfilesPath`（と実装）。プロパティ `AutoProfilesPath` は残る。
+- テスト:
+  - `OutputSlotServiceTests`: 3 件を削除（`InitialState_ShouldHaveNoOutputDevices`、`OutputSlotChangedEvent_ShouldFireOnSetOutputDevice`、`SetOutputDevice_OutOfBounds_DoesNotFireEvent`）、範囲外のテストから `GetOutputDevice` の 2 行を削除。
+  - `NotificationServiceTests`: 設定の同期だけを確認する 3 件（`Defaults_ShouldSynchronizeWithGlobal`、`GlobalShim_ShouldSynchronizeWithService`、`Service_ShouldDirectlyReflectGlobalChanges`）を削除。`service.NotificationsEnabled = …` は `Global.Notifications = 1／0` に置き換えた。
+  - `MockNotificationService`、`MockVirtualKBM`、`RecordingVirtualKbm`、`VirtualKBMTests`、`UdpServerServiceTests`: 削除したメンバーの定義・確認を削除。
+- ラチェット: `AppNotificationService.cs` 6 → 1、`OutputKBMHandlerAdapter.cs` 21 → 20。全域は `Global.*` 732 → **726**（走査で確認）。`AppHost` 40、`Program.rootHub` 22 は不変。

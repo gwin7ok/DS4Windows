@@ -59,7 +59,8 @@ namespace DS4WindowsTests
             ["DS4Windows/DS4Control/Changelog.cs"] = (0, 0, 4),
             // Phase6-Step12 Wave 1: 孤立コード 24 件を削除（Global 47 → 45）。Wave 2: 互換アクセサ 152 件を削除（Global 45 → 38）。Wave 3: *Instance のフォールバック群 19 件を削除（Global 38 → 26、AppHost 11 → 5、rootHub 9 → 6）。Wave 4: BackingStore 直転送ラッパー 58 件を削除（AppHost 5 → 4。(6, 4, 26)）
             ["DS4Windows/DS4Control/Global.cs"] = (6, 4, 26),
-            ["DS4Windows/DS4Control/Services/AppNotificationService.cs"] = (0, 0, 6),
+            // Phase7-Step2 W4: INotificationService.NotificationsEnabled／FlashTaskbar の削除で Global.* 5 件を削除（6 → 1）
+            ["DS4Windows/DS4Control/Services/AppNotificationService.cs"] = (0, 0, 1),
             ["DS4Windows/DS4Control/Services/AppSettingsService.cs"] = (0, 0, 185),
             ["DS4Windows/DS4Control/Services/AppearanceSettingsService.cs"] = (0, 0, 8),
             ["DS4Windows/DS4Control/Services/AutoProfileService.cs"] = (0, 0, 3),
@@ -67,7 +68,8 @@ namespace DS4WindowsTests
             ["DS4Windows/DS4Control/Services/DeviceStateService.cs"] = (0, 0, 4),
             ["DS4Windows/DS4Control/Services/Ds4DeviceRegistryAdapter.cs"] = (0, 0, 1),
             ["DS4Windows/DS4Control/Services/EnvironmentService.cs"] = (0, 0, 21),
-            ["DS4Windows/DS4Control/Services/OutputKBMHandlerAdapter.cs"] = (0, 0, 21),
+            // Phase7-Step2 W4: IVirtualKBM.ErrorMessage の削除で Global.outputKBMHandler の参照 1 件を削除（21 → 20）
+            ["DS4Windows/DS4Control/Services/OutputKBMHandlerAdapter.cs"] = (0, 0, 20),
             ["DS4Windows/DS4Control/Services/OutputKBMHandlerLifecycle.cs"] = (0, 0, 8),
             ["DS4Windows/DS4Control/Services/OutputSlotService.cs"] = (0, 0, 2),
             ["DS4Windows/DS4Control/Services/PathService.cs"] = (0, 0, 8),

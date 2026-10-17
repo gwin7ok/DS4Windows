@@ -9,9 +9,10 @@ namespace DS4Windows.DI
     public interface IOutputSlotService
     {
         // === 既存互換メンバー ===
-        OutputDevice[] OutputDevices { get; }
-        OutputDevice GetOutputDevice(int slotIndex);
-        bool IsSlotPlugin(int slotIndex);
+        // Phase7-Step2 W4: OutputDevices／GetOutputDevice／IsSlotPlugin（と実装の SetOutputDevice）は削除した。
+        // 実装の内部配列は、本体で null 以外が設定されず、常に null／false を返す孤立実装だった。
+        // 実体の入口は OutputSlots／GetOutSlotDevice（OutputSlotManager 連動）。
+        // 参照: docs-forDIMG/MadeByAgent/Phase7-Step2-Plan.md §2.3
 
         // Phase6-Step5-2（2026-09-24）: GetOutputDeviceType／SetOutputDeviceType を削除した。
         // 両メソッドは Global/BackingStore と非連動の孤立配列 _deviceTypes を読み書きしており、
@@ -22,7 +23,7 @@ namespace DS4Windows.DI
         //   UI一時状態（プロファイル編集画面の未確定値）: OutDevTypeTemp（本インターフェース）
         // 参照: docs-forDIMG/MadeByAgent/Phase6-Step5-Plan.md §2
 
-        // DeviceType は、PluginSlot では指定された種別、SetOutputDevice／UnplugSlot では None。
+        // DeviceType は、PluginSlot では指定された種別、UnplugSlot では None。
         event EventHandler<OutputSlotChangedEventArgs> OutputSlotChanged;
 
         // === Step 12 拡充: 実体 OutputSlotManager 連動操作 ===

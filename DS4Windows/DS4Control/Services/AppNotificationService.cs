@@ -7,17 +7,9 @@ namespace DS4Windows
     {
         public event EventHandler<NotificationEventArgs> NotificationTriggered;
 
-        public bool NotificationsEnabled
-        {
-            get => Global.Notifications != 0;
-            set => Global.Notifications = value ? (Global.Notifications != 0 ? Global.Notifications : 1) : 0;
-        }
-
-        public bool FlashTaskbar
-        {
-            get => Global.FlashWhenLate;
-            set => Global.FlashWhenLate = value;
-        }
+        // Phase7-Step2 W4: INotificationService.NotificationsEnabled／FlashTaskbar は削除した（設定の読み書きは
+        // IAppSettingsService.Notifications／FlashWhenLate が担う重複）。通知の有無の判定は、実装の内部判定として残す。
+        private static bool NotificationsEnabled => Global.Notifications != 0;
 
         public void SendNotification(string title, string message, bool warning = false, bool temporary = false, bool isToast = true)
         {

@@ -23,7 +23,6 @@ namespace DS4Windows.Services
         }
 
         public int Port => _port;
-        public string ListenAddress => _listenAddress;
 
         public bool Start(ControlService control, int port = 26760, string listenAddress = "127.0.0.1")
         {

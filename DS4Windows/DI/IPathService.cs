@@ -11,7 +11,6 @@ namespace DS4Windows.DI
         string ActionsPath { get; }
 
         string GetProfilePath(string profileName);
-        string GetAutoProfilesPath();
 
         // ---- Phase6-Step7-1: App.xaml.cs（Post-Host）の Global 直接参照解消（Global への薄い委譲）----
         /// <summary>

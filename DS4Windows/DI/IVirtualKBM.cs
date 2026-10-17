@@ -6,7 +6,6 @@ namespace DS4Windows.Services
     /// </summary>
     public interface IVirtualKBM
     {
-        string ErrorMessage { get; }
         string Version { get; }
         bool fakeKeyRepeat { get; set; }
 

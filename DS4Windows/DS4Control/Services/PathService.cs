@@ -71,8 +71,6 @@ namespace DS4Windows
             return Path.Combine(ProfilesPath, profileName);
         }
 
-        public string GetAutoProfilesPath() => AutoProfilesPath;
-
         // ---- Phase6-Step7-1: App.xaml.cs（Post-Host）の Global 直接参照解消 ----
         // いずれも Global の現在値をその都度返す薄い委譲（独自の状態を持たない）。
         public string RoamingAppDataPath => Global.appDataPpath;

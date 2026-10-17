@@ -22,9 +22,6 @@ namespace DS4WindowsTests
 
         public List<SendCall> SendCalls { get; } = new List<SendCall>();
 
-        public bool NotificationsEnabled { get; set; } = true;
-        public bool FlashTaskbar { get; set; }
-
         public event EventHandler<NotificationEventArgs> NotificationTriggered;
 
         public void SendNotification(string title, string message, bool warning = false, bool temporary = false, bool isToast = true)

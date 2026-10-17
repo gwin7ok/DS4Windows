@@ -30,55 +30,15 @@ namespace DS4WindowsTests
         // Phase6-Step5-2: GetOutputDeviceType／SetOutputDeviceType（孤立配列 _deviceTypes）を削除したため、
         // それらを対象としたテスト（初期値・更新・グローバルシム経由の更新）は削除し、
         // イベント発行・範囲外の安全性のテストを SetOutputDevice／PluginSlot／UnplugSlot ベースへ置き換えた。
-
-        [Fact]
-        public void InitialState_ShouldHaveNoOutputDevices()
-        {
-            var service = TestRepositoryFactory.CreateOutputSlotService();
-
-            for (int i = 0; i < OutputSlotService.MAX_SLOTS; i++)
-            {
-                Assert.Null(service.GetOutputDevice(i));
-                Assert.False(service.IsSlotPlugin(i));
-            }
-        }
-
-        [Fact]
-        public void OutputSlotChangedEvent_ShouldFireOnSetOutputDevice()
-        {
-            var service = TestRepositoryFactory.CreateOutputSlotService();
-            OutputSlotChangedEventArgs receivedArgs = null;
-
-            service.OutputSlotChanged += (s, e) => receivedArgs = e;
-
-            service.SetOutputDevice(2, null);
-
-            Assert.NotNull(receivedArgs);
-            Assert.Equal(2, receivedArgs.Slot);
-            Assert.Equal(OutContType.None, receivedArgs.DeviceType);
-            Assert.Null(receivedArgs.OutputDevice);
-        }
-
-        [Fact]
-        public void SetOutputDevice_OutOfBounds_DoesNotFireEvent()
-        {
-            var service = TestRepositoryFactory.CreateOutputSlotService();
-            int fired = 0;
-            service.OutputSlotChanged += (s, e) => fired++;
-
-            service.SetOutputDevice(-1, null);
-            service.SetOutputDevice(OutputSlotService.MAX_SLOTS, null);
-
-            Assert.Equal(0, fired);
-        }
+        // Phase7-Step2 W4: OutputDevices／GetOutputDevice／IsSlotPlugin／SetOutputDevice（常に null を返す孤立配列）を削除したため、
+        // それらを対象としたテスト（初期状態、SetOutputDevice によるイベント発行、範囲外）も削除した。
+        // 抜き差しの要求とイベントの確認は PluginSlot／UnplugSlot を対象とする（Step10FourTwoGlobalReferenceGuardTests など）。
 
         [Fact]
         public void OutOfBounds_ShouldBeHandledSafely()
         {
             var service = TestRepositoryFactory.CreateOutputSlotService();
 
-            Assert.Null(service.GetOutputDevice(-1));
-            Assert.Null(service.GetOutputDevice(8));
             Assert.Null(service.GetOutSlotDevice(-1));
             Assert.Null(service.GetOutSlotDevice(8));
             Assert.False(service.PluginSlot(-1, OutContType.X360));
