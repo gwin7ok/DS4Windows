@@ -38,7 +38,7 @@ namespace DS4Windows
 
         public MacroRuntimeState()
         {
-            TaskQueue = new Dictionary<string, Task>[Global.MAX_DS4_CONTROLLER_COUNT];
+            TaskQueue = new Dictionary<string, Task>[ControllerLimits.MaxControllerCount];
             for (int i = 0; i < TaskQueue.Length; i++) TaskQueue[i] = new Dictionary<string, Task>();
         }
 

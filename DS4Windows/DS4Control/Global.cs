@@ -66,11 +66,13 @@ namespace DS4Windows
             set { m_Config.logMinLevel = value; }
             get { return m_Config.logMinLevel; }
         }
-        public const int MAX_DS4_CONTROLLER_COUNT = 8;
-        public const int TEST_PROFILE_ITEM_COUNT = MAX_DS4_CONTROLLER_COUNT + 1;
-        public const int TEST_PROFILE_INDEX = TEST_PROFILE_ITEM_COUNT - 1;
-        public const int OLD_XINPUT_CONTROLLER_COUNT = 4;
-        public const byte DS4_STICK_AXIS_MIDPOINT = 128;
+        // Phase7-Step9 W2（Q2＝A）: 実体は ControllerLimits へ移した。以下は同じ値を指す別名（薄いシム）。
+        // TODO(Phase7-Step10): 利用箇所（約 250 件）を ControllerLimits へ移したら、この別名を削除する。
+        public const int MAX_DS4_CONTROLLER_COUNT = ControllerLimits.MaxControllerCount;
+        public const int TEST_PROFILE_ITEM_COUNT = ControllerLimits.TestProfileItemCount;
+        public const int TEST_PROFILE_INDEX = ControllerLimits.TestProfileIndex;
+        public const int OLD_XINPUT_CONTROLLER_COUNT = ControllerLimits.OldXInputControllerCount;
+        public const byte DS4_STICK_AXIS_MIDPOINT = ControllerLimits.StickAxisMidpoint;
 
         public static CultureInfo configFileDecimalCulture = new CultureInfo("en-US"); // Loading and Saving decimal values in configuration files should always use en-US decimal format (ie. dot char as decimal separator char, not comma char)
 
@@ -1031,9 +1033,10 @@ namespace DS4Windows
             return Color.FromArgb((int)R, (int)G, (int)B);
         }
 
+        // Phase7-Step9 W2（Q2＝A）: 実体は NumericUtil.Clamp へ移した。残りの呼び出し元（DS4State／BezierCurve／Mouse／MouseCursor）は Step10 で移す。
         public static double Clamp(double min, double value, double max)
         {
-            return (value < min) ? min : (value > max) ? max : value;
+            return NumericUtil.Clamp(min, value, max);
         }
 
         private static int ClampInt(int min, int value, int max)

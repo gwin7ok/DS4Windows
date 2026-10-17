@@ -18,7 +18,7 @@ namespace DS4Windows
 
         public SyntheticInputState()
         {
-            DeviceState = new SyntheticState[Global.MAX_DS4_CONTROLLER_COUNT];
+            DeviceState = new SyntheticState[ControllerLimits.MaxControllerCount];
             for (int i = 0; i < DeviceState.Length; i++) DeviceState[i] = new SyntheticState();
         }
 

@@ -32,7 +32,7 @@ namespace DS4Windows
 
         public StickMotionState()
         {
-            int count = Global.MAX_DS4_CONTROLLER_COUNT;
+            int count = ControllerLimits.MaxControllerCount;
             GyroStickX = new byte[count];
             GyroStickY = new byte[count];
             MapStickActionData = new PostMapStickData[count];

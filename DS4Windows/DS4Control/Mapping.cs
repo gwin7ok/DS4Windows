@@ -203,7 +203,7 @@ namespace DS4Windows
             r2TwoStageMappingData = stickMotion.R2TwoStageMappingData;
             deltaAccelProcessors = stickMotion.DeltaAccelProcessors;
 
-            customMapQueue = new Queue<ControlToXInput>[Global.MAX_DS4_CONTROLLER_COUNT]
+            customMapQueue = new Queue<ControlToXInput>[ControllerLimits.MaxControllerCount]
             {
                 new Queue<ControlToXInput>(), new Queue<ControlToXInput>(),
                 new Queue<ControlToXInput>(), new Queue<ControlToXInput>(),
@@ -381,7 +381,7 @@ namespace DS4Windows
             }
         }
 
-        public Queue<DS4TimedStickAxisValue>[][] stickValueHistory = new Queue<DS4TimedStickAxisValue>[Global.TEST_PROFILE_ITEM_COUNT][]
+        public Queue<DS4TimedStickAxisValue>[][] stickValueHistory = new Queue<DS4TimedStickAxisValue>[ControllerLimits.TestProfileItemCount][]
         {
             new Queue<DS4TimedStickAxisValue>[2] { new Queue<DS4TimedStickAxisValue>(), new Queue<DS4TimedStickAxisValue>() },
             new Queue<DS4TimedStickAxisValue>[2] { new Queue<DS4TimedStickAxisValue>(), new Queue<DS4TimedStickAxisValue>() },
@@ -394,7 +394,7 @@ namespace DS4Windows
             new Queue<DS4TimedStickAxisValue>[2] { new Queue<DS4TimedStickAxisValue>(), new Queue<DS4TimedStickAxisValue>() }
         };
 
-        private DS4SquareStick[] outSqrStk = new DS4SquareStick[Global.TEST_PROFILE_ITEM_COUNT]
+        private DS4SquareStick[] outSqrStk = new DS4SquareStick[ControllerLimits.TestProfileItemCount]
         {
             new DS4SquareStick(), new DS4SquareStick(), new DS4SquareStick(), new DS4SquareStick(),
             new DS4SquareStick(), new DS4SquareStick(), new DS4SquareStick(), new DS4SquareStick(),
@@ -408,7 +408,7 @@ namespace DS4Windows
         //public static byte[] touchStickY = new byte[Global.MAX_DS4_CONTROLLER_COUNT] { 128, 128, 128, 128, 128, 128, 128, 128 };
 
         // [<Device>][<AxisId>]. LX = 0, LY = 1, RX = 2, RY = 3
-        public byte[][] lastStickAxisValues = new byte[Global.TEST_PROFILE_ITEM_COUNT][]
+        public byte[][] lastStickAxisValues = new byte[ControllerLimits.TestProfileItemCount][]
         {
             new byte[4] {128, 128, 128, 128}, new byte[4] {128, 128, 128, 128},
             new byte[4] {128, 128, 128, 128}, new byte[4] {128, 128, 128, 128},
@@ -423,7 +423,7 @@ namespace DS4Windows
             public int gyroZ;
         }
 
-        private LastWheelGyroCoord[] lastWheelGyroValues = new LastWheelGyroCoord[Global.MAX_DS4_CONTROLLER_COUNT]
+        private LastWheelGyroCoord[] lastWheelGyroValues = new LastWheelGyroCoord[ControllerLimits.MaxControllerCount]
         {
             new LastWheelGyroCoord(), new LastWheelGyroCoord(), new LastWheelGyroCoord(), new LastWheelGyroCoord(),
             new LastWheelGyroCoord(), new LastWheelGyroCoord(), new LastWheelGyroCoord(), new LastWheelGyroCoord()
@@ -446,18 +446,18 @@ namespace DS4Windows
         // Phase7-Step7 W2（Q2＝A・Q3＝A）: 合成入力の状態（_syntheticInput.GlobalState／deviceState／syncStateLock）の実体は SyntheticInputState が持つ。
         // Phase7-Step8 W2: 転送プロパティは削除した。deviceState／syncStateLock は上のフィールド宣言（readonly の複製）、GlobalState は保持クラスを直接読む。
 
-        public DS4StateFieldMapping[] fieldMappings = new DS4StateFieldMapping[Global.MAX_DS4_CONTROLLER_COUNT] {
+        public DS4StateFieldMapping[] fieldMappings = new DS4StateFieldMapping[ControllerLimits.MaxControllerCount] {
             new DS4StateFieldMapping(), new DS4StateFieldMapping(), new DS4StateFieldMapping(),
             new DS4StateFieldMapping(), new DS4StateFieldMapping(), new DS4StateFieldMapping(),
             new DS4StateFieldMapping(), new DS4StateFieldMapping(),
         };
-        public DS4StateFieldMapping[] outputFieldMappings = new DS4StateFieldMapping[Global.MAX_DS4_CONTROLLER_COUNT]
+        public DS4StateFieldMapping[] outputFieldMappings = new DS4StateFieldMapping[ControllerLimits.MaxControllerCount]
         {
             new DS4StateFieldMapping(), new DS4StateFieldMapping(), new DS4StateFieldMapping(),
             new DS4StateFieldMapping(), new DS4StateFieldMapping(), new DS4StateFieldMapping(),
             new DS4StateFieldMapping(), new DS4StateFieldMapping(),
         };
-        public DS4StateFieldMapping[] previousFieldMappings = new DS4StateFieldMapping[Global.MAX_DS4_CONTROLLER_COUNT]
+        public DS4StateFieldMapping[] previousFieldMappings = new DS4StateFieldMapping[ControllerLimits.MaxControllerCount]
         {
             new DS4StateFieldMapping(), new DS4StateFieldMapping(), new DS4StateFieldMapping(),
             new DS4StateFieldMapping(), new DS4StateFieldMapping(), new DS4StateFieldMapping(),
@@ -510,13 +510,13 @@ namespace DS4Windows
         private const int SyntheticSendThrottleMs = 10;
 
         //actions
-        public bool[] extrasRumbleActive = new bool[Global.MAX_DS4_CONTROLLER_COUNT];
-        public int[] fadetimer = new int[Global.MAX_DS4_CONTROLLER_COUNT] { 0, 0, 0, 0, 0, 0, 0, 0 };
-        public int[] prevFadetimer = new int[Global.MAX_DS4_CONTROLLER_COUNT] { 0, 0, 0, 0, 0, 0, 0, 0 };
-        public DS4Color[] lastColor = new DS4Color[Global.MAX_DS4_CONTROLLER_COUNT];
+        public bool[] extrasRumbleActive = new bool[ControllerLimits.MaxControllerCount];
+        public int[] fadetimer = new int[ControllerLimits.MaxControllerCount] { 0, 0, 0, 0, 0, 0, 0, 0 };
+        public int[] prevFadetimer = new int[ControllerLimits.MaxControllerCount] { 0, 0, 0, 0, 0, 0, 0, 0 };
+        public DS4Color[] lastColor = new DS4Color[ControllerLimits.MaxControllerCount];
         // Legacy `actionDone` list removed — per-action state now lives in ActionManager/ActionInstanceState.
         // Per-device runtime state replacing legacy `untriggeraction`/`untriggerindex` globals
-        public DeviceRuntimeState[] deviceRuntime = new DeviceRuntimeState[Global.MAX_DS4_CONTROLLER_COUNT]
+        public DeviceRuntimeState[] deviceRuntime = new DeviceRuntimeState[ControllerLimits.MaxControllerCount]
         {
             new DeviceRuntimeState(), new DeviceRuntimeState(), new DeviceRuntimeState(), new DeviceRuntimeState(),
             new DeviceRuntimeState(), new DeviceRuntimeState(), new DeviceRuntimeState(), new DeviceRuntimeState()
@@ -527,7 +527,7 @@ namespace DS4Windows
         // ここに含まれる間は、当該ボタン自身の通常出力（デフォルト信号／通常マッピング／KBM／機能）を抑制し続ける。
         // トリガー全体の成立/解除（いずれか1つが離れたら解除）とは独立に、ボタン単位で管理する。
         // 詳細: docs-forDIMG/MadeByAgent/Phase5-Step14-Issue8-1-3-Fix-Plan.md §2.1
-        public HashSet<DS4Controls>[] suppressedTriggerButtons = new HashSet<DS4Controls>[Global.MAX_DS4_CONTROLLER_COUNT]
+        public HashSet<DS4Controls>[] suppressedTriggerButtons = new HashSet<DS4Controls>[ControllerLimits.MaxControllerCount]
         {
             new HashSet<DS4Controls>(), new HashSet<DS4Controls>(), new HashSet<DS4Controls>(), new HashSet<DS4Controls>(),
             new HashSet<DS4Controls>(), new HashSet<DS4Controls>(), new HashSet<DS4Controls>(), new HashSet<DS4Controls>()
@@ -697,7 +697,7 @@ namespace DS4Windows
         public DateTime[] nowAction = { DateTime.MinValue, DateTime.MinValue, DateTime.MinValue, DateTime.MinValue };
         public DateTime[] oldnowAction = { DateTime.MinValue, DateTime.MinValue, DateTime.MinValue, DateTime.MinValue };
         // legacy `untriggerindex` removed; use `deviceRuntime[device].UntriggerIndex`
-        public DateTime[] oldnowKeyAct = new DateTime[Global.MAX_DS4_CONTROLLER_COUNT] { DateTime.MinValue,
+        public DateTime[] oldnowKeyAct = new DateTime[ControllerLimits.MaxControllerCount] { DateTime.MinValue,
             DateTime.MinValue, DateTime.MinValue, DateTime.MinValue, DateTime.MinValue, DateTime.MinValue, DateTime.MinValue, DateTime.MinValue };
 
         private const int SHIFT_TRIGGER_MAPPING_LEN = 35;
@@ -1080,16 +1080,16 @@ namespace DS4Windows
 
                             if (lsSquared > lsDeadzoneSquared)
                             {
-                                double currentX = Global.Clamp(maxZoneXNegValue, dState.LX, maxZoneXPosValue);
-                                double currentY = Global.Clamp(maxZoneYNegValue, dState.LY, maxZoneYPosValue);
+                                double currentX = NumericUtil.Clamp(maxZoneXNegValue, dState.LX, maxZoneXPosValue);
+                                double currentY = NumericUtil.Clamp(maxZoneYNegValue, dState.LY, maxZoneYPosValue);
                                 tempOutputX = ((currentX - 128.0 - tempLsXDead) / (maxZoneX - tempLsXDead));
                                 tempOutputY = ((currentY - 128.0 - tempLsYDead) / (maxZoneY - tempLsYDead));
                             }
                         }
                         else
                         {
-                            double currentX = Global.Clamp(maxZoneXNegValue, dState.LX, maxZoneXPosValue);
-                            double currentY = Global.Clamp(maxZoneYNegValue, dState.LY, maxZoneYPosValue);
+                            double currentX = NumericUtil.Clamp(maxZoneXNegValue, dState.LX, maxZoneXPosValue);
+                            double currentY = NumericUtil.Clamp(maxZoneYNegValue, dState.LY, maxZoneYPosValue);
                             tempOutputX = (currentX - 128.0) / maxZoneX;
                             tempOutputY = (currentY - 128.0) / maxZoneY;
                         }
@@ -1195,7 +1195,7 @@ namespace DS4Windows
                         double maxZone = dState.LX >= 128.0 ? (maxZonePosValue - 128.0) : (maxZoneNegValue - 128.0);
 
                         double tempDead = (xAxisDeadInfo.deadZone > 0) ? ((xAxisDeadInfo.deadZone / 127.0) * maxAxisValue) : 0.0;
-                        double currentVal = Global.Clamp(maxZoneNegValue, dState.LX, maxZonePosValue);
+                        double currentVal = NumericUtil.Clamp(maxZoneNegValue, dState.LX, maxZonePosValue);
                         double tempOutput = (currentVal - 128.0 - tempDead) / (maxZone - tempDead);
 
                         if (xAxisDeadInfo.maxOutput != 100.0)
@@ -1241,7 +1241,7 @@ namespace DS4Windows
                         double maxZone = dState.LY >= 128.0 ? (maxZonePosValue - 128.0) : (maxZoneNegValue - 128.0);
 
                         double tempDead = (yAxisDeadInfo.deadZone > 0) ? ((yAxisDeadInfo.deadZone / 127.0) * maxAxisValue) : 0.0;
-                        double currentVal = Global.Clamp(maxZoneNegValue, dState.LY, maxZonePosValue);
+                        double currentVal = NumericUtil.Clamp(maxZoneNegValue, dState.LY, maxZonePosValue);
                         double tempOutput = (currentVal - 128.0 - tempDead) / (maxZone - tempDead);
 
                         if (yAxisDeadInfo.maxOutput != 100.0)
@@ -1313,8 +1313,8 @@ namespace DS4Windows
 
                             if (rsSquared > rsDeadzoneSquared)
                             {
-                                double currentX = Global.Clamp(maxZoneXNegValue, dState.RX, maxZoneXPosValue);
-                                double currentY = Global.Clamp(maxZoneYNegValue, dState.RY, maxZoneYPosValue);
+                                double currentX = NumericUtil.Clamp(maxZoneXNegValue, dState.RX, maxZoneXPosValue);
+                                double currentY = NumericUtil.Clamp(maxZoneYNegValue, dState.RY, maxZoneYPosValue);
 
                                 tempOutputX = ((currentX - 128.0 - tempRsXDead) / (maxZoneX - tempRsXDead));
                                 tempOutputY = ((currentY - 128.0 - tempRsYDead) / (maxZoneY - tempRsYDead));
@@ -1322,8 +1322,8 @@ namespace DS4Windows
                         }
                         else
                         {
-                            double currentX = Global.Clamp(maxZoneXNegValue, dState.RX, maxZoneXPosValue);
-                            double currentY = Global.Clamp(maxZoneYNegValue, dState.RY, maxZoneYPosValue);
+                            double currentX = NumericUtil.Clamp(maxZoneXNegValue, dState.RX, maxZoneXPosValue);
+                            double currentY = NumericUtil.Clamp(maxZoneYNegValue, dState.RY, maxZoneYPosValue);
 
                             tempOutputX = (currentX - 128.0) / maxZoneX;
                             tempOutputY = (currentY - 128.0) / maxZoneY;
@@ -1430,7 +1430,7 @@ namespace DS4Windows
                         double maxZone = dState.RX >= 128.0 ? (maxZonePosValue - 128.0) : (maxZoneNegValue - 128.0);
 
                         double tempDead = (xAxisDeadInfo.deadZone > 0) ? ((xAxisDeadInfo.deadZone / 127.0) * maxAxisValue) : 0.0;
-                        double currentVal = Global.Clamp(maxZoneNegValue, dState.RX, maxZonePosValue);
+                        double currentVal = NumericUtil.Clamp(maxZoneNegValue, dState.RX, maxZonePosValue);
                         double tempOutput = (currentVal - 128.0 - tempDead) / (maxZone - tempDead);
 
                         if (xAxisDeadInfo.maxOutput != 100.0)
@@ -1476,7 +1476,7 @@ namespace DS4Windows
                         double maxZone = dState.RY >= 128.0 ? (maxZonePosValue - 128.0) : (maxZoneNegValue - 128.0);
 
                         double tempDead = (yAxisDeadInfo.deadZone > 0) ? ((yAxisDeadInfo.deadZone / 127.0) * maxAxisValue) : 0.0;
-                        double currentVal = Global.Clamp(maxZoneNegValue, dState.RY, maxZonePosValue);
+                        double currentVal = NumericUtil.Clamp(maxZoneNegValue, dState.RY, maxZonePosValue);
                         double tempOutput = (currentVal - 128.0 - tempDead) / (maxZone - tempDead);
 
                         if (yAxisDeadInfo.maxOutput != 100.0)
@@ -1525,7 +1525,7 @@ namespace DS4Windows
                 {
                     if (cState.L2 > l2Deadzone)
                     {
-                        double current = Global.Clamp(0, dState.L2, maxValue);
+                        double current = NumericUtil.Clamp(0, dState.L2, maxValue);
                         tempL2Output = (current - l2Deadzone) / (maxValue - l2Deadzone);
                     }
                     else
@@ -1535,7 +1535,7 @@ namespace DS4Windows
                 }
                 else
                 {
-                    double current = Global.Clamp(0, dState.L2, maxValue);
+                    double current = NumericUtil.Clamp(0, dState.L2, maxValue);
                     tempL2Output = current / maxValue;
                 }
 
@@ -1580,7 +1580,7 @@ namespace DS4Windows
                 {
                     if (cState.R2 > r2Deadzone)
                     {
-                        double current = Global.Clamp(0, dState.R2, maxValue);
+                        double current = NumericUtil.Clamp(0, dState.R2, maxValue);
                         tempR2Output = (current - r2Deadzone) / (maxValue - r2Deadzone);
                     }
                     else
@@ -1590,7 +1590,7 @@ namespace DS4Windows
                 }
                 else
                 {
-                    double current = Global.Clamp(0, dState.R2, maxValue);
+                    double current = NumericUtil.Clamp(0, dState.R2, maxValue);
                     tempR2Output = current / maxValue;
                 }
 
@@ -1621,8 +1621,8 @@ namespace DS4Windows
                 double lsSens = settings.LSSens[device];
                 if (lsSens != 1.0)
                 {
-                    dState.LX = (byte)Global.Clamp(0, lsSens * (dState.LX - 128.0) + 128.0, 255);
-                    dState.LY = (byte)Global.Clamp(0, lsSens * (dState.LY - 128.0) + 128.0, 255);
+                    dState.LX = (byte)NumericUtil.Clamp(0, lsSens * (dState.LX - 128.0) + 128.0, 255);
+                    dState.LY = (byte)NumericUtil.Clamp(0, lsSens * (dState.LY - 128.0) + 128.0, 255);
                 }
             }
 
@@ -1632,18 +1632,18 @@ namespace DS4Windows
                 double rsSens = settings.RSSens[device];
                 if (rsSens != 1.0)
                 {
-                    dState.RX = (byte)Global.Clamp(0, rsSens * (dState.RX - 128.0) + 128.0, 255);
-                    dState.RY = (byte)Global.Clamp(0, rsSens * (dState.RY - 128.0) + 128.0, 255);
+                    dState.RX = (byte)NumericUtil.Clamp(0, rsSens * (dState.RX - 128.0) + 128.0, 255);
+                    dState.RY = (byte)NumericUtil.Clamp(0, rsSens * (dState.RY - 128.0) + 128.0, 255);
                 }
             }
 
             double l2Sens = settings.L2Sens[device];
             if (l2Sens != 1.0)
-                dState.L2 = (byte)Global.Clamp(0, l2Sens * dState.L2, 255);
+                dState.L2 = (byte)NumericUtil.Clamp(0, l2Sens * dState.L2, 255);
 
             double r2Sens = settings.R2Sens[device];
             if (r2Sens != 1.0)
-                dState.R2 = (byte)Global.Clamp(0, r2Sens * dState.R2, 255);
+                dState.R2 = (byte)NumericUtil.Clamp(0, r2Sens * dState.R2, 255);
 
             SquareStickInfo squStk = settings.SquStickInfo[device];
             if (squStk.lsMode && (dState.LX != 128 || dState.LY != 128))
@@ -2240,7 +2240,7 @@ namespace DS4Windows
         /// <summary>
         /// Map DS4 Buttons/Axes to other DS4 Buttons/Axes (largely the same as Xinput ones) and to keyboard and mouse buttons.
         /// </summary>
-        DS4Controls[] held = new DS4Controls[Global.MAX_DS4_CONTROLLER_COUNT];
+        DS4Controls[] held = new DS4Controls[ControllerLimits.MaxControllerCount];
 
         /*static double previousPointerX = 0.0;
         //double accelHelperX = 0.0;
@@ -5407,7 +5407,7 @@ namespace DS4Windows
         public void PlayMacroDirect(int device, SpecialAction action)
         {
             // Phase6-Step9b-3（F05）: 4 スロット固定だと、拡張スロット数が 8 のときデバイス 4〜7 のマクロが再生されなかった。
-            if (device < 0 || device >= Global.MAX_DS4_CONTROLLER_COUNT || action == null) return;
+            if (device < 0 || device >= ControllerLimits.MaxControllerCount || action == null) return;
             PlayMacro(device, new bool[4], String.Empty, action.macro, null, DS4Controls.None, action.keyType, action, null);
         }
 
@@ -5416,7 +5416,7 @@ namespace DS4Windows
         /// </summary>
         public void EndMacroDirect(int device)
         {
-            if (device < 0 || device >= Global.MAX_DS4_CONTROLLER_COUNT) return;
+            if (device < 0 || device >= ControllerLimits.MaxControllerCount) return;
             EndMacro(device, new bool[4], string.Empty, DS4Controls.None);
         }
 
@@ -7103,7 +7103,7 @@ namespace DS4Windows
                 else
                 {
                     double angle = Math.Acos(dotProduct / (magAB * magCD));
-                    result = Convert.ToInt32(Global.Clamp(
+                    result = Convert.ToInt32(NumericUtil.Clamp(
                             -180.0 * C_WHEEL_ANGLE_PRECISION,
                             Math.Round((angle * (180.0 / Math.PI)), 1) * C_WHEEL_ANGLE_PRECISION,
                             180.0 * C_WHEEL_ANGLE_PRECISION)

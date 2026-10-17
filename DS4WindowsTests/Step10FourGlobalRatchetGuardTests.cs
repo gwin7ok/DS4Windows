@@ -55,10 +55,11 @@ namespace DS4WindowsTests
             // Phase7-Step7 W3: macroTaskQueue の宣言（Global.MAX_DS4_CONTROLLER_COUNT）を MacroRuntimeState へ移した（51 → 50）
             // Phase7-Step7 W4: スティック・ジャイロ・トリガーの処理状態の宣言（Global.MAX_DS4_CONTROLLER_COUNT 7 件）を StickMotionState へ移した（50 → 43。StickMotionState は 1 件）
             // Phase7-Step8 W2: AppHost 6 件をコンストラクター注入へ（6 → 0）、フォールバックの Global.ProfileSettingsServiceInstance／Global.outputKBMHandler を削除（43 → 41）
-            ["DS4Windows/DS4Control/Mapping.cs"] = (0, 0, 41),
-            ["DS4Windows/DS4Control/StickMotionState.cs"] = (0, 0, 1),
-            ["DS4Windows/DS4Control/MacroRuntimeState.cs"] = (0, 0, 1),
-            ["DS4Windows/DS4Control/SyntheticInputState.cs"] = (0, 0, 1),
+            // Phase7-Step9 W2: 定数 18 件と Clamp 23 件を ControllerLimits／NumericUtil へ切り替え（41 → 0）
+            ["DS4Windows/DS4Control/Mapping.cs"] = (0, 0, 0),
+            ["DS4Windows/DS4Control/StickMotionState.cs"] = (0, 0, 0),
+            ["DS4Windows/DS4Control/MacroRuntimeState.cs"] = (0, 0, 0),
+            ["DS4Windows/DS4Control/SyntheticInputState.cs"] = (0, 0, 0),
             ["DS4Windows/DS4Control/Mouse.cs"] = (0, 0, 2),
             ["DS4Windows/DS4Control/MouseCursor.cs"] = (0, 0, 2),
             // Phase7-Step4 W1: fakerInputInstalled を EnvironmentService の状態に切り替え（1 → 0）
