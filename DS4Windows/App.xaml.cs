@@ -329,6 +329,7 @@ namespace DS4WinWPF
             {
                 var host = AppHost.CreateHost(new Microsoft.Extensions.Configuration.ConfigurationBuilder().Build(), parser);
                 AppLogger.LogInfo("AppHost.CreateHost() called successfully (Phase 0-3 verification)");
+                AppLogger.LogInfo($"[DI] Host creation path: {AppHost.CreationNote}");
             }
             catch (Exception ex)
             {

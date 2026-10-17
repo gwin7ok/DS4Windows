@@ -14,6 +14,13 @@ namespace DS4WinWPF
 
         public static IHost Host => _host;
 
+        /// <summary>
+        /// Phase6-Step12（K7-1 の原因特定用）: ホストがどの経路で作られたかの記録。
+        /// ホスト構築の時点では、ログの最小レベルがまだ反映されておらず Trace が捨てられるため、
+        /// App.xaml.cs が、ロガー初期化後に、Info で出力する。
+        /// </summary>
+        public static string CreationNote { get; private set; }
+
         public static IHost CreateHost(IConfiguration configuration = null)
         {
             lock (_loggedResolvedTypes) { _loggedResolvedTypes.Clear(); }
@@ -47,6 +54,7 @@ namespace DS4WinWPF
                     // Phase6-Step7-4（決定7＝案H）: 現在の起動順序では、ホストは Global の静的初期化の中で
                     // 起動引数なしの CreateHost() により先に作られている（Phase6-Step7-Plan.md §0.4 の訂正）。
                     // 構築済みのコンテナには登録を追加できないため、登録済みの IStartupArguments へ起動引数を設定する。
+                    CreationNote = CreationNote ?? "host already existed (creator not recorded)";
                     ApplyStartupArguments(parser, hostAlreadyCreated: true);
                     return _host;
                 }
@@ -61,6 +69,7 @@ namespace DS4WinWPF
                 _host = builder.Build();
                 DS4Windows.DI.ServiceProviderHolder.SetProvider(_host.Services);
                 PreallocateActionEntries();
+                CreationNote = "explicit CreateHost(config, parser) created the host";
                 ApplyStartupArguments(parser, hostAlreadyCreated: false);
                 if (AppLogger.IsTraceEnabled)
                     AppLogger.LogTrace("[DI] AppHost.CreateHost: Host initialized with runtime parser");
@@ -129,8 +138,7 @@ namespace DS4WinWPF
                     if (_host == null)
                     {
                         // Phase6-Step12（K7-1 の原因特定用）: ホストが明示的な構築より前に、暗黙に作られる箇所を、呼び出し元つきで記録する
-                        if (AppLogger.IsTraceEnabled)
-                            AppLogger.LogTrace($"[DI] implicit CreateHost (no parser) triggered by resolving {typeof(T).Name}. Caller stack:{Environment.NewLine}{Environment.StackTrace}");
+                        CreationNote = $"implicit CreateHost (no parser) triggered by resolving {typeof(T).Name}. Caller stack:{Environment.NewLine}{Environment.StackTrace}";
                         CreateHost();
                     }
                 }
@@ -159,8 +167,7 @@ namespace DS4WinWPF
                     if (_host == null)
                     {
                         // Phase6-Step12（K7-1 の原因特定用）: ホストが明示的な構築より前に、暗黙に作られる箇所を、呼び出し元つきで記録する
-                        if (AppLogger.IsTraceEnabled)
-                            AppLogger.LogTrace($"[DI] implicit CreateHost (no parser) triggered by resolving {serviceType.Name}. Caller stack:{Environment.NewLine}{Environment.StackTrace}");
+                        CreationNote = $"implicit CreateHost (no parser) triggered by resolving {serviceType.Name}. Caller stack:{Environment.NewLine}{Environment.StackTrace}";
                         CreateHost();
                     }
                 }

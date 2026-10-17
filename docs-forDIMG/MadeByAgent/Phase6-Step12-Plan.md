@@ -365,6 +365,8 @@ HEAD は `e0bc8258`（作業ツリーはクリーン）。以降の §0〜§6 �
 - **課題 1: 起動ログに `Host initialized with runtime parser` が出ない（K7-1）→ 原因特定の準備**。
   - 事実: このメッセージは、`AppHost.CreateHost(config, parser)` が**新たに**ホストを作ったときだけ出る。ホストが先に作られていると、`startup arguments applied to IStartupArguments (host already created)` が出る。出ないのは、ホストが、明示的な構築より前に、暗黙に作られているため。
   - 対応: `AppHost.GetService<T>`／`GetService(Type)` が、ホスト未構築で暗黙にホストを作るとき、解決しようとした型と呼び出し元のスタックを、Trace ログ（`[DI] implicit CreateHost (no parser) triggered by resolving …`）に出すようにした。動作は変わらない（ログのみ）。
+  - **結果（2026-10-17 の起動ログ）**: `Host initialized with runtime parser`（Trace）は、上記の暗黙構築の診断ログ（Trace）と同じく、出なかった。原因は、ホスト構築の時点では、ロガーの最小レベル（Trace）がまだ反映されておらず（`Logger initialized` はホスト構築の後）、`IsTraceEnabled` が false で、Trace が捨てられるため。つまり「欠落」は、ログのタイミングの問題で、暗黙構築かどうかは、このログでは判別できない。
+  - **追加対応**: ホストの作成経路を `AppHost.CreationNote` に保持し、ロガー初期化後の Info（`[DI] Host creation path: …`、`AppHost.CreateHost() called successfully` の直後）で出力する。暗黙構築の場合は、解決しようとした型とスタックが入る。Trace の既存ログとレベルは変更していない。
   - 次の作業: 次の起動のログを取り、このログから、暗黙の構築を起こしている呼び出し元を特定する。特定できたら、`Global` の静的初期化（または Pre-Host の経路）を修正して、明示的な構築を最初にする（K7-1 の案 R。Phase7 で予定していたが、原因次第で前倒しできる）。
 
 ---
