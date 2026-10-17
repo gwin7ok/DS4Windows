@@ -317,15 +317,16 @@ namespace DS4Windows.Services
         // 本シムも読み取り専用として公開する。
         public ulong LastVersionCheckedNum => _config.lastVersionCheckedNum;
 
-        // ---- Phase6-Step10-1-1: Global への薄い委譲 ----
+        // Phase7-Step3 W4: 代入時に番号（LastVersionCheckedNum）を算出する処理を、Global のプロパティからここへ移した。
         public string LastVersionChecked
         {
-            get => Global.LastVersionChecked;
+            get => _config.lastVersionChecked;
             set
             {
-                if (Global.LastVersionChecked != value)
+                if (_config.lastVersionChecked != value)
                 {
-                    Global.LastVersionChecked = value;
+                    _config.lastVersionChecked = value;
+                    _config.lastVersionCheckedNum = Global.CompileVersionNumberFromString(value);
                     NotifyChanged(nameof(LastVersionChecked));
                     NotifyChanged(nameof(LastVersionCheckedNum));
                 }
@@ -554,29 +555,22 @@ namespace DS4Windows.Services
 
         public ControlServiceDeviceOptions DeviceOptions => _config.deviceOptions;
 
-        // Global 側の static イベントへ購読をそのまま転送する（発火元・引数は従来と完全に同一）。
-        public event EventHandler UDPServerSmoothingMincutoffChanged
-        {
-            add => Global.UDPServerSmoothingMincutoffChanged += value;
-            remove => Global.UDPServerSmoothingMincutoffChanged -= value;
-        }
+        // Phase7-Step3 W4: 静的イベントだった UDPServerSmoothing*Changed を、このサービスのインスタンスイベントにした
+        // （購読者は ControlService のみ。発火の条件と順序は従来と同一で、発火元だけが Global の静的イベントから this に変わった）。
+        public event EventHandler UDPServerSmoothingMincutoffChanged;
 
-        public event EventHandler UDPServerSmoothingBetaChanged
-        {
-            add => Global.UDPServerSmoothingBetaChanged += value;
-            remove => Global.UDPServerSmoothingBetaChanged -= value;
-        }
+        public event EventHandler UDPServerSmoothingBetaChanged;
 
         // ---- Phase6-Step2-2 (PR-2): UDP サーバ平滑化パラメータ ----
-        // 値の変更は Global 側のプロパティが UDPServerSmoothing*Changed イベントを発火する（従来と同一）。
         public double UDPServerSmoothingMincutoff
         {
-            get => Global.UDPServerSmoothingMincutoff;
+            get => _config.udpSmoothingMincutoff;
             set
             {
-                if (Global.UDPServerSmoothingMincutoff != value)
+                if (_config.udpSmoothingMincutoff != value)
                 {
-                    Global.UDPServerSmoothingMincutoff = value;
+                    _config.udpSmoothingMincutoff = value;
+                    UDPServerSmoothingMincutoffChanged?.Invoke(this, EventArgs.Empty);
                     NotifyChanged(nameof(UDPServerSmoothingMincutoff));
                 }
             }
@@ -584,12 +578,13 @@ namespace DS4Windows.Services
 
         public double UDPServerSmoothingBeta
         {
-            get => Global.UDPServerSmoothingBeta;
+            get => _config.udpSmoothingBeta;
             set
             {
-                if (Global.UDPServerSmoothingBeta != value)
+                if (_config.udpSmoothingBeta != value)
                 {
-                    Global.UDPServerSmoothingBeta = value;
+                    _config.udpSmoothingBeta = value;
+                    UDPServerSmoothingBetaChanged?.Invoke(this, EventArgs.Empty);
                     NotifyChanged(nameof(UDPServerSmoothingBeta));
                 }
             }
@@ -664,17 +659,21 @@ namespace DS4Windows.Services
             }
         }
 
-        // Global.FakeExeName の setter は、ファイル名に使えない文字を含む値を黙って無視する（従来の動作）。
+        // ファイル名に使えない文字を含む値は黙って無視する（従来の Global.FakeExeName の setter の動作。Phase7-Step3 W4 でここへ移した）。
         // 値が実際に変わったときだけ通知する。
         public string FakeExeName
         {
-            get => Global.FakeExeName;
+            get => _config.fakeExeFileName;
             set
             {
-                if (Global.FakeExeName != value)
+                if (_config.fakeExeFileName != value)
                 {
-                    Global.FakeExeName = value;
-                    if (Global.FakeExeName == value)
+                    if (!(value.IndexOfAny(System.IO.Path.GetInvalidFileNameChars()) >= 0))
+                    {
+                        _config.fakeExeFileName = value;
+                    }
+
+                    if (_config.fakeExeFileName == value)
                     {
                         NotifyChanged(nameof(FakeExeName));
                     }

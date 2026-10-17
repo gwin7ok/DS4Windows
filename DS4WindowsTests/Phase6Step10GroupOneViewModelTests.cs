@@ -63,7 +63,7 @@ namespace DS4WindowsTests
             }
             finally
             {
-                Global.LastVersionChecked = original;
+                Global.store.lastVersionChecked = original;
             }
         }
 

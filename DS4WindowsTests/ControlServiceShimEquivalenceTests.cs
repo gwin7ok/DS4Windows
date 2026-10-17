@@ -161,49 +161,49 @@ namespace DS4WindowsTests
         }
 
         [Fact]
-        public void UDPServerSmoothingMincutoffChanged_IsForwardedFromGlobal()
+        public void UDPServerSmoothingMincutoffChanged_IsRaisedByService()
         {
             int fired = 0;
             EventHandler handler = (sender, e) => fired++;
-            double original = Global.UDPServerSmoothingMincutoff;
+            double original = _appSettings.UDPServerSmoothingMincutoff;
             _appSettings.UDPServerSmoothingMincutoffChanged += handler;
             try
             {
-                Global.UDPServerSmoothingMincutoff = original + 1.0;
+                _appSettings.UDPServerSmoothingMincutoff = original + 1.0;
                 Assert.Equal(1, fired);
 
-                // 購読解除が Global 側の static イベントへ正しく転送されること。
+                // Phase7-Step3 W4: イベントはサービスのインスタンスイベント。購読解除後は発火しないこと。
                 _appSettings.UDPServerSmoothingMincutoffChanged -= handler;
-                Global.UDPServerSmoothingMincutoff = original;
+                _appSettings.UDPServerSmoothingMincutoff = original;
                 Assert.Equal(1, fired);
             }
             finally
             {
                 _appSettings.UDPServerSmoothingMincutoffChanged -= handler;
-                Global.UDPServerSmoothingMincutoff = original;
+                _appSettings.UDPServerSmoothingMincutoff = original;
             }
         }
 
         [Fact]
-        public void UDPServerSmoothingBetaChanged_IsForwardedFromGlobal()
+        public void UDPServerSmoothingBetaChanged_IsRaisedByService()
         {
             int fired = 0;
             EventHandler handler = (sender, e) => fired++;
-            double original = Global.UDPServerSmoothingBeta;
+            double original = _appSettings.UDPServerSmoothingBeta;
             _appSettings.UDPServerSmoothingBetaChanged += handler;
             try
             {
-                Global.UDPServerSmoothingBeta = original + 1.0;
+                _appSettings.UDPServerSmoothingBeta = original + 1.0;
                 Assert.Equal(1, fired);
 
                 _appSettings.UDPServerSmoothingBetaChanged -= handler;
-                Global.UDPServerSmoothingBeta = original;
+                _appSettings.UDPServerSmoothingBeta = original;
                 Assert.Equal(1, fired);
             }
             finally
             {
                 _appSettings.UDPServerSmoothingBetaChanged -= handler;
-                Global.UDPServerSmoothingBeta = original;
+                _appSettings.UDPServerSmoothingBeta = original;
             }
         }
 

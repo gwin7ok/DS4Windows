@@ -127,7 +127,7 @@ namespace DS4WindowsTests
 
             bool originalQuick = Global.store.quickCharge;
             int originalOscPort = Global.getOSCServerPortNum();
-            double originalBeta = Global.UDPServerSmoothingBeta;
+            double originalBeta = Global.store.udpSmoothingBeta;
             string originalLevel = Global.LogMinLevel;
             try
             {
@@ -139,13 +139,13 @@ namespace DS4WindowsTests
                 Assert.Equal(originalOscPort + 1, Global.getOSCServerPortNum());
 
                 vm.UdpSmoothBeta = originalBeta + 0.25;
-                Assert.Equal(originalBeta + 0.25, Global.UDPServerSmoothingBeta);
+                Assert.Equal(originalBeta + 0.25, Global.store.udpSmoothingBeta);
             }
             finally
             {
                 Global.store.quickCharge = originalQuick;
                 Global.store.oscServPort = originalOscPort;
-                Global.UDPServerSmoothingBeta = originalBeta;
+                Global.store.udpSmoothingBeta = originalBeta;
                 Global.LogMinLevel = originalLevel;
                 vm.Dispose();
             }

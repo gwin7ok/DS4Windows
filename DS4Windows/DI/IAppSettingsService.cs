@@ -110,7 +110,7 @@ namespace DS4Windows.DI
         bool UseCustomSteamFolder { get; set; }
         string CustomSteamFolder { get; set; }
         /// <summary>
-        /// 偽装 exe 名（拡張子なし）。ファイル名に使えない文字を含む値は <c>Global.FakeExeName</c> と同じく黙って無視される
+        /// 偽装 exe 名（拡張子なし）。ファイル名に使えない文字を含む値は 従来の <c>Global.FakeExeName</c> と同じく黙って無視される（処理は <c>AppSettingsService</c> が持つ）
         /// （読み戻すと値は変わらない）。
         /// </summary>
         string FakeExeName { get; set; }

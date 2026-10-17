@@ -1213,15 +1213,9 @@ namespace DS4Windows
         // 0 = hours, 1 = days
         // Legacy `CheckWhen` removed. Use explicit CheckEveryValue/CheckEveryUnit instead.
 
-        public static string LastVersionChecked
-        {
-            get { return m_Config.lastVersionChecked; }
-            set
-            {
-                m_Config.lastVersionChecked = value;
-                m_Config.lastVersionCheckedNum = CompileVersionNumberFromString(value);
-            }
-        }
+        // Phase7-Step3 W4: 読み取り専用にした（代入と番号の算出は AppSettingsService.LastVersionChecked が担う）。
+        // Changelog が読むため、Phase7 の後続 Step まで残す。
+        public static string LastVersionChecked => m_Config.lastVersionChecked;
 
         public static int Notifications
         {
@@ -1257,32 +1251,6 @@ namespace DS4Windows
         {
             return m_Config.oscServPort;
         }
-        public static double UDPServerSmoothingMincutoff
-        {
-            get => m_Config.udpSmoothingMincutoff;
-            set
-            {
-                double temp = m_Config.udpSmoothingMincutoff;
-                if (temp == value) return;
-                m_Config.udpSmoothingMincutoff = value;
-                UDPServerSmoothingMincutoffChanged?.Invoke(null, EventArgs.Empty);
-            }
-        }
-        public static event EventHandler UDPServerSmoothingMincutoffChanged;
-
-        public static double UDPServerSmoothingBeta
-        {
-            get => m_Config.udpSmoothingBeta;
-            set
-            {
-                double temp = m_Config.udpSmoothingBeta;
-                if (temp == value) return;
-                m_Config.udpSmoothingBeta = value;
-                UDPServerSmoothingBetaChanged?.Invoke(null, EventArgs.Empty);
-            }
-        }
-        public static event EventHandler UDPServerSmoothingBetaChanged;
-
         public static TrayIconChoice UseIconChoice
         {
             get => m_Config.useIconChoice;
@@ -1306,22 +1274,6 @@ namespace DS4Windows
         {
             get => m_Config.autoProfileSwitchNotifyChoice;
             set => m_Config.autoProfileSwitchNotifyChoice = value;
-        }
-
-        /// <summary>
-        /// Fake name used for user copy of DS4Windows.exe
-        /// </summary>
-        public static string FakeExeName
-        {
-            get { return m_Config.fakeExeFileName; }
-            set
-            {
-                bool valid = !(value.IndexOfAny(Path.GetInvalidFileNameChars()) >= 0);
-                if (valid)
-                {
-                    m_Config.fakeExeFileName = value;
-                }
-            }
         }
 
         public static int[] DebouncingMs => ProfileSettingsServiceInstance.DebouncingMs;

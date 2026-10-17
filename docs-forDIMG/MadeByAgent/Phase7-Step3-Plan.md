@@ -121,3 +121,10 @@
   - テスト: 15 件を `Global.store.<field>` に書き換え。`ControlServiceShimEquivalenceTests` の関数参照 5 件はラムダに変更。ガードテストの名前一覧に W3 を追記し、メソッド宣言も検出するよう正規表現を拡張。
   - `LastVersionChecked`（代入時に番号を算出する処理を持つ）、`SetCulture`、`firstRun`、`runHotPlug`、`ProfileChangedNotification`、UDP 平滑化、`FakeExeName` は W4 以降（処理を持つため）。
   - ラチェット基準値: `AppSettingsService.cs` 80→27。
+- **W4 実装済み（ビルド・テスト待ち）**
+  - `FakeExeName`: ファイル名として有効かの検証を `AppSettingsService` の setter へ移し、`Global.FakeExeName` を削除（`null` を代入すると例外になる点も従来どおり）。
+  - UDP 平滑化: `UDPServerSmoothingMincutoff`／`Beta` の値と、`…Changed` イベントを `AppSettingsService` のインスタンスに移した（発火の条件と順序は従来と同一、発火元が `Global` の静的イベントから `this` に変わった）。購読者は `ControlService` のみ（すでに `_appSettings` 経由）。`Global` の 2 プロパティと 2 イベントを削除。静的イベントの購読が解除されないまま残る問題も解消した。
+  - `LastVersionChecked`: 代入時に `LastVersionCheckedNum` を算出する処理をサービスへ移し、`Global.LastVersionChecked` は読み取り専用にした（`Changelog` が読むため残す。後続 Step で `Changelog` を切り替えたら削除）。
+  - テスト: `Global.store.<field>` への書き換え、`ControlServiceShimEquivalenceTests` の 2 件は「サービスの setter が `Changed` を 1 回発火し、購読解除後は発火しない」確認に変更。ガードテストの名前一覧に W4 を追記。
+  - ラチェット基準値: `AppSettingsService.cs` 27→11。
+  - 持ち越し: `SetCulture`（`Global` に他の呼び出し元あり）、`firstRun`／`runHotPlug`（環境の状態。Step4）、`ProfileChangedNotification`（`ProfileSettingsServiceInstance` 経由。サービス間の依存の整理が要るため W5 で判断）。

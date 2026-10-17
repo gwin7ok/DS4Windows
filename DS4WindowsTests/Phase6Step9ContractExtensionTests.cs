@@ -67,18 +67,18 @@ namespace DS4WindowsTests
         public void FakeExeName_ValidName_IsAppliedAndNotified()
         {
             var service = TestRepositoryFactory.CreateAppSettingsService();
-            string original = Global.FakeExeName;
+            string original = Global.store.fakeExeFileName;
             var changed = new System.Collections.Generic.List<string>();
             service.SettingChanged += (s, name) => changed.Add(name);
             try
             {
                 service.FakeExeName = "Phase6Step9Fake";
-                Assert.Equal("Phase6Step9Fake", Global.FakeExeName);
+                Assert.Equal("Phase6Step9Fake", Global.store.fakeExeFileName);
                 Assert.Contains(nameof(IAppSettingsService.FakeExeName), changed);
             }
             finally
             {
-                Global.FakeExeName = original;
+                Global.store.fakeExeFileName = original;
             }
         }
 
@@ -86,7 +86,7 @@ namespace DS4WindowsTests
         public void FakeExeName_InvalidFileNameChars_AreIgnoredLikeGlobal_AndNotNotified()
         {
             var service = TestRepositoryFactory.CreateAppSettingsService();
-            string original = Global.FakeExeName;
+            string original = Global.store.fakeExeFileName;
             var changed = new System.Collections.Generic.List<string>();
             service.SettingChanged += (s, name) => changed.Add(name);
             try
@@ -94,15 +94,15 @@ namespace DS4WindowsTests
                 service.FakeExeName = "Phase6Step9Valid";
                 changed.Clear();
 
-                // Global.FakeExeName の setter は、ファイル名に使えない文字を含む値を黙って無視する
+                // Global.store.fakeExeFileName の setter は、ファイル名に使えない文字を含む値を黙って無視する
                 service.FakeExeName = "bad|name?";
-                Assert.Equal("Phase6Step9Valid", Global.FakeExeName);
+                Assert.Equal("Phase6Step9Valid", Global.store.fakeExeFileName);
                 Assert.Equal("Phase6Step9Valid", service.FakeExeName);
                 Assert.Empty(changed);
             }
             finally
             {
-                Global.FakeExeName = original;
+                Global.store.fakeExeFileName = original;
             }
         }
 

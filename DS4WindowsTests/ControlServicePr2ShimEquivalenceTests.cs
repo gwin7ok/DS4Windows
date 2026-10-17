@@ -22,49 +22,49 @@ namespace DS4WindowsTests
         [Fact]
         public void UDPServerSmoothingMincutoff_SharesStateWithGlobal()
         {
-            double original = Global.UDPServerSmoothingMincutoff;
+            double original = Global.store.udpSmoothingMincutoff;
             try
             {
-                Global.UDPServerSmoothingMincutoff = original + 0.5;
+                Global.store.udpSmoothingMincutoff = original + 0.5;
                 Assert.Equal(original + 0.5, _appSettings.UDPServerSmoothingMincutoff);
 
                 _appSettings.UDPServerSmoothingMincutoff = original + 0.25;
-                Assert.Equal(original + 0.25, Global.UDPServerSmoothingMincutoff);
+                Assert.Equal(original + 0.25, Global.store.udpSmoothingMincutoff);
             }
             finally
             {
-                Global.UDPServerSmoothingMincutoff = original;
+                Global.store.udpSmoothingMincutoff = original;
             }
         }
 
         [Fact]
         public void UDPServerSmoothingBeta_SharesStateWithGlobal()
         {
-            double original = Global.UDPServerSmoothingBeta;
+            double original = Global.store.udpSmoothingBeta;
             try
             {
-                Global.UDPServerSmoothingBeta = original + 0.5;
+                Global.store.udpSmoothingBeta = original + 0.5;
                 Assert.Equal(original + 0.5, _appSettings.UDPServerSmoothingBeta);
 
                 _appSettings.UDPServerSmoothingBeta = original + 0.25;
-                Assert.Equal(original + 0.25, Global.UDPServerSmoothingBeta);
+                Assert.Equal(original + 0.25, Global.store.udpSmoothingBeta);
             }
             finally
             {
-                Global.UDPServerSmoothingBeta = original;
+                Global.store.udpSmoothingBeta = original;
             }
         }
 
         [Fact]
-        public void UDPServerSmoothing_SetThroughService_RaisesGlobalChangedEvents()
+        public void UDPServerSmoothing_SetThroughService_RaisesChangedEvents()
         {
-            // サービス経由の書込みでも、従来どおり Global 側の Changed イベントが発火すること。
+            // サービス経由の書込みでも、サービスの Changed イベントが発火すること。
             int mincutoffFired = 0;
             int betaFired = 0;
             EventHandler onMincutoff = (s, e) => mincutoffFired++;
             EventHandler onBeta = (s, e) => betaFired++;
-            double originalMincutoff = Global.UDPServerSmoothingMincutoff;
-            double originalBeta = Global.UDPServerSmoothingBeta;
+            double originalMincutoff = Global.store.udpSmoothingMincutoff;
+            double originalBeta = Global.store.udpSmoothingBeta;
             _appSettings.UDPServerSmoothingMincutoffChanged += onMincutoff;
             _appSettings.UDPServerSmoothingBetaChanged += onBeta;
             try
@@ -79,8 +79,8 @@ namespace DS4WindowsTests
             {
                 _appSettings.UDPServerSmoothingMincutoffChanged -= onMincutoff;
                 _appSettings.UDPServerSmoothingBetaChanged -= onBeta;
-                Global.UDPServerSmoothingMincutoff = originalMincutoff;
-                Global.UDPServerSmoothingBeta = originalBeta;
+                Global.store.udpSmoothingMincutoff = originalMincutoff;
+                Global.store.udpSmoothingBeta = originalBeta;
             }
         }
 
