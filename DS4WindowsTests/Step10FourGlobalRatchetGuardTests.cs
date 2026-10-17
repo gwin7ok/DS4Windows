@@ -75,7 +75,8 @@ namespace DS4WindowsTests
             ["DS4Windows/DS4Control/Services/ProfilePresetLoader.cs"] = (0, 0, 10),
             // 26: 名前変更の伝播（ReplaceProfileSwitchTarget。Phase6-Step10-4-5d）で、Global.store への委譲を 2 件追加（薄いシムの性質。24 → 26）
             ["DS4Windows/DS4Control/Services/ProfileRepository.cs"] = (0, 0, 26),
-            ["DS4Windows/DS4Control/Services/ProfileSettingsService.cs"] = (0, 0, 5),
+            // Phase7-Step2 W1: コピー版 GetReverseX360ButtonMapping の削除で Global.reverseX360ButtonMapping の参照 1 件を削除（5 → 4）
+            ["DS4Windows/DS4Control/Services/ProfileSettingsService.cs"] = (0, 0, 4),
             ["DS4Windows/DS4Control/Services/ProfileSlotApplier.cs"] = (0, 0, 1),
             ["DS4Windows/DS4Control/Services/ProfileXmlStore.cs"] = (0, 0, 3),
             ["DS4Windows/DS4Control/Services/SpecialActionRepository.cs"] = (0, 0, 4),

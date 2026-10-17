@@ -13,21 +13,18 @@ namespace DS4WindowsTests
         {
             var service = TestRepositoryFactory.CreateProfileSettingsService();
 
-            Assert.Equal(new CultureInfo("en-US"), service.ConfigDecimalCulture);
             Assert.Equal(9, service.TouchpadActiveArray.Length);
             Assert.Equal(9, service.UseTempProfileArray.Length);
-            Assert.Equal(9, service.TempProfileNameArray.Length);
             Assert.Equal(9, service.TempProfileDistanceArray.Length);
             Assert.Equal(9, service.UseDInputOnlyArray.Length);
-            Assert.Equal(8, service.LinkedProfileCheckArray.Length);
 
             for (int i = 0; i < 9; i++)
             {
                 Assert.True(service.GetTouchpadActive(i));
                 Assert.False(service.GetUseTempProfile(i));
                 Assert.Equal(string.Empty, service.GetTempProfileName(i));
-                Assert.False(service.GetTempProfileDistance(i));
-                Assert.True(service.GetUseDInputOnly(i));
+                Assert.False(service.TempProfileDistanceArray[i]);
+                Assert.True(service.UseDInputOnlyArray[i]);
             }
 
             for (int i = 0; i < 8; i++)
@@ -41,11 +38,11 @@ namespace DS4WindowsTests
         {
             var service = TestRepositoryFactory.CreateProfileSettingsService();
 
-            service.SetTouchpadActive(2, false);
+            service.TouchpadActiveArray[2] = false;
             service.SetUseTempProfile(3, true);
             service.SetTempProfileName(4, "TestProfile");
             service.SetTempProfileDistance(1, true);
-            service.SetUseDInputOnly(0, false);
+            service.UseDInputOnlyArray[0] = false;
             service.SetLinkedProfileCheck(5, true);
 
             Assert.False(service.GetTouchpadActive(2));
@@ -57,8 +54,8 @@ namespace DS4WindowsTests
             Assert.Equal("TestProfile", service.GetTempProfileName(4));
             Assert.Equal(string.Empty, service.GetTempProfileName(0));
 
-            Assert.True(service.GetTempProfileDistance(1));
-            Assert.False(service.GetUseDInputOnly(0));
+            Assert.True(service.TempProfileDistanceArray[1]);
+            Assert.False(service.UseDInputOnlyArray[0]);
             Assert.True(service.GetLinkedProfileCheck(5));
         }
 
@@ -69,13 +66,13 @@ namespace DS4WindowsTests
             ProfileSettingChangedEventArgs eventArgs = null;
             service.ProfileSettingChanged += (s, e) => eventArgs = e;
 
-            service.SetTouchpadActive(1, false);
+            service.SetUseTempProfile(1, true);
 
             Assert.NotNull(eventArgs);
             Assert.Equal(1, eventArgs.DeviceIndex);
-            Assert.Equal(nameof(service.TouchpadActiveArray), eventArgs.SettingName);
-            Assert.Equal(true, eventArgs.OldValue);
-            Assert.Equal(false, eventArgs.NewValue);
+            Assert.Equal(nameof(service.UseTempProfileArray), eventArgs.SettingName);
+            Assert.Equal(false, eventArgs.OldValue);
+            Assert.Equal(true, eventArgs.NewValue);
         }
 
         [Fact]
@@ -83,7 +80,7 @@ namespace DS4WindowsTests
         {
             var service = TestRepositoryFactory.CreateProfileSettingsService();
 
-            service.SetTouchpadActive(0, false);
+            service.TouchpadActiveArray[0] = false;
             service.SetUseTempProfile(0, true);
             service.SetTempProfileName(0, "Temp");
             service.SetLinkedProfileCheck(0, true);
@@ -104,7 +101,8 @@ namespace DS4WindowsTests
             var touchpad = service.GetTouchpadActive(99);
             Assert.True(touchpad);
 
-            service.SetTouchpadActive(99, false);
+            service.SetUseTempProfile(99, true);
+            Assert.False(service.GetUseTempProfile(99));
             service.SetTempProfileName(-1, "Invalid");
             Assert.Equal(string.Empty, service.GetTempProfileName(-1));
         }

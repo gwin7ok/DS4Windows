@@ -42,8 +42,6 @@ namespace DS4Windows
             _controlProvider = controlProvider ?? throw new ArgumentNullException(nameof(controlProvider));
         }
 
-        public CultureInfo ConfigDecimalCulture { get; } = new CultureInfo("en-US");
-
         private bool[] _touchpadActive = new bool[TEST_PROFILE_ITEM_COUNT] { true, true, true, true, true, true, true, true, true };
         private bool[] _useTempProfile = new bool[TEST_PROFILE_ITEM_COUNT] { false, false, false, false, false, false, false, false, false };
         private string[] _tempProfileName = new string[TEST_PROFILE_ITEM_COUNT] { string.Empty, string.Empty, string.Empty, string.Empty, string.Empty, string.Empty, string.Empty, string.Empty, string.Empty };
@@ -132,22 +130,6 @@ namespace DS4Windows
             return true;
         }
 
-        public void SetTouchpadActive(int deviceIndex, bool value)
-        {
-            if (deviceIndex >= 0 && deviceIndex < _touchpadActive.Length)
-            {
-                lock (_syncLock)
-                {
-                    var old = _touchpadActive[deviceIndex];
-                    if (old != value)
-                    {
-                        _touchpadActive[deviceIndex] = value;
-                        OnProfileSettingChanged(deviceIndex, nameof(TouchpadActiveArray), old, value);
-                    }
-                }
-            }
-        }
-
         public bool GetUseTempProfile(int deviceIndex)
         {
             if (deviceIndex >= 0 && deviceIndex < _useTempProfile.Length)
@@ -194,13 +176,6 @@ namespace DS4Windows
             }
         }
 
-        public bool GetTempProfileDistance(int deviceIndex)
-        {
-            if (deviceIndex >= 0 && deviceIndex < _tempProfileDistance.Length)
-                return _tempProfileDistance[deviceIndex];
-            return false;
-        }
-
         public void SetTempProfileDistance(int deviceIndex, bool value)
         {
             if (deviceIndex >= 0 && deviceIndex < _tempProfileDistance.Length)
@@ -212,29 +187,6 @@ namespace DS4Windows
                     {
                         _tempProfileDistance[deviceIndex] = value;
                         OnProfileSettingChanged(deviceIndex, nameof(TempProfileDistanceArray), old, value);
-                    }
-                }
-            }
-        }
-
-        public bool GetUseDInputOnly(int deviceIndex)
-        {
-            if (deviceIndex >= 0 && deviceIndex < _useDInputOnly.Length)
-                return _useDInputOnly[deviceIndex];
-            return true;
-        }
-
-        public void SetUseDInputOnly(int deviceIndex, bool value)
-        {
-            if (deviceIndex >= 0 && deviceIndex < _useDInputOnly.Length)
-            {
-                lock (_syncLock)
-                {
-                    var old = _useDInputOnly[deviceIndex];
-                    if (old != value)
-                    {
-                        _useDInputOnly[deviceIndex] = value;
-                        OnProfileSettingChanged(deviceIndex, nameof(UseDInputOnlyArray), old, value);
                     }
                 }
             }
@@ -374,7 +326,6 @@ namespace DS4Windows
         public int GetGyroInvert(int deviceIndex) => SafeConfig != null && SafeConfig.gyroInvert != null ? SafeConfig.gyroInvert[deviceIndex] : 0;
         public bool GetGyroTriggerTurns(int deviceIndex) => SafeConfig != null && SafeConfig.gyroTriggerTurns != null && SafeConfig.gyroTriggerTurns[deviceIndex];
         public int GetGyroMouseHorizontalAxis(int deviceIndex) => SafeConfig != null && SafeConfig.gyroMouseHorizontalAxis != null ? SafeConfig.gyroMouseHorizontalAxis[deviceIndex] : 0;
-        public int GetGyroMouseDeadZone(int deviceIndex) => SafeConfig != null && SafeConfig.gyroMouseDZ != null ? SafeConfig.gyroMouseDZ[deviceIndex] : 0;
         public GyroControlsInfo GetGyroControlsInfo(int deviceIndex) => SafeConfig?.gyroControlsInf?[deviceIndex];
 
         public void SetGyroMouseDeadZone(int index, int value, ControlService control)
@@ -463,11 +414,6 @@ namespace DS4Windows
         }
 
         public ref DS4Color GetMainColor(int deviceIndex) => ref SafeConfig.lightbarSettingInfo[deviceIndex].ds4winSettings.m_Led;
-        public ref DS4Color GetLowColor(int deviceIndex) => ref SafeConfig.lightbarSettingInfo[deviceIndex].ds4winSettings.m_LowLed;
-        public ref DS4Color GetChargingColor(int deviceIndex) => ref SafeConfig.lightbarSettingInfo[deviceIndex].ds4winSettings.m_ChargingLed;
-        public ref DS4Color GetCustomColor(int deviceIndex) => ref SafeConfig.lightbarSettingInfo[deviceIndex].ds4winSettings.m_CustomLed;
-        public bool GetUseCustomLed(int deviceIndex) => SafeConfig != null && SafeConfig.lightbarSettingInfo[deviceIndex].ds4winSettings.useCustomLed;
-        public ref DS4Color GetFlashColor(int deviceIndex) => ref SafeConfig.lightbarSettingInfo[deviceIndex].ds4winSettings.m_FlashLed;
 
         public void SetRumbleAutostopTime(int index, int value)
         {
@@ -494,8 +440,6 @@ namespace DS4Windows
         public double[] TrackballFriction => SafeConfig?.trackballFriction;
         public bool GetEnableTouchToggle(int deviceIndex) => SafeConfig != null && SafeConfig.enableTouchToggle != null && SafeConfig.enableTouchToggle[deviceIndex];
         public bool GetDoubleTap(int deviceIndex) => SafeConfig != null && SafeConfig.doubleTap != null && SafeConfig.doubleTap[deviceIndex];
-        public int[] GetScrollSensitivity() => SafeConfig?.scrollSensitivity;
-        public int GetScrollSensitivity(int deviceIndex) => SafeConfig != null && SafeConfig.scrollSensitivity != null ? SafeConfig.scrollSensitivity[deviceIndex] : 0;
         public bool GetTrackballMode(int deviceIndex) => SafeConfig != null && SafeConfig.trackballMode != null && SafeConfig.trackballMode[deviceIndex];
         public double GetTrackballFriction(int deviceIndex) => SafeConfig != null && SafeConfig.trackballFriction != null ? SafeConfig.trackballFriction[deviceIndex] : 0;
 
@@ -503,7 +447,6 @@ namespace DS4Windows
         public string[] SATriggers => SafeConfig?.sATriggers;
         public bool[] SATriggerCond => SafeConfig?.sATriggerCond;
         public string[] SAMousestickTriggers => SafeConfig?.sAMouseStickTriggers;
-        public bool[] SAMouseStickTriggerCond => SafeConfig?.sAMouseStickTriggerCond;
         public SASteeringWheelEmulationAxisType[] SASteeringWheelEmulationAxis => SafeConfig?.sASteeringWheelEmulationAxis;
         public int[] SASteeringWheelEmulationRange => SafeConfig?.sASteeringWheelEmulationRange;
         public int[] SAWheelFuzzValues => SafeConfig?.saWheelFuzzValues;
@@ -581,7 +524,6 @@ namespace DS4Windows
         public bool GetEnableOutputDataToDS4(int deviceIndex) => SafeConfig != null && SafeConfig.enableOutputDataToDS4 != null && SafeConfig.enableOutputDataToDS4[deviceIndex];
         public DS4ControlSettings GetDS4CSetting(int deviceIndex, string control) => SafeConfig?.GetDS4CSetting(deviceIndex, control);
         public DS4ControlSettings GetDS4CSetting(int deviceIndex, DS4Controls control) => SafeConfig?.GetDS4CSetting(deviceIndex, control);
-        public List<DS4ControlSettings> GetDS4CSettings(int deviceIndex) => SafeConfig?.ds4settings != null ? SafeConfig.ds4settings[deviceIndex] : null;
 
         // ---- Step10-2-A-9: Mapping.cs専用 ----
         public bool ProfileChangedNotification
@@ -603,11 +545,6 @@ namespace DS4Windows
         // Phase6-Step9-1: Global.RefreshActionAlias への薄い委譲
         public void RefreshActionAlias(DS4ControlSettings setting, bool shift) =>
             Global.RefreshActionAlias(setting, shift);
-
-        public DS4Controls[] GetReverseX360ButtonMapping()
-        {
-            return (DS4Controls[])Global.reverseX360ButtonMapping.Clone();
-        }
 
         // コピーしない版（Phase6-Step3-6a、決定 R1）。Global.reverseX360ButtonMapping は起動時に作られて以後変化しない定数表。
         // 元の Global.reverseX360ButtonMapping（素の public static 配列）と同じく、参照をそのまま返す。
@@ -633,17 +570,6 @@ namespace DS4Windows
                         SafeConfig.rumbleSettings[deviceIndex].Reset();
                     }
                     OnProfileSettingChanged(deviceIndex, "ResetToDefaults", null, null);
-                }
-            }
-        }
-
-        public void ResetAllToDefaults()
-        {
-            lock (_syncLock)
-            {
-                for (int i = 0; i < TEST_PROFILE_ITEM_COUNT; i++)
-                {
-                    ResetToDefaults(i);
                 }
             }
         }

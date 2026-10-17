@@ -10,17 +10,13 @@ namespace DS4Windows.DI
 
     public interface IProfileSettingsService
     {
-        CultureInfo ConfigDecimalCulture { get; }
 
         bool[] TouchpadActiveArray { get; set; }
         bool[] UseTempProfileArray { get; set; }
-        string[] TempProfileNameArray { get; set; }
         bool[] TempProfileDistanceArray { get; set; }
         bool[] UseDInputOnlyArray { get; set; }
-        bool[] LinkedProfileCheckArray { get; set; }
 
         bool GetTouchpadActive(int deviceIndex);
-        void SetTouchpadActive(int deviceIndex, bool value);
 
         bool GetUseTempProfile(int deviceIndex);
         void SetUseTempProfile(int deviceIndex, bool value);
@@ -28,17 +24,12 @@ namespace DS4Windows.DI
         string GetTempProfileName(int deviceIndex);
         void SetTempProfileName(int deviceIndex, string value);
 
-        bool GetTempProfileDistance(int deviceIndex);
         void SetTempProfileDistance(int deviceIndex, bool value);
-
-        bool GetUseDInputOnly(int deviceIndex);
-        void SetUseDInputOnly(int deviceIndex, bool value);
 
         bool GetLinkedProfileCheck(int deviceIndex);
         void SetLinkedProfileCheck(int deviceIndex, bool value);
 
         X360Controls[] GetDefaultButtonMapping();
-        DS4Controls[] GetReverseX360ButtonMapping();
 
         // ---- Phase6-Step9-1: PresetMenuHelper／BindingWindowViewModel の Global.RefreshActionAlias 参照の置換先 ----
         /// <summary>
@@ -51,8 +42,8 @@ namespace DS4Windows.DI
         /// <summary>
         /// Xbox360 ボタン → DS4 ボタンの逆引き表そのもの（<c>Global.reverseX360ButtonMapping</c>）を、コピーせずに返す。
         /// 起動時に1回作られて以後変化しない定数表で、毎入力レポートの経路（<c>Mapping.ProcessControlSettingAction</c>）から引かれるため、
-        /// 呼び出しごとに <c>Clone()</c> する <see cref="GetReverseX360ButtonMapping"/> ではなく本プロパティを使う（ゼロアロケーション方針、Phase6-Step3-6a の決定 R1）。
-        /// 返された配列は呼び出し側で書き換えないこと。書き換える可能性がある呼び出し元は <see cref="GetReverseX360ButtonMapping"/>（コピー版）を使う。
+        /// 呼び出しごとに <c>Clone()</c> するコピー版は使わず、本プロパティを使う（ゼロアロケーション方針、Phase6-Step3-6a の決定 R1）。コピー版 <c>GetReverseX360ButtonMapping()</c> は、呼び出し元が 0 件のため Phase7-Step2 W1 で削除した。
+        /// 返された配列は呼び出し側で書き換えないこと。書き換える必要がある場合は、呼び出し側で <c>Clone()</c> して使う。
         /// </summary>
         DS4Controls[] ReverseX360ButtonMapping { get; }
 
@@ -130,7 +121,6 @@ namespace DS4Windows.DI
         int GetGyroInvert(int deviceIndex);
         bool GetGyroTriggerTurns(int deviceIndex);
         int GetGyroMouseHorizontalAxis(int deviceIndex);
-        int GetGyroMouseDeadZone(int deviceIndex);
         GyroControlsInfo GetGyroControlsInfo(int deviceIndex);
         void SetGyroMouseDeadZone(int index, int value, ControlService control);
         void SetGyroMouseToggle(int index, bool value, ControlService control);
@@ -149,11 +139,6 @@ namespace DS4Windows.DI
         byte GetRumbleBoost(int deviceIndex);
         int GetRumbleAutostopTime(int deviceIndex);
         ref DS4Color GetMainColor(int deviceIndex);
-        ref DS4Color GetLowColor(int deviceIndex);
-        ref DS4Color GetChargingColor(int deviceIndex);
-        ref DS4Color GetCustomColor(int deviceIndex);
-        bool GetUseCustomLed(int deviceIndex);
-        ref DS4Color GetFlashColor(int deviceIndex);
         void SetRumbleAutostopTime(int index, int value);
 
         // ---- Step10-2-A-6: ボタン/マウス出力関連 (m_Config委譲) ----
@@ -166,8 +151,6 @@ namespace DS4Windows.DI
         double[] TrackballFriction { get; }
         bool GetEnableTouchToggle(int deviceIndex);
         bool GetDoubleTap(int deviceIndex);
-        int[] GetScrollSensitivity();
-        int GetScrollSensitivity(int deviceIndex);
         bool GetTrackballMode(int deviceIndex);
         double GetTrackballFriction(int deviceIndex);
 
@@ -175,7 +158,6 @@ namespace DS4Windows.DI
         string[] SATriggers { get; }
         bool[] SATriggerCond { get; }
         string[] SAMousestickTriggers { get; }
-        bool[] SAMouseStickTriggerCond { get; }
         SASteeringWheelEmulationAxisType[] SASteeringWheelEmulationAxis { get; }
         int[] SASteeringWheelEmulationRange { get; }
         int[] SAWheelFuzzValues { get; }
@@ -231,7 +213,6 @@ namespace DS4Windows.DI
         bool GetEnableOutputDataToDS4(int deviceIndex);
         DS4ControlSettings GetDS4CSetting(int deviceIndex, string control);
         DS4ControlSettings GetDS4CSetting(int deviceIndex, DS4Controls control);
-        List<DS4ControlSettings> GetDS4CSettings(int deviceIndex);
 
         // ---- Step10-2-A-9: Mapping.cs専用 ----
         bool ProfileChangedNotification { get; set; }
@@ -241,7 +222,6 @@ namespace DS4Windows.DI
         event EventHandler<ProfileSettingChangedEventArgs> ProfileSettingChanged;
 
         void ResetToDefaults(int deviceIndex);
-        void ResetAllToDefaults();
 
         /// <summary>
         /// 指定スロット（-1 の場合は全スロット）のネストされたサブ設定オブジェクト群の変更バブリングイベントを配線します。

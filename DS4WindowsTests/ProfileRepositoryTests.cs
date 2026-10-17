@@ -70,7 +70,7 @@ namespace DS4WindowsTests
             var settings = TestRepositoryFactory.CreateProfileSettingsService();
             var repository = TestRepositoryFactory.CreateProfileRepository(settings);
 
-            settings.SetTouchpadActive(0, false);
+            settings.TouchpadActiveArray[0] = false;
             settings.SetUseTempProfile(0, true);
 
             var result = repository.LoadDefaultProfile(0);
@@ -140,7 +140,7 @@ namespace DS4WindowsTests
                 Assert.Equal(1, fakeXmlStore.LoadCallCount);
                 Assert.False(settings.GetUseTempProfile(4));
                 Assert.Equal(string.Empty, settings.GetTempProfileName(4));
-                Assert.False(settings.GetTempProfileDistance(4));
+                Assert.False(settings.TempProfileDistanceArray[4]);
             }
             finally
             {

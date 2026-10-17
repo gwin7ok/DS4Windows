@@ -140,3 +140,22 @@
 - [ ] `Phase7-Residual-Ledger.md`、`Phase7-Status.md`、モデル図が更新されている。
 - [ ] 起動・接続・出力スロットの付け外しの実機確認（1 回）。
 - [ ] `Phase7-Step2-Completion-Report.md` が作成されている。
+
+---
+
+## 8. 承認と実施記録
+
+### 承認（2026-10-17）
+- Q1〜Q5 をすべて推奨どおり承認（Q2＝案 A: `ProfileSettingChanged` 系は GUI ログごと削除、Q3＝削除、Q4＝温存、Q5＝TODO 付与）。
+
+### W1 の実施記録（2026-10-17、ビルド・テストはユーザーの実行待ち）
+- 削除（契約 `IProfileSettingsService` から 19 行、実装 `ProfileSettingsService` から 17 メンバー）: `GetLowColor`／`GetChargingColor`／`GetCustomColor`／`GetFlashColor`／`GetUseCustomLed`、`GetDS4CSettings`、`GetGyroMouseDeadZone`、`GetScrollSensitivity`（2 オーバーロード）、`GetUseDInputOnly`／`SetUseDInputOnly`、`GetTempProfileDistance`、`GetReverseX360ButtonMapping`（コピー版）、`SAMouseStickTriggerCond`、`SetTouchpadActive`、`ConfigDecimalCulture`、`ResetAllToDefaults`。
+- 契約のみ削除（実装は W2 まで残す）: `TempProfileNameArray`、`LinkedProfileCheckArray`。実装の `OnProfileSettingChanged(…, nameof(…))` が参照しているため。W2 で、イベントの仕組みとあわせて実装も削除する。
+- 実装から消した `Set…`／`Get…` は、サービス内の同じ配列（`_touchpadActive`、`_useDInputOnly`、`_tempProfileDistance`）を扱っていたため、本体が使う配列プロパティ（`TouchpadActiveArray` など）と状態は同一。挙動は変わらない。
+- `ReverseX360ButtonMapping` のコピー版は、Phase6-Step3-6a の決定 R1 で「書き換える呼び出し元のため」に残していたが、呼び出し元が 0 件のため削除した。契約の説明文を更新した。
+- テストの書き換え:
+  - `ProfileSettingsServiceTests`: 削除したメンバーの呼び出しを、配列プロパティの直接参照に置き換えた。`ConfigDecimalCulture`、`TempProfileNameArray`／`LinkedProfileCheckArray` の長さの確認は削除した。イベントのテストは `SetUseTempProfile` を使う形に変更した（W2 で削除予定）。範囲外の安全確認は `SetUseTempProfile(99, …)` に置き換えた。
+  - `ProfileRepositoryTests`: 2 箇所を配列プロパティの参照に置き換えた。
+  - `ProfileSettingsServiceReverseX360ButtonMappingTests`: コピー版の確認テスト 1 件を削除した。
+- ラチェット: `ProfileSettingsService.cs` の `Global.*` 5 → 4。全域は `Global.*` 733 → 732（走査で確認）。`AppHost` 40、`Program.rootHub` 22 は不変。
+- 確認済み: 削除した名前の参照が、本体・テスト・XAML に残っていない（`Step12DeadShimRemovalGuardTests` の文字列は、`Global` 用の名簿）。契約の別の実装クラスは存在しない。
