@@ -17,7 +17,7 @@ namespace DS4WindowsTests
     /// </summary>
     public class ControlServiceShimEquivalenceTests
     {
-        private readonly AppSettingsService _appSettings = new AppSettingsService();
+        private readonly AppSettingsService _appSettings = TestRepositoryFactory.CreateAppSettingsService();
         private readonly EnvironmentService _environment = new EnvironmentService();
 
         /// <summary>Global で書いた値がサービスから読め、サービスで書いた値が Global から読めることを確認し、元に戻す。</summary>
@@ -112,7 +112,7 @@ namespace DS4WindowsTests
         public void QuickCharge_SharesStateWithGlobal()
         {
             AssertSharesStateWithGlobal(
-                () => Global.QuickCharge, v => Global.QuickCharge = v,
+                () => Global.store.quickCharge, v => Global.store.quickCharge = v,
                 () => _appSettings.QuickCharge, v => _appSettings.QuickCharge = v,
                 true, false);
         }
@@ -121,7 +121,7 @@ namespace DS4WindowsTests
         public void DCBTatStop_SharesStateWithGlobal()
         {
             AssertSharesStateWithGlobal(
-                () => Global.DCBTatStop, v => Global.DCBTatStop = v,
+                () => Global.store.disconnectBTAtStop, v => Global.store.disconnectBTAtStop = v,
                 () => _appSettings.DCBTatStop, v => _appSettings.DCBTatStop = v,
                 true, false);
         }
@@ -130,7 +130,7 @@ namespace DS4WindowsTests
         public void ProcessPriority_SharesStateWithGlobal()
         {
             AssertSharesStateWithGlobal(
-                () => Global.ProcessPriority, v => Global.ProcessPriority = v,
+                () => Global.store.processPriority, v => Global.store.processPriority = v,
                 () => _appSettings.ProcessPriority, v => _appSettings.ProcessPriority = v,
                 1, 3);
         }

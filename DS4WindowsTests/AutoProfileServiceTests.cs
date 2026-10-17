@@ -126,7 +126,7 @@ namespace DS4WindowsTests
             // 一時プロファイルが適用された状態をセット
             settings.SetUseTempProfile(0, true);
             settings.SetTempProfileName(0, "GameProfile");
-            Global.AutoProfileRevertDefaultProfile = true;
+            Global.store.autoProfileRevertDefaultProfile = true;
 
             // 2回目のチェック: ゲーム終了・未知プロセス（デスクトップ等）
             mockInspector.ForegroundPath = @"c:\windows\explorer.exe";

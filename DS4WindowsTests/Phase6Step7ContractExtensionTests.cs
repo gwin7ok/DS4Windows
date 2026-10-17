@@ -62,7 +62,7 @@ namespace DS4WindowsTests
         [Fact]
         public void UseLang_SharesStateWithGlobal_AndNotifiesOnChange()
         {
-            var settings = new AppSettingsService();
+            var settings = TestRepositoryFactory.CreateAppSettingsService();
             string original = Global.UseLang;
             try
             {

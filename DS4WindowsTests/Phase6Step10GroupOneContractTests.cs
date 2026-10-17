@@ -131,7 +131,7 @@ namespace DS4WindowsTests
         [Fact]
         public void LastVersionChecked_SharesStateWithGlobal_UpdatesNum_AndNotifiesOnChange()
         {
-            var service = new DS4Windows.Services.AppSettingsService();
+            var service = TestRepositoryFactory.CreateAppSettingsService();
             string original = Global.LastVersionChecked ?? string.Empty;
             var changed = new System.Collections.Generic.List<string>();
             service.SettingChanged += (s, name) => changed.Add(name);
@@ -159,7 +159,7 @@ namespace DS4WindowsTests
         [Fact]
         public void SetCulture_AppliesToCurrentUiCulture_LikeGlobalSetCulture_AndDoesNotChangeUseLang()
         {
-            IAppSettingsService service = new DS4Windows.Services.AppSettingsService();
+            IAppSettingsService service = TestRepositoryFactory.CreateAppSettingsService();
             CultureInfo originalThreadUi = Thread.CurrentThread.CurrentUICulture;
             CultureInfo originalDefaultUi = CultureInfo.DefaultThreadCurrentUICulture;
             string originalUseLang = Global.UseLang;

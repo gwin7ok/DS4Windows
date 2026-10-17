@@ -113,7 +113,7 @@ namespace DS4WindowsTests
         {
             var settings = TestRepositoryFactory.CreateProfileSettingsService();
             var repo = TestRepositoryFactory.CreateProfileRepository();
-            var app = new DS4Windows.Services.AppSettingsService();
+            var app = TestRepositoryFactory.CreateAppSettingsService();
 
             // 依存の null 検査は、ControlService を使う処理より前に行われる
             Assert.Throws<ArgumentNullException>(() => new ControllerListViewModel(null, null, null, repo, app));
@@ -125,7 +125,7 @@ namespace DS4WindowsTests
         public void AutoProfilesViewModel_RequiresAllServices()
         {
             // 依存の null 検査は、AutoProfileHolder を使う処理より前に行われる（holder／list は null で検証できる）
-            var app = new DS4Windows.Services.AppSettingsService();
+            var app = TestRepositoryFactory.CreateAppSettingsService();
 
             Assert.Throws<ArgumentNullException>(() => new AutoProfilesViewModel(null, null, null, null, null));
             Assert.Throws<ArgumentNullException>(() => new AutoProfilesViewModel(null, null, app, null, null));
@@ -203,7 +203,7 @@ namespace DS4WindowsTests
         [Fact]
         public void ControllerRegDeviceOptsViewModel_RequiresAppSettingsAndXmlStore()
         {
-            var app = new DS4Windows.Services.AppSettingsService();
+            var app = TestRepositoryFactory.CreateAppSettingsService();
             var xmlStore = new ProfileXmlStore(Global.store);
 
             Assert.Throws<ArgumentNullException>(() => new ControllerRegDeviceOptsViewModel(null, null, null, xmlStore));

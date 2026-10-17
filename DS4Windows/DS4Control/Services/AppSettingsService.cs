@@ -5,8 +5,10 @@ using DS4Windows.DI;
 namespace DS4Windows.Services
 {
     // ★ IDE0290 根本解決: C# 12 プライマリコンストラクタ構文を適用
-    public class AppSettingsService(IProfileXmlStore xmlStore = null, IPathService pathService = null) : IAppSettingsService
+    public class AppSettingsService(BackingStore config, IProfileXmlStore xmlStore = null, IPathService pathService = null) : IAppSettingsService
     {
+        // Phase7-Step3 W2: Global の転送プロパティ経由をやめ、注入された BackingStore（設定の唯一の実体）を直接使う。
+        private readonly BackingStore _config = config ?? throw new ArgumentNullException(nameof(config));
         private readonly IProfileXmlStore _xmlStore = xmlStore;
         private readonly IPathService _pathService = pathService;
 
@@ -54,12 +56,12 @@ namespace DS4Windows.Services
 
         public bool StartMinimized
         {
-            get => Global.StartMinimized;
+            get => _config.startMinimized;
             set
             {
-                if (Global.StartMinimized != value)
+                if (_config.startMinimized != value)
                 {
-                    Global.StartMinimized = value;
+                    _config.startMinimized = value;
                     NotifyChanged(nameof(StartMinimized));
                 }
             }
@@ -67,12 +69,12 @@ namespace DS4Windows.Services
 
         public bool MinimizeToTaskbar
         {
-            get => Global.MinToTaskbar;
+            get => _config.minToTaskbar;
             set
             {
-                if (Global.MinToTaskbar != value)
+                if (_config.minToTaskbar != value)
                 {
-                    Global.MinToTaskbar = value;
+                    _config.minToTaskbar = value;
                     NotifyChanged(nameof(MinimizeToTaskbar));
                 }
             }
@@ -80,12 +82,12 @@ namespace DS4Windows.Services
 
         public bool CloseMinimizes
         {
-            get => Global.CloseMini;
+            get => _config.closeMini;
             set
             {
-                if (Global.CloseMini != value)
+                if (_config.closeMini != value)
                 {
-                    Global.CloseMini = value;
+                    _config.closeMini = value;
                     NotifyChanged(nameof(CloseMinimizes));
                 }
             }
@@ -145,12 +147,12 @@ namespace DS4Windows.Services
 
         public bool UseExclusiveMode
         {
-            get => Global.UseExclusiveMode;
+            get => _config.useExclusiveMode;
             set
             {
-                if (Global.UseExclusiveMode != value)
+                if (_config.useExclusiveMode != value)
                 {
-                    Global.UseExclusiveMode = value;
+                    _config.useExclusiveMode = value;
                     NotifyChanged(nameof(UseExclusiveMode));
                 }
             }
@@ -158,12 +160,12 @@ namespace DS4Windows.Services
 
         public bool AutoProfileRevertDefaultProfile
         {
-            get => Global.AutoProfileRevertDefaultProfile;
+            get => _config.autoProfileRevertDefaultProfile;
             set
             {
-                if (Global.AutoProfileRevertDefaultProfile != value)
+                if (_config.autoProfileRevertDefaultProfile != value)
                 {
-                    Global.AutoProfileRevertDefaultProfile = value;
+                    _config.autoProfileRevertDefaultProfile = value;
                     NotifyChanged(nameof(AutoProfileRevertDefaultProfile));
                 }
             }
@@ -173,93 +175,93 @@ namespace DS4Windows.Services
         // いずれも m_Config(BackingStore) への薄い公開アクセサ(Global.X)への正規シム。
         public int FormWidth
         {
-            get => Global.FormWidth;
-            set { if (Global.FormWidth != value) { Global.FormWidth = value; NotifyChanged(nameof(FormWidth)); } }
+            get => _config.formWidth;
+            set { if (_config.formWidth != value) { _config.formWidth = value; NotifyChanged(nameof(FormWidth)); } }
         }
 
         public int FormHeight
         {
-            get => Global.FormHeight;
-            set { if (Global.FormHeight != value) { Global.FormHeight = value; NotifyChanged(nameof(FormHeight)); } }
+            get => _config.formHeight;
+            set { if (_config.formHeight != value) { _config.formHeight = value; NotifyChanged(nameof(FormHeight)); } }
         }
 
         public int FormLocationX
         {
-            get => Global.FormLocationX;
-            set { if (Global.FormLocationX != value) { Global.FormLocationX = value; NotifyChanged(nameof(FormLocationX)); } }
+            get => _config.formLocationX;
+            set { if (_config.formLocationX != value) { _config.formLocationX = value; NotifyChanged(nameof(FormLocationX)); } }
         }
 
         public int FormLocationY
         {
-            get => Global.FormLocationY;
-            set { if (Global.FormLocationY != value) { Global.FormLocationY = value; NotifyChanged(nameof(FormLocationY)); } }
+            get => _config.formLocationY;
+            set { if (_config.formLocationY != value) { _config.formLocationY = value; NotifyChanged(nameof(FormLocationY)); } }
         }
 
         public int ControllerIndexColWidth
         {
-            get => Global.ControllerIndexColWidth;
-            set { if (Global.ControllerIndexColWidth != value) { Global.ControllerIndexColWidth = value; NotifyChanged(nameof(ControllerIndexColWidth)); } }
+            get => _config.controllerIndexColWidth;
+            set { if (_config.controllerIndexColWidth != value) { _config.controllerIndexColWidth = value; NotifyChanged(nameof(ControllerIndexColWidth)); } }
         }
 
         public int ControllerIdColWidth
         {
-            get => Global.ControllerIdColWidth;
-            set { if (Global.ControllerIdColWidth != value) { Global.ControllerIdColWidth = value; NotifyChanged(nameof(ControllerIdColWidth)); } }
+            get => _config.controllerIdColWidth;
+            set { if (_config.controllerIdColWidth != value) { _config.controllerIdColWidth = value; NotifyChanged(nameof(ControllerIdColWidth)); } }
         }
 
         public int ControllerStatusColWidth
         {
-            get => Global.ControllerStatusColWidth;
-            set { if (Global.ControllerStatusColWidth != value) { Global.ControllerStatusColWidth = value; NotifyChanged(nameof(ControllerStatusColWidth)); } }
+            get => _config.controllerStatusColWidth;
+            set { if (_config.controllerStatusColWidth != value) { _config.controllerStatusColWidth = value; NotifyChanged(nameof(ControllerStatusColWidth)); } }
         }
 
         public int ControllerExclusiveColWidth
         {
-            get => Global.ControllerExclusiveColWidth;
-            set { if (Global.ControllerExclusiveColWidth != value) { Global.ControllerExclusiveColWidth = value; NotifyChanged(nameof(ControllerExclusiveColWidth)); } }
+            get => _config.controllerExclusiveColWidth;
+            set { if (_config.controllerExclusiveColWidth != value) { _config.controllerExclusiveColWidth = value; NotifyChanged(nameof(ControllerExclusiveColWidth)); } }
         }
 
         public int ControllerBatteryColWidth
         {
-            get => Global.ControllerBatteryColWidth;
-            set { if (Global.ControllerBatteryColWidth != value) { Global.ControllerBatteryColWidth = value; NotifyChanged(nameof(ControllerBatteryColWidth)); } }
+            get => _config.controllerBatteryColWidth;
+            set { if (_config.controllerBatteryColWidth != value) { _config.controllerBatteryColWidth = value; NotifyChanged(nameof(ControllerBatteryColWidth)); } }
         }
 
         public int ControllerSelectProfileColWidth
         {
-            get => Global.ControllerSelectProfileColWidth;
-            set { if (Global.ControllerSelectProfileColWidth != value) { Global.ControllerSelectProfileColWidth = value; NotifyChanged(nameof(ControllerSelectProfileColWidth)); } }
+            get => _config.controllerSelectProfileColWidth;
+            set { if (_config.controllerSelectProfileColWidth != value) { _config.controllerSelectProfileColWidth = value; NotifyChanged(nameof(ControllerSelectProfileColWidth)); } }
         }
 
         public int ControllerEditColWidth
         {
-            get => Global.ControllerEditColWidth;
-            set { if (Global.ControllerEditColWidth != value) { Global.ControllerEditColWidth = value; NotifyChanged(nameof(ControllerEditColWidth)); } }
+            get => _config.controllerEditColWidth;
+            set { if (_config.controllerEditColWidth != value) { _config.controllerEditColWidth = value; NotifyChanged(nameof(ControllerEditColWidth)); } }
         }
 
         public int ControllerLinkedProfileColWidth
         {
-            get => Global.ControllerLinkedProfileColWidth;
-            set { if (Global.ControllerLinkedProfileColWidth != value) { Global.ControllerLinkedProfileColWidth = value; NotifyChanged(nameof(ControllerLinkedProfileColWidth)); } }
+            get => _config.controllerLinkedProfileColWidth;
+            set { if (_config.controllerLinkedProfileColWidth != value) { _config.controllerLinkedProfileColWidth = value; NotifyChanged(nameof(ControllerLinkedProfileColWidth)); } }
         }
 
         public int ControllerLinkProfIdColWidth
         {
-            get => Global.ControllerLinkProfIdColWidth;
-            set { if (Global.ControllerLinkProfIdColWidth != value) { Global.ControllerLinkProfIdColWidth = value; NotifyChanged(nameof(ControllerLinkProfIdColWidth)); } }
+            get => _config.controllerLinkProfIdColWidth;
+            set { if (_config.controllerLinkProfIdColWidth != value) { _config.controllerLinkProfIdColWidth = value; NotifyChanged(nameof(ControllerLinkProfIdColWidth)); } }
         }
 
         public int ControllerCustomColorColWidth
         {
-            get => Global.ControllerCustomColorColWidth;
-            set { if (Global.ControllerCustomColorColWidth != value) { Global.ControllerCustomColorColWidth = value; NotifyChanged(nameof(ControllerCustomColorColWidth)); } }
+            get => _config.controllerCustomColorColWidth;
+            set { if (_config.controllerCustomColorColWidth != value) { _config.controllerCustomColorColWidth = value; NotifyChanged(nameof(ControllerCustomColorColWidth)); } }
         }
 
         // ---- Phase5-Step13-7: 通知レベル・スワイプ操作設定 ----
         public int Notifications
         {
-            get => Global.Notifications;
-            set { if (Global.Notifications != value) { Global.Notifications = value; NotifyChanged(nameof(Notifications)); } }
+            get => _config.notifications;
+            set { if (_config.notifications != value) { _config.notifications = value; NotifyChanged(nameof(Notifications)); } }
         }
 
         public bool ProfileChangedNotification
@@ -274,8 +276,8 @@ namespace DS4Windows.Services
         }
         public bool SwipeProfiles
         {
-            get => Global.SwipeProfiles;
-            set { if (Global.SwipeProfiles != value) { Global.SwipeProfiles = value; NotifyChanged(nameof(SwipeProfiles)); } }
+            get => _config.swipeProfiles;
+            set { if (_config.swipeProfiles != value) { _config.swipeProfiles = value; NotifyChanged(nameof(SwipeProfiles)); } }
         }
 
         // ---- Phase5-Step14前クリーンアップ: MainWindow.xaml.cs残存Global参照の解消 ----
@@ -289,8 +291,8 @@ namespace DS4Windows.Services
 
         public bool CheckUpdateStartupEnabled
         {
-            get => Global.CheckUpdateStartupEnabled;
-            set { if (Global.CheckUpdateStartupEnabled != value) { Global.CheckUpdateStartupEnabled = value; NotifyChanged(nameof(CheckUpdateStartupEnabled)); } }
+            get => _config.checkUpdateStartup;
+            set { if (_config.checkUpdateStartup != value) { _config.checkUpdateStartup = value; NotifyChanged(nameof(CheckUpdateStartupEnabled)); } }
         }
 
         public int CheckEveryValue
@@ -368,12 +370,12 @@ namespace DS4Windows.Services
         // ---- Phase5-Step14: プロファイル編集画面・SpecialAction カラム幅の永続化 ----
         public int ProfileEditorLeftWidth
         {
-            get => Global.ProfileEditorLeftWidth;
+            get => _config.profileEditorLeftWidth;
             set
             {
-                if (Global.ProfileEditorLeftWidth != value)
+                if (_config.profileEditorLeftWidth != value)
                 {
-                    Global.ProfileEditorLeftWidth = value;
+                    _config.profileEditorLeftWidth = value;
                     NotifyChanged(nameof(ProfileEditorLeftWidth));
                 }
             }
@@ -381,12 +383,12 @@ namespace DS4Windows.Services
 
         public int ProfileEditorRightWidth
         {
-            get => Global.ProfileEditorRightWidth;
+            get => _config.profileEditorRightWidth;
             set
             {
-                if (Global.ProfileEditorRightWidth != value)
+                if (_config.profileEditorRightWidth != value)
                 {
-                    Global.ProfileEditorRightWidth = value;
+                    _config.profileEditorRightWidth = value;
                     NotifyChanged(nameof(ProfileEditorRightWidth));
                 }
             }
@@ -394,12 +396,12 @@ namespace DS4Windows.Services
 
         public int SpecialActionNameColWidth
         {
-            get => Global.SpecialActionNameColWidth;
+            get => _config.specialActionNameColWidth;
             set
             {
-                if (Global.SpecialActionNameColWidth != value)
+                if (_config.specialActionNameColWidth != value)
                 {
-                    Global.SpecialActionNameColWidth = value;
+                    _config.specialActionNameColWidth = value;
                     NotifyChanged(nameof(SpecialActionNameColWidth));
                 }
             }
@@ -407,12 +409,12 @@ namespace DS4Windows.Services
 
         public int SpecialActionTriggerColWidth
         {
-            get => Global.SpecialActionTriggerColWidth;
+            get => _config.specialActionTriggerColWidth;
             set
             {
-                if (Global.SpecialActionTriggerColWidth != value)
+                if (_config.specialActionTriggerColWidth != value)
                 {
-                    Global.SpecialActionTriggerColWidth = value;
+                    _config.specialActionTriggerColWidth = value;
                     NotifyChanged(nameof(SpecialActionTriggerColWidth));
                 }
             }
@@ -420,12 +422,12 @@ namespace DS4Windows.Services
 
         public int SpecialActionDetailColWidth
         {
-            get => Global.SpecialActionDetailColWidth;
+            get => _config.specialActionDetailColWidth;
             set
             {
-                if (Global.SpecialActionDetailColWidth != value)
+                if (_config.specialActionDetailColWidth != value)
                 {
-                    Global.SpecialActionDetailColWidth = value;
+                    _config.specialActionDetailColWidth = value;
                     NotifyChanged(nameof(SpecialActionDetailColWidth));
                 }
             }
@@ -513,12 +515,12 @@ namespace DS4Windows.Services
 
         public bool QuickCharge
         {
-            get => Global.QuickCharge;
+            get => _config.quickCharge;
             set
             {
-                if (Global.QuickCharge != value)
+                if (_config.quickCharge != value)
                 {
-                    Global.QuickCharge = value;
+                    _config.quickCharge = value;
                     NotifyChanged(nameof(QuickCharge));
                 }
             }
@@ -526,12 +528,12 @@ namespace DS4Windows.Services
 
         public bool DCBTatStop
         {
-            get => Global.DCBTatStop;
+            get => _config.disconnectBTAtStop;
             set
             {
-                if (Global.DCBTatStop != value)
+                if (_config.disconnectBTAtStop != value)
                 {
-                    Global.DCBTatStop = value;
+                    _config.disconnectBTAtStop = value;
                     NotifyChanged(nameof(DCBTatStop));
                 }
             }
@@ -539,12 +541,12 @@ namespace DS4Windows.Services
 
         public int ProcessPriority
         {
-            get => Global.ProcessPriority;
+            get => _config.processPriority;
             set
             {
-                if (Global.ProcessPriority != value)
+                if (_config.processPriority != value)
                 {
-                    Global.ProcessPriority = value;
+                    _config.processPriority = value;
                     NotifyChanged(nameof(ProcessPriority));
                 }
             }
@@ -596,12 +598,12 @@ namespace DS4Windows.Services
         // ---- Phase6-Step2-4 (PR-4): 遅延警告時のライトバー点滅 ----
         public bool FlashWhenLate
         {
-            get => Global.FlashWhenLate;
+            get => _config.flashWhenLate;
             set
             {
-                if (Global.FlashWhenLate != value)
+                if (_config.flashWhenLate != value)
                 {
-                    Global.FlashWhenLate = value;
+                    _config.flashWhenLate = value;
                     NotifyChanged(nameof(FlashWhenLate));
                 }
             }
@@ -611,12 +613,12 @@ namespace DS4Windows.Services
         // 毎レポート評価される経路から呼ばれるため、BackingStore の値を直接返し、キャッシュ・割り当て・ログを行わない。
         public bool UseUdpServerSmoothing
         {
-            get => Global.UseUDPSeverSmoothing;
+            get => _config.useUdpSmoothing;
             set
             {
-                if (Global.UseUDPSeverSmoothing != value)
+                if (_config.useUdpSmoothing != value)
                 {
-                    Global.UseUDPSeverSmoothing = value;
+                    _config.useUdpSmoothing = value;
                     NotifyChanged(nameof(UseUdpServerSmoothing));
                 }
             }
@@ -624,12 +626,12 @@ namespace DS4Windows.Services
 
         public int FlashWhenLateAt
         {
-            get => Global.FlashWhenLateAt;
+            get => _config.flashWhenLateAt;
             set
             {
-                if (Global.FlashWhenLateAt != value)
+                if (_config.flashWhenLateAt != value)
                 {
-                    Global.FlashWhenLateAt = value;
+                    _config.flashWhenLateAt = value;
                     NotifyChanged(nameof(FlashWhenLateAt));
                 }
             }
@@ -638,12 +640,12 @@ namespace DS4Windows.Services
         // ---- Phase6-Step9-1: SettingsViewModel の Global 直接参照解消（Global への薄い委譲。独自フィールドは持たない）----
         public bool UseCustomSteamFolder
         {
-            get => Global.UseCustomSteamFolder;
+            get => _config.useCustomSteamFolder;
             set
             {
-                if (Global.UseCustomSteamFolder != value)
+                if (_config.useCustomSteamFolder != value)
                 {
-                    Global.UseCustomSteamFolder = value;
+                    _config.useCustomSteamFolder = value;
                     NotifyChanged(nameof(UseCustomSteamFolder));
                 }
             }
@@ -651,12 +653,12 @@ namespace DS4Windows.Services
 
         public string CustomSteamFolder
         {
-            get => Global.CustomSteamFolder;
+            get => _config.customSteamFolder;
             set
             {
-                if (Global.CustomSteamFolder != value)
+                if (_config.customSteamFolder != value)
                 {
-                    Global.CustomSteamFolder = value;
+                    _config.customSteamFolder = value;
                     NotifyChanged(nameof(CustomSteamFolder));
                 }
             }

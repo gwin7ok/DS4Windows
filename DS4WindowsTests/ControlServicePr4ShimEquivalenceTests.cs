@@ -13,7 +13,7 @@ namespace DS4WindowsTests
     /// </summary>
     public class ControlServicePr4ShimEquivalenceTests
     {
-        private readonly AppSettingsService _appSettings = new AppSettingsService();
+        private readonly AppSettingsService _appSettings = TestRepositoryFactory.CreateAppSettingsService();
         private readonly DeviceStateService _deviceState = new DeviceStateService();
         private readonly ProfileSettingsService _profileSettings = TestRepositoryFactory.CreateProfileSettingsService();
         private readonly ProfileRepository _profileRepository = TestRepositoryFactory.CreateProfileRepository();
@@ -21,18 +21,18 @@ namespace DS4WindowsTests
         [Fact]
         public void FlashWhenLate_SharesStateWithGlobal()
         {
-            bool original = Global.FlashWhenLate;
+            bool original = Global.store.flashWhenLate;
             try
             {
-                Global.FlashWhenLate = !original;
+                Global.store.flashWhenLate = !original;
                 Assert.Equal(!original, _appSettings.FlashWhenLate);
 
                 _appSettings.FlashWhenLate = original;
-                Assert.Equal(original, Global.FlashWhenLate);
+                Assert.Equal(original, Global.store.flashWhenLate);
             }
             finally
             {
-                Global.FlashWhenLate = original;
+                Global.store.flashWhenLate = original;
             }
         }
 

@@ -13,7 +13,7 @@ namespace DS4WindowsTests
     /// </summary>
     public class ControlServicePr5ShimEquivalenceTests
     {
-        private readonly AppSettingsService _appSettings = new AppSettingsService();
+        private readonly AppSettingsService _appSettings = TestRepositoryFactory.CreateAppSettingsService();
         private readonly AppearanceSettingsService _appearance = new AppearanceSettingsService();
         private readonly ProfileSettingsService _profileSettings = TestRepositoryFactory.CreateProfileSettingsService();
         private readonly ProfileActionProvider _actionProvider = TestRepositoryFactory.CreateProfileActionProvider();
@@ -21,36 +21,36 @@ namespace DS4WindowsTests
         [Fact]
         public void UseUdpServerSmoothing_SharesStateWithGlobal()
         {
-            bool original = Global.UseUDPSeverSmoothing;
+            bool original = Global.store.useUdpSmoothing;
             try
             {
-                Global.UseUDPSeverSmoothing = !original;
+                Global.store.useUdpSmoothing = !original;
                 Assert.Equal(!original, _appSettings.UseUdpServerSmoothing);
 
                 _appSettings.UseUdpServerSmoothing = original;
-                Assert.Equal(original, Global.UseUDPSeverSmoothing);
+                Assert.Equal(original, Global.store.useUdpSmoothing);
             }
             finally
             {
-                Global.UseUDPSeverSmoothing = original;
+                Global.store.useUdpSmoothing = original;
             }
         }
 
         [Fact]
         public void FlashWhenLateAt_SharesStateWithGlobal()
         {
-            int original = Global.FlashWhenLateAt;
+            int original = Global.store.flashWhenLateAt;
             try
             {
-                Global.FlashWhenLateAt = original + 7;
+                Global.store.flashWhenLateAt = original + 7;
                 Assert.Equal(original + 7, _appSettings.FlashWhenLateAt);
 
                 _appSettings.FlashWhenLateAt = original + 3;
-                Assert.Equal(original + 3, Global.FlashWhenLateAt);
+                Assert.Equal(original + 3, Global.store.flashWhenLateAt);
             }
             finally
             {
-                Global.FlashWhenLateAt = original;
+                Global.store.flashWhenLateAt = original;
             }
         }
 

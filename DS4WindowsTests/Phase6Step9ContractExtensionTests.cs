@@ -24,14 +24,14 @@ namespace DS4WindowsTests
         [Fact]
         public void UseCustomSteamFolder_SharesStateWithGlobal_AndNotifiesOnChange()
         {
-            var service = new DS4Windows.Services.AppSettingsService();
-            bool original = Global.UseCustomSteamFolder;
+            var service = TestRepositoryFactory.CreateAppSettingsService();
+            bool original = Global.store.useCustomSteamFolder;
             var changed = new System.Collections.Generic.List<string>();
             service.SettingChanged += (s, name) => changed.Add(name);
             try
             {
                 service.UseCustomSteamFolder = !original;
-                Assert.Equal(!original, Global.UseCustomSteamFolder);
+                Assert.Equal(!original, Global.store.useCustomSteamFolder);
                 Assert.Equal(!original, service.UseCustomSteamFolder);
                 Assert.Contains(nameof(IAppSettingsService.UseCustomSteamFolder), changed);
 
@@ -42,31 +42,31 @@ namespace DS4WindowsTests
             }
             finally
             {
-                Global.UseCustomSteamFolder = original;
+                Global.store.useCustomSteamFolder = original;
             }
         }
 
         [Fact]
         public void CustomSteamFolder_SharesStateWithGlobal()
         {
-            var service = new DS4Windows.Services.AppSettingsService();
-            string original = Global.CustomSteamFolder;
+            var service = TestRepositoryFactory.CreateAppSettingsService();
+            string original = Global.store.customSteamFolder;
             try
             {
                 service.CustomSteamFolder = @"C:\Phase6Step9\Steam";
-                Assert.Equal(@"C:\Phase6Step9\Steam", Global.CustomSteamFolder);
-                Assert.Equal(Global.CustomSteamFolder, service.CustomSteamFolder);
+                Assert.Equal(@"C:\Phase6Step9\Steam", Global.store.customSteamFolder);
+                Assert.Equal(Global.store.customSteamFolder, service.CustomSteamFolder);
             }
             finally
             {
-                Global.CustomSteamFolder = original;
+                Global.store.customSteamFolder = original;
             }
         }
 
         [Fact]
         public void FakeExeName_ValidName_IsAppliedAndNotified()
         {
-            var service = new DS4Windows.Services.AppSettingsService();
+            var service = TestRepositoryFactory.CreateAppSettingsService();
             string original = Global.FakeExeName;
             var changed = new System.Collections.Generic.List<string>();
             service.SettingChanged += (s, name) => changed.Add(name);
@@ -85,7 +85,7 @@ namespace DS4WindowsTests
         [Fact]
         public void FakeExeName_InvalidFileNameChars_AreIgnoredLikeGlobal_AndNotNotified()
         {
-            var service = new DS4Windows.Services.AppSettingsService();
+            var service = TestRepositoryFactory.CreateAppSettingsService();
             string original = Global.FakeExeName;
             var changed = new System.Collections.Generic.List<string>();
             service.SettingChanged += (s, name) => changed.Add(name);
@@ -109,7 +109,7 @@ namespace DS4WindowsTests
         [Fact]
         public void LogMaxArchiveFiles_SharesStateWithGlobal()
         {
-            var service = new DS4Windows.Services.AppSettingsService();
+            var service = TestRepositoryFactory.CreateAppSettingsService();
             int original = Global.LogMaxArchiveFiles;
             try
             {

@@ -99,7 +99,7 @@ namespace DS4WindowsTests
 
             var env = new EnvironmentService();
             var appearance = new DS4Windows.Services.AppearanceSettingsService();
-            var app = new DS4Windows.Services.AppSettingsService();
+            var app = TestRepositoryFactory.CreateAppSettingsService();
             var path = new PathService();
             var logApplier = new DS4Windows.Services.LogSettingsApplierProxy();
             Assert.Throws<ArgumentNullException>(() => new SettingsViewModel(null, appearance, env, path, logApplier));
@@ -125,14 +125,14 @@ namespace DS4WindowsTests
             var vm = DS4WinWPF.AppHost.GetService<SettingsViewModel>();
             Assert.NotNull(vm);
 
-            bool originalQuick = Global.QuickCharge;
+            bool originalQuick = Global.store.quickCharge;
             int originalOscPort = Global.getOSCServerPortNum();
             double originalBeta = Global.UDPServerSmoothingBeta;
             string originalLevel = Global.LogMinLevel;
             try
             {
                 vm.QuickCharge = !originalQuick;
-                Assert.Equal(!originalQuick, Global.QuickCharge);
+                Assert.Equal(!originalQuick, Global.store.quickCharge);
                 Assert.Equal(!originalQuick, vm.QuickCharge);
 
                 vm.OscPort = originalOscPort + 1;
@@ -143,7 +143,7 @@ namespace DS4WindowsTests
             }
             finally
             {
-                Global.QuickCharge = originalQuick;
+                Global.store.quickCharge = originalQuick;
                 Global.setOSCServerPort(originalOscPort);
                 Global.UDPServerSmoothingBeta = originalBeta;
                 Global.LogMinLevel = originalLevel;

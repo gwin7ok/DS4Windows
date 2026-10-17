@@ -57,83 +57,6 @@ namespace DS4Windows
         }
         // プロファイル切り替え時の無効アクション名エラーログ抑制用
         public static HashSet<string> loggedInvalidActions = new HashSet<string>();
-        // ProfileEditor layout properties (統合管理)
-        public static int ProfileEditorLeftWidth
-        {
-            set { m_Config.profileEditorLeftWidth = value; }
-            get { return m_Config.profileEditorLeftWidth; }
-        }
-        public static int ProfileEditorRightWidth
-        {
-            set { m_Config.profileEditorRightWidth = value; }
-            get { return m_Config.profileEditorRightWidth; }
-        }
-        public static int SpecialActionNameColWidth
-        {
-            set { m_Config.specialActionNameColWidth = value; }
-            get { return m_Config.specialActionNameColWidth; }
-        }
-        public static int SpecialActionTriggerColWidth
-        {
-            set { m_Config.specialActionTriggerColWidth = value; }
-            get { return m_Config.specialActionTriggerColWidth; }
-        }
-        public static int SpecialActionDetailColWidth
-        {
-            set { m_Config.specialActionDetailColWidth = value; }
-            get { return m_Config.specialActionDetailColWidth; }
-        }
-        // SpecialActionDeleteColWidth 削除
-
-        // Controller tab column width properties
-        public static int ControllerIndexColWidth
-        {
-            set { m_Config.controllerIndexColWidth = value; }
-            get { return m_Config.controllerIndexColWidth; }
-        }
-        public static int ControllerIdColWidth
-        {
-            set { m_Config.controllerIdColWidth = value; }
-            get { return m_Config.controllerIdColWidth; }
-        }
-        public static int ControllerStatusColWidth
-        {
-            set { m_Config.controllerStatusColWidth = value; }
-            get { return m_Config.controllerStatusColWidth; }
-        }
-        public static int ControllerExclusiveColWidth
-        {
-            set { m_Config.controllerExclusiveColWidth = value; }
-            get { return m_Config.controllerExclusiveColWidth; }
-        }
-        public static int ControllerBatteryColWidth
-        {
-            set { m_Config.controllerBatteryColWidth = value; }
-            get { return m_Config.controllerBatteryColWidth; }
-        }
-        public static int ControllerSelectProfileColWidth
-        {
-            set { m_Config.controllerSelectProfileColWidth = value; }
-            get { return m_Config.controllerSelectProfileColWidth; }
-        }
-        public static int ControllerEditColWidth
-        {
-            set { m_Config.controllerEditColWidth = value; }
-            get { return m_Config.controllerEditColWidth; }
-        }
-
-        public static int ControllerLinkedProfileColWidth
-        {
-            set { m_Config.controllerLinkedProfileColWidth = value; }
-            get { return m_Config.controllerLinkedProfileColWidth; }
-        }
-
-        public static int ControllerLinkProfIdColWidth
-        {
-            set { m_Config.controllerLinkProfIdColWidth = value; }
-            get { return m_Config.controllerLinkProfIdColWidth; }
-        }
-
         public static int LogMaxArchiveFiles
         {
             set { m_Config.logMaxArchiveFiles = value; }
@@ -145,12 +68,6 @@ namespace DS4Windows
             set { m_Config.logMinLevel = value; }
             get { return m_Config.logMinLevel; }
         }
-        public static int ControllerCustomColorColWidth
-        {
-            set { m_Config.controllerCustomColorColWidth = value; }
-            get { return m_Config.controllerCustomColorColWidth; }
-        }
-
         public const int MAX_DS4_CONTROLLER_COUNT = 8;
         public const int TEST_PROFILE_ITEM_COUNT = MAX_DS4_CONTROLLER_COUNT + 1;
         public const int TEST_PROFILE_INDEX = TEST_PROFILE_ITEM_COUNT - 1;
@@ -1292,12 +1209,6 @@ namespace DS4Windows
 
         // general values
         // -- Re-Enable Exclusive Mode Starts Here --
-        public static bool UseExclusiveMode
-        {
-            set { m_Config.useExclusiveMode = value; }
-            get { return m_Config.useExclusiveMode; }
-        } // -- Re-Enable Ex Mode Ends here
-
         public static DateTime LastChecked
         {
             set { m_Config.lastChecked = value; }
@@ -1305,12 +1216,6 @@ namespace DS4Windows
         }
 
         // New explicit startup update-check settings
-        public static bool CheckUpdateStartupEnabled
-        {
-            get { return m_Config.checkUpdateStartup; }
-            set { m_Config.checkUpdateStartup = value; }
-        }
-
         public static int CheckEveryValue
         {
             get { return m_Config.checkEveryValue; }
@@ -1353,24 +1258,6 @@ namespace DS4Windows
             set => ProfileSettingsServiceInstance.ProfileChangedNotification = value;
         }
 
-        public static bool DCBTatStop
-        {
-            set { m_Config.disconnectBTAtStop = value; }
-            get { return m_Config.disconnectBTAtStop; }
-        }
-
-        public static bool SwipeProfiles
-        {
-            set { m_Config.swipeProfiles = value; }
-            get { return m_Config.swipeProfiles; }
-        }
-
-        public static bool QuickCharge
-        {
-            set { m_Config.quickCharge = value; }
-            get { return m_Config.quickCharge; }
-        }
-
         public static bool UseMoonlight
         {
             get => m_Config.useMoonlight;
@@ -1383,64 +1270,10 @@ namespace DS4Windows
             set => m_Config.useAdvancedMoonlight = value;
         }
 
-        public static bool CloseMini
-        {
-            set { m_Config.closeMini = value; }
-            get { return m_Config.closeMini; }
-        }
-
-        public static bool StartMinimized
-        {
-            set { m_Config.startMinimized = value; }
-            get { return m_Config.startMinimized; }
-        }
-
-        public static bool MinToTaskbar
-        {
-            set { m_Config.minToTaskbar = value; }
-            get { return m_Config.minToTaskbar; }
-        }
-
-        public static int FormWidth
-        {
-            set { m_Config.formWidth = value; }
-            get { return m_Config.formWidth; }
-        }
-
-        public static int FormHeight
-        {
-            set { m_Config.formHeight = value; }
-            get { return m_Config.formHeight; }
-        }
-
-        public static int FormLocationX
-        {
-            set { m_Config.formLocationX = value; }
-            get { return m_Config.formLocationX; }
-        }
-
-        public static int FormLocationY
-        {
-            set { m_Config.formLocationY = value; }
-            get { return m_Config.formLocationY; }
-        }
-
         public static string UseLang
         {
             set { m_Config.useLang = value; }
             get { return m_Config.useLang; }
-        }
-
-        public static bool FlashWhenLate
-        {
-            set { m_Config.flashWhenLate = value; }
-            get { return m_Config.flashWhenLate; }
-        }
-
-        public static int FlashWhenLateAt
-        {
-            set { m_Config.flashWhenLateAt = value; }
-            get { return m_Config.flashWhenLateAt; }
         }
 
         public static bool isUsingOSCServer()
@@ -1527,12 +1360,6 @@ namespace DS4Windows
             m_Config.udpServListenAddress = value.Trim();
         }
 
-        public static bool UseUDPSeverSmoothing
-        {
-            get => m_Config.useUdpSmoothing;
-            set => m_Config.useUdpSmoothing = value;
-        }
-
         public static double UDPServerSmoothingMincutoff
         {
             get => m_Config.udpSmoothingMincutoff;
@@ -1578,24 +1405,6 @@ namespace DS4Windows
             set => m_Config.useCurrentTheme = value;
         }
 
-        public static bool UseCustomSteamFolder
-        {
-            set { m_Config.useCustomSteamFolder = value; }
-            get { return m_Config.useCustomSteamFolder; }
-        }
-
-        public static string CustomSteamFolder
-        {
-            set { m_Config.customSteamFolder = value; }
-            get { return m_Config.customSteamFolder; }
-        }
-
-        public static bool AutoProfileRevertDefaultProfile
-        {
-            set { m_Config.autoProfileRevertDefaultProfile = value; }
-            get { return m_Config.autoProfileRevertDefaultProfile; }
-        }
-
         public static AutoProfileDisplayProfileSwitchChoices autoProfileSwitchNotifyChoice
         {
             get => m_Config.autoProfileSwitchNotifyChoice;
@@ -1635,12 +1444,6 @@ namespace DS4Windows
         public static LightbarSettingInfo getLightbarSettingsInfo(int index)
         {
             return ProfileSettingsServiceInstance.GetLightbarSettingsInfo(index);
-        }
-
-        public static int ProcessPriority
-        {
-            get => m_Config.processPriority;
-            set => m_Config.processPriority = value;
         }
 
 

@@ -65,6 +65,12 @@ namespace DS4WindowsTests
             return new ProfileActionProvider(store ?? Global.store);
         }
 
+        public static AppSettingsService CreateAppSettingsService(IProfileXmlStore xmlStore = null,
+            IPathService pathService = null, BackingStore store = null)
+        {
+            return new AppSettingsService(store ?? Global.store, xmlStore, pathService);
+        }
+
         public static AutoProfileHolder CreateAutoProfileHolder(IPathService pathService = null)
         {
             return new AutoProfileHolder(pathService ?? new PathService());
@@ -78,7 +84,7 @@ namespace DS4WindowsTests
         {
             return new AutoProfileService(holder, profileAppService, profileSettings, processInspector,
                 environmentService ?? new EnvironmentService(),
-                appSettings ?? new AppSettingsService(),
+                appSettings ?? CreateAppSettingsService(),
                 profileRepository ?? CreateProfileRepository(profileSettings),
                 control ?? new Func<ControlService>(() => Program.rootHub));
         }

@@ -33,7 +33,7 @@ namespace DS4WindowsTests
         [Fact]
         public void UseMoonlight_SharesStateWithGlobal_AndNotifiesOnChange()
         {
-            var service = new DS4Windows.Services.AppSettingsService();
+            var service = TestRepositoryFactory.CreateAppSettingsService();
             bool original = Global.UseMoonlight;
             var changed = new List<string>();
             service.SettingChanged += (s, name) => changed.Add(name);
@@ -58,7 +58,7 @@ namespace DS4WindowsTests
         [Fact]
         public void UseAdvancedMoonlight_SharesStateWithGlobal_AndNotifiesOnChange()
         {
-            var service = new DS4Windows.Services.AppSettingsService();
+            var service = TestRepositoryFactory.CreateAppSettingsService();
             bool original = Global.UseAdvancedMoonlight;
             var changed = new List<string>();
             service.SettingChanged += (s, name) => changed.Add(name);

@@ -142,7 +142,7 @@ namespace DS4WindowsTests
                 TestRepositoryFactory.CreateProfileRepository(settings), new EnvironmentService());
             var repo = TestRepositoryFactory.CreateProfileRepository(settings);
             var env = new EnvironmentService();
-            var appSettings = new DS4Windows.Services.AppSettingsService();
+            var appSettings = TestRepositoryFactory.CreateAppSettingsService();
             Func<ControlService> control = () => null;
             IProcessInspector inspector = new NullProcessInspector();
 

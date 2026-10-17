@@ -53,7 +53,7 @@ namespace DS4WindowsTests
             string original = Global.LastVersionChecked ?? string.Empty;
             try
             {
-                object vm = CreateUpdaterVm("9.8.7", new DS4Windows.Services.AppSettingsService());
+                object vm = CreateUpdaterVm("9.8.7", TestRepositoryFactory.CreateAppSettingsService());
 
                 UpdaterVmType.GetMethod("SetSkippedVersion").Invoke(vm, null);
                 Assert.Equal("9.8.7", Global.LastVersionChecked);
@@ -82,7 +82,7 @@ namespace DS4WindowsTests
             string target = original == "zz-test" ? "yy-test" : "zz-test";
             try
             {
-                var vm = new LanguagePackViewModel(new DS4Windows.Services.AppSettingsService());
+                var vm = new LanguagePackViewModel(TestRepositoryFactory.CreateAppSettingsService());
                 var listField = typeof(LanguagePackViewModel).GetField("langPackList",
                     System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.NonPublic);
                 listField.SetValue(vm, new System.Collections.Generic.List<LangPackItem>

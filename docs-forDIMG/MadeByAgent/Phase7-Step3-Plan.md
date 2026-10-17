@@ -109,3 +109,9 @@
   - `ProfileRepository`: 第1引数に `BackingStore config` を追加。`Global.store` の 5 箇所を `_config` に置換。
   - テスト: `TestRepositoryFactory.CreateProfileRepository` に `store` 引数を追加。`ProfileXmlStoreTests`（フォールバック → 例外）、`Step10FourTwoGlobalReferenceGuardTests`（引数の並びと null 検査）、`Phase6Step10GroupThreeBContractTests`／`Step10GroupTwoGlobalReferenceGuardTests`（`new ProfileXmlStore(Global.store)`）を更新。
   - ラチェット基準値: `ServiceRegistration.cs` 3→1、`ProfileRepository.cs` 26→21、`ProfileXmlStore.cs` 3→2（`Global.*` 合計 723→715）。
+- **W2 実装済み（ビルド・テスト待ち）**
+  - `AppSettingsService`: コンストラクターの第1引数に `BackingStore config` を追加（必須）。寸法・動作設定・更新確認の開始時設定など 35 名の `Global.X` 参照 105 件を `_config.<field>` に置換。
+  - `Global`: 純粋な転送だった 34 名を削除（`Notifications` は `AppNotificationService`／`MainWindow` が参照するため W5 まで残す）。残っていた見出しコメント（ProfileEditor／Controller tab）も削除。
+  - テスト: 削除した名前の参照 66 件を `Global.store.<field>` に書き換え（等価性テストは削除せず、サービスと `BackingStore` の状態共有を確認する形で残した。計画書 §1.4 の「削除」から変更）。`new AppSettingsService(...)` 34 件を `TestRepositoryFactory.CreateAppSettingsService(...)` に置換。
+  - 新規 `Phase7Step3RemovedGlobalForwardersGuardTests`（削除した名前の再宣言禁止と `AppSettingsService` からの参照禁止。以降の Wave で名前を追記する）。
+  - ラチェット基準値: `AppSettingsService.cs` 185→80（`Global.*` 合計 715→610）。
