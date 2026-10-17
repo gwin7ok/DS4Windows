@@ -95,3 +95,14 @@
 - [ ] 台帳、モデル図、`Phase7-Status.md` が更新されている。
 - [ ] 実機確認 U-13。
 - [ ] `Phase7-Step3c-Completion-Report.md` が作成されている。
+
+---
+
+## 7. 承認と実行記録
+
+- 承認: 2026-10-17、Q1〜Q6 すべて推奨（A）で承認。
+- **W1 実装済み（ビルド・テスト待ち）**: 新規 `Phase7Step3cApplyProfileCharacterizationTests`（9 件）。
+  - 固定した内容: 通常プロファイルの適用（`ProfilePath`／`SelectedProfile`／`OlderProfilePath` の更新、一時状態のリセット、`SelectedProfileChanged` が 1 回・引数付きで発火）、一時プロファイルの適用（`OlderProfilePath` と `ProfilePath` は更新されない、一時状態の設定、名前に `distance` を含むと距離フラグ）、存在しないプロファイル（失敗、`SelectedProfile`／`OlderProfilePath` は不変、イベントなし。通常は `ProfilePath` だけ先に更新される従来の動作）、`LoadTempProfile` 単体、`ApplyProfileToSlot` のスロット・名前の検査と成功、`LoadBlankDevProfile` による一時状態のリセット。
+  - 方法: 一時ディレクトリを `Global.appdatapath` に設定し、`Global.store.SaveProfile` で有効なプロファイルを作成。Host を構築して実物の `ControlService` を使い、`Program.rootHub` も一時的に差し替える。終了時にすべて復元する。
+  - 副作用の対策: `Global.appdatapath` を書き換える `PathServiceTests` を、同じ `ServiceProviderHolder` コレクションに入れて直列化した。
+  - 注意: このテストは W1 の時点で **現行コードに対して成功する** ことが前提（コードは変更していない）。失敗した場合は、テストの前提の誤りであり、移管の前に修正する。
