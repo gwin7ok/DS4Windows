@@ -37,3 +37,15 @@
 - 承認待ちの追加候補（Step2 計画書 §8 W6）: `IUdpServerService` 契約全体（未接続。接続を推奨）、`ISpecialActionRepository.GetAction`／`ActionExists`／`SaveActions`、`IPathService.ActionsPath`、`IDs4DeviceRegistry.IsHidHideInstalled`、`IProfileSettingsService.RumbleAutostopTime`、`IVirtualKBM.Version`（削除を推奨）。
 - Phase8 へ移管: `Actions/` の未配線の抽象 12 メンバー（`Phase8-Unified-Trigger-Dispatch-Plan.md` に追記済み）。
 - Step10 で再判断: `ProfileSubSettingBase.OnSubPropertyChanged`（購読者がいなくなった）、`ProfileApplicationService` の未使用の依存 `IDeviceStateService`。
+
+## 5. Phase7-Step3 で更新した台帳（2026-10-17）
+
+- `Global.*`: 723 → **516**（W1 −8、W2 −105、W3〜W5 −94。基準値は `Step10FourGlobalRatchetGuardTests`）。`AppHost` 40、`Program.rootHub` 22、`ServiceProviderHolder` 23 は変わらない。
+- `BackingStore` を DI のシングルトンとして登録（実体は `Global.store` と同一）。`ServiceRegistration`、`ProfileXmlStore`、`ProfileRepository` から `Global.store` の直接参照を除いた（`ServiceRegistration` の登録の 1 件だけが Composition Root として残る）。
+- 削除した `Global` の転送メンバー: 76 名（W2 34、W3 21、W4 5、W5 16）。ガード: `Phase7Step3RemovedGlobalForwardersGuardTests`。
+- サービス側だけ `BackingStore` に切り替え、`Global` のメンバーは他の呼び出し元のために残したもの（Q5）: `Notifications`（`MainWindow`）、`UseLang`、`LogMinLevel`、`LogMaxArchiveFiles`、`UseCurrentTheme`、`UseMoonlight`、`UseAdvancedMoonlight`、`DeviceOptions`、`getOSCServerPortNum`（`ControlService`）、`LastVersionChecked`（読み取り専用にした。`Changelog` が読む）。
+- Step3c（別計画書）へ持ち越し: `ProfilePresetLoader` の 10 名と `ProfileRepository.LoadBlankProfile`（`tempprofileDistance` ほかの状態と絡む）、`ProfilePath`／`OlderProfilePath`／`SelectedProfile`（`Global.ApplyProfile` が内部で使う）、`SelectedProfileChanged` ほかのイベント、`LoadTempProfile`、`ProfileApplicationService`／`ProfileSlotApplier` の `ApplyProfile` 系、`ProfileChangedNotification`（`ProfileSettingsServiceInstance` 経由）。
+- Step4 へ: `firstRun`／`runHotPlug`、`PathService`／`EnvironmentService` が参照する環境・パスの実体、`SetCulture`。
+- Step5 へ: `ProfileXmlStore.Load/SaveControllerConfigs`（`Program.rootHub` を走査する）、`MainWindow` などの Service Locator。
+- Step6 へ: `OutputSlotService` の `outDevTypeTemp`／`activeOutDevType`、`OutputKBMHandlerAdapter` の `outputKBMHandler`。
+- 残る Pure DI 違反のフォールバック: `Global.cs` の `new ProfileXmlStore(m_Config)`／`new AppNotificationService(m_Config)`（`*Instance` 系の最後のフォールバック。Step4／Step5 で削除）。

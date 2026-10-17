@@ -3,7 +3,7 @@
 作成日: 2026-10-17  
 対象ブランチ: `For-DI-migration-work`  
 前提: `Phase7-Plan.md` §2（Step3）、`Phase7-0-Survey.md` §1.2、D2（`BackingStore` は「DI の単一インスタンス化＋永続化の切り出し」まで）  
-状態: **調査完了・決定事項 Q1〜Q5 の承認待ち。実装は承認後に Wave 単位で行う。**  
+状態: **実装完了（2026-10-17）。実機確認 U-12 は未。完了報告書あり。**  
 ルール: ビルド・テストビルド・テスト実行・コミットはユーザーが行う。エージェントはローカルファイルの編集のみ。
 
 ---
@@ -89,14 +89,14 @@
 
 ## 6. 完了判定チェックリスト
 
-- [ ] W1〜W6 のビルド（警告 0）・テストビルド・テスト実行が成功している。
-- [ ] 対象の `Global` メンバー（Q1〜Q5 の承認内容に従う約 95 名）が削除され、サービスが `BackingStore` を直接使っている。
-- [ ] `ServiceRegistration`、`ProfileXmlStore`、`ProfileRepository` に `Global.store` の直接参照がない。
-- [ ] ラチェットの基準値が更新され、`Global.*` が約 520 以下になっている。
-- [ ] `Phase7Step3RemovedGlobalForwardersGuardTests` が成功している。
-- [ ] 台帳、モデル図、`Phase7-Status.md` が更新されている。
+- [x] W1〜W5 のビルド（警告 0）・テストビルド・テスト実行が成功している（W6 は文書のみ）。
+- [x] 対象の `Global` メンバー 76 名が削除され、サービスが `BackingStore` を直接使っている（計画の約 95 名との差は完了報告書 §1・§5）。
+- [x] `ProfileXmlStore`、`ProfileRepository` に `Global.store` の直接参照がない。`ServiceRegistration` は登録の 1 件だけ（Composition Root）。
+- [x] ラチェットの基準値が更新され、`Global.*` が 516 になっている。
+- [x] `Phase7Step3RemovedGlobalForwardersGuardTests` が成功している（W2〜W5 で毎回実行済み）。
+- [x] 台帳、モデル図、`Phase7-Status.md` が更新されている。
 - [ ] 実機確認 U-12（設定値の保持ほか）。
-- [ ] `Phase7-Step3-Completion-Report.md` が作成されている。
+- [x] `Phase7-Step3-Completion-Report.md` が作成されている。
 
 ---
 
@@ -136,3 +136,4 @@
   - テスト: 生成を `TestRepositoryFactory` の新ヘルパー（`CreateAppearanceSettingsService`／`CreateDeviceStateService`／`CreateAppNotificationService`）に置換、`Global.<名前>` を `Global.store.<field>` に書き換え。`AutoProfileService` の null 検査に `config` を追加。
   - **W5 で見送ったもの（判断）**: `ProfilePresetLoader` の 10 名と `ProfileRepository.LoadBlankProfile`（`Global.tempprofileDistance` など、プロファイル適用の状態と絡むため 3c）。`ProfilePath`／`OlderProfilePath`／`SelectedProfile`（`Global.ApplyProfile` が内部で使う。3c）。`SelectedProfileChanged` ほかのイベント、`LoadTempProfile`（`Global` の状態と絡む。3c）。`ProfileXmlStore.Load/SaveControllerConfigs`（`Program.rootHub` を走査する。Step5）。`SpecialActionRepository`／`PathService`／`EnvironmentService`／`OutputSlotService`／`OutputKBMHandlerAdapter`（実体を持つ状態。Step4／Step6）。`Notifications`（`MainWindow` が参照）は `Global` に残す。
   - ラチェット基準値: `AppearanceSettingsService` 8→4、`AppNotificationService` 1→0、`AutoProfileService` 3→1、`DeviceStateService` 4→2、`ProfileRepository` 21→6、`ProfileSettingsService` 4→3。`Global.*` 合計 516。
+- **W6 実施（文書とガード）**: 台帳 §5、モデル図 03／04、チェックリスト U-12、完了報告書、本チェックリスト。`Phase7Step3RemovedGlobalForwardersGuardTests` は W2〜W5 で名前を追記済み。

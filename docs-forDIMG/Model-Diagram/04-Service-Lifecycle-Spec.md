@@ -173,4 +173,9 @@
 %% - 2 系統目のうち `Actions/` の 17 件は Phase8 の持ち越し。`Mapping`（5）と `App`（1）は Phase7-Step5 で注入へ置き換える。
 %% - 台帳: `docs-forDIMG/MadeByAgent/Phase7-Residual-Ledger.md`。
 %%
-%% Phase7-Step2 W3（2026-10-17）: `ControllersViewModel`（`HasControllers` だけを持つ使われない殻）を削除。`IDeviceStateService` は、デバイス一覧・接続状態・電池残量などの取得（内部配列が常に空で、本体で一度も設定されなかった孤立実装）を削除し、初回接続判定（`IsFirstConnection`／`MarkConnected`／`ResetConnectionFlags`）とシリアル変更通知（`OnDeviceSerialChange`）だけを持つ。接続中のデバイスの実体は `ControlService.DS4Controllers`（`IDeviceStateAccessor` 経由）。
+%% Phase7-Step2 W3（2026-10-17）: `ControllersViewModel`（`HasControllers` だけを持つ使われない殻）を削除。`IDeviceStateService` は、デバイス一覧・接続状態・電池残量などの取得（内部配列が常に空で、本体で一度も設定されなかった孤立実装）を削除し、初回接続判定（`IsFirstConnection`／`MarkConnected`／`ResetConnectionFlags`）とシリアル変更通知（`OnDeviceSerialChange`）だけを持つ。接続中のデバイスの実体は `ControlService.DS4Controllers`（`IDeviceStateAccessor` 経由）。%%
+%% Phase7-Step3（2026-10-17）: `BackingStore`（設定の唯一の実体）を DI のシングルトンとして登録した（`services.AddSingleton<BackingStore>(_ => Global.store)`。実体は `Global.store` と同一で、`Global` 側の生成は Step10 まで残す）。
+%% - 上の 2026-10-15 の注釈にある「`BackingStore` は DI 未登録のため、`Global.store` を渡すファクトリー登録」は、この登録に置き換わった（`ProfileSettingsService`／`SpecialActionRepository`／`ProfileActionProvider` のファクトリーは `GetRequiredService<BackingStore>()` を渡す）。
+%% - `BackingStore` を必須の依存として受け取るサービス: `ProfileXmlStore`、`ProfileRepository`、`AppSettingsService`、`AppearanceSettingsService`、`DeviceStateService`、`AppNotificationService`、`AutoProfileService`（`ProfileSettingsService`、`SpecialActionRepository`、`ProfileActionProvider` は以前から）。任意引数や `Global.store` へのフォールバックは廃止した。
+%% - `AppSettingsService` が `UDPServerSmoothing*Changed` イベントの発火元になった（静的イベントから、サービスのインスタンスイベントへ。購読者は `ControlService`）。`FakeExeName` の検証、リンクプロファイルのシリアル正規化もサービスへ移した。
+%% - 詳細は `Phase7-Step3-Plan.md`、`Phase7-Step3-Completion-Report.md`、台帳は `Phase7-Residual-Ledger.md` §5。

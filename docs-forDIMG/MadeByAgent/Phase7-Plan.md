@@ -47,7 +47,7 @@
 - **Step3: `BackingStore` の DI 化と `Global` の転送の削除**
   - 3a: `BackingStore` を DI のシングルトンとして登録（実体は `Global.store` と同一）。サービスのコンストラクターへ注入。
   - 3b: 純粋な転送の約 90 名を、サービスが `BackingStore` を直接使うようにして、`Global` から削除（サービス単位の Wave。`AppSettingsService` の 185 参照が最大）。
-  - 3c: イベントとプロファイル適用・プリセットの処理（`ApplyProfile` ほか約 15 名）をサービス側へ移管。
+  - 3c: イベントとプロファイル適用・プリセットの処理（`ApplyProfile` ほか約 15 名）をサービス側へ移管。**Step3 では実施せず、別計画書（Step3c）へ持ち越した**（2026-10-17。`Phase7-Step3-Completion-Report.md` §5）。
 - **Step4: 起動・終了シーケンスの近代化**
   - ブートストラップ（パス・設定の場所・ログ設定を、コンテナ構築の前に作り、同じインスタンスを登録）。Pre-Host 12 箇所と共用ヘルパーの整理。
   - 環境・パスの実体（`exedirpath`、`appdatapath`、ViGEm／HidHide の情報ほか約 20 名）を `PathService`／`EnvironmentService` へ移管。

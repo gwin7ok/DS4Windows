@@ -445,3 +445,8 @@ classDiagram
 %% - `IDeviceStateService`: デバイス一覧・接続状態・電池残量（常に空の孤立実装）を削除。初回接続判定とシリアル変更通知だけを持つ。`ControllersViewModel` を削除。
 %% - `IOutputSlotService`: `OutputDevices`／`GetOutputDevice`／`IsSlotPlugin` を削除。`IProfileRepository`、`ISpecialActionRepository`（メモリ上だけの `AddAction`／`ReplaceAction`／`RemoveAction`）、`IDs4DeviceRegistry`、`IVirtualKBM`、`IUdpServerService`、`INotificationService`、`IPathService` の孤立・重複メンバーを削除。
 %% - 「使うべきだが未接続」として TODO 付きで残した契約: `IEnvironmentService.UsingMaxControllers`、`IDs4DeviceRegistry.ReEnableDevice`、`IOutputSlotService.LoadOutputSlots`／`SaveOutputSlots`、`OutputSlotChanged`（温存）。
+%%
+%% Phase7-Step3（2026-10-17）: `BackingStore` が DI のシングルトンになり、サービスの構成が変わった（クラス間の関係線は変わらない。依存が `Global` 経由から `BackingStore` の直接注入に変わった）。
+%%   - 追加された注入: `ProfileXmlStore(BackingStore)`、`ProfileRepository(BackingStore, IProfileSettingsService, IProfileXmlStore, IPathService, Func<ControlService>)`、`AppSettingsService(BackingStore, IProfileXmlStore, IPathService)`、`AppearanceSettingsService(BackingStore)`、`DeviceStateService(BackingStore)`、`AppNotificationService(BackingStore)`、`AutoProfileService(…, Func<ControlService>, BackingStore)`。
+%%   - `IAppSettingsService` の `UDPServerSmoothingMincutoffChanged`／`BetaChanged` の発火元は、`AppSettingsService` のインスタンスになった（`Global` の静的イベントを削除）。
+%%   - `Global` から削除した転送メンバー 76 名の一覧は `Phase7Step3RemovedGlobalForwardersGuardTests` を参照。
