@@ -21,7 +21,7 @@ namespace DS4WindowsTests
 
         public static string SaveProfile(PersistenceGoldenContext ctx, BackingStore store, string name)
         {
-            Assert.True(store.SaveProfile(Slot, name), "プロファイルの保存に失敗した");
+            Assert.True(TestRepositoryFactory.CreateLegacyProfileXml(store).SaveProfile(Slot, name), "プロファイルの保存に失敗した");
             return File.ReadAllText(Path.Combine(ctx.AppData, "Profiles", name + ".xml"));
         }
 
@@ -119,7 +119,8 @@ namespace DS4WindowsTests
 
         public static BackingStore LoadPreset(PersistenceGoldenContext ctx, string presetName)
         {
-            BackingStore s = NewStore();
+            BackingStore store = NewStore();
+            var s = new DS4Windows.Services.ProfilePresets(store);
             ControlService c = ctx.Control;
             switch (presetName)
             {
@@ -136,7 +137,7 @@ namespace DS4WindowsTests
                 default: throw new ArgumentException(presetName);
             }
 
-            return s;
+            return store;
         }
     }
 }

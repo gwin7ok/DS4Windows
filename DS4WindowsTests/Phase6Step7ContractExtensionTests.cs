@@ -178,7 +178,8 @@ namespace DS4WindowsTests
             string text = ReadSourceWithoutComments("DS4Windows/DS4Control/Services/ProfileRepository.cs");
             if (text == null) return;
 
-            Assert.Matches(@"public bool SaveAsProfile\(int deviceIndex, string profileName\)\s*=>\s*_config\.SaveAsProfile\(deviceIndex, profileName\);", text);
+            // Phase7-Step10c W5: プロファイルの保存は LegacyProfileXmlSerializer へ移した
+            Assert.Matches(@"public bool SaveAsProfile\(int deviceIndex, string profileName\)\s*=>\s*_legacyProfileXml\.SaveAsProfile\(deviceIndex, profileName\);", text);
             // Phase7-Step10c W2: リンクプロファイルの読込は LinkedProfilesXmlSerializer へ移した（BackingStore から削除）
             Assert.Matches(@"public bool LoadLinkedProfiles\(\)\s*=>\s*_linkedProfilesXml\.LoadLinkedProfiles\(\);", text);
         }

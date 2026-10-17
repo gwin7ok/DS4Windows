@@ -51,7 +51,7 @@ namespace DS4Windows
             {
                 try
                 {
-                    return _backingStore.SaveProfile(deviceIndex, profileName);
+                    return _legacyProfileXml.SaveProfile(deviceIndex, profileName);
                 }
                 catch (Exception ex)
                 {

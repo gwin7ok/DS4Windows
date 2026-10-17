@@ -66,9 +66,9 @@ namespace DS4WindowsTests
             _origDistance = Global.tempprofileDistance[Slot];
 
             // 読み込める有効なプロファイルを、保存の経路で作る（保存先は退避した appdatapath 配下）
-            Assert.True(Global.store.SaveProfile(Slot, Normal));
-            Assert.True(Global.store.SaveProfile(Slot, Temp));
-            Assert.True(Global.store.SaveProfile(Slot, Distance));
+            Assert.True(TestRepositoryFactory.CreateLegacyProfileXml().SaveProfile(Slot, Normal));
+            Assert.True(TestRepositoryFactory.CreateLegacyProfileXml().SaveProfile(Slot, Temp));
+            Assert.True(TestRepositoryFactory.CreateLegacyProfileXml().SaveProfile(Slot, Distance));
 
             _handler = (s, e) => _events.Add(e);
             _repo.SelectedProfileChanged += _handler;

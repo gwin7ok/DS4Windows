@@ -293,7 +293,7 @@ namespace DS4Windows
         // ---- Phase6-Step7-1: App.xaml.cs（Post-Host）の Global 直接参照解消 ----
         // Global.SaveAsProfile は戻り値を捨てる void のため、同じ実体（BackingStore.SaveAsProfile）を直接呼んで成否を返す。
         public bool SaveAsProfile(int deviceIndex, string profileName)
-            => _config.SaveAsProfile(deviceIndex, profileName);
+            => _legacyProfileXml.SaveAsProfile(deviceIndex, profileName);
 
         public bool LoadLinkedProfiles()
             => _linkedProfilesXml.LoadLinkedProfiles();

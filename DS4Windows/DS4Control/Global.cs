@@ -183,7 +183,9 @@ namespace DS4Windows
         // KBM マッピング（旧 outputKBMMapping）は IProfileSettingsService.OutputKBMMapping を直接使う形にした
         // （決定・破棄・フォールバックの操作は OutputKBMHandlerLifecycle）。
 
-        public const int CONFIG_VERSION = 5;
+        // Phase7-Step10c W5: 実体は LegacyProfileXmlSerializer.ConfigVersion へ移した。以下は同じ値を指す別名（ProfileMigration が使う）。
+        // TODO(Phase7-Step10d): 利用箇所をなくしたら、この別名を削除する。
+        public const int CONFIG_VERSION = Services.LegacyProfileXmlSerializer.ConfigVersion;
         public const int APP_CONFIG_VERSION = 2;
         // Phase7-Step10a W3・W4: 資源パスの定数（ASSEMBLY_RESOURCE_PREFIX／RESOURCES_PREFIX）は画面側の ResourcePaths へ移し、削除した。
         // Need to add additional probing path in code starting with .NET 6.
@@ -192,7 +194,8 @@ namespace DS4Windows
         // Phase7-Step10c W3: 実体は AppSettingsXmlSerializer.CustomExeConfigFileName へ移した。以下は同じ値を指す別名（テストが使う）。
         // TODO(Phase7-Step10d): 利用箇所をなくしたら、この別名を削除する。
         public const string CUSTOM_EXE_CONFIG_FILENAME = Services.AppSettingsXmlSerializer.CustomExeConfigFileName;
-        public const string XML_EXTENSION = ".xml";
+        // Phase7-Step10c W5: 実体は LegacyProfileXmlSerializer.XmlExtension へ移した（別名。TODO(Phase7-Step10d): 利用箇所がなくなったら削除）。
+        public const string XML_EXTENSION = Services.LegacyProfileXmlSerializer.XmlExtension;
 
         // Phase7-Step10b W1: 既定のボタン割り当て・名前の表・getX360ControlString は X360ControlTables へ、
         // ds4inputNames／macroDS4Values は DS4ControlNames へ移し、Global から削除した（宣言は移動のみで、中身は同一）。

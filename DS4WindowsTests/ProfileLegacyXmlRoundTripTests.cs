@@ -17,9 +17,6 @@ namespace DS4WindowsTests
         private const int Device = 2;
         private const string Root = "DS4Windows";
 
-        private static readonly FieldInfo XdocField =
-            typeof(BackingStore).GetField("m_Xdoc", BindingFlags.Instance | BindingFlags.NonPublic);
-
         // Phase7-Step10c W4: 読込（LoadLegacyExtraSettings）は LegacyProfileXmlSerializer へ移した。作業用の XmlDocument はその m_Xdoc
         private static readonly FieldInfo SerializerXdocField =
             typeof(DS4Windows.Services.LegacyProfileXmlSerializer).GetField("m_Xdoc", BindingFlags.Instance | BindingFlags.NonPublic);
@@ -35,11 +32,11 @@ namespace DS4WindowsTests
         private static readonly MethodInfo ResetProfileMethod =
             typeof(BackingStore).GetMethod("ResetProfile", BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic);
 
+        // Phase7-Step10c W5: 作業用の XmlDocument は、読み書きのどちらも LegacyProfileXmlSerializer の m_Xdoc（NewSerializer で設定）
         private static XmlDocument NewDocument(BackingStore store)
         {
             var doc = new XmlDocument();
             doc.AppendChild(doc.CreateElement(Root));
-            XdocField.SetValue(store, doc);
             return doc;
         }
 
@@ -64,7 +61,7 @@ namespace DS4WindowsTests
             source.gyroMStickInfo[Device].jitterCompensation = !GyroMouseStickInfo.JITTER_COMPENSATION_DEFAULT;
 
             XmlDocument doc = NewDocument(source);
-            source.SaveLegacyExtraSettings(doc.DocumentElement, Device);
+            NewSerializer(source, doc).SaveLegacyExtraSettings(doc.DocumentElement, Device);
 
             var target = new BackingStore();
             var targetXml = NewSerializer(target, doc);

@@ -39,7 +39,7 @@ namespace DS4WindowsTests
         public static DS4Windows.Services.LegacyProfileXmlSerializer CreateLegacyProfileXml(BackingStore store = null,
             IProfileSettingsService settings = null, IPathService pathService = null)
             => new DS4Windows.Services.LegacyProfileXmlSerializer(store ?? Global.store, pathService ?? new PathService(),
-                settings ?? Global.ProfileSettingsServiceInstance);
+                settings ?? Global.ProfileSettingsServiceInstance, new EnvironmentService());
 
         /// <summary>Phase7-Step10c W3: アプリ設定（Profiles.xml）の保存・読込（旧: BackingStore.Load／Save）。</summary>
         public static DS4Windows.Services.AppSettingsXmlSerializer CreateAppSettingsXml(BackingStore store = null,
@@ -122,7 +122,8 @@ namespace DS4WindowsTests
         public static ProfilePresetLoader CreateProfilePresetLoader(BackingStore store = null,
             IProfileSettingsService profileSettings = null)
         {
-            return new ProfilePresetLoader(store ?? Global.store, profileSettings ?? Global.ProfileSettingsServiceInstance);
+            return new ProfilePresetLoader(store ?? Global.store, profileSettings ?? Global.ProfileSettingsServiceInstance,
+                new DS4Windows.Services.ProfilePresets(store ?? Global.store));
         }
 
         public static ProfileApplicationService CreateProfileApplicationService(IProfileSettingsService settings,

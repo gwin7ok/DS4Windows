@@ -62,9 +62,11 @@ namespace DS4WindowsTests
 
             Assert.Matches(@"public\s+OutContType\[\]\s+ActiveOutDevType\s*\{\s*get;\s*set;\s*\}", store);
             // Phase7-Step10c W4: プロファイルの読込（1 件）は LegacyProfileXmlSerializer へ移した（store.ActiveOutDevType）。合計は変わらない
+            // Phase7-Step10c W6: プリセットの読込（7 件）も ProfilePresets へ移した。3 つのソースを合わせて 8 件
             string serializer = Read("DS4Windows/DS4Control/Services/LegacyProfileXmlSerializer.cs");
-            if (serializer == null) return;
-            Assert.Equal(8, Regex.Matches(store + serializer, @"OutContType oldContType = (store\.)?ActiveOutDevType\[device\];").Count);
+            string presets = Read("DS4Windows/DS4Control/Services/ProfilePresets.cs");
+            if (serializer == null || presets == null) return;
+            Assert.Equal(8, Regex.Matches(store + serializer + presets, @"OutContType oldContType = (store\.)?ActiveOutDevType\[device\];").Count);
         }
 
         [Fact]

@@ -13,9 +13,12 @@ namespace DS4Windows.Services
     {
         private readonly BackingStore _config;
         private readonly IProfileSettingsService _profileSettings;
+        // Phase7-Step10c W6: プリセットの読込（旧: BackingStore.LoadBlank*／LoadDefault*）
+        private readonly ProfilePresets _presets;
 
-        public ProfilePresetLoader(BackingStore config, IProfileSettingsService profileSettings)
+        public ProfilePresetLoader(BackingStore config, IProfileSettingsService profileSettings, ProfilePresets presets)
         {
+            _presets = presets ?? throw new ArgumentNullException(nameof(presets));
             _config = config ?? throw new ArgumentNullException(nameof(config));
             _profileSettings = profileSettings ?? throw new ArgumentNullException(nameof(profileSettings));
         }
@@ -33,61 +36,61 @@ namespace DS4Windows.Services
 
         public void LoadBlank(int deviceIndex, bool launchProgram, ControlService control, bool xinputChange = true, bool postLoad = true)
         {
-            _config.LoadBlankProfile(deviceIndex, launchProgram, control, "", xinputChange, postLoad);
+            _presets.LoadBlankProfile(deviceIndex, launchProgram, control, "", xinputChange, postLoad);
             CompleteLoad(deviceIndex);
         }
 
         public void LoadBlankDS4(int deviceIndex, bool launchProgram, ControlService control, bool xinputChange = true, bool postLoad = true)
         {
-            _config.LoadBlankDS4Profile(deviceIndex, launchProgram, control, "", xinputChange, postLoad);
+            _presets.LoadBlankDS4Profile(deviceIndex, launchProgram, control, "", xinputChange, postLoad);
             CompleteLoad(deviceIndex);
         }
 
         public void LoadDefaultGamepadGyro(int deviceIndex, bool launchProgram, ControlService control, bool xinputChange = true, bool postLoad = true)
         {
-            _config.LoadDefaultGamepadGyroProfile(deviceIndex, launchProgram, control, "", xinputChange, postLoad);
+            _presets.LoadDefaultGamepadGyroProfile(deviceIndex, launchProgram, control, "", xinputChange, postLoad);
             CompleteLoad(deviceIndex);
         }
 
         public void LoadDefaultDS4GamepadGyro(int deviceIndex, bool launchProgram, ControlService control, bool xinputChange = true, bool postLoad = true)
         {
-            _config.LoadDefaultDS4GamepadGyroProfile(deviceIndex, launchProgram, control, "", xinputChange, postLoad);
+            _presets.LoadDefaultDS4GamepadGyroProfile(deviceIndex, launchProgram, control, "", xinputChange, postLoad);
             CompleteLoad(deviceIndex);
         }
 
         public void LoadDefaultMixedControls(int deviceIndex, bool launchProgram, ControlService control, bool xinputChange = true, bool postLoad = true)
         {
-            _config.LoadDefaultMixedControlsProfile(deviceIndex, launchProgram, control, "", xinputChange, postLoad);
+            _presets.LoadDefaultMixedControlsProfile(deviceIndex, launchProgram, control, "", xinputChange, postLoad);
             CompleteLoad(deviceIndex);
         }
 
         public void LoadDefaultDS4MixedControls(int deviceIndex, bool launchProgram, ControlService control, bool xinputChange = true, bool postLoad = true)
         {
-            _config.LoadDefaultDS4MixedControlsProfile(deviceIndex, launchProgram, control, "", xinputChange, postLoad);
+            _presets.LoadDefaultDS4MixedControlsProfile(deviceIndex, launchProgram, control, "", xinputChange, postLoad);
             CompleteLoad(deviceIndex);
         }
 
         public void LoadDefaultMixedGyroMouse(int deviceIndex, bool launchProgram, ControlService control, bool xinputChange = true, bool postLoad = true)
         {
-            _config.LoadDefaultMixedGyroMouseProfile(deviceIndex, launchProgram, control, "", xinputChange, postLoad);
+            _presets.LoadDefaultMixedGyroMouseProfile(deviceIndex, launchProgram, control, "", xinputChange, postLoad);
             CompleteLoad(deviceIndex);
         }
 
         public void LoadDefaultDS4MixedGyroMouse(int deviceIndex, bool launchProgram, ControlService control, bool xinputChange = true, bool postLoad = true)
         {
-            _config.LoadDefaultDS4MixedGyroMouseProfile(deviceIndex, launchProgram, control, "", xinputChange, postLoad);
+            _presets.LoadDefaultDS4MixedGyroMouseProfile(deviceIndex, launchProgram, control, "", xinputChange, postLoad);
             CompleteLoad(deviceIndex);
         }
 
         public void LoadDefaultKBM(int deviceIndex, bool launchProgram, ControlService control, bool xinputChange = true, bool postLoad = true)
         {
-            _config.LoadDefaultKBMProfile(deviceIndex, launchProgram, control, "", xinputChange, postLoad);
+            _presets.LoadDefaultKBMProfile(deviceIndex, launchProgram, control, "", xinputChange, postLoad);
             CompleteLoad(deviceIndex);
         }
 
         public void LoadDefaultKBMGyroMouse(int deviceIndex, bool launchProgram, ControlService control, bool xinputChange = true, bool postLoad = true)
         {
-            _config.LoadDefaultKBMGyroMouseProfile(deviceIndex, launchProgram, control, "", xinputChange, postLoad);
+            _presets.LoadDefaultKBMGyroMouseProfile(deviceIndex, launchProgram, control, "", xinputChange, postLoad);
             CompleteLoad(deviceIndex);
         }
     }

@@ -74,7 +74,8 @@ namespace DS4WindowsTests
             // Phase7-Step10a W1: 定数 132 件（TEST_PROFILE_ITEM_COUNT 114、MAX_DS4_CONTROLLER_COUNT 18）を ControllerLimits へ切り替え（159 → 27）
             // Phase7-Step10c W3: アプリ設定の保存・読込（Load／Save／LoadFakeExeName）を AppSettingsXmlSerializer へ移した（27 → 18）
             // Phase7-Step10c W4: プロファイルの読込（LoadProfile ほか）を LegacyProfileXmlSerializer へ移した（18 → 14）
-            ["DS4Windows/DS4Control/BackingStore.cs"] = (0, 0, 14),
+            // Phase7-Step10c W5: プロファイルの保存（SaveProfile ほか）を LegacyProfileXmlSerializer へ移した（14 → 7）
+            ["DS4Windows/DS4Control/BackingStore.cs"] = (0, 0, 7),
             ["DS4Windows/DS4Control/Changelog.cs"] = (0, 0, 4),
             // Phase6-Step12 Wave 1: 孤立コード 24 件を削除（Global 47 → 45）。Wave 2: 互換アクセサ 152 件を削除（Global 45 → 38）。Wave 3: *Instance のフォールバック群 19 件を削除（Global 38 → 26、AppHost 11 → 5、rootHub 9 → 6）。Wave 4: BackingStore 直転送ラッパー 58 件を削除（AppHost 5 → 4。(6, 4, 26)）
             // Phase7-Step4 W1: IsUsingMinViGEm117333 の移管で Global.* 2 件を削除（24 → 22）

@@ -168,11 +168,11 @@ namespace DS4WindowsTests
 
             foreach (var kv in expected)
             {
-                // Phase7-Step3c W2: 実装は BackingStore の読み込みを呼び、後処理（CompleteLoad）を行う
+                // Phase7-Step3c W2: 実装はプリセットの読み込みを呼び、後処理（CompleteLoad）を行う（Phase7-Step10c W6: 呼び出し先は ProfilePresets）
                 string target = kv.Value == "LoadBlankDevProfile" ? "LoadBlankProfile" : kv.Value;
-                string pattern = @"public void " + kv.Key + @"\([^)]*\)\s*\{\s*_config\." + target +
+                string pattern = @"public void " + kv.Key + @"\([^)]*\)\s*\{\s*_presets\." + target +
                     @"\(deviceIndex, launchProgram, control, """", xinputChange, postLoad\);\s*CompleteLoad\(deviceIndex\);\s*\}";
-                Assert.True(Regex.IsMatch(text, pattern), $"{kv.Key} が BackingStore.{target} を呼んで CompleteLoad していない。");
+                Assert.True(Regex.IsMatch(text, pattern), $"{kv.Key} が ProfilePresets.{target} を呼んで CompleteLoad していない。");
             }
 
             // 契約のメソッド数（10）と実装のメソッド数が一致すること

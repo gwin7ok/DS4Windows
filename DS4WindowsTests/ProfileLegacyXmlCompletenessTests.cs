@@ -62,7 +62,7 @@ namespace DS4WindowsTests
                 Global.appdatapath = tempDir;
                 var store = new BackingStore();
 
-                Assert.True(store.SaveProfile(0, "Completeness"));
+                Assert.True(TestRepositoryFactory.CreateLegacyProfileXml(store).SaveProfile(0, "Completeness"));
 
                 var doc = new XmlDocument();
                 doc.Load(Path.Combine(tempDir, "Profiles", "Completeness.xml"));
@@ -92,7 +92,7 @@ namespace DS4WindowsTests
                 Global.appdatapath = tempDir;
                 var store = new BackingStore();
 
-                Assert.True(store.SaveProfile(0, "OutputStick"));
+                Assert.True(TestRepositoryFactory.CreateLegacyProfileXml(store).SaveProfile(0, "OutputStick"));
 
                 var doc = new XmlDocument();
                 doc.Load(Path.Combine(tempDir, "Profiles", "OutputStick.xml"));
