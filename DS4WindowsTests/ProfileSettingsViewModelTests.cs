@@ -103,7 +103,6 @@ namespace DS4WindowsTests
             var service = TestRepositoryFactory.CreateProfileSettingsService();
             var outputSlotService = TestRepositoryFactory.CreateOutputSlotService();
             Global.ProfileSettingsServiceInstance = service;
-            Global.OutputSlotServiceInstance = outputSlotService;
 
             const int device = 0;
             OutContType original = service.OutContType[device];

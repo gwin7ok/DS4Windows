@@ -61,8 +61,8 @@ namespace DS4WindowsTests
             // Phase6-Step10b W5: ScpUtil.cs（29 型）を型ごとに分割。件数を引き継いだ（Global 233＝Global 47＋BackingStore 182＋Changelog 4、AppHost 12＝11＋1。rootHub 9 は Global。合計は不変）
             ["DS4Windows/DS4Control/BackingStore.cs"] = (0, 1, 182),
             ["DS4Windows/DS4Control/Changelog.cs"] = (0, 0, 4),
-            // Phase6-Step12 Wave 1: 孤立コード 24 件を削除（Global 47 → 45）。Wave 2: 互換アクセサ 152 件を削除（Global 45 → 38。rootHub 9・AppHost 11 は不変）
-            ["DS4Windows/DS4Control/Global.cs"] = (9, 11, 38),
+            // Phase6-Step12 Wave 1: 孤立コード 24 件を削除（Global 47 → 45）。Wave 2: 互換アクセサ 152 件を削除（Global 45 → 38）。Wave 3: *Instance のフォールバック群 19 件を削除（Global 38 → 26、AppHost 11 → 5、rootHub 9 → 6）
+            ["DS4Windows/DS4Control/Global.cs"] = (6, 5, 26),
             ["DS4Windows/DS4Control/Services/AppNotificationService.cs"] = (0, 0, 6),
             ["DS4Windows/DS4Control/Services/AppSettingsService.cs"] = (0, 0, 185),
             ["DS4Windows/DS4Control/Services/AppearanceSettingsService.cs"] = (0, 0, 8),

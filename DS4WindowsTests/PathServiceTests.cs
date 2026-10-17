@@ -52,15 +52,5 @@ namespace DS4WindowsTests
             Assert.Equal(string.Empty, service.GetProfilePath(null));
             Assert.Equal(string.Empty, service.GetProfilePath(""));
         }
-
-        [Fact]
-        public void GlobalShim_ShouldSynchronizeWithService()
-        {
-            var service = new PathService(@"C:\TestAppPath");
-            Global.PathServiceInstance = service;
-
-            Assert.NotNull(Global.PathServiceInstance);
-            Assert.Equal(@"C:\TestAppPath\Profiles", Global.PathServiceInstance.ProfilesPath);
-        }
     }
 }

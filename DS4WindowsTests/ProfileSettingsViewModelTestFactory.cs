@@ -24,8 +24,8 @@ namespace DS4WindowsTests
                 device,
                 profileSettings ?? Global.ProfileSettingsServiceInstance,
                 null,
-                outputSlotService ?? DS4WinWPF.AppHost.GetService<IOutputSlotService>() ?? Global.OutputSlotServiceInstance,
-                DS4WinWPF.AppHost.GetService<IProfileRepository>() ?? Global.ProfileRepositoryInstance,
+                outputSlotService ?? DS4WinWPF.AppHost.GetService<IOutputSlotService>(),
+                DS4WinWPF.AppHost.GetService<IProfileRepository>(),
                 DS4WinWPF.AppHost.GetService<IEnvironmentService>(),
                 DS4WinWPF.AppHost.GetService<IPathService>(),
                 targetDevice);

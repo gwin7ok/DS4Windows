@@ -98,21 +98,19 @@ namespace DS4WindowsTests
         }
 
         [Fact]
-        public void GlobalShim_ShouldSynchronizeWithRepository()
+        public void ApplyAndRestoreProfileDirect_ShouldUpdateTempProfileState()
         {
+            // Phase6-Step12 Wave 3: Global.ProfileRepositoryInstance（旧シム）を削除したため、リポジトリを直接使う。
             var settings = TestRepositoryFactory.CreateProfileSettingsService();
             var repository = TestRepositoryFactory.CreateProfileRepository(settings);
-            Global.ProfileRepositoryInstance = repository;
-            Global.ProfileSettingsServiceInstance = settings;
 
-            Assert.NotNull(Global.ProfileRepositoryInstance);
-            Assert.Equal(repository.ProfilesPath, Global.ProfileRepositoryInstance.ProfilesPath);
+            Assert.NotNull(repository.ProfilesPath);
 
-            Global.ProfileRepositoryInstance.ApplyProfileDirect(2, "ShimDirectTest");
+            repository.ApplyProfileDirect(2, "ShimDirectTest");
             Assert.True(settings.GetUseTempProfile(2));
             Assert.Equal("ShimDirectTest", settings.GetTempProfileName(2));
 
-            Global.ProfileRepositoryInstance.RestoreProfileDirect(2);
+            repository.RestoreProfileDirect(2);
             Assert.False(settings.GetUseTempProfile(2));
         }
 

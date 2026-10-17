@@ -53,6 +53,8 @@ namespace DS4WindowsTests
             "TouchClickPassthru", "TouchDisInvertTriggers", "TouchMouseStickInf", "TouchOutMode", "touchpadActive", "TouchpadButtonMode",
             "TouchpadInvert", "TouchpadJitterCompensation", "TouchRelMouse", "TouchSensitivity", "TrackballFriction", "TrackballMode",
             "UseGenericRumbleStrRescaleForDualSenses", "WheelSmoothInfo",
+            // Wave 3（*Instance のフォールバック群）
+            "CreateFallbackOutputSlotService", "deviceStateService", "DeviceStateServiceInstance", "environmentService", "EnvironmentServiceInstance", "fallbackDeviceStateService", "fallbackEnvironmentService", "fallbackOutputSlotService", "fallbackPathService", "fallbackProfileRepository", "fallbackSpecialActionRepository", "outputSlotService", "OutputSlotServiceInstance", "pathService", "PathServiceInstance", "profileRepository", "ProfileRepositoryInstance", "specialActionRepository", "SpecialActionRepositoryInstance",
         };
 
         private static readonly string[] RemovedFiles =

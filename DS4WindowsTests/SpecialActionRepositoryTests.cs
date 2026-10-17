@@ -93,19 +93,5 @@ namespace DS4WindowsTests
 
             Assert.True(eventFired);
         }
-
-        [Fact]
-        public void GlobalShim_ShouldSynchronizeWithRepository()
-        {
-            var backingStore = new BackingStore();
-            var repo = TestRepositoryFactory.CreateSpecialActionRepository(backingStore);
-            Global.SpecialActionRepositoryInstance = repo;
-
-            var action = new SpecialAction("ShimActionTest", "Touchpad", "Key", "10", 0);
-            repo.AddAction(action);
-
-            Assert.True(Global.SpecialActionRepositoryInstance.ActionExists("ShimActionTest"));
-            Assert.NotNull(Global.SpecialActionRepositoryInstance.GetAction("ShimActionTest"));
-        }
     }
 }

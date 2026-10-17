@@ -62,15 +62,5 @@ namespace DS4WindowsTests
             service.SetDevice(-1, null);
             service.SetDevice(99, null);
         }
-
-        [Fact]
-        public void GlobalShim_ShouldSynchronizeWithService()
-        {
-            var service = new DeviceStateService();
-            Global.DeviceStateServiceInstance = service;
-
-            Assert.NotNull(Global.DeviceStateServiceInstance);
-            Assert.Equal(0, Global.DeviceStateServiceInstance.ConnectedControllersCount);
-        }
     }
 }

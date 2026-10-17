@@ -29,23 +29,5 @@ namespace DS4WindowsTests
             // Globalへの委譲呼び出しが例外なく完了することのみ確認する。
             var _ = service.IsAdministrator();
         }
-
-        [Fact]
-        public void GlobalShim_ShouldReturnAssignedInstance()
-        {
-            var service = new EnvironmentService();
-            IEnvironmentService original = Global.EnvironmentServiceInstance;
-            try
-            {
-                Global.EnvironmentServiceInstance = service;
-
-                Assert.Same(service, Global.EnvironmentServiceInstance);
-            }
-            finally
-            {
-                // 他テストへの影響を避けるため、シムの状態を元に戻す。
-                Global.EnvironmentServiceInstance = original;
-            }
-        }
     }
 }

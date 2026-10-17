@@ -88,23 +88,6 @@ namespace DS4WindowsTests
         }
 
         [Fact]
-        public void GlobalShim_ShouldReferenceSameService()
-        {
-            var original = Global.OutputSlotServiceInstance;
-            try
-            {
-                var service = TestRepositoryFactory.CreateOutputSlotService();
-                Global.OutputSlotServiceInstance = service;
-
-                Assert.Same(service, Global.OutputSlotServiceInstance);
-            }
-            finally
-            {
-                Global.OutputSlotServiceInstance = original;
-            }
-        }
-
-        [Fact]
         public void LoadAndSave_DelegatesToStoreSuccessfully()
         {
             var mockStore = new MockOutputSlotStore();
