@@ -45,6 +45,8 @@ namespace DS4WindowsTests
             "LoadBlankDevProfile", "LoadBlankDS4Profile", "LoadDefaultGamepadGyroProfile", "LoadDefaultDS4GamepadGyroProfile",
             "LoadDefaultMixedControlsProfile", "LoadDefaultDS4MixedControlsProfile", "LoadDefaultMixedGyroMouseProfile",
             "LoadDefaultDS4MixedGyroMouseProfile", "LoadDefaultKBMProfile", "LoadDefaultKBMGyroMouseProfile",
+            // Step3c W3: BackingStore のインスタンスのフィールドに移した
+            "loggedInvalidActions",
         };
 
         private readonly ITestOutputHelper _output;

@@ -96,6 +96,17 @@ namespace DS4WindowsTests
             return new ProfilePresetLoader(store ?? Global.store, profileSettings ?? Global.ProfileSettingsServiceInstance);
         }
 
+        public static ProfileApplicationService CreateProfileApplicationService(IProfileSettingsService settings,
+            IDeviceStateService deviceState, Func<ControlService> control, IProfileRepository profileRepository,
+            IEnvironmentService environmentService, IProfileXmlStore xmlStore = null,
+            IProfileActionProvider actionProvider = null, BackingStore store = null)
+        {
+            return new ProfileApplicationService(settings, deviceState, control, profileRepository, environmentService,
+                xmlStore ?? Global.ProfileXmlStoreInstance,
+                actionProvider ?? CreateProfileActionProvider(store ?? Global.store),
+                store ?? Global.store);
+        }
+
         public static AppearanceSettingsService CreateAppearanceSettingsService(BackingStore store = null)
         {
             return new AppearanceSettingsService(store ?? Global.store);

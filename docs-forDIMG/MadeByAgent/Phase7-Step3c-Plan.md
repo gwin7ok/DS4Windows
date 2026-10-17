@@ -111,3 +111,10 @@
   - `Global`: プリセット 10 名を削除。`IProfileRepository.LoadBlankProfile` とその実装を削除（Q4＝A）。`ProfileSettingsViewModel` と `ViewModelFactory` に `IProfilePresetLoader` を追加し、`LoadBlankProfile(ControlService)` は `presetLoader.LoadBlank` を呼ぶ。
   - テスト: `TestRepositoryFactory.CreateProfilePresetLoader` を追加し、`ProfileSettingsViewModel` の生成 6 件と `ProfilePresetLoader` の生成 2 件を更新。`Phase6Step10GroupTwoContractTests` の委譲確認は新しい実装の形（`_config.<読み込み>` ＋ `CompleteLoad`）に、`Phase6Step8ContractExtensionTests` の `LoadBlankProfile` の確認は契約ごと削除。特性化テストのプリセットは `ProfilePresetLoader` 経由に変更（期待値は同じ）。ガードテストの名前一覧に 10 名を追記。
   - ラチェット基準値: `ProfilePresetLoader.cs` 10→0、`ProfileRepository.cs` 6→5（`Global.*` 合計 516→505）。
+- **W3 実装済み（ビルド・テスト待ち）**: 適用の核の準備。呼び出し元はまだ切り替えていない（`Global.ApplyProfile` ほかは残っている）。
+  - `loggedInvalidActions` を `BackingStore` のインスタンスのフィールドに移した（`Global` の静的フィールドを削除。`Global` の読み込み 2 箇所、`BackingStore` の 2 箇所、`ProfileRepository` の 1 箇所を切り替え）。
+  - `ProfileRepository.LoadTempProfile` に、旧 `Global.LoadTempProfile` の処理を移した（`Global.LoadTempProfile` は W4 まで残す）。
+  - `ProfileApplicationService` に `IProfileXmlStore`／`IProfileActionProvider`／`BackingStore` の依存を追加し、`ApplyCore`／`LoadNormalProfile`／`CompleteProfileApplication`（旧 `Global` から手順・ログ・順序を変えずに移した）と、Halt なしの入口 `ApplyProfileWithoutHalt` を追加。`IProfileApplicationService` に同メソッドを追加（テストの模擬 2 件にも実装）。
+  - **計画との差**: `SelectedProfileChanged` のインスタンスイベント化は W4 に移した。W3 の時点では `Global.CompleteProfileApplication` がまだ静的イベントを発火するため、`ProfileRepository` の転送を残さないと購読者に届かなくなる。新しい `CompleteProfileApplication` は `_profileRepo.RaiseSelectedProfileChanged` を呼ぶ（W3 の時点では、これが `Global` の静的イベントを発火する）。
+  - テスト: 特性化テストの主要 6 件を `[Theory]`（旧 `Global` と移管先の両方で同じ結果になること）に変更し、`ApplyProfileWithoutHalt` の検査テストを追加。`ProfileApplicationService` の生成 7 件を `TestRepositoryFactory.CreateProfileApplicationService` に置換。ガードテストに `loggedInvalidActions` を追記。
+  - ラチェット基準値: `BackingStore` 168→166、`Global.cs` 26→24、`ProfileRepository` 5→3（`Global.*` 合計 505→499）。

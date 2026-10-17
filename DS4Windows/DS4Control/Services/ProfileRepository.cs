@@ -64,7 +64,7 @@ namespace DS4Windows
                     // Phase5-Step2: Global.LoadProfileへの委譲をやめ、XML I/O(IProfileXmlStore)と
                     // 状態調整ロジック(旧Global.LoadProfile内で行っていたもの)をここに直接内包する。
                     // 挙動はGlobal.LoadProfileと完全に同一に維持する。
-                    Global.loggedInvalidActions.Clear();
+                    _config.loggedInvalidActions.Clear();
                     _profileXmlStore.LoadProfileXml(deviceIndex, false, control, "", false, true);
                     _profileSettings?.SetTempProfileName(deviceIndex, string.Empty);
                     _profileSettings?.SetUseTempProfile(deviceIndex, false);
@@ -263,8 +263,20 @@ namespace DS4Windows
         public void CacheProfileCustomsFlags(int deviceIndex) => _config.CacheProfileCustomsFlags(deviceIndex);
 
         // ---- Phase5-Step13-7: 一時プロファイル読込（スワイプ操作等での即時切替用） ----
+        // Phase7-Step3c W3: 旧 Global.LoadTempProfile の処理をここへ移した（xinputChange は従来どおり読み込みへ渡さない）。
         public bool LoadTempProfile(int deviceIndex, string profileName, bool launchProgram, ControlService control, bool xinputChange = true)
-            => Global.LoadTempProfile(deviceIndex, profileName, launchProgram, control, xinputChange);
+        {
+            _config.loggedInvalidActions.Clear();
+            bool result = _config.LoadProfile(deviceIndex, launchProgram, control, Path.Combine(ProfilesPath, $"{profileName}.xml"));
+            if (result)
+            {
+                _profileSettings.SetTempProfileName(deviceIndex, profileName);
+                _profileSettings.SetUseTempProfile(deviceIndex, true);
+                _profileSettings.SetTempProfileDistance(deviceIndex, profileName.ToLower().Contains("distance"));
+            }
+
+            return result;
+        }
 
         // ---- Phase5-Step13-7 Tier4: プロファイル未定義アクションの警告ログ出力 ----
         public void EmitMissingActionLogsForDevice(int deviceIndex, bool forceEmit = false, string overrideProfileName = null)

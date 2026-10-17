@@ -22,6 +22,14 @@ namespace DS4Windows.DI
                     string prolog = null);
 
         /// <summary>
+        /// 入力の読み取りを一時停止（Halt）せずにプロファイルを適用します（接続処理中など、呼び出し元がすでに停止している経路用。
+        /// Phase7-Step3c W3 で追加。旧 <c>Global.ApplyProfileToSlot</c> と同じく例外は握りません）。
+        /// </summary>
+        bool ApplyProfileWithoutHalt(int deviceIndex, string profileName, bool isTemp = false, bool launchProgram = false,
+                    ProfileChangeSource source = ProfileChangeSource.Manual,
+                    string prolog = null);
+
+        /// <summary>
         /// 切断時等に指定スロットの一時プロファイル復帰予約状態をクリアします（§5.6 ガードレール）。
         /// </summary>
         /// <param name="deviceIndex">デバイスインデックス（0〜3）</param>

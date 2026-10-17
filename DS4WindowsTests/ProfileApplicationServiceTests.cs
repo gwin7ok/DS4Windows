@@ -34,6 +34,11 @@ namespace DS4WindowsTests
                 return true;
             }
 
+            public bool ApplyProfileWithoutHalt(int deviceIndex, string profileName, bool isTemp = false,
+                bool launchProgram = true, ProfileChangeSource source = ProfileChangeSource.Manual,
+                string prolog = null)
+                => ApplyProfile(deviceIndex, profileName, isTemp, launchProgram, source, prolog);
+
             public void ApplyFromAction(int deviceIndex, SpecialAction action)
             {
                 CallCount++;

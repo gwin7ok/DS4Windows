@@ -167,6 +167,8 @@ namespace DS4Windows
         public string[] olderProfilePath = new string[Global.TEST_PROFILE_ITEM_COUNT] { string.Empty, string.Empty, string.Empty, string.Empty, string.Empty, string.Empty, string.Empty, string.Empty, string.Empty };
         public string[] selectedProfile = new string[Global.TEST_PROFILE_ITEM_COUNT] { string.Empty, string.Empty, string.Empty, string.Empty, string.Empty, string.Empty, string.Empty, string.Empty, string.Empty };
         public string[] linkedProfileUI = new string[Global.TEST_PROFILE_ITEM_COUNT] { string.Empty, string.Empty, string.Empty, string.Empty, string.Empty, string.Empty, string.Empty, string.Empty, string.Empty };
+        // プロファイル切り替え時の無効アクション名エラーログ抑制用（Phase7-Step3c W3: Global の静的フィールドから移した）
+        public HashSet<string> loggedInvalidActions = new HashSet<string>();
         public bool[] firstConnectionAfterStartup = new bool[Global.TEST_PROFILE_ITEM_COUNT] { true, true, true, true, true, true, true, true, true };
         public Dictionary<string, string> linkedProfiles = new Dictionary<string, string>();
         // Cache properties instead of performing a string comparison every frame
@@ -838,7 +840,7 @@ namespace DS4Windows
 
         /// <summary>
         /// Emit "Invalid action index" logs for missing actions in the profile for the given device.
-        /// Respects Global.loggedInvalidActions unless forceEmit is true.
+        /// Respects loggedInvalidActions unless forceEmit is true.
         /// </summary>
         /// <param name="device">Device index</param>
         /// <param name="forceEmit">If true, ignore suppression and always emit logs</param>
@@ -853,7 +855,7 @@ namespace DS4Windows
                 int index = GetActionIndexOf(actionname);
                 if (actionObj == null || actionObj.name == "null" || index < 0)
                 {
-                    if (forceEmit || !Global.loggedInvalidActions.Contains(actionname))
+                    if (forceEmit || !loggedInvalidActions.Contains(actionname))
                     {
                         string profName;
                         if (overrideProfileName != null)
@@ -873,7 +875,7 @@ namespace DS4Windows
                         AppLogger.LogToGui($"Profile '{displayProfile}' contains an invalid special action '{actionname}'.", false);
                         try
                         {
-                            Global.loggedInvalidActions.Add(actionname);
+                            loggedInvalidActions.Add(actionname);
                         }
                         catch { }
                     }

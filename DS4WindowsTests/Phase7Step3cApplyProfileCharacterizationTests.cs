@@ -30,6 +30,8 @@ namespace DS4WindowsTests
         private readonly ControlService _control;
         private readonly ControlService _originalRootHub;
         private readonly IProfileSettingsService _settings;
+        private readonly ProfileRepository _repo;
+        private readonly ProfileApplicationService _service;
         private readonly string _origProfilePath;
         private readonly string _origOlder;
         private readonly string _origSelected;
@@ -51,6 +53,10 @@ namespace DS4WindowsTests
             _originalRootHub = Program.rootHub;
             Program.rootHub = _control;
             _settings = Global.ProfileSettingsServiceInstance;
+            // Phase7-Step3c W3: 移管先（ProfileApplicationService／ProfileRepository）。旧 Global と同じ状態を共有する
+            _repo = TestRepositoryFactory.CreateProfileRepository(_settings);
+            _service = TestRepositoryFactory.CreateProfileApplicationService(_settings,
+                TestRepositoryFactory.CreateDeviceStateService(), () => _control, _repo, new EnvironmentService());
 
             _origProfilePath = Global.ProfilePath[Slot];
             _origOlder = Global.OlderProfilePath[Slot];
@@ -82,13 +88,26 @@ namespace DS4WindowsTests
             try { Directory.Delete(_dir, true); } catch { }
         }
 
-        [Fact]
-        public void ApplyProfile_Normal_UpdatesSelectionAndRaisesEventOnce()
+        // viaService=false: 旧 Global.ApplyProfile／LoadTempProfile、true: 移管先（Halt なしの入口）。両方が同じ結果を示すこと
+        private bool Apply(bool viaService, int slot, string name, bool isTemp, ProfileChangeSource source)
+            => viaService
+                ? _service.ApplyProfileWithoutHalt(slot, name, isTemp, false, source, "prolog")
+                : Global.ApplyProfile(slot, name, isTemp, false, _control, source, "prolog");
+
+        private bool LoadTemp(bool viaService, string name)
+            => viaService
+                ? _repo.LoadTempProfile(Slot, name, false, _control)
+                : Global.LoadTempProfile(Slot, name, false, _control);
+
+        [Theory]
+        [InlineData(false)]
+        [InlineData(true)]
+        public void ApplyProfile_Normal_UpdatesSelectionAndRaisesEventOnce(bool viaService)
         {
             Global.OlderProfilePath[Slot] = "OlderSentinel";
             Global.SelectedProfile[Slot] = "SelectedSentinel";
 
-            bool result = Global.ApplyProfile(Slot, Normal, false, false, _control, ProfileChangeSource.Manual, "prolog");
+            bool result = Apply(viaService, Slot, Normal, false, ProfileChangeSource.Manual);
 
             Assert.True(result);
             Assert.Equal(Normal, Global.ProfilePath[Slot]);
@@ -103,13 +122,15 @@ namespace DS4WindowsTests
             Assert.Equal(Normal, _events[0].ProfileName);
         }
 
-        [Fact]
-        public void ApplyProfile_Temp_KeepsOlderProfilePath_AndMarksTempState()
+        [Theory]
+        [InlineData(false)]
+        [InlineData(true)]
+        public void ApplyProfile_Temp_KeepsOlderProfilePath_AndMarksTempState(bool viaService)
         {
             Global.OlderProfilePath[Slot] = "OlderSentinel";
             Global.ProfilePath[Slot] = "ProfilePathSentinel";
 
-            bool result = Global.ApplyProfile(Slot, Temp, true, false, _control, ProfileChangeSource.MappingAction, "prolog");
+            bool result = Apply(viaService, Slot, Temp, true, ProfileChangeSource.MappingAction);
 
             Assert.True(result);
             // 一時プロファイルでは、復帰先の OlderProfilePath と通常の ProfilePath は更新されない
@@ -124,28 +145,32 @@ namespace DS4WindowsTests
             Assert.Equal(Temp, _events[0].ProfileName);
         }
 
-        [Fact]
-        public void ApplyProfile_TempWithDistanceInName_SetsDistanceFlag()
+        [Theory]
+        [InlineData(false)]
+        [InlineData(true)]
+        public void ApplyProfile_TempWithDistanceInName_SetsDistanceFlag(bool viaService)
         {
-            bool result = Global.ApplyProfile(Slot, Distance, true, false, _control, ProfileChangeSource.MappingAction, "prolog");
+            bool result = Apply(viaService, Slot, Distance, true, ProfileChangeSource.MappingAction);
 
             Assert.True(result);
             Assert.True(Global.tempprofileDistance[Slot]);
 
             // 通常プロファイルを適用すると、一時プロファイルの状態と距離フラグが戻る
-            Assert.True(Global.ApplyProfile(Slot, Normal, false, false, _control, ProfileChangeSource.Manual, "prolog"));
+            Assert.True(Apply(viaService, Slot, Normal, false, ProfileChangeSource.Manual));
             Assert.False(_settings.GetUseTempProfile(Slot));
             Assert.Equal(string.Empty, _settings.GetTempProfileName(Slot));
             Assert.False(Global.tempprofileDistance[Slot]);
         }
 
-        [Fact]
-        public void ApplyProfile_MissingProfile_ReturnsFalse_AndKeepsSelectionAndRaisesNothing()
+        [Theory]
+        [InlineData(false)]
+        [InlineData(true)]
+        public void ApplyProfile_MissingProfile_ReturnsFalse_AndKeepsSelectionAndRaisesNothing(bool viaService)
         {
             Global.SelectedProfile[Slot] = "SelectedSentinel";
             Global.OlderProfilePath[Slot] = "OlderSentinel";
 
-            bool result = Global.ApplyProfile(Slot, Missing, false, false, _control, ProfileChangeSource.Manual, "prolog");
+            bool result = Apply(viaService, Slot, Missing, false, ProfileChangeSource.Manual);
 
             Assert.False(result);
             Assert.Equal("SelectedSentinel", Global.SelectedProfile[Slot]);
@@ -155,14 +180,16 @@ namespace DS4WindowsTests
             Assert.Equal(Missing, Global.ProfilePath[Slot]);
         }
 
-        [Fact]
-        public void ApplyProfile_MissingTempProfile_ReturnsFalse_AndKeepsTempState()
+        [Theory]
+        [InlineData(false)]
+        [InlineData(true)]
+        public void ApplyProfile_MissingTempProfile_ReturnsFalse_AndKeepsTempState(bool viaService)
         {
             _settings.SetUseTempProfile(Slot, false);
             _settings.SetTempProfileName(Slot, string.Empty);
             Global.SelectedProfile[Slot] = "SelectedSentinel";
 
-            bool result = Global.ApplyProfile(Slot, Missing, true, false, _control, ProfileChangeSource.MappingAction, "prolog");
+            bool result = Apply(viaService, Slot, Missing, true, ProfileChangeSource.MappingAction);
 
             Assert.False(result);
             Assert.False(_settings.GetUseTempProfile(Slot));
@@ -171,12 +198,14 @@ namespace DS4WindowsTests
             Assert.Empty(_events);
         }
 
-        [Fact]
-        public void LoadTempProfile_Success_SetsTempState_AndDoesNotTouchSelection()
+        [Theory]
+        [InlineData(false)]
+        [InlineData(true)]
+        public void LoadTempProfile_Success_SetsTempState_AndDoesNotTouchSelection(bool viaService)
         {
             Global.SelectedProfile[Slot] = "SelectedSentinel";
 
-            bool result = Global.LoadTempProfile(Slot, Temp, false, _control);
+            bool result = LoadTemp(viaService, Temp);
 
             Assert.True(result);
             Assert.True(_settings.GetUseTempProfile(Slot));
@@ -195,6 +224,20 @@ namespace DS4WindowsTests
             Assert.False(Global.ApplyProfileToSlot(Slot, "", ProfileChangeSource.Manual));
             Assert.False(Global.ApplyProfileToSlot(Slot, "   ", ProfileChangeSource.Manual));
             Assert.False(Global.ApplyProfileToSlot(Slot, null, ProfileChangeSource.Manual));
+
+            Assert.Equal("SelectedSentinel", Global.SelectedProfile[Slot]);
+            Assert.Empty(_events);
+        }
+
+        [Fact]
+        public void ApplyProfileWithoutHalt_RejectsInvalidSlotOrName_AndDoesNotChangeState()
+        {
+            Global.SelectedProfile[Slot] = "SelectedSentinel";
+
+            Assert.False(_service.ApplyProfileWithoutHalt(-1, Normal));
+            Assert.False(_service.ApplyProfileWithoutHalt(Slot, ""));
+            Assert.False(_service.ApplyProfileWithoutHalt(Slot, "   "));
+            Assert.False(_service.ApplyProfileWithoutHalt(Slot, null));
 
             Assert.Equal("SelectedSentinel", Global.SelectedProfile[Slot]);
             Assert.Empty(_events);

@@ -55,8 +55,6 @@ namespace DS4Windows
         {
             // Static initializer retained for future Global initializations.
         }
-        // プロファイル切り替え時の無効アクション名エラーログ抑制用
-        public static HashSet<string> loggedInvalidActions = new HashSet<string>();
         public static int LogMaxArchiveFiles
         {
             set { m_Config.logMaxArchiveFiles = value; }
@@ -1631,7 +1629,7 @@ namespace DS4Windows
         public static bool LoadProfile(int device, bool launchprogram, ControlService control,
             bool xinputChange = true, bool postLoad = true)
         {
-            Global.loggedInvalidActions.Clear();
+            m_Config.loggedInvalidActions.Clear();
             // Phase5-Step2: XML実体I/OをIProfileXmlStore経由に変更。
             // 内部実装は引き続きBackingStore.LoadProfileへ委譲するため挙動は変更しない。
             bool result = ProfileXmlStoreInstance.LoadProfileXml(device, launchprogram, control, "", xinputChange, postLoad);
@@ -1645,7 +1643,7 @@ namespace DS4Windows
         public static bool LoadTempProfile(int device, string name, bool launchprogram,
             ControlService control, bool xinputChange = true)
         {
-            Global.loggedInvalidActions.Clear();
+            m_Config.loggedInvalidActions.Clear();
             bool result = m_Config.LoadProfile(device, launchprogram, control, Path.Combine(appdatapath, "Profiles", $"{name}.xml"));
             //bool result = m_Config.LoadProfile(device, launchprogram, control, Path.Combine(appdatapath, "Profiles", $"{name}.xml"));
             if (result)

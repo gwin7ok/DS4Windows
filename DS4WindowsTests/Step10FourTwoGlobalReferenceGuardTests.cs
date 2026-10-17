@@ -137,7 +137,7 @@ namespace DS4WindowsTests
             var path = new PathService();
             var holder = new DS4WinWPF.AutoProfileHolder(path);
             var settings = TestRepositoryFactory.CreateProfileSettingsService();
-            var app = new ProfileApplicationService(settings,
+            var app = TestRepositoryFactory.CreateProfileApplicationService(settings,
                 TestRepositoryFactory.CreateDeviceStateService(), () => null,
                 TestRepositoryFactory.CreateProfileRepository(settings), new EnvironmentService());
             var repo = TestRepositoryFactory.CreateProfileRepository(settings);
@@ -390,11 +390,11 @@ namespace DS4WindowsTests
             var repo = TestRepositoryFactory.CreateProfileRepository(settings, null, null);
             var env = new EnvironmentService();
 
-            Assert.Throws<ArgumentNullException>(() => new ProfileApplicationService(null, state, control, repo, env));
-            Assert.Throws<ArgumentNullException>(() => new ProfileApplicationService(settings, null, control, repo, env));
-            Assert.Throws<ArgumentNullException>(() => new ProfileApplicationService(settings, state, null, repo, env));
-            Assert.Throws<ArgumentNullException>(() => new ProfileApplicationService(settings, state, control, null, env));
-            Assert.Throws<ArgumentNullException>(() => new ProfileApplicationService(settings, state, control, repo, null));
+            Assert.Throws<ArgumentNullException>(() => TestRepositoryFactory.CreateProfileApplicationService(null, state, control, repo, env));
+            Assert.Throws<ArgumentNullException>(() => TestRepositoryFactory.CreateProfileApplicationService(settings, null, control, repo, env));
+            Assert.Throws<ArgumentNullException>(() => TestRepositoryFactory.CreateProfileApplicationService(settings, state, null, repo, env));
+            Assert.Throws<ArgumentNullException>(() => TestRepositoryFactory.CreateProfileApplicationService(settings, state, control, null, env));
+            Assert.Throws<ArgumentNullException>(() => TestRepositoryFactory.CreateProfileApplicationService(settings, state, control, repo, null));
         }
 
         [Fact]
@@ -403,7 +403,7 @@ namespace DS4WindowsTests
             var settings = TestRepositoryFactory.CreateProfileSettingsService();
             var repo = TestRepositoryFactory.CreateProfileRepository(settings);
             var env = new EnvironmentService();
-            var service = new ProfileApplicationService(settings, TestRepositoryFactory.CreateDeviceStateService(), () => null, repo, env);
+            var service = TestRepositoryFactory.CreateProfileApplicationService(settings, TestRepositoryFactory.CreateDeviceStateService(), () => null, repo, env);
             int limit = env.ControllerSlotLimit;
             string[] older = repo.OlderProfilePath;
             string[] backup = (string[])older.Clone();
