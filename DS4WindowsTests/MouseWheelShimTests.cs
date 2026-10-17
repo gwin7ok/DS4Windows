@@ -64,7 +64,7 @@ namespace DS4WindowsTests
 
         private static ProfileSettingsService CreateSettings(int scrollSensitivity, int tickUp, int tickDown)
         {
-            var store = new BackingStore();
+            var store = new DS4Windows.BackingStore(new DS4Windows.EnvironmentService());
             store.scrollSensitivity[Slot] = scrollSensitivity;
             var settings = TestRepositoryFactory.CreateProfileSettingsService(store);
             var mapping = new SendInputMapping { WHEEL_TICK_UP = tickUp, WHEEL_TICK_DOWN = tickDown };

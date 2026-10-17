@@ -27,7 +27,7 @@ namespace DS4WindowsTests
 
         private static BackingStore CreateStoreWithAction(string name)
         {
-            var store = new BackingStore();
+            var store = new DS4Windows.BackingStore(new DS4Windows.EnvironmentService());
             store.actions.Clear();
             store.actions.Add(new SpecialAction(name, "PS", "DisconnectBT", "0"));
             return store;
@@ -92,7 +92,7 @@ namespace DS4WindowsTests
         {
             // 既定の SpecialActionRepository は Global.store（= Global.GetAction の実体）を使う。
             var repo = TestRepositoryFactory.CreateSpecialActionRepository();
-            SpecialAction viaGlobal = Global.GetAction("DefinitelyMissingAction_Step8");
+            SpecialAction viaGlobal = TestGlobals.Store.GetAction("DefinitelyMissingAction_Step8");
             SpecialAction viaRepo = repo.GetActionOrPlaceholder("DefinitelyMissingAction_Step8");
 
             Assert.Equal(viaGlobal.name, viaRepo.name);

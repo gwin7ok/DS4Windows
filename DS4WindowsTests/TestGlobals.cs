@@ -1,36 +1,49 @@
 using DS4Windows;
 using DS4Windows.DI;
+using DS4WinWPF;
 
 namespace DS4WindowsTests
 {
     /// <summary>
-    /// Phase7-Step10d W1: テストが <c>Global</c> の静的な窓口を直接参照しないための入口。
-    /// 当面は <c>Global</c> を呼ぶだけの薄い委譲で、W5／W6 で実体を差し替える（テスト本体は触らない）。
+    /// Phase7-Step10d W1／W5: テストが共有の設定（BackingStore）とパスの静的な状態を扱う入口。
+    /// W5 で <c>Global</c> を削除したため、共有の BackingStore は、テストのコンテナ（<see cref="AppHost"/>）が持つ実体とする。
+    /// コンテナは 1 つがテスト全体で使い回される（Dispose されると取得できなくなるため、最後に取得した実体を保持する）。
     /// </summary>
     internal static class TestGlobals
     {
-        /// <summary>共有の BackingStore（旧 <c>Global.store</c>）。</summary>
-        public static BackingStore Store => Global.store;
+        private static BackingStore _store;
+
+        /// <summary>共有の BackingStore（旧 <c>Global.store</c>）。コンテナの Singleton と同一。</summary>
+        public static BackingStore Store
+        {
+            get
+            {
+                var current = AppHost.GetService<BackingStore>();
+                if (current != null)
+                    _store = current;
+                return _store;
+            }
+        }
 
         /// <summary>設定の保存場所（旧 <c>Global.appdatapath</c>）。</summary>
         public static string AppDataPath
         {
-            get => Global.appdatapath;
-            set => Global.appdatapath = value;
+            get => PathService.AppDataPathState;
+            set => PathService.AppDataPathState = value;
         }
 
         /// <summary>実行ファイルのディレクトリ（旧 <c>Global.exedirpath</c>）。</summary>
         public static string ExeDirPath
         {
-            get => Global.exedirpath;
-            set => Global.exedirpath = value;
+            get => PathService.ExecutableDirectoryState;
+            set => PathService.ExecutableDirectoryState = value;
         }
 
-        /// <summary>静的に保持されるプロファイル設定サービス（旧 <c>Global.ProfileSettingsServiceInstance</c>）。</summary>
+        /// <summary>共有の BackingStore が使うプロファイル設定サービス（旧 <c>Global.ProfileSettingsServiceInstance</c>）。</summary>
         public static IProfileSettingsService ProfileSettingsServiceInstance
         {
-            get => Global.ProfileSettingsServiceInstance;
-            set => Global.ProfileSettingsServiceInstance = value;
+            get => Store.ProfileSettings;
+            set => Store.ProfileSettings = value;
         }
     }
 }

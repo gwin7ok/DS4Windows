@@ -24,7 +24,7 @@ public class ScpUtilIntegrationTests
 
             File.WriteAllText(tempPath, xml);
 
-            var bs = new BackingStore();
+            var bs = new DS4Windows.BackingStore(new DS4Windows.EnvironmentService());
             bs.m_Profile = tempPath;
             bool loaded = new DS4Windows.Services.AppSettingsXmlSerializer(bs, new DS4Windows.PathService(), new DS4Windows.EnvironmentService()).Load();
             Assert.IsTrue(loaded, "Initial Load failed");
@@ -47,7 +47,7 @@ public class ScpUtilIntegrationTests
             Assert.IsTrue(saved, "Save failed");
 
             // Load into a new instance
-            var bs2 = new BackingStore();
+            var bs2 = new DS4Windows.BackingStore(new DS4Windows.EnvironmentService());
             bs2.m_Profile = tempPath;
             bool loaded2 = new DS4Windows.Services.AppSettingsXmlSerializer(bs2, new DS4Windows.PathService(), new DS4Windows.EnvironmentService()).Load();
             Assert.IsTrue(loaded2, "Reload failed");

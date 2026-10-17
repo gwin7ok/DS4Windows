@@ -15,17 +15,20 @@ namespace DS4Windows.DI
         // Phase7-Step8 W3: BackingStore.ActionsLoaded の購読者（コンテナの作り直しで重複購読しないための記憶）
         private static ActionsLoadedRuntimeReset _subscribedReset;
 
-        public static IServiceCollection RegisterServices(this IServiceCollection services)
+        // Phase7-Step10d W5（Q3＝A）: existingStore は、コンテナの構築より前に作った BackingStore（本体の起動のブートストラップ。起動直後の設定の読み取りが使う）。
+        // 省略（null）のときは、コンテナが BackingStore を作る（テストなど）。どちらも、IProcessInspector の設定と ActionsLoaded の購読は、この登録が行う。
+        public static IServiceCollection RegisterServices(this IServiceCollection services, BackingStore existingStore = null)
         {
             // === 第4層: 4-c DIサービス群 (Singleton) ===
-            // Phase7-Step3 W1: BackingStore（設定の唯一の実体）を登録する。実体は Global.store と同一（Global の生成は Step10 まで残す）
-            // Phase7-Step5 W4（Q6＝A）: BackingStore は Global が生成する（コンテナ外）ため、IProcessInspector はプロパティで設定する
-            // （プロファイル読込の「起動するプログラム」の稼働確認で使う。Step10 の分割でコンストラクター注入へ）
+            // Phase7-Step3 W1: BackingStore（設定の唯一の実体）を登録する。
+            // Phase7-Step10d W5: 旧 Global.store（静的）をやめた。ブートストラップの BackingStore があればそれを、なければコンテナが作る。
+            // IProcessInspector はプロパティで設定する（プロファイル読込の「起動するプログラム」の稼働確認で使う。BackingStore を
+            // コンテナより前に作る場合があるため、コンストラクターでは渡せない）。
             services.AddSingleton<BackingStore>(sp =>
             {
-                var store = Global.store;
+                var store = existingStore ?? new BackingStore(sp.GetRequiredService<IEnvironmentService>());
                 store.ProcessInspector = sp.GetRequiredService<IProcessInspector>();
-                // Phase7-Step7 W2（Q4＝A）: Actions.xml の読み込み後の実行時状態のリセット。Global.store は静的でコンテナより長く生きるため、
+                // Phase7-Step7 W2（Q4＝A）: Actions.xml の読み込み後の実行時状態のリセット。ブートストラップの BackingStore はコンテナより長く生きるため、
                 // コンテナが作り直されても購読が 1 つになるよう、前回の購読者を外してから登録する（Phase7-Step8 W3: instance の購読者）
                 var reset = sp.GetRequiredService<ActionsLoadedRuntimeReset>();
                 if (_subscribedReset != null) store.ActionsLoaded -= _subscribedReset.Reset;

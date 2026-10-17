@@ -38,7 +38,7 @@ namespace DS4WindowsTests
 
         private BackingStore SaveStore(Action<BackingStore> configure = null)
         {
-            var writer = new BackingStore { m_Profile = _profilesXml };
+            var writer = new BackingStore(new EnvironmentService()) { m_Profile = _profilesXml };
             configure?.Invoke(writer);
             Assert.True(TestRepositoryFactory.CreateAppSettingsXml(writer).Save(), "テスト用の Profiles.xml（DTO）の保存に失敗した");
             return writer;
@@ -46,7 +46,7 @@ namespace DS4WindowsTests
 
         private BackingStore LoadStore()
         {
-            var reader = new BackingStore { m_Profile = _profilesXml };
+            var reader = new BackingStore(new EnvironmentService()) { m_Profile = _profilesXml };
             Assert.True(TestRepositoryFactory.CreateAppSettingsXml(reader).Load());
             return reader;
         }

@@ -95,7 +95,7 @@ namespace DS4WindowsTests
 
         private static ProfileSettingsService CreateIsolatedSettings()
         {
-            var settings = TestRepositoryFactory.CreateProfileSettingsService(new BackingStore());
+            var settings = TestRepositoryFactory.CreateProfileSettingsService(new DS4Windows.BackingStore(new DS4Windows.EnvironmentService()));
             for (int i = 0; i < settings.TouchOutMode.Length; i++)
             {
                 settings.TouchOutMode[i] = TouchpadOutMode.Mouse;

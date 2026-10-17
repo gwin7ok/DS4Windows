@@ -110,17 +110,17 @@ namespace DS4WindowsTests
         public void LogMaxArchiveFiles_SharesStateWithGlobal()
         {
             var service = TestRepositoryFactory.CreateAppSettingsService();
-            int original = Global.LogMaxArchiveFiles;
+            int original = TestGlobals.Store.logMaxArchiveFiles;
             try
             {
                 int value = original + 7;
                 service.LogMaxArchiveFiles = value;
-                Assert.Equal(value, Global.LogMaxArchiveFiles);
+                Assert.Equal(value, TestGlobals.Store.logMaxArchiveFiles);
                 Assert.Equal(value, service.LogMaxArchiveFiles);
             }
             finally
             {
-                Global.LogMaxArchiveFiles = original;
+                TestGlobals.Store.logMaxArchiveFiles = original;
             }
         }
 
@@ -210,8 +210,8 @@ namespace DS4WindowsTests
 
             service.RefreshActionAlias(viaService, false);
             service.RefreshActionAlias(viaService, true);
-            Global.RefreshActionAlias(viaGlobal, false);
-            Global.RefreshActionAlias(viaGlobal, true);
+            TestGlobals.ProfileSettingsServiceInstance.RefreshActionAlias(viaGlobal, false);
+            TestGlobals.ProfileSettingsServiceInstance.RefreshActionAlias(viaGlobal, true);
 
             Assert.Equal(0u, viaService.action.actionAlias);
             Assert.Equal(0u, viaService.shiftAction.actionAlias);
@@ -243,7 +243,7 @@ namespace DS4WindowsTests
                 viaGlobal.action.actionKey = virtualKey;
 
                 service.RefreshActionAlias(viaService, false);
-                Global.RefreshActionAlias(viaGlobal, false);
+                TestGlobals.ProfileSettingsServiceInstance.RefreshActionAlias(viaGlobal, false);
 
                 Assert.Equal(mapping.GetRealEventKey((uint)virtualKey), viaService.action.actionAlias);
                 Assert.Equal(viaGlobal.action.actionAlias, viaService.action.actionAlias);

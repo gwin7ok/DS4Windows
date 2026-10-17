@@ -14,6 +14,8 @@ namespace DS4Windows.DI
         bool[] TouchpadActiveArray { get; set; }
         bool[] UseTempProfileArray { get; set; }
         bool[] TempProfileDistanceArray { get; set; }
+        // Phase7-Step10d W5: 旧 Global.DistanceProfiles（BackingStore.distanceProfiles の配列そのもの）。ライトバー（DS4LightBar）が読む。
+        bool[] DistanceProfiles { get; }
         bool[] UseDInputOnlyArray { get; set; }
 
         bool GetTouchpadActive(int deviceIndex);

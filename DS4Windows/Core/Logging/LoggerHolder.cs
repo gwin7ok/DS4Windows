@@ -36,8 +36,12 @@ namespace DS4WinWPF
         public Logger Logger { get => logger; }
         private ReaderWriterLockSlim logLock = new ReaderWriterLockSlim();
 
-        public LoggerHolder(DS4Windows.ControlService service)
+        // Phase7-Step10d W5: ログ設定（保管数・最小レベル）は、旧 Global.LogMaxArchiveFiles／LogMinLevel（BackingStore の値）に替えて、注入された設定サービスから読む
+        private readonly DS4Windows.DI.IAppSettingsService appSettings;
+
+        public LoggerHolder(DS4Windows.ControlService service, DS4Windows.DI.IAppSettingsService appSettings)
         {
+            this.appSettings = appSettings ?? throw new ArgumentNullException(nameof(appSettings));
             var configuration = LogManager.Configuration;
             if (configuration == null)
                 throw new InvalidOperationException("NLog configuration is not loaded");
@@ -118,7 +122,7 @@ namespace DS4WinWPF
         private void ApplyLogSettings(NLog.Targets.FileTarget fileTarget)
         {
             // Set maxArchiveFiles
-            fileTarget.MaxArchiveFiles = DS4Windows.Global.LogMaxArchiveFiles;
+            fileTarget.MaxArchiveFiles = appSettings.LogMaxArchiveFiles;
             // Reduce internal buffering and avoid keeping the file open to force more immediate writes
             try
             {
@@ -130,7 +134,7 @@ namespace DS4WinWPF
             
             // Set minlevel for all logging rules that target "logfile"
             var configuration = LogManager.Configuration;
-            var minLevel = ParseLogLevel(DS4Windows.Global.LogMinLevel);
+            var minLevel = ParseLogLevel(appSettings.LogMinLevel);
             
             foreach (var rule in configuration.LoggingRules)
             {
@@ -187,7 +191,7 @@ namespace DS4WinWPF
             LogManager.ReconfigExistingLoggers();
             
             // Log the settings change
-            logger?.Debug($"Log settings updated: MaxArchiveFiles={DS4Windows.Global.LogMaxArchiveFiles}, MinLevel={DS4Windows.Global.LogMinLevel}");
+            logger?.Debug($"Log settings updated: MaxArchiveFiles={appSettings.LogMaxArchiveFiles}, MinLevel={appSettings.LogMinLevel}");
         }
         
         /// <summary>

@@ -19,7 +19,6 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 using System;
 using System.Drawing;
 using static System.Math;
-using static DS4Windows.Global;
 using System.Diagnostics;
 
 namespace DS4Windows
@@ -63,11 +62,13 @@ namespace DS4Windows
         internal const int PULSE_CHARGING_DURATION = 4000;
         internal const double PULSE_CHARGING_SEGMENTS = (PULSE_CHARGING_DURATION / 40) - 2;
 
-        public static void updateLightBar(DS4Device device, int deviceNum)
+        // Phase7-Step10d W5: 旧 Global の転送（getLightbarSettingsInfo／getMainColor／getIdleDisconnectTimeout／DistanceProfiles／tempprofileDistance）に替えて、
+        // 呼び出し元（ControlService）が持つプロファイル設定サービスを引数で受け取る。
+        public static void updateLightBar(DS4Device device, int deviceNum, DS4Windows.DI.IProfileSettingsService profileSettings)
         {
             DS4Color color = new DS4Color();
             bool useForceLight = forcelight[deviceNum];
-            LightbarSettingInfo lightbarSettingInfo = getLightbarSettingsInfo(deviceNum);
+            LightbarSettingInfo lightbarSettingInfo = profileSettings.GetLightbarSettingsInfo(deviceNum);
             LightbarDS4WinInfo lightModeInfo = lightbarSettingInfo.ds4winSettings;
             bool useLightRoutine = lightbarSettingInfo.mode == LightbarMode.DS4Win;
             //bool useLightRoutine = false;
@@ -122,7 +123,7 @@ namespace DS4Windows
                     }
                     else
                     {
-                        color = getMainColor(deviceNum);
+                        color = profileSettings.GetMainColor(deviceNum);
                     }
                 }
 
@@ -182,7 +183,7 @@ namespace DS4Windows
                     }
                 }
 
-                int idleDisconnectTimeout = getIdleDisconnectTimeout(deviceNum);
+                int idleDisconnectTimeout = profileSettings.GetIdleDisconnectTimeout(deviceNum);
                 if (idleDisconnectTimeout > 0 && lightModeInfo.ledAsBattery &&
                     (!device.isCharging() || device.getBattery() >= 100))
                 {
@@ -295,7 +296,7 @@ namespace DS4Windows
 
             if (useLightRoutine)
             {
-                bool distanceprofile = DistanceProfiles[deviceNum] || tempprofileDistance[deviceNum];
+                bool distanceprofile = profileSettings.DistanceProfiles[deviceNum] || profileSettings.TempProfileDistanceArray[deviceNum];
                 //distanceprofile = (ProfilePath[deviceNum].ToLower().Contains("distance") || tempprofilename[deviceNum].ToLower().Contains("distance"));
                 if (distanceprofile && !defaultLight)
                 {

@@ -34,7 +34,7 @@ namespace DS4WindowsTests
             var controlService = DS4WinWPF.AppHost.GetService<ControlService>();
 
             // コンストラクタで _appSettings.DeviceOptions（= Global.DeviceOptions）を受け取っていること。
-            Assert.Same(Global.DeviceOptions, controlService.DeviceOptions);
+            Assert.Same(TestGlobals.Store.deviceOptions, controlService.DeviceOptions);
         }
 
         [Fact]

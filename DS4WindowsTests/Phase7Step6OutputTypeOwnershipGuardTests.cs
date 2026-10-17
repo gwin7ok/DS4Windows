@@ -39,14 +39,11 @@ namespace DS4WindowsTests
         [Fact]
         public void Global_NoLongerHoldsTheArrays_AndNoOneReadsThemFromGlobal()
         {
-            string global = Read("DS4Windows/DS4Control/Global.cs");
             string store = Read("DS4Windows/DS4Control/BackingStore.cs");
             string control = Read("DS4Windows/DS4Control/ControlService.cs");
             string service = Read("DS4Windows/DS4Control/Services/OutputSlotService.cs");
-            if (global == null || store == null || control == null || service == null) return;
+            if (store == null || control == null || service == null) return;
 
-            Assert.DoesNotContain("outDevTypeTemp", global);
-            Assert.DoesNotContain("activeOutDevType", global);
             Assert.DoesNotContain("Global.activeOutDevType", store);
             Assert.DoesNotContain("Global.outDevTypeTemp", store);
             Assert.DoesNotContain("Global.activeOutDevType", service);

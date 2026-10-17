@@ -34,13 +34,13 @@ namespace DS4WindowsTests
         public void UseMoonlight_SharesStateWithGlobal_AndNotifiesOnChange()
         {
             var service = TestRepositoryFactory.CreateAppSettingsService();
-            bool original = Global.UseMoonlight;
+            bool original = TestGlobals.Store.useMoonlight;
             var changed = new List<string>();
             service.SettingChanged += (s, name) => changed.Add(name);
             try
             {
                 service.UseMoonlight = !original;
-                Assert.Equal(!original, Global.UseMoonlight);
+                Assert.Equal(!original, TestGlobals.Store.useMoonlight);
                 Assert.Equal(!original, service.UseMoonlight);
                 Assert.Contains(nameof(IAppSettingsService.UseMoonlight), changed);
 
@@ -51,7 +51,7 @@ namespace DS4WindowsTests
             }
             finally
             {
-                Global.UseMoonlight = original;
+                TestGlobals.Store.useMoonlight = original;
             }
         }
 
@@ -59,13 +59,13 @@ namespace DS4WindowsTests
         public void UseAdvancedMoonlight_SharesStateWithGlobal_AndNotifiesOnChange()
         {
             var service = TestRepositoryFactory.CreateAppSettingsService();
-            bool original = Global.UseAdvancedMoonlight;
+            bool original = TestGlobals.Store.useAdvancedMoonlight;
             var changed = new List<string>();
             service.SettingChanged += (s, name) => changed.Add(name);
             try
             {
                 service.UseAdvancedMoonlight = !original;
-                Assert.Equal(!original, Global.UseAdvancedMoonlight);
+                Assert.Equal(!original, TestGlobals.Store.useAdvancedMoonlight);
                 Assert.Equal(!original, service.UseAdvancedMoonlight);
                 Assert.Contains(nameof(IAppSettingsService.UseAdvancedMoonlight), changed);
 
@@ -75,7 +75,7 @@ namespace DS4WindowsTests
             }
             finally
             {
-                Global.UseAdvancedMoonlight = original;
+                TestGlobals.Store.useAdvancedMoonlight = original;
             }
         }
 

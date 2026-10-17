@@ -102,8 +102,6 @@ namespace DS4WindowsTests
             // 静的イベント（ActionManager.ToggledOnChanged など）も対象
             Assert.True(CountSubscriptions(null, typeof(ActionManager), vm) == 0,
                 "ViewModel が ActionManager の静的イベントを購読している");
-            Assert.True(CountSubscriptions(null, typeof(Global), vm) == 0,
-                "ViewModel が Global の静的イベントを購読している");
         }
 
         [Fact]

@@ -155,7 +155,7 @@ namespace DS4WindowsTests
         [Fact]
         public void DeviceOptions_ReturnsSameInstanceAsGlobal()
         {
-            Assert.Same(Global.DeviceOptions, _appSettings.DeviceOptions);
+            Assert.Same(TestGlobals.Store.deviceOptions, _appSettings.DeviceOptions);
         }
 
         [Fact]

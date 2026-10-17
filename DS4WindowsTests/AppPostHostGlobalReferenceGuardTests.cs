@@ -36,8 +36,7 @@ namespace DS4WindowsTests
             // E7-01〜E7-05（起動時ログローテーション・ViGEmBus 情報。温存）
             // Phase7-Step4 W3: FindConfigLocation は PathService へ移した（Global 参照 1 → 0）
             // Phase7-Step4 W4: appdatapath は PathService の状態を直接読み書きする形にした（Global 参照 1 → 0）
-            ["LogMaxArchiveFiles"] = 1,
-            ["LogMinLevel"] = 1,
+            // Phase7-Step10d W5: ブートストラップの BackingStore から読む形にした（Global 参照 2 → 0）
             // Phase7-Step4 W1: RefreshViGEmBusInfo は EnvironmentService へ移した（Global 参照 1 → 0）
         };
 
@@ -46,15 +45,14 @@ namespace DS4WindowsTests
             // E7-06〜E7-12（-driverinstall 分岐。温存）。Phase7-Step4 W1: RefreshViGEmBusInfo は EnvironmentService へ移した（1 → 0）
             // Phase7-Step4 W3: FindConfigLocation は PathService へ移した（Global 参照 1 → 0）
             // Phase7-Step4 W2: Global.Load は IAppSettingsService.Load に置き換えた（1 → 0）
-            ["UseLang"] = 2,
-            ["UseCurrentTheme"] = 2,
+            // Phase7-Step10d W5: ブートストラップの BackingStore から読む形にした（Global 参照 4 → 0）
         };
 
         private static readonly Dictionary<string, int> ExpectedApplyLanguageSetting = new Dictionary<string, int>
         {
             // E7-13〜E7-14（共用ヘルパー。決定4＝K で温存）
             // Phase7-Step10d W4: SetCulture は UiCulture.Set へ移した
-            ["UseLang"] = 1,
+            // Phase7-Step10d W5: ブートストラップの BackingStore へ書く形にした（Global 参照 1 → 0）
         };
 
         // Application_Startup の Post-Host（P7-01〜P7-25）は、Step7-2・7-3 ですべて DI サービス経由に置き換えた。

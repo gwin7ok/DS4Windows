@@ -51,12 +51,8 @@ namespace DS4WindowsTests
         [Fact]
         public void GlobalInstances_AreRemoved_ExceptTheProfileSettingsOne()
         {
-            string global = Read("DS4Windows/DS4Control/Global.cs");
-            if (global == null) return;
-
-            Assert.DoesNotContain("ProfileXmlStoreInstance", global);
-            Assert.DoesNotContain("NotificationServiceInstance", global);
-            Assert.Contains("ProfileSettingsServiceInstance", global);
+            // Phase7-Step10d W5: ProfileSettingsServiceInstance も含めて Global ごと削除した（BackingStore.ProfileSettings へ移した）
+            Assert.Null(SourceFileLocator.Find("DS4Windows/DS4Control/Global.cs"));
         }
 
         [Fact]
@@ -72,6 +68,7 @@ namespace DS4WindowsTests
             Assert.Contains("Services.IElevatedProcessLauncher elevatedProcessLauncher", control);
             Assert.Contains("sp.GetRequiredService<IElevatedProcessLauncher>()", registration);
             Assert.Contains("store.ProcessInspector = sp.GetRequiredService<IProcessInspector>();", registration);
+            Assert.DoesNotContain("Global.store", registration);
         }
 
         [Fact]

@@ -21,12 +21,8 @@ namespace DS4WindowsTests
         [Fact]
         public void Global_NoLongerDeclaresTheMovedMembers()
         {
-            const BindingFlags all = BindingFlags.Instance | BindingFlags.Static | BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.DeclaredOnly;
-            var names = typeof(Global).GetMembers(all).Select(m => m.Name).ToHashSet();
-            foreach (string removed in RemovedFromGlobal)
-            {
-                Assert.DoesNotContain(removed, names);
-            }
+            // Phase7-Step10d W5: Global 型ごと削除した（Phase7Step10dW5GlobalRemovedGuardTests が型の不在を確認する）
+            Assert.Null(typeof(BackingStore).Assembly.GetType("DS4Windows.Global"));
         }
 
         [Fact]

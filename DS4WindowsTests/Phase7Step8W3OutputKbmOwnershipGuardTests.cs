@@ -48,7 +48,7 @@ namespace DS4WindowsTests
         {
             state = new SyntheticInputState();
             owner = new OutputKBMHandlerAdapter();
-            settings = TestRepositoryFactory.CreateProfileSettingsService(new BackingStore());
+            settings = TestRepositoryFactory.CreateProfileSettingsService(new DS4Windows.BackingStore(new DS4Windows.EnvironmentService()));
             return new SyntheticDispatcherService(state, owner, settings);
         }
 
@@ -188,7 +188,7 @@ namespace DS4WindowsTests
         [Fact]
         public void NoSourceFile_ReferencesTheRemovedGlobalMembers_OrTheStaticResetMethod()
         {
-            string anchor = SourceFileLocator.Find("DS4Windows/DS4Control/Global.cs");
+            string anchor = SourceFileLocator.Find("DS4Windows/DS4Control/BackingStore.cs"); // Phase7-Step10d W5: Global.cs は削除したため、同じフォルダーの BackingStore.cs を起点にする
             if (anchor == null) return;
 
             string root = Path.GetDirectoryName(Path.GetDirectoryName(anchor)); // DS4Windows プロジェクト（本体のみ。テストの文字列は対象外）

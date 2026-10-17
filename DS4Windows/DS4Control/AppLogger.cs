@@ -84,7 +84,7 @@ namespace DS4Windows
 
         public static DS4Windows.DI.INotificationService NotificationService
         {
-            get => _notificationService ?? (_notificationService = new AppNotificationService(Global.store));
+            get => _notificationService ?? (_notificationService = new AppNotificationService(new BackingStore(new EnvironmentService())));
             set => _notificationService = value;
         }
 

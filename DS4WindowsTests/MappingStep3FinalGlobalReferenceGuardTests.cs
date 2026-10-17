@@ -57,10 +57,9 @@ namespace DS4WindowsTests
             string text = ReadSourceWithoutComments(out string raw);
             if (text == null) return;
 
-            Assert.Contains("using static DS4Windows.Global;", text);
+            Assert.DoesNotContain("using static DS4Windows.Global;", text); // Phase7-Step10d W5: Global の削除で外した
 
             // Phase7-Step10b W2: getTransitionedColor は ColorUtil へ移した。Mapping.cs は ColorUtil. で修飾して呼ぶ。
-            // using static DS4Windows.Global; 自体は Global の削除（Phase7-Step10d）まで残す。
             var bareCall = new Regex(@"(?<![\w.])getTransitionedColor\s*\(");
             Assert.False(bareCall.IsMatch(text), "getTransitionedColor の非修飾呼び出しが残っている（ColorUtil. で修飾すること）");
             Assert.Contains("ColorUtil.getTransitionedColor(", text);

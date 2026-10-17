@@ -1977,7 +1977,7 @@ namespace DS4Windows
                             DS4LightBar.forcelight[i] = false;
                             DS4LightBar.forcedFlash[i] = 0;
                             DS4LightBar.defaultLight = true;
-                            DS4LightBar.updateLightBar(DS4Controllers[i], i);
+                            DS4LightBar.updateLightBar(DS4Controllers[i], i, _profileSettings);
                             tempDevice.IsRemoved = true;
                             tempDevice.StopUpdate();
                             _deviceRegistry.RemoveDevice(tempDevice);
@@ -3025,7 +3025,7 @@ namespace DS4Windows
                 _mapping.Commit(ind, _profileSettings);
 
                 // Update the Lightbar color
-                DS4LightBar.updateLightBar(device, ind);
+                DS4LightBar.updateLightBar(device, ind, _profileSettings);
 
                 if (device.PerformStateMerge)
                 {

@@ -63,7 +63,7 @@ namespace DS4WindowsTests
             _origSelected = _repo.SelectedProfile[Slot];
             _origUseTemp = _settings.GetUseTempProfile(Slot);
             _origTempName = _settings.GetTempProfileName(Slot);
-            _origDistance = Global.tempprofileDistance[Slot];
+            _origDistance = TestGlobals.ProfileSettingsServiceInstance.TempProfileDistanceArray[Slot];
 
             // 読み込める有効なプロファイルを、保存の経路で作る（保存先は退避した appdatapath 配下）
             Assert.True(TestRepositoryFactory.CreateLegacyProfileXml().SaveProfile(Slot, Normal));
@@ -82,7 +82,7 @@ namespace DS4WindowsTests
             _repo.SelectedProfile[Slot] = _origSelected;
             _settings.SetUseTempProfile(Slot, _origUseTemp);
             _settings.SetTempProfileName(Slot, _origTempName);
-            Global.tempprofileDistance[Slot] = _origDistance;
+            TestGlobals.ProfileSettingsServiceInstance.TempProfileDistanceArray[Slot] = _origDistance;
             TestGlobals.AppDataPath = _originalAppData;
             try { Directory.Delete(_dir, true); } catch { }
         }
@@ -109,7 +109,7 @@ namespace DS4WindowsTests
             Assert.Equal(Normal, _repo.OlderProfilePath[Slot]);
             Assert.False(_settings.GetUseTempProfile(Slot));
             Assert.Equal(string.Empty, _settings.GetTempProfileName(Slot));
-            Assert.False(Global.tempprofileDistance[Slot]);
+            Assert.False(TestGlobals.ProfileSettingsServiceInstance.TempProfileDistanceArray[Slot]);
 
             Assert.Single(_events);
             Assert.Equal(Slot, _events[0].DeviceIndex);
@@ -133,7 +133,7 @@ namespace DS4WindowsTests
             Assert.Equal(Temp, _repo.SelectedProfile[Slot]);
             Assert.True(_settings.GetUseTempProfile(Slot));
             Assert.Equal(Temp, _settings.GetTempProfileName(Slot));
-            Assert.False(Global.tempprofileDistance[Slot]);
+            Assert.False(TestGlobals.ProfileSettingsServiceInstance.TempProfileDistanceArray[Slot]);
 
             Assert.Single(_events);
             Assert.Equal(Temp, _events[0].ProfileName);
@@ -147,13 +147,13 @@ namespace DS4WindowsTests
             bool result = Apply(withHalt, Distance, true, ProfileChangeSource.MappingAction);
 
             Assert.True(result);
-            Assert.True(Global.tempprofileDistance[Slot]);
+            Assert.True(TestGlobals.ProfileSettingsServiceInstance.TempProfileDistanceArray[Slot]);
 
             // 通常プロファイルを適用すると、一時プロファイルの状態と距離フラグが戻る
             Assert.True(Apply(withHalt, Normal, false, ProfileChangeSource.Manual));
             Assert.False(_settings.GetUseTempProfile(Slot));
             Assert.Equal(string.Empty, _settings.GetTempProfileName(Slot));
-            Assert.False(Global.tempprofileDistance[Slot]);
+            Assert.False(TestGlobals.ProfileSettingsServiceInstance.TempProfileDistanceArray[Slot]);
         }
 
         [Theory]
@@ -254,14 +254,14 @@ namespace DS4WindowsTests
         {
             _settings.SetUseTempProfile(Slot, true);
             _settings.SetTempProfileName(Slot, "TempSentinel");
-            Global.tempprofileDistance[Slot] = true;
+            TestGlobals.ProfileSettingsServiceInstance.TempProfileDistanceArray[Slot] = true;
 
             // 旧 Global.LoadBlankDevProfile の処理は、Phase7-Step3c W2 で ProfilePresetLoader に移した
             TestRepositoryFactory.CreateProfilePresetLoader().LoadBlank(Slot, false, _control, false, false);
 
             Assert.False(_settings.GetUseTempProfile(Slot));
             Assert.Equal(string.Empty, _settings.GetTempProfileName(Slot));
-            Assert.False(Global.tempprofileDistance[Slot]);
+            Assert.False(TestGlobals.ProfileSettingsServiceInstance.TempProfileDistanceArray[Slot]);
         }
     }
 }

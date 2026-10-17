@@ -66,17 +66,17 @@ namespace DS4WindowsTests
         public void UseLang_SharesStateWithGlobal_AndNotifiesOnChange()
         {
             var settings = TestRepositoryFactory.CreateAppSettingsService();
-            string original = Global.UseLang;
+            string original = TestGlobals.Store.useLang;
             try
             {
-                Global.UseLang = "en";
+                TestGlobals.Store.useLang = "en";
                 Assert.Equal("en", settings.UseLang);
 
                 string notified = null;
                 settings.SettingChanged += (s, name) => notified = name;
 
                 settings.UseLang = "ja";
-                Assert.Equal("ja", Global.UseLang);
+                Assert.Equal("ja", TestGlobals.Store.useLang);
                 Assert.Equal(nameof(IAppSettingsService.UseLang), notified);
 
                 // 同じ値の再設定では通知しない（他のプロパティと同じ規約）。
@@ -86,7 +86,7 @@ namespace DS4WindowsTests
             }
             finally
             {
-                Global.UseLang = original;
+                TestGlobals.Store.useLang = original;
             }
         }
 
@@ -129,7 +129,7 @@ namespace DS4WindowsTests
             try
             {
                 string actionsFile = Path.Combine(dir, "Actions.xml");
-                var store = new BackingStore { m_Actions = actionsFile };
+                var store = new BackingStore(new EnvironmentService()) { m_Actions = actionsFile };
                 var repo = TestRepositoryFactory.CreateSpecialActionRepository(store);
 
                 Assert.False(File.Exists(actionsFile));
@@ -143,7 +143,7 @@ namespace DS4WindowsTests
                 Assert.Contains(store.actions, a => a.name == "Disconnect Controller");
 
                 // 作られたファイルを、別の BackingStore から読み込めること。
-                var store2 = new BackingStore { m_Actions = actionsFile };
+                var store2 = new BackingStore(new EnvironmentService()) { m_Actions = actionsFile };
                 var repo2 = TestRepositoryFactory.CreateSpecialActionRepository(store2);
                 Assert.True(repo2.LoadActions());
                 Assert.Contains(store2.actions, a => a.name == "Disconnect Controller");

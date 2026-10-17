@@ -17,6 +17,8 @@ namespace DS4WindowsTests
         private static readonly HashSet<string> ExcludedNames = new HashSet<string>(StringComparer.Ordinal)
         {
             "m_Profile", "m_Actions", "m_linkedProfiles", "m_controllerConfigs", "ProcessInspector", "ActiveOutDevType",
+            // Phase7-Step10d W5: 別のサービス（ProfileSettingsService）への参照であり、BackingStore の設定値ではない
+            "ProfileSettings",
             "lastVersionChecked", "lastVersionCheckedNum", "useLang", "fakeExeFileName", "loggedInvalidActions",
             "actions", "linkedProfiles",
         };
@@ -28,6 +30,9 @@ namespace DS4WindowsTests
         {
             object reference = null;
             try { reference = Activator.CreateInstance(root.GetType()); } catch { }
+            // Phase7-Step10d W5: BackingStore は引数なしでは作れない（環境サービスが必須）
+            if (reference == null && root is DS4Windows.BackingStore)
+                reference = new DS4Windows.BackingStore(new DS4Windows.EnvironmentService());
             FillObject(root, reference, slot, 0);
         }
 

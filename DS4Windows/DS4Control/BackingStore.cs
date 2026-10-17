@@ -132,9 +132,9 @@ namespace DS4Windows
         // Phase7-Step10b W4: DEFAULT_STICK_OUTPUT_CURVE／_ID、DEFAULT_SA_OUTPUT_CURVE／_ID は削除した（廃止済みの ProfileDTO の既定値の残骸。参照 0 件）。
 
         public String m_Profile = Directory.GetParent(Assembly.GetExecutingAssembly().Location).FullName + "\\Profiles.xml";
-        public String m_Actions = Global.appdatapath + "\\Actions.xml";
-        public string m_linkedProfiles = Global.appdatapath + "\\LinkedProfiles.xml";
-        public string m_controllerConfigs = Global.appdatapath + "\\ControllerConfigs.xml";
+        public String m_Actions = PathService.AppDataPathState + "\\Actions.xml";
+        public string m_linkedProfiles = PathService.AppDataPathState + "\\LinkedProfiles.xml";
+        public string m_controllerConfigs = PathService.AppDataPathState + "\\ControllerConfigs.xml";
 
         // Phase7-Step10c W5: 作業用の XmlDocument（m_Xdoc）は、読み書きを担う各シリアライザーが自分のフィールドとして持つ。BackingStore からは削除した。
         // ninth (fifth in old builds) value used for options, not last controller
@@ -736,18 +736,68 @@ namespace DS4Windows
 
         // Phase7-Step5 W4（Q6＝A）: 旧 AppHost.GetService<IProcessInspector>()。ServiceRegistration の BackingStore の登録が設定する。
         // 未設定のとき（コンテナを通らないテストなど）は、LoadProfile が従来のフォールバック（プロセス一覧の走査）を使う。
-        // TODO(Phase7-Step10): BackingStore の分割（永続化の切り出し）で、コンストラクター注入にする。
+        // Phase7-Step10d W5: コンストラクター注入にしない理由 → ProcessInspector は、ブートストラップで先に作る BackingStore（起動直後の設定の読み取りに使う）に、
+        // コンテナの構築後に ServiceRegistration の登録が設定する（コンテナより前に BackingStore を作るため、コンストラクターでは渡せない）。
         public DS4Windows.Services.IProcessInspector ProcessInspector { get; set; }
 
         // Phase7-Step6 W1（Q2＝A）: 旧 Global.activeOutDevType。スロットごとの、現在接続中の出力種別（実体は OutputSlotService が持つ）。
         // ServiceRegistration の IOutputSlotService の登録が、OutputSlotService の生成時に ActiveOutDevType の配列を設定する。
         // 設定前（コンテナ構築前の起動処理、コンテナを通らないテスト）は、全スロット None の既定の配列を読む（接続前は元々 None）。
         // 書き込むのは ControlService だけで、既定の配列は書き換わらない。配列の参照は再代入されない前提で使うこと。
-        // TODO(Phase7-Step10): BackingStore の分割で、コンストラクター注入にする。
+        // Phase7-Step10d W5: コンストラクター注入にしない理由 → 配列を持つ OutputSlotService は BackingStore の後に作られ、BackingStore の登録側から解決できない（循環）。
         public OutContType[] ActiveOutDevType { get; set; } = new OutContType[ControllerLimits.TestProfileItemCount];
 
-        public BackingStore()
+        // Phase7-Step10d W5（Q8＝A）: 旧 Global.ProfileSettingsServiceInstance（静的に最初のコンテナの実体を保持していた）の置き換え。
+        // 一時プロファイル・DInput のみの配列と、出力 KBM のマッピング（RefreshActionAlias が使う）は ProfileSettingsService が持つ。
+        // ProfileSettingsService が BackingStore を受け取る（逆向きの依存）ため、コンストラクターでは渡せない。ProfileSettingsService が
+        // 自分の生成時に LinkProfileSettings で登録する（最初の 1 つが有効）。登録がないまま使われたときは、従来のフォールバックと同じく、
+        // コントローラー（ControlService）を持たない ProfileSettingsService を作る。
+        private readonly object _profileSettingsLock = new object();
+        private DS4Windows.DI.IProfileSettingsService _profileSettings;
+
+        public DS4Windows.DI.IProfileSettingsService ProfileSettings
         {
+            get
+            {
+                var linked = _profileSettings;
+                if (linked != null)
+                    return linked;
+
+                AppLogger.LogTrace("[Legacy] BackingStore.ProfileSettings: Fallback instance used");
+                AppLogger.LogToGui("[Legacy] BackingStore.ProfileSettings: Fallback instance used", false, true);
+                lock (_profileSettingsLock)
+                {
+                    if (_profileSettings == null)
+                    {
+                        // 生成された ProfileSettingsService が、自分のコンストラクターで LinkProfileSettings を呼ぶ
+                        _ = new ProfileSettingsService(this, _environmentService, () => null);
+                    }
+
+                    return _profileSettings;
+                }
+            }
+            set
+            {
+                lock (_profileSettingsLock) { _profileSettings = value; }
+            }
+        }
+
+        /// <summary>ProfileSettingsService が、自分の生成時に呼ぶ。まだ登録がないときだけ登録する（最初の 1 つが有効）。</summary>
+        internal void LinkProfileSettings(DS4Windows.DI.IProfileSettingsService service)
+        {
+            lock (_profileSettingsLock)
+            {
+                if (_profileSettings == null)
+                    _profileSettings = service;
+            }
+        }
+
+        // Phase7-Step10d W5（Q3・Q9＝A）: スロット数の上限は、静的な _environmentService.ControllerSlotLimit ではなく、注入された環境サービスから読む。
+        private readonly DS4Windows.DI.IEnvironmentService _environmentService;
+
+        public BackingStore(DS4Windows.DI.IEnvironmentService environmentService)
+        {
+            _environmentService = environmentService ?? throw new ArgumentNullException(nameof(environmentService));
             ds4controlSettings = new ControlSettingsGroup[ControllerLimits.TestProfileItemCount];
 
             for (int i = 0; i < ControllerLimits.TestProfileItemCount; i++)
@@ -876,8 +926,8 @@ namespace DS4Windows
                         else
                         {
                             // Determine the profile name actually in use for this device (temporary or regular)
-                            profName = (Global.ProfileSettingsServiceInstance.GetUseTempProfile(device))
-                                ? Global.ProfileSettingsServiceInstance.GetTempProfileName(device)
+                            profName = (ProfileSettings.GetUseTempProfile(device))
+                                ? ProfileSettings.GetTempProfileName(device)
                                 : (profilePath != null && device >= 0 && device < profilePath.Length ? profilePath[device] : string.Empty);
                         }
 
@@ -990,28 +1040,28 @@ namespace DS4Windows
         public void SetGyroMouseDZ(int index, int value, ControlService control)
         {
             gyroMouseDZ[index] = value;
-            if (index < ControlService.CURRENT_DS4_CONTROLLER_LIMIT && control.touchPad[index] != null)
+            if (index < _environmentService.ControllerSlotLimit && control.touchPad[index] != null)
                 control.touchPad[index].CursorGyroDead = value;
         }
 
         public void SetGyroControlsToggle(int index, bool value, ControlService control)
         {
             gyroControlsInf[index].triggerToggle = value;
-            if (index < ControlService.CURRENT_DS4_CONTROLLER_LIMIT && control.touchPad[index] != null)
+            if (index < _environmentService.ControllerSlotLimit && control.touchPad[index] != null)
                 control.touchPad[index].ToggleGyroControls = value;
         }
 
         public void SetGyroMouseToggle(int index, bool value, ControlService control)
         {
             gyroMouseToggle[index] = value;
-            if (index < ControlService.CURRENT_DS4_CONTROLLER_LIMIT && control.touchPad[index] != null)
+            if (index < _environmentService.ControllerSlotLimit && control.touchPad[index] != null)
                 control.touchPad[index].ToggleGyroMouse = value;
         }
 
         public void SetGyroMouseStickToggle(int index, bool value, ControlService control)
         {
             gyroMouseStickToggle[index] = value;
-            if (index < ControlService.CURRENT_DS4_CONTROLLER_LIMIT && control.touchPad[index] != null)
+            if (index < _environmentService.ControllerSlotLimit && control.touchPad[index] != null)
                 control.touchPad[index].ToggleGyroStick = value;
         }
 
@@ -1317,7 +1367,7 @@ namespace DS4Windows
                 int index = temp - 1;
                 DS4ControlSettings dcs = ds4settings[deviceNum][index];
                 dcs.UpdateSettings(shift, action, exts, kt, trigger);
-                Global.RefreshActionAlias(dcs, shift);
+                ProfileSettings.RefreshActionAlias(dcs, shift);
             }
         }
 
@@ -1584,9 +1634,9 @@ namespace DS4Windows
             xinputPlug = false;
             xinputStatus = false;
 
-            if (device < ControlService.CURRENT_DS4_CONTROLLER_LIMIT)
+            if (device < _environmentService.ControllerSlotLimit)
             {
-                bool oldUseDInputOnly = Global.useDInputOnly[device];
+                bool oldUseDInputOnly = ProfileSettings.UseDInputOnlyArray[device];
                 DS4Device tempDevice = control.DS4Controllers[device];
                 bool exists = tempBool = (tempDevice != null);
                 bool synced = tempBool = exists ? tempDevice.isSynced() : false;

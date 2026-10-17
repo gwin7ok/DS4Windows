@@ -23,7 +23,7 @@ namespace DS4WindowsTests
                 try { Directory.CreateDirectory(profilesDir); } catch { }
             }
 
-            var store = TestRepositoryFactory.CreateProfileXmlStore(new BackingStore());
+            var store = TestRepositoryFactory.CreateProfileXmlStore(new DS4Windows.BackingStore(new DS4Windows.EnvironmentService()));
             string profileName = "Phase5Step2_ProfileXmlStore_SaveTest";
             string path = pathService.GetProfilePath(profileName);
 
@@ -53,7 +53,7 @@ namespace DS4WindowsTests
             DS4WinWPF.AppHost.CreateHost();
             var control = DS4WinWPF.AppHost.GetService<ControlService>();
 
-            var store = TestRepositoryFactory.CreateProfileXmlStore(new BackingStore());
+            var store = TestRepositoryFactory.CreateProfileXmlStore(new DS4Windows.BackingStore(new DS4Windows.EnvironmentService()));
 
             var exception = Record.Exception(() =>
             {
@@ -74,7 +74,7 @@ namespace DS4WindowsTests
         public void Constructor_WithNullBackingStore_Throws()
         {
             // Phase7-Step3 W1: Global.store へのフォールバックを廃止した
-            Assert.Throws<System.ArgumentNullException>(() => new ProfileXmlStore(null, new DS4Windows.Services.ControllerConfigsXmlSerializer(new BackingStore()), TestRepositoryFactory.CreateAppSettingsXml(new BackingStore()), TestRepositoryFactory.CreateLegacyProfileXml(new BackingStore())));
+            Assert.Throws<System.ArgumentNullException>(() => new ProfileXmlStore(null, new DS4Windows.Services.ControllerConfigsXmlSerializer(new DS4Windows.BackingStore(new DS4Windows.EnvironmentService())), TestRepositoryFactory.CreateAppSettingsXml(new DS4Windows.BackingStore(new DS4Windows.EnvironmentService())), TestRepositoryFactory.CreateLegacyProfileXml(new DS4Windows.BackingStore(new DS4Windows.EnvironmentService()))));
         }
     }
 }

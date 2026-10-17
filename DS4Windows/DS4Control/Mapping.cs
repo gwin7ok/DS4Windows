@@ -32,7 +32,6 @@ using System.Diagnostics;
 // Phase6-Step3-Plan.md §1）が非修飾で呼ばれており本ディレクティブに依存するため、現時点では削除できない。
 // これ以外の Global 実利用箇所はすべて Global. 明示修飾（温存3件: ProfileSettingsServiceInstance／outputKBMHandler／ApplyProfile。
 // いずれも上記のTODO参照）または各DIサービス経由への置換で解消済み（Phase6-Step3-Plan.md §6 完了判定チェックリスト）。
-using static DS4Windows.Global;
 using System.Drawing; // Point struct
 using Sensorit.Base;
 using DS4WinWPF.DS4Control;
@@ -7229,7 +7228,7 @@ namespace DS4Windows
                 DS4LightBar.forcedFlash[device] = 0;
                 DS4LightBar.forcedColor[device] = profileSettings.GetMainColor(device);
                 DS4LightBar.forcelight[device] = false;
-                DS4LightBar.updateLightBar(controller, device);
+                DS4LightBar.updateLightBar(controller, device, profileSettings);
             }
         }
 

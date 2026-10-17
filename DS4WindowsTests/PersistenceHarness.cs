@@ -15,7 +15,14 @@ namespace DS4WindowsTests
         /// <summary>プロファイルの保存・読込・プリセットに使うスロット（編集用の作業スロット。ControlService の状態に触れない）。</summary>
         public const int Slot = ControllerLimits.TestProfileIndex;
 
-        public static BackingStore NewStore() => new BackingStore();
+        // Phase7-Step10d W5: 旧 Global.ProfileSettingsServiceInstance（出力 KBM のマッピングを設定した共有の instance）を、新しい BackingStore も使う
+        // （プロファイルの読込・保存が、一時プロファイル・DInput のみ・タッチパッドの配列をこのサービスから読むため）
+        public static BackingStore NewStore()
+        {
+            var store = new DS4Windows.BackingStore(new DS4Windows.EnvironmentService());
+            store.ProfileSettings = TestGlobals.ProfileSettingsServiceInstance;
+            return store;
+        }
 
         // ---- プロファイル（旧形式の XML）----
 

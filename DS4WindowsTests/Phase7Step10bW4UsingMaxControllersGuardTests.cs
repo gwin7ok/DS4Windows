@@ -95,7 +95,7 @@ namespace DS4WindowsTests
         {
             Assert.Equal(1, BackingStore.DEFAULT_CHECK_EVERY_VALUE);
             Assert.Equal(1, BackingStore.DEFAULT_CHECK_EVERY_UNIT);
-            var fresh = new BackingStore();
+            var fresh = new DS4Windows.BackingStore(new DS4Windows.EnvironmentService());
             Assert.Equal(BackingStore.DEFAULT_CHECK_EVERY_VALUE, fresh.checkEveryValue);
             Assert.Equal(BackingStore.DEFAULT_CHECK_EVERY_UNIT, fresh.checkEveryUnit);
 
@@ -106,7 +106,7 @@ namespace DS4WindowsTests
         [Fact]
         public void NoSource_ReferencesTheRemovedShim()
         {
-            string anchor = SourceFileLocator.Find("DS4Windows/DS4Control/Global.cs");
+            string anchor = SourceFileLocator.Find("DS4Windows/DS4Control/BackingStore.cs"); // Phase7-Step10d W5: Global.cs は削除したため、同じフォルダーの BackingStore.cs を起点にする
             if (anchor == null)
             {
                 _output.WriteLine("ソースが見つからないため検査を省略した。");

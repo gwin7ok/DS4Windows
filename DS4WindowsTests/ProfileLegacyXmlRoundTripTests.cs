@@ -48,7 +48,7 @@ namespace DS4WindowsTests
         [Fact]
         public void SaveThenLoad_RestoresAllTenSettings()
         {
-            var source = new BackingStore();
+            var source = new DS4Windows.BackingStore(new DS4Windows.EnvironmentService());
             source.debouncingMs[Device] = 500;
             source.inverseRumbleMotors[Device] = true;
             source.useDs3PitchRollSim = true;
@@ -63,7 +63,7 @@ namespace DS4WindowsTests
             XmlDocument doc = NewDocument(source);
             NewSerializer(source, doc).SaveLegacyExtraSettings(doc.DocumentElement, Device);
 
-            var target = new BackingStore();
+            var target = new DS4Windows.BackingStore(new DS4Windows.EnvironmentService());
             var targetXml = NewSerializer(target, doc);
             ResetProfile(target);
             targetXml.LoadLegacyExtraSettings(Device, Root);
@@ -95,7 +95,7 @@ namespace DS4WindowsTests
         public void Load_WithoutElements_KeepsDefaultsAfterReset()
         {
             // 古いプロファイル（10 要素が無い）を読み込んでも、既定値になること（前のプロファイルの値を引き継がない）
-            var store = new BackingStore();
+            var store = new DS4Windows.BackingStore(new DS4Windows.EnvironmentService());
             store.debouncingMs[Device] = 500;
             store.inverseRumbleMotors[Device] = true;
             store.leftStickDriftXAxis[Device] = -5;
@@ -120,7 +120,7 @@ namespace DS4WindowsTests
         [Fact]
         public void Load_WithInvalidValues_IgnoresThem()
         {
-            var store = new BackingStore();
+            var store = new DS4Windows.BackingStore(new DS4Windows.EnvironmentService());
             XmlDocument doc = NewDocument(store);
             var xml = NewSerializer(store, doc);
             ResetProfile(store);
@@ -148,7 +148,7 @@ namespace DS4WindowsTests
         [Fact]
         public void Load_DebouncingMs_IsClampedToUiRange()
         {
-            var store = new BackingStore();
+            var store = new DS4Windows.BackingStore(new DS4Windows.EnvironmentService());
             XmlDocument doc = NewDocument(store);
             var xml = NewSerializer(store, doc);
             ResetProfile(store);

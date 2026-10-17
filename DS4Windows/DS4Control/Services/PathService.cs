@@ -74,13 +74,17 @@ namespace DS4Windows
         private string _customAppDataPath;
         private readonly BackingStore _config;
 
-        // config: SaveWhere が設定ファイルのパス（m_Profile ほか）を更新する先。省略時は Global.store（本番の BackingStore と同じ実体）。
-        // TODO(Phase7-Step10): 省略時の Global.store をやめ、BackingStore を必須の依存にする（BackingStore の永続化の切り出しと同時）。
+        // config: SaveWhere が設定ファイルのパス（m_Profile ほか）を更新する先（本番はコンテナの BackingStore。ブートストラップでは起動時に作る BackingStore）。
+        // Phase7-Step10d W5: 省略時の Global.store をやめた。省略（null）のインスタンスは、保存場所の決定（SetSaveLocation／FindConfigLocation）
+        // だけが使えない（呼ぶと InvalidOperationException）。パスの読み取りは config なしで使える。
         public PathService(string appDataPath = null, BackingStore config = null)
         {
             _customAppDataPath = appDataPath;
-            _config = config ?? Global.store;
+            _config = config;
         }
+
+        private BackingStore RequireConfig() =>
+            _config ?? throw new InvalidOperationException("保存場所の決定には BackingStore が必要です（PathService の config 引数を指定してください）。");
 
         /// <summary>
         /// アプリケーションデータパスを取得します（コンストラクタ引数で指定した場合は、その値を返します）。
@@ -145,7 +149,7 @@ namespace DS4Windows
         public bool HasMultipleSaveLocations => MultipleSaveLocationsState;
 
         // ---- Phase6-Step10-1-1／Phase7-Step4 W3: 保存場所の決定（AppDataPath の setter とは別物。IPathService の注記を参照）----
-        public void SetSaveLocation(string path) => SaveWhere(_config, path);
+        public void SetSaveLocation(string path) => SaveWhere(RequireConfig(), path);
 
         /// <summary>
         /// 保存場所を決める。<see cref="AppDataPathState"/> のほか、設定ファイル 4 つのパス（BackingStore）も更新する
@@ -165,7 +169,7 @@ namespace DS4Windows
         /// "Auto Profiles.xml" の有無で、初回起動・保存場所が 2 か所・保存先を決める。起動時に 1 度呼ぶ。
         /// </summary>
         public void FindConfigLocation() =>
-            FindConfigLocation(_config, ExecutableDirectoryState, RoamingAppDataPathState, File.Exists);
+            FindConfigLocation(RequireConfig(), ExecutableDirectoryState, RoamingAppDataPathState, File.Exists);
 
         /// <summary>
         /// <see cref="FindConfigLocation()"/> の本体。実行ファイルのフォルダ、ローミングのフォルダ、ファイルの有無の判定を

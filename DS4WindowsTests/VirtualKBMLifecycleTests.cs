@@ -16,7 +16,7 @@ namespace DS4WindowsTests
     public class VirtualKBMLifecycleTests
     {
         private readonly OutputKBMHandlerAdapter _adapter = new OutputKBMHandlerAdapter();
-        private readonly ProfileSettingsService _settings = TestRepositoryFactory.CreateProfileSettingsService(new BackingStore());
+        private readonly ProfileSettingsService _settings = TestRepositoryFactory.CreateProfileSettingsService(new DS4Windows.BackingStore(new DS4Windows.EnvironmentService()));
         private readonly OutputKBMHandlerLifecycle _lifecycle;
 
         public VirtualKBMLifecycleTests()

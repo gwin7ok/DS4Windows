@@ -81,7 +81,7 @@ namespace DS4WindowsTests
         {
             using (new StateScope())
             {
-                var config = new BackingStore();
+                var config = new DS4Windows.BackingStore(new DS4Windows.EnvironmentService());
                 PathService.AppDataPathState = "untouched";
                 PathService.FirstRunState = false;
                 PathService.MultipleSaveLocationsState = false;
@@ -99,7 +99,7 @@ namespace DS4WindowsTests
         {
             using (new StateScope())
             {
-                var config = new BackingStore();
+                var config = new DS4Windows.BackingStore(new DS4Windows.EnvironmentService());
                 PathService.FirstRunState = false;
                 PathService.MultipleSaveLocationsState = false;
 
@@ -120,7 +120,7 @@ namespace DS4WindowsTests
         {
             using (new StateScope())
             {
-                var config = new BackingStore();
+                var config = new DS4Windows.BackingStore(new DS4Windows.EnvironmentService());
                 PathService.FirstRunState = true;
                 PathService.MultipleSaveLocationsState = true;
 
@@ -139,7 +139,7 @@ namespace DS4WindowsTests
         {
             using (new StateScope())
             {
-                var config = new BackingStore();
+                var config = new DS4Windows.BackingStore(new DS4Windows.EnvironmentService());
                 PathService.AppDataPathState = "untouched";
                 PathService.FirstRunState = false;
                 PathService.MultipleSaveLocationsState = true;
@@ -157,7 +157,7 @@ namespace DS4WindowsTests
         {
             using (new StateScope())
             {
-                var config = new BackingStore();
+                var config = new DS4Windows.BackingStore(new DS4Windows.EnvironmentService());
                 PathService.FirstRunState = false;
                 PathService.MultipleSaveLocationsState = false;
                 Func<string, bool> both = path => path == Path.Combine(Exe, "Auto Profiles.xml");
@@ -175,7 +175,7 @@ namespace DS4WindowsTests
         {
             using (new StateScope())
             {
-                var config = new BackingStore();
+                var config = new DS4Windows.BackingStore(new DS4Windows.EnvironmentService());
 
                 PathService.SaveWhere(config, @"C:\Phase7SaveWhere");
 
@@ -244,7 +244,7 @@ namespace DS4WindowsTests
         [Fact]
         public void NoSourceFile_ReferencesRemovedMembersThroughGlobal()
         {
-            string anchor = SourceFileLocator.Find("DS4Windows/DS4Control/Global.cs");
+            string anchor = SourceFileLocator.Find("DS4Windows/DS4Control/BackingStore.cs"); // Phase7-Step10d W5: Global.cs は削除したため、同じフォルダーの BackingStore.cs を起点にする
             if (anchor == null)
             {
                 _output.WriteLine("ソースが見つからないため検査を省略した。");
@@ -276,11 +276,10 @@ namespace DS4WindowsTests
             string text = Read("DS4Windows/DS4Control/Services/PathService.cs");
             if (text == null) return;
 
-            // static の初期化子と static メソッドから Global を呼ばない。許可するのは、インスタンスのコンストラクタの Global.store だけ
-            // （BackingStore の field 初期化子が Global.appdatapath を読むため、PathService の静的初期化が Global を起こすと循環する）。
+            // Phase7-Step10d W5: Global を削除した。PathService は Global を一切参照しない（省略時の Global.store もやめ、config は呼び出し側が渡す）。
             var uses = Regex.Matches(text, @"\bGlobal\.(\w+)").Cast<Match>().Select(m => m.Groups[1].Value).ToList();
-            Assert.Equal(new[] { "store" }, uses);
-            Assert.Matches(@"_config\s*=\s*config\s*\?\?\s*Global\.store;", text);
+            Assert.Empty(uses);
+            Assert.Matches(@"_config\s*=\s*config;", text);
         }
     }
 }

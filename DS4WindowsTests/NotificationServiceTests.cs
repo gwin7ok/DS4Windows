@@ -10,11 +10,11 @@ namespace DS4WindowsTests
         [Fact]
         public void SendNotification_ShouldFireNotificationTriggered_WhenEnabled()
         {
-            var origNotifications = Global.Notifications;
+            var origNotifications = TestGlobals.Store.notifications;
             try
             {
                 var service = TestRepositoryFactory.CreateAppNotificationService();
-                Global.Notifications = 1;
+                TestGlobals.Store.notifications = 1;
 
                 NotificationEventArgs eventArgs = null;
                 service.NotificationTriggered += (s, e) => eventArgs = e;
@@ -30,18 +30,18 @@ namespace DS4WindowsTests
             }
             finally
             {
-                Global.Notifications = origNotifications;
+                TestGlobals.Store.notifications = origNotifications;
             }
         }
 
         [Fact]
         public void SendNotification_ShouldPropagateWarningFlag()
         {
-            var origNotifications = Global.Notifications;
+            var origNotifications = TestGlobals.Store.notifications;
             try
             {
                 var service = TestRepositoryFactory.CreateAppNotificationService();
-                Global.Notifications = 1;
+                TestGlobals.Store.notifications = 1;
 
                 NotificationEventArgs eventArgs = null;
                 service.NotificationTriggered += (s, e) => eventArgs = e;
@@ -54,18 +54,18 @@ namespace DS4WindowsTests
             }
             finally
             {
-                Global.Notifications = origNotifications;
+                TestGlobals.Store.notifications = origNotifications;
             }
         }
 
         [Fact]
         public void SendNotification_ShouldPropagateTemporaryFlag()
         {
-            var origNotifications = Global.Notifications;
+            var origNotifications = TestGlobals.Store.notifications;
             try
             {
                 var service = TestRepositoryFactory.CreateAppNotificationService();
-                Global.Notifications = 1;
+                TestGlobals.Store.notifications = 1;
 
                 NotificationEventArgs eventArgs = null;
                 service.NotificationTriggered += (s, e) => eventArgs = e;
@@ -78,30 +78,30 @@ namespace DS4WindowsTests
             }
             finally
             {
-                Global.Notifications = origNotifications;
+                TestGlobals.Store.notifications = origNotifications;
             }
         }
 
         [Fact]
         public void SendNotification_ShouldNotFire_WhenDisabled()
         {
-            var origNotifications = Global.Notifications;
+            var origNotifications = TestGlobals.Store.notifications;
             try
             {
                 var service = TestRepositoryFactory.CreateAppNotificationService();
                 bool eventFired = false;
                 service.NotificationTriggered += (s, e) => eventFired = true;
 
-                Global.Notifications = 0;
+                TestGlobals.Store.notifications = 0;
                 // warning/temporary はデフォルト値(false)のまま。シグネチャ拡張後も本テストの意図（無効時は発火しない）に影響しない。
                 service.SendNotification("TitleTest", "MessageTest");
 
                 Assert.False(eventFired);
-                Assert.Equal(0, Global.Notifications);
+                Assert.Equal(0, TestGlobals.Store.notifications);
             }
             finally
             {
-                Global.Notifications = origNotifications;
+                TestGlobals.Store.notifications = origNotifications;
             }
         }
     }

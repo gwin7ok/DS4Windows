@@ -100,6 +100,9 @@ namespace DS4WinWPF
         // 状態は PathService／EnvironmentService の static（プロセス全体で 1 つ）のため、どのインスタンスでも同じ値を見る。
         private DS4Windows.PathService _bootstrapPathService;
         private DS4Windows.EnvironmentService _bootstrapEnvironmentService;
+        // Phase7-Step10d W5（Q3＝A）: 旧 Global.store（静的）。コンテナの構築より前に作り、CreateHost に渡して、コンテナへ同じインスタンスを登録する
+        // （起動直後のログのローテーションと最小ログレベル、-driverinstall 分岐の言語・テーマの読み取りが使う）。
+        private DS4Windows.BackingStore _bootstrapBackingStore;
 
         private MemoryMappedFile ipcClassNameMMF = null; // MemoryMappedFile for inter-process communication used to hold className of DS4Form window
         private MemoryMappedFile ipcResultDataMMF = null; // MemoryMappedFile for inter-process communication used to exchange string result data between cmdline client process and the background running DS4Windows app
@@ -138,7 +141,8 @@ namespace DS4WinWPF
                 // App の外（LanguagePackControl → ApplyLanguageSettingPublic）からも呼ばれる共用ヘルパーのため、
                 // DI 経由と Global 経由の二重経路を作らない。SetCulture はスレッドのカルチャを設定するだけの静的ユーティリティ。
                 // Global の解体（Phase7）で、言語設定の適用処理ごと整理する。
-                DS4Windows.Global.UseLang = cultureCode;
+                // Phase7-Step10d W5: Global は削除した。ブートストラップの BackingStore（コンテナの Singleton と同一）へ書く。
+                _bootstrapBackingStore.useLang = cultureCode;
                 DS4Windows.UiCulture.Set(cultureCode);
 
                 // Ensure thread and default thread cultures are set so UI localization applies
@@ -190,8 +194,9 @@ namespace DS4WinWPF
             skipSave = true;
 
             // Phase7-Step4 W4: ブートストラップのサービスを、コンテナの構築より前に作る
-            _bootstrapPathService = new DS4Windows.PathService();
             _bootstrapEnvironmentService = new DS4Windows.EnvironmentService();
+            _bootstrapBackingStore = new DS4Windows.BackingStore(_bootstrapEnvironmentService);
+            _bootstrapPathService = new DS4Windows.PathService(config: _bootstrapBackingStore);
 
             // Locate config location and perform startup log rotation as early as possible
             try
@@ -200,12 +205,12 @@ namespace DS4WinWPF
 
                 // Perform deterministic startup rotation as early as possible
                 // （Phase7-Step4 W4: appdatapath は null の可能性がある（初回起動）ため、AppDataPath（null のとき実行フォルダ）ではなく状態そのものを渡す）
-                LogRotator.PerformStartupRotation(DS4Windows.PathService.AppDataPathState, DS4Windows.Global.LogMaxArchiveFiles);
+                LogRotator.PerformStartupRotation(DS4Windows.PathService.AppDataPathState, _bootstrapBackingStore.logMaxArchiveFiles);
 
                 // Immediately apply bootstrap minimum log level so early logging honors user-configured min level
                 try
                 {
-                    DS4WinWPF.LoggerHolder.ApplyBootstrapMinLogLevel(DS4Windows.Global.LogMinLevel);
+                    DS4WinWPF.LoggerHolder.ApplyBootstrapMinLogLevel(_bootstrapBackingStore.logMinLevel);
                 }
                 catch { }
             }
@@ -349,7 +354,7 @@ namespace DS4WinWPF
             try
             {
                 var host = AppHost.CreateHost(new Microsoft.Extensions.Configuration.ConfigurationBuilder().Build(), parser,
-                    _bootstrapPathService, _bootstrapEnvironmentService);
+                    _bootstrapPathService, _bootstrapEnvironmentService, _bootstrapBackingStore);
                 AppLogger.LogInfo("AppHost.CreateHost() called successfully (Phase 0-3 verification)");
                 AppLogger.LogInfo($"[DI] Host creation path: {AppHost.CreationNote}");
             }
@@ -429,7 +434,7 @@ namespace DS4WinWPF
                 _appSettingsService.Save();
             }
 
-            logHolder = new LoggerHolder(_controlService);
+            logHolder = new LoggerHolder(_controlService, _appSettingsService);
             // Phase6-Step10-1-5（決定D7＝A）: 設定画面がログ設定の変更を反映する窓口（ILogSettingsApplier）へ、生成した LoggerHolder を接続する
             _logSettingsApplierProxy.Attach(logHolder);
             DispatcherUnhandledException += App_DispatcherUnhandledException;
@@ -726,17 +731,17 @@ namespace DS4WinWPF
                 // （K7-1 の残存経路）。ここで、起動引数つきで明示的にホストを作り、設定は IAppSettingsService で読む。
                 var driverInstallHost = AppHost.CreateHost(
                     new Microsoft.Extensions.Configuration.ConfigurationBuilder().Build(), parser,
-                    _bootstrapPathService, _bootstrapEnvironmentService);
+                    _bootstrapPathService, _bootstrapEnvironmentService, _bootstrapBackingStore);
                 var driverInstallSettings = (DS4Windows.DI.IAppSettingsService)driverInstallHost.Services
                     .GetService(typeof(DS4Windows.DI.IAppSettingsService));
                 bool readAppConfig = driverInstallSettings.Load();
                 if (readAppConfig)
                 {
                     // Have app use selected culture
-                    SetUICulture(DS4Windows.Global.UseLang);
-                    ApplyLanguageSetting(DS4Windows.Global.UseLang);
-                    DS4Windows.AppThemeChoice themeChoice = DS4Windows.Global.UseCurrentTheme;
-                    ChangeTheme(DS4Windows.Global.UseCurrentTheme, false);
+                    SetUICulture(_bootstrapBackingStore.useLang);
+                    ApplyLanguageSetting(_bootstrapBackingStore.useLang);
+                    DS4Windows.AppThemeChoice themeChoice = _bootstrapBackingStore.useCurrentTheme;
+                    ChangeTheme(_bootstrapBackingStore.useCurrentTheme, false);
                 }
 
                 CreateBaseThread();

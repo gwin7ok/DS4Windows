@@ -63,7 +63,7 @@ namespace DS4WindowsTests
         [Fact]
         public void PathService_SetSaveLocation_UpdatesGlobalAppDataPath_AndAppDataPathReflectsIt()
         {
-            IPathService service = new PathService();
+            IPathService service = new PathService(config: TestGlobals.Store); // Phase7-Step10d W5: 保存場所の決定には BackingStore が必要
             string original = TestGlobals.AppDataPath;
             // Global.SaveWhere は appdatapath のほかに、設定ファイル 4 つのパス（BackingStore）も書き換える。
             // 他のテスト（ProfileRepositoryTests など）へ影響を残さないよう、4 つとも元の値へ戻す。
@@ -168,13 +168,13 @@ namespace DS4WindowsTests
             IAppSettingsService service = TestRepositoryFactory.CreateAppSettingsService();
             CultureInfo originalThreadUi = Thread.CurrentThread.CurrentUICulture;
             CultureInfo originalDefaultUi = CultureInfo.DefaultThreadCurrentUICulture;
-            string originalUseLang = Global.UseLang;
+            string originalUseLang = TestGlobals.Store.useLang;
             try
             {
                 service.SetCulture("ja");
                 Assert.Equal("ja", Thread.CurrentThread.CurrentUICulture.Name);
                 Assert.Equal("ja", CultureInfo.DefaultThreadCurrentUICulture.Name);
-                Assert.Equal(originalUseLang, Global.UseLang);
+                Assert.Equal(originalUseLang, TestGlobals.Store.useLang);
 
                 // 不正なカルチャ名でも例外にしない（Global.SetCulture と同じ。try/catch で握りつぶす）。
                 // 注意: .NET は "xx-..." 形式の未知の名前を、例外にせず別のカルチャとして受け入れることがある。

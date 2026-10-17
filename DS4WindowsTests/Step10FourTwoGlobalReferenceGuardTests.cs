@@ -88,15 +88,15 @@ namespace DS4WindowsTests
         public void SpecialActionRepository_RequiresStoreAndPathService()
         {
             Assert.Throws<ArgumentNullException>(() => new SpecialActionRepository(null, new PathService(), new SyntheticInputState(), TestRepositoryFactory.CreateActionsXml()));
-            Assert.Throws<ArgumentNullException>(() => new SpecialActionRepository(new BackingStore(), null, new SyntheticInputState(), TestRepositoryFactory.CreateActionsXml()));
-            Assert.Throws<ArgumentNullException>(() => new SpecialActionRepository(new BackingStore(), new PathService(), new SyntheticInputState(), null));
+            Assert.Throws<ArgumentNullException>(() => new SpecialActionRepository(new DS4Windows.BackingStore(new DS4Windows.EnvironmentService()), null, new SyntheticInputState(), TestRepositoryFactory.CreateActionsXml()));
+            Assert.Throws<ArgumentNullException>(() => new SpecialActionRepository(new DS4Windows.BackingStore(new DS4Windows.EnvironmentService()), new PathService(), new SyntheticInputState(), null));
         }
 
         [Fact]
         public void ProfileRepository_ProfileActionProvider_AutoProfileHolder_RequireDependencies()
         {
             var settings = TestRepositoryFactory.CreateProfileSettingsService();
-            var config = new BackingStore();
+            var config = new DS4Windows.BackingStore(new DS4Windows.EnvironmentService());
             var store = TestRepositoryFactory.CreateProfileXmlStore(config);
             var linkedXml = TestRepositoryFactory.CreateLinkedProfilesXml(config);
             var actionsXml = TestRepositoryFactory.CreateActionsXml(config);
@@ -123,7 +123,7 @@ namespace DS4WindowsTests
         [Fact]
         public void ProfileSettingsService_RequiresAllDependencies()
         {
-            var store = new BackingStore();
+            var store = new DS4Windows.BackingStore(new DS4Windows.EnvironmentService());
             var env = new EnvironmentService();
             Func<ControlService> control = () => null;
 
@@ -135,7 +135,7 @@ namespace DS4WindowsTests
         [Fact]
         public void ProfileSettingsService_GetRumbleBoost_UsesInjectedControlProvider()
         {
-            var settings = TestRepositoryFactory.CreateProfileSettingsService(new BackingStore(), null, () => null);
+            var settings = TestRepositoryFactory.CreateProfileSettingsService(new DS4Windows.BackingStore(new DS4Windows.EnvironmentService()), null, () => null);
             // コントローラーが無い場合も、注入された関数だけを参照して例外なく値を返す（Program.rootHub を参照しない）
             var ex = Record.Exception(() => settings.GetRumbleBoost(0));
             Assert.Null(ex);

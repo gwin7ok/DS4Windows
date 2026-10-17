@@ -16,7 +16,7 @@ namespace DS4WindowsTests
         [Fact]
         public void TouchMoveCursor_AllocatesZeroBytes()
         {
-            var store = new BackingStore();
+            var store = new DS4Windows.BackingStore(new DS4Windows.EnvironmentService());
             store.touchSensitivity[Slot] = 100;
             var settings = TestRepositoryFactory.CreateProfileSettingsService(store);
             var kbm = new RecordingVirtualKbm { Recording = false };

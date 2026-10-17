@@ -60,7 +60,7 @@ namespace DS4WindowsTests
             try
             {
                 TestGlobals.AppDataPath = tempDir;
-                var store = new BackingStore();
+                var store = new DS4Windows.BackingStore(new DS4Windows.EnvironmentService());
 
                 Assert.True(TestRepositoryFactory.CreateLegacyProfileXml(store).SaveProfile(0, "Completeness"));
 
@@ -90,7 +90,7 @@ namespace DS4WindowsTests
             try
             {
                 TestGlobals.AppDataPath = tempDir;
-                var store = new BackingStore();
+                var store = new DS4Windows.BackingStore(new DS4Windows.EnvironmentService());
 
                 Assert.True(TestRepositoryFactory.CreateLegacyProfileXml(store).SaveProfile(0, "OutputStick"));
 

@@ -60,7 +60,8 @@ namespace DS4WinWPF
         /// </summary>
         public static IHost CreateHost(IConfiguration configuration, DS4WinWPF.ArgumentParser parser,
             DS4Windows.DI.IPathService bootstrapPathService = null,
-            DS4Windows.DI.IEnvironmentService bootstrapEnvironmentService = null)
+            DS4Windows.DI.IEnvironmentService bootstrapEnvironmentService = null,
+            DS4Windows.BackingStore bootstrapBackingStore = null)
         {
             lock (_loggedResolvedTypes) { _loggedResolvedTypes.Clear(); }
             lock (_syncLock)
@@ -84,7 +85,8 @@ namespace DS4WinWPF
                 var builder = Microsoft.Extensions.Hosting.Host.CreateDefaultBuilder()
                     .ConfigureServices((context, services) =>
                     {
-                        DS4Windows.DI.ServiceRegistration.RegisterServices(services);
+                        // Phase7-Step10d W5: ブートストラップの BackingStore は、登録の中で（IProcessInspector などの配線つきで）コンテナへ登録する
+                        DS4Windows.DI.ServiceRegistration.RegisterServices(services, bootstrapBackingStore);
                         services.AddSingleton(parser);
                         // 後から登録した実装が、同じ型の解決で優先される（既定の登録を、ブートストラップのインスタンスで置き換える）
                         if (bootstrapPathService != null)

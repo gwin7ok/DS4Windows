@@ -36,7 +36,7 @@ namespace DS4WindowsTests
             // Phase7-Step9 W1: 互換ラッパー（DI/Compat/AppHost.cs）を削除（呼び出し元 0 件。AppHost 合計 5 → 4）
             ["DS4Windows/DI/AppHost.cs"] = (0, 2, 0),
             // Phase7-Step5 W2: Program.rootHub ?? の削除（1 → 0）
-            ["DS4Windows/DI/ServiceRegistration.cs"] = (0, 0, 1),
+            ["DS4Windows/DI/ServiceRegistration.cs"] = (0, 0, 0),
             // Phase7-Step5 W4: IElevatedProcessLauncher をコンストラクター注入にし、AppHost.GetService を削除（1 → 0）
             ["DS4Windows/DS4Control/ControlService.cs"] = (0, 0, 0),
             ["DS4Windows/DS4Control/DS4LightBar.cs"] = (0, 0, 0),
@@ -50,7 +50,7 @@ namespace DS4WindowsTests
             ["DS4Windows/DS4Control/DTOXml/OutputSlotPersistDTO.cs"] = (0, 0, 0), // Phase7-Step10d W2: 1 → 0
             ["DS4Windows/DS4Control/DTOXml/SpecialActionSerializer.cs"] = (0, 0, 0), // Phase7-Step10d W2: 2 → 0
             // Phase6-Step10b W4: Log.cs（AppLogger／ProfileChangeSource／ProfileChangedEventArgs）は型ごとに分割。Global 1 件は AppLogger.cs
-            ["DS4Windows/DS4Control/AppLogger.cs"] = (0, 0, 1),
+            ["DS4Windows/DS4Control/AppLogger.cs"] = (0, 0, 0),
             // Phase7-Step5 W2: Program.rootHub のフォールバックを削除（1 → 0）
             // Phase7-Step7 W2: 合成入力の状態の宣言（Global.MAX_DS4_CONTROLLER_COUNT）を SyntheticInputState へ移した（52 → 51）
             // Phase7-Step7 W3: macroTaskQueue の宣言（Global.MAX_DS4_CONTROLLER_COUNT）を MacroRuntimeState へ移した（51 → 50）
@@ -75,7 +75,7 @@ namespace DS4WindowsTests
             // Phase7-Step10c W3: アプリ設定の保存・読込（Load／Save／LoadFakeExeName）を AppSettingsXmlSerializer へ移した（27 → 18）
             // Phase7-Step10c W4: プロファイルの読込（LoadProfile ほか）を LegacyProfileXmlSerializer へ移した（18 → 14）
             // Phase7-Step10c W5: プロファイルの保存（SaveProfile ほか）を LegacyProfileXmlSerializer へ移した（14 → 7）
-            ["DS4Windows/DS4Control/BackingStore.cs"] = (0, 0, 7),
+            ["DS4Windows/DS4Control/BackingStore.cs"] = (0, 0, 0),
             ["DS4Windows/DS4Control/Changelog.cs"] = (0, 0, 0), // Phase7-Step10d W2: 4 → 2、W4: 2 → 0
             // Phase6-Step12 Wave 1: 孤立コード 24 件を削除（Global 47 → 45）。Wave 2: 互換アクセサ 152 件を削除（Global 45 → 38）。Wave 3: *Instance のフォールバック群 19 件を削除（Global 38 → 26、AppHost 11 → 5、rootHub 9 → 6）。Wave 4: BackingStore 直転送ラッパー 58 件を削除（AppHost 5 → 4。(6, 4, 26)）
             // Phase7-Step4 W1: IsUsingMinViGEm117333 の移管で Global.* 2 件を削除（24 → 22）
@@ -85,7 +85,7 @@ namespace DS4WindowsTests
             // Phase7-Step5 W2: Program.rootHub の参照 5 件を削除（フォールバックのラムダと、Save/LoadControllerConfigs）
             // Phase7-Step5 W3: ProfileXmlStoreInstance／NotificationServiceInstance の削除で AppHost.GetService を 2 件、Global.* を 4 件削除（(0, 3, 16) → (0, 1, 12)）
             // Phase7-Step10a W3: iconChoiceResources と ASSEMBLY／RESOURCES の自己参照 4 件を ResourcePaths の定数に替えた（12 → 8）
-            ["DS4Windows/DS4Control/Global.cs"] = (0, 1, 8),
+            // Phase7-Step10d W5: Global.cs を削除した（(0, 1, 8) → 削除）
             // Phase7-Step2 W4: INotificationService.NotificationsEnabled／FlashTaskbar の削除で Global.* 5 件を削除（6 → 1）
             ["DS4Windows/DS4Control/Services/AppNotificationService.cs"] = (0, 0, 0),
             // Phase7-Step4 W3: FirstRun は PathService の状態、RunHotPlug はインスタンスの状態にした（8 → 2）
@@ -107,14 +107,14 @@ namespace DS4WindowsTests
             // Phase7-Step6 W2: 配列の実体を持ち、Global の参照は配列の長さの定数 1 件だけ（2 → 1）
             ["DS4Windows/DS4Control/Services/OutputSlotService.cs"] = (0, 0, 0),
             // Phase7-Step4 W3: 実行ファイル・保存場所の状態を PathService が持つ形に移管（8 → 1: 省略時の Global.store）
-            ["DS4Windows/DS4Control/Services/PathService.cs"] = (0, 0, 1),
+            ["DS4Windows/DS4Control/Services/PathService.cs"] = (0, 0, 0),
             ["DS4Windows/DS4Control/Services/ProfileApplicationService.cs"] = (0, 0, 0),
             ["DS4Windows/DS4Control/Services/ProfilePresetLoader.cs"] = (0, 0, 0),
             // 26: 名前変更の伝播（ReplaceProfileSwitchTarget。Phase6-Step10-4-5d）で、Global.store への委譲を 2 件追加（薄いシムの性質。24 → 26）
             ["DS4Windows/DS4Control/Services/ProfileRepository.cs"] = (0, 0, 0),
             // Phase7-Step2 W1: コピー版 GetReverseX360ButtonMapping の削除で Global.reverseX360ButtonMapping の参照 1 件を削除（5 → 4）
             // Phase7-Step10b W1: 表と変換（defaultButtonMapping／reverseX360ButtonMapping／getX360ControlString ほか）を X360ControlTables／DS4ControlNames へ移した（ProfileSettingsService 3 → 1、MappedControl 3 → 0、RecordBoxViewModel 1 → 0、PressKeyViewModel 7 → 0）
-            ["DS4Windows/DS4Control/Services/ProfileSettingsService.cs"] = (0, 0, 1),
+            ["DS4Windows/DS4Control/Services/ProfileSettingsService.cs"] = (0, 0, 0),
             ["DS4Windows/DS4Control/Services/ProfileSlotApplier.cs"] = (0, 0, 0),
             // Phase7-Step5 W2: Global.Load/SaveControllerConfigs の削除に伴い、BackingStore を直接呼ぶ形に（2 → 0）
             ["DS4Windows/DS4Control/Services/ProfileXmlStore.cs"] = (0, 0, 0),
@@ -180,7 +180,7 @@ namespace DS4WindowsTests
         [Fact]
         public void DirectReferences_DoNotExceedStep10FourBaseline()
         {
-            string anchor = SourceFileLocator.Find("DS4Windows/DS4Control/Global.cs");
+            string anchor = SourceFileLocator.Find("DS4Windows/DS4Control/BackingStore.cs"); // Phase7-Step10d W5: Global.cs は削除したため、同じフォルダーの BackingStore.cs を起点にする
             if (anchor == null)
             {
                 _output.WriteLine("ソースが見つからないため検査を省略した。");

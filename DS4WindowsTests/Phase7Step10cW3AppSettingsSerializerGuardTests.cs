@@ -40,7 +40,7 @@ namespace DS4WindowsTests
         [Fact]
         public void TheSerializer_RequiresAllItsDependencies()
         {
-            var store = new BackingStore();
+            var store = new DS4Windows.BackingStore(new DS4Windows.EnvironmentService());
             Assert.Throws<ArgumentNullException>(() => new AppSettingsXmlSerializer(null, new PathService(), new EnvironmentService()));
             Assert.Throws<ArgumentNullException>(() => new AppSettingsXmlSerializer(store, null, new EnvironmentService()));
             Assert.Throws<ArgumentNullException>(() => new AppSettingsXmlSerializer(store, new PathService(), null));

@@ -60,16 +60,9 @@ namespace DS4WindowsTests
         [Fact]
         public void TheSource_HasNoColorOrIconMembersOnGlobalAnymore()
         {
-            string anchor = SourceFileLocator.Find("DS4Windows/DS4Control/Global.cs");
-            if (anchor == null)
-            {
-                _output.WriteLine("ソースが見つからないため検査を省略した。");
-                return;
-            }
-
-            string text = Regex.Replace(Regex.Replace(File.ReadAllText(anchor), @"/\*.*?\*/", string.Empty, RegexOptions.Singleline), @"//[^\r\n]*", string.Empty);
-            foreach (string name in new[] { "getTransitionedColor", "HuetoRGB", "applyRatio", "iconChoiceResources" })
-                Assert.False(Regex.IsMatch(text, @"\b" + name + @"\b"), "Global.cs に " + name + " が残っている");
+            // Phase7-Step10d W5: Global は削除した（Global.cs が存在しないことで、色・アイコンのメンバーが戻らないことを担保する）
+            Assert.Null(SourceFileLocator.Find("DS4Windows/DS4Control/Global.cs"));
+            Assert.Null(typeof(BackingStore).Assembly.GetType("DS4Windows.Global"));
         }
     }
 }

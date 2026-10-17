@@ -25,7 +25,7 @@ namespace DS4WindowsTests
 
         private static DS4Windows.DI.IProfileSettingsService CreateService()
         {
-            return TestRepositoryFactory.CreateProfileSettingsService(new BackingStore());
+            return TestRepositoryFactory.CreateProfileSettingsService(new DS4Windows.BackingStore(new DS4Windows.EnvironmentService()));
         }
 
         [Fact]

@@ -305,7 +305,7 @@ namespace DS4WindowsTests
             string changedProperty = null;
             service.SettingChanged += (s, prop) => changedProperty = prop;
 
-            int originalNotif = Global.Notifications;
+            int originalNotif = TestGlobals.Store.notifications;
             bool originalSwipe = TestGlobals.Store.swipeProfiles;
             try
             {
@@ -313,7 +313,7 @@ namespace DS4WindowsTests
                 int newNotif = originalNotif == 1 ? 0 : 1;
                 service.Notifications = newNotif;
                 Assert.Equal(nameof(service.Notifications), changedProperty);
-                Assert.Equal(newNotif, Global.Notifications);
+                Assert.Equal(newNotif, TestGlobals.Store.notifications);
 
                 changedProperty = null;
                 service.SwipeProfiles = !originalSwipe;
@@ -322,7 +322,7 @@ namespace DS4WindowsTests
             }
             finally
             {
-                Global.Notifications = originalNotif;
+                TestGlobals.Store.notifications = originalNotif;
                 TestGlobals.Store.swipeProfiles = originalSwipe;
             }
         }

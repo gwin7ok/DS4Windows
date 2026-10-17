@@ -132,15 +132,15 @@ namespace DS4WindowsTests
             var service = TestRepositoryFactory.CreateProfileSettingsService();
             TestGlobals.ProfileSettingsServiceInstance = service;
 
-            Assert.Same(service.OutContType, Global.OutContType);
+            Assert.Same(service.OutContType, TestGlobals.Store.outputDevType);
 
             OutContType original = service.OutContType[0];
             try
             {
                 service.OutContType[0] = OutContType.DS4;
-                Assert.Equal(OutContType.DS4, Global.OutContType[0]);
+                Assert.Equal(OutContType.DS4, TestGlobals.Store.outputDevType[0]);
 
-                Global.OutContType[0] = OutContType.X360;
+                TestGlobals.Store.outputDevType[0] = OutContType.X360;
                 Assert.Equal(OutContType.X360, service.OutContType[0]);
             }
             finally

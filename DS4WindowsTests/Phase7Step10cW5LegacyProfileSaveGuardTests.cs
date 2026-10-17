@@ -48,7 +48,7 @@ namespace DS4WindowsTests
             foreach (string name in new[] { "SaveProfile", "SaveAsProfile", "LoadProfile", "SaveLegacyExtraSettings", "LoadLegacyExtraSettings" })
                 Assert.NotNull(typeof(LegacyProfileXmlSerializer).GetMethod(name, BindingFlags.Instance | BindingFlags.Public));
 
-            var store = new BackingStore();
+            var store = new DS4Windows.BackingStore(new DS4Windows.EnvironmentService());
             Assert.Throws<ArgumentNullException>(() => new LegacyProfileXmlSerializer(store, new PathService(), TestGlobals.ProfileSettingsServiceInstance, null));
         }
 

@@ -37,7 +37,11 @@ namespace DS4Windows
             _config = backingStore ?? throw new ArgumentNullException(nameof(backingStore));
             _environmentService = environmentService ?? throw new ArgumentNullException(nameof(environmentService));
             _controlProvider = controlProvider ?? throw new ArgumentNullException(nameof(controlProvider));
+            // Phase7-Step10d W5（Q8＝A）: BackingStore が、一時プロファイル・DInput のみ・出力 KBM のマッピングを読むための登録（最初の 1 つが有効）
+            _config.LinkProfileSettings(this);
         }
+
+        public bool[] DistanceProfiles => _config.distanceProfiles;
 
         private bool[] _touchpadActive = new bool[TEST_PROFILE_ITEM_COUNT] { true, true, true, true, true, true, true, true, true };
         private bool[] _useTempProfile = new bool[TEST_PROFILE_ITEM_COUNT] { false, false, false, false, false, false, false, false, false };
@@ -499,9 +503,27 @@ namespace DS4Windows
             return (X360Controls[])X360ControlTables.defaultButtonMapping.Clone();
         }
 
-        // Phase6-Step9-1: Global.RefreshActionAlias への薄い委譲
-        public void RefreshActionAlias(DS4ControlSettings setting, bool shift) =>
-            Global.RefreshActionAlias(setting, shift);
+        // Phase6-Step9-1／Phase7-Step10d W5: 旧 Global.RefreshActionAlias の本体をここへ移した（内容は同一。OutputKBMMapping はこのサービス自身のもの）。
+        /// <summary>Windows の仮想キーの値から、現在の出力 KB+M のシステム用の別名（actionAlias）を更新する。</summary>
+        public void RefreshActionAlias(DS4ControlSettings setting, bool shift)
+        {
+            if (!shift)
+            {
+                setting.action.actionAlias = 0;
+                if (setting.actionType == DS4ControlSettings.ActionType.Key)
+                {
+                    setting.action.actionAlias = OutputKBMMapping.GetRealEventKey(Convert.ToUInt32(setting.action.actionKey));
+                }
+            }
+            else
+            {
+                setting.shiftAction.actionAlias = 0;
+                if (setting.shiftActionType == DS4ControlSettings.ActionType.Key)
+                {
+                    setting.shiftAction.actionAlias = OutputKBMMapping.GetRealEventKey(Convert.ToUInt32(setting.shiftAction.actionKey));
+                }
+            }
+        }
 
         // コピーしない版（Phase6-Step3-6a、決定 R1）。Global.reverseX360ButtonMapping は起動時に作られて以後変化しない定数表。
         // 元の Global.reverseX360ButtonMapping（素の public static 配列）と同じく、参照をそのまま返す。

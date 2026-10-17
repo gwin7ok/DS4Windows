@@ -12,7 +12,7 @@ namespace DS4WindowsTests
         [Fact]
         public void ActionsPath_ShouldReturnValidPath()
         {
-            var repo = TestRepositoryFactory.CreateSpecialActionRepository(new BackingStore());
+            var repo = TestRepositoryFactory.CreateSpecialActionRepository(new DS4Windows.BackingStore(new DS4Windows.EnvironmentService()));
             var path = repo.ActionsPath;
             Assert.False(string.IsNullOrWhiteSpace(path));
             Assert.EndsWith("Actions.xml", path, StringComparison.OrdinalIgnoreCase);
@@ -22,7 +22,7 @@ namespace DS4WindowsTests
         public void GetAction_ShouldReturnItemInList()
         {
             // Phase7-Step2 W5: AddAction（メモリ上の並行実装）を削除したため、一覧への追加は ActionList で行う。
-            var repo = TestRepositoryFactory.CreateSpecialActionRepository(new BackingStore());
+            var repo = TestRepositoryFactory.CreateSpecialActionRepository(new DS4Windows.BackingStore(new DS4Windows.EnvironmentService()));
             var action = new SpecialAction("TestAction", "Touchpad", "Key", "10", 0);
 
             repo.ActionList.Add(action);
@@ -38,7 +38,7 @@ namespace DS4WindowsTests
         [Fact]
         public void SpecialActionRepository_Modifications_ShouldReflectInBackingStore()
         {
-            var backingStore = new BackingStore();
+            var backingStore = new DS4Windows.BackingStore(new DS4Windows.EnvironmentService());
             var repo = TestRepositoryFactory.CreateSpecialActionRepository(backingStore);
 
             var action = new SpecialAction("BackingStoreTest", "Circle", "Key", "30", 0);
