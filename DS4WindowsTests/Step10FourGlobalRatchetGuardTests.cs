@@ -32,9 +32,8 @@ namespace DS4WindowsTests
             ["DS4Windows/App.xaml.cs"] = (0, 1, 1),
             ["DS4Windows/BezierCurveEditor/BezierCurve.cs"] = (0, 0, 1),
             // Phase6-Step10b W2: DS4Windows.AppHost（互換ラッパー）を DI/Compat/AppHost.cs へ分離。件数を引き継いだ（4＝2＋2。合計は不変）
+            // Phase7-Step9 W1: 互換ラッパー（DI/Compat/AppHost.cs）を削除（呼び出し元 0 件。AppHost 合計 5 → 4）
             ["DS4Windows/DI/AppHost.cs"] = (0, 2, 0),
-            // Phase6-Step12 Wave 5: 呼び出し元 0 件の GetService(Type) などを削除（2 → 1）
-            ["DS4Windows/DI/Compat/AppHost.cs"] = (0, 1, 0),
             // Phase7-Step5 W2: Program.rootHub ?? の削除（1 → 0）
             ["DS4Windows/DI/ServiceRegistration.cs"] = (0, 0, 1),
             // Phase7-Step5 W4: IElevatedProcessLauncher をコンストラクター注入にし、AppHost.GetService を削除（1 → 0）
