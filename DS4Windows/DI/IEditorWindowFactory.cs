@@ -32,5 +32,12 @@ namespace DS4Windows.DI
 
         SpecialActionEditor CreateSpecialActionEditor(int deviceNum, ProfileList profileList, int targetDevice,
             SpecialAction specialAction = null);
+
+        /// <summary>
+        /// プロファイル編集画面（メイン画面に埋め込む）を生成する（Phase7-Step5 W5）。
+        /// 旧: <c>MainWindow</c> が <c>new ProfileEditor(...)</c> で生成し、<c>ProfileEditor</c> が <c>AppHost</c> から 4 つのサービスを解決していた。
+        /// </summary>
+        /// <param name="targetDevice">編集の対象にする実機のスロット番号。-1 は実機なし</param>
+        ProfileEditor CreateProfileEditor(int targetDevice);
     }
 }

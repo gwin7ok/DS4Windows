@@ -1,4 +1,5 @@
 using System;
+using DS4Windows.Actions;
 using DS4Windows.DI;
 using DS4WinWPF;
 using DS4WinWPF.DS4Forms;
@@ -21,6 +22,10 @@ namespace DS4Windows.Services
         private readonly ISpecialActionRepository _specialActionRepository;
         private readonly IProfilePresetLoader _presetLoader;
         private readonly Func<ControlService> _controlServiceAccessor;
+        // Phase7-Step5 W5: CreateProfileEditor が ProfileEditor へ渡すサービス
+        private readonly IAppSettingsService _appSettings;
+        private readonly IProfileRepository _profileRepository;
+        private readonly IProfileSwitcher _profileSwitcher;
 
         public EditorWindowFactory(
             IProfileSettingsService profileSettings,
@@ -29,7 +34,10 @@ namespace DS4Windows.Services
             IViewModelFactory viewModelFactory,
             ISpecialActionRepository specialActionRepository,
             IProfilePresetLoader presetLoader,
-            Func<ControlService> controlServiceAccessor)
+            Func<ControlService> controlServiceAccessor,
+            IAppSettingsService appSettings,
+            IProfileRepository profileRepository,
+            IProfileSwitcher profileSwitcher)
         {
             _profileSettings = profileSettings ?? throw new ArgumentNullException(nameof(profileSettings));
             _outputSlotService = outputSlotService ?? throw new ArgumentNullException(nameof(outputSlotService));
@@ -38,6 +46,9 @@ namespace DS4Windows.Services
             _specialActionRepository = specialActionRepository ?? throw new ArgumentNullException(nameof(specialActionRepository));
             _presetLoader = presetLoader ?? throw new ArgumentNullException(nameof(presetLoader));
             _controlServiceAccessor = controlServiceAccessor ?? throw new ArgumentNullException(nameof(controlServiceAccessor));
+            _appSettings = appSettings ?? throw new ArgumentNullException(nameof(appSettings));
+            _profileRepository = profileRepository ?? throw new ArgumentNullException(nameof(profileRepository));
+            _profileSwitcher = profileSwitcher ?? throw new ArgumentNullException(nameof(profileSwitcher));
         }
 
         public BindingWindow CreateBindingWindow(int deviceNum, DS4ControlSettings settings, int targetDevice,
@@ -65,5 +76,9 @@ namespace DS4Windows.Services
             SpecialAction specialAction = null)
             => new SpecialActionEditor(deviceNum, profileList, targetDevice, this, _viewModelFactory,
                 _specialActionRepository, _profileSettings, _outputSlotService, specialAction);
+
+        public ProfileEditor CreateProfileEditor(int targetDevice)
+            => new ProfileEditor(targetDevice, _appSettings, _profileSettings, this, _profileRepository,
+                _profileSwitcher, _controlServiceAccessor(), _viewModelFactory);
     }
 }

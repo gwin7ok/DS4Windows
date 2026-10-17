@@ -164,14 +164,22 @@ namespace DS4WindowsTests
             Func<ControlService> cs = () => null;
             var loader = TestRepositoryFactory.CreateProfilePresetLoader();
             var repo = TestRepositoryFactory.CreateSpecialActionRepository();
+            // Phase7-Step5 W5: CreateProfileEditor のために、アプリ設定・プロファイルリポジトリ・プロファイル切替の 3 つを追加した
+            var app = TestRepositoryFactory.CreateAppSettingsService();
+            var profiles = TestRepositoryFactory.CreateProfileRepository(settings);
+            var switcher = new DS4Windows.Actions.DefaultProfileSwitcher();
+            var vm = new NullViewModelFactory();
 
-            Assert.Throws<ArgumentNullException>(() => new DS4Windows.Services.EditorWindowFactory(null, slots, path, null, repo, loader, cs));
-            Assert.Throws<ArgumentNullException>(() => new DS4Windows.Services.EditorWindowFactory(settings, null, path, null, repo, loader, cs));
-            Assert.Throws<ArgumentNullException>(() => new DS4Windows.Services.EditorWindowFactory(settings, slots, null, null, repo, loader, cs));
-            Assert.Throws<ArgumentNullException>(() => new DS4Windows.Services.EditorWindowFactory(settings, slots, path, null, repo, loader, cs));
-            Assert.Throws<ArgumentNullException>(() => new DS4Windows.Services.EditorWindowFactory(settings, slots, path, new NullViewModelFactory(), null, loader, cs));
-            Assert.Throws<ArgumentNullException>(() => new DS4Windows.Services.EditorWindowFactory(settings, slots, path, new NullViewModelFactory(), repo, null, cs));
-            Assert.Throws<ArgumentNullException>(() => new DS4Windows.Services.EditorWindowFactory(settings, slots, path, new NullViewModelFactory(), repo, loader, null));
+            Assert.Throws<ArgumentNullException>(() => new DS4Windows.Services.EditorWindowFactory(null, slots, path, vm, repo, loader, cs, app, profiles, switcher));
+            Assert.Throws<ArgumentNullException>(() => new DS4Windows.Services.EditorWindowFactory(settings, null, path, vm, repo, loader, cs, app, profiles, switcher));
+            Assert.Throws<ArgumentNullException>(() => new DS4Windows.Services.EditorWindowFactory(settings, slots, null, vm, repo, loader, cs, app, profiles, switcher));
+            Assert.Throws<ArgumentNullException>(() => new DS4Windows.Services.EditorWindowFactory(settings, slots, path, null, repo, loader, cs, app, profiles, switcher));
+            Assert.Throws<ArgumentNullException>(() => new DS4Windows.Services.EditorWindowFactory(settings, slots, path, vm, null, loader, cs, app, profiles, switcher));
+            Assert.Throws<ArgumentNullException>(() => new DS4Windows.Services.EditorWindowFactory(settings, slots, path, vm, repo, null, cs, app, profiles, switcher));
+            Assert.Throws<ArgumentNullException>(() => new DS4Windows.Services.EditorWindowFactory(settings, slots, path, vm, repo, loader, null, app, profiles, switcher));
+            Assert.Throws<ArgumentNullException>(() => new DS4Windows.Services.EditorWindowFactory(settings, slots, path, vm, repo, loader, cs, null, profiles, switcher));
+            Assert.Throws<ArgumentNullException>(() => new DS4Windows.Services.EditorWindowFactory(settings, slots, path, vm, repo, loader, cs, app, null, switcher));
+            Assert.Throws<ArgumentNullException>(() => new DS4Windows.Services.EditorWindowFactory(settings, slots, path, vm, repo, loader, cs, app, profiles, null));
         }
 
         private class NullViewModelFactory : IViewModelFactory

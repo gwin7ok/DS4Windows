@@ -106,44 +106,57 @@ namespace DS4WinWPF.DS4Forms
             ProcessPriorityClass.High, ProcessPriorityClass.RealTime
         ];
 
-        public MainWindow(ArgumentParser parser, IAutoProfileService autoProfileService = null)
+        // Phase7-Step5 W5（Q4＝A）: 旧 AppHost.GetService の 17 件を、コンストラクター引数に替えた。
+        // IMainWindowFactory（実装は MainWindowFactory）が DI から解決して渡す。
+        public MainWindow(ArgumentParser parser,
+            DS4Windows.DI.IProfileSettingsService profileSettingsService,
+            DS4Windows.DI.IAppSettingsService appSettingsService,
+            DS4Windows.DI.IProfileXmlStore profileXmlStore,
+            DS4Windows.DI.IEditorWindowFactory editorWindowFactory,
+            DS4Windows.DI.IPathService pathService,
+            DS4Windows.DI.IEnvironmentService environmentService,
+            DS4Windows.DI.IAppearanceSettingsService appearanceSettingsService,
+            DS4Windows.DI.IProfileApplicationService profileAppService,
+            DS4Windows.DI.IOutputSlotService outputSlotService,
+            DS4Windows.DI.IProfileRepository profileRepo,
+            DS4Windows.DI.INotificationService notificationService,
+            ControlService controlService,
+            DS4Windows.Services.IProfileSlotApplier profileSlotApplier,
+            MainWindowsViewModel mainWindowsViewModel,
+            DS4Windows.DI.ILogSettingsApplier logSettingsApplier,
+            IAutoProfileService autoProfileService,
+            DS4Windows.DI.IViewModelFactory viewModelFactory)
         {
             // XAML初期化前にウィンドウサイズを設定（WindowLayoutDefaults から）
             Width = WindowLayoutDefaults.MAIN_WINDOW_WIDTH;
             Height = WindowLayoutDefaults.MAIN_WINDOW_HEIGHT;
 
             InitializeComponent();
-            profileSettingsService = DS4WinWPF.AppHost.GetService<DS4Windows.DI.IProfileSettingsService>();
-            appSettingsService = DS4WinWPF.AppHost.GetService<DS4Windows.DI.IAppSettingsService>();
-            profileXmlStore = DS4WinWPF.AppHost.GetService<DS4Windows.DI.IProfileXmlStore>();
-            editorWindowFactory = DS4WinWPF.AppHost.GetService<DS4Windows.DI.IEditorWindowFactory>();
-            pathService = DS4WinWPF.AppHost.GetService<DS4Windows.DI.IPathService>();
+            this.profileSettingsService = profileSettingsService ?? throw new ArgumentNullException(nameof(profileSettingsService));
+            this.appSettingsService = appSettingsService ?? throw new ArgumentNullException(nameof(appSettingsService));
+            this.profileXmlStore = profileXmlStore ?? throw new ArgumentNullException(nameof(profileXmlStore));
+            this.editorWindowFactory = editorWindowFactory ?? throw new ArgumentNullException(nameof(editorWindowFactory));
+            this.pathService = pathService ?? throw new ArgumentNullException(nameof(pathService));
             profileListHolder = new ProfileList(pathService);
-            environmentService = DS4WinWPF.AppHost.GetService<DS4Windows.DI.IEnvironmentService>();
-            appearanceSettingsService = DS4WinWPF.AppHost.GetService<DS4Windows.DI.IAppearanceSettingsService>()
-                ?? throw new InvalidOperationException("IAppearanceSettingsService is not registered.");
-            profileAppService = DS4WinWPF.AppHost.GetService<DS4Windows.DI.IProfileApplicationService>();
-            outputSlotService = DS4WinWPF.AppHost.GetService<DS4Windows.DI.IOutputSlotService>();
-            profileRepo = DS4WinWPF.AppHost.GetService<DS4Windows.DI.IProfileRepository>();
-            notificationService = DS4WinWPF.AppHost.GetService<DS4Windows.DI.INotificationService>();
-            controlService = DS4WinWPF.AppHost.GetService<DS4Windows.ControlService>();
-            profileSlotApplier = DS4WinWPF.AppHost.GetService<DS4Windows.Services.IProfileSlotApplier>();
+            this.environmentService = environmentService ?? throw new ArgumentNullException(nameof(environmentService));
+            this.appearanceSettingsService = appearanceSettingsService ?? throw new ArgumentNullException(nameof(appearanceSettingsService));
+            this.profileAppService = profileAppService ?? throw new ArgumentNullException(nameof(profileAppService));
+            this.outputSlotService = outputSlotService ?? throw new ArgumentNullException(nameof(outputSlotService));
+            this.profileRepo = profileRepo ?? throw new ArgumentNullException(nameof(profileRepo));
+            this.notificationService = notificationService ?? throw new ArgumentNullException(nameof(notificationService));
+            this.controlService = controlService ?? throw new ArgumentNullException(nameof(controlService));
+            this.profileSlotApplier = profileSlotApplier ?? throw new ArgumentNullException(nameof(profileSlotApplier));
 
             // Initialize log settings ComboBox
             logMinLevelComboBox.ItemsSource = new string[] { "Trace", "Debug", "Info", "Warn", "Error", "Fatal" };
             logMinLevelComboBox.SelectedValue = appSettingsService.LogMinLevel;
 
-            mainWinVM = DS4WinWPF.AppHost.GetService<DS4WinWPF.DS4Forms.ViewModels.MainWindowsViewModel>();
-            if (mainWinVM == null)
-            {
-                DS4Windows.AppLogger.LogTrace("[Legacy] ViewModel fallback: screen=MainWindow, viewModel=MainWindowsViewModel");
-                mainWinVM = new DS4WinWPF.DS4Forms.ViewModels.MainWindowsViewModel(environmentService, pathService);
-            }
+            // Phase7-Step5 W5: 旧 AppHost 解決の失敗時の new MainWindowsViewModel(...) のフォールバックは削除した（必須引数）
+            mainWinVM = mainWindowsViewModel ?? throw new ArgumentNullException(nameof(mainWindowsViewModel));
             DataContext = mainWinVM;
 
             App root = Application.Current as App;
             // Phase6-Step10-1-5（決定D7＝A）: ログ設定の反映の窓口（App が LoggerHolder の生成直後に接続する）
-            var logSettingsApplier = DS4WinWPF.AppHost.GetService<DS4Windows.DI.ILogSettingsApplier>();
             settingsWrapVM = new SettingsViewModel(appSettingsService, appearanceSettingsService, environmentService, pathService,
                 logSettingsApplier);
             settingsTab.DataContext = settingsWrapVM;
@@ -214,11 +227,11 @@ namespace DS4WinWPF.DS4Forms
 
             // [Phase 5 Step 13-9] 二重実体化防止: 注入済み _autoProfileService を直接利用するため撤去
             // Phase6-Step10-2-3: AutoProfiles の Initialize に渡すため、解決を前へ移した（解決先は同じ）
-            _autoProfileService = autoProfileService ?? DS4WinWPF.AppHost.GetService<IAutoProfileService>();
+            _autoProfileService = autoProfileService ?? throw new ArgumentNullException(nameof(autoProfileService));
 
             // Phase6-Step10-2-3: XAML から生成されるコントロールへ、保持済みのサービスを渡す（AutoProfileHolder を読む前に呼ぶ）
             autoProfControl.Initialize(pathService, appSettingsService, _autoProfileService,
-                DS4WinWPF.AppHost.GetService<DS4Windows.DI.IViewModelFactory>());
+                viewModelFactory ?? throw new ArgumentNullException(nameof(viewModelFactory)));
             dupBox.Initialize(pathService);
             autoProfileHolder = autoProfControl.AutoProfileHolder;
             autoProfControl.SetupDataContext(profileListHolder);
@@ -1942,7 +1955,7 @@ Suspend support not enabled.", true);
                 //     this.Height = WindowLayoutDefaults.PROFILE_EDITOR_HEIGHT;
                 // }
 
-                editor = new ProfileEditor(targetDevice, appSettingsService, profileSettingsService, editorWindowFactory);
+                editor = editorWindowFactory.CreateProfileEditor(targetDevice);
                 editor.ProfileSaved += Editor_ProfileSaved;
                 editor.ProfilesUpdatedExternally += Editor_ProfilesUpdatedExternally;
                 editor.Closed += ProfileEditor_Closed;

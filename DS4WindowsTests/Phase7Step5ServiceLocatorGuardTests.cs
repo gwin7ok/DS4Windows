@@ -87,6 +87,23 @@ namespace DS4WindowsTests
         }
 
         [Fact]
+        public void MainWindowAndProfileEditor_DoNotUseTheLocator_AndAreCreatedThroughFactories()
+        {
+            string main = Read("DS4Windows/DS4Forms/MainWindow.xaml.cs");
+            string editor = Read("DS4Windows/DS4Forms/ProfileEditor.xaml.cs");
+            string app = Read("DS4Windows/App.xaml.cs");
+            string registration = Read("DS4Windows/DI/ServiceRegistration.cs");
+            if (main == null || editor == null || app == null || registration == null) return;
+
+            Assert.DoesNotContain("AppHost", main);
+            Assert.DoesNotContain("AppHost", editor);
+            Assert.DoesNotContain("new MainWindow(", app);
+            Assert.DoesNotContain("new DS4Forms.MainWindow(", app);
+            Assert.Contains("ResolvePostHostService<IMainWindowFactory>().Create(parser)", app);
+            Assert.Contains("services.AddSingleton<IMainWindowFactory, MainWindowFactory>();", registration);
+        }
+
+        [Fact]
         public void AppLogger_UsesItsOwnNotificationService_SetByTheApp()
         {
             string logger = Read("DS4Windows/DS4Control/AppLogger.cs");

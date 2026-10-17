@@ -296,7 +296,8 @@ namespace DS4WinWPF.DS4Forms
         /// Phase6-Step8-3: プロファイル設定（LSModInfo／RSModInfo／OutContType）。MainWindow から渡す
         /// </param>
         public ProfileEditor(int targetDevice, IAppSettingsService appSettingsService, IProfileSettingsService profileSettingsService,
-            DS4Windows.DI.IEditorWindowFactory editorWindowFactory)
+            DS4Windows.DI.IEditorWindowFactory editorWindowFactory, IProfileRepository profileRepository,
+            IProfileSwitcher profileSwitcher, ControlService controlService, IViewModelFactory viewModelFactory)
         {
             // Phase6-Step10-2-4a: 補助ウィンドウの生成を窓口へ依頼する（必須引数）
             this.editorWindowFactory = editorWindowFactory ?? throw new ArgumentNullException(nameof(editorWindowFactory));
@@ -307,11 +308,10 @@ namespace DS4WinWPF.DS4Forms
 
             InitializeComponent();
 
-            profileRepository = DS4WinWPF.AppHost.GetService<DS4Windows.DI.IProfileRepository>()
-                ?? throw new InvalidOperationException("IProfileRepository is not registered.");
-            profileSwitcher = DS4WinWPF.AppHost.GetService<DS4Windows.Actions.IProfileSwitcher>()
-                ?? new DefaultProfileSwitcher();
-            controlService = DS4WinWPF.AppHost.GetService<DS4Windows.ControlService>();
+            // Phase7-Step5 W5（Q5＝A）: 旧 AppHost.GetService の 4 件を、コンストラクター引数に替えた（IEditorWindowFactory.CreateProfileEditor が渡す）
+            this.profileRepository = profileRepository ?? throw new ArgumentNullException(nameof(profileRepository));
+            this.profileSwitcher = profileSwitcher ?? throw new ArgumentNullException(nameof(profileSwitcher));
+            this.controlService = controlService;
             // Phase6-Step10-2-5: ControllerReadingsControl は XAML から生成されるため、ControlService を Initialize で渡す
             conReadingsUserCon.Initialize(controlService);
 
@@ -325,8 +325,7 @@ namespace DS4WinWPF.DS4Forms
             emptyColorGB.Visibility = Visibility.Collapsed;
             // Phase6-Step9-4: ファクトリが解決できない場合のレガシーフォールバック（new ProfileSettingsViewModel）は削除した
             // （ViewModel の依存を必須引数にしたため、ファクトリ以外に組み立てる経路が無い）
-            var vmFactory = DS4WinWPF.AppHost.GetService<DS4Windows.DI.IViewModelFactory>()
-                ?? throw new InvalidOperationException("IViewModelFactory is not registered.");
+            var vmFactory = viewModelFactory ?? throw new ArgumentNullException(nameof(viewModelFactory));
             profileSettingsVM = vmFactory.CreateProfileSettingsViewModel(deviceNum, targetDevice);
             picBoxHover.Visibility = Visibility.Hidden;
             picBoxHover2.Visibility = Visibility.Hidden;

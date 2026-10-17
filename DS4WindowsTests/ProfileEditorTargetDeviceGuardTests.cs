@@ -262,7 +262,11 @@ namespace DS4WindowsTests
                     $"ShowProfileEditor({a}) に編集スロットが渡されている（編集スロットは ProfileEditor 内部で決める）");
             }
 
-            Assert.Contains("new ProfileEditor(targetDevice, appSettingsService, profileSettingsService, editorWindowFactory)", text);
+            // Phase7-Step5 W5: ProfileEditor の生成は IEditorWindowFactory.CreateProfileEditor に集約した（実機のスロット番号は、そのまま渡す）
+            Assert.Contains("editorWindowFactory.CreateProfileEditor(targetDevice)", text);
+            string factory = ReadSourceWithoutComments("DS4Windows/DS4Control/Services/EditorWindowFactory.cs");
+            if (factory != null)
+                Assert.Contains("new ProfileEditor(targetDevice,", factory);
             Assert.Contains("editor.Reload(entity)", text);
         }
 

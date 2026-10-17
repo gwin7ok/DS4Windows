@@ -109,9 +109,11 @@ namespace DS4WindowsTests
             //   MappingListViewModel 3＝0＋MappedControl 3、RecordBoxViewModel 7＝1＋MacroStepItem 6
             ["DS4Windows/DS4Forms/ImageLocationPaths.cs"] = (0, 0, 6),
             ["DS4Windows/DS4Forms/LanguageSelectDialog.xaml.cs"] = (0, 0, 1),
-            ["DS4Windows/DS4Forms/MainWindow.xaml.cs"] = (0, 17, 1),
+            // Phase7-Step5 W5: AppHost.GetService の 17 件をコンストラクター引数に（IMainWindowFactory）。17 → 0
+            ["DS4Windows/DS4Forms/MainWindow.xaml.cs"] = (0, 0, 1),
             // Phase7-Step5 W2: Program.rootHub のフォールバックを削除（1 → 0）
-            ["DS4Windows/DS4Forms/ProfileEditor.xaml.cs"] = (0, 4, 32),
+            // Phase7-Step5 W5: AppHost.GetService の 4 件をコンストラクター引数に（IEditorWindowFactory.CreateProfileEditor）。4 → 0
+            ["DS4Windows/DS4Forms/ProfileEditor.xaml.cs"] = (0, 0, 32),
             ["DS4Windows/DS4Forms/ResourcePaths.cs"] = (0, 0, 5),
             ["DS4Windows/DS4Forms/ViewModels/CompositeDeviceModel.cs"] = (0, 0, 4),
             ["DS4Windows/DS4Forms/ViewModels/ControllerListViewModel.cs"] = (0, 0, 0),
