@@ -1,7 +1,7 @@
 # フェーズ7 進捗管理文書: `Global`／`BackingStore` の解体、起動の近代化、`Mapping` の instance 化
 
 最終更新日: 2026-10-17  
-状態: **Step1・Step2・Step3・Step3c・Step4 完了。次は Step5（調査と計画書の作成から）。**  
+状態: **Step1・Step2・Step3・Step3c・Step4 完了。Step5 の計画書（`Phase7-Step5-Plan.md`）を作成済み。Q1〜Q9 の承認待ち。**  
 計画書: `Phase7-Plan.md`。調査: `Phase7-0-Survey.md`。残存台帳: `Phase7-Residual-Ledger.md`
 
 ---
@@ -16,7 +16,7 @@
 | Step3 | `BackingStore` の DI 化と `Global` の転送の削除 | **完了**（2026-10-17。W1〜W5 のビルド・テスト成功、W6 は文書。U-12 の実機確認は未。完了報告書あり） | `Phase7-Step3-Plan.md` |
 | Step3c | プロファイル適用・プリセット・イベントの `Global` からの移管（Step3 から持ち越し） | **完了**（2026-10-17。W1〜W5 のビルド・テスト成功、W6 は文書。U-13 の実機確認は先送り。完了報告書あり） | `Phase7-Step3c-Plan.md`、`Phase7-Step3c-Completion-Report.md` |
 | Step4 | 起動・終了シーケンスの近代化 | **完了**（2026-10-17。Q1〜Q7 推奨どおり承認。W1〜W4 のビルド・テスト成功、W5 は文書。U-14 の実機確認は未。完了報告書あり） | `Phase7-Step4-Plan.md`、`Phase7-Step4-Completion-Report.md` |
-| Step5 | `Program.rootHub` と Service Locator の削除 | 未着手 | |
+| Step5 | `Program.rootHub` と Service Locator の削除 | **計画書の承認待ち**（Q1〜Q9） | `Phase7-Step5-Plan.md` |
 | Step6 | 出力スロットの所有権の移動 | 未着手 | |
 | Step7 | `Mapping` の instance 化（1）特性化テストと状態の切り出し | 未着手 | |
 | Step8 | `Mapping` の instance 化（2）instance 化と呼び出し元の切り替え | 未着手 | |
@@ -88,11 +88,12 @@
 - K3（マクロの二重ガード）: `Mapping` の instance 化（Step8〜9）の中で、再設計の要否を判断。
 - K7-1: 解消済み（通常の起動は Phase6、`-driverinstall` 分岐は Phase7-Step4 W2）。
 - `AppHost.CreationNote` と `[DI] Host creation path` のログ: ユーザー決定により残す。Step5 で Service Locator とあわせて、残すか判断する。
+- DS3 のジャイロトリガー経路の不具合（`DS4SixAxis` の `_controlService` が常に null。コミット `78ae8687` からの回帰。`Phase7-Step5-Plan.md` §1.6・Q3）: 承認待ち。
 - 起動直後のログローテーションとログの最小レベルが `BackingStore` の既定値になる課題（DI 移行前からの動作）: 記録のみ。直す場合は承認が必要（`Phase7-Step4-Completion-Report.md` §4）。
 - 孤立定数 8 件（`BackingStore`）: Step10 の定数の再配置。
 - Phase8 への申し送り: `Actions/` の `ServiceProviderHolder` 17 件、`Actions/` の未配線の抽象 11 メンバー（`IActionBinding`、`IKeyController`、`IActionRegistry`、`IControllerRegistry`、`IInputAction`、`IMacroPlayer`、`ITrigger`）。
 
 ## 6. 直近の次アクション
 
-1. Step5（`Program.rootHub` と Service Locator の削除）の調査と `Phase7-Step5-Plan.md` の作成。
+1. `Phase7-Step5-Plan.md` §3（Q1〜Q9）の承認。承認後、Step5 を W1 から実施。
 2. 実機確認 U-11、U-12、U-13、U-14（任意のタイミング。U-14 は終了時のホスト破棄と初回起動の確認が中心）。
