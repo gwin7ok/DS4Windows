@@ -76,6 +76,10 @@ namespace DS4Windows.DI
             // ControlService は遅延解決（循環の回避）
             services.AddSingleton<IProfileSettingsService>(sp => new ProfileSettingsService(
                 sp.GetRequiredService<BackingStore>(), sp.GetRequiredService<IEnvironmentService>(), sp.GetRequiredService<Func<ControlService>>()));
+            // Phase7-Step10c W2: 設定ファイルの保存・読込を担う型（旧: BackingStore のメソッド）。BackingStore を受ける具象クラスの Singleton
+            services.AddSingleton<SpecialActionsXmlSerializer>();
+            services.AddSingleton<LinkedProfilesXmlSerializer>();
+            services.AddSingleton<ControllerConfigsXmlSerializer>();
             services.AddSingleton<IProfileXmlStore, ProfileXmlStore>();
             services.AddSingleton<IProfileRepository, ProfileRepository>();
             // Phase6-Step10-2（決定 E2＝A）: プリセットの読み込み（Global.Load…Profile への薄い委譲）
@@ -83,7 +87,7 @@ namespace DS4Windows.DI
             services.AddSingleton<IProfileSlotApplier, ProfileSlotApplier>();
             services.AddSingleton<ISpecialActionRepository>(sp => new SpecialActionRepository(
                 sp.GetRequiredService<BackingStore>(), sp.GetRequiredService<IPathService>(),
-                sp.GetRequiredService<SyntheticInputState>()));
+                sp.GetRequiredService<SyntheticInputState>(), sp.GetRequiredService<SpecialActionsXmlSerializer>()));
 
             // Phase 3 Step 3-6: プロセス検査・昇格起動サービスの登録
             services.AddSingleton<IProcessInspector, DefaultProcessInspector>();

@@ -6,14 +6,17 @@ namespace DS4Windows
     public class ProfileXmlStore : IProfileXmlStore
     {
         private readonly BackingStore _backingStore;
+        // Phase7-Step10c W2: コントローラー固有設定の保存・読込（旧: BackingStore のメソッド）
+        private readonly Services.ControllerConfigsXmlSerializer _controllerConfigsXml;
 
         // Phase 5 ガードレール: Profiles.xml に対する同一プロセス内の並行アクセス競合を防ぐための静的排他ロックオブジェクト
         // (Step6: AppSettingsService との同一ファイル排他ロック共有)
         public static readonly object XmlIoLock = new object();
 
         // Phase7-Step3 W1: 任意引数＋Global 経由のフォールバックを廃止し、BackingStore を必須にした（Pure DI）。
-        public ProfileXmlStore(BackingStore backingStore)
+        public ProfileXmlStore(BackingStore backingStore, Services.ControllerConfigsXmlSerializer controllerConfigsXml)
         {
+            _controllerConfigsXml = controllerConfigsXml ?? throw new ArgumentNullException(nameof(controllerConfigsXml));
             _backingStore = backingStore ?? throw new ArgumentNullException(nameof(backingStore));
         }
 
@@ -95,10 +98,10 @@ namespace DS4Windows
 
         // ---- Phase6-Step2-2 (PR-2): 接続時のコントローラー固有設定の読込 ----
         public bool LoadControllerConfigsForDevice(DS4Device device)
-            => _backingStore.LoadControllerConfigsForDevice(device);
+            => _controllerConfigsXml.LoadControllerConfigsForDevice(device);
 
         // ---- Phase6-Step3-1: 切断時のコントローラー固有設定の保存 ----
         public bool SaveControllerConfigsForDevice(DS4Device device)
-            => _backingStore.SaveControllerConfigsForDevice(device);
+            => _controllerConfigsXml.SaveControllerConfigsForDevice(device);
     }
 }

@@ -27,7 +27,7 @@ namespace DS4WindowsTests
             _dir = Path.Combine(Path.GetTempPath(), "Phase6Step10_3b_" + Guid.NewGuid().ToString("N"));
             _profiles = Path.Combine(_dir, "Profiles");
             Directory.CreateDirectory(_profiles);
-            _repo = TestRepositoryFactory.CreateProfileRepository(TestRepositoryFactory.CreateProfileSettingsService(), new ProfileXmlStore(Global.store), new PathService(_dir));
+            _repo = TestRepositoryFactory.CreateProfileRepository(TestRepositoryFactory.CreateProfileSettingsService(), TestRepositoryFactory.CreateProfileXmlStore(), new PathService(_dir));
         }
 
         public void Dispose()

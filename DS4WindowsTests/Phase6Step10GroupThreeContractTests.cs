@@ -49,7 +49,7 @@ namespace DS4WindowsTests
                 Global.store.m_Actions = ActionsPath;
                 Global.store.actions.Clear();
                 // 空の Actions.xml から始める（存在しない場合は既定のアクションが作られるため）
-                Global.store.SaveActions();
+                TestRepositoryFactory.CreateActionsXml().SaveActions();
             }
 
             public void Dispose()
@@ -106,21 +106,8 @@ namespace DS4WindowsTests
             Assert.Equal("C:/b.exe", action.details);
         }
 
-        [Fact]
-        public void SaveAction_MatchesGlobalSaveAction()
-        {
-            using var scope = new ActionsStoreScope();
-            var repo = TestRepositoryFactory.CreateSpecialActionRepository();
-
-            Global.SaveAction("Step10_3_ViaGlobal", "Square", 2, "C:/c.exe?0", false);
-            repo.SaveAction("Step10_3_ViaRepo", "Square", 2, "C:/c.exe?0", false);
-
-            SpecialAction viaGlobal = repo.GetAction("Step10_3_ViaGlobal");
-            SpecialAction viaRepo = repo.GetAction("Step10_3_ViaRepo");
-            Assert.Equal(viaGlobal.controls, viaRepo.controls);
-            Assert.Equal(viaGlobal.details, viaRepo.details);
-            Assert.Equal(viaGlobal.typeID, viaRepo.typeID);
-        }
+        // Phase7-Step10c W2: SaveAction_MatchesGlobalSaveAction は削除した（比較対象の Global.SaveAction を、SpecialActionRepository の
+        // プライベートメソッドへ移したため）。保存→読み直しの結果は、上の SaveAction_AddsNewAction_SavesFileAndNotifies ほかが確認する。
 
         [Fact]
         public void RemoveActionAndSave_RemovesFromListAndFile()
@@ -200,7 +187,7 @@ namespace DS4WindowsTests
             File.WriteAllText(scope.ActionsPath,
                 "<?xml version=\"1.0\" encoding=\"utf-8\"?><Actions>" +
                 "<Action Name=\"Legacy\"><Trigger>Cross</Trigger><Type>Button</Type><Details>1</Details></Action></Actions>");
-            Global.store.LoadActions();
+            TestRepositoryFactory.CreateActionsXml().LoadActions();
 
             SpecialAction legacy = repo.GetAction("Legacy");
             Assert.Equal(SpecialAction.ActionTypeId.Button, legacy.typeID);

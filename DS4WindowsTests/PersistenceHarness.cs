@@ -60,16 +60,17 @@ namespace DS4WindowsTests
         {
             string path = Path.Combine(ctx.AppData, "Actions.xml");
             store.m_Actions = path;
+            var xml = new DS4Windows.Services.SpecialActionsXmlSerializer(store);
             // モード: 1＝マクロ、2＝プログラム、3＝プロファイル、4＝キー、5＝切断、6＝バッテリー確認、7＝複数アクション、8＝ホイール較正、10＝ボタン
-            store.SaveAction("Golden_Macro", "Cross", 1, "65/66/67", false, "Hold");
-            store.SaveAction("Golden_Program", "Circle", 2, "C:/golden/a.exe?3", false, "-arg");
-            store.SaveAction("Golden_Profile", "Square", 3, "Golden_ProfileName", false, "Triangle");
-            store.SaveAction("Golden_Key", "L1", 4, "65", false, "Toggle\nR1");
-            store.SaveAction("Golden_Disconnect", "L2", 5, "5", false);
-            store.SaveAction("Golden_Battery", "R2", 6, "50", false);
-            store.SaveAction("Golden_Multi", "Cross/Circle", 7, "Golden_Macro/Golden_Program", false);
-            store.SaveAction("Golden_Edit", "Triangle", 2, "C:/golden/b.exe?0", false);
-            store.SaveAction("Golden_Edit", "Square", 2, "C:/golden/c.exe?1", true);
+            xml.SaveAction("Golden_Macro", "Cross", 1, "65/66/67", false, "Hold");
+            xml.SaveAction("Golden_Program", "Circle", 2, "C:/golden/a.exe?3", false, "-arg");
+            xml.SaveAction("Golden_Profile", "Square", 3, "Golden_ProfileName", false, "Triangle");
+            xml.SaveAction("Golden_Key", "L1", 4, "65", false, "Toggle\nR1");
+            xml.SaveAction("Golden_Disconnect", "L2", 5, "5", false);
+            xml.SaveAction("Golden_Battery", "R2", 6, "50", false);
+            xml.SaveAction("Golden_Multi", "Cross/Circle", 7, "Golden_Macro/Golden_Program", false);
+            xml.SaveAction("Golden_Edit", "Triangle", 2, "C:/golden/b.exe?0", false);
+            xml.SaveAction("Golden_Edit", "Square", 2, "C:/golden/c.exe?1", true);
             return File.ReadAllText(path);
         }
 
@@ -79,7 +80,7 @@ namespace DS4WindowsTests
             File.WriteAllText(path, xml);
             BackingStore store = NewStore();
             store.m_Actions = path;
-            Assert.True(store.LoadActions(), "アクションの読込に失敗した");
+            Assert.True(new DS4Windows.Services.SpecialActionsXmlSerializer(store).LoadActions(), "アクションの読込に失敗した");
             return store;
         }
 
@@ -89,10 +90,11 @@ namespace DS4WindowsTests
         {
             string path = Path.Combine(ctx.AppData, "LinkedProfiles.xml");
             store.m_linkedProfiles = path;
-            Assert.True(store.createLinkedProfiles(), "リンクプロファイルの新規作成に失敗した");
+            var linked = new DS4Windows.Services.LinkedProfilesXmlSerializer(store);
+            Assert.True(linked.createLinkedProfiles(), "リンクプロファイルの新規作成に失敗した");
             store.linkedProfiles["0123456789AB"] = "Golden_ProfileA";
             store.linkedProfiles["BA9876543210"] = "Golden_ProfileB";
-            Assert.True(store.SaveLinkedProfiles(), "リンクプロファイルの保存に失敗した");
+            Assert.True(linked.SaveLinkedProfiles(), "リンクプロファイルの保存に失敗した");
             return File.ReadAllText(path);
         }
 
@@ -102,7 +104,7 @@ namespace DS4WindowsTests
             File.WriteAllText(path, xml);
             BackingStore store = NewStore();
             store.m_linkedProfiles = path;
-            Assert.True(store.LoadLinkedProfiles(), "リンクプロファイルの読込に失敗した");
+            Assert.True(new DS4Windows.Services.LinkedProfilesXmlSerializer(store).LoadLinkedProfiles(), "リンクプロファイルの読込に失敗した");
             return store;
         }
 

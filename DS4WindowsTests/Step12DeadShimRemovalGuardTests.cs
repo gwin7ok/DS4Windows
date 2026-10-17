@@ -77,6 +77,8 @@ namespace DS4WindowsTests
             // Phase7-Step10b W1（表と変換。移し先は X360ControlTables／DS4ControlNames）
             "defaultButtonMapping", "reverseX360ButtonMapping", "xboxDefaultNames", "ds4DefaultNames", "ds4inputNames", "macroDS4Values", "getX360ControlString",
             "getTransitionedColor", "HuetoRGB", "applyRatio", "iconChoiceResources",
+            // Phase7-Step10c W2（Actions.xml の保存・読込のシム。移し先は SpecialActionsXmlSerializer／SpecialActionRepository）
+            "SaveAction", "SaveActions", "RemoveAction", "ReloadActionsAndVerify", "LoadActions", "CreateStdActions",
         };
 
         private static readonly string[] RemovedFiles =

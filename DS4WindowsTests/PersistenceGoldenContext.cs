@@ -42,10 +42,12 @@ namespace DS4WindowsTests
             Control = DS4WinWPF.AppHost.GetService<ControlService>();
 
             // プロファイルの読込（LoadProfile → UpdateDS4CSetting → Global.RefreshActionAlias）は、出力 KBM のマッピングが必要。
-            // 本体では ControlService の起動時に設定される。テストでは、既定の方式（SendInput）で設定し、破棄時に元へ戻す。
-            _settings = DS4WinWPF.AppHost.GetService<IProfileSettingsService>();
+            // 本体では ControlService の起動時に設定される。RefreshActionAlias は Global.ProfileSettingsServiceInstance（最初に解決した
+            // コンテナの instance を静的に保持する）を読むため、テストの実行順によらず、その instance に設定する。
+            // 既定の方式（SendInput）で設定し、破棄時に元へ戻す。
+            _settings = Global.ProfileSettingsServiceInstance;
             _originalMapping = _settings.OutputKBMMapping;
-            DS4WinWPF.AppHost.GetService<IVirtualKBMLifecycle>().InitializeMapping(SendInputHandler.IDENTIFIER);
+            _settings.OutputKBMMapping = VirtualKBMFactory.GetMappingInstance(SendInputHandler.IDENTIFIER);
         }
 
         /// <summary>揺れる値（一時フォルダーのパス、バージョン、日時のコメント）を固定の文字列にする。</summary>

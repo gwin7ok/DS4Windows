@@ -179,7 +179,8 @@ namespace DS4WindowsTests
             if (text == null) return;
 
             Assert.Matches(@"public bool SaveAsProfile\(int deviceIndex, string profileName\)\s*=>\s*_config\.SaveAsProfile\(deviceIndex, profileName\);", text);
-            Assert.Matches(@"public bool LoadLinkedProfiles\(\)\s*=>\s*_config\.LoadLinkedProfiles\(\);", text);
+            // Phase7-Step10c W2: リンクプロファイルの読込は LinkedProfilesXmlSerializer へ移した（BackingStore から削除）
+            Assert.Matches(@"public bool LoadLinkedProfiles\(\)\s*=>\s*_linkedProfilesXml\.LoadLinkedProfiles\(\);", text);
         }
 
         [Fact]
@@ -188,7 +189,7 @@ namespace DS4WindowsTests
             string text = ReadSourceWithoutComments("DS4Windows/DS4Control/Services/SpecialActionRepository.cs");
             if (text == null) return;
 
-            Assert.Matches(@"public void CreateStandardActions\(\)\s*\{\s*Global\.CreateStdActions\(\);", text);
+            Assert.Matches(@"public void CreateStandardActions\(\)\s*\{\s*CreateStdActions\(\);", text);
 
             // LoadActions の本体に、Actions.xml の有無で早期に false を返す判定が再混入していないこと。
             // Phase7-Step2 W7: 終端を、LoadActions の次のメンバー（SaveActions を削除したため GetAction）に変更した。

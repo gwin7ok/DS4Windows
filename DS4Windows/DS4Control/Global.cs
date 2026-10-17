@@ -367,43 +367,7 @@ namespace DS4Windows
             catch { /* Skip setting culture that we cannot set */ }
         }
 
-        public static void CreateStdActions()
-        {
-            XmlDocument xDoc = new XmlDocument();
-            try
-            {
-                string[] profiles = Directory.GetFiles(appdatapath + @"\Profiles\");
-                string s = string.Empty;
-                //foreach (string s in profiles)
-                for (int i = 0, proflen = profiles.Length; i < proflen; i++)
-                {
-                    s = profiles[i];
-                    if (Path.GetExtension(s) == ".xml")
-                    {
-                        xDoc.Load(s);
-                        XmlNode el = xDoc.SelectSingleNode("DS4Windows/ProfileActions");
-                        if (el != null)
-                        {
-                            if (string.IsNullOrEmpty(el.InnerText))
-                                el.InnerText = "Disconnect Controller";
-                            else
-                                el.InnerText += "/Disconnect Controller";
-                        }
-                        else
-                        {
-                            XmlNode Node = xDoc.SelectSingleNode("DS4Windows");
-                            el = xDoc.CreateElement("ProfileActions");
-                            el.InnerText = "Disconnect Controller";
-                            Node.AppendChild(el);
-                        }
-
-                        xDoc.Save(s);
-                        LoadActions();
-                    }
-                }
-            }
-            catch { }
-        }
+        // Phase7-Step10c W2: CreateStdActions は、唯一の呼び出し元の SpecialActionRepository.CreateStandardActions へ移した（内容は同一）。
 
         public static bool CreateAutoProfiles(string m_Profile)
         {
@@ -553,101 +517,9 @@ namespace DS4Windows
         public static bool[] DistanceProfiles = m_Config.distanceProfiles;
 
 
-        public static void SaveAction(string name, string controls, int mode,
-            string details, bool edit, double delayTime = 0.0, string extras = "")
-        {
-            // Mark actionDone as uninitialized before mutating actions to reduce
-            // the window where MapCustomAction can observe an inconsistent size.
-            try
-            {
-                try { ActionManager.ClearAllEntries(); } catch { }
-            }
-            catch { }
-
-            m_Config.SaveActionNew(name, controls, mode, details, edit, delayTime, extras);
-            //m_Config.SaveAction(name, controls, mode, details, edit, extras);
-            //m_Config.SaveActions();
-
-            // Reload actions from file and verify counts to avoid duplicated in-memory entries.
-            ReloadActionsAndVerify("SaveAction");
-            // Phase7-Step8 W1: キー型スペシャルアクション（mode==4）の保存後の実行時状態のリセットは、呼び出し元の
-            // SpecialActionRepository.SaveAction へ移した（SyntheticInputState.ResetRuntimeStateForKey。旧: Mapping.ResetRuntimeStateForKey）。
-        }
-
-        public static void SaveActions()
-        {
-            try
-            {
-                try { ActionManager.ClearAllEntries(); } catch { }
-            }
-            catch { }
-
-            m_Config.SaveActions();
-
-            // After saving, reload to ensure in-memory list matches file contents.
-            ReloadActionsAndVerify("SaveActions");
-        }
-
-        public static void RemoveAction(string name)
-        {
-            try
-            {
-                try { ActionManager.ClearAllEntries(); } catch { }
-            }
-            catch { }
-
-            m_Config.RemoveAction(name);
-
-            // After removal, reload to ensure consistency between file and memory.
-            ReloadActionsAndVerify("RemoveAction");
-        }
-
-        // Reload Actions.xml into the backing store and verify that the in-memory
-        // `actions` count matches the number of <Action> elements in the file.
-        private static void ReloadActionsAndVerify(string caller)
-        {
-            try
-            {
-                // Attempt to reload from the canonical file
-                bool loaded = m_Config.LoadActions();
-
-                int memCount = m_Config.actions?.Count ?? 0;
-                int fileCount = -1;
-                try
-                {
-                    XmlDocument xd = new XmlDocument();
-                    xd.Load(m_Config.m_Actions);
-                    XmlNodeList nodes = xd.SelectNodes("/Actions/Action");
-                    fileCount = nodes?.Count ?? 0;
-                }
-                catch (Exception ex)
-                {
-                    AppLogger.LogToGui($"Could not count Actions.xml entries: {ex.Message}", false);
-                }
-
-                if (fileCount >= 0)
-                {
-                    if (memCount != fileCount)
-                    {
-                        AppLogger.LogToGui($"Warning: action count mismatch after {caller}: memory={memCount} file={fileCount}", true);
-                    }
-                    else
-                    {
-                        AppLogger.LogToGui($"Action list reloaded ({memCount} entries) after {caller}.", false);
-                    }
-                }
-                else
-                {
-                    AppLogger.LogToGui($"Action list reloaded ({memCount} entries) after {caller}. (file count unknown)", false);
-                }
-            }
-            catch (Exception ex)
-            {
-                AppLogger.LogToGui($"Error reloading Actions.xml after {caller}: {ex.Message}", true);
-            }
-        }
-
-        public static bool LoadActions() => m_Config.LoadActions();
+        // Phase7-Step10c W2: SaveAction／SaveActions／RemoveAction／ReloadActionsAndVerify／LoadActions（Actions.xml の保存・読込の薄いシム）は削除した。
+        // 保存・読込は SpecialActionsXmlSerializer、実行中のアクション状態のクリアと読み直しの検証は SpecialActionRepository へ移した。
+        // （SaveActions／LoadActions の呼び出しは、移動前から SpecialActionRepository 経由かテストだけだった。）
 
         public static int GetActionIndexOf(string name)
         {

@@ -18,8 +18,21 @@ namespace DS4WindowsTests
 
         public static SpecialActionRepository CreateSpecialActionRepository(BackingStore store = null, IPathService pathService = null)
         {
-            return new SpecialActionRepository(store ?? Global.store, pathService ?? new PathService(), new SyntheticInputState());
+            return new SpecialActionRepository(store ?? Global.store, pathService ?? new PathService(), new SyntheticInputState(),
+                CreateActionsXml(store));
         }
+
+        /// <summary>Phase7-Step10c W2: Actions.xml の保存・読込（旧: BackingStore のメソッド）。</summary>
+        public static DS4Windows.Services.SpecialActionsXmlSerializer CreateActionsXml(BackingStore store = null)
+            => new DS4Windows.Services.SpecialActionsXmlSerializer(store ?? Global.store);
+
+        /// <summary>Phase7-Step10c W2: リンクプロファイルの保存・読込（旧: BackingStore のメソッド）。</summary>
+        public static DS4Windows.Services.LinkedProfilesXmlSerializer CreateLinkedProfilesXml(BackingStore store = null)
+            => new DS4Windows.Services.LinkedProfilesXmlSerializer(store ?? Global.store);
+
+        /// <summary>Phase7-Step10c W2: ProfileXmlStore（コントローラー固有設定の保存・読込を含む）。</summary>
+        public static ProfileXmlStore CreateProfileXmlStore(BackingStore store = null)
+            => new ProfileXmlStore(store ?? Global.store, new DS4Windows.Services.ControllerConfigsXmlSerializer(store ?? Global.store));
 
         public static ProfileRepository CreateProfileRepository(IProfileSettingsService settings = null,
             IProfileXmlStore xmlStore = null, IPathService pathService = null, Func<ControlService> control = null,
@@ -28,9 +41,10 @@ namespace DS4WindowsTests
             return new ProfileRepository(
                 store ?? Global.store,
                 settings ?? Global.ProfileSettingsServiceInstance,
-                xmlStore ?? new ProfileXmlStore(store ?? Global.store),
+                xmlStore ?? CreateProfileXmlStore(store),
                 pathService ?? new PathService(),
-                control ?? new Func<ControlService>(() => DS4WinWPF.AppHost.GetService<ControlService>()));
+                control ?? new Func<ControlService>(() => DS4WinWPF.AppHost.GetService<ControlService>()),
+                CreateLinkedProfilesXml(store), CreateActionsXml(store));
         }
 
         public static ProfileSettingsService CreateProfileSettingsService(BackingStore store = null,
@@ -106,7 +120,7 @@ namespace DS4WindowsTests
             IKeyButtonControllerRegistry keyButtonControllers = null)
         {
             return new ProfileApplicationService(settings, control, profileRepository, environmentService,
-                xmlStore ?? new ProfileXmlStore(store ?? Global.store),
+                xmlStore ?? CreateProfileXmlStore(store),
                 actionProvider ?? CreateProfileActionProvider(store ?? Global.store),
                 store ?? Global.store,
                 keyButtonControllers ?? DS4WinWPF.AppHost.GetService<IKeyButtonControllerRegistry>());

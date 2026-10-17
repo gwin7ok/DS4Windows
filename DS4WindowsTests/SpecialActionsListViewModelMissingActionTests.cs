@@ -39,7 +39,7 @@ namespace DS4WindowsTests
                 {
                     list.Add(new SpecialAction(name, "Cross", "Program", "C:/a.exe"));
                 }
-                Global.store.SaveActions();
+                TestRepositoryFactory.CreateActionsXml().SaveActions();
             }
 
             public void Dispose()

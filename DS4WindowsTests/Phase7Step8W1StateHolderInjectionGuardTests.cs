@@ -115,9 +115,9 @@ namespace DS4WindowsTests
             string global = Read("DS4Windows/DS4Control/Global.cs");
             if (repository == null || global == null) return;
 
-            int save = repository.IndexOf("Global.SaveAction(", System.StringComparison.Ordinal);
+            int save = repository.IndexOf("SaveActionAndReload(", System.StringComparison.Ordinal);
             int reset = repository.IndexOf("_syntheticInput.ResetRuntimeStateForKey(", System.StringComparison.Ordinal);
-            Assert.True(save >= 0 && reset > save, "Global.SaveAction の後に ResetRuntimeStateForKey を呼ぶこと");
+            Assert.True(save >= 0 && reset > save, "SaveActionAndReload（旧 Global.SaveAction）の後に ResetRuntimeStateForKey を呼ぶこと");
             Assert.Contains("mode == 4", repository);
 
             Assert.DoesNotMatch(@"\bMapping\.", global);

@@ -18,11 +18,17 @@ namespace DS4Windows
         // Phase6-Step10-4-2b: 全ての依存を必須化（Global.*Instance／AppHost のフォールバックを廃止）。
         // ControlService は ControlService → IProfileRepository の依存循環を避けるため、遅延解決（Func）で受け取る。
         private readonly Func<ControlService> _controlProvider;
+        // Phase7-Step10c W2: リンクプロファイル・Actions.xml の保存・読込（旧: BackingStore のメソッド）
+        private readonly Services.LinkedProfilesXmlSerializer _linkedProfilesXml;
+        private readonly Services.SpecialActionsXmlSerializer _actionsXml;
 
         public ProfileRepository(BackingStore config, IProfileSettingsService profileSettings,
             IProfileXmlStore profileXmlStore, IPathService pathService,
-            Func<ControlService> controlProvider)
+            Func<ControlService> controlProvider,
+            Services.LinkedProfilesXmlSerializer linkedProfilesXml, Services.SpecialActionsXmlSerializer actionsXml)
         {
+            _linkedProfilesXml = linkedProfilesXml ?? throw new ArgumentNullException(nameof(linkedProfilesXml));
+            _actionsXml = actionsXml ?? throw new ArgumentNullException(nameof(actionsXml));
             _config = config ?? throw new ArgumentNullException(nameof(config));
             _profileSettings = profileSettings ?? throw new ArgumentNullException(nameof(profileSettings));
             _profileXmlStore = profileXmlStore ?? throw new ArgumentNullException(nameof(profileXmlStore));
@@ -179,7 +185,7 @@ namespace DS4Windows
         }
 
         public bool SaveLinkedProfiles()
-            => _config.SaveLinkedProfiles();
+            => _linkedProfilesXml.SaveLinkedProfiles();
 
         // Phase6-Step10-4-5b: 名前変更後に、リンクプロファイルの旧名が残って「Selected Profile が空欄になる」不具合の是正
         public int ReplaceLinkedProfileName(string oldName, string newName)
@@ -215,7 +221,7 @@ namespace DS4Windows
 
             if (replaced > 0)
             {
-                _config.SaveLinkedProfiles();
+                _linkedProfilesXml.SaveLinkedProfiles();
             }
 
             return replaced;
@@ -247,7 +253,7 @@ namespace DS4Windows
 
             if (replaced > 0)
             {
-                _config.SaveActions();
+                _actionsXml.SaveActions();
             }
 
             return replaced;
@@ -286,7 +292,7 @@ namespace DS4Windows
             => _config.SaveAsProfile(deviceIndex, profileName);
 
         public bool LoadLinkedProfiles()
-            => _config.LoadLinkedProfiles();
+            => _linkedProfilesXml.LoadLinkedProfiles();
 
         // ---- Phase6-Step10-3b-1: アクションの名前変更・削除の、全プロファイルへの反映 ----
         public IReadOnlyList<string> ReplaceActionReference(string oldName, string newName)
