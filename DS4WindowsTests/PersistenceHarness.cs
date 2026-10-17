@@ -40,7 +40,7 @@ namespace DS4WindowsTests
         {
             string path = Path.Combine(ctx.AppData, "Profiles.xml");
             store.m_Profile = path;
-            Assert.True(store.Save(), "アプリ設定の保存に失敗した");
+            Assert.True(TestRepositoryFactory.CreateAppSettingsXml(store).Save(), "アプリ設定の保存に失敗した");
             return File.ReadAllText(path);
         }
 
@@ -50,7 +50,7 @@ namespace DS4WindowsTests
             File.WriteAllText(path, xml);
             BackingStore store = NewStore();
             store.m_Profile = path;
-            Assert.True(store.Load(), "アプリ設定の読込に失敗した");
+            Assert.True(TestRepositoryFactory.CreateAppSettingsXml(store).Load(), "アプリ設定の読込に失敗した");
             return store;
         }
 

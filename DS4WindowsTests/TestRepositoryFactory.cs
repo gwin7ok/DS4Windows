@@ -32,7 +32,13 @@ namespace DS4WindowsTests
 
         /// <summary>Phase7-Step10c W2: ProfileXmlStore（コントローラー固有設定の保存・読込を含む）。</summary>
         public static ProfileXmlStore CreateProfileXmlStore(BackingStore store = null)
-            => new ProfileXmlStore(store ?? Global.store, new DS4Windows.Services.ControllerConfigsXmlSerializer(store ?? Global.store));
+            => new ProfileXmlStore(store ?? Global.store, new DS4Windows.Services.ControllerConfigsXmlSerializer(store ?? Global.store),
+                CreateAppSettingsXml(store));
+
+        /// <summary>Phase7-Step10c W3: アプリ設定（Profiles.xml）の保存・読込（旧: BackingStore.Load／Save）。</summary>
+        public static DS4Windows.Services.AppSettingsXmlSerializer CreateAppSettingsXml(BackingStore store = null,
+            IPathService pathService = null, IEnvironmentService environment = null)
+            => new DS4Windows.Services.AppSettingsXmlSerializer(store ?? Global.store, pathService ?? new PathService(), environment ?? new EnvironmentService());
 
         public static ProfileRepository CreateProfileRepository(IProfileSettingsService settings = null,
             IProfileXmlStore xmlStore = null, IPathService pathService = null, Func<ControlService> control = null,

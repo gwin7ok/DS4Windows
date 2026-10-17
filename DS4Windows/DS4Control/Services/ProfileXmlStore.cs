@@ -8,14 +8,18 @@ namespace DS4Windows
         private readonly BackingStore _backingStore;
         // Phase7-Step10c W2: コントローラー固有設定の保存・読込（旧: BackingStore のメソッド）
         private readonly Services.ControllerConfigsXmlSerializer _controllerConfigsXml;
+        // Phase7-Step10c W3: アプリ設定（Profiles.xml）の保存・読込（旧: BackingStore.Load／Save）
+        private readonly Services.AppSettingsXmlSerializer _appSettingsXml;
 
         // Phase 5 ガードレール: Profiles.xml に対する同一プロセス内の並行アクセス競合を防ぐための静的排他ロックオブジェクト
         // (Step6: AppSettingsService との同一ファイル排他ロック共有)
         public static readonly object XmlIoLock = new object();
 
         // Phase7-Step3 W1: 任意引数＋Global 経由のフォールバックを廃止し、BackingStore を必須にした（Pure DI）。
-        public ProfileXmlStore(BackingStore backingStore, Services.ControllerConfigsXmlSerializer controllerConfigsXml)
+        public ProfileXmlStore(BackingStore backingStore, Services.ControllerConfigsXmlSerializer controllerConfigsXml,
+            Services.AppSettingsXmlSerializer appSettingsXml)
         {
+            _appSettingsXml = appSettingsXml ?? throw new ArgumentNullException(nameof(appSettingsXml));
             _controllerConfigsXml = controllerConfigsXml ?? throw new ArgumentNullException(nameof(controllerConfigsXml));
             _backingStore = backingStore ?? throw new ArgumentNullException(nameof(backingStore));
         }
@@ -60,7 +64,7 @@ namespace DS4Windows
             {
                 try
                 {
-                    bool result = _backingStore.Load();
+                    bool result = _appSettingsXml.Load();
                     if (AppLogger.IsTraceEnabled)
                         AppLogger.LogTrace($"[DI] ProfileXmlStore.LoadAppSettingsXml: loaded={result}");
                     return result;
@@ -81,7 +85,7 @@ namespace DS4Windows
             {
                 try
                 {
-                    bool result = _backingStore.Save();
+                    bool result = _appSettingsXml.Save();
                     if (AppLogger.IsTraceEnabled)
                         AppLogger.LogTrace($"[DI] ProfileXmlStore.SaveAppSettingsXml: saved={result}");
                     return result;

@@ -79,6 +79,8 @@ namespace DS4WindowsTests
             "getTransitionedColor", "HuetoRGB", "applyRatio", "iconChoiceResources",
             // Phase7-Step10c W2（Actions.xml の保存・読込のシム。移し先は SpecialActionsXmlSerializer／SpecialActionRepository）
             "SaveAction", "SaveActions", "RemoveAction", "ReloadActionsAndVerify", "LoadActions", "CreateStdActions",
+            // Phase7-Step10c W3（バージョンの数値化。移し先は VersionUtil）
+            "CompileVersionNumberFromString", "CompileVersionNumber",
         };
 
         private static readonly string[] RemovedFiles =

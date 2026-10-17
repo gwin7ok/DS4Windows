@@ -189,7 +189,9 @@ namespace DS4Windows
         // Need to add additional probing path in code starting with .NET 6.
         public const string PROBING_PATH = "Lang";
         public const string LANGUAGE_ASSEMBLY_NAME = "DS4Windows.resources.dll";
-        public const string CUSTOM_EXE_CONFIG_FILENAME = "custom_exe_name.txt";
+        // Phase7-Step10c W3: 実体は AppSettingsXmlSerializer.CustomExeConfigFileName へ移した。以下は同じ値を指す別名（テストが使う）。
+        // TODO(Phase7-Step10d): 利用箇所をなくしたら、この別名を削除する。
+        public const string CUSTOM_EXE_CONFIG_FILENAME = Services.AppSettingsXmlSerializer.CustomExeConfigFileName;
         public const string XML_EXTENSION = ".xml";
 
         // Phase7-Step10b W1: 既定のボタン割り当て・名前の表・getX360ControlString は X360ControlTables へ、
@@ -406,27 +408,7 @@ namespace DS4Windows
             }
         }
 
-        public static ulong CompileVersionNumberFromString(string versionStr)
-        {
-            ulong result = 0;
-            try
-            {
-                Version tmpVersion = new Version(versionStr);
-                result = CompileVersionNumber(tmpVersion.Major, tmpVersion.Minor,
-                    tmpVersion.Build, tmpVersion.Revision);
-            }
-            catch (Exception) { }
-
-            return result;
-        }
-
-        public static ulong CompileVersionNumber(int majorPart, int minorPart,
-            int buildPart, int privatePart)
-        {
-            ulong result = (ulong)majorPart << 48 | (ulong)minorPart << 32 |
-                (ulong)buildPart << 16 | (ushort)privatePart;
-            return result;
-        }
+        // Phase7-Step10c W3: CompileVersionNumberFromString／CompileVersionNumber は VersionUtil へ移し、Global から削除した（本体は同一）。
 
         // general values
         // -- Re-Enable Exclusive Mode Starts Here --

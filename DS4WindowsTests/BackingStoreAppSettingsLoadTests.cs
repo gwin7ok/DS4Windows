@@ -40,14 +40,14 @@ namespace DS4WindowsTests
         {
             var writer = new BackingStore { m_Profile = _profilesXml };
             configure?.Invoke(writer);
-            Assert.True(writer.Save(), "テスト用の Profiles.xml（DTO）の保存に失敗した");
+            Assert.True(TestRepositoryFactory.CreateAppSettingsXml(writer).Save(), "テスト用の Profiles.xml（DTO）の保存に失敗した");
             return writer;
         }
 
         private BackingStore LoadStore()
         {
             var reader = new BackingStore { m_Profile = _profilesXml };
-            Assert.True(reader.Load());
+            Assert.True(TestRepositoryFactory.CreateAppSettingsXml(reader).Load());
             return reader;
         }
 
@@ -80,7 +80,7 @@ namespace DS4WindowsTests
             File.WriteAllText(_fakeExeFile, "fake_game.exe");
             BackingStore reader = LoadStore();
 
-            Assert.True(reader.Save());
+            Assert.True(TestRepositoryFactory.CreateAppSettingsXml(reader).Save());
 
             Assert.Equal("fake_game.exe", File.ReadAllText(_fakeExeFile).Trim());
         }
@@ -94,7 +94,7 @@ namespace DS4WindowsTests
 
             Assert.Equal("3.9.0", reader.lastVersionChecked);
             Assert.True(reader.lastVersionCheckedNum > 0);
-            Assert.Equal(Global.CompileVersionNumberFromString("3.9.0"), reader.lastVersionCheckedNum);
+            Assert.Equal(VersionUtil.CompileVersionNumberFromString("3.9.0"), reader.lastVersionCheckedNum);
         }
 
         [Fact]

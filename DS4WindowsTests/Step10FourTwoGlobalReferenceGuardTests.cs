@@ -104,8 +104,9 @@ namespace DS4WindowsTests
             Func<ControlService> control = () => null;
 
             Assert.Throws<ArgumentNullException>(() => new ProfileRepository(null, settings, store, path, control, linkedXml, actionsXml));
-            Assert.Throws<ArgumentNullException>(() => new ProfileXmlStore(null, new DS4Windows.Services.ControllerConfigsXmlSerializer(config)));
-            Assert.Throws<ArgumentNullException>(() => new ProfileXmlStore(config, null));
+            Assert.Throws<ArgumentNullException>(() => new ProfileXmlStore(null, new DS4Windows.Services.ControllerConfigsXmlSerializer(config), TestRepositoryFactory.CreateAppSettingsXml(config)));
+            Assert.Throws<ArgumentNullException>(() => new ProfileXmlStore(config, null, TestRepositoryFactory.CreateAppSettingsXml(config)));
+            Assert.Throws<ArgumentNullException>(() => new ProfileXmlStore(config, new DS4Windows.Services.ControllerConfigsXmlSerializer(config), null));
             Assert.Throws<ArgumentNullException>(() => new ProfileRepository(config, settings, store, path, null, linkedXml, actionsXml));
             Assert.Throws<ArgumentNullException>(() => new ProfileRepository(config, null, store, path, control, linkedXml, actionsXml));
             Assert.Throws<ArgumentNullException>(() => new ProfileRepository(config, settings, null, path, control, linkedXml, actionsXml));

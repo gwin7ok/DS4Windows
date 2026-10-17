@@ -326,7 +326,7 @@ namespace DS4Windows.Services
                 if (_config.lastVersionChecked != value)
                 {
                     _config.lastVersionChecked = value;
-                    _config.lastVersionCheckedNum = Global.CompileVersionNumberFromString(value);
+                    _config.lastVersionCheckedNum = VersionUtil.CompileVersionNumberFromString(value);
                     NotifyChanged(nameof(LastVersionChecked));
                     NotifyChanged(nameof(LastVersionCheckedNum));
                 }
