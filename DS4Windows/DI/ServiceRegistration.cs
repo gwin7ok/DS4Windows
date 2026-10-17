@@ -124,8 +124,8 @@ namespace DS4Windows.DI
                     // Phase6-Step7-4（決定5＝A、決定7＝案H）: AppHost.CreateHost(config, parser) が IStartupArguments に
                     // 設定した実際の起動引数を渡す。2026-09-04（4c89cd91）以降は常に空の new ArgumentParser() を渡していたため、
                     // 起動引数 -virtualkbm（キーボード・マウス出力方式の指定）が無視されていた。
-                    // ホストは Global の静的初期化で起動引数なしに先に作られるため、コンテナへの登録（AddSingleton(parser)）
-                    // ではなく、登録済みの保持役を経由する（Phase6-Step7-Plan.md §0.4 の訂正・決定7）。
+                    // ホストが起動引数なしに先に作られる順序（-driverinstall 分岐など）でも動くよう、コンテナへの登録
+                    // （AddSingleton(parser)）ではなく、登録済みの保持役を経由する（Phase6-Step7-Plan.md §0.4・決定7）。
                     // 起動引数が設定されていない場合（引数なしの CreateHost()、テスト）は、従来どおり空のパーサーを使う。
                     // 注意: ControlService はこの時点の値を保持するため、CreateHost(config, parser) より前に解決してはならない
                     // （現在は App.CreateControlService で、明示的なホスト構築の後に解決している）。

@@ -367,7 +367,7 @@ HEAD は `e0bc8258`（作業ツリーはクリーン）。以降の §0〜§6 �
   - 対応: `AppHost.GetService<T>`／`GetService(Type)` が、ホスト未構築で暗黙にホストを作るとき、解決しようとした型と呼び出し元のスタックを、Trace ログ（`[DI] implicit CreateHost (no parser) triggered by resolving …`）に出すようにした。動作は変わらない（ログのみ）。
   - **結果（2026-10-17 の起動ログ）**: `Host initialized with runtime parser`（Trace）は、上記の暗黙構築の診断ログ（Trace）と同じく、出なかった。原因は、ホスト構築の時点では、ロガーの最小レベル（Trace）がまだ反映されておらず（`Logger initialized` はホスト構築の後）、`IsTraceEnabled` が false で、Trace が捨てられるため。つまり「欠落」は、ログのタイミングの問題で、暗黙構築かどうかは、このログでは判別できない。
   - **追加対応**: ホストの作成経路を `AppHost.CreationNote` に保持し、ロガー初期化後の Info（`[DI] Host creation path: …`、`AppHost.CreateHost() called successfully` の直後）で出力する。暗黙構築の場合は、解決しようとした型とスタックが入る。Trace の既存ログとレベルは変更していない。
-  - **確定（2026-10-17 15:28 の起動ログ）**: `[DI] Host creation path: explicit CreateHost(config, parser) created the host`。ホストは、暗黙ではなく、App.xaml.cs の明示的な `CreateHost(config, parser)` で作られている。K7-1 の不具合は無い（Trace が捨てられていただけ）。`AppHost.cs` の、「ホストは Global の静的初期化で先に作られる」旨のコメント（Step7-4）は、現状と合わない。コメントの訂正と、`CreationNote` の扱い（残す／削除）は、Phase7 の台帳へ回す。
+  - **確定（2026-10-17 15:28 の起動ログ）**: `[DI] Host creation path: explicit CreateHost(config, parser) created the host`。ホストは、暗黙ではなく、App.xaml.cs の明示的な `CreateHost(config, parser)` で作られている。K7-1 の不具合は無い（Trace が捨てられていただけ）。`AppHost.cs` の、「ホストは Global の静的初期化で先に作られる」旨のコメント（Step7-4）は、現状と合わない。コメントは訂正済み（`AppHost.cs`、`IStartupArguments.cs`、`ServiceRegistration.cs`）。`Host creation path` のログと `CreationNote` は、ユーザー決定により残す。
   - 次の作業: 次の起動のログを取り、このログから、暗黙の構築を起こしている呼び出し元を特定する。特定できたら、`Global` の静的初期化（または Pre-Host の経路）を修正して、明示的な構築を最初にする（K7-1 の案 R。Phase7 で予定していたが、原因次第で前倒しできる）。
 
 ---

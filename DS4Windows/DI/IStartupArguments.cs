@@ -6,9 +6,10 @@ namespace DS4Windows.DI
     /// Phase6-Step7-4（決定7＝案H）: アプリの起動引数（<see cref="ArgumentParser"/>）を、DI コンテナ経由で
     /// 利用側（現在は <see cref="ControlService"/> の生成）へ受け渡すための保持役。
     ///
-    /// DI コンテナは一度構築すると登録を追加できない。一方、現在の起動順序では、ホストは
-    /// <c>Global</c> の静的初期化（<c>ScpUtil.cs</c> の <c>fallbackProfileRepository</c>）の中で、起動引数なしで先に
-    /// 暗黙に構築される（<c>Phase6-Step7-Plan.md</c> §0.4 の訂正）。そのため起動引数は「登録」ではなく、
+    /// DI コンテナは一度構築すると登録を追加できない。通常の起動では <c>App.xaml.cs</c> の明示的な
+    /// <c>CreateHost(config, parser)</c> がホストを作るが、それより前に <c>AppHost.GetService</c> が呼ばれると
+    /// （例: <c>-driverinstall</c> 分岐の <c>Global.Load()</c>）、起動引数なしでホストが先に暗黙に構築される
+    /// （<c>Phase6-Step7-Plan.md</c> §0.4）。どちらの順序でも動くよう、起動引数は「登録」ではなく、
     /// 登録済みのこの保持役へ <c>AppHost.CreateHost(config, parser)</c> が値を設定する形で渡す。
     /// </summary>
     public interface IStartupArguments

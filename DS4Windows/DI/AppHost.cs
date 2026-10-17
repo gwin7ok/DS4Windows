@@ -51,9 +51,13 @@ namespace DS4WinWPF
             {
                 if (_host != null)
                 {
-                    // Phase6-Step7-4（決定7＝案H）: 現在の起動順序では、ホストは Global の静的初期化の中で
-                    // 起動引数なしの CreateHost() により先に作られている（Phase6-Step7-Plan.md §0.4 の訂正）。
-                    // 構築済みのコンテナには登録を追加できないため、登録済みの IStartupArguments へ起動引数を設定する。
+                    // Phase6-Step7-4（決定7＝案H）: 構築済みのコンテナには登録を追加できないため、
+                    // 登録済みの IStartupArguments へ起動引数を設定する。
+                    // 通常の起動では、App.xaml.cs の明示的な CreateHost(config, parser) がホストを作る
+                    // （2026-10-17 の起動ログで確認。Global の静的初期化は、もうホストを作らない。
+                    // 旧: ScpUtil.cs の fallbackProfileRepository は Step12 までに削除済み）。
+                    // この分岐に来るのは、それより前に GetService が呼ばれた場合（例: -driverinstall 分岐の Global.Load()。
+                    // Phase6-Step7-Plan.md §0.4）。
                     CreationNote = CreationNote ?? "host already existed (creator not recorded)";
                     ApplyStartupArguments(parser, hostAlreadyCreated: true);
                     return _host;
