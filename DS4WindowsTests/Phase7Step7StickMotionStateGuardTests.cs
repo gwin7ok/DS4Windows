@@ -109,13 +109,15 @@ namespace DS4WindowsTests
             Assert.DoesNotContain("Mapping.mapStickActionData", mouse);
             Assert.DoesNotContain("Mapping.PostMapStickData", mouse);
             Assert.DoesNotContain("Mapping.Click", mouse);
-            Assert.Contains("StickMotionState.Shared.GyroStickX", mouse);
+            Assert.Contains("_stickMotion.GyroStickX", mouse); // Phase7-Step8 W1: コンストラクター注入
+            Assert.DoesNotContain("StickMotionState.Shared", mouse);
 
             foreach (string name in new[] { "l2TwoStageMappingData", "r2TwoStageMappingData", "wheelFilters", "flickMappingData", "deltaAccelProcessors" })
             {
                 Assert.DoesNotContain("Mapping." + name, control);
             }
-            Assert.Contains("StickMotionState.Shared.FlickMappingData", control);
+            Assert.Contains("_stickMotion.FlickMappingData", control); // Phase7-Step8 W1: コンストラクター注入
+            Assert.DoesNotContain("StickMotionState.Shared", control);
         }
 
         [Fact]

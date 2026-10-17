@@ -37,6 +37,9 @@ namespace DS4Windows
         // Phase6-Step4-3: Global 直参照を廃し、コンストラクタ注入（Pure DI、フォールバックなし）で受け取る
         private readonly IProfileSettingsService _profileSettings;
         private readonly IVirtualKBM _virtualKBM;
+        // Phase7-Step8 W1: 旧 StickMotionState.Shared／Mapping.MapClick（静的な窓口）。コンストラクターで受ける。
+        private readonly StickMotionState _stickMotion;
+        private readonly SyntheticInputState _syntheticInput;
         private bool tappedOnce = false, secondtouchbegin = false;
         // タップ判定で許容する始点と終点のずれ（タッチパッド座標。上流は 10）
         private const int TapMaxMoveHw = 100;
@@ -131,8 +134,11 @@ namespace DS4Windows
         private OneEuroFilterPair touchStickFilter;
         private FakeTrackball touchStickTrackball;
 
-        public Mouse(int deviceID, DS4Device d, IProfileSettingsService profileSettings, IVirtualKBM virtualKBM)
+        public Mouse(int deviceID, DS4Device d, IProfileSettingsService profileSettings, IVirtualKBM virtualKBM,
+            StickMotionState stickMotion, SyntheticInputState syntheticInput)
         {
+            _stickMotion = stickMotion ?? throw new ArgumentNullException(nameof(stickMotion));
+            _syntheticInput = syntheticInput ?? throw new ArgumentNullException(nameof(syntheticInput));
             _profileSettings = profileSettings ?? throw new ArgumentNullException(nameof(profileSettings));
             _virtualKBM = virtualKBM ?? throw new ArgumentNullException(nameof(virtualKBM));
             deviceNum = deviceID;
@@ -279,7 +285,7 @@ namespace DS4Windows
             else if (outMode == GyroOutMode.MouseJoystick)
             {
                 s = dev.getCurrentStateRef();
-                StickMotionState.Shared.GyroStickX[deviceNum] = StickMotionState.Shared.GyroStickX[deviceNum] = 128;
+                _stickMotion.GyroStickX[deviceNum] = _stickMotion.GyroStickX[deviceNum] = 128;
 
                 var triggerActive = IsGyroTriggerActive(outMode);
 
@@ -655,7 +661,7 @@ namespace DS4Windows
             bool outputX = msinfo.OutputHorizontal();
             bool outputY = msinfo.OutputVertical();
 
-            PostMapStickData tempMapStickData = StickMotionState.Shared.MapStickActionData[deviceNum];
+            PostMapStickData tempMapStickData = _stickMotion.MapStickActionData[deviceNum];
             if (outputX)
             {
                 if (msinfo.outputStick == GyroMouseStickInfo.OutputStick.LeftStick &&
@@ -671,7 +677,7 @@ namespace DS4Windows
                     tempMapStickData.dirty = true;
                 }
 
-                StickMotionState.Shared.GyroStickX[deviceNum] = axisXOut;
+                _stickMotion.GyroStickX[deviceNum] = axisXOut;
             }
 
             if (outputY)
@@ -689,7 +695,7 @@ namespace DS4Windows
                     tempMapStickData.dirty = true;
                 }
 
-                StickMotionState.Shared.GyroStickY[deviceNum] = axisYOut;
+                _stickMotion.GyroStickY[deviceNum] = axisYOut;
             }
         }
 
@@ -1038,7 +1044,7 @@ namespace DS4Windows
 
             //Mapping.touchStickX[deviceNum] = axisXOut;
             //Mapping.touchStickY[deviceNum] = axisYOut;
-            PostMapStickData tempMapStickData = StickMotionState.Shared.MapStickActionData[deviceNum];
+            PostMapStickData tempMapStickData = _stickMotion.MapStickActionData[deviceNum];
             if (outputX)
             {
                 if (msinfo.outputStick == TouchMouseStickInfo.OutputStick.LeftStick &&
@@ -1837,7 +1843,7 @@ namespace DS4Windows
             if (_profileSettings.GetDS4CSetting(deviceNum, DS4Controls.TouchLeft).IsDefault &&
                 leftDown)
             {
-                Mapping.MapClick(deviceNum, Click.Left);
+                _syntheticInput.CountClick(deviceNum, Click.Left);
                 dragging2 = true;
             }
             else
@@ -1848,19 +1854,19 @@ namespace DS4Windows
             if (_profileSettings.GetDS4CSetting(deviceNum, DS4Controls.TouchUpper).IsDefault &&
                 upperDown)
             {
-                Mapping.MapClick(deviceNum, Click.Middle);
+                _syntheticInput.CountClick(deviceNum, Click.Middle);
             }
 
             if (_profileSettings.GetDS4CSetting(deviceNum, DS4Controls.TouchRight).IsDefault &&
                 rightDown)
             {
-                Mapping.MapClick(deviceNum, Click.Left);
+                _syntheticInput.CountClick(deviceNum, Click.Left);
             }
 
             if (_profileSettings.GetDS4CSetting(deviceNum, DS4Controls.TouchMulti).IsDefault &&
                 multiDown)
             {
-                Mapping.MapClick(deviceNum, Click.Right);
+                _syntheticInput.CountClick(deviceNum, Click.Right);
             }
 
             if (_profileSettings.TouchOutMode[deviceNum] == TouchpadOutMode.Mouse)
@@ -1879,12 +1885,12 @@ namespace DS4Windows
                 // タップのクリックを保持時間の間、押したままにする（毎フレーム MapClick。state は毎フレーム消去されるため）
                 if (DateTime.UtcNow < tapClickHoldUntil)
                 {
-                    Mapping.MapClick(deviceNum, Click.Left);
+                    _syntheticInput.CountClick(deviceNum, Click.Left);
                 }
 
                 if (secondtouchbegin) //if tap and hold (also works as double tap)
                 {
-                    Mapping.MapClick(deviceNum, Click.Left);
+                    _syntheticInput.CountClick(deviceNum, Click.Left);
                     dragging = true;
                 }
                 else
@@ -1916,7 +1922,7 @@ namespace DS4Windows
                 arg.Touches.Length == 1 &&
                 (_profileSettings.LowerRCOn[deviceNum] && arg.Touches[0].HwX > (1920 * 3) / 4 && arg.Touches[0].HwY > (960 * 3) / 4))
             {
-                Mapping.MapClick(deviceNum, Click.Right);
+                _syntheticInput.CountClick(deviceNum, Click.Right);
             }
             else if (arg.Touches == null)
             {

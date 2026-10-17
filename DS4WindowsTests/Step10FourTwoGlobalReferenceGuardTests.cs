@@ -87,8 +87,8 @@ namespace DS4WindowsTests
         [Fact]
         public void SpecialActionRepository_RequiresStoreAndPathService()
         {
-            Assert.Throws<ArgumentNullException>(() => new SpecialActionRepository(null, new PathService()));
-            Assert.Throws<ArgumentNullException>(() => new SpecialActionRepository(new BackingStore(), null));
+            Assert.Throws<ArgumentNullException>(() => new SpecialActionRepository(null, new PathService(), new SyntheticInputState()));
+            Assert.Throws<ArgumentNullException>(() => new SpecialActionRepository(new BackingStore(), null, new SyntheticInputState()));
         }
 
         [Fact]

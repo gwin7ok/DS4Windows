@@ -70,7 +70,7 @@ namespace DS4WindowsTests
         public DS4State RunMapCustom(DS4State input)
         {
             var device = (DS4Device)RuntimeHelpers.GetUninitializedObject(typeof(DS4Device));
-            var mouse = new Mouse(Device, device, Settings, Recorder);
+            var mouse = new Mouse(Device, device, Settings, Recorder, StickMotionState.Shared, SyntheticInputState.Shared);
             var exposed = new DS4StateExposed(input);
             var mapped = new DS4State();
 

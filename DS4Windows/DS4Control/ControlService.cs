@@ -139,6 +139,9 @@ namespace DS4Windows
         private readonly DI.ISpecialActionRepository _specialActionRepository;
         // Phase7-Step5 W4（Q6＝A）: 旧 AppHost.GetService<IElevatedProcessLauncher>()。デバイス再有効化の昇格要求で使う
         private readonly Services.IElevatedProcessLauncher _elevatedProcessLauncher;
+        // Phase7-Step8 W1: 旧 StickMotionState.Shared／SyntheticInputState.Shared（静的な窓口）。コンストラクターで受ける。
+        private readonly StickMotionState _stickMotion;
+        private readonly SyntheticInputState _syntheticInput;
         // コントローラースロット上限（現在接続台数ではない）。プロセス内で不変のためコンストラクタで1回だけ取得する。
         private readonly int _controllerSlotLimit;
 
@@ -268,7 +271,9 @@ namespace DS4Windows
             DI.IAppearanceSettingsService appearanceSettings,
             DI.IProfileActionProvider profileActionProvider,
             DI.ISpecialActionRepository specialActionRepository,
-            Services.IElevatedProcessLauncher elevatedProcessLauncher)
+            Services.IElevatedProcessLauncher elevatedProcessLauncher,
+            StickMotionState stickMotion,
+            SyntheticInputState syntheticInput)
         {
             this.cmdParser = cmdParser;
             this._deviceRegistry = deviceRegistry;
@@ -290,6 +295,8 @@ namespace DS4Windows
             this._profileActionProvider = profileActionProvider ?? throw new ArgumentNullException(nameof(profileActionProvider));
             this._specialActionRepository = specialActionRepository ?? throw new ArgumentNullException(nameof(specialActionRepository));
             this._elevatedProcessLauncher = elevatedProcessLauncher ?? throw new ArgumentNullException(nameof(elevatedProcessLauncher));
+            this._stickMotion = stickMotion ?? throw new ArgumentNullException(nameof(stickMotion));
+            this._syntheticInput = syntheticInput ?? throw new ArgumentNullException(nameof(syntheticInput));
 
             Crc32Algorithm.InitializeTable(DS4Device.DefaultPolynomial);
 
@@ -316,12 +323,12 @@ namespace DS4Windows
                 int tempDev = i;
                 _profileSettings.L2OutputSettings[i].TwoStageModeChanged += (sender, e) =>
                 {
-                    StickMotionState.Shared.L2TwoStageMappingData[tempDev].Reset();
+                    _stickMotion.L2TwoStageMappingData[tempDev].Reset();
                 };
 
                 _profileSettings.R2OutputSettings[i].TwoStageModeChanged += (sender, e) =>
                 {
-                    StickMotionState.Shared.R2TwoStageMappingData[tempDev].Reset();
+                    _stickMotion.R2TwoStageMappingData[tempDev].Reset();
                 };
             }
 
@@ -2189,7 +2196,7 @@ namespace DS4Windows
             device.SerialChange += this.On_SerialChange;
             device.ChargingChanged += CheckQuickCharge;
 
-            touchPad[index] = new Mouse(index, device, _profileSettings, _virtualKBM);
+            touchPad[index] = new Mouse(index, device, _profileSettings, _virtualKBM, _stickMotion, _syntheticInput);
             // Phase7-Step5 W1: DS3 のジャイロトリガー（Controls モード）の判定を、このスロットの Mouse へつなぐ。
             // DS4SixAxis は ControlService を直接参照しない（旧: Program.rootHub。DI 移行後は参照が失われていた）。
             device.SixAxis.GyroControlsTriggerActive =
@@ -2466,7 +2473,7 @@ namespace DS4Windows
             // Set up filter for new input device
             OneEuroFilter tempFilter = new OneEuroFilter(OneEuroFilterPair.DEFAULT_WHEEL_CUTOFF,
                 OneEuroFilterPair.DEFAULT_WHEEL_BETA);
-            StickMotionState.Shared.WheelFilters[ind] = tempFilter;
+            _stickMotion.WheelFilters[ind] = tempFilter;
 
             // Carry over initial profile wheel smoothing values to filter instances.
             // Set up event hooks to keep values in sync
@@ -2476,11 +2483,11 @@ namespace DS4Windows
 
             FlickStickSettings flickStickSettings = _profileSettings.LSOutputSettings[ind].outputSettings.flickSettings;
             flickStickSettings.RemoveRefreshEvents();
-            flickStickSettings.SetRefreshEvents(StickMotionState.Shared.FlickMappingData[ind].flickFilter);
+            flickStickSettings.SetRefreshEvents(_stickMotion.FlickMappingData[ind].flickFilter);
 
             flickStickSettings = _profileSettings.RSOutputSettings[ind].outputSettings.flickSettings;
             flickStickSettings.RemoveRefreshEvents();
-            flickStickSettings.SetRefreshEvents(StickMotionState.Shared.FlickMappingData[ind].flickFilter);
+            flickStickSettings.SetRefreshEvents(_stickMotion.FlickMappingData[ind].flickFilter);
 
             int tempIdx = ind;
             _profileSettings.L2OutputSettings[ind].ResetEvents();
@@ -2553,11 +2560,11 @@ namespace DS4Windows
             }
 
             // Reset current flick stick progress from previous profile
-            StickMotionState.Shared.FlickMappingData[ind].Reset();
+            _stickMotion.FlickMappingData[ind].Reset();
 
             // Reset delta accel processors for sticks
-            StickMotionState.Shared.DeltaAccelProcessors[ind].LSProcessor.Reset();
-            StickMotionState.Shared.DeltaAccelProcessors[ind].RSProcessor.Reset();
+            _stickMotion.DeltaAccelProcessors[ind].LSProcessor.Reset();
+            _stickMotion.DeltaAccelProcessors[ind].RSProcessor.Reset();
 
             // Reset some elements of current Mouse instance
             touchPad[ind]?.Reset();

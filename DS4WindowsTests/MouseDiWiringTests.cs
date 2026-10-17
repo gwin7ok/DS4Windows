@@ -34,7 +34,7 @@ namespace DS4WindowsTests
         public void Constructor_NullProfileSettings_Throws()
         {
             Assert.Throws<ArgumentNullException>(() =>
-                new Mouse(Slot, CreateUninitializedDevice(), null, new RecordingVirtualKbm()));
+                new Mouse(Slot, CreateUninitializedDevice(), null, new RecordingVirtualKbm(), new StickMotionState(), new SyntheticInputState()));
         }
 
         [Fact]
@@ -42,7 +42,19 @@ namespace DS4WindowsTests
         {
             var settings = TestRepositoryFactory.CreateProfileSettingsService(new BackingStore());
             Assert.Throws<ArgumentNullException>(() =>
-                new Mouse(Slot, CreateUninitializedDevice(), settings, null));
+                new Mouse(Slot, CreateUninitializedDevice(), settings, null, new StickMotionState(), new SyntheticInputState()));
+        }
+
+        // Phase7-Step8 W1: 保持クラスはコンストラクターで受ける（旧: StickMotionState.Shared／Mapping.MapClick）
+        [Fact]
+        public void Constructor_NullStateHolders_Throws()
+        {
+            var settings = TestRepositoryFactory.CreateProfileSettingsService(new BackingStore());
+            var kbm = new RecordingVirtualKbm();
+            Assert.Throws<ArgumentNullException>(() =>
+                new Mouse(Slot, CreateUninitializedDevice(), settings, kbm, null, new SyntheticInputState()));
+            Assert.Throws<ArgumentNullException>(() =>
+                new Mouse(Slot, CreateUninitializedDevice(), settings, kbm, new StickMotionState(), null));
         }
 
         [Fact]
@@ -51,7 +63,7 @@ namespace DS4WindowsTests
             var settings = TestRepositoryFactory.CreateProfileSettingsService(new BackingStore());
             var kbm = new RecordingVirtualKbm();
 
-            var mouse = new Mouse(Slot, CreateUninitializedDevice(), settings, kbm);
+            var mouse = new Mouse(Slot, CreateUninitializedDevice(), settings, kbm, new StickMotionState(), new SyntheticInputState());
 
             Assert.Same(settings, GetField(mouse, "_profileSettings"));
             Assert.Same(kbm, GetField(mouse, "_virtualKBM"));

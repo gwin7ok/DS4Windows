@@ -734,10 +734,6 @@ namespace DS4Windows
             }
         }
 
-        internal static void DispatchProfileActionEdge(SpecialAction action, int device, bool value)
-        {
-            DispatchOrSetBeingTriggered(action, device, value);
-        }
 
         // Centralized Mapping-side input-edge handler. Detects input-level rise/fall per (action,device)
         // and only calls ActionManager.DispatchTriggerEdge when an input edge is observed.
@@ -1126,34 +1122,6 @@ namespace DS4Windows
             VirtualKBM.Sync();
         }
 
-        public static void MapClick(int device, Click mouseClick)
-        {
-            switch (mouseClick)
-            {
-                case Click.Left:
-                    deviceState[device].currentClicks.leftCount++;
-                    break;
-                case Click.Middle:
-                    deviceState[device].currentClicks.middleCount++;
-                    break;
-                case Click.Right:
-                    deviceState[device].currentClicks.rightCount++;
-                    break;
-                case Click.Fourth:
-                    deviceState[device].currentClicks.fourthCount++;
-                    break;
-                case Click.Fifth:
-                    deviceState[device].currentClicks.fifthCount++;
-                    break;
-                case Click.WUP:
-                    deviceState[device].currentClicks.wUpCount++;
-                    break;
-                case Click.WDOWN:
-                    deviceState[device].currentClicks.wDownCount++;
-                    break;
-                default: break;
-            }
-        }
 
         public static int DS4ControltoInt(DS4Controls ctrl)
         {
@@ -5590,36 +5558,6 @@ namespace DS4Windows
             }
         }
 
-        // 指定したキーに関連するランタイム上の合成状態を全デバイス分クリアする。
-        // 呼び出しタイミング: 保存直後など、当該キーの設定が変更された直後に呼ぶことで
-        // 古い合成キューや押下フラグが残るのを防止する。
-        public static void ResetRuntimeStateForKey(ushort key)
-        {
-            try
-            {
-                for (int d = 0; d < deviceState.Length; d++)
-                {
-                    // keyPresses から該当キーを削除
-                    if (deviceState[d].keyPresses.ContainsKey(key))
-                        deviceState[d].keyPresses.Remove(key);
-
-                    // native alias も削除
-                    if (deviceState[d].nativeKeyAlias.ContainsKey(key))
-                        deviceState[d].nativeKeyAlias.Remove(key);
-                }
-
-                // 押下済みフラグをクリア（ActionManager優先、legacy配列はフォールバック）
-                try { ActionManager.ClearToggledOnForKey(key); } catch { }
-                // Legacy `PressedOnce` removed; use ActionManager `IsToggledOn` to represent per-key toggled-on state.
-                // ActionManager.ClearToggledOnForKey already invoked above.
-
-                AppLogger.LogToGui($"Runtime state for key {key} cleared on all devices.", false);
-            }
-            catch (Exception ex)
-            {
-                AppLogger.LogToGui($"Failed to reset runtime key state for {key}: {ex.Message}", true);
-            }
-        }
         /// <summary>
         /// DI/IMacroPlayer 用のマクロ実行エントリーポイント
         /// </summary>
@@ -5642,36 +5580,8 @@ namespace DS4Windows
             EndMacro(device, new bool[4], string.Empty, DS4Controls.None);
         }
 
-        internal static string TakePendingRestoreProfileName(int device, out bool previousProfileWasTemporary)
-        {
-            previousProfileWasTemporary = false;
-            if (device < 0 || device >= deviceRuntime.Length)
-                return null;
 
-            if (deviceRuntime[device].UntriggerAction == null)
-                return null;
 
-            previousProfileWasTemporary = deviceRuntime[device].UntriggerAction.prevProfileWasTemporary;
-            string profileName = deviceRuntime[device].UntriggerAction.prevProfileName;
-            deviceRuntime[device].UntriggerAction = null;
-            return profileName;
-        }
-
-        /// <summary>
-        /// DI/IProfileSwitcher 用のプロファイル切り替えエントリーポイント
-        /// </summary>
-        internal static void ApplyProfileDirect(int device, SpecialAction action)
-        {
-            profileApplication?.ApplyFromAction(device, action);
-        }
-
-        /// <summary>
-        /// DI/IProfileSwitcher 用の一時プロファイル復帰エントリーポイント
-        /// </summary>
-        internal static void RestoreProfileDirect(int device)
-        {
-            profileApplication?.RestoreFromAction(device);
-        }
 
         // Play macro as a background task. Optionally the new macro play waits for completion of a previous macro execution (synchronized macro special action).
         // Macro steps are defined either as macrostr string value, macroLst list<int> object or as macroArr integer array. Only one of these should have a valid macro definition when this method is called.

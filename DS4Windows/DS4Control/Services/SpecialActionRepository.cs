@@ -11,11 +11,14 @@ namespace DS4Windows
         private readonly object _actionLock = new object();
         private readonly BackingStore _config;
         private readonly IPathService _pathService;
+        // Phase7-Step8 W1: キー型スペシャルアクションの保存後に、合成入力の状態をリセットするために使う（旧: Global.SaveAction → Mapping）
+        private readonly SyntheticInputState _syntheticInput;
 
         public event EventHandler ActionsChanged;
 
-        public SpecialActionRepository(BackingStore config, IPathService pathService)
+        public SpecialActionRepository(BackingStore config, IPathService pathService, SyntheticInputState syntheticInput)
         {
+            _syntheticInput = syntheticInput ?? throw new ArgumentNullException(nameof(syntheticInput));
             _config = config ?? throw new ArgumentNullException(nameof(config));
             _pathService = pathService ?? throw new ArgumentNullException(nameof(pathService));
         }
@@ -122,6 +125,16 @@ namespace DS4Windows
             double delayTime = 0.0, string extras = "")
         {
             Global.SaveAction(name, controls, mode, details, edit, delayTime, extras);
+
+            // Phase7-Step8 W1: 旧 Global.SaveAction の末尾の処理。キー型（mode==4）を保存したときだけ、当該キーの実行時状態をリセットする
+            try
+            {
+                if (mode == 4 && ushort.TryParse(details, out ushort savedKey))
+                {
+                    _syntheticInput.ResetRuntimeStateForKey(savedKey);
+                }
+            }
+            catch { }
             if (AppLogger.IsTraceEnabled)
                 AppLogger.LogTrace($"[DI] SpecialActionRepository.SaveAction: Action '{name}' saved via DI (mode={mode}, edit={edit})");
             OnActionsChanged();

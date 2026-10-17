@@ -22,12 +22,12 @@ namespace DS4WindowsTests
             uint up = scope.KbmMapping.MOUSEEVENTF_LEFTUP;
 
             // 1 ティック目: 押下
-            Mapping.MapClick(Device, Click.Left);
+            SyntheticInputState.Shared.CountClick(Device, Click.Left);
             Mapping.Commit(Device, scope.Settings);
             Assert.Equal(new[] { down }, scope.Recorder.MouseButtonEvents);
 
             // 2 ティック目: 押したまま（毎ティック MapClick が呼ばれる）。新しい出力はない
-            Mapping.MapClick(Device, Click.Left);
+            SyntheticInputState.Shared.CountClick(Device, Click.Left);
             Mapping.Commit(Device, scope.Settings);
             Assert.Equal(new[] { down }, scope.Recorder.MouseButtonEvents);
 
@@ -41,8 +41,8 @@ namespace DS4WindowsTests
         {
             using var scope = new MappingCharacterizationScope();
 
-            Mapping.MapClick(Device, Click.Right);
-            Mapping.MapClick(Device, Click.Middle);
+            SyntheticInputState.Shared.CountClick(Device, Click.Right);
+            SyntheticInputState.Shared.CountClick(Device, Click.Middle);
             Mapping.Commit(Device, scope.Settings);
 
             Assert.Contains(scope.KbmMapping.MOUSEEVENTF_RIGHTDOWN, scope.Recorder.MouseButtonEvents);
@@ -67,11 +67,11 @@ namespace DS4WindowsTests
         {
             using var scope = new MappingCharacterizationScope();
 
-            Mapping.MapClick(Device, Click.Left);
-            Mapping.MapClick(Device, Click.Left);
-            Mapping.MapClick(Device, Click.Fourth);
-            Mapping.MapClick(Device, Click.WDOWN);
-            Mapping.MapClick(Device, Click.None);
+            SyntheticInputState.Shared.CountClick(Device, Click.Left);
+            SyntheticInputState.Shared.CountClick(Device, Click.Left);
+            SyntheticInputState.Shared.CountClick(Device, Click.Fourth);
+            SyntheticInputState.Shared.CountClick(Device, Click.WDOWN);
+            SyntheticInputState.Shared.CountClick(Device, Click.None);
 
             var clicks = SyntheticInputState.Shared.DeviceState[Device].currentClicks;
             Assert.Equal(2, clicks.leftCount);

@@ -19,7 +19,7 @@
 | Step5 | `Program.rootHub` と Service Locator の削除 | **完了**（2026-10-17。Q1〜Q9 推奨どおり承認、DS3 の不具合も修正。W1〜W5 のビルド・テスト成功、W6 は文書。U-15 の実機確認は未。完了報告書あり） | `Phase7-Step5-Plan.md`、`Phase7-Step5-Completion-Report.md` |
 | Step6 | 出力デバイス種別の所有権の移動 | **完了**（2026-10-17。Q1〜Q5 推奨どおり承認。W1・W2 のビルド・テスト成功、W3 は文書。U-16 の実機確認は未。完了報告書あり） | |
 | Step7 | `Mapping` の instance 化（1）特性化テストと状態の切り出し | **完了**（2026-10-17。Q1〜Q6 推奨どおり承認。W1〜W4 のビルド・テスト成功、W5 は文書。U-17 の実機確認は未。完了報告書あり） | |
-| Step8 | `Mapping` の instance 化（2）instance 化と呼び出し元の切り替え | 未着手 | |
+| Step8 | `Mapping` の instance 化（2）instance 化と呼び出し元の切り替え | **実装中**（2026-10-17。Q1〜Q9 推奨どおり承認。W1 実装済み、ビルド・テスト待ち） | `Phase7-Step8-Plan.md` |
 | Step9 | `Mapping` の instance 化（3）互換 `AppHost` の削除ほか | 未着手 | |
 | Step10 | 仕上げ（`Global` の残り、永続化の切り出し、総合検証） | 未着手 | |
 

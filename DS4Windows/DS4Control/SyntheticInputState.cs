@@ -1,3 +1,4 @@
+using System;
 using System.Threading;
 
 namespace DS4Windows
@@ -24,6 +25,69 @@ namespace DS4Windows
         {
             DeviceState = new SyntheticState[Global.MAX_DS4_CONTROLLER_COUNT];
             for (int i = 0; i < DeviceState.Length; i++) DeviceState[i] = new SyntheticState();
+        }
+
+        /// <summary>
+        /// Phase7-Step8 W1: 旧 <c>Mapping.MapClick</c>。このティックで押されたマウスボタンの回数を数える（<c>Commit</c> が前ティックとの差で押下／解放を送る）。
+        /// 配列の要素を更新するだけで、割り当てはない。
+        /// </summary>
+        public void CountClick(int device, Click mouseClick)
+        {
+            switch (mouseClick)
+            {
+                case Click.Left:
+                    DeviceState[device].currentClicks.leftCount++;
+                    break;
+                case Click.Middle:
+                    DeviceState[device].currentClicks.middleCount++;
+                    break;
+                case Click.Right:
+                    DeviceState[device].currentClicks.rightCount++;
+                    break;
+                case Click.Fourth:
+                    DeviceState[device].currentClicks.fourthCount++;
+                    break;
+                case Click.Fifth:
+                    DeviceState[device].currentClicks.fifthCount++;
+                    break;
+                case Click.WUP:
+                    DeviceState[device].currentClicks.wUpCount++;
+                    break;
+                case Click.WDOWN:
+                    DeviceState[device].currentClicks.wDownCount++;
+                    break;
+                default: break;
+            }
+        }
+
+        /// <summary>
+        /// Phase7-Step8 W1: 旧 <c>Mapping.ResetRuntimeStateForKey</c>。キー型スペシャルアクションの保存直後に、当該キーの合成キーの記録と
+        /// トグル状態を全デバイスから消す（古い合成キューや押下フラグの残留を防ぐ）。ログは従来どおり。
+        /// </summary>
+        public void ResetRuntimeStateForKey(ushort key)
+        {
+            try
+            {
+                for (int d = 0; d < DeviceState.Length; d++)
+                {
+                    // keyPresses から該当キーを削除
+                    if (DeviceState[d].keyPresses.ContainsKey(key))
+                        DeviceState[d].keyPresses.Remove(key);
+
+                    // native alias も削除
+                    if (DeviceState[d].nativeKeyAlias.ContainsKey(key))
+                        DeviceState[d].nativeKeyAlias.Remove(key);
+                }
+
+                // 押下済みフラグをクリア（ActionManager が持つ IsToggledOn）
+                try { ActionManager.ClearToggledOnForKey(key); } catch { }
+
+                AppLogger.LogToGui($"Runtime state for key {key} cleared on all devices.", false);
+            }
+            catch (Exception ex)
+            {
+                AppLogger.LogToGui($"Failed to reset runtime key state for {key}: {ex.Message}", true);
+            }
         }
 
         /// <summary>全体と全デバイスの合成状態を新品へ戻す（Actions.xml の読み込み後のリセット用）。</summary>

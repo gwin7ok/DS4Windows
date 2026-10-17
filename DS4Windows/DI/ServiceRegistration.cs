@@ -67,7 +67,8 @@ namespace DS4Windows.DI
             services.AddSingleton<IProfilePresetLoader, ProfilePresetLoader>();
             services.AddSingleton<IProfileSlotApplier, ProfileSlotApplier>();
             services.AddSingleton<ISpecialActionRepository>(sp => new SpecialActionRepository(
-                sp.GetRequiredService<BackingStore>(), sp.GetRequiredService<IPathService>()));
+                sp.GetRequiredService<BackingStore>(), sp.GetRequiredService<IPathService>(),
+                sp.GetRequiredService<SyntheticInputState>()));
 
             // Phase 3 Step 3-6: プロセス検査・昇格起動サービスの登録
             services.AddSingleton<IProcessInspector, DefaultProcessInspector>();
@@ -173,7 +174,10 @@ namespace DS4Windows.DI
                     sp.GetRequiredService<IAppearanceSettingsService>(),
                     sp.GetRequiredService<IProfileActionProvider>(),
                     sp.GetRequiredService<ISpecialActionRepository>(),
-                    sp.GetRequiredService<IElevatedProcessLauncher>()
+                    sp.GetRequiredService<IElevatedProcessLauncher>(),
+                    // Phase7-Step8 W1: 保持クラスをコンストラクターで受ける（旧: ControlService／Mouse が Shared を参照）
+                    sp.GetRequiredService<StickMotionState>(),
+                    sp.GetRequiredService<SyntheticInputState>()
                 );
             });
             services.AddSingleton<IDeviceStateAccessor>(sp => sp.GetRequiredService<ControlService>());
