@@ -19,13 +19,13 @@ namespace DS4WindowsTests
         }
 
         [Fact]
-        public void AddAndGetAction_ShouldWorkCorrectly()
+        public void GetAction_ShouldReturnItemInList()
         {
+            // Phase7-Step2 W5: AddAction（メモリ上の並行実装）を削除したため、一覧への追加は ActionList で行う。
             var repo = TestRepositoryFactory.CreateSpecialActionRepository(new BackingStore());
             var action = new SpecialAction("TestAction", "Touchpad", "Key", "10", 0);
 
-            var added = repo.AddAction(action);
-            Assert.True(added);
+            repo.ActionList.Add(action);
 
             var retrieved = repo.GetAction("TestAction");
             Assert.NotNull(retrieved);
@@ -36,62 +36,17 @@ namespace DS4WindowsTests
         }
 
         [Fact]
-        public void RemoveAction_ShouldRemoveItem()
-        {
-            var repo = TestRepositoryFactory.CreateSpecialActionRepository(new BackingStore());
-            var action = new SpecialAction("RemoveTestAction", "Touchpad", "Key", "10", 0);
-
-            repo.AddAction(action);
-            Assert.True(repo.ActionExists("RemoveTestAction"));
-
-            var removed = repo.RemoveAction("RemoveTestAction");
-            Assert.True(removed);
-            Assert.False(repo.ActionExists("RemoveTestAction"));
-        }
-
-        [Fact]
-        public void ReplaceAction_ShouldReplaceExistingItem()
-        {
-            var repo = TestRepositoryFactory.CreateSpecialActionRepository(new BackingStore());
-            var action1 = new SpecialAction("ReplaceTest", "Touchpad", "Key", "10", 0);
-            var action2 = new SpecialAction("ReplaceTest", "Cross", "Macro", "20", 0);
-
-            repo.AddAction(action1);
-            Assert.Equal("Touchpad", repo.GetAction("ReplaceTest").controls);
-
-            bool replaced = repo.ReplaceAction("ReplaceTest", action2);
-            Assert.True(replaced);
-            Assert.Equal("Cross", repo.GetAction("ReplaceTest").controls);
-        }
-
-        [Fact]
         public void SpecialActionRepository_Modifications_ShouldReflectInBackingStore()
         {
             var backingStore = new BackingStore();
             var repo = TestRepositoryFactory.CreateSpecialActionRepository(backingStore);
 
             var action = new SpecialAction("BackingStoreTest", "Circle", "Key", "30", 0);
-            repo.AddAction(action);
+            repo.ActionList.Add(action);
 
             // BackingStore.actions に直接反映されていることを検証（二重管理解消の証明）
             Assert.Contains(backingStore.actions, a => a.name == "BackingStoreTest");
             Assert.Same(action, repo.ActionList.First(a => a.name == "BackingStoreTest"));
-
-            repo.RemoveAction("BackingStoreTest");
-            Assert.DoesNotContain(backingStore.actions, a => a.name == "BackingStoreTest");
-        }
-
-        [Fact]
-        public void ActionsChangedEvent_ShouldFireOnMutation()
-        {
-            var repo = TestRepositoryFactory.CreateSpecialActionRepository(new BackingStore());
-            bool eventFired = false;
-            repo.ActionsChanged += (s, e) => eventFired = true;
-
-            var action = new SpecialAction("EventTestAction", "Touchpad", "Key", "10", 0);
-            repo.AddAction(action);
-
-            Assert.True(eventFired);
         }
     }
 }

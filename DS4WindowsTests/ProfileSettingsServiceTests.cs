@@ -90,24 +90,6 @@ namespace DS4WindowsTests
         }
 
         [Fact]
-        public void ResetToDefaults_ShouldRestoreValues()
-        {
-            var service = TestRepositoryFactory.CreateProfileSettingsService();
-
-            service.TouchpadActiveArray[0] = false;
-            service.SetUseTempProfile(0, true);
-            service.SetTempProfileName(0, "Temp");
-            service.SetLinkedProfileCheck(0, true);
-
-            service.ResetToDefaults(0);
-
-            Assert.True(service.GetTouchpadActive(0));
-            Assert.False(service.GetUseTempProfile(0));
-            Assert.Equal(string.Empty, service.GetTempProfileName(0));
-            Assert.False(service.GetLinkedProfileCheck(0));
-        }
-
-        [Fact]
         public void OutOfBounds_ShouldBeHandledSafely()
         {
             var service = TestRepositoryFactory.CreateProfileSettingsService();

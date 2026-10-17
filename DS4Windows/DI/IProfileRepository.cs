@@ -12,11 +12,9 @@ namespace DS4Windows.DI
         bool LoadProfile(int deviceIndex, string profileName);
         bool SaveProfile(int deviceIndex, string profileName);
 
-        bool LoadDefaultProfile(int deviceIndex);
-        bool LoadProfileToSlot(int deviceIndex, string profileName);
-
-        IReadOnlyList<string> GetProfileNames();
-        bool ProfileExists(string profileName);
+        // Phase7-Step2 W5: LoadDefaultProfile／LoadProfileToSlot／GetProfileNames／ProfileExists は削除した（本体の呼び出しが 0 件。
+        // 読み込みは LoadProfile、プリセットは ProfilePresetLoader、一覧は UI の ProfileList が担う重複）。
+        // 参照: docs-forDIMG/MadeByAgent/Phase7-Step2-Plan.md §2.4
 
         bool ApplyProfileDirect(int deviceIndex, string profileName);
         bool RestoreProfileDirect(int deviceIndex);

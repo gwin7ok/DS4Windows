@@ -243,3 +243,10 @@ Phase6-Step9b の検証（`Phase6-Step9b-Plan.md` §1）で、本フェーズの
   - ホットパスの負荷（毎ティックの GetStateFor）と割り当て。
 - **前提となる成果**: ButtonSpecialActionOutput（Phase6-Step10-3d）と、Fresh-press ガードの全型への適用（Phase6-Step10-4-2e）。
 - **関連**: Phase6-Step10-3d-Plan.md §7〜8。
+
+## 追記（2026-10-17）: Phase7-Step2 から申し送る、`Actions/` の未配線の抽象（12 メンバー）と Service Locator（17 件）
+
+- **経緯**: Phase7-Step2 の調査（`Phase7-Step2-Plan.md` §2.5）で、DI インターフェースのうち、本体の呼び出しが 0 件のメンバーを走査した。`Actions/` の抽象（系統 A。未配線）は、Phase7 では触らず、Phase8 の設計の中で、使うか削除するかを判断する。
+- **対象メンバー（12）**: `IActionBinding`（`OnReleased`、`OnTriggered`、`Outputs`）、`IKeyController`（`ClearAll`、`OnDown`、`OnUp`）、`IActionRegistry.GetBindingsForDevice`、`IControllerRegistry.GetControllersForDevice`、`IInputAction.Evaluate`、`IMacroPlayer.IsPlaying`（テスト 11 参照）、`ITrigger.Context`、`IOutputHandler.FakeKeyRepeat`。
+- **Service Locator（17 件）**: `Actions/ActionManager.cs` 13、`ActionFactory.cs` 1、`DefaultKeyButtonActionControllerFactory.cs` 2、`KeyActionAdapter.cs` 1 が、`ServiceProviderHolder.Provider` を直接使う。`Phase7Step1ServiceLocatorRatchetGuardTests` が基準値で固定している。Phase8 の統合ディスパッチで、コンストラクター注入へ置き換える。
+- **判断の方針**: §2.4（本来その API を使うべきか）に従う。Phase8 の `TriggerBinding` の設計に必要な契約は、TODO を付けて残し、不要なものは削除する。

@@ -133,13 +133,13 @@
 
 ## 7. 完了判定チェックリスト
 
-- [ ] W1〜W6 のビルド（警告 0）・テストビルド・テスト実行が成功している。
-- [ ] 削除 45 メンバーが、契約・実装・テストから消えている（`Phase7Step2RemovedContractMembersGuardTests` が成功）。
-- [ ] 接続 3 件と温存 1 件に、TODO が付いている。
-- [ ] Phase8 の台帳に、12 メンバーが追記されている。
-- [ ] `Phase7-Residual-Ledger.md`、`Phase7-Status.md`、モデル図が更新されている。
-- [ ] 起動・接続・出力スロットの付け外しの実機確認（1 回）。
-- [ ] `Phase7-Step2-Completion-Report.md` が作成されている。
+- [ ] W1〜W7 のビルド（警告 0）・テストビルド・テスト実行が成功している（W1〜W6 は成功。W7 は結果待ち）。
+- [x] 削除 56 メンバー（計画の 49 のうち削除 45、W5・W6・W7 の追加分を含む）が、契約・実装・テストから消えている（`Phase7Step2RemovedContractMembersGuardTests`）。
+- [x] 接続・温存の契約に、TODO が付いている（`UsingMaxControllers`、`ReEnableDevice`、`Load/SaveOutputSlots`、`OutputSlotChanged`、`IUdpServerService`）。
+- [x] Phase8 の台帳に、12 メンバーと Service Locator 17 件が追記されている。
+- [x] `Phase7-Residual-Ledger.md`、`Phase7-Status.md`、モデル図が更新されている。
+- [ ] 起動・接続・出力スロットの付け外しの実機確認（チェックリスト §11 の U-11。未実施）。
+- [x] `Phase7-Step2-Completion-Report.md` が作成されている。
 
 ---
 
@@ -195,3 +195,56 @@
   - `NotificationServiceTests`: 設定の同期だけを確認する 3 件（`Defaults_ShouldSynchronizeWithGlobal`、`GlobalShim_ShouldSynchronizeWithService`、`Service_ShouldDirectlyReflectGlobalChanges`）を削除。`service.NotificationsEnabled = …` は `Global.Notifications = 1／0` に置き換えた。
   - `MockNotificationService`、`MockVirtualKBM`、`RecordingVirtualKbm`、`VirtualKBMTests`、`UdpServerServiceTests`: 削除したメンバーの定義・確認を削除。
 - ラチェット: `AppNotificationService.cs` 6 → 1、`OutputKBMHandlerAdapter.cs` 21 → 20。全域は `Global.*` 732 → **726**（走査で確認）。`AppHost` 40、`Program.rootHub` 22 は不変。
+
+### W5 の実施記録（2026-10-17、W4 のビルド・テストは成功。W5 のビルド・テストはユーザーの実行待ち）
+- 削除（契約と実装）:
+  - `IProfileRepository`: `LoadDefaultProfile`、`LoadProfileToSlot`、`GetProfileNames`、`ProfileExists`（46 行）。
+  - `ISpecialActionRepository`: `AddAction`、`ReplaceAction`（メモリ上のリストだけを変える並行実装）、`GetActionIndex`（契約のみ。実装は、`RemoveAction` が内部で使うため private に変更）。契約の説明文の `cref` を `RemoveAction` に更新。
+  - `IDs4DeviceRegistry`: `ConnectedDevices`、`DeviceCount`（`GetDS4Controllers()` と同じ値）。
+- 接続（削除しない）: `IDs4DeviceRegistry.ReEnableDevice` に TODO（経緯・差・接続予定 Phase7-Step4）を付けた。
+- テスト: `ProfileRepositoryTests.LoadDefaultProfile_ShouldResetSlotSettings` を削除。`SpecialActionRepositoryTests` は、`AddAction` による準備を `ActionList.Add` に置き換え、`ReplaceAction` のテストを削除し、`ActionsChanged` のテストは `RemoveAction` で発火させる形に変更。`Ds4DeviceRegistryTests` はモックと確認から削除したメンバーを除いた。
+- ラチェット: 変更なし（`Global.*` 726、`AppHost` 40、`Program.rootHub` 22）。
+- **調査で見つけた、承認済みの範囲の外の事項（判断をお願いしたい）**:
+  1. `ISpecialActionRepository.RemoveAction`（メモリ上のみ）は、`AddAction`／`ReplaceAction` と同じ並行実装の仲間で、本体の呼び出しが 0 件。名前が `Global.RemoveAction`／`BackingStore.RemoveAction` と衝突するため、W5 の前の走査（名前のみで数える）から漏れていた。`Phase6Step10GroupThreeContractTests.RemoveAction_InMemoryOnly_DoesNotChangeFile` が、保存する `RemoveActionAndSave` との違いを固定するために使っている。推奨: 削除する（W6 で、そのテストと一緒に）。
+  2. `IProfileSettingsService.ResetToDefaults` は、`LoadDefaultProfile` の削除で、本体の呼び出しが 0 件になった（残るのは `ProfileSettingsServiceTests` のみ）。推奨: 削除する（W6 で）。
+  3. 名前の衝突で走査から漏れる同様の事例を探すため、W6 の最初に、型を明示した走査（受け手の型で数える）で再確認する。
+
+### W6 の実施記録（2026-10-17、W5 のビルド・テストは成功。W6 のビルド・テストはユーザーの実行待ち）
+- 承認（2026-10-17）: `RemoveAction`（メモリ上のみ）と `ResetToDefaults` の削除、名前衝突で漏れたメンバーの再確認。
+- 削除:
+  - `ISpecialActionRepository.RemoveAction`（と実装、private 化していた `GetActionIndex`）。テスト: `SpecialActionRepositoryTests` の `RemoveAction_ShouldRemoveItem`、`ActionsChangedEvent_ShouldFireOnMutation`（保存経路の通知は `Phase6Step10GroupThreeContractTests.SaveAction_AddsNewAction_SavesFileAndNotifies` が確認する）、`Phase6Step10GroupThreeContractTests.RemoveAction_InMemoryOnly_DoesNotChangeFile`。
+  - `IProfileSettingsService.ResetToDefaults`（と実装。`LoadDefaultProfile` の削除で、本体の呼び出しが 0 件になっていた）。テスト: `ProfileSettingsServiceTests.ResetToDefaults_ShouldRestoreValues`。
+- TODO を付与（Q5）: `IOutputSlotService.LoadOutputSlots`／`SaveOutputSlots`（接続予定 Step5）、`IOutputSlotService.OutputSlotChanged`（温存、Step6 で再判断）。`IEnvironmentService.UsingMaxControllers`（W4）と `IDs4DeviceRegistry.ReEnableDevice`（W5）は付与済み。
+- ガード: 新規 `Phase7Step2RemovedContractMembersGuardTests`（削除した 51 メンバーが契約に再び現れないこと、削除した 3 ファイルの不在、残した 9 メンバーの存在。ソースの実ファイルと突き合わせて、不一致が 0 件であることを確認した）。
+- Phase8 の台帳: `Phase8-Unified-Trigger-Dispatch-Plan.md` に、12 メンバーと Service Locator 17 件を追記した。
+- モデル図: `03-Class-Interface-Diagram.md`・`04-Service-Lifecycle-Spec.md` のインターフェース記述は W3 の注記に加え、下記の注記を追記した。
+- ラチェット: 変更なし（`Global.*` 726、`AppHost` 40、`Program.rootHub` 22）。
+
+#### 名前の衝突で漏れたメンバーの再確認の結果（型を意識した再走査）
+- 方法: 全インターフェースのメンバーについて、「契約・実装以外にも同名の宣言がある」ものを抽出し（214 件）、参照の受け手の変数名で、当該インターフェースの変数か、別の型かを確認した（`scripts/audit/Step12/iface.py` を拡張した手元の走査）。参照が 2 件以下の 76 件を目視で確認し、3 件以上の分は、受け手の変数名がインターフェースの変数であることを抜き取りで確認した。
+- **新たに見つかった、本体の呼び出しが 0 件のメンバー（承認待ち、いずれも未削除）**:
+  1. `IUdpServerService` **契約全体**（`IsRunning`／`Port`／`Start`／`Stop`）: DI に登録されているが、使う側が無い。`ControlService` は `UdpServer` を直接 `new` して使う（`ControlService.cs:949`）。Phase5-Step10（2026-09-04）で「UDP サーバーの起動・停止の窓口」として作られ、呼び出し側の切り替えが未実施。§2.4 の「使うべきもの」に当たる可能性が高い（推奨: 接続。`ControlService` の UDP の起動・停止をこのサービス経由にする。時期は Step5 以降）。
+  2. `ISpecialActionRepository.GetAction`、`ActionExists`、`SaveActions`: 受け手が別の型（`Global`／`m_Config`／`BackingStore`）のものだけだった。推奨: 削除（`GetActionOrPlaceholder` が使われている。`ActionExists` は `RemoveActionAndSave` の内部判定として実装に残す）。
+  3. `IPathService.ActionsPath`: 受け手が `specialActionRepo`（`ISpecialActionRepository.ActionsPath`）で、別の契約のもの。推奨: 削除。
+  4. `IDs4DeviceRegistry.IsHidHideInstalled`: 同じ値を `IEnvironmentService.IsHidHideInstalled()` が提供し、使われているのはそちら。推奨: 削除。
+  5. `IProfileSettingsService.RumbleAutostopTime`（配列版）: 受け手が `DS4Device`／`RumbleSettings` のもの。使われているのは `GetRumbleAutostopTime(int)`。推奨: 削除。
+  6. `IVirtualKBM.Version`: 受け手が別の型（`OSVersion` ほか）で、`Global.outputKBMHandler.Version` は具象の基底クラスのもの。推奨: 削除（アダプターの実装は契約のためのもの）。
+- 限界: 参照が 3 件以上のメンバーは、受け手の抜き取り確認にとどまる。見落としの可能性は残る（W7 で、さらに確認するかを判断）。
+
+### W7 の実施記録（2026-10-17、W6 のビルド・テストは成功。W7 のビルド・テストはユーザーの実行待ち）
+- 承認（2026-10-17）: W6 で見つけた追加候補 7 件のうち、`IUdpServerService` は「接続」として TODO を付けて残し、他の 6 件は削除する（推奨どおり）。
+- 削除（契約と実装）:
+  - `ISpecialActionRepository.SaveActions`（と実装）、`GetAction`、`ActionExists`（契約から外した。実装の `GetAction`／`ActionExists` は、`RemoveActionAndSave` の内部判定とテストの確認で使うため、クラスには残した）。契約の説明文の `cref` を修正。
+  - `IPathService.ActionsPath`（と実装。`SpecialActionRepository` は自前の `ActionsPath` を持つ）。
+  - `IDs4DeviceRegistry.IsHidHideInstalled`（と実装、テストのモック）。
+  - `IProfileSettingsService.RumbleAutostopTime`（配列版。実装も削除。`BackingStore.rumbleAutostopTime` は残る）。
+  - `IVirtualKBM.Version`（と `OutputKBMHandlerAdapter`、`MockVirtualKBM`、`RecordingVirtualKbm`、`VirtualKBMTests` の確認）。基底クラスの `Version` は上流のため触れない。
+- 接続（削除しない）: `IUdpServerService` に TODO（経緯、`ControlService` が `UdpServer` を直接 new する差、接続予定 Phase7-Step5 以降）。
+- ガード: `Phase7Step2RemovedContractMembersGuardTests` に、上記の削除分を追加し、`IUdpServerService` の 4 メンバーを「残す契約」に加えた（削除 56 メンバー。W6 の記録の「51」は、数え間違いだった）。契約の実ファイルと突き合わせて、不一致が 0 件であることを確認した。
+- ラチェット: `Ds4DeviceRegistryAdapter.cs` 1 → 0、`OutputKBMHandlerAdapter.cs` 20 → 19、`SpecialActionRepository.cs` 4 → 3。全域は `Global.*` 726 → **723**（走査で確認）。`AppHost` 40、`Program.rootHub` 22 は不変。
+
+#### W7 のテスト失敗と是正（2026-10-17）
+- 失敗: `Phase6Step7ContractExtensionTests.SpecialActionRepository_CreateStandardActions_DelegatesToGlobal_AndLoadActionsHasNoFileExistsShortcut`（「LoadActions の本体を特定できなかった」）。
+- 原因: このテストは、ソースの文字列で `LoadActions` の本体の終端を、次のメンバー `public bool SaveActions()` で判定していた。W7 で `SaveActions` を削除したため、終端が見つからなくなった（実装の挙動の問題ではなく、テストの終端の指定）。
+- 是正: 終端を、`LoadActions` の次のメンバー `public SpecialAction GetAction(` に変更した（テストの意図「`LoadActions` に `File.Exists` の早期 return が再混入していないこと」は維持）。
+- 教訓: ソースの文字列でメンバーの範囲を切り出すテストは、隣のメンバーの削除で壊れる。メンバーを削除する前に、`public bool <名前>` のような隣接メンバーの名前を使う正規表現を検索する（今後の削除前の確認項目に追加）。

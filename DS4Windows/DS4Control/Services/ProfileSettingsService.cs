@@ -320,15 +320,6 @@ namespace DS4Windows
             }
         }
 
-        public int[] RumbleAutostopTime
-        {
-            get => SafeConfig?.rumbleAutostopTime;
-            set
-            {
-                if (SafeConfig != null) SafeConfig.rumbleAutostopTime = value;
-            }
-        }
-
         // 選択肢A: BackingStore への直接委譲（純粋な薄いパススルー）
         public RumbleSettings[] RumbleSettings => SafeConfig?.rumbleSettings;
 
@@ -515,29 +506,6 @@ namespace DS4Windows
         // コピーしない版（Phase6-Step3-6a、決定 R1）。Global.reverseX360ButtonMapping は起動時に作られて以後変化しない定数表。
         // 元の Global.reverseX360ButtonMapping（素の public static 配列）と同じく、参照をそのまま返す。
         public DS4Controls[] ReverseX360ButtonMapping => Global.reverseX360ButtonMapping;
-
-        public void ResetToDefaults(int deviceIndex)
-        {
-            if (deviceIndex >= 0 && deviceIndex < TEST_PROFILE_ITEM_COUNT)
-            {
-                lock (_syncLock)
-                {
-                    _touchpadActive[deviceIndex] = true;
-                    _useTempProfile[deviceIndex] = false;
-                    _tempProfileName[deviceIndex] = string.Empty;
-                    _tempProfileDistance[deviceIndex] = false;
-                    _useDInputOnly[deviceIndex] = true;
-                    if (deviceIndex < MAX_DS4_CONTROLLER_COUNT)
-                    {
-                        _linkedProfileCheck[deviceIndex] = false;
-                    }
-                    if (SafeConfig?.rumbleSettings != null && deviceIndex < SafeConfig.rumbleSettings.Length)
-                    {
-                        SafeConfig.rumbleSettings[deviceIndex].Reset();
-                    }
-                }
-            }
-        }
 
         // ---- Phase6-Step2-2 (PR-2): 接続時のエクストラボタン再構築 ----
         public void RefreshExtrasButtons(int deviceIndex, List<DS4Controls> buttons)

@@ -131,7 +131,6 @@ namespace DS4Windows.DI
         LightbarSettingInfo[] LightbarSettingsInfo { get; }
         bool[] InverseRumbleMotors { get; }
         byte[] RumbleBoost { get; }
-        int[] RumbleAutostopTime { get; }
         DualSenseDevice.RumbleEmulationMode[] DualSenseRumbleEmulationMode { get; set; }
         bool[] UseGenericRumbleStrRescaleForDualSenses { get; set; }
         byte[] DualSenseHapticPowerLevel { get; set; }
@@ -218,8 +217,6 @@ namespace DS4Windows.DI
         bool ProfileChangedNotification { get; set; }
         int[] DebouncingMs { get; }
         VirtualKBMMapping OutputKBMMapping { get; set; }
-
-        void ResetToDefaults(int deviceIndex);
 
         // ---- Phase6-Step2-2 (PR-2): 接続時のエクストラボタン再構築（Global への薄い委譲）----
         void RefreshExtrasButtons(int deviceIndex, List<DS4Controls> buttons);

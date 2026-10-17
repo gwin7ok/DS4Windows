@@ -15,7 +15,6 @@ namespace DS4WindowsTests
             public int FindControllersCalls { get; private set; }
             public int StopControllersCalls { get; private set; }
             public List<DS4Device> RemoveCalls { get; } = new List<DS4Device>();
-            public bool MockHidHideInstalled { get; set; } = true;
             public bool IsExclusiveMode { get; set; }
 
             // CS0067 警告回避のための明示的空アクセサ
@@ -35,9 +34,7 @@ namespace DS4WindowsTests
                 return MockDevices;
             }
 
-            public IEnumerable<DS4Device> ConnectedDevices => MockDevices;
             public IEnumerable<DS4Device> GetDS4Controllers() => MockDevices;
-            public int DeviceCount => MockDevices.Count;
 
             public void StopControllers()
             {
@@ -54,7 +51,6 @@ namespace DS4WindowsTests
             public void UpdateSerial(object sender, EventArgs e) { }
             public void ReEnableDevice(string deviceInstanceId) { }
 
-            public bool IsHidHideInstalled => MockHidHideInstalled;
         }
 
         [Fact]
@@ -63,9 +59,7 @@ namespace DS4WindowsTests
             var adapter = new Ds4DeviceRegistryAdapter();
 
             Assert.NotNull(adapter);
-            Assert.NotNull(adapter.ConnectedDevices);
             Assert.NotNull(adapter.GetDS4Controllers());
-            Assert.True(adapter.DeviceCount >= 0);
 
             // Null 引数に対する安全性の検証
             bool removeNull = adapter.RemoveDevice(null);
@@ -91,9 +85,6 @@ namespace DS4WindowsTests
             Assert.NotNull(found);
             Assert.Equal(1, mockRegistry.FindControllersCalls);
 
-            // DeviceCount
-            Assert.Equal(0, mockRegistry.DeviceCount);
-
             // StopControllers
             mockRegistry.StopControllers();
             Assert.Equal(1, mockRegistry.StopControllersCalls);
@@ -102,9 +93,6 @@ namespace DS4WindowsTests
             bool removed = mockRegistry.RemoveDevice(null);
             Assert.False(removed);
             Assert.Single(mockRegistry.RemoveCalls);
-
-            // HidHide
-            Assert.True(mockRegistry.IsHidHideInstalled);
         }
     }
 }

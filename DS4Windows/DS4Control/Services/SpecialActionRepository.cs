@@ -76,34 +76,6 @@ namespace DS4Windows
             }
         }
 
-        public bool SaveActions()
-        {
-            lock (_actionLock)
-            {
-                try
-                {
-                    if (_config != null)
-                    {
-                        _config.SaveActions();
-                    }
-                    else
-                    {
-                        Global.SaveActions();
-                    }
-
-                    if (AppLogger.IsTraceEnabled)
-                        AppLogger.LogTrace("[DI] SpecialActionRepository.SaveActions: Actions.xml saved via DI");
-
-                    return true;
-                }
-                catch (Exception ex)
-                {
-                    AppLogger.LogToGui($"Failed to save Actions.xml: {ex.Message}", true);
-                    return false;
-                }
-            }
-        }
-
         public SpecialAction GetAction(string actionName)
         {
             if (string.IsNullOrWhiteSpace(actionName) || _config == null || _config.actions == null)
@@ -115,84 +87,9 @@ namespace DS4Windows
             }
         }
 
-        public int GetActionIndex(string actionName)
-        {
-            if (string.IsNullOrWhiteSpace(actionName) || _config == null || _config.actions == null)
-                return -1;
-
-            lock (_actionLock)
-            {
-                return _config.actions.FindIndex(a => string.Equals(a.name, actionName, StringComparison.OrdinalIgnoreCase));
-            }
-        }
-
         public bool ActionExists(string actionName)
         {
             return GetAction(actionName) != null;
-        }
-
-        public bool AddAction(SpecialAction action)
-        {
-            if (action == null || string.IsNullOrWhiteSpace(action.name) || _config == null || _config.actions == null)
-                return false;
-
-            lock (_actionLock)
-            {
-                int index = GetActionIndex(action.name);
-                if (index >= 0)
-                {
-                    _config.actions[index] = action;
-                }
-                else
-                {
-                    _config.actions.Add(action);
-                }
-
-                if (AppLogger.IsTraceEnabled)
-                    AppLogger.LogTrace($"[DI] SpecialActionRepository.AddAction: Action '{action.name}' added via DI");
-                OnActionsChanged();
-                return true;
-            }
-        }
-
-        public bool RemoveAction(string actionName)
-        {
-            if (string.IsNullOrWhiteSpace(actionName) || _config == null || _config.actions == null)
-                return false;
-
-            lock (_actionLock)
-            {
-                int index = GetActionIndex(actionName);
-                if (index >= 0)
-                {
-                    _config.actions.RemoveAt(index);
-                    if (AppLogger.IsTraceEnabled)
-                        AppLogger.LogTrace($"[DI] SpecialActionRepository.RemoveAction: Action '{actionName}' removed via DI");
-                    OnActionsChanged();
-                    return true;
-                }
-                return false;
-            }
-        }
-
-        public bool ReplaceAction(string oldActionName, SpecialAction newAction)
-        {
-            if (string.IsNullOrWhiteSpace(oldActionName) || newAction == null || _config == null || _config.actions == null)
-                return false;
-
-            lock (_actionLock)
-            {
-                int index = GetActionIndex(oldActionName);
-                if (index >= 0)
-                {
-                    _config.actions[index] = newAction;
-                    if (AppLogger.IsTraceEnabled)
-                        AppLogger.LogTrace($"[DI] SpecialActionRepository.ReplaceAction: Action '{oldActionName}' replaced via DI");
-                    OnActionsChanged();
-                    return true;
-                }
-                return false;
-            }
         }
 
         // ---- Phase6-Step7-1: App.xaml.cs（Post-Host）の Global 直接参照解消 ----
@@ -218,7 +115,7 @@ namespace DS4Windows
         // ---- Phase6-Step10-3-1: スペシャルアクション編集画面の Global 直接参照解消 ----
         // Global.SaveAction / Global.RemoveAction への薄い委譲。これらは、実行中のアクション状態のクリア、
         // Actions.xml への書き込み、読み直しと検証（SaveAction ではキー種別のランタイム状態のリセットも）を行う。
-        // メモリ上のリストだけを変える AddAction/RemoveAction とは動作が異なるため、別メソッドにしている。
+        // （メモリ上のリストだけを変える旧 AddAction／RemoveAction は Phase7-Step2 で削除した。）
         // 対象は Global.store（Global.m_Config と同じ実体）。本リポジトリの _config が Global.store 以外の場合でも、
         // Global と同じ実体に対して動作する。
         public void SaveAction(string name, string controls, int mode, string details, bool edit,

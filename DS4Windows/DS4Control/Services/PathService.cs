@@ -55,7 +55,6 @@ namespace DS4Windows
             }
         }
 
-        public string ActionsPath => Path.Combine(AppDataPath, "Actions.xml");
         public string AutoProfilesPath => Path.Combine(AppDataPath, "Auto Profiles.xml");
         public string LinkedProfilesPath => Path.Combine(AppDataPath, "LinkedProfiles.xml");
         public string ControllerConfigsPath => Path.Combine(AppDataPath, "ControllerConfigs.xml");

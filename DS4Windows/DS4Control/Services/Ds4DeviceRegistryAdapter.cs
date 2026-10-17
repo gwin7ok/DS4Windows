@@ -13,11 +13,7 @@ namespace DS4Windows.Services
             return DS4Devices.getDS4Controllers();
         }
 
-        public IEnumerable<DS4Device> ConnectedDevices => DS4Devices.getDS4Controllers();
-
         public IEnumerable<DS4Device> GetDS4Controllers() => DS4Devices.getDS4Controllers();
-
-        public int DeviceCount => DS4Devices.getDS4Controllers()?.Count() ?? 0;
 
         public void StopControllers()
         {
@@ -56,8 +52,6 @@ namespace DS4Windows.Services
             get => DS4Devices.isExclusiveMode;
             set => DS4Devices.isExclusiveMode = value;
         }
-
-        public bool IsHidHideInstalled => Global.IsHidHideInstalled();
 
         public event RequestElevationDelegate RequestElevation
         {

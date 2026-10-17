@@ -42,31 +42,6 @@ namespace DS4Windows
             return Path.Combine(ProfilesPath, profileName);
         }
 
-        public bool ProfileExists(string profileName)
-        {
-            string path = GetProfilePath(profileName);
-            return !string.IsNullOrEmpty(path) && File.Exists(path);
-        }
-
-        public IReadOnlyList<string> GetProfileNames()
-        {
-            lock (_fileLock)
-            {
-                try
-                {
-                    if (!Directory.Exists(ProfilesPath))
-                        return Array.Empty<string>();
-
-                    var files = Directory.GetFiles(ProfilesPath, "*.xml");
-                    return files.Select(f => Path.GetFileNameWithoutExtension(f)).ToList();
-                }
-                catch
-                {
-                    return Array.Empty<string>();
-                }
-            }
-        }
-
         public bool LoadProfile(int deviceIndex, string profileName)
         {
             lock (_fileLock)
@@ -140,27 +115,6 @@ namespace DS4Windows
                     return false;
                 }
             }
-        }
-
-        public bool LoadDefaultProfile(int deviceIndex)
-        {
-            _profileSettings?.ResetToDefaults(deviceIndex);
-            if (AppLogger.IsTraceEnabled)
-                AppLogger.LogTrace($"[DI] ProfileRepository.LoadDefaultProfile: Slot {deviceIndex} reset to defaults via DI");
-            return true;
-        }
-
-        public bool LoadProfileToSlot(int deviceIndex, string profileName)
-        {
-            if (deviceIndex < 0 || deviceIndex >= ProfileSettingsService.TEST_PROFILE_ITEM_COUNT)
-                return false;
-
-            if (string.IsNullOrWhiteSpace(profileName))
-            {
-                return LoadDefaultProfile(deviceIndex);
-            }
-
-            return LoadProfile(deviceIndex, profileName);
         }
 
         public bool ApplyProfileDirect(int deviceIndex, string profileName)

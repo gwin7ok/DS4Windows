@@ -188,7 +188,8 @@ namespace DS4WindowsTests
             Assert.Matches(@"public void CreateStandardActions\(\)\s*\{\s*Global\.CreateStdActions\(\);", text);
 
             // LoadActions の本体に、Actions.xml の有無で早期に false を返す判定が再混入していないこと。
-            Match m = Regex.Match(text, @"public bool LoadActions\(\)(?<body>.*?)public bool SaveActions\(\)", RegexOptions.Singleline);
+            // Phase7-Step2 W7: 終端を、LoadActions の次のメンバー（SaveActions を削除したため GetAction）に変更した。
+            Match m = Regex.Match(text, @"public bool LoadActions\(\)(?<body>.*?)public SpecialAction GetAction\(", RegexOptions.Singleline);
             Assert.True(m.Success, "LoadActions の本体を特定できなかった。");
             Assert.DoesNotContain("File.Exists", m.Groups["body"].Value);
         }

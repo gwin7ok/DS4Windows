@@ -24,6 +24,9 @@ namespace DS4Windows.DI
         // 参照: docs-forDIMG/MadeByAgent/Phase6-Step5-Plan.md §2
 
         // DeviceType は、PluginSlot では指定された種別、UnplugSlot では None。
+        // TODO(Phase7-Step2 W6、温存。Phase7-Step6 で再判断): 本体の購読者がいない。PluginSlot／UnplugSlot の実行後に発行される
+        // （2026-08-31 の初期契約。出力スロット画面の更新が OutputSlotManager 側のイベントで足りているかを、未確認のまま温存した）。
+        // 出力デバイスの所有権の移動（outDevTypeTemp／activeOutDevType の移管）とあわせて、残すか削除するかを判断する。
         event EventHandler<OutputSlotChangedEventArgs> OutputSlotChanged;
 
         // === Step 12 拡充: 実体 OutputSlotManager 連動操作 ===
@@ -42,6 +45,10 @@ namespace DS4Windows.DI
 
         // Phase6-Step10-5: 上記 PluginSlot と同じ方針（実装は ControlService.DetachUnboundOutDev を中継する）。
         bool UnplugSlot(int slotNumber);
+        // TODO(Phase7-Step2 W4 の調査で「接続」と判断。削除しない): 2026-09-05 に OutputSlots.xml の永続化の窓口として追加した契約。
+        // 呼び出し側の切り替えが未実施で、本体の呼び出しが 0 件。現状の差: App.xaml.cs:541 が rootHub.LoadPermanentSlotsConfig() を、
+        // ControlService.cs:702 が OutputSlotPersist.WriteConfig を直接呼ぶ（同じ処理が二重に存在する）。
+        // 接続予定: Phase7-Step5（rootHub の削除時に、App・ControlService がこのサービスを通す）。
         bool LoadOutputSlots();
         bool SaveOutputSlots();
 

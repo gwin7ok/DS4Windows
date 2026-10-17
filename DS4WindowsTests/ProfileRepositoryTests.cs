@@ -65,22 +65,6 @@ namespace DS4WindowsTests
         }
 
         [Fact]
-        public void LoadDefaultProfile_ShouldResetSlotSettings()
-        {
-            var settings = TestRepositoryFactory.CreateProfileSettingsService();
-            var repository = TestRepositoryFactory.CreateProfileRepository(settings);
-
-            settings.TouchpadActiveArray[0] = false;
-            settings.SetUseTempProfile(0, true);
-
-            var result = repository.LoadDefaultProfile(0);
-            Assert.True(result);
-
-            Assert.True(settings.GetTouchpadActive(0));
-            Assert.False(settings.GetUseTempProfile(0));
-        }
-
-        [Fact]
         public void ApplyAndRestoreProfileDirect_ShouldUpdateSettingsService()
         {
             var settings = TestRepositoryFactory.CreateProfileSettingsService();

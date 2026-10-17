@@ -8,7 +8,6 @@ namespace DS4Windows.DI
         string ExecutableDirectory { get; }
         string ExecutablePath { get; }
         string ProfilesPath { get; }
-        string ActionsPath { get; }
 
         string GetProfilePath(string profileName);
 

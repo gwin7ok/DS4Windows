@@ -12,7 +12,7 @@
 |---|---|---|---|
 | Phase7-0 | 調査と Step 分割案 | 完了（D1〜D6 承認、2026-10-17） | `Phase7-0-Survey.md` |
 | Step1 | 整理と台帳の確定 | **完了**（2026-10-17。W1〜W4 のビルド・テスト成功、U-10 確認済み） | `Phase7-Step1-Plan.md`、`Phase7-Step1-Completion-Report.md` |
-| Step2 | DI インターフェースの 0 件メンバー（49）の個別判断 | **実施中**（承認済み 2026-10-17。W1・W2 実装済み。W2 のビルド・テスト待ち。判断: 削除 45／接続 3／温存 1。Phase8 へ 12） | `Phase7-Step2-Plan.md` |
+| Step2 | DI インターフェースの 0 件メンバー（49）の個別判断 | **実施中**（承認済み 2026-10-17。W1〜W7 実装済み。W7 のビルド・テストと U-11 待ち。完了報告書あり。判断: 削除 45／接続 3／温存 1。Phase8 へ 12） | `Phase7-Step2-Plan.md` |
 | Step3 | `BackingStore` の DI 化と `Global` の転送の削除 | 未着手 | |
 | Step4 | 起動・終了シーケンスの近代化 | 未着手 | |
 | Step5 | `Program.rootHub` と Service Locator の削除 | 未着手 | |

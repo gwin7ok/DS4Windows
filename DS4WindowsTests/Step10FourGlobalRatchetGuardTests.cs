@@ -66,10 +66,11 @@ namespace DS4WindowsTests
             ["DS4Windows/DS4Control/Services/AutoProfileService.cs"] = (0, 0, 3),
             ["DS4Windows/DS4Control/Services/DefaultElevatedProcessLauncher.cs"] = (0, 0, 1),
             ["DS4Windows/DS4Control/Services/DeviceStateService.cs"] = (0, 0, 4),
-            ["DS4Windows/DS4Control/Services/Ds4DeviceRegistryAdapter.cs"] = (0, 0, 1),
+            // Phase7-Step2 W7: IDs4DeviceRegistry.IsHidHideInstalled の削除で Global.IsHidHideInstalled の参照 1 件を削除（1 → 0）
+            ["DS4Windows/DS4Control/Services/Ds4DeviceRegistryAdapter.cs"] = (0, 0, 0),
             ["DS4Windows/DS4Control/Services/EnvironmentService.cs"] = (0, 0, 21),
-            // Phase7-Step2 W4: IVirtualKBM.ErrorMessage の削除で Global.outputKBMHandler の参照 1 件を削除（21 → 20）
-            ["DS4Windows/DS4Control/Services/OutputKBMHandlerAdapter.cs"] = (0, 0, 20),
+            // Phase7-Step2 W4: IVirtualKBM.ErrorMessage の削除で Global.outputKBMHandler の参照 1 件を削除（21 → 20）。W7: Version の削除でさらに 1 件削除（20 → 19）
+            ["DS4Windows/DS4Control/Services/OutputKBMHandlerAdapter.cs"] = (0, 0, 19),
             ["DS4Windows/DS4Control/Services/OutputKBMHandlerLifecycle.cs"] = (0, 0, 8),
             ["DS4Windows/DS4Control/Services/OutputSlotService.cs"] = (0, 0, 2),
             ["DS4Windows/DS4Control/Services/PathService.cs"] = (0, 0, 8),
@@ -81,7 +82,8 @@ namespace DS4WindowsTests
             ["DS4Windows/DS4Control/Services/ProfileSettingsService.cs"] = (0, 0, 4),
             ["DS4Windows/DS4Control/Services/ProfileSlotApplier.cs"] = (0, 0, 1),
             ["DS4Windows/DS4Control/Services/ProfileXmlStore.cs"] = (0, 0, 3),
-            ["DS4Windows/DS4Control/Services/SpecialActionRepository.cs"] = (0, 0, 4),
+            // Phase7-Step2 W7: SaveActions の削除で Global.SaveActions の参照 1 件を削除（4 → 3）
+            ["DS4Windows/DS4Control/Services/SpecialActionRepository.cs"] = (0, 0, 3),
             ["DS4Windows/DS4Control/SyntheticDispatcher.cs"] = (0, 0, 4),
             ["DS4Windows/DS4Control/Util.cs"] = (0, 0, 1),
             ["DS4Windows/DS4Control/Xbox360OutDevice.cs"] = (0, 0, 1),

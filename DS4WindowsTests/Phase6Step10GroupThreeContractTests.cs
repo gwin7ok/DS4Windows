@@ -16,7 +16,7 @@ namespace DS4WindowsTests
     /// 追加した契約が、<c>Global.SaveAction</c>／<c>Global.RemoveAction</c> と同じ動作（薄い委譲）であることを検証する。
     /// - ISpecialActionRepository.SaveAction: Actions.xml へ保存し、メモリ上のリストが読み直されること
     /// - ISpecialActionRepository.RemoveActionAndSave: メモリ上のリストとファイルの両方から削除されること
-    ///   （メモリ上のリストだけを変える RemoveAction とは別物）
+    ///   （メモリ上のリストだけを変えていた旧 RemoveAction は Phase7-Step2 W6 で削除した。別物）
     /// Global 状態を変更するため、保存先とアクションの一覧を必ず元に戻す（Phase6-Status.md §6.4-1）。
     /// </summary>
     [Collection("ServiceProviderHolder")]
@@ -150,20 +150,6 @@ namespace DS4WindowsTests
 
             Assert.False(repo.RemoveActionAndSave("Step10_3_Missing"));
             Assert.True(repo.ActionExists("Step10_3_Keep"));
-        }
-
-        [Fact]
-        public void RemoveAction_InMemoryOnly_DoesNotChangeFile()
-        {
-            // 既存の RemoveAction（メモリ上のリストだけ）との違いを固定する
-            using var scope = new ActionsStoreScope();
-            var repo = TestRepositoryFactory.CreateSpecialActionRepository();
-            repo.SaveAction("Step10_3_MemOnly", "Cross", 2, "C:/a.exe?0", false);
-
-            Assert.True(repo.RemoveAction("Step10_3_MemOnly"));
-
-            Assert.False(repo.ActionExists("Step10_3_MemOnly"));
-            Assert.Contains("Step10_3_MemOnly", ActionNamesInFile(scope.ActionsPath));
         }
 
         // ---- Phase6-Step10-3c: ボタン（Button）の割り当てでの SwitchMode の保存・読込、戻った直後の表示 ----
