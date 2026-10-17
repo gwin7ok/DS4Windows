@@ -194,3 +194,13 @@
 %% - 終了: `CleanShutdown` の最後（`rootHub` の停止、設定の保存、コントローラーレジストリの破棄の後、ログのフラッシュの前）に `AppHost.Dispose()` を呼ぶ。Dispose の後は、`GetService` が暗黙にホストを作り直さない。
 %% - ViGEmBus／HidHide／FakerInput／OS の調べ物とその状態は `EnvironmentService` が持つ（`Global` から移管）。
 %% - 詳細は `Phase7-Step4-Plan.md`、`Phase7-Step4-Completion-Report.md`、台帳は `Phase7-Residual-Ledger.md` §7。
+%%
+%% Phase7-Step5（2026-10-17）: `Program.rootHub` を削除し、Service Locator の大半を注入に置き換えた。
+%% - `ControlService` の保持: `App` のフィールド（`_controlService`）が持つ。`ServiceRegistration` の登録は常に新規生成（`rootHub ??` を削除）。生成は従来どおり `controlThread`（別スレッド）で、`ResolvePostHostService` を通す。
+%% - 画面の生成: `IMainWindowFactory`（`MainWindowFactory`。Singleton）を新設。`App` は生成の直前に 1 件解決して `Create(parser)` を呼び、`MainWindow` は必要なサービスをコンストラクター引数で受け取る（`ControlService` と `IAutoProfileService` は `Func` で遅延解決）。`ProfileEditor` は `IEditorWindowFactory.CreateProfileEditor` が生成する。
+%% - 出力スロットの永続化: `App`（起動後の読込）と `ControlService.ShutDown`（保存）が `IOutputSlotService.LoadOutputSlots`／`SaveOutputSlots` を通す。
+%% - 通知: `AppLogger.NotificationService`（静的）を `App` が起動時に `INotificationService` のシングルトンへ設定する（`Global.NotificationServiceInstance` を削除）。
+%% - `ControlService` のコンストラクターに `IElevatedProcessLauncher` が加わった。`BackingStore.ProcessInspector` は、`ServiceRegistration` の `BackingStore` の登録が設定する。
+%% - `DS4SixAxis.GyroControlsTriggerActive`: `ControlService` がデバイスをスロットへ接続するときに設定する（DS3 のジャイロトリガー）。
+%% - 残る Locator は `Mapping`（Step7〜9）、`Actions/`（Phase8）、互換 `AppHost`（Step9）、`Global.ProfileSettingsServiceInstance`、`App` の解決の窓口 1 件。
+%% - 詳細は `Phase7-Step5-Plan.md`、`Phase7-Step5-Completion-Report.md`、台帳は `Phase7-Residual-Ledger.md` §8。

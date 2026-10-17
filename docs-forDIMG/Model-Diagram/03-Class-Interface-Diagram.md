@@ -460,3 +460,8 @@ classDiagram
 %%   - `EnvironmentService` が ViGEmBus／HidHide／FakerInput の調べ物（`FindViGEmDeviceInfo`／`CheckForSysDevice` ほか）と導入状態の static 状態を持つ（`Global` の 27 名を削除）。`VirtualKBMFactory` は `EnvironmentService.FakerInputInstalledState` を読む。
 %%   - `PathService` が実行ファイルの情報、保存場所（`AppDataPathState`）、初回起動・保存場所が 2 か所の判定、`FindConfigLocation`／`SaveWhere`／空のプロファイル一覧の作成を持つ。`PathService(string appDataPath = null, BackingStore config = null)`（`SaveWhere` が `BackingStore` のファイルパスを更新するため）。`Global` の `appdatapath`／`exedirpath`／`exelocation`／`exeversion` は、`PathService` の状態を指す窓口として残る。
 %%   - `AppSettingsService.RunHotPlug` はインスタンスの状態、`FirstRun` は `PathService` の状態。`IDs4DeviceRegistry.ReEnableDevice` は `App`（`-reenableDevice` 分岐）が呼ぶ。`AppHost` は `CreateHost(string[])` を削除し、`CreateHost(config, parser, pathService, environmentService)` でブートストラップのインスタンスを登録する。
+%%
+%% Phase7-Step5（2026-10-17）: 画面の生成と依存の受け渡しの構成が変わった。
+%%   - 新設: `IMainWindowFactory` ← `MainWindowFactory`（`MainWindow` を生成。17 サービスと `Func<ControlService>`／`Func<IAutoProfileService>` を保持）。`IEditorWindowFactory` に `CreateProfileEditor(int)` を追加（`EditorWindowFactory` が `IAppSettingsService`／`IProfileRepository`／`IProfileSwitcher` を保持）。
+%%   - `MainWindow`（コンストラクター引数 18）、`ProfileEditor`（コンストラクター引数 8）は `AppHost` を参照しない。`ControlService` は `IElevatedProcessLauncher` を受ける。`BackingStore.ProcessInspector`（`IProcessInspector`）はプロパティ注入。`AppLogger.NotificationService`（`INotificationService`）は静的プロパティ。
+%%   - 削除: `Program`（`Program.rootHub`）、`Global.ProfileXmlStoreInstance`／`NotificationServiceInstance`／`SaveControllerConfigs`／`LoadControllerConfigs`、`ControlService.LoadPermanentSlotsConfig`。`ProfileXmlStore` は `BackingStore.Load/SaveControllerConfigsForDevice` を直接呼ぶ。

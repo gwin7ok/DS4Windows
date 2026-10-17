@@ -73,3 +73,14 @@
 - 既存の課題（回帰ではない。修正は未承認）: 起動直後のログローテーションとログの最小レベルは、`Profiles.xml` を読む前に参照されるため、`BackingStore` の既定値になる（2025-12-14 の `25d60ecb`／`c1cb918b` の機能から。DI 移行前から）。計画書 Q7＝A により記録のみ。直す場合は、ログ設定だけを先に読む手順を足す（起動順序の変更になる）。
 - 持ち越し: `Global.cs` の `*Instance` フォールバック（`new ProfileXmlStore(m_Config)`／`new AppNotificationService(m_Config)` ほか）は Step5 で Service Locator とあわせて削除する（Step4 では触っていない）。`AppHost.Dispose()` は呼ぶようになったが、`Program.rootHub` と Service Locator は Step5。
 - 実機確認: U-14（未）。
+
+## 8. Phase7-Step5 で更新した台帳（2026-10-17）
+
+- `Program.rootHub`: 21 → **0**（`Program` クラスと `Program.cs` を削除）。`AppHost.GetService|Services`: 39 → **11**。`ServiceProviderHolder`: 23 → **22**。`Global.*`: 452 → **446**。Phase7 開始時（733）からの累計は −287。基準値は `Step10FourGlobalRatchetGuardTests`（合計 0／11／446）と `Phase7Step1ServiceLocatorRatchetGuardTests`。
+- 残る `AppHost.GetService`（11）: `Mapping.cs` 6（静的なフィールド初期化子ほか。→ Step7〜9）、`DI/Compat/AppHost.cs` 1（互換ラッパー。→ Step9）、`DI/AppHost.cs` 2（自身のログ文）、`Global.cs` 1（`ProfileSettingsServiceInstance`。→ Step7〜9／Step10）、`App.xaml.cs` 1（`ResolvePostHostService`。Composition Root の解決の窓口）。
+- 残る `ServiceProviderHolder`（22）: `Actions/` 17（→ Phase8）、`Mapping.cs` 5（→ Step7〜9）。
+- 新設: `IMainWindowFactory`／`MainWindowFactory`（`MainWindow` の 17 件の Locator を引数化）、`IEditorWindowFactory.CreateProfileEditor`（`ProfileEditor` の 4 件を引数化）、`AppLogger.NotificationService`（静的ロガーへ通知サービスを設定）、`BackingStore.ProcessInspector`（プロパティ注入）、`ControlService` のコンストラクター引数 `IElevatedProcessLauncher`、`DS4SixAxis.GyroControlsTriggerActive`。
+- 削除: `Program.rootHub`、`Global.SaveControllerConfigs`／`LoadControllerConfigs`、`Global.ProfileXmlStoreInstance`／`NotificationServiceInstance`、`ControlService.LoadPermanentSlotsConfig`。接続: `IOutputSlotService.LoadOutputSlots`／`SaveOutputSlots`（Step2 の「接続」の判断を完了）。
+- 不具合の是正: DS3 コントローラーのジャイロトリガー経路（`DS4SixAxis._controlService` が常に null。コミット `78ae8687` からの DI 移行による回帰）。移行前と同じ結果を返す形に直した（`Phase7-Step5-Plan.md` §1.6、Q3＝A）。DS3 の機材での実機確認は難しい可能性がある（U-15 の注記）。
+- 持ち越し: `Global.ProfileSettingsServiceInstance` とそのフォールバック（→ Step7〜9／Step10）。`AppHost.CreationNote` と暗黙構築の経路（→ Step9 で互換 `AppHost` と同時に判断）。`MainWindow` のコンストラクター引数は 18 個と多い（→ Step10 で、画面ごとの責務の整理とあわせて見直す）。
+- 実機確認: U-15（未）。

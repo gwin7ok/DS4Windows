@@ -3,7 +3,7 @@
 作成日: 2026-10-17  
 対象ブランチ: `For-DI-migration-work`  
 前提: `Phase7-Plan.md` §2（Step5）、`Phase7-0-Survey.md` §1.5・F-A、`Phase7-Step4-Completion-Report.md` §5、`Phase7-Residual-Ledger.md` §2・§7  
-状態: **調査完了・決定事項 Q1〜Q9 の承認待ち。実装は承認後に Wave 単位で行う。**  
+状態: **Q1〜Q9 を推奨どおり承認（2026-10-17。DS3 の修正も承認）。W1〜W6 完了。結果は `Phase7-Step5-Completion-Report.md`。**  
 ルール: ビルド・テストビルド・テスト実行・コミットはユーザーが行う。エージェントはローカルファイルの編集のみ。
 
 ---
