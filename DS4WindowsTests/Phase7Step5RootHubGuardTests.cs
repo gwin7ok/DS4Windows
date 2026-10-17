@@ -76,7 +76,7 @@ namespace DS4WindowsTests
             if (text == null) return;
 
             Assert.Matches(@"private\s+volatile\s+DS4Windows\.ControlService\s+_controlService\s*;", text);
-            Assert.Matches(@"_controlService\s*=\s*AppHost\.GetService<DS4Windows\.ControlService>\(\)", text);
+            Assert.Matches(@"_controlService\s*=\s*ResolvePostHostService<DS4Windows\.ControlService>\(\)", text);
         }
 
         [Fact]

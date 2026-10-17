@@ -28,7 +28,8 @@ namespace DS4WindowsTests
             ["DS4Windows/Actions/DefaultActionManager.cs"] = (0, 0, 1),
             ["DS4Windows/Actions/DefaultMacroPlayer.cs"] = (0, 0, 1),
             // Phase7-Step5 W2: Program.rootHub を App のフィールド _controlService に置き換え（12 → 0）
-            ["DS4Windows/App.xaml.cs"] = (0, 4, 1),
+            // Phase7-Step5 W4: App の AppHost.GetService は ResolvePostHostService の 1 件だけ（4 → 1）
+            ["DS4Windows/App.xaml.cs"] = (0, 1, 1),
             ["DS4Windows/BezierCurveEditor/BezierCurve.cs"] = (0, 0, 1),
             // Phase6-Step10b W2: DS4Windows.AppHost（互換ラッパー）を DI/Compat/AppHost.cs へ分離。件数を引き継いだ（4＝2＋2。合計は不変）
             ["DS4Windows/DI/AppHost.cs"] = (0, 2, 0),
@@ -36,7 +37,8 @@ namespace DS4WindowsTests
             ["DS4Windows/DI/Compat/AppHost.cs"] = (0, 1, 0),
             // Phase7-Step5 W2: Program.rootHub ?? の削除（1 → 0）
             ["DS4Windows/DI/ServiceRegistration.cs"] = (0, 0, 1),
-            ["DS4Windows/DS4Control/ControlService.cs"] = (0, 1, 2),
+            // Phase7-Step5 W4: IElevatedProcessLauncher をコンストラクター注入にし、AppHost.GetService を削除（1 → 0）
+            ["DS4Windows/DS4Control/ControlService.cs"] = (0, 0, 2),
             ["DS4Windows/DS4Control/DS4LightBar.cs"] = (0, 0, 7),
             ["DS4Windows/DS4Control/DS4OutDevices/DS4OutDeviceBasic.cs"] = (0, 0, 1),
             ["DS4Windows/DS4Control/DS4OutDevices/DS4OutDeviceExt.cs"] = (0, 0, 1),
@@ -59,7 +61,8 @@ namespace DS4WindowsTests
             ["DS4Windows/DS4Control/ProfileMigration.cs"] = (0, 0, 4),
             // Phase6-Step10b W5: ScpUtil.cs（29 型）を型ごとに分割。件数を引き継いだ（Global 233＝Global 47＋BackingStore 182＋Changelog 4、AppHost 12＝11＋1。rootHub 9 は Global。合計は不変）
             // Phase7-Step1 W1: 孤立メソッド 10 名の削除で Global.* 14 件が減った（182 → 168）
-            ["DS4Windows/DS4Control/BackingStore.cs"] = (0, 1, 166),
+            // Phase7-Step5 W4: IProcessInspector をプロパティ注入にし、AppHost.GetService を削除（1 → 0）
+            ["DS4Windows/DS4Control/BackingStore.cs"] = (0, 0, 166),
             ["DS4Windows/DS4Control/Changelog.cs"] = (0, 0, 4),
             // Phase6-Step12 Wave 1: 孤立コード 24 件を削除（Global 47 → 45）。Wave 2: 互換アクセサ 152 件を削除（Global 45 → 38）。Wave 3: *Instance のフォールバック群 19 件を削除（Global 38 → 26、AppHost 11 → 5、rootHub 9 → 6）。Wave 4: BackingStore 直転送ラッパー 58 件を削除（AppHost 5 → 4。(6, 4, 26)）
             // Phase7-Step4 W1: IsUsingMinViGEm117333 の移管で Global.* 2 件を削除（24 → 22）

@@ -86,6 +86,9 @@ namespace DS4WinWPF
         private IAppearanceSettingsService _appearanceSettingsService;
         private IDeviceStateService _deviceStateService;
         private IOutputSlotService _outputSlotService;
+        // Phase7-Step5 W4: 旧 AppHost.GetService／ServiceProviderHolder の直接呼び出しの置き換え先（InitializePostHostServices で解決）
+        private DS4Windows.Services.LogSettingsApplierProxy _logSettingsApplierProxy;
+        private DS4Windows.Actions.IControllerRegistry _controllerRegistry;
 
         // Phase7-Step5 W2（Q1＝A）: 旧 Program.rootHub。ControlService は CreateControlService の別スレッドで解決して代入し、
         // 呼び出し元がスレッドの終了を待ってから読む（以降は LoggerHolder の生成、起動後の処理、未処理例外の処理、終了処理が使う）。
@@ -428,7 +431,7 @@ namespace DS4WinWPF
 
             logHolder = new LoggerHolder(_controlService);
             // Phase6-Step10-1-5（決定D7＝A）: 設定画面がログ設定の変更を反映する窓口（ILogSettingsApplier）へ、生成した LoggerHolder を接続する
-            AppHost.GetService<DS4Windows.Services.LogSettingsApplierProxy>()?.Attach(logHolder);
+            _logSettingsApplierProxy.Attach(logHolder);
             DispatcherUnhandledException += App_DispatcherUnhandledException;
             AppDomain.CurrentDomain.UnhandledException += CurrentDomain_UnhandledException;
             string version = _environmentService.ApplicationVersion;
@@ -580,6 +583,8 @@ namespace DS4WinWPF
             _outputSlotService = ResolvePostHostService<IOutputSlotService>();
             // Phase7-Step5 W3（Q7＝A）: 静的なロガー（AppLogger.LogToTray）が使う通知サービスを、DI のシングルトンに設定する
             AppLogger.NotificationService = ResolvePostHostService<INotificationService>();
+            _logSettingsApplierProxy = ResolvePostHostService<DS4Windows.Services.LogSettingsApplierProxy>();
+            _controllerRegistry = ResolvePostHostService<DS4Windows.Actions.IControllerRegistry>();
 
             if (AppLogger.IsTraceEnabled)
                 AppLogger.LogTrace("[DI] App.InitializePostHostServices: Post-Host services resolved");
@@ -734,7 +739,7 @@ namespace DS4WinWPF
 
                 CreateBaseThread();
                 DS4Forms.WelcomeDialog dialog = new DS4Forms.WelcomeDialog(
-                    AppHost.GetService<DS4Windows.DI.IEnvironmentService>());
+                    _bootstrapEnvironmentService);
                 dialog.ShowDialog();
                 runShutdown = false;
                 exitApp = true;
@@ -843,9 +848,8 @@ namespace DS4WinWPF
                 // is called, so GetService should not be null; the null-coalesce is a
                 // startup-order safety net only, and 'new Ds4DeviceRegistryAdapter()' here
                 // is the same adapter class already registered, not a second implementation.
-                _controlService = AppHost.GetService<DS4Windows.ControlService>();
-                if (_controlService == null)
-                    throw new InvalidOperationException("ControlService could not be resolved from AppHost.");
+                // Phase7-Step5 W4: 解決の窓口（ResolvePostHostService）を通す。解決できなければ InvalidOperationException（従来と同じ）
+                _controlService = ResolvePostHostService<DS4Windows.ControlService>();
 
                 requestClient = new HttpClient();
                 requestClient.DefaultRequestHeaders.Add("User-Agent", "DS4Windows");
@@ -1139,18 +1143,15 @@ namespace DS4WinWPF
                 if (ipcClassNameMMF != null) ipcClassNameMMF.Dispose();
 
                 // Dispose controllers registered in IControllerRegistry (if present)
+                // Phase7-Step5 W4: ServiceProviderHolder.Provider の直接呼び出しをやめ、InitializePostHostServices で解決した
+                // レジストリを使う（ホスト構築前の早期終了では null のため、何もしない）。
                 try
                 {
-                    var sp = DS4Windows.DI.ServiceProviderHolder.Provider;
-                    if (sp != null)
+                    if (_controllerRegistry != null)
                     {
-                        var reg = sp.GetService(typeof(DS4Windows.Actions.IControllerRegistry)) as DS4Windows.Actions.IControllerRegistry;
-                        if (reg != null)
+                        for (int d = 0; d < Global.MAX_DS4_CONTROLLER_COUNT; d++)
                         {
-                            for (int d = 0; d < Global.MAX_DS4_CONTROLLER_COUNT; d++)
-                            {
-                                try { reg.ClearControllersForDevice(d); } catch { }
-                            }
+                            try { _controllerRegistry.ClearControllersForDevice(d); } catch { }
                         }
                     }
                 }

@@ -16,7 +16,14 @@ namespace DS4Windows.DI
         {
             // === 第4層: 4-c DIサービス群 (Singleton) ===
             // Phase7-Step3 W1: BackingStore（設定の唯一の実体）を登録する。実体は Global.store と同一（Global の生成は Step10 まで残す）
-            services.AddSingleton<BackingStore>(_ => Global.store);
+            // Phase7-Step5 W4（Q6＝A）: BackingStore は Global が生成する（コンテナ外）ため、IProcessInspector はプロパティで設定する
+            // （プロファイル読込の「起動するプログラム」の稼働確認で使う。Step10 の分割でコンストラクター注入へ）
+            services.AddSingleton<BackingStore>(sp =>
+            {
+                var store = Global.store;
+                store.ProcessInspector = sp.GetRequiredService<IProcessInspector>();
+                return store;
+            });
             services.AddSingleton<IPathService, PathService>();
             services.AddSingleton<IDeviceStateService, DeviceStateService>();
             services.AddSingleton<IEnvironmentService, EnvironmentService>();
@@ -145,7 +152,8 @@ namespace DS4Windows.DI
                     sp.GetRequiredService<IVirtualKBMLifecycle>(),
                     sp.GetRequiredService<IAppearanceSettingsService>(),
                     sp.GetRequiredService<IProfileActionProvider>(),
-                    sp.GetRequiredService<ISpecialActionRepository>()
+                    sp.GetRequiredService<ISpecialActionRepository>(),
+                    sp.GetRequiredService<IElevatedProcessLauncher>()
                 );
             });
             services.AddSingleton<IDeviceStateAccessor>(sp => sp.GetRequiredService<ControlService>());

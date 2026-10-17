@@ -736,6 +736,11 @@ namespace DS4Windows
 
         bool tempBool = false;
 
+        // Phase7-Step5 W4（Q6＝A）: 旧 AppHost.GetService<IProcessInspector>()。ServiceRegistration の BackingStore の登録が設定する。
+        // 未設定のとき（コンテナを通らないテストなど）は、LoadProfile が従来のフォールバック（プロセス一覧の走査）を使う。
+        // TODO(Phase7-Step10): BackingStore の分割（永続化の切り出し）で、コンストラクター注入にする。
+        public DS4Windows.Services.IProcessInspector ProcessInspector { get; set; }
+
         public BackingStore()
         {
             ds4controlSettings = new ControlSettingsGroup[Global.TEST_PROFILE_ITEM_COUNT];
@@ -2820,7 +2825,7 @@ namespace DS4Windows
                     bool handled = false;
                     try
                     {
-                        var inspector = DS4WinWPF.AppHost.GetService<DS4Windows.Services.IProcessInspector>();
+                        var inspector = ProcessInspector;
                         if (inspector != null)
                         {
                             procFound = inspector.IsProcessRunning(programPath);

@@ -137,6 +137,8 @@ namespace DS4Windows
         private readonly DI.IProfileActionProvider _profileActionProvider;
         // Phase6-Step3-2: Mapping.cs からの引数渡し（S3方針）用。ControlService 自体はこの値を使わない。
         private readonly DI.ISpecialActionRepository _specialActionRepository;
+        // Phase7-Step5 W4（Q6＝A）: 旧 AppHost.GetService<IElevatedProcessLauncher>()。デバイス再有効化の昇格要求で使う
+        private readonly Services.IElevatedProcessLauncher _elevatedProcessLauncher;
         // コントローラースロット上限（現在接続台数ではない）。プロセス内で不変のためコンストラクタで1回だけ取得する。
         private readonly int _controllerSlotLimit;
 
@@ -265,7 +267,8 @@ namespace DS4Windows
             Services.IVirtualKBMLifecycle kbmLifecycle,
             DI.IAppearanceSettingsService appearanceSettings,
             DI.IProfileActionProvider profileActionProvider,
-            DI.ISpecialActionRepository specialActionRepository)
+            DI.ISpecialActionRepository specialActionRepository,
+            Services.IElevatedProcessLauncher elevatedProcessLauncher)
         {
             this.cmdParser = cmdParser;
             this._deviceRegistry = deviceRegistry;
@@ -286,6 +289,7 @@ namespace DS4Windows
             this._appearanceSettings = appearanceSettings ?? throw new ArgumentNullException(nameof(appearanceSettings));
             this._profileActionProvider = profileActionProvider ?? throw new ArgumentNullException(nameof(profileActionProvider));
             this._specialActionRepository = specialActionRepository ?? throw new ArgumentNullException(nameof(specialActionRepository));
+            this._elevatedProcessLauncher = elevatedProcessLauncher ?? throw new ArgumentNullException(nameof(elevatedProcessLauncher));
 
             Crc32Algorithm.InitializeTable(DS4Device.DefaultPolynomial);
 
@@ -716,7 +720,7 @@ namespace DS4Windows
             bool handled = false;
             try
             {
-                var launcher = DS4WinWPF.AppHost.GetService<IElevatedProcessLauncher>();
+                var launcher = _elevatedProcessLauncher;
                 if (launcher != null)
                 {
                     int? exitCode = launcher.RelaunchElevated("re-enabledevice " + args.InstanceId, 30000);

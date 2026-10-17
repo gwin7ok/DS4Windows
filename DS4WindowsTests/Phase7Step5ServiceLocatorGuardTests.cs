@@ -60,6 +60,33 @@ namespace DS4WindowsTests
         }
 
         [Fact]
+        public void ControlServiceAndBackingStore_ReceiveTheirCollaborators()
+        {
+            string control = Read("DS4Windows/DS4Control/ControlService.cs");
+            string store = Read("DS4Windows/DS4Control/BackingStore.cs");
+            string registration = Read("DS4Windows/DI/ServiceRegistration.cs");
+            if (control == null || store == null || registration == null) return;
+
+            Assert.DoesNotContain("AppHost", control);
+            Assert.DoesNotContain("AppHost", store);
+            Assert.Contains("Services.IElevatedProcessLauncher elevatedProcessLauncher", control);
+            Assert.Contains("sp.GetRequiredService<IElevatedProcessLauncher>()", registration);
+            Assert.Contains("store.ProcessInspector = sp.GetRequiredService<IProcessInspector>();", registration);
+        }
+
+        [Fact]
+        public void App_ResolvesServicesOnlyThroughTheSingleEntryPoint()
+        {
+            string app = Read("DS4Windows/App.xaml.cs");
+            if (app == null) return;
+
+            // AppHost.GetService は ResolvePostHostService の 1 件だけ。ServiceProviderHolder も使わない
+            Assert.Single(Regex.Matches(app, @"AppHost\.GetService"));
+            Assert.DoesNotContain("ServiceProviderHolder", app);
+            Assert.Contains("_logSettingsApplierProxy.Attach(logHolder)", app);
+        }
+
+        [Fact]
         public void AppLogger_UsesItsOwnNotificationService_SetByTheApp()
         {
             string logger = Read("DS4Windows/DS4Control/AppLogger.cs");

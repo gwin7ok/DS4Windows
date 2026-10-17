@@ -26,7 +26,8 @@ namespace DS4WindowsTests
             ["DS4Windows/Actions/DefaultKeyButtonActionControllerFactory.cs"] = 2,
             ["DS4Windows/Actions/KeyActionAdapter.cs"] = 1,
             // Phase7 の対象（Step5 で、コンストラクター注入または App の保持へ置き換える。計 6）
-            ["DS4Windows/App.xaml.cs"] = 1,
+            // Phase7-Step5 W4: CleanShutdown のレジストリ破棄を、InitializePostHostServices で解決した IControllerRegistry に置き換え（1 → 0）
+            ["DS4Windows/App.xaml.cs"] = 0,
             ["DS4Windows/DS4Control/Mapping.cs"] = 5,
         };
 
