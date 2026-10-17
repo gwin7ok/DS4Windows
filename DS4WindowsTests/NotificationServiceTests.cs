@@ -13,7 +13,7 @@ namespace DS4WindowsTests
             var origNotifications = Global.Notifications;
             try
             {
-                var service = new AppNotificationService();
+                var service = TestRepositoryFactory.CreateAppNotificationService();
                 Global.Notifications = 1;
 
                 NotificationEventArgs eventArgs = null;
@@ -40,7 +40,7 @@ namespace DS4WindowsTests
             var origNotifications = Global.Notifications;
             try
             {
-                var service = new AppNotificationService();
+                var service = TestRepositoryFactory.CreateAppNotificationService();
                 Global.Notifications = 1;
 
                 NotificationEventArgs eventArgs = null;
@@ -64,7 +64,7 @@ namespace DS4WindowsTests
             var origNotifications = Global.Notifications;
             try
             {
-                var service = new AppNotificationService();
+                var service = TestRepositoryFactory.CreateAppNotificationService();
                 Global.Notifications = 1;
 
                 NotificationEventArgs eventArgs = null;
@@ -88,7 +88,7 @@ namespace DS4WindowsTests
             var origNotifications = Global.Notifications;
             try
             {
-                var service = new AppNotificationService();
+                var service = TestRepositoryFactory.CreateAppNotificationService();
                 bool eventFired = false;
                 service.NotificationTriggered += (s, e) => eventFired = true;
 

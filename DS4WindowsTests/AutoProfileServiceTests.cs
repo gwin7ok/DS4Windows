@@ -150,7 +150,7 @@ namespace DS4WindowsTests
             var mockAppService = new MockProfileAppService();
             var service = TestRepositoryFactory.CreateAutoProfileService(holder, mockAppService, settings, mockInspector);
 
-            var original = Global.autoProfileSwitchNotifyChoice;
+            var original = Global.store.autoProfileSwitchNotifyChoice;
             try
             {
                 var newValue = original == AutoProfileDisplayProfileSwitchChoices.LogAndNotification
@@ -158,11 +158,11 @@ namespace DS4WindowsTests
                     : AutoProfileDisplayProfileSwitchChoices.LogAndNotification;
 
                 service.AutoProfileSwitchNotifyChoice = newValue;
-                Assert.Equal(newValue, Global.autoProfileSwitchNotifyChoice);
+                Assert.Equal(newValue, Global.store.autoProfileSwitchNotifyChoice);
             }
             finally
             {
-                Global.autoProfileSwitchNotifyChoice = original;
+                Global.store.autoProfileSwitchNotifyChoice = original;
             }
         }
     }

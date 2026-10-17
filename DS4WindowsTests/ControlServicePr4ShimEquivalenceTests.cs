@@ -14,7 +14,7 @@ namespace DS4WindowsTests
     public class ControlServicePr4ShimEquivalenceTests
     {
         private readonly AppSettingsService _appSettings = TestRepositoryFactory.CreateAppSettingsService();
-        private readonly DeviceStateService _deviceState = new DeviceStateService();
+        private readonly DeviceStateService _deviceState = TestRepositoryFactory.CreateDeviceStateService();
         private readonly ProfileSettingsService _profileSettings = TestRepositoryFactory.CreateProfileSettingsService();
         private readonly ProfileRepository _profileRepository = TestRepositoryFactory.CreateProfileRepository();
 

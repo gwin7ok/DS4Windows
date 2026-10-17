@@ -98,7 +98,7 @@ namespace DS4WindowsTests
             Assert.DoesNotContain("appSettings = null", text);
 
             var env = new EnvironmentService();
-            var appearance = new DS4Windows.Services.AppearanceSettingsService();
+            var appearance = TestRepositoryFactory.CreateAppearanceSettingsService();
             var app = TestRepositoryFactory.CreateAppSettingsService();
             var path = new PathService();
             var logApplier = new DS4Windows.Services.LogSettingsApplierProxy();

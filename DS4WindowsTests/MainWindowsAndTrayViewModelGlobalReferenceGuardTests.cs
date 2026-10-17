@@ -115,7 +115,7 @@ namespace DS4WindowsTests
             // 依存の null 検査は WPF オブジェクト（ContextMenu 等）の生成より前に行われるため、STA でなくても検証できる
             var env = new EnvironmentService();
             var path = new PathService();
-            var appearance = new DS4Windows.Services.AppearanceSettingsService();
+            var appearance = TestRepositoryFactory.CreateAppearanceSettingsService();
             var repo = TestRepositoryFactory.CreateProfileRepository();
 
             Assert.Throws<ArgumentNullException>(() =>

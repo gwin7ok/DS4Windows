@@ -128,3 +128,11 @@
   - テスト: `Global.store.<field>` への書き換え、`ControlServiceShimEquivalenceTests` の 2 件は「サービスの setter が `Changed` を 1 回発火し、購読解除後は発火しない」確認に変更。ガードテストの名前一覧に W4 を追記。
   - ラチェット基準値: `AppSettingsService.cs` 27→11。
   - 持ち越し: `SetCulture`（`Global` に他の呼び出し元あり）、`firstRun`／`runHotPlug`（環境の状態。Step4）、`ProfileChangedNotification`（`ProfileSettingsServiceInstance` 経由。サービス間の依存の整理が要るため W5 で判断）。
+- **W5 実装済み（ビルド・テスト待ち）**
+  - `ProfileRepository`: `ProfilePath` 系、`LinkedProfileUI`、`ProfileActions`、リンクプロファイルの保存・読込、`CacheExtraProfileInfo`／`CacheProfileCustomsFlags` を `_config` に切り替え。リンクプロファイルの 4 操作（シリアルからコロンを除く正規化を含む）をサービスへ移した。
+  - `AppearanceSettingsService`／`DeviceStateService`／`AppNotificationService`: コンストラクターに `BackingStore` を必須で追加。`AutoProfileService`: 末尾に `BackingStore config` を追加（必須）。`ProfileSettingsService.RefreshExtrasButtons`: 処理をサービスへ移した。
+  - `Global`: 16 名を削除（`LinkedProfileUI`、`ProfileActions`、リンクプロファイル関連 6、`Cache…` 2、`UseIconChoice`、`autoProfileSwitchNotifyChoice`、接続フラグ 3、`RefreshExtrasButtons`）。`Global` のフォールバック `new AppNotificationService(m_Config)` に変更。
+  - `MainWindow`: `IAppearanceSettingsService` の `?? new AppearanceSettingsService()`（Pure DI 違反のフォールバック）を、未登録なら例外にする形に変更。
+  - テスト: 生成を `TestRepositoryFactory` の新ヘルパー（`CreateAppearanceSettingsService`／`CreateDeviceStateService`／`CreateAppNotificationService`）に置換、`Global.<名前>` を `Global.store.<field>` に書き換え。`AutoProfileService` の null 検査に `config` を追加。
+  - **W5 で見送ったもの（判断）**: `ProfilePresetLoader` の 10 名と `ProfileRepository.LoadBlankProfile`（`Global.tempprofileDistance` など、プロファイル適用の状態と絡むため 3c）。`ProfilePath`／`OlderProfilePath`／`SelectedProfile`（`Global.ApplyProfile` が内部で使う。3c）。`SelectedProfileChanged` ほかのイベント、`LoadTempProfile`（`Global` の状態と絡む。3c）。`ProfileXmlStore.Load/SaveControllerConfigs`（`Program.rootHub` を走査する。Step5）。`SpecialActionRepository`／`PathService`／`EnvironmentService`／`OutputSlotService`／`OutputKBMHandlerAdapter`（実体を持つ状態。Step4／Step6）。`Notifications`（`MainWindow` が参照）は `Global` に残す。
+  - ラチェット基準値: `AppearanceSettingsService` 8→4、`AppNotificationService` 1→0、`AutoProfileService` 3→1、`DeviceStateService` 4→2、`ProfileRepository` 21→6、`ProfileSettingsService` 4→3。`Global.*` 合計 516。

@@ -9,7 +9,15 @@ namespace DS4Windows
 
         // Phase7-Step2 W4: INotificationService.NotificationsEnabled／FlashTaskbar は削除した（設定の読み書きは
         // IAppSettingsService.Notifications／FlashWhenLate が担う重複）。通知の有無の判定は、実装の内部判定として残す。
-        private static bool NotificationsEnabled => Global.Notifications != 0;
+        // Phase7-Step3 W5: 注入された BackingStore の値で判定する（Global 経由をやめた）。
+        private readonly BackingStore _config;
+
+        public AppNotificationService(BackingStore config)
+        {
+            _config = config ?? throw new ArgumentNullException(nameof(config));
+        }
+
+        private bool NotificationsEnabled => _config.notifications != 0;
 
         public void SendNotification(string title, string message, bool warning = false, bool temporary = false, bool isToast = true)
         {

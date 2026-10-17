@@ -14,7 +14,7 @@ namespace DS4WindowsTests
     public class ControlServicePr5ShimEquivalenceTests
     {
         private readonly AppSettingsService _appSettings = TestRepositoryFactory.CreateAppSettingsService();
-        private readonly AppearanceSettingsService _appearance = new AppearanceSettingsService();
+        private readonly AppearanceSettingsService _appearance = TestRepositoryFactory.CreateAppearanceSettingsService();
         private readonly ProfileSettingsService _profileSettings = TestRepositoryFactory.CreateProfileSettingsService();
         private readonly ProfileActionProvider _actionProvider = TestRepositoryFactory.CreateProfileActionProvider();
 
@@ -84,16 +84,16 @@ namespace DS4WindowsTests
         [Fact]
         public void UseIconChoice_SharesStateWithGlobal()
         {
-            TrayIconChoice original = Global.UseIconChoice;
+            TrayIconChoice original = Global.store.useIconChoice;
             TrayIconChoice other = original == TrayIconChoice.Battery ? TrayIconChoice.Default : TrayIconChoice.Battery;
             try
             {
-                Global.UseIconChoice = other;
+                Global.store.useIconChoice = other;
                 Assert.Equal(other, _appearance.UseIconChoice);
             }
             finally
             {
-                Global.UseIconChoice = original;
+                Global.store.useIconChoice = original;
             }
         }
 

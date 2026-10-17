@@ -92,7 +92,7 @@ namespace DS4WindowsTests
         [Fact]
         public void ResetConnectionFlags_SetsAllSlotsToFirstConnection()
         {
-            var deviceState = new DeviceStateService();
+            var deviceState = TestRepositoryFactory.CreateDeviceStateService();
             bool[] flags = Global.store.firstConnectionAfterStartup;
             bool[] original = (bool[])flags.Clone();
             try
@@ -107,7 +107,7 @@ namespace DS4WindowsTests
                 for (int i = 0; i < Global.TEST_PROFILE_ITEM_COUNT; i++)
                 {
                     Assert.True(deviceState.IsFirstConnection(i));
-                    Assert.True(Global.IsFirstConnection(i));
+                    Assert.True(Global.store.firstConnectionAfterStartup[i]);
                 }
             }
             finally
@@ -175,8 +175,8 @@ namespace DS4WindowsTests
             string text = ReadSourceWithoutComments("DS4Windows/DS4Control/Services/ProfileRepository.cs");
             if (text == null) return;
 
-            Assert.Matches(@"public bool SaveAsProfile\(int deviceIndex, string profileName\)\s*=>\s*_config.SaveAsProfile\(deviceIndex, profileName\);", text);
-            Assert.Matches(@"public bool LoadLinkedProfiles\(\)\s*=>\s*Global\.LoadLinkedProfiles\(\);", text);
+            Assert.Matches(@"public bool SaveAsProfile\(int deviceIndex, string profileName\)\s*=>\s*_config\.SaveAsProfile\(deviceIndex, profileName\);", text);
+            Assert.Matches(@"public bool LoadLinkedProfiles\(\)\s*=>\s*_config\.LoadLinkedProfiles\(\);", text);
         }
 
         [Fact]

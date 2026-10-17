@@ -80,13 +80,29 @@ namespace DS4WindowsTests
             IProfileApplicationService profileAppService, IProfileSettingsService profileSettings,
             IProcessInspector processInspector, IEnvironmentService environmentService = null,
             IAppSettingsService appSettings = null, IProfileRepository profileRepository = null,
-            Func<ControlService> control = null)
+            Func<ControlService> control = null, BackingStore store = null)
         {
             return new AutoProfileService(holder, profileAppService, profileSettings, processInspector,
                 environmentService ?? new EnvironmentService(),
                 appSettings ?? CreateAppSettingsService(),
                 profileRepository ?? CreateProfileRepository(profileSettings),
-                control ?? new Func<ControlService>(() => Program.rootHub));
+                control ?? new Func<ControlService>(() => Program.rootHub),
+                store ?? Global.store);
+        }
+
+        public static AppearanceSettingsService CreateAppearanceSettingsService(BackingStore store = null)
+        {
+            return new AppearanceSettingsService(store ?? Global.store);
+        }
+
+        public static DeviceStateService CreateDeviceStateService(BackingStore store = null)
+        {
+            return new DeviceStateService(store ?? Global.store);
+        }
+
+        public static AppNotificationService CreateAppNotificationService(BackingStore store = null)
+        {
+            return new AppNotificationService(store ?? Global.store);
         }
     }
 }

@@ -509,7 +509,14 @@ namespace DS4Windows
 
         // ---- Phase6-Step2-2 (PR-2): 接続時のエクストラボタン再構築 ----
         public void RefreshExtrasButtons(int deviceIndex, List<DS4Controls> buttons)
-            => Global.RefreshExtrasButtons(deviceIndex, buttons);
+        {
+            // Phase7-Step3 W5: 旧 Global.RefreshExtrasButtons の処理をここへ移した。
+            _config.ds4controlSettings[deviceIndex].ResetExtraButtons();
+            if (buttons != null)
+            {
+                _config.ds4controlSettings[deviceIndex].EstablishExtraButtons(buttons);
+            }
+        }
 
         // ---- Phase6-Step2-5 (PR-5): カスタムアクション／エクストラの有無 ----
         // 毎レポート評価される経路から呼ばれるため、BackingStore の配列を直接参照する（従来の Global.containsCustomAction／Extras と同一）。

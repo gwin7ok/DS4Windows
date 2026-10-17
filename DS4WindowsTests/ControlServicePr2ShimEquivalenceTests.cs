@@ -15,7 +15,7 @@ namespace DS4WindowsTests
     public class ControlServicePr2ShimEquivalenceTests
     {
         private readonly AppSettingsService _appSettings = TestRepositoryFactory.CreateAppSettingsService();
-        private readonly DeviceStateService _deviceState = new DeviceStateService();
+        private readonly DeviceStateService _deviceState = TestRepositoryFactory.CreateDeviceStateService();
         private readonly ProfileRepository _profileRepository = TestRepositoryFactory.CreateProfileRepository();
         private readonly ProfileSlotApplier _slotApplier = new ProfileSlotApplier();
 
@@ -93,10 +93,10 @@ namespace DS4WindowsTests
             {
                 Global.store.firstConnectionAfterStartup[slot] = true;
                 Assert.True(_deviceState.IsFirstConnection(slot));
-                Assert.Equal(Global.IsFirstConnection(slot), _deviceState.IsFirstConnection(slot));
+                Assert.Equal(Global.store.firstConnectionAfterStartup[slot], _deviceState.IsFirstConnection(slot));
 
                 _deviceState.MarkConnected(slot);
-                Assert.False(Global.IsFirstConnection(slot));
+                Assert.False(Global.store.firstConnectionAfterStartup[slot]);
                 Assert.False(_deviceState.IsFirstConnection(slot));
             }
             finally
@@ -108,7 +108,7 @@ namespace DS4WindowsTests
         [Fact]
         public void LinkedProfile_ContainsAndGet_ShareStateWithGlobal_AndIgnoreColons()
         {
-            // Global.containsLinkedProfile/getLinkedProfile は MAC アドレスのコロンを除去して照合する。
+            // 旧 Global.containsLinkedProfile/getLinkedProfile と同じく、MAC アドレスのコロンを除去して照合する（Phase7-Step3 W5 でサービスへ移した）。
             const string key = "A1B2C3D4E5F6";
             var linked = Global.store.linkedProfiles;
             Assert.False(linked.ContainsKey(key));
@@ -118,7 +118,6 @@ namespace DS4WindowsTests
 
                 Assert.True(_profileRepository.ContainsLinkedProfile("A1:B2:C3:D4:E5:F6"));
                 Assert.Equal("PR2TestProfile", _profileRepository.GetLinkedProfile("A1:B2:C3:D4:E5:F6"));
-                Assert.Equal(Global.getLinkedProfile("A1:B2:C3:D4:E5:F6"), _profileRepository.GetLinkedProfile("A1:B2:C3:D4:E5:F6"));
             }
             finally
             {

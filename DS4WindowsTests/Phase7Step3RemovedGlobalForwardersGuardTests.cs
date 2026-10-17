@@ -15,7 +15,7 @@ namespace DS4WindowsTests
     /// </summary>
     public class Phase7Step3RemovedGlobalForwardersGuardTests
     {
-        // Wave ごとに追記する（W2: 画面・ウィンドウの寸法と動作設定、W3: 通信と更新確認、W4: 処理を持つ転送）
+        // Wave ごとに追記する（W2: 画面・ウィンドウの寸法と動作設定、W3: 通信と更新確認、W4: 処理を持つ転送、W5: ほかのサービス）
         private static readonly string[] Removed =
         {
             "StartMinimized", "MinToTaskbar", "CloseMini", "UseExclusiveMode", "AutoProfileRevertDefaultProfile",
@@ -36,6 +36,11 @@ namespace DS4WindowsTests
             // W4: 処理を持つ転送（偽の exe 名の検証、UDP 平滑化の変更通知）
             "FakeExeName", "UDPServerSmoothingMincutoff", "UDPServerSmoothingBeta",
             "UDPServerSmoothingMincutoffChanged", "UDPServerSmoothingBetaChanged",
+            // W5: 各サービスへ移した転送（プロファイル、リンクプロファイル、外観、自動プロファイル、接続フラグ）
+            "LinkedProfileUI", "ProfileActions", "SaveLinkedProfiles", "LoadLinkedProfiles",
+            "CacheExtraProfileInfo", "CacheProfileCustomsFlags", "changeLinkedProfile", "removeLinkedProfile",
+            "containsLinkedProfile", "getLinkedProfile", "UseIconChoice", "autoProfileSwitchNotifyChoice",
+            "IsFirstConnection", "MarkConnected", "ResetConnectionFlags", "RefreshExtrasButtons",
         };
 
         private readonly ITestOutputHelper _output;

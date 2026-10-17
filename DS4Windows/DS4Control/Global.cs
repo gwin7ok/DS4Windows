@@ -202,7 +202,7 @@ namespace DS4Windows
         // Phase4-Step5: INotificationService DI シム（IPathService／IEnvironmentService の静的フォールバックは Phase6-Step12 Wave 3 で削除）
         // =========================================================================
         private static DS4Windows.DI.INotificationService notificationService = null;
-        private static readonly DS4Windows.DI.INotificationService fallbackNotificationService = new AppNotificationService();
+        private static readonly DS4Windows.DI.INotificationService fallbackNotificationService = new AppNotificationService(m_Config);
 
         public static DS4Windows.DI.INotificationService NotificationServiceInstance
         {
@@ -262,24 +262,6 @@ namespace DS4Windows
                 ProfileSettingsServiceInstance.UseDInputOnlyArray = value;
             }
         }
-        public static bool IsFirstConnection(int index)
-        {
-            return m_Config.firstConnectionAfterStartup[index];
-        }
-
-        public static void MarkConnected(int index)
-        {
-            m_Config.firstConnectionAfterStartup[index] = false;
-        }
-
-        public static void ResetConnectionFlags()
-        {
-            for (int i = 0; i < TEST_PROFILE_ITEM_COUNT; i++)
-            {
-                m_Config.firstConnectionAfterStartup[i] = true;
-            }
-        }
-
         // (Removed) Previously used to hold pending removed invalid special actions
         // collected by UI-time calls. This mechanism was refactored so that
         // removal detection and logging happen at save/apply time; the array has
@@ -1251,12 +1233,6 @@ namespace DS4Windows
         {
             return m_Config.oscServPort;
         }
-        public static TrayIconChoice UseIconChoice
-        {
-            get => m_Config.useIconChoice;
-            set => m_Config.useIconChoice = value;
-        }
-
         public static event EventHandler<byte> BatteryChanged;
 
         public static void InvokeBatteryChanged(byte percentage)
@@ -1268,12 +1244,6 @@ namespace DS4Windows
         {
             get => m_Config.useCurrentTheme;
             set => m_Config.useCurrentTheme = value;
-        }
-
-        public static AutoProfileDisplayProfileSwitchChoices autoProfileSwitchNotifyChoice
-        {
-            get => m_Config.autoProfileSwitchNotifyChoice;
-            set => m_Config.autoProfileSwitchNotifyChoice = value;
         }
 
         public static int[] DebouncingMs => ProfileSettingsServiceInstance.DebouncingMs;
@@ -1314,7 +1284,6 @@ namespace DS4Windows
         public static string[] ProfilePath => m_Config.profilePath;
         public static string[] OlderProfilePath => m_Config.olderProfilePath;
         public static string[] SelectedProfile => m_Config.selectedProfile;
-        public static string[] LinkedProfileUI => m_Config.linkedProfileUI;
         public static bool[] DistanceProfiles = m_Config.distanceProfiles;
 
         // Event for profile change notification
@@ -1513,7 +1482,6 @@ namespace DS4Windows
             }
         }
 
-        public static List<string>[] ProfileActions => m_Config.profileActions;
         public static List<string> getProfileActions(int index)
         {
             return m_Config.profileActions[index];
@@ -1643,52 +1611,9 @@ namespace DS4Windows
             return sA;
         }
 
-        public static void CacheProfileCustomsFlags(int device)
-        {
-            m_Config.CacheProfileCustomsFlags(device);
-        }
-
-        public static void CacheExtraProfileInfo(int device)
-        {
-            m_Config.CacheExtraProfileInfo(device);
-        }
-
         public static string getX360ControlString(X360Controls key)
         {
             return m_Config.getX360ControlString(key);
-        }
-
-        public static bool containsLinkedProfile(string serial)
-        {
-            string tempSerial = serial.Replace(":", string.Empty);
-            return m_Config.linkedProfiles.ContainsKey(tempSerial);
-        }
-
-        public static string getLinkedProfile(string serial)
-        {
-            string temp = string.Empty;
-            string tempSerial = serial.Replace(":", string.Empty);
-            if (m_Config.linkedProfiles.ContainsKey(tempSerial))
-            {
-                temp = m_Config.linkedProfiles[tempSerial];
-            }
-
-            return temp;
-        }
-
-        public static void changeLinkedProfile(string serial, string profile)
-        {
-            string tempSerial = serial.Replace(":", string.Empty);
-            m_Config.linkedProfiles[tempSerial] = profile;
-        }
-
-        public static void removeLinkedProfile(string serial)
-        {
-            string tempSerial = serial.Replace(":", string.Empty);
-            if (m_Config.linkedProfiles.ContainsKey(tempSerial))
-            {
-                m_Config.linkedProfiles.Remove(tempSerial);
-            }
         }
 
         //public static bool Load() => m_Config.Load();
@@ -1851,16 +1776,6 @@ namespace DS4Windows
             ProfileSettingsServiceInstance.SetTempProfileName(device, string.Empty);
             ProfileSettingsServiceInstance.SetUseTempProfile(device, false);
             tempprofileDistance[device] = false;
-        }
-
-        public static bool SaveLinkedProfiles()
-        {
-            return m_Config.SaveLinkedProfiles();
-        }
-
-        public static bool LoadLinkedProfiles()
-        {
-            return m_Config.LoadLinkedProfiles();
         }
 
         public static bool SaveControllerConfigs(DS4Device device = null)
@@ -2035,14 +1950,6 @@ namespace DS4Windows
             }
         }
 
-        public static void RefreshExtrasButtons(int deviceNum, List<DS4Controls> devButtons)
-        {
-            m_Config.ds4controlSettings[deviceNum].ResetExtraButtons();
-            if (devButtons != null)
-            {
-                m_Config.ds4controlSettings[deviceNum].EstablishExtraButtons(devButtons);
-            }
-        }
     }
 }
 

@@ -162,7 +162,7 @@ namespace DS4WindowsTests
         [Fact]
         public void BatteryChanged_Subscription_ReceivesGlobalInvokeWithSameSenderAndValue()
         {
-            IAppearanceSettingsService service = new DS4Windows.Services.AppearanceSettingsService();
+            IAppearanceSettingsService service = TestRepositoryFactory.CreateAppearanceSettingsService();
             object receivedSender = null;
             byte receivedValue = 0;
             int fired = 0;
@@ -195,7 +195,7 @@ namespace DS4WindowsTests
         [Fact]
         public void BatteryChanged_Subscription_ReceivesGlobalInvokeDirectly()
         {
-            IAppearanceSettingsService service = new DS4Windows.Services.AppearanceSettingsService();
+            IAppearanceSettingsService service = TestRepositoryFactory.CreateAppearanceSettingsService();
             int fired = 0;
             EventHandler<byte> handler = (sender, value) => fired++;
 

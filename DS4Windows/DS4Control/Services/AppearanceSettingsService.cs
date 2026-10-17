@@ -7,16 +7,24 @@ namespace DS4Windows.Services
     /// </summary>
     public class AppearanceSettingsService : DS4Windows.DI.IAppearanceSettingsService
     {
+        // Phase7-Step3 W5: Global 経由をやめ、注入された BackingStore（設定の唯一の実体）を直接使う。
+        private readonly BackingStore _config;
+
+        public AppearanceSettingsService(BackingStore config)
+        {
+            _config = config ?? throw new System.ArgumentNullException(nameof(config));
+        }
+
         public AppThemeChoice UseCurrentTheme
         {
-            get => Global.UseCurrentTheme;
-            set => Global.UseCurrentTheme = value;
+            get => _config.useCurrentTheme;
+            set => _config.useCurrentTheme = value;
         }
 
         public TrayIconChoice UseIconChoice
         {
-            get => Global.UseIconChoice;
-            set => Global.UseIconChoice = value;
+            get => _config.useIconChoice;
+            set => _config.useIconChoice = value;
         }
 
         public string GetIconResourcePath(TrayIconChoice choice) => Global.iconChoiceResources[choice];

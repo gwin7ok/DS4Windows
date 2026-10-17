@@ -33,7 +33,7 @@ namespace DS4WindowsTests
             const int editSlot = Global.TEST_PROFILE_INDEX;
             // 既存テスト（ProfileSettingsServiceSubSettingsTests.ProfileActions_GetSet_ShouldPersistAndNotify）が
             // Global.store.profileActions を 8 要素の配列に置き換えたまま戻さないため、実行順によって
-            // Global.ProfileActions の長さが変わる。独立した 9 要素の配列に差し替えて検証し、終了時に戻す。
+            // Global.store.profileActions の長さが変わる。独立した 9 要素の配列に差し替えて検証し、終了時に戻す。
             BackingStore store = Global.store;
             List<string>[] originalArray = store.profileActions;
             List<string>[] profileActions = new List<string>[Global.TEST_PROFILE_ITEM_COUNT];

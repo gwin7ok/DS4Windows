@@ -148,10 +148,10 @@ namespace DS4Windows
         // Global.ProfilePath 等は m_Config(BackingStore) への薄い公開アクセサであり、
         // 本クラスの LoadProfile 内でも同一配列(Global.ProfilePath[deviceIndex])へ直接書き込んでいる
         // 既存の単一の実体であるため、状態を複製せずそのまま公開する(Phase4-Step10の知見に準拠)。
-        public string[] ProfilePath => Global.ProfilePath;
-        public string[] OlderProfilePath => Global.OlderProfilePath;
-        public string[] SelectedProfile => Global.SelectedProfile;
-        public string[] LinkedProfileUI => Global.LinkedProfileUI;
+        public string[] ProfilePath => _config.profilePath;
+        public string[] OlderProfilePath => _config.olderProfilePath;
+        public string[] SelectedProfile => _config.selectedProfile;
+        public string[] LinkedProfileUI => _config.linkedProfileUI;
 
         public event EventHandler<SelectedProfileChangedEventArgs> SelectedProfileChanged
         {
@@ -163,14 +163,25 @@ namespace DS4Windows
             => Global.RaiseSelectedProfileChanged(deviceIndex, profileName);
 
         // ---- Phase5-Step13-2: LinkedProfile（コントローラーMAC単位のプロファイル紐付け）管理 ----
+        // Phase7-Step3 W5: 旧 Global.changeLinkedProfile／removeLinkedProfile／containsLinkedProfile／getLinkedProfile の処理
+        // （シリアルからコロンを除いて正規化する）をここへ移した。
         public void ChangeLinkedProfile(string serial, string profile)
-            => Global.changeLinkedProfile(serial, profile);
+        {
+            string tempSerial = serial.Replace(":", string.Empty);
+            _config.linkedProfiles[tempSerial] = profile;
+        }
 
         public void RemoveLinkedProfile(string serial)
-            => Global.removeLinkedProfile(serial);
+        {
+            string tempSerial = serial.Replace(":", string.Empty);
+            if (_config.linkedProfiles.ContainsKey(tempSerial))
+            {
+                _config.linkedProfiles.Remove(tempSerial);
+            }
+        }
 
         public bool SaveLinkedProfiles()
-            => Global.SaveLinkedProfiles();
+            => _config.SaveLinkedProfiles();
 
         // Phase6-Step10-4-5b: 名前変更後に、リンクプロファイルの旧名が残って「Selected Profile が空欄になる」不具合の是正
         public int ReplaceLinkedProfileName(string oldName, string newName)
@@ -191,7 +202,7 @@ namespace DS4Windows
                 }
             }
 
-            string[] ui = Global.LinkedProfileUI;
+            string[] ui = _config.linkedProfileUI;
             if (ui != null)
             {
                 for (int i = 0; i < ui.Length; i++)
@@ -206,7 +217,7 @@ namespace DS4Windows
 
             if (replaced > 0)
             {
-                Global.SaveLinkedProfiles();
+                _config.SaveLinkedProfiles();
             }
 
             return replaced;
@@ -245,11 +256,11 @@ namespace DS4Windows
         }
 
         // ---- Phase5-Step13-5: デバイス別・割当済みSpecialAction名リスト ----
-        public List<string>[] ProfileActions => Global.ProfileActions;
-        public void CacheExtraProfileInfo(int deviceIndex) => Global.CacheExtraProfileInfo(deviceIndex);
+        public List<string>[] ProfileActions => _config.profileActions;
+        public void CacheExtraProfileInfo(int deviceIndex) => _config.CacheExtraProfileInfo(deviceIndex);
 
         // ---- Phase5-Step13-6: プロファイルのカスタムフラグキャッシュ更新 ----
-        public void CacheProfileCustomsFlags(int deviceIndex) => Global.CacheProfileCustomsFlags(deviceIndex);
+        public void CacheProfileCustomsFlags(int deviceIndex) => _config.CacheProfileCustomsFlags(deviceIndex);
 
         // ---- Phase5-Step13-7: 一時プロファイル読込（スワイプ操作等での即時切替用） ----
         public bool LoadTempProfile(int deviceIndex, string profileName, bool launchProgram, ControlService control, bool xinputChange = true)
@@ -265,7 +276,7 @@ namespace DS4Windows
             => _config.SaveAsProfile(deviceIndex, profileName);
 
         public bool LoadLinkedProfiles()
-            => Global.LoadLinkedProfiles();
+            => _config.LoadLinkedProfiles();
 
         // ---- Phase6-Step10-3b-1: アクションの名前変更・削除の、全プロファイルへの反映 ----
         public IReadOnlyList<string> ReplaceActionReference(string oldName, string newName)
@@ -379,8 +390,22 @@ namespace DS4Windows
 
 
         // ---- Phase6-Step2-2 (PR-2): リンクプロファイル解決 ----
-        public bool ContainsLinkedProfile(string serial) => Global.containsLinkedProfile(serial);
+        public bool ContainsLinkedProfile(string serial)
+        {
+            string tempSerial = serial.Replace(":", string.Empty);
+            return _config.linkedProfiles.ContainsKey(tempSerial);
+        }
 
-        public string GetLinkedProfile(string serial) => Global.getLinkedProfile(serial);
+        public string GetLinkedProfile(string serial)
+        {
+            string temp = string.Empty;
+            string tempSerial = serial.Replace(":", string.Empty);
+            if (_config.linkedProfiles.ContainsKey(tempSerial))
+            {
+                temp = _config.linkedProfiles[tempSerial];
+            }
+
+            return temp;
+        }
     }
 }

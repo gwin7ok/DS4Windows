@@ -60,12 +60,12 @@ namespace DS4WindowsTests
             // Phase6-Step12 Wave 1: 孤立コード 24 件を削除（Global 47 → 45）。Wave 2: 互換アクセサ 152 件を削除（Global 45 → 38）。Wave 3: *Instance のフォールバック群 19 件を削除（Global 38 → 26、AppHost 11 → 5、rootHub 9 → 6）。Wave 4: BackingStore 直転送ラッパー 58 件を削除（AppHost 5 → 4。(6, 4, 26)）
             ["DS4Windows/DS4Control/Global.cs"] = (6, 4, 26),
             // Phase7-Step2 W4: INotificationService.NotificationsEnabled／FlashTaskbar の削除で Global.* 5 件を削除（6 → 1）
-            ["DS4Windows/DS4Control/Services/AppNotificationService.cs"] = (0, 0, 1),
+            ["DS4Windows/DS4Control/Services/AppNotificationService.cs"] = (0, 0, 0),
             ["DS4Windows/DS4Control/Services/AppSettingsService.cs"] = (0, 0, 11),
-            ["DS4Windows/DS4Control/Services/AppearanceSettingsService.cs"] = (0, 0, 8),
-            ["DS4Windows/DS4Control/Services/AutoProfileService.cs"] = (0, 0, 3),
+            ["DS4Windows/DS4Control/Services/AppearanceSettingsService.cs"] = (0, 0, 4),
+            ["DS4Windows/DS4Control/Services/AutoProfileService.cs"] = (0, 0, 1),
             ["DS4Windows/DS4Control/Services/DefaultElevatedProcessLauncher.cs"] = (0, 0, 1),
-            ["DS4Windows/DS4Control/Services/DeviceStateService.cs"] = (0, 0, 4),
+            ["DS4Windows/DS4Control/Services/DeviceStateService.cs"] = (0, 0, 2),
             // Phase7-Step2 W7: IDs4DeviceRegistry.IsHidHideInstalled の削除で Global.IsHidHideInstalled の参照 1 件を削除（1 → 0）
             ["DS4Windows/DS4Control/Services/Ds4DeviceRegistryAdapter.cs"] = (0, 0, 0),
             ["DS4Windows/DS4Control/Services/EnvironmentService.cs"] = (0, 0, 21),
@@ -77,9 +77,9 @@ namespace DS4WindowsTests
             ["DS4Windows/DS4Control/Services/ProfileApplicationService.cs"] = (0, 0, 3),
             ["DS4Windows/DS4Control/Services/ProfilePresetLoader.cs"] = (0, 0, 10),
             // 26: 名前変更の伝播（ReplaceProfileSwitchTarget。Phase6-Step10-4-5d）で、Global.store への委譲を 2 件追加（薄いシムの性質。24 → 26）
-            ["DS4Windows/DS4Control/Services/ProfileRepository.cs"] = (0, 0, 21),
+            ["DS4Windows/DS4Control/Services/ProfileRepository.cs"] = (0, 0, 6),
             // Phase7-Step2 W1: コピー版 GetReverseX360ButtonMapping の削除で Global.reverseX360ButtonMapping の参照 1 件を削除（5 → 4）
-            ["DS4Windows/DS4Control/Services/ProfileSettingsService.cs"] = (0, 0, 4),
+            ["DS4Windows/DS4Control/Services/ProfileSettingsService.cs"] = (0, 0, 3),
             ["DS4Windows/DS4Control/Services/ProfileSlotApplier.cs"] = (0, 0, 1),
             ["DS4Windows/DS4Control/Services/ProfileXmlStore.cs"] = (0, 0, 2),
             // Phase7-Step2 W7: SaveActions の削除で Global.SaveActions の参照 1 件を削除（4 → 3）

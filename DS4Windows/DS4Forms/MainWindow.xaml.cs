@@ -120,7 +120,8 @@ namespace DS4WinWPF.DS4Forms
             pathService = DS4WinWPF.AppHost.GetService<DS4Windows.DI.IPathService>();
             profileListHolder = new ProfileList(pathService);
             environmentService = DS4WinWPF.AppHost.GetService<DS4Windows.DI.IEnvironmentService>();
-            appearanceSettingsService = DS4WinWPF.AppHost.GetService<DS4Windows.DI.IAppearanceSettingsService>() ?? new DS4Windows.Services.AppearanceSettingsService();
+            appearanceSettingsService = DS4WinWPF.AppHost.GetService<DS4Windows.DI.IAppearanceSettingsService>()
+                ?? throw new InvalidOperationException("IAppearanceSettingsService is not registered.");
             profileAppService = DS4WinWPF.AppHost.GetService<DS4Windows.DI.IProfileApplicationService>();
             outputSlotService = DS4WinWPF.AppHost.GetService<DS4Windows.DI.IOutputSlotService>();
             profileRepo = DS4WinWPF.AppHost.GetService<DS4Windows.DI.IProfileRepository>();

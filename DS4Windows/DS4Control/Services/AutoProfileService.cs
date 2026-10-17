@@ -36,10 +36,13 @@ namespace DS4Windows
 
         public AutoProfileHolder Holder => _holder;
 
+        // Phase7-Step3 W5: Global 経由をやめ、注入された BackingStore を直接使う。
+        private readonly BackingStore _config;
+
         public AutoProfileDisplayProfileSwitchChoices AutoProfileSwitchNotifyChoice
         {
-            get => Global.autoProfileSwitchNotifyChoice;
-            set => Global.autoProfileSwitchNotifyChoice = value;
+            get => _config.autoProfileSwitchNotifyChoice;
+            set => _config.autoProfileSwitchNotifyChoice = value;
         }
 
         // Phase6-Step10-2-1: Global への薄い委譲
@@ -61,8 +64,10 @@ namespace DS4Windows
             IEnvironmentService environmentService,
             IAppSettingsService appSettings,
             IProfileRepository profileRepository,
-            Func<ControlService> controlProvider)
+            Func<ControlService> controlProvider,
+            BackingStore config)
         {
+            _config = config ?? throw new ArgumentNullException(nameof(config));
             _holder = holder ?? throw new ArgumentNullException(nameof(holder));
             _profileAppService = profileAppService ?? throw new ArgumentNullException(nameof(profileAppService));
             _profileSettings = profileSettings ?? throw new ArgumentNullException(nameof(profileSettings));

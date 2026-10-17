@@ -22,7 +22,7 @@ namespace DS4WindowsTests
 
         private readonly ITestOutputHelper _output;
         private readonly AppSettingsService _appSettings = TestRepositoryFactory.CreateAppSettingsService();
-        private readonly AppearanceSettingsService _appearance = new AppearanceSettingsService();
+        private readonly AppearanceSettingsService _appearance = TestRepositoryFactory.CreateAppearanceSettingsService();
         private readonly ProfileSettingsService _profileSettings = TestRepositoryFactory.CreateProfileSettingsService();
         private readonly ProfileActionProvider _actionProvider = TestRepositoryFactory.CreateProfileActionProvider();
 
