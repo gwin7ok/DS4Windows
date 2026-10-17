@@ -182,12 +182,9 @@ namespace DS4Windows
         // Phase7-Step4 W1: ViGEmBus／HidHide／FakerInput の導入状態（vigemInstalled／vigemBusVersionInfo／hidHideInstalled／
         // fakerInputInstalled／fakerInputVersion と関連する定数）と、その調べ物は EnvironmentService へ移した。
 
-        public static VirtualKBMBase outputKBMHandler = null;
-        public static VirtualKBMMapping outputKBMMapping
-        {
-            get => ProfileSettingsServiceInstance.OutputKBMMapping;
-            set => ProfileSettingsServiceInstance.OutputKBMMapping = value;
-        }
+        // Phase7-Step8 W3（Q6＝A）: 出力 KBM ハンドラの実体（旧 outputKBMHandler）は OutputKBMHandlerAdapter.Handler へ、
+        // KBM マッピング（旧 outputKBMMapping）は IProfileSettingsService.OutputKBMMapping を直接使う形にした
+        // （決定・破棄・フォールバックの操作は OutputKBMHandlerLifecycle）。
 
         public const int CONFIG_VERSION = 5;
         public const int APP_CONFIG_VERSION = 2;
@@ -1044,28 +1041,7 @@ namespace DS4Windows
             return (value < min) ? min : (value > max) ? max : value;
         }
 
-        public static void InitOutputKBMHandler(string identifier)
-        {
-            outputKBMHandler = VirtualKBMFactory.DetermineHandler(identifier);
-            // For testing: disable fake key repeat to isolate whether repeated synthetic sends
-            // are due to fakeKeyRepeat logic. Re-enable or remove this for normal builds.
-            if (outputKBMHandler != null)
-            {
-                try
-                {
-                    AppLogger.LogDebug($"Output KBM handler fakeKeyRepeat={outputKBMHandler.fakeKeyRepeat} for {outputKBMHandler.GetIdentifier()}");
-                }
-                catch (Exception)
-                {
-                    // ignore - defensive in case handler implementation restricts setting
-                }
-            }
-        }
-
-        public static void InitOutputKBMMapping(string identifier)
-        {
-            outputKBMMapping = VirtualKBMFactory.GetMappingInstance(identifier);
-        }
+        // Phase7-Step8 W3: 旧 InitOutputKBMHandler／InitOutputKBMMapping は OutputKBMHandlerLifecycle へ移した（挙動・ログは同一）。
 
         /// <summary>
         /// Take Windows virtual key value and refresh action alias for currently used output KB+M system
@@ -1079,7 +1055,7 @@ namespace DS4Windows
                 setting.action.actionAlias = 0;
                 if (setting.actionType == DS4ControlSettings.ActionType.Key)
                 {
-                    setting.action.actionAlias = outputKBMMapping.GetRealEventKey(Convert.ToUInt32(setting.action.actionKey));
+                    setting.action.actionAlias = ProfileSettingsServiceInstance.OutputKBMMapping.GetRealEventKey(Convert.ToUInt32(setting.action.actionKey));
                 }
             }
             else
@@ -1087,7 +1063,7 @@ namespace DS4Windows
                 setting.shiftAction.actionAlias = 0;
                 if (setting.shiftActionType == DS4ControlSettings.ActionType.Key)
                 {
-                    setting.shiftAction.actionAlias = outputKBMMapping.GetRealEventKey(Convert.ToUInt32(setting.shiftAction.actionKey));
+                    setting.shiftAction.actionAlias = ProfileSettingsServiceInstance.OutputKBMMapping.GetRealEventKey(Convert.ToUInt32(setting.shiftAction.actionKey));
                 }
             }
         }

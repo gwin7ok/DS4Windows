@@ -22,6 +22,7 @@ namespace DS4WindowsTests
         private readonly SyntheticState _savedGlobalState;
         private readonly SyntheticState _savedDeviceState;
         private readonly DS4Windows.DS4Control.VirtualKBMBase _savedHandler;
+        private readonly DS4Windows.Services.OutputKBMHandlerAdapter _handlerOwner;
         private readonly VirtualKBMMapping _savedMapping;
         private readonly List<DS4Controls> _touched = new List<DS4Controls>();
 
@@ -30,6 +31,8 @@ namespace DS4WindowsTests
         public ControlService Control { get; }
         /// <summary>コンテナの <c>IMapping</c>（Singleton）。Phase7-Step8 W2 で static から instance になった。</summary>
         public IMapping Mapper { get; }
+        /// <summary>コンテナの合成キーの送出（Mapper が使うものと同じ instance）。</summary>
+        public ISyntheticDispatcher Dispatcher { get; }
         /// <summary>コンテナの保持クラス（Mapper が使うものと同じ instance）。</summary>
         public SyntheticInputState Synthetic { get; }
         private readonly StickMotionState _stickMotion;
@@ -41,12 +44,14 @@ namespace DS4WindowsTests
             Settings = DS4WinWPF.AppHost.GetService<IProfileSettingsService>();
             Control = DS4WinWPF.AppHost.GetService<ControlService>();
             Mapper = DS4WinWPF.AppHost.GetService<IMapping>();
+            Dispatcher = DS4WinWPF.AppHost.GetService<ISyntheticDispatcher>();
+            _handlerOwner = DS4WinWPF.AppHost.GetService<DS4Windows.Services.OutputKBMHandlerAdapter>();
             Synthetic = DS4WinWPF.AppHost.GetService<SyntheticInputState>();
             _stickMotion = DS4WinWPF.AppHost.GetService<StickMotionState>();
 
             _savedGlobalState = Synthetic.GlobalState;
             _savedDeviceState = Synthetic.DeviceState[Device];
-            _savedHandler = Global.outputKBMHandler;
+            _savedHandler = _handlerOwner.Handler; // Phase7-Step8 W3: 旧 Global.outputKBMHandler
             _savedMapping = Settings.OutputKBMMapping;
 
             Synthetic.GlobalState = new SyntheticState();
@@ -56,7 +61,7 @@ namespace DS4WindowsTests
             KbmMapping.PopulateConstants();
             KbmMapping.PopulateMappings();
             Settings.OutputKBMMapping = KbmMapping;
-            Global.outputKBMHandler = Recorder;
+            _handlerOwner.Handler = Recorder;
         }
 
         /// <summary>デバイス <see cref="Device"/> の、指定のボタンの割り当てを「ボタン」へ変える（終了時に既定へ戻す）。</summary>
@@ -92,7 +97,7 @@ namespace DS4WindowsTests
                 Global.store.GetDS4CSetting(Device, control)?.Reset();
 
             Mapper.HandleDeviceDisconnect(Device);
-            Global.outputKBMHandler = _savedHandler;
+            _handlerOwner.Handler = _savedHandler;
             Settings.OutputKBMMapping = _savedMapping;
             Synthetic.GlobalState = _savedGlobalState;
             Synthetic.DeviceState[Device] = _savedDeviceState;

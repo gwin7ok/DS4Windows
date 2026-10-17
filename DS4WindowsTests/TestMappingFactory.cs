@@ -29,19 +29,24 @@ namespace DS4WindowsTests
             SyntheticInputState syntheticInput = null,
             MacroRuntimeState macroRuntime = null,
             StickMotionState stickMotion = null,
-            IVirtualKBM virtualKbm = null)
+            IVirtualKBM virtualKbm = null,
+            ISyntheticDispatcher syntheticDispatcher = null)
         {
             DS4WinWPF.AppHost.CreateHost();
+            var synthetic = syntheticInput ?? new SyntheticInputState();
+            var profileSettings = settings ?? DS4WinWPF.AppHost.GetService<IProfileSettingsService>();
             return new Mapping(
-                syntheticInput ?? new SyntheticInputState(),
+                synthetic,
                 macroRuntime ?? new MacroRuntimeState(),
                 stickMotion ?? new StickMotionState(),
-                settings ?? DS4WinWPF.AppHost.GetService<IProfileSettingsService>(),
+                profileSettings,
                 DS4WinWPF.AppHost.GetService<IProfileApplicationService>(),
                 virtualKbm ?? DS4WinWPF.AppHost.GetService<IVirtualKBM>(),
                 DS4WinWPF.AppHost.GetService<IKeyButtonControllerRegistry>(),
                 DS4WinWPF.AppHost.GetService<IProcessLauncher>(),
                 DS4WinWPF.AppHost.GetService<IProfileSwitcher>(),
+                // 独立の合成状態（synthetic）に対して送出する、独立の送出役（出力先の既定はホストのアダプター）
+                syntheticDispatcher ?? new SyntheticDispatcherService(synthetic, DS4WinWPF.AppHost.GetService<OutputKBMHandlerAdapter>(), profileSettings),
                 () => DS4WinWPF.AppHost.GetService<IDeviceStateAccessor>());
         }
     }

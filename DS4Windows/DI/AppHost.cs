@@ -46,6 +46,7 @@ namespace DS4WinWPF
                 _host = builder.Build();
                 DS4Windows.DI.ServiceProviderHolder.SetProvider(_host.Services);
                 PreallocateActionEntries();
+                BindSyntheticDispatcher();
                 if (AppLogger.IsTraceEnabled)
                     AppLogger.LogTrace("[DI] AppHost.CreateHost: Host initialized and all services registered");
                 return _host;
@@ -95,6 +96,7 @@ namespace DS4WinWPF
                 _host = builder.Build();
                 DS4Windows.DI.ServiceProviderHolder.SetProvider(_host.Services);
                 PreallocateActionEntries();
+                BindSyntheticDispatcher();
                 CreationNote = "explicit CreateHost(config, parser) created the host";
                 ApplyStartupArguments(parser, hostAlreadyCreated: false);
                 if (AppLogger.IsTraceEnabled)
@@ -119,6 +121,15 @@ namespace DS4WinWPF
             startupArguments.SetParser(parser);
             if (AppLogger.IsTraceEnabled)
                 AppLogger.LogTrace($"[DI] AppHost.CreateHost: startup arguments applied to IStartupArguments (host {(hostAlreadyCreated ? "already created" : "newly created")})");
+        }
+
+        /// <summary>
+        /// Phase7-Step8 W3（Q6＝A）: 合成キーの送出（ISyntheticDispatcher）を作り、Actions サブシステムが静的に呼ぶ橋渡し
+        /// （SyntheticDispatcher.Bind。ServiceRegistration の登録の中で束縛される）を、ホストの構築直後に有効にする。
+        /// </summary>
+        private static void BindSyntheticDispatcher()
+        {
+            try { _host?.Services.GetService<DS4Windows.DI.ISyntheticDispatcher>(); } catch { }
         }
 
         private static void PreallocateActionEntries()

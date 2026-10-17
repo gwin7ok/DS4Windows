@@ -9,150 +9,128 @@ namespace DS4WindowsTests
     /// <summary>
     /// Phase6-Step2-3 (PR-3, 決定D3): OutputKBMHandlerLifecycle が、旧 ControlService の
     /// RefreshOutputKBMHandler / InitOutputKBMHandler が行っていたハンドラ操作と等価であることを検証する。
-    /// Global.outputKBMHandler / Global.outputKBMMapping は static のため、各テストは変更した状態を必ず元に戻す。
+    /// Phase7-Step8 W3（Q6＝A）: ハンドラの実体は <see cref="OutputKBMHandlerAdapter.Handler"/>（旧 Global.outputKBMHandler）、
+    /// KBM マッピングは <c>IProfileSettingsService.OutputKBMMapping</c>（旧 Global.outputKBMMapping）へ移った。
+    /// 各テストは、独立の adapter・設定サービスを使うため、静的な状態を共有せず、元へ戻す必要もない。
     /// </summary>
     public class VirtualKBMLifecycleTests
     {
-        private readonly OutputKBMHandlerLifecycle _lifecycle = new OutputKBMHandlerLifecycle(new EnvironmentService());
+        private readonly OutputKBMHandlerAdapter _adapter = new OutputKBMHandlerAdapter();
+        private readonly ProfileSettingsService _settings = TestRepositoryFactory.CreateProfileSettingsService(new BackingStore());
+        private readonly OutputKBMHandlerLifecycle _lifecycle;
+
+        public VirtualKBMLifecycleTests()
+        {
+            _lifecycle = new OutputKBMHandlerLifecycle(new EnvironmentService(), _adapter, _settings);
+        }
 
         [Fact]
-        public void Constructor_NullEnvironmentService_ThrowsArgumentNullException()
+        public void Constructor_NullDependencies_ThrowArgumentNullException()
         {
-            var ex = Assert.Throws<ArgumentNullException>(() => new OutputKBMHandlerLifecycle(null));
-
+            var ex = Assert.Throws<ArgumentNullException>(() => new OutputKBMHandlerLifecycle(null, _adapter, _settings));
             Assert.Equal("environmentService", ex.ParamName);
+
+            ex = Assert.Throws<ArgumentNullException>(() => new OutputKBMHandlerLifecycle(new EnvironmentService(), null, _settings));
+            Assert.Equal("handlerOwner", ex.ParamName);
+
+            ex = Assert.Throws<ArgumentNullException>(() => new OutputKBMHandlerLifecycle(new EnvironmentService(), _adapter, null));
+            Assert.Equal("profileSettings", ex.ParamName);
         }
 
         [Fact]
         public void ReleaseHandler_WithExistingHandler_ClearsHandler()
         {
-            var original = Global.outputKBMHandler;
-            try
-            {
-                Global.outputKBMHandler = VirtualKBMFactory.GetFallbackHandler();
+            _adapter.Handler = VirtualKBMFactory.GetFallbackHandler();
 
-                _lifecycle.ReleaseHandler();
+            _lifecycle.ReleaseHandler();
 
-                Assert.Null(Global.outputKBMHandler);
-            }
-            finally
-            {
-                Global.outputKBMHandler = original;
-            }
+            Assert.Null(_adapter.Handler);
         }
 
         [Fact]
         public void ReleaseHandler_WithoutHandler_DoesNotThrow()
         {
-            var original = Global.outputKBMHandler;
-            try
-            {
-                Global.outputKBMHandler = null;
+            _adapter.Handler = null;
 
-                var ex = Record.Exception(() => _lifecycle.ReleaseHandler());
+            var ex = Record.Exception(() => _lifecycle.ReleaseHandler());
 
-                Assert.Null(ex);
-                Assert.Null(Global.outputKBMHandler);
-            }
-            finally
-            {
-                Global.outputKBMHandler = original;
-            }
+            Assert.Null(ex);
+            Assert.Null(_adapter.Handler);
         }
 
         [Fact]
         public void DetermineHandler_WithFallbackIdentifier_SetsFallbackHandler()
         {
-            var original = Global.outputKBMHandler;
-            try
-            {
-                Global.outputKBMHandler = null;
+            _adapter.Handler = null;
 
-                _lifecycle.DetermineHandler(VirtualKBMFactory.GetFallbackHandlerIdentifier());
+            _lifecycle.DetermineHandler(VirtualKBMFactory.GetFallbackHandlerIdentifier());
 
-                Assert.NotNull(Global.outputKBMHandler);
-                Assert.Equal(VirtualKBMFactory.GetFallbackHandlerIdentifier(), Global.outputKBMHandler.GetIdentifier());
-            }
-            finally
-            {
-                Global.outputKBMHandler = original;
-            }
+            Assert.NotNull(_adapter.Handler);
+            Assert.Equal(VirtualKBMFactory.GetFallbackHandlerIdentifier(), _adapter.Handler.GetIdentifier());
         }
 
         [Fact]
         public void SwitchToFallbackHandler_ReplacesHandlerWithFallback()
         {
-            var original = Global.outputKBMHandler;
-            try
-            {
-                Global.outputKBMHandler = null;
+            _adapter.Handler = null;
 
-                _lifecycle.SwitchToFallbackHandler();
+            _lifecycle.SwitchToFallbackHandler();
 
-                Assert.NotNull(Global.outputKBMHandler);
-                Assert.Equal(VirtualKBMFactory.GetFallbackHandlerIdentifier(), Global.outputKBMHandler.GetIdentifier());
-            }
-            finally
-            {
-                Global.outputKBMHandler = original;
-            }
+            Assert.NotNull(_adapter.Handler);
+            Assert.Equal(VirtualKBMFactory.GetFallbackHandlerIdentifier(), _adapter.Handler.GetIdentifier());
         }
 
         [Fact]
         public void ApplyFakerInputVersion_SetsHandlerVersionFromEnvironmentService()
         {
-            var originalHandler = Global.outputKBMHandler;
             string originalVersion = EnvironmentService.FakerInputVersionState;
             try
             {
                 EnvironmentService.FakerInputVersionState = "1.2.3.4";
-                Global.outputKBMHandler = VirtualKBMFactory.GetFallbackHandler();
+                _adapter.Handler = VirtualKBMFactory.GetFallbackHandler();
 
                 _lifecycle.ApplyFakerInputVersion();
 
-                Assert.Equal("1.2.3.4", Global.outputKBMHandler.Version);
+                Assert.Equal("1.2.3.4", _adapter.Handler.Version);
             }
             finally
             {
                 EnvironmentService.FakerInputVersionState = originalVersion;
-                Global.outputKBMHandler = originalHandler;
             }
         }
 
         [Fact]
         public void ApplyFakerInputVersion_WithoutHandler_DoesNotThrow()
         {
-            var original = Global.outputKBMHandler;
-            try
-            {
-                Global.outputKBMHandler = null;
+            _adapter.Handler = null;
 
-                var ex = Record.Exception(() => _lifecycle.ApplyFakerInputVersion());
+            var ex = Record.Exception(() => _lifecycle.ApplyFakerInputVersion());
 
-                Assert.Null(ex);
-            }
-            finally
-            {
-                Global.outputKBMHandler = original;
-            }
+            Assert.Null(ex);
         }
 
         [Fact]
-        public void InitializeMapping_WithFallbackIdentifier_SetsMappingLikeGlobal()
+        public void InitializeMapping_WithFallbackIdentifier_SetsTheMappingOnTheProfileSettings()
         {
-            var original = Global.outputKBMMapping;
-            try
-            {
-                Global.outputKBMMapping = null;
+            _settings.OutputKBMMapping = null;
 
-                _lifecycle.InitializeMapping(VirtualKBMFactory.GetFallbackHandlerIdentifier());
+            _lifecycle.InitializeMapping(VirtualKBMFactory.GetFallbackHandlerIdentifier());
 
-                Assert.NotNull(Global.outputKBMMapping);
-            }
-            finally
-            {
-                Global.outputKBMMapping = original;
-            }
+            Assert.NotNull(_settings.OutputKBMMapping);
+        }
+
+        [Fact]
+        public void Adapter_DelegatesToTheOwnedHandler_AndIsInertWithoutOne()
+        {
+            var adapter = new OutputKBMHandlerAdapter();
+            Assert.Equal(string.Empty, adapter.GetIdentifier());
+            Assert.False(adapter.Connect());
+
+            adapter.Handler = VirtualKBMFactory.GetFallbackHandler();
+            Assert.Equal(VirtualKBMFactory.GetFallbackHandlerIdentifier(), adapter.GetIdentifier());
+
+            adapter.Handler = null;
+            Assert.Equal(string.Empty, adapter.GetIdentifier());
         }
 
         [Fact]

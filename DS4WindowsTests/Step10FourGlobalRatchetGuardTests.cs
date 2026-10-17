@@ -93,8 +93,8 @@ namespace DS4WindowsTests
             // Phase7-Step4 W1: 調べ物と状態を EnvironmentService が持つ形に移管（21 → 7: IsAdministrator／exeversion／GetInstanceIdFromDevicePath／AdminNeeded と、スロット上限の定数 3）
             ["DS4Windows/DS4Control/Services/EnvironmentService.cs"] = (0, 0, 7),
             // Phase7-Step2 W4: IVirtualKBM.ErrorMessage の削除で Global.outputKBMHandler の参照 1 件を削除（21 → 20）。W7: Version の削除でさらに 1 件削除（20 → 19）
-            ["DS4Windows/DS4Control/Services/OutputKBMHandlerAdapter.cs"] = (0, 0, 19),
-            ["DS4Windows/DS4Control/Services/OutputKBMHandlerLifecycle.cs"] = (0, 0, 8),
+            // Phase7-Step8 W3（Q6＝A）: OutputKBMHandlerAdapter.cs の Global.outputKBMHandler／outputKBMMapping 参照 19 件を削除（出力ハンドラの実体を OutputKBMHandlerAdapter へ）
+            // Phase7-Step8 W3（Q6＝A）: OutputKBMHandlerLifecycle.cs の Global.outputKBMHandler／outputKBMMapping 参照 8 件を削除（出力ハンドラの実体を OutputKBMHandlerAdapter へ）
             // Phase7-Step6 W2: 配列の実体を持ち、Global の参照は配列の長さの定数 1 件だけ（2 → 1）
             ["DS4Windows/DS4Control/Services/OutputSlotService.cs"] = (0, 0, 1),
             // Phase7-Step4 W3: 実行ファイル・保存場所の状態を PathService が持つ形に移管（8 → 1: 省略時の Global.store）
@@ -110,7 +110,7 @@ namespace DS4WindowsTests
             ["DS4Windows/DS4Control/Services/ProfileXmlStore.cs"] = (0, 0, 0),
             // Phase7-Step2 W7: SaveActions の削除で Global.SaveActions の参照 1 件を削除（4 → 3）
             ["DS4Windows/DS4Control/Services/SpecialActionRepository.cs"] = (0, 0, 3),
-            ["DS4Windows/DS4Control/SyntheticDispatcher.cs"] = (0, 0, 4),
+            // Phase7-Step8 W3（Q6＝A）: SyntheticDispatcher.cs の Global.outputKBMHandler／outputKBMMapping 参照 4 件を削除（出力ハンドラの実体を OutputKBMHandlerAdapter へ）
             ["DS4Windows/DS4Control/Util.cs"] = (0, 0, 1),
             ["DS4Windows/DS4Control/Xbox360OutDevice.cs"] = (0, 0, 1),
             // Phase6-Step10b W3: 1 ファイル 1 型の分割に伴い、件数を新設ファイルへ引き継いだ（合計は不変）

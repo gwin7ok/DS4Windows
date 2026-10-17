@@ -242,13 +242,16 @@ namespace DS4WindowsTests
         public void RefreshActionAlias_KeyAction_UsesOutputKbmMapping_LikeGlobal()
         {
             var service = TestRepositoryFactory.CreateProfileSettingsService();
-            VirtualKBMMapping originalMapping = Global.outputKBMMapping;
+            // Phase7-Step8 W3: 旧 Global.outputKBMMapping は、Global.ProfileSettingsServiceInstance.OutputKBMMapping への転送プロパティだった
+            var globalSettings = Global.ProfileSettingsServiceInstance;
+            VirtualKBMMapping originalMapping = globalSettings.OutputKBMMapping;
             try
             {
                 VirtualKBMMapping mapping = VirtualKBMFactory.GetMappingInstance();
                 mapping.PopulateConstants();
                 mapping.PopulateMappings();
-                Global.outputKBMMapping = mapping;
+                globalSettings.OutputKBMMapping = mapping;
+                service.OutputKBMMapping = mapping;
 
                 const int virtualKey = 0x41; // 'A'
                 var viaService = new DS4ControlSettings(DS4Controls.Cross);
@@ -266,7 +269,7 @@ namespace DS4WindowsTests
             }
             finally
             {
-                Global.outputKBMMapping = originalMapping;
+                globalSettings.OutputKBMMapping = originalMapping;
             }
         }
     }

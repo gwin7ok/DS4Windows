@@ -1,145 +1,59 @@
+using DS4Windows.DI;
 using DS4Windows.Services;
-using System;
-using System.Collections.Generic;
-using DS4Windows.DS4Control;
 
 namespace DS4Windows
 {
-    // Minimal SyntheticDispatcher: centralized small wrapper for synthetic sends.
-    // Responsibilities (minimal): resolve native key, perform press/release via KBM handler,
-    // update basic timing counters on SyntheticInputState (DeviceState / GlobalState), and provide ResetKeyTiming.
+    // TODO(Phase7-Step8 W3／Phase8 で削除): Actions サブシステム（KeyButtonActionController、KeyAction、KeyOutputAction、RepeatHelper）が
+    // 静的に呼ぶための、暫定の静的な橋渡し。実体の処理は SyntheticDispatcherService（ISyntheticDispatcher。DI の Singleton）にあり、
+    // ここは Composition Root が 1 度だけ束縛した instance（Bind。ServiceRegistration の登録と AppHost.CreateHost）へ委譲するだけである。
+    // 旧: SyntheticInputState.Shared／Global.outputKBMHandler／Global.outputKBMMapping への直接参照とフォールバックを持っていた。
+    // 本クラスは状態を持たず、フォールバックも持たない（未束縛のときは、明示的に渡されたハンドラへ送るだけで、合成状態は更新しない）。
+    // Actions の利用者が生成の経路を注入に切り替えた時点（Phase8）で、本クラスごと削除する。
     public static class SyntheticDispatcher
     {
+        private static volatile ISyntheticDispatcher bound;
+
+        /// <summary>Composition Root が、DI が作った唯一の instance を束縛する（null で解除。テストの後始末用）。</summary>
+        public static void Bind(ISyntheticDispatcher dispatcher)
+        {
+            bound = dispatcher;
+        }
+
         public static uint ResolveNativeKey(ushort kvpKey)
         {
-            try
-            {
-                if (Global.outputKBMMapping != null)
-                    return Global.outputKBMMapping.GetRealEventKey(kvpKey);
-            }
-            catch { }
-            return kvpKey;
+            var d = bound;
+            return d != null ? d.ResolveNativeKey(kvpKey) : kvpKey;
         }
 
         public static void SendPress(int device, ushort kvpKey, uint nativeKey, bool useScanCode, IVirtualKBM handler = null)
         {
-            try
+            var d = bound;
+            if (d != null)
             {
-                var h = handler ?? Global.outputKBMHandler;
-                if (h == null) return;
-
-                AppLogger.LogTrace($"SYNTHETIC TRACE dispatcher device={device} key={kvpKey} nativeKey={nativeKey} event=KeyPress");
-                AppLogger.LogDebug($"EVENT SENT [SYNTHETIC] dispatcher device={device} key={kvpKey} nativeKey={nativeKey} event=KeyPress");
-
-                if (useScanCode) h.PerformKeyPressAlt(nativeKey); else h.PerformKeyPress(nativeKey);
-
-                // Update simple timing counters to help throttle logic elsewhere
-                try
-                {
-                    var now = DateTime.UtcNow.Ticks;
-                    if (SyntheticInputState.Shared.DeviceState != null && device >= 0 && device < SyntheticInputState.Shared.DeviceState.Length)
-                    {
-                        var ds = SyntheticInputState.Shared.DeviceState[device];
-                        if (ds.keyPresses == null) ds.keyPresses = new Dictionary<UInt16, SyntheticState.KeyPresses>();
-                        if (!ds.keyPresses.TryGetValue(kvpKey, out var kp))
-                        {
-                            kp = new SyntheticState.KeyPresses();
-                            ds.keyPresses[kvpKey] = kp;
-                            try { ds.nativeKeyAlias[kvpKey] = nativeKey; } catch { }
-                        }
-                        kp.current.lastSyntheticSendUtcTicks = now;
-                        kp.current.repeatCount++;
-                    }
-
-                    if (SyntheticInputState.Shared.GlobalState != null)
-                    {
-                        if (SyntheticInputState.Shared.GlobalState.keyPresses == null) SyntheticInputState.Shared.GlobalState.keyPresses = new Dictionary<UInt16, SyntheticState.KeyPresses>();
-                        if (!SyntheticInputState.Shared.GlobalState.keyPresses.TryGetValue(kvpKey, out var gkp))
-                        {
-                            gkp = new SyntheticState.KeyPresses();
-                            SyntheticInputState.Shared.GlobalState.keyPresses[kvpKey] = gkp;
-                        }
-                        gkp.current.lastSyntheticSendUtcTicks = DateTime.UtcNow.Ticks;
-                        gkp.current.repeatCount++;
-                    }
-                }
-                catch { }
+                d.SendPress(device, kvpKey, nativeKey, useScanCode, handler);
+                return;
             }
-            catch (Exception ex)
-            {
-                AppLogger.LogTrace($"SyntheticDispatcher.SendPress failed: {ex}");
-            }
+
+            if (handler == null) return;
+            if (useScanCode) handler.PerformKeyPressAlt(nativeKey); else handler.PerformKeyPress(nativeKey);
         }
 
         public static void SendRelease(int device, ushort kvpKey, uint nativeKey, bool useScanCode, IVirtualKBM handler = null)
         {
-            try
+            var d = bound;
+            if (d != null)
             {
-                var h = handler ?? Global.outputKBMHandler;
-                if (h == null) return;
-
-                AppLogger.LogTrace($"SYNTHETIC TRACE dispatcher device={device} key={kvpKey} nativeKey={nativeKey} event=KeyRelease");
-                AppLogger.LogDebug($"EVENT SENT [SYNTHETIC] dispatcher device={device} key={kvpKey} nativeKey={nativeKey} event=KeyRelease");
-
-                if (useScanCode) h.PerformKeyReleaseAlt(nativeKey); else h.PerformKeyRelease(nativeKey);
-
-                try
-                {
-                    // Mark last send time and clear counts to avoid duplicates
-                    var now = DateTime.UtcNow.Ticks;
-                    if (SyntheticInputState.Shared.DeviceState != null && device >= 0 && device < SyntheticInputState.Shared.DeviceState.Length)
-                    {
-                        var ds = SyntheticInputState.Shared.DeviceState[device];
-                        if (ds.keyPresses != null && ds.keyPresses.TryGetValue(kvpKey, out var kp))
-                        {
-                            kp.current.lastSyntheticSendUtcTicks = now;
-                            kp.current.vkCount = 0;
-                            kp.current.scanCodeCount = 0;
-                            kp.current.repeatCount = 0;
-                            kp.current.toggleCount = 0;
-                            kp.current.toggle = false;
-                        }
-                    }
-
-                    if (SyntheticInputState.Shared.GlobalState != null && SyntheticInputState.Shared.GlobalState.keyPresses != null && SyntheticInputState.Shared.GlobalState.keyPresses.TryGetValue(kvpKey, out var gkp))
-                    {
-                        gkp.current.lastSyntheticSendUtcTicks = now;
-                        gkp.current.vkCount = 0;
-                        gkp.current.scanCodeCount = 0;
-                        gkp.current.repeatCount = 0;
-                        gkp.current.toggleCount = 0;
-                        gkp.current.toggle = false;
-                    }
-                }
-                catch { }
+                d.SendRelease(device, kvpKey, nativeKey, useScanCode, handler);
+                return;
             }
-            catch (Exception ex)
-            {
-                AppLogger.LogTrace($"SyntheticDispatcher.SendRelease failed: {ex}");
-            }
+
+            if (handler == null) return;
+            if (useScanCode) handler.PerformKeyReleaseAlt(nativeKey); else handler.PerformKeyRelease(nativeKey);
         }
 
         public static void ResetKeyTiming(int device, ushort kvpKey)
         {
-            try
-            {
-                var now = DateTime.UtcNow.Ticks;
-                if (SyntheticInputState.Shared.DeviceState != null && device >= 0 && device < SyntheticInputState.Shared.DeviceState.Length)
-                {
-                    var ds = SyntheticInputState.Shared.DeviceState[device];
-                    if (ds.keyPresses != null && ds.keyPresses.TryGetValue(kvpKey, out var kp))
-                    {
-                        kp.current.lastSyntheticSendUtcTicks = 0;
-                        kp.current.repeatCount = 0;
-                    }
-                }
-                if (SyntheticInputState.Shared.GlobalState != null && SyntheticInputState.Shared.GlobalState.keyPresses != null && SyntheticInputState.Shared.GlobalState.keyPresses.TryGetValue(kvpKey, out var gkp))
-                {
-                    gkp.current.lastSyntheticSendUtcTicks = 0;
-                    gkp.current.repeatCount = 0;
-                }
-            }
-            catch { }
+            bound?.ResetKeyTiming(device, kvpKey);
         }
     }
 }

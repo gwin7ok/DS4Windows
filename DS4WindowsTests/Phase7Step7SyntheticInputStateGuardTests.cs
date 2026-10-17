@@ -68,8 +68,9 @@ namespace DS4WindowsTests
             string registration = Read("DS4Windows/DI/ServiceRegistration.cs");
             if (registration == null) return;
 
-            Assert.Contains("store.ActionsLoaded -= ActionsLoadedRuntimeReset.Reset;", registration);
-            Assert.Contains("store.ActionsLoaded += ActionsLoadedRuntimeReset.Reset;", registration);
+            // Phase7-Step8 W3: 購読者は instance（保持クラスをコンストラクターで受ける）。前回の購読者を外してから登録する
+            Assert.Contains("store.ActionsLoaded -= _subscribedReset.Reset;", registration);
+            Assert.Contains("store.ActionsLoaded += reset.Reset;", registration);
             Assert.Contains("services.AddSingleton<SyntheticInputState>(_ => SyntheticInputState.Shared);", registration);
         }
 
@@ -79,23 +80,28 @@ namespace DS4WindowsTests
             string reset = Read("DS4Windows/DS4Control/Services/ActionsLoadedRuntimeReset.cs");
             if (reset == null) return;
 
-            int state = reset.IndexOf("SyntheticInputState.Shared.ResetAll();");
+            int state = reset.IndexOf("_syntheticInput.ResetAll();");
             int toggled = reset.IndexOf("ActionManager.ClearAllToggledOn();");
-            int macro = reset.IndexOf("MacroRuntimeState.Shared.ClearMacroDone();");
+            int macro = reset.IndexOf("_macroRuntime.ClearMacroDone();");
             int log = reset.IndexOf("Runtime synthetic state reset after Actions load");
             Assert.True(state >= 0 && state < toggled && toggled < macro && macro < log);
         }
 
         [Fact]
-        public void SyntheticDispatcher_UsesTheHolder()
+        public void SyntheticDispatcherService_UsesTheInjectedHolder_AndTheStaticBridgeHoldsNoState()
         {
-            string dispatcher = Read("DS4Windows/DS4Control/SyntheticDispatcher.cs");
-            if (dispatcher == null) return;
+            string service = Read("DS4Windows/DS4Control/Services/SyntheticDispatcherService.cs");
+            string bridge = Read("DS4Windows/DS4Control/SyntheticDispatcher.cs");
+            if (service == null || bridge == null) return;
 
-            Assert.DoesNotContain("Mapping.deviceState", dispatcher);
-            Assert.DoesNotContain("Mapping.globalState", dispatcher);
-            Assert.DoesNotContain("Mapping.SyntheticState", dispatcher);
-            Assert.Contains("SyntheticInputState.Shared.DeviceState", dispatcher);
+            Assert.DoesNotContain("Mapping.deviceState", service);
+            Assert.DoesNotContain("Mapping.globalState", service);
+            Assert.DoesNotContain("Shared", service);
+            Assert.Contains("_syntheticInput.DeviceState", service);
+
+            // Phase7-Step8 W3（Q6＝A）: 暫定の静的な橋渡しは、状態もフォールバックも持たない
+            Assert.DoesNotContain("SyntheticInputState", bridge);
+            Assert.DoesNotContain("Global.", bridge);
         }
     }
 }

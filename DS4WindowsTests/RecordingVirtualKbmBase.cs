@@ -4,7 +4,7 @@ using DS4Windows.DS4Control;
 namespace DS4WindowsTests
 {
     /// <summary>
-    /// Phase7-Step7 W1 のテスト用スタブ。<see cref="DS4Windows.Global.outputKBMHandler"/>（<see cref="VirtualKBMBase"/>）へ差して、
+    /// Phase7-Step7 W1 のテスト用スタブ。<c>OutputKBMHandlerAdapter.Handler</c>（旧 Global.outputKBMHandler）（<see cref="VirtualKBMBase"/>）へ差して、
     /// <c>Mapping</c> が <c>IVirtualKBM</c>（アダプタ経由）へ送る出力を記録する。実際の入力は送出しない。
     /// </summary>
     public sealed class RecordingVirtualKbmBase : VirtualKBMBase

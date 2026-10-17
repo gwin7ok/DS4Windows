@@ -81,7 +81,7 @@ namespace DS4WindowsTests
         {
             ConstructorInfo ctor = typeof(Mapping).GetConstructors().Single();
             ParameterInfo[] parameters = ctor.GetParameters();
-            Assert.Equal(10, parameters.Length);
+            Assert.Equal(11, parameters.Length); // Phase7-Step8 W3: ISyntheticDispatcher を追加
 
             // 実 DI ホストの部品で 1 つずつ null にして、ArgumentNullException になることを確認する
             var valid = new object[]
@@ -93,6 +93,7 @@ namespace DS4WindowsTests
                 DS4WinWPF.AppHost.GetService<IKeyButtonControllerRegistry>(),
                 DS4WinWPF.AppHost.GetService<IProcessLauncher>(),
                 DS4WinWPF.AppHost.GetService<IProfileSwitcher>(),
+                DS4WinWPF.AppHost.GetService<ISyntheticDispatcher>(),
                 new Func<IDeviceStateAccessor>(() => null),
             };
 

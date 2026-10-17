@@ -81,6 +81,8 @@ namespace DS4Windows
         private readonly DS4Windows.DI.IKeyButtonControllerRegistry _keyButtonControllers;
         private readonly DS4Windows.Actions.IProcessLauncher _processLauncher;
         private readonly DS4Windows.Actions.IProfileSwitcher _profileSwitcher;
+        // Phase7-Step8 W3（Q6＝A）: 旧 静的クラス SyntheticDispatcher の呼び出し
+        private readonly DS4Windows.DI.ISyntheticDispatcher _syntheticDispatcher;
         // ControlService が IDeviceStateAccessor の実装者のため、循環を避けて遅延で取得する（マクロの振動イベントで使う）
         private readonly Func<IDeviceStateAccessor> _deviceStateAccessor;
 
@@ -170,6 +172,7 @@ namespace DS4Windows
             DS4Windows.DI.IKeyButtonControllerRegistry keyButtonControllers,
             DS4Windows.Actions.IProcessLauncher processLauncher,
             DS4Windows.Actions.IProfileSwitcher profileSwitcher,
+            DS4Windows.DI.ISyntheticDispatcher syntheticDispatcher,
             Func<IDeviceStateAccessor> deviceStateAccessor)
         {
             _syntheticInput = syntheticInput ?? throw new ArgumentNullException(nameof(syntheticInput));
@@ -181,6 +184,7 @@ namespace DS4Windows
             _keyButtonControllers = keyButtonControllers ?? throw new ArgumentNullException(nameof(keyButtonControllers));
             _processLauncher = processLauncher ?? throw new ArgumentNullException(nameof(processLauncher));
             _profileSwitcher = profileSwitcher ?? throw new ArgumentNullException(nameof(profileSwitcher));
+            _syntheticDispatcher = syntheticDispatcher ?? throw new ArgumentNullException(nameof(syntheticDispatcher));
             _deviceStateAccessor = deviceStateAccessor ?? throw new ArgumentNullException(nameof(deviceStateAccessor));
 
             syncStateLock = syntheticInput.SyncStateLock;
@@ -3131,7 +3135,7 @@ namespace DS4Windows
                                 {
                                     uint native = 0;
                                     ds.nativeKeyAlias?.TryGetValue(k, out native);
-                                    SyntheticDispatcher.SendRelease(device, k, native, false, null);
+                                    _syntheticDispatcher.SendRelease(device, k, native, false, null);
                                 }
                                 catch { }
                             }
@@ -4995,7 +4999,7 @@ namespace DS4Windows
                                     ushort.TryParse(action.details, out key);
                                     try
                                     {
-                                        uint nativeKeyToUse = SyntheticDispatcher.ResolveNativeKey(key);
+                                        uint nativeKeyToUse = _syntheticDispatcher.ResolveNativeKey(key);
                                         bool useScanRel = action.keyType.HasFlag(DS4KeyType.ScanCode);
                                         TryDispatchSATriggerReleased(action, device, key, nativeKeyToUse, useScanRel, VirtualKBM);
                                     }
@@ -5071,7 +5075,7 @@ namespace DS4Windows
                                         ushort.TryParse(action.details, out key);
                                         try
                                         {
-                                            uint nativeKeyToUse = SyntheticDispatcher.ResolveNativeKey(key);
+                                            uint nativeKeyToUse = _syntheticDispatcher.ResolveNativeKey(key);
                                             bool useScanRel = action.keyType.HasFlag(DS4KeyType.ScanCode);
                                             TryDispatchSATriggerReleased(action, device, key, nativeKeyToUse, useScanRel, VirtualKBM);
                                         }

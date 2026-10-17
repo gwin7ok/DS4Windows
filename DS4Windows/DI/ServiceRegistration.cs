@@ -12,6 +12,9 @@ namespace DS4Windows.DI
     /// </summary>
     public static class ServiceRegistration
     {
+        // Phase7-Step8 W3: BackingStore.ActionsLoaded の購読者（コンテナの作り直しで重複購読しないための記憶）
+        private static ActionsLoadedRuntimeReset _subscribedReset;
+
         public static IServiceCollection RegisterServices(this IServiceCollection services)
         {
             // === 第4層: 4-c DIサービス群 (Singleton) ===
@@ -22,9 +25,12 @@ namespace DS4Windows.DI
             {
                 var store = Global.store;
                 store.ProcessInspector = sp.GetRequiredService<IProcessInspector>();
-                // Phase7-Step7 W2（Q4＝A）: Actions.xml の読み込み後の実行時状態のリセット。AppHost.CreateHost が複数回呼ばれても、購読は 1 つにする（静的メソッドなので -= で外せる）
-                store.ActionsLoaded -= ActionsLoadedRuntimeReset.Reset;
-                store.ActionsLoaded += ActionsLoadedRuntimeReset.Reset;
+                // Phase7-Step7 W2（Q4＝A）: Actions.xml の読み込み後の実行時状態のリセット。Global.store は静的でコンテナより長く生きるため、
+                // コンテナが作り直されても購読が 1 つになるよう、前回の購読者を外してから登録する（Phase7-Step8 W3: instance の購読者）
+                var reset = sp.GetRequiredService<ActionsLoadedRuntimeReset>();
+                if (_subscribedReset != null) store.ActionsLoaded -= _subscribedReset.Reset;
+                store.ActionsLoaded += reset.Reset;
+                _subscribedReset = reset;
                 return store;
             });
             // Phase7-Step7 W2（Q3＝A）: 合成入力の状態の保持クラス。静的な窓口（Shared）と同じ instance を登録する（Step8 で Shared を削除し、コンストラクター注入にする）
@@ -33,6 +39,16 @@ namespace DS4Windows.DI
             services.AddSingleton<MacroRuntimeState>(_ => MacroRuntimeState.Shared);
             // Phase7-Step7 W4（Q3＝A）: スティック・ジャイロ・トリガーの処理状態の保持クラス。同様に静的な窓口（Shared）と同じ instance を登録する
             services.AddSingleton<StickMotionState>(_ => StickMotionState.Shared);
+            // Phase7-Step8 W3: Actions.xml の読み込み後のリセットの購読者（保持クラスをコンストラクターで受ける）
+            services.AddSingleton<ActionsLoadedRuntimeReset>();
+            // Phase7-Step8 W3（Q6＝A）: 合成キーの送出。Actions サブシステム（静的な呼び出し）が使う橋渡し SyntheticDispatcher へ、作成時に 1 度だけ束縛する（Phase8 で削除）
+            services.AddSingleton<ISyntheticDispatcher>(sp =>
+            {
+                var dispatcher = new SyntheticDispatcherService(
+                    sp.GetRequiredService<SyntheticInputState>(), sp.GetRequiredService<OutputKBMHandlerAdapter>(), sp.GetRequiredService<IProfileSettingsService>());
+                SyntheticDispatcher.Bind(dispatcher);
+                return dispatcher;
+            });
             services.AddSingleton<IPathService, PathService>();
             services.AddSingleton<IDeviceStateService, DeviceStateService>();
             services.AddSingleton<IEnvironmentService, EnvironmentService>();
@@ -105,7 +121,9 @@ namespace DS4Windows.DI
             services.AddSingleton<IRepeater, RepeatHelperToIRepeaterAdapter>();
             services.AddSingleton<IProcessLauncher, DefaultProcessLauncher>();
             services.AddSingleton<IProfileSwitcher, DefaultProfileSwitcher>();
-            services.AddSingleton<IVirtualKBM, OutputKBMHandlerAdapter>();
+            // Phase7-Step8 W3（Q6＝A）: 出力ハンドラの実体を持つ OutputKBMHandlerAdapter を 1 つ登録し、IVirtualKBM（送出）と IVirtualKBMLifecycle（決定・破棄）が共有する
+            services.AddSingleton<OutputKBMHandlerAdapter>();
+            services.AddSingleton<IVirtualKBM>(sp => sp.GetRequiredService<OutputKBMHandlerAdapter>());
             services.AddSingleton<IVirtualKBMLifecycle, OutputKBMHandlerLifecycle>();
             services.AddSingleton<IMacroPlayer, DefaultMacroPlayer>();
 
