@@ -171,3 +171,13 @@
   - 移動: `ProfileActions_GetSet_ShouldPersistAndNotify` → `ProfileSettingsServiceTests.ProfileActions_GetSet_ShouldPersist`（通知の確認を除いた）。
 - ラチェット: 変更なし（`Global.*` 732、`AppHost` 40、`Program.rootHub` 22）。
 - コメントだけが残る参照: `EnvironmentServiceInjectionTests`、`ProfileEditorBackendViewModelTests` の注記（削除した旧テストの名前。動作に影響なし）。
+
+### W3 の実施記録（2026-10-17、W2 のビルド・テストは成功。W3 のビルド・テストはユーザーの実行待ち）
+- 削除（契約 `IDeviceStateService`）: `Devices`、`GetDevice`、`IsDeviceConnected`、`ConnectedControllersCount`、`GetDeviceMacAddress`、`GetConnectionType`、`GetBatteryLevel`、`SetDevice`、`DeviceStateChanged`（理由の説明文を契約に残した）。残る: `IsFirstConnection`、`MarkConnected`、`ResetConnectionFlags`、`OnDeviceSerialChange`。
+- 削除（実装 `DeviceStateService`）: 内部配列 `_devices`、`MAX_SLOTS`、`_syncLock`、イベント、`NotifyDeviceStateChanged` と上記メンバー。
+- 削除したファイル: `DI/DeviceStateChangedEventArgs.cs`、`DS4Forms/ViewModels/ControllersViewModel.cs`、`DS4WindowsTests/DeviceStateServiceTests.cs`（全 4 件が削除したメンバーの確認だけだった）。
+- `ServiceRegistration`: `ControllersViewModel` の登録を削除。
+- テスト: `PatternBViewModelTests` の 2 件（`ControllersViewModel` の解決と Singleton）、`Step10GroupTwoGlobalReferenceGuardTests` の `ControllersViewModel_RequiresAllServices` と許可リストの 1 行を削除。
+- モデル図: `02-Layer-Architecture-Diagram.md`（Singleton ViewModels から `ControllersViewModel` を除く）、`04-Service-Lifecycle-Spec.md`（`IDeviceStateService` の責務の説明、`ControllersViewModel` の行の削除、注記）を更新。
+- ラチェット: 変更なし（削除したファイルに `Global`／`AppHost`／`rootHub` の参照はなかった。`Global.*` 732、`AppHost` 40、`Program.rootHub` 22）。
+- 気づいた点（未対応）: `ProfileApplicationService` は `IDeviceStateService` を受け取るが、フィールド `_deviceState` を使っていない。依存の整理は Step10（または Step3 の `ProfileApplicationService` の移管）で判断する。

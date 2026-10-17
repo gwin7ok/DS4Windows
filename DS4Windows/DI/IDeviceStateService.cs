@@ -6,19 +6,11 @@ namespace DS4Windows.DI
 
     public interface IDeviceStateService
     {
-        DS4Device[] Devices { get; }
-        DS4Device GetDevice(int slotIndex);
-        bool IsDeviceConnected(int slotIndex);
-        int ConnectedControllersCount { get; }
-
-        string GetDeviceMacAddress(int slotIndex);
-        ConnectionType GetConnectionType(int slotIndex);
-        int GetBatteryLevel(int slotIndex);
-
-        void SetDevice(int slotIndex, DS4Device device);
-
-        event EventHandler<DeviceStateChangedEventArgs> DeviceStateChanged;
-
+        // Phase7-Step2 W3: デバイスの一覧・接続状態・電池残量などの取得（Devices／GetDevice／IsDeviceConnected／ConnectedControllersCount／
+        // GetDeviceMacAddress／GetConnectionType／GetBatteryLevel／SetDevice／DeviceStateChanged）は削除した。
+        // 実装の内部配列は本体で一度も設定されず、常に「未接続」を返す孤立実装だった。接続中のデバイスの実体は
+        // ControlService.DS4Controllers（IDeviceStateAccessor.GetController で参照する）。
+        // 参照: docs-forDIMG/MadeByAgent/Phase7-Step2-Plan.md §2.2
 
         // ---- Phase6-Step2-2 (PR-2): 起動後の初回接続判定（Global への薄い委譲）----
         bool IsFirstConnection(int slotIndex);

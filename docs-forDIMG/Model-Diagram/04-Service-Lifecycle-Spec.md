@@ -41,7 +41,7 @@
 | **基盤** | `IProfilePresetLoader` | `ProfilePresetLoader` | **Singleton** | プリセット（空・ゲームパッド＋ジャイロ・ミックス・ミックス＋ジャイロマウス・KBM・KBM＋ジャイロマウス。Xbox 360/DS4 別）の読み込み。`Global.Load…Profile` への薄い委譲（独自の状態なし） | なし |
 | **1.入力**| `IDeviceHotplugMonitor` | `DeviceHotplugMonitor` | **Singleton** | Win32 RAW/HID デバイス到着・抜去イベントの検知 | なし |
 | **1.入力**| `IDs4DeviceRegistry` | `Ds4DeviceRegistryAdapter` | **Singleton** | コントローラーの列挙・保持、通信ハンドルの監視 | `IDeviceHotplugMonitor` |
-| **1.入力**| `IDeviceStateService` | `DeviceStateService` | **Singleton** | 接続中デバイスのバッテリー残量、通信種別管理、初回接続判定・シリアル変更通知 | `IDs4DeviceRegistry` |
+| **1.入力**| `IDeviceStateService` | `DeviceStateService` | **Singleton** | 初回接続判定・シリアル変更通知（デバイス一覧・電池残量は Phase7-Step2 W3 で削除。実体は `ControlService.DS4Controllers`） | なし |
 | **1.入力**| `IInputReportParserFactory` | `InputReportParserFactory` | **Singleton** | デバイス種別に応じたパケット解析器（DS4/Vader等）の提供 | なし |
 | **2.変換**| `IButtonProcessor` | `ButtonProcessor` | **Singleton** | ボタンリマップ、シフト変調（ステートレス計算） | なし |
 | **2.変換**| `IStickProcessor` | `StickProcessor` | **Singleton** | デッドゾーン、カーブ（`StickOutCurve`）、AntiSnap計算 | なし |
@@ -71,7 +71,6 @@
 | **4.UI** | `IViewModelFactory` | `ViewModelFactory` | **Singleton** | パラメータ付きViewModel / 複合ViewModelの生成ファクトリ | `IProfileSettingsService`, `IProfileRepository`, `ISpecialActionRepository`, `IOutputSlotService`, `IEnvironmentService`, `IPathService`, `IAppSettingsService`, `Func<IAutoProfileService>`・`Func<ControlService>`（生成のたびに遅延解決） |
 | **4.UI** | `IEditorWindowFactory` | `EditorWindowFactory` | **Singleton** | 補助ウィンドウ（ボタン割り当て・マクロ記録・プリセット・スティック校正・スペシャルアクション編集）の生成の窓口。UI スレッドで生成する | `IProfileSettingsService`, `IOutputSlotService`, `IPathService`, `IViewModelFactory`, `IProfilePresetLoader`, `Func<ControlService>`（生成のたびに遅延解決） |
 | **4.UI** | `MainWindowsViewModel` | `MainWindowsViewModel` | **Singleton** | メインウィンドウ（ヘッダー、タブ切替、ステータス、ViGEmBus ドライバーの確認） | `IEnvironmentService`, `IPathService` |
-| **4.UI** | `ControllersViewModel` | `ControllersViewModel` | **Singleton** | コントローラー接続スロット一覧表示画面 | `IDs4DeviceRegistry`, `IProfileApplicationService` |
 | **4.UI** | `SettingsViewModel` | `SettingsViewModel` | **Transient** | アプリ全般設定画面（開くたびに最新値取得） | `IAppSettingsService`, `IAppearanceSettingsService`, `IEnvironmentService`, `IPathService`, `ILogSettingsApplier` |
 | **4.UI** | `TrayIconViewModel` | `TrayIconViewModel` | **`MainWindow` が生成（アプリ存続期間）** | タスクトレイのアイコン・ツールチップ・コンテキストメニュー（バッテリー表示、プロファイル選択） | `ControlService`, `ProfileList`, `IAppearanceSettingsService`, `IProfileRepository`, `IEnvironmentService`, `IPathService`, UI スレッドの `Dispatcher` |
 | **4.UI** | `LogViewModel` | `LogViewModel` | **Transient** | ログ表示画面 | なし |
@@ -173,3 +172,5 @@
 %% - Service Locator は 2 系統ある。1 系統目: `AppHost.GetService|Services` と `Program.rootHub`（`Step10FourGlobalRatchetGuardTests`）。2 系統目: `ServiceProviderHolder.Provider`（23 件。`Phase7Step1ServiceLocatorRatchetGuardTests` を追加）。
 %% - 2 系統目のうち `Actions/` の 17 件は Phase8 の持ち越し。`Mapping`（5）と `App`（1）は Phase7-Step5 で注入へ置き換える。
 %% - 台帳: `docs-forDIMG/MadeByAgent/Phase7-Residual-Ledger.md`。
+%%
+%% Phase7-Step2 W3（2026-10-17）: `ControllersViewModel`（`HasControllers` だけを持つ使われない殻）を削除。`IDeviceStateService` は、デバイス一覧・接続状態・電池残量などの取得（内部配列が常に空で、本体で一度も設定されなかった孤立実装）を削除し、初回接続判定（`IsFirstConnection`／`MarkConnected`／`ResetConnectionFlags`）とシリアル変更通知（`OnDeviceSerialChange`）だけを持つ。接続中のデバイスの実体は `ControlService.DS4Controllers`（`IDeviceStateAccessor` 経由）。

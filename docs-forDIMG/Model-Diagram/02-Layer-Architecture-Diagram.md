@@ -11,7 +11,7 @@
 ┌──────────────────────────────────────────────────────────────────────────────────────────────────┐
 │                                   第4層: UI層 (Presentation Layer)                               │
 │  WPF Views (MainWindow, ProfileEditor, BindingWindow, etc.)                                      │
-│  ├── Singleton ViewModels: MainWindowsViewModel / ControllersViewModel                           │
+│  ├── Singleton ViewModels: MainWindowsViewModel                                                  │
 │  ├── Transient ViewModels: SettingsViewModel / LogViewModel / AboutViewModel                     │
 │  └── ProfileEditor 分割ViewModels (Mediatorパターンによる調停):                                   │
 │       ProfileSettingsViewModel (親Mediator: 保存・集約・全体設定)                                 │

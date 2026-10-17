@@ -27,7 +27,6 @@ namespace DS4WindowsTests
         private static readonly Dictionary<string, string[]> AllowedGlobalMembers = new Dictionary<string, string[]>
         {
             // Step10-2-2
-            ["DS4Windows/DS4Forms/ViewModels/ControllersViewModel.cs"] = new string[0],
             ["DS4Windows/DS4Forms/ViewModels/ControllerListViewModel.cs"] = new[] { "RESOURCES_PREFIX" },
             ["DS4Windows/DS4Forms/ViewModels/ControllerRegDeviceOptsViewModel.cs"] = new string[0],
             ["DS4Windows/DS4Forms/ControllerRegisterOptionsWindow.xaml.cs"] = new string[0],
@@ -107,17 +106,6 @@ namespace DS4WindowsTests
                 Assert.DoesNotContain("AppHost", text);
                 Assert.DoesNotContain("Program.rootHub", text);
             }
-        }
-
-        [Fact]
-        public void ControllersViewModel_RequiresAllServices()
-        {
-            var settings = TestRepositoryFactory.CreateProfileSettingsService();
-            var repo = TestRepositoryFactory.CreateProfileRepository();
-
-            Assert.Throws<ArgumentNullException>(() => new ControllersViewModel(null, settings, repo));
-            Assert.Throws<ArgumentNullException>(() => new ControllersViewModel(new DeviceStateService(), null, repo));
-            Assert.Throws<ArgumentNullException>(() => new ControllersViewModel(new DeviceStateService(), settings, null));
         }
 
         [Fact]

@@ -113,7 +113,6 @@ namespace DS4Windows.DI
             services.AddTransient<AboutViewModel>();
 
             // Phase 4: Pattern B ViewModel (Singleton)
-            services.AddSingleton<ControllersViewModel>();
             services.AddSingleton<MainWindowsViewModel>();
 
             // === 既存Singletonインスタンスの取得登録 ===
