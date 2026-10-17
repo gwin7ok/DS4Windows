@@ -163,7 +163,7 @@ namespace DS4WindowsTests
         }
 
         [Fact]
-        public void TouchpadActiveArray_OfDiSingleton_IsTheSameArrayAsGlobalTouchActive()
+        public void TouchpadActiveArray_OfDiSingleton_ReflectsWrites()
         {
             // TouchpadActiveArray はサービスのインスタンスが保持する状態（BackingStore ではない）。
             // TestRepositoryFactory.CreateProfileSettingsService() で作った別インスタンスではなく、ControlService が実際に受け取る
@@ -174,14 +174,13 @@ namespace DS4WindowsTests
             WithGlobalWiredTo(service, () =>
             {
                 Assert.Same(Global.ProfileSettingsServiceInstance, service);
-                Assert.Same(Global.touchpadActive, service.TouchpadActiveArray);
 
                 const int slot = 0;
                 bool original = service.TouchpadActiveArray[slot];
                 try
                 {
                     service.TouchpadActiveArray[slot] = !original;
-                    Assert.Equal(!original, Global.GetTouchActive(slot));
+                    Assert.Equal(!original, service.GetTouchpadActive(slot));
                 }
                 finally
                 {
@@ -191,20 +190,14 @@ namespace DS4WindowsTests
         }
 
         [Fact]
-        public void TouchOutMode_And_OutputDS4TriggerMode_MatchGlobalGetters()
+        public void EnableTouchToggle_And_RumbleBoost_GettersMatchArrays()
         {
+            // Phase6-Step12 Wave 2: 旧シム（Global.getEnableTouchToggle／getRumbleBoost ほか）を削除したため、
+            // サービスのメソッドと配列が一致することを確認する。
             const int slot = 0;
 
-            // Global.getEnableTouchToggle／getRumbleBoost は Global.ProfileSettingsServiceInstance 経由のため、
-            // 比較対象のサービスに Global を配線してから比較する（実行順序に依存しないようにする）。
-            WithGlobalWiredTo(_profileSettings, () =>
-            {
-                Assert.Equal(Global.IsUsingTouchpadForControls(slot),
-                    _profileSettings.TouchOutMode[slot] == TouchpadOutMode.Controls);
-                Assert.Equal(Global.GetOutputDS4TriggerMode(slot), _profileSettings.OutputDS4TriggerMode[slot]);
-                Assert.Equal(Global.getEnableTouchToggle(slot), _profileSettings.GetEnableTouchToggle(slot));
-                Assert.Equal(Global.getRumbleBoost(slot), _profileSettings.GetRumbleBoost(slot));
-            });
+            Assert.Equal(_profileSettings.EnableTouchToggle[slot], _profileSettings.GetEnableTouchToggle(slot));
+            Assert.Equal(_profileSettings.RumbleBoost[slot], _profileSettings.GetRumbleBoost(slot));
         }
     }
 }

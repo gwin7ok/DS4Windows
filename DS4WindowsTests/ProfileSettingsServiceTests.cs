@@ -97,22 +97,6 @@ namespace DS4WindowsTests
         }
 
         [Fact]
-        public void GlobalShim_ShouldSynchronizeWithService()
-        {
-            var service = TestRepositoryFactory.CreateProfileSettingsService();
-            Global.ProfileSettingsServiceInstance = service;
-
-            Global.touchpadActive[2] = false;
-            Global.tempprofilename[3] = "ShimTest";
-
-            Assert.False(service.GetTouchpadActive(2));
-            Assert.Equal("ShimTest", service.GetTempProfileName(3));
-
-            service.SetTouchpadActive(2, true);
-            Assert.True(Global.touchpadActive[2]);
-        }
-
-        [Fact]
         public void OutOfBounds_ShouldBeHandledSafely()
         {
             var service = TestRepositoryFactory.CreateProfileSettingsService();
@@ -126,37 +110,18 @@ namespace DS4WindowsTests
         }
 
         [Fact]
-        public void TriggerSettings_ShouldShareBackingStoreWithGlobalShim()
+        public void TriggerCurveMode_ShouldRoundTripThroughService()
         {
             var service = TestRepositoryFactory.CreateProfileSettingsService();
-            Global.ProfileSettingsServiceInstance = service;
-
-            Assert.Same(service.L2ModInfo, Global.L2ModInfo);
-            Assert.Same(service.R2ModInfo, Global.R2ModInfo);
-            Assert.Same(service.L2Sens, Global.L2Sens);
-            Assert.Same(service.R2Sens, Global.R2Sens);
-            Assert.Same(service.L2OutputSettings, Global.L2OutputSettings);
-            Assert.Same(service.R2OutputSettings, Global.R2OutputSettings);
-            Assert.Same(service.L2OutBezierCurveObj, Global.l2OutBezierCurveObj);
-            Assert.Same(service.R2OutBezierCurveObj, Global.r2OutBezierCurveObj);
-            Assert.Same(service.OutputVirtualTriggerButton, Global.OutputVirtualTriggerButton);
-            Assert.Same(service.OutputDS4TriggerMode, Global.OutputDS4TriggerMode);
-        }
-
-        [Fact]
-        public void TriggerCurveMode_ShouldDelegateThroughServiceAndGlobalShim()
-        {
-            var service = TestRepositoryFactory.CreateProfileSettingsService();
-            Global.ProfileSettingsServiceInstance = service;
 
             service.SetL2OutCurveMode(0, 2);
             service.SetR2OutCurveMode(0, 3);
 
-            Assert.Equal(2, Global.getL2OutCurveMode(0));
-            Assert.Equal(3, Global.getR2OutCurveMode(0));
+            Assert.Equal(2, service.GetL2OutCurveMode(0));
+            Assert.Equal(3, service.GetR2OutCurveMode(0));
 
-            Global.setL2OutCurveMode(0, 0);
-            Global.setR2OutCurveMode(0, 0);
+            service.SetL2OutCurveMode(0, 0);
+            service.SetR2OutCurveMode(0, 0);
             Assert.Equal(0, service.GetL2OutCurveMode(0));
             Assert.Equal(0, service.GetR2OutCurveMode(0));
         }

@@ -476,19 +476,6 @@ namespace DS4Windows
             set => notificationService = value;
         }
 
-        public static string[] tempprofilename
-        {
-            get
-            {
-                return ProfileSettingsServiceInstance.TempProfileNameArray;
-            }
-            set
-            {
-                AppLogger.LogTrace("[Legacy] Global.tempprofilename setter accessed via static shim");
-                AppLogger.LogToGui("[Legacy] Global.tempprofilename setter accessed via static shim", false, true);
-                ProfileSettingsServiceInstance.TempProfileNameArray = value;
-            }
-        }
         public static bool[] useTempProfile
         {
             get
@@ -526,16 +513,6 @@ namespace DS4Windows
                 AppLogger.LogTrace("[Legacy] Global.useDInputOnly setter accessed via static shim");
                 AppLogger.LogToGui("[Legacy] Global.useDInputOnly setter accessed via static shim", false, true);
                 ProfileSettingsServiceInstance.UseDInputOnlyArray = value;
-            }
-        }
-        public static bool[] touchpadActive
-        {
-            get => ProfileSettingsServiceInstance.TouchpadActiveArray;
-            set
-            {
-                if (AppLogger.IsTraceEnabled)
-                    AppLogger.LogTrace("[Legacy] Global.touchpadActive setter accessed via static shim");
-                ProfileSettingsServiceInstance.TouchpadActiveArray = value;
             }
         }
         public static bool IsFirstConnection(int index)
@@ -1811,13 +1788,6 @@ namespace DS4Windows
             }
         }
 
-        public static sbyte[] RightStickDriftXAxis => ProfileSettingsServiceInstance.RightStickDriftXAxis;
-        public static sbyte[] RightStickDriftYAxis => ProfileSettingsServiceInstance.RightStickDriftYAxis;
-        public static sbyte[] LeftStickDriftXAxis => ProfileSettingsServiceInstance.LeftStickDriftXAxis;
-        public static sbyte[] LeftStickDriftYAxis => ProfileSettingsServiceInstance.LeftStickDriftYAxis;
-
-        public static bool[] InverseRumbleMotors => ProfileSettingsServiceInstance.InverseRumbleMotors;
-
         public static int[] DebouncingMs => ProfileSettingsServiceInstance.DebouncingMs;
 
         public static void DebouncingMsHasChanged()
@@ -1835,44 +1805,12 @@ namespace DS4Windows
         }
 
         // controller/profile specfic values
-        public static ButtonMouseInfo[] ButtonMouseInfos => ProfileSettingsServiceInstance.ButtonMouseInfos;
-
-        public static byte[] RumbleBoost => ProfileSettingsServiceInstance.RumbleBoost;
-        public static byte getRumbleBoost(int index)
-        {
-            return ProfileSettingsServiceInstance.GetRumbleBoost(index);
-        }
-
-        public static void setRumbleAutostopTime(int index, int value)
-        {
-            ProfileSettingsServiceInstance.SetRumbleAutostopTime(index, value);
-        }
-
-        public static int getRumbleAutostopTime(int index)
-        {
-            return ProfileSettingsServiceInstance.GetRumbleAutostopTime(index);
-        }
-
-        public static bool[] EnableTouchToggle => ProfileSettingsServiceInstance.EnableTouchToggle;
-        public static bool getEnableTouchToggle(int index)
-        {
-            return ProfileSettingsServiceInstance.GetEnableTouchToggle(index);
-        }
-
-        public static int[] IdleDisconnectTimeout => ProfileSettingsServiceInstance.IdleDisconnectTimeout;
         public static int getIdleDisconnectTimeout(int index)
         {
             return ProfileSettingsServiceInstance.GetIdleDisconnectTimeout(index);
         }
 
-        public static bool[] EnableOutputDataToDS4 => ProfileSettingsServiceInstance.EnableOutputDataToDS4;
-        public static bool getEnableOutputDataToDS4(int index)
-        {
-            return ProfileSettingsServiceInstance.GetEnableOutputDataToDS4(index);
-        }
-
         // Step10-2-A-3: タッチパッド関連の後方互換シム
-        public static byte[] TouchSensitivity => ProfileSettingsServiceInstance.TouchSensitivity;
         public static byte[] getTouchSensitivity()
         {
             return m_Config.touchSensitivity;
@@ -1883,22 +1821,9 @@ namespace DS4Windows
             return m_Config.touchSensitivity[index];
         }
 
-        public static bool[] TouchActive => touchpadActive;
-        public static bool GetTouchActive(int index)
-        {
-            return touchpadActive[index];
-        }
-
-        public static LightbarSettingInfo[] LightbarSettingsInfo => ProfileSettingsServiceInstance.LightbarSettingsInfo;
         public static LightbarSettingInfo getLightbarSettingsInfo(int index)
         {
             return ProfileSettingsServiceInstance.GetLightbarSettingsInfo(index);
-        }
-
-        public static bool[] DinputOnly => ProfileSettingsServiceInstance.DinputOnly;
-        public static bool getDInputOnly(int index)
-        {
-            return ProfileSettingsServiceInstance.GetDInputOnly(index);
         }
 
         public static int ProcessPriority
@@ -1907,163 +1832,26 @@ namespace DS4Windows
             set => m_Config.processPriority = value;
         }
 
-        public static bool[] StartTouchpadOff => ProfileSettingsServiceInstance.StartTouchpadOff;
-
         public static bool IsUsingTouchpadForControls(int index)
         {
             return m_Config.touchOutMode[index] == TouchpadOutMode.Controls;
         }
-
-        public static TouchpadOutMode[] TouchOutMode => ProfileSettingsServiceInstance.TouchOutMode;
 
         public static bool IsUsingSAForControls(int index)
         {
             return m_Config.gyroOutMode[index] == GyroOutMode.Controls;
         }
 
-        public static string[] SATriggers => ProfileSettingsServiceInstance.SATriggers;
-        public static string getSATriggers(int index)
-        {
-            return ProfileSettingsServiceInstance.GetSATriggers(index);
-        }
 
-        public static bool[] SATriggerCond => ProfileSettingsServiceInstance.SATriggerCond;
-        public static bool getSATriggerCond(int index)
-        {
-            return ProfileSettingsServiceInstance.GetSATriggerCond(index);
-        }
-        public static void SetSaTriggerCond(int index, string text)
-        {
-            ProfileSettingsServiceInstance.SetSaTriggerCond(index, text);
-        }
-
-
-        public static GyroOutMode[] GyroOutputMode => ProfileSettingsServiceInstance.GyroOutputMode;
-        public static GyroOutMode GetGyroOutMode(int device)
-        {
-            return ProfileSettingsServiceInstance.GetGyroOutMode(device);
-        }
-
-        public static string[] SAMousestickTriggers => ProfileSettingsServiceInstance.SAMousestickTriggers;
-        public static string GetSAMouseStickTriggers(int device)
-        {
-            return ProfileSettingsServiceInstance.GetSAMouseStickTriggers(device);
-        }
-
-        public static bool[] SAMouseStickTriggerCond => ProfileSettingsServiceInstance.SAMouseStickTriggerCond;
-        public static bool GetSAMouseStickTriggerCond(int device)
-        {
-            return ProfileSettingsServiceInstance.GetSAMouseStickTriggerCond(device);
-        }
-        public static void SetSaMouseStickTriggerCond(int index, string text)
-        {
-            ProfileSettingsServiceInstance.SetSaMouseStickTriggerCond(index, text);
-        }
-
-        public static bool[] GyroMouseStickTriggerTurns => ProfileSettingsServiceInstance.GyroMouseStickTriggerTurns;
-        public static bool GetGyroMouseStickTriggerTurns(int device)
-        {
-            return ProfileSettingsServiceInstance.GetGyroMouseStickTriggerTurns(device);
-        }
-
-        public static int[] GyroMouseStickHorizontalAxis => ProfileSettingsServiceInstance.GyroMouseStickHorizontalAxis;
-        public static int getGyroMouseStickHorizontalAxis(int index)
-        {
-            return ProfileSettingsServiceInstance.GetGyroMouseStickHorizontalAxis(index);
-        }
-
-        public static GyroMouseStickInfo[] GyroMouseStickInf => ProfileSettingsServiceInstance.GyroMouseStickInf;
-        public static GyroMouseStickInfo GetGyroMouseStickInfo(int device)
-        {
-            return ProfileSettingsServiceInstance.GetGyroMouseStickInfo(device);
-        }
-
-        public static GyroDirectionalSwipeInfo[] GyroSwipeInf => ProfileSettingsServiceInstance.GyroSwipeInf;
-        public static GyroDirectionalSwipeInfo GetGyroSwipeInfo(int device)
-        {
-            return ProfileSettingsServiceInstance.GetGyroSwipeInfo(device);
-        }
-
-        public static bool[] GyroMouseStickToggle => ProfileSettingsServiceInstance.GyroMouseStickToggle;
-        public static void SetGyroMouseStickToggle(int index, bool value, ControlService control)
-            => ProfileSettingsServiceInstance.SetGyroMouseStickToggle(index, value, control);
-
-        public static SASteeringWheelEmulationAxisType[] SASteeringWheelEmulationAxis => ProfileSettingsServiceInstance.SASteeringWheelEmulationAxis;
         public static SASteeringWheelEmulationAxisType GetSASteeringWheelEmulationAxis(int index)
         {
             return ProfileSettingsServiceInstance.GetSASteeringWheelEmulationAxis(index);
         }
 
-        public static int[] SASteeringWheelEmulationRange => ProfileSettingsServiceInstance.SASteeringWheelEmulationRange;
-        public static int GetSASteeringWheelEmulationRange(int index)
-        {
-            return ProfileSettingsServiceInstance.GetSASteeringWheelEmulationRange(index);
-        }
-
-        public static int[][] TouchDisInvertTriggers => ProfileSettingsServiceInstance.TouchDisInvertTriggers;
         public static int[] getTouchDisInvertTriggers(int index)
         {
             return m_Config.touchDisInvertTriggers[index];
         }
-
-        public static int[] GyroSensitivity => ProfileSettingsServiceInstance.GyroSensitivity;
-        public static int getGyroSensitivity(int index)
-        {
-            return ProfileSettingsServiceInstance.GetGyroSensitivity(index);
-        }
-
-        public static int[] GyroSensVerticalScale => ProfileSettingsServiceInstance.GyroSensVerticalScale;
-        public static int getGyroSensVerticalScale(int index)
-        {
-            return ProfileSettingsServiceInstance.GetGyroSensVerticalScale(index);
-        }
-
-        public static int[] GyroInvert => ProfileSettingsServiceInstance.GyroInvert;
-        public static int getGyroInvert(int index)
-        {
-            return ProfileSettingsServiceInstance.GetGyroInvert(index);
-        }
-
-        public static bool[] GyroTriggerTurns => ProfileSettingsServiceInstance.GyroTriggerTurns;
-        public static bool getGyroTriggerTurns(int index)
-        {
-            return ProfileSettingsServiceInstance.GetGyroTriggerTurns(index);
-        }
-
-        public static int[] GyroMouseHorizontalAxis => ProfileSettingsServiceInstance.GyroMouseHorizontalAxis;
-        public static int getGyroMouseHorizontalAxis(int index)
-        {
-            return ProfileSettingsServiceInstance.GetGyroMouseHorizontalAxis(index);
-        }
-
-        public static int[] GyroMouseDeadZone => ProfileSettingsServiceInstance.GyroMouseDeadZone;
-        public static int GetGyroMouseDeadZone(int index)
-        {
-            return ProfileSettingsServiceInstance.GetGyroMouseDeadZone(index);
-        }
-
-        public static void SetGyroMouseDeadZone(int index, int value, ControlService control)
-        {
-            ProfileSettingsServiceInstance.SetGyroMouseDeadZone(index, value, control);
-        }
-
-        public static bool[] GyroMouseToggle => ProfileSettingsServiceInstance.GyroMouseToggle;
-        public static void SetGyroMouseToggle(int index, bool value, ControlService control)
-            => ProfileSettingsServiceInstance.SetGyroMouseToggle(index, value, control);
-
-        public static void SetGyroControlsToggle(int index, bool value, ControlService control)
-            => ProfileSettingsServiceInstance.SetGyroControlsToggle(index, value, control);
-
-        public static GyroMouseInfo[] GyroMouseInfo => ProfileSettingsServiceInstance.GyroMouseInfo;
-
-        public static GyroControlsInfo[] GyroControlsInf => ProfileSettingsServiceInstance.GyroControlsInf;
-        public static GyroControlsInfo GetGyroControlsInfo(int index)
-        {
-            return ProfileSettingsServiceInstance.GetGyroControlsInfo(index);
-        }
-
-        public static SteeringWheelSmoothingInfo[] WheelSmoothInfo => ProfileSettingsServiceInstance.WheelSmoothInfo;
-        public static int[] SAWheelFuzzValues => ProfileSettingsServiceInstance.SAWheelFuzzValues;
 
         //public static DS4Color[] MainColor => m_Config.m_Leds;
         public static ref DS4Color getMainColor(int index)
@@ -2073,72 +1861,20 @@ namespace DS4Windows
         }
 
         //public static DS4Color[] LowColor => m_Config.m_LowLeds;
-        public static ref DS4Color getLowColor(int index)
-        {
-            return ref ProfileSettingsServiceInstance.GetLowColor(index);
-            //return ref m_Config.m_LowLeds[index];
-        }
-
         //public static DS4Color[] ChargingColor => m_Config.m_ChargingLeds;
-        public static ref DS4Color getChargingColor(int index)
-        {
-            return ref ProfileSettingsServiceInstance.GetChargingColor(index);
-            //return ref m_Config.m_ChargingLeds[index];
-        }
-
         //public static DS4Color[] CustomColor => m_Config.m_CustomLeds;
-        public static ref DS4Color getCustomColor(int index)
-        {
-            return ref ProfileSettingsServiceInstance.GetCustomColor(index);
-            //return ref m_Config.m_CustomLeds[index];
-        }
-
         //public static bool[] UseCustomLed => m_Config.useCustomLeds;
-        public static bool getUseCustomLed(int index)
-        {
-            return ProfileSettingsServiceInstance.GetUseCustomLed(index);
-            //return m_Config.useCustomLeds[index];
-        }
-
         //public static DS4Color[] FlashColor => m_Config.m_FlashLeds;
-        public static ref DS4Color getFlashColor(int index)
-        {
-            return ref ProfileSettingsServiceInstance.GetFlashColor(index);
-            //return ref m_Config.m_FlashLeds[index];
-        }
-
-        public static byte[] TapSensitivity => ProfileSettingsServiceInstance.TapSensitivity;
         public static byte getTapSensitivity(int index)
         {
             return m_Config.tapSensitivity[index];
         }
 
-        public static bool[] DoubleTap => ProfileSettingsServiceInstance.DoubleTap;
-        public static bool getDoubleTap(int index)
-        {
-            return ProfileSettingsServiceInstance.GetDoubleTap(index);
-        }
-
-        public static int[] ScrollSensitivity => ProfileSettingsServiceInstance.ScrollSensitivity;
-        public static int[] getScrollSensitivity()
-        {
-            return ProfileSettingsServiceInstance.GetScrollSensitivity();
-        }
-        public static int getScrollSensitivity(int index)
-        {
-            return ProfileSettingsServiceInstance.GetScrollSensitivity(index);
-        }
-
-        public static bool[] LowerRCOn => ProfileSettingsServiceInstance.LowerRCOn;
-        public static bool[] TouchClickPassthru => ProfileSettingsServiceInstance.TouchClickPassthru;
-        public static TouchButtonActivationMode[] TouchpadButtonMode => ProfileSettingsServiceInstance.TouchpadButtonMode;
-        public static bool[] TouchpadJitterCompensation => ProfileSettingsServiceInstance.TouchpadJitterCompensation;
         public static bool getTouchpadJitterCompensation(int index)
         {
             return m_Config.touchpadJitterCompensation[index];
         }
 
-        public static int[] TouchpadInvert => ProfileSettingsServiceInstance.TouchpadInvert;
         public static int getTouchpadInvert(int index)
         {
             return m_Config.touchpadInvert[index];
@@ -2166,18 +1902,6 @@ namespace DS4Windows
         {
             return m_Config.r2ModInfo[index].deadZone;
             //return m_Config.r2Deadzone[index];
-        }
-
-        public static double[] SXDeadzone => ProfileSettingsServiceInstance.SXDeadzone;
-        public static double getSXDeadzone(int index)
-        {
-            return ProfileSettingsServiceInstance.SXDeadzone[index];
-        }
-
-        public static double[] SZDeadzone => ProfileSettingsServiceInstance.SZDeadzone;
-        public static double getSZDeadzone(int index)
-        {
-            return ProfileSettingsServiceInstance.SZDeadzone[index];
         }
 
         //public static int[] LSDeadzone => m_Config.LSDeadzone;
@@ -2208,13 +1932,11 @@ namespace DS4Windows
             //return m_Config.RSAntiDeadzone[index];
         }
 
-        public static StickDeadZoneInfo[] LSModInfo => ProfileSettingsServiceInstance.LSModInfo;
         public static StickDeadZoneInfo GetLSDeadInfo(int index)
         {
             return m_Config.lsModInfo[index];
         }
 
-        public static StickDeadZoneInfo[] RSModInfo => ProfileSettingsServiceInstance.RSModInfo;
         public static StickDeadZoneInfo GetRSDeadInfo(int index)
         {
             return m_Config.rsModInfo[index];
@@ -2246,18 +1968,6 @@ namespace DS4Windows
             //return m_Config.RSMaxzone[index];
         }
 
-        public static double[] SXMaxzone => ProfileSettingsServiceInstance.SXMaxzone;
-        public static double getSXMaxzone(int index)
-        {
-            return ProfileSettingsServiceInstance.SXMaxzone[index];
-        }
-
-        public static double[] SZMaxzone => ProfileSettingsServiceInstance.SZMaxzone;
-        public static double getSZMaxzone(int index)
-        {
-            return ProfileSettingsServiceInstance.SZMaxzone[index];
-        }
-
         //public static int[] L2AntiDeadzone => m_Config.l2AntiDeadzone;
         public static int getL2AntiDeadzone(int index)
         {
@@ -2286,7 +1996,6 @@ namespace DS4Windows
             //return m_Config.r2Maxzone[index];
         }
 
-        public static double[] LSRotation => ProfileSettingsServiceInstance.LSRotation;
         /// <summary>
         /// Return profile LS Rotation setting (radians)
         /// </summary>
@@ -2297,7 +2006,6 @@ namespace DS4Windows
             return m_Config.LSRotation[index];
         }
 
-        public static double[] RSRotation => ProfileSettingsServiceInstance.RSRotation;
         /// <summary>
         /// Return profile LS Rotation setting (radians)
         /// </summary>
@@ -2318,169 +2026,37 @@ namespace DS4Windows
             return m_Config.r2Sens[index];
         }
 
-        public static double[] SXSens => ProfileSettingsServiceInstance.SXSens;
-        public static double getSXSens(int index)
-        {
-            return ProfileSettingsServiceInstance.SXSens[index];
-        }
-
-        public static double[] SZSens => ProfileSettingsServiceInstance.SZSens;
-        public static double getSZSens(int index)
-        {
-            return ProfileSettingsServiceInstance.SZSens[index];
-        }
-
-        public static double[] LSSens => ProfileSettingsServiceInstance.LSSens;
         public static double getLSSens(int index)
         {
             return m_Config.LSSens[index];
         }
 
-        public static double[] RSSens => ProfileSettingsServiceInstance.RSSens;
         public static double getRSSens(int index)
         {
             return m_Config.RSSens[index];
         }
 
-        public static int[] BTPollRate => ProfileSettingsServiceInstance.BTPollRate;
-        public static int getBTPollRate(int index)
-        {
-            return ProfileSettingsServiceInstance.GetBTPollRate(index);
-        }
-
         // Start of DualSense specific profile settings
         //
-        public static DualSenseDevice.RumbleEmulationMode[] DualSenseRumbleEmulationMode
-        {
-            get => ProfileSettingsServiceInstance.DualSenseRumbleEmulationMode;
-            set => ProfileSettingsServiceInstance.DualSenseRumbleEmulationMode = value;
-        }
-
-        public static bool[] UseGenericRumbleStrRescaleForDualSenses
-        {
-            get => ProfileSettingsServiceInstance.UseGenericRumbleStrRescaleForDualSenses;
-            set => ProfileSettingsServiceInstance.UseGenericRumbleStrRescaleForDualSenses = value;
-        }
-
-        public static byte[] DualSenseHapticPowerLevel
-        {
-            get => ProfileSettingsServiceInstance.DualSenseHapticPowerLevel;
-            set => ProfileSettingsServiceInstance.DualSenseHapticPowerLevel = value;
-        }
         //
         // End of DualSense specific profile settings
 
-        public static SquareStickInfo[] SquStickInfo => ProfileSettingsServiceInstance.SquStickInfo;
         public static SquareStickInfo GetSquareStickInfo(int device)
         {
             return m_Config.squStickInfo[device];
         }
 
-        public static StickAntiSnapbackInfo[] LSAntiSnapbackInfo => ProfileSettingsServiceInstance.LSAntiSnapbackInfo;
         public static StickAntiSnapbackInfo GetLSAntiSnapbackInfo(int device)
         {
             return m_Config.lsAntiSnapbackInfo[device];
         }
 
-        public static StickAntiSnapbackInfo[] RSAntiSnapbackInfo => ProfileSettingsServiceInstance.RSAntiSnapbackInfo;
         public static StickAntiSnapbackInfo GetRSAntiSnapbackInfo(int device)
         {
             return m_Config.rsAntiSnapbackInfo[device];
         }
 
-        public static StickOutputSetting[] LSOutputSettings => ProfileSettingsServiceInstance.LSOutputSettings;
-        public static StickOutputSetting[] RSOutputSettings => ProfileSettingsServiceInstance.RSOutputSettings;
-
-        public static void setLsOutCurveMode(int index, int value)
-        {
-            if (AppLogger.IsTraceEnabled)
-                AppLogger.LogTrace("[Legacy] Global.setLsOutCurveMode: accessed via static shim");
-            ProfileSettingsServiceInstance.SetLsOutCurveMode(index, value);
-        }
-        public static int getLsOutCurveMode(int index)
-        {
-            return ProfileSettingsServiceInstance.GetLsOutCurveMode(index);
-        }
-        public static BezierCurve[] lsOutBezierCurveObj => ProfileSettingsServiceInstance.LsOutBezierCurveObj;
-
-        public static void setRsOutCurveMode(int index, int value)
-        {
-            if (AppLogger.IsTraceEnabled)
-                AppLogger.LogTrace("[Legacy] Global.setRsOutCurveMode: accessed via static shim");
-            ProfileSettingsServiceInstance.SetRsOutCurveMode(index, value);
-        }
-        public static int getRsOutCurveMode(int index)
-        {
-            return ProfileSettingsServiceInstance.GetRsOutCurveMode(index);
-        }
-        public static BezierCurve[] rsOutBezierCurveObj => ProfileSettingsServiceInstance.RsOutBezierCurveObj;
-
         // Step10-2-A-2: トリガー(L2/R2)関連の後方互換シム
-        public static TriggerDeadZoneZInfo[] L2ModInfo => ProfileSettingsServiceInstance.L2ModInfo;
-        public static TriggerDeadZoneZInfo[] R2ModInfo => ProfileSettingsServiceInstance.R2ModInfo;
-        public static double[] L2Sens => ProfileSettingsServiceInstance.L2Sens;
-        public static double[] R2Sens => ProfileSettingsServiceInstance.R2Sens;
-        public static TriggerOutputSettings[] L2OutputSettings => ProfileSettingsServiceInstance.L2OutputSettings;
-        public static TriggerOutputSettings[] R2OutputSettings => ProfileSettingsServiceInstance.R2OutputSettings;
-        public static BezierCurve[] l2OutBezierCurveObj => ProfileSettingsServiceInstance.L2OutBezierCurveObj;
-        public static BezierCurve[] r2OutBezierCurveObj => ProfileSettingsServiceInstance.R2OutBezierCurveObj;
-        public static bool[] OutputVirtualTriggerButton => ProfileSettingsServiceInstance.OutputVirtualTriggerButton;
-        public static DS4TriggerOutputMode[] OutputDS4TriggerMode => ProfileSettingsServiceInstance.OutputDS4TriggerMode;
-
-        public static void setL2OutCurveMode(int index, int value)
-        {
-            if (AppLogger.IsTraceEnabled)
-                AppLogger.LogTrace("[Legacy] Global.setL2OutCurveMode: accessed via static shim");
-            ProfileSettingsServiceInstance.SetL2OutCurveMode(index, value);
-        }
-        public static int getL2OutCurveMode(int index)
-        {
-            return ProfileSettingsServiceInstance.GetL2OutCurveMode(index);
-        }
-
-        public static void setR2OutCurveMode(int index, int value)
-        {
-            if (AppLogger.IsTraceEnabled)
-                AppLogger.LogTrace("[Legacy] Global.setR2OutCurveMode: accessed via static shim");
-            ProfileSettingsServiceInstance.SetR2OutCurveMode(index, value);
-        }
-        public static int getR2OutCurveMode(int index)
-        {
-            return ProfileSettingsServiceInstance.GetR2OutCurveMode(index);
-        }
-
-        public static void setSXOutCurveMode(int index, int value)
-        {
-            ProfileSettingsServiceInstance.SetSxOutCurveMode(index, value);
-        }
-        public static int getSXOutCurveMode(int index)
-        {
-            return ProfileSettingsServiceInstance.GetSxOutCurveMode(index);
-        }
-        public static BezierCurve[] sxOutBezierCurveObj => ProfileSettingsServiceInstance.SxOutBezierCurveObj;
-
-        public static void setSZOutCurveMode(int index, int value)
-        {
-            ProfileSettingsServiceInstance.SetSzOutCurveMode(index, value);
-        }
-        public static int getSZOutCurveMode(int index)
-        {
-            return ProfileSettingsServiceInstance.GetSzOutCurveMode(index);
-        }
-        public static BezierCurve[] szOutBezierCurveObj => ProfileSettingsServiceInstance.SzOutBezierCurveObj;
-
-        public static bool[] TrackballMode => ProfileSettingsServiceInstance.TrackballMode;
-        public static bool getTrackballMode(int index)
-        {
-            return ProfileSettingsServiceInstance.GetTrackballMode(index);
-        }
-
-        public static double[] TrackballFriction => ProfileSettingsServiceInstance.TrackballFriction;
-        public static double getTrackballFriction(int index)
-        {
-            return ProfileSettingsServiceInstance.GetTrackballFriction(index);
-        }
-
         //public static bool[] TouchStickTrackballMode => m_Config.touchStickTrackballMode;
         //public static bool GetTouchStickTrackballMode(int index)
         //{
@@ -2493,13 +2069,10 @@ namespace DS4Windows
         //    return m_Config.touchStickTrackballFriction[index];
         //}
 
-        public static TouchMouseStickInfo[] TouchMouseStickInf => ProfileSettingsServiceInstance.TouchMouseStickInf;
         public static TouchMouseStickInfo GetTouchMouseStickInfo(int device)
         {
             return m_Config.touchMStickInfo[device];
         }
-
-        public static TouchpadRelMouseSettings[] TouchRelMouse => ProfileSettingsServiceInstance.TouchRelMouse;
 
         public static ControlServiceDeviceOptions DeviceOptions => m_Config.deviceOptions;
 
@@ -2509,7 +2082,6 @@ namespace DS4Windows
             return m_Config.outputDS4TriggerMode[index];
         }
 
-        public static string[] LaunchProgram => ProfileSettingsServiceInstance.LaunchProgram;
         public static string[] ProfilePath => m_Config.profilePath;
         public static string[] OlderProfilePath => m_Config.olderProfilePath;
         public static string[] SelectedProfile => m_Config.selectedProfile;
@@ -2748,9 +2320,6 @@ namespace DS4Windows
         public static string GetDS4Extra(int deviceNum, string buttonName, bool shift) => m_Config.GetDS4Extra(deviceNum, buttonName, shift);
         public static int GetDS4STrigger(int deviceNum, string buttonName) => m_Config.GetDS4STrigger(deviceNum, buttonName);
         public static int GetDS4STrigger(int deviceNum, DS4Controls control) => m_Config.GetDS4STrigger(deviceNum, control);
-        public static List<DS4ControlSettings> getDS4CSettings(int device) => ProfileSettingsServiceInstance.GetDS4CSettings(device);
-        public static DS4ControlSettings GetDS4CSetting(int deviceNum, string control) => ProfileSettingsServiceInstance.GetDS4CSetting(deviceNum, control);
-        public static DS4ControlSettings GetDS4CSetting(int deviceNum, DS4Controls control) => ProfileSettingsServiceInstance.GetDS4CSetting(deviceNum, control);
         public static ControlSettingsGroup GetControlSettingsGroup(int deviceNum) => m_Config.ds4controlSettings[deviceNum];
         public static bool HasCustomActions(int deviceNum) => m_Config.HasCustomActions(deviceNum);
         public static bool HasCustomExtras(int deviceNum) => m_Config.HasCustomExtras(deviceNum);

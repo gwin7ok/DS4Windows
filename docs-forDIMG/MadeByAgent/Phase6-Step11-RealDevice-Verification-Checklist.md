@@ -179,4 +179,5 @@
 | U-5 | ステアリングホイールエミュレーション・校正（Step2-PR-4 ③、Step3-6a、Step7b） | 参照の置換は、単体テストで固定 | vJoy 利用時のステアリング軸 | vJoy 環境が用意できたとき | 未 |
 | U-6 | Joy-Con の結合デバイスのジャイロ（Step2-PR-4 ⑤） | — | Joy-Con の結合時のジャイロ | Joy-Con が用意できたとき | 未 |
 | U-7 | 更新通知（Step10-1-3） | 単体テスト（`Phase6Step10GroupOneViewModelTests`）で固定 | 「Skip Version」「Install Latest」の動作 | 新しいバージョンが公開されたとき | 未 |
-| U-8 | （追加があれば記入） | | | | |
+| U-8 | デバウンス時間の即時反映（Step12 の是正。`CheckProfileOptions` と `Debouncer.SetDuration`） | 単体テスト `DebouncerSetDurationTests`（0ms から有効化、0 へ戻す、呼び出しの存在） | 接続中にプロファイル編集画面の Debouncing を変えたときの反映 | 次に実機を使うとき（接続中に Other タブの Debouncing を 500 にして適用し、連打が抑えられること、0 に戻すと抑えられなくなること） | 未（2026-10-17 先送り） |
+| U-9 | （追加があれば記入） | | | | |

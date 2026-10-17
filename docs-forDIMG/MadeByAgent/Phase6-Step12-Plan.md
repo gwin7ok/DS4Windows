@@ -217,6 +217,23 @@ HEAD は `e0bc8258`（作業ツリーはクリーン）。以降の §0〜§6 �
 
 ---
 
+### 0A.12 Wave 2 の実施記録（2026-10-17、ビルド・テストはユーザーの実行待ち）
+
+- 前提: Wave 1 とデバウンスの是正は、ビルド・テスト成功・コミット・リモート反映済み。実機確認は先送り（チェックリスト §11 の U-8）。
+- 再走査: Wave 1 後に走査をやり直し、Wave 2 の 148 名が引き続き呼び出し元 0 件であることを確認した（新たに不要になったのは、温存・削除の判断済みの 2 件のみ）。
+- 削除（`Global.cs`）: 150 名（宣言 152 件。オーバーロード 2 組を含む）。ProfileSettings 系の互換アクセサ（配列プロパティ、`getXxx`／`GetXxx`／`setXxx`）。
+  - 計画からの変更: `TouchActive`、`GetTouchActive`（Wave 4 の予定）を Wave 2 に含めた。`touchpadActive`（Wave 2）を参照するため、同時に消さないとコンパイルできない。Wave 4 は 62→60 件になる。
+  - 付随する孤立コメントは無し（セクション見出し 2 行と、元からあるコメントアウトされた旧コードは残した。Wave 4 で整理する）。
+- テストの書き換え:
+  - `ControlServicePr5ShimEquivalenceTests`: `TouchpadActiveArray_OfDiSingleton_IsTheSameArrayAsGlobalTouchActive` → `…_ReflectsWrites`（`Global.touchpadActive`／`GetTouchActive` を、サービスの `GetTouchpadActive` に置換）。`TouchOutMode_And_OutputDS4TriggerMode_MatchGlobalGetters` → `EnableTouchToggle_And_RumbleBoost_GettersMatchArrays`（サービスのメソッドと配列の一致）。
+  - `ProfileSettingsServiceTests`: 旧シム専用の `GlobalShim_ShouldSynchronizeWithService`、`TriggerSettings_ShouldShareBackingStoreWithGlobalShim` を**削除**。`TriggerCurveMode_ShouldDelegateThroughServiceAndGlobalShim` → `TriggerCurveMode_ShouldRoundTripThroughService`（サービスだけで確認）。
+  - 削除したテスト: 2 件（旧シムと新サービスの一致のみが目的）。テスト数は、Wave 1 後の件数から 2 件減る。
+- ラチェット: `Global.cs` = (rootHub 9, AppHost 11, Global **38**)。全域は `Global.*` 778→771。`Global.cs` の件数は走査で確認済み（38）。
+- ガード: `Step12DeadShimRemovalGuardTests` に 150 名を追記（宣言の検出式で、現行の `Global.cs` に残っていないことを確認済み）。
+- 残る呼び出し元の確認: 削除した名前の `Global.` 参照・非修飾参照（`Mapping.cs`、`DS4LightBar.cs`）・`Global.cs` 内の参照は、走査で 0 件。
+
+---
+
 ## 0. 背景と方針（2026-10-17 改訂。承認済みの決定は §0A.10）
 
 ### 0.1 Step2〜Step11 の完了実績と残存コードの状況
@@ -253,7 +270,7 @@ HEAD は `e0bc8258`（作業ツリーはクリーン）。以降の §0〜§6 �
 
 - **Step12-0**: 完了（§0A、§0A.9）。
 - **Wave 1**: 孤立コード 24 件＋イベント引数 3 型（`git rm`）。実施済み（§0A.11。`DebouncingMsHasChanged` は回帰確認のため温存）。テストの書き換えを伴う。ラチェット `Global.cs` の `Global` 47→45。
-- **Wave 2**: ProfileSettings 系の互換アクセサ 150 件。`Global` 45→38。
+- **Wave 2**: ProfileSettings 系の互換アクセサ 150 名（宣言 152 件）。実施済み（§0A.12）。`Global` 45→38。
 - **Wave 3**: `*Instance` のフォールバック群 19 件。`Global` 38→26、`AppHost` 11→5、`rootHub` 9→6。**この Wave の後に実機で起動・接続・プロファイル切替を確認**（起動ログ `Host initialized with runtime parser`）。
 - **Wave 4**: `BackingStore` 直転送ラッパー 62 件＋`getDefaultX360ControlBinding`。`AppHost` 5→4。
 - **Wave 5**: 互換 `AppHost`（`DI/Compat/AppHost.cs`）の未使用 5 件、`AppDataPath` のセッター、ガードテストの最終確認、完了報告書（`Phase6-Step12-Completion-Report.md`、`Phase6-Completion-Report.md`）。
