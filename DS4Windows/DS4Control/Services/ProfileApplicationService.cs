@@ -8,7 +8,6 @@ namespace DS4Windows
     public class ProfileApplicationService : IProfileApplicationService
     {
         private readonly IProfileSettingsService _profileSettings;
-        private readonly IDeviceStateService _deviceState;
         private readonly Func<ControlService> _controlProvider;
         // Phase6-Step10-4-2a: ControlService は遅延解決（Func）で受け取る（Program.rootHub/AppHost 参照の廃止。決定 D4-3）
         private ControlService _control => _controlProvider();
@@ -24,7 +23,6 @@ namespace DS4Windows
 
         public ProfileApplicationService(
             IProfileSettingsService profileSettings,
-            IDeviceStateService deviceState,
             Func<ControlService> controlProvider,
             IProfileRepository profileRepo,
             IEnvironmentService environmentService,
@@ -38,7 +36,7 @@ namespace DS4Windows
             _profileActionProvider = profileActionProvider ?? throw new ArgumentNullException(nameof(profileActionProvider));
             _config = config ?? throw new ArgumentNullException(nameof(config));
             _profileSettings = profileSettings ?? throw new ArgumentNullException(nameof(profileSettings));
-            _deviceState = deviceState ?? throw new ArgumentNullException(nameof(deviceState));
+            // Phase7-Step10b W3: 未使用だった依存 IDeviceStateService（フィールドを保持するだけ。234e20f9 で DI コンテナ化の途中に追加）を外した。
             _controlProvider = controlProvider ?? throw new ArgumentNullException(nameof(controlProvider));
             _profileRepo = profileRepo ?? throw new ArgumentNullException(nameof(profileRepo));
             _environmentService = environmentService ?? throw new ArgumentNullException(nameof(environmentService));

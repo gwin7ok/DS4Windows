@@ -100,12 +100,12 @@ namespace DS4WindowsTests
         }
 
         public static ProfileApplicationService CreateProfileApplicationService(IProfileSettingsService settings,
-            IDeviceStateService deviceState, Func<ControlService> control, IProfileRepository profileRepository,
+            Func<ControlService> control, IProfileRepository profileRepository,
             IEnvironmentService environmentService, IProfileXmlStore xmlStore = null,
             IProfileActionProvider actionProvider = null, BackingStore store = null,
             IKeyButtonControllerRegistry keyButtonControllers = null)
         {
-            return new ProfileApplicationService(settings, deviceState, control, profileRepository, environmentService,
+            return new ProfileApplicationService(settings, control, profileRepository, environmentService,
                 xmlStore ?? new ProfileXmlStore(store ?? Global.store),
                 actionProvider ?? CreateProfileActionProvider(store ?? Global.store),
                 store ?? Global.store,
@@ -116,7 +116,7 @@ namespace DS4WindowsTests
         {
             var settings = Global.ProfileSettingsServiceInstance;
             return new ProfileSlotApplier(profileApplication ?? CreateProfileApplicationService(settings,
-                CreateDeviceStateService(), () => null, CreateProfileRepository(settings), new EnvironmentService()));
+                () => null, CreateProfileRepository(settings), new EnvironmentService()));
         }
 
         public static AppearanceSettingsService CreateAppearanceSettingsService(BackingStore store = null)

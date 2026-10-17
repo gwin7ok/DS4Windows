@@ -24,9 +24,10 @@ namespace DS4Windows.DI
         // 参照: docs-forDIMG/MadeByAgent/Phase6-Step5-Plan.md §2
 
         // DeviceType は、PluginSlot では指定された種別、UnplugSlot では None。
-        // TODO(Phase7-Step2 W6、温存。Phase7-Step6 Q5＝A で再判断し、Phase7-Step10 へ持ち越し): 本体の購読者がいない。PluginSlot／UnplugSlot の実行後に発行される
+        // TODO(Phase7-Step2 W6、温存。Phase7-Step6 Q5＝A・Phase7-Step10b Q5＝A で再判断し、Phase8 以降の UI 通知の拡張点として温存): 本体の購読者がいない。PluginSlot／UnplugSlot の実行後に発行される
         // （2026-08-31 の初期契約。出力スロット画面の更新が OutputSlotManager 側のイベントで足りているかを、未確認のまま温存した）。
         // 出力デバイス種別の配列の所有権は Step6 で OutputSlotService へ移した。画面の更新経路を実機で確かめられるまで削除しない。
+        // 削除するとトレースログ「[DI] OutputSlotService.OutputSlotChanged: Slot … = …」も消えるため、購読者を付けるのは機能拡張（Phase8 以降）として扱う。
         event EventHandler<OutputSlotChangedEventArgs> OutputSlotChanged;
 
         // === Step 12 拡充: 実体 OutputSlotManager 連動操作 ===

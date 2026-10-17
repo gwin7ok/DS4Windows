@@ -6,23 +6,18 @@ namespace DS4Windows
 {
     /// <summary>
     /// プロファイルのネストされたサブ設定クラス（スティック詳細、トリガー、ジャイロなど）向けの抽象基底クラス。
-    /// INotifyPropertyChanged を実装し、子プロパティの変更を親のプロファイルコンテナへバブリング通知する
-    /// OnSubPropertyChanged イベントを提供します。
+    /// INotifyPropertyChanged を実装します。
     /// (Phase 5 Step 14: Profile Configuration Synchronization and Unified Persistence)
+    /// Phase7-Step10b W3: 親のプロファイルコンテナへバブリング通知する OnSubPropertyChanged イベントは、
+    /// 唯一の購読の仕組み（IProfileSettingsService.WireSubSettingsEvents。Phase7-Step2 W2 で削除）がなくなり、購読者が 0 件のため削除した。
     /// </summary>
     public abstract class ProfileSubSettingBase : INotifyPropertyChanged
     {
         public event PropertyChangedEventHandler PropertyChanged;
 
-        /// <summary>
-        /// サブオブジェクト内のプロパティが変更された際に親へバブリングするためのイベント
-        /// </summary>
-        public event Action<string> OnSubPropertyChanged;
-
         protected virtual void RaisePropertyChanged([CallerMemberName] string propertyName = null)
         {
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
-            OnSubPropertyChanged?.Invoke(propertyName);
         }
 
         /// <summary>
@@ -31,7 +26,6 @@ namespace DS4Windows
         protected virtual void RaiseAllPropertiesChanged()
         {
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(string.Empty));
-            OnSubPropertyChanged?.Invoke(string.Empty);
         }
     }
 }

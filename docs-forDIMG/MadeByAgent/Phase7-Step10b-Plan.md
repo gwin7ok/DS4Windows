@@ -3,7 +3,7 @@
 作成日: 2026-10-18  
 対象ブランチ: `For-DI-migration-work`  
 上位計画: `Phase7-Step10-Plan.md`（Q1〜Q9 は推奨どおり承認）§3「10b」、`Phase7-Step10a-Completion-Report.md` §5、`Phase7-Residual-Ledger.md` §3・§13  
-状態: **Q1〜Q8 は推奨どおり承認（2026-10-18。Q3 の `OnSubPropertyChanged` の削除を含む）。W1 完了（ビルド・テスト成功）。W2 実装済み（ビルド・テスト待ち）。次は W3。**
+状態: **Q1〜Q8 は推奨どおり承認（2026-10-18。Q3 の `OnSubPropertyChanged` の削除を含む）。W1・W2 完了（ビルド・テスト成功）。W3 実装済み（ビルド・テスト待ち）。次は W4。**
 
 ---
 

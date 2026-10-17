@@ -55,7 +55,7 @@ namespace DS4WindowsTests
 
             _repo = TestRepositoryFactory.CreateProfileRepository(_settings);
             _service = TestRepositoryFactory.CreateProfileApplicationService(_settings,
-                TestRepositoryFactory.CreateDeviceStateService(), () => _control, _repo, new EnvironmentService());
+                () => _control, _repo, new EnvironmentService());
             _slotApplier = new ProfileSlotApplier(_service);
 
             _origProfilePath = _repo.ProfilePath[Slot];

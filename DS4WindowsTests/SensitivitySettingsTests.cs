@@ -33,21 +33,21 @@ namespace DS4WindowsTests
         }
 
         [Fact]
-        public void SensitivitySettings_SubPropertyChange_ShouldBubbleUpEvent()
+        public void SensitivitySettings_SubPropertyChange_ShouldRaisePropertyChanged()
         {
             var settings = new SensitivitySettings();
             string reportedProperty = null;
             bool eventFired = false;
 
-            settings.OnSubPropertyChanged += (propName) =>
+            // Phase7-Step10b W3: OnSubPropertyChanged（親への中継）は削除した。PropertyChanged で変更の通知を確認する
+            settings.PropertyChanged += (s, e) =>
             {
-                reportedProperty = propName;
+                reportedProperty = e.PropertyName;
                 eventFired = true;
             };
 
             settings.LS = 42;
 
-            // 親へのイベントバブリングが正しく機能すること
             Assert.True(eventFired);
             Assert.Equal(nameof(SensitivitySettings.LS), reportedProperty);
         }

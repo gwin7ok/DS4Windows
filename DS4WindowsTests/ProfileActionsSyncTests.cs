@@ -28,10 +28,9 @@ namespace DS4WindowsTests
         }
 
         [Fact]
-        public void ProfileSubSettingBase_PropertyChange_ShouldBubbleUpEvent()
+        public void ProfileSubSettingBase_PropertyChange_ShouldRaisePropertyChanged()
         {
             var setting = new DummyStickSetting();
-            string reportedProperty = null;
             bool propertyChangedFired = false;
 
             setting.PropertyChanged += (s, e) =>
@@ -40,15 +39,10 @@ namespace DS4WindowsTests
                     propertyChangedFired = true;
             };
 
-            setting.OnSubPropertyChanged += (propName) =>
-            {
-                reportedProperty = propName;
-            };
-
             setting.DeadZone = 15;
 
+            // Phase7-Step10b W3: OnSubPropertyChanged（親への中継）は削除した。PropertyChanged は従来どおり発火する
             Assert.True(propertyChangedFired);
-            Assert.Equal(nameof(DummyStickSetting.DeadZone), reportedProperty);
         }
 
         [Fact]
