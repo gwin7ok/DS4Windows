@@ -1,0 +1,142 @@
+# Phase7-Step2 計画書: DI インターフェースの 0 件メンバーの個別判断
+
+作成日: 2026-10-17  
+対象ブランチ: `For-DI-migration-work`  
+前提: `Phase7-Plan.md`（Step2 の位置づけ）、`Phase7-0-Survey.md` §1.6、`.github/copilot-instructions.md` §2.4（未参照コードの扱い）  
+状態: **調査完了・判断案の提示（承認待ち）。実装はこの計画書の承認後に Wave 単位で行う。**  
+ルール: ビルド・テストビルド・テスト実行・コミットはユーザーが行う。エージェントはローカルファイルの編集のみ。
+
+---
+
+## 0. 結論（先に）
+
+- 対象は 61 メンバー（本体の呼び出しが 0 件）。うち **12 は Phase8 へ移管**（`Actions/` の未配線の抽象）。Phase7 で判断するのは **49**。
+- 判断案（49）: **削除 45／接続 3（後続 Step で呼び出し側を切り替える）／温存 1**。
+- 削除の理由は 3 種類に分かれる（§2.4 の「使うべきでないもの」）:
+  - 重複: 同じ値を返す別の入口があり、本体はそちらを使っている（約 27）。
+  - 孤立した実体: サービス内の配列が本体で一度も設定されず、常に空・null・既定値を返す（`IDeviceStateService`、`IOutputSlotService`、`IVirtualKBM.ErrorMessage`。約 13）。
+  - 購読者のいない通知: 購読側を撤去済みのイベントの仕組み（`ProfileSettingChanged` 系。3）。
+  - 残りは並行実装（メモリだけに足す `AddAction` など。数件）。
+- 「使うべきなのに未接続」と判断したもの: `Load/SaveOutputSlots`（Step5）、`ReEnableDevice`（Step4）。
+
+## 1. 調査の方法
+
+- 走査: `scripts/audit/Step12/iface.py`（インターフェースの宣言ファイルと実装クラスのファイルを除く、本体の参照が 0 件。名前で数えるため、0 件の判定は確実）。
+- 各メンバーについて、(1) `git log -S` による導入の経緯、(2) 実装の本体、(3) 同じ値を本体が別の入口から取っているか、(4) テストの参照、を確認した。
+- 判断基準（§2.4）: 「本来その API を使うべきか」。使うべきなら削除せず TODO を付けて接続を計画に入れる。使うべきでなければ削除する。
+
+## 2. 判断の一覧
+
+凡例: **削** 削除／**接** 接続（後続 Step で呼び出し側を切り替える）／**温** 温存／**P8** Phase8 へ移管。「テスト」はテストからの参照数。
+
+### 2.1 IProfileSettingsService（21）
+
+| メンバー | テスト | 判断 | 理由 |
+|---|---|---|---|
+| `GetLowColor`／`GetChargingColor`／`GetFlashColor`／`GetCustomColor`／`GetUseCustomLed` | 0 | 削 | Step10-2-A-5（2026-09-02）で追加。本体の `DS4LightBar` は `GetLightbarSettingsInfo` が返す `LightbarSettingInfo` を直接読む（コメントに旧名が残るだけ）。重複 |
+| `GetDS4CSettings` | 0 | 削 | 単数の `GetDS4CSetting` が 69 箇所で使われている。重複 |
+| `GetGyroMouseDeadZone` | 1 | 削 | 本体は配列 `GyroMouseDeadZone[device]` を使う。重複 |
+| `GetScrollSensitivity`（2 オーバーロード） | 0 | 削 | 本体は `ScrollSensitivity[device]` を使う。重複 |
+| `GetUseDInputOnly`／`SetUseDInputOnly` | 2／1 | 削 | 本体は `DinputOnly`、`GetDInputOnly`、`UseDInputOnlyArray` を使う。重複 |
+| `GetTempProfileDistance` | 3 | 削 | 本体は `TempProfileDistanceArray`、`SetTempProfileDistance` を使う。重複 |
+| `GetReverseX360ButtonMapping` | 1 | 削 | `Clone()` を返す版。本体はゼロアロケーションの `ReverseX360ButtonMapping` を使う（インターフェースの注記のとおり）。書き換える呼び出し元は無い |
+| `SAMouseStickTriggerCond`（配列） | 1 | 削 | 本体は `GetSAMouseStickTriggerCond`／`SetSaMouseStickTriggerCond` を使う。重複 |
+| `SetTouchpadActive` | 5 | 削 | 本体は `TouchpadActiveArray[device]`（`ControlService`）と `GetTouchpadActive` を使う。重複 |
+| `LinkedProfileCheckArray`／`TempProfileNameArray` | 1／1 | 削 | 本体は `Get/SetLinkedProfileCheck`、`Get/SetTempProfileName` を使う。重複 |
+| `ConfigDecimalCulture` | 1 | 削 | 本体の DTO は `Global.configFileDecimalCulture`（静的。XML のシリアライザーが使う）を使う。契約側は孤立（`new CultureInfo("en-US")` を別に持つ） |
+| `ResetAllToDefaults` | 0 | 削 | 呼び出し元なし。スロット別の `ResetToDefaults` は残る。プリセットの読み込みが別経路（`ProfilePresetLoader`）で担う |
+| `ProfileSettingChanged`／`WireSubSettingsEvents`／`UnwireSubSettingsEvents` | 10／10／1 | 削（要承認、§3 Q2） | Phase5-Step14（2026-09-16〜17）で追加した、サブ設定の変更の中継。唯一の購読者（プロファイル編集画面の適用ボタンの活性化）は、同 Step で撤去済み（適用ボタンは常時有効）。`Wire` の呼び出しも、本体には残っていない。購読者のいない仕組み |
+
+### 2.2 IDeviceStateService（6）と周辺
+
+| メンバー | テスト | 判断 | 理由 |
+|---|---|---|---|
+| `SetDevice`、`DeviceStateChanged`、`IsDeviceConnected`、`GetDeviceMacAddress`、`GetConnectionType`、`GetBatteryLevel` | 4／1／4／2／0／2 | 削 | 2026-08-31 に追加。サービス内の配列 `_devices` は、本体で `SetDevice` が呼ばれず、常に空。接続中のデバイスの実体は `ControlService.DS4Controllers`（`IDeviceStateAccessor` が公開）。誤った値（常に未接続）を返す孤立実装 |
+| （関連）`Devices`、`GetDevice`、`ConnectedControllersCount` | — | 削（同じ理由。§3 Q3） | 本体の使用は `ControllersViewModel.HasControllers` だけで、そのプロパティも使用箇所が無い |
+| （関連）`ControllersViewModel` | 2 | 削（要承認、§3 Q3） | `HasControllers` だけを持つ殻。DI に登録されているが、使う画面・クラスが無い。テスト 2 件（`PatternBViewModelTests` の解決と Singleton の確認）は削除 |
+
+残す: `IsFirstConnection`、`MarkConnected`、`ResetConnectionFlags`、`OnDeviceSerialChange`（本体で使用中）。
+
+### 2.3 IOutputSlotService（6）
+
+| メンバー | テスト | 判断 | 理由 |
+|---|---|---|---|
+| `OutputDevices`、`GetOutputDevice`、`IsSlotPlugin`（と実装の `SetOutputDevice`、配列 `_outputDevices`） | 0／3／1 | 削 | 2026-08-31 に追加。`SetOutputDevice` の呼び出しは、`UnplugSlot` が null を入れるだけ。常に null／false を返す孤立配列。実体の入口は `OutputSlots`／`GetOutSlotDevice`（`OutputSlotManager` 連動） |
+| `LoadOutputSlots`／`SaveOutputSlots` | 1／1 | **接**（Step5） | 2026-09-05 に永続化の窓口として追加。現状は、`App.xaml.cs:541` が `rootHub.LoadPermanentSlotsConfig()`、`ControlService:702` が `OutputSlotPersist.WriteConfig` を直接呼び、同じ処理が二重に存在する。`rootHub` の削除（Step5）で、サービス経由へ切り替える。TODO を付ける（§4） |
+| `OutputSlotChanged` | 3 | 温（Step6 で再判断） | `PluginSlot`／`UnplugSlot` の実行後に発行されるが、本体の購読者はいない。出力スロット画面の更新が `OutputSlotManager` 側のイベントで足りているかは未確認。所有権の移動（Step6）で、`outDevType` の通知と合わせて判断する。TODO を付ける |
+
+### 2.4 その他（各 1〜4）
+
+| インターフェース.メンバー | テスト | 判断 | 理由 |
+|---|---|---|---|
+| `IDs4DeviceRegistry.ConnectedDevices`／`DeviceCount` | 0 | 削 | `GetDS4Controllers()` と同じ値。重複 |
+| `IDs4DeviceRegistry.ReEnableDevice` | 0 | **接**（Step4） | 2026-09-20 に Actions/ から移動した契約。`App.xaml.cs:712` が `DS4Devices.reEnableDevice` を静的に直接呼ぶ。Pre-Host の経路（コンテナ構築前）のため、起動の近代化（Step4）で切り替えられるか判断する。TODO を付ける |
+| `IEnvironmentService.UsingMaxControllers` | 2 | 削 | `ControllerSlotLimit` との比較で置き換えられる。本体の使用なし |
+| `INotificationService.NotificationsEnabled`／`FlashTaskbar` | 7／5 | 削 | 設定の読み書きは `IAppSettingsService.Notifications`／`FlashWhenLate` が担う。重複（`NotificationsEnabled` は実装内の `SendNotification` が使うため、実装には private として残す） |
+| `IPathService.GetAutoProfilesPath` | 0 | 削 | プロパティ `AutoProfilesPath` と同じ値。重複。副次: `AutoProfileHolder`、`AutoProfiles.xaml.cs` が `"Auto Profiles.xml"` を文字列連結している（置換は Step4 の候補） |
+| `IProfileRepository.GetProfileNames`／`ProfileExists`／`LoadProfileToSlot`／`LoadDefaultProfile` | 0／0／0／1 | 削 | 2026-08-31 の初期契約。本体は `LoadProfile`（11 箇所）、プリセットは `ProfilePresetLoader`、一覧は UI の `ProfileList` が担う。重複 |
+| `ISpecialActionRepository.AddAction`／`ReplaceAction`／`GetActionIndex` | 5／1／0 | 削 | `AddAction`／`ReplaceAction` はメモリ上の一覧だけを書き換える並行実装で、本体の保存経路（`SaveAction`＝ファイルへ保存して再読込）と別。`GetActionIndex` は実装内部（`RemoveAction` など）が使うため、実装には残し、契約からのみ外す |
+| `IUdpServerService.ListenAddress` | 1 | 削 | 本体は `IAppSettingsService.UdpServerListenAddress` を読む。重複 |
+| `IVirtualKBM.ErrorMessage` | 1 | 削 | `VirtualKBMBase.errorMessage` は 2020 年の上流のコミットから、**一度も代入されず**、常に空文字を返す。アダプター（`OutputKBMHandlerAdapter`）の実装と契約のみ外す（上流の基底クラスのフィールドは変更しない） |
+
+### 2.5 Phase8 へ移管（12）
+
+- `IActionBinding`（`OnReleased`、`OnTriggered`、`Outputs`）、`IKeyController`（`ClearAll`、`OnDown`、`OnUp`）、`IActionRegistry.GetBindingsForDevice`、`IControllerRegistry.GetControllersForDevice`、`IInputAction.Evaluate`、`IMacroPlayer.IsPlaying`（テスト 11）、`ITrigger.Context`、`IOutputHandler.FakeKeyRepeat`。
+- Phase6-Step9b から Phase8 へ申し送り済みの、未配線の抽象（系統 A）。Phase8 の台帳（`Phase8-Unified-Trigger-Dispatch-Plan.md`）に追記する。Phase7 では触らない。
+
+### 2.6 集計
+
+- 削除 45: `IProfileSettingsService` 21、`IDeviceStateService` 6、`IOutputSlotService` 3、`IDs4DeviceRegistry` 2、`IEnvironmentService` 1、`INotificationService` 2、`IPathService` 1、`IProfileRepository` 4、`ISpecialActionRepository` 3、`IUdpServerService` 1、`IVirtualKBM` 1。
+- 接続 3（Step4 に 1、Step5 に 2）。温存 1（Step6 で再判断）。Phase8 へ 12。
+
+## 3. ご判断をお願いしたい事項（選択肢と推奨）
+
+- **Q1: 全体の方針** — 上の判断案（削除 45／接続 3／温存 1）で進めてよいか。推奨: 承認。
+- **Q2: `ProfileSettingChanged` 系の削除（3 メンバーと、仕組み一式）** — 削除すると、`OnProfileSettingChanged` が出している GUI ログ（`[DI] ProfileSettingsService.SettingChanged: Slot …`）も無くなる（Trace 相当の GUI ログ）。§2.3 の「ログの維持」に当たるため、明示的な承認が要る。
+  - 案 A（推奨）: 削除する。購読者がなく、設定の変更の追跡は、適用・保存の経路のログで足りる。
+  - 案 B: イベントだけ削除し、ログを出す箇所は残す（変更の度に GUI ログが出る現状を維持）。
+  - 案 C: 温存して Phase8 以降で、変更の追跡（Dirty フラグ）が必要になったときに再判断する。
+- **Q3: `ControllersViewModel`（殻）と `IDeviceStateService` のデバイス系の削除** — 推奨: 削除（`HasControllers` の使用箇所なし。デバイスの実体は `IDeviceStateAccessor`）。テスト 2 件（`PatternBViewModelTests`）と、`DeviceStateServiceTests` の該当ケースを削除または書き換える。
+- **Q4: `OutputSlotChanged` の温存** — 推奨: 温存して Step6 で判断。
+- **Q5: 接続 3 件の TODO の付与** — 推奨: 付与（§4）。
+
+## 4. 接続・温存の項目へ付ける TODO（copilot-instructions §3.3 原則4）
+
+- `IOutputSlotService.LoadOutputSlots`／`SaveOutputSlots`: 「作られた経緯（2026-09-05、永続化の窓口）、未接続の理由（`App.xaml.cs` が `rootHub.LoadPermanentSlotsConfig` を直接呼ぶ。`ControlService` も `OutputSlotPersist` を直接呼ぶ）、接続予定（Phase7-Step5: `rootHub` 削除時）、現状の差（二重の呼び出し）」。
+- `IDs4DeviceRegistry.ReEnableDevice`: 「経緯（2026-09-20）、`App.xaml.cs:712` が `DS4Devices.reEnableDevice` を静的に呼ぶ（Pre-Host）、予定（Phase7-Step4）」。
+- `IOutputSlotService.OutputSlotChanged`: 「購読者なし。Phase7-Step6 で再判断」。
+
+## 5. Wave 計画（各 Wave ＝ 1 コミット。ビルド・テストはユーザーが実行）
+
+- **W1: `IProfileSettingsService` の重複アクセサ 18 名の削除**（§2.1 の `ProfileSettingChanged` 系を除く）。契約・実装（`ProfileSettingsService`）・テストの書き換え（該当テストは、生存する入口へ書き換えるか、重複の確認だけのテストは削除）。
+- **W2: `ProfileSettingChanged` 系 3 名と仕組み一式の削除**（Q2 の案による）。`SubSettingDescriptor`、`_subSettingsUnwireMap`、`OnSubSettingChanged`、`OnProfileSettingChanged` の発火、`ProfileSettingChangedEventArgs`（他に使われない場合）。テスト約 11 件の削除または書き換え。
+- **W3: `IDeviceStateService` のデバイス系と `ControllersViewModel` の削除**（Q3）。`DeviceStateService` の配列・イベント、`DeviceStateChangedEventArgs`（他に使われない場合）、DI 登録、テスト。
+- **W4: 小さな契約の整理** — `IOutputSlotService` の 3 名（と `_outputDevices`、`SetOutputDevice`）、`IVirtualKBM.ErrorMessage`（と `OutputKBMHandlerAdapter`）、`IUdpServerService.ListenAddress`、`INotificationService` の 2 名、`IEnvironmentService.UsingMaxControllers`、`IPathService.GetAutoProfilesPath`。
+- **W5: `IProfileRepository` 4 名、`ISpecialActionRepository` 3 名、`IDs4DeviceRegistry` 2 名の削除**。
+- **W6: 接続・温存の TODO の付与、ガードテスト、台帳**
+  - TODO（§4）。
+  - ガード: 新規 `Phase7Step2RemovedContractMembersGuardTests`（削除した名前が、DI のインターフェースに再び現れないこと。残す契約の名前が残っていること）。
+  - 台帳: `Phase7-Residual-Ledger.md` と `Phase7-Status.md` の更新。Phase8 の台帳へ、12 メンバーを追記。モデル図 `03-Class-Interface-Diagram.md` と `04-Service-Lifecycle-Spec.md` のインターフェースの記述を、削除に合わせて更新。
+
+各 Wave の共通作業:
+- 削除の直前に、`iface.py` で参照が 0 件であることを再走査する（コメントを除く）。
+- 動的な参照（リフレクション、XAML の Binding、`nameof`）が無いことを確認する。
+- ラチェットの基準値（`Global.*`／`AppHost`／`Program.rootHub`）は、削除で減ったファイルの分だけ更新（減る方向のみ）。
+- 既存のコメント（設計意図・TODO）を消さない。
+
+## 6. リスク
+
+- 削除の対象は、本体の呼び出しが 0 件。ただし、テストの書き換えが多い（`ProfileSettingsService` 系、`DeviceStateServiceTests`、`OutputSlotServiceTests`、`PatternBViewModelTests` ほか）。旧シムと新サービスの等価性だけを確認するテストは削除、生存する入口で確認できるものは書き換える（Step12 と同じ方針）。
+- W2 は、`ProfileSubSettingBase` のイベント（`OnSubPropertyChanged`）自体は、Step14 のサブ設定のクラスが持つ。それは削除しない（購読側の仕組みだけを削除する）。
+- 名前が同じ別のメンバー（例: `Devices`）を誤って削除しない。削除はインターフェースごとに、型を明示して行う。
+- 実機確認: 本体の呼び出しが 0 件の削除なので、実機の項目は追加しない。W3（`ControllersViewModel`）と W4（`IOutputSlotService`）の後に、起動・接続・出力スロットの付け外しを、Step2 完了時に 1 回確認する。
+
+## 7. 完了判定チェックリスト
+
+- [ ] W1〜W6 のビルド（警告 0）・テストビルド・テスト実行が成功している。
+- [ ] 削除 45 メンバーが、契約・実装・テストから消えている（`Phase7Step2RemovedContractMembersGuardTests` が成功）。
+- [ ] 接続 3 件と温存 1 件に、TODO が付いている。
+- [ ] Phase8 の台帳に、12 メンバーが追記されている。
+- [ ] `Phase7-Residual-Ledger.md`、`Phase7-Status.md`、モデル図が更新されている。
+- [ ] 起動・接続・出力スロットの付け外しの実機確認（1 回）。
+- [ ] `Phase7-Step2-Completion-Report.md` が作成されている。
