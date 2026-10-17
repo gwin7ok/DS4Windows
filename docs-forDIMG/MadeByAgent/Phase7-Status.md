@@ -116,7 +116,8 @@
 - `Phase7-Step10-Plan.md`（サブ Step 10a〜10e の構成と Q1〜Q9。推奨どおり承認）。各サブ Step は個別の計画書を作成してから進める。
 - **10a: 完了**。W1 `BackingStore.cs` の定数（132）、W2 制御層ほか、W3 資源パス（`ResourcePaths`）、W4 `Clamp` の残り・テスト・`Global` の別名の削除、W5 文書。`Global.*` 355 → 107。詳細は `Phase7-Step10a-Completion-Report.md`。
 - **10b: 完了**。W1 表と変換（`X360ControlTables`／`DS4ControlNames`）、W2 アイコンの表・色の関数（`TrayIconResources`／`ColorUtil`）、W3 契約の整理（`OnSubPropertyChanged` ほか）、W4 `UsingMaxControllers` の接続と孤立定数、W5 文書。`Global.*` 107 → 93。詳細は `Phase7-Step10b-Completion-Report.md`。
-- 10c〜10e: 未着手（10c＝永続化の切り出し、10d＝`BackingStore` の注入と `Global` の廃止、10e＝仕上げと総合検証）。
+- **10c: 計画書作成済み・承認待ち（2026-10-18）**。`Phase7-Step10c-Plan.md`（永続化の切り出し。ゴールデンテストを先に整備。Q1〜Q8、W1〜W7）。
+- 10d〜10e: 未着手（10d＝`BackingStore` の注入と `Global` の廃止、10e＝仕上げと総合検証）。
 
 ## 4. 実機確認の台帳（`Phase6-Step11-RealDevice-Verification-Checklist.md` §11）
 
@@ -138,5 +139,5 @@
 
 ## 6. 直近の次アクション
 
-1. Step10c（`BackingStore` の永続化の切り出し）の調査と `Phase7-Step10c-Plan.md` の作成。ゴールデンテストを先に整備する。その後 10d〜10e。
+1. Step10c（`Phase7-Step10c-Plan.md`）の承認と実装（W1 のゴールデンの生成・コミットを経てから W2 以降）。その後 10d〜10e。
 2. 実機確認 U-11、U-12、U-13、U-14、U-15、U-16、U-17、U-18、U-19（任意のタイミング。U-14 は終了時のホスト破棄と初回起動の確認が中心）。
