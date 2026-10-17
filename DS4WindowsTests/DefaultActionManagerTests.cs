@@ -204,13 +204,13 @@ namespace DS4WindowsTests
             var field = typeof(DefaultMacroPlayer).GetField("_isPlaying",
                 System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.NonPublic);
             var states = (bool[])field.GetValue(player);
-            Assert.Equal(DS4Windows.Global.MAX_DS4_CONTROLLER_COUNT, states.Length);
+            Assert.Equal(DS4Windows.ControllerLimits.MaxControllerCount, states.Length);
             Assert.True(states.Length >= 8);
 
             // 範囲内の最後のスロット（7）は範囲内として扱い、範囲外（8）は常に false
             states[7] = true;
             Assert.True(player.IsPlaying(7));
-            Assert.False(player.IsPlaying(DS4Windows.Global.MAX_DS4_CONTROLLER_COUNT));
+            Assert.False(player.IsPlaying(DS4Windows.ControllerLimits.MaxControllerCount));
 
             player.Stop(7);
             Assert.False(player.IsPlaying(7));

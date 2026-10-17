@@ -31,15 +31,7 @@ namespace DS4WindowsTests
             Assert.Equal((byte)128, ControllerLimits.StickAxisMidpoint);
         }
 
-        [Fact]
-        public void TheGlobalAliases_PointToTheSameValues()
-        {
-            Assert.Equal(ControllerLimits.MaxControllerCount, Global.MAX_DS4_CONTROLLER_COUNT);
-            Assert.Equal(ControllerLimits.TestProfileItemCount, Global.TEST_PROFILE_ITEM_COUNT);
-            Assert.Equal(ControllerLimits.TestProfileIndex, Global.TEST_PROFILE_INDEX);
-            Assert.Equal(ControllerLimits.OldXInputControllerCount, Global.OLD_XINPUT_CONTROLLER_COUNT);
-            Assert.Equal(ControllerLimits.StickAxisMidpoint, Global.DS4_STICK_AXIS_MIDPOINT);
-        }
+        // Phase7-Step10a W4: Global の別名（定数 5 つ・Clamp）は削除した。再導入の禁止は Step12DeadShimRemovalGuardTests が固定する。
 
         [Theory]
         [InlineData(0.0, -5.0, 10.0)]
@@ -49,11 +41,10 @@ namespace DS4WindowsTests
         [InlineData(0.0, 10.0, 10.0)]
         [InlineData(-3.5, -3.5, 2.5)]
         [InlineData(5.0, 7.0, 3.0)] // min > max: 旧実装と同じく、value < min の判定が先に効く
-        public void Clamp_IsIdenticalToTheOldImplementation_AndTheGlobalShim(double min, double value, double max)
+        public void Clamp_IsIdenticalToTheOldImplementation(double min, double value, double max)
         {
             double expected = (value < min) ? min : (value > max) ? max : value;
             Assert.Equal(expected, NumericUtil.Clamp(min, value, max));
-            Assert.Equal(expected, Global.Clamp(min, value, max));
         }
 
         [Fact]
@@ -61,7 +52,6 @@ namespace DS4WindowsTests
         {
             // 旧実装: NaN は両方の比較が false になり、そのまま返る
             Assert.True(double.IsNaN(NumericUtil.Clamp(0, double.NaN, 10)));
-            Assert.True(double.IsNaN(Global.Clamp(0, double.NaN, 10)));
         }
 
         [Theory]

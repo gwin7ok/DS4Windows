@@ -75,7 +75,7 @@ namespace DS4WindowsTests
         }
 
         [Fact]
-        public void MouseFiles_KeepOnlyTheFourExcludedClampReferences()
+        public void MouseFiles_HaveNoClampReferenceToGlobalAnymore()
         {
             int total = 0;
             bool anyRead = false;
@@ -87,8 +87,9 @@ namespace DS4WindowsTests
                 total += Regex.Matches(text, @"\bGlobal\.Clamp\b").Count;
             }
 
-            // 台帳（Phase6-Step4-Plan.md §2）の除外は Mouse.cs 2行 + MouseCursor.cs 2行。増減があれば台帳の見直しが必要
-            if (anyRead) Assert.Equal(4, total);
+            // 台帳（Phase6-Step4-Plan.md §2）の除外は Mouse.cs 2行 + MouseCursor.cs 2行だった。
+            // Phase7-Step10a W4: Global.Clamp は NumericUtil.Clamp へ移して削除したため、0 件であること
+            if (anyRead) Assert.Equal(0, total);
         }
     }
 }

@@ -30,13 +30,13 @@ namespace DS4WindowsTests
         [Fact]
         public void CommitEnabledActionsToProfile_WritesEnabledNamesToEditSlotOnly()
         {
-            const int editSlot = Global.TEST_PROFILE_INDEX;
+            const int editSlot = DS4Windows.ControllerLimits.TestProfileIndex;
             // 既存テスト（ProfileSettingsServiceSubSettingsTests.ProfileActions_GetSet_ShouldPersistAndNotify）が
             // Global.store.profileActions を 8 要素の配列に置き換えたまま戻さないため、実行順によって
             // Global.store.profileActions の長さが変わる。独立した 9 要素の配列に差し替えて検証し、終了時に戻す。
             BackingStore store = Global.store;
             List<string>[] originalArray = store.profileActions;
-            List<string>[] profileActions = new List<string>[Global.TEST_PROFILE_ITEM_COUNT];
+            List<string>[] profileActions = new List<string>[DS4Windows.ControllerLimits.TestProfileItemCount];
             store.profileActions = profileActions;
             try
             {

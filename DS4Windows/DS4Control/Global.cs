@@ -66,13 +66,8 @@ namespace DS4Windows
             set { m_Config.logMinLevel = value; }
             get { return m_Config.logMinLevel; }
         }
-        // Phase7-Step9 W2（Q2＝A）: 実体は ControllerLimits へ移した。以下は同じ値を指す別名（薄いシム）。
-        // TODO(Phase7-Step10): 利用箇所（約 250 件）を ControllerLimits へ移したら、この別名を削除する。
-        public const int MAX_DS4_CONTROLLER_COUNT = ControllerLimits.MaxControllerCount;
-        public const int TEST_PROFILE_ITEM_COUNT = ControllerLimits.TestProfileItemCount;
-        public const int TEST_PROFILE_INDEX = ControllerLimits.TestProfileIndex;
-        public const int OLD_XINPUT_CONTROLLER_COUNT = ControllerLimits.OldXInputControllerCount;
-        public const byte DS4_STICK_AXIS_MIDPOINT = ControllerLimits.StickAxisMidpoint;
+        // Phase7-Step10a W4: コントローラー数などの定数（MAX_DS4_CONTROLLER_COUNT／TEST_PROFILE_ITEM_COUNT／TEST_PROFILE_INDEX／
+        // OLD_XINPUT_CONTROLLER_COUNT／DS4_STICK_AXIS_MIDPOINT）は ControllerLimits へ移し、別名を削除した。
 
         public static CultureInfo configFileDecimalCulture = new CultureInfo("en-US"); // Loading and Saving decimal values in configuration files should always use en-US decimal format (ie. dot char as decimal separator char, not comma char)
 
@@ -190,8 +185,7 @@ namespace DS4Windows
 
         public const int CONFIG_VERSION = 5;
         public const int APP_CONFIG_VERSION = 2;
-        public const string ASSEMBLY_RESOURCE_PREFIX = "pack://application:,,,/DS4Windows;";
-        public const string RESOURCES_PREFIX = "/DS4Windows;component/Resources";
+        // Phase7-Step10a W3・W4: 資源パスの定数（ASSEMBLY_RESOURCE_PREFIX／RESOURCES_PREFIX）は画面側の ResourcePaths へ移し、削除した。
         // Need to add additional probing path in code starting with .NET 6.
         public const string PROBING_PATH = "Lang";
         public const string LANGUAGE_ASSEMBLY_NAME = "DS4Windows.resources.dll";
@@ -1035,11 +1029,7 @@ namespace DS4Windows
             return Color.FromArgb((int)R, (int)G, (int)B);
         }
 
-        // Phase7-Step9 W2（Q2＝A）: 実体は NumericUtil.Clamp へ移した。残りの呼び出し元（DS4State／BezierCurve／Mouse／MouseCursor）は Step10 で移す。
-        public static double Clamp(double min, double value, double max)
-        {
-            return NumericUtil.Clamp(min, value, max);
-        }
+        // Phase7-Step10a W4: Global.Clamp は NumericUtil.Clamp へ移し、削除した。
 
         private static int ClampInt(int min, int value, int max)
         {

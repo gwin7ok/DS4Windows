@@ -806,8 +806,8 @@ namespace DS4Windows
                 double rotation = msinfo.rotationRad;
                 double sinAngle = Math.Sin(rotation), cosAngle = Math.Cos(rotation);
                 int tempX = deltaX, tempY = deltaY;
-                deltaX = (int)Global.Clamp(-DS4Touchpad.RESOLUTION_X_MAX, tempX * cosAngle - tempY * sinAngle, DS4Touchpad.RESOLUTION_X_MAX);
-                deltaY = (int)Global.Clamp(-DS4Touchpad.RESOLUTION_Y_MAX, tempX * sinAngle + tempY * cosAngle, DS4Touchpad.RESOLUTION_Y_MAX);
+                deltaX = (int)NumericUtil.Clamp(-DS4Touchpad.RESOLUTION_X_MAX, tempX * cosAngle - tempY * sinAngle, DS4Touchpad.RESOLUTION_X_MAX);
+                deltaY = (int)NumericUtil.Clamp(-DS4Touchpad.RESOLUTION_Y_MAX, tempX * sinAngle + tempY * cosAngle, DS4Touchpad.RESOLUTION_Y_MAX);
             }
 
             //double tempDouble = s.elapsedTime * 250.0; // Base default speed on 4 ms

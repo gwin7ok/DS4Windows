@@ -105,7 +105,7 @@ namespace DS4WindowsTests
 
         private static RecordBoxViewModel CreateViewModel(ProfileSettingsService settings, int targetDevice)
         {
-            return new RecordBoxViewModel(Global.TEST_PROFILE_INDEX, new DS4ControlSettings(DS4Controls.Cross),
+            return new RecordBoxViewModel(DS4Windows.ControllerLimits.TestProfileIndex, new DS4ControlSettings(DS4Controls.Cross),
                 false, true, settings, null, targetDevice);
         }
 
@@ -116,7 +116,7 @@ namespace DS4WindowsTests
 
             var vm = CreateViewModel(settings, TargetSlot);
 
-            Assert.Equal(Global.TEST_PROFILE_INDEX, vm.DeviceNum);
+            Assert.Equal(DS4Windows.ControllerLimits.TestProfileIndex, vm.DeviceNum);
             Assert.Equal(TargetSlot, vm.TargetDevice);
             Assert.Equal(TouchpadOutMode.Passthru, settings.TouchOutMode[TargetSlot]);
             // 編集スロットとほかのスロットの設定は変えない
@@ -152,7 +152,7 @@ namespace DS4WindowsTests
         {
             var settings = CreateIsolatedSettings();
 
-            var vm = new RecordBoxViewModel(Global.TEST_PROFILE_INDEX, new DS4ControlSettings(DS4Controls.Cross),
+            var vm = new RecordBoxViewModel(DS4Windows.ControllerLimits.TestProfileIndex, new DS4ControlSettings(DS4Controls.Cross),
                 false, true, settings, null);
 
             Assert.Equal(-1, vm.TargetDevice);

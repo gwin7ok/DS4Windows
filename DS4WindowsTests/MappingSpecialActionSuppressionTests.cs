@@ -93,7 +93,7 @@ namespace DS4WindowsTests
         [Fact]
         public void SuppressedTriggerButtons_ArrayIsSizedForAllDevices()
         {
-            Assert.Equal(Global.MAX_DS4_CONTROLLER_COUNT, Mapper.suppressedTriggerButtons.Length);
+            Assert.Equal(DS4Windows.ControllerLimits.MaxControllerCount, Mapper.suppressedTriggerButtons.Length);
             for (int i = 0; i < Mapper.suppressedTriggerButtons.Length; i++)
             {
                 Assert.NotNull(Mapper.suppressedTriggerButtons[i]);

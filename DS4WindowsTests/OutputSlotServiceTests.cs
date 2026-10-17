@@ -79,7 +79,7 @@ namespace DS4WindowsTests
         {
             var service = TestRepositoryFactory.CreateOutputSlotService();
             Assert.Same(service.OutDevTypeTemp, service.OutDevTypeTemp);
-            Assert.Equal(Global.TEST_PROFILE_ITEM_COUNT, service.OutDevTypeTemp.Length);
+            Assert.Equal(DS4Windows.ControllerLimits.TestProfileItemCount, service.OutDevTypeTemp.Length);
             Assert.All(service.OutDevTypeTemp, t => Assert.Equal(OutContType.X360, t));
         }
 
@@ -88,7 +88,7 @@ namespace DS4WindowsTests
         {
             var service = TestRepositoryFactory.CreateOutputSlotService();
             Assert.Same(service.ActiveOutDevType, service.ActiveOutDevType);
-            Assert.Equal(Global.TEST_PROFILE_ITEM_COUNT, service.ActiveOutDevType.Length);
+            Assert.Equal(DS4Windows.ControllerLimits.TestProfileItemCount, service.ActiveOutDevType.Length);
             Assert.All(service.ActiveOutDevType, t => Assert.Equal(OutContType.None, t));
         }
 

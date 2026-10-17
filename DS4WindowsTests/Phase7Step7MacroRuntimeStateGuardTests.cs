@@ -43,7 +43,7 @@ namespace DS4WindowsTests
             Assert.Equal(52, state.MacroDone.Length);
             Assert.Equal(52, state.DispatchInFlight.Length);
             Assert.Equal(26, state.MacroControl.Length);
-            Assert.Equal(DS4Windows.Global.MAX_DS4_CONTROLLER_COUNT, state.TaskQueue.Length);
+            Assert.Equal(DS4Windows.ControllerLimits.MaxControllerCount, state.TaskQueue.Length);
             Assert.All(state.TaskQueue, q => Assert.NotNull(q));
 
             // 参照は安定（再代入されない）

@@ -38,7 +38,7 @@ namespace DS4WindowsTests
         public void NewInstance_HasTheSameInitialValuesAsTheOldStaticFields()
         {
             var state = new StickMotionState();
-            int count = Global.MAX_DS4_CONTROLLER_COUNT;
+            int count = DS4Windows.ControllerLimits.MaxControllerCount;
 
             Assert.Equal(count, state.GyroStickX.Length);
             Assert.Equal(count, state.GyroStickY.Length);

@@ -22,8 +22,8 @@ namespace DS4WindowsTests
             var os = System.Environment.OSVersion.Version;
             bool win8OrGreater = os.Major > 6 || (os.Major == 6 && os.Minor >= 2);
             int expected = win8OrGreater
-                ? Global.MAX_DS4_CONTROLLER_COUNT
-                : Global.OLD_XINPUT_CONTROLLER_COUNT;
+                ? DS4Windows.ControllerLimits.MaxControllerCount
+                : DS4Windows.ControllerLimits.OldXInputControllerCount;
 
             Assert.Equal(expected, _environment.ControllerSlotLimit);
         }
@@ -33,8 +33,8 @@ namespace DS4WindowsTests
         {
             int limit = _environment.ControllerSlotLimit;
 
-            Assert.True(limit >= Global.OLD_XINPUT_CONTROLLER_COUNT);
-            Assert.True(limit <= Global.MAX_DS4_CONTROLLER_COUNT);
+            Assert.True(limit >= DS4Windows.ControllerLimits.OldXInputControllerCount);
+            Assert.True(limit <= DS4Windows.ControllerLimits.MaxControllerCount);
         }
 
         [Fact]
@@ -50,7 +50,7 @@ namespace DS4WindowsTests
         {
             // EnvironmentService と ControlService の互換シムは EXPANDED_CONTROLLER_COUNT で判定するため、
             // Global 側の最大値と食い違っていないことを固定する。
-            Assert.Equal(Global.MAX_DS4_CONTROLLER_COUNT, ControlService.EXPANDED_CONTROLLER_COUNT);
+            Assert.Equal(DS4Windows.ControllerLimits.MaxControllerCount, ControlService.EXPANDED_CONTROLLER_COUNT);
         }
 
         [Fact]

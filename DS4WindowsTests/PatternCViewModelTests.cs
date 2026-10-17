@@ -103,19 +103,19 @@ namespace DS4WindowsTests
             Assert.NotNull(factory);
 
             var outputSlotService = DS4WinWPF.AppHost.GetService<IOutputSlotService>();
-            OutContType savedOutDevTypeTemp = outputSlotService.OutDevTypeTemp[Global.TEST_PROFILE_INDEX];
+            OutContType savedOutDevTypeTemp = outputSlotService.OutDevTypeTemp[DS4Windows.ControllerLimits.TestProfileIndex];
             try
             {
                 // CURRENT_DS4_CONTROLLER_LIMIT は 4 または 8 のため、どちらでも範囲内の 1 を使う
-                var vm = factory.CreateProfileSettingsViewModel(Global.TEST_PROFILE_INDEX, 1);
+                var vm = factory.CreateProfileSettingsViewModel(DS4Windows.ControllerLimits.TestProfileIndex, 1);
                 Assert.NotNull(vm);
-                Assert.Equal(Global.TEST_PROFILE_INDEX, vm.Device);
+                Assert.Equal(DS4Windows.ControllerLimits.TestProfileIndex, vm.Device);
                 Assert.Equal(1, vm.TargetDevice);
                 Assert.Equal(1, vm.FuncDevNum);
             }
             finally
             {
-                outputSlotService.OutDevTypeTemp[Global.TEST_PROFILE_INDEX] = savedOutDevTypeTemp;
+                outputSlotService.OutDevTypeTemp[DS4Windows.ControllerLimits.TestProfileIndex] = savedOutDevTypeTemp;
             }
         }
 
@@ -153,20 +153,20 @@ namespace DS4WindowsTests
             // CURRENT_DS4_CONTROLLER_LIMIT は 4 または 8 のため、どちらでも範囲内の 1 を使う
             const int targetSlot = 1;
             TouchpadOutMode savedTargetMode = profileSettings.TouchOutMode[targetSlot];
-            TouchpadOutMode savedEditSlotMode = profileSettings.TouchOutMode[Global.TEST_PROFILE_INDEX];
+            TouchpadOutMode savedEditSlotMode = profileSettings.TouchOutMode[DS4Windows.ControllerLimits.TestProfileIndex];
             RecordBoxViewModel vm = null;
             try
             {
                 profileSettings.TouchOutMode[targetSlot] = TouchpadOutMode.Mouse;
-                profileSettings.TouchOutMode[Global.TEST_PROFILE_INDEX] = TouchpadOutMode.Mouse;
+                profileSettings.TouchOutMode[DS4Windows.ControllerLimits.TestProfileIndex] = TouchpadOutMode.Mouse;
 
-                vm = factory.CreateRecordBoxViewModel(Global.TEST_PROFILE_INDEX,
+                vm = factory.CreateRecordBoxViewModel(DS4Windows.ControllerLimits.TestProfileIndex,
                     new DS4ControlSettings(DS4Controls.Cross), true, false, targetSlot);
                 Assert.NotNull(vm);
-                Assert.Equal(Global.TEST_PROFILE_INDEX, vm.DeviceNum);
+                Assert.Equal(DS4Windows.ControllerLimits.TestProfileIndex, vm.DeviceNum);
                 Assert.Equal(targetSlot, vm.TargetDevice);
                 Assert.Equal(TouchpadOutMode.Passthru, profileSettings.TouchOutMode[targetSlot]);
-                Assert.Equal(TouchpadOutMode.Mouse, profileSettings.TouchOutMode[Global.TEST_PROFILE_INDEX]);
+                Assert.Equal(TouchpadOutMode.Mouse, profileSettings.TouchOutMode[DS4Windows.ControllerLimits.TestProfileIndex]);
 
                 vm.RevertControlsSettings();
                 Assert.Equal(TouchpadOutMode.Mouse, profileSettings.TouchOutMode[targetSlot]);
@@ -175,7 +175,7 @@ namespace DS4WindowsTests
             {
                 vm?.RevertControlsSettings();
                 profileSettings.TouchOutMode[targetSlot] = savedTargetMode;
-                profileSettings.TouchOutMode[Global.TEST_PROFILE_INDEX] = savedEditSlotMode;
+                profileSettings.TouchOutMode[DS4Windows.ControllerLimits.TestProfileIndex] = savedEditSlotMode;
             }
         }
 

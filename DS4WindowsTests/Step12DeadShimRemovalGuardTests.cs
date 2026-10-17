@@ -71,6 +71,9 @@ namespace DS4WindowsTests
             "getDS4ControlsByName", "getX360ControlsByName",
             // デバウンス時間の通知経路（案 A の是正後に不要）
             "DebouncingMsHasChanged", "DebouncingMsChanged",
+            // Phase7-Step10a W4（定数 5 つ・資源パスの定数 2 つ・Clamp。移し先は ControllerLimits／ResourcePaths／NumericUtil）
+            "MAX_DS4_CONTROLLER_COUNT", "TEST_PROFILE_ITEM_COUNT", "TEST_PROFILE_INDEX", "OLD_XINPUT_CONTROLLER_COUNT",
+            "DS4_STICK_AXIS_MIDPOINT", "ASSEMBLY_RESOURCE_PREFIX", "RESOURCES_PREFIX", "Clamp",
         };
 
         private static readonly string[] RemovedFiles =
@@ -103,8 +106,8 @@ namespace DS4WindowsTests
         // 防壁 3（Pre-Host）、防壁 4（定数・純粋計算）、防壁 5（ViGEm クライアント依存）にあたる Global のメンバー
         private static readonly string[] ProtectedInGlobal =
         {
-            "MAX_DS4_CONTROLLER_COUNT", "TEST_PROFILE_ITEM_COUNT", "TEST_PROFILE_INDEX", "ASSEMBLY_RESOURCE_PREFIX",
-            "RESOURCES_PREFIX", "DS4_STICK_AXIS_MIDPOINT", "Clamp", "getTransitionedColor",
+            // Phase7-Step10a W4: 定数 5 つ・資源パスの定数 2 つ・Clamp は ControllerLimits／ResourcePaths／NumericUtil へ移し、Global から削除した
+            "getTransitionedColor",
             // Phase7-Step4 W3: multisavespots／FindConfigLocation は PathService へ移した（Phase7Step4PathServiceGuardTests で確認）
             "appdatapath", "LogMaxArchiveFiles", "LogMinLevel", "SetCulture",
             // Phase7-Step4 W1: ViGEmBus の調べ物（RefreshViGEmBusInfo／IsRunningSupportedViGEmBus／vigembusVersion／vigemInstalled）は

@@ -30,7 +30,8 @@ namespace DS4WindowsTests
             // Phase7-Step5 W2: Program.rootHub を App のフィールド _controlService に置き換え（12 → 0）
             // Phase7-Step5 W4: App の AppHost.GetService は ResolvePostHostService の 1 件だけ（4 → 1）
             ["DS4Windows/App.xaml.cs"] = (0, 1, 0),
-            ["DS4Windows/BezierCurveEditor/BezierCurve.cs"] = (0, 0, 1),
+            // Phase7-Step10a W4: Global.Clamp の残りの呼び出し元を NumericUtil.Clamp に替えた（BezierCurve 1、DS4State 4、Mouse 2、MouseCursor 2 → すべて 0）
+            ["DS4Windows/BezierCurveEditor/BezierCurve.cs"] = (0, 0, 0),
             // Phase6-Step10b W2: DS4Windows.AppHost（互換ラッパー）を DI/Compat/AppHost.cs へ分離。件数を引き継いだ（4＝2＋2。合計は不変）
             // Phase7-Step9 W1: 互換ラッパー（DI/Compat/AppHost.cs）を削除（呼び出し元 0 件。AppHost 合計 5 → 4）
             ["DS4Windows/DI/AppHost.cs"] = (0, 2, 0),
@@ -60,8 +61,8 @@ namespace DS4WindowsTests
             ["DS4Windows/DS4Control/StickMotionState.cs"] = (0, 0, 0),
             ["DS4Windows/DS4Control/MacroRuntimeState.cs"] = (0, 0, 0),
             ["DS4Windows/DS4Control/SyntheticInputState.cs"] = (0, 0, 0),
-            ["DS4Windows/DS4Control/Mouse.cs"] = (0, 0, 2),
-            ["DS4Windows/DS4Control/MouseCursor.cs"] = (0, 0, 2),
+            ["DS4Windows/DS4Control/Mouse.cs"] = (0, 0, 0),
+            ["DS4Windows/DS4Control/MouseCursor.cs"] = (0, 0, 0),
             // Phase7-Step4 W1: fakerInputInstalled を EnvironmentService の状態に切り替え（1 → 0）
             ["DS4Windows/DS4Control/OutputKBM/VirtualKBMFactory.cs"] = (0, 0, 0),
             ["DS4Windows/DS4Control/OutputSlotPersist.cs"] = (0, 0, 1),
@@ -147,7 +148,7 @@ namespace DS4WindowsTests
             // Phase6-Step10b W4: DS4Sixaxis.cs は DS4SixAxis.cs へ改名（型名に合わせた大文字・小文字の変更。Dictionary は大文字・小文字を区別する）
             // Phase7-Step5 W1: DS3 のジャイロトリガーの判定を関数の注入にし、Program.rootHub の参照を削除（1 → 0）
             ["DS4Windows/DS4Library/DS4SixAxis.cs"] = (0, 0, 1),
-            ["DS4Windows/DS4Library/DS4State.cs"] = (0, 0, 4),
+            ["DS4Windows/DS4Library/DS4State.cs"] = (0, 0, 0),
             ["DS4Windows/HidLibrary/HidDevices.cs"] = (0, 0, 2),
         };
 

@@ -107,7 +107,7 @@ namespace DS4WindowsTests
 
                 deviceState.ResetConnectionFlags();
 
-                for (int i = 0; i < Global.TEST_PROFILE_ITEM_COUNT; i++)
+                for (int i = 0; i < DS4Windows.ControllerLimits.TestProfileItemCount; i++)
                 {
                     Assert.True(deviceState.IsFirstConnection(i));
                     Assert.True(Global.store.firstConnectionAfterStartup[i]);

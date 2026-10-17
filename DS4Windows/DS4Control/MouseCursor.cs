@@ -340,8 +340,8 @@ namespace DS4Windows
                 double rotation = relMouseSettings.rotation;
                 double sinAngle = Math.Sin(rotation), cosAngle = Math.Cos(rotation);
                 int tempX = dx, tempY = dy;
-                dx = (int)Global.Clamp(-DS4Touchpad.RESOLUTION_X_MAX, tempX * cosAngle - tempY * sinAngle, DS4Touchpad.RESOLUTION_X_MAX);
-                dy = (int)Global.Clamp(-DS4Touchpad.RESOLUTION_Y_MAX, tempX * sinAngle + tempY * cosAngle, DS4Touchpad.RESOLUTION_Y_MAX);
+                dx = (int)NumericUtil.Clamp(-DS4Touchpad.RESOLUTION_X_MAX, tempX * cosAngle - tempY * sinAngle, DS4Touchpad.RESOLUTION_X_MAX);
+                dy = (int)NumericUtil.Clamp(-DS4Touchpad.RESOLUTION_Y_MAX, tempX * sinAngle + tempY * cosAngle, DS4Touchpad.RESOLUTION_Y_MAX);
             }
 
             double tempAngle = Math.Atan2(-dy, dx);

@@ -85,9 +85,9 @@ namespace DS4WindowsTests
         {
             using var scope = new StaticStateScope();
 
-            var vm = CreateViewModel(Global.TEST_PROFILE_INDEX, TargetSlot);
+            var vm = CreateViewModel(DS4Windows.ControllerLimits.TestProfileIndex, TargetSlot);
 
-            Assert.Equal(Global.TEST_PROFILE_INDEX, vm.Device);
+            Assert.Equal(DS4Windows.ControllerLimits.TestProfileIndex, vm.Device);
             Assert.Equal(TargetSlot, vm.TargetDevice);
             Assert.Equal(TargetSlot, vm.FuncDevNum);
         }
@@ -97,7 +97,7 @@ namespace DS4WindowsTests
         {
             using var scope = new StaticStateScope();
 
-            var vm = CreateViewModel(Global.TEST_PROFILE_INDEX, -1);
+            var vm = CreateViewModel(DS4Windows.ControllerLimits.TestProfileIndex, -1);
 
             Assert.Equal(-1, vm.TargetDevice);
             // プロファイル一覧から開いた場合の従来動作（ランブルテスト等はコントローラー0）を維持する
@@ -109,7 +109,7 @@ namespace DS4WindowsTests
         {
             using var scope = new StaticStateScope();
 
-            var vm = ProfileSettingsViewModelTestFactory.Create(Global.TEST_PROFILE_INDEX, TestRepositoryFactory.CreateProfileSettingsService(),
+            var vm = ProfileSettingsViewModelTestFactory.Create(DS4Windows.ControllerLimits.TestProfileIndex, TestRepositoryFactory.CreateProfileSettingsService(),
                 outputSlotService: TestRepositoryFactory.CreateOutputSlotService());
 
             Assert.Equal(-1, vm.TargetDevice);
@@ -123,7 +123,7 @@ namespace DS4WindowsTests
             ResetForcedColorArrays();
 
             int outOfRange = ControlService.CURRENT_DS4_CONTROLLER_LIMIT;
-            var vm = CreateViewModel(Global.TEST_PROFILE_INDEX, outOfRange);
+            var vm = CreateViewModel(DS4Windows.ControllerLimits.TestProfileIndex, outOfRange);
 
             Assert.Equal(0, vm.FuncDevNum);
 
@@ -141,7 +141,7 @@ namespace DS4WindowsTests
             ResetForcedColorArrays();
 
             // 編集スロットに 8 を渡しても、プレビューは targetDevice に対して行われる
-            var vm = CreateViewModel(Global.TEST_PROFILE_INDEX, TargetSlot);
+            var vm = CreateViewModel(DS4Windows.ControllerLimits.TestProfileIndex, TargetSlot);
 
             vm.StartForcedColor(Color.FromRgb(10, 20, 30));
             Assert.True(DS4LightBar.forcelight[TargetSlot]);
@@ -170,7 +170,7 @@ namespace DS4WindowsTests
             using var scope = new StaticStateScope();
             ResetForcedColorArrays();
 
-            var vm = CreateViewModel(Global.TEST_PROFILE_INDEX, -1);
+            var vm = CreateViewModel(DS4Windows.ControllerLimits.TestProfileIndex, -1);
 
             vm.StartForcedColor(Colors.Red);
             vm.UpdateForcedColor(Colors.Blue);
