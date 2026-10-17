@@ -470,3 +470,8 @@ classDiagram
 %%   - `OutputSlotService` が `OutDevTypeTemp`／`ActiveOutDevType` の配列の実体を持つ（IOutputSlotService の契約は変更なし）。
 %%   - `BackingStore` に `ActiveOutDevType`（OutContType[]、プロパティ注入。Step10 でコンストラクター注入へ）を追加。
 %%   - 削除: `Global.outDevTypeTemp`、`Global.activeOutDevType`。
+%%
+%% Phase7-Step7（2026-10-17）: Mapping の状態の保持クラスと、トップレベルへ出した型。
+%%   - 新設: SyntheticInputState（globalState／deviceState／syncStateLock を保持）、MacroRuntimeState、StickMotionState。いずれも Shared（暫定の静的な窓口）を持ち、DI の Singleton としても登録される。
+%%   - トップレベルへ移した型（旧 Mapping の入れ子）: SyntheticState、PostMapStickData、FlickStickMappingData、TwoStageTriggerMappingData、DeltaSettingsProcessor、DeltaSettingsProcessorGroup、Click。
+%%   - 新設: ActionsLoadedRuntimeReset（Actions.xml 読み込み後のリセットの購読者。静的クラス）、BackingStore.ActionsLoaded（イベント）。依存方向: BackingStore → （イベント）→ ActionsLoadedRuntimeReset → 保持クラス。BackingStore から Mapping への参照はない。

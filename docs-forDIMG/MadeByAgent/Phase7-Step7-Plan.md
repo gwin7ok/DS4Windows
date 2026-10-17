@@ -3,7 +3,7 @@
 作成日: 2026-10-17  
 対象ブランチ: `For-DI-migration-work`  
 上位計画: `Phase7-Plan.md` §2（Step7〜9: `Mapping` の instance 化の第 1 段）、`Phase7-Residual-Ledger.md`  
-状態: 調査完了・承認待ち（Q1〜Q6 の判断を待つ）。実装は未着手。
+状態: 実装完了（Q1〜Q6 はすべて推奨どおり承認。W1〜W4 のビルド・テスト成功、W5 は文書。実機確認 U-17 は未）。結果は `Phase7-Step7-Completion-Report.md`。
 
 ---
 

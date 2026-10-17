@@ -92,3 +92,14 @@
 - 注意（循環）: `BackingStore` の登録の中で `IOutputSlotService` を解決してはならない（`IOutputSlotStore` → `IPathService` → `BackingStore` と循環し、実行時にスタックオーバーフローになる）。W1 で一度発生し、受け渡しを `IOutputSlotService` の登録側へ移して解消した。`Phase7Step6OutputTypeOwnershipGuardTests` が固定している。
 - 持ち越し: `Global.outputKBMHandler`／`outputKBMMapping`（`OutputKBMHandlerAdapter`、`OutputKBMHandlerLifecycle`、`SyntheticDispatcher`、`Mapping` のフォールバック）は、Q4＝A により Step7〜9（`Mapping` の instance 化）で扱う。`IOutputSlotService.OutputSlotChanged`（購読者 0 件）は、Q5＝A により温存し、TODO の再判断先を Step10 へ更新した。`BackingStore.ActiveOutDevType` のコンストラクター注入は Step10。
 - 実機確認: U-16（未）。
+
+## 10. Phase7-Step7 で更新した台帳（2026-10-17）
+
+- `Global.*`: 438 → **432**（`Mapping.cs` 52 → 43、新ファイル `SyntheticInputState.cs`／`MacroRuntimeState.cs`／`StickMotionState.cs` が各 1）。`AppHost.GetService|Services` 11、`Program.rootHub` 0、`ServiceProviderHolder` 22 は変更なし。Phase7 開始時（733）からの累計は −301。基準値は `Step10FourGlobalRatchetGuardTests`（合計 0／11／432）。
+- 新設（状態の保持クラス。いずれも `Shared`＝暫定の静的な窓口＋DI の Singleton 登録。Step8 で `Shared` を削除）: `SyntheticInputState`（`globalState`／`deviceState`／`syncStateLock`）、`MacroRuntimeState`（`macrodone`／`macroDispatchInFlight`／`macroDispatchLock`／`macroControl`／`macroCount`／`macroTaskQueue`）、`StickMotionState`（`gyroStickX`／`gyroStickY`／`mapStickActionData`／`flickMappingData`／`l2/r2TwoStageMappingData`／`wheelFilters`／`deltaAccelProcessors`）。`Mapping` の同名メンバーは、保持クラスへの転送（状態は持たない。TODO は Step8）。
+- トップレベルへ出した型（Q5＝A。中身は変えていない）: `SyntheticState`、`PostMapStickData`、`FlickStickMappingData`、`TwoStageTriggerMappingData`、`DeltaSettingsProcessor`、`DeltaSettingsProcessorGroup`、`Click`。
+- 逆参照の解消（Q4＝A）: `BackingStore` から `Mapping` への参照を 0 にした。`BackingStore.ActionsLoaded` イベントを `LoadActions` の末尾で発行し、`ServiceRegistration` が購読者 `ActionsLoadedRuntimeReset.Reset`（順序とログは従来どおり）を登録する。
+- 特性化テスト（Q1＝A）: `MapCustom`（素通し、ボタン→ボタン、軸の向き→ボタン、トリガー→ボタン、ボタン→マウスボタン）、`Commit`（左・右・中ボタンの押下／保持／解放、Sync）、`MapClick`、`getBool*Mapping`、`HandleDeviceDisconnect`。範囲外: ボタン→キー（`ActionManager` 経由。Phase8）、ホイール（実時間 150ms の連続送出）、マクロ、ジャイロ、フリックスティック、タッチ。
+- 計画との差: `ControlService` と `Mouse` は、保持クラスを注入ではなく `Shared` から得る（`ControlService` のコンストラクター変更によるテストの改修を避けるため。Step8 で `Mapping` の instance 化と同時に注入へ）。`stickValueHistory`／`lastStickAxisValues`／`outSqrStk`／`lastWheelGyroValues` など `Mapping` 内部だけで使う状態は、Step8 まで `Mapping` に残した。
+- 持ち越し: `Mapping` の `profileSettings`／`profileApplication`／`VirtualKBM` の束縛、`AppHost` 6・`ServiceProviderHolder` 5、`Global.outputKBMHandler`／`outputKBMMapping`（Q6＝A）、`Shared` の削除（Step8）。互換 `AppHost`、`Global` 定数参照 43、K3（`macroDispatchInFlight` の再設計）（Step9）。`Actions/` の `ServiceProviderHolder` 17（Phase8）。
+- 実機確認: U-17（未）。

@@ -212,3 +212,10 @@
 %% - 禁止: `BackingStore` の登録の中で `IOutputSlotService` を解決しない（`IOutputSlotStore` → `IPathService` → `BackingStore` の循環でスタックオーバーフロー）。
 %% - 持ち越し: `Global.outputKBMHandler`／`outputKBMMapping` は Step7〜9（`Mapping` の instance 化）で扱う。
 %% - 詳細は `Phase7-Step6-Plan.md`、`Phase7-Step6-Completion-Report.md`、台帳は `Phase7-Residual-Ledger.md` §9。
+%%
+%% Phase7-Step7（2026-10-17）: Mapping の静的な状態のうち、外から触られるものを保持クラスへ切り出した。
+%% - 保持クラス（Singleton。実体は各クラスの Shared と同じ instance を DI にも登録）: SyntheticInputState（合成キー・マウス入力の状態。globalState／deviceState／syncStateLock）、MacroRuntimeState（マクロの実行時状態。macrodone／二重実行防止のフラグとロック／macroControl／macroCount／macroTaskQueue）、StickMotionState（スティック・ジャイロ・トリガーの処理状態のうち外から触られるもの）。
+%% - Mapping の同名メンバーは保持クラスへの転送のみ（状態を持たない）。Mouse、ControlService、SyntheticDispatcher は保持クラスを直接使う。ホットパスでは、Mapping が型の初期化時に参照を 1 度だけ保持し、毎レポートの割り当てを増やさない。
+%% - Actions.xml の読み込み後のリセット: BackingStore.LoadActions が ActionsLoaded イベントを発行し、ServiceRegistration が登録した購読者 ActionsLoadedRuntimeReset.Reset が、合成状態・ActionManager のトグル状態・macrodone をリセットする（従来の順序とログのまま）。BackingStore は Mapping を参照しない。AppHost.CreateHost が複数回呼ばれても購読は 1 つ。
+%% - Step8 で Mapping が instance 化されたら、各保持クラスの Shared（暫定）を削除し、コンストラクター注入にする。
+%% - 詳細は Phase7-Step7-Plan.md、Phase7-Step7-Completion-Report.md、台帳は Phase7-Residual-Ledger.md §10。
