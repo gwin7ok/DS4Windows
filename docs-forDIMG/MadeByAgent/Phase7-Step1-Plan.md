@@ -3,7 +3,7 @@
 作成日: 2026-10-17  
 対象ブランチ: `For-DI-migration-work`  
 前提: `Phase7-0-Survey.md`（調査報告）。決定 D1〜D6 は、すべて推奨どおり承認済み（2026-10-17、§1）。  
-状態: **計画（承認待ち）。実装は、この計画書の承認後に Wave 単位で行う。**  
+状態: **実装完了（2026-10-17）。完了報告書: `Phase7-Step1-Completion-Report.md`。**  
 ルール: ビルド・テストビルド・テスト実行・コミットはユーザーが行う。エージェントはローカルファイルの編集のみ。
 
 ---
@@ -92,12 +92,12 @@
 - W4: ガードの基準値は、走査値と完全に一致させる（コメントや文字列の誤検出に注意）。
 
 ## 7. 完了判定チェックリスト
-- [ ] W1: `BackingStore` の孤立メソッド 10 名が削除され、`PostProcessLoad` が残っている。ラチェットの基準値が更新されている。
-- [ ] W2: `GetProfileActionIndexOf` が未検出で -1 を返す。`indexNext` が削除されている。テストが更新されている。
-- [ ] W3: 特性化テストが、修正前に失敗し、修正後に成功する。旧形式の経路のテストが成功する。U-10 がチェックリストに追記されている。
-- [ ] W4: `Phase7Step1ServiceLocatorRatchetGuardTests` が成功。`Phase7-Residual-Ledger.md` が作成されている。
-- [ ] `dotnet build` が警告 0・エラー 0。`DS4WindowsTests`／`StandaloneTests` の全件が成功。
-- [ ] `Phase7-Step1-Completion-Report.md` が作成されている（テスト数の増減、削除した名前、U-10 の結果を含む）。
+- [x] W1: `BackingStore` の孤立メソッド 10 名が削除され、`PostProcessLoad` が残っている。ラチェットの基準値が更新されている。
+- [x] W2: `GetProfileActionIndexOf` が未検出で -1 を返す。`indexNext` が削除されている。テストが更新されている。
+- [x] W3: 特性化テストが修正後に成功する（修正前の失敗は未検証。テストは修正と同時に提供した）。旧形式の経路のテストが成功する。U-10 がチェックリストに追記されている（実アプリでの確認は未実施）。
+- [x] W4: `Phase7Step1ServiceLocatorRatchetGuardTests` が成功。`Phase7-Residual-Ledger.md` が作成されている。
+- [x] `dotnet build` が警告 0・エラー 0。`DS4WindowsTests`／`StandaloneTests` の全件が成功。
+- [x] `Phase7-Step1-Completion-Report.md` が作成されている（テスト数の増減、削除した名前、U-10 の結果を含む）。
 
 ---
 
