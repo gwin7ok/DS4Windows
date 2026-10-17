@@ -161,8 +161,6 @@ namespace DS4Windows
 
         protected static BackingStore m_Config = new BackingStore();
         public static BackingStore store => m_Config;
-        protected static Int32 m_IdleTimeout = 600000;
-
         // Need to perform extra steps to check if DS4Windows is installed in a junction
         // directory (done with Scoop). Use real path when available
         public static string exelocation = new Func<string>(() =>
@@ -182,12 +180,8 @@ namespace DS4Windows
             return filePath;
         })();
         public static string exedirpath = Directory.GetParent(exelocation).FullName;
-        public static string exeFileName = Path.GetFileName(exelocation);
         public static FileVersionInfo fileVersion = FileVersionInfo.GetVersionInfo(exelocation);
         public static string exeversion = fileVersion.FileVersion;
-        public static ulong exeversionLong = (ulong)fileVersion.ProductMajorPart << 48 |
-            (ulong)fileVersion.ProductMinorPart << 32 | (ulong)fileVersion.ProductBuildPart << 16;
-        public static ulong fullExeVersionLong = exeversionLong | (ushort)fileVersion.ProductPrivatePart;
         public static bool IsWin8OrGreater()
         {
             bool result = false;
@@ -219,7 +213,6 @@ namespace DS4Windows
         public static bool firstRun = false;
         public static bool multisavespots = false;
         public static string appDataPpath = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) + "\\DS4Windows";
-        public static string localAppDataPpath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "DS4Windows");
         public static bool runHotPlug = false;
         // =========================================================================
         // Phase4-Step1: IProfileSettingsService DI シム (Strangler Fig 移行用)
@@ -533,19 +526,6 @@ namespace DS4Windows
                 AppLogger.LogTrace("[Legacy] Global.useDInputOnly setter accessed via static shim");
                 AppLogger.LogToGui("[Legacy] Global.useDInputOnly setter accessed via static shim", false, true);
                 ProfileSettingsServiceInstance.UseDInputOnlyArray = value;
-            }
-        }
-        public static bool[] linkedProfileCheck
-        {
-            get
-            {
-                return ProfileSettingsServiceInstance.LinkedProfileCheckArray;
-            }
-            set
-            {
-                AppLogger.LogTrace("[Legacy] Global.linkedProfileCheck setter accessed via static shim");
-                AppLogger.LogToGui("[Legacy] Global.linkedProfileCheck setter accessed via static shim", false, true);
-                ProfileSettingsServiceInstance.LinkedProfileCheckArray = value;
             }
         }
         public static bool[] touchpadActive
@@ -970,27 +950,6 @@ namespace DS4Windows
             var identity = WindowsIdentity.GetCurrent();
             var principal = new WindowsPrincipal(identity);
             return principal.IsInRole(WindowsBuiltInRole.Administrator);
-        }
-
-        public static bool CheckForDevice(string guid)
-        {
-            bool result = false;
-            Guid deviceGuid = Guid.Parse(guid);
-            NativeMethods.SP_DEVINFO_DATA deviceInfoData =
-                new NativeMethods.SP_DEVINFO_DATA();
-            deviceInfoData.cbSize =
-                System.Runtime.InteropServices.Marshal.SizeOf(deviceInfoData);
-
-            IntPtr deviceInfoSet = NativeMethods.SetupDiGetClassDevs(ref deviceGuid, null, 0,
-                NativeMethods.DIGCF_DEVICEINTERFACE);
-            result = NativeMethods.SetupDiEnumDeviceInfo(deviceInfoSet, 0, ref deviceInfoData);
-
-            if (deviceInfoSet.ToInt64() != NativeMethods.INVALID_HANDLE_VALUE)
-            {
-                NativeMethods.SetupDiDestroyDeviceInfoList(deviceInfoSet);
-            }
-
-            return result;
         }
 
         private class ViGEmBusInfo
@@ -1492,43 +1451,6 @@ namespace DS4Windows
             return Saved;
         }
 
-        public static event EventHandler<EventArgs> ControllerStatusChange; // called when a controller is added/removed/battery or touchpad mode changes/etc.
-        public static void ControllerStatusChanged(object sender)
-        {
-            if (ControllerStatusChange != null)
-                ControllerStatusChange(sender, EventArgs.Empty);
-        }
-
-        public static event EventHandler<BatteryReportArgs> BatteryStatusChange;
-        public static void OnBatteryStatusChange(object sender, int index, int level, bool charging)
-        {
-            if (BatteryStatusChange != null)
-            {
-                BatteryReportArgs args = new BatteryReportArgs(index, level, charging);
-                BatteryStatusChange(sender, args);
-            }
-        }
-
-        public static event EventHandler<ControllerRemovedArgs> ControllerRemoved;
-        public static void OnControllerRemoved(object sender, int index)
-        {
-            if (ControllerRemoved != null)
-            {
-                ControllerRemovedArgs args = new ControllerRemovedArgs(index);
-                ControllerRemoved(sender, args);
-            }
-        }
-
-        public static event EventHandler<DeviceStatusChangeEventArgs> DeviceStatusChange;
-        public static void OnDeviceStatusChanged(object sender, int index)
-        {
-            if (DeviceStatusChange != null)
-            {
-                DeviceStatusChangeEventArgs args = new DeviceStatusChangeEventArgs(index);
-                DeviceStatusChange(sender, args);
-            }
-        }
-
         public static event EventHandler<SerialChangeArgs> DeviceSerialChange;
         public static void OnDeviceSerialChange(object sender, int index, string serial)
         {
@@ -1569,10 +1491,6 @@ namespace DS4Windows
             get { return m_Config.useExclusiveMode; }
         } // -- Re-Enable Ex Mode Ends here
 
-        public static bool getUseExclusiveMode()
-        {
-            return m_Config.useExclusiveMode;
-        }
         public static DateTime LastChecked
         {
             set { m_Config.lastChecked = value; }
@@ -1640,12 +1558,6 @@ namespace DS4Windows
             get { return m_Config.swipeProfiles; }
         }
 
-        public static bool DS4Mapping
-        {
-            set { ProfileSettingsServiceInstance.DS4Mapping = value; }
-            get { return ProfileSettingsServiceInstance.DS4Mapping; }
-        }
-
         public static bool QuickCharge
         {
             set { m_Config.quickCharge = value; }
@@ -1664,11 +1576,6 @@ namespace DS4Windows
             set => m_Config.useAdvancedMoonlight = value;
         }
 
-        public static bool getQuickCharge()
-        {
-            return m_Config.quickCharge;
-        }
-
         public static bool CloseMini
         {
             set { m_Config.closeMini = value; }
@@ -1685,11 +1592,6 @@ namespace DS4Windows
         {
             set { m_Config.minToTaskbar = value; }
             get { return m_Config.minToTaskbar; }
-        }
-
-        public static bool GetMinToTaskbar()
-        {
-            return m_Config.minToTaskbar;
         }
 
         public static int FormWidth
@@ -1722,32 +1624,16 @@ namespace DS4Windows
             get { return m_Config.useLang; }
         }
 
-        public static bool DownloadLang
-        {
-            set { m_Config.downloadLang = value; }
-            get { return m_Config.downloadLang; }
-        }
-
         public static bool FlashWhenLate
         {
             set { m_Config.flashWhenLate = value; }
             get { return m_Config.flashWhenLate; }
         }
 
-        public static bool getFlashWhenLate()
-        {
-            return m_Config.flashWhenLate;
-        }
-
         public static int FlashWhenLateAt
         {
             set { m_Config.flashWhenLateAt = value; }
             get { return m_Config.flashWhenLateAt; }
-        }
-
-        public static int getFlashWhenLateAt()
-        {
-            return m_Config.flashWhenLateAt;
         }
 
         public static bool isUsingOSCServer()
@@ -1838,11 +1724,6 @@ namespace DS4Windows
         {
             get => m_Config.useUdpSmoothing;
             set => m_Config.useUdpSmoothing = value;
-        }
-
-        public static bool IsUsingUDPServerSmoothing()
-        {
-            return m_Config.useUdpSmoothing;
         }
 
         public static double UDPServerSmoothingMincutoff
@@ -3015,13 +2896,6 @@ namespace DS4Windows
             SpecialAction sA = null;
             m_Config.profileActionDict[device].TryGetValue(name, out sA);
             return sA;
-        }
-
-        // Normalize action name for comparisons (centralized helper)
-        public static string NormalizeActionName(string name)
-        {
-            if (name == null) return string.Empty;
-            return name.Trim();
         }
 
         public static void CalculateProfileActionDicts(int device)

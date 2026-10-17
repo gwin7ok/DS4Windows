@@ -21,14 +21,14 @@ namespace DS4WindowsTests
         [Fact]
         public void UseUdpServerSmoothing_SharesStateWithGlobal()
         {
-            bool original = Global.IsUsingUDPServerSmoothing();
+            bool original = Global.UseUDPSeverSmoothing;
             try
             {
                 Global.UseUDPSeverSmoothing = !original;
                 Assert.Equal(!original, _appSettings.UseUdpServerSmoothing);
 
                 _appSettings.UseUdpServerSmoothing = original;
-                Assert.Equal(original, Global.IsUsingUDPServerSmoothing());
+                Assert.Equal(original, Global.UseUDPSeverSmoothing);
             }
             finally
             {
@@ -39,14 +39,14 @@ namespace DS4WindowsTests
         [Fact]
         public void FlashWhenLateAt_SharesStateWithGlobal()
         {
-            int original = Global.getFlashWhenLateAt();
+            int original = Global.FlashWhenLateAt;
             try
             {
                 Global.FlashWhenLateAt = original + 7;
                 Assert.Equal(original + 7, _appSettings.FlashWhenLateAt);
 
                 _appSettings.FlashWhenLateAt = original + 3;
-                Assert.Equal(original + 3, Global.getFlashWhenLateAt());
+                Assert.Equal(original + 3, Global.FlashWhenLateAt);
             }
             finally
             {

@@ -29,7 +29,6 @@ namespace DS4WindowsTests
 
                 _appSettings.FlashWhenLate = original;
                 Assert.Equal(original, Global.FlashWhenLate);
-                Assert.Equal(Global.getFlashWhenLate(), _appSettings.FlashWhenLate);
             }
             finally
             {
