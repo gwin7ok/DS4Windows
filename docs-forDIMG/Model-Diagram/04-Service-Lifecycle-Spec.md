@@ -187,3 +187,10 @@
 %% - `ProfilePresetLoader`: `BackingStore` と `IProfileSettingsService` を注入で受け、10 種のプリセットを直接読み込む。`BackingStore` が `loggedInvalidActions` を持つ。
 %% - `Mapping.cs` の特殊アクションの切替は、`Global.ApplyProfile` ではなく `IProfileApplicationService.ApplyProfile`（`MappingAction`）を呼ぶ。
 %% - 詳細は `Phase7-Step3c-Plan.md`、`Phase7-Step3c-Completion-Report.md`、台帳は `Phase7-Residual-Ledger.md` §6。
+%%
+%% Phase7-Step4（2026-10-17）: 起動・終了の手順が変わった。
+%% - ブートストラップ: `Application_Startup` の最初（コンテナの構築より前）に、`PathService` と `EnvironmentService` を作る。保存場所の決定（`FindConfigLocation`）、ログのローテーション、ViGEmBus 情報の取得は、このインスタンスを使う。`AppHost.CreateHost(config, parser, pathService, environmentService)` が、同じインスタンスをコンテナへ登録する（Singleton のライフタイムは変わらない）。状態（保存先、初回起動、導入状態ほか）は両クラスの static で、どのインスタンスでも同じ値を見る。
+%% - `-driverinstall` 分岐: 設定の読込の前に、起動引数つきで `CreateHost` を明示的に呼ぶ（暗黙のホスト構築はなくなった）。`-reenableDevice` 分岐は、ホストを作らず、`IDs4DeviceRegistry`（`Ds4DeviceRegistryAdapter`）の契約を通す。
+%% - 終了: `CleanShutdown` の最後（`rootHub` の停止、設定の保存、コントローラーレジストリの破棄の後、ログのフラッシュの前）に `AppHost.Dispose()` を呼ぶ。Dispose の後は、`GetService` が暗黙にホストを作り直さない。
+%% - ViGEmBus／HidHide／FakerInput／OS の調べ物とその状態は `EnvironmentService` が持つ（`Global` から移管）。
+%% - 詳細は `Phase7-Step4-Plan.md`、`Phase7-Step4-Completion-Report.md`、台帳は `Phase7-Residual-Ledger.md` §7。

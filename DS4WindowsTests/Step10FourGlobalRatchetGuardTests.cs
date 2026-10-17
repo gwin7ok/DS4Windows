@@ -62,7 +62,8 @@ namespace DS4WindowsTests
             // Phase7-Step4 W1: IsUsingMinViGEm117333 の移管で Global.* 2 件を削除（24 → 22）
             // Phase7-Step4 W2: Global.Load の削除で AppHost.GetService を 1 件削除（4 → 3）
             // Phase7-Step4 W3: FindConfigLocation／SaveWhere の移管で Global.* 6 件を削除（22 → 16）
-            ["DS4Windows/DS4Control/Global.cs"] = (6, 3, 16),
+            // Phase7-Step4 W5: Program.rootHub の実数は 5（基準値 6 は過大だった）。合計 22 → 21
+            ["DS4Windows/DS4Control/Global.cs"] = (5, 3, 16),
             // Phase7-Step2 W4: INotificationService.NotificationsEnabled／FlashTaskbar の削除で Global.* 5 件を削除（6 → 1）
             ["DS4Windows/DS4Control/Services/AppNotificationService.cs"] = (0, 0, 0),
             // Phase7-Step4 W3: FirstRun は PathService の状態、RunHotPlug はインスタンスの状態にした（8 → 2）

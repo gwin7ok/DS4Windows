@@ -58,3 +58,18 @@
 - 静的呼び出しのまま残るもの（適用の本体の中）: `ActionManager.ClearAllEntries`／`ClearDeviceState`／`PreallocateForProfileApply`（→ Phase8）、`Mapping.ClearKeyButtonControllersForDevice`（→ Phase7-Step7〜9）。
 - `Global` に残る、プロファイルに関係する窓口: `tempprofileDistance`／`useTempProfile`／`DistanceProfiles`（`DS4LightBar`／`Mapping` が `using static` で参照。→ Step7〜9）、`ProfileSettingsServiceInstance`／`ProfileXmlStoreInstance`（フォールバックの Service Locator。→ Step4／Step5）。
 - 実機確認: U-13（未。ユーザー判断で先送り）。
+
+
+## 7. Phase7-Step4 で更新した台帳（2026-10-17）
+
+- `Global.*`: 488 → **452**（W1 −17、W3 −19。基準値は `Step10FourGlobalRatchetGuardTests`）。`AppHost` 40 → **39**（W2: `Global.Load` の削除）、`Program.rootHub` 22 → **21**（基準値 `Global.cs` の 6 が過大で、実数 5 に直した。コードの変更ではない）、`ServiceProviderHolder` 23 は変わらない。Phase7 開始時（733）からの累計は −281。
+- 削除した `Global` のメンバー: 環境の調べ物とその状態 27 名（W1。`EnvironmentService` が処理と状態を持つ）、`Load`（W2）、保存場所・実行ファイルの実体と処理 8 名（W3: `FindConfigLocation`／`SaveWhere`／`SaveDefault`／`firstRun`／`multisavespots`／`appDataPpath`／`runHotPlug`／`fileVersion`）。ガード: `Phase7Step4EnvironmentProbesGuardTests`、`Phase7Step4PathServiceGuardTests`、`Phase7Step4AppHostGuardTests`、`Phase7Step4StartupBootstrapGuardTests`。
+- 設計上の逸脱（計画書 §2 との差）: `PathService`／`EnvironmentService` の状態は、インスタンスではなく **static** で持つ。理由は、下位層（`BackingStore`／`LoggerHolder`）、既存テスト（`Global.appdatapath` を書き換えるもの約 46 件）、起動前の `App` が、同じプロセス全体の値を共有するため。ブートストラップのインスタンスは作り、`CreateHost` へ渡して同じインスタンスをコンテナへ登録する（インスタンスはどれも同じ状態を見る）。
+- `Global` に残した窓口（読み書き）: `appdatapath`／`exedirpath`／`exelocation`／`exeversion`（`PathService` の状態を指す。`BackingStore`／`LoggerHolder`／`Changelog` ほかが静的に読む。→ Step10 で `BackingStore` の永続化を切り出すときに、`IPathService` の注入に置き換えて廃止）。
+- `Global` に残した環境系: `IsAdministrator`／`AdminNeeded`／`GetInstanceIdFromDevicePath`／`CheckIfVirtualDevice`（`BackingStore`／`Util`／`DS4Devices` が呼ぶ。→ Step10）。
+- `AppHost`: `CreateHost(string[])` と `CreateHost()` の未使用引数を削除。`Dispose` を `CleanShutdown` で呼ぶ（Dispose の後は暗黙にホストを作り直さない）。`-driverinstall` 分岐は、設定の読込の前にホストを明示的に作る（K7-1 の残存経路の解消）。`CreationNote` は残す。
+- `IDs4DeviceRegistry.ReEnableDevice`: 接続した（`-reenableDevice` 分岐が契約経由で呼ぶ）。
+- `WelcomeDialog` の `loadConfig` 引数と、中の `FindConfigLocation`／`Load` の重複呼び出しを削除（呼び出し元が直前に同じ処理をしている）。
+- 既存の課題（回帰ではない。修正は未承認）: 起動直後のログローテーションとログの最小レベルは、`Profiles.xml` を読む前に参照されるため、`BackingStore` の既定値になる（2025-12-14 の `25d60ecb`／`c1cb918b` の機能から。DI 移行前から）。計画書 Q7＝A により記録のみ。直す場合は、ログ設定だけを先に読む手順を足す（起動順序の変更になる）。
+- 持ち越し: `Global.cs` の `*Instance` フォールバック（`new ProfileXmlStore(m_Config)`／`new AppNotificationService(m_Config)` ほか）は Step5 で Service Locator とあわせて削除する（Step4 では触っていない）。`AppHost.Dispose()` は呼ぶようになったが、`Program.rootHub` と Service Locator は Step5。
+- 実機確認: U-14（未）。

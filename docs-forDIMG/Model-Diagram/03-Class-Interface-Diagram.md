@@ -455,3 +455,8 @@ classDiagram
 %%   - `ProfileSlotApplier` → `IProfileApplicationService`（新しい依存）。`ProfileApplicationService` → `IProfileXmlStore`／`IProfileActionProvider`／`BackingStore`（新しい依存）。
 %%   - `IProfileApplicationService` に `ApplyProfileWithoutHalt` を追加。`IProfileRepository` から `LoadBlankProfile` を削除。`ProfileSettingsViewModel`／`ViewModelFactory` が `IProfilePresetLoader` を受け取る。
 %%   - `Global` から、プロファイル適用・プリセット・`SelectedProfileChanged` ほか 24 名を削除した（一覧は `Phase7Step3RemovedGlobalForwardersGuardTests`）。
+%%
+%% Phase7-Step4（2026-10-17）: 環境・保存場所の構成が変わった。
+%%   - `EnvironmentService` が ViGEmBus／HidHide／FakerInput の調べ物（`FindViGEmDeviceInfo`／`CheckForSysDevice` ほか）と導入状態の static 状態を持つ（`Global` の 27 名を削除）。`VirtualKBMFactory` は `EnvironmentService.FakerInputInstalledState` を読む。
+%%   - `PathService` が実行ファイルの情報、保存場所（`AppDataPathState`）、初回起動・保存場所が 2 か所の判定、`FindConfigLocation`／`SaveWhere`／空のプロファイル一覧の作成を持つ。`PathService(string appDataPath = null, BackingStore config = null)`（`SaveWhere` が `BackingStore` のファイルパスを更新するため）。`Global` の `appdatapath`／`exedirpath`／`exelocation`／`exeversion` は、`PathService` の状態を指す窓口として残る。
+%%   - `AppSettingsService.RunHotPlug` はインスタンスの状態、`FirstRun` は `PathService` の状態。`IDs4DeviceRegistry.ReEnableDevice` は `App`（`-reenableDevice` 分岐）が呼ぶ。`AppHost` は `CreateHost(string[])` を削除し、`CreateHost(config, parser, pathService, environmentService)` でブートストラップのインスタンスを登録する。
