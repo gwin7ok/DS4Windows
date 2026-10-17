@@ -98,3 +98,14 @@
 - [ ] W4: `Phase7Step1ServiceLocatorRatchetGuardTests` が成功。`Phase7-Residual-Ledger.md` が作成されている。
 - [ ] `dotnet build` が警告 0・エラー 0。`DS4WindowsTests`／`StandaloneTests` の全件が成功。
 - [ ] `Phase7-Step1-Completion-Report.md` が作成されている（テスト数の増減、削除した名前、U-10 の結果を含む）。
+
+---
+
+## 8. 実施記録
+
+### W1 の実施記録（2026-10-17、ビルド・テストはユーザーの実行待ち）
+- 削除（`BackingStore.cs`、純粋な削除 396 行、6,952 → 6,556 行）: `SaveOld`、`UsedSavedProfileString`、`RebuildProfileActionDicts`（と doc コメント）、`GetDS4Action`×2、`GetDS4Extra`、`GetDS4KeyType`、`GetDS4STrigger`×2、`GetGyroOutModeString`、`GetGyroOutModeType`、`UpdateDS4CLightbarMacro`。削除前に、本体・テスト・XAML の参照が 0 件であることを再確認した（`Step12DeadShimRemovalGuardTests` の文字列にある名前は `Global` 用の名簿で、影響なし）。
+- 残したもの: `PostProcessLoad`（W3 で接続）、`GetDS4CSetting`／`UpdateDS4CSetting`、孤立定数 8 件（Step10）。コメントアウト行（`//gyroOutMode[device] = GetGyroOutModeType(tempMode);`）は既存コメントのため触っていない。
+- ラチェット: `BackingStore.cs` の `Global.*` を 182 → 168（ラチェットと同じ数え方で再集計。`AppHost` 1、`rootHub` 0 は不変）。全域は `Global.*` 747 → 733。
+- ガード: 新規 `Phase7Step1DeadMethodGuardTests`（削除済み 10 名の再宣言禁止、`PostProcessLoad` ほか 3 名の存在確認）。
+- 検証待ち: ユーザーの `dotnet build`（警告 0）と `dotnet test`（全件成功）。
