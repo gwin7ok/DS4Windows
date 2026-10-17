@@ -71,7 +71,7 @@ namespace DS4WindowsTests
             // Phase7-Step8 W3: 購読者は instance（保持クラスをコンストラクターで受ける）。前回の購読者を外してから登録する
             Assert.Contains("store.ActionsLoaded -= _subscribedReset.Reset;", registration);
             Assert.Contains("store.ActionsLoaded += reset.Reset;", registration);
-            Assert.Contains("services.AddSingleton<SyntheticInputState>(_ => SyntheticInputState.Shared);", registration);
+            Assert.Contains("services.AddSingleton<SyntheticInputState>();", registration); // Phase7-Step8 W4: Shared は削除した
         }
 
         [Fact]

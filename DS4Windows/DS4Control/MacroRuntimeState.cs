@@ -18,10 +18,6 @@ namespace DS4Windows
         /// <summary>マクロが送出するボタン／スティック／トリガーの出力フラグの数（旧: <c>macroControl</c> の長さ）。</summary>
         public const int MacroControlLength = 26;
 
-        // TODO(Phase7-Step8、Q3＝A): 暫定の静的な窓口。Mapping（静的）がコンテナの外から同じ instance を得るために置く。
-        // Mapping の instance 化で、Mapping が本クラスをコンストラクターで受け取った時点で削除する。DI にも同じ instance を登録している。
-        public static MacroRuntimeState Shared { get; } = new MacroRuntimeState();
-
         /// <summary>コントロールごとの「マクロの実行を済ませた」フラグ（旧: <c>macrodone</c>）。</summary>
         public bool[] MacroDone { get; } = new bool[ControlArrayLength];
 

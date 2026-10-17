@@ -10,11 +10,6 @@ namespace DS4Windows
     /// </summary>
     public class SyntheticInputState
     {
-        // TODO(Phase7-Step8、Q3＝A): 暫定の静的な窓口。Mapping（静的）、Mouse、SyntheticDispatcher がコンテナの外から同じ instance を得るために置く。
-        // Mapping の instance 化で、Mapping が本クラスをコンストラクターで受け取り、SyntheticDispatcher も注入になった時点で削除する。
-        // DI にも同じ instance を Singleton として登録している（ServiceRegistration）。
-        public static SyntheticInputState Shared { get; } = new SyntheticInputState();
-
         public ReaderWriterLockSlim SyncStateLock { get; } = new ReaderWriterLockSlim();
 
         public SyntheticState GlobalState { get; set; } = new SyntheticState();

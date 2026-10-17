@@ -35,9 +35,9 @@ namespace DS4WindowsTests
         }
 
         [Fact]
-        public void Shared_HasTheSameShapeAsTheOldStaticFields()
+        public void NewInstance_HasTheSameShapeAsTheOldStaticFields()
         {
-            var state = MacroRuntimeState.Shared;
+            var state = new MacroRuntimeState();
 
             Assert.Equal(52, MacroRuntimeState.ControlArrayLength);
             Assert.Equal(52, state.MacroDone.Length);
@@ -48,8 +48,11 @@ namespace DS4WindowsTests
             Assert.All(state.TaskQueue, q => Assert.NotNull(q));
 
             // 参照は安定（再代入されない）
-            Assert.Same(state.MacroDone, MacroRuntimeState.Shared.MacroDone);
-            Assert.Same(state.TaskQueue, MacroRuntimeState.Shared.TaskQueue);
+            var macroDone = state.MacroDone;
+            var taskQueue = state.TaskQueue;
+            state.ClearMacroDone();
+            Assert.Same(macroDone, state.MacroDone);
+            Assert.Same(taskQueue, state.TaskQueue);
         }
 
         [Fact]
@@ -88,7 +91,7 @@ namespace DS4WindowsTests
             string registration = Read("DS4Windows/DI/ServiceRegistration.cs");
             if (registration == null) return;
 
-            Assert.Contains("services.AddSingleton<MacroRuntimeState>(_ => MacroRuntimeState.Shared);", registration);
+            Assert.Contains("services.AddSingleton<MacroRuntimeState>();", registration); // Phase7-Step8 W4: Shared は削除した
         }
     }
 }

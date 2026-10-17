@@ -33,12 +33,11 @@ namespace DS4Windows.DI
                 _subscribedReset = reset;
                 return store;
             });
-            // Phase7-Step7 W2（Q3＝A）: 合成入力の状態の保持クラス。静的な窓口（Shared）と同じ instance を登録する（Step8 で Shared を削除し、コンストラクター注入にする）
-            services.AddSingleton<SyntheticInputState>(_ => SyntheticInputState.Shared);
-            // Phase7-Step7 W3（Q3＝A）: マクロの実行時状態の保持クラス。同様に静的な窓口（Shared）と同じ instance を登録する
-            services.AddSingleton<MacroRuntimeState>(_ => MacroRuntimeState.Shared);
-            // Phase7-Step7 W4（Q3＝A）: スティック・ジャイロ・トリガーの処理状態の保持クラス。同様に静的な窓口（Shared）と同じ instance を登録する
-            services.AddSingleton<StickMotionState>(_ => StickMotionState.Shared);
+            // Phase7-Step8 W4: 状態の保持クラス 3 つ（合成入力・マクロ・スティック／ジャイロ／トリガー）。暫定の静的な窓口（Shared）は削除し、
+            // コンテナの Singleton を、利用者（Mapping、Mouse、ControlService ほか）がコンストラクターで受ける
+            services.AddSingleton<SyntheticInputState>();
+            services.AddSingleton<MacroRuntimeState>();
+            services.AddSingleton<StickMotionState>();
             // Phase7-Step8 W3: Actions.xml の読み込み後のリセットの購読者（保持クラスをコンストラクターで受ける）
             services.AddSingleton<ActionsLoadedRuntimeReset>();
             // Phase7-Step8 W3（Q6＝A）: 合成キーの送出。Actions サブシステム（静的な呼び出し）が使う橋渡し SyntheticDispatcher へ、作成時に 1 度だけ束縛する（Phase8 で削除）

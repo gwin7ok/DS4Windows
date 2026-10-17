@@ -18,7 +18,7 @@ namespace DS4WindowsTests
 
         public static SpecialActionRepository CreateSpecialActionRepository(BackingStore store = null, IPathService pathService = null)
         {
-            return new SpecialActionRepository(store ?? Global.store, pathService ?? new PathService(), SyntheticInputState.Shared);
+            return new SpecialActionRepository(store ?? Global.store, pathService ?? new PathService(), new SyntheticInputState());
         }
 
         public static ProfileRepository CreateProfileRepository(IProfileSettingsService settings = null,

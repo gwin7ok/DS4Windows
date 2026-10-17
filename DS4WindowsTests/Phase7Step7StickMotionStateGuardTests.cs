@@ -35,9 +35,9 @@ namespace DS4WindowsTests
         }
 
         [Fact]
-        public void Shared_HasTheSameInitialValuesAsTheOldStaticFields()
+        public void NewInstance_HasTheSameInitialValuesAsTheOldStaticFields()
         {
-            var state = StickMotionState.Shared;
+            var state = new StickMotionState();
             int count = Global.MAX_DS4_CONTROLLER_COUNT;
 
             Assert.Equal(count, state.GyroStickX.Length);
@@ -138,7 +138,7 @@ namespace DS4WindowsTests
             string registration = Read("DS4Windows/DI/ServiceRegistration.cs");
             if (registration == null) return;
 
-            Assert.Contains("services.AddSingleton<StickMotionState>(_ => StickMotionState.Shared);", registration);
+            Assert.Contains("services.AddSingleton<StickMotionState>();", registration); // Phase7-Step8 W4: Shared は削除した
         }
     }
 }

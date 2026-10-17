@@ -11,11 +11,6 @@ namespace DS4Windows
     /// </summary>
     public class StickMotionState
     {
-        // TODO(Phase7-Step8、Q3＝A): 暫定の静的な窓口。Mapping（静的）、Mouse、ControlService がコンテナの外から同じ instance を得るために置く。
-        // Mapping の instance 化で、Mapping が本クラスをコンストラクターで受け取り、Mouse／ControlService も注入になった時点で削除する。
-        // DI にも同じ instance を Singleton として登録している（ServiceRegistration）。
-        public static StickMotionState Shared { get; } = new StickMotionState();
-
         /// <summary>ジャイロのマウススティック出力の、デバイスごとの軸の値（128＝中立）。</summary>
         public byte[] GyroStickX { get; }
 
