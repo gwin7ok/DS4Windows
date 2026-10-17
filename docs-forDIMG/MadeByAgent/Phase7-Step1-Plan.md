@@ -109,3 +109,10 @@
 - ラチェット: `BackingStore.cs` の `Global.*` を 182 → 168（ラチェットと同じ数え方で再集計。`AppHost` 1、`rootHub` 0 は不変）。全域は `Global.*` 747 → 733。
 - ガード: 新規 `Phase7Step1DeadMethodGuardTests`（削除済み 10 名の再宣言禁止、`PostProcessLoad` ほか 3 名の存在確認）。
 - 検証待ち: ユーザーの `dotnet build`（警告 0）と `dotnet test`（全件成功）。
+
+### W2 の実施記録（2026-10-17、W1 のビルド・テストは成功。W2 のビルド・テストはユーザーの実行待ち）
+- 修正: `ProfileActionProvider.GetProfileActionIndexOf` が、`TryGetValue` の戻り値で判定し、未検出（名前が null の場合を含む）は -1 を返す。
+- 削除: `Mapping.cs` の未使用変数 `indexNext`（呼び出しごと。戻り値は使われていなかった）。
+- 影響の確認: `profileActionDict` と `profileActionIndexDict` は、同じ名前で同時に作られる（`BackingStore.cs` の 827–835、3935–3940）。したがって、定義済みのアクションが「辞書にあるのにインデックスが無い」ことはなく、未検出の名前は、これまで `action == null` で読み飛ばされていた。-1 になると、その前の `index < 0` で読み飛ばされる（結果は同じ。`action == null` 側にログは無かった）。
+- テスト: `Phase6Step3ContractExtensionTests` の該当テストを `GetProfileActionIndexOf_SharesStateWithGlobal_AndReturnsMinusOneWhenMissing` に改名し、未検出と null を -1 とする期待に更新、インデックス 0 の実在する名前が 0 を返すケースを追加。
+- ラチェット: 変更なし（`Global`／`AppHost`／`rootHub` の参照を増減させていない）。

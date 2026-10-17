@@ -5189,7 +5189,6 @@ namespace DS4Windows
                                                         {
                                                             string actionnameNext = profileActionsNext[actionIndexNext];
                                                             SpecialAction actionNext = ctrl.ProfileActionProvider.GetProfileAction(device, actionnameNext);
-                                                            int indexNext = ctrl.ProfileActionProvider.GetProfileActionIndexOf(device, actionnameNext);
 
                                                             if (actionNext != null && actionNext.controls == action.controls)
                                                                 DispatchOrSetBeingTriggered(actionNext, device, true);

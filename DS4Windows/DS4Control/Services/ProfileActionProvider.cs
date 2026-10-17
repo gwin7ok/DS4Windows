@@ -55,9 +55,15 @@ namespace DS4Windows
         // ---- Phase6-Step3-1: スペシャルアクション名→定義済みインデックス ----
         public int GetProfileActionIndexOf(int deviceIndex, string actionName)
         {
-            int index = -1;
-            _config?.profileActionIndexDict[deviceIndex].TryGetValue(actionName, out index);
-            return index;
+            // Phase7-Step1 W2（K2 の是正）: Dictionary.TryGetValue は未検出時に out 引数を 0 で上書きするため、
+            // 戻り値で判定して、未検出は -1 を返す（旧実装は未検出でも 0 を返していた）。
+            if (_config != null && actionName != null &&
+                _config.profileActionIndexDict[deviceIndex].TryGetValue(actionName, out int index))
+            {
+                return index;
+            }
+
+            return -1;
         }
 
         // ---- Phase6-Step3-1: アクション名一覧（コピーなし）----

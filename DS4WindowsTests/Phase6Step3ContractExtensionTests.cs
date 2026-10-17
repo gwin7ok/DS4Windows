@@ -22,7 +22,7 @@ namespace DS4WindowsTests
         // ---- IProfileActionProvider.GetProfileActionIndexOf / GetProfileActionsRaw ----
 
         [Fact]
-        public void GetProfileActionIndexOf_SharesStateWithGlobal()
+        public void GetProfileActionIndexOf_SharesStateWithGlobal_AndReturnsMinusOneWhenMissing()
         {
             const int slot = 0;
             var original = Global.store.profileActionIndexDict[slot].ToDictionary(kv => kv.Key, kv => kv.Value);
@@ -30,13 +30,16 @@ namespace DS4WindowsTests
             {
                 Global.store.profileActionIndexDict[slot].Clear();
                 Global.store.profileActionIndexDict[slot]["TestAction"] = 3;
+                Global.store.profileActionIndexDict[slot]["FirstAction"] = 0;
 
                 Assert.Equal(3, _actionProvider.GetProfileActionIndexOf(slot, "TestAction"));
+                Assert.Equal(0, _actionProvider.GetProfileActionIndexOf(slot, "FirstAction"));
 
-                // Dictionary<TKey,TValue>.TryGetValue は未検出時に out 引数を default(int)(=0) で
-                // 上書きする。移植元の Global.GetProfileActionIndexOf（Phase6-Step12 Wave 4 で削除）も同じ実装だったため、
-                // 未検出時は -1 ではなく 0 を返す（既存の挙動。Step3-1では変更しない）。
-                Assert.Equal(0, _actionProvider.GetProfileActionIndexOf(slot, "NoSuchAction"));
+                // Phase7-Step1 W2（K2 の是正）: Dictionary<TKey,TValue>.TryGetValue は未検出時に out 引数を
+                // default(int)(=0) で上書きするため、移植元の Global.GetProfileActionIndexOf（Phase6-Step12 Wave 4 で削除）は
+                // 未検出でも 0 を返していた。現在は戻り値で判定し、未検出は -1 を返す（0 は定義済みの先頭のアクションと区別できる）。
+                Assert.Equal(-1, _actionProvider.GetProfileActionIndexOf(slot, "NoSuchAction"));
+                Assert.Equal(-1, _actionProvider.GetProfileActionIndexOf(slot, null));
             }
             finally
             {
