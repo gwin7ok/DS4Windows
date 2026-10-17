@@ -84,10 +84,8 @@ namespace DS4WindowsTests
         public void ProgramItem_ShowsTheExpandedControllerRows_OnlyWhenTheCreatorSaysSo()
         {
             // 存在しないパスなら、アイコンの読み込みは行われない
-            var expanded = new ProgramItem(@"C:
-o\suchile.exe", true);
-            var normal = new ProgramItem(@"C:
-o\suchile.exe", false);
+            var expanded = new ProgramItem(@"C:\no\such\file.exe", true);
+            var normal = new ProgramItem(@"C:\no\such\file.exe", false);
             Assert.Equal(System.Windows.Visibility.Visible, expanded.ExpandedControllersVisible);
             Assert.Equal(System.Windows.Visibility.Collapsed, normal.ExpandedControllersVisible);
         }

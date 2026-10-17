@@ -133,3 +133,20 @@
 - 持ち越し（Step10b）: `Global.iconChoiceResources`（トレイアイコンの表）は画面側の `ResourcePaths` を一時的に参照している（下位層から上位層への参照。TODO を付けた）。表と文字列変換（`getX360ControlString`、`macroDS4Values`、`defaultButtonMapping`、`reverseX360ButtonMapping`、名前表）の再配置、契約の再判断、孤立定数 8 件。
 - 持ち越し（Step10d）: `using static DS4Windows.Global;`（`Mapping.cs`、`DS4LightBar.cs`）の削除と、`MappingStep3FinalGlobalReferenceGuardTests` の更新。
 - 実機確認: 10a 単独の項目なし（10e の総合検証で、トレイアイコン・プロファイル編集の画像の表示を確認項目に加える）。
+
+## 14. Phase7-Step10b で更新した台帳（2026-10-18）
+
+- `Global.*`: 107 → **93**（W1 −13、W2 −1。`PressKeyViewModel` 7、`MappedControl` 3、`RecordBoxViewModel` 1、`ProfileSettingsService` 2、`AppearanceSettingsService` 1 が 0 または減）。`AppHost.GetService|Services` 4、`Program.rootHub` 0、`ServiceProviderHolder` 17 は変更なし。Phase7 開始時（733）からの累計は −640。基準値は `Step10FourGlobalRatchetGuardTests`（合計 0／4／93）。計画書の目標「約 80」は見積もりで、実測は 93（W3・W4 は `Global.` の参照に関係しない）。
+- 移動（`Global` から削除。宣言は移動のみで内容は同一）:
+  - `X360ControlTables`: `defaultButtonMapping`、`reverseX360ButtonMapping`、`xboxDefaultNames`、`ds4DefaultNames`、`getX360ControlString`（2 引数）、および `BackingStore` の 1 引数の `getX360ControlString`（XML 保存用の名前。状態を持たない switch）。
+  - `DS4ControlNames`: `ds4inputNames`、`macroDS4Values`。
+  - `TrayIconResources`（画面側）: `iconChoiceResources`。`AppearanceSettingsService` が参照する（サービスから画面側の型への参照が残る。TODO を記載）。
+  - `ColorUtil`: `getTransitionedColor`、`applyRatio`×2、`HuetoRGB`。`DS4LightBar`／`Mapping` は `ColorUtil.` で修飾して呼ぶ。
+  - 再導入は `Step12DeadShimRemovalGuardTests` が禁止する。
+- 削除: `ProfileSubSettingBase.OnSubPropertyChanged`（購読者 0 件の孤立イベント。承認済み。`PropertyChanged` は残す）、`ProfileApplicationService` の未使用の依存 `IDeviceStateService`、`ControlService.USING_MAX_CONTROLLERS`（静的シム）、孤立定数 4 件（`DEFAULT_STICK_OUTPUT_CURVE`／`_ID`、`DEFAULT_SA_OUTPUT_CURVE`／`_ID`。廃止済みの `ProfileDTO` の残骸）。
+- 接続: `IEnvironmentService.UsingMaxControllers`（Step2 の「接続」判断の実装）。`AutoProfileHolder`（保存時の 4〜8 番目の書き出し。`AutoProfilesDTO.MapFrom` が `source.UsingMaxControllers` を読む）、`AutoProfilesViewModel`（`IEnvironmentService` を受ける）、`ProgramItem`（生成元が値を渡す）。`DEFAULT_CHECK_EVERY_VALUE`／`_UNIT` は `checkEveryValue`／`checkEveryUnit` の初期化子に接続。
+- 温存（判断済み）: `IOutputSlotService.OutputSlotChanged`（購読者 0 件。トレースログを維持するため。TODO を「Phase8 以降の UI 通知の拡張点」に更新）。`MainWindow` の引数 18 個（全部使用中。画面の責務の見直し［Phase8 以降］で扱う）。
+- 未接続のまま残した孤立コード: `ColorUtil.applyRatio(Color, Color, uint)` と `HuetoRGB(float, float, float)`（移動前から呼び出し元 0 件。TODO を記載。削除は copilot-instructions §2.4 の手順［経緯の調査と承認］で判断する → Step10e で判断）。
+- 新たな持ち越し: `ControlService.CURRENT_DS4_CONTROLLER_LIMIT`（静的シム。30 箇所以上、16 ファイル、テスト 5 件が使う）を `IEnvironmentService.ControllerSlotLimit` の注入に置き換える → `BackingStore` の分は 10d、画面・サービスの分は 10e。
+- 持ち越し（10c）: `configFileDecimalCulture`、`CompileVersionNumber*`、設定の定数（`CONFIG_VERSION` ほか）、`LoadActions`／`SaveAction` などの薄いシム。持ち越し（10d）: `Global.store`、環境・パスの窓口、`ProfileSettingsServiceInstance` 経由の設定の窓口、`using static DS4Windows.Global;`。
+- 実機確認: 10b 単独の項目なし（10e の総合検証に、トレイアイコンの切り替え、自動プロファイル画面［8 台表示］、ライトバーの色の遷移、自動プロファイルの保存を追加）。

@@ -553,3 +553,11 @@ classDiagram
 %%   - 全利用箇所（本体・テスト）を新しい型へ切り替えた。ControlService.MAX_DS4_CONTROLLER_COUNT（公開）と ProfileSettingsService の再宣言は ControllerLimits から値を取る。
 %%   - 一時的な参照: Global.iconChoiceResources（トレイアイコンの表）が ResourcePaths の定数を参照している（Step10b で画面側へ移す）。
 %%   - 詳細は Phase7-Step10a-Plan.md、Phase7-Step10a-Completion-Report.md、台帳は Phase7-Residual-Ledger.md §13。
+%%
+%% Phase7-Step10b（2026-10-18）: Global の表・色の関数の再配置と、持ち越しの契約の整理。
+%%   - 新設（静的クラス。状態を持たない表・純粋計算）: X360ControlTables（ボタンの既定割り当て・名前の表・getX360ControlString）、DS4ControlNames（DS4 入力の表示名・マクロ記録用の値）、ColorUtil（getTransitionedColor ほか）、TrayIconResources（画面側。トレイアイコンの資源パスの表）。
+%%   - Global から削除: 上記の表・関数。BackingStore の 1 引数の getX360ControlString も X360ControlTables へ移した。
+%%   - 削除: ProfileSubSettingBase.OnSubPropertyChanged（購読者 0 件）、ProfileApplicationService の未使用の依存 IDeviceStateService、ControlService.USING_MAX_CONTROLLERS（静的シム）、孤立定数 4 件。
+%%   - 接続: IEnvironmentService.UsingMaxControllers を AutoProfileHolder（コンストラクター注入）・AutoProfilesViewModel（同）・ProgramItem（生成元が値を渡す）が使う。AutoProfilesDTO.MapFrom は source.UsingMaxControllers を読む。
+%%   - 温存: IOutputSlotService.OutputSlotChanged（Phase8 以降の UI 通知の拡張点）。AppearanceSettingsService → TrayIconResources（サービスから画面側の型への参照。Phase8 以降で整理）。
+%%   - 詳細は Phase7-Step10b-Plan.md、Phase7-Step10b-Completion-Report.md、台帳は Phase7-Residual-Ledger.md §14。

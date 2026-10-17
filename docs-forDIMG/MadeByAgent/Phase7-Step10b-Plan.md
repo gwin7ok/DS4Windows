@@ -3,7 +3,7 @@
 作成日: 2026-10-18  
 対象ブランチ: `For-DI-migration-work`  
 上位計画: `Phase7-Step10-Plan.md`（Q1〜Q9 は推奨どおり承認）§3「10b」、`Phase7-Step10a-Completion-Report.md` §5、`Phase7-Residual-Ledger.md` §3・§13  
-状態: **Q1〜Q8 は推奨どおり承認（2026-10-18。Q3 の `OnSubPropertyChanged` の削除を含む）。W1〜W3 完了（ビルド・テスト成功）。W4 実装済み（ビルド・テスト待ち）。次は W5（文書）。**
+状態: **Q1〜Q8 は推奨どおり承認（2026-10-18）。W1〜W4 完了（ビルド・テスト成功）。W5 は文書。10b 完了。完了報告書は `Phase7-Step10b-Completion-Report.md`。**
 
 ---
 
@@ -11,7 +11,7 @@
 
 - 10a で `Global` の定数・`Clamp` は片づいた。10b は、`Global` に残る**表・文字列変換・色の純粋関数**を、用途ごとの型へ移し、あわせて Step2・Step6・Step9 から 10 へ持ち越した**契約の再判断**と**孤立定数**を消化する。
 - 機能・ログは変えない。表の中身・計算は 1 文字も変えず、置き場所と呼び出し元だけを替える。
-- 目標: `Global.*` 107 → 約 80。`AppHost` 4、`rootHub` 0、`ServiceProviderHolder` 17 は変わらない。
+- 目標: `Global.*` 107 → 約 80（見積もり。実測は 93）。`AppHost` 4、`rootHub` 0、`ServiceProviderHolder` 17 は変わらない。
 - 永続化に属するもの（`configFileDecimalCulture`、`CompileVersionNumber*`、設定の定数）は 10c、`Global.store` と環境・パスの窓口は 10d で扱う。10b では触らない。
 
 ---
@@ -124,7 +124,7 @@
 
 ## 6. 完了条件
 
-- `Global` に表・変換・色の関数が存在しない。`Global.*` 約 80。孤立定数 6 件が整理されている。`OnSubPropertyChanged`、`ProfileApplicationService` の未使用の依存、`USING_MAX_CONTROLLERS` が削除されている。
+- `Global` に表・変換・色の関数が存在しない。`Global.*` 93（見積もりは約 80）。孤立定数 6 件が整理されている。`OnSubPropertyChanged`、`ProfileApplicationService` の未使用の依存、`USING_MAX_CONTROLLERS` が削除されている。
 - ガードとラチェットが成功（ユーザーが実行）。文書の更新（台帳 §14、モデル図、Status、完了報告書）。
 
 ## 7. 持ち越し

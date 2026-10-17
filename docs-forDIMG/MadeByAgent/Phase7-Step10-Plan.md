@@ -3,7 +3,7 @@
 作成日: 2026-10-18  
 対象ブランチ: `For-DI-migration-work`  
 上位計画: `Phase7-Plan.md` §2（Step10）、`Phase7-0-Survey.md` §3.2・§5（D2・D4）、`Phase7-Residual-Ledger.md` §1〜§12、`Phase7-Step9-Completion-Report.md` §5  
-状態: **Q1〜Q9 は推奨どおり承認（2026-10-18）。10a は完了（2026-10-18。`Phase7-Step10a-Completion-Report.md`）。次は 10b の計画書の作成。**
+状態: **Q1〜Q9 は推奨どおり承認（2026-10-18）。10a・10b は完了（2026-10-18。`Phase7-Step10a-Completion-Report.md`、`Phase7-Step10b-Completion-Report.md`）。次は 10c の計画書の作成。**
 
 ---
 
