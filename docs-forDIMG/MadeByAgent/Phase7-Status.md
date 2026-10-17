@@ -1,7 +1,7 @@
 # フェーズ7 進捗管理文書: `Global`／`BackingStore` の解体、起動の近代化、`Mapping` の instance 化
 
 最終更新日: 2026-10-17  
-状態: **Step1 完了。Step2 の計画書（`Phase7-Step2-Plan.md`）を作成済み。Q1〜Q5 の承認待ち。**  
+状態: **Step1・Step2 完了。Step3 の計画書（`Phase7-Step3-Plan.md`）を作成済み。Q1〜Q5 の承認待ち。**  
 計画書: `Phase7-Plan.md`。調査: `Phase7-0-Survey.md`。残存台帳: `Phase7-Residual-Ledger.md`
 
 ---
@@ -12,8 +12,8 @@
 |---|---|---|---|
 | Phase7-0 | 調査と Step 分割案 | 完了（D1〜D6 承認、2026-10-17） | `Phase7-0-Survey.md` |
 | Step1 | 整理と台帳の確定 | **完了**（2026-10-17。W1〜W4 のビルド・テスト成功、U-10 確認済み） | `Phase7-Step1-Plan.md`、`Phase7-Step1-Completion-Report.md` |
-| Step2 | DI インターフェースの 0 件メンバー（49）の個別判断 | **実施中**（承認済み 2026-10-17。W1〜W7 実装済み。W7 のビルド・テストと U-11 待ち。完了報告書あり。判断: 削除 45／接続 3／温存 1。Phase8 へ 12） | `Phase7-Step2-Plan.md` |
-| Step3 | `BackingStore` の DI 化と `Global` の転送の削除 | 未着手 | |
+| Step2 | DI インターフェースの 0 件メンバー（49）の個別判断 | **完了**（2026-10-17。W1〜W7 のビルド・テスト成功。U-11 の実機確認は未。完了報告書あり。判断: 削除 45／接続 3／温存 1。Phase8 へ 12） | `Phase7-Step2-Plan.md` |
+| Step3 | `BackingStore` の DI 化と `Global` の転送の削除 | **計画書の承認待ち**（Q1〜Q5） | `Phase7-Step3-Plan.md` |
 | Step4 | 起動・終了シーケンスの近代化 | 未着手 | |
 | Step5 | `Program.rootHub` と Service Locator の削除 | 未着手 | |
 | Step6 | 出力スロットの所有権の移動 | 未着手 | |
