@@ -110,8 +110,8 @@
 - W3: K3 の二重実行防止を `MacroRuntimeState.TryBeginDispatch`／`EndDispatch` に包む（挙動は同一。恒久対応は Phase8）。
 - W4: 台帳 §12、モデル図、U-19、完了報告書。`Global.*` 399 → 355、`AppHost` 5 → 4。詳細は `Phase7-Step9-Completion-Report.md`。実機確認 U-11〜U-19 はユーザー判断で先送り。
 
-### Phase7-Step10【未着手】
-- 内容と依存関係は `Phase7-Plan.md` §2。
+### Phase7-Step10: 仕上げ【計画書作成済み・承認待ち（2026-10-18）】
+- `Phase7-Step10-Plan.md`（サブ Step 10a〜10e の構成案と Q1〜Q9。実装は未着手）。各サブ Step は個別の計画書を作成してから進める。
 
 ## 4. 実機確認の台帳（`Phase6-Step11-RealDevice-Verification-Checklist.md` §11）
 
