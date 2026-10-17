@@ -29,10 +29,10 @@ namespace DS4WindowsTests
         {
             Assert.NotNull(HelperMethod); // メソッド名変更等でシグネチャが失われた場合に検出する
 
-            GyroOutMode original = Global.store.gyroOutMode[Slot];
+            GyroOutMode original = TestGlobals.Store.gyroOutMode[Slot];
             try
             {
-                Global.store.gyroOutMode[Slot] = mode;
+                TestGlobals.Store.gyroOutMode[Slot] = mode;
 
                 bool expected = mode == GyroOutMode.Controls; // Global.IsUsingSAForControls は Phase6-Step12 Wave 4 で削除（同じ判定）
                 bool actual = (bool)HelperMethod.Invoke(Mapper, new object[] { Slot });
@@ -42,7 +42,7 @@ namespace DS4WindowsTests
             }
             finally
             {
-                Global.store.gyroOutMode[Slot] = original;
+                TestGlobals.Store.gyroOutMode[Slot] = original;
             }
         }
     }

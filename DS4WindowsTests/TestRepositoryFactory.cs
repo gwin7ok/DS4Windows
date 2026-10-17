@@ -18,41 +18,41 @@ namespace DS4WindowsTests
 
         public static SpecialActionRepository CreateSpecialActionRepository(BackingStore store = null, IPathService pathService = null)
         {
-            return new SpecialActionRepository(store ?? Global.store, pathService ?? new PathService(), new SyntheticInputState(),
+            return new SpecialActionRepository(store ?? TestGlobals.Store, pathService ?? new PathService(), new SyntheticInputState(),
                 CreateActionsXml(store));
         }
 
         /// <summary>Phase7-Step10c W2: Actions.xml の保存・読込（旧: BackingStore のメソッド）。</summary>
         public static DS4Windows.Services.SpecialActionsXmlSerializer CreateActionsXml(BackingStore store = null)
-            => new DS4Windows.Services.SpecialActionsXmlSerializer(store ?? Global.store);
+            => new DS4Windows.Services.SpecialActionsXmlSerializer(store ?? TestGlobals.Store);
 
         /// <summary>Phase7-Step10c W2: リンクプロファイルの保存・読込（旧: BackingStore のメソッド）。</summary>
         public static DS4Windows.Services.LinkedProfilesXmlSerializer CreateLinkedProfilesXml(BackingStore store = null)
-            => new DS4Windows.Services.LinkedProfilesXmlSerializer(store ?? Global.store);
+            => new DS4Windows.Services.LinkedProfilesXmlSerializer(store ?? TestGlobals.Store);
 
         /// <summary>Phase7-Step10c W2: ProfileXmlStore（コントローラー固有設定の保存・読込を含む）。</summary>
         public static ProfileXmlStore CreateProfileXmlStore(BackingStore store = null)
-            => new ProfileXmlStore(store ?? Global.store, new DS4Windows.Services.ControllerConfigsXmlSerializer(store ?? Global.store),
+            => new ProfileXmlStore(store ?? TestGlobals.Store, new DS4Windows.Services.ControllerConfigsXmlSerializer(store ?? TestGlobals.Store),
                 CreateAppSettingsXml(store), CreateLegacyProfileXml(store));
 
         /// <summary>Phase7-Step10c W4: プロファイル（旧形式の XML）の保存・読込（旧: BackingStore のメソッド）。</summary>
         public static DS4Windows.Services.LegacyProfileXmlSerializer CreateLegacyProfileXml(BackingStore store = null,
             IProfileSettingsService settings = null, IPathService pathService = null)
-            => new DS4Windows.Services.LegacyProfileXmlSerializer(store ?? Global.store, pathService ?? new PathService(),
-                settings ?? Global.ProfileSettingsServiceInstance, new EnvironmentService());
+            => new DS4Windows.Services.LegacyProfileXmlSerializer(store ?? TestGlobals.Store, pathService ?? new PathService(),
+                settings ?? TestGlobals.ProfileSettingsServiceInstance, new EnvironmentService());
 
         /// <summary>Phase7-Step10c W3: アプリ設定（Profiles.xml）の保存・読込（旧: BackingStore.Load／Save）。</summary>
         public static DS4Windows.Services.AppSettingsXmlSerializer CreateAppSettingsXml(BackingStore store = null,
             IPathService pathService = null, IEnvironmentService environment = null)
-            => new DS4Windows.Services.AppSettingsXmlSerializer(store ?? Global.store, pathService ?? new PathService(), environment ?? new EnvironmentService());
+            => new DS4Windows.Services.AppSettingsXmlSerializer(store ?? TestGlobals.Store, pathService ?? new PathService(), environment ?? new EnvironmentService());
 
         public static ProfileRepository CreateProfileRepository(IProfileSettingsService settings = null,
             IProfileXmlStore xmlStore = null, IPathService pathService = null, Func<ControlService> control = null,
             BackingStore store = null)
         {
             return new ProfileRepository(
-                store ?? Global.store,
-                settings ?? Global.ProfileSettingsServiceInstance,
+                store ?? TestGlobals.Store,
+                settings ?? TestGlobals.ProfileSettingsServiceInstance,
                 xmlStore ?? CreateProfileXmlStore(store),
                 pathService ?? new PathService(),
                 control ?? new Func<ControlService>(() => DS4WinWPF.AppHost.GetService<ControlService>()),
@@ -62,7 +62,7 @@ namespace DS4WindowsTests
         public static ProfileSettingsService CreateProfileSettingsService(BackingStore store = null,
             IEnvironmentService environmentService = null, Func<ControlService> control = null)
         {
-            return new ProfileSettingsService(store ?? Global.store,
+            return new ProfileSettingsService(store ?? TestGlobals.Store,
                 environmentService ?? new EnvironmentService(),
                 control ?? new Func<ControlService>(() => null));
         }
@@ -91,13 +91,13 @@ namespace DS4WindowsTests
 
         public static ProfileActionProvider CreateProfileActionProvider(BackingStore store = null)
         {
-            return new ProfileActionProvider(store ?? Global.store);
+            return new ProfileActionProvider(store ?? TestGlobals.Store);
         }
 
         public static AppSettingsService CreateAppSettingsService(IProfileXmlStore xmlStore = null,
             IPathService pathService = null, BackingStore store = null)
         {
-            return new AppSettingsService(store ?? Global.store, xmlStore, pathService);
+            return new AppSettingsService(store ?? TestGlobals.Store, xmlStore, pathService);
         }
 
         public static AutoProfileHolder CreateAutoProfileHolder(IPathService pathService = null)
@@ -116,14 +116,14 @@ namespace DS4WindowsTests
                 appSettings ?? CreateAppSettingsService(),
                 profileRepository ?? CreateProfileRepository(profileSettings),
                 control ?? new Func<ControlService>(() => null),
-                store ?? Global.store);
+                store ?? TestGlobals.Store);
         }
 
         public static ProfilePresetLoader CreateProfilePresetLoader(BackingStore store = null,
             IProfileSettingsService profileSettings = null)
         {
-            return new ProfilePresetLoader(store ?? Global.store, profileSettings ?? Global.ProfileSettingsServiceInstance,
-                new DS4Windows.Services.ProfilePresets(store ?? Global.store));
+            return new ProfilePresetLoader(store ?? TestGlobals.Store, profileSettings ?? TestGlobals.ProfileSettingsServiceInstance,
+                new DS4Windows.Services.ProfilePresets(store ?? TestGlobals.Store));
         }
 
         public static ProfileApplicationService CreateProfileApplicationService(IProfileSettingsService settings,
@@ -134,31 +134,31 @@ namespace DS4WindowsTests
         {
             return new ProfileApplicationService(settings, control, profileRepository, environmentService,
                 xmlStore ?? CreateProfileXmlStore(store),
-                actionProvider ?? CreateProfileActionProvider(store ?? Global.store),
-                store ?? Global.store,
+                actionProvider ?? CreateProfileActionProvider(store ?? TestGlobals.Store),
+                store ?? TestGlobals.Store,
                 keyButtonControllers ?? DS4WinWPF.AppHost.GetService<IKeyButtonControllerRegistry>());
         }
 
         public static ProfileSlotApplier CreateProfileSlotApplier(IProfileApplicationService profileApplication = null)
         {
-            var settings = Global.ProfileSettingsServiceInstance;
+            var settings = TestGlobals.ProfileSettingsServiceInstance;
             return new ProfileSlotApplier(profileApplication ?? CreateProfileApplicationService(settings,
                 () => null, CreateProfileRepository(settings), new EnvironmentService()));
         }
 
         public static AppearanceSettingsService CreateAppearanceSettingsService(BackingStore store = null)
         {
-            return new AppearanceSettingsService(store ?? Global.store);
+            return new AppearanceSettingsService(store ?? TestGlobals.Store);
         }
 
         public static DeviceStateService CreateDeviceStateService(BackingStore store = null)
         {
-            return new DeviceStateService(store ?? Global.store);
+            return new DeviceStateService(store ?? TestGlobals.Store);
         }
 
         public static AppNotificationService CreateAppNotificationService(BackingStore store = null)
         {
-            return new AppNotificationService(store ?? Global.store);
+            return new AppNotificationService(store ?? TestGlobals.Store);
         }
     }
 }

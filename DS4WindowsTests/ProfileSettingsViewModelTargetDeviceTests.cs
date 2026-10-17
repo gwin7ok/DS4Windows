@@ -22,9 +22,9 @@ namespace DS4WindowsTests
 
         static ProfileSettingsViewModelTargetDeviceTests()
         {
-            if (string.IsNullOrEmpty(Global.appdatapath))
+            if (string.IsNullOrEmpty(TestGlobals.AppDataPath))
             {
-                Global.appdatapath = AppContext.BaseDirectory;
+                TestGlobals.AppDataPath = AppContext.BaseDirectory;
             }
 
             if (Application.Current == null)

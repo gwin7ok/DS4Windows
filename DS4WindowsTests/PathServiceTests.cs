@@ -21,20 +21,20 @@ namespace DS4WindowsTests
         public void AppDataPath_OnDemandEvaluation_ReflectsGlobalChangesDynamically()
         {
             var service = new PathService();
-            string original = Global.appdatapath;
+            string original = TestGlobals.AppDataPath;
 
             try
             {
-                Global.appdatapath = @"C:\TestDynamicPath1";
+                TestGlobals.AppDataPath = @"C:\TestDynamicPath1";
                 Assert.Equal(@"C:\TestDynamicPath1", service.AppDataPath);
 
-                Global.appdatapath = @"C:\TestDynamicPath2";
+                TestGlobals.AppDataPath = @"C:\TestDynamicPath2";
                 Assert.Equal(@"C:\TestDynamicPath2", service.AppDataPath);
             }
             finally
             {
                 // 並列実行される他テストを汚染しないよう、必ず元のパスへ復元する
-                Global.appdatapath = original;
+                TestGlobals.AppDataPath = original;
             }
         }
 

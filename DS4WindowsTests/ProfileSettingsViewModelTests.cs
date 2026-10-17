@@ -11,9 +11,9 @@ namespace DS4WindowsTests
     {
         static ProfileSettingsViewModelTests()
         {
-            if (string.IsNullOrEmpty(Global.appdatapath))
+            if (string.IsNullOrEmpty(TestGlobals.AppDataPath))
             {
-                Global.appdatapath = AppContext.BaseDirectory;
+                TestGlobals.AppDataPath = AppContext.BaseDirectory;
             }
 
             if (Application.Current == null)
@@ -39,7 +39,7 @@ namespace DS4WindowsTests
         public void ControllerTypeIndex_ShouldSupportBidirectionalSwitching()
         {
             var service = TestRepositoryFactory.CreateProfileSettingsService();
-            Global.ProfileSettingsServiceInstance = service;
+            TestGlobals.ProfileSettingsServiceInstance = service;
 
             const int device = 0;
             OutContType original = service.OutContType[device];
@@ -71,7 +71,7 @@ namespace DS4WindowsTests
         public void TempControllerIndex_ShouldUpdateSSOTAndBidirectionalState()
         {
             var service = TestRepositoryFactory.CreateProfileSettingsService();
-            Global.ProfileSettingsServiceInstance = service;
+            TestGlobals.ProfileSettingsServiceInstance = service;
 
             const int device = 0;
             OutContType original = service.OutContType[device];
@@ -102,7 +102,7 @@ namespace DS4WindowsTests
         {
             var service = TestRepositoryFactory.CreateProfileSettingsService();
             var outputSlotService = TestRepositoryFactory.CreateOutputSlotService();
-            Global.ProfileSettingsServiceInstance = service;
+            TestGlobals.ProfileSettingsServiceInstance = service;
 
             const int device = 0;
             OutContType original = service.OutContType[device];

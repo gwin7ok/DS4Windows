@@ -64,10 +64,10 @@ namespace DS4WindowsTests
         public void PathService_SetSaveLocation_UpdatesGlobalAppDataPath_AndAppDataPathReflectsIt()
         {
             IPathService service = new PathService();
-            string original = Global.appdatapath;
+            string original = TestGlobals.AppDataPath;
             // Global.SaveWhere は appdatapath のほかに、設定ファイル 4 つのパス（BackingStore）も書き換える。
             // 他のテスト（ProfileRepositoryTests など）へ影響を残さないよう、4 つとも元の値へ戻す。
-            var store = Global.store;
+            var store = TestGlobals.Store;
             string originalProfile = store.m_Profile;
             string originalActions = store.m_Actions;
             string originalLinkedProfiles = store.m_linkedProfiles;
@@ -76,7 +76,7 @@ namespace DS4WindowsTests
             try
             {
                 service.SetSaveLocation(target);
-                Assert.Equal(target, Global.appdatapath);
+                Assert.Equal(target, TestGlobals.AppDataPath);
                 Assert.Equal(target, service.AppDataPath);
 
                 // 設定ファイルのパスも更新されること（AppDataPath の setter では更新されない）
@@ -87,7 +87,7 @@ namespace DS4WindowsTests
             }
             finally
             {
-                Global.appdatapath = original;
+                TestGlobals.AppDataPath = original;
                 store.m_Profile = originalProfile;
                 store.m_Actions = originalActions;
                 store.m_linkedProfiles = originalLinkedProfiles;
@@ -148,7 +148,7 @@ namespace DS4WindowsTests
 
                 Assert.Equal(newValue, Global.LastVersionChecked);
                 Assert.Equal(newValue, service.LastVersionChecked);
-                Assert.Equal(Global.store.lastVersionCheckedNum, service.LastVersionCheckedNum);
+                Assert.Equal(TestGlobals.Store.lastVersionCheckedNum, service.LastVersionCheckedNum);
                 Assert.Contains(nameof(IAppSettingsService.LastVersionChecked), changed);
 
                 // 同じ値の再設定では通知しない
@@ -158,7 +158,7 @@ namespace DS4WindowsTests
             }
             finally
             {
-                Global.store.lastVersionChecked = original;
+                TestGlobals.Store.lastVersionChecked = original;
             }
         }
 

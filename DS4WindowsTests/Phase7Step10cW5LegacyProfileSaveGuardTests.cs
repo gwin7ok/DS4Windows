@@ -49,7 +49,7 @@ namespace DS4WindowsTests
                 Assert.NotNull(typeof(LegacyProfileXmlSerializer).GetMethod(name, BindingFlags.Instance | BindingFlags.Public));
 
             var store = new BackingStore();
-            Assert.Throws<ArgumentNullException>(() => new LegacyProfileXmlSerializer(store, new PathService(), Global.ProfileSettingsServiceInstance, null));
+            Assert.Throws<ArgumentNullException>(() => new LegacyProfileXmlSerializer(store, new PathService(), TestGlobals.ProfileSettingsServiceInstance, null));
         }
 
         [Fact]

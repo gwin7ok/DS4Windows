@@ -34,7 +34,7 @@ namespace DS4WindowsTests
             // 既存テスト（ProfileSettingsServiceSubSettingsTests.ProfileActions_GetSet_ShouldPersistAndNotify）が
             // Global.store.profileActions を 8 要素の配列に置き換えたまま戻さないため、実行順によって
             // Global.store.profileActions の長さが変わる。独立した 9 要素の配列に差し替えて検証し、終了時に戻す。
-            BackingStore store = Global.store;
+            BackingStore store = TestGlobals.Store;
             List<string>[] originalArray = store.profileActions;
             List<string>[] profileActions = new List<string>[DS4Windows.ControllerLimits.TestProfileItemCount];
             store.profileActions = profileActions;

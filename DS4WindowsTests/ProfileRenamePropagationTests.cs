@@ -18,7 +18,7 @@ namespace DS4WindowsTests
         {
             string dir = Path.Combine(Path.GetTempPath(), "ds4w-step10-4-5d-" + Guid.NewGuid().ToString("N"));
             Directory.CreateDirectory(dir);
-            var store = Global.store;
+            var store = TestGlobals.Store;
             string originalPath = store.m_Actions;
             var backup = new List<SpecialAction>(store.actions);
             try

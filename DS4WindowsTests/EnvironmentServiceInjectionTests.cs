@@ -20,9 +20,9 @@ namespace DS4WindowsTests
         // （Step2 の教訓 B.11: Global の static 状態に依存するテストは明示的に配線する）。
         public EnvironmentServiceInjectionTests()
         {
-            if (string.IsNullOrEmpty(Global.appdatapath))
+            if (string.IsNullOrEmpty(TestGlobals.AppDataPath))
             {
-                Global.appdatapath = new PathService().AppDataPath;
+                TestGlobals.AppDataPath = new PathService().AppDataPath;
             }
         }
 

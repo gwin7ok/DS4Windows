@@ -22,7 +22,7 @@ namespace DS4WindowsTests
 
             return new ProfileSettingsViewModel(
                 device,
-                profileSettings ?? Global.ProfileSettingsServiceInstance,
+                profileSettings ?? TestGlobals.ProfileSettingsServiceInstance,
                 null,
                 outputSlotService ?? DS4WinWPF.AppHost.GetService<IOutputSlotService>(),
                 DS4WinWPF.AppHost.GetService<IProfileRepository>(),

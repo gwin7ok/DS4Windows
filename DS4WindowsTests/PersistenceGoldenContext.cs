@@ -33,10 +33,10 @@ namespace DS4WindowsTests
             Directory.CreateDirectory(Path.Combine(AppData, "Profiles"));
             Directory.CreateDirectory(ExeDir);
 
-            _originalAppData = Global.appdatapath;
-            _originalExeDir = Global.exedirpath;
-            Global.appdatapath = AppData;
-            Global.exedirpath = ExeDir;
+            _originalAppData = TestGlobals.AppDataPath;
+            _originalExeDir = TestGlobals.ExeDirPath;
+            TestGlobals.AppDataPath = AppData;
+            TestGlobals.ExeDirPath = ExeDir;
 
             DS4WinWPF.AppHost.CreateHost();
             Control = DS4WinWPF.AppHost.GetService<ControlService>();
@@ -45,7 +45,7 @@ namespace DS4WindowsTests
             // 本体では ControlService の起動時に設定される。RefreshActionAlias は Global.ProfileSettingsServiceInstance（最初に解決した
             // コンテナの instance を静的に保持する）を読むため、テストの実行順によらず、その instance に設定する。
             // 既定の方式（SendInput）で設定し、破棄時に元へ戻す。
-            _settings = Global.ProfileSettingsServiceInstance;
+            _settings = TestGlobals.ProfileSettingsServiceInstance;
             _originalMapping = _settings.OutputKBMMapping;
             _settings.OutputKBMMapping = VirtualKBMFactory.GetMappingInstance(SendInputHandler.IDENTIFIER);
         }
@@ -64,8 +64,8 @@ namespace DS4WindowsTests
         public void Dispose()
         {
             _settings.OutputKBMMapping = _originalMapping;
-            Global.appdatapath = _originalAppData;
-            Global.exedirpath = _originalExeDir;
+            TestGlobals.AppDataPath = _originalAppData;
+            TestGlobals.ExeDirPath = _originalExeDir;
             try { Directory.Delete(Root, true); } catch { }
         }
     }

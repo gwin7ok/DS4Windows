@@ -87,11 +87,11 @@ namespace DS4WindowsTests
             // AutoProfileService のコンストラクタが AutoProfileHolder を生成し、Global.appdatapath を読む。
             // 未設定のテスト環境では ArgumentNullException になるため、AutoProfileServiceTests と同じく既定値を設定する
             // （設定した場合は、終了時に元へ戻す）。
-            string originalAppDataPath = Global.appdatapath;
+            string originalAppDataPath = TestGlobals.AppDataPath;
             bool appDataPathWasSet = string.IsNullOrEmpty(originalAppDataPath);
             if (appDataPathWasSet)
             {
-                Global.appdatapath = new DS4Windows.PathService().AppDataPath;
+                TestGlobals.AppDataPath = new DS4Windows.PathService().AppDataPath;
             }
 
             string dir = Path.Combine(Path.GetTempPath(), "Phase6Step10_AutoProfiles_" + Guid.NewGuid().ToString("N"));
@@ -123,7 +123,7 @@ namespace DS4WindowsTests
                 Directory.Delete(dir, true);
                 if (appDataPathWasSet)
                 {
-                    Global.appdatapath = originalAppDataPath;
+                    TestGlobals.AppDataPath = originalAppDataPath;
                 }
             }
         }

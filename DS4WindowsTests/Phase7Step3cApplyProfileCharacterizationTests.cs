@@ -46,12 +46,12 @@ namespace DS4WindowsTests
         {
             _dir = Path.Combine(Path.GetTempPath(), "Phase7Step3c_" + Guid.NewGuid().ToString("N"));
             Directory.CreateDirectory(Path.Combine(_dir, "Profiles"));
-            _originalAppData = Global.appdatapath;
-            Global.appdatapath = _dir;
+            _originalAppData = TestGlobals.AppDataPath;
+            TestGlobals.AppDataPath = _dir;
 
             DS4WinWPF.AppHost.CreateHost();
             _control = DS4WinWPF.AppHost.GetService<ControlService>();
-            _settings = Global.ProfileSettingsServiceInstance;
+            _settings = TestGlobals.ProfileSettingsServiceInstance;
 
             _repo = TestRepositoryFactory.CreateProfileRepository(_settings);
             _service = TestRepositoryFactory.CreateProfileApplicationService(_settings,
@@ -83,7 +83,7 @@ namespace DS4WindowsTests
             _settings.SetUseTempProfile(Slot, _origUseTemp);
             _settings.SetTempProfileName(Slot, _origTempName);
             Global.tempprofileDistance[Slot] = _origDistance;
-            Global.appdatapath = _originalAppData;
+            TestGlobals.AppDataPath = _originalAppData;
             try { Directory.Delete(_dir, true); } catch { }
         }
 

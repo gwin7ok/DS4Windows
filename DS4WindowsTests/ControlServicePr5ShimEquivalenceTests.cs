@@ -21,36 +21,36 @@ namespace DS4WindowsTests
         [Fact]
         public void UseUdpServerSmoothing_SharesStateWithGlobal()
         {
-            bool original = Global.store.useUdpSmoothing;
+            bool original = TestGlobals.Store.useUdpSmoothing;
             try
             {
-                Global.store.useUdpSmoothing = !original;
+                TestGlobals.Store.useUdpSmoothing = !original;
                 Assert.Equal(!original, _appSettings.UseUdpServerSmoothing);
 
                 _appSettings.UseUdpServerSmoothing = original;
-                Assert.Equal(original, Global.store.useUdpSmoothing);
+                Assert.Equal(original, TestGlobals.Store.useUdpSmoothing);
             }
             finally
             {
-                Global.store.useUdpSmoothing = original;
+                TestGlobals.Store.useUdpSmoothing = original;
             }
         }
 
         [Fact]
         public void FlashWhenLateAt_SharesStateWithGlobal()
         {
-            int original = Global.store.flashWhenLateAt;
+            int original = TestGlobals.Store.flashWhenLateAt;
             try
             {
-                Global.store.flashWhenLateAt = original + 7;
+                TestGlobals.Store.flashWhenLateAt = original + 7;
                 Assert.Equal(original + 7, _appSettings.FlashWhenLateAt);
 
                 _appSettings.FlashWhenLateAt = original + 3;
-                Assert.Equal(original + 3, Global.store.flashWhenLateAt);
+                Assert.Equal(original + 3, TestGlobals.Store.flashWhenLateAt);
             }
             finally
             {
-                Global.store.flashWhenLateAt = original;
+                TestGlobals.Store.flashWhenLateAt = original;
             }
         }
 
@@ -84,16 +84,16 @@ namespace DS4WindowsTests
         [Fact]
         public void UseIconChoice_SharesStateWithGlobal()
         {
-            TrayIconChoice original = Global.store.useIconChoice;
+            TrayIconChoice original = TestGlobals.Store.useIconChoice;
             TrayIconChoice other = original == TrayIconChoice.Battery ? TrayIconChoice.Default : TrayIconChoice.Battery;
             try
             {
-                Global.store.useIconChoice = other;
+                TestGlobals.Store.useIconChoice = other;
                 Assert.Equal(other, _appearance.UseIconChoice);
             }
             finally
             {
-                Global.store.useIconChoice = original;
+                TestGlobals.Store.useIconChoice = original;
             }
         }
 
@@ -101,24 +101,24 @@ namespace DS4WindowsTests
         public void ContainsCustomAction_And_Extras_ShareStateWithGlobal()
         {
             const int slot = 0;
-            bool originalAction = Global.store.containsCustomAction[slot];
-            bool originalExtras = Global.store.containsCustomExtras[slot];
+            bool originalAction = TestGlobals.Store.containsCustomAction[slot];
+            bool originalExtras = TestGlobals.Store.containsCustomExtras[slot];
             try
             {
-                Global.store.containsCustomAction[slot] = true;
-                Global.store.containsCustomExtras[slot] = false;
+                TestGlobals.Store.containsCustomAction[slot] = true;
+                TestGlobals.Store.containsCustomExtras[slot] = false;
                 Assert.True(_profileSettings.ContainsCustomAction(slot));
                 Assert.False(_profileSettings.ContainsCustomExtras(slot));
 
-                Global.store.containsCustomAction[slot] = false;
-                Global.store.containsCustomExtras[slot] = true;
+                TestGlobals.Store.containsCustomAction[slot] = false;
+                TestGlobals.Store.containsCustomExtras[slot] = true;
                 Assert.False(_profileSettings.ContainsCustomAction(slot));
                 Assert.True(_profileSettings.ContainsCustomExtras(slot));
             }
             finally
             {
-                Global.store.containsCustomAction[slot] = originalAction;
-                Global.store.containsCustomExtras[slot] = originalExtras;
+                TestGlobals.Store.containsCustomAction[slot] = originalAction;
+                TestGlobals.Store.containsCustomExtras[slot] = originalExtras;
             }
         }
 
@@ -126,16 +126,16 @@ namespace DS4WindowsTests
         public void GetProfileActionCount_SharesStateWithGlobal()
         {
             const int slot = 0;
-            int original = Global.store.profileActionCount[slot];
+            int original = TestGlobals.Store.profileActionCount[slot];
             try
             {
-                Global.store.profileActionCount[slot] = original + 5;
+                TestGlobals.Store.profileActionCount[slot] = original + 5;
 
                 Assert.Equal(original + 5, _actionProvider.GetProfileActionCount(slot));
             }
             finally
             {
-                Global.store.profileActionCount[slot] = original;
+                TestGlobals.Store.profileActionCount[slot] = original;
             }
         }
 
@@ -147,15 +147,15 @@ namespace DS4WindowsTests
         /// </summary>
         private static void WithGlobalWiredTo(IProfileSettingsService service, Action body)
         {
-            IProfileSettingsService original = Global.ProfileSettingsServiceInstance;
+            IProfileSettingsService original = TestGlobals.ProfileSettingsServiceInstance;
             try
             {
-                Global.ProfileSettingsServiceInstance = service;
+                TestGlobals.ProfileSettingsServiceInstance = service;
                 body();
             }
             finally
             {
-                Global.ProfileSettingsServiceInstance = original;
+                TestGlobals.ProfileSettingsServiceInstance = original;
             }
         }
 
@@ -170,7 +170,7 @@ namespace DS4WindowsTests
 
             WithGlobalWiredTo(service, () =>
             {
-                Assert.Same(Global.ProfileSettingsServiceInstance, service);
+                Assert.Same(TestGlobals.ProfileSettingsServiceInstance, service);
 
                 const int slot = 0;
                 bool original = service.TouchpadActiveArray[slot];

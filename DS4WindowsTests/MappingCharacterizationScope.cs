@@ -67,7 +67,7 @@ namespace DS4WindowsTests
         /// <summary>デバイス <see cref="Device"/> の、指定のボタンの割り当てを「ボタン」へ変える（終了時に既定へ戻す）。</summary>
         public void RemapToButton(DS4Controls control, X360Controls target)
         {
-            DS4ControlSettings dcs = Global.store.GetDS4CSetting(Device, control);
+            DS4ControlSettings dcs = TestGlobals.Store.GetDS4CSetting(Device, control);
             dcs.Reset();
             dcs.actionType = DS4ControlSettings.ActionType.Button;
             dcs.action.actionBtn = target;
@@ -94,7 +94,7 @@ namespace DS4WindowsTests
         public void Dispose()
         {
             foreach (DS4Controls control in _touched)
-                Global.store.GetDS4CSetting(Device, control)?.Reset();
+                TestGlobals.Store.GetDS4CSetting(Device, control)?.Reset();
 
             Mapper.HandleDeviceDisconnect(Device);
             _handlerOwner.Handler = _savedHandler;

@@ -52,7 +52,7 @@ namespace DS4WindowsTests
         public void TheSerializer_RequiresAllItsDependencies()
         {
             var store = new BackingStore();
-            var settings = Global.ProfileSettingsServiceInstance;
+            var settings = TestGlobals.ProfileSettingsServiceInstance;
             Assert.Throws<ArgumentNullException>(() => new LegacyProfileXmlSerializer(null, new PathService(), settings, new EnvironmentService()));
             Assert.Throws<ArgumentNullException>(() => new LegacyProfileXmlSerializer(store, null, settings, new EnvironmentService()));
             Assert.Throws<ArgumentNullException>(() => new LegacyProfileXmlSerializer(store, new PathService(), null, new EnvironmentService()));

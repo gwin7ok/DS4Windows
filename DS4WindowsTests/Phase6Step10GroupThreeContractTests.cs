@@ -43,19 +43,19 @@ namespace DS4WindowsTests
                 Directory.CreateDirectory(Dir);
                 ActionsPath = Path.Combine(Dir, "Actions.xml");
 
-                _originalPath = Global.store.m_Actions;
-                _originalActions = new List<SpecialAction>(Global.store.actions);
+                _originalPath = TestGlobals.Store.m_Actions;
+                _originalActions = new List<SpecialAction>(TestGlobals.Store.actions);
 
-                Global.store.m_Actions = ActionsPath;
-                Global.store.actions.Clear();
+                TestGlobals.Store.m_Actions = ActionsPath;
+                TestGlobals.Store.actions.Clear();
                 // 空の Actions.xml から始める（存在しない場合は既定のアクションが作られるため）
                 TestRepositoryFactory.CreateActionsXml().SaveActions();
             }
 
             public void Dispose()
             {
-                Global.store.m_Actions = _originalPath;
-                var list = Global.store.actions;
+                TestGlobals.Store.m_Actions = _originalPath;
+                var list = TestGlobals.Store.actions;
                 list.Clear();
                 list.AddRange(_originalActions);
                 try { Directory.Delete(Dir, true); } catch { }

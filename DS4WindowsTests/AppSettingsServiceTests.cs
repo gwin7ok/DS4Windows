@@ -11,9 +11,9 @@ namespace DS4WindowsTests
         public AppSettingsServiceTests()
         {
             var pathService = new PathService();
-            if (string.IsNullOrEmpty(Global.appdatapath))
+            if (string.IsNullOrEmpty(TestGlobals.AppDataPath))
             {
-                Global.appdatapath = pathService.AppDataPath;
+                TestGlobals.AppDataPath = pathService.AppDataPath;
             }
         }
 
@@ -139,18 +139,18 @@ namespace DS4WindowsTests
         public void StartMinimized_ShouldReadWriteSameEntityAsGlobal()
         {
             var service = TestRepositoryFactory.CreateAppSettingsService(new MockProfileXmlStore());
-            bool original = Global.store.startMinimized;
+            bool original = TestGlobals.Store.startMinimized;
             try
             {
                 service.StartMinimized = !original;
-                Assert.Equal(!original, Global.store.startMinimized);
+                Assert.Equal(!original, TestGlobals.Store.startMinimized);
 
-                Global.store.startMinimized = original;
+                TestGlobals.Store.startMinimized = original;
                 Assert.Equal(original, service.StartMinimized);
             }
             finally
             {
-                Global.store.startMinimized = original;
+                TestGlobals.Store.startMinimized = original;
             }
         }
 
@@ -158,15 +158,15 @@ namespace DS4WindowsTests
         public void MinimizeToTaskbar_ShouldReadWriteSameEntityAsGlobal()
         {
             var service = TestRepositoryFactory.CreateAppSettingsService(new MockProfileXmlStore());
-            bool original = Global.store.minToTaskbar;
+            bool original = TestGlobals.Store.minToTaskbar;
             try
             {
                 service.MinimizeToTaskbar = !original;
-                Assert.Equal(!original, Global.store.minToTaskbar);
+                Assert.Equal(!original, TestGlobals.Store.minToTaskbar);
             }
             finally
             {
-                Global.store.minToTaskbar = original;
+                TestGlobals.Store.minToTaskbar = original;
             }
         }
 
@@ -174,15 +174,15 @@ namespace DS4WindowsTests
         public void CloseMinimizes_ShouldReadWriteSameEntityAsGlobal()
         {
             var service = TestRepositoryFactory.CreateAppSettingsService(new MockProfileXmlStore());
-            bool original = Global.store.closeMini;
+            bool original = TestGlobals.Store.closeMini;
             try
             {
                 service.CloseMinimizes = !original;
-                Assert.Equal(!original, Global.store.closeMini);
+                Assert.Equal(!original, TestGlobals.Store.closeMini);
             }
             finally
             {
-                Global.store.closeMini = original;
+                TestGlobals.Store.closeMini = original;
             }
         }
 
@@ -190,15 +190,15 @@ namespace DS4WindowsTests
         public void UseExclusiveMode_ShouldReadWriteSameEntityAsGlobal()
         {
             var service = TestRepositoryFactory.CreateAppSettingsService(new MockProfileXmlStore());
-            bool original = Global.store.useExclusiveMode;
+            bool original = TestGlobals.Store.useExclusiveMode;
             try
             {
                 service.UseExclusiveMode = !original;
-                Assert.Equal(!original, Global.store.useExclusiveMode);
+                Assert.Equal(!original, TestGlobals.Store.useExclusiveMode);
             }
             finally
             {
-                Global.store.useExclusiveMode = original;
+                TestGlobals.Store.useExclusiveMode = original;
             }
         }
 
@@ -206,25 +206,25 @@ namespace DS4WindowsTests
         public void UdpServerSettings_ShouldReadWriteSameEntityAsGlobal()
         {
             var service = TestRepositoryFactory.CreateAppSettingsService(new MockProfileXmlStore());
-            bool originalUse = Global.store.useUDPServ;
-            int originalPort = Global.store.udpServPort;
-            string originalAddr = Global.store.udpServListenAddress;
+            bool originalUse = TestGlobals.Store.useUDPServ;
+            int originalPort = TestGlobals.Store.udpServPort;
+            string originalAddr = TestGlobals.Store.udpServListenAddress;
             try
             {
                 service.UseUdpServer = !originalUse;
-                Assert.Equal(!originalUse, Global.store.useUDPServ);
+                Assert.Equal(!originalUse, TestGlobals.Store.useUDPServ);
 
                 service.UdpServerPort = 27000;
-                Assert.Equal(27000, Global.store.udpServPort);
+                Assert.Equal(27000, TestGlobals.Store.udpServPort);
 
                 service.UdpServerListenAddress = "192.168.1.1";
-                Assert.Equal("192.168.1.1", Global.store.udpServListenAddress);
+                Assert.Equal("192.168.1.1", TestGlobals.Store.udpServListenAddress);
             }
             finally
             {
-                Global.store.useUDPServ = originalUse;
-                Global.store.udpServPort = originalPort;
-                Global.store.udpServListenAddress = originalAddr;
+                TestGlobals.Store.useUDPServ = originalUse;
+                TestGlobals.Store.udpServPort = originalPort;
+                TestGlobals.Store.udpServListenAddress = originalAddr;
             }
         }
 
@@ -238,37 +238,37 @@ namespace DS4WindowsTests
             string changedProperty = null;
             service.SettingChanged += (s, prop) => changedProperty = prop;
 
-            int originalWidth = Global.store.formWidth;
-            int originalHeight = Global.store.formHeight;
-            int originalX = Global.store.formLocationX;
-            int originalY = Global.store.formLocationY;
+            int originalWidth = TestGlobals.Store.formWidth;
+            int originalHeight = TestGlobals.Store.formHeight;
+            int originalX = TestGlobals.Store.formLocationX;
+            int originalY = TestGlobals.Store.formLocationY;
             try
             {
                 service.FormWidth = 1024;
                 Assert.Equal(nameof(service.FormWidth), changedProperty);
-                Assert.Equal(1024, Global.store.formWidth);
+                Assert.Equal(1024, TestGlobals.Store.formWidth);
 
                 changedProperty = null;
                 service.FormHeight = 768;
                 Assert.Equal(nameof(service.FormHeight), changedProperty);
-                Assert.Equal(768, Global.store.formHeight);
+                Assert.Equal(768, TestGlobals.Store.formHeight);
 
                 changedProperty = null;
                 service.FormLocationX = 100;
                 Assert.Equal(nameof(service.FormLocationX), changedProperty);
-                Assert.Equal(100, Global.store.formLocationX);
+                Assert.Equal(100, TestGlobals.Store.formLocationX);
 
                 changedProperty = null;
                 service.FormLocationY = 200;
                 Assert.Equal(nameof(service.FormLocationY), changedProperty);
-                Assert.Equal(200, Global.store.formLocationY);
+                Assert.Equal(200, TestGlobals.Store.formLocationY);
             }
             finally
             {
-                Global.store.formWidth = originalWidth;
-                Global.store.formHeight = originalHeight;
-                Global.store.formLocationX = originalX;
-                Global.store.formLocationY = originalY;
+                TestGlobals.Store.formWidth = originalWidth;
+                TestGlobals.Store.formHeight = originalHeight;
+                TestGlobals.Store.formLocationX = originalX;
+                TestGlobals.Store.formLocationY = originalY;
             }
         }
 
@@ -276,25 +276,25 @@ namespace DS4WindowsTests
         public void ControllerListColumnWidths_ShouldReadWriteSameEntityAsGlobal()
         {
             var service = TestRepositoryFactory.CreateAppSettingsService(new MockProfileXmlStore());
-            int originalIndex = Global.store.controllerIndexColWidth;
-            int originalStatus = Global.store.controllerStatusColWidth;
-            int originalBattery = Global.store.controllerBatteryColWidth;
+            int originalIndex = TestGlobals.Store.controllerIndexColWidth;
+            int originalStatus = TestGlobals.Store.controllerStatusColWidth;
+            int originalBattery = TestGlobals.Store.controllerBatteryColWidth;
             try
             {
                 service.ControllerIndexColWidth = 55;
-                Assert.Equal(55, Global.store.controllerIndexColWidth);
+                Assert.Equal(55, TestGlobals.Store.controllerIndexColWidth);
 
                 service.ControllerStatusColWidth = 66;
-                Assert.Equal(66, Global.store.controllerStatusColWidth);
+                Assert.Equal(66, TestGlobals.Store.controllerStatusColWidth);
 
                 service.ControllerBatteryColWidth = 77;
-                Assert.Equal(77, Global.store.controllerBatteryColWidth);
+                Assert.Equal(77, TestGlobals.Store.controllerBatteryColWidth);
             }
             finally
             {
-                Global.store.controllerIndexColWidth = originalIndex;
-                Global.store.controllerStatusColWidth = originalStatus;
-                Global.store.controllerBatteryColWidth = originalBattery;
+                TestGlobals.Store.controllerIndexColWidth = originalIndex;
+                TestGlobals.Store.controllerStatusColWidth = originalStatus;
+                TestGlobals.Store.controllerBatteryColWidth = originalBattery;
             }
         }
 
@@ -306,7 +306,7 @@ namespace DS4WindowsTests
             service.SettingChanged += (s, prop) => changedProperty = prop;
 
             int originalNotif = Global.Notifications;
-            bool originalSwipe = Global.store.swipeProfiles;
+            bool originalSwipe = TestGlobals.Store.swipeProfiles;
             try
             {
                 // デフォルト値(2)と衝突しないよう、元の値と異なる値を明示的に選ぶ
@@ -318,12 +318,12 @@ namespace DS4WindowsTests
                 changedProperty = null;
                 service.SwipeProfiles = !originalSwipe;
                 Assert.Equal(nameof(service.SwipeProfiles), changedProperty);
-                Assert.Equal(!originalSwipe, Global.store.swipeProfiles);
+                Assert.Equal(!originalSwipe, TestGlobals.Store.swipeProfiles);
             }
             finally
             {
                 Global.Notifications = originalNotif;
-                Global.store.swipeProfiles = originalSwipe;
+                TestGlobals.Store.swipeProfiles = originalSwipe;
             }
         }
     }

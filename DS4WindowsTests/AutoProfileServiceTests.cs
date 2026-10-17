@@ -13,9 +13,9 @@ namespace DS4WindowsTests
         public AutoProfileServiceTests()
         {
             var pathService = new PathService();
-            if (string.IsNullOrEmpty(Global.appdatapath))
+            if (string.IsNullOrEmpty(TestGlobals.AppDataPath))
             {
-                Global.appdatapath = pathService.AppDataPath;
+                TestGlobals.AppDataPath = pathService.AppDataPath;
             }
         }
 
@@ -131,7 +131,7 @@ namespace DS4WindowsTests
             // 一時プロファイルが適用された状態をセット
             settings.SetUseTempProfile(0, true);
             settings.SetTempProfileName(0, "GameProfile");
-            Global.store.autoProfileRevertDefaultProfile = true;
+            TestGlobals.Store.autoProfileRevertDefaultProfile = true;
 
             // 2回目のチェック: ゲーム終了・未知プロセス（デスクトップ等）
             mockInspector.ForegroundPath = @"c:\windows\explorer.exe";
@@ -155,7 +155,7 @@ namespace DS4WindowsTests
             var mockAppService = new MockProfileAppService();
             var service = TestRepositoryFactory.CreateAutoProfileService(holder, mockAppService, settings, mockInspector);
 
-            var original = Global.store.autoProfileSwitchNotifyChoice;
+            var original = TestGlobals.Store.autoProfileSwitchNotifyChoice;
             try
             {
                 var newValue = original == AutoProfileDisplayProfileSwitchChoices.LogAndNotification
@@ -163,11 +163,11 @@ namespace DS4WindowsTests
                     : AutoProfileDisplayProfileSwitchChoices.LogAndNotification;
 
                 service.AutoProfileSwitchNotifyChoice = newValue;
-                Assert.Equal(newValue, Global.store.autoProfileSwitchNotifyChoice);
+                Assert.Equal(newValue, TestGlobals.Store.autoProfileSwitchNotifyChoice);
             }
             finally
             {
-                Global.store.autoProfileSwitchNotifyChoice = original;
+                TestGlobals.Store.autoProfileSwitchNotifyChoice = original;
             }
         }
     }

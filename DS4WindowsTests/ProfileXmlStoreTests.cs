@@ -12,9 +12,9 @@ namespace DS4WindowsTests
         public void SaveProfileXml_ShouldReturnTrueOnSuccessfulWrite()
         {
             var pathService = new PathService();
-            if (string.IsNullOrEmpty(Global.appdatapath))
+            if (string.IsNullOrEmpty(TestGlobals.AppDataPath))
             {
-                Global.appdatapath = pathService.AppDataPath;
+                TestGlobals.AppDataPath = pathService.AppDataPath;
             }
 
             string profilesDir = pathService.ProfilesPath;
@@ -45,9 +45,9 @@ namespace DS4WindowsTests
         public void LoadProfileXml_NonExistentPath_ShouldNotThrow()
         {
             var pathService = new PathService();
-            if (string.IsNullOrEmpty(Global.appdatapath))
+            if (string.IsNullOrEmpty(TestGlobals.AppDataPath))
             {
-                Global.appdatapath = pathService.AppDataPath;
+                TestGlobals.AppDataPath = pathService.AppDataPath;
             }
 
             DS4WinWPF.AppHost.CreateHost();

@@ -198,12 +198,12 @@ namespace DS4WindowsTests
                 try
                 {
                     PathService.AppDataPathState = @"C:\Phase7Window";
-                    Assert.Equal(@"C:\Phase7Window", Global.appdatapath);
+                    Assert.Equal(@"C:\Phase7Window", TestGlobals.AppDataPath);
 
-                    Global.appdatapath = @"C:\Phase7Window2";
+                    TestGlobals.AppDataPath = @"C:\Phase7Window2";
                     Assert.Equal(@"C:\Phase7Window2", PathService.AppDataPathState);
 
-                    Global.exedirpath = @"C:\Phase7ExeWindow";
+                    TestGlobals.ExeDirPath = @"C:\Phase7ExeWindow";
                     Assert.Equal(@"C:\Phase7ExeWindow", PathService.ExecutableDirectoryState);
 
                     Assert.Equal(PathService.ExecutableLocationState, Global.exelocation);

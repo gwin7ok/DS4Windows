@@ -96,7 +96,7 @@ namespace DS4WindowsTests
         public void ResetConnectionFlags_SetsAllSlotsToFirstConnection()
         {
             var deviceState = TestRepositoryFactory.CreateDeviceStateService();
-            bool[] flags = Global.store.firstConnectionAfterStartup;
+            bool[] flags = TestGlobals.Store.firstConnectionAfterStartup;
             bool[] original = (bool[])flags.Clone();
             try
             {
@@ -110,7 +110,7 @@ namespace DS4WindowsTests
                 for (int i = 0; i < DS4Windows.ControllerLimits.TestProfileItemCount; i++)
                 {
                     Assert.True(deviceState.IsFirstConnection(i));
-                    Assert.True(Global.store.firstConnectionAfterStartup[i]);
+                    Assert.True(TestGlobals.Store.firstConnectionAfterStartup[i]);
                 }
             }
             finally

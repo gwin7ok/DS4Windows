@@ -25,12 +25,12 @@ namespace DS4WindowsTests
         public void GetProfileActionIndexOf_SharesStateWithGlobal_AndReturnsMinusOneWhenMissing()
         {
             const int slot = 0;
-            var original = Global.store.profileActionIndexDict[slot].ToDictionary(kv => kv.Key, kv => kv.Value);
+            var original = TestGlobals.Store.profileActionIndexDict[slot].ToDictionary(kv => kv.Key, kv => kv.Value);
             try
             {
-                Global.store.profileActionIndexDict[slot].Clear();
-                Global.store.profileActionIndexDict[slot]["TestAction"] = 3;
-                Global.store.profileActionIndexDict[slot]["FirstAction"] = 0;
+                TestGlobals.Store.profileActionIndexDict[slot].Clear();
+                TestGlobals.Store.profileActionIndexDict[slot]["TestAction"] = 3;
+                TestGlobals.Store.profileActionIndexDict[slot]["FirstAction"] = 0;
 
                 Assert.Equal(3, _actionProvider.GetProfileActionIndexOf(slot, "TestAction"));
                 Assert.Equal(0, _actionProvider.GetProfileActionIndexOf(slot, "FirstAction"));
@@ -43,9 +43,9 @@ namespace DS4WindowsTests
             }
             finally
             {
-                Global.store.profileActionIndexDict[slot].Clear();
+                TestGlobals.Store.profileActionIndexDict[slot].Clear();
                 foreach (var kv in original)
-                    Global.store.profileActionIndexDict[slot][kv.Key] = kv.Value;
+                    TestGlobals.Store.profileActionIndexDict[slot][kv.Key] = kv.Value;
             }
         }
 
@@ -53,19 +53,19 @@ namespace DS4WindowsTests
         public void GetProfileActionsRaw_ReturnsSameInstanceAsGlobal()
         {
             const int slot = 1;
-            var original = Global.store.profileActions[slot];
+            var original = TestGlobals.Store.profileActions[slot];
             try
             {
                 var list = new System.Collections.Generic.List<string> { "Alpha", "Beta" };
-                Global.store.profileActions[slot] = list;
+                TestGlobals.Store.profileActions[slot] = list;
 
                 // Global.getProfileActions と同じ実体参照を返す（ToArray() 等でコピーしない）ことを検証する。
                 Assert.Same(list, _actionProvider.GetProfileActionsRaw(slot));
-                Assert.Same(Global.store.profileActions[slot], _actionProvider.GetProfileActionsRaw(slot));
+                Assert.Same(TestGlobals.Store.profileActions[slot], _actionProvider.GetProfileActionsRaw(slot));
             }
             finally
             {
-                Global.store.profileActions[slot] = original;
+                TestGlobals.Store.profileActions[slot] = original;
             }
         }
 
@@ -75,7 +75,7 @@ namespace DS4WindowsTests
         public void GetControlSettingsGroup_ReturnsSameInstanceAsGlobal()
         {
             const int slot = 0;
-            var expected = Global.store.ds4controlSettings[slot];
+            var expected = TestGlobals.Store.ds4controlSettings[slot];
 
             var actual = _profileSettings.GetControlSettingsGroup(slot);
 

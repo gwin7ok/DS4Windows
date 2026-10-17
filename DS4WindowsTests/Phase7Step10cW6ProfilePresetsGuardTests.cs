@@ -54,7 +54,7 @@ namespace DS4WindowsTests
         [Fact]
         public void TheLoader_UsesThePresets_AndRequiresThem()
         {
-            Assert.Throws<ArgumentNullException>(() => new ProfilePresetLoader(new BackingStore(), Global.ProfileSettingsServiceInstance, null));
+            Assert.Throws<ArgumentNullException>(() => new ProfilePresetLoader(new BackingStore(), TestGlobals.ProfileSettingsServiceInstance, null));
 
             DS4WinWPF.AppHost.CreateHost();
             Assert.Same(DS4WinWPF.AppHost.GetService<ProfilePresets>(), DS4WinWPF.AppHost.GetService<ProfilePresets>());

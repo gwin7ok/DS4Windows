@@ -30,9 +30,9 @@ namespace DS4WindowsTests
         // UriFormatException（Invalid port specified）で失敗していた。ほかの ViewModel テストと同じ準備を明示する。
         static ProfileSettingsViewModelGlobalReferenceGuardTests()
         {
-            if (string.IsNullOrEmpty(Global.appdatapath))
+            if (string.IsNullOrEmpty(TestGlobals.AppDataPath))
             {
-                Global.appdatapath = AppContext.BaseDirectory;
+                TestGlobals.AppDataPath = AppContext.BaseDirectory;
             }
 
             if (System.Windows.Application.Current == null)

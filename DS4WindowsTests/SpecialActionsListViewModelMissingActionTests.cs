@@ -29,10 +29,10 @@ namespace DS4WindowsTests
                 // Actions.xml の保存先を、一時ディレクトリへ向ける（削除の保存が、実際の設定を書き換えないようにする）
                 _dir = System.IO.Path.Combine(System.IO.Path.GetTempPath(), "Phase6Step10_3b_" + System.Guid.NewGuid().ToString("N"));
                 System.IO.Directory.CreateDirectory(_dir);
-                _originalPath = Global.store.m_Actions;
-                Global.store.m_Actions = System.IO.Path.Combine(_dir, "Actions.xml");
+                _originalPath = TestGlobals.Store.m_Actions;
+                TestGlobals.Store.m_Actions = System.IO.Path.Combine(_dir, "Actions.xml");
 
-                var list = Global.store.actions;
+                var list = TestGlobals.Store.actions;
                 _original = new List<SpecialAction>(list);
                 list.Clear();
                 foreach (string name in names)
@@ -44,8 +44,8 @@ namespace DS4WindowsTests
 
             public void Dispose()
             {
-                Global.store.m_Actions = _originalPath;
-                var list = Global.store.actions;
+                TestGlobals.Store.m_Actions = _originalPath;
+                var list = TestGlobals.Store.actions;
                 list.Clear();
                 list.AddRange(_original);
                 try { System.IO.Directory.Delete(_dir, true); } catch { }
@@ -117,9 +117,9 @@ namespace DS4WindowsTests
             vm.RemoveAction(vm.ActionCol.Single(i => i.ActionName == "ActA"));
 
             Assert.DoesNotContain(vm.ActionCol, i => i.ActionName == "ActA");
-            Assert.DoesNotContain(Global.store.actions, a => a.name == "ActA");
-            Assert.Contains(Global.store.actions, a => a.name == "ActB");
-            string xml = System.IO.File.ReadAllText(Global.store.m_Actions);
+            Assert.DoesNotContain(TestGlobals.Store.actions, a => a.name == "ActA");
+            Assert.Contains(TestGlobals.Store.actions, a => a.name == "ActB");
+            string xml = System.IO.File.ReadAllText(TestGlobals.Store.m_Actions);
             Assert.DoesNotContain("ActA", xml);
             Assert.Contains("ActB", xml);
         }
@@ -130,13 +130,13 @@ namespace DS4WindowsTests
             using var scope = new ActionsScope("ActA");
             var vm = CreateVm();
             vm.LoadActions(false, "ActA/Gone");
-            string before = System.IO.File.ReadAllText(Global.store.m_Actions);
+            string before = System.IO.File.ReadAllText(TestGlobals.Store.m_Actions);
 
             vm.RemoveAction(vm.ActionCol.Single(i => i.ActionName == "Gone"));
 
             Assert.DoesNotContain(vm.ActionCol, i => i.ActionName == "Gone");
-            Assert.Contains(Global.store.actions, a => a.name == "ActA");
-            Assert.Equal(before, System.IO.File.ReadAllText(Global.store.m_Actions));
+            Assert.Contains(TestGlobals.Store.actions, a => a.name == "ActA");
+            Assert.Equal(before, System.IO.File.ReadAllText(TestGlobals.Store.m_Actions));
         }
 
     }

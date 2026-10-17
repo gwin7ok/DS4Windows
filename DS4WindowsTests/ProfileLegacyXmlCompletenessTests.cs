@@ -54,12 +54,12 @@ namespace DS4WindowsTests
         [Fact]
         public void SaveProfile_WritesEveryExpectedElement()
         {
-            string originalPath = Global.appdatapath;
+            string originalPath = TestGlobals.AppDataPath;
             string tempDir = Path.Combine(Path.GetTempPath(), "Phase6Step12_Completeness_" + Guid.NewGuid().ToString("N"));
             Directory.CreateDirectory(Path.Combine(tempDir, "Profiles"));
             try
             {
-                Global.appdatapath = tempDir;
+                TestGlobals.AppDataPath = tempDir;
                 var store = new BackingStore();
 
                 Assert.True(TestRepositoryFactory.CreateLegacyProfileXml(store).SaveProfile(0, "Completeness"));
@@ -75,7 +75,7 @@ namespace DS4WindowsTests
             }
             finally
             {
-                Global.appdatapath = originalPath;
+                TestGlobals.AppDataPath = originalPath;
                 try { Directory.Delete(tempDir, true); } catch { }
             }
         }
@@ -84,12 +84,12 @@ namespace DS4WindowsTests
         public void SaveProfile_TouchpadMouseStick_WritesOutputStickAndAxesOnce()
         {
             // 上流（2022-10-20）以来、軸が <OutputStick> として 2 回書かれ、<OutputStickAxes> が無かった不具合の再発防止
-            string originalPath = Global.appdatapath;
+            string originalPath = TestGlobals.AppDataPath;
             string tempDir = Path.Combine(Path.GetTempPath(), "Phase6Step12_OutputStick_" + Guid.NewGuid().ToString("N"));
             Directory.CreateDirectory(Path.Combine(tempDir, "Profiles"));
             try
             {
-                Global.appdatapath = tempDir;
+                TestGlobals.AppDataPath = tempDir;
                 var store = new BackingStore();
 
                 Assert.True(TestRepositoryFactory.CreateLegacyProfileXml(store).SaveProfile(0, "OutputStick"));
@@ -103,7 +103,7 @@ namespace DS4WindowsTests
             }
             finally
             {
-                Global.appdatapath = originalPath;
+                TestGlobals.AppDataPath = originalPath;
                 try { Directory.Delete(tempDir, true); } catch { }
             }
         }

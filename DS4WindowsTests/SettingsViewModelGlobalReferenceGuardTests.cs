@@ -125,27 +125,27 @@ namespace DS4WindowsTests
             var vm = DS4WinWPF.AppHost.GetService<SettingsViewModel>();
             Assert.NotNull(vm);
 
-            bool originalQuick = Global.store.quickCharge;
+            bool originalQuick = TestGlobals.Store.quickCharge;
             int originalOscPort = Global.getOSCServerPortNum();
-            double originalBeta = Global.store.udpSmoothingBeta;
+            double originalBeta = TestGlobals.Store.udpSmoothingBeta;
             string originalLevel = Global.LogMinLevel;
             try
             {
                 vm.QuickCharge = !originalQuick;
-                Assert.Equal(!originalQuick, Global.store.quickCharge);
+                Assert.Equal(!originalQuick, TestGlobals.Store.quickCharge);
                 Assert.Equal(!originalQuick, vm.QuickCharge);
 
                 vm.OscPort = originalOscPort + 1;
                 Assert.Equal(originalOscPort + 1, Global.getOSCServerPortNum());
 
                 vm.UdpSmoothBeta = originalBeta + 0.25;
-                Assert.Equal(originalBeta + 0.25, Global.store.udpSmoothingBeta);
+                Assert.Equal(originalBeta + 0.25, TestGlobals.Store.udpSmoothingBeta);
             }
             finally
             {
-                Global.store.quickCharge = originalQuick;
-                Global.store.oscServPort = originalOscPort;
-                Global.store.udpSmoothingBeta = originalBeta;
+                TestGlobals.Store.quickCharge = originalQuick;
+                TestGlobals.Store.oscServPort = originalOscPort;
+                TestGlobals.Store.udpSmoothingBeta = originalBeta;
                 Global.LogMinLevel = originalLevel;
                 vm.Dispose();
             }

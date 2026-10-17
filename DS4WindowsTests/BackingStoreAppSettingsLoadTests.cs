@@ -24,15 +24,15 @@ namespace DS4WindowsTests
         {
             _tempDir = Path.Combine(Path.GetTempPath(), "ds4w_p7s1w3_" + Guid.NewGuid().ToString("N"));
             Directory.CreateDirectory(_tempDir);
-            _originalExeDirPath = Global.exedirpath;
-            Global.exedirpath = _tempDir;
+            _originalExeDirPath = TestGlobals.ExeDirPath;
+            TestGlobals.ExeDirPath = _tempDir;
             _profilesXml = Path.Combine(_tempDir, "Profiles.xml");
             _fakeExeFile = Path.Combine(_tempDir, Global.CUSTOM_EXE_CONFIG_FILENAME);
         }
 
         public void Dispose()
         {
-            Global.exedirpath = _originalExeDirPath;
+            TestGlobals.ExeDirPath = _originalExeDirPath;
             try { Directory.Delete(_tempDir, true); } catch { }
         }
 

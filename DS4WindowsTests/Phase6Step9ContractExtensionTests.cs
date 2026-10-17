@@ -25,13 +25,13 @@ namespace DS4WindowsTests
         public void UseCustomSteamFolder_SharesStateWithGlobal_AndNotifiesOnChange()
         {
             var service = TestRepositoryFactory.CreateAppSettingsService();
-            bool original = Global.store.useCustomSteamFolder;
+            bool original = TestGlobals.Store.useCustomSteamFolder;
             var changed = new System.Collections.Generic.List<string>();
             service.SettingChanged += (s, name) => changed.Add(name);
             try
             {
                 service.UseCustomSteamFolder = !original;
-                Assert.Equal(!original, Global.store.useCustomSteamFolder);
+                Assert.Equal(!original, TestGlobals.Store.useCustomSteamFolder);
                 Assert.Equal(!original, service.UseCustomSteamFolder);
                 Assert.Contains(nameof(IAppSettingsService.UseCustomSteamFolder), changed);
 
@@ -42,7 +42,7 @@ namespace DS4WindowsTests
             }
             finally
             {
-                Global.store.useCustomSteamFolder = original;
+                TestGlobals.Store.useCustomSteamFolder = original;
             }
         }
 
@@ -50,16 +50,16 @@ namespace DS4WindowsTests
         public void CustomSteamFolder_SharesStateWithGlobal()
         {
             var service = TestRepositoryFactory.CreateAppSettingsService();
-            string original = Global.store.customSteamFolder;
+            string original = TestGlobals.Store.customSteamFolder;
             try
             {
                 service.CustomSteamFolder = @"C:\Phase6Step9\Steam";
-                Assert.Equal(@"C:\Phase6Step9\Steam", Global.store.customSteamFolder);
-                Assert.Equal(Global.store.customSteamFolder, service.CustomSteamFolder);
+                Assert.Equal(@"C:\Phase6Step9\Steam", TestGlobals.Store.customSteamFolder);
+                Assert.Equal(TestGlobals.Store.customSteamFolder, service.CustomSteamFolder);
             }
             finally
             {
-                Global.store.customSteamFolder = original;
+                TestGlobals.Store.customSteamFolder = original;
             }
         }
 
@@ -67,18 +67,18 @@ namespace DS4WindowsTests
         public void FakeExeName_ValidName_IsAppliedAndNotified()
         {
             var service = TestRepositoryFactory.CreateAppSettingsService();
-            string original = Global.store.fakeExeFileName;
+            string original = TestGlobals.Store.fakeExeFileName;
             var changed = new System.Collections.Generic.List<string>();
             service.SettingChanged += (s, name) => changed.Add(name);
             try
             {
                 service.FakeExeName = "Phase6Step9Fake";
-                Assert.Equal("Phase6Step9Fake", Global.store.fakeExeFileName);
+                Assert.Equal("Phase6Step9Fake", TestGlobals.Store.fakeExeFileName);
                 Assert.Contains(nameof(IAppSettingsService.FakeExeName), changed);
             }
             finally
             {
-                Global.store.fakeExeFileName = original;
+                TestGlobals.Store.fakeExeFileName = original;
             }
         }
 
@@ -86,7 +86,7 @@ namespace DS4WindowsTests
         public void FakeExeName_InvalidFileNameChars_AreIgnoredLikeGlobal_AndNotNotified()
         {
             var service = TestRepositoryFactory.CreateAppSettingsService();
-            string original = Global.store.fakeExeFileName;
+            string original = TestGlobals.Store.fakeExeFileName;
             var changed = new System.Collections.Generic.List<string>();
             service.SettingChanged += (s, name) => changed.Add(name);
             try
@@ -96,13 +96,13 @@ namespace DS4WindowsTests
 
                 // Global.store.fakeExeFileName の setter は、ファイル名に使えない文字を含む値を黙って無視する
                 service.FakeExeName = "bad|name?";
-                Assert.Equal("Phase6Step9Valid", Global.store.fakeExeFileName);
+                Assert.Equal("Phase6Step9Valid", TestGlobals.Store.fakeExeFileName);
                 Assert.Equal("Phase6Step9Valid", service.FakeExeName);
                 Assert.Empty(changed);
             }
             finally
             {
-                Global.store.fakeExeFileName = original;
+                TestGlobals.Store.fakeExeFileName = original;
             }
         }
 
@@ -154,7 +154,7 @@ namespace DS4WindowsTests
         {
             var service = new PathService();
 
-            Assert.Equal(Global.exedirpath, service.ProgramDirectory);
+            Assert.Equal(TestGlobals.ExeDirPath, service.ProgramDirectory);
             Assert.False(service.ProgramDirectory.EndsWith(Path.DirectorySeparatorChar.ToString()),
                 "ProgramDirectory は Global.exedirpath と同じく末尾に区切りを持たない（AppContext.BaseDirectory とは別物）");
             Assert.Equal(Path.GetDirectoryName(service.ExecutablePath), service.ProgramDirectory);
@@ -243,7 +243,7 @@ namespace DS4WindowsTests
         {
             var service = TestRepositoryFactory.CreateProfileSettingsService();
             // Phase7-Step8 W3: 旧 Global.outputKBMMapping は、Global.ProfileSettingsServiceInstance.OutputKBMMapping への転送プロパティだった
-            var globalSettings = Global.ProfileSettingsServiceInstance;
+            var globalSettings = TestGlobals.ProfileSettingsServiceInstance;
             VirtualKBMMapping originalMapping = globalSettings.OutputKBMMapping;
             try
             {

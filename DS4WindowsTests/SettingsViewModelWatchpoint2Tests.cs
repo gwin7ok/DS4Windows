@@ -18,9 +18,9 @@ namespace DS4WindowsTests
     {
         static SettingsViewModelWatchpoint2Tests()
         {
-            if (string.IsNullOrEmpty(Global.appdatapath))
+            if (string.IsNullOrEmpty(TestGlobals.AppDataPath))
             {
-                Global.appdatapath = AppContext.BaseDirectory;
+                TestGlobals.AppDataPath = AppContext.BaseDirectory;
             }
         }
 

@@ -22,36 +22,36 @@ namespace DS4WindowsTests
         [Fact]
         public void UDPServerSmoothingMincutoff_SharesStateWithGlobal()
         {
-            double original = Global.store.udpSmoothingMincutoff;
+            double original = TestGlobals.Store.udpSmoothingMincutoff;
             try
             {
-                Global.store.udpSmoothingMincutoff = original + 0.5;
+                TestGlobals.Store.udpSmoothingMincutoff = original + 0.5;
                 Assert.Equal(original + 0.5, _appSettings.UDPServerSmoothingMincutoff);
 
                 _appSettings.UDPServerSmoothingMincutoff = original + 0.25;
-                Assert.Equal(original + 0.25, Global.store.udpSmoothingMincutoff);
+                Assert.Equal(original + 0.25, TestGlobals.Store.udpSmoothingMincutoff);
             }
             finally
             {
-                Global.store.udpSmoothingMincutoff = original;
+                TestGlobals.Store.udpSmoothingMincutoff = original;
             }
         }
 
         [Fact]
         public void UDPServerSmoothingBeta_SharesStateWithGlobal()
         {
-            double original = Global.store.udpSmoothingBeta;
+            double original = TestGlobals.Store.udpSmoothingBeta;
             try
             {
-                Global.store.udpSmoothingBeta = original + 0.5;
+                TestGlobals.Store.udpSmoothingBeta = original + 0.5;
                 Assert.Equal(original + 0.5, _appSettings.UDPServerSmoothingBeta);
 
                 _appSettings.UDPServerSmoothingBeta = original + 0.25;
-                Assert.Equal(original + 0.25, Global.store.udpSmoothingBeta);
+                Assert.Equal(original + 0.25, TestGlobals.Store.udpSmoothingBeta);
             }
             finally
             {
-                Global.store.udpSmoothingBeta = original;
+                TestGlobals.Store.udpSmoothingBeta = original;
             }
         }
 
@@ -63,8 +63,8 @@ namespace DS4WindowsTests
             int betaFired = 0;
             EventHandler onMincutoff = (s, e) => mincutoffFired++;
             EventHandler onBeta = (s, e) => betaFired++;
-            double originalMincutoff = Global.store.udpSmoothingMincutoff;
-            double originalBeta = Global.store.udpSmoothingBeta;
+            double originalMincutoff = TestGlobals.Store.udpSmoothingMincutoff;
+            double originalBeta = TestGlobals.Store.udpSmoothingBeta;
             _appSettings.UDPServerSmoothingMincutoffChanged += onMincutoff;
             _appSettings.UDPServerSmoothingBetaChanged += onBeta;
             try
@@ -79,8 +79,8 @@ namespace DS4WindowsTests
             {
                 _appSettings.UDPServerSmoothingMincutoffChanged -= onMincutoff;
                 _appSettings.UDPServerSmoothingBetaChanged -= onBeta;
-                Global.store.udpSmoothingMincutoff = originalMincutoff;
-                Global.store.udpSmoothingBeta = originalBeta;
+                TestGlobals.Store.udpSmoothingMincutoff = originalMincutoff;
+                TestGlobals.Store.udpSmoothingBeta = originalBeta;
             }
         }
 
@@ -88,20 +88,20 @@ namespace DS4WindowsTests
         public void IsFirstConnection_And_MarkConnected_ShareStateWithGlobal()
         {
             const int slot = 0;
-            bool original = Global.store.firstConnectionAfterStartup[slot];
+            bool original = TestGlobals.Store.firstConnectionAfterStartup[slot];
             try
             {
-                Global.store.firstConnectionAfterStartup[slot] = true;
+                TestGlobals.Store.firstConnectionAfterStartup[slot] = true;
                 Assert.True(_deviceState.IsFirstConnection(slot));
-                Assert.Equal(Global.store.firstConnectionAfterStartup[slot], _deviceState.IsFirstConnection(slot));
+                Assert.Equal(TestGlobals.Store.firstConnectionAfterStartup[slot], _deviceState.IsFirstConnection(slot));
 
                 _deviceState.MarkConnected(slot);
-                Assert.False(Global.store.firstConnectionAfterStartup[slot]);
+                Assert.False(TestGlobals.Store.firstConnectionAfterStartup[slot]);
                 Assert.False(_deviceState.IsFirstConnection(slot));
             }
             finally
             {
-                Global.store.firstConnectionAfterStartup[slot] = original;
+                TestGlobals.Store.firstConnectionAfterStartup[slot] = original;
             }
         }
 
@@ -110,7 +110,7 @@ namespace DS4WindowsTests
         {
             // 旧 Global.containsLinkedProfile/getLinkedProfile と同じく、MAC アドレスのコロンを除去して照合する（Phase7-Step3 W5 でサービスへ移した）。
             const string key = "A1B2C3D4E5F6";
-            var linked = Global.store.linkedProfiles;
+            var linked = TestGlobals.Store.linkedProfiles;
             Assert.False(linked.ContainsKey(key));
             try
             {

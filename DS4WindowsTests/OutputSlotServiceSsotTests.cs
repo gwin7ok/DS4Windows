@@ -19,7 +19,7 @@ namespace DS4WindowsTests
         public void ThreeStates_AreDistinctArrays()
         {
             var service = TestRepositoryFactory.CreateOutputSlotService();
-            var settings = TestRepositoryFactory.CreateProfileSettingsService(Global.store);
+            var settings = TestRepositoryFactory.CreateProfileSettingsService(TestGlobals.Store);
 
             Assert.NotSame(settings.OutContType, service.ActiveOutDevType);
             Assert.NotSame(settings.OutContType, service.OutDevTypeTemp);
@@ -30,7 +30,7 @@ namespace DS4WindowsTests
         public void ChangingPersistentSetting_DoesNotAffectRuntimeOrTempState()
         {
             var service = TestRepositoryFactory.CreateOutputSlotService();
-            var settings = TestRepositoryFactory.CreateProfileSettingsService(Global.store);
+            var settings = TestRepositoryFactory.CreateProfileSettingsService(TestGlobals.Store);
 
             OutContType originalPersistent = settings.OutContType[Slot];
             OutContType originalActive = service.ActiveOutDevType[Slot];
@@ -54,7 +54,7 @@ namespace DS4WindowsTests
         public void ChangingRuntimeState_DoesNotAffectPersistentSetting()
         {
             var service = TestRepositoryFactory.CreateOutputSlotService();
-            var settings = TestRepositoryFactory.CreateProfileSettingsService(Global.store);
+            var settings = TestRepositoryFactory.CreateProfileSettingsService(TestGlobals.Store);
 
             OutContType originalPersistent = settings.OutContType[Slot];
             OutContType originalActive = service.ActiveOutDevType[Slot];
@@ -76,7 +76,7 @@ namespace DS4WindowsTests
             // 旧計画（SetOutputDeviceType を永続設定へ委譲する案）で懸念された、
             // UnplugSlot 経由で永続設定へ None が書き込まれる事故が起きないことを固定する。
             var service = TestRepositoryFactory.CreateOutputSlotService(TestRepositoryFactory.CreateOutputSlotManager());
-            var settings = TestRepositoryFactory.CreateProfileSettingsService(Global.store);
+            var settings = TestRepositoryFactory.CreateProfileSettingsService(TestGlobals.Store);
 
             OutContType originalPersistent = settings.OutContType[Slot];
             service.UnplugSlot(Slot);

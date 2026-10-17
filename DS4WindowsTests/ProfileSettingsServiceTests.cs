@@ -75,7 +75,7 @@ namespace DS4WindowsTests
             // Phase6-Step9-1: ProfileActions の setter は Global.store.profileActions の配列そのものを置き換える。
             // 戻さないと、後続のテストが編集スロット（Global.TEST_PROFILE_INDEX = 8）を引いたときに範囲外になる
             // （Phase6-Status.md §6.4-1）。置き換え前の配列へ必ず戻す。
-            System.Collections.Generic.List<string>[] originalActions = Global.store.profileActions;
+            System.Collections.Generic.List<string>[] originalActions = TestGlobals.Store.profileActions;
             try
             {
                 service.ProfileActions = newActions;
@@ -85,7 +85,7 @@ namespace DS4WindowsTests
             }
             finally
             {
-                Global.store.profileActions = originalActions;
+                TestGlobals.Store.profileActions = originalActions;
             }
         }
 
@@ -130,7 +130,7 @@ namespace DS4WindowsTests
             // 意図的に確認する（copilot-instructions.md §3.3-4 における「孤立プロパティ」検知の
             // ためのテストであり、削除・書き換えを行ってはならない）。
             var service = TestRepositoryFactory.CreateProfileSettingsService();
-            Global.ProfileSettingsServiceInstance = service;
+            TestGlobals.ProfileSettingsServiceInstance = service;
 
             Assert.Same(service.OutContType, Global.OutContType);
 
