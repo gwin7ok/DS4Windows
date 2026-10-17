@@ -1,7 +1,7 @@
 # フェーズ7 進捗管理文書: `Global`／`BackingStore` の解体、起動の近代化、`Mapping` の instance 化
 
 最終更新日: 2026-10-17  
-状態: **Step1・Step2・Step3 完了。次は Step4（計画書の作成から）。**  
+状態: **Step1・Step2・Step3 完了。Step3c の計画書（`Phase7-Step3c-Plan.md`）を作成済み。Q1〜Q6 の承認待ち。**  
 計画書: `Phase7-Plan.md`。調査: `Phase7-0-Survey.md`。残存台帳: `Phase7-Residual-Ledger.md`
 
 ---
@@ -14,6 +14,7 @@
 | Step1 | 整理と台帳の確定 | **完了**（2026-10-17。W1〜W4 のビルド・テスト成功、U-10 確認済み） | `Phase7-Step1-Plan.md`、`Phase7-Step1-Completion-Report.md` |
 | Step2 | DI インターフェースの 0 件メンバー（49）の個別判断 | **完了**（2026-10-17。W1〜W7 のビルド・テスト成功。U-11 の実機確認は未。完了報告書あり。判断: 削除 45／接続 3／温存 1。Phase8 へ 12） | `Phase7-Step2-Plan.md` |
 | Step3 | `BackingStore` の DI 化と `Global` の転送の削除 | **完了**（2026-10-17。W1〜W5 のビルド・テスト成功、W6 は文書。U-12 の実機確認は未。完了報告書あり） | `Phase7-Step3-Plan.md` |
+| Step3c | プロファイル適用・プリセット・イベントの `Global` からの移管（Step3 から持ち越し） | **計画書の承認待ち**（Q1〜Q6） | `Phase7-Step3c-Plan.md` |
 | Step4 | 起動・終了シーケンスの近代化 | 未着手 | |
 | Step5 | `Program.rootHub` と Service Locator の削除 | 未着手 | |
 | Step6 | 出力スロットの所有権の移動 | 未着手 | |
@@ -75,6 +76,6 @@
 
 ## 6. 直近の次アクション
 
-1. Step4 の調査を行い、`Phase7-Step4-Plan.md` を作成する（承認が必要な事項を明記）。
-2. Step3c の扱い（Step4 の後に別計画書にするか、Step4 に取り込むか）を、Step4 の調査で判断する。
+1. `Phase7-Step3c-Plan.md` §3（Q1〜Q6）の承認。承認後、Step3c を W1（特性化テスト）から実施。
+2. その後、Step4 の調査と `Phase7-Step4-Plan.md` の作成。
 3. 実機確認 U-11、U-12（任意のタイミング）。

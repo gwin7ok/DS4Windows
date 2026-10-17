@@ -1,0 +1,97 @@
+# Phase7-Step3c 計画書: プロファイル適用・プリセット・イベントの `Global` からの移管
+
+作成日: 2026-10-17  
+対象ブランチ: `For-DI-migration-work`  
+前提: `Phase7-Step3-Completion-Report.md` §5（Step3c への持ち越し）、`Phase7-Plan.md` §2（Step3 の 3c）  
+状態: **調査完了・決定事項 Q1〜Q6 の承認待ち。実装は承認後に Wave 単位で行う。**  
+ルール: ビルド・テストビルド・テスト実行・コミットはユーザーが行う。エージェントはローカルファイルの編集のみ。
+
+---
+
+## 0. 結論（先に）
+
+- 目的: `Global` に残っている「プロファイルを適用する処理」を、`ProfileApplicationService` などの DI サービスへ移し、`Global` の該当メンバーを削除する。
+- 対象は約 26 名（§1.2）。いずれも、呼び出し元は少ない（本体のサービス 4 つと `Mapping.cs` の 1 箇所、`BackingStore` の 1 箇所）。
+- 難しい点は、メンバーの数ではなく **処理の中身**（適用の手順、Halt の入れ子、静的な `ActionManager`／`Mapping` の呼び出し、イベントの発火元の変更）。したがって **先に特性化テストを書いてから移す**（Q6）。
+- 効果の見込み: `Global.*` 516 → 約 485（約 30 件減）。確定値は各 Wave の走査で出す。
+- 今回の対象外（理由は §3 の Q1）: `DS4LightBar`／`Mapping` が静的に読む状態の窓口（`tempprofileDistance`、`useTempProfile`、`DistanceProfiles`）、永続化（`CreateAutoProfiles`、`SaveAction` ほか）。
+
+## 1. 調査結果
+
+### 1.1 現状の構造
+- `Global.ApplyProfile`（本体）は、次の流れで動く。
+  - 一時プロファイルなら `LoadTempProfile`、通常なら `ProfilePath[device]` を更新して `LoadProfile`。
+  - 成功したら `CompleteProfileApplication`（約 95 行）を実行する: `SelectedProfile`／`OlderProfilePath` の更新、ログ、`LogProfileChanged`、`SelectedProfileChanged` イベントの発火、`ActionManager` の全エントリー破棄・デバイス状態破棄・事前確保、`Mapping.ClearKeyButtonControllersForDevice`、プロファイルのアクションの走査（トグル／押下の判定）。
+- 入口は 3 系統ある。
+  - `ProfileApplicationService.ApplyProfile`（Halt あり。`source == MappingAction` のときだけ Halt なし）と `ApplyFromAction`（Halt の内側で `Global.ApplyProfile` を直接呼ぶ）。呼び出しは `Global.ApplyProfile` の 3 箇所。
+  - `ProfileSlotApplier.ApplyToSlot` → `Global.ApplyProfileToSlot`（Halt なし。`Program.rootHub` を使う）。呼び出し元: `ControlService`（接続時）と `MainWindow` の 2 箇所（手動）。
+  - `Mapping.cs` の特殊アクション処理（`!handled` の経路）。`Task.Run` と `HaltReportingRunAction` の内側で `Global.ApplyProfile` を直接呼ぶ。
+- 既存の `ProfileRepository.LoadProfile` は、`Global.LoadProfile` とは別物（ファイルの存在確認があり、読み込み結果を無視して `true` を返す）。そのため、置き換えには使えない。
+- 2026-10-17 時点の Phase6 の TODO（K1: スロット 5〜8 の拒否など）は是正済み。残っているのは「接続処理中の Halt の入れ子」だけ。
+
+### 1.2 対象メンバーと呼び出し元（`Global.*`、コメントを除く）
+- **プロファイル適用**: `ApplyProfile`（`ProfileApplicationService` 3、`Mapping` 1、テスト 1）、`ApplyProfileToSlot`（`ProfileSlotApplier` 1、テスト 2）、`CompleteProfileApplication`（内部）、`LoadProfile`（`ApplyProfile` からのみ）、`LoadTempProfile`（`ProfileRepository` 1）。
+- **プリセット**: `LoadBlankDevProfile`／`LoadBlankDS4Profile`／`LoadDefault…Profile` の 10 名（`ProfilePresetLoader` が各 1。`LoadBlankDevProfile` は `ProfileRepository` も 1）。
+- **イベント**: `SelectedProfileChanged`（静的イベント）と `RaiseSelectedProfileChanged`。購読者は `ControllerListViewModel` だけ（`IProfileRepository` 経由）。
+- **状態の窓口**: `ProfilePath`／`OlderProfilePath`／`SelectedProfile`（`Global` の内部、つまり `CompleteProfileApplication` 以外に使用者なし。テスト 4）、`loggedInvalidActions`（`BackingStore` 2、`ProfileRepository` 1、`Global` 2）、`ProfileChangedNotification`（`AppSettingsService` 3。実体は `ProfileSettingsServiceInstance` 経由）、`getProfileActions`（テスト 1）、`GetProfileAction`（`CompleteProfileApplication` のみ）。
+- **対象外にするもの**（§3 Q1）: `tempprofileDistance`（`DS4LightBar` が `using static` で参照）、`useTempProfile`（`Mapping` が同様に参照）、`DistanceProfiles`（`DS4LightBar`）。これらは `ProfileSettingsServiceInstance`（Service Locator）への窓口で、静的な `DS4LightBar`／`Mapping` を instance 化する Step7〜9 で解消する。
+
+### 1.3 移管先に必要な依存と、残る静的呼び出し
+- `ProfileApplicationService` の新しい依存: `IProfileXmlStore`（読み込み）、`IProfileActionProvider`（プロファイルのアクションの取得。`Global.GetProfileAction` の置き換え）。パスは `IPathService`、配列とイベントは `IProfileRepository` が持つ（`ProfilePath`／`OlderProfilePath`／`SelectedProfile`／`RaiseSelectedProfileChanged`）。循環はない（`ControlService` は従来どおり `Func` で遅延解決）。
+- 移した後も静的に残る呼び出し: `ActionManager.ClearAllEntries`／`ClearDeviceState`／`PreallocateForProfileApply`（Phase8 の範囲）、`Mapping.ClearKeyButtonControllersForDevice`（Step7〜9）、`AppLogger`。これらは TODO を付けて残す。
+- `ProfilePresetLoader` の新しい依存: `BackingStore`、`IProfileSettingsService`。10 名の本体は同じ形（読み込み、既定の特殊アクション、エクストラ情報のキャッシュ、一時プロファイル状態のリセット）なので、1 つの私的ヘルパーにまとめられる。
+
+## 2. 設計
+
+- **適用の核を `ProfileApplicationService` に移す**（`Global.ApplyProfile` の TODO に書かれていた本来の姿）。
+  - 私的な核 `ApplyCore`（読み込み → 完了処理）を置き、公開の `ApplyProfile`（Halt あり）と、新設の Halt なしの入口の両方がこれを呼ぶ。
+  - 一時プロファイルの読み込みは `IProfileRepository.LoadTempProfile` を使い、`ProfileRepository.LoadTempProfile` の本体は `BackingStore.LoadProfile` ＋ 一時状態の更新（旧 `Global.LoadTempProfile` の処理）に置き換える。通常の読み込みは `IProfileXmlStore.LoadProfileXml` ＋ 一時状態のリセット（旧 `Global.LoadProfile` の処理）。
+- **`ProfileSlotApplier`** は、`IProfileApplicationService` の Halt なしの入口へ委譲する（Q2）。
+- **`SelectedProfileChanged`** は、`ProfileRepository` のインスタンスイベントにする（発火の呼び出しは `IProfileRepository.RaiseSelectedProfileChanged`）。`Global` の静的イベントは削除。`sender` が `null` から `ProfileRepository` に変わるが、購読者は `e` だけを使う。
+- **プリセット**は `ProfilePresetLoader` に移す。`IProfileRepository.LoadBlankProfile` は、`IProfilePresetLoader.LoadBlank` と重複するため削除し、呼び出し元の `ProfileSettingsViewModel` を `IProfilePresetLoader` に切り替える（Q4）。
+- **`loggedInvalidActions`** は `BackingStore` のインスタンスの `HashSet` にする（使用者が `BackingStore` と、クリアする側の読み込み処理だけのため）。
+- **`ProfileChangedNotification`** は `AppSettingsService` が `_config.profileChangedNotification` を直接使う（`ProfileSettingsService` はすでに同じフィールドを使っている）。
+
+## 3. ご判断をお願いしたい事項（選択肢と推奨）
+
+- **Q1: スコープ** — (A・推奨) §1.2 の対象（約 26 名）のみ。`tempprofileDistance`／`useTempProfile`／`DistanceProfiles`（`DS4LightBar`／`Mapping` の静的参照）と、永続化（`CreateAutoProfiles`、`SaveAction` ほか）は対象外とし、それぞれ Step7〜9／Step10 に残す。(B) `DS4LightBar`／`Mapping` の窓口も含める（静的クラスの instance 化とぶつかるため非推奨）。
+- **Q2: Halt の扱い** — (A・推奨) `IProfileApplicationService` に Halt なしの入口（仮称 `ApplyProfileWithoutHalt`）を追加し、`ProfileSlotApplier` が委譲する。接続処理中の Halt の入れ子を避ける現在の動作を維持できる。(B) 既存の `ApplyProfile` の Halt を、`source == ControlService` でも省略する条件を足す（暗黙の条件が増える）。
+- **Q3: `Mapping.cs` の呼び出し** — (A・推奨) `Global.ApplyProfile` の呼び出しを、すでに `Mapping` が保持している `profileApplication.ApplyProfile(…, ProfileChangeSource.MappingAction, prolog)` に置き換える。サービスは `MappingAction` のとき Halt を省略するため、`Mapping` 側の `HaltReportingRunAction` の内側で同じ順序で動く。変わる点は、スロット範囲・名前の検査と、例外を握って記録することだけ。(B) 今回は `Mapping.cs` を触らず、`Global.ApplyProfile` を薄い転送として残す（Step7〜9 まで `Global` に残るメンバーが 1 つ増える）。
+- **Q4: `IProfileRepository.LoadBlankProfile`** — (A・推奨) `IProfilePresetLoader.LoadBlank` と重複するため契約から削除し、`ProfileSettingsViewModel` を `IProfilePresetLoader` に切り替える（生成箇所 8 件の更新）。(B) 契約を残し、`ProfileRepository` が `IProfilePresetLoader` へ委譲する（`ProfileRepository` の生成箇所が増える）。(C) 重複する数行を `ProfileRepository` に書き写す。
+- **Q5: `SelectedProfileChanged`** — (A・推奨) `ProfileRepository` のインスタンスイベントにし、`Global` の静的イベントを削除。(B) 静的イベントを残す。
+- **Q6: 進め方** — (A・推奨) 先に特性化テストを書く（W1）。適用後の状態（`ProfilePath`、`SelectedProfile`、`OlderProfilePath`（一時プロファイルでは更新されない）、一時プロファイルの名前・使用・距離プロファイルの状態、イベントが 1 回だけ引数付きで発火、読み込み失敗時に何も変えない）を、現行の `Global.ApplyProfile` に対して固定してから移す。(B) 既存テストのみで進める（適用の核は既存テストが薄いため非推奨）。
+
+## 4. Wave 計画（各 Wave ＝ 1 コミット。ビルド・テストはユーザーが実行）
+
+- **W1: 特性化テスト**（コードの変更なし）
+  - 現行の `Global.ApplyProfile`／`ApplyProfileToSlot`／`LoadTempProfile`／プリセット 1 つ（`LoadBlankDevProfile`）の結果を固定するテストを追加（一時ディレクトリにプロファイルを作成）。Global の静的状態（`appdatapath`）を保存・復元する。
+- **W2: プリセットの移管**（Q4）
+  - 10 名を `ProfilePresetLoader` に移し、`Global` から削除。`IProfileRepository.LoadBlankProfile` を削除し、`ProfileSettingsViewModel` を切り替える。ラチェット: `ProfilePresetLoader` 10→0、`ProfileRepository` −1。
+- **W3: 適用の核の準備**（呼び出し元はまだ切り替えない）
+  - `loggedInvalidActions` を `BackingStore` へ。`ProfileRepository.LoadTempProfile` の実体化。`SelectedProfileChanged` を `ProfileRepository` のインスタンスイベントに（Q5）。`ProfileApplicationService` に `ApplyCore` と Halt なしの入口を追加（`IProfileXmlStore`／`IProfileActionProvider` の依存を追加。生成箇所 7 件の更新）。この時点では `Global.ApplyProfile` も残し、W1 のテストを新旧の両方に流す。
+- **W4: 呼び出し元の切り替えと `Global` の削除**
+  - `ProfileApplicationService` の 3 箇所、`ProfileSlotApplier`（Q2）、`Mapping.cs` の 1 箇所（Q3）を切り替え。`Global` から `ApplyProfile`／`ApplyProfileToSlot`／`CompleteProfileApplication`／`LoadProfile`／`LoadTempProfile`／`ProfilePath` 系 3／静的イベントと `Raise`／`getProfileActions`／`GetProfileAction` を削除。
+- **W5: `ProfileChangedNotification`**
+  - `AppSettingsService` を `_config.profileChangedNotification` に切り替え、`Global` から削除。
+- **W6: ガード・台帳・モデル図・完了報告書**
+  - `Phase7Step3RemovedGlobalForwardersGuardTests` に名前を追記（または新しいガード）。ラチェットの基準値、台帳、モデル図（03、04）、チェックリスト U-13、`Phase7-Step3c-Completion-Report.md`。
+- 各 Wave の共通作業: 削除の直前に、`Global.<名前>`、`DS4Windows.Global.<名前>`、`using static` の無修飾の使用（`Mapping.cs`、`DS4LightBar.cs`）、テストの参照、ソース文字列を正規表現で確認するテスト（`Assert.Matches(@"…Global\…")` 型）を再走査する。既存のコメントを消さない。
+
+## 5. リスクと検証
+
+- **適用の順序**: `CompleteProfileApplication` の手順（状態の更新 → ログ → イベント → `ActionManager`／`Mapping` の破棄 → アクションの走査）を一字一句保つ。W1 の特性化テストで、状態とイベントを固定する（`ActionManager`／`Mapping` の静的状態は、既存の方式で呼び出しが例外を出さないことだけを確認）。
+- **Halt の入れ子**（Q2）: 接続処理中の `ApplyToSlot` が Halt を使わない現在の動作を保つ。
+- **イベントの `sender` の変更**（Q5）: 購読者は `e` のみ使う。ログ（`Global_SelectedProfileChanged` ほか）に影響しない。
+- **`Mapping.cs`**（Q3）: 入力処理の経路に近いため、変更は 1 呼び出しに限り、前後の `HaltReportingRunAction`、`Task.Run`、後続の `DispatchOrSetBeingTriggered` は触らない。
+- **実機確認 U-13**（チェックリスト §11 に追記予定）: 特殊アクションでのプロファイル切替（通常・一時・復帰）、自動プロファイル、コントローラー接続時の適用、メイン画面での手動切替（`SelectedProfileChanged` による一覧の更新）、プロファイルエディターのプリセット読み込み。
+- 持ち越し: 窓口の `tempprofileDistance` ほか（Step7〜9）、`ActionManager` の静的呼び出し（Phase8）。
+
+## 6. 完了判定チェックリスト
+
+- [ ] W1〜W5 のビルド（警告 0）・テストビルド・テスト実行が成功している。
+- [ ] §1.2 の対象が `Global` から削除され、各サービスが DI で受けた依存を使っている（Q1〜Q6 の承認内容に従う）。
+- [ ] 特性化テストが、移管の前後で同じ結果を示している。
+- [ ] ラチェットの基準値が更新されている。
+- [ ] 台帳、モデル図、`Phase7-Status.md` が更新されている。
+- [ ] 実機確認 U-13。
+- [ ] `Phase7-Step3c-Completion-Report.md` が作成されている。
