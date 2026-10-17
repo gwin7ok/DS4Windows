@@ -103,7 +103,10 @@
 - W4: 保持クラス 3 つの `Shared` を削除。
 - W5: 台帳 §11、モデル図、U-18、完了報告書。`Global.*` 432 → 399、`AppHost` 11 → 5、`ServiceProviderHolder` 22 → 17。詳細は `Phase7-Step8-Completion-Report.md`。
 
-### Phase7-Step9〜Step10【未着手】
+### Phase7-Step9: 互換 `AppHost` の削除、`Mapping.cs` の `Global` 参照の再配置、K3【計画書作成済み・承認待ち（2026-10-17）】
+- `Phase7-Step9-Plan.md`（Q1〜Q5 は推奨つき。実装は未着手）。実機確認 U-11〜U-18 はユーザー判断で先送り。
+
+### Phase7-Step10【未着手】
 - 内容と依存関係は `Phase7-Plan.md` §2。
 
 ## 4. 実機確認の台帳（`Phase6-Step11-RealDevice-Verification-Checklist.md` §11）
