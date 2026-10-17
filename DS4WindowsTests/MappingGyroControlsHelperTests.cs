@@ -31,7 +31,7 @@ namespace DS4WindowsTests
             {
                 Global.store.gyroOutMode[Slot] = mode;
 
-                bool expected = Global.IsUsingSAForControls(Slot);
+                bool expected = mode == GyroOutMode.Controls; // Global.IsUsingSAForControls は Phase6-Step12 Wave 4 で削除（同じ判定）
                 bool actual = (bool)HelperMethod.Invoke(null, new object[] { Slot });
 
                 Assert.Equal(expected, actual);

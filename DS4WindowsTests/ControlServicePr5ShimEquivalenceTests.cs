@@ -109,13 +109,11 @@ namespace DS4WindowsTests
                 Global.store.containsCustomExtras[slot] = false;
                 Assert.True(_profileSettings.ContainsCustomAction(slot));
                 Assert.False(_profileSettings.ContainsCustomExtras(slot));
-                Assert.Equal(Global.containsCustomAction(slot), _profileSettings.ContainsCustomAction(slot));
 
                 Global.store.containsCustomAction[slot] = false;
                 Global.store.containsCustomExtras[slot] = true;
                 Assert.False(_profileSettings.ContainsCustomAction(slot));
                 Assert.True(_profileSettings.ContainsCustomExtras(slot));
-                Assert.Equal(Global.containsCustomExtras(slot), _profileSettings.ContainsCustomExtras(slot));
             }
             finally
             {
@@ -134,7 +132,6 @@ namespace DS4WindowsTests
                 Global.store.profileActionCount[slot] = original + 5;
 
                 Assert.Equal(original + 5, _actionProvider.GetProfileActionCount(slot));
-                Assert.Equal(Global.getProfileActionCount(slot), _actionProvider.GetProfileActionCount(slot));
             }
             finally
             {

@@ -180,4 +180,5 @@
 | U-6 | Joy-Con の結合デバイスのジャイロ（Step2-PR-4 ⑤） | — | Joy-Con の結合時のジャイロ | Joy-Con が用意できたとき | 未 |
 | U-7 | 更新通知（Step10-1-3） | 単体テスト（`Phase6Step10GroupOneViewModelTests`）で固定 | 「Skip Version」「Install Latest」の動作 | 新しいバージョンが公開されたとき | 未 |
 | U-8 | デバウンス時間の即時反映（Step12 の是正。`CheckProfileOptions` と `Debouncer.SetDuration`） | 単体テスト `DebouncerSetDurationTests`（0ms から有効化、0 へ戻す、呼び出しの存在） | 接続中にプロファイル編集画面の Debouncing を変えたときの反映 | 次に実機を使うとき（接続中に Other タブの Debouncing を 500 にして適用し、連打が抑えられること、0 に戻すと抑えられなくなること） | 未（2026-10-17 先送り） |
-| U-9 | （追加があれば記入） | | | | |
+| U-9 | Step12 Wave 3 後の起動・接続・プロファイル切替（`*Instance` フォールバック群の削除。Phase6-Step12-Plan.md §0A.13） | 単体テスト全件成功、ビルド警告 0。削除対象は呼び出し元 0 件で、実行経路に載っていない | 起動ログ（`Host initialized with runtime parser`）、コントローラーの接続、プロファイル切替、`Profiles` の読み書き | Step12 完了前（最終 Wave の後にまとめて実施する） | 未（2026-10-17 先送り） |
+| U-10 | （追加があれば記入） | | | | |

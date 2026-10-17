@@ -122,7 +122,7 @@ namespace DS4WindowsTests
 
             Assert.NotNull(service);
 
-            var saveEx = Record.Exception(() => Global.Save());
+            var saveEx = Record.Exception(() => service.Save());
             Assert.Null(saveEx);
 
             var loadEx = Record.Exception(() => Global.Load());

@@ -34,16 +34,9 @@ namespace DS4WindowsTests
                 Assert.Equal(3, _actionProvider.GetProfileActionIndexOf(slot, "TestAction"));
 
                 // Dictionary<TKey,TValue>.TryGetValue は未検出時に out 引数を default(int)(=0) で
-                // 上書きする。Global.GetProfileActionIndexOf も全く同じ実装（3494〜3499行）のため、
+                // 上書きする。移植元の Global.GetProfileActionIndexOf（Phase6-Step12 Wave 4 で削除）も同じ実装だったため、
                 // 未検出時は -1 ではなく 0 を返す（既存の挙動。Step3-1では変更しない）。
                 Assert.Equal(0, _actionProvider.GetProfileActionIndexOf(slot, "NoSuchAction"));
-                Assert.Equal(
-                    Global.GetProfileActionIndexOf(slot, "NoSuchAction"),
-                    _actionProvider.GetProfileActionIndexOf(slot, "NoSuchAction"));
-
-                Assert.Equal(
-                    Global.GetProfileActionIndexOf(slot, "TestAction"),
-                    _actionProvider.GetProfileActionIndexOf(slot, "TestAction"));
             }
             finally
             {
@@ -84,7 +77,6 @@ namespace DS4WindowsTests
             var actual = _profileSettings.GetControlSettingsGroup(slot);
 
             Assert.Same(expected, actual);
-            Assert.Same(Global.GetControlSettingsGroup(slot), actual);
         }
     }
 }

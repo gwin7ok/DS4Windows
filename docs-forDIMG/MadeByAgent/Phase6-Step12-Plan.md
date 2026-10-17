@@ -249,6 +249,25 @@ HEAD は `e0bc8258`（作業ツリーはクリーン）。以降の §0〜§6 �
 
 ---
 
+### 0A.14 Wave 4 の実施記録（2026-10-17、ビルド・テストはユーザーの実行待ち）
+
+- 前提: Wave 3 は、ビルド・テスト成功。実機確認は先送り（チェックリスト §11 の U-9。最終 Wave の後にまとめて実施）。
+- 再走査: 58 名が引き続き呼び出し元 0 件で、Wave 外メンバーからの内部参照も 0 件。
+- 削除（`Global.cs`）: 58 名（`getDefaultX360ControlBinding` を含む）。`BackingStore` へ直接転送していた薄いラッパー（`GetDS4Action`／`UpdateDS4CSetting`／`SaveProfile`／`Save`／`GetActions` ほか、`getXxxDeadzone`／`getXxxSens` 系）。あわせて、削除済み部品のコメントアウトされた旧コード（約 45 行）と、宛先を失った `///` の説明、見出し `Step10-2-A-3` を整理した。`Global.cs` は 3,472 行 → 2,414 行。
+- 温存（決定どおり）: `DS4_STICK_AXIS_MIDPOINT`。Wave 1 で外した `DebouncingMsHasChanged`（下記）。
+- テストの書き換え（7 ファイル。削除したテストは無し）:
+  - `AppSettingsServiceTests`: `Global.Save()` → `service.Save()`。
+  - `ControlServicePr5ShimEquivalenceTests`: 旧シムとの比較 3 行を削除（サービス側の確認は残す）。
+  - `MappingGyroControlsHelperTests`: 期待値を `mode == GyroOutMode.Controls` に置換。
+  - `Phase6Step3ContractExtensionTests`: 旧シムとの比較 2 件と `GetControlSettingsGroup` の比較 1 行を削除。
+  - `Phase6Step10GroupThreeContractTests`、`SpecialActionsListViewModelMissingActionTests`: `Global.GetActions()` → `Global.store.actions`（同じ実体）。
+  - テスト数の増減: 0 件。
+- ラチェット: `Global.cs` = (rootHub 6, AppHost **4**, Global 26)。全域は `Global.*` 759、`AppHost` 41、`Program.rootHub` 22（最終目標と一致）。
+- ガード: `Step12DeadShimRemovalGuardTests` に 58 名を追記。
+- 既知の持ち越し（Wave 5 の後に判断）: デバウンスの通知経路 — `DebouncingMsHasChanged`、`Global.DebouncingMsChanged`、`DS4Device.cs:1442` の購読ラムダ、`IProfileSettingsService.NotifyDebouncingMsChanged`／`DebouncingMsChanged`。案 A により不要になったが、実機確認（U-8）の後に削除を判断する。
+
+---
+
 ## 0. 背景と方針（2026-10-17 改訂。承認済みの決定は §0A.10）
 
 ### 0.1 Step2〜Step11 の完了実績と残存コードの状況
@@ -287,7 +306,7 @@ HEAD は `e0bc8258`（作業ツリーはクリーン）。以降の §0〜§6 �
 - **Wave 1**: 孤立コード 24 件＋イベント引数 3 型（`git rm`）。実施済み（§0A.11。`DebouncingMsHasChanged` は回帰確認のため温存）。テストの書き換えを伴う。ラチェット `Global.cs` の `Global` 47→45。
 - **Wave 2**: ProfileSettings 系の互換アクセサ 150 名（宣言 152 件）。実施済み（§0A.12）。`Global` 45→38。
 - **Wave 3**: `*Instance` のフォールバック群 19 件。実施済み（§0A.13。実機確認待ち）。`Global` 38→26、`AppHost` 11→5、`rootHub` 9→6。**この Wave の後に実機で起動・接続・プロファイル切替を確認**（起動ログ `Host initialized with runtime parser`）。
-- **Wave 4**: `BackingStore` 直転送ラッパー 62 件＋`getDefaultX360ControlBinding`。`AppHost` 5→4。
+- **Wave 4**: `BackingStore` 直転送ラッパー 58 件（`getDefaultX360ControlBinding` を含む）。実施済み（§0A.14）。`AppHost` 5→4。
 - **Wave 5**: 互換 `AppHost`（`DI/Compat/AppHost.cs`）の未使用 5 件、`AppDataPath` のセッター、ガードテストの最終確認、完了報告書（`Phase6-Step12-Completion-Report.md`、`Phase6-Completion-Report.md`）。
 - **各 Wave の共通作業**:
   - 対象の削除とテストの書き換え（旧シム専用の等価性テストは削除、書き換え可能なものは生存プロパティ・サービスへ）。削除したテストは一覧にして完了報告書へ記録する。

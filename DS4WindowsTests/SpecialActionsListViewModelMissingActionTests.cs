@@ -32,7 +32,7 @@ namespace DS4WindowsTests
                 _originalPath = Global.store.m_Actions;
                 Global.store.m_Actions = System.IO.Path.Combine(_dir, "Actions.xml");
 
-                var list = Global.GetActions();
+                var list = Global.store.actions;
                 _original = new List<SpecialAction>(list);
                 list.Clear();
                 foreach (string name in names)
@@ -45,7 +45,7 @@ namespace DS4WindowsTests
             public void Dispose()
             {
                 Global.store.m_Actions = _originalPath;
-                var list = Global.GetActions();
+                var list = Global.store.actions;
                 list.Clear();
                 list.AddRange(_original);
                 try { System.IO.Directory.Delete(_dir, true); } catch { }
@@ -117,8 +117,8 @@ namespace DS4WindowsTests
             vm.RemoveAction(vm.ActionCol.Single(i => i.ActionName == "ActA"));
 
             Assert.DoesNotContain(vm.ActionCol, i => i.ActionName == "ActA");
-            Assert.DoesNotContain(Global.GetActions(), a => a.name == "ActA");
-            Assert.Contains(Global.GetActions(), a => a.name == "ActB");
+            Assert.DoesNotContain(Global.store.actions, a => a.name == "ActA");
+            Assert.Contains(Global.store.actions, a => a.name == "ActB");
             string xml = System.IO.File.ReadAllText(Global.store.m_Actions);
             Assert.DoesNotContain("ActA", xml);
             Assert.Contains("ActB", xml);
@@ -135,7 +135,7 @@ namespace DS4WindowsTests
             vm.RemoveAction(vm.ActionCol.Single(i => i.ActionName == "Gone"));
 
             Assert.DoesNotContain(vm.ActionCol, i => i.ActionName == "Gone");
-            Assert.Contains(Global.GetActions(), a => a.name == "ActA");
+            Assert.Contains(Global.store.actions, a => a.name == "ActA");
             Assert.Equal(before, System.IO.File.ReadAllText(Global.store.m_Actions));
         }
 

@@ -44,10 +44,10 @@ namespace DS4WindowsTests
                 ActionsPath = Path.Combine(Dir, "Actions.xml");
 
                 _originalPath = Global.store.m_Actions;
-                _originalActions = new List<SpecialAction>(Global.GetActions());
+                _originalActions = new List<SpecialAction>(Global.store.actions);
 
                 Global.store.m_Actions = ActionsPath;
-                Global.GetActions().Clear();
+                Global.store.actions.Clear();
                 // 空の Actions.xml から始める（存在しない場合は既定のアクションが作られるため）
                 Global.store.SaveActions();
             }
@@ -55,7 +55,7 @@ namespace DS4WindowsTests
             public void Dispose()
             {
                 Global.store.m_Actions = _originalPath;
-                var list = Global.GetActions();
+                var list = Global.store.actions;
                 list.Clear();
                 list.AddRange(_originalActions);
                 try { Directory.Delete(Dir, true); } catch { }

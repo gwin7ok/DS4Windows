@@ -55,6 +55,18 @@ namespace DS4WindowsTests
             "UseGenericRumbleStrRescaleForDualSenses", "WheelSmoothInfo",
             // Wave 3（*Instance のフォールバック群）
             "CreateFallbackOutputSlotService", "deviceStateService", "DeviceStateServiceInstance", "environmentService", "EnvironmentServiceInstance", "fallbackDeviceStateService", "fallbackEnvironmentService", "fallbackOutputSlotService", "fallbackPathService", "fallbackProfileRepository", "fallbackSpecialActionRepository", "outputSlotService", "OutputSlotServiceInstance", "pathService", "PathServiceInstance", "profileRepository", "ProfileRepositoryInstance", "specialActionRepository", "SpecialActionRepositoryInstance",
+            // Wave 4（BackingStore 直転送ラッパー。getDefaultX360ControlBinding を含む）
+            "CalculateProfileActionCount", "CalculateProfileActionDicts", "containsCustomAction", "containsCustomExtras", "GetActions",
+            "GetControlSettingsGroup", "getDefaultX360ControlBinding", "GetDS4Action", "GetDS4Extra", "GetDS4KeyType", "GetDS4STrigger",
+            "getL2AntiDeadzone", "getL2Deadzone", "getL2Maxzone", "GetL2ModInfo", "getL2Sens", "getLSAntiDeadzone",
+            "GetLSAntiSnapbackInfo", "GetLSDeadInfo", "getLSDeadzone", "getLSMaxzone", "getLSRotation", "getLSSens",
+            "GetOutputDS4TriggerMode", "getProfileActionCount", "GetProfileActionIndexOf", "getR2AntiDeadzone", "getR2Deadzone",
+            "getR2Maxzone", "GetR2ModInfo", "getR2Sens", "getRSAntiDeadzone", "GetRSAntiSnapbackInfo", "GetRSDeadInfo", "getRSDeadzone",
+            "getRSMaxzone", "getRSRotation", "getRSSens", "GetSquareStickInfo", "getSXAntiDeadzone", "getSZAntiDeadzone",
+            "getTapSensitivity", "getTouchDisInvertTriggers", "GetTouchMouseStickInfo", "getTouchpadInvert",
+            "getTouchpadJitterCompensation", "getTouchSensitivity", "HasCustomActions", "HasCustomExtras", "IsUsingSAForControls",
+            "IsUsingTouchpadForControls", "Save", "SaveAsProfile", "SaveProfile", "SXAntiDeadzone", "SZAntiDeadzone", "UpdateDS4CSetting",
+            "UpdateDS4Extra",
         };
 
         private static readonly string[] RemovedFiles =
