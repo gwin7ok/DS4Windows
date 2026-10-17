@@ -76,6 +76,7 @@ namespace DS4WindowsTests
             "DS4_STICK_AXIS_MIDPOINT", "ASSEMBLY_RESOURCE_PREFIX", "RESOURCES_PREFIX", "Clamp",
             // Phase7-Step10b W1（表と変換。移し先は X360ControlTables／DS4ControlNames）
             "defaultButtonMapping", "reverseX360ButtonMapping", "xboxDefaultNames", "ds4DefaultNames", "ds4inputNames", "macroDS4Values", "getX360ControlString",
+            "getTransitionedColor", "HuetoRGB", "applyRatio", "iconChoiceResources",
         };
 
         private static readonly string[] RemovedFiles =
@@ -109,7 +110,7 @@ namespace DS4WindowsTests
         private static readonly string[] ProtectedInGlobal =
         {
             // Phase7-Step10a W4: 定数 5 つ・資源パスの定数 2 つ・Clamp は ControllerLimits／ResourcePaths／NumericUtil へ移し、Global から削除した
-            "getTransitionedColor",
+            // Phase7-Step10b W2: getTransitionedColor／HuetoRGB／applyRatio（→ ColorUtil）、iconChoiceResources（→ TrayIconResources）は Global から削除した
             // Phase7-Step4 W3: multisavespots／FindConfigLocation は PathService へ移した（Phase7Step4PathServiceGuardTests で確認）
             "appdatapath", "LogMaxArchiveFiles", "LogMinLevel", "SetCulture",
             // Phase7-Step4 W1: ViGEmBus の調べ物（RefreshViGEmBusInfo／IsRunningSupportedViGEmBus／vigembusVersion／vigemInstalled）は

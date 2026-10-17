@@ -42,8 +42,8 @@ namespace DS4WindowsTests
         [Fact]
         public void TheIconTable_UsesTheSamePrefix()
         {
-            Assert.Equal("/DS4Windows;component/Resources/DS4W.ico", DS4Windows.Global.iconChoiceResources[DS4Windows.TrayIconChoice.Default]);
-            Assert.Equal("/DS4Windows;component/Resources/DS4W - White.ico", DS4Windows.Global.iconChoiceResources[DS4Windows.TrayIconChoice.White]);
+            Assert.Equal("/DS4Windows;component/Resources/DS4W.ico", DS4WinWPF.DS4Forms.TrayIconResources.iconChoiceResources[DS4Windows.TrayIconChoice.Default]);
+            Assert.Equal("/DS4Windows;component/Resources/DS4W - White.ico", DS4WinWPF.DS4Forms.TrayIconResources.iconChoiceResources[DS4Windows.TrayIconChoice.White]);
         }
 
         [Fact]

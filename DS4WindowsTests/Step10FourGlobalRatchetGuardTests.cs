@@ -87,7 +87,8 @@ namespace DS4WindowsTests
             ["DS4Windows/DS4Control/Services/AppNotificationService.cs"] = (0, 0, 0),
             // Phase7-Step4 W3: FirstRun は PathService の状態、RunHotPlug はインスタンスの状態にした（8 → 2）
             ["DS4Windows/DS4Control/Services/AppSettingsService.cs"] = (0, 0, 2),
-            ["DS4Windows/DS4Control/Services/AppearanceSettingsService.cs"] = (0, 0, 4),
+            // Phase7-Step10b W2: iconChoiceResources を TrayIconResources へ移した（4 → 3）
+            ["DS4Windows/DS4Control/Services/AppearanceSettingsService.cs"] = (0, 0, 3),
             ["DS4Windows/DS4Control/Services/AutoProfileService.cs"] = (0, 0, 1),
             ["DS4Windows/DS4Control/Services/DefaultElevatedProcessLauncher.cs"] = (0, 0, 1),
             ["DS4Windows/DS4Control/Services/DeviceStateService.cs"] = (0, 0, 1),
