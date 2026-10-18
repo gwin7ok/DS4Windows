@@ -25,7 +25,7 @@
 │                               第2層: 信号変換層 (Domain & Application Core)                       │
 │  【ループ統括】 ControlService (ファサード) ──> IInputLoopCoordinator (高速ループ実行エンジン)       │
 │  【状態管理】   MappingPipelineContext Pool (スロット別常駐バッファ: インプレース更新 / Zero-GC)   │
-│  【切替制御】   IProfileApplicationService (適用/復帰/Halt) / IAutoProfileService (自動切替)     │
+│  【切替制御】   IProfileApplicationService (適用/復帰/Halt) / IAutoProfileService / IProfileSwitcher │
 │  【アクション】 IManagedActionManager (アクション実行・トグル)                                         │
 │  【マッピング】 IInputMappingPipeline (変換パイプライン親: Context統括)                           │
 │                 ├── IButtonProcessor (ボタン変換・シフト)   IStickProcessor (軸/カーブ/AntiSnap)   │
@@ -43,7 +43,7 @@
 │  └─ IInputReportParser / OutputReportEncoder  │  │  │   └─ IMacroPlayer (非同期時系列マクロ再生)  │
 │     ├─ DS4ReportParser / Encoder              │  │  3-c 副作用実行:                               │
 │     ├─ Vader4ProReportParser / Encoder        │  │      ├─ IProcessLauncher / ElevatedLauncher    │
-│     └─ DualSenseReportParser / Encoder        │  │      ├─ IProfileSwitcher (アクション内切替)     │
+│     └─ DualSenseReportParser / Encoder        │  │         (IProfileSwitcher は第2層へ移した)│
 │                                               │  │      ├─ IUdpServerService (Cemuhook Motion)    │
 │                                               │  │      └─ ILightbarService (LED/発光色計算)      │
 └───────────────────────────────────────────────┘  └───────────────────────────────────────────────┘
@@ -148,3 +148,6 @@
 %% - 第 4-c 層（サービス群）: BackingStore（設定の唯一の実体）と、永続化の型、プロファイル適用（ProfileApplicationService）、出力デバイス種別の所有（OutputSlotService）。
 %% - 第 2 層: Mapping が DI の Singleton の instance になり、第 3 層（IVirtualKBM）への依存はインターフェース経由のまま。
 %% - 依存方向に反する静的な窓口は、起動前に必要なもの（PathService／EnvironmentService の状態）を除いて解消した。残りは Phase8（第 1 層の静的な状態、Actions の ServiceProviderHolder）。
+%% 注釈補強（2026-10-19 依存図の検証［Phase8 前レビュー］。依存の向きの是正のみ）
+%% - IProfileSwitcher を、第3層（3-c）から第2層（【切替制御】）へ移した。プロファイルの切替はアプリ内部の状態遷移で、IProfileApplicationService（第2層）に依存するため、第3層に置くと第3層 → 第2層の上向きの辺と循環ができる。詳細は 01 の注釈。
+%% - 依存の規則: UI層(4) → 信号変換層(2) → { 入力監視層(1)、信号出力層(3)、横断基盤 }。第1層・第3層・横断基盤から第2層への参照は禁止（`.github/copilot-instructions.md` §1 も同様に書き直した）。

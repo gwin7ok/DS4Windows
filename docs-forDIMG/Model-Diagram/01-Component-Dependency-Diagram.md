@@ -10,6 +10,12 @@
 矢印（`-->`）は**「依存している（相手のインターフェースや仕様を知っている）」**方向を示す。
 すべての巨大ファイルは単一責任のクラスに分解され、具象ではなくインターフェースに依存する（DIP原則）。
 
+**凡例と読み方（2026-10-19 追記）**
+- **依存の方向**: UI層(4) → 信号変換層(2) → { 入力監視層(1)、信号・アクション出力層(3)、横断基盤・永続化層 }。信号変換層が核で、層の番号の大小ではなく、この向きが依存の規則である。第1層・第3層・横断基盤から第2層への参照は禁止（`.github/copilot-instructions.md` §1）。
+- **横断基盤・永続化層への依存は、図では大半を省略している**。実際には、ほぼすべてのサービスが設定・パス・環境・ストアに依存する（例: `ControlService` のコンストラクターは 19 引数で、10 個以上が基盤）。基盤は「どの層からも使える」ものとして扱い、辺を描かない（図の辺は、特定の部品が特定の基盤を使うことを説明したいものだけ）。
+- **ノードの実在**: 本図は目標構造である。2026-10-19 時点で、コードに実在しないノードがある（`InputLoopCoordinator`、`MappingPipelineContext`、`IInputMappingPipeline` と各 Processor、`IMouseEngine`、`IHidTransport`、各機種のパーサー、`IDeviceHotplugMonitor`、`ILightbarService`、`IDeviceOptionRepository`、サブ ViewModel 群）。Phase8 の Step2 で、実在／未実装の区別を図に反映する。
+- **層をまたぐ辺**: 第2層 → 第3層の辺は、第2層が出力のポート（インターフェース）を使うことを表す。向きは常に「第2層から出る」だけで、第3層から第2層へ戻る辺はない。
+
 ```mermaid
 flowchart TD
     %% 全ノードのデフォルト文字色を「純黒 #000000」に固定
@@ -59,6 +65,7 @@ flowchart TD
         Core_SlotApplier["IProfileSlotApplier<br>(接続時プロファイル適用の出力ポート。ControlService が定義)"]:::coreLayer
         Core_AutoProfile["IAutoProfileService<br>(プロセス監視切替)"]:::coreLayer
         Core_ActionMgr["IManagedActionManager<br>(アクション実行管理・トグル状態)"]:::coreLayer
+        Core_Switcher["IProfileSwitcher<br>(アクション内のプロファイル切替。第2層の内部契約)"]:::coreLayer
 
         subgraph Mapping_Processors ["Mapping Pipeline & Stateless Processors"]
             Pipe_Master["IInputMappingPipeline<br>(パイプライン親: Context更新統括)"]:::coreLayer
@@ -81,6 +88,8 @@ flowchart TD
         Core_SlotApplier -. 委譲（フェーズG以降） .-> Core_ProfileApp
         Pipe_Master --> Core_ActionMgr
         Core_AutoProfile --> Core_ProfileApp
+        Core_ActionMgr --> Core_Switcher
+        Core_Switcher --> Core_ProfileApp
     end
 
     %% ==========================================
@@ -124,7 +133,6 @@ flowchart TD
 
         subgraph Out_Actions ["3-c: アプリ・OS副作用実行"]
             Out_Launcher["IProcessLauncher / IElevatedProcessLauncher<br>(通常起動 / UAC昇格起動)"]:::egressLayer
-            Out_Switcher["IProfileSwitcher<br>(プロファイル切替実行)"]:::egressLayer
             Out_UDP["IUdpServerService<br>(Cemuhook Motion UDP配信)"]:::egressLayer
             Out_LED["ILightbarService<br>(LED/ライトバー計算・出力指示)"]:::egressLayer
         end
@@ -153,7 +161,6 @@ flowchart TD
     UI_Factory --> Layer2
     UI_Factory --> LayerInfra
     UI_VM_Main --> Layer2
-    UI_VM_Main --> Layer1
     VM_ProfileContainer --> Layer2
     VM_ProfileContainer --> LayerInfra
 
@@ -167,10 +174,8 @@ flowchart TD
 
     Core_ActionMgr --> Out_KBMHandler
     Core_ActionMgr --> Out_Launcher
-    Core_ActionMgr --> Out_Switcher
     Core_ActionMgr --> Out_SlotSvc
 
-    Out_Switcher --> Core_ProfileApp
     Core_ProfileApp --> Store_Profile
 
 %% 注釈補強（2026-09-19 Phase6-Step2 決定O1=B／O4=B-2 反映）
@@ -229,3 +234,8 @@ flowchart TD
 %% - 信号変換層: Mapping は DI の Singleton（IMapping）の instance。状態は SyntheticInputState／MacroRuntimeState／StickMotionState に分かれる。出力 KBM ハンドラの実体は OutputKBMHandlerAdapter（第 3 層）。
 %% - 入力監視層: 設定は IDeviceLayerSettings（Singleton）を Ds4DeviceRegistryAdapter が DS4Devices.LayerSettings へ渡す。DS4Devices／DS4LightBar／HidDevices の静的な状態は Phase8 以降。
 %% - Service Locator: Program.rootHub は 0、AppHost.GetService は App の窓口 1 件。ServiceProviderHolder の 17 件（Actions/）は Phase8。
+%% 注釈補強（2026-10-19 依存図の検証［Phase8 前レビュー］。依存の向きの是正のみ。構造の目標は変更しない）
+%% - IProfileSwitcher を、第3層（3-c）から第2層へ移した。理由: プロファイルの切替は外部への副作用ではなく、アプリ内部の状態遷移であり、IProfileApplicationService（第2層）に依存する。第3層に置くと「第3層 → 第2層」の上向きの辺と、IManagedActionManager → IProfileSwitcher → IProfileApplicationService の第2層・第3層間の循環ができた。実コードの DefaultProfileSwitcher も IProfileApplicationService を受け取る。
+%% - 「UI_VM_Main → 入力監視層（Layer1）」の辺を削除した。UI層は第2層だけに依存する（02 の依存方向図と一致）。実コードで、UI（DS4Forms）が IDs4DeviceRegistry／DS4Devices を使う箇所は、コメントアウトされた行のみ（IDs4DeviceRegistry の利用者は ControlService と、構築側の App／ServiceRegistration）。
+%% - 層をまたぐ辺は 19 本から 16 本になった（UI → 第1層 1 本を削除。IProfileSwitcher を第2層へ移したことで、上向きの 1 本［Out_Switcher → Core_ProfileApp］と第2層 → 第3層の 1 本［Core_ActionMgr → Out_Switcher］が、第2層の内部の辺になった）。
+%% - 持ち越し（Phase8 の Step2）: 層の箱全体を指す矢印（UI_Factory／UI_VM_Main／VM_ProfileContainer → Layer2／LayerInfra）の具体化または集約、第2層 → 第3層の辺（11 本）の「出力ポート」への集約と表の併記、実在／未実装の区別、Phase8 の統一ディスパッチ（TriggerBinding／IActionBinding 系）の反映。

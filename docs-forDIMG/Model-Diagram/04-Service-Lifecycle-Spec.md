@@ -73,7 +73,7 @@
 | **3.出力**| `IProcessLauncher` | `DefaultProcessLauncher` | **Singleton** | 外部プロセスの通常起動 | なし |
 | **3.出力**| `IElevatedProcessLauncher` | `DefaultElevatedProcessLauncher` | **Singleton** | UAC昇格を伴う外部ツールの起動 | なし |
 | **3.出力**| `IProcessInspector` | `DefaultProcessInspector` | **Singleton** | 実行中プロセスのパス・ウィンドウ名調査 | なし |
-| **3.出力**| `IProfileSwitcher` | `DefaultProfileSwitcher` | **Singleton** | アクションからのプロファイル切替実行 | `IProfileApplicationService` |
+| **2.変換**| `IProfileSwitcher` | `DefaultProfileSwitcher` | **Singleton** | アクションからのプロファイル切替実行（2026-10-19: 第3層から第2層へ移した。理由は 01 の注釈を参照。コードの配置は変えない） | `IProfileApplicationService` |
 | **3.出力**| `IUdpServerService` | `UdpServerService` | **Singleton** | Cemuhook 互換 UDP モーションデータ配信 | `IAppSettingsService` |
 | **4.UI** | `IViewModelFactory` | `ViewModelFactory` | **Singleton** | パラメータ付きViewModel / 複合ViewModelの生成ファクトリ | `IProfileSettingsService`, `IProfileRepository`, `ISpecialActionRepository`, `IOutputSlotService`, `IEnvironmentService`, `IPathService`, `IAppSettingsService`, `Func<IAutoProfileService>`・`Func<ControlService>`（生成のたびに遅延解決） |
 | **4.UI** | `IEditorWindowFactory` | `EditorWindowFactory` | **Singleton** | 補助ウィンドウ（ボタン割り当て・マクロ記録・プリセット・スティック校正・スペシャルアクション編集）の生成の窓口。UI スレッドで生成する | `IProfileSettingsService`, `IOutputSlotService`, `IPathService`, `IViewModelFactory`, `IProfilePresetLoader`, `Func<ControlService>`（生成のたびに遅延解決） |
