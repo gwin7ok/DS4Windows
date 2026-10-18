@@ -496,7 +496,9 @@ namespace DS4Windows
         private void SixMouseStick(SixAxisEventArgs arg)
         {
             int deltaX = 0, deltaY = 0;
-            deltaX = _profileSettings.GetGyroMouseStickHorizontalAxis(0) == 0 ? arg.sixAxis.gyroYawFull :
+            // Phase7b W2（K4-1）: 旧は GetGyroMouseStickHorizontalAxis(0) の固定で、2 台目以降も 1 台目のプロファイルの水平軸で動いていた
+            // （上流の元からの不具合。1 台だけのときは挙動が変わらない）。この Mouse が受け持つ台の設定を読む。
+            deltaX = _profileSettings.GetGyroMouseStickHorizontalAxis(deviceNum) == 0 ? arg.sixAxis.gyroYawFull :
                 arg.sixAxis.gyroRollFull;
             deltaY = -arg.sixAxis.gyroPitchFull;
             //int inputX = deltaX, inputY = deltaY;
