@@ -3,7 +3,7 @@
 作成日: 2026-10-19  
 対象ブランチ: `For-DI-migration-work`  
 上位: `Phase8-Unified-Trigger-Dispatch-Plan.md`（§5 Step3）、`Phase8-Step2-Design.md`（§3〜§8、§14〜§15、§22）、`Phase8-Step2-Completion-Report.md` §4  
-状態: **実施中（Q1〜Q7 を推奨どおり承認、2026-10-19）。W1〜W4 完了、W5 実装済み［ビルド・テスト待ち］**
+状態: **完了（2026-10-19。Q1〜Q7 を推奨どおり承認。W1〜W5 ビルド・テスト成功。完了報告書 `Phase8-Step3-Completion-Report.md`）**
 
 ---
 
@@ -75,10 +75,10 @@
 
 ## 7. 完了条件
 
-- [ ] W1〜W5 のビルド・テストが成功する（ユーザーが実行）。ラチェットの一致検査、1 ファイル 1 型のガードも成功する。
-- [ ] 新しい型は、`Mapping`・DI のどちらにも配線されていない（本番の挙動が変わっていない）。
-- [ ] `KeyInputAction`、`ITrigger`／`SingleButtonTrigger` が削除されている。
-- [ ] 完了報告書。
+- [x] W1〜W5 のビルド・テストが成功する（ユーザーが実行）。ラチェットの一致検査、1 ファイル 1 型のガードも成功する。
+- [x] 新しい型は、`Mapping`・DI のどちらにも配線されていない（本番の挙動が変わっていない）。
+- [x] `KeyInputAction`、`ITrigger`／`SingleButtonTrigger` が削除されている。
+- [x] 完了報告書。
 
 ## 8. 次の Step
 
