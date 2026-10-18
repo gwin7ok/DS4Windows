@@ -207,6 +207,61 @@ namespace DS4WindowsTests
             }
         }
 
+        // ---- キー種別（状態の遷移のみ。実際のキー送出は ActionManager／KeyAction の側で、ここでは見ない）----
+
+        [Fact]
+        public void KeyPress_EstablishedThenHeldThenReleased_TracksBeingTriggeredAndUntriggerIndex()
+        {
+            using var t = new SpecialActionTestScope();
+            SpecialAction sa = t.AddKey("L1", toggle: false);
+            int index = t.IndexOf(sa);
+            t.StateOf(sa).RequiresFreshPressAfterReset = false;
+            DS4State held = SpecialActionTestScope.Neutral();
+            held.L1 = true;
+
+            t.RunFrame(held);
+            Assert.True(ActionManager.IsBeingTriggered(sa, t.Device));
+            Assert.Equal(index, t.Mapping.deviceRuntime[t.Device].UntriggerIndex);
+
+            t.RunFrame(held); // 保持中も成立のまま
+            Assert.True(ActionManager.IsBeingTriggered(sa, t.Device));
+            Assert.Equal(index, t.Mapping.deviceRuntime[t.Device].UntriggerIndex);
+
+            t.RunFrame(SpecialActionTestScope.Neutral()); // 離す
+            Assert.False(ActionManager.IsBeingTriggered(sa, t.Device));
+            Assert.Equal(-1, t.Mapping.deviceRuntime[t.Device].UntriggerIndex);
+        }
+
+        [Fact]
+        public void KeyPress_WhileTheFreshPressGuardIsOn_DoesNotFire()
+        {
+            using var t = new SpecialActionTestScope();
+            SpecialAction sa = t.AddKey("L1", toggle: false);
+            t.StateOf(sa).RequiresFreshPressAfterReset = true;
+            DS4State held = SpecialActionTestScope.Neutral();
+            held.L1 = true;
+
+            t.RunFrame(held);
+
+            Assert.False(ActionManager.IsBeingTriggered(sa, t.Device));
+            Assert.Equal(-1, t.Mapping.deviceRuntime[t.Device].UntriggerIndex);
+        }
+
+        [Fact]
+        public void KeyToggle_DoesNotRegisterAnUntriggerIndex()
+        {
+            // Toggle は、物理的に離したときではなく、次の成立で切り替わるため、UntriggerIndex を登録しない
+            using var t = new SpecialActionTestScope();
+            SpecialAction sa = t.AddKey("L1", toggle: true);
+            t.StateOf(sa).RequiresFreshPressAfterReset = false;
+            DS4State held = SpecialActionTestScope.Neutral();
+            held.L1 = true;
+
+            t.RunFrame(held);
+
+            Assert.Equal(-1, t.Mapping.deviceRuntime[t.Device].UntriggerIndex);
+        }
+
         // ---- Stage3 の並行変更への耐性（Phase7c W1 の回帰ガード）----
 
         [Fact]

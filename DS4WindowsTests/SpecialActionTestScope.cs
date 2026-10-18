@@ -69,6 +69,16 @@ namespace DS4WindowsTests
             return Add(new SpecialAction(name, triggers, "Button", ((int)X360Controls.A).ToString(), 0, "Press\n"));
         }
 
+        /// <summary>キー種別の特殊アクション（出力キーは 65）を作って登録する。<paramref name="toggle"/> が偽なら Press。</summary>
+        public SpecialAction AddKey(string triggers, bool toggle)
+        {
+            string name = "p7c_key_" + Guid.NewGuid().ToString("N");
+            return Add(new SpecialAction(name, triggers, "Key", "65", 0, (toggle ? "Toggle" : "Press") + "\n"));
+        }
+
+        /// <summary><c>BackingStore.actions</c> での添字（<c>Mapping</c> が <c>UntriggerIndex</c> に使う値）。</summary>
+        public int IndexOf(SpecialAction action) => _store.actions.IndexOf(action);
+
         /// <summary>1 フレーム分の入力を評価する（<c>MapCustom</c> を 1 回実行して出力の状態を返す）。</summary>
         public DS4State RunFrame(DS4State input) => _inner.RunMapCustom(input);
 
