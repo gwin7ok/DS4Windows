@@ -2670,7 +2670,10 @@ namespace DS4Windows
             // --- Stage3: Synchronous Button SpecialAction handling ---
             try
             {
-                var profileActions = ctrl.ProfileActionProvider.GetProfileActionsRaw(device);
+                // Phase7c W1: 生の List<string> を直接列挙しない。プロファイルの読込（LegacyProfileXmlSerializer）が UI／適用スレッドで
+                // 同じリストを Clear→Add するため、列挙中に "Collection was modified" になり、そのフレームの Button SA の出力が打ち切られていた。
+                // MapCustomAction（4255 行付近）と同じく ToArray() で複製してから列挙する。
+                string[] profileActions = ctrl.ProfileActionProvider.GetProfileActionsRaw(device)?.ToArray();
                 if (profileActions != null)
                 {
                     // Maintain last-known trigger state to avoid logging the same "NOT active" repeatedly.
@@ -4650,8 +4653,9 @@ namespace DS4Windows
 
                                                     if (action.uTrigger.Count == 0 && !action.automaticUntrigger)
                                                     {
-                                                        IReadOnlyList<string> profileActionsNext = ctrl.ProfileActionProvider.GetProfileActionsRaw(device);
-                                                        for (int actionIndexNext = 0, profileListLenNext = profileActionsNext.Count; actionIndexNext < profileListLenNext; actionIndexNext++)
+                                                        // Phase7c W1: 生のリストを Count 固定の添字ループで読むと、縮んだときに範囲外例外になる。複製してから読む
+                                                        string[] profileActionsNext = ctrl.ProfileActionProvider.GetProfileActionsRaw(device)?.ToArray() ?? Array.Empty<string>();
+                                                        for (int actionIndexNext = 0, profileListLenNext = profileActionsNext.Length; actionIndexNext < profileListLenNext; actionIndexNext++)
                                                         {
                                                             string actionnameNext = profileActionsNext[actionIndexNext];
                                                             SpecialAction actionNext = ctrl.ProfileActionProvider.GetProfileAction(device, actionnameNext);
