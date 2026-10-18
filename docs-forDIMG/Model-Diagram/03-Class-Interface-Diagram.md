@@ -382,7 +382,6 @@ classDiagram
         +RemoveActionAndSave(actionName) bool「Actions.xml へ保存・読み直し」
         +GetActionOrPlaceholder(actionName) SpecialAction
     }
-|.. ViewModelFactory : implements
     ViewModelFactory ..> ProfileSettingsViewModel : creates
 
     %% ==========================================
