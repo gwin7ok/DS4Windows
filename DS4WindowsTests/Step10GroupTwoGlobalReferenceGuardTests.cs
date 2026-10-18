@@ -178,7 +178,8 @@ namespace DS4WindowsTests
             Assert.Throws<ArgumentNullException>(() => new DS4Windows.Services.EditorWindowFactory(settings, slots, path, vm, repo, null, cs, app, profiles, switcher, new DS4Windows.EnvironmentService()));
             Assert.Throws<ArgumentNullException>(() => new DS4Windows.Services.EditorWindowFactory(settings, slots, path, vm, repo, loader, null, app, profiles, switcher, new DS4Windows.EnvironmentService()));
             Assert.Throws<ArgumentNullException>(() => new DS4Windows.Services.EditorWindowFactory(settings, slots, path, vm, repo, loader, cs, null, profiles, switcher, new DS4Windows.EnvironmentService()));
-            Assert.Throws<ArgumentNullException>(() => new DS4Windows.Services.EditorWindowFactory(settings, slots, path, vm, repo, loader, cs, app, null, switcher));
+            Assert.Throws<ArgumentNullException>(() => new DS4Windows.Services.EditorWindowFactory(settings, slots, path, vm, repo, loader, cs, app, null, switcher, new DS4Windows.EnvironmentService()));
+            Assert.Throws<ArgumentNullException>(() => new DS4Windows.Services.EditorWindowFactory(settings, slots, path, vm, repo, loader, cs, app, profiles, switcher, null));
             Assert.Throws<ArgumentNullException>(() => new DS4Windows.Services.EditorWindowFactory(settings, slots, path, vm, repo, loader, cs, app, profiles, null, new DS4Windows.EnvironmentService()));
         }
 
