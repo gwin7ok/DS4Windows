@@ -4,7 +4,7 @@
 対象ブランチ: `For-DI-migration-work`  
 上位: `Phase8-Step2-Plan.md`（Q1〜Q9 を推奨の方向で承認）、`Phase8-Step2-Intent-Decisions.md`（承認済み）  
 入力: `Phase8-Step1-Trigger-Spec-Ledger.md`、`Phase8-Step1-Static-Access-Inventory.md`  
-状態: **W2（契約）は承認済み。W3（状態・スレッド・安全弁）は §14 以降に追記済み、承認待ち**。W4（移行計画）は、W3 の承認後に追記する  
+状態: **W2（契約）・W3（状態・スレッド・安全弁）は承認済み。W4（移行計画）は §22 以降に追記済み、承認待ち**。W5（モデル図の更新案）は、W4 の承認後  
 注意: 本書のコードブロックは**設計のスケッチ**で、コミットされた実装ではない。メンバー名は Step3 の実装時に調整してよい（意味を変える場合は本書を更新して承認を得る）。
 
 ---
@@ -386,3 +386,104 @@ for each binding b in registry.GetBindings(device) that has an IFrameOutputActio
 1. §14 の契約の修正 5 項目（エンジンの入口を 2 つに分ける、`DelayClock` をデバイスごとに共有、`IHeldOutputAction`、`BindingPolicy` の 2 項目、離したときの `Stop`）。
 2. 復帰の合図・抑制の集合をエンジンに移す（Step7 の Profile の切替で、`Mapping.deviceRuntime` から移す）。
 3. `OnProfileApplied` を、適用のスレッドから「次のフレームの先頭でリセット」の要求にする（§17）。
+
+---
+
+# 設計書（移行計画: W4）
+
+追記日: 2026-10-19（W4）。W3 の設計（§14〜§21）は承認済み。本節は、Step3〜Step9 の範囲、新旧の並行期間のしくみ、Step7 の PR の割り方、テストの流用、ロールバックを定める。
+
+## 22. Step3〜Step9 の範囲（`Phase8-Unified-Trigger-Dispatch-Plan.md` §5 の具体化）
+
+各 Step は、個別の計画書を作成し、承認を得てから進める。**Step3〜Step6 では、本番の挙動は変わらない**（新しい型を足し、配線するが、移行対象の種別が空）。挙動が新経路に移るのは Step7 の種別ごとの PR から。
+
+- **Step3: 判定と束縛の型（配線なし）**
+  - 新設: `ITriggerInput`／`TriggerInput`（`DelayClock` を含む）、`TriggerState`、`IInputAction` の改訂、`ComboTriggerInputAction`（AND 条件、`delayTime`、`InvertOnRelease`）、`BindingPolicy`／`UntriggerPolicy`、`TriggerBinding`、`IActionBinding` の改訂（`OnTriggered`／`OnReleased` の削除）。
+  - 書き直し: `KeyOutputAction`（`KeyAction` への委譲。§7）。削除: `KeyInputAction`、`ITrigger`／`SingleButtonTrigger`（Orphan-Decisions のとおり）。
+  - テスト: `ComboTriggerInputAction` の単体テスト（AND、遅延、反転、時刻の差し替え）、`KeyOutputAction` と系統 B（`KeyActionAdapter` 経由）の挙動一致、処理時間の簡易な比較の用意（割り当て 0 のテストを含む）。
+- **Step4: エンジンと出力の型（`Mapping` への配線は空の状態で）**
+  - 新設: `IFrameOutput` の実装（`outputfieldMapping` に書くアダプター）、`ButtonOutputAction`、`IHeldOutputAction`、`TriggerDispatchEngine`（`ProcessTriggers`／`ApplyFrameOutputs`／`IsSuppressed`／`OnProfileApplied`／`OnDeviceDisconnected`）。排他グループ（シフト）の解決を含む。
+  - 配線: `Mapping` に `ITriggerDispatchEngine` を注入し、**抑制の集合の所有を `Mapping` からエンジンへ移す**（§23.3）。旧ループに「所有しているアクションなら、エンジンに任せる」フックを入れる（§23.1）。移行対象が空なので、挙動は変わらない。
+  - テスト: エンジンを偽の束縛・出力で検証する単体テスト（エッジ検出、ガード、抑制、フレームの打ち切り、排他グループ、`OnProfileApplied` の後始末）。既存の全テストが変わらず成功すること。
+- **Step4b（挿入）**: `LoadProfile`／`SaveProfile` の分解ほか（`Phase8-Unified-Trigger-Dispatch-Plan.md` 2026-10-19 追記）。
+- **Step5: 登録簿とビルダー（空の移行対象で）**
+  - 新設: `ActionBindingRegistry`、`ActionBindingBuilder`、移行対象を持つ設定オブジェクト（§23.2）。プロファイルの読込・適用の完了後に `Replace(device, Build(device))` を呼ぶ（移行対象が空なら、空のリスト）。
+  - テスト: 各種別の `SpecialAction` から作る束縛の構成（ポリシーの値）、リスト差し替えのアトミック性、読込中の並行呼び出し。
+- **Step6: 接続・切断との連携**
+  - 切断時に `registry.Clear`／`engine.OnDeviceDisconnected`。`ClearState`／`ClearPendingRestore` の意味（`OlderProfilePath` の扱い）を調べて接続（Phase8-Step1 の発見）。接続時の紐付け（`IControllerRegistry` の利用の要否を、ここで確定）。
+  - テスト: 切断で束縛・合図・抑制が消えること、再接続後の復元（`ControlService` の接続処理）が従来どおりであること。
+- **Step7: 種別ごとの切替**（§24。1 種別 ＝ 1 PR）。
+- **Step8: 旧コードの削除**: `MapCustomAction`、Stage3、`TryDispatchSATrigger*`、`prevInputEstablished`、系統 B（`Actions.Action`、`*ActionAdapter`、`IActionFactory`／`DefaultActionFactory`／`ActionFactory`、`ActionEntry`）、`ActionManager` の静的 API（呼び出し元 0 件の 6 件を含む）、`IMapping` の `CaptureProfileUntrigger`／`RestoreProfileUntrigger`、`ServiceProviderHolder` の 17 件の注入化、旧フック。ラチェットの基準値を更新する。
+- **Step9: 総合検証**: 実機確認（全種別）、性能の比較、モデル図 01〜04 の更新、完了報告書。
+
+## 23. 新旧の並行期間のしくみ
+
+### 23.1 二重処理の防止: 「所有しているアクションはエンジンに任せる」フック
+- 旧ループ（`MapCustomAction`）の各アクションの先頭に、次のフックを入れる（Step4）。
+  ```csharp
+  if (_engine.Owns(device, action))              // 移行済みの種別で、束縛が登録されている
+  {
+      if (_engine.ProcessOwned(device, action, input, frame) == FrameResult.EndFrame) return;
+      continue;                                   // 旧経路の処理は一切しない
+  }
+  ```
+- **順序を保つ**: エンジンの処理を旧ループの中の**そのアクションの位置**で行うので、プロファイル内のアクションの順序（フレームの打ち切りで、後ろのアクションの処理が飛ぶ順序を含む）は、現行と変わらない。最終形（Step8）では、`ProcessTriggers` が束縛を順に処理する（このフックは消える）。
+- Stage3（Button）にも同じフック（`Owns` なら飛ばし、毎フレームの出力は `ApplyFrameOutputs` が担う）。
+- `ProcessOwned` は、単一の束縛の処理（§15.2 のループの本体）。`ProcessTriggers` は、これを順に呼ぶだけ。
+
+### 23.2 切り替えるスイッチ: 設定オブジェクト `BindingMigrationOptions`
+- ビルダーは、`BindingMigrationOptions.MigratedTypes`（`ISet<ActionTypeId>`）に含まれる種別の束縛だけを作る。**静的な窓口にしない**: DI の Singleton の設定オブジェクトを注入する。既定値は、コード中の 1 か所の一覧（Step7 の PR ごとに種別を足す）。
+- テストは、このオブジェクトを書き換えて、**同じ特性化テストを旧経路と新経路の両方で走らせる**（§25）。
+- ロールバックは、一覧から種別を外すだけ（§26）。
+
+### 23.3 共有する状態
+- `ActionInstanceState`（`IManagedActionManager`）は、新旧で**同じオブジェクト**を使う。`IsToggledOn`、`BeingTriggered`、`RequiresFreshPressAfterReset`、`IsExecuting` は、旧経路で処理するアクションと新経路で処理するアクションが、混在しても食い違わない。
+- **抑制の集合**（`suppressedTriggerButtons`）は、Step4 で**エンジンの所有に一本化**する。旧ループは、`engine.AddSuppressed`／`engine.ReleaseSuppressed`／`IsSuppressed` を呼ぶ（挙動は同じ）。新旧が別々の集合を持つと、通常の割り当ての抑制が食い違うため。
+- **復帰の合図**（`UntriggerAction`／`UntriggerIndex`）は、`Mapping.deviceRuntime` に残し、**Profile の PR（Step7）で一度に**エンジンへ移す（Profile だけが設定し、判定するため）。それまで、Key（Press）が共有の `UntriggerIndex` を設定する現行の挙動は、そのまま。
+  - 注意: Key を先に移行すると、Key が `UntriggerIndex` を上書きしなくなる。現行では、Key の Press が動いたとき、Profile の復帰の合図の `UntriggerIndex` を上書きしうる（偶発的な競合）。移行で**挙動が改善する方向の差**になるため、Key の PR の説明に明記する。
+- 時刻・遅延の基準（`nowAction`／`oldnowAction`）は、`TriggerInput.Delay` へ。新旧のどちらかの経路だけが `delayTime` つきのアクションを処理する種別ごとの移行では、旧配列と `Delay` の二重管理が起きる。→ Step4 で、旧ループも `input.Delay`（`Mapping` が持つ `TriggerInput`）を使うように揃える（旧配列を `Delay` の実体にする）。
+
+### 23.4 二重ディスパッチの検出
+- テスト用の検査: エンジンが処理したアクションの集合と、旧ループが処理したアクションの集合が、重ならないことを確認する（`Owns` が true のアクションは、旧ループの本体を通らない）。`Phase8Step1` までの特性化テストに、「旧経路の通過回数」を数える仕掛けを足す（テスト用のフックのみ。製品コードにカウンターは置かない）。
+
+## 24. Step7 の PR 一覧（案。順序は変更可）
+
+各 PR の共通の完了条件: ① 該当種別の特性化テストが、旧経路・新経路の両方で成功する（§25）。② 全テスト・ラチェットの一致検査が成功する。③ 処理時間の比較が許容範囲（現行の +5% 以内）。④ 実機確認の項目が合格（または先送りの記録）。⑤ 切り替えた種別の旧コードの分岐を削除する（Strangler Fig）。
+
+- **7.1 Button**（Press／Toggle）: `ButtonOutputAction`、Stage3 とバイパスの `MapCustomAction` の Button の分岐を削除。実機確認: ボタンの割り当て（Press、Toggle、マウス系、タッチパッドクリック）。
+- **7.2 Key**（Press／Toggle／リピート）: `KeyOutputAction`、`TryDispatchSATrigger*` の Key 用の経路、Key の分岐（解除トリガーを使う分岐は移植しない）を削除。実機確認: Press の押下・解放、Toggle の ON／OFF、長押しのリピート。
+- **7.3 Macro**: `MacroAction`＋`IHeldOutputAction`（Alt-Tab）、`RunOnRelease`（`InvertOnRelease`）。実機確認: マクロの単発、`RunOnRelease`、Alt-Tab マクロ。
+- **7.4 Program**: `LaunchProcessAction`、`IsExecuting`。実機確認: プログラムの起動（`$hidden` を含む）、押しっぱなしで繰り返し起動しないこと。
+- **7.5 Profile ＋ 復帰**（最大のリスク）: `ProfileSwitchAction`、復帰の合図を `Mapping.deviceRuntime` からエンジンへ、`OnProfileApplied` と `ProfileApplicationService` の連携、`IMapping` の `CaptureProfileUntrigger`／`RestoreProfileUntrigger` の削除、フレームの打ち切り（`RequestEndFrame`）。実機確認: プロファイルの切替、「Unload on trigger release」、解除トリガー、一時プロファイルの復帰、連続切替の安全弁。
+- **7.6 実機のデバイスを要する種別**（1 種別ずつ PR）: GyroCalibrate、DisconnectBT、BatteryCheck、ステアリング較正。実機確認が必須（機材がなければ、ガードの分岐までの検証と、リスク受容の記録）。
+- **7.7 XboxGameDVR／MultiAction**: `MultiTapInputAction`（タップ・長押し・ダブルタップ。状態の置き場を決める）。
+- **7.8 Controls タブ**（単一ボタンの割り当て）: `ProcessControlSettingAction`（約 400 行。Key・Button・Macro・マウス・シフトほか）を、同じエンジンに載せる。**範囲が大きく、追加の設計が要る**（Step2b として、7.7 の後に、別の設計書［`Phase8-Step2b-ControlsTab-Design.md`］を作る）。D2＝B1 の「Controls タブとスペシャルアクションの統一」の最後の部分。
+
+## 25. テストの流用と、性能・実機の検証
+
+- **同じ特性化テストを、両方の経路で**: `SpecialActionTestScope` に、`BindingMigrationOptions` を設定するパラメーター（`migrated: bool` または種別の集合）を足し、Phase7c・Step1 の特性化テスト（`Phase7cW2...`、`Phase8Step1...`）を `[Theory]` にして、旧経路（`migrated: false`）と新経路（`migrated: true`）の両方で流す。期待値は同じ。**新経路で食い違ったら、設計か実装を直す**（期待値を変えるのは、Intent-Decisions で承認した差だけ）。Step8 で旧経路を消した後は、新経路のみになる。
+- **新経路で足す回帰テスト**: Intent 項目 8（適用後の再成立が 1 回だけ実行される）、`DelayClock` の共有（`delayTime` つきのアクションが 2 つ）、排他グループ（シフト）、`OnProfileApplied` の後始末、`RequestEndFrame` でその後ろのアクションが処理されないこと。
+- **性能**: 簡易なベンチマーク（固定の入力で `MapCustom` を N 回呼び、1 回あたりの時間と割り当てを測る）を Step3 で用意し、各 PR の前後で比較する（許容: 現行の +5% 以内）。`MappingHotPathAllocationTests` を維持。
+- **実機確認**: `Phase6-Step11-RealDevice-Verification-Checklist.md` §11 に、PR ごとの項目を追加する（Step7 の各 PR で、U 番号を割り振る）。
+
+## 26. ロールバック
+
+- 種別の PR が問題を起こしたら、`MigratedTypes` から該当の種別を外せば、旧経路に戻る（旧コードは Step8 まで残してあるため）。→ **旧コードの削除（Step8）は、全種別の実機確認が済むまで行わない**。
+- 各 PR で旧コードの分岐を削除する運用（上の完了条件⑤）と、このロールバックは両立しない。→ **修正**: Step7 の各 PR では、旧コードの分岐を**残したまま**、スイッチ（`MigratedTypes`）だけで切り替える。旧コードは Step8 でまとめて削除する。ただし、Stage3 のような別経路（Button）の旧コードも同様に残す。
+
+  上の完了条件⑤は「旧コードの削除は Step8」に読み替える（D5 の「種別ごとの切替が完了するたびに削除対象として扱う」は、「削除可能になる」の意味とする）。
+
+## 27. リスクと対応（移行固有）
+
+- 旧ループのフックの挿入で、旧経路の挙動が変わる: フックは `Owns` が false のとき何もしない（Step4 のテストで、既存の全テストが変わらず成功することを確認）。
+- 順序が変わる（フレームの打ち切り）: フックで旧ループ内の位置を維持（§23.1）。順序の回帰テスト（打ち切りの前後のアクション）を足す。
+- 新旧で `ActionInstanceState` を共有することによる食い違い: 新経路は旧経路の語彙（`BeingTriggered` のエッジ）を使う。`Owns` で分離されたアクションは、片方の経路しか触らない。
+- Profile の PR（7.5）の規模: 復帰の合図の移行、適用との連携、Phase7b の退避・復元の撤去を含む。分割できる場合は（合図の移行と、`OnProfileApplied` の連携）2 PR にする。
+- 実機がなければ確認できない種別（7.6）: ガードの分岐までの検証と、リスク受容の記録。Phase8 の完了を、これらの確認の完了にかけるかは、Step9 で決める。
+
+## 28. 確認したい点（W4）
+
+1. §22 の Step の割り方（Step3〜Step6 は本番の挙動を変えない）。
+2. §23 の並行期間のしくみ（旧ループ内のフック、`BindingMigrationOptions` のスイッチ、抑制の集合をエンジンへ一本化、`DelayClock` を旧ループも使う）。
+3. §26 の修正: **旧コードは Step8 まで残し、Step7 はスイッチだけで切り替える**（D5 の運用を「削除可能になる」の意味に読み替える）。
+4. §24 の PR の割り方（7.1 Button → 7.2 Key → 7.3 Macro → 7.4 Program → 7.5 Profile ＋ 復帰 → 7.6 デバイスを要する種別 → 7.7 MultiAction → 7.8 Controls タブ［別の設計書］）。
