@@ -97,6 +97,34 @@
 
 ---
 
+## 4.1 W4 の調査結果と判断（承認済み）
+
+W3 の完了後に、Q5・Q6 の対象を調査した。実測は `git log -S`（追加したコミット）と、呼び出し元の検索（本体・テスト）による。各判断は、あなたの承認を得て実装する（copilot-instructions §2.2・§2.4）。
+
+### 4.1.1 `ColorUtil` の孤立コード（Q5）
+- 対象: `applyRatio(Color, Color, uint)`（private）と `HuetoRGB(float, float, float)`（public）。
+- 経緯: 10b W2 で `Global` から `ColorUtil` へ移した時点で、すでに呼び出し元が 0 件だった（TODO を付けて移動のみ）。`applyRatio(Color…)` は `HuetoRGB` だけを呼ぶ。本体のライトバーは `DS4LightBar.HuetoRGB(float, byte)` と `ColorUtil.getTransitionedColor` を使い、`DS4Color` も独自の `HuetoRGB` を持つ。
+- 判断: **削除する**（正規の経路と重複する並行実装の残骸。§2.4 の「使うべきでないもの」）。
+
+### 4.1.2 呼び出し 0 件の DI メンバー（Q6）
+- 検出方法: `DI/` のインターフェースの全メンバーのうち、本体での `.メンバー名` の使用が 0 件のものを抽出し、経緯を確認した。`IMainWindowFactory`・`IOutputSlotStore`・`IUdpServerService`（型名の一致）は誤検出。
+- `IAppSettingsService.CheckWhen` → **削除**。旧 `Global` の概念が撤廃済みで、設定ファイルへも保存されない（実装側のコメントにも「単体テストのみで参照される非連動プロパティ」とある）。
+- `IProfileSettingsService.SATriggerCond`（配列）→ **削除**。本体は `GetSATriggerCond(int)` だけを使う。
+- `IAutoProfileService.ClearState()` → **削除**。追加時から呼び出し元がなく、正規の経路は `IProfileSwitcher.ClearState(int)`。
+- `IProfileRepository.GetProfilePath` → **インターフェースから削除（実装は残す）**。パスの組み立ては `IPathService.GetProfilePath` が持つ。
+- `IPathService.GetProfilePath` → 維持（正規の経路）。
+- `IAppSettingsService.SettingChanged` → **維持（TODO 付き）**。全プロパティの変更時に発火する通知の契約（テスト 12 件）。画面への接続は Phase8。
+- `ISpecialActionRepository.ActionsChanged` → **維持（TODO 付き）**。実装は正しく発火する。旧 `ProfileActions.ActionsChanged` も購読者がなかった。
+- `IProfileSettingsService.UseTempProfileArray` → **維持（TODO 付き）**。`BackingStore` の状態の窓口。接続は Phase8。
+- `IDeviceStateService.DeviceSerialChange` → 維持（10d で決定済み。移行前から購読者なし）。
+- `IUdpServerService.Port` → 維持（情報用プロパティ）。
+- `IKeyButtonControllerRegistry.GetOrCreate` → 維持（`GetOrCreateForAction` が内部で使う）。
+
+### 4.1.3 実装
+- 削除: `ColorUtil` の 2 メンバー、`CheckWhen`（インターフェース・実装・テスト）、`SATriggerCond`（インターフェース・実装）、`IAutoProfileService.ClearState`（インターフェース・実装・テスト）、`IProfileRepository.GetProfilePath`（インターフェースのみ）。
+- 追記: 維持するもののうち `SettingChanged`・`ActionsChanged`・`UseTempProfileArray` に、経緯・未接続の理由・接続予定（Phase8）の TODO を付ける。
+- 回帰ガード: 削除したメンバーが再び宣言されないこと、TODO が残っていることを検査するテストを追加する。
+
 ## 5. 総合検証（実機確認の一括）
 
 - 範囲: `Phase6-Step11-RealDevice-Verification-Checklist.md` §11 の U-11〜U-21（U-1〜U-7 は機材・環境がなく確認不能のままリスク受容。U-8〜U-10 は確認済み）。U-13 は先送りしたままだが、総合検証で実施するか、リスク受容とするかを、検証時にあなたが決める。

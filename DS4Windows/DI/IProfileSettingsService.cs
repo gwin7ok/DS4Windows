@@ -12,6 +12,8 @@ namespace DS4Windows.DI
     {
 
         bool[] TouchpadActiveArray { get; set; }
+        // TODO(Phase8): 呼び出し元が 0 件のまま維持している。BackingStore の状態の窓口として作られたが、読み手が BackingStore を直接使っているため未接続。
+        // BackingStore の分割（Phase8）とあわせて、読み手をこの契約へ切り替える。Phase7-Step10e W4 で経緯を確認し、削除せず維持と判断した。
         bool[] UseTempProfileArray { get; set; }
         bool[] TempProfileDistanceArray { get; set; }
         // Phase7-Step10d W5: 旧 Global.DistanceProfiles（BackingStore.distanceProfiles の配列そのもの）。ライトバー（DS4LightBar）が読む。
@@ -157,7 +159,6 @@ namespace DS4Windows.DI
 
         // ---- Step10-2-A-7: SA/デッドゾーン関連 (m_Config委譲) ----
         string[] SATriggers { get; }
-        bool[] SATriggerCond { get; }
         string[] SAMousestickTriggers { get; }
         SASteeringWheelEmulationAxisType[] SASteeringWheelEmulationAxis { get; }
         int[] SASteeringWheelEmulationRange { get; }

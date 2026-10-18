@@ -407,7 +407,6 @@ namespace DS4Windows
 
         // ---- Step10-2-A-7: SA/デッドゾーン関連 (m_Config委譲) ----
         public string[] SATriggers => SafeConfig?.sATriggers;
-        public bool[] SATriggerCond => SafeConfig?.sATriggerCond;
         public string[] SAMousestickTriggers => SafeConfig?.sAMouseStickTriggers;
         public SASteeringWheelEmulationAxisType[] SASteeringWheelEmulationAxis => SafeConfig?.sASteeringWheelEmulationAxis;
         public int[] SASteeringWheelEmulationRange => SafeConfig?.sASteeringWheelEmulationRange;

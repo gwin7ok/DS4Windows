@@ -10,12 +10,13 @@ namespace DS4Windows.DI
         bool Save();
         bool Load();
 
+        // TODO(Phase8): 購読者が 0 件のまま維持している。AppSettingsService が全プロパティの変更時に発火する、画面への通知の契約（テスト 12 件が検証）。
+        // 画面（MainWindow／SettingsViewModel）の更新通知への接続は Phase8 で行う。Phase7-Step10e W4 で経緯を確認し、削除せず維持と判断した。
         event EventHandler<string> SettingChanged;
 
         bool StartMinimized { get; set; }
         bool MinimizeToTaskbar { get; set; }
         bool CloseMinimizes { get; set; }
-        int CheckWhen { get; set; }
         bool UseUdpServer { get; set; }
         int UdpServerPort { get; set; }
         string UdpServerListenAddress { get; set; }

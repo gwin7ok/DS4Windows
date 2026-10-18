@@ -7,7 +7,7 @@ namespace DS4Windows.DI
     public interface IProfileRepository
     {
         string ProfilesPath { get; }
-        string GetProfilePath(string profileName);
+        // Phase7-Step10e W4（承認済み）: GetProfilePath はインターフェースから削除した（実装クラスは内部で使う。パスの組み立ての正規の窓口は IPathService.GetProfilePath）。
 
         bool LoadProfile(int deviceIndex, string profileName);
         bool SaveProfile(int deviceIndex, string profileName);

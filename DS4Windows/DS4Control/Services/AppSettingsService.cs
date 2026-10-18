@@ -16,10 +16,7 @@ namespace DS4Windows.Services
         // 正規シムとし、UI層(MainWindow.xaml.cs等)からGlobal直参照した場合と完全に同一の実体を
         // 参照するようにする。従来はここに独立したprivateフィールドを持ち、Global側と非連動という
         // 「孤立した重複状態」バグがあった(Step13投入時に発覚)。
-        // CheckWhenのみ、対応するGlobal側の概念が既に撤廃されている(コメント "Legacy CheckWhen
-        // removed. Use explicit CheckEveryValue/CheckEveryUnit instead." 参照)ため、
-        // 単体テストのみで参照される非連動プロパティとして現状維持する。
-        private int _checkWhen;
+        // Phase7-Step10e W4（承認済み）: 非連動プロパティ CheckWhen（旧 Global 側の概念は撤廃済み）を削除した。
 
         public event EventHandler<string> SettingChanged;
 
@@ -89,19 +86,6 @@ namespace DS4Windows.Services
                 {
                     _config.closeMini = value;
                     NotifyChanged(nameof(CloseMinimizes));
-                }
-            }
-        }
-
-        public int CheckWhen
-        {
-            get => _checkWhen;
-            set
-            {
-                if (_checkWhen != value)
-                {
-                    _checkWhen = value;
-                    NotifyChanged(nameof(CheckWhen));
                 }
             }
         }

@@ -101,12 +101,6 @@ namespace DS4WindowsTests
             Assert.Equal(nameof(service.CloseMinimizes), changedProperty);
             Assert.True(service.CloseMinimizes);
 
-            // CheckWhen
-            changedProperty = null;
-            service.CheckWhen = 24;
-            Assert.Equal(nameof(service.CheckWhen), changedProperty);
-            Assert.Equal(24, service.CheckWhen);
-
             // UdpServerPort
             changedProperty = null;
             service.UdpServerPort = 26761;

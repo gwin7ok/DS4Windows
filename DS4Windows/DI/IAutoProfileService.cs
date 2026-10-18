@@ -16,10 +16,7 @@ namespace DS4Windows.DI
         /// </summary>
         void CheckProfiles();
 
-        /// <summary>
-        /// 内部のウィンドウ・プロセス追跡キャッシュをクリアします。
-        /// </summary>
-        void ClearState();
+        // Phase7-Step10e W4（承認済み）: 呼び出し元が追加時から 0 件だった ClearState() を削除した（正規の経路は IProfileSwitcher.ClearState(int)）。
 
         // ---- Phase5-Step13-4: AutoProfileHolder二重インスタンス問題の是正 ----
         /// <summary>

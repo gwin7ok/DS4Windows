@@ -242,14 +242,5 @@ namespace DS4Windows
                 Thread.SpinWait(1000);
             }
         }
-
-        public void ClearState()
-        {
-            lock (_syncLock)
-            {
-                _tempAutoProfile = null;
-                _turnOffTemp = false;
-            }
-        }
     }
 }
