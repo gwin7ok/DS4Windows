@@ -122,7 +122,7 @@ namespace DS4WindowsTests
             using var scope = new StaticStateScope();
             ResetForcedColorArrays();
 
-            int outOfRange = ControlService.CURRENT_DS4_CONTROLLER_LIMIT;
+            int outOfRange = new DS4Windows.EnvironmentService().ControllerSlotLimit;
             var vm = CreateViewModel(DS4Windows.ControllerLimits.TestProfileIndex, outOfRange);
 
             Assert.Equal(0, vm.FuncDevNum);

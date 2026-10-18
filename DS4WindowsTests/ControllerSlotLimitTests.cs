@@ -53,10 +53,5 @@ namespace DS4WindowsTests
             Assert.Equal(DS4Windows.ControllerLimits.MaxControllerCount, ControlService.EXPANDED_CONTROLLER_COUNT);
         }
 
-        [Fact]
-        public void ControlServiceStaticShim_SharesValueWithService() // Phase7-Step10b W4: USING_MAX_CONTROLLERS は削除済み（CURRENT_DS4_CONTROLLER_LIMIT のみ残る）
-        {
-            Assert.Equal(_environment.ControllerSlotLimit, ControlService.CURRENT_DS4_CONTROLLER_LIMIT);
-        }
     }
 }

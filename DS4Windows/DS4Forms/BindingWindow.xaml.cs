@@ -73,6 +73,7 @@ namespace DS4WinWPF.DS4Forms
             DS4Windows.DI.IEditorWindowFactory editorWindowFactory,
             DS4Windows.DI.IProfileSettingsService profileSettingsService,
             DS4Windows.DI.IOutputSlotService outputSlotService,
+            DS4Windows.DI.IEnvironmentService environmentService,
             DS4Windows.ControlService controlService,
             ExposeMode expose = ExposeMode.Full)
         {
@@ -83,7 +84,7 @@ namespace DS4WinWPF.DS4Forms
 
             this.controlService = controlService ?? throw new ArgumentNullException(nameof(controlService));
             this.expose = expose;
-            bindingVM = new BindingWindowViewModel(deviceNum, settings, profileSettingsService, outputSlotService, targetDevice);
+            bindingVM = new BindingWindowViewModel(deviceNum, settings, profileSettingsService, outputSlotService, environmentService, targetDevice);
 
             if (settings.control != DS4Windows.DS4Controls.None)
             {

@@ -43,13 +43,9 @@ namespace DS4Windows
         // Might be useful for ScpVBus build
         public const int EXPANDED_CONTROLLER_COUNT = 8;
         public const int MAX_DS4_CONTROLLER_COUNT = ControllerLimits.MaxControllerCount;
-        // TODO(技術的負債): 互換シム。値の SSOT は IEnvironmentService.ControllerSlotLimit / UsingMaxControllers。
-        // 未移行の外部呼び出し元（UI・ViewModel・ScpUtil・DTO・OutputSlotManager 等）のために static プロパティとして残す。
-        // 各呼び出し元はそれぞれの Step で IEnvironmentService の注入へ置換し、最終的に Phase6-Step12 で削除する
-        // （Phase6-Step2-Plan.md 決定O2/O3）。ControlService 内部は注入値 _controllerSlotLimit を使用する。
-        public static int CURRENT_DS4_CONTROLLER_LIMIT { get; } = EnvironmentService.ProcessControllerSlotLimit;
+        // Phase7-Step10e W2: 静的な互換シム CURRENT_DS4_CONTROLLER_LIMIT は削除した。値の SSOT は IEnvironmentService.ControllerSlotLimit / UsingMaxControllers。
+        // ControlService 内部は注入値 _controllerSlotLimit を使用する（Phase6-Step2-Plan.md 決定O2/O3）。
         // Phase7-Step10b W4: USING_MAX_CONTROLLERS（静的シム）は、呼び出し元 3 箇所を IEnvironmentService.UsingMaxControllers の注入に替えて削除した。
-        // CURRENT_DS4_CONTROLLER_LIMIT（30 箇所以上が使う）は Phase7-Step10d／10e で同様に置き換える。
         public DS4Device[] DS4Controllers = new DS4Device[MAX_DS4_CONTROLLER_COUNT];
         public DS4Device GetController(int deviceIndex)
         {

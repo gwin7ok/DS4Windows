@@ -65,7 +65,7 @@ namespace DS4WindowsTests
         {
             return new BindingWindowViewModel(DS4Windows.ControllerLimits.TestProfileIndex,
                 new DS4ControlSettings(DS4Controls.Cross),
-                TestRepositoryFactory.CreateProfileSettingsService(), TestRepositoryFactory.CreateOutputSlotService(), targetDevice);
+                TestRepositoryFactory.CreateProfileSettingsService(), TestRepositoryFactory.CreateOutputSlotService(), new DS4Windows.EnvironmentService(), targetDevice);
         }
 
         [Fact]
@@ -82,7 +82,7 @@ namespace DS4WindowsTests
         public void TargetDeviceIsOptional_DefaultsToNoTargetDevice()
         {
             var vm = new BindingWindowViewModel(DS4Windows.ControllerLimits.TestProfileIndex, new DS4ControlSettings(DS4Controls.Cross),
-                TestRepositoryFactory.CreateProfileSettingsService(), TestRepositoryFactory.CreateOutputSlotService());
+                TestRepositoryFactory.CreateProfileSettingsService(), TestRepositoryFactory.CreateOutputSlotService(), new DS4Windows.EnvironmentService());
 
             Assert.Equal(-1, vm.TargetDevice);
             Assert.False(vm.HasTargetDevice);
@@ -93,7 +93,7 @@ namespace DS4WindowsTests
         {
             using var scope = new LightBarStateScope();
 
-            var vm = CreateViewModel(ControlService.CURRENT_DS4_CONTROLLER_LIMIT);
+            var vm = CreateViewModel(new DS4Windows.EnvironmentService().ControllerSlotLimit);
 
             Assert.False(vm.HasTargetDevice);
             // 範囲外の添字で DS4LightBar の配列に触れない（例外にならず、何も変えない）

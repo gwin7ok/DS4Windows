@@ -165,10 +165,12 @@ namespace DS4WinWPF.DS4Forms
         private readonly IProfileSettingsService profileSettingsService;
         // Phase6-Step10-2-4a: 補助ウィンドウ（ボタン割り当て、プリセット、スティック校正、スペシャルアクション編集）の生成の窓口
         private readonly DS4Windows.DI.IEditorWindowFactory editorWindowFactory;
+        // Phase7-Step10e W2: スロット数の上限は、静的な environmentService.ControllerSlotLimit ではなく、注入された環境サービスから読む
+        private readonly DS4Windows.DI.IEnvironmentService environmentService;
 
         /// <summary>実機（targetDevice）が指定され、かつ有効なコントローラースロットの範囲内であるか。</summary>
         private bool HasTargetDevice =>
-            targetDevice >= 0 && targetDevice < ControlService.CURRENT_DS4_CONTROLLER_LIMIT;
+            targetDevice >= 0 && targetDevice < environmentService.ControllerSlotLimit;
         private ProfileSettingsViewModel profileSettingsVM;
         private readonly DS4Windows.DI.IProfileRepository profileRepository;
         private readonly DS4Windows.Actions.IProfileSwitcher profileSwitcher;
@@ -297,8 +299,10 @@ namespace DS4WinWPF.DS4Forms
         /// </param>
         public ProfileEditor(int targetDevice, IAppSettingsService appSettingsService, IProfileSettingsService profileSettingsService,
             DS4Windows.DI.IEditorWindowFactory editorWindowFactory, IProfileRepository profileRepository,
-            IProfileSwitcher profileSwitcher, ControlService controlService, IViewModelFactory viewModelFactory)
+            IProfileSwitcher profileSwitcher, ControlService controlService, IViewModelFactory viewModelFactory,
+            DS4Windows.DI.IEnvironmentService environmentService)
         {
+            this.environmentService = environmentService ?? throw new ArgumentNullException(nameof(environmentService));
             // Phase6-Step10-2-4a: 補助ウィンドウの生成を窓口へ依頼する（必須引数）
             this.editorWindowFactory = editorWindowFactory ?? throw new ArgumentNullException(nameof(editorWindowFactory));
             this.targetDevice = targetDevice;
@@ -1297,7 +1301,7 @@ namespace DS4WinWPF.DS4Forms
 
         private void CancelBtn_Click(object sender, RoutedEventArgs e)
         {
-            if (profileSettingsVM.FuncDevNum < ControlService.CURRENT_DS4_CONTROLLER_LIMIT)
+            if (profileSettingsVM.FuncDevNum < environmentService.ControllerSlotLimit)
             {
                 controlService.setRumble(0, 0, profileSettingsVM.FuncDevNum);
             }
@@ -1457,7 +1461,7 @@ namespace DS4WinWPF.DS4Forms
 
         public void Close()
         {
-            if (profileSettingsVM.FuncDevNum < ControlService.CURRENT_DS4_CONTROLLER_LIMIT)
+            if (profileSettingsVM.FuncDevNum < environmentService.ControllerSlotLimit)
             {
                 controlService.setRumble(0, 0, profileSettingsVM.FuncDevNum);
             }
@@ -1528,7 +1532,7 @@ namespace DS4WinWPF.DS4Forms
             // Phase6-Step7b: 振動させるのは実機（FuncDevNum＝targetDevice、実機なしならコントローラー0）。
             // モーターの左右反転（InverseRumbleMotors）は、編集中の設定（作業スロット deviceNum）の値を読む（決定4＝I1）
             int rumbleDevice = profileSettingsVM.FuncDevNum;
-            if (rumbleDevice < ControlService.CURRENT_DS4_CONTROLLER_LIMIT)
+            if (rumbleDevice < environmentService.ControllerSlotLimit)
             {
                 DS4Device d = controlService.DS4Controllers[rumbleDevice];
                 if (d != null)
@@ -2379,7 +2383,7 @@ namespace DS4WinWPF.DS4Forms
             // Phase6-Step7b: 校正するのは実機（FuncDevNum＝targetDevice、実機なしならコントローラー0）。
             // 編集スロットのフィールド deviceNum と区別するため、ローカル変数名を分けた
             int calibrationDevice = profileSettingsVM.FuncDevNum;
-            if (calibrationDevice < ControlService.CURRENT_DS4_CONTROLLER_LIMIT)
+            if (calibrationDevice < environmentService.ControllerSlotLimit)
             {
                 DS4Device d = controlService.DS4Controllers[calibrationDevice];
                 d.SixAxis.ResetContinuousCalibration();

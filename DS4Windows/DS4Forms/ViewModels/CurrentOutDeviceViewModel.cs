@@ -115,7 +115,7 @@ namespace DS4WinWPF.DS4Forms.ViewModels
         {
             outSlotManager = outputMan;
             // Set initial capacity at input controller limit in app
-            slotDeviceEntries = new List<SlotDeviceEntry>(ControlService.CURRENT_DS4_CONTROLLER_LIMIT);
+            slotDeviceEntries = new List<SlotDeviceEntry>(outputMan.OutputSlots.Length); // Phase7-Step10e W2: スロット数の上限どおりの長さ（OutputSlotManager が上限で作る）
             int idx = 0;
             foreach(OutSlotDevice tempDev in outputMan.OutputSlots)
             {

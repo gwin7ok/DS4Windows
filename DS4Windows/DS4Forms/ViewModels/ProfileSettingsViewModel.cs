@@ -3146,7 +3146,7 @@ namespace DS4WinWPF.DS4Forms.ViewModels
         /// Phase6-Step7b: ライトバーのプレビュー等、実機に触れる処理はこの判定を使う（編集スロット Device ではない）。
         /// </summary>
         private bool HasTargetDevice =>
-            targetDevice >= 0 && targetDevice < ControlService.CURRENT_DS4_CONTROLLER_LIMIT;
+            targetDevice >= 0 && targetDevice < environmentService.ControllerSlotLimit;
 
         // Phase6-Step7b: ライトバー強制色のプレビューは、編集スロット（Device）ではなく実機（targetDevice）に対して行う
         public void UpdateForcedColor(System.Windows.Media.Color color)

@@ -27,10 +27,11 @@ namespace DS4WindowsTests
         }
 
         [Fact]
-        public void TheStaticShim_IsGone_ButTheSlotLimitShimRemains()
+        public void TheStaticShims_AreGone()
         {
             Assert.Null(typeof(ControlService).GetProperty("USING_MAX_CONTROLLERS", BindingFlags.Static | BindingFlags.Public | BindingFlags.NonPublic));
-            Assert.NotNull(typeof(ControlService).GetProperty("CURRENT_DS4_CONTROLLER_LIMIT", BindingFlags.Static | BindingFlags.Public));
+            // Phase7-Step10e W2: CURRENT_DS4_CONTROLLER_LIMIT も削除した
+            Assert.Null(typeof(ControlService).GetProperty("CURRENT_DS4_CONTROLLER_LIMIT", BindingFlags.Static | BindingFlags.Public | BindingFlags.NonPublic));
         }
 
         [Fact]

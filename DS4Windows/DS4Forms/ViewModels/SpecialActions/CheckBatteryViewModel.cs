@@ -66,7 +66,7 @@ namespace DS4WinWPF.DS4Forms.ViewModels.SpecialActions
 
         public void UpdateForcedColor(System.Windows.Media.Color color, int device)
         {
-            if (device < ControlService.CURRENT_DS4_CONTROLLER_LIMIT)
+            if (device < environmentService.ControllerSlotLimit)
             {
                 DS4Color dcolor = new DS4Color() { red = color.R, green = color.G, blue = color.B };
                 DS4LightBar.forcedColor[device] = dcolor;
@@ -77,7 +77,7 @@ namespace DS4WinWPF.DS4Forms.ViewModels.SpecialActions
 
         public void StartForcedColor(System.Windows.Media.Color color, int device)
         {
-            if (device < ControlService.CURRENT_DS4_CONTROLLER_LIMIT)
+            if (device < environmentService.ControllerSlotLimit)
             {
                 DS4Color dcolor = new DS4Color() { red = color.R, green = color.G, blue = color.B };
                 DS4LightBar.forcedColor[device] = dcolor;
@@ -88,7 +88,7 @@ namespace DS4WinWPF.DS4Forms.ViewModels.SpecialActions
 
         public void EndForcedColor(int device)
         {
-            if (device < ControlService.CURRENT_DS4_CONTROLLER_LIMIT)
+            if (device < environmentService.ControllerSlotLimit)
             {
                 DS4LightBar.forcedColor[device] = new DS4Color(0, 0, 0);
                 DS4LightBar.forcedFlash[device] = 0;
@@ -108,9 +108,12 @@ namespace DS4WinWPF.DS4Forms.ViewModels.SpecialActions
 
         // Phase6-Step10-3-2: Global.SaveAction の置換先（必須引数）
         private readonly ISpecialActionRepository specialActionRepository;
+        // Phase7-Step10e W2: スロット数の上限は、静的な ControlService.CURRENT_DS4_CONTROLLER_LIMIT ではなく、注入された環境サービスから読む
+        private readonly IEnvironmentService environmentService;
 
-        public CheckBatteryViewModel(ISpecialActionRepository specialActionRepository)
+        public CheckBatteryViewModel(ISpecialActionRepository specialActionRepository, IEnvironmentService environmentService)
         {
+            this.environmentService = environmentService ?? throw new ArgumentNullException(nameof(environmentService));
             this.specialActionRepository = specialActionRepository ?? throw new ArgumentNullException(nameof(specialActionRepository));
         }
 

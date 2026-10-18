@@ -61,7 +61,7 @@ namespace DS4Windows
             if (AppLogger.IsTraceEnabled)
                 AppLogger.LogTrace($"[DI] ViewModelFactory: Created RecordBoxViewModel for Device {device}, targetDevice {targetDevice}");
             return new RecordBoxViewModel(device, controlSettings, recordMacro, extraHold,
-                _profileSettings, _controlServiceAccessor(), targetDevice);
+                _profileSettings, _environmentService, _controlServiceAccessor(), targetDevice);
         }
 
         public SpecialActEditorViewModel CreateSpecialActEditorViewModel(int device, SpecialAction action = null)

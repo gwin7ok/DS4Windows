@@ -223,7 +223,7 @@ namespace DS4WinWPF.DS4Forms
             }
 
             noContLb.Content = string.Format(Strings.NoControllersConnected,
-                ControlService.CURRENT_DS4_CONTROLLER_LIMIT);
+                environmentService.ControllerSlotLimit);
 
             // [Phase 5 Step 13-9] 二重実体化防止: 注入済み _autoProfileService を直接利用するため撤去
             // Phase6-Step10-2-3: AutoProfiles の Initialize に渡すため、解決を前へ移した（解決先は同じ）
@@ -231,7 +231,7 @@ namespace DS4WinWPF.DS4Forms
 
             // Phase6-Step10-2-3: XAML から生成されるコントロールへ、保持済みのサービスを渡す（AutoProfileHolder を読む前に呼ぶ）
             autoProfControl.Initialize(pathService, appSettingsService, _autoProfileService,
-                viewModelFactory ?? throw new ArgumentNullException(nameof(viewModelFactory)));
+                viewModelFactory ?? throw new ArgumentNullException(nameof(viewModelFactory)), environmentService);
             dupBox.Initialize(pathService);
             autoProfileHolder = autoProfControl.AutoProfileHolder;
             autoProfControl.SetupDataContext(profileListHolder);
@@ -1999,7 +1999,7 @@ Suspend support not enabled.", true);
         private void SyncProfileListAndControllers(string oldProfile = null, string newProfile = null,
             IReadOnlyCollection<string> targetProfiles = null)
         {
-            int slotCount = ControlService.CURRENT_DS4_CONTROLLER_LIMIT;
+            int slotCount = environmentService.ControllerSlotLimit;
 
             string[] activeProfiles = new string[slotCount];
             try

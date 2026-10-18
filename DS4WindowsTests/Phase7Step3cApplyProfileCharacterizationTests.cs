@@ -226,7 +226,7 @@ namespace DS4WindowsTests
             _repo.SelectedProfile[Slot] = "SelectedSentinel";
 
             Assert.False(_slotApplier.ApplyToSlot(-1, Normal, ProfileChangeSource.Manual));
-            Assert.False(_slotApplier.ApplyToSlot(ControlService.CURRENT_DS4_CONTROLLER_LIMIT, Normal, ProfileChangeSource.Manual));
+            Assert.False(_slotApplier.ApplyToSlot(new DS4Windows.EnvironmentService().ControllerSlotLimit, Normal, ProfileChangeSource.Manual));
             Assert.False(_slotApplier.ApplyToSlot(Slot, "", ProfileChangeSource.Manual));
             Assert.False(_slotApplier.ApplyToSlot(Slot, "   ", ProfileChangeSource.Manual));
             Assert.False(_slotApplier.ApplyToSlot(Slot, null, ProfileChangeSource.Manual));

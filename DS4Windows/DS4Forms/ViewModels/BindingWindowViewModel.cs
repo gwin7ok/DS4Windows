@@ -57,6 +57,8 @@ namespace DS4WinWPF.DS4Forms.ViewModels
         // （プロファイル一覧から開いた場合）。詳細は docs-forDIMG/MadeByAgent/Phase6-Step7b-Plan.md §2.1
         // Phase6-Step10-2-4b: Global.RefreshActionAlias の置換先（必須引数）
         private readonly IProfileSettingsService profileSettingsService;
+        // Phase7-Step10e W2: スロット数の上限は、静的な ControlService.CURRENT_DS4_CONTROLLER_LIMIT ではなく、注入された環境サービスから読む
+        private readonly IEnvironmentService environmentService;
         private readonly int targetDevice;
         public int TargetDevice { get => targetDevice; }
 
@@ -65,12 +67,13 @@ namespace DS4WinWPF.DS4Forms.ViewModels
         /// Phase6-Step7b: 実機に触れる処理はこの判定を使う（編集スロット DeviceNum ではない）。
         /// </summary>
         public bool HasTargetDevice =>
-            targetDevice >= 0 && targetDevice < ControlService.CURRENT_DS4_CONTROLLER_LIMIT;
+            targetDevice >= 0 && targetDevice < environmentService.ControllerSlotLimit;
 
         public BindingWindowViewModel(int deviceNum, DS4ControlSettings settings,
             IProfileSettingsService profileSettingsService, IOutputSlotService outputSlotService,
-            int targetDevice = -1)
+            IEnvironmentService environmentService, int targetDevice = -1)
         {
+            this.environmentService = environmentService ?? throw new ArgumentNullException(nameof(environmentService));
             this.profileSettingsService = profileSettingsService ?? throw new ArgumentNullException(nameof(profileSettingsService));
             if (outputSlotService == null) throw new ArgumentNullException(nameof(outputSlotService));
             this.deviceNum = deviceNum;

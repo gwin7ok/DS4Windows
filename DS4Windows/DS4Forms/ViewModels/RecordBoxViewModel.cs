@@ -113,6 +113,8 @@ namespace DS4WinWPF.DS4Forms.ViewModels
         /// </summary>
         private bool touchpadModeOverridden;
         private readonly IProfileSettingsService profileSettingsService;
+        // Phase7-Step10e W2: スロット数の上限は、静的な ControlService.CURRENT_DS4_CONTROLLER_LIMIT ではなく、注入された環境サービスから読む
+        private readonly IEnvironmentService environmentService;
         private readonly ControlService controlService;
 
         // Phase6-Step7b: 設定の読み書き先（DeviceNum＝編集スロット）とは別に、ライトバーのプレビューと
@@ -125,13 +127,15 @@ namespace DS4WinWPF.DS4Forms.ViewModels
         /// 実機（targetDevice）が指定され、かつ有効なコントローラースロットの範囲内であるか。
         /// </summary>
         private bool HasTargetDevice =>
-            targetDevice >= 0 && targetDevice < ControlService.CURRENT_DS4_CONTROLLER_LIMIT;
+            targetDevice >= 0 && targetDevice < environmentService.ControllerSlotLimit;
 
         public RecordBoxViewModel(int deviceNum, DS4ControlSettings controlSettings, bool shift, bool repeatable,
             IProfileSettingsService profileSettingsService,
+            IEnvironmentService environmentService,
             ControlService controlService,
             int targetDevice = -1)
         {
+            this.environmentService = environmentService ?? throw new ArgumentNullException(nameof(environmentService));
             this.targetDevice = targetDevice;
             this.profileSettingsService = profileSettingsService ?? throw new ArgumentNullException(nameof(profileSettingsService));
             // Phase6-Step10-2-4b: Program.rootHub への後退を廃止。ControlService は EditorWindowFactory から渡す。

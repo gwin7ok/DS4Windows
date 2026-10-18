@@ -80,8 +80,10 @@ namespace DS4WinWPF.DS4Forms
         public void Initialize(DS4Windows.DI.IPathService pathService,
             DS4Windows.DI.IAppSettingsService appSettingsService,
             DS4Windows.DI.IAutoProfileService autoProfileService,
-            DS4Windows.DI.IViewModelFactory viewModelFactory)
+            DS4Windows.DI.IViewModelFactory viewModelFactory,
+            DS4Windows.DI.IEnvironmentService environmentService)
         {
+            if (environmentService == null) throw new ArgumentNullException(nameof(environmentService));
             if (this.pathService != null) throw new InvalidOperationException("AutoProfiles is already initialized.");
             this.pathService = pathService ?? throw new ArgumentNullException(nameof(pathService));
             this.appSettingsService = appSettingsService ?? throw new ArgumentNullException(nameof(appSettingsService));
@@ -111,9 +113,11 @@ namespace DS4WinWPF.DS4Forms
             autoProfileHolder = autoProfileService.Holder;
 
             int currentRowCount = autoProfilesGrid.RowDefinitions.Count;
-            if (currentRowCount > DS4Windows.ControlService.CURRENT_DS4_CONTROLLER_LIMIT)
+            // Phase7-Step10e W2: 行数の上限は、静的な ControlService.CURRENT_DS4_CONTROLLER_LIMIT ではなく、注入された環境サービスから読む
+            int slotLimit = environmentService.ControllerSlotLimit;
+            if (currentRowCount > slotLimit)
             {
-                for (int i = currentRowCount - 1; i >= DS4Windows.ControlService.CURRENT_DS4_CONTROLLER_LIMIT; i--)
+                for (int i = currentRowCount - 1; i >= slotLimit; i--)
                 {
                     autoProfilesGrid.RowDefinitions.RemoveAt(i);
                 }

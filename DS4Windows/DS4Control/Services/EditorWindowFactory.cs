@@ -26,6 +26,8 @@ namespace DS4Windows.Services
         private readonly IAppSettingsService _appSettings;
         private readonly IProfileRepository _profileRepository;
         private readonly IProfileSwitcher _profileSwitcher;
+        // Phase7-Step10e W2: 画面・ViewModel が上限を読むための環境サービス
+        private readonly IEnvironmentService _environmentService;
 
         public EditorWindowFactory(
             IProfileSettingsService profileSettings,
@@ -37,8 +39,10 @@ namespace DS4Windows.Services
             Func<ControlService> controlServiceAccessor,
             IAppSettingsService appSettings,
             IProfileRepository profileRepository,
-            IProfileSwitcher profileSwitcher)
+            IProfileSwitcher profileSwitcher,
+            IEnvironmentService environmentService)
         {
+            _environmentService = environmentService ?? throw new ArgumentNullException(nameof(environmentService));
             _profileSettings = profileSettings ?? throw new ArgumentNullException(nameof(profileSettings));
             _outputSlotService = outputSlotService ?? throw new ArgumentNullException(nameof(outputSlotService));
             _pathService = pathService ?? throw new ArgumentNullException(nameof(pathService));
@@ -54,7 +58,7 @@ namespace DS4Windows.Services
         public BindingWindow CreateBindingWindow(int deviceNum, DS4ControlSettings settings, int targetDevice,
             BindingWindow.ExposeMode expose = BindingWindow.ExposeMode.Full)
             => new BindingWindow(deviceNum, settings, targetDevice, this, _profileSettings, _outputSlotService,
-                _controlServiceAccessor(), expose);
+                _environmentService, _controlServiceAccessor(), expose);
 
         public RecordBox CreateRecordBox(int deviceNum, DS4ControlSettings controlSettings, bool shift, int targetDevice,
             bool showscan = true, bool repeatable = true)
@@ -75,10 +79,10 @@ namespace DS4Windows.Services
         public SpecialActionEditor CreateSpecialActionEditor(int deviceNum, ProfileList profileList, int targetDevice,
             SpecialAction specialAction = null)
             => new SpecialActionEditor(deviceNum, profileList, targetDevice, this, _viewModelFactory,
-                _specialActionRepository, _profileSettings, _outputSlotService, specialAction);
+                _specialActionRepository, _profileSettings, _outputSlotService, _environmentService, specialAction);
 
         public ProfileEditor CreateProfileEditor(int targetDevice)
             => new ProfileEditor(targetDevice, _appSettings, _profileSettings, this, _profileRepository,
-                _profileSwitcher, _controlServiceAccessor(), _viewModelFactory);
+                _profileSwitcher, _controlServiceAccessor(), _viewModelFactory, _environmentService);
     }
 }

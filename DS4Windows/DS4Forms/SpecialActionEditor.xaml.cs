@@ -58,7 +58,7 @@ namespace DS4WinWPF.DS4Forms
 
         /// <summary>実機（targetDevice）が指定され、かつ有効なコントローラースロットの範囲内であるか。</summary>
         private bool HasTargetDevice =>
-            targetDevice >= 0 && targetDevice < DS4Windows.ControlService.CURRENT_DS4_CONTROLLER_LIMIT;
+            targetDevice >= 0 && targetDevice < environmentService.ControllerSlotLimit;
 
         /// <param name="deviceNum">設定を読み書きするスロット（プロファイル編集画面では編集用の作業スロット）</param>
         /// <param name="targetDevice">
@@ -69,6 +69,8 @@ namespace DS4WinWPF.DS4Forms
         // Phase6-Step10-3-2: 種別ごとの ViewModel の生成と、名前変更時の旧名の削除に必要なサービスも必須引数で受け取る。
         private readonly DS4Windows.DI.IEditorWindowFactory editorWindowFactory;
         private readonly DS4Windows.DI.ISpecialActionRepository specialActionRepository;
+        // Phase7-Step10e W2: スロット数の上限は、静的な ControlService.CURRENT_DS4_CONTROLLER_LIMIT ではなく、注入された環境サービスから読む
+        private readonly DS4Windows.DI.IEnvironmentService environmentService;
 
         public SpecialActionEditor(int deviceNum, ProfileList profileList, int targetDevice,
             DS4Windows.DI.IEditorWindowFactory editorWindowFactory,
@@ -76,8 +78,10 @@ namespace DS4WinWPF.DS4Forms
             DS4Windows.DI.ISpecialActionRepository specialActionRepository,
             DS4Windows.DI.IProfileSettingsService profileSettingsService,
             DS4Windows.DI.IOutputSlotService outputSlotService,
+            DS4Windows.DI.IEnvironmentService environmentService,
             DS4Windows.SpecialAction specialAction = null)
         {
+            this.environmentService = environmentService ?? throw new ArgumentNullException(nameof(environmentService));
             this.editorWindowFactory = editorWindowFactory ?? throw new ArgumentNullException(nameof(editorWindowFactory));
             if (viewModelFactory == null) throw new ArgumentNullException(nameof(viewModelFactory));
             this.specialActionRepository = specialActionRepository ?? throw new ArgumentNullException(nameof(specialActionRepository));
@@ -122,7 +126,7 @@ namespace DS4WinWPF.DS4Forms
             pressKeyVM = new PressKeyViewModel(specialActionRepository, profileSettingsService, outputSlotService);
             pressKeyVM.SetDeviceNum(deviceNum);
             disconnectBtVM = new SpecialActionViewModel(5, specialActionRepository);
-            checkBatteryVM = new CheckBatteryViewModel(specialActionRepository);
+            checkBatteryVM = new CheckBatteryViewModel(specialActionRepository, environmentService);
             multiActButtonVM = new MultiActButtonViewModel(specialActionRepository);
             saSteeringWheelVM = new SpecialActionViewModel(8, specialActionRepository);
             calibrateGyroVM = new SpecialActionViewModel(9, specialActionRepository);
