@@ -140,12 +140,12 @@
 - 起動直後のログローテーションとログの最小レベルが `BackingStore` の既定値になる課題（DI 移行前からの動作）: 記録のみ。直す場合は承認が必要（`Phase7-Step4-Completion-Report.md` §4）。
 - 孤立定数 8 件（`BackingStore`）: Step10 の定数の再配置。
 - **既存の不具合: 「Unload on trigger release」で元のプロファイルに戻らない（2026-10-18、総合検証 T-6 で発見。未着手・要承認）**: プロファイル切替（一時プロファイル）の適用処理 `ProfileApplicationService.CompleteProfileApplication` が `ActionManager.ClearDeviceState` を呼び、`DefaultActionManager.ClearDeviceState` → `Mapping.HandleDeviceDisconnect` が `deviceRuntime[device]` を作り直すため、直前に `Mapping` が保存した `UntriggerAction`（復帰の合図）も消える。トリガーを離しても復帰の処理に入らない。ログに `SpecialAction UNTRIGGER check` が出ないことで確認。Phase6 完了時点（`1c97977f`）も同じ構造で、Phase7 の退行ではない（上流の元の実装は `ClearDeviceState` を呼ばず、復帰できていた）。是正案: 適用処理が `ClearDeviceState` を呼ぶ前後で、`UntriggerAction`／`UntriggerIndex` を `IMapping` 経由で退避・復元する。機能の是正のため、総合検証の後に別の計画書で扱い、承認を得て実装する。
-- **仕様変更の要望（2026-10-18、総合検証 T-4 で提起。未着手・要承認）**: L2／R2 のデッドゾーンを、「超えた点を 0% として引き伸ばす」現行の計算（`Mapping.SetCurveAndDeadzone`。Phase6 完了時点・上流 2019 年と同一）ではなく、「デッドゾーン以下は 0、超えたら押し込み量そのままを出力」にしたい。アンチデッドゾーンとの関係（現行は出力の開始値になる）の整理が要る。Phase7 の範囲外（機能変更）のため、総合検証の後に別の計画書で扱う。
+- **仕様変更の要望（2026-10-18、総合検証 T-4 で提起。解決: コードの変更なし）**: L2／R2 のデッドゾーンを、「超えた点を 0% として引き伸ばす」現行の計算（`Mapping.SetCurveAndDeadzone`。Phase6 完了時点・上流 2019 年と同一）ではなく、「デッドゾーン以下は 0、超えたら押し込み量そのままを出力」にしたい。アンチデッドゾーンとの関係（現行は出力の開始値になる）の整理が要る。Phase7 の範囲外（機能変更）のため、総合検証の後に別の計画書で扱う。【2026-10-18 追記】デッドゾーンとアンチデッドゾーンに同じ値を設定すれば、現行の Scaled のままで、「超えたら押し込み量そのまま」と実質同じ動作になる（最大ゾーン・最大出力は 1.00。誤差は整数の丸めによる約 ±1%）。Cutoff モードを一度実装したが、設計を単純に保つため取り下げた（`Phase7b-Plan.md` §10）。
 - Phase8 への申し送り: `Actions/` の `ServiceProviderHolder` 17 件、`Actions/` の未配線の抽象 11 メンバー（`IActionBinding`、`IKeyController`、`IActionRegistry`、`IControllerRegistry`、`IInputAction`、`IMacroPlayer`、`ITrigger`）。
 
 ## 6. 直近の次アクション
 
 1. 総合検証は完了（GO。`Phase6-Step11-RealDevice-Verification-Checklist.md` §12.6）。
 2. 完了報告書は作成済み（`Phase7-Step10e-Completion-Report.md`、`Phase7-Completion-Report.md`）。Phase7 の完了宣言は 2026-10-18 に済み（ユーザー承認）。
-3. **Phase7b（`Phase7b-Plan.md`。計画書作成済み・承認待ち、2026-10-18）**: 持ち越し不具合 6 件（「Unload on trigger release」の復帰、L2／R2 のデッドゾーンのモード追加、K4-1、K7-2、K7b-1 の切り分け、K9-3）を Phase8 の前に対処する。Q1〜Q11 の承認後に W1 から実装。その後、Phase8。
+3. **Phase7b（`Phase7b-Plan.md`。計画書作成済み・承認待ち、2026-10-18）**: 持ち越し不具合 6 件（「Unload on trigger release」の復帰、L2／R2 のデッドゾーンのモード追加、K4-1、K7-2、K7b-1 の切り分け、K9-3）を Phase8 の前に対処する。Q1〜Q11 の承認後に W1 から実装（W1・W2・W3 完了、W5 は先送り、W6 はいったん実装したが取り下げ［Phase7b-Plan.md §10］）。その後、Phase8。
 4. 実機確認 U-11、U-12、U-13、U-14、U-15、U-16、U-17、U-18、U-19、U-20、U-21（任意のタイミング。U-14 は終了時のホスト破棄と初回起動の確認が中心）。

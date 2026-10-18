@@ -19,9 +19,6 @@ namespace DS4WindowsTests
             "m_Profile", "m_Actions", "m_linkedProfiles", "m_controllerConfigs", "ProcessInspector", "ActiveOutDevType",
             // Phase7-Step10d W5: 別のサービス（ProfileSettingsService）への参照であり、BackingStore の設定値ではない
             "ProfileSettings",
-            // Phase7b W6: L2／R2 のデッドゾーンの計算方式。既定（Scaled）のときは XML に書かない設計のため、既存のゴールデンファイルには含めない
-            // （新方式の読み書きは Phase7bW6TriggerDeadZoneModeTests が検査する）
-            "deadZoneMode", "DeadZoneMode",
             "lastVersionChecked", "lastVersionCheckedNum", "useLang", "fakeExeFileName", "loggedInvalidActions",
             "actions", "linkedProfiles",
         };

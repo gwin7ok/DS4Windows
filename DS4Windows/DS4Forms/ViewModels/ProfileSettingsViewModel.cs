@@ -1629,29 +1629,6 @@ namespace DS4WinWPF.DS4Forms.ViewModels
         }
         public event EventHandler R2DeadZoneChanged;
 
-        // Phase7b W6（Q7＝A）: L2／R2 のデッドゾーンの計算方式（0＝Scaled［現行・既定］、1＝Cutoff）
-        public int L2DeadZoneModeIndex
-        {
-            get => (int)profileSettings.L2ModInfo[device].DeadZoneMode;
-            set
-            {
-                var mode = Enum.IsDefined(typeof(TriggerDeadZoneMode), (byte)value) ? (TriggerDeadZoneMode)value : TriggerDeadZoneMode.Scaled;
-                if (profileSettings.L2ModInfo[device].DeadZoneMode == mode) return;
-                profileSettings.L2ModInfo[device].DeadZoneMode = mode;
-            }
-        }
-
-        public int R2DeadZoneModeIndex
-        {
-            get => (int)profileSettings.R2ModInfo[device].DeadZoneMode;
-            set
-            {
-                var mode = Enum.IsDefined(typeof(TriggerDeadZoneMode), (byte)value) ? (TriggerDeadZoneMode)value : TriggerDeadZoneMode.Scaled;
-                if (profileSettings.R2ModInfo[device].DeadZoneMode == mode) return;
-                profileSettings.R2ModInfo[device].DeadZoneMode = mode;
-            }
-        }
-
         public double L2MaxZone
         {
             get => profileSettings.L2ModInfo[device].MaxZone / 100.0;

@@ -34,15 +34,12 @@ namespace DS4Windows
         public const int DEFAULT_MAX_ZONE = 100;
         // Default Max Output value
         public const double DEFAULT_MAX_OUTPUT = 100.0;
-        // Phase7b W6: デッドゾーンの計算方式の既定（現行の Scaled。既定のときは、プロファイルの XML に書かない）
-        public const TriggerDeadZoneMode DEFAULT_DEADZONE_MODE = TriggerDeadZoneMode.Scaled;
 
         // ref / out で渡されるため public フィールドとして保持
         public byte deadZone = DEFAULT_DEADZONE;
         public int antiDeadZone = DEFAULT_ANTIDEADZONE;
         public int maxZone = DEFAULT_MAX_ZONE;
         public double maxOutput = DEFAULT_MAX_OUTPUT;
-        public TriggerDeadZoneMode deadZoneMode = DEFAULT_DEADZONE_MODE;
 
         public delegate void DeadZoneChangedHandler(TriggerDeadZoneZInfo sender, EventArgs args);
         public event DeadZoneChangedHandler DeadZoneChanged;
@@ -106,25 +103,12 @@ namespace DS4Windows
             }
         }
 
-        /// <summary>Phase7b W6（Q7＝A）: デッドゾーンの計算方式。<see cref="TriggerDeadZoneMode.Scaled"/>＝現行、<see cref="TriggerDeadZoneMode.Cutoff"/>＝超えたら押し込み量そのまま。</summary>
-        public TriggerDeadZoneMode DeadZoneMode
-        {
-            get => deadZoneMode;
-            set
-            {
-                if (deadZoneMode == value) return;
-                deadZoneMode = value;
-                RaisePropertyChanged();
-            }
-        }
-
         public void Reset()
         {
             deadZone = DEFAULT_DEADZONE;
             antiDeadZone = DEFAULT_ANTIDEADZONE;
             maxZone = DEFAULT_MAX_ZONE;
             maxOutput = DEFAULT_MAX_OUTPUT;
-            deadZoneMode = DEFAULT_DEADZONE_MODE;
             RaiseAllPropertiesChanged();
         }
 

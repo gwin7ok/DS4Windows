@@ -60,16 +60,6 @@ namespace DS4Windows.Services
             _profileSettings = profileSettings ?? throw new ArgumentNullException(nameof(profileSettings));
         }
 
-        // Phase7b W6: L2／R2 のデッドゾーンの計算方式の読み取り。要素が無い、または値が不明なときは、既定（Scaled）
-        private static TriggerDeadZoneMode ReadTriggerDeadZoneMode(XmlNode item)
-        {
-            string text = item?.InnerText;
-            if (!string.IsNullOrEmpty(text) && Enum.TryParse(text, out TriggerDeadZoneMode mode) && Enum.IsDefined(typeof(TriggerDeadZoneMode), mode))
-                return mode;
-
-            return TriggerDeadZoneZInfo.DEFAULT_DEADZONE_MODE;
-        }
-
         private int axisOutputCurveId(string name)
         {
             return store.stickOutputCurveId(name);
@@ -381,11 +371,6 @@ namespace DS4Windows.Services
                     store.r2ModInfo[device].maxOutput = Math.Min(Math.Max(temp, 0.0), 100.0);
                 }
                 catch { store.r2ModInfo[device].maxOutput = 100.0; missingSetting = true; }
-
-                // Phase7b W6（Q9＝A）: L2／R2 のデッドゾーンの計算方式。既定（Scaled）のときは要素を書かないため、無いのは正常
-                // （missingSetting にしない。既存のプロファイルを、読むたびに書き直さない）。不明な値は Scaled。
-                store.l2ModInfo[device].deadZoneMode = ReadTriggerDeadZoneMode(m_Xdoc.SelectSingleNode("/" + rootname + "/L2DeadZoneMode"));
-                store.r2ModInfo[device].deadZoneMode = ReadTriggerDeadZoneMode(m_Xdoc.SelectSingleNode("/" + rootname + "/R2DeadZoneMode"));
 
                 try
                 {
@@ -2602,15 +2587,6 @@ namespace DS4Windows.Services
                 XmlNode xmlR2Maxzone = m_Xdoc.CreateNode(XmlNodeType.Element, "R2MaxZone", null); xmlR2Maxzone.InnerText = store.r2ModInfo[device].maxZone.ToString(); rootElement.AppendChild(xmlR2Maxzone);
                 XmlNode xmlL2MaxOutput = m_Xdoc.CreateNode(XmlNodeType.Element, "L2MaxOutput", null); xmlL2MaxOutput.InnerText = store.l2ModInfo[device].maxOutput.ToString(); rootElement.AppendChild(xmlL2MaxOutput);
                 XmlNode xmlR2MaxOutput = m_Xdoc.CreateNode(XmlNodeType.Element, "R2MaxOutput", null); xmlR2MaxOutput.InnerText = store.r2ModInfo[device].maxOutput.ToString(); rootElement.AppendChild(xmlR2MaxOutput);
-                // Phase7b W6（Q9＝A）: 既定（Scaled）のときは書かない。新方式（Cutoff）のときだけ書く（既存のプロファイルの XML は変わらない）
-                if (store.l2ModInfo[device].deadZoneMode != TriggerDeadZoneZInfo.DEFAULT_DEADZONE_MODE)
-                {
-                    XmlNode xmlL2DeadZoneMode = m_Xdoc.CreateNode(XmlNodeType.Element, "L2DeadZoneMode", null); xmlL2DeadZoneMode.InnerText = store.l2ModInfo[device].deadZoneMode.ToString(); rootElement.AppendChild(xmlL2DeadZoneMode);
-                }
-                if (store.r2ModInfo[device].deadZoneMode != TriggerDeadZoneZInfo.DEFAULT_DEADZONE_MODE)
-                {
-                    XmlNode xmlR2DeadZoneMode = m_Xdoc.CreateNode(XmlNodeType.Element, "R2DeadZoneMode", null); xmlR2DeadZoneMode.InnerText = store.r2ModInfo[device].deadZoneMode.ToString(); rootElement.AppendChild(xmlR2DeadZoneMode);
-                }
                 XmlNode xmlButtonMouseSensitivity = m_Xdoc.CreateNode(XmlNodeType.Element, "ButtonMouseSensitivity", null); xmlButtonMouseSensitivity.InnerText = store.buttonMouseInfos[device].buttonSensitivity.ToString(); rootElement.AppendChild(xmlButtonMouseSensitivity);
                 XmlNode xmlButtonMouseOffset = m_Xdoc.CreateNode(XmlNodeType.Element, "ButtonMouseOffset", null); xmlButtonMouseOffset.InnerText = store.buttonMouseInfos[device].mouseVelocityOffset.ToString(); rootElement.AppendChild(xmlButtonMouseOffset);
                 XmlNode xmlRainbow = m_Xdoc.CreateNode(XmlNodeType.Element, "Rainbow", null); xmlRainbow.InnerText = lightInfo.rainbow.ToString(); rootElement.AppendChild(xmlRainbow);

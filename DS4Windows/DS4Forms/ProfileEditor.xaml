@@ -982,7 +982,6 @@
                                     <RowDefinition></RowDefinition>
                                     <RowDefinition Style="{StaticResource gridRowHeight}"></RowDefinition>
                                     <RowDefinition Style="{StaticResource gridRowHeight}"></RowDefinition>
-                                    <RowDefinition Style="{StaticResource gridRowHeight}"></RowDefinition>
                                 </Grid.RowDefinitions>
 
                                 <Grid.ColumnDefinitions>
@@ -1155,18 +1154,6 @@
                                           DisplayMemberPath="DisplayName" SelectedValuePath="Mode" SelectedValue="{Binding L2TriggerEffect}" Margin="{StaticResource spaceMargin}" />
                                 <ComboBox Grid.Row="11" Grid.Column="2" ItemsSource="{Binding Path=TriggerEffectChoices}"
                                           DisplayMemberPath="DisplayName" SelectedValuePath="Mode" SelectedValue="{Binding R2TriggerEffect}" Margin="{StaticResource spaceMargin}" />
-
-                                <!-- Phase7b W6: デッドゾーンの計算方式。Scaled＝現行（超えた点を 0% として引き伸ばす）、Cutoff＝超えたら押し込み量そのまま（アンチデッドゾーンとの大きい方）。
-                                     TODO(Phase7b): 表示文字列は未ローカライズ（Strings.resx へ追加する） -->
-                                <Label Content="Dead Zone Mode:" Grid.Row="12" Grid.Column="0" />
-                                <ComboBox Grid.Row="12" Grid.Column="1" SelectedIndex="{Binding L2DeadZoneModeIndex}" Margin="{StaticResource spaceMargin}">
-                                    <ComboBoxItem Content="Scaled" />
-                                    <ComboBoxItem Content="Cutoff" />
-                                </ComboBox>
-                                <ComboBox Grid.Row="12" Grid.Column="2" SelectedIndex="{Binding R2DeadZoneModeIndex}" Margin="{StaticResource spaceMargin}">
-                                    <ComboBoxItem Content="Scaled" />
-                                    <ComboBoxItem Content="Cutoff" />
-                                </ComboBox>
                             </Grid>
                         </GroupBox>
 

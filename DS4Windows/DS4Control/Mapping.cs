@@ -1511,13 +1511,7 @@ namespace DS4Windows
             int l2AntiDeadzone = l2ModInfo.antiDeadZone;
             int l2Maxzone = l2ModInfo.maxZone;
             double l2MaxOutput = l2ModInfo.maxOutput;
-            if (l2ModInfo.deadZoneMode == TriggerDeadZoneMode.Cutoff)
-            {
-                // Phase7b W6（Q7＝A、Q8＝B）: Cutoff＝デッドゾーン以下は 0、超えたら押し込み量とアンチデッドゾーンの大きい方
-                if (l2Deadzone > 0 || l2AntiDeadzone > 0 || l2Maxzone != 100 || l2MaxOutput != 100.0)
-                    dState.L2 = TriggerCutoffCurve.Apply(cState.L2, l2Deadzone, l2AntiDeadzone, l2Maxzone, l2MaxOutput);
-            }
-            else if (l2Deadzone > 0 || l2AntiDeadzone > 0 || l2Maxzone != 100 || l2MaxOutput != 100.0)
+            if (l2Deadzone > 0 || l2AntiDeadzone > 0 || l2Maxzone != 100 || l2MaxOutput != 100.0)
             {
                 double tempL2Output = cState.L2 / 255.0;
                 double tempL2AntiDead = 0.0;
@@ -1572,13 +1566,7 @@ namespace DS4Windows
             int r2AntiDeadzone = r2ModInfo.antiDeadZone;
             int r2Maxzone = r2ModInfo.maxZone;
             double r2MaxOutput = r2ModInfo.maxOutput;
-            if (r2ModInfo.deadZoneMode == TriggerDeadZoneMode.Cutoff)
-            {
-                // Phase7b W6（Q7＝A、Q8＝B）: L2 と同じ（Cutoff）
-                if (r2Deadzone > 0 || r2AntiDeadzone > 0 || r2Maxzone != 100 || r2MaxOutput != 100.0)
-                    dState.R2 = TriggerCutoffCurve.Apply(cState.R2, r2Deadzone, r2AntiDeadzone, r2Maxzone, r2MaxOutput);
-            }
-            else if (r2Deadzone > 0 || r2AntiDeadzone > 0 || r2Maxzone != 100 || r2MaxOutput != 100.0)
+            if (r2Deadzone > 0 || r2AntiDeadzone > 0 || r2Maxzone != 100 || r2MaxOutput != 100.0)
             {
                 double tempR2Output = cState.R2 / 255.0;
                 double tempR2AntiDead = 0.0;
