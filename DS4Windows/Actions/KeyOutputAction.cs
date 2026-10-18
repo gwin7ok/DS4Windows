@@ -1,73 +1,58 @@
 using System;
-using DS4Windows.DS4Control;
+using DS4Windows.DI;
 
 namespace DS4Windows.Actions
 {
-    // TODO(Phase8-Step2/3): 使うべき型だが、書き直しが必要（D1 の注記）。現状は KeyAction に委譲せず、独自に TriggerContextImpl を組み立てて IActionController.Handle で再ディスパッチする
-    // 未検証の実装で、Execute／Stop は一度も呼ばれていない（2025-12-19、efcfa29e）。Step3 で KeyAction へ委譲する形に改め、系統 B（KeyActionAdapter 経由）との挙動一致を単体テストで確認してから採用する。
-    public class KeyOutputAction : IOutputAction
+    /// <summary>
+    /// Phase8-Step3 W4: Key 種別の出力。<see cref="KeyAction"/> へ委譲する（Phase8-Step2-Design.md §7）。押下／解放の意味（Press か Toggle か、リピート）は
+    /// 従来どおり <c>KeyButtonActionController</c> が決める（系統 B の <c>KeyActionAdapter</c> 経由と同じ経路）。
+    /// 論理キー＝<c>SpecialAction.details</c>、ネイティブキー＝<c>OutputKBMMapping.GetRealEventKey</c>（現行の <c>Mapping</c> の Key 経路と同じ。Q7＝A）。
+    /// ScanCode の指定は、現行どおり下流には渡さない（<c>KeyAction</c> 自身が <c>keyType</c> から読む。別件として記録済み）。
+    /// 旧実装（<c>TriggerContextImpl</c> を独自に組み立てて再ディスパッチ）は、一度も呼ばれていなかったため置き換えた。まだ <c>Mapping</c>・DI には配線していない（Step4 以降）。
+    /// </summary>
+    public sealed class KeyOutputAction : IOutputAction
     {
-        private readonly SpecialAction sa;
+        private readonly SpecialAction _sa;
+        private readonly IProfileSettingsService _profileSettings;
+        private readonly KeyAction _keyAction;
+        private readonly ushort _logicalKey;
 
-        public KeyOutputAction(SpecialAction sa)
+        public KeyOutputAction(SpecialAction sa, IProfileSettingsService profileSettings)
         {
-            this.sa = sa;
+            _sa = sa ?? throw new ArgumentNullException(nameof(sa));
+            _profileSettings = profileSettings ?? throw new ArgumentNullException(nameof(profileSettings));
+            _keyAction = new KeyAction(sa, -1);
+
+            ushort logical = 0;
+            if (!string.IsNullOrEmpty(sa.details)) ushort.TryParse(sa.details, out logical);
+            _logicalKey = logical;
         }
 
-        public string Id => sa?.name ?? "KeyOutput";
+        public string Id => string.IsNullOrEmpty(_sa.name) ? "KeyOutput" : _sa.name;
 
         public void Execute(IOutputContext ctx)
         {
-            try
-            {
-                if (sa == null) return;
-                ushort logical = 0;
-                if (!string.IsNullOrEmpty(sa.details)) ushort.TryParse(sa.details, out logical);
-                uint native = 0;
-                try { native = SyntheticDispatcher.ResolveNativeKey(logical); } catch { native = 0; }
-
-                var trigger = new TriggerContextImpl
-                {
-                    Device = ctx.Device,
-                    IsEdgeEstablished = true,
-                    LogicalValue = logical,
-                    NativeValue = native,
-                    OutputHandler = ctx.OutputHandler,
-                    Timestamp = DateTime.UtcNow
-                };
-
-                var binding = new KeyActionBinding(sa);
-                var ctrl = ActionManager.GetOrCreateControllerForAction(ctx.Device, sa);
-                try { ctrl?.Handle(binding, trigger); } catch { }
-            }
-            catch { }
+            if (ctx == null) return;
+            _keyAction.OnTrigger(ctx.Device, _logicalKey, ResolveNativeKey(), false, ctx.OutputHandler);
         }
 
         public void Stop(IOutputContext ctx)
         {
+            if (ctx == null) return;
+            _keyAction.OnRelease(ctx.Device, _logicalKey, ResolveNativeKey(), false, ctx.OutputHandler);
+        }
+
+        // SyntheticDispatcherService.ResolveNativeKey と同じ規則（対応表がない・例外のときは論理キーのまま）
+        private uint ResolveNativeKey()
+        {
             try
             {
-                if (sa == null) return;
-                ushort logical = 0;
-                if (!string.IsNullOrEmpty(sa.details)) ushort.TryParse(sa.details, out logical);
-                uint native = 0;
-                try { native = SyntheticDispatcher.ResolveNativeKey(logical); } catch { native = 0; }
-
-                var trigger = new TriggerContextImpl
-                {
-                    Device = ctx.Device,
-                    IsEdgeEstablished = false,
-                    LogicalValue = logical,
-                    NativeValue = native,
-                    OutputHandler = ctx.OutputHandler,
-                    Timestamp = DateTime.UtcNow
-                };
-
-                var binding = new KeyActionBinding(sa);
-                var ctrl = ActionManager.GetOrCreateControllerForAction(ctx.Device, sa);
-                try { ctrl?.Handle(binding, trigger); } catch { }
+                var mapping = _profileSettings.OutputKBMMapping;
+                if (mapping != null) return mapping.GetRealEventKey(_logicalKey);
             }
             catch { }
+
+            return _logicalKey;
         }
     }
 }
