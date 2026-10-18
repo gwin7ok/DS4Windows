@@ -3,6 +3,8 @@ using DS4Windows.DS4Control;
 
 namespace DS4Windows.Actions
 {
+    // TODO(Phase8-Step3/4): 使うべき型だが、現状は SpecialAction に直結した実装（Input は未実装で null）。Controls タブ由来のデータも扱えるよう、Step3/4 で改修する。
+    // 作られた経緯: 2025-12-19（5564c2d6）、系統 A の骨組みとして。KeyAction が生成するが、Execute／Stop は呼ばれていない。
     public class KeyActionBinding : IActionBinding
     {
         public KeyActionBinding(SpecialAction sa)

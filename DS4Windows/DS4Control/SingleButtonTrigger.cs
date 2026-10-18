@@ -5,6 +5,7 @@ using DS4Windows.DS4Control;
 namespace DS4Windows
 {
 
+    // TODO(Phase8-Step3): ITrigger とともに、Step3 で削除する。Phase8-Step1-Orphan-Decisions.md §2 B。
     public class SingleButtonTrigger : ITrigger
     {
         public TriggerType Type => TriggerType.SingleButton;

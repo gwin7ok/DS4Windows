@@ -3,7 +3,7 @@
 作成日: 2026-10-19  
 対象ブランチ: `For-DI-migration-work`  
 上位: `Phase8-Step1-Plan.md` 項目 C、`.github/copilot-instructions.md` §2.4、`Phase8-Unified-Trigger-Dispatch-Plan.md` 2026-10-19 追記 §8  
-状態: **判断案（承認待ち）。コード・コメントの変更は、承認後の W5 で行う**（Q3＝A: 一括で承認を得る）
+状態: **承認済み（2026-10-19）。W5 で実施済み（ビルド・テスト待ち）**: 削除 10 件、TODO コメントの追加。Step3 で削除する 2 件（`KeyInputAction`、`ITrigger`／`SingleButtonTrigger`）は TODO を付けて残した
 
 ---
 

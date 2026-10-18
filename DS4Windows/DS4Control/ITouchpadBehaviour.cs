@@ -20,6 +20,8 @@ using System;
 
 namespace DS4Windows
 {
+    // TODO(Phase9-B): 利用者のいない契約（Mouse が実装するのみ。ControlService の利用はコメントアウト済み）。上流の設計（2014 年）。
+    // Mouse の分割（IMouseEngine、Phase9-Responsibility-Split-Plan.md）で、この契約を使うか廃止するかを判断する。
     interface ITouchpadBehaviour
     {
         void touchesBegan(DS4Touchpad sender, TouchpadEventArgs arg);

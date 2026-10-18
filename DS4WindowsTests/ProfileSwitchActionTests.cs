@@ -37,17 +37,6 @@ namespace DS4WindowsTests
             {
             }
 
-            public void ApplyManualProfile(
-                int deviceIndex,
-                string profileName,
-                bool isTemp = false,
-                bool launchProgram = true,
-                ControlService control = null,
-                ProfileChangeSource source = ProfileChangeSource.MappingAction,
-                string prolog = "")
-            {
-            }
-
             public void Reset()
             {
                 SwitchProfileCalls.Clear();

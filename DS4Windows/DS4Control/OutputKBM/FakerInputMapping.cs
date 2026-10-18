@@ -29,14 +29,6 @@ namespace DS4Windows.DS4Control
     {
         private Dictionary<ushort, uint> mappingPairs = new Dictionary<ushort, uint>();
 
-        /// <summary>
-        /// Use to define keys not available in the VMultiDllWrapper. Might not use
-        /// </summary>
-        public static class ExpandedKeyboardKeys
-        {
-            public const byte KEY_NONE = 0x00;
-        }
-
         public override void PopulateConstants()
         {
             MOUSEEVENTF_LEFTDOWN = (uint)MouseButton.LeftButton; MOUSEEVENTF_LEFTUP = (uint)MouseButton.LeftButton;

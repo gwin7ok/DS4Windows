@@ -8,6 +8,7 @@ namespace DS4Windows.Actions
     /// </summary>
     public interface IMacroPlayer
     {
+        // TODO(Phase9-C): 本体の呼び出し元は 0 件（テストのみ）。DefaultMacroPlayer が状態を保持している。マクロの再設計（K3 の恒久対応を含む）で、使うか廃止するかを判断する。
         /// <summary>
         /// 指定されたデバイスでマクロが再生中かどうかを取得します。
         /// </summary>

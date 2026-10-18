@@ -28,18 +28,6 @@ namespace DS4Windows.Actions
             profileAppService?.RestoreFromAction(deviceIndex);
         }
 
-        public void ApplyManualProfile(
-            int deviceIndex,
-            string profileName,
-            bool isTemp = false,
-            bool launchProgram = true,
-            ControlService control = null,
-            ProfileChangeSource source = ProfileChangeSource.MappingAction,
-            string prolog = "")
-        {
-            profileAppService?.ApplyProfile(deviceIndex, profileName, isTemp, launchProgram, source, prolog);
-        }
-
         public void ClearState(int deviceIndex)
         {
             profileAppService?.ClearPendingRestore(deviceIndex);

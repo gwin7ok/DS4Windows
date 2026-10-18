@@ -9,7 +9,6 @@ namespace DS4WindowsTests
     {
         public int SwitchProfileCalledCount { get; private set; }
         public int RestoreProfileCalledCount { get; private set; }
-        public int ApplyManualProfileCalledCount { get; private set; }
         public int ClearStateCalledCount { get; private set; }
 
         public int LastDeviceIndex { get; private set; }
@@ -31,19 +30,6 @@ namespace DS4WindowsTests
         {
             RestoreProfileCalledCount++;
             LastDeviceIndex = deviceIndex;
-        }
-
-        public void ApplyManualProfile(int deviceIndex, string profileName, bool launchProgram,
-            bool xinputChange, ControlService control, ProfileChangeSource source,
-            string prolog)
-        {
-            ApplyManualProfileCalledCount++;
-            LastDeviceIndex = deviceIndex;
-            LastProfileName = profileName;
-            LastLaunchProgram = launchProgram;
-            LastXinputChange = xinputChange;
-            LastSource = source;
-            LastProlog = prolog;
         }
 
         public void ClearState(int deviceIndex)

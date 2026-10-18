@@ -28,7 +28,7 @@
 - **W2b: 「デバイス上限が 4 前提」の箇所の是正**— **完了（ビルド・テスト成功。2026-10-19）。実機確認 W2b-5 は未**。A-1（`nowAction`／`oldnowAction`）と B-1（出力スロットの復元）を是正。`Phase8-Step1-SlotLimit-Fix-Plan.md`。
 - W3: B-5・B-6 — **完了（ビルド・テスト成功。2026-10-19）**。`ControlTabAndSpecialActionKeyTests` の Press／Toggle に Assert を補強（Press: 押下で 1 回押し、離して 1 回解放。Toggle: トグル OFF で解放）、`Phase8Step1MacroBranchCharacterizationTests`（ガード中は不実行、成立・保持・解除、RunOnRelease の準備→離して実行）。
 - W4: 孤立コードの調査と判断案（`Phase8-Step1-Orphan-Decisions.md`）— **判断案を提示済み（承認待ち。2026-10-19）**。重要な発見: `IProfileSwitcher.ClearState`／`ClearPendingRestore`（Phase5-Step3 の「切断時スタック残留防止」）は、契約だけ配備され、本番の呼び出しが 0 件。
-- W5: 判断の実施（承認された分）、静的な窓口の一覧、Step2 への論点 — 未着手。
+- W5: 判断の実施（承認された分）— **実施済み（ビルド・テスト待ち。2026-10-19）**。削除: `IOutputHandler`、`ReleasePolicy`、`ToggleController`、`MacroManager`、`ToggleActionController`、`DateTimeJsonConverter`、`InputMethods`、`Sensitivity`、`FakerInputMapping.ExpandedKeyboardKeys`、`IProfileSwitcher.ApplyManualProfile`（実装、モック 2 か所を含む）。TODO 追加: 系統 A の骨組み、`ClearState`、`ITouchpadBehaviour`、`SensitivitySettings`、`IMacroPlayer.IsPlaying`、`KeyInputAction`／`ITrigger`／`SingleButtonTrigger`（Step3 で削除）。静的な窓口の一覧、Step2 への論点は未着手（D・E）。
 - W6: 完了報告書 — 未着手。
 
 ## 3. 決定事項（Step1。2026-10-19）
@@ -45,6 +45,8 @@
 - U-24（Phase7c W1 後。Stage3 の競合の是正）: **○（2026-10-19。ユーザーが確認）**。確認内容:手動のプロファイル切替（メイン画面）を繰り返し、`Collection was modified` が出ないこと、Button／Key／マクロ／プロファイル切替と復帰が従来どおり動くこと（`Phase6-Step11-RealDevice-Verification-Checklist.md` §11）。
 
 ## 5. 持ち越し・保留事項
+
+- **Phase5-Step3 の完了報告と実コードの不一致**（W4 で発見）: 「切断時スタック残留防止」の `IProfileSwitcher.ClearState`／`IProfileApplicationService.ClearPendingRestore` は契約だけ配備され、物理切断の経路から呼ばれていない。意味（`OlderProfilePath` の扱い）を調べて、Phase8 の Step6 で接続する（`IProfileSwitcher.ClearState` に TODO を付与済み）。
 
 - K7b-1（異常終了）: 先送り。切り分け手順は `Phase7c-Completion-Report.md` §4。
 - K9-3（プリセットのサブメニュー）: 先送り。

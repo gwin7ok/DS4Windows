@@ -3,6 +3,8 @@ using DS4Windows;
 
 namespace DS4Windows
 {
+    // TODO(Phase9-G): 製品コードの参照 0 件（テストのみ）。Phase5-Step14 の後続（2026-09-16、4bf31c21）で、ProfileSubSettingBase 系の同期モデルとして作られたが、ViewModel 側は未接続。
+    // ProfileSettingsViewModel のサブ ViewModel 化（Phase9-G）で、使うか廃止するかを判断する。
     /// <summary>
     /// 6つの感度値 (LS, RS, L2, R2, SX, SZ) とパイプ区切り文字列（SensitivityString）を
     /// 双方向に自動同期するサブ設定モデル
