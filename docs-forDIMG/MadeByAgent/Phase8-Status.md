@@ -11,7 +11,7 @@
 | Step | 内容 | 状態 | 記録 |
 |---|---|---|---|
 | Step1 | 詳細監査（トリガー判定の棚卸し、特性化テストの完成、孤立コードの判断、静的な窓口の洗い出し） | **完了**（2026-10-19。実機確認 W2b-5 は未） | `Phase8-Step1-Plan.md`、`Phase8-Step1-Completion-Report.md` |
-| Step2 | 詳細設計（メンバー確定、`KeyOutputAction` の委譲設計、モデル図の更新案） | **計画案を提示（承認待ち。2026-10-19）** | `Phase8-Step2-Plan.md` |
+| Step2 | 詳細設計（メンバー確定、`KeyOutputAction` の委譲設計、モデル図の更新案） | **実施中**（Q1〜Q9 は推奨の方向で承認。W1 の決定案を提示、承認待ち。2026-10-19） | `Phase8-Step2-Plan.md` |
 | Step3 | トリガー条件クラス（`ComboTriggerInputAction`）の新設・単体テスト、`KeyOutputAction` の書き直し | 未着手 | - |
 | Step4 | SpecialActions の複雑なケース（組み合わせ・デバウンス・抑制）への拡張 | 未着手 | - |
 | **Step4b（挿入）** | `LoadProfile`/`SaveProfile` の節ごとの分解、機械的な整理 2 件（Step5 の準備。仮称 Phase7d）。計画書は Step4 の完了後 | 未着手 | `Phase8-Unified-Trigger-Dispatch-Plan.md` 2026-10-19 追記［実行順序の改訂］ |

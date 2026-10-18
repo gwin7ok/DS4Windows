@@ -41,7 +41,7 @@
 - **Key の解除トリガー**: `uTrigger` は Key では無視される（`uTriggerCount = 0`、4403〜4406 行。「単一トリガーのトグル」を優先）。ただし、`uTriggerCount > 0` の分岐のコード（5100 行付近）は残っている。→ Key の `uTrigger` が実質デッドコードかどうかは Step2 で確認する。
 - **Key の離し（Press）**: 不成立のとき、`uTrigger.Count == 0 && BeingTriggered && UntriggerIndex == index` なら、`DispatchOrSetBeingTriggered(false)`、`UntriggerIndex = -1`、`TryDispatchSATriggerReleased`（4949 行付近）。Toggle は `UntriggerIndex` を登録しない（4801〜4804 行）ため、この分岐に入らない。
 - **Profile の復帰**: 実行時に `uTrigger.Count > 0 || automaticUntrigger` なら、`deviceRuntime[device].UntriggerAction`／`UntriggerIndex` を設定し、復帰先 `prevProfileName`／`prevProfileWasTemporary` を記録する（4583〜4592 行）。ループの後（5316 行以降）で、`automaticUntrigger` ならトリガーのどれか 1 つが離された時点、そうでなければ `uTrigger` がすべて押された時点で、復帰する。復帰は、`UntriggerAction`／`UntriggerIndex` を先に消してから `ProfileSwitchAction.Stop` を呼ぶ（Phase7b W1。復帰の適用が `ClearDeviceState` を通り、合図が復元されて毎フレーム復帰が繰り返されるのを防ぐ）。`action.controls == action.ucontrols` のときは、`BeingTriggered` が false のときだけ復帰する。
-- **Profile 以外の `UntriggerAction`**: 5392 行の else で、`DispatchOrSetBeingTriggered(false)`。ただし `UntriggerAction` は Profile のときだけ設定されるため、この else は実質的に通らない。→ 要確認。
+- **復帰条件を待っている間の else**（5392 行付近）: `DispatchOrSetBeingTriggered(false)` を毎フレーム行う（切替アクションの `BeingTriggered` を下げ続ける。【2026-10-19 訂正】旧記述の「Profile 以外では通らない」は誤り。`Phase8-Step2-Intent-Decisions.md` 項目 6）。
 - **Macro の離し**: `pressRelease` の Macro は、`firstTouch` を使って、離したときに 1 回実行する（4726〜4767 行）。
 
 ## 4. 安全弁（Fresh-press ガード、`IsExecuting`）
@@ -124,7 +124,7 @@
 3. タップ判定の分岐（B）が、条件上、到達不能に見える。
 4. Key の `uTrigger` を無視する（`uTriggerCount = 0`）一方で、その分岐のコードが残っている。
 5. Profile／DisconnectBT の `return` が、フレームの残りの処理を飛ばす。
-6. 5392 行の else（`UntriggerAction` が Profile 以外のとき）が実質的に通らない。
+6. 【2026-10-19 訂正: Phase8-Step2-Intent-Decisions.md 項目 6】5392 行付近の else は「通らない」のではなく、復帰条件が成立していない間に毎フレーム通る（切替アクションの `BeingTriggered` を下げ続ける。上流の `actionDone = false` に相当）。（旧記述: `UntriggerAction` が Profile 以外のとき実質的に通らない。）
 7. XboxGameDVR／MultiAction が、統一経路（`ActionManager`）を通らず、`PlayMacro` を直接呼ぶ。
 8. Macro のフォールバック（`handled == false` のとき `PlayMacro` を直接呼ぶ）の有無（DI 未登録時のためのもの。現行は登録済み）。
 9. `FreshPressReleaseHoldMs`（80ms）とタップ判定（250ms）、`MultiAction`（150ms/500ms）の時間定数が別々。
