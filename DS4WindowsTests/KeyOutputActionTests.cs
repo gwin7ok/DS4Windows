@@ -22,6 +22,8 @@ namespace DS4WindowsTests
             public Context(IVirtualKBM handler) { OutputHandler = handler; }
             public int Device => KeyOutputActionTests.Device;
             public IVirtualKBM OutputHandler { get; }
+            public IFrameOutput Frame => null;
+            public void RequestEndFrame() { }
         }
 
         private static IProfileSettingsService Settings()

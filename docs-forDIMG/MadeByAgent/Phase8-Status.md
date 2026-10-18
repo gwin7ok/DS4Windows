@@ -1,7 +1,7 @@
 # フェーズ8 進捗管理文書: Controls／SpecialActions の統一トリガーディスパッチ
 
 最終更新日: 2026-10-19  
-状態: **Step1〜3 完了（2026-10-19）。次は Step4 の計画書**。Phase7・7b・7c は完了。実機確認 U-24（Phase7c W1）は確認済み（2026-10-19）  
+状態: **Step1〜3 完了（2026-10-19）。Step4 実施中**。Phase7・7b・7c は完了。実機確認 U-24（Phase7c W1）は確認済み（2026-10-19）  
 計画書: `Phase8-Unified-Trigger-Dispatch-Plan.md`（D1〜D5 確定。2026-10-19 追記は事実誤認の訂正）。Step1: `Phase8-Step1-Plan.md`
 
 ---
@@ -13,7 +13,7 @@
 | Step1 | 詳細監査（トリガー判定の棚卸し、特性化テストの完成、孤立コードの判断、静的な窓口の洗い出し） | **完了**（2026-10-19。実機確認 W2b-5 は未） | `Phase8-Step1-Plan.md`、`Phase8-Step1-Completion-Report.md` |
 | Step2 | 詳細設計（メンバー確定、`KeyOutputAction` の委譲設計、モデル図の更新案） | **完了**（2026-10-19。モデル図の段階 A は反映済み） | `Phase8-Step2-Plan.md`、`Phase8-Step2-Completion-Report.md` |
 | Step3 | 判定と束縛の型の新設（`ComboTriggerInputAction` ほか）・単体テスト、`KeyOutputAction` の書き直し（配線なし） | **完了**（2026-10-19。W1〜W5 ビルド・テスト成功） | `Phase8-Step3-Plan.md`、`Phase8-Step3-Completion-Report.md` |
-| Step4 | SpecialActions の複雑なケース（組み合わせ・デバウンス・抑制）への拡張 | 未着手 | - |
+| Step4 | エンジンと出力の型（`TriggerDispatchEngine`、`ButtonOutputAction` ほか）、`Mapping` への空配線 | **実施中**（Q1〜Q8 を推奨どおり承認。W1 実装済み［ビルド・テスト待ち］。2026-10-19） | `Phase8-Step4-Plan.md` |
 | **Step4b（挿入）** | `LoadProfile`/`SaveProfile` の節ごとの分解、機械的な整理 2 件（Step5 の準備。仮称 Phase7d）。計画書は Step4 の完了後 | 未着手 | `Phase8-Unified-Trigger-Dispatch-Plan.md` 2026-10-19 追記［実行順序の改訂］ |
 | Step5 | プロファイル読込時の `TriggerBinding` リスト構築 | 未着手 | - |
 | Step6 | コントローラー接続時の紐付け | 未着手 | - |

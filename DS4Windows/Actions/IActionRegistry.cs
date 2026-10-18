@@ -2,15 +2,21 @@ using System.Collections.Generic;
 
 namespace DS4Windows.Actions
 {
-    // TODO(Phase8-Step2/Step5〜6): 使うべき型。実装クラスが存在せず（静的な ActionRegistry は SpecialAction の一覧を持つ別物）、Register／GetBindingsForDevice の呼び出し元は 0 件。
-    // Step2 で実装の形（DI 登録するか）を設計し、Step5（プロファイル読込時の TriggerBinding の登録）と Step6（コントローラー接続時の紐付け）で接続する。
+    // Phase8-Step4 W1 で改訂した（旧: Register／Unregister／GetBindingsForDevice。実装がなく、呼び出し元は 0 件だった）。
+    // 実装は ActionBindingRegistry。束縛の組み立てと Replace の呼び出し（プロファイルの読込・適用の完了後）は Step5、切断時の Clear は Step6。
     /// <summary>
-    /// Registry for bindings and controllers per device.
+    /// デバイスごとの束縛の一覧の置き場（Phase8-Step2-Design.md §8）。一覧は不変のスナップショットで、参照ごと差し替える（アトミック）。
+    /// 読み出し側（エンジン）は、フレームの先頭で <see cref="GetBindings"/> を 1 回だけ呼び、そのフレームは古い一覧で最後まで処理する。
     /// </summary>
     public interface IActionRegistry
     {
-        void Register(IActionBinding binding, int device);
-        void Unregister(IActionBinding binding, int device);
-        IEnumerable<IActionBinding> GetBindingsForDevice(int device);
+        /// <summary>デバイスの束縛の一覧（不変）。null は返さない（空のリスト）。範囲外のデバイスも空のリスト。</summary>
+        IReadOnlyList<IActionBinding> GetBindings(int device);
+
+        /// <summary>デバイスの束縛の一覧を差し替える（<paramref name="bindings"/> は複製して保持する。null は空）。範囲外のデバイスは例外。</summary>
+        void Replace(int device, IReadOnlyList<IActionBinding> bindings);
+
+        /// <summary>デバイスの束縛の一覧を空にする（切断）。範囲外のデバイスは何もしない。</summary>
+        void Clear(int device);
     }
 }

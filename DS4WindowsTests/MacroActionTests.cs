@@ -14,6 +14,8 @@ namespace DS4WindowsTests
         {
             public int Device { get; }
             public IVirtualKBM OutputHandler { get; }
+            public IFrameOutput Frame => null;
+            public void RequestEndFrame() { }
             public MockOutputContext(int device) { Device = device; }
         }
 
