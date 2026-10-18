@@ -149,4 +149,4 @@
 2. 完了報告書は作成済み（`Phase7-Step10e-Completion-Report.md`、`Phase7-Completion-Report.md`）。Phase7 の完了宣言は 2026-10-18 に済み（ユーザー承認）。
 3. **Phase7b は完了（一部先送り。2026-10-19。`Phase7b-Plan.md`、`Phase7b-Completion-Report.md`）**: 「Unload on trigger release」の復帰、K4-1、K7-2、L2／R2 のデッドゾーンの丸め誤差を是正（実機確認済み）。L2／R2 のデッドゾーンの Cutoff モードは取り下げ（同じ値の設定で実現）。K7b-1・K9-3 は先送り。次は Phase8（着手前に引き継ぎを取り込む）。
 4. 実機確認 U-11〜U-22（2026-10-19 に U-22 を追記。任意のタイミング。U-14 は終了時のホスト破棄と初回起動の確認が中心）。
-5. **Phase7c は実施中（2026-10-19。`Phase7c-Plan.md`）**: Phase8 の前に、Stage3 の列挙競合（`Collection was modified`）の是正（W1 完了）、`MapCustomAction` の特性化テスト（W2 前半完了。残りは Phase8 の Step1 へ）、文書とコメントの整合（W3 実施中）を行う。K7b-1 の切り分け手順の整理は W4（任意）。
+5. **Phase7c は完了（2026-10-19。`Phase7c-Plan.md`、`Phase7c-Completion-Report.md`。実機確認 U-24 は未）**: Phase8 の前に、Stage3 の列挙競合（`Collection was modified`）の是正（W1 完了）、`MapCustomAction` の特性化テスト（W2 前半完了。残りは Phase8 の Step1 へ）、文書とコメントの整合（W3 実施中）を行う。K7b-1 の切り分け手順の整理は W4（任意）。

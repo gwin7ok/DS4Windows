@@ -4,7 +4,7 @@
 対象ブランチ: `For-DI-migration-work`  
 上位: `Phase7-Completion-Report.md` §5、`Phase7b-Completion-Report.md` §5、`Phase8-Unified-Trigger-Dispatch-Plan.md`  
 発端: Phase8 着手前の全体レビュー（2026-10-19。コード健全性・文書整合・テストの穴の並行調査）  
-状態: **実施中（2026-10-19）。W1 完了、W2 前半完了［残りは Phase8 の Step1 へ。§8］、W3 実施中**。Q1〜Q6 は推奨どおり承認
+状態: **完了（2026-10-19。W2 の一部は Phase8 の Step1 へ移管。§8。`Phase7c-Completion-Report.md`）**。Q1〜Q6 は推奨どおり承認
 
 ---
 
@@ -138,4 +138,4 @@
   4. `ApplyProfile` 後の掃除の順序（`ProfileApplicationService.cs:259-265`）。
   - あわせて、`ControlTabAndSpecialActionKeyTests.cs` の 2 本の Assert の補強（`MockVirtualKBM` の押下・解放の回数）も、実際の挙動を確かめながら行う必要があるため、Phase8 の Step1 へ移す。
   - Phase8 の Step1 は、これらを特性化テストとして書き足してから、Step3 以降に進む（Phase8 計画書 §6 の最初のリスク対応と同じ扱い）。
-- **W3: 実施中**。完了条件（§6）の W2 の項目は、上記の変更に合わせて「前半の 16 件が成功」とする。
+- **W3: 完了。W4: 手順を整理（完了報告書 §4）。W5: 完了報告書を作成**。完了条件（§6）の W2 の項目は、上記の変更に合わせて「前半の 16 件が成功」とする。
