@@ -143,3 +143,8 @@
 %% - 依存方向（上位 → 下位、またはインターフェース経由）に反する静的な窓口は、Phase7 で解消した: 第 1 層の設定は IDeviceLayerSettings（10d）、スロット数の上限は IEnvironmentService.ControllerSlotLimit（10e）。
 %% - 第 4-b 層（Composition Root）の AppHost は、暗黙にホストを作らない。起動（App.xaml.cs）が明示的に作る。
 %% - 持ち越し（Phase8）: 第 1 層（DS4Devices／DS4LightBar／HidDevices）の静的な状態と、Actions の ServiceProviderHolder。
+%% 注釈補強（2026-10-18 Phase7 完了時点のまとめ。構造の目標は変更なし。各 Step の詳細は 03・04 の注釈と Phase7-Completion-Report.md）
+%% - 第 4-b 層（Composition Root）: App の起動が EnvironmentService → BackingStore → PathService の順にブートストラップのインスタンスを作り、CreateHost(config, parser) でコンテナに渡して同じインスタンスを登録する。AppHost は暗黙にホストを作らず、終了時に Dispose する。
+%% - 第 4-c 層（サービス群）: BackingStore（設定の唯一の実体）と、永続化の型、プロファイル適用（ProfileApplicationService）、出力デバイス種別の所有（OutputSlotService）。
+%% - 第 2 層: Mapping が DI の Singleton の instance になり、第 3 層（IVirtualKBM）への依存はインターフェース経由のまま。
+%% - 依存方向に反する静的な窓口は、起動前に必要なもの（PathService／EnvironmentService の状態）を除いて解消した。残りは Phase8（第 1 層の静的な状態、Actions の ServiceProviderHolder）。

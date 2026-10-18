@@ -1,7 +1,7 @@
 # DS4Windows-Vader4Pro アプリ全体 DI化 最終プラン書
 
 作成日: 2026-08-25
-改訂日: 2026-10-14（Phase5 完了、Phase6 の Step1〜9・Step9b・Step10-0〜10-3 完了、Phase8 新設を反映。詳細は下記「2026-10-14改訂の要旨」）
+改訂日: 2026-10-18（Phase6 完了［2026-10-17］、Phase7 完了［2026-10-18］を反映。詳細は下記「2026-10-18改訂の要旨」）。2026-10-14（Phase5 完了、Phase6 の Step1〜9・Step9b・Step10-0〜10-3 完了、Phase8 新設を反映。詳細は下記「2026-10-14改訂の要旨」）
 改訂履歴: 2026-09-23（Phase8 新設）／2026-09-09（Phase6「残存Global実利用箇所の解体」、Phase7「Mapping.cs完全instance化（延期）」を追加。
 DI化対象外項目をカテゴリA〜Fとして確定）
 対象ブランチ: `インターフェース化`（以降の実装は `For-DI-migration-work` ブランチで実施）
@@ -28,6 +28,15 @@ DI化すべきでない、またはDI化する実益がない項目を**カテ�
 3. **Phase8**（Controls／SpecialActions 統一トリガーディスパッチ）が新設された（2026-09-23。§6.13）。
 4. 実装で生じた機能廃止（Abs Mouse 機能、プロファイル編集の即時反映、Flydigi Vader 4 Pro のデバイスサポート）と、
    持ち越し事項（K 番号）の扱いを §6.8 に反映した。
+
+**2026-10-18改訂の要旨**: 次の3点を反映した（上記の記述は、当時の状態の記録として残す）。
+1. **Phase6 は完了**（2026-10-17。Step11 の総合検証 GO、Step12 の旧シムの物理削除。`Phase6-Completion-Report.md`）。
+2. **Phase7 は完了**（2026-10-18。Step1〜Step10e、総合検証 GO。`Phase7-Completion-Report.md`）。射程は、当初の
+   「`Mapping.cs` の instance 化」から、`Global`／`BackingStore` の解体、起動・終了シーケンスの近代化、
+   `Program.rootHub` と Service Locator の削減へ拡大した（`Phase7-Plan.md`。§6.9.4）。結果として、
+   **`Global` 型は存在せず**、`Program.rootHub` は 0、`Mapping` は DI の Singleton の instance、互換 `AppHost` は削除済み。
+3. 全域の直接参照の最終値: `Global.*` 2（ログ文言の文字列のみ）／`AppHost.GetService|Services` 3／`Program.rootHub` 0／
+   `ServiceProviderHolder` 17（`Actions/`。Phase8）。残る課題は Phase8 へ引き継ぐ（§6.9.4）。
 
 ---
 
@@ -61,9 +70,9 @@ Phase5完了間際の実地調査により**Phase6・Phase7**を追加し（2026
 | 3. 入力監視層・信号変換層の整理 | `IDs4DeviceRegistry`, 循環依存解消 | 1〜2週間 | 3日 |
 | 4. `Global` 分割 + ViewModel DI化 | 10サービス + 33ViewModel | 6〜8週間 | 3日 |
 | 5. 仕上げ・整流化（DIサービス内部Legacy経路監査） | シム削除判断、`AppHost` 完全移行 | 1〜2週間（実施の結果15ステップへ再編） | **完了**（Step1〜15、2026-09-02〜09-18） |
-| **6.（新設）残存Global実利用箇所の解体** | 呼出元の実参照式 約404箇所（Step1 再監査で193件から確定）をDIサービス経由へ置換。仮想コントローラー部分は対象外 | 実績ベース見積り: 実働4〜8日 → 再監査後に約17〜22日へ改訂 | **進行中**（Step1〜9・9b、Step10-0〜10-3・10-3b 完了、2026-10-14 時点。次は Step10-4） |
-| **7.（新設・延期）`Mapping.cs`完全instance化** | 8,500行超のstatic中心ファイルを段階的にinstance化 | Phase6完了後に個別見積り | 未着手（個別計画書は未作成） |
-| **8.（新設、2026-09-23）Controls／SpecialActions統一トリガーディスパッチ** | 2つのタブの「トリガー成立→処理実行」を単一の実行時経路へ統合 | Phase7完了後に個別見積り | 未着手（決定事項D1〜D5は確定済み） |
+| **6.（新設）残存Global実利用箇所の解体** | 呼出元の実参照式 約404箇所（Step1 再監査で193件から確定）をDIサービス経由へ置換。仮想コントローラー部分は対象外 | 実績ベース見積り: 実働4〜8日 → 再監査後に約17〜22日へ改訂 | **完了**（2026-10-17。Step11 総合検証 GO、Step12 旧シム削除。`Phase6-Completion-Report.md`） |
+| **7.（新設・延期）`Mapping.cs`完全instance化** | 8,500行超のstatic中心ファイルを段階的にinstance化。射程は `Global`／`BackingStore` の解体、起動の近代化、Service Locator の削減へ拡大 | 実績: 約2日（2026-10-17〜10-18） | **完了**（2026-10-18。Step1〜10e、総合検証 GO。`Phase7-Completion-Report.md`） |
+| **8.（新設、2026-09-23）Controls／SpecialActions統一トリガーディスパッチ** | 2つのタブの「トリガー成立→処理実行」を単一の実行時経路へ統合 | Phase7完了後に個別見積り | 未着手（決定事項D1〜D5は確定済み。Phase7 完了。Phase7 からの引き継ぎは §6.9.4） |
 
 ---
 
@@ -262,6 +271,12 @@ DI化は「1つの `Global` を削除する」のではなく「10個前後の�
 このうち Step2〜Step9 で、`ControlService.cs`66件、`Mapping.cs`（引数渡しで解消可能な範囲）、マウス系81行、
 `App.xaml.cs`Post-Host 39件、`ProfileEditor.xaml.cs`58件、主要4大ViewModel 114件などが解消済みである。
 残るのは Step10 の72件と、温存項目（定数、Pre-Host 12件、Phase7 引き継ぎのホットパス）である。**
+
+**（2026-10-18注記）上記の残りは、Phase6-Step10〜12 と Phase7 で解消した。`Global` 型は Phase7-Step10d で削除済みで（`Global.cs` なし）、
+以降の `Global.*` は、ログ文言の文字列 2 件のみである。`Global` の分割先は §5.4 のサービス群のほか、`ControllerLimits`、`NumericUtil`、
+`ColorUtil`、`X360ControlTables`、`DS4ControlNames`、`TrayIconResources`、`AdminCheck`、`DevicePathProbe`、`ConfigFileCulture`、`UiCulture`、
+`VersionUtil`（状態を持たない静的クラス）と、永続化の型（`AppSettingsXmlSerializer`、`LegacyProfileXmlSerializer`、`ProfilePresets` ほか）である。
+台帳は `MadeByAgent/Phase7-Residual-Ledger.md`。**
 
 ### 4.2 `ControlService` の依存関係
 
@@ -581,8 +596,8 @@ Viewの改修は最小限に抑えられる。17件全てに個別インター�
 | フェーズ3 | 入力監視層・信号変換層の整理 | 1, 2 | `IDs4DeviceRegistry` 化、`IDeviceStateAccessor` による循環依存解消 | 新規設計 | 完了 |
 | フェーズ4 | `Global` 分割とViewModel DI化 | 横断/UI層 | `Global` を10種以上のサービスへ分割、33件のViewModelをDI/ファクトリへ移行 | 新規設計 | 完了 |
 | フェーズ5 | DIサービス内部Legacy経路監査と責務分離 | 横断 | サービス内部の`Global`/`Program.rootHub`再委譲の監査・是正（Step1〜15） | 新規設計 | **完了**（Step1〜15。2026-09-18 正式クローズ、`Phase5-Status.md`） |
-| **フェーズ6（新設）** | **残存Global実利用箇所の解体** | 横断（信号変換層/入力監視層境界・信号出力層・UI層） | 呼出元の実参照式 約404箇所をDIサービス経由へ置換。仮想コントローラー部分（カテゴリE）は対象外。全16ステップ（Step1〜13、7b、9b、10b） | `Phase6-Plan.md`、`Phase6-Status.md` | **進行中**（Step1〜9・7b・9b・13、Step10-0〜10-3・10-3b 完了、2026-10-14 時点。次は Step10-4 → Step10-5 → Step10b → Step11 → Step12） |
-| **フェーズ7（新設・延期）** | **`Mapping.cs`完全instance化** | 2-a（信号変換層） | `Mapping`のstatic中心設計を段階的にinstance化。Phase6 からの引き継ぎ（`Mapping` の静的 `profileSettings` 束縛［方針P2、TODO付き］、実行時状態配列、K3・K7-1）を含む（§6.9.3） | Phase6完了後に個別計画書を新設 | 未着手（Phase6完了後に検討開始） |
+| **フェーズ6（新設）** | **残存Global実利用箇所の解体** | 横断（信号変換層/入力監視層境界・信号出力層・UI層） | 呼出元の実参照式 約404箇所をDIサービス経由へ置換。仮想コントローラー部分（カテゴリE）は対象外。全16ステップ（Step1〜13、7b、9b、10b） | `Phase6-Plan.md`、`Phase6-Status.md` | **完了**（2026-10-17。Step1〜13・7b・9b・10b、Step11 総合検証 GO［自動テスト 595 件成功、実機 70 項目のうち ○67／不能 3／×0］、Step12 旧シム削除。`Phase6-Completion-Report.md`） |
+| **フェーズ7（新設・延期）** | **`Mapping.cs`完全instance化** | 2-a（信号変換層） | `Mapping`のstatic中心設計を段階的にinstance化。Phase6 からの引き継ぎ（`Mapping` の静的 `profileSettings` 束縛［方針P2、TODO付き］、実行時状態配列、K3・K7-1）を含む（§6.9.3） | `Phase7-Plan.md`、`Phase7-Status.md`、`Phase7-Residual-Ledger.md` | **完了**（2026-10-18。Step1〜10e。総合検証 GO。`Phase7-Completion-Report.md`） |
 | **フェーズ8（新設、2026-09-23）** | **Controls／SpecialActions統一トリガーディスパッチ** | 2-a/2-b（信号変換層の統合） | Controlsタブ・SpecialActionsタブの「トリガー成立→処理実行」を単一の実行時経路に統合。UI・設定の保存/読込は分離を維持 | `Phase8-Unified-Trigger-Dispatch-Plan.md`（既存の未配線抽象化`IActionBinding`系、稼働中の`Actions.Action`系の両方を調査済み） | **決定事項D1〜D5確定済み（2026-09-23）**。未着手（Phase7完了後に着手）。Phase6-Step9b で判明した未配線コードの扱いも本フェーズへ申し送り |
 
 ### 6.2 フェーズ0: 基盤整備（1〜2日）
@@ -824,6 +839,29 @@ DIサービス経由で一貫して動作する状態**を完成させる。
 
 **着手前提**: フェーズ6の完了。
 
+#### 6.9.4 フェーズ7の完了記録（2026-10-18）
+
+- 状態: **完了**（2026-10-17 着手、2026-10-18 完了）。個別計画書は `Phase7-Plan.md`、進捗は `Phase7-Status.md`、
+  各 Step の完了報告書と全体の `Phase7-Completion-Report.md`、残存台帳は `Phase7-Residual-Ledger.md`。
+- 射程の拡大: 当初は `Mapping.cs` の instance 化が中心だったが、Phase6 の引き継ぎ（`Global` に残る実体、`BackingStore` の
+  静的な生成、K7-1、K3）を取り込み、次の順に実施した。
+  - Step1〜2: 整理と台帳、DI インターフェースの 0 件メンバー（49）の個別判断。
+  - Step3・3c: `BackingStore` の DI 化、`Global` の転送の削除、プロファイル適用・プリセット・イベントの移管。
+  - Step4: 起動・終了シーケンスの近代化（ブートストラップの `PathService`／`EnvironmentService`、`-driverinstall` の明示的なホスト構築、終了時のホスト破棄）。
+  - Step5: `Program.rootHub` の削除と Service Locator の削減。Step6: 出力デバイス種別の所有権を `OutputSlotService` へ。
+  - Step7〜9: `Mapping` の instance 化（特性化テスト、状態の切り出し、`IMapping`／`Mapping` の Singleton 化、互換 `AppHost` の削除、K3）。
+  - Step10a〜10e: `Global` の削除（定数・表・永続化・環境・第 1 層の設定の再配置と、`BackingStore(IEnvironmentService)` のコンストラクター注入）、
+    `AppHost` の暗黙構築の廃止、ラチェットの最終化、総合検証。
+- 最終の姿: `Global` 型なし。`BackingStore` は `IEnvironmentService` を受けるコンストラクター注入で、永続化は 6 つの型に切り出し済み。
+  `Mapping` は DI の Singleton。`AppHost` は暗黙にホストを作らない。ラチェット: `Global.*` 2（文字列）／`AppHost` 3／`Program.rootHub` 0／`ServiceProviderHolder` 17。
+- 実機確認: 総合検証（必須の 8 項目）は GO（○7、△1、×0）。先送りの項目と U-1〜U-7 はリスク受容（`Phase7-Completion-Report.md` §4）。
+- **Phase8 への引き継ぎ**:
+  - `Actions/` の `ServiceProviderHolder` 17 件と、未配線の抽象 11 メンバー。第 1 層（`DS4Devices`／`DS4LightBar`／`HidDevices`）の静的な状態。
+  - 維持して `TODO(Phase8)` を付けたメンバー（`SettingChanged`／`ActionsChanged`／`UseTempProfileArray`）の接続。
+  - `BackingStore` のフィールド群の分解、`Mapping` の依存 11・`MainWindow` の引数 18 の整理、K3 の恒久的な再設計。
+- Phase7 の範囲外として別の計画書で扱う件（総合検証で判明）: 「Unload on trigger release」で元のプロファイルに戻らない既存の不具合
+  （Phase6 完了時点から同じ構造。上流の元の実装は復帰できていた）、L2／R2 のデッドゾーンの仕様変更の要望。
+
 ### 6.10 全体スケジュール見積もり
 
 | フェーズ | 当初見積もり | 実績／実績ベース見積り |
@@ -835,8 +873,8 @@ DIサービス経由で一貫して動作する状態**を完成させる。
 | フェーズ4（Global分割 + ViewModel DI化） | 6〜8週間 | 3日 |
 | フェーズ5（DIサービス内部Legacy経路監査） | 1〜2週間（実施の結果15ステップへ再編） | 約17日（2026-09-02〜09-18。**完了**） |
 | **フェーズ6（残存Global実利用箇所の解体）** | - | 当初見込み4〜8日 → 再監査後に約17〜22日へ改訂。**Step1〜9 で約16日経過（2026-09-18〜10-14、Step9b 以降が残る）** |
-| **フェーズ7（Mapping.cs完全instance化）** | - | **フェーズ6完了後に個別見積り** |
-| **フェーズ8（統一トリガーディスパッチ）** | - | **フェーズ7完了後に個別見積り** |
+| **フェーズ7（Mapping.cs完全instance化。射程は Global の解体ほかへ拡大）** | - | **約2日（2026-10-17〜10-18。完了）** |
+| **フェーズ8（統一トリガーディスパッチ）** | - | **個別見積り（Phase7 完了。着手待ち）** |
 | **合計（フェーズ0〜5）** | **概算13〜19週間** | **実働約30日程度**（フェーズ5完了。フェーズ6以降は別掲） |
 
 ※ AIエージェントによる実装のため、機械的な置換作業が中心のフェーズ（1・4）ほど当初見積もりに対する
@@ -862,6 +900,10 @@ DIサービス経由で一貫して動作する状態**を完成させる。
 | DIコンテナ登録サービス数 | 5 | フェーズ5完了時点で全10+αサービス登録済み | 達成（23以上。Phase6 で `IStartupArguments`、`IVirtualKBMLifecycle`、`IProfileSlotApplier` などを追加） |
 | `new XxxViewModel(` のうちDI非経由の件数 | 33件 | フェーズ4完了時点で0 | 0件（達成済み、Phase4-Step9） |
 | `AppHost.cs` が実際に呼ばれているか | 呼ばれていない（デッドコード） | フェーズ0で呼ばれる状態に、フェーズ6で完全移行 | フェーズ0で解消済み。呼び出し元側の完全移行はフェーズ6で対応中（Step7 で `App.xaml.cs` の Post-Host を移行済み）。ただし K7-1: `Global` の静的初期化がホストを先に暗黙構築する点はフェーズ7で解消 |
+
+**2026-10-18時点の実績（Phase7 完了）**: `Global.*` 2（ログ文言の文字列のみ。`Global` 型は削除済み）、`Program.rootHub` 0、
+`AppHost.GetService|Services` 3（`App` の窓口 1＋ログ文言 2）、`ServiceProviderHolder` 17（`Actions/`。Phase8）。`Mapping.cs` は DI の Singleton の instance。
+複数型ファイル 0、ビルド警告 0。推移は `Phase7-Status.md` §2。
 
 ### 6.13 フェーズ8（新設、2026-09-23）: Controls／SpecialActions統一トリガーディスパッチ
 
@@ -973,6 +1015,15 @@ static結合を先に減らしておくことが本フェーズの下地にな�
 | - | `docs/Direct-Callsites-Inventory.md`（既存） | `Process.Start`等の分類のベースとして活用 |
 
 ### 9.3 次のアクション
+
+**（2026-10-18更新）Phase6・Phase7 は完了した。次は、次の順で進める。**
+
+1. Phase7 の完了宣言: 済み（2026-10-18、ユーザー承認）。
+2. 別の計画書で扱う件: 「Unload on trigger release」の復帰の是正（既存の不具合）、L2／R2 のデッドゾーンの仕様変更の要望。
+3. Phase8（`Phase8-Unified-Trigger-Dispatch-Plan.md` の D1〜D5）の着手前に、Phase7 からの引き継ぎ（§6.9.4）を取り込む。
+4. 先送りした実機確認（`Phase6-Step11-RealDevice-Verification-Checklist.md` §12.6）は、任意のタイミングで実施する。
+
+（以下は 2026-10-14 時点の記述。履歴として残す。）
 
 （2026-10-14時点。Phase5 完了、Phase6-Step1〜9・9b 完了）
 

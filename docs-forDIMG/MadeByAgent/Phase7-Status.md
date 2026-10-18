@@ -1,7 +1,7 @@
 # フェーズ7 進捗管理文書: `Global`／`BackingStore` の解体、起動の近代化、`Mapping` の instance 化
 
 最終更新日: 2026-10-18  
-状態: **Step1・Step2・Step3・Step3c・Step4・Step5・Step6・Step7・Step8・Step9 完了。Step10 は 10a・10b・10c・10d 完了、10e は W1〜W6（文書）完了、総合検証待ち。**  
+状態: **Step1〜Step10（10a〜10e）完了。総合検証 GO（2026-10-18）。Phase7 完了報告書あり。Phase7 完了宣言（2026-10-18、ユーザー承認）。**
 計画書: `Phase7-Plan.md`。調査: `Phase7-0-Survey.md`。残存台帳: `Phase7-Residual-Ledger.md`
 
 ---
@@ -21,7 +21,7 @@
 | Step7 | `Mapping` の instance 化（1）特性化テストと状態の切り出し | **完了**（2026-10-17。Q1〜Q6 推奨どおり承認。W1〜W4 のビルド・テスト成功、W5 は文書。U-17 の実機確認は未。完了報告書あり） | |
 | Step8 | `Mapping` の instance 化（2）instance 化と呼び出し元の切り替え | **完了**（2026-10-17。Q1〜Q9 推奨どおり承認。W1〜W4 のビルド・テスト成功、W5 は文書。U-18 の実機確認は未。完了報告書あり） | `Phase7-Step8-Plan.md`、`Phase7-Step8-Completion-Report.md` |
 | Step9 | `Mapping` の instance 化（3）互換 `AppHost` の削除ほか | **完了**（2026-10-18。Q1〜Q5 推奨どおり承認。W1〜W3 のビルド・テスト成功、W4 は文書。U-19 の実機確認は未。完了報告書あり） | `Phase7-Step9-Plan.md`、`Phase7-Step9-Completion-Report.md` |
-| Step10 | 仕上げ（`Global` の残り、永続化の切り出し、総合検証） | **実施中**（2026-10-18。Q1〜Q9 推奨どおり承認。10a・10b・10c・10d 完了、10e は W1〜W6（文書）完了で総合検証待ち） | `Phase7-Step10-Plan.md`、`Phase7-Step10a-Plan.md`、`Phase7-Step10a-Completion-Report.md` |
+| Step10 | 仕上げ（`Global` の残り、永続化の切り出し、総合検証） | **完了**（2026-10-18。Q1〜Q9 推奨どおり承認。10a・10b・10c・10d 完了、10e は完了（総合検証 GO）。Phase7 完了報告書あり） | `Phase7-Step10-Plan.md`、`Phase7-Step10a-Plan.md`、`Phase7-Step10a-Completion-Report.md` |
 
 ## 2. ラチェットの基準値（全域）
 
@@ -115,13 +115,13 @@
 - W3: K3 の二重実行防止を `MacroRuntimeState.TryBeginDispatch`／`EndDispatch` に包む（挙動は同一。恒久対応は Phase8）。
 - W4: 台帳 §12、モデル図、U-19、完了報告書。`Global.*` 399 → 355、`AppHost` 5 → 4。詳細は `Phase7-Step9-Completion-Report.md`。実機確認 U-11〜U-19 はユーザー判断で先送り。
 
-### Phase7-Step10: 仕上げ【実施中（2026-10-18）】
+### Phase7-Step10: 仕上げ【完了（2026-10-18）】
 - `Phase7-Step10-Plan.md`（サブ Step 10a〜10e の構成と Q1〜Q9。推奨どおり承認）。各サブ Step は個別の計画書を作成してから進める。
 - **10a: 完了**。W1 `BackingStore.cs` の定数（132）、W2 制御層ほか、W3 資源パス（`ResourcePaths`）、W4 `Clamp` の残り・テスト・`Global` の別名の削除、W5 文書。`Global.*` 355 → 107。詳細は `Phase7-Step10a-Completion-Report.md`。
 - **10b: 完了**。W1 表と変換（`X360ControlTables`／`DS4ControlNames`）、W2 アイコンの表・色の関数（`TrayIconResources`／`ColorUtil`）、W3 契約の整理（`OnSubPropertyChanged` ほか）、W4 `UsingMaxControllers` の接続と孤立定数、W5 文書。`Global.*` 107 → 93。詳細は `Phase7-Step10b-Completion-Report.md`。
 - **10c: 完了**。W1 ゴールデンテスト（11 ファイル）、W2 `Actions`／リンク／コントローラー設定、W3 アプリ設定（`AppSettingsXmlSerializer`）、W4 プロファイルの読込、W5 同 保存（`LegacyProfileXmlSerializer`）、W6 プリセット（`ProfilePresets`）、W7 文書。`BackingStore.cs` 6,522 → 1,660 行、`Global.*` 93 → 69。詳細は `Phase7-Step10c-Completion-Report.md`。
 - **10d: 完了**。W1 テストの移行（`TestGlobals`）、W2 環境・パスの窓口と定数（`AdminCheck`／`DevicePathProbe`／`ConfigFileCulture`）、W3 第 1 層の設定（`IDeviceLayerSettings`）、W4 アプリ層のイベントほか、W5（W6 込み）`BackingStore` のコンストラクター注入・ブートストラップ・`Global` の削除、W7 文書。`Global.*` 69 → 2（ログ文言の文字列のみ）、`Global.cs` を削除。詳細は `Phase7-Step10d-Completion-Report.md`。
-- **10e: W1〜W6（文書）完了、総合検証待ち（2026-10-18）**。`Phase7-Step10e-Plan.md`（Q1〜Q10 推奨どおり承認。W4 は §4.1 の判断を承認）。W1・W2 `CURRENT_DS4_CONTROLLER_LIMIT` の削除（`IEnvironmentService.ControllerSlotLimit` の注入）、W3 `AppHost` の暗黙のホスト構築の廃止（`TestHost`）、W4 孤立コード・0 件メンバーの決着（削除: `ColorUtil` の 2 メンバー、`CheckWhen`、`SATriggerCond`、`IAutoProfileService.ClearState`、`IProfileRepository.GetProfilePath`。維持して TODO: `SettingChanged`、`ActionsChanged`、`UseTempProfileArray`）、W5 ラチェットの最終化（基準値と実数の一致の検査を追加）と静的な状態の目録、W6 文書（モデル図 01〜04、台帳 §17、チェックリスト §12・U-22）。`copilot-instructions.md` の更新（Q10。§2.1・§3.1）も承認を得て実施済み。次は総合検証（チェックリスト §12 の T-1〜T-14）。
+- **10e: 完了、総合検証 GO（2026-10-18）**。`Phase7-Step10e-Plan.md`（Q1〜Q10 推奨どおり承認。W4 は §4.1 の判断を承認）。W1・W2 `CURRENT_DS4_CONTROLLER_LIMIT` の削除（`IEnvironmentService.ControllerSlotLimit` の注入）、W3 `AppHost` の暗黙のホスト構築の廃止（`TestHost`）、W4 孤立コード・0 件メンバーの決着（削除: `ColorUtil` の 2 メンバー、`CheckWhen`、`SATriggerCond`、`IAutoProfileService.ClearState`、`IProfileRepository.GetProfilePath`。維持して TODO: `SettingChanged`、`ActionsChanged`、`UseTempProfileArray`）、W5 ラチェットの最終化（基準値と実数の一致の検査を追加）と静的な状態の目録、W6 文書（モデル図 01〜04、台帳 §17、チェックリスト §12・U-22）。`copilot-instructions.md` の更新（Q10。§2.1・§3.1）も承認を得て実施済み。総合検証（必須の 8 項目）は ○ 7、△ 1、× 0 で GO（チェックリスト §12.6）。残りは完了報告書の作成。
 
 ## 4. 実機確認の台帳（`Phase6-Step11-RealDevice-Verification-Checklist.md` §11）
 
@@ -139,10 +139,13 @@
 - DS3 のジャイロトリガー経路の不具合（コミット `78ae8687` からの回帰）: Phase7-Step5 W1 で修正済み（機材での実機確認は難しい可能性。U-15 の注記）。
 - 起動直後のログローテーションとログの最小レベルが `BackingStore` の既定値になる課題（DI 移行前からの動作）: 記録のみ。直す場合は承認が必要（`Phase7-Step4-Completion-Report.md` §4）。
 - 孤立定数 8 件（`BackingStore`）: Step10 の定数の再配置。
+- **既存の不具合: 「Unload on trigger release」で元のプロファイルに戻らない（2026-10-18、総合検証 T-6 で発見。未着手・要承認）**: プロファイル切替（一時プロファイル）の適用処理 `ProfileApplicationService.CompleteProfileApplication` が `ActionManager.ClearDeviceState` を呼び、`DefaultActionManager.ClearDeviceState` → `Mapping.HandleDeviceDisconnect` が `deviceRuntime[device]` を作り直すため、直前に `Mapping` が保存した `UntriggerAction`（復帰の合図）も消える。トリガーを離しても復帰の処理に入らない。ログに `SpecialAction UNTRIGGER check` が出ないことで確認。Phase6 完了時点（`1c97977f`）も同じ構造で、Phase7 の退行ではない（上流の元の実装は `ClearDeviceState` を呼ばず、復帰できていた）。是正案: 適用処理が `ClearDeviceState` を呼ぶ前後で、`UntriggerAction`／`UntriggerIndex` を `IMapping` 経由で退避・復元する。機能の是正のため、総合検証の後に別の計画書で扱い、承認を得て実装する。
+- **仕様変更の要望（2026-10-18、総合検証 T-4 で提起。未着手・要承認）**: L2／R2 のデッドゾーンを、「超えた点を 0% として引き伸ばす」現行の計算（`Mapping.SetCurveAndDeadzone`。Phase6 完了時点・上流 2019 年と同一）ではなく、「デッドゾーン以下は 0、超えたら押し込み量そのままを出力」にしたい。アンチデッドゾーンとの関係（現行は出力の開始値になる）の整理が要る。Phase7 の範囲外（機能変更）のため、総合検証の後に別の計画書で扱う。
 - Phase8 への申し送り: `Actions/` の `ServiceProviderHolder` 17 件、`Actions/` の未配線の抽象 11 メンバー（`IActionBinding`、`IKeyController`、`IActionRegistry`、`IControllerRegistry`、`IInputAction`、`IMacroPlayer`、`ITrigger`）。
 
 ## 6. 直近の次アクション
 
-1. 総合検証（`Phase6-Step11-RealDevice-Verification-Checklist.md` §12 の T-1〜T-14。約 105 分）。結果で GO／NO-GO を判断する。
-2. GO の後、`Phase7-Step10e-Completion-Report.md` と `Phase7-Completion-Report.md` を作成する。
+1. 総合検証は完了（GO。`Phase6-Step11-RealDevice-Verification-Checklist.md` §12.6）。
+2. 完了報告書は作成済み（`Phase7-Step10e-Completion-Report.md`、`Phase7-Completion-Report.md`）。Phase7 の完了宣言は 2026-10-18 に済み（ユーザー承認）。
+3. 別の計画書で扱う件: 「Unload on trigger release」の復帰の是正、L2／R2 のデッドゾーンの仕様変更。その後、Phase8。
 4. 実機確認 U-11、U-12、U-13、U-14、U-15、U-16、U-17、U-18、U-19、U-20、U-21（任意のタイミング。U-14 は終了時のホスト破棄と初回起動の確認が中心）。

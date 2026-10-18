@@ -260,3 +260,4 @@
 %% - 登録の変更はない。ProfileRepository／ProfileSlotApplier は IEnvironmentService を受ける（Singleton どうしの依存で、循環はない）。OutputSlotManager は ControlService が生成時にスロット数の上限を渡す。
 %% - 静的な状態の最終の目録は Phase7-Residual-Ledger.md §17.3（起動前に必要な状態は残す。第 1 層・Actions の静的な状態は Phase8）。
 %% - ラチェットの最終: Global.* 2（ログ文言）、AppHost.GetService|Services 3、Program.rootHub 0、ServiceProviderHolder 17。
+%% Phase7 完了（2026-10-18）: Step1〜Step10e のライフサイクルの変更は、上記の Phase7-Step 別の注釈に記載した。最終の起動順序は EnvironmentService → BackingStore → PathService（FindConfigLocation）→ ログのローテーション → ホストの構築（CreateHost）。全体の完了報告は Phase7-Completion-Report.md。

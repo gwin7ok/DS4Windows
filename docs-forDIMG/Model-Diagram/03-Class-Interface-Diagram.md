@@ -579,3 +579,4 @@ classDiagram
 %%   - コンストラクターの変更: OutputSlotManager(+int slotLimit)、ProfileRepository(+IEnvironmentService)、ProfileSlotApplier(+IEnvironmentService)、EditorWindowFactory(+IEnvironmentService)。ControlService.CURRENT_DS4_CONTROLLER_LIMIT（静的）は削除。
 %%   - AppHost: GetService は暗黙にホストを作らない。CreationNote は維持。
 %%   - 詳細は Phase7-Step10e-Plan.md、Phase7-Residual-Ledger.md §17。
+%% Phase7 完了（2026-10-18）: Step1〜Step10e の変更は、上記の Phase7-Step 別の注釈に記載した。全体の完了報告は Phase7-Completion-Report.md、台帳は Phase7-Residual-Ledger.md。Phase8 への引き継ぎ（Actions の ServiceProviderHolder 17 件、第 1 層の静的な状態、TODO(Phase8) 付きメンバー 3 件）は同報告書 §5.2。
