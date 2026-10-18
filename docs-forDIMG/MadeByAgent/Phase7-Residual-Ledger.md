@@ -186,3 +186,34 @@
 - **挙動の差**: バッテリー通知の送信元（購読者は不使用）。第 1 層の設定が未設定のとき（テスト）の扱い。`ProfileSettings` のフォールバックのログは 1 度だけ。
 - 持ち越し（10e）: `ControlService.CURRENT_DS4_CONTROLLER_LIMIT`（画面・サービスの分）、`AppHost` の暗黙のホスト構築と `CreationNote`、`PathService`／`EnvironmentService` の静的な状態、`ServiceRegistration._subscribedReset`、`ColorUtil` の孤立コード、総合検証。
 - 実機確認: **U-21**（起動直後のログ設定、言語・テーマ、バッテリー表示、Moonlight、デバウンス、ライトバー、`-driverinstall`。新設・未）。
+
+## 17. Phase7-Step10e で更新した台帳（2026-10-18。W1〜W5 時点。W6 で文書の最終化を追記する）
+
+### 17.1 実施した内容
+- **W1・W2**: 静的な `ControlService.CURRENT_DS4_CONTROLLER_LIMIT` を削除し、スロット数の上限を注入された `IEnvironmentService.ControllerSlotLimit` に替えた（サービス・シリアライザー・DTO・画面・ViewModel）。`OutputSlotManager` は上限をコンストラクターの整数で受ける。`EnvironmentService.ProcessControllerSlotLimit`（OS 判定の純粋な計算）は残した。
+- **W3**: `AppHost.GetService` の暗黙のホスト構築を廃止した（未構築・Dispose 後は `null`）。K7-1 の残存経路を閉じた。`CreationNote`（プロパティと起動ログ）は維持し、呼び出し元スタックの組み立てだけを削除した。テストは `TestHost`（共有のホストを必要なときに明示的に作る入口）に替えた。
+- **W4（承認済み）**: 呼び出し 0 件のメンバーを決着した（`Phase7-Step10e-Plan.md` §4.1）。
+  - 削除: `ColorUtil.applyRatio(Color, Color, uint)`／`HuetoRGB(float, float, float)`、`IAppSettingsService.CheckWhen`、`IProfileSettingsService.SATriggerCond`（配列）、`IAutoProfileService.ClearState`、`IProfileRepository.GetProfilePath`（実装クラスは残す）。
+  - 維持（TODO 付き。接続は Phase8）: `IAppSettingsService.SettingChanged`、`ISpecialActionRepository.ActionsChanged`、`IProfileSettingsService.UseTempProfileArray`。
+  - 維持（変更なし）: `IDeviceStateService.DeviceSerialChange`（10d で決定済み）、`IUdpServerService.Port`、`IKeyButtonControllerRegistry.GetOrCreate`、`IPathService.GetProfilePath`。
+
+### 17.2 ラチェットの最終基準値（W5）
+- `Global.*` **2**（ログ文言の文字列のみ）、`AppHost.GetService|Services` **3**（`App.xaml.cs` の窓口 1、`AppHost.cs` のログ文言 2）、`Program.rootHub` **0**、`ServiceProviderHolder` **17**（`Actions/`。Phase8）。実数と基準値は一致している。
+- 新設の検査（`Phase7Step10eW5RatchetEqualityGuardTests`）: 既存のラチェットの基準値を読み、**実数との一致**（超過だけでなく、減ったのに基準値を更新していない場合も失敗）と、最終の合計（0／3／2／17）を固定する。Phase8 で `ServiceProviderHolder` を減らすときは、既存のラチェットの基準値を同時に更新しないと、この検査が失敗する。
+
+### 17.3 静的な状態の目録（W5。コードは変えない）
+走査: `DS4Windows/` 配下の静的な可変フィールド・自動プロパティ（定数・`readonly`・メソッドを除く）。約 140 件。理由と解消する Phase で分類する。
+- **A. 起動前（コンテナの構築前）に必要で、残す**:
+  - `PathService`（`AppDataPathState`／`ExecutableDirectoryState`／`FirstRunState`／`MultipleSaveLocationsState` ほか）、`EnvironmentService`（ViGEm・HidHide・FakerInput の状態）。ブートストラップのインスタンスが書き、コンテナのインスタンスが読む。解消しない（Q8）。
+  - `AppHost._host`、`ServiceProviderHolder.provider`、`ServiceRegistration._subscribedReset`（ホストが 1 つであることの表現。テストは単一の静的ホストを共有する）。
+  - `App.requestClient`／`logHolder`、`AppLogger` のイベントと `NotificationService`（ロガーの初期化は最初に必要）、`KeyboardSettings`（OS の設定の読み取り）、`WindowPlacementHelper` のウィンドウハンドル。
+- **B. 第 1 層（デバイス管理）の静的な状態。Phase8 以降**:
+  - `DS4Devices`（`Devices`／`serialDevices`／`deviceSerials`／`DevicePaths`／`DisabledDevices`／デリゲート／`LayerSettings`／`isExclusiveMode`）、`DS4LightBar` の配列（`counters`／`fadewatches`／`forcelight` ほか）、`HidDevices`、`vJoyFeeder`／`VJoy`。
+  - 理由: 複数のスレッドと複数のクラスが静的に共有する。注入に替えるには第 1 層の再設計が要る（Phase8 の候補）。
+- **C. Actions サブシステム。Phase8**: `ActionRegistry`（`actions`／`initialized`）、`ActionManager.ToggledOnChanged`、`RepeatHelperToIRepeaterAdapter.RepeaterFactoryOverride`、`SyntheticDispatcher.bound`（Actions が静的に呼ぶ橋渡し）。`ServiceProviderHolder` の 17 件と同じ持ち越し。
+- **D. 実質不変の表・定数（可変の宣言だが、実行中に書き換えない）。解消しない**: `DS4ControlNames`／`X360ControlTables`／`MacroParser`／`Mapping` の表、`TrayIconResources.iconChoiceResources`、`BezierCurve` の定数、`Crc32Algorithm`、`HidLibrary/NativeMethods` のキー、`JoyConDevice`／`SwitchProDevice` の表、`DS4OutDeviceFactory`／`OutputSlotManager` の最小バージョン、`Util` の GUID、`LightbarDS4WinInfo.DEFAULT_CUSTOM_LED`。
+- **E. 画面の状態。解消しない（窓口が静的なのが自然なもの）**: `ProfileNotificationWindow.currentWindow`／`closeCts`、`RecordBoxViewModel.KeydownOverrides`、`MainWindow.ProcessPriorityClasses`、`MacroStepItem.imageSources`、`Changelog` の最新バージョンのキャッシュ、`AppNotificationRegistration` のリフレクションのキャッシュ、`StartupMethods.lnkpath`、`Properties/Settings`。
+- 判断: Phase7 の目標（`Global` の削除、Service Locator の削減、`BackingStore` の注入）は達成した。上記 B・C の静的な状態は、Phase8 の計画の入力とする。
+
+### 17.4 意図した依存の記録（Q7＝A。変更しない）
+- `Mapping` のコンストラクター引数 11、`MainWindow` のコンストラクター引数 18: 循環はなく、各依存は使われている。Phase8 の Actions の統合・ウィンドウの分割の候補として記録する（Facade は作らない。Phase8 の再設計と衝突するため）。
