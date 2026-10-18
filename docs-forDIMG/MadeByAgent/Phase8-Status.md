@@ -1,0 +1,56 @@
+# フェーズ8 進捗管理文書: Controls／SpecialActions の統一トリガーディスパッチ
+
+最終更新日: 2026-10-19  
+状態: **Step1 実施中（W1 完了）**。Phase7・7b・7c は完了。実機確認 U-24（Phase7c W1）は未  
+計画書: `Phase8-Unified-Trigger-Dispatch-Plan.md`（D1〜D5 確定。2026-10-19 追記は事実誤認の訂正）。Step1: `Phase8-Step1-Plan.md`
+
+---
+
+## 1. 全体進捗サマリ
+
+| Step | 内容 | 状態 | 記録 |
+|---|---|---|---|
+| Step1 | 詳細監査（トリガー判定の棚卸し、特性化テストの完成、孤立コードの判断、静的な窓口の洗い出し） | **実施中**（Q1〜Q6 を推奨どおり承認、2026-10-19）。W1 完了 | `Phase8-Step1-Plan.md`、`Phase8-Step1-Trigger-Spec-Ledger.md` |
+| Step2 | 詳細設計（メンバー確定、`KeyOutputAction` の委譲設計、モデル図の更新案） | 未着手 | - |
+| Step3 | トリガー条件クラス（`ComboTriggerInputAction`）の新設・単体テスト、`KeyOutputAction` の書き直し | 未着手 | - |
+| Step4 | SpecialActions の複雑なケース（組み合わせ・デバウンス・抑制）への拡張 | 未着手 | - |
+| Step5 | プロファイル読込時の `TriggerBinding` リスト構築 | 未着手 | - |
+| Step6 | コントローラー接続時の紐付け | 未着手 | - |
+| Step7 | 種別ごとに `Mapping.cs` から新経路へ切替（1 種別＝1PR） | 未着手 | - |
+| Step8 | 旧ディスパッチと系統 B の削除 | 未着手 | - |
+| Step9 | 総合検証・実機確認 | 未着手 | - |
+
+## 2. Step1 の Wave
+
+- W1: トリガー判定・実行の仕様台帳 — **完了**（`Phase8-Step1-Trigger-Spec-Ledger.md`）。
+- W2: 特性化テスト B-1〜B-4（`uTrigger` ほかの復帰、チェーン、`shiftTrigger`、`ApplyProfile` 後の掃除の順序）— 未着手。
+- W3: B-5・B-6（Assert の補強、Macro 分岐）— 未着手。
+- W4: 孤立コードの調査と判断案（`Phase8-Step1-Orphan-Decisions.md`）— 未着手。
+- W5: 判断の実施（承認された分）、静的な窓口の一覧、Step2 への論点 — 未着手。
+- W6: 完了報告書 — 未着手。
+
+## 3. 決定事項（Step1。2026-10-19）
+
+- Q1＝A: 全種別で成立・保持・解除・ガードの 4 点を固定。実機の `DS4Device` を要する種別（DisconnectBT、BatteryCheck、GyroCalibrate、ステアリング較正）は、ガードの分岐までに限る。
+- Q2＝A: プロファイル切替を通すテストは、`IProfileApplicationService` を記録用の実装に差し替える。
+- Q3＝A: 孤立コードの判断は、調査結果を 1 つの文書にして、一括で承認を得る。
+- Q4＝A: U-24 の実機確認を Step1 の前に行う（W1 は文書のみなので、着手済み）。
+- Q5＝A: 本書（`Phase8-Status.md`）を新設して進捗を管理する。
+- Q6＝A: 第 1 層（`DS4Devices`／`DS4LightBar`／`HidDevices`）の静的な状態は Step1 で扱わない。
+
+## 4. 実機確認の台帳
+
+- U-24（Phase7c W1 後。Stage3 の競合の是正）: 未。手動のプロファイル切替（メイン画面）を繰り返し、`Collection was modified` が出ないこと、Button／Key／マクロ／プロファイル切替と復帰が従来どおり動くこと（`Phase6-Step11-RealDevice-Verification-Checklist.md` §11）。
+
+## 5. 持ち越し・保留事項
+
+- K7b-1（異常終了）: 先送り。切り分け手順は `Phase7c-Completion-Report.md` §4。
+- K9-3（プリセットのサブメニュー）: 先送り。
+- `RetainedGlobalReferences_HaveTodoComments`（`AppPostHostGlobalReferenceGuardTests`）: 存在しない `Global` の TODO を要求する陳腐化したテスト。整理を判断する。
+- `Phase7-Status.md` §1 の Step6・Step7 行の記録列が空欄。
+- 台帳 §17.3 の B（第 1 層の静的な状態）: Phase8 の範囲外（Q6）。
+
+## 6. 直近の次アクション
+
+1. U-24 の実機確認（ユーザー）。
+2. W2（特性化テスト B-1〜B-4）。`Phase8-Step1-Trigger-Spec-Ledger.md` §8・§9 の「意図が不明な挙動」を、固定する／固定しないを決める。
