@@ -65,13 +65,14 @@ namespace DS4WindowsTests
         }
 
         [Fact]
-        public void IMapping_HasExactlyTheEightWindowMembers()
+        public void IMapping_HasExactlyTheTenWindowMembers()
         {
             string[] names = typeof(IMapping).GetMethods().Select(m => m.Name).OrderBy(n => n).ToArray();
+            // Phase7b W1: プロファイル切替の復帰の合図の退避・復元（CaptureProfileUntrigger／RestoreProfileUntrigger）を追加した（8 → 10）
             string[] expected =
             {
-                "Commit", "EndMacroDirect", "GetBoolMappingExternal", "HandleDeviceDisconnect",
-                "MapCustom", "PlayMacroDirect", "SetCurveAndDeadzone", "TempMouseJoystick",
+                "CaptureProfileUntrigger", "Commit", "EndMacroDirect", "GetBoolMappingExternal", "HandleDeviceDisconnect",
+                "MapCustom", "PlayMacroDirect", "RestoreProfileUntrigger", "SetCurveAndDeadzone", "TempMouseJoystick",
             };
             Assert.Equal(expected, names);
         }

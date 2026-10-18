@@ -267,7 +267,18 @@ namespace DS4Windows
                 }
 
                 // Phase7-Step8 W2（Q8＝A）: 旧 Mapping.HandleDeviceDisconnect の静的呼び出し。取得済みの sp から解決する（ホストが無いときは、Mapping も無いので何もしない）
-                try { (sp?.GetService(typeof(DS4Windows.DI.IMapping)) as DS4Windows.DI.IMapping)?.HandleDeviceDisconnect(device); } catch { }
+                // Phase7b W1: プロファイル切替の復帰の合図は、DefaultActionManager.ClearDeviceState と同じく退避して戻す。
+                try
+                {
+                    var mapping = sp?.GetService(typeof(DS4Windows.DI.IMapping)) as DS4Windows.DI.IMapping;
+                    if (mapping != null)
+                    {
+                        var untrigger = mapping.CaptureProfileUntrigger(device);
+                        try { mapping.HandleDeviceDisconnect(device); }
+                        finally { mapping.RestoreProfileUntrigger(device, untrigger); }
+                    }
+                }
+                catch { }
             }
             catch { }
         }

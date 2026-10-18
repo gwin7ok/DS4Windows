@@ -231,7 +231,18 @@ namespace DS4Windows.Actions
                 // 2026-09-04（31dddc43）から本クラスは未登録で静的実装が使われ、実機確認はその挙動で行われていたため、
                 // 再登録で挙動が変わらないよう揃えた（以前の ClearKeyButtonControllersForDevice 単体では、
                 // 押しっぱなしの合成キーが解放されない）。
-                try { _mappingProvider().HandleDeviceDisconnect(device); } catch { }
+                // Phase7b W1: HandleDeviceDisconnect は deviceRuntime を作り直し、プロファイル切替の特殊アクション
+                // （「Unload on trigger release」など）の復帰の合図（UntriggerAction）も消す。ClearDeviceState は
+                // プロファイル適用でも呼ばれ、切断ではないため、合図を退避して戻す（実際の切断は ControlService が
+                // Mapping.HandleDeviceDisconnect を直接呼ぶので、合図は消える）。
+                try
+                {
+                    var mapping = _mappingProvider();
+                    var untrigger = mapping.CaptureProfileUntrigger(device);
+                    try { mapping.HandleDeviceDisconnect(device); }
+                    finally { mapping.RestoreProfileUntrigger(device, untrigger); }
+                }
+                catch { }
             }
             catch { }
         }

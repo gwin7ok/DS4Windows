@@ -31,6 +31,15 @@ namespace DS4Windows.DI
         /// <summary>切断時の後始末（保持中の合成キーの解放、キュー・タスクのクリア、コントローラーの破棄）。</summary>
         void HandleDeviceDisconnect(int device);
 
+        /// <summary>
+        /// Phase7b W1: プロファイル切替の特殊アクションの「復帰の合図」（<c>UntriggerAction</c>／<c>UntriggerIndex</c>）を取り出す。
+        /// <c>ActionManager.ClearDeviceState</c> が <see cref="HandleDeviceDisconnect"/> を通じて合図を消す前に退避するために使う。
+        /// </summary>
+        ProfileUntriggerSnapshot CaptureProfileUntrigger(int device);
+
+        /// <summary>Phase7b W1: <see cref="CaptureProfileUntrigger"/> で退避した合図を戻す。合図が無かった（Action が null）ときは何もしない。</summary>
+        void RestoreProfileUntrigger(int device, ProfileUntriggerSnapshot snapshot);
+
         /// <summary>特殊アクションのマクロを再生する（<c>IMacroPlayer</c> 用）。</summary>
         void PlayMacroDirect(int device, SpecialAction action);
 

@@ -3107,6 +3107,26 @@ namespace DS4Windows
             }
         }
 
+        // Phase7b W1: プロファイル切替の特殊アクション（「Unload on trigger release」など）の復帰の合図を、
+        // ActionManager.ClearDeviceState（内部の HandleDeviceDisconnect が deviceRuntime を作り直す）の前後で保つための退避・復元。
+        // 旧: プロファイルの適用のたびに合図が消え、トリガーを離しても元のプロファイルへ戻らなかった。
+        public ProfileUntriggerSnapshot CaptureProfileUntrigger(int device)
+        {
+            if (deviceRuntime == null || device < 0 || device >= deviceRuntime.Length || deviceRuntime[device] == null)
+                return default;
+
+            return new ProfileUntriggerSnapshot(deviceRuntime[device].UntriggerAction, deviceRuntime[device].UntriggerIndex);
+        }
+
+        public void RestoreProfileUntrigger(int device, ProfileUntriggerSnapshot snapshot)
+        {
+            if (snapshot.Action == null || deviceRuntime == null || device < 0 || device >= deviceRuntime.Length || deviceRuntime[device] == null)
+                return;
+
+            deviceRuntime[device].UntriggerAction = snapshot.Action;
+            deviceRuntime[device].UntriggerIndex = snapshot.Index;
+        }
+
         // Handle full device disconnect cleanup: release synthetic keys, clear queues and tasks,
         // and remove any per-device runtime state. This consolidates the shutdown-like cleanup
         // performed when the application exits so it can be used on disconnect as well.
@@ -5353,6 +5373,11 @@ namespace DS4Windows
                                     }
                                 }
                             }
+
+                            // Phase7b W1: 復帰の適用も ActionManager.ClearDeviceState を通る（合図を退避・復元する）ため、
+                            // 復帰の前に合図を消す。消さないと、復帰の後に合図が復元され、毎フレーム復帰を繰り返す。
+                            deviceRuntime[device].UntriggerAction = null;
+                            deviceRuntime[device].UntriggerIndex = -1;
 
                             new DS4Windows.Actions.ProfileSwitchAction(action, device,
                                 _profileSwitcher).Stop(null);

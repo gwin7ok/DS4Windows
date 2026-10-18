@@ -147,5 +147,5 @@
 
 1. 総合検証は完了（GO。`Phase6-Step11-RealDevice-Verification-Checklist.md` §12.6）。
 2. 完了報告書は作成済み（`Phase7-Step10e-Completion-Report.md`、`Phase7-Completion-Report.md`）。Phase7 の完了宣言は 2026-10-18 に済み（ユーザー承認）。
-3. 別の計画書で扱う件: 「Unload on trigger release」の復帰の是正、L2／R2 のデッドゾーンの仕様変更。その後、Phase8。
+3. **Phase7b（`Phase7b-Plan.md`。計画書作成済み・承認待ち、2026-10-18）**: 持ち越し不具合 6 件（「Unload on trigger release」の復帰、L2／R2 のデッドゾーンのモード追加、K4-1、K7-2、K7b-1 の切り分け、K9-3）を Phase8 の前に対処する。Q1〜Q11 の承認後に W1 から実装。その後、Phase8。
 4. 実機確認 U-11、U-12、U-13、U-14、U-15、U-16、U-17、U-18、U-19、U-20、U-21（任意のタイミング。U-14 は終了時のホスト破棄と初回起動の確認が中心）。

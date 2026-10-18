@@ -38,6 +38,9 @@ namespace StandaloneTests
             private readonly DS4Windows.DI.IKeyButtonControllerRegistry registry;
             public DisconnectOnlyMapping(DS4Windows.DI.IKeyButtonControllerRegistry registry) { this.registry = registry; }
             public void HandleDeviceDisconnect(int device) { registry.ClearForDevice(device); }
+            // Phase7b W1: 復帰の合図の退避・復元（このスタブは合図を持たない）
+            public ProfileUntriggerSnapshot CaptureProfileUntrigger(int device) { return default; }
+            public void RestoreProfileUntrigger(int device, ProfileUntriggerSnapshot snapshot) { }
             public DS4State SetCurveAndDeadzone(int device, DS4State cState, DS4State dState, DS4Windows.DI.IProfileSettingsService settings) { throw new NotSupportedException(); }
             public void MapCustom(int device, DS4State cState, DS4State MappedState, DS4StateExposed eState, Mouse tp, ControlService ctrl) { throw new NotSupportedException(); }
             public void TempMouseJoystick(int device, DS4State MappedState) { throw new NotSupportedException(); }
