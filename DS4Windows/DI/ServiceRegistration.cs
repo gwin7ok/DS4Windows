@@ -147,9 +147,10 @@ namespace DS4Windows.DI
             services.AddSingleton<IControllerRegistry, DefaultControllerRegistry>();
 
             // Phase8-Step4 W1: 統一トリガーディスパッチの束縛の置き場と、種別ごとの移行のスイッチ（既定は空＝本番の挙動は旧経路のまま）。
-            // エンジン（ITriggerDispatchEngine）の登録は W3、Mapping への注入は W4。
+            // エンジン（W3）の Mapping への注入は W4。
             services.AddSingleton<IActionRegistry, ActionBindingRegistry>();
             services.AddSingleton<BindingMigrationOptions>();
+            services.AddSingleton<ITriggerDispatchEngine, TriggerDispatchEngine>();
 
             // Phase6-Step9-4（決定2＝C1）: ViewModelFactory が ControlService を生成のたびに遅延解決するための Func
             // （ControlService は Singleton。明示的なホスト構築より前に解決しないため、構築時には解決しない）
