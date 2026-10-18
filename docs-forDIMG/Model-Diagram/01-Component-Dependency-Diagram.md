@@ -15,6 +15,7 @@
 - **横断基盤・永続化層への依存は、図では大半を省略している**。実際には、ほぼすべてのサービスが設定・パス・環境・ストアに依存する（例: `ControlService` のコンストラクターは 19 引数で、10 個以上が基盤）。基盤は「どの層からも使える」ものとして扱い、辺を描かない（図の辺は、特定の部品が特定の基盤を使うことを説明したいものだけ）。
 - **ノードの実在**: 本図は目標構造である。2026-10-19 時点で、コードに実在しないノードがある（`InputLoopCoordinator`、`MappingPipelineContext`、`IInputMappingPipeline` と各 Processor、`IMouseEngine`、`IHidTransport`、各機種のパーサー、`IDeviceHotplugMonitor`、`ILightbarService`、`IDeviceOptionRepository`、サブ ViewModel 群）。Phase8 の Step2 で、実在／未実装の区別を図に反映する。
 - **層をまたぐ辺**: 第2層 → 第3層の辺は、第2層が出力のポート（インターフェース）を使うことを表す。向きは常に「第2層から出る」だけで、第3層から第2層へ戻る辺はない。
+- **点線（Phase8 の目標像。2026-10-19 追加）**: 枠が点線のノード（`ITriggerDispatchEngine`、`IActionRegistry`、`IActionBindingBuilder`、`TriggerBinding`）と、点線の辺は、未実装の目標像。Step7 の各 PR で実線化し、Step8 で旧い辺（`IManagedActionManager` から出力・切替への辺。系統 B）を撤去する。層をまたぐ辺は、実線 16 本に、点線 3 本（`Core_Engine` から出力）が加わっているが、Step8 で旧い 3 本と置き換わり、**最終は 16 本のまま**。
 
 ```mermaid
 flowchart TD
@@ -28,6 +29,8 @@ flowchart TD
     classDef egressLayer fill:#e8f5e9,stroke:#388e3c,stroke-width:2px,color:#000000;
     classDef ingressLayer fill:#f3e5f5,stroke:#7b1fa2,stroke-width:2px,color:#000000;
     classDef infraLayer fill:#eceff1,stroke:#37474f,stroke-width:2px,color:#000000;
+    %% 未実装（目標像）のノード: 枠を点線にする（Phase8 の統一トリガーディスパッチ。2026-10-19 追加）
+    classDef plannedNode stroke-dasharray: 5 5;
 
     %% ==========================================
     %% 4. UI層 (Mediator パターンによる分割)
@@ -64,8 +67,15 @@ flowchart TD
         Core_ProfileApp["IProfileApplicationService<br>(プロファイル切替/復帰/Halt保護)"]:::coreLayer
         Core_SlotApplier["IProfileSlotApplier<br>(接続時プロファイル適用の出力ポート。ControlService が定義)"]:::coreLayer
         Core_AutoProfile["IAutoProfileService<br>(プロセス監視切替)"]:::coreLayer
-        Core_ActionMgr["IManagedActionManager<br>(アクション実行管理・トグル状態)"]:::coreLayer
+        Core_ActionMgr["IManagedActionManager<br>(アクションの状態: BeingTriggered／IsToggledOn／ガード。<br>実行の統括は Core_Engine へ移行［Step8 で撤去］)"]:::coreLayer
         Core_Switcher["IProfileSwitcher<br>(アクション内のプロファイル切替。第2層の内部契約)"]:::coreLayer
+
+        subgraph TriggerDispatch ["統一トリガーディスパッチ (Phase8・未実装)"]
+            Core_Engine["ITriggerDispatchEngine<br>(判定→実行・ガード・抑制・復帰)"]:::coreLayer
+            Core_Registry["IActionRegistry<br>(ActionBindingRegistry: スロット別の不変の束縛リスト)"]:::coreLayer
+            Core_Builder["IActionBindingBuilder<br>(プロファイルから束縛を構築)"]:::coreLayer
+            Core_Binding["TriggerBinding<br>(IInputAction + IOutputAction[] + BindingPolicy)"]:::coreLayer
+        end
 
         subgraph Mapping_Processors ["Mapping Pipeline & Stateless Processors"]
             Pipe_Master["IInputMappingPipeline<br>(パイプライン親: Context更新統括)"]:::coreLayer
@@ -90,6 +100,15 @@ flowchart TD
         Core_AutoProfile --> Core_ProfileApp
         Core_ActionMgr --> Core_Switcher
         Core_Switcher --> Core_ProfileApp
+
+        %% Phase8 の目標像（点線の辺）。Step7 の各 PR で実線化し、Step8 で旧い辺（Core_ActionMgr 起点）を撤去する
+        Pipe_Master -.-> Core_Engine
+        Core_Engine -.-> Core_Registry
+        Core_Engine -.-> Core_ActionMgr
+        Core_Engine -.-> Core_Switcher
+        Core_Registry -.-> Core_Binding
+        Core_ProfileApp -.-> Core_Builder
+        Core_Builder -.-> Core_Registry
     end
 
     %% ==========================================
@@ -172,11 +191,18 @@ flowchart TD
     Pipe_Master --> Out_SlotSvc
     Proc_Mouse --> Out_KBMHandler
 
+    %% 現状は Core_ActionMgr（系統 B）が出力を呼ぶ。Phase8 の目標像では、束縛が保持する出力アクションを通して Core_Engine が呼ぶ（層をまたぐ辺は 3 本のまま）
     Core_ActionMgr --> Out_KBMHandler
     Core_ActionMgr --> Out_Launcher
     Core_ActionMgr --> Out_SlotSvc
+    Core_Engine -.-> Out_KBMHandler
+    Core_Engine -.-> Out_Launcher
+    Core_Engine -.-> Out_SlotSvc
 
     Core_ProfileApp --> Store_Profile
+
+    %% 未実装ノードの点線スタイル
+    class Core_Engine,Core_Registry,Core_Builder,Core_Binding plannedNode;
 
 %% 注釈補強（2026-09-19 Phase6-Step2 決定O1=B／O4=B-2 反映）
 %% - `ControlService` は `IProfileApplicationService` に直接依存せず、自身が定義する出力ポート `IProfileSlotApplier` のみに依存する（依存の逆転）。現状の実装は `Global.ApplyProfileToSlot` へ委譲し、K1（`IProfileApplicationService.ApplyProfile` のスロット上限ハードコード等）の是正後に `IProfileApplicationService` へ委譲する（点線）。
@@ -239,3 +265,7 @@ flowchart TD
 %% - 「UI_VM_Main → 入力監視層（Layer1）」の辺を削除した。UI層は第2層だけに依存する（02 の依存方向図と一致）。実コードで、UI（DS4Forms）が IDs4DeviceRegistry／DS4Devices を使う箇所は、コメントアウトされた行のみ（IDs4DeviceRegistry の利用者は ControlService と、構築側の App／ServiceRegistration）。
 %% - 層をまたぐ辺は 19 本から 16 本になった（UI → 第1層 1 本を削除。IProfileSwitcher を第2層へ移したことで、上向きの 1 本［Out_Switcher → Core_ProfileApp］と第2層 → 第3層の 1 本［Core_ActionMgr → Out_Switcher］が、第2層の内部の辺になった）。
 %% - 持ち越し（Phase8 の Step2）: 層の箱全体を指す矢印（UI_Factory／UI_VM_Main／VM_ProfileContainer → Layer2／LayerInfra）の具体化または集約、第2層 → 第3層の辺（11 本）の「出力ポート」への集約と表の併記、実在／未実装の区別、Phase8 の統一ディスパッチ（TriggerBinding／IActionBinding 系）の反映。
+%% 注釈補強（2026-10-19 Phase8-Step2 W5［段階 A］: 統一トリガーディスパッチの目標像を追加。構造の目標は変更しない）
+%% - 第2層に「統一トリガーディスパッチ」（ITriggerDispatchEngine／IActionRegistry／IActionBindingBuilder／TriggerBinding）を点線で追加した。Mapping（図では Pipe_Master）が毎フレームエンジンを呼び、エンジンが登録簿の束縛を処理して、出力アクション（MacroAction／ProfileSwitchAction／LaunchProcessAction ほか）を通して第3層へ出力する。状態は IManagedActionManager（ActionInstanceState）に残す。
+%% - エンジンは IMapping に依存しない（Mapping がエンジンを呼ぶ）。登録簿の更新は、プロファイル適用の後に IActionBindingBuilder が組み立てた不変リストの参照の差し替え（読込中の Clear→Add の競合を構造的に排除）。
+%% - 旧い辺（Core_ActionMgr から出力・切替への辺。系統 B）は、実装の現状を表すため残し、Step8 で撤去する。詳細は Phase8-Step2-Design.md、更新案は Phase8-Step2-ModelDiagram-Update-Proposal.md。

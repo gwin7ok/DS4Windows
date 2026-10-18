@@ -4,7 +4,7 @@
 対象ブランチ: `For-DI-migration-work`  
 上位: `Phase8-Step2-Plan.md`（Q1〜Q9 を推奨の方向で承認）、`Phase8-Step2-Intent-Decisions.md`（承認済み）  
 入力: `Phase8-Step1-Trigger-Spec-Ledger.md`、`Phase8-Step1-Static-Access-Inventory.md`  
-状態: **W2（契約）・W3（状態・スレッド・安全弁）は承認済み。W4（移行計画）は §22 以降に追記済み、承認待ち**。W5（モデル図の更新案）は、W4 の承認後  
+状態: **承認済み（W2〜W5。2026-10-19）**。W5 のモデル図の更新案は別文書  
 注意: 本書のコードブロックは**設計のスケッチ**で、コミットされた実装ではない。メンバー名は Step3 の実装時に調整してよい（意味を変える場合は本書を更新して承認を得る）。
 
 ---

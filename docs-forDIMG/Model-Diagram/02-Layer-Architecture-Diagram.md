@@ -26,7 +26,8 @@
 │  【ループ統括】 ControlService (ファサード) ──> IInputLoopCoordinator (高速ループ実行エンジン)       │
 │  【状態管理】   MappingPipelineContext Pool (スロット別常駐バッファ: インプレース更新 / Zero-GC)   │
 │  【切替制御】   IProfileApplicationService (適用/復帰/Halt) / IAutoProfileService / IProfileSwitcher │
-│  【アクション】 IManagedActionManager (アクション実行・トグル)                                         │
+│  【アクション】 ITriggerDispatchEngine (判定→実行の統一) / IActionRegistry (束縛の一覧)  ※Phase8 目標像│
+│                 IActionBindingBuilder (束縛の構築) / IManagedActionManager (アクションの状態)    │
 │  【マッピング】 IInputMappingPipeline (変換パイプライン親: Context統括)                           │
 │                 ├── IButtonProcessor (ボタン変換・シフト)   IStickProcessor (軸/カーブ/AntiSnap)   │
 │                 ├── ITriggerProcessor (2段階トリガー)      ITouchGyroProcessor (タッチ/ジャイロ)  │
@@ -151,3 +152,6 @@
 %% 注釈補強（2026-10-19 依存図の検証［Phase8 前レビュー］。依存の向きの是正のみ）
 %% - IProfileSwitcher を、第3層（3-c）から第2層（【切替制御】）へ移した。プロファイルの切替はアプリ内部の状態遷移で、IProfileApplicationService（第2層）に依存するため、第3層に置くと第3層 → 第2層の上向きの辺と循環ができる。詳細は 01 の注釈。
 %% - 依存の規則: UI層(4) → 信号変換層(2) → { 入力監視層(1)、信号出力層(3)、横断基盤 }。第1層・第3層・横断基盤から第2層への参照は禁止（`.github/copilot-instructions.md` §1 も同様に書き直した）。
+%% 注釈補強（2026-10-19 Phase8-Step2 W5［段階 A］: 統一トリガーディスパッチの目標像を追加。構造の目標は変更しない）
+%% - 第2層の【アクション】の行を、目標像（ITriggerDispatchEngine／IActionRegistry／IActionBindingBuilder／IManagedActionManager［状態］）に書き換えた。特殊アクションと Controls タブの「トリガー成立→処理実行」を、第2層の統一エンジンに集約する（Phase8）。未実装。Step7 の各 PR で種別ごとに実装済みになる。
+%% - 入力の 1 フレームは 2 段階: 通常の割り当ての前（トリガーの実行・ボタンの出力の消去）と、後（Button の毎フレームの出力）。依存方向（UI → 変換 → 入力／出力／基盤）は変更なし。

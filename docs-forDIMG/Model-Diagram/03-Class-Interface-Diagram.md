@@ -412,6 +412,135 @@ classDiagram
     }
     IProfileXmlStore <|.. ProfileXmlStore : implements
     ProfileXmlStore --> XmlIoLock : uses
+
+    %% ==========================================
+    %% 統一トリガーディスパッチ（Phase8・目標像。未実装。2026-10-19 追加［段階 A］）
+    %% 設計: docs-forDIMG/MadeByAgent/Phase8-Step2-Design.md。Step7 の各 PR で実装済みになる。
+    %% 撤去予定（Step8）: IActionFactory／DefaultActionFactory／ActionFactory、Actions.Action／SpecialActionBase／*ActionAdapter、ActionEntry、ActionManager（静的）
+    %% IMapping は、Step7.5（Profile）で CaptureProfileUntrigger／RestoreProfileUntrigger を削除して 8 メンバーになり、ITriggerDispatchEngine を使う
+    %% ==========================================
+    class ITriggerInput {
+        <<interface>>
+        +Device int
+        +IsActive(DS4Controls control) bool
+        +WasActive(DS4Controls control) bool
+        +Delay DelayClock
+        +UtcNow DateTime
+        +TickCount64 long
+    }
+    class TriggerInput
+    class TriggerState {
+        <<struct>>
+        +IsEstablished bool
+        +Gesture int
+    }
+    class IInputAction {
+        <<interface>>
+        +Name string
+        +Triggers IReadOnlyList~DS4Controls~
+        +Evaluate(ITriggerInput input) TriggerState
+        +Reset()
+    }
+    class ComboTriggerInputAction
+    class MultiTapInputAction
+    class IOutputAction {
+        <<interface>>
+        +Id string
+        +Execute(IOutputContext ctx)
+        +Stop(IOutputContext ctx)
+    }
+    class IFrameOutputAction {
+        <<interface>>
+        +ApplyFrame(IOutputContext ctx, bool active, bool risingEdge)
+    }
+    class IHeldOutputAction {
+        <<interface>>
+        +WhileHeld(IOutputContext ctx)
+    }
+    class IOutputContext {
+        <<interface>>
+        +Device int
+        +OutputHandler IVirtualKBM
+        +Frame IFrameOutput
+        +RequestEndFrame()
+    }
+    class IFrameOutput {
+        <<interface>>
+        +ResetTriggerControl(DS4Controls control)
+        +PressX360(X360Controls control)
+    }
+    class IActionBinding {
+        <<interface>>
+        +Input IInputAction
+        +Outputs IReadOnlyList~IOutputAction~
+        +Policy BindingPolicy
+        +Source SpecialAction
+        +Index int
+    }
+    class TriggerBinding
+    class BindingPolicy {
+        +RespectsFreshPressGuard bool
+        +BlocksWhileExecuting bool
+        +Untrigger UntriggerPolicy
+        +ResetsTriggerOutput bool
+        +StopOnRelease bool
+        +ExclusionGroup string
+    }
+    class IActionRegistry {
+        <<interface>>
+        +GetBindings(int device) IReadOnlyList~IActionBinding~
+        +Replace(int device, IReadOnlyList~IActionBinding~ bindings)
+        +Clear(int device)
+    }
+    class ActionBindingRegistry
+    class IActionBindingBuilder {
+        <<interface>>
+        +Build(int device) IReadOnlyList~IActionBinding~
+    }
+    class ActionBindingBuilder
+    class ITriggerDispatchEngine {
+        <<interface>>
+        +ProcessTriggers(int device, ITriggerInput input, IFrameOutput frame)
+        +ApplyFrameOutputs(int device, ITriggerInput input, IFrameOutput frame)
+        +IsSuppressed(int device, DS4Controls control) bool
+        +OnProfileApplied(int device)
+        +OnDeviceDisconnected(int device)
+    }
+    class TriggerDispatchEngine
+    class ButtonOutputAction
+    class KeyOutputAction
+    class MacroAction
+    class ProfileSwitchAction
+    class LaunchProcessAction
+    ITriggerInput <|.. TriggerInput : implements
+    IInputAction <|.. ComboTriggerInputAction : implements
+    IInputAction <|.. MultiTapInputAction : implements
+    IActionBinding <|.. TriggerBinding : implements
+    IActionRegistry <|.. ActionBindingRegistry : implements
+    IActionBindingBuilder <|.. ActionBindingBuilder : implements
+    ITriggerDispatchEngine <|.. TriggerDispatchEngine : implements
+    IOutputAction <|-- IFrameOutputAction
+    IOutputAction <|-- IHeldOutputAction
+    IFrameOutputAction <|.. ButtonOutputAction : implements
+    IOutputAction <|.. KeyOutputAction : implements
+    IHeldOutputAction <|.. MacroAction : implements
+    IOutputAction <|.. ProfileSwitchAction : implements
+    IOutputAction <|.. LaunchProcessAction : implements
+    TriggerBinding --> IInputAction : Input
+    TriggerBinding --> IOutputAction : Outputs
+    TriggerBinding --> BindingPolicy : Policy
+    TriggerDispatchEngine --> IActionRegistry : GetBindings
+    class IManagedActionManager {
+        <<interface>>
+        +GetStateFor(SpecialAction action, int device) ActionInstanceState
+    }
+    class IProfileApplicationService {
+        <<interface>>
+    }
+    TriggerDispatchEngine --> IManagedActionManager : ActionInstanceState
+    ActionBindingBuilder ..> TriggerBinding : builds
+    IMapping ..> ITriggerDispatchEngine : calls every frame
+    IProfileApplicationService ..> IActionBindingBuilder : after profile applied
 ```
 
 ---
@@ -583,3 +712,7 @@ classDiagram
 %%   - 詳細は Phase7-Step10e-Plan.md、Phase7-Residual-Ledger.md §17。
 %% Phase7 完了（2026-10-18）: Step1〜Step10e の変更は、上記の Phase7-Step 別の注釈に記載した。全体の完了報告は Phase7-Completion-Report.md、台帳は Phase7-Residual-Ledger.md。Phase8 への引き継ぎ（Actions の ServiceProviderHolder 17 件、第 1 層の静的な状態、TODO(Phase8) 付きメンバー 3 件）は同報告書 §5.2。
 %% Phase7b（2026-10-19）: 持ち越し不具合の是正。IMapping に CaptureProfileUntrigger／RestoreProfileUntrigger を追加（メンバー数 8 → 10。ProfileUntriggerSnapshot を新設）。ActionManager.ClearDeviceState（DefaultActionManager と静的なフォールバック）が、HandleDeviceDisconnect の前後で、プロファイル切替の復帰の合図を退避・復元する。詳細は Phase7b-Completion-Report.md。
+%% 注釈補強（2026-10-19 Phase8-Step2 W5［段階 A］: 統一トリガーディスパッチの目標像を、クラス図の末尾に追加した。未実装。構造の目標は変更しない）
+%% - 判定（IInputAction＝ComboTriggerInputAction／MultiTapInputAction）と実行（IOutputAction）を TriggerBinding が束ね、ITriggerDispatchEngine が、エッジ検出・Fresh-press ガード・抑制・復帰を一元的に担う。実行時の状態は IManagedActionManager（ActionInstanceState）に残す。
+%% - IActionRegistry は、スロットごとの不変リストを参照ごと差し替える（Register／Unregister／GetBindingsForDevice は廃止）。IActionBinding の OnTriggered／OnReleased は廃止（ライフサイクルはエンジン）。
+%% - 出力アクションは、既存の MacroAction／ProfileSwitchAction／LaunchProcessAction をそのまま使い、KeyOutputAction は KeyAction へ委譲する形に書き直す。ButtonOutputAction は新設（毎フレームの出力）。デバイスを要する種別（DisconnectBT ほか）は Step7.6 で追加。

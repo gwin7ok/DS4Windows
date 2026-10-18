@@ -4,7 +4,7 @@
 対象ブランチ: `For-DI-migration-work`  
 上位: `Phase8-Unified-Trigger-Dispatch-Plan.md`（D1〜D5 確定。2026-10-19 の 2 つの追記を含む）、`Phase8-Step1-Completion-Report.md`  
 入力: `Phase8-Step1-Trigger-Spec-Ledger.md`（現行の挙動）、`Phase8-Step1-Static-Access-Inventory.md` §3（Step2 への論点）、`Phase8-Step1-Orphan-Decisions.md`  
-状態: **計画案（承認待ち）。実装は未着手**
+状態: **完了（2026-10-19。`Phase8-Step2-Completion-Report.md`）**。W1〜W6 を実施し、設計書・意図決定・モデル図の更新案を承認済み
 
 ---
 
