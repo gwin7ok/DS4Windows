@@ -1024,7 +1024,7 @@ static結合を先に減らしておくことが本フェーズの下地にな�
 
 1. Phase7 の完了宣言: 済み（2026-10-18、ユーザー承認）。
 2. 別の計画書で扱う件: 【2026-10-19 更新】「Unload on trigger release」の復帰の是正と、L2／R2 のデッドゾーンの要望（コードの変更なし）は Phase7b で対処済み。K7b-1（異常終了）・K9-3（プリセットのサブメニュー）は先送り。Phase8 の前の整理は Phase7c（`Phase7c-Plan.md`）で実施中。
-3. Phase8（`Phase8-Unified-Trigger-Dispatch-Plan.md` の D1〜D5）は Phase7c の完了後に着手する。着手前に、Phase7 からの引き継ぎ（§6.9.4）と、同計画書の 2026-10-19 追記（事実誤認の訂正）を取り込む。
+3. Phase8（`Phase8-Unified-Trigger-Dispatch-Plan.md` の D1〜D5）は Phase7c の完了後に着手する。実行順序は同計画書の 2026-10-19 追記のとおり（Step4 と Step5 の間に Step4b を挿入）。Phase8 の後は Phase9（`MadeByAgent/Phase9-Responsibility-Split-Plan.md`。巨大クラスの責務分割）。着手前に、Phase7 からの引き継ぎ（§6.9.4）と、同計画書の 2026-10-19 追記（事実誤認の訂正）を取り込む。
 4. 先送りした実機確認（`Phase6-Step11-RealDevice-Verification-Checklist.md` §12.6）は、任意のタイミングで実施する。
 
 （以下は 2026-10-14 時点の記述。履歴として残す。）

@@ -292,3 +292,32 @@ Phase8 着手前の全体レビュー（`Phase7c-Plan.md`）で、本書の前�
    - 既存の `ControlTabAndSpecialActionKeyTests.cs` の 2 本の Assert の補強。
    - 既に固定済み（Phase7c W2）: Button の Press、AND 条件、抑制、Fresh-press、Profile／Program のブロック、Key の状態遷移、Stage3 の並行変更（`Phase7cW2SpecialActionTriggerCharacterizationTests`）。
 10. **現状の挙動で、設計時に注意する点**（Phase7c W2 の特性化で固定した事実）: Stage3 の Button の Press は Fresh-press ガードを見ない（Toggle の反転だけが見る）。統一経路に移すときは、この差を意図して維持するか、揃えるかを決めること。
+
+---
+
+## 追記（2026-10-19）: 実行順序の改訂（Phase8 の前後で行う構造整理の位置づけ）
+
+経緯: 上位の巨大ファイル（`Mapping.cs`、`LegacyProfileXmlSerializer.cs`、`ControlService.cs` ほか）の責務分割を、Phase8 の前に行うか後に行うかを検討し、次の順序とした（ユーザー承認、2026-10-19）。D1〜D5 と、§5 の Step 構成（Step1〜Step9）は変更しない。**Step4 と Step5 の間に、Step4b を挿入する。**
+
+### 実行順序
+
+1. Phase7c の実機確認 U-24（Stage3 の競合の是正）。
+2. **Step1〜Step4**（詳細監査、特性化テスト、詳細設計、新クラスの追加）。既存の大きなメソッドを触らない作業が中心。Step1 の計画は `Phase8-Step1-Plan.md`。
+3. **Step4b（挿入。仮称 Phase7d）**: `LegacyProfileXmlSerializer.LoadProfile`／`SaveProfile` の節ごとの分解と、機械的な整理 2 件（下記）。Phase8 本体の作業ではなく、Step5 の準備。
+4. **Step5〜Step9**（読込時の `TriggerBinding`、接続時の紐付け、種別ごとの切替、旧コードの削除、総合検証）。
+5. **Phase9**（別 Phase。`Phase9-Responsibility-Split-Plan.md`）: `Mapping` の補正・マウス変換・マクロ、`ControlService`、`App` の起動手順、UI、第 1 層。Phase8 の完了後。
+
+### 順序の理由（要約）
+- Phase8 の Step7・Step8 は `Mapping.cs` から約 2,000 行を削除する。先に分割すると、移行元の行番号と、Step1 の仕様台帳・特性化テストの前提が崩れ、二度手間になる。
+- スティック補正・マウス変換などは全入力が通る経路で、値の特性化テストがない。Phase8 の実機確認の直前に動かすと、不具合の帰属（分割か統一ディスパッチか）が切り分けにくくなる。
+- 一方、`LoadProfile` は Step5（読込時の `TriggerBinding` の構築）が触る。2,323 行の単一メソッドに足すのは危険で、節ごとに分けておけば足す場所が明確になる。ゴールデンテスト（Phase7-Step10c）の安全網があり、`Mapping.cs`・`Actions/` に触れないので、Step1〜Step4 とも独立。
+
+### Step4b の内容（個別計画書は、Step4 の完了後に作る）
+- **4b-0 監査**: ゴールデンテストの網羅の確認。保存・読込のゴールデンは「既定」と「変化させた状態」だが、`LoadProfile` の各節（スティック、トリガー、ジャイロ、タッチパッド、ライトバー、ボタン割り当て、特殊アクション、出力種別ほか）の**すべての設定項目が非既定値で読み書きされているか**を確認し、足りない節の分のゴールデンを先に足す。`LoadProfile` が共有する局所変数（`missingSetting` など）と、節ごとの依存を一覧にする。
+- **4b-1 `LoadProfile` の分解**: 節ごとの読み込みクラス（1 ファイル 1 型。共通の契約は小さなインターフェース。DI 登録の要否は計画書で決める）。読込の順序（節の相互依存）と、`missingSetting` の伝播、ログ、例外の握りつぶしの有無を維持する。節 1 つずつを 1 PR とし、毎回ゴールデンテストを通す。
+- **4b-2 `SaveProfile` の分解**: 同様。
+- **4b-3 機械的な整理**: `BackingStore` の名前の変換関数（`getDS4ControlsByName`／`getX360ControlsByName`、約 200 行）を、既存の `DS4ControlNames`／`X360ControlTables` へ。`ProfileEditor` のホバー画像・位置の表（`PopulateHoverImages`／`PopulateHoverLocations`、約 320 行）を、データ用のクラスへ。
+- 制約: 製品の挙動・保存形式を変えない。ラチェット（`Global.*` ほか）の基準値を、新しいファイルへ引き継ぐ（合計を増やさない）。規約 §3.2（メソッド単位の置換）と §3.4（ファイル配置）に従う。
+
+### Step5 との接続
+- Step5 は、4b-1 で分けた「特殊アクション」の節（`ProfileActions`）の読込と、`BackingStore.CalculateProfileActionDicts` の結果を入力に、プロファイルスロットごとの不変の `IReadOnlyList<TriggerBinding>` を作る（読込側のリスト差し替えは、Phase7c W1 で保留した本格案。ここで解消する）。

@@ -14,6 +14,7 @@
 | Step2 | 詳細設計（メンバー確定、`KeyOutputAction` の委譲設計、モデル図の更新案） | 未着手 | - |
 | Step3 | トリガー条件クラス（`ComboTriggerInputAction`）の新設・単体テスト、`KeyOutputAction` の書き直し | 未着手 | - |
 | Step4 | SpecialActions の複雑なケース（組み合わせ・デバウンス・抑制）への拡張 | 未着手 | - |
+| **Step4b（挿入）** | `LoadProfile`/`SaveProfile` の節ごとの分解、機械的な整理 2 件（Step5 の準備。仮称 Phase7d）。計画書は Step4 の完了後 | 未着手 | `Phase8-Unified-Trigger-Dispatch-Plan.md` 2026-10-19 追記［実行順序の改訂］ |
 | Step5 | プロファイル読込時の `TriggerBinding` リスト構築 | 未着手 | - |
 | Step6 | コントローラー接続時の紐付け | 未着手 | - |
 | Step7 | 種別ごとに `Mapping.cs` から新経路へ切替（1 種別＝1PR） | 未着手 | - |
@@ -54,3 +55,7 @@
 
 1. U-24 の実機確認（ユーザー）。
 2. W2（特性化テスト B-1〜B-4）。`Phase8-Step1-Trigger-Spec-Ledger.md` §8・§9 の「意図が不明な挙動」を、固定する／固定しないを決める。
+
+## 7. 実行順序（2026-10-19 改訂。ユーザー承認）
+
+U-24 → Step1〜Step4 → **Step4b（`LoadProfile`／`SaveProfile` の分解ほか）** → Step5〜Step9 → **Phase9（巨大クラスの責務分割。`Phase9-Responsibility-Split-Plan.md`）**。`Mapping` の補正・マウス変換・マクロなどの分割は、Phase8 が `Mapping.cs` の旧ディスパッチを削除する前には行わない（二度手間と、実機確認の帰属の混乱を避けるため）。
