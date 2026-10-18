@@ -24,8 +24,8 @@
 ## 2. Step1 の Wave
 
 - W1: トリガー判定・実行の仕様台帳 — **完了**（`Phase8-Step1-Trigger-Spec-Ledger.md`）。
-- W2: 特性化テスト B-1〜B-4 — **実装済み（ビルド・テスト待ち。2026-10-19）**。`Phase8Step1ProfileSwitchCharacterizationTests`（成立→切替、AutomaticUntrigger の復帰、uTrigger の復帰、チェーン経路が使われないこと）、`Phase8Step1ShiftTriggerCharacterizationTests`、`Phase8Step1ApplyProfileCleanupOrderGuardTests`（ソース順序のガード）。`delayTime` は、配列が 4 要素の不具合（台帳 §8 項目 10）のため固定しない。
-- **W2b: 「デバイス上限が 4 前提」の箇所の是正**— 実装済み（ビルド・テスト待ち。2026-10-19）。A-1（`nowAction`／`oldnowAction`）と B-1（出力スロットの復元）を是正。`Phase8-Step1-SlotLimit-Fix-Plan.md`。
+- W2: 特性化テスト B-1〜B-4 — **完了（ビルド・テスト成功。2026-10-19）**。`Phase8Step1ProfileSwitchCharacterizationTests`（成立→切替、AutomaticUntrigger の復帰、uTrigger の復帰、チェーン経路が使われないこと）、`Phase8Step1ShiftTriggerCharacterizationTests`、`Phase8Step1ApplyProfileCleanupOrderGuardTests`（ソース順序のガード）。`delayTime` は、配列が 4 要素の不具合（台帳 §8 項目 10）のため固定しない。
+- **W2b: 「デバイス上限が 4 前提」の箇所の是正**— **完了（ビルド・テスト成功。2026-10-19）。実機確認 W2b-5 は未**。A-1（`nowAction`／`oldnowAction`）と B-1（出力スロットの復元）を是正。`Phase8-Step1-SlotLimit-Fix-Plan.md`。
 - W3: B-5・B-6（Assert の補強、Macro 分岐）— 未着手。
 - W4: 孤立コードの調査と判断案（`Phase8-Step1-Orphan-Decisions.md`）— 未着手。
 - W5: 判断の実施（承認された分）、静的な窓口の一覧、Step2 への論点 — 未着手。
@@ -60,3 +60,10 @@
 ## 7. 実行順序（2026-10-19 改訂。ユーザー承認）
 
 U-24 → Step1〜Step4 → **Step4b（`LoadProfile`／`SaveProfile` の分解ほか）** → Step5〜Step9 → **Phase9（巨大クラスの責務分割。`Phase9-Responsibility-Split-Plan.md`）**。`Mapping` の補正・マウス変換・マクロなどの分割は、Phase8 が `Mapping.cs` の旧ディスパッチを削除する前には行わない（二度手間と、実機確認の帰属の混乱を避けるため）。
+
+## 8. 経過メモ（2026-10-19）
+
+- W2・W2b の特性化テストと回帰テストは成功（ユーザーが実行）。W2 の途中で、本番では「プロファイル適用が行うアクション状態の掃除［`ClearAllEntries`／`ClearDeviceState`］により、離したときの `OnRelease` → `RestoreFromAction` が起きない」という暗黙の依存が判明（台帳 §8 項目 11）。Phase8 の統一ディスパッチで明示的な仕様にする。
+- 上流の元からの不具合 2 件を是正: `nowAction`／`oldnowAction` が 4 要素（デバイス 4〜7 で `delayTime` が例外。台帳 §8 項目 10）、出力スロットの復元が 0〜3 に限られていた（`OutputSlotPersistDTO.MapTo`）。
+- 実機確認の追加候補: 5 台以上のコントローラー（スロット 5〜8）での `delayTime` のアクション、5〜8 番目の出力スロットの恒久の保存・復元。機材がなければリスク受容。
+- 次: W3（B-5 Assert の補強、B-6 Macro 分岐）。
