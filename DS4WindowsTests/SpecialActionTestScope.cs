@@ -79,6 +79,36 @@ namespace DS4WindowsTests
         /// <summary><c>BackingStore.actions</c> での添字（<c>Mapping</c> が <c>UntriggerIndex</c> に使う値）。</summary>
         public int IndexOf(SpecialAction action) => _store.actions.IndexOf(action);
 
+        /// <summary>
+        /// Phase8-Step1 W2: ホストの <c>DefaultProfileSwitcher</c>（アクションと <c>Mapping</c> の両方が使う Singleton）が持つ
+        /// <c>IProfileApplicationService</c> を、記録用の実装に差し替える（終了時に元へ戻す）。実際のプロファイルの読込・適用は走らない。
+        /// </summary>
+        public RecordingProfileApplicationService InstallProfileRecorder()
+        {
+            if (_switcherField != null)
+                return _recorder;
+
+            var switcher = TestHost.GetService<DS4Windows.Actions.IProfileSwitcher>() as DS4Windows.Actions.DefaultProfileSwitcher;
+            if (switcher == null)
+                throw new InvalidOperationException("IProfileSwitcher の実体が DefaultProfileSwitcher ではない");
+
+            _switcherField = typeof(DS4Windows.Actions.DefaultProfileSwitcher).GetField("profileAppService",
+                System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance);
+            if (_switcherField == null)
+                throw new InvalidOperationException("DefaultProfileSwitcher.profileAppService が見つからない");
+
+            _switcherInstance = switcher;
+            _savedProfileApp = _switcherField.GetValue(switcher);
+            _recorder = new RecordingProfileApplicationService();
+            _switcherField.SetValue(switcher, _recorder);
+            return _recorder;
+        }
+
+        private System.Reflection.FieldInfo _switcherField;
+        private object _switcherInstance;
+        private object _savedProfileApp;
+        private RecordingProfileApplicationService _recorder;
+
         /// <summary>1 フレーム分の入力を評価する（<c>MapCustom</c> を 1 回実行して出力の状態を返す）。</summary>
         public DS4State RunFrame(DS4State input) => _inner.RunMapCustom(input);
 
@@ -91,6 +121,9 @@ namespace DS4WindowsTests
 
         public void Dispose()
         {
+            if (_switcherField != null)
+                _switcherField.SetValue(_switcherInstance, _savedProfileApp);
+
             Mapping.suppressedTriggerButtons[Device]?.Clear();
             Mapping.deviceRuntime[Device].UntriggerAction = null;
             Mapping.deviceRuntime[Device].UntriggerIndex = -1;

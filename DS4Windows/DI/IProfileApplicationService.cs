@@ -10,7 +10,7 @@ namespace DS4Windows.DI
         /// <summary>
         /// 指定されたスロットに対してプロファイルを適用します（Halt保護を内包）。
         /// </summary>
-        /// <param name="deviceIndex">デバイスインデックス（0〜3）</param>
+        /// <param name="deviceIndex">デバイスインデックス（0〜スロット上限 − 1。最大 8 台のとき 0〜7）</param>
         /// <param name="profileName">適用するプロファイル名</param>
         /// <param name="isTemp">一時プロファイルフラグ（既定: false）</param>
         /// <param name="launchProgram">関連プログラムを起動するか（既定: false）</param>
@@ -32,7 +32,7 @@ namespace DS4Windows.DI
         /// <summary>
         /// 切断時等に指定スロットの一時プロファイル復帰予約状態をクリアします（§5.6 ガードレール）。
         /// </summary>
-        /// <param name="deviceIndex">デバイスインデックス（0〜3）</param>
+        /// <param name="deviceIndex">デバイスインデックス（0〜スロット上限 − 1。最大 8 台のとき 0〜7）</param>
         void ClearPendingRestore(int deviceIndex);
     }
 }

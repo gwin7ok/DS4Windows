@@ -68,7 +68,9 @@ namespace DS4WinWPF.DS4Control.DTOXml
             foreach(OutputSlotSerializer tempSlot in SlotItems)
             {
                 OutSlotDevice tempDev = null;
-                if (tempSlot.Index >= 0 && tempSlot.Index <= 3)
+                // Phase8-Step1 W2b（B-1）: 上流は出力スロットが 4 つだった時代の「<= 3」。出力スロットは slotLimit（最大 8）個あり、
+                // 保存側（MapFrom）は全スロットを書くため、読込側もスロット数までを復元する（範囲外は無視する）。
+                if (tempSlot.Index >= 0 && tempSlot.Index < destination.OutputSlots.Length)
                 {
                     int idx = tempSlot.Index;
                     tempDev = destination.OutputSlots[idx];

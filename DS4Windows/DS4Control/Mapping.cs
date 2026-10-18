@@ -692,8 +692,10 @@ namespace DS4Windows
             catch { }
             return true;
         }
-        public DateTime[] nowAction = { DateTime.MinValue, DateTime.MinValue, DateTime.MinValue, DateTime.MinValue };
-        public DateTime[] oldnowAction = { DateTime.MinValue, DateTime.MinValue, DateTime.MinValue, DateTime.MinValue };
+        // Phase8-Step1 W2b（A-1）: 上流の 2015 年（4 台の時代）の初期化子 { MinValue x4 } のままで、8 スロット化（2020 年）で更新が漏れていた。
+        // デバイス 4〜7 で delayTime のアクションが IndexOutOfRangeException になっていた。DateTime の既定値は MinValue。
+        public DateTime[] nowAction = new DateTime[ControllerLimits.MaxControllerCount];
+        public DateTime[] oldnowAction = new DateTime[ControllerLimits.MaxControllerCount];
         // legacy `untriggerindex` removed; use `deviceRuntime[device].UntriggerIndex`
         public DateTime[] oldnowKeyAct = new DateTime[ControllerLimits.MaxControllerCount] { DateTime.MinValue,
             DateTime.MinValue, DateTime.MinValue, DateTime.MinValue, DateTime.MinValue, DateTime.MinValue, DateTime.MinValue, DateTime.MinValue };

@@ -3,13 +3,13 @@
 作成日: 2026-10-19  
 対象ブランチ: `For-DI-migration-work`  
 計画書: `Phase7c-Plan.md`（Q1〜Q6 を推奨どおり承認）。上位: `Phase7-Completion-Report.md` §5、`Phase7b-Completion-Report.md` §5  
-状態: **完了（W2 の一部を Phase8 の Step1 へ移管。実機確認 U-24 は未）**。W1・W2 前半・W3 のビルド・テストビルド・テスト実行は成功（ユーザーが実行）。
+状態: **完了（W2 の一部を Phase8 の Step1 へ移管。実機確認 U-24 は 2026-10-19 に確認済み）**。W1・W2 前半・W3 のビルド・テストビルド・テスト実行は成功（ユーザーが実行）。
 
 ---
 
 ## 1. 結果の要約
 
-- **W1（Stage3 の列挙競合）: 是正した。** 実機での再発確認は U-24（未）。
+- **W1（Stage3 の列挙競合）: 是正した。** 実機での再発確認は U-24（2026-10-19 に確認済み）。
 - **W2（特性化テスト）: 前半を完了。** 実走行ハーネスと 16 件のテストを追加した。残りの項目は Phase8 の Step1 へ移した（承認済み）。
 - **W3（文書とコメントの整合）: 完了。** 規約書とモデル図の変更も承認を得て反映した。
 - **W4（K7b-1 の切り分け手順）: 整理した（§4）。** 実機作業はユーザー。Phase8 のブロッカーにはしない。
@@ -85,7 +85,7 @@ DS4Windows を起動 → コントローラーを Bluetooth で接続 → プロ
 
 ## 5. 未完了・持ち越し
 
-- **実機確認 U-24（未）**: 手動のプロファイル切替（メイン画面）を繰り返し、`Synchronous Button SA handling error: Collection was modified` が出ないこと。Button／Key／マクロ／プロファイル切替と復帰が従来どおり動くこと。
+- **実機確認 U-24（2026-10-19 にユーザーが確認。○）**: 手動のプロファイル切替（メイン画面）を繰り返し、`Synchronous Button SA handling error: Collection was modified` が出ないこと。Button／Key／マクロ／プロファイル切替と復帰が従来どおり動くこと。
 - **Phase8 の Step1 へ**: §2 W2 の 5 項目、孤立コードの §2.4 判断記録（`Phase8-Unified-Trigger-Dispatch-Plan.md` 2026-10-19 追記 §8）。
 - **K7b-1**: 先送り（手順は §4）。**K9-3**: 先送りのまま（`Phase7b-Plan.md` §9）。
 - 陳腐化したテスト `RetainedGlobalReferences_HaveTodoComments` の整理（§3）。

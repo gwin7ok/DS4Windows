@@ -1,7 +1,7 @@
 # フェーズ8 進捗管理文書: Controls／SpecialActions の統一トリガーディスパッチ
 
 最終更新日: 2026-10-19  
-状態: **Step1 実施中（W1 完了）**。Phase7・7b・7c は完了。実機確認 U-24（Phase7c W1）は未  
+状態: **Step1 実施中（W1 完了）**。Phase7・7b・7c は完了。実機確認 U-24（Phase7c W1）は確認済み（2026-10-19）  
 計画書: `Phase8-Unified-Trigger-Dispatch-Plan.md`（D1〜D5 確定。2026-10-19 追記は事実誤認の訂正）。Step1: `Phase8-Step1-Plan.md`
 
 ---
@@ -24,7 +24,8 @@
 ## 2. Step1 の Wave
 
 - W1: トリガー判定・実行の仕様台帳 — **完了**（`Phase8-Step1-Trigger-Spec-Ledger.md`）。
-- W2: 特性化テスト B-1〜B-4（`uTrigger` ほかの復帰、チェーン、`shiftTrigger`、`ApplyProfile` 後の掃除の順序）— 未着手。
+- W2: 特性化テスト B-1〜B-4 — **実装済み（ビルド・テスト待ち。2026-10-19）**。`Phase8Step1ProfileSwitchCharacterizationTests`（成立→切替、AutomaticUntrigger の復帰、uTrigger の復帰、チェーン経路が使われないこと）、`Phase8Step1ShiftTriggerCharacterizationTests`、`Phase8Step1ApplyProfileCleanupOrderGuardTests`（ソース順序のガード）。`delayTime` は、配列が 4 要素の不具合（台帳 §8 項目 10）のため固定しない。
+- **W2b: 「デバイス上限が 4 前提」の箇所の是正**— 実装済み（ビルド・テスト待ち。2026-10-19）。A-1（`nowAction`／`oldnowAction`）と B-1（出力スロットの復元）を是正。`Phase8-Step1-SlotLimit-Fix-Plan.md`。
 - W3: B-5・B-6（Assert の補強、Macro 分岐）— 未着手。
 - W4: 孤立コードの調査と判断案（`Phase8-Step1-Orphan-Decisions.md`）— 未着手。
 - W5: 判断の実施（承認された分）、静的な窓口の一覧、Step2 への論点 — 未着手。
@@ -41,7 +42,7 @@
 
 ## 4. 実機確認の台帳
 
-- U-24（Phase7c W1 後。Stage3 の競合の是正）: 未。手動のプロファイル切替（メイン画面）を繰り返し、`Collection was modified` が出ないこと、Button／Key／マクロ／プロファイル切替と復帰が従来どおり動くこと（`Phase6-Step11-RealDevice-Verification-Checklist.md` §11）。
+- U-24（Phase7c W1 後。Stage3 の競合の是正）: **○（2026-10-19。ユーザーが確認）**。確認内容:手動のプロファイル切替（メイン画面）を繰り返し、`Collection was modified` が出ないこと、Button／Key／マクロ／プロファイル切替と復帰が従来どおり動くこと（`Phase6-Step11-RealDevice-Verification-Checklist.md` §11）。
 
 ## 5. 持ち越し・保留事項
 
@@ -53,7 +54,7 @@
 
 ## 6. 直近の次アクション
 
-1. U-24 の実機確認（ユーザー）。
+1. U-24 の実機確認: 済み（2026-10-19）。
 2. W2（特性化テスト B-1〜B-4）。`Phase8-Step1-Trigger-Spec-Ledger.md` §8・§9 の「意図が不明な挙動」を、固定する／固定しないを決める。
 
 ## 7. 実行順序（2026-10-19 改訂。ユーザー承認）

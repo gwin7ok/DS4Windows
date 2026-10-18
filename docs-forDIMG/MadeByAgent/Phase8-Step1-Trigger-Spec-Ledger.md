@@ -128,6 +128,8 @@
 7. XboxGameDVR／MultiAction が、統一経路（`ActionManager`）を通らず、`PlayMacro` を直接呼ぶ。
 8. Macro のフォールバック（`handled == false` のとき `PlayMacro` を直接呼ぶ）の有無（DI 未登録時のためのもの。現行は登録済み）。
 9. `FreshPressReleaseHoldMs`（80ms）とタップ判定（250ms）、`MultiAction`（150ms/500ms）の時間定数が別々。
+10. **【2026-10-19 是正済み: Phase8-Step1 W2b。`new DateTime[MaxControllerCount]`、テスト `Phase8Step1SlotLimitTests`】`nowAction`／`oldnowAction` が 4 要素の配列**（`Mapping.cs:695-696`）。`delayTime > 0` の特殊アクションが、デバイス 4〜7 で `IndexOutOfRangeException` になる（`MapCustomAction` の外側の `catch` に捕まり、`MapCustomAction exception` が記録されてそのフレームの特殊アクションが打ち切られる）。`oldnowKeyAct` や `deviceRuntime` は 8 要素（`MaxControllerCount`）。拡張スロット（5 台目以降）の実装時の取りこぼしとみられる（Phase6-Step9b F05 の 4 スロット固定と同種）。上流の元の実装との比較と是正は、承認を得て行う。特性化テストでは固定しない（不具合を固定しないため）。
+11. **Profile 種別の「離したときの OnRelease → 復帰」が、プロファイル適用による状態の掃除に依存している**（Phase8-Step1 W2 のテストで判明、2026-10-19）。トリガーを離すと、`DispatchOrSetBeingTriggered(false)` → `ActionManager`（`DefaultActionManager`）の `DispatchTriggerReleased` → `ProfileSwitchActionAdapter.OnRelease` → `ProfileSwitchAction.Stop` → `RestoreFromAction`（`OlderProfilePath` へ復帰）という経路がある。ただし本番では、切替の適用（`CompleteProfileApplication`）が `ActionManager.ClearAllEntries`／`ClearDeviceState` でアクションの状態を作り直し、`BeingTriggered` が false に戻るため、離したときのエッジが発火せず、この経路は通らない（Phase7b で「Unload on trigger release」の復帰が `Mapping` の復帰処理［5316 行付近］の 1 回だけになる理由の 1 つ）。→ **統一ディスパッチは、この暗黙の依存を明示的な仕様にする必要がある**（Profile の「離したら復帰」は、`AutomaticUntrigger`／`uTrigger` の指定があるときだけ。指定がないときは離しても復帰しない）。特性化テストの `RecordingProfileApplicationService` は、本番と同じ掃除を再現する（`SimulateStateReset`、既定 true）。
 
 ## 9. 現行のテストとの対応（2026-10-19、Phase7c W2 後）
 
