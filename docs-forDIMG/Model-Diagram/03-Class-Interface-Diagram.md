@@ -181,6 +181,8 @@ classDiagram
         +Commit(int device, IProfileSettingsService settings)
         +GetBoolMappingExternal(int device, DS4Controls control, DS4State cState, DS4StateExposed eState, Mouse tp) bool
         +HandleDeviceDisconnect(int device)
+        +CaptureProfileUntrigger(int device) ProfileUntriggerSnapshot
+        +RestoreProfileUntrigger(int device, ProfileUntriggerSnapshot snapshot)
         +PlayMacroDirect(int device, SpecialAction action)
         +EndMacroDirect(int device)
     }
@@ -325,7 +327,7 @@ classDiagram
         +LoadDefaultKBMGyroMouse(...)
     }
     class ProfilePresetLoader
-    IProfilePresetLoader <|.. ProfilePresetLoader : implements（Global.Load…Profile への薄い委譲）
+    IProfilePresetLoader <|.. ProfilePresetLoader : implements（プリセットの読込。旧 Global.Load…Profile への委譲は Phase7-Step10d で Global ごと削除済み）
     class IEditorWindowFactory {
         <<interface>>
         +CreateBindingWindow(deviceNum, settings, targetDevice, expose)

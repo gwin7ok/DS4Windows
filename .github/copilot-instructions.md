@@ -64,7 +64,7 @@
 - **ラチェットの一致検査**（2026-10-18 追記）: `Step10FourGlobalRatchetGuardTests`（`Global.*`／`AppHost`／`Program.rootHub`）と `Phase7Step1ServiceLocatorRatchetGuardTests`（`ServiceProviderHolder`）の基準値は、「超えない」だけでなく「実数と一致する」ことを `Phase7Step10eW5RatchetEqualityGuardTests` が検査する。件数を減らしたら、基準値も同時に更新すること。
 
 ### 3.2 巨大ファイルの編集方針
-- `ScpUtil.cs`（9,900行超）、`Mapping.cs`（7,700行超）、`ControlService.cs`（2,900行超）などの巨大ファイルは、全体を再生成せず、対象メソッドのみをピンポイントで置換する（Strangler Fig パターンの徹底）。
+- `Mapping.cs`（約 7,600 行）、`ControlService.cs`（約 3,400 行）、`BackingStore.cs`（約 1,700 行）などの巨大ファイルは、全体を再生成せず、対象メソッドのみをピンポイントで置換する（Strangler Fig パターンの徹底）。
 
 ### 3.3 ファイル構成・クラス設計・名前空間の3原則と過渡期ルール
 近代的な C# 設計として以下の「3大原則」を最終目標とするが、大規模移行の安全性を最優先するため過渡期ルールを設ける。
