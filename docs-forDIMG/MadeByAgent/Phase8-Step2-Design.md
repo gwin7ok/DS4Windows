@@ -4,7 +4,7 @@
 対象ブランチ: `For-DI-migration-work`  
 上位: `Phase8-Step2-Plan.md`（Q1〜Q9 を推奨の方向で承認）、`Phase8-Step2-Intent-Decisions.md`（承認済み）  
 入力: `Phase8-Step1-Trigger-Spec-Ledger.md`、`Phase8-Step1-Static-Access-Inventory.md`  
-状態: **W2（契約の設計）の草案。承認待ち**。後半（W3 状態・スレッド・安全弁、W4 移行計画）は、本書の承認後に追記する  
+状態: **W2（契約）は承認済み。W3（状態・スレッド・安全弁）は §14 以降に追記済み、承認待ち**。W4（移行計画）は、W3 の承認後に追記する  
 注意: 本書のコードブロックは**設計のスケッチ**で、コミットされた実装ではない。メンバー名は Step3 の実装時に調整してよい（意味を変える場合は本書を更新して承認を得る）。
 
 ---
@@ -255,3 +255,134 @@ public interface ITriggerDispatchEngine
 2. `IActionRegistry` の `Register`／`Unregister`／`GetBindingsForDevice` を、`GetBindings`／`Replace`／`Clear` に置き換える（呼び出し元は 0 件なので影響なし）。
 3. `IOutputContext` の拡張（`Frame`、`RequestEndFrame`）は、既存の実装（`OutputContextImpl` ほか）の追加のみで、既存の 3 つの出力アクションは変更しない。
 4. 時刻の注入（`ITriggerInput.UtcNow`／`TickCount64`）を契約に含める。
+
+---
+
+# 設計書（後半: 状態・フレームの手順・スレッド・安全弁）
+
+追記日: 2026-10-19（W3）。前半（§1〜§13）の契約は承認済み（確認したい点 1〜4）。本節は、W3 の調査で**前半の契約に修正が必要と分かった点**（§14）を最初に示し、続けて状態の所有、フレームの手順、スレッド、ガードレールへの適合を設計する。
+
+## 14. W3 で判明した、前半の契約の修正点（承認が要る）
+
+1. **エンジンの入口を 2 つに分ける**（§9 の `Process` を置き換える）。現行の `MapCustom` は、`MapCustomAction`（エッジ型の実行。トリガーのボタンの出力を**消す**）を、通常の割り当て（Controls タブのループ）の**前**に呼び、Stage3（Button の毎フレームの出力）を、通常の割り当ての**後**に呼ぶ。順序を入れ替えると、出力が変わる（Stage3 は、消去の後・通常の割り当ての後に書く）。
+   ```csharp
+   void ProcessTriggers(int device, ITriggerInput input, IFrameOutput frame);   // 通常の割り当ての前（MapCustomAction の置き換え）
+   void ApplyFrameOutputs(int device, ITriggerInput input, IFrameOutput frame); // 通常の割り当ての後（Stage3 の置き換え）
+   ```
+2. **`delayTime` の基準時刻は、デバイスごとに共有する**（§4 の `ComboTriggerInputAction` の内部状態にしない）。現行の `nowAction[device]`／`oldnowAction[device]` は、そのデバイスのすべての `delayTime` つきアクションで**共有**される（どれか 1 つのトリガーが押されていないと、共有の基準時刻が更新される）。束縛ごとに持つと、`delayTime` つきのアクションが 2 つ以上あるプロファイルで挙動が変わる。
+   → `ITriggerInput` に `DelayClock Delay { get; }`（`Now`／`Old` を持つ、デバイスごとの再利用オブジェクト）を足し、`ComboTriggerInputAction` はそれを読み書きする。
+3. **押している間の呼び出し `IHeldOutputAction` を足す**（任意の契約）。現行の Macro は、成立中に 2 フレーム目以降も `BeingTriggered` が true のとき `EndMacro(...)` を呼ぶ（`RepeatMacro` でないとき）。マクロが Alt-Tab（`164/9/9/164`）のときだけ効果があり（`AltTabSwappingRelease`）、それ以外は何もしない。この呼び出しを失わないため、`MacroAction` 側に任意の `WhileHeld(ctx)` を持たせる。
+   ```csharp
+   public interface IHeldOutputAction : IOutputAction { void WhileHeld(IOutputContext ctx); }
+   ```
+4. **`BindingPolicy` に 2 項目を足す**: `ResetsTriggerOutput`（成立中に、トリガーのボタンの出力を消すか。`typeID != None` の既存の全種別が true）、`StopOnRelease`（離したとき `Stop` を呼ぶか。下の 5）。
+5. **離したときの `Stop`**: 現行は、離したエッジで `ActionImpl.OnRelease` → `Stop` が呼ばれる。実際の効果は、種別で異なる。
+   - Key（Press）: キーを解放する（意味がある）。Toggle: 無視される（`OnUp` が何もしない。トグル OFF は次の成立で行う）。
+   - Macro: `EndMacroDirect` が `control = None` で呼ばれ、Alt-Tab のとき以外は**何もしない**。Program: 何もしない（`Stop` は空）。
+   - Profile: `RestoreFromAction`（復帰）。ただし、本番では適用の掃除で `BeingTriggered` が false に戻るため、離したときのエッジは起きない（Intent 項目 11）。
+   - → エンジンは、現行と同じく**離したエッジ（`BeingTriggered` が true → false）で `Stop` を呼ぶ**。Profile は、`OnProfileApplied` が `BeingTriggered` を明示的に下げる（§16）ので、離したときの `Stop` は呼ばれない。復帰は復帰のポリシー（§15.2 の `UntriggerPass`）が担う。
+
+## 15. 1 フレームの手順
+
+### 15.1 全体の順序（`Mapping.MapCustom`）
+1. `Mapping` が `ITriggerInput.Update(...)` を呼ぶ（`fieldMapping` の展開、前フレームの状態）。
+2. `engine.ProcessTriggers(device, input, frame)`（現行の `MapCustomAction` の位置。`GetProfileActionCount > 0 || 一時プロファイル使用中` のとき。束縛が空で、復帰の合図もないときは、すぐ戻る）。
+3. 通常の割り当て（Controls タブ。`CheckForSpecialActionSuppression` → `engine.IsSuppressed`）。
+4. `engine.ApplyFrameOutputs(device, input, frame)`（現行の Stage3 の位置）。
+5. マクロの出力の重ね合わせ、`Commit` など（現行どおり）。
+
+### 15.2 `ProcessTriggers`（擬似コード）
+```
+bindings = registry.GetBindings(device)              // フレームの先頭で 1 回。途中の差し替えは、次のフレームから
+EnsureRuntime(device, bindings)                       // リストの参照が変わったときだけ、実行時の配列を作り直す（フレーム内は割り当て 0）
+ReleaseSuppressedButtons(device, input)               // 離されたボタンを、1 つずつ抑制から外す（現行の冒頭）
+for each binding b in bindings:
+    state  = managed.GetStateFor(b.Source, device)    // 束縛ごとに 1 回（現行は 1 つのアクションで複数回）
+    result = b.Input.Evaluate(input)                  // delayTime は input.Delay を使う
+    UpdateFreshPressTimer(state, result.IsEstablished, input.TickCount64)    // 全種別。成立中は 0 に戻す。80ms 連続の未成立でガードを解除
+    if result.IsEstablished:
+        AddToSuppressed(device, b.Input.Triggers)     // 構成するすべてのボタン
+        if b.Policy.ResetsTriggerOutput: frame.ResetTriggerControl(each trigger)
+        if exclusion group already fired: continue    // シフト（Q6）
+        if b.Policy.RespectsFreshPressGuard && state.RequiresFreshPressAfterReset: continue
+        if b.Policy.BlocksWhileExecuting && state.IsExecuting: continue
+        if !state.BeingTriggered:                      // 立ち上がりのエッジ
+            if b.Policy.BlocksWhileExecuting: state.IsExecuting = true
+            try:
+                state.SetBeingTriggeredInternal(true)
+                for o in b.Outputs: o.Execute(ctx)
+                if b.Policy.Untrigger != None: untrigger.Set(device, b)    // 復帰の合図（prevProfileName を記録）
+            finally: if b.Policy.BlocksWhileExecuting: state.IsExecuting = false
+            if ctx.EndFrameRequested: return          // Profile の切替・DisconnectBT
+        else:
+            for o in b.Outputs: if o is IHeldOutputAction h: h.WhileHeld(ctx)
+    else:
+        if state.BeingTriggered:                       // 離したエッジ
+            state.SetBeingTriggeredInternal(false)
+            if b.Policy.StopOnRelease: for o in b.Outputs: o.Stop(ctx)
+        // 復帰待ちの間: 切替アクションの BeingTriggered を下げ続ける（Intent 項目 6）
+UntriggerPass(device, input)                          // 復帰の判定（現行のループの後）。フレームが打ち切られた場合は行わない
+```
+- 種別ごとの差は、すべて `BindingPolicy` と出力アクションに押し込める。エンジンの本体に、種別の分岐を持たない。
+- **Macro の `RunOnRelease`**: `ComboTriggerInputAction` の `InvertOnRelease`（`firstTouch` を内部状態に持つ。現行は `SpecialAction.firstTouch`）。押したときは「準備」（`IsEstablished = false` を返し、`firstTouch` を立てる）、離したとき `IsEstablished = true`（反転）で 1 回実行する。`Phase8Step1MacroBranchCharacterizationTests` の期待どおり。
+- **Key の `UntriggerIndex`**: 現行は、Press の Key が `deviceRuntime.UntriggerIndex` を使って離しを判定する（Profile の復帰と共有の 1 変数）。エンジンは `BeingTriggered` のエッジで離しを判定するため**不要**になる。Profile の `UntriggerIndex` は、復帰の合図（§16）に含める。
+
+### 15.3 `ApplyFrameOutputs`
+```
+for each binding b in registry.GetBindings(device) that has an IFrameOutputAction:
+    result = cached result from ProcessTriggers                 // 同じフレームの評価結果を再利用（遅延の基準時刻を二重に更新しない）
+    rising = result.IsEstablished && !runtime[b].PrevEstablished
+    foreach o in b.Outputs of IFrameOutputAction: o.ApplyFrame(ctx, active: result.IsEstablished, risingEdge: rising)
+    runtime[b].PrevEstablished = result.IsEstablished
+```
+- Button の Press: `active = IsEstablished`（Fresh-press ガードを見ない）。Toggle: `ButtonOutputAction` が `risingEdge && !state.RequiresFreshPressAfterReset` で反転し（`ActionManager.SetToggledOn` 相当）、`state.IsToggledOn` を出力する。現行の `ButtonSpecialActionOutput.ResolveOutputActive` と同じ。
+- 現行の Stage3 は、`GetProfileActionsRaw` の複製を列挙している（Phase7c W1）。新設計では、不変のリストを使うため、複製が不要。例外はフレーム単位で記録する（現行の `catch` のログ文言を維持）。
+
+## 16. 状態の所有と、後始末
+
+- **`ActionInstanceState`（`IManagedActionManager`）に残すもの**: `BeingTriggered`、`IsToggledOn`、`RequiresFreshPressAfterReset`、`UntriggeredTimestampTicks`、`IsExecuting`、`FirstTouch`（Q2＝A）。
+- **エンジンが新しく持つもの（デバイスごと）**:
+  - 抑制の集合（現行の `Mapping.suppressedTriggerButtons`）→ `IsSuppressed` の本体。
+  - 復帰の合図 `UntriggerSignal { SpecialAction Action; int Index; }`（現行の `deviceRuntime[device].UntriggerAction`／`UntriggerIndex`）。
+  - 束縛ごとの実行時の配列 `runtime`（`PrevEstablished`。リストの参照が変わったときだけ作り直す）。
+- **`OnProfileApplied(device)`**（現行の `ProfileApplicationService.CompleteProfileApplication` の掃除に相当）:
+  1. `managed.ClearAllEntries()`／`managed.ClearDeviceState(device)`（既存。状態を作り直す。`BeingTriggered` が false、`RequiresFreshPressAfterReset` が true になる）。
+  2. エンジンの `runtime` を初期化し、抑制の集合を空にし、`input.Delay` を初期化する。**復帰の合図は残す**（Phase7b W1 の退避・復元を、エンジン内で明示的に行う。`Mapping.HandleDeviceDisconnect` が合図を消す問題は、合図がエンジンに移ることで構造的に起きなくなる）。
+  3. 新しいプロファイルの束縛を `registry.Replace(device, builder.Build(device))`。
+  - 順序は現行の掃除の順序（`ClearAllEntries` → `ClearForDevice` → `ClearDeviceState` → `PreallocateForProfileApply`。`Phase8Step1ApplyProfileCleanupOrderGuardTests` で固定）を維持し、その後にエンジンの初期化と束縛の差し替えを足す。
+- **`OnDeviceDisconnected(device)`**: 復帰の合図も含めてすべて消す（物理切断）。`registry.Clear(device)`。ガードレール 5.6（切断時の一時プロファイル残留防止）の本実装に、`ClearState`／`ClearPendingRestore` の接続（Step6）が含まれる。
+
+## 17. スレッドと同時実行
+
+- **呼び出し元のスレッド**: `engine.ProcessTriggers`／`ApplyFrameOutputs` は、`Mapping.MapCustom` を呼ぶ**そのデバイスの入力スレッド**（`ControlService.On_Report`）だけ。デバイスごとの状態（抑制、復帰の合図、`runtime`、`input`）は、そのスレッドだけが読み書きする。デバイス間で共有する可変の状態はない。
+- **差し替えの競合**: `registry.Replace` は、プロファイル適用のスレッド（UI、`Task.Run`、AutoProfile のタイマー）から呼ばれる。参照の差し替えはアトミックで、入力スレッドは、フレームの先頭で 1 回だけ参照を取る。Halt（ガードレール 5.2）の下で行う現行の運用は維持し、さらに、Halt を取りこぼしても（500ms のタイムアウトで適用が飛ぶ現行の挙動を含め）一覧が壊れない。
+- **`OnProfileApplied` の呼び出し**: 適用のスレッドから呼ばれる。エンジンの状態（抑制の集合、`runtime`）は入力スレッドのものなので、適用スレッドは**直接書かず**、「次のフレームの先頭でリセットする」要求のフラグ（volatile）を立てる。フレームの先頭でそのフラグを見て初期化する（`Halt` が成功した場合は入力スレッドが止まっているため即時でも安全だが、Halt を取りこぼした場合も安全にするため）。`ActionInstanceState` の作り直し（`ClearAllEntries`）は、現行どおり適用スレッドで行う。
+- **`async void` の廃止**: 現行の `MapCustomAction` は `async void`（例外が握りつぶされるか、プロセスを落とす）。エンジンは同期で動き、例外は束縛ごとに `try/catch` して記録する（現行の `MapCustomAction exception` のログ文言を維持）。非同期の処理（プロファイル適用の `Task.Run`、マクロ）は、出力アクションの内側に閉じる。
+- **ロック**: `ActionInstanceState` への書き込みは、現行どおり `lock (st)` の下で（エッジ検出の `SetBeingTriggeredInternal`）。エンジン自身の状態にロックは不要。
+- **非同期実行中の再入**: `IsExecuting`（Program・Profile）と K3 の二重実行防止（`MacroRuntimeState`）を維持。
+
+## 18. 6 大ガードレール（`Phase5-Plan.md` §5）への適合
+
+- 5.1 同一 XML の排他: 影響なし（束縛の構築は読込の完了後。`Build` は XML を読まず、メモリ上の設定から作る）。
+- 5.2 適用時 Halt: `registry.Replace`／`OnProfileApplied` を、Halt の区間内で行う（現行の `ApplyFromAction`／`ApplyProfile` の位置）。Halt を取りこぼしても安全（§17）。
+- 5.3 AutoProfile のタイマー vs UI の競合: 束縛の読み出しは不変リストの参照で、競合しない（現行の `Clear()`→`Add()` の問題の解消）。
+- 5.4 On-Demand のパス評価: 影響なし。
+- 5.5 ドライバ破棄順序: 影響なし（出力デバイスは触らない）。
+- 5.6 切断時クリーンアップ: `OnDeviceDisconnected` で束縛・合図・抑制を消す。`ClearState`／`ClearPendingRestore` の接続は Step6（意味の調査を含む）。
+
+## 19. ホットパス（割り当て 0・呼び出し回数）の見積もり
+
+- 割り当て 0 の確認点: `Evaluate` は値型を返す、`ITriggerInput` はデバイスごとに再利用、束縛のリストは不変で反復は `for` ループ（`foreach` の列挙子を作らない）、`runtime` の配列はリストの差し替え時だけ作る、ログ文字列は `IsTraceEnabled`／`IsDebugEnabled` のガードの内側で作る。
+- 呼び出し回数の見積もり: 現行は、1 つのアクションあたり `GetStateFor`（ロックと辞書の検索）が複数回、`GetProfileAction`／`GetProfileActionIndexOf`（辞書の検索）がアクション数分（実測で最大約 40）。新設計は、束縛あたり `GetStateFor` が 1 回、辞書の検索はなし。仮想呼び出しは、束縛あたり `Evaluate`＋出力が数回。**現行より軽くなる見込み**（特性化テストと割り当て 0 のテスト［`MappingHotPathAllocationTests`］で確認し、簡易な処理時間の比較を Step3 で用意する）。
+
+## 20. 設計上の注意（Step3 以降の確認事項）
+
+- **`prevInputEstablished` のキャッシュ**（Intent 項目 8）: 新エンジンはこのキャッシュを使わない。プロファイル適用の後に、「押しっぱなしのトリガーを離して再度押す」と、現行と同じく 1 回だけ実行されること（および、`BeingTriggered` が作り直された後にフォールバックで余分に実行されないこと）を、Step3 の単体テストで確認する。
+- **`ClearAllEntries` が呼ばれるタイミング**: `ActionEntry` の再作成で、系統 B の `ActionImpl`（`KeyActionAdapter` など）も作り直される。新エンジンの出力アクションは束縛が保持するため、作り直されない。系統 B の出力と並行する期間（Step7）の、`IsToggledOn` などの状態の持ち方は、W4 で設計する。
+- **Controls タブ**: `ProcessControlSettingAction` は対象外（特殊アクションの切替の後。Phase8 の後半）。
+
+## 21. 確認したい点（W3）
+
+1. §14 の契約の修正 5 項目（エンジンの入口を 2 つに分ける、`DelayClock` をデバイスごとに共有、`IHeldOutputAction`、`BindingPolicy` の 2 項目、離したときの `Stop`）。
+2. 復帰の合図・抑制の集合をエンジンに移す（Step7 の Profile の切替で、`Mapping.deviceRuntime` から移す）。
+3. `OnProfileApplied` を、適用のスレッドから「次のフレームの先頭でリセット」の要求にする（§17）。
