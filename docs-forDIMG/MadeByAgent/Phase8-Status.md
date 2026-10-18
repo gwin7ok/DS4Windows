@@ -26,8 +26,8 @@
 - W1: トリガー判定・実行の仕様台帳 — **完了**（`Phase8-Step1-Trigger-Spec-Ledger.md`）。
 - W2: 特性化テスト B-1〜B-4 — **完了（ビルド・テスト成功。2026-10-19）**。`Phase8Step1ProfileSwitchCharacterizationTests`（成立→切替、AutomaticUntrigger の復帰、uTrigger の復帰、チェーン経路が使われないこと）、`Phase8Step1ShiftTriggerCharacterizationTests`、`Phase8Step1ApplyProfileCleanupOrderGuardTests`（ソース順序のガード）。`delayTime` は、配列が 4 要素の不具合（台帳 §8 項目 10）のため固定しない。
 - **W2b: 「デバイス上限が 4 前提」の箇所の是正**— **完了（ビルド・テスト成功。2026-10-19）。実機確認 W2b-5 は未**。A-1（`nowAction`／`oldnowAction`）と B-1（出力スロットの復元）を是正。`Phase8-Step1-SlotLimit-Fix-Plan.md`。
-- W3: B-5・B-6 — **実装済み（ビルド・テスト待ち。2026-10-19）**。`ControlTabAndSpecialActionKeyTests` の Press／Toggle に Assert を補強（Press: 押下で 1 回押し、離して 1 回解放。Toggle: トグル OFF で解放）、`Phase8Step1MacroBranchCharacterizationTests`（ガード中は不実行、成立・保持・解除、RunOnRelease の準備→離して実行）。
-- W4: 孤立コードの調査と判断案（`Phase8-Step1-Orphan-Decisions.md`）— 未着手。
+- W3: B-5・B-6 — **完了（ビルド・テスト成功。2026-10-19）**。`ControlTabAndSpecialActionKeyTests` の Press／Toggle に Assert を補強（Press: 押下で 1 回押し、離して 1 回解放。Toggle: トグル OFF で解放）、`Phase8Step1MacroBranchCharacterizationTests`（ガード中は不実行、成立・保持・解除、RunOnRelease の準備→離して実行）。
+- W4: 孤立コードの調査と判断案（`Phase8-Step1-Orphan-Decisions.md`）— **判断案を提示済み（承認待ち。2026-10-19）**。重要な発見: `IProfileSwitcher.ClearState`／`ClearPendingRestore`（Phase5-Step3 の「切断時スタック残留防止」）は、契約だけ配備され、本番の呼び出しが 0 件。
 - W5: 判断の実施（承認された分）、静的な窓口の一覧、Step2 への論点 — 未着手。
 - W6: 完了報告書 — 未着手。
 
