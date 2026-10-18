@@ -641,6 +641,47 @@ namespace DS4WindowsTests
         }
 
         [Fact]
+        public void SteadyState_ProcessOwned_DoesNotAllocate()
+        {
+            var h = new Harness();
+            var bindings = new List<IActionBinding>();
+            var sources = new List<SpecialAction>();
+            var buttons = new[] { DS4Controls.L1, DS4Controls.R1, DS4Controls.Cross, DS4Controls.Circle };
+            for (int i = 0; i < 30; i++)
+            {
+                SpecialAction sa = h.NewSource();
+                sources.Add(sa);
+                var input = new FakeInputAction(buttons[i % 4], buttons[(i + 1) % 4]) { Established = i % 3 != 0 };
+                bindings.Add(new TriggerBinding(input, new IOutputAction[] { new RecordingOutput() }, NoGuard(), sa, i));
+            }
+
+            h.Registry.Replace(Device, bindings);
+            h.Input.Active.Add(DS4Controls.L1);
+            h.Input.Active.Add(DS4Controls.R1);
+            h.Frame.Record = false;
+
+            for (int i = 0; i < 300; i++)
+            {
+                h.Engine.ReleaseSuppressed(Device, h.Input);
+                foreach (SpecialAction sa in sources) h.Engine.ProcessOwned(Device, sa, h.Input, h.Frame);
+            }
+
+            long before = GC.GetAllocatedBytesForCurrentThread();
+            for (int i = 0; i < 1000; i++)
+            {
+                h.Engine.ReleaseSuppressed(Device, h.Input);
+                for (int k = 0; k < sources.Count; k++)
+                {
+                    h.Engine.Owns(Device, sources[k]);
+                    h.Engine.ProcessOwned(Device, sources[k], h.Input, h.Frame);
+                }
+            }
+
+            long allocated = GC.GetAllocatedBytesForCurrentThread() - before;
+            Assert.True(allocated == 0, $"ProcessOwned／Owns が {allocated} バイトを割り当てた");
+        }
+
+        [Fact]
         public void ConcurrentProcessingAndReplacement_DoNotThrow()
         {
             var h = new Harness();
