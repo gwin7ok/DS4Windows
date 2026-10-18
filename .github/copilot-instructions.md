@@ -1,7 +1,7 @@
 # エージェント向け作業ルール (copilot-instructions)
 
 作成日: 2026-03-01
-最終更新日: 2026-10-15（3.3 原則1の過渡期ルールを終了し、既存ファイルを含む厳格適用へ更新［Phase6-Step10b の完了］。2026-10-14: 2.2 のカスケードループ防止ガードの記述を現行の機構へ更新［Phase6-Step9b の決定6］。2026-09-24: 2.4 未参照コードの扱いを追記。2026-09-20: 3.3 原則1に過渡期ルールを追記、3.4 ファイル配置ルールを追記。2026-09-03: 3.3 ファイル構成・クラス・名前空間の原則と過渡期ルールを追記）
+最終更新日: 2026-10-18（2.1 のシム維持の原則を過渡期の記述に改め、3.1 に暗黙のホスト構築の禁止とラチェットの一致検査を追記［Phase7-Step10e の承認済み］。2026-10-15: 3.3 原則1の過渡期ルールを終了し、既存ファイルを含む厳格適用へ更新［Phase6-Step10b の完了］。2026-10-14: 2.2 のカスケードループ防止ガードの記述を現行の機構へ更新［Phase6-Step9b の決定6］。2026-09-24: 2.4 未参照コードの扱いを追記。2026-09-20: 3.3 原則1に過渡期ルールを追記、3.4 ファイル配置ルールを追記。2026-09-03: 3.3 ファイル構成・クラス・名前空間の原則と過渡期ルールを追記）
 対象ブランチ: `For-DI-migration-work`
 全体計画書: `docs-forDIMG/DI-App-Wide-Migration-Plan.md`
 ＤＩ化移行後の理想構造のモデル図：`docs-forDIMG\Model-Diagram\01-Component-Dependency-Diagram.md`,`docs-forDIMG\Model-Diagram\02-Layer-Architecture-Diagram.md`,`docs-forDIMG\Model-Diagram\03-Class-Interface-Diagram.md`,`docs-forDIMG\Model-Diagram\04-Service-Lifecycle-Spec.md` ← これら4文書は全体の構造に関わる部分の意思決定を行う場合は必ず参照し、また実装作業の中で変更があった場合はその内容をこれらの文書に反映すること
@@ -26,6 +26,7 @@
 ### 2.1 フォールバック実装・シム維持の原則
 - 古い静的経路（`Global.xxx`, `Program.rootHub.xxx` 等）は、新しい DI サービスへの移行が完了し動作確認が取れるまで即座に削除しない。
 - 既存の外部呼び出し元との互換性を保つため、古い静的メソッドは新しい DI サービスを呼び出す「薄いシム（委譲ラッパー）」として温存する。
+- **適用状況（2026-10-18 更新）**: 上記は移行の過渡期の原則である。Phase7 で `Global`・`Program.rootHub` は削除済みで（残るのはログ文言の文字列 2 件のみ）、静的なシムも `ControlService.CURRENT_DS4_CONTROLLER_LIMIT` を最後に残っていない。今後は、新しい静的な窓口やシムを新設しない（必要な値はコンストラクターで受ける）。残る静的な状態は `Phase7-Residual-Ledger.md` §17.3 の目録に従う（起動前に必要なもの以外は Phase8）。
 
 ### 2.2 現在の機能の完全維持 (No Feature Drop)
 - DI移行作業そのものによる機能削減、設定値欠落、通知抑制不全を絶対に発生させない。
@@ -59,6 +60,8 @@
 - DI コンテナへの登録は `DS4Windows/DI/ServiceRegistration.cs` に集約する。
 - インターフェースには `I` プレフィックスを付ける。
 - **Pure DI（純粋コンストラクタ注入）の堅持**: ViewModel やサービスに `AppHost.Services`（Service Locator）を持ち込ませず、コンストラクタで明示的に依存を受け取る。
+- **暗黙のホスト構築の禁止**（2026-10-18 追記）: `AppHost.GetService` は、ホストが未構築（または Dispose 済み）のとき `null` を返し、暗黙にホストを作らない。ホストは `App` の起動（`CreateHost(config, parser)`）だけが作る。テストは `TestHost` 経由で共有のホストを使う。
+- **ラチェットの一致検査**（2026-10-18 追記）: `Step10FourGlobalRatchetGuardTests`（`Global.*`／`AppHost`／`Program.rootHub`）と `Phase7Step1ServiceLocatorRatchetGuardTests`（`ServiceProviderHolder`）の基準値は、「超えない」だけでなく「実数と一致する」ことを `Phase7Step10eW5RatchetEqualityGuardTests` が検査する。件数を減らしたら、基準値も同時に更新すること。
 
 ### 3.2 巨大ファイルの編集方針
 - `ScpUtil.cs`（9,900行超）、`Mapping.cs`（7,700行超）、`ControlService.cs`（2,900行超）などの巨大ファイルは、全体を再生成せず、対象メソッドのみをピンポイントで置換する（Strangler Fig パターンの徹底）。

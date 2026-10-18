@@ -222,4 +222,4 @@
 - モデル図 01〜04 に Phase7-Step10e の注釈を追記した（構造の目標は変更なし）。
 - 実機確認: 総合検証の手順をチェックリスト §12（T-1〜T-14、約 105 分）に作成した。10e の変更の確認は U-22（新設・未）。
 - 持ち越し（Phase8）: `Actions/` の `ServiceProviderHolder` 17 件、第 1 層の静的な状態（§17.3 の B・C）、維持して TODO を付けた 3 メンバー（`SettingChanged`、`ActionsChanged`、`UseTempProfileArray`）の画面への接続、`BackingStore` の分割、`Mapping` の依存 11・`MainWindow` の引数 18 の整理。
-- 承認待ち: `copilot-instructions.md` の更新（Q10）。
+- `copilot-instructions.md`（Q10。承認済み）: §2.1 のシム維持を過渡期の記述に改め、§3.1 に暗黙のホスト構築の禁止とラチェットの一致検査を追記した。

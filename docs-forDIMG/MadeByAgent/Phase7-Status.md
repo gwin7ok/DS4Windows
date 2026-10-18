@@ -121,7 +121,7 @@
 - **10b: 完了**。W1 表と変換（`X360ControlTables`／`DS4ControlNames`）、W2 アイコンの表・色の関数（`TrayIconResources`／`ColorUtil`）、W3 契約の整理（`OnSubPropertyChanged` ほか）、W4 `UsingMaxControllers` の接続と孤立定数、W5 文書。`Global.*` 107 → 93。詳細は `Phase7-Step10b-Completion-Report.md`。
 - **10c: 完了**。W1 ゴールデンテスト（11 ファイル）、W2 `Actions`／リンク／コントローラー設定、W3 アプリ設定（`AppSettingsXmlSerializer`）、W4 プロファイルの読込、W5 同 保存（`LegacyProfileXmlSerializer`）、W6 プリセット（`ProfilePresets`）、W7 文書。`BackingStore.cs` 6,522 → 1,660 行、`Global.*` 93 → 69。詳細は `Phase7-Step10c-Completion-Report.md`。
 - **10d: 完了**。W1 テストの移行（`TestGlobals`）、W2 環境・パスの窓口と定数（`AdminCheck`／`DevicePathProbe`／`ConfigFileCulture`）、W3 第 1 層の設定（`IDeviceLayerSettings`）、W4 アプリ層のイベントほか、W5（W6 込み）`BackingStore` のコンストラクター注入・ブートストラップ・`Global` の削除、W7 文書。`Global.*` 69 → 2（ログ文言の文字列のみ）、`Global.cs` を削除。詳細は `Phase7-Step10d-Completion-Report.md`。
-- **10e: W1〜W6（文書）完了、総合検証待ち（2026-10-18）**。`Phase7-Step10e-Plan.md`（Q1〜Q10 推奨どおり承認。W4 は §4.1 の判断を承認）。W1・W2 `CURRENT_DS4_CONTROLLER_LIMIT` の削除（`IEnvironmentService.ControllerSlotLimit` の注入）、W3 `AppHost` の暗黙のホスト構築の廃止（`TestHost`）、W4 孤立コード・0 件メンバーの決着（削除: `ColorUtil` の 2 メンバー、`CheckWhen`、`SATriggerCond`、`IAutoProfileService.ClearState`、`IProfileRepository.GetProfilePath`。維持して TODO: `SettingChanged`、`ActionsChanged`、`UseTempProfileArray`）、W5 ラチェットの最終化（基準値と実数の一致の検査を追加）と静的な状態の目録、W6 文書（モデル図 01〜04、台帳 §17、チェックリスト §12・U-22）。`copilot-instructions.md` の更新（Q10）は承認待ち。次は総合検証（チェックリスト §12 の T-1〜T-14）。
+- **10e: W1〜W6（文書）完了、総合検証待ち（2026-10-18）**。`Phase7-Step10e-Plan.md`（Q1〜Q10 推奨どおり承認。W4 は §4.1 の判断を承認）。W1・W2 `CURRENT_DS4_CONTROLLER_LIMIT` の削除（`IEnvironmentService.ControllerSlotLimit` の注入）、W3 `AppHost` の暗黙のホスト構築の廃止（`TestHost`）、W4 孤立コード・0 件メンバーの決着（削除: `ColorUtil` の 2 メンバー、`CheckWhen`、`SATriggerCond`、`IAutoProfileService.ClearState`、`IProfileRepository.GetProfilePath`。維持して TODO: `SettingChanged`、`ActionsChanged`、`UseTempProfileArray`）、W5 ラチェットの最終化（基準値と実数の一致の検査を追加）と静的な状態の目録、W6 文書（モデル図 01〜04、台帳 §17、チェックリスト §12・U-22）。`copilot-instructions.md` の更新（Q10。§2.1・§3.1）も承認を得て実施済み。次は総合検証（チェックリスト §12 の T-1〜T-14）。
 
 ## 4. 実機確認の台帳（`Phase6-Step11-RealDevice-Verification-Checklist.md` §11）
 
@@ -144,6 +144,5 @@
 ## 6. 直近の次アクション
 
 1. 総合検証（`Phase6-Step11-RealDevice-Verification-Checklist.md` §12 の T-1〜T-14。約 105 分）。結果で GO／NO-GO を判断する。
-2. `copilot-instructions.md` の更新（Q10）の承認。
-3. GO の後、`Phase7-Step10e-Completion-Report.md` と `Phase7-Completion-Report.md` を作成する。
+2. GO の後、`Phase7-Step10e-Completion-Report.md` と `Phase7-Completion-Report.md` を作成する。
 4. 実機確認 U-11、U-12、U-13、U-14、U-15、U-16、U-17、U-18、U-19、U-20、U-21（任意のタイミング。U-14 は終了時のホスト破棄と初回起動の確認が中心）。
