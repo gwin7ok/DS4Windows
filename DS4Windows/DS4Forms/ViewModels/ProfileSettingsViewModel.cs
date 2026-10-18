@@ -1039,25 +1039,25 @@ namespace DS4WinWPF.DS4Forms.ViewModels
         public double LSMaxZone
         {
             get => profileSettings.LSModInfo[device].maxZone / 100.0;
-            set => profileSettings.LSModInfo[device].maxZone = (int)(value * 100.0);
+            set => profileSettings.LSModInfo[device].maxZone = (int)Math.Round(value * 100.0);
         }
 
         public double RSMaxZone
         {
             get => profileSettings.RSModInfo[device].maxZone / 100.0;
-            set => profileSettings.RSModInfo[device].maxZone = (int)(value * 100.0);
+            set => profileSettings.RSModInfo[device].maxZone = (int)Math.Round(value * 100.0);
         }
 
         public double LSAntiDeadZone
         {
             get => profileSettings.LSModInfo[device].antiDeadZone / 100.0;
-            set => profileSettings.LSModInfo[device].antiDeadZone = (int)(value * 100.0);
+            set => profileSettings.LSModInfo[device].antiDeadZone = (int)Math.Round(value * 100.0);
         }
 
         public double RSAntiDeadZone
         {
             get => profileSettings.RSModInfo[device].antiDeadZone / 100.0;
-            set => profileSettings.RSModInfo[device].antiDeadZone = (int)(value * 100.0);
+            set => profileSettings.RSModInfo[device].antiDeadZone = (int)Math.Round(value * 100.0);
         }
 
         public double LSVerticalScale
@@ -1603,14 +1603,16 @@ namespace DS4WinWPF.DS4Forms.ViewModels
             }
         }
 
+        // Phase7b（既存の不具合。上流の元から）: 旧は deadZone / 255.0（丸めなし）と (byte)(value * 255.0)（切り捨て）で、
+        // 上下ボタンで 0.10 ずつ増減すると誤差が溜まり、0.20 → 0.29 のように 0.09 しか変わらない所があった。スティック（LSDeadZone）と同じく、読み出しは小数 2 桁へ丸め、設定は四捨五入する。
         public double L2DeadZone
         {
-            get => profileSettings.L2ModInfo[device].deadZone / 255.0;
+            get => Math.Round(profileSettings.L2ModInfo[device].deadZone / 255.0, 2);
             set
             {
-                double temp = profileSettings.L2ModInfo[device].deadZone / 255.0;
+                double temp = Math.Round(profileSettings.L2ModInfo[device].deadZone / 255.0, 2);
                 if (temp == value) return;
-                profileSettings.L2ModInfo[device].deadZone = (byte)(value * 255.0);
+                profileSettings.L2ModInfo[device].deadZone = (byte)Math.Min(Math.Max(Math.Round(value * 255.0), 0.0), 255.0);
                 L2DeadZoneChanged?.Invoke(this, EventArgs.Empty);
             }
         }
@@ -1618,12 +1620,12 @@ namespace DS4WinWPF.DS4Forms.ViewModels
 
         public double R2DeadZone
         {
-            get => profileSettings.R2ModInfo[device].deadZone / 255.0;
+            get => Math.Round(profileSettings.R2ModInfo[device].deadZone / 255.0, 2);
             set
             {
-                double temp = profileSettings.R2ModInfo[device].deadZone / 255.0;
+                double temp = Math.Round(profileSettings.R2ModInfo[device].deadZone / 255.0, 2);
                 if (temp == value) return;
-                profileSettings.R2ModInfo[device].deadZone = (byte)(value * 255.0);
+                profileSettings.R2ModInfo[device].deadZone = (byte)Math.Min(Math.Max(Math.Round(value * 255.0), 0.0), 255.0);
                 R2DeadZoneChanged?.Invoke(this, EventArgs.Empty);
             }
         }
@@ -1632,25 +1634,25 @@ namespace DS4WinWPF.DS4Forms.ViewModels
         public double L2MaxZone
         {
             get => profileSettings.L2ModInfo[device].MaxZone / 100.0;
-            set => profileSettings.L2ModInfo[device].MaxZone = (int)(value * 100.0);
+            set => profileSettings.L2ModInfo[device].MaxZone = (int)Math.Round(value * 100.0);
         }
 
         public double R2MaxZone
         {
             get => profileSettings.R2ModInfo[device].MaxZone / 100.0;
-            set => profileSettings.R2ModInfo[device].MaxZone = (int)(value * 100.0);
+            set => profileSettings.R2ModInfo[device].MaxZone = (int)Math.Round(value * 100.0);
         }
 
         public double L2AntiDeadZone
         {
             get => profileSettings.L2ModInfo[device].antiDeadZone / 100.0;
-            set => profileSettings.L2ModInfo[device].antiDeadZone = (int)(value * 100.0);
+            set => profileSettings.L2ModInfo[device].antiDeadZone = (int)Math.Round(value * 100.0);
         }
 
         public double R2AntiDeadZone
         {
             get => profileSettings.R2ModInfo[device].antiDeadZone / 100.0;
-            set => profileSettings.R2ModInfo[device].antiDeadZone = (int)(value * 100.0);
+            set => profileSettings.R2ModInfo[device].antiDeadZone = (int)Math.Round(value * 100.0);
         }
 
         public double L2MaxOutput

@@ -580,3 +580,4 @@ classDiagram
 %%   - AppHost: GetService は暗黙にホストを作らない。CreationNote は維持。
 %%   - 詳細は Phase7-Step10e-Plan.md、Phase7-Residual-Ledger.md §17。
 %% Phase7 完了（2026-10-18）: Step1〜Step10e の変更は、上記の Phase7-Step 別の注釈に記載した。全体の完了報告は Phase7-Completion-Report.md、台帳は Phase7-Residual-Ledger.md。Phase8 への引き継ぎ（Actions の ServiceProviderHolder 17 件、第 1 層の静的な状態、TODO(Phase8) 付きメンバー 3 件）は同報告書 §5.2。
+%% Phase7b（2026-10-19）: 持ち越し不具合の是正。IMapping に CaptureProfileUntrigger／RestoreProfileUntrigger を追加（メンバー数 8 → 10。ProfileUntriggerSnapshot を新設）。ActionManager.ClearDeviceState（DefaultActionManager と静的なフォールバック）が、HandleDeviceDisconnect の前後で、プロファイル切替の復帰の合図を退避・復元する。詳細は Phase7b-Completion-Report.md。

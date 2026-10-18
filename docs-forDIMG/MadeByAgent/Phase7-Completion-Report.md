@@ -65,6 +65,7 @@
 ## 5. 残課題と引き継ぎ
 
 ### 5.1 別の計画書で扱う（Phase7 の範囲外。承認が要る）
+- **【2026-10-19 追記】下記 2 件は Phase7b（`Phase7b-Completion-Report.md`）で対処した**: 「Unload on trigger release」の復帰は是正済み。デッドゾーンの要望は、デッドゾーンとアンチデッドゾーンを同じ値にする設定で実現できるため、コードの変更なし。
 - **既存の不具合: 「Unload on trigger release」で元のプロファイルに戻らない。** プロファイル切替の適用処理が `ActionManager.ClearDeviceState` を呼び、`Mapping.HandleDeviceDisconnect` が `deviceRuntime[device]` を作り直すため、復帰の合図（`UntriggerAction`）も消える。Phase6 完了時点も同じ構造（Phase7 の退行ではない）。上流の元の実装は復帰できていた。是正案は、`ClearDeviceState` の前後で `UntriggerAction`／`UntriggerIndex` を `IMapping` 経由で退避・復元すること。詳細は `Phase7-Step10e-Completion-Report.md` §3.4。
 - **L2／R2 のデッドゾーンの仕様変更の要望**: 現行は「超えた点を 0% として引き伸ばす」（Phase6 完了時点・上流と同一）。要望は「超えたら押し込み量そのまま」。アンチデッドゾーンとの関係の整理が要る。
 

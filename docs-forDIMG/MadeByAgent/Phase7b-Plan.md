@@ -3,7 +3,7 @@
 作成日: 2026-10-18  
 対象ブランチ: `For-DI-migration-work`  
 上位: `Phase7-Completion-Report.md` §5.1、`Phase7-Status.md` §5、`Phase6-Status.md` §6.5（K7b-1、K9-3 ほか）  
-状態: **承認済み（2026-10-18。Q2＝B、Q8＝B［内容を指定］、ほかは推奨どおり。§8 が確定内容）**。W1 から実装
+状態: **完了（一部先送り。2026-10-19。`Phase7b-Completion-Report.md`）**。W1・W2・W3・丸めの是正は完了、W4・W5 は先送り、W6 は取り下げ（§10）
 
 ---
 
@@ -196,3 +196,11 @@ dotnet build ..\DS4Windows-Vader4Pro-baseline\DS4Windows\DS4WinWPF.csproj -c Deb
 - 判断（ユーザー）: 設計を単純に保つため、**Cutoff モードを削除し、W6 の前の状態に戻す**。要望（「超えたら押し込み量そのまま」）は、**設定で実現する**（L2／R2 のデッドゾーンとアンチデッドゾーンを同じ値にする。最大ゾーン・最大出力は 1.00 のまま）。
 - 実施: `a972e153` の変更（`TriggerDeadZoneMode`／`TriggerCutoffCurve`／`TriggerDeadZoneZInfo`／XML の読み書き／`Mapping`／`ProfileSettingsViewModel`／`ProfileEditor.xaml`／テスト）を、作業ツリー上で取り消した（`git apply -R`）。保存形式・画面・計算は、W6 の前と同じ。
 - 補足: §8 の Q7〜Q9（モード追加、Cutoff の式、XML の書き方）は、取り下げにより無効。W7 の対象は、項目 1・3・4・5・6 の文書化。
+
+## 11. 追加の是正: L2／R2 のデッドゾーンの上下ボタンの丸め誤差（2026-10-18。ユーザー報告、承認済み）
+
+- 症状: L2／R2 のデッドゾーンを上下ボタン（Increment 0.1）で増減すると、0.20 → 0.29 のように 0.09 しか変わらない所があり、最後も 1.00 に届かなかった（計算での再現: 0.00, 0.10, 0.20, 0.29, 0.39, 0.49, 0.59, 0.69, 0.78, 0.88, 0.98）。
+- 原因: 保存値（0〜255 の `byte`）への変換が切り捨て（`(byte)(value * 255.0)`）で、読み出し（`deadZone / 255.0`）が丸められておらず、1 回ごとに誤差が溜まる。
+- 旧実装: 上流の元（2019-12-18 の取り込み、`906946a7`）から同じ。DI 移行で入った不具合ではない。スティックのデッドゾーン（`LSDeadZone`／`RSDeadZone`）は、読み出し・設定とも丸めていて、問題がない。
+- 是正（`ProfileSettingsViewModel.cs`）: L2／R2 の `DeadZone` を、スティックと同じ形にする（読み出しは `Math.Round(…, 2)`、設定は `Math.Round(value * 255.0)`［0〜255 に収める］）。あわせて、同じ系統の切り捨て `(int)(value * 100.0)`（最大ゾーン・アンチデッドゾーン。L2／R2 と左右スティックの 8 か所。0.29 × 100 ＝ 28.999… で 28 になる）を `(int)Math.Round(value * 100.0)` にした。保存形式・保存値の意味は変わらない。
+- テスト: `Phase7bTriggerDeadZoneRoundingTests`（0.10 刻みで 1.00 まで届く、範囲の境界、百分率の丸め）。
