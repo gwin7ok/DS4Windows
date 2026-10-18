@@ -27,7 +27,7 @@ namespace DS4WindowsTests
         {
             DS4WinWPF.AppHost.CreateHost();
 
-            var launcher = DS4WinWPF.AppHost.GetService<IElevatedProcessLauncher>();
+            var launcher = TestHost.GetService<IElevatedProcessLauncher>();
 
             Assert.NotNull(launcher);
             Assert.IsType<DefaultElevatedProcessLauncher>(launcher);
@@ -38,7 +38,7 @@ namespace DS4WindowsTests
         {
             DS4WinWPF.AppHost.CreateHost();
 
-            var inspector = DS4WinWPF.AppHost.GetService<IProcessInspector>();
+            var inspector = TestHost.GetService<IProcessInspector>();
 
             Assert.NotNull(inspector);
             Assert.IsType<DefaultProcessInspector>(inspector);
@@ -49,7 +49,7 @@ namespace DS4WindowsTests
         {
             DS4WinWPF.AppHost.CreateHost();
 
-            var registry = DS4WinWPF.AppHost.GetService<IDs4DeviceRegistry>();
+            var registry = TestHost.GetService<IDs4DeviceRegistry>();
 
             Assert.NotNull(registry);
             Assert.IsType<Ds4DeviceRegistryAdapter>(registry);
@@ -61,8 +61,8 @@ namespace DS4WindowsTests
             DS4WinWPF.AppHost.CreateHost();
 
             IDeviceStateAccessor accessor = null;
-            var ex = Record.Exception(() => accessor = DS4WinWPF.AppHost.GetService<IDeviceStateAccessor>());
-            var controlService = DS4WinWPF.AppHost.GetService<ControlService>();
+            var ex = Record.Exception(() => accessor = TestHost.GetService<IDeviceStateAccessor>());
+            var controlService = TestHost.GetService<ControlService>();
 
             Assert.Null(ex);
             Assert.NotNull(accessor);

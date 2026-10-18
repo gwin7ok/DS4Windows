@@ -87,13 +87,13 @@ namespace DS4WindowsTests
             var valid = new object[]
             {
                 new SyntheticInputState(), new MacroRuntimeState(), new StickMotionState(),
-                DS4WinWPF.AppHost.GetService<IProfileSettingsService>(),
-                DS4WinWPF.AppHost.GetService<IProfileApplicationService>(),
-                DS4WinWPF.AppHost.GetService<IVirtualKBM>(),
-                DS4WinWPF.AppHost.GetService<IKeyButtonControllerRegistry>(),
-                DS4WinWPF.AppHost.GetService<IProcessLauncher>(),
-                DS4WinWPF.AppHost.GetService<IProfileSwitcher>(),
-                DS4WinWPF.AppHost.GetService<ISyntheticDispatcher>(),
+                TestHost.GetService<IProfileSettingsService>(),
+                TestHost.GetService<IProfileApplicationService>(),
+                TestHost.GetService<IVirtualKBM>(),
+                TestHost.GetService<IKeyButtonControllerRegistry>(),
+                TestHost.GetService<IProcessLauncher>(),
+                TestHost.GetService<IProfileSwitcher>(),
+                TestHost.GetService<ISyntheticDispatcher>(),
                 new Func<IDeviceStateAccessor>(() => null),
             };
 
@@ -110,11 +110,11 @@ namespace DS4WindowsTests
         public void Host_ResolvesTheSameMappingInstance_ForControlServiceAndTheContainer()
         {
             DS4WinWPF.AppHost.CreateHost();
-            var mapping = DS4WinWPF.AppHost.GetService<IMapping>();
+            var mapping = TestHost.GetService<IMapping>();
             Assert.NotNull(mapping);
-            Assert.Same(mapping, DS4WinWPF.AppHost.GetService<IMapping>());
-            Assert.Same(mapping, DS4WinWPF.AppHost.GetService<ControlService>().MappingService);
-            Assert.Same(mapping, DS4WinWPF.AppHost.GetService<Func<IMapping>>()());
+            Assert.Same(mapping, TestHost.GetService<IMapping>());
+            Assert.Same(mapping, TestHost.GetService<ControlService>().MappingService);
+            Assert.Same(mapping, TestHost.GetService<Func<IMapping>>()());
         }
 
         [Fact]

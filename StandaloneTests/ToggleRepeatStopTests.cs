@@ -68,6 +68,8 @@ namespace StandaloneTests
         [TestMethod]
         public void Toggle_OnThenOff_StopsRepeater()
         {
+            // Phase7-Step10e W3: AppHost.GetService は暗黙にホストを作らないため、明示的に作る
+            DS4WinWPF.AppHost.CreateHost();
             var dam = new DS4Windows.Actions.DefaultActionManager(DS4WinWPF.AppHost.GetService<DS4Windows.Actions.IActionFactory>(),
                 () => DS4WinWPF.AppHost.GetService<DS4Windows.DI.IMapping>());
             var registry = new DS4Windows.Services.KeyButtonControllerRegistry(

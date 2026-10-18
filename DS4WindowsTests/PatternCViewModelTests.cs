@@ -71,7 +71,7 @@ namespace DS4WindowsTests
         {
             DS4WinWPF.AppHost.CreateHost();
 
-            var factory = DS4WinWPF.AppHost.GetService<IViewModelFactory>();
+            var factory = TestHost.GetService<IViewModelFactory>();
             Assert.NotNull(factory);
         }
 
@@ -80,7 +80,7 @@ namespace DS4WindowsTests
         {
             DS4WinWPF.AppHost.CreateHost();
 
-            var factory = DS4WinWPF.AppHost.GetService<IViewModelFactory>();
+            var factory = TestHost.GetService<IViewModelFactory>();
             Assert.NotNull(factory);
 
             var vm = factory.CreateProfileSettingsViewModel(0);
@@ -99,10 +99,10 @@ namespace DS4WindowsTests
         {
             DS4WinWPF.AppHost.CreateHost();
 
-            var factory = DS4WinWPF.AppHost.GetService<IViewModelFactory>();
+            var factory = TestHost.GetService<IViewModelFactory>();
             Assert.NotNull(factory);
 
-            var outputSlotService = DS4WinWPF.AppHost.GetService<IOutputSlotService>();
+            var outputSlotService = TestHost.GetService<IOutputSlotService>();
             OutContType savedOutDevTypeTemp = outputSlotService.OutDevTypeTemp[DS4Windows.ControllerLimits.TestProfileIndex];
             try
             {
@@ -124,7 +124,7 @@ namespace DS4WindowsTests
         {
             DS4WinWPF.AppHost.CreateHost();
 
-            var factory = DS4WinWPF.AppHost.GetService<IViewModelFactory>();
+            var factory = TestHost.GetService<IViewModelFactory>();
             Assert.NotNull(factory);
 
             var settings = new DS4ControlSettings(DS4Controls.Cross);
@@ -145,9 +145,9 @@ namespace DS4WindowsTests
         {
             DS4WinWPF.AppHost.CreateHost();
 
-            var factory = DS4WinWPF.AppHost.GetService<IViewModelFactory>();
+            var factory = TestHost.GetService<IViewModelFactory>();
             Assert.NotNull(factory);
-            var profileSettings = DS4WinWPF.AppHost.GetService<IProfileSettingsService>();
+            var profileSettings = TestHost.GetService<IProfileSettingsService>();
             Assert.NotNull(profileSettings);
 
             // CURRENT_DS4_CONTROLLER_LIMIT は 4 または 8 のため、どちらでも範囲内の 1 を使う
@@ -184,10 +184,10 @@ namespace DS4WindowsTests
         {
             DS4WinWPF.AppHost.CreateHost();
 
-            var factory = DS4WinWPF.AppHost.GetService<IViewModelFactory>();
+            var factory = TestHost.GetService<IViewModelFactory>();
             Assert.NotNull(factory);
 
-            var profileList = new ProfileList(DS4WinWPF.AppHost.GetService<DS4Windows.DI.IPathService>());
+            var profileList = new ProfileList(TestHost.GetService<DS4Windows.DI.IPathService>());
             var holder = TestRepositoryFactory.CreateAutoProfileHolder();
             var vm = factory.CreateAutoProfilesViewModel(holder, profileList);
             Assert.NotNull(vm);

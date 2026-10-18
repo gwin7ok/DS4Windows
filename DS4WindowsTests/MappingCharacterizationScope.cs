@@ -41,13 +41,13 @@ namespace DS4WindowsTests
         public MappingCharacterizationScope()
         {
             DS4WinWPF.AppHost.CreateHost();
-            Settings = DS4WinWPF.AppHost.GetService<IProfileSettingsService>();
-            Control = DS4WinWPF.AppHost.GetService<ControlService>();
-            Mapper = DS4WinWPF.AppHost.GetService<IMapping>();
-            Dispatcher = DS4WinWPF.AppHost.GetService<ISyntheticDispatcher>();
-            _handlerOwner = DS4WinWPF.AppHost.GetService<DS4Windows.Services.OutputKBMHandlerAdapter>();
-            Synthetic = DS4WinWPF.AppHost.GetService<SyntheticInputState>();
-            _stickMotion = DS4WinWPF.AppHost.GetService<StickMotionState>();
+            Settings = TestHost.GetService<IProfileSettingsService>();
+            Control = TestHost.GetService<ControlService>();
+            Mapper = TestHost.GetService<IMapping>();
+            Dispatcher = TestHost.GetService<ISyntheticDispatcher>();
+            _handlerOwner = TestHost.GetService<DS4Windows.Services.OutputKBMHandlerAdapter>();
+            Synthetic = TestHost.GetService<SyntheticInputState>();
+            _stickMotion = TestHost.GetService<StickMotionState>();
 
             _savedGlobalState = Synthetic.GlobalState;
             _savedDeviceState = Synthetic.DeviceState[Device];

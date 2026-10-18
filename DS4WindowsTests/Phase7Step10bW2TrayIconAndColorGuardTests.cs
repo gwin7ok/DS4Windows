@@ -37,7 +37,7 @@ namespace DS4WindowsTests
         [Fact]
         public void TheAppearanceService_ResolvesThePathFromTheMovedTable()
         {
-            var service = DS4WinWPF.AppHost.GetService<DS4Windows.DI.IAppearanceSettingsService>();
+            var service = TestHost.GetService<DS4Windows.DI.IAppearanceSettingsService>();
             Assert.Equal(TrayIconResources.iconChoiceResources[TrayIconChoice.White], service.GetIconResourcePath(TrayIconChoice.White));
         }
 

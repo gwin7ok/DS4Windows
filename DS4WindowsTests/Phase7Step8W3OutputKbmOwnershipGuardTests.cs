@@ -142,7 +142,7 @@ namespace DS4WindowsTests
             finally
             {
                 // ホストの送出役へ束縛し直す（他のテストへ影響を残さない）
-                SyntheticDispatcher.Bind(DS4WinWPF.AppHost.GetService<ISyntheticDispatcher>());
+                SyntheticDispatcher.Bind(TestHost.GetService<ISyntheticDispatcher>());
             }
         }
 
@@ -150,11 +150,11 @@ namespace DS4WindowsTests
         public void Host_SharesOneAdapterBetweenTheSenderAndTheLifecycle_AndBindsTheBridge()
         {
             DS4WinWPF.AppHost.CreateHost();
-            var adapter = DS4WinWPF.AppHost.GetService<OutputKBMHandlerAdapter>();
-            Assert.Same(adapter, DS4WinWPF.AppHost.GetService<IVirtualKBM>());
-            Assert.NotNull(DS4WinWPF.AppHost.GetService<IVirtualKBMLifecycle>());
-            Assert.NotNull(DS4WinWPF.AppHost.GetService<ISyntheticDispatcher>());
-            Assert.Same(DS4WinWPF.AppHost.GetService<ISyntheticDispatcher>(), DS4WinWPF.AppHost.GetService<ISyntheticDispatcher>());
+            var adapter = TestHost.GetService<OutputKBMHandlerAdapter>();
+            Assert.Same(adapter, TestHost.GetService<IVirtualKBM>());
+            Assert.NotNull(TestHost.GetService<IVirtualKBMLifecycle>());
+            Assert.NotNull(TestHost.GetService<ISyntheticDispatcher>());
+            Assert.Same(TestHost.GetService<ISyntheticDispatcher>(), TestHost.GetService<ISyntheticDispatcher>());
         }
 
         [Fact]

@@ -39,7 +39,7 @@ namespace DS4WindowsTests
             TestGlobals.ExeDirPath = ExeDir;
 
             DS4WinWPF.AppHost.CreateHost();
-            Control = DS4WinWPF.AppHost.GetService<ControlService>();
+            Control = TestHost.GetService<ControlService>();
 
             // プロファイルの読込（LoadProfile → UpdateDS4CSetting → Global.RefreshActionAlias）は、出力 KBM のマッピングが必要。
             // 本体では ControlService の起動時に設定される。RefreshActionAlias は Global.ProfileSettingsServiceInstance（最初に解決した

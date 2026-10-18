@@ -118,7 +118,7 @@ namespace DS4WindowsTests
         public void GlobalShim_SaveAndLoad_ShouldSynchronizeWithService()
         {
             DS4WinWPF.AppHost.CreateHost();
-            var service = DS4WinWPF.AppHost.GetService<IAppSettingsService>();
+            var service = TestHost.GetService<IAppSettingsService>();
 
             Assert.NotNull(service);
 

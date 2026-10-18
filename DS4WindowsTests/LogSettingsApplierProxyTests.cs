@@ -64,8 +64,8 @@ namespace DS4WindowsTests
         {
             DS4WinWPF.AppHost.CreateHost();
 
-            var contract = DS4WinWPF.AppHost.GetService<ILogSettingsApplier>();
-            var concrete = DS4WinWPF.AppHost.GetService<LogSettingsApplierProxy>();
+            var contract = TestHost.GetService<ILogSettingsApplier>();
+            var concrete = TestHost.GetService<LogSettingsApplierProxy>();
 
             Assert.NotNull(contract);
             Assert.Same(concrete, contract);

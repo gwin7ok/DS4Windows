@@ -81,9 +81,9 @@ namespace DS4WindowsTests
             string text = Read("DS4Windows/DI/AppHost.cs");
             if (text == null) return;
 
-            Assert.Contains("_disposed = true;", text);
-            Assert.Equal(2, Regex.Matches(text, @"if\s*\(\s*_disposed\s*\)").Count);
-            Assert.Equal(2, Regex.Matches(text, @"_disposed\s*=\s*false;").Count);
+            // Phase7-Step10e W3: Dispose 後だけでなく、未構築のときも暗黙に作らない（_disposed フラグは不要になった）
+            Assert.DoesNotContain("_disposed", text);
+            Assert.Equal(2, Regex.Matches(text, @"_host\s*=\s*builder\.Build\(\)").Count);
         }
 
         [Fact]

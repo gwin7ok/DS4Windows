@@ -175,13 +175,13 @@ namespace DS4WindowsTests
         public void ViewModelFactory_ResolvedFromContainer_CreatesViewModelWithEnvironmentService()
         {
             DS4WinWPF.AppHost.CreateHost();
-            var factory = DS4WinWPF.AppHost.GetService<IViewModelFactory>();
+            var factory = TestHost.GetService<IViewModelFactory>();
             Assert.NotNull(factory);
 
             ProfileSettingsViewModel vm = factory.CreateProfileSettingsViewModel(0);
 
             Assert.NotNull(vm);
-            Assert.Equal(DS4WinWPF.AppHost.GetService<IEnvironmentService>().IsUsingMinViGEm117333(),
+            Assert.Equal(TestHost.GetService<IEnvironmentService>().IsUsingMinViGEm117333(),
                 vm.UsingMinViGEm173333);
         }
     }

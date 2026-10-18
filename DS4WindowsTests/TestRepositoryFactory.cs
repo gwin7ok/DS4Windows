@@ -14,7 +14,7 @@ namespace DS4WindowsTests
     internal static class TestRepositoryFactory
     {
         /// <summary>Phase7-Step8 W2: 切断時の後始末などで使う IMapping の遅延プロバイダー（コンテナの Singleton。ホスト構築時に Mapping を作らない）。</summary>
-        public static Func<IMapping> MappingProvider => () => DS4WinWPF.AppHost.GetService<IMapping>();
+        public static Func<IMapping> MappingProvider => () => TestHost.GetService<IMapping>();
 
         public static SpecialActionRepository CreateSpecialActionRepository(BackingStore store = null, IPathService pathService = null)
         {
@@ -55,7 +55,7 @@ namespace DS4WindowsTests
                 settings ?? TestGlobals.ProfileSettingsServiceInstance,
                 xmlStore ?? CreateProfileXmlStore(store),
                 pathService ?? new PathService(),
-                control ?? new Func<ControlService>(() => DS4WinWPF.AppHost.GetService<ControlService>()),
+                control ?? new Func<ControlService>(() => TestHost.GetService<ControlService>()),
                 CreateLinkedProfilesXml(store), CreateActionsXml(store), CreateLegacyProfileXml(store, settings, pathService), new EnvironmentService());
         }
 
@@ -136,7 +136,7 @@ namespace DS4WindowsTests
                 xmlStore ?? CreateProfileXmlStore(store),
                 actionProvider ?? CreateProfileActionProvider(store ?? TestGlobals.Store),
                 store ?? TestGlobals.Store,
-                keyButtonControllers ?? DS4WinWPF.AppHost.GetService<IKeyButtonControllerRegistry>());
+                keyButtonControllers ?? TestHost.GetService<IKeyButtonControllerRegistry>());
         }
 
         public static ProfileSlotApplier CreateProfileSlotApplier(IProfileApplicationService profileApplication = null)

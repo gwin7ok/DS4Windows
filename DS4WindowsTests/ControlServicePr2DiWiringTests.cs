@@ -19,7 +19,7 @@ namespace DS4WindowsTests
         {
             DS4WinWPF.AppHost.CreateHost();
 
-            Assert.IsType<ProfileSlotApplier>(DS4WinWPF.AppHost.GetService<IProfileSlotApplier>());
+            Assert.IsType<ProfileSlotApplier>(TestHost.GetService<IProfileSlotApplier>());
         }
 
         [Fact]
@@ -28,7 +28,7 @@ namespace DS4WindowsTests
             DS4WinWPF.AppHost.CreateHost();
 
             ControlService controlService = null;
-            var ex = Record.Exception(() => controlService = DS4WinWPF.AppHost.GetService<ControlService>());
+            var ex = Record.Exception(() => controlService = TestHost.GetService<ControlService>());
 
             Assert.Null(ex);
             Assert.NotNull(controlService);
@@ -44,7 +44,7 @@ namespace DS4WindowsTests
             var controlService = ControlServiceTestFactory.Create(outputSlotServiceFactory: () =>
             {
                 factoryCalls++;
-                return DS4WinWPF.AppHost.GetService<IOutputSlotService>();
+                return TestHost.GetService<IOutputSlotService>();
             });
 
             Assert.NotNull(controlService);

@@ -135,7 +135,7 @@ namespace DS4WindowsTests
         {
             DS4WinWPF.AppHost.CreateHost();
 
-            var vm = DS4WinWPF.AppHost.GetService<MainWindowsViewModel>();
+            var vm = TestHost.GetService<MainWindowsViewModel>();
 
             Assert.NotNull(vm);
         }

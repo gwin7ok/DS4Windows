@@ -68,10 +68,10 @@ namespace DS4WindowsTests
             if (parameterType == typeof(Func<IOutputSlotService>))
             {
                 return outputSlotServiceFactory
-                    ?? (Func<IOutputSlotService>)(() => DS4WinWPF.AppHost.GetService<IOutputSlotService>());
+                    ?? (Func<IOutputSlotService>)(() => TestHost.GetService<IOutputSlotService>());
             }
 
-            return DS4WinWPF.AppHost.GetService(parameterType);
+            return TestHost.GetService(parameterType);
         }
     }
 }

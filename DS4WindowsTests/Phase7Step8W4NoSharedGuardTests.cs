@@ -44,14 +44,14 @@ namespace DS4WindowsTests
         public void TheHost_SharesOneInstanceOfEachHolder_WithMappingAndTheControlService()
         {
             DS4WinWPF.AppHost.CreateHost();
-            var synthetic = DS4WinWPF.AppHost.GetService<SyntheticInputState>();
-            var macro = DS4WinWPF.AppHost.GetService<MacroRuntimeState>();
-            var stick = DS4WinWPF.AppHost.GetService<StickMotionState>();
-            Assert.Same(synthetic, DS4WinWPF.AppHost.GetService<SyntheticInputState>());
-            Assert.Same(macro, DS4WinWPF.AppHost.GetService<MacroRuntimeState>());
-            Assert.Same(stick, DS4WinWPF.AppHost.GetService<StickMotionState>());
+            var synthetic = TestHost.GetService<SyntheticInputState>();
+            var macro = TestHost.GetService<MacroRuntimeState>();
+            var stick = TestHost.GetService<StickMotionState>();
+            Assert.Same(synthetic, TestHost.GetService<SyntheticInputState>());
+            Assert.Same(macro, TestHost.GetService<MacroRuntimeState>());
+            Assert.Same(stick, TestHost.GetService<StickMotionState>());
 
-            var mapping = DS4WinWPF.AppHost.GetService<IMapping>();
+            var mapping = TestHost.GetService<IMapping>();
             object Field(Type type, object target, string name)
             {
                 var field = type.GetField(name, BindingFlags.Instance | BindingFlags.NonPublic);
@@ -64,7 +64,7 @@ namespace DS4WindowsTests
             Assert.Same(stick, Field(typeof(Mapping), mapping, "_stickMotion"));
             Assert.Same(synthetic.DeviceState, Field(typeof(Mapping), mapping, "deviceState"));
 
-            var control = DS4WinWPF.AppHost.GetService<ControlService>();
+            var control = TestHost.GetService<ControlService>();
             Assert.Same(stick, Field(typeof(ControlService), control, "_stickMotion"));
             Assert.Same(synthetic, Field(typeof(ControlService), control, "_syntheticInput"));
         }

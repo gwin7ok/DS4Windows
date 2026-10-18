@@ -59,7 +59,7 @@ namespace DS4WindowsTests
         public void TheHost_StillResolvesTheProfileApplicationService()
         {
             DS4WinWPF.AppHost.CreateHost();
-            Assert.NotNull(DS4WinWPF.AppHost.GetService<IProfileApplicationService>());
+            Assert.NotNull(TestHost.GetService<IProfileApplicationService>());
         }
 
         [Fact]

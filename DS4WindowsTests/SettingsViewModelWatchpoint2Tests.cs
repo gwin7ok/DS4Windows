@@ -29,8 +29,8 @@ namespace DS4WindowsTests
         {
             // Arrange: AppHost から DI 経由で解決
             DS4WinWPF.AppHost.CreateHost();
-            var settingsService = DS4WinWPF.AppHost.GetService<IAppSettingsService>();
-            var vm = DS4WinWPF.AppHost.GetService<SettingsViewModel>();
+            var settingsService = TestHost.GetService<IAppSettingsService>();
+            var vm = TestHost.GetService<SettingsViewModel>();
             Assert.NotNull(vm);
 
             bool originalExclusive = settingsService.UseExclusiveMode;
@@ -64,7 +64,7 @@ namespace DS4WindowsTests
         {
             // Arrange: AppHost から DI 経由で解決
             DS4WinWPF.AppHost.CreateHost();
-            var vm = DS4WinWPF.AppHost.GetService<SettingsViewModel>();
+            var vm = TestHost.GetService<SettingsViewModel>();
             Assert.NotNull(vm);
 
             // Act & Assert 1: 初回 Dispose が例外なく成功すること

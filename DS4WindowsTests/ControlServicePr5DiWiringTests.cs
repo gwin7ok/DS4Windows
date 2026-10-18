@@ -17,7 +17,7 @@ namespace DS4WindowsTests
             DS4WinWPF.AppHost.CreateHost();
 
             ControlService controlService = null;
-            var ex = Record.Exception(() => controlService = DS4WinWPF.AppHost.GetService<ControlService>());
+            var ex = Record.Exception(() => controlService = TestHost.GetService<ControlService>());
 
             Assert.Null(ex);
             Assert.NotNull(controlService);
@@ -28,8 +28,8 @@ namespace DS4WindowsTests
         {
             DS4WinWPF.AppHost.CreateHost();
 
-            Assert.NotNull(DS4WinWPF.AppHost.GetService<IAppearanceSettingsService>());
-            Assert.NotNull(DS4WinWPF.AppHost.GetService<IProfileActionProvider>());
+            Assert.NotNull(TestHost.GetService<IAppearanceSettingsService>());
+            Assert.NotNull(TestHost.GetService<IProfileActionProvider>());
         }
 
         [Theory]

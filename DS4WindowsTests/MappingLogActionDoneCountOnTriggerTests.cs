@@ -42,7 +42,7 @@ namespace DS4WindowsTests
         public void Invoke_WithRealControlService_DoesNotThrow()
         {
             DS4WinWPF.AppHost.CreateHost();
-            var controlService = DS4WinWPF.AppHost.GetService<ControlService>();
+            var controlService = TestHost.GetService<ControlService>();
 
             var ex = Record.Exception(() =>
                 Method.Invoke(Mapper, new object[] { 0, null, 0, controlService, "UnitTest" }));

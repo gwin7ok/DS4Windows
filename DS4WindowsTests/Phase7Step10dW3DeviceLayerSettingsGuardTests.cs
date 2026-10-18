@@ -59,17 +59,17 @@ namespace DS4WindowsTests
         public void Container_ResolvesTheSingletonLayerSettings()
         {
             DS4WinWPF.AppHost.CreateHost();
-            var first = DS4WinWPF.AppHost.GetService<IDeviceLayerSettings>();
+            var first = TestHost.GetService<IDeviceLayerSettings>();
             Assert.NotNull(first);
             Assert.IsType<DeviceLayerSettings>(first);
-            Assert.Same(first, DS4WinWPF.AppHost.GetService<IDeviceLayerSettings>());
+            Assert.Same(first, TestHost.GetService<IDeviceLayerSettings>());
         }
 
         [Fact]
         public void Constructors_RejectNull()
         {
             DS4WinWPF.AppHost.CreateHost();
-            Assert.Throws<ArgumentNullException>(() => new DeviceLayerSettings(null, DS4WinWPF.AppHost.GetService<IProfileSettingsService>()));
+            Assert.Throws<ArgumentNullException>(() => new DeviceLayerSettings(null, TestHost.GetService<IProfileSettingsService>()));
             Assert.Throws<ArgumentNullException>(() => new Ds4DeviceRegistryAdapter(null));
             Assert.Throws<ArgumentNullException>(() => new OutputSlotManager(() => new Version(1, 0), null, 4));
         }

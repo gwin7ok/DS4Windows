@@ -37,9 +37,9 @@ namespace DS4WindowsTests
         public void AppHost_ShouldResolve_AutoProfilesViewModel_ViaFactory()
         {
             DS4WinWPF.AppHost.CreateHost();
-            var factory = DS4WinWPF.AppHost.GetService<IViewModelFactory>();
+            var factory = TestHost.GetService<IViewModelFactory>();
             var holder = TestRepositoryFactory.CreateAutoProfileHolder();
-            var profileList = new ProfileList(DS4WinWPF.AppHost.GetService<DS4Windows.DI.IPathService>());
+            var profileList = new ProfileList(TestHost.GetService<DS4Windows.DI.IPathService>());
 
             var vm = factory.CreateAutoProfilesViewModel(holder, profileList);
 

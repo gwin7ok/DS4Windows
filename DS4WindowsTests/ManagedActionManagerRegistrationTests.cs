@@ -22,14 +22,14 @@ namespace DS4WindowsTests
         {
             DS4WinWPF.AppHost.CreateHost();
 
-            var manager1 = DS4WinWPF.AppHost.GetService<IManagedActionManager>();
-            var manager2 = DS4WinWPF.AppHost.GetService<IManagedActionManager>();
+            var manager1 = TestHost.GetService<IManagedActionManager>();
+            var manager2 = TestHost.GetService<IManagedActionManager>();
             Assert.NotNull(manager1);
             Assert.IsType<DefaultActionManager>(manager1);
             Assert.Same(manager1, manager2);
 
-            var registry1 = DS4WinWPF.AppHost.GetService<IControllerRegistry>();
-            var registry2 = DS4WinWPF.AppHost.GetService<IControllerRegistry>();
+            var registry1 = TestHost.GetService<IControllerRegistry>();
+            var registry2 = TestHost.GetService<IControllerRegistry>();
             Assert.NotNull(registry1);
             Assert.IsType<DefaultControllerRegistry>(registry1);
             Assert.Same(registry1, registry2);

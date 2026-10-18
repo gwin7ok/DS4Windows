@@ -23,21 +23,21 @@ namespace DS4WindowsTests
             DS4WinWPF.AppHost.CreateHost();
 
             // 第4層 4-c 設定・永続化・環境・通知サービス
-            Assert.NotNull(DS4WinWPF.AppHost.GetService<IProfileSettingsService>());
-            Assert.NotNull(DS4WinWPF.AppHost.GetService<IProfileRepository>());
-            Assert.NotNull(DS4WinWPF.AppHost.GetService<ISpecialActionRepository>());
-            Assert.NotNull(DS4WinWPF.AppHost.GetService<IPathService>());
-            Assert.NotNull(DS4WinWPF.AppHost.GetService<IEnvironmentService>());
-            Assert.NotNull(DS4WinWPF.AppHost.GetService<INotificationService>());
+            Assert.NotNull(TestHost.GetService<IProfileSettingsService>());
+            Assert.NotNull(TestHost.GetService<IProfileRepository>());
+            Assert.NotNull(TestHost.GetService<ISpecialActionRepository>());
+            Assert.NotNull(TestHost.GetService<IPathService>());
+            Assert.NotNull(TestHost.GetService<IEnvironmentService>());
+            Assert.NotNull(TestHost.GetService<INotificationService>());
 
             // 第1層 入力監視層・デバイス状態管理サービス
-            Assert.NotNull(DS4WinWPF.AppHost.GetService<IDeviceStateService>());
-            Assert.NotNull(DS4WinWPF.AppHost.GetService<IDs4DeviceRegistry>());
+            Assert.NotNull(TestHost.GetService<IDeviceStateService>());
+            Assert.NotNull(TestHost.GetService<IDs4DeviceRegistry>());
 
             // 第3層 信号出力層（仮想コントローラー出力スロット・プロセス起動）
-            Assert.NotNull(DS4WinWPF.AppHost.GetService<IOutputSlotService>());
-            Assert.NotNull(DS4WinWPF.AppHost.GetService<IElevatedProcessLauncher>());
-            Assert.NotNull(DS4WinWPF.AppHost.GetService<IProcessInspector>());
+            Assert.NotNull(TestHost.GetService<IOutputSlotService>());
+            Assert.NotNull(TestHost.GetService<IElevatedProcessLauncher>());
+            Assert.NotNull(TestHost.GetService<IProcessInspector>());
         }
 
         [Fact]
@@ -45,12 +45,12 @@ namespace DS4WindowsTests
         {
             DS4WinWPF.AppHost.CreateHost();
 
-            var instance1 = DS4WinWPF.AppHost.GetService<IProfileSettingsService>();
-            var instance2 = DS4WinWPF.AppHost.GetService<IProfileSettingsService>();
+            var instance1 = TestHost.GetService<IProfileSettingsService>();
+            var instance2 = TestHost.GetService<IProfileSettingsService>();
             Assert.Same(instance1, instance2);
 
-            var path1 = DS4WinWPF.AppHost.GetService<IPathService>();
-            var path2 = DS4WinWPF.AppHost.GetService<IPathService>();
+            var path1 = TestHost.GetService<IPathService>();
+            var path2 = TestHost.GetService<IPathService>();
             Assert.Same(path1, path2);
         }
     }

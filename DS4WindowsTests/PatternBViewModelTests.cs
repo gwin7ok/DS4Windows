@@ -14,7 +14,7 @@ namespace DS4WindowsTests
         {
             DS4WinWPF.AppHost.CreateHost();
 
-            var vm = DS4WinWPF.AppHost.GetService<MainWindowsViewModel>();
+            var vm = TestHost.GetService<MainWindowsViewModel>();
             Assert.NotNull(vm);
         }
 
@@ -23,8 +23,8 @@ namespace DS4WindowsTests
         {
             DS4WinWPF.AppHost.CreateHost();
 
-            var vm1 = DS4WinWPF.AppHost.GetService<MainWindowsViewModel>();
-            var vm2 = DS4WinWPF.AppHost.GetService<MainWindowsViewModel>();
+            var vm1 = TestHost.GetService<MainWindowsViewModel>();
+            var vm2 = TestHost.GetService<MainWindowsViewModel>();
 
             Assert.NotNull(vm1);
             Assert.NotNull(vm2);

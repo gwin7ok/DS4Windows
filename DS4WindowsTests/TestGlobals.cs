@@ -18,7 +18,7 @@ namespace DS4WindowsTests
         {
             get
             {
-                var current = AppHost.GetService<BackingStore>();
+                var current = TestHost.GetService<BackingStore>();
                 if (current != null)
                     _store = current;
                 return _store;

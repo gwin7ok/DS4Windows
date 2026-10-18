@@ -50,7 +50,7 @@ namespace DS4WindowsTests
             TestGlobals.AppDataPath = _dir;
 
             DS4WinWPF.AppHost.CreateHost();
-            _control = DS4WinWPF.AppHost.GetService<ControlService>();
+            _control = TestHost.GetService<ControlService>();
             _settings = TestGlobals.ProfileSettingsServiceInstance;
 
             _repo = TestRepositoryFactory.CreateProfileRepository(_settings);

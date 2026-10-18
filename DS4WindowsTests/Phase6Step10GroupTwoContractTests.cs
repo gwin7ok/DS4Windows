@@ -99,7 +99,7 @@ namespace DS4WindowsTests
             try
             {
                 DS4WinWPF.AppHost.CreateHost();
-                IAutoProfileService service = DS4WinWPF.AppHost.GetService<IAutoProfileService>();
+                IAutoProfileService service = TestHost.GetService<IAutoProfileService>();
                 Assert.NotNull(service);
 
                 string viaService = Path.Combine(dir, "service.xml");
@@ -130,7 +130,7 @@ namespace DS4WindowsTests
         {
             DS4WinWPF.AppHost.CreateHost();
 
-            var loader = DS4WinWPF.AppHost.GetService<IProfilePresetLoader>();
+            var loader = TestHost.GetService<IProfilePresetLoader>();
 
             Assert.NotNull(loader);
             Assert.IsType<DS4Windows.Services.ProfilePresetLoader>(loader);

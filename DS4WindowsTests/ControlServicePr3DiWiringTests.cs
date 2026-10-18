@@ -16,8 +16,8 @@ namespace DS4WindowsTests
         {
             DS4WinWPF.AppHost.CreateHost();
 
-            Assert.IsType<OutputKBMHandlerAdapter>(DS4WinWPF.AppHost.GetService<IVirtualKBM>());
-            Assert.IsType<OutputKBMHandlerLifecycle>(DS4WinWPF.AppHost.GetService<IVirtualKBMLifecycle>());
+            Assert.IsType<OutputKBMHandlerAdapter>(TestHost.GetService<IVirtualKBM>());
+            Assert.IsType<OutputKBMHandlerLifecycle>(TestHost.GetService<IVirtualKBMLifecycle>());
         }
 
         [Fact]
@@ -26,7 +26,7 @@ namespace DS4WindowsTests
             DS4WinWPF.AppHost.CreateHost();
 
             ControlService controlService = null;
-            var ex = Record.Exception(() => controlService = DS4WinWPF.AppHost.GetService<ControlService>());
+            var ex = Record.Exception(() => controlService = TestHost.GetService<ControlService>());
 
             Assert.Null(ex);
             Assert.NotNull(controlService);

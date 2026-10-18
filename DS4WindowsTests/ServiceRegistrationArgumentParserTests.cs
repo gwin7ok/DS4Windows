@@ -87,7 +87,7 @@ namespace DS4WindowsTests
         {
             // 実際の起動では、App.xaml.cs の CreateHost(config, parser) の時点でホストは構築済み（既存のホストを返す経路）。
             EnsureHostCreated();
-            var startupArguments = DS4WinWPF.AppHost.GetService<IStartupArguments>();
+            var startupArguments = TestHost.GetService<IStartupArguments>();
             Assert.NotNull(startupArguments);
 
             ArgumentParser original = startupArguments.Parser;
@@ -107,8 +107,8 @@ namespace DS4WindowsTests
 
         private static void EnsureHostCreated()
         {
-            // DS4WinWPF.AppHost.GetService はホストが未構築なら引数なしの CreateHost() で構築する（実際の起動と同じ経路）。
-            Assert.NotNull(DS4WinWPF.AppHost.GetService<IStartupArguments>());
+            // Phase7-Step10e W3: AppHost.GetService は暗黙にホストを作らなくなったため、TestHost が（未構築なら）引数なしの CreateHost() で明示的に構築する。
+            Assert.NotNull(TestHost.GetService<IStartupArguments>());
             Assert.NotNull(DS4WinWPF.AppHost.Host);
         }
     }

@@ -31,9 +31,9 @@ namespace DS4WindowsTests
         public void ProfileSettingsService_ReturnsSameInstanceAsAppHost()
         {
             DS4WinWPF.AppHost.CreateHost();
-            var controlService = DS4WinWPF.AppHost.GetService<ControlService>();
+            var controlService = TestHost.GetService<ControlService>();
 
-            var expected = DS4WinWPF.AppHost.GetService<IProfileSettingsService>();
+            var expected = TestHost.GetService<IProfileSettingsService>();
             var actual = GetInternalProperty(controlService, "ProfileSettingsService");
 
             Assert.NotNull(expected);

@@ -50,8 +50,8 @@ namespace DS4WindowsTests
         public void TheContainer_ProvidesTheSerializer_AndTheXmlStoreUsesIt()
         {
             DS4WinWPF.AppHost.CreateHost();
-            Assert.Same(DS4WinWPF.AppHost.GetService<AppSettingsXmlSerializer>(), DS4WinWPF.AppHost.GetService<AppSettingsXmlSerializer>());
-            Assert.NotNull(DS4WinWPF.AppHost.GetService<IProfileXmlStore>());
+            Assert.Same(TestHost.GetService<AppSettingsXmlSerializer>(), TestHost.GetService<AppSettingsXmlSerializer>());
+            Assert.NotNull(TestHost.GetService<IProfileXmlStore>());
         }
 
         [Fact]

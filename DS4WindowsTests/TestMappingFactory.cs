@@ -17,7 +17,7 @@ namespace DS4WindowsTests
         /// <summary>コンテナの Singleton。ホストの保持クラス（<c>Shared</c> と同じ instance）を使う。</summary>
         public static IMapping Host()
         {
-            return DS4WinWPF.AppHost.GetService<IMapping>();
+            return TestHost.GetService<IMapping>();
         }
 
         /// <summary>
@@ -34,20 +34,20 @@ namespace DS4WindowsTests
         {
             DS4WinWPF.AppHost.CreateHost();
             var synthetic = syntheticInput ?? new SyntheticInputState();
-            var profileSettings = settings ?? DS4WinWPF.AppHost.GetService<IProfileSettingsService>();
+            var profileSettings = settings ?? TestHost.GetService<IProfileSettingsService>();
             return new Mapping(
                 synthetic,
                 macroRuntime ?? new MacroRuntimeState(),
                 stickMotion ?? new StickMotionState(),
                 profileSettings,
-                DS4WinWPF.AppHost.GetService<IProfileApplicationService>(),
-                virtualKbm ?? DS4WinWPF.AppHost.GetService<IVirtualKBM>(),
-                DS4WinWPF.AppHost.GetService<IKeyButtonControllerRegistry>(),
-                DS4WinWPF.AppHost.GetService<IProcessLauncher>(),
-                DS4WinWPF.AppHost.GetService<IProfileSwitcher>(),
+                TestHost.GetService<IProfileApplicationService>(),
+                virtualKbm ?? TestHost.GetService<IVirtualKBM>(),
+                TestHost.GetService<IKeyButtonControllerRegistry>(),
+                TestHost.GetService<IProcessLauncher>(),
+                TestHost.GetService<IProfileSwitcher>(),
                 // 独立の合成状態（synthetic）に対して送出する、独立の送出役（出力先の既定はホストのアダプター）
-                syntheticDispatcher ?? new SyntheticDispatcherService(synthetic, DS4WinWPF.AppHost.GetService<OutputKBMHandlerAdapter>(), profileSettings),
-                () => DS4WinWPF.AppHost.GetService<IDeviceStateAccessor>());
+                syntheticDispatcher ?? new SyntheticDispatcherService(synthetic, TestHost.GetService<OutputKBMHandlerAdapter>(), profileSettings),
+                () => TestHost.GetService<IDeviceStateAccessor>());
         }
     }
 }

@@ -74,10 +74,10 @@ namespace DS4WindowsTests
         public void TheViewModel_FollowsTheEnvironment()
         {
             DS4WinWPF.AppHost.CreateHost();
-            var factory = DS4WinWPF.AppHost.GetService<IViewModelFactory>();
-            var env = DS4WinWPF.AppHost.GetService<IEnvironmentService>();
+            var factory = TestHost.GetService<IViewModelFactory>();
+            var env = TestHost.GetService<IEnvironmentService>();
             var vm = factory.CreateAutoProfilesViewModel(TestRepositoryFactory.CreateAutoProfileHolder(),
-                new ProfileList(DS4WinWPF.AppHost.GetService<IPathService>()));
+                new ProfileList(TestHost.GetService<IPathService>()));
             Assert.Equal(env.UsingMaxControllers, vm.UsingExpandedControllers);
         }
 

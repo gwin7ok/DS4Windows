@@ -12,21 +12,21 @@ namespace DS4WinWPF
         private static IHost _host;
         private static readonly object _syncLock = new object();
 
-        // Phase7-Step4 W2: Dispose 済みかどうか。終了処理の途中で（Dispose の後に）GetService が呼ばれても、
-        // 暗黙に 2 つ目のホストを作らないために使う。CreateHost を明示的に呼ぶと解除される。
-        private static bool _disposed;
-
         public static IHost Host => _host;
 
         /// <summary>
         /// Phase6-Step12（K7-1 の原因特定用）: ホストがどの経路で作られたかの記録。
         /// ホスト構築の時点では、ログの最小レベルがまだ反映されておらず Trace が捨てられるため、
         /// App.xaml.cs が、ロガー初期化後に、Info で出力する。
+        /// Phase7-Step10e W3（Q3＝A, Q4＝A）: GetService による暗黙の構築を廃止したため、値は
+        /// 「explicit CreateHost(...) created the host」か「host already existed」の 2 種類だけになる
+        /// （呼び出し元スタックの組み立ては削除した。プロパティとログは、ユーザー決定により維持する）。
         /// </summary>
         public static string CreationNote { get; private set; }
 
         // Phase7-Step4 W2: 未使用だった configuration 引数を削除した（テストはすべて引数なしで呼ぶ）。
-        // 本体の起動は CreateHost(configuration, parser) を使う。引数なしの本メソッドはテストと、GetService の暗黙の構築が使う。
+        // 本体の起動は CreateHost(configuration, parser) を使う。引数なしの本メソッドはテストが明示的に呼ぶ
+        // （Phase7-Step10e W3: GetService の暗黙の構築は廃止した。テストは TestHost 経由で共有のホストを作る）。
         public static IHost CreateHost()
         {
             lock (_loggedResolvedTypes) { _loggedResolvedTypes.Clear(); }
@@ -34,8 +34,6 @@ namespace DS4WinWPF
             {
                 if (_host != null)
                     return _host;
-
-                _disposed = false;
 
                 var builder = Microsoft.Extensions.Hosting.Host.CreateDefaultBuilder()
                     .ConfigureServices((context, services) =>
@@ -47,6 +45,7 @@ namespace DS4WinWPF
                 DS4Windows.DI.ServiceProviderHolder.SetProvider(_host.Services);
                 PreallocateActionEntries();
                 BindSyntheticDispatcher();
+                CreationNote = "explicit CreateHost() created the host";
                 if (AppLogger.IsTraceEnabled)
                     AppLogger.LogTrace("[DI] AppHost.CreateHost: Host initialized and all services registered");
                 return _host;
@@ -81,7 +80,6 @@ namespace DS4WinWPF
                     return _host;
                 }
 
-                _disposed = false;
                 var builder = Microsoft.Extensions.Hosting.Host.CreateDefaultBuilder()
                     .ConfigureServices((context, services) =>
                     {
@@ -145,23 +143,14 @@ namespace DS4WinWPF
             catch { }
         }
 
+        // Phase7-Step10e W3（Q3＝A）: ホストが未構築（または Dispose 済み）のときは、暗黙にホストを作らず null を返す。
+        // 旧: 未構築のときに引数なしの CreateHost() で暗黙に作っていた（K7-1 の残存経路。Phase7-Step4 W2 で Dispose 後だけ止めた）。
         public static T GetService<T>() where T : class
         {
             if (_host == null)
             {
-                lock (_syncLock)
-                {
-                    if (_host == null)
-                    {
-                        // Phase7-Step4 W2: Dispose の後は、暗黙にホストを作らない（終了処理中に 2 つ目のホストができるのを防ぐ）
-                        if (_disposed)
-                            return default;
-
-                        // Phase6-Step12（K7-1 の原因特定用）: ホストが明示的な構築より前に、暗黙に作られる箇所を、呼び出し元つきで記録する
-                        CreationNote = $"implicit CreateHost (no parser) triggered by resolving {typeof(T).Name}. Caller stack:{Environment.NewLine}{Environment.StackTrace}";
-                        CreateHost();
-                    }
-                }
+                LogNoHost(typeof(T));
+                return default;
             }
 
             var service = _host?.Services.GetService<T>();
@@ -182,19 +171,8 @@ namespace DS4WinWPF
         {
             if (_host == null)
             {
-                lock (_syncLock)
-                {
-                    if (_host == null)
-                    {
-                        // Phase7-Step4 W2: Dispose の後は、暗黙にホストを作らない（終了処理中に 2 つ目のホストができるのを防ぐ）
-                        if (_disposed)
-                            return null;
-
-                        // Phase6-Step12（K7-1 の原因特定用）: ホストが明示的な構築より前に、暗黙に作られる箇所を、呼び出し元つきで記録する
-                        CreationNote = $"implicit CreateHost (no parser) triggered by resolving {serviceType.Name}. Caller stack:{Environment.NewLine}{Environment.StackTrace}";
-                        CreateHost();
-                    }
-                }
+                LogNoHost(serviceType);
+                return null;
             }
 
             var service = _host?.Services.GetService(serviceType);
@@ -209,6 +187,12 @@ namespace DS4WinWPF
                 }
             }
             return service;
+        }
+
+        private static void LogNoHost(Type serviceType)
+        {
+            if (AppLogger.IsTraceEnabled)
+                AppLogger.LogTrace($"[DI] AppHost: no host (not created or already disposed); returning null for {serviceType.Name}");
         }
 
         public static void Dispose()
@@ -227,7 +211,6 @@ namespace DS4WinWPF
                     finally
                     {
                         _host = null;
-                        _disposed = true;
                     }
                 }
             }

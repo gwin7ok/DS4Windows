@@ -63,9 +63,9 @@ namespace DS4WindowsTests
         public void TheContainer_ProvidesTheSerializer_ToTheXmlStoreAndTheRepository()
         {
             DS4WinWPF.AppHost.CreateHost();
-            Assert.Same(DS4WinWPF.AppHost.GetService<LegacyProfileXmlSerializer>(), DS4WinWPF.AppHost.GetService<LegacyProfileXmlSerializer>());
-            Assert.NotNull(DS4WinWPF.AppHost.GetService<IProfileXmlStore>());
-            Assert.NotNull(DS4WinWPF.AppHost.GetService<IProfileRepository>());
+            Assert.Same(TestHost.GetService<LegacyProfileXmlSerializer>(), TestHost.GetService<LegacyProfileXmlSerializer>());
+            Assert.NotNull(TestHost.GetService<IProfileXmlStore>());
+            Assert.NotNull(TestHost.GetService<IProfileRepository>());
         }
 
         [Fact]

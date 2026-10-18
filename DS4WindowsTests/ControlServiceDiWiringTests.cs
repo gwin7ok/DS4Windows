@@ -20,7 +20,7 @@ namespace DS4WindowsTests
             DS4WinWPF.AppHost.CreateHost();
 
             ControlService controlService = null;
-            var ex = Record.Exception(() => controlService = DS4WinWPF.AppHost.GetService<ControlService>());
+            var ex = Record.Exception(() => controlService = TestHost.GetService<ControlService>());
 
             Assert.Null(ex);
             Assert.NotNull(controlService);
@@ -31,7 +31,7 @@ namespace DS4WindowsTests
         {
             DS4WinWPF.AppHost.CreateHost();
 
-            var controlService = DS4WinWPF.AppHost.GetService<ControlService>();
+            var controlService = TestHost.GetService<ControlService>();
 
             // コンストラクタで _appSettings.DeviceOptions（= Global.DeviceOptions）を受け取っていること。
             Assert.Same(TestGlobals.Store.deviceOptions, controlService.DeviceOptions);
@@ -42,9 +42,9 @@ namespace DS4WindowsTests
         {
             DS4WinWPF.AppHost.CreateHost();
 
-            Assert.IsType<AppSettingsService>(DS4WinWPF.AppHost.GetService<IAppSettingsService>());
-            Assert.IsType<EnvironmentService>(DS4WinWPF.AppHost.GetService<IEnvironmentService>());
-            Assert.IsType<PathService>(DS4WinWPF.AppHost.GetService<IPathService>());
+            Assert.IsType<AppSettingsService>(TestHost.GetService<IAppSettingsService>());
+            Assert.IsType<EnvironmentService>(TestHost.GetService<IEnvironmentService>());
+            Assert.IsType<PathService>(TestHost.GetService<IPathService>());
         }
 
         [Fact]

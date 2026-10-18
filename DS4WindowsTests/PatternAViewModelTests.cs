@@ -14,7 +14,7 @@ namespace DS4WindowsTests
         {
             DS4WinWPF.AppHost.CreateHost();
 
-            var vm = DS4WinWPF.AppHost.GetService<SettingsViewModel>();
+            var vm = TestHost.GetService<SettingsViewModel>();
             Assert.NotNull(vm);
         }
 
@@ -23,7 +23,7 @@ namespace DS4WindowsTests
         {
             DS4WinWPF.AppHost.CreateHost();
 
-            var vm = DS4WinWPF.AppHost.GetService<LogViewModel>();
+            var vm = TestHost.GetService<LogViewModel>();
             Assert.NotNull(vm);
         }
 
@@ -32,7 +32,7 @@ namespace DS4WindowsTests
         {
             DS4WinWPF.AppHost.CreateHost();
 
-            var vm = DS4WinWPF.AppHost.GetService<AboutViewModel>();
+            var vm = TestHost.GetService<AboutViewModel>();
             Assert.NotNull(vm);
             Assert.Contains("DS4Windows", vm.AppTitle);
             Assert.False(string.IsNullOrWhiteSpace(vm.VersionText));
@@ -44,8 +44,8 @@ namespace DS4WindowsTests
         {
             DS4WinWPF.AppHost.CreateHost();
 
-            var vm1 = DS4WinWPF.AppHost.GetService<SettingsViewModel>();
-            var vm2 = DS4WinWPF.AppHost.GetService<SettingsViewModel>();
+            var vm1 = TestHost.GetService<SettingsViewModel>();
+            var vm2 = TestHost.GetService<SettingsViewModel>();
 
             Assert.NotNull(vm1);
             Assert.NotNull(vm2);
@@ -69,7 +69,7 @@ namespace DS4WindowsTests
         public void Dispose_CalledMultipleTimes_ShouldNotThrow()
         {
             DS4WinWPF.AppHost.CreateHost();
-            var vm = DS4WinWPF.AppHost.GetService<SettingsViewModel>();
+            var vm = TestHost.GetService<SettingsViewModel>();
 
             var ex1 = Record.Exception(() => vm.Dispose());
             var ex2 = Record.Exception(() => vm.Dispose());

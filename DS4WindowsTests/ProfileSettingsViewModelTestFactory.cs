@@ -24,11 +24,11 @@ namespace DS4WindowsTests
                 device,
                 profileSettings ?? TestGlobals.ProfileSettingsServiceInstance,
                 null,
-                outputSlotService ?? DS4WinWPF.AppHost.GetService<IOutputSlotService>(),
-                DS4WinWPF.AppHost.GetService<IProfileRepository>(),
-                DS4WinWPF.AppHost.GetService<IProfilePresetLoader>(),
-                DS4WinWPF.AppHost.GetService<IEnvironmentService>(),
-                DS4WinWPF.AppHost.GetService<IPathService>(),
+                outputSlotService ?? TestHost.GetService<IOutputSlotService>(),
+                TestHost.GetService<IProfileRepository>(),
+                TestHost.GetService<IProfilePresetLoader>(),
+                TestHost.GetService<IEnvironmentService>(),
+                TestHost.GetService<IPathService>(),
                 targetDevice);
         }
     }

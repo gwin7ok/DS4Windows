@@ -200,16 +200,16 @@ namespace DS4WindowsTests
         public void PostHostServices_CanBeResolvedFromAppHost()
         {
             // InitializePostHostServices が解決する 7 サービスが、DI コンテナに登録されていること。
-            Assert.NotNull(DS4WinWPF.AppHost.GetService<IAppSettingsService>());
-            Assert.NotNull(DS4WinWPF.AppHost.GetService<IPathService>());
-            Assert.NotNull(DS4WinWPF.AppHost.GetService<IEnvironmentService>());
-            Assert.NotNull(DS4WinWPF.AppHost.GetService<IProfileRepository>());
-            Assert.NotNull(DS4WinWPF.AppHost.GetService<ISpecialActionRepository>());
-            Assert.NotNull(DS4WinWPF.AppHost.GetService<IAppearanceSettingsService>());
-            Assert.NotNull(DS4WinWPF.AppHost.GetService<IDeviceStateService>());
+            Assert.NotNull(TestHost.GetService<IAppSettingsService>());
+            Assert.NotNull(TestHost.GetService<IPathService>());
+            Assert.NotNull(TestHost.GetService<IEnvironmentService>());
+            Assert.NotNull(TestHost.GetService<IProfileRepository>());
+            Assert.NotNull(TestHost.GetService<ISpecialActionRepository>());
+            Assert.NotNull(TestHost.GetService<IAppearanceSettingsService>());
+            Assert.NotNull(TestHost.GetService<IDeviceStateService>());
             // Phase7-Step5 W3: 出力スロットの契約（起動後の読込）と、LogToTray が使う通知サービス
-            Assert.NotNull(DS4WinWPF.AppHost.GetService<IOutputSlotService>());
-            Assert.NotNull(DS4WinWPF.AppHost.GetService<INotificationService>());
+            Assert.NotNull(TestHost.GetService<IOutputSlotService>());
+            Assert.NotNull(TestHost.GetService<INotificationService>());
         }
     }
 }

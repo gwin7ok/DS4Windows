@@ -166,7 +166,7 @@ namespace DS4WindowsTests
             // TestRepositoryFactory.CreateProfileSettingsService() で作った別インスタンスではなく、ControlService が実際に受け取る
             // DI の Singleton を対象にする。本番では Global.ProfileSettingsServiceInstance も同じ Singleton を返すため、
             // CheckForTouchToggle／StartTPOff が書き換える配列と、Global.TouchActive／touchpadActive の読み取りは同一になる。
-            IProfileSettingsService service = DS4WinWPF.AppHost.GetService<IProfileSettingsService>();
+            IProfileSettingsService service = TestHost.GetService<IProfileSettingsService>();
 
             WithGlobalWiredTo(service, () =>
             {

@@ -54,12 +54,12 @@ namespace DS4WindowsTests
         public void TheContainer_ProvidesSingletonSerializers_ToTheServices()
         {
             DS4WinWPF.AppHost.CreateHost();
-            Assert.Same(DS4WinWPF.AppHost.GetService<SpecialActionsXmlSerializer>(), DS4WinWPF.AppHost.GetService<SpecialActionsXmlSerializer>());
-            Assert.NotNull(DS4WinWPF.AppHost.GetService<LinkedProfilesXmlSerializer>());
-            Assert.NotNull(DS4WinWPF.AppHost.GetService<ControllerConfigsXmlSerializer>());
-            Assert.NotNull(DS4WinWPF.AppHost.GetService<ISpecialActionRepository>());
-            Assert.NotNull(DS4WinWPF.AppHost.GetService<IProfileRepository>());
-            Assert.NotNull(DS4WinWPF.AppHost.GetService<IProfileXmlStore>());
+            Assert.Same(TestHost.GetService<SpecialActionsXmlSerializer>(), TestHost.GetService<SpecialActionsXmlSerializer>());
+            Assert.NotNull(TestHost.GetService<LinkedProfilesXmlSerializer>());
+            Assert.NotNull(TestHost.GetService<ControllerConfigsXmlSerializer>());
+            Assert.NotNull(TestHost.GetService<ISpecialActionRepository>());
+            Assert.NotNull(TestHost.GetService<IProfileRepository>());
+            Assert.NotNull(TestHost.GetService<IProfileXmlStore>());
         }
 
         [Theory]

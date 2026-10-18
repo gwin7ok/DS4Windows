@@ -76,11 +76,11 @@ namespace DS4WindowsTests
             // 発行側（サービス）のデリゲートの購読者を調べて証明する（Singleton からの強参照によるメモリリーク経路が無いこと）。
             DS4WinWPF.AppHost.CreateHost();
 
-            var specialActionRepo = DS4WinWPF.AppHost.GetService<ISpecialActionRepository>();
-            var profileRepo = DS4WinWPF.AppHost.GetService<IProfileRepository>();
-            var outputSlotService = DS4WinWPF.AppHost.GetService<IOutputSlotService>();
-            var profileSettings = DS4WinWPF.AppHost.GetService<IProfileSettingsService>();
-            var actionManager = DS4WinWPF.AppHost.GetService<IManagedActionManager>();
+            var specialActionRepo = TestHost.GetService<ISpecialActionRepository>();
+            var profileRepo = TestHost.GetService<IProfileRepository>();
+            var outputSlotService = TestHost.GetService<IOutputSlotService>();
+            var profileSettings = TestHost.GetService<IProfileSettingsService>();
+            var actionManager = TestHost.GetService<IManagedActionManager>();
 
             var vm = new SpecialActionsListViewModel(0, specialActionRepo, profileRepo);
 
@@ -109,10 +109,10 @@ namespace DS4WindowsTests
         {
             DS4WinWPF.AppHost.CreateHost();
 
-            var specialActionRepo = DS4WinWPF.AppHost.GetService<ISpecialActionRepository>();
-            var profileRepo = DS4WinWPF.AppHost.GetService<IProfileRepository>();
-            var outputSlotService = DS4WinWPF.AppHost.GetService<IOutputSlotService>();
-            var profileSettings = DS4WinWPF.AppHost.GetService<IProfileSettingsService>();
+            var specialActionRepo = TestHost.GetService<ISpecialActionRepository>();
+            var profileRepo = TestHost.GetService<IProfileRepository>();
+            var outputSlotService = TestHost.GetService<IOutputSlotService>();
+            var profileSettings = TestHost.GetService<IProfileSettingsService>();
 
             // コンストラクタへの DI サービス直接注入による ViewModel 生成を検証
             var vm = new SpecialActionsListViewModel(0, specialActionRepo, profileRepo);

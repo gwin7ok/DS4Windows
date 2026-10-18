@@ -122,7 +122,7 @@ namespace DS4WindowsTests
         public void Properties_ReadAndWriteThroughToGlobal()
         {
             DS4WinWPF.AppHost.CreateHost();
-            var vm = DS4WinWPF.AppHost.GetService<SettingsViewModel>();
+            var vm = TestHost.GetService<SettingsViewModel>();
             Assert.NotNull(vm);
 
             bool originalQuick = TestGlobals.Store.quickCharge;

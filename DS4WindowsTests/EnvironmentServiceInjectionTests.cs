@@ -47,9 +47,9 @@ namespace DS4WindowsTests
         {
             DS4WinWPF.AppHost.CreateHost();
 
-            Assert.NotNull(DS4WinWPF.AppHost.GetService<IProfileSettingsService>());
-            Assert.NotNull(DS4WinWPF.AppHost.GetService<IAutoProfileService>());
-            Assert.NotNull(DS4WinWPF.AppHost.GetService<IEnvironmentService>());
+            Assert.NotNull(TestHost.GetService<IProfileSettingsService>());
+            Assert.NotNull(TestHost.GetService<IAutoProfileService>());
+            Assert.NotNull(TestHost.GetService<IEnvironmentService>());
         }
     }
 }

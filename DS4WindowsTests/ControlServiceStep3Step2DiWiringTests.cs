@@ -24,7 +24,7 @@ namespace DS4WindowsTests
             DS4WinWPF.AppHost.CreateHost();
 
             ControlService controlService = null;
-            var ex = Record.Exception(() => controlService = DS4WinWPF.AppHost.GetService<ControlService>());
+            var ex = Record.Exception(() => controlService = TestHost.GetService<ControlService>());
 
             Assert.Null(ex);
             Assert.NotNull(controlService);
@@ -35,7 +35,7 @@ namespace DS4WindowsTests
         {
             DS4WinWPF.AppHost.CreateHost();
 
-            Assert.NotNull(DS4WinWPF.AppHost.GetService<ISpecialActionRepository>());
+            Assert.NotNull(TestHost.GetService<ISpecialActionRepository>());
         }
 
         [Fact]
@@ -64,9 +64,9 @@ namespace DS4WindowsTests
         public void InternalAccessor_ReturnsSameInstanceAsAppHost(string propertyName, Type serviceType)
         {
             DS4WinWPF.AppHost.CreateHost();
-            var controlService = DS4WinWPF.AppHost.GetService<ControlService>();
+            var controlService = TestHost.GetService<ControlService>();
 
-            var expected = DS4WinWPF.AppHost.GetService(serviceType);
+            var expected = TestHost.GetService(serviceType);
             var actual = GetInternalProperty(controlService, propertyName);
 
             Assert.NotNull(expected);
