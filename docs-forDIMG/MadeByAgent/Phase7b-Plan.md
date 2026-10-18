@@ -157,3 +157,34 @@
   - 式: `if (入力 <= dz) 出力 = 0 else { 割合 = Clamp(入力,0,最大)/最大; 割合 = min(割合, 最大出力); 出力 = max(割合, アンチデッドゾーン) }`。`dz` が 0 のときは、`Cutoff` でも入力が 0 より大きければ上の式を適用する（入力 0 は 0）。
   - 例: デッドゾーン 80%、アンチデッドゾーン 0% で、物理 79% は 0、81% は 81%。アンチデッドゾーン 90% なら、81% を超えた瞬間から 90% 以上になる。
 - W6 のテストは、この式を固定する（境界: dz ちょうど、dz＋1、最大ゾーン、最大出力、アンチデッドゾーンが大きい／小さいとき）。
+
+## 9. W5（K9-3）の調査: コード調査の結果と、ベースラインの再現手順
+
+### 9.1 コード調査（2026-10-18）
+- プリセットメニュー（`ProfileEditor.xaml` の `presetMenu`。親項目 Left Stick／Right Stick／DPad ほか＋サブメニュー）は、`Canvas.Resources` の共有リソース。`ConBtn_MouseRightButtonUp`（`ProfileEditor.xaml.cs`）が、`PlacementTarget` を設定して `IsOpen = true` で開く。
+- メニューを閉じる処理は見つからない。ボタンの `MouseLeave`（`ContBtn_MouseLeave`）は、ハイライトの画像を隠すだけ。`ContextMenuClosing`／`StaysOpen` の指定もない。
+- このメニューの定義と開き方は、上流の元の実装と同じ構造と見られる。`ProfileEditor.xaml` は、Phase6 以降に、ガイドボタン・ジャイロ校正などの小変更のみ（メニューの定義は触っていない）。
+- 結論: コードだけでは原因を特定できない。WPF の動作（右ボタンを離した直後の `IsOpen = true`、サブメニューの Popup、アプリのテーマ）が絡む可能性が高く、**いつから出ているかを実機で切り分ける**のが先。
+
+### 9.2 ベースラインの再現手順（ユーザーの実機作業）
+目的: 現在のビルドと、古いビルドで、同じ操作で再現するかを比べ、いつから出ているかを絞る。
+- 操作（共通）: プロファイル編集画面の Controls タブで、コントローラー図の **左スティック（L3 付近）を右クリック** → 「Left Stick」にマウスを置く（サブメニューが右に出る）→ **サブメニューへマウスを水平に移す**。サブメニューが消えるかを見る。同じ操作を 10 回行う。条件（消える回数／10 回）を記録する。
+- 比べるビルド（古い順）:
+  1. 上流の DS4Windows（Ryochan7 版）の公式リリース。入手できる場合のみ（ダウンロードが要るため、あなたの判断）。
+  2. `0bef94f9`（2025-12-20。このフォークの、DI 移行より前で、`ProfileEditor.xaml` の最後の変更）。
+  3. `e022684b`（2026-09-26。Phase6-Step7b 完了。`ProfileEditor` の MVVM 移設の前）。
+  4. `69dc6736`（2026-10-13。Phase6-Step8 完了。`ProfileEditor` の Global 参照解消と ViewModel 移設の後）。
+  5. 現在のビルド。
+- 古いビルドの作り方（別フォルダー。現在の作業ツリーは変えない）: 下記のコマンドを、リポジトリのルートで 1 つずつ実行する（例は 2 番目）。
+
+```
+git worktree add ..\DS4Windows-Vader4Pro-baseline 0bef94f9
+dotnet build ..\DS4Windows-Vader4Pro-baseline\DS4Windows\DS4WinWPF.csproj -c Debug /p:platform=x64 -o ..\DS4Windows-Vader4Pro-baseline\out
+```
+  - 実行は `..\DS4Windows-Vader4Pro-baseline\out\DS4Windows.exe`。終わったら `git worktree remove ..\DS4Windows-Vader4Pro-baseline` で削除する。
+  - 古いコミットは、設定フォルダー（`%APPDATA%\DS4Windows`）の形式が違う可能性があるため、**設定フォルダーのバックアップを取ってから**行う。
+- 判定:
+  - 古いビルド（1 または 2）で再現する → 上流の元からの不具合。是正は、ユーザー判断（Q6 の方針は、直す方向で再設計）。
+  - 2 では出ず 3 以降で出る → Phase6 のどこかで入った回帰。3 と 4 の間で絞る。
+  - 現在のビルドでも再現しない → 偶発的で、リスク受容として閉じる。
+- 結果の報告: ビルドごとに「再現する／しない（回数／10）」。可能なら、サブメニューが消える瞬間の画面（メニューが出る位置、マウスの軌跡）の説明。
