@@ -573,3 +573,9 @@ classDiagram
 %%   - 新設: IDeviceLayerSettings／DeviceLayerSettings（第 1 層の設定）、AdminCheck、DevicePathProbe、ConfigFileCulture、UiCulture。
 %%   - イベントの移行: AppearanceSettingsService.BatteryChanged、DeviceStateService.DeviceSerialChange。出力デバイスは SteeringWheelAxisProvider を受ける。
 %%   - 詳細は Phase7-Step10d-Plan.md、Phase7-Step10d-Completion-Report.md、台帳は Phase7-Residual-Ledger.md §16。
+%% Phase7-Step10e（2026-10-18）: 仕上げ（契約・コンストラクターの変更）。
+%%   - 削除したメンバー（呼び出し 0 件）: IAppSettingsService.CheckWhen、IProfileSettingsService.SATriggerCond（GetSATriggerCond は残る）、IAutoProfileService.ClearState、IProfileRepository.GetProfilePath（ProfileRepository の public メソッドは残る。窓口は IPathService.GetProfilePath）。
+%%   - 維持（TODO(Phase8) 付き）: IAppSettingsService.SettingChanged、ISpecialActionRepository.ActionsChanged、IProfileSettingsService.UseTempProfileArray。
+%%   - コンストラクターの変更: OutputSlotManager(+int slotLimit)、ProfileRepository(+IEnvironmentService)、ProfileSlotApplier(+IEnvironmentService)、EditorWindowFactory(+IEnvironmentService)。ControlService.CURRENT_DS4_CONTROLLER_LIMIT（静的）は削除。
+%%   - AppHost: GetService は暗黙にホストを作らない。CreationNote は維持。
+%%   - 詳細は Phase7-Step10e-Plan.md、Phase7-Residual-Ledger.md §17。

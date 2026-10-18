@@ -1,7 +1,7 @@
 # フェーズ7 進捗管理文書: `Global`／`BackingStore` の解体、起動の近代化、`Mapping` の instance 化
 
-最終更新日: 2026-10-17  
-状態: **Step1・Step2・Step3・Step3c・Step4・Step5・Step6・Step7・Step8・Step9 完了。Step10 は 10a・10b・10c・10d 完了、10e は計画書作成済み・承認待ち。**  
+最終更新日: 2026-10-18  
+状態: **Step1・Step2・Step3・Step3c・Step4・Step5・Step6・Step7・Step8・Step9 完了。Step10 は 10a・10b・10c・10d 完了、10e は W1〜W6（文書）完了、総合検証待ち。**  
 計画書: `Phase7-Plan.md`。調査: `Phase7-0-Survey.md`。残存台帳: `Phase7-Residual-Ledger.md`
 
 ---
@@ -21,7 +21,7 @@
 | Step7 | `Mapping` の instance 化（1）特性化テストと状態の切り出し | **完了**（2026-10-17。Q1〜Q6 推奨どおり承認。W1〜W4 のビルド・テスト成功、W5 は文書。U-17 の実機確認は未。完了報告書あり） | |
 | Step8 | `Mapping` の instance 化（2）instance 化と呼び出し元の切り替え | **完了**（2026-10-17。Q1〜Q9 推奨どおり承認。W1〜W4 のビルド・テスト成功、W5 は文書。U-18 の実機確認は未。完了報告書あり） | `Phase7-Step8-Plan.md`、`Phase7-Step8-Completion-Report.md` |
 | Step9 | `Mapping` の instance 化（3）互換 `AppHost` の削除ほか | **完了**（2026-10-18。Q1〜Q5 推奨どおり承認。W1〜W3 のビルド・テスト成功、W4 は文書。U-19 の実機確認は未。完了報告書あり） | `Phase7-Step9-Plan.md`、`Phase7-Step9-Completion-Report.md` |
-| Step10 | 仕上げ（`Global` の残り、永続化の切り出し、総合検証） | **実施中**（2026-10-18。Q1〜Q9 推奨どおり承認。10a・10b・10c・10d 完了、10e は未着手） | `Phase7-Step10-Plan.md`、`Phase7-Step10a-Plan.md`、`Phase7-Step10a-Completion-Report.md` |
+| Step10 | 仕上げ（`Global` の残り、永続化の切り出し、総合検証） | **実施中**（2026-10-18。Q1〜Q9 推奨どおり承認。10a・10b・10c・10d 完了、10e は W1〜W6（文書）完了で総合検証待ち） | `Phase7-Step10-Plan.md`、`Phase7-Step10a-Plan.md`、`Phase7-Step10a-Completion-Report.md` |
 
 ## 2. ラチェットの基準値（全域）
 
@@ -40,7 +40,9 @@
   - Phase7-Step9 W4 後: 355／4／0／17
   - Phase7-Step10a W5 後: 107／4／0／17
   - Phase7-Step10b W5 後: 93／4／0／17
-  - Phase7-Step10c W7 後（現在）: **69／4／0／17**
+  - Phase7-Step10c W7 後: 69／4／0／17
+  - Phase7-Step10d W7 後: 2／3／0／17
+  - Phase7-Step10e W5 後（最終・現在）: **2／3／0／17**（実数と基準値の一致を `Phase7Step10eW5RatchetEqualityGuardTests` が検査）
 - ガード: `Step10FourGlobalRatchetGuardTests`（`Global.*`／`AppHost`／`rootHub`）、`Phase7Step1ServiceLocatorRatchetGuardTests`（`ServiceProviderHolder`）、`Phase7Step1DeadMethodGuardTests`（`BackingStore` の削除済みメソッド）。
 - 目標値は、各 Step の計画書で確定し、`Phase7-Residual-Ledger.md` に反映する。
 
@@ -119,13 +121,13 @@
 - **10b: 完了**。W1 表と変換（`X360ControlTables`／`DS4ControlNames`）、W2 アイコンの表・色の関数（`TrayIconResources`／`ColorUtil`）、W3 契約の整理（`OnSubPropertyChanged` ほか）、W4 `UsingMaxControllers` の接続と孤立定数、W5 文書。`Global.*` 107 → 93。詳細は `Phase7-Step10b-Completion-Report.md`。
 - **10c: 完了**。W1 ゴールデンテスト（11 ファイル）、W2 `Actions`／リンク／コントローラー設定、W3 アプリ設定（`AppSettingsXmlSerializer`）、W4 プロファイルの読込、W5 同 保存（`LegacyProfileXmlSerializer`）、W6 プリセット（`ProfilePresets`）、W7 文書。`BackingStore.cs` 6,522 → 1,660 行、`Global.*` 93 → 69。詳細は `Phase7-Step10c-Completion-Report.md`。
 - **10d: 完了**。W1 テストの移行（`TestGlobals`）、W2 環境・パスの窓口と定数（`AdminCheck`／`DevicePathProbe`／`ConfigFileCulture`）、W3 第 1 層の設定（`IDeviceLayerSettings`）、W4 アプリ層のイベントほか、W5（W6 込み）`BackingStore` のコンストラクター注入・ブートストラップ・`Global` の削除、W7 文書。`Global.*` 69 → 2（ログ文言の文字列のみ）、`Global.cs` を削除。詳細は `Phase7-Step10d-Completion-Report.md`。
-- **10e: 計画書作成済み・承認待ち（2026-10-18）**。`Phase7-Step10e-Plan.md`（`CURRENT_DS4_CONTROLLER_LIMIT` の置き換え、`AppHost` の暗黙構築の廃止、孤立コード・0 件メンバーの決着、ラチェットの最終化、文書の最終化、総合検証。Q1〜Q10、W1〜W6）。
+- **10e: W1〜W6（文書）完了、総合検証待ち（2026-10-18）**。`Phase7-Step10e-Plan.md`（Q1〜Q10 推奨どおり承認。W4 は §4.1 の判断を承認）。W1・W2 `CURRENT_DS4_CONTROLLER_LIMIT` の削除（`IEnvironmentService.ControllerSlotLimit` の注入）、W3 `AppHost` の暗黙のホスト構築の廃止（`TestHost`）、W4 孤立コード・0 件メンバーの決着（削除: `ColorUtil` の 2 メンバー、`CheckWhen`、`SATriggerCond`、`IAutoProfileService.ClearState`、`IProfileRepository.GetProfilePath`。維持して TODO: `SettingChanged`、`ActionsChanged`、`UseTempProfileArray`）、W5 ラチェットの最終化（基準値と実数の一致の検査を追加）と静的な状態の目録、W6 文書（モデル図 01〜04、台帳 §17、チェックリスト §12・U-22）。`copilot-instructions.md` の更新（Q10）は承認待ち。次は総合検証（チェックリスト §12 の T-1〜T-14）。
 
 ## 4. 実機確認の台帳（`Phase6-Step11-RealDevice-Verification-Checklist.md` §11）
 
 - U-1〜U-7: 機材・環境が揃うまで未確認（リスク受容）。
 - U-8、U-9: 確認済み（Phase6）。
-- U-11（Step2 後）、U-12（Step3 後）、U-13（Step3c 後）、U-14（Step4 後）、U-15（Step5 後）、U-16（Step6 後）、U-17（Step7 後）、U-18（Step8 後）、U-19（Step9 後）、U-20（Step10c 後）、U-21（Step10d 後）: 未（U-13 はユーザー判断で先送り）。
+- U-11（Step2 後）、U-12（Step3 後）、U-13（Step3c 後）、U-14（Step4 後）、U-15（Step5 後）、U-16（Step6 後）、U-17（Step7 後）、U-18（Step8 後）、U-19（Step9 後）、U-20（Step10c 後）、U-21（Step10d 後）、U-22（Step10e 後）: 未（総合検証 §12 で一括）（U-13 はユーザー判断で先送り）。
 - U-10: 確認済み（偽の exe 名の保持。スキップしたバージョンの値の保持）。通知の抑制は、新バージョンの公開時に確認（U-7 とあわせる）。
 - 今後の追加候補: Step6 の後（スロットの付け外し）。
 
@@ -141,5 +143,7 @@
 
 ## 6. 直近の次アクション
 
-1. Step10e（`Phase7-Step10e-Plan.md`）の承認と実装。その後、総合検証と Phase7 完了報告書。
-2. 実機確認 U-11、U-12、U-13、U-14、U-15、U-16、U-17、U-18、U-19、U-20、U-21（任意のタイミング。U-14 は終了時のホスト破棄と初回起動の確認が中心）。
+1. 総合検証（`Phase6-Step11-RealDevice-Verification-Checklist.md` §12 の T-1〜T-14。約 105 分）。結果で GO／NO-GO を判断する。
+2. `copilot-instructions.md` の更新（Q10）の承認。
+3. GO の後、`Phase7-Step10e-Completion-Report.md` と `Phase7-Completion-Report.md` を作成する。
+4. 実機確認 U-11、U-12、U-13、U-14、U-15、U-16、U-17、U-18、U-19、U-20、U-21（任意のタイミング。U-14 は終了時のホスト破棄と初回起動の確認が中心）。

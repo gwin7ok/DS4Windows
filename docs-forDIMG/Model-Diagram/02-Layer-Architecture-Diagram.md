@@ -139,3 +139,7 @@
 %% 注釈補強（2026-10-17 Phase7-Step8 反映、構造の目標は変更なし）
 %% - 現行の Mapping.cs（理想構造では IInputMappingPipeline 以下へ分解される予定の対象）は、DI の Singleton（IMapping）の instance になった。状態は 3 つの保持クラス（合成入力・マクロ・スティック／ジャイロ／トリガー）に分かれ、いずれもコンテナの Singleton。サービスへの静的な束縛（AppHost／ServiceProviderHolder／Global のフォールバック）はない。
 %% - 出力 KBM ハンドラの実体は OutputKBMHandlerAdapter（第3層）が持つ。第2層（Mapping）→ 第3層（IVirtualKBM）の依存方向は、インターフェース経由のままで変わらない。
+%% 注釈補強（2026-10-18 Phase7-Step10e 反映、構造の目標は変更なし）
+%% - 依存方向（上位 → 下位、またはインターフェース経由）に反する静的な窓口は、Phase7 で解消した: 第 1 層の設定は IDeviceLayerSettings（10d）、スロット数の上限は IEnvironmentService.ControllerSlotLimit（10e）。
+%% - 第 4-b 層（Composition Root）の AppHost は、暗黙にホストを作らない。起動（App.xaml.cs）が明示的に作る。
+%% - 持ち越し（Phase8）: 第 1 層（DS4Devices／DS4LightBar／HidDevices）の静的な状態と、Actions の ServiceProviderHolder。

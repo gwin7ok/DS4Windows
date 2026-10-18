@@ -255,3 +255,8 @@
 %% - Singleton（具象クラス）: SpecialActionsXmlSerializer、LinkedProfilesXmlSerializer、ControllerConfigsXmlSerializer、AppSettingsXmlSerializer、LegacyProfileXmlSerializer、ProfilePresets（いずれも BackingStore などをコンストラクターで受ける）。
 %% - コンストラクターの変更: ProfileXmlStore（+ControllerConfigs／AppSettings／LegacyProfile）、ProfileRepository（+LinkedProfiles／SpecialActions／LegacyProfile）、SpecialActionRepository（+SpecialActions）、ProfilePresetLoader（+ProfilePresets）。
 %% - Global.* は 93 → 69。AppHost.GetService|Services 4、ServiceProviderHolder 17 は変更なし。
+%% Phase7-Step10e（2026-10-18）: 仕上げ（ライフサイクルの確定）。
+%% - ホストの生成: App の起動だけが CreateHost(config, parser) で作る（テストは TestHost 経由で CreateHost() を明示的に呼ぶ）。GetService は、未構築・Dispose 後は null を返し、暗黙に 2 つ目のホストを作らない。
+%% - 登録の変更はない。ProfileRepository／ProfileSlotApplier は IEnvironmentService を受ける（Singleton どうしの依存で、循環はない）。OutputSlotManager は ControlService が生成時にスロット数の上限を渡す。
+%% - 静的な状態の最終の目録は Phase7-Residual-Ledger.md §17.3（起動前に必要な状態は残す。第 1 層・Actions の静的な状態は Phase8）。
+%% - ラチェットの最終: Global.* 2（ログ文言）、AppHost.GetService|Services 3、Program.rootHub 0、ServiceProviderHolder 17。

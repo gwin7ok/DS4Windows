@@ -217,3 +217,9 @@
 
 ### 17.4 意図した依存の記録（Q7＝A。変更しない）
 - `Mapping` のコンストラクター引数 11、`MainWindow` のコンストラクター引数 18: 循環はなく、各依存は使われている。Phase8 の Actions の統合・ウィンドウの分割の候補として記録する（Facade は作らない。Phase8 の再設計と衝突するため）。
+
+### 17.5 W6（文書）の記録
+- モデル図 01〜04 に Phase7-Step10e の注釈を追記した（構造の目標は変更なし）。
+- 実機確認: 総合検証の手順をチェックリスト §12（T-1〜T-14、約 105 分）に作成した。10e の変更の確認は U-22（新設・未）。
+- 持ち越し（Phase8）: `Actions/` の `ServiceProviderHolder` 17 件、第 1 層の静的な状態（§17.3 の B・C）、維持して TODO を付けた 3 メンバー（`SettingChanged`、`ActionsChanged`、`UseTempProfileArray`）の画面への接続、`BackingStore` の分割、`Mapping` の依存 11・`MainWindow` の引数 18 の整理。
+- 承認待ち: `copilot-instructions.md` の更新（Q10）。
