@@ -12,6 +12,26 @@ namespace DS4WindowsTests
     /// </summary>
     internal static class ProfileSettingsViewModelTestFactory
     {
+        // Phase7c: ProfileSettingsViewModel のコンストラクターは pack://application:,,, の URI を作る。pack スキームと
+        // リソースのアセンブリは、WPF の Application が作られて初めて使える。以前は、Application を作る別のテストクラス
+        // （ProfileSettingsViewModelTests など）が先に動いたときだけ通る、実行順に依存したテストがあった
+        // （Phase7bTriggerDeadZoneRoundingTests が UriFormatException: Invalid port specified で失敗した）。
+        // ファクトリーを通る生成なら、どのクラスが先でも通るよう、ここで同じ初期化を行う。
+        static ProfileSettingsViewModelTestFactory()
+        {
+            if (System.Windows.Application.Current == null)
+            {
+                try { _ = new System.Windows.Application(); }
+                catch { }
+            }
+
+            if (System.Windows.Application.ResourceAssembly == null)
+            {
+                try { System.Windows.Application.ResourceAssembly = typeof(DS4WinWPF.AppHost).Assembly; }
+                catch { }
+            }
+        }
+
         public static ProfileSettingsViewModel Create(
             int device,
             IProfileSettingsService profileSettings = null,
