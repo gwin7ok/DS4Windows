@@ -250,3 +250,45 @@ Phase6-Step9b の検証（`Phase6-Step9b-Plan.md` §1）で、本フェーズの
 - **対象メンバー（12）**: `IActionBinding`（`OnReleased`、`OnTriggered`、`Outputs`）、`IKeyController`（`ClearAll`、`OnDown`、`OnUp`）、`IActionRegistry.GetBindingsForDevice`、`IControllerRegistry.GetControllersForDevice`、`IInputAction.Evaluate`、`IMacroPlayer.IsPlaying`（テスト 11 参照）、`ITrigger.Context`、`IOutputHandler.FakeKeyRepeat`。
 - **Service Locator（17 件）**: `Actions/ActionManager.cs` 13、`ActionFactory.cs` 1、`DefaultKeyButtonActionControllerFactory.cs` 2、`KeyActionAdapter.cs` 1 が、`ServiceProviderHolder.Provider` を直接使う。`Phase7Step1ServiceLocatorRatchetGuardTests` が基準値で固定している。Phase8 の統合ディスパッチで、コンストラクター注入へ置き換える。
 - **判断の方針**: §2.4（本来その API を使うべきか）に従う。Phase8 の `TriggerBinding` の設計に必要な契約は、TODO を付けて残し、不要なものは削除する。
+
+---
+
+## 追記（2026-10-19）: Phase7c W3 による事実誤認の訂正（設計は変更しない。D1〜D5 は確定のまま）
+
+Phase8 着手前の全体レビュー（`Phase7c-Plan.md`）で、本書の前提を現行コードと突き合わせた。決定事項（D1〜D5）と §5 の Step 構成は変更しない。次の記述は、現状と食い違うため、**この追記を正とする**。
+
+1. **着手条件**: 「Phase7 完了後に Step1 から着手」は、Phase7（2026-10-18）・Phase7b（2026-10-19）の完了を経て、**Phase7c の完了後に着手**する。Phase7c の W2 から移した特性化テスト 4 項目は、Step1 で書き足す（下記 9）。
+2. **「未配線の 12 メンバー」の内訳**（上の 2026-10-17 の追記。12 と 11 の食い違いも整理）:
+   - `IKeyController` の 3 つ（`ClearAll`／`OnDown`／`OnUp`）は、**未配線ではない**。`KeyButtonActionController.cs:109` の private 入れ子インターフェースで、`KeyButtonActionController.cs` の `:57`、`:99`、`:411`、`:422`、`:451` で実際に呼ばれている（Phase7-Step2 の走査が、同名のメソッドと取り違えた可能性）。
+   - 実際に本体の呼び出しが 0 件なのは、次の 8 メンバー: `IActionBinding` の `OnReleased`／`OnTriggered`／`Outputs`、`IActionRegistry.GetBindingsForDevice`、`IControllerRegistry.GetControllersForDevice`、`IInputAction.Evaluate`、`ITrigger.Context`、`IOutputHandler.FakeKeyRepeat`。`IMacroPlayer.IsPlaying` は、テスト以外の呼び出しがない。
+   - 11 と書いた文書は、`IOutputHandler`（`FakeKeyRepeat`）が抜けていた。
+   - `Outputs` は同名の別物が多く、機械的な検出で確かめきれていない。Step1 で個別に確認する。
+3. **`IActionRegistry` の実装**: 「実装が静的クラス（`ActionRegistry`）」は誤り。`ActionRegistry`（`Actions/ActionRegistry.cs`）は `SpecialAction` の一覧を持つ**別物の静的クラス**で、`IActionRegistry` を実装していない。**`IActionRegistry` の実装クラスはリポジトリに存在しない**。§3 の「`Register`／`GetBindingsForDevice` は既存の形をそのまま使う」は、実装ゼロの前提で読むこと。
+4. **`KeyOutputAction` と `KeyInputAction`**:
+   - `KeyOutputAction` は「呼び出し元ゼロ」ではなく、`KeyActionBinding.cs:23` が生成している（`KeyAction.cs:64`、`91` が `KeyActionBinding` を作る）。正確には「`Execute`／`Stop` が一度も呼ばれない」。`KeyAction` に委譲せず `ActionManager.GetOrCreateControllerForAction` → `ctrl.Handle` を呼ぶ点（`KeyOutputAction.cs:33-36`）は、本書の記述どおり。
+   - `KeyInputAction`（`Actions/KeyInputAction.cs`）が `IInputAction` を実装している。ただし `Evaluate` は null を返すだけのプレースホルダー。§3 の「実装クラスが 1 つもない」は、「実質的な実装はない」と読む。
+5. **`ProfileActionChainService`**: 2026-10-14 の追記の「`ProfileActionChainService` の Profile 型チェーンのスキップ」は、**同クラスが削除済み**のため無効（モデル図 03・04 に「削除」と明記）。安全弁は、Fresh-press ガード（`ActionInstanceState.RequiresFreshPressAfterReset`、`FreshPressReleaseHoldMs`＝80ms）と `IsExecuting`（`.github/copilot-instructions.md` §2.2 の現行の記述）。チェーンの処理は、`Mapping.cs` の Profile 分岐の中（`DispatchOrSetBeingTriggered` を、同じ `controls` を持つ次のアクションに対して呼ぶ部分）にインラインで書かれている。
+6. **位置情報・行数**:
+   - `CheckForSpecialActionSuppression`: 「7848 行目」→ `Mapping.cs:6711`。
+   - `Mapping.cs`: 「8,600 行超」→ 7,602 行（2026-10-19 時点）。
+   - `DS4ControlSettings`: 「`ScpUtil.cs` 124 行目」→ `ScpUtil.cs` は存在せず、`DS4Control/DS4ControlSettings.cs:52`。
+   - 行番号は、着手時に再確認すること（`Mapping.cs` は今後も変わる）。
+7. **Phase7・7b・7c の影響**:
+   - `Mapping` は DI の Singleton の instance（`IMapping`、Phase7-Step8）。`IMapping` は 10 メンバー（Phase7b W1 で `CaptureProfileUntrigger`／`RestoreProfileUntrigger` を追加）。
+   - 静的 `ActionManager.ClearDeviceState` の本体（フォールバック）は、`IManagedActionManager` の登録により、本番では呼ばれない（先に `DefaultActionManager` へ委譲して戻る）。Phase7b W1 の退避・復元は、`DefaultActionManager` とフォールバックの二重になっている。統合時に片方へ寄せる。
+   - `ServiceProviderHolder` は `Actions/` の 17 件のみ（内訳: `ActionManager` 13／`ActionFactory` 1／`DefaultKeyButtonActionControllerFactory` 2／`KeyActionAdapter` 1）。台帳 §17.3 に載っていなかった `ActionManager.actionInstances`／`actions`（静的な可変辞書）も、統合時の整理対象。
+   - `KeyButtonActionController.cs:169`、`319` の `new RepeatHelperToIRepeaterAdapter` は DI を通っていない。注入化の対象。
+   - Stage3（Button の特殊アクション。Phase6-Step10-3d）の列挙競合は、Phase7c W1 で `ToArray()` による複製に変えた。読込側のリスト差し替え（`Clear()`→`Add()` の置き換え）は、本 Phase の `TriggerBinding`（読込時に 1 回だけ解決し、不変リストを差し替える設計）で解消する。
+8. **孤立コードの §2.4 判断**（Phase7c の Q4＝A。Step1 で行う）:
+   - 旧系統の孤立ヘルパー: `ReleasePolicy`、`ToggleController`、`MacroManager`、`SingleButtonTrigger`／`ITrigger`、`KeyInputAction`、`IActionRegistry`、`IOutputHandler`。
+   - 上流由来の死にコード: `DateTimeJsonConverter`、`InputMethods`、`FakerInputMapping` の `ExpandedKeyboardKeys`、`ToggleActionController`（`[Obsolete]` の殻）。
+   - `SensitivitySettings`: 製品コードの参照 0 件で、テストだけが使う。個別に判断。
+   - いずれも、統合ディスパッチの設計と合わせて「使うべきか」を判断し、判断と根拠を Step の計画書に記録する（規約 §2.4）。機能の削除に当たるものは承認が要る。
+9. **Step1 で書き足す特性化テスト**（Phase7c W2 から移した分。`Phase7c-Plan.md` §8）:
+   - `uTrigger`／`delayTime`／`pressRelease` と「Unload on trigger release」の通し復帰。
+   - 一時プロファイルのチェーンの条件（`uTrigger.Count == 0 && !automaticUntrigger`、`controls` 一致）。
+   - Controls タブの `shiftTrigger` と `MapCustom` の Key 出力。
+   - `ApplyProfile` 後の掃除の順序（`ClearAllEntries` → `ClearForDevice` → `ClearDeviceState` → `PreallocateForProfileApply`）。
+   - 既存の `ControlTabAndSpecialActionKeyTests.cs` の 2 本の Assert の補強。
+   - 既に固定済み（Phase7c W2）: Button の Press、AND 条件、抑制、Fresh-press、Profile／Program のブロック、Key の状態遷移、Stage3 の並行変更（`Phase7cW2SpecialActionTriggerCharacterizationTests`）。
+10. **現状の挙動で、設計時に注意する点**（Phase7c W2 の特性化で固定した事実）: Stage3 の Button の Press は Fresh-press ガードを見ない（Toggle の反転だけが見る）。統一経路に移すときは、この差を意図して維持するか、揃えるかを決めること。

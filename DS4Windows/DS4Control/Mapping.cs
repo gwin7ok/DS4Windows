@@ -32,6 +32,7 @@ using System.Diagnostics;
 // Phase6-Step3-Plan.md §1）が非修飾で呼ばれており本ディレクティブに依存するため、現時点では削除できない。
 // これ以外の Global 実利用箇所はすべて Global. 明示修飾（温存3件: ProfileSettingsServiceInstance／outputKBMHandler／ApplyProfile。
 // いずれも上記のTODO参照）または各DIサービス経由への置換で解消済み（Phase6-Step3-Plan.md §6 完了判定チェックリスト）。
+// 【Phase7c W3 追記】上記は Phase6 時点の記録。Phase7-Step10d で Global 型は削除済み（Global への参照は存在しない）。
 using System.Drawing; // Point struct
 using Sensorit.Base;
 using DS4WinWPF.DS4Control;
@@ -5745,7 +5746,8 @@ namespace DS4Windows
 
         private bool PlayMacroCodeValue(int device, bool[] macrocontrol, DS4KeyType keyType, int macroCodeValue, bool[] keydown)
         {
-            // TODO(Phase6-Step3-6c, 決定P2): 非同期マクロ経路（別スレッド、ctrl を持たない連鎖）のため、Mapping の静的 profileSettings から読む。Phase7 の instance 化（コンストラクタ注入）で解消する。
+            // Phase6-Step3-6c（決定P2）: 非同期マクロ経路（別スレッド、ctrl を持たない連鎖）のため、Mapping が保持する profileSettings から読む。
+            // Phase7-Step8 W2 で instance 化（コンストラクター注入）済み。この経路も instance の profileSettings を読む（Phase7c W3 でコメントを訂正）。
             bool doDelayOnCaller = false;
             if (macroCodeValue >= 261 && macroCodeValue <= DS4ControlSettings.MAX_MACRO_VALUE)
             {
@@ -5935,7 +5937,8 @@ namespace DS4Windows
 
         private void AltTabSwapping(int wait, int device)
         {
-            // TODO(Phase6-Step3-6c, 決定P2): 非同期マクロ経路（別スレッド、ctrl を持たない連鎖）のため、Mapping の静的 profileSettings から読む。Phase7 の instance 化（コンストラクタ注入）で解消する。
+            // Phase6-Step3-6c（決定P2）: 非同期マクロ経路（別スレッド、ctrl を持たない連鎖）のため、Mapping が保持する profileSettings から読む。
+            // Phase7-Step8 W2 で instance 化（コンストラクター注入）済み。この経路も instance の profileSettings を読む（Phase7c W3 でコメントを訂正）。
             if (altTabDone)
             {
                 altTabDone = false;
@@ -5958,7 +5961,8 @@ namespace DS4Windows
 
         private void AltTabSwappingRelease()
         {
-            // TODO(Phase6-Step3-6c, 決定P2): 非同期マクロ経路（別スレッド、ctrl を持たない連鎖）のため、Mapping の静的 profileSettings から読む。Phase7 の instance 化（コンストラクタ注入）で解消する。
+            // Phase6-Step3-6c（決定P2）: 非同期マクロ経路（別スレッド、ctrl を持たない連鎖）のため、Mapping が保持する profileSettings から読む。
+            // Phase7-Step8 W2 で instance 化（コンストラクター注入）済み。この経路も instance の profileSettings を読む（Phase7c W3 でコメントを訂正）。
             if (altTabNow < DateTime.UtcNow - TimeSpan.FromMilliseconds(10)) //in case multiple controls are mapped to alt+tab
             {
                 altTabDone = true;
@@ -5974,7 +5978,8 @@ namespace DS4Windows
         private void GetMouseWheelMapping(int device, DS4Controls control, DS4State cState,
             DS4StateExposed eState, Mouse tp, DS4StateFieldMapping fieldMap, bool down)
         {
-            // TODO(Phase6-Step3-6b, 決定P2): ctrl を持たない経路のため、Mapping の静的 profileSettings から読む。Phase7 の instance 化（コンストラクタ注入）で解消する。
+            // Phase6-Step3-6b（決定P2）: ctrl を持たない経路のため、Mapping が保持する profileSettings から読む。
+            // Phase7-Step8 W2 で instance 化（コンストラクター注入）済み（Phase7c W3 でコメントを訂正）。
             DateTime now = DateTime.UtcNow;
             if (now >= oldnow + TimeSpan.FromMilliseconds(10) && !pressagain)
             {
@@ -6560,7 +6565,7 @@ namespace DS4Windows
 
                 switch (control)
                 {
-                    // TODO(Phase6-Step3-6b, 決定P2): 呼び出し元が ctrl を持たないため静的 profileSettings から読む。Phase7 の instance 化で解消する。
+                    // Phase6-Step3-6b（決定P2）: 呼び出し元が ctrl を持たないため、Mapping が保持する profileSettings から読む。Phase7-Step8 W2 で instance 化済み（Phase7c W3 でコメントを訂正）。
                     case DS4Controls.GyroXPos: result = saControls ? profileSettings.SXSens[device] * -eState.AccelX > 67 : false; break;
                     case DS4Controls.GyroXNeg: result = saControls ? profileSettings.SXSens[device] * -eState.AccelX < -67 : false; break;
                     case DS4Controls.GyroZPos: result = saControls ? profileSettings.SZSens[device] * eState.AccelZ > 67 : false; break;

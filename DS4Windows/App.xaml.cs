@@ -136,11 +136,10 @@ namespace DS4WinWPF
                 catch { }
                 AppLogger.LogDebug($"ApplyLanguageSetting requested: {cultureCode}");
                 CultureInfo culture = CultureInfo.GetCultureInfo(cultureCode);
-                // TODO(Phase6-Step7 決定4＝K): 意図的に Global を直接使う。このメソッドは Post-Host だけでなく、
-                // Pre-Host の -driverinstall 分岐（CheckOptions。DI サービスのフィールドはまだ null）と、
-                // App の外（LanguagePackControl → ApplyLanguageSettingPublic）からも呼ばれる共用ヘルパーのため、
-                // DI 経由と Global 経由の二重経路を作らない。SetCulture はスレッドのカルチャを設定するだけの静的ユーティリティ。
-                // Global の解体（Phase7）で、言語設定の適用処理ごと整理する。
+                // 旧 TODO(Phase6-Step7 決定4＝K)（解消済み）: このメソッドは Post-Host だけでなく、Pre-Host の -driverinstall 分岐
+                // （CheckOptions。DI サービスのフィールドはまだ null）と、App の外（LanguagePackControl → ApplyLanguageSettingPublic）
+                // からも呼ばれる共用ヘルパーのため、DI 経由の二重経路を作らない。SetCulture はスレッドのカルチャを設定するだけの静的ユーティリティ。
+                // （Phase7c W3: 当時は Global を直接使っていた。Global は Phase7-Step10d で削除済みで、現在は Global を参照しない。）
                 // Phase7-Step10d W5: Global は削除した。ブートストラップの BackingStore（コンテナの Singleton と同一）へ書く。
                 _bootstrapBackingStore.useLang = cultureCode;
                 DS4Windows.UiCulture.Set(cultureCode);
@@ -699,10 +698,10 @@ namespace DS4WinWPF
                         "DS4Windows");
                 }
 
-                // TODO(Phase6-Step7 決定3＝P1): 意図的に Global へ直接書き込む。IPathService.AppDataPath のセッターは
-                // Global.appdatapath を変えない（PathService 内部の上書き用フィールドに保存するだけの孤立実装。呼出元0件）ため、
-                // 置き換え先にならない。セッターは Phase6-Step12 で削除候補とし、保存先の所有を PathService へ移す Phase7 で本行も解消する。
+                // 旧 TODO(Phase6-Step7 決定3＝P1)（解消済み。当時の経緯）: IPathService.AppDataPath のセッターは、保存先の状態を変えない孤立実装だったため、
+                // 置き換え先にならず、保存先の状態を直接書き換えていた。
                 // Phase7-Step4 W4: 保存先の所有を PathService へ移した。状態そのものを null に戻す（旧 Global.appdatapath = null と同じ）。
+                // （Phase7c W3: 本行の TODO は Phase7-Step4 W4 で解消済みのため、TODO 表記を外した。）
                 DS4Windows.PathService.AppDataPathState = null;
                 skipSave = true;
                 Current.Shutdown();

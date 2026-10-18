@@ -23,7 +23,7 @@
 
 - Phase7-0: 調査と Step 分割案（D1〜D6 承認）。
 - Step1: 整理と台帳の確定。孤立メソッド 10 名（396 行）の削除、K2 の是正、不具合 B（アプリ設定の DTO 読込の後処理の欠落）の是正、`ServiceProviderHolder` の追跡。
-- Step2: DI インターフェースの 0 件メンバー（49）の個別判断（削除 45／接続 3／温存 1。Phase8 へ 12）。
+- Step2: DI インターフェースの 0 件メンバー（49）の個別判断（削除 45／接続 3／温存 1。Phase8 へ 12）。 （【2026-10-19 訂正】「12」「11」は不一致。実際に本体の呼び出しが 0 件なのは 8 メンバー＋`IMacroPlayer.IsPlaying`［テスト以外の呼び出しなし］で、`IKeyController` の 3 つは未配線ではない。`Phase8-Unified-Trigger-Dispatch-Plan.md` の 2026-10-19 追記 §2 を正とする）
 - Step3・Step3c: `BackingStore` の DI 登録、`Global` の転送の削除（`AppSettingsService`、`ProfileRepository`、外観、自動プロファイルほか）。プロファイル適用・プリセット・イベントの移管（`ProfileApplicationService`、`ProfilePresetLoader`、`ProfileSlotApplier`）。
 - Step4: 起動・終了シーケンスの近代化。ViGEmBus／HidHide／FakerInput／OS の調べ物と状態を `EnvironmentService` へ、実行ファイル情報・保存場所を `PathService` へ。ブートストラップの `PathService`／`EnvironmentService`、`-driverinstall` の明示的なホスト構築（K7-1 の残存経路）、終了時の `AppHost.Dispose()`。
 - Step5: `Program.rootHub` の削除、Service Locator の削減（`IMainWindowFactory`、`IEditorWindowFactory.CreateProfileEditor`、`IElevatedProcessLauncher` の注入）。DS3 のジャイロトリガーの不具合（DI 移行による回帰）の修正。
@@ -70,7 +70,7 @@
 - **L2／R2 のデッドゾーンの仕様変更の要望**: 現行は「超えた点を 0% として引き伸ばす」（Phase6 完了時点・上流と同一）。要望は「超えたら押し込み量そのまま」。アンチデッドゾーンとの関係の整理が要る。
 
 ### 5.2 Phase8 へ
-- `Actions/` の `ServiceProviderHolder` 17 件、`Actions/` の未配線の抽象 11 メンバー（`IActionBinding`、`IKeyController`、`IActionRegistry`、`IControllerRegistry`、`IInputAction`、`IMacroPlayer`、`ITrigger`）、`Controls`／`SpecialActions` の統合ディスパッチ。
+- `Actions/` の `ServiceProviderHolder` 17 件、`Actions/` の未配線の抽象 11 メンバー（`IActionBinding`、`IKeyController`、`IActionRegistry`、`IControllerRegistry`、`IInputAction`、`IMacroPlayer`、`ITrigger`）、`Controls`／`SpecialActions` の統合ディスパッチ。 （【2026-10-19 訂正】「12」「11」は不一致。実際に本体の呼び出しが 0 件なのは 8 メンバー＋`IMacroPlayer.IsPlaying`［テスト以外の呼び出しなし］で、`IKeyController` の 3 つは未配線ではない。`Phase8-Unified-Trigger-Dispatch-Plan.md` の 2026-10-19 追記 §2 を正とする）
 - 第 1 層（`DS4Devices`／`DS4LightBar`／`HidDevices`）の静的な状態。静的な状態の目録は台帳 §17.3（起動前に必要な `PathService`／`EnvironmentService` の状態などは残す）。
 - 維持して `TODO(Phase8)` を付けたメンバー（`IAppSettingsService.SettingChanged`、`ISpecialActionRepository.ActionsChanged`、`IProfileSettingsService.UseTempProfileArray`）の接続。
 - `BackingStore` のフィールド群の分解、`Mapping` の依存 11・`MainWindow` の引数 18 の整理（台帳 §17.4）、K3（マクロの二重ガード）の恒久的な再設計。

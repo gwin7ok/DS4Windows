@@ -56,7 +56,7 @@
 - 実機確認 U-10: 偽の exe 名の保持は○。スキップしたバージョンは値の保持まで○（通知の抑制は U-7 とあわせて確認）。
 
 ### Phase7-Step2: DI インターフェースの 0 件メンバーの個別判断【完了（2026-10-17）】
-- 走査の結果、本体の呼び出しが 0 件のメンバーは 61。うち `Actions/` の未配線の抽象 11 は Phase8 へ移す。残り約 50 が対象。
+- 走査の結果、本体の呼び出しが 0 件のメンバーは 61。うち `Actions/` の未配線の抽象 11 は Phase8 へ移す。残り約 50 が対象。 （【2026-10-19 訂正】「12」「11」は不一致。実際に本体の呼び出しが 0 件なのは 8 メンバー＋`IMacroPlayer.IsPlaying`［テスト以外の呼び出しなし］で、`IKeyController` の 3 つは未配線ではない。`Phase8-Unified-Trigger-Dispatch-Plan.md` の 2026-10-19 追記 §2 を正とする）
 - 調査中に、`IDeviceStateService` の `SetDevice` に本体の呼び出しが無く、サービス内の配列が空のまま、`ConnectedControllersCount` などが常に 0 を返す構造であることを確認した（使うのは `ControllersViewModel.HasControllers` だけで、そのプロパティ自体の使用箇所が無い。実害は出ていない）。判断の詳細は `Phase7-Step2-Plan.md`。
 
 ### Phase7-Step3: `BackingStore` の DI 化と `Global` の転送の削除【完了（2026-10-17）】
@@ -121,7 +121,7 @@
 - **10b: 完了**。W1 表と変換（`X360ControlTables`／`DS4ControlNames`）、W2 アイコンの表・色の関数（`TrayIconResources`／`ColorUtil`）、W3 契約の整理（`OnSubPropertyChanged` ほか）、W4 `UsingMaxControllers` の接続と孤立定数、W5 文書。`Global.*` 107 → 93。詳細は `Phase7-Step10b-Completion-Report.md`。
 - **10c: 完了**。W1 ゴールデンテスト（11 ファイル）、W2 `Actions`／リンク／コントローラー設定、W3 アプリ設定（`AppSettingsXmlSerializer`）、W4 プロファイルの読込、W5 同 保存（`LegacyProfileXmlSerializer`）、W6 プリセット（`ProfilePresets`）、W7 文書。`BackingStore.cs` 6,522 → 1,660 行、`Global.*` 93 → 69。詳細は `Phase7-Step10c-Completion-Report.md`。
 - **10d: 完了**。W1 テストの移行（`TestGlobals`）、W2 環境・パスの窓口と定数（`AdminCheck`／`DevicePathProbe`／`ConfigFileCulture`）、W3 第 1 層の設定（`IDeviceLayerSettings`）、W4 アプリ層のイベントほか、W5（W6 込み）`BackingStore` のコンストラクター注入・ブートストラップ・`Global` の削除、W7 文書。`Global.*` 69 → 2（ログ文言の文字列のみ）、`Global.cs` を削除。詳細は `Phase7-Step10d-Completion-Report.md`。
-- **10e: 完了、総合検証 GO（2026-10-18）**。`Phase7-Step10e-Plan.md`（Q1〜Q10 推奨どおり承認。W4 は §4.1 の判断を承認）。W1・W2 `CURRENT_DS4_CONTROLLER_LIMIT` の削除（`IEnvironmentService.ControllerSlotLimit` の注入）、W3 `AppHost` の暗黙のホスト構築の廃止（`TestHost`）、W4 孤立コード・0 件メンバーの決着（削除: `ColorUtil` の 2 メンバー、`CheckWhen`、`SATriggerCond`、`IAutoProfileService.ClearState`、`IProfileRepository.GetProfilePath`。維持して TODO: `SettingChanged`、`ActionsChanged`、`UseTempProfileArray`）、W5 ラチェットの最終化（基準値と実数の一致の検査を追加）と静的な状態の目録、W6 文書（モデル図 01〜04、台帳 §17、チェックリスト §12・U-22）。`copilot-instructions.md` の更新（Q10。§2.1・§3.1）も承認を得て実施済み。総合検証（必須の 8 項目）は ○ 7、△ 1、× 0 で GO（チェックリスト §12.6）。残りは完了報告書の作成。
+- **10e: 完了、総合検証 GO（2026-10-18）**。`Phase7-Step10e-Plan.md`（Q1〜Q10 推奨どおり承認。W4 は §4.1 の判断を承認）。W1・W2 `CURRENT_DS4_CONTROLLER_LIMIT` の削除（`IEnvironmentService.ControllerSlotLimit` の注入）、W3 `AppHost` の暗黙のホスト構築の廃止（`TestHost`）、W4 孤立コード・0 件メンバーの決着（削除: `ColorUtil` の 2 メンバー、`CheckWhen`、`SATriggerCond`、`IAutoProfileService.ClearState`、`IProfileRepository.GetProfilePath`。維持して TODO: `SettingChanged`、`ActionsChanged`、`UseTempProfileArray`）、W5 ラチェットの最終化（基準値と実数の一致の検査を追加）と静的な状態の目録、W6 文書（モデル図 01〜04、台帳 §17、チェックリスト §12・U-22）。`copilot-instructions.md` の更新（Q10。§2.1・§3.1）も承認を得て実施済み。総合検証（必須の 8 項目）は ○ 7、△ 1、× 0 で GO（チェックリスト §12.6）。完了報告書は作成済み（`Phase7-Step10e-Completion-Report.md`、`Phase7-Completion-Report.md`。2026-10-19 に訂正）。
 
 ## 4. 実機確認の台帳（`Phase6-Step11-RealDevice-Verification-Checklist.md` §11）
 
@@ -141,11 +141,12 @@
 - 孤立定数 8 件（`BackingStore`）: Step10 の定数の再配置。
 - **既存の不具合: 「Unload on trigger release」で元のプロファイルに戻らない（2026-10-18、総合検証 T-6 で発見。未着手・要承認）**: プロファイル切替（一時プロファイル）の適用処理 `ProfileApplicationService.CompleteProfileApplication` が `ActionManager.ClearDeviceState` を呼び、`DefaultActionManager.ClearDeviceState` → `Mapping.HandleDeviceDisconnect` が `deviceRuntime[device]` を作り直すため、直前に `Mapping` が保存した `UntriggerAction`（復帰の合図）も消える。トリガーを離しても復帰の処理に入らない。ログに `SpecialAction UNTRIGGER check` が出ないことで確認。Phase6 完了時点（`1c97977f`）も同じ構造で、Phase7 の退行ではない（上流の元の実装は `ClearDeviceState` を呼ばず、復帰できていた）。是正案: 適用処理が `ClearDeviceState` を呼ぶ前後で、`UntriggerAction`／`UntriggerIndex` を `IMapping` 経由で退避・復元する。機能の是正のため、総合検証の後に別の計画書で扱い、承認を得て実装する。
 - **仕様変更の要望（2026-10-18、総合検証 T-4 で提起。解決: コードの変更なし）**: L2／R2 のデッドゾーンを、「超えた点を 0% として引き伸ばす」現行の計算（`Mapping.SetCurveAndDeadzone`。Phase6 完了時点・上流 2019 年と同一）ではなく、「デッドゾーン以下は 0、超えたら押し込み量そのままを出力」にしたい。アンチデッドゾーンとの関係（現行は出力の開始値になる）の整理が要る。Phase7 の範囲外（機能変更）のため、総合検証の後に別の計画書で扱う。【2026-10-18 追記】デッドゾーンとアンチデッドゾーンに同じ値を設定すれば、現行の Scaled のままで、「超えたら押し込み量そのまま」と実質同じ動作になる（最大ゾーン・最大出力は 1.00。誤差は整数の丸めによる約 ±1%）。Cutoff モードを一度実装したが、設計を単純に保つため取り下げた（`Phase7b-Plan.md` §10）。
-- Phase8 への申し送り: `Actions/` の `ServiceProviderHolder` 17 件、`Actions/` の未配線の抽象 11 メンバー（`IActionBinding`、`IKeyController`、`IActionRegistry`、`IControllerRegistry`、`IInputAction`、`IMacroPlayer`、`ITrigger`）。
+- Phase8 への申し送り: `Actions/` の `ServiceProviderHolder` 17 件、`Actions/` の未配線の抽象 11 メンバー（`IActionBinding`、`IKeyController`、`IActionRegistry`、`IControllerRegistry`、`IInputAction`、`IMacroPlayer`、`ITrigger`）。 （【2026-10-19 訂正】「12」「11」は不一致。実際に本体の呼び出しが 0 件なのは 8 メンバー＋`IMacroPlayer.IsPlaying`［テスト以外の呼び出しなし］で、`IKeyController` の 3 つは未配線ではない。`Phase8-Unified-Trigger-Dispatch-Plan.md` の 2026-10-19 追記 §2 を正とする）
 
 ## 6. 直近の次アクション
 
 1. 総合検証は完了（GO。`Phase6-Step11-RealDevice-Verification-Checklist.md` §12.6）。
 2. 完了報告書は作成済み（`Phase7-Step10e-Completion-Report.md`、`Phase7-Completion-Report.md`）。Phase7 の完了宣言は 2026-10-18 に済み（ユーザー承認）。
 3. **Phase7b は完了（一部先送り。2026-10-19。`Phase7b-Plan.md`、`Phase7b-Completion-Report.md`）**: 「Unload on trigger release」の復帰、K4-1、K7-2、L2／R2 のデッドゾーンの丸め誤差を是正（実機確認済み）。L2／R2 のデッドゾーンの Cutoff モードは取り下げ（同じ値の設定で実現）。K7b-1・K9-3 は先送り。次は Phase8（着手前に引き継ぎを取り込む）。
-4. 実機確認 U-11、U-12、U-13、U-14、U-15、U-16、U-17、U-18、U-19、U-20、U-21（任意のタイミング。U-14 は終了時のホスト破棄と初回起動の確認が中心）。
+4. 実機確認 U-11〜U-22（2026-10-19 に U-22 を追記。任意のタイミング。U-14 は終了時のホスト破棄と初回起動の確認が中心）。
+5. **Phase7c は実施中（2026-10-19。`Phase7c-Plan.md`）**: Phase8 の前に、Stage3 の列挙競合（`Collection was modified`）の是正（W1 完了）、`MapCustomAction` の特性化テスト（W2 前半完了。残りは Phase8 の Step1 へ）、文書とコメントの整合（W3 実施中）を行う。K7b-1 の切り分け手順の整理は W4（任意）。

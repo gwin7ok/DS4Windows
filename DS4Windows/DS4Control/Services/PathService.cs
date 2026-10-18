@@ -14,9 +14,9 @@ namespace DS4Windows
     /// それらを決める <see cref="FindConfigLocation()"/>／<see cref="SaveWhere"/>／空のプロファイル一覧の作成を、
     /// <c>Global</c> から本クラスへ移した。これらはプロセス全体で 1 つの状態（起動前の App、LoggerHolder、BackingStore、各サービスが
     /// 同じ値を見る）のため、<see cref="EnvironmentService"/> と同じく static な状態として持つ。インスタンスはどれを使っても
-    /// 同じ状態を読み書きする。下位層（BackingStore／LoggerHolder など）が静的に読む <c>Global.appdatapath</c>／<c>exedirpath</c>／
-    /// <c>exelocation</c>／<c>exeversion</c> は、本クラスの状態を指す読み書きの窓口として <c>Global</c> に残す
-    /// （TODO(Phase7-Step10): BackingStore の永続化を切り出すときに、下位層へ <see cref="IPathService"/> を注入して窓口を廃止する）。
+    /// 同じ状態を読み書きする。下位層（BackingStore／LoggerHolder など）が静的に読んでいた <c>Global.appdatapath</c>／<c>exedirpath</c>／
+    /// <c>exelocation</c>／<c>exeversion</c> の窓口は、Phase7-Step10d で <c>Global</c> ごと削除済み
+    /// （下位層は、本クラスの <c>*State</c> の静的な状態、または注入された <see cref="IPathService"/> を読む。Phase7c W3 でコメントを訂正）。
     /// 静的初期化の循環を作らないため、本クラスの static 初期化は <c>Global</c> を参照しない（回帰ガード: Phase7Step4PathServiceGuardTests）。
     /// </summary>
     public class PathService : IPathService

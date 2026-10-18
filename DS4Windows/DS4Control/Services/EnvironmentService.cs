@@ -25,7 +25,7 @@ namespace DS4Windows
     {
         // 読み取り専用のシステム状態プローブ／実行時操作であり、永続化設定ではない。
         // 管理者権限・書き込み権限・実行ファイルのバージョン・デバイスパスの変換は、他の層（BackingStore／Util／DS4Devices）も
-        // 静的に呼ぶため Global に残している（TODO(Phase7-Step4 W3／Step10): パスの所有の移管と、下位層への注入で解消する）。
+        // 静的に呼ぶ。以前は Global に残していたが、Global は Phase7-Step10d で削除済み（AdminCheck／DevicePathProbe ほかへ再配置。Phase7c W3 でコメントを訂正）。
         public bool IsAdministrator() => AdminCheck.IsAdministrator();
 
         public string ApplicationVersion => PathService.ExecutableVersionState;
@@ -96,8 +96,10 @@ namespace DS4Windows
 
         // ---- Phase6-Step2-1b (決定O2=C): コントローラースロット上限 ----
         // 旧 ControlService.CURRENT_DS4_CONTROLLER_LIMIT の計算（純粋な OS 判定＋ビルド定義）をここへ移設した。
-        // TODO(技術的負債): ControlService の static 互換シム（CURRENT_DS4_CONTROLLER_LIMIT / USING_MAX_CONTROLLERS）が
-        // 本値を共有するため static のまま保持している。互換シム撤去後（Phase6-Step12）はインスタンスフィールドへ戻す。
+        // 技術的負債: 以前は ControlService の static 互換シム（CURRENT_DS4_CONTROLLER_LIMIT / USING_MAX_CONTROLLERS）が
+        // 本値を共有するため static だった。シムは Phase7-Step10e W2 で削除済みで、現在の参照は ControllerSlotLimit のみ。
+        // static のまま残してあり（Phase7c W3 の調査時点）、インスタンスフィールドへ戻すかは Phase8 以降で判断する
+        // （EnvironmentServiceStaticInitGuardTests が静的初期化の形を固定している）。
         internal static readonly int ProcessControllerSlotLimit = CalculateControllerSlotLimit();
 
         public int ControllerSlotLimit => ProcessControllerSlotLimit;

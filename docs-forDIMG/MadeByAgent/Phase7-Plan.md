@@ -26,7 +26,7 @@
 - 既存の課題: K2（完了）、不具合 B（完了）、K3（マクロの二重ガード。`Mapping` の instance 化の中で再設計の要否を判断）。
 
 ### 0.3 スコープに含まないもの
-- Phase8（Controls／SpecialActions の統合ディスパッチ）。`Actions/` の `ServiceProviderHolder`（17）と、`Actions/` の未配線の抽象（11 メンバー）は、Phase8 の台帳へ移す。
+- Phase8（Controls／SpecialActions の統合ディスパッチ）。`Actions/` の `ServiceProviderHolder`（17）と、`Actions/` の未配線の抽象（11 メンバー）は、Phase8 の台帳へ移す。 （【2026-10-19 訂正】「12」「11」は不一致。実際に本体の呼び出しが 0 件なのは 8 メンバー＋`IMacroPlayer.IsPlaying`［テスト以外の呼び出しなし］で、`IKeyController` の 3 つは未配線ではない。`Phase8-Unified-Trigger-Dispatch-Plan.md` の 2026-10-19 追記 §2 を正とする）
 - 実機で確認できない項目（U-1〜U-7）の解消。
 - 保存形式の統一の拡大（D4＝F1）: アプリ設定ほか 4 ファイルは DTO のまま。プロファイルは旧形式。
 - `BackingStore` のフィールド群のドメインエンティティへの分解（D2＝(i)。Step10 で範囲を再評価）。

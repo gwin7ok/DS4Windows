@@ -46,7 +46,7 @@
 - **U-11（実アプリでの確認）**: 起動→接続→メイン画面→出力スロット画面の Plug／Unplug（チェックリスト §11 に記録済み。未）。
 - 接続の実装: `UsingMaxControllers`（Step10）、`ReEnableDevice`（Step4）、`Load/SaveOutputSlots`（Step5）、`IUdpServerService`（Step5 以降の別計画書）。温存の判断: `OutputSlotChanged`（Step6）。
 - Step10 で再判断: `ProfileSubSettingBase.OnSubPropertyChanged`（購読者がいなくなった）、`ProfileApplicationService` の未使用の依存 `IDeviceStateService`。
-- Phase8 へ: `Actions/` の未配線の抽象 12 メンバーと Service Locator 17 件（`Phase8-Unified-Trigger-Dispatch-Plan.md` に追記済み）。
+- Phase8 へ: `Actions/` の未配線の抽象 12 メンバーと Service Locator 17 件（`Phase8-Unified-Trigger-Dispatch-Plan.md` に追記済み）。 （【2026-10-19 訂正】「12」「11」は不一致。実際に本体の呼び出しが 0 件なのは 8 メンバー＋`IMacroPlayer.IsPlaying`［テスト以外の呼び出しなし］で、`IKeyController` の 3 つは未配線ではない。`Phase8-Unified-Trigger-Dispatch-Plan.md` の 2026-10-19 追記 §2 を正とする）
 
 ## 6. 次の Step
 

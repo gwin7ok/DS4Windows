@@ -35,7 +35,7 @@
 - 削除した DI 契約のメンバー: 51（`Phase7-Step2-Plan.md` §2・§8。ガード: `Phase7Step2RemovedContractMembersGuardTests`）。
 - 「使うべきだが未接続」として TODO 付きで残した契約: `IEnvironmentService.UsingMaxControllers`（接続予定 Step10）、`IDs4DeviceRegistry.ReEnableDevice`（Step4）、`IOutputSlotService.LoadOutputSlots`／`SaveOutputSlots`（Step5）。温存: `IOutputSlotService.OutputSlotChanged`（Step6 で再判断）。
 - 承認待ちの追加候補（Step2 計画書 §8 W6）: `IUdpServerService` 契約全体（未接続。接続を推奨）、`ISpecialActionRepository.GetAction`／`ActionExists`／`SaveActions`、`IPathService.ActionsPath`、`IDs4DeviceRegistry.IsHidHideInstalled`、`IProfileSettingsService.RumbleAutostopTime`、`IVirtualKBM.Version`（削除を推奨）。
-- Phase8 へ移管: `Actions/` の未配線の抽象 12 メンバー（`Phase8-Unified-Trigger-Dispatch-Plan.md` に追記済み）。
+- Phase8 へ移管: `Actions/` の未配線の抽象 12 メンバー（`Phase8-Unified-Trigger-Dispatch-Plan.md` に追記済み）。 （【2026-10-19 訂正】「12」「11」は不一致。実際に本体の呼び出しが 0 件なのは 8 メンバー＋`IMacroPlayer.IsPlaying`［テスト以外の呼び出しなし］で、`IKeyController` の 3 つは未配線ではない。`Phase8-Unified-Trigger-Dispatch-Plan.md` の 2026-10-19 追記 §2 を正とする）
 - Step10 で再判断: `ProfileSubSettingBase.OnSubPropertyChanged`（購読者がいなくなった）、`ProfileApplicationService` の未使用の依存 `IDeviceStateService`。
 
 ## 5. Phase7-Step3 で更新した台帳（2026-10-17）
@@ -187,7 +187,7 @@
 - 持ち越し（10e）: `ControlService.CURRENT_DS4_CONTROLLER_LIMIT`（画面・サービスの分）、`AppHost` の暗黙のホスト構築と `CreationNote`、`PathService`／`EnvironmentService` の静的な状態、`ServiceRegistration._subscribedReset`、`ColorUtil` の孤立コード、総合検証。
 - 実機確認: **U-21**（起動直後のログ設定、言語・テーマ、バッテリー表示、Moonlight、デバウンス、ライトバー、`-driverinstall`。新設・未）。
 
-## 17. Phase7-Step10e で更新した台帳（2026-10-18。W1〜W5 時点。W6 で文書の最終化を追記する）
+## 17. Phase7-Step10e で更新した台帳（2026-10-18。W1〜W5 時点。W6 の文書の最終化は §17.5 に記録済み。2026-10-19 に訂正）
 
 ### 17.1 実施した内容
 - **W1・W2**: 静的な `ControlService.CURRENT_DS4_CONTROLLER_LIMIT` を削除し、スロット数の上限を注入された `IEnvironmentService.ControllerSlotLimit` に替えた（サービス・シリアライザー・DTO・画面・ViewModel）。`OutputSlotManager` は上限をコンストラクターの整数で受ける。`EnvironmentService.ProcessControllerSlotLimit`（OS 判定の純粋な計算）は残した。
@@ -210,7 +210,7 @@
 - **B. 第 1 層（デバイス管理）の静的な状態。Phase8 以降**:
   - `DS4Devices`（`Devices`／`serialDevices`／`deviceSerials`／`DevicePaths`／`DisabledDevices`／デリゲート／`LayerSettings`／`isExclusiveMode`）、`DS4LightBar` の配列（`counters`／`fadewatches`／`forcelight` ほか）、`HidDevices`、`vJoyFeeder`／`VJoy`。
   - 理由: 複数のスレッドと複数のクラスが静的に共有する。注入に替えるには第 1 層の再設計が要る（Phase8 の候補）。
-- **C. Actions サブシステム。Phase8**: `ActionRegistry`（`actions`／`initialized`）、`ActionManager.ToggledOnChanged`、`RepeatHelperToIRepeaterAdapter.RepeaterFactoryOverride`、`SyntheticDispatcher.bound`（Actions が静的に呼ぶ橋渡し）。`ServiceProviderHolder` の 17 件と同じ持ち越し。
+- **C. Actions サブシステム。Phase8**: `ActionRegistry`（`actions`／`initialized`）、`ActionManager` の静的な辞書 `actionInstances`／`actions`（`private static readonly` だが中身は可変。2026-10-19 に追記。走査が `readonly` を除いたため落ちていた）、`ActionManager.ToggledOnChanged`、`RepeatHelperToIRepeaterAdapter.RepeaterFactoryOverride`、`SyntheticDispatcher.bound`（Actions が静的に呼ぶ橋渡し）。`ServiceProviderHolder` の 17 件と同じ持ち越し。
 - **D. 実質不変の表・定数（可変の宣言だが、実行中に書き換えない）。解消しない**: `DS4ControlNames`／`X360ControlTables`／`MacroParser`／`Mapping` の表、`TrayIconResources.iconChoiceResources`、`BezierCurve` の定数、`Crc32Algorithm`、`HidLibrary/NativeMethods` のキー、`JoyConDevice`／`SwitchProDevice` の表、`DS4OutDeviceFactory`／`OutputSlotManager` の最小バージョン、`Util` の GUID、`LightbarDS4WinInfo.DEFAULT_CUSTOM_LED`。
 - **E. 画面の状態。解消しない（窓口が静的なのが自然なもの）**: `ProfileNotificationWindow.currentWindow`／`closeCts`、`RecordBoxViewModel.KeydownOverrides`、`MainWindow.ProcessPriorityClasses`、`MacroStepItem.imageSources`、`Changelog` の最新バージョンのキャッシュ、`AppNotificationRegistration` のリフレクションのキャッシュ、`StartupMethods.lnkpath`、`Properties/Settings`。
 - 判断: Phase7 の目標（`Global` の削除、Service Locator の削減、`BackingStore` の注入）は達成した。上記 B・C の静的な状態は、Phase8 の計画の入力とする。

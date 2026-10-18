@@ -4,7 +4,7 @@
 対象ブランチ: `For-DI-migration-work`  
 上位: `Phase7-Completion-Report.md` §5、`Phase7b-Completion-Report.md` §5、`Phase8-Unified-Trigger-Dispatch-Plan.md`  
 発端: Phase8 着手前の全体レビュー（2026-10-19。コード健全性・文書整合・テストの穴の並行調査）  
-状態: **計画確定（Q1〜Q6 を推奨どおり承認。2026-10-19）。実装は未着手**
+状態: **実施中（2026-10-19）。W1 完了、W2 前半完了［残りは Phase8 の Step1 へ。§8］、W3 実施中**。Q1〜Q6 は推奨どおり承認
 
 ---
 
@@ -74,7 +74,7 @@
 - `DI-App-Wide-Migration-Plan.md`: §6.8 の「進行中」、§6.8.2 の項目 5〜7、§6.9.4 と §9.3 の Phase7b 是正済み項目（Unload、デッドゾーン）、K4-1／K7-2／K7b-1／K9-3 の記述。
 - `Phase7-Status.md`: §3 の 10e の「残りは完了報告書の作成」、§6 項目 4 の U-22 の欠落、§1 の記録列の空欄。
 - `Phase7-Residual-Ledger.md`: §17.3 C に `ActionManager.actionInstances`／`actions`（静的な可変辞書）を追記。
-- `Phase6-Step11-RealDevice-Verification-Checklist.md`: U-23 の後ろの空の `U-18` 行を `U-24` に改める。§12 の U 番号の範囲（U-11〜U-21／U-14〜U-22）の整理。先送り項目の結果欄への反映。T-14 の連続使用時間の記述（30 分／短縮版／10 分）の整理。
+- `Phase6-Step11-RealDevice-Verification-Checklist.md`: U-23 の後ろの空の `U-18` 行を `U-26` に改める（実施済み）。§12 の U 番号の範囲（U-11〜U-21／U-14〜U-22）の整理。先送り項目の結果欄への反映。T-14 の連続使用時間の記述（30 分／短縮版／10 分）の整理。
 - 古い TODO コメントの訂正（動作は変えない。既存コメントの設計意図は消さない）:
   - `Mapping.cs:34`、`5744`、`5934`、`5957`、`5973`、`6559`
   - `App.xaml.cs:139`、`702-704`
@@ -95,7 +95,7 @@
 
 ### W5: 完了報告書
 
-- `Phase7c-Completion-Report.md`、`Phase7-Status.md` への Phase7c の追記、チェックリストの U-25（Stage3 の競合の実機確認）の追加。
+- `Phase7c-Completion-Report.md`、`Phase7-Status.md` への Phase7c の追記、チェックリストの U-24（Stage3 の競合の実機確認）の追加。
 
 ## 4. 起動順序・スレッド・ガードレールへの影響
 
@@ -122,3 +122,20 @@
 ## 7. 次の Step
 
 - Phase7c の完了後、Phase8 の Step1（詳細監査。孤立コードの §2.4 判断記録を含む）へ進む。
+
+---
+
+## 8. 進捗と計画の変更（2026-10-19 追記）
+
+- **W1: 完了**（ビルド・テストビルド・テスト実行は成功。ユーザーが実行）。`Mapping.cs` の Stage3 と、プロファイル切替のチェーン処理を `ToArray()` による複製に変えた。構造ガード `Phase7cW1Stage3ProfileActionsSnapshotGuardTests`。
+- **W2: 前半を完了**（同上）。実走行ハーネス `SpecialActionTestScope`、特性化テスト `Phase7cW2SpecialActionTriggerCharacterizationTests`（16 件）。
+  - 固定済み: Button の Press の出力、トリガーの AND 条件、抑制の追加と解除、Fresh-press ガードの解除条件、Profile／Program のブロック、Key の Press／Toggle の状態遷移、Stage3 の並行変更への耐性。
+  - 実行中に判明した、テストの実行順への依存（`Phase7bTriggerDeadZoneRoundingTests` が `pack://` の URI で失敗）は、`ProfileSettingsViewModelTestFactory` の静的初期化で `Application` を作ることで解消した。
+- **計画の変更（ユーザー承認、2026-10-19）**: W2 の次の 4 項目は、実際の `ProfileApplicationService` と `Task.Run` を通すため重く、Phase8 の設計と一緒に扱うほうが自然なので、**Phase8 の Step1（詳細監査）へ移す**。
+  1. `uTrigger`／`delayTime`／`pressRelease` と、「Unload on trigger release」の通し復帰（`Mapping.cs:5361`、`ClearDeviceState` をまたぐ）。
+  2. 一時プロファイルのチェーンの条件（`Mapping.cs:4650-4660` 付近、`uTrigger.Count == 0 && !automaticUntrigger`、`controls` 一致）。
+  3. Controls タブの `shiftTrigger`（`Mapping.cs:2216`、`3759`、`3776`）と、`MapCustom` の Key 出力。
+  4. `ApplyProfile` 後の掃除の順序（`ProfileApplicationService.cs:259-265`）。
+  - あわせて、`ControlTabAndSpecialActionKeyTests.cs` の 2 本の Assert の補強（`MockVirtualKBM` の押下・解放の回数）も、実際の挙動を確かめながら行う必要があるため、Phase8 の Step1 へ移す。
+  - Phase8 の Step1 は、これらを特性化テストとして書き足してから、Step3 以降に進む（Phase8 計画書 §6 の最初のリスク対応と同じ扱い）。
+- **W3: 実施中**。完了条件（§6）の W2 の項目は、上記の変更に合わせて「前半の 16 件が成功」とする。
