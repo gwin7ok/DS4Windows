@@ -1,7 +1,7 @@
 # フェーズ8 進捗管理文書: Controls／SpecialActions の統一トリガーディスパッチ
 
 最終更新日: 2026-10-19  
-状態: **Step1 実施中（W1 完了）**。Phase7・7b・7c は完了。実機確認 U-24（Phase7c W1）は確認済み（2026-10-19）  
+状態: **Step1 完了（2026-10-19）。次は Step2（詳細設計）の計画書**。Phase7・7b・7c は完了。実機確認 U-24（Phase7c W1）は確認済み（2026-10-19）  
 計画書: `Phase8-Unified-Trigger-Dispatch-Plan.md`（D1〜D5 確定。2026-10-19 追記は事実誤認の訂正）。Step1: `Phase8-Step1-Plan.md`
 
 ---
@@ -10,7 +10,7 @@
 
 | Step | 内容 | 状態 | 記録 |
 |---|---|---|---|
-| Step1 | 詳細監査（トリガー判定の棚卸し、特性化テストの完成、孤立コードの判断、静的な窓口の洗い出し） | **実施中**（Q1〜Q6 を推奨どおり承認、2026-10-19）。W1 完了 | `Phase8-Step1-Plan.md`、`Phase8-Step1-Trigger-Spec-Ledger.md` |
+| Step1 | 詳細監査（トリガー判定の棚卸し、特性化テストの完成、孤立コードの判断、静的な窓口の洗い出し） | **完了**（2026-10-19。実機確認 W2b-5 は未） | `Phase8-Step1-Plan.md`、`Phase8-Step1-Completion-Report.md` |
 | Step2 | 詳細設計（メンバー確定、`KeyOutputAction` の委譲設計、モデル図の更新案） | 未着手 | - |
 | Step3 | トリガー条件クラス（`ComboTriggerInputAction`）の新設・単体テスト、`KeyOutputAction` の書き直し | 未着手 | - |
 | Step4 | SpecialActions の複雑なケース（組み合わせ・デバウンス・抑制）への拡張 | 未着手 | - |
@@ -28,8 +28,8 @@
 - **W2b: 「デバイス上限が 4 前提」の箇所の是正**— **完了（ビルド・テスト成功。2026-10-19）。実機確認 W2b-5 は未**。A-1（`nowAction`／`oldnowAction`）と B-1（出力スロットの復元）を是正。`Phase8-Step1-SlotLimit-Fix-Plan.md`。
 - W3: B-5・B-6 — **完了（ビルド・テスト成功。2026-10-19）**。`ControlTabAndSpecialActionKeyTests` の Press／Toggle に Assert を補強（Press: 押下で 1 回押し、離して 1 回解放。Toggle: トグル OFF で解放）、`Phase8Step1MacroBranchCharacterizationTests`（ガード中は不実行、成立・保持・解除、RunOnRelease の準備→離して実行）。
 - W4: 孤立コードの調査と判断案（`Phase8-Step1-Orphan-Decisions.md`）— **判断案を提示済み（承認待ち。2026-10-19）**。重要な発見: `IProfileSwitcher.ClearState`／`ClearPendingRestore`（Phase5-Step3 の「切断時スタック残留防止」）は、契約だけ配備され、本番の呼び出しが 0 件。
-- W5: 判断の実施（承認された分）— **実施済み（ビルド・テスト待ち。2026-10-19）**。削除: `IOutputHandler`、`ReleasePolicy`、`ToggleController`、`MacroManager`、`ToggleActionController`、`DateTimeJsonConverter`、`InputMethods`、`Sensitivity`、`FakerInputMapping.ExpandedKeyboardKeys`、`IProfileSwitcher.ApplyManualProfile`（実装、モック 2 か所を含む）。TODO 追加: 系統 A の骨組み、`ClearState`、`ITouchpadBehaviour`、`SensitivitySettings`、`IMacroPlayer.IsPlaying`、`KeyInputAction`／`ITrigger`／`SingleButtonTrigger`（Step3 で削除）。静的な窓口の一覧、Step2 への論点は未着手（D・E）。
-- W6: 完了報告書 — 未着手。
+- W5: 判断の実施（承認された分）— **実施済み（ビルド・テスト待ち。2026-10-19）**。削除: `IOutputHandler`、`ReleasePolicy`、`ToggleController`、`MacroManager`、`ToggleActionController`、`DateTimeJsonConverter`、`InputMethods`、`Sensitivity`、`FakerInputMapping.ExpandedKeyboardKeys`、`IProfileSwitcher.ApplyManualProfile`（実装、モック 2 か所を含む）。TODO 追加: 系統 A の骨組み、`ClearState`、`ITouchpadBehaviour`、`SensitivitySettings`、`IMacroPlayer.IsPlaying`、`KeyInputAction`／`ITrigger`／`SingleButtonTrigger`（Step3 で削除）。静的な窓口の一覧と Step2 への論点は `Phase8-Step1-Static-Access-Inventory.md`（2026-10-19）。
+- W6: 完了報告書 — **作成済み（`Phase8-Step1-Completion-Report.md`、2026-10-19）**。
 
 ## 3. 決定事項（Step1。2026-10-19）
 
