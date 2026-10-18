@@ -88,25 +88,26 @@ namespace DS4WindowsTests
         {
             using var t = new SpecialActionTestScope();
             t.AddButtonPress("L1/R1");
-            HashSet<DS4Controls> suppressed = t.Mapping.suppressedTriggerButtons[t.Device];
-            Assert.NotNull(suppressed);
+            // Phase8-Step4 W4: 抑制の集合はエンジンの所有。IsSuppressed で観測する
+            bool Suppressed(DS4Controls control) => t.Engine.IsSuppressed(t.Device, control);
 
             DS4State both = SpecialActionTestScope.Neutral();
             both.L1 = true;
             both.R1 = true;
             t.RunFrame(both);
-            Assert.Contains(DS4Controls.L1, suppressed);
-            Assert.Contains(DS4Controls.R1, suppressed);
+            Assert.True(Suppressed(DS4Controls.L1));
+            Assert.True(Suppressed(DS4Controls.R1));
 
             // R1 を離す: 冒頭の解除パスが、離されたボタンだけを個別に外す
             DS4State onlyL1 = SpecialActionTestScope.Neutral();
             onlyL1.L1 = true;
             t.RunFrame(onlyL1);
-            Assert.Contains(DS4Controls.L1, suppressed);
-            Assert.DoesNotContain(DS4Controls.R1, suppressed);
+            Assert.True(Suppressed(DS4Controls.L1));
+            Assert.False(Suppressed(DS4Controls.R1));
 
             t.RunFrame(SpecialActionTestScope.Neutral());
-            Assert.Empty(suppressed);
+            Assert.False(Suppressed(DS4Controls.L1));
+            Assert.False(Suppressed(DS4Controls.R1));
         }
 
         // ---- Fresh-press ガードの解除（トリガーが FreshPressReleaseHoldMs 連続して未成立になるまで） ----

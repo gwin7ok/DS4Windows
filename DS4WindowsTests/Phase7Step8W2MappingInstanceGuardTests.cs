@@ -82,7 +82,7 @@ namespace DS4WindowsTests
         {
             ConstructorInfo ctor = typeof(Mapping).GetConstructors().Single();
             ParameterInfo[] parameters = ctor.GetParameters();
-            Assert.Equal(11, parameters.Length); // Phase7-Step8 W3: ISyntheticDispatcher を追加
+            Assert.Equal(12, parameters.Length); // Phase7-Step8 W3: ISyntheticDispatcher を追加。Phase8-Step4 W4: ITriggerDispatchEngine を追加
 
             // 実 DI ホストの部品で 1 つずつ null にして、ArgumentNullException になることを確認する
             var valid = new object[]
@@ -96,6 +96,7 @@ namespace DS4WindowsTests
                 TestHost.GetService<IProfileSwitcher>(),
                 TestHost.GetService<ISyntheticDispatcher>(),
                 new Func<IDeviceStateAccessor>(() => null),
+                TestHost.GetService<ITriggerDispatchEngine>(),
             };
 
             for (int i = 0; i < valid.Length; i++)

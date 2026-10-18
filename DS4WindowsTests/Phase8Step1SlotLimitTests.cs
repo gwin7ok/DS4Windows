@@ -28,8 +28,9 @@ namespace DS4WindowsTests
             Assert.NotNull(mapping);
             string[] perDevice =
             {
-                "nowAction", "oldnowAction", "oldnowKeyAct", "held", "fadetimer", "prevFadetimer", "lastColor",
-                "deviceRuntime", "suppressedTriggerButtons", "customMapQueue",
+                // Phase8-Step4 W4: nowAction／oldnowAction／suppressedTriggerButtons は、_triggerInputs（Delay）とエンジンへ移した
+                "_triggerInputs", "_frameOutputs", "oldnowKeyAct", "held", "fadetimer", "prevFadetimer", "lastColor",
+                "deviceRuntime", "customMapQueue",
             };
 
             foreach (string name in perDevice)
@@ -99,8 +100,7 @@ namespace DS4WindowsTests
 
         private static void ResetDelayClock(SpecialActionTestScope t)
         {
-            t.Mapping.nowAction[t.Device] = DateTime.MinValue;
-            t.Mapping.oldnowAction[t.Device] = DateTime.MinValue;
+            t.Delay.Reset();
         }
 
         [Theory]

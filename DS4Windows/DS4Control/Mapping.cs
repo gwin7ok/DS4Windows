@@ -171,7 +171,8 @@ namespace DS4Windows
             DS4Windows.Actions.IProcessLauncher processLauncher,
             DS4Windows.Actions.IProfileSwitcher profileSwitcher,
             DS4Windows.DI.ISyntheticDispatcher syntheticDispatcher,
-            Func<IDeviceStateAccessor> deviceStateAccessor)
+            Func<IDeviceStateAccessor> deviceStateAccessor,
+            DS4Windows.Actions.ITriggerDispatchEngine triggerEngine)
         {
             _syntheticInput = syntheticInput ?? throw new ArgumentNullException(nameof(syntheticInput));
             _macroRuntime = macroRuntime ?? throw new ArgumentNullException(nameof(macroRuntime));
@@ -184,6 +185,15 @@ namespace DS4Windows
             _profileSwitcher = profileSwitcher ?? throw new ArgumentNullException(nameof(profileSwitcher));
             _syntheticDispatcher = syntheticDispatcher ?? throw new ArgumentNullException(nameof(syntheticDispatcher));
             _deviceStateAccessor = deviceStateAccessor ?? throw new ArgumentNullException(nameof(deviceStateAccessor));
+            _engine = triggerEngine ?? throw new ArgumentNullException(nameof(triggerEngine));
+
+            _triggerInputs = new DS4Windows.Actions.TriggerInput[ControllerLimits.MaxControllerCount];
+            _frameOutputs = new DS4Windows.Actions.FrameOutput[ControllerLimits.MaxControllerCount];
+            for (int device = 0; device < _triggerInputs.Length; device++)
+            {
+                _triggerInputs[device] = new DS4Windows.Actions.TriggerInput(device, profileSettings);
+                _frameOutputs[device] = new DS4Windows.Actions.FrameOutput();
+            }
 
             syncStateLock = syntheticInput.SyncStateLock;
             deviceState = syntheticInput.DeviceState;
@@ -520,16 +530,16 @@ namespace DS4Windows
             new DeviceRuntimeState(), new DeviceRuntimeState(), new DeviceRuntimeState(), new DeviceRuntimeState()
         };
 
-        // Issue8-1(3)是正: トリガー成立時に抑制対象となった物理ボタンのうち、
-        // まだ「離される」ことを観測していないものの集合（デバイスごと）。
-        // ここに含まれる間は、当該ボタン自身の通常出力（デフォルト信号／通常マッピング／KBM／機能）を抑制し続ける。
-        // トリガー全体の成立/解除（いずれか1つが離れたら解除）とは独立に、ボタン単位で管理する。
-        // 詳細: docs-forDIMG/MadeByAgent/Phase5-Step14-Issue8-1-3-Fix-Plan.md §2.1
-        public HashSet<DS4Controls>[] suppressedTriggerButtons = new HashSet<DS4Controls>[ControllerLimits.MaxControllerCount]
-        {
-            new HashSet<DS4Controls>(), new HashSet<DS4Controls>(), new HashSet<DS4Controls>(), new HashSet<DS4Controls>(),
-            new HashSet<DS4Controls>(), new HashSet<DS4Controls>(), new HashSet<DS4Controls>(), new HashSet<DS4Controls>()
-        };
+        // Phase8-Step4 W4: 抑制の集合（旧 suppressedTriggerButtons。Issue8-1(3)是正: トリガー成立時に抑制対象となった物理ボタンのうち、まだ「離される」ことを
+        // 観測していないものの集合）の所有を、エンジン（ITriggerDispatchEngine）に一本化した。ここに含まれる間は、当該ボタン自身の通常出力を抑制し続ける
+        // （トリガー全体の成立/解除とは独立に、ボタン単位で管理する。詳細: docs-forDIMG/MadeByAgent/Phase5-Step14-Issue8-1-3-Fix-Plan.md §2.1）。
+        // 新旧の経路が別々の集合を持つと、通常の割り当ての抑制が食い違うため（Phase8-Step2-Design.md §23.3）。
+        private readonly DS4Windows.Actions.ITriggerDispatchEngine _engine;
+
+        // Phase8-Step4 W4: デバイスごとのトリガー判定の入力（毎フレーム MapCustom の先頭で更新する）と、フレームの出力への書き込み口。
+        // 遅延の基準時刻（旧 nowAction／oldnowAction）は、_triggerInputs[device].Delay に置き換わった。
+        private readonly DS4Windows.Actions.TriggerInput[] _triggerInputs;
+        private readonly DS4Windows.Actions.FrameOutput[] _frameOutputs;
 
         // Cache of previous input-level 'established' state per (actionIndex, device).
         // Mapping will use this to detect input-edge (rise/fall) and only call DispatchTriggerEdge when input changed.
@@ -692,10 +702,8 @@ namespace DS4Windows
             catch { }
             return true;
         }
-        // Phase8-Step1 W2b（A-1）: 上流の 2015 年（4 台の時代）の初期化子 { MinValue x4 } のままで、8 スロット化（2020 年）で更新が漏れていた。
-        // デバイス 4〜7 で delayTime のアクションが IndexOutOfRangeException になっていた。DateTime の既定値は MinValue。
-        public DateTime[] nowAction = new DateTime[ControllerLimits.MaxControllerCount];
-        public DateTime[] oldnowAction = new DateTime[ControllerLimits.MaxControllerCount];
+        // Phase8-Step4 W4: 旧 nowAction／oldnowAction（delayTime の共有の基準時刻）は、_triggerInputs[device].Delay（Now／Old）に置き換えた。
+        // （Phase8-Step1 W2b［A-1］で、4 要素だった配列を 8 要素に是正したもの。DelayClock の初期値も MinValue）
         // legacy `untriggerindex` removed; use `deviceRuntime[device].UntriggerIndex`
         public DateTime[] oldnowKeyAct = new DateTime[ControllerLimits.MaxControllerCount] { DateTime.MinValue,
             DateTime.MinValue, DateTime.MinValue, DateTime.MinValue, DateTime.MinValue, DateTime.MinValue, DateTime.MinValue, DateTime.MinValue };
@@ -2291,6 +2299,9 @@ namespace DS4Windows
             fieldMapping.PopulateFieldMapping(cState, eState, tp);
             DS4StateFieldMapping outputfieldMapping = outputFieldMappings[device];
             outputfieldMapping.PopulateFieldMapping(cState, eState, tp);
+            // Phase8-Step4 W4: トリガー判定の入力と、フレームの出力の書き込み口を、このフレームの表に合わせる（割り当て 0）
+            _triggerInputs[device].Update(cState, null, eState, tp, fieldMapping);
+            _frameOutputs[device].Bind(outputfieldMapping, this.deviceState[device]);
             //DS4StateFieldMapping fieldMapping = new DS4StateFieldMapping(cState, eState, tp);
             //DS4StateFieldMapping outputfieldMapping = new DS4StateFieldMapping(cState, eState, tp);
 
@@ -2690,6 +2701,8 @@ namespace DS4Windows
                         SpecialAction sa = ctrl.ProfileActionProvider.GetProfileAction(device, actionname);
                         if (sa == null) continue;
                         if (sa.typeID != SpecialAction.ActionTypeId.Button) continue;
+                        // Phase8-Step4 W4: 移行済みの種別は、エンジンの ApplyFrameOutputs が毎フレームの出力を担う（既定は空＝ここは素通し）
+                        if (_engine.Owns(device, sa)) continue;
 
                         string key = device + ":" + actionname;
                         bool prevState = false;
@@ -2830,6 +2843,10 @@ namespace DS4Windows
             {
                 AppLogger.LogToGui($"Synchronous Button SA handling error: {ex}", true);
             }
+
+            // Phase8-Step4 W4: 移行済みの種別（既定は空）の毎フレームの出力。Stage3 の直後（通常の割り当ての後）の位置を保つ
+            try { _engine.ApplyFrameOutputs(device, _triggerInputs[device], _frameOutputs[device]); }
+            catch (Exception ex) { AppLogger.LogToGui($"Synchronous Button SA handling error: {ex}", true); }
 
             outputfieldMapping.PopulateState(MappedState);
 
@@ -4263,23 +4280,10 @@ namespace DS4Windows
                 // Issue8-1(3)是正: 抑制中のボタンのうち、実際に離されたものを解除する（デバイスにつき1回）。
                 // トリガー全体の成立/解除（triggeractivated）とは独立に、ボタン単位で判定する。
                 // 詳細: docs-forDIMG/MadeByAgent/Phase5-Step14-Issue8-1-3-Fix-Plan.md §2.3
+                // （Phase8-Step4 W4: 集合の所有はエンジン。解除の判定は、従来の getBoolSpecialActionMapping と同じ意味の TriggerInput.IsActive）
                 try
                 {
-                    var currentlySuppressedSet = suppressedTriggerButtons[device];
-                    if (currentlySuppressedSet != null && currentlySuppressedSet.Count > 0)
-                    {
-                        // 列挙中の変更を避けるためコピーしてから判定する
-                        DS4Controls[] currentlySuppressed = new DS4Controls[currentlySuppressedSet.Count];
-                        currentlySuppressedSet.CopyTo(currentlySuppressed);
-                        for (int i = 0; i < currentlySuppressed.Length; i++)
-                        {
-                            DS4Controls suppressedControl = currentlySuppressed[i];
-                            if (!getBoolSpecialActionMapping(device, suppressedControl, cState, eState, tp, fieldMapping))
-                            {
-                                currentlySuppressedSet.Remove(suppressedControl);
-                            }
-                        }
-                    }
+                    _engine.ReleaseSuppressed(device, _triggerInputs[device]);
                 }
                 catch { }
 
@@ -4303,6 +4307,16 @@ namespace DS4Windows
 
                     if (action == null)
                     {
+                        continue;
+                    }
+
+                    // Phase8-Step4 W4: 移行済みの種別で束縛が登録されているアクションは、エンジンに任せる（既定は空＝ここは素通し）。
+                    // 旧ループの中のこの位置で処理するので、プロファイル内のアクションの順序は変わらない。
+                    if (_engine.Owns(device, action))
+                    {
+                        if (_engine.ProcessOwned(device, action, _triggerInputs[device], _frameOutputs[device]) == DS4Windows.Actions.FrameResult.EndFrame)
+                            return;
+
                         continue;
                     }
 
@@ -4331,12 +4345,13 @@ namespace DS4Windows
                             if (subtriggeractivated)
                             {
                                 time = action.delayTime;
-                                nowAction[device] = DateTime.UtcNow;
-                                if (nowAction[device] >= oldnowAction[device] + TimeSpan.FromSeconds(time))
+                                DS4Windows.Actions.DelayClock delay = _triggerInputs[device].Delay;
+                                delay.Now = DateTime.UtcNow;
+                                if (delay.Now >= delay.Old + TimeSpan.FromSeconds(time))
                                     triggeractivated = true;
                             }
-                            else if (nowAction[device] < DateTime.UtcNow - TimeSpan.FromMilliseconds(100) + TimeSpan.FromMilliseconds(profileSettings.DebouncingMs[device]))
-                                oldnowAction[device] = DateTime.UtcNow;
+                            else if (_triggerInputs[device].Delay.Now < DateTime.UtcNow - TimeSpan.FromMilliseconds(100) + TimeSpan.FromMilliseconds(profileSettings.DebouncingMs[device]))
+                                _triggerInputs[device].Delay.Old = DateTime.UtcNow;
                         }
                         else if (triggerToBeTapped && oldnowKeyAct[device] == DateTime.MinValue)
                         {
@@ -4463,14 +4478,7 @@ namespace DS4Windows
                             // 詳細: docs-forDIMG/MadeByAgent/Phase5-Step14-Issue8-1-3-Fix-Plan.md §2.2
                             try
                             {
-                                var suppressSet = suppressedTriggerButtons[device];
-                                if (suppressSet != null)
-                                {
-                                    for (int __si = 0, __salen = action.trigger.Count; __si < __salen; __si++)
-                                    {
-                                        suppressSet.Add(action.trigger[__si]);
-                                    }
-                                }
+                                _engine.AddSuppressed(device, action.trigger);
                             }
                             catch { }
 
@@ -6673,7 +6681,8 @@ namespace DS4Windows
                 if (subtriggeractivated)
                 {
                     DateTime now = DateTime.UtcNow;
-                    if (nowAction[device] >= oldnowAction[device] + TimeSpan.FromSeconds(action.delayTime))
+                    DS4Windows.Actions.DelayClock delay = _triggerInputs[device].Delay;
+                    if (delay.Now >= delay.Old + TimeSpan.FromSeconds(action.delayTime))
                         triggeractivated = true;
                 }
             }
@@ -6724,13 +6733,12 @@ namespace DS4Windows
         {
             // Issue8-1(3)是正: 「現在トリガーが成立しているか」（IsSpecialActionTriggeredの都度再計算）ではなく、
             // 「このボタンが、いずれかのトリガー成立によりまだ抑制継続中か」を判定する。
-            // 判定に必要な状態は suppressedTriggerButtons（MapCustomAction内で更新）で管理される。
+            // 判定に必要な状態は、エンジンが所有する抑制の集合（MapCustomAction内で更新。Phase8-Step4 W4 で Mapping から移した）で管理される。
             // これにより、トリガー成立中にPS等の一部ボタンだけ先に離されても、
             // まだ押され続けているボタン（例: L2）自身の通常出力は、L2が実際に離されるまで抑制され続ける
             // （旧実装は triggeractivated、すなわちいずれか1つでも離れた瞬間に抑制ごと解除されてしまっていた）。
             // 詳細: docs-forDIMG/MadeByAgent/Phase5-Step14-Issue8-1-3-Fix-Plan.md §2.4
-            var suppressSet = suppressedTriggerButtons[device];
-            return suppressSet != null && suppressSet.Contains(control);
+            return _engine.IsSuppressed(device, control);
         }
 
         private bool getBoolSpecialActionMapping(int device, DS4Controls control,

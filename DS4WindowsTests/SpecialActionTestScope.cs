@@ -28,6 +28,20 @@ namespace DS4WindowsTests
         public MappingCharacterizationScope Scope => _inner;
         public Mapping Mapping { get; }
 
+        /// <summary>Phase8-Step4 W4: ホストの <c>Mapping</c> が使うエンジン（抑制の集合の所有者）。</summary>
+        public DS4Windows.Actions.ITriggerDispatchEngine Engine { get; } = TestHost.GetService<DS4Windows.Actions.ITriggerDispatchEngine>();
+
+        /// <summary>Phase8-Step4 W4: このデバイスの遅延の基準時刻（旧 <c>Mapping.nowAction</c>／<c>oldnowAction</c>）。</summary>
+        public DS4Windows.Actions.DelayClock Delay
+        {
+            get
+            {
+                var field = typeof(Mapping).GetField("_triggerInputs", System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.NonPublic);
+                var inputs = (DS4Windows.Actions.TriggerInput[])field.GetValue(Mapping);
+                return inputs[Device].Delay;
+            }
+        }
+
         /// <summary>デバイスのプロファイルのアクション名の一覧（実体。<c>Mapping</c> が生で読む <c>List&lt;string&gt;</c> と同一）。</summary>
         public List<string> ProfileActionNames => _store.profileActions[Device];
 
@@ -46,7 +60,7 @@ namespace DS4WindowsTests
             _store.profileActionDict[Device].Clear();
             _store.profileActionIndexDict[Device].Clear();
             _store.profileActionCount[Device] = 0;
-            Mapping.suppressedTriggerButtons[Device]?.Clear();
+            Engine.OnDeviceDisconnected(Device); // 抑制の集合を空にする（旧: suppressedTriggerButtons のクリア）
         }
 
         /// <summary>特殊アクションを 1 件登録する（<c>BackingStore.actions</c> の末尾に足し、その添字をプロファイル側の索引にする）。</summary>
@@ -124,7 +138,7 @@ namespace DS4WindowsTests
             if (_switcherField != null)
                 _switcherField.SetValue(_switcherInstance, _savedProfileApp);
 
-            Mapping.suppressedTriggerButtons[Device]?.Clear();
+            Engine.OnDeviceDisconnected(Device); // 抑制の集合を空にする（旧: suppressedTriggerButtons のクリア）
             Mapping.deviceRuntime[Device].UntriggerAction = null;
             Mapping.deviceRuntime[Device].UntriggerIndex = -1;
 

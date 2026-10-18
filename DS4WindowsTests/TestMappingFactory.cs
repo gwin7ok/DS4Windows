@@ -30,24 +30,30 @@ namespace DS4WindowsTests
             MacroRuntimeState macroRuntime = null,
             StickMotionState stickMotion = null,
             IVirtualKBM virtualKbm = null,
-            ISyntheticDispatcher syntheticDispatcher = null)
+            ISyntheticDispatcher syntheticDispatcher = null,
+            ITriggerDispatchEngine engine = null)
         {
             DS4WinWPF.AppHost.CreateHost();
             var synthetic = syntheticInput ?? new SyntheticInputState();
             var profileSettings = settings ?? TestHost.GetService<IProfileSettingsService>();
+            var kbm = virtualKbm ?? TestHost.GetService<IVirtualKBM>();
+            // Phase8-Step4 W4: 抑制の集合を持つエンジンも、独立の instance にする（他のテストと状態を共有しない。ホストの登録簿・移行スイッチは使わない）
+            var triggerEngine = engine ?? new TriggerDispatchEngine(new ActionBindingRegistry(),
+                TestHost.GetService<IManagedActionManager>(), new BindingMigrationOptions(), kbm);
             return new Mapping(
                 synthetic,
                 macroRuntime ?? new MacroRuntimeState(),
                 stickMotion ?? new StickMotionState(),
                 profileSettings,
                 TestHost.GetService<IProfileApplicationService>(),
-                virtualKbm ?? TestHost.GetService<IVirtualKBM>(),
+                kbm,
                 TestHost.GetService<IKeyButtonControllerRegistry>(),
                 TestHost.GetService<IProcessLauncher>(),
                 TestHost.GetService<IProfileSwitcher>(),
                 // 独立の合成状態（synthetic）に対して送出する、独立の送出役（出力先の既定はホストのアダプター）
                 syntheticDispatcher ?? new SyntheticDispatcherService(synthetic, TestHost.GetService<OutputKBMHandlerAdapter>(), profileSettings),
-                () => TestHost.GetService<IDeviceStateAccessor>());
+                () => TestHost.GetService<IDeviceStateAccessor>(),
+                triggerEngine);
         }
     }
 }

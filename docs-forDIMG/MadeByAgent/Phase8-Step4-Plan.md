@@ -3,7 +3,7 @@
 作成日: 2026-10-19  
 対象ブランチ: `For-DI-migration-work`  
 上位: `Phase8-Unified-Trigger-Dispatch-Plan.md`（§5 Step4）、`Phase8-Step2-Design.md`（§5、§9、§14〜§17、§22〜§23）、`Phase8-Step3-Completion-Report.md` §5  
-状態: **実施中（Q1〜Q8 を推奨どおり承認、2026-10-19）。W1・W2 完了、W3 実装済み［ビルド・テスト待ち］**
+状態: **実施中（Q1〜Q8 を推奨どおり承認、2026-10-19）。W1〜W3 完了、W4 実装済み［ビルド・テスト待ち］**
 
 ---
 
