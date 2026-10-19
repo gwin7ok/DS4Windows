@@ -100,7 +100,7 @@ namespace DS4WindowsTests
             if (path == null) return;
 
             string body = MethodBody(File.ReadAllText(path), "private void PrepareConnectedInputControllerSettingEvents(");
-            int first = body.IndexOf("IsFirstConnection(index)", StringComparison.Ordinal);
+            int first = body.IndexOf("IsFirstConnection(index, connectedMac)", StringComparison.Ordinal);
             int older = body.IndexOf("profileToApply = _profileRepository.OlderProfilePath[index];", StringComparison.Ordinal);
             int selected = body.IndexOf("profileToApply = _profileRepository.SelectedProfile[index];", StringComparison.Ordinal);
             Assert.True(first >= 0 && older > first && selected > older, "初回接続は OlderProfilePath、再接続は SelectedProfile");

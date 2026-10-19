@@ -288,6 +288,8 @@ namespace DS4Windows
             this._outputSlotServiceFactory = outputSlotServiceFactory ?? throw new ArgumentNullException(nameof(outputSlotServiceFactory));
             this._profileRepository = profileRepository ?? throw new ArgumentNullException(nameof(profileRepository));
             this._deviceStateService = deviceStateService ?? throw new ArgumentNullException(nameof(deviceStateService));
+            // 適用のたびに、そのスロットのコントローラー（MAC）に、適用したプロファイルを記憶する（再接続で使う）
+            this._profileRepository.SelectedProfileChanged += RememberAppliedProfile;
             this._profileXmlStore = profileXmlStore ?? throw new ArgumentNullException(nameof(profileXmlStore));
             this._profileSlotApplier = profileSlotApplier ?? throw new ArgumentNullException(nameof(profileSlotApplier));
             this._virtualKBM = virtualKBM ?? throw new ArgumentNullException(nameof(virtualKBM));
@@ -2208,14 +2210,19 @@ namespace DS4Windows
             bool profileLoaded = false;
             bool useAutoProfile = _profileSettings.GetUseTempProfile(index);
 
-            DS4Windows.AppLogger.LogDebug($"PrepareConnectedInputController: device={index}, useAutoProfile={useAutoProfile}, isFirstConnection={_deviceStateService.IsFirstConnection(index)}");
+            // 「初回接続か」「直前のプロファイル」は、スロット番号ではなくコントローラー（MAC）ごとに判定する
+            // （別のコントローラーが空いたスロットに入っても、そのコントローラーにとっては初回。Reconnect-Profile-PerController-Fix-Plan.md）。
+            // 有効なシリアルがない（MAC が使えない）ときは、従来のスロット単位。
+            string connectedMac = device.isValidSerial() ? device.getMacAddress() : null;
+
+            DS4Windows.AppLogger.LogDebug($"PrepareConnectedInputController: device={index}, useAutoProfile={useAutoProfile}, isFirstConnection={_deviceStateService.IsFirstConnection(index, connectedMac)}");
 
             if (!useAutoProfile)
             {
                 // ===== プロファイル選択ロジック =====
                 string profileToApply;
 
-                if (_deviceStateService.IsFirstConnection(index))
+                if (_deviceStateService.IsFirstConnection(index, connectedMac))
                 {
                     // 初回接続: LinkedProfiles.xmlまたはOlderProfilePathからプロファイルを選択
                     DS4Windows.AppLogger.LogDebug($"FIRST CONNECTION detected for device {index}");
@@ -2233,17 +2240,20 @@ namespace DS4Windows
                         DS4Windows.AppLogger.LogDebug($"Using OLDER profile: '{profileToApply}' for device {index}");
                     }
 
-                    _deviceStateService.MarkConnected(index); // 初回接続完了マーク
+                    _deviceStateService.MarkConnected(index, connectedMac); // 初回接続完了マーク
                 }
                 else
                 {
-                    // 再接続: 既存のSelectedProfileを使用
-                    profileToApply = _profileRepository.SelectedProfile[index];
+                    // 再接続: そのコントローラーが直前に適用していたプロファイル。記憶がなければ、既存のSelectedProfile（スロット）を使用
+                    profileToApply = _deviceStateService.GetRememberedProfile(connectedMac);
+                    if (string.IsNullOrWhiteSpace(profileToApply))
+                        profileToApply = _profileRepository.SelectedProfile[index];
                     DS4Windows.AppLogger.LogDebug($"RECONNECTION detected for device {index}, using existing profile: '{profileToApply}'");
                 }
 
                 // ===== 共通処理: プロファイル設定とUI状態の更新 =====
                 _profileRepository.SelectedProfile[index] = profileToApply;
+                _deviceStateService.RememberProfile(connectedMac, profileToApply);   // このコントローラーの「直前のプロファイル」（適用のたびにも更新する）
 
                 // LinkedProfiles.xmlの状態を確認してLinkedProfileUIとlinkedProfileCheckを設定
                 if (device.isValidSerial() && _profileRepository.ContainsLinkedProfile(device.getMacAddress()))
@@ -2623,6 +2633,26 @@ namespace DS4Windows
             }
             else
                 return DS4WinWPF.Properties.Resources.NA;
+        }
+
+        // プロファイルを適用したとき（SelectedProfileChanged は、適用のたびに発火する）、そのスロットのコントローラーに、適用したプロファイルを記憶する。
+        // 再接続（同じコントローラー）のとき、切断前のプロファイルを適用するため（Reconnect-Profile-PerController-Fix-Plan.md）。適用のスレッドから呼ばれる。
+        private void RememberAppliedProfile(object sender, SelectedProfileChangedEventArgs e)
+        {
+            try
+            {
+                int slot = e.DeviceIndex;
+                if (slot < 0 || slot >= DS4Controllers.Length) return;
+
+                DS4Device device = DS4Controllers[slot];
+                if (device == null || !device.isValidSerial()) return;
+
+                _deviceStateService.RememberProfile(device.getMacAddress(), e.ProfileName);
+            }
+            catch
+            {
+                // 記憶できなくても、適用を止めない（再接続は、スロットの SelectedProfile に戻る）
+            }
         }
 
         protected void On_SerialChange(object sender, EventArgs e)
