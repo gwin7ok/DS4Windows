@@ -400,3 +400,17 @@ Step7 の 7.6 は、これで 4 種別（GyroCalibrate、DisconnectBT、BatteryC
 - **残る旧経路**: Button の割り当て（Button＋Extras を含む）は、7.8f まで旧経路。旧経路の Extras の枝（`held`、`extrasRumbleActive`）は Step8 で削除する。そのとき、Button＋Extras の押したままの適用・切断の残りも、新経路に入ることで直る。
 - **追加・変更したテスト**: `Phase8Step78eW1ControlsExtrasCharacterizationTests`（旧・新の両経路）、`Phase8Step78eW2ControlsExtrasTests`、`ControlsKeyTestScope`（Extras の観察窓口、`PublishControlsOnly`）、`RecordingControlExtrasPort`。Lightbar マクロのテストは、廃止に伴い削除した。ゴールデンの状態ファイル 5 つから `LightbarMacro` 関連の 2 項目を削除した。
 - **実機確認（Step9。U-44）**: 振動・ライトバー・感度、Key／Macro との併用、Extras だけのボタン、2 つ同時、押したままの適用・切断、編集画面のライトバーの設定、色の指定が実際に光ること。
+
+## 7.8f-1 Controls タブの Button（パッド）（2026-10-20。W0〜W2 完了。ビルド・テスト成功。実機確認は Step9 の U-45）
+
+計画書: `Phase8-Step7-8f-Plan.md`（Q1〜Q7 を承認済み。Q5＝B、他は推奨。Q8［Toggle］＝A）。7.8f は 3 つの PR に分ける（7.8f-1 パッド、7.8f-2 マウスのボタン・ホイール［デジタル］・Toggle、7.8f-3 アナログのホイール・マウスの移動）。
+
+- **対象**: Button の割り当てのうち、X360 の軸・トリガー・ボタンへの出力、Unbound／None（消すだけ）、軸の Default の素通し。Toggle つき、マウス・ホイール・タッチパッドクリックは旧経路のまま。
+- **W1**: `Phase8Step78fW1ControlsPadCharacterizationTests`（旧経路の特性化。ビルド・テスト成功）。
+- **W2**: `IAnalogTriggerInput`（軸の値・バイト値）、`IPadFrameOutput`、`IEvaluatedFrameOutputAction`（評価されたフレームだけ出力する契約）、`ControlPadOutputAction`、`ControlPassthroughOutputAction`、ビルダーの `TryInterpretPad`、区分 `ButtonPad`（`Button` を置き換え）を追加。ビルド・テスト成功（§5.3）。
+- **承認済みの動作変更**: 出力先がパッドのボタンのとき、ジャイロの判定を SA の判定に揃える（閾値だけの変更。Q3＝A）。
+- **7.8e の見落としの是正**: Default の軸に Extras があり反対側が割り当て済みのとき、素通しが走らなくなっていた。`ButtonPad` が有効なときは素通しの束縛を足し、無効なときは旧経路に任せる。
+- **ロールバック**: `ServiceRegistration` の `ButtonPad` の 1 行を外す。
+- **テスト**: `Phase8Step78fW2ControlsPadTests`。初回に 7 件失敗したが、原因はテストの後始末の不備（共有ストアに Extras を残した）で、製品コードは正しかった。
+- **残る旧経路**: マウス・ホイール・タッチパッドクリック・Toggle（7.8f-2）、アナログのホイール・マウスの移動・ジャイロスワイプ（7.8f-3）。旧経路の Button の枝と `customMapQueue` は Step8 で削除する。
+- **実機確認（Step9。U-45）**: ボタン→ボタン、スティックの向き→ボタン、ボタン→スティック・トリガー、Unbound、スティックの片側だけ割り当てたときの反対側、Extras との併用。
