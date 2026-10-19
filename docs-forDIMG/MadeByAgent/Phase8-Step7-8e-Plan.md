@@ -3,7 +3,7 @@
 作成日: 2026-10-20  
 対象ブランチ: `For-DI-migration-work`  
 上位: `Phase8-Step2b-ControlsTab-Design.md`（§3.3 の C・D、§10。Q5＝A［ポート方式］、Q8＝B［実機確認は Step9］、Q9＝A［値渡し］）、`Phase8-Step7-8a-Plan.md`（土台）、`Phase8-Step7-8b-Plan.md`（Key）、`Phase8-Step7-8c-Plan.md`（Macro）、`Phase8-Step7-8d-Plan.md`（シフトの廃止）、`Phase8-Step7-6-Plan.md`（ポート方式の前例）  
-状態: **Q1〜Q6 を承認済み（2026-10-20。ユーザー。Q1・Q2・Q5＝A、Q3＝B、Q4＝C、Q6＝B。§6）。W0（調査）完了［§5.1］。次は W1（旧経路の特性化テスト）。コードは未着手**
+状態: **Q1〜Q6 を承認済み（2026-10-20。ユーザー。Q1・Q2・Q5＝A、Q3＝B、Q4＝C、Q6＝B。§6）。W0（調査）完了［§5.1］。W1（旧経路の特性化テスト）を実装済み［ビルド・テストの結果待ち。§5.2］。W1 の調査で、旧経路の不具合の疑いが 2 件見つかった［§5.2。Q7・Q8 の承認待ち］。製品コードは未着手**
 
 ---
 
@@ -116,6 +116,13 @@ Controls タブの「Extras」（振動・ライトバーの強制色と点滅�
 5. **Lightbar マクロの保存形**: `LightbarMacro`（`DS4WinWPF.DS4Forms.ViewModels`）は、`Active`、`Macro`（色＋長さ ms の要素の列）、`Trigger`（Press／Release）、`CancelCurrent`。プロファイルの文字列は `True/255,255,255:100;255,0,0:50;/Press/False`。ビルダーは、`Active` のとき、要素を配列に写して値にする（`LightbarMacroBindingValues`）。
 6. **ついでに分かったこと**: 旧経路の Lightbar マクロの判定は、毎フレーム、リフレクション（`typeof(DS4State).GetField(…)`）で値を引く（割り当てが生じる）。新経路は、表で引き、割り当てを増やさない。
 
+### 5.2 W1 の実装と発見（2026-10-20。ビルド・テストの結果待ち）
+
+- テスト基盤: `ControlsKeyTestScope` に `MapExtras`、`SetLightbarMacro`、観察窓口（`ForceLight`／`ForcedColor`／`ForcedFlash`／`RumbleActive`／`MouseInfo`）、`ResetExtrasObservables`（静的配列・感度・振動の記録・旧 `held` を、テストの前後で初期化）を足した。`TestDs4Device.SetRawStates`（デバイスの生の前回・現在の状態を設定）、`LightbarHarness`（生の状態を流す土台）を新設。
+- テスト: `Phase8Step78eW1ControlsExtrasCharacterizationTests`（押下で振動・強制色・点滅・感度が出る、離すと戻る、振動 0、ライトバー無効でも離すと強制が解除される、感度は一時の感度がないときだけ、毎フレーム適用、スティック扇形と L2 の 0 超、**2 つ同時は両方を離すまで戻らない**［旧経路の癖。W2 で Q3＝B により期待値を分ける］、Default＋Extras は通常の出力を消さない、Key＋Extras、有効な Lightbar マクロがあると Extras のライトバーは出ない、数値でない欄は 0、9 個未満は途中で止まる、**押したままの適用で効果が残る**［W2 で Q6＝B により期待値を分ける］、切断の記録）。`Phase8Step78eW1ControlsLightbarMacroCharacterizationTests`（Press／Release の変化で始まる、押し続けても再開しない、`CancelCurrent` の有無、`BoolDS4Controls` 以外では動かない、デバイスの生の状態で判定する）。
+- **発見 1（不具合の疑い。Extras のライトバー）**: 旧経路の条件 `extras[2] == 1 && (!dcs.LightbarMacro?.Active ?? false)` は、`dcs.LightbarMacro` が **null だと偽**になる（`!` は `bool?` に対して null を返し、`?? false` で偽）。`LightbarMacro` は、`LightbarMacroString` が空でないときだけ作られる。→ **Lightbar マクロを作っていない通常の割り当てでは、Extras の「ライトバーの強制色・点滅」は効かない**（振動と感度は効く）。意図は「Lightbar マクロが有効なときだけ譲る」と読める。テスト: `WithoutALightbarMacroObject_TheExtrasLightbarIsNeverForced_ALegacyQuirk`。
+- **発見 2（Lightbar マクロは保存されない）**: `LightbarMacroString` を書くのは、編集画面の `OutBinding`（メモリ上の設定）だけで、**プロファイル XML の読込・保存の対象ではない**（読み書きするコードがない）。編集画面で作っても、保存して適用（ファイルから読み直し）すると消えると思われる（実機の確認は Q8 の前に推奨）。
+
 ## 6. 質問と決定
 
 承認: **2026-10-20（ユーザー）。Q1・Q2・Q5＝A（推奨）、Q3＝B、Q4＝C、Q6＝B。**
@@ -127,10 +134,15 @@ Controls タブの「Extras」（振動・ライトバーの強制色と点滅�
 - **Q5（ポート）【承認: A】**: `IControlExtrasPort` を 1 つと、`ILightbarMacroPort`。
 - **Q6（押したままの適用・切断）【承認: B。W1 の実測を待たずに決定】**: 適用・切断のときに元に戻す（§3.2 の `IResettableOutputAction`）。旧経路が処理する割り当て（Button＋Extras）は対象外で、7.8f で直る。
 
+### 6.1 W1 で見つかった質問（承認待ち）
+
+- **Q7（Extras のライトバー。発見 1）**: A: 旧経路の動きを再現する（`LightbarMacro` が null の割り当てでは、ライトバーを強制しない。つまり効かないまま）。B（推奨）: 直す（Lightbar マクロが有効でないときは、ライトバーを強制する。編集画面に項目があり、意図は明らか）。動作変更なので承認が要る。旧経路で処理する割り当て（Button＋Extras）は、7.8f まで効かないまま。
+- **Q8（Lightbar マクロ。発見 2）**: A: 予定どおり新経路に移す（保存されないので、実際には編集中のメモリ上でしか動かない）。B（推奨）: 機能を廃止する（規約 2.2 の廃止の承認が要る。編集画面の「Lightbar マクロを作る」、`OutBinding`／`LightbarMacro*` の部品、`Mapping` の枝、`DS4ControlSettings` の欄。保存されないため、利用者のデータは失われない）。移行の範囲が小さくなり、`LightbarMacro` のスイッチ、ポート、生の状態の判定の追加が不要になる。C: 保存・読込を足して直す（範囲外。別の Step）。実機で、編集画面で作った Lightbar マクロが、保存して適用したあとも残るかの確認を推奨。
+
 ## 7. 完了条件
 
 - [x] Q1〜Q6 をユーザーが承認（2026-10-20）。W0 の結果を追記（§5.1）。
-- [ ] W1 の実測値を追記。
+- [ ] W1 のビルド・テストが成功。Q7・Q8 の承認。
 - [ ] ビルド・テストが成功（ユーザーが実行）。割り当て（新 ≦ 旧）、ロールバック、全ガード（1 ファイル 1 型、ラチェットの一致検査）。
 - [ ] 実機確認は Step9（U-44）。
 - [ ] `Phase8-Step7-Completion-Report.md`、`Phase8-Status.md`、`Phase8-Step2b-ControlsTab-Design.md` の更新。
