@@ -386,7 +386,7 @@ Step7 の 7.6 は、これで 4 種別（GyroCalibrate、DisconnectBT、BatteryC
 
 ---
 
-## 7.8e Controls タブの Extras と Lightbar マクロ（2026-10-20。W2 まで完了［ビルド・テスト成功］。W3 も完了［ビルド・テスト成功］。実機確認は Step9 の U-44）
+## 7.8e Controls タブの Extras と Lightbar マクロ（2026-10-20。W0〜W5 完了。ビルド・テスト成功。実機確認は Step9 の U-44）
 
 計画書: `Phase8-Step7-8e-Plan.md`（Q1〜Q8 を承認済み。Q3＝B、Q4＝C［Q8 により不要］、Q6＝B、Q7＝B、Q8＝B、他は推奨）。
 
@@ -396,3 +396,7 @@ Step7 の 7.6 は、これで 4 種別（GyroCalibrate、DisconnectBT、BatteryC
 - **W1**: `Phase8Step78eW1ControlsExtrasCharacterizationTests`（旧経路の Extras の特性化。ビルド・テスト成功）。
 - **W2**: Lightbar マクロの廃止（§5.3）。ビルド・テスト成功。
 - **W3**: エンジンの 1 ボタン複数束縛、`IResettableOutputAction`（Q6＝B）、Extras の出力・ポート・ビルダー、既定の区分に `Extras` を追加（§5.4）。ビルド・テスト成功。実機確認は Step9（U-44）。
+- **承認済みの動作変更（まとめ）**: ① Extras のボタンを 2 つ同時に押したとき、旧経路は両方を離すまで戻らなかったが、新経路はボタンごとに戻す（Q3＝B）。② 押したままのプロファイル適用・切断で、振動・強制色・感度が残っていたのを、束縛の差し替え・切断のときに戻す（Q6＝B）。③ Extras のライトバーが効かなかった不具合の修正（Q7＝B。旧経路で処理する割り当てにも効く）。④ Lightbar マクロ機能の廃止（Q8＝B）。
+- **残る旧経路**: Button の割り当て（Button＋Extras を含む）は、7.8f まで旧経路。旧経路の Extras の枝（`held`、`extrasRumbleActive`）は Step8 で削除する。そのとき、Button＋Extras の押したままの適用・切断の残りも、新経路に入ることで直る。
+- **追加・変更したテスト**: `Phase8Step78eW1ControlsExtrasCharacterizationTests`（旧・新の両経路）、`Phase8Step78eW2ControlsExtrasTests`、`ControlsKeyTestScope`（Extras の観察窓口、`PublishControlsOnly`）、`RecordingControlExtrasPort`。Lightbar マクロのテストは、廃止に伴い削除した。ゴールデンの状態ファイル 5 つから `LightbarMacro` 関連の 2 項目を削除した。
+- **実機確認（Step9。U-44）**: 振動・ライトバー・感度、Key／Macro との併用、Extras だけのボタン、2 つ同時、押したままの適用・切断、編集画面のライトバーの設定、色の指定が実際に光ること。

@@ -3,7 +3,7 @@
 作成日: 2026-10-20  
 対象ブランチ: `For-DI-migration-work`  
 上位: `Phase8-Step2b-ControlsTab-Design.md`（§3.3 の C・D、§10。Q5＝A［ポート方式］、Q8＝B［実機確認は Step9］、Q9＝A［値渡し］）、`Phase8-Step7-8a-Plan.md`（土台）、`Phase8-Step7-8b-Plan.md`（Key）、`Phase8-Step7-8c-Plan.md`（Macro）、`Phase8-Step7-8d-Plan.md`（シフトの廃止）、`Phase8-Step7-6-Plan.md`（ポート方式の前例）  
-状態: **Q1〜Q8 を承認済み（2026-10-20。ユーザー。Q1・Q2・Q5＝A、Q3＝B、Q4＝C［Q8 により不要になった］、Q6＝B、Q7＝B、Q8＝B）。W0・W1 完了。Lightbar マクロ機能の廃止（W2）完了［ビルド・テスト成功。§5.3］。W3（エンジンの 1 ボタン複数束縛と Extras の新経路）完了［ビルド・テスト成功。§5.4］。W4 の内容［割り当て・ロールバック・ソースのガード］は、W3 のテストに含めた。残りは W5（文書の仕上げ）**
+状態: **Q1〜Q8 を承認済み（2026-10-20。ユーザー。Q1・Q2・Q5＝A、Q3＝B、Q4＝C［Q8 により不要になった］、Q6＝B、Q7＝B、Q8＝B）。W0・W1 完了。Lightbar マクロ機能の廃止（W2）完了［ビルド・テスト成功。§5.3］。W3（エンジンの 1 ボタン複数束縛と Extras の新経路）完了［ビルド・テスト成功。§5.4］。W4 の内容［割り当て・ロールバック・ソースのガード］は、W3 のテストに含めた。W5（文書の仕上げ）も完了。7.8e は、コード・テスト・文書とも完了［実機確認は Step9 の U-44］**
 
 ---
 
@@ -162,9 +162,9 @@ Controls タブの「Extras」（振動・ライトバーの強制色と点滅�
 - [x] W1 のビルド・テストが成功（2026-10-20）。
 - [x] Q7・Q8 の承認（2026-10-20）。
 - [x] W2（Lightbar マクロの廃止）のビルド・テストが成功（2026-10-20）。
-- [ ] ビルド・テストが成功（ユーザーが実行）。割り当て（新 ≦ 旧）、ロールバック、全ガード（1 ファイル 1 型、ラチェットの一致検査）。
-- [ ] 実機確認は Step9（U-44）。
-- [ ] `Phase8-Step7-Completion-Report.md`、`Phase8-Status.md`、`Phase8-Step2b-ControlsTab-Design.md` の更新。
+- [x] ビルド・テストが成功（ユーザーが実行。W1〜W3 とも成功。2026-10-20）。割り当て（新 ≦ 旧）、ロールバック、全ガードを含む。
+- [ ] 実機確認は Step9（U-44。チェックリストに登録済み）。
+- [x] `Phase8-Step7-Completion-Report.md`、`Phase8-Status.md`、`Phase8-Step2b-ControlsTab-Design.md`、`Phase8-Step7-Plan.md` の更新（W5）。
 
 ## 8. 次
 
