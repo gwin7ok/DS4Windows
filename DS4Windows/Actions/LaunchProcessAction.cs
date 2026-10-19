@@ -1,13 +1,32 @@
 using System;
+using System.Collections.Generic;
 using System.IO;
+using DS4Windows.DI;
 using DS4Windows.Services;
 
 namespace DS4Windows.Actions
 {
+    /// <summary>
+    /// Phase8-Step7 7.4-W2（Q1＝A）: 統一ディスパッチ（エンジン）から使うときは、旧 <c>MapCustomAction</c> の Program の分岐が出していたログ
+    /// （Trace の立ち上がり 4 行、Debug の「SpecialAction Program: …」）を、同じ文言・順序で出す。
+    /// 旧経路のアダプター（<c>LaunchProcessActionAdapter</c>）は、<c>Mapping</c> が同じログを出すため、このログを出さない（添字つきのコンストラクターを使ったときだけ出す）。
+    /// </summary>
     public class LaunchProcessAction : IOutputAction
     {
         private readonly SpecialAction sa;
         private readonly IProcessLauncher _launcher;
+        private readonly bool _logTrigger;
+        private readonly int _actionIndex;
+        private readonly ISpecialActionRepository _actionRepository;
+
+        /// <summary>エンジン用: 旧経路のログ（立ち上がり）も出す。<paramref name="actionIndex"/> と <paramref name="actionRepository"/> は、ログの「index」「ActionEntries」用。</summary>
+        public LaunchProcessAction(SpecialAction sa, IProcessLauncher launcher, int actionIndex, ISpecialActionRepository actionRepository)
+            : this(sa, launcher)
+        {
+            _logTrigger = true;
+            _actionIndex = actionIndex;
+            _actionRepository = actionRepository;
+        }
 
         public LaunchProcessAction(SpecialAction sa, IProcessLauncher launcher)
         {
@@ -17,10 +36,36 @@ namespace DS4Windows.Actions
 
         public string Id => sa?.name ?? "LaunchProcess";
 
+        // 旧 MapCustomAction の Program の分岐と同じ順序: LogSpecialActionTrace（立ち上がり）→ LogActionDoneCountOnTrigger
+        private void LogRising(IOutputContext ctx)
+        {
+            try
+            {
+                if (AppLogger.IsTraceEnabled)
+                {
+                    AppLogger.LogTrace($"Trigger detected for SA '{sa.name}' on device {ctx.Device}");
+                    AppLogger.LogTrace($"SA '{sa.name}' maps to Type:{sa.type} Details:{sa.details}");
+                    // 旧経路は、状態を渡さずに getBoolSpecialActionMapping を呼ぶため例外（握りつぶし）となり、常に "<none>" を記録している（既存の挙動）
+                    AppLogger.LogTrace($"Trigger keys for SA '{sa.name}': <none>");
+                    var parts = new List<string>();
+                    (ctx.Frame as IFrameOutputTrace)?.AppendOutputCombo(parts);
+                    string combo = parts.Count > 0 ? string.Join(", ", parts) : "<none>";
+                    AppLogger.LogTrace($"SA '{sa.name}' output combo: {combo}");
+                }
+
+                int count = 0;
+                try { count = _actionRepository?.ActionList?.Count ?? 0; } catch { }
+                AppLogger.LogDebug($"SpecialAction Program: device={ctx.Device}, name={sa.name}, index={_actionIndex}, ActionEntries={count}");
+            }
+            catch { }
+        }
+
         public void Execute(IOutputContext ctx)
         {
             try
             {
+                if (_logTrigger && sa != null && ctx != null) LogRising(ctx);
+
                 if (sa == null || string.IsNullOrWhiteSpace(sa.details)) return;
 
                 // Phase6-Step9b-3（F06）: DI 移行前（Mapping.cs の specActionLaunchProc、79170f73 の直前）の仕様へ戻した。

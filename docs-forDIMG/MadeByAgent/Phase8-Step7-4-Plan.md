@@ -3,7 +3,7 @@
 作成日: 2026-10-19  
 対象ブランチ: `For-DI-migration-work`  
 上位: `Phase8-Step7-Plan.md`（§3 共通の手順、§4 の 7.4）、`Phase8-Step7-2-Plan.md`・`Phase8-Step7-3-Plan.md`（進め方）、`Phase8-Step1-Trigger-Spec-Ledger.md`（Program）  
-状態: **Q1〜Q3 を推奨どおり承認（2026-10-19）。7.4-W1 実装済み（ビルド・テストの結果待ち）**
+状態: **Q1〜Q3 を推奨どおり承認（2026-10-19）。7.4-W1 完了（ビルド・テスト成功）。7.4-W2 実装済み（結果待ち）**
 
 ---
 
@@ -40,7 +40,7 @@ Program 種別の特殊アクション（ボタンの組み合わせで、外部
 
 ### W1: 足場と両経路の特性化（コードは変えない）
 
-**W1 の実装（2026-10-19。ユーザーのビルド・テストの結果待ち）**: `SpecialActionTestScope(migrated: true)` が Program も移行。`Phase8Step74W1ProgramDualPathTests`（新設）: 存在しないパスの起動の試行を `GuiLog` で数え、旧・新で、累計の起動の回数・`BeingTriggered`・`IsExecuting` を比較。押下ごとに 1 回、`$hidden`、ガード中、`IsExecuting` 中、AND 条件、遅延、押している最中のプロファイル適用。
+**W1 の実装（2026-10-19。ビルド・テスト成功）**: `SpecialActionTestScope(migrated: true)` が Program も移行。`Phase8Step74W1ProgramDualPathTests`（新設）: 存在しないパスの起動の試行を `GuiLog` で数え、旧・新で、累計の起動の回数・`BeingTriggered`・`IsExecuting` を比較。押下ごとに 1 回、`$hidden`、ガード中、`IsExecuting` 中、AND 条件、遅延、押している最中のプロファイル適用。
 
 - `SpecialActionTestScope(migrated: true)` が、Program も移行する。
 - **起動の観察の口**: 実際にプログラムを起動しないよう、**存在しない実行ファイルのパス**を使う（既存の `Phase7cW2…` の Program のテストと同じ）。`DefaultProcessLauncher` は、起動に失敗すると `AppLogger.LogToGui("Process launch failed for '<パス>': …")` を出すため、`AppLogger.GuiLog` を購読して、パスごとに起動の試行の回数を数える（旧・新で同じ部品を通るため、回数を比べられる）。
@@ -48,6 +48,8 @@ Program 種別の特殊アクション（ボタンの組み合わせで、外部
 - 新規: 押下で 1 回だけ起動、保持中は起動しない、離して再び押すと起動、ガード中は起動しない、`IsExecuting` 中は起動しない、AND 条件、遅延、押している最中のプロファイル適用、`$hidden` つきでも同じ。
 
 ### W2: 新経路の不足分
+
+**W2 の実装（2026-10-19。ユーザーのビルド・テストの結果待ち）**: `LaunchProcessAction` に、エンジン用のコンストラクター（添字と `ISpecialActionRepository` つき）を足し、旧経路のログ（Trace 4 行［Trigger keys は常に `<none>`］、Debug の「SpecialAction Program: …ActionEntries=」）を、起動の前に、同じ文言・順序で出す。旧経路のアダプターは、添字なしのままで、ログを出さない（二重にならない）。ビルダーが添字とリポジトリを渡す。テスト: `Phase8Step74W2ProgramLogTests`。
 
 - Q1 の実装: `LaunchProcessAction` に、エンジン用のコンストラクター（添字と `ISpecialActionRepository` つき）を足し、旧経路のログ（Trace 4 行、Debug の「SpecialAction Program: …」）を同じ文言・順序で出す（7.3 の `MacroAction` と同じ方式。旧経路のアダプターは、`Mapping` が同じログを出すため、添字なしのままで出さない）。NLog のメモリ出力で、旧経路との行の一致をテストする。
 

@@ -87,7 +87,7 @@ namespace DS4Windows.Actions
                         BindingPolicy.Default, sa, index);
 
                 case SpecialAction.ActionTypeId.Program:
-                    return new TriggerBinding(Input(sa, false), new IOutputAction[] { new LaunchProcessAction(sa, _processLauncher) },
+                    return new TriggerBinding(Input(sa, false), new IOutputAction[] { new LaunchProcessAction(sa, _processLauncher, index, _actionRepository) },
                         new BindingPolicy(blocksWhileExecuting: true), sa, index);
 
                 case SpecialAction.ActionTypeId.Profile:
