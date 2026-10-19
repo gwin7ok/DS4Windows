@@ -215,3 +215,27 @@
 ### 4. 次
 
 7.6（実機を要する種別。1 種別ずつ）。
+
+## 7.6a GyroCalibrate
+
+### 1. 成果
+
+- 実機のコントローラーを操作する窓口 `IGyroCalibrationPort`（Actions サブシステムのため `Actions/`）と、本番の実装 `DefaultGyroCalibrationPort`（`Func<IDeviceStateAccessor>` を遅延で受ける）、出力 `GyroCalibrateAction` を新設。
+- `ActionBindingBuilder` が GyroCalibrate の束縛を作る（ポートがなければ作らない）。`ServiceRegistration` の既定の一覧に GyroCalibrate の 1 行を追加（ロールバックはその 1 行を外す）。
+- 旧経路との違い: 旧経路は、コントローラーがいない（null）と例外で止まるが、新経路は何もしない。立ち上がりの 1 回だけ実行する点（`BeingTriggered` と Fresh-press ガード）は同じ。
+- ログ: Trace 4 行（旧経路と一致をテストで確認）、Debug「SpecialAction GyroCalibrate: …」。
+
+### 2. 検証結果・判断の記録
+
+1. Q2＝A（窓口を介す）。実機がないテストでは、記録用のポートで、回数・条件（Fresh-press ガード、AND 条件）・デバイスの添字を確認。
+2. 割り当て: 押している間（1000 フレーム）≦ 4 KB。
+3. 性能の出力: なし（種別が 1 つだけで、30 件の比較は意味が薄いため）。
+
+### 3. 実機確認（ユーザー）
+
+チェックリスト §11 の **U-35**。確認の前に、起動ログの「built at … (commit …)」でビルドを確認する。
+
+### 4. 次
+
+7.6b DisconnectBT（Q3＝B: 成功／失敗の戻り値と再試行）。
+
