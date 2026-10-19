@@ -93,6 +93,7 @@ namespace DS4WindowsTests
             {
                 AddMacro(t, "L1");
                 for (int i = 0; i < 300; i++) { t.RunFrame(held); t.RunFrame(idle); }
+                t.RunFrame(held);   // 立ち上がりの 1 フレーム（再生の開始で、1 回だけ大きく割り当てる）は、測定の外へ
                 legacyHeld = Allocated(t, held);
                 legacyIdle = Allocated(t, idle);
                 player.Stop(t.Device);
@@ -102,6 +103,7 @@ namespace DS4WindowsTests
             {
                 AddMacro(t, "L1");
                 for (int i = 0; i < 300; i++) { t.RunFrame(held); t.RunFrame(idle); }
+                t.RunFrame(held);
                 migratedHeld = Allocated(t, held);
                 migratedIdle = Allocated(t, idle);
                 player.Stop(t.Device);
@@ -110,9 +112,9 @@ namespace DS4WindowsTests
             _output.WriteLine($"[Phase8Step7.3 Macro] held legacy={legacyHeld}B migrated={migratedHeld}B / idle legacy={legacyIdle}B migrated={migratedIdle}B");
             Assert.True(migratedIdle <= legacyIdle, $"未操作: 新 {migratedIdle} B > 旧 {legacyIdle} B");
 
-            // 押下（保持中）: 新経路が旧経路より多く割り当てる（W3 の実測: 新 約 10.7 MB／旧 約 6.5 MB［1000 フレーム］）。原因は調査中のため、
-            // ここでは出力のみとし、判定しない（Phase8-Step7-3-Plan.md の W3 の記録を参照）。再実行されていないことは、下の HeldMacro_FiresOnlyOnce が確かめる。
-            _output.WriteLine($"[Phase8Step7.3 Macro] held: migrated - legacy = {migratedHeld - legacyHeld} B (1000 frames)");
+            // 押している間（立ち上がりを除く）: 新経路が旧経路より多く割り当てない。
+            // W3 の最初の実測で、新経路が多かったのは、立ち上がりのフレーム（マクロの再生の開始）を測定に含めていたため（診断で、立ち上がりを除くと旧・新が一致した）。
+            Assert.True(migratedHeld <= legacyHeld + 4096, $"押下: 新 {migratedHeld} B > 旧 {legacyHeld} B");
         }
 
         private static int CountMacroFirings(bool migrated, int heldFrames)
@@ -159,6 +161,43 @@ namespace DS4WindowsTests
             _output.WriteLine($"[Phase8Step7.3 Macro] firings while held (1000 frames): legacy={legacy} migrated={migrated}");
             Assert.Equal(1, legacy);
             Assert.Equal(1, migrated);
+        }
+
+        /// <summary>
+        /// 押している間（1000 フレーム。立ち上がりを除く）の割り当てが、種別（Button／Key／Macro）ごとに、新経路で旧経路を超えない（4 KB の誤差まで）。
+        /// 出力は、<c>--logger "console;verbosity=detailed"</c> で見られる。
+        /// </summary>
+        [Fact]
+        public void HeldAllocation_PerType_NewPathIsNotMoreThanLegacy()
+        {
+            IMacroPlayer player = TestHost.GetService<IMacroPlayer>();
+            DS4State held = Frame(true), idle = Frame(false);
+
+            long Measure(bool migrated, Func<SpecialActionTestScope, SpecialAction> add)
+            {
+                using var t = new SpecialActionTestScope(migrated);
+                SpecialAction sa = add(t);
+                t.StateOf(sa).RequiresFreshPressAfterReset = false;
+                for (int i = 0; i < 300; i++) { t.RunFrame(held); t.RunFrame(idle); }
+                t.RunFrame(held);   // 立ち上がりを測定の外へ
+                long bytes = Allocated(t, held);
+                player.Stop(t.Device);
+                return bytes;
+            }
+
+            var types = new (string Name, Func<SpecialActionTestScope, SpecialAction> Add)[]
+            {
+                ("Button", t => t.AddButtonPress("L1")),
+                ("Key", t => t.AddKey("L1", toggle: false)),
+                ("Macro", t => AddMacro(t, "L1")),
+            };
+            foreach (var type in types)
+            {
+                long legacy = Measure(false, type.Add);
+                long migrated = Measure(true, type.Add);
+                _output.WriteLine($"[Phase8Step7.3] {type.Name}: held legacy={legacy}B migrated={migrated}B (1000 frames, rising edge excluded)");
+                Assert.True(migrated <= legacy + 4096, $"{type.Name}: 新 {migrated} B > 旧 {legacy} B");
+            }
         }
 
         [Fact]

@@ -118,7 +118,8 @@
 3. Q3: ログは、旧経路と同じ文言・順序（`Phase8Step73W2MacroLogTests`）。「Trigger keys」は、旧経路と同じく常に `<none>`。
 4. 既存テストの更新: ホストの既定の一覧の検査（`Phase8Step4W1ContractTests`、`Phase8Step7W3ButtonSwitchTests`）を「Button、Key、Macro」に（設計どおりの変更）。
 5. 割り当て: 新経路 ≦ 旧経路（`TheNewPath_DoesNotAddAllocationsToTheFrame_ForMacro`）。性能: `MapCustom_MacroMigrated_PerFrameTime_IsReported` の出力を旧経路と並べて +5% 以内を確認する（測定値: 未記入）。
-6. 観察（変更しない）: `PlayMacroDirect` が `new bool[4]` を渡すため、特殊アクション経由のマクロのボタン出力の手順は、共有の `macroControl` に反映されない。旧経路も同じ入口で、差は出ない。マクロの再設計（`TODO(Phase9-C)`）で扱う。
+6. 割り当ての実測: 最初の測定で、押している間の新経路が旧経路より多く見えたが、立ち上がりのフレーム（マクロの再生の開始。1 回だけ大きく割り当てる）を測定に含めていたため。立ち上がりを除くと、Button／Key／Macro とも、新経路 ≦ 旧経路（Macro は一致）。テストは、立ち上がりを除いて判定する形に直した。
+7. 観察（変更しない）: `PlayMacroDirect` が `new bool[4]` を渡すため、特殊アクション経由のマクロのボタン出力の手順は、共有の `macroControl` に反映されない。旧経路も同じ入口で、差は出ない。マクロの再設計（`TODO(Phase9-C)`）で扱う。
 
 ### 3. 実機確認（ユーザー）
 
