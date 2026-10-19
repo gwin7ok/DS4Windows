@@ -380,6 +380,6 @@ Step7 の 7.6 は、これで 4 種別（GyroCalibrate、DisconnectBT、BatteryC
 計画書: `Phase8-Step7-8d-Plan.md`（ユーザーの決定: SA の組み合わせトリガーで代用できるため、シフト機能を廃止する。規約 2.2 の機能廃止の承認）。**当初の 7.8d（シフトの新経路への移行）は、この廃止に置き換えた。**
 
 - **廃止したもの**: Controls タブの割り当ての「シフト」（副ボタンを押している間だけ別の割り当てに切り替わる）。データ（`DS4ControlSettings` のシフトの欄）、実行（`Mapping` のシフトの処理、副ボタンの表）、画面（割り当て画面のシフトの選択）、旧形式の `<ShiftModifier>` の読込。代用できない使い方（アナログの割り当て、Extras）は、利用者が承知のうえで失う。
-- **プロファイルに残るシフトの設定**: 読込のとき、`<ShiftControl>` の内容を解釈せず、そのまま保持する（`RemovedShiftSettings`）。動作には使わない。保存では、保持した内容をそのまま書き出す（編集画面で削除を選べば、空の要素になる）。**編集画面を開いたときの警告（削除か残すかの選択。残せば毎回警告）は W3**。
+- **プロファイルに残るシフトの設定**: 読込のとき、`<ShiftControl>` の内容を解釈せず、そのまま保持する（`RemovedShiftSettings`）。動作には使わない。保存では、保持した内容をそのまま書き出す（編集画面で削除を選べば、空の要素になる）。編集画面を開いたときの警告（削除か残すかの選択。残せば毎回警告）は W3 で実装済み（`MessageBoxRemovedShiftPrompt`、`ProfileEditor.Reload` が読込の直後に `RemovedShiftNotice.Apply` を呼ぶ。文言は英語・日本語。`Phase8Step78dW3RemovedShiftNoticeWiringTests`。ビルド・テスト成功。2026-10-20）。ダイアログの実機確認は Step9（U-43）。
 - **移行処理**: SA への変換は作らない（ユーザー指示）。
 - **影響した API**: `UpdateSettings`／`UpdateDS4CSetting`／`UpdateDS4CExtra`／`UpdateDS4CKeyType`／`RefreshActionAlias`／`RecordBox`／`RecordBoxViewModel`／`IEditorWindowFactory.CreateRecordBox`／`IViewModelFactory.CreateRecordBoxViewModel` から、シフトの引数を削除した。
