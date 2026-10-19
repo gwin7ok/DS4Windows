@@ -90,5 +90,26 @@ namespace DS4WindowsTests
             // 読込の最後に、節が書き戻した状態を受け取る
             Assert.True(text.IndexOf("missingSetting = context.MissingSetting;", previous, StringComparison.Ordinal) > previous);
         }
+
+        [Fact]
+        public void TheSerializer_CallsTheSaveSectionsInTheXmlOrder()
+        {
+            // W6: 保存の節は、保存の順序（XML の要素の並び。ゴールデンが固定している）で呼ぶ。追加設定の保存は、全般の節の直後
+            string text = File.ReadAllText(Path.Combine(Repo(), "DS4Windows", "DS4Control", "Services", "LegacyProfileXmlSerializer.cs"));
+            string[] order =
+            {
+                "_generalSaveSection.Save(context);", "SaveLegacyExtraSettings(rootElement, device);", "_triggerStickSaveSection.Save(context);",
+                "_motionSaveSection.Save(context);", "_profileActionsSaveSection.Save(context);", "_outputCurveSaveSection.Save(context);",
+                "_outputControllerSaveSection.Save(context);", "_buttonSaveSection.Save(context);", "m_Xdoc.AppendChild(rootElement);",
+            };
+
+            int previous = -1;
+            foreach (string call in order)
+            {
+                int at = text.IndexOf(call, StringComparison.Ordinal);
+                Assert.True(at > previous, call + " は、前の呼び出しの後に呼ぶ");
+                previous = at;
+            }
+        }
     }
 }
