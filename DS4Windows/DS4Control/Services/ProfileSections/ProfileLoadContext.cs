@@ -41,6 +41,19 @@ namespace DS4Windows.Services
         /// <summary><c>UseTPforControls</c> 要素の有無。雑多の節が書き、<c>TouchpadOutputMode</c> を読む節が読む。</summary>
         public bool TpForControlsPresent { get; set; }
 
+        public DS4Windows.DI.IEnvironmentService Environment { get; set; }
+
+        /// <summary>読込の引数 <c>xinputChange</c>（起動前の読込では、出力デバイスの状態を確認しない）。</summary>
+        public bool XinputChange { get; set; }
+
+        /// <summary>読込の前に有効だった出力コントローラーの種別（<c>ResetProfile</c> の前に取得）。</summary>
+        public OutContType OldContType { get; set; }
+
+        /// <summary>出力デバイスの状態の確認の結果。出力コントローラーの節が書き、読込の最後の <c>PostLoadSnippet</c> が使う。</summary>
+        public bool XinputPlug { get; set; }
+
+        public bool XinputStatus { get; set; }
+
         /// <summary>要素が欠けていた、または読めなかったとき true（読込の最後で、欠けた設定を追記して保存し直す判断に使う）。</summary>
         public bool MissingSetting { get; set; }
     }

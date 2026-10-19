@@ -69,19 +69,26 @@ namespace DS4WindowsTests
         public void TheSerializer_CallsTheSectionsInFileOrder()
         {
             string text = File.ReadAllText(Path.Combine(Repo(), "DS4Windows", "DS4Control", "Services", "LegacyProfileXmlSerializer.cs"));
-            int general = text.IndexOf("RunSection(_generalSection", StringComparison.Ordinal);
-            int extra = text.IndexOf("LoadLegacyExtraSettings(device, rootname);", StringComparison.Ordinal);
-            int touchpad = text.IndexOf("RunSection(_touchpadBasicSection", StringComparison.Ordinal);
-            Assert.True(general > 0 && general < extra && extra < touchpad, "節と追加設定の読込は、旧コードと同じ順序で呼ぶ");
-
-            // W3 以降: 節は、ファイル順（旧コードの要素の順序）で呼ぶ
-            int previous = touchpad;
-            foreach (string field in new[] { "_triggerStickBasicSection", "_stickAxialSection", "_motionSensitivitySection", "_miscSection", "_gyroControlsSection", "_gyroSwipeSection" })
+            string[] order =
             {
-                int at = text.IndexOf("RunSection(" + field, StringComparison.Ordinal);
-                Assert.True(at > previous, field + " は、前の節の後に呼ぶ");
+                "_generalSection", "LoadLegacyExtraSettings(device, rootname);", "_touchpadBasicSection", "_triggerStickBasicSection",
+                "_stickAxialSection", "_motionSensitivitySection", "_miscSection", "_gyroControlsSection", "_gyroSwipeSection",
+                "_stickOutputSection", "_triggerCurveSection", "_touchpadMouseSection", "_outputControllerSection",
+                "_profileActionsSection", "_buttonControlSection", "_buttonShiftSection",
+            };
+
+            // 節は、旧コードの要素の順序（ファイル順）で呼ぶ。追加設定の読込は、全般の節の直後
+            int previous = -1;
+            foreach (string item in order)
+            {
+                string call = item.EndsWith(";") ? item : item + ".Load(context);";
+                int at = text.IndexOf(call, StringComparison.Ordinal);
+                Assert.True(at > previous, item + " は、前の呼び出しの後に呼ぶ");
                 previous = at;
             }
+
+            // 読込の最後に、節が書き戻した状態を受け取る
+            Assert.True(text.IndexOf("missingSetting = context.MissingSetting;", previous, StringComparison.Ordinal) > previous);
         }
     }
 }
