@@ -1,7 +1,7 @@
 # フェーズ8 進捗管理文書: Controls／SpecialActions の統一トリガーディスパッチ
 
 最終更新日: 2026-10-19  
-状態: **Step1〜3 完了（2026-10-19）。Step1〜4 完了。Step4b 実施済み［W11 のビルド・テスト待ち］**。Phase7・7b・7c は完了。実機確認 U-24（Phase7c W1）は確認済み（2026-10-19）  
+状態: **Step1〜3 完了（2026-10-19）。Step1〜4・Step4b 完了。次は Step5**。Phase7・7b・7c は完了。実機確認 U-24（Phase7c W1）は確認済み（2026-10-19）  
 計画書: `Phase8-Unified-Trigger-Dispatch-Plan.md`（D1〜D5 確定。2026-10-19 追記は事実誤認の訂正）。Step1: `Phase8-Step1-Plan.md`
 
 ---
@@ -14,7 +14,7 @@
 | Step2 | 詳細設計（メンバー確定、`KeyOutputAction` の委譲設計、モデル図の更新案） | **完了**（2026-10-19。モデル図の段階 A は反映済み） | `Phase8-Step2-Plan.md`、`Phase8-Step2-Completion-Report.md` |
 | Step3 | 判定と束縛の型の新設（`ComboTriggerInputAction` ほか）・単体テスト、`KeyOutputAction` の書き直し（配線なし） | **完了**（2026-10-19。W1〜W5 ビルド・テスト成功） | `Phase8-Step3-Plan.md`、`Phase8-Step3-Completion-Report.md` |
 | Step4 | エンジンと出力の型（`TriggerDispatchEngine`、`ButtonOutputAction` ほか）、`Mapping` への空配線 | **完了**（2026-10-19。W1〜W5 ビルド・テスト成功、配線の追加分は 1.15%） | `Phase8-Step4-Plan.md`、`Phase8-Step4-Completion-Report.md` |
-| **Step4b（挿入）** | `LoadProfile`/`SaveProfile` の節ごとの分解、機械的な整理 2 件（Step5 の準備。仮称 Phase7d） | **実施済み**（W1〜W10 成功、W11 のビルド・テスト待ち。2026-10-19） | `Phase8-Step4b-Plan.md`、`Phase8-Step4b-Audit.md`、`Phase8-Step4b-Completion-Report.md` |
+| **Step4b（挿入）** | `LoadProfile`/`SaveProfile` の節ごとの分解、機械的な整理 2 件（Step5 の準備。仮称 Phase7d） | **完了**（W1〜W11 成功。2026-10-19） | `Phase8-Step4b-Plan.md`、`Phase8-Step4b-Audit.md`、`Phase8-Step4b-Completion-Report.md` |
 | Step5 | プロファイル読込時の `TriggerBinding` リスト構築 | 未着手 | - |
 | Step6 | コントローラー接続時の紐付け | 未着手 | - |
 | Step7 | 種別ごとに `Mapping.cs` から新経路へ切替（1 種別＝1PR） | 未着手 | - |

@@ -3,7 +3,7 @@
 作成日: 2026-10-19  
 対象ブランチ: `For-DI-migration-work`  
 上位: `Phase8-Unified-Trigger-Dispatch-Plan.md`（2026-10-19 追記「実行順序の改訂」の Step4b）、`Phase8-Step4-Completion-Report.md` §5  
-状態: **W1〜W10 完了（ビルド・テスト成功、2026-10-19）。W11（長さのガード、完了報告書）実施済み［ビルド・テスト待ち］。完了報告書: `Phase8-Step4b-Completion-Report.md`**
+状態: **W1〜W10 完了（ビルド・テスト成功、2026-10-19）。W11（長さのガード、完了報告書）も成功。**Step4b 完了**。完了報告書: `Phase8-Step4b-Completion-Report.md`**
 
 ---
 
