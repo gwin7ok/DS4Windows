@@ -1,7 +1,7 @@
 # フェーズ8 進捗管理文書: Controls／SpecialActions の統一トリガーディスパッチ
 
 最終更新日: 2026-10-19  
-状態: **Step1〜3 完了（2026-10-19）。Step1〜4・Step4b 完了。Step1〜5 完了。次は Step6**。Phase7・7b・7c は完了。実機確認 U-24（Phase7c W1）は確認済み（2026-10-19）  
+状態: **Step1〜3 完了（2026-10-19）。Step1〜4・Step4b 完了。Step1〜5 完了。Step6 実施中**。Phase7・7b・7c は完了。実機確認 U-24（Phase7c W1）は確認済み（2026-10-19）  
 計画書: `Phase8-Unified-Trigger-Dispatch-Plan.md`（D1〜D5 確定。2026-10-19 追記は事実誤認の訂正）。Step1: `Phase8-Step1-Plan.md`
 
 ---
@@ -16,7 +16,7 @@
 | Step4 | エンジンと出力の型（`TriggerDispatchEngine`、`ButtonOutputAction` ほか）、`Mapping` への空配線 | **完了**（2026-10-19。W1〜W5 ビルド・テスト成功、配線の追加分は 1.15%） | `Phase8-Step4-Plan.md`、`Phase8-Step4-Completion-Report.md` |
 | **Step4b（挿入）** | `LoadProfile`/`SaveProfile` の節ごとの分解、機械的な整理 2 件（Step5 の準備。仮称 Phase7d） | **完了**（W1〜W11 成功。2026-10-19） | `Phase8-Step4b-Plan.md`、`Phase8-Step4b-Audit.md`、`Phase8-Step4b-Completion-Report.md` |
 | Step5 | 束縛のビルダー（`IActionBindingBuilder`）と、登録簿への `Replace`（移行対象が空のまま） | **完了**（W1〜W3 成功。2026-10-19） | `Phase8-Step5-Plan.md`、`Phase8-Step5-Completion-Report.md` |
-| Step6 | コントローラー接続時の紐付け | 未着手 | - |
+| Step6 | 切断・接続との連携（エンジンと登録簿の後始末、`ClearState`／`ClearPendingRestore` の扱い） | **実施中**（Q1〜Q7 を推奨どおり承認。W1 実装済み［ビルド・テスト待ち］。2026-10-19） | `Phase8-Step6-Plan.md` |
 | Step7 | 種別ごとに `Mapping.cs` から新経路へ切替（1 種別＝1PR） | 未着手 | - |
 | Step8 | 旧ディスパッチと系統 B の削除 | 未着手 | - |
 | Step9 | 総合検証・実機確認 | 未着手 | - |
