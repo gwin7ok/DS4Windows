@@ -327,7 +327,7 @@ namespace DS4Windows.Actions
             if (source == null) return false;
 
             // Controls タブの束縛（7.8b）は、Controls 側の移行のスイッチで決まる（SA タブの種別のスイッチには依存しない）
-            if (binding.Input is ControlButtonInputAction) return _options.IsControlMigrated(ControlBindingKind.Key);
+            if (binding.Input is ControlButtonInputAction controlInput) return _options.IsControlMigrated(controlInput.Kind);
 
             return _options.IsMigrated(source.typeID);
         }

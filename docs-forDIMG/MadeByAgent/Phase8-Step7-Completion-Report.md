@@ -365,3 +365,12 @@ Step7 の 7.6 は、これで 4 種別（GyroCalibrate、DisconnectBT、BatteryC
 - **動作の変更（承認済み。Q4＝B）**: Controls タブの Key は、同じ論理キーの Key 特殊アクションと状態を共有しない。
 - **ログ**: 旧経路の Controls タブの Key が出していた行（`KeyAction` 以降）は同じ。旧ディスパッチャ内部の Trace（`DispatchInputEdge`、`DispatchTriggerEdge: firing established` など）は、7.1〜7.7 と同様、新経路では出ない。
 - **テスト**: `Phase8Step78bW1ControlsKeyCharacterizationTests`（旧・新）、`Phase8Step78bW2ControlsKeyTests`。ビルド・テスト成功。実機確認は Step9（U-41）。
+
+## 7.8c Controls タブの Macro の新経路への移行（2026-10-20。ビルド・テストの結果待ち）
+
+計画書: `Phase8-Step7-8c-Plan.md`（ユーザー指示: Controls の Macro も SA の Macro の仕様に合わせる）。運用は 7.8b と同じ（`MigratedControlKinds` に Macro の 1 行。外すと旧経路）。
+
+- **範囲**: Macro、手順あり、シフトなし、Extras なし、Lightbar マクロなしの割り当てだけ（ボタン単位の所有。移行中の仕組み）。
+- **SA に合わせた点**: 出力は既存の `MacroAction`、押下の判定は SA のトリガー（`IsActive`）、状態は `ActionInstanceState`、呼び出しは立ち上がりの 1 回（繰り返しは `RepeatMacro` の内部ループ）、Fresh-press ガードを見る。
+- **動作の変更（承認済み）**: (1) **Play Once の連続再実行を、不具合として 1 回だけに直した**（旧経路は、フラグなしでも押している間ほぼ毎フレーム再実行されていた。W1 の実測: 900ms で 58 回）。(2) ジャイロの閾値が 0 から ±67 に。(3) プロファイル適用直後の押しっぱなしは、一度離すまで動かない（Fresh-press ガード）。(4) 状態の持ち方が、ボタン単位の `macrodone` から `ActionInstanceState` に。
+- **後続**: Phase10（割り当ての UI の統一）で、Controls と SA のマクロの編集画面を共通化する（`Phase10-Assignment-UI-Unification-Plan.md`）。

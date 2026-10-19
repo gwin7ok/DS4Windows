@@ -3,7 +3,7 @@
 作成日: 2026-10-20（同日、方針を改訂）  
 対象ブランチ: `For-DI-migration-work`  
 上位: `Phase8-Step2b-ControlsTab-Design.md`（§3.3 の E、§10。Q8＝B［実機確認は Step9］）、`Phase8-Step7-8a-Plan.md`、`Phase8-Step7-8b-Plan.md`（Controls の Key。同じ仕組みを使う）、`Phase8-Step7-3a-AltTab-Removal-Plan.md`（SA の Macro）  
-状態: **方針の改訂を反映済み（2026-10-20 ユーザー指示: 最終的に Controls の Macro も SA の Macro の仕様［呼び出し、押したかの判定、状態の持ち方］に合わせる。今回から合わせる）。W1（旧経路の特性化）に着手。動作が変わる点は、W1 の実測のあと、一覧にしてユーザーが承認する（規約 2.2）**
+状態: **方針の改訂を反映済み（2026-10-20 ユーザー指示: 最終的に Controls の Macro も SA の Macro の仕様［呼び出し、押したかの判定、状態の持ち方］に合わせる。今回から合わせる）。W1 完了（実測は §5.1）。動作が変わる点（§4）を承認済み［2026-10-20。Play Once の連続再実行は不具合として 1 回だけに直す。ほかの変更点も承認］。W2（実装）に着手**
 
 ---
 
@@ -86,6 +86,28 @@ SA の Macro の編集（`MacroViewModel`）も、Controls の記録画面（`Re
 - **W2（実装）**: §3.2。W1 のテストが新経路を走らせる。期待値の変更点は §4 のとおり、承認を得てから切り替える。
 - **W3**: 割り当て、ロールバック、ソースのガード。
 - **W4**: 完了報告書、`Phase8-Status.md`、チェックリスト（U-42）。**実機確認は作らない（Q8＝B）**。
+
+### 5.1 W1 の実測（2026-10-20。旧経路。手順は { 65, 65 } ＝ キー 65 を押して離す）
+
+| 状況 | 実測 |
+|---|---|
+| **フラグなしのマクロを押し続ける** | 300ms で 19 回、900ms で 58 回（**約 15ms ごと。ほぼ毎フレーム再実行される**）。離すと止まる（58 → 58） |
+| 「押している間繰り返す」（`HoldMacro｜RepeatMacro`）を押し続ける | 300ms で 5 回、1000ms で 15 回（約 66ms ごと） |
+| 押したままプロファイルを適用／切断 | 止まらず続く（20 → 46 → 72） |
+| スティック | 幅 28 では実行されない。幅 68 で実行される（±55） |
+| L2 | 100 では実行されない。101 で実行される |
+| 割り当てたボタンの出力 | 押している間は消える |
+| シフト付きの割り当て | 旧経路が処理する（マクロが動く） |
+
+→ **旧経路の Controls の Macro は、フラグがなくても、押している間ずっと再実行される**（`PlayMacroTask` の終わりの `EndMacro` が `macrodone` を戻すため、次のフレームですぐ再開する）。編集画面には別に「押している間繰り返す」のオプションがあり、SA の Macro は、フラグなしなら押した瞬間に 1 回だけ。したがって、SA の仕様に合わせると、フラグなしのマクロの動きが「連続再実行」から「1 回」に変わる。
+
+### 5.2 W2 の実装（2026-10-20。ビルド・テストの結果待ち）
+
+承認: ユーザーが「Play Once の連続再実行は不具合として 1 回だけに直す」を承認し、§4 のほかの変更点（ジャイロの閾値、Fresh-press ガード、状態の持ち方）も承認（2026-10-20）。
+
+- 新設: `ControlJudgement`（Assignment／Trigger）。変更: `ControlButtonInputAction`（区分と判定の種類を持つ）、`TriggerDispatchEngine.IsOwnedBinding`（区分で `IsControlMigrated` を調べる）、`ControlBindingBuilder`（`IMacroPlayer` を省略可能な依存で受ける。`TryInterpretMacro`、Macro の束縛［識別用 SA `Synthetic_Macro_{device}_{control}`、手順は「/」でつないだ文字列、`keyType` はそのままコピー、`controls` は名前と同じにして同期キューをボタンごとに分ける］）、`ServiceRegistration`（`MigratedControlKinds` に Macro の 1 行）。出力は既存の `MacroAction`、判定は SA の `IsActive`。
+- テスト: `Phase8Step78cW2ControlsMacroTests`（所有の条件、ビルダー、判定の種類、ロールバック、割り当て）。W1 のテストは、新経路でも走り、承認済みの変更点だけ `migrated` で期待値を分けた（Play Once は 1 回だけ）。「押している間繰り返す」の確認の手順には、20ms の待ちを足した。
+- 旧経路の `PlayMacro`／`PlayMacroTask`／`macrodone` は、Step8 まで残す（旧経路が処理する割り当てのため）。
 
 ## 6. 質問と決定
 

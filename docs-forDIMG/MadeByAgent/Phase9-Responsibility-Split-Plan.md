@@ -51,6 +51,7 @@
 - 前提: OSC は競合の回帰テストのみで、送信内容を固定するテストがない。UDP・HidHide・出力デバイスは、実機が要る箇所が多い。ガードレール（6 大ガードレール。同一 XML 排他、適用時 Halt、スレッド直列化、On-Demand パス評価、ドライバ破棄順序、切断時クリーンアップ）を確実に守る。
 
 ### 9-F: アプリ層・UI のコードビハインド
+- **順序の注記（2026-10-20）**: `Phase10-Assignment-UI-Unification-Plan.md` の Step1（Controls／SA のマクロの割り当ての UI の共通化）は、`RecordBox`・`SpecialActionEditor`・`ProfileEditor` のコードビハインドを触るため、**9-F の前に行う**（二重の変更を避ける）。
 - 対象: `App.xaml.cs` の `Application_Startup`（393 行）と `CheckOptions`（136 行）→ 起動手順のクラス（Phase7-Step4 の起動順序・終了順序を維持）。`MainWindow` の `WndProc`（265 行）、電源イベント、コンストラクター（151 行・引数 18）。`ProfileEditor` の残りのイベントハンドラー（`Phase8` の Step4b で表を出した後）。
 - 前提: 起動順序の特性化（ホスト構築、ブートストラップ、設定の復元の順序）。実機（画面）での確認が必須。
 
