@@ -7,7 +7,7 @@ namespace DS4Windows.Actions
     /// <summary>
     /// Phase8-Step5 W1（Phase8-Step5-Plan.md §3.1。Phase8-Step2-Design.md §6・§8）: <see cref="IActionBindingBuilder"/> の実装（DI の Singleton）。
     /// 種別ごとの構成は設計書 §6 のとおり（Button／Key／Macro／Program／Profile／GyroCalibrate／DisconnectBT／BatteryCheck／SASteeringWheelEmulationCalibrate の 9 種）。それ以外の種別
-    /// （<c>MultiAction</c>、<c>XboxGameDVR</c>、<c>None</c>）は束縛を作らず、旧経路が処理する。
+    /// （<c>MultiAction</c>、<c>None</c>）は束縛を作らず、旧経路が処理する。
     /// <para>
     /// TODO（Phase8-Step7。規約 2.4）: 本クラスは Step5 で作り、本番の適用の経路（<c>ProfileApplicationService</c>）から呼ぶが、
     /// <see cref="BindingMigrationOptions.MigratedTypes"/> が空の間は常に空のリストを返す。各種別の構成（方針の細部を含む）は、

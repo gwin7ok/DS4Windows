@@ -17,7 +17,7 @@ namespace DS4WindowsTests
     public class Phase8Step7W3ButtonSwitchTests
     {
         [Fact]
-        public void TheHostDefault_MigratesAllTheTypesOfStep7ExceptMultiActionAndXboxGameDVR()
+        public void TheHostDefault_MigratesAllTheTypesOfStep7ExceptMultiAction()
         {
             var options = TestHost.GetService<BindingMigrationOptions>();
 
@@ -33,7 +33,6 @@ namespace DS4WindowsTests
             Assert.True(options.IsMigrated(SpecialAction.ActionTypeId.BatteryCheck));
             Assert.True(options.IsMigrated(SpecialAction.ActionTypeId.SASteeringWheelEmulationCalibrate));
             Assert.False(options.IsMigrated(SpecialAction.ActionTypeId.MultiAction));
-            Assert.False(options.IsMigrated(SpecialAction.ActionTypeId.XboxGameDVR));
         }
 
         [Fact]

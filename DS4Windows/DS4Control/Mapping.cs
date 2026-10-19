@@ -4478,7 +4478,7 @@ namespace DS4Windows
                             catch { }
 
                             // Issue8-3是正: 従来ここにあった「risingEdge = !GetBeingTriggered(...)」ベースの
-                            // 共通TRACEログ呼び出しは廃止した。MultiAction/XboxGameDVR型はBeingTriggeredを
+                            // 共通TRACEログ呼び出しは廃止した。MultiAction型はBeingTriggeredを
                             // trueに設定しないため、押下し続けている間ずっと「新規成立」と誤認してログが
                             // 出続けるバグの原因になっていた（連射に見えた事象の正体）。
                             // 対応として、ログ出力自体を「SpecialActionの実行が決定された、まさにその場所」
@@ -5066,7 +5066,6 @@ namespace DS4Windows
                                 }
                             }
                             else if (action.typeID != SpecialAction.ActionTypeId.Key &&
-                                     action.typeID != SpecialAction.ActionTypeId.XboxGameDVR &&
                                      action.typeID != SpecialAction.ActionTypeId.MultiAction)
                             {
                                 // Ignore
@@ -5129,7 +5128,7 @@ namespace DS4Windows
                                     }
                                 }
                             }
-                            else if (action.typeID == SpecialAction.ActionTypeId.XboxGameDVR || action.typeID == SpecialAction.ActionTypeId.MultiAction)
+                            else if (action.typeID == SpecialAction.ActionTypeId.MultiAction)
                             {
                                 actionFound = true;
 
@@ -5199,25 +5198,10 @@ namespace DS4Windows
                                     }
                                 }
 
-                                int type = 0;
                                 string macro = "";
                                 if (tappedOnce) //single tap
                                 {
-                                    if (action.typeID == SpecialAction.ActionTypeId.MultiAction)
-                                    {
-                                        macro = dets[0];
-                                    }
-                                    else if (int.TryParse(dets[0], out type))
-                                    {
-                                        switch (type)
-                                        {
-                                            case 0: macro = "91/71/71/91"; break;
-                                            case 1: macro = "91/164/82/82/164/91"; break;
-                                            case 2: macro = "91/164/44/44/164/91"; break;
-                                            case 3: macro = dets[3] + "/" + dets[3]; break;
-                                            case 4: macro = "91/164/71/71/164/91"; break;
-                                        }
-                                    }
+                                    macro = dets[0];
 
                                     if ((DateTime.UtcNow - action.TimeofEnd) > TimeSpan.FromMilliseconds(150) + TimeSpan.FromMilliseconds(profileSettings.DebouncingMs[device]))
                                     {
@@ -5236,21 +5220,7 @@ namespace DS4Windows
                                 }
                                 else if (firstTouch && (DateTime.UtcNow - action.pastTime) > TimeSpan.FromMilliseconds(500) + TimeSpan.FromMilliseconds(profileSettings.DebouncingMs[device])) //helddown
                                 {
-                                    if (action.typeID == SpecialAction.ActionTypeId.MultiAction)
-                                    {
-                                        macro = dets[1];
-                                    }
-                                    else if (int.TryParse(dets[1], out type))
-                                    {
-                                        switch (type)
-                                        {
-                                            case 0: macro = "91/71/71/91"; break;
-                                            case 1: macro = "91/164/82/82/164/91"; break;
-                                            case 2: macro = "91/164/44/44/164/91"; break;
-                                            case 3: macro = dets[3] + "/" + dets[3]; break;
-                                            case 4: macro = "91/164/71/71/164/91"; break;
-                                        }
-                                    }
+                                    macro = dets[1];
 
                                     if (macro != "")
                                     {
@@ -5265,21 +5235,7 @@ namespace DS4Windows
                                 }
                                 else if (secondtouchbegin) //if double tap
                                 {
-                                    if (action.typeID == SpecialAction.ActionTypeId.MultiAction)
-                                    {
-                                        macro = dets[2];
-                                    }
-                                    else if (int.TryParse(dets[2], out type))
-                                    {
-                                        switch (type)
-                                        {
-                                            case 0: macro = "91/71/71/91"; break;
-                                            case 1: macro = "91/164/82/82/164/91"; break;
-                                            case 2: macro = "91/164/44/44/164/91"; break;
-                                            case 3: macro = dets[3] + "/" + dets[3]; break;
-                                            case 4: macro = "91/164/71/71/164/91"; break;
-                                        }
-                                    }
+                                    macro = dets[2];
 
                                     if (macro != "")
                                     {

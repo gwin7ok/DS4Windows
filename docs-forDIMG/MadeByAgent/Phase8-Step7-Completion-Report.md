@@ -305,5 +305,23 @@
 
 ### 4. 次
 
-Step7 の 7.6 は、これで 4 種別（GyroCalibrate、DisconnectBT、BatteryCheck、ステアリング較正）がそろった。次は 7.7（XboxGameDVR／MultiAction）。
+Step7 の 7.6 は、これで 4 種別（GyroCalibrate、DisconnectBT、BatteryCheck、ステアリング較正）がそろった。次は 7.7（XboxGameDVR の削除［7.7a］と MultiAction の移行［7.7b］。`Phase8-Step7-7-Plan.md`）。
+
+## 7.7a XboxGameDVR の削除（機能削除）
+
+### 1. 成果
+
+- ユーザーの決定（2026-10-20）: 「この機能自体が不要」として、機能削除を前提に計画（規約 2.2 の、ユーザーの明示的な承認）。
+- 削除したもの: `SpecialAction.ActionTypeId.XboxGameDVR`、`SpecialAction` の構築の `XboxGameDVR` の分岐、`Mapping.MapCustomAction` の `XboxGameDVR` の条件と、整数からマクロへの置き換え（3 か所）。
+- 削除の根拠（調査の事実）: (1) 構築時に `details` がマクロの文字列に置き換わるのに、旧経路は整数として読み直すため、マクロが実行されなかった。(2) 編集画面の種別の一覧になく、新しく作れなかった。(3) `Actions.xml` への保存で、書き出されなかった。
+- 古い `Actions.xml` の `<Type>XboxGameDVR</Type>` の項目は、種別が不明（`None`）の項目になる（何も実行されない。次の保存で書き出されない。今も保存で書き出されないため、実質同じ）。
+- 実機確認は不要（動いていない機能の削除のため）。
+
+### 2. 検証
+
+`Phase8Step77aXboxGameDvrRemovalTests`（列挙にない、古い項目が例外にならず `None` になる、MultiAction の `details` が保たれる、ソースに残っていない）。
+
+### 3. 次
+
+7.7b MultiAction（独立した `MultiTapInputAction`）。
 

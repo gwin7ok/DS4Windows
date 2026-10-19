@@ -51,7 +51,7 @@ namespace DS4Windows
 
     public class SpecialAction
     {
-        public enum ActionTypeId { None, Key, Program, Profile, Macro, DisconnectBT, BatteryCheck, MultiAction, XboxGameDVR, SASteeringWheelEmulationCalibrate, GyroCalibrate, Button }
+        public enum ActionTypeId { None, Key, Program, Profile, Macro, DisconnectBT, BatteryCheck, MultiAction, SASteeringWheelEmulationCalibrate, GyroCalibrate, Button }
 
         public enum KeyButtonSwitchModeEnum { Press, Toggle }
 
@@ -212,31 +212,8 @@ namespace DS4Windows
                 typeID = ActionTypeId.MultiAction;
                 this.details = details;
             }
-            else if (type == "XboxGameDVR")
-            {
-                this.typeID = ActionTypeId.XboxGameDVR;
-                string[] dets = details.Split(',');
-                List<string> macros = new List<string>();
-                //string dets = "";
-                int typeT = 0;
-                for (int i = 0; i < 3; i++)
-                {
-                    if (int.TryParse(dets[i], out typeT))
-                    {
-                        switch (typeT)
-                        {
-                            case 0: macros.Add("91/71/71/91"); break;
-                            case 1: macros.Add("91/164/82/82/164/91"); break;
-                            case 2: macros.Add("91/164/44/44/164/91"); break;
-                            case 3: macros.Add(dets[3] + "/" + dets[3]); break;
-                            case 4: macros.Add("91/164/71/71/164/91"); break;
-                        }
-                    }
-                }
-                this.type = "MultiAction";
-                type = "MultiAction";
-                this.details = string.Join(",", macros);
-            }
+            // Phase8-Step7 7.7a: XboxGameDVR 種別は、機能ごと削除した（ユーザーの決定。実行時にマクロが実行されず、新しく作れない機能だったため）。
+            // 古い Actions.xml に Type が XboxGameDVR の項目が残っていても、種別が不明（None）の項目になり、何も実行されない。
             else if (type == "SASteeringWheelEmulationCalibrate")
             {
                 typeID = ActionTypeId.SASteeringWheelEmulationCalibrate;
