@@ -3,7 +3,7 @@
 作成日: 2026-10-20  
 対象ブランチ: `For-DI-migration-work`  
 上位: `Phase8-Step2b-ControlsTab-Design.md`（§3.3 の F、§3.5、§10。Q4＝B［共有をやめる］、Q8＝B［実機確認は Step9］）、`Phase8-Step7-8a-Plan.md`（土台と値渡し化。完了）  
-状態: **計画案（Q1〜Q5 の承認待ち）。実装はまだ行わない**
+状態: **Q1〜Q5 を承認済み（全て推奨［A］。2026-10-20 ユーザーが直接承認）。W0（調査）完了。次は W1（特性化）**
 
 ---
 
@@ -20,6 +20,23 @@ Controls タブで「ボタン → キー」を割り当てた dcs（`DS4Control
 - `actionKey` が `ushort` の範囲に収まる（旧経路は範囲外で例外になる。新経路は、そのような dcs を所有せず、旧経路の挙動を保つ）。
 
 **この PR でやらないこと**: Macro（7.8c）、シフト（7.8d）、Extras／Lightbar マクロ（7.8e）、Button／マウス／ホイール（7.8f）、`ProcessControlSettingAction` の旧コードの削除（Step8）。
+
+### 1.1 暫定の範囲と最終形（別セッションからの補足と訂正。2026-10-20）
+
+- §1 の範囲と、ボタン単位の所有（Q2＝A）は、**移行中の仕組み**である。7.8c（Macro）、7.8d（シフト）、7.8e（Extras／Lightbar マクロ）、7.8f（Button／マウス／ホイール）で区分を 1 つずつ移し、最終的に Controls タブの割り当てはすべて新経路（エンジン）で同じ扱いになる。全区分が移行済みになれば、所有の判定は常に真になり、旧経路との振り分けは不要になる。旧経路は Step8 で削除する。
+- **抑制の判定**（特殊アクションが押しているボタンの通常の割り当てを止める）: データ（抑制の集合）はエンジン所有。呼び出しは、今も旧経路の `ProcessControlSettingAction` の先頭に残っている。区分の移行（7.8b〜f）が終わり、Step8 で旧経路を削除するときに、呼び出しがエンジンの Controls 処理の中へ移る（機能は残る）。
+- **通常出力の消去**（`ErasesOutputEveryFrame`）の最終形: 割り当てのあるボタンすべてを、エンジンが毎フレーム消す。**Default（未設定）と Unbound（割り当て無し）は別物**:
+
+| 区分 | 実体 | 消去 | 今 → 最終形 |
+|---|---|---|---|
+| Default（未設定） | `actionType == Default` | **消さない**（元のボタン出力がそのまま出る。消すと未設定のボタンが全部効かなくなる） | 今も最終形も同じ |
+| Unbound（割り当て無し） | `actionType == Button` で、`X360Controls.Unbound`（`keyType` にも Unbound の印。`OutBinding.cs` 448 行、`BindingWindow.xaml.cs` 943 行） | **毎フレーム無条件で消す**（`Mapping` の Button の枝は、Unbound をどの出力先にも当てはめず何も出力せず、末尾の共通の `ResetToDefaultValue` で元の出力を消す） | 今は旧経路 → 7.8f（Button 区分）でエンジンへ |
+| Key（§1 の条件を満たすもの） | `actionType == Key` | 毎フレーム消す | 7.8b からエンジン |
+| Macro | `actionType == Macro` | 毎フレーム消す | 今は旧経路 → 7.8c でエンジンへ |
+| Button（X360、マウス、ホイール） | `actionType == Button` | 毎フレーム消す | 今は旧経路 → 7.8f でエンジンへ |
+| シフト付き／Extras 付き | — | 割り当ての区分に従い消す | 今は旧経路 → 7.8d／7.8e でエンジンへ |
+
+7.8b の時点でエンジンが消すのは、新経路が所有するボタン（Key）だけ。
 
 ## 2. 現状の調査（2026-10-20）
 
@@ -43,6 +60,8 @@ dcs 1 つにつき毎フレーム、次を行う。
 | ネイティブキー | `GetRealEventKey(alias があれば alias、なければ論理キー)` | `KeyOutputAction` は論理キーだけから求める | `KeyBindingValues` にエイリアスを足す（W2） |
 | ログ | Key の枝自身は、SA タブ形式の Debug ログ（`SpecialAction KEY entry` など）を**出さない** | `KeyOutputAction` は SA タブ形式を出す | Controls では出さない指定を値に足す（W2。Q4） |
 | 状態の鍵 | 合成 SA の**名前**（`Synthetic_Key_{device}_{control}`）。`FindSpecialActionForLogicalKey` により、同じ論理キーの Key 特殊アクションがあればその状態を共有 | 束縛の `Source`（識別用 SA）の名前 | 識別用 SA を同じ名前で作る。共有はしない（Q4＝B の承認済みの動作変更。§2.3） |
+
+**通常出力の消去の対象**: §1.1 の表のとおり。Default（未設定）は消さず、Unbound を含む割り当てのあるボタンは毎フレーム消す。7.8b では Key だけがエンジンの消去に移る。
 
 状態（`ActionInstanceState`）とアクションの実体は、`DefaultActionManager` が **`SpecialAction.name`（大文字小文字を区別しない）**で引く。したがって、識別用 SA は、合成と同じ名前にすれば同じ状態の入れ物を使い、旧経路と新経路が同じ dcs を同時に処理しない限り（ボタン単位の所有で保証）、衝突しない。
 
@@ -81,6 +100,10 @@ dcs 1 つにつき毎フレーム、次を行う。
 ## 4. 作業（Wave）
 
 - **W0（調査。コードは変えない）**: (1) `DS4ControlSettings` を実行中に書き換える箇所（`UpdateSettings`、`Reset`、プロファイルエディターのライブ反映など）を洗い出し、束縛を再構築する必要があるかを判断する。(2) `ProfileApplicationService` の Replace の呼び出し位置と、連結の入れ方。(3) `GetBoolActionMapping` の `IsUsingGyroForControls` と `TriggerInput` の `GyroOutputMode` の一致。結果をこの計画書に追記する。
+- **W0 の結果（2026-10-20。コードは変えていない）**:
+  1. **実行中の設定の書き換え**: プロファイルエディターは、ライブのスロットではなく**専用の編集スロット**（`ControllerLimits.TestProfileIndex`、`ProfileEditor.xaml.cs` 157 行）で `DS4ControlSettings` を編集する（`OutBinding`、`PresetMenuHelper`、`ProfilePresets` はこのスロットの設定を書く）。ライブのスロットの `DS4ControlSettings` を書き換えるのは、プロファイルの読込（`ResetProfile` ＋ 読込）だけで、その後に `ApplyProfile` が `PublishBindings`（`ProfileApplicationService.cs` 310〜333 行）を呼ぶ。`BackingStore.UpdateDS4CSetting`／`UpdateDS4CExtra`／`UpdateDS4CKeyType` は呼び出し元が 0 件。結論: **SA タブの束縛と同じ時点（プロファイル適用の完了時）で作れば、追随が要る経路はない**。読込の途中の書き換えを旧経路は直接読んでいたが、新経路は適用時のスナップショットを使うため、むしろ安全になる。
+  2. **束縛の差し替えの位置**: 差し替えは `ProfileApplicationService.PublishBindings` の 1 か所だけ（`_actionRegistry.Replace(device, _bindingBuilderProvider().Build(device))`）。連結は、`ActionBindingBuilder` が省略可能な依存 `IControlBindingBuilder` を受け取り、`Build(device)` の結果に Controls の束縛を連結して返す形にする（`IActionBindingBuilder` と `ProfileApplicationService` のコンストラクターは変えない。影響が最小）。**Q5＝A の方針（同じ一覧に連結）のまま、実装の位置を確定した**。
+  3. **ジャイロの判定**: `IsUsingGyroForControls`（`GyroOutputMode == Controls`）は `TriggerInput` の判定と同じ。違いは閾値のみ（`GetBoolActionMapping` は `gryodirs > 0`／`< 0`、`TriggerInput` は ±67）。Controls 用の判定は、`GetBoolActionMapping` どおり `> 0`／`< 0` を使う（W2 の一致テストで全コントロールを比べる）。
 - **W1（特性化。旧・新の両経路の Theory。新経路の指定でも、W1 の時点では旧経路が処理する）**: テスト足場 `ControlsKeyTestScope`（`SpecialActionTestScope` と同じ方式。dcs を設定して、`MapCustom` の 1 フレームを流す）。内容: 押下・解放（ボタン、スティックの方向、L2／R2）、Toggle、ScanCode、エイリアスのネイティブキー、押していないフレームの通常出力の消去（スティックの方向・トリガーを含む）、押したままのプロファイル適用・切断、シフト／Extras を持つ dcs が旧経路に残ること、ログの比較（NLog の `MemoryTarget`）。**Q4＝B の差のテストは、旧・新で期待値を分けて明示する**。
 - **W2（実装）**: §3.2 のとおり。
 - **W3（割り当てとロールバック）**: 押している間／押していない間の割り当て（SA の基準と同じ、同数の未押下を基準にする方式）、`MigratedControlKinds` から `Key` を外すと旧経路に戻ること、ソースのガード（`Mapping` の呼び出しが 1 か所、1 ファイル 1 型）。
@@ -99,11 +122,11 @@ dcs 1 つにつき毎フレーム、次を行う。
 
 ## 6. 質問
 
-- **Q1（所有の範囲）**: A（推奨）: §1 の条件（Key、シフトなし、Extras なし、Lightbar マクロなし）を満たす dcs だけ。他は旧経路が全体を処理する。B: Extras を持つ dcs も 7.8b で扱う（7.8e の作業が前倒しになり、範囲が広がる）。
-- **Q2（押下の判定の入れ方）**: A（推奨）: 別のインターフェース `IControlTriggerInput` を新設し、`TriggerInput` が実装する。既存の `ITriggerInput` と偽物は変えない。B: `ITriggerInput` に `IsControlActive` を足す（偽物の更新が要る）。
-- **Q3（通常出力の消去）**: A（推奨）: `BindingPolicy.ErasesOutputEveryFrame` を追加し、エンジンが消す（出力の責務をエンジンに統一）。B: 消去は `Mapping` が従来どおり `ResetToDefaultValue` を呼ぶ（変更は小さいが、消去が 2 か所に分かれる）。
-- **Q4（ログ）**: A（推奨）: Controls の Key は、SA タブ形式のログ（`SpecialAction KEY entry` など）を出さない（旧経路も出していない）。旧ディスパッチャ内部の Trace（`DispatchInputEdge`、`DispatchTriggerEdge: firing established` など）は、7.1〜7.7 と同じく新経路では出ない。`KeyAction` 以降のログは変わらない。B: SA タブ形式のログも出す（旧経路にないログが増える）。
-- **Q5（束縛の置き場）**: A（推奨）: SA タブの束縛と同じレジストリの一覧に連結する（入力アクションの型で見分ける）。B: Controls 用の別の領域をレジストリに足す（インターフェースと偽物の更新が要る）。
+- **Q1（所有の範囲）**【承認: A。2026-10-20】: A（推奨）: §1 の条件（Key、シフトなし、Extras なし、Lightbar マクロなし）を満たす dcs だけ。他は旧経路が全体を処理する。B: Extras を持つ dcs も 7.8b で扱う（7.8e の作業が前倒しになり、範囲が広がる）。
+- **Q2（押下の判定の入れ方）**【承認: A。2026-10-20】: A（推奨）: 別のインターフェース `IControlTriggerInput` を新設し、`TriggerInput` が実装する。既存の `ITriggerInput` と偽物は変えない。B: `ITriggerInput` に `IsControlActive` を足す（偽物の更新が要る）。
+- **Q3（通常出力の消去）**【承認: A。2026-10-20】: A（推奨）: `BindingPolicy.ErasesOutputEveryFrame` を追加し、エンジンが消す（出力の責務をエンジンに統一）。B: 消去は `Mapping` が従来どおり `ResetToDefaultValue` を呼ぶ（変更は小さいが、消去が 2 か所に分かれる）。
+- **Q4（ログ）**【承認: A。2026-10-20】: A（推奨）: Controls の Key は、SA タブ形式のログ（`SpecialAction KEY entry` など）を出さない（旧経路も出していない）。旧ディスパッチャ内部の Trace（`DispatchInputEdge`、`DispatchTriggerEdge: firing established` など）は、7.1〜7.7 と同じく新経路では出ない。`KeyAction` 以降のログは変わらない。B: SA タブ形式のログも出す（旧経路にないログが増える）。
+- **Q5（束縛の置き場）**【承認: A。2026-10-20】: A（推奨）: SA タブの束縛と同じレジストリの一覧に連結する（入力アクションの型で見分ける）。B: Controls 用の別の領域をレジストリに足す（インターフェースと偽物の更新が要る）。
 
 ## 7. 完了条件
 
