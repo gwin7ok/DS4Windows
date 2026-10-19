@@ -3,7 +3,7 @@
 作成日: 2026-10-19  
 対象ブランチ: `For-DI-migration-work`  
 上位: `Phase8-Step7-Plan.md`（§3 共通の手順、§4 の 7.4）、`Phase8-Step7-2-Plan.md`・`Phase8-Step7-3-Plan.md`（進め方）、`Phase8-Step1-Trigger-Spec-Ledger.md`（Program）  
-状態: **Q1〜Q3 を推奨どおり承認（2026-10-19）。7.4-W1 完了（ビルド・テスト成功）。7.4-W1・W2 完了、W3 実装済み（結果待ち）**
+状態: **Q1〜Q3 を推奨どおり承認（2026-10-19）。7.4-W1 完了（ビルド・テスト成功）。7.4 Program 完了（W1〜W3 成功、実機確認 U-31 の主要 4 項目が合格）**
 
 ---
 
