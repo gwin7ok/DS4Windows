@@ -3,7 +3,7 @@
 作成日: 2026-10-19  
 対象ブランチ: `For-DI-migration-work`  
 上位: `Phase8-Step7-Plan.md`（§3 共通の手順、§4 の 7.2）、`Phase8-Step2-Design.md` §6・§7、`Phase8-Step2-Intent-Decisions.md`（項目 4: Key の `uTrigger` は無視）、`Phase8-Step7-Completion-Report.md`（7.1 の結果）  
-状態: **Q1〜Q4 を推奨どおり承認（2026-10-19）。7.2-W1〜W3 完了（ビルド・テスト成功）。7.2-W4: 経過報告書に追記済み、実機確認 U-28 の結果待ち**
+状態: **Q1〜Q4 を推奨どおり承認（2026-10-19）。7.2 Key 完了（W1〜W4。実機確認 U-28 の 8 項目が合格）**
 
 ---
 
