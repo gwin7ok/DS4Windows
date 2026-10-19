@@ -167,8 +167,8 @@ namespace DS4WindowsTests
             Assert.IsType<ActionBindingRegistry>(registry);
             Assert.Same(registry, TestHost.GetService<IActionRegistry>());
             Assert.Same(options, TestHost.GetService<BindingMigrationOptions>());
-            // 本番の既定の一覧（Phase8-Step7: PR ごとに 1 種別ずつ足す。現在は 7.1 の Button、7.2 の Key、7.3 の Macro、7.4 の Program）
-            Assert.Equal(new[] { SpecialAction.ActionTypeId.Button, SpecialAction.ActionTypeId.Key, SpecialAction.ActionTypeId.Macro, SpecialAction.ActionTypeId.Program }, options.MigratedTypes.OrderBy(t => t.ToString(), StringComparer.Ordinal).ToArray());
+            // 本番の既定の一覧（Phase8-Step7: PR ごとに 1 種別ずつ足す。現在は 7.1 の Button、7.2 の Key、7.3 の Macro、7.4 の Program、7.5a の Profile）
+            Assert.Equal(new[] { SpecialAction.ActionTypeId.Button, SpecialAction.ActionTypeId.Key, SpecialAction.ActionTypeId.Macro, SpecialAction.ActionTypeId.Profile, SpecialAction.ActionTypeId.Program }, options.MigratedTypes.OrderBy(t => t.ToString(), StringComparer.Ordinal).ToArray());
         }
 
         // ---- 出力の文脈の拡張 ----

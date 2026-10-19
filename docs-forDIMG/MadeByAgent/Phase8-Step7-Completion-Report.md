@@ -157,3 +157,36 @@
 ### 4. 次
 
 7.5 Profile ＋ 復帰（最大のリスク。短い個別の計画書 `Phase8-Step7-5-Plan.md` を、U-31 の合格後に作成する）。
+
+---
+
+## 7.5a Profile（切替のみ。復帰を持たないもの）
+
+計画書: `Phase8-Step7-5-Plan.md`（Q1〜Q6 を推奨どおり承認）。復帰（7.5b）は、7.5a の実機確認の合格後に、個別の計画書を作る。
+
+### 1. 成果
+
+| Wave | 内容 | 主なファイル |
+|---|---|---|
+| W1 | `SpecialActionTestScope(migrated)` が Profile も移行。切替・復帰の回数、ガード、実行中、AND 条件、遅延、押している最中の適用を旧・新で比較。フレームの打ち切り・キーの解放・連鎖の防止は、旧経路で固定 | `Phase8Step75aW1ProfileSwitchDualPathTests` |
+| W2 | `IGatedOutputAction`（立ち上がりの実行の条件の口）を新設。`ProfileSwitchAction`（エンジン用のコンストラクター）に、連鎖の防止・ログ・トリガーのボタンのキーの解放・切替後のフレームの打ち切りを実装。ビルダーは、復帰を持つ Profile の束縛を作らない（`ProfileUntriggerMigrated = false`）。W1 の後半を旧・新の両経路に | `IGatedOutputAction`、`TriggerDispatchEngine`、`ProfileSwitchAction`、`ActionBindingBuilder`、`Phase8Step75aW2ProfileLogTests` |
+| W3 | 既定のスイッチに Profile を追加（`ServiceRegistration` の 1 行）。ロールバック、復帰つきが旧経路のままであること、割り当て、性能のテスト | `ServiceRegistration`、`Phase8Step75aW3ProfileSwitchTests` |
+
+- **ロールバック**: `ServiceRegistration` の `migration.MigratedTypes.Add(SpecialAction.ActionTypeId.Profile);` の 1 行を外してビルドし直す。
+
+### 2. 検証結果・判断の記録
+
+1. Q2: 連鎖の防止は、`IGatedOutputAction`＋既存の `IMapping.CaptureProfileUntrigger`・`GetUseTempProfile` で評価（`IMapping` のメンバーは 10 のまま）。
+2. Q3: `prevProfileName`／`prevProfileWasTemporary`（書くだけで、読む場所がない）は、新経路で移していない。Step8 で、旧コードと一緒に削除を提案する。
+3. Q4: ログ（Trace 4 行、Debug 3 行）、トリガーのボタンのキーの解放、切替後のフレームの打ち切りは、旧経路と同じ条件・順序（W1 の旧・新の比較と、`Phase8Step75aW2ProfileLogTests`）。「Trigger keys」は、旧経路と同じく常に `<none>`。
+4. 既存テストの更新（設計どおり）: `Phase8Step5W1BuilderTests` の Profile の検査（復帰つきは束縛を作らない）、ホストの既定の一覧の検査（Button、Key、Macro、Profile、Program）。
+5. `ControlServicePr4ShimEquivalenceTests.GetterShims_UsedOnReportPath_DoNotAllocate`: コメントにあるウォームアップが実際になく、初回 JIT の割り当てで偶発的に失敗したため、ウォームアップを足した（判定は 0 バイトのまま）。
+6. 割り当て: 立ち上がりを除いて、新経路 ≦ 旧経路（4 KB の誤差まで）。性能: `MapCustom_ProfileMigrated_PerFrameTime_IsReported` の出力を、旧経路と並べて +5% 以内を確認する（測定値: 未記入）。
+
+### 3. 実機確認（ユーザー）
+
+チェックリスト §11 の **U-32**（8 項目）。確認の前に、起動ログの「built at … (commit …)」で、ビルドを確認する。合格してから 7.5b（復帰）へ進む（Q5＝A）。
+
+### 4. 次
+
+7.5b 復帰（個別の計画書 `Phase8-Step7-5b-Plan.md` を、U-32 の合格後に作成）。

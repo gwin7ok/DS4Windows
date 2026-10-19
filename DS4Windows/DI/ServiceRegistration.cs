@@ -156,6 +156,7 @@ namespace DS4Windows.DI
                 migration.MigratedTypes.Add(SpecialAction.ActionTypeId.Key);      // 7.2 Key
                 migration.MigratedTypes.Add(SpecialAction.ActionTypeId.Macro);    // 7.3 Macro
                 migration.MigratedTypes.Add(SpecialAction.ActionTypeId.Program);  // 7.4 Program
+                migration.MigratedTypes.Add(SpecialAction.ActionTypeId.Profile);  // 7.5a Profile（切替のみ。復帰を持つ Profile は、7.5b まで束縛を作らず、旧経路が処理する）
                 return migration;
             });
             services.AddSingleton<ITriggerDispatchEngine, TriggerDispatchEngine>();
