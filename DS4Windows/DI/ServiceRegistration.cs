@@ -146,10 +146,15 @@ namespace DS4Windows.DI
             services.AddSingleton<IManagedActionManager, DefaultActionManager>();
             services.AddSingleton<IControllerRegistry, DefaultControllerRegistry>();
 
-            // Phase8-Step4 W1: 統一トリガーディスパッチの束縛の置き場と、種別ごとの移行のスイッチ（既定は空＝本番の挙動は旧経路のまま）。
-            // エンジン（W3）の Mapping への注入は W4。
+            // Phase8-Step4 W1: 統一トリガーディスパッチの束縛の置き場と、種別ごとの移行のスイッチ。
+            // Phase8-Step7（Q2＝A）: 本番の既定の一覧は、種別ごとの PR で 1 行ずつ足す。ロールバックは、その 1 行を外すだけ（旧経路は Step8 まで残す）。
             services.AddSingleton<IActionRegistry, ActionBindingRegistry>();
-            services.AddSingleton<BindingMigrationOptions>();
+            services.AddSingleton(sp =>
+            {
+                var migration = new BindingMigrationOptions();
+                migration.MigratedTypes.Add(SpecialAction.ActionTypeId.Button);   // 7.1 Button
+                return migration;
+            });
             services.AddSingleton<ITriggerDispatchEngine, TriggerDispatchEngine>();
             // Phase8-Step5 W2（Q3＝A）: 束縛のビルダー。ProfileApplicationService は Func で遅延解決する（ビルダー → IProfileSwitcher → IProfileApplicationService の循環を避ける）
             services.AddSingleton<IActionBindingBuilder, ActionBindingBuilder>();

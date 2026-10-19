@@ -1,7 +1,7 @@
 # フェーズ8 進捗管理文書: Controls／SpecialActions の統一トリガーディスパッチ
 
 最終更新日: 2026-10-19  
-状態: **Step1〜3 完了（2026-10-19）。Step1〜4・Step4b 完了。Step1〜6 完了。Step7 は 7.1-W1 完了、W2 実装済み（結果待ち）**。Phase7・7b・7c は完了。実機確認 U-24（Phase7c W1）は確認済み（2026-10-19）  
+状態: **Step1〜3 完了（2026-10-19）。Step1〜4・Step4b 完了。Step1〜6 完了。Step7 は 7.1-W1・W2 完了、W3 実装済み（結果待ち）**。Phase7・7b・7c は完了。実機確認 U-24（Phase7c W1）は確認済み（2026-10-19）  
 計画書: `Phase8-Unified-Trigger-Dispatch-Plan.md`（D1〜D5 確定。2026-10-19 追記は事実誤認の訂正）。Step1: `Phase8-Step1-Plan.md`
 
 ---
@@ -17,7 +17,7 @@
 | **Step4b（挿入）** | `LoadProfile`/`SaveProfile` の節ごとの分解、機械的な整理 2 件（Step5 の準備。仮称 Phase7d） | **完了**（W1〜W11 成功。2026-10-19） | `Phase8-Step4b-Plan.md`、`Phase8-Step4b-Audit.md`、`Phase8-Step4b-Completion-Report.md` |
 | Step5 | 束縛のビルダー（`IActionBindingBuilder`）と、登録簿への `Replace`（移行対象が空のまま） | **完了**（W1〜W3 成功。2026-10-19） | `Phase8-Step5-Plan.md`、`Phase8-Step5-Completion-Report.md` |
 | Step6 | 切断・接続との連携（エンジンと登録簿の後始末、`ClearState`／`ClearPendingRestore` の削除） | **完了**（W1〜W3 成功。2026-10-19） | `Phase8-Step6-Plan.md`、`Phase8-Step6-Completion-Report.md` |
-| Step7 | 種別ごとの切替（1 種別＝1PR。7.1 Button → 7.2 Key → 7.3 Macro → 7.4 Program → 7.5 Profile → 7.6 実機を要する種別 → 7.7 MultiAction → 7.8 Controls タブ） | **Q1〜Q8 承認済み（推奨どおり。2026-10-19）。7.1-W1 完了**（テスト足場 `migrated`、Button テストの新旧 Theory 化、`Phase8Step7W1ButtonDualPathTests`）。**W2 実装済み**（TRACE ログの引き継ぎ、`OnProfileApplied` の新旧差の特性化、順序・二重ディスパッチ。ビルド・テストの結果待ち） | `Phase8-Step7-Plan.md` |
+| Step7 | 種別ごとの切替（1 種別＝1PR。7.1 Button → 7.2 Key → 7.3 Macro → 7.4 Program → 7.5 Profile → 7.6 実機を要する種別 → 7.7 MultiAction → 7.8 Controls タブ） | **Q1〜Q8 承認済み（推奨どおり。2026-10-19）。7.1-W1 完了**（テスト足場 `migrated`、Button テストの新旧 Theory 化、`Phase8Step7W1ButtonDualPathTests`）。**W2 完了**（TRACE ログの引き継ぎ、`OnProfileApplied` は新旧差が出ないため未接続のまま、順序・二重ディスパッチ）。**W3 実装済み**（既定のスイッチに Button を追加［`ServiceRegistration` の 1 行］、ロールバックのテスト、ベンチマーク。実機確認 U-27 を追加。ビルド・テストの結果待ち） | `Phase8-Step7-Plan.md` |
 | Step8 | 旧ディスパッチと系統 B の削除 | 未着手 | - |
 | Step9 | 総合検証・実機確認 | 未着手 | - |
 

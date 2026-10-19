@@ -159,7 +159,7 @@ namespace DS4WindowsTests
         }
 
         [Fact]
-        public void Host_RegistersTheRegistryAndTheOptions_AsSingletons_WithAnEmptyDefault()
+        public void Host_RegistersTheRegistryAndTheOptions_AsSingletons_WithTheMigratedTypesDefault()
         {
             var registry = TestHost.GetService<IActionRegistry>();
             var options = TestHost.GetService<BindingMigrationOptions>();
@@ -167,7 +167,8 @@ namespace DS4WindowsTests
             Assert.IsType<ActionBindingRegistry>(registry);
             Assert.Same(registry, TestHost.GetService<IActionRegistry>());
             Assert.Same(options, TestHost.GetService<BindingMigrationOptions>());
-            Assert.Empty(options.MigratedTypes); // 本番の既定は空（旧経路のまま）
+            // 本番の既定の一覧（Phase8-Step7: PR ごとに 1 種別ずつ足す。現在は 7.1 の Button だけ）
+            Assert.Equal(new[] { SpecialAction.ActionTypeId.Button }, options.MigratedTypes.ToArray());
         }
 
         // ---- 出力の文脈の拡張 ----

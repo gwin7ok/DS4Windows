@@ -3,7 +3,7 @@
 作成日: 2026-10-19  
 対象ブランチ: `For-DI-migration-work`  
 上位: `Phase8-Unified-Trigger-Dispatch-Plan.md`（§5 の Step7）、`Phase8-Step2-Design.md` §23〜§28（並行期間のしくみ、PR 一覧、テストの流用、ロールバック）、`Phase8-Step2-Intent-Decisions.md`、`Phase8-Step1-Trigger-Spec-Ledger.md`、`Phase8-Step4/5/6-Completion-Report.md`  
-状態: **Q1〜Q8 を推奨どおり承認（2026-10-19）。7.1-W1 完了（ビルド・テスト成功）。7.1-W2 実装済み（結果待ち）**
+状態: **Q1〜Q8 を推奨どおり承認（2026-10-19）。7.1-W1・W2 完了（ビルド・テスト成功）。7.1-W3 実装済み（結果待ち）**
 
 ---
 
@@ -87,7 +87,7 @@
 
 ### 5.2 7.1-W2 新経路の不足分
 
-**W2 の実装（2026-10-19。ユーザーのビルド・テストの結果待ち）**
+**W2 の実装（2026-10-19。ビルド・テスト成功）**
 
 - **TRACE ログの引き継ぎ（Q6＝A）**: `ButtonOutputAction.ApplyFrame` が、旧 Stage3 と `Mapping.LogSpecialActionTrace` の 7 種のログ（立ち上がり／立ち下がり、出力のたびの組み合わせ、立ち上がりの「Trigger detected for SA」「maps to」「Trigger keys」「output combo」）を、同じ文言・レベル・順序で出す。`AppLogger.IsTraceEnabled` が偽のときは文字列を作らない。口として、`IFrameOutputTrace`（`FrameOutput` が出力の組み合わせを返す）を新設。既存のインターフェース（`IFrameOutput`／`IOutputContext`）は変えていない。
   - **既存の不具合の記録**: 旧 `LogSpecialActionTrace` の「Trigger keys for SA」は、状態を渡さずに `getBoolSpecialActionMapping` を呼ぶため例外（握りつぶし）となり、常に `<none>` を記録している。ログの文言を変えない方針により、新経路も同じ `<none>` を出す。成立中のトリガーの一覧を出す改善は、別途ユーザーの承認を得て行う候補。
@@ -100,6 +100,14 @@
 - 順序の回帰テスト（フレームの打ち切りの前後のアクション）と、二重ディスパッチの検出（Step2-Design §23.4）を足す。
 
 ### 5.3 7.1-W3 スイッチと性能
+
+**W3 の実装（2026-10-19。ユーザーのビルド・テストの結果待ち）**
+
+- `ServiceRegistration`: `BindingMigrationOptions` をファクトリー登録にし、既定の一覧に Button を **1 行**足した（`migration.MigratedTypes.Add(SpecialAction.ActionTypeId.Button); // 7.1 Button`）。`BindingMigrationOptions` の既定のコンストラクターは空のまま（単体テストの前提を保つ）。
+- 既存テストの更新（Q3 に基づく唯一の変更）: `Phase8Step4W1ContractTests.Host_RegistersTheRegistryAndTheOptions_…` の「ホストの既定は空」の検査を、「既定は Button のみ」に変えた（設計どおりの変更。他の旧経路のテストは `SpecialActionTestScope` が一覧を空にして実行するため、期待値は不変）。
+- `Phase8Step7W3ButtonSwitchTests`（3 本）: ホストの既定が Button のみ／ソースに `MigratedTypes.Add` の行が 1 行／その行を外すと束縛が作られず旧経路（Stage3）が Cross を出力する（ロールバック）。
+- 性能: `Phase8Step4MapCustomBenchmarkTests.MapCustom_ButtonMigrated_PerFrameTime_IsReported`（Button を移行した状態の MapCustom の費用を出力。旧経路の測定と並べて、+5% 以内を確認する）。割り当ては、`Phase8Step4W4WiringTests.TheNewPath_DoesNotAddAllocationsToTheFrame`（新経路 ≦ 旧経路）が検査する。
+- 実機確認: チェックリストに **U-27** を追加（W4 でユーザーが実施）。
 
 - `ServiceRegistration` の既定の一覧に `Button` を足す（1 行）。
 - ベンチマークに、Button を移行した状態の測定を足す。許容は +5% 以内。割り当て 0。

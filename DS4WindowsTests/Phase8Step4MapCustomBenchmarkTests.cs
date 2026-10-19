@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Linq;
 using DS4Windows;
 using DS4Windows.Actions;
 using DS4Windows.DI;
@@ -54,6 +55,24 @@ namespace DS4WindowsTests
 
                 Measure(t, "idle   ", idle);
                 Measure(t, "pressed", pressed);
+            }
+        }
+
+        /// <summary>Phase8-Step7 7.1-W3: Button を新経路（エンジン）で処理した状態の <c>MapCustom</c> の費用（出力のみ。旧経路の <see cref="MapCustom_PerFrameTime_IsReported"/> と並べて見る。許容: +5% 以内）。</summary>
+        [Fact]
+        public void MapCustom_ButtonMigrated_PerFrameTime_IsReported()
+        {
+            using (var t = new SpecialActionTestScope(true))
+            {
+                AddActions(t);
+
+                DS4State idle = SpecialActionTestScope.Neutral();
+                DS4State pressed = SpecialActionTestScope.Neutral();
+                pressed.Cross = true;
+                pressed.L1 = true;
+
+                Measure(t, "idle   (migrated)", idle);
+                Measure(t, "pressed(migrated)", pressed);
             }
         }
 
