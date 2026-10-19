@@ -3,7 +3,7 @@
 作成日: 2026-10-20  
 対象ブランチ: `For-DI-migration-work`  
 上位: `Phase8-Step2b-ControlsTab-Design.md`（§3.3 の F、§10。Q8＝B［実機確認は Step9］、Q9＝A［値渡し］）、`Phase8-Step7-8a-Plan.md`（土台）、`Phase8-Step7-8b-Plan.md`（Key。Default と Unbound の表）、`Phase8-Step7-8e-Plan.md`（Extras。1 ボタン複数束縛）、`Phase8-Step7-1-Plan.md`（SA の Button）  
-状態: **Q1〜Q7 を承認済み（2026-10-20。ユーザー。Q5＝B、他は推奨）。W0（調査）完了［§5.1］。Q8＝A も承認済み。7.8f-1 の W1（旧経路の特性化テスト）を実装［ビルド・テストの結果待ち。§5.2］。製品コードは未着手**
+状態: **Q1〜Q7 を承認済み（2026-10-20。ユーザー。Q5＝B、他は推奨）。W0（調査）完了［§5.1］。Q8＝A も承認済み。7.8f-1 の W1（旧経路の特性化テスト）完了［ビルド・テスト成功。§5.2］。次は 7.8f-1 の W2（実装）。製品コードは未着手**
 
 ---
 
@@ -88,7 +88,7 @@ Controls タブの「Button」の割り当て（ボタン・軸・トリガー�
 5. **マウスの移動**: `getMouseMapping` は、`ctrl.ProfileSettingsService.LSModInfo／RSModInfo`（デッドゾーン）、`ButtonMouseInfos[device].activeButtonSensitivity`（Extras の感度の一時変更が書く値）、`deltaAccelProcessors[device]`（`Mapping` が持つ、スティックの加速の処理）、`ctrl.DS4Controllers[device].lastTimeElapsedDouble`（経過時間）を使う。→ 7.8f-3 で、これらを渡す窓口（ポート）が要る。
 6. **ホイールの状態**: `oldnow` は、アナログのホイールの 10ms の間隔と、`Commit` のデジタルのホイールの 150ms の繰り返しで**共有**されている（アナログのホイールが動くと、デジタルのホイールの繰り返しが遅れる）。`pressagain` は、どこにも true を代入しておらず、常に偽（実質、使われていない）。ホイールを直接送る（`PerformMouseWheelEvent`）ため、出力の文脈の `OutputHandler` で足りる（ポートは不要）。→ Q5＝B（束縛ごとに持つ）で、この共有はなくなる。
 
-### 5.2 7.8f-1 W1 の実装（2026-10-20。ビルド・テストの結果待ち）
+### 5.2 7.8f-1 W1 の実装（2026-10-20。ビルド・テスト成功）
 
 - `ControlsKeyTestScope.MapButton`（Button の割り当て）を足した。`Phase8Step78fW1ControlsPadCharacterizationTests`（旧・新の両経路）: ボタン → パッドのボタン［移して元を消す］、スティックの向き［幅 55］・トリガー［100 超］の判定、ボタン → 軸［両端へ］、アナログの軸 → 軸［値を保つ］、ボタン／トリガー → トリガー、Unbound［消すだけ］、割り当てた軸の反対側の Default の素通し、割り当てなしの素通し、Button＋Extras。
 - 範囲外（7.8f-1 の W2 で確かめる）: 2 段トリガー、ジャイロスワイプ、ジャイロの閾値（Q3＝A の変更点）。
