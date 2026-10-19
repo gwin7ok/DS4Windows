@@ -171,8 +171,9 @@ namespace DS4WindowsTests
 
             IReadOnlyList<IActionBinding> all = TestHost.GetService<IControlBindingBuilder>().Build(Device);
 
-            Assert.Equal(4, all.Count);
+            Assert.Equal(5, all.Count);
             Assert.Single(all, b => b.Outputs[0] is ControlExtrasOutputAction);
+            Assert.Single(all, b => b.Outputs[0] is ControlPassthroughOutputAction);   // 7.8f-1: LXNeg の反対側（LXPos）は Default なので、素通し
             List<IActionBinding> bindings = all.Where(b => b.Outputs[0] is KeyOutputAction).ToList();
             Assert.Equal(3, bindings.Count);
             Assert.All(bindings, b =>

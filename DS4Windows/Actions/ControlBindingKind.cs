@@ -13,8 +13,8 @@ namespace DS4Windows.Actions
         /// <summary>Macro の出力（7.8c）。</summary>
         Macro,
 
-        /// <summary>Button（X360 のボタン、マウス、ホイール）の出力（7.8f）。</summary>
-        Button,
+        /// <summary>Button のうち、パッド（X360 の軸・トリガー・ボタン）への割り当てと、Default の軸の素通し（7.8f-1）。マウス、ホイールは 7.8f-2・7.8f-3 で別の区分にする。</summary>
+        ButtonPad,
 
         /// <summary>Extras（振動、ライトバー、感度。7.8e）。Lightbar マクロは、7.8e で機能を廃止した。</summary>
         Extras,

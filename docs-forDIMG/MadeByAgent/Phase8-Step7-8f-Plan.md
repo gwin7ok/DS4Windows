@@ -3,7 +3,7 @@
 作成日: 2026-10-20  
 対象ブランチ: `For-DI-migration-work`  
 上位: `Phase8-Step2b-ControlsTab-Design.md`（§3.3 の F、§10。Q8＝B［実機確認は Step9］、Q9＝A［値渡し］）、`Phase8-Step7-8a-Plan.md`（土台）、`Phase8-Step7-8b-Plan.md`（Key。Default と Unbound の表）、`Phase8-Step7-8e-Plan.md`（Extras。1 ボタン複数束縛）、`Phase8-Step7-1-Plan.md`（SA の Button）  
-状態: **Q1〜Q7 を承認済み（2026-10-20。ユーザー。Q5＝B、他は推奨）。W0（調査）完了［§5.1］。Q8＝A も承認済み。7.8f-1 の W1（旧経路の特性化テスト）完了［ビルド・テスト成功。§5.2］。次は 7.8f-1 の W2（実装）。製品コードは未着手**
+状態: **Q1〜Q7 を承認済み（2026-10-20。ユーザー。Q5＝B、他は推奨）。W0（調査）完了［§5.1］。Q8＝A も承認済み。7.8f-1 の W1 完了［ビルド・テスト成功。§5.2］。7.8f-1 の W2（実装）を実施［ビルド・テストの結果待ち。§5.3］。製品コードは未着手**
 
 ---
 
@@ -92,6 +92,15 @@ Controls タブの「Button」の割り当て（ボタン・軸・トリガー�
 
 - `ControlsKeyTestScope.MapButton`（Button の割り当て）を足した。`Phase8Step78fW1ControlsPadCharacterizationTests`（旧・新の両経路）: ボタン → パッドのボタン［移して元を消す］、スティックの向き［幅 55］・トリガー［100 超］の判定、ボタン → 軸［両端へ］、アナログの軸 → 軸［値を保つ］、ボタン／トリガー → トリガー、Unbound［消すだけ］、割り当てた軸の反対側の Default の素通し、割り当てなしの素通し、Button＋Extras。
 - 範囲外（7.8f-1 の W2 で確かめる）: 2 段トリガー、ジャイロスワイプ、ジャイロの閾値（Q3＝A の変更点）。
+
+### 5.3 7.8f-1 W2 の実装（2026-10-20。ビルド・テストの結果待ち）
+
+- 新設（`Actions/`）: `IAnalogTriggerInput`（軸の値・バイト値の読み取り。`TriggerInput` が実装。旧 `GetXYAxisMapping`／`GetByteMapping` の移植）、`IPadFrameOutput`（軸のペア・トリガー・ボタンの書き込み。`FrameOutput` が実装。`IFrameOutput` は変えない）、`IEvaluatedFrameOutputAction`（束縛が評価されたフレームだけ呼ばれる出力の契約）、`PadTargetKind`／`PadBindingValues`、`ControlPadOutputAction`（旧 `customMapQueue` の処理と同じ規則）、`ControlPassthroughOutputAction`（Default の軸の素通し）。
+- 変更: `TriggerDispatchEngine.ApplyFrameOutputs`（評価されたフレームだけ `IEvaluatedFrameOutputAction` を呼ぶ。旧経路が dcs を処理しなかったフレームには出力しない）、`ControlBindingKind`（未使用だった `Button` を `ButtonPad` に置き換え）、`ControlBindingBuilder`（`TryInterpretPad`、パッドの束縛［割り当てたボタンの通常の出力を毎フレーム消す。Unbound／None は出力のない束縛］、素通しの束縛［反対側の向きが割り当て済みの Default の軸だけ］、Extras との順序 ＝ Extras → パッド）、`ServiceRegistration`（`ButtonPad` の 1 行）。`Mapping` は変更なし（旧経路の枝とキューは Step8 まで残る）。
+- 所有の条件: Button でパッド（X360 の軸・トリガー・ボタン、Unbound／None）を出力先とし、Toggle でないもの。マウス・ホイール・タッチパッドクリック、Toggle つきは、旧経路のまま（7.8f-2・7.8f-3）。素通しが要る Default の軸（反対側が割り当て済み）は、`ButtonPad` が有効なときだけ新経路。外すと、その Default の軸は、Extras も含めて旧経路が処理する。
+- 7.8e の見落としの是正: Default の軸に Extras があり、反対側が割り当て済みのとき、7.8e の時点では、新経路が所有し、旧経路の素通し（`else` 枝）が走らなくなっていた。上の条件で、`ButtonPad` が有効なときは素通しの束縛を足し、無効なときは旧経路に任せる。
+- テスト: `Phase8Step78fW2ControlsPadTests`（アナログ値が旧関数と全コントロールで一致、解釈、ビルダー、評価されたフレームだけの出力、ロールバック、割り当て、ソースのガード）。W1 のテストは、新経路も走る。更新: 7.8e／7.8b の束縛数の検査、既定の区分の一覧。
+- ジャイロスワイプの割り当ては、7.8f-3 で扱う（ビルダーの対象外のまま）。
 
 ## 6. 質問と決定
 

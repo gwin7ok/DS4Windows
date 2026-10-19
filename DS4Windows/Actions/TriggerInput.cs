@@ -8,7 +8,7 @@ namespace DS4Windows.Actions
     /// <see cref="IsActive"/> の本体は、現行の <c>Mapping.getBoolSpecialActionMapping</c> をそのまま移したもの（意味は同じ。<c>TriggerInputTests</c> が全コントロールで比較する）。
     /// 割り当て 0: 判定は表の参照のみ。前フレームの表（<c>_previousFields</c>）は、コンストラクターで 1 回だけ作り、最初に <see cref="WasActive"/> が呼ばれたときだけ展開する（遅延）。
     /// </summary>
-    public sealed class TriggerInput : IControlTriggerInput
+    public sealed class TriggerInput : IAnalogTriggerInput
     {
         // L2／R2 の「押された」とみなす値、軸の「倒された」とみなす幅、ジャイロの「傾いた」とみなす値（現行の getBoolSpecialActionMapping と同じ）
         private const byte TriggerThreshold = 100;
@@ -142,6 +142,152 @@ namespace DS4Windows.Actions
                 }
 
                 result = gyroForControls ? safeTest : false;
+            }
+
+            return result;
+        }
+
+        /// <summary>
+        /// Phase8-Step7 7.8f-1（Q4＝A）: 現行の <c>Mapping.GetXYAxisMapping</c> と同じ値。128 が中立。
+        /// <paramref name="positive"/> は、出力先が正の向きの軸か（旧 <c>alt</c>）。割り当て 0。
+        /// </summary>
+        public byte GetAxisValue(DS4Controls control, bool positive)
+        {
+            const byte falseVal = 128;
+            if (_fields == null) return 0;
+
+            int controlNum = (int)control;
+            if (controlNum < 0 || controlNum >= DS4StateFieldMapping.mappedType.Length) return 0;
+
+            DS4StateFieldMapping fieldMap = _fields;
+            bool alt = positive;
+            byte trueVal = alt ? (byte)255 : (byte)0;
+            byte result = 0;
+            DS4StateFieldMapping.ControlType controlType = DS4StateFieldMapping.mappedType[controlNum];
+
+            if (controlType == DS4StateFieldMapping.ControlType.Button)
+            {
+                result = fieldMap.buttons[controlNum] ? trueVal : falseVal;
+            }
+            else if (controlType == DS4StateFieldMapping.ControlType.AxisDir)
+            {
+                byte axisValue = fieldMap.axisdirs[controlNum];
+
+                switch (control)
+                {
+                    case DS4Controls.LXNeg: if (!alt) result = axisValue < falseVal ? axisValue : falseVal; else result = axisValue < falseVal ? (byte)(255 - axisValue) : falseVal; break;
+                    case DS4Controls.LYNeg: if (!alt) result = axisValue < falseVal ? axisValue : falseVal; else result = axisValue < falseVal ? (byte)(255 - axisValue) : falseVal; break;
+                    case DS4Controls.RXNeg: if (!alt) result = axisValue < falseVal ? axisValue : falseVal; else result = axisValue < falseVal ? (byte)(255 - axisValue) : falseVal; break;
+                    case DS4Controls.RYNeg: if (!alt) result = axisValue < falseVal ? axisValue : falseVal; else result = axisValue < falseVal ? (byte)(255 - axisValue) : falseVal; break;
+                    default: if (!alt) result = axisValue > falseVal ? (byte)(255 - axisValue) : falseVal; else result = axisValue > falseVal ? axisValue : falseVal; break;
+                }
+            }
+            else if (controlType == DS4StateFieldMapping.ControlType.Trigger)
+            {
+                if (alt)
+                    result = (byte)(128.0f + fieldMap.triggers[controlNum] / 2.0078740157480315f);
+                else
+                    result = (byte)(128.0f - fieldMap.triggers[controlNum] / 2.0078740157480315f);
+            }
+            else if (controlType == DS4StateFieldMapping.ControlType.Touch)
+            {
+                result = fieldMap.buttons[controlNum] ? trueVal : falseVal;
+            }
+            else if (controlType == DS4StateFieldMapping.ControlType.SwipeDir)
+            {
+                if (alt)
+                    result = (byte)(_mouse != null ? 128.0f + fieldMap.swipedirs[controlNum] / 2f : 0);
+                else
+                    result = (byte)(_mouse != null ? 128.0f - fieldMap.swipedirs[controlNum] / 2f : 0);
+            }
+            else if (controlType == DS4StateFieldMapping.ControlType.GyroDir)
+            {
+                bool saControls = _profileSettings.GyroOutputMode[_device] == GyroOutMode.Controls;
+                int gyro = fieldMap.gryodirs[controlNum];
+
+                switch (control)
+                {
+                    case DS4Controls.GyroXPos:
+                    case DS4Controls.GyroZPos:
+                        if (saControls && gyro > 0)
+                        {
+                            if (alt) result = (byte)Math.Min(255, 128 + gyro); else result = (byte)Math.Max(0, 128 - gyro);
+                        }
+                        else result = falseVal;
+                        break;
+                    case DS4Controls.GyroXNeg:
+                    case DS4Controls.GyroZNeg:
+                        if (saControls && gyro < 0)
+                        {
+                            if (alt) result = (byte)Math.Min(255, 128 + -gyro); else result = (byte)Math.Max(0, 128 - -gyro);
+                        }
+                        else result = falseVal;
+                        break;
+                    default: break;
+                }
+            }
+
+            return result;
+        }
+
+        /// <summary>Phase8-Step7 7.8f-1（Q4＝A）: 現行の <c>Mapping.GetByteMapping</c> と同じ値（0〜255）。割り当て 0。</summary>
+        public byte GetByteValue(DS4Controls control)
+        {
+            if (_fields == null) return 0;
+
+            int controlNum = (int)control;
+            if (controlNum < 0 || controlNum >= DS4StateFieldMapping.mappedType.Length) return 0;
+
+            DS4StateFieldMapping fieldMap = _fields;
+            byte result = 0;
+            DS4StateFieldMapping.ControlType controlType = DS4StateFieldMapping.mappedType[controlNum];
+
+            if (controlType == DS4StateFieldMapping.ControlType.Button)
+            {
+                result = (byte)(fieldMap.buttons[controlNum] ? 255 : 0);
+            }
+            else if (controlType == DS4StateFieldMapping.ControlType.AxisDir)
+            {
+                byte axisValue = fieldMap.axisdirs[controlNum];
+
+                switch (control)
+                {
+                    case DS4Controls.LXNeg: result = (byte)(axisValue - 128.0f >= 0 ? 0 : -(axisValue - 128.0f) * 1.9921875f); break;
+                    case DS4Controls.LYNeg: result = (byte)(axisValue - 128.0f >= 0 ? 0 : -(axisValue - 128.0f) * 1.9921875f); break;
+                    case DS4Controls.RXNeg: result = (byte)(axisValue - 128.0f >= 0 ? 0 : -(axisValue - 128.0f) * 1.9921875f); break;
+                    case DS4Controls.RYNeg: result = (byte)(axisValue - 128.0f >= 0 ? 0 : -(axisValue - 128.0f) * 1.9921875f); break;
+                    default: result = (byte)(axisValue - 128.0f < 0 ? 0 : (axisValue - 128.0f) * 2.0078740157480315f); break;
+                }
+            }
+            else if (controlType == DS4StateFieldMapping.ControlType.Trigger)
+            {
+                result = fieldMap.triggers[controlNum];
+            }
+            else if (controlType == DS4StateFieldMapping.ControlType.Touch)
+            {
+                result = (byte)(_mouse != null && fieldMap.buttons[controlNum] ? 255 : 0);
+            }
+            else if (controlType == DS4StateFieldMapping.ControlType.SwipeDir)
+            {
+                result = (byte)(_mouse != null ? fieldMap.swipedirs[controlNum] : 0);
+            }
+            else if (controlType == DS4StateFieldMapping.ControlType.GyroDir)
+            {
+                bool saControls = _profileSettings.GyroOutputMode[_device] == GyroOutMode.Controls;
+                int gyro = fieldMap.gryodirs[controlNum];
+
+                switch (control)
+                {
+                    case DS4Controls.GyroXPos:
+                    case DS4Controls.GyroZPos:
+                        result = (byte)(saControls ? Math.Min(255, gyro * 2) : 0);
+                        break;
+                    case DS4Controls.GyroXNeg:
+                    case DS4Controls.GyroZNeg:
+                        result = (byte)(saControls ? Math.Min(255, -gyro * 2) : 0);
+                        break;
+                    default: break;
+                }
             }
 
             return result;

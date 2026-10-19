@@ -19,7 +19,7 @@ namespace DS4Windows.Services
     /// 識別用の <c>SpecialAction</c>（状態の鍵）は、旧経路の合成と同じ名前（<c>Synthetic_Key_{device}_{control}</c>）で作る。
     /// 旧経路の <c>FindSpecialActionForLogicalKey</c> による Key 特殊アクションとの状態の共有は、再現しない（Q4＝B。承認済みの動作変更）。
     /// </summary>
-    // TODO(Phase8-Step7 7.8f。規約 2.4): Button の区分は、7.8f の PR でここに足す。
+    // TODO(Phase8-Step7 7.8f-2・7.8f-3。規約 2.4): Button のうち、マウスのボタン・タッチパッドクリック・ホイール・Toggle（7.8f-2）と、アナログのホイール・マウスの移動（7.8f-3）は、それぞれの PR でここに足す。ジャイロスワイプの割り当ては、7.8f-3 で扱う。
     public sealed class ControlBindingBuilder : IControlBindingBuilder
     {
         private readonly BindingMigrationOptions _options;
@@ -43,20 +43,21 @@ namespace DS4Windows.Services
             bool keys = _options.IsControlMigrated(ControlBindingKind.Key);
             bool macros = _options.IsControlMigrated(ControlBindingKind.Macro) && _macroPlayer != null;
             bool extras = _options.IsControlMigrated(ControlBindingKind.Extras) && _extrasPort != null;
-            if (!keys && !macros && !extras) return Array.Empty<IActionBinding>();
+            bool pads = _options.IsControlMigrated(ControlBindingKind.ButtonPad);
+            if (!keys && !macros && !extras && !pads) return Array.Empty<IActionBinding>();
 
             ControlSettingsGroup group = _profileSettings.GetControlSettingsGroup(device);
             if (group == null) return Array.Empty<IActionBinding>();
 
             var result = new List<IActionBinding>();
-            Add(device, group.LS, keys, macros, extras, result);
-            Add(device, group.RS, keys, macros, extras, result);
-            Add(device, group.L2, keys, macros, extras, result);
-            Add(device, group.L2FullPull, keys, macros, extras, result);
-            Add(device, group.R2, keys, macros, extras, result);
-            Add(device, group.R2FullPull, keys, macros, extras, result);
-            Add(device, group.ControlButtons, keys, macros, extras, result);
-            Add(device, group.ExtraDeviceButtons, keys, macros, extras, result);
+            Add(device, group.LS, keys, macros, extras, pads, result);
+            Add(device, group.RS, keys, macros, extras, pads, result);
+            Add(device, group.L2, keys, macros, extras, pads, result);
+            Add(device, group.L2FullPull, keys, macros, extras, pads, result);
+            Add(device, group.R2, keys, macros, extras, pads, result);
+            Add(device, group.R2FullPull, keys, macros, extras, pads, result);
+            Add(device, group.ControlButtons, keys, macros, extras, pads, result);
+            Add(device, group.ExtraDeviceButtons, keys, macros, extras, pads, result);
 
             return result.Count == 0 ? (IReadOnlyList<IActionBinding>)Array.Empty<IActionBinding>() : result.ToArray();
         }
@@ -118,15 +119,56 @@ namespace DS4Windows.Services
             return true;
         }
 
-        private void Add(int device, List<DS4ControlSettings> settings, bool keys, bool macros, bool extras, List<IActionBinding> result)
+        private void Add(int device, List<DS4ControlSettings> settings, bool keys, bool macros, bool extras, bool pads, List<IActionBinding> result)
         {
             if (settings == null) return;
             for (int i = 0; i < settings.Count; i++)
-                Add(device, settings[i], keys, macros, extras, result);
+                Add(device, settings[i], keys, macros, extras, pads, result);
         }
 
-        // dcs の部品（Extras、通常の割り当て）は、すべて新経路で扱えるときだけ束縛にする。一部でも扱えなければ、1 つも作らず、旧経路が dcs 全体を処理する
-        private void Add(int device, DS4ControlSettings dcs, bool keys, bool macros, bool extras, List<IActionBinding> result)
+        /// <summary>
+        /// Phase8-Step7 7.8f-1: Button のうち、パッド（X360 の軸・トリガー・ボタン）への割り当ての解釈。出力先が Unbound／None なら、消すだけ（<paramref name="eraseOnly"/>）。
+        /// マウス・ホイール・タッチパッドクリックへの割り当て（7.8f-2・7.8f-3）と、Toggle つき（Toggle は 7.8f-2 で扱う）は偽（旧経路が処理する）。
+        /// </summary>
+        public static bool TryInterpretPad(DS4ControlSettings dcs, out PadBindingValues values, out bool eraseOnly)
+        {
+            values = default;
+            eraseOnly = false;
+            if (dcs == null) return false;
+            if (dcs.actionType != DS4ControlSettings.ActionType.Button) return false;
+            if (dcs.keyType.HasFlag(DS4KeyType.Toggle)) return false;
+
+            X360Controls xbox = dcs.action.actionBtn;
+            if (xbox == X360Controls.None || xbox == X360Controls.Unbound)
+            {
+                eraseOnly = true;
+                return true;
+            }
+
+            if (xbox < X360Controls.LXNeg || xbox > X360Controls.Start) return false;
+
+            DS4Controls output = X360ControlTables.reverseX360ButtonMapping[(int)xbox];
+            PadTargetKind kind = output >= DS4Controls.LXNeg && output <= DS4Controls.RYPos ? PadTargetKind.Axis
+                : output == DS4Controls.L2 || output == DS4Controls.R2 ? PadTargetKind.Trigger
+                : PadTargetKind.Button;
+            values = new PadBindingValues(dcs.control, output, kind);
+            return true;
+        }
+
+        // 軸の Default で、反対側の向きが割り当て済み（Key／Macro／Button のどれでも、割り当てたボタンの消去が軸のペアの両方を中立にする）なら、素通しが要る
+        private bool NeedsPassthrough(int device, DS4ControlSettings dcs)
+        {
+            int control = (int)dcs.control;
+            if (control < 0 || control >= DS4StateFieldMapping.mappedType.Length) return false;
+            if (DS4StateFieldMapping.mappedType[control] != DS4StateFieldMapping.ControlType.AxisDir) return false;
+
+            int relation = control % 2 == 0 ? control - 1 : control + 1;
+            DS4ControlSettings partner = _profileSettings.GetDS4CSetting(device, (DS4Controls)relation);
+            return partner != null && partner.actionType != DS4ControlSettings.ActionType.Default;
+        }
+
+        // dcs の部品（Extras、通常の割り当て、Default の素通し）は、すべて新経路で扱えるときだけ束縛にする。一部でも扱えなければ、1 つも作らず、旧経路が dcs 全体を処理する
+        private void Add(int device, DS4ControlSettings dcs, bool keys, bool macros, bool extras, bool pads, List<IActionBinding> result)
         {
             if (dcs == null) return;
 
@@ -137,8 +179,13 @@ namespace DS4Windows.Services
             switch (dcs.actionType)
             {
                 case DS4ControlSettings.ActionType.Default:
-                    if (hasExtras) AddExtras(device, dcs, extrasValues, result);
-                    break;
+                    {
+                        bool passthrough = NeedsPassthrough(device, dcs);
+                        if (passthrough && !pads) return;   // 素通しは旧経路が行う（Extras も含め、dcs 全体を旧経路が処理する）
+                        if (hasExtras) AddExtras(device, dcs, extrasValues, result);
+                        if (passthrough) AddPassthrough(device, dcs, result);
+                        break;
+                    }
                 case DS4ControlSettings.ActionType.Key:
                     if (keys && TryInterpretKey(dcs, out KeyBindingValues values))
                     {
@@ -153,9 +200,44 @@ namespace DS4Windows.Services
                         AddMacro(device, dcs, steps, result);
                     }
                     break;
+                case DS4ControlSettings.ActionType.Button:
+                    if (pads && TryInterpretPad(dcs, out PadBindingValues pad, out bool eraseOnly))
+                    {
+                        if (hasExtras) AddExtras(device, dcs, extrasValues, result);
+                        AddPad(device, dcs, pad, eraseOnly, result);
+                    }
+                    break;
                 default:
-                    break;   // Button は 7.8f まで旧経路
+                    break;
             }
+        }
+
+        // 設計: Phase8-Step7-8f-Plan.md §3.2。パッドへの割り当て。割り当てたボタンの通常の出力は、毎フレーム消す（Controls の規則）。値の出力は、評価されたフレームごとに、全 dcs のあと（Stage3 と同じ段階）で書く。
+        // 出力先が Unbound／None のときは、出力を持たない束縛（消すだけ）
+        private void AddPad(int device, DS4ControlSettings dcs, PadBindingValues values, bool eraseOnly, List<IActionBinding> result)
+        {
+            var identity = new SpecialAction($"Synthetic_Pad_{device}_{(int)dcs.control}", "Synthetic", "Pad", "Pad", 0, string.Empty);
+            identity.type = "Pad";
+            identity.controls = identity.name;
+
+            var policy = new BindingPolicy(respectsFreshPressGuard: false, suppressesTriggerButtons: false, resetsTriggerOutput: false,
+                erasesOutputEveryFrame: true);
+            IOutputAction[] outputs = eraseOnly ? Array.Empty<IOutputAction>() : new IOutputAction[] { new ControlPadOutputAction(identity, values) };
+            result.Add(new TriggerBinding(new ControlButtonInputAction(identity.name, dcs.control, ControlBindingKind.ButtonPad, ControlJudgement.Assignment),
+                outputs, policy, identity, -1));
+        }
+
+        // 設計: Phase8-Step7-8f-Plan.md §3.2（Q2＝A）。Default の軸の素通し。Default は通常の出力を消さない（消すのは、反対側の向きの割り当て）
+        private void AddPassthrough(int device, DS4ControlSettings dcs, List<IActionBinding> result)
+        {
+            var identity = new SpecialAction($"Synthetic_PadPassthrough_{device}_{(int)dcs.control}", "Synthetic", "PadPassthrough", "PadPassthrough", 0, string.Empty);
+            identity.type = "PadPassthrough";
+            identity.controls = identity.name;
+
+            var policy = new BindingPolicy(respectsFreshPressGuard: false, suppressesTriggerButtons: false, resetsTriggerOutput: false,
+                erasesOutputEveryFrame: false);
+            result.Add(new TriggerBinding(new ControlButtonInputAction(identity.name, dcs.control, ControlBindingKind.ButtonPad, ControlJudgement.Assignment),
+                new IOutputAction[] { new ControlPassthroughOutputAction(identity, dcs.control) }, policy, identity, -1));
         }
 
         // 設計: Phase8-Step7-8e-Plan.md §3.2。Extras は Controls の判定（Assignment）で、通常の割り当てとは別の束縛にする。

@@ -167,6 +167,12 @@ namespace DS4Windows.Actions
                             try { frameOutput.ApplyFrame(ctx, established, rising); }
                             catch (Exception ex) { LogException(ex); }
                         }
+                        else if (rt.Stamp[i] == rt.Frame && outputs[o] is IEvaluatedFrameOutputAction evaluatedOutput)
+                        {
+                            // Phase8-Step7 7.8f-1: このフレームで評価された束縛だけ（旧経路が dcs を処理したフレームだけ、アナログの値を出す）
+                            try { evaluatedOutput.ApplyEvaluatedFrame(ctx, established); }
+                            catch (Exception ex) { LogException(ex); }
+                        }
                     }
 
                     rt.Prev[i] = established;

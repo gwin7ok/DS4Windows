@@ -8,7 +8,7 @@ namespace DS4Windows.Actions
     /// 中身は、現行の <c>Mapping.ResetToDefaultValue</c> と、Stage3（Synchronous Button SpecialAction handling）の出力の分岐をそのまま移したもの
     /// （<c>FrameOutputTests</c> が現行のメソッドと比較する）。まだ <c>Mapping</c> には配線していない（W4）。
     /// </summary>
-    public sealed class FrameOutput : IFrameOutput, IFrameOutputTrace
+    public sealed class FrameOutput : IPadFrameOutput, IFrameOutputTrace
     {
         private DS4StateFieldMapping _outputFields;
         private SyntheticState _deviceState;
@@ -46,6 +46,34 @@ namespace DS4Windows.Actions
             {
                 fieldMap.buttons[controlNum] = false;
             }
+        }
+
+        // Phase8-Step7 7.8f-1: 旧 customMapQueue の処理（Mapping の全 dcs のあと）が出力の表へ書いていたものと同じ
+        public void SetAxisPair(DS4Controls outControl, byte value)
+        {
+            DS4StateFieldMapping fields = _outputFields;
+            if (fields == null) return;
+
+            int tempOutControl = (int)outControl;
+            int controlRelation = tempOutControl % 2 == 0 ? tempOutControl - 1 : tempOutControl + 1;
+            fields.axisdirs[tempOutControl] = value;
+            fields.axisdirs[controlRelation] = value;
+        }
+
+        public void SetTrigger(DS4Controls outControl, byte value)
+        {
+            DS4StateFieldMapping fields = _outputFields;
+            if (fields == null) return;
+
+            fields.triggers[(int)outControl] = value;
+        }
+
+        public void SetButton(DS4Controls outControl)
+        {
+            DS4StateFieldMapping fields = _outputFields;
+            if (fields == null) return;
+
+            fields.buttons[(int)outControl] = true;
         }
 
         // Phase8-Step7 7.1-W2: 現行の Stage3 の「出力の組み合わせ」のログ（Mapping の Stage3／LogSpecialActionTrace）と同じ順序・書式
