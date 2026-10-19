@@ -260,5 +260,28 @@
 
 ### 4. 次
 
-7.6c BatteryCheck（Q8＝B: `WheelRecalibrate` のログを削除）。
+7.6c BatteryCheck（次節）。
+
+## 7.6c BatteryCheck
+
+### 1. 成果
+
+- 窓口 `IBatteryCheckPort`（`Actions/`）と本番の実装 `DefaultBatteryCheckPort`、出力 `BatteryCheckAction` を新設。ライトバーの強制色（静的な `DS4LightBar`）と通知（`AppLogger.LogToTray`）は、窓口の内側に閉じ込めた（Q6＝A）。
+- `ActionBindingBuilder` が BatteryCheck の束縛を作る（ポートがなければ作らない）。`ServiceRegistration` の既定の一覧に BatteryCheck の 1 行を追加（ロールバックはその 1 行を外す）。
+- **ログの変更（Q8＝B。承認済み）**: BatteryCheck の立ち上がりで出ていた、コピーの名残りのログ「SpecialAction WheelRecalibrate: …」を削除（新経路・旧経路とも）。BatteryCheck が実行されたことは、既存の Debug「SpecialAction BatteryCheck: …」で分かる。
+- そのほかの違い: `details` の読み取りは最初の 1 回、遷移の進みと保存した色は出力アクションのインスタンスが持つ（適用で束縛が作り直されると 0 から）、不正な `details` は何もしない。
+
+### 2. 検証結果・判断の記録
+
+1. 実機がないテストでは、記録用のポートで、順序（通知 → 強制色 → 遷移）、遷移の 2 ずつ・100 まで、離したときの戻し、フラグ（通知／ライトバー）、Fresh-press ガード、AND 条件を確認。
+2. ログ: 立ち上がりで Trace 4 行 ＋ Debug 1 行。`WheelRecalibrate` は出ない。
+3. 割り当て: 押している間（1000 フレーム）、同じ件数でトリガー未成立の基準 ＋ 4 KB 以内。
+
+### 3. 実機確認（ユーザー）
+
+チェックリスト §11 の **U-37**。確認の前に、起動ログの「built at … (commit …)」でビルドを確認する。
+
+### 4. 次
+
+7.6d ステアリング較正。
 

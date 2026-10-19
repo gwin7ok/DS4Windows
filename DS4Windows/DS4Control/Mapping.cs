@@ -4915,7 +4915,7 @@ namespace DS4Windows
                                 }
 
                                 LogActionDoneCountOnTrigger(index, action, device, ctrl, "BatteryCheck");
-                                LogActionDoneCountOnTrigger(index, action, device, ctrl, "WheelRecalibrate");
+                                // Phase8-Step7 7.6c（Q8＝B。承認済み）: ここにあった WheelRecalibrate という名前のログ（LogActionDoneCountOnTrigger の 2 回目）は、ステアリング較正の分岐からのコピーの名残りだったため削除した
                                 DispatchOrSetBeingTriggered(action, device, true);
                             }
                             else if (action.typeID == SpecialAction.ActionTypeId.SASteeringWheelEmulationCalibrate)

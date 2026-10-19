@@ -3,7 +3,7 @@
 作成日: 2026-10-20  
 対象ブランチ: `For-DI-migration-work`  
 上位: `Phase8-Step7-Plan.md`（§4 の 7.6、Q8＝A）、`Phase8-Step7-5-Plan.md`（進め方）、`Phase8-Step2-Design.md`（§6、§9、§15、§23）、`Phase8-Step2-Intent-Decisions.md`（項目 5・6）、`Phase8-Step1-Trigger-Spec-Ledger.md`（§3〜§5）  
-状態: **Q1〜Q8 を承認（2026-10-20。Q3 と Q8 は B に変更、ほかは推奨 A）。7.6a GyroCalibrate はビルド・テスト成功（実機確認 U-35 は先送り。2026-10-20 ユーザー判断）。7.6b DisconnectBT はビルド・テスト成功（実機確認 U-36 は先送り。2026-10-20 ユーザー判断）。7.6c・7.6d は 7.6b の後**  
+状態: **Q1〜Q8 を承認（2026-10-20。Q3 と Q8 は B に変更、ほかは推奨 A）。7.6a GyroCalibrate はビルド・テスト成功（実機確認 U-35 は先送り。2026-10-20 ユーザー判断）。7.6b DisconnectBT はビルド・テスト成功（実機確認 U-36 は先送り。2026-10-20 ユーザー判断）。7.6c BatteryCheck は実装済み（ビルド・テストの結果待ち）。7.6d は 7.6c の後**  
 調査の方法: 旧ループ（`Mapping.MapCustomAction`）と、実機ログ（2026-10-20）の読解。テストでの確認は未実施
 
 ---
@@ -130,6 +130,16 @@
 - **ユーザー決定（2026-10-20）: 「切断の成功／失敗」は、案 A（`DS4Device.DisconnectBT()` が Windows の API の本当の結果を返すようにする）で実装したい。実施の判断は、実機確認 U-36 の後に行う（今は実装しない）。**
   - 案 A の注意: ほかの呼び出し元（アイドル切断［`DS4Device.cs` 1380 行付近］、`DS3Device`／`DualSenseDevice`／`JoyConDevice` の同種の箇所、`DisconnectWireless`）が、成功＝true を前提にしているため、変更の前に、全呼び出し元の影響の確認が要る。別の計画書にする想定。
   - 案 B（新経路で、命令の後、一定時間たっても接続されたままなら再試行）は、今回は採らない。
+
+### 7.6c BatteryCheck の実装（2026-10-20）
+
+- 新設: `IBatteryCheckPort`（窓口: コントローラーの有無、通知、ライトバーの色、電池残量、強制色の有効／無効、強制色）、`DefaultBatteryCheckPort`（本番。`Func<IDeviceStateAccessor>` と `Func<ControlService>` を遅延で受ける。静的な `DS4LightBar` と `AppLogger.LogToTray` を、この窓口の内側に閉じ込めた［Q6＝A］）、`BatteryCheckAction`（`IHeldOutputAction`）。配置は `DS4Windows/Actions/`（R3）。
+- 変更: `ActionBindingBuilder`（`IBatteryCheckPort` を省略可で受ける。BatteryCheck の束縛。ポートがなければ作らない）、`ServiceRegistration`（ポートの登録、既定の一覧に BatteryCheck の 1 行）、`Mapping`（**Q8＝B**: BatteryCheck の分岐から、コピーの名残りの `WheelRecalibrate` のログを削除。旧経路も同じにした）。ロールバックは、既定の一覧の 1 行を外す。
+- 動き: 立ち上がり — 通知（`details`［1］）→ ライトバーの色の保存と強制色の有効化（［2］）→ 色の遷移の 1 ステップ → Trace 4 行 → Debug「SpecialAction BatteryCheck: …」。押している間 — 毎フレーム、遷移を 2 ずつ（100 まで）進める。離したとき — 遷移の進みを 0 に戻し、強制色を無効にする。
+- 旧経路との違い（承認済み、または実害のない整理）: (1) `WheelRecalibrate` のログの削除（Q8＝B）。(2) `details` の読み取りを、毎フレームから最初の 1 回に（旧経路は毎フレーム文字列を分割していた。値は変わらない）。(3) 遷移の進み・保存した色は、旧 `Mapping.fadetimer`／`lastColor` ではなく、出力アクションのインスタンスが持つ。プロファイルの適用で束縛が作り直されると、遷移の進みが 0 から始まる（旧経路は、適用をまたいで残っていた。離さずに適用された場合の細かな違い）。(4) 不正な `details` は、何もしない（旧経路は例外で、そのフレームの処理が打ち切られていた）。
+- `Mapping.fadetimer`／`lastColor` は、`Phase8Step1SlotLimitTests` が名前を参照するため、残す（Step8 で、旧コードと一緒に削除を提案）。
+- テスト: `Phase8Step76cBatteryCheckTests`、`RecordingBatteryCheckPort`（記録用）。既存の更新: `SpecialActionTestScope`、`Phase8Step4W1ContractTests`、`Phase8Step7W3ButtonSwitchTests`。
+- 実機確認 U-37。
 
 ## 5. リスクと対応
 
