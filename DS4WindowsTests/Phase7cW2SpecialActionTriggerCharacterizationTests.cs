@@ -12,6 +12,8 @@ namespace DS4WindowsTests
     /// 対象: ボタン種別の Press の出力、トリガーの AND 条件、トリガーボタンの抑制と解除、Fresh-press ガードの解除条件（80ms の連続した未成立）、
     ///       Profile／Program の実行ブロック（ガード中・実行中）、Stage3 の並行変更への耐性。
     /// 範囲外（Phase7c の続き）: Key の Press／Toggle の出力、`uTrigger`／`delayTime`／`pressRelease`、プロファイル切替の復帰とチェーン、`shiftTrigger`。
+    /// Phase8-Step7 7.1-W1: Button 種別のテスト（Press の出力、AND 条件、抑制、Fresh-press）は <c>[Theory]</c> にし、旧経路（<c>migrated: false</c>）と
+    /// 新経路（<c>migrated: true</c>。Button を <c>MigratedTypes</c> に足し、実物のビルダーが作る束縛を登録簿へ登録）の両方で、期待値を変えずに流す（Phase8-Step7-Plan.md §3・Q3）。
     /// `Mapping` の静的な状態と `ActionManager`（静的）を共有するため、<c>ServiceProviderHolder</c> のコレクションで直列に実行する。
     /// </summary>
     [Collection("ServiceProviderHolder")]
@@ -19,10 +21,12 @@ namespace DS4WindowsTests
     {
         // ---- ボタン種別: Press の出力と AND 条件 ----
 
-        [Fact]
-        public void ButtonPress_TriggerHeld_OutputsTargetButton_AndErasesTheTrigger()
+        [Theory]
+        [InlineData(false)]
+        [InlineData(true)]
+        public void ButtonPress_TriggerHeld_OutputsTargetButton_AndErasesTheTrigger(bool migrated)
         {
-            using var t = new SpecialActionTestScope();
+            using var t = new SpecialActionTestScope(migrated);
             t.AddButtonPress("L1");
             DS4State input = SpecialActionTestScope.Neutral();
             input.L1 = true;
@@ -33,10 +37,12 @@ namespace DS4WindowsTests
             Assert.False(output.L1);     // トリガーのボタンは出力から消える
         }
 
-        [Fact]
-        public void ButtonPress_TriggerReleased_OutputsNothing()
+        [Theory]
+        [InlineData(false)]
+        [InlineData(true)]
+        public void ButtonPress_TriggerReleased_OutputsNothing(bool migrated)
         {
-            using var t = new SpecialActionTestScope();
+            using var t = new SpecialActionTestScope(migrated);
             t.AddButtonPress("L1");
 
             DS4State output = t.RunFrame(SpecialActionTestScope.Neutral());
@@ -45,10 +51,12 @@ namespace DS4WindowsTests
             Assert.False(output.L1);
         }
 
-        [Fact]
-        public void ButtonPress_AndCondition_NeedsEveryTriggerButton()
+        [Theory]
+        [InlineData(false)]
+        [InlineData(true)]
+        public void ButtonPress_AndCondition_NeedsEveryTriggerButton(bool migrated)
         {
-            using var t = new SpecialActionTestScope();
+            using var t = new SpecialActionTestScope(migrated);
             t.AddButtonPress("L1/R1");
 
             DS4State onlyL1 = SpecialActionTestScope.Neutral();
@@ -66,11 +74,13 @@ namespace DS4WindowsTests
             Assert.False(full.R1);
         }
 
-        [Fact]
-        public void ButtonPress_IgnoresTheFreshPressGuard_ForPressMode()
+        [Theory]
+        [InlineData(false)]
+        [InlineData(true)]
+        public void ButtonPress_IgnoresTheFreshPressGuard_ForPressMode(bool migrated)
         {
             // 現在の挙動の固定: Stage3 の Press はトリガー成立中のみ出力し、Fresh-press ガードを見ない（Toggle の反転だけがガードを見る）。
-            using var t = new SpecialActionTestScope();
+            using var t = new SpecialActionTestScope(migrated);
             SpecialAction sa = t.AddButtonPress("L1");
             t.StateOf(sa).RequiresFreshPressAfterReset = true;
             DS4State input = SpecialActionTestScope.Neutral();
@@ -83,10 +93,12 @@ namespace DS4WindowsTests
 
         // ---- トリガーボタンの抑制と解除 ----
 
-        [Fact]
-        public void Suppression_AddsEveryTriggerButtonWhileEstablished_AndRemovesEachWhenReleased()
+        [Theory]
+        [InlineData(false)]
+        [InlineData(true)]
+        public void Suppression_AddsEveryTriggerButtonWhileEstablished_AndRemovesEachWhenReleased(bool migrated)
         {
-            using var t = new SpecialActionTestScope();
+            using var t = new SpecialActionTestScope(migrated);
             t.AddButtonPress("L1/R1");
             // Phase8-Step4 W4: 抑制の集合はエンジンの所有。IsSuppressed で観測する
             bool Suppressed(DS4Controls control) => t.Engine.IsSuppressed(t.Device, control);
@@ -112,10 +124,12 @@ namespace DS4WindowsTests
 
         // ---- Fresh-press ガードの解除（トリガーが FreshPressReleaseHoldMs 連続して未成立になるまで） ----
 
-        [Fact]
-        public void FreshPress_WhileTriggerHeld_KeepsTheGuard_AndResetsTheOffTimer()
+        [Theory]
+        [InlineData(false)]
+        [InlineData(true)]
+        public void FreshPress_WhileTriggerHeld_KeepsTheGuard_AndResetsTheOffTimer(bool migrated)
         {
-            using var t = new SpecialActionTestScope();
+            using var t = new SpecialActionTestScope(migrated);
             SpecialAction sa = t.AddButtonPress("L1");
             ActionInstanceState state = t.StateOf(sa);
             state.RequiresFreshPressAfterReset = true;
@@ -129,10 +143,12 @@ namespace DS4WindowsTests
             Assert.Equal(0, state.UntriggeredTimestampTicks);
         }
 
-        [Fact]
-        public void FreshPress_FirstUntriggeredFrame_RecordsTheTimestamp_WithoutReleasingTheGuard()
+        [Theory]
+        [InlineData(false)]
+        [InlineData(true)]
+        public void FreshPress_FirstUntriggeredFrame_RecordsTheTimestamp_WithoutReleasingTheGuard(bool migrated)
         {
-            using var t = new SpecialActionTestScope();
+            using var t = new SpecialActionTestScope(migrated);
             SpecialAction sa = t.AddButtonPress("L1");
             ActionInstanceState state = t.StateOf(sa);
             state.RequiresFreshPressAfterReset = true;
@@ -144,10 +160,12 @@ namespace DS4WindowsTests
             Assert.True(state.RequiresFreshPressAfterReset);
         }
 
-        [Fact]
-        public void FreshPress_UntriggeredLongerThanTheHold_ReleasesTheGuard()
+        [Theory]
+        [InlineData(false)]
+        [InlineData(true)]
+        public void FreshPress_UntriggeredLongerThanTheHold_ReleasesTheGuard(bool migrated)
         {
-            using var t = new SpecialActionTestScope();
+            using var t = new SpecialActionTestScope(migrated);
             SpecialAction sa = t.AddButtonPress("L1");
             ActionInstanceState state = t.StateOf(sa);
             state.RequiresFreshPressAfterReset = true;
@@ -158,10 +176,12 @@ namespace DS4WindowsTests
             Assert.False(state.RequiresFreshPressAfterReset);
         }
 
-        [Fact]
-        public void FreshPress_UntriggeredShorterThanTheHold_KeepsTheGuard()
+        [Theory]
+        [InlineData(false)]
+        [InlineData(true)]
+        public void FreshPress_UntriggeredShorterThanTheHold_KeepsTheGuard(bool migrated)
         {
-            using var t = new SpecialActionTestScope();
+            using var t = new SpecialActionTestScope(migrated);
             SpecialAction sa = t.AddButtonPress("L1");
             // 初回の実行（JIT など）の遅れで閾値をまたがないよう、ウォームアップしてから、記録時刻を「未来」にして経過を負にする
             t.RunFrame(SpecialActionTestScope.Neutral());

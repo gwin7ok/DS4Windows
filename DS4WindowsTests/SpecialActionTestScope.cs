@@ -11,6 +11,9 @@ namespace DS4WindowsTests
     /// <see cref="MappingCharacterizationScope"/> の専用デバイス添字（<see cref="Device"/>）に対し、プロファイルのアクション一覧
     /// （<c>profileActions</c>／<c>profileActionDict</c>／<c>profileActionIndexDict</c>／<c>profileActionCount</c>）と
     /// <c>BackingStore.actions</c> へ、テスト用の <see cref="SpecialAction"/> を登録する。終了時にすべて元へ戻す。
+    /// Phase8-Step7 7.1-W1: コンストラクターの <c>migrated</c> が真なら、Button 種別を <c>BindingMigrationOptions.MigratedTypes</c> に足し、
+    /// <see cref="Add"/> のたびに本番の <c>PublishBindings</c> と同じ経路（<c>IActionBindingBuilder.Build</c> → <c>IActionRegistry.Replace</c>）で束縛を登録する。
+    /// 偽の束縛ではなく、実物のビルダーが作る束縛を使う。終了時に元へ戻す。
     /// <c>MapCustomAction</c> は <c>async void</c> だが、初期化待ちが完了済みの <c>Task</c> のため、最初の実際の <c>await</c>
     /// （タップ判定の <c>Task.Delay</c>、プロファイル適用の <c>Task.Run</c>）までは <c>RunMapCustom</c> の中で同期的に走る。
     /// </summary>
@@ -23,6 +26,9 @@ namespace DS4WindowsTests
         private readonly Dictionary<string, int> _savedIndexDict;
         private readonly int _savedCount;
         private readonly List<SpecialAction> _added = new List<SpecialAction>();
+        private readonly bool _migrated;
+        private readonly DS4Windows.Actions.BindingMigrationOptions _options = TestHost.GetService<DS4Windows.Actions.BindingMigrationOptions>();
+        private readonly SpecialAction.ActionTypeId[] _savedMigrated;
 
         public int Device => MappingCharacterizationScope.Device;
         public MappingCharacterizationScope Scope => _inner;
@@ -45,11 +51,20 @@ namespace DS4WindowsTests
         /// <summary>デバイスのプロファイルのアクション名の一覧（実体。<c>Mapping</c> が生で読む <c>List&lt;string&gt;</c> と同一）。</summary>
         public List<string> ProfileActionNames => _store.profileActions[Device];
 
-        public SpecialActionTestScope()
+        /// <summary>Phase8-Step7: 新経路（統一ディスパッチ）で Button を処理するか。</summary>
+        public bool Migrated => _migrated;
+
+        public SpecialActionTestScope(bool migrated = false)
         {
             Mapping = _inner.Mapper as Mapping;
             if (Mapping == null)
                 throw new InvalidOperationException("IMapping の実体が Mapping ではない");
+
+            _migrated = migrated;
+            _savedMigrated = _options.MigratedTypes.ToArray();
+            _options.MigratedTypes.Clear();
+            if (migrated)
+                _options.MigratedTypes.Add(SpecialAction.ActionTypeId.Button);
 
             _savedNames = _store.profileActions[Device];
             _savedDict = new Dictionary<string, SpecialAction>(_store.profileActionDict[Device]);
@@ -73,7 +88,16 @@ namespace DS4WindowsTests
             _store.profileActionDict[Device][action.name] = action;
             _store.profileActionIndexDict[Device][action.name] = index;
             _store.profileActionCount[Device] = _store.profileActions[Device].Count;
+            if (_migrated)
+                PublishBindings();
             return action;
+        }
+
+        /// <summary>Phase8-Step7: 登録済みの特殊アクションから、本番と同じ経路で束縛を作って登録簿へ差し替える（新経路のときだけ使う）。</summary>
+        public void PublishBindings()
+        {
+            var builder = TestHost.GetService<DS4Windows.Actions.IActionBindingBuilder>();
+            TestHost.GetService<DS4Windows.Actions.IActionRegistry>().Replace(Device, builder.Build(Device));
         }
 
         /// <summary>ボタン種別の特殊アクション（Press。出力は X360 の A ボタン＝DS4 の Cross）を作って登録する。</summary>
@@ -138,7 +162,9 @@ namespace DS4WindowsTests
             if (_switcherField != null)
                 _switcherField.SetValue(_switcherInstance, _savedProfileApp);
 
-            Engine.OnDeviceDisconnected(Device); // 抑制の集合を空にする（旧: suppressedTriggerButtons のクリア）
+            Engine.OnDeviceDisconnected(Device); // 抑制の集合を空にする（旧: suppressedTriggerButtons のクリア）。登録簿の束縛も消える
+            _options.MigratedTypes.Clear();
+            foreach (var type in _savedMigrated) _options.MigratedTypes.Add(type);
             Mapping.deviceRuntime[Device].UntriggerAction = null;
             Mapping.deviceRuntime[Device].UntriggerIndex = -1;
 
