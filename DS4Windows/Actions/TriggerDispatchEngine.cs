@@ -84,13 +84,14 @@ namespace DS4Windows.Actions
                 int c = (int)control;
                 if (rt.ControlCount == 0 || (uint)c >= (uint)rt.ControlIndex.Length) return;
 
-                int i = rt.ControlIndex[c];
-                if (i < 0) return;
+                // Phase8-Step7 7.8e: 1 つのボタンに複数の束縛（Extras → 通常の割り当て）を持てる。ビルダーが並べた順に、鎖をたどって処理する
+                for (int i = rt.ControlIndex[c]; i >= 0; i = rt.ControlNext[i])
+                {
+                    IActionBinding binding = rt.Bindings[i];
+                    if (!IsOwnedBinding(binding)) continue;
 
-                IActionBinding binding = rt.Bindings[i];
-                if (!IsOwnedBinding(binding)) return;
-
-                ProcessBinding(device, rt, i, binding, input, frame);
+                    ProcessBinding(device, rt, i, binding, input, frame);
+                }
             }
         }
 
@@ -312,6 +313,7 @@ namespace DS4Windows.Actions
             lock (rt.Lock)
             {
                 _registry.Clear(device);
+                ResetOutputs(rt, rt.Bindings, null);   // 7.8e（Q6＝B）: 押したままの切断で、効果が残らないように、出力を元に戻す
                 ResetState(rt, null);
                 rt.Pending = null;   // 物理切断では、復帰の合図も消す（適用では消さない。ResetState は触らない）
                 rt.ResetRequested = false;
@@ -337,12 +339,45 @@ namespace DS4Windows.Actions
         {
             IReadOnlyList<IActionBinding> snapshot = _registry.GetBindings(device);
             if (!ReferenceEquals(snapshot, rt.Bindings))
+            {
+                ResetOutputs(rt, rt.Bindings, input);   // 7.8e（Q6＝B）: 差し替え前の出力が、押したまま有効にした効果を元に戻す
                 Rebuild(rt, snapshot);
+            }
 
             if (rt.ResetRequested)
             {
                 rt.ResetRequested = false;
+                ResetOutputs(rt, rt.Bindings, input);
                 ResetState(rt, input);
+            }
+        }
+
+        // Phase8-Step7 7.8e（Q6＝B）: 束縛の差し替え・適用・切断のときに、IResettableOutputAction を実装する出力へ後始末を知らせる。
+        // 有効にしていない出力は何もしない。割り当てが起きるのは、差し替えの瞬間だけ（毎フレームではない）
+        private static void ResetOutputs(DeviceRuntime rt, IReadOnlyList<IActionBinding> bindings, ITriggerInput input)
+        {
+            if (bindings == null) return;
+
+            for (int i = 0; i < bindings.Count; i++)
+            {
+                IReadOnlyList<IOutputAction> outputs = bindings[i]?.Outputs;
+                if (outputs == null) continue;
+
+                for (int o = 0; o < outputs.Count; o++)
+                {
+                    if (outputs[o] is IResettableOutputAction resettable)
+                    {
+                        try
+                        {
+                            rt.Context.Begin(null, input);
+                            resettable.OnReset(rt.Context);
+                        }
+                        catch (Exception ex)
+                        {
+                            LogException(ex);
+                        }
+                    }
+                }
             }
         }
 
@@ -354,6 +389,8 @@ namespace DS4Windows.Actions
             rt.Established = new bool[count];
             rt.Stamp = new int[count];
             rt.Index = new Dictionary<SpecialAction, int>(count);
+            rt.ControlNext = new int[count];
+            Array.Fill(rt.ControlNext, -1);
             rt.ControlCount = 0;
             for (int i = 0; i < count; i++)
             {
@@ -367,13 +404,18 @@ namespace DS4Windows.Actions
                     if (rt.ControlIndex == null || rt.ControlCount == 0)
                     {
                         rt.ControlIndex = rt.ControlIndex ?? new int[ControlTableSize];
+                        rt.ControlTail = rt.ControlTail ?? new int[ControlTableSize];
                         Array.Fill(rt.ControlIndex, -1);
+                        Array.Fill(rt.ControlTail, -1);
                     }
 
                     int control = (int)controlInput.Triggers[0];
                     if ((uint)control < (uint)rt.ControlIndex.Length)
                     {
-                        rt.ControlIndex[control] = i;
+                        // 7.8e: 同じボタンの束縛は、一覧の順に鎖でつなぐ（先頭が ControlIndex、次が ControlNext）
+                        if (rt.ControlIndex[control] < 0) rt.ControlIndex[control] = i;
+                        else rt.ControlNext[rt.ControlTail[control]] = i;
+                        rt.ControlTail[control] = i;
                         rt.ControlCount++;
                     }
                 }
@@ -588,7 +630,9 @@ namespace DS4Windows.Actions
             public bool[] Established;
             public int[] Stamp;
             public Dictionary<SpecialAction, int> Index;
-            public int[] ControlIndex;   // Controls タブの束縛（7.8b）: DS4Controls → Bindings の添字（なしは -1）
+            public int[] ControlIndex;   // Controls タブの束縛（7.8b）: DS4Controls → Bindings の先頭の添字（なしは -1）
+            public int[] ControlTail;    // 7.8e: DS4Controls → 鎖の最後の添字（Rebuild の間だけ使う）
+            public int[] ControlNext;    // 7.8e: 束縛の添字 → 同じボタンの次の束縛の添字（なしは -1）
             public volatile int ControlCount;
             public int Frame = 1;
             public ITriggerInput ReleaseInput;

@@ -52,9 +52,10 @@ namespace DS4WindowsTests
             Assert.False(ControlBindingBuilder.TryInterpretMacro(Macro(null), out _));            // 旧経路は、手順がないと例外になる。新経路は所有しない
             Assert.False(ControlBindingBuilder.TryInterpretMacro(Macro(new int[0]), out _));
 
+            // Extras は、通常の割り当てと直交する部品（7.8e）。Macro の解釈は、Extras の有無を見ない（Extras は別の束縛）
             DS4ControlSettings extras = Macro(Steps);
             extras.extras = "1,2,0,0,0,0,0,0,0";
-            Assert.False(ControlBindingBuilder.TryInterpretMacro(extras, out _));
+            Assert.True(ControlBindingBuilder.TryInterpretMacro(extras, out _));
 
         }
 

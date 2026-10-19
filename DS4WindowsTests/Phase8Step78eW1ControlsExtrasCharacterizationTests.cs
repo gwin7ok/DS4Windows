@@ -43,7 +43,7 @@ namespace DS4WindowsTests
         {
             using var t = new ControlsKeyTestScope(migrated);
             t.MapExtras(DS4Controls.Cross, Full);
-            t.Publish();
+            t.PublishControlsOnly();
 
             t.Run(State());
             Assert.False(t.ForceLight);
@@ -75,7 +75,7 @@ namespace DS4WindowsTests
             // Extras のライトバーが効かなかった。Lightbar マクロ機能の廃止（Q8＝B）とあわせて、条件を外した。旧経路で処理する割り当ても、直った
             using var t = new ControlsKeyTestScope(migrated);
             t.MapExtras(DS4Controls.Cross, Full);
-            t.Publish();
+            t.PublishControlsOnly();
 
             t.Run(State());
             t.Run(State(cross: true));
@@ -92,7 +92,7 @@ namespace DS4WindowsTests
         {
             using var t = new ControlsKeyTestScope(migrated);
             t.MapExtras(DS4Controls.Cross, "0,0,1,1,2,3,0,0,0");
-            t.Publish();
+            t.PublishControlsOnly();
 
             t.Run(State());
             t.Run(State(cross: true));
@@ -109,7 +109,7 @@ namespace DS4WindowsTests
             // 離したときの元に戻す処理は、この dcs がライトバーを強制していなくても、強制を解除する（旧経路の癖。変えない）
             using var t = new ControlsKeyTestScope(migrated);
             t.MapExtras(DS4Controls.Cross, "5,5,0,1,2,3,0,0,0");
-            t.Publish();
+            t.PublishControlsOnly();
 
             t.Run(State());
             DS4LightBar.forcelight[t.Device] = true;   // ほかの強制色の使い手がいる、と仮定する
@@ -128,7 +128,7 @@ namespace DS4WindowsTests
         {
             using var t = new ControlsKeyTestScope(migrated);
             t.MapExtras(DS4Controls.Cross, Full);
-            t.Publish();
+            t.PublishControlsOnly();
 
             t.Run(State());
             t.MouseInfo.tempButtonSensitivity = 3;   // すでに一時の感度がある（ほかの割り当て）
@@ -148,7 +148,7 @@ namespace DS4WindowsTests
         {
             using var t = new ControlsKeyTestScope(migrated);
             t.MapExtras(DS4Controls.Cross, Full);
-            t.Publish();
+            t.PublishControlsOnly();
 
             t.Run(State());
             t.Run(State(cross: true));
@@ -168,7 +168,7 @@ namespace DS4WindowsTests
             using var t = new ControlsKeyTestScope(migrated);
             t.MapExtras(DS4Controls.LXNeg, "0,0,1,1,1,1,0,0,0");
             t.MapExtras(DS4Controls.L2, "0,0,1,2,2,2,0,0,0");
-            t.Publish();
+            t.PublishControlsOnly();
 
             t.Run(State());
             t.Run(State(lx: 100));   // 128 − 100 ＝ 28（SA の幅 55 には届かないが、扇形の判定では押下）
@@ -189,11 +189,11 @@ namespace DS4WindowsTests
         public void TwoButtonsHeldTogether_AreRestoredOnlyAfterBothAreReleased_ForEitherOrder(bool migrated)
         {
             // 旧経路: held がデバイスに 1 つしかないため、2 つ同時に押すと、両方を離すまで元に戻す処理が走らない（どちらを先に離しても）。
-            // W2: 承認済みの動作の変更（Q3＝B）。新経路は、ボタンごとに元に戻すため、migrated の期待値は「先に離した時点で、そのボタンの分を元に戻す」に分ける。
+            // 新経路: 承認済みの動作の変更（Q3＝B）。ボタンごとに元に戻すため、migrated の期待値を分ける。
             using var t = new ControlsKeyTestScope(migrated);
             t.MapExtras(DS4Controls.Cross, "10,10,1,1,1,1,1,0,0");
             t.MapExtras(DS4Controls.Circle, "20,20,1,2,2,2,2,0,0");
-            t.Publish();
+            t.PublishControlsOnly();
 
             t.Run(State());
             t.Run(State(cross: true, circle: true));
@@ -203,14 +203,28 @@ namespace DS4WindowsTests
             _output.WriteLine($"[7.8e W1 {(migrated ? "migrated" : "legacy  ")}] 同時に押したとき、後に処理されるのは {(circleIsLast ? "Circle" : "Cross")}");
 
             // 順序 1: 後に処理されるほうを先に離す
-            t.Run(circleIsLast ? State(cross: true) : State(circle: true));
-            Assert.True(t.ForceLight);
-            Assert.True(t.RumbleActive);
+            DS4State firstOnly = circleIsLast ? State(cross: true) : State(circle: true);
+            t.Run(firstOnly);
+            if (!migrated)
+            {
+                Assert.True(t.ForceLight);   // 旧経路: 両方を離すまで、元に戻らない
+                Assert.True(t.RumbleActive);
+            }
+            else
+            {
+                // 新経路（承認済み。Q3＝B）: 離したボタンの分を元に戻す。押したままのほうは、同じフレームでは先に処理されるため、一瞬途切れ、次のフレームで再び適用する
+                Assert.False(t.ForceLight);
+                Assert.False(t.RumbleActive);
+                t.Run(firstOnly);
+                Assert.True(t.ForceLight);
+                Assert.True(t.RumbleActive);
+            }
+
             t.Run(State());
             Assert.False(t.ForceLight);
             Assert.False(t.RumbleActive);
 
-            // 順序 2: 先に処理されるほうを先に離す
+            // 順序 2: 先に処理されるほうを先に離す（新経路でも、押したままの後のほうが同じフレームで再び適用するため、途切れない）
             t.Run(State(cross: true, circle: true));
             t.Run(circleIsLast ? State(circle: true) : State(cross: true));
             Assert.True(t.ForceLight);
@@ -227,7 +241,7 @@ namespace DS4WindowsTests
         {
             using var t = new ControlsKeyTestScope(migrated);
             t.MapExtras(DS4Controls.Cross, Full);
-            t.Publish();
+            t.PublishControlsOnly();
 
             t.Run(State());
             DS4State output = t.Run(State(cross: true));
@@ -244,7 +258,7 @@ namespace DS4WindowsTests
             using var t = new ControlsKeyTestScope(migrated);
             DS4ControlSettings dcs = t.MapKey(DS4Controls.Cross, 65);
             dcs.extras = Full;
-            t.Publish();
+            t.PublishControlsOnly();
             SpecialAction sa = t.SyntheticFor(DS4Controls.Cross, 65);
 
             t.Run(State());
@@ -267,7 +281,7 @@ namespace DS4WindowsTests
         {
             using var t = new ControlsKeyTestScope(migrated);
             t.MapExtras(DS4Controls.Cross, "x,y,1,a,b,c,d,0,0");
-            t.Publish();
+            t.PublishControlsOnly();
 
             t.Run(State());
             t.Run(State(cross: true));
@@ -286,7 +300,7 @@ namespace DS4WindowsTests
             // 9 個未満だと、途中の欄の参照で例外になり（try で握りつぶす）、そこまでの効果だけが残る。新経路の所有の条件で除外する根拠
             using var t = new ControlsKeyTestScope(migrated);
             t.MapExtras(DS4Controls.Cross, "5,5,1");
-            t.Publish();
+            t.PublishControlsOnly();
 
             t.Run(State());
             t.Run(State(cross: true));
@@ -300,29 +314,38 @@ namespace DS4WindowsTests
         [Theory]
         [InlineData(false)]
         [InlineData(true)]
-        public void ProfileApplyWhileHeld_LeavesTheEffectsOn_OnTheLegacyPath(bool migrated)
+        public void ProfileApplyWhileHeld_LeavesTheEffectsOnlyOnTheLegacyPath(bool migrated)
         {
-            // 押したままプロファイルが切り替わり、新しい割り当てには Extras がない場合: 旧経路は元に戻す処理が走らず、振動・強制色・感度が残る。
-            // W2: 承認済みの動作の変更（Q6＝B）。migrated の期待値は「適用のあと、元に戻っている」に分ける。
+            // 押したままプロファイルが切り替わり、新しい割り当てには Extras がない場合:
+            // 旧経路は元に戻す処理が走らず、振動・強制色・感度が残る。新経路は、承認済みの修正（Q6＝B）で、束縛の差し替えのときに元に戻す
             using var t = new ControlsKeyTestScope(migrated);
             DS4ControlSettings dcs = t.MapExtras(DS4Controls.Cross, Full);
-            t.Publish();
+            t.PublishControlsOnly();
 
             t.Run(State());
             t.Run(State(cross: true));
             Assert.True(t.ForceLight);
 
             dcs.Reset();   // 新しいプロファイル（Extras なし）
-            t.Publish();
+            t.PublishControlsOnly();
             ActionManager.ClearDeviceState(t.Device);
             TestHost.GetService<DS4Windows.Actions.ITriggerDispatchEngine>().OnProfileApplied(t.Device);
             t.Run(State(cross: true));
             t.Run(State());
 
             _output.WriteLine($"[7.8e W1 {(migrated ? "migrated" : "legacy  ")}] 適用のあと: 強制色={t.ForceLight} 振動の記録={t.RumbleActive} 一時の感度={t.MouseInfo.tempButtonSensitivity}");
-            Assert.True(t.ForceLight);
-            Assert.True(t.RumbleActive);
-            Assert.Equal(7, t.MouseInfo.tempButtonSensitivity);
+            if (!migrated)
+            {
+                Assert.True(t.ForceLight);
+                Assert.True(t.RumbleActive);
+                Assert.Equal(7, t.MouseInfo.tempButtonSensitivity);
+            }
+            else
+            {
+                Assert.False(t.ForceLight);
+                Assert.False(t.RumbleActive);
+                Assert.Equal(-1, t.MouseInfo.tempButtonSensitivity);
+            }
         }
 
         [Theory]
@@ -332,7 +355,7 @@ namespace DS4WindowsTests
         {
             using var t = new ControlsKeyTestScope(migrated);
             t.MapExtras(DS4Controls.Cross, Full);
-            t.Publish();
+            t.PublishControlsOnly();
 
             t.Run(State());
             t.Run(State(cross: true));

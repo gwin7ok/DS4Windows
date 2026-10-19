@@ -218,13 +218,13 @@ namespace DS4WindowsTests
         }
 
         [Fact]
-        public void TheHostDefault_MigratesTheKeyAndMacroKinds_AndRegistersTheBuilder()
+        public void TheHostDefault_MigratesTheKeyMacroAndExtrasKinds_AndRegistersTheBuilder()
         {
             var options = TestHost.GetService<BindingMigrationOptions>();
             var builder = TestHost.GetService<IControlBindingBuilder>();
 
-            // Phase8-Step7 7.8b・7.8c: 既定の一覧に Key と Macro（Controls タブ）。7.8d 以降で区分ごとに増える
-            Assert.Equal(new[] { ControlBindingKind.Key, ControlBindingKind.Macro }, options.MigratedControlKinds.OrderBy(k => k.ToString(), StringComparer.Ordinal).ToArray());
+            // Phase8-Step7 7.8b・7.8c・7.8e: 既定の一覧に Key、Macro、Extras（Controls タブ）。7.8f で Button が増える
+            Assert.Equal(new[] { ControlBindingKind.Extras, ControlBindingKind.Key, ControlBindingKind.Macro }, options.MigratedControlKinds.OrderBy(k => k.ToString(), StringComparer.Ordinal).ToArray());
             Assert.IsType<ControlBindingBuilder>(builder);
             Assert.Same(builder, TestHost.GetService<IControlBindingBuilder>());
         }

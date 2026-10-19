@@ -145,6 +145,8 @@ namespace DS4Windows.DI
             services.AddSingleton<IVirtualKBM>(sp => sp.GetRequiredService<OutputKBMHandlerAdapter>());
             services.AddSingleton<IVirtualKBMLifecycle, OutputKBMHandlerLifecycle>();
             services.AddSingleton<IMacroPlayer, DefaultMacroPlayer>();
+            // Phase8-Step7 7.8e: Controls タブの Extras が、振動・ライトバーの強制色・ボタン感度を操作する窓口（ControlService は遅延で解決する）
+            services.AddSingleton<IControlExtrasPort, DefaultControlExtrasPort>();
 
             // Phase6-Step9b-2（F02）: IManagedActionManager と IControllerRegistry の再登録。
             // 2026-09-04（31dddc43、自動プロファイル設定コレクションの追加）で、無関係な差分として 3 件（ほかに IActionRegistry）が
@@ -172,8 +174,9 @@ namespace DS4Windows.DI
                 migration.MigratedTypes.Add(SpecialAction.ActionTypeId.SASteeringWheelEmulationCalibrate); // 7.6d ステアリング較正
                 migration.MigratedTypes.Add(SpecialAction.ActionTypeId.MultiAction); // 7.7b MultiAction
                 migration.MigratedTypes.Add(SpecialAction.ActionTypeId.Profile);  // 7.5a Profile（切替のみ。復帰を持つ Profile は、7.5b まで束縛を作らず、旧経路が処理する）
-                migration.MigratedControlKinds.Add(ControlBindingKind.Key);       // 7.8b Controls タブの Key（シフト・Extras・Lightbar マクロなしの割り当て）
-                migration.MigratedControlKinds.Add(ControlBindingKind.Macro);     // 7.8c Controls タブの Macro（SA の Macro の仕様に合わせる。同じ条件の割り当て）
+                migration.MigratedControlKinds.Add(ControlBindingKind.Key);       // 7.8b Controls タブの Key
+                migration.MigratedControlKinds.Add(ControlBindingKind.Macro);     // 7.8c Controls タブの Macro（SA の Macro の仕様に合わせる）
+                migration.MigratedControlKinds.Add(ControlBindingKind.Extras);    // 7.8e Controls タブの Extras（振動・ライトバー・感度。通常の割り当てとは別の束縛）
                 return migration;
             });
             services.AddSingleton<ITriggerDispatchEngine, TriggerDispatchEngine>();

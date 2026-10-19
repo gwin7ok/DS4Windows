@@ -16,7 +16,7 @@ namespace DS4Windows.Actions
         /// <summary>Button（X360 のボタン、マウス、ホイール）の出力（7.8f）。</summary>
         Button,
 
-        /// <summary>Extras（振動、ライトバー、感度）と Lightbar マクロ（7.8e）。</summary>
+        /// <summary>Extras（振動、ライトバー、感度。7.8e）。Lightbar マクロは、7.8e で機能を廃止した。</summary>
         Extras,
     }
 }

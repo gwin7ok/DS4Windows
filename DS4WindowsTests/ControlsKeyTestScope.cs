@@ -22,6 +22,7 @@ namespace DS4WindowsTests
         public ControlsKeyTestScope(bool migrated)
         {
             Migrated = migrated;
+            ExtrasPort = new RecordingControlExtrasPort(new DefaultControlExtrasPort(() => _inner.Control, _inner.Settings));
             Mapping = _inner.Mapper as Mapping;
             if (Mapping == null)
                 throw new InvalidOperationException("IMapping の実体が Mapping ではない");
@@ -40,6 +41,9 @@ namespace DS4WindowsTests
         }
 
         public bool Migrated { get; }
+
+        /// <summary>Phase8-Step7 7.8e: 新経路の Extras が使う窓口（振動は記録、ライトバーと感度は本番の窓口へ転送）。<see cref="PublishControlsOnly"/> が使う。</summary>
+        public RecordingControlExtrasPort ExtrasPort { get; }
 
         public Mapping Mapping { get; }
 
@@ -86,12 +90,14 @@ namespace DS4WindowsTests
         public bool ForceLight => DS4LightBar.forcelight[Device];
         public DS4Color ForcedColor => DS4LightBar.forcedColor[Device];
         public byte ForcedFlash => DS4LightBar.forcedFlash[Device];
-        public bool RumbleActive => Mapping.extrasRumbleActive[Device];
+        /// <summary>振動が出ているか。旧経路は <c>extrasRumbleActive</c>、新経路は窓口の記録（最後の呼び出しが 0 でない）。</summary>
+        public bool RumbleActive => Mapping.extrasRumbleActive[Device] || ExtrasPort.RumbleOn;
         public ButtonMouseInfo MouseInfo => _inner.Settings.ButtonMouseInfos[Device];
 
         /// <summary>テスト間で、Extras が書く状態（静的配列、感度、振動の記録、旧経路の held）を初期化する。</summary>
         public void ResetExtrasObservables()
         {
+            ExtrasPort.RumbleCalls.Clear();
             DS4LightBar.forcelight[Device] = false;
             DS4LightBar.forcedFlash[Device] = 0;
             DS4LightBar.forcedColor[Device] = default;
@@ -112,6 +118,16 @@ namespace DS4WindowsTests
         public void Publish()
         {
             var builder = TestHost.GetService<IActionBindingBuilder>();
+            TestHost.GetService<IActionRegistry>().Replace(Device, builder.Build(Device));
+        }
+
+        /// <summary>
+        /// Phase8-Step7 7.8e: Controls タブの束縛だけを、記録用の窓口つきのビルダーで組み立てて登録する（SA タブの束縛は含めない）。
+        /// Extras の振動を、新経路でも観察するため（本番の窓口は、実機がないと振動が見えない）。
+        /// </summary>
+        public void PublishControlsOnly()
+        {
+            var builder = new DS4Windows.Services.ControlBindingBuilder(_options, _inner.Settings, TestHost.GetService<IMacroPlayer>(), ExtrasPort);
             TestHost.GetService<IActionRegistry>().Replace(Device, builder.Build(Device));
         }
 

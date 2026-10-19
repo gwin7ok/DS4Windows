@@ -146,9 +146,10 @@ namespace DS4WindowsTests
             button.actionType = DS4ControlSettings.ActionType.Button;
             Assert.False(ControlBindingBuilder.TryInterpretKey(button, out _));
 
+            // Extras は、通常の割り当てと直交する部品（7.8e）。Key の解釈は、Extras の有無を見ない（Extras は別の束縛。ビルダーが dcs 全体の所有を決める）
             DS4ControlSettings extras = Key();
             extras.extras = "1,2,0,0,0,0,0,0,0";
-            Assert.False(ControlBindingBuilder.TryInterpretKey(extras, out _));
+            Assert.True(ControlBindingBuilder.TryInterpretKey(extras, out _));
 
             Assert.False(ControlBindingBuilder.TryInterpretKey(Key(-1), out _));      // 旧経路は範囲外で例外になる。新経路は所有しない
             Assert.False(ControlBindingBuilder.TryInterpretKey(Key(70000), out _));
@@ -165,12 +166,15 @@ namespace DS4WindowsTests
             t.MapKey(DS4Controls.Cross, 65);
             t.MapKey(DS4Controls.LXNeg, 66, DS4KeyType.Toggle);
             DS4ControlSettings withExtras = t.MapKey(DS4Controls.Circle, 67);
-            withExtras.extras = "1,2,0,0,0,0,0,0,0";   // 条件を満たさない
+            withExtras.extras = "1,2,0,0,0,0,0,0,0";   // 7.8e: Extras つきも新経路が処理する（Extras の束縛 ＋ Key の束縛）
             t.MapKey(DS4Controls.GyroSwipeLeft, 69);                        // 対象外
 
-            IReadOnlyList<IActionBinding> bindings = TestHost.GetService<IControlBindingBuilder>().Build(Device);
+            IReadOnlyList<IActionBinding> all = TestHost.GetService<IControlBindingBuilder>().Build(Device);
 
-            Assert.Equal(2, bindings.Count);
+            Assert.Equal(4, all.Count);
+            Assert.Single(all, b => b.Outputs[0] is ControlExtrasOutputAction);
+            List<IActionBinding> bindings = all.Where(b => b.Outputs[0] is KeyOutputAction).ToList();
+            Assert.Equal(3, bindings.Count);
             Assert.All(bindings, b =>
             {
                 Assert.IsType<ControlButtonInputAction>(b.Input);

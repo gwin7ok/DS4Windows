@@ -167,13 +167,13 @@ namespace DS4WindowsTests
         [InlineData(true)]
         public void ADcsWithExtras_IsNotOwnedByTheNewPath(bool migrated)
         {
-            // 新経路の所有の条件（Key、Extras なし）を満たさない割り当て: 新経路は束縛を作らず、旧経路が処理する（シフトは 7.8d で廃止した）
+            // 7.8e: Extras つきの Key は、新経路が処理する（Extras の束縛 ＋ Key の束縛）。新経路の指定がなければ、束縛を作らず、旧経路が処理する
             using var t = new ControlsKeyTestScope(migrated);
             DS4ControlSettings dcs = t.MapKey(DS4Controls.Cross, Key);
             dcs.extras = "1,2,0,0,0,0,0,0,0";
             t.Publish();
 
-            Assert.Empty(TestHost.GetService<DS4Windows.DI.IControlBindingBuilder>().Build(t.Device));
+            Assert.Equal(migrated ? 2 : 0, TestHost.GetService<DS4Windows.DI.IControlBindingBuilder>().Build(t.Device).Count);
         }
 
         [Theory]

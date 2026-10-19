@@ -3,7 +3,7 @@
 作成日: 2026-10-20  
 対象ブランチ: `For-DI-migration-work`  
 上位: `Phase8-Step2b-ControlsTab-Design.md`（§3.3 の C・D、§10。Q5＝A［ポート方式］、Q8＝B［実機確認は Step9］、Q9＝A［値渡し］）、`Phase8-Step7-8a-Plan.md`（土台）、`Phase8-Step7-8b-Plan.md`（Key）、`Phase8-Step7-8c-Plan.md`（Macro）、`Phase8-Step7-8d-Plan.md`（シフトの廃止）、`Phase8-Step7-6-Plan.md`（ポート方式の前例）  
-状態: **Q1〜Q8 を承認済み（2026-10-20。ユーザー。Q1・Q2・Q5＝A、Q3＝B、Q4＝C［Q8 により不要になった］、Q6＝B、Q7＝B、Q8＝B）。W0・W1 完了。Lightbar マクロ機能の廃止（W2）完了［ビルド・テスト成功。§5.3］。次は W3（エンジンの 1 ボタン複数束縛と Extras の新経路）**
+状態: **Q1〜Q8 を承認済み（2026-10-20。ユーザー。Q1・Q2・Q5＝A、Q3＝B、Q4＝C［Q8 により不要になった］、Q6＝B、Q7＝B、Q8＝B）。W0・W1 完了。Lightbar マクロ機能の廃止（W2）完了［ビルド・テスト成功。§5.3］。W3（エンジンの 1 ボタン複数束縛と Extras の新経路）を実装済み［ビルド・テストの結果待ち。§5.4］**
 
 ---
 
@@ -107,7 +107,7 @@ Controls タブの「Extras」（振動・ライトバーの強制色と点滅�
 - **W0（調査。完了。結果は §5.1）**。
 - **W1（特性化。完了［ビルド・テスト成功］。§5.2）**: `Phase8Step78eW1ControlsExtrasCharacterizationTests`。
 - **W2（Lightbar マクロの廃止。完了［ビルド・テスト成功］。§5.3）**。
-- **W3（実装）**: §3.2。エンジンの 1 ボタン複数束縛と `IResettableOutputAction` から始め、Extras の出力・ポート・ビルダーを足す。W1 のテストが新経路も走る。承認済みの変更（§4 の 1・2）は、`migrated` で期待値を分ける。
+- **W3（実装。実装済み［ビルド・テストの結果待ち］。§5.4）**: §3.2。エンジンの 1 ボタン複数束縛と `IResettableOutputAction` から始め、Extras の出力・ポート・ビルダーを足す。W1 のテストが新経路も走る。承認済みの変更（§4 の 1・2）は、`migrated` で期待値を分ける。
 - **W4**: 割り当て（新 ≦ 旧）、ロールバック（`Extras` の 1 行を外す）、ソースのガード。
 - **W5**: 完了報告書（7.8e）、`Phase8-Status.md`、チェックリスト（**U-44**: Extras の実機確認。Step9 でまとめて行う）。
 
@@ -133,6 +133,12 @@ Controls タブの「Extras」（振動・ライトバーの強制色と点滅�
 - Extras のライトバー: 条件 `(!dcs.LightbarMacro?.Active ?? false)` を外した（Q7＝B）。
 - テスト: ゴールデンの状態ファイル 5 つから `LightbarMacro`／`LightbarMacroString` の行を削除（差分は、この 2 項目だけ）。`Phase7Step8W2MappingInstanceGuardTests` の許可リストから `BoolDS4Controls` を外した。W1 の Extras のテストの、Lightbar マクロの有無に依るもの 2 件を、修正後の動き（`TheExtrasLightbar_IsForced_OnlyByItsOwnFlag`）に置き換えた。
 - 旧形式の `<LightbarMacro>`（上流の形式）がプロファイルにあっても、読み飛ばす（もともと読んでいない）。
+
+### 5.4 W3 の実装（2026-10-20。ビルド・テストの結果待ち）
+
+- 新設（`Actions/`）: `IResettableOutputAction`（押したままの適用・切断の後始末の契約）、`ExtrasBindingValues`（解釈済みの 9 個の値）、`IControlExtrasPort`／`DefaultControlExtrasPort`（振動は `ControlService.setRumble`、ライトバーは `DS4LightBar` の静的配列、感度は `ButtonMouseInfo`）、`ControlExtrasOutputAction`（`IHeldOutputAction`＋`IResettableOutputAction`。Execute／WhileHeld は同じ「適用」、Stop は旧経路の順［強制の解除、感度の復元、振動 0］で元に戻す。自分の分だけ戻す）。
+- 変更: `TriggerDispatchEngine`（1 ボタン複数束縛 ＝ `ControlIndex`［先頭］＋`ControlNext`［鎖］、`ProcessControl` が鎖をたどる。`Prepare` が束縛の差し替え前と `ResetRequested` のときに、`OnDeviceDisconnected` が登録を消す前に、`IResettableOutputAction` の出力へ `OnReset` を知らせる）、`ControlBindingBuilder`（`TryInterpretExtras`［9 個未満は所有しない］、dcs の部品［Extras・通常の割り当て］は「全部扱える」ときだけ束縛にする、Extras → 通常の割り当ての順、識別用 SA `Synthetic_Extras_{device}_{control}`、窓口を省略可能な依存で受ける）、`TryInterpretKey`／`TryInterpretMacro`（Extras の有無を見ない）、`ServiceRegistration`（ポートの登録と、`MigratedControlKinds` の `Extras` の 1 行）。旧経路の Extras の枝は、変更なし（Q7 の条件の修正は W2 で済み）。
+- テスト: `Phase8Step78eW2ControlsExtrasTests`（値の解釈、出力［順序、byte のキャスト、元に戻す、後始末］、ビルダーの所有の条件、ロールバック、エンジンの鎖、切断、割り当て、ソースのガード）。W1 のテストは新経路も走り、承認済みの変更［2 つ同時、押したままの適用］だけ `migrated` で期待値を分けた。`ControlsKeyTestScope` に `PublishControlsOnly`（記録用の窓口つきのビルダー）と `ExtrasPort` を足し、`RecordingControlExtrasPort` を新設。7.8b・7.8c・7.8a のテストのうち、Extras を除外する前提だった 5 か所［`TryInterpretKey`／`TryInterpretMacro` の Extras、ビルダーの束縛数、W1 の所有、既定の区分の一覧］を更新。
 
 ## 6. 質問と決定
 
