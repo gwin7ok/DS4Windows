@@ -467,7 +467,10 @@ namespace DS4WinWPF
                         var m = Regex.Match(single, @"(?<date>\d{4}-\d{2}-\d{2}[ T]\d{2}:\d{2}:\d{2})");
                         if (m.Success)
                         {
-                            AppLogger.LogInfo($"This binary was built at {m.Groups["date"].Value}");
+                            // ビルドのコミット（build_timestamp.txt の「commit=」。未コミットの変更があれば「-dirty」つき）。古い形式のファイルには、ない
+                            Match commit = Regex.Match(single, @"commit=(?<hash>\S+)");
+                            string commitText = commit.Success ? $" (commit {commit.Groups["hash"].Value})" : string.Empty;
+                            AppLogger.LogInfo($"This binary was built at {m.Groups["date"].Value}{commitText}");
                         }
                         else
                         {
