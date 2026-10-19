@@ -324,7 +324,7 @@ namespace DS4WinWPF.DS4Forms
 
         private void LoadPresetBtn_Click(object sender, RoutedEventArgs e)
         {
-            // Phase8-Step7-3a: 「Cycle Programs」の削除で、メニューの項目が 1 つになったため、メニューをやめて、保存のボタンと同じく、ファイルの選択を直接表示する
+            // Phase8-Step7-3a: Alt-Tab 用のプリセットの削除で、メニューの項目が 1 つになったため、メニューをやめて、保存のボタンと同じく、ファイルの選択を直接表示する
             // Reset selected index of macro list before removing item source
             macroListBox.SelectedIndex = -1;
 

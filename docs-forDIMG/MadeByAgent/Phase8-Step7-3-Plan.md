@@ -3,7 +3,7 @@
 作成日: 2026-10-19  
 対象ブランチ: `For-DI-migration-work`  
 上位: `Phase8-Step7-Plan.md`（§3 共通の手順、§4 の 7.3）、`Phase8-Step7-2-Plan.md`（7.2 の進め方）、`Phase8-Step2-Design.md` §6・§7、`Phase8-Step1-Trigger-Spec-Ledger.md` §5（Macro）  
-状態: **計画書作成済み。ただし、Alt-Tab の特別扱いを削除する（`Phase8-Step7-3a-AltTab-Removal-Plan.md`。承認済み、W1・W2 実装済み）ため、下記の「Q1」と、W2 の `WhileHeld` の実装・`IMacroPlayer`／`IMapping` の変更は不要になった（取り消し線の項目）。残る Q2〜Q4 は、承認待ち**
+状態: **計画書改訂済み（2026-10-19）。Alt-Tab の特別扱いの削除（`Phase8-Step7-3a-AltTab-Removal-Plan.md`。完了、実機確認済み）により、下記の「Q1」と、W2 の `WhileHeld` の実装・`IMacroPlayer`／`IMapping` の変更は不要になった（取り消し線の項目）。Q2〜Q4 の承認待ち**
 
 ---
 
@@ -39,7 +39,7 @@ Macro 種別の特殊アクションを、旧ループ（`MapCustomAction` の M
 
 | # | 点 | 旧経路 | 新経路 | 扱い |
 |---|---|---|---|---|
-| 1 | **押している間の `EndMacro`（Alt-Tab の Alt の解放）** | 毎フレーム呼ぶ（`RepeatMacro` 以外） | まだない | **Q1** |
+| 1 | ~~押している間の `EndMacro`（Alt-Tab の Alt の解放）~~ | 3a で削除した（効果がなくなったため、呼び出しも削除） | 不要 | ~~Q1~~（取り消し） |
 | 2 | RunOnRelease の `firstTouch` | 旧経路が書く | 書かない（入力の内部の状態） | **Q2** |
 | 3 | ログ | §2.1 のとおり | `MacroAction` は出さない | **Q3** |
 | 4 | 再生中の旗（`IsMacroRunning`、`macroTaskQueue`）と二重実行の防止 | `PlayMacro` の中（変更しない） | 同じ `PlayMacro` を呼ぶ | 変更なし。W1 で、押している間に再実行されないことを確認 |

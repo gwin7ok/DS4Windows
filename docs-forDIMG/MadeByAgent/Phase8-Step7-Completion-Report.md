@@ -82,3 +82,15 @@
 ### 4. 次
 
 7.3 Macro（短い個別の計画書 `Phase8-Step7-3-Plan.md` を、U-28 の合格後に作成する）。
+
+---
+
+## 7.3a Alt-Tab の特別扱いと「Cycle Programs」プリセットの削除（機能廃止。7.3 の前提）
+
+計画書: `Phase8-Step7-3a-AltTab-Removal-Plan.md`（Q1〜Q4 を推奨どおり承認。ユーザーの要望による機能廃止）。W1〜W3 のビルド・テスト成功。実機確認 U-29（4 項目）が合格（2026-10-19）。
+
+- 削除: `Mapping.cs` の Alt-Tab の特別扱い（フィールド 3、再生の分岐、`AltTabSwapping`／`AltTabSwappingRelease`、`EndMacro` の判定、押している間の毎フレームの `EndMacro`）、記録画面の「Cycle Programs」（メニュー項目、処理、`WriteCycleProgramsPreset`）。
+- 追加の変更（ユーザーの要望）: メニューの項目が 1 つになったため、「Load Preset」のボタンは、メニューをやめて、ファイル選択を直接表示する（保存のボタンと同じ）。
+- 挙動の変化: Alt-Tab の並びのマクロは、通常のマクロとして手順どおりに再生される（1 回の Alt+Tab）。保存済みのデータは変更しない。
+- テスト: `Phase8Step7AltTabRemovalGuardTests`（ソースに残らない、手順どおりの再生）。`RecordingVirtualKbmBase` に押下の記録を追加。エンジンの割り当てゼロの 2 つの検査（`SteadyState_…`）は、JIT の偶発的な割り当てで 1 回ずつ失敗したため、最大 3 回測って最小値で判定する形にした。
+- 影響: 7.3 Macro の Q1（押している間の `EndMacro`）と、`IMacroPlayer.WhileHeld`／`IMapping.EndMacroDirect` の変更が不要になった。
