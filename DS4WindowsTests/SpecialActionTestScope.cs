@@ -11,7 +11,7 @@ namespace DS4WindowsTests
     /// <see cref="MappingCharacterizationScope"/> の専用デバイス添字（<see cref="Device"/>）に対し、プロファイルのアクション一覧
     /// （<c>profileActions</c>／<c>profileActionDict</c>／<c>profileActionIndexDict</c>／<c>profileActionCount</c>）と
     /// <c>BackingStore.actions</c> へ、テスト用の <see cref="SpecialAction"/> を登録する。終了時にすべて元へ戻す。
-    /// Phase8-Step7 7.1-W1: コンストラクターの <c>migrated</c> が真なら、Button・Key・Macro・Program 種別を <c>BindingMigrationOptions.MigratedTypes</c> に足し、
+    /// Phase8-Step7 7.1-W1: コンストラクターの <c>migrated</c> が真なら、Button・Key・Macro・Program・Profile 種別を <c>BindingMigrationOptions.MigratedTypes</c> に足し、
     /// <see cref="Add"/> のたびに本番の <c>PublishBindings</c> と同じ経路（<c>IActionBindingBuilder.Build</c> → <c>IActionRegistry.Replace</c>）で束縛を登録する。
     /// 偽の束縛ではなく、実物のビルダーが作る束縛を使う。終了時に元へ戻す。
     /// <c>MapCustomAction</c> は <c>async void</c> だが、初期化待ちが完了済みの <c>Task</c> のため、最初の実際の <c>await</c>
@@ -69,6 +69,7 @@ namespace DS4WindowsTests
                 _options.MigratedTypes.Add(SpecialAction.ActionTypeId.Key);   // Phase8-Step7 7.2-W1: Key も新経路で処理する（Button と同じ指定）
                 _options.MigratedTypes.Add(SpecialAction.ActionTypeId.Macro); // Phase8-Step7 7.3-W1: Macro も新経路で処理する
                 _options.MigratedTypes.Add(SpecialAction.ActionTypeId.Program); // Phase8-Step7 7.4-W1: Program も新経路で処理する
+                _options.MigratedTypes.Add(SpecialAction.ActionTypeId.Profile); // Phase8-Step7 7.5a-W1: Profile も新経路で処理する（復帰つきの Profile は、7.5a の W2 でビルダーが束縛を作らない形にする）
             }
 
             _savedNames = _store.profileActions[Device];
