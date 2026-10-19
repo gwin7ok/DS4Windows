@@ -416,27 +416,12 @@ namespace DS4WindowsTests
             var env = new EnvironmentService();
             var service = TestRepositoryFactory.CreateProfileApplicationService(settings, () => null, repo, env);
             int limit = env.ControllerSlotLimit;
-            string[] older = repo.OlderProfilePath;
-            string[] backup = (string[])older.Clone();
-            try
-            {
-                // 上限の内側（最後のスロット）は受け入れられ、保留中の復帰先がクリアされる
-                older[limit - 1] = "pending";
-                service.ClearPendingRestore(limit - 1);
-                Assert.Equal(string.Empty, older[limit - 1]);
 
-                // 上限（範囲外）は拒否され、何も変更されない
-                older[limit] = "pending";
-                service.ClearPendingRestore(limit);
-                Assert.Equal("pending", older[limit]);
-
-                Assert.False(service.ApplyProfile(limit, "NoSuchProfile"));
-                Assert.False(service.ApplyProfile(-1, "NoSuchProfile"));
-            }
-            finally
-            {
-                Array.Copy(backup, older, backup.Length);
-            }
+            // 上限（範囲外）は拒否され、何も変更されない（Phase8-Step6 W3: ClearPendingRestore の削除に伴い、保留中の復帰先の検査は外した）
+            Assert.False(service.RestoreFromAction(limit));
+            Assert.False(service.RestoreFromAction(-1));
+            Assert.False(service.ApplyProfile(limit, "NoSuchProfile"));
+            Assert.False(service.ApplyProfile(-1, "NoSuchProfile"));
         }
     }
 }

@@ -76,3 +76,9 @@
 1. 上の「削除」「削除（Step3 と同時）」の範囲でよいか（機能の削除ではなく、参照 0 件の整理）。
 2. E の `ClearState`／`ClearPendingRestore` を「要調査の TODO」とし、Step6 で扱う方針でよいか。
 3. 上流由来の死にコード（C）を削除すると、上流の更新を取り込むときの差分が増える。本リポジトリは既に大きく分岐しているが、問題ないか。
+
+## 追記（2026-10-19、Phase8-Step6 W3）: `ClearState`／`ClearPendingRestore` を削除した
+
+- 判断: **削除**（ユーザー承認、Phase8-Step6 の Q3＝A）。`IProfileSwitcher.ClearState`、`DefaultProfileSwitcher.ClearState`、`IProfileApplicationService.ClearPendingRestore`、`ProfileApplicationService.ClearPendingRestore`、テスト用の偽の実装・テストを削除した。
+- 根拠: 本番の呼び出しは 0 件のまま。`OlderProfilePath` は、初回接続の既定、画面（プロファイルの選択、リンクの解除、名前変更）で使う「通常のプロファイル」で、切断で空にするとこれらが壊れる。Phase5-Step3 のガードレール 6（切断で復帰先が残らない）の目的は、復帰が `OlderProfilePath` ではなく `Mapping` の復帰の合図（`prevProfileName`）で行われるため、エンジンの `OnDeviceDisconnected` による復帰の合図の消去が担う（`IProfileSlotApplier.ReleaseSlot`）。
+- 詳細: `Phase8-Step6-Plan.md` §2.3、`Phase8Step6W1DisconnectCharacterizationTests`、`Phase8Step6W3SlotLifecycleTests`。

@@ -28,9 +28,5 @@ namespace DS4Windows.Actions
             profileAppService?.RestoreFromAction(deviceIndex);
         }
 
-        public void ClearState(int deviceIndex)
-        {
-            profileAppService?.ClearPendingRestore(deviceIndex);
-        }
     }
 }

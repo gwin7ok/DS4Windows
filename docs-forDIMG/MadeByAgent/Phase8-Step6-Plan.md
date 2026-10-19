@@ -3,7 +3,7 @@
 作成日: 2026-10-19  
 対象ブランチ: `For-DI-migration-work`  
 上位: `Phase8-Unified-Trigger-Dispatch-Plan.md`（§5 の Step6）、`Phase8-Step2-Design.md` §16・§18（5.6）・§22（Step6）、`Phase8-Step1-Orphan-Decisions.md` §2（`ClearState`／`ClearPendingRestore`）、`Phase8-Step5-Completion-Report.md` §5  
-状態: **Q1〜Q7 を推奨どおり承認（2026-10-19）。W1 完了［成功］。W2 実装済み［ReleaseSlot／PublishSlot と ControlService への接続。ビルド・テスト待ち］**
+状態: **Q1〜Q7 を推奨どおり承認（2026-10-19）。W1 完了［成功］。W2 完了［成功］。W3 実装済み［結合テストと、`ClearState`／`ClearPendingRestore` の削除（承認済み）。ビルド・テスト待ち］**
 
 ---
 

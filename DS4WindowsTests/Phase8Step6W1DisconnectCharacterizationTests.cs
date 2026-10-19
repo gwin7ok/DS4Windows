@@ -16,7 +16,7 @@ namespace DS4WindowsTests
     /// 2. プロファイル適用の後始末（<c>ClearDeviceState</c>）も、同じ切断の後始末を通る（だから、ここにエンジンの切断を足せない）。
     /// 3. 物理的な切断（<c>On_DS4Removal</c>）だけが <c>HandleDeviceDisconnect</c> を呼び、サービスの停止（<c>Stop</c>）は呼ばない。
     /// 4. <c>OlderProfilePath</c> は、初回接続の既定、画面（リンクの解除、名前変更）などで使われる「通常のプロファイル」。
-    /// 5. <c>ClearState</c>／<c>ClearPendingRestore</c> の本番の呼び出しは 0 件。
+    /// 5. <c>ClearState</c>／<c>ClearPendingRestore</c> の本番の呼び出しは 0 件だった（W3 で削除した。Q3＝A）。
     /// 専用のデバイス添字（7）を使い、終了時に状態を戻す。
     /// </summary>
     [Collection("ServiceProviderHolder")]
@@ -141,7 +141,7 @@ namespace DS4WindowsTests
                 "DS4Windows/DS4Control/ControlService.cs",                       // 初回接続の既定
                 "DS4Windows/DS4Control/DTOXml/AppSettingsDTO.cs",                // アプリ設定の読込
                 "DS4Windows/DS4Control/Services/AppSettingsXmlSerializer.cs",
-                "DS4Windows/DS4Control/Services/ProfileApplicationService.cs",   // 適用での更新、RestoreFromAction、ClearPendingRestore
+                "DS4Windows/DS4Control/Services/ProfileApplicationService.cs",   // 適用での更新、RestoreFromAction
                 "DS4Windows/DS4Control/Services/ProfileRepository.cs",
                 "DS4Windows/DS4Forms/MainWindow.xaml.cs",                        // 名前変更の追従
                 "DS4Windows/DS4Forms/ViewModels/CompositeDeviceModel.cs",        // 画面の選択、リンクの解除
@@ -149,31 +149,14 @@ namespace DS4WindowsTests
         }
 
         [Fact]
-        public void ClearState_AndClearPendingRestore_HaveNoProductionCaller()
+        public void ClearState_AndClearPendingRestore_AreRemoved()
         {
-            string root = RepoRoot();
-            if (root == null) return;
-
-            string[] sources = Sources(root).ToArray();
-
-            // 定義と委譲だけ。切断の経路（ControlService、Mapping ほか）からは呼ばれていない
-            string[] restore = sources.Where(f => Code(f).Contains("ClearPendingRestore"))
-                .Select(f => Rel(root, f)).OrderBy(x => x).ToArray();
-            Assert.Equal(new[]
-            {
-                "DS4Windows/Actions/DefaultProfileSwitcher.cs",
-                "DS4Windows/DI/IProfileApplicationService.cs",
-                "DS4Windows/DS4Control/Services/ProfileApplicationService.cs",
-            }, restore);
-
-            string[] state = sources.Where(f => System.Text.RegularExpressions.Regex.IsMatch(File.ReadAllText(f), @"\.ClearState\(|\bvoid ClearState\("))
-                .Select(f => Rel(root, f)).OrderBy(x => x).ToArray();
-            Assert.Equal(new[]
-            {
-                "DS4Windows/Actions/DefaultProfileSwitcher.cs",
-                "DS4Windows/Actions/IProfileSwitcher.cs",
-                "DS4Windows/DI/IAutoProfileService.cs",   // コメントでの言及のみ（このファイルは Shift-JIS で、コメント行の除去が効かない）
-            }, state);
+            // Phase8-Step6 W3（Q3＝A。承認済み）: 本番の呼び出しが 0 件だった 2 つのメンバーを削除した。
+            // 切断で OlderProfilePath を空にするとスロットの「通常のプロファイル」が失われるため、接続しなかった。
+            Assert.Null(typeof(IProfileSwitcher).GetMethod("ClearState"));
+            Assert.Null(typeof(IProfileApplicationService).GetMethod("ClearPendingRestore"));
+            Assert.Null(typeof(DefaultProfileSwitcher).GetMethod("ClearState"));
+            Assert.Null(typeof(ProfileApplicationService).GetMethod("ClearPendingRestore"));
         }
 
         // ---- 補助 ----

@@ -35,10 +35,6 @@ namespace DS4WindowsTests
                 RestoreProfileCalls.Add(slot);
             }
 
-            public void ClearState(int slot)
-            {
-            }
-
             public void Reset()
             {
                 SwitchProfileCalls.Clear();

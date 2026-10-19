@@ -50,7 +50,6 @@ namespace DS4WindowsTests
         {
             public void SwitchProfile(int deviceIndex, SpecialAction action) { }
             public void RestoreProfile(int deviceIndex) { }
-            public void ClearState(int deviceIndex) { }
         }
 
         private static ActionBindingBuilder NewBuilder(FakeProvider provider, BindingMigrationOptions options)

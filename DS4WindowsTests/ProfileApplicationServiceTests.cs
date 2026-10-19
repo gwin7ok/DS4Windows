@@ -23,7 +23,6 @@ namespace DS4WindowsTests
 
             public List<ApplyCall> ApplyCalls { get; } = new List<ApplyCall>();
             public List<int> RestoreCalls { get; } = new List<int>();
-            public List<int> ClearPendingCalls { get; } = new List<int>();
 
             public bool ApplyProfile(int deviceIndex, string profileName, bool isTemp = false, bool launchProgram = true, ProfileChangeSource source = ProfileChangeSource.MappingAction, string prolog = "")
             {
@@ -52,11 +51,6 @@ namespace DS4WindowsTests
             {
                 RestoreCalls.Add(deviceIndex);
                 return true;
-            }
-
-            public void ClearPendingRestore(int slot)
-            {
-                ClearPendingCalls.Add(slot);
             }
 
             public void PublishBindings(int deviceIndex) { }
@@ -89,18 +83,6 @@ namespace DS4WindowsTests
 
             Assert.Single(mockAppService.RestoreCalls);
             Assert.Equal(1, mockAppService.RestoreCalls[0]);
-        }
-
-        [Fact]
-        public void DefaultProfileSwitcher_ClearState_ClearsAppServicePendingRestore()
-        {
-            var mockAppService = new MockProfileAppService();
-            var switcher = new DefaultProfileSwitcher(mockAppService);
-
-            switcher.ClearState(2);
-
-            Assert.Single(mockAppService.ClearPendingCalls);
-            Assert.Equal(2, mockAppService.ClearPendingCalls[0]);
         }
     }
 }

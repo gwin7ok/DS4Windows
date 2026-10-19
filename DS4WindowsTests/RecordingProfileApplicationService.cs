@@ -15,7 +15,6 @@ namespace DS4WindowsTests
         public readonly List<int> RestoreFromActionCalls = new List<int>();
         public readonly List<(int Device, string ProfileName, bool IsTemp, ProfileChangeSource Source)> ApplyProfileCalls =
             new List<(int, string, bool, ProfileChangeSource)>();
-        public readonly List<int> ClearPendingRestoreCalls = new List<int>();
         public readonly List<int> PublishBindingsCalls = new List<int>();
 
         /// <summary><see cref="RestoreFromAction"/> の戻り値（既定は true）。</summary>
@@ -62,11 +61,6 @@ namespace DS4WindowsTests
             lock (ApplyProfileCalls) ApplyProfileCalls.Add((deviceIndex, profileName, isTemp, source));
             ResetActionState(deviceIndex);
             return true;
-        }
-
-        public void ClearPendingRestore(int deviceIndex)
-        {
-            lock (ClearPendingRestoreCalls) ClearPendingRestoreCalls.Add(deviceIndex);
         }
 
         public void PublishBindings(int deviceIndex)

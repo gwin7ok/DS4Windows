@@ -56,8 +56,6 @@ namespace DS4WindowsTests
             public bool RestoreFromAction(int deviceIndex) => true;
 
 
-            public void ClearPendingRestore(int deviceIndex) { }
-
             public void PublishBindings(int deviceIndex) { }
         }
 

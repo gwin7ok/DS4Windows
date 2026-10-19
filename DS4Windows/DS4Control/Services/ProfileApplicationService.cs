@@ -99,17 +99,6 @@ namespace DS4Windows
             return ApplyProfile(deviceIndex, previousProfile, false, false, ProfileChangeSource.MappingAction);
         }
 
-        public void ClearPendingRestore(int deviceIndex)
-        {
-            if (deviceIndex < 0 || deviceIndex >= _environmentService.ControllerSlotLimit)
-                return;
-
-            if (_profileRepo.OlderProfilePath != null && deviceIndex < _profileRepo.OlderProfilePath.Length)
-            {
-                _profileRepo.OlderProfilePath[deviceIndex] = string.Empty;
-            }
-        }
-
         public bool ApplyProfile(int deviceIndex, string profileName, bool isTemp = false,
                     bool launchProgram = false, ProfileChangeSource source = ProfileChangeSource.Manual,
                     string prolog = null)

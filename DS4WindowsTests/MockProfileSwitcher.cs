@@ -9,7 +9,6 @@ namespace DS4WindowsTests
     {
         public int SwitchProfileCalledCount { get; private set; }
         public int RestoreProfileCalledCount { get; private set; }
-        public int ClearStateCalledCount { get; private set; }
 
         public int LastDeviceIndex { get; private set; }
         public SpecialAction LastAction { get; private set; }
@@ -29,12 +28,6 @@ namespace DS4WindowsTests
         public void RestoreProfile(int deviceIndex)
         {
             RestoreProfileCalledCount++;
-            LastDeviceIndex = deviceIndex;
-        }
-
-        public void ClearState(int deviceIndex)
-        {
-            ClearStateCalledCount++;
             LastDeviceIndex = deviceIndex;
         }
     }
