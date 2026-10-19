@@ -3,7 +3,7 @@
 作成日: 2026-10-19  
 対象ブランチ: `For-DI-migration-work`  
 計画書: `Phase8-Step7-Plan.md`（Q1〜Q8 を推奨どおり承認）  
-状態: **7.1 Button は実装・単体テスト完了（W1〜W3 のビルド・テスト成功）。実機確認 U-27 の結果待ち。7.2 以降は未着手**
+状態: **7.1 Button は完了（W1〜W3 のビルド・テスト成功。実機確認 U-27 の主要 4 項目が合格）。7.2 以降は未着手**
 
 本書は、各 PR（7.1〜7.8）の結果を追記していく経過報告書である。
 
@@ -39,7 +39,9 @@
 
 ### 4. 実機確認（ユーザー）
 
-`Phase6-Step11-RealDevice-Verification-Checklist.md` §11 の **U-27**（9 項目）。合格してから 7.2 Key へ進む（Q7＝A）。不合格なら、スイッチの 1 行を外して原因を調べる。
+`Phase6-Step11-RealDevice-Verification-Checklist.md` §11 の **U-27**（9 項目）。**結果（2026-10-19）**: ユーザーが (1) Press、(2) Toggle、(5) プロファイルの切替・再適用、(7) 抜き差し・再接続を実機で確認し、問題なし。(3)(4)(6)(8)(9) は先送り（リスク受容。単体テストで新旧の一致を確認済み）。合格のため、7.2 Key へ進める（Q7＝A）。
+
+**確認中に見つかった別件（Step7 とは無関係の既存の挙動）**: コントローラーが 1 台も接続されていない状態でも、自動プロファイルが（スロット 0 に）プロファイルを適用し、切替の通知が出る。ログでは `AutoProfileService.CheckProfiles` → `ApplyProfile(device=0, source=AutoProfile)`、「Controller item not found for device 0」。別の作業として調査する。
 
 ### 5. 性能
 
