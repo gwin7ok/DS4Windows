@@ -121,7 +121,6 @@ namespace DS4WinWPF.DS4Forms.ViewModels
                 currentOutBind.ParseExtras(setting.extras);
             }
 
-            if (settings.LightbarMacro is not null) currentOutBind.LightbarMacro = settings.LightbarMacro;
         }
 
         public void PrepareSaveMacro(OutBinding bind)

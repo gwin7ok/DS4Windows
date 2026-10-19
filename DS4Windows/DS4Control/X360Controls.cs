@@ -45,7 +45,6 @@ using DS4WinWPF.ApiDTO;
 using WpfScreenHelper;
 using static DS4Windows.Mouse;
 using static DS4Windows.Util;
-using LightbarMacro = DS4WinWPF.DS4Forms.ViewModels.LightbarMacro;
 namespace DS4Windows
 {
     public enum X360Controls : byte { None, LXNeg, LXPos, LYNeg, LYPos, RXNeg, RXPos, RYNeg, RYPos, LB, LT, LS, RB, RT, RS, X, Y, B, A, DpadUp, DpadRight, DpadDown, DpadLeft, Guide, Back, Start, TouchpadClick, LeftMouse, RightMouse, MiddleMouse, FourthMouse, FifthMouse, WUP, WDOWN, MouseUp, MouseDown, MouseLeft, MouseRight, Unbound };

@@ -1492,9 +1492,6 @@ Please click OK to confirm that you have read the message. Press Cancel to be re
   <data name="ProfileSwitchNotification" xml:space="preserve">
     <value>Display profile switch notification</value>
   </data>
-  <data name="CreateLightbarMacro" xml:space="preserve">
-    <value>Create lightbar macro</value>
-  </data>
   <data name="LightbarMode" xml:space="preserve">
     <value>Lightbar Mode</value>
   </data>

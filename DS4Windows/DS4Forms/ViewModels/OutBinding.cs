@@ -54,19 +54,6 @@ namespace DS4WinWPF.DS4Forms.ViewModels
         private int mouseSens = 25;
         private DS4Color extrasColor = new DS4Color(255,255,255);
 
-        private LightbarMacro lightbarMacro;
-
-        public LightbarMacro LightbarMacro
-        {
-            get => lightbarMacro;
-            set
-            {
-                lightbarMacro = value;
-                LightbarMacroChanged?.Invoke(this, EventArgs.Empty);
-            }
-        }
-        public event EventHandler LightbarMacroChanged;
-
         private uint currentInterval;
         public uint CurrentInterval
         {
@@ -291,7 +278,6 @@ namespace DS4WinWPF.DS4Forms.ViewModels
             ExtrasColorBChanged += OutBinding_ExtrasColorBChanged;
             UseExtrasColorChanged += OutBinding_UseExtrasColorChanged;
             CurrentColor = Color.FromRgb(255, 255, 255);
-            LightbarMacro = new LightbarMacro();
         }
 
         private void OutBinding_ExtrasColorBChanged(object sender, EventArgs e)
@@ -468,9 +454,6 @@ namespace DS4WinWPF.DS4Forms.ViewModels
             {
                 settings.extras = string.Empty;
             }
-
-            if (LightbarMacro is not null && LightbarMacro.Macro.Count > 0)
-                settings.LightbarMacroString = LightbarMacro.Compile();
 
             profileSettingsService.RefreshActionAlias(settings);
         }

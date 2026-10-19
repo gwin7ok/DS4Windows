@@ -10,7 +10,7 @@ namespace DS4Windows.Services
     /// Controls タブの割り当て（<c>ControlSettingsGroup</c>）のうち、移行済みの区分（<see cref="BindingMigrationOptions.MigratedControlKinds"/>）の条件を満たす割り当てだけを、束縛にする。
     /// 条件を満たさない割り当ては束縛を作らず、旧経路が全体を処理する（Q2＝A: ボタン単位の所有）。移行済みの区分が空の間は、何も読まずに空のリストを返す。
     /// <para>
-    /// Key（7.8b）の条件: 通常の割り当てが Key、Extras なし（シフトは、7.8d で廃止した）、Lightbar マクロが有効でない、<c>actionKey</c> が <c>ushort</c> の範囲内。
+    /// Key（7.8b）の条件: 通常の割り当てが Key、Extras なし（シフトは 7.8d、Lightbar マクロは 7.8e で廃止した）、<c>actionKey</c> が <c>ushort</c> の範囲内。
     /// ジャイロスワイプの割り当て（<c>GyroSwipe*</c>）は、前の方向を先に離す旧経路の順序に依存するため、対象にしない（旧経路が処理する）。
     /// </para>
     /// 「何をするか」の解釈（キー番号、Toggle、ScanCode、別名キー）はここで行い、出力（<c>KeyOutputAction</c>）には解釈済みの値を渡す（Q9＝A）。
@@ -56,7 +56,7 @@ namespace DS4Windows.Services
         }
 
         /// <summary>
-        /// Phase8-Step7 7.8c: Macro の新経路の条件（Key と同じ形。Macro、手順あり、シフトなし、Extras なし、Lightbar マクロなし）を満たすか。満たすとき、手順を返す。
+        /// Phase8-Step7 7.8c: Macro の新経路の条件（Key と同じ形。Macro、手順あり、Extras なし）を満たすか。満たすとき、手順を返す。
         /// </summary>
         public static bool TryInterpretMacro(DS4ControlSettings dcs, out int[] steps)
         {
@@ -64,7 +64,6 @@ namespace DS4Windows.Services
             if (dcs == null) return false;
             if (dcs.actionType != DS4ControlSettings.ActionType.Macro) return false;
             if (!dcs.IsExtrasEmpty(dcs.extras)) return false;
-            if (dcs.LightbarMacro != null && dcs.LightbarMacro.Active) return false;
 
             int[] macro = dcs.action.actionMacro;
             if (macro == null || macro.Length == 0) return false;   // 旧経路は、手順がないと例外になる。新経路は所有せず、旧経路の挙動を保つ
@@ -82,7 +81,6 @@ namespace DS4Windows.Services
             if (dcs == null) return false;
             if (dcs.actionType != DS4ControlSettings.ActionType.Key) return false;
             if (!dcs.IsExtrasEmpty(dcs.extras)) return false;
-            if (dcs.LightbarMacro != null && dcs.LightbarMacro.Active) return false;
 
             int key = dcs.action.actionKey;
             if (key < ushort.MinValue || key > ushort.MaxValue) return false;   // 旧経路は範囲外で例外になる。新経路は所有せず、旧経路の挙動を保つ

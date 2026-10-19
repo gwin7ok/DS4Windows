@@ -1,13 +1,12 @@
 using System;
 using DS4Windows;
-using DS4WinWPF.DS4Forms.ViewModels;
 using Xunit;
 using Xunit.Abstractions;
 
 namespace DS4WindowsTests
 {
     /// <summary>
-    /// Phase8-Step7 7.8e-W1（Phase8-Step7-8e-Plan.md §5）: Controls タブの Extras（<c>ProcessControlSettingAction</c> の Extras の枝）の特性化。
+    /// Phase8-Step7 7.8e-W1（Phase8-Step7-8e-Plan.md §5）: Controls タブの Extras（<c>ProcessControlSettingAction</c> の Extras の枝）の特性化。Lightbar マクロは廃止した（Q8＝B）ため、対象外。
     /// 旧・新の両経路（<c>InlineData(false)</c>／<c>InlineData(true)</c>）で同じテストを走らせる。W1 の時点では新経路が未実装のため、どちらでも旧経路が処理する。
     /// W2 で新経路が入るとき、承認済みの動作の変更（Q3＝B: 2 つ同時のとき、ボタンごとに元に戻す。Q6＝B: 押したままの適用・切断で元に戻す）の
     /// テストは、<c>migrated</c> で期待値を分ける（該当のテストに「W2」の注記がある）。
@@ -70,21 +69,20 @@ namespace DS4WindowsTests
         [Theory]
         [InlineData(false)]
         [InlineData(true)]
-        public void WithoutALightbarMacroObject_TheExtrasLightbarIsNeverForced_ALegacyQuirk(bool migrated)
+        public void TheExtrasLightbar_IsForced_OnlyByItsOwnFlag(bool migrated)
         {
-            // 旧経路の癖（不具合の疑い）: 条件 `extras[2] == 1 && (!dcs.LightbarMacro?.Active ?? false)` は、LightbarMacro が null だと偽になる。
-            // Lightbar マクロは、プロファイルの読込・保存の対象ではない（W0 で判明）ため、通常は null のまま。つまり、Extras のライトバーは、実際には効かない。
-            // 新経路の扱いは Q7（Phase8-Step7-8e-Plan.md §6）。決定のあと、migrated の期待値を分ける
+            // 承認済みの修正（Q7＝B）: 旧経路は、条件 `!dcs.LightbarMacro?.Active ?? false` が、LightbarMacro が null だと偽になり、
+            // Extras のライトバーが効かなかった。Lightbar マクロ機能の廃止（Q8＝B）とあわせて、条件を外した。旧経路で処理する割り当ても、直った
             using var t = new ControlsKeyTestScope(migrated);
-            t.MapExtras(DS4Controls.Cross, Full, lightbarMacroObject: false);
+            t.MapExtras(DS4Controls.Cross, Full);
             t.Publish();
 
             t.Run(State());
             t.Run(State(cross: true));
 
-            Assert.True(t.RumbleActive);                          // 振動は出る
-            Assert.False(t.ForceLight);                           // ライトバーは出ない
-            Assert.Equal(7, t.MouseInfo.tempButtonSensitivity);   // 感度は出る
+            Assert.True(t.RumbleActive);
+            Assert.True(t.ForceLight);
+            Assert.Equal(7, t.MouseInfo.tempButtonSensitivity);
         }
 
         [Theory]
@@ -246,7 +244,6 @@ namespace DS4WindowsTests
             using var t = new ControlsKeyTestScope(migrated);
             DS4ControlSettings dcs = t.MapKey(DS4Controls.Cross, 65);
             dcs.extras = Full;
-            dcs.LightbarMacro = new LightbarMacro();   // 実体がないと、Extras のライトバーは出ない（旧経路の癖。別のテスト）
             t.Publish();
             SpecialAction sa = t.SyntheticFor(DS4Controls.Cross, 65);
 
@@ -261,24 +258,6 @@ namespace DS4WindowsTests
             t.Run(State());
             Assert.False(t.IsBeingTriggered(sa));
             Assert.False(t.ForceLight);
-        }
-
-        [Theory]
-        [InlineData(false)]
-        [InlineData(true)]
-        public void AnActiveLightbarMacro_SuppressesTheExtrasLightbar_ButNotTheRumble(bool migrated)
-        {
-            using var h = new LightbarHarness(migrated);
-            DS4ControlSettings dcs = h.T.MapExtras(DS4Controls.Cross, Full);
-            ControlsKeyTestScope.SetLightbarMacro(dcs, LightbarMacroTrigger.Release, false, new LightbarMacroElement(new DS4Color(9, 9, 9), 50));
-            h.T.Publish();
-
-            h.Step(false);
-            h.Step(true);
-
-            Assert.True(h.T.RumbleActive);
-            Assert.False(h.T.ForceLight);   // Lightbar マクロが有効な dcs では、Extras の強制色を出さない（Release のマクロは、離すまで動かない）
-            Assert.Equal(7, h.T.MouseInfo.tempButtonSensitivity);   // 感度は出る
         }
 
         [Theory]

@@ -941,13 +941,6 @@ namespace DS4WinWPF.DS4Forms
             };
         }
 
-        private void CreateLightbarMacro_Click(object sender, RoutedEventArgs e)
-        {
-            LightbarMacroCreator dialog = new(bindingVM.ActionBinding);
-            dialog.Owner = Application.Current.MainWindow;
-            dialog.ShowDialog();
-        }
-
         private void UnregisterDataContext()
         {
             topOptsPanel.DataContext = null;

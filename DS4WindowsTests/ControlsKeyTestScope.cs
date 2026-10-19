@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using DS4Windows;
 using DS4Windows.Actions;
-using DS4WinWPF.DS4Forms.ViewModels;
 
 namespace DS4WindowsTests
 {
@@ -73,33 +72,24 @@ namespace DS4WindowsTests
             return dcs;
         }
 
-        /// <summary>
-        /// Phase8-Step7 7.8e: ボタンに Extras（振動・ライトバー・感度の 9 個の値）だけを付ける（通常の割り当ては Default）。
-        /// 旧経路の Extras のライトバーは、<c>dcs.LightbarMacro</c> が null だと強制色を出さない（<c>!LightbarMacro?.Active ?? false</c> が偽になる）。
-        /// 既定では、無効な Lightbar マクロの実体を付ける（<paramref name="lightbarMacroObject"/>＝false で null にする）。
-        /// </summary>
-        public DS4ControlSettings MapExtras(DS4Controls control, string extras, bool lightbarMacroObject = true)
+        /// <summary>Phase8-Step7 7.8e: ボタンに Extras（振動・ライトバー・感度の 9 個の値）だけを付ける（通常の割り当ては Default）。</summary>
+        public DS4ControlSettings MapExtras(DS4Controls control, string extras)
         {
             DS4ControlSettings dcs = TestGlobals.Store.GetDS4CSetting(Device, control);
             dcs.Reset();
-            dcs.LightbarMacro = lightbarMacroObject ? new LightbarMacro() : null;
             dcs.extras = extras;
             _touched.Add(control);
             return dcs;
         }
 
-        /// <summary>Phase8-Step7 7.8e: 割り当てに Lightbar マクロ（有効）を付ける。</summary>
-        public static void SetLightbarMacro(DS4ControlSettings dcs, LightbarMacroTrigger trigger, bool cancelCurrent, params LightbarMacroElement[] elements)
-            => dcs.LightbarMacro = new LightbarMacro(true, elements, trigger, cancelCurrent);
-
-        // ---- Phase8-Step7 7.8e: Extras と Lightbar マクロの観察窓口（旧経路が書く、公開の状態・静的配列） ----
+        // ---- Phase8-Step7 7.8e: Extras の観察窓口（旧経路が書く、公開の状態・静的配列） ----
         public bool ForceLight => DS4LightBar.forcelight[Device];
         public DS4Color ForcedColor => DS4LightBar.forcedColor[Device];
         public byte ForcedFlash => DS4LightBar.forcedFlash[Device];
         public bool RumbleActive => Mapping.extrasRumbleActive[Device];
         public ButtonMouseInfo MouseInfo => _inner.Settings.ButtonMouseInfos[Device];
 
-        /// <summary>テスト間で、Extras と Lightbar マクロが書く状態（静的配列、感度、振動の記録、旧経路の held）を初期化する。</summary>
+        /// <summary>テスト間で、Extras が書く状態（静的配列、感度、振動の記録、旧経路の held）を初期化する。</summary>
         public void ResetExtrasObservables()
         {
             DS4LightBar.forcelight[Device] = false;
@@ -143,11 +133,7 @@ namespace DS4WindowsTests
             Mapping.ClearSyntheticActionCache();
 
             foreach (DS4Controls control in _touched)
-            {
-                DS4ControlSettings touched = TestGlobals.Store.GetDS4CSetting(Device, control);
-                touched?.Reset();
-                if (touched != null) touched.LightbarMacro = null;   // Reset は、Lightbar マクロの実体を消さない
-            }
+                TestGlobals.Store.GetDS4CSetting(Device, control)?.Reset();
 
             _options.MigratedControlKinds.Clear();
             foreach (ControlBindingKind kind in _savedKinds) _options.MigratedControlKinds.Add(kind);

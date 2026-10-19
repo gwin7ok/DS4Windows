@@ -18,17 +18,6 @@ namespace DS4WindowsTests
 
         public override DS4State getPreviousStateRef() => Previous;
 
-        /// <summary>
-        /// Phase8-Step7 7.8e-W1: デバイスの生の前回・現在の状態（<see cref="DS4Device.GetRawPreviousStateRef"/>／<see cref="DS4Device.GetRawCurrentStateRef"/> が返す）を設定する。
-        /// 旧経路の Lightbar マクロは、MapCustom の引数の状態ではなく、この生の状態の変化で判定する。<see cref="Previous"/> も同じ前回の状態にそろえる。
-        /// </summary>
-        public void SetRawStates(DS4State previous, DS4State current)
-        {
-            pState = previous;
-            cState = current;
-            Previous = previous;
-        }
-
         public static TestDs4Device Create()
             => (TestDs4Device)System.Runtime.CompilerServices.RuntimeHelpers.GetUninitializedObject(typeof(TestDs4Device));
     }

@@ -45,7 +45,6 @@ using DS4WinWPF.ApiDTO;
 using WpfScreenHelper;
 using static DS4Windows.Mouse;
 using static DS4Windows.Util;
-using LightbarMacro = DS4WinWPF.DS4Forms.ViewModels.LightbarMacro;
 namespace DS4Windows
 {
     public enum DS4Controls : byte { None, LXNeg, LXPos, LYNeg, LYPos, RXNeg, RXPos, RYNeg, RYPos, L1, L2, L3, R1, R2, R3, Square, Triangle, Circle, Cross, DpadUp, DpadRight, DpadDown, DpadLeft, PS, TouchLeft, TouchUpper, TouchMulti, TouchRight, Share, Options, Mute, FnL, FnR, BLP, BRP, GyroXPos, GyroXNeg, GyroZPos, GyroZNeg, SwipeLeft, SwipeRight, SwipeUp, SwipeDown, L2FullPull, R2FullPull, GyroSwipeLeft, GyroSwipeRight, GyroSwipeUp, GyroSwipeDown, Capture, SideL, SideR, LSOuter, RSOuter, TouchStarted, TouchEnded };

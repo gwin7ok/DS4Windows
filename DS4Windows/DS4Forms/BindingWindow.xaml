@@ -58,34 +58,20 @@
 
                     <StackPanel Orientation="Vertical">
                         <StackPanel Margin="{StaticResource spaceMargin}">
-                            <Label Content="{lex:Loc LightbarMode}" />
-                            <ComboBox x:Name="LightbarModeCombo" MinWidth="160" SelectedIndex="{Binding Path=LightbarMacro.Active, Converter={StaticResource IntToBoolConverter}}">
-                                <ComboBoxItem Content="{lex:Loc SolidColor}" />
-                                <ComboBoxItem Content="{lex:Loc Macro}" />
-                            </ComboBox>
-                            <TabControl SelectedIndex="{Binding ElementName=LightbarModeCombo, Path=SelectedIndex}">
-                                <TabItem Header="{lex:Loc SolidColor}" Visibility="Collapsed">
-                                    <StackPanel>
-                                        <CheckBox Content="{lex:Loc BindingWin.ChangeLight}" IsChecked="{Binding UseExtrasColor}" Margin="{StaticResource spaceMargin}" />
-                                        <StackPanel Orientation="Horizontal">
-                                            <Label Content="R" />
-                                            <Slider Value="{Binding ExtrasColorR}" Minimum="0" Maximum="255" ToolTip="{Binding ExtrasColorR}" MinWidth="100" Background="{Binding ExtrasColorRString, FallbackValue=Red}"/>
-                                        </StackPanel>
-                                        <StackPanel Orientation="Horizontal">
-                                            <Label Content="G" />
-                                            <Slider Value="{Binding ExtrasColorG}" MinWidth="100" Minimum="0" Maximum="255" ToolTip="{Binding ExtrasColorG}" Background="{Binding ExtrasColorGString, FallbackValue=Lime}"/>
-                                        </StackPanel>
-                                        <StackPanel Orientation="Horizontal">
-                                            <Label Content="B" />
-                                            <Slider Value="{Binding ExtrasColorB}" MinWidth="100" Minimum="0" Maximum="255" ToolTip="{Binding ExtrasColorB}" Background="{Binding ExtrasColorBString, FallbackValue=Blue}"/>
-                                        </StackPanel>
-                                        <Button x:Name="extrasColorChoosebtn" Width="20" Height="20" Background="{Binding ExtrasColorString}" HorizontalAlignment="Right" Margin="0,10,10,0" Click="ExtrasColorChoosebtn_Click" />
-                                    </StackPanel>
-                                </TabItem>
-                                <TabItem Header="{lex:Loc Macro}" Visibility="Collapsed">
-                                    <Button HorizontalAlignment="Stretch" Height="20" Content="{lex:Loc CreateLightbarMacro}" Click="CreateLightbarMacro_Click" />
-                                </TabItem>
-                            </TabControl>
+                            <CheckBox Content="{lex:Loc BindingWin.ChangeLight}" IsChecked="{Binding UseExtrasColor}" Margin="{StaticResource spaceMargin}" />
+                            <StackPanel Orientation="Horizontal">
+                                <Label Content="R" />
+                                <Slider Value="{Binding ExtrasColorR}" Minimum="0" Maximum="255" ToolTip="{Binding ExtrasColorR}" MinWidth="100" Background="{Binding ExtrasColorRString, FallbackValue=Red}"/>
+                            </StackPanel>
+                            <StackPanel Orientation="Horizontal">
+                                <Label Content="G" />
+                                <Slider Value="{Binding ExtrasColorG}" MinWidth="100" Minimum="0" Maximum="255" ToolTip="{Binding ExtrasColorG}" Background="{Binding ExtrasColorGString, FallbackValue=Lime}"/>
+                            </StackPanel>
+                            <StackPanel Orientation="Horizontal">
+                                <Label Content="B" />
+                                <Slider Value="{Binding ExtrasColorB}" MinWidth="100" Minimum="0" Maximum="255" ToolTip="{Binding ExtrasColorB}" Background="{Binding ExtrasColorBString, FallbackValue=Blue}"/>
+                            </StackPanel>
+                            <Button x:Name="extrasColorChoosebtn" Width="20" Height="20" Background="{Binding ExtrasColorString}" HorizontalAlignment="Right" Margin="0,10,10,0" Click="ExtrasColorChoosebtn_Click" />
                         </StackPanel>
                         <StackPanel Orientation="Horizontal" Margin="{StaticResource spaceMargin}">
                             <Label Content="{lex:Loc FlashRate}"/>

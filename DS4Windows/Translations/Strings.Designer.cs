@@ -851,14 +851,6 @@ namespace DS4WinWPF.Translations {
             }
         }
         
-        /// <summary>
-        ///   Looks up a localized string similar to Create lightbar macro.
-        /// </summary>
-        public static string CreateLightbarMacro {
-            get {
-                return ResourceManager.GetString("CreateLightbarMacro", resourceCulture);
-            }
-        }
         
         /// <summary>
         ///   Looks up a localized string similar to Cubic.

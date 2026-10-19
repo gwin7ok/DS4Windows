@@ -27,7 +27,6 @@ using DS4WinWPF.ApiDTO;
 using WpfScreenHelper;
 using static DS4Windows.Mouse;
 using static DS4Windows.Util;
-using LightbarMacro = DS4WinWPF.DS4Forms.ViewModels.LightbarMacro;
 
 namespace DS4Windows.Services
 {

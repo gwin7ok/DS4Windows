@@ -3704,19 +3704,6 @@ namespace DS4Windows
         //private static double FlickThreshold = 0.9;
         //private static double FlickTime = 0.1;
 
-        // array of DS4Controls that can be mapped to a bool (through DS4State) and used for lightbar macro press/release function
-        private static DS4Controls[] BoolDS4Controls =
-        [
-            DS4Controls.Square, DS4Controls.Triangle, DS4Controls.Circle, DS4Controls.Cross, DS4Controls.DpadUp,
-            DS4Controls.DpadDown, DS4Controls.DpadLeft, DS4Controls.DpadRight, DS4Controls.L1, DS4Controls.L3,
-            DS4Controls.R1, DS4Controls.R3, DS4Controls.Share, DS4Controls.Options, DS4Controls.Mute,
-            DS4Controls.TouchRight, DS4Controls.TouchLeft, DS4Controls.Capture, DS4Controls.SideL, DS4Controls.SideR,
-            DS4Controls.FnL, DS4Controls.FnR, DS4Controls.BLP, DS4Controls.BRP
-        ];
-
-        private CancellationTokenSource threadCts = new();
-        private Task lightbarMacroTask;
-
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private void ProcessControlSettingAction(DS4ControlSettings dcs, int device, DS4State cState, DS4State MappedState, DS4StateExposed eState,
             Mouse tp, DS4StateFieldMapping fieldMapping, DS4StateFieldMapping outputfieldMapping, SyntheticState deviceState, ref double tempMouseDeltaX, ref double tempMouseDeltaY,
@@ -3783,8 +3770,9 @@ namespace DS4Windows
                             extrasRumbleActive[device] = true;
                         }
 
-                        // lightbar macro takes precedence
-                        if (extras[2] == 1 && (!dcs.LightbarMacro?.Active ?? false))
+                        // Phase8-Step7 7.8e Q7=B: 旧条件 `!dcs.LightbarMacro?.Active ?? false` は、LightbarMacro が null だと偽になり、Extras のライトバーが効かなかった。
+                        // Lightbar マクロ機能の廃止（Q8=B）とあわせて、条件を外した（ライトバーの有効フラグだけで強制色を出す）
+                        if (extras[2] == 1)
                         {
                             DS4Color color = new DS4Color { red = (byte)extras[3], green = (byte)extras[4], blue = (byte)extras[5] };
                             DS4LightBar.forcedColor[device] = color;
@@ -3826,57 +3814,6 @@ namespace DS4Windows
                 }
             }
 
-
-            if (dcs.LightbarMacro is not null && dcs.LightbarMacro.Active)
-            {
-                if (BoolDS4Controls.Contains(dcs.control))
-                {
-                    var dev = ctrl.DS4Controllers[device];
-                    var prev = dev.GetRawPreviousStateRef();
-                    var curr = dev.GetRawCurrentStateRef();
-
-                    var field = typeof(DS4State).GetField(dcs.control.ToString());
-                    // using cState can lead to some duplicate input issues
-                    var currButtonState = (bool)field.GetValue(curr);
-                    var prevButtonState = (bool)field.GetValue(prev);
-
-                    if (prevButtonState != currButtonState)
-                    {
-                        if ((dcs.LightbarMacro.Trigger == LightbarMacroTrigger.Press && !prevButtonState && currButtonState)
-                            || (dcs.LightbarMacro.Trigger == LightbarMacroTrigger.Release && prevButtonState &&
-                                !currButtonState))
-                        {
-                            if (dcs.LightbarMacro.CancelCurrent && lightbarMacroTask != null && !lightbarMacroTask.IsCompleted)
-                            {
-                                threadCts.Cancel();
-
-                                try
-                                {
-                                    lightbarMacroTask.Wait();
-                                }
-                                catch (OperationCanceledException)
-                                {
-                                }
-                                finally
-                                {
-                                    threadCts.Dispose();
-                                    threadCts = new CancellationTokenSource();
-                                }
-                            }
-
-                            // if cancellation is on, the task has already been cancelled, if cancellation is off,
-                            // we need to make sure that we don't do Task.Run when the previous one hasn't completed yet,
-                            // as that would queue it and it's undesired. check for task being null too as it's
-                            // only initialised here and in case not a single macro hasn't run yet, it will be null
-                            if (dcs.LightbarMacro.CancelCurrent ||
-                                (!dcs.LightbarMacro.CancelCurrent
-                                 && (lightbarMacroTask is null || lightbarMacroTask.IsCompleted))
-                                )
-                                lightbarMacroTask = Task.Run(() => RunLightbarMacro(dcs.LightbarMacro.Macro, device, threadCts.Token));
-                        }
-                    }
-                }
-            }
 
             if (actionType != DS4ControlSettings.ActionType.Default)
             {
@@ -4117,47 +4054,6 @@ namespace DS4Windows
                     customMapQueue[device].Enqueue(new ControlToXInput(dcs.control, dcs.control));
                 }
             }
-        }
-
-        private void RunLightbarMacro(ObservableCollection<LightbarMacroElement> macro, int device, CancellationToken token)
-        {
-            lock (DS4LightBar.forcedColor) lock (DS4LightBar.forcelight)
-                {
-                    DS4LightBar.forcelight[device] = true;
-
-                    var timestamp = DateTime.UtcNow.Ticks;
-                    var i = 0;
-
-                    while (i < macro.Count)
-                    {
-                        if (token.IsCancellationRequested)
-                        {
-                            break;
-                        }
-
-                        DS4LightBar.forcedColor[device] = macro[i].Color;
-
-                        try
-                        {
-                            Task.Delay(10, token).Wait();
-                        }
-                        catch (AggregateException ex)
-                        {
-                            if (ex.InnerExceptions.All(e => e is OperationCanceledException))
-                            { }
-                            else
-                            { throw; }
-                        }
-
-                        if (DateTime.UtcNow.Ticks - timestamp >= macro[i].Length * TimeSpan.TicksPerMillisecond)
-                        {
-                            i++;
-                            timestamp = DateTime.UtcNow.Ticks;
-                        }
-                    }
-
-                    DS4LightBar.forcelight[device] = false;
-                }
         }
 
         // 注: 呼び出し元のない private メソッド（Phase6-Step3-6a 時点で確認）。Global 参照だけ外し、削除は Phase7 の整理で判断する。

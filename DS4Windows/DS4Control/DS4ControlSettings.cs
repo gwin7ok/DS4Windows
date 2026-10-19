@@ -45,7 +45,6 @@ using DS4WinWPF.ApiDTO;
 using WpfScreenHelper;
 using static DS4Windows.Mouse;
 using static DS4Windows.Util;
-using LightbarMacro = DS4WinWPF.DS4Forms.ViewModels.LightbarMacro;
 namespace DS4Windows
 {
 
@@ -62,25 +61,7 @@ namespace DS4Windows
         public ActionType actionType = ActionType.Default;
         public ControlActionData action = new ControlActionData();
 
-        private string _lightbarMacroString;
-        public string LightbarMacroString
-        {
-            get => _lightbarMacroString;
-            set
-            {
-                _lightbarMacroString = value;
-                if (string.IsNullOrEmpty(value)) return;
-                try
-                {
-                    LightbarMacro = new LightbarMacro(value);
-                }
-                catch (ArgumentException)
-                {
-                    LightbarMacro = new LightbarMacro();
-                }
-            }
-        }
-        public LightbarMacro LightbarMacro { get; set; }
+        // Phase8-Step7 7.8e: 「Lightbar マクロ」機能は廃止した（Phase8-Step7-8e-Plan.md Q8＝B。プロファイルに保存されず、実質使えなかった）。
 
         // Phase8-Step7 7.8d: 「シフト」機能は廃止した（Phase8-Step7-8d-Plan.md）。プロファイルに残っているシフトの設定は、解釈せず、RemovedShiftSettings に保持する。
 
@@ -99,7 +80,6 @@ namespace DS4Windows
             action = new ControlActionData();
             action.actionAlias = 0;
             //actionAlias = 0;
-            LightbarMacroString = string.Empty;
         }
 
         public bool IsExtrasEmpty(string extraStr)

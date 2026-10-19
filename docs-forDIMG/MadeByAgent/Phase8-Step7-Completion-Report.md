@@ -383,3 +383,15 @@ Step7 の 7.6 は、これで 4 種別（GyroCalibrate、DisconnectBT、BatteryC
 - **プロファイルに残るシフトの設定**: 読込のとき、`<ShiftControl>` の内容を解釈せず、そのまま保持する（`RemovedShiftSettings`）。動作には使わない。保存では、保持した内容をそのまま書き出す（編集画面で削除を選べば、空の要素になる）。編集画面を開いたときの警告（削除か残すかの選択。残せば毎回警告）は W3 で実装済み（`MessageBoxRemovedShiftPrompt`、`ProfileEditor.Reload` が読込の直後に `RemovedShiftNotice.Apply` を呼ぶ。文言は英語・日本語。`Phase8Step78dW3RemovedShiftNoticeWiringTests`。ビルド・テスト成功。2026-10-20）。ダイアログの実機確認は Step9（U-43）。
 - **移行処理**: SA への変換は作らない（ユーザー指示）。
 - **影響した API**: `UpdateSettings`／`UpdateDS4CSetting`／`UpdateDS4CExtra`／`UpdateDS4CKeyType`／`RefreshActionAlias`／`RecordBox`／`RecordBoxViewModel`／`IEditorWindowFactory.CreateRecordBox`／`IViewModelFactory.CreateRecordBoxViewModel` から、シフトの引数を削除した。
+
+---
+
+## 7.8e Controls タブの Extras と Lightbar マクロ（2026-10-20。W2 まで実施。W3 以降は未着手）
+
+計画書: `Phase8-Step7-8e-Plan.md`（Q1〜Q8 を承認済み。Q3＝B、Q4＝C［Q8 により不要］、Q6＝B、Q7＝B、Q8＝B、他は推奨）。
+
+- **Lightbar マクロ機能の廃止（規約 2.2 の機能廃止。ユーザーの承認。Q8＝B）**: W1 の調査で、Lightbar マクロはプロファイルに保存されず（旧形式に保存・読込がない。上流の `ProfileDTO` の形式にはあった）、編集画面で作っても、保存して適用すると消えると分かった。編集画面の「ライトバーのモード」の選択（単色／マクロ）、`LightbarMacro` 関連の部品、`Mapping` の実行のコードを削除した。単色の設定は残る。利用者のデータは失われない（保存されていなかったため）。実機での事前確認は行わずに承認された。
+- **不具合の修正（Q7＝B）**: Extras のライトバーは、旧経路の条件 `!dcs.LightbarMacro?.Active ?? false` が、`LightbarMacro` が null だと偽になり、効いていなかった。条件を外し、新・旧どちらの経路でも、ライトバーの有効フラグだけで強制色を出す。
+- **W0**: 旧経路の Extras と Lightbar マクロの調査（`Phase8-Step7-8e-Plan.md` §2・§5.1）。
+- **W1**: `Phase8Step78eW1ControlsExtrasCharacterizationTests`（旧経路の Extras の特性化。ビルド・テスト成功）。
+- **W2**: Lightbar マクロの廃止（§5.3）。ビルド・テストの結果待ち。実機確認は Step9（U-44）。
