@@ -3,7 +3,7 @@
 作成日: 2026-10-20  
 対象ブランチ: `For-DI-migration-work`  
 上位: `Phase8-Step7-Plan.md`（§4 の 7.7）、`Phase8-Step7-6-Plan.md`（進め方）、`Phase8-Step2-Design.md`（§4 の `MultiTapInputAction`、§24）、`Phase8-Step2-Intent-Decisions.md`（項目 7）、`Phase8-Step1-Trigger-Spec-Ledger.md`（XboxGameDVR／MultiAction）  
-状態: **ユーザーの決定を反映済み（2026-10-20）: Q1＝A（XboxGameDVR は機能削除を前提）、Q2＝B（MultiAction を独立した入力アクションにする）、Q3〜Q7＝推奨（A）。7.7a（XboxGameDVR の削除）はビルド・テスト成功。7.7b（MultiAction）は W1 成功、W2 と、ユーザーの設計見直し（ジェスチャーから出力への対応を変換層に置く。W2b。§3.3）を実装済み［W2 と合わせて、ビルド・テスト成功。Q8＝A、Q9＝A を承認済み］。W3 のロールバックと割り当ては、W2 のテスト［`Phase8Step77bW2MultiTapTests`］に含まれる。次は実機確認 U-39**
+状態: **ユーザーの決定を反映済み（2026-10-20）: Q1＝A（XboxGameDVR は機能削除を前提）、Q2＝B（MultiAction を独立した入力アクションにする）、Q3〜Q7＝推奨（A）。7.7a（XboxGameDVR の削除）はビルド・テスト成功。7.7b（MultiAction）は W1 成功、W2 と、ユーザーの設計見直し（ジェスチャーから出力への対応を変換層に置く。W2b。§3.3）を実装済み［W2 と合わせて、ビルド・テスト成功。Q8＝A、Q9＝A を承認済み］。W3 のロールバックと割り当ては、W2 のテスト［`Phase8Step77bW2MultiTapTests`］に含まれる。次は実機確認 U-39［先送り。2026-10-20 ユーザー判断］**
 
 ---
 
