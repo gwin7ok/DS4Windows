@@ -323,5 +323,28 @@ Step7 の 7.6 は、これで 4 種別（GyroCalibrate、DisconnectBT、BatteryC
 
 ### 3. 次
 
-7.7b MultiAction（独立した `MultiTapInputAction`）。
+7.7b MultiAction（次節）。
+
+## 7.7b MultiAction
+
+### 1. 成果
+
+- 独立した入力アクション `MultiTapInputAction` を新設。トリガーの AND（`ComboTriggerInputAction`）と、`trigger[0]` の押下・解放のエッジ、時刻、`DebouncingMs` から、旧経路と同じ状態機械を動かし、`TriggerState.Gesture`（タップ／長押し／ダブルタップ）を返す。状態は入力アクションのインスタンスが持つ。
+- **設計の見直し（W2b。ユーザーの提案、Q8＝A・Q9＝A）**: ジェスチャーから出力への対応を、出力層ではなく、変換層（ビルダーが作る束縛）に置いた。`BindingPolicy.RoutesOutputsByGesture` を追加し、エンジンは、その項目が真の束縛で `Gesture` が 0 でないフレームにだけ `Outputs[Gesture-1]` を実行する。出力は、汎用の `MacroStringAction`（マクロの文字列を再生）。`IGestureOutputAction`／`MultiActionOutput`／`IMultiActionMacroPlayer`／`DefaultMultiActionMacroPlayer` は作らない（W2 の初版を、実装後・コミット前に置き換えた）。窓口は `IMacroStringPlayer`／`DefaultMacroStringPlayer`（`Mapping` が実装。`IMapping` は 10 メンバーのまま）。
+- **配線の是正**: `Mapping.MapCustom` が `TriggerInput.Update` に前フレームの状態を `null` で渡していた（Step4）ため、新経路で MultiAction の押下・解放が見えなかった。デバイスの前回のレポート（`getPreviousStateRef`。旧経路と同じ）を渡すようにした。前フレームの表は `WasActive` が最初に呼ばれたときにだけ作る（遅延）ため、MultiAction がなければ費用は増えない。
+- `ServiceRegistration` の既定の一覧に MultiAction の 1 行を追加（ロールバックはその 1 行を外す）。
+
+### 2. 検証結果・判断の記録
+
+1. W1（旧経路の特性化。テスト用のデバイス `TestDs4Device` を使用）: タップ、長押し、ダブルタップ、空のマクロ、`DebouncingMs`、Fresh-press ガードを見ない、トリガーの出力の消去、前の特殊アクションのフレームの打ち切りでの見逃し。旧・新の両経路で成功。
+2. W2: 偽の入力（時刻と押下を差し込める）での状態機械、出力、ビルダー、ロールバック、窓口、旧・新のログの一致（マクロの直前の Trace 4 行）、割り当て。成功。
+3. 旧経路との違いなし（旧ループの位置で動くため、見逃しも同じ）。
+
+### 3. 実機確認（ユーザー）
+
+チェックリスト §11 の **U-39**。確認の前に、起動ログの「built at … (commit …)」でビルドを確認する。
+
+### 4. 次
+
+7.8（Controls タブ。別の設計書を先に作る）。その後 Step8（旧コードの削除）。
 
