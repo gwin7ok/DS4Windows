@@ -50,6 +50,10 @@ namespace DS4Windows.Services
         private readonly DS4Windows.DI.IProfileSettingsService _profileSettings;
         private readonly DS4Windows.DI.IEnvironmentService _environment;
         private readonly XmlDocument m_Xdoc = new XmlDocument(); // 旧 BackingStore.m_Xdoc と同じ使い方（排他は呼び出し側のロック）
+        // Phase8-Step4b W2: LoadProfile の節（Q3＝A。DI 登録せず、直列化の中で使う状態を持たない）
+        private readonly IProfileLoadSection _generalSection = new ProfileGeneralLoadSection();
+        private readonly IProfileLoadSection _touchpadBasicSection = new ProfileTouchpadBasicLoadSection();
+
 
         public LegacyProfileXmlSerializer(BackingStore store, DS4Windows.DI.IPathService pathService, DS4Windows.DI.IProfileSettingsService profileSettings,
             DS4Windows.DI.IEnvironmentService environment)
@@ -87,22 +91,12 @@ namespace DS4Windows.Services
             }
         }
 
-        private LightbarMode GetLightbarModeType(string modeString)
+        // Phase8-Step4b W2（移行中の橋渡し）: LoadProfile にまだ残る局所変数 missingSetting を、節の文脈と受け渡す。全節の移動後（W5）に不要になり削除する。
+        private static void RunSection(IProfileLoadSection section, ProfileLoadContext context, ref bool missingSetting)
         {
-            LightbarMode result = LightbarMode.DS4Win;
-            switch (modeString)
-            {
-                case "DS4Win":
-                    result = LightbarMode.DS4Win;
-                    break;
-                case "Passthru":
-                    result = LightbarMode.Passthru;
-                    break;
-                default:
-                    break;
-            }
-
-            return result;
+            context.MissingSetting = missingSetting;
+            section.Load(context);
+            missingSetting = context.MissingSetting;
         }
 
         public bool LoadProfile(int device, bool launchprogram, ControlService control,
@@ -163,6 +157,7 @@ namespace DS4Windows.Services
                 OutContType oldContType = store.ActiveOutDevType[device];
                 LightbarSettingInfo lightbarSettings = store.lightbarSettingInfo[device];
                 LightbarDS4WinInfo lightInfo = lightbarSettings.ds4winSettings;
+                var context = new ProfileLoadContext(store, m_Xdoc, rootname, device, control, lightbarSettings, lightInfo);
 
                 // Make sure to reset currently set profile values before parsing
                 store.ResetProfile(device);
@@ -171,163 +166,12 @@ namespace DS4Windows.Services
                 // profile
                 control.PreLoadReset(device);
 
-                try { Item = m_Xdoc.SelectSingleNode("/" + rootname + "/touchToggle"); Boolean.TryParse(Item.InnerText, out store.enableTouchToggle[device]); }
-                catch { missingSetting = true; }
-
-                try
-                {
-                    Item = m_Xdoc.SelectSingleNode("/" + rootname + "/idleDisconnectTimeout");
-                    if (int.TryParse(Item?.InnerText ?? "", out int temp))
-                    {
-                        store.idleDisconnectTimeout[device] = temp;
-                    }
-                }
-                catch { missingSetting = true; }
-
-                try { Item = m_Xdoc.SelectSingleNode("/" + rootname + "/outputDataToDS4"); Boolean.TryParse(Item.InnerText, out store.enableOutputDataToDS4[device]); }
-                catch { missingSetting = true; }
-
-                try
-                {
-                    Item = m_Xdoc.SelectSingleNode("/" + rootname + "/LightbarMode");
-                    string tempMode = Item.InnerText;
-                    lightbarSettings.mode = GetLightbarModeType(tempMode);
-                }
-                catch { lightbarSettings.mode = LightbarMode.DS4Win; missingSetting = true; }
-
-                //New method for saving color
-                try
-                {
-                    Item = m_Xdoc.SelectSingleNode("/" + rootname + "/Color");
-                    string[] colors;
-                    if (!string.IsNullOrEmpty(Item.InnerText))
-                        colors = Item.InnerText.Split(',');
-                    else
-                        colors = new string[0];
-
-                    lightInfo.m_Led.red = byte.Parse(colors[0]);
-                    lightInfo.m_Led.green = byte.Parse(colors[1]);
-                    lightInfo.m_Led.blue = byte.Parse(colors[2]);
-                }
-                catch { missingSetting = true; }
-
-                if (m_Xdoc.SelectSingleNode("/" + rootname + "/Color") == null)
-                {
-                    //Old method of color saving
-                    try { Item = m_Xdoc.SelectSingleNode("/" + rootname + "/Red"); Byte.TryParse(Item.InnerText, out lightInfo.m_Led.red); }
-                    catch { missingSetting = true; }
-                    try { Item = m_Xdoc.SelectSingleNode("/" + rootname + "/Green"); Byte.TryParse(Item.InnerText, out lightInfo.m_Led.green); }
-                    catch { missingSetting = true; }
-
-                    try { Item = m_Xdoc.SelectSingleNode("/" + rootname + "/Blue"); Byte.TryParse(Item.InnerText, out lightInfo.m_Led.blue); }
-                    catch { missingSetting = true; }
-                }
-
-                try { Item = m_Xdoc.SelectSingleNode("/" + rootname + "/RumbleBoost"); Byte.TryParse(Item.InnerText, out store.rumble[device]); }
-                catch { missingSetting = true; }
-
-                try { Item = m_Xdoc.SelectSingleNode("/" + rootname + "/RumbleAutostopTime"); Int32.TryParse(Item.InnerText, out store.rumbleAutostopTime[device]); }
-                catch { missingSetting = true; }
-
-                try { Item = m_Xdoc.SelectSingleNode("/" + rootname + "/ledAsBatteryIndicator"); Boolean.TryParse(Item.InnerText, out lightInfo.ledAsBattery); }
-                catch { missingSetting = true; }
-
-                try { Item = m_Xdoc.SelectSingleNode("/" + rootname + "/FlashType"); Byte.TryParse(Item.InnerText, out lightInfo.flashType); }
-                catch { missingSetting = true; }
-
-                try { Item = m_Xdoc.SelectSingleNode("/" + rootname + "/flashBatteryAt"); Int32.TryParse(Item.InnerText, out lightInfo.flashAt); }
-                catch { missingSetting = true; }
-
-                try { Item = m_Xdoc.SelectSingleNode("/" + rootname + "/touchSensitivity"); Byte.TryParse(Item.InnerText, out store.touchSensitivity[device]); }
-                catch { missingSetting = true; }
-
-                //New method for saving color
-                try
-                {
-                    Item = m_Xdoc.SelectSingleNode("/" + rootname + "/LowColor");
-                    string[] colors;
-                    if (!string.IsNullOrEmpty(Item.InnerText))
-                        colors = Item.InnerText.Split(',');
-                    else
-                        colors = new string[0];
-
-                    lightInfo.m_LowLed.red = byte.Parse(colors[0]);
-                    lightInfo.m_LowLed.green = byte.Parse(colors[1]);
-                    lightInfo.m_LowLed.blue = byte.Parse(colors[2]);
-                }
-                catch { missingSetting = true; }
-
-                if (m_Xdoc.SelectSingleNode("/" + rootname + "/LowColor") == null)
-                {
-                    //Old method of color saving
-                    try { Item = m_Xdoc.SelectSingleNode("/" + rootname + "/LowRed"); byte.TryParse(Item.InnerText, out lightInfo.m_LowLed.red); }
-                    catch { missingSetting = true; }
-                    try { Item = m_Xdoc.SelectSingleNode("/" + rootname + "/LowGreen"); byte.TryParse(Item.InnerText, out lightInfo.m_LowLed.green); }
-                    catch { missingSetting = true; }
-                    try { Item = m_Xdoc.SelectSingleNode("/" + rootname + "/LowBlue"); byte.TryParse(Item.InnerText, out lightInfo.m_LowLed.blue); }
-                    catch { missingSetting = true; }
-                }
-
-                //New method for saving color
-                try
-                {
-                    Item = m_Xdoc.SelectSingleNode("/" + rootname + "/ChargingColor");
-                    string[] colors;
-                    if (!string.IsNullOrEmpty(Item.InnerText))
-                        colors = Item.InnerText.Split(',');
-                    else
-                        colors = new string[0];
-
-                    lightInfo.m_ChargingLed.red = byte.Parse(colors[0]);
-                    lightInfo.m_ChargingLed.green = byte.Parse(colors[1]);
-                    lightInfo.m_ChargingLed.blue = byte.Parse(colors[2]);
-                }
-                catch { missingSetting = true; }
-
-                if (m_Xdoc.SelectSingleNode("/" + rootname + "/ChargingColor") == null)
-                {
-                    try { Item = m_Xdoc.SelectSingleNode("/" + rootname + "/ChargingRed"); Byte.TryParse(Item.InnerText, out lightInfo.m_ChargingLed.red); }
-                    catch { missingSetting = true; }
-                    try { Item = m_Xdoc.SelectSingleNode("/" + rootname + "/ChargingGreen"); Byte.TryParse(Item.InnerText, out lightInfo.m_ChargingLed.green); }
-                    catch { missingSetting = true; }
-                    try { Item = m_Xdoc.SelectSingleNode("/" + rootname + "/ChargingBlue"); Byte.TryParse(Item.InnerText, out lightInfo.m_ChargingLed.blue); }
-                    catch { missingSetting = true; }
-                }
-
-                try
-                {
-                    Item = m_Xdoc.SelectSingleNode("/" + rootname + "/FlashColor");
-                    string[] colors;
-                    if (!string.IsNullOrEmpty(Item.InnerText))
-                        colors = Item.InnerText.Split(',');
-                    else
-                        colors = new string[0];
-                    lightInfo.m_FlashLed.red = byte.Parse(colors[0]);
-                    lightInfo.m_FlashLed.green = byte.Parse(colors[1]);
-                    lightInfo.m_FlashLed.blue = byte.Parse(colors[2]);
-                }
-                catch { missingSetting = true; }
-
-                try { Item = m_Xdoc.SelectSingleNode("/" + rootname + "/touchpadJitterCompensation"); bool.TryParse(Item.InnerText, out store.touchpadJitterCompensation[device]); }
-                catch { missingSetting = true; }
+                RunSection(_generalSection, context, ref missingSetting);
                 // Phase6-Step12: 旧形式の読込で欠けていた 10 要素。要素が無い（古いプロファイル）、または値が不正なときは、
                 // ResetProfile で設定済みの既定値のままにする（missingSetting は立てない）。
                 LoadLegacyExtraSettings(device, rootname);
 
-                try { Item = m_Xdoc.SelectSingleNode("/" + rootname + "/lowerRCOn"); bool.TryParse(Item.InnerText, out store.lowerRCOn[device]); }
-                catch { missingSetting = true; }
-                try { Item = m_Xdoc.SelectSingleNode("/" + rootname + "/tapSensitivity"); byte.TryParse(Item.InnerText, out store.tapSensitivity[device]); }
-                catch { missingSetting = true; }
-                try { Item = m_Xdoc.SelectSingleNode("/" + rootname + "/doubleTap"); bool.TryParse(Item.InnerText, out store.doubleTap[device]); }
-                catch { missingSetting = true; }
-                try { Item = m_Xdoc.SelectSingleNode("/" + rootname + "/scrollSensitivity"); int.TryParse(Item.InnerText, out store.scrollSensitivity[device]); }
-                catch { missingSetting = true; }
-
-                try { Item = m_Xdoc.SelectSingleNode("/" + rootname + "/TouchpadInvert"); int temp = 0; int.TryParse(Item.InnerText, out temp); store.touchpadInvert[device] = Math.Min(Math.Max(temp, 0), 3); }
-                catch { store.touchpadInvert[device] = 0; missingSetting = true; }
-
-                try { Item = m_Xdoc.SelectSingleNode("/" + rootname + "/TouchpadClickPassthru"); bool.TryParse(Item.InnerText, out store.touchClickPassthru[device]); }
-                catch { missingSetting = true; }
+                RunSection(_touchpadBasicSection, context, ref missingSetting);
 
                 try { Item = m_Xdoc.SelectSingleNode("/" + rootname + "/LeftTriggerMiddle"); byte.TryParse(Item.InnerText, out store.l2ModInfo[device].deadZone); }
                 catch { missingSetting = true; }
