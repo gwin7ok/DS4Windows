@@ -3,7 +3,7 @@
 作成日: 2026-10-19  
 対象ブランチ: `For-DI-migration-work`  
 上位: `Phase8-Step7-5-Plan.md`（§3 の 7.5b、Q5・Q6）、`Phase8-Step2-Design.md`（§15.2 の `UntriggerPass`、§16）、`Phase8-Step2-Intent-Decisions.md`（項目 5・6・11・12）、`Phase7b` の W1（復帰の合図の退避・復元）、`Phase8-Step7-Completion-Report.md`（7.5a）  
-状態: **計画書の作成のみ（2026-10-19）。Q1〜Q6 の承認待ち。実装は承認の後**
+状態: **Q1〜Q6 を推奨（A）どおり承認（2026-10-19）。W1 実装済み（ビルド・テストの結果待ち）**
 
 ---
 
@@ -51,6 +51,8 @@
 - **ビルダー**: `ProfileUntriggerMigrated` を削除する。`uTrigger` を持つ Profile は束縛を作らない（旧経路。自動と併用でも旧経路。旧経路の自動の分岐に、`uTrigger` ごとの処理が付くため）。それ以外（切替のみ、自動の復帰）は束縛を作る。
 
 ### W1: 特性化（コードは変えない）
+
+**実装（2026-10-19）**: `Phase8Step75bW1ProfileUntriggerDualPathTests`（新設。復帰の回数を旧・新の両経路で比べる: 離して 1 回、AND 条件は 1 つ離れた時点、切り替えなかったときは復帰なし、適用をまたぐ、物理切断で消える）。旧経路だけ: 合図の設定の条件、復帰の前に合図が消える。報告のみ: 適用が終わる前に離したとき（Q4 の材料。判定なし）。W1 の時点では新経路の指定でもビルダーが束縛を作らないため、旧経路が処理する。
 
 `SpecialActionTestScope(migrated)` と `Phase8Step75a…` の方式で、**旧経路だけ**で期待値を固定する（新経路はまだ復帰を持たないため）。
 - 自動の復帰: トリガーを離すと `RestoreFromAction` が 1 回。保持中は呼ばれない。AND 条件（`L1/R1`）は、どれか 1 つが離れた時点で成立。
