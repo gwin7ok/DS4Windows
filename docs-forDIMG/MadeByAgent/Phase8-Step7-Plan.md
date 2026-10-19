@@ -3,7 +3,7 @@
 作成日: 2026-10-19  
 対象ブランチ: `For-DI-migration-work`  
 上位: `Phase8-Unified-Trigger-Dispatch-Plan.md`（§5 の Step7）、`Phase8-Step2-Design.md` §23〜§28（並行期間のしくみ、PR 一覧、テストの流用、ロールバック）、`Phase8-Step2-Intent-Decisions.md`、`Phase8-Step1-Trigger-Spec-Ledger.md`、`Phase8-Step4/5/6-Completion-Report.md`  
-状態: **Q1〜Q8 を推奨どおり承認（2026-10-19）。7.1-W1・W2 完了（ビルド・テスト成功）。7.1-W3 実装済み（結果待ち）**
+状態: **Q1〜Q8 を推奨どおり承認（2026-10-19）。7.1-W1〜W3 完了（ビルド・テスト成功）。7.1-W4 の実機確認 U-27 の結果待ち。経過報告書: `Phase8-Step7-Completion-Report.md`**
 
 ---
 
@@ -101,7 +101,7 @@
 
 ### 5.3 7.1-W3 スイッチと性能
 
-**W3 の実装（2026-10-19。ユーザーのビルド・テストの結果待ち）**
+**W3 の実装（2026-10-19。ビルド・テスト成功）**
 
 - `ServiceRegistration`: `BindingMigrationOptions` をファクトリー登録にし、既定の一覧に Button を **1 行**足した（`migration.MigratedTypes.Add(SpecialAction.ActionTypeId.Button); // 7.1 Button`）。`BindingMigrationOptions` の既定のコンストラクターは空のまま（単体テストの前提を保つ）。
 - 既存テストの更新（Q3 に基づく唯一の変更）: `Phase8Step4W1ContractTests.Host_RegistersTheRegistryAndTheOptions_…` の「ホストの既定は空」の検査を、「既定は Button のみ」に変えた（設計どおりの変更。他の旧経路のテストは `SpecialActionTestScope` が一覧を空にして実行するため、期待値は不変）。
