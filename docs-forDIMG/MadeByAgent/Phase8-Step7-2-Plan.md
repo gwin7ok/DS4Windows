@@ -3,7 +3,7 @@
 作成日: 2026-10-19  
 対象ブランチ: `For-DI-migration-work`  
 上位: `Phase8-Step7-Plan.md`（§3 共通の手順、§4 の 7.2）、`Phase8-Step2-Design.md` §6・§7、`Phase8-Step2-Intent-Decisions.md`（項目 4: Key の `uTrigger` は無視）、`Phase8-Step7-Completion-Report.md`（7.1 の結果）  
-状態: **Q1〜Q4 を推奨どおり承認（2026-10-19）。7.2-W1 完了（ビルド・テスト成功）。7.2-W2 実装済み（結果待ち）**
+状態: **Q1〜Q4 を推奨どおり承認（2026-10-19）。7.2-W1・W2 完了（ビルド・テスト成功）。7.2-W3 実装済み（結果待ち）**
 
 ---
 
@@ -69,7 +69,7 @@ Key 種別の特殊アクション（キーボードのキーの出力。Press�
 
 ### W2: 新経路の不足分
 
-**W2 の実装（2026-10-19。ユーザーのビルド・テストの結果待ち）**
+**W2 の実装（2026-10-19。ビルド・テスト成功）**
 - `KeyOutputAction` が、旧 `MapCustomAction` の Key の分岐のログ（Debug: KEY entry、KeyTriggered ×2、KEY triggered、KeyReleased ×2。Trace: Trigger detected／maps to／Trigger keys［常に `<none>`］／output combo）を、同じ文言・順序で出す。`index` と `ActionEntries`（`ISpecialActionRepository.ActionList.Count`）は、ビルダーが渡す。差: 「untriggerindex」は常に -1。Toggle の解放は、旧経路が送らないため、ログも出さない。`IOutputContextInput`（エンジンの文脈が入力を返す）を再び使う（解放のログの「released=」のため）。
 - テスト: `Phase8Step72W2KeyLogTests`（旧・新の行の一致。Press／Toggle、ログ無効時）。
 
@@ -77,6 +77,11 @@ Key 種別の特殊アクション（キーボードのキーの出力。Press�
 - Q1・Q2 の結論の実装。
 
 ### W3: スイッチと性能
+
+**W3 の実装（2026-10-19。ユーザーのビルド・テストの結果待ち）**
+- `ServiceRegistration` の既定の一覧に `Key` を 1 行足した。既存テストの更新（設計どおりの変更）: ホストの既定の一覧（`Phase8Step4W1ContractTests`、`Phase8Step7W3ButtonSwitchTests`）を「Button と Key」に。
+- `Phase8Step72W3KeySwitchTests`: Key の行だけを外すと束縛が作られず旧経路が処理する（ロールバック）／新経路の割り当て ≦ 旧経路／Key 30 件を移行した状態の `MapCustom` の費用の出力（旧経路と並べて +5% 以内を確認）。
+- 実機確認 **U-28**（8 項目）をチェックリストに追加。
 
 - `ServiceRegistration` の既定の一覧に `Key` を足す（1 行）。ロールバックのテスト（7.1 の `Phase8Step7W3ButtonSwitchTests` に追加）。
 - ベンチマーク（`Key` を移行した状態）。許容は +5% 以内。割り当ては新経路 ≦ 旧経路。

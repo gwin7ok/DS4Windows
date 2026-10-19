@@ -17,13 +17,15 @@ namespace DS4WindowsTests
     public class Phase8Step7W3ButtonSwitchTests
     {
         [Fact]
-        public void TheHostDefault_MigratesOnlyButton()
+        public void TheHostDefault_MigratesButtonAndKey()
         {
             var options = TestHost.GetService<BindingMigrationOptions>();
 
-            Assert.Equal(new[] { SpecialAction.ActionTypeId.Button }, options.MigratedTypes.ToArray());
+            // Phase8-Step7: PR ごとに 1 種別ずつ足す（7.1 Button、7.2 Key）
+            Assert.Equal(new[] { SpecialAction.ActionTypeId.Button, SpecialAction.ActionTypeId.Key }, options.MigratedTypes.OrderBy(t => t.ToString(), StringComparer.Ordinal).ToArray());
             Assert.True(options.IsMigrated(SpecialAction.ActionTypeId.Button));
-            Assert.False(options.IsMigrated(SpecialAction.ActionTypeId.Key));
+            Assert.True(options.IsMigrated(SpecialAction.ActionTypeId.Key));
+            Assert.False(options.IsMigrated(SpecialAction.ActionTypeId.Macro));
         }
 
         [Fact]
@@ -36,8 +38,9 @@ namespace DS4WindowsTests
                 .Where(l => l.Contains("migration.MigratedTypes.Add(")).ToArray();
 
             // 種別ごとの PR で 1 行ずつ足す。ロールバックは、その行を外すだけ（Q2＝A）
-            Assert.Single(lines);
+            Assert.Equal(2, lines.Length);
             Assert.Matches(new Regex(@"MigratedTypes\.Add\(SpecialAction\.ActionTypeId\.Button\);"), lines[0]);
+            Assert.Matches(new Regex(@"MigratedTypes\.Add\(SpecialAction\.ActionTypeId\.Key\);"), lines[1]);
         }
 
         [Fact]
