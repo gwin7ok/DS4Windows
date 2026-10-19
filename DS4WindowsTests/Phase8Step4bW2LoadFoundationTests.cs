@@ -76,7 +76,7 @@ namespace DS4WindowsTests
 
             // W3 以降: 節は、ファイル順（旧コードの要素の順序）で呼ぶ
             int previous = touchpad;
-            foreach (string field in new[] { "_triggerStickBasicSection", "_stickAxialSection" })
+            foreach (string field in new[] { "_triggerStickBasicSection", "_stickAxialSection", "_motionSensitivitySection", "_miscSection", "_gyroControlsSection", "_gyroSwipeSection" })
             {
                 int at = text.IndexOf("RunSection(" + field, StringComparison.Ordinal);
                 Assert.True(at > previous, field + " は、前の節の後に呼ぶ");

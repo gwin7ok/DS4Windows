@@ -30,6 +30,17 @@ namespace DS4Windows.Services
         public LightbarSettingInfo LightbarSettings { get; }
         public LightbarDS4WinInfo LightInfo { get; }
 
+        /// <summary>読込の引数 <c>launchprogram</c>（プロファイルの起動プログラムを、読込時に起動するか）。</summary>
+        public bool LaunchProgram { get; set; }
+
+        public DS4Windows.DI.IProfileSettingsService ProfileSettings { get; set; }
+
+        /// <summary><c>ShiftModifier</c>（旧形式。全体で 1 つ）の値。雑多の節が書き、シフトのボタン割り当ての節が読む。</summary>
+        public int ShiftModifier { get; set; }
+
+        /// <summary><c>UseTPforControls</c> 要素の有無。雑多の節が書き、<c>TouchpadOutputMode</c> を読む節が読む。</summary>
+        public bool TpForControlsPresent { get; set; }
+
         /// <summary>要素が欠けていた、または読めなかったとき true（読込の最後で、欠けた設定を追記して保存し直す判断に使う）。</summary>
         public bool MissingSetting { get; set; }
     }
