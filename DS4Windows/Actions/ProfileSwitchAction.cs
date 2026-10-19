@@ -1,16 +1,44 @@
 using System;
+using System.Collections.Generic;
+using DS4Windows.DI;
 using DS4Windows.Services;
 
 namespace DS4Windows.Actions
 {
-    public class ProfileSwitchAction : IOutputAction
+    /// <summary>
+    /// Phase8-Step7 7.5a-W2: 統一ディスパッチ（エンジン）から使うとき（添字などつきのコンストラクター）は、旧 <c>MapCustomAction</c> の Profile の分岐が行っていた次の処理も、同じ条件・順序で行う（Phase8-Step7-5-Plan.md Q2〜Q4）。
+    /// (1) 連鎖の防止（<see cref="CanExecute"/>）、(2) ログ（Trace の立ち上がり 4 行、Debug 3 行）、(3) トリガーのボタンの通常の割り当て（キー、マクロ）のキーを離す、
+    /// (4) 切替のあとでフレームを打ち切る（<c>RequestEndFrame</c>。Intent-Decisions 項目 5）。
+    /// 旧経路のアダプター（<c>ProfileSwitchActionAdapter</c>）は、<c>Mapping</c> が同じ処理を行うため、添字なしのコンストラクターのままで、これらを行わない。
+    /// 復帰の合図（<c>UntriggerAction</c>）の設定は、7.5b でエンジンへ移す（それまで、復帰を持つ Profile は、ビルダーが束縛を作らず、旧経路が処理する）。
+    /// 旧経路が書く <c>prevProfileName</c>／<c>prevProfileWasTemporary</c> は、読む場所がないため、移さない（Q3＝A）。
+    /// </summary>
+    public class ProfileSwitchAction : IGatedOutputAction
     {
+        private readonly bool _engineMode;
+        private readonly int _actionIndex;
+        private readonly ISpecialActionRepository _actionRepository;
+        private readonly IProfileSettingsService _settings;
+        private readonly Func<IMapping> _mappingProvider;
+
         public SpecialAction sa { get; }
         public int deviceIndex { get; }
         public IProfileSwitcher profileSwitcher { get; }
 
         // Phase6-Step10-4-4: プロファイル切替役は必須の依存（AppHost／new DefaultProfileSwitcher のフォールバックを廃止）
         public ProfileSwitchAction(SpecialAction sa, IProfileSwitcher profileSwitcher) : this(sa, -1, profileSwitcher) { }
+
+        /// <summary>エンジン用。<paramref name="actionIndex"/>・<paramref name="actionRepository"/> は、ログの「index」「ActionEntries」用。<paramref name="mappingProvider"/> は、連鎖の防止（復帰の合図の参照）用。</summary>
+        public ProfileSwitchAction(SpecialAction sa, int deviceIndex, IProfileSwitcher profileSwitcher, int actionIndex,
+            ISpecialActionRepository actionRepository, IProfileSettingsService settings, Func<IMapping> mappingProvider)
+            : this(sa, deviceIndex, profileSwitcher)
+        {
+            _engineMode = true;
+            _actionIndex = actionIndex;
+            _actionRepository = actionRepository;
+            _settings = settings ?? throw new ArgumentNullException(nameof(settings));
+            _mappingProvider = mappingProvider;
+        }
 
         public ProfileSwitchAction(SpecialAction sa, int deviceIndex, IProfileSwitcher profileSwitcher)
         {
@@ -25,7 +53,86 @@ namespace DS4Windows.Actions
         {
             if (sa == null) return;
             int dev = (deviceIndex >= 0) ? deviceIndex : (ctx != null ? ctx.Device : 0);
+            if (_engineMode && ctx != null)
+            {
+                LogRising(ctx, dev);
+                ReleaseTheTriggerButtonKeys(ctx, dev);
+            }
+
             profileSwitcher.SwitchProfile(dev, sa);
+
+            // 旧ループの return と同じ: 切替のあとは、このフレームの残りの特殊アクションを処理しない
+            if (_engineMode) ctx?.RequestEndFrame();
+        }
+
+        /// <summary>
+        /// 連鎖の防止（旧経路の条件と同じ）: 一時プロファイルの間、復帰の合図が Profile の特殊アクションなら、別の切替を始めない。
+        /// 7.5a では、復帰の合図は、旧経路（<c>Mapping</c>）が持つ（復帰を持つ Profile は、旧経路が処理する）。
+        /// </summary>
+        public bool CanExecute(IOutputContext ctx)
+        {
+            if (!_engineMode || ctx == null) return true;
+
+            int dev = (deviceIndex >= 0) ? deviceIndex : ctx.Device;
+            if (!_settings.GetUseTempProfile(dev)) return true;
+
+            SpecialAction pending = _mappingProvider?.Invoke()?.CaptureProfileUntrigger(dev).Action;
+            return pending == null || pending.typeID != SpecialAction.ActionTypeId.Profile;
+        }
+
+        // 旧 MapCustomAction の Profile の分岐と同じ順序: LogSpecialActionTrace（立ち上がり）→ PROFILE ×2 → LogActionDoneCountOnTrigger
+        private void LogRising(IOutputContext ctx, int dev)
+        {
+            try
+            {
+                if (AppLogger.IsTraceEnabled)
+                {
+                    AppLogger.LogTrace($"Trigger detected for SA '{sa.name}' on device {dev}");
+                    AppLogger.LogTrace($"SA '{sa.name}' maps to Type:{sa.type} Details:{sa.details}");
+                    // 旧経路は、状態を渡さずに getBoolSpecialActionMapping を呼ぶため例外（握りつぶし）となり、常に "<none>" を記録している（既存の挙動）
+                    AppLogger.LogTrace($"Trigger keys for SA '{sa.name}': <none>");
+                    var parts = new List<string>();
+                    (ctx.Frame as IFrameOutputTrace)?.AppendOutputCombo(parts);
+                    string combo = parts.Count > 0 ? string.Join(", ", parts) : "<none>";
+                    AppLogger.LogTrace($"SA '{sa.name}' output combo: {combo}");
+                }
+
+                bool useTemp = _settings.GetUseTempProfile(dev);
+                AppLogger.LogDebug($"SpecialAction PROFILE: Triggered for device {dev}, action={sa.name}, target={sa.details}");
+                AppLogger.LogDebug($"SpecialAction PROFILE: beingTriggered={false}, useTempProfile={useTemp}");   // 旧経路は、立ち上がりのとき、常に False
+                int count = 0;
+                try { count = _actionRepository?.ActionList?.Count ?? 0; } catch { }
+                AppLogger.LogDebug($"SpecialAction Profile: device={dev}, name={sa.name}, index={_actionIndex}, ActionEntries={count}");
+            }
+            catch { }
+        }
+
+        // 旧経路と同じ: トリガーのボタンの通常の割り当てがキー／マクロなら、そのキーを離す（切替で、キーが押されたまま残らないように）
+        private void ReleaseTheTriggerButtonKeys(IOutputContext ctx, int dev)
+        {
+            IVirtualKBM kbm = ctx.OutputHandler;
+            if (kbm == null || sa.trigger == null) return;
+
+            for (int i = 0, count = sa.trigger.Count; i < count; i++)
+            {
+                DS4ControlSettings dcs = _settings.GetDS4CSetting(dev, sa.trigger[i]);
+                if (dcs.actionType == DS4ControlSettings.ActionType.Default) continue;
+
+                if (dcs.actionType == DS4ControlSettings.ActionType.Key)
+                {
+                    uint tempKey = _settings.OutputKBMMapping.GetRealEventKey((uint)dcs.action.actionKey);
+                    kbm.PerformKeyRelease(tempKey);
+                }
+                else if (dcs.actionType == DS4ControlSettings.ActionType.Macro)
+                {
+                    int[] keys = (int[])dcs.action.actionMacro;
+                    for (int j = 0, keysLen = keys.Length; j < keysLen; j++)
+                    {
+                        uint tempKey = _settings.OutputKBMMapping.GetRealEventKey((uint)keys[j]);
+                        kbm.PerformKeyRelease(tempKey);
+                    }
+                }
+            }
         }
 
         public void Stop(IOutputContext ctx)

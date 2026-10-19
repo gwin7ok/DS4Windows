@@ -162,19 +162,13 @@ namespace DS4WindowsTests
 
             IReadOnlyList<IActionBinding> result = NewBuilder(provider, All()).Build(0);
 
-            var none = (TriggerBinding)result[0];
-            var auto = (TriggerBinding)result[1];
-            var buttons = (TriggerBinding)result[2];
-
+            // Phase8-Step7 7.5a: 復帰（AutomaticUntrigger／解除トリガー）を持つ Profile は、7.5b まで束縛を作らず、旧経路が処理する。
+            // 切替のみの Profile だけが束縛になる（7.5b で、auto と buttons の束縛も作る形に戻し、方針［Automatic／Buttons］を検査する）
+            var none = Assert.IsType<TriggerBinding>(Assert.Single(result));
+            Assert.Equal("none", none.Source.name);
             Assert.Equal(UntriggerPolicy.None, none.Policy.Untrigger);
-            Assert.Equal(UntriggerPolicy.Automatic, auto.Policy.Untrigger);
-            Assert.Equal(UntriggerPolicy.Buttons, buttons.Policy.Untrigger);
-            Assert.Equal(new[] { DS4Controls.Cross, DS4Controls.Circle }, buttons.Policy.UntriggerButtons.ToArray());
-            Assert.All(result.Cast<TriggerBinding>(), x =>
-            {
-                Assert.IsType<ProfileSwitchAction>(Assert.Single(x.Outputs));
-                Assert.True(x.Policy.BlocksWhileExecuting);
-            });
+            Assert.IsType<ProfileSwitchAction>(Assert.Single(none.Outputs));
+            Assert.True(none.Policy.BlocksWhileExecuting);
         }
 
         [Fact]

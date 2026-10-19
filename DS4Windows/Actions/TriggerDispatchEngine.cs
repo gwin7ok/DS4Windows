@@ -321,6 +321,15 @@ namespace DS4Windows.Actions
                     {
                         // 立ち上がりのエッジ
                         ctx.Begin(frame, input);
+
+                        // 実行の条件（任意。Profile の連鎖の防止）。満たさないときは、状態を変えずに素通しする（旧経路の、実行の条件の if と同じ位置）
+                        IReadOnlyList<IOutputAction> gated = binding.Outputs;
+                        for (int o = 0; o < gated.Count; o++)
+                        {
+                            if (gated[o] is IGatedOutputAction gate && !gate.CanExecute(ctx))
+                                return FrameResult.Continue;
+                        }
+
                         if (policy.BlocksWhileExecuting) state.IsExecuting = true;
                         try
                         {

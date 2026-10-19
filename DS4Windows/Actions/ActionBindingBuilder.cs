@@ -25,12 +25,19 @@ namespace DS4Windows.Actions
         private readonly IProfileSwitcher _profileSwitcher;
         private readonly BindingMigrationOptions _options;
         private readonly ISpecialActionRepository _actionRepository;   // Key のログ（ActionEntries の数）用。省略可（テスト）
+        private readonly Func<IMapping> _mappingProvider;               // Profile の連鎖の防止（復帰の合図の参照）用。省略可（テスト）
+
+        // TODO(Phase8-Step7 7.5b。規約 2.4): 復帰（uTrigger／AutomaticUntrigger）を持つ Profile は、復帰の合図と毎フレームの確認をエンジンへ移す 7.5b まで、
+        // 束縛を作らず、旧経路が処理する（7.5a は、復帰を持たない「切替のみ」の Profile だけを新経路へ移す）。7.5b で、この定数と分岐を削除する。
+        private const bool ProfileUntriggerMigrated = false;
 
         public ActionBindingBuilder(IProfileActionProvider profileActions, IProfileSettingsService profileSettings,
             IManagedActionManager manager, IMacroPlayer macroPlayer, IProcessLauncher processLauncher,
-            IProfileSwitcher profileSwitcher, BindingMigrationOptions options, ISpecialActionRepository actionRepository = null)
+            IProfileSwitcher profileSwitcher, BindingMigrationOptions options, ISpecialActionRepository actionRepository = null,
+            Func<IMapping> mappingProvider = null)
         {
             _actionRepository = actionRepository;
+            _mappingProvider = mappingProvider;
             _profileActions = profileActions ?? throw new ArgumentNullException(nameof(profileActions));
             _profileSettings = profileSettings ?? throw new ArgumentNullException(nameof(profileSettings));
             _manager = manager ?? throw new ArgumentNullException(nameof(manager));
@@ -92,11 +99,14 @@ namespace DS4Windows.Actions
 
                 case SpecialAction.ActionTypeId.Profile:
                 {
+                    if (!ProfileUntriggerMigrated && (sa.automaticUntrigger || (sa.uTrigger != null && sa.uTrigger.Count > 0)))
+                        return null;   // 復帰を持つ Profile は、7.5b まで旧経路が処理する
+
                     // 復帰: 自動（トリガーを離したとき）が優先。そうでなく解除用のボタンがあれば、そのボタン（旧 Mapping の uTrigger と同じ）
                     UntriggerPolicy untrigger = sa.automaticUntrigger
                         ? UntriggerPolicy.Automatic
                         : (sa.uTrigger != null && sa.uTrigger.Count > 0 ? UntriggerPolicy.Buttons : UntriggerPolicy.None);
-                    return new TriggerBinding(Input(sa, false), new IOutputAction[] { new ProfileSwitchAction(sa, device, _profileSwitcher) },
+                    return new TriggerBinding(Input(sa, false), new IOutputAction[] { new ProfileSwitchAction(sa, device, _profileSwitcher, index, _actionRepository, _profileSettings, _mappingProvider) },
                         new BindingPolicy(blocksWhileExecuting: true, untrigger: untrigger,
                             untriggerButtons: untrigger == UntriggerPolicy.Buttons ? sa.uTrigger : null), sa, index);
                 }
