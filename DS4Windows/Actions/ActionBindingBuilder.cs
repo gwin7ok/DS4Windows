@@ -24,11 +24,13 @@ namespace DS4Windows.Actions
         private readonly IProcessLauncher _processLauncher;
         private readonly IProfileSwitcher _profileSwitcher;
         private readonly BindingMigrationOptions _options;
+        private readonly ISpecialActionRepository _actionRepository;   // Key のログ（ActionEntries の数）用。省略可（テスト）
 
         public ActionBindingBuilder(IProfileActionProvider profileActions, IProfileSettingsService profileSettings,
             IManagedActionManager manager, IMacroPlayer macroPlayer, IProcessLauncher processLauncher,
-            IProfileSwitcher profileSwitcher, BindingMigrationOptions options)
+            IProfileSwitcher profileSwitcher, BindingMigrationOptions options, ISpecialActionRepository actionRepository = null)
         {
+            _actionRepository = actionRepository;
             _profileActions = profileActions ?? throw new ArgumentNullException(nameof(profileActions));
             _profileSettings = profileSettings ?? throw new ArgumentNullException(nameof(profileSettings));
             _manager = manager ?? throw new ArgumentNullException(nameof(manager));
@@ -77,7 +79,7 @@ namespace DS4Windows.Actions
                 }
 
                 case SpecialAction.ActionTypeId.Key:
-                    return new TriggerBinding(Input(sa, false), new IOutputAction[] { new KeyOutputAction(sa, _profileSettings) },
+                    return new TriggerBinding(Input(sa, false), new IOutputAction[] { new KeyOutputAction(sa, _profileSettings, index, _actionRepository) },
                         BindingPolicy.Default, sa, index);
 
                 case SpecialAction.ActionTypeId.Macro:

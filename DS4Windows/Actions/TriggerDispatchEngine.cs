@@ -103,7 +103,7 @@ namespace DS4Windows.Actions
 
                 IReadOnlyList<IActionBinding> bindings = rt.Bindings;
                 EngineContext ctx = rt.Context;
-                ctx.Begin(frame);
+                ctx.Begin(frame, input);
 
                 for (int i = 0; i < bindings.Count; i++)
                 {
@@ -320,7 +320,7 @@ namespace DS4Windows.Actions
                     if (!state.BeingTriggered)
                     {
                         // 立ち上がりのエッジ
-                        ctx.Begin(frame);
+                        ctx.Begin(frame, input);
                         if (policy.BlocksWhileExecuting) state.IsExecuting = true;
                         try
                         {
@@ -338,7 +338,7 @@ namespace DS4Windows.Actions
                     else
                     {
                         // 押している間
-                        ctx.Begin(frame);
+                        ctx.Begin(frame, input);
                         for (int o = 0; o < outputs.Count; o++)
                         {
                             if (outputs[o] is IHeldOutputAction held)
@@ -355,7 +355,7 @@ namespace DS4Windows.Actions
                     if (policy.StopOnRelease)
                     {
                         EngineContext ctx = rt.Context;
-                        ctx.Begin(frame);
+                        ctx.Begin(frame, input);
                         IReadOnlyList<IOutputAction> outputs = binding.Outputs;
                         for (int o = 0; o < outputs.Count; o++)
                             outputs[o].Stop(ctx);
@@ -423,7 +423,7 @@ namespace DS4Windows.Actions
         }
 
         // 出力アクションに渡す文脈（デバイスごとに再利用。割り当て 0）
-        private sealed class EngineContext : IOutputContext
+        private sealed class EngineContext : IOutputContext, IOutputContextInput
         {
             public EngineContext(int device, IVirtualKBM handler)
             {
@@ -436,9 +436,12 @@ namespace DS4Windows.Actions
             public IFrameOutput Frame { get; private set; }
             public bool EndFrameRequested { get; private set; }
 
-            public void Begin(IFrameOutput frame)
+            public ITriggerInput Input { get; private set; }
+
+            public void Begin(IFrameOutput frame, ITriggerInput input)
             {
                 Frame = frame;
+                Input = input;
                 EndFrameRequested = false;
             }
 

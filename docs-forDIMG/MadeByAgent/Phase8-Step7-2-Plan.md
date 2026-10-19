@@ -3,7 +3,7 @@
 作成日: 2026-10-19  
 対象ブランチ: `For-DI-migration-work`  
 上位: `Phase8-Step7-Plan.md`（§3 共通の手順、§4 の 7.2）、`Phase8-Step2-Design.md` §6・§7、`Phase8-Step2-Intent-Decisions.md`（項目 4: Key の `uTrigger` は無視）、`Phase8-Step7-Completion-Report.md`（7.1 の結果）  
-状態: **Q1〜Q4 を推奨どおり承認（2026-10-19）。7.2-W1 実装済み（ビルド・テストの結果待ち）**
+状態: **Q1〜Q4 を推奨どおり承認（2026-10-19）。7.2-W1 完了（ビルド・テスト成功）。7.2-W2 実装済み（結果待ち）**
 
 ---
 
@@ -49,7 +49,7 @@ Key 種別の特殊アクション（キーボードのキーの出力。Press�
 
 ### W1: 足場と両経路の特性化（コードは変えない）
 
-**W1 の実装（2026-10-19。ユーザーのビルド・テストの結果待ち）**
+**W1 の実装（2026-10-19。ビルド・テスト成功）**
 
 - `SpecialActionTestScope(migrated: true)` が、Button に加えて Key も移行する（本番コードは変更なし）。
 - `Phase7cW2…` の Key の 3 本（成立・保持・解放、ガード中は押されない、Toggle は `UntriggerIndex` を登録しない）を `[Theory]`（旧・新）にした。`UntriggerIndex` の検査だけは Q1 により、新経路は -1。
@@ -61,7 +61,17 @@ Key 種別の特殊アクション（キーボードのキーの出力。Press�
 - 既存の Key のテスト（`Phase7cW2…` の `KeyPress_*`、`KeyToggle_*`）を `[Theory]` にし、旧経路・新経路の両方で期待値を変えずに流す（ただし、`UntriggerIndex` の検査は、新経路では書かないため Q1 の結論に従う）。
 - 新規: Press の押下・保持・解放、Toggle の ON／OFF、ガード中は押されない、遅延つき、トリガーが AND、2 つの Key の同時押し（§2.3 #1）、プロファイル適用の前後（7.1 の `SimulateProfileApply` を流用）、`keyPresses`／`repeatCount` の有無（§2.3 #2）。
 
+**W1 の結果（実測。予想との差）**:
+- 旧経路・新経路の状態は、Press、Toggle、ガード中、AND 条件、遅延、押している最中のプロファイル適用で一致した。
+- **Q1 の前提は再現しなかった**: Key を 2 つ同時に押して、どちらを先に離しても、旧経路は各キーを解放した（新経路と一致）。Key の `UntriggerIndex` の癖で「キーが押されたままになる」現象は、この手順では確認できない。新経路は `UntriggerIndex` を書かない（Profile の復帰との共有をやめる）ので、結果は同じで、衝突だけがなくなる。
+- **Q2 の結果**: 合成キーの押下の数（`vkCount`）は、旧経路でも 0 のままで、観測できない。適用の後始末（切断と同じ）で、旧経路は同じキーの解放を 1 回多く送る（Mapping が作る `nativeKeyAlias` の項目があるため。コントローラーの破棄でも解放されるため、キーを離す効果は同じ）。**この重複の解放は、新経路に移植しない**（効果が同じため。PR の説明に明記する）。
+- **遅延**: `delayTime` を持つ Key は、遅延の基準時刻の初期値が最小値のため、最初の押下は遅延なしで成立する（旧・新とも。既存の挙動の固定）。
+
 ### W2: 新経路の不足分
+
+**W2 の実装（2026-10-19。ユーザーのビルド・テストの結果待ち）**
+- `KeyOutputAction` が、旧 `MapCustomAction` の Key の分岐のログ（Debug: KEY entry、KeyTriggered ×2、KEY triggered、KeyReleased ×2。Trace: Trigger detected／maps to／Trigger keys［常に `<none>`］／output combo）を、同じ文言・順序で出す。`index` と `ActionEntries`（`ISpecialActionRepository.ActionList.Count`）は、ビルダーが渡す。差: 「untriggerindex」は常に -1。Toggle の解放は、旧経路が送らないため、ログも出さない。`IOutputContextInput`（エンジンの文脈が入力を返す）を再び使う（解放のログの「released=」のため）。
+- テスト: `Phase8Step72W2KeyLogTests`（旧・新の行の一致。Press／Toggle、ログ無効時）。
 
 - Q3 に従い、ログ（Debug 3 行＋`LogActionDoneCountOnTrigger`＋TRACE の立ち上がり＋解放の 2 行）を `KeyOutputAction`（`Execute`／`Stop`）で、同じ文言・レベル・順序で出す。ログが無効なときは文字列を作らない（Debug は、`AppLogger` が文字列を受けるため、判定してから作る）。NLog のメモリ出力で、旧経路との行の一致をテストする（7.1 の `Phase8Step7W2ButtonTraceLogTests` の方式）。
 - Q1・Q2 の結論の実装。
