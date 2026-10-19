@@ -16,6 +16,12 @@ namespace DS4Windows.DI
         /// </summary>
         void CheckProfiles();
 
+        /// <summary>
+        /// コントローラーの接続直後に呼ぶ。最後に取得した前景ウィンドウの情報で、もう一度ルールを照合する
+        /// （未接続で飛ばしたスロットへ、自動プロファイルを適用する。前景が変わらなくても動く）。
+        /// </summary>
+        void CheckProfilesForConnectedController();
+
         // Phase7-Step10e W4（承認済み）: 呼び出し元が追加時から 0 件だった ClearState() を削除した（正規の経路は IProfileSwitcher.ClearState(int)）。
 
         // ---- Phase5-Step13-4: AutoProfileHolder二重インスタンス問題の是正 ----

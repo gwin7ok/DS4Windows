@@ -103,6 +103,29 @@ namespace DS4Windows
             _controlProvider = controlProvider ?? throw new ArgumentNullException(nameof(controlProvider));
         }
 
+        // 2026-10-19（AutoProfile-NoController-Investigation.md 案B）: 自動プロファイルは、接続中のスロットにだけ適用する。
+        // テストなどで差し替える。未設定（null）なら ControlService の DS4Controllers[slot] が null でないことを接続とみなす。
+        // ControlService が未解決のとき（起動前）は判定できないため接続とみなし、従来どおり適用する。
+        public Func<int, bool> SlotConnectedProbe { get; set; }
+
+        private bool IsSlotConnected(int slot)
+        {
+            if (SlotConnectedProbe != null)
+                return SlotConnectedProbe(slot);
+
+            var control = Control;
+            if (control == null)
+                return true;
+            var controllers = control.DS4Controllers;
+            return controllers != null && slot >= 0 && slot < controllers.Length && controllers[slot] != null;
+        }
+
+        // 最後に取得できた前景ウィンドウの情報。前景が変わらないと GetForegroundProcessInfo が false を返すため、
+        // コントローラーの接続時の再確認（CheckProfilesForConnectedController）はこの値を使う。
+        private string _lastProcessName;
+        private string _lastWindowTitle;
+        private bool _hasLastForeground;
+
         public void CheckProfiles()
         {
             lock (_syncLock)
@@ -114,6 +137,30 @@ namespace DS4Windows
                 if (!_processInspector.GetForegroundProcessInfo(out topProcessName, out topWindowTitle))
                     return;
 
+                _lastProcessName = topProcessName;
+                _lastWindowTitle = topWindowTitle;
+                _hasLastForeground = true;
+
+                CheckProfilesCore(topProcessName, topWindowTitle);
+            }
+        }
+
+        public void CheckProfilesForConnectedController()
+        {
+            lock (_syncLock)
+            {
+                if (_holder == null || _profileAppService == null || !_running || !_hasLastForeground)
+                    return;
+
+                AppLogger.LogDebug("[DI] AutoProfileService.CheckProfilesForConnectedController: re-checking with the last foreground window");
+                CheckProfilesCore(_lastProcessName, _lastWindowTitle);
+            }
+        }
+
+        // _syncLock を保持して呼ぶこと。
+        private void CheckProfilesCore(string topProcessName, string topWindowTitle)
+        {
+            {
                 bool turnOffDS4WinApp = false;
                 AutoProfileEntity matchedProfileEntity = null;
 
@@ -146,6 +193,13 @@ namespace DS4Windows
                         string tempname = matchedProfileEntity.ProfileNames[j];
                         if (!string.IsNullOrEmpty(tempname) && tempname != "(none)")
                         {
+                            if (!IsSlotConnected(j))
+                            {
+                                if (AutoProfileDebugLogLevel > 0)
+                                    AppLogger.LogToGui($"DEBUG: Auto-Profile. Controller {j + 1} is not connected. Skipping LoadProfile {tempname}", false, true);
+                                continue;
+                            }
+
                             bool useTemp = _profileSettings?.GetUseTempProfile(j) ?? false;
                             string currentTemp = _profileSettings?.GetTempProfileName(j) ?? string.Empty;
                             string currentProfile = _profileRepository.ProfilePath[j];

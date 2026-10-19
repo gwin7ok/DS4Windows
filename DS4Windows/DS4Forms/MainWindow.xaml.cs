@@ -484,6 +484,8 @@ namespace DS4WinWPF.DS4Forms
 
             autoProfControl.AutoDebugChanged += AutoProfControl_AutoDebugChanged;
             _autoProfileService.RequestServiceChange += AutoprofileChecker_RequestServiceChange;
+            // 自動プロファイルは接続中のスロットにだけ適用する。接続した直後に、最後の前景ウィンドウで照合し直す
+            controlService.HotplugController += ControlService_HotplugControllerRecheckAutoProfile;
             autoProfileHolder.AutoProfileColl.CollectionChanged += AutoProfileColl_CollectionChanged;
             //autoProfControl.AutoProfVM.AutoProfileSystemChange += AutoProfVM_AutoProfileSystemChange;
             mainWinVM.FullTabsEnabledChanged += MainWinVM_FullTabsEnabledChanged;
@@ -819,7 +821,10 @@ Suspend support not enabled.", true);
                     // }
 
                     // 修正後（判定をメソッド側に委譲し、シンプルに1行で呼ぶ）:
-                    ShowProfileSwitchNotification(prolog);
+                    // 2026-10-19: 自動プロファイル由来は AutoProfileSwitchNotifyChoice と接続の有無で判定する（AutoProfileNotificationPolicy）
+                    if (DS4Windows.Services.AutoProfileNotificationPolicy.ShouldNotify(
+                            e.Source, _autoProfileService.AutoProfileSwitchNotifyChoice, item != null))
+                        ShowProfileSwitchNotification(prolog);
                 }
                 catch { }
             }));
@@ -867,6 +872,19 @@ Suspend support not enabled.", true);
             {
                 ChangeAutoProfilesStatus(false);
             }
+        }
+
+        private void ControlService_HotplugControllerRecheckAutoProfile(DS4Windows.ControlService sender, DS4Windows.DS4Device device, int index)
+        {
+            if (!_autoProfileService.Running)
+                return;
+
+            // 接続処理（サービスのスレッド）を待たせず、別スレッドで照合する
+            System.Threading.Tasks.Task.Run(() =>
+            {
+                try { _autoProfileService.CheckProfilesForConnectedController(); }
+                catch (Exception ex) { DS4Windows.AppLogger.LogError($"[DI] CheckProfilesForConnectedController failed: {ex.Message}"); }
+            });
         }
 
         private void AutoProfilesTimer_Elapsed(object sender, System.Timers.ElapsedEventArgs e)

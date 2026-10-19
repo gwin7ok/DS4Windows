@@ -145,6 +145,71 @@ namespace DS4WindowsTests
             Assert.Equal(ProfileChangeSource.AutoProfile, mockAppService.ApplyCalls[1].Source);
         }
 
+        // 2026-10-19（案B）: 未接続のスロットには適用しない／接続後の再照合で適用する
+        [Fact]
+        public void CheckProfiles_SlotNotConnected_DoesNotApply_ThenAppliesAfterConnect()
+        {
+            var mockInspector = new MockProcessInspector
+            {
+                ForegroundPath = @"c:\games\testgame.exe",
+                ForegroundTitle = "test game window",
+                ReturnSuccess = true
+            };
+            var mockAppService = new MockProfileAppService();
+            var settings = TestRepositoryFactory.CreateProfileSettingsService();
+            var holder = TestRepositoryFactory.CreateAutoProfileHolder();
+
+            var entity = new AutoProfileEntity(@"c:\games\testgame.exe", "test game window");
+            entity.ProfileNames[0] = "GameProfile";
+            holder.AutoProfileColl.Add(entity);
+
+            var service = TestRepositoryFactory.CreateAutoProfileService(holder, mockAppService, settings, mockInspector);
+            service.Running = true;
+            bool connected = false;
+            service.SlotConnectedProbe = slot => connected;
+
+            service.CheckProfiles();
+            Assert.Empty(mockAppService.ApplyCalls);
+
+            // 前景が変わらない（インスペクターが false を返す）状態でも、接続後の再照合で適用される
+            mockInspector.ReturnSuccess = false;
+            connected = true;
+            service.CheckProfilesForConnectedController();
+
+            Assert.Single(mockAppService.ApplyCalls);
+            Assert.Equal(0, mockAppService.ApplyCalls[0].DeviceIndex);
+            Assert.Equal("GameProfile", mockAppService.ApplyCalls[0].ProfileName);
+            Assert.True(mockAppService.ApplyCalls[0].IsTemp);
+        }
+
+        [Fact]
+        public void CheckProfilesForConnectedController_BeforeAnyForegroundCheck_DoesNothing()
+        {
+            var mockAppService = new MockProfileAppService();
+            var holder = TestRepositoryFactory.CreateAutoProfileHolder();
+            var service = TestRepositoryFactory.CreateAutoProfileService(holder, mockAppService,
+                TestRepositoryFactory.CreateProfileSettingsService(), new MockProcessInspector());
+            service.Running = true;
+
+            service.CheckProfilesForConnectedController();
+
+            Assert.Empty(mockAppService.ApplyCalls);
+        }
+
+        [Theory]
+        [InlineData(ProfileChangeSource.Manual, AutoProfileDisplayProfileSwitchChoices.None, true, true)]
+        [InlineData(ProfileChangeSource.MappingAction, AutoProfileDisplayProfileSwitchChoices.None, false, true)]
+        [InlineData(ProfileChangeSource.AutoProfile, AutoProfileDisplayProfileSwitchChoices.None, true, false)]
+        [InlineData(ProfileChangeSource.AutoProfile, AutoProfileDisplayProfileSwitchChoices.Log, true, false)]
+        [InlineData(ProfileChangeSource.AutoProfile, AutoProfileDisplayProfileSwitchChoices.Notification, true, true)]
+        [InlineData(ProfileChangeSource.AutoProfile, AutoProfileDisplayProfileSwitchChoices.LogAndNotification, true, true)]
+        [InlineData(ProfileChangeSource.AutoProfile, AutoProfileDisplayProfileSwitchChoices.LogAndNotification, false, false)]
+        public void AutoProfileNotificationPolicy_ShouldNotify(ProfileChangeSource source,
+            AutoProfileDisplayProfileSwitchChoices choice, bool itemExists, bool expected)
+        {
+            Assert.Equal(expected, AutoProfileNotificationPolicy.ShouldNotify(source, choice, itemExists));
+        }
+
         // Phase5-Step13-4で追加: Global.autoProfileSwitchNotifyChoiceへの薄い委譲であることを検証。
         [Fact]
         public void AutoProfileSwitchNotifyChoice_ShouldReadWriteSameEntityAsGlobal()
