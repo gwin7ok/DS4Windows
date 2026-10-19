@@ -189,4 +189,29 @@
 
 ### 4. 次
 
-7.5b 復帰（個別の計画書 `Phase8-Step7-5b-Plan.md` を、U-32 の合格後に作成）。
+7.5b 復帰（`Phase8-Step7-5b-Plan.md`。次節）。
+
+## 7.5b Profile の復帰（Unload on trigger release）
+
+### 1. 成果
+
+- 範囲: **自動の復帰（`uTrigger` なし）だけ**をエンジンへ移した（Q1＝A）。解除トリガー（手動 uTrigger）を持つ Profile は、UI から作れない（a7277da9 で削除）ため、旧経路のまま（Q2＝A）。Step8 で、廃止（ユーザーの承認が要る）か移行かを決める。
+- W1: `Phase8Step75bW1ProfileUntriggerDualPathTests`（復帰の特性化を旧・新の両経路で。ビルド・テスト成功）。
+- W2: 復帰の合図をエンジンが持つ（`TriggerDispatchEngine.Pending`。適用で消えず、物理切断で消える）。`ITriggerDispatchEngine.ProcessUntrigger`、`IPendingUntriggerQuery`（連鎖の防止がエンジンの合図も見る）、`ActionBindingBuilder`（復帰つきも束縛を作る。`uTrigger` つきは作らない。復帰つきは `stopOnRelease: false`）、`Mapping`（旧ループの後で `ProcessUntrigger`）。ビルド・テスト成功。
+- W3: `Phase8Step75bW3ProfileUntriggerSwitchTests`（ロールバック、割り当て、性能の出力）。既定の一覧は 7.5a のまま（Profile を含む）。
+
+### 2. 検証結果・判断の記録
+
+1. Q3＝A: 合図は切替前の束縛そのものを持つ。復帰の `Stop` はその出力を使う（ロックの外で呼ぶ）。
+2. Q4＝A: W1 の報告のみのテストの出力は未確認のまま、二重の復帰を避ける安全側（復帰つきは離したエッジの `Stop` を呼ばない）で実装した。本番では、適用が状態を作り直すため、離したエッジの `Stop` は起きない（設計書 §15.1）。
+3. Q5＝A: `IMapping.CaptureProfileUntrigger`／`RestoreProfileUntrigger` は残す（`uTrigger` つきの旧経路が使う）。Step8 で扱う。
+4. `prevProfileName`／`prevProfileWasTemporary` は、7.5a のとおり移していない（Step8 で削除を提案）。
+5. 性能・割り当て: 出力（`MapCustom_ProfileUntriggerMigrated_PerFrameTime_IsReported` ほか）は、結果の報告のあとに記入する（測定値: 未記入）。
+
+### 3. 実機確認（ユーザー）
+
+チェックリスト §11 の **U-33**（7 項目）。確認の前に、起動ログの「built at … (commit …)」でビルドを確認する。合格してから 7.6 へ進む（Q6＝A）。
+
+### 4. 次
+
+7.6（実機を要する種別。1 種別ずつ）。

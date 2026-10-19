@@ -3,7 +3,7 @@
 作成日: 2026-10-19  
 対象ブランチ: `For-DI-migration-work`  
 上位: `Phase8-Step7-5-Plan.md`（§3 の 7.5b、Q5・Q6）、`Phase8-Step2-Design.md`（§15.2 の `UntriggerPass`、§16）、`Phase8-Step2-Intent-Decisions.md`（項目 5・6・11・12）、`Phase7b` の W1（復帰の合図の退避・復元）、`Phase8-Step7-Completion-Report.md`（7.5a）  
-状態: **Q1〜Q6 を推奨（A）どおり承認（2026-10-19）。W1 成功（ビルド・テスト）。W2 実装済み（結果待ち）**
+状態: **Q1〜Q6 を推奨（A）どおり承認（2026-10-19）。W1 成功（ビルド・テスト）。W2 成功（ビルド・テスト）。W3 成功（ビルド・テスト）。実機確認 U-33 の結果待ち**
 
 ---
 
@@ -72,6 +72,8 @@
 `UntriggerSignal`、`ProcessUntrigger`（`ITriggerDispatchEngine` に追加。実装を持つ他のクラス［テストの偽物］の更新を含む）、`IPendingUntriggerQuery`、`ProfileSwitchAction.CanExecute` の更新、`ActionBindingBuilder` の更新（`ProfileUntriggerMigrated` の削除、`uTrigger` つきは束縛なし）、`Mapping` の呼び出し（旧ループの後）、`OnDeviceDisconnected` で合図を消す。`Phase8Step5W1BuilderTests` の Automatic の検査を、束縛ありに戻す。W1 の旧経路の検査を、旧・新の両経路にする。ログ: 復帰のログは、旧経路が `UNTRIGGER check` の Debug を毎フレーム出す（旧経路と同じ文言・レベルを、合図があるときだけ出す。割り当てを増やさない）。
 
 ### W3: スイッチ（実質は変更なし）と性能
+
+**実装（2026-10-19）**: `Phase8Step75bW3ProfileUntriggerSwitchTests`（新設）: Profile の 1 行を外すと旧経路に戻る（切替・復帰とも）、割り当て（復帰待ち・未操作とも 新 ≦ 旧＋4 KB）、性能の出力（30 件）。
 
 Profile は 7.5a で既定の一覧に入っているため、一覧は変えない。変わるのは、復帰つきの Profile の束縛が作られること。ロールバックは、`ServiceRegistration` の Profile の 1 行を外す（7.5a と同じ。切替も旧経路に戻る）。割り当て（合図なし・あり）と性能を、旧・新で比べる。
 
