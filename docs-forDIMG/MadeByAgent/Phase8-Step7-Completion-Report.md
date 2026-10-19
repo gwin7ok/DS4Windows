@@ -386,7 +386,7 @@ Step7 の 7.6 は、これで 4 種別（GyroCalibrate、DisconnectBT、BatteryC
 
 ---
 
-## 7.8e Controls タブの Extras と Lightbar マクロ（2026-10-20。W2 まで完了［ビルド・テスト成功］。W3 を実装済み［ビルド・テストの結果待ち］）
+## 7.8e Controls タブの Extras と Lightbar マクロ（2026-10-20。W2 まで完了［ビルド・テスト成功］。W3 も完了［ビルド・テスト成功］。実機確認は Step9 の U-44）
 
 計画書: `Phase8-Step7-8e-Plan.md`（Q1〜Q8 を承認済み。Q3＝B、Q4＝C［Q8 により不要］、Q6＝B、Q7＝B、Q8＝B、他は推奨）。
 
@@ -395,4 +395,4 @@ Step7 の 7.6 は、これで 4 種別（GyroCalibrate、DisconnectBT、BatteryC
 - **W0**: 旧経路の Extras と Lightbar マクロの調査（`Phase8-Step7-8e-Plan.md` §2・§5.1）。
 - **W1**: `Phase8Step78eW1ControlsExtrasCharacterizationTests`（旧経路の Extras の特性化。ビルド・テスト成功）。
 - **W2**: Lightbar マクロの廃止（§5.3）。ビルド・テスト成功。
-- **W3**: エンジンの 1 ボタン複数束縛、`IResettableOutputAction`（Q6＝B）、Extras の出力・ポート・ビルダー、既定の区分に `Extras` を追加（§5.4）。ビルド・テストの結果待ち。実機確認は Step9（U-44）。
+- **W3**: エンジンの 1 ボタン複数束縛、`IResettableOutputAction`（Q6＝B）、Extras の出力・ポート・ビルダー、既定の区分に `Extras` を追加（§5.4）。ビルド・テスト成功。実機確認は Step9（U-44）。
