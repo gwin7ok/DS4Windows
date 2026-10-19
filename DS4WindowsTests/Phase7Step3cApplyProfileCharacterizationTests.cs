@@ -56,7 +56,7 @@ namespace DS4WindowsTests
             _repo = TestRepositoryFactory.CreateProfileRepository(_settings);
             _service = TestRepositoryFactory.CreateProfileApplicationService(_settings,
                 () => _control, _repo, new EnvironmentService());
-            _slotApplier = new ProfileSlotApplier(_service, new EnvironmentService());
+            _slotApplier = new ProfileSlotApplier(_service, new EnvironmentService(), TestHost.GetService<DS4Windows.Actions.ITriggerDispatchEngine>());
 
             _origProfilePath = _repo.ProfilePath[Slot];
             _origOlder = _repo.OlderProfilePath[Slot];

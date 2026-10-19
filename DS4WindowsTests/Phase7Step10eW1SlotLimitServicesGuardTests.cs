@@ -76,7 +76,8 @@ namespace DS4WindowsTests
         public void TheConstructors_RequireTheEnvironmentService()
         {
             Assert.Throws<ArgumentNullException>(() => new ProfileSlotApplier(TestRepositoryFactory.CreateProfileApplicationService(
-                TestGlobals.ProfileSettingsServiceInstance, () => null, TestRepositoryFactory.CreateProfileRepository(), new EnvironmentService()), null));
+                TestGlobals.ProfileSettingsServiceInstance, () => null, TestRepositoryFactory.CreateProfileRepository(), new EnvironmentService()), null,
+                TestHost.GetService<DS4Windows.Actions.ITriggerDispatchEngine>()));
         }
     }
 }

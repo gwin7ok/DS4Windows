@@ -2263,6 +2263,11 @@ namespace DS4Windows
                 profileLoaded = _profileSlotApplier.ApplyToSlot(index, profileToApply, DS4Windows.ProfileChangeSource.ControlService);
                 DS4Windows.AppLogger.LogDebug($"PrepareConnectedInputController: ApplyProfileToSlot returned {profileLoaded}");
             }
+            else
+            {
+                // Phase8-Step6 W2: 一時プロファイル／AutoProfile を使う接続は、プロファイルを適用し直さない。切断で空になった束縛を、ここで差し替える
+                _profileSlotApplier.PublishSlot(index);
+            }
 
             if (profileLoaded || useAutoProfile)
             {
@@ -2726,6 +2731,9 @@ namespace DS4Windows
                         _mapping.HandleDeviceDisconnect(ind);
                     }
                     catch { }
+
+                    // Phase8-Step6 W2: 物理的な切断だけが、エンジンの状態と登録簿の束縛を消す（HandleDeviceDisconnect は適用のたびにも呼ばれるため、そこには足さない）
+                    _profileSlotApplier.ReleaseSlot(ind);
 
                     string removed = DS4WinWPF.Properties.Resources.ControllerWasRemoved.Replace("*Mac address*", (ind + 1).ToString());
                     if (device.getBattery() <= 20 &&

@@ -143,11 +143,13 @@ namespace DS4WindowsTests
                 bindingBuilderProvider ?? (() => TestHost.GetService<DS4Windows.Actions.IActionBindingBuilder>()));
         }
 
-        public static ProfileSlotApplier CreateProfileSlotApplier(IProfileApplicationService profileApplication = null)
+        public static ProfileSlotApplier CreateProfileSlotApplier(IProfileApplicationService profileApplication = null,
+            DS4Windows.Actions.ITriggerDispatchEngine engine = null)
         {
             var settings = TestGlobals.ProfileSettingsServiceInstance;
             return new ProfileSlotApplier(profileApplication ?? CreateProfileApplicationService(settings,
-                () => null, CreateProfileRepository(settings), new EnvironmentService()), new EnvironmentService());
+                () => null, CreateProfileRepository(settings), new EnvironmentService()), new EnvironmentService(),
+                engine ?? TestHost.GetService<DS4Windows.Actions.ITriggerDispatchEngine>());
         }
 
         public static AppearanceSettingsService CreateAppearanceSettingsService(BackingStore store = null)
