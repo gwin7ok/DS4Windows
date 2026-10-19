@@ -17,21 +17,29 @@ namespace DS4Windows.Actions
         private readonly IManagedActionManager _manager;
         private readonly bool _hasControl;
         private readonly X360Controls _control;
+        private readonly bool _toggle;
 
         // 前のフレームの成立（旧 Mapping.lastButtonTriggerState 相当。立ち下がりのログ用）。ApplyFrame は毎フレーム、このアクションの所有する束縛で呼ばれる
         private bool _prevActive;
 
+        // TODO(Phase8-Step8。Phase8-Step7-8a-Plan.md Q4＝A): 設定の解釈（details → X360 のボタン、スイッチモード → Toggle）を、この互換のコンストラクターが
+        // ActionBindingBuilder.InterpretButton を呼んで行う。ビルダーは解釈済みの値を渡す下のコンストラクターを使う。既存のテストが使うため残す。Step8 で整理する。
         public ButtonOutputAction(SpecialAction sa, IManagedActionManager manager)
+            : this(sa ?? throw new ArgumentNullException(nameof(sa)), ActionBindingBuilder.InterpretButton(sa), manager)
         {
-            _sa = sa ?? throw new ArgumentNullException(nameof(sa));
-            _manager = manager ?? throw new ArgumentNullException(nameof(manager));
+        }
 
-            // 現行の Stage3 と同じ: details が整数として読めなければ、何も出力しない
-            if (int.TryParse(sa.details, out int value))
-            {
-                _control = (X360Controls)value;
-                _hasControl = true;
-            }
+        /// <summary>
+        /// Phase8-Step7 7.8a（Q9＝A）: 解釈済みの値（<paramref name="values"/>）を受け取る。<paramref name="identity"/> は、Toggle の状態の鍵とログの名前として使う
+        /// （Phase8-Step7-8a-Plan.md §2.2）。現行の Stage3 と同じく、ボタンが解釈できなければ、何も出力しない。
+        /// </summary>
+        public ButtonOutputAction(SpecialAction identity, ButtonBindingValues values, IManagedActionManager manager)
+        {
+            _sa = identity ?? throw new ArgumentNullException(nameof(identity));
+            _manager = manager ?? throw new ArgumentNullException(nameof(manager));
+            _hasControl = values.HasControl;
+            _control = values.Control;
+            _toggle = values.Toggle;
         }
 
         public string Id => string.IsNullOrEmpty(_sa.name) ? "ButtonOutput" : _sa.name;
@@ -115,9 +123,7 @@ namespace DS4Windows.Actions
 
         private bool ResolveOutputActive(int device, bool triggered, bool risingEdge)
         {
-            bool isToggle = _sa.KeyButtonSwitchMode.HasValue &&
-                _sa.KeyButtonSwitchMode.Value == SpecialAction.KeyButtonSwitchModeEnum.Toggle;
-            if (!isToggle) return triggered;
+            if (!_toggle) return triggered;
 
             ActionInstanceState state = _manager.GetStateFor(_sa, device);
             if (state == null) return triggered;

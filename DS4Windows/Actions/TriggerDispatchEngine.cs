@@ -50,6 +50,14 @@ namespace DS4Windows.Actions
             }
         }
 
+        // 7.8a: 空の配線。区分が有効になっても、束縛の置き場がまだないため偽（7.8b で実装）。毎フレーム・全ボタンで呼ばれるため、割り当てもロックもなし
+        public bool OwnsControl(int device, DS4Controls control)
+        {
+            if (_options.MigratedControlKinds.Count == 0) return false;
+
+            return false;
+        }
+
         public FrameResult ProcessOwned(int device, SpecialAction action, ITriggerInput input, IFrameOutput frame)
         {
             if (action == null || input == null || (uint)device >= (uint)_devices.Length) return FrameResult.Continue;

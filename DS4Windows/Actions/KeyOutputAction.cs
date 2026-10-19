@@ -20,21 +20,33 @@ namespace DS4Windows.Actions
         private readonly IProfileSettingsService _profileSettings;
         private readonly KeyAction _keyAction;
         private readonly ushort _logicalKey;
+        private readonly bool _toggle;
         private readonly int _index;
         private readonly ISpecialActionRepository _actionRepository;
 
+        // TODO(Phase8-Step8。Phase8-Step7-8a-Plan.md Q4＝A): 設定の解釈（details → 論理キー、keyType → ScanCode／Toggle）を、この互換のコンストラクターが
+        // ActionBindingBuilder.InterpretKey を呼んで行う。ビルダーは解釈済みの値を渡す下のコンストラクターを使う。既存のテストが使うため残す。Step8 で整理する。
         public KeyOutputAction(SpecialAction sa, IProfileSettingsService profileSettings, int index = -1, ISpecialActionRepository actionRepository = null)
+            : this(Require(sa), ActionBindingBuilder.InterpretKey(sa), profileSettings, index, actionRepository)
+        {
+        }
+
+        /// <summary>
+        /// Phase8-Step7 7.8a（Q9＝A）: 解釈済みの値（<paramref name="values"/>）を受け取る。<paramref name="identity"/> は、状態の鍵・ログの名前・系統 B への入力として使う
+        /// （Phase8-Step7-8a-Plan.md §2.2。識別用の SpecialAction を中立な型に替えるのは Step8 以降）。
+        /// </summary>
+        public KeyOutputAction(SpecialAction identity, KeyBindingValues values, IProfileSettingsService profileSettings, int index = -1, ISpecialActionRepository actionRepository = null)
         {
             _index = index;
             _actionRepository = actionRepository;
-            _sa = sa ?? throw new ArgumentNullException(nameof(sa));
+            _sa = identity ?? throw new ArgumentNullException(nameof(identity));
             _profileSettings = profileSettings ?? throw new ArgumentNullException(nameof(profileSettings));
-            _keyAction = new KeyAction(sa, -1);
-
-            ushort logical = 0;
-            if (!string.IsNullOrEmpty(sa.details)) ushort.TryParse(sa.details, out logical);
-            _logicalKey = logical;
+            _keyAction = new KeyAction(identity, -1, values.LogicalKey, values.ScanCode);
+            _logicalKey = values.LogicalKey;
+            _toggle = values.Toggle;
         }
+
+        private static SpecialAction Require(SpecialAction sa) => sa ?? throw new ArgumentNullException(nameof(sa));
 
         public string Id => string.IsNullOrEmpty(_sa.name) ? "KeyOutput" : _sa.name;
 
@@ -52,7 +64,7 @@ namespace DS4Windows.Actions
             _keyAction.OnRelease(ctx.Device, _logicalKey, ResolveNativeKey(), false, ctx.OutputHandler);
         }
 
-        private bool IsToggleKey => _sa.keyType.HasFlag(DS4KeyType.Toggle);
+        private bool IsToggleKey => _toggle;
 
         private int ActionEntryCount
         {

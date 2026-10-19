@@ -1,0 +1,26 @@
+namespace DS4Windows.Actions
+{
+    /// <summary>
+    /// Phase8-Step7 7.8a（Phase8-Step7-8a-Plan.md W1。Q9＝A）: Key の出力が受け取る「解釈済みの値」。
+    /// 設定（SA タブの <c>SpecialAction.details</c>／<c>keyType</c>、のちに Controls タブの割り当て）から何を出すかを決める解釈は変換層（ビルダー）が行い、
+    /// 出力（<see cref="KeyOutputAction"/>）は、この値を実行するだけにする。
+    /// </summary>
+    public readonly struct KeyBindingValues
+    {
+        public KeyBindingValues(ushort logicalKey, bool scanCode, bool toggle)
+        {
+            LogicalKey = logicalKey;
+            ScanCode = scanCode;
+            Toggle = toggle;
+        }
+
+        /// <summary>論理キー（<c>details</c> が数値として読めなければ 0）。</summary>
+        public ushort LogicalKey { get; }
+
+        /// <summary>ScanCode の指定（<c>keyType</c> の <see cref="DS4KeyType.ScanCode"/>）。</summary>
+        public bool ScanCode { get; }
+
+        /// <summary>Toggle の指定（<c>keyType</c> の <see cref="DS4KeyType.Toggle"/>。ログの出し分け用。Press／Toggle の実際の動作は <c>KeyButtonActionController</c> が決める）。</summary>
+        public bool Toggle { get; }
+    }
+}

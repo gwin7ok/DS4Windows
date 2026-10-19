@@ -33,6 +33,7 @@ namespace DS4WindowsTests
             }
 
             public bool Owns(int device, SpecialAction action) => false;
+            public bool OwnsControl(int device, DS4Controls control) => false;
             public FrameResult ProcessOwned(int device, SpecialAction action, ITriggerInput input, IFrameOutput frame) => FrameResult.Continue;
             public void ProcessTriggers(int device, ITriggerInput input, IFrameOutput frame) { }
             public void ApplyFrameOutputs(int device, ITriggerInput input, IFrameOutput frame) { }

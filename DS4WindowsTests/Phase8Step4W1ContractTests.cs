@@ -199,7 +199,7 @@ namespace DS4WindowsTests
             Assert.NotNull(typeof(IHeldOutputAction).GetMethod("WhileHeld"));
 
             Assert.Equal(typeof(FrameResult), typeof(ITriggerDispatchEngine).GetMethod("ProcessOwned").ReturnType);
-            foreach (string name in new[] { "Owns", "ProcessOwned", "ProcessTriggers", "ApplyFrameOutputs", "IsSuppressed",
+            foreach (string name in new[] { "Owns", "OwnsControl", "ProcessOwned", "ProcessTriggers", "ApplyFrameOutputs", "IsSuppressed",
                 "AddSuppressed", "ReleaseSuppressed", "OnProfileApplied", "OnDeviceDisconnected" })
                 Assert.NotNull(typeof(ITriggerDispatchEngine).GetMethod(name));
         }

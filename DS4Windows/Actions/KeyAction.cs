@@ -30,16 +30,29 @@ namespace DS4Windows
         // No per-action repeater here; RepeatHelper should be used only by controllers.
 
         public KeyAction(SpecialAction action, int index)
+            : this(action, index, ParseKeyId(action), action != null && action.keyType.HasFlag(DS4KeyType.ScanCode))
+        {
+        }
+
+        /// <summary>
+        /// Phase8-Step7 7.8a（Q9＝A）: 解釈済みの値（論理キー、ScanCode）を受け取る。<paramref name="action"/> は、状態の鍵と系統 B（コントローラー）への入力として使う。
+        /// </summary>
+        public KeyAction(SpecialAction action, int index, ushort keyId, bool useScan)
         {
             this.action = action;
             this.index = index;
+            this.keyId = keyId;
+            try { nativeKey = SyntheticDispatcher.ResolveNativeKey(keyId); } catch { nativeKey = 0; }
+            this.useScan = useScan;
+            // Do not parse repeater options here; controllers handle repeat behavior.
+        }
+
+        private static ushort ParseKeyId(SpecialAction action)
+        {
             ushort k = 0;
             if (action != null && !string.IsNullOrEmpty(action.details))
                 ushort.TryParse(action.details, out k);
-            keyId = k;
-            try { nativeKey = SyntheticDispatcher.ResolveNativeKey(k); } catch { nativeKey = 0; }
-            useScan = action != null && action.keyType.HasFlag(DS4KeyType.ScanCode);
-            // Do not parse repeater options here; controllers handle repeat behavior.
+            return k;
         }
 
         public void OnTrigger(int device, ushort logicalValue, uint nativeValue, bool useScanCode, IVirtualKBM handler)

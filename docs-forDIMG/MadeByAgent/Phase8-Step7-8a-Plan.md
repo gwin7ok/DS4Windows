@@ -3,7 +3,7 @@
 作成日: 2026-10-20  
 対象ブランチ: `For-DI-migration-work`  
 上位: `Phase8-Step2b-ControlsTab-Design.md`（§3.4 の 7.8a、§3.5、§3.6、§10。Q1〜Q9 承認済み）、`Phase8-Step7-Plan.md`（7.8）、`Phase8-Step7-7-Plan.md`（W2b の考え方）  
-状態: **計画案（Q1〜Q4 の承認待ち）。実装はまだ行わない**
+状態: **Q1〜Q4 を承認済み（推奨どおり。2026-10-20）。W1〜W4 を実装済み。ビルド・テストの結果待ち（ユーザーが実行）**
 
 ---
 
@@ -89,10 +89,10 @@
 
 ## 6. 質問
 
-- **Q1（識別用 SpecialAction の扱い）**: A（推奨）: 7.8a では、Controls タブの束縛にも**識別用の `SpecialAction` を使う**（状態の鍵と系統 B の入力のため）。解釈は値で渡す。鍵の型を中立にする大きな変更は、系統 B の整理（Step8 以降）と一緒に行う。B: 7.8a で、鍵の型を中立にする（`ActionInstanceState` の引き方、エンジンの `Source`、`ActionManager`、`KeyButtonActionController` まで変更する。範囲が大きく、7.1〜7.7 の全体に影響する）。
-- **Q2（7.8a の分け方）**: A（推奨）: 7.8a を 1 つの PR にする（W1〜W4）。B: 値渡し化（W1・W2）と土台（W3・W4）を別の PR にする（7.8a-1、7.8a-2。確認しやすいが、PR が増える）。
-- **Q3（Macro の値渡し化の時期）**: A（推奨）: 7.8c（Controls のマクロを載せるとき）に、消費側とあわせて行う（§2.4）。B: 7.8a で `MacroAction` も値渡しにする（解釈が `IMacroPlayer` 側にあり、整数配列の経路との形が定まらないため、消費側なしの設計になる）。**設計書 §3.6／Q9 の「Key／Button／Macro を 7.8a で」からの変更の提案**（Macro だけ 7.8c へ）。
-- **Q4（互換のコンストラクターの扱い）**: A（推奨）: 旧のコンストラクターは、薄い互換として残し、TODO（Step8 で整理）を付ける。B: 呼び出し元（テスト含む）をすべて新しい形に書き換え、旧を削除する（変更が広がる）。
+- **Q1（識別用 SpecialAction の扱い）**【承認: A。2026-10-20】: A（推奨）: 7.8a では、Controls タブの束縛にも**識別用の `SpecialAction` を使う**（状態の鍵と系統 B の入力のため）。解釈は値で渡す。鍵の型を中立にする大きな変更は、系統 B の整理（Step8 以降）と一緒に行う。B: 7.8a で、鍵の型を中立にする（`ActionInstanceState` の引き方、エンジンの `Source`、`ActionManager`、`KeyButtonActionController` まで変更する。範囲が大きく、7.1〜7.7 の全体に影響する）。
+- **Q2（7.8a の分け方）**【承認: A。2026-10-20】: A（推奨）: 7.8a を 1 つの PR にする（W1〜W4）。B: 値渡し化（W1・W2）と土台（W3・W4）を別の PR にする（7.8a-1、7.8a-2。確認しやすいが、PR が増える）。
+- **Q3（Macro の値渡し化の時期）**【承認: A。2026-10-20】: A（推奨）: 7.8c（Controls のマクロを載せるとき）に、消費側とあわせて行う（§2.4）。B: 7.8a で `MacroAction` も値渡しにする（解釈が `IMacroPlayer` 側にあり、整数配列の経路との形が定まらないため、消費側なしの設計になる）。**設計書 §3.6／Q9 の「Key／Button／Macro を 7.8a で」からの変更の提案**（Macro だけ 7.8c へ）。
+- **Q4（互換のコンストラクターの扱い）**【承認: A。2026-10-20】: A（推奨）: 旧のコンストラクターは、薄い互換として残し、TODO（Step8 で整理）を付ける。B: 呼び出し元（テスト含む）をすべて新しい形に書き換え、旧を削除する（変更が広がる）。
 
 ## 7. 完了条件
 
@@ -104,3 +104,10 @@
 ## 8. 次
 
 7.8b（Controls タブの Key。Q4＝B の動作変更を含む。識別用 SpecialAction の生成、束縛の置き場、`OwnsControl` の実装）。
+
+## 9. 実装の記録（2026-10-20。ビルド・テストはユーザーが実行）
+
+- **W1**: 新設 `KeyBindingValues`（論理キー、ScanCode、Toggle）。`ActionBindingBuilder.InterpretKey`（変換層の解釈。公開の静的メソッド）。`KeyOutputAction` に、値を受け取るコンストラクターを追加し、従来のコンストラクターは `InterpretKey` を呼ぶ互換として残した（TODO: Step8 で整理）。`KeyAction` に、論理キーと ScanCode を受け取るコンストラクターを追加（従来のコンストラクターは、系統 B のアダプターが使うため残し、新しい方へ委譲）。`KeyOutputAction` の Toggle のログ判定は、値の `Toggle` を使う。ビルダーの Key の分岐は値を渡す。
+- **W2**: 新設 `ButtonBindingValues`（ボタンの有無、ボタン、Toggle）。`ActionBindingBuilder.InterpretButton`。`ButtonOutputAction` に値を受け取るコンストラクターを追加し、従来のコンストラクターは互換として残した。Toggle の判定は、構築時に固定した値（従来は呼び出しごとに SA の設定を読んでいた。SA は束縛の構築後に変更されないため、動作は同じ）。
+- **W3**: 新設 `ControlBindingKind`（Key／Macro／Button／Extras）、`IControlBindingBuilder`（`DI/`）、`ControlBindingBuilder`（`DS4Control/Services/`。空を返す）、`BindingMigrationOptions.MigratedControlKinds`／`IsControlMigrated`（既定は空）、`ITriggerDispatchEngine.OwnsControl`（常に偽）、`Mapping.ProcessControlSettingAction` の先頭（抑制の判定の後）に 1 行（`_engine.OwnsControl` が真なら素通り）、`ServiceRegistration` に登録 1 行。
+- **W4**: `Phase8Step78aFoundationTests`（解釈の表、互換のコンストラクターとの一致、Button の乱数列での一致、ソースに解釈が残っていないこと、既定が空、ビルダーが空、`OwnsControl` が偽かつ割り当て 0、`Mapping` の呼び出しが 1 か所）。既存の `Phase8Step4W1ContractTests`（エンジンのメンバー名に `OwnsControl` を追加）と `Phase8Step6W3SlotLifecycleTests`（偽のエンジンに `OwnsControl` を追加）を更新。

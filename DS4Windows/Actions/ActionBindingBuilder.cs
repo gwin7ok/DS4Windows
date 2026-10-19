@@ -89,12 +89,12 @@ namespace DS4Windows.Actions
                 {
                     // 設計書 §6: Press は Fresh-press ガードを見ない／Toggle は見る（Stage3 の ButtonSpecialActionOutput と同じ規則）
                     bool toggle = sa.KeyButtonSwitchMode.HasValue && sa.KeyButtonSwitchMode.Value == SpecialAction.KeyButtonSwitchModeEnum.Toggle;
-                    return new TriggerBinding(Input(sa, false), new IOutputAction[] { new ButtonOutputAction(sa, _manager) },
+                    return new TriggerBinding(Input(sa, false), new IOutputAction[] { new ButtonOutputAction(sa, InterpretButton(sa), _manager) },
                         new BindingPolicy(respectsFreshPressGuard: toggle), sa, index);
                 }
 
                 case SpecialAction.ActionTypeId.Key:
-                    return new TriggerBinding(Input(sa, false), new IOutputAction[] { new KeyOutputAction(sa, _profileSettings, index, _actionRepository) },
+                    return new TriggerBinding(Input(sa, false), new IOutputAction[] { new KeyOutputAction(sa, InterpretKey(sa), _profileSettings, index, _actionRepository) },
                         BindingPolicy.Default, sa, index);
 
                 case SpecialAction.ActionTypeId.Macro:
@@ -165,6 +165,32 @@ namespace DS4Windows.Actions
                 default:
                     return null;
             }
+        }
+
+        /// <summary>
+        /// Phase8-Step7 7.8a（Q9＝A）: SA タブの Key の設定の解釈（<c>details</c> → 論理キー、<c>keyType</c> → ScanCode／Toggle）。変換層の責務。
+        /// <c>details</c> が数値として読めなければ論理キーは 0（現行の <c>KeyOutputAction</c> と同じ）。
+        /// </summary>
+        public static KeyBindingValues InterpretKey(SpecialAction sa)
+        {
+            ushort logical = 0;
+            if (sa != null && !string.IsNullOrEmpty(sa.details)) ushort.TryParse(sa.details, out logical);
+            bool scan = sa != null && sa.keyType.HasFlag(DS4KeyType.ScanCode);
+            bool toggle = sa != null && sa.keyType.HasFlag(DS4KeyType.Toggle);
+            return new KeyBindingValues(logical, scan, toggle);
+        }
+
+        /// <summary>
+        /// Phase8-Step7 7.8a（Q9＝A）: SA タブの Button の設定の解釈（<c>details</c> → X360 のボタン、<c>KeyButtonSwitchMode</c> → Toggle）。変換層の責務。
+        /// <c>details</c> が整数として読めなければ、ボタンなし（現行の Stage3 と同じく、何も出力しない）。
+        /// </summary>
+        public static ButtonBindingValues InterpretButton(SpecialAction sa)
+        {
+            bool toggle = sa != null && sa.KeyButtonSwitchMode.HasValue &&
+                sa.KeyButtonSwitchMode.Value == SpecialAction.KeyButtonSwitchModeEnum.Toggle;
+            if (sa != null && int.TryParse(sa.details, out int value))
+                return new ButtonBindingValues(true, (X360Controls)value, toggle);
+            return new ButtonBindingValues(false, X360Controls.None, toggle);
         }
 
         private ComboTriggerInputAction Input(SpecialAction sa, bool invertOnRelease)

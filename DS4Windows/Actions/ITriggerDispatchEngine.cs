@@ -18,6 +18,13 @@ namespace DS4Windows.Actions
         /// <summary>旧ループの中の、そのアクションの位置で呼ぶ（順序を保つ）。<see cref="FrameResult.EndFrame"/> なら、旧ループは打ち切る。</summary>
         FrameResult ProcessOwned(int device, SpecialAction action, ITriggerInput input, IFrameOutput frame);
 
+        /// <summary>
+        /// Phase8-Step7 7.8a: Controls タブの割り当て（<c>ProcessControlSettingAction</c>）を、新経路が所有するか。真なら、旧経路は本体を素通りする（抑制の判定は共通）。
+        /// <c>BindingMigrationOptions.MigratedControlKinds</c> が空の間は常に false（7.8a では、空の配線のみ）。
+        /// </summary>
+        // TODO(Phase8-Step7 7.8b〜f。規約 2.4): 割り当て（ボタン単位。通常とシフトの両方が移行済みの区分のときだけ真。Q2＝A）の判定は、7.8b の Key で実装する。
+        bool OwnsControl(int device, DS4Controls control);
+
         // ---- 最終形の入口（現行の MapCustomAction と Stage3 の置き換え）----
 
         /// <summary>通常の割り当ての前。束縛を順に処理する。</summary>

@@ -3769,6 +3769,9 @@ namespace DS4Windows
                 return;
             }
 
+            // Phase8-Step7 7.8a: 新経路（エンジン）が所有する割り当ては、旧経路の本体を素通りする。7.8a では常に偽（空の配線）。7.8b 以降で区分ごとに有効にする
+            if (_engine.OwnsControl(device, dcs.control)) return;
+
             //DS4ControlSettings dcs = tempSettingsList[settingIndex];
 
             uint actionAlias = 0;

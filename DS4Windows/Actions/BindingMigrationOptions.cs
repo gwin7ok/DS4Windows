@@ -13,5 +13,13 @@ namespace DS4Windows.Actions
         public ISet<SpecialAction.ActionTypeId> MigratedTypes { get; } = new HashSet<SpecialAction.ActionTypeId>();
 
         public bool IsMigrated(SpecialAction.ActionTypeId type) => MigratedTypes.Count > 0 && MigratedTypes.Contains(type);
+
+        /// <summary>
+        /// Phase8-Step7 7.8a: Controls タブの割り当てのうち、新経路が処理する区分（<see cref="ControlBindingKind"/>）。既定は<b>空</b>（Controls タブは旧経路のまま）。
+        /// 後続の PR（7.8b〜f）が区分を足す。ロールバックは、足した 1 行を外すだけ。
+        /// </summary>
+        public ISet<ControlBindingKind> MigratedControlKinds { get; } = new HashSet<ControlBindingKind>();
+
+        public bool IsControlMigrated(ControlBindingKind kind) => MigratedControlKinds.Count > 0 && MigratedControlKinds.Contains(kind);
     }
 }
