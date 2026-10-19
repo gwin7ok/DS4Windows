@@ -66,7 +66,7 @@
 | 7.5 | Profile ＋ 復帰（最大のリスク） | `ProfileSwitchAction`、復帰の合図を `Mapping.deviceRuntime` からエンジンへ、`OnProfileApplied` の連携、`RequestEndFrame`、`RestoreFromAction` の扱い（Step6 完了報告書 §5）。合図の移行と適用との連携は、必要なら 2 PR に分ける | 切替、Unload on trigger release、解除トリガー、一時プロファイルの復帰、連続切替の安全弁 | 開始時に作成 |
 | 7.6 | 実機を要する種別（GyroCalibrate、DisconnectBT、BatteryCheck、ステアリング較正）。1 種別ずつ | 実機確認が必須（機材がなければ、ガードの分岐までの検証とリスク受容の記録） | 開始時に作成 |
 | 7.7 | XboxGameDVR／MultiAction | `MultiTapInputAction`（タップ、長押し、ダブルタップ。状態の置き場を決める） | 開始時に作成 |
-| 7.8 | Controls タブ（単一ボタンの割り当て） | `ProcessControlSettingAction`（約 400 行）を同じエンジンに載せる。**範囲が大きく、別の設計書［`Phase8-Step2b-ControlsTab-Design.md`］を 7.7 の後に作る**（設計書は作成済み［2026-10-20］。Q1〜Q9 を承認済み［2026-10-20。Q4＝B、Q8＝B、Q9＝A、他は推奨］。7.8a〜f に分ける） | 別途 | 別の設計書 |
+| 7.8 | **［7.8d は、2026-10-20 のユーザー決定で「シフト機能の廃止」に変更］** Controls タブ（単一ボタンの割り当て） | `ProcessControlSettingAction`（約 400 行）を同じエンジンに載せる。**範囲が大きく、別の設計書［`Phase8-Step2b-ControlsTab-Design.md`］を 7.7 の後に作る**（設計書は作成済み［2026-10-20］。Q1〜Q9 を承認済み［2026-10-20。Q4＝B、Q8＝B、Q9＝A、他は推奨］。7.8a〜f に分ける） | 別途 | 別の設計書 |
 
 ## 5. 7.1 Button の作業内容
 
