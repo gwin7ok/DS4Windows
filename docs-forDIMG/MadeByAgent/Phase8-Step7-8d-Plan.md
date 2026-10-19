@@ -3,7 +3,7 @@
 作成日: 2026-10-20  
 対象ブランチ: `For-DI-migration-work`  
 上位: `Phase8-Step2b-ControlsTab-Design.md`（§2.2 の B、§3.3。7.8d を「シフトの新経路への移行」から「シフトの廃止」に変更）、`Phase8-Step7-Plan.md`（7.8）、`Phase10-Assignment-UI-Unification-Plan.md`  
-状態: **計画書を承認済み（2026-10-20。ユーザー）。W0（調査）、W1（部品とテスト）完了。W2（読込・保存・実行への配線と、シフトの削除。画面の項目の削除を含む）完了［ビルド・テスト成功。2026-10-20］。次は W3（編集画面の警告ダイアログ。文言の追加）**
+状態: **計画書を承認済み（2026-10-20。ユーザー）。W0（調査）、W1（部品とテスト）完了。W2（読込・保存・実行への配線と、シフトの削除。画面の項目の削除を含む）完了［ビルド・テスト成功。2026-10-20］。W3（編集画面の警告ダイアログ。文言の追加）を実装済み［ビルド・テストの結果待ち］。次は W4（文書・チェックリスト）**
 
 > 初版（シフトを Key／Macro で新経路へ移す計画）は、ユーザーの廃止の方針により破棄した。初版の調査（旧経路のシフトの動き、副ボタンの表、通常とシフトが同じ名前で状態を共有する癖）は、§2 に要点を残す。
 
@@ -89,6 +89,13 @@
 - **実行**: `Mapping` から、`ShiftTrigger`、副ボタンの表（35 要素）、番号 26 の定数、`ProcessControlSettingAction` のシフトの選択と `shiftE` を削除。`ControlBindingBuilder` の「シフトなし」の条件を削除（シフトは存在しない）。
 - **画面（W3 の警告ダイアログ以外）**: `BindingWindow`（シフトのラジオボタン、副ボタンの選択、関連のメソッド）、`BindingWindowViewModel`（シフト用の `OutBinding` と読み書き）、`OutBinding`（シフトの欄と書き込み）、`MappedControl`（シフトの表示）、`ProfileEditor`（ハイライトの表示）、`RecordBoxViewModel`／`RecordBox`／`EditorWindowFactory`／`ViewModelFactory`（シフトの引数）、`ProfilePresets`／`PresetMenuHelper`（呼び出し）。
 - **テスト**: 新規 `Phase8Step78dW2RemovedShiftWiringTests`（読込で保持、保存でそのまま、削除したら空の要素、ほかの設定を編集しても保たれる、`ResetProfile`、シフトのメンバーがないこと、ソースのガード）。`Phase8Step1ShiftTriggerCharacterizationTests`（旧経路のシフトの特性化）を削除。ガード・テスト・シグネチャを更新（`MappingCommitAndCalibration…` の終端、`RefreshActionAlias`、`RecordBox` 系の呼び出し、7.8b・7.8c のテストのシフトの項目）。ゴールデン: `profile-gap.xml`、`profile-gap.resaved.xml`、`profile-legacy.resaved.xml`、`profile-varied.xml` の `<ShiftControl>` を空の要素に、`profile-*.state.txt` からシフトの行（各 150 行）を削除。
+
+### 5.4 W3 の実装（2026-10-20。ビルド・テストの結果待ち）
+
+- 新設: `MessageBoxRemovedShiftPrompt`（`DS4Forms/`。`IRemovedShiftPrompt` の画面の実装。`MessageBox` の「はい」＝削除、「いいえ」［またはダイアログを閉じる］＝残す。選択は記憶しない）。
+- 配線: `IProfileSettingsService.GetRemovedShiftSettings(device)`（`ProfileSettingsService` が `BackingStore.removedShiftSettings` を返す）、`ProfileEditor.Reload`（`profileRepository.LoadProfile` の直後に `RemovedShiftNotice.Apply(…)`。プロファイルがあるときだけ。新規作成では呼ばない）。
+- 文言: `Properties/Resources.resx`（英語）と `Resources.ja.resx`（日本語）に `RemovedShiftWarning`（`{0}`＝プロファイル名）を追加し、`Resources.Designer.cs` に手で参照用のプロパティを追加した（ほかの言語は英語にフォールバック）。
+- テスト: `Phase8Step78dW3RemovedShiftNoticeWiringTests`（サービスが保持の入れ物を返す、文言［英語・日本語］、`Reload` の読込の直後に警告を呼ぶ［1 か所］）。ダイアログそのものは、Step9 の実機（画面）の確認（U-43）。
 
 ## 6. リスクと対応
 

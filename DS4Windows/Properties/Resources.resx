@@ -568,4 +568,10 @@ OR
   <data name="InvalidSpecialAction" xml:space="preserve">
     <value>Invalid Special Action</value>
   </data>
+  <data name="RemovedShiftWarning" xml:space="preserve">
+    <value>Profile "{0}" contains settings of the removed "Shift Modifier" feature. These settings no longer work; use a combination trigger in the Special Actions tab instead.
+
+Yes: delete the settings (applied to the file when you save the profile).
+No: keep them (this warning is shown every time you open the profile).</value>
+  </data>
 </root>

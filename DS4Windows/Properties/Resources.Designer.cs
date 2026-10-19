@@ -1639,6 +1639,15 @@ namespace DS4WinWPF.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to a warning that the profile contains settings of the removed Shift Modifier feature.
+        /// </summary>
+        public static string RemovedShiftWarning {
+            get {
+                return ResourceManager.GetString("RemovedShiftWarning", resourceCulture);
+            }
+        }
+
+        /// <summary>
         ///   Looks up a localized string similar to Please enter a valid name.
         /// </summary>
         public static string ValidName {

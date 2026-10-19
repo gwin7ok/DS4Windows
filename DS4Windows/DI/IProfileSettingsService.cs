@@ -230,5 +230,11 @@ namespace DS4Windows.DI
 
         // ---- Phase6-Step3-1: デバイスの入力→出力割り当てグループ（毎レポート評価。割り当てなし）----
         ControlSettingsGroup GetControlSettingsGroup(int deviceIndex);
+
+        /// <summary>
+        /// Phase8-Step7 7.8d: 廃止された「シフト」機能の設定（プロファイルの <c>&lt;ShiftControl&gt;</c>）を、解釈せずに保持した入れ物（スロットごと）。
+        /// 編集画面が、プロファイルを読み込んだあと、警告（削除か残すか）に使う。
+        /// </summary>
+        RemovedShiftSettings GetRemovedShiftSettings(int deviceIndex);
     }
 }

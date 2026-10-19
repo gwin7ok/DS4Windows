@@ -537,5 +537,7 @@ namespace DS4Windows
         // ---- Phase6-Step3-1: 入力→出力割り当てグループ ----
         // 毎レポート評価される経路から呼ばれるため、BackingStore の配列を直接参照する（従来の Global.GetControlSettingsGroup と同一）。
         public ControlSettingsGroup GetControlSettingsGroup(int deviceIndex) => SafeConfig?.ds4controlSettings[deviceIndex];
+
+        public RemovedShiftSettings GetRemovedShiftSettings(int deviceIndex) => SafeConfig?.removedShiftSettings[deviceIndex];
     }
 }

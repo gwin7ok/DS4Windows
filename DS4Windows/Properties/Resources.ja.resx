@@ -238,4 +238,10 @@
   <data name="InvalidSpecialAction" xml:space="preserve">
     <value>無効なスペシャルアクション</value>
   </data>
+  <data name="RemovedShiftWarning" xml:space="preserve">
+    <value>プロファイル「{0}」には、廃止された「シフト」機能の設定が含まれています。この設定は動作しません。代わりに、スペシャルアクションの組み合わせトリガーを使ってください。
+
+はい: この設定を削除します（プロファイルを保存したとき、ファイルに反映されます）。
+いいえ: 残します（プロファイルを開くたびに、この警告を表示します）。</value>
+  </data>
 </root>
