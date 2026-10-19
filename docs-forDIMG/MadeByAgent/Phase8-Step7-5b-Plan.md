@@ -3,7 +3,7 @@
 作成日: 2026-10-19  
 対象ブランチ: `For-DI-migration-work`  
 上位: `Phase8-Step7-5-Plan.md`（§3 の 7.5b、Q5・Q6）、`Phase8-Step2-Design.md`（§15.2 の `UntriggerPass`、§16）、`Phase8-Step2-Intent-Decisions.md`（項目 5・6・11・12）、`Phase7b` の W1（復帰の合図の退避・復元）、`Phase8-Step7-Completion-Report.md`（7.5a）  
-状態: **Q1〜Q6 を推奨（A）どおり承認（2026-10-19）。W1 成功（ビルド・テスト）。W2 成功（ビルド・テスト）。W3 成功（ビルド・テスト）。実機確認 U-33 の結果待ち**
+状態: **Q1〜Q6 を推奨（A）どおり承認（2026-10-19）。W1 成功（ビルド・テスト）。W2 成功（ビルド・テスト）。W3 成功（ビルド・テスト）。実機確認 U-33 が合格（2026-10-20）**
 
 ---
 
