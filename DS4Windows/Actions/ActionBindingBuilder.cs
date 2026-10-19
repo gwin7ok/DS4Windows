@@ -30,14 +30,14 @@ namespace DS4Windows.Actions
         private readonly IControllerDisconnectPort _disconnectPort;     // DisconnectBT（7.6b）。省略時（テスト）は束縛を作らず、旧経路が処理する
         private readonly IBatteryCheckPort _batteryCheckPort;           // BatteryCheck（7.6c）。省略時（テスト）は束縛を作らず、旧経路が処理する
         private readonly IWheelCalibrationPort _wheelCalibrationPort;   // ステアリング較正（7.6d）。省略時（テスト）は束縛を作らず、旧経路が処理する
-        private readonly IMultiActionMacroPlayer _multiActionPlayer;    // MultiAction（7.7b）。省略時（テスト）は束縛を作らず、旧経路が処理する
+        private readonly IMacroStringPlayer _macroStringPlayer;          // MultiAction（7.7b）。省略時（テスト）は束縛を作らず、旧経路が処理する
 
         public ActionBindingBuilder(IProfileActionProvider profileActions, IProfileSettingsService profileSettings,
             IManagedActionManager manager, IMacroPlayer macroPlayer, IProcessLauncher processLauncher,
             IProfileSwitcher profileSwitcher, BindingMigrationOptions options, ISpecialActionRepository actionRepository = null,
             Func<IMapping> mappingProvider = null, IGyroCalibrationPort gyroCalibration = null,
             IControllerDisconnectPort disconnectPort = null, IBatteryCheckPort batteryCheckPort = null,
-            IWheelCalibrationPort wheelCalibrationPort = null, IMultiActionMacroPlayer multiActionPlayer = null)
+            IWheelCalibrationPort wheelCalibrationPort = null, IMacroStringPlayer macroStringPlayer = null)
         {
             _actionRepository = actionRepository;
             _mappingProvider = mappingProvider;
@@ -45,7 +45,7 @@ namespace DS4Windows.Actions
             _disconnectPort = disconnectPort;
             _batteryCheckPort = batteryCheckPort;
             _wheelCalibrationPort = wheelCalibrationPort;
-            _multiActionPlayer = multiActionPlayer;
+            _macroStringPlayer = macroStringPlayer;
             _profileActions = profileActions ?? throw new ArgumentNullException(nameof(profileActions));
             _profileSettings = profileSettings ?? throw new ArgumentNullException(nameof(profileSettings));
             _manager = manager ?? throw new ArgumentNullException(nameof(manager));
@@ -147,10 +147,20 @@ namespace DS4Windows.Actions
                         BindingPolicy.Default, sa, index);
 
                 case SpecialAction.ActionTypeId.MultiAction:
-                    // 独立した入力アクション（タップ・長押し・ダブルタップを Gesture で返す）。Fresh-press ガードを見ない。出力の Stop は不要（旧経路と同じ）
-                    if (_multiActionPlayer == null) return null;
-                    return new TriggerBinding(new MultiTapInputAction(sa.name, sa.trigger, _profileSettings, sa.delayTime), new IOutputAction[] { new MultiActionOutput(sa, device, _multiActionPlayer) },
-                        new BindingPolicy(respectsFreshPressGuard: false, stopOnRelease: false), sa, index);
+                {
+                    // 独立した入力アクション（タップ・長押し・ダブルタップを Gesture で返す）。Fresh-press ガードを見ない。出力の Stop は不要（旧経路になし）。
+                    // 「どのジェスチャーでどのマクロか」の対応は、ここ（変換層）で決める: details を「,」で分けた 3 つ（タップ、長押し、ダブルタップの順。足りなければ空）から、
+                    // ジェスチャーごとの出力を 3 つそろえて作る（添字を固定するため、空でも作る）。エンジンが Outputs[Gesture - 1] を実行する（BindingPolicy.RoutesOutputsByGesture）
+                    if (_macroStringPlayer == null) return null;
+
+                    string[] macros = (sa.details ?? string.Empty).Split(',');
+                    var gestureOutputs = new IOutputAction[3];
+                    for (int g = 0; g < gestureOutputs.Length; g++)
+                        gestureOutputs[g] = new MacroStringAction(sa, device, g < macros.Length ? macros[g] : string.Empty, _macroStringPlayer);
+
+                    return new TriggerBinding(new MultiTapInputAction(sa.name, sa.trigger, _profileSettings, sa.delayTime), gestureOutputs,
+                        new BindingPolicy(respectsFreshPressGuard: false, stopOnRelease: false, routesOutputsByGesture: true), sa, index);
+                }
 
                 default:
                     return null;

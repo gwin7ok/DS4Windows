@@ -42,7 +42,7 @@ using ThreadState = System.Threading.ThreadState;
 
 namespace DS4Windows
 {
-    public class Mapping : DS4Windows.DI.IMapping, DS4Windows.Actions.IMultiActionMacroPlayer
+    public class Mapping : DS4Windows.DI.IMapping, DS4Windows.Actions.IMacroStringPlayer
     {
         // ==========================================
         // 【修正後】
@@ -5402,8 +5402,8 @@ namespace DS4Windows
         }
 
         /// <summary>
-        /// Phase8-Step7 7.7b（Q4＝A）: MultiAction の新経路（<c>MultiActionOutput</c>）用。マクロを文字列で直接指定して実行する
-        /// （旧 <c>MapCustomAction</c> の MultiAction の枝と同じ呼び出し）。<c>IMapping</c> のメンバーではない（<c>DefaultMultiActionMacroPlayer</c> が委譲する）。
+        /// Phase8-Step7 7.7b（Q4＝A）: MultiAction の新経路（汎用の出力 <c>MacroStringAction</c>）用。マクロを文字列で直接指定して実行する
+        /// （旧 <c>MapCustomAction</c> の MultiAction の枝と同じ呼び出し）。<c>IMapping</c> のメンバーではない（<c>DefaultMacroStringPlayer</c> が委譲する）。
         /// </summary>
         public void PlayMacroString(int device, string macro)
         {

@@ -206,7 +206,7 @@ namespace DS4WindowsTests
 
         // ---- 出力 ----
 
-        private sealed class RecordingPlayer : IMultiActionMacroPlayer
+        private sealed class RecordingPlayer : IMacroStringPlayer
         {
             public readonly List<(int Device, string Macro)> Calls = new List<(int, string)>();
 
@@ -222,42 +222,36 @@ namespace DS4WindowsTests
         }
 
         [Fact]
-        public void TheOutput_PlaysTheMacroOfTheGesture_AndIgnoresEmptyAndMissingOnes()
+        public void TheMacroStringAction_PlaysItsMacro_AndIgnoresAnEmptyOne()
         {
             var player = new RecordingPlayer();
             var sa = new SpecialAction("p8s77b_out", "L1", "MultiAction", "65/65,,67/67", 0, string.Empty);
-            var output = new MultiActionOutput(sa, 4, player);
             var ctx = new DummyContext();
 
-            output.OnGesture(ctx, TriggerState.Tap);
-            output.OnGesture(ctx, TriggerState.Hold);        // 空
-            output.OnGesture(ctx, TriggerState.DoubleTap);
-            output.OnGesture(ctx, 4);                         // 範囲外
-            output.OnGesture(ctx, TriggerState.NoGesture);
+            new MacroStringAction(sa, 4, "65/65", player).Execute(ctx);
+            new MacroStringAction(sa, 4, string.Empty, player).Execute(ctx);   // 空: 何もしない
+            new MacroStringAction(sa, 4, null, player).Execute(ctx);            // null: 空として扱う
+            new MacroStringAction(sa, -1, "67/67", player).Execute(ctx);        // デバイスの添字がなければ、文脈のデバイス
 
-            Assert.Equal(new[] { (4, "65/65"), (4, "67/67") }, player.Calls.ToArray());
+            Assert.Equal(new[] { (4, "65/65"), (2, "67/67") }, player.Calls.ToArray());
 
-            var few = new MultiActionOutput(new SpecialAction("p8s77b_few", "L1", "MultiAction", "65/65", 0, string.Empty), 4, player);
-            few.OnGesture(ctx, TriggerState.DoubleTap);       // details が足りない: 例外にせず、何もしない
-            Assert.Equal(2, player.Calls.Count);
-
-            output.Execute(ctx);
+            var output = new MacroStringAction(sa, 4, "66/66", player);
             output.Stop(ctx);
-            Assert.Equal(2, player.Calls.Count);               // 通常の出力は何もしない
+            Assert.Equal(2, player.Calls.Count);   // 離したときは何もしない
         }
 
         // ---- ビルダー・スイッチ ----
 
-        private static ActionBindingBuilder NewBuilder(IMultiActionMacroPlayer player)
+        private static ActionBindingBuilder NewBuilder(IMacroStringPlayer player)
             => new ActionBindingBuilder(TestHost.GetService<IProfileActionProvider>(), TestHost.GetService<IProfileSettingsService>(),
                 TestHost.GetService<IManagedActionManager>(), TestHost.GetService<IMacroPlayer>(), TestHost.GetService<IProcessLauncher>(),
                 TestHost.GetService<IProfileSwitcher>(), TestHost.GetService<BindingMigrationOptions>(), TestHost.GetService<ISpecialActionRepository>(),
                 TestHost.GetService<Func<IMapping>>(), null, null, null, null, player);
 
-        private static void Publish(SpecialActionTestScope t, IMultiActionMacroPlayer player)
+        private static void Publish(SpecialActionTestScope t, IMacroStringPlayer player)
             => TestHost.GetService<IActionRegistry>().Replace(t.Device, NewBuilder(player).Build(t.Device));
 
-        private static SpecialAction AddMulti(SpecialActionTestScope t, string triggers, IMultiActionMacroPlayer player, string details = "65/65,66/66,67/67")
+        private static SpecialAction AddMulti(SpecialActionTestScope t, string triggers, IMacroStringPlayer player, string details = "65/65,66/66,67/67")
         {
             SpecialAction sa = t.Add(new SpecialAction("p8s77b_bind_" + Guid.NewGuid().ToString("N"), triggers, "MultiAction", details, 0, string.Empty));
             t.StateOf(sa).RequiresFreshPressAfterReset = false;
@@ -266,7 +260,7 @@ namespace DS4WindowsTests
         }
 
         [Fact]
-        public void TheBuilder_BuildsTheIndependentInputAndTheGestureOutput_OnlyWithAPlayer()
+        public void TheBuilder_BuildsTheIndependentInput_AndOneOutputPerGesture_OnlyWithAPlayer()
         {
             using var t = new SpecialActionTestScope(true);
             var player = new RecordingPlayer();
@@ -275,7 +269,9 @@ namespace DS4WindowsTests
             IActionBinding binding = Assert.Single(NewBuilder(player).Build(t.Device));
             Assert.Same(sa, binding.Source);
             Assert.IsType<MultiTapInputAction>(binding.Input);
-            Assert.IsType<MultiActionOutput>(Assert.Single(binding.Outputs));
+            Assert.Equal(3, binding.Outputs.Count);   // タップ、長押し、ダブルタップの順に、ジェスチャーごとの出力
+            Assert.All(binding.Outputs, o => Assert.IsType<MacroStringAction>(o));
+            Assert.True(binding.Policy.RoutesOutputsByGesture);
             Assert.False(binding.Policy.RespectsFreshPressGuard);
             Assert.False(binding.Policy.BlocksWhileExecuting);
             Assert.False(binding.Policy.StopOnRelease);
@@ -283,6 +279,40 @@ namespace DS4WindowsTests
             Assert.True(t.Engine.Owns(t.Device, sa));
 
             Assert.Empty(NewBuilder(null).Build(t.Device));   // 窓口がなければ、束縛を作らず、旧経路が処理する
+        }
+
+        [Fact]
+        public void TheBuilder_MapsEachGestureToItsOwnMacro_AndKeepsTheSlotsWhenTheMacrosAreEmptyOrMissing()
+        {
+            // 「どのジェスチャーでどのマクロか」の対応は、変換層（ビルダーが作る束縛）が決める
+            var player = new RecordingPlayer();
+            var ctx = new DummyContext();
+
+            using (var t = new SpecialActionTestScope(true))
+            {
+                AddMulti(t, "L1", player, "65/65,,67/67");
+                IActionBinding binding = Assert.Single(NewBuilder(player).Build(t.Device));
+                for (int g = 0; g < binding.Outputs.Count; g++) binding.Outputs[g].Execute(ctx);
+                Assert.Equal(new[] { (t.Device, "65/65"), (t.Device, "67/67") }, player.Calls.ToArray());   // 長押しは空: 何もしない
+            }
+
+            player.Calls.Clear();
+            using (var t = new SpecialActionTestScope(true))
+            {
+                AddMulti(t, "L1", player, "65/65");   // details が足りない
+                IActionBinding few = Assert.Single(NewBuilder(player).Build(t.Device));
+                Assert.Equal(3, few.Outputs.Count);     // 添字を固定するため、足りなくても 3 つそろえる
+                for (int g = 0; g < few.Outputs.Count; g++) few.Outputs[g].Execute(ctx);
+                Assert.Equal(new[] { (t.Device, "65/65") }, player.Calls.ToArray());
+            }
+        }
+
+        [Fact]
+        public void TheDefaultPolicy_DoesNotRouteOutputsByGesture()
+        {
+            Assert.False(BindingPolicy.Default.RoutesOutputsByGesture);
+            Assert.False(new BindingPolicy(blocksWhileExecuting: true).RoutesOutputsByGesture);
+            Assert.True(new BindingPolicy(routesOutputsByGesture: true).RoutesOutputsByGesture);
         }
 
         [Fact]
@@ -315,22 +345,22 @@ namespace DS4WindowsTests
         [Fact]
         public void TheHostPlayer_DelegatesToMapping_AndIgnoresEmptyOrOutOfRange()
         {
-            var player = TestHost.GetService<IMultiActionMacroPlayer>();
-            Assert.IsType<DefaultMultiActionMacroPlayer>(player);
-            Assert.IsAssignableFrom<IMultiActionMacroPlayer>(TestHost.GetService<IMapping>());   // Mapping が実装する（IMapping のメンバーではない）
+            var player = TestHost.GetService<IMacroStringPlayer>();
+            Assert.IsType<DefaultMacroStringPlayer>(player);
+            Assert.IsAssignableFrom<IMacroStringPlayer>(TestHost.GetService<IMapping>());   // Mapping が実装する（IMapping のメンバーではない）
 
             player.PlayMacroString(0, string.Empty);
             player.PlayMacroString(-1, "65/65");
             player.PlayMacroString(99, "65/65");
 
-            new DefaultMultiActionMacroPlayer(() => null).PlayMacroString(0, "65/65");   // Mapping がなくても、例外にしない
+            new DefaultMacroStringPlayer(() => null).PlayMacroString(0, "65/65");   // Mapping がなくても、例外にしない
         }
 
         [Fact]
         public void TheMappingPlayer_PlaysTheMacroString_ThroughTheOutputHandler()
         {
             using var scope = new MappingCharacterizationScope();
-            var player = (IMultiActionMacroPlayer)scope.Mapper;
+            var player = (IMacroStringPlayer)scope.Mapper;
 
             player.PlayMacroString(MappingCharacterizationScope.Device, "65/65");
 

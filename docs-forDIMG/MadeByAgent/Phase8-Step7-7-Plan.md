@@ -3,7 +3,7 @@
 作成日: 2026-10-20  
 対象ブランチ: `For-DI-migration-work`  
 上位: `Phase8-Step7-Plan.md`（§4 の 7.7）、`Phase8-Step7-6-Plan.md`（進め方）、`Phase8-Step2-Design.md`（§4 の `MultiTapInputAction`、§24）、`Phase8-Step2-Intent-Decisions.md`（項目 7）、`Phase8-Step1-Trigger-Spec-Ledger.md`（XboxGameDVR／MultiAction）  
-状態: **ユーザーの決定を反映済み（2026-10-20）: Q1＝A（XboxGameDVR は機能削除を前提）、Q2＝B（MultiAction を独立した入力アクションにする）、Q3〜Q7＝推奨（A）。7.7a（XboxGameDVR の削除）はビルド・テスト成功。7.7b（MultiAction）は W1 成功、W2（初版）実装済み［ビルド・テストの結果待ち］。ユーザーの設計見直し（ジェスチャーから出力への対応を変換層に置く）を W2b として追加［§3.3。Q8・Q9 の承認待ち］**
+状態: **ユーザーの決定を反映済み（2026-10-20）: Q1＝A（XboxGameDVR は機能削除を前提）、Q2＝B（MultiAction を独立した入力アクションにする）、Q3〜Q7＝推奨（A）。7.7a（XboxGameDVR の削除）はビルド・テスト成功。7.7b（MultiAction）は W1 成功、W2 と、ユーザーの設計見直し（ジェスチャーから出力への対応を変換層に置く。W2b。§3.3）を実装済み［ビルド・テストの結果待ち。Q8＝A、Q9＝A を承認済み］**
 
 ---
 
@@ -57,6 +57,8 @@ MultiAction は、他の種別と**構造が違う**。「トリガーが成立�
 
 ### 3.2 7.7b MultiAction の移行（Q2＝B: 独立した入力アクション）
 
+> **注（W2b。2026-10-20）**: 以下の `IGestureOutputAction`／`MultiActionOutput`／エンジンの `OnGesture` の呼び出しは、§3.3 の設計見直しで、`MacroStringAction`（汎用の出力）と `BindingPolicy.RoutesOutputsByGesture`（エンジンが `Outputs[Gesture − 1]` を実行）に置き換わった。`IMultiActionMacroPlayer` は `IMacroStringPlayer`、`DefaultMultiActionMacroPlayer` は `DefaultMacroStringPlayer` に改名した。それ以外（`MultiTapInputAction`、状態の置き場、方針、旧経路との違い）は、そのまま。
+
 - **`MultiTapInputAction`（新設。`IInputAction`）**: `ComboTriggerInputAction`（トリガーの AND、`delayTime`）を中に持ち、`IsEstablished` はそれと同じ（トリガーのボタンの抑制・出力の消去を、エンジンの共通の方針で行うため）。それに加えて、**毎フレーム、`trigger[0]` のエッジ（`IsActive`／`WasActive`）と時刻（`ITriggerInput.UtcNow`）と `DebouncingMs[device]` から、旧経路と同じ状態機械を動かし**、その結果を `TriggerState.Gesture`（タップ／長押し／ダブルタップ）として返す。状態（`tappedOnce` ほか）はこのインスタンスが持つ（Q3＝A）。`Reset()` で状態を戻す。
 - **`IGestureOutputAction`（新設。`IOutputAction` の拡張）**: `OnGesture(IOutputContext ctx, int gesture)`。
 - **`MultiActionOutput`（新設）**: ジェスチャーに対応するマクロの文字列（`details` を「,」で分けた 3 つ。足りなければ空）が空でなければ、Trace 4 行（旧 `LogSpecialActionTrace`）→ `IMultiActionMacroPlayer.PlayMacroString(device, macro)`（Q4＝A）。Debug はなし（Q5＝A）。
@@ -95,7 +97,7 @@ MultiAction は、他の種別と**構造が違う**。「トリガーが成立�
 - **7.7b**
   - **W1（特性化。2026-10-20 実装済み、ビルド・テストの結果待ち）**: `Phase8Step77bW1MultiActionDualPathTests`（新設）と `TestDs4Device`（テスト用のデバイス。前回のレポートだけを返す）。旧経路は `d.getPreviousStateRef()` を使うため、スロットにテスト用のデバイスを置く。時刻は旧経路が `DateTime.UtcNow` を使うため、実際に待つ（待ち時間に余裕を持たせる。全体で約 10 秒）。内容: タップ［離した直後は実行しない、間隔後に 1 つ目を 1 回だけ］、長押し［2 つ目を 1 回。離してもタップは実行しない］、ダブルタップ［3 つ目のみ］、空のマクロ、`DebouncingMs`（200 で、タップの間隔が 350ms になる）、Fresh-press ガードを見ない、押している間トリガーの出力が消える、前の特殊アクション［Profile の切替］のフレームの打ち切りで押下を見逃す。旧・新の両経路（W1 の時点では、新経路の指定でも旧経路が処理する）。計画: `SpecialActionTestScope` に MultiAction。旧経路を、`PlayMacro` の記録（`Mapping` の窓口の差し替え）と、入力の時刻の差し込みで固定する: タップ（遅延後に 1 つ目）、長押し、ダブルタップ、間隔と `DebouncingMs`、マクロが空のとき、トリガーの抑制・出力の消去、前の特殊アクションの `return` のフレームでの見逃し。時刻の足場が足りなければ追加する。
   - **W1 は成功（ビルド・テスト。2026-10-20）。W2（実装済み、ビルド・テストの結果待ち）**: 新設 — `IGestureOutputAction`、`MultiTapInputAction`（`ComboTriggerInputAction` を中に持ち、`trigger[0]` のエッジと時刻と `DebouncingMs` から旧経路と同じ状態機械を動かし `Gesture` を返す）、`MultiActionOutput`、`IMultiActionMacroPlayer`、`DefaultMultiActionMacroPlayer`（`Func<IMapping>` から `Mapping` へ委譲）。変更 — `TriggerDispatchEngine.ProcessBinding`（`Evaluate` の直後に、`Gesture` が 0 でなければ出力の `OnGesture` を呼ぶ。ガード・成立・`BeingTriggered` によらない）、`Mapping`（`IMultiActionMacroPlayer.PlayMacroString` を実装。`IMapping` は 10 メンバーのまま）、`ActionBindingBuilder`（MultiAction の束縛。`respectsFreshPressGuard: false`、`stopOnRelease: false`）、`ServiceRegistration`（窓口の登録、既定の一覧に MultiAction の 1 行）。テスト: `Phase8Step77bW2MultiTapTests`（偽の入力［時刻と押下を差し込める］での状態機械、出力、ビルダー、ロールバック、窓口、旧・新のログの一致、割り当て）。計画: 上記の新設と変更、既定の一覧の 1 行。旧・新の両経路で、W1 の期待値を変えずに成功。ログの一致。
-  - **W2b（設計の見直し。§3.3。Q8・Q9 の承認後）**: 上記のとおり、`BindingPolicy` の項目の追加、エンジンの出力の選択、`MacroStringAction` の新設、`IGestureOutputAction`／`MultiActionOutput` の削除、窓口の改名、ビルダーの変更（3つの出力）。テストの更新: `Phase8Step77bW2MultiTapTests` の出力・ビルダー・窓口の部分（出力の選択のテスト、ビルダーが3つの出力を作るテスト、空のマクロの出力の扱い、`BindingPolicy` の既定値の確認）。W1 と、`MultiTapInputAction` の状態機械のテスト、旧・新のログの一致、割り当てのテストは、期待値を変えずに成功すること。
+  - **W2b（設計の見直し。§3.3。Q8＝A、Q9＝A 承認済み。2026-10-20 実装済み、ビルド・テストの結果待ち）**: 上記のとおり — `BindingPolicy.RoutesOutputsByGesture`（追加。既定は偽）、`TriggerDispatchEngine`（`Gesture` が0でないフレームだけ `Outputs[Gesture − 1]` を実行。この項目が真の束縛は、抑制と出力の消去のあと、通常の出力の実行をしない）、`MacroStringAction`（新設）、`IGestureOutputAction`／`MultiActionOutput`（削除）、`IMacroStringPlayer`／`DefaultMacroStringPlayer`（改名）、`ActionBindingBuilder`（`details` の3つから、ジェスチャーごとの出力を3つそろえて作る）、`Mapping`（実装するインターフェース名）、`ServiceRegistration`（登録名）。テストの更新: `Phase8Step77bW2MultiTapTests`（`MacroStringAction` のテスト、ビルダーが3つの出力を作り、ジェスチャーごとのマクロに対応づけるテスト［空・足りない場合］、`BindingPolicy` の既定値、窓口の改名）。ジェスチャーでの出力の選択は、W1 の旧・新の両経路のテスト［タップ・長押し・ダブルタップがそれぞれ正しいマクロを1回だけ再生する］が確かめる。W1 と、`MultiTapInputAction` の状態機械のテスト、旧・新のログの一致、割り当てのテストは、期待値を変えずに成功すること。
   - **W3**: ロールバック、割り当て（新 ≦ 旧）。
   - **W4**: 実機確認 U-39（PS 単押しで地図など）。報告書。
 
@@ -108,8 +110,8 @@ MultiAction は、他の種別と**構造が違う**。「トリガーが成立�
 - **Q5（ログ）**: A（推奨）。旧経路と同じ（マクロを実行する直前の Trace 4 行。Debug なし）。
 - **Q6（時間）**: A（推奨）。150ms／500ms ＋ `DebouncingMs` を、旧経路どおり。
 - **Q7（実機確認）**: A（推奨）。既存の MultiAction で、ユーザーが確認する。機材がなければ先送りの記録。
-- **Q8（ジェスチャーから出力への対応の置き場。ユーザーの提案）**: A（推奨）: 変換層（ビルダーが作る束縛）に置き、出力層は汎用の「マクロの文字列を再生する」出力だけにする（§3.3）。窓口と実装の名前も汎用にする。B: W2 初版のまま（`MultiActionOutput` が、ジェスチャーに対応するマクロを選ぶ）。
-- **Q9（W2b を入れる時期）**: A（推奨）: W2（初版）はまだビルド・テストの結果が出ておらず、コミットもされていないため、**W2b を先に適用して**から、1 回のビルド・テストで確認する（作り直しの往復が減る）。B: W2（初版）のビルド・テストの結果を見てから、W2b を別の波として適用する（初版の成否と、見直しの成否を、切り分けられる）。
+- **Q8（ジェスチャーから出力への対応の置き場。ユーザーの提案）【承認: A】**: A（推奨）: 変換層（ビルダーが作る束縛）に置き、出力層は汎用の「マクロの文字列を再生する」出力だけにする（§3.3）。窓口と実装の名前も汎用にする。B: W2 初版のまま（`MultiActionOutput` が、ジェスチャーに対応するマクロを選ぶ）。
+- **Q9（W2b を入れる時期）【承認: A】**: A（推奨）: W2（初版）はまだビルド・テストの結果が出ておらず、コミットもされていないため、**W2b を先に適用して**から、1 回のビルド・テストで確認する（作り直しの往復が減る）。B: W2（初版）のビルド・テストの結果を見てから、W2b を別の波として適用する（初版の成否と、見直しの成否を、切り分けられる）。
 
 ### W2 の最初の結果と是正（2026-10-20）
 

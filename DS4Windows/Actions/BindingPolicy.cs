@@ -24,7 +24,8 @@ namespace DS4Windows.Actions
             bool suppressesTriggerButtons = true,
             bool resetsTriggerOutput = true,
             bool stopOnRelease = true,
-            string exclusionGroup = null)
+            string exclusionGroup = null,
+            bool routesOutputsByGesture = false)
         {
             RespectsFreshPressGuard = respectsFreshPressGuard;
             BlocksWhileExecuting = blocksWhileExecuting;
@@ -36,6 +37,7 @@ namespace DS4Windows.Actions
             ResetsTriggerOutput = resetsTriggerOutput;
             StopOnRelease = stopOnRelease;
             ExclusionGroup = exclusionGroup;
+            RoutesOutputsByGesture = routesOutputsByGesture;
         }
 
         /// <summary>トリガーが連続して未成立になるまで（<c>RequiresFreshPressAfterReset</c> が true の間）、実行しないか。台帳 §4.2: Button の Press のみ false。</summary>
@@ -61,6 +63,13 @@ namespace DS4Windows.Actions
 
         /// <summary>シフト（Q6）: 同じグループで先に成立した束縛だけが実行される。null ＝ なし。</summary>
         public string ExclusionGroup { get; }
+
+        /// <summary>
+        /// Phase8-Step7 7.7b（W2b。MultiAction）: 出力を**ジェスチャーで選ぶ**束縛か。真のとき、エンジンは、通常の立ち上がり・保持・離したときの出力の実行をせず
+        /// （トリガーのボタンの抑制と出力の消去は行う）、入力アクションが <c>TriggerState.Gesture</c> を返したフレームだけ、<c>Outputs[Gesture - 1]</c> を実行する。
+        /// 「どのジェスチャーでどの出力か」の対応は、束縛を作る側（ビルダー。信号変換層）が決める。既定は偽。
+        /// </summary>
+        public bool RoutesOutputsByGesture { get; }
 
         private static DS4Controls[] CopyOf(IReadOnlyList<DS4Controls> source)
         {

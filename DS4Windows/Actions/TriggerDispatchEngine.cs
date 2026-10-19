@@ -357,20 +357,19 @@ namespace DS4Windows.Actions
 
                 UpdateFreshPressTimer(state, established, input.TickCount64);
 
-                // ジェスチャー（Phase8-Step7 7.7b。MultiAction のタップ・長押し・ダブルタップ）: ガード・成立の判定・BeingTriggered によらず、出力へ渡す。
-                // 通常の出力の処理（以降）とは独立（旧経路の MultiAction は、ガードを見ず、BeingTriggered を使わない）。Gesture が 0 のときは何もしない
-                if (result.Gesture != TriggerState.NoGesture)
+                // ジェスチャー（Phase8-Step7 7.7b。MultiAction のタップ・長押し・ダブルタップ）: 出力を「ジェスチャーで選ぶ」束縛では、
+                // ガード・成立の判定・BeingTriggered によらず、Gesture が 0 でないフレームだけ、Outputs[Gesture - 1] を実行する
+                // （旧経路の MultiAction は、ガードを見ず、BeingTriggered を使わない）。どのジェスチャーでどの出力かは、束縛を作る側（ビルダー）が決めている。
+                if (policy.RoutesOutputsByGesture && result.Gesture != TriggerState.NoGesture)
                 {
-                    EngineContext gestureContext = rt.Context;
-                    gestureContext.Begin(frame, input);
-                    IReadOnlyList<IOutputAction> gestureOutputs = binding.Outputs;
-                    for (int o = 0; o < gestureOutputs.Count; o++)
+                    IReadOnlyList<IOutputAction> routed = binding.Outputs;
+                    int routedIndex = result.Gesture - 1;
+                    if ((uint)routedIndex < (uint)routed.Count)
                     {
-                        if (gestureOutputs[o] is IGestureOutputAction gestureOutput)
-                        {
-                            try { gestureOutput.OnGesture(gestureContext, result.Gesture); }
-                            catch (Exception ex) { LogException(ex); }
-                        }
+                        EngineContext gestureContext = rt.Context;
+                        gestureContext.Begin(frame, input);
+                        try { routed[routedIndex].Execute(gestureContext); }
+                        catch (Exception ex) { LogException(ex); }
                     }
                 }
 
@@ -389,6 +388,10 @@ namespace DS4Windows.Actions
                         for (int t = 0; t < triggers.Count; t++)
                             frame.ResetTriggerControl(triggers[t]);
                     }
+
+                    // 出力をジェスチャーで選ぶ束縛（MultiAction）は、通常の出力の実行をしない（抑制と出力の消去は、上で済んでいる）
+                    if (policy.RoutesOutputsByGesture)
+                        return FrameResult.Continue;
 
                     // 排他グループ（シフト）: 同じグループで先に成立した束縛だけが、以降の処理に進む
                     string group = policy.ExclusionGroup;

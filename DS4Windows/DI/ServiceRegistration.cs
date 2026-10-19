@@ -139,7 +139,7 @@ namespace DS4Windows.DI
             // Phase8-Step7 7.6d: ステアリング較正が実機のコントローラーの較正の状態を読み書きする窓口（同上）
             services.AddSingleton<IWheelCalibrationPort, DefaultWheelCalibrationPort>();
             // Phase8-Step7 7.7b: MultiAction が、マクロを文字列で直接実行する窓口（Mapping へ遅延で委譲する）
-            services.AddSingleton<IMultiActionMacroPlayer, DefaultMultiActionMacroPlayer>();
+            services.AddSingleton<IMacroStringPlayer, DefaultMacroStringPlayer>();
             // Phase7-Step8 W3（Q6＝A）: 出力ハンドラの実体を持つ OutputKBMHandlerAdapter を 1 つ登録し、IVirtualKBM（送出）と IVirtualKBMLifecycle（決定・破棄）が共有する
             services.AddSingleton<OutputKBMHandlerAdapter>();
             services.AddSingleton<IVirtualKBM>(sp => sp.GetRequiredService<OutputKBMHandlerAdapter>());
