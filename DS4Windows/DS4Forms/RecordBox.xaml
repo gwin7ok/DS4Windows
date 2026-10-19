@@ -49,7 +49,6 @@
                     <Button x:Name="loadPresetBtn" Content="{lex:Loc RecordBox.LoadPreset}" Margin="0,0,5,0" Click="LoadPresetBtn_Click">
                         <Button.ContextMenu>
                             <ContextMenu>
-                                <MenuItem x:Name="cycleProgPresetMenuItem" Header="Cycle Programs" Click="CycleProgPresetMenuItem_Click" />
                                 <MenuItem x:Name="loadPresetFromFileMenuItem" Header="From File..." Click="LoadPresetFromFileMenuItem_Click" />
                             </ContextMenu>
                         </Button.ContextMenu>

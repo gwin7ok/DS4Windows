@@ -3,7 +3,7 @@
 作成日: 2026-10-19  
 対象ブランチ: `For-DI-migration-work`  
 上位: `Phase8-Step7-Plan.md`（§3 共通の手順、§4 の 7.3）、`Phase8-Step7-2-Plan.md`（7.2 の進め方）、`Phase8-Step2-Design.md` §6・§7、`Phase8-Step1-Trigger-Spec-Ledger.md` §5（Macro）  
-状態: **計画書作成済み（Q1〜Q4 の承認待ち）。ただし、Alt-Tab の特別扱いの削除（`Phase8-Step7-3a-AltTab-Removal-Plan.md`）が承認されると、Q1 と、W2 の `WhileHeld` の実装は不要になる（計画書を改訂する）**
+状態: **計画書作成済み。ただし、Alt-Tab の特別扱いを削除する（`Phase8-Step7-3a-AltTab-Removal-Plan.md`。承認済み、W1・W2 実装済み）ため、下記の「Q1」と、W2 の `WhileHeld` の実装・`IMacroPlayer`／`IMapping` の変更は不要になった（取り消し線の項目）。残る Q2〜Q4 は、承認待ち**
 
 ---
 
@@ -56,7 +56,7 @@ Macro 種別の特殊アクションを、旧ループ（`MapCustomAction` の M
 
 ### W2: 新経路の不足分
 
-- Q1 の実装: `MacroAction` が `IHeldOutputAction.WhileHeld` を実装し、旧経路と同じ条件（`RepeatMacro` でなく、`pressRelease` が偽）のときだけ、毎フレーム `IMacroPlayer.WhileHeld(device, action)` を呼ぶ。`IMacroPlayer` に、**既定の実装つきのメンバー**として `WhileHeld` を足す（既存の実装・テスト用の偽物は、変更なし）。`DefaultMacroPlayer` は `IMapping.EndMacroDirect(device, action)` を呼ぶ。`IMapping.EndMacroDirect` に、**省略可の引数 `SpecialAction action = null`** を足す（メンバーの数は 10 のまま。`null` のときは、従来どおり）。`action` が指定されたときは、旧経路と同じ `EndMacro(device, macroControl, action.macro, None)` を呼ぶ。
+- ~~Q1 の実装（不要になった）~~: `MacroAction` が `IHeldOutputAction.WhileHeld` を実装し、旧経路と同じ条件（`RepeatMacro` でなく、`pressRelease` が偽）のときだけ、毎フレーム `IMacroPlayer.WhileHeld(device, action)` を呼ぶ。`IMacroPlayer` に、**既定の実装つきのメンバー**として `WhileHeld` を足す（既存の実装・テスト用の偽物は、変更なし）。`DefaultMacroPlayer` は `IMapping.EndMacroDirect(device, action)` を呼ぶ。`IMapping.EndMacroDirect` に、**省略可の引数 `SpecialAction action = null`** を足す（メンバーの数は 10 のまま。`null` のときは、従来どおり）。`action` が指定されたときは、旧経路と同じ `EndMacro(device, macroControl, action.macro, None)` を呼ぶ。
 - Q3 の実装: ログを `MacroAction` から、旧経路と同じ文言・順序で出す（`index`・`ActionEntries` はビルダーが渡す。7.2 の Key と同じ方式）。NLog のメモリ出力で、旧経路との行の一致をテストする。
 
 ### W3: スイッチと性能
@@ -69,7 +69,7 @@ Macro 種別の特殊アクションを、旧ループ（`MapCustomAction` の M
 
 ## 4. 質問（推奨は A）
 
-- **Q1（押している間の `EndMacro`。§2.3 #1）**: Alt-Tab のマクロが、押した次のフレームで Alt を離す動作を、新経路でも保つか。  
+- ~~**Q1（押している間の `EndMacro`。§2.3 #1）**~~ 【不要: Alt-Tab の特別扱いの削除により、押している間の呼び出しの効果がなくなった】: Alt-Tab のマクロが、押した次のフレームで Alt を離す動作を、新経路でも保つか。  
   A（推奨）: 保つ。`IMacroPlayer.WhileHeld`（既定の実装つき）と、`IMapping.EndMacroDirect` の省略可の引数で実装する（上記 W2）。旧経路と同じ条件・同じ呼び出し。  
   B: 保たない（Alt-Tab のマクロで Alt が押されたままになりうる。機能の低下のため、2.2 により不可）。  
   C: Alt-Tab の並びのマクロだけ、新経路へ移さず旧経路に残す（ビルダーが束縛を作らない。二重の経路が残り、Step8 の削除が複雑になる）。

@@ -271,7 +271,7 @@ public interface ITriggerDispatchEngine
    ```
 2. **`delayTime` の基準時刻は、デバイスごとに共有する**（§4 の `ComboTriggerInputAction` の内部状態にしない）。現行の `nowAction[device]`／`oldnowAction[device]` は、そのデバイスのすべての `delayTime` つきアクションで**共有**される（どれか 1 つのトリガーが押されていないと、共有の基準時刻が更新される）。束縛ごとに持つと、`delayTime` つきのアクションが 2 つ以上あるプロファイルで挙動が変わる。
    → `ITriggerInput` に `DelayClock Delay { get; }`（`Now`／`Old` を持つ、デバイスごとの再利用オブジェクト）を足し、`ComboTriggerInputAction` はそれを読み書きする。
-3. **押している間の呼び出し `IHeldOutputAction` を足す**（任意の契約）。現行の Macro は、成立中に 2 フレーム目以降も `BeingTriggered` が true のとき `EndMacro(...)` を呼ぶ（`RepeatMacro` でないとき）。マクロが Alt-Tab（`164/9/9/164`）のときだけ効果があり（`AltTabSwappingRelease`）、それ以外は何もしない。この呼び出しを失わないため、`MacroAction` 側に任意の `WhileHeld(ctx)` を持たせる。
+3. **押している間の呼び出し `IHeldOutputAction` を足す**（任意の契約。**2026-10-19 追記: Alt-Tab の特別扱いを廃止したため［Phase8-Step7-3a］、Macro では不要になった。契約として残すかは、必要になったときに判断する**）。現行の Macro は、成立中に 2 フレーム目以降も `BeingTriggered` が true のとき `EndMacro(...)` を呼ぶ（`RepeatMacro` でないとき）。マクロが Alt-Tab（`164/9/9/164`）のときだけ効果があり（`AltTabSwappingRelease`）、それ以外は何もしない。この呼び出しを失わないため、`MacroAction` 側に任意の `WhileHeld(ctx)` を持たせる。
    ```csharp
    public interface IHeldOutputAction : IOutputAction { void WhileHeld(IOutputContext ctx); }
    ```
@@ -452,7 +452,7 @@ for each binding b in registry.GetBindings(device) that has an IFrameOutputActio
 
 - **7.1 Button**（Press／Toggle）: `ButtonOutputAction`、Stage3 とバイパスの `MapCustomAction` の Button の分岐を削除。実機確認: ボタンの割り当て（Press、Toggle、マウス系、タッチパッドクリック）。
 - **7.2 Key**（Press／Toggle／リピート）: `KeyOutputAction`、`TryDispatchSATrigger*` の Key 用の経路、Key の分岐（解除トリガーを使う分岐は移植しない）を削除。実機確認: Press の押下・解放、Toggle の ON／OFF、長押しのリピート。
-- **7.3 Macro**: `MacroAction`＋`IHeldOutputAction`（Alt-Tab）、`RunOnRelease`（`InvertOnRelease`）。実機確認: マクロの単発、`RunOnRelease`、Alt-Tab マクロ。
+- **7.3 Macro**: `MacroAction`（Alt-Tab の特別扱いは、Phase8-Step7-3a で廃止したため、`IHeldOutputAction` は不要）、`RunOnRelease`（`InvertOnRelease`）。実機確認: マクロの単発、`RunOnRelease`、Alt-Tab マクロ。
 - **7.4 Program**: `LaunchProcessAction`、`IsExecuting`。実機確認: プログラムの起動（`$hidden` を含む）、押しっぱなしで繰り返し起動しないこと。
 - **7.5 Profile ＋ 復帰**（最大のリスク）: `ProfileSwitchAction`、復帰の合図を `Mapping.deviceRuntime` からエンジンへ、`OnProfileApplied` と `ProfileApplicationService` の連携、`IMapping` の `CaptureProfileUntrigger`／`RestoreProfileUntrigger` の削除、フレームの打ち切り（`RequestEndFrame`）。実機確認: プロファイルの切替、「Unload on trigger release」、解除トリガー、一時プロファイルの復帰、連続切替の安全弁。
 - **7.6 実機のデバイスを要する種別**（1 種別ずつ PR）: GyroCalibrate、DisconnectBT、BatteryCheck、ステアリング較正。実機確認が必須（機材がなければ、ガードの分岐までの検証と、リスク受容の記録）。

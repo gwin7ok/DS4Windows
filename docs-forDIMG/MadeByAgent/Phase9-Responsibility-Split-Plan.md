@@ -39,7 +39,7 @@
 - 前提: 値の特性化テスト。特殊アクション側の `getBoolSpecialActionMapping`／`GetBoolActionMapping` は、Phase8 の後の姿を見て扱う。
 
 ### 9-C: マクロの再生（約 700 行）
-- 対象: `PlayMacro`、`PlayMacroTask`（230 行）、`PlayMacroCodeValue`（164 行）、`EndMacro*`、`AltTabSwapping*`、`RunLightbarMacro`。K3（マクロの二重実行防止。`MacroRuntimeState`）の恒久的な再設計を含む。
+- 対象: `PlayMacro`、`PlayMacroTask`（230 行）、`PlayMacroCodeValue`（164 行）、`EndMacro*`、`RunLightbarMacro`。K3（マクロの二重実行防止。`MacroRuntimeState`）の恒久的な再設計を含む。
 - 注意: Phase8 の後の `IMacroPlayer`／`MacroAction` との境界を確認してから（Phase8 の Step7 で Macro 種別を切り替える際に、`PlayMacro` の呼び出しがどう変わるかに依存する）。
 
 ### 9-D: `Mapping` の合成入力の確定と Controls タブのボタン割り当て（約 1,600 行）

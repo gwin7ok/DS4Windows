@@ -272,29 +272,6 @@ namespace DS4WinWPF.DS4Forms.ViewModels
             }
         }
 
-        public void WriteCycleProgramsPreset()
-        {
-            MacroStep step = new MacroStep(18, KeyInterop.KeyFromVirtualKey(18).ToString(),
-                MacroStep.StepType.ActDown, MacroStep.StepOutput.Key);
-            macroSteps.Add(new MacroStepItem(step));
-
-            step = new MacroStep(9, KeyInterop.KeyFromVirtualKey(9).ToString(),
-                MacroStep.StepType.ActDown, MacroStep.StepOutput.Key);
-            macroSteps.Add(new MacroStepItem(step));
-
-            step = new MacroStep(9, KeyInterop.KeyFromVirtualKey(9).ToString(),
-                MacroStep.StepType.ActUp, MacroStep.StepOutput.Key);
-            macroSteps.Add(new MacroStepItem(step));
-
-            step = new MacroStep(18, KeyInterop.KeyFromVirtualKey(18).ToString(),
-                MacroStep.StepType.ActUp, MacroStep.StepOutput.Key);
-            macroSteps.Add(new MacroStepItem(step));
-
-            step = new MacroStep(1300, $"Wait 1000ms",
-                MacroStep.StepType.Wait, MacroStep.StepOutput.None);
-            macroSteps.Add(new MacroStepItem(step));
-        }
-
         public void LoadPresetFromFile(string filepath)
         {
             string[] macs = File.ReadAllText(filepath).Split('/');

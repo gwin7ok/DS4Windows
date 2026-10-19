@@ -12,6 +12,7 @@ namespace DS4WindowsTests
         public readonly List<uint> MouseButtonEvents = new List<uint>();
         public readonly List<(uint Button, int Type)> MouseButtonAltEvents = new List<(uint, int)>();
         public readonly List<(int X, int Y)> MoveEvents = new List<(int, int)>();
+        public readonly List<uint> KeyPresses = new List<uint>();   // Phase8-Step7-3a: マクロの手順どおりの再生を確かめるために記録する
         public readonly List<uint> KeyReleases = new List<uint>();
         public int SyncCount;
 
@@ -23,8 +24,8 @@ namespace DS4WindowsTests
         public override void PerformMouseButtonEventAlt(uint mouseButton, int type) => MouseButtonAltEvents.Add((mouseButton, type));
         public override void PerformMouseButtonPress(uint mouseButton) { }
         public override void PerformMouseButtonRelease(uint mouseButton) { }
-        public override void PerformKeyPress(uint key) { }
-        public override void PerformKeyPressAlt(uint key) { }
+        public override void PerformKeyPress(uint key) => KeyPresses.Add(key);
+        public override void PerformKeyPressAlt(uint key) => KeyPresses.Add(key);
         public override void PerformKeyRelease(uint key) => KeyReleases.Add(key);
         public override void PerformKeyReleaseAlt(uint key) => KeyReleases.Add(key);
         public override void Sync() => SyncCount++;

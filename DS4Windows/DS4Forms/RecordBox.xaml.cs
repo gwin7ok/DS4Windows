@@ -492,17 +492,6 @@ namespace DS4WinWPF.DS4Forms
             recordBoxVM.EditMacroIndex = -1;
         }
 
-        private void CycleProgPresetMenuItem_Click(object sender, RoutedEventArgs e)
-        {
-            // Reset selected index of macro list before removing item source
-            macroListBox.SelectedIndex = -1;
-
-            macroListBox.ItemsSource = null;
-            recordBoxVM.MacroSteps.Clear();
-            recordBoxVM.WriteCycleProgramsPreset();
-            macroListBox.ItemsSource = recordBoxVM.MacroSteps;
-        }
-
         private void LoadPresetFromFileMenuItem_Click(object sender, RoutedEventArgs e)
         {
             // Reset selected index of macro list before removing item source
