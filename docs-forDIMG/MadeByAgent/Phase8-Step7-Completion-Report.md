@@ -414,3 +414,16 @@ Step7 の 7.6 は、これで 4 種別（GyroCalibrate、DisconnectBT、BatteryC
 - **テスト**: `Phase8Step78fW2ControlsPadTests`。初回に 7 件失敗したが、原因はテストの後始末の不備（共有ストアに Extras を残した）で、製品コードは正しかった。
 - **残る旧経路**: マウス・ホイール・タッチパッドクリック・Toggle（7.8f-2）、アナログのホイール・マウスの移動・ジャイロスワイプ（7.8f-3）。旧経路の Button の枝と `customMapQueue` は Step8 で削除する。
 - **実機確認（Step9。U-45）**: ボタン→ボタン、スティックの向き→ボタン、ボタン→スティック・トリガー、Unbound、スティックの片側だけ割り当てたときの反対側、Extras との併用。
+
+## 7.8f-2 Controls タブの Button（マウスのボタン・タッチパッドクリック・デジタルのホイール・Toggle）（2026-10-20。W0〜W2 完了。ビルド・テスト成功。実機確認は Step9 の U-46）
+
+計画書: `Phase8-Step7-8f-Plan.md` §5.4・§5.5（Q5＝B、Q8［Toggle］＝A。他は推奨）。
+
+- **対象**: Button のうち、マウスのボタン（左・右・中・4・5）、タッチパッドクリック、元がボタンのホイール（デジタル）、Toggle つきの割り当て（出力先がパッドでも）。元がスティック・トリガー・ジャイロのホイール（アナログ）とマウスの移動は、7.8f-3 まで旧経路。
+- **W1**: `Phase8Step78f2W1ControlsMouseCharacterizationTests`（旧・新の両経路。ビルド・テスト成功）。旧経路の Toggle が、押している間、毎フレーム反転することを実測で確認した。
+- **W2**: `IToggleFrameOutput`、`ControlMouseOutputAction`、`ControlTouchpadClickOutputAction`、`ControlToggleOutputAction`、区分 `ButtonMouse`、ビルダーの `TryInterpretMouse`／`TryInterpretPadTarget`／`AddMouse`。ビルド・テスト成功（§5.5）。
+- **承認済みの動作変更**: Toggle は、押している間に毎フレーム反転していた不具合（予測できない動き）を、立ち上がりで 1 回の反転に直した（Q8＝A）。`Commit` は変更なし。
+- **ロールバック**: `ServiceRegistration` の `ButtonMouse` の 1 行を外す。Toggle つきは、出力先の区分と `ButtonMouse` の両方が要る。
+- **テスト**: `Phase8Step78f2W2ControlsMouseTests`。更新: 既定の区分の一覧、`ControlsKeyTestScope`、7.8e／7.8f-1 の旧経路の検査。
+- **残る旧経路**: アナログのホイール、マウスの移動、ジャイロスワイプ（7.8f-3）。旧経路の Button の枝は Step8 で削除する。
+- **実機確認（Step9。U-46）**: マウスのボタン 5 種、タッチパッドクリック、ホイール、Toggle（押すたびに 1 回だけ切り替わる）。
