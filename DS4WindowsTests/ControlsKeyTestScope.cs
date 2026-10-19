@@ -1,0 +1,91 @@
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using DS4Windows;
+using DS4Windows.Actions;
+
+namespace DS4WindowsTests
+{
+    /// <summary>
+    /// Phase8-Step7 7.8b-W1（Phase8-Step7-8b-Plan.md §4）: Controls タブの Key の割り当て（<c>DS4ControlSettings</c>）で <c>Mapping.MapCustom</c> を実走行させる最小のハーネス。
+    /// <see cref="MappingCharacterizationScope"/> の専用デバイス添字に対して、ボタンの割り当てを「キー」に変える（終了時に既定へ戻す）。
+    /// <paramref name="migrated"/> が真なら、<c>BindingMigrationOptions.MigratedControlKinds</c> に Key を足す（終了時に元へ戻す）。W1 の時点では新経路が未実装のため、どちらでも旧経路が処理する
+    /// （W2 で新経路が入ると、同じテストが新経路を走らせる）。
+    /// </summary>
+    public sealed class ControlsKeyTestScope : IDisposable
+    {
+        private readonly MappingCharacterizationScope _inner = new MappingCharacterizationScope();
+        private readonly BindingMigrationOptions _options = TestHost.GetService<BindingMigrationOptions>();
+        private readonly ControlBindingKind[] _savedKinds;
+        private readonly List<DS4Controls> _touched = new List<DS4Controls>();
+
+        public ControlsKeyTestScope(bool migrated)
+        {
+            Migrated = migrated;
+            Mapping = _inner.Mapper as Mapping;
+            if (Mapping == null)
+                throw new InvalidOperationException("IMapping の実体が Mapping ではない");
+
+            _savedKinds = _options.MigratedControlKinds.ToArray();
+            _options.MigratedControlKinds.Clear();
+            if (migrated)
+                _options.MigratedControlKinds.Add(ControlBindingKind.Key);   // Phase8-Step7 7.8b: Controls タブの Key を新経路で処理する（W2 から有効）
+
+            TestHost.GetService<ITriggerDispatchEngine>().OnDeviceDisconnected(Device);
+        }
+
+        public bool Migrated { get; }
+
+        public Mapping Mapping { get; }
+
+        public MappingCharacterizationScope Scope => _inner;
+
+        public int Device => MappingCharacterizationScope.Device;
+
+        /// <summary>ボタンの割り当てを Key にする（通常。シフトなし、Extras なし）。</summary>
+        public DS4ControlSettings MapKey(DS4Controls control, int key, DS4KeyType keyType = DS4KeyType.None, uint alias = 0)
+        {
+            DS4ControlSettings dcs = TestGlobals.Store.GetDS4CSetting(Device, control);
+            dcs.Reset();
+            dcs.actionType = DS4ControlSettings.ActionType.Key;
+            dcs.action.actionKey = key;
+            dcs.action.actionAlias = alias;
+            dcs.keyType = keyType;
+            _touched.Add(control);
+            return dcs;
+        }
+
+        /// <summary>設定の変更の後に呼ぶ。本番の <c>PublishBindings</c> と同じ経路で、束縛を登録簿へ差し替える（W2 から Controls の束縛を含む）。</summary>
+        public void Publish()
+        {
+            var builder = TestHost.GetService<IActionBindingBuilder>();
+            TestHost.GetService<IActionRegistry>().Replace(Device, builder.Build(Device));
+        }
+
+        /// <summary>旧経路が使う合成 SpecialAction（<c>Synthetic_Key_{device}_{control}</c>）。名前で状態を引くため、新経路の識別用 SA と同じ状態を指す。</summary>
+        public SpecialAction SyntheticFor(DS4Controls control, int key, bool toggle = false, bool useScan = false)
+            => Mapping.GetOrCreateSyntheticKeyAction(Device, (int)control, (uint)key, toggle, useScan);
+
+        public DS4State Run(DS4State input) => _inner.RunMapCustom(input);
+
+        public static DS4State Neutral() => MappingCharacterizationScope.NeutralState();
+
+        public bool IsBeingTriggered(SpecialAction sa) => ActionManager.IsBeingTriggered(sa, Device);
+
+        public bool IsToggledOn(SpecialAction sa) => ActionManager.GetStateFor(sa, Device)?.IsToggledOn ?? false;
+
+        public void Dispose()
+        {
+            TestHost.GetService<ITriggerDispatchEngine>().OnDeviceDisconnected(Device);
+            Mapping.ClearSyntheticActionCache();
+
+            foreach (DS4Controls control in _touched)
+                TestGlobals.Store.GetDS4CSetting(Device, control)?.Reset();
+
+            _options.MigratedControlKinds.Clear();
+            foreach (ControlBindingKind kind in _savedKinds) _options.MigratedControlKinds.Add(kind);
+
+            _inner.Dispose();
+        }
+    }
+}

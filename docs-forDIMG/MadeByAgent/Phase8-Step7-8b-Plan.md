@@ -3,7 +3,7 @@
 作成日: 2026-10-20  
 対象ブランチ: `For-DI-migration-work`  
 上位: `Phase8-Step2b-ControlsTab-Design.md`（§3.3 の F、§3.5、§10。Q4＝B［共有をやめる］、Q8＝B［実機確認は Step9］）、`Phase8-Step7-8a-Plan.md`（土台と値渡し化。完了）  
-状態: **Q1〜Q5 を承認済み（全て推奨［A］。2026-10-20 ユーザーが直接承認）。W0（調査）完了。次は W1（特性化）**
+状態: **Q1〜Q5 を承認済み（全て推奨［A］。2026-10-20 ユーザーが直接承認）。W0（調査）完了。W1（特性化）実装済み［ビルド・テストの結果待ち］**
 
 ---
 
@@ -105,6 +105,8 @@ dcs 1 つにつき毎フレーム、次を行う。
   2. **束縛の差し替えの位置**: 差し替えは `ProfileApplicationService.PublishBindings` の 1 か所だけ（`_actionRegistry.Replace(device, _bindingBuilderProvider().Build(device))`）。連結は、`ActionBindingBuilder` が省略可能な依存 `IControlBindingBuilder` を受け取り、`Build(device)` の結果に Controls の束縛を連結して返す形にする（`IActionBindingBuilder` と `ProfileApplicationService` のコンストラクターは変えない。影響が最小）。**Q5＝A の方針（同じ一覧に連結）のまま、実装の位置を確定した**。
   3. **ジャイロの判定**: `IsUsingGyroForControls`（`GyroOutputMode == Controls`）は `TriggerInput` の判定と同じ。違いは閾値のみ（`GetBoolActionMapping` は `gryodirs > 0`／`< 0`、`TriggerInput` は ±67）。Controls 用の判定は、`GetBoolActionMapping` どおり `> 0`／`< 0` を使う（W2 の一致テストで全コントロールを比べる）。
 - **W1（特性化。旧・新の両経路の Theory。新経路の指定でも、W1 の時点では旧経路が処理する）**: テスト足場 `ControlsKeyTestScope`（`SpecialActionTestScope` と同じ方式。dcs を設定して、`MapCustom` の 1 フレームを流す）。内容: 押下・解放（ボタン、スティックの方向、L2／R2）、Toggle、ScanCode、エイリアスのネイティブキー、押していないフレームの通常出力の消去（スティックの方向・トリガーを含む）、押したままのプロファイル適用・切断、シフト／Extras を持つ dcs が旧経路に残ること、ログの比較（NLog の `MemoryTarget`）。**Q4＝B の差のテストは、旧・新で期待値を分けて明示する**。
+- **W1 の実装（2026-10-20）**: `ControlsKeyTestScope`（足場。dcs を Key にする、本番と同じ経路で束縛を登録、合成 SA の状態を引く、`migrated` で `MigratedControlKinds` に Key を足す）と `Phase8Step78bW1ControlsKeyCharacterizationTests`（旧・新の Theory。押下・解放、Toggle［オンになり、離しても保たれる］、スティックの扇形の判定［幅 28 の傾きで押下］、押していない軸の出力の消去、L2 が 1 で押下、未設定のボタンは素通し、シフト付きの割り当て、同じ論理キーの Key 特殊アクションとの状態の共有［旧経路の癖。W2 で新経路の期待値を「共有しない」に切り替える］、押したままの適用・切断の記録）。ログの比較と、キー送出の記録（リピーターの有無で安定しない）は W2 で扱う。押したままの適用・切断は、結果を `ITestOutputHelper` に出力する（期待値は結果を見て W2 で確定する）。
+- **W1 の最初の結果と是正（2026-10-20）**: 9 件中 2 件が失敗（旧経路の挙動の読み違い）。(1) 「押していない軸の出力の消去」: LXNeg を割り当て、右へ倒した（LX＝220）とき、出力は 128 ではなく **220 のまま**だった。反対の方向（LXPos）は未設定（Default）で、その出力が `customMapQueue` で素通しされるため。軸の消去が値として見えるのは、反対の方向を含まない傾きのときに限られる。テストは「反対の方向は、その割り当てに任せる（220 のまま）」に改めた。消去の規則（`ErasesOutputEveryFrame`）自体は、エンジンへ引き継ぐ方針のまま。(2) Toggle の `IsToggledOn`: 押した後も偽だった（出力先のスタブでは、リピーターの有無で結果が分かれると推測。原因は未確認）。テストは、押下のディスパッチ（`BeingTriggered`）を固定し、`IsToggledOn` は値を記録するだけにした。W2 で旧・新の値が一致することを比べる。
 - **W2（実装）**: §3.2 のとおり。
 - **W3（割り当てとロールバック）**: 押している間／押していない間の割り当て（SA の基準と同じ、同数の未押下を基準にする方式）、`MigratedControlKinds` から `Key` を外すと旧経路に戻ること、ソースのガード（`Mapping` の呼び出しが 1 か所、1 ファイル 1 型）。
 - **W4**: 完了報告書、`Phase8-Status.md`、チェックリスト（Step9 の総合確認の項目に、Controls の Key を追加）の更新。**実機確認は作らない（Q8＝B）**。
