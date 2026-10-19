@@ -3,7 +3,7 @@
 作成日: 2026-10-20  
 対象ブランチ: `For-DI-migration-work`  
 上位: `Phase8-Step7-Plan.md`（§4 の 7.7）、`Phase8-Step7-6-Plan.md`（進め方）、`Phase8-Step2-Design.md`（§4 の `MultiTapInputAction`、§24）、`Phase8-Step2-Intent-Decisions.md`（項目 7）、`Phase8-Step1-Trigger-Spec-Ledger.md`（XboxGameDVR／MultiAction）  
-状態: **ユーザーの決定を反映済み（2026-10-20）: Q1＝A（XboxGameDVR は機能削除を前提）、Q2＝B（MultiAction を独立した入力アクションにする）、Q3〜Q7＝推奨（A）。7.7a（XboxGameDVR の削除）の実装済み［ビルド・テストの結果待ち］。7.7b（MultiAction）は 7.7a の後**
+状態: **ユーザーの決定を反映済み（2026-10-20）: Q1＝A（XboxGameDVR は機能削除を前提）、Q2＝B（MultiAction を独立した入力アクションにする）、Q3〜Q7＝推奨（A）。7.7a（XboxGameDVR の削除）はビルド・テスト成功。7.7b（MultiAction）は W1 成功、W2（初版）実装済み［ビルド・テストの結果待ち］。ユーザーの設計見直し（ジェスチャーから出力への対応を変換層に置く）を W2b として追加［§3.3。Q8・Q9 の承認待ち］**
 
 ---
 
@@ -53,7 +53,7 @@ MultiAction は、他の種別と**構造が違う**。「トリガーが成立�
 - テスト: 新規 — 列挙に `XboxGameDVR` がないこと、`Type` が `XboxGameDVR` の項目を作っても例外にならず、種別が `None` になること、MultiAction の旧経路の動き（`details` の文字列がそのままマクロになる）が変わらないこと。既存の更新 — `Phase8Step7W3ButtonSwitchTests`。
 - 実機確認は要らない（新しく作れず、動いていない機能の削除のため）。
 
-**実装（2026-10-20）**: `SpecialAction.cs`（列挙の値と構築の分岐を削除。古い項目は種別が不明の項目になる）、`Mapping.cs`（`XboxGameDVR` の条件と、整数からマクロへの置き換え［3 か所の `switch`］、未使用の変数を削除。MultiAction の枝は `details` の 3 つの文字列をそのままマクロにする）、`ActionBindingBuilder.cs` のコメント、`Phase8Step7W3ButtonSwitchTests` の更新、新規 `Phase8Step77aXboxGameDvrRemovalTests`（列挙にない、古い項目が例外にならず `None` になる、MultiAction の `details` が保たれる、ソースに残っていない）。ビルド・テストの結果待ち。
+**実装（2026-10-20）**: `SpecialAction.cs`（列挙の値と構築の分岐を削除。古い項目は種別が不明の項目になる）、`Mapping.cs`（`XboxGameDVR` の条件と、整数からマクロへの置き換え［3 か所の `switch`］、未使用の変数を削除。MultiAction の枝は `details` の 3 つの文字列をそのままマクロにする）、`ActionBindingBuilder.cs` のコメント、`Phase8Step7W3ButtonSwitchTests` の更新、新規 `Phase8Step77aXboxGameDvrRemovalTests`（列挙にない、古い項目が例外にならず `None` になる、MultiAction の `details` が保たれる、ソースに残っていない）。ビルド・テスト成功（2026-10-20）。
 
 ### 3.2 7.7b MultiAction の移行（Q2＝B: 独立した入力アクション）
 
@@ -67,12 +67,35 @@ MultiAction は、他の種別と**構造が違う**。「トリガーが成立�
 - **ビルダー**: `MultiAction` の束縛。窓口（プレーヤー）がなければ作らない。
 - **旧経路との違い**: 時刻を入力（`ITriggerInput.UtcNow`。本番は `DateTime.UtcNow`）から取る点、状態が `SpecialAction` のフィールドではなくインスタンスにある点。`details` の足りない部分は、旧経路は例外になるが、新経路は空として扱う。
 
+### 3.3 設計の見直し（2026-10-20。ユーザーの提案）: 「どのジェスチャーで何をするか」の決定は、信号変換層に置く
+
+**背景**: W2（初版）の `MultiActionOutput` は、ジェスチャー（タップ／長押し／ダブルタップ）に対応するマクロの文字列を、出力アクションの中で選んでいる（`details` を「,」で分けた3つの中から選ぶ）。ユーザーから、「どのアクションを行うかの決定は、出力層ではなく信号変換層が担当し、決めたうえで出力層へ渡す形がよい」との提案があった。妥当と判断する。
+
+**層の対応（改訂後）**
+
+| 層 | この機能での担当 |
+|---|---|
+| 1. 入力監視層 | 押下状態、前フレーム、時計（`DS4Device`、`DS4State`、`ITriggerInput`: `IsActive`／`WasActive`／`UtcNow`）。解釈しない |
+| 2. 信号変換層 | トリガーの AND と遅延（`ComboTriggerInputAction`）、エッジと時間によるジェスチャーの判定（`MultiTapInputAction`、状態もここ）、**ジェスチャーから「どの出力を実行するか」への対応（束縛の構成。ビルダーが決める）**、エンジンによる出力の選択・ガード・抑制 |
+| 3. 信号・アクション出力層 | 渡された命令の実行だけ: 「このマクロの文字列を再生する」（ログ、`IMacroStringPlayer`、`Mapping.PlayMacro`、キー送出） |
+
+**改訂後の設計（W2 初版との差分）**
+
+- **ビルダー（変換層側）**: `details` を「,」で分けた3つ（足りなければ空）から、**ジェスチャーごとの出力を3つ**（タップ、長押し、ダブルタップの順）作って束縛の `Outputs` に持たせる。対応は、ここで決まる。
+- **汎用の出力 `MacroStringAction`（新設。`MultiActionOutput` の置き換え）**: 1つのマクロの文字列を持ち、実行されたとき、空でなければ Trace 4 行（旧 `LogSpecialActionTrace`）→ `IMacroStringPlayer.PlayMacroString(device, macro)`。ジェスチャーも `details` の構造も知らない（MultiAction 専用でなくなる）。
+- **`BindingPolicy` に項目を追加**（既定は偽）: 「出力をジェスチャーで選ぶ」。真のとき、エンジンは、(1) 通常の立ち上がり・保持・離したときの出力の実行をしない（抑制とトリガーの出力の消去は、今までどおり行う）。(2) `Gesture` が0でないフレームだけ、`Outputs[Gesture − 1]` を実行する。ガード（Fresh-press、実行中）と `BeingTriggered` の対象外であることは、W2 初版と同じ。
+- **削除するもの**: `IGestureOutputAction`、`MultiActionOutput`。エンジンの `is IGestureOutputAction` のループは、上の「出力の選択」に置き換わる。
+- **名前の整理**: マクロの文字列を再生する窓口は、MultiAction 専用でなくなるため、`IMultiActionMacroPlayer` → `IMacroStringPlayer`、`DefaultMultiActionMacroPlayer` → `DefaultMacroStringPlayer` に改名する（Q8 に含む）。
+- **変わらないもの**: `MultiTapInputAction`（判定と状態）、`TriggerState.Gesture`、旧ループの位置で動くこと、旧経路との動作の差（W1 の期待値、ログ、時刻の取り方）、`Mapping` の窓口の実装（`PlayMacroString`）、既定の一覧の 1 行。
+- **旧経路との動作の差は増えない**。出力が汎用になるだけで、再生されるマクロと、ログの文言・順序は同じ。
+
 ## 4. 作業
 
 - **7.7a**: W1 削除と、テスト（上記）。ビルド・テスト。
 - **7.7b**
-  - **W1（特性化）**: `SpecialActionTestScope` に MultiAction。旧経路を、`PlayMacro` の記録（`Mapping` の窓口の差し替え）と、入力の時刻の差し込みで固定する: タップ（遅延後に 1 つ目）、長押し、ダブルタップ、間隔と `DebouncingMs`、マクロが空のとき、トリガーの抑制・出力の消去、前の特殊アクションの `return` のフレームでの見逃し。時刻の足場が足りなければ追加する。
-  - **W2（実装）**: 上記の新設と変更、既定の一覧の 1 行。旧・新の両経路で、W1 の期待値を変えずに成功。ログの一致。
+  - **W1（特性化。2026-10-20 実装済み、ビルド・テストの結果待ち）**: `Phase8Step77bW1MultiActionDualPathTests`（新設）と `TestDs4Device`（テスト用のデバイス。前回のレポートだけを返す）。旧経路は `d.getPreviousStateRef()` を使うため、スロットにテスト用のデバイスを置く。時刻は旧経路が `DateTime.UtcNow` を使うため、実際に待つ（待ち時間に余裕を持たせる。全体で約 10 秒）。内容: タップ［離した直後は実行しない、間隔後に 1 つ目を 1 回だけ］、長押し［2 つ目を 1 回。離してもタップは実行しない］、ダブルタップ［3 つ目のみ］、空のマクロ、`DebouncingMs`（200 で、タップの間隔が 350ms になる）、Fresh-press ガードを見ない、押している間トリガーの出力が消える、前の特殊アクション［Profile の切替］のフレームの打ち切りで押下を見逃す。旧・新の両経路（W1 の時点では、新経路の指定でも旧経路が処理する）。計画: `SpecialActionTestScope` に MultiAction。旧経路を、`PlayMacro` の記録（`Mapping` の窓口の差し替え）と、入力の時刻の差し込みで固定する: タップ（遅延後に 1 つ目）、長押し、ダブルタップ、間隔と `DebouncingMs`、マクロが空のとき、トリガーの抑制・出力の消去、前の特殊アクションの `return` のフレームでの見逃し。時刻の足場が足りなければ追加する。
+  - **W1 は成功（ビルド・テスト。2026-10-20）。W2（実装済み、ビルド・テストの結果待ち）**: 新設 — `IGestureOutputAction`、`MultiTapInputAction`（`ComboTriggerInputAction` を中に持ち、`trigger[0]` のエッジと時刻と `DebouncingMs` から旧経路と同じ状態機械を動かし `Gesture` を返す）、`MultiActionOutput`、`IMultiActionMacroPlayer`、`DefaultMultiActionMacroPlayer`（`Func<IMapping>` から `Mapping` へ委譲）。変更 — `TriggerDispatchEngine.ProcessBinding`（`Evaluate` の直後に、`Gesture` が 0 でなければ出力の `OnGesture` を呼ぶ。ガード・成立・`BeingTriggered` によらない）、`Mapping`（`IMultiActionMacroPlayer.PlayMacroString` を実装。`IMapping` は 10 メンバーのまま）、`ActionBindingBuilder`（MultiAction の束縛。`respectsFreshPressGuard: false`、`stopOnRelease: false`）、`ServiceRegistration`（窓口の登録、既定の一覧に MultiAction の 1 行）。テスト: `Phase8Step77bW2MultiTapTests`（偽の入力［時刻と押下を差し込める］での状態機械、出力、ビルダー、ロールバック、窓口、旧・新のログの一致、割り当て）。計画: 上記の新設と変更、既定の一覧の 1 行。旧・新の両経路で、W1 の期待値を変えずに成功。ログの一致。
+  - **W2b（設計の見直し。§3.3。Q8・Q9 の承認後）**: 上記のとおり、`BindingPolicy` の項目の追加、エンジンの出力の選択、`MacroStringAction` の新設、`IGestureOutputAction`／`MultiActionOutput` の削除、窓口の改名、ビルダーの変更（3つの出力）。テストの更新: `Phase8Step77bW2MultiTapTests` の出力・ビルダー・窓口の部分（出力の選択のテスト、ビルダーが3つの出力を作るテスト、空のマクロの出力の扱い、`BindingPolicy` の既定値の確認）。W1 と、`MultiTapInputAction` の状態機械のテスト、旧・新のログの一致、割り当てのテストは、期待値を変えずに成功すること。
   - **W3**: ロールバック、割り当て（新 ≦ 旧）。
   - **W4**: 実機確認 U-39（PS 単押しで地図など）。報告書。
 
@@ -85,6 +108,12 @@ MultiAction は、他の種別と**構造が違う**。「トリガーが成立�
 - **Q5（ログ）**: A（推奨）。旧経路と同じ（マクロを実行する直前の Trace 4 行。Debug なし）。
 - **Q6（時間）**: A（推奨）。150ms／500ms ＋ `DebouncingMs` を、旧経路どおり。
 - **Q7（実機確認）**: A（推奨）。既存の MultiAction で、ユーザーが確認する。機材がなければ先送りの記録。
+- **Q8（ジェスチャーから出力への対応の置き場。ユーザーの提案）**: A（推奨）: 変換層（ビルダーが作る束縛）に置き、出力層は汎用の「マクロの文字列を再生する」出力だけにする（§3.3）。窓口と実装の名前も汎用にする。B: W2 初版のまま（`MultiActionOutput` が、ジェスチャーに対応するマクロを選ぶ）。
+- **Q9（W2b を入れる時期）**: A（推奨）: W2（初版）はまだビルド・テストの結果が出ておらず、コミットもされていないため、**W2b を先に適用して**から、1 回のビルド・テストで確認する（作り直しの往復が減る）。B: W2（初版）のビルド・テストの結果を見てから、W2b を別の波として適用する（初版の成否と、見直しの成否を、切り分けられる）。
+
+### W2 の最初の結果と是正（2026-10-20）
+
+W2 のビルド・テストで、W1 の新経路（`InlineData(true)`）の 5 件と、旧・新のログの比べの 1 件が失敗した（新経路でマクロが実行されない）。原因: `Mapping.MapCustom` が `TriggerInput.Update` に**前フレームの状態を `null` で渡していた**（Step4 の配線。それまで `WasActive` を使う種別がなかった）ため、MultiAction の押下・解放のエッジが見えなかった。是正: `Mapping.MapCustom` が、デバイスの前回のレポート（`ctrl.DS4Controllers[device]?.getPreviousStateRef()`。旧経路と同じ）を渡す。前フレームの表は `WasActive` が最初に呼ばれたときにだけ作る（遅延）ため、MultiAction がなければ費用は増えない。デバイスがなければ `null`（従来どおり）。
 
 ## 6. リスクと対応
 
@@ -93,11 +122,15 @@ MultiAction は、他の種別と**構造が違う**。「トリガーが成立�
 - **`delayTime` との関係**: `ComboTriggerInputAction` が持つ `delayTime`（基準時刻の更新）を、旧経路と同じ回数だけ評価する（1 フレーム 1 回）。
 - **エンジンの変更**: 既存の種別に影響しない（`Gesture` が 0 のとき何もしない）。割り当て 0 を保つ。
 - **ロールバック**: 7.7b は `ServiceRegistration` の MultiAction の 1 行を外す。7.7a の削除は、コミットを戻す。
+- **W2b の影響範囲**: `BindingPolicy`（項目の追加。既存の種別は既定の偽で、動きが変わらない）、エンジン（出力の選択。`Gesture` が0のとき、および項目が偽のとき、何もしない）、`MultiAction` の束縛だけ。`Phase8Step4W1ContractTests` などの、`BindingPolicy` の形を確認するテストの更新が要る可能性がある。
+- **空のマクロ**: ジェスチャーに対応するマクロが空でも、出力は3つそろえて作る（添字を固定するため）。`MacroStringAction` が、空のとき何もしない。
+- **出力の選択の添字**: `Gesture − 1` が `Outputs` の範囲外なら、何もしない（旧経路の「足りない部分は空」と同じ扱い）。
 
 ## 7. 完了条件
 
 - [ ] 7.7a: ビルド・テストが成功（ユーザーが実行）。全テスト・ラチェットの一致検査・1 ファイル 1 型のガードが成功。
 - [ ] 7.7b: W1〜W3 のビルド・テストが成功。旧・新の両経路で、タップ・長押し・ダブルタップの期待値が一致。`IMapping` が 10 メンバーのまま。割り当て（新 ≦ 旧）。ロールバックのテストが成功。
+- [ ] 設計の見直し（W2b。Q8・Q9）が反映され、`IGestureOutputAction`／`MultiActionOutput` がなくなっていること（Q8＝A の場合）。
 - [ ] 実機確認 U-39 が合格（または先送りの記録）。
 - [ ] `Phase8-Step7-Completion-Report.md`、`Phase8-Status.md`、チェックリストの更新。
 

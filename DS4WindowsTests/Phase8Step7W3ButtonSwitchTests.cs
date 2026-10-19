@@ -17,12 +17,12 @@ namespace DS4WindowsTests
     public class Phase8Step7W3ButtonSwitchTests
     {
         [Fact]
-        public void TheHostDefault_MigratesAllTheTypesOfStep7ExceptMultiAction()
+        public void TheHostDefault_MigratesAllTheTypesOfStep7()
         {
             var options = TestHost.GetService<BindingMigrationOptions>();
 
-            // Phase8-Step7: PR ごとに 1 種別ずつ足す（7.1 Button、7.2 Key、7.3 Macro、7.4 Program、7.5a Profile、7.6a GyroCalibrate、7.6b DisconnectBT、7.6c BatteryCheck、7.6d ステアリング較正）
-            Assert.Equal(new[] { SpecialAction.ActionTypeId.BatteryCheck, SpecialAction.ActionTypeId.Button, SpecialAction.ActionTypeId.DisconnectBT, SpecialAction.ActionTypeId.GyroCalibrate, SpecialAction.ActionTypeId.Key, SpecialAction.ActionTypeId.Macro, SpecialAction.ActionTypeId.Profile, SpecialAction.ActionTypeId.Program, SpecialAction.ActionTypeId.SASteeringWheelEmulationCalibrate }, options.MigratedTypes.OrderBy(t => t.ToString(), StringComparer.Ordinal).ToArray());
+            // Phase8-Step7: PR ごとに 1 種別ずつ足す（7.1 Button、7.2 Key、7.3 Macro、7.4 Program、7.5a Profile、7.6a GyroCalibrate、7.6b DisconnectBT、7.6c BatteryCheck、7.6d ステアリング較正、7.7b MultiAction）
+            Assert.Equal(new[] { SpecialAction.ActionTypeId.BatteryCheck, SpecialAction.ActionTypeId.Button, SpecialAction.ActionTypeId.DisconnectBT, SpecialAction.ActionTypeId.GyroCalibrate, SpecialAction.ActionTypeId.Key, SpecialAction.ActionTypeId.Macro, SpecialAction.ActionTypeId.MultiAction, SpecialAction.ActionTypeId.Profile, SpecialAction.ActionTypeId.Program, SpecialAction.ActionTypeId.SASteeringWheelEmulationCalibrate }, options.MigratedTypes.OrderBy(t => t.ToString(), StringComparer.Ordinal).ToArray());
             Assert.True(options.IsMigrated(SpecialAction.ActionTypeId.Button));
             Assert.True(options.IsMigrated(SpecialAction.ActionTypeId.Key));
             Assert.True(options.IsMigrated(SpecialAction.ActionTypeId.Macro));
@@ -32,7 +32,8 @@ namespace DS4WindowsTests
             Assert.True(options.IsMigrated(SpecialAction.ActionTypeId.DisconnectBT));
             Assert.True(options.IsMigrated(SpecialAction.ActionTypeId.BatteryCheck));
             Assert.True(options.IsMigrated(SpecialAction.ActionTypeId.SASteeringWheelEmulationCalibrate));
-            Assert.False(options.IsMigrated(SpecialAction.ActionTypeId.MultiAction));
+            Assert.True(options.IsMigrated(SpecialAction.ActionTypeId.MultiAction));
+            Assert.False(options.IsMigrated(SpecialAction.ActionTypeId.None));
         }
 
         [Fact]
@@ -45,7 +46,7 @@ namespace DS4WindowsTests
                 .Where(l => l.Contains("migration.MigratedTypes.Add(")).ToArray();
 
             // 種別ごとの PR で 1 行ずつ足す。ロールバックは、その行を外すだけ（Q2＝A）
-            Assert.Equal(9, lines.Length);
+            Assert.Equal(10, lines.Length);
             Assert.Matches(new Regex(@"MigratedTypes\.Add\(SpecialAction\.ActionTypeId\.Button\);"), lines[0]);
             Assert.Matches(new Regex(@"MigratedTypes\.Add\(SpecialAction\.ActionTypeId\.Key\);"), lines[1]);
             Assert.Matches(new Regex(@"MigratedTypes\.Add\(SpecialAction\.ActionTypeId\.Macro\);"), lines[2]);
@@ -54,7 +55,8 @@ namespace DS4WindowsTests
             Assert.Matches(new Regex(@"MigratedTypes\.Add\(SpecialAction\.ActionTypeId\.DisconnectBT\);"), lines[5]);
             Assert.Matches(new Regex(@"MigratedTypes\.Add\(SpecialAction\.ActionTypeId\.BatteryCheck\);"), lines[6]);
             Assert.Matches(new Regex(@"MigratedTypes\.Add\(SpecialAction\.ActionTypeId\.SASteeringWheelEmulationCalibrate\);"), lines[7]);
-            Assert.Matches(new Regex(@"MigratedTypes\.Add\(SpecialAction\.ActionTypeId\.Profile\);"), lines[8]);
+            Assert.Matches(new Regex(@"MigratedTypes\.Add\(SpecialAction\.ActionTypeId\.MultiAction\);"), lines[8]);
+            Assert.Matches(new Regex(@"MigratedTypes\.Add\(SpecialAction\.ActionTypeId\.Profile\);"), lines[9]);
         }
 
         [Fact]

@@ -357,6 +357,23 @@ namespace DS4Windows.Actions
 
                 UpdateFreshPressTimer(state, established, input.TickCount64);
 
+                // ジェスチャー（Phase8-Step7 7.7b。MultiAction のタップ・長押し・ダブルタップ）: ガード・成立の判定・BeingTriggered によらず、出力へ渡す。
+                // 通常の出力の処理（以降）とは独立（旧経路の MultiAction は、ガードを見ず、BeingTriggered を使わない）。Gesture が 0 のときは何もしない
+                if (result.Gesture != TriggerState.NoGesture)
+                {
+                    EngineContext gestureContext = rt.Context;
+                    gestureContext.Begin(frame, input);
+                    IReadOnlyList<IOutputAction> gestureOutputs = binding.Outputs;
+                    for (int o = 0; o < gestureOutputs.Count; o++)
+                    {
+                        if (gestureOutputs[o] is IGestureOutputAction gestureOutput)
+                        {
+                            try { gestureOutput.OnGesture(gestureContext, result.Gesture); }
+                            catch (Exception ex) { LogException(ex); }
+                        }
+                    }
+                }
+
                 if (established)
                 {
                     IReadOnlyList<DS4Controls> triggers = inputAction.Triggers;

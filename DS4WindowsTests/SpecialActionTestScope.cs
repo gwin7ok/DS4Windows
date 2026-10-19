@@ -73,6 +73,7 @@ namespace DS4WindowsTests
                 _options.MigratedTypes.Add(SpecialAction.ActionTypeId.DisconnectBT); // Phase8-Step7 7.6b-W1: DisconnectBT も新経路で処理する
                 _options.MigratedTypes.Add(SpecialAction.ActionTypeId.BatteryCheck); // Phase8-Step7 7.6c-W1: BatteryCheck も新経路で処理する
                 _options.MigratedTypes.Add(SpecialAction.ActionTypeId.SASteeringWheelEmulationCalibrate); // Phase8-Step7 7.6d-W1: ステアリング較正も新経路で処理する
+                _options.MigratedTypes.Add(SpecialAction.ActionTypeId.MultiAction); // Phase8-Step7 7.7b-W2: MultiAction も新経路で処理する
                 _options.MigratedTypes.Add(SpecialAction.ActionTypeId.Profile); // Phase8-Step7 7.5a-W1: Profile も新経路で処理する（復帰つきの Profile は、7.5a の W2 でビルダーが束縛を作らない形にする）
             }
 

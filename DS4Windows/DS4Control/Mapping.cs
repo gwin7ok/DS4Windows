@@ -42,7 +42,7 @@ using ThreadState = System.Threading.ThreadState;
 
 namespace DS4Windows
 {
-    public class Mapping : DS4Windows.DI.IMapping
+    public class Mapping : DS4Windows.DI.IMapping, DS4Windows.Actions.IMultiActionMacroPlayer
     {
         // ==========================================
         // 【修正後】
@@ -2295,7 +2295,11 @@ namespace DS4Windows
             DS4StateFieldMapping outputfieldMapping = outputFieldMappings[device];
             outputfieldMapping.PopulateFieldMapping(cState, eState, tp);
             // Phase8-Step4 W4: トリガー判定の入力と、フレームの出力の書き込み口を、このフレームの表に合わせる（割り当て 0）
-            _triggerInputs[device].Update(cState, null, eState, tp, fieldMapping);
+            // Phase8-Step7 7.7b: 前フレームの状態（MultiAction のエッジ判定用）は、デバイスの前回のレポート（旧経路の getPreviousStateRef と同じ）を渡す。
+            // 前フレームの表は、WasActive が最初に呼ばれたときにだけ作る（遅延）ため、MultiAction がなければ費用は増えない。デバイスがなければ null（従来どおり）
+            DS4State previousState = null;
+            try { previousState = ctrl?.DS4Controllers[device]?.getPreviousStateRef(); } catch { }
+            _triggerInputs[device].Update(cState, previousState, eState, tp, fieldMapping);
             _frameOutputs[device].Bind(outputfieldMapping, this.deviceState[device]);
             //DS4StateFieldMapping fieldMapping = new DS4StateFieldMapping(cState, eState, tp);
             //DS4StateFieldMapping outputfieldMapping = new DS4StateFieldMapping(cState, eState, tp);
@@ -5395,6 +5399,16 @@ namespace DS4Windows
             // Phase6-Step9b-3（F05）: 4 スロット固定だと、拡張スロット数が 8 のときデバイス 4〜7 のマクロが再生されなかった。
             if (device < 0 || device >= ControllerLimits.MaxControllerCount || action == null) return;
             PlayMacro(device, new bool[4], String.Empty, action.macro, null, DS4Controls.None, action.keyType, action, null);
+        }
+
+        /// <summary>
+        /// Phase8-Step7 7.7b（Q4＝A）: MultiAction の新経路（<c>MultiActionOutput</c>）用。マクロを文字列で直接指定して実行する
+        /// （旧 <c>MapCustomAction</c> の MultiAction の枝と同じ呼び出し）。<c>IMapping</c> のメンバーではない（<c>DefaultMultiActionMacroPlayer</c> が委譲する）。
+        /// </summary>
+        public void PlayMacroString(int device, string macro)
+        {
+            if (device < 0 || device >= ControllerLimits.MaxControllerCount || string.IsNullOrEmpty(macro)) return;
+            PlayMacro(device, macroControl, macro, null, null, DS4Controls.None, DS4KeyType.None);
         }
 
         /// <summary>
