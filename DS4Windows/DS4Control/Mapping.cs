@@ -789,11 +789,6 @@ namespace DS4Windows
         private static int macroEndIndex = DS4_CONTROL_MACRO_ARRAY_LEN - 1;
 #pragma warning restore CS0414
 
-        // Special macros
-        bool altTabDone = true;
-        DateTime altTabNow = DateTime.UtcNow,
-            oldAltTabNow = DateTime.UtcNow - TimeSpan.FromSeconds(1);
-
         // Mouse
         public int mcounter = 34;
         public int mouseaccel = 0;
@@ -4727,11 +4722,6 @@ namespace DS4Windows
                                             PlayMacro(device, macroControl, String.Empty, action.macro, null, DS4Controls.None, keyType, action, null);
                                         }
                                     }
-                                    else
-                                    {
-                                        if (!action.keyType.HasFlag(DS4KeyType.RepeatMacro))
-                                            EndMacro(device, macroControl, action.macro, DS4Controls.None);
-                                    }
                                 }
                                 else
                                 {
@@ -5548,27 +5538,9 @@ namespace DS4Windows
             {
                 try { AppLogger.LogTrace($"PlayMacroTask START: action={action?.name} device={device} IsMacroRunning={(actionDoneState != null ? actionDoneState.IsMacroRunning : false)} IsBeingTriggered={(action != null ? ActionManager.IsBeingTriggered(action, device) : false)} keyType={keyType}"); } catch { }
 
-                // macro.StartsWith("164/9/9/164") || macro.StartsWith("18/9/9/18")
-                if ((macroLst != null && macroLst.Count >= 4 && ((macroLst[0] == 164 && macroLst[1] == 9 && macroLst[2] == 9 && macroLst[3] == 164) || (macroLst[0] == 18 && macroLst[1] == 9 && macroLst[2] == 9 && macroLst[3] == 18)))
-                  || (macroArr != null && macroArr.Length >= 4 && ((macroArr[0] == 164 && macroArr[1] == 9 && macroArr[2] == 9 && macroArr[3] == 164) || (macroArr[0] == 18 && macroArr[1] == 9 && macroArr[2] == 9 && macroArr[3] == 18)))
-                )
-                {
-                    int wait;
-                    if (macroLst != null)
-                        wait = macroLst[macroLst.Count - 1];
-                    else
-                        wait = macroArr[macroArr.Length - 1];
-
-                    if (wait <= 300 || wait > ushort.MaxValue)
-                        wait = 1000;
-                    else
-                        wait -= 300;
-
-                    AltTabSwapping(wait, device);
-                    if (control != DS4Controls.None)
-                        macrodone[DS4ControltoInt(control)] = true;
-                }
-                else if (control == DS4Controls.None || !macrodone[DS4ControltoInt(control)])
+                // Phase8-Step7-3a（機能廃止。ユーザー承認済み）: Alt-Tab の並び（Alt 押す・Tab 押す・Tab 離す・Alt 離す）で始まるマクロの特別扱いを廃止した。
+                // この並びのマクロも、他のマクロと同じく、手順どおりに再生する（Phase8-Step7-3a-AltTab-Removal-Plan.md）。
+                if (control == DS4Controls.None || !macrodone[DS4ControltoInt(control)])
                 {
                     int macroCodeValue;
                     bool[] keydown = new bool[512];
@@ -5920,69 +5892,20 @@ namespace DS4Windows
 
         private void EndMacro(int device, bool[] macrocontrol, string macro, DS4Controls control)
         {
-            if ((macro.StartsWith("164/9/9/164") || macro.StartsWith("18/9/9/18")) && !altTabDone)
-                AltTabSwappingRelease();
-
             if (control != DS4Controls.None)
                 macrodone[DS4ControltoInt(control)] = false;
         }
 
         private void EndMacro(int device, bool[] macrocontrol, List<int> macro, DS4Controls control)
         {
-            if (macro.Count >= 4 && ((macro[0] == 164 && macro[1] == 9 && macro[2] == 9 && macro[3] == 164) || (macro[0] == 18 && macro[1] == 9 && macro[2] == 9 && macro[3] == 18)) && !altTabDone)
-                AltTabSwappingRelease();
-
             if (control != DS4Controls.None)
                 macrodone[DS4ControltoInt(control)] = false;
         }
 
         private void EndMacro(int device, bool[] macrocontrol, int[] macro, DS4Controls control)
         {
-            if (macro.Length >= 4 && ((macro[0] == 164 && macro[1] == 9 && macro[2] == 9 && macro[3] == 164) || (macro[0] == 18 && macro[1] == 9 && macro[2] == 9 && macro[3] == 18)) && !altTabDone)
-                AltTabSwappingRelease();
-
             if (control != DS4Controls.None)
                 macrodone[DS4ControltoInt(control)] = false;
-        }
-
-        private void AltTabSwapping(int wait, int device)
-        {
-            // Phase6-Step3-6c（決定P2）: 非同期マクロ経路（別スレッド、ctrl を持たない連鎖）のため、Mapping が保持する profileSettings から読む。
-            // Phase7-Step8 W2 で instance 化（コンストラクター注入）済み。この経路も instance の profileSettings を読む（Phase7c W3 でコメントを訂正）。
-            if (altTabDone)
-            {
-                altTabDone = false;
-                AppLogger.LogDebug($"EVENT SENT [INLINE] device={device} event=AltTab KeyPress TAB");
-                VirtualKBM.PerformKeyPress(profileSettings.OutputKBMMapping.KEY_TAB);
-            }
-            else
-            {
-                altTabNow = DateTime.UtcNow;
-                if (altTabNow >= oldAltTabNow + TimeSpan.FromMilliseconds(wait))
-                {
-                    oldAltTabNow = altTabNow;
-                    AppLogger.LogDebug($"EVENT SENT [INLINE] device={device} event=AltTab KeyPress TAB");
-                    VirtualKBM.PerformKeyPress(profileSettings.OutputKBMMapping.KEY_TAB);
-                    AppLogger.LogDebug($"EVENT SENT [INLINE] device={device} event=AltTab KeyRelease TAB");
-                    VirtualKBM.PerformKeyRelease(profileSettings.OutputKBMMapping.KEY_TAB);
-                }
-            }
-        }
-
-        private void AltTabSwappingRelease()
-        {
-            // Phase6-Step3-6c（決定P2）: 非同期マクロ経路（別スレッド、ctrl を持たない連鎖）のため、Mapping が保持する profileSettings から読む。
-            // Phase7-Step8 W2 で instance 化（コンストラクター注入）済み。この経路も instance の profileSettings を読む（Phase7c W3 でコメントを訂正）。
-            if (altTabNow < DateTime.UtcNow - TimeSpan.FromMilliseconds(10)) //in case multiple controls are mapped to alt+tab
-            {
-                altTabDone = true;
-                AppLogger.LogDebug($"EVENT SENT [INLINE] event=AltTab KeyRelease TAB");
-                VirtualKBM.PerformKeyRelease(profileSettings.OutputKBMMapping.KEY_TAB);
-                AppLogger.LogDebug($"EVENT SENT [INLINE] event=AltTab KeyRelease LALT");
-                VirtualKBM.PerformKeyRelease(profileSettings.OutputKBMMapping.KEY_LALT);
-                altTabNow = DateTime.UtcNow;
-                oldAltTabNow = DateTime.UtcNow - TimeSpan.FromDays(1);
-            }
         }
 
         private void GetMouseWheelMapping(int device, DS4Controls control, DS4State cState,

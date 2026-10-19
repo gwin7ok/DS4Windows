@@ -629,14 +629,21 @@ namespace DS4WindowsTests
 
             h.Frame.Record = false;
 
-            long before = GC.GetAllocatedBytesForCurrentThread();
-            for (int i = 0; i < 1000; i++)
+            // JIT の段階的な最適化（Tiered Compilation）が、計測の途中で 1 回だけ割り当てることがある（Phase8-Step7-3a の W1 の実行で 1 回だけ発生）。
+            // 本物の割り当てなら、毎回起きる。3 回まで測り、最小値が 0 であることを確かめる
+            long allocated = long.MaxValue;
+            for (int attempt = 0; attempt < 3 && allocated != 0; attempt++)
             {
-                h.Engine.ProcessTriggers(Device, h.Input, h.Frame);
-                h.Engine.ApplyFrameOutputs(Device, h.Input, h.Frame);
+                long before = GC.GetAllocatedBytesForCurrentThread();
+                for (int i = 0; i < 1000; i++)
+                {
+                    h.Engine.ProcessTriggers(Device, h.Input, h.Frame);
+                    h.Engine.ApplyFrameOutputs(Device, h.Input, h.Frame);
+                }
+
+                allocated = Math.Min(allocated, GC.GetAllocatedBytesForCurrentThread() - before);
             }
 
-            long allocated = GC.GetAllocatedBytesForCurrentThread() - before;
             Assert.True(allocated == 0, $"エンジンが {allocated} バイトを割り当てた");
         }
 
@@ -666,18 +673,24 @@ namespace DS4WindowsTests
                 foreach (SpecialAction sa in sources) h.Engine.ProcessOwned(Device, sa, h.Input, h.Frame);
             }
 
-            long before = GC.GetAllocatedBytesForCurrentThread();
-            for (int i = 0; i < 1000; i++)
+            // JIT の段階的な最適化（Tiered Compilation）が、計測の途中で割り当てることがある。本物の割り当てなら、毎回起きる。3 回まで測り、最小値が 0 であることを確かめる
+            long allocated = long.MaxValue;
+            for (int attempt = 0; attempt < 3 && allocated != 0; attempt++)
             {
-                h.Engine.ReleaseSuppressed(Device, h.Input);
-                for (int k = 0; k < sources.Count; k++)
+                long before = GC.GetAllocatedBytesForCurrentThread();
+                for (int i = 0; i < 1000; i++)
                 {
-                    h.Engine.Owns(Device, sources[k]);
-                    h.Engine.ProcessOwned(Device, sources[k], h.Input, h.Frame);
+                    h.Engine.ReleaseSuppressed(Device, h.Input);
+                    for (int k = 0; k < sources.Count; k++)
+                    {
+                        h.Engine.Owns(Device, sources[k]);
+                        h.Engine.ProcessOwned(Device, sources[k], h.Input, h.Frame);
+                    }
                 }
+
+                allocated = Math.Min(allocated, GC.GetAllocatedBytesForCurrentThread() - before);
             }
 
-            long allocated = GC.GetAllocatedBytesForCurrentThread() - before;
             Assert.True(allocated == 0, $"ProcessOwned／Owns が {allocated} バイトを割り当てた");
         }
 

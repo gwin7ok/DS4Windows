@@ -21,8 +21,7 @@ namespace DS4WindowsTests
         private static readonly string[] MethodMarkers =
         {
             "private bool PlayMacroCodeValue(",
-            "private void AltTabSwapping(",
-            "private void AltTabSwappingRelease(",
+            // Phase8-Step7-3a: AltTabSwapping／AltTabSwappingRelease は、機能廃止により削除した
         };
 
         private static readonly Regex BareReference = new Regex(@"(?<![\w.])outputKBMMapping\b");
