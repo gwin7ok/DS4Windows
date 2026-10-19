@@ -10,7 +10,7 @@ namespace DS4Windows.Services
     /// Controls タブの割り当て（<c>ControlSettingsGroup</c>）のうち、移行済みの区分（<see cref="BindingMigrationOptions.MigratedControlKinds"/>）の条件を満たす割り当てだけを、束縛にする。
     /// 条件を満たさない割り当ては束縛を作らず、旧経路が全体を処理する（Q2＝A: ボタン単位の所有）。移行済みの区分が空の間は、何も読まずに空のリストを返す。
     /// <para>
-    /// Key（7.8b）の条件: 通常の割り当てが Key、シフトなし、Extras なし（通常・シフトとも）、Lightbar マクロが有効でない、<c>actionKey</c> が <c>ushort</c> の範囲内。
+    /// Key（7.8b）の条件: 通常の割り当てが Key、Extras なし（シフトは、7.8d で廃止した）、Lightbar マクロが有効でない、<c>actionKey</c> が <c>ushort</c> の範囲内。
     /// ジャイロスワイプの割り当て（<c>GyroSwipe*</c>）は、前の方向を先に離す旧経路の順序に依存するため、対象にしない（旧経路が処理する）。
     /// </para>
     /// 「何をするか」の解釈（キー番号、Toggle、ScanCode、別名キー）はここで行い、出力（<c>KeyOutputAction</c>）には解釈済みの値を渡す（Q9＝A）。
@@ -63,8 +63,7 @@ namespace DS4Windows.Services
             steps = null;
             if (dcs == null) return false;
             if (dcs.actionType != DS4ControlSettings.ActionType.Macro) return false;
-            if (dcs.shiftActionType != DS4ControlSettings.ActionType.Default) return false;
-            if (!dcs.IsExtrasEmpty(dcs.extras) || !dcs.IsExtrasEmpty(dcs.shiftExtras)) return false;
+            if (!dcs.IsExtrasEmpty(dcs.extras)) return false;
             if (dcs.LightbarMacro != null && dcs.LightbarMacro.Active) return false;
 
             int[] macro = dcs.action.actionMacro;
@@ -82,8 +81,7 @@ namespace DS4Windows.Services
             values = default;
             if (dcs == null) return false;
             if (dcs.actionType != DS4ControlSettings.ActionType.Key) return false;
-            if (dcs.shiftActionType != DS4ControlSettings.ActionType.Default) return false;
-            if (!dcs.IsExtrasEmpty(dcs.extras) || !dcs.IsExtrasEmpty(dcs.shiftExtras)) return false;
+            if (!dcs.IsExtrasEmpty(dcs.extras)) return false;
             if (dcs.LightbarMacro != null && dcs.LightbarMacro.Active) return false;
 
             int key = dcs.action.actionKey;

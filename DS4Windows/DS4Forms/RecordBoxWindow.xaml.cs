@@ -50,7 +50,7 @@ namespace DS4WinWPF.DS4Forms
             if (editorWindowFactory == null) throw new ArgumentNullException(nameof(editorWindowFactory));
             InitializeComponent();
 
-            RecordBox box = editorWindowFactory.CreateRecordBox(deviceNum, settings, false, targetDevice, repeatable: repeatable);
+            RecordBox box = editorWindowFactory.CreateRecordBox(deviceNum, settings, targetDevice, repeatable: repeatable);
             mainPanel.Children.Add(box);
 
             box.Save += RecordBox_Save;

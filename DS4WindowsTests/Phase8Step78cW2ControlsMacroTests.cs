@@ -52,17 +52,10 @@ namespace DS4WindowsTests
             Assert.False(ControlBindingBuilder.TryInterpretMacro(Macro(null), out _));            // 旧経路は、手順がないと例外になる。新経路は所有しない
             Assert.False(ControlBindingBuilder.TryInterpretMacro(Macro(new int[0]), out _));
 
-            DS4ControlSettings shifted = Macro(Steps);
-            shifted.shiftActionType = DS4ControlSettings.ActionType.Key;
-            Assert.False(ControlBindingBuilder.TryInterpretMacro(shifted, out _));
-
             DS4ControlSettings extras = Macro(Steps);
             extras.extras = "1,2,0,0,0,0,0,0,0";
             Assert.False(ControlBindingBuilder.TryInterpretMacro(extras, out _));
 
-            DS4ControlSettings shiftExtras = Macro(Steps);
-            shiftExtras.shiftExtras = "1,2,0,0,0,0,0,0,0";
-            Assert.False(ControlBindingBuilder.TryInterpretMacro(shiftExtras, out _));
         }
 
         [Fact]

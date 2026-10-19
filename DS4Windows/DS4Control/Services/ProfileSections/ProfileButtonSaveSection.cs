@@ -32,7 +32,7 @@ using LightbarMacro = DS4WinWPF.DS4Forms.ViewModels.LightbarMacro;
 namespace DS4Windows.Services
 {
     /// <summary>
-    /// Phase8-Step4b W6（Phase8-Step4b-Plan.md §3.3）: ボタン割り当て（Control と ShiftControl。通常とシフトを 1 つのループで集めて保存する）の保存。
+    /// Phase8-Step4b W6（Phase8-Step4b-Plan.md §3.3）: ボタン割り当て（Control）の保存。ShiftControl（廃止されたシフトの設定）は、保持した内容をそのまま書き出す（Phase8-Step7 7.8d）。
     /// <c>LegacyProfileXmlSerializer.SaveProfile</c> から移したもの。移動のみで、要素の順序・値の書式は変えない（XML の順序はゴールデンが固定している）。
     /// </summary>
     internal sealed class ProfileButtonSaveSection : IProfileSaveSection
@@ -50,14 +50,6 @@ namespace DS4Windows.Services
             XmlNode KeyType = m_Xdoc.CreateNode(XmlNodeType.Element, "KeyType", null);
             XmlNode Button = m_Xdoc.CreateNode(XmlNodeType.Element, "Button", null);
             XmlNode Extras = m_Xdoc.CreateNode(XmlNodeType.Element, "Extras", null);
-
-            XmlNode NodeShiftControl = m_Xdoc.CreateNode(XmlNodeType.Element, "ShiftControl", null);
-
-            XmlNode ShiftKey = m_Xdoc.CreateNode(XmlNodeType.Element, "Key", null);
-            XmlNode ShiftMacro = m_Xdoc.CreateNode(XmlNodeType.Element, "Macro", null);
-            XmlNode ShiftKeyType = m_Xdoc.CreateNode(XmlNodeType.Element, "KeyType", null);
-            XmlNode ShiftButton = m_Xdoc.CreateNode(XmlNodeType.Element, "Button", null);
-            XmlNode ShiftExtras = m_Xdoc.CreateNode(XmlNodeType.Element, "Extras", null);
 
             foreach (DS4ControlSettings dcs in store.ds4settings[device])
             {
@@ -127,73 +119,6 @@ namespace DS4Windows.Services
                     extraNode.InnerText = dcs.extras;
                     Extras.AppendChild(extraNode);
                 }
-
-                if (dcs.shiftActionType != DS4ControlSettings.ActionType.Default && dcs.shiftTrigger > 0)
-                {
-                    XmlElement buttonNode;
-                    string keyType = string.Empty;
-
-                    if (dcs.shiftActionType == DS4ControlSettings.ActionType.Button &&
-                        dcs.shiftAction.actionBtn == X360Controls.Unbound)
-                    {
-                        keyType += DS4KeyType.Unbound;
-                    }
-
-                    if (dcs.shiftKeyType.HasFlag(DS4KeyType.HoldMacro))
-                        keyType += DS4KeyType.HoldMacro;
-                    if (dcs.shiftKeyType.HasFlag(DS4KeyType.Macro))
-                        keyType += DS4KeyType.Macro;
-                    if (dcs.shiftKeyType.HasFlag(DS4KeyType.Toggle))
-                        keyType += DS4KeyType.Toggle;
-                    if (dcs.shiftKeyType.HasFlag(DS4KeyType.ScanCode))
-                        keyType += DS4KeyType.ScanCode;
-
-                    if (keyType != string.Empty)
-                    {
-                        buttonNode = m_Xdoc.CreateElement(dcs.control.ToString());
-                        buttonNode.InnerText = keyType;
-                        ShiftKeyType.AppendChild(buttonNode);
-                    }
-
-                    buttonNode = m_Xdoc.CreateElement(dcs.control.ToString());
-                    buttonNode.SetAttribute("Trigger", dcs.shiftTrigger.ToString());
-                    if (dcs.shiftActionType == DS4ControlSettings.ActionType.Macro)
-                    {
-                        int[] ii = dcs.shiftAction.actionMacro;
-                        buttonNode.InnerText = string.Join("/", ii);
-                        ShiftMacro.AppendChild(buttonNode);
-                    }
-                    else if (dcs.shiftActionType == DS4ControlSettings.ActionType.Key)
-                    {
-                        buttonNode.InnerText = dcs.shiftAction.actionKey.ToString();
-                        ShiftKey.AppendChild(buttonNode);
-                    }
-                    else if (dcs.shiftActionType == DS4ControlSettings.ActionType.Button)
-                    {
-                        buttonNode.InnerText = dcs.shiftAction.actionBtn.ToString();
-                        ShiftButton.AppendChild(buttonNode);
-                    }
-                }
-
-                hasvalue = false;
-                if (!string.IsNullOrEmpty(dcs.shiftExtras))
-                {
-                    foreach (string s in dcs.shiftExtras.Split(','))
-                    {
-                        if (s != "0")
-                        {
-                            hasvalue = true;
-                            break;
-                        }
-                    }
-                }
-
-                if (hasvalue)
-                {
-                    XmlNode extraNode = m_Xdoc.CreateNode(XmlNodeType.Element, dcs.control.ToString(), null);
-                    extraNode.InnerText = dcs.shiftExtras;
-                    ShiftExtras.AppendChild(extraNode);
-                }
             }
 
             rootElement.AppendChild(NodeControl);
@@ -211,17 +136,8 @@ namespace DS4Windows.Services
             if (NodeControl.HasChildNodes)
                 rootElement.AppendChild(NodeControl);
 
-            rootElement.AppendChild(NodeShiftControl);
-            if (ShiftButton.HasChildNodes)
-                NodeShiftControl.AppendChild(ShiftButton);
-            if (ShiftMacro.HasChildNodes)
-                NodeShiftControl.AppendChild(ShiftMacro);
-            if (ShiftKey.HasChildNodes)
-                NodeShiftControl.AppendChild(ShiftKey);
-            if (ShiftKeyType.HasChildNodes)
-                NodeShiftControl.AppendChild(ShiftKeyType);
-            if (ShiftExtras.HasChildNodes)
-                NodeShiftControl.AppendChild(ShiftExtras);
+            // Phase8-Step7 7.8d: 廃止された「シフト」の設定は、保持した内容をそのまま書き出す（なければ、従来と同じ空の <ShiftControl />）
+            store.removedShiftSettings[device].AppendTo(m_Xdoc, rootElement);
         }
     }
 }

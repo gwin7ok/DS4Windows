@@ -555,6 +555,12 @@ namespace DS4Windows
         public bool useAdvancedMoonlight = false;
         public bool closeMini = false;
         public List<SpecialAction> actions = new List<SpecialAction>();
+        /// <summary>
+        /// Phase8-Step7 7.8d: 廃止された「シフト」機能の設定（プロファイルの &lt;ShiftControl&gt;）を、解釈せずに保持する。スロットごと。
+        /// 読込のたびに取り込み直し（<see cref="RemovedShiftSettings.Capture"/>）、保存で、そのまま書き出す（<see cref="RemovedShiftSettings.AppendTo"/>）。
+        /// </summary>
+        public readonly RemovedShiftSettings[] removedShiftSettings = new RemovedShiftSettings[ControllerLimits.TestProfileItemCount];
+
         public List<DS4ControlSettings>[] ds4settings = new List<DS4ControlSettings>[ControllerLimits.TestProfileItemCount]
             { new List<DS4ControlSettings>(), new List<DS4ControlSettings>(), new List<DS4ControlSettings>(),
               new List<DS4ControlSettings>(), new List<DS4ControlSettings>(), new List<DS4ControlSettings>(), new List<DS4ControlSettings>(), new List<DS4ControlSettings>(), new List<DS4ControlSettings>() };
@@ -809,6 +815,7 @@ namespace DS4Windows
                 }
 
                 ds4controlSettings[i] = new ControlSettingsGroup(ds4settings[i]);
+                removedShiftSettings[i] = new RemovedShiftSettings();
 
                 // RumbleSettings の変更を生配列 rumble / rumbleAutostopTime に連動させる
                 int slot = i;
@@ -1158,7 +1165,7 @@ namespace DS4Windows
         }
 
 
-        public void UpdateDS4CSetting(int deviceNum, string buttonName, bool shift, object action, string exts, DS4KeyType kt, int trigger = 0)
+        public void UpdateDS4CSetting(int deviceNum, string buttonName, object action, string exts, DS4KeyType kt)
         {
             DS4Controls dc;
             if (buttonName.StartsWith("bn"))
@@ -1171,12 +1178,12 @@ namespace DS4Windows
             {
                 int index = temp - 1;
                 DS4ControlSettings dcs = ds4settings[deviceNum][index];
-                dcs.UpdateSettings(shift, action, exts, kt, trigger);
-                ProfileSettings.RefreshActionAlias(dcs, shift);
+                dcs.UpdateSettings(action, exts, kt);
+                ProfileSettings.RefreshActionAlias(dcs);
             }
         }
 
-        public void UpdateDS4CExtra(int deviceNum, string buttonName, bool shift, string exts)
+        public void UpdateDS4CExtra(int deviceNum, string buttonName, string exts)
         {
             DS4Controls dc;
             if (buttonName.StartsWith("bn"))
@@ -1189,14 +1196,11 @@ namespace DS4Windows
             {
                 int index = temp - 1;
                 DS4ControlSettings dcs = ds4settings[deviceNum][index];
-                if (shift)
-                    dcs.shiftExtras = exts;
-                else
-                    dcs.extras = exts;
+                dcs.extras = exts;
             }
         }
 
-        public void UpdateDS4CKeyType(int deviceNum, string buttonName, bool shift, DS4KeyType keyType)
+        public void UpdateDS4CKeyType(int deviceNum, string buttonName, DS4KeyType keyType)
         {
             DS4Controls dc;
             if (buttonName.StartsWith("bn"))
@@ -1209,10 +1213,7 @@ namespace DS4Windows
             {
                 int index = temp - 1;
                 DS4ControlSettings dcs = ds4settings[deviceNum][index];
-                if (shift)
-                    dcs.shiftKeyType = keyType;
-                else
-                    dcs.keyType = keyType;
+                dcs.keyType = keyType;
             }
         }
 
@@ -1254,7 +1255,7 @@ namespace DS4Windows
             for (int i = 0, settingsLen = ds4settingsList.Count; i < settingsLen; i++)
             {
                 DS4ControlSettings dcs = ds4settingsList[i];
-                if (dcs.actionType != DS4ControlSettings.ActionType.Default || dcs.shiftActionType != DS4ControlSettings.ActionType.Default)
+                if (dcs.actionType != DS4ControlSettings.ActionType.Default)
                     return true;
             }
 
@@ -1267,7 +1268,7 @@ namespace DS4Windows
             for (int i = 0, settingsLen = ds4settingsList.Count; i < settingsLen; i++)
             {
                 DS4ControlSettings dcs = ds4settingsList[i];
-                if (dcs.extras != null || dcs.shiftExtras != null)
+                if (dcs.extras != null)
                     return true;
             }
 
@@ -1290,6 +1291,7 @@ namespace DS4Windows
         // Phase7-Step10c W4: プロファイルの読込を担う LegacyProfileXmlSerializer が呼ぶため公開にした（プリセットの読込［Phase7-Step10c W6 まで BackingStore］も使う）
         public void ResetProfile(int device)
         {
+            removedShiftSettings[device].Clear();
             buttonMouseInfos[device].Reset();
             gyroControlsInf[device].Reset();
 

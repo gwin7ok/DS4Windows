@@ -498,8 +498,8 @@ namespace DS4WinWPF.DS4Forms.ViewModels
                     X360Controls defaultControl = defaultButtonMapping[(int)dsControl];
                     if (!(outAct is X360Controls) || defaultControl != (X360Controls)outAct)
                     {
-                        setting.UpdateSettings(false, outAct, null, DS4KeyType.None);
-                        profileSettings.RefreshActionAlias(setting, false);
+                        setting.UpdateSettings(outAct, null, DS4KeyType.None);
+                        profileSettings.RefreshActionAlias(setting);
                     }
                 }
 

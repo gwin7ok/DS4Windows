@@ -165,23 +165,15 @@ namespace DS4WindowsTests
         [Theory]
         [InlineData(false)]
         [InlineData(true)]
-        public void ADcsWithAShiftOrExtras_IsStillHandled_ByTheLegacyBranch(bool migrated)
+        public void ADcsWithExtras_IsNotOwnedByTheNewPath(bool migrated)
         {
-            // 7.8b の所有の条件（Key、シフトなし、Extras なし）を満たさない割り当て: 新経路が所有せず、旧経路が処理する（押下で合成 SA の状態が変わる）
+            // 新経路の所有の条件（Key、Extras なし）を満たさない割り当て: 新経路は束縛を作らず、旧経路が処理する（シフトは 7.8d で廃止した）
             using var t = new ControlsKeyTestScope(migrated);
             DS4ControlSettings dcs = t.MapKey(DS4Controls.Cross, Key);
-            dcs.shiftActionType = DS4ControlSettings.ActionType.Key;
-            dcs.shiftAction.actionKey = 66;
-            dcs.shiftTrigger = 12;   // L1
+            dcs.extras = "1,2,0,0,0,0,0,0,0";
             t.Publish();
-            SpecialAction sa = t.SyntheticFor(DS4Controls.Cross, Key);
 
-            DS4State held = ControlsKeyTestScope.Neutral();
-            held.Cross = true;
-            DS4State output = t.Run(held);
-
-            Assert.True(t.IsBeingTriggered(sa));
-            Assert.False(output.Cross);
+            Assert.Empty(TestHost.GetService<DS4Windows.DI.IControlBindingBuilder>().Build(t.Device));
         }
 
         [Theory]

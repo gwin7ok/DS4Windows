@@ -100,7 +100,7 @@ namespace DS4WindowsTests
             var setting = new DS4ControlSettings(DS4Controls.Cross);
             setting.action.actionAlias = 99;
             // Key 以外のアクション種別は、別名を 0 に戻すだけ（KBM のマッピングは使わない）
-            service.RefreshActionAlias(setting, false);
+            service.RefreshActionAlias(setting);
             Assert.Equal(0u, setting.action.actionAlias);
         }
 

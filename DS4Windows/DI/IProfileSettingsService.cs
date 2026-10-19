@@ -42,7 +42,7 @@ namespace DS4Windows.DI
         /// </summary>
         /// <param name="setting">編集中の <see cref="DS4ControlSettings"/></param>
         /// <param name="shift">シフト側のアクションを更新するか</param>
-        void RefreshActionAlias(DS4ControlSettings setting, bool shift);
+        void RefreshActionAlias(DS4ControlSettings setting);
         /// <summary>
         /// Xbox360 ボタン → DS4 ボタンの逆引き表そのもの（<c>Global.reverseX360ButtonMapping</c>）を、コピーせずに返す。
         /// 起動時に1回作られて以後変化しない定数表で、毎入力レポートの経路（<c>Mapping.ProcessControlSettingAction</c>）から引かれるため、

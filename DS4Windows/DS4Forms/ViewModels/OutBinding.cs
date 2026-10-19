@@ -48,8 +48,6 @@ namespace DS4WinWPF.DS4Forms.ViewModels
         public int[] macro;
         public DS4KeyType macroType;
         public X360Controls control;
-        public bool shiftBind;
-        public int shiftTrigger;
         private int heavyRumble = 0;
         private int lightRumble = 0;
         private int flashRate;
@@ -97,11 +95,6 @@ namespace DS4WinWPF.DS4Forms.ViewModels
 
         public bool HasScanCode { get => hasScanCode; set => hasScanCode = value; }
         public bool Toggle { get => toggle; set => toggle = value; }
-        public int ShiftTrigger
-        {
-            get => shiftTrigger;
-            set => shiftTrigger = value;
-        }
         public int HeavyRumble { get => heavyRumble; set => heavyRumble = value; }
         public int LightRumble { get => lightRumble; set => lightRumble = value; }
         public int FlashRate
@@ -237,9 +230,6 @@ namespace DS4WinWPF.DS4Forms.ViewModels
             }
         }
 
-        private int shiftTriggerIndex;
-        public int ShiftTriggerIndex { get => shiftTriggerIndex; set => shiftTriggerIndex = value; }
-
         public string DefaultColor
         {
             get
@@ -282,13 +272,7 @@ namespace DS4WinWPF.DS4Forms.ViewModels
         {
             get
             {
-                string result = "Default";
-                if (shiftBind)
-                {
-                    result = Properties.Resources.FallBack;
-                }
-
-                return result;
+                return "Default";
             }
         }
 
@@ -336,11 +320,6 @@ namespace DS4WinWPF.DS4Forms.ViewModels
                 ExtrasColorG = 255;
                 ExtrasColorB = 255;
             }
-        }
-
-        public bool IsShift()
-        {
-            return shiftBind;
         }
 
         public bool IsMouse()
@@ -432,135 +411,68 @@ namespace DS4WinWPF.DS4Forms.ViewModels
 
         public void WriteBind(DS4ControlSettings settings, IProfileSettingsService profileSettingsService)
         {
-            if (!shiftBind)
+            settings.keyType = DS4KeyType.None;
+
+            if (outputType == OutType.Default)
             {
-                settings.keyType = DS4KeyType.None;
-
-                if (outputType == OutType.Default)
+                settings.action.actionKey = 0;
+                settings.actionType = DS4ControlSettings.ActionType.Default;
+            }
+            else if (outputType == OutType.Button)
+            {
+                settings.action.actionBtn = control;
+                settings.actionType = DS4ControlSettings.ActionType.Button;
+                if (control == X360Controls.Unbound)
                 {
-                    settings.action.actionKey = 0;
-                    settings.actionType = DS4ControlSettings.ActionType.Default;
+                    settings.keyType |= DS4KeyType.Unbound;
                 }
-                else if (outputType == OutType.Button)
+            }
+            else if (outputType == OutType.Key)
+            {
+                settings.action.actionKey = outkey;
+                settings.actionType = DS4ControlSettings.ActionType.Key;
+                if (hasScanCode)
                 {
-                    settings.action.actionBtn = control;
-                    settings.actionType = DS4ControlSettings.ActionType.Button;
-                    if (control == X360Controls.Unbound)
-                    {
-                        settings.keyType |= DS4KeyType.Unbound;
-                    }
-                }
-                else if (outputType == OutType.Key)
-                {
-                    settings.action.actionKey = outkey;
-                    settings.actionType = DS4ControlSettings.ActionType.Key;
-                    if (hasScanCode)
-                    {
-                        settings.keyType |= DS4KeyType.ScanCode;
-                    }
-
-                    if (toggle)
-                    {
-                        settings.keyType |= DS4KeyType.Toggle;
-                    }
-                }
-                else if (outputType == OutType.Macro)
-                {
-                    settings.action.actionMacro = macro;
-                    settings.actionType = DS4ControlSettings.ActionType.Macro;
-                    if (macroType.HasFlag(DS4KeyType.HoldMacro))
-                    {
-                        settings.keyType |= DS4KeyType.HoldMacro;
-                    }
-                    else
-                    {
-                        settings.keyType |= DS4KeyType.Macro;
-                    }
-
-                    if (hasScanCode)
-                    {
-                        settings.keyType |= DS4KeyType.ScanCode;
-                    }
+                    settings.keyType |= DS4KeyType.ScanCode;
                 }
 
-                if (IsUsingExtras())
+                if (toggle)
                 {
-                    settings.extras = CompileExtras();
+                    settings.keyType |= DS4KeyType.Toggle;
+                }
+            }
+            else if (outputType == OutType.Macro)
+            {
+                settings.action.actionMacro = macro;
+                settings.actionType = DS4ControlSettings.ActionType.Macro;
+                if (macroType.HasFlag(DS4KeyType.HoldMacro))
+                {
+                    settings.keyType |= DS4KeyType.HoldMacro;
                 }
                 else
                 {
-                    settings.extras = string.Empty;
+                    settings.keyType |= DS4KeyType.Macro;
                 }
 
-                if (LightbarMacro is not null && LightbarMacro.Macro.Count > 0)
-                    settings.LightbarMacroString = LightbarMacro.Compile();
+                if (hasScanCode)
+                {
+                    settings.keyType |= DS4KeyType.ScanCode;
+                }
+            }
 
-                profileSettingsService.RefreshActionAlias(settings, shiftBind);
+            if (IsUsingExtras())
+            {
+                settings.extras = CompileExtras();
             }
             else
             {
-                settings.shiftKeyType = DS4KeyType.None;
-                settings.shiftTrigger = shiftTrigger;
-
-                if (outputType == OutType.Default || shiftTrigger == 0)
-                {
-                    settings.shiftAction.actionKey = 0;
-                    settings.shiftActionType = DS4ControlSettings.ActionType.Default;
-                }
-                else if (outputType == OutType.Button)
-                {
-                    settings.shiftAction.actionBtn = control;
-                    settings.shiftActionType = DS4ControlSettings.ActionType.Button;
-                    if (control == X360Controls.Unbound)
-                    {
-                        settings.shiftKeyType |= DS4KeyType.Unbound;
-                    }
-                }
-                else if (outputType == OutType.Key)
-                {
-                    settings.shiftAction.actionKey = outkey;
-                    settings.shiftActionType = DS4ControlSettings.ActionType.Key;
-                    if (hasScanCode)
-                    {
-                        settings.shiftKeyType |= DS4KeyType.ScanCode;
-                    }
-
-                    if (toggle)
-                    {
-                        settings.shiftKeyType |= DS4KeyType.Toggle;
-                    }
-                }
-                else if (outputType == OutType.Macro)
-                {
-                    settings.shiftAction.actionMacro = macro;
-                    settings.shiftActionType = DS4ControlSettings.ActionType.Macro;
-
-                    if (macroType.HasFlag(DS4KeyType.HoldMacro))
-                    {
-                        settings.shiftKeyType |= DS4KeyType.HoldMacro;
-                    }
-                    else
-                    {
-                        settings.shiftKeyType |= DS4KeyType.Macro;
-                    }
-
-                    if (hasScanCode)
-                    {
-                        settings.shiftKeyType |= DS4KeyType.ScanCode;
-                    }
-                }
-
-                if (IsUsingExtras())
-                {
-                    settings.shiftExtras = CompileExtras();
-                }
-                else
-                {
-                    settings.shiftExtras = string.Empty;
-                }
-
-                profileSettingsService.RefreshActionAlias(settings, shiftBind);
+                settings.extras = string.Empty;
             }
+
+            if (LightbarMacro is not null && LightbarMacro.Macro.Count > 0)
+                settings.LightbarMacroString = LightbarMacro.Compile();
+
+            profileSettingsService.RefreshActionAlias(settings);
         }
 
         public void UpdateExtrasColor(Color color)

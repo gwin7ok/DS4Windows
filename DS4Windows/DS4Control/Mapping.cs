@@ -708,23 +708,6 @@ namespace DS4Windows
         public DateTime[] oldnowKeyAct = new DateTime[ControllerLimits.MaxControllerCount] { DateTime.MinValue,
             DateTime.MinValue, DateTime.MinValue, DateTime.MinValue, DateTime.MinValue, DateTime.MinValue, DateTime.MinValue, DateTime.MinValue };
 
-        private const int SHIFT_TRIGGER_MAPPING_LEN = 35;
-        private static DS4Controls[] shiftTriggerMapping = new DS4Controls[SHIFT_TRIGGER_MAPPING_LEN]
-        {
-            DS4Controls.None, DS4Controls.Cross, DS4Controls.Circle, DS4Controls.Square,
-            DS4Controls.Triangle, DS4Controls.Options, DS4Controls.Share, DS4Controls.DpadUp, DS4Controls.DpadDown,
-            DS4Controls.DpadLeft, DS4Controls.DpadRight, DS4Controls.PS, DS4Controls.L1, DS4Controls.R1, DS4Controls.L2,
-            DS4Controls.R2, DS4Controls.L3, DS4Controls.R3, DS4Controls.TouchLeft, DS4Controls.TouchUpper, DS4Controls.TouchMulti,
-            DS4Controls.TouchRight, DS4Controls.GyroZNeg, DS4Controls.GyroZPos, DS4Controls.GyroXPos, DS4Controls.GyroXNeg,
-            DS4Controls.None, DS4Controls.Mute, DS4Controls.FnL, DS4Controls.FnR, DS4Controls.BLP, DS4Controls.BRP,
-            DS4Controls.Capture, DS4Controls.SideL, DS4Controls.SideR
-        };
-
-        /// <summary>
-        /// Touch 1 Finger is treated special when it comes to shift triggers. It does not correspond
-        /// to a direct value from DS4Controls
-        /// </summary>
-        private const int TOUCH_FINGER_SHIFT_TRIGGER = 26;
         private const int DS4_CONTROL_MACRO_ARRAY_LEN = MacroRuntimeState.ControlArrayLength; // Phase7-Step7 W3: 値の定義は MacroRuntimeState へ移した
 
         // Button to index mapping used for macrodone array. Not even sure this
@@ -2217,27 +2200,6 @@ namespace DS4Windows
             }
 
             return state;
-        }
-
-        private bool ShiftTrigger(int trigger, int device, DS4State cState, DS4StateExposed eState, Mouse tp, DS4StateFieldMapping fieldMapping)
-        {
-            bool result = false;
-            if (trigger == 0)
-            {
-                result = false;
-            }
-            else if (trigger < SHIFT_TRIGGER_MAPPING_LEN && trigger != TOUCH_FINGER_SHIFT_TRIGGER)
-            {
-                DS4Controls ds = shiftTriggerMapping[trigger];
-                result = GetBoolMapping(device, ds, cState, eState, tp, fieldMapping);
-            }
-            // 26 is a special case. It does not correlate to a direct DS4Controls value
-            else if (trigger == TOUCH_FINGER_SHIFT_TRIGGER)
-            {
-                result = cState.Touch1Finger;
-            }
-
-            return result;
         }
 
         /// <summary>
@@ -3786,14 +3748,7 @@ namespace DS4Windows
             DS4ControlSettings.ActionType actionType = 0;
             DS4KeyType keyType = DS4KeyType.None;
             DS4Controls usingExtra = DS4Controls.None;
-            if (dcs.shiftActionType != DS4ControlSettings.ActionType.Default && ShiftTrigger(dcs.shiftTrigger, device, cState, eState, tp, fieldMapping))
-            {
-                action = dcs.shiftAction;
-                actionType = dcs.shiftActionType;
-                actionAlias = dcs.shiftAction.actionAlias;
-                keyType = dcs.shiftKeyType;
-            }
-            else if (dcs.actionType != DS4ControlSettings.ActionType.Default)
+            if (dcs.actionType != DS4ControlSettings.ActionType.Default)
             {
                 action = dcs.action;
                 actionType = dcs.actionType;
@@ -3803,16 +3758,11 @@ namespace DS4Windows
 
             if (usingExtra == DS4Controls.None || usingExtra == dcs.control)
             {
-                bool shiftE = !dcs.IsExtrasEmpty(dcs.shiftExtras) && ShiftTrigger(dcs.shiftTrigger, device, cState, eState, tp, fieldMapping);
                 bool regE = !dcs.IsExtrasEmpty(dcs.extras);
-                if ((regE || shiftE) && GetBoolActionMapping(device, dcs.control, cState, eState, tp, fieldMapping))
+                if (regE && GetBoolActionMapping(device, dcs.control, cState, eState, tp, fieldMapping))
                 {
                     usingExtra = dcs.control;
-                    string p;
-                    if (shiftE)
-                        p = dcs.shiftExtras;
-                    else
-                        p = dcs.extras;
+                    string p = dcs.extras;
 
                     string[] extraS = p.Split(',');
                     int extrasSLen = extraS.Length;
@@ -3854,7 +3804,7 @@ namespace DS4Windows
                     }
                     catch { }
                 }
-                else if ((regE || shiftE) && held[device] == dcs.control)
+                else if (regE && held[device] == dcs.control)
                 {
                     DS4LightBar.forcelight[device] = false;
                     DS4LightBar.forcedFlash[device] = 0;

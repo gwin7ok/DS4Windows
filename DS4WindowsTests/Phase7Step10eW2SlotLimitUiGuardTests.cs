@@ -58,7 +58,7 @@ namespace DS4WindowsTests
             var settings = TestRepositoryFactory.CreateProfileSettingsService();
             var slots = TestRepositoryFactory.CreateOutputSlotService();
             Assert.Throws<ArgumentNullException>(() => new BindingWindowViewModel(0, new DS4ControlSettings(DS4Controls.Cross), settings, slots, null));
-            Assert.Throws<ArgumentNullException>(() => new RecordBoxViewModel(0, new DS4ControlSettings(DS4Controls.Cross), false, true, settings, null, null));
+            Assert.Throws<ArgumentNullException>(() => new RecordBoxViewModel(0, new DS4ControlSettings(DS4Controls.Cross), true, settings, null, null));
         }
     }
 }

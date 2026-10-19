@@ -186,7 +186,7 @@ namespace DS4WindowsTests
         private class NullViewModelFactory : IViewModelFactory
         {
             public ProfileSettingsViewModel CreateProfileSettingsViewModel(int device, int targetDevice = -1) => null;
-            public RecordBoxViewModel CreateRecordBoxViewModel(int device, DS4ControlSettings controlSettings, bool recordMacro = true, bool extraHold = false, int targetDevice = -1) => null;
+            public RecordBoxViewModel CreateRecordBoxViewModel(int device, DS4ControlSettings controlSettings, bool repeatable = false, int targetDevice = -1) => null;
             public SpecialActEditorViewModel CreateSpecialActEditorViewModel(int device, SpecialAction action = null) => null;
             public AutoProfilesViewModel CreateAutoProfilesViewModel(AutoProfileHolder autoProfileHolder, ProfileList profileList) => null;
             public SpecialActionsListViewModel CreateSpecialActionsListViewModel(int device) => null;
@@ -206,7 +206,7 @@ namespace DS4WindowsTests
         {
             Assert.Throws<ArgumentNullException>(() => new BindingWindowViewModel(0, new DS4ControlSettings(DS4Controls.Cross), null, TestRepositoryFactory.CreateOutputSlotService(), new DS4Windows.EnvironmentService()));
             Assert.Throws<ArgumentNullException>(() => new BindingWindowViewModel(0, new DS4ControlSettings(DS4Controls.Cross), TestRepositoryFactory.CreateProfileSettingsService(), null, new DS4Windows.EnvironmentService()));
-            Assert.Throws<ArgumentNullException>(() => new RecordBoxViewModel(0, new DS4ControlSettings(DS4Controls.Cross), false, true, null, new DS4Windows.EnvironmentService(), null));
+            Assert.Throws<ArgumentNullException>(() => new RecordBoxViewModel(0, new DS4ControlSettings(DS4Controls.Cross), true, null, new DS4Windows.EnvironmentService(), null));
         }
 
         [Fact]

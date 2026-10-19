@@ -60,9 +60,9 @@ namespace DS4Windows.Services
             => new BindingWindow(deviceNum, settings, targetDevice, this, _profileSettings, _outputSlotService,
                 _environmentService, _controlServiceAccessor(), expose);
 
-        public RecordBox CreateRecordBox(int deviceNum, DS4ControlSettings controlSettings, bool shift, int targetDevice,
+        public RecordBox CreateRecordBox(int deviceNum, DS4ControlSettings controlSettings, int targetDevice,
             bool showscan = true, bool repeatable = true)
-            => new RecordBox(deviceNum, controlSettings, shift, targetDevice, showscan, repeatable,
+            => new RecordBox(deviceNum, controlSettings, targetDevice, showscan, repeatable,
                 _controlServiceAccessor(), _pathService, _viewModelFactory);
 
         public RecordBoxWindow CreateRecordBoxWindow(int deviceNum, DS4ControlSettings settings, int targetDevice,

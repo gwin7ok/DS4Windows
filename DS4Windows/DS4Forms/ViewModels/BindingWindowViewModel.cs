@@ -35,8 +35,6 @@ namespace DS4WinWPF.DS4Forms.ViewModels
         private bool use360Mode;
         private DS4ControlSettings settings;
         private OutBinding currentOutBind;
-        private OutBinding shiftOutBind;
-        private bool showShift;
         private bool rumbleActive;
 
         public bool Using360Mode
@@ -45,10 +43,8 @@ namespace DS4WinWPF.DS4Forms.ViewModels
         }
         public int DeviceNum { get => deviceNum; }
         public OutBinding CurrentOutBind { get => currentOutBind; }
-        public OutBinding ShiftOutBind { get => shiftOutBind; }
         public OutBinding ActionBinding { get; set; }
 
-        public bool ShowShift { get => showShift; set => showShift = value; }
         public bool RumbleActive { get => rumbleActive; set => rumbleActive = value; }
         public DS4ControlSettings Settings { get => settings; }
 
@@ -81,8 +77,6 @@ namespace DS4WinWPF.DS4Forms.ViewModels
             use360Mode = outputSlotService.OutDevTypeTemp[deviceNum] == OutContType.X360;
             this.settings = settings;
             currentOutBind = new OutBinding();
-            shiftOutBind = new OutBinding();
-            shiftOutBind.shiftBind = true;
             PopulateCurrentBinds();
         }
 
@@ -92,7 +86,6 @@ namespace DS4WinWPF.DS4Forms.ViewModels
             bool sc = setting.keyType.HasFlag(DS4KeyType.ScanCode);
             bool toggle = setting.keyType.HasFlag(DS4KeyType.Toggle);
             currentOutBind.input = setting.control;
-            shiftOutBind.input = setting.control;
             if (setting.actionType != DS4ControlSettings.ActionType.Default)
             {
                 switch(setting.actionType)
@@ -128,65 +121,21 @@ namespace DS4WinWPF.DS4Forms.ViewModels
                 currentOutBind.ParseExtras(setting.extras);
             }
 
-            if (setting.shiftActionType != DS4ControlSettings.ActionType.Default)
-            {
-                sc = setting.shiftKeyType.HasFlag(DS4KeyType.ScanCode);
-                toggle = setting.shiftKeyType.HasFlag(DS4KeyType.Toggle);
-                shiftOutBind.shiftTrigger = setting.shiftTrigger;
-                switch (setting.shiftActionType)
-                {
-                    case DS4ControlSettings.ActionType.Button:
-                        shiftOutBind.outputType = OutBinding.OutType.Button;
-                        shiftOutBind.control = (X360Controls)setting.shiftAction.actionBtn;
-                        break;
-                    case DS4ControlSettings.ActionType.Default:
-                        shiftOutBind.outputType = OutBinding.OutType.Default;
-                        break;
-                    case DS4ControlSettings.ActionType.Key:
-                        shiftOutBind.outputType = OutBinding.OutType.Key;
-                        shiftOutBind.outkey = setting.shiftAction.actionKey;
-                        shiftOutBind.hasScanCode = sc;
-                        shiftOutBind.toggle = toggle;
-                        break;
-                    case DS4ControlSettings.ActionType.Macro:
-                        shiftOutBind.outputType = OutBinding.OutType.Macro;
-                        shiftOutBind.macro = (int[])setting.shiftAction.actionMacro;
-                        shiftOutBind.macroType = setting.shiftKeyType;
-                        shiftOutBind.hasScanCode = sc;
-                        break;
-                }
-            }
-
-            if (!string.IsNullOrEmpty(setting.shiftExtras))
-            {
-                shiftOutBind.ParseExtras(setting.shiftExtras);
-            }
-
             if (settings.LightbarMacro is not null) currentOutBind.LightbarMacro = settings.LightbarMacro;
         }
 
-        public void PrepareSaveMacro(OutBinding bind, bool shiftBind=false)
+        public void PrepareSaveMacro(OutBinding bind)
         {
             DS4ControlSettings setting = settings;
 
-            if (!shiftBind)
-            {
-                bind.outputType = OutBinding.OutType.Macro;
-                bind.macro = (int[])setting.action.actionMacro;
-                bind.macroType = settings.keyType;
-            }
-            else
-            {
-                bind.outputType = OutBinding.OutType.Macro;
-                bind.macro = (int[])setting.shiftAction.actionMacro;
-                bind.macroType = setting.shiftKeyType;
-            }
+            bind.outputType = OutBinding.OutType.Macro;
+            bind.macro = (int[])setting.action.actionMacro;
+            bind.macroType = settings.keyType;
         }
 
         public void WriteBinds()
         {
             currentOutBind.WriteBind(settings, profileSettingsService);
-            shiftOutBind.WriteBind(settings, profileSettingsService);
         }
 
         // Phase6-Step7b: ライトバー強制色のプレビューは、編集スロット（DeviceNum）ではなく実機（targetDevice）に対して行う

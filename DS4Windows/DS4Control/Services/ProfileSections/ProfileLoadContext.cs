@@ -35,8 +35,6 @@ namespace DS4Windows.Services
 
         public DS4Windows.DI.IProfileSettingsService ProfileSettings { get; set; }
 
-        /// <summary><c>ShiftModifier</c>（旧形式。全体で 1 つ）の値。雑多の節が書き、シフトのボタン割り当ての節が読む。</summary>
-        public int ShiftModifier { get; set; }
 
         /// <summary><c>UseTPforControls</c> 要素の有無。雑多の節が書き、<c>TouchpadOutputMode</c> を読む節が読む。</summary>
         public bool TpForControlsPresent { get; set; }

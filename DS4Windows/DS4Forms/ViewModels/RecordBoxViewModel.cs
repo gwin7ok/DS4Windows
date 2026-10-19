@@ -41,8 +41,6 @@ namespace DS4WinWPF.DS4Forms.ViewModels
         private DS4ControlSettings settings;
         public DS4ControlSettings Settings { get => settings; }
 
-        private bool shift;
-        public bool Shift { get => shift; }
 
         private bool recordDelays;
         public bool RecordDelays { get => recordDelays; set => recordDelays = value; }
@@ -129,7 +127,7 @@ namespace DS4WinWPF.DS4Forms.ViewModels
         private bool HasTargetDevice =>
             targetDevice >= 0 && targetDevice < environmentService.ControllerSlotLimit;
 
-        public RecordBoxViewModel(int deviceNum, DS4ControlSettings controlSettings, bool shift, bool repeatable,
+        public RecordBoxViewModel(int deviceNum, DS4ControlSettings controlSettings, bool repeatable,
             IProfileSettingsService profileSettingsService,
             IEnvironmentService environmentService,
             ControlService controlService,
@@ -149,30 +147,17 @@ namespace DS4WinWPF.DS4Forms.ViewModels
 
             this.deviceNum = deviceNum;
             settings = controlSettings;
-            this.shift = shift;
-            if (!shift && settings.keyType.HasFlag(DS4KeyType.HoldMacro))
-            {
-                macroModeIndex = 1;
-            }
-            else if (shift && settings.shiftKeyType.HasFlag(DS4KeyType.HoldMacro))
+            if (settings.keyType.HasFlag(DS4KeyType.HoldMacro))
             {
                 macroModeIndex = 1;
             }
 
-            if (!shift && settings.keyType.HasFlag(DS4KeyType.ScanCode))
-            {
-                useScanCode = true;
-            }
-            else if (shift && settings.shiftKeyType.HasFlag(DS4KeyType.ScanCode))
+            if (settings.keyType.HasFlag(DS4KeyType.ScanCode))
             {
                 useScanCode = true;
             }
 
-            if (!shift && settings.actionType == DS4ControlSettings.ActionType.Macro)
-            {
-                LoadMacro();
-            }
-            else if (shift && settings.shiftActionType == DS4ControlSettings.ActionType.Macro)
+            if (settings.actionType == DS4ControlSettings.ActionType.Macro)
             {
                 LoadMacro();
             }
@@ -208,15 +193,7 @@ namespace DS4WinWPF.DS4Forms.ViewModels
 
         public void LoadMacro()
         {
-            int[] macro;
-            if (!shift)
-            {
-                macro = (int[])settings.action.actionMacro;
-            }
-            else
-            {
-                macro = (int[])settings.shiftAction.actionMacro;
-            }
+            int[] macro = (int[])settings.action.actionMacro;
 
             MacroParser macroParser = new MacroParser(macro);
             macroParser.LoadMacro();
@@ -237,38 +214,20 @@ namespace DS4WinWPF.DS4Forms.ViewModels
                 index++;
             }
 
-            if (!shift)
+            settings.action.actionMacro = outmac;
+            settings.actionType = DS4ControlSettings.ActionType.Macro;
+            settings.keyType = DS4KeyType.Macro;
+            if (macroModeIndex == 1)
             {
-                settings.action.actionMacro = outmac;
-                settings.actionType = DS4ControlSettings.ActionType.Macro;
-                settings.keyType = DS4KeyType.Macro;
-                if (macroModeIndex == 1)
-                {
-                    // When user selects "Repeat while held" in the macro editor,
-                    // preserve both HoldMacro and RepeatMacro flags so the
-                    // SpecialAction editor's Repeat checkbox stays in sync.
-                    settings.keyType |= DS4KeyType.HoldMacro;
-                    settings.keyType |= DS4KeyType.RepeatMacro;
-                }
-                if (useScanCode)
-                {
-                    settings.keyType |= DS4KeyType.ScanCode;
-                }
+                // When user selects "Repeat while held" in the macro editor,
+                // preserve both HoldMacro and RepeatMacro flags so the
+                // SpecialAction editor's Repeat checkbox stays in sync.
+                settings.keyType |= DS4KeyType.HoldMacro;
+                settings.keyType |= DS4KeyType.RepeatMacro;
             }
-            else
+            if (useScanCode)
             {
-                settings.shiftAction.actionMacro = outmac;
-                settings.shiftActionType = DS4ControlSettings.ActionType.Macro;
-                settings.shiftKeyType = DS4KeyType.Macro;
-                if (macroModeIndex == 1)
-                {
-                    settings.shiftKeyType |= DS4KeyType.HoldMacro;
-                    settings.shiftKeyType |= DS4KeyType.RepeatMacro;
-                }
-                if (useScanCode)
-                {
-                    settings.shiftKeyType |= DS4KeyType.ScanCode;
-                }
+                settings.keyType |= DS4KeyType.ScanCode;
             }
         }
 

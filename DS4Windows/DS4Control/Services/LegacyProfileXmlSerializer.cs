@@ -310,8 +310,6 @@ namespace DS4Windows.Services
             try
             {
                 XmlNode tmpNode;
-                XmlNode xmlControls = m_Xdoc.SelectSingleNode("/DS4Windows/Control");
-                XmlNode xmlShiftControls = m_Xdoc.SelectSingleNode("/DS4Windows/ShiftControl");
                 m_Xdoc.RemoveAll();
 
                 tmpNode = m_Xdoc.CreateXmlDeclaration("1.0", "utf-8", string.Empty);

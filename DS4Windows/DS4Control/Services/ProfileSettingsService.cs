@@ -504,23 +504,12 @@ namespace DS4Windows
 
         // Phase6-Step9-1／Phase7-Step10d W5: 旧 Global.RefreshActionAlias の本体をここへ移した（内容は同一。OutputKBMMapping はこのサービス自身のもの）。
         /// <summary>Windows の仮想キーの値から、現在の出力 KB+M のシステム用の別名（actionAlias）を更新する。</summary>
-        public void RefreshActionAlias(DS4ControlSettings setting, bool shift)
+        public void RefreshActionAlias(DS4ControlSettings setting)
         {
-            if (!shift)
+            setting.action.actionAlias = 0;
+            if (setting.actionType == DS4ControlSettings.ActionType.Key)
             {
-                setting.action.actionAlias = 0;
-                if (setting.actionType == DS4ControlSettings.ActionType.Key)
-                {
-                    setting.action.actionAlias = OutputKBMMapping.GetRealEventKey(Convert.ToUInt32(setting.action.actionKey));
-                }
-            }
-            else
-            {
-                setting.shiftAction.actionAlias = 0;
-                if (setting.shiftActionType == DS4ControlSettings.ActionType.Key)
-                {
-                    setting.shiftAction.actionAlias = OutputKBMMapping.GetRealEventKey(Convert.ToUInt32(setting.shiftAction.actionKey));
-                }
+                setting.action.actionAlias = OutputKBMMapping.GetRealEventKey(Convert.ToUInt32(setting.action.actionKey));
             }
         }
 

@@ -114,12 +114,7 @@ namespace DS4WinWPF.DS4Forms
             }
 
             bindingVM.ActionBinding = bindingVM.CurrentOutBind;
-            if (expose == ExposeMode.Full)
-            {
-                regBindRadio.IsChecked = !bindingVM.ShowShift;
-                shiftBindRadio.IsChecked = bindingVM.ShowShift;
-            }
-            else if (expose == ExposeMode.ForPressToggle)
+            if (expose == ExposeMode.ForPressToggle)
             {
                 // For Press/Toggle selection: show keyboard, mouse and controller areas,
                 // but hide auxiliary UI panels (mode panel, record macro and extras).
@@ -219,7 +214,7 @@ namespace DS4WinWPF.DS4Forms
             Button button = sender as Button;
             if (associatedBindings.TryGetValue(button, out BindAssociation bind))
             {
-                if (defaultControl == bind.control && !binding.IsShift())
+                if (defaultControl == bind.control)
                 {
                     binding.outputType = OutBinding.OutType.Default;
                 }
@@ -242,7 +237,6 @@ namespace DS4WinWPF.DS4Forms
             {
                 extrasGB.DataContext = bind;
                 modePanel.DataContext = bind;
-                shiftTriggerCombo.Visibility = bind.IsShift() ? Visibility.Visible : Visibility.Hidden;
                 macroOnLb.DataContext = bind;
             }
 
@@ -853,24 +847,6 @@ namespace DS4WinWPF.DS4Forms
             touchpadClickBtn.Visibility = Visibility.Visible;
         }
 
-        private void RegBindRadio_Click(object sender, RoutedEventArgs e)
-        {
-            if (regBindRadio.IsChecked == true)
-            {
-                bindingVM.ActionBinding = bindingVM.CurrentOutBind;
-                ChangeForCurrentAction();
-            }
-        }
-
-        private void ShiftBindRadio_Click(object sender, RoutedEventArgs e)
-        {
-            if (shiftBindRadio.IsChecked == true)
-            {
-                bindingVM.ActionBinding = bindingVM.ShiftOutBind;
-                ChangeForCurrentAction();
-            }
-        }
-
         private void TestRumbleBtn_Click(object sender, RoutedEventArgs e)
         {
             // Phase6-Step7b: 振動させるのは実機（targetDevice）。モーターの左右反転は、編集中の設定
@@ -923,15 +899,8 @@ namespace DS4WinWPF.DS4Forms
         {
             OutBinding actBind = bindingVM.ActionBinding;
 
-            if (!actBind.shiftBind)
-            {
-                actBind.outputType = OutBinding.OutType.Default;
-                actBind.control = profileSettingsService.GetDefaultButtonMapping()[(int)actBind.input];
-            }
-            else
-            {
-                actBind.outputType = OutBinding.OutType.Default;
-            }
+            actBind.outputType = OutBinding.OutType.Default;
+            actBind.control = profileSettingsService.GetDefaultButtonMapping()[(int)actBind.input];
 
             Close();
         }
@@ -947,7 +916,7 @@ namespace DS4WinWPF.DS4Forms
         private void RecordMacroBtn_Click(object sender, RoutedEventArgs e)
         {
             RecordBox box = editorWindowFactory.CreateRecordBox(bindingVM.DeviceNum, bindingVM.Settings,
-                bindingVM.ActionBinding.IsShift(), bindingVM.TargetDevice);
+                bindingVM.TargetDevice);
             box.Visibility = Visibility.Visible;
             mapBindingPanel.Visibility = Visibility.Collapsed;
             extrasSidePanel.Visibility = Visibility.Collapsed;
@@ -967,8 +936,7 @@ namespace DS4WinWPF.DS4Forms
                 fullPanel.Children.Remove(box);
                 box = null;
                 //mapBindingPanel.Visibility = Visibility.Visible;
-                bindingVM.PrepareSaveMacro(bindingVM.ActionBinding,
-                    bindingVM.ActionBinding.IsShift());
+                bindingVM.PrepareSaveMacro(bindingVM.ActionBinding);
                 Close();
             };
         }

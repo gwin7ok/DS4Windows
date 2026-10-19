@@ -82,14 +82,9 @@ namespace DS4Windows
         }
         public LightbarMacro LightbarMacro { get; set; }
 
-        public ActionType shiftActionType = ActionType.Default;
-        public ControlActionData shiftAction = new ControlActionData();
-        public int shiftTrigger = 0;
-        public string shiftExtras = null;
-        public DS4KeyType shiftKeyType = DS4KeyType.None;
+        // Phase8-Step7 7.8d: 「シフト」機能は廃止した（Phase8-Step7-8d-Plan.md）。プロファイルに残っているシフトの設定は、解釈せず、RemovedShiftSettings に保持する。
 
         public bool IsDefault { get => actionType == ActionType.Default; }
-        public bool IsShiftDefault { get => shiftActionType == ActionType.Default; }
 
         public DS4ControlSettings(DS4Controls ctrl)
         {
@@ -105,13 +100,6 @@ namespace DS4Windows
             action.actionAlias = 0;
             //actionAlias = 0;
             LightbarMacroString = string.Empty;
-            shiftActionType = ActionType.Default;
-            shiftAction = new ControlActionData();
-            shiftAction.actionAlias = 0;
-            //shiftActionAlias = 0;
-            shiftTrigger = 0;
-            shiftExtras = null;
-            shiftKeyType = DS4KeyType.None;
         }
 
         public bool IsExtrasEmpty(string extraStr)
@@ -119,75 +107,38 @@ namespace DS4Windows
             return string.IsNullOrEmpty(extraStr) || extraStr == "0,0,0,0,0,0,0,0,0";
         }
 
-        internal void UpdateSettings(bool shift, object act, string exts, DS4KeyType kt, int trigger = 0)
+        internal void UpdateSettings(object act, string exts, DS4KeyType kt)
         {
-            if (!shift)
+            if (act is int || act is ushort)
             {
-                if (act is int || act is ushort)
+                actionType = ActionType.Key;
+                action.actionKey = Convert.ToInt32(act);
+            }
+            else if (act is string || act is X360Controls)
+            {
+                actionType = ActionType.Button;
+                if (act is X360Controls)
                 {
-                    actionType = ActionType.Key;
-                    action.actionKey = Convert.ToInt32(act);
-                }
-                else if (act is string || act is X360Controls)
-                {
-                    actionType = ActionType.Button;
-                    if (act is X360Controls)
-                    {
-                        action.actionBtn = (X360Controls)act;
-                    }
-                    else
-                    {
-                        Enum.TryParse(act.ToString(), out action.actionBtn);
-                    }
-                }
-                else if (act is int[])
-                {
-                    actionType = ActionType.Macro;
-                    action.actionMacro = (int[])act;
+                    action.actionBtn = (X360Controls)act;
                 }
                 else
                 {
-                    actionType = ActionType.Default;
-                    action.actionKey = 0;
+                    Enum.TryParse(act.ToString(), out action.actionBtn);
                 }
-
-                extras = exts;
-                keyType = kt;
+            }
+            else if (act is int[])
+            {
+                actionType = ActionType.Macro;
+                action.actionMacro = (int[])act;
             }
             else
             {
-                if (act is int || act is ushort)
-                {
-                    shiftActionType = ActionType.Key;
-                    shiftAction.actionKey = Convert.ToInt32(act);
-                }
-                else if (act is string || act is X360Controls)
-                {
-                    shiftActionType = ActionType.Button;
-                    if (act is X360Controls)
-                    {
-                        shiftAction.actionBtn = (X360Controls)act;
-                    }
-                    else
-                    {
-                        Enum.TryParse(act.ToString(), out shiftAction.actionBtn);
-                    }
-                }
-                else if (act is int[])
-                {
-                    shiftActionType = ActionType.Macro;
-                    shiftAction.actionMacro = (int[])act;
-                }
-                else
-                {
-                    shiftActionType = ActionType.Default;
-                    shiftAction.actionKey = 0;
-                }
-
-                shiftExtras = exts;
-                shiftKeyType = kt;
-                shiftTrigger = trigger;
+                actionType = ActionType.Default;
+                action.actionKey = 0;
             }
+
+            extras = exts;
+            keyType = kt;
         }
     }
 }

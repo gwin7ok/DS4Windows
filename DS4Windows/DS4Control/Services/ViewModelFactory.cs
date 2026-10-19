@@ -56,11 +56,11 @@ namespace DS4Windows
                 _outputSlotService, _profileRepo, _presetLoader, _environmentService, _pathService, targetDevice);
         }
 
-        public RecordBoxViewModel CreateRecordBoxViewModel(int device, DS4ControlSettings controlSettings, bool recordMacro = true, bool extraHold = false, int targetDevice = -1)
+        public RecordBoxViewModel CreateRecordBoxViewModel(int device, DS4ControlSettings controlSettings, bool repeatable = false, int targetDevice = -1)
         {
             if (AppLogger.IsTraceEnabled)
                 AppLogger.LogTrace($"[DI] ViewModelFactory: Created RecordBoxViewModel for Device {device}, targetDevice {targetDevice}");
-            return new RecordBoxViewModel(device, controlSettings, recordMacro, extraHold,
+            return new RecordBoxViewModel(device, controlSettings, repeatable,
                 _profileSettings, _environmentService, _controlServiceAccessor(), targetDevice);
         }
 

@@ -3,7 +3,7 @@
 作成日: 2026-10-20  
 対象ブランチ: `For-DI-migration-work`  
 上位: `Phase8-Step2b-ControlsTab-Design.md`（§2.2 の B、§3.3。7.8d を「シフトの新経路への移行」から「シフトの廃止」に変更）、`Phase8-Step7-Plan.md`（7.8）、`Phase10-Assignment-UI-Unification-Plan.md`  
-状態: **計画書を承認済み（2026-10-20。ユーザー）。W0（調査）完了。W1（保持・警告の判定の部品と、仕様のテスト）を実装済み［ビルド・テストの結果待ち］。次は W2（読込・保存・実行への配線と、シフトの削除）**
+状態: **計画書を承認済み（2026-10-20。ユーザー）。W0（調査）、W1（部品とテスト）完了。W2（読込・保存・実行への配線と、シフトの削除。画面の項目の削除を含む）を実装済み［ビルド・テストの結果待ち］。次は W3（編集画面の警告ダイアログ。文言の追加）**
 
 > 初版（シフトを Key／Macro で新経路へ移す計画）は、ユーザーの廃止の方針により破棄した。初版の調査（旧経路のシフトの動き、副ボタンの表、通常とシフトが同じ名前で状態を共有する癖）は、§2 に要点を残す。
 
@@ -79,9 +79,16 @@
 5. **参照**: シフトの識別子は 12 ファイル、約 138 か所（`DS4ControlSettings` 25、`OutBinding` 32、`BindingWindowViewModel` 16、`ProfileButtonSaveSection` 17、`Mapping` 10、`RecordBoxViewModel` 10、`BindingWindow.xaml.cs` 8、`MappedControl` 7、`BackingStore` 4、`ControlBindingBuilder` 4、`ProfileSettingsService` 3、翻訳 2）。
 6. **保持の置き場**: `BackingStore` の、スロットごとの `RemovedShiftSettings`（`ds4settings` と同じ寸法）。読込のたびに取り込み直す（`ResetProfile` でも空にする）。
 
-### 5.2 W1 の実装（2026-10-20。ビルド・テストの結果待ち）
+### 5.2 W1 の実装（2026-10-20。ビルド・テスト成功）
 
 保持・警告の判定の部品（配線なし）と、その仕様のテスト。新設（1 ファイル 1 型）: `RemovedShiftSettings`（保持。`Capture`／`Clear`／`AppendTo`）、`RemovedShiftChoice`（Delete／Keep）、`RemovedShiftOutcome`（NoNotice／Deleted／Kept）、`IRemovedShiftPrompt`（警告の窓口。実装は W3 のダイアログ）、`RemovedShiftNotice`（警告の判定。選択は記憶しない）。テスト: `Phase8Step78dW1RemovedShiftSpecTests`（取り込み、置き換え、空、書き出し［属性を保つ、空のときは従来と同じ `<ShiftControl />`］、削除、残す［毎回警告］）。実行への影響（シフトの副ボタンを押しても何も変わらない）と、読込・保存のラウンドトリップは、配線をする W2 のテスト。
+
+### 5.3 W2 の実装（2026-10-20。ビルド・テストの結果待ち）
+
+- **データ・読込・保存**: `DS4ControlSettings` からシフトの欄（`shiftActionType`、`shiftAction`、`shiftTrigger`、`shiftExtras`、`shiftKeyType`、`IsShiftDefault`）を削除し、`UpdateSettings`（シフトの引数を削除）を単純化。`BackingStore` に `removedShiftSettings`（公開の読み取り専用の配列。スロットごと）を追加し、`UpdateDS4CSetting`／`UpdateDS4CExtra`／`UpdateDS4CKeyType`（シフトの引数を削除）、`ResetProfile`（保持を空に）を更新。`IProfileSettingsService.RefreshActionAlias` は 1 引数に（シフトの引数を削除）。読込は `ProfileButtonShiftLoadSection`（保持だけ）、保存は `ProfileButtonSaveSection`（シフトの組み立てを削除し、保持した内容を書き出す）。旧形式の `<ShiftModifier>` の読込（`ProfileMiscLoadSection`、`ProfileLoadContext`）を削除。`SaveProfile` の使われていない変数を削除。
+- **実行**: `Mapping` から、`ShiftTrigger`、副ボタンの表（35 要素）、番号 26 の定数、`ProcessControlSettingAction` のシフトの選択と `shiftE` を削除。`ControlBindingBuilder` の「シフトなし」の条件を削除（シフトは存在しない）。
+- **画面（W3 の警告ダイアログ以外）**: `BindingWindow`（シフトのラジオボタン、副ボタンの選択、関連のメソッド）、`BindingWindowViewModel`（シフト用の `OutBinding` と読み書き）、`OutBinding`（シフトの欄と書き込み）、`MappedControl`（シフトの表示）、`ProfileEditor`（ハイライトの表示）、`RecordBoxViewModel`／`RecordBox`／`EditorWindowFactory`／`ViewModelFactory`（シフトの引数）、`ProfilePresets`／`PresetMenuHelper`（呼び出し）。
+- **テスト**: 新規 `Phase8Step78dW2RemovedShiftWiringTests`（読込で保持、保存でそのまま、削除したら空の要素、ほかの設定を編集しても保たれる、`ResetProfile`、シフトのメンバーがないこと、ソースのガード）。`Phase8Step1ShiftTriggerCharacterizationTests`（旧経路のシフトの特性化）を削除。ガード・テスト・シグネチャを更新（`MappingCommitAndCalibration…` の終端、`RefreshActionAlias`、`RecordBox` 系の呼び出し、7.8b・7.8c のテストのシフトの項目）。ゴールデン: `profile-gap.xml`、`profile-gap.resaved.xml`、`profile-legacy.resaved.xml`、`profile-varied.xml` の `<ShiftControl>` を空の要素に、`profile-*.state.txt` からシフトの行（各 150 行）を削除。
 
 ## 6. リスクと対応
 

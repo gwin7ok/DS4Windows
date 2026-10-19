@@ -284,26 +284,5 @@
       <Capture>ScanCode</Capture>
     </KeyType>
   </Control>
-  <ShiftControl>
-    <Key>
-      <L3 Trigger="1">0</L3>
-      <R3 Trigger="1">0</R3>
-      <R2FullPull Trigger="1">0</R2FullPull>
-      <GyroSwipeLeft Trigger="1">0</GyroSwipeLeft>
-      <GyroSwipeRight Trigger="1">0</GyroSwipeRight>
-      <GyroSwipeUp Trigger="1">0</GyroSwipeUp>
-      <GyroSwipeDown Trigger="1">0</GyroSwipeDown>
-      <Capture Trigger="1">0</Capture>
-    </Key>
-    <KeyType>
-      <L3>ScanCode</L3>
-      <R3>ScanCode</R3>
-      <R2FullPull>ScanCode</R2FullPull>
-      <GyroSwipeLeft>ScanCode</GyroSwipeLeft>
-      <GyroSwipeRight>ScanCode</GyroSwipeRight>
-      <GyroSwipeUp>ScanCode</GyroSwipeUp>
-      <GyroSwipeDown>ScanCode</GyroSwipeDown>
-      <Capture>ScanCode</Capture>
-    </KeyType>
-  </ShiftControl>
+  <ShiftControl />
 </DS4Windows>

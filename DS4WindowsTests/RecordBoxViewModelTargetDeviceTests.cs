@@ -106,7 +106,7 @@ namespace DS4WindowsTests
         private static RecordBoxViewModel CreateViewModel(ProfileSettingsService settings, int targetDevice)
         {
             return new RecordBoxViewModel(DS4Windows.ControllerLimits.TestProfileIndex, new DS4ControlSettings(DS4Controls.Cross),
-                false, true, settings, new DS4Windows.EnvironmentService(), null, targetDevice);
+                true, settings, new DS4Windows.EnvironmentService(), null, targetDevice);
         }
 
         [Fact]
@@ -153,7 +153,7 @@ namespace DS4WindowsTests
             var settings = CreateIsolatedSettings();
 
             var vm = new RecordBoxViewModel(DS4Windows.ControllerLimits.TestProfileIndex, new DS4ControlSettings(DS4Controls.Cross),
-                false, true, settings, new DS4Windows.EnvironmentService(), null);
+                true, settings, new DS4Windows.EnvironmentService(), null);
 
             Assert.Equal(-1, vm.TargetDevice);
             Assert.All(settings.TouchOutMode, m => Assert.Equal(TouchpadOutMode.Mouse, m));

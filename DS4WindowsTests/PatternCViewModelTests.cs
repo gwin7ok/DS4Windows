@@ -130,7 +130,7 @@ namespace DS4WindowsTests
             var settings = new DS4ControlSettings(DS4Controls.Cross);
             // Phase6-Step7b-2: targetDevice を省略（-1＝実機なし）するため、以前のように
             // TouchOutMode[0] を Passthru にしたまま戻さない副作用は起きない
-            var vm = factory.CreateRecordBoxViewModel(0, settings, true, false);
+            var vm = factory.CreateRecordBoxViewModel(0, settings, false);
             Assert.NotNull(vm);
             Assert.Equal(-1, vm.TargetDevice);
         }
@@ -161,7 +161,7 @@ namespace DS4WindowsTests
                 profileSettings.TouchOutMode[DS4Windows.ControllerLimits.TestProfileIndex] = TouchpadOutMode.Mouse;
 
                 vm = factory.CreateRecordBoxViewModel(DS4Windows.ControllerLimits.TestProfileIndex,
-                    new DS4ControlSettings(DS4Controls.Cross), true, false, targetSlot);
+                    new DS4ControlSettings(DS4Controls.Cross), false, targetSlot);
                 Assert.NotNull(vm);
                 Assert.Equal(DS4Windows.ControllerLimits.TestProfileIndex, vm.DeviceNum);
                 Assert.Equal(targetSlot, vm.TargetDevice);

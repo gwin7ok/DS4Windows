@@ -62,7 +62,7 @@ namespace DS4WinWPF.DS4Forms
         /// Phase6-Step7b: ライトバーのプレビューと記録中のタッチパッド Passthru で使う実機のスロット番号。-1 は実機なし。
         /// 渡し忘れをコンパイルで検出するため必須引数とする（Phase6-Step7b-Plan.md 決定2）
         /// </param>
-        public RecordBox(int deviceNum, DS4Windows.DS4ControlSettings controlSettings, bool shift, int targetDevice,
+        public RecordBox(int deviceNum, DS4Windows.DS4ControlSettings controlSettings, int targetDevice,
             bool showscan, bool repeatable,
             DS4Windows.ControlService controlService, DS4Windows.DI.IPathService pathService,
             DS4Windows.DI.IViewModelFactory viewModelFactory)
@@ -71,7 +71,7 @@ namespace DS4WinWPF.DS4Forms
             this.pathService = pathService ?? throw new ArgumentNullException(nameof(pathService));
             if (viewModelFactory == null) throw new ArgumentNullException(nameof(viewModelFactory));
             InitializeComponent();
-            recordBoxVM = viewModelFactory.CreateRecordBoxViewModel(deviceNum, controlSettings, shift, repeatable, targetDevice);
+            recordBoxVM = viewModelFactory.CreateRecordBoxViewModel(deviceNum, controlSettings, repeatable, targetDevice);
             mouseButtonsPanel.Visibility = Visibility.Hidden;
             extraConPanel.Visibility = Visibility.Hidden;
             macroModeCombo.IsEnabled = repeatable;

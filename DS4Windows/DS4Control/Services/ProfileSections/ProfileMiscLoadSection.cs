@@ -32,7 +32,7 @@ using LightbarMacro = DS4WinWPF.DS4Forms.ViewModels.LightbarMacro;
 namespace DS4Windows.Services
 {
     /// <summary>
-    /// Phase8-Step4b W4（Phase8-Step4b-Plan.md §3.2）: 雑多の設定（ChargingType、MouseAcceleration、ShiftModifier、LaunchProgram、DinputOnly、StartTouchpadOff、UseTPforControls、UseSAforMouse）の読込。ShiftModifier と UseTPforControls の有無は、後の節が使うため文脈に書き戻す。
+    /// Phase8-Step4b W4（Phase8-Step4b-Plan.md §3.2）: 雑多の設定（ChargingType、MouseAcceleration、LaunchProgram、DinputOnly、StartTouchpadOff、UseTPforControls、UseSAforMouse）の読込。UseTPforControls の有無は、後の節が使うため文脈に書き戻す。
     /// <c>LegacyProfileXmlSerializer.LoadProfile</c> から移したもの。移動のみで、要素の順序・既定値・例外の扱いは変えない。
     /// </summary>
     internal sealed class ProfileMiscLoadSection : IProfileLoadSection
@@ -55,9 +55,6 @@ namespace DS4Windows.Services
             try { Item = m_Xdoc.SelectSingleNode("/" + rootname + "/MouseAcceleration"); bool.TryParse(Item.InnerText, out store.buttonMouseInfos[device].mouseAccel); }
             catch { missingSetting = true; }
 
-            int shiftM = 0;
-            if (m_Xdoc.SelectSingleNode("/" + rootname + "/ShiftModifier") != null)
-                int.TryParse(m_Xdoc.SelectSingleNode("/" + rootname + "/ShiftModifier").InnerText, out shiftM);
 
             try
             {
@@ -164,7 +161,6 @@ namespace DS4Windows.Services
             }
             catch { store.gyroOutMode[device] = GyroOutMode.Controls; }
 
-            context.ShiftModifier = shiftM;
             context.TpForControlsPresent = tpForControlsPresent;
             context.MissingSetting = missingSetting;
         }

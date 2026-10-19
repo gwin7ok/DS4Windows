@@ -105,48 +105,6 @@
         <DockPanel x:Name="mapBindingPanel" DockPanel.Dock="Top">
             <DockPanel x:Name="bottomPanel" DockPanel.Dock="Bottom" Margin="0,4,0,0">
                 <StackPanel x:Name="modePanel" Width="160" DockPanel.Dock="Left" Margin="8,0,0,0">
-                    <StackPanel Orientation="Horizontal">
-                        <RadioButton x:Name="regBindRadio" Content="{lex:Loc Regular}" GroupName="bindModeGroup" IsChecked="True" Click="RegBindRadio_Click" />
-                        <RadioButton x:Name="shiftBindRadio" Content="{lex:Loc ShiftModifier}" GroupName="bindModeGroup" Margin="10,0,0,0" Click="ShiftBindRadio_Click" />
-                    </StackPanel>
-
-                    <ComboBox x:Name="shiftTriggerCombo" Margin="0,8,0,0" SelectedIndex="{Binding ShiftTrigger,FallbackValue=0}">
-                        <ComboBoxItem Content="{lex:Loc BindingWin.SelectShiftTrigger}"/>
-                        <ComboBoxItem Content="Cross"/>
-                        <ComboBoxItem Content="Circle"/>
-                        <ComboBoxItem Content="Square"/>
-                        <ComboBoxItem Content="Triangle"/>
-                        <ComboBoxItem Content="Options"/>
-                        <ComboBoxItem Content="Share"/>
-                        <ComboBoxItem Content="Up"/>
-                        <ComboBoxItem Content="Down"/>
-                        <ComboBoxItem Content="Left"/>
-                        <ComboBoxItem Content="Right"/>
-                        <ComboBoxItem Content="PS"/>
-                        <ComboBoxItem Content="L1"/>
-                        <ComboBoxItem Content="R1"/>
-                        <ComboBoxItem Content="L2"/>
-                        <ComboBoxItem Content="R2"/>
-                        <ComboBoxItem Content="L3"/>
-                        <ComboBoxItem Content="R3"/>
-                        <ComboBoxItem Content="Left Touch"/>
-                        <ComboBoxItem Content="Upper Touch"/>
-                        <ComboBoxItem Content="Multitouch"/>
-                        <ComboBoxItem Content="Right Touch"/>
-                        <ComboBoxItem Content="Sixaxis Up"/>
-                        <ComboBoxItem Content="Sixaxis Down"/>
-                        <ComboBoxItem Content="Sixaxis Left"/>
-                        <ComboBoxItem Content="Sixaxis Right"/>
-                        <ComboBoxItem Content="Finger on Touchpad"/>
-                        <ComboBoxItem Content="Mute"/>
-                        <ComboBoxItem Content="DSE Function Left"/>
-                        <ComboBoxItem Content="DSE Function Right"/>
-                        <ComboBoxItem Content="DSE Left Paddle"/>
-                        <ComboBoxItem Content="DSE Right Paddle"/>
-                        <ComboBoxItem Content="Capture" />
-                        <ComboBoxItem Content="Side L" />
-                        <ComboBoxItem Content="Side R" />
-                    </ComboBox>
 
                     <Button x:Name="defaultBtn" Content="{Binding DefaultBtnString,FallbackValue={lex:Loc Default}}" Background="{Binding DefaultColor,FallbackValue={StaticResource SecondaryColor}}" Margin="0,50,0,0" Click="DefaultBtn_Click" />
                     <Button x:Name="unboundBtn" Content="{lex:Loc Unbound}" Background="{Binding UnboundColor,FallbackValue={StaticResource SecondaryColor}}" Margin="0,10,0,0" Click="UnboundBtn_Click" />

@@ -146,18 +146,9 @@ namespace DS4WindowsTests
             button.actionType = DS4ControlSettings.ActionType.Button;
             Assert.False(ControlBindingBuilder.TryInterpretKey(button, out _));
 
-            DS4ControlSettings shifted = Key();
-            shifted.shiftActionType = DS4ControlSettings.ActionType.Key;
-            shifted.shiftAction.actionKey = 66;
-            Assert.False(ControlBindingBuilder.TryInterpretKey(shifted, out _));
-
             DS4ControlSettings extras = Key();
             extras.extras = "1,2,0,0,0,0,0,0,0";
             Assert.False(ControlBindingBuilder.TryInterpretKey(extras, out _));
-
-            DS4ControlSettings shiftExtras = Key();
-            shiftExtras.shiftExtras = "1,2,0,0,0,0,0,0,0";
-            Assert.False(ControlBindingBuilder.TryInterpretKey(shiftExtras, out _));
 
             Assert.False(ControlBindingBuilder.TryInterpretKey(Key(-1), out _));      // 旧経路は範囲外で例外になる。新経路は所有しない
             Assert.False(ControlBindingBuilder.TryInterpretKey(Key(70000), out _));
@@ -173,9 +164,8 @@ namespace DS4WindowsTests
             using var t = new ControlsKeyTestScope(true);
             t.MapKey(DS4Controls.Cross, 65);
             t.MapKey(DS4Controls.LXNeg, 66, DS4KeyType.Toggle);
-            DS4ControlSettings shifted = t.MapKey(DS4Controls.Circle, 67);
-            shifted.shiftActionType = DS4ControlSettings.ActionType.Key;   // 条件を満たさない
-            shifted.shiftAction.actionKey = 68;
+            DS4ControlSettings withExtras = t.MapKey(DS4Controls.Circle, 67);
+            withExtras.extras = "1,2,0,0,0,0,0,0,0";   // 条件を満たさない
             t.MapKey(DS4Controls.GyroSwipeLeft, 69);                        // 対象外
 
             IReadOnlyList<IActionBinding> bindings = TestHost.GetService<IControlBindingBuilder>().Build(Device);

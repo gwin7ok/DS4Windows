@@ -19,7 +19,7 @@ namespace DS4Windows.DI
         BindingWindow CreateBindingWindow(int deviceNum, DS4ControlSettings settings, int targetDevice,
             BindingWindow.ExposeMode expose = BindingWindow.ExposeMode.Full);
 
-        RecordBox CreateRecordBox(int deviceNum, DS4ControlSettings controlSettings, bool shift, int targetDevice,
+        RecordBox CreateRecordBox(int deviceNum, DS4ControlSettings controlSettings, int targetDevice,
             bool showscan = true, bool repeatable = true);
 
         RecordBoxWindow CreateRecordBoxWindow(int deviceNum, DS4ControlSettings settings, int targetDevice,

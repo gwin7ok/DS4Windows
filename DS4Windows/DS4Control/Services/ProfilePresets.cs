@@ -309,13 +309,13 @@ namespace DS4Windows.Services
             PrepareBlankingProfile(device, control, out bool xinputPlug, out bool xinputStatus, xinputChange);
 
             DS4ControlSettings setting = store.GetDS4CSetting(device, DS4Controls.RYNeg);
-            setting.UpdateSettings(false, X360Controls.MouseUp, "", DS4KeyType.None);
+            setting.UpdateSettings(X360Controls.MouseUp, "", DS4KeyType.None);
             setting = store.GetDS4CSetting(device, DS4Controls.RYPos);
-            setting.UpdateSettings(false, X360Controls.MouseDown, "", DS4KeyType.None);
+            setting.UpdateSettings(X360Controls.MouseDown, "", DS4KeyType.None);
             setting = store.GetDS4CSetting(device, DS4Controls.RXNeg);
-            setting.UpdateSettings(false, X360Controls.MouseLeft, "", DS4KeyType.None);
+            setting.UpdateSettings(X360Controls.MouseLeft, "", DS4KeyType.None);
             setting = store.GetDS4CSetting(device, DS4Controls.RXPos);
-            setting.UpdateSettings(false, X360Controls.MouseRight, "", DS4KeyType.None);
+            setting.UpdateSettings(X360Controls.MouseRight, "", DS4KeyType.None);
 
             StickDeadZoneInfo rsInfo = store.rsModInfo[device];
             rsInfo.deadZone = (int)(0.035 * 127);
@@ -360,13 +360,13 @@ namespace DS4Windows.Services
             store.containsCustomExtras[device] = false;
 
             DS4ControlSettings setting = store.GetDS4CSetting(device, DS4Controls.RYNeg);
-            setting.UpdateSettings(false, X360Controls.MouseUp, "", DS4KeyType.None);
+            setting.UpdateSettings(X360Controls.MouseUp, "", DS4KeyType.None);
             setting = store.GetDS4CSetting(device, DS4Controls.RYPos);
-            setting.UpdateSettings(false, X360Controls.MouseDown, "", DS4KeyType.None);
+            setting.UpdateSettings(X360Controls.MouseDown, "", DS4KeyType.None);
             setting = store.GetDS4CSetting(device, DS4Controls.RXNeg);
-            setting.UpdateSettings(false, X360Controls.MouseLeft, "", DS4KeyType.None);
+            setting.UpdateSettings(X360Controls.MouseLeft, "", DS4KeyType.None);
             setting = store.GetDS4CSetting(device, DS4Controls.RXPos);
-            setting.UpdateSettings(false, X360Controls.MouseRight, "", DS4KeyType.None);
+            setting.UpdateSettings(X360Controls.MouseRight, "", DS4KeyType.None);
 
             StickDeadZoneInfo rsInfo = store.rsModInfo[device];
             rsInfo.deadZone = (int)(0.035 * 127);
@@ -426,58 +426,58 @@ namespace DS4Windows.Services
             store.dinputOnly[device] = true;
 
             DS4ControlSettings setting = store.GetDS4CSetting(device, DS4Controls.LYNeg);
-            setting.UpdateSettings(false, KeyInterop.VirtualKeyFromKey(Key.W), "", DS4KeyType.None);
+            setting.UpdateSettings(KeyInterop.VirtualKeyFromKey(Key.W), "", DS4KeyType.None);
             setting = store.GetDS4CSetting(device, DS4Controls.LXNeg);
-            setting.UpdateSettings(false, KeyInterop.VirtualKeyFromKey(Key.A), "", DS4KeyType.None);
+            setting.UpdateSettings(KeyInterop.VirtualKeyFromKey(Key.A), "", DS4KeyType.None);
             setting = store.GetDS4CSetting(device, DS4Controls.LYPos);
-            setting.UpdateSettings(false, KeyInterop.VirtualKeyFromKey(Key.S), "", DS4KeyType.None);
+            setting.UpdateSettings(KeyInterop.VirtualKeyFromKey(Key.S), "", DS4KeyType.None);
             setting = store.GetDS4CSetting(device, DS4Controls.LXPos);
-            setting.UpdateSettings(false, KeyInterop.VirtualKeyFromKey(Key.D), "", DS4KeyType.None);
+            setting.UpdateSettings(KeyInterop.VirtualKeyFromKey(Key.D), "", DS4KeyType.None);
             setting = store.GetDS4CSetting(device, DS4Controls.L3);
-            setting.UpdateSettings(false, KeyInterop.VirtualKeyFromKey(Key.LeftShift), "", DS4KeyType.None);
+            setting.UpdateSettings(KeyInterop.VirtualKeyFromKey(Key.LeftShift), "", DS4KeyType.None);
 
             setting = store.GetDS4CSetting(device, DS4Controls.RYNeg);
-            setting.UpdateSettings(false, X360Controls.MouseUp, "", DS4KeyType.None);
+            setting.UpdateSettings(X360Controls.MouseUp, "", DS4KeyType.None);
             setting = store.GetDS4CSetting(device, DS4Controls.RYPos);
-            setting.UpdateSettings(false, X360Controls.MouseDown, "", DS4KeyType.None);
+            setting.UpdateSettings(X360Controls.MouseDown, "", DS4KeyType.None);
             setting = store.GetDS4CSetting(device, DS4Controls.RXNeg);
-            setting.UpdateSettings(false, X360Controls.MouseLeft, "", DS4KeyType.None);
+            setting.UpdateSettings(X360Controls.MouseLeft, "", DS4KeyType.None);
             setting = store.GetDS4CSetting(device, DS4Controls.RXPos);
-            setting.UpdateSettings(false, X360Controls.MouseRight, "", DS4KeyType.None);
+            setting.UpdateSettings(X360Controls.MouseRight, "", DS4KeyType.None);
             setting = store.GetDS4CSetting(device, DS4Controls.R3);
-            setting.UpdateSettings(false, KeyInterop.VirtualKeyFromKey(Key.LeftCtrl), "", DS4KeyType.None);
+            setting.UpdateSettings(KeyInterop.VirtualKeyFromKey(Key.LeftCtrl), "", DS4KeyType.None);
 
             setting = store.GetDS4CSetting(device, DS4Controls.DpadUp);
-            setting.UpdateSettings(false, X360Controls.Unbound, "", DS4KeyType.None);
+            setting.UpdateSettings(X360Controls.Unbound, "", DS4KeyType.None);
             setting = store.GetDS4CSetting(device, DS4Controls.DpadRight);
-            setting.UpdateSettings(false, X360Controls.WDOWN, "", DS4KeyType.None);
+            setting.UpdateSettings(X360Controls.WDOWN, "", DS4KeyType.None);
             setting = store.GetDS4CSetting(device, DS4Controls.DpadDown);
-            setting.UpdateSettings(false, X360Controls.Unbound, "", DS4KeyType.None);
+            setting.UpdateSettings(X360Controls.Unbound, "", DS4KeyType.None);
             setting = store.GetDS4CSetting(device, DS4Controls.DpadLeft);
-            setting.UpdateSettings(false, X360Controls.WUP, "", DS4KeyType.None);
+            setting.UpdateSettings(X360Controls.WUP, "", DS4KeyType.None);
 
             setting = store.GetDS4CSetting(device, DS4Controls.Cross);
-            setting.UpdateSettings(false, KeyInterop.VirtualKeyFromKey(Key.Space), "", DS4KeyType.None);
+            setting.UpdateSettings(KeyInterop.VirtualKeyFromKey(Key.Space), "", DS4KeyType.None);
             setting = store.GetDS4CSetting(device, DS4Controls.Square);
-            setting.UpdateSettings(false, KeyInterop.VirtualKeyFromKey(Key.F), "", DS4KeyType.None);
+            setting.UpdateSettings(KeyInterop.VirtualKeyFromKey(Key.F), "", DS4KeyType.None);
             setting = store.GetDS4CSetting(device, DS4Controls.Triangle);
-            setting.UpdateSettings(false, KeyInterop.VirtualKeyFromKey(Key.E), "", DS4KeyType.None);
+            setting.UpdateSettings(KeyInterop.VirtualKeyFromKey(Key.E), "", DS4KeyType.None);
             setting = store.GetDS4CSetting(device, DS4Controls.Circle);
-            setting.UpdateSettings(false, KeyInterop.VirtualKeyFromKey(Key.C), "", DS4KeyType.None);
+            setting.UpdateSettings(KeyInterop.VirtualKeyFromKey(Key.C), "", DS4KeyType.None);
 
             setting = store.GetDS4CSetting(device, DS4Controls.L1);
-            setting.UpdateSettings(false, KeyInterop.VirtualKeyFromKey(Key.Q), "", DS4KeyType.None);
+            setting.UpdateSettings(KeyInterop.VirtualKeyFromKey(Key.Q), "", DS4KeyType.None);
             setting = store.GetDS4CSetting(device, DS4Controls.L2);
-            setting.UpdateSettings(false, X360Controls.RightMouse, "", DS4KeyType.None);
+            setting.UpdateSettings(X360Controls.RightMouse, "", DS4KeyType.None);
             setting = store.GetDS4CSetting(device, DS4Controls.R1);
-            setting.UpdateSettings(false, KeyInterop.VirtualKeyFromKey(Key.R), "", DS4KeyType.None);
+            setting.UpdateSettings(KeyInterop.VirtualKeyFromKey(Key.R), "", DS4KeyType.None);
             setting = store.GetDS4CSetting(device, DS4Controls.R2);
-            setting.UpdateSettings(false, X360Controls.LeftMouse, "", DS4KeyType.None);
+            setting.UpdateSettings(X360Controls.LeftMouse, "", DS4KeyType.None);
 
             setting = store.GetDS4CSetting(device, DS4Controls.Share);
-            setting.UpdateSettings(false, KeyInterop.VirtualKeyFromKey(Key.Tab), "", DS4KeyType.None);
+            setting.UpdateSettings(KeyInterop.VirtualKeyFromKey(Key.Tab), "", DS4KeyType.None);
             setting = store.GetDS4CSetting(device, DS4Controls.Options);
-            setting.UpdateSettings(false, KeyInterop.VirtualKeyFromKey(Key.Escape), "", DS4KeyType.None);
+            setting.UpdateSettings(KeyInterop.VirtualKeyFromKey(Key.Escape), "", DS4KeyType.None);
 
             // If a device exists, make sure to transfer relevant profile device
             // options to device instance
@@ -539,59 +539,59 @@ namespace DS4Windows.Services
             store.dinputOnly[device] = true;
 
             DS4ControlSettings setting = store.GetDS4CSetting(device, DS4Controls.LYNeg);
-            setting.UpdateSettings(false, KeyInterop.VirtualKeyFromKey(Key.W), "", DS4KeyType.None);
+            setting.UpdateSettings(KeyInterop.VirtualKeyFromKey(Key.W), "", DS4KeyType.None);
             setting = store.GetDS4CSetting(device, DS4Controls.LXNeg);
-            setting.UpdateSettings(false, KeyInterop.VirtualKeyFromKey(Key.A), "", DS4KeyType.None);
+            setting.UpdateSettings(KeyInterop.VirtualKeyFromKey(Key.A), "", DS4KeyType.None);
             setting = store.GetDS4CSetting(device, DS4Controls.LYPos);
-            setting.UpdateSettings(false, KeyInterop.VirtualKeyFromKey(Key.S), "", DS4KeyType.None);
+            setting.UpdateSettings(KeyInterop.VirtualKeyFromKey(Key.S), "", DS4KeyType.None);
             setting = store.GetDS4CSetting(device, DS4Controls.LXPos);
-            setting.UpdateSettings(false, KeyInterop.VirtualKeyFromKey(Key.D), "", DS4KeyType.None);
+            setting.UpdateSettings(KeyInterop.VirtualKeyFromKey(Key.D), "", DS4KeyType.None);
             setting = store.GetDS4CSetting(device, DS4Controls.L3);
-            setting.UpdateSettings(false, KeyInterop.VirtualKeyFromKey(Key.LeftShift), "", DS4KeyType.None);
+            setting.UpdateSettings(KeyInterop.VirtualKeyFromKey(Key.LeftShift), "", DS4KeyType.None);
 
             setting = store.GetDS4CSetting(device, DS4Controls.RYNeg);
-            setting.UpdateSettings(false, X360Controls.MouseUp, "", DS4KeyType.None);
+            setting.UpdateSettings(X360Controls.MouseUp, "", DS4KeyType.None);
             setting = store.GetDS4CSetting(device, DS4Controls.RYPos);
-            setting.UpdateSettings(false, X360Controls.MouseDown, "", DS4KeyType.None);
+            setting.UpdateSettings(X360Controls.MouseDown, "", DS4KeyType.None);
             setting = store.GetDS4CSetting(device, DS4Controls.RXNeg);
-            setting.UpdateSettings(false, X360Controls.MouseLeft, "", DS4KeyType.None);
+            setting.UpdateSettings(X360Controls.MouseLeft, "", DS4KeyType.None);
             setting = store.GetDS4CSetting(device, DS4Controls.RXPos);
-            setting.UpdateSettings(false, X360Controls.MouseRight, "", DS4KeyType.None);
+            setting.UpdateSettings(X360Controls.MouseRight, "", DS4KeyType.None);
             setting = store.GetDS4CSetting(device, DS4Controls.R3);
-            setting.UpdateSettings(false, KeyInterop.VirtualKeyFromKey(Key.LeftCtrl), "", DS4KeyType.None);
+            setting.UpdateSettings(KeyInterop.VirtualKeyFromKey(Key.LeftCtrl), "", DS4KeyType.None);
 
             setting = store.GetDS4CSetting(device, DS4Controls.DpadUp);
-            setting.UpdateSettings(false, X360Controls.Unbound, "", DS4KeyType.None);
+            setting.UpdateSettings(X360Controls.Unbound, "", DS4KeyType.None);
             setting = store.GetDS4CSetting(device, DS4Controls.DpadRight);
-            setting.UpdateSettings(false, X360Controls.WDOWN, "", DS4KeyType.None);
+            setting.UpdateSettings(X360Controls.WDOWN, "", DS4KeyType.None);
             setting = store.GetDS4CSetting(device, DS4Controls.DpadDown);
-            setting.UpdateSettings(false, X360Controls.Unbound, "", DS4KeyType.None);
+            setting.UpdateSettings(X360Controls.Unbound, "", DS4KeyType.None);
             setting = store.GetDS4CSetting(device, DS4Controls.DpadLeft);
-            setting.UpdateSettings(false, X360Controls.WUP, "", DS4KeyType.None);
+            setting.UpdateSettings(X360Controls.WUP, "", DS4KeyType.None);
 
             setting = store.GetDS4CSetting(device, DS4Controls.Cross);
-            setting.UpdateSettings(false, KeyInterop.VirtualKeyFromKey(Key.Space), "", DS4KeyType.None);
+            setting.UpdateSettings(KeyInterop.VirtualKeyFromKey(Key.Space), "", DS4KeyType.None);
             setting = store.GetDS4CSetting(device, DS4Controls.Square);
-            setting.UpdateSettings(false, KeyInterop.VirtualKeyFromKey(Key.F), "", DS4KeyType.None);
+            setting.UpdateSettings(KeyInterop.VirtualKeyFromKey(Key.F), "", DS4KeyType.None);
             setting = store.GetDS4CSetting(device, DS4Controls.Triangle);
-            setting.UpdateSettings(false, KeyInterop.VirtualKeyFromKey(Key.E), "", DS4KeyType.None);
+            setting.UpdateSettings(KeyInterop.VirtualKeyFromKey(Key.E), "", DS4KeyType.None);
             setting = store.GetDS4CSetting(device, DS4Controls.Circle);
-            setting.UpdateSettings(false, KeyInterop.VirtualKeyFromKey(Key.C), "", DS4KeyType.None);
+            setting.UpdateSettings(KeyInterop.VirtualKeyFromKey(Key.C), "", DS4KeyType.None);
 
             setting = store.GetDS4CSetting(device, DS4Controls.L1);
-            //setting.UpdateSettings(false, KeyInterop.VirtualKeyFromKey(Key.Q), "", DS4KeyType.None);
-            setting.UpdateSettings(false, X360Controls.Unbound, "", DS4KeyType.None);
+            //setting.UpdateSettings(KeyInterop.VirtualKeyFromKey(Key.Q), "", DS4KeyType.None);
+            setting.UpdateSettings(X360Controls.Unbound, "", DS4KeyType.None);
             setting = store.GetDS4CSetting(device, DS4Controls.L2);
-            setting.UpdateSettings(false, X360Controls.RightMouse, "", DS4KeyType.None);
+            setting.UpdateSettings(X360Controls.RightMouse, "", DS4KeyType.None);
             setting = store.GetDS4CSetting(device, DS4Controls.R1);
-            setting.UpdateSettings(false, KeyInterop.VirtualKeyFromKey(Key.R), "", DS4KeyType.None);
+            setting.UpdateSettings(KeyInterop.VirtualKeyFromKey(Key.R), "", DS4KeyType.None);
             setting = store.GetDS4CSetting(device, DS4Controls.R2);
-            setting.UpdateSettings(false, X360Controls.LeftMouse, "", DS4KeyType.None);
+            setting.UpdateSettings(X360Controls.LeftMouse, "", DS4KeyType.None);
 
             setting = store.GetDS4CSetting(device, DS4Controls.Share);
-            setting.UpdateSettings(false, KeyInterop.VirtualKeyFromKey(Key.Tab), "", DS4KeyType.None);
+            setting.UpdateSettings(KeyInterop.VirtualKeyFromKey(Key.Tab), "", DS4KeyType.None);
             setting = store.GetDS4CSetting(device, DS4Controls.Options);
-            setting.UpdateSettings(false, KeyInterop.VirtualKeyFromKey(Key.Escape), "", DS4KeyType.None);
+            setting.UpdateSettings(KeyInterop.VirtualKeyFromKey(Key.Escape), "", DS4KeyType.None);
 
             // If a device exists, make sure to transfer relevant profile device
             // options to device instance

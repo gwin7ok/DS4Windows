@@ -975,11 +975,6 @@ namespace DS4WinWPF.DS4Forms
         private void UpdateHighlightLabel(MappedControl mapped)
         {
             string display = $"{mapped.ControlName}: {mapped.MappingName}";
-            if (mapped.HasShiftAction())
-            {
-                display += "\nShift: ";
-                display += mapped.ShiftMappingName;
-            }
 
             highlightControlDisplayLb.Content = display;
         }

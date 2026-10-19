@@ -205,18 +205,12 @@ namespace DS4WindowsTests
             var viaGlobal = new DS4ControlSettings(DS4Controls.Cross);
             viaService.action.actionAlias = 99;
             viaGlobal.action.actionAlias = 99;
-            viaService.shiftAction.actionAlias = 77;
-            viaGlobal.shiftAction.actionAlias = 77;
 
-            service.RefreshActionAlias(viaService, false);
-            service.RefreshActionAlias(viaService, true);
-            TestGlobals.ProfileSettingsServiceInstance.RefreshActionAlias(viaGlobal, false);
-            TestGlobals.ProfileSettingsServiceInstance.RefreshActionAlias(viaGlobal, true);
+            service.RefreshActionAlias(viaService);
+            TestGlobals.ProfileSettingsServiceInstance.RefreshActionAlias(viaGlobal);
 
             Assert.Equal(0u, viaService.action.actionAlias);
-            Assert.Equal(0u, viaService.shiftAction.actionAlias);
             Assert.Equal(viaGlobal.action.actionAlias, viaService.action.actionAlias);
-            Assert.Equal(viaGlobal.shiftAction.actionAlias, viaService.shiftAction.actionAlias);
         }
 
         [Fact]
@@ -242,8 +236,8 @@ namespace DS4WindowsTests
                 viaGlobal.actionType = DS4ControlSettings.ActionType.Key;
                 viaGlobal.action.actionKey = virtualKey;
 
-                service.RefreshActionAlias(viaService, false);
-                TestGlobals.ProfileSettingsServiceInstance.RefreshActionAlias(viaGlobal, false);
+                service.RefreshActionAlias(viaService);
+                TestGlobals.ProfileSettingsServiceInstance.RefreshActionAlias(viaGlobal);
 
                 Assert.Equal(mapping.GetRealEventKey((uint)virtualKey), viaService.action.actionAlias);
                 Assert.Equal(viaGlobal.action.actionAlias, viaService.action.actionAlias);

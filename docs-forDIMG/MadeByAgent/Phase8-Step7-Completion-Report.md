@@ -374,3 +374,12 @@ Step7 の 7.6 は、これで 4 種別（GyroCalibrate、DisconnectBT、BatteryC
 - **SA に合わせた点**: 出力は既存の `MacroAction`、押下の判定は SA のトリガー（`IsActive`）、状態は `ActionInstanceState`、呼び出しは立ち上がりの 1 回（繰り返しは `RepeatMacro` の内部ループ）、Fresh-press ガードを見る。
 - **動作の変更（承認済み）**: (1) **Play Once の連続再実行を、不具合として 1 回だけに直した**（旧経路は、フラグなしでも押している間ほぼ毎フレーム再実行されていた。W1 の実測: 900ms で 58 回）。(2) ジャイロの閾値が 0 から ±67 に。(3) プロファイル適用直後の押しっぱなしは、一度離すまで動かない（Fresh-press ガード）。(4) 状態の持ち方が、ボタン単位の `macrodone` から `ActionInstanceState` に。
 - **後続**: Phase10（割り当ての UI の統一）で、Controls と SA のマクロの編集画面を共通化する（`Phase10-Assignment-UI-Unification-Plan.md`）。
+
+## 7.8d Controls タブの「シフト」機能の廃止（2026-10-20。W2 までの実装。ビルド・テストの結果待ち）
+
+計画書: `Phase8-Step7-8d-Plan.md`（ユーザーの決定: SA の組み合わせトリガーで代用できるため、シフト機能を廃止する。規約 2.2 の機能廃止の承認）。**当初の 7.8d（シフトの新経路への移行）は、この廃止に置き換えた。**
+
+- **廃止したもの**: Controls タブの割り当ての「シフト」（副ボタンを押している間だけ別の割り当てに切り替わる）。データ（`DS4ControlSettings` のシフトの欄）、実行（`Mapping` のシフトの処理、副ボタンの表）、画面（割り当て画面のシフトの選択）、旧形式の `<ShiftModifier>` の読込。代用できない使い方（アナログの割り当て、Extras）は、利用者が承知のうえで失う。
+- **プロファイルに残るシフトの設定**: 読込のとき、`<ShiftControl>` の内容を解釈せず、そのまま保持する（`RemovedShiftSettings`）。動作には使わない。保存では、保持した内容をそのまま書き出す（編集画面で削除を選べば、空の要素になる）。**編集画面を開いたときの警告（削除か残すかの選択。残せば毎回警告）は W3**。
+- **移行処理**: SA への変換は作らない（ユーザー指示）。
+- **影響した API**: `UpdateSettings`／`UpdateDS4CSetting`／`UpdateDS4CExtra`／`UpdateDS4CKeyType`／`RefreshActionAlias`／`RecordBox`／`RecordBoxViewModel`／`IEditorWindowFactory.CreateRecordBox`／`IViewModelFactory.CreateRecordBoxViewModel` から、シフトの引数を削除した。
