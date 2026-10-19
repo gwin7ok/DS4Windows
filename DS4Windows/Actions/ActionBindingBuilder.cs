@@ -83,7 +83,7 @@ namespace DS4Windows.Actions
                         BindingPolicy.Default, sa, index);
 
                 case SpecialAction.ActionTypeId.Macro:
-                    return new TriggerBinding(Input(sa, sa.pressRelease), new IOutputAction[] { new MacroAction(sa, device, _macroPlayer) },
+                    return new TriggerBinding(Input(sa, sa.pressRelease), new IOutputAction[] { new MacroAction(sa, device, _macroPlayer, index, _actionRepository) },
                         BindingPolicy.Default, sa, index);
 
                 case SpecialAction.ActionTypeId.Program:

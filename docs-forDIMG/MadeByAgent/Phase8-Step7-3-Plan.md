@@ -49,7 +49,7 @@ Macro 種別の特殊アクションを、旧ループ（`MapCustomAction` の M
 
 ### W1: 足場と両経路の特性化（コードは変えない）
 
-**W1 の実装（2026-10-19。ユーザーのビルド・テストの結果待ち）**: `SpecialActionTestScope(migrated: true)` が Macro も移行。`Phase8Step1MacroBranchCharacterizationTests` の 3 本を `[Theory]`（旧・新。`firstTouch` の検査は旧経路だけ）。`Phase8Step73W1MacroDualPathTests`（新設）: 状態（`BeingTriggered`、`IMacroPlayer.IsPlaying`）を旧・新で比較。Press、RunOnRelease、ガード中、AND 条件、遅延、押している最中のプロファイル適用。観察の口は、再生中の旗（`DefaultMacroPlayer.IsPlaying`。`Play` で真、`Stop` で偽）を使い、`IMacroPlayer` の差し替えは不要だった。
+**W1 の実装（2026-10-19。ビルド・テスト成功）**: `SpecialActionTestScope(migrated: true)` が Macro も移行。`Phase8Step1MacroBranchCharacterizationTests` の 3 本を `[Theory]`（旧・新。`firstTouch` の検査は旧経路だけ）。`Phase8Step73W1MacroDualPathTests`（新設）: 状態（`BeingTriggered`、`IMacroPlayer.IsPlaying`）を旧・新で比較。Press、RunOnRelease、ガード中、AND 条件、遅延、押している最中のプロファイル適用。観察の口は、再生中の旗（`DefaultMacroPlayer.IsPlaying`。`Play` で真、`Stop` で偽）を使い、`IMacroPlayer` の差し替えは不要だった。
 
 - `SpecialActionTestScope(migrated: true)` が、Macro も移行する（Button・Key に加える）。`AddMacro` を用意。
 - 観察の口: 再生の回数と引数は、`IMacroPlayer` を記録用に差し替えて数える（`InstallProfileRecorder` と同じ方式で、`MacroActionAdapter` の `macroPlayer` を差し替える。または、記録用の `IMacroPlayer` を `ActionManager` の経路へ注入する）。W1 で、最小の方法を選ぶ。
@@ -57,6 +57,8 @@ Macro 種別の特殊アクションを、旧ループ（`MapCustomAction` の M
 - 新規: 再生の回数（押下で 1 回、保持中は増えない、離して解放）、RunOnRelease（押したときは再生しない、離したときに 1 回）、ガード中は再生しない、AND 条件、遅延、押している最中のプロファイル適用（7.1 の `SimulateProfileApply`）、Alt-Tab の並びのマクロの保持中の `EndMacro`（Q1）。
 
 ### W2: 新経路の不足分
+
+**W2 の実装（2026-10-19。ユーザーのビルド・テストの結果待ち）**: `MacroAction` に、エンジン用のコンストラクター（添字と `ISpecialActionRepository` つき）を足し、旧経路のログ（Trace の立ち上がり 4 行［Trigger keys は常に `<none>`］、Debug の「SpecialAction Macro／MacroRelease: …ActionEntries=」）を同じ文言・順序で出す。旧経路のアダプター（`MacroActionAdapter`）は、`Mapping` が同じログを出すため、添字なしのコンストラクターのままで、ログを出さない（二重にならない）。ビルダーが添字とリポジトリを渡す。テスト: `Phase8Step73W2MacroLogTests`（Press／RunOnRelease の行の一致、ログ無効時）。
 
 - ~~Q1 の実装（不要になった）~~: `MacroAction` が `IHeldOutputAction.WhileHeld` を実装し、旧経路と同じ条件（`RepeatMacro` でなく、`pressRelease` が偽）のときだけ、毎フレーム `IMacroPlayer.WhileHeld(device, action)` を呼ぶ。`IMacroPlayer` に、**既定の実装つきのメンバー**として `WhileHeld` を足す（既存の実装・テスト用の偽物は、変更なし）。`DefaultMacroPlayer` は `IMapping.EndMacroDirect(device, action)` を呼ぶ。`IMapping.EndMacroDirect` に、**省略可の引数 `SpecialAction action = null`** を足す（メンバーの数は 10 のまま。`null` のときは、従来どおり）。`action` が指定されたときは、旧経路と同じ `EndMacro(device, macroControl, action.macro, None)` を呼ぶ。
 - Q3 の実装: ログを `MacroAction` から、旧経路と同じ文言・順序で出す（`index`・`ActionEntries` はビルダーが渡す。7.2 の Key と同じ方式）。NLog のメモリ出力で、旧経路との行の一致をテストする。
