@@ -355,3 +355,13 @@ Step7 の 7.6 は、これで 4 種別（GyroCalibrate、DisconnectBT、BatteryC
 - **値渡し化**: Key／Button の出力が `SpecialAction` から設定を解釈していたのを、変換層（`ActionBindingBuilder.InterpretKey`／`InterpretButton`）に移し、出力は `KeyBindingValues`／`ButtonBindingValues` を受け取るだけにした。`SpecialAction` は、状態の鍵・ログの名前・系統 B への入力として残る（識別用。中立な型への置き換えは Step8 以降）。従来のコンストラクターは互換として残した（TODO: Step8）。Macro は 7.8c に回した（Q3＝A）。
 - **土台**: `IControlBindingBuilder`／`ControlBindingBuilder`（空）、`BindingMigrationOptions.MigratedControlKinds`（既定は空）、`ITriggerDispatchEngine.OwnsControl`（常に偽）、`Mapping.ProcessControlSettingAction` の先頭に素通りの 1 行。
 - **テスト**: `Phase8Step78aFoundationTests`（新規）。ビルド・テスト成功（2026-10-20。ユーザーが実行）。次は 7.8b（Controls タブの Key。Q4＝B の動作変更を含む）。
+
+## 7.8b Controls タブの Key の新経路への移行（2026-10-20）
+
+計画書: `Phase8-Step7-8b-Plan.md`（Q1〜Q5 承認済み。推奨どおり）。運用は 7.1〜7.7 と同じ（`ServiceRegistration` の既定の `MigratedControlKinds` に Key の 1 行。外すと旧経路）。旧コードは Step8 まで残す。
+
+- **範囲**: Controls タブで「ボタン → キー」を割り当てた dcs のうち、シフトなし、Extras なし、Lightbar マクロなし、`actionKey` が範囲内のものだけを、新経路が処理する（ボタン単位の所有）。他は旧経路が全体を処理する。ジャイロスワイプは対象外。これは移行中の仕組みで、7.8c〜f で区分を増やし、最終的にすべて新経路になる。
+- **新設・変更**: `IControlTriggerInput`／`TriggerInput.IsControlActive`（現行の `GetBoolActionMapping` の移植。スティックは角度の扇形、L2／R2 は 0 より大きい）、`ControlButtonInputAction`、`BindingPolicy.ErasesOutputEveryFrame`（割り当てのあるボタンの通常の出力を、毎フレーム消す）、`KeyBindingValues`（別名キー、SA 形式ログの抑制）、`ControlBindingBuilder`（実装）、`ActionBindingBuilder`（Controls の束縛を SA の束縛の後ろに連結）、`TriggerDispatchEngine`（`OwnsControl`／`ProcessControl`）、`Mapping`（所有なら `ProcessControl` を呼んで戻る）。
+- **動作の変更（承認済み。Q4＝B）**: Controls タブの Key は、同じ論理キーの Key 特殊アクションと状態を共有しない。
+- **ログ**: 旧経路の Controls タブの Key が出していた行（`KeyAction` 以降）は同じ。旧ディスパッチャ内部の Trace（`DispatchInputEdge`、`DispatchTriggerEdge: firing established` など）は、7.1〜7.7 と同様、新経路では出ない。
+- **テスト**: `Phase8Step78bW1ControlsKeyCharacterizationTests`（旧・新）、`Phase8Step78bW2ControlsKeyTests`。ビルド・テスト成功。実機確認は Step9（U-41）。

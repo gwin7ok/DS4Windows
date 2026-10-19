@@ -3,7 +3,7 @@
 作成日: 2026-10-20  
 対象ブランチ: `For-DI-migration-work`  
 上位: `Phase8-Step2b-ControlsTab-Design.md`（§3.3 の F、§3.5、§10。Q4＝B［共有をやめる］、Q8＝B［実機確認は Step9］）、`Phase8-Step7-8a-Plan.md`（土台と値渡し化。完了）  
-状態: **Q1〜Q5 を承認済み（全て推奨［A］。2026-10-20 ユーザーが直接承認）。W0（調査）完了。W1 完了。W2（実装）実装済み［ビルド・テストの結果待ち］**
+状態: **Q1〜Q5 を承認済み（全て推奨［A］。2026-10-20 ユーザーが直接承認）。W0（調査）完了。W1〜W3 完了［ビルド・テスト成功。2026-10-20］。W4（文書）を反映。実機確認は Step9 でまとめて行う（Q8＝B）**
 
 ---
 
@@ -108,8 +108,8 @@ dcs 1 つにつき毎フレーム、次を行う。
 - **W1 の実装（2026-10-20）**: `ControlsKeyTestScope`（足場。dcs を Key にする、本番と同じ経路で束縛を登録、合成 SA の状態を引く、`migrated` で `MigratedControlKinds` に Key を足す）と `Phase8Step78bW1ControlsKeyCharacterizationTests`（旧・新の Theory。押下・解放、Toggle［オンになり、離しても保たれる］、スティックの扇形の判定［幅 28 の傾きで押下］、押していない軸の出力の消去、L2 が 1 で押下、未設定のボタンは素通し、シフト付きの割り当て、同じ論理キーの Key 特殊アクションとの状態の共有［旧経路の癖。W2 で新経路の期待値を「共有しない」に切り替える］、押したままの適用・切断の記録）。ログの比較と、キー送出の記録（リピーターの有無で安定しない）は W2 で扱う。押したままの適用・切断は、結果を `ITestOutputHelper` に出力する（期待値は結果を見て W2 で確定する）。
 - **W1 の最初の結果と是正（2026-10-20）**: 9 件中 2 件が失敗（旧経路の挙動の読み違い）。(1) 「押していない軸の出力の消去」: LXNeg を割り当て、右へ倒した（LX＝220）とき、出力は 128 ではなく **220 のまま**だった。反対の方向（LXPos）は未設定（Default）で、その出力が `customMapQueue` で素通しされるため。軸の消去が値として見えるのは、反対の方向を含まない傾きのときに限られる。テストは「反対の方向は、その割り当てに任せる（220 のまま）」に改めた。消去の規則（`ErasesOutputEveryFrame`）自体は、エンジンへ引き継ぐ方針のまま。(2) Toggle の `IsToggledOn`: 押した後も偽だった（出力先のスタブでは、リピーターの有無で結果が分かれると推測。原因は未確認）。テストは、押下のディスパッチ（`BeingTriggered`）を固定し、`IsToggledOn` は値を記録するだけにした。W2 で旧・新の値が一致することを比べる。
 - **W2（実装）**: §3.2 のとおり。
-- **W2 の実装（2026-10-20。ビルド・テストの結果待ち）**: 新設 — `IControlTriggerInput`、`ControlButtonInputAction`、`TriggerInput.IsControlActive`（現行の `GetBoolActionMapping` の移植）。変更 — `BindingPolicy.ErasesOutputEveryFrame`、`KeyBindingValues`（別名キー、SA 形式ログの抑制）、`KeyOutputAction`（別名キーでネイティブキーを求める、ログの抑制）、`ControlBindingBuilder`（実装。`TryInterpretKey` の条件、識別用 SA は旧合成と同じ名前、ジャイロスワイプは対象外）、`ActionBindingBuilder`（`IControlBindingBuilder` を省略可能な依存として受け、SA の束縛の後ろに連結）、`ITriggerDispatchEngine`／`TriggerDispatchEngine`（`OwnsControl` の実装、`ProcessControl`、ボタン → 束縛の表、毎フレームの消去）、`Mapping`（所有なら `ProcessControl` を呼んで戻る）、`ServiceRegistration`（`MigratedControlKinds` に Key の 1 行）。テスト — `Phase8Step78bW2ControlsKeyTests`（判定の一致、条件の表、ビルダー、連結、所有とロールバック、割り当て、ログ）。W1 のテストは、新経路を走らせる（Q4＝B に合わせ、共有のテストの期待値を切り替え済み）。
-- **W3（割り当てとロールバック）**: 押している間／押していない間の割り当て（SA の基準と同じ、同数の未押下を基準にする方式）、`MigratedControlKinds` から `Key` を外すと旧経路に戻ること、ソースのガード（`Mapping` の呼び出しが 1 か所、1 ファイル 1 型）。
+- **W2 の実装（2026-10-20。ビルド・テスト成功）**: 新設 — `IControlTriggerInput`、`ControlButtonInputAction`、`TriggerInput.IsControlActive`（現行の `GetBoolActionMapping` の移植）。変更 — `BindingPolicy.ErasesOutputEveryFrame`、`KeyBindingValues`（別名キー、SA 形式ログの抑制）、`KeyOutputAction`（別名キーでネイティブキーを求める、ログの抑制）、`ControlBindingBuilder`（実装。`TryInterpretKey` の条件、識別用 SA は旧合成と同じ名前、ジャイロスワイプは対象外）、`ActionBindingBuilder`（`IControlBindingBuilder` を省略可能な依存として受け、SA の束縛の後ろに連結）、`ITriggerDispatchEngine`／`TriggerDispatchEngine`（`OwnsControl` の実装、`ProcessControl`、ボタン → 束縛の表、毎フレームの消去）、`Mapping`（所有なら `ProcessControl` を呼んで戻る）、`ServiceRegistration`（`MigratedControlKinds` に Key の 1 行）。テスト — `Phase8Step78bW2ControlsKeyTests`（判定の一致、条件の表、ビルダー、連結、所有とロールバック、割り当て、ログ）。W1 のテストは、新経路を走らせる（Q4＝B に合わせ、共有のテストの期待値を切り替え済み）。
+- **W3（割り当てとロールバック。W2 のテスト［`Phase8Step78bW2ControlsKeyTests`］に含めて成功）**: 押している間／押していない間の割り当て（SA の基準と同じ、同数の未押下を基準にする方式）、`MigratedControlKinds` から `Key` を外すと旧経路に戻ること、ソースのガード（`Mapping` の呼び出しが 1 か所、1 ファイル 1 型）。
 - **W4**: 完了報告書、`Phase8-Status.md`、チェックリスト（Step9 の総合確認の項目に、Controls の Key を追加）の更新。**実機確認は作らない（Q8＝B）**。
 
 ## 5. リスクと対応
@@ -142,3 +142,11 @@ dcs 1 つにつき毎フレーム、次を行う。
 ## 8. 次
 
 7.8c（Controls の Macro。`MacroAction` の値渡し化を含む。Q3＝A の持ち越し）。
+
+## 9. 結果（2026-10-20。ユーザーがビルド・テストを実行し、すべて成功）
+
+- W1 のテスト（旧・新の Theory）が、新経路でも期待値のまま成功した（押下・解放、Toggle の配信、スティックの扇形、L2、未設定のボタンの素通し、シフト付きの割り当ては旧経路、押したままの適用・切断）。
+- **Q4＝B の動作変更**（承認済み）: Controls タブの Key は、同じ論理キーの Key 特殊アクションと状態を共有しなくなった（`SharesTheStateWithAKeySpecialActionOfTheSameKey` が、旧経路は共有、新経路は共有しないことを固定）。
+- 押下の判定（`IsControlActive`）は、全コントロール・乱数で現行の `GetBoolActionMapping` と一致。割り当ては新 ≦ 旧。ログは、SA タブ形式の行が旧・新とも出ず、`KeyAction` 以降の行は旧・新で一致（コントローラー番号は生成のたびに増えるため、そろえて比較）。
+- ロールバック: `ServiceRegistration` の `MigratedControlKinds.Add(ControlBindingKind.Key)` の 1 行を外すと、束縛が作られず、旧経路が処理する。
+- 実機確認は Step9 でまとめて行う（Q8＝B）。チェックリストに U-41 を追加した。
