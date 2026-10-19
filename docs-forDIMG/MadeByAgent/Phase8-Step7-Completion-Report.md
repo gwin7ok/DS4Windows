@@ -366,7 +366,7 @@ Step7 の 7.6 は、これで 4 種別（GyroCalibrate、DisconnectBT、BatteryC
 - **ログ**: 旧経路の Controls タブの Key が出していた行（`KeyAction` 以降）は同じ。旧ディスパッチャ内部の Trace（`DispatchInputEdge`、`DispatchTriggerEdge: firing established` など）は、7.1〜7.7 と同様、新経路では出ない。
 - **テスト**: `Phase8Step78bW1ControlsKeyCharacterizationTests`（旧・新）、`Phase8Step78bW2ControlsKeyTests`。ビルド・テスト成功。実機確認は Step9（U-41）。
 
-## 7.8c Controls タブの Macro の新経路への移行（2026-10-20。ビルド・テストの結果待ち）
+## 7.8c Controls タブの Macro の新経路への移行（2026-10-20。ビルド・テスト成功）
 
 計画書: `Phase8-Step7-8c-Plan.md`（ユーザー指示: Controls の Macro も SA の Macro の仕様に合わせる）。運用は 7.8b と同じ（`MigratedControlKinds` に Macro の 1 行。外すと旧経路）。
 
