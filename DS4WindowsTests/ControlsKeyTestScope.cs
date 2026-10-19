@@ -29,7 +29,10 @@ namespace DS4WindowsTests
             _savedKinds = _options.MigratedControlKinds.ToArray();
             _options.MigratedControlKinds.Clear();
             if (migrated)
-                _options.MigratedControlKinds.Add(ControlBindingKind.Key);   // Phase8-Step7 7.8b: Controls タブの Key を新経路で処理する（W2 から有効）
+            {
+                _options.MigratedControlKinds.Add(ControlBindingKind.Key);     // Phase8-Step7 7.8b: Controls タブの Key を新経路で処理する
+                _options.MigratedControlKinds.Add(ControlBindingKind.Macro);   // Phase8-Step7 7.8c: Controls タブの Macro を新経路で処理する（W2 から有効）
+            }
 
             TestHost.GetService<ITriggerDispatchEngine>().OnDeviceDisconnected(Device);
         }
@@ -54,6 +57,24 @@ namespace DS4WindowsTests
             _touched.Add(control);
             return dcs;
         }
+
+        /// <summary>ボタンの割り当てを Macro にする（通常。シフトなし、Extras なし）。<paramref name="steps"/> はマクロの手順（例: { 65, 65 } ＝ キー 65 を押して離す）。</summary>
+        public DS4ControlSettings MapMacro(DS4Controls control, int[] steps, DS4KeyType keyType = DS4KeyType.None)
+        {
+            DS4ControlSettings dcs = TestGlobals.Store.GetDS4CSetting(Device, control);
+            dcs.Reset();
+            dcs.actionType = DS4ControlSettings.ActionType.Macro;
+            dcs.action.actionMacro = steps;
+            dcs.keyType = keyType | DS4KeyType.Macro;
+            _touched.Add(control);
+            return dcs;
+        }
+
+        /// <summary>記録用のキーボード出力（マクロの再生で押されたキーが入る）。</summary>
+        public RecordingVirtualKbmBase Recorder => _inner.Recorder;
+
+        /// <summary>マクロの再生が実際に出すキー（変換が有効なら、実キーへ変換される）。</summary>
+        public uint Native(uint key) => _inner.KbmMapping.macroKeyTranslate ? _inner.KbmMapping.GetRealEventKey(key) : key;
 
         /// <summary>設定の変更の後に呼ぶ。本番の <c>PublishBindings</c> と同じ経路で、束縛を登録簿へ差し替える（W2 から Controls の束縛を含む）。</summary>
         public void Publish()
