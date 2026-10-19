@@ -3,7 +3,7 @@
 作成日: 2026-10-19  
 対象ブランチ: `For-DI-migration-work`  
 上位: `Phase8-Step7-Plan.md`（§3 共通の手順、§4 の 7.4）、`Phase8-Step7-2-Plan.md`・`Phase8-Step7-3-Plan.md`（進め方）、`Phase8-Step1-Trigger-Spec-Ledger.md`（Program）  
-状態: **Q1〜Q3 を推奨どおり承認（2026-10-19）。7.4-W1 完了（ビルド・テスト成功）。7.4-W2 実装済み（結果待ち）**
+状態: **Q1〜Q3 を推奨どおり承認（2026-10-19）。7.4-W1 完了（ビルド・テスト成功）。7.4-W1・W2 完了、W3 実装済み（結果待ち）**
 
 ---
 
@@ -49,7 +49,7 @@ Program 種別の特殊アクション（ボタンの組み合わせで、外部
 
 ### W2: 新経路の不足分
 
-**W2 の実装（2026-10-19。ユーザーのビルド・テストの結果待ち）**: `LaunchProcessAction` に、エンジン用のコンストラクター（添字と `ISpecialActionRepository` つき）を足し、旧経路のログ（Trace 4 行［Trigger keys は常に `<none>`］、Debug の「SpecialAction Program: …ActionEntries=」）を、起動の前に、同じ文言・順序で出す。旧経路のアダプターは、添字なしのままで、ログを出さない（二重にならない）。ビルダーが添字とリポジトリを渡す。テスト: `Phase8Step74W2ProgramLogTests`。
+**W2 の実装（2026-10-19。ビルド・テスト成功）**: `LaunchProcessAction` に、エンジン用のコンストラクター（添字と `ISpecialActionRepository` つき）を足し、旧経路のログ（Trace 4 行［Trigger keys は常に `<none>`］、Debug の「SpecialAction Program: …ActionEntries=」）を、起動の前に、同じ文言・順序で出す。旧経路のアダプターは、添字なしのままで、ログを出さない（二重にならない）。ビルダーが添字とリポジトリを渡す。テスト: `Phase8Step74W2ProgramLogTests`。
 
 - Q1 の実装: `LaunchProcessAction` に、エンジン用のコンストラクター（添字と `ISpecialActionRepository` つき）を足し、旧経路のログ（Trace 4 行、Debug の「SpecialAction Program: …」）を同じ文言・順序で出す（7.3 の `MacroAction` と同じ方式。旧経路のアダプターは、`Mapping` が同じログを出すため、添字なしのままで出さない）。NLog のメモリ出力で、旧経路との行の一致をテストする。
 

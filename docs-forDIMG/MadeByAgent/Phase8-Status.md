@@ -1,7 +1,7 @@
 # フェーズ8 進捗管理文書: Controls／SpecialActions の統一トリガーディスパッチ
 
 最終更新日: 2026-10-19  
-状態: **Step1〜3 完了（2026-10-19）。Step1〜4・Step4b 完了。Step1〜6 完了。Step7 は 7.1 Button 完了（実機確認 U-27 の主要 4 項目が合格）。7.2 Key は Q1〜Q4 承認済み、7.2 Key 完了（実機確認 U-28 が合格）。7.3 Macro 完了（実機確認 U-30 の主要 4 項目が合格）。7.4 Program は計画書作成済み（Q1〜Q3 の承認待ち）。7.3 の前に、Alt-Tab の特別扱いと「Cycle Programs」の削除（`Phase8-Step7-3a-AltTab-Removal-Plan.md`。Q1〜Q4 承認済み、W1〜W3 完了。実機確認 U-29 が合格。完了）。次は 7.3 Macro の Q2〜Q4 の承認**。Phase7・7b・7c は完了。実機確認 U-24（Phase7c W1）は確認済み（2026-10-19）  
+状態: **Step1〜3 完了（2026-10-19）。Step1〜4・Step4b 完了。Step1〜6 完了。Step7 は 7.1 Button 完了（実機確認 U-27 の主要 4 項目が合格）。7.2 Key は Q1〜Q4 承認済み、7.2 Key 完了（実機確認 U-28 が合格）。7.3 Macro 完了（実機確認 U-30 の主要 4 項目が合格）。7.4 Program は W1・W2 完了、W3 実装済み（結果待ち）。7.3 の前に、Alt-Tab の特別扱いと「Cycle Programs」の削除（`Phase8-Step7-3a-AltTab-Removal-Plan.md`。Q1〜Q4 承認済み、W1〜W3 完了。実機確認 U-29 が合格。完了）。次は 7.3 Macro の Q2〜Q4 の承認**。Phase7・7b・7c は完了。実機確認 U-24（Phase7c W1）は確認済み（2026-10-19）  
 計画書: `Phase8-Unified-Trigger-Dispatch-Plan.md`（D1〜D5 確定。2026-10-19 追記は事実誤認の訂正）。Step1: `Phase8-Step1-Plan.md`
 
 ---

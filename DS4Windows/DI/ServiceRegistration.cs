@@ -155,6 +155,7 @@ namespace DS4Windows.DI
                 migration.MigratedTypes.Add(SpecialAction.ActionTypeId.Button);   // 7.1 Button
                 migration.MigratedTypes.Add(SpecialAction.ActionTypeId.Key);      // 7.2 Key
                 migration.MigratedTypes.Add(SpecialAction.ActionTypeId.Macro);    // 7.3 Macro
+                migration.MigratedTypes.Add(SpecialAction.ActionTypeId.Program);  // 7.4 Program
                 return migration;
             });
             services.AddSingleton<ITriggerDispatchEngine, TriggerDispatchEngine>();

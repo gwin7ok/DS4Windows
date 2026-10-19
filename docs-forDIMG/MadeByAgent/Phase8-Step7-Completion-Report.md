@@ -128,3 +128,32 @@
 ### 4. 次
 
 7.4 Program（短い個別の計画書 `Phase8-Step7-4-Plan.md` を、U-30 の合格後に作成する）。
+
+---
+
+## 7.4 Program
+
+### 1. 成果
+
+| Wave | 内容 | 主なファイル |
+|---|---|---|
+| W1 | `SpecialActionTestScope(migrated)` が Program も移行。存在しないパスの起動の試行を `GuiLog` で数え、旧・新の起動の回数・`BeingTriggered`・`IsExecuting` を比較 | `Phase8Step74W1ProgramDualPathTests` |
+| W2 | 旧 `MapCustomAction` の Program のログ（Trace 4 行、Debug 1 行）を `LaunchProcessAction` から出す（エンジン用のコンストラクターのときだけ。旧経路のアダプターは出さない） | `LaunchProcessAction`、`ActionBindingBuilder`、`Phase8Step74W2ProgramLogTests` |
+| W3 | 既定のスイッチに Program を追加（`ServiceRegistration` の 1 行）。ロールバック、割り当て、性能のテスト | `ServiceRegistration`、`Phase8Step74W3ProgramSwitchTests` |
+
+- **ロールバック**: `ServiceRegistration` の `migration.MigratedTypes.Add(SpecialAction.ActionTypeId.Program);` の 1 行を外してビルドし直す。
+
+### 2. 検証結果・判断の記録
+
+1. Q1: ログは旧経路と同じ文言・順序（`Phase8Step74W2ProgramLogTests`）。「Trigger keys」は、旧経路と同じく常に `<none>`。
+2. Q2: 起動の観察は、存在しないパスの起動の失敗（`GuiLog` の警告）を数える方式（実際のプログラムは起動しない）。
+3. 既存テストの更新: ホストの既定の一覧の検査を「Button、Key、Macro、Program」に（設計どおりの変更）。
+4. 割り当て: 立ち上がりを除いて、新経路 ≦ 旧経路（4 KB の誤差まで）。性能: `MapCustom_ProgramMigrated_PerFrameTime_IsReported` の出力を、旧経路と並べて +5% 以内を確認する（測定値: 未記入）。
+
+### 3. 実機確認（ユーザー）
+
+チェックリスト §11 の **U-31**（7 項目）。**確認の前に、起動ログの「built at … (commit …)」で、ビルドが Program の切替を含むことを確認する**（7.3 のとき、古いビルドで確認して取り直したため）。合格してから 7.5 Profile へ進む（Q3＝A）。
+
+### 4. 次
+
+7.5 Profile ＋ 復帰（最大のリスク。短い個別の計画書 `Phase8-Step7-5-Plan.md` を、U-31 の合格後に作成する）。
