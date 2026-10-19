@@ -3,7 +3,7 @@
 作成日: 2026-10-19  
 対象ブランチ: `For-DI-migration-work`  
 計画書: `Phase8-Step7-Plan.md`（Q1〜Q8 を推奨どおり承認）  
-状態: **7.1 Button は完了（W1〜W3 のビルド・テスト成功。実機確認 U-27 の主要 4 項目が合格）。7.2 以降は未着手**
+状態: **7.1 Button は完了（実機確認 U-27 の主要 4 項目が合格）。7.2 Key は W1〜W3 のビルド・テスト成功、実機確認 U-28 の結果待ち。7.3 以降は未着手**
 
 本書は、各 PR（7.1〜7.8）の結果を追記していく経過報告書である。
 
@@ -50,3 +50,35 @@
 ### 6. 次
 
 7.2 Key（短い個別の計画書 `Phase8-Step7-2-Plan.md` を、U-27 の合格後に作成する）。
+
+---
+
+## 7.2 Key
+
+### 1. 成果
+
+| Wave | 内容 | 主なファイル |
+|---|---|---|
+| W1 | `SpecialActionTestScope(migrated)` が Key も移行。Key の既存 3 本を旧・新の `[Theory]` に。両経路の状態比較 | `Phase7cW2…`、`Phase8Step72W1KeyDualPathTests` |
+| W2 | 旧 `MapCustomAction` の Key のログ（Debug 6 行、Trace 4 行）を `KeyOutputAction` へ引き継ぎ。`index`・`ActionEntries` はビルダーが渡す | `KeyOutputAction`、`ActionBindingBuilder`（`ISpecialActionRepository` を省略可の引数で受ける）、`IOutputContextInput`（エンジンの文脈が入力を返す）、`TriggerDispatchEngine`、`Phase8Step72W2KeyLogTests` |
+| W3 | 既定のスイッチに Key を追加（`ServiceRegistration` の 1 行）。ロールバック、割り当て、性能のテスト | `ServiceRegistration`、`Phase8Step72W3KeySwitchTests` |
+
+- **ロールバック**: `ServiceRegistration` の `migration.MigratedTypes.Add(SpecialAction.ActionTypeId.Key);` の 1 行を外してビルドし直す。
+
+### 2. 検証結果・判断の記録
+
+1. 旧経路・新経路の状態は、Press、Toggle、ガード中、AND 条件、遅延、押している最中のプロファイル適用で一致した。
+2. **Q1（`UntriggerIndex` の癖）の前提は再現しなかった**: Key を 2 つ同時に押して、どちらを先に離しても、旧経路は各キーを解放した。新経路は `UntriggerIndex` を書かない（Profile の復帰との共有をやめる）ので、結果は同じで、衝突だけがなくなる。是正（挙動の変更）にはならなかった。
+3. **Q2**: 合成キーの押下の数は旧経路でも 0 のままで観測できない。適用の後始末で、旧経路は同じキーの解放を 1 回多く送る（`nativeKeyAlias` の項目のため。コントローラーの破棄でも解放されるため、効果は同じ）。**この重複の解放は新経路に移植しない**。
+4. **遅延**: `delayTime` を持つ Key は、遅延の基準時刻の初期値が最小値のため、最初の押下は遅延なしで成立する（旧・新とも）。既存の挙動として固定した。
+5. **ログ**: 旧経路と同じ文言・順序（`Phase8Step72W2KeyLogTests` で行の一致を確認）。差は 2 点: 「untriggerindex」は常に -1。Toggle の解放は旧経路が送らないため、解放のログも出さない。「Trigger keys for SA」は旧経路と同じく常に `<none>`（既存の挙動）。
+6. **既存テストの更新**: ホストの既定の一覧の検査（`Phase8Step4W1ContractTests`、`Phase8Step7W3ButtonSwitchTests`）を「Button と Key」に（設計どおりの変更）。`Phase7cW2…` の Key の `UntriggerIndex` の検査は、新経路で -1（Q1）。
+7. 割り当て: 新経路 ≦ 旧経路（`TheNewPath_DoesNotAddAllocationsToTheFrame_ForKey`）。性能: `MapCustom_KeyMigrated_PerFrameTime_IsReported` の出力を、旧経路と並べて +5% 以内を確認する（測定値: 未記入）。
+
+### 3. 実機確認（ユーザー）
+
+`Phase6-Step11-RealDevice-Verification-Checklist.md` §11 の **U-28**（8 項目）。合格してから 7.3 Macro へ進む（Q7＝A）。不合格なら、`ServiceRegistration` の Key の 1 行を外して原因を調べる。
+
+### 4. 次
+
+7.3 Macro（短い個別の計画書 `Phase8-Step7-3-Plan.md` を、U-28 の合格後に作成する）。

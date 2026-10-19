@@ -3,7 +3,7 @@
 作成日: 2026-10-19  
 対象ブランチ: `For-DI-migration-work`  
 上位: `Phase8-Step7-Plan.md`（§3 共通の手順、§4 の 7.2）、`Phase8-Step2-Design.md` §6・§7、`Phase8-Step2-Intent-Decisions.md`（項目 4: Key の `uTrigger` は無視）、`Phase8-Step7-Completion-Report.md`（7.1 の結果）  
-状態: **Q1〜Q4 を推奨どおり承認（2026-10-19）。7.2-W1・W2 完了（ビルド・テスト成功）。7.2-W3 実装済み（結果待ち）**
+状態: **Q1〜Q4 を推奨どおり承認（2026-10-19）。7.2-W1〜W3 完了（ビルド・テスト成功）。7.2-W4: 経過報告書に追記済み、実機確認 U-28 の結果待ち**
 
 ---
 
@@ -78,7 +78,7 @@ Key 種別の特殊アクション（キーボードのキーの出力。Press�
 
 ### W3: スイッチと性能
 
-**W3 の実装（2026-10-19。ユーザーのビルド・テストの結果待ち）**
+**W3 の実装（2026-10-19。ビルド・テスト成功）**
 - `ServiceRegistration` の既定の一覧に `Key` を 1 行足した。既存テストの更新（設計どおりの変更）: ホストの既定の一覧（`Phase8Step4W1ContractTests`、`Phase8Step7W3ButtonSwitchTests`）を「Button と Key」に。
 - `Phase8Step72W3KeySwitchTests`: Key の行だけを外すと束縛が作られず旧経路が処理する（ロールバック）／新経路の割り当て ≦ 旧経路／Key 30 件を移行した状態の `MapCustom` の費用の出力（旧経路と並べて +5% 以内を確認）。
 - 実機確認 **U-28**（8 項目）をチェックリストに追加。
