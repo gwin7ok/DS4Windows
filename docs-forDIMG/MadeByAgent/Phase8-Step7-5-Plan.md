@@ -3,7 +3,7 @@
 作成日: 2026-10-19  
 対象ブランチ: `For-DI-migration-work`  
 上位: `Phase8-Step7-Plan.md`（§4 の 7.5）、`Phase8-Step7-4-Plan.md`（進め方）、`Phase8-Step2-Design.md`（§6・§9・§17）、`Phase8-Step2-Intent-Decisions.md`（項目 5: 切替の後はフレームを打ち切る）、`Phase8-Step1-Trigger-Spec-Ledger.md`（Profile）、`Phase8-Step6-Completion-Report.md` §5、`Phase8-Step7-Completion-Report.md`  
-状態: **Q1〜Q6 を推奨どおり承認（2026-10-19）。7.5a-W1・W2 完了（ビルド・テスト成功）、W3 実装済み（結果待ち）**
+状態: **Q1〜Q6 を推奨どおり承認（2026-10-19）。7.5a-W1・W2 完了（ビルド・テスト成功）、W3 完了（実機確認 U-32 が合格。2026-10-19）**
 
 ---
 
