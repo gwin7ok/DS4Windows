@@ -1066,202 +1066,7 @@ namespace DS4Windows
         }
 
 
-        public DS4Controls getDS4ControlsByName(string key)
-        {
-            if (!key.StartsWith("bn"))
-                return (DS4Controls)Enum.Parse(typeof(DS4Controls), key, true);
 
-            switch (key)
-            {
-                case "bnShare": return DS4Controls.Share;
-                case "bnL3": return DS4Controls.L3;
-                case "bnR3": return DS4Controls.R3;
-                case "bnOptions": return DS4Controls.Options;
-                case "bnUp": return DS4Controls.DpadUp;
-                case "bnRight": return DS4Controls.DpadRight;
-                case "bnDown": return DS4Controls.DpadDown;
-                case "bnLeft": return DS4Controls.DpadLeft;
-
-                case "bnL1": return DS4Controls.L1;
-                case "bnR1": return DS4Controls.R1;
-                case "bnTriangle": return DS4Controls.Triangle;
-                case "bnCircle": return DS4Controls.Circle;
-                case "bnCross": return DS4Controls.Cross;
-                case "bnSquare": return DS4Controls.Square;
-
-                case "bnPS": return DS4Controls.PS;
-                case "bnLSLeft": return DS4Controls.LXNeg;
-                case "bnLSUp": return DS4Controls.LYNeg;
-                case "bnRSLeft": return DS4Controls.RXNeg;
-                case "bnRSUp": return DS4Controls.RYNeg;
-
-                case "bnLSRight": return DS4Controls.LXPos;
-                case "bnLSDown": return DS4Controls.LYPos;
-                case "bnRSRight": return DS4Controls.RXPos;
-                case "bnRSDown": return DS4Controls.RYPos;
-                case "bnL2": return DS4Controls.L2;
-                case "bnR2": return DS4Controls.R2;
-
-                case "bnTouchLeft": return DS4Controls.TouchLeft;
-                case "bnTouchMulti": return DS4Controls.TouchMulti;
-                case "bnTouchUpper": return DS4Controls.TouchUpper;
-                case "bnTouchRight": return DS4Controls.TouchRight;
-                case "bnGyroXP": return DS4Controls.GyroXPos;
-                case "bnGyroXN": return DS4Controls.GyroXNeg;
-                case "bnGyroZP": return DS4Controls.GyroZPos;
-                case "bnGyroZN": return DS4Controls.GyroZNeg;
-
-                case "bnSwipeUp": return DS4Controls.SwipeUp;
-                case "bnSwipeDown": return DS4Controls.SwipeDown;
-                case "bnSwipeLeft": return DS4Controls.SwipeLeft;
-                case "bnSwipeRight": return DS4Controls.SwipeRight;
-                case "bnTouchStarted": return DS4Controls.TouchStarted;
-                case "bnTouchEnded": return DS4Controls.TouchEnded;
-
-                #region OldShiftname
-                case "sbnShare": return DS4Controls.Share;
-                case "sbnL3": return DS4Controls.L3;
-                case "sbnR3": return DS4Controls.R3;
-                case "sbnOptions": return DS4Controls.Options;
-                case "sbnUp": return DS4Controls.DpadUp;
-                case "sbnRight": return DS4Controls.DpadRight;
-                case "sbnDown": return DS4Controls.DpadDown;
-                case "sbnLeft": return DS4Controls.DpadLeft;
-
-                case "sbnL1": return DS4Controls.L1;
-                case "sbnR1": return DS4Controls.R1;
-                case "sbnTriangle": return DS4Controls.Triangle;
-                case "sbnCircle": return DS4Controls.Circle;
-                case "sbnCross": return DS4Controls.Cross;
-                case "sbnSquare": return DS4Controls.Square;
-
-                case "sbnPS": return DS4Controls.PS;
-                case "sbnLSLeft": return DS4Controls.LXNeg;
-                case "sbnLSUp": return DS4Controls.LYNeg;
-                case "sbnRSLeft": return DS4Controls.RXNeg;
-                case "sbnRSUp": return DS4Controls.RYNeg;
-
-                case "sbnLSRight": return DS4Controls.LXPos;
-                case "sbnLSDown": return DS4Controls.LYPos;
-                case "sbnRSRight": return DS4Controls.RXPos;
-                case "sbnRSDown": return DS4Controls.RYPos;
-                case "sbnL2": return DS4Controls.L2;
-                case "sbnR2": return DS4Controls.R2;
-
-                case "sbnTouchLeft": return DS4Controls.TouchLeft;
-                case "sbnTouchMulti": return DS4Controls.TouchMulti;
-                case "sbnTouchUpper": return DS4Controls.TouchUpper;
-                case "sbnTouchRight": return DS4Controls.TouchRight;
-                case "sbnGsyroXP": return DS4Controls.GyroXPos;
-                case "sbnGyroXN": return DS4Controls.GyroXNeg;
-                case "sbnGyroZP": return DS4Controls.GyroZPos;
-                case "sbnGyroZN": return DS4Controls.GyroZNeg;
-                #endregion
-
-                case "bnShiftShare": return DS4Controls.Share;
-                case "bnShiftL3": return DS4Controls.L3;
-                case "bnShiftR3": return DS4Controls.R3;
-                case "bnShiftOptions": return DS4Controls.Options;
-                case "bnShiftUp": return DS4Controls.DpadUp;
-                case "bnShiftRight": return DS4Controls.DpadRight;
-                case "bnShiftDown": return DS4Controls.DpadDown;
-                case "bnShiftLeft": return DS4Controls.DpadLeft;
-
-                case "bnShiftL1": return DS4Controls.L1;
-                case "bnShiftR1": return DS4Controls.R1;
-                case "bnShiftTriangle": return DS4Controls.Triangle;
-                case "bnShiftCircle": return DS4Controls.Circle;
-                case "bnShiftCross": return DS4Controls.Cross;
-                case "bnShiftSquare": return DS4Controls.Square;
-
-                case "bnShiftPS": return DS4Controls.PS;
-                case "bnShiftLSLeft": return DS4Controls.LXNeg;
-                case "bnShiftLSUp": return DS4Controls.LYNeg;
-                case "bnShiftRSLeft": return DS4Controls.RXNeg;
-                case "bnShiftRSUp": return DS4Controls.RYNeg;
-
-                case "bnShiftLSRight": return DS4Controls.LXPos;
-                case "bnShiftLSDown": return DS4Controls.LYPos;
-                case "bnShiftRSRight": return DS4Controls.RXPos;
-                case "bnShiftRSDown": return DS4Controls.RYPos;
-                case "bnShiftL2": return DS4Controls.L2;
-                case "bnShiftR2": return DS4Controls.R2;
-
-                case "bnShiftTouchLeft": return DS4Controls.TouchLeft;
-                case "bnShiftTouchMulti": return DS4Controls.TouchMulti;
-                case "bnShiftTouchUpper": return DS4Controls.TouchUpper;
-                case "bnShiftTouchRight": return DS4Controls.TouchRight;
-                case "bnShiftGyroXP": return DS4Controls.GyroXPos;
-                case "bnShiftGyroXN": return DS4Controls.GyroXNeg;
-                case "bnShiftGyroZP": return DS4Controls.GyroZPos;
-                case "bnShiftGyroZN": return DS4Controls.GyroZNeg;
-
-                case "bnShiftSwipeUp": return DS4Controls.SwipeUp;
-                case "bnShiftSwipeDown": return DS4Controls.SwipeDown;
-                case "bnShiftSwipeLeft": return DS4Controls.SwipeLeft;
-                case "bnShiftSwipeRight": return DS4Controls.SwipeRight;
-
-                case "bnShiftTouchStarted": return DS4Controls.TouchStarted;
-                case "bnShiftTouchEnded": return DS4Controls.TouchEnded;
-            }
-
-            return 0;
-        }
-
-        public X360Controls getX360ControlsByName(string key)
-        {
-            X360Controls x3c;
-            if (Enum.TryParse(key, true, out x3c))
-                return x3c;
-
-            switch (key)
-            {
-                case "Back": return X360Controls.Back;
-                case "Left Stick": return X360Controls.LS;
-                case "Right Stick": return X360Controls.RS;
-                case "Start": return X360Controls.Start;
-                case "Up Button": return X360Controls.DpadUp;
-                case "Right Button": return X360Controls.DpadRight;
-                case "Down Button": return X360Controls.DpadDown;
-                case "Left Button": return X360Controls.DpadLeft;
-
-                case "Left Bumper": return X360Controls.LB;
-                case "Right Bumper": return X360Controls.RB;
-                case "Y Button": return X360Controls.Y;
-                case "B Button": return X360Controls.B;
-                case "A Button": return X360Controls.A;
-                case "X Button": return X360Controls.X;
-
-                case "Guide": return X360Controls.Guide;
-                case "Left X-Axis-": return X360Controls.LXNeg;
-                case "Left Y-Axis-": return X360Controls.LYNeg;
-                case "Right X-Axis-": return X360Controls.RXNeg;
-                case "Right Y-Axis-": return X360Controls.RYNeg;
-
-                case "Left X-Axis+": return X360Controls.LXPos;
-                case "Left Y-Axis+": return X360Controls.LYPos;
-                case "Right X-Axis+": return X360Controls.RXPos;
-                case "Right Y-Axis+": return X360Controls.RYPos;
-                case "Left Trigger": return X360Controls.LT;
-                case "Right Trigger": return X360Controls.RT;
-                case "Touchpad Click": return X360Controls.TouchpadClick;
-
-                case "Left Mouse Button": return X360Controls.LeftMouse;
-                case "Right Mouse Button": return X360Controls.RightMouse;
-                case "Middle Mouse Button": return X360Controls.MiddleMouse;
-                case "4th Mouse Button": return X360Controls.FourthMouse;
-                case "5th Mouse Button": return X360Controls.FifthMouse;
-                case "Mouse Wheel Up": return X360Controls.WUP;
-                case "Mouse Wheel Down": return X360Controls.WDOWN;
-                case "Mouse Up": return X360Controls.MouseUp;
-                case "Mouse Down": return X360Controls.MouseDown;
-                case "Mouse Left": return X360Controls.MouseLeft;
-                case "Mouse Right": return X360Controls.MouseRight;
-                case "Unbound": return X360Controls.Unbound;
-            }
-
-            return X360Controls.Unbound;
-        }
 
         // Phase7-Step10b W1: getX360ControlString（XML 保存用の名前）は X360ControlTables へ移した。
 
@@ -1357,7 +1162,7 @@ namespace DS4Windows
         {
             DS4Controls dc;
             if (buttonName.StartsWith("bn"))
-                dc = getDS4ControlsByName(buttonName);
+                dc = DS4ControlNames.getDS4ControlsByName(buttonName);
             else
                 dc = (DS4Controls)Enum.Parse(typeof(DS4Controls), buttonName, true);
 
@@ -1375,7 +1180,7 @@ namespace DS4Windows
         {
             DS4Controls dc;
             if (buttonName.StartsWith("bn"))
-                dc = getDS4ControlsByName(buttonName);
+                dc = DS4ControlNames.getDS4ControlsByName(buttonName);
             else
                 dc = (DS4Controls)Enum.Parse(typeof(DS4Controls), buttonName, true);
 
@@ -1395,7 +1200,7 @@ namespace DS4Windows
         {
             DS4Controls dc;
             if (buttonName.StartsWith("bn"))
-                dc = getDS4ControlsByName(buttonName);
+                dc = DS4ControlNames.getDS4ControlsByName(buttonName);
             else
                 dc = (DS4Controls)Enum.Parse(typeof(DS4Controls), buttonName, true);
 
@@ -1415,7 +1220,7 @@ namespace DS4Windows
         {
             DS4Controls dc;
             if (buttonName.StartsWith("bn"))
-                dc = getDS4ControlsByName(buttonName);
+                dc = DS4ControlNames.getDS4ControlsByName(buttonName);
             else
                 dc = (DS4Controls)Enum.Parse(typeof(DS4Controls), buttonName, true);
 

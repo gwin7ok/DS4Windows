@@ -14,7 +14,7 @@
 | Step2 | 詳細設計（メンバー確定、`KeyOutputAction` の委譲設計、モデル図の更新案） | **完了**（2026-10-19。モデル図の段階 A は反映済み） | `Phase8-Step2-Plan.md`、`Phase8-Step2-Completion-Report.md` |
 | Step3 | 判定と束縛の型の新設（`ComboTriggerInputAction` ほか）・単体テスト、`KeyOutputAction` の書き直し（配線なし） | **完了**（2026-10-19。W1〜W5 ビルド・テスト成功） | `Phase8-Step3-Plan.md`、`Phase8-Step3-Completion-Report.md` |
 | Step4 | エンジンと出力の型（`TriggerDispatchEngine`、`ButtonOutputAction` ほか）、`Mapping` への空配線 | **完了**（2026-10-19。W1〜W5 ビルド・テスト成功、配線の追加分は 1.15%） | `Phase8-Step4-Plan.md`、`Phase8-Step4-Completion-Report.md` |
-| **Step4b（挿入）** | `LoadProfile`/`SaveProfile` の節ごとの分解、機械的な整理 2 件（Step5 の準備。仮称 Phase7d） | **実施中**（Q1〜Q8 を推奨どおり承認。W1 完了［ゴールデン確定、977 件成功］。W2 完了。W3 完了。W4 完了。W5 完了。W6 実装済み［保存側 7 節。ビルド・テスト待ち］。2026-10-19） | `Phase8-Step4b-Plan.md`、`Phase8-Step4b-Audit.md` |
+| **Step4b（挿入）** | `LoadProfile`/`SaveProfile` の節ごとの分解、機械的な整理 2 件（Step5 の準備。仮称 Phase7d） | **実施中**（Q1〜Q8 を推奨どおり承認。W1 完了［ゴールデン確定、977 件成功］。W2 完了。W3 完了。W4 完了。W5 完了。W6 完了。W9 実装済み［ビルド・テスト待ち］。2026-10-19） | `Phase8-Step4b-Plan.md`、`Phase8-Step4b-Audit.md` |
 | Step5 | プロファイル読込時の `TriggerBinding` リスト構築 | 未着手 | - |
 | Step6 | コントローラー接続時の紐付け | 未着手 | - |
 | Step7 | 種別ごとに `Mapping.cs` から新経路へ切替（1 種別＝1PR） | 未着手 | - |

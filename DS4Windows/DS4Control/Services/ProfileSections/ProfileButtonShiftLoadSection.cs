@@ -66,8 +66,8 @@ namespace DS4Windows.Services
 
                     if (Enum.TryParse(item.Name, out DS4Controls currentControl))
                     {
-                        store.UpdateDS4CSetting(device, item.Name, true, store.getX360ControlsByName(item.InnerText), "", DS4KeyType.None, shiftT);
-                        shiftCustomMapButtons.Add(store.getDS4ControlsByName(item.Name), store.getX360ControlsByName(item.InnerText));
+                        store.UpdateDS4CSetting(device, item.Name, true, X360ControlTables.getX360ControlsByName(item.InnerText), "", DS4KeyType.None, shiftT);
+                        shiftCustomMapButtons.Add(DS4ControlNames.getDS4ControlsByName(item.Name), X360ControlTables.getX360ControlsByName(item.InnerText));
                     }
                 }
             }
@@ -77,7 +77,7 @@ namespace DS4Windows.Services
             {
                 foreach (XmlElement item in ParentItem.ChildNodes)
                 {
-                    shiftCustomMapMacros.Add(store.getDS4ControlsByName(item.Name), item.InnerText);
+                    shiftCustomMapMacros.Add(DS4ControlNames.getDS4ControlsByName(item.Name), item.InnerText);
                     string[] skeys;
                     int[] keys;
                     if (!string.IsNullOrEmpty(item.InnerText))
@@ -119,7 +119,7 @@ namespace DS4Windows.Services
                         if (Enum.TryParse(item.Name, out DS4Controls currentControl))
                         {
                             store.UpdateDS4CSetting(device, item.Name, true, wvk, "", DS4KeyType.None, shiftT);
-                            shiftCustomMapKeys.Add(store.getDS4ControlsByName(item.Name), wvk);
+                            shiftCustomMapKeys.Add(DS4ControlNames.getDS4ControlsByName(item.Name), wvk);
                         }
                     }
                 }
@@ -135,7 +135,7 @@ namespace DS4Windows.Services
                         if (Enum.TryParse(item.Name, out DS4Controls currentControl))
                         {
                             store.UpdateDS4CExtra(device, item.Name, true, item.InnerText);
-                            shiftCustomMapExtras.Add(store.getDS4ControlsByName(item.Name), item.InnerText);
+                            shiftCustomMapExtras.Add(DS4ControlNames.getDS4ControlsByName(item.Name), item.InnerText);
                         }
                     }
                     else
@@ -165,7 +165,7 @@ namespace DS4Windows.Services
                         if (keyType != DS4KeyType.None && Enum.TryParse(item.Name, out DS4Controls currentControl))
                         {
                             store.UpdateDS4CKeyType(device, item.Name, true, keyType);
-                            shiftCustomMapKeyTypes.Add(store.getDS4ControlsByName(item.Name), keyType);
+                            shiftCustomMapKeyTypes.Add(DS4ControlNames.getDS4ControlsByName(item.Name), keyType);
                         }
                     }
                 }
