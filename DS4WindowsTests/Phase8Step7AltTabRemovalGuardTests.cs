@@ -45,9 +45,17 @@ namespace DS4WindowsTests
                 Assert.DoesNotContain("Cycle Programs", text);
             }
 
-            // 他のプリセット（ファイルから読み込む）は残る
+            // 「Load Preset」のボタンは、メニューを出さず、ファイルの選択を直接表示する（保存のボタンと同じ）
             string xaml = Read("DS4Windows/DS4Forms/RecordBox.xaml");
-            if (xaml != null) Assert.Contains("loadPresetFromFileMenuItem", xaml);
+            string code = Read("DS4Windows/DS4Forms/RecordBox.xaml.cs");
+            if (xaml == null || code == null) return;
+
+            Assert.DoesNotContain("ContextMenu", xaml);
+            Assert.DoesNotContain("loadPresetBtn.ContextMenu", code);
+            Assert.DoesNotContain("LoadPresetFromFileMenuItem", xaml + code);
+            int handler = code.IndexOf("private void LoadPresetBtn_Click(", StringComparison.Ordinal);
+            Assert.True(handler >= 0, "LoadPresetBtn_Click が見つからない");
+            Assert.Contains("OpenFileDialog", code.Substring(handler, Math.Min(900, code.Length - handler)));
         }
 
         [Fact]

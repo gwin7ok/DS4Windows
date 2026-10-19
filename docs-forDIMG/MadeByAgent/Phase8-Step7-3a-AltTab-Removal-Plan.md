@@ -3,7 +3,7 @@
 作成日: 2026-10-19  
 対象ブランチ: `For-DI-migration-work`  
 上位: `Phase8-Step7-3-Plan.md`（7.3 Macro。本計画の結論で Q1 が不要になる）、`.github/copilot-instructions.md` 2.2（機能廃止はユーザーの明示的な承認が要る）、2.4  
-状態: **Q1〜Q4 を推奨どおり承認（2026-10-19）。W1 完了（ビルド・テスト成功）。W2・W3 実装済み（ビルド・テストの結果待ち）**。廃止の要望: ユーザー（2026-10-19。「Alt+Tab の特別扱い自体と、プリセットの CycleProgram を削除したい」）
+状態: **Q1〜Q4 を推奨どおり承認（2026-10-19）。W1〜W3 完了（ビルド・テスト成功）。実機確認 U-29 の結果待ち**。廃止の要望: ユーザー（2026-10-19。「Alt+Tab の特別扱い自体と、プリセットの CycleProgram を削除したい」）
 
 ---
 
@@ -63,8 +63,8 @@
 ## 4. 作業（各 Wave の後に、ユーザーがビルド・テストを実行）
 
 - **W1: コードの削除（`Mapping.cs`）【完了】**: フィールド 3 つ、`PlayMacroTask` の分岐、`AltTabSwapping`、`AltTabSwappingRelease`、`EndMacro` の 3 つのオーバーロードの先頭の判定、`MapCustomAction` の 4733 行の呼び出し（Q4）を削除。`MappingMacroPathGlobalReferenceGuardTests` の対象から 2 つの名前を外す。
-- **W2: 画面の削除【実装済み。結果待ち】**: 「Cycle Programs」のメニュー項目、`CycleProgPresetMenuItem_Click`、`WriteCycleProgramsPreset` を削除。
-- **W3: 検査とドキュメント【実装済み。結果待ち】**（`Phase8Step7AltTabRemovalGuardTests`、`RecordingVirtualKbmBase` に押下の記録を追加、ドキュメント更新、U-29 を追加）:
+- **W2: 画面の削除【完了。追加（2026-10-19 のユーザー要望）: メニューの項目が 1 つになったため、「Load Preset」のボタンも、メニューをやめて、ファイル選択を直接表示する（保存のボタンと同じ）。`LoadPresetFromFileMenuItem_Click` を `LoadPresetBtn_Click` に統合。結果待ち】**: 「Cycle Programs」のメニュー項目、`CycleProgPresetMenuItem_Click`、`WriteCycleProgramsPreset` を削除。
+- **W3: 検査とドキュメント【完了】**（`Phase8Step7AltTabRemovalGuardTests`、`RecordingVirtualKbmBase` に押下の記録を追加、ドキュメント更新、U-29 を追加）:
   - 新規のガード（`Phase8Step7AltTabRemovalGuardTests`）: ソースに、`AltTabSwapping`、`altTabDone`、`altTabNow`、`oldAltTabNow`、`WriteCycleProgramsPreset`、`CycleProgPresetMenuItem`、`164/9/9/164`、`18/9/9/18` が残らない。`RecordBox.xaml` に「Cycle Programs」が残らない。
   - 挙動のテスト: `18/9/9/18` で始まるマクロを `PlayMacroDirect` で再生すると、通常の再生になり、キーの列（Alt 押す、Tab 押す、Tab 離す、Alt 離す）が記録用の KBM に記録される（記録用の KBM に、押下の記録を足す）。通常のマクロの再生が変わらないこと（既存のテスト）。
   - ドキュメント: `Phase8-Step2-Intent-Decisions.md` に廃止の決定を記録、`Phase8-Step2-Design.md` の該当の記述（§14.3、§14.5、7.3 の行）に追記、`Phase9-Responsibility-Split-Plan.md` の対象から `AltTabSwapping*` を外す、`Phase8-Step7-3-Plan.md` の Q1・W2 を改訂、`Phase8-Status.md` を更新。実機確認の項目を、チェックリストに追加（U-29）。
@@ -86,7 +86,7 @@
 
 - [ ] W1〜W3 のビルド・テストが成功（ユーザーが実行）。全テスト・ラチェットの一致検査・1 ファイル 1 型のガードが成功。
 - [ ] ソースに Alt-Tab の特別扱い・「Cycle Programs」が残らない（ガードで確認）。通常のマクロの再生が変わらない。
-- [ ] 実機確認 U-29: (1) 通常のマクロ（キー入力、マウスクリックを含む）が従来どおり (2) Alt+Tab の手順を記録したマクロが、1 回の切り替えを行う (3) Controls タブのマクロが従来どおり (4) 記録画面の「Preset」メニューから「Cycle Programs」がなくなり、他の項目が使える。
+- [ ] 実機確認 U-29: (1) 通常のマクロ（キー入力、マウスクリックを含む）が従来どおり (2) Alt+Tab の手順を記録したマクロが、1 回の切り替えを行う (3) Controls タブのマクロが従来どおり (4) 記録画面の「Load Preset」ボタンを押すと、メニューは出ず、読み込むファイルを選ぶ画面が直接開く。
 - [ ] ドキュメント（§4 W3）の更新。
 
 ## 8. 次

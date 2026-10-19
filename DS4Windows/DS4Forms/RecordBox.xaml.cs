@@ -324,7 +324,24 @@ namespace DS4WinWPF.DS4Forms
 
         private void LoadPresetBtn_Click(object sender, RoutedEventArgs e)
         {
-            loadPresetBtn.ContextMenu.IsOpen = true;
+            // Phase8-Step7-3a: 「Cycle Programs」の削除で、メニューの項目が 1 つになったため、メニューをやめて、保存のボタンと同じく、ファイルの選択を直接表示する
+            // Reset selected index of macro list before removing item source
+            macroListBox.SelectedIndex = -1;
+
+            macroListBox.ItemsSource = null;
+            OpenFileDialog dialog = new OpenFileDialog();
+            dialog.AddExtension = true;
+            dialog.DefaultExt = ".txt";
+            dialog.Filter = "Text Documents (*.txt)|*.txt";
+            dialog.Title = "Select Preset File";
+            dialog.InitialDirectory = $"{pathService.AppDataPath}\\Macros";
+            if (dialog.ShowDialog() == true)
+            {
+                recordBoxVM.MacroSteps.Clear();
+                recordBoxVM.LoadPresetFromFile(dialog.FileName);
+            }
+
+            macroListBox.ItemsSource = recordBoxVM.MacroSteps;
         }
 
         private void SavePresetBtn_Click(object sender, RoutedEventArgs e)
@@ -490,27 +507,6 @@ namespace DS4WinWPF.DS4Forms
 
             lbitem.ContentTemplate = this.FindResource("DisplayTemplate") as DataTemplate;
             recordBoxVM.EditMacroIndex = -1;
-        }
-
-        private void LoadPresetFromFileMenuItem_Click(object sender, RoutedEventArgs e)
-        {
-            // Reset selected index of macro list before removing item source
-            macroListBox.SelectedIndex = -1;
-
-            macroListBox.ItemsSource = null;
-            OpenFileDialog dialog = new OpenFileDialog();
-            dialog.AddExtension = true;
-            dialog.DefaultExt = ".txt";
-            dialog.Filter = "Text Documents (*.txt)|*.txt";
-            dialog.Title = "Select Preset File";
-            dialog.InitialDirectory = $"{pathService.AppDataPath}\\Macros";
-            if (dialog.ShowDialog() == true)
-            {
-                recordBoxVM.MacroSteps.Clear();
-                recordBoxVM.LoadPresetFromFile(dialog.FileName);
-            }
-
-            macroListBox.ItemsSource = recordBoxVM.MacroSteps;
         }
 
         private void WaitIUD_KeyDown(object sender, KeyEventArgs e)
