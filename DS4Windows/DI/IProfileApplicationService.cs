@@ -34,5 +34,13 @@ namespace DS4Windows.DI
         /// </summary>
         /// <param name="deviceIndex">デバイスインデックス（0〜スロット上限 − 1。最大 8 台のとき 0〜7）</param>
         void ClearPendingRestore(int deviceIndex);
+
+        /// <summary>
+        /// Phase8-Step5 W2（Phase8-Step5-Plan.md §3.2。Q6＝A）: そのデバイスの特殊アクションから束縛を組み立てて、登録簿へ差し替える。
+        /// 適用の経路（<c>ApplyProfile</c> ほか）は後始末の中で呼ぶので、外から呼ぶ必要はない。適用の後始末を通らずにプロファイルを読み込む経路
+        /// （名前付きパイプの「一時プロファイルの読込」）が、読込の成功後に呼ぶ。
+        /// 範囲外のデバイス（編集スロットを含む）では何もしない。組み立てに失敗しても例外は投げない（そのデバイスの束縛は空になる）。
+        /// </summary>
+        void PublishBindings(int deviceIndex);
     }
 }

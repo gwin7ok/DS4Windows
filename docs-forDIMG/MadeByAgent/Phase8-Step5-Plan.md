@@ -3,7 +3,7 @@
 作成日: 2026-10-19  
 対象ブランチ: `For-DI-migration-work`  
 上位: `Phase8-Unified-Trigger-Dispatch-Plan.md`（§5 の Step5、2026-10-19 追記「Step5 との接続」）、`Phase8-Step2-Design.md` §8・§16・§18・§23、`Phase8-Step4-Completion-Report.md` §5、`Phase8-Step4b-Completion-Report.md` §5  
-状態: **Q1〜Q8 を推奨どおり承認（2026-10-19）。W1 実装済み［ビルド・テスト待ち］**
+状態: **Q1〜Q8 を推奨どおり承認（2026-10-19）。W1 完了［成功］。W2 実装済み［DI 登録、適用の後始末への接続、パイプ経路の入口。ビルド・テスト待ち］**
 
 ---
 

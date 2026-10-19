@@ -57,6 +57,8 @@ namespace DS4WindowsTests
 
 
             public void ClearPendingRestore(int deviceIndex) { }
+
+            public void PublishBindings(int deviceIndex) { }
         }
 
         private record ApplyCall(int DeviceIndex, string ProfileName, bool IsTemp,

@@ -15,7 +15,7 @@
 | Step3 | 判定と束縛の型の新設（`ComboTriggerInputAction` ほか）・単体テスト、`KeyOutputAction` の書き直し（配線なし） | **完了**（2026-10-19。W1〜W5 ビルド・テスト成功） | `Phase8-Step3-Plan.md`、`Phase8-Step3-Completion-Report.md` |
 | Step4 | エンジンと出力の型（`TriggerDispatchEngine`、`ButtonOutputAction` ほか）、`Mapping` への空配線 | **完了**（2026-10-19。W1〜W5 ビルド・テスト成功、配線の追加分は 1.15%） | `Phase8-Step4-Plan.md`、`Phase8-Step4-Completion-Report.md` |
 | **Step4b（挿入）** | `LoadProfile`/`SaveProfile` の節ごとの分解、機械的な整理 2 件（Step5 の準備。仮称 Phase7d） | **完了**（W1〜W11 成功。2026-10-19） | `Phase8-Step4b-Plan.md`、`Phase8-Step4b-Audit.md`、`Phase8-Step4b-Completion-Report.md` |
-| Step5 | 束縛のビルダー（`IActionBindingBuilder`）と、登録簿への `Replace`（移行対象が空のまま） | **実施中**（Q1〜Q8 を推奨どおり承認。W1 実装済み［ビルド・テスト待ち］。2026-10-19） | `Phase8-Step5-Plan.md` |
+| Step5 | 束縛のビルダー（`IActionBindingBuilder`）と、登録簿への `Replace`（移行対象が空のまま） | **実施中**（Q1〜Q8 を推奨どおり承認。W1 完了。W2 実装済み［ビルド・テスト待ち］。2026-10-19） | `Phase8-Step5-Plan.md` |
 | Step6 | コントローラー接続時の紐付け | 未着手 | - |
 | Step7 | 種別ごとに `Mapping.cs` から新経路へ切替（1 種別＝1PR） | 未着手 | - |
 | Step8 | 旧ディスパッチと系統 B の削除 | 未着手 | - |

@@ -20,6 +20,9 @@ namespace DS4Windows
         private readonly BackingStore _config;
         // Phase7-Step8 W2（Q3＝A）: 旧 Mapping.ClearKeyButtonControllersForDevice の静的呼び出し
         private readonly IKeyButtonControllerRegistry _keyButtonControllers;
+        // Phase8-Step5 W2（Q3＝A）: 束縛の登録簿と、ビルダーの遅延解決（ビルダー → IProfileSwitcher → 本サービス、の循環を避ける）
+        private readonly DS4Windows.Actions.IActionRegistry _actionRegistry;
+        private readonly Func<DS4Windows.Actions.IActionBindingBuilder> _bindingBuilderProvider;
 
         public ProfileApplicationService(
             IProfileSettingsService profileSettings,
@@ -29,8 +32,12 @@ namespace DS4Windows
             IProfileXmlStore profileXmlStore,
             IProfileActionProvider profileActionProvider,
             BackingStore config,
-            IKeyButtonControllerRegistry keyButtonControllers)
+            IKeyButtonControllerRegistry keyButtonControllers,
+            DS4Windows.Actions.IActionRegistry actionRegistry,
+            Func<DS4Windows.Actions.IActionBindingBuilder> bindingBuilderProvider)
         {
+            _actionRegistry = actionRegistry ?? throw new ArgumentNullException(nameof(actionRegistry));
+            _bindingBuilderProvider = bindingBuilderProvider ?? throw new ArgumentNullException(nameof(bindingBuilderProvider));
             _keyButtonControllers = keyButtonControllers ?? throw new ArgumentNullException(nameof(keyButtonControllers));
             _profileXmlStore = profileXmlStore ?? throw new ArgumentNullException(nameof(profileXmlStore));
             _profileActionProvider = profileActionProvider ?? throw new ArgumentNullException(nameof(profileActionProvider));
@@ -309,6 +316,30 @@ namespace DS4Windows
             catch (Exception ex)
             {
                 AppLogger.LogTrace($"ApplyProfile: Controller activation check failed: {ex}");
+            }
+
+            // Phase8-Step5 W2: 後始末（掃除）の最後に、このプロファイルの束縛を組み立てて登録簿へ差し替える。
+            // 掃除の順序（ClearAllEntries → ClearForDevice → ClearDeviceState → PreallocateForProfileApply。Phase8Step1ApplyProfileCleanupOrderGuardTests）は変えない
+            PublishBindings(device);
+        }
+
+        // TODO(Phase8-Step7。規約 2.4): 移行対象（BindingMigrationOptions.MigratedTypes）が空の間、ここで差し替える束縛は常に空のリスト。
+        // 種別ごとの切替の PR で、MigratedTypes に種別を足すと、該当の束縛が入る。OnProfileApplied（適用時の抑制の集合の消去）の接続は、Step7.1 で判断する（Step5 計画書 Q4）。
+        public void PublishBindings(int deviceIndex)
+        {
+            if (deviceIndex < 0 || deviceIndex >= _environmentService.ControllerSlotLimit)
+                return;
+
+            try
+            {
+                _actionRegistry.Replace(deviceIndex, _bindingBuilderProvider().Build(deviceIndex));
+                AppLogger.LogDebug($"[DI] ProfileApplicationService.PublishBindings: replaced the bindings of device {deviceIndex}");
+            }
+            catch (Exception ex)
+            {
+                // Q5＝A: 組み立ての失敗で、プロファイルの適用を失敗にしない。そのデバイスの束縛は空にする
+                AppLogger.LogError($"[DI] ProfileApplicationService.PublishBindings FAILED for device {deviceIndex}: {ex.Message}");
+                try { _actionRegistry.Clear(deviceIndex); } catch { }
             }
         }
 

@@ -16,6 +16,7 @@ namespace DS4WindowsTests
         public readonly List<(int Device, string ProfileName, bool IsTemp, ProfileChangeSource Source)> ApplyProfileCalls =
             new List<(int, string, bool, ProfileChangeSource)>();
         public readonly List<int> ClearPendingRestoreCalls = new List<int>();
+        public readonly List<int> PublishBindingsCalls = new List<int>();
 
         /// <summary><see cref="RestoreFromAction"/> の戻り値（既定は true）。</summary>
         public bool RestoreResult { get; set; } = true;
@@ -66,6 +67,11 @@ namespace DS4WindowsTests
         public void ClearPendingRestore(int deviceIndex)
         {
             lock (ClearPendingRestoreCalls) ClearPendingRestoreCalls.Add(deviceIndex);
+        }
+
+        public void PublishBindings(int deviceIndex)
+        {
+            lock (PublishBindingsCalls) PublishBindingsCalls.Add(deviceIndex);
         }
     }
 }

@@ -151,6 +151,9 @@ namespace DS4Windows.DI
             services.AddSingleton<IActionRegistry, ActionBindingRegistry>();
             services.AddSingleton<BindingMigrationOptions>();
             services.AddSingleton<ITriggerDispatchEngine, TriggerDispatchEngine>();
+            // Phase8-Step5 W2（Q3＝A）: 束縛のビルダー。ProfileApplicationService は Func で遅延解決する（ビルダー → IProfileSwitcher → IProfileApplicationService の循環を避ける）
+            services.AddSingleton<IActionBindingBuilder, ActionBindingBuilder>();
+            services.AddSingleton<Func<IActionBindingBuilder>>(sp => () => sp.GetRequiredService<IActionBindingBuilder>());
 
             // Phase6-Step9-4（決定2＝C1）: ViewModelFactory が ControlService を生成のたびに遅延解決するための Func
             // （ControlService は Singleton。明示的なホスト構築より前に解決しないため、構築時には解決しない）

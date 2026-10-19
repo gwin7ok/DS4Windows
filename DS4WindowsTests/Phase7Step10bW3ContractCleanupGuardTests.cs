@@ -52,7 +52,8 @@ namespace DS4WindowsTests
         {
             var ctor = typeof(ProfileApplicationService).GetConstructors().Single();
             Assert.DoesNotContain(ctor.GetParameters(), p => p.ParameterType == typeof(IDeviceStateService));
-            Assert.Equal(8, ctor.GetParameters().Length);
+            // Phase8-Step5 W2: 束縛の登録簿（IActionRegistry）とビルダーの遅延解決（Func<IActionBindingBuilder>）を足した（8 → 10）
+            Assert.Equal(10, ctor.GetParameters().Length);
         }
 
         [Fact]

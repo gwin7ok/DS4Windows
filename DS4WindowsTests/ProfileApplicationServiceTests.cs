@@ -58,6 +58,8 @@ namespace DS4WindowsTests
             {
                 ClearPendingCalls.Add(slot);
             }
+
+            public void PublishBindings(int deviceIndex) { }
         }
 
         [Fact]
