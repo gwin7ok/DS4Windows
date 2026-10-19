@@ -3,7 +3,7 @@
 作成日: 2026-10-19  
 対象ブランチ: `For-DI-migration-work`  
 上位: `Phase8-Unified-Trigger-Dispatch-Plan.md`（§5 の Step6）、`Phase8-Step2-Design.md` §16・§18（5.6）・§22（Step6）、`Phase8-Step1-Orphan-Decisions.md` §2（`ClearState`／`ClearPendingRestore`）、`Phase8-Step5-Completion-Report.md` §5  
-状態: **Q1〜Q7 を推奨どおり承認（2026-10-19）。W1 完了［成功］。W2 完了［成功］。W3 実装済み［結合テストと、`ClearState`／`ClearPendingRestore` の削除（承認済み）。ビルド・テスト待ち］**
+状態: **完了（W1〜W3 成功、2026-10-19）。完了報告書: `Phase8-Step6-Completion-Report.md`**
 
 ---
 
@@ -98,12 +98,12 @@
 
 ## 8. 完了条件
 
-- [ ] W1〜W4 のビルド・テストが成功する（ユーザーが実行）。既存の全テストが期待値を変えずに成功。ラチェットの一致検査、1 ファイル 1 型のガードも成功。
-- [ ] 切断のスロットで、登録簿とエンジンの状態が消え、`OlderProfilePath`／`SelectedProfile` は不変。プロファイルを適用しない再接続でも、束縛が差し替わる。
-- [ ] 適用のたびに走る `HandleDeviceDisconnect` に、エンジンの切断を足していない。
-- [ ] `ClearState`／`ClearPendingRestore` の扱いが決まり、TODO が解消されている（`Phase8-Step1-Orphan-Decisions.md` を更新）。
-- [ ] 本番の挙動が変わらない（`MigratedTypes` が空）。ベンチマークの割り当て 0 が不変。
-- [ ] 完了報告書、`Phase8-Status.md` の更新。
+- [x] W1〜W4 のビルド・テストが成功する（ユーザーが実行）。既存の全テストが期待値を変えずに成功。ラチェットの一致検査、1 ファイル 1 型のガードも成功。
+- [x] 切断のスロットで、登録簿とエンジンの状態が消え、`OlderProfilePath`／`SelectedProfile` は不変。プロファイルを適用しない再接続でも、束縛が差し替わる。
+- [x] 適用のたびに走る `HandleDeviceDisconnect` に、エンジンの切断を足していない。
+- [x] `ClearState`／`ClearPendingRestore` の扱いが決まり、TODO が解消されている（`Phase8-Step1-Orphan-Decisions.md` を更新）。
+- [x] 本番の挙動が変わらない（`MigratedTypes` が空）。ベンチマークの割り当て 0 が不変。
+- [x] 完了報告書、`Phase8-Status.md` の更新。
 
 ## 9. 次の Step
 
