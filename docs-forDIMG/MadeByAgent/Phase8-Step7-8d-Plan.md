@@ -3,7 +3,7 @@
 作成日: 2026-10-20  
 対象ブランチ: `For-DI-migration-work`  
 上位: `Phase8-Step2b-ControlsTab-Design.md`（§2.2 の B、§3.3。7.8d を「シフトの新経路への移行」から「シフトの廃止」に変更）、`Phase8-Step7-Plan.md`（7.8）、`Phase10-Assignment-UI-Unification-Plan.md`  
-状態: **ユーザーの機能廃止の指示を反映済み（2026-10-20）。計画書の承認待ち（§6）。実装はまだ行わない**
+状態: **計画書を承認済み（2026-10-20。ユーザー）。W0（調査）完了。W1（保持・警告の判定の部品と、仕様のテスト）を実装済み［ビルド・テストの結果待ち］。次は W2（読込・保存・実行への配線と、シフトの削除）**
 
 > 初版（シフトを Key／Macro で新経路へ移す計画）は、ユーザーの廃止の方針により破棄した。初版の調査（旧経路のシフトの動き、副ボタンの表、通常とシフトが同じ名前で状態を共有する癖）は、§2 に要点を残す。
 
@@ -69,6 +69,19 @@
 - **W2（実装）**: データモデルと実行の削除（`DS4ControlSettings` のシフトの欄、`Mapping` のシフトの処理、`ControlBindingBuilder` の条件）、読込・保存（`ProfileButtonShiftLoadSection` を、保持だけの処理に置き換え）、`RemovedShiftSettings`（保持）、警告の判定のクラス。
 - **W3（画面）**: `BindingWindow` ほかのシフトの項目の削除、`ProfileEditor` の警告（ダイアログ。文字列の追加）。
 - **W4（テストと文書）**: `Phase8Step1ShiftTriggerCharacterizationTests`（旧経路のシフトのテスト）の置き換え（「シフトは無視される」へ）、ゴールデンファイル（シフトの欄を含むもの）の更新、ラチェットの基準値の更新（件数が変わる場合）、完了報告書、`Phase8-Status.md`、チェックリスト（U-43: 編集画面の警告、削除と残すの動き）。
+
+### 5.1 W0 の結果（2026-10-20。コードは変えていない）
+
+1. **XML の経路は 1 系統だけ**: `LegacyProfileXmlSerializer`（読込 `ProfileButtonShiftLoadSection`、保存 `ProfileButtonSaveSection`）。新形式の DTO（`DTOXml`）には、シフトの欄がない。`SaveProfile` の `xmlControls`／`xmlShiftControls` は、使われていない変数（削除してよい）。名前の変更・SA の参照の更新（`ReplaceActionReference`、`ReplaceProfileSwitchTarget`）は、XML を直接書き換える方式で、`<ShiftControl>` はそのまま残る（影響なし）。
+2. **`<ShiftModifier>`（旧形式の読込専用。全体で 1 つの副ボタンの番号）も、シフトの一部**。`ProfileMiscLoadSection` が読み、`ProfileLoadContext.ShiftModifier` 経由でシフトの読込が使う。廃止に合わせて、読まない（`Trigger` の属性を持たない旧形式の項目は、保持した内容に、番号なしのまま残る。動作しないので問題なし）。
+3. **画面**: `ProfileEditor.Reload`（`profileRepository.LoadProfile(deviceNum, profile.Name)` の直後）が警告の位置。既存のダイアログは `System.Windows.MessageBox` ＋ `Properties.Resources` の文字列。警告の文言は、`Properties.Resources`（と翻訳）に追加する。
+4. **ゴールデン**: `profile-gap.xml`、`profile-gap.resaved.xml`、`profile-legacy.resaved.xml`、`profile-varied.xml` に `<ShiftControl>` の内容がある（W2 で、保存の結果は「保持した内容のまま」になるため、読み込んだ内容がそのまま出る。状態のゴールデンは、シフトの欄が消える）。`profile-default.xml`、`profile-minimal.rewritten.xml` の空の `<ShiftControl />` は、変わらない。
+5. **参照**: シフトの識別子は 12 ファイル、約 138 か所（`DS4ControlSettings` 25、`OutBinding` 32、`BindingWindowViewModel` 16、`ProfileButtonSaveSection` 17、`Mapping` 10、`RecordBoxViewModel` 10、`BindingWindow.xaml.cs` 8、`MappedControl` 7、`BackingStore` 4、`ControlBindingBuilder` 4、`ProfileSettingsService` 3、翻訳 2）。
+6. **保持の置き場**: `BackingStore` の、スロットごとの `RemovedShiftSettings`（`ds4settings` と同じ寸法）。読込のたびに取り込み直す（`ResetProfile` でも空にする）。
+
+### 5.2 W1 の実装（2026-10-20。ビルド・テストの結果待ち）
+
+保持・警告の判定の部品（配線なし）と、その仕様のテスト。新設（1 ファイル 1 型）: `RemovedShiftSettings`（保持。`Capture`／`Clear`／`AppendTo`）、`RemovedShiftChoice`（Delete／Keep）、`RemovedShiftOutcome`（NoNotice／Deleted／Kept）、`IRemovedShiftPrompt`（警告の窓口。実装は W3 のダイアログ）、`RemovedShiftNotice`（警告の判定。選択は記憶しない）。テスト: `Phase8Step78dW1RemovedShiftSpecTests`（取り込み、置き換え、空、書き出し［属性を保つ、空のときは従来と同じ `<ShiftControl />`］、削除、残す［毎回警告］）。実行への影響（シフトの副ボタンを押しても何も変わらない）と、読込・保存のラウンドトリップは、配線をする W2 のテスト。
 
 ## 6. リスクと対応
 
