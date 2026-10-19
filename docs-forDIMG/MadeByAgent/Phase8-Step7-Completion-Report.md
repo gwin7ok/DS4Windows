@@ -354,4 +354,4 @@ Step7 の 7.6 は、これで 4 種別（GyroCalibrate、DisconnectBT、BatteryC
 
 - **値渡し化**: Key／Button の出力が `SpecialAction` から設定を解釈していたのを、変換層（`ActionBindingBuilder.InterpretKey`／`InterpretButton`）に移し、出力は `KeyBindingValues`／`ButtonBindingValues` を受け取るだけにした。`SpecialAction` は、状態の鍵・ログの名前・系統 B への入力として残る（識別用。中立な型への置き換えは Step8 以降）。従来のコンストラクターは互換として残した（TODO: Step8）。Macro は 7.8c に回した（Q3＝A）。
 - **土台**: `IControlBindingBuilder`／`ControlBindingBuilder`（空）、`BindingMigrationOptions.MigratedControlKinds`（既定は空）、`ITriggerDispatchEngine.OwnsControl`（常に偽）、`Mapping.ProcessControlSettingAction` の先頭に素通りの 1 行。
-- **テスト**: `Phase8Step78aFoundationTests`（新規）。結果は、ユーザーのビルド・テストの報告後に追記する。
+- **テスト**: `Phase8Step78aFoundationTests`（新規）。ビルド・テスト成功（2026-10-20。ユーザーが実行）。次は 7.8b（Controls タブの Key。Q4＝B の動作変更を含む）。
