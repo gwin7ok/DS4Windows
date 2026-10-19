@@ -3,7 +3,7 @@
 作成日: 2026-10-20  
 対象ブランチ: `For-DI-migration-work`  
 上位: `Phase8-Step7-Plan.md`（§4 の 7.6、Q8＝A）、`Phase8-Step7-5-Plan.md`（進め方）、`Phase8-Step2-Design.md`（§6、§9、§15、§23）、`Phase8-Step2-Intent-Decisions.md`（項目 5・6）、`Phase8-Step1-Trigger-Spec-Ledger.md`（§3〜§5）  
-状態: **Q1〜Q8 を承認（2026-10-20。Q3 と Q8 は B に変更、ほかは推奨 A）。7.6a GyroCalibrate はビルド・テスト成功（実機確認 U-35 は先送り。2026-10-20 ユーザー判断）。7.6b DisconnectBT はビルド・テスト成功（実機確認 U-36 は先送り。2026-10-20 ユーザー判断）。7.6c BatteryCheck は実装済み（ビルド・テストの結果待ち）。7.6d は 7.6c の後**  
+状態: **Q1〜Q8 を承認（2026-10-20。Q3 と Q8 は B に変更、ほかは推奨 A）。7.6a GyroCalibrate はビルド・テスト成功（実機確認 U-35 は先送り。2026-10-20 ユーザー判断）。7.6b DisconnectBT はビルド・テスト成功（実機確認 U-36 は先送り。2026-10-20 ユーザー判断）。7.6c BatteryCheck はビルド・テスト成功（実機確認 U-37 は先送り。2026-10-20 ユーザー判断）。7.6d は 7.6c の後**  
 調査の方法: 旧ループ（`Mapping.MapCustomAction`）と、実機ログ（2026-10-20）の読解。テストでの確認は未実施
 
 ---
