@@ -248,8 +248,8 @@ namespace DS4WindowsTests
         public void ButtonWithExtras_AndShortExtras_AreNotOwned_SoTheLegacyPathHandlesTheWholeAssignment()
         {
             using var t = new ControlsKeyTestScope(true);
-            t.Scope.RemapToButton(DS4Controls.Cross, X360Controls.LeftMouse);
-            TestGlobals.Store.GetDS4CSetting(Device, DS4Controls.Cross).extras = Full;   // マウスのボタンは 7.8f-2 まで旧経路（パッドは 7.8f-1 で新経路）
+            t.Scope.RemapToButton(DS4Controls.Cross, X360Controls.MouseUp);
+            TestGlobals.Store.GetDS4CSetting(Device, DS4Controls.Cross).extras = Full;   // マウスの移動は 7.8f-3 まで旧経路（パッドは 7.8f-1、マウスのボタンは 7.8f-2 で新経路）
             t.MapKey(DS4Controls.Circle, 65).extras = "5,5,1";                              // 値が読めない
 
             Assert.Empty(Build());

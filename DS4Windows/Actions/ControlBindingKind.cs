@@ -16,6 +16,9 @@ namespace DS4Windows.Actions
         /// <summary>Button のうち、パッド（X360 の軸・トリガー・ボタン）への割り当てと、Default の軸の素通し（7.8f-1）。マウス、ホイールは 7.8f-2・7.8f-3 で別の区分にする。</summary>
         ButtonPad,
 
+        /// <summary>Button のうち、マウスのボタン・タッチパッドクリック・デジタルのホイールへの割り当てと、Toggle つきの割り当て（7.8f-2）。アナログのホイール・マウスの移動は 7.8f-3 で別の区分にする。</summary>
+        ButtonMouse,
+
         /// <summary>Extras（振動、ライトバー、感度。7.8e）。Lightbar マクロは、7.8e で機能を廃止した。</summary>
         Extras,
     }

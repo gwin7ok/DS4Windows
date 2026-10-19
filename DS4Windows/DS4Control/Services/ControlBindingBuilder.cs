@@ -19,7 +19,7 @@ namespace DS4Windows.Services
     /// 識別用の <c>SpecialAction</c>（状態の鍵）は、旧経路の合成と同じ名前（<c>Synthetic_Key_{device}_{control}</c>）で作る。
     /// 旧経路の <c>FindSpecialActionForLogicalKey</c> による Key 特殊アクションとの状態の共有は、再現しない（Q4＝B。承認済みの動作変更）。
     /// </summary>
-    // TODO(Phase8-Step7 7.8f-2・7.8f-3。規約 2.4): Button のうち、マウスのボタン・タッチパッドクリック・ホイール・Toggle（7.8f-2）と、アナログのホイール・マウスの移動（7.8f-3）は、それぞれの PR でここに足す。ジャイロスワイプの割り当ては、7.8f-3 で扱う。
+    // TODO(Phase8-Step7 7.8f-3。規約 2.4): Button のうち、アナログのホイール・マウスの移動は、7.8f-3 の PR でここに足す。ジャイロスワイプの割り当ては、7.8f-3 で扱う。
     public sealed class ControlBindingBuilder : IControlBindingBuilder
     {
         private readonly BindingMigrationOptions _options;
@@ -44,20 +44,21 @@ namespace DS4Windows.Services
             bool macros = _options.IsControlMigrated(ControlBindingKind.Macro) && _macroPlayer != null;
             bool extras = _options.IsControlMigrated(ControlBindingKind.Extras) && _extrasPort != null;
             bool pads = _options.IsControlMigrated(ControlBindingKind.ButtonPad);
-            if (!keys && !macros && !extras && !pads) return Array.Empty<IActionBinding>();
+            bool mice = _options.IsControlMigrated(ControlBindingKind.ButtonMouse);
+            if (!keys && !macros && !extras && !pads && !mice) return Array.Empty<IActionBinding>();
 
             ControlSettingsGroup group = _profileSettings.GetControlSettingsGroup(device);
             if (group == null) return Array.Empty<IActionBinding>();
 
             var result = new List<IActionBinding>();
-            Add(device, group.LS, keys, macros, extras, pads, result);
-            Add(device, group.RS, keys, macros, extras, pads, result);
-            Add(device, group.L2, keys, macros, extras, pads, result);
-            Add(device, group.L2FullPull, keys, macros, extras, pads, result);
-            Add(device, group.R2, keys, macros, extras, pads, result);
-            Add(device, group.R2FullPull, keys, macros, extras, pads, result);
-            Add(device, group.ControlButtons, keys, macros, extras, pads, result);
-            Add(device, group.ExtraDeviceButtons, keys, macros, extras, pads, result);
+            Add(device, group.LS, keys, macros, extras, pads, mice, result);
+            Add(device, group.RS, keys, macros, extras, pads, mice, result);
+            Add(device, group.L2, keys, macros, extras, pads, mice, result);
+            Add(device, group.L2FullPull, keys, macros, extras, pads, mice, result);
+            Add(device, group.R2, keys, macros, extras, pads, mice, result);
+            Add(device, group.R2FullPull, keys, macros, extras, pads, mice, result);
+            Add(device, group.ControlButtons, keys, macros, extras, pads, mice, result);
+            Add(device, group.ExtraDeviceButtons, keys, macros, extras, pads, mice, result);
 
             return result.Count == 0 ? (IReadOnlyList<IActionBinding>)Array.Empty<IActionBinding>() : result.ToArray();
         }
@@ -119,24 +120,33 @@ namespace DS4Windows.Services
             return true;
         }
 
-        private void Add(int device, List<DS4ControlSettings> settings, bool keys, bool macros, bool extras, bool pads, List<IActionBinding> result)
+        private void Add(int device, List<DS4ControlSettings> settings, bool keys, bool macros, bool extras, bool pads, bool mice, List<IActionBinding> result)
         {
             if (settings == null) return;
             for (int i = 0; i < settings.Count; i++)
-                Add(device, settings[i], keys, macros, extras, pads, result);
+                Add(device, settings[i], keys, macros, extras, pads, mice, result);
         }
 
         /// <summary>
         /// Phase8-Step7 7.8f-1: Button のうち、パッド（X360 の軸・トリガー・ボタン）への割り当ての解釈。出力先が Unbound／None なら、消すだけ（<paramref name="eraseOnly"/>）。
-        /// マウス・ホイール・タッチパッドクリックへの割り当て（7.8f-2・7.8f-3）と、Toggle つき（Toggle は 7.8f-2 で扱う）は偽（旧経路が処理する）。
+        /// マウス・ホイール・タッチパッドクリックへの割り当て（7.8f-2・7.8f-3）と、Toggle つきは偽（Toggle つきは、<see cref="TryInterpretPadTarget"/> と Toggle の出力を組み合わせて扱う［7.8f-2］）。
         /// </summary>
         public static bool TryInterpretPad(DS4ControlSettings dcs, out PadBindingValues values, out bool eraseOnly)
         {
             values = default;
             eraseOnly = false;
             if (dcs == null) return false;
-            if (dcs.actionType != DS4ControlSettings.ActionType.Button) return false;
             if (dcs.keyType.HasFlag(DS4KeyType.Toggle)) return false;
+            return TryInterpretPadTarget(dcs, out values, out eraseOnly);
+        }
+
+        /// <summary>Phase8-Step7 7.8f-2: <see cref="TryInterpretPad"/> と同じ解釈で、Toggle の有無を見ない（Toggle は別の出力が担う）。</summary>
+        public static bool TryInterpretPadTarget(DS4ControlSettings dcs, out PadBindingValues values, out bool eraseOnly)
+        {
+            values = default;
+            eraseOnly = false;
+            if (dcs == null) return false;
+            if (dcs.actionType != DS4ControlSettings.ActionType.Button) return false;
 
             X360Controls xbox = dcs.action.actionBtn;
             if (xbox == X360Controls.None || xbox == X360Controls.Unbound)
@@ -155,6 +165,42 @@ namespace DS4Windows.Services
             return true;
         }
 
+        /// <summary>
+        /// Phase8-Step7 7.8f-2: Button のうち、マウスのボタン（左・右・中・4・5）、タッチパッドクリック、デジタルのホイール（元がボタン）への割り当ての解釈。
+        /// Toggle の有無は見ない（Toggle は別の出力が担う）。元がスティック・トリガー・ジャイロのホイール（アナログ）と、マウスの移動は偽（7.8f-3。旧経路が処理する）。
+        /// </summary>
+        public static bool TryInterpretMouse(DS4ControlSettings dcs, out X360Controls target)
+        {
+            target = X360Controls.None;
+            if (dcs == null) return false;
+            if (dcs.actionType != DS4ControlSettings.ActionType.Button) return false;
+
+            X360Controls xbox = dcs.action.actionBtn;
+            switch (xbox)
+            {
+                case X360Controls.TouchpadClick:
+                case X360Controls.LeftMouse:
+                case X360Controls.RightMouse:
+                case X360Controls.MiddleMouse:
+                case X360Controls.FourthMouse:
+                case X360Controls.FifthMouse:
+                    target = xbox;
+                    return true;
+                case X360Controls.WUP:
+                case X360Controls.WDOWN:
+                    // 旧経路の isAnalog と同じ: 元が軸・トリガー・ジャイロならアナログのホイール
+                    DS4Controls source = dcs.control;
+                    bool analog = (source >= DS4Controls.LXNeg && source <= DS4Controls.RYPos)
+                        || source == DS4Controls.L2 || source == DS4Controls.R2
+                        || (source >= DS4Controls.GyroXPos && source <= DS4Controls.GyroZNeg);
+                    if (analog) return false;
+                    target = xbox;
+                    return true;
+                default:
+                    return false;
+            }
+        }
+
         // 軸の Default で、反対側の向きが割り当て済み（Key／Macro／Button のどれでも、割り当てたボタンの消去が軸のペアの両方を中立にする）なら、素通しが要る
         private bool NeedsPassthrough(int device, DS4ControlSettings dcs)
         {
@@ -168,7 +214,7 @@ namespace DS4Windows.Services
         }
 
         // dcs の部品（Extras、通常の割り当て、Default の素通し）は、すべて新経路で扱えるときだけ束縛にする。一部でも扱えなければ、1 つも作らず、旧経路が dcs 全体を処理する
-        private void Add(int device, DS4ControlSettings dcs, bool keys, bool macros, bool extras, bool pads, List<IActionBinding> result)
+        private void Add(int device, DS4ControlSettings dcs, bool keys, bool macros, bool extras, bool pads, bool mice, List<IActionBinding> result)
         {
             if (dcs == null) return;
 
@@ -201,10 +247,22 @@ namespace DS4Windows.Services
                     }
                     break;
                 case DS4ControlSettings.ActionType.Button:
-                    if (pads && TryInterpretPad(dcs, out PadBindingValues pad, out bool eraseOnly))
                     {
-                        if (hasExtras) AddExtras(device, dcs, extrasValues, result);
-                        AddPad(device, dcs, pad, eraseOnly, result);
+                        // Phase8-Step7 7.8f-2: Toggle つきは、ButtonMouse が有効なときだけ（Toggle の出力は ButtonMouse の区分）。出力先がパッドなら ButtonPad も要る
+                        bool toggle = dcs.keyType.HasFlag(DS4KeyType.Toggle);
+                        if (toggle && !mice) break;
+
+                        if (TryInterpretMouse(dcs, out X360Controls mouseTarget))
+                        {
+                            if (!mice) break;
+                            if (hasExtras) AddExtras(device, dcs, extrasValues, result);
+                            AddMouse(device, dcs, mouseTarget, toggle, result);
+                        }
+                        else if (pads && TryInterpretPadTarget(dcs, out PadBindingValues pad, out bool eraseOnly))
+                        {
+                            if (hasExtras) AddExtras(device, dcs, extrasValues, result);
+                            AddPad(device, dcs, pad, eraseOnly, toggle, result);
+                        }
                     }
                     break;
                 default:
@@ -214,7 +272,7 @@ namespace DS4Windows.Services
 
         // 設計: Phase8-Step7-8f-Plan.md §3.2。パッドへの割り当て。割り当てたボタンの通常の出力は、毎フレーム消す（Controls の規則）。値の出力は、評価されたフレームごとに、全 dcs のあと（Stage3 と同じ段階）で書く。
         // 出力先が Unbound／None のときは、出力を持たない束縛（消すだけ）
-        private void AddPad(int device, DS4ControlSettings dcs, PadBindingValues values, bool eraseOnly, List<IActionBinding> result)
+        private void AddPad(int device, DS4ControlSettings dcs, PadBindingValues values, bool eraseOnly, bool toggle, List<IActionBinding> result)
         {
             var identity = new SpecialAction($"Synthetic_Pad_{device}_{(int)dcs.control}", "Synthetic", "Pad", "Pad", 0, string.Empty);
             identity.type = "Pad";
@@ -222,9 +280,29 @@ namespace DS4Windows.Services
 
             var policy = new BindingPolicy(respectsFreshPressGuard: false, suppressesTriggerButtons: false, resetsTriggerOutput: false,
                 erasesOutputEveryFrame: true);
-            IOutputAction[] outputs = eraseOnly ? Array.Empty<IOutputAction>() : new IOutputAction[] { new ControlPadOutputAction(identity, values) };
-            result.Add(new TriggerBinding(new ControlButtonInputAction(identity.name, dcs.control, ControlBindingKind.ButtonPad, ControlJudgement.Assignment),
-                outputs, policy, identity, -1));
+            var outputs = new List<IOutputAction>(2);
+            if (!eraseOnly) outputs.Add(new ControlPadOutputAction(identity, values));
+            if (toggle) outputs.Add(new ControlToggleOutputAction(identity));   // 7.8f-2（Q8＝A）。Toggle の出力は ButtonMouse の区分
+            result.Add(new TriggerBinding(new ControlButtonInputAction(identity.name, dcs.control, toggle ? ControlBindingKind.ButtonMouse : ControlBindingKind.ButtonPad, ControlJudgement.Assignment),
+                outputs.ToArray(), policy, identity, -1));
+        }
+
+        // 設計: Phase8-Step7-8f-Plan.md §3.2（7.8f-2）。マウスのボタン・タッチパッドクリック・デジタルのホイール。割り当てたボタンの通常の出力は、毎フレーム消す。
+        // マウスのボタンとホイールは Controls の判定（旧 GetBoolActionMapping）。タッチパッドクリックの押下は SA と同じ判定（旧 GetBoolMapping）で、出力が自分で見る。Toggle つきなら、Toggle の出力を足す（Q8＝A）
+        private void AddMouse(int device, DS4ControlSettings dcs, X360Controls target, bool toggle, List<IActionBinding> result)
+        {
+            var identity = new SpecialAction($"Synthetic_Mouse_{device}_{(int)dcs.control}", "Synthetic", "Mouse", "Mouse", 0, string.Empty);
+            identity.type = "Mouse";
+            identity.controls = identity.name;
+
+            var policy = new BindingPolicy(respectsFreshPressGuard: false, suppressesTriggerButtons: false, resetsTriggerOutput: false,
+                erasesOutputEveryFrame: true);
+            var outputs = new List<IOutputAction>(2);
+            if (target == X360Controls.TouchpadClick) outputs.Add(new ControlTouchpadClickOutputAction(identity, dcs.control));
+            else outputs.Add(new ControlMouseOutputAction(identity, target));
+            if (toggle) outputs.Add(new ControlToggleOutputAction(identity));
+            result.Add(new TriggerBinding(new ControlButtonInputAction(identity.name, dcs.control, ControlBindingKind.ButtonMouse, ControlJudgement.Assignment),
+                outputs.ToArray(), policy, identity, -1));
         }
 
         // 設計: Phase8-Step7-8f-Plan.md §3.2（Q2＝A）。Default の軸の素通し。Default は通常の出力を消さない（消すのは、反対側の向きの割り当て）

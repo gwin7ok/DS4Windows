@@ -8,7 +8,7 @@ namespace DS4Windows.Actions
     /// 中身は、現行の <c>Mapping.ResetToDefaultValue</c> と、Stage3（Synchronous Button SpecialAction handling）の出力の分岐をそのまま移したもの
     /// （<c>FrameOutputTests</c> が現行のメソッドと比較する）。まだ <c>Mapping</c> には配線していない（W4）。
     /// </summary>
-    public sealed class FrameOutput : IPadFrameOutput, IFrameOutputTrace
+    public sealed class FrameOutput : IPadFrameOutput, IToggleFrameOutput, IFrameOutputTrace
     {
         private DS4StateFieldMapping _outputFields;
         private SyntheticState _deviceState;
@@ -74,6 +74,23 @@ namespace DS4Windows.Actions
             if (fields == null) return;
 
             fields.buttons[(int)outControl] = true;
+        }
+
+        // Phase8-Step7 7.8f-2: 旧経路の Controls の Toggle が、デバイスの合成状態へ書いていたものと同じ
+        public void FlipToggle()
+        {
+            SyntheticState deviceState = _deviceState;
+            if (deviceState == null) return;
+
+            deviceState.currentClicks.toggle = !deviceState.currentClicks.toggle;
+        }
+
+        public void CountToggle()
+        {
+            SyntheticState deviceState = _deviceState;
+            if (deviceState == null) return;
+
+            deviceState.currentClicks.toggleCount++;
         }
 
         // Phase8-Step7 7.1-W2: 現行の Stage3 の「出力の組み合わせ」のログ（Mapping の Stage3／LogSpecialActionTrace）と同じ順序・書式

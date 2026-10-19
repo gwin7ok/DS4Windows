@@ -177,6 +177,7 @@ namespace DS4Windows.DI
                 migration.MigratedControlKinds.Add(ControlBindingKind.Key);       // 7.8b Controls タブの Key
                 migration.MigratedControlKinds.Add(ControlBindingKind.Macro);     // 7.8c Controls タブの Macro（SA の Macro の仕様に合わせる）
                 migration.MigratedControlKinds.Add(ControlBindingKind.Extras);    // 7.8e Controls タブの Extras（振動・ライトバー・感度。通常の割り当てとは別の束縛）
+                migration.MigratedControlKinds.Add(ControlBindingKind.ButtonMouse); // 7.8f-2 Controls タブの Button のうち、マウスのボタン・タッチパッドクリック・デジタルのホイール・Toggle
                 migration.MigratedControlKinds.Add(ControlBindingKind.ButtonPad); // 7.8f-1 Controls タブの Button のうち、パッド（X360 の軸・トリガー・ボタン）と Default の軸の素通し
                 return migration;
             });

@@ -193,14 +193,18 @@ namespace DS4WindowsTests
         }
 
         [Fact]
-        public void MouseTargetsAndToggle_AreNotBuilt()
+        public void MouseMovementAndAnalogWheel_AreNotBuilt_AndToggleNeedsTheMouseKind()
         {
             using var t = new ControlsKeyTestScope(true);
-            t.MapButton(DS4Controls.Cross, X360Controls.LeftMouse);
-            t.MapButton(DS4Controls.Circle, X360Controls.WUP);
-            t.MapButton(DS4Controls.Square, X360Controls.A, DS4KeyType.Toggle);
+            t.MapButton(DS4Controls.Cross, X360Controls.MouseUp);       // マウスの移動は 7.8f-3
+            t.MapButton(DS4Controls.LXPos, X360Controls.WUP);           // 元がスティックのホイールは、アナログ（7.8f-3）
+            t.MapButton(DS4Controls.L2, X360Controls.WDOWN);
+            Assert.DoesNotContain(Build(), b => b.Source.name.StartsWith($"Synthetic_Pad_") || b.Source.name.StartsWith($"Synthetic_Mouse_"));
 
-            Assert.Empty(Build());
+            // Toggle つきのパッドは、ButtonMouse（Toggle の出力の区分）が無効なら、旧経路が処理する
+            t.MapButton(DS4Controls.Square, X360Controls.A, DS4KeyType.Toggle);
+            TestHost.GetService<BindingMigrationOptions>().MigratedControlKinds.Remove(ControlBindingKind.ButtonMouse);
+            Assert.DoesNotContain(Build(), b => b.Source.name == $"Synthetic_Pad_{Device}_{(int)DS4Controls.Square}");
         }
 
         [Fact]

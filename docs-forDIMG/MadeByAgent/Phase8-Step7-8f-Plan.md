@@ -3,7 +3,7 @@
 作成日: 2026-10-20  
 対象ブランチ: `For-DI-migration-work`  
 上位: `Phase8-Step2b-ControlsTab-Design.md`（§3.3 の F、§10。Q8＝B［実機確認は Step9］、Q9＝A［値渡し］）、`Phase8-Step7-8a-Plan.md`（土台）、`Phase8-Step7-8b-Plan.md`（Key。Default と Unbound の表）、`Phase8-Step7-8e-Plan.md`（Extras。1 ボタン複数束縛）、`Phase8-Step7-1-Plan.md`（SA の Button）  
-状態: **Q1〜Q7 を承認済み（2026-10-20。ユーザー。Q5＝B、他は推奨）。W0（調査）完了［§5.1］。Q8＝A も承認済み。7.8f-1 の W1 完了［ビルド・テスト成功。§5.2］。7.8f-1 の W2（実装）完了［ビルド・テスト成功。§5.3］。7.8f-1 の W4（文書）完了。7.8f-2 の W1（旧経路の特性化テスト）を作成［ビルド・テスト成功。§5.4］。次は 7.8f-2 の W2（実装）。製品コードは未着手**
+状態: **Q1〜Q7 を承認済み（2026-10-20。ユーザー。Q5＝B、他は推奨）。W0（調査）完了［§5.1］。Q8＝A も承認済み。7.8f-1 の W1 完了［ビルド・テスト成功。§5.2］。7.8f-1 の W2（実装）完了［ビルド・テスト成功。§5.3］。7.8f-1 の W4（文書）完了。7.8f-2 の W1（旧経路の特性化テスト）を作成［ビルド・テスト成功。§5.4］。7.8f-2 の W2（実装）を実施［ビルド・テストの結果待ち。§5.5］。製品コードは未着手**
 
 ---
 
@@ -108,6 +108,14 @@ Controls タブの「Button」の割り当て（ボタン・軸・トリガー�
 - `Phase8Step78f2W1ControlsMouseCharacterizationTests`（旧・新の両経路。W1 の時点では、どちらも旧経路）: マウスのボタン 5 種［自分のカウンターだけ増える、元を消す、押している間は毎フレーム数える］、判定［スティックは扇形、トリガーは 0 超］、タッチパッドクリック［幅 55 の判定、マウスのカウンターは動かない］、ホイール（デジタル。元がボタン）、Extras との併用、隣のパッド割り当てとの独立。
 - Toggle（旧経路だけの記録。Q8）: 押している間、毎フレーム `toggle` を反転し、`toggleCount` も毎フレーム 1 になることを確かめる。W2 で Q8＝A に直すとき、期待値を更新する。パッド出力に Toggle を付けた場合も記録（出力は押している間だけ）。
 - `MapCustom` は `Commit` を呼ばないため、フレームの区切りは `SaveToPrevious(true)` で再現する。
+
+### 5.5 7.8f-2 W2 の実装（2026-10-20。ビルド・テストの結果待ち）
+
+- 新設（`Actions/`）: `IToggleFrameOutput`（Toggle の状態の反転・数の加算。`FrameOutput` が実装）、`ControlMouseOutputAction`（マウスのボタン・デジタルのホイール。成立中、毎フレーム `PressX360`）、`ControlTouchpadClickOutputAction`（旧 `GetBoolMapping` と同じ SA 風の判定で `IsActive` を自分で見る）、`ControlToggleOutputAction`（立ち上がりで 1 回反転［Q8＝A］、`toggleCount` は毎フレーム）。区分 `ButtonMouse`（`ServiceRegistration` の 1 行）。
+- `ControlBindingBuilder`: `TryInterpretMouse`（左・右・中・4・5、タッチパッドクリック、元がボタンのホイール。元がスティック・トリガー・ジャイロのホイールとマウスの移動は偽＝7.8f-3）、`TryInterpretPadTarget`（Toggle を見ない解釈。`TryInterpretPad` は従来どおり Toggle を拒否）、`AddMouse`、`AddPad` に Toggle の出力を追加。
+- 所有の条件: マウス系は `ButtonMouse` が有効なとき。Toggle つきは、出力先の区分に加えて `ButtonMouse` も要る（Toggle の出力の区分）。外すと、その dcs は旧経路。パッド＋Toggle の束縛の区分は `ButtonMouse`。
+- 動作の変更（承認済み。Q8＝A）: Toggle は押している間に毎フレーム反転していた不具合を、立ち上がりで 1 回の反転に直した。`Commit` は変更なし。
+- テスト: `Phase8Step78f2W2ControlsMouseTests`（解釈、束縛の形、ロールバック、Toggle の是正、ソース）。W1 の Theory は新経路も走る。更新: 既定の区分の一覧、`ControlsKeyTestScope`、7.8e の Button＋Extras の旧経路の検査（マウスの移動に）、7.8f-1 の「マウスと Toggle は作らない」検査。
 
 ## 6. 質問と決定
 
