@@ -44,6 +44,12 @@ namespace DS4Windows.Actions
 
         public IReadOnlyList<DS4Controls> Triggers => _triggers;
 
+        /// <summary>押し続けて成立するまでの秒数（現行の <c>delayTime</c>。0 なら遅延なし）。</summary>
+        public double DelaySeconds => _delaySeconds;
+
+        /// <summary>true なら、離したときに成立する（現行の Macro の <c>RunOnRelease</c>）。</summary>
+        public bool InvertsOnRelease => _invertOnRelease;
+
         public TriggerState Evaluate(ITriggerInput input)
         {
             if (input == null) throw new ArgumentNullException(nameof(input));
