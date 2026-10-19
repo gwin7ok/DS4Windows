@@ -20,6 +20,7 @@ namespace DS4Windows.Actions
         private readonly ISpecialActionRepository _actionRepository;
         private readonly IProfileSettingsService _settings;
         private readonly Func<IMapping> _mappingProvider;
+        private readonly TriggerButtonKeyReleaser _keyReleaser;
 
         public SpecialAction sa { get; }
         public int deviceIndex { get; }
@@ -37,6 +38,7 @@ namespace DS4Windows.Actions
             _actionIndex = actionIndex;
             _actionRepository = actionRepository;
             _settings = settings ?? throw new ArgumentNullException(nameof(settings));
+            _keyReleaser = new TriggerButtonKeyReleaser(_settings);
             _mappingProvider = mappingProvider;
         }
 
@@ -110,32 +112,11 @@ namespace DS4Windows.Actions
             catch { }
         }
 
-        // 旧経路と同じ: トリガーのボタンの通常の割り当てがキー／マクロなら、そのキーを離す（切替で、キーが押されたまま残らないように）
+        // 旧経路と同じ: トリガーのボタンの通常の割り当てがキー／マクロなら、そのキーを離す（切替で、キーが押されたまま残らないように）。
+        // 7.6b（Q5＝A）: DisconnectBT と共有する部品（TriggerButtonKeyReleaser）へ移した。処理は同じ
         private void ReleaseTheTriggerButtonKeys(IOutputContext ctx, int dev)
         {
-            IVirtualKBM kbm = ctx.OutputHandler;
-            if (kbm == null || sa.trigger == null) return;
-
-            for (int i = 0, count = sa.trigger.Count; i < count; i++)
-            {
-                DS4ControlSettings dcs = _settings.GetDS4CSetting(dev, sa.trigger[i]);
-                if (dcs.actionType == DS4ControlSettings.ActionType.Default) continue;
-
-                if (dcs.actionType == DS4ControlSettings.ActionType.Key)
-                {
-                    uint tempKey = _settings.OutputKBMMapping.GetRealEventKey((uint)dcs.action.actionKey);
-                    kbm.PerformKeyRelease(tempKey);
-                }
-                else if (dcs.actionType == DS4ControlSettings.ActionType.Macro)
-                {
-                    int[] keys = (int[])dcs.action.actionMacro;
-                    for (int j = 0, keysLen = keys.Length; j < keysLen; j++)
-                    {
-                        uint tempKey = _settings.OutputKBMMapping.GetRealEventKey((uint)keys[j]);
-                        kbm.PerformKeyRelease(tempKey);
-                    }
-                }
-            }
+            _keyReleaser.Release(sa, dev, ctx.OutputHandler);
         }
 
         public void Stop(IOutputContext ctx)

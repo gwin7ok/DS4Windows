@@ -3,7 +3,7 @@
 作成日: 2026-10-20  
 対象ブランチ: `For-DI-migration-work`  
 上位: `Phase8-Step7-Plan.md`（§4 の 7.6、Q8＝A）、`Phase8-Step7-5-Plan.md`（進め方）、`Phase8-Step2-Design.md`（§6、§9、§15、§23）、`Phase8-Step2-Intent-Decisions.md`（項目 5・6）、`Phase8-Step1-Trigger-Spec-Ledger.md`（§3〜§5）  
-状態: **Q1〜Q8 を承認（2026-10-20。Q3 と Q8 は B に変更、ほかは推奨 A）。7.6a GyroCalibrate は実装済み（ビルド・テストの結果待ち）。7.6b〜7.6d は 7.6a の合格後**  
+状態: **Q1〜Q8 を承認（2026-10-20。Q3 と Q8 は B に変更、ほかは推奨 A）。7.6a GyroCalibrate はビルド・テスト成功（実機確認 U-35 は先送り。2026-10-20 ユーザー判断）。7.6b DisconnectBT はビルド・テスト成功（実機確認 U-36 の結果待ち）。7.6c・7.6d は 7.6b の後**  
 調査の方法: 旧ループ（`Mapping.MapCustomAction`）と、実機ログ（2026-10-20）の読解。テストでの確認は未実施
 
 ---
@@ -114,7 +114,22 @@
 - 新設: `IGyroCalibrationPort`（窓口）、`DefaultGyroCalibrationPort`（本番。`Func<IDeviceStateAccessor>` を遅延で受ける。コントローラーがいなければ何もしない。結合デバイスも較正）、`GyroCalibrateAction`（立ち上がりで 1 回: Trace 4 行 → 較正 → Debug の「SpecialAction GyroCalibrate: …」）。配置は、Actions サブシステムのため `DS4Windows/Actions/`（R3）。
 - 変更: `ActionBindingBuilder`（`IGyroCalibrationPort` を省略可で受ける。GyroCalibrate の束縛。ポートがなければ作らない）、`ServiceRegistration`（ポートの登録、既定の一覧に GyroCalibrate の 1 行）。ロールバックは、その 1 行を外す。
 - テスト: `Phase8Step76aGyroCalibrateTests`、`RecordingGyroCalibrationPort`（記録用）。既存の更新: `SpecialActionTestScope`、`Phase8Step4W1ContractTests`、`Phase8Step7W3ButtonSwitchTests`（既定の一覧に GyroCalibrate）。
+- 注意: GyroCalibrate の特殊アクションの型の文字列（`Actions.xml` の `Type`）は `GyroCalibration`（型 ID は `GyroCalibrate`）。割り当てのテストは、同じ件数でトリガー未成立の場合を基準にする（テストの足場が、特殊アクションがあるだけで 1 フレーム約 1 KB 増えるため）。
 - 旧経路との比較は、実機がないため、立ち上がりの Trace 4 行の一致だけ。効果は記録用のポートで確認し、実機のログで確認する（U-35）。
+
+### 7.6b DisconnectBT の実装（2026-10-20）
+
+- 調査の事実: `DS4Device.DisconnectBT()` は bool を返すが、Windows の API の結果（`success`）を最後に `success = true;` で上書きしている（コメント: 「戻り値は失敗を示すが、それでも動く？」）。**MAC アドレスがあれば常に true**。ほかの呼び出し元（アイドル切断、`DisconnectWireless` など）がこの戻り値に依存するため、変えない。
+- そのため、Q3＝B の「成功／失敗」は、実際に失敗として観測できるのが、コントローラーがいない・MAC がない・例外のときに限られる。それでも、仕組み（失敗なら再試行）は入れた。**実際の Windows の API の失敗を見分けるには、`DS4Device.DisconnectBT()` の戻り値の見直し（ほかの呼び出し元の確認を伴う）が別途要る**。必要なら、別の計画書にする。
+- 新設: `DisconnectTargetKind`（None／Bluetooth／Dongle）、`IControllerDisconnectPort`（窓口）、`DefaultControllerDisconnectPort`（本番）、`TriggerButtonKeyReleaser`（キーを離す共通の部品。Q5＝A）、`DisconnectBTAction`（`IHeldOutputAction` と `IFrameOutputAction`）。配置は `DS4Windows/Actions/`（R3）。
+- 変更: `ProfileSwitchAction`（キーを離す処理を共通の部品へ。処理は同じ）、`ActionBindingBuilder`（`IControllerDisconnectPort` を省略可で受ける。DisconnectBT の束縛。ポートがなければ作らない）、`ServiceRegistration`（ポートの登録、既定の一覧に DisconnectBT の 1 行）。ロールバックは、その 1 行を外す。
+- 動き: Bluetooth（同期済み・非充電）で、トレース 4 行 → 切断の要求 → 成功なら、キーを離し、`RequestEndFrame`。成功のあとは、離すまで再要求しないが、切断の完了までフレームの打ち切りは毎フレーム続ける（旧経路の `return` と同じ）。失敗なら、押している間、次のフレームで再試行（フレームは打ち切らない）。ドングル: 押している間は切断待ちにし、離した後、アイドルになったら切断とキーの解放（`ApplyFrame`）。
+- 旧経路との違い（承認済み。完了報告書に記録）: 切断の要求の成功後の繰り返し（`DisconnectBT()` とトレースログが、切断の完了までの数フレーム並んでいた）がなくなる。
+- テスト: `Phase8Step76bDisconnectBTTests`、`RecordingControllerDisconnectPort`（記録用）。既存の更新: `SpecialActionTestScope`、`Phase8Step4W1ContractTests`、`Phase8Step7W3ButtonSwitchTests`（既定の一覧に DisconnectBT）。
+- 実機確認 U-36。
+- **ユーザー決定（2026-10-20）: 「切断の成功／失敗」は、案 A（`DS4Device.DisconnectBT()` が Windows の API の本当の結果を返すようにする）で実装したい。実施の判断は、実機確認 U-36 の後に行う（今は実装しない）。**
+  - 案 A の注意: ほかの呼び出し元（アイドル切断［`DS4Device.cs` 1380 行付近］、`DS3Device`／`DualSenseDevice`／`JoyConDevice` の同種の箇所、`DisconnectWireless`）が、成功＝true を前提にしているため、変更の前に、全呼び出し元の影響の確認が要る。別の計画書にする想定。
+  - 案 B（新経路で、命令の後、一定時間たっても接続されたままなら再試行）は、今回は採らない。
 
 ## 5. リスクと対応
 

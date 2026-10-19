@@ -228,7 +228,7 @@
 ### 2. 検証結果・判断の記録
 
 1. Q2＝A（窓口を介す）。実機がないテストでは、記録用のポートで、回数・条件（Fresh-press ガード、AND 条件）・デバイスの添字を確認。
-2. 割り当て: 押している間（1000 フレーム）≦ 4 KB。
+2. 割り当て: 押している間（1000 フレーム）、同じ件数でトリガー未成立の基準 ＋ 4 KB 以内。
 3. 性能の出力: なし（種別が 1 つだけで、30 件の比較は意味が薄いため）。
 
 ### 3. 実機確認（ユーザー）
@@ -237,5 +237,28 @@
 
 ### 4. 次
 
-7.6b DisconnectBT（Q3＝B: 成功／失敗の戻り値と再試行）。
+7.6b DisconnectBT（次節）。7.6a の実機確認 U-35 は先送り（2026-10-20 ユーザー判断。Step9 で、Phase8 の完了をこの確認にかけるかを決める）。
+
+## 7.6b DisconnectBT
+
+### 1. 成果
+
+- 窓口 `IControllerDisconnectPort`（`Actions/`）と本番の実装 `DefaultControllerDisconnectPort`、`DisconnectTargetKind`、出力 `DisconnectBTAction`、キーを離す共通の部品 `TriggerButtonKeyReleaser`（`ProfileSwitchAction` も使う。Q5＝A）を新設。
+- `ActionBindingBuilder` が DisconnectBT の束縛を作る（ポートがなければ作らない）。`ServiceRegistration` の既定の一覧に DisconnectBT の 1 行を追加（ロールバックはその 1 行を外す）。
+- **挙動の変更（Q3＝B。承認済み）**: 切断の要求が成功したら、繰り返さない（旧経路は、切断の完了まで毎フレーム、`DisconnectBT()` とトレースログを繰り返した）。失敗したら、押している間、再試行する。成功のあとも、切断の完了までのフレームの打ち切りは続く。
+- 注意（調査の事実）: `DS4Device.DisconnectBT()` は、Windows の API の結果を使わず、MAC があれば常に true を返す（既存のコードの `success = true;`）。このため、実際に「失敗」として見えるのは、コントローラーがいない・MAC がない・例外のときに限られる。API の失敗を見分けるには、`DS4Device.DisconnectBT()` の戻り値の見直し（ほかの呼び出し元の確認を伴う）が別途要る。
+
+### 2. 検証結果・判断の記録
+
+1. Q2＝A（窓口を介す）。実機がないテストでは、記録用のポートで、回数・条件・再試行・ドングルの切断待ち・キーの解放を確認。
+2. ログ: 試行ごとに Trace 4 行（Debug はなし。旧経路と同じ）。
+3. 割り当て: 押している間（1000 フレーム）、同じ件数でトリガー未成立の基準 ＋ 4 KB 以内。
+
+### 3. 実機確認（ユーザー）
+
+チェックリスト §11 の **U-36**。確認の前に、起動ログの「built at … (commit …)」でビルドを確認する。
+
+### 4. 次
+
+7.6c BatteryCheck（Q8＝B: `WheelRecalibrate` のログを削除）。
 

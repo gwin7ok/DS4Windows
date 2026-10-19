@@ -6,8 +6,8 @@ namespace DS4Windows.Actions
 {
     /// <summary>
     /// Phase8-Step5 W1（Phase8-Step5-Plan.md §3.1。Phase8-Step2-Design.md §6・§8）: <see cref="IActionBindingBuilder"/> の実装（DI の Singleton）。
-    /// 種別ごとの構成は設計書 §6 のとおり（Button／Key／Macro／Program／Profile／GyroCalibrate の 6 種）。それ以外の種別
-    /// （<c>DisconnectBT</c>、<c>BatteryCheck</c>、<c>MultiAction</c>、<c>XboxGameDVR</c>、<c>SASteeringWheelEmulationCalibrate</c>、<c>None</c>）は束縛を作らず、旧経路が処理する。
+    /// 種別ごとの構成は設計書 §6 のとおり（Button／Key／Macro／Program／Profile／GyroCalibrate／DisconnectBT の 7 種）。それ以外の種別
+    /// （<c>BatteryCheck</c>、<c>MultiAction</c>、<c>XboxGameDVR</c>、<c>SASteeringWheelEmulationCalibrate</c>、<c>None</c>）は束縛を作らず、旧経路が処理する。
     /// <para>
     /// TODO（Phase8-Step7。規約 2.4）: 本クラスは Step5 で作り、本番の適用の経路（<c>ProfileApplicationService</c>）から呼ぶが、
     /// <see cref="BindingMigrationOptions.MigratedTypes"/> が空の間は常に空のリストを返す。各種別の構成（方針の細部を含む）は、
@@ -27,15 +27,18 @@ namespace DS4Windows.Actions
         private readonly ISpecialActionRepository _actionRepository;   // Key のログ（ActionEntries の数）用。省略可（テスト）
         private readonly Func<IMapping> _mappingProvider;               // Profile の連鎖の防止（復帰の合図の参照）用。省略可（テスト）
         private readonly IGyroCalibrationPort _gyroCalibration;         // GyroCalibrate（7.6a）。省略時（テスト）は束縛を作らず、旧経路が処理する
+        private readonly IControllerDisconnectPort _disconnectPort;     // DisconnectBT（7.6b）。省略時（テスト）は束縛を作らず、旧経路が処理する
 
         public ActionBindingBuilder(IProfileActionProvider profileActions, IProfileSettingsService profileSettings,
             IManagedActionManager manager, IMacroPlayer macroPlayer, IProcessLauncher processLauncher,
             IProfileSwitcher profileSwitcher, BindingMigrationOptions options, ISpecialActionRepository actionRepository = null,
-            Func<IMapping> mappingProvider = null, IGyroCalibrationPort gyroCalibration = null)
+            Func<IMapping> mappingProvider = null, IGyroCalibrationPort gyroCalibration = null,
+            IControllerDisconnectPort disconnectPort = null)
         {
             _actionRepository = actionRepository;
             _mappingProvider = mappingProvider;
             _gyroCalibration = gyroCalibration;
+            _disconnectPort = disconnectPort;
             _profileActions = profileActions ?? throw new ArgumentNullException(nameof(profileActions));
             _profileSettings = profileSettings ?? throw new ArgumentNullException(nameof(profileSettings));
             _manager = manager ?? throw new ArgumentNullException(nameof(manager));
@@ -116,6 +119,12 @@ namespace DS4Windows.Actions
                     // 立ち上がりの 1 回だけ。Fresh-press ガードは既定のまま（旧経路の独自の判定と同じ効果）。実行中のブロックなし
                     if (_gyroCalibration == null) return null;
                     return new TriggerBinding(Input(sa, false), new IOutputAction[] { new GyroCalibrateAction(sa, device, _gyroCalibration, index, _actionRepository) },
+                        BindingPolicy.Default, sa, index);
+
+                case SpecialAction.ActionTypeId.DisconnectBT:
+                    // 切断の要求が成功するまで、押している間は再試行する（Q3＝B）。Fresh-press ガードは既定のまま。実行中のブロックなし
+                    if (_disconnectPort == null) return null;
+                    return new TriggerBinding(Input(sa, false), new IOutputAction[] { new DisconnectBTAction(sa, device, _disconnectPort, _profileSettings) },
                         BindingPolicy.Default, sa, index);
 
                 default:

@@ -70,6 +70,7 @@ namespace DS4WindowsTests
                 _options.MigratedTypes.Add(SpecialAction.ActionTypeId.Macro); // Phase8-Step7 7.3-W1: Macro も新経路で処理する
                 _options.MigratedTypes.Add(SpecialAction.ActionTypeId.Program); // Phase8-Step7 7.4-W1: Program も新経路で処理する
                 _options.MigratedTypes.Add(SpecialAction.ActionTypeId.GyroCalibrate); // Phase8-Step7 7.6a-W1: GyroCalibrate も新経路で処理する
+                _options.MigratedTypes.Add(SpecialAction.ActionTypeId.DisconnectBT); // Phase8-Step7 7.6b-W1: DisconnectBT も新経路で処理する
                 _options.MigratedTypes.Add(SpecialAction.ActionTypeId.Profile); // Phase8-Step7 7.5a-W1: Profile も新経路で処理する（復帰つきの Profile は、7.5a の W2 でビルダーが束縛を作らない形にする）
             }
 
