@@ -12,6 +12,7 @@ namespace DS4WindowsTests
         public readonly List<uint> MouseButtonEvents = new List<uint>();
         public readonly List<(uint Button, int Type)> MouseButtonAltEvents = new List<(uint, int)>();
         public readonly List<(int X, int Y)> MoveEvents = new List<(int, int)>();
+        public readonly List<(int Vertical, int Horizontal)> WheelEvents = new List<(int, int)>();   // Phase8-Step7 7.8f-3: アナログのホイールの特性化のために記録する
         public readonly List<uint> KeyPresses = new List<uint>();   // Phase8-Step7-3a: マクロの手順どおりの再生を確かめるために記録する
         public readonly List<uint> KeyReleases = new List<uint>();
         public int SyncCount;
@@ -19,7 +20,7 @@ namespace DS4WindowsTests
         public override bool Connect() => true;
         public override bool Disconnect() => true;
         public override void MoveRelativeMouse(int x, int y) => MoveEvents.Add((x, y));
-        public override void PerformMouseWheelEvent(int vertical, int horizontal) { }
+        public override void PerformMouseWheelEvent(int vertical, int horizontal) => WheelEvents.Add((vertical, horizontal));
         public override void PerformMouseButtonEvent(uint mouseButton) => MouseButtonEvents.Add(mouseButton);
         public override void PerformMouseButtonEventAlt(uint mouseButton, int type) => MouseButtonAltEvents.Add((mouseButton, type));
         public override void PerformMouseButtonPress(uint mouseButton) { }
