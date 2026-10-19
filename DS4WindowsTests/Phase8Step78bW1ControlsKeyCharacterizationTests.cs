@@ -205,9 +205,9 @@ namespace DS4WindowsTests
                 held.Cross = true;
                 t.Run(held);
 
-                bool legacyShares = true;   // W2 で、migrated のときは false（共有しない）に変える
-                Assert.Equal(legacyShares, t.IsBeingTriggered(keyAction));
-                Assert.Equal(!legacyShares, t.IsBeingTriggered(synthetic));
+                bool shares = !migrated;   // Q4＝B（W2）: 新経路は共有しない（自分専用の状態を使う）。旧経路は共有する
+                Assert.Equal(shares, t.IsBeingTriggered(keyAction));
+                Assert.Equal(!shares, t.IsBeingTriggered(synthetic));
             }
             finally
             {

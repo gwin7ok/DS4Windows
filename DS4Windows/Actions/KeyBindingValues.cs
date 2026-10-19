@@ -7,12 +7,26 @@ namespace DS4Windows.Actions
     /// </summary>
     public readonly struct KeyBindingValues
     {
-        public KeyBindingValues(ushort logicalKey, bool scanCode, bool toggle)
+        public KeyBindingValues(ushort logicalKey, bool scanCode, bool toggle, uint aliasKey = 0, bool suppressSpecialActionLogs = false)
         {
             LogicalKey = logicalKey;
             ScanCode = scanCode;
             Toggle = toggle;
+            AliasKey = aliasKey;
+            SuppressSpecialActionLogs = suppressSpecialActionLogs;
         }
+
+        /// <summary>
+        /// Phase8-Step7 7.8b: 別名キー（Controls タブの <c>actionAlias</c>）。0 以外なら、ネイティブキーはこのキーから求める
+        /// （<c>GetRealEventKey(AliasKey)</c>。0 なら論理キーから）。SA タブは 0。
+        /// </summary>
+        public uint AliasKey { get; }
+
+        /// <summary>
+        /// Phase8-Step7 7.8b（Q4＝A）: 真なら、SA タブ形式の Debug／Trace ログ（<c>SpecialAction KEY entry</c> など）を出さない。
+        /// 旧経路の Controls タブの Key は、これらを出していなかったため（Controls タブは真）。
+        /// </summary>
+        public bool SuppressSpecialActionLogs { get; }
 
         /// <summary>論理キー（<c>details</c> が数値として読めなければ 0）。</summary>
         public ushort LogicalKey { get; }

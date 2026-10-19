@@ -31,13 +31,15 @@ namespace DS4Windows.Actions
         private readonly IBatteryCheckPort _batteryCheckPort;           // BatteryCheck（7.6c）。省略時（テスト）は束縛を作らず、旧経路が処理する
         private readonly IWheelCalibrationPort _wheelCalibrationPort;   // ステアリング較正（7.6d）。省略時（テスト）は束縛を作らず、旧経路が処理する
         private readonly IMacroStringPlayer _macroStringPlayer;          // MultiAction（7.7b）。省略時（テスト）は束縛を作らず、旧経路が処理する
+        private readonly IControlBindingBuilder _controlBuilder;         // Controls タブの束縛（7.8b）。省略時（テスト）は連結しない
 
         public ActionBindingBuilder(IProfileActionProvider profileActions, IProfileSettingsService profileSettings,
             IManagedActionManager manager, IMacroPlayer macroPlayer, IProcessLauncher processLauncher,
             IProfileSwitcher profileSwitcher, BindingMigrationOptions options, ISpecialActionRepository actionRepository = null,
             Func<IMapping> mappingProvider = null, IGyroCalibrationPort gyroCalibration = null,
             IControllerDisconnectPort disconnectPort = null, IBatteryCheckPort batteryCheckPort = null,
-            IWheelCalibrationPort wheelCalibrationPort = null, IMacroStringPlayer macroStringPlayer = null)
+            IWheelCalibrationPort wheelCalibrationPort = null, IMacroStringPlayer macroStringPlayer = null,
+            IControlBindingBuilder controlBuilder = null)
         {
             _actionRepository = actionRepository;
             _mappingProvider = mappingProvider;
@@ -46,6 +48,7 @@ namespace DS4Windows.Actions
             _batteryCheckPort = batteryCheckPort;
             _wheelCalibrationPort = wheelCalibrationPort;
             _macroStringPlayer = macroStringPlayer;
+            _controlBuilder = controlBuilder;
             _profileActions = profileActions ?? throw new ArgumentNullException(nameof(profileActions));
             _profileSettings = profileSettings ?? throw new ArgumentNullException(nameof(profileSettings));
             _manager = manager ?? throw new ArgumentNullException(nameof(manager));
@@ -56,6 +59,20 @@ namespace DS4Windows.Actions
         }
 
         public IReadOnlyList<IActionBinding> Build(int device)
+        {
+            IReadOnlyList<IActionBinding> special = BuildSpecialActions(device);
+
+            // Phase8-Step7 7.8b: Controls タブの束縛を、同じ一覧に連結する（Q5＝A。入力アクションの型で見分ける）。空なら、連結しない
+            IReadOnlyList<IActionBinding> controls = _controlBuilder?.Build(device);
+            if (controls == null || controls.Count == 0) return special;
+
+            var all = new List<IActionBinding>(special.Count + controls.Count);
+            all.AddRange(special);
+            all.AddRange(controls);
+            return all.ToArray();
+        }
+
+        private IReadOnlyList<IActionBinding> BuildSpecialActions(int device)
         {
             // 移行対象が空の間（本番の既定）は、何も読まずに空のリストを返す
             if (_options.MigratedTypes.Count == 0) return Array.Empty<IActionBinding>();

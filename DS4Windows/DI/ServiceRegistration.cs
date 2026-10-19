@@ -172,6 +172,7 @@ namespace DS4Windows.DI
                 migration.MigratedTypes.Add(SpecialAction.ActionTypeId.SASteeringWheelEmulationCalibrate); // 7.6d ステアリング較正
                 migration.MigratedTypes.Add(SpecialAction.ActionTypeId.MultiAction); // 7.7b MultiAction
                 migration.MigratedTypes.Add(SpecialAction.ActionTypeId.Profile);  // 7.5a Profile（切替のみ。復帰を持つ Profile は、7.5b まで束縛を作らず、旧経路が処理する）
+                migration.MigratedControlKinds.Add(ControlBindingKind.Key);       // 7.8b Controls タブの Key（シフト・Extras・Lightbar マクロなしの割り当て）
                 return migration;
             });
             services.AddSingleton<ITriggerDispatchEngine, TriggerDispatchEngine>();

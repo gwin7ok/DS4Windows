@@ -21,6 +21,8 @@ namespace DS4Windows.Actions
         private readonly KeyAction _keyAction;
         private readonly ushort _logicalKey;
         private readonly bool _toggle;
+        private readonly uint _aliasKey;
+        private readonly bool _suppressLogs;
         private readonly int _index;
         private readonly ISpecialActionRepository _actionRepository;
 
@@ -44,6 +46,8 @@ namespace DS4Windows.Actions
             _keyAction = new KeyAction(identity, -1, values.LogicalKey, values.ScanCode);
             _logicalKey = values.LogicalKey;
             _toggle = values.Toggle;
+            _aliasKey = values.AliasKey;
+            _suppressLogs = values.SuppressSpecialActionLogs;
         }
 
         private static SpecialAction Require(SpecialAction sa) => sa ?? throw new ArgumentNullException(nameof(sa));
@@ -53,14 +57,14 @@ namespace DS4Windows.Actions
         public void Execute(IOutputContext ctx)
         {
             if (ctx == null) return;
-            LogRising(ctx);
+            if (!_suppressLogs) LogRising(ctx);
             _keyAction.OnTrigger(ctx.Device, _logicalKey, ResolveNativeKey(), false, ctx.OutputHandler);
         }
 
         public void Stop(IOutputContext ctx)
         {
             if (ctx == null) return;
-            LogRelease(ctx);
+            if (!_suppressLogs) LogRelease(ctx);
             _keyAction.OnRelease(ctx.Device, _logicalKey, ResolveNativeKey(), false, ctx.OutputHandler);
         }
 
@@ -156,7 +160,7 @@ namespace DS4Windows.Actions
             try
             {
                 var mapping = _profileSettings.OutputKBMMapping;
-                if (mapping != null) return mapping.GetRealEventKey(_logicalKey);
+                if (mapping != null) return mapping.GetRealEventKey(_aliasKey != 0 ? _aliasKey : _logicalKey);
             }
             catch { }
 

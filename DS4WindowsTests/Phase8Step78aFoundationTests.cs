@@ -1,5 +1,6 @@
 using System;
 using System.IO;
+using System.Linq;
 using DS4Windows;
 using DS4Windows.Actions;
 using DS4Windows.DI;
@@ -217,39 +218,41 @@ namespace DS4WindowsTests
         }
 
         [Fact]
-        public void TheHostDefault_MigratesNoControlKind_AndRegistersTheBuilder()
+        public void TheHostDefault_MigratesTheKeyKindOnly_AndRegistersTheBuilder()
         {
             var options = TestHost.GetService<BindingMigrationOptions>();
             var builder = TestHost.GetService<IControlBindingBuilder>();
 
-            Assert.Empty(options.MigratedControlKinds);
+            // Phase8-Step7 7.8b: 既定の一覧に Key（Controls タブ）。7.8c 以降で区分ごとに増える
+            Assert.Equal(new[] { ControlBindingKind.Key }, options.MigratedControlKinds.OrderBy(k => k.ToString(), StringComparer.Ordinal).ToArray());
             Assert.IsType<ControlBindingBuilder>(builder);
             Assert.Same(builder, TestHost.GetService<IControlBindingBuilder>());
         }
 
         [Fact]
-        public void TheControlBindingBuilder_ReturnsAnEmptyList_EvenWhenAKindIsEnabled()
+        public void TheControlBindingBuilder_ReturnsAnEmptyList_WhenNoAssignmentQualifies()
         {
             var options = new BindingMigrationOptions();
-            var builder = new ControlBindingBuilder(options);
+            var settings = TestHost.GetService<IProfileSettingsService>();
+            var builder = new ControlBindingBuilder(options, settings);
 
-            Assert.Empty(builder.Build(0));
+            Assert.Empty(builder.Build(MappingCharacterizationScope.Device));
             options.MigratedControlKinds.Add(ControlBindingKind.Key);
-            Assert.Empty(builder.Build(0));   // 7.8a では、組み立ては後続の PR
-            Assert.Throws<ArgumentNullException>(() => new ControlBindingBuilder(null));
+            Assert.Empty(builder.Build(MappingCharacterizationScope.Device));   // 割り当てが全部 Default なら、束縛はない
+            Assert.Throws<ArgumentNullException>(() => new ControlBindingBuilder(null, settings));
+            Assert.Throws<ArgumentNullException>(() => new ControlBindingBuilder(options, null));
         }
 
         [Fact]
-        public void TheEngine_NeverOwnsAControl_In78a_AndDoesNotAllocate()
+        public void TheEngine_OwnsNoControl_WithoutABinding_AndDoesNotAllocate()
         {
-            var options = TestHost.GetService<BindingMigrationOptions>();
             var engine = TestHost.GetService<ITriggerDispatchEngine>();
 
             Assert.False(engine.OwnsControl(0, DS4Controls.Cross));
             Assert.False(engine.OwnsControl(-1, DS4Controls.Cross));
             Assert.False(engine.OwnsControl(99, DS4Controls.Cross));
 
-            for (int i = 0; i < 200; i++) engine.OwnsControl(0, DS4Controls.Cross);
+            for (int i = 0; i < 200; i++) { engine.OwnsControl(0, DS4Controls.Cross); engine.OwnsControl(1, DS4Controls.L1); }
             long before = GC.GetAllocatedBytesForCurrentThread();
             for (int i = 0; i < 5000; i++)
             {
@@ -258,16 +261,6 @@ namespace DS4WindowsTests
             }
 
             Assert.Equal(0L, GC.GetAllocatedBytesForCurrentThread() - before);
-
-            options.MigratedControlKinds.Add(ControlBindingKind.Key);
-            try
-            {
-                Assert.False(engine.OwnsControl(0, DS4Controls.Cross));   // 束縛の置き場がまだないため、区分が有効でも偽
-            }
-            finally
-            {
-                options.MigratedControlKinds.Remove(ControlBindingKind.Key);
-            }
         }
 
         [Fact]

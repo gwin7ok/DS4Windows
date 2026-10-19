@@ -25,7 +25,8 @@ namespace DS4Windows.Actions
             bool resetsTriggerOutput = true,
             bool stopOnRelease = true,
             string exclusionGroup = null,
-            bool routesOutputsByGesture = false)
+            bool routesOutputsByGesture = false,
+            bool erasesOutputEveryFrame = false)
         {
             RespectsFreshPressGuard = respectsFreshPressGuard;
             BlocksWhileExecuting = blocksWhileExecuting;
@@ -38,6 +39,7 @@ namespace DS4Windows.Actions
             StopOnRelease = stopOnRelease;
             ExclusionGroup = exclusionGroup;
             RoutesOutputsByGesture = routesOutputsByGesture;
+            ErasesOutputEveryFrame = erasesOutputEveryFrame;
         }
 
         /// <summary>トリガーが連続して未成立になるまで（<c>RequiresFreshPressAfterReset</c> が true の間）、実行しないか。台帳 §4.2: Button の Press のみ false。</summary>
@@ -70,6 +72,12 @@ namespace DS4Windows.Actions
         /// 「どのジェスチャーでどの出力か」の対応は、束縛を作る側（ビルダー。信号変換層）が決める。既定は偽。
         /// </summary>
         public bool RoutesOutputsByGesture { get; }
+
+        /// <summary>
+        /// Phase8-Step7 7.8b（Q3＝A）: 成立の有無によらず、毎フレーム、トリガーのボタンの通常の出力を消すか（現行の Controls タブの <c>ResetToDefaultValue</c>）。
+        /// 割り当てのあるボタンだけが対象（Default＝未設定は消さない）。既定は偽（特殊アクションは、成立中だけ <see cref="ResetsTriggerOutput"/> で消す）。
+        /// </summary>
+        public bool ErasesOutputEveryFrame { get; }
 
         private static DS4Controls[] CopyOf(IReadOnlyList<DS4Controls> source)
         {

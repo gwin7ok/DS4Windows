@@ -3769,8 +3769,13 @@ namespace DS4Windows
                 return;
             }
 
-            // Phase8-Step7 7.8a: 新経路（エンジン）が所有する割り当ては、旧経路の本体を素通りする。7.8a では常に偽（空の配線）。7.8b 以降で区分ごとに有効にする
-            if (_engine.OwnsControl(device, dcs.control)) return;
+            // Phase8-Step7 7.8a／7.8b: 新経路（エンジン）が所有する割り当て（7.8b では Key の条件を満たすもの）は、エンジンが処理し、旧経路の本体は素通りする。
+            // 7.8c 以降で区分ごとに増える。ロールバックは、ServiceRegistration の MigratedControlKinds の 1 行を外す
+            if (_engine.OwnsControl(device, dcs.control))
+            {
+                _engine.ProcessControl(device, dcs.control, _triggerInputs[device], _frameOutputs[device]);
+                return;
+            }
 
             //DS4ControlSettings dcs = tempSettingsList[settingIndex];
 

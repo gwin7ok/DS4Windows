@@ -8,7 +8,7 @@ namespace DS4Windows.Actions
     /// <see cref="IsActive"/> の本体は、現行の <c>Mapping.getBoolSpecialActionMapping</c> をそのまま移したもの（意味は同じ。<c>TriggerInputTests</c> が全コントロールで比較する）。
     /// 割り当て 0: 判定は表の参照のみ。前フレームの表（<c>_previousFields</c>）は、コンストラクターで 1 回だけ作り、最初に <see cref="WasActive"/> が呼ばれたときだけ展開する（遅延）。
     /// </summary>
-    public sealed class TriggerInput : ITriggerInput
+    public sealed class TriggerInput : IControlTriggerInput
     {
         // L2／R2 の「押された」とみなす値、軸の「倒された」とみなす幅、ジャイロの「傾いた」とみなす値（現行の getBoolSpecialActionMapping と同じ）
         private const byte TriggerThreshold = 100;
@@ -78,6 +78,73 @@ namespace DS4Windows.Actions
             }
 
             return Evaluate(control, _previous, _previousFields);
+        }
+
+        /// <summary>
+        /// Phase8-Step7 7.8b: 現行の <c>Mapping.GetBoolActionMapping</c>（Controls タブの割り当て用）と同じ判定。スティックは角度の扇形（<c>LSAngle</c>／<c>RSAngle</c>）、
+        /// L2／R2 は 0 より大きい、ジャイロは 0 より大きい／小さい（<c>GyroOutputMode</c> が Controls のときだけ）。
+        /// </summary>
+        public bool IsControlActive(DS4Controls control)
+        {
+            if (_current == null || _fields == null) return false;
+
+            int controlNum = (int)control;
+            if (controlNum < 0 || controlNum >= DS4StateFieldMapping.mappedType.Length)
+                return false;
+
+            DS4State cState = _current;
+            DS4StateFieldMapping fieldMap = _fields;
+            DS4StateFieldMapping.ControlType controlType = DS4StateFieldMapping.mappedType[controlNum];
+            bool result = false;
+            if (controlType == DS4StateFieldMapping.ControlType.Button)
+            {
+                result = fieldMap.buttons[controlNum];
+            }
+            else if (controlType == DS4StateFieldMapping.ControlType.AxisDir)
+            {
+                switch (control)
+                {
+                    case DS4Controls.LXNeg: result = cState.LX < 128 && (cState.LSAngle >= 112.5 && cState.LSAngle <= 247.5); break;
+                    case DS4Controls.LYNeg: result = cState.LY < 128 && (cState.LSAngle >= 22.5 && cState.LSAngle <= 157.5); break;
+                    case DS4Controls.RXNeg: result = cState.RX < 128 && (cState.RSAngle >= 112.5 && cState.RSAngle <= 247.5); break;
+                    case DS4Controls.RYNeg: result = cState.RY < 128 && (cState.RSAngle >= 22.5 && cState.RSAngle <= 157.5); break;
+                    case DS4Controls.LXPos: result = cState.LX > 128 && (cState.LSAngle <= 67.5 || cState.LSAngle >= 292.5); break;
+                    case DS4Controls.LYPos: result = cState.LY > 128 && (cState.LSAngle >= 202.5 && cState.LSAngle <= 337.5); break;
+                    case DS4Controls.RXPos: result = cState.RX > 128 && (cState.RSAngle <= 67.5 || cState.RSAngle >= 292.5); break;
+                    case DS4Controls.RYPos: result = cState.RY > 128 && (cState.RSAngle >= 202.5 && cState.RSAngle <= 337.5); break;
+                    default: break;
+                }
+            }
+            else if (controlType == DS4StateFieldMapping.ControlType.Trigger)
+            {
+                result = fieldMap.triggers[controlNum] > 0;
+            }
+            else if (controlType == DS4StateFieldMapping.ControlType.Touch)
+            {
+                result = fieldMap.buttons[controlNum];
+            }
+            else if (controlType == DS4StateFieldMapping.ControlType.SwipeDir)
+            {
+                result = fieldMap.swipedirbools[controlNum];
+            }
+            else if (controlType == DS4StateFieldMapping.ControlType.GyroDir)
+            {
+                bool gyroForControls = _profileSettings.GyroOutputMode[_device] == GyroOutMode.Controls;
+                bool safeTest = false;
+
+                switch (control)
+                {
+                    case DS4Controls.GyroXPos: safeTest = fieldMap.gryodirs[controlNum] > 0; break;
+                    case DS4Controls.GyroXNeg: safeTest = fieldMap.gryodirs[controlNum] < 0; break;
+                    case DS4Controls.GyroZPos: safeTest = fieldMap.gryodirs[controlNum] > 0; break;
+                    case DS4Controls.GyroZNeg: safeTest = fieldMap.gryodirs[controlNum] < 0; break;
+                    default: break;
+                }
+
+                result = gyroForControls ? safeTest : false;
+            }
+
+            return result;
         }
 
         // 現行の Mapping.getBoolSpecialActionMapping（cState／fieldMap を引数に取る形）と同じ判定

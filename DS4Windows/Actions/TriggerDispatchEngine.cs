@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using DS4Windows.Services;
 
 namespace DS4Windows.Actions
@@ -23,6 +24,7 @@ namespace DS4Windows.Actions
         private readonly BindingMigrationOptions _options;
         private readonly IVirtualKBM _virtualKbm;
         private readonly DeviceRuntime[] _devices = new DeviceRuntime[ControllerLimits.MaxControllerCount];
+        private static readonly int ControlTableSize = (int)Enum.GetValues(typeof(DS4Controls)).Cast<DS4Controls>().Max() + 1;
 
         public TriggerDispatchEngine(IActionRegistry registry, IManagedActionManager manager, BindingMigrationOptions options, IVirtualKBM virtualKbm)
         {
@@ -50,12 +52,46 @@ namespace DS4Windows.Actions
             }
         }
 
-        // 7.8a: 空の配線。区分が有効になっても、束縛の置き場がまだないため偽（7.8b で実装）。毎フレーム・全ボタンで呼ばれるため、割り当てもロックもなし
+        // 7.8b: そのボタンの束縛が登録されていれば真。毎フレーム・全ボタンで呼ばれるため、束縛が 1 つもないとき（既定）は、ロックも割り当てもなしで偽を返す
         public bool OwnsControl(int device, DS4Controls control)
         {
             if (_options.MigratedControlKinds.Count == 0) return false;
+            if ((uint)device >= (uint)_devices.Length) return false;
 
-            return false;
+            DeviceRuntime rt = _devices[device];
+            if (ReferenceEquals(_registry.GetBindings(device), rt.Bindings) && rt.ControlCount == 0 && !rt.ResetRequested)
+                return false;
+
+            lock (rt.Lock)
+            {
+                Prepare(rt, device, null);
+                int c = (int)control;
+                if (rt.ControlCount == 0 || (uint)c >= (uint)rt.ControlIndex.Length) return false;
+
+                int i = rt.ControlIndex[c];
+                return i >= 0 && IsOwnedBinding(rt.Bindings[i]);
+            }
+        }
+
+        public void ProcessControl(int device, DS4Controls control, ITriggerInput input, IFrameOutput frame)
+        {
+            if (input == null || (uint)device >= (uint)_devices.Length) return;
+
+            DeviceRuntime rt = _devices[device];
+            lock (rt.Lock)
+            {
+                Prepare(rt, device, input);
+                int c = (int)control;
+                if (rt.ControlCount == 0 || (uint)c >= (uint)rt.ControlIndex.Length) return;
+
+                int i = rt.ControlIndex[c];
+                if (i < 0) return;
+
+                IActionBinding binding = rt.Bindings[i];
+                if (!IsOwnedBinding(binding)) return;
+
+                ProcessBinding(device, rt, i, binding, input, frame);
+            }
         }
 
         public FrameResult ProcessOwned(int device, SpecialAction action, ITriggerInput input, IFrameOutput frame)
@@ -288,7 +324,12 @@ namespace DS4Windows.Actions
         private bool IsOwnedBinding(IActionBinding binding)
         {
             SpecialAction source = binding?.Source;
-            return source != null && _options.IsMigrated(source.typeID);
+            if (source == null) return false;
+
+            // Controls タブの束縛（7.8b）は、Controls 側の移行のスイッチで決まる（SA タブの種別のスイッチには依存しない）
+            if (binding.Input is ControlButtonInputAction) return _options.IsControlMigrated(ControlBindingKind.Key);
+
+            return _options.IsMigrated(source.typeID);
         }
 
         // 登録簿の一覧が差し替わっていたら実行時の配列を作り直し、リセットの要求があれば状態を初期化する
@@ -313,11 +354,29 @@ namespace DS4Windows.Actions
             rt.Established = new bool[count];
             rt.Stamp = new int[count];
             rt.Index = new Dictionary<SpecialAction, int>(count);
+            rt.ControlCount = 0;
             for (int i = 0; i < count; i++)
             {
                 SpecialAction source = snapshot[i]?.Source;
                 if (source != null && !rt.Index.ContainsKey(source))
                     rt.Index.Add(source, i);
+
+                // Controls タブの束縛（7.8b）: ボタン → 束縛の添字の表
+                if (snapshot[i]?.Input is ControlButtonInputAction controlInput)
+                {
+                    if (rt.ControlIndex == null || rt.ControlCount == 0)
+                    {
+                        rt.ControlIndex = rt.ControlIndex ?? new int[ControlTableSize];
+                        Array.Fill(rt.ControlIndex, -1);
+                    }
+
+                    int control = (int)controlInput.Triggers[0];
+                    if ((uint)control < (uint)rt.ControlIndex.Length)
+                    {
+                        rt.ControlIndex[control] = i;
+                        rt.ControlCount++;
+                    }
+                }
             }
 
             rt.Frame++; // 古い評価結果を使わない
@@ -364,6 +423,14 @@ namespace DS4Windows.Actions
                 rt.Stamp[i] = rt.Frame;
 
                 UpdateFreshPressTimer(state, established, input.TickCount64);
+
+                // Controls タブの束縛（7.8b。Q3＝A）: 成立の有無によらず、毎フレーム、割り当てたボタンの通常の出力を消す（旧 ResetToDefaultValue）
+                if (policy.ErasesOutputEveryFrame && frame != null)
+                {
+                    IReadOnlyList<DS4Controls> erased = inputAction.Triggers;
+                    for (int t = 0; t < erased.Count; t++)
+                        frame.ResetTriggerControl(erased[t]);
+                }
 
                 // ジェスチャー（Phase8-Step7 7.7b。MultiAction のタップ・長押し・ダブルタップ）: 出力を「ジェスチャーで選ぶ」束縛では、
                 // ガード・成立の判定・BeingTriggered によらず、Gesture が 0 でないフレームだけ、Outputs[Gesture - 1] を実行する
@@ -521,6 +588,8 @@ namespace DS4Windows.Actions
             public bool[] Established;
             public int[] Stamp;
             public Dictionary<SpecialAction, int> Index;
+            public int[] ControlIndex;   // Controls タブの束縛（7.8b）: DS4Controls → Bindings の添字（なしは -1）
+            public volatile int ControlCount;
             public int Frame = 1;
             public ITriggerInput ReleaseInput;
             public volatile IActionBinding Pending;   // 復帰の合図（切替前の束縛）。適用では消えず、物理切断で消える
