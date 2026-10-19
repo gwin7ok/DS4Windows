@@ -10,7 +10,7 @@ namespace DS4Windows.Actions
     /// (1) 連鎖の防止（<see cref="CanExecute"/>）、(2) ログ（Trace の立ち上がり 4 行、Debug 3 行）、(3) トリガーのボタンの通常の割り当て（キー、マクロ）のキーを離す、
     /// (4) 切替のあとでフレームを打ち切る（<c>RequestEndFrame</c>。Intent-Decisions 項目 5）。
     /// 旧経路のアダプター（<c>ProfileSwitchActionAdapter</c>）は、<c>Mapping</c> が同じ処理を行うため、添字なしのコンストラクターのままで、これらを行わない。
-    /// 復帰の合図（<c>UntriggerAction</c>）の設定は、7.5b でエンジンへ移す（それまで、復帰を持つ Profile は、ビルダーが束縛を作らず、旧経路が処理する）。
+    /// 復帰の合図は、7.5b で、エンジンが持つ（自動の復帰 ＝ Unload on trigger release）。解除トリガー（<c>uTrigger</c>）を持つ Profile は、ビルダーが束縛を作らず、旧経路が処理し、その合図は <c>Mapping</c> が持つ。
     /// 旧経路が書く <c>prevProfileName</c>／<c>prevProfileWasTemporary</c> は、読む場所がないため、移さない（Q3＝A）。
     /// </summary>
     public class ProfileSwitchAction : IGatedOutputAction
@@ -67,7 +67,7 @@ namespace DS4Windows.Actions
 
         /// <summary>
         /// 連鎖の防止（旧経路の条件と同じ）: 一時プロファイルの間、復帰の合図が Profile の特殊アクションなら、別の切替を始めない。
-        /// 7.5a では、復帰の合図は、旧経路（<c>Mapping</c>）が持つ（復帰を持つ Profile は、旧経路が処理する）。
+        /// 復帰の合図は、エンジン（<see cref="IPendingUntriggerQuery"/>）と旧経路（<c>Mapping</c>。解除トリガーつきの Profile）のどちらにもありうるため、両方を見る。
         /// </summary>
         public bool CanExecute(IOutputContext ctx)
         {
@@ -76,7 +76,10 @@ namespace DS4Windows.Actions
             int dev = (deviceIndex >= 0) ? deviceIndex : ctx.Device;
             if (!_settings.GetUseTempProfile(dev)) return true;
 
-            SpecialAction pending = _mappingProvider?.Invoke()?.CaptureProfileUntrigger(dev).Action;
+            SpecialAction pending = (ctx as IPendingUntriggerQuery)?.PendingUntriggerAction;
+            if (pending != null && pending.typeID == SpecialAction.ActionTypeId.Profile) return false;
+
+            pending = _mappingProvider?.Invoke()?.CaptureProfileUntrigger(dev).Action;
             return pending == null || pending.typeID != SpecialAction.ActionTypeId.Profile;
         }
 

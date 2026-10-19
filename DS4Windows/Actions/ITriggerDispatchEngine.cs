@@ -26,6 +26,12 @@ namespace DS4Windows.Actions
         /// <summary>通常の割り当ての後（現行の Stage3 の位置）。同じフレームの評価結果を再利用して、毎フレームの出力を適用する。</summary>
         void ApplyFrameOutputs(int device, ITriggerInput input, IFrameOutput frame);
 
+        /// <summary>
+        /// Phase8-Step7 7.5b: 復帰の確認（旧 <c>Mapping.MapCustomAction</c> の後段の <c>UNTRIGGER check</c>）。旧ループの後、旧経路の復帰の確認と同じ位置で呼ぶ。
+        /// 合図（復帰待ちの Profile）が空なら、ロックも割り当てもなしで戻る。切替のフレーム（旧ループが <c>return</c>）では呼ばれない。
+        /// </summary>
+        void ProcessUntrigger(int device, ITriggerInput input);
+
         // ---- 抑制の集合（旧ループもこれを使う。所有はエンジン）----
 
         /// <summary>通常の割り当てがそのボタンを抑制するか（現行の <c>CheckForSpecialActionSuppression</c>）。</summary>

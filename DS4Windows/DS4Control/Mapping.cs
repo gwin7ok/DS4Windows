@@ -5313,6 +5313,9 @@ namespace DS4Windows
                 return;
             }
 
+            // Phase8-Step7 7.5b: 自動の復帰（Unload on trigger release）は、エンジンが持つ合図で確認する（旧経路と同じ位置）
+            _engine.ProcessUntrigger(device, _triggerInputs[device]);
+
             if (deviceRuntime[device].UntriggerAction != null)
             {
                 SpecialAction action = deviceRuntime[device].UntriggerAction;

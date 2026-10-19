@@ -7,7 +7,7 @@ namespace DS4Windows.Actions
     // TODO(Phase8-Step4 W4〜Step8): W4 で Mapping に注入する（旧ループのフック Owns／ProcessOwned、抑制の集合の所有、Stage3 の後の ApplyFrameOutputs）。
     // OnProfileApplied は Step5（ProfileApplicationService の完了処理へ接続）、OnDeviceDisconnected は Step6（ControlService の切断処理へ接続）で本番に接続する。
     // それまでは単体テストからのみ呼ばれる（規約 2.4）。ProcessTriggers は最終形の入口で、Step8 で旧ループのフックと入れ替える。
-    // 復帰（UntriggerPolicy）の処理は、Step7.5（Profile）で足す。それまでは UntriggerPolicy.None の束縛だけを扱う。
+    // 復帰（UntriggerPolicy）: 7.5b で、Automatic（Unload on trigger release）を足した。Buttons（解除トリガー。UI から作れない）は、ビルダーが束縛を作らず、旧経路が処理する。
     /// <summary>
     /// Phase8-Step4 W3: 統一トリガーディスパッチのエンジン（Phase8-Step2-Design.md §9、§14〜§17、§23.1）。
     /// 種別ごとの分岐は持たない。差は <see cref="BindingPolicy"/> と出力アクションで表す。状態（<c>BeingTriggered</c> ほか）は <c>ActionInstanceState</c> に残し、
@@ -133,6 +133,75 @@ namespace DS4Windows.Actions
             }
         }
 
+        // ---- 復帰（Phase8-Step7 7.5b）----
+
+        public void ProcessUntrigger(int device, ITriggerInput input)
+        {
+            if (input == null || (uint)device >= (uint)_devices.Length) return;
+
+            DeviceRuntime rt = _devices[device];
+            if (rt.Pending == null) return;   // 合図なし: ロックも割り当てもなし
+
+            IActionBinding binding = null;
+            lock (rt.Lock)
+            {
+                binding = rt.Pending;
+                if (binding == null) return;
+
+                try
+                {
+                    SpecialAction action = binding.Source;
+                    AppLogger.LogDebug($"SpecialAction UNTRIGGER check: device={device}, untriggeraction={(action != null ? action.name : "null")}, untriggerindex={binding.Index}");
+
+                    // 自動（Unload on trigger release）: トリガーのうち、どれか 1 つでも離れたら成立（旧 Mapping と同じ）
+                    bool activated = false;
+                    var triggers = action.trigger;
+                    for (int i = 0, count = triggers.Count; i < count; i++)
+                    {
+                        if (!input.IsActive(triggers[i]))
+                        {
+                            activated = true;
+                            break;
+                        }
+                    }
+
+                    if (!activated)
+                    {
+                        // 復帰待ちの間: 切替アクションの BeingTriggered を下げ続ける（Intent 項目 6）
+                        ActionInstanceState state = _manager.GetStateFor(action, device);
+                        if (state != null)
+                        {
+                            lock (state) { state.SetBeingTriggeredInternal(false); }
+                        }
+
+                        return;
+                    }
+
+                    // 復帰の適用も ClearDeviceState を通る。復帰の前に合図を消す（旧経路と同じ順序。Phase7b W1）
+                    rt.Pending = null;
+                }
+                catch (Exception ex)
+                {
+                    LogException(ex);
+                    return;
+                }
+            }
+
+            // 復帰の適用はロックの外で行う（旧経路と同じ。適用が、同じスレッドでエンジンの他のメソッドを呼んでも、待たない）
+            try
+            {
+                EngineContext ctx = rt.Context;
+                ctx.Begin(null, input);
+                IReadOnlyList<IOutputAction> outputs = binding.Outputs;
+                for (int o = 0; o < outputs.Count; o++)
+                    outputs[o].Stop(ctx);
+            }
+            catch (Exception ex)
+            {
+                LogException(ex);
+            }
+        }
+
         // ---- 抑制の集合 ----
 
         public bool IsSuppressed(int device, DS4Controls control)
@@ -200,6 +269,7 @@ namespace DS4Windows.Actions
             {
                 _registry.Clear(device);
                 ResetState(rt, null);
+                rt.Pending = null;   // 物理切断では、復帰の合図も消す（適用では消さない。ResetState は触らない）
                 rt.ResetRequested = false;
                 rt.Bindings = null; // 次の処理で、空の一覧から作り直す
             }
@@ -333,6 +403,9 @@ namespace DS4Windows.Actions
                         if (policy.BlocksWhileExecuting) state.IsExecuting = true;
                         try
                         {
+                            // 復帰の合図（旧経路と同じ。出力を実行する前に設定する）。Buttons は、ビルダーが束縛を作らないため、ここでは扱わない
+                            if (policy.Untrigger == UntriggerPolicy.Automatic) rt.Pending = binding;
+
                             lock (state) { state.SetBeingTriggeredInternal(true); }
                             for (int o = 0; o < outputs.Count; o++)
                                 outputs[o].Execute(ctx);
@@ -422,23 +495,29 @@ namespace DS4Windows.Actions
             public Dictionary<SpecialAction, int> Index;
             public int Frame = 1;
             public ITriggerInput ReleaseInput;
+            public volatile IActionBinding Pending;   // 復帰の合図（切替前の束縛）。適用では消えず、物理切断で消える
             public volatile bool ResetRequested;
 
             public DeviceRuntime(int device, IVirtualKBM virtualKbm)
             {
-                Context = new EngineContext(device, virtualKbm);
+                Context = new EngineContext(device, virtualKbm, this);
                 ReleasePredicate = control => !ReleaseInput.IsActive(control);
             }
         }
 
         // 出力アクションに渡す文脈（デバイスごとに再利用。割り当て 0）
-        private sealed class EngineContext : IOutputContext, IOutputContextInput
+        private sealed class EngineContext : IOutputContext, IOutputContextInput, IPendingUntriggerQuery
         {
-            public EngineContext(int device, IVirtualKBM handler)
+            private readonly DeviceRuntime _owner;
+
+            public EngineContext(int device, IVirtualKBM handler, DeviceRuntime owner)
             {
                 Device = device;
                 OutputHandler = handler;
+                _owner = owner;
             }
+
+            public SpecialAction PendingUntriggerAction => _owner.Pending?.Source;
 
             public int Device { get; }
             public IVirtualKBM OutputHandler { get; }

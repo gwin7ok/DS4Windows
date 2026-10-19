@@ -69,11 +69,11 @@ namespace DS4WindowsTests
         }
 
         [Theory]
-        [InlineData("AutomaticUntrigger")]
         [InlineData("R1")]
         public void AProfileWithAnUntrigger_IsNotBuilt_AndTheLegacyPathStillHandlesIt(string extras)
         {
-            // 7.5a: 復帰（Unload on trigger release／解除トリガー）を持つ Profile は、束縛を作らず、旧経路が切替と復帰を行う（7.5b でエンジンへ移す）
+            // 7.5a: 解除トリガー（uTrigger）を持つ Profile は、束縛を作らず、旧経路が切替と復帰を行う。
+            // 7.5b: 自動の復帰（AutomaticUntrigger）はエンジンへ移した（Phase8Step75bW2…）。解除トリガーは UI から作れないため、旧経路のまま（Q2＝A）
             var builder = TestHost.GetService<IActionBindingBuilder>();
             using var t = new SpecialActionTestScope(true);
             RecordingProfileApplicationService recorder = t.InstallProfileRecorder();

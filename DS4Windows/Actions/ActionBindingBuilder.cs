@@ -27,10 +27,6 @@ namespace DS4Windows.Actions
         private readonly ISpecialActionRepository _actionRepository;   // Key のログ（ActionEntries の数）用。省略可（テスト）
         private readonly Func<IMapping> _mappingProvider;               // Profile の連鎖の防止（復帰の合図の参照）用。省略可（テスト）
 
-        // TODO(Phase8-Step7 7.5b。規約 2.4): 復帰（uTrigger／AutomaticUntrigger）を持つ Profile は、復帰の合図と毎フレームの確認をエンジンへ移す 7.5b まで、
-        // 束縛を作らず、旧経路が処理する（7.5a は、復帰を持たない「切替のみ」の Profile だけを新経路へ移す）。7.5b で、この定数と分岐を削除する。
-        private const bool ProfileUntriggerMigrated = false;
-
         public ActionBindingBuilder(IProfileActionProvider profileActions, IProfileSettingsService profileSettings,
             IManagedActionManager manager, IMacroPlayer macroPlayer, IProcessLauncher processLauncher,
             IProfileSwitcher profileSwitcher, BindingMigrationOptions options, ISpecialActionRepository actionRepository = null,
@@ -99,8 +95,10 @@ namespace DS4Windows.Actions
 
                 case SpecialAction.ActionTypeId.Profile:
                 {
-                    if (!ProfileUntriggerMigrated && (sa.automaticUntrigger || (sa.uTrigger != null && sa.uTrigger.Count > 0)))
-                        return null;   // 復帰を持つ Profile は、7.5b まで旧経路が処理する
+                    // TODO(Phase8-Step8。規約 2.4。Phase8-Step7-5b-Plan.md Q2＝A): 解除トリガー（uTrigger）を持つ Profile は、UI から作れない（a7277da9 で「Set Unload Trigger」を削除）ため、
+                    // 束縛を作らず、旧経路が処理する。Step8 の旧コード削除のときに、廃止（機能廃止のため、ユーザーの承認が要る）か、エンジンへの移行かを決める。
+                    if (sa.uTrigger != null && sa.uTrigger.Count > 0)
+                        return null;
 
                     // 復帰: 自動（トリガーを離したとき）が優先。そうでなく解除用のボタンがあれば、そのボタン（旧 Mapping の uTrigger と同じ）
                     UntriggerPolicy untrigger = sa.automaticUntrigger
@@ -108,7 +106,8 @@ namespace DS4Windows.Actions
                         : (sa.uTrigger != null && sa.uTrigger.Count > 0 ? UntriggerPolicy.Buttons : UntriggerPolicy.None);
                     return new TriggerBinding(Input(sa, false), new IOutputAction[] { new ProfileSwitchAction(sa, device, _profileSwitcher, index, _actionRepository, _profileSettings, _mappingProvider) },
                         new BindingPolicy(blocksWhileExecuting: true, untrigger: untrigger,
-                            untriggerButtons: untrigger == UntriggerPolicy.Buttons ? sa.uTrigger : null), sa, index);
+                            untriggerButtons: untrigger == UntriggerPolicy.Buttons ? sa.uTrigger : null,
+                            stopOnRelease: untrigger == UntriggerPolicy.None), sa, index);   // 復帰を持つ Profile は、離したエッジの Stop を呼ばない。復帰は ProcessUntrigger だけが担う（二重の復帰を防ぐ。Q4）
                 }
 
                 default:

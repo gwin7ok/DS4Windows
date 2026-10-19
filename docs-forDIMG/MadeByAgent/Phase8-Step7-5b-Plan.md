@@ -3,7 +3,7 @@
 作成日: 2026-10-19  
 対象ブランチ: `For-DI-migration-work`  
 上位: `Phase8-Step7-5-Plan.md`（§3 の 7.5b、Q5・Q6）、`Phase8-Step2-Design.md`（§15.2 の `UntriggerPass`、§16）、`Phase8-Step2-Intent-Decisions.md`（項目 5・6・11・12）、`Phase7b` の W1（復帰の合図の退避・復元）、`Phase8-Step7-Completion-Report.md`（7.5a）  
-状態: **Q1〜Q6 を推奨（A）どおり承認（2026-10-19）。W1 実装済み（ビルド・テストの結果待ち）**
+状態: **Q1〜Q6 を推奨（A）どおり承認（2026-10-19）。W1 成功（ビルド・テスト）。W2 実装済み（結果待ち）**
 
 ---
 
@@ -65,6 +65,9 @@
 - 既存の `Phase8Step1ProfileSwitchCharacterizationTests`・`Phase7bW1ProfileUntriggerPreservationTests` を、旧・新の両経路にする準備をする。
 
 ### W2: 新経路の実装
+
+**実装（2026-10-19）**: `IPendingUntriggerQuery`（新設）、`ITriggerDispatchEngine.ProcessUntrigger`（追加）、`TriggerDispatchEngine`（合図 `Pending`［束縛］を、立ち上がりの `Execute` の前に設定、`ProcessUntrigger`［自動の判定、成立しない間は `BeingTriggered` を下げる、成立したら合図を消してからロックの外で `Stop`］、`OnDeviceDisconnected` で消す）、`ProfileSwitchAction.CanExecute`（エンジンの合図と `IMapping` の合図の両方を見る）、`ActionBindingBuilder`（`ProfileUntriggerMigrated` を削除、`uTrigger` つきは束縛なし、復帰つきは `stopOnRelease: false`）、`Mapping`（旧ループの後で `ProcessUntrigger`）。テスト: `Phase8Step75bW2ProfileUntriggerEngineTests`（新設）、`Phase8Step5W1BuilderTests`・`Phase8Step75aW3ProfileSwitchTests`・`Phase8Step6W3SlotLifecycleTests` の更新。
+**Q4 の決定**: W1 の報告のみのテスト（`ReleaseBeforeTheApplyCompletes_IsReported`）の出力は未確認のまま、二重の復帰を避ける安全側（`stopOnRelease: false`）で実装した。本番では、適用が状態を作り直すため、離したエッジの `Stop` は起きない（設計書 §15.1）。W2 の結果と合わせて確認する。
 
 `UntriggerSignal`、`ProcessUntrigger`（`ITriggerDispatchEngine` に追加。実装を持つ他のクラス［テストの偽物］の更新を含む）、`IPendingUntriggerQuery`、`ProfileSwitchAction.CanExecute` の更新、`ActionBindingBuilder` の更新（`ProfileUntriggerMigrated` の削除、`uTrigger` つきは束縛なし）、`Mapping` の呼び出し（旧ループの後）、`OnDeviceDisconnected` で合図を消す。`Phase8Step5W1BuilderTests` の Automatic の検査を、束縛ありに戻す。W1 の旧経路の検査を、旧・新の両経路にする。ログ: 復帰のログは、旧経路が `UNTRIGGER check` の Debug を毎フレーム出す（旧経路と同じ文言・レベルを、合図があるときだけ出す。割り当てを増やさない）。
 

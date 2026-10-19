@@ -40,6 +40,7 @@ namespace DS4WindowsTests
             public void AddSuppressed(int device, IReadOnlyList<DS4Controls> controls) { }
             public void ReleaseSuppressed(int device, ITriggerInput input) { }
             public void OnProfileApplied(int device) { }
+            public void ProcessUntrigger(int device, ITriggerInput input) { }
         }
 
         private readonly BackingStore _store = TestGlobals.Store;
