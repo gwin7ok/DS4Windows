@@ -6,8 +6,8 @@ namespace DS4Windows.Actions
 {
     /// <summary>
     /// Phase8-Step5 W1（Phase8-Step5-Plan.md §3.1。Phase8-Step2-Design.md §6・§8）: <see cref="IActionBindingBuilder"/> の実装（DI の Singleton）。
-    /// 種別ごとの構成は設計書 §6 のとおり（Button／Key／Macro／Program／Profile／GyroCalibrate／DisconnectBT／BatteryCheck の 8 種）。それ以外の種別
-    /// （<c>MultiAction</c>、<c>XboxGameDVR</c>、<c>SASteeringWheelEmulationCalibrate</c>、<c>None</c>）は束縛を作らず、旧経路が処理する。
+    /// 種別ごとの構成は設計書 §6 のとおり（Button／Key／Macro／Program／Profile／GyroCalibrate／DisconnectBT／BatteryCheck／SASteeringWheelEmulationCalibrate の 9 種）。それ以外の種別
+    /// （<c>MultiAction</c>、<c>XboxGameDVR</c>、<c>None</c>）は束縛を作らず、旧経路が処理する。
     /// <para>
     /// TODO（Phase8-Step7。規約 2.4）: 本クラスは Step5 で作り、本番の適用の経路（<c>ProfileApplicationService</c>）から呼ぶが、
     /// <see cref="BindingMigrationOptions.MigratedTypes"/> が空の間は常に空のリストを返す。各種別の構成（方針の細部を含む）は、
@@ -29,18 +29,21 @@ namespace DS4Windows.Actions
         private readonly IGyroCalibrationPort _gyroCalibration;         // GyroCalibrate（7.6a）。省略時（テスト）は束縛を作らず、旧経路が処理する
         private readonly IControllerDisconnectPort _disconnectPort;     // DisconnectBT（7.6b）。省略時（テスト）は束縛を作らず、旧経路が処理する
         private readonly IBatteryCheckPort _batteryCheckPort;           // BatteryCheck（7.6c）。省略時（テスト）は束縛を作らず、旧経路が処理する
+        private readonly IWheelCalibrationPort _wheelCalibrationPort;   // ステアリング較正（7.6d）。省略時（テスト）は束縛を作らず、旧経路が処理する
 
         public ActionBindingBuilder(IProfileActionProvider profileActions, IProfileSettingsService profileSettings,
             IManagedActionManager manager, IMacroPlayer macroPlayer, IProcessLauncher processLauncher,
             IProfileSwitcher profileSwitcher, BindingMigrationOptions options, ISpecialActionRepository actionRepository = null,
             Func<IMapping> mappingProvider = null, IGyroCalibrationPort gyroCalibration = null,
-            IControllerDisconnectPort disconnectPort = null, IBatteryCheckPort batteryCheckPort = null)
+            IControllerDisconnectPort disconnectPort = null, IBatteryCheckPort batteryCheckPort = null,
+            IWheelCalibrationPort wheelCalibrationPort = null)
         {
             _actionRepository = actionRepository;
             _mappingProvider = mappingProvider;
             _gyroCalibration = gyroCalibration;
             _disconnectPort = disconnectPort;
             _batteryCheckPort = batteryCheckPort;
+            _wheelCalibrationPort = wheelCalibrationPort;
             _profileActions = profileActions ?? throw new ArgumentNullException(nameof(profileActions));
             _profileSettings = profileSettings ?? throw new ArgumentNullException(nameof(profileSettings));
             _manager = manager ?? throw new ArgumentNullException(nameof(manager));
@@ -133,6 +136,12 @@ namespace DS4Windows.Actions
                     // 押している間、毎フレームの色の遷移。離したときに戻す（既定の StopOnRelease）。Fresh-press ガードは既定のまま。実行中のブロックなし
                     if (_batteryCheckPort == null) return null;
                     return new TriggerBinding(Input(sa, false), new IOutputAction[] { new BatteryCheckAction(sa, device, _batteryCheckPort, index, _actionRepository) },
+                        BindingPolicy.Default, sa, index);
+
+                case SpecialAction.ActionTypeId.SASteeringWheelEmulationCalibrate:
+                    // 押している間、毎フレーム判定する（立ち上がりも含む）。Fresh-press ガードは既定のまま。実行中のブロックなし
+                    if (_wheelCalibrationPort == null) return null;
+                    return new TriggerBinding(Input(sa, false), new IOutputAction[] { new SteeringWheelCalibrateAction(sa, device, _wheelCalibrationPort) },
                         BindingPolicy.Default, sa, index);
 
                 default:

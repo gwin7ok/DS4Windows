@@ -283,5 +283,27 @@
 
 ### 4. 次
 
-7.6d ステアリング較正。
+7.6d ステアリング較正（次節）。
+
+## 7.6d ステアリング較正（SASteeringWheelEmulationCalibrate）
+
+### 1. 成果
+
+- 窓口 `IWheelCalibrationPort`（`Actions/`）と本番の実装 `DefaultWheelCalibrationPort`、出力 `SteeringWheelCalibrateAction` を新設。
+- `ActionBindingBuilder` が束縛を作る（ポートがなければ作らない）。`ServiceRegistration` の既定の一覧に `SASteeringWheelEmulationCalibrate` の 1 行を追加（ロールバックはその 1 行を外す）。
+- 旧経路と同じ: 押している間、毎フレーム（立ち上がりを含む）、較正の状態が 0 なら 1、2 なら 3 に進める（前回から 3 秒の間隔）。状態を変えるときだけ Trace 4 行。
+- 違い: コントローラーがいないとき、例外にせず何もしない。
+
+### 2. 検証結果・判断の記録
+
+1. 実機がないテストでは、記録用のポートで、0→1、2→3、3 秒の間隔（`firstTap` の書き換えで再現）、離して押し直し、Fresh-press ガード、AND 条件、ログ（状態を変えたときだけ Trace 4 行）を確認。
+2. 割り当て: 押している間（1000 フレーム）、同じ件数でトリガー未成立の基準 ＋ 4 KB 以内。
+
+### 3. 実機確認（ユーザー）
+
+チェックリスト §11 の **U-38**。ジャイロのステアリング操作の設定が必要。
+
+### 4. 次
+
+Step7 の 7.6 は、これで 4 種別（GyroCalibrate、DisconnectBT、BatteryCheck、ステアリング較正）がそろった。次は 7.7（XboxGameDVR／MultiAction）。
 

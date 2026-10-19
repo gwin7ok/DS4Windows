@@ -136,6 +136,8 @@ namespace DS4Windows.DI
             services.AddSingleton<IControllerDisconnectPort, DefaultControllerDisconnectPort>();
             // Phase8-Step7 7.6c: BatteryCheck が実機のコントローラー・ライトバーの強制色・通知を操作する窓口（同上。ControlService も遅延で解決する）
             services.AddSingleton<IBatteryCheckPort, DefaultBatteryCheckPort>();
+            // Phase8-Step7 7.6d: ステアリング較正が実機のコントローラーの較正の状態を読み書きする窓口（同上）
+            services.AddSingleton<IWheelCalibrationPort, DefaultWheelCalibrationPort>();
             // Phase7-Step8 W3（Q6＝A）: 出力ハンドラの実体を持つ OutputKBMHandlerAdapter を 1 つ登録し、IVirtualKBM（送出）と IVirtualKBMLifecycle（決定・破棄）が共有する
             services.AddSingleton<OutputKBMHandlerAdapter>();
             services.AddSingleton<IVirtualKBM>(sp => sp.GetRequiredService<OutputKBMHandlerAdapter>());
@@ -165,6 +167,7 @@ namespace DS4Windows.DI
                 migration.MigratedTypes.Add(SpecialAction.ActionTypeId.GyroCalibrate); // 7.6a GyroCalibrate
                 migration.MigratedTypes.Add(SpecialAction.ActionTypeId.DisconnectBT); // 7.6b DisconnectBT
                 migration.MigratedTypes.Add(SpecialAction.ActionTypeId.BatteryCheck); // 7.6c BatteryCheck
+                migration.MigratedTypes.Add(SpecialAction.ActionTypeId.SASteeringWheelEmulationCalibrate); // 7.6d ステアリング較正
                 migration.MigratedTypes.Add(SpecialAction.ActionTypeId.Profile);  // 7.5a Profile（切替のみ。復帰を持つ Profile は、7.5b まで束縛を作らず、旧経路が処理する）
                 return migration;
             });

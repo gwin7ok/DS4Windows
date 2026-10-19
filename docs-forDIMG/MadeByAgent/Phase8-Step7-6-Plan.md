@@ -3,7 +3,7 @@
 作成日: 2026-10-20  
 対象ブランチ: `For-DI-migration-work`  
 上位: `Phase8-Step7-Plan.md`（§4 の 7.6、Q8＝A）、`Phase8-Step7-5-Plan.md`（進め方）、`Phase8-Step2-Design.md`（§6、§9、§15、§23）、`Phase8-Step2-Intent-Decisions.md`（項目 5・6）、`Phase8-Step1-Trigger-Spec-Ledger.md`（§3〜§5）  
-状態: **Q1〜Q8 を承認（2026-10-20。Q3 と Q8 は B に変更、ほかは推奨 A）。7.6a GyroCalibrate はビルド・テスト成功（実機確認 U-35 は先送り。2026-10-20 ユーザー判断）。7.6b DisconnectBT はビルド・テスト成功（実機確認 U-36 は先送り。2026-10-20 ユーザー判断）。7.6c BatteryCheck はビルド・テスト成功（実機確認 U-37 は先送り。2026-10-20 ユーザー判断）。7.6d は 7.6c の後**  
+状態: **Q1〜Q8 を承認（2026-10-20。Q3 と Q8 は B に変更、ほかは推奨 A）。7.6a GyroCalibrate はビルド・テスト成功（実機確認 U-35 は先送り。2026-10-20 ユーザー判断）。7.6b DisconnectBT はビルド・テスト成功（実機確認 U-36 は先送り。2026-10-20 ユーザー判断）。7.6c BatteryCheck はビルド・テスト成功（実機確認 U-37 は先送り。2026-10-20 ユーザー判断）。7.6d ステアリング較正は実装済み（ビルド・テストの結果待ち）**  
 調査の方法: 旧ループ（`Mapping.MapCustomAction`）と、実機ログ（2026-10-20）の読解。テストでの確認は未実施
 
 ---
@@ -140,6 +140,15 @@
 - `Mapping.fadetimer`／`lastColor` は、`Phase8Step1SlotLimitTests` が名前を参照するため、残す（Step8 で、旧コードと一緒に削除を提案）。
 - テスト: `Phase8Step76cBatteryCheckTests`、`RecordingBatteryCheckPort`（記録用）。既存の更新: `SpecialActionTestScope`、`Phase8Step4W1ContractTests`、`Phase8Step7W3ButtonSwitchTests`。
 - 実機確認 U-37。
+
+### 7.6d ステアリング較正の実装（2026-10-20）
+
+- 新設: `IWheelCalibrationPort`（窓口: 較正の状態の読み書き。コントローラーがいなければ -1）、`DefaultWheelCalibrationPort`（本番。`Func<IDeviceStateAccessor>` を遅延で受ける）、`SteeringWheelCalibrateAction`（`IHeldOutputAction`）。配置は `DS4Windows/Actions/`（R3）。
+- 変更: `ActionBindingBuilder`（`IWheelCalibrationPort` を省略可で受ける。束縛。ポートがなければ作らない）、`ServiceRegistration`（ポートの登録、既定の一覧に `SASteeringWheelEmulationCalibrate` の 1 行）。ロールバックは、その 1 行を外す。
+- 動き: 押している間、**立ち上がりのフレームも含めて毎フレーム**判定する（旧経路と同じ）。較正の状態が 0 で、前回から 3 秒以上たっていれば 1（較正の開始の要求）、2 で 3 秒以上たっていれば 3（確定の要求）にする。状態を変えるときだけ、Trace 4 行を出し、`SpecialAction.firstTap` を更新する（Debug のログはない）。離したときは何もしない。状態 1→2 と、3→0 は、`Mapping` の較正の処理（旧経路のまま）が進める。
+- 旧経路との違い: コントローラーがいないとき、何もしない（旧経路は例外で、そのフレームの処理が打ち切られていた）。時刻は、入力（`ITriggerInput.UtcNow`。本番は `DateTime.UtcNow`）から取る。
+- テスト: `Phase8Step76dSteeringWheelCalibrateTests`、`RecordingWheelCalibrationPort`（記録用。3 秒の間隔は `firstTap` の書き換えで再現）。既存の更新: `SpecialActionTestScope`、`Phase8Step4W1ContractTests`、`Phase8Step7W3ButtonSwitchTests`。
+- 実機確認 U-38（ステアリング操作［ジャイロのステアリングホイール］の設定が必要。なければ先送り）。
 
 ## 5. リスクと対応
 
