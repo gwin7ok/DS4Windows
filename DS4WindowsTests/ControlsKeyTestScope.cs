@@ -108,6 +108,18 @@ namespace DS4WindowsTests
             if (held != null) held[Device] = DS4Controls.None;
         }
 
+        /// <summary>Phase8-Step7 7.8f: ボタンの割り当てを Button（X360 のボタン・軸・トリガー、マウスなど）にする（通常。Extras なし）。</summary>
+        public DS4ControlSettings MapButton(DS4Controls control, X360Controls target, DS4KeyType keyType = DS4KeyType.None)
+        {
+            DS4ControlSettings dcs = TestGlobals.Store.GetDS4CSetting(Device, control);
+            dcs.Reset();
+            dcs.actionType = DS4ControlSettings.ActionType.Button;
+            dcs.action.actionBtn = target;
+            dcs.keyType = keyType;
+            _touched.Add(control);
+            return dcs;
+        }
+
         /// <summary>記録用のキーボード出力（マクロの再生で押されたキーが入る）。</summary>
         public RecordingVirtualKbmBase Recorder => _inner.Recorder;
 
