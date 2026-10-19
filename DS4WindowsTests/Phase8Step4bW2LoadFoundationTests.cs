@@ -73,6 +73,15 @@ namespace DS4WindowsTests
             int extra = text.IndexOf("LoadLegacyExtraSettings(device, rootname);", StringComparison.Ordinal);
             int touchpad = text.IndexOf("RunSection(_touchpadBasicSection", StringComparison.Ordinal);
             Assert.True(general > 0 && general < extra && extra < touchpad, "節と追加設定の読込は、旧コードと同じ順序で呼ぶ");
+
+            // W3 以降: 節は、ファイル順（旧コードの要素の順序）で呼ぶ
+            int previous = touchpad;
+            foreach (string field in new[] { "_triggerStickBasicSection", "_stickAxialSection" })
+            {
+                int at = text.IndexOf("RunSection(" + field, StringComparison.Ordinal);
+                Assert.True(at > previous, field + " は、前の節の後に呼ぶ");
+                previous = at;
+            }
         }
     }
 }
