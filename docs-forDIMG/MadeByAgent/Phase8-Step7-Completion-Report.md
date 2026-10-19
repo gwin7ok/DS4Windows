@@ -94,3 +94,36 @@
 - 挙動の変化: Alt-Tab の並びのマクロは、通常のマクロとして手順どおりに再生される（1 回の Alt+Tab）。保存済みのデータは変更しない。
 - テスト: `Phase8Step7AltTabRemovalGuardTests`（ソースに残らない、手順どおりの再生）。`RecordingVirtualKbmBase` に押下の記録を追加。エンジンの割り当てゼロの 2 つの検査（`SteadyState_…`）は、JIT の偶発的な割り当てで 1 回ずつ失敗したため、最大 3 回測って最小値で判定する形にした。
 - 影響: 7.3 Macro の Q1（押している間の `EndMacro`）と、`IMacroPlayer.WhileHeld`／`IMapping.EndMacroDirect` の変更が不要になった。
+
+---
+
+## 7.3 Macro
+
+（Alt-Tab の特別扱いの削除は、7.3a として別に記録済み。上の節を参照。）
+
+### 1. 成果
+
+| Wave | 内容 | 主なファイル |
+|---|---|---|
+| W1 | `SpecialActionTestScope(migrated)` が Macro も移行。Macro の既存 3 本を旧・新の `[Theory]` に（`firstTouch` の検査は旧経路だけ）。状態（`BeingTriggered`、`IMacroPlayer.IsPlaying`）の比較 | `Phase8Step1MacroBranchCharacterizationTests`、`Phase8Step73W1MacroDualPathTests` |
+| W2 | 旧 `MapCustomAction` の Macro のログ（Trace 4 行、Debug 1 行）を `MacroAction` から出す（エンジン用のコンストラクターのときだけ。旧経路のアダプターは出さない） | `MacroAction`、`ActionBindingBuilder`、`Phase8Step73W2MacroLogTests` |
+| W3 | 既定のスイッチに Macro を追加（`ServiceRegistration` の 1 行）。ロールバック、割り当て、性能のテスト | `ServiceRegistration`、`Phase8Step73W3MacroSwitchTests` |
+
+- **ロールバック**: `ServiceRegistration` の `migration.MigratedTypes.Add(SpecialAction.ActionTypeId.Macro);` の 1 行を外してビルドし直す。
+
+### 2. 検証結果・判断の記録
+
+1. Q1（押している間の `EndMacro`）は、Alt-Tab の特別扱いの削除（7.3a）で不要になった。`IMacroPlayer`／`IMapping` は変更していない（`IMapping` のメンバーは 10 のまま）。
+2. Q2: 新経路は `firstTouch` を書かない（RunOnRelease の準備は入力の内部の状態）。
+3. Q3: ログは、旧経路と同じ文言・順序（`Phase8Step73W2MacroLogTests`）。「Trigger keys」は、旧経路と同じく常に `<none>`。
+4. 既存テストの更新: ホストの既定の一覧の検査（`Phase8Step4W1ContractTests`、`Phase8Step7W3ButtonSwitchTests`）を「Button、Key、Macro」に（設計どおりの変更）。
+5. 割り当て: 新経路 ≦ 旧経路（`TheNewPath_DoesNotAddAllocationsToTheFrame_ForMacro`）。性能: `MapCustom_MacroMigrated_PerFrameTime_IsReported` の出力を旧経路と並べて +5% 以内を確認する（測定値: 未記入）。
+6. 観察（変更しない）: `PlayMacroDirect` が `new bool[4]` を渡すため、特殊アクション経由のマクロのボタン出力の手順は、共有の `macroControl` に反映されない。旧経路も同じ入口で、差は出ない。マクロの再設計（`TODO(Phase9-C)`）で扱う。
+
+### 3. 実機確認（ユーザー）
+
+チェックリスト §11 の **U-30**（8 項目）。合格してから 7.4 Program へ進む（Q7＝A）。不合格なら、`ServiceRegistration` の Macro の 1 行を外して原因を調べる。
+
+### 4. 次
+
+7.4 Program（短い個別の計画書 `Phase8-Step7-4-Plan.md` を、U-30 の合格後に作成する）。
