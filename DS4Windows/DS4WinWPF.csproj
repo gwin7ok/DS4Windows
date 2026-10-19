@@ -86,11 +86,22 @@
 	</ItemGroup>
 
 	<Target Name="UpdateLatestBuildSummary" AfterTargets="Build">
-		<!-- Write local build timestamp into build_timestamp.txt in output folder -->
+		<!-- Write local build timestamp and the git commit into build_timestamp.txt in output folder -->
+		<!-- コミットのハッシュ（8 桁）。未コミットの変更があれば、末尾に「-dirty」を付ける。git がない・リポジトリでないときは「unknown」 -->
+		<Exec Command="git rev-parse --short=8 HEAD" WorkingDirectory="$(MSBuildProjectDirectory)" ConsoleToMSBuild="true" IgnoreExitCode="true" ContinueOnError="true" StandardOutputImportance="low" StandardErrorImportance="low">
+			<Output TaskParameter="ConsoleOutput" PropertyName="GitCommitHash" />
+			<Output TaskParameter="ExitCode" PropertyName="GitHashExitCode" />
+		</Exec>
+		<Exec Command="git status --porcelain --untracked-files=no" WorkingDirectory="$(MSBuildProjectDirectory)" ConsoleToMSBuild="true" IgnoreExitCode="true" ContinueOnError="true" StandardOutputImportance="low" StandardErrorImportance="low">
+			<Output TaskParameter="ConsoleOutput" PropertyName="GitDirtyOutput" />
+		</Exec>
 		<PropertyGroup>
 			<BuildTimestamp>$([System.DateTime]::Now.ToString('yyyy-MM-dd HH:mm:ss'))</BuildTimestamp>
+			<BuildCommit Condition="'$(GitHashExitCode)' == '0' And '$(GitCommitHash)' != ''">$(GitCommitHash.Trim())</BuildCommit>
+			<BuildCommit Condition="'$(BuildCommit)' == ''">unknown</BuildCommit>
+			<BuildCommit Condition="'$(BuildCommit)' != 'unknown' And '$(GitDirtyOutput)' != ''">$(BuildCommit)-dirty</BuildCommit>
 		</PropertyGroup>
-		<WriteLinesToFile File="$(OutDir)build_timestamp.txt" Lines="$(BuildTimestamp)" Overwrite="true" Encoding="UTF-8" />
+		<WriteLinesToFile File="$(OutDir)build_timestamp.txt" Lines="$(BuildTimestamp);commit=$(BuildCommit)" Overwrite="true" Encoding="UTF-8" />
 	</Target>
 
 
