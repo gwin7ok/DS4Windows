@@ -3,7 +3,7 @@
 作成日: 2026-10-20  
 対象ブランチ: `For-DI-migration-work`  
 上位: `Phase8-Step2b-ControlsTab-Design.md`（§3.3 の C・D、§10。Q5＝A［ポート方式］、Q8＝B［実機確認は Step9］、Q9＝A［値渡し］）、`Phase8-Step7-8a-Plan.md`（土台）、`Phase8-Step7-8b-Plan.md`（Key）、`Phase8-Step7-8c-Plan.md`（Macro）、`Phase8-Step7-8d-Plan.md`（シフトの廃止）、`Phase8-Step7-6-Plan.md`（ポート方式の前例）  
-状態: **Q1〜Q8 を承認済み（2026-10-20。ユーザー。Q1・Q2・Q5＝A、Q3＝B、Q4＝C［Q8 により不要になった］、Q6＝B、Q7＝B、Q8＝B）。W0・W1 完了。Lightbar マクロ機能の廃止（W2）を実施［ビルド・テストの結果待ち。§5.3］。次は W3（エンジンの 1 ボタン複数束縛と Extras の新経路）**
+状態: **Q1〜Q8 を承認済み（2026-10-20。ユーザー。Q1・Q2・Q5＝A、Q3＝B、Q4＝C［Q8 により不要になった］、Q6＝B、Q7＝B、Q8＝B）。W0・W1 完了。Lightbar マクロ機能の廃止（W2）完了［ビルド・テスト成功。§5.3］。次は W3（エンジンの 1 ボタン複数束縛と Extras の新経路）**
 
 ---
 
@@ -106,7 +106,7 @@ Controls タブの「Extras」（振動・ライトバーの強制色と点滅�
 
 - **W0（調査。完了。結果は §5.1）**。
 - **W1（特性化。完了［ビルド・テスト成功］。§5.2）**: `Phase8Step78eW1ControlsExtrasCharacterizationTests`。
-- **W2（Lightbar マクロの廃止。実施済み［ビルド・テストの結果待ち］。§5.3）**。
+- **W2（Lightbar マクロの廃止。完了［ビルド・テスト成功］。§5.3）**。
 - **W3（実装）**: §3.2。エンジンの 1 ボタン複数束縛と `IResettableOutputAction` から始め、Extras の出力・ポート・ビルダーを足す。W1 のテストが新経路も走る。承認済みの変更（§4 の 1・2）は、`migrated` で期待値を分ける。
 - **W4**: 割り当て（新 ≦ 旧）、ロールバック（`Extras` の 1 行を外す）、ソースのガード。
 - **W5**: 完了報告書（7.8e）、`Phase8-Status.md`、チェックリスト（**U-44**: Extras の実機確認。Step9 でまとめて行う）。
@@ -126,7 +126,7 @@ Controls タブの「Extras」（振動・ライトバーの強制色と点滅�
 - **発見 1（不具合）**: 旧経路の条件 `extras[2] == 1 && (!dcs.LightbarMacro?.Active ?? false)` は、`LightbarMacro` が null だと偽になり、Extras のライトバーが効かなかった。→ Q7＝B で修正（§4 の 3）。
 - **発見 2**: Lightbar マクロは、プロファイルに保存されない。→ Q8＝B で廃止（§0）。W1 で書いた Lightbar マクロのテスト（`Phase8Step78eW1ControlsLightbarMacroCharacterizationTests`、`LightbarHarness`）は、廃止に伴って削除した。
 
-### 5.3 W2 Lightbar マクロの廃止（2026-10-20。ビルド・テストの結果待ち）
+### 5.3 W2 Lightbar マクロの廃止（2026-10-20。ビルド・テスト成功）
 
 - 削除（コード）: `LightbarMacro`、`LightbarMacroElement`、`LightbarMacroTrigger`、`LightbarMacroViewModel`、`LightbarMacroCreator`（XAML と分離コード）。`DS4ControlSettings` の `LightbarMacroString`／`LightbarMacro`。`OutBinding` の `LightbarMacro` と、保存時の `LightbarMacroString` への書き込み。`BindingWindowViewModel` の読み込み。`Mapping` の Lightbar マクロの枝、`BoolDS4Controls`、`threadCts`、`lightbarMacroTask`、`RunLightbarMacro`。`ControlBindingBuilder` の「Lightbar マクロが有効でない」条件。文字列 `CreateLightbarMacro`（`Strings.resx`、`Strings.Designer.cs`）。51 ファイルの `using LightbarMacro = …` の別名。
 - 画面: `BindingWindow.xaml` の「ライトバーのモード」（単色／マクロの選択）と、マクロのタブを削除し、単色の設定（色の有効、R／G／B、色の選択）を直接置いた。
@@ -155,7 +155,7 @@ Controls タブの「Extras」（振動・ライトバーの強制色と点滅�
 - [x] Q1〜Q6 をユーザーが承認（2026-10-20）。W0 の結果を追記（§5.1）。
 - [x] W1 のビルド・テストが成功（2026-10-20）。
 - [x] Q7・Q8 の承認（2026-10-20）。
-- [ ] W2（Lightbar マクロの廃止）のビルド・テストが成功。
+- [x] W2（Lightbar マクロの廃止）のビルド・テストが成功（2026-10-20）。
 - [ ] ビルド・テストが成功（ユーザーが実行）。割り当て（新 ≦ 旧）、ロールバック、全ガード（1 ファイル 1 型、ラチェットの一致検査）。
 - [ ] 実機確認は Step9（U-44）。
 - [ ] `Phase8-Step7-Completion-Report.md`、`Phase8-Status.md`、`Phase8-Step2b-ControlsTab-Design.md` の更新。
