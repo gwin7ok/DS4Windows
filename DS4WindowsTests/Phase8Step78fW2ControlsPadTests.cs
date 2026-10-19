@@ -240,7 +240,7 @@ namespace DS4WindowsTests
         {
             using var t = new ControlsKeyTestScope(true);
             t.MapKey(DS4Controls.LXNeg, 66);
-            TestGlobals.Store.GetDS4CSetting(Device, DS4Controls.LXPos).extras = "100,50,1,10,20,30,5,1,7";
+            t.MapExtras(DS4Controls.LXPos, "100,50,1,10,20,30,5,1,7");   // スコープが後始末する（共有のストアに残さない）
 
             IReadOnlyList<IActionBinding> bindings = Build();
             Assert.Equal(3, bindings.Count);   // LXNeg の Key、LXPos の Extras、LXPos の素通し
