@@ -49,6 +49,8 @@ Macro 種別の特殊アクションを、旧ループ（`MapCustomAction` の M
 
 ### W1: 足場と両経路の特性化（コードは変えない）
 
+**W1 の実装（2026-10-19。ユーザーのビルド・テストの結果待ち）**: `SpecialActionTestScope(migrated: true)` が Macro も移行。`Phase8Step1MacroBranchCharacterizationTests` の 3 本を `[Theory]`（旧・新。`firstTouch` の検査は旧経路だけ）。`Phase8Step73W1MacroDualPathTests`（新設）: 状態（`BeingTriggered`、`IMacroPlayer.IsPlaying`）を旧・新で比較。Press、RunOnRelease、ガード中、AND 条件、遅延、押している最中のプロファイル適用。観察の口は、再生中の旗（`DefaultMacroPlayer.IsPlaying`。`Play` で真、`Stop` で偽）を使い、`IMacroPlayer` の差し替えは不要だった。
+
 - `SpecialActionTestScope(migrated: true)` が、Macro も移行する（Button・Key に加える）。`AddMacro` を用意。
 - 観察の口: 再生の回数と引数は、`IMacroPlayer` を記録用に差し替えて数える（`InstallProfileRecorder` と同じ方式で、`MacroActionAdapter` の `macroPlayer` を差し替える。または、記録用の `IMacroPlayer` を `ActionManager` の経路へ注入する）。W1 で、最小の方法を選ぶ。
 - 既存の Macro の特性化（`Phase8Step1MacroBranchCharacterizationTests` の 3 本）を `[Theory]`（旧・新）にする。`firstTouch` の検査は旧経路だけ（Q2）。`BeingTriggered` の検査は両方。
