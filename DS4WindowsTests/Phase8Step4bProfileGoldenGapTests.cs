@@ -18,6 +18,7 @@ namespace DS4WindowsTests
     /// ゴールデンは、製品のコードを変えない W1 の時点で生成する（初回はファイルを生成して失敗する。内容を確認してコミットし、再実行すること）。
     /// 分解の各 Wave では、これらのゴールデンの文面を更新しない。
     /// </summary>
+    [Collection("ServiceProviderHolder")]
     public class Phase8Step4bProfileGoldenGapTests
     {
         private readonly ITestOutputHelper _output;
@@ -111,6 +112,10 @@ namespace DS4WindowsTests
             // 新しい形式の出力モードの要素を取り除き（旧形式のフォールバックの経路を通す）、旧形式の要素を足す
             xml = Regex.Replace(xml, "<GyroOutputMode>.*?</GyroOutputMode>", string.Empty, RegexOptions.Singleline);
             xml = Regex.Replace(xml, "<TouchpadOutputMode>.*?</TouchpadOutputMode>", string.Empty, RegexOptions.Singleline);
+            // ジャイロのマウスの平滑化は、新しい形式のグループを取り除き、旧形式の GyroSmoothing／GyroSmoothingWeight から読ませる
+            xml = Regex.Replace(xml, "<GyroMouseSmoothingSettings>.*?</GyroMouseSmoothingSettings>", string.Empty, RegexOptions.Singleline);
+            // シフトの割り当ては、個別の Trigger 属性を取り除き、旧形式の ShiftModifier（全体で 1 つ）を使わせる
+            xml = Regex.Replace(xml, "(<ShiftControl>.*</ShiftControl>)", m => m.Value.Replace(" Trigger=\"1\"", string.Empty), RegexOptions.Singleline);
             const string legacy =
                 "<UseSAforMouse>True</UseSAforMouse><UseTPforControls>True</UseTPforControls>" +
                 "<GyroSmoothing>True</GyroSmoothing><GyroSmoothingWeight>0.75</GyroSmoothingWeight><ShiftModifier>2</ShiftModifier>";
