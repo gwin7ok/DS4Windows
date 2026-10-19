@@ -1,0 +1,152 @@
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using DS4Windows;
+using NLog;
+using NLog.Config;
+using NLog.Targets;
+using Xunit;
+
+namespace DS4WindowsTests
+{
+    /// <summary>
+    /// Phase8-Step7 7.1-W2（Phase8-Step7-Plan.md §5.2・Q6＝A）: 旧 Stage3 が出していた Button の TRACE ログ（立ち上がり・立ち下がり、出力の組み合わせ、立ち上がりの詳細）を、
+    /// 新経路が同じ文言・順序で出すことを確かめる。NLog の設定をテストの間だけ Trace 有効のメモリ出力へ差し替え、旧経路と新経路のログの行を比べる。
+    /// 他の Host 構築テストと同じコレクションで直列に実行する。
+    /// </summary>
+    [Collection("ServiceProviderHolder")]
+    public class Phase8Step7W2ButtonTraceLogTests
+    {
+        private static DS4State Frame(bool l1)
+        {
+            DS4State state = SpecialActionTestScope.Neutral();
+            state.L1 = l1;
+            return state;
+        }
+
+        /// <summary>Trace を有効にしたメモリ出力へ NLog を差し替えて <paramref name="body"/> を実行し、記録された行を返す（終了時に元の設定へ戻す）。</summary>
+        private static List<string> CaptureTrace(Action body, string mustContain)
+        {
+            LoggingConfiguration saved = LogManager.Configuration;
+            var target = new MemoryTarget("p8s7w2") { Layout = "${level}|${message}" };
+            var config = new LoggingConfiguration();
+            config.AddTarget(target);
+            config.AddRule(LogLevel.Trace, LogLevel.Fatal, target);
+            LogManager.Configuration = config;
+            try
+            {
+                body();
+                // Button の TRACE ログだけを比べる（ActionManager の生成のログなど、経路に依らない別のログは除く）
+                return target.Logs.Where(l => l.Contains("'" + mustContain + "'") &&
+                    (l.Contains("Trigger detected for") || l.Contains("Trigger no longer active") || l.Contains("maps to") ||
+                     l.Contains("Trigger keys for") || l.Contains("output combo") || l.Contains("Failed to build output combo"))).ToList();
+            }
+            finally
+            {
+                LogManager.Configuration = saved;
+            }
+        }
+
+        private static List<string> RunLogged(bool migrated, string name, string details, string extras, bool[] l1Frames)
+        {
+            return CaptureTrace(() =>
+            {
+                using var t = new SpecialActionTestScope(migrated);
+                SpecialAction sa = t.Add(new SpecialAction(name, "L1", "Button", details, 0, extras));
+                ActionInstanceState state = t.StateOf(sa);
+                state.IsToggledOn = false;
+                state.RequiresFreshPressAfterReset = false;
+                state.UntriggeredTimestampTicks = 0;
+                foreach (bool l1 in l1Frames)
+                    t.RunFrame(Frame(l1));
+            }, name);
+        }
+
+        [Fact]
+        public void PressTrace_NewPathLogsTheSameLinesInTheSameOrder()
+        {
+            string name = "p8s7w2_press_" + Guid.NewGuid().ToString("N");
+            bool[] frames = { false, true, true, false, true, false };
+
+            var legacy = RunLogged(false, name, ((int)X360Controls.A).ToString(), "Press\n", frames);
+            var migrated = RunLogged(true, name, ((int)X360Controls.A).ToString(), "Press\n", frames);
+
+            Assert.Equal(legacy, migrated);
+            Assert.Contains(legacy, l => l.Contains("Trigger detected for Button SA"));
+            Assert.Contains(legacy, l => l.Contains("Trigger no longer active for Button SA"));
+            Assert.Contains(legacy, l => l.Contains("maps to X360Controls"));
+            Assert.Contains(legacy, l => l.Contains("Trigger keys for SA") && l.EndsWith("<none>"));   // 旧経路は常に <none>（状態を渡さず例外を握りつぶす既存の挙動。新経路も同じにする）
+            Assert.Contains(legacy, l => l.Contains("output combo:"));
+        }
+
+        [Fact]
+        public void ToggleTrace_NewPathLogsTheSameLinesInTheSameOrder()
+        {
+            string name = "p8s7w2_toggle_" + Guid.NewGuid().ToString("N");
+            bool[] frames = { false, true, false, false, true, true, false };
+
+            var legacy = RunLogged(false, name, ((int)X360Controls.A).ToString(), "Toggle\n", frames);
+            var migrated = RunLogged(true, name, ((int)X360Controls.A).ToString(), "Toggle\n", frames);
+
+            Assert.Equal(legacy, migrated);
+            Assert.Contains(legacy, l => l.Contains("output combo:"));
+        }
+
+        [Fact]
+        public void MouseAndTouchpadTrace_NewPathLogsTheSameLines()
+        {
+            bool[] frames = { true, true, false, true };
+            foreach (X360Controls control in new[] { X360Controls.LeftMouse, X360Controls.TouchpadClick })
+            {
+                string name = "p8s7w2_" + control + "_" + Guid.NewGuid().ToString("N");
+                var legacy = RunLogged(false, name, ((int)control).ToString(), "Press\n", frames);
+                var migrated = RunLogged(true, name, ((int)control).ToString(), "Press\n", frames);
+
+                Assert.Equal(legacy, migrated);
+                Assert.Contains(legacy, l => l.Contains(control == X360Controls.LeftMouse ? "LeftMouse(" : "TouchpadClick"));
+            }
+        }
+
+        [Fact]
+        public void UnreadableDetails_TraceMatchesToo()
+        {
+            string name = "p8s7w2_bad_" + Guid.NewGuid().ToString("N");
+            bool[] frames = { true, true, false };
+
+            var legacy = RunLogged(false, name, "not-a-number", "Press\n", frames);
+            var migrated = RunLogged(true, name, "not-a-number", "Press\n", frames);
+
+            Assert.Equal(legacy, migrated);
+            Assert.Contains(legacy, l => l.Contains("Type:Button Details:not-a-number"));
+        }
+
+        [Fact]
+        public void WhenTraceIsOff_NothingIsLogged_OnEitherPath()
+        {
+            string name = "p8s7w2_off_" + Guid.NewGuid().ToString("N");
+            bool[] frames = { true, true, false };
+
+            LoggingConfiguration saved = LogManager.Configuration;
+            var target = new MemoryTarget("p8s7w2off") { Layout = "${message}" };
+            var config = new LoggingConfiguration();
+            config.AddTarget(target);
+            config.AddRule(LogLevel.Debug, LogLevel.Fatal, target);   // Trace は無効
+            LogManager.Configuration = config;
+            try
+            {
+                foreach (bool migrated in new[] { false, true })
+                {
+                    using var t = new SpecialActionTestScope(migrated);
+                    t.Add(new SpecialAction(name, "L1", "Button", ((int)X360Controls.A).ToString(), 0, "Press\n"));
+                    foreach (bool l1 in frames) t.RunFrame(Frame(l1));
+                }
+
+                Assert.DoesNotContain(target.Logs, l => l.Contains(name));
+            }
+            finally
+            {
+                LogManager.Configuration = saved;
+            }
+        }
+    }
+}

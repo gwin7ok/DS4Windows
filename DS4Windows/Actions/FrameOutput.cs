@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 
 namespace DS4Windows.Actions
 {
@@ -7,7 +8,7 @@ namespace DS4Windows.Actions
     /// 中身は、現行の <c>Mapping.ResetToDefaultValue</c> と、Stage3（Synchronous Button SpecialAction handling）の出力の分岐をそのまま移したもの
     /// （<c>FrameOutputTests</c> が現行のメソッドと比較する）。まだ <c>Mapping</c> には配線していない（W4）。
     /// </summary>
-    public sealed class FrameOutput : IFrameOutput
+    public sealed class FrameOutput : IFrameOutput, IFrameOutputTrace
     {
         private DS4StateFieldMapping _outputFields;
         private SyntheticState _deviceState;
@@ -44,6 +45,31 @@ namespace DS4Windows.Actions
             else if (controlType == DS4StateFieldMapping.ControlType.Touch)
             {
                 fieldMap.buttons[controlNum] = false;
+            }
+        }
+
+        // Phase8-Step7 7.1-W2: 現行の Stage3 の「出力の組み合わせ」のログ（Mapping の Stage3／LogSpecialActionTrace）と同じ順序・書式
+        public void AppendOutputCombo(List<string> parts)
+        {
+            DS4StateFieldMapping fields = _outputFields;
+            SyntheticState ds = _deviceState;
+            if (fields == null) return;
+
+            if (fields.outputTouchButton) parts.Add("TouchpadClick");
+            if (ds != null)
+            {
+                if (ds.currentClicks.leftCount > 0) parts.Add($"LeftMouse({ds.currentClicks.leftCount})");
+                if (ds.currentClicks.rightCount > 0) parts.Add($"RightMouse({ds.currentClicks.rightCount})");
+                if (ds.currentClicks.middleCount > 0) parts.Add($"MiddleMouse({ds.currentClicks.middleCount})");
+                if (ds.currentClicks.fourthCount > 0) parts.Add($"FourthMouse({ds.currentClicks.fourthCount})");
+                if (ds.currentClicks.fifthCount > 0) parts.Add($"FifthMouse({ds.currentClicks.fifthCount})");
+                if (ds.currentClicks.wUpCount > 0) parts.Add($"WUP({ds.currentClicks.wUpCount})");
+                if (ds.currentClicks.wDownCount > 0) parts.Add($"WDOWN({ds.currentClicks.wDownCount})");
+            }
+
+            for (int bi = 0; bi < fields.buttons.Length; bi++)
+            {
+                if (fields.buttons[bi]) parts.Add($"{(X360Controls)bi}({bi})");
             }
         }
 

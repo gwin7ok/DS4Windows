@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 
 namespace DS4Windows.Actions
 {
@@ -7,9 +8,8 @@ namespace DS4Windows.Actions
     /// （エッジの <c>Execute</c>／<c>Stop</c> は何もしない。現行も Button はエッジの処理を持たず、Stage3 が毎フレームの出力だけを担う）。
     /// 規則は <c>ButtonSpecialActionOutput.ResolveOutputActive</c> と同じ: Press は成立中のみ ON。Toggle は立ち上がりで反転し（Fresh-press ガード中は反転しない）、
     /// ON の間は出力する。状態（<c>IsToggledOn</c>）は、Key の Toggle と同じ <c>ActionInstanceState</c>（<see cref="IManagedActionManager"/>）。
-    /// まだ <c>Mapping</c> には配線していない（W4 の空配線、Step7.1 で切替）。
-    /// 注意（Step7.1 へ）: 現行の Stage3 は、立ち上がり・立ち下がりと出力の組み合わせの TRACE ログ（<c>LogSpecialActionTrace</c>）を出す。
-    /// ログは維持する必要がある（規約 2.3）ため、7.1 の PR でエンジンの側に引き継ぐ。
+    /// Phase8-Step7 7.1-W2（Q6＝A）: 現行の Stage3 と <c>Mapping.LogSpecialActionTrace</c> が出していた TRACE ログ（立ち上がり・立ち下がり、
+    /// 出力の組み合わせ、立ち上がりの詳細）を、同じ文言・レベル・順序で出す（規約 2.3）。ログが無効のときは、文字列を作らない（割り当て 0）。
     /// </summary>
     public sealed class ButtonOutputAction : IFrameOutputAction
     {
@@ -17,6 +17,9 @@ namespace DS4Windows.Actions
         private readonly IManagedActionManager _manager;
         private readonly bool _hasControl;
         private readonly X360Controls _control;
+
+        // 前のフレームの成立（旧 Mapping.lastButtonTriggerState 相当。立ち下がりのログ用）。ApplyFrame は毎フレーム、このアクションの所有する束縛で呼ばれる
+        private bool _prevActive;
 
         public ButtonOutputAction(SpecialAction sa, IManagedActionManager manager)
         {
@@ -41,10 +44,73 @@ namespace DS4Windows.Actions
         {
             if (ctx == null) return;
 
-            bool outputActive = ResolveOutputActive(ctx.Device, active, risingEdge);
-            if (!outputActive || !_hasControl) return;
+            bool previous = _prevActive;
+            _prevActive = active;
+            bool trace = AppLogger.IsTraceEnabled;
 
-            ctx.Frame?.PressX360(_control);
+            bool outputActive = ResolveOutputActive(ctx.Device, active, risingEdge);
+
+            // 現行の Stage3 と同じ: 状態が変わったときだけ、立ち上がり・立ち下がりを記録する
+            if (trace && active != previous)
+            {
+                if (active)
+                    AppLogger.LogTrace($"Trigger detected for Button SA '{_sa.name}' on device {ctx.Device}");
+                else
+                    AppLogger.LogTrace($"Trigger no longer active for Button SA '{_sa.name}' on device {ctx.Device}");
+            }
+
+            if (outputActive && _hasControl)
+            {
+                ctx.Frame?.PressX360(_control);
+
+                // 現行の Stage3 と同じ: 出力しているフレームごとに、出力の組み合わせを記録する
+                if (trace) LogOutputCombo(ctx);
+            }
+
+            // 現行の LogSpecialActionTrace と同じ: 立ち上がりのときに、対応・トリガーのボタン・出力の組み合わせを記録する
+            if (trace && risingEdge) LogRisingEdge(ctx);
+        }
+
+        private void LogRisingEdge(IOutputContext ctx)
+        {
+            try
+            {
+                AppLogger.LogTrace($"Trigger detected for SA '{_sa.name}' on device {ctx.Device}");
+
+                string mapping = _hasControl
+                    ? $"X360Controls {_control.ToString()} ({(int)_control})"
+                    : $"Type:{_sa.type} Details:{_sa.details}";
+                AppLogger.LogTrace($"SA '{_sa.name}' maps to {mapping}");
+
+                // 現行の LogSpecialActionTrace は、状態を渡さずに getBoolSpecialActionMapping を呼ぶため、例外（握りつぶし）となり、常に "<none>" を記録している
+                // （旧経路の既存の挙動。ログの文言を変えない方針［Q6＝A］により、同じ出力にする。成立しているトリガーの一覧を出す改善は、別途ユーザーの承認が要る）
+                AppLogger.LogTrace($"Trigger keys for SA '{_sa.name}': <none>");
+
+                try
+                {
+                    var parts = new List<string>();
+                    (ctx.Frame as IFrameOutputTrace)?.AppendOutputCombo(parts);
+                    string combo = parts.Count > 0 ? string.Join(", ", parts) : "<none>";
+                    AppLogger.LogTrace($"SA '{_sa.name}' output combo: {combo}");
+                }
+                catch { }
+            }
+            catch { }
+        }
+
+        private void LogOutputCombo(IOutputContext ctx)
+        {
+            try
+            {
+                var parts = new List<string>();
+                (ctx.Frame as IFrameOutputTrace)?.AppendOutputCombo(parts);
+                string combo = parts.Count > 0 ? string.Join(", ", parts) : "<none>";
+                AppLogger.LogTrace($"SA '{_sa.name}' output combo: {combo}");
+            }
+            catch (Exception ex)
+            {
+                AppLogger.LogTrace($"Failed to build output combo log for SA '{_sa.name}': {ex}");
+            }
         }
 
         private bool ResolveOutputActive(int device, bool triggered, bool risingEdge)

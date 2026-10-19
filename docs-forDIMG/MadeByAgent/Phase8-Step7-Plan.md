@@ -3,7 +3,7 @@
 作成日: 2026-10-19  
 対象ブランチ: `For-DI-migration-work`  
 上位: `Phase8-Unified-Trigger-Dispatch-Plan.md`（§5 の Step7）、`Phase8-Step2-Design.md` §23〜§28（並行期間のしくみ、PR 一覧、テストの流用、ロールバック）、`Phase8-Step2-Intent-Decisions.md`、`Phase8-Step1-Trigger-Spec-Ledger.md`、`Phase8-Step4/5/6-Completion-Report.md`  
-状態: **Q1〜Q8 を推奨どおり承認（2026-10-19）。7.1-W1 実装済み（ビルド・テストの結果待ち）**
+状態: **Q1〜Q8 を推奨どおり承認（2026-10-19）。7.1-W1 完了（ビルド・テスト成功）。7.1-W2 実装済み（結果待ち）**
 
 ---
 
@@ -72,19 +72,28 @@
 
 ### 5.1 7.1-W1 テストの足場と両経路の特性化
 
-**W1 の実装（2026-10-19。ユーザーのビルド・テストの結果待ち）**
+**W1 の実装（2026-10-19。ビルド・テスト成功）**
 
 - `SpecialActionTestScope(bool migrated = false)`: `migrated` が真なら、`BindingMigrationOptions.MigratedTypes` に Button を足し、`Add` のたびに `IActionBindingBuilder.Build` → `IActionRegistry.Replace`（本番の `PublishBindings` と同じ経路）で束縛を登録する。終了時に、移行の一覧と登録簿を元へ戻す。
 - `Phase7cW2SpecialActionTriggerCharacterizationTests` の Button 関連 9 本（Press の出力、AND 条件、Press は Fresh-press ガードを見ない、抑制の追加・解除、Fresh-press の解除条件 4 本）を `[Theory]`（`migrated` が偽・真）にした。**期待値は変えていない**。Key／Profile／Program／Stage3 の並行変更のテストは、旧経路のまま。
 - `Phase8Step7W1ButtonDualPathTests`（新設。9 本）: 同じ入力の列を両経路に流し、フレームごとの出力（Cross、L1／R1 の素通し、タッチパッドクリック、マウス左クリックの数）が一致することを確かめる。Press、Toggle、Toggle＋ガード中、AND 条件、タッチパッドクリック、マウス、読めない details、長い遅延、スコープの復元。
 - `ButtonSpecialActionOutputTests` は、判定関数（`ResolveOutputActive`）と `Mapping` のソースの構造を見るテストで、経路に依存しないため、変更しない。
 - 食い違いが出た場合は、本計画書 §2.3 の表に記録し、実装を直す（意図の差ならユーザーに相談）。
+- W1 の結果: 失敗は 1 本のみ（私の期待の誤り）。**`delayTime` は Button の出力を遅らせない**（旧・新とも、Press は成立中すぐ出力する）。テストを実測の固定に直した。新旧の出力は、全シナリオで一致した。
 
 - `SpecialActionTestScope` に、種別の集合を指定するパラメーター（`migrated`）を足す。`true` のときは、`BindingMigrationOptions.MigratedTypes` に種別を足し、スコープが登録した特殊アクションから `ActionBindingBuilder.Build` を呼んで登録簿へ `Replace` する（本番の `PublishBindings` と同じ経路）。終了時に元へ戻す。
 - Button に関する既存のテスト（`ButtonSpecialActionOutputTests` ほか、Press／Toggle、AND 条件、抑制、Fresh-press、遅延、順序）を `[Theory]` にして、両経路で流す。**期待値は変えない**。
 - 食い違いがあれば、本計画書 §2.3 の表に記録し、直すか（実装）、ユーザーに相談する（意図の差）。
 
 ### 5.2 7.1-W2 新経路の不足分
+
+**W2 の実装（2026-10-19。ユーザーのビルド・テストの結果待ち）**
+
+- **TRACE ログの引き継ぎ（Q6＝A）**: `ButtonOutputAction.ApplyFrame` が、旧 Stage3 と `Mapping.LogSpecialActionTrace` の 7 種のログ（立ち上がり／立ち下がり、出力のたびの組み合わせ、立ち上がりの「Trigger detected for SA」「maps to」「Trigger keys」「output combo」）を、同じ文言・レベル・順序で出す。`AppLogger.IsTraceEnabled` が偽のときは文字列を作らない。口として、`IFrameOutputTrace`（`FrameOutput` が出力の組み合わせを返す）を新設。既存のインターフェース（`IFrameOutput`／`IOutputContext`）は変えていない。
+  - **既存の不具合の記録**: 旧 `LogSpecialActionTrace` の「Trigger keys for SA」は、状態を渡さずに `getBoolSpecialActionMapping` を呼ぶため例外（握りつぶし）となり、常に `<none>` を記録している。ログの文言を変えない方針により、新経路も同じ `<none>` を出す。成立中のトリガーの一覧を出す改善は、別途ユーザーの承認を得て行う候補。
+  - テスト: `Phase8Step7W2ButtonTraceLogTests`（旧経路と新経路の NLog の行を比較。Press、Toggle、マウス・タッチパッド、読めない details、Trace 無効時）。
+- **`OnProfileApplied`（Q5＝A）**: 旧経路では、プロファイル適用の後始末（`HandleDeviceDisconnect` を含む）は抑制の集合を消さない。`Phase8Step7W2ApplyAndOrderTests` で、適用を再現して（`SimulateProfileApply`: `ClearDeviceState` → `PreallocateForProfileApply` → `PublishBindings`）、押している最中・離している最中の適用で新旧の出力と抑制の集合を比べる。**差が出なければ、`OnProfileApplied` は接続しない**（結果で確定する。差が出たら、抑制の集合を消さない形で接続する）。
+- **順序と二重ディスパッチ**: 2 つの Button の新旧比較（マウスの左クリックのカウンターが 1 フレームにつき 1 回）、移行済みの Button を旧 Stage3 が処理しない（`lastButtonTriggerState` に残らない）ことを確認。
 
 - **TRACE ログの引き継ぎ**（Q6）: 立ち上がり・立ち下がりのログ、出力の組み合わせのログを、`ButtonOutputAction`（または `FrameOutput`）が、旧 Stage3 と同じ文言・レベルで出す。ログが無効のときに文字列を作らない（割り当て 0）。
 - **`OnProfileApplied`**（Q5）: プロファイルの適用の前後で、新旧の出力（抑制の集合、Toggle の状態、遅延の基準）を比べる特性化テストを足し、差が出る場合だけ接続する。接続するときは、抑制の集合を消さない形にして、現行の挙動を保つ。

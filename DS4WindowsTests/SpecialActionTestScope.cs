@@ -93,6 +93,18 @@ namespace DS4WindowsTests
             return action;
         }
 
+        /// <summary>
+        /// Phase8-Step7 7.1-W2: プロファイルの適用の後始末を再現する（<c>ProfileApplicationService</c> の掃除と同じ順序: <c>ClearDeviceState</c> → <c>PreallocateForProfileApply</c> →
+        /// 新経路のときは <c>PublishBindings</c>）。<c>OnProfileApplied</c> は、判断が済むまで呼ばない（Phase8-Step7-Plan.md Q5）。
+        /// </summary>
+        public void SimulateProfileApply()
+        {
+            ActionManager.ClearDeviceState(Device);
+            ActionManager.PreallocateForProfileApply(Device);
+            if (_migrated)
+                PublishBindings();
+        }
+
         /// <summary>Phase8-Step7: 登録済みの特殊アクションから、本番と同じ経路で束縛を作って登録簿へ差し替える（新経路のときだけ使う）。</summary>
         public void PublishBindings()
         {
