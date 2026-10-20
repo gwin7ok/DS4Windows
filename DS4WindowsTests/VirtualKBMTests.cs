@@ -68,20 +68,5 @@ namespace DS4WindowsTests
             player.Stop(0);
             Assert.False(player.IsPlaying(0));
         }
-
-        [Fact]
-        public void MouseOutputAction_WithMock_ExecutesWithoutException()
-        {
-            var mockKbm = new MockVirtualKBM();
-            var sa = new SpecialAction("TestMouseAction", "Cross", "Key", "Key", 0, "");
-            var action = new MouseOutputAction(sa, mockKbm);
-
-            Assert.Equal("TestMouseAction", action.Id);
-
-            var ctx = new OutputContextImpl(0, mockKbm);
-
-            action.Execute(ctx);
-            action.Stop(ctx);
-        }
     }
 }

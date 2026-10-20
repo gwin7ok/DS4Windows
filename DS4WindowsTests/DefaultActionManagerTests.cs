@@ -9,22 +9,10 @@ namespace DS4WindowsTests
 {
     public class DefaultActionManagerTests
     {
-        private class MockActionFactory : IActionFactory
-        {
-            public int CreateFromCalls { get; private set; }
-
-            public DS4Windows.Actions.Action CreateFrom(SpecialAction action, int index = -1)
-            {
-                CreateFromCalls++;
-                return null;
-            }
-        }
-
         [Fact]
-        public void Constructor_WithMockActionFactory_InitializesSuccessfully()
+        public void Constructor_WithMappingProvider_InitializesSuccessfully()
         {
-            var mockFactory = new MockActionFactory();
-            var manager = new DefaultActionManager(mockFactory, TestRepositoryFactory.MappingProvider);
+            var manager = new DefaultActionManager(TestRepositoryFactory.MappingProvider);
 
             Assert.NotNull(manager);
             Assert.NotEqual(0, manager.InstanceId);
@@ -33,7 +21,7 @@ namespace DS4WindowsTests
         [Fact]
         public void SetToggledOn_FiresInstanceToggledOnChangedEvent()
         {
-            var manager = new DefaultActionManager(TestRepositoryFactory.CreateDefaultActionFactory(), TestRepositoryFactory.MappingProvider);
+            var manager = new DefaultActionManager(TestRepositoryFactory.MappingProvider);
             var action = new SpecialAction("ToggleTest", "Cross", "Key", "Key", 0);
 
             SpecialAction eventAction = null;
@@ -74,7 +62,7 @@ namespace DS4WindowsTests
         [Fact]
         public void ClearDeviceState_ResetsToggledOnStateAndFiresEvent()
         {
-            var manager = new DefaultActionManager(TestRepositoryFactory.CreateDefaultActionFactory(), TestRepositoryFactory.MappingProvider);
+            var manager = new DefaultActionManager(TestRepositoryFactory.MappingProvider);
             var action = new SpecialAction("ClearTest", "Circle", "Key", "Key", 0);
 
             manager.SetToggledOn(action, 1, true);
@@ -102,7 +90,7 @@ namespace DS4WindowsTests
             // Issue8-1是正(1)の回帰防止テスト。
             // ActionInstanceStateが新規生成された直後は、プロファイル適用直後の
             // 押しっぱなし誤検知を防ぐため、RequiresFreshPressAfterResetがtrueであること。
-            var manager = new DefaultActionManager(TestRepositoryFactory.CreateDefaultActionFactory(), TestRepositoryFactory.MappingProvider);
+            var manager = new DefaultActionManager(TestRepositoryFactory.MappingProvider);
             var action = new SpecialAction("FreshPressTest", "Cross", "Key", "Key", 0);
 
             var state = manager.GetStateFor(action, 0);
@@ -122,7 +110,7 @@ namespace DS4WindowsTests
             // trueに戻ること自体は正しい（是正後の意図した挙動）。
             // 本テストは、いったんfalse（＝離す動作を観測済み）になった状態が、
             // ClearDeviceStateによって確実にtrue（＝要フレッシュプレス）へ戻ることを確認する。
-            var manager = new DefaultActionManager(TestRepositoryFactory.CreateDefaultActionFactory(), TestRepositoryFactory.MappingProvider);
+            var manager = new DefaultActionManager(TestRepositoryFactory.MappingProvider);
             var action = new SpecialAction("FreshPressResetTest", "Circle", "Key", "Key", 0);
 
             var stateBefore = manager.GetStateFor(action, 2);
@@ -139,7 +127,7 @@ namespace DS4WindowsTests
         {
             // Issue8-1是正(1)の回帰防止テスト。ClearAllEntries経由（Global.ApplyProfile等、
             // 複数の呼出元で使われる）でも同様にリセットされることを確認する。
-            var manager = new DefaultActionManager(TestRepositoryFactory.CreateDefaultActionFactory(), TestRepositoryFactory.MappingProvider);
+            var manager = new DefaultActionManager(TestRepositoryFactory.MappingProvider);
             var action = new SpecialAction("ClearAllFreshPressTest", "Square", "Key", "Key", 0);
 
             var stateBefore = manager.GetStateFor(action, 0);
@@ -158,7 +146,7 @@ namespace DS4WindowsTests
             // 実際の「実行中は新規実行しない・完了後に1回だけ再実行する」というキュー挙動は
             // Mapping.cs側のトリガー評価ロジックに実装されているため、本テストでは
             // ActionInstanceState側のフィールドが期待通り独立して読み書きできることのみを確認する。
-            var manager = new DefaultActionManager(TestRepositoryFactory.CreateDefaultActionFactory(), TestRepositoryFactory.MappingProvider);
+            var manager = new DefaultActionManager(TestRepositoryFactory.MappingProvider);
             var action = new SpecialAction("ExecutingFlagTest", "Triangle", "Key", "Key", 0);
 
             var state = manager.GetStateFor(action, 0);

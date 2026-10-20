@@ -67,12 +67,6 @@ namespace DS4WindowsTests
                 control ?? new Func<ControlService>(() => null));
         }
 
-        public static DefaultActionFactory CreateDefaultActionFactory()
-        {
-            return new DefaultActionFactory(new DefaultMacroPlayer(new MockVirtualKBM(), MappingProvider),
-                new DefaultProcessLauncher(), new DefaultProfileSwitcher());
-        }
-
         public static OutputSlotManager CreateOutputSlotManager()
         {
             return new OutputSlotManager(() => EnvironmentService.ViGEmBusVersionState, _ => SASteeringWheelEmulationAxisType.None, new EnvironmentService().ControllerSlotLimit);

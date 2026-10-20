@@ -13,19 +13,14 @@ namespace DS4Windows.Actions.Tests
     public class MockManagedActionManager : IManagedActionManager
     {
         public List<string> RegisteredActions { get; } = new List<string>();
-        public IReadOnlyList<Action> Actions => new List<Action>();
 
         public event Action<SpecialAction, int, bool, bool> ToggledOnChanged;
 
-        public Action GetActionByIndex(int index) => null;
-        public Action GetActionByName(string name) => null;
         public ActionInstanceState GetStateFor(SpecialAction action, int device) => new ActionInstanceState();
         public void ClearToggledOnForKey(ushort key) { }
         public void ClearAllToggledOn() { }
         public void ClearAllEntries() { }
         public void ClearDeviceState(int device) { }
-        public bool DispatchTriggerEstablished(SpecialAction action, int device, ushort logicalValue, uint nativeValue, bool useScanCode, IVirtualKBM outputKBMHandler) => false;
-        public bool DispatchTriggerReleased(SpecialAction action, int device, ushort logicalValue, uint nativeValue, bool useScanCode, IVirtualKBM outputKBMHandler) => false;
         public void SetToggledOn(SpecialAction action, int device, bool value)
         {
             ToggledOnChanged?.Invoke(action, device, false, value);

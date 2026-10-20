@@ -47,7 +47,6 @@ namespace DS4WindowsTests
             try
             {
                 var services = new ServiceCollection();
-                services.AddSingleton<IActionFactory>(TestRepositoryFactory.CreateDefaultActionFactory()); // Phase6-Step10-4-4: 工場は部品（マクロ再生役ほか）を必須とする
                 // Phase7-Step8 W2: DefaultActionManager は Func<IMapping>（切断時の後始末）を必須とする
                 services.AddSingleton<Func<IMapping>>(_ => TestRepositoryFactory.MappingProvider);
                 services.AddSingleton<IManagedActionManager, DefaultActionManager>();
@@ -81,7 +80,6 @@ namespace DS4WindowsTests
             try
             {
                 var services = new ServiceCollection();
-                services.AddSingleton<IActionFactory>(TestRepositoryFactory.CreateDefaultActionFactory()); // Phase6-Step10-4-4: 工場は部品（マクロ再生役ほか）を必須とする
                 // Phase7-Step8 W2: DefaultActionManager は Func<IMapping>（切断時の後始末）を必須とする。合成アクションのキャッシュは Mapping の instance が持つ
                 var mapper = TestMappingFactory.Create();
                 services.AddSingleton<Func<IMapping>>(_ => () => mapper);
@@ -96,29 +94,12 @@ namespace DS4WindowsTests
                 sa = SyntheticKeyActionFactory.Create(device, 91, 0x41, toggle: true, useScan: false);
                 Assert.True(sa.keyType.HasFlag(DS4KeyType.Toggle));
 
-                var kbm = new MockVirtualKBM();
-
-                bool Edge(bool established) => ActionManager.DispatchTriggerEdge(new TriggerContext
-                {
-                    ActionDef = sa,
-                    Device = device,
-                    LogicalValue = 0x41,
-                    NativeValue = 0x41,
-                    UseScanCode = false,
-                    OutputHandler = kbm,
-                    IsEstablished = established
-                });
-
-                // 1 回目の押下 → トグルオン
-                Assert.True(Edge(true));
+                // Phase8-Step8 8c: 系統 B の DispatchTriggerEdge は削除した。Toggle の状態の遷移は、新経路の束縛（ControlToggleOutputAction ほか）のテストが確かめる。
+                // ここでは、合成アクションの状態が IManagedActionManager 経由で読み書きできることだけを確かめる
+                ActionManager.SetToggledOn(sa, device, true);
                 Assert.True(ActionManager.GetStateFor(sa, device).IsToggledOn);
 
-                // 解放 → トグルは維持される
-                Edge(false);
-                Assert.True(ActionManager.GetStateFor(sa, device).IsToggledOn);
-
-                // 2 回目の押下 → トグルオフ
-                Edge(true);
+                ActionManager.SetToggledOn(sa, device, false);
                 Assert.False(ActionManager.GetStateFor(sa, device).IsToggledOn);
             }
             finally

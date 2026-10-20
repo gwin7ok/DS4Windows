@@ -12,32 +12,29 @@ namespace DS4Windows.Actions
     public class DefaultActionManager : IManagedActionManager, IInstanceIdentifiable
     {
         public int InstanceId => this.GetHashCode();
-        private readonly Dictionary<int, Actions.Action> actionInstances = new Dictionary<int, Actions.Action>();
         private readonly Dictionary<string, ActionEntry> actions = new Dictionary<string, ActionEntry>(StringComparer.OrdinalIgnoreCase);
         // Button state table: device x controlIndex
         private bool[,] buttonStates = null;
         private const int ToggleReleaseHoldMsLocal = 200;
-        private readonly IActionFactory _actionFactory;
         // Phase7-Step8 W2（Q8＝A）: 切断時の後始末（旧: Mapping.HandleDeviceDisconnect の静的呼び出し）。ホスト構築時（PreallocateEntries）に Mapping とその依存を
         // 作らないよう、遅延（Func）で受ける（Phase5-Plan §5.4）。
         private readonly Func<DS4Windows.DI.IMapping> _mappingProvider;
 
         public event Action<SpecialAction, int, bool, bool> ToggledOnChanged;
 
-        public DefaultActionManager(IActionFactory actionFactory, Func<DS4Windows.DI.IMapping> mappingProvider)
+        public DefaultActionManager(Func<DS4Windows.DI.IMapping> mappingProvider)
         {
-            _actionFactory = actionFactory ?? throw new ArgumentNullException(nameof(actionFactory)); // Phase6-Step10-4-4: 必須の依存
             _mappingProvider = mappingProvider ?? throw new ArgumentNullException(nameof(mappingProvider));
         }
 
-        private static ActionEntry GetOrCreateEntryInternal(Dictionary<string, ActionEntry> actionsDict, SpecialAction action, IActionFactory factory)
+        private static ActionEntry GetOrCreateEntryInternal(Dictionary<string, ActionEntry> actionsDict, SpecialAction action)
         {
             if (action == null) return null;
             lock (actionsDict)
             {
                 if (!actionsDict.TryGetValue(action.name, out ActionEntry ent) || ent == null)
                 {
-                    ent = new ActionEntry(action, factory);
+                    ent = new ActionEntry(action);
                     actionsDict[action.name] = ent;
                 }
                 return ent;
@@ -54,7 +51,7 @@ namespace DS4Windows.Actions
                 {
                     foreach (var sa in ActionRegistry.AllActions())
                     {
-                        try { GetOrCreateEntryInternal(actions, sa, _actionFactory); } catch { }
+                        try { GetOrCreateEntryInternal(actions, sa); } catch { }
                     }
                 }
 
@@ -71,67 +68,11 @@ namespace DS4Windows.Actions
             catch { }
         }
 
-        public Actions.Action GetActionByIndex(int index)
-        {
-            try
-            {
-                var sa = ActionRegistry.GetByIndex(index);
-                if (sa == null) return null;
-                lock (actions)
-                {
-                    if (!actionInstances.TryGetValue(index, out Actions.Action act) || act == null)
-                    {
-                        act = _actionFactory.CreateFrom(sa, index);
-                        actionInstances[index] = act;
-                    }
-                    return act;
-                }
-            }
-            catch { return null; }
-        }
-
-        public Actions.Action GetActionByName(string name)
-        {
-            if (string.IsNullOrEmpty(name)) return null;
-            try
-            {
-                int idx = -1;
-                int i = 0;
-                foreach (var sa in ActionRegistry.AllActions())
-                {
-                    if (sa != null && string.Equals(sa.name, name, StringComparison.OrdinalIgnoreCase)) { idx = i; break; }
-                    i++;
-                }
-                if (idx == -1) return null;
-                return GetActionByIndex(idx);
-            }
-            catch { return null; }
-        }
-
-        public IReadOnlyList<Actions.Action> Actions
-        {
-            get
-            {
-                try
-                {
-                    var list = new List<Actions.Action>();
-                    int count = ActionRegistry.Count;
-                    for (int i = 0; i < count; ++i)
-                    {
-                        var a = GetActionByIndex(i);
-                        list.Add(a);
-                    }
-                    return list.AsReadOnly();
-                }
-                catch { return Array.Empty<Actions.Action>(); }
-            }
-        }
-
         public ActionInstanceState GetStateFor(SpecialAction action, int device)
         {
             try
             {
-                var ent = GetOrCreateEntryInternal(actions, action, _actionFactory);
+                var ent = GetOrCreateEntryInternal(actions, action);
                 if (ent == null) return null;
                 if (device < 0 || device >= ent.States.Length) return null;
                 return ent.States[device];
@@ -251,7 +192,7 @@ namespace DS4Windows.Actions
         {
             try
             {
-                var ent = GetOrCreateEntryInternal(actions, action, _actionFactory);
+                var ent = GetOrCreateEntryInternal(actions, action);
                 if (ent == null) return;
                 if (device < 0 || device >= ent.States.Length) return;
                 var st = ent.States[device];
@@ -314,65 +255,5 @@ namespace DS4Windows.Actions
             catch { }
         }
 
-        public bool DispatchTriggerEstablished(SpecialAction action, int device, ushort logicalValue, uint nativeValue, bool useScanCode, IVirtualKBM outputKBMHandler)
-        {
-            try
-            {
-                var ent = GetOrCreateEntryInternal(actions, action, _actionFactory);
-                if (ent?.ActionImpl == null) return false;
-                try
-                {
-                    var st = GetStateFor(action, device);
-                    try { AppLogger.LogTrace($"DefaultActionManager.DispatchTriggerEstablished: before OnTrigger BeingTriggered={st?.BeingTriggered ?? false} name={action?.name} device={device}"); } catch { }
-                    var ctx = new DS4Windows.Actions.MappingContext
-                    {
-                        LogicalValue = logicalValue,
-                        NativeValue = nativeValue,
-                        UseScanCode = useScanCode,
-                        OutputHandler = outputKBMHandler,
-                        ActionDef = action,
-                        Index = -1
-                    };
-                    ent.ActionImpl.OnTrigger(device, ctx);
-                    try { AppLogger.LogTrace($"DefaultActionManager.DispatchTriggerEstablished: after OnTrigger BeingTriggered={st?.BeingTriggered ?? false} name={action?.name} device={device}"); } catch { }
-                }
-                catch { }
-                return true;
-            }
-            catch (Exception ex)
-            {
-                AppLogger.LogTrace($"DefaultActionManager.DispatchTriggerEstablished failed: {ex}");
-                return false;
-            }
-        }
-
-        public bool DispatchTriggerReleased(SpecialAction action, int device, ushort logicalValue, uint nativeValue, bool useScanCode, IVirtualKBM outputKBMHandler)
-        {
-            try
-            {
-                var ent = GetOrCreateEntryInternal(actions, action, _actionFactory);
-                if (ent?.ActionImpl == null) return false;
-                try
-                {
-                    var ctx = new DS4Windows.Actions.MappingContext
-                    {
-                        LogicalValue = logicalValue,
-                        NativeValue = nativeValue,
-                        UseScanCode = useScanCode,
-                        OutputHandler = outputKBMHandler,
-                        ActionDef = action,
-                        Index = -1
-                    };
-                    ent.ActionImpl.OnRelease(device, ctx);
-                }
-                catch { }
-                return true;
-            }
-            catch (Exception ex)
-            {
-                AppLogger.LogTrace($"DefaultActionManager.DispatchTriggerReleased failed: {ex}");
-                return false;
-            }
-        }
     }
 }

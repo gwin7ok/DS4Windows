@@ -45,9 +45,6 @@ namespace DS4WindowsTests
             ["DS4Windows/Actions/MacroAction.cs"] = new string[0],
             ["DS4Windows/Actions/ProfileSwitchAction.cs"] = new string[0],
             ["DS4Windows/Actions/LaunchProcessAction.cs"] = new string[0],
-            ["DS4Windows/Actions/MouseOutputAction.cs"] = new string[0],
-            ["DS4Windows/Actions/DefaultActionFactory.cs"] = new string[0],
-            ["DS4Windows/Actions/ActionFactory.cs"] = new string[0],
             ["DS4Windows/Actions/DefaultMacroPlayer.cs"] = new[] { "MAX_DS4_CONTROLLER_COUNT" },
             ["DS4Windows/Actions/DefaultActionManager.cs"] = new[] { "MAX_DS4_CONTROLLER_COUNT" },
             ["DS4Windows/Actions/ActionManager.cs"] = new[] { "MAX_DS4_CONTROLLER_COUNT" },
@@ -237,24 +234,9 @@ namespace DS4WindowsTests
             Assert.Throws<ArgumentNullException>(() => new MacroAction(sa, (IMacroPlayer)null));
             Assert.Throws<ArgumentNullException>(() => new ProfileSwitchAction(sa, (IProfileSwitcher)null));
             Assert.Throws<ArgumentNullException>(() => new LaunchProcessAction(sa, null));
-            Assert.Throws<ArgumentNullException>(() => new MouseOutputAction(sa, null));
             Assert.Throws<ArgumentNullException>(() => new DefaultMacroPlayer(null, TestRepositoryFactory.MappingProvider));
             Assert.Throws<ArgumentNullException>(() => new DefaultMacroPlayer(new MockVirtualKBM(), null));
-            Assert.Throws<ArgumentNullException>(() => new DefaultActionManager(null, TestRepositoryFactory.MappingProvider));
-            Assert.Throws<ArgumentNullException>(() => new DefaultActionManager(TestRepositoryFactory.CreateDefaultActionFactory(), null));
-            Assert.Throws<ArgumentNullException>(() => new DefaultActionFactory(null, launcher, switcher));
-            Assert.Throws<ArgumentNullException>(() => new DefaultActionFactory(player, null, switcher));
-            Assert.Throws<ArgumentNullException>(() => new DefaultActionFactory(player, launcher, null));
-        }
-
-        [Fact]
-        public void DefaultActionFactory_PassesInjectedDependencies_ToActions()
-        {
-            var factory = TestRepositoryFactory.CreateDefaultActionFactory();
-            Assert.NotNull(factory.CreateFrom(new SpecialAction("k", "Cross", "Key", "1", 0) { typeID = SpecialAction.ActionTypeId.Key }, 0));
-            Assert.IsType<MacroActionAdapter>(factory.CreateFrom(new SpecialAction("m", "Cross", "Macro", "1", 0) { typeID = SpecialAction.ActionTypeId.Macro }, 0));
-            Assert.IsType<ProfileSwitchActionAdapter>(factory.CreateFrom(new SpecialAction("p", "Cross", "Profile", "x", 0) { typeID = SpecialAction.ActionTypeId.Profile }, 0));
-            Assert.IsType<LaunchProcessActionAdapter>(factory.CreateFrom(new SpecialAction("l", "Cross", "Program", "x", 0) { typeID = SpecialAction.ActionTypeId.Program }, 0));
+            Assert.Throws<ArgumentNullException>(() => new DefaultActionManager(null));
         }
 
         [Fact]

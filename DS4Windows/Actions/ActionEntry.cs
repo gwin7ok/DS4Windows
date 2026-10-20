@@ -12,13 +12,12 @@ namespace DS4Windows
     internal class ActionEntry
     {
         public SpecialAction ActionDef;
-        public Actions.Action ActionImpl;
         public ActionInstanceState[] States;
 
-        public ActionEntry(SpecialAction action, IActionFactory factory = null)
+        // Phase8-Step8 8c: 系統 B の Action 実体（ActionImpl）とその工場は削除した。このクラスは、アクションごと・デバイスごとの状態の入れ物だけを持つ。
+        public ActionEntry(SpecialAction action)
         {
             ActionDef = action;
-            ActionImpl = factory != null ? factory.CreateFrom(action, -1) : ActionFactory.CreateFrom(action, -1);
             States = new ActionInstanceState[ControllerLimits.MaxControllerCount];
             for (int i = 0; i < States.Length; ++i) States[i] = new ActionInstanceState();
             try

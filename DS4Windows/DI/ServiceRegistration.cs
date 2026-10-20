@@ -124,8 +124,6 @@ namespace DS4Windows.DI
             services.AddSingleton<IUdpServerService, UdpServerService>();
 
             // === 第3層: Actions基盤サービス ===
-            services.AddSingleton<IActionFactory, DefaultActionFactory>();
-            services.AddSingleton<IKeyActionCreator, DefaultKeyActionCreator>();
             services.AddSingleton<IKeyButtonActionControllerFactory, DefaultKeyButtonActionControllerFactory>();
             services.AddSingleton<IRepeater, RepeatHelperToIRepeaterAdapter>();
             services.AddSingleton<IProcessLauncher, DefaultProcessLauncher>();

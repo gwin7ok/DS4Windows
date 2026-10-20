@@ -94,7 +94,7 @@ namespace DS4WindowsTests
         public void DefaultActionManager_ClearDeviceState_KeepsTheUntriggerAction()
         {
             var mapping = GetMapping();
-            var manager = new DefaultActionManager(TestRepositoryFactory.CreateDefaultActionFactory(), TestRepositoryFactory.MappingProvider);
+            var manager = new DefaultActionManager(TestRepositoryFactory.MappingProvider);
             var action = NewProfileAction("p7b-clear");
             try
             {

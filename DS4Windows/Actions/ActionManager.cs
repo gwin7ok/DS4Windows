@@ -12,8 +12,6 @@ namespace DS4Windows
     // Manages Action instances and provides access to per-device state.
     public static class ActionManager
     {
-        // Cache of created Action instances by SpecialAction index (lazy-created via ActionFactory)
-        private static readonly Dictionary<int, Actions.Action> actionInstances = new Dictionary<int, Actions.Action>();
         private static readonly Dictionary<string, ActionEntry> actions = new Dictionary<string, ActionEntry>(StringComparer.OrdinalIgnoreCase);
         private const int ToggleReleaseHoldMsLocal = 200;
 
@@ -28,86 +26,6 @@ namespace DS4Windows
                     actions[action.name] = ent;
                 }
                 return ent;
-            }
-        }
-
-        // Return an Action instance for given SpecialAction index (lazy-created via ActionFactory)
-        public static Actions.Action GetActionByIndex(int index)
-        {
-            try
-            {
-                var sp = DS4Windows.DI.ServiceProviderHolder.Provider;
-                if (sp != null)
-                {
-                    var mgr = sp.GetService(typeof(DS4Windows.Actions.IManagedActionManager)) as DS4Windows.Actions.IManagedActionManager;
-                    if (mgr != null) return mgr.GetActionByIndex(index);
-                }
-
-                var sa = ActionRegistry.GetByIndex(index);
-                if (sa == null) return null;
-                lock (actions)
-                {
-                    if (!actionInstances.TryGetValue(index, out Actions.Action act) || act == null)
-                    {
-                        act = ActionFactory.CreateFrom(sa, index);
-                        actionInstances[index] = act;
-                    }
-                    return act;
-                }
-            }
-            catch { return null; }
-        }
-
-        public static Actions.Action GetActionByName(string name)
-        {
-            try
-            {
-                var sp = DS4Windows.DI.ServiceProviderHolder.Provider;
-                if (sp != null)
-                {
-                    var mgr = sp.GetService(typeof(DS4Windows.Actions.IManagedActionManager)) as DS4Windows.Actions.IManagedActionManager;
-                    if (mgr != null) return mgr.GetActionByName(name);
-                }
-
-                if (string.IsNullOrEmpty(name)) return null;
-
-                // Find index from registry
-                int idx = -1;
-                int i = 0;
-                foreach (var sa in ActionRegistry.AllActions())
-                {
-                    if (sa != null && string.Equals(sa.name, name, StringComparison.OrdinalIgnoreCase)) { idx = i; break; }
-                    i++;
-                }
-                if (idx == -1) return null;
-                return GetActionByIndex(idx);
-            }
-            catch { return null; }
-        }
-
-        public static IReadOnlyList<Actions.Action> Actions
-        {
-            get
-            {
-                try
-                {
-                    var sp = DS4Windows.DI.ServiceProviderHolder.Provider;
-                    if (sp != null)
-                    {
-                        var mgr = sp.GetService(typeof(DS4Windows.Actions.IManagedActionManager)) as DS4Windows.Actions.IManagedActionManager;
-                        if (mgr != null) return mgr.Actions;
-                    }
-
-                    var list = new List<Actions.Action>();
-                    int count = ActionRegistry.Count;
-                    for (int i = 0; i < count; ++i)
-                    {
-                        var a = GetActionByIndex(i);
-                        list.Add(a);
-                    }
-                    return list.AsReadOnly();
-                }
-                catch { return Array.Empty<Actions.Action>(); }
             }
         }
 
@@ -289,10 +207,6 @@ namespace DS4Windows
             try
             {
                 int count = ActionRegistry.Count;
-                for (int i = 0; i < count; ++i)
-                {
-                    try { GetActionByIndex(i); } catch { }
-                }
 
                 try
                 {
@@ -349,171 +263,6 @@ namespace DS4Windows
             throw new InvalidOperationException(msg);
         }
 
-        public static bool DispatchTriggerEstablished(SpecialAction action, int device, ushort logicalValue, uint nativeValue, bool useScanCode, IVirtualKBM outputKBMHandler)
-        {
-            try
-            {
-                var sp = DS4Windows.DI.ServiceProviderHolder.Provider;
-                if (sp != null)
-                {
-                    var mgr = sp.GetService(typeof(DS4Windows.Actions.IManagedActionManager)) as DS4Windows.Actions.IManagedActionManager;
-                    if (mgr != null) return mgr.DispatchTriggerEstablished(action, device, logicalValue, nativeValue, useScanCode, outputKBMHandler);
-                }
-
-                var ent = GetOrCreateEntry(action);
-                if (ent?.ActionImpl == null) return false;
-                try
-                {
-                    var st = GetStateFor(action, device);
-                    try { AppLogger.LogTrace($"DispatchTriggerEstablished: before OnTrigger BeingTriggered={st?.BeingTriggered ?? false} name={action?.name} device={device}"); } catch { }
-                    var ctx = new DS4Windows.Actions.MappingContext
-                    {
-                        LogicalValue = logicalValue,
-                        NativeValue = nativeValue,
-                        UseScanCode = useScanCode,
-                        OutputHandler = outputKBMHandler,
-                        ActionDef = action,
-                        Index = -1
-                    };
-                    ent.ActionImpl.OnTrigger(device, ctx);
-                    try { AppLogger.LogTrace($"DispatchTriggerEstablished: after OnTrigger BeingTriggered={st?.BeingTriggered ?? false} name={action?.name} device={device}"); } catch { }
-                }
-                catch (Exception ex) { AppLogger.LogTrace($"DispatchTriggerEstablished handler failed: {ex}"); }
-                return true;
-            }
-            catch (Exception ex)
-            {
-                AppLogger.LogTrace($"ActionManager.DispatchTriggerEstablished failed: {ex}");
-                return false;
-            }
-        }
-
-        public static bool DispatchTriggerReleased(SpecialAction action, int device, ushort logicalValue, uint nativeValue, bool useScanCode, IVirtualKBM outputKBMHandler)
-        {
-            try
-            {
-                var sp = DS4Windows.DI.ServiceProviderHolder.Provider;
-                if (sp != null)
-                {
-                    var mgr = sp.GetService(typeof(DS4Windows.Actions.IManagedActionManager)) as DS4Windows.Actions.IManagedActionManager;
-                    if (mgr != null) return mgr.DispatchTriggerReleased(action, device, logicalValue, nativeValue, useScanCode, outputKBMHandler);
-                }
-
-                var ent = GetOrCreateEntry(action);
-                if (ent?.ActionImpl == null) return false;
-                try
-                {
-                    var ctx = new DS4Windows.Actions.MappingContext
-                    {
-                        LogicalValue = logicalValue,
-                        NativeValue = nativeValue,
-                        UseScanCode = useScanCode,
-                        OutputHandler = outputKBMHandler,
-                        ActionDef = action,
-                        Index = -1
-                    };
-                    ent.ActionImpl.OnRelease(device, ctx);
-                }
-                catch { }
-                return true;
-            }
-            catch (Exception ex)
-            {
-                AppLogger.LogTrace($"ActionManager.DispatchTriggerReleased failed: {ex}");
-                return false;
-            }
-        }
-
-        public static bool DispatchTrigger(DS4Windows.TriggerContext ctx)
-        {
-            try
-            {
-                if (ctx == null || ctx.ActionDef == null) return false;
-                if (ctx.IsEstablished)
-                {
-                    return DispatchTriggerEstablished(ctx.ActionDef, ctx.Device, ctx.LogicalValue, ctx.NativeValue, ctx.UseScanCode, ctx.OutputHandler);
-                }
-                else
-                {
-                    return DispatchTriggerReleased(ctx.ActionDef, ctx.Device, ctx.LogicalValue, ctx.NativeValue, ctx.UseScanCode, ctx.OutputHandler);
-                }
-            }
-            catch (Exception ex)
-            {
-                AppLogger.LogTrace($"ActionManager.DispatchTrigger failed: {ex}");
-                return false;
-            }
-        }
-
-        public static bool DispatchTriggerEdge(DS4Windows.TriggerContext ctx)
-        {
-            try
-            {
-                if (ctx == null || ctx.ActionDef == null) return false;
-
-                var st = GetStateFor(ctx.ActionDef, ctx.Device);
-                if (st == null)
-                {
-                    try { AppLogger.LogTrace($"DispatchTriggerEdge: no ActionInstanceState for name={ctx.ActionDef?.name} device={ctx.Device}; falling back to full dispatch"); } catch { }
-                    return DispatchTrigger(ctx);
-                }
-
-                if (ctx.IsEstablished)
-                {
-                    bool shouldFire = false;
-                    try
-                    {
-                        lock (st)
-                        {
-                            if (!st.BeingTriggered)
-                            {
-                                st.SetBeingTriggeredInternal(true);
-                                shouldFire = true;
-                            }
-                        }
-                    }
-                    catch { }
-
-                    if (shouldFire)
-                    {
-                        try { AppLogger.LogTrace($"DispatchTriggerEdge: firing established (edge) for name={ctx.ActionDef?.name} device={ctx.Device} (now BeingTriggered={st.BeingTriggered})"); } catch { }
-                        return DispatchTriggerEstablished(ctx.ActionDef, ctx.Device, ctx.LogicalValue, ctx.NativeValue, ctx.UseScanCode, ctx.OutputHandler);
-                    }
-
-                    return false;
-                }
-                else
-                {
-                    bool shouldFire = false;
-                    try
-                    {
-                        lock (st)
-                        {
-                            if (st.BeingTriggered)
-                            {
-                                st.SetBeingTriggeredInternal(false);
-                                shouldFire = true;
-                            }
-                        }
-                    }
-                    catch { }
-
-                    if (shouldFire)
-                    {
-                        try { AppLogger.LogTrace($"DispatchTriggerEdge: firing released (edge) for name={ctx.ActionDef?.name} device={ctx.Device}"); } catch { }
-                        return DispatchTriggerReleased(ctx.ActionDef, ctx.Device, ctx.LogicalValue, ctx.NativeValue, ctx.UseScanCode, ctx.OutputHandler);
-                    }
-
-                    return false;
-                }
-            }
-            catch (Exception ex)
-            {
-                AppLogger.LogTrace($"ActionManager.DispatchTriggerEdge failed: {ex}");
-                return false;
-            }
-        }
-
         public static DS4Windows.Actions.IActionController GetOrCreateControllerForAction(int device, SpecialAction action)
         {
             try
@@ -549,7 +298,6 @@ namespace DS4Windows
                         var sa = provider.GetProfileAction(device, actionName);
                         if (sa == null) continue;
 
-                        try { GetActionByName(sa.name); } catch { }
                         try { GetStateFor(sa, device); } catch { }
                         try { controllerRegistry?.GetOrCreateForAction(device, sa); } catch { }
                     }

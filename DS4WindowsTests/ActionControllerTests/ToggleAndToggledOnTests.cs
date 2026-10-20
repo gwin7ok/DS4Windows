@@ -14,7 +14,7 @@ namespace DS4Windows.Actions.Tests
         [Fact]
         public void Toggle_OnTrigger_Toggles_IsToggledOn_State()
         {
-            var dam = new DS4Windows.Actions.DefaultActionManager(TestHost.GetService<DS4Windows.Actions.IActionFactory>(), DS4WindowsTests.TestRepositoryFactory.MappingProvider);
+            var dam = new DS4Windows.Actions.DefaultActionManager(DS4WindowsTests.TestRepositoryFactory.MappingProvider);
             var registry = new DS4Windows.Services.KeyButtonControllerRegistry(
                 new DS4Windows.Actions.DefaultKeyButtonActionControllerFactory(), new DS4Windows.Actions.DefaultControllerRegistry());
             var srv = new TestServiceProvider(dam, registry);
@@ -65,7 +65,7 @@ namespace DS4Windows.Actions.Tests
         [Fact]
         public void Press_OnTrigger_DoesNot_Set_IsToggledOn()
         {
-            var dam = new DS4Windows.Actions.DefaultActionManager(TestHost.GetService<DS4Windows.Actions.IActionFactory>(), DS4WindowsTests.TestRepositoryFactory.MappingProvider);
+            var dam = new DS4Windows.Actions.DefaultActionManager(DS4WindowsTests.TestRepositoryFactory.MappingProvider);
             var srv = new TestServiceProvider(dam);
             DS4Windows.DI.ServiceProviderHolder.SetProvider(srv);
 
@@ -95,7 +95,7 @@ namespace DS4Windows.Actions.Tests
         [Fact]
         public void IsToggledOn_SingleWriter_EventOnlyFromManager()
         {
-            var dam = new DS4Windows.Actions.DefaultActionManager(TestHost.GetService<DS4Windows.Actions.IActionFactory>(), DS4WindowsTests.TestRepositoryFactory.MappingProvider);
+            var dam = new DS4Windows.Actions.DefaultActionManager(DS4WindowsTests.TestRepositoryFactory.MappingProvider);
             var srv = new TestServiceProvider(dam);
             DS4Windows.DI.ServiceProviderHolder.SetProvider(srv);
 
@@ -134,7 +134,7 @@ namespace DS4Windows.Actions.Tests
         [Fact]
         public void DeterministicRepeater_TriggerViaFake()
         {
-            var dam = new DS4Windows.Actions.DefaultActionManager(TestHost.GetService<DS4Windows.Actions.IActionFactory>(), DS4WindowsTests.TestRepositoryFactory.MappingProvider);
+            var dam = new DS4Windows.Actions.DefaultActionManager(DS4WindowsTests.TestRepositoryFactory.MappingProvider);
             var registry = new DS4Windows.Services.KeyButtonControllerRegistry(
                 new DS4Windows.Actions.DefaultKeyButtonActionControllerFactory(), new DS4Windows.Actions.DefaultControllerRegistry());
             var srv = new TestServiceProvider(dam, registry);
@@ -195,7 +195,7 @@ namespace DS4Windows.Actions.Tests
         [Fact]
         public void KeyButtonActionControllerAdapter_StartStop_Toggle_Clears_IsToggledOn()
         {
-            var dam = new DS4Windows.Actions.DefaultActionManager(TestHost.GetService<DS4Windows.Actions.IActionFactory>(), DS4WindowsTests.TestRepositoryFactory.MappingProvider);
+            var dam = new DS4Windows.Actions.DefaultActionManager(DS4WindowsTests.TestRepositoryFactory.MappingProvider);
             var srv = new TestServiceProvider(dam);
             DS4Windows.DI.ServiceProviderHolder.SetProvider(srv);
 
@@ -239,7 +239,7 @@ namespace DS4Windows.Actions.Tests
         [Fact]
         public void KeyButtonActionControllerAdapter_Handle_Release_DoesNot_Clear_Toggle()
         {
-            var dam = new DS4Windows.Actions.DefaultActionManager(TestHost.GetService<DS4Windows.Actions.IActionFactory>(), DS4WindowsTests.TestRepositoryFactory.MappingProvider);
+            var dam = new DS4Windows.Actions.DefaultActionManager(DS4WindowsTests.TestRepositoryFactory.MappingProvider);
             var srv = new TestServiceProvider(dam);
             DS4Windows.DI.ServiceProviderHolder.SetProvider(srv);
 

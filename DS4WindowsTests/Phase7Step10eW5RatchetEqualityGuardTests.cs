@@ -138,7 +138,7 @@ namespace DS4WindowsTests
             Assert.Equal(0, rootHub);
             Assert.Equal(3, appHost);   // App.xaml.cs の窓口 1 + AppHost.cs のログ文言 2
             Assert.Equal(2, global);    // ログ文言の文字列 2（LanguageSelectDialog.xaml.cs／LanguagePackViewModel.cs）
-            Assert.Equal(17, locator);  // Actions/ の 17（Phase8 の持ち越し）
+            Assert.Equal(10, locator);  // Actions/ の 10（Phase8 の持ち越し。8c で 17 → 10）
         }
     }
 }
