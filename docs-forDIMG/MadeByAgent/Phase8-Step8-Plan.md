@@ -149,7 +149,7 @@ W1 の調査（§5.1）に **「ジャイロの出力モード `DirectionalSwipe
 - 旧関数を reflection で呼んで比べているテスト: `TriggerInputTests`、`Phase8Step78bW2ControlsKeyTests`、`Phase8Step78fW2ControlsPadTests`。W1 で、旧関数の値の表（乱数の入力と期待値）をテストデータに固定してから、置き換える。
 - ジャイロスワイプ関連のテストは、廃止（8-0）で削除・更新する（W1 で一覧にする）。
 
-### 5.9 W1 の実装（2026-10-20。ゴールデンを生成済み［Controls・Passthru の 2 ファイル。各 60 行 × 52 項目、例外 0 件、2 つの表は異なる］。コミット後の再実行で、照合が通ることを確認する）
+### 5.9 W1 の実装（2026-10-20。ゴールデンを生成済み［Controls・Passthru の 2 ファイル。各 60 行 × 52 項目、例外 0 件、2 つの表は異なる］。コミット後の再実行で、旧関数との照合と、新経路との一致の両方が通った。ビルド・テスト成功）
 
 - `LegacyFunctionTable`（テスト用。旧関数 `getBoolSpecialActionMapping`／`GetBoolActionMapping`／`GetBoolMapping`／`GetByteMapping`／`GetXYAxisMapping` を reflection で呼び、決定的な入力［種 80801、60 回］で、全コントロールの戻り値を表にする。1 項目 ＝ 判定(SA)・判定(Controls)・`GetBoolMapping`・バイト値・軸(alt=false)・軸(alt=true)。例外は x）と、`Phase8Step8W1LegacyFunctionGoldenTests`。
 - (1) `LegacyFunctionGolden`（Controls／Passthru）: 旧関数の表を、`Golden/Phase7Step10c/step8-legacy-functions-{mode}.txt` と照合。**初回はファイルを生成して失敗する。内容を確認してコミットし、再実行する**（この Step の W1 は、旧関数がまだある今のうちに生成すること）。
