@@ -51,18 +51,18 @@ namespace DS4WindowsTests
         }
 
         [Fact]
-        public void AProfileWithUntriggerButtons_IsNotOwned_AndTheLegacyPathKeepsTheSignal()
+        public void AProfileWithUntriggerButtons_IsOwned_AndHasNoSignal_AfterTheRemovalOfTheUnloadTrigger()
         {
-            // 解除トリガー（uTrigger）を持つ Profile は、UI から作れないため、旧経路のまま（Q2＝A）
+            // Phase8-Step8 8b（機能廃止。ユーザー承認）: 解除トリガー（uTrigger）のボタンによる復帰は廃止した。切替は新経路が行い、復帰の合図は立たない
             using var t = new SpecialActionTestScope(true);
             RecordingProfileApplicationService recorder = t.InstallProfileRecorder();
             SpecialAction sa = AddProfile(t, "L1", "R1");
 
-            Assert.False(t.Engine.Owns(t.Device, sa));
+            Assert.True(t.Engine.Owns(t.Device, sa));
 
             t.RunFrame(Frame(true));
 
-            Assert.Same(sa, t.Mapping.deviceRuntime[t.Device].UntriggerAction);
+            Assert.Null(t.Mapping.deviceRuntime[t.Device].UntriggerAction);
             Assert.Single(recorder.ApplyFromActionCalls);
         }
 

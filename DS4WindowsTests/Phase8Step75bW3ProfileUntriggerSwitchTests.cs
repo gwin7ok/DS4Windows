@@ -39,7 +39,7 @@ namespace DS4WindowsTests
         }
 
         [Fact]
-        public void RemovingTheProfileLine_BringsBackTheLegacyPath_ForTheAutomaticUntrigger()
+        public void RemovingTheProfileLine_NoBindingIsBuilt_AndNothingHappens()
         {
             var options = TestHost.GetService<BindingMigrationOptions>();
             var builder = TestHost.GetService<IActionBindingBuilder>();
@@ -57,13 +57,12 @@ namespace DS4WindowsTests
                 t.PublishBindings();
                 Assert.False(t.Engine.Owns(t.Device, sa));
 
-                // 旧経路が、切替と復帰を行う（合図は Mapping が持つ）
+                // Phase8-Step8 8b: 旧経路は削除した。束縛がない Profile は、切替も復帰もしない
                 t.RunFrame(Frame(true));
-                Assert.Single(recorder.ApplyFromActionCalls);
-                Assert.Same(sa, t.Mapping.deviceRuntime[t.Device].UntriggerAction);
+                Assert.Empty(recorder.ApplyFromActionCalls);
 
                 t.RunFrame(Frame(false));
-                Assert.Single(recorder.RestoreFromActionCalls);
+                Assert.Empty(recorder.RestoreFromActionCalls);
             }
             finally
             {

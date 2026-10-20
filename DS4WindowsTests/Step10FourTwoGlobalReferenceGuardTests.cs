@@ -185,23 +185,6 @@ namespace DS4WindowsTests
         }
 
         [Fact]
-        public void Mapping_FreshPressGuard_CoversAllSpecialActionTypes()
-        {
-            string text = ReadWithoutComments("DS4Windows/DS4Control/Mapping.cs");
-            if (text == null) return;
-
-            // 10-4-2e で追加した 6 型（既存の Program/Profile/GyroCalibrate 以外）が、全てガードを参照する
-            int start = text.IndexOf("freshPressBlockedOtherTypes = false;", StringComparison.Ordinal);
-            Assert.True(start >= 0, "その他の型のガードが見つからない");
-            string block = text.Substring(start, 900);
-            foreach (string type in new[] { "Macro", "Button", "Key", "DisconnectBT", "BatteryCheck", "SASteeringWheelEmulationCalibrate" })
-            {
-                Assert.Contains("ActionTypeId." + type, block);
-            }
-            Assert.Contains("RequiresFreshPressAfterReset", block);
-        }
-
-        [Fact]
         public void OutputSlot_Services_RequireAllDependencies()
         {
             var store = new OutputSlotStore(new PathService());

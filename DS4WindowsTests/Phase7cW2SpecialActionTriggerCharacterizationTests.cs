@@ -232,8 +232,7 @@ namespace DS4WindowsTests
         // ---- キー種別（状態の遷移のみ。実際のキー送出は ActionManager／KeyAction の側で、ここでは見ない）----
 
         [Theory]
-        [InlineData(false)]
-        [InlineData(true)]
+                [InlineData(true)]
         public void KeyPress_EstablishedThenHeldThenReleased_TracksBeingTriggeredAndUntriggerIndex(bool migrated)
         {
             using var t = new SpecialActionTestScope(migrated);

@@ -62,7 +62,7 @@ namespace DS4WindowsTests
             // Phase7-Step10b W2: getTransitionedColor は ColorUtil へ移した。Mapping.cs は ColorUtil. で修飾して呼ぶ。
             var bareCall = new Regex(@"(?<![\w.])getTransitionedColor\s*\(");
             Assert.False(bareCall.IsMatch(text), "getTransitionedColor の非修飾呼び出しが残っている（ColorUtil. で修飾すること）");
-            Assert.Contains("ColorUtil.getTransitionedColor(", text);
+            // Phase8-Step8 8b: BatteryCheck の旧枝（ColorUtil.getTransitionedColor の呼び出し）を削除したため、Mapping.cs に呼び出しはない
         }
 
         [Fact]

@@ -10,7 +10,7 @@ namespace DS4Windows.Actions
     /// (1) 連鎖の防止（<see cref="CanExecute"/>）、(2) ログ（Trace の立ち上がり 4 行、Debug 3 行）、(3) トリガーのボタンの通常の割り当て（キー、マクロ）のキーを離す、
     /// (4) 切替のあとでフレームを打ち切る（<c>RequestEndFrame</c>。Intent-Decisions 項目 5）。
     /// 旧経路のアダプター（<c>ProfileSwitchActionAdapter</c>）は、<c>Mapping</c> が同じ処理を行うため、添字なしのコンストラクターのままで、これらを行わない。
-    /// 復帰の合図は、7.5b で、エンジンが持つ（自動の復帰 ＝ Unload on trigger release）。解除トリガー（<c>uTrigger</c>）を持つ Profile は、ビルダーが束縛を作らず、旧経路が処理し、その合図は <c>Mapping</c> が持つ。
+    /// 復帰の合図は、7.5b で、エンジンが持つ（自動の復帰 ＝ Unload on trigger release）。解除トリガー（<c>uTrigger</c>）のボタンによる復帰は、Phase8-Step8 8b で機能廃止した（ユーザー承認）。uTrigger を持つ Profile も、切替は行う。
     /// 旧経路が書く <c>prevProfileName</c>／<c>prevProfileWasTemporary</c> は、読む場所がないため、移さない（Q3＝A）。
     /// </summary>
     public class ProfileSwitchAction : IGatedOutputAction

@@ -66,11 +66,10 @@ namespace DS4WindowsTests
             using var t = new SpecialActionTestScope();
             var recorder = t.InstallProfileRecorder();
             SpecialAction sa = AddProfile(t, "L1", "AutomaticUntrigger");
-            int index = t.IndexOf(sa);
 
+            // Phase8-Step8 8b: 復帰の合図は、エンジンが持つ（Mapping の deviceRuntime には書かない）
             t.RunFrame(Held(DS4Controls.L1));
-            Assert.Same(sa, t.Mapping.deviceRuntime[t.Device].UntriggerAction);
-            Assert.Equal(index, t.Mapping.deviceRuntime[t.Device].UntriggerIndex);
+            Assert.Null(t.Mapping.deviceRuntime[t.Device].UntriggerAction);
             Assert.Empty(recorder.RestoreFromActionCalls);
 
             t.RunFrame(Held(DS4Controls.L1)); // 保持中は復帰しない
@@ -79,8 +78,6 @@ namespace DS4WindowsTests
             t.RunFrame(SpecialActionTestScope.Neutral()); // 離す
             Assert.Single(recorder.RestoreFromActionCalls);
             Assert.Equal(t.Device, recorder.RestoreFromActionCalls[0]);
-            Assert.Null(t.Mapping.deviceRuntime[t.Device].UntriggerAction);
-            Assert.Equal(-1, t.Mapping.deviceRuntime[t.Device].UntriggerIndex);
 
             t.RunFrame(SpecialActionTestScope.Neutral()); // 合図が消えているので、繰り返し復帰しない
             Assert.Single(recorder.RestoreFromActionCalls);
@@ -89,8 +86,9 @@ namespace DS4WindowsTests
         // ---- 解除トリガー（uTrigger）----
 
         [Fact]
-        public void Profile_WithUntriggerButtons_RestoresOnlyWhenAllUntriggerButtonsArePressed()
+        public void Profile_WithUntriggerButtons_SwitchesButNeverRestores_AfterTheRemovalOfTheUnloadTrigger()
         {
+            // Phase8-Step8 8b（機能廃止。ユーザー承認）: 解除トリガー（uTrigger）のボタンによる復帰は廃止した。切替は行い、復帰はしない
             using var t = new SpecialActionTestScope();
             var recorder = t.InstallProfileRecorder();
             SpecialAction sa = AddProfile(t, "L1", "R1"); // トリガー L1、解除トリガー R1
@@ -98,16 +96,12 @@ namespace DS4WindowsTests
             Assert.Single(sa.uTrigger);
 
             t.RunFrame(Held(DS4Controls.L1));
-            Assert.Same(sa, t.Mapping.deviceRuntime[t.Device].UntriggerAction);
+            Assert.Single(recorder.ApplyFromActionCalls);
 
-            t.RunFrame(Held(DS4Controls.L1)); // 解除トリガーが押されていない間は、トリガーを離しても復帰しない
+            t.RunFrame(Held(DS4Controls.L1));
             t.RunFrame(SpecialActionTestScope.Neutral());
+            t.RunFrame(Held(DS4Controls.R1)); // 解除トリガーを押しても、復帰しない
             Assert.Empty(recorder.RestoreFromActionCalls);
-            Assert.Same(sa, t.Mapping.deviceRuntime[t.Device].UntriggerAction);
-
-            t.RunFrame(Held(DS4Controls.R1)); // 解除トリガーを押す
-            Assert.Single(recorder.RestoreFromActionCalls);
-            Assert.Null(t.Mapping.deviceRuntime[t.Device].UntriggerAction);
         }
 
         // ---- 切替なしのトリガーは、復帰の合図を設定しない ----
@@ -123,7 +117,6 @@ namespace DS4WindowsTests
             t.RunFrame(SpecialActionTestScope.Neutral());
 
             Assert.Single(recorder.ApplyFromActionCalls);
-            Assert.Null(t.Mapping.deviceRuntime[t.Device].UntriggerAction);
             Assert.Empty(recorder.RestoreFromActionCalls);
         }
     }

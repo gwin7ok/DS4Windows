@@ -60,7 +60,7 @@ namespace DS4WindowsTests
         }
 
         [Fact]
-        public void RemovingTheLine_BringsBackTheLegacyPath_NoBindingIsBuilt()
+        public void RemovingTheLine_NoBindingIsBuilt_AndNothingHappens()
         {
             var options = TestHost.GetService<BindingMigrationOptions>();
             var builder = TestHost.GetService<IActionBindingBuilder>();
@@ -77,10 +77,10 @@ namespace DS4WindowsTests
                 t.PublishBindings();
                 Assert.Empty(TestHost.GetService<IActionRegistry>().GetBindings(t.Device));
 
-                // 旧経路が処理する（Stage3 が Cross を出力する）
+                // Phase8-Step8 8b: 旧経路（Stage3）は削除した。束縛がない Button は、何もしない
                 DS4State input = SpecialActionTestScope.Neutral();
                 input.L1 = true;
-                Assert.True(t.RunFrame(input).Cross);
+                Assert.False(t.RunFrame(input).Cross);
             }
             finally
             {

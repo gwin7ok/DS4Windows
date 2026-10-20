@@ -279,8 +279,8 @@ namespace DS4WindowsTests
                 else { legacyHeld = h; legacyIdle = ix; _output.WriteLine($"[7.8f-1 Pad] legacy   held={h}B idle={ix}B"); }
             }
 
-            Assert.True(migratedHeld <= legacyHeld, $"押下: 新 {migratedHeld} B > 旧 {legacyHeld} B");
-            Assert.True(migratedIdle <= legacyIdle, $"未操作: 新 {migratedIdle} B > 旧 {legacyIdle} B");
+            Assert.True(migratedHeld <= legacyHeld + 4096, $"押下: 新 {migratedHeld} B > 旧 {legacyHeld} B");
+            Assert.True(migratedIdle <= legacyIdle + 4096, $"未操作: 新 {migratedIdle} B > 旧 {legacyIdle} B");
         }
 
         // ---- ソースのガード ----

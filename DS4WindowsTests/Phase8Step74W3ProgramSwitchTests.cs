@@ -40,7 +40,7 @@ namespace DS4WindowsTests
         }
 
         [Fact]
-        public void RemovingTheProgramLine_BringsBackTheLegacyPath_NoBindingIsBuilt()
+        public void RemovingTheProgramLine_NoBindingIsBuilt_AndNothingHappens()
         {
             var options = TestHost.GetService<BindingMigrationOptions>();
             var builder = TestHost.GetService<IActionBindingBuilder>();
@@ -58,9 +58,9 @@ namespace DS4WindowsTests
                 Assert.Empty(TestHost.GetService<IActionRegistry>().GetBindings(t.Device));
                 Assert.False(t.Engine.Owns(t.Device, sa));
 
-                // 旧経路が処理する（旧ループが、成立を記録して、起動の入口を呼ぶ）
+                // Phase8-Step8 8b: 旧経路は削除した。束縛がない Program は、何もしない
                 t.RunFrame(Frame(true));
-                Assert.True(ActionManager.IsBeingTriggered(sa, t.Device));
+                Assert.False(ActionManager.IsBeingTriggered(sa, t.Device));
             }
             finally
             {

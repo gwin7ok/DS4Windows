@@ -2,7 +2,7 @@
 
 作成日: 2026-10-20
 計画書: `Phase8-Step8-Plan.md`
-状態: **8-0（ジャイロスワイプの廃止）完了。8a〜8d（旧経路・系統 B・スイッチの削除）は未着手。**
+状態: **8-0（ジャイロスワイプの廃止）完了。8a（Controls タブの旧枝）完了。8b（SA の旧枝）はビルド・テスト待ち。8c・8d は未着手。**
 
 ---
 
@@ -20,3 +20,16 @@
 - **テスト**: `Phase8Step8W1RemovedGyroSwipeSpecTests`、`Phase8Step8W2RemovedGyroSwipeWiringTests`、`Phase8Step8W3RemovedGyroSwipeNoticeWiringTests`。更新: ゴールデン 7 ファイル、`Phase8Step4bW2LoadFoundationTests`、`Phase8Step78bW2ControlsKeyTests`、`ProfileEditorTargetDeviceGuardTests`（`CreateBindingWindow(` の呼び出し 7 → 6）。
 - **残る文言**: `Strings` の `DirectionalSwipe`（翻訳 4 言語）は未使用。翻訳ファイルの整理は Phase9 で扱う。
 - **実機確認（Step9。U-48）**: スワイプの設定を持つプロファイルを開いたときの警告（残す／削除）、「残す」で保存したファイルに内容が残ること、「削除」で消えること、出力モード「ディレクショナルスワイプ」のプロファイルの扱い、通常のジャイロ（Controls／Mouse／MouseJoystick／Passthru）が従来どおり動くこと、編集画面のジャイロの出力モードの選択が正しい項目を指すこと。
+
+---
+
+## 8a Controls タブの旧枝などの削除（2026-10-20。ビルド・テスト成功）
+
+詳細: `Phase8-Step8-Plan.md` §5.10。`Mapping.cs` は 7,322 行 → 6,449 行。`ProcessControlSettingAction` の旧経路の本体、`customMapQueue`、判定の旧関数（`GetBoolMapping` ほか）、合成キーの SA のキャッシュなどを削除した。新経路が所有しない割り当て（9 個未満の Extras など）は、何もしない。
+
+## 8b SA の Stage3 と MapCustomAction の旧枝などの削除（2026-10-20。ビルド・テスト待ち）
+
+詳細: `Phase8-Step8-Plan.md` §5.11、ログの一覧は `Phase8-Step8-Q7-Legacy-Log-List.md`。`Mapping.cs` は 6,449 → 4,632 行（8a と合わせて 7,322 → 4,632 行）。
+- **承認済みの機能廃止（規約 2.2）**: Profile 切替の解除トリガー（uTrigger）のボタンによる復帰。UI から作れず（a7277da9 で削除）、旧データだけに残っていた。切替は行い、復帰は自動（AutomaticUntrigger）のときだけ。
+- **ログ**: 診断ログの削除一覧（L1〜L19、M1〜M7）を承認のうえ削除。画面に出るログが変わるのは 2 件（`BeingTriggered initialization failed ...`、Stage3 の `Synchronous Button SA handling error`）だけ。
+- **実機確認（Step9）**: 全種別の SA（Key／Macro／Button／Program／Profile［自動の復帰］／DisconnectBT／BatteryCheck／ステアリング較正／GyroCalibrate／MultiAction）が、従来どおり動くこと（U-35〜U-47 を含む）。

@@ -64,8 +64,7 @@ namespace DS4WindowsTests
         }
 
         [Theory]
-        [InlineData(false)]
-        [InlineData(true)]
+                [InlineData(true)]
         public void Macro_RunOnRelease_ArmsOnPress_AndFiresOnlyWhenTheTriggerIsReleased(bool migrated)
         {
             using var t = new SpecialActionTestScope(migrated);

@@ -25,7 +25,8 @@ namespace DS4WindowsTests
             int calls = Regex.Matches(text, @"GetProfileActionsRaw\(").Count;
             int copied = Regex.Matches(text, @"GetProfileActionsRaw\([^)]*\)\s*\?\.ToArray\(\)").Count;
 
-            Assert.True(calls >= 3, $"GetProfileActionsRaw の呼び出しが想定より少ない: {calls}");
+            Assert.True(calls >= 1,   // Phase8-Step8 8b: Stage3 などの旧経路を削除し、MapCustomAction の 1 か所になった
+                 $"GetProfileActionsRaw の呼び出しが想定より少ない: {calls}");
             Assert.Equal(calls, copied);
         }
     }

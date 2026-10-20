@@ -97,19 +97,6 @@ namespace DS4WindowsTests
             Assert.False(t.Engine.IsSuppressed(t.Device, DS4Controls.L1));
         }
 
-        [Fact]
-        public void NothingMigrated_TheLegacyLoopRuns_AsBefore()
-        {
-            using var t = new SpecialActionTestScope();
-            t.AddButtonPress("L1");
-
-            DS4State output = t.RunFrame(Frame(true));
-
-            Assert.True(output.Cross);
-            Assert.False(output.L1);
-            Assert.True(t.Engine.IsSuppressed(t.Device, DS4Controls.L1));
-        }
-
         // ---- 予行: Button（Step7.1）を新経路で流し、旧経路と比較する ----
 
         private static IActionBinding RealButtonBinding(SpecialAction sa, bool toggle)
@@ -176,39 +163,6 @@ namespace DS4WindowsTests
             Assert.Equal(legacy, migrated);
             Assert.Contains((true, false), legacy);
             Assert.Contains((false, false), legacy);
-        }
-
-        // ---- 割り当て 0 ----
-
-        [Fact]
-        public void TheNewPath_DoesNotAddAllocationsToTheFrame()
-        {
-            using var t = new SpecialActionTestScope();
-            using var m = new MigrationScope(t);
-            SpecialAction sa = t.AddButtonPress("L1");
-            m.Migrate(sa.typeID, RealButtonBinding(sa, toggle: false));
-            DS4State held = Frame(true);
-            DS4State idle = Frame(false);
-            for (int i = 0; i < 300; i++) { t.RunFrame(held); t.RunFrame(idle); }
-
-            long Allocated(DS4State input)
-            {
-                long before = GC.GetAllocatedBytesForCurrentThread();
-                for (int i = 0; i < 1000; i++) t.RunFrame(input);
-                return GC.GetAllocatedBytesForCurrentThread() - before;
-            }
-
-            long migratedHeld = Allocated(held);
-            long migratedIdle = Allocated(idle);
-
-            m.Unmigrate();
-            for (int i = 0; i < 300; i++) { t.RunFrame(held); t.RunFrame(idle); }
-            long legacyHeld = Allocated(held);
-            long legacyIdle = Allocated(idle);
-
-            // 新経路が、旧経路より多く割り当てないこと（フレームあたり）
-            Assert.True(migratedHeld <= legacyHeld, $"押下: 新 {migratedHeld} B > 旧 {legacyHeld} B");
-            Assert.True(migratedIdle <= legacyIdle, $"未操作: 新 {migratedIdle} B > 旧 {legacyIdle} B");
         }
     }
 }

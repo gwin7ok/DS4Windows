@@ -29,7 +29,7 @@ namespace DS4WindowsTests
             string[] perDevice =
             {
                 // Phase8-Step4 W4: nowAction／oldnowAction／suppressedTriggerButtons は、_triggerInputs（Delay）とエンジンへ移した
-                "_triggerInputs", "_frameOutputs", "oldnowKeyAct", "fadetimer", "prevFadetimer", "lastColor",
+                "_triggerInputs", "_frameOutputs", "fadetimer", "prevFadetimer", "lastColor",
                 "deviceRuntime",   // Phase8-Step8 8a: held／customMapQueue は旧経路の削除で消えた
             };
 

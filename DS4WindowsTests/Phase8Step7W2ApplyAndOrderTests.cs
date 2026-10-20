@@ -136,17 +136,9 @@ namespace DS4WindowsTests
             DS4State output = t.RunFrame(Frame(true));
 
             Assert.True(output.Cross);
-            // 旧 Stage3 が処理していれば、キャッシュ（lastButtonTriggerState）に状態が残る。新経路では触れない
+            // Phase8-Step8 8b: 旧 Stage3（lastButtonTriggerState のキャッシュ）は削除した。新経路だけが処理する
             var field = typeof(Mapping).GetField("lastButtonTriggerState", System.Reflection.BindingFlags.Static | System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Public);
-            if (field != null)
-            {
-                var dict = field.GetValue(field.IsStatic ? null : t.Mapping) as Dictionary<string, bool>;
-                if (dict != null)
-                {
-                    lock (dict)
-                        Assert.DoesNotContain(dict.Keys, k => k.EndsWith(":" + sa.name, StringComparison.Ordinal));
-                }
-            }
+            Assert.Null(field);
         }
     }
 }

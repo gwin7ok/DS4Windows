@@ -93,7 +93,7 @@ namespace DS4WindowsTests
         }
 
         [Fact]
-        public void Mapping_ButtonBranch_DoesNotOutputOrDispatch_AndStage3UsesResolver()
+        public void Mapping_HasNoButtonBranchOrStage3_AnymoreAfterStep8()
         {
             string path = SourceFileLocator.Find("DS4Windows/DS4Control/Mapping.cs");
             if (path == null) return;
@@ -101,19 +101,10 @@ namespace DS4WindowsTests
             text = Regex.Replace(text, @"/\*.*?\*/", string.Empty, RegexOptions.Singleline);
             text = Regex.Replace(text, @"//[^\r\n]*", string.Empty);
 
-            // MapCustomAction の Button の分岐は、出力もディスパッチもしない（Stage3 に一本化）
-            const string buttonBranch = "else if (action.typeID == SpecialAction.ActionTypeId.Button)";
-            const string keyBranch = "else if (action.typeID == SpecialAction.ActionTypeId.Key)";
-            int start = text.IndexOf(buttonBranch, StringComparison.Ordinal);
-            Assert.True(start >= 0, "Button の分岐が見つからない");
-            int end = text.IndexOf(keyBranch, start, StringComparison.Ordinal);
-            Assert.True(end > start, "Key の分岐が見つからない");
-            string branch = text.Substring(start, end - start);
-            Assert.DoesNotContain("TryDispatchSATriggerEstablished", branch);
-            Assert.DoesNotContain("outputfieldMapping", branch);
-
-            // Stage3 は、判定を ButtonSpecialActionOutput に委ねる
-            Assert.Contains("ButtonSpecialActionOutput.ResolveOutputActive(", text);
+            // Phase8-Step8 8b: SA の Button の旧枝と Stage3 は削除した。判定は ButtonOutputAction（新経路）だけが行う
+            Assert.DoesNotContain("TryDispatchSATriggerEstablished", text);
+            Assert.DoesNotContain("ButtonSpecialActionOutput.ResolveOutputActive(", text);
+            Assert.DoesNotContain("SpecialAction.ActionTypeId.Button", text);
         }
     }
 }

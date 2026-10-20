@@ -124,18 +124,13 @@ namespace DS4Windows.Actions
 
                 case SpecialAction.ActionTypeId.Profile:
                 {
-                    // TODO(Phase8-Step8。規約 2.4。Phase8-Step7-5b-Plan.md Q2＝A): 解除トリガー（uTrigger）を持つ Profile は、UI から作れない（a7277da9 で「Set Unload Trigger」を削除）ため、
-                    // 束縛を作らず、旧経路が処理する。Step8 の旧コード削除のときに、廃止（機能廃止のため、ユーザーの承認が要る）か、エンジンへの移行かを決める。
-                    if (sa.uTrigger != null && sa.uTrigger.Count > 0)
-                        return null;
-
-                    // 復帰: 自動（トリガーを離したとき）が優先。そうでなく解除用のボタンがあれば、そのボタン（旧 Mapping の uTrigger と同じ）
-                    UntriggerPolicy untrigger = sa.automaticUntrigger
-                        ? UntriggerPolicy.Automatic
-                        : (sa.uTrigger != null && sa.uTrigger.Count > 0 ? UntriggerPolicy.Buttons : UntriggerPolicy.None);
+                    // Phase8-Step8 8b（ユーザー承認、2026-10-20）: 解除トリガー（uTrigger）のボタンによる復帰は、機能廃止（規約 2.2）。UI から作れず
+                    // （a7277da9 で「Set Unload Trigger」を削除）、旧データ（Actions.xml）にだけ残っていた。uTrigger を持つ Profile も束縛を作り、
+                    // 切替は行う。復帰は、自動（AutomaticUntrigger）のときだけ。uTrigger の値は読み込みも保存もそのまま（ファイルは変えない）。
+                    // TODO(Phase8-Step8 8d): UntriggerPolicy.Buttons と BindingPolicy.UntriggerButtons は、使う者がなくなったため削除する。
+                    UntriggerPolicy untrigger = sa.automaticUntrigger ? UntriggerPolicy.Automatic : UntriggerPolicy.None;
                     return new TriggerBinding(Input(sa, false), new IOutputAction[] { new ProfileSwitchAction(sa, device, _profileSwitcher, index, _actionRepository, _profileSettings, _mappingProvider) },
                         new BindingPolicy(blocksWhileExecuting: true, untrigger: untrigger,
-                            untriggerButtons: untrigger == UntriggerPolicy.Buttons ? sa.uTrigger : null,
                             stopOnRelease: untrigger == UntriggerPolicy.None), sa, index);   // 復帰を持つ Profile は、離したエッジの Stop を呼ばない。復帰は ProcessUntrigger だけが担う（二重の復帰を防ぐ。Q4）
                 }
 

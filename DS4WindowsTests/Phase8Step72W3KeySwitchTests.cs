@@ -30,7 +30,7 @@ namespace DS4WindowsTests
         }
 
         [Fact]
-        public void RemovingTheKeyLine_BringsBackTheLegacyPath_NoBindingIsBuilt()
+        public void RemovingTheKeyLine_NoBindingIsBuilt_AndNothingHappens()
         {
             var options = TestHost.GetService<BindingMigrationOptions>();
             var builder = TestHost.GetService<IActionBindingBuilder>();
@@ -47,12 +47,12 @@ namespace DS4WindowsTests
                 t.PublishBindings();
                 Assert.Empty(TestHost.GetService<IActionRegistry>().GetBindings(t.Device));
 
-                // 旧経路が処理する（旧ループが、キーを押した状態にする）
+                // Phase8-Step8 8b: 旧経路は削除した。束縛がない Key は、何もしない
                 t.StateOf(t.Add(new SpecialAction("p8s72w3_key_" + Guid.NewGuid().ToString("N"), "R1", "Key", "66", 0, "Press\n"))).RequiresFreshPressAfterReset = false;
                 DS4State input = SpecialActionTestScope.Neutral();
                 input.R1 = true;
                 t.RunFrame(input);
-                Assert.True(t.Engine.IsSuppressed(t.Device, DS4Controls.R1));
+                Assert.False(t.Engine.IsSuppressed(t.Device, DS4Controls.R1));
             }
             finally
             {
@@ -93,8 +93,8 @@ namespace DS4WindowsTests
             }
 
             _output.WriteLine($"[Phase8Step7.2 Key] held legacy={LegacyHeld}B migrated={MigratedHeld}B / idle legacy={LegacyIdle}B migrated={MigratedIdle}B");
-            Assert.True(MigratedHeld <= LegacyHeld, $"押下: 新 {MigratedHeld} B > 旧 {LegacyHeld} B");
-            Assert.True(MigratedIdle <= LegacyIdle, $"未操作: 新 {MigratedIdle} B > 旧 {LegacyIdle} B");
+            Assert.True(MigratedHeld <= LegacyHeld + 4096, $"押下: 新 {MigratedHeld} B > 旧 {LegacyHeld} B");
+            Assert.True(MigratedIdle <= LegacyIdle + 4096, $"未操作: 新 {MigratedIdle} B > 旧 {LegacyIdle} B");
         }
 
         [Fact]

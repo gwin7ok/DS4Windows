@@ -23,8 +23,7 @@ namespace DS4WindowsTests
         {
             "public void MapCustom(",
             "private void ProcessControlSettingAction(",
-            "private async void MapCustomAction(",
-            "private void ReleaseActionKeys(",
+            "private void MapCustomAction(",   // Phase8-Step8 8b: async void → void。ReleaseActionKeys は旧枝と一緒に削除
             "private double getMouseMapping(",
             "protected Int32 Scale360degreeGyroAxis(",
         };
@@ -114,16 +113,6 @@ namespace DS4WindowsTests
                     Assert.False(qualified.IsMatch(body), $"Global.{member} への修飾参照が {marker} に残っている");
                 }
             }
-        }
-
-        [Theory]
-        [InlineData("private void ReleaseActionKeys(")]
-        public void MethodsWithoutCtrl_TakeProfileSettingsAsParameter(string marker)
-        {
-            string text = ReadSourceWithoutComments();
-            if (text == null) return;
-
-            Assert.Contains("IProfileSettingsService settings", ExtractMethod(text, marker));
         }
     }
 }

@@ -207,7 +207,7 @@ namespace DS4WindowsTests
         }
 
         [Fact]
-        public void RemovingTheLine_BringsBackTheLegacyPath_NoBindingIsBuilt()
+        public void RemovingTheLine_NoBindingIsBuilt_AndNothingHappens()
         {
             var options = TestHost.GetService<BindingMigrationOptions>();
             var builder = TestHost.GetService<IActionBindingBuilder>();
@@ -284,22 +284,6 @@ namespace DS4WindowsTests
             string name = "p8s76c_off_" + Guid.NewGuid().ToString("N");
 
             Assert.Empty(RunLogged(name, LogLevel.Warn, new RecordingBatteryCheckPort()));
-        }
-
-        [Fact]
-        public void TheLegacyBranch_NoLongerHasTheWheelRecalibrateLogInBatteryCheck()
-        {
-            // 旧経路にも、同じ名残りのログを残さない（Q8＝B。旧経路は Step8 まで残るため、BatteryCheck の分岐の中だけを確認する）
-            string path = SourceFileLocator.Find("DS4Windows/DS4Control/Mapping.cs");
-            if (path == null) return;
-
-            string text = System.IO.File.ReadAllText(path);
-            int battery = text.IndexOf("action.typeID == SpecialAction.ActionTypeId.BatteryCheck)\n", StringComparison.Ordinal);
-            if (battery < 0) battery = text.IndexOf("action.typeID == SpecialAction.ActionTypeId.BatteryCheck)\r\n", StringComparison.Ordinal);
-            Assert.True(battery >= 0);
-            int steering = text.IndexOf("action.typeID == SpecialAction.ActionTypeId.SASteeringWheelEmulationCalibrate)", battery, StringComparison.Ordinal);
-            Assert.True(steering > battery);
-            Assert.DoesNotContain("\"WheelRecalibrate\"", text.Substring(battery, steering - battery));
         }
 
         // ---- 割り当て ----

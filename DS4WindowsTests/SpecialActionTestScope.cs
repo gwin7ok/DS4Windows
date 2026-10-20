@@ -60,10 +60,10 @@ namespace DS4WindowsTests
             if (Mapping == null)
                 throw new InvalidOperationException("IMapping の実体が Mapping ではない");
 
-            _migrated = migrated;
+            // Phase8-Step8 8b: SA の旧経路を削除したため、引数 migrated にかかわらず新経路で処理する（引数は 8d で整理する）
+            _migrated = true;
             _savedMigrated = _options.MigratedTypes.ToArray();
             _options.MigratedTypes.Clear();
-            if (migrated)
             {
                 _options.MigratedTypes.Add(SpecialAction.ActionTypeId.Button);
                 _options.MigratedTypes.Add(SpecialAction.ActionTypeId.Key);   // Phase8-Step7 7.2-W1: Key も新経路で処理する（Button と同じ指定）

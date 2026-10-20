@@ -21,7 +21,6 @@ namespace DS4WindowsTests
         private static readonly string[] MethodMarkers =
         {
             "public bool GetBoolMappingExternal(",
-            "private bool getBoolSpecialActionMapping(",
         };
 
         /// <summary>Step3-6b で `profileSettings` 経由へ置換済みの `Global` メンバ名。</summary>

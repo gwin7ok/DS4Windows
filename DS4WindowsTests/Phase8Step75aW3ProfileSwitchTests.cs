@@ -39,7 +39,7 @@ namespace DS4WindowsTests
         }
 
         [Fact]
-        public void RemovingTheProfileLine_BringsBackTheLegacyPath_NoBindingIsBuilt()
+        public void RemovingTheProfileLine_NoBindingIsBuilt_AndNothingHappens()
         {
             var options = TestHost.GetService<BindingMigrationOptions>();
             var builder = TestHost.GetService<IActionBindingBuilder>();
@@ -57,9 +57,9 @@ namespace DS4WindowsTests
                 t.PublishBindings();
                 Assert.False(t.Engine.Owns(t.Device, sa));
 
-                // 旧経路が処理する（旧ループが切り替える）
+                // Phase8-Step8 8b: 旧経路は削除した。束縛がない Profile は、切り替えない
                 t.RunFrame(Frame(true));
-                Assert.Single(recorder.ApplyFromActionCalls);
+                Assert.Empty(recorder.ApplyFromActionCalls);
             }
             finally
             {
@@ -70,22 +70,22 @@ namespace DS4WindowsTests
 
         [Theory]
         [InlineData("R1")]
-        public void AProfileWithAnUntrigger_IsNotBuilt_AndTheLegacyPathStillHandlesIt(string extras)
+        public void AProfileWithAnUnloadTrigger_IsBuilt_SwitchesButNeverRestores(string extras)
         {
-            // 7.5a: 解除トリガー（uTrigger）を持つ Profile は、束縛を作らず、旧経路が切替と復帰を行う。
-            // 7.5b: 自動の復帰（AutomaticUntrigger）はエンジンへ移した（Phase8Step75bW2…）。解除トリガーは UI から作れないため、旧経路のまま（Q2＝A）
+            // Phase8-Step8 8b（機能廃止。ユーザー承認）: 解除トリガー（uTrigger）のボタンによる復帰は廃止した。uTrigger を持つ Profile も束縛になり、切替は行う
             var builder = TestHost.GetService<IActionBindingBuilder>();
             using var t = new SpecialActionTestScope(true);
             RecordingProfileApplicationService recorder = t.InstallProfileRecorder();
             SpecialAction sa = AddProfile(t, "L1", extras);
 
-            Assert.Empty(builder.Build(t.Device));
-            Assert.False(t.Engine.Owns(t.Device, sa));
+            Assert.Single(builder.Build(t.Device));
+            Assert.True(t.Engine.Owns(t.Device, sa));
 
             t.RunFrame(Frame(true));
+            Assert.Single(recorder.ApplyFromActionCalls);
 
-            Assert.Single(recorder.ApplyFromActionCalls);                                  // 旧経路が切り替える
-            Assert.Same(sa, t.Mapping.deviceRuntime[t.Device].UntriggerAction);            // 復帰の合図は、旧経路が持つ
+            t.RunFrame(Frame(false));
+            Assert.Empty(recorder.RestoreFromActionCalls);
         }
 
         private static long Allocated(SpecialActionTestScope t, DS4State input)

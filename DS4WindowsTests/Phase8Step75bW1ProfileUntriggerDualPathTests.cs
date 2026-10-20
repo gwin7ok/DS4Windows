@@ -146,54 +146,6 @@ namespace DS4WindowsTests
             Assert.Equal((1, 0), counts.Last());   // 合図が消えているので、離しても復帰しない
         }
 
-        // ---- 旧経路だけ: 合図の置き場所（W2 で、新経路のときはエンジンへ移る）----
-
-        [Fact]
-        public void Legacy_TheSignalIsSetWhenTheSwitchSucceeds_AndNotWhenItIsBlocked()
-        {
-            using (var t = new SpecialActionTestScope(false))
-            {
-                t.InstallProfileRecorder();
-                SpecialAction sa = AddProfile(t, "L1");
-                t.RunFrame(Frame(true));
-                Assert.Same(sa, t.Mapping.deviceRuntime[t.Device].UntriggerAction);
-                Assert.Equal(t.IndexOf(sa), t.Mapping.deviceRuntime[t.Device].UntriggerIndex);
-            }
-
-            using (var t = new SpecialActionTestScope(false))
-            {
-                t.InstallProfileRecorder();
-                AddProfile(t, "L1", freshPressGuard: true);
-                t.RunFrame(Frame(true));
-                Assert.Null(t.Mapping.deviceRuntime[t.Device].UntriggerAction);
-            }
-
-            using (var t = new SpecialActionTestScope(false))
-            {
-                t.InstallProfileRecorder();
-                AddProfile(t, "L1", executing: true);
-                t.RunFrame(Frame(true));
-                Assert.Null(t.Mapping.deviceRuntime[t.Device].UntriggerAction);
-            }
-        }
-
-        [Fact]
-        public void Legacy_TheSignalIsClearedBeforeTheRestoreIsCalled()
-        {
-            // 復帰の適用も ClearDeviceState を通る（合図を退避・復元する）ため、復帰の前に合図を消す。復帰を呼ぶ時点で、合図は空
-            using var t = new SpecialActionTestScope(false);
-            RecordingProfileApplicationService recorder = t.InstallProfileRecorder();
-            AddProfile(t, "L1");
-            t.RunFrame(Frame(true));
-            Assert.NotNull(t.Mapping.deviceRuntime[t.Device].UntriggerAction);
-
-            t.RunFrame(Frame(false));
-
-            Assert.Single(recorder.RestoreFromActionCalls);
-            Assert.Null(t.Mapping.deviceRuntime[t.Device].UntriggerAction);
-            Assert.Equal(-1, t.Mapping.deviceRuntime[t.Device].UntriggerIndex);
-        }
-
         // ---- 報告のみ（Q4）: 適用が終わる前にトリガーを離したとき ----
 
         [Fact]

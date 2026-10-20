@@ -316,7 +316,7 @@ namespace DS4WindowsTests
         }
 
         [Fact]
-        public void RemovingTheLine_BringsBackTheLegacyPath_NoBindingIsBuilt()
+        public void RemovingTheLine_NoBindingIsBuilt_AndNothingHappens()
         {
             var options = TestHost.GetService<BindingMigrationOptions>();
             var builder = TestHost.GetService<IActionBindingBuilder>();

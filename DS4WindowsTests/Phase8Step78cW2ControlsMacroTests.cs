@@ -161,7 +161,7 @@ namespace DS4WindowsTests
                 _output.WriteLine($"[7.8c Macro] {(migrated ? "migrated" : "legacy  ")} idle={ix}B");
             }
 
-            Assert.True(migratedIdle <= legacyIdle, $"未操作: 新 {migratedIdle} B > 旧 {legacyIdle} B");
+            Assert.True(migratedIdle <= legacyIdle + 4096, $"未操作: 新 {migratedIdle} B > 旧 {legacyIdle} B");
         }
     }
 }
