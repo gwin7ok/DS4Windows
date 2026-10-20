@@ -1,8 +1,8 @@
-# Phase8-Step8 完了報告書（進行中）
+# Phase8-Step8 完了報告書
 
 作成日: 2026-10-20
 計画書: `Phase8-Step8-Plan.md`
-状態: **8-0（ジャイロスワイプの廃止）完了。8a（Controls タブの旧枝）完了。8b（SA の旧枝）完了。8c（系統 B）完了。8d は未着手。**
+状態: **8-0・8a・8b・8c・8d すべて完了（ビルド・テスト成功。実機確認は Step9 で合格）。Phase8 全体は `Phase8-Completion-Report.md`。**
 
 ---
 
