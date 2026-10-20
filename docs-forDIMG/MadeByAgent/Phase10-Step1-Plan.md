@@ -70,7 +70,7 @@ Press Key の値の流れ: `PrepareSettings` → `BindingWindow`（`OutBinding.W
    - 実機（画面）の確認: Controls のマクロで、Execute Mode／Scan Code の設定・保存・再読み込みが従来どおり。
    - **実機確認で見つかった、以前からの不具合（2026-10-21）**: Controls で、記録画面の Scan Code にチェックを入れて保存しても、開き直すと外れていた。原因は、`BindingWindowViewModel.PrepareSaveMacro` が `macroType` だけを `OutBinding` に渡し、`WriteBind`（Macro）が見る `hasScanCode` を渡していなかったこと（繰り返しは `macroType` から書かれるため、保たれていた）。`PrepareSaveMacro` で `hasScanCode` も渡すように是正し、`Phase10Step1W2BindingWindowMacroScanCodeTests` で固定した（W2 の変更が原因ではない）。
    - **画面の配置は過渡的**: Controls の `RecordBox` に Execute Mode と Scan Code を置くのは、共通の編集画面（Step2）ができるまでの暫定。Step4 で、これらは共通の編集画面の Macro タブへ移り、`RecordBox` は記録専用になる（`BindingWindow` の「Record A Macro」も、このとき削除する）。
-3. **W3: SA の Macro タブと、SA から開く `RecordBox`**
+3. **W3: SA の Macro タブと、SA から開く `RecordBox`**（**実装済み、ビルド・テスト・実機確認待ち**。新規テスト: `Phase10Step1W3MacroViewModelPlaybackOptionsTests`。変更: `SpecialActionEditor.xaml(.cs)`、`MacroViewModel.cs`、`RecordBox.xaml.cs`［`showPlaybackOptions`］、`RecordBoxWindow.xaml.cs`、`IEditorWindowFactory`／`EditorWindowFactory`［`showPlaybackOptions`］。パネルに `ScanCodeAlignment` を追加。SA から開く記録画面は 4 か所［Macro と、MultiAction の Tap／Hold／DoubleTap］すべてでオプションを出さない。MultiAction の記録画面の Scan Code は、保存に使われず［`actionMacro` だけを読む］効果がなかったため、消えても影響はない）
    - Macro タブに Execute Mode を追加（チェックボックスの置き換え）。`RecordBox` の `ShowPlaybackOptions=false`。手の書き戻しを撤去。
    - テスト: `MacroViewModel.LoadAction`／`PrepareSettings`／`SaveAction` の往復（`Repeat`、`Scan Code`、他の extras を保つ）。
    - 実機（画面）の確認: SA の Macro の新規作成・編集・保存・再読み込み。記録画面にオプションが出ない。Press Key／MultiAction のマクロは従来どおり。

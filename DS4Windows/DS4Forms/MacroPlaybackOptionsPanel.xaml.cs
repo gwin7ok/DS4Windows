@@ -25,7 +25,19 @@ namespace DS4WinWPF.DS4Forms
             new PropertyMetadata(true, (d, e) => ((MacroPlaybackOptionsPanel)d).scanCodeCk.Visibility =
                 (bool)e.NewValue ? Visibility.Visible : Visibility.Collapsed));
 
+        /// <summary>Scan Code のチェックボックスの水平位置（<c>RecordBox</c> は中央、SA の Macro タブは左）。</summary>
+        public static readonly DependencyProperty ScanCodeAlignmentProperty = DependencyProperty.Register(
+            nameof(ScanCodeAlignment), typeof(HorizontalAlignment), typeof(MacroPlaybackOptionsPanel),
+            new PropertyMetadata(HorizontalAlignment.Center, (d, e) => ((MacroPlaybackOptionsPanel)d).scanCodeCk.HorizontalAlignment =
+                (HorizontalAlignment)e.NewValue));
+
         private MacroPlaybackOptions options;
+
+        public HorizontalAlignment ScanCodeAlignment
+        {
+            get => (HorizontalAlignment)GetValue(ScanCodeAlignmentProperty);
+            set => SetValue(ScanCodeAlignmentProperty, value);
+        }
 
         public bool AllowModeEdit
         {

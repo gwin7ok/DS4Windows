@@ -63,7 +63,7 @@ namespace DS4WinWPF.DS4Forms
         /// 渡し忘れをコンパイルで検出するため必須引数とする（Phase6-Step7b-Plan.md 決定2）
         /// </param>
         public RecordBox(int deviceNum, DS4Windows.DS4ControlSettings controlSettings, int targetDevice,
-            bool showscan, bool repeatable,
+            bool showscan, bool repeatable, bool showPlaybackOptions,
             DS4Windows.ControlService controlService, DS4Windows.DI.IPathService pathService,
             DS4Windows.DI.IViewModelFactory viewModelFactory)
         {
@@ -76,6 +76,8 @@ namespace DS4WinWPF.DS4Forms
             extraConPanel.Visibility = Visibility.Hidden;
             // Phase10-Step1 W2: Execute Mode と Scan Code は、共通部品 MacroPlaybackOptionsPanel（repeatable は PlaybackOptions.Repeatable に入る）
             playbackPanel.ShowScanCode = showscan;
+            // Phase10-Step1 W3: SA から開くときは、Execute Mode／Scan Code を出さない（SA の Macro タブで設定する。記録専用の画面にする）
+            playbackPanel.Visibility = showPlaybackOptions ? Visibility.Visible : Visibility.Collapsed;
 
             ds4.Enabled = false;
             ds4.Elapsed += Ds4_Tick;

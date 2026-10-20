@@ -61,13 +61,13 @@ namespace DS4Windows.Services
                 _environmentService, _controlServiceAccessor(), expose);
 
         public RecordBox CreateRecordBox(int deviceNum, DS4ControlSettings controlSettings, int targetDevice,
-            bool showscan = true, bool repeatable = true)
-            => new RecordBox(deviceNum, controlSettings, targetDevice, showscan, repeatable,
+            bool showscan = true, bool repeatable = true, bool showPlaybackOptions = true)
+            => new RecordBox(deviceNum, controlSettings, targetDevice, showscan, repeatable, showPlaybackOptions,
                 _controlServiceAccessor(), _pathService, _viewModelFactory);
 
         public RecordBoxWindow CreateRecordBoxWindow(int deviceNum, DS4ControlSettings settings, int targetDevice,
-            bool repeatable = true)
-            => new RecordBoxWindow(deviceNum, settings, targetDevice, this, repeatable);
+            bool repeatable = true, bool showPlaybackOptions = true)
+            => new RecordBoxWindow(deviceNum, settings, targetDevice, this, repeatable, showPlaybackOptions);
 
         public PresetOptionWindow CreatePresetOptionWindow()
             => new PresetOptionWindow(_presetLoader, _controlServiceAccessor());

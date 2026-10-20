@@ -439,16 +439,15 @@ namespace DS4WinWPF.DS4Forms
         private void RecordMacroBtn_Click(object sender, RoutedEventArgs e)
         {
             DS4Windows.DS4ControlSettings settings = macroActVM.PrepareSettings();
-            RecordBoxWindow recordWin = editorWindowFactory.CreateRecordBoxWindow(specialActVM.DeviceNum, settings, targetDevice);
+            RecordBoxWindow recordWin = editorWindowFactory.CreateRecordBoxWindow(specialActVM.DeviceNum, settings, targetDevice,
+                showPlaybackOptions: false);
             recordWin.Saved += (sender2, args) =>
             {
                 macroActVM.Macro.Clear();
                 macroActVM.Macro.AddRange((int[])settings.action.actionMacro);
                 macroActVM.UpdateMacroString();
-                // Sync repeat and scan-code flags back to the MacroViewModel so the
-                // SpecialAction editor's checkboxes reflect changes made in RecordBox.
-                macroActVM.UseScanCode = settings.keyType.HasFlag(DS4KeyType.ScanCode);
-                macroActVM.RepeatHeld = settings.keyType.HasFlag(DS4KeyType.RepeatMacro);
+                // Phase10-Step1 W3: Execute Mode／Scan Code は、記録画面に出さず（記録専用）、Macro タブの PlaybackOptions だけが持つ。
+                // 記録画面へは PrepareSettings で渡し、保存で同じ値が返るため、手の書き戻しは不要
             };
 
             recordWin.ShowDialog();
@@ -493,7 +492,8 @@ namespace DS4WinWPF.DS4Forms
         private void MultiTapTrigBtn_Click(object sender, RoutedEventArgs e)
         {
             DS4Windows.DS4ControlSettings settings = multiActButtonVM.PrepareTapSettings();
-            RecordBoxWindow recordWin = editorWindowFactory.CreateRecordBoxWindow(specialActVM.DeviceNum, settings, targetDevice, false);
+            RecordBoxWindow recordWin = editorWindowFactory.CreateRecordBoxWindow(specialActVM.DeviceNum, settings, targetDevice, false,
+                showPlaybackOptions: false);
             recordWin.Saved += (sender2, args) =>
             {
                 multiActButtonVM.TapMacro.Clear();
@@ -507,7 +507,8 @@ namespace DS4WinWPF.DS4Forms
         private void MultiHoldTapTrigBtn_Click(object sender, RoutedEventArgs e)
         {
             DS4Windows.DS4ControlSettings settings = multiActButtonVM.PrepareHoldSettings();
-            RecordBoxWindow recordWin = editorWindowFactory.CreateRecordBoxWindow(specialActVM.DeviceNum, settings, targetDevice, false);
+            RecordBoxWindow recordWin = editorWindowFactory.CreateRecordBoxWindow(specialActVM.DeviceNum, settings, targetDevice, false,
+                showPlaybackOptions: false);
             recordWin.Saved += (sender2, args) =>
             {
                 multiActButtonVM.HoldMacro.Clear();
@@ -521,7 +522,8 @@ namespace DS4WinWPF.DS4Forms
         private void MultiDoubleTapTrigBtn_Click(object sender, RoutedEventArgs e)
         {
             DS4Windows.DS4ControlSettings settings = multiActButtonVM.PrepareDoubleTapSettings();
-            RecordBoxWindow recordWin = editorWindowFactory.CreateRecordBoxWindow(specialActVM.DeviceNum, settings, targetDevice, false);
+            RecordBoxWindow recordWin = editorWindowFactory.CreateRecordBoxWindow(specialActVM.DeviceNum, settings, targetDevice, false,
+                showPlaybackOptions: false);
             recordWin.Saved += (sender2, args) =>
             {
                 multiActButtonVM.DoubleTapMacro.Clear();

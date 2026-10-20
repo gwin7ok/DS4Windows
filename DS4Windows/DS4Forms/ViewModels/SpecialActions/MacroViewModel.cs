@@ -33,19 +33,17 @@ namespace DS4WinWPF.DS4Forms.ViewModels.SpecialActions
     {
         public event System.ComponentModel.PropertyChangedEventHandler PropertyChanged;
         private void OnPropertyChanged(string name) => PropertyChanged?.Invoke(this, new System.ComponentModel.PropertyChangedEventArgs(name));
-        private bool useScanCode;
         private bool runTriggerRelease;
         private bool syncRun;
         private bool keepKeyState;
-        private bool repeatHeld;
         private List<int> macro = new List<int>(1);
         private string macrostring;
 
-        public bool UseScanCode { get => useScanCode; set { useScanCode = value; OnPropertyChanged(nameof(UseScanCode)); } }
+        // Phase10-Step1 W3: Execute Mode（繰り返し）と Scan Code は、共通の MacroPlaybackOptions に持つ（旧: UseScanCode、RepeatHeld）
+        public MacroPlaybackOptions PlaybackOptions { get; } = new MacroPlaybackOptions();
         public bool RunTriggerRelease { get => runTriggerRelease; set { runTriggerRelease = value; OnPropertyChanged(nameof(RunTriggerRelease)); } }
         public bool SyncRun { get => syncRun; set { syncRun = value; OnPropertyChanged(nameof(SyncRun)); } }
         public bool KeepKeyState { get => keepKeyState; set { keepKeyState = value; OnPropertyChanged(nameof(KeepKeyState)); } }
-        public bool RepeatHeld { get => repeatHeld; set { repeatHeld = value; OnPropertyChanged(nameof(RepeatHeld)); } }
         public List<int> Macro { get => macro; set { macro = value; OnPropertyChanged(nameof(Macro)); } }
         public string Macrostring { get => macrostring;
             set
@@ -68,11 +66,10 @@ namespace DS4WinWPF.DS4Forms.ViewModels.SpecialActions
                 macrostring = string.Join(", ", macroParser.GetMacroStrings());
             }
 
-            useScanCode = action.keyType.HasFlag(DS4KeyType.ScanCode);
+            PlaybackOptions.LoadFrom(action.keyType);
             runTriggerRelease = action.pressRelease;
             syncRun = action.synchronized;
             keepKeyState = action.keepKeyState;
-            repeatHeld = action.keyType.HasFlag(DS4KeyType.RepeatMacro);
         }
 
         public DS4ControlSettings PrepareSettings()
@@ -80,16 +77,8 @@ namespace DS4WinWPF.DS4Forms.ViewModels.SpecialActions
             DS4ControlSettings settings = new DS4ControlSettings(DS4Controls.None);
             settings.action.actionMacro = macro.ToArray();
             settings.actionType = DS4ControlSettings.ActionType.Macro;
-            settings.keyType = DS4KeyType.Macro;
-            if (repeatHeld)
-            {
-                // Phase8-Fix-MacroRepeatUnify（D1）: 「押している間繰り返す」は RepeatMacro だけで表す
-                settings.keyType |= DS4KeyType.RepeatMacro;
-            }
-            if (useScanCode)
-            {
-                settings.keyType |= DS4KeyType.ScanCode;
-            }
+            // Phase8-Fix-MacroRepeatUnify（D1）: 「押している間繰り返す」は RepeatMacro だけで表す
+            settings.keyType = PlaybackOptions.ApplyTo(DS4KeyType.Macro);
 
             return settings;
         }
@@ -105,11 +94,11 @@ namespace DS4WinWPF.DS4Forms.ViewModels.SpecialActions
         public void SaveAction(SpecialAction action, bool edit = false)
         {
             List<string> extrasList = new List<string>();
-            extrasList.Add(useScanCode ? "Scan Code" : null);
+            extrasList.Add(PlaybackOptions.UseScanCode ? "Scan Code" : null);
             extrasList.Add(runTriggerRelease ? "RunOnRelease" : null);
             extrasList.Add(syncRun ? "Sync" : null);
             extrasList.Add(keepKeyState ? "KeepKeyState" : null);
-            extrasList.Add(repeatHeld ? "Repeat" : null);
+            extrasList.Add(PlaybackOptions.RepeatWhileHeld ? "Repeat" : null);
             specialActionRepository.SaveAction(action.name, action.controls, 1, string.Join("/", macro), edit,
                 extras: string.Join("/", extrasList.Where(s => !string.IsNullOrEmpty(s))));
         }
