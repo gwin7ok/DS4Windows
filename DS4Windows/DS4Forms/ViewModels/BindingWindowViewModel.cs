@@ -130,6 +130,9 @@ namespace DS4WinWPF.DS4Forms.ViewModels
             bind.outputType = OutBinding.OutType.Macro;
             bind.macro = (int[])setting.action.actionMacro;
             bind.macroType = settings.keyType;
+            // Phase10-Step1 W2: 記録画面（RecordBox）で設定した Scan Code を、WriteBind が書く hasScanCode へ渡す。
+            // 渡さないと、記録画面でチェックしても、保存時に落ちていた（WriteBind の Macro は、hasScanCode［選択ダイアログのチェックボックス］から書く）
+            bind.hasScanCode = settings.keyType.HasFlag(DS4KeyType.ScanCode);
         }
 
         public void WriteBinds()
