@@ -58,8 +58,16 @@ namespace DS4WinWPF.DS4Forms
 
         public enum ExposeMode : uint
         {
+            // TODO(Phase10-Step3 W1→Step6): Full は、Controls 用の旧モード。Step3 W4 で ProfileEditor の呼び出しがすべて割り当てエディター
+            //   （Control のモードの出力ピッカーを開く）へ切り替わると、使われなくなる。コードの撤去は Phase10-Step6（Phase10-Step3-Plan.md §3.2）
             Full,
-            ForPressToggle,
+            // SA の Press Key 用（旧 ForPressToggle）。Default／Unbound を出さない（SA の Press Key に「Default」はない）。
+            // TODO(Phase10-Step4・5): Extras は、SA に保存先がないため、今は出さない。SA に Extras の保存先を作ったら、出す
+            //   （Phase10-Step3-Plan.md §3.1。最終的に、2 つのモードの違いは Default／Unbound の表示だけになる）
+            SpecialAction,
+            // Controls の割り当てエディターの Press Key 用（Phase10-Step3 W1）。Default／Unbound と Extras を出す。
+            // どのモードでも、Record A Macro・Toggle・Scan Code は出さない（割り当てエディターで設定する）
+            Control,
             Keyboard,
         }
 
@@ -99,7 +107,7 @@ namespace DS4WinWPF.DS4Forms
             highlightImg.Visibility = Visibility.Hidden;
             highlightLb.Visibility = Visibility.Hidden;
 
-            if (expose == ExposeMode.Full || expose == ExposeMode.ForPressToggle)
+            if (expose == ExposeMode.Full || expose == ExposeMode.SpecialAction || expose == ExposeMode.Control)
             {
                 // Initialize controller/button bindings for full and press/toggle modes
                 InitButtonBindings();
@@ -114,7 +122,15 @@ namespace DS4WinWPF.DS4Forms
             }
 
             bindingVM.ActionBinding = bindingVM.CurrentOutBind;
-            if (expose == ExposeMode.ForPressToggle)
+            if (expose == ExposeMode.Control)
+            {
+                // Phase10-Step3 W1: Default／Unbound（modePanel）と Extras（extrasSidePanel）は出す。
+                // Record A Macro・Toggle・Scan Code（topOptsPanel）・マクロの表示は、どのモードでも、割り当てエディターで設定するため出さない
+                recordMacroBtn.Visibility = Visibility.Collapsed;
+                topOptsPanel.Visibility = Visibility.Collapsed;
+                macroOnLb.Visibility = Visibility.Collapsed;
+            }
+            else if (expose == ExposeMode.SpecialAction)
             {
                 // For Press/Toggle selection: show keyboard, mouse and controller areas,
                 // but hide auxiliary UI panels (mode panel, record macro and extras).
@@ -235,7 +251,7 @@ namespace DS4WinWPF.DS4Forms
             OutBinding bind = bindingVM.ActionBinding;
             topOptsPanel.DataContext = bind;
 
-            if (expose == ExposeMode.Full)
+            if (expose == ExposeMode.Full || expose == ExposeMode.Control)
             {
                 extrasGB.DataContext = bind;
                 modePanel.DataContext = bind;

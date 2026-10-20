@@ -67,12 +67,13 @@
 
 - **出力ピッカーに残す**（ユーザーの確認）。Extras のコードは、この Step では動かさない（移設も、新しい部品も作らない）。
 - 割り当てエディターから出力ピッカーを開いたときも、Extras は出力ピッカーで編集する。エディターが持つ編集用のコピー（`ControlSettingsEditTarget`）に、出力ピッカーの結果［Key・Button・Default・Unbound と Extras］が反映される経路を、W2 で作る。エディター自身の Extras のパネルは、作らない（Step4 以降で、必要なら判断）。
-- SA のモードでは、Extras は出さない（Q2＝出さない。出力ピッカーの `SpecialAction` のモードは、従来どおり Extras を隠す）。
+- SA のモードでは、Extras は、**今は**出さない（Q2。SA に保存先がないため）。SA に Extras の保存先を作る Step（Step4・5）で、出す。**最終的に、出力ピッカーの 2 つのモードの違いは、Default／Unbound の表示だけになる**（ユーザーの確認、2026-10-21）。
 
 ### 3.2 出力ピッカー（`BindingWindow`）の統一
 
 - モードを、`SpecialAction`（SA の Press Key 用。今の `ForPressToggle`）と `Control`（Controls 用）の 2 つにする。ほかに、旧来の `Keyboard`（現状どおり）。Full は、使わなくする（コードの撤去は Step6）。
-- どちらのモードも、「Record A Macro」「Toggle」「Scan Code」は出さない。`Control` のモードだけ、Default／Unbound ボタンと **Extras のパネル**を出す。
+- どのモードも、「Record A Macro」「Toggle」「Scan Code」は出さない（割り当てエディターで設定する）。`Control` のモードだけ、Default／Unbound ボタンを出す。Extras のパネルは、`Control` のモードで出し、`SpecialAction` のモードでは、SA の保存先ができるまで出さない（§3.1）。
+- **割り当てエディターのモード**（ユーザーの確認、2026-10-21）: 特別なアクション（SA）タブは、トリガーを選ぶ部分が要る。Controls、Touchpad、ジャイロの 3 つのタブ（と Axis Config の Full Pull・Outer Bind）は、同じ Controls のモードで開き、トリガーの場所に、割り当てを行うボタン名を表示する（Step2 で実装済み）。出力ピッカーのモードは、Default／Unbound の表示だけを制御する。
 - ダイアログは、選択結果（キー・ボタン・Default・Unbound と Extras）を、設定の箱（`DS4ControlSettings`）で返す（SA と同じ流れ）。割り当てエディターは、その結果を編集用のコピーへ取り込み、Save で反映する。
 
 ### 3.3 Press Key の入力が、Default／Unbound を扱う
@@ -133,3 +134,8 @@
 - **Q2＝SA のモードでは Extras を出さない（確定、2026-10-21）**。
 - **Q3＝Save／Cancel（確定、2026-10-21）**: Controls の割り当ては、閉じると保存（従来）から、Save／Cancel（SA と同じ）へ変わる。
 - **Q4＝不要になった（2026-10-21）**: すべての入口が割り当てエディターを開くため、Record A Macro・Toggle・Scan Code の設定場所の問題は、なくなった。Extras は出力ピッカーで設定する。
+
+## 9. 進捗の記録
+
+- **W0（完了 2026-10-21。ビルド・テスト成功）**: 特性化テスト 3 ファイルを追加した（製品コードは変更なし）。`Phase10Step3W0OutBindingExtrasTests`（Extras の書式・境界・不正値）、`Phase10Step3W0BindingWindowWriteTests`（Default／Unbound／Key／Button の書き込み、Extras の保持、C-5）、`Phase10Step3W0ProfileEditorCallSitesTests`（`CreateBindingWindow` の呼び出しが 6 か所。W4 で 0 か所へ更新する）。
+  - **判明した既存の癖**（変更しない）: (1) 色の旗を下ろしても、点滅の間隔（`FlashRate`）は 0 に戻らず、Extras が「使用中」のまま書き出される。(2) `IsUsingExtras` の色の判定は「3 チャンネルすべてが 255 以外」のときだけ真。(3) Button の書き出しは、Toggle を書かない（C-5。割り当てエディターは書く）。
