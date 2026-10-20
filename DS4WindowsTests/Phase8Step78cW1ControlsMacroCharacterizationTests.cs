@@ -60,8 +60,7 @@ namespace DS4WindowsTests
         }
 
         [Theory]
-        [InlineData(false)]
-        [InlineData(true)]
+                [InlineData(true)]
         public void Press_PlaysTheMacroSteps_AndNothingMoreAfterTheRelease(bool migrated)
         {
             using var t = new ControlsKeyTestScope(migrated);
@@ -180,8 +179,7 @@ namespace DS4WindowsTests
         }
 
         [Theory]
-        [InlineData(false)]
-        [InlineData(true)]
+                [InlineData(true)]
         public void ADcsWithExtras_IsNotOwnedByTheNewPath(bool migrated)
         {
             // 7.8e: Extras つきの Macro は、新経路が処理する（Extras の束縛 ＋ Macro の束縛）。新経路の指定がなければ、束縛を作らず、旧経路が処理する

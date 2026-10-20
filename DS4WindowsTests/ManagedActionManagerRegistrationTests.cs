@@ -67,7 +67,7 @@ namespace DS4WindowsTests
         }
 
         /// <summary>
-        /// Controls タブのキー割り当て（Toggle）は、合成 SpecialAction（Mapping.GetOrCreateSyntheticKeyAction）に変換され、
+        /// Controls タブのキー割り当て（Toggle）は、識別用の合成 SpecialAction（SyntheticKeyActionFactory。新経路の束縛と同じ名前）に変換され、
         /// SpecialActions タブと同じ ActionManager.DispatchTriggerEdge → KeyAction → KeyButtonActionController(Toggle)
         /// の経路で処理される。その経路で IsToggledOn が「1 回目の押下でオン、解放では維持、2 回目の押下でオフ」と
         /// 遷移することを固定する（登録欠落時は SetToggledOn が例外になり、常に false のままだった）。
@@ -92,9 +92,8 @@ namespace DS4WindowsTests
                 services.AddSingleton<IKeyButtonControllerRegistry, DS4Windows.Services.KeyButtonControllerRegistry>();
                 ServiceProviderHolder.SetProvider(services.BuildServiceProvider());
 
-                mapper.ClearSyntheticActionCache();
                 // 一意の control 値（ほかのテストの合成アクションとキャッシュ・状態を共有しないため）
-                sa = mapper.GetOrCreateSyntheticKeyAction(device, 91, 0x41, toggle: true, useScan: false);
+                sa = SyntheticKeyActionFactory.Create(device, 91, 0x41, toggle: true, useScan: false);
                 Assert.True(sa.keyType.HasFlag(DS4KeyType.Toggle));
 
                 var kbm = new MockVirtualKBM();

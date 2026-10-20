@@ -314,7 +314,7 @@ namespace DS4WindowsTests
         }
 
         [Fact]
-        public void RemovingTheExtrasKind_HandsTheAssignmentBackToTheLegacyPath_WhichNowForcesTheLightbarToo()
+        public void RemovingTheExtrasKind_StopsOwningTheAssignment()
         {
             using var t = new ControlsKeyTestScope(true);
             t.MapExtras(DS4Controls.Cross, Full);
@@ -324,12 +324,6 @@ namespace DS4WindowsTests
 
             TestHost.GetService<BindingMigrationOptions>().MigratedControlKinds.Remove(ControlBindingKind.Extras);
             Assert.False(engine.OwnsControl(Device, DS4Controls.Cross));
-
-            t.Run(State());
-            t.Run(State(cross: true));
-
-            Assert.True(t.Mapping.extrasRumbleActive[Device]);   // 旧経路が処理した
-            Assert.True(t.ForceLight);                           // 旧経路でもライトバーが出る（Q7＝B の修正）
         }
 
         [Fact]

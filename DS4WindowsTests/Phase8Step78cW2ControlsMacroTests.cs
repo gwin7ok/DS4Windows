@@ -120,7 +120,7 @@ namespace DS4WindowsTests
         }
 
         [Fact]
-        public void TheEngine_OwnsTheMacroControl_AndRemovingTheMacroLineHandsItBackToTheLegacyPath()
+        public void TheEngine_OwnsTheMacroControl_AndRemovingTheMacroLineStopsOwningIt()
         {
             using var t = new ControlsKeyTestScope(true);
             t.MapMacro(DS4Controls.Cross, Steps);

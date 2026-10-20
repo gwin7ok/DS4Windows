@@ -20,13 +20,8 @@ namespace DS4WindowsTests
         /// <summary>検査対象メソッドの宣言（一意に特定できる先頭部分）。</summary>
         private static readonly string[] MethodMarkers =
         {
-            "private byte GetByteMapping(",
             "public bool GetBoolMappingExternal(",
-            "private bool GetBoolMapping(",
             "private bool getBoolSpecialActionMapping(",
-            "private bool GetBoolActionMapping(",
-            "private byte GetXYAxisMapping(",
-            "private void GetMouseWheelMapping(",
         };
 
         /// <summary>Step3-6b で `profileSettings` 経由へ置換済みの `Global` メンバ名。</summary>

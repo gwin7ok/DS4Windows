@@ -39,56 +39,6 @@ namespace DS4WindowsTests
 
         // ---- 押下の判定: 現行の GetBoolActionMapping との一致 ----
 
-        [Theory]
-        [InlineData(GyroOutMode.Controls)]
-        [InlineData(GyroOutMode.Passthru)]
-        public void IsControlActive_MatchesTheCurrentMappingEvaluation_ForEveryControl(GyroOutMode mode)
-        {
-            IProfileSettingsService settings = Settings();
-            Mapping mapping = TestMappingFactory.Create(settings);
-            MethodInfo legacy = typeof(Mapping).GetMethod("GetBoolActionMapping", BindingFlags.Instance | BindingFlags.NonPublic);
-            Assert.NotNull(legacy);
-
-            var input = new TriggerInput(Device, settings);
-            var random = new Random(78201);
-            GyroOutMode saved = settings.GyroOutputMode[Device];
-            settings.GyroOutputMode[Device] = mode;
-            try
-            {
-                for (int iteration = 0; iteration < 400; iteration++)
-                {
-                    DS4State state = new DS4State
-                    {
-                        LX = (byte)random.Next(256), LY = (byte)random.Next(256),
-                        RX = (byte)random.Next(256), RY = (byte)random.Next(256),
-                    };
-                    state.calculateStickAngles();
-                    DS4StateFieldMapping fields = new DS4StateFieldMapping();
-                    for (int i = 0; i < fields.buttons.Length; i++)
-                    {
-                        fields.buttons[i] = random.Next(2) == 0;
-                        fields.axisdirs[i] = (byte)random.Next(256);
-                        fields.triggers[i] = (byte)random.Next(256);
-                        fields.gryodirs[i] = random.Next(-150, 151);
-                        fields.swipedirbools[i] = random.Next(2) == 0;
-                    }
-
-                    input.Update(state, null, null, null, fields);
-
-                    for (int c = 0; c <= DS4StateFieldMapping.LAST_DS4_ACTION; c++)
-                    {
-                        var control = (DS4Controls)c;
-                        bool expected = (bool)legacy.Invoke(mapping, new object[] { Device, control, state, null, null, fields, false });
-                        Assert.True(expected == input.IsControlActive(control), $"{control}（iteration={iteration}, mode={mode}）で現行の判定と異なる");
-                    }
-                }
-            }
-            finally
-            {
-                settings.GyroOutputMode[Device] = saved;
-            }
-        }
-
         [Fact]
         public void ControlButtonInputAction_IsEstablishedByTheControlJudgement_NotByTheSpecialActionOne()
         {
@@ -191,8 +141,9 @@ namespace DS4WindowsTests
         [Fact]
         public void TheBuilder_ReturnsNothing_WhenTheKeyKindIsNotMigrated()
         {
-            using var t = new ControlsKeyTestScope(false);
+            using var t = new ControlsKeyTestScope(true);
             t.MapKey(DS4Controls.Cross, 65);
+            TestHost.GetService<BindingMigrationOptions>().MigratedControlKinds.Remove(ControlBindingKind.Key);
 
             Assert.Empty(TestHost.GetService<IControlBindingBuilder>().Build(Device));
         }
@@ -230,7 +181,7 @@ namespace DS4WindowsTests
         // ---- 所有とロールバック ----
 
         [Fact]
-        public void TheEngine_OwnsOnlyTheMappedControl_AndRemovingTheKindHandsItBackToTheLegacyPath()
+        public void TheEngine_OwnsOnlyTheMappedControl_AndRemovingTheKindStopsOwningIt()
         {
             using var t = new ControlsKeyTestScope(true);
             t.MapKey(DS4Controls.Cross, 65);
@@ -246,13 +197,6 @@ namespace DS4WindowsTests
             Assert.False(engine.OwnsControl(Device, DS4Controls.Cross));
             t.Publish();
             Assert.Empty(TestHost.GetService<IActionRegistry>().GetBindings(Device));
-
-            // 旧経路が処理する（合成 SA の状態が変わる）
-            SpecialAction synthetic = t.SyntheticFor(DS4Controls.Cross, 65);
-            DS4State held = ControlsKeyTestScope.Neutral();
-            held.Cross = true;
-            t.Run(held);
-            Assert.True(t.IsBeingTriggered(synthetic));
         }
 
         // ---- 割り当て ----

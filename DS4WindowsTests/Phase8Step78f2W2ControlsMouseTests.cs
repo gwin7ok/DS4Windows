@@ -150,7 +150,7 @@ namespace DS4WindowsTests
         }
 
         [Fact]
-        public void RemovingTheButtonMouseKind_HandsTheAssignmentsBackToTheLegacyPath()
+        public void RemovingTheButtonMouseKind_StopsBuildingTheMouseAssignments()
         {
             using var t = new ControlsKeyTestScope(true);
             t.MapButton(DS4Controls.Cross, X360Controls.LeftMouse);
@@ -163,13 +163,6 @@ namespace DS4WindowsTests
             Assert.DoesNotContain(bindings, b => b.Source.name.StartsWith("Synthetic_Mouse_"));
             Assert.DoesNotContain(bindings, b => b.Source.name == $"Synthetic_Pad_{Device}_{(int)DS4Controls.Circle}");
             Assert.Contains(bindings, b => b.Source.name == $"Synthetic_Pad_{Device}_{(int)DS4Controls.Square}");
-
-            // 旧経路が処理する
-            t.Publish();
-            DS4State input = ControlsKeyTestScope.Neutral();
-            input.Cross = true;
-            t.Run(input);
-            Assert.Equal(1, t.Scope.Synthetic.DeviceState[Device].currentClicks.leftCount);
         }
 
         // ---- Toggle の是正（Q8＝A） ----

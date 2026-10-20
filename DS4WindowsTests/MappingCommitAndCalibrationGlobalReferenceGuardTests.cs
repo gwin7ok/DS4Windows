@@ -18,8 +18,8 @@ namespace DS4WindowsTests
     public class MappingCommitAndCalibrationGlobalReferenceGuardTests
     {
         private const string CalibrationStart = "public DS4State ApplyStickCalibration(";
-        // Phase8-Step7 7.8d: ShiftTrigger を廃止したため、較正の次のメンバー（held の表）を終端にする
-        private const string CalibrationEnd = "DS4Controls[] held = new DS4Controls[";
+        // Phase8-Step8 8a: held の表を削除したため、較正の直後の文書コメント（Map DS4 Buttons/Axes…）を終端にする
+        private const string CalibrationEnd = "/// Map DS4 Buttons/Axes to other DS4 Buttons/Axes";
         private const string CommitStart = "public void Commit(";
         // Phase7-Step8 W1: MapClick を SyntheticInputState.CountClick へ移したため、Commit の次のメンバー（DS4ControltoInt）を終端にする
         private const string CommitEnd = "public static int DS4ControltoInt(";

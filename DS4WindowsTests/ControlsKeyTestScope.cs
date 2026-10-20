@@ -21,7 +21,7 @@ namespace DS4WindowsTests
 
         public ControlsKeyTestScope(bool migrated)
         {
-            Migrated = migrated;
+            Migrated = true;   // Phase8-Step8 8a: 旧経路を削除したため、引数にかかわらず新経路（互換のために引数は残す。8d で整理する）
             ExtrasPort = new RecordingControlExtrasPort(new DefaultControlExtrasPort(() => _inner.Control, _inner.Settings));
             Mapping = _inner.Mapper as Mapping;
             if (Mapping == null)
@@ -29,7 +29,6 @@ namespace DS4WindowsTests
 
             _savedKinds = _options.MigratedControlKinds.ToArray();
             _options.MigratedControlKinds.Clear();
-            if (migrated)
             {
                 _options.MigratedControlKinds.Add(ControlBindingKind.Key);     // Phase8-Step7 7.8b: Controls タブの Key を新経路で処理する
                 _options.MigratedControlKinds.Add(ControlBindingKind.Macro);   // Phase8-Step7 7.8c: Controls タブの Macro を新経路で処理する（W2 から有効）
@@ -94,7 +93,7 @@ namespace DS4WindowsTests
         public DS4Color ForcedColor => DS4LightBar.forcedColor[Device];
         public byte ForcedFlash => DS4LightBar.forcedFlash[Device];
         /// <summary>振動が出ているか。旧経路は <c>extrasRumbleActive</c>、新経路は窓口の記録（最後の呼び出しが 0 でない）。</summary>
-        public bool RumbleActive => Mapping.extrasRumbleActive[Device] || ExtrasPort.RumbleOn;
+        public bool RumbleActive => ExtrasPort.RumbleOn;
         public ButtonMouseInfo MouseInfo => _inner.Settings.ButtonMouseInfos[Device];
 
         /// <summary>テスト間で、Extras が書く状態（静的配列、感度、振動の記録、旧経路の held）を初期化する。</summary>
@@ -104,11 +103,8 @@ namespace DS4WindowsTests
             DS4LightBar.forcelight[Device] = false;
             DS4LightBar.forcedFlash[Device] = 0;
             DS4LightBar.forcedColor[Device] = default;
-            Mapping.extrasRumbleActive[Device] = false;
             _inner.Settings.ButtonMouseInfos[Device].Reset();
 
-            var held = typeof(Mapping).GetField("held", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance)?.GetValue(Mapping) as DS4Controls[];
-            if (held != null) held[Device] = DS4Controls.None;
         }
 
         /// <summary>Phase8-Step7 7.8f: ボタンの割り当てを Button（X360 のボタン・軸・トリガー、マウスなど）にする（通常。Extras なし）。</summary>
@@ -148,7 +144,7 @@ namespace DS4WindowsTests
 
         /// <summary>旧経路が使う合成 SpecialAction（<c>Synthetic_Key_{device}_{control}</c>）。名前で状態を引くため、新経路の識別用 SA と同じ状態を指す。</summary>
         public SpecialAction SyntheticFor(DS4Controls control, int key, bool toggle = false, bool useScan = false)
-            => Mapping.GetOrCreateSyntheticKeyAction(Device, (int)control, (uint)key, toggle, useScan);
+            => SyntheticKeyActionFactory.Create(Device, (int)control, (uint)key, toggle, useScan);
 
         public DS4State Run(DS4State input) => _inner.RunMapCustom(input);
 
@@ -161,7 +157,6 @@ namespace DS4WindowsTests
         public void Dispose()
         {
             TestHost.GetService<ITriggerDispatchEngine>().OnDeviceDisconnected(Device);
-            Mapping.ClearSyntheticActionCache();
 
             foreach (DS4Controls control in _touched)
                 TestGlobals.Store.GetDS4CSetting(Device, control)?.Reset();
@@ -170,6 +165,7 @@ namespace DS4WindowsTests
             foreach (ControlBindingKind kind in _savedKinds) _options.MigratedControlKinds.Add(kind);
 
             ResetExtrasObservables();
+            ActionManager.ClearDeviceState(Device);   // Toggle の状態を次のテストへ残さない
             _inner.Dispose();
         }
     }

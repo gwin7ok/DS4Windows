@@ -37,64 +37,6 @@ namespace DS4WindowsTests
 
         // ---- アナログ値: 現行の GetXYAxisMapping／GetByteMapping との一致 ----
 
-        [Theory]
-        [InlineData(GyroOutMode.Controls)]
-        [InlineData(GyroOutMode.Passthru)]
-        public void AnalogValues_MatchTheCurrentMappingFunctions_ForEveryControl(GyroOutMode mode)
-        {
-            IProfileSettingsService settings = Settings();
-            Mapping mapping = TestMappingFactory.Create(settings);
-            MethodInfo legacyAxis = typeof(Mapping).GetMethod("GetXYAxisMapping", BindingFlags.Instance | BindingFlags.NonPublic);
-            MethodInfo legacyByte = typeof(Mapping).GetMethod("GetByteMapping", BindingFlags.Instance | BindingFlags.NonPublic);
-            Assert.NotNull(legacyAxis);
-            Assert.NotNull(legacyByte);
-
-            var input = new TriggerInput(Device, settings);
-            var random = new Random(78601);
-            GyroOutMode saved = settings.GyroOutputMode[Device];
-            settings.GyroOutputMode[Device] = mode;
-            try
-            {
-                for (int iteration = 0; iteration < 300; iteration++)
-                {
-                    DS4State state = new DS4State
-                    {
-                        LX = (byte)random.Next(256), LY = (byte)random.Next(256),
-                        RX = (byte)random.Next(256), RY = (byte)random.Next(256),
-                    };
-                    DS4StateFieldMapping fields = new DS4StateFieldMapping();
-                    for (int i = 0; i < fields.buttons.Length; i++)
-                    {
-                        fields.buttons[i] = random.Next(2) == 0;
-                        fields.axisdirs[i] = (byte)random.Next(256);
-                        fields.triggers[i] = (byte)random.Next(256);
-                        fields.gryodirs[i] = random.Next(-150, 151);
-                        fields.swipedirs[i] = (byte)random.Next(256);
-                        fields.swipedirbools[i] = random.Next(2) == 0;
-                    }
-
-                    input.Update(state, null, null, null, fields);
-
-                    for (int c = 0; c <= DS4StateFieldMapping.LAST_DS4_ACTION; c++)
-                    {
-                        var control = (DS4Controls)c;
-                        byte expectedByte = (byte)legacyByte.Invoke(mapping, new object[] { Device, control, state, null, null, fields });
-                        Assert.True(expectedByte == input.GetByteValue(control), $"{control} のバイト値が現行と異なる（iteration={iteration}, mode={mode}）");
-
-                        foreach (bool alt in new[] { false, true })
-                        {
-                            byte expected = (byte)legacyAxis.Invoke(mapping, new object[] { Device, control, state, null, null, fields, alt });
-                            Assert.True(expected == input.GetAxisValue(control, alt), $"{control} の軸の値（alt={alt}）が現行と異なる（iteration={iteration}, mode={mode}）");
-                        }
-                    }
-                }
-            }
-            finally
-            {
-                settings.GyroOutputMode[Device] = saved;
-            }
-        }
-
         // ---- 解釈 ----
 
         private static DS4ControlSettings Button(X360Controls target, DS4KeyType keyType = DS4KeyType.None)
@@ -290,7 +232,7 @@ namespace DS4WindowsTests
         }
 
         [Fact]
-        public void RemovingTheButtonPadKind_HandsTheAssignmentBackToTheLegacyPath()
+        public void RemovingTheButtonPadKind_StopsOwningTheAssignment()
         {
             using var t = new ControlsKeyTestScope(true);
             t.MapButton(DS4Controls.Cross, X360Controls.B);
@@ -303,12 +245,6 @@ namespace DS4WindowsTests
 
             t.Publish();
             Assert.Empty(TestHost.GetService<IActionRegistry>().GetBindings(Device));
-
-            DS4State input = ControlsKeyTestScope.Neutral();
-            input.Cross = true;
-            DS4State output = t.Run(input);   // 旧経路が処理する（旧キューの処理で、B → Circle）
-            Assert.True(output.Circle);
-            Assert.False(output.Cross);
         }
 
         // ---- 割り当て ----

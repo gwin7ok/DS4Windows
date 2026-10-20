@@ -43,50 +43,6 @@ namespace DS4WindowsTests
 
         // ---- 現行の判定との一致（全コントロール × 多数の入力 × ジャイロ制御の有無）----
 
-        [Theory]
-        [InlineData(GyroOutMode.Controls)]
-        [InlineData(GyroOutMode.Passthru)]
-        public void IsActive_MatchesTheCurrentMappingEvaluation_ForEveryControl(GyroOutMode mode)
-        {
-            IProfileSettingsService settings = Settings();
-            Mapping mapping = TestMappingFactory.Create(settings);
-            MethodInfo legacy = typeof(Mapping).GetMethod("getBoolSpecialActionMapping", BindingFlags.Instance | BindingFlags.NonPublic);
-            Assert.NotNull(legacy);
-
-            var input = new TriggerInput(Device, settings);
-            var random = new Random(8001);
-
-            using (new GyroModeScope(settings, mode))
-            {
-                for (int iteration = 0; iteration < 400; iteration++)
-                {
-                    DS4State state = new DS4State
-                    {
-                        LX = (byte)random.Next(256), LY = (byte)random.Next(256),
-                        RX = (byte)random.Next(256), RY = (byte)random.Next(256),
-                    };
-                    DS4StateFieldMapping fields = NewFields();
-                    for (int i = 0; i < fields.buttons.Length; i++)
-                    {
-                        fields.buttons[i] = random.Next(2) == 0;
-                        fields.axisdirs[i] = (byte)random.Next(256);
-                        fields.triggers[i] = (byte)random.Next(256);
-                        fields.gryodirs[i] = random.Next(-150, 151);
-                        fields.swipedirbools[i] = random.Next(2) == 0;
-                    }
-
-                    input.Update(state, null, null, null, fields);
-
-                    for (int c = 0; c <= DS4StateFieldMapping.LAST_DS4_ACTION; c++)
-                    {
-                        var control = (DS4Controls)c;
-                        bool expected = (bool)legacy.Invoke(mapping, new object[] { Device, control, state, null, null, fields });
-                        Assert.True(expected == input.IsActive(control), $"{control}（iteration={iteration}, mode={mode}）で現行の判定と異なる");
-                    }
-                }
-            }
-        }
-
         // ---- 境界値（現行の仕様の固定）----
 
         [Fact]

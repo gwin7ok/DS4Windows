@@ -105,7 +105,7 @@ namespace DS4WindowsTests
         }
 
         [Fact]
-        public void RemovingTheButtonAnalogMouseKind_HandsTheAssignmentsBackToTheLegacyPath()
+        public void RemovingTheButtonAnalogMouseKind_StopsBuildingTheAnalogMouseAssignments()
         {
             using var h = new AnalogMouseTestHarness(true);
             h.T.MapButton(DS4Controls.Cross, X360Controls.MouseRight);
@@ -118,14 +118,6 @@ namespace DS4WindowsTests
 
             Assert.DoesNotContain(bindings, b => b.Source.name.StartsWith("Synthetic_AnalogMouse_"));
             Assert.Contains(bindings, b => b.Source.name == $"Synthetic_Mouse_{Device}_{(int)DS4Controls.Square}");
-
-            // 旧経路が処理する
-            h.T.Publish();
-            h.T.MouseInfo.activeButtonSensitivity = 100;
-            DS4State input = ControlsKeyTestScope.Neutral();
-            input.Cross = true;
-            h.Step(input);
-            Assert.NotEmpty(h.Moves);
         }
 
         // ---- 加算器（Q6＝A）と、ホイールの状態（Q5＝B） ----

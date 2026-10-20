@@ -64,52 +64,6 @@ namespace DS4WindowsTests
 
         private static string Hex(byte value) => value.ToString("x2");
 
-        /// <summary>旧関数（<c>Mapping</c> の private メソッド）の表。削除の前に、これを生成してゴールデンに固定する。</summary>
-        public static string BuildLegacy(GyroOutMode mode)
-        {
-            IProfileSettingsService settings = Settings();
-            Mapping mapping = TestMappingFactory.Create(settings);
-            MethodInfo special = typeof(Mapping).GetMethod("getBoolSpecialActionMapping", BindingFlags.Instance | BindingFlags.NonPublic);
-            MethodInfo action = typeof(Mapping).GetMethod("GetBoolActionMapping", BindingFlags.Instance | BindingFlags.NonPublic);
-            MethodInfo boolMapping = typeof(Mapping).GetMethod("GetBoolMapping", BindingFlags.Instance | BindingFlags.NonPublic);
-            MethodInfo byteMapping = typeof(Mapping).GetMethod("GetByteMapping", BindingFlags.Instance | BindingFlags.NonPublic);
-            MethodInfo axisMapping = typeof(Mapping).GetMethod("GetXYAxisMapping", BindingFlags.Instance | BindingFlags.NonPublic);
-            if (special == null || action == null || boolMapping == null || byteMapping == null || axisMapping == null)
-                throw new InvalidOperationException("旧関数が見つからない（削除後は、ゴールデンだけを使う）");
-
-            var sb = new StringBuilder(Header());
-            var random = new Random(Seed);
-            GyroOutMode saved = settings.GyroOutputMode[Device];
-            settings.GyroOutputMode[Device] = mode;
-            try
-            {
-                for (int iteration = 0; iteration < Iterations; iteration++)
-                {
-                    MakeInput(random, out DS4State state, out DS4StateFieldMapping fields);
-                    sb.Append(iteration.ToString("D3")).Append(' ');
-                    for (int c = 0; c <= DS4StateFieldMapping.LAST_DS4_ACTION; c++)
-                    {
-                        var control = (DS4Controls)c;
-                        if (c > 0) sb.Append(',');
-                        sb.Append(Call(() => B((bool)special.Invoke(mapping, new object[] { Device, control, state, null, null, fields }))));
-                        sb.Append(Call(() => B((bool)action.Invoke(mapping, new object[] { Device, control, state, null, null, fields, false }))));
-                        sb.Append(Call(() => B((bool)boolMapping.Invoke(mapping, new object[] { Device, control, state, null, null, fields }))));
-                        sb.Append(Call(() => Hex((byte)byteMapping.Invoke(mapping, new object[] { Device, control, state, null, null, fields })), "xx"));
-                        sb.Append(Call(() => Hex((byte)axisMapping.Invoke(mapping, new object[] { Device, control, state, null, null, fields, false })), "xx"));
-                        sb.Append(Call(() => Hex((byte)axisMapping.Invoke(mapping, new object[] { Device, control, state, null, null, fields, true })), "xx"));
-                    }
-
-                    sb.Append('\n');
-                }
-            }
-            finally
-            {
-                settings.GyroOutputMode[Device] = saved;
-            }
-
-            return sb.ToString();
-        }
-
         /// <summary>新経路（<see cref="TriggerInput"/>）の表。<c>GetBoolMapping</c> の位置は '-'。</summary>
         public static string BuildNew(GyroOutMode mode)
         {

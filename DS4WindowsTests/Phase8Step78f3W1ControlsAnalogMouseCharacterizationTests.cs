@@ -169,50 +169,6 @@ namespace DS4WindowsTests
             Assert.Empty(h.Wheels);
         }
 
-        /// <summary>
-        /// 旧経路の、Mapping 全体で 1 つのホイールの状態（Q5）。旧経路だけの記録（W2 で Q5＝B［束縛ごとに持つ］に直すとき、新しい期待値に更新する）。
-        ///  1. 向きを変えると、持ち越した端数を捨てる。
-        ///  2. 同じフレームに 2 つのアナログ元が上に割り当てられていても、10ms の間隔の基準時刻が共有のため、2 つ目は進まない。
-        /// </summary>
-        [Fact]
-        public void AnalogWheel_LegacySharesOneStateAcrossAllAssignments()
-        {
-            // 1. 向きを変えると、端数を捨てる
-            using (var h = new AnalogMouseTestHarness(false))
-            {
-                h.T.MapButton(DS4Controls.L2, X360Controls.WUP);
-                h.T.MapButton(DS4Controls.R2, X360Controls.WDOWN);
-                h.T.Publish();
-
-                DS4State up = Neutral();
-                up.L2 = 255;
-                h.Step(up);
-                h.Step(up);   // 端数 2/3 を持ち越す
-
-                DS4State down = Neutral();
-                down.R2 = 255;
-                h.Step(down);   // 向きが変わるので端数を捨てて、1/3 から
-                h.Step(down);
-                _output.WriteLine($"[7.8f-3 W1 legacy] after switching direction (2 runs): {h.Wheels.Count} events");
-                Assert.Empty(h.Wheels);   // 捨てていなければ、2/3 + 1/3 ＋ 1/3 で 1 目盛りに届いていた
-            }
-
-            // 2. 同じフレームの 2 つ目のアナログ元は進まない
-            using (var h = new AnalogMouseTestHarness(false))
-            {
-                h.T.MapButton(DS4Controls.L2, X360Controls.WUP);
-                h.T.MapButton(DS4Controls.R2, X360Controls.WUP);
-                h.T.Publish();
-
-                DS4State both = Neutral();
-                both.L2 = 255;
-                both.R2 = 255;
-                for (int i = 0; i < 3; i++) h.Step(both);
-                _output.WriteLine($"[7.8f-3 W1 legacy] two sources on WUP, 3 runs: {h.Wheels.Count} events");
-                Assert.Single(h.Wheels);   // 3 回で 1 目盛り。2 つ目が進めば、2 目盛りになっていた
-            }
-        }
-
         [Theory]
         [InlineData(false)]
         [InlineData(true)]

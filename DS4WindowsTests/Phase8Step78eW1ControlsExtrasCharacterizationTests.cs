@@ -184,8 +184,7 @@ namespace DS4WindowsTests
         }
 
         [Theory]
-        [InlineData(false)]
-        [InlineData(true)]
+                [InlineData(true)]
         public void TwoButtonsHeldTogether_AreRestoredOnlyAfterBothAreReleased_ForEitherOrder(bool migrated)
         {
             // 旧経路: held がデバイスに 1 つしかないため、2 つ同時に押すと、両方を離すまで元に戻す処理が走らない（どちらを先に離しても）。
@@ -293,8 +292,7 @@ namespace DS4WindowsTests
         }
 
         [Theory]
-        [InlineData(false)]
-        [InlineData(true)]
+                [InlineData(true)]
         public void FewerThanNineValues_StopsHalfWay_ButStillRestoresOnRelease(bool migrated)
         {
             // 9 個未満だと、途中の欄の参照で例外になり（try で握りつぶす）、そこまでの効果だけが残る。新経路の所有の条件で除外する根拠
@@ -304,16 +302,16 @@ namespace DS4WindowsTests
 
             t.Run(State());
             t.Run(State(cross: true));
-            Assert.True(t.RumbleActive);    // 振動までは出た
-            Assert.False(t.ForceLight);     // ライトバーの値の参照で例外になった
+            // Phase8-Step8 8a: 9 個未満の Extras は束縛を作らない＝何もしない（旧経路の「途中まで適用」は削除した。Phase8-Step8-Plan.md Q2）
+            Assert.False(t.RumbleActive);
+            Assert.False(t.ForceLight);
 
             t.Run(State());
             Assert.False(t.RumbleActive);   // 離すと、元に戻す
         }
 
         [Theory]
-        [InlineData(false)]
-        [InlineData(true)]
+                [InlineData(true)]
         public void ProfileApplyWhileHeld_LeavesTheEffectsOnlyOnTheLegacyPath(bool migrated)
         {
             // 押したままプロファイルが切り替わり、新しい割り当てには Extras がない場合:

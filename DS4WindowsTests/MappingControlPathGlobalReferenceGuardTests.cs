@@ -23,7 +23,6 @@ namespace DS4WindowsTests
         {
             "public void MapCustom(",
             "private void ProcessControlSettingAction(",
-            "private bool IfAxisIsNotModified(",
             "private async void MapCustomAction(",
             "private void ReleaseActionKeys(",
             "private double getMouseMapping(",
@@ -118,7 +117,6 @@ namespace DS4WindowsTests
         }
 
         [Theory]
-        [InlineData("private bool IfAxisIsNotModified(")]
         [InlineData("private void ReleaseActionKeys(")]
         public void MethodsWithoutCtrl_TakeProfileSettingsAsParameter(string marker)
         {

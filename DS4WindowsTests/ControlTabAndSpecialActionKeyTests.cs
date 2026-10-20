@@ -104,29 +104,5 @@ namespace DS4WindowsTests
             Assert.Contains((uint)0x1E, mockKbm.KeyReleaseCalls.ToArray());
         }
 
-        [Fact]
-        public void ControlTab_SyntheticSpecialAction_Construction()
-        {
-            var mapper = TestMappingFactory.Create();
-            mapper.ClearSyntheticActionCache();
-
-            // 通常キー（Toggle OFF）の合成SpecialAction
-            var pressSa = mapper.GetOrCreateSyntheticKeyAction(0, 1, 0x41, toggle: false, useScan: false);
-            Assert.Equal("Synthetic_Key_0_1", pressSa.name);
-            Assert.Equal("65", pressSa.details);
-            Assert.Equal(SpecialAction.ActionTypeId.Key, pressSa.typeID);
-            Assert.Equal((DS4KeyType)0, pressSa.keyType);
-
-            // トグルキー（Toggle ON）の合成SpecialAction
-            var toggleSa = mapper.GetOrCreateSyntheticKeyAction(0, 2, 0x42, toggle: true, useScan: true);
-            Assert.Equal("Synthetic_Key_0_2", toggleSa.name);
-            Assert.Equal("66", toggleSa.details);
-            Assert.Equal(SpecialAction.ActionTypeId.Key, toggleSa.typeID);
-            Assert.Equal(DS4KeyType.ScanCode | DS4KeyType.Toggle, toggleSa.keyType);
-
-            // キャッシュ再利用の検証
-            var cachedSa = mapper.GetOrCreateSyntheticKeyAction(0, 1, 0x41, toggle: false, useScan: false);
-            Assert.Same(pressSa, cachedSa);
-        }
     }
 }

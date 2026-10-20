@@ -7,8 +7,8 @@ namespace DS4WindowsTests
     /// <summary>
     /// Phase8-Step8 W1（Phase8-Step8-Plan.md §3 の方針 1。Q4＝A）: 旧関数（<c>getBoolSpecialActionMapping</c>、<c>GetBoolActionMapping</c>、<c>GetBoolMapping</c>、
     /// <c>GetByteMapping</c>、<c>GetXYAxisMapping</c>）の戻り値の表を、削除（8a・8b）の前にゴールデンへ固定する。
-    /// (1) <c>LegacyFunctionGolden</c>: 旧関数の表が、ゴールデンと一致する（初回は生成して失敗する。内容を確認してコミットし、再実行する）。
-    /// (2) <c>NewFunctionsMatchTheGolden</c>: 新経路（<c>TriggerInput</c>）の表が、ゴールデンの該当の列と一致する。旧関数を削除した後も、これが「旧と同じ値」の根拠になる。
+    /// Phase8-Step8 8a: 旧関数を削除したため、旧関数の表の生成（<c>LegacyFunctionGolden</c>）は削除した（ゴールデンが旧関数の値の記録として残る）。
+    /// <c>NewFunctionsMatchTheGolden</c>: 新経路（<c>TriggerInput</c>）の表が、ゴールデンの該当の列と一致する。旧関数を削除した後も、これが「旧と同じ値」の根拠になる。
     /// ゴールデンは <c>DS4WindowsTests/Golden/Phase7Step10c/step8-legacy-functions-*.txt</c>。他の Host 構築テストと同じコレクションで直列に実行する。
     /// </summary>
     [Collection("ServiceProviderHolder")]
@@ -19,14 +19,6 @@ namespace DS4WindowsTests
         public Phase8Step8W1LegacyFunctionGoldenTests(ITestOutputHelper output)
         {
             _output = output;
-        }
-
-        [Theory]
-        [InlineData(GyroOutMode.Controls)]
-        [InlineData(GyroOutMode.Passthru)]
-        public void LegacyFunctionGolden(GyroOutMode mode)
-        {
-            GoldenFile.AssertMatches(LegacyFunctionTable.FileName(mode), LegacyFunctionTable.BuildLegacy(mode), _output);
         }
 
         [Theory]

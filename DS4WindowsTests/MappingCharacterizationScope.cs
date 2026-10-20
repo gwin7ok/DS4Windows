@@ -72,6 +72,9 @@ namespace DS4WindowsTests
             dcs.actionType = DS4ControlSettings.ActionType.Button;
             dcs.action.actionBtn = target;
             _touched.Add(control);
+
+            // Phase8-Step8 8a: 旧経路（Controls タブの割り当てを Mapping が直接処理する）を削除したため、割り当てを変えたら、束縛を組み立て直して登録する
+            TestHost.GetService<DS4Windows.Actions.IActionRegistry>().Replace(Device, TestHost.GetService<DS4Windows.Actions.IActionBindingBuilder>().Build(Device));
         }
 
         public static DS4State NeutralState()
@@ -97,6 +100,8 @@ namespace DS4WindowsTests
                 TestGlobals.Store.GetDS4CSetting(Device, control)?.Reset();
 
             Mapper.HandleDeviceDisconnect(Device);
+            // RemapToButton が公開した束縛を残さない（次のテストの素通しの検査に影響するため）
+            TestHost.GetService<DS4Windows.Actions.ITriggerDispatchEngine>().OnDeviceDisconnected(Device);
             _handlerOwner.Handler = _savedHandler;
             Settings.OutputKBMMapping = _savedMapping;
             Synthetic.GlobalState = _savedGlobalState;

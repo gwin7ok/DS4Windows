@@ -163,8 +163,7 @@ namespace DS4WindowsTests
         }
 
         [Theory]
-        [InlineData(false)]
-        [InlineData(true)]
+                [InlineData(true)]
         public void ADcsWithExtras_IsNotOwnedByTheNewPath(bool migrated)
         {
             // 7.8e: Extras つきの Key は、新経路が処理する（Extras の束縛 ＋ Key の束縛）。新経路の指定がなければ、束縛を作らず、旧経路が処理する
@@ -177,8 +176,7 @@ namespace DS4WindowsTests
         }
 
         [Theory]
-        [InlineData(false)]
-        [InlineData(true)]
+                [InlineData(true)]
         public void SharesTheStateWithAKeySpecialActionOfTheSameKey(bool migrated)
         {
             // 旧経路の癖（FindSpecialActionForLogicalKey）: 同じ論理キーの Key 特殊アクションが登録されていれば、Controls の Key はその状態を使う。
