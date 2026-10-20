@@ -67,7 +67,10 @@ namespace DS4Windows.Services
             if (dcs.actionType != DS4ControlSettings.ActionType.Macro) return false;
 
             int[] macro = dcs.action.actionMacro;
-            if (macro == null || macro.Length == 0) return false;   // 旧経路は、手順がないと例外になる。新経路は所有せず、旧経路の挙動を保つ
+            // Phase10-Step3（ユーザー承認、2026-10-21）: 手順が空のマクロも、新経路が所有する（SA の Macro と同じ。トリガーが成立すると、空のマクロを実行し、何も出力しない。
+            // 通常の出力は、他の割り当てと同じく毎フレーム消える）。以前は「旧経路が、手順がないと例外になる」ため所有しなかったが、旧経路の本体は
+            // Phase8-Step8 8a で削除済みで、所有しないと、割り当てたのに通常の出力が出てしまっていた。手順そのものがない（null）ものは、従来どおり所有しない
+            if (macro == null) return false;
 
             steps = macro;
             return true;

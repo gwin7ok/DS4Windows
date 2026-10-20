@@ -120,18 +120,10 @@ namespace DS4WinWPF.DS4Forms.ViewModels.SpecialActions
         {
             ClearOldErrors();
 
-            bool valid = true;
-            List<string> macroErrors = new List<string>();
-
-            if (macro.Count == 0)
-            {
-                valid = false;
-                macroErrors.Add("No macro defined");
-                errors["Macro"] = macroErrors;
-                RaiseErrorsChanged("Macro");
-            }
-
-            return valid;
+            // Phase10-Step3（ユーザー承認、2026-10-21）: 手順が空のマクロも、保存できる（従来は「No macro defined」で保存できなかった）。
+            // トリガーが成立すると、空のマクロが実行される（何も出力しない）。「押している間繰り返す」の空のマクロは、再生を繰り返さない
+            // （Mapping.PlayMacroTask の繰り返しの手前で止める。空のまま繰り返すと、待ちなしの空回りになるため）
+            return true;
         }
 
         public override void ClearOldErrors()

@@ -49,8 +49,10 @@ namespace DS4WindowsTests
             key.actionType = DS4ControlSettings.ActionType.Key;
             Assert.False(ControlBindingBuilder.TryInterpretMacro(key, out _));
 
-            Assert.False(ControlBindingBuilder.TryInterpretMacro(Macro(null), out _));            // 旧経路は、手順がないと例外になる。新経路は所有しない
-            Assert.False(ControlBindingBuilder.TryInterpretMacro(Macro(new int[0]), out _));
+            Assert.False(ControlBindingBuilder.TryInterpretMacro(Macro(null), out _));            // 手順そのものがない（null）ものは、所有しない
+            // Phase10-Step3（ユーザー承認）: 手順が空のマクロは、SA と同じく所有する（何も出力しない空のマクロを実行し、通常の出力を消す）
+            Assert.True(ControlBindingBuilder.TryInterpretMacro(Macro(new int[0]), out int[] emptySteps));
+            Assert.Empty(emptySteps);
 
             // Extras は、通常の割り当てと直交する部品（7.8e）。Macro の解釈は、Extras の有無を見ない（Extras は別の束縛）
             DS4ControlSettings extras = Macro(Steps);

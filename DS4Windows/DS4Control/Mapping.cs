@@ -3055,6 +3055,9 @@ namespace DS4Windows
 
                         if (!keepRunning) break;
 
+                        // Phase10-Step3: 手順が空のマクロは、繰り返さない（待ちなしの空回りになるため）
+                        if ((macroLst == null || macroLst.Count == 0) && (macroArr == null || macroArr.Length == 0)) break;
+
                         // Execute the macro sequence again inline (the iteration is marked as running)
                         RunMacroOnce(device, macroLst, macroArr, keyType, action, actionDoneState, markRunning: true);
 
