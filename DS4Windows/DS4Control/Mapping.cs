@@ -3002,6 +3002,9 @@ namespace DS4Windows
                 Task.Factory.StartNew(() => PlayMacroTask(device, macroStr, macroLst, macroArr, keyType, action, actionDoneState));
         }
 
+        /// <summary>Phase10-Step3: 手順が空のマクロを「押している間繰り返す」ときの、1 回ごとの間隔（ミリ秒）。手順のあるマクロの 1 回の再生時間（約 50ms）に合わせた。</summary>
+        private const int EmptyMacroRepeatIntervalMs = 50;
+
         // Play through a macro. The macro steps are defined either as string, List or Array object (always only one of those parameters is set to a valid value)
         private void PlayMacroTask(int device, string macroStr, List<int> macroLst, int[] macroArr, DS4KeyType keyType, SpecialAction action, ActionInstanceState actionDoneState)
         {
@@ -3055,8 +3058,10 @@ namespace DS4Windows
 
                         if (!keepRunning) break;
 
-                        // Phase10-Step3: 手順が空のマクロは、繰り返さない（待ちなしの空回りになるため）
-                        if ((macroLst == null || macroLst.Count == 0) && (macroArr == null || macroArr.Length == 0)) break;
+                        // Phase10-Step3: 手順が空のマクロも、押している間は繰り返す。ただし、1 回の再生に時間がかからず、待ちなしの空回りになるため、
+                        // 繰り返しの間に、短い間隔（EmptyMacroRepeatIntervalMs）を置く（手順のあるマクロは、手順そのものの時間が間隔になる）
+                        if ((macroLst == null || macroLst.Count == 0) && (macroArr == null || macroArr.Length == 0))
+                            Task.Delay(EmptyMacroRepeatIntervalMs).Wait();
 
                         // Execute the macro sequence again inline (the iteration is marked as running)
                         RunMacroOnce(device, macroLst, macroArr, keyType, action, actionDoneState, markRunning: true);

@@ -61,7 +61,7 @@ namespace DS4WindowsTests
         }
 
         [Fact]
-        public void TheRepeatLoop_StopsBeforeReplaying_AnEmptyMacro()
+        public void TheRepeatLoop_WaitsBetweenRuns_OfAnEmptyMacro_InsteadOfSpinningOrStopping()
         {
             string path = SourceFileLocator.Find("DS4Windows/DS4Control/Mapping.cs");
             if (path == null)
@@ -72,9 +72,13 @@ namespace DS4WindowsTests
 
             string source = File.ReadAllText(path);
             int guard = source.IndexOf("(macroLst == null || macroLst.Count == 0) && (macroArr == null || macroArr.Length == 0)");
+            int wait = source.IndexOf("Task.Delay(EmptyMacroRepeatIntervalMs).Wait()", guard < 0 ? 0 : guard);
             int rerun = source.IndexOf("RunMacroOnce(device, macroLst, macroArr, keyType, action, actionDoneState, markRunning: true)");
-            Assert.True(guard >= 0, "空のマクロの繰り返しの歯止めがない");
-            Assert.True(rerun > guard, "歯止めが、繰り返しの再生より前にない");
+            Assert.True(guard >= 0, "空のマクロの繰り返しの間隔の条件がない");
+            Assert.True(wait > guard, "空のマクロの繰り返しに、間隔の待ちがない");
+            Assert.True(rerun > wait, "間隔の待ちが、繰り返しの再生より前にない");
+            // 繰り返しを止める（break）のではなく、待つ。条件の直後に break があってはならない
+            Assert.DoesNotContain("break;", source.Substring(guard, wait - guard));
         }
     }
 }
