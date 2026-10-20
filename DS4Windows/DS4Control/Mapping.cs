@@ -3218,7 +3218,9 @@ namespace DS4Windows
                 // additional macro runs), perform repeat-in-place. After a macro run completes, check the
                 // per-action BeingTriggered flag; if it remains true (trigger still held), run the macro again.
                 // This avoids accumulating a queue of runs that would execute after physical release.
-                if (action != null && keyType.HasFlag(DS4KeyType.RepeatMacro) && actionDoneState != null)
+                // HoldMacro も「押している間は繰り返す」（旧経路は macrodone を 50ms 後に解除して毎フレーム再発火していた）。
+                // Controls タブのマクロは Phase8-Step7-8c 以降、立ち上がりエッジで 1 回だけ起動する経路に載ったため、HoldMacro だけのキー種別（Macro, HoldMacro）もこのループで繰り返す。
+                if (action != null && (keyType.HasFlag(DS4KeyType.RepeatMacro) || keyType.HasFlag(DS4KeyType.HoldMacro)) && actionDoneState != null)
                 {
                     bool keepRunning = true;
                     while (keepRunning)
