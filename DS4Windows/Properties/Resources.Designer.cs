@@ -1648,6 +1648,15 @@ namespace DS4WinWPF.Properties {
         }
 
         /// <summary>
+        ///   Looks up a localized string similar to a warning that the profile contains settings of the removed Gyro Swipe feature.
+        /// </summary>
+        public static string RemovedGyroSwipeWarning {
+            get {
+                return ResourceManager.GetString("RemovedGyroSwipeWarning", resourceCulture);
+            }
+        }
+
+        /// <summary>
         ///   Looks up a localized string similar to Please enter a valid name.
         /// </summary>
         public static string ValidName {

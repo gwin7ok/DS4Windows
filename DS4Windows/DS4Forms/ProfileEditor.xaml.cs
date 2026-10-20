@@ -736,6 +736,8 @@ namespace DS4WinWPF.DS4Forms
         /// <param name="profile">編集するプロファイル。null は新規作成（プリセット選択から始める）</param>
         // Phase8-Step7 7.8d: 廃止された「シフト」の設定の警告（画面の実装）
         private readonly IRemovedShiftPrompt removedShiftPrompt = new MessageBoxRemovedShiftPrompt();
+        // Phase8-Step8 8-0: 廃止された「ジャイロスワイプ」の設定の警告（画面の実装）
+        private readonly IRemovedGyroSwipePrompt removedGyroSwipePrompt = new MessageBoxRemovedGyroSwipePrompt();
 
         public void Reload(ProfileEntity profile = null)
         {
@@ -754,6 +756,8 @@ namespace DS4WinWPF.DS4Forms
                 profileRepository.LoadProfile(deviceNum, profile.Name);
                 // Phase8-Step7 7.8d: 廃止された「シフト」の設定が残っていれば、警告して、削除するか残すかを選ばせる（残せば、開くたびに警告する）
                 RemovedShiftNotice.Apply(profileSettingsService.GetRemovedShiftSettings(deviceNum), profile.Name, removedShiftPrompt);
+                // Phase8-Step8 8-0: 廃止された「ジャイロスワイプ」の設定が残っていれば、同じく警告して、削除するか残すかを選ばせる（残せば、開くたびに警告する）
+                RemovedGyroSwipeNotice.Apply(profileSettingsService.GetRemovedGyroSwipeSettings(deviceNum), profile.Name, removedGyroSwipePrompt);
                 profileNameTxt.Text = profile.Name;
                 profileNameTxt.IsEnabled = false;
             }

@@ -574,4 +574,10 @@ OR
 Yes: delete the settings (applied to the file when you save the profile).
 No: keep them (this warning is shown every time you open the profile).</value>
   </data>
+  <data name="RemovedGyroSwipeWarning" xml:space="preserve">
+    <value>Profile "{0}" contains settings of the removed "Gyro Swipe" feature (swipe assignments, swipe settings, or the "Directional Swipe" gyro output mode). These settings no longer work.
+
+Yes: delete the settings (applied to the file when you save the profile).
+No: keep them (this warning is shown every time you open the profile).</value>
+  </data>
 </root>

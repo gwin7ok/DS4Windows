@@ -135,6 +135,14 @@ W1 の調査（§5.1）に **「ジャイロの出力モード `DirectionalSwipe
 - **テスト**: 新規 `Phase8Step8W2RemovedGyroSwipeWiringTests`（設定・割り当て・モードの保持と書き戻し、削除、`ResetProfile`、メンバーがないこと、ソースのガード）。更新: `Phase8Step4bW2LoadFoundationTests`（節の名前）、`Phase8Step78bW2ControlsKeyTests`（スワイプの行を削除）。
 - **残す文言**: `Strings` の `DirectionalSwipe`（翻訳 4 言語）は未使用になるが、W3 の文言と一緒に整理する。
 
+### 5.8 8-0 W3 の実装（2026-10-20。ビルド・テストの結果待ち）
+
+- 新設: `MessageBoxRemovedGyroSwipePrompt`（`DS4Forms/`。`IRemovedGyroSwipePrompt` の画面の実装。「はい」＝設定を削除、「いいえ」［またはダイアログを閉じる］＝残す。選択は記憶しない。Shift の `MessageBoxRemovedShiftPrompt` と同じ作り）。
+- 配線: `ProfileEditor.Reload`（`profileRepository.LoadProfile` の直後、Shift の警告に続けて `RemovedGyroSwipeNotice.Apply(…)`。プロファイルがあるときだけ）。Shift とジャイロスワイプの両方が残っているプロファイルでは、警告が 2 回続けて出る。
+- 文言: `Resources.resx`（英語）、`Resources.ja.resx`（日本語）に `RemovedGyroSwipeWarning`（`{0}`＝プロファイル名。スワイプの割り当て・設定・出力モード「ディレクショナルスワイプ」が含まれることを書く）、`Resources.Designer.cs` に参照用のプロパティ。ほかの言語は英語にフォールバック。
+- テスト: `Phase8Step8W3RemovedGyroSwipeNoticeWiringTests`（サービスが保持の入れ物を返す、文言［英語・日本語］、`Reload` の読込の直後に警告を呼ぶ［1 か所］）。ダイアログそのものは、Step9 の実機（画面）の確認（U-48）。
+- 残る未使用の文言: `Strings` の `DirectionalSwipe`（翻訳 4 言語）。W4 で削除するか判断する。
+
 ### 5.5 テストへの影響
 
 - 旧・新の両経路の Theory は `InlineData(false)` を持つファイルが 15、`migrated` 引数を取るテストが 36 ファイル、`MigratedTypes`／`MigratedControlKinds` を触るテストが 28 ファイル。
