@@ -172,7 +172,7 @@ W1 の調査（§5.1）に **「ジャイロの出力モード `DirectionalSwipe
 - **実行への影響**: なし（呼び出し元のないコードの削除）。ログの変更もなし。
 - **ロールバック**: git のみ。
 
-### 5.13 8d の実装（2026-10-20。ビルド・テスト待ち）
+### 5.13 8d の実装（2026-10-20。ビルド・テスト成功）
 
 - **削除（本体）**: `BindingMigrationOptions`（種別ごと・区分ごとの移行スイッチ。Q3＝A）。エンジン（`TriggerDispatchEngine`）は、束縛が登録されていれば常に処理し（`Owns`／`OwnsControl`／`ProcessOwned`）、ビルダー（`ActionBindingBuilder`／`ControlBindingBuilder`）は常に全種別・全区分を組み立てる。本番の既定は全種別・全区分が有効だったため、**実行への影響はない**（`ActionTypeId.None` は元から束縛を作らない）。`ServiceRegistration` の登録 1 件（16 行）、各コンストラクターの引数を削除。
 - **削除（8b の TODO）**: `UntriggerPolicy.Buttons`、`BindingPolicy.UntriggerButtons`（コンストラクターの `untriggerButtons` 引数と内部の複製）。使う者は 8b でなくなっていた。
