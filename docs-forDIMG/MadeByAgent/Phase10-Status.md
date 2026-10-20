@@ -1,7 +1,7 @@
 # フェーズ10 進捗管理文書: 割り当て編集画面の統合（Controls タブと SpecialActions タブ）
 
 最終更新日: 2026-10-21  
-状態: **Step1 完了（2026-10-21）。Step2 以降は未着手（Step2 の個別計画書を作り、承認を得てから着手する）**  
+状態: **Step1・Step2 完了（2026-10-21）。Step3 以降は未着手（Step3 の個別計画書を作り、承認を得てから着手する）**  
 計画書: `Phase10-Assignment-UI-Unification-Plan.md`（方針承認済み。§6 の決定事項 Q1〜Q7、§7 の優先順位と抑制の仕様 R1〜R10）  
 Step1: `Phase10-Step1-Plan.md`
 
@@ -12,12 +12,12 @@ Step1: `Phase10-Step1-Plan.md`
 | Step | 内容 | 状態 | 記録 |
 |---|---|---|---|
 | Step1 | マクロの再生オプションの共通部品（Execute Mode、Scan Code）と、Press Key の Scan Code の移動 | **完了**（2026-10-21。W1〜W4 ビルド・テスト成功、実機確認済み） | `Phase10-Step1-Plan.md` |
-| Step2 | 共通の編集画面の骨格（ViewModel の分離、Controls／SA の 2 モード化、優先順位・抑制の仕様の特性化テスト） | **W0〜W2 完了**（2026-10-21。W0＝特性化テスト［§7 の仕様と現行の挙動が一致］、W1＝ViewModel の分離、W2＝トリガーの一覧のデータ駆動化）。W3（Controls のモードの画面）以降は未着手。C-5 の調査は完了（§4） | `Phase10-Step2-Plan.md` |
-| Step3 | 保存形式の拡張（Controls に SA 専用の種別・項目。SA の文字列の受け渡しを、型のある独立した項目へ。Q7）と、往復変換のテスト | 未着手 | |
-| Step4 | Controls 側の各種別の移植。選択ダイアログ `BindingWindow` の統一（Record A Macro、Toggle、Scan Code の削除）、Execute Mode／Scan Code を共通画面の Macro タブへ | 未着手 | |
-| Step4b | SA 側のアナログ出力（固定値の強さ） | 未着手 | |
-| Step5 | SA 専用の種別を Controls で実行する経路（`ControlBindingBuilder` の拡張） | 未着手 | |
-| Step6 | 旧 `BindingWindow`／旧エディタの撤去、モデル図・文書の更新、完了報告書 | 未着手 | |
+| Step2 | 共通の編集画面の骨格（ViewModel の分離、Controls／SA の 2 モード化、優先順位・抑制の仕様の特性化テスト） | **完了**（2026-10-21。W0〜W5。ビルド・テスト成功、実機確認済み） | `Phase10-Step2-Plan.md`（§9 に完了の記録、未接続のコードの一覧、Step3・4 への引き継ぎ） |
+| Step3（繰り上げ） | **Controls タブを割り当てエディターへ接続する**（選択ダイアログ `BindingWindow`＝出力ピッカーの統一、6 か所の呼び出しを、左ペイン全体に重ねる割り当てエディターへ切り替え） | 計画書は確定（Q1〜Q4 回答済み）。ユーザーの承認待ち（2026-10-21） | `Phase10-Step3-Plan.md` |
+| Step3b（追加） | Touchpad タブとジャイロタブを左ペインへ移す（レイアウトのみ。ユーザーの方針、2026-10-21） | 未着手 | |
+| Step4 | 保存形式の拡張と、Controls での SA 専用の種別の実行（旧 Step3＋旧 Step5）。Step3 のあとで、実施するか・後回しにするかを判断 | 未着手 | |
+| Step5 | SA 側のアナログ出力（旧 Step4b） | 未着手 | |
+| Step6 | SA の文字列の受け渡しを型のある項目へ（Q7）、旧画面の撤去・改名、モデル図・文書の更新、完了報告書 | 未着手 |  |
 
 ## 2. Step1 の Wave
 
@@ -53,6 +53,13 @@ Step1: `Phase10-Step1-Plan.md`
 - ラベル「Output Key/Mouse/Button」（`SpecialActionEdit.PressKey`）は、全言語で英語を表示するため、オランダ語・ロシア語・簡体字中国語の旧訳（Press/Toggle key）の項目を削除した（既定の英語へフォールバック）。翻訳を戻す場合は、Phase9-I の翻訳整理で行う。
 - SA の「Execute Mode:」のラベルは、翻訳キーを持たない直書き（`Switch Mode:` と同様）。
 
+## 5b. Step2 の結果（2026-10-21）
+
+- W0: 優先順位・抑制の仕様（条件 1・2、R2〜R7、R9）は、現行の挙動と**一致**していた。R1・R8・R10 は、時間依存・切替・保存先の都合で、固定していない（`Phase10-Step2-Plan.md` §8）。
+- W1〜W4: 共通の編集画面の骨格を作った。SA のモードは従来と同じ動作。Controls のモードは、骨格と、設定との変換まで作ったが、**呼び出し元がない**（Step4 で接続）。
+- 実機確認で見つけた、以前からの不具合 1 件を是正（無効な入力で、保存を押すと、編集画面が空になる）。
+- 持ち越し C-5（Button の Toggle）: 共通の編集画面は、Key と Button の両方に Toggle を書ける（W4）。従来の選択ダイアログの欠落は、Step4 で、ダイアログの Toggle を削除して解消する。
+
 ## 6. 次の作業
 
-- Step2 の個別計画書（共通の編集画面の骨格。ViewModel の分離、2 モード化、§7 の優先順位・抑制の特性化テスト。条件 2 の後半［同じフレームで最後のボタンが抑制されるか］の確認から）を作る。承認後に着手する。
+- Step3（Controls タブを共通画面へ接続する）の個別計画書（`Phase10-Step3-Plan.md`）を、ユーザーが確認してコミットする。承認後に、W0 から着手する（Q1〜Q4 は回答済み。Step3 の後に、Step3b［Touchpad・ジャイロのタブを左ペインへ移す］）。

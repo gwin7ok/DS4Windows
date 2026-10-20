@@ -3,7 +3,7 @@
 作成日: 2026-10-21  
 対象ブランチ: `For-DI-migration-work`  
 上位: `Phase10-Assignment-UI-Unification-Plan.md`（§5 Step2、§6 決定事項、§7 優先順位と抑制の仕様）、`Phase10-Status.md`  
-状態: **方針承認済み（§7）。承認をもらい次第、Wave 0 から着手する**
+状態: **完了（2026-10-21。W0〜W5。ビルド・テスト成功、実機確認済み）。進捗は `Phase10-Status.md`**
 
 ---
 
@@ -81,7 +81,7 @@ SA の編集画面（`SpecialActionEditor`）を土台にして、**Controls の
 
 各 Wave の後に、ユーザーがビルドと `dotnet test` を実行する。画面を変える Wave は、実機（画面）の確認を付ける。
 
-1. **W0: 優先順位・抑制の特性化テストと、C-5／B-11 の再現**（製品コードは変えない）（**実装済み。1 回目のテスト実行で 6 件が失敗したが、原因はテストの足場［SA の Fresh-press ガードが、新しい SA でオンのまま始まる］で、製品コードの食い違いではなかった。足場を直し、再実行待ち**。新規テスト: `Phase10Step2W0PriorityAndSuppressionCharacterizationTests`［条件 1・2、R2〜R7、R9、対照］、`Phase10Step2W0ButtonToggleReproTests`［C-5／B-11］）
+1. **W0: 優先順位・抑制の特性化テストと、C-5／B-11 の再現**（製品コードは変えない）（**完了。1 回目のテスト実行で 6 件が失敗したが、原因はテストの足場［SA の Fresh-press ガードが、新しい SA でオンのまま始まる］で、製品コードの食い違いではなかった。足場を直し、全成功。現行の挙動は §7 の仕様と一致**。新規テスト: `Phase10Step2W0PriorityAndSuppressionCharacterizationTests`［条件 1・2、R2〜R7、R9、対照］、`Phase10Step2W0ButtonToggleReproTests`［C-5／B-11］）
    - 既存のテストの足場（`SpecialActionTestScope`、`ControlsKeyTestScope`、`RunMapCustom`）で、フレーム列（押す・離すの順序）を入力し、`Phase10-Assignment-UI-Unification-Plan.md` §7 の条件 1・2 と R1〜R10 を固定する。
      - 条件 1: 同じボタンに Controls と SA があるとき、SA が成立したら、Controls の出力が出ない。
      - 条件 2: 複数ボタンのトリガーで、成立の手前までに押したボタンの Controls の出力は出る。最後のボタン（同じフレーム）は出ない。同時押し（同じフレーム）は、全ボタンが抑制される。
@@ -97,10 +97,10 @@ SA の編集画面（`SpecialActionEditor`）を土台にして、**Controls の
    - テスト: 項目の並びと名前が、従来の XAML と一致すること。読み込み・選択・解除の動作。
    - 実機（画面）の確認: SA の新規作成・編集で、トリガーの選択・保存・再読み込みが従来どおり。既存の SA のトリガーが、すべて正しく復元される。
 4. **W3: Controls のモードの画面**（Name 欄の読み取り専用、トリガーの 1 つ固定、種別の一覧の無効化、Save／Cancel）。呼び出しは接続しない。
-   - **W3 の実装（2026-10-21、ビルド・テスト・実機確認待ち）**: 新規（`DS4Forms/ViewModels/`）: `ControlTriggerSource`（対象のボタン 1 つに固定）、`ControlEditTarget`（名前＝ボタンの表示名で固定、検査なし）、`ControlActionEditorViewModel`（Controls のモードの ViewModel）。変更: `ActionEditorViewModel`（`Mode`、`IsTypeEnabled(index)`、`ActionNameReadOnly`）、`SpecialActionEditor.xaml`（名前の欄に `IsReadOnly` の結び）、`SpecialActionEditor.xaml.cs`（Controls のモードの公開コンストラクターを追加［SA のモードの公開コンストラクターは不変］、種別の一覧の項目を、保存できる種別だけ有効にする、`ControlSaved` と、入力が無効なときの扱い）、`IEditorWindowFactory`／`EditorWindowFactory`（`CreateControlActionEditor`。呼び出し元はまだなく、TODO コメント）。保存の中身（`DS4ControlSettings` への書き込み）は W4。テスト: `Phase10Step2W3ControlTriggerSourceTests`、`Phase10Step2W3ControlEditTargetTests`、`Phase10Step2W3ControlActionEditorViewModelTests`、`Phase10Step2W3ControlModeGuardTests`（呼び出し元がないこと）。**Controls のモードの画面は、Step2 では、ユーザーの操作から開けない**（Q2）。実機（画面）で確認する対象は、SA のモードの回帰だけ（名前の欄が編集できる、種別の一覧が全部選べる）。
+   - **W3 の実装（2026-10-21、完了。ビルド・テスト成功、実機確認済み）**: 新規（`DS4Forms/ViewModels/`）: `ControlTriggerSource`（対象のボタン 1 つに固定）、`ControlEditTarget`（名前＝ボタンの表示名で固定、検査なし）、`ControlActionEditorViewModel`（Controls のモードの ViewModel）。変更: `ActionEditorViewModel`（`Mode`、`IsTypeEnabled(index)`、`ActionNameReadOnly`）、`SpecialActionEditor.xaml`（名前の欄に `IsReadOnly` の結び）、`SpecialActionEditor.xaml.cs`（Controls のモードの公開コンストラクターを追加［SA のモードの公開コンストラクターは不変］、種別の一覧の項目を、保存できる種別だけ有効にする、`ControlSaved` と、入力が無効なときの扱い）、`IEditorWindowFactory`／`EditorWindowFactory`（`CreateControlActionEditor`。呼び出し元はまだなく、TODO コメント）。保存の中身（`DS4ControlSettings` への書き込み）は W4。テスト: `Phase10Step2W3ControlTriggerSourceTests`、`Phase10Step2W3ControlEditTargetTests`、`Phase10Step2W3ControlActionEditorViewModelTests`、`Phase10Step2W3ControlModeGuardTests`（呼び出し元がないこと）。**Controls のモードの画面は、Step2 では、ユーザーの操作から開けない**（Q2）。実機（画面）で確認する対象は、SA のモードの回帰だけ（名前の欄が編集できる、種別の一覧が全部選べる）。
    - テスト: Controls のモードで、Name が対象のボタン名で編集不可、トリガーが 1 つで変更不可、保存できない種別が無効、など。
 5. **W4: Controls のモードの変換と、編集用のコピー**（`ControlSettingsEditTarget`）
-   - **W4 の実装（2026-10-21、ビルド・テスト待ち）**: 新規: `ControlSettingsEditTarget`（`DS4ControlSettings` の編集用のコピー。`LoadInto`［設定 → Press Key／Macro の入力］、`WriteFrom`［入力 → コピー。Default／Key／Button／Macro］、`Apply`［Save。元へ反映］、`Discard`［Cancel。コピーを捨てる］、`InitialTypeIndex`）。`extras` は、編集せず保つ。**Toggle は、Key と Button の両方に書く**（持ち越し C-5 の是正の土台。保存形式の `keyType` の `Toggle` フラグは、Button でも、すでに読み書きでき、実行側も対応済みのため、保存形式の変更は不要。ユーザー承認: 「Step3 まで待たずに W4 で書く」）。Button の Unbound は `Unbound` フラグだけ（Toggle なし）。変更: `PressKeyViewModel`（`SelectedActionType`／`SelectedButton` の読み取りを追加。SA のモードの動作は不変）、`ControlActionEditorViewModel`（`ControlSettingsEditTarget` を受けるコンストラクターを追加）、`SpecialActionEditor`（Controls のモードのコンストラクターを、`DS4Controls` から `DS4ControlSettings` を受ける形に変更［呼び出し元なし］。読み込み・書き出し・`ControlSaved`）、`IEditorWindowFactory`／`EditorWindowFactory`（`CreateControlActionEditor` の引数を `DS4ControlSettings` に変更）。テスト: `Phase10Step2W4ControlSettingsEditTargetTests`（初期の種別、読み込み、書き出し［Toggle・Scan Code・Repeat・Unbound］、往復［11 種］、`extras` の保持、Apply／Discard、保存できない種別の拒否）。画面は変えていない。Step9 の B-11 の食い違い（パッドのボタン A で Toggle が設定される）は、W0 のテストで、ダイアログの Button の分岐が Toggle を書かないと確定済みで、この W4 の往復テストが、共通の編集画面では書けることを固定する。
+   - **W4 の実装（2026-10-21、完了。ビルド・テスト成功、実機確認済み）**: 新規: `ControlSettingsEditTarget`（`DS4ControlSettings` の編集用のコピー。`LoadInto`［設定 → Press Key／Macro の入力］、`WriteFrom`［入力 → コピー。Default／Key／Button／Macro］、`Apply`［Save。元へ反映］、`Discard`［Cancel。コピーを捨てる］、`InitialTypeIndex`）。`extras` は、編集せず保つ。**Toggle は、Key と Button の両方に書く**（持ち越し C-5 の是正の土台。保存形式の `keyType` の `Toggle` フラグは、Button でも、すでに読み書きでき、実行側も対応済みのため、保存形式の変更は不要。ユーザー承認: 「Step3 まで待たずに W4 で書く」）。Button の Unbound は `Unbound` フラグだけ（Toggle なし）。変更: `PressKeyViewModel`（`SelectedActionType`／`SelectedButton` の読み取りを追加。SA のモードの動作は不変）、`ControlActionEditorViewModel`（`ControlSettingsEditTarget` を受けるコンストラクターを追加）、`SpecialActionEditor`（Controls のモードのコンストラクターを、`DS4Controls` から `DS4ControlSettings` を受ける形に変更［呼び出し元なし］。読み込み・書き出し・`ControlSaved`）、`IEditorWindowFactory`／`EditorWindowFactory`（`CreateControlActionEditor` の引数を `DS4ControlSettings` に変更）。テスト: `Phase10Step2W4ControlSettingsEditTargetTests`（初期の種別、読み込み、書き出し［Toggle・Scan Code・Repeat・Unbound］、往復［11 種］、`extras` の保持、Apply／Discard、保存できない種別の拒否）。画面は変えていない。Step9 の B-11 の食い違い（パッドのボタン A で Toggle が設定される）は、W0 のテストで、ダイアログの Button の分岐が Toggle を書かないと確定済みで、この W4 の往復テストが、共通の編集画面では書けることを固定する。
    - テスト: `DS4ControlSettings` の往復（Default／Key／Button／Macro、Toggle／Scan Code／Repeat、`extras` の保持）。Cancel で元が変わらないこと。Button の Toggle が保たれること（C-5 の土台）。
 6. **W5: 文書**: `Phase10-Status.md`、本書の完了の記録、実機確認の台帳の追加、モデル図（必要なら）の更新。
 
@@ -136,3 +136,35 @@ SA の編集画面（`SpecialActionEditor`）を土台にして、**Controls の
 | R9（無効な SA は抑制しない） | テストで固定（`R9_*`。プロファイルの有効な SA の一覧から外す） |
 | R10（Controls に割り当てた SA 専用の種別） | **固定できない**。Controls に SA 専用の種別を保存する場所は、Step3 まで存在しない。Step3・Step5 の後に、テストを足す |
 
+## 9. 完了の記録（2026-10-21）
+
+### 9.1 達成したこと
+
+| Wave | 内容 | 結果 |
+|---|---|---|
+| W0 | 優先順位・抑制の仕様（§7、R1〜R10）の特性化テストと、C-5／B-11 の再現 | 現行の挙動が仕様と**一致**（食い違いなし）。Button の Toggle の欠落（ダイアログが Key にしか書かない）を、テストで確定 |
+| W1 | ViewModel の分離（`ActionTypeCatalog`、`IActionTriggerSource`、`IActionEditTarget`、`ActionEditorViewModel`、`ActionTypeEditorSet`） | SA のモードは、従来と同じ動作（種別ごと 10 種の `SaveAction` の引数をテストで固定） |
+| W2 | トリガーの一覧のデータ駆動化（`TriggerCatalog`、`TriggerOptionViewModel`）。名前つきのチェックボックス 49＋49 個と、そのコードビハインドを撤去 | `SpecialActionEditor.xaml` 547 行 → 約 240 行、`.xaml.cs` 約 180 行減 |
+| W3 | Controls のモードの画面（名前＝ボタン名で固定、トリガー 1 つで固定、種別の一覧は保存できるものだけ有効） | 呼び出し元なし（Q2） |
+| W4 | `ControlSettingsEditTarget`（`DS4ControlSettings` の編集用のコピー、読み込み・書き出し・Apply／Discard。Toggle を Key と Button の両方に書く） | 往復 11 種をテストで固定。保存形式の変更なし |
+
+### 9.2 実機確認で見つかり、是正した、以前からの不具合
+
+| # | 不具合 | 是正 |
+|---|---|---|
+| 1 | SA の編集で、入力が無効なとき（トリガーなし、名前が空、種別未選択）に保存を押すと、エラーが表示されず、編集画面が空になる | `SaveBtn_Click` が、無効なときも先にデータの結びつきを外していたため。外すのは保存できるときだけにした（W2） |
+
+### 9.3 未接続のコード（Step4 で接続。規約 3.3 原則 4 の TODO コメントを付けてある）
+
+| コード | 状態 | 接続の予定 |
+|---|---|---|
+| `IEditorWindowFactory.CreateControlActionEditor` と実装 | 呼び出し元なし（ソース走査ガード `Phase10Step2W3ControlModeGuardTests` が、呼び出し元がないことを固定） | Step4: `ProfileEditor` の Controls タブが、従来の `BindingWindow` の代わりに使う |
+| `SpecialActionEditor` の Controls のモード（`ControlSaved` の受け手） | 受け手なし | Step4 |
+| `ControlSettingsEditTarget`、`ControlActionEditorViewModel`、`ControlTriggerSource`、`ControlEditTarget` | `SpecialActionEditor` の Controls のモードからだけ使われる | Step4 |
+
+### 9.4 次の Step への引き継ぎ（2026-10-21 の順序の改訂を反映）
+
+- **Step3（繰り上げ）**: Controls タブを共通画面へ接続する（`Phase10-Step3-Plan.md`）。選択ダイアログ `BindingWindow`＝出力ピッカーの統一（Extras は出力ピッカーに残す。Record A Macro、Toggle、Scan Code の削除。Default／Unbound は Controls のときだけ出す）、`ProfileEditor` の 6 か所の呼び出しの切り替え。保存形式は変えない。
+- **Step4**: 保存形式の拡張（Controls で保存できる種別を増やす）と、Controls での SA 専用の種別の実行。Step3 のあとで、実施するか後回しにするかを判断する。`ActionTypeDescriptor.SavableIn` の Controls の指定を、保存形式の拡張に合わせて増やす。
+- **Step6**: SA の文字列の受け渡しを、型のある独立した項目に置き換える（Phase10 計画書 §6 Q7）。
+- **既知の事項（Step2 では変えていない）**: 種別ごとの入力（Macro、Program ほか）の検証（`IsValid`）は、エラーを記録するが、**常に「有効」を返す**。そのため、手順が空のマクロやパスのないプログラムでも、保存できる。

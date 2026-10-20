@@ -65,15 +65,14 @@ Controls タブ（トリガー＝単体のボタン）と SpecialActions（SA）
 - **Step1（完了 2026-10-21）: マクロの再生オプションの共通部品**（Controls と SA。個別計画書: `Phase10-Step1-Plan.md`）
   - 範囲（2026-10-21 改訂）: SA の Macro タブに Execute Mode（Play Once／Repeat While Held のドロップダウン）を追加し、SA から開く記録画面（`RecordBox`）の繰り返し・Scan Code を消す。Press Key の Scan Code を選択ダイアログからタブへ移し、ダイアログの Toggle と Scan Code を（SA から開く場合に）消す。部品は `MacroPlaybackOptions` と `MacroPlaybackOptionsPanel`。**Controls 側の画面は、共通の編集画面（Step2）ができるまで変えない**（Controls は、選択ダイアログの「Record A Macro」「Toggle」「Scan Code」が唯一の設定場所のため）。Run on release、Sync、Keep key state を Controls に出すことは、保存形式の拡張が要るため **Step3 に回す**（承認済み）。
   - 繰り返しのフラグは、`Phase8-Fix-MacroRepeatUnify` で `RepeatMacro` に統合済みのため、保存・読み込み・実行側の統一は不要。
-- **Step2: 共通画面の骨格**。ViewModel の分離（P4）と、Controls／SA の 2 モード化（トリガーの供給元、Name 欄、保存先）。
-- **Step3: 保存形式の拡張**（Q1 で案 A の場合）と、往復変換のテスト（P7）。読込のテストを先に作る。
-- **Step4: Controls 側の各種別の移植**（Key、Button、マウス、Extras）。`BindingWindow` の視覚的な選択 UI の埋め込み（P5）。
-  - **選択ダイアログ `BindingWindow` の統一**（ユーザーの指示、2026-10-21）: 現在の 2 つのモード（Controls 用の `Full` と、SA の Press Key 用の `ForPressToggle`。ほかに `Keyboard`）を 1 つの画面にし、**「Record A Macro」ボタンと「Toggle」チェックボックスを削除**する。マクロの登録は、1 つ前のメニュー（共通の編集画面の Macro）から行い、Toggle は、共通の編集画面の Press Key の「Switch Mode」（Press／Toggle）で設定する。選択ダイアログは、キー・ボタン・マウスの**選択だけ**を担う。Scan Code のチェックボックスは残す。
-  - **前提**: 共通の編集画面（Step2）が先にできていること。現状、Controls は、この画面の「Record A Macro」と「Toggle」が、マクロと Toggle を設定する**唯一の場所**のため、共通画面より前に削除すると、Controls で設定できなくなる。
-  - 副次の効果: Switch Mode は Key と Button の両方に効くため、C-5 の欠落（マウスボタン・パッドのボタンに Toggle を書けない）が、この画面の統一で解消する。
-  - Default／Unbound ボタンと Extras パネルの扱いは §6 Q6 のとおり。
-- **Step5: SA 専用の種別を Controls で実行する経路**（`ControlBindingBuilder` の拡張）。
-- **Step6: 旧 `BindingWindow`／旧エディタの撤去**、モデル図・文書の更新、完了報告書。
+- **Step2（完了 2026-10-21）: 共通画面の骨格**。ViewModel の分離（P4）と、Controls／SA の 2 モード化（トリガーの供給元、Name 欄、保存先）。個別計画書: `Phase10-Step2-Plan.md`。
+- **Step3（繰り上げ。2026-10-21 の順序の改訂）: Controls タブを共通画面へ接続する**（旧 Step4）。個別計画書: `Phase10-Step3-Plan.md`。
+  - **順序を変えた理由**（ユーザーの確認、2026-10-21）: 「2 つのタブから共通の割り当て設定画面を開く」（UI の統一）は、保存形式の拡張を**必要としない**。Step2 で、Controls のモードは、「今 Controls が保存できる種別［Key・Button・Macro］だけ選べて、ほかはグレーアウト」になっている。保存形式を広げずに、Controls タブを共通画面へ接続すれば、**機能は減らず**、UI が統一される。Controls で SA 専用の種別を選べるようにする作業（保存形式の拡張）は、後から足せる（グレーアウトの項目が、選べるようになるだけ）。
+  - 範囲: Controls の割り当ての編集（6 か所の呼び出し）を、従来の選択ダイアログ `BindingWindow` から、割り当てエディター（左ペイン全体に重ねて表示）へ切り替える。選択ダイアログ `BindingWindow` は、**出力ピッカー**として、エディターの「Select a Key」から開く（Record A Macro、Toggle、Scan Code を削除。Default／Unbound と Extras は、Controls のときだけ出す。Extras は、エディターへは移さず、出力ピッカーに残す）。C-5（Button の Toggle）は、共通画面の Switch Mode で解消する（Step2 W4 で書き出しは対応済み）。
+- **Step3b（追加。2026-10-21、ユーザーの方針）: Touchpad タブとジャイロタブを左ペインへ移す**。2 つは、入力から出力への割り当て（Swipe、Tilt）が主な機能のため。Axis Config、Lightbar、Other は右ペインに残す。左ペインの幅［470］に全メニューが収まることは、ユーザーが画面で確認済み。レイアウトの変更のみで、ロジックは変えない。Step3 の割り当てエディターの表示場所（左ペイン全体）は、タブの位置に依存しない。個別計画書は、Step3 の完了後に作る。
+- **Step4: 保存形式の拡張と、Controls での SA 専用の種別の実行**（旧 Step3＋旧 Step5）。`DS4ControlSettings`／`Profile.xml` に、SA 専用の種別・項目（プログラム起動、プロファイル切替、DisconnectBT、バッテリー確認、MultiAction、較正、Run on release、Sync、Keep key state、Hold 秒数）と、SA 側の Extras の保存先を足す。`ControlBindingBuilder` を拡張して、Controls のボタンから、これらを実行する。往復変換と読込のテストを先に作る。**Step3 のあとで、実施するか・後回しにするかを、ユーザーが判断する**（Controls で SA 専用の種別が必要になったとき）。
+- **Step5: SA 側のアナログ出力**（旧 Step4b。マウス移動・ホイール・アナログ軸を、固定値の強さで出す）。
+- **Step6: SA の文字列の受け渡しを、型のある独立した項目へ**（§6 Q7）、**旧 `BindingWindow`／旧エディタ（Full のモード、Extras のコード）の撤去**、`SpecialActionEditor` の `AssignmentEditor` への改名、モデル図・文書の更新、完了報告書。
 
 各 Step の前に、個別計画書を作り、承認を得る。実機（画面）の確認項目は、`Phase6-Step11-RealDevice-Verification-Checklist.md` §11 の台帳に追加する。
 

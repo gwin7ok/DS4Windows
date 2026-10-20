@@ -336,6 +336,7 @@ classDiagram
         +CreatePresetOptionWindow()
         +CreateStickCalibrationWindow(stick, device, profileSettingsViewModel)
         +CreateSpecialActionEditor(deviceNum, profileList, targetDevice, specialAction)
+        +CreateControlActionEditor(deviceNum, controlSettings, profileList, targetDevice)
     }
     class EditorWindowFactory {
         -IProfileSettingsService _profileSettings
@@ -715,3 +716,7 @@ classDiagram
 %% - 判定（IInputAction＝ComboTriggerInputAction／MultiTapInputAction）と実行（IOutputAction）を TriggerBinding が束ね、ITriggerDispatchEngine が、エッジ検出・Fresh-press ガード・抑制・復帰を一元的に担う。実行時の状態は IManagedActionManager（ActionInstanceState）に残す。
 %% - IActionRegistry は、スロットごとの不変リストを参照ごと差し替える（Register／Unregister／GetBindingsForDevice は廃止）。IActionBinding の OnTriggered／OnReleased は廃止（ライフサイクルはエンジン）。
 %% - 出力アクションは、既存の MacroAction／ProfileSwitchAction／LaunchProcessAction をそのまま使い、KeyOutputAction は KeyAction へ委譲する形に書き直す。ButtonOutputAction は新設（毎フレームの出力）。デバイスを要する種別（DisconnectBT ほか）は Step7.6 で追加。
+%% 注釈補強（2026-10-21 Phase10-Step2 反映: 共通の編集画面の骨格）
+%% - 編集画面の ViewModel を、役割ごとに分けた（`DS4Forms/ViewModels/`）。`ActionEditorViewModel`（共通の土台）は、`IActionTriggerSource`（SA: `SpecialActionTriggerSource`＝複数のボタン。Controls: `ControlTriggerSource`＝対象のボタン 1 つで固定）、`IActionEditTarget`（SA: `SpecialActionEditTarget`＝名前の検査つき。Controls: `ControlSettingsEditTarget`＝`DS4ControlSettings` の編集用のコピー。名前はボタン名で固定）、`ActionTypeCatalog`（種別の一覧。`ActionTypeDescriptor` ごとに、使えるモードと、今保存できるモード）、`TriggerCatalog`（トリガーの一覧 49 項目）に委譲する。派生は `SpecialActEditorViewModel`（SA のモード）と `ControlActionEditorViewModel`（Controls のモード）。
+%% - 種別ごとの入力（`MacroViewModel`、`PressKeyViewModel` ほか 7 つ）は `IActionTypeEditor` を実装し、`ActionTypeEditorSet` が、種別から対応する入力を選んで、読み込み・検証・保存を中継する。
+%% - 未接続: `IEditorWindowFactory.CreateControlActionEditor` と Controls のモードは、Phase10-Step4 まで呼び出し元がない（`Phase10-Step2-Plan.md` §9.3）。`BindingWindow`／`RecordBox` は、Step4〜6 で、共通の編集画面へ統合される。
