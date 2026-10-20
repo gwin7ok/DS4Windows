@@ -5,7 +5,7 @@ using DS4WinWPF.DS4Forms.ViewModels.Util;
 
 namespace DS4WinWPF.DS4Forms.ViewModels.SpecialActions;
 
-public class SpecialActionViewModel : NotifyDataErrorBase
+public class SpecialActionViewModel : NotifyDataErrorBase, IActionTypeEditor
 {
     private double holdInterval;
     public double HoldInterval { get => holdInterval; set => holdInterval = value; }

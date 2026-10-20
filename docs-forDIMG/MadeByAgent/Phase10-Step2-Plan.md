@@ -89,6 +89,7 @@ SA の編集画面（`SpecialActionEditor`）を土台にして、**Controls の
    - C-5／B-11 の再現: `OutBinding.WriteBind` の Button の分岐が、Toggle を書かない（現行の挙動）ことを、テストで固定する。Step9 の B-11 の記録（「パッドのボタン A では Toggle が設定される」）との食い違いの原因（Toggle が、既存の Key の設定から残ったか、など）を、再現して確定する。
    - 現行のコードが、仕様（§7）と**食い違う**場合は、不具合として扱い、是正の承認を得る（実装の前に、結果を報告する）。
 2. **W1: ViewModel の分離**（`IActionTriggerSource`、`IActionEditTarget`、`ActionTypeDescriptor`、`ActionEditorViewModel`。SA のモード）
+   - **W1 の実装（2026-10-21、ビルド・テスト待ち）**: 新規（`DS4Forms/ViewModels/`）: `ActionEditorModes`、`ActionTypeDescriptor`、`ActionTypeCatalog`、`IActionTriggerSource`／`SpecialActionTriggerSource`、`IActionEditTarget`／`SpecialActionEditTarget`、`ActionEditorViewModel`（共通の土台）、`ActionTypeEditorSet`、`SpecialActions/IActionTypeEditor`。変更: `SpecialActEditorViewModel`（`ActionEditorViewModel` の薄い派生。公開メンバー・検証・エラーの文言は従来と同じ）、種別ごとの 7 つの ViewModel（`IActionTypeEditor` を実装）、`SpecialActionEditor.xaml.cs`（3 つの `switch` を `ActionTypeEditorSet` に置き換え）。画面（XAML）は変えていない。テスト: `Phase10Step2W1ActionTypeCatalogTests`、`Phase10Step2W1SpecialActionTriggerSourceTests`、`Phase10Step2W1SpecialActEditorViewModelTests`、`Phase10Step2W1ActionTypeEditorSetTests`（種別ごと 10 種の `SaveAction` の引数を固定）、`RecordingSpecialActionRepository`（記録用の偽物）。
    - テスト: 種別ごと（10 種）に、SA のモードの保存が、従来と同じ `SaveAction` の引数になること（`ISpecialActionRepository` の記録用の偽物で固定）。名前・トリガー・種別の検証が、従来と同じこと。
 3. **W2: トリガーの画面部品のデータ駆動化**（`TriggerSelectionPanel`。46＋46 個のチェックボックスの撤去）
    - テスト: 項目の並びと名前が、従来の XAML と一致すること。読み込み・選択・解除の動作。

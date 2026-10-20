@@ -41,6 +41,7 @@ namespace DS4WinWPF.DS4Forms
         private LaunchProgramViewModel launchProgVM;
         private LoadProfileViewModel loadProfileVM;
         private PressKeyViewModel pressKeyVM;
+        private ActionTypeEditorSet typeEditors;
         private SpecialActionViewModel disconnectBtVM;
         private CheckBatteryViewModel checkBatteryVM;
         private MultiActButtonViewModel multiActButtonVM;
@@ -130,6 +131,20 @@ namespace DS4WinWPF.DS4Forms
             multiActButtonVM = new MultiActButtonViewModel(specialActionRepository);
             saSteeringWheelVM = new SpecialActionViewModel(8, specialActionRepository);
             calibrateGyroVM = new SpecialActionViewModel(9, specialActionRepository);
+
+            // Phase10-Step2 W1: 種別ごとの入力の対応は、ActionTypeEditorSet に 1 か所で持つ（旧: LoadAction／CheckActionValid／SaveBtn_Click の 3 つの switch）
+            typeEditors = new ActionTypeEditorSet(new Dictionary<DS4Windows.SpecialAction.ActionTypeId, IActionTypeEditor>
+            {
+                [DS4Windows.SpecialAction.ActionTypeId.Macro] = macroActVM,
+                [DS4Windows.SpecialAction.ActionTypeId.Program] = launchProgVM,
+                [DS4Windows.SpecialAction.ActionTypeId.Profile] = loadProfileVM,
+                [DS4Windows.SpecialAction.ActionTypeId.Key] = pressKeyVM,   // Button も、Press Key のタブで編集する
+                [DS4Windows.SpecialAction.ActionTypeId.DisconnectBT] = disconnectBtVM,
+                [DS4Windows.SpecialAction.ActionTypeId.BatteryCheck] = checkBatteryVM,
+                [DS4Windows.SpecialAction.ActionTypeId.MultiAction] = multiActButtonVM,
+                [DS4Windows.SpecialAction.ActionTypeId.SASteeringWheelEmulationCalibrate] = saSteeringWheelVM,
+                [DS4Windows.SpecialAction.ActionTypeId.GyroCalibrate] = calibrateGyroVM,
+            });
 
             // Hide tab headers. Tab content will still be visible
             blankActTab.Visibility = Visibility.Collapsed;
@@ -232,40 +247,8 @@ namespace DS4WinWPF.DS4Forms
                 }
             }
 
-            switch (specialAction.typeID)
-            {
-                case DS4Windows.SpecialAction.ActionTypeId.Macro:
-                    macroActVM.LoadAction(specialAction);
-                    break;
-                case DS4Windows.SpecialAction.ActionTypeId.Program:
-                    launchProgVM.LoadAction(specialAction);
-                    break;
-                case DS4Windows.SpecialAction.ActionTypeId.Profile:
-                    loadProfileVM.LoadAction(specialAction);
-                    break;
-                case DS4Windows.SpecialAction.ActionTypeId.Key:
-                    pressKeyVM.LoadAction(specialAction);
-                    break;
-                case DS4Windows.SpecialAction.ActionTypeId.Button:
-                    // Button special actions use the same editor as Key (Press Key tab)
-                    pressKeyVM.LoadAction(specialAction);
-                    break;
-                case DS4Windows.SpecialAction.ActionTypeId.DisconnectBT:
-                    disconnectBtVM.LoadAction(specialAction);
-                    break;
-                case DS4Windows.SpecialAction.ActionTypeId.BatteryCheck:
-                    checkBatteryVM.LoadAction(specialAction);
-                    break;
-                case DS4Windows.SpecialAction.ActionTypeId.MultiAction:
-                    multiActButtonVM.LoadAction(specialAction);
-                    break;
-                case DS4Windows.SpecialAction.ActionTypeId.SASteeringWheelEmulationCalibrate:
-                    saSteeringWheelVM.LoadAction(specialAction);
-                    break;
-                case DS4Windows.SpecialAction.ActionTypeId.GyroCalibrate:
-                    calibrateGyroVM.LoadAction(specialAction);
-                    break;
-            }
+            // Phase10-Step2 W1: 種別に対応する入力へ読み込む（Button も、Press Key のタブ）
+            typeEditors.Load(specialAction);
         }
 
         private void ActionTypeCombo_SelectionChanged(object sender, SelectionChangedEventArgs e)
@@ -301,7 +284,7 @@ namespace DS4WinWPF.DS4Forms
                 // Duplicate-name validation is handled by the ViewModel (normalized
                 // comparison). No additional re-check here to avoid duplication
                 // and potential race conditions.
-                valid = CheckActionValid(tempAct, typeId);
+                valid = typeEditors.IsValid(typeId, tempAct);
             }
             else if (specialActVM.ExistingName)
             {
@@ -335,77 +318,11 @@ namespace DS4WinWPF.DS4Forms
                     editMode = false;
                 }
 
-                switch (typeId)
-                {
-                    case DS4Windows.SpecialAction.ActionTypeId.Macro:
-                        macroActVM.SaveAction(tempAct, editMode);
-                        break;
-                    case DS4Windows.SpecialAction.ActionTypeId.Program:
-                        launchProgVM.SaveAction(tempAct, editMode);
-                        break;
-                    case DS4Windows.SpecialAction.ActionTypeId.Profile:
-                        loadProfileVM.SaveAction(tempAct, editMode);
-                        break;
-                    case DS4Windows.SpecialAction.ActionTypeId.Key:
-                        pressKeyVM.SaveAction(tempAct, editMode);
-                        break;
-                    case DS4Windows.SpecialAction.ActionTypeId.DisconnectBT:
-                        disconnectBtVM.SaveAction(tempAct, editMode);
-                        break;
-                    case DS4Windows.SpecialAction.ActionTypeId.BatteryCheck:
-                        checkBatteryVM.SaveAction(tempAct, editMode);
-                        break;
-                    case DS4Windows.SpecialAction.ActionTypeId.MultiAction:
-                        multiActButtonVM.SaveAction(tempAct, editMode);
-                        break;
-                    case DS4Windows.SpecialAction.ActionTypeId.SASteeringWheelEmulationCalibrate:
-                        saSteeringWheelVM.SaveAction(tempAct, editMode);
-                        break;
-                    case DS4Windows.SpecialAction.ActionTypeId.GyroCalibrate:
-                        calibrateGyroVM.SaveAction(tempAct, editMode);
-                        break;
-                }
+                // Phase10-Step2 W1: 種別に対応する入力を保存する
+                typeEditors.Save(typeId, tempAct, editMode);
 
                 Saved?.Invoke(this, tempAct.name);
             }
-        }
-
-        private bool CheckActionValid(DS4Windows.SpecialAction action,
-            DS4Windows.SpecialAction.ActionTypeId typeId)
-        {
-            bool valid = false;
-            switch (typeId)
-            {
-                case DS4Windows.SpecialAction.ActionTypeId.Macro:
-                    valid = macroActVM.IsValid(action);
-                    break;
-                case DS4Windows.SpecialAction.ActionTypeId.Program:
-                    valid = launchProgVM.IsValid(action);
-                    break;
-                case DS4Windows.SpecialAction.ActionTypeId.Profile:
-                    valid = loadProfileVM.IsValid(action);
-                    break;
-                case DS4Windows.SpecialAction.ActionTypeId.Key:
-                    valid = pressKeyVM.IsValid(action);
-                    break;
-                case DS4Windows.SpecialAction.ActionTypeId.DisconnectBT:
-                    valid = disconnectBtVM.IsValid(action);
-                    break;
-                case DS4Windows.SpecialAction.ActionTypeId.BatteryCheck:
-                    valid = checkBatteryVM.IsValid(action);
-                    break;
-                case DS4Windows.SpecialAction.ActionTypeId.MultiAction:
-                    valid = multiActButtonVM.IsValid(action);
-                    break;
-                case DS4Windows.SpecialAction.ActionTypeId.SASteeringWheelEmulationCalibrate:
-                    valid = saSteeringWheelVM.IsValid(action);
-                    break;
-                case DS4Windows.SpecialAction.ActionTypeId.GyroCalibrate:
-                    valid = calibrateGyroVM.IsValid(action);
-                    break;
-            }
-
-            return valid;
         }
 
         private void ControlTriggerCheckBox_Click(object sender, RoutedEventArgs e)

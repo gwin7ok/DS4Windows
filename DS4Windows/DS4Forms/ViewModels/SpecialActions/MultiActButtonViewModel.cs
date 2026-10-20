@@ -27,7 +27,7 @@ using DS4WinWPF.DS4Forms.ViewModels.Util;
 
 namespace DS4WinWPF.DS4Forms.ViewModels.SpecialActions
 {
-    public class MultiActButtonViewModel : NotifyDataErrorBase
+    public class MultiActButtonViewModel : NotifyDataErrorBase, IActionTypeEditor
     {
         private List<int> tapMacro = new List<int>();
         private List<int> holdMacro = new List<int>();

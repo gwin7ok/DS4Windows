@@ -28,7 +28,7 @@ using DS4WinWPF.DS4Forms.ViewModels.Util;
 
 namespace DS4WinWPF.DS4Forms.ViewModels.SpecialActions
 {
-    public class LoadProfileViewModel : NotifyDataErrorBase
+    public class LoadProfileViewModel : NotifyDataErrorBase, IActionTypeEditor
     {
         private bool autoUntrigger;
         private ProfileList profileList;

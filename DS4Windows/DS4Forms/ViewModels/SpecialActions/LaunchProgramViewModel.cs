@@ -33,7 +33,7 @@ using DS4WinWPF.DS4Forms.ViewModels.Util;
 
 namespace DS4WinWPF.DS4Forms.ViewModels.SpecialActions
 {
-    public class LaunchProgramViewModel : NotifyDataErrorBase
+    public class LaunchProgramViewModel : NotifyDataErrorBase, IActionTypeEditor
     {
         private string filepath;
         private double delay;

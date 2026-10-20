@@ -29,7 +29,7 @@ using DS4WinWPF.DS4Forms.ViewModels.Util;
 
 namespace DS4WinWPF.DS4Forms.ViewModels.SpecialActions
 {
-    public class MacroViewModel : NotifyDataErrorBase, System.ComponentModel.INotifyPropertyChanged
+    public class MacroViewModel : NotifyDataErrorBase, System.ComponentModel.INotifyPropertyChanged, IActionTypeEditor
     {
         public event System.ComponentModel.PropertyChangedEventHandler PropertyChanged;
         private void OnPropertyChanged(string name) => PropertyChanged?.Invoke(this, new System.ComponentModel.PropertyChangedEventArgs(name));

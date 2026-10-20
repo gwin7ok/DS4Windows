@@ -30,7 +30,7 @@ using System.ComponentModel;
 
 namespace DS4WinWPF.DS4Forms.ViewModels.SpecialActions
 {
-    public class PressKeyViewModel : NotifyDataErrorBase, INotifyPropertyChanged
+    public class PressKeyViewModel : NotifyDataErrorBase, INotifyPropertyChanged, IActionTypeEditor
     {
         public event PropertyChangedEventHandler PropertyChanged;
         private void OnPropertyChanged(string name) => PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(name));

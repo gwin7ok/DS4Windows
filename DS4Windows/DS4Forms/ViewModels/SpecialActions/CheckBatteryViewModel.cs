@@ -28,7 +28,7 @@ using DS4WinWPF.DS4Forms.ViewModels.Util;
 
 namespace DS4WinWPF.DS4Forms.ViewModels.SpecialActions
 {
-    public class CheckBatteryViewModel : NotifyDataErrorBase
+    public class CheckBatteryViewModel : NotifyDataErrorBase, IActionTypeEditor
     {
         private double delay;
         private bool notification;

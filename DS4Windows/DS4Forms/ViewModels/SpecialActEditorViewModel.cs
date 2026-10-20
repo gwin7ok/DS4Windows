@@ -17,198 +17,38 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
 
 using System;
-using System.Collections;
 using System.Collections.Generic;
-using System.ComponentModel;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using DS4Windows;
 using DS4Windows.DI;
-using DS4WinWPF.DS4Forms.ViewModels.Util;
 
 namespace DS4WinWPF.DS4Forms.ViewModels
 {
-    public class SpecialActEditorViewModel : NotifyDataErrorBase
+    /// <summary>
+    /// SA の編集画面（<c>SpecialActionEditor</c>）の ViewModel。Phase10-Step2 W1（Phase10-Step2-Plan.md §3.1）で、中身を
+    /// <see cref="ActionEditorViewModel"/>（共通の土台）へ移し、これは、SA のモードの部品（<see cref="SpecialActionTriggerSource"/>、
+    /// <see cref="SpecialActionEditTarget"/>、<see cref="ActionTypeCatalog"/>）を組み合わせるだけの薄い派生クラスにした。
+    /// 公開メンバー・検証・エラーの文言は、従来と同じ。
+    /// </summary>
+    public class SpecialActEditorViewModel : ActionEditorViewModel
     {
-        private int deviceNum;
-        private int actionTypeIndex = 0;
-        private string actionName;
-        private SpecialAction savedaction;
-        private SpecialAction.ActionTypeId[] typeAssoc = new SpecialAction.ActionTypeId[]
-        {
-            SpecialAction.ActionTypeId.None, SpecialAction.ActionTypeId.Macro,
-            SpecialAction.ActionTypeId.Program, SpecialAction.ActionTypeId.Profile,
-            SpecialAction.ActionTypeId.Key, SpecialAction.ActionTypeId.DisconnectBT,
-            SpecialAction.ActionTypeId.BatteryCheck, SpecialAction.ActionTypeId.MultiAction,
-            SpecialAction.ActionTypeId.SASteeringWheelEmulationCalibrate, SpecialAction.ActionTypeId.GyroCalibrate
-        };
+        private readonly SpecialActionTriggerSource specialTriggers;
 
-        private List<string> controlTriggerList = new List<string>();
-        private List<string> controlUnloadTriggerList = new List<string>();
-        private bool editMode;
         // Phase6-Step10-3-2: Global.GetActions の置換先（必須引数。ActionList は Global.GetActions と同じリスト）
-        private readonly ISpecialActionRepository specialActionRepository;
-
-        public int DeviceNum { get => deviceNum; }
-        public int ActionTypeIndex { get => actionTypeIndex; set => actionTypeIndex = value; }
-        public string ActionName { get => actionName; set => actionName = value; }
-        public SpecialAction.ActionTypeId[] TypeAssoc { get => typeAssoc; }
-        public SpecialAction SavedAction { get => savedaction; }
-        public List<string> ControlTriggerList { get => controlTriggerList; }
-        public List<string> ControlUnloadTriggerList { get => controlUnloadTriggerList; }
-        public bool EditMode { get => editMode; }
-
-        public bool TriggerError
-        {
-            get
-            {
-                return errors.TryGetValue("TriggerError", out List<string> _);
-            }
-        }
-
-        public bool ExistingName { get => existingName; }
-
-        private bool existingName;
-
-
         public SpecialActEditorViewModel(int deviceNum, SpecialAction action, ISpecialActionRepository specialActionRepository)
+            : this(deviceNum, new SpecialActionTriggerSource(), new SpecialActionEditTarget(specialActionRepository, action))
         {
-            this.specialActionRepository = specialActionRepository ?? throw new ArgumentNullException(nameof(specialActionRepository));
-            this.deviceNum = deviceNum;
-            savedaction = action;
-            editMode = savedaction != null;
         }
 
-        public void LoadAction(SpecialAction action)
+        private SpecialActEditorViewModel(int deviceNum, SpecialActionTriggerSource triggers, SpecialActionEditTarget target)
+            : base(deviceNum, triggers, target, new ActionTypeCatalog())
         {
-            foreach (string s in action.controls.Split('/'))
-            {
-                controlTriggerList.Add(s);
-            }
-
-            if (action.ucontrols != null)
-            {
-                foreach (string s in action.ucontrols.Split('/'))
-                {
-                    if (s != "AutomaticUntrigger")
-                    {
-                        controlUnloadTriggerList.Add(s);
-                    }
-                }
-            }
-
-            actionName = action.name;
-            for(int i = 0; i < typeAssoc.Length; i++)
-            {
-                SpecialAction.ActionTypeId type = typeAssoc[i];
-                if (type == action.typeID)
-                {
-                    actionTypeIndex = i;
-                    break;
-                }
-            }
-            // If action.typeID is Button but Button is not in typeAssoc (UI combines Key and Button into the "Press Key" tab),
-            // map Button to the same index as Key so the Press Key tab is selected.
-            if (action.typeID == SpecialAction.ActionTypeId.Button && actionTypeIndex == 0)
-            {
-                for (int i = 0; i < typeAssoc.Length; i++)
-                {
-                    if (typeAssoc[i] == SpecialAction.ActionTypeId.Key)
-                    {
-                        actionTypeIndex = i;
-                        break;
-                    }
-                }
-            }
+            specialTriggers = triggers;
         }
 
-        public void SetAction(SpecialAction action)
-        {
-            action.name = actionName;
-            action.controls = string.Join("/", controlTriggerList.ToArray());
-            if (controlUnloadTriggerList.Count > 0)
-            {
-                action.ucontrols = string.Join("/", controlUnloadTriggerList.ToArray());
-            }
-            action.typeID = typeAssoc[actionTypeIndex];
-        }
+        /// <summary>選ばれているトリガー（名前）。画面（チェックボックスのクリック）が、直接書き換える（W2 でデータ駆動の部品に置き換えるまで）。</summary>
+        public List<string> ControlTriggerList { get => specialTriggers.TriggerList; }
 
-        public override bool IsValid(SpecialAction action)
-        {
-            ClearOldErrors();
-
-            bool valid = true;
-            List<string> actionNameErrors = new List<string>();
-            List<string> triggerErrors = new List<string>();
-            List<string> typeErrors = new List<string>();
-
-            if (string.IsNullOrWhiteSpace(actionName))
-            {
-                valid = false;
-                actionNameErrors.Add("No name provided");
-            }
-            else if (!editMode || savedaction.name != actionName)
-            {
-                // Perform existing name check when creating a new action
-                // or if the action name has changed. Use normalized names so
-                // that case/whitespace differences are treated as duplicates.
-                var normNew = DS4Windows.Util.NormalizeActionName(actionName);
-                foreach (SpecialAction sA in specialActionRepository.ActionList)
-                {
-                    var normExisting = DS4Windows.Util.NormalizeActionName(sA?.name);
-                    if (string.Equals(normExisting, normNew, StringComparison.OrdinalIgnoreCase))
-                    {
-                        valid = false;
-                        actionNameErrors.Add("Existing action with name already exists");
-                        existingName = true;
-                        break;
-                    }
-                }
-            }
-
-            if (controlTriggerList.Count == 0)
-            {
-                valid = false;
-                triggerErrors.Add("No triggers provided");
-            }
-
-            if (ActionTypeIndex == 0)
-            {
-                valid = false;
-                typeErrors.Add("Specify an action type");
-            }
-
-            if (actionNameErrors.Count > 0)
-            {
-                errors["ActionName"] = actionNameErrors;
-                RaiseErrorsChanged("ActionName");
-            }
-            if (triggerErrors.Count > 0)
-            {
-                errors["TriggerError"] = triggerErrors;
-                RaiseErrorsChanged("TriggerError");
-            }
-            if (typeErrors.Count > 0)
-            {
-                errors["ActionTypeIndex"] = typeErrors;
-                RaiseErrorsChanged("ActionTypeIndex");
-            }
-
-            return valid;
-        }
-
-        public override void ClearOldErrors()
-        {
-            existingName = false;
-
-            if (errors.Count > 0)
-            {
-                errors.Clear();
-                RaiseErrorsChanged("ActionName");
-                RaiseErrorsChanged("TriggerError");
-                RaiseErrorsChanged("ActionTypeIndex");
-            }
-        }
+        /// <summary>解除トリガー（名前）。画面には出さないが、保存済みの値を保って書き戻す。</summary>
+        public List<string> ControlUnloadTriggerList { get => specialTriggers.UnloadTriggerList; }
     }
 }
