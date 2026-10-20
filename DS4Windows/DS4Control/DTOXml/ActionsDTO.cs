@@ -70,7 +70,10 @@ namespace DS4WinWPF.DS4Control.DTOXml
                         actionSerializer.Name = action.name;
                         actionSerializer.Trigger = action.controls;
                         actionSerializer.TypeString = action.type;
-                        actionSerializer.Details = action.details;
+                        // Phase10-Step1 W4（実機確認で発見。以前からの不具合）: action.details は、コンストラクターが「Scan Code」を除いたキーの値だけ
+                        // （keyType の ScanCode ビットに移してある）。そのまま書くと、Scan Code が Actions.xml に残らず、開き直すと外れていた。
+                        // 読み込み側（SpecialAction のコンストラクター）は、Details に「Scan Code」を含めば ScanCode を立てる（元の DS4Windows と同じ書式）
+                        actionSerializer.Details = action.keyType.HasFlag(DS4KeyType.ScanCode) ? action.details + " Scan Code" : action.details;
                         if (!string.IsNullOrEmpty(action.extra))
                         {
                             string[] exts = action.extra.Split('\n');

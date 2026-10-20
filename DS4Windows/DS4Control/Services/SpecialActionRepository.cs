@@ -134,7 +134,7 @@ namespace DS4Windows
             // Phase7-Step8 W1: 旧 Global.SaveAction の末尾の処理。キー型（mode==4）を保存したときだけ、当該キーの実行時状態をリセットする
             try
             {
-                if (mode == 4 && ushort.TryParse(details, out ushort savedKey))
+                if (mode == 4 && ushort.TryParse(details.Split(' ')[0], out ushort savedKey))   // Scan Code つきは「65 Scan Code」
                 {
                     _syntheticInput.ResetRuntimeStateForKey(savedKey);
                 }

@@ -91,6 +91,15 @@ Controls タブ（トリガー＝単体のボタン）と SpecialActions（SA）
 - **Q5＝許容する**: 新しいファイルを旧バージョンで読めなくなることを許容する。旧 → 新の読み込みは完全に保つ（読込テストを先に作る）。
 - **Q6＝Extras は両方で出す、Default／Unbound は Controls から開いたときだけ出す**（ユーザー決定、2026-10-21）: 統一した選択ダイアログに、Extras パネル（振動・ライトバー・マウス感度）を常に出す。Default／Unbound ボタンは、Controls のタブから開いたときだけ出す（SA から開いたときは隠す）。注意: SA 側で Extras を保存するには、`SpecialAction` に Extras の保存先が要る（Step3 の保存形式の拡張に含める。Q2＝「すべて出す」と整合）。
 
+- **Q7＝SA の文字列の受け渡しを、型のある独立した項目に置き換える（案 A。実装は Step3）**（ユーザー決定、2026-10-21）: 現在、SA の保存・読み込みは、文字列の組み立てで値を運んでいる。
+  - Key: キーの値と Scan Code を「65 Scan Code」の 1 つの文字列（`details`）で運び、スペースで分けて読む。Switch Mode と解除トリガーは、別の「`Press
+R1`」（改行区切り。`extras`）で運ぶ。
+  - Macro: `extras` に「Scan Code/RunOnRelease/Sync/KeepKeyState/Repeat」を `/` 区切りで詰め、`Contains` で調べる。
+  - これらを、`SpecialAction`、Actions.xml（`SpecialActionSerializer`、`ActionsDTO`）、`ISpecialActionRepository.SaveAction` の引数、各 ViewModel（`PressKeyViewModel`、`MacroViewModel` ほか）の水準で、**独立した項目**（Scan Code、Switch Mode、解除トリガー、Run on release、Sync、Keep key state、繰り返しなど）に置き換える。
+  - Step3 の保存形式の拡張（Controls への SA 専用項目の追加）と、同じ場面で行う。型のある項目にしておけば、Controls と SA で、同じ項目の定義を共有できる。
+  - 互換: 古い書式（「65 Scan Code」、`extras` の文字列）の**読み込みは、引き続き受け付ける**。新しい書式で保存したファイルは、古いバージョンでは読めない（Q5 で許容済み）。読込テストを、先に作る。
+  - Step1 W4 の応急の是正（`ActionsDTO` が Key の Scan Code を Details に「 Scan Code」と書く）は、Step3 でこの置き換えをするまでの暫定。
+
 ### 決定による Step への影響
 
 - Step3（保存形式の拡張）は必須になり、**範囲が広い**（`DS4ControlSettings` に全種別と項目を持たせる）。Step3 の個別計画書で、拡張する欄と XML の書式を決め、承認を得る。
