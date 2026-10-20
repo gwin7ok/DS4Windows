@@ -4,7 +4,7 @@
 改訂日: 2026-10-21（ユーザーの指示［Execute Mode の追加、記録画面からの削除、Scan Code の移動］を反映）  
 対象ブランチ: `For-DI-migration-work`  
 上位: `Phase10-Assignment-UI-Unification-Plan.md`（§5 Step1、§6 決定事項）、`Phase8-Fix-MacroRepeatUnify-Plan.md`  
-状態: **方針承認済み（§6）。承認をもらい次第、Wave 1 から着手する**
+状態: **完了（2026-10-21。W1〜W5。ビルド・テスト成功、実機確認済み）。進捗は `Phase10-Status.md`**
 
 ---
 
@@ -74,12 +74,12 @@ Press Key の値の流れ: `PrepareSettings` → `BindingWindow`（`OutBinding.W
    - Macro タブに Execute Mode を追加（チェックボックスの置き換え）。`RecordBox` の `ShowPlaybackOptions=false`。手の書き戻しを撤去。
    - テスト: `MacroViewModel.LoadAction`／`PrepareSettings`／`SaveAction` の往復（`Repeat`、`Scan Code`、他の extras を保つ）。
    - 実機（画面）の確認: SA の Macro の新規作成・編集・保存・再読み込み。記録画面にオプションが出ない。Press Key／MultiAction のマクロは従来どおり。
-4. **W4: SA の Press Key（Scan Code の移動）**（**実装済み、ビルド・テスト・実機確認待ち**。新規テスト: `Phase10Step1W4PressKeyScanCodeTests`。変更: `PressKeyViewModel.cs`［`UseScanCode`、`IsScanCodeEnabled`］、`SpecialActionEditor.xaml`［チェックボックス］、`BindingWindow.xaml.cs`［`ForPressToggle` で `topOptsPanel` を隠す］。設計上の判断: Scan Code は `keyType` とは別のフィールドで持つ。ボタンを選んで `keyType` が 0 になっても、選択を失わず、キーに戻したときに使える。ボタンのときは、チェックボックスを無効にする）
+4. **W4: SA の Press Key（Scan Code の移動）**（**完了（ビルド・テスト成功、実機確認済み。2026-10-21）**。新規テスト: `Phase10Step1W4PressKeyScanCodeTests`。変更: `PressKeyViewModel.cs`［`UseScanCode`、`IsScanCodeEnabled`］、`SpecialActionEditor.xaml`［チェックボックス］、`BindingWindow.xaml.cs`［`ForPressToggle` で `topOptsPanel` を隠す］。設計上の判断: Scan Code は `keyType` とは別のフィールドで持つ。ボタンを選んで `keyType` が 0 になっても、選択を失わず、キーに戻したときに使える。ボタンのときは、チェックボックスを無効にする）
    - **実機確認で見つかった、以前からの不具合（2026-10-21）**: SA の Press Key で、Scan Code にチェックを入れて保存しても、開き直すと外れていた。原因は、`ActionsDTO`（Actions.xml の書き出し）が、`SpecialAction` のコンストラクターで「Scan Code」を除かれた `details`（`"65"`）をそのまま Details に書き、`keyType` の `ScanCode` ビットを書いていなかったこと（以前は選択ダイアログのチェックボックスでも、同じ理由で保存されなかった）。是正: `ActionsDTO` の Key で、`ScanCode` のとき Details に「 Scan Code」を足して書く（読み込み側は、元の DS4Windows と同じ書式を既に解釈する）。あわせて、`SpecialActionRepository.SaveAction` のキー実行時状態のリセットが、「65 Scan Code」を数値として読めず飛ばされていた点も、先頭の語だけを読むよう是正（`Phase10Step1W4KeyActionScanCodePersistenceTests`）。**これは暫定の是正**: SA の文字列の受け渡し（`details` の「65 Scan Code」、`extras` の改行区切り・`/` 区切り）を、型のある独立した項目に置き換える作業は、Step3 で行う（`Phase10-Assignment-UI-Unification-Plan.md` §6 Q7）。
    - `PressKeyViewModel.UseScanCode`、Press Key タブのチェックボックス、`BindingWindow`（`ForPressToggle`）の Toggle／Scan Code の非表示。
    - テスト: `PressKeyViewModel` の `LoadAction`／`PrepareSettings`／`ReadSettings`／保存の往復で、`ScanCode` と Toggle が保たれる。ダイアログを通した後も、タブの値が保たれる。
    - 実機（画面）の確認: SA の Press Key（キー、パッドのボタン）で、Scan Code と Switch Mode の設定・保存・再読み込み。ダイアログに Toggle／Scan Code が出ない。Controls の選択ダイアログは従来どおり。
-5. **W5: 文書**: `Phase10-Status.md`（新規）、本書の完了の記録、`Phase6-Step11-RealDevice-Verification-Checklist.md` §11 への確認項目の追加、`Phase10-Assignment-UI-Unification-Plan.md` の Step1 の完了の記録。
+5. **W5: 文書**（**完了**）: `Phase10-Status.md`（新規）、本書の完了の記録、`Phase6-Step11-RealDevice-Verification-Checklist.md` §11 への確認項目の追加、`Phase10-Assignment-UI-Unification-Plan.md` の Step1 の完了の記録。
 
 ## 6. 決定事項（ユーザー承認、2026-10-21）
 

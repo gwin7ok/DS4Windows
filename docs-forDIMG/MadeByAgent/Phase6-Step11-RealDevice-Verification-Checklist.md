@@ -275,3 +275,19 @@ Phase7 で先送りしてきた実機確認（§11 の U-11〜U-22（総合検�
 - T-6（△）: 「Unload on trigger release」で元のプロファイルに戻らない。Phase7 の退行ではない既存の不具合（Phase6 完了時点も同じ構造。原因は `ClearDeviceState` が復帰の合図を消すこと）。Phase7-Status.md §5 に原因と是正案を記録し、総合検証の後に別の計画書で扱う。
 - 先送り: T-5、T-7、T-10、T-11、T-12、T-13、T-8 のうち振動テスト・ジャイロ校正・ライトバーの即時反映。対応する U-xx は「未」のまま残し、完了報告書に残課題として書く。
 - 判定: × が 0 件のため、**GO**（Phase7 の変更に起因する失敗はなかった）。△ は是正を別の計画書で行う。
+
+---
+
+## 13. Phase10-Step1 の実機確認（2026-10-21）
+
+`Phase10-Step1-Plan.md` の W2〜W4 の画面の変更を、実機（画面）で確認した。全項目 ○（不具合 2 件は、確認の途中で見つけて、是正後に再確認）。
+
+| ID | 項目 | 結果 |
+|---|---|---|
+| P10-1 | Controls のマクロ割り当て: 記録画面に「Execute Mode:」（ドロップダウン）と Scan Code が出る。記録中は Execute Mode だけが無効。Repeat While Held／Scan Code の設定・保存・再読み込み、繰り返し再生が従来どおり | ○ |
+| P10-2 | SA の Macro タブ: 「Execute Mode:」と Scan Code（左寄せ）が出る。「Repeat while held」のチェックボックスはない。新規作成・編集・保存・再読み込み、繰り返し再生 | ○ |
+| P10-3 | SA の記録画面（Macro、MultiAction の Tap／Hold／DoubleTap）: Execute Mode と Scan Code が出ない（記録専用）。記録後も、Macro タブの値が変わらない | ○ |
+| P10-4 | SA の Press Key（ラベル「Output Key/Mouse/Button」）: Switch Mode の下に Scan Code。選択ダイアログに Toggle／Scan Code が出ない。(SC) の表示、保存・再読み込みで Scan Code・Switch Mode が保たれる。ダイアログを通っても保たれる | ○ |
+| P10-5 | SA の Press Key で、パッドのボタンを選ぶと、Scan Code が無効になり、キーに戻すと、以前の選択が残る。Scan Code ありのキーが、実際に入力される | ○ |
+| P10-6 | Controls の選択ダイアログ: Toggle、Scan Code、Record A Macro が従来どおり出る（Step4 まで変えない） | ○ |
+| P10-7 | ラベルが全言語で英語（Output Key/Mouse/Button） | ○ |

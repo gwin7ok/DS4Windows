@@ -4,7 +4,7 @@
 改訂日: 2026-10-21（範囲を「マクロだけ」から「共通の編集画面への統合」へ拡大。`Phase8-Fix-MacroRepeatUnify` の影響を反映）  
 対象ブランチ: `For-DI-migration-work`  
 上位: `Phase8-Unified-Trigger-Dispatch-Plan.md`（D2＝B1: 違いはトリガーのボタン数だけ）、`Phase8-Step2b-ControlsTab-Design.md`、`Phase8-Step7-8c-Plan.md`（Controls の Macro を SA の仕様に合わせる）、`Phase8-Fix-MacroRepeatUnify-Plan.md`（マクロの繰り返しフラグの統合）、`Phase9-Responsibility-Split-Plan.md`  
-状態: **方針承認済み（2026-10-21、§6）。Step ごとの個別計画書を作り、承認を得てから着手する**
+状態: **方針承認済み（2026-10-21、§6）。Step1 完了（2026-10-21）。Step2 以降は、個別計画書を作り、承認を得てから着手する。進捗は `Phase10-Status.md`**
 
 ---
 
@@ -62,7 +62,7 @@ Controls タブ（トリガー＝単体のボタン）と SpecialActions（SA）
 
 ## 5. Step の構成（案）
 
-- **Step1: マクロの再生オプションの共通部品**（Controls と SA。個別計画書: `Phase10-Step1-Plan.md`）
+- **Step1（完了 2026-10-21）: マクロの再生オプションの共通部品**（Controls と SA。個別計画書: `Phase10-Step1-Plan.md`）
   - 範囲（2026-10-21 改訂）: SA の Macro タブに Execute Mode（Play Once／Repeat While Held のドロップダウン）を追加し、SA から開く記録画面（`RecordBox`）の繰り返し・Scan Code を消す。Press Key の Scan Code を選択ダイアログからタブへ移し、ダイアログの Toggle と Scan Code を（SA から開く場合に）消す。部品は `MacroPlaybackOptions` と `MacroPlaybackOptionsPanel`。**Controls 側の画面は、共通の編集画面（Step2）ができるまで変えない**（Controls は、選択ダイアログの「Record A Macro」「Toggle」「Scan Code」が唯一の設定場所のため）。Run on release、Sync、Keep key state を Controls に出すことは、保存形式の拡張が要るため **Step3 に回す**（承認済み）。
   - 繰り返しのフラグは、`Phase8-Fix-MacroRepeatUnify` で `RepeatMacro` に統合済みのため、保存・読み込み・実行側の統一は不要。
 - **Step2: 共通画面の骨格**。ViewModel の分離（P4）と、Controls／SA の 2 モード化（トリガーの供給元、Name 欄、保存先）。
