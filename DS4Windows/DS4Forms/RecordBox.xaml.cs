@@ -74,11 +74,8 @@ namespace DS4WinWPF.DS4Forms
             recordBoxVM = viewModelFactory.CreateRecordBoxViewModel(deviceNum, controlSettings, repeatable, targetDevice);
             mouseButtonsPanel.Visibility = Visibility.Hidden;
             extraConPanel.Visibility = Visibility.Hidden;
-            macroModeCombo.IsEnabled = repeatable;
-            if (!showscan)
-            {
-                useScanCode.Visibility = Visibility.Collapsed;
-            }
+            // Phase10-Step1 W2: Execute Mode と Scan Code は、共通部品 MacroPlaybackOptionsPanel（repeatable は PlaybackOptions.Repeatable に入る）
+            playbackPanel.ShowScanCode = showscan;
 
             ds4.Enabled = false;
             ds4.Elapsed += Ds4_Tick;
@@ -269,7 +266,7 @@ namespace DS4WinWPF.DS4Forms
             cancelBtn.IsEnabled = on;
             loadPresetBtn.IsEnabled = on;
             savePresetBtn.IsEnabled = on;
-            macroModeCombo.IsEnabled = on && recordBoxVM.Repeatable;
+            playbackPanel.AllowModeEdit = on;
             clearStepsBtn.IsEnabled = on;
             addWaitTimeBtn.IsEnabled = on;
         }

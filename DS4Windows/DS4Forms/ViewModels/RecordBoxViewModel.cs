@@ -45,8 +45,9 @@ namespace DS4WinWPF.DS4Forms.ViewModels
         private bool recordDelays;
         public bool RecordDelays { get => recordDelays; set => recordDelays = value; }
 
-        private int macroModeIndex;
-        public int MacroModeIndex { get => macroModeIndex; set => macroModeIndex = value; }
+        // Phase10-Step1 W2: 繰り返し（Execute Mode）と Scan Code は、共通の MacroPlaybackOptions に持つ（旧: macroModeIndex、useScanCode）
+        private MacroPlaybackOptions playbackOptions;
+        public MacroPlaybackOptions PlaybackOptions { get => playbackOptions; }
 
         private bool recording;
         public bool Recording { get => recording; set => recording = value; }
@@ -84,7 +85,6 @@ namespace DS4WinWPF.DS4Forms.ViewModels
         public int AppendIndex { get => appendIndex; set => appendIndex = value; }
         public int EditMacroIndex { get => editMacroIndex; set => editMacroIndex = value; }
         public Dictionary<int, bool> KeysdownMap { get => keysdownMap; }
-        public bool UseScanCode { get => useScanCode; set => useScanCode = value; }
         public static HashSet<int> KeydownOverrides { get => keydownOverrides; }
 
         private int editMacroIndex = -1;
@@ -96,10 +96,7 @@ namespace DS4WinWPF.DS4Forms.ViewModels
 
         private Dictionary<int, bool> ds4InputMap = new Dictionary<int, bool>();
 
-        private bool useScanCode;
-
-        private bool repeatable;
-        public bool Repeatable { get => repeatable; }
+        public bool Repeatable { get => playbackOptions.Repeatable; }
 
         /// <summary>
         /// Cached initial profile mode set for Touchpad.
@@ -147,22 +144,12 @@ namespace DS4WinWPF.DS4Forms.ViewModels
 
             this.deviceNum = deviceNum;
             settings = controlSettings;
-            if (settings.keyType.HasFlag(DS4KeyType.RepeatMacro))
-            {
-                macroModeIndex = 1;
-            }
-
-            if (settings.keyType.HasFlag(DS4KeyType.ScanCode))
-            {
-                useScanCode = true;
-            }
+            playbackOptions = MacroPlaybackOptions.FromKeyType(settings.keyType, repeatable);
 
             if (settings.actionType == DS4ControlSettings.ActionType.Macro)
             {
                 LoadMacro();
             }
-
-            this.repeatable = repeatable;
 
             BindingOperations.EnableCollectionSynchronization(macroSteps, _colLockobj);
 
@@ -216,16 +203,8 @@ namespace DS4WinWPF.DS4Forms.ViewModels
 
             settings.action.actionMacro = outmac;
             settings.actionType = DS4ControlSettings.ActionType.Macro;
-            settings.keyType = DS4KeyType.Macro;
-            if (macroModeIndex == 1)
-            {
-                // Phase8-Fix-MacroRepeatUnify（D1）: 「Repeat while held」は RepeatMacro だけで表す（旧: HoldMacro と RepeatMacro の両方）
-                settings.keyType |= DS4KeyType.RepeatMacro;
-            }
-            if (useScanCode)
-            {
-                settings.keyType |= DS4KeyType.ScanCode;
-            }
+            // Phase8-Fix-MacroRepeatUnify（D1）: 「Repeat while held」は RepeatMacro だけで表す（旧: HoldMacro と RepeatMacro の両方）
+            settings.keyType = playbackOptions.ApplyTo(DS4KeyType.Macro);
         }
 
         public void LoadPresetFromFile(string filepath)

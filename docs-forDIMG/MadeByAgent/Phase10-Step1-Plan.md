@@ -64,7 +64,7 @@ Press Key の値の流れ: `PrepareSettings` → `BindingWindow`（`OutBinding.W
 
 1. **W1: `MacroPlaybackOptions` と単体テスト**（画面は変えない。**実装済み、ビルド・テスト待ち**。ファイル: `DS4Forms/ViewModels/MacroPlaybackOptions.cs`、`DS4WindowsTests/Phase10Step1W1MacroPlaybackOptionsTests.cs`）
    - テスト: `FromKeyType`／`ApplyTo` の往復（`RepeatMacro`、`ScanCode`。他のビット［`Macro`、`Toggle`、`Unbound` など］を保つ）、`PlayModeIndex`↔`RepeatWhileHeld`、`Repeatable=false` でも読み込んだ `RepeatWhileHeld` を保つ、`PropertyChanged` の通知。
-2. **W2: `MacroPlaybackOptionsPanel` と、Controls（`RecordBox`）への適用**
+2. **W2: `MacroPlaybackOptionsPanel` と、Controls（`RecordBox`）への適用**（**実装済み、ビルド・テスト・実機確認待ち**。新規: `DS4Forms/MacroPlaybackOptionsPanel.xaml(.cs)`、`DS4WindowsTests/Phase10Step1W2RecordBoxPlaybackOptionsTests.cs`。変更: `RecordBox.xaml(.cs)`、`RecordBoxViewModel.cs`。パネルは、`AllowModeEdit`［記録中の一時無効］と `ShowScanCode`［従来の showscan］を持つ）
    - `RecordBoxViewModel` の `MacroModeIndex`／`UseScanCode` を `MacroPlaybackOptions` に置き換える。
    - テスト: 読み込みで `keyType` の `RepeatMacro`／`ScanCode` を復元、`ExportMacro` が `RepeatMacro` だけを立てる、既存の `RecordBoxViewModelTargetDeviceTests`・`Phase8FixMacroRepeatUnifyPersistenceTests` が成功。
    - 実機（画面）の確認: Controls のマクロで、Execute Mode／Scan Code の設定・保存・再読み込みが従来どおり。
