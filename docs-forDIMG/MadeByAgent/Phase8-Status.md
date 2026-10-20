@@ -60,6 +60,15 @@
 1. U-24 の実機確認: 済み（2026-10-19）。
 2. W2（特性化テスト B-1〜B-4）。`Phase8-Step1-Trigger-Spec-Ledger.md` §8・§9 の「意図が不明な挙動」を、固定する／固定しないを決める。
 
+## 6b. Phase8 完了後の不具合修正: マクロの「押している間繰り返す」フラグの統合（2026-10-21。完了）
+
+計画書: `Phase8-Fix-MacroRepeatUnify-Plan.md`。ビルド・テスト成功、実機確認済み（ログ確認でも異常なし）。
+
+- **不具合**: □に割り当てた「Repeat While Held」のマクロが、押しっぱなしで繰り返されない。原因は、Controls タブの XML に `HoldMacro` だけが保存され、`RepeatMacro` が落ちること（Phase8-Step7-8c の前提の誤り）。
+- **決定**: D1＝`HoldMacro` を `RepeatMacro` に統合、D2＝待ち時間は SA の仕様（50ms 待ちを廃止）、D3＝Controls の XML は `RepeatMacro` と保存し、旧値 `HoldMacro` は読込のみ受け付けて保存時に置換、D4＝設定ファイルの下位互換性は失ってよい、D5＝`PlayMacro` の `control != None` の死んだ経路（`macrodone`、`macroDispatchInFlight`）の整理を同じ Step で行う、Q2＝START GUARD ログの `control=`／`ControlDispatchInFlight=` の項目を削除。
+- **実装**: W1・W2（保存・読込、実行、編集画面、enum）、W3（死んだ経路の整理、`PlayMacroTask` の重複の統合 `RunMacroOnce`、K3 の解消）、W4（文書）。
+- **残る課題**: `EndMacroDirect`（`IMacroPlayer.Stop` の実体）は、従来も何もしない空処理で、TODO を付けて残した（Phase9 候補）。
+
 ## 7. 実行順序（2026-10-19 改訂。ユーザー承認）
 
 U-24 → Step1〜Step4 → **Step4b（`LoadProfile`／`SaveProfile` の分解ほか）** → Step5〜Step9 → **Phase9（巨大クラスの責務分割。`Phase9-Responsibility-Split-Plan.md`）**。`Mapping` の補正・マウス変換・マクロなどの分割は、Phase8 が `Mapping.cs` の旧ディスパッチを削除する前には行わない（二度手間と、実機確認の帰属の混乱を避けるため）。

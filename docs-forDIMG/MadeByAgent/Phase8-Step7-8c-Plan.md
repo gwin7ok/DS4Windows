@@ -7,6 +7,16 @@
 
 ---
 
+## 訂正（2026-10-21。`Phase8-Fix-MacroRepeatUnify-Plan.md`）
+
+本書の次の記述は、実機で不具合（□に割り当てた「Repeat While Held」のマクロが、押しっぱなしで繰り返されない）が見つかり、誤りと判明した。
+
+- §53 の「編集画面が `RepeatMacro` ＋ `HoldMacro` の**両方**を保存する」、§81 の「編集画面は両方を保存するため、通常は影響しない」は誤り。両方が立つのは編集画面のメモリ上だけで、**プロファイル XML（Controls タブの `<KeyType>`）には `HoldMacro` だけが保存され、`RepeatMacro` は保存・復元されなかった**。保存して読み込み直した後の keyType は `Macro｜HoldMacro` で、内部ループ（`RepeatMacro` のみ対象）に入らず、繰り返さなくなっていた。
+- 是正（Phase8-Fix-MacroRepeatUnify）: 「押している間繰り返す」を **`RepeatMacro` に統合**した（`HoldMacro` を enum から削除）。Controls の XML は `RepeatMacro` と保存し、旧値 `HoldMacro` は読み込みだけ受け付けて `RepeatMacro` に置き換える（保存時に置換。旧版では新しいファイルの繰り返しが効かない）。`HoldMacro` の 50ms 待ちは、SA の仕様に統一して廃止した。
+- あわせて、§110 の「旧経路の `PlayMacro`／`PlayMacroTask`／`macrodone` は残す」の対象だった `control != None` の経路（`macrodone`、`macroDispatchInFlight`／`TryBeginDispatch`、`EndMacro`、`DS4ControltoInt`）は、本番では到達しないことが確認できたため、同じ Fix で削除した。
+
+---
+
 ## 0. 方針の改訂（初版からの変更）
 
 初版は、動作を変えないために、Controls 専用の出力（`ControlMacroAction`）、再生窓口（`IControlMacroPlayer`）、3 種類目の押下判定（`GetBoolMapping`）を新設する案だった。ユーザーから「最終的には Controls の Macro も SA の Macro の仕様に合わせてよい」との指示があり、**捨てることになる中継の部品を作らず、最初から SA の Macro の仕組みに載せる**ことにした。

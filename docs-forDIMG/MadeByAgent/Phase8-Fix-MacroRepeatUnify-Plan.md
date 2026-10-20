@@ -1,7 +1,7 @@
 # Phase8 不具合修正: マクロの「押している間繰り返す」フラグの統合 計画書
 
 作成日: 2026-10-20
-状態: **承認済み（Q2＝ログの項目を消す案）。W1・W2 は実装済みで、ビルド・テスト成功を確認済み。W3 は実装済み（ビルド・テスト待ち）。W4 は未着手**
+状態: **承認済み（Q2＝ログの項目を消す案）。W1・W2 は実装済みで、ビルド・テスト成功を確認済み。W3 も実装済みで、ビルド・テスト成功、実機確認済み（ログ確認でも異常なし）。W4（文書）も完了。本計画は完了（2026-10-21）**
 - W3 の追加の整理: `ActionsLoadedRuntimeReset` は、`macrodone` の解除を削除したため `MacroRuntimeState` への依存（コンストラクターの引数）も削除した。`ds4ControlMapping`／`DS4ControltoInt`／`macroEndIndex`／`DS4_CONTROL_MACRO_ARRAY_LEN`／`MacroRuntimeState.ControlArrayLength` も、`macrodone` の添字専用だったため削除した。
 - W3 の削除したテスト: `Phase7Step9W3MacroDispatchGuardTests`（W2 で前倒しした `MappingPlayMacroDispatchGuardTests` に加えて）。
 - W1・W2 は、W1 だけだと編集画面が読み込み後の `RepeatMacro` を認識できず、再保存で繰り返しが落ちるため、まとめて実施した。

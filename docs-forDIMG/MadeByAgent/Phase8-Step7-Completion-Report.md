@@ -373,6 +373,7 @@ Step7 の 7.6 は、これで 4 種別（GyroCalibrate、DisconnectBT、BatteryC
 - **範囲**: Macro、手順あり、シフトなし、Extras なし、Lightbar マクロなしの割り当てだけ（ボタン単位の所有。移行中の仕組み）。
 - **SA に合わせた点**: 出力は既存の `MacroAction`、押下の判定は SA のトリガー（`IsActive`）、状態は `ActionInstanceState`、呼び出しは立ち上がりの 1 回（繰り返しは `RepeatMacro` の内部ループ）、Fresh-press ガードを見る。
 - **動作の変更（承認済み）**: (1) **Play Once の連続再実行を、不具合として 1 回だけに直した**（旧経路は、フラグなしでも押している間ほぼ毎フレーム再実行されていた。W1 の実測: 900ms で 58 回）。(2) ジャイロの閾値が 0 から ±67 に。(3) プロファイル適用直後の押しっぱなしは、一度離すまで動かない（Fresh-press ガード）。(4) 状態の持ち方が、ボタン単位の `macrodone` から `ActionInstanceState` に。
+- **訂正（2026-10-21）**: 上の「繰り返しは `RepeatMacro` の内部ループ」は、Controls タブでは、プロファイルの保存・読込で `RepeatMacro` が落ち（保存されるのは `HoldMacro` だけ）、保存後に読み込み直すと繰り返さない不具合があった。`HoldMacro` を `RepeatMacro` に統合して是正した（`Phase8-Fix-MacroRepeatUnify-Plan.md`。実機確認済み）。
 - **後続**: Phase10（割り当ての UI の統一）で、Controls と SA のマクロの編集画面を共通化する（`Phase10-Assignment-UI-Unification-Plan.md`）。
 
 ## 7.8d Controls タブの「シフト」機能の廃止（2026-10-20。W0〜W4 完了。ビルド・テスト成功。実機の画面確認は Step9 の U-43）

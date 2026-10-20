@@ -123,6 +123,7 @@
 - K3 の判断（Q3＝A）: 暫定フラグの実体を `MacroRuntimeState` に包んだだけで、仕組みは変えていない。恒久の再設計（トリガー判定層とマクロ実行層の分離、実行層の一本化）は **Phase8** へ持ち越し（TODO を `MacroRuntimeState.cs` と `Mapping.cs` に明記）。
 - 持ち越し（Step10）: `Global` の定数の利用箇所（約 250 件。`BackingStore` 135 が最大）と `Global.Clamp` の残り 10 件（`DS4State` 4、`BezierCurve` 2、`Mouse` 2、`MouseCursor` 2）を `ControllerLimits`／`NumericUtil` へ移し、別名とシムを削除する。静的な純粋関数（`getBool*Mapping`、`DS4ControltoInt`、`remainderCutoff` ほか）の置き場所（Q4＝`Mapping` に残す）。`AppHost` の暗黙構築と `CreationNote`（Q5＝触らない）。`BackingStore` のコンストラクター注入。`Mapping` の依存 11 個の整理。
 - 持ち越し（Phase8）: K3 の恒久対応、静的な `SyntheticDispatcher`、`Actions/` の `ServiceProviderHolder` 17。
+- **K3 の解消（2026-10-21。`Phase8-Fix-MacroRepeatUnify-Plan.md` D5）**: `PlayMacro` の呼び出しがすべて `control == DS4Controls.None` になり（Controls タブのマクロが SA と同じ経路に移った Phase8-Step7-8c 以降）、control 単位の二重実行防止の暫定対策（`macroDispatchInFlight`／`TryBeginDispatch`／`EndDispatch`）は本番で到達しなくなっていたため、`macrodone`、`MacroRuntimeState.MacroDone`／`DispatchInFlight`、`DS4ControltoInt` とともに削除した。二重実行の防止は `ActionInstanceState.IsMacroRunning` が担う。
 - 実機確認: U-19（未。先送り）。
 
 ## 13. Phase7-Step10a で更新した台帳（2026-10-18）
