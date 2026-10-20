@@ -237,9 +237,12 @@ namespace DS4WinWPF.DS4Forms
                 return;
             }
 
-            UnregisterDataContext();
+            // Phase10-Step2 W2（実機確認で発見。以前からの不具合）: 入力が無効なとき（トリガーなし、名前が空、種別未選択）に、先に
+            // データの結びつきを外すと、エラーが表示される前に、編集画面が空になっていた。無効なときは、結びつきを保ち、エラーを表示したまま、修正できるようにする
+            // （名前の重複で、メッセージを出して戻る経路と同じ）。保存できるときだけ、結びつきを外す
             if (valid)
             {
+                UnregisterDataContext();
                 bool editMode = specialActVM.EditMode;
                 if (editMode && specialActVM.SavedAction.name != specialActVM.ActionName)
                 {

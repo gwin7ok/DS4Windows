@@ -38,10 +38,21 @@
             "dependsOn": [
                 "Remove bin",
                 "Release win-x64",
-                "post-build-x64"
+                "post-build-x64",
+                "Copy to Program Files (JK)"
             ],
             "group": {
                 "kind": "build"
+            }
+        },
+        {
+            "label": "Copy to Program Files (JK)",
+            "type": "shell",
+            "command": "& \".\\scripts\\CopyDS4WindowsToJK.bat\"",
+            "presentation": {
+                "reveal": "always",
+                "panel": "shared",
+                "showReuseMessage": false
             }
         },
         {

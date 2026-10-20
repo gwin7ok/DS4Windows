@@ -1,4 +1,5 @@
 using System.IO;
+using System.Text.RegularExpressions;
 using Xunit;
 using Xunit.Abstractions;
 
@@ -54,6 +55,18 @@ namespace DS4WindowsTests
             Assert.DoesNotContain("ControlTriggerCheckBox_Click", code);
             Assert.DoesNotContain("ControlUnloadTriggerCheckBox_Click", code);
             Assert.DoesNotContain("unloadTriggersListView", code);
+        }
+
+        [Fact]
+        public void TheSaveButton_KeepsTheBindings_WhenTheInputIsInvalid()
+        {
+            // 実機確認で発見（以前からの不具合）: 無効なとき（トリガーなし、名前が空、種別未選択）に、先に結びつきを外すと、
+            // エラーが表示される前に、編集画面が空になる。結びつきを外すのは、保存できるときだけ
+            string code = Read("DS4Windows/DS4Forms/SpecialActionEditor.xaml.cs");
+            if (code == null) return;
+
+            Assert.DoesNotMatch(new Regex(@"UnregisterDataContext\(\);\s*if \(valid\)"), code);
+            Assert.Matches(new Regex(@"if \(valid\)\s*\{\s*UnregisterDataContext\(\);"), code);
         }
     }
 }
