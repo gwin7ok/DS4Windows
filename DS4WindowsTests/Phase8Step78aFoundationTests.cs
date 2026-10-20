@@ -202,29 +202,10 @@ namespace DS4WindowsTests
         // ---- W3: 土台（空の配線）----
 
         [Fact]
-        public void TheControlMigration_IsEmptyByDefault_AndFollowsTheSet()
+        public void TheHost_RegistersTheControlBindingBuilder()
         {
-            var options = new BindingMigrationOptions();
-            Assert.Empty(options.MigratedControlKinds);
-            foreach (ControlBindingKind kind in Enum.GetValues(typeof(ControlBindingKind)))
-                Assert.False(options.IsControlMigrated(kind));
-
-            options.MigratedControlKinds.Add(ControlBindingKind.Key);
-            Assert.True(options.IsControlMigrated(ControlBindingKind.Key));
-            Assert.False(options.IsControlMigrated(ControlBindingKind.Macro));
-
-            options.MigratedControlKinds.Remove(ControlBindingKind.Key);
-            Assert.False(options.IsControlMigrated(ControlBindingKind.Key));
-        }
-
-        [Fact]
-        public void TheHostDefault_MigratesTheKeyMacroAndExtrasKinds_AndRegistersTheBuilder()
-        {
-            var options = TestHost.GetService<BindingMigrationOptions>();
             var builder = TestHost.GetService<IControlBindingBuilder>();
 
-            // Phase8-Step7 7.8b・7.8c・7.8e・7.8f-1・7.8f-2・7.8f-3: 既定の一覧に Key、Macro、Extras、ButtonPad、ButtonMouse、ButtonAnalogMouse（Controls タブ）
-            Assert.Equal(new[] { ControlBindingKind.ButtonAnalogMouse, ControlBindingKind.ButtonMouse, ControlBindingKind.ButtonPad, ControlBindingKind.Extras, ControlBindingKind.Key, ControlBindingKind.Macro }, options.MigratedControlKinds.OrderBy(k => k.ToString(), StringComparer.Ordinal).ToArray());
             Assert.IsType<ControlBindingBuilder>(builder);
             Assert.Same(builder, TestHost.GetService<IControlBindingBuilder>());
         }
@@ -232,15 +213,11 @@ namespace DS4WindowsTests
         [Fact]
         public void TheControlBindingBuilder_ReturnsAnEmptyList_WhenNoAssignmentQualifies()
         {
-            var options = new BindingMigrationOptions();
             var settings = TestHost.GetService<IProfileSettingsService>();
-            var builder = new ControlBindingBuilder(options, settings);
+            var builder = new ControlBindingBuilder(settings);
 
-            Assert.Empty(builder.Build(MappingCharacterizationScope.Device));
-            options.MigratedControlKinds.Add(ControlBindingKind.Key);
             Assert.Empty(builder.Build(MappingCharacterizationScope.Device));   // 割り当てが全部 Default なら、束縛はない
-            Assert.Throws<ArgumentNullException>(() => new ControlBindingBuilder(null, settings));
-            Assert.Throws<ArgumentNullException>(() => new ControlBindingBuilder(options, null));
+            Assert.Throws<ArgumentNullException>(() => new ControlBindingBuilder(null));
         }
 
         [Fact]

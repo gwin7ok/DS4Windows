@@ -34,24 +34,21 @@ namespace DS4WindowsTests
             public void WhileHeld(IOutputContext ctx) { Held++; }
         }
 
-        /// <summary>ホストの登録簿・移行スイッチを一時的に使い、終了時に元（空）へ戻す。</summary>
+        /// <summary>ホストの登録簿を一時的に使い、終了時に元（空）へ戻す。</summary>
         private sealed class MigrationScope : IDisposable
         {
             private readonly SpecialActionTestScope _scope;
             private readonly IActionRegistry _registry = TestHost.GetService<IActionRegistry>();
-            private readonly BindingMigrationOptions _options = TestHost.GetService<BindingMigrationOptions>();
 
             public MigrationScope(SpecialActionTestScope scope) { _scope = scope; }
 
             public void Migrate(SpecialAction.ActionTypeId type, params IActionBinding[] bindings)
             {
-                _options.MigratedTypes.Add(type);
                 _registry.Replace(_scope.Device, bindings);
             }
 
             public void Unmigrate()
             {
-                _options.MigratedTypes.Clear();
                 _registry.Clear(_scope.Device);
             }
 

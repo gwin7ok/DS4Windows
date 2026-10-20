@@ -46,8 +46,6 @@ namespace DS4WindowsTests
         }
 
         private readonly BackingStore _store = TestGlobals.Store;
-        private readonly BindingMigrationOptions _options = TestHost.GetService<BindingMigrationOptions>();
-        private readonly SpecialAction.ActionTypeId[] _origMigrated;
         private readonly List<string> _origNames;
         private readonly Dictionary<string, SpecialAction> _origDict;
         private readonly Dictionary<string, int> _origIndexDict;
@@ -56,9 +54,6 @@ namespace DS4WindowsTests
 
         public Phase8Step6W3SlotLifecycleTests()
         {
-            _origMigrated = _options.MigratedTypes.ToArray();
-            _options.MigratedTypes.Clear();
-
             _origNames = _store.profileActions[Slot];
             _origDict = new Dictionary<string, SpecialAction>(_store.profileActionDict[Slot]);
             _origIndexDict = new Dictionary<string, int>(_store.profileActionIndexDict[Slot]);
@@ -76,8 +71,6 @@ namespace DS4WindowsTests
 
         public void Dispose()
         {
-            _options.MigratedTypes.Clear();
-            foreach (var t in _origMigrated) _options.MigratedTypes.Add(t);
             TestHost.GetService<IActionRegistry>().Clear(Slot);
             TestHost.GetService<ITriggerDispatchEngine>().OnDeviceDisconnected(Slot);
             _store.profileActions[Slot] = _origNames;
@@ -142,7 +135,6 @@ namespace DS4WindowsTests
         {
             var registry = TestHost.GetService<IActionRegistry>();
             var engine = TestHost.GetService<ITriggerDispatchEngine>();
-            _options.MigratedTypes.Add(SpecialAction.ActionTypeId.Button);
             ProfileSlotApplier applier = TestRepositoryFactory.CreateProfileSlotApplier();
 
             applier.PublishSlot(Slot);
@@ -167,7 +159,6 @@ namespace DS4WindowsTests
         public void RealHost_AReconnectionWithoutAnApply_GetsTheBindingsBack()
         {
             var registry = TestHost.GetService<IActionRegistry>();
-            _options.MigratedTypes.Add(SpecialAction.ActionTypeId.Button);
             ProfileSlotApplier applier = TestRepositoryFactory.CreateProfileSlotApplier();
 
             applier.PublishSlot(Slot);
@@ -180,18 +171,6 @@ namespace DS4WindowsTests
             var after = Assert.IsType<TriggerBinding>(Assert.Single(registry.GetBindings(Slot)));
             Assert.Same(before.Source, after.Source);
             Assert.NotSame(before, after);
-        }
-
-        [Fact]
-        public void RealHost_NothingMigrated_ReleaseAndPublishLeaveTheRegistryEmpty()
-        {
-            var registry = TestHost.GetService<IActionRegistry>();
-            ProfileSlotApplier applier = TestRepositoryFactory.CreateProfileSlotApplier();
-
-            applier.PublishSlot(Slot);
-            Assert.Empty(registry.GetBindings(Slot));
-            applier.ReleaseSlot(Slot);
-            Assert.Empty(registry.GetBindings(Slot));
         }
 
         [Fact]

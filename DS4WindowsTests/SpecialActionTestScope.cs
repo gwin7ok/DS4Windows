@@ -11,7 +11,7 @@ namespace DS4WindowsTests
     /// <see cref="MappingCharacterizationScope"/> の専用デバイス添字（<see cref="Device"/>）に対し、プロファイルのアクション一覧
     /// （<c>profileActions</c>／<c>profileActionDict</c>／<c>profileActionIndexDict</c>／<c>profileActionCount</c>）と
     /// <c>BackingStore.actions</c> へ、テスト用の <see cref="SpecialAction"/> を登録する。終了時にすべて元へ戻す。
-    /// Phase8-Step7 7.1-W1: コンストラクターの <c>migrated</c> が真なら、Button・Key・Macro・Program・Profile 種別を <c>BindingMigrationOptions.MigratedTypes</c> に足し、
+    /// Phase8-Step8 8d: 全種別を常に新経路で処理する（移行のスイッチは削除した）。
     /// <see cref="Add"/> のたびに本番の <c>PublishBindings</c> と同じ経路（<c>IActionBindingBuilder.Build</c> → <c>IActionRegistry.Replace</c>）で束縛を登録する。
     /// 偽の束縛ではなく、実物のビルダーが作る束縛を使う。終了時に元へ戻す。
     /// <c>MapCustomAction</c> は <c>async void</c> だが、初期化待ちが完了済みの <c>Task</c> のため、最初の実際の <c>await</c>
@@ -27,8 +27,6 @@ namespace DS4WindowsTests
         private readonly int _savedCount;
         private readonly List<SpecialAction> _added = new List<SpecialAction>();
         private readonly bool _migrated;
-        private readonly DS4Windows.Actions.BindingMigrationOptions _options = TestHost.GetService<DS4Windows.Actions.BindingMigrationOptions>();
-        private readonly SpecialAction.ActionTypeId[] _savedMigrated;
 
         public int Device => MappingCharacterizationScope.Device;
         public MappingCharacterizationScope Scope => _inner;
@@ -60,22 +58,9 @@ namespace DS4WindowsTests
             if (Mapping == null)
                 throw new InvalidOperationException("IMapping の実体が Mapping ではない");
 
-            // Phase8-Step8 8b: SA の旧経路を削除したため、引数 migrated にかかわらず新経路で処理する（引数は 8d で整理する）
+            // Phase8-Step8 8b: SA の旧経路を削除したため、引数 migrated にかかわらず新経路で処理する（8d: 移行のスイッチ BindingMigrationOptions も削除した。
+            // 引数は、呼び出し側の整理を Phase9 に回すため残す）
             _migrated = true;
-            _savedMigrated = _options.MigratedTypes.ToArray();
-            _options.MigratedTypes.Clear();
-            {
-                _options.MigratedTypes.Add(SpecialAction.ActionTypeId.Button);
-                _options.MigratedTypes.Add(SpecialAction.ActionTypeId.Key);   // Phase8-Step7 7.2-W1: Key も新経路で処理する（Button と同じ指定）
-                _options.MigratedTypes.Add(SpecialAction.ActionTypeId.Macro); // Phase8-Step7 7.3-W1: Macro も新経路で処理する
-                _options.MigratedTypes.Add(SpecialAction.ActionTypeId.Program); // Phase8-Step7 7.4-W1: Program も新経路で処理する
-                _options.MigratedTypes.Add(SpecialAction.ActionTypeId.GyroCalibrate); // Phase8-Step7 7.6a-W1: GyroCalibrate も新経路で処理する
-                _options.MigratedTypes.Add(SpecialAction.ActionTypeId.DisconnectBT); // Phase8-Step7 7.6b-W1: DisconnectBT も新経路で処理する
-                _options.MigratedTypes.Add(SpecialAction.ActionTypeId.BatteryCheck); // Phase8-Step7 7.6c-W1: BatteryCheck も新経路で処理する
-                _options.MigratedTypes.Add(SpecialAction.ActionTypeId.SASteeringWheelEmulationCalibrate); // Phase8-Step7 7.6d-W1: ステアリング較正も新経路で処理する
-                _options.MigratedTypes.Add(SpecialAction.ActionTypeId.MultiAction); // Phase8-Step7 7.7b-W2: MultiAction も新経路で処理する
-                _options.MigratedTypes.Add(SpecialAction.ActionTypeId.Profile); // Phase8-Step7 7.5a-W1: Profile も新経路で処理する（復帰つきの Profile は、7.5a の W2 でビルダーが束縛を作らない形にする）
-            }
 
             _savedNames = _store.profileActions[Device];
             _savedDict = new Dictionary<string, SpecialAction>(_store.profileActionDict[Device]);
@@ -186,8 +171,6 @@ namespace DS4WindowsTests
                 _switcherField.SetValue(_switcherInstance, _savedProfileApp);
 
             Engine.OnDeviceDisconnected(Device); // 抑制の集合を空にする（旧: suppressedTriggerButtons のクリア）。登録簿の束縛も消える
-            _options.MigratedTypes.Clear();
-            foreach (var type in _savedMigrated) _options.MigratedTypes.Add(type);
             Mapping.deviceRuntime[Device].UntriggerAction = null;
             Mapping.deviceRuntime[Device].UntriggerIndex = -1;
 

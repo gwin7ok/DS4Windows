@@ -172,6 +172,17 @@ W1 の調査（§5.1）に **「ジャイロの出力モード `DirectionalSwipe
 - **実行への影響**: なし（呼び出し元のないコードの削除）。ログの変更もなし。
 - **ロールバック**: git のみ。
 
+### 5.13 8d の実装（2026-10-20。ビルド・テスト待ち）
+
+- **削除（本体）**: `BindingMigrationOptions`（種別ごと・区分ごとの移行スイッチ。Q3＝A）。エンジン（`TriggerDispatchEngine`）は、束縛が登録されていれば常に処理し（`Owns`／`OwnsControl`／`ProcessOwned`）、ビルダー（`ActionBindingBuilder`／`ControlBindingBuilder`）は常に全種別・全区分を組み立てる。本番の既定は全種別・全区分が有効だったため、**実行への影響はない**（`ActionTypeId.None` は元から束縛を作らない）。`ServiceRegistration` の登録 1 件（16 行）、各コンストラクターの引数を削除。
+- **削除（8b の TODO）**: `UntriggerPolicy.Buttons`、`BindingPolicy.UntriggerButtons`（コンストラクターの `untriggerButtons` 引数と内部の複製）。使う者は 8b でなくなっていた。
+- **削除（未使用）**: `Mapping` の定数 `ToggleDebounceMs`、`SyntheticSendThrottleMs`。
+- **残したもの（Phase9 の整理へ）**: `IMapping.CaptureProfileUntrigger`／`RestoreProfileUntrigger`、`ProfileUntriggerSnapshot`、`DeviceRuntimeState.UntriggerAction`／`UntriggerIndex`（合図は常に空だが、`ProfileSwitchAction` の保険の読み取りと Phase7b の保全テストが使うため、挙動のリスクを避けて残した）。テストのスコープとヘルパーの `migrated` 引数（常に新経路。呼び出し約 220 か所の書き換えは、ビルドで確かめられない大量編集のリスクを避けて Phase9 に回した）。
+- **テスト**: 削除 `Phase8Step7W3ButtonSwitchTests`（スイッチの既定値と「1 行を外すと戻る」のテスト）。各ファイルの「1 行を外すと束縛が作られない（ロールバック）」のテストを削除（`Phase8Step72W3`／`73W3`／`74W3`／`75aW3`／`75bW3`／`76a〜d`／`77bW2`／`78bW2`／`78cW2`／`78eW2`／`78f2W2`／`78f3W2`／`78fW2`）。`Phase8Step4W1ContractTests`・`78aFoundationTests` のスイッチ自体のテスト、`Phase8Step4W3EngineTests` の「何も移行していない」テスト、`Phase8Step5W1BuilderTests` の「移行対象だけ組み立てる」テストは削除または「全種別を組み立てる」形に置き換え。`SpecialActionTestScope`・`ControlsKeyTestScope`・`Phase8Step5W3`・`Phase8Step6W3` などは、スイッチの退避・復元を削除。`Phase8Step3ContractTests` は `Buttons` を `Automatic` に置き換え。
+- **文書**: モデル図 03（撤去済みの注記）、04（`IActionFactory`・`BindingMigrationOptions` の行を削除）、`copilot-instructions.md`（`Mapping.cs` の行数）を更新。
+- **ログ・挙動の変更**: なし。
+- **ロールバック**: git のみ。
+
 ### 5.5 テストへの影響
 
 - 旧・新の両経路の Theory は `InlineData(false)` を持つファイルが 15、`migrated` 引数を取るテストが 36 ファイル、`MigratedTypes`／`MigratedControlKinds` を触るテストが 28 ファイル。

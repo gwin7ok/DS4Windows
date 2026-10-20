@@ -1,6 +1,3 @@
-using System;
-using System.Collections.Generic;
-
 namespace DS4Windows.Actions
 {
     /// <summary>
@@ -11,8 +8,6 @@ namespace DS4Windows.Actions
     /// </summary>
     public sealed class BindingPolicy
     {
-        private static readonly IReadOnlyList<DS4Controls> NoButtons = Array.AsReadOnly(new DS4Controls[0]);
-
         /// <summary>既定の方針（Fresh-press ガードあり、実行中のブロックなし、復帰なし、トリガーのボタンを抑制・消去、離したとき Stop を呼ぶ）。</summary>
         public static readonly BindingPolicy Default = new BindingPolicy();
 
@@ -20,7 +15,6 @@ namespace DS4Windows.Actions
             bool respectsFreshPressGuard = true,
             bool blocksWhileExecuting = false,
             UntriggerPolicy untrigger = UntriggerPolicy.None,
-            IReadOnlyList<DS4Controls> untriggerButtons = null,
             bool suppressesTriggerButtons = true,
             bool resetsTriggerOutput = true,
             bool stopOnRelease = true,
@@ -31,9 +25,6 @@ namespace DS4Windows.Actions
             RespectsFreshPressGuard = respectsFreshPressGuard;
             BlocksWhileExecuting = blocksWhileExecuting;
             Untrigger = untrigger;
-            UntriggerButtons = untriggerButtons == null || untriggerButtons.Count == 0
-                ? NoButtons
-                : Array.AsReadOnly(CopyOf(untriggerButtons));
             SuppressesTriggerButtons = suppressesTriggerButtons;
             ResetsTriggerOutput = resetsTriggerOutput;
             StopOnRelease = stopOnRelease;
@@ -50,9 +41,6 @@ namespace DS4Windows.Actions
 
         /// <summary>復帰のポリシー（Profile）。</summary>
         public UntriggerPolicy Untrigger { get; }
-
-        /// <summary><see cref="UntriggerPolicy.Buttons"/> のときの解除トリガー。</summary>
-        public IReadOnlyList<DS4Controls> UntriggerButtons { get; }
 
         /// <summary>成立中、トリガーのボタンの通常出力を抑制するか。</summary>
         public bool SuppressesTriggerButtons { get; }
@@ -78,13 +66,5 @@ namespace DS4Windows.Actions
         /// 割り当てのあるボタンだけが対象（Default＝未設定は消さない）。既定は偽（特殊アクションは、成立中だけ <see cref="ResetsTriggerOutput"/> で消す）。
         /// </summary>
         public bool ErasesOutputEveryFrame { get; }
-
-        private static DS4Controls[] CopyOf(IReadOnlyList<DS4Controls> source)
-        {
-            var copy = new DS4Controls[source.Count];
-            for (int i = 0; i < copy.Length; i++)
-                copy[i] = source[i];
-            return copy;
-        }
     }
 }

@@ -382,12 +382,6 @@ namespace DS4Windows
         // Phase7-Step9 W3（K3）: フラグとロックの実体は MacroRuntimeState（TryBeginDispatch／EndDispatch）に包んだ（挙動は同一）。
         // 上記の恒久対応（実行層の一本化）は Phase8（Actions サブシステム）へ持ち越した。
 
-        // debounce for SpecialAction toggle (milliseconds)
-        private const int ToggleDebounceMs = 30;
-        // throttle synthetic sends per key (milliseconds)
-        // Keep below fakeKeyRepeat internal repeat interval (25ms) to avoid suppressing repeats
-        private const int SyntheticSendThrottleMs = 10;
-
         //actions
         public int[] fadetimer = new int[ControllerLimits.MaxControllerCount] { 0, 0, 0, 0, 0, 0, 0, 0 };
         public int[] prevFadetimer = new int[ControllerLimits.MaxControllerCount] { 0, 0, 0, 0, 0, 0, 0, 0 };
@@ -2951,7 +2945,7 @@ namespace DS4Windows
             }
 
             // Phase8-Step7 7.8a／7.8b: 新経路（エンジン）が所有する割り当て（7.8b では Key の条件を満たすもの）は、エンジンが処理し、旧経路の本体は素通りする。
-            // 7.8c 以降で区分ごとに増える。ロールバックは、ServiceRegistration の MigratedControlKinds の 1 行を外す
+            // ロールバックは git のみ（Phase8-Step8 8d で移行のスイッチを削除）
             if (_engine.OwnsControl(device, dcs.control))
             {
                 _engine.ProcessControl(device, dcs.control, _triggerInputs[device], _frameOutputs[device]);

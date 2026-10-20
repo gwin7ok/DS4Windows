@@ -54,13 +54,12 @@
 | **2.変換**| `IProfileSlotApplier` | `ProfileSlotApplier` | **Singleton** | 接続時などにスロットへプロファイルを適用する、`ControlService` 側の出力ポート（依存の逆転）。現状は `Global.ApplyProfileToSlot` へ委譲し、K1 是正後に `IProfileApplicationService` へ委譲する | なし（目標: `IProfileApplicationService`） |
 | **2.変換**| `IProfileActionProvider` | `ProfileActionProvider` | **Singleton** | プロファイルに紐づくアクション定義の解決 | `ISpecialActionRepository` |
 | **2.変換**| `IAutoProfileService` | `AutoProfileService` | **Singleton** | フォアグラウンドアプリ監視とプロファイル自動切替 | `IProcessInspector`, `IProfileApplicationService` |
-| **2.変換**| `IManagedActionManager` | `DefaultActionManager` | **Singleton** | マクロ・キー・プロファイル切替アクションの実行統括。2026-09-04〜2026-10-14 は登録が欠落していた（Phase6-Step9b-2 で再登録）。【Phase8 目標像】アクションの状態（`ActionInstanceState`）の管理に縮小し、実行の統括は `ITriggerDispatchEngine` へ移行（Step8 で撤去） | `IActionFactory` |
+| **2.変換**| `IManagedActionManager` | `DefaultActionManager` | **Singleton** | マクロ・キー・プロファイル切替アクションの実行統括。2026-09-04〜2026-10-14 は登録が欠落していた（Phase6-Step9b-2 で再登録）。【Phase8 目標像】アクションの状態（`ActionInstanceState`）の管理に縮小し、実行の統括は `ITriggerDispatchEngine` へ移行（Phase8-Step8 の 8c で、系統 B の `IActionFactory` ほかを撤去し、コンストラクターは `Func<IMapping>` のみになった） | `Func<IMapping>` |
 | **2.変換**| `IControllerRegistry` | `DefaultControllerRegistry` | **Singleton** | `KeyButtonActionController` の登録と、デバイス単位・終了時の破棄（Phase6-Step9b-2 で再登録）。【Phase8】使うか廃止するかを Step6 で確定 | なし |
 | **2.変換**| `IMapping` | `Mapping` | **Singleton** | 入力の評価（カーブ・割り当て・合成入力の確定・切断の後始末・マクロ）。旧: メンバーのほぼすべてが static（Phase7-Step8）。`DefaultActionManager`／`DefaultMacroPlayer` は `Func<IMapping>` で遅延して受ける | `ITriggerDispatchEngine`※2, `SyntheticInputState`, `MacroRuntimeState`, `StickMotionState`, `IProfileSettingsService`, `IProfileApplicationService`, `IVirtualKBM`, `IKeyButtonControllerRegistry`, `IProcessLauncher`, `IProfileSwitcher`, `ISyntheticDispatcher`, `Func<IDeviceStateAccessor>`※1 |
 | **2.変換**| `ITriggerDispatchEngine` | `TriggerDispatchEngine` | **Singleton** | 【Phase8・目標像・未実装】特殊アクション（と、後に Controls タブ）の判定→実行の統一。エッジ検出・Fresh-press ガード・実行中の再実行防止・抑制・復帰の合図を一元的に担う。`Mapping` が毎フレーム呼ぶ（通常の割り当ての前後に 2 回） | `IActionRegistry`, `IManagedActionManager` |
 | **2.変換**| `IActionRegistry` | `ActionBindingRegistry` | **Singleton** | 【Phase8・目標像・未実装】スロット別の不変の束縛リスト（`TriggerBinding`）。更新は参照ごとの差し替え（読込中の競合を排除）。切断で空にする | なし |
 | **2.変換**| `IActionBindingBuilder` | `ActionBindingBuilder` | **Singleton** | 【Phase8・目標像・未実装】プロファイルのスペシャルアクションと Controls タブの割り当てから、束縛を組み立てる（プロファイル適用の完了後） | `IProfileActionProvider`, `IProfileSettingsService`, `IMacroPlayer`, `IProcessLauncher`, `IProfileSwitcher`, `IKeyActionCreator`, `BindingMigrationOptions` |
-| **2.変換**| `BindingMigrationOptions` | `BindingMigrationOptions` | **Singleton** | 【Phase8・目標像・未実装・過渡期のみ。Step8 で削除】種別ごとの移行スイッチ（`MigratedTypes`）。含まれる種別だけ、新エンジンが処理する。ロールバックは一覧から外すだけ | なし |
 | **2.変換**| `IKeyButtonControllerRegistry` | `KeyButtonControllerRegistry` | **Singleton** | デバイス × アクション名ごとの `KeyButtonActionController` の登録簿（生成・再利用・破棄）。旧: `Mapping` の静的フィールド | `IKeyButtonActionControllerFactory`, `IControllerRegistry` |
 | **2.変換**| `ISyntheticDispatcher` | `SyntheticDispatcherService` | **Singleton** | 合成キーの押下・解放・タイミングのリセット。静的な `SyntheticDispatcher` は、Actions サブシステム用の暫定の橋渡し（Phase8 で削除） | `SyntheticInputState`, `OutputKBMHandlerAdapter`, `IProfileSettingsService` |
 | **2.変換**| `SyntheticInputState` | `SyntheticInputState` | **Singleton** | 合成キー・マウス入力の状態（`GlobalState`／`DeviceState`／`SyncStateLock`） | なし |
@@ -73,7 +72,6 @@
 | **3.出力**| `IVirtualKBMLifecycle` | `OutputKBMHandlerLifecycle` | **Singleton** | KBM出力ハンドラの生成・破棄・フォールバック切替・マッピング初期化（送出は `IVirtualKBM` が担当） | `IEnvironmentService`, `OutputKBMHandlerAdapter`, `IProfileSettingsService` |
 | **3.出力**| `IMacroPlayer` | `DefaultMacroPlayer` | **Singleton** | 時系列非同期マクロの再生・停止管理 | `IVirtualKBM` |
 | **3.出力**| `ILightbarService` | `LightbarService` | **Singleton** | バッテリー・プロファイル色に応じたLED発光計算 | なし |
-| **3.出力**| `IActionFactory` | `DefaultActionFactory` | **Singleton** | 各種アクションインスタンス（Key/Macro/Launch）の生成 | `IVirtualKBM`, `IMacroPlayer`, `IProcessLauncher`。【Phase8】Step8 で撤去（系統 B） |
 | **3.出力**| `IProcessLauncher` | `DefaultProcessLauncher` | **Singleton** | 外部プロセスの通常起動 | なし |
 | **3.出力**| `IElevatedProcessLauncher` | `DefaultElevatedProcessLauncher` | **Singleton** | UAC昇格を伴う外部ツールの起動 | なし |
 | **3.出力**| `IProcessInspector` | `DefaultProcessInspector` | **Singleton** | 実行中プロセスのパス・ウィンドウ名調査 | なし |
@@ -270,3 +268,5 @@
 %% - 追加した 4 行（ITriggerDispatchEngine／IActionRegistry／IActionBindingBuilder／BindingMigrationOptions）は未実装。Step3〜Step6 で型を足して配線（本番の挙動は変えない）、Step7 で種別ごとに切り替え、Step8 で旧い系統 B（IActionFactory／Actions.Action／ActionManager の静的 API）と BindingMigrationOptions を撤去する。
 %% - ※2 IMapping の ITriggerDispatchEngine の依存は、Step4 で追加する（Func による遅延が要るかは、循環の確認で決める。エンジンは IMapping に依存しない）。
 %% - TriggerBinding の生成と破棄: プロファイルの適用の完了後に構築し、IActionRegistry.Replace で差し替える（旧リストは参照が外れて GC）。切断で Clear。ITriggerInput（TriggerInput）は DI 登録せず、Mapping がデバイスごとに保持する再利用オブジェクト（接続で作り、切断で破棄）。
+
+%% 2026-10-20（Phase8-Step8 8c・8d）: `IActionFactory`／`DefaultActionFactory` の行（系統 B。8c で撤去）と `BindingMigrationOptions` の行（種別ごとの移行スイッチ。8d で撤去）を削除した。エンジン・ビルダーは、束縛があれば常に処理する。

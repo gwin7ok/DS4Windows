@@ -18,7 +18,7 @@ namespace DS4WindowsTests
     {
         // 他のテストと状態を共有しない、独立のエンジンと Mapping の instance を使う
         private static readonly ITriggerDispatchEngine Engine = new TriggerDispatchEngine(new ActionBindingRegistry(),
-            TestHost.GetService<IManagedActionManager>(), new BindingMigrationOptions(), null);
+            TestHost.GetService<IManagedActionManager>(), null);
         private static readonly Mapping Mapper = TestMappingFactory.Create(engine: Engine);
 
         // テスト間の副作用（他テストが同じデバイス添字・ボタンを使っている可能性）を避けるため、

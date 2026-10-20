@@ -87,7 +87,6 @@ namespace DS4WindowsTests
         private sealed class Harness
         {
             public readonly ActionBindingRegistry Registry = new ActionBindingRegistry();
-            public readonly BindingMigrationOptions Options = new BindingMigrationOptions();
             public readonly IManagedActionManager Manager;
             public readonly TriggerDispatchEngine Engine;
             public readonly FakeTriggerInput Input = new FakeTriggerInput();
@@ -97,8 +96,7 @@ namespace DS4WindowsTests
             {
                 DS4WinWPF.AppHost.CreateHost();
                 Manager = TestHost.GetService<IManagedActionManager>();
-                Engine = new TriggerDispatchEngine(Registry, Manager, Options, null);
-                Options.MigratedTypes.Add(SpecialAction.ActionTypeId.Button);
+                Engine = new TriggerDispatchEngine(Registry, Manager, null);
             }
 
             public SpecialAction NewSource() =>
@@ -117,28 +115,7 @@ namespace DS4WindowsTests
 
         private static BindingPolicy NoGuard() => new BindingPolicy(respectsFreshPressGuard: false);
 
-        // ---- 何も移行していないとき ----
-
-        [Fact]
-        public void NothingMigrated_OwnsNothing_AndDoesNothing()
-        {
-            var h = new Harness();
-            h.Options.MigratedTypes.Clear();
-            SpecialAction sa = h.NewSource();
-            var input = new FakeInputAction(DS4Controls.L1) { Established = true };
-            var output = new RecordingOutput();
-            h.Register(h.Bind(input, sa, NoGuard(), output));
-            h.Input.Active.Add(DS4Controls.L1);
-
-            Assert.False(h.Engine.Owns(Device, sa));
-            Assert.Equal(FrameResult.Continue, h.Engine.ProcessOwned(Device, sa, h.Input, h.Frame));
-            h.Engine.ProcessTriggers(Device, h.Input, h.Frame);
-            h.Engine.ApplyFrameOutputs(Device, h.Input, h.Frame);
-
-            Assert.Empty(output.Events);
-            Assert.Equal(0, input.Evaluations);
-            Assert.False(h.Engine.IsSuppressed(Device, DS4Controls.L1));
-        }
+        // ---- 束縛がないとき（Phase8-Step8 8d: 移行のスイッチは削除した。束縛がなければ何もしない） ----
 
         [Fact]
         public void EmptyRegistry_DoesNothing_AndOutOfRangeDevicesAreIgnored()
@@ -161,7 +138,7 @@ namespace DS4WindowsTests
         }
 
         [Fact]
-        public void Owns_RequiresAMigratedTypeAndARegisteredBinding()
+        public void Owns_RequiresARegisteredBinding()
         {
             var h = new Harness();
             SpecialAction registered = h.NewSource();
@@ -170,9 +147,6 @@ namespace DS4WindowsTests
 
             Assert.True(h.Engine.Owns(Device, registered));
             Assert.False(h.Engine.Owns(Device, other));
-
-            h.Options.MigratedTypes.Clear();
-            Assert.False(h.Engine.Owns(Device, registered));
         }
 
         // ---- エッジ ----

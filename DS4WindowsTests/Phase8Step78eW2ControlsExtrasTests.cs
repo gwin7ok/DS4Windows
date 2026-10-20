@@ -245,7 +245,7 @@ namespace DS4WindowsTests
         }
 
         [Fact]
-        public void ButtonWithExtras_AndShortExtras_AreNotOwned_SoTheLegacyPathHandlesTheWholeAssignment()
+        public void ButtonWithExtras_AndShortExtras_AreNotOwned()
         {
             using var t = new ControlsKeyTestScope(true);
             t.Scope.RemapToButton(DS4Controls.Cross, X360Controls.A);
@@ -256,30 +256,21 @@ namespace DS4WindowsTests
         }
 
         [Fact]
-        public void WithoutTheExtrasKind_OrThePort_AnAssignmentWithExtrasIsNotOwnedAtAll()
+        public void WithoutThePort_AnAssignmentWithExtrasIsNotOwnedAtAll()
         {
             using var t = new ControlsKeyTestScope(true);
             t.MapKey(DS4Controls.Cross, 65).extras = Full;
             t.MapKey(DS4Controls.Circle, 66);
-            var options = TestHost.GetService<BindingMigrationOptions>();
 
-            // ロールバック: Extras の 1 行を外すと、Extras つきの割り当ては、Key も含めて旧経路が処理する。Extras なしの Key は新経路のまま
-            options.MigratedControlKinds.Remove(ControlBindingKind.Extras);
-            IActionBinding only = Assert.Single(Build());
-            Assert.Equal(DS4Controls.Circle, ((ControlButtonInputAction)only.Input).Triggers[0]);
-
-            // 窓口がない（テスト用の構築）: 同じ
-            options.MigratedControlKinds.Add(ControlBindingKind.Extras);
-            var withoutPort = new ControlBindingBuilder(options, t.Scope.Settings, TestHost.GetService<IMacroPlayer>());
+            // 窓口がない（テスト用の構築）: Extras つきの割り当ては、Key も含めて束縛を作らない。Extras なしの Key は束縛になる
+            var withoutPort = new ControlBindingBuilder(t.Scope.Settings, TestHost.GetService<IMacroPlayer>());
             IActionBinding alsoOnly = Assert.Single(withoutPort.Build(Device));
             Assert.Equal(DS4Controls.Circle, ((ControlButtonInputAction)alsoOnly.Input).Triggers[0]);
         }
 
         [Fact]
-        public void TheHostDefault_MigratesExtras_AndRegistersThePort()
+        public void TheHost_RegistersThePort()
         {
-            var options = TestHost.GetService<BindingMigrationOptions>();
-            Assert.True(options.IsControlMigrated(ControlBindingKind.Extras));
             Assert.IsType<DefaultControlExtrasPort>(TestHost.GetService<IControlExtrasPort>());
             Assert.Same(TestHost.GetService<IControlExtrasPort>(), TestHost.GetService<IControlExtrasPort>());
         }
@@ -311,19 +302,6 @@ namespace DS4WindowsTests
             Assert.True(t.IsBeingTriggered(key));                 // 鎖の 2 つ目（Key）も処理される
             Assert.True(t.ForceLight);                            // 1 つ目（Extras）も処理される
             Assert.Equal(7, t.MouseInfo.tempButtonSensitivity);
-        }
-
-        [Fact]
-        public void RemovingTheExtrasKind_StopsOwningTheAssignment()
-        {
-            using var t = new ControlsKeyTestScope(true);
-            t.MapExtras(DS4Controls.Cross, Full);
-            t.PublishControlsOnly();
-            var engine = TestHost.GetService<ITriggerDispatchEngine>();
-            Assert.True(engine.OwnsControl(Device, DS4Controls.Cross));
-
-            TestHost.GetService<BindingMigrationOptions>().MigratedControlKinds.Remove(ControlBindingKind.Extras);
-            Assert.False(engine.OwnsControl(Device, DS4Controls.Cross));
         }
 
         [Fact]
@@ -395,7 +373,7 @@ namespace DS4WindowsTests
                 foreach (DS4Controls control in new[] { DS4Controls.Cross, DS4Controls.Circle, DS4Controls.Square, DS4Controls.Triangle, DS4Controls.L1, DS4Controls.R1 })
                     t.MapExtras(control, Full);
 
-                var builder = new ControlBindingBuilder(TestHost.GetService<BindingMigrationOptions>(), t.Scope.Settings, TestHost.GetService<IMacroPlayer>(), new SilentPort());
+                var builder = new ControlBindingBuilder(t.Scope.Settings, TestHost.GetService<IMacroPlayer>(), new SilentPort());
                 TestHost.GetService<IActionRegistry>().Replace(Device, builder.Build(Device));
                 for (int i = 0; i < 300; i++) { t.Run(held); t.Run(idle); }
                 long h = Allocated(t, held);
@@ -421,7 +399,6 @@ namespace DS4WindowsTests
             string engineText = File.ReadAllText(engine);
             Assert.Contains("ControlNext", engineText);
             Assert.Contains("IResettableOutputAction", engineText);
-            Assert.Contains("MigratedControlKinds.Add(ControlBindingKind.Extras)", File.ReadAllText(registration));
 
             string mappingText = File.ReadAllText(mapping);
             Assert.DoesNotContain("LightbarMacroTrigger", mappingText);

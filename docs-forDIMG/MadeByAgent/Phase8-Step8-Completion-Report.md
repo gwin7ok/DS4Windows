@@ -37,3 +37,7 @@
 ## 8c 系統 B の削除（2026-10-20。ビルド・テスト成功）
 
 詳細: `Phase8-Step8-Plan.md` §5.12。`IActionFactory` 系（工場、アダプター 4 つ、`SpecialActionBase`、`Action`、`MappingContext`、`IKeyActionCreator` 系、`MouseOutputAction`、`TriggerContext`）の 14 ファイルを削除し、`DefaultActionManager`・`IManagedActionManager`・`ActionManager`・`ActionEntry` から Action 実体とディスパッチを外した。`KeyAction`／`KeyButtonActionController` ほか、新経路が使う型は残した。`ServiceProviderHolder` の参照は 17 → 10。実機確認への影響なし。
+
+## 8d 移行スイッチなどの削除（2026-10-20。ビルド・テスト待ち）
+
+詳細: `Phase8-Step8-Plan.md` §5.13。`BindingMigrationOptions` と、そのコンストラクター引数、`UntriggerPolicy.Buttons`／`BindingPolicy.UntriggerButtons`、`Mapping` の未使用の定数 2 つを削除した。本番の既定は全種別・全区分が有効だったため、実行・ログへの影響はない。テストは、スイッチを触るロールバックのテストを削除し、スコープからスイッチの退避・復元を外した。`Capture`／`RestoreProfileUntrigger` と、テストの `migrated` 引数は、Phase9 の整理に残した。

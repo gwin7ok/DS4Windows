@@ -312,8 +312,7 @@ namespace DS4Windows
             PublishBindings(device);
         }
 
-        // TODO(Phase8-Step7。規約 2.4): 移行対象（BindingMigrationOptions.MigratedTypes）が空の間、ここで差し替える束縛は常に空のリスト。
-        // 種別ごとの切替の PR で、MigratedTypes に種別を足すと、該当の束縛が入る。OnProfileApplied（適用時の抑制の集合の消去）の接続は、Step7.1 で判断する（Step5 計画書 Q4）。
+        // Phase8-Step8 8d: 移行のスイッチは削除した。ここで差し替える束縛は、プロファイルの全種別の束縛。OnProfileApplied（適用時の抑制の集合の消去）の接続は、Step7.1 で判断する（Step5 計画書 Q4）。
         public void PublishBindings(int deviceIndex)
         {
             if (deviceIndex < 0 || deviceIndex >= _environmentService.ControllerSlotLimit)

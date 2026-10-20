@@ -140,35 +140,15 @@ namespace DS4WindowsTests
             Assert.Equal(0, broken);
         }
 
-        // ---- BindingMigrationOptions ----
+        // ---- 登録簿（Phase8-Step8 8d: 移行のスイッチ BindingMigrationOptions は削除した） ----
 
         [Fact]
-        public void MigrationOptions_StartEmpty_AndFollowTheSet()
-        {
-            var options = new BindingMigrationOptions();
-            Assert.Empty(options.MigratedTypes);
-            foreach (SpecialAction.ActionTypeId type in Enum.GetValues(typeof(SpecialAction.ActionTypeId)))
-                Assert.False(options.IsMigrated(type));
-
-            options.MigratedTypes.Add(SpecialAction.ActionTypeId.Button);
-            Assert.True(options.IsMigrated(SpecialAction.ActionTypeId.Button));
-            Assert.False(options.IsMigrated(SpecialAction.ActionTypeId.Key));
-
-            options.MigratedTypes.Remove(SpecialAction.ActionTypeId.Button);
-            Assert.False(options.IsMigrated(SpecialAction.ActionTypeId.Button));
-        }
-
-        [Fact]
-        public void Host_RegistersTheRegistryAndTheOptions_AsSingletons_WithTheMigratedTypesDefault()
+        public void Host_RegistersTheRegistry_AsASingleton()
         {
             var registry = TestHost.GetService<IActionRegistry>();
-            var options = TestHost.GetService<BindingMigrationOptions>();
 
             Assert.IsType<ActionBindingRegistry>(registry);
             Assert.Same(registry, TestHost.GetService<IActionRegistry>());
-            Assert.Same(options, TestHost.GetService<BindingMigrationOptions>());
-            // 本番の既定の一覧（Phase8-Step7: PR ごとに 1 種別ずつ足す。現在は 7.1 の Button、7.2 の Key、7.3 の Macro、7.4 の Program、7.5a の Profile、7.6a の GyroCalibrate、7.6b の DisconnectBT、7.6c の BatteryCheck、7.6d のステアリング較正、7.7b の MultiAction）
-            Assert.Equal(new[] { SpecialAction.ActionTypeId.BatteryCheck, SpecialAction.ActionTypeId.Button, SpecialAction.ActionTypeId.DisconnectBT, SpecialAction.ActionTypeId.GyroCalibrate, SpecialAction.ActionTypeId.Key, SpecialAction.ActionTypeId.Macro, SpecialAction.ActionTypeId.MultiAction, SpecialAction.ActionTypeId.Profile, SpecialAction.ActionTypeId.Program, SpecialAction.ActionTypeId.SASteeringWheelEmulationCalibrate }, options.MigratedTypes.OrderBy(t => t.ToString(), StringComparer.Ordinal).ToArray());
         }
 
         // ---- 出力の文脈の拡張 ----

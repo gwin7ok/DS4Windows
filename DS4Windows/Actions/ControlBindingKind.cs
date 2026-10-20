@@ -2,7 +2,7 @@ namespace DS4Windows.Actions
 {
     /// <summary>
     /// Phase8-Step7 7.8a（Phase8-Step2b-ControlsTab-Design.md §3.4）: Controls タブの割り当ての、新経路（エンジン）へ移行する区分。
-    /// <see cref="BindingMigrationOptions.MigratedControlKinds"/> に含まれる区分だけで構成される割り当てを、新経路が処理する（Q2＝A: ボタン単位の所有）。
+    /// 各区分の条件を満たす割り当てを、新経路が処理する（Q2＝A: ボタン単位の所有）。Phase8-Step8 8d: 区分ごとの移行のスイッチは削除した。
     /// 区分は、後続の PR（7.8b〜f）が 1 つずつ有効にする。7.8a では、どれも有効にしない。
     /// </summary>
     public enum ControlBindingKind

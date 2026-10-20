@@ -88,11 +88,9 @@ namespace DS4WindowsTests
         }
 
         [Fact]
-        public void AMacroBuiltWithoutAPlayer_IsNotBuilt_AndTheLegacyPathStillHandlesIt()
+        public void AMacroBuiltWithoutAPlayer_IsNotBuilt()
         {
-            var options = new BindingMigrationOptions();
-            options.MigratedControlKinds.Add(ControlBindingKind.Macro);
-            var builder = new ControlBindingBuilder(options, TestHost.GetService<IProfileSettingsService>());   // プレーヤーなし
+            var builder = new ControlBindingBuilder(TestHost.GetService<IProfileSettingsService>());   // プレーヤーなし
             using var t = new ControlsKeyTestScope(false);
             t.MapMacro(DS4Controls.Cross, Steps);
 
@@ -120,20 +118,14 @@ namespace DS4WindowsTests
         }
 
         [Fact]
-        public void TheEngine_OwnsTheMacroControl_AndRemovingTheMacroLineStopsOwningIt()
+        public void TheEngine_OwnsTheMacroControl()
         {
             using var t = new ControlsKeyTestScope(true);
             t.MapMacro(DS4Controls.Cross, Steps);
             t.Publish();
             var engine = TestHost.GetService<ITriggerDispatchEngine>();
-            var options = TestHost.GetService<BindingMigrationOptions>();
 
             Assert.True(engine.OwnsControl(Device, DS4Controls.Cross));
-
-            options.MigratedControlKinds.Remove(ControlBindingKind.Macro);   // ロールバック（既定の一覧から Macro の 1 行を外した状態）
-            Assert.False(engine.OwnsControl(Device, DS4Controls.Cross));      // 束縛が残っていても、区分が外れていれば所有しない
-            t.Publish();
-            Assert.Empty(TestHost.GetService<IActionRegistry>().GetBindings(Device));   // Key の束縛もなく（この割り当ては Macro）、空になる
         }
 
         private static long Allocated(ControlsKeyTestScope t, DS4State input)

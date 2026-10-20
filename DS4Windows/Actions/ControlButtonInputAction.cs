@@ -12,7 +12,7 @@ namespace DS4Windows.Actions
     {
         private readonly DS4Controls[] _triggers;
 
-        /// <param name="kind">所属の区分。エンジンが、この区分の移行のスイッチ（<c>MigratedControlKinds</c>）で、所有を判定する。</param>
+        /// <param name="kind">所属の区分。束縛の区分（情報用）。</param>
         /// <param name="judgement">押下の判定の種類（Key は Assignment、Macro は SA と同じ Trigger）。</param>
         public ControlButtonInputAction(string name, DS4Controls control, ControlBindingKind kind = ControlBindingKind.Key,
             ControlJudgement judgement = ControlJudgement.Assignment)

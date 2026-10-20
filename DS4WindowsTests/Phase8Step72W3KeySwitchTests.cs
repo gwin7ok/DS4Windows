@@ -29,38 +29,6 @@ namespace DS4WindowsTests
             return state;
         }
 
-        [Fact]
-        public void RemovingTheKeyLine_NoBindingIsBuilt_AndNothingHappens()
-        {
-            var options = TestHost.GetService<BindingMigrationOptions>();
-            var builder = TestHost.GetService<IActionBindingBuilder>();
-            var saved = options.MigratedTypes.ToArray();
-            try
-            {
-                using var t = new SpecialActionTestScope(true);
-                t.AddKey("L1", toggle: false);
-                Assert.Single(builder.Build(t.Device));
-
-                options.MigratedTypes.Remove(SpecialAction.ActionTypeId.Key);   // 既定の一覧から Key だけを外した状態
-
-                Assert.Empty(builder.Build(t.Device));
-                t.PublishBindings();
-                Assert.Empty(TestHost.GetService<IActionRegistry>().GetBindings(t.Device));
-
-                // Phase8-Step8 8b: 旧経路は削除した。束縛がない Key は、何もしない
-                t.StateOf(t.Add(new SpecialAction("p8s72w3_key_" + Guid.NewGuid().ToString("N"), "R1", "Key", "66", 0, "Press\n"))).RequiresFreshPressAfterReset = false;
-                DS4State input = SpecialActionTestScope.Neutral();
-                input.R1 = true;
-                t.RunFrame(input);
-                Assert.False(t.Engine.IsSuppressed(t.Device, DS4Controls.R1));
-            }
-            finally
-            {
-                options.MigratedTypes.Clear();
-                foreach (var type in saved) options.MigratedTypes.Add(type);
-            }
-        }
-
         private static long Allocated(SpecialActionTestScope t, DS4State input)
         {
             long before = GC.GetAllocatedBytesForCurrentThread();

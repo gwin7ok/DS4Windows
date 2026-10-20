@@ -149,22 +149,6 @@ namespace DS4WindowsTests
             Assert.IsType<ControlMouseOutputAction>(bindings[1].Outputs[0]);
         }
 
-        [Fact]
-        public void RemovingTheButtonMouseKind_StopsBuildingTheMouseAssignments()
-        {
-            using var t = new ControlsKeyTestScope(true);
-            t.MapButton(DS4Controls.Cross, X360Controls.LeftMouse);
-            t.MapButton(DS4Controls.Circle, X360Controls.B, DS4KeyType.Toggle);
-            t.MapButton(DS4Controls.Square, X360Controls.B);   // パッドは ButtonPad のまま
-
-            TestHost.GetService<BindingMigrationOptions>().MigratedControlKinds.Remove(ControlBindingKind.ButtonMouse);
-            var bindings = Build();
-
-            Assert.DoesNotContain(bindings, b => b.Source.name.StartsWith("Synthetic_Mouse_"));
-            Assert.DoesNotContain(bindings, b => b.Source.name == $"Synthetic_Pad_{Device}_{(int)DS4Controls.Circle}");
-            Assert.Contains(bindings, b => b.Source.name == $"Synthetic_Pad_{Device}_{(int)DS4Controls.Square}");
-        }
-
         // ---- Toggle の是正（Q8＝A） ----
 
         private static (bool Toggle, int ToggleCount, int Left) Frame(ControlsKeyTestScope t, DS4State input)
@@ -217,7 +201,6 @@ namespace DS4WindowsTests
             string frameOutput = SourceFileLocator.Find("DS4Windows/Actions/FrameOutput.cs");
             if (registration == null || frameOutput == null) return;
 
-            Assert.Contains("MigratedControlKinds.Add(ControlBindingKind.ButtonMouse)", File.ReadAllText(registration));
             Assert.Contains("IToggleFrameOutput", File.ReadAllText(frameOutput));
         }
     }

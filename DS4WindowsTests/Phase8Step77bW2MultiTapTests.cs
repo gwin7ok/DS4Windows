@@ -245,7 +245,7 @@ namespace DS4WindowsTests
         private static ActionBindingBuilder NewBuilder(IMacroStringPlayer player)
             => new ActionBindingBuilder(TestHost.GetService<IProfileActionProvider>(), TestHost.GetService<IProfileSettingsService>(),
                 TestHost.GetService<IManagedActionManager>(), TestHost.GetService<IMacroPlayer>(), TestHost.GetService<IProcessLauncher>(),
-                TestHost.GetService<IProfileSwitcher>(), TestHost.GetService<BindingMigrationOptions>(), TestHost.GetService<ISpecialActionRepository>(),
+                TestHost.GetService<IProfileSwitcher>(), TestHost.GetService<ISpecialActionRepository>(),
                 TestHost.GetService<Func<IMapping>>(), null, null, null, null, player);
 
         private static void Publish(SpecialActionTestScope t, IMacroStringPlayer player)
@@ -313,31 +313,6 @@ namespace DS4WindowsTests
             Assert.False(BindingPolicy.Default.RoutesOutputsByGesture);
             Assert.False(new BindingPolicy(blocksWhileExecuting: true).RoutesOutputsByGesture);
             Assert.True(new BindingPolicy(routesOutputsByGesture: true).RoutesOutputsByGesture);
-        }
-
-        [Fact]
-        public void RemovingTheLine_NoBindingIsBuilt_AndNothingHappens()
-        {
-            var options = TestHost.GetService<BindingMigrationOptions>();
-            var builder = TestHost.GetService<IActionBindingBuilder>();
-            var saved = options.MigratedTypes.ToArray();
-            try
-            {
-                using var t = new SpecialActionTestScope(true);
-                SpecialAction sa = AddMulti(t, "L1", new RecordingPlayer());
-                Assert.Single(builder.Build(t.Device));   // 本番のビルダー（本番の窓口）でも束縛が作られる
-
-                options.MigratedTypes.Remove(SpecialAction.ActionTypeId.MultiAction);   // 既定の一覧から MultiAction だけを外した状態
-
-                Assert.Empty(builder.Build(t.Device));
-                t.PublishBindings();
-                Assert.False(t.Engine.Owns(t.Device, sa));
-            }
-            finally
-            {
-                options.MigratedTypes.Clear();
-                foreach (var type in saved) options.MigratedTypes.Add(type);
-            }
         }
 
         // ---- 窓口 ----

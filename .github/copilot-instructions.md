@@ -1,7 +1,7 @@
 # エージェント向け作業ルール (copilot-instructions)
 
 作成日: 2026-03-01
-最終更新日: 2026-10-18（2.1 のシム維持の原則を過渡期の記述に改め、3.1 に暗黙のホスト構築の禁止とラチェットの一致検査を追記［Phase7-Step10e の承認済み］。2026-10-15: 3.3 原則1の過渡期ルールを終了し、既存ファイルを含む厳格適用へ更新［Phase6-Step10b の完了］。2026-10-14: 2.2 のカスケードループ防止ガードの記述を現行の機構へ更新［Phase6-Step9b の決定6］。2026-09-24: 2.4 未参照コードの扱いを追記。2026-09-20: 3.3 原則1に過渡期ルールを追記、3.4 ファイル配置ルールを追記。2026-09-03: 3.3 ファイル構成・クラス・名前空間の原則と過渡期ルールを追記）
+最終更新日: 2026-10-20（3.2 の Mapping.cs の行数を Phase8-Step8 の削減後に更新。2026-10-18: 2.1 のシム維持の原則を過渡期の記述に改め、3.1 に暗黙のホスト構築の禁止とラチェットの一致検査を追記［Phase7-Step10e の承認済み］。2026-10-15: 3.3 原則1の過渡期ルールを終了し、既存ファイルを含む厳格適用へ更新［Phase6-Step10b の完了］。2026-10-14: 2.2 のカスケードループ防止ガードの記述を現行の機構へ更新［Phase6-Step9b の決定6］。2026-09-24: 2.4 未参照コードの扱いを追記。2026-09-20: 3.3 原則1に過渡期ルールを追記、3.4 ファイル配置ルールを追記。2026-09-03: 3.3 ファイル構成・クラス・名前空間の原則と過渡期ルールを追記）
 対象ブランチ: `For-DI-migration-work`
 全体計画書: `docs-forDIMG/DI-App-Wide-Migration-Plan.md`
 ＤＩ化移行後の理想構造のモデル図：`docs-forDIMG\Model-Diagram\01-Component-Dependency-Diagram.md`,`docs-forDIMG\Model-Diagram\02-Layer-Architecture-Diagram.md`,`docs-forDIMG\Model-Diagram\03-Class-Interface-Diagram.md`,`docs-forDIMG\Model-Diagram\04-Service-Lifecycle-Spec.md` ← これら4文書は全体の構造に関わる部分の意思決定を行う場合は必ず参照し、また実装作業の中で変更があった場合はその内容をこれらの文書に反映すること
@@ -65,7 +65,7 @@
 - **ラチェットの一致検査**（2026-10-18 追記）: `Step10FourGlobalRatchetGuardTests`（`Global.*`／`AppHost`／`Program.rootHub`）と `Phase7Step1ServiceLocatorRatchetGuardTests`（`ServiceProviderHolder`）の基準値は、「超えない」だけでなく「実数と一致する」ことを `Phase7Step10eW5RatchetEqualityGuardTests` が検査する。件数を減らしたら、基準値も同時に更新すること。
 
 ### 3.2 巨大ファイルの編集方針
-- `Mapping.cs`（約 7,600 行）、`ControlService.cs`（約 3,400 行）、`BackingStore.cs`（約 1,700 行）などの巨大ファイルは、全体を再生成せず、対象メソッドのみをピンポイントで置換する（Strangler Fig パターンの徹底）。
+- `Mapping.cs`（約 4,600 行。Phase8-Step8 で 7,322 行から削減）、`ControlService.cs`（約 3,400 行）、`BackingStore.cs`（約 1,700 行）などの巨大ファイルは、全体を再生成せず、対象メソッドのみをピンポイントで置換する（Strangler Fig パターンの徹底）。
 
 ### 3.3 ファイル構成・クラス設計・名前空間の3原則と過渡期ルール
 近代的な C# 設計として以下の「3大原則」を最終目標とするが、大規模移行の安全性を最優先するため過渡期ルールを設ける。

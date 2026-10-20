@@ -57,8 +57,6 @@ namespace DS4WindowsTests
         private readonly string _origSelected;
         private readonly List<string> _origActions;
         private readonly SpecialAction _action;
-        private readonly BindingMigrationOptions _options;
-        private readonly SpecialAction.ActionTypeId[] _origMigrated;
 
         public Phase8Step5W3PublishBindingsTests()
         {
@@ -72,9 +70,6 @@ namespace DS4WindowsTests
             _settings = TestGlobals.ProfileSettingsServiceInstance;
             _store = TestGlobals.Store;
             _repo = TestRepositoryFactory.CreateProfileRepository(_settings);
-            _options = TestHost.GetService<BindingMigrationOptions>();
-            _origMigrated = _options.MigratedTypes.ToArray();
-            _options.MigratedTypes.Clear();
 
             _origProfilePath = _repo.ProfilePath[Slot];
             _origOlder = _repo.OlderProfilePath[Slot];
@@ -90,8 +85,6 @@ namespace DS4WindowsTests
 
         public void Dispose()
         {
-            _options.MigratedTypes.Clear();
-            foreach (var t in _origMigrated) _options.MigratedTypes.Add(t);
             TestHost.GetService<IActionRegistry>().Clear(Slot);
             _store.profileActions[Slot] = _origActions;
             _store.actions.Remove(_action);
@@ -193,21 +186,9 @@ namespace DS4WindowsTests
         // ---- 実ホストの登録簿・ビルダー ----
 
         [Fact]
-        public void RealHost_NothingMigrated_TheRegistryStaysEmpty()
+        public void RealHost_TheRegistryHoldsTheBindingOfTheProfile()
         {
             var registry = TestHost.GetService<IActionRegistry>();
-            ProfileApplicationService service = Service();
-
-            Assert.True(service.ApplyProfileWithoutHalt(Slot, Normal, false, false, ProfileChangeSource.Manual, "prolog"));
-
-            Assert.Empty(registry.GetBindings(Slot));
-        }
-
-        [Fact]
-        public void RealHost_ButtonMigrated_TheRegistryHoldsTheBindingOfTheProfile()
-        {
-            var registry = TestHost.GetService<IActionRegistry>();
-            _options.MigratedTypes.Add(SpecialAction.ActionTypeId.Button);
             ProfileApplicationService service = Service();
 
             Assert.True(service.ApplyProfileWithoutHalt(Slot, Normal, false, false, ProfileChangeSource.Manual, "prolog"));
@@ -224,11 +205,6 @@ namespace DS4WindowsTests
             Assert.NotSame(bindings, again);
             Assert.Single(bindings);
             Assert.Single(again);
-
-            // 移行対象から外して適用し直すと、空に戻る（ロールバック）
-            _options.MigratedTypes.Clear();
-            Assert.True(service.ApplyProfileWithoutHalt(Slot, Normal, false, false, ProfileChangeSource.Manual, "prolog"));
-            Assert.Empty(registry.GetBindings(Slot));
         }
 
         // ---- 構造 ----

@@ -104,22 +104,6 @@ namespace DS4WindowsTests
             Assert.Equal($"Synthetic_Mouse_{Device}_{(int)DS4Controls.Cross}", b.Source.name);
         }
 
-        [Fact]
-        public void RemovingTheButtonAnalogMouseKind_StopsBuildingTheAnalogMouseAssignments()
-        {
-            using var h = new AnalogMouseTestHarness(true);
-            h.T.MapButton(DS4Controls.Cross, X360Controls.MouseRight);
-            h.T.MapButton(DS4Controls.L2, X360Controls.WUP);
-            h.T.MapButton(DS4Controls.Circle, X360Controls.MouseUp, DS4KeyType.Toggle);
-            h.T.MapButton(DS4Controls.Square, X360Controls.LeftMouse);   // 7.8f-2 の区分は有効のまま
-
-            TestHost.GetService<BindingMigrationOptions>().MigratedControlKinds.Remove(ControlBindingKind.ButtonAnalogMouse);
-            var bindings = Build();
-
-            Assert.DoesNotContain(bindings, b => b.Source.name.StartsWith("Synthetic_AnalogMouse_"));
-            Assert.Contains(bindings, b => b.Source.name == $"Synthetic_Mouse_{Device}_{(int)DS4Controls.Square}");
-        }
-
         // ---- 加算器（Q6＝A）と、ホイールの状態（Q5＝B） ----
 
         [Fact]
@@ -191,7 +175,6 @@ namespace DS4WindowsTests
             string mapping = SourceFileLocator.Find("DS4Windows/DS4Control/Mapping.cs");
             if (registration == null || mapping == null) return;
 
-            Assert.Contains("MigratedControlKinds.Add(ControlBindingKind.ButtonAnalogMouse)", File.ReadAllText(registration));
             string text = File.ReadAllText(mapping);
             Assert.Contains("MouseSampler", text);
             Assert.Contains("frameOutput.MouseDeltaX", text);

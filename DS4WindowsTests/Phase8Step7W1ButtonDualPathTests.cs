@@ -158,22 +158,18 @@ namespace DS4WindowsTests
         }
 
         [Fact]
-        public void TheScope_RestoresTheMigrationSwitchAndTheRegistry()
+        public void TheScope_RestoresTheRegistry()
         {
-            var options = TestHost.GetService<DS4Windows.Actions.BindingMigrationOptions>();
             var registry = TestHost.GetService<DS4Windows.Actions.IActionRegistry>();
-            var before = options.MigratedTypes.ToArray();
             int device;
 
             using (var t = new SpecialActionTestScope(true))
             {
                 device = t.Device;
                 t.AddButtonPress("L1");
-                Assert.Contains(SpecialAction.ActionTypeId.Button, options.MigratedTypes);
                 Assert.Single(registry.GetBindings(device));
             }
 
-            Assert.Equal(before, options.MigratedTypes.ToArray());
             Assert.Empty(registry.GetBindings(device));
         }
     }

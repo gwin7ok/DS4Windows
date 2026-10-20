@@ -52,16 +52,9 @@ namespace DS4WindowsTests
             public void RestoreProfile(int deviceIndex) { }
         }
 
-        private static ActionBindingBuilder NewBuilder(FakeProvider provider, BindingMigrationOptions options)
+        private static ActionBindingBuilder NewBuilder(FakeProvider provider)
             => new ActionBindingBuilder(provider, TestHost.GetService<IProfileSettingsService>(), TestHost.GetService<IManagedActionManager>(),
-                new NoMacroPlayer(), new NoLauncher(), new NoSwitcher(), options);
-
-        private static BindingMigrationOptions All()
-        {
-            var o = new BindingMigrationOptions();
-            foreach (SpecialAction.ActionTypeId t in Enum.GetValues(typeof(SpecialAction.ActionTypeId))) o.MigratedTypes.Add(t);
-            return o;
-        }
+                new NoMacroPlayer(), new NoLauncher(), new NoSwitcher());
 
         private static SpecialAction Button(string name, string triggers, string mode, double delay = 0)
             => new SpecialAction(name, triggers, "Button", ((int)X360Controls.A).ToString(), delay, mode + "\n");
@@ -73,25 +66,12 @@ namespace DS4WindowsTests
         }
 
         [Fact]
-        public void NothingMigrated_ReturnsAnEmptyList_AndDoesNotReadTheProfile()
-        {
-            var provider = new FakeProvider();
-            provider.Add(Button("b", "Cross", "Press"));
-            var builder = NewBuilder(provider, new BindingMigrationOptions());
-
-            IReadOnlyList<IActionBinding> result = builder.Build(0);
-
-            Assert.NotNull(result);
-            Assert.Empty(result);
-        }
-
-        [Fact]
         public void ButtonPress_HasNoFreshPressGuard_AndToggleHasIt()
         {
             var provider = new FakeProvider();
             provider.Add(Button("press", "Cross/L1", "Press", delay: 1.5));
             provider.Add(Button("toggle", "Circle", "Toggle"));
-            IReadOnlyList<IActionBinding> result = NewBuilder(provider, All()).Build(2);
+            IReadOnlyList<IActionBinding> result = NewBuilder(provider).Build(2);
 
             Assert.Equal(2, result.Count);
             var press = Assert.IsType<TriggerBinding>(result[0]);
@@ -116,7 +96,7 @@ namespace DS4WindowsTests
             var provider = new FakeProvider();
             provider.Add(new SpecialAction("key", "Square", "Key", "65", 0, "Press\n"));
 
-            TriggerBinding b = Only(NewBuilder(provider, All()).Build(0));
+            TriggerBinding b = Only(NewBuilder(provider).Build(0));
 
             Assert.IsType<KeyOutputAction>(Assert.Single(b.Outputs));
             Assert.True(b.Policy.RespectsFreshPressGuard);
@@ -132,7 +112,7 @@ namespace DS4WindowsTests
             var provider = new FakeProvider();
             provider.Add(new SpecialAction("macro", "Triangle", "Macro", "65/66", 0, extras));
 
-            TriggerBinding b = Only(NewBuilder(provider, All()).Build(1));
+            TriggerBinding b = Only(NewBuilder(provider).Build(1));
 
             Assert.IsType<MacroAction>(Assert.Single(b.Outputs));
             Assert.True(b.Policy.RespectsFreshPressGuard);
@@ -145,7 +125,7 @@ namespace DS4WindowsTests
             var provider = new FakeProvider();
             provider.Add(new SpecialAction("prog", "Share", "Program", "notepad.exe", 0, ""));
 
-            TriggerBinding b = Only(NewBuilder(provider, All()).Build(0));
+            TriggerBinding b = Only(NewBuilder(provider).Build(0));
 
             Assert.IsType<LaunchProcessAction>(Assert.Single(b.Outputs));
             Assert.True(b.Policy.BlocksWhileExecuting);
@@ -160,7 +140,7 @@ namespace DS4WindowsTests
             provider.Add(new SpecialAction("auto", "L2", "Profile", "ProfileB", 0, "AutomaticUntrigger"));
             provider.Add(new SpecialAction("buttons", "R1", "Profile", "ProfileC", 0, "Cross/Circle"));
 
-            IReadOnlyList<IActionBinding> result = NewBuilder(provider, All()).Build(0);
+            IReadOnlyList<IActionBinding> result = NewBuilder(provider).Build(0);
 
             // Phase8-Step7 7.5b: 自動の復帰（AutomaticUntrigger）の Profile も束縛になる。解除トリガー（uTrigger）を持つ Profile も、Phase8-Step8 8b（機能廃止）で束縛になる（解除ボタンによる復帰はなし）
             Assert.Equal(3, result.Count);
@@ -186,22 +166,20 @@ namespace DS4WindowsTests
             provider.Add(Button("b", "Circle", "Press"));
             provider.Add(new SpecialAction("battery", "Options", "BatteryCheck", "1|2|3", 0, ""));
 
-            IReadOnlyList<IActionBinding> result = NewBuilder(provider, All()).Build(0);
+            IReadOnlyList<IActionBinding> result = NewBuilder(provider).Build(0);
 
             Assert.Equal(new[] { "a", "b" }, result.Cast<TriggerBinding>().Select(x => x.Source.name).ToArray());
         }
 
         [Fact]
-        public void OnlyTheMigratedTypesAreBuilt()
+        public void ATypeWithoutABinding_IsNotBuilt()
         {
+            // Phase8-Step8 8d: 移行のスイッチは削除した。全種別を組み立てるが、束縛を持たない種別（None）は作らない
             var provider = new FakeProvider();
-            provider.Add(new SpecialAction("k", "Cross", "Key", "65", 0, "Press\n"));
+            provider.Add(new SpecialAction("n", "Cross", "None", "", 0, ""));
             provider.Add(Button("b", "Circle", "Press"));
-            provider.Add(new SpecialAction("p", "L1", "Program", "notepad.exe", 0, ""));
-            var options = new BindingMigrationOptions();
-            options.MigratedTypes.Add(SpecialAction.ActionTypeId.Button);
 
-            IReadOnlyList<IActionBinding> result = NewBuilder(provider, options).Build(0);
+            IReadOnlyList<IActionBinding> result = NewBuilder(provider).Build(0);
 
             Assert.Equal("b", Only(result).Source.name);
         }
@@ -214,7 +192,7 @@ namespace DS4WindowsTests
             empty.trigger.Clear();
             provider.Add(empty);
             provider.Add(Button("b", "Circle", "Press"));
-            var builder = NewBuilder(provider, All());
+            var builder = NewBuilder(provider);
 
             IReadOnlyList<IActionBinding> first = builder.Build(0);
             provider.Names.Clear();
@@ -230,14 +208,12 @@ namespace DS4WindowsTests
             var p = new FakeProvider();
             var s = TestHost.GetService<IProfileSettingsService>();
             var m = TestHost.GetService<IManagedActionManager>();
-            var o = new BindingMigrationOptions();
-            Assert.Throws<ArgumentNullException>(() => new ActionBindingBuilder(null, s, m, new NoMacroPlayer(), new NoLauncher(), new NoSwitcher(), o));
-            Assert.Throws<ArgumentNullException>(() => new ActionBindingBuilder(p, null, m, new NoMacroPlayer(), new NoLauncher(), new NoSwitcher(), o));
-            Assert.Throws<ArgumentNullException>(() => new ActionBindingBuilder(p, s, null, new NoMacroPlayer(), new NoLauncher(), new NoSwitcher(), o));
-            Assert.Throws<ArgumentNullException>(() => new ActionBindingBuilder(p, s, m, null, new NoLauncher(), new NoSwitcher(), o));
-            Assert.Throws<ArgumentNullException>(() => new ActionBindingBuilder(p, s, m, new NoMacroPlayer(), null, new NoSwitcher(), o));
-            Assert.Throws<ArgumentNullException>(() => new ActionBindingBuilder(p, s, m, new NoMacroPlayer(), new NoLauncher(), null, o));
-            Assert.Throws<ArgumentNullException>(() => new ActionBindingBuilder(p, s, m, new NoMacroPlayer(), new NoLauncher(), new NoSwitcher(), null));
+            Assert.Throws<ArgumentNullException>(() => new ActionBindingBuilder(null, s, m, new NoMacroPlayer(), new NoLauncher(), new NoSwitcher()));
+            Assert.Throws<ArgumentNullException>(() => new ActionBindingBuilder(p, null, m, new NoMacroPlayer(), new NoLauncher(), new NoSwitcher()));
+            Assert.Throws<ArgumentNullException>(() => new ActionBindingBuilder(p, s, null, new NoMacroPlayer(), new NoLauncher(), new NoSwitcher()));
+            Assert.Throws<ArgumentNullException>(() => new ActionBindingBuilder(p, s, m, null, new NoLauncher(), new NoSwitcher()));
+            Assert.Throws<ArgumentNullException>(() => new ActionBindingBuilder(p, s, m, new NoMacroPlayer(), null, new NoSwitcher()));
+            Assert.Throws<ArgumentNullException>(() => new ActionBindingBuilder(p, s, m, new NoMacroPlayer(), new NoLauncher(), null));
         }
     }
 }

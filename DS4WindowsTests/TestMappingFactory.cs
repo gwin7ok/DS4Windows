@@ -37,9 +37,9 @@ namespace DS4WindowsTests
             var synthetic = syntheticInput ?? new SyntheticInputState();
             var profileSettings = settings ?? TestHost.GetService<IProfileSettingsService>();
             var kbm = virtualKbm ?? TestHost.GetService<IVirtualKBM>();
-            // Phase8-Step4 W4: 抑制の集合を持つエンジンも、独立の instance にする（他のテストと状態を共有しない。ホストの登録簿・移行スイッチは使わない）
+            // Phase8-Step4 W4: 抑制の集合を持つエンジンも、独立の instance にする（他のテストと状態を共有しない。ホストの登録簿は使わない）
             var triggerEngine = engine ?? new TriggerDispatchEngine(new ActionBindingRegistry(),
-                TestHost.GetService<IManagedActionManager>(), new BindingMigrationOptions(), kbm);
+                TestHost.GetService<IManagedActionManager>(), kbm);
             return new Mapping(
                 synthetic,
                 macroRuntime ?? new MacroRuntimeState(),

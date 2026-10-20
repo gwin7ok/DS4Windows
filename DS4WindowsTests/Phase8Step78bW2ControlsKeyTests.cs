@@ -139,23 +139,9 @@ namespace DS4WindowsTests
         }
 
         [Fact]
-        public void TheBuilder_ReturnsNothing_WhenTheKeyKindIsNotMigrated()
-        {
-            using var t = new ControlsKeyTestScope(true);
-            t.MapKey(DS4Controls.Cross, 65);
-            TestHost.GetService<BindingMigrationOptions>().MigratedControlKinds.Remove(ControlBindingKind.Key);
-
-            Assert.Empty(TestHost.GetService<IControlBindingBuilder>().Build(Device));
-        }
-
-        [Fact]
         public void TheActionBindingBuilder_AppendsTheControlBindings_AfterTheSpecialActionOnes()
         {
             using var t = new SpecialActionTestScope(true);
-            var options = TestHost.GetService<BindingMigrationOptions>();
-            var saved = options.MigratedControlKinds.ToArray();
-            options.MigratedControlKinds.Clear();
-            options.MigratedControlKinds.Add(ControlBindingKind.Key);
             DS4ControlSettings dcs = TestGlobals.Store.GetDS4CSetting(Device, DS4Controls.Cross);
             dcs.Reset();
             dcs.actionType = DS4ControlSettings.ActionType.Key;
@@ -173,15 +159,13 @@ namespace DS4WindowsTests
             finally
             {
                 dcs.Reset();
-                options.MigratedControlKinds.Clear();
-                foreach (ControlBindingKind kind in saved) options.MigratedControlKinds.Add(kind);
             }
         }
 
         // ---- 所有とロールバック ----
 
         [Fact]
-        public void TheEngine_OwnsOnlyTheMappedControl_AndRemovingTheKindStopsOwningIt()
+        public void TheEngine_OwnsOnlyTheMappedControl()
         {
             using var t = new ControlsKeyTestScope(true);
             t.MapKey(DS4Controls.Cross, 65);
@@ -191,12 +175,6 @@ namespace DS4WindowsTests
             Assert.True(engine.OwnsControl(Device, DS4Controls.Cross));
             Assert.False(engine.OwnsControl(Device, DS4Controls.Circle));
             Assert.False(engine.OwnsControl(Device + 1, DS4Controls.Cross));
-
-            // 既定の一覧から Key だけを外した状態（ロールバック）: 所有しない。束縛も作られない
-            TestHost.GetService<BindingMigrationOptions>().MigratedControlKinds.Remove(ControlBindingKind.Key);
-            Assert.False(engine.OwnsControl(Device, DS4Controls.Cross));
-            t.Publish();
-            Assert.Empty(TestHost.GetService<IActionRegistry>().GetBindings(Device));
         }
 
         // ---- 割り当て ----

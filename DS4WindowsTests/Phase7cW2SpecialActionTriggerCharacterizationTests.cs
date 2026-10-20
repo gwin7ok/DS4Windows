@@ -14,7 +14,7 @@ namespace DS4WindowsTests
     /// 範囲外（Phase7c の続き）: Key の Press／Toggle の出力、`uTrigger`／`delayTime`／`pressRelease`、プロファイル切替の復帰とチェーン、`shiftTrigger`。
     /// Phase8-Step7 7.2-W1: Key 種別のテスト（成立・保持・解放、ガード、Toggle）も同じく <c>[Theory]</c>。<c>UntriggerIndex</c> だけは Q1 により、新経路は書かない（-1）。
     /// Phase8-Step7 7.1-W1: Button 種別のテスト（Press の出力、AND 条件、抑制、Fresh-press）は <c>[Theory]</c> にし、旧経路（<c>migrated: false</c>）と
-    /// 新経路（<c>migrated: true</c>。Button を <c>MigratedTypes</c> に足し、実物のビルダーが作る束縛を登録簿へ登録）の両方で、期待値を変えずに流す（Phase8-Step7-Plan.md §3・Q3）。
+    /// 新経路（実物のビルダーが作る束縛を登録簿へ登録）で流す。Phase8-Step8 8d: 移行のスイッチは削除した（Phase8-Step7-Plan.md §3・Q3）。
     /// `Mapping` の静的な状態と `ActionManager`（静的）を共有するため、<c>ServiceProviderHolder</c> のコレクションで直列に実行する。
     /// </summary>
     [Collection("ServiceProviderHolder")]

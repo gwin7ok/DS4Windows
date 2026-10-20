@@ -10,9 +10,7 @@ namespace DS4Windows.Actions
     /// （<c>None</c>）は束縛を作らず、旧経路が処理する。
     /// <para>
     /// TODO（Phase8-Step7。規約 2.4）: 本クラスは Step5 で作り、本番の適用の経路（<c>ProfileApplicationService</c>）から呼ぶが、
-    /// <see cref="BindingMigrationOptions.MigratedTypes"/> が空の間は常に空のリストを返す。各種別の構成（方針の細部を含む）は、
-    /// Step7 の種別ごとの PR で、特性化テストを新旧の両経路で走らせて確定する。Key の <c>uTrigger</c>（解除用のボタン）、
-    /// Macro の同期実行（<c>synchronized</c>）・RunOnRelease の細部は、Step7.2・7.3 で扱う。
+    /// Phase8-Step8 8d: 種別ごとの移行のスイッチ（<c>BindingMigrationOptions</c>）は削除した。全種別の束縛を常に組み立てる。
     /// </para>
     /// </summary>
     public sealed class ActionBindingBuilder : IActionBindingBuilder
@@ -23,7 +21,6 @@ namespace DS4Windows.Actions
         private readonly IMacroPlayer _macroPlayer;
         private readonly IProcessLauncher _processLauncher;
         private readonly IProfileSwitcher _profileSwitcher;
-        private readonly BindingMigrationOptions _options;
         private readonly ISpecialActionRepository _actionRepository;   // Key のログ（ActionEntries の数）用。省略可（テスト）
         private readonly Func<IMapping> _mappingProvider;               // Profile の連鎖の防止（復帰の合図の参照）用。省略可（テスト）
         private readonly IGyroCalibrationPort _gyroCalibration;         // GyroCalibrate（7.6a）。省略時（テスト）は束縛を作らず、旧経路が処理する
@@ -35,7 +32,7 @@ namespace DS4Windows.Actions
 
         public ActionBindingBuilder(IProfileActionProvider profileActions, IProfileSettingsService profileSettings,
             IManagedActionManager manager, IMacroPlayer macroPlayer, IProcessLauncher processLauncher,
-            IProfileSwitcher profileSwitcher, BindingMigrationOptions options, ISpecialActionRepository actionRepository = null,
+            IProfileSwitcher profileSwitcher, ISpecialActionRepository actionRepository = null,
             Func<IMapping> mappingProvider = null, IGyroCalibrationPort gyroCalibration = null,
             IControllerDisconnectPort disconnectPort = null, IBatteryCheckPort batteryCheckPort = null,
             IWheelCalibrationPort wheelCalibrationPort = null, IMacroStringPlayer macroStringPlayer = null,
@@ -55,7 +52,6 @@ namespace DS4Windows.Actions
             _macroPlayer = macroPlayer ?? throw new ArgumentNullException(nameof(macroPlayer));
             _processLauncher = processLauncher ?? throw new ArgumentNullException(nameof(processLauncher));
             _profileSwitcher = profileSwitcher ?? throw new ArgumentNullException(nameof(profileSwitcher));
-            _options = options ?? throw new ArgumentNullException(nameof(options));
         }
 
         public IReadOnlyList<IActionBinding> Build(int device)
@@ -74,9 +70,6 @@ namespace DS4Windows.Actions
 
         private IReadOnlyList<IActionBinding> BuildSpecialActions(int device)
         {
-            // 移行対象が空の間（本番の既定）は、何も読まずに空のリストを返す
-            if (_options.MigratedTypes.Count == 0) return Array.Empty<IActionBinding>();
-
             // 名前の一覧は、読込側が Clear→Add するリストの複製を使う（適用の途中で変わっても、この呼び出しの中では一貫させる）
             IReadOnlyList<string> names = _profileActions.GetProfileActionNames(device);
             if (names == null || names.Count == 0) return Array.Empty<IActionBinding>();
@@ -86,7 +79,6 @@ namespace DS4Windows.Actions
             {
                 SpecialAction sa = _profileActions.GetProfileAction(device, names[i]);
                 if (sa == null) continue;   // 旧ループと同じ: 見つからない名前は飛ばす（警告ログは EmitMissingActionLogsForDevice が出す）
-                if (!_options.IsMigrated(sa.typeID)) continue;
 
                 IActionBinding binding = Create(device, sa, _profileActions.GetProfileActionIndexOf(device, names[i]));
                 if (binding != null) result.Add(binding);
@@ -127,7 +119,6 @@ namespace DS4Windows.Actions
                     // Phase8-Step8 8b（ユーザー承認、2026-10-20）: 解除トリガー（uTrigger）のボタンによる復帰は、機能廃止（規約 2.2）。UI から作れず
                     // （a7277da9 で「Set Unload Trigger」を削除）、旧データ（Actions.xml）にだけ残っていた。uTrigger を持つ Profile も束縛を作り、
                     // 切替は行う。復帰は、自動（AutomaticUntrigger）のときだけ。uTrigger の値は読み込みも保存もそのまま（ファイルは変えない）。
-                    // TODO(Phase8-Step8 8d): UntriggerPolicy.Buttons と BindingPolicy.UntriggerButtons は、使う者がなくなったため削除する。
                     UntriggerPolicy untrigger = sa.automaticUntrigger ? UntriggerPolicy.Automatic : UntriggerPolicy.None;
                     return new TriggerBinding(Input(sa, false), new IOutputAction[] { new ProfileSwitchAction(sa, device, _profileSwitcher, index, _actionRepository, _profileSettings, _mappingProvider) },
                         new BindingPolicy(blocksWhileExecuting: true, untrigger: untrigger,

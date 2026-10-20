@@ -37,7 +37,7 @@ namespace DS4Windows.Services
             return _profileApplication.ApplyProfileWithoutHalt(slotIndex, profileName, false, false, source, null);
         }
 
-        // TODO(Phase8-Step7。規約 2.4): 移行対象（BindingMigrationOptions.MigratedTypes）が空の間、切断で消すものは空の登録簿とエンジンの空の状態だけ。
+        // Phase8-Step8 8d: 移行のスイッチは削除した。切断で消すのは、登録簿の束縛とエンジンの状態。
         // 種別ごとの切替が始まると、抑制の集合・実行中の状態・復帰の合図が実際に消える。
         public void ReleaseSlot(int slotIndex)
         {

@@ -8,12 +8,12 @@ namespace DS4Windows.Actions
     // TODO(Phase8-Step4 W4〜Step8): W4 で Mapping に注入する（旧ループのフック Owns／ProcessOwned、抑制の集合の所有、Stage3 の後の ApplyFrameOutputs）。
     // OnProfileApplied は Step5（ProfileApplicationService の完了処理へ接続）、OnDeviceDisconnected は Step6（ControlService の切断処理へ接続）で本番に接続する。
     // それまでは単体テストからのみ呼ばれる（規約 2.4）。ProcessTriggers は最終形の入口で、Step8 で旧ループのフックと入れ替える。
-    // 復帰（UntriggerPolicy）: 7.5b で、Automatic（Unload on trigger release）を足した。Buttons（解除トリガー。UI から作れない）は、ビルダーが束縛を作らず、旧経路が処理する。
+    // 復帰（UntriggerPolicy）: Automatic（Unload on trigger release）のみ。Buttons（解除トリガー）は Phase8-Step8 8b で機能を廃止し、8d で型から削除した。
     /// <summary>
     /// Phase8-Step4 W3: 統一トリガーディスパッチのエンジン（Phase8-Step2-Design.md §9、§14〜§17、§23.1）。
     /// 種別ごとの分岐は持たない。差は <see cref="BindingPolicy"/> と出力アクションで表す。状態（<c>BeingTriggered</c> ほか）は <c>ActionInstanceState</c> に残し、
     /// エンジンが持つのは、デバイスごとの抑制の集合と、束縛ごとの実行時の配列（前フレームの成立、このフレームの評価結果）だけ。
-    /// 処理するのは、<see cref="BindingMigrationOptions.MigratedTypes"/> に含まれる種別の束縛のみ（既定は空＝何も処理しない）。
+    /// 束縛が登録されていれば、常に処理する（Phase8-Step8 8d: 種別ごとの移行のスイッチ <c>BindingMigrationOptions</c> は削除した）。
     /// スレッド（Q8＝A）: <c>ProcessOwned</c>／<c>ProcessTriggers</c>／<c>ApplyFrameOutputs</c>／<c>AddSuppressed</c>／<c>ReleaseSuppressed</c> は、デバイスごとのロックの下で動く。
     /// <c>IsSuppressed</c> は、従来の <c>CheckForSpecialActionSuppression</c> と同じく、ロックなしで集合を読む。
     /// </summary>
@@ -21,16 +21,14 @@ namespace DS4Windows.Actions
     {
         private readonly IActionRegistry _registry;
         private readonly IManagedActionManager _manager;
-        private readonly BindingMigrationOptions _options;
         private readonly IVirtualKBM _virtualKbm;
         private readonly DeviceRuntime[] _devices = new DeviceRuntime[ControllerLimits.MaxControllerCount];
         private static readonly int ControlTableSize = (int)Enum.GetValues(typeof(DS4Controls)).Cast<DS4Controls>().Max() + 1;
 
-        public TriggerDispatchEngine(IActionRegistry registry, IManagedActionManager manager, BindingMigrationOptions options, IVirtualKBM virtualKbm)
+        public TriggerDispatchEngine(IActionRegistry registry, IManagedActionManager manager, IVirtualKBM virtualKbm)
         {
             _registry = registry ?? throw new ArgumentNullException(nameof(registry));
             _manager = manager ?? throw new ArgumentNullException(nameof(manager));
-            _options = options ?? throw new ArgumentNullException(nameof(options));
             _virtualKbm = virtualKbm; // null でもよい（出力アクションが OutputHandler を使えないだけ）
 
             for (int device = 0; device < _devices.Length; device++)
@@ -42,8 +40,6 @@ namespace DS4Windows.Actions
         public bool Owns(int device, SpecialAction action)
         {
             if (action == null || (uint)device >= (uint)_devices.Length) return false;
-            if (!_options.IsMigrated(action.typeID)) return false;
-
             DeviceRuntime rt = _devices[device];
             lock (rt.Lock)
             {
@@ -55,7 +51,6 @@ namespace DS4Windows.Actions
         // 7.8b: そのボタンの束縛が登録されていれば真。毎フレーム・全ボタンで呼ばれるため、束縛が 1 つもないとき（既定）は、ロックも割り当てもなしで偽を返す
         public bool OwnsControl(int device, DS4Controls control)
         {
-            if (_options.MigratedControlKinds.Count == 0) return false;
             if ((uint)device >= (uint)_devices.Length) return false;
 
             DeviceRuntime rt = _devices[device];
@@ -98,8 +93,6 @@ namespace DS4Windows.Actions
         public FrameResult ProcessOwned(int device, SpecialAction action, ITriggerInput input, IFrameOutput frame)
         {
             if (action == null || input == null || (uint)device >= (uint)_devices.Length) return FrameResult.Continue;
-            if (!_options.IsMigrated(action.typeID)) return FrameResult.Continue;
-
             DeviceRuntime rt = _devices[device];
             lock (rt.Lock)
             {
@@ -331,13 +324,7 @@ namespace DS4Windows.Actions
 
         private bool IsOwnedBinding(IActionBinding binding)
         {
-            SpecialAction source = binding?.Source;
-            if (source == null) return false;
-
-            // Controls タブの束縛（7.8b）は、Controls 側の移行のスイッチで決まる（SA タブの種別のスイッチには依存しない）
-            if (binding.Input is ControlButtonInputAction controlInput) return _options.IsControlMigrated(controlInput.Kind);
-
-            return _options.IsMigrated(source.typeID);
+            return binding?.Source != null;
         }
 
         // 登録簿の一覧が差し替わっていたら実行時の配列を作り直し、リセットの要求があれば状態を初期化する

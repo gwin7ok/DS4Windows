@@ -86,7 +86,6 @@ namespace DS4WindowsTests
             Assert.True(p.RespectsFreshPressGuard);
             Assert.False(p.BlocksWhileExecuting);
             Assert.Equal(UntriggerPolicy.None, p.Untrigger);
-            Assert.Empty(p.UntriggerButtons);
             Assert.True(p.SuppressesTriggerButtons);
             Assert.True(p.ResetsTriggerOutput);
             Assert.True(p.StopOnRelease);
@@ -94,14 +93,12 @@ namespace DS4WindowsTests
         }
 
         [Fact]
-        public void BindingPolicy_HoldsTheGivenValues_AndCopiesTheUntriggerButtons()
+        public void BindingPolicy_HoldsTheGivenValues()
         {
-            var buttons = new List<DS4Controls> { DS4Controls.R1, DS4Controls.R2 };
             var p = new BindingPolicy(
                 respectsFreshPressGuard: false,
                 blocksWhileExecuting: true,
-                untrigger: UntriggerPolicy.Buttons,
-                untriggerButtons: buttons,
+                untrigger: UntriggerPolicy.Automatic,
                 suppressesTriggerButtons: false,
                 resetsTriggerOutput: false,
                 stopOnRelease: false,
@@ -109,16 +106,11 @@ namespace DS4WindowsTests
 
             Assert.False(p.RespectsFreshPressGuard);
             Assert.True(p.BlocksWhileExecuting);
-            Assert.Equal(UntriggerPolicy.Buttons, p.Untrigger);
-            Assert.Equal(new[] { DS4Controls.R1, DS4Controls.R2 }, p.UntriggerButtons.ToArray());
+            Assert.Equal(UntriggerPolicy.Automatic, p.Untrigger);
             Assert.False(p.SuppressesTriggerButtons);
             Assert.False(p.ResetsTriggerOutput);
             Assert.False(p.StopOnRelease);
             Assert.Equal("shift-cross", p.ExclusionGroup);
-
-            // 呼び出し側のリストを書き換えても、方針は変わらない（不変）
-            buttons.Clear();
-            Assert.Equal(2, p.UntriggerButtons.Count);
         }
 
         [Fact]

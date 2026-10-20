@@ -415,7 +415,7 @@ classDiagram
     %% ==========================================
     %% 統一トリガーディスパッチ（Phase8・目標像。未実装。2026-10-19 追加［段階 A］）
     %% 設計: docs-forDIMG/MadeByAgent/Phase8-Step2-Design.md。Step7 の各 PR で実装済みになる。
-    %% 撤去予定（Step8）: IActionFactory／DefaultActionFactory／ActionFactory、Actions.Action／SpecialActionBase／*ActionAdapter、ActionEntry、ActionManager（静的）
+    %% 撤去済み（Phase8-Step8 8c・8d）: IActionFactory／DefaultActionFactory／ActionFactory、Actions.Action／SpecialActionBase／*ActionAdapter、BindingMigrationOptions、UntriggerPolicy.Buttons。残る: ActionEntry（状態の入れ物）、ActionManager（静的。Phase9 で整理）
     %% IMapping は、Step7.5（Profile）で CaptureProfileUntrigger／RestoreProfileUntrigger を削除して 8 メンバーになり、ITriggerDispatchEngine を使う
     %% ==========================================
     class ITriggerInput {

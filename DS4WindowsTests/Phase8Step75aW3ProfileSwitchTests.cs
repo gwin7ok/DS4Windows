@@ -38,36 +38,6 @@ namespace DS4WindowsTests
             return sa;
         }
 
-        [Fact]
-        public void RemovingTheProfileLine_NoBindingIsBuilt_AndNothingHappens()
-        {
-            var options = TestHost.GetService<BindingMigrationOptions>();
-            var builder = TestHost.GetService<IActionBindingBuilder>();
-            var saved = options.MigratedTypes.ToArray();
-            try
-            {
-                using var t = new SpecialActionTestScope(true);
-                RecordingProfileApplicationService recorder = t.InstallProfileRecorder();
-                SpecialAction sa = AddProfile(t, "L1");
-                Assert.Single(builder.Build(t.Device));
-
-                options.MigratedTypes.Remove(SpecialAction.ActionTypeId.Profile);   // 既定の一覧から Profile だけを外した状態
-
-                Assert.Empty(builder.Build(t.Device));
-                t.PublishBindings();
-                Assert.False(t.Engine.Owns(t.Device, sa));
-
-                // Phase8-Step8 8b: 旧経路は削除した。束縛がない Profile は、切り替えない
-                t.RunFrame(Frame(true));
-                Assert.Empty(recorder.ApplyFromActionCalls);
-            }
-            finally
-            {
-                options.MigratedTypes.Clear();
-                foreach (var type in saved) options.MigratedTypes.Add(type);
-            }
-        }
-
         [Theory]
         [InlineData("R1")]
         public void AProfileWithAnUnloadTrigger_IsBuilt_SwitchesButNeverRestores(string extras)

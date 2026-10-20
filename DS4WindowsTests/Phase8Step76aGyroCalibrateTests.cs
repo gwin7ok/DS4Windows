@@ -32,7 +32,7 @@ namespace DS4WindowsTests
         private static ActionBindingBuilder NewBuilder(IGyroCalibrationPort port)
             => new ActionBindingBuilder(TestHost.GetService<IProfileActionProvider>(), TestHost.GetService<IProfileSettingsService>(),
                 TestHost.GetService<IManagedActionManager>(), TestHost.GetService<IMacroPlayer>(), TestHost.GetService<IProcessLauncher>(),
-                TestHost.GetService<IProfileSwitcher>(), TestHost.GetService<BindingMigrationOptions>(), TestHost.GetService<ISpecialActionRepository>(),
+                TestHost.GetService<IProfileSwitcher>(), TestHost.GetService<ISpecialActionRepository>(),
                 TestHost.GetService<Func<IMapping>>(), port);
 
         /// <summary>登録した GyroCalibrate の特殊アクションの束縛を、記録用のポートを持つビルダーで作り直して登録簿へ差し替える。</summary>
@@ -115,31 +115,6 @@ namespace DS4WindowsTests
             Assert.Equal(UntriggerPolicy.None, binding.Policy.Untrigger);
 
             Assert.Empty(NewBuilder(null).Build(t.Device));   // ポートがなければ、束縛を作らず、旧経路が処理する
-        }
-
-        [Fact]
-        public void RemovingTheLine_NoBindingIsBuilt_AndNothingHappens()
-        {
-            var options = TestHost.GetService<BindingMigrationOptions>();
-            var builder = TestHost.GetService<IActionBindingBuilder>();
-            var saved = options.MigratedTypes.ToArray();
-            try
-            {
-                using var t = new SpecialActionTestScope(true);
-                SpecialAction sa = AddGyro(t, "L1", new RecordingGyroCalibrationPort());
-                Assert.Single(builder.Build(t.Device));   // 本番のビルダー（本番のポート）でも束縛が作られる
-
-                options.MigratedTypes.Remove(SpecialAction.ActionTypeId.GyroCalibrate);   // 既定の一覧から GyroCalibrate だけを外した状態
-
-                Assert.Empty(builder.Build(t.Device));
-                t.PublishBindings();
-                Assert.False(t.Engine.Owns(t.Device, sa));
-            }
-            finally
-            {
-                options.MigratedTypes.Clear();
-                foreach (var type in saved) options.MigratedTypes.Add(type);
-            }
         }
 
         // ---- ログ ----

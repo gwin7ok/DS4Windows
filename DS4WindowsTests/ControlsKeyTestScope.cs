@@ -9,34 +9,20 @@ namespace DS4WindowsTests
     /// <summary>
     /// Phase8-Step7 7.8b-W1（Phase8-Step7-8b-Plan.md §4）: Controls タブの Key の割り当て（<c>DS4ControlSettings</c>）で <c>Mapping.MapCustom</c> を実走行させる最小のハーネス。
     /// <see cref="MappingCharacterizationScope"/> の専用デバイス添字に対して、ボタンの割り当てを「キー」に変える（終了時に既定へ戻す）。
-    /// <paramref name="migrated"/> が真なら、<c>BindingMigrationOptions.MigratedControlKinds</c> に Key を足す（終了時に元へ戻す）。W1 の時点では新経路が未実装のため、どちらでも旧経路が処理する
-    /// （W2 で新経路が入ると、同じテストが新経路を走らせる）。
+    /// Phase8-Step8 8d: 常に新経路で処理する（移行のスイッチは削除した。引数 <paramref name="migrated"/> は、呼び出し側の整理を Phase9 に回すため残す）。
     /// </summary>
     public sealed class ControlsKeyTestScope : IDisposable
     {
         private readonly MappingCharacterizationScope _inner = new MappingCharacterizationScope();
-        private readonly BindingMigrationOptions _options = TestHost.GetService<BindingMigrationOptions>();
-        private readonly ControlBindingKind[] _savedKinds;
         private readonly List<DS4Controls> _touched = new List<DS4Controls>();
 
         public ControlsKeyTestScope(bool migrated)
         {
-            Migrated = true;   // Phase8-Step8 8a: 旧経路を削除したため、引数にかかわらず新経路（互換のために引数は残す。8d で整理する）
+            Migrated = true;   // Phase8-Step8 8a: 旧経路を削除したため、引数にかかわらず新経路（互換のために引数は残す）
             ExtrasPort = new RecordingControlExtrasPort(new DefaultControlExtrasPort(() => _inner.Control, _inner.Settings));
             Mapping = _inner.Mapper as Mapping;
             if (Mapping == null)
                 throw new InvalidOperationException("IMapping の実体が Mapping ではない");
-
-            _savedKinds = _options.MigratedControlKinds.ToArray();
-            _options.MigratedControlKinds.Clear();
-            {
-                _options.MigratedControlKinds.Add(ControlBindingKind.Key);     // Phase8-Step7 7.8b: Controls タブの Key を新経路で処理する
-                _options.MigratedControlKinds.Add(ControlBindingKind.Macro);   // Phase8-Step7 7.8c: Controls タブの Macro を新経路で処理する（W2 から有効）
-                _options.MigratedControlKinds.Add(ControlBindingKind.Extras);  // Phase8-Step7 7.8e: Controls タブの Extras を新経路で処理する
-                _options.MigratedControlKinds.Add(ControlBindingKind.ButtonAnalogMouse); // Phase8-Step7 7.8f-3: Controls タブの Button のうち、マウスの移動とアナログのホイール
-                _options.MigratedControlKinds.Add(ControlBindingKind.ButtonMouse); // Phase8-Step7 7.8f-2: Controls タブの Button のうち、マウスのボタン・タッチパッドクリック・デジタルのホイール・Toggle
-                _options.MigratedControlKinds.Add(ControlBindingKind.ButtonPad); // Phase8-Step7 7.8f-1: Controls タブの Button のうち、パッドと Default の軸の素通しを新経路で処理する
-            }
 
             TestHost.GetService<ITriggerDispatchEngine>().OnDeviceDisconnected(Device);
             ResetExtrasObservables();
@@ -138,7 +124,7 @@ namespace DS4WindowsTests
         /// </summary>
         public void PublishControlsOnly()
         {
-            var builder = new DS4Windows.Services.ControlBindingBuilder(_options, _inner.Settings, TestHost.GetService<IMacroPlayer>(), ExtrasPort);
+            var builder = new DS4Windows.Services.ControlBindingBuilder(_inner.Settings, TestHost.GetService<IMacroPlayer>(), ExtrasPort);
             TestHost.GetService<IActionRegistry>().Replace(Device, builder.Build(Device));
         }
 
@@ -160,9 +146,6 @@ namespace DS4WindowsTests
 
             foreach (DS4Controls control in _touched)
                 TestGlobals.Store.GetDS4CSetting(Device, control)?.Reset();
-
-            _options.MigratedControlKinds.Clear();
-            foreach (ControlBindingKind kind in _savedKinds) _options.MigratedControlKinds.Add(kind);
 
             ResetExtrasObservables();
             ActionManager.ClearDeviceState(Device);   // Toggle の状態を次のテストへ残さない

@@ -39,36 +39,6 @@ namespace DS4WindowsTests
             return sa;
         }
 
-        [Fact]
-        public void RemovingTheProgramLine_NoBindingIsBuilt_AndNothingHappens()
-        {
-            var options = TestHost.GetService<BindingMigrationOptions>();
-            var builder = TestHost.GetService<IActionBindingBuilder>();
-            var saved = options.MigratedTypes.ToArray();
-            try
-            {
-                using var t = new SpecialActionTestScope(true);
-                SpecialAction sa = AddProgram(t, "L1");
-                Assert.Single(builder.Build(t.Device));
-
-                options.MigratedTypes.Remove(SpecialAction.ActionTypeId.Program);   // 既定の一覧から Program だけを外した状態
-
-                Assert.Empty(builder.Build(t.Device));
-                t.PublishBindings();
-                Assert.Empty(TestHost.GetService<IActionRegistry>().GetBindings(t.Device));
-                Assert.False(t.Engine.Owns(t.Device, sa));
-
-                // Phase8-Step8 8b: 旧経路は削除した。束縛がない Program は、何もしない
-                t.RunFrame(Frame(true));
-                Assert.False(ActionManager.IsBeingTriggered(sa, t.Device));
-            }
-            finally
-            {
-                options.MigratedTypes.Clear();
-                foreach (var type in saved) options.MigratedTypes.Add(type);
-            }
-        }
-
         private static long Allocated(SpecialActionTestScope t, DS4State input)
         {
             long before = GC.GetAllocatedBytesForCurrentThread();

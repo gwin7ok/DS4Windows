@@ -7,8 +7,8 @@ namespace DS4Windows.Services
 {
     /// <summary>
     /// Phase8-Step7 7.8b（Phase8-Step7-8b-Plan.md §3.2）: <see cref="IControlBindingBuilder"/> の実装（DI の Singleton）。
-    /// Controls タブの割り当て（<c>ControlSettingsGroup</c>）のうち、移行済みの区分（<see cref="BindingMigrationOptions.MigratedControlKinds"/>）の条件を満たす割り当てだけを、束縛にする。
-    /// 条件を満たさない割り当ては束縛を作らず、旧経路が全体を処理する（Q2＝A: ボタン単位の所有）。移行済みの区分が空の間は、何も読まずに空のリストを返す。
+    /// Controls タブの割り当て（<c>ControlSettingsGroup</c>）のうち、各区分の条件を満たす割り当てだけを、束縛にする。
+    /// 条件を満たさない割り当ては束縛を作らない（Phase8-Step8: 旧経路は削除済みのため、束縛なし＝何もしない。Q2＝C）。Phase8-Step8 8d: 区分ごとの移行のスイッチ（<c>BindingMigrationOptions</c>）は削除した。
     /// <para>
     /// Key（7.8b）の条件: 通常の割り当てが Key、<c>actionKey</c> が <c>ushort</c> の範囲内（シフトは 7.8d、Lightbar マクロは 7.8e で廃止した）。
     /// Extras（7.8e）は、通常の割り当て（Default／Key／Macro）と直交する部品で、別の束縛にする（<c>Synthetic_Extras_{device}_{control}</c>。通常の割り当ての束縛の前に並べる）。
@@ -20,15 +20,13 @@ namespace DS4Windows.Services
     /// </summary>
     public sealed class ControlBindingBuilder : IControlBindingBuilder
     {
-        private readonly BindingMigrationOptions _options;
         private readonly IProfileSettingsService _profileSettings;
         private readonly IMacroPlayer _macroPlayer;   // Macro（7.8c）。省略時（テスト）は、Macro の束縛を作らず、旧経路が処理する
         private readonly IControlExtrasPort _extrasPort;   // Extras（7.8e）。省略時（テスト）は、Extras を持つ割り当ての束縛を作らず、旧経路が処理する
 
-        public ControlBindingBuilder(BindingMigrationOptions options, IProfileSettingsService profileSettings, IMacroPlayer macroPlayer = null,
+        public ControlBindingBuilder(IProfileSettingsService profileSettings, IMacroPlayer macroPlayer = null,
             IControlExtrasPort extrasPort = null)
         {
-            _options = options ?? throw new ArgumentNullException(nameof(options));
             _profileSettings = profileSettings ?? throw new ArgumentNullException(nameof(profileSettings));
             _macroPlayer = macroPlayer;
             _extrasPort = extrasPort;
@@ -36,15 +34,12 @@ namespace DS4Windows.Services
 
         public IReadOnlyList<IActionBinding> Build(int device)
         {
-            if (_options.MigratedControlKinds.Count == 0) return Array.Empty<IActionBinding>();
-
-            bool keys = _options.IsControlMigrated(ControlBindingKind.Key);
-            bool macros = _options.IsControlMigrated(ControlBindingKind.Macro) && _macroPlayer != null;
-            bool extras = _options.IsControlMigrated(ControlBindingKind.Extras) && _extrasPort != null;
-            bool pads = _options.IsControlMigrated(ControlBindingKind.ButtonPad);
-            bool mice = _options.IsControlMigrated(ControlBindingKind.ButtonMouse);
-            bool analogMice = _options.IsControlMigrated(ControlBindingKind.ButtonAnalogMouse);
-            if (!keys && !macros && !extras && !pads && !mice && !analogMice) return Array.Empty<IActionBinding>();
+            bool keys = true;
+            bool macros = _macroPlayer != null;
+            bool extras = _extrasPort != null;
+            bool pads = true;
+            bool mice = true;
+            bool analogMice = true;
 
             ControlSettingsGroup group = _profileSettings.GetControlSettingsGroup(device);
             if (group == null) return Array.Empty<IActionBinding>();

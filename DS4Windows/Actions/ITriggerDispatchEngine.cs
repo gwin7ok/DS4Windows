@@ -12,7 +12,7 @@ namespace DS4Windows.Actions
     {
         // ---- 旧ループのフック（並行期間。Step4〜Step7）----
 
-        /// <summary>移行済みの種別で、束縛が登録されている特殊アクションか。<c>BindingMigrationOptions.MigratedTypes</c> が空の間は常に false。</summary>
+        /// <summary>束縛が登録されている特殊アクションか。</summary>
         bool Owns(int device, SpecialAction action);
 
         /// <summary>旧ループの中の、そのアクションの位置で呼ぶ（順序を保つ）。<see cref="FrameResult.EndFrame"/> なら、旧ループは打ち切る。</summary>
@@ -20,7 +20,6 @@ namespace DS4Windows.Actions
 
         /// <summary>
         /// Phase8-Step7 7.8a: Controls タブの割り当て（<c>ProcessControlSettingAction</c>）を、新経路が所有するか。真なら、旧経路は本体を素通りする（抑制の判定は共通）。
-        /// <c>BindingMigrationOptions.MigratedControlKinds</c> が空の間は常に false（7.8a では、空の配線のみ）。
         /// </summary>
         // 7.8b: 判定は、そのボタンの束縛（ボタン単位。Q2＝A）が登録されているか。束縛は、移行済みの区分の条件を満たす割り当てだけに作られる（ControlBindingBuilder）。
         bool OwnsControl(int device, DS4Controls control);

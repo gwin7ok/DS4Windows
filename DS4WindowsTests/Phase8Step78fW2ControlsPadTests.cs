@@ -143,11 +143,6 @@ namespace DS4WindowsTests
             t.MapButton(DS4Controls.L2, X360Controls.WDOWN);
             Assert.DoesNotContain(Build(), b => b.Source.name.StartsWith($"Synthetic_Pad_") || b.Source.name.StartsWith($"Synthetic_Mouse_"));
             Assert.Equal(3, Build().Count(b => b.Source.name.StartsWith("Synthetic_AnalogMouse_")));
-
-            // Toggle つきのパッドは、ButtonMouse（Toggle の出力の区分）が無効なら、旧経路が処理する
-            t.MapButton(DS4Controls.Square, X360Controls.A, DS4KeyType.Toggle);
-            TestHost.GetService<BindingMigrationOptions>().MigratedControlKinds.Remove(ControlBindingKind.ButtonMouse);
-            Assert.DoesNotContain(Build(), b => b.Source.name == $"Synthetic_Pad_{Device}_{(int)DS4Controls.Square}");
         }
 
         [Fact]
@@ -193,11 +188,6 @@ namespace DS4WindowsTests
             Assert.Equal(3, bindings.Count);   // LXNeg の Key、LXPos の Extras、LXPos の素通し
             int extras = bindings.ToList().FindIndex(b => b.Outputs[0] is ControlExtrasOutputAction);
             Assert.IsType<ControlPassthroughOutputAction>(bindings[extras + 1].Outputs[0]);
-
-            // ロールバック: ButtonPad の 1 行を外すと、素通しを旧経路が行うため、LXPos は Extras も含めて旧経路が処理する
-            TestHost.GetService<BindingMigrationOptions>().MigratedControlKinds.Remove(ControlBindingKind.ButtonPad);
-            IActionBinding only = Assert.Single(Build());
-            Assert.IsType<KeyOutputAction>(only.Outputs[0]);
         }
 
         // ---- エンジン: 評価されたフレームだけ、出力する ----
@@ -229,22 +219,6 @@ namespace DS4WindowsTests
             engine.ProcessControl(Device, DS4Controls.Cross, input, frame);
             engine.ApplyFrameOutputs(Device, input, frame);
             Assert.True(outFields.buttons[(int)DS4Controls.Circle]);
-        }
-
-        [Fact]
-        public void RemovingTheButtonPadKind_StopsOwningTheAssignment()
-        {
-            using var t = new ControlsKeyTestScope(true);
-            t.MapButton(DS4Controls.Cross, X360Controls.B);
-            t.Publish();
-            var engine = TestHost.GetService<ITriggerDispatchEngine>();
-            Assert.True(engine.OwnsControl(Device, DS4Controls.Cross));
-
-            TestHost.GetService<BindingMigrationOptions>().MigratedControlKinds.Remove(ControlBindingKind.ButtonPad);
-            Assert.False(engine.OwnsControl(Device, DS4Controls.Cross));
-
-            t.Publish();
-            Assert.Empty(TestHost.GetService<IActionRegistry>().GetBindings(Device));
         }
 
         // ---- 割り当て ----
@@ -293,7 +267,6 @@ namespace DS4WindowsTests
             if (engine == null || registration == null) return;
 
             Assert.Contains("IEvaluatedFrameOutputAction", File.ReadAllText(engine));
-            Assert.Contains("MigratedControlKinds.Add(ControlBindingKind.ButtonPad)", File.ReadAllText(registration));
         }
     }
 }

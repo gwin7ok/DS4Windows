@@ -156,30 +156,8 @@ namespace DS4Windows.DI
             services.AddSingleton<IManagedActionManager, DefaultActionManager>();
             services.AddSingleton<IControllerRegistry, DefaultControllerRegistry>();
 
-            // Phase8-Step4 W1: 統一トリガーディスパッチの束縛の置き場と、種別ごとの移行のスイッチ。
-            // Phase8-Step7（Q2＝A）: 本番の既定の一覧は、種別ごとの PR で 1 行ずつ足す。ロールバックは、その 1 行を外すだけ（旧経路は Step8 まで残す）。
+            // Phase8-Step4 W1: 統一トリガーディスパッチの束縛の置き場。Phase8-Step8 8d: 種別ごとの移行のスイッチ（BindingMigrationOptions）は削除した（ロールバックは git のみ）。
             services.AddSingleton<IActionRegistry, ActionBindingRegistry>();
-            services.AddSingleton(sp =>
-            {
-                var migration = new BindingMigrationOptions();
-                migration.MigratedTypes.Add(SpecialAction.ActionTypeId.Button);   // 7.1 Button
-                migration.MigratedTypes.Add(SpecialAction.ActionTypeId.Key);      // 7.2 Key
-                migration.MigratedTypes.Add(SpecialAction.ActionTypeId.Macro);    // 7.3 Macro
-                migration.MigratedTypes.Add(SpecialAction.ActionTypeId.Program);  // 7.4 Program
-                migration.MigratedTypes.Add(SpecialAction.ActionTypeId.GyroCalibrate); // 7.6a GyroCalibrate
-                migration.MigratedTypes.Add(SpecialAction.ActionTypeId.DisconnectBT); // 7.6b DisconnectBT
-                migration.MigratedTypes.Add(SpecialAction.ActionTypeId.BatteryCheck); // 7.6c BatteryCheck
-                migration.MigratedTypes.Add(SpecialAction.ActionTypeId.SASteeringWheelEmulationCalibrate); // 7.6d ステアリング較正
-                migration.MigratedTypes.Add(SpecialAction.ActionTypeId.MultiAction); // 7.7b MultiAction
-                migration.MigratedTypes.Add(SpecialAction.ActionTypeId.Profile);  // 7.5a Profile（切替のみ。復帰を持つ Profile は、7.5b まで束縛を作らず、旧経路が処理する）
-                migration.MigratedControlKinds.Add(ControlBindingKind.Key);       // 7.8b Controls タブの Key
-                migration.MigratedControlKinds.Add(ControlBindingKind.Macro);     // 7.8c Controls タブの Macro（SA の Macro の仕様に合わせる）
-                migration.MigratedControlKinds.Add(ControlBindingKind.Extras);    // 7.8e Controls タブの Extras（振動・ライトバー・感度。通常の割り当てとは別の束縛）
-                migration.MigratedControlKinds.Add(ControlBindingKind.ButtonAnalogMouse); // 7.8f-3 Controls タブの Button のうち、マウスの移動とアナログのホイール
-                migration.MigratedControlKinds.Add(ControlBindingKind.ButtonMouse); // 7.8f-2 Controls タブの Button のうち、マウスのボタン・タッチパッドクリック・デジタルのホイール・Toggle
-                migration.MigratedControlKinds.Add(ControlBindingKind.ButtonPad); // 7.8f-1 Controls タブの Button のうち、パッド（X360 の軸・トリガー・ボタン）と Default の軸の素通し
-                return migration;
-            });
             services.AddSingleton<ITriggerDispatchEngine, TriggerDispatchEngine>();
             // Phase8-Step5 W2（Q3＝A）: 束縛のビルダー。ProfileApplicationService は Func で遅延解決する（ビルダー → IProfileSwitcher → IProfileApplicationService の循環を避ける）
             services.AddSingleton<IActionBindingBuilder, ActionBindingBuilder>();
