@@ -35,8 +35,7 @@ namespace DS4Windows.DI
 
         /// <summary>
         /// Phase10-Step2 W3: 共通の編集画面の、Controls のモード（Controls のボタン 1 つの割り当ての編集）。
-        /// TODO(Phase10-Step4): 呼び出し元は、まだない（Phase10-Step2-Plan.md §7 Q2＝接続しない）。Step4 で、<c>ProfileEditor</c> の Controls タブが、
-        /// 従来の選択ダイアログ（<c>BindingWindow</c>）の代わりに、これを使う。
+        /// Phase10-Step3 W4: <c>ProfileEditor</c> の <c>ShowControlAssignmentEditor</c> が、従来の選択ダイアログ（<c>BindingWindow</c> の Full のモード）の代わりに、これを使う。
         /// </summary>
         SpecialActionEditor CreateControlActionEditor(int deviceNum, DS4ControlSettings controlSettings, ProfileList profileList, int targetDevice);
 

@@ -927,12 +927,7 @@ namespace DS4WinWPF.DS4Forms
         private void HoverConBtn_Click(object sender, RoutedEventArgs e)
         {
             MappedControl mpControl = mappingListVM.Mappings[mappingListVM.SelectedIndex];
-            BindingWindow window = editorWindowFactory.CreateBindingWindow(deviceNum, mpControl.Setting, targetDevice);
-            window.Owner = App.Current.MainWindow;
-            window.ShowDialog();
-            mpControl.UpdateMappingName();
-            UpdateHighlightLabel(mpControl);
-            profileSettingsVM.RefreshCustomsFlags();
+            ShowControlAssignmentEditor(mpControl, updateHighlight: true);
         }
 
         private void InputControlHighlight(Button control)
@@ -1662,10 +1657,11 @@ namespace DS4WinWPF.DS4Forms
                     default: break;
                 }
 
-                if (index >= 0)
+                if (index >= 0 && controlEditor == null)
                 {
                     Dispatcher.BeginInvoke((System.Action)(() =>
                     {
+                        if (controlEditor != null) return;
                         mappingListVM.SelectedIndex = index;
                         ShowControlBindingWindow();
                     }));
@@ -1711,15 +1707,59 @@ namespace DS4WinWPF.DS4Forms
             }
         }
 
+        // Phase10-Step3 W4: 割り当てエディター（SpecialActionEditor の Controls のモード）が、左ペイン全体に重なって表示されているあいだは、null でない。
+        // 開いているあいだは、新しく開かない（コントローラーの入力［タイマー］と、右ペインに残る入口からの二重起動を防ぐ）。
+        // TODO(Phase10-Step3b): 入口をすべて左ペインのタブのボタンにする（Axis Config の 4 つの入口は、Controls タブへボタンとして追加）。
+        //   そのあとも、この判定は、コントローラーの入力（タイマー）経由の安全装置として残す
+        private SpecialActionEditor controlEditor;
+
+        /// <summary>
+        /// 割り当てエディターを、左ペイン全体に重ねて表示する。保存したら、従来と同じ更新（割り当て名、ハイライトのラベル、カスタムの印）を行う。
+        /// キャンセルは、何もしない（編集用のコピーを捨てる）。従来の選択ダイアログ（BindingWindow の Full のモード）は、使わない。
+        /// </summary>
+        private void ShowControlAssignmentEditor(MappedControl mpControl, bool updateHighlight)
+        {
+            if (mpControl == null || controlEditor != null) return;
+
+            ProfileList profList = (Application.Current.MainWindow as MainWindow).ProfileListHolder;
+            SpecialActionEditor editor = editorWindowFactory.CreateControlActionEditor(deviceNum, mpControl.Setting, profList, targetDevice);
+            editor.ControlSaved += (sender2, args) =>
+            {
+                CloseControlEditor();
+                mpControl.UpdateMappingName();
+                if (updateHighlight)
+                {
+                    UpdateHighlightLabel(mpControl);
+                }
+
+                profileSettingsVM.RefreshCustomsFlags();
+            };
+            editor.Cancel += (sender2, args) => CloseControlEditor();
+
+            // 左の列の幅は Auto（中身で決まる）ため、タブを隠しても、列の幅が変わらないよう、いまの幅に固定する
+            controlEditorHost.Width = sidebarTabControl.ActualWidth;
+            controlEditor = editor;
+            sidebarTabControl.Visibility = Visibility.Collapsed;
+            controlEditorHost.Children.Add(editor);
+            editor.Visibility = Visibility.Visible;
+            controlEditorHost.Visibility = Visibility.Visible;
+        }
+
+        private void CloseControlEditor()
+        {
+            if (controlEditor == null) return;
+
+            controlEditorHost.Children.Remove(controlEditor);
+            controlEditor = null;
+            controlEditorHost.Visibility = Visibility.Collapsed;
+            controlEditorHost.ClearValue(WidthProperty);
+            sidebarTabControl.Visibility = Visibility.Visible;
+        }
+
         private void ShowControlBindingWindow()
         {
             MappedControl mpControl = mappingListVM.Mappings[mappingListVM.SelectedIndex];
-            BindingWindow window = editorWindowFactory.CreateBindingWindow(deviceNum, mpControl.Setting, targetDevice);
-            window.Owner = App.Current.MainWindow;
-            window.ShowDialog();
-            mpControl.UpdateMappingName();
-            UpdateHighlightLabel(mpControl);
-            profileSettingsVM.RefreshCustomsFlags();
+            ShowControlAssignmentEditor(mpControl, updateHighlight: true);
         }
 
         private void MappingListBox_MouseDoubleClick(object sender, MouseButtonEventArgs e)
@@ -1778,12 +1818,7 @@ namespace DS4WinWPF.DS4Forms
             Button btn = sender as Button;
             DS4Controls control = (DS4Controls)Convert.ToInt32(btn.Tag);
             MappedControl mpControl = mappingListVM.ControlMap[control];
-            BindingWindow window = editorWindowFactory.CreateBindingWindow(deviceNum, mpControl.Setting, targetDevice);
-            window.Owner = App.Current.MainWindow;
-            window.ShowDialog();
-            mpControl.UpdateMappingName();
-            UpdateHighlightLabel(mpControl);
-            profileSettingsVM.RefreshCustomsFlags();
+            ShowControlAssignmentEditor(mpControl, updateHighlight: true);
         }
 
         // Special Actions の GridViewColumn に DataTemplate を割り当て、
@@ -1905,12 +1940,7 @@ namespace DS4WinWPF.DS4Forms
             Button btn = sender as Button;
             DS4Controls control = (DS4Controls)Convert.ToInt32(btn.Tag);
             MappedControl mpControl = mappingListVM.ControlMap[control];
-            BindingWindow window = editorWindowFactory.CreateBindingWindow(deviceNum, mpControl.Setting, targetDevice);
-            window.Owner = App.Current.MainWindow;
-            window.ShowDialog();
-            mpControl.UpdateMappingName();
-            UpdateHighlightLabel(mpControl);
-            profileSettingsVM.RefreshCustomsFlags();
+            ShowControlAssignmentEditor(mpControl, updateHighlight: true);
         }
 
         private void ConBtn_MouseRightButtonUp(object sender, MouseButtonEventArgs e)
@@ -1975,11 +2005,7 @@ namespace DS4WinWPF.DS4Forms
 
             //DS4ControlSettings setting = Global.getDS4CSetting(tag, ds4control);
             MappedControl mpControl = mappingListVM.ControlMap[ds4control];
-            BindingWindow window = editorWindowFactory.CreateBindingWindow(deviceNum, mpControl.Setting, targetDevice);
-            window.Owner = App.Current.MainWindow;
-            window.ShowDialog();
-            mpControl.UpdateMappingName();
-            profileSettingsVM.RefreshCustomsFlags();
+            ShowControlAssignmentEditor(mpControl, updateHighlight: false);
         }
 
         private void GyroCalibration_Click(object sender, RoutedEventArgs e)
@@ -2025,11 +2051,7 @@ namespace DS4WinWPF.DS4Forms
 
             //DS4ControlSettings setting = Global.getDS4CSetting(tag, ds4control);
             MappedControl mpControl = mappingListVM.ControlMap[ds4control];
-            BindingWindow window = editorWindowFactory.CreateBindingWindow(deviceNum, mpControl.Setting, targetDevice);
-            window.Owner = App.Current.MainWindow;
-            window.ShowDialog();
-            mpControl.UpdateMappingName();
-            profileSettingsVM.RefreshCustomsFlags();
+            ShowControlAssignmentEditor(mpControl, updateHighlight: false);
         }
 
         private void CalibrateStick_OnClick(object sender, RoutedEventArgs e)

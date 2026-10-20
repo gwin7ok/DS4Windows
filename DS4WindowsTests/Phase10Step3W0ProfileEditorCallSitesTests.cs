@@ -6,9 +6,10 @@ using Xunit.Abstractions;
 namespace DS4WindowsTests
 {
     /// <summary>
-    /// Phase10-Step3 W0（Phase10-Step3-Plan.md §2.1・§5）: <c>ProfileEditor</c> が、<c>CreateBindingWindow</c> を呼ぶ箇所の構成の特性化（ソース走査）。
-    /// 現状は 6 か所（Controls の絵のボタン、一覧／コントローラーの入力、Tilt、Swipe、Full Pull、Outer Bind）。W4 で、すべて割り当てエディターへ切り替える
-    /// ときに、この検査を「0 か所」へ更新する。ソースファイルが見つからない環境では、検査を行わず合格とする。
+    /// Phase10-Step3 W0・W4（Phase10-Step3-Plan.md §2.1・§3.4・§5）: <c>ProfileEditor</c> の、Controls の割り当ての編集の入口の構成（ソース走査）。
+    /// W0 で、従来の構成（<c>CreateBindingWindow</c> の呼び出しが 6 か所）を固定し、W4 で、6 か所すべてが割り当てエディター
+    /// （<c>ShowControlAssignmentEditor</c>）を呼ぶ形に更新した（<c>CreateBindingWindow</c> は 0 か所）。
+    /// ソースファイルが見つからない環境では、検査を行わず合格とする。
     /// </summary>
     public class Phase10Step3W0ProfileEditorCallSitesTests
     {
@@ -42,7 +43,7 @@ namespace DS4WindowsTests
         }
 
         [Fact]
-        public void CreateBindingWindow_IsCalledExactlySixTimes()
+        public void CreateBindingWindow_IsNoLongerCalled()
         {
             string source = ReadProfileEditor();
             if (source == null)
@@ -50,11 +51,11 @@ namespace DS4WindowsTests
                 return;
             }
 
-            Assert.Equal(6, Regex.Matches(source, @"CreateBindingWindow\(").Count);
+            Assert.Empty(Regex.Matches(source, @"CreateBindingWindow\("));
         }
 
         [Fact]
-        public void EachKnownEntryMethod_ExistsAndCallsCreateBindingWindow()
+        public void EachKnownEntryMethod_ExistsAndCallsTheAssignmentEditor()
         {
             string source = ReadProfileEditor();
             if (source == null)
@@ -71,12 +72,12 @@ namespace DS4WindowsTests
                 int start = m.Index + m.Length;
                 Match next = Regex.Match(source.Substring(start), @"\r?\n\s*(?:private|public|internal) \w+ \w+\(");
                 string body = next.Success ? source.Substring(start, next.Index) : source.Substring(start);
-                Assert.Contains("CreateBindingWindow(", body);
+                Assert.Contains("ShowControlAssignmentEditor(", body);
             }
         }
 
         [Fact]
-        public void EveryCall_IsFollowedByTheSameRefreshes()
+        public void TheOnlyOtherCallers_AreTheSixEntryMethods()
         {
             string source = ReadProfileEditor();
             if (source == null)
@@ -84,9 +85,23 @@ namespace DS4WindowsTests
                 return;
             }
 
-            // 閉じたあとの更新（割り当てエディターへ切り替えても、同じ更新を行うこと）
-            Assert.True(Regex.Matches(source, @"mpControl\.UpdateMappingName\(\)").Count >= 6);
-            Assert.True(Regex.Matches(source, @"profileSettingsVM\.RefreshCustomsFlags\(\)").Count >= 6);
+            // 宣言 1 + 呼び出し 6（絵のボタン、一覧／コントローラーの入力、Tilt、Swipe、Full Pull、Outer Bind）
+            Assert.Equal(1 + CallerMethods.Length, Regex.Matches(source, @"ShowControlAssignmentEditor\(").Count);
+        }
+
+        [Fact]
+        public void TheSavedHandler_DoesTheSameRefreshesAsBefore()
+        {
+            string source = ReadProfileEditor();
+            if (source == null)
+            {
+                return;
+            }
+
+            // 閉じたあとの更新（従来は、各入口が、ダイアログのあとに行っていた）。いまは、保存（ControlSaved）の受け手 1 か所
+            Assert.Contains("mpControl.UpdateMappingName();", source);
+            Assert.Contains("UpdateHighlightLabel(mpControl);", source);
+            Assert.Contains("profileSettingsVM.RefreshCustomsFlags();", source);
         }
     }
 }

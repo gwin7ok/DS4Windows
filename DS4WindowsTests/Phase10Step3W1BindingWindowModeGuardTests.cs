@@ -129,9 +129,9 @@ namespace DS4WindowsTests
         }
 
         [Fact]
-        public void ProfileEditor_StillUsesTheFullMode_UntilW4()
+        public void ProfileEditor_NoLongerOpensTheFullModePicker_AfterW4()
         {
-            // W1 では、ProfileEditor の呼び出しは変えない（W4 で割り当てエディターへ切り替える）
+            // W4 で、ProfileEditor の呼び出しは、すべて割り当てエディターへ切り替えた（BindingWindow を直接開かない）
             string source = Read("DS4Windows/DS4Forms/ProfileEditor.xaml.cs");
             if (source == null)
             {
@@ -139,6 +139,7 @@ namespace DS4WindowsTests
             }
 
             Assert.DoesNotContain("ExposeMode.Control", source);
+            Assert.DoesNotContain("CreateBindingWindow(", source);
         }
     }
 }

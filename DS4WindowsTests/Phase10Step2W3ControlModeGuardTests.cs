@@ -34,7 +34,7 @@ namespace DS4WindowsTests
         }
 
         [Fact]
-        public void TheControlModeEditor_IsNotOpenedFromAnywhereYet()
+        public void TheControlModeEditor_IsOpenedOnlyFromTheProfileEditor()
         {
             string profileEditor = SourceFileLocator.Find("DS4Windows/DS4Forms/ProfileEditor.xaml.cs");
             if (profileEditor == null)
@@ -52,8 +52,8 @@ namespace DS4WindowsTests
                 .OrderBy(n => n, StringComparer.Ordinal)
                 .ToArray();
 
-            // 宣言（インターフェース）と実装（窓口）だけ。呼び出し元は、Step4 で足す
-            Assert.Equal(new[] { "EditorWindowFactory.cs", "IEditorWindowFactory.cs" }, callers);
+            // 宣言（インターフェース）と実装（窓口）と、呼び出し元の ProfileEditor だけ（Phase10-Step3 W4 で、ProfileEditor に接続した）
+            Assert.Equal(new[] { "EditorWindowFactory.cs", "IEditorWindowFactory.cs", "ProfileEditor.xaml.cs" }, callers);
         }
     }
 }

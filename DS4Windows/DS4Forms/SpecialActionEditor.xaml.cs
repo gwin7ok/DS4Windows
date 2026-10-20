@@ -54,7 +54,7 @@ namespace DS4WinWPF.DS4Forms
         /// <summary>Controls のモードか。</summary>
         public bool IsControlMode => controlMode;
 
-        /// <summary>Controls のモードで「保存」が押され、入力が有効なときに発生する（W4 で、保存の中身を足す）。</summary>
+        /// <summary>Controls のモードで「保存」が押され、入力が有効なときに発生する（受け手は、ProfileEditor の ShowControlAssignmentEditor。Phase10-Step3 W4）。</summary>
         public event EventHandler ControlSaved;
 
         /// <summary>Controls のモードで、保存が押されたときに選ばれていた種別。</summary>
@@ -100,8 +100,8 @@ namespace DS4WinWPF.DS4Forms
         /// <summary>
         /// Controls のモード（Phase10-Step2 W3・W4）: Controls のボタン 1 つの割り当て（<paramref name="controlSettings"/>）を編集する。名前は、ボタンの表示名で固定（編集不可）、
         /// トリガーは、そのボタンだけ（変更不可）、種別の一覧は、Controls で現在保存できる種別だけ有効。
-        /// TODO(Phase10-Step4): <c>ProfileEditor</c> の Controls タブからの呼び出しは、Step4 まで接続しない（Phase10-Step2-Plan.md §7 Q2）。
-        /// 保存（<see cref="ControlSaved"/>）の中身（<c>DS4ControlSettings</c> への書き込み、編集用のコピー）は W4 で足す。
+        /// Phase10-Step3 W4: <c>ProfileEditor</c> の <c>ShowControlAssignmentEditor</c> が、これを左ペイン全体に重ねて表示する（Controls の絵のボタン・一覧、Tilt、Swipe、Full Pull、Outer Bind、
+        /// コントローラーの入力。Phase10-Step3-Plan.md §3.4）。保存（<see cref="ControlSaved"/>）は、編集用のコピーを元の設定へ反映してから発生する。
         /// </summary>
         public SpecialActionEditor(int deviceNum, DS4Windows.DS4ControlSettings controlSettings, ProfileList profileList, int targetDevice,
             DS4Windows.DI.IEditorWindowFactory editorWindowFactory,
@@ -274,7 +274,7 @@ namespace DS4WinWPF.DS4Forms
 
         // Controls のモードの保存。入力が無効なときは、結びつきを外さず、エラーを表示したまま戻る（SA のモードと同じ）。
         // 有効なときは、種別ごとの入力から、編集用のコピーへ書き出し、元の設定へ反映してから ControlSaved を出す（Phase10-Step2 W4）。
-        // TODO(Phase10-Step4): ControlSaved の受け手（呼び出し側）は、Step4 で、ProfileEditor の Controls タブに足す
+        // Phase10-Step3 W4: ControlSaved の受け手は、ProfileEditor（ShowControlAssignmentEditor）
         private void SaveControlMode()
         {
             DS4Windows.SpecialAction tempAct = new DS4Windows.SpecialAction("null", "null", "null", "null");
@@ -285,6 +285,7 @@ namespace DS4WinWPF.DS4Forms
             controlTarget.Apply();
 
             ControlSaveTypeId = specialActVM.TypeAssoc[specialActVM.ActionTypeIndex];
+            UnregisterDataContext();
             ControlSaved?.Invoke(this, EventArgs.Empty);
         }
 

@@ -190,7 +190,7 @@ namespace DS4WindowsTests
 
             var checks = new (string Call, int MinCount)[]
             {
-                ("CreateBindingWindow(", 6),   // Phase8-Step8 8-0: ジャイロスワイプの割り当てボタンの 1 か所を削除（7 → 6）
+                ("CreateControlActionEditor(", 1),   // Phase10-Step3 W4: Controls の割り当ての編集は、6 か所の呼び出しが ShowControlAssignmentEditor の 1 か所へまとまった（旧: CreateBindingWindow の 6 か所）
                 ("CreateSpecialActionEditor(", 2),
                 ("CreateProfileSettingsViewModel(", 1),
             };

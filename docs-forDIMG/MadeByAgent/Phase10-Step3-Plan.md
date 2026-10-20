@@ -85,7 +85,7 @@
 
 - 共通の入口 `ShowControlAssignmentEditor(MappedControl)` を作り、6 か所とコントローラーの入力の経路が、すべて、これを呼ぶ。Save のあとに、従来と同じ更新（`UpdateMappingName`、`UpdateHighlightLabel`、`RefreshCustomsFlags`）を行う。Cancel は、何もしない。
 - **ホスト（表示場所）**（Q1＝左ペイン）: `ProfileEditor` の**左ペイン全体**（タブ領域）の上に、割り当てエディターを重ねて表示する（1 か所だけ）。表示中は、左ペインのタブ領域を隠し、Save／Cancel で元に戻す。どのタブ（Controls、Touchpad、ジャイロ［Step3b のあと］）、どの入口（右ペインの Axis Config を含む）から呼んでも、同じ場所に出るため、タブの配置に依存しない。
-- 割り当てエディターが開いているあいだは、コントローラーの入力による「選択して開く」経路は、新しく開かない（二重に開かないため）。
+- **二重に開かない仕組み**（ユーザーとの議論、2026-10-21）: 割り当てエディターを開いている間は、新しく開かない（判定。`ProfileEditor` のフラグ）。コントローラーの入力（タイマー）で開く経路と、右ペインに残る入口（Axis Config の 4 つ。Tilt・Swipe は Step3b まで）のため、W4 で必須。右ペインは、編集中も無効にしない（ユーザーが選択）。**最終形**は、Step3b で、入口をすべて左ペインのタブのボタンにする（Axis Config の 4 つの入口は、Controls タブにボタンとして追加する）。左ペイン全体が割り当てエディターで覆われるため、ボタンを押せなくなり、構造として二重に開けない。判定は、タイマー経由の安全装置として残す。出力ピッカーは、モーダル（`ShowDialog`）のため、二重に開かない。
 
 ### 3.5 Controls のモードの調整
 
@@ -144,3 +144,5 @@
 - **W1（完了 2026-10-21。ビルド・テスト成功、実機確認済み）**: 出力ピッカー（`BindingWindow`）の表示モードを整理した。`ForPressToggle` を `SpecialAction` に改名し、`Control` を追加した（`Full`、`Keyboard` は残す。`Full` の撤去は Step6）。`Control` は、Default／Unbound と Extras を出し、Record A Macro・Toggle・Scan Code・マクロ表示を隠す。`SpecialAction` は従来どおり（Extras は、SA の保存先ができる Step4・5 まで出さない。TODO コメントあり）。`ProfileEditor` の呼び出しは、W4 まで変えない。ガードテスト: `Phase10Step3W1BindingWindowModeGuardTests`。実機確認: SA の Press Key の回帰なし。
 - **W2（完了 2026-10-21。ビルド・テスト成功、実機確認済み［SA の回帰なし］）**: Press Key の Default と、割り当てエディターと出力ピッカーとの受け渡し。`PressKeyViewModel` に「Default」の状態（`ReadSettings` の `allowDefault`、既定 false）と、ピッカーへ渡す一時設定（`PrepareSettings(control, extras)`。ボタン・Extras・いまの割り当てを載せる。引数なしは従来どおり）を追加。`ControlSettingsEditTarget` に `Extras`（出力ピッカーの結果を取り込み、Save で反映、Cancel で破棄）、Default の書き出し・読み込みを追加。`SpecialActionEditor` の Controls のモードは、「Select a Key」で `Control` モードの出力ピッカーを開き、結果を取り込む。テスト: `Phase10Step3W2ControlDefaultAndExtrasTests`。Controls のエディターは、W4 まで画面から開けない。
 - **W3（実装・テスト完了 2026-10-21。ビルド・テスト成功。SA の Macro タブの回帰の実機確認は、報告待ち）**: Controls のモードで、Macro タブの SA 専用の 3 項目（Run on trigger release、Synchronized Run、Keep key state）を隠す（保存場所がないための暫定。最終的には SA と同じ状態にする。§3.5）。ガードテスト: `Phase10Step3W3ControlMacroTabGuardTests`。
+  - **W3 の追加対応（ユーザー承認、2026-10-21。ビルド・テスト成功、実機確認済み）**: 手順が空のマクロも、SA として保存できるようにした（`MacroViewModel.IsValid` の「No macro defined」を廃止）。Controls 側も、`ControlBindingBuilder.TryInterpretMacro` が空のマクロを所有する（旧経路は Phase8-Step8 8a で削除済みのため、「旧経路は、手順がないと例外になる」の理由は成り立たなかった。所有しないと、割り当てたのに通常の出力が出ていた。`null` は従来どおり所有しない）。「押している間繰り返す」の空のマクロは、`Mapping.PlayMacroTask` が 50ms の間隔（`EmptyMacroRepeatIntervalMs`）を置いて繰り返す（間隔なしだと待ちなしの空回りになるため）。実機で、Play Once は 1 回、Repeat は押している間実行され、CPU 負荷が上がらず、離すと止まることを確認。テスト: `Phase10Step3W3EmptyMacroTests`、`Phase8Step78cW2ControlsMacroTests`（期待値を更新）。
+    - **調査メモ**: 実機の途中で「繰り返し・キューの滞留」に見えたのは、先に押した Circle の Toggle の `A`（`Synthetic_Key_0_17`。33ms ごとに `KeyPress`）が、仕様（条件 2）どおり実行され続けていたもので、空のマクロの不具合ではなかった（ログ `ds4windows_log_20261021_18.txt` で確認）。

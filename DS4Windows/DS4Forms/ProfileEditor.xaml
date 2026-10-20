@@ -320,6 +320,10 @@
             </TabItem>
         </TabControl>
 
+    <!-- Phase10-Step3 W4: Controls の割り当てエディター（SpecialActionEditor の Controls のモード）の表示場所。
+         編集中は、左ペイン全体（sidebarTabControl）の代わりに、ここへ表示する（コードビハインドで切り替える） -->
+    <Grid x:Name="controlEditorHost" Grid.Row="1" Grid.Column="0" Margin="0,0,5,0" Visibility="Collapsed" />
+
     <!-- 仕切り線（ドラッグ可能） -->
     <!-- 両側4pxの背景（背景色と同じ） -->
     <Border Grid.Row="1" Grid.Column="1" Width="10" Background="{x:Static SystemColors.ControlBrush}" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" IsHitTestVisible="False" />
