@@ -1,5 +1,4 @@
 using System;
-using System.Linq;
 using DS4Windows;
 using Xunit;
 using Xunit.Abstractions;
@@ -11,7 +10,7 @@ namespace DS4WindowsTests
     /// アナログのホイール（元がスティック・トリガーの WUP／WDOWN）の特性化。旧・新の両経路（<c>InlineData(false)</c>／<c>InlineData(true)</c>）で同じテストを走らせる。
     /// W1 の時点では、新経路が未実装のため、どちらでも旧経路が処理する。W2 で新経路が入るとき、同じ期待値で通ること
     /// （例外: ホイールの状態の共有は、Q5＝B で束縛ごとに変わる。<c>...LegacyShares...</c> のテストは旧経路だけの記録）。
-    /// 実機がないため、スロットにテスト用のデバイス（経過時間つき）を置く。ホイールの 10ms の間隔は、<c>Mapping.oldnow</c> をフレームごとに戻して決定的にする。
+    /// 実機がないため、スロットにテスト用のデバイス（経過時間つき）を置く（<see cref="AnalogMouseTestHarness"/>）。
     /// 他の Host 構築テストと同じコレクションで直列に実行する。
     /// </summary>
     [Collection("ServiceProviderHolder")]
@@ -26,53 +25,6 @@ namespace DS4WindowsTests
 
         private static DS4State Neutral() => ControlsKeyTestScope.Neutral();
 
-        /// <summary>スロットにテスト用のデバイスを置き、フレームごとにホイールの間隔の基準時刻を戻して、1 フレームずつ流す。</summary>
-        private sealed class Harness : IDisposable
-        {
-            private readonly TestDs4Device _device = TestDs4Device.Create();
-            private readonly DS4Device _savedDevice;
-
-            public Harness(bool migrated, double elapsedMs = 5.0)
-            {
-                T = new ControlsKeyTestScope(migrated);
-                _savedDevice = T.Scope.Control.DS4Controllers[T.Device];
-                _device.lastTimeElapsedDouble = elapsedMs;
-                T.Scope.Control.DS4Controllers[T.Device] = _device;
-                ResetWheelState();
-            }
-
-            // Mapping は、ホストが共有する 1 つのインスタンス。前のテストが残したホイールの端数・向き・移動の端数を初期化する
-            private void ResetWheelState()
-            {
-                const System.Reflection.BindingFlags flags = System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.NonPublic;
-                void Set(string name, object value) => typeof(Mapping).GetField(name, flags)?.SetValue(T.Mapping, value);
-                Set("stickWheelRemainder", 0.0);
-                Set("stickWheel", 0.0);
-                Set("stickWheelDownDir", false);
-                Set("pressagain", false);
-                Set("horizontalRemainder", 0.0);
-                Set("verticalRemainder", 0.0);
-            }
-
-            public ControlsKeyTestScope T { get; }
-
-            public System.Collections.Generic.List<(int X, int Y)> Moves => T.Scope.Recorder.MoveEvents;
-
-            public System.Collections.Generic.List<(int Vertical, int Horizontal)> Wheels => T.Scope.Recorder.WheelEvents;
-
-            public DS4State Step(DS4State input)
-            {
-                T.Mapping.oldnow = DateTime.MinValue;   // 10ms の間隔を満たした状態にする（時刻に依らず、決定的にする）
-                return T.Run(input);
-            }
-
-            public void Dispose()
-            {
-                T.Scope.Control.DS4Controllers[T.Device] = _savedDevice;
-                T.Dispose();
-            }
-        }
-
         // ---- マウスの移動 ----
 
         [Theory]
@@ -86,7 +38,7 @@ namespace DS4WindowsTests
         [InlineData(true, X360Controls.MouseUp, 0, -1)]
         public void MouseMovement_FromAButton_MovesInItsDirection_AndErasesTheOriginal(bool migrated, X360Controls target, int signX, int signY)
         {
-            using var h = new Harness(migrated);
+            using var h = new AnalogMouseTestHarness(migrated);
             h.T.MapButton(DS4Controls.Cross, target);
             h.T.Publish();
             h.T.MouseInfo.activeButtonSensitivity = 100;   // 1 フレームで 1 以上動く大きさにする（小さいと、端数が次のフレームに持ち越される）
@@ -113,7 +65,7 @@ namespace DS4WindowsTests
         [InlineData(true)]
         public void MouseMovement_TwoButtonsToTheSameDirection_DoNotAdd(bool migrated)
         {
-            using var h = new Harness(migrated);
+            using var h = new AnalogMouseTestHarness(migrated);
             h.T.MapButton(DS4Controls.Cross, X360Controls.MouseRight);
             h.T.MapButton(DS4Controls.Circle, X360Controls.MouseRight);
             h.T.Publish();
@@ -136,7 +88,7 @@ namespace DS4WindowsTests
         [InlineData(true)]
         public void MouseMovement_FromAStick_ScalesWithTheDeflection_AndUsesTheElapsedTime(bool migrated)
         {
-            using var h = new Harness(migrated, 5.0);
+            using var h = new AnalogMouseTestHarness(migrated, 5.0);
             h.T.MapButton(DS4Controls.LXPos, X360Controls.MouseRight);
             h.T.Publish();
 
@@ -161,7 +113,7 @@ namespace DS4WindowsTests
         [InlineData(true)]
         public void AnalogWheel_FromATrigger_NeedsThreeRunsForOneTick_AndErasesTheSource(bool migrated)
         {
-            using var h = new Harness(migrated);
+            using var h = new AnalogMouseTestHarness(migrated);
             h.T.MapButton(DS4Controls.L2, X360Controls.WUP);
             h.T.Publish();
 
@@ -185,7 +137,7 @@ namespace DS4WindowsTests
         [InlineData(true)]
         public void AnalogWheel_FromAStick_Down_IsNegative_AndALightPressIsSlower(bool migrated)
         {
-            using var h = new Harness(migrated);
+            using var h = new AnalogMouseTestHarness(migrated);
             h.T.MapButton(DS4Controls.LYPos, X360Controls.WDOWN);   // 左スティックを下へ（値が大きい向き）
             h.T.Publish();
 
@@ -209,7 +161,7 @@ namespace DS4WindowsTests
         [InlineData(true)]
         public void AnalogWheel_Released_DoesNothing(bool migrated)
         {
-            using var h = new Harness(migrated);
+            using var h = new AnalogMouseTestHarness(migrated);
             h.T.MapButton(DS4Controls.R2, X360Controls.WUP);
             h.T.Publish();
 
@@ -226,7 +178,7 @@ namespace DS4WindowsTests
         public void AnalogWheel_LegacySharesOneStateAcrossAllAssignments()
         {
             // 1. 向きを変えると、端数を捨てる
-            using (var h = new Harness(false))
+            using (var h = new AnalogMouseTestHarness(false))
             {
                 h.T.MapButton(DS4Controls.L2, X360Controls.WUP);
                 h.T.MapButton(DS4Controls.R2, X360Controls.WDOWN);
@@ -246,7 +198,7 @@ namespace DS4WindowsTests
             }
 
             // 2. 同じフレームの 2 つ目のアナログ元は進まない
-            using (var h = new Harness(false))
+            using (var h = new AnalogMouseTestHarness(false))
             {
                 h.T.MapButton(DS4Controls.L2, X360Controls.WUP);
                 h.T.MapButton(DS4Controls.R2, X360Controls.WUP);
@@ -266,7 +218,7 @@ namespace DS4WindowsTests
         [InlineData(true)]
         public void AMouseMovementWithExtras_BothWork(bool migrated)
         {
-            using var h = new Harness(migrated);
+            using var h = new AnalogMouseTestHarness(migrated);
             DS4ControlSettings dcs = h.T.MapButton(DS4Controls.Cross, X360Controls.MouseRight);
             dcs.extras = "100,50,1,10,20,30,5,1,7";
             h.T.PublishControlsOnly();

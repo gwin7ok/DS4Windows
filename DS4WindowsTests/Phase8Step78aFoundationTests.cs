@@ -223,8 +223,8 @@ namespace DS4WindowsTests
             var options = TestHost.GetService<BindingMigrationOptions>();
             var builder = TestHost.GetService<IControlBindingBuilder>();
 
-            // Phase8-Step7 7.8b・7.8c・7.8e・7.8f-1・7.8f-2: 既定の一覧に Key、Macro、Extras、ButtonPad、ButtonMouse（Controls タブ）。7.8f-3 で増える
-            Assert.Equal(new[] { ControlBindingKind.ButtonMouse, ControlBindingKind.ButtonPad, ControlBindingKind.Extras, ControlBindingKind.Key, ControlBindingKind.Macro }, options.MigratedControlKinds.OrderBy(k => k.ToString(), StringComparer.Ordinal).ToArray());
+            // Phase8-Step7 7.8b・7.8c・7.8e・7.8f-1・7.8f-2・7.8f-3: 既定の一覧に Key、Macro、Extras、ButtonPad、ButtonMouse、ButtonAnalogMouse（Controls タブ）
+            Assert.Equal(new[] { ControlBindingKind.ButtonAnalogMouse, ControlBindingKind.ButtonMouse, ControlBindingKind.ButtonPad, ControlBindingKind.Extras, ControlBindingKind.Key, ControlBindingKind.Macro }, options.MigratedControlKinds.OrderBy(k => k.ToString(), StringComparer.Ordinal).ToArray());
             Assert.IsType<ControlBindingBuilder>(builder);
             Assert.Same(builder, TestHost.GetService<IControlBindingBuilder>());
         }

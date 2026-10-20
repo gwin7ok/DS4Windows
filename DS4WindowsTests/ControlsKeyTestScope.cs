@@ -34,6 +34,7 @@ namespace DS4WindowsTests
                 _options.MigratedControlKinds.Add(ControlBindingKind.Key);     // Phase8-Step7 7.8b: Controls タブの Key を新経路で処理する
                 _options.MigratedControlKinds.Add(ControlBindingKind.Macro);   // Phase8-Step7 7.8c: Controls タブの Macro を新経路で処理する（W2 から有効）
                 _options.MigratedControlKinds.Add(ControlBindingKind.Extras);  // Phase8-Step7 7.8e: Controls タブの Extras を新経路で処理する
+                _options.MigratedControlKinds.Add(ControlBindingKind.ButtonAnalogMouse); // Phase8-Step7 7.8f-3: Controls タブの Button のうち、マウスの移動とアナログのホイール
                 _options.MigratedControlKinds.Add(ControlBindingKind.ButtonMouse); // Phase8-Step7 7.8f-2: Controls タブの Button のうち、マウスのボタン・タッチパッドクリック・デジタルのホイール・Toggle
                 _options.MigratedControlKinds.Add(ControlBindingKind.ButtonPad); // Phase8-Step7 7.8f-1: Controls タブの Button のうち、パッドと Default の軸の素通しを新経路で処理する
             }

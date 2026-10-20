@@ -61,6 +61,18 @@ namespace DS4Windows.Actions
             _previousPopulated = false;
         }
 
+        /// <summary>
+        /// Phase8-Step7 7.8f-3: マウスの移動の生の量の計算の借り先（<c>Mapping</c> が、デバイスごとに 1 回だけ設定する）。引数は（コントロール、向き）。
+        /// 計算が感度・加速・デッドゾーン・経過時間を使うため、<c>Mapping.getMouseMapping</c> を呼ぶ。
+        /// </summary>
+        public Func<DS4Controls, int, double> MouseSampler { get; set; }
+
+        public double GetMouseMovement(DS4Controls control, int direction)
+        {
+            Func<DS4Controls, int, double> sampler = MouseSampler;
+            return sampler == null ? 0.0 : sampler(control, direction);
+        }
+
         public bool IsActive(DS4Controls control)
         {
             if (_current == null || _fields == null) return false;

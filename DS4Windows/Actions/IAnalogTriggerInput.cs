@@ -15,5 +15,11 @@ namespace DS4Windows.Actions
 
         /// <summary>バイト値（0〜255）。元がボタンなら 255 か 0、軸なら向きの倒し具合を 0〜255 に伸ばした値、トリガーならその値（旧 <c>GetByteMapping</c>）。</summary>
         byte GetByteValue(DS4Controls control);
+
+        /// <summary>
+        /// Phase8-Step7 7.8f-3: マウスの移動の生の量（旧 <c>Mapping.getMouseMapping</c> の戻り値。符号の処理の前）。<paramref name="direction"/> は 0＝Up、1＝Down、2＝Left、3＝Right。
+        /// 感度・加速・デッドゾーン・経過時間を使うため、計算は <c>Mapping</c> が持ち、入力の側から借りる（<see cref="TriggerInput.MouseSampler"/>）。借り先がなければ 0。
+        /// </summary>
+        double GetMouseMovement(DS4Controls control, int direction);
     }
 }

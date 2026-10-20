@@ -19,7 +19,7 @@ namespace DS4Windows.Services
     /// 識別用の <c>SpecialAction</c>（状態の鍵）は、旧経路の合成と同じ名前（<c>Synthetic_Key_{device}_{control}</c>）で作る。
     /// 旧経路の <c>FindSpecialActionForLogicalKey</c> による Key 特殊アクションとの状態の共有は、再現しない（Q4＝B。承認済みの動作変更）。
     /// </summary>
-    // TODO(Phase8-Step7 7.8f-3。規約 2.4): Button のうち、アナログのホイール・マウスの移動は、7.8f-3 の PR でここに足す。ジャイロスワイプの割り当ては、7.8f-3 で扱う。
+    // TODO(Phase8-Step7 7.8f-3。規約 2.4): ジャイロスワイプの割り当ては、入力の作り方を確かめたうえで、この区分に足すかを決める（Phase8-Step7-8f-Plan.md §5.6）。ジャイロスワイプの割り当ては、7.8f-3 で扱う。
     public sealed class ControlBindingBuilder : IControlBindingBuilder
     {
         private readonly BindingMigrationOptions _options;
@@ -45,20 +45,21 @@ namespace DS4Windows.Services
             bool extras = _options.IsControlMigrated(ControlBindingKind.Extras) && _extrasPort != null;
             bool pads = _options.IsControlMigrated(ControlBindingKind.ButtonPad);
             bool mice = _options.IsControlMigrated(ControlBindingKind.ButtonMouse);
-            if (!keys && !macros && !extras && !pads && !mice) return Array.Empty<IActionBinding>();
+            bool analogMice = _options.IsControlMigrated(ControlBindingKind.ButtonAnalogMouse);
+            if (!keys && !macros && !extras && !pads && !mice && !analogMice) return Array.Empty<IActionBinding>();
 
             ControlSettingsGroup group = _profileSettings.GetControlSettingsGroup(device);
             if (group == null) return Array.Empty<IActionBinding>();
 
             var result = new List<IActionBinding>();
-            Add(device, group.LS, keys, macros, extras, pads, mice, result);
-            Add(device, group.RS, keys, macros, extras, pads, mice, result);
-            Add(device, group.L2, keys, macros, extras, pads, mice, result);
-            Add(device, group.L2FullPull, keys, macros, extras, pads, mice, result);
-            Add(device, group.R2, keys, macros, extras, pads, mice, result);
-            Add(device, group.R2FullPull, keys, macros, extras, pads, mice, result);
-            Add(device, group.ControlButtons, keys, macros, extras, pads, mice, result);
-            Add(device, group.ExtraDeviceButtons, keys, macros, extras, pads, mice, result);
+            Add(device, group.LS, keys, macros, extras, pads, mice, analogMice, result);
+            Add(device, group.RS, keys, macros, extras, pads, mice, analogMice, result);
+            Add(device, group.L2, keys, macros, extras, pads, mice, analogMice, result);
+            Add(device, group.L2FullPull, keys, macros, extras, pads, mice, analogMice, result);
+            Add(device, group.R2, keys, macros, extras, pads, mice, analogMice, result);
+            Add(device, group.R2FullPull, keys, macros, extras, pads, mice, analogMice, result);
+            Add(device, group.ControlButtons, keys, macros, extras, pads, mice, analogMice, result);
+            Add(device, group.ExtraDeviceButtons, keys, macros, extras, pads, mice, analogMice, result);
 
             return result.Count == 0 ? (IReadOnlyList<IActionBinding>)Array.Empty<IActionBinding>() : result.ToArray();
         }
@@ -120,11 +121,11 @@ namespace DS4Windows.Services
             return true;
         }
 
-        private void Add(int device, List<DS4ControlSettings> settings, bool keys, bool macros, bool extras, bool pads, bool mice, List<IActionBinding> result)
+        private void Add(int device, List<DS4ControlSettings> settings, bool keys, bool macros, bool extras, bool pads, bool mice, bool analogMice, List<IActionBinding> result)
         {
             if (settings == null) return;
             for (int i = 0; i < settings.Count; i++)
-                Add(device, settings[i], keys, macros, extras, pads, mice, result);
+                Add(device, settings[i], keys, macros, extras, pads, mice, analogMice, result);
         }
 
         /// <summary>
@@ -201,6 +202,36 @@ namespace DS4Windows.Services
             }
         }
 
+        /// <summary>
+        /// Phase8-Step7 7.8f-3: Button のうち、マウスの移動（MouseUp／Down／Left／Right）と、元がスティック・トリガー・ジャイロのホイール（アナログ）への割り当ての解釈。
+        /// Toggle の有無は見ない。元がボタンのホイール（デジタル）は <see cref="TryInterpretMouse"/> が扱う。
+        /// </summary>
+        public static bool TryInterpretAnalogMouse(DS4ControlSettings dcs, out X360Controls target)
+        {
+            target = X360Controls.None;
+            if (dcs == null) return false;
+            if (dcs.actionType != DS4ControlSettings.ActionType.Button) return false;
+
+            X360Controls xbox = dcs.action.actionBtn;
+            switch (xbox)
+            {
+                case X360Controls.MouseUp:
+                case X360Controls.MouseDown:
+                case X360Controls.MouseLeft:
+                case X360Controls.MouseRight:
+                    target = xbox;
+                    return true;
+                case X360Controls.WUP:
+                case X360Controls.WDOWN:
+                    // TryInterpretMouse が偽（元がアナログ）のものだけ
+                    if (TryInterpretMouse(dcs, out _)) return false;
+                    target = xbox;
+                    return true;
+                default:
+                    return false;
+            }
+        }
+
         // 軸の Default で、反対側の向きが割り当て済み（Key／Macro／Button のどれでも、割り当てたボタンの消去が軸のペアの両方を中立にする）なら、素通しが要る
         private bool NeedsPassthrough(int device, DS4ControlSettings dcs)
         {
@@ -214,7 +245,7 @@ namespace DS4Windows.Services
         }
 
         // dcs の部品（Extras、通常の割り当て、Default の素通し）は、すべて新経路で扱えるときだけ束縛にする。一部でも扱えなければ、1 つも作らず、旧経路が dcs 全体を処理する
-        private void Add(int device, DS4ControlSettings dcs, bool keys, bool macros, bool extras, bool pads, bool mice, List<IActionBinding> result)
+        private void Add(int device, DS4ControlSettings dcs, bool keys, bool macros, bool extras, bool pads, bool mice, bool analogMice, List<IActionBinding> result)
         {
             if (dcs == null) return;
 
@@ -258,6 +289,12 @@ namespace DS4Windows.Services
                             if (hasExtras) AddExtras(device, dcs, extrasValues, result);
                             AddMouse(device, dcs, mouseTarget, toggle, result);
                         }
+                        else if (TryInterpretAnalogMouse(dcs, out X360Controls analogTarget))
+                        {
+                            if (!analogMice) break;
+                            if (hasExtras) AddExtras(device, dcs, extrasValues, result);
+                            AddAnalogMouse(device, dcs, analogTarget, toggle, result);
+                        }
                         else if (pads && TryInterpretPadTarget(dcs, out PadBindingValues pad, out bool eraseOnly))
                         {
                             if (hasExtras) AddExtras(device, dcs, extrasValues, result);
@@ -284,6 +321,31 @@ namespace DS4Windows.Services
             if (!eraseOnly) outputs.Add(new ControlPadOutputAction(identity, values));
             if (toggle) outputs.Add(new ControlToggleOutputAction(identity));   // 7.8f-2（Q8＝A）。Toggle の出力は ButtonMouse の区分
             result.Add(new TriggerBinding(new ControlButtonInputAction(identity.name, dcs.control, toggle ? ControlBindingKind.ButtonMouse : ControlBindingKind.ButtonPad, ControlJudgement.Assignment),
+                outputs.ToArray(), policy, identity, -1));
+        }
+
+        // 設計: Phase8-Step7-8f-Plan.md §3.2（7.8f-3）。マウスの移動とアナログのホイール。割り当てたボタンの通常の出力は、毎フレーム消す。
+        // 移動は、評価されたフレームごとに量を借りて加算器へ書く（Q6＝A）。ホイールは、成立中に束縛ごとの状態で進む（Q5＝B）。Toggle つきなら、Toggle の出力を足す
+        private void AddAnalogMouse(int device, DS4ControlSettings dcs, X360Controls target, bool toggle, List<IActionBinding> result)
+        {
+            var identity = new SpecialAction($"Synthetic_AnalogMouse_{device}_{(int)dcs.control}", "Synthetic", "AnalogMouse", "AnalogMouse", 0, string.Empty);
+            identity.type = "AnalogMouse";
+            identity.controls = identity.name;
+
+            var policy = new BindingPolicy(respectsFreshPressGuard: false, suppressesTriggerButtons: false, resetsTriggerOutput: false,
+                erasesOutputEveryFrame: true);
+            var outputs = new List<IOutputAction>(2);
+            switch (target)
+            {
+                case X360Controls.MouseUp: outputs.Add(new ControlMouseMoveOutputAction(identity, dcs.control, 0)); break;
+                case X360Controls.MouseDown: outputs.Add(new ControlMouseMoveOutputAction(identity, dcs.control, 1)); break;
+                case X360Controls.MouseLeft: outputs.Add(new ControlMouseMoveOutputAction(identity, dcs.control, 2)); break;
+                case X360Controls.MouseRight: outputs.Add(new ControlMouseMoveOutputAction(identity, dcs.control, 3)); break;
+                default: outputs.Add(new ControlAnalogWheelOutputAction(identity, dcs.control, target == X360Controls.WDOWN, _profileSettings)); break;
+            }
+
+            if (toggle) outputs.Add(new ControlToggleOutputAction(identity));
+            result.Add(new TriggerBinding(new ControlButtonInputAction(identity.name, dcs.control, ControlBindingKind.ButtonAnalogMouse, ControlJudgement.Assignment),
                 outputs.ToArray(), policy, identity, -1));
         }
 

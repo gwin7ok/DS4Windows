@@ -19,6 +19,9 @@ namespace DS4Windows.Actions
         /// <summary>Button のうち、マウスのボタン・タッチパッドクリック・デジタルのホイールへの割り当てと、Toggle つきの割り当て（7.8f-2）。アナログのホイール・マウスの移動は 7.8f-3 で別の区分にする。</summary>
         ButtonMouse,
 
+        /// <summary>Button のうち、マウスの移動（MouseUp／Down／Left／Right）と、アナログのホイール（元がスティック・トリガー・ジャイロの WUP／WDOWN）への割り当て（7.8f-3）。</summary>
+        ButtonAnalogMouse,
+
         /// <summary>Extras（振動、ライトバー、感度。7.8e）。Lightbar マクロは、7.8e で機能を廃止した。</summary>
         Extras,
     }

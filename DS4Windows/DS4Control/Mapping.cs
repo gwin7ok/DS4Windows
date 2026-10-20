@@ -193,6 +193,10 @@ namespace DS4Windows
             {
                 _triggerInputs[device] = new DS4Windows.Actions.TriggerInput(device, profileSettings);
                 _frameOutputs[device] = new DS4Windows.Actions.FrameOutput();
+
+                // Phase8-Step7 7.8f-3: 新経路のマウスの移動が、生の量の計算（getMouseMapping）を借りる。デバイスごとに 1 回だけ作る（フレームごとの割り当てなし）
+                int sampleDevice = device;
+                _triggerInputs[device].MouseSampler = (control, direction) => SampleMouseMovement(sampleDevice, control, direction);
             }
 
             syncStateLock = syntheticInput.SyncStateLock;
@@ -540,6 +544,23 @@ namespace DS4Windows
         // 遅延の基準時刻（旧 nowAction／oldnowAction）は、_triggerInputs[device].Delay に置き換わった。
         private readonly DS4Windows.Actions.TriggerInput[] _triggerInputs;
         private readonly DS4Windows.Actions.FrameOutput[] _frameOutputs;
+
+        // Phase8-Step7 7.8f-3: 今のフレームの入力（getMouseMapping を新経路から借りるために、MapCustom が設定する）
+        private readonly DS4State[] _sampleState = new DS4State[ControllerLimits.MaxControllerCount];
+        private readonly DS4StateExposed[] _sampleExposed = new DS4StateExposed[ControllerLimits.MaxControllerCount];
+        private readonly DS4StateFieldMapping[] _sampleFields = new DS4StateFieldMapping[ControllerLimits.MaxControllerCount];
+        private readonly ControlService[] _sampleControl = new ControlService[ControllerLimits.MaxControllerCount];
+
+        // 新経路のマウスの移動（ControlMouseMoveOutputAction）が、TriggerInput 経由で呼ぶ。旧 getMouseMapping と同じ計算
+        private double SampleMouseMovement(int device, DS4Controls control, int direction)
+        {
+            DS4State state = _sampleState[device];
+            DS4StateFieldMapping fields = _sampleFields[device];
+            ControlService ctrl = _sampleControl[device];
+            if (state == null || fields == null || ctrl == null) return 0.0;
+
+            return getMouseMapping(device, control, state, _sampleExposed[device], fields, direction, ctrl);
+        }
 
         // Cache of previous input-level 'established' state per (actionIndex, device).
         // Mapping will use this to detect input-edge (rise/fall) and only call DispatchTriggerEdge when input changed.
@@ -2263,6 +2284,10 @@ namespace DS4Windows
             try { previousState = ctrl?.DS4Controllers[device]?.getPreviousStateRef(); } catch { }
             _triggerInputs[device].Update(cState, previousState, eState, tp, fieldMapping);
             _frameOutputs[device].Bind(outputfieldMapping, this.deviceState[device]);
+            _sampleState[device] = cState;
+            _sampleExposed[device] = eState;
+            _sampleFields[device] = fieldMapping;
+            _sampleControl[device] = ctrl;
             //DS4StateFieldMapping fieldMapping = new DS4StateFieldMapping(cState, eState, tp);
             //DS4StateFieldMapping outputfieldMapping = new DS4StateFieldMapping(cState, eState, tp);
 
@@ -3008,6 +3033,11 @@ namespace DS4Windows
             //        touchTempX = touchTempY = 128;
             //    }
             //}
+
+            // Phase8-Step7 7.8f-3（Q6＝A）: 新経路が書いたマウスの移動量。旧経路（局所変数）が何も書いていないときだけ使う（先に書いた方が勝つ、の規則のまま）
+            DS4Windows.Actions.FrameOutput frameOutput = _frameOutputs[device];
+            if (tempMouseDeltaX == 0.0) tempMouseDeltaX = frameOutput.MouseDeltaX;
+            if (tempMouseDeltaY == 0.0) tempMouseDeltaY = frameOutput.MouseDeltaY;
 
             calculateFinalMouseMovement(ref tempMouseDeltaX, ref tempMouseDeltaY,
                 out mouseDeltaX, out mouseDeltaY);

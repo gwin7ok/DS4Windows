@@ -8,7 +8,7 @@ namespace DS4Windows.Actions
     /// 中身は、現行の <c>Mapping.ResetToDefaultValue</c> と、Stage3（Synchronous Button SpecialAction handling）の出力の分岐をそのまま移したもの
     /// （<c>FrameOutputTests</c> が現行のメソッドと比較する）。まだ <c>Mapping</c> には配線していない（W4）。
     /// </summary>
-    public sealed class FrameOutput : IPadFrameOutput, IToggleFrameOutput, IFrameOutputTrace
+    public sealed class FrameOutput : IPadFrameOutput, IToggleFrameOutput, IMouseMoveFrameOutput, IFrameOutputTrace
     {
         private DS4StateFieldMapping _outputFields;
         private SyntheticState _deviceState;
@@ -18,6 +18,23 @@ namespace DS4Windows.Actions
         {
             _outputFields = outputFields;
             _deviceState = deviceState;
+            MouseDeltaX = 0.0;   // Phase8-Step7 7.8f-3: フレームごとに、マウスの移動量の加算器を空にする
+            MouseDeltaY = 0.0;
+        }
+
+        /// <summary>Phase8-Step7 7.8f-3（Q6＝A）: このフレームで、新経路が書いたマウスの移動量（旧 <c>tempMouseDeltaX／Y</c> の置き換え）。</summary>
+        public double MouseDeltaX { get; private set; }
+
+        public double MouseDeltaY { get; private set; }
+
+        public void SetMouseDeltaX(double value)
+        {
+            if (MouseDeltaX == 0.0) MouseDeltaX = value;
+        }
+
+        public void SetMouseDeltaY(double value)
+        {
+            if (MouseDeltaY == 0.0) MouseDeltaY = value;
         }
 
         // 現行の Mapping.ResetToDefaultValue と同じ

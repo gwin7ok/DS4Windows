@@ -3,7 +3,7 @@
 作成日: 2026-10-20  
 対象ブランチ: `For-DI-migration-work`  
 上位: `Phase8-Step2b-ControlsTab-Design.md`（§3.3 の F、§10。Q8＝B［実機確認は Step9］、Q9＝A［値渡し］）、`Phase8-Step7-8a-Plan.md`（土台）、`Phase8-Step7-8b-Plan.md`（Key。Default と Unbound の表）、`Phase8-Step7-8e-Plan.md`（Extras。1 ボタン複数束縛）、`Phase8-Step7-1-Plan.md`（SA の Button）  
-状態: **Q1〜Q7 を承認済み（2026-10-20。ユーザー。Q5＝B、他は推奨）。W0（調査）完了［§5.1］。Q8＝A も承認済み。7.8f-1 の W1 完了［ビルド・テスト成功。§5.2］。7.8f-1 の W2（実装）完了［ビルド・テスト成功。§5.3］。7.8f-1 の W4（文書）完了。7.8f-2 の W1（旧経路の特性化テスト）を作成［ビルド・テスト成功。§5.4］。7.8f-2 の W2（実装）完了［ビルド・テスト成功。§5.5］。7.8f-2 の W4（文書）完了。7.8f-3 の W1（旧経路の特性化テスト）を作成［ビルド・テスト成功。§5.6］。次は 7.8f-3 の W2（実装）。製品コードは未着手**
+状態: **Q1〜Q7 を承認済み（2026-10-20。ユーザー。Q5＝B、他は推奨）。W0（調査）完了［§5.1］。Q8＝A も承認済み。7.8f-1 の W1 完了［ビルド・テスト成功。§5.2］。7.8f-1 の W2（実装）完了［ビルド・テスト成功。§5.3］。7.8f-1 の W4（文書）完了。7.8f-2 の W1（旧経路の特性化テスト）を作成［ビルド・テスト成功。§5.4］。7.8f-2 の W2（実装）完了［ビルド・テスト成功。§5.5］。7.8f-2 の W4（文書）完了。7.8f-3 の W1（旧経路の特性化テスト）を作成［ビルド・テスト成功。§5.6］。7.8f-3 の W2（実装）を実施［ビルド・テストの結果待ち。§5.7］。製品コードは未着手**
 
 ---
 
@@ -123,6 +123,16 @@ Controls タブの「Button」の割り当て（ボタン・軸・トリガー�
 - 旧経路だけの記録（Q5）: ホイールの状態は Mapping 全体で 1 つ（向きを変えると端数を捨てる、同じフレームの 2 つ目のアナログ元は進まない）。W2 で Q5＝B［束縛ごと］に直すとき、期待値を更新する。
 - テスト基盤: `RecordingVirtualKbmBase` にホイールの記録（`WheelEvents`）を追加。実機がないため、スロットにテスト用のデバイスを置き（経過時間）、ホイールの 10ms の間隔は `Mapping.oldnow` をフレームごとに戻して決定的にする。ホイールと移動の端数（Mapping が共有）は、テストごとに初期化する。
 - ジャイロスワイプの割り当て（Q7）は、W1 では確かめていない（W2 の前に、入力の作り方を調べて別に確かめる）。
+
+### 5.7 7.8f-3 W2 の実装（2026-10-20。ビルド・テストの結果待ち）
+
+- 新設（`Actions/`）: `IMouseMoveFrameOutput`（マウスの移動量の加算器への書き込み口。`FrameOutput` が実装し、`Bind` のたびに空にする。「0 のときだけ書く」で、先に書いた方が勝つ規則を保つ。Q6＝A）、`ControlMouseMoveOutputAction`（評価されたフレームごとに、生の量を借りて符号をそろえ、加算器へ書く）、`ControlAnalogWheelOutputAction`（旧 `GetMouseWheelMapping` の計算。端数・間隔の時刻を**束縛ごと**に持つ。Q5＝B）。区分 `ButtonAnalogMouse`（`ServiceRegistration` の 1 行）。
+- 生の量の借り方: `IAnalogTriggerInput.GetMouseMovement(control, direction)` を足し、`TriggerInput.MouseSampler`（`Mapping` がデバイスごとに 1 回だけ設定。フレームごとの割り当てなし）経由で、旧 `getMouseMapping` を呼ぶ。`Mapping` は、`MapCustom` の先頭で今のフレームの入力を保持する配列に入れる。
+- `Mapping` の変更（最小）: 上の借り先の配線と、フレームの最後（`calculateFinalMouseMovement` の直前）で「局所変数が 0 なら加算器の値を使う」の 3 か所。旧経路の枝は Step8 まで残る。
+- `ControlBindingBuilder`: `TryInterpretAnalogMouse`（MouseUp／Down／Left／Right、元がスティック・トリガー・ジャイロの WUP／WDOWN）、`AddAnalogMouse`。Toggle つきは `ButtonMouse` も要る。
+- 動作の変更（承認済み。Q5＝B）: アナログのホイールの状態を束縛ごとに持つ。向きを変えても端数を捨てない、複数のアナログ元を同じ向きに割り当てても干渉しない、デジタルのホイールの繰り返し（`Commit` の 150ms）が遅れる癖がなくなる。
+- 範囲外: ジャイロスワイプの割り当て（Q7）は、入力の作り方を確かめていないため、ビルダーの対象外のまま（旧経路）。
+- テスト: `Phase8Step78f3W2ControlsAnalogMouseTests`（解釈、束縛の形、ロールバック、加算器、ホイールの状態を束縛ごとに持つこと、ソース）。`AnalogMouseTestHarness` に共通化し、W1 のテストも新経路を走らせる（フレームの間に 12ms 待つ）。更新: 既定の区分の一覧、7.8e の Button＋Extras の旧経路の検査（読めない Extras に）、7.8f-1 の検査。
 
 ## 6. 質問と決定
 
