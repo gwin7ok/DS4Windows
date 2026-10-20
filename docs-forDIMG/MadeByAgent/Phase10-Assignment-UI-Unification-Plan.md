@@ -62,12 +62,16 @@ Controls タブ（トリガー＝単体のボタン）と SpecialActions（SA）
 
 ## 5. Step の構成（案）
 
-- **Step1: マクロの共通部品**（Controls と SA）
-  - 再生の種別の表現を 1 つにする（Play Once／Repeat While Held）。
-  - 繰り返しのフラグは、`Phase8-Fix-MacroRepeatUnify` で `RepeatMacro` に統合済みのため、**保存・読み込み・実行側の統一は不要**になった。残るのは、UI の表現の統一と、Run on release／Sync／Keep key state を Controls に出すか（Q1）。
+- **Step1: マクロの再生オプションの共通部品**（Controls と SA。個別計画書: `Phase10-Step1-Plan.md`）
+  - 範囲（2026-10-21 改訂）: SA の Macro タブに Execute Mode（Play Once／Repeat While Held のドロップダウン）を追加し、SA から開く記録画面（`RecordBox`）の繰り返し・Scan Code を消す。Press Key の Scan Code を選択ダイアログからタブへ移し、ダイアログの Toggle と Scan Code を（SA から開く場合に）消す。部品は `MacroPlaybackOptions` と `MacroPlaybackOptionsPanel`。**Controls 側の画面は、共通の編集画面（Step2）ができるまで変えない**（Controls は、選択ダイアログの「Record A Macro」「Toggle」「Scan Code」が唯一の設定場所のため）。Run on release、Sync、Keep key state を Controls に出すことは、保存形式の拡張が要るため **Step3 に回す**（承認済み）。
+  - 繰り返しのフラグは、`Phase8-Fix-MacroRepeatUnify` で `RepeatMacro` に統合済みのため、保存・読み込み・実行側の統一は不要。
 - **Step2: 共通画面の骨格**。ViewModel の分離（P4）と、Controls／SA の 2 モード化（トリガーの供給元、Name 欄、保存先）。
 - **Step3: 保存形式の拡張**（Q1 で案 A の場合）と、往復変換のテスト（P7）。読込のテストを先に作る。
 - **Step4: Controls 側の各種別の移植**（Key、Button、マウス、Extras）。`BindingWindow` の視覚的な選択 UI の埋め込み（P5）。
+  - **選択ダイアログ `BindingWindow` の統一**（ユーザーの指示、2026-10-21）: 現在の 2 つのモード（Controls 用の `Full` と、SA の Press Key 用の `ForPressToggle`。ほかに `Keyboard`）を 1 つの画面にし、**「Record A Macro」ボタンと「Toggle」チェックボックスを削除**する。マクロの登録は、1 つ前のメニュー（共通の編集画面の Macro）から行い、Toggle は、共通の編集画面の Press Key の「Switch Mode」（Press／Toggle）で設定する。選択ダイアログは、キー・ボタン・マウスの**選択だけ**を担う。Scan Code のチェックボックスは残す。
+  - **前提**: 共通の編集画面（Step2）が先にできていること。現状、Controls は、この画面の「Record A Macro」と「Toggle」が、マクロと Toggle を設定する**唯一の場所**のため、共通画面より前に削除すると、Controls で設定できなくなる。
+  - 副次の効果: Switch Mode は Key と Button の両方に効くため、C-5 の欠落（マウスボタン・パッドのボタンに Toggle を書けない）が、この画面の統一で解消する。
+  - Default／Unbound ボタンと Extras パネルの扱いは §6 Q6 のとおり。
 - **Step5: SA 専用の種別を Controls で実行する経路**（`ControlBindingBuilder` の拡張）。
 - **Step6: 旧 `BindingWindow`／旧エディタの撤去**、モデル図・文書の更新、完了報告書。
 
@@ -85,6 +89,7 @@ Controls タブ（トリガー＝単体のボタン）と SpecialActions（SA）
   - 注意: Step9 の B-11 の記録には「パッドのボタン（A）では Toggle が設定される」とあるが、コードの読み取りでは、Button の分岐は Toggle を書かない。この食い違いは未解決（A の割り当てが、既定値の `Default` に戻る経路や、既存の設定の再保存で残っていた可能性）。Step2 で、共通画面の Toggle を「Key と Button の両方で書く」ことを、往復変換テストで固定する際に再現して確定する。
   - 対応: 別の是正は行わず、Phase10 の共通画面（Step2〜4）で、Key と Button の両方に Toggle を書く。
 - **Q5＝許容する**: 新しいファイルを旧バージョンで読めなくなることを許容する。旧 → 新の読み込みは完全に保つ（読込テストを先に作る）。
+- **Q6＝Extras は両方で出す、Default／Unbound は Controls から開いたときだけ出す**（ユーザー決定、2026-10-21）: 統一した選択ダイアログに、Extras パネル（振動・ライトバー・マウス感度）を常に出す。Default／Unbound ボタンは、Controls のタブから開いたときだけ出す（SA から開いたときは隠す）。注意: SA 側で Extras を保存するには、`SpecialAction` に Extras の保存先が要る（Step3 の保存形式の拡張に含める。Q2＝「すべて出す」と整合）。
 
 ### 決定による Step への影響
 
