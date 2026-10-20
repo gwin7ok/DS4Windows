@@ -521,9 +521,6 @@ Verbind gewoon je DualShock 4 en PC met een micro-USB kabel.
   <data name="SpecialActionEdit.RecordMacro" xml:space="preserve">
     <value>Neem een macro op</value>
   </data>
-  <data name="SpecialActionEdit.PressKey" xml:space="preserve">
-    <value>Druk/schakel toets</value>
-  </data>
   <data name="SpecialActionEdit.SelectKey" xml:space="preserve">
     <value>Selecteer een toets</value>
   </data>

@@ -458,6 +458,9 @@
                                         <ComboBoxItem Content="Toggle" />
                                     </ComboBox>
                                 </StackPanel>
+                                <!-- Phase10-Step1 W4: Scan Code は、選択ダイアログではなく、この画面で設定する -->
+                                <CheckBox Content="{lex:Loc ScanCode}" IsChecked="{Binding UseScanCode}" IsEnabled="{Binding IsScanCodeEnabled}"
+                                          Margin="0,0,0,6" />
                                 <Button x:Name="pressKeySelectBtn" Content="{Binding DescribeText,FallbackValue={lex:Loc SpecialActionEdit.SelectKey}}"
                                         Margin="{StaticResource spaceMargin}" Click="PressKeySelectBtn_Click" />
                                 <!-- Unload trigger UI removed: Key-type SpecialActions now use single-trigger toggle by design -->

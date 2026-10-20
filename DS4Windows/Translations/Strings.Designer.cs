@@ -3237,7 +3237,7 @@ namespace DS4WinWPF.Translations {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Press/Toggle key.
+        ///   Looks up a localized string similar to Output Key/Mouse/Button.
         /// </summary>
         public static string SpecialActionEdit_PressKey {
             get {

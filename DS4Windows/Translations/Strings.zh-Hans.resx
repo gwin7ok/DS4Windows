@@ -1419,9 +1419,6 @@
   <data name="SpecialActionEdit.MultiAction" xml:space="preserve">
     <value>多动作按钮</value>
   </data>
-  <data name="SpecialActionEdit.PressKey" xml:space="preserve">
-    <value>按下/切换按键</value>
-  </data>
   <data name="SpecialActionEdit.RecordMacro" xml:space="preserve">
     <value>录制宏</value>
   </data>

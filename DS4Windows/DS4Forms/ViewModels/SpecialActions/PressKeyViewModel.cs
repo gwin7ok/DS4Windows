@@ -56,6 +56,25 @@ namespace DS4WinWPF.DS4Forms.ViewModels.SpecialActions
         private int pressReleaseIndex = 0;
         private bool normalTrigger = true;
         public bool IsToggle => (keyType & DS4KeyType.Toggle) != 0;
+
+        // Phase10-Step1 W4: Scan Code は、選択ダイアログのチェックボックスではなく、この画面（Press Key タブ）で設定する。
+        // keyType とは別に持つ（ボタンを選んで keyType が 0 になっても、Scan Code の選択を失わず、キーに戻したとき使えるように）
+        private bool useScanCode;
+        public bool UseScanCode
+        {
+            get => useScanCode;
+            set
+            {
+                if (useScanCode == value) return;
+                useScanCode = value;
+                OnPropertyChanged(nameof(UseScanCode));
+                // キーが未選択のうちは、「Select a Key」の表示を、そのまま保つ（this.value は、選んだキーの値）
+                if (this.value != 0) UpdateDescribeText();
+            }
+        }
+
+        /// <summary>Scan Code が効くのは、キーの割り当てだけ（ボタンのときは、チェックボックスを無効にする）。</summary>
+        public bool IsScanCodeEnabled => lastActionType != DS4ControlSettings.ActionType.Button;
         public event EventHandler IsToggleChanged;
 
         public Visibility ShowToggleControls
@@ -95,6 +114,7 @@ namespace DS4WinWPF.DS4Forms.ViewModels.SpecialActions
             // device number may be set by the editor so we can pick the proper
             // emulated controller type for label strings (X360 vs DS4)
             keyType = action.keyType;
+            useScanCode = keyType.HasFlag(DS4KeyType.ScanCode);
             // Read explicit SwitchMode if provided by SpecialAction; fallback to keyType flag
             if (action.KeyButtonSwitchMode.HasValue)
             {
@@ -168,12 +188,13 @@ namespace DS4WinWPF.DS4Forms.ViewModels.SpecialActions
             else
             {
                     describeText = KeyInterop.KeyFromVirtualKey(value).ToString() +
-                        (keyType.HasFlag(DS4KeyType.ScanCode) ? " (SC)" : "") +
+                        (useScanCode ? " (SC)" : "") +
                         (string.Equals(switchMode, "Toggle", StringComparison.OrdinalIgnoreCase) ? " (Toggle)" : " (Press)");
             }
 
             DescribeTextChanged?.Invoke(this, EventArgs.Empty);
             OnPropertyChanged(nameof(DescribeText));
+            OnPropertyChanged(nameof(IsScanCodeEnabled));
         }
 
         public void UpdateToggleControls()
@@ -201,6 +222,8 @@ namespace DS4WinWPF.DS4Forms.ViewModels.SpecialActions
             {
                 keyTypeToPass &= ~DS4KeyType.Toggle;
             }
+            // Phase10-Step1 W4: Scan Code も、タブの値を渡す（選択ダイアログは、値を通過させるだけ）
+            keyTypeToPass = useScanCode ? keyTypeToPass | DS4KeyType.ScanCode : keyTypeToPass & ~DS4KeyType.ScanCode;
             settings.keyType = keyTypeToPass;
             settings.actionType = DS4ControlSettings.ActionType.Key;
             return settings;
@@ -245,6 +268,8 @@ namespace DS4WinWPF.DS4Forms.ViewModels.SpecialActions
             // Default: treat as a key action
             value = (int)settings.action.actionKey;
             keyType = settings.keyType;
+            useScanCode = keyType.HasFlag(DS4KeyType.ScanCode);
+            OnPropertyChanged(nameof(UseScanCode));
             // Update SwitchMode editor value to reflect the binding window's toggle flag
             SwitchMode = keyType.HasFlag(DS4KeyType.Toggle) ? "Toggle" : "Press";
             lastActionType = DS4ControlSettings.ActionType.Key;
@@ -283,7 +308,7 @@ namespace DS4WinWPF.DS4Forms.ViewModels.SpecialActions
                 return;
             }
             specialActionRepository.SaveAction(action.name, action.controls, 4,
-                $"{value}{(keyType.HasFlag(DS4KeyType.ScanCode) ? " Scan Code" : "")}", edit,
+                $"{value}{(useScanCode ? " Scan Code" : "")}", edit,
                 extras: $"{modeToSave}\n{action.ucontrols}");
         }
 

@@ -74,7 +74,7 @@ Press Key の値の流れ: `PrepareSettings` → `BindingWindow`（`OutBinding.W
    - Macro タブに Execute Mode を追加（チェックボックスの置き換え）。`RecordBox` の `ShowPlaybackOptions=false`。手の書き戻しを撤去。
    - テスト: `MacroViewModel.LoadAction`／`PrepareSettings`／`SaveAction` の往復（`Repeat`、`Scan Code`、他の extras を保つ）。
    - 実機（画面）の確認: SA の Macro の新規作成・編集・保存・再読み込み。記録画面にオプションが出ない。Press Key／MultiAction のマクロは従来どおり。
-4. **W4: SA の Press Key（Scan Code の移動）**
+4. **W4: SA の Press Key（Scan Code の移動）**（**実装済み、ビルド・テスト・実機確認待ち**。新規テスト: `Phase10Step1W4PressKeyScanCodeTests`。変更: `PressKeyViewModel.cs`［`UseScanCode`、`IsScanCodeEnabled`］、`SpecialActionEditor.xaml`［チェックボックス］、`BindingWindow.xaml.cs`［`ForPressToggle` で `topOptsPanel` を隠す］。設計上の判断: Scan Code は `keyType` とは別のフィールドで持つ。ボタンを選んで `keyType` が 0 になっても、選択を失わず、キーに戻したときに使える。ボタンのときは、チェックボックスを無効にする）
    - `PressKeyViewModel.UseScanCode`、Press Key タブのチェックボックス、`BindingWindow`（`ForPressToggle`）の Toggle／Scan Code の非表示。
    - テスト: `PressKeyViewModel` の `LoadAction`／`PrepareSettings`／`ReadSettings`／保存の往復で、`ScanCode` と Toggle が保たれる。ダイアログを通した後も、タブの値が保たれる。
    - 実機（画面）の確認: SA の Press Key（キー、パッドのボタン）で、Scan Code と Switch Mode の設定・保存・再読み込み。ダイアログに Toggle／Scan Code が出ない。Controls の選択ダイアログは従来どおり。

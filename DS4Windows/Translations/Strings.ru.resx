@@ -1209,9 +1209,6 @@
   <data name="SpecialActionEdit.PressingUnloadTrigger" xml:space="preserve">
     <value>Нажатие триггера выгрузки</value>
   </data>
-  <data name="SpecialActionEdit.PressKey" xml:space="preserve">
-    <value>Нажать/Переключить клавишу</value>
-  </data>
   <data name="SpecialActionEdit.RecordMacro" xml:space="preserve">
     <value>Записать макрос</value>
   </data>

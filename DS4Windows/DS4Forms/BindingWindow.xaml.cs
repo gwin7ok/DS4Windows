@@ -121,6 +121,8 @@ namespace DS4WinWPF.DS4Forms
                 modePanel.Visibility = Visibility.Collapsed;
                 recordMacroBtn.Visibility = Visibility.Collapsed;
                 extrasSidePanel.Visibility = Visibility.Collapsed;
+                // Phase10-Step1 W4: Toggle（Switch Mode）と Scan Code は、Press Key タブで設定する。ダイアログは、値を通過させるだけ
+                topOptsPanel.Visibility = Visibility.Collapsed;
                 // Keep main layout size but reduce right-hand grid column for extras
                 try
                 {
