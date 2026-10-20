@@ -35,7 +35,8 @@ Press Key の値の流れ: `PrepareSettings` → `BindingWindow`（`OutBinding.W
 ### 3.1 部品（マクロ）
 
 - **`MacroPlaybackOptions`**（新規。`DS4Forms/ViewModels/`。ViewModel）: `RepeatWhileHeld`（bool）、`UseScanCode`（bool）、`Repeatable`（bool。繰り返しを選べるか）、`PlayModeIndex`（0＝Play Once、1＝Repeat While Held。`RepeatWhileHeld` との相互変換）。`INotifyPropertyChanged`。
-  - `FromKeyType(DS4KeyType)`、`ApplyTo(ref DS4KeyType)`: `RepeatMacro`、`ScanCode` のビットだけを操作する（他のビットは触らない）。
+  - `FromKeyType(DS4KeyType, bool repeatable = true)`、`LoadFrom(DS4KeyType)`、`ApplyTo(DS4KeyType)`（値を返す。`ref` ではない）: `RepeatMacro`、`ScanCode` のビットだけを操作する（他のビットは触らない）。
+  - `Repeatable=false` は、画面の有効・無効だけに使い、`RepeatWhileHeld` の値は**消さない**（従来の `RecordBox` は、ドロップダウンを無効にしても、読み込んだ `RepeatMacro` を保存時に書き戻していたため。規約 2.2。W1 で、当初の「偽に固定」から変更）。
 - **`MacroPlaybackOptionsPanel`**（新規。`DS4Forms/`。UserControl）: 「Execute Mode:」ラベル＋ドロップダウン（`RecordBox.PlayOnce`／`RecordBox.RepeatWhileHeld`）と、「Scan Code」チェックボックス。`MacroPlaybackOptions` を `DataContext` に受ける。`Repeatable=false` のとき、ドロップダウンを無効にする。
 
 ### 3.2 適用先（マクロ）
@@ -61,8 +62,8 @@ Press Key の値の流れ: `PrepareSettings` → `BindingWindow`（`OutBinding.W
 
 各 Wave の後に、ユーザーがビルドと `dotnet test` を実行する。
 
-1. **W1: `MacroPlaybackOptions` と単体テスト**（画面は変えない）
-   - テスト: `FromKeyType`／`ApplyTo` の往復（`RepeatMacro`、`ScanCode`。他のビット［`Macro`、`Toggle`、`Unbound` など］を保つ）、`PlayModeIndex`↔`RepeatWhileHeld`、`Repeatable=false` のとき `RepeatWhileHeld` を `false` に固定、`PropertyChanged` の通知。
+1. **W1: `MacroPlaybackOptions` と単体テスト**（画面は変えない。**実装済み、ビルド・テスト待ち**。ファイル: `DS4Forms/ViewModels/MacroPlaybackOptions.cs`、`DS4WindowsTests/Phase10Step1W1MacroPlaybackOptionsTests.cs`）
+   - テスト: `FromKeyType`／`ApplyTo` の往復（`RepeatMacro`、`ScanCode`。他のビット［`Macro`、`Toggle`、`Unbound` など］を保つ）、`PlayModeIndex`↔`RepeatWhileHeld`、`Repeatable=false` でも読み込んだ `RepeatWhileHeld` を保つ、`PropertyChanged` の通知。
 2. **W2: `MacroPlaybackOptionsPanel` と、Controls（`RecordBox`）への適用**
    - `RecordBoxViewModel` の `MacroModeIndex`／`UseScanCode` を `MacroPlaybackOptions` に置き換える。
    - テスト: 読み込みで `keyType` の `RepeatMacro`／`ScanCode` を復元、`ExportMacro` が `RepeatMacro` だけを立てる、既存の `RecordBoxViewModelTargetDeviceTests`・`Phase8FixMacroRepeatUnifyPersistenceTests` が成功。
