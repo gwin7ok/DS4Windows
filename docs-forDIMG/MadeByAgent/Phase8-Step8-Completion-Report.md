@@ -2,7 +2,7 @@
 
 作成日: 2026-10-20
 計画書: `Phase8-Step8-Plan.md`
-状態: **8-0（ジャイロスワイプの廃止）完了。8a（Controls タブの旧枝）完了。8b（SA の旧枝）はビルド・テスト待ち。8c・8d は未着手。**
+状態: **8-0（ジャイロスワイプの廃止）完了。8a（Controls タブの旧枝）完了。8b（SA の旧枝）完了。8c・8d は未着手。**
 
 ---
 
@@ -27,7 +27,7 @@
 
 詳細: `Phase8-Step8-Plan.md` §5.10。`Mapping.cs` は 7,322 行 → 6,449 行。`ProcessControlSettingAction` の旧経路の本体、`customMapQueue`、判定の旧関数（`GetBoolMapping` ほか）、合成キーの SA のキャッシュなどを削除した。新経路が所有しない割り当て（9 個未満の Extras など）は、何もしない。
 
-## 8b SA の Stage3 と MapCustomAction の旧枝などの削除（2026-10-20。ビルド・テスト待ち）
+## 8b SA の Stage3 と MapCustomAction の旧枝などの削除（2026-10-20。ビルド・テスト成功）
 
 詳細: `Phase8-Step8-Plan.md` §5.11、ログの一覧は `Phase8-Step8-Q7-Legacy-Log-List.md`。`Mapping.cs` は 6,449 → 4,632 行（8a と合わせて 7,322 → 4,632 行）。
 - **承認済みの機能廃止（規約 2.2）**: Profile 切替の解除トリガー（uTrigger）のボタンによる復帰。UI から作れず（a7277da9 で削除）、旧データだけに残っていた。切替は行い、復帰は自動（AutomaticUntrigger）のときだけ。
