@@ -143,12 +143,13 @@ W1 の調査（§5.1）に **「ジャイロの出力モード `DirectionalSwipe
 - テスト: `Phase8Step8W3RemovedGyroSwipeNoticeWiringTests`（サービスが保持の入れ物を返す、文言［英語・日本語］、`Reload` の読込の直後に警告を呼ぶ［1 か所］）。ダイアログそのものは、Step9 の実機（画面）の確認（U-48）。
 - 残る未使用の文言: `Strings` の `DirectionalSwipe`（翻訳 4 言語）。W4 で削除するか判断する。
 
-### 5.10 8a の実装（2026-10-20。ビルド・テストの結果待ち）
+### 5.10 8a の実装（2026-10-20。ビルド・テスト成功）
 
 - **削除（`Mapping.cs`。7,401 行 → 約 6,450 行。8a だけで約 950 行減）**: `ProcessControlSettingAction` の旧経路の本体（Controls タブの Key／Macro／Button／Extras／Default の素通し。新経路が所有しない割り当ては、何もしない）、`customMapQueue`／`ControlToXInput` とその処理・切断時の消去・初期化、`GetBoolMapping`／`GetBoolActionMapping`／`GetXYAxisMapping`／`GetByteMapping`／`GetMouseWheelMapping`／`GetIsToggledOn`、`FindSpecialActionForLogicalKey`、合成キーの SA のキャッシュ（`GetOrCreateSyntheticKeyAction`／`ClearSyntheticActionCache`）、`IfAxisIsNotModified`（未使用）、旧経路だけの状態（`stickWheel*`、`held`、`extrasRumbleActive`）。
 - **残したもの**: 判定の `getBoolSpecialActionMapping`（SA の旧枝が使う。8b で削除）、`getMouseMapping`（Q5＝A。新経路が借りる）、`GetBoolMappingExternal`（`IMapping` のメンバー。`RecordBox` が使う）、`oldnow`／`pressagain`（`Commit` が使う）、`PlayMacro`／`EndMacro`／`DispatchOrSetBeingTriggered`（SA の旧枝。8b）。
 - **テスト**: `ControlsKeyTestScope` は、引数にかかわらず新経路（`migrated` の引数は 8d で整理）。`MappingCharacterizationScope.RemapToButton` は、割り当てを変えたら束縛を組み立て直して登録する。識別用の SA は `SyntheticKeyActionFactory`（テスト用）で作る。削除: 旧関数を reflection で比べるテスト 3 つ（`TriggerInputTests`、`Phase8Step78bW2ControlsKeyTests`、`Phase8Step78fW2ControlsPadTests`。ゴールデンが置き換える）、旧経路だけの記録のテスト（Toggle の毎フレーム反転 2 つ、ホイールの共有状態）、合成 SA のキャッシュのテスト、`LegacyFunctionGolden`（旧関数の表の生成）。ロールバックのテスト 6 つは、「区分を外すと所有しない・束縛を作らない」だけを確かめる形に改めた（旧経路が処理する部分を削除）。ガード（`MappingHelperMethods…`、`MappingControlPath…`、`Phase8Step1SlotLimitTests`）の対象の一覧から、削除したメンバーを除いた。
 - **ロールバック**: この PR 以降、Controls タブの旧経路はない。戻す手段は git のみ（Q1＝A）。
+- **ビルド・テストでの修正**: (1) 削除スクリプトが `HandleDeviceDisconnect` の「マクロのタスクキューの消去」と「`deviceRuntime` の作り直し」まで消していたため復元（`customMapQueue` の消去だけを削除）。(2) `Mapping.cs` の閉じ括弧の重複。(3) 旧経路専用の `migrated: false` のケースを外した（`ADcsWithExtras_IsNotOwnedByTheNewPath`、`SharesTheStateWithAKeySpecialActionOfTheSameKey`、Macro の Play Once、Extras の同時押し・適用後の残り）。(4) 9 個未満の Extras は「何もしない」に期待値を変更（Q2 の仕様の固定）。(5) キー種別を外すと束縛を作らないテストは、オプションから `Key` を外す形に変更。(6) 較正ガードの終端マーカー。(7) テストの後始末（`MappingCharacterizationScope` は束縛を、`ControlsKeyTestScope` は Toggle の状態を、Dispose で消す）。
 
 ### 5.5 テストへの影響
 
