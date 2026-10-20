@@ -33,8 +33,6 @@ namespace DS4WinWPF.DS4Forms
     /// </summary>
     public partial class SpecialActionEditor : UserControl
     {
-        private List<CheckBox> triggerBoxes;
-        private List<CheckBox> unloadTriggerBoxes;
 
         private SpecialActEditorViewModel specialActVM;
         private MacroViewModel macroActVM;
@@ -91,35 +89,6 @@ namespace DS4WinWPF.DS4Forms
             InitializeComponent();
             this.targetDevice = targetDevice;
 
-            triggerBoxes = new List<CheckBox>()
-            {
-                crossTrigCk, circleTrigCk, squareTrigCk, triangleTrigCk,
-                optionsTrigCk, shareTrigCk, upTrigCk, downTrigCk,
-                leftTrigCk, rightTrigCk, psTrigCk, muteTrigCk, l1TrigCk,
-                r1TrigCk, l2TrigCk, l2FullPullTrigCk, r2TrigCk, r2TrigFullPullCk, l3TrigCk,
-                r3TrigCk, fnLTrigCk, fnRTrigCk, bLPTrigCk, bRPTrigCk,
-                leftTouchTrigCk, upperTouchTrigCk, multitouchTrigCk,
-                rightTouchTrigCk, lsuTrigCk, lsdTrigCk, lslTrigCk,
-                lsrTrigCk, rsuTrigCk, rsdTrigCk, rslTrigCk,
-                rsrTrigCk, swipeUpTrigCk, swipeDownTrigCk, swipeLeftTrigCk,
-                swipeRightTrigCk, tiltUpTrigCk, tiltDownTrigCk, tiltLeftTrigCk,
-                tiltRightTrigCk,touchStartedTrigCk,touchEndedTrigCk
-            };
-
-            unloadTriggerBoxes = new List<CheckBox>()
-            {
-                unloadCrossTrigCk, unloadCircleTrigCk, unloadSquareTrigCk, unloadTriangleTrigCk,
-                unloadOptionsTrigCk, unloadShareTrigCk, unloadUpTrigCk, unloadDownTrigCk,
-                unloadLeftTrigCk, unloadRightTrigCk, unloadPsTrigCk, unloadMuteTrigCk, unloadL1TrigCk,
-                unloadR1TrigCk, unloadL2TrigCk, unloadL2FullPullTrigCk, unloadR2TrigCk, unloadR2FullPullTrigCk, unloadL3TrigCk,
-                unloadR3TrigCk, unloadfnLTrigCk, unloadfnRTrigCk, unloadbLPTrigCk, unloadbRPTrigCk,
-                unloadLeftTouchTrigCk, unloadUpperTouchTrigCk, unloadMultitouchTrigCk,
-                unloadRightTouchTrigCk, unloadLsuTrigCk, unloadLsdTrigCk, unloadLslTrigCk,
-                unloadLsrTrigCk, unloadRsuTrigCk, unloadRsdTrigCk, unloadRslTrigCk,
-                unloadRsrTrigCk, unloadSwipeUpTrigCk, unloadSwipeDownTrigCk, unloadSwipeLeftTrigCk,
-                unloadSwipeRightTrigCk, unloadTiltUpTrigCk, unloadTiltDownTrigCk, unloadTiltLeftTrigCk,
-                unloadTiltRightTrigCk,unloadTouchStartedTrigCk, unloadTouchEndedTrigCk,
-            };
             specialActVM = viewModelFactory.CreateSpecialActEditorViewModel(deviceNum, specialAction);
             macroActVM = new MacroViewModel(specialActionRepository);
             launchProgVM = new LaunchProgramViewModel(specialActionRepository);
@@ -206,46 +175,8 @@ namespace DS4WinWPF.DS4Forms
 
         private void LoadAction(DS4Windows.SpecialAction specialAction)
         {
+            // Phase10-Step2 W2: トリガーの読み込みと、一覧にない名前の除外は、ViewModel が行う（旧: チェックボックス 49＋49 個を、ここで 1 つずつ照合）
             specialActVM.LoadAction(specialAction);
-            string[] tempTriggers = specialActVM.ControlTriggerList.ToArray();
-            foreach (string control in tempTriggers)
-            {
-                bool found = false;
-                foreach (CheckBox box in triggerBoxes)
-                {
-                    if (box.Tag.ToString() == control)
-                    {
-                        box.IsChecked = true;
-                        found = true;
-                        break;
-                    }
-                }
-
-                if (!found)
-                {
-                    specialActVM.ControlTriggerList.Remove(control);
-                }
-            }
-
-            tempTriggers = specialActVM.ControlUnloadTriggerList.ToArray();
-            foreach (string control in tempTriggers)
-            {
-                bool found = false;
-                foreach (CheckBox box in unloadTriggerBoxes)
-                {
-                    if (box.Tag.ToString() == control)
-                    {
-                        box.IsChecked = true;
-                        found = true;
-                        break;
-                    }
-                }
-
-                if (!found)
-                {
-                    specialActVM.ControlUnloadTriggerList.Remove(control);
-                }
-            }
 
             // Phase10-Step2 W1: 種別に対応する入力へ読み込む（Button も、Press Key のタブ）
             typeEditors.Load(specialAction);
@@ -263,7 +194,6 @@ namespace DS4WinWPF.DS4Forms
             }
 
             triggersListView.Visibility = Visibility.Visible;
-            unloadTriggersListView.Visibility = Visibility.Collapsed;
         }
 
         private void CancelBtn_Click(object sender, RoutedEventArgs e)
@@ -322,34 +252,6 @@ namespace DS4WinWPF.DS4Forms
                 typeEditors.Save(typeId, tempAct, editMode);
 
                 Saved?.Invoke(this, tempAct.name);
-            }
-        }
-
-        private void ControlTriggerCheckBox_Click(object sender, RoutedEventArgs e)
-        {
-            CheckBox check = sender as CheckBox;
-            string name = check.Tag.ToString();
-            if (check.IsChecked == true)
-            {
-                specialActVM.ControlTriggerList.Add(name);
-            }
-            else
-            {
-                specialActVM.ControlTriggerList.Remove(name);
-            }
-        }
-
-        private void ControlUnloadTriggerCheckBox_Click(object sender, RoutedEventArgs e)
-        {
-            CheckBox check = sender as CheckBox;
-            string name = check.Tag.ToString();
-            if (check.IsChecked == true)
-            {
-                specialActVM.ControlUnloadTriggerList.Add(name);
-            }
-            else
-            {
-                specialActVM.ControlUnloadTriggerList.Remove(name);
             }
         }
 

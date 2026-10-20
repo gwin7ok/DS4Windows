@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Linq;
 using DS4Windows;
 using DS4WinWPF.DS4Forms.ViewModels.Util;
 
@@ -17,16 +18,22 @@ namespace DS4WinWPF.DS4Forms.ViewModels
         private readonly IActionTriggerSource triggerSource;
         private readonly IActionEditTarget editTarget;
         private readonly ActionTypeCatalog typeCatalog;
+        private readonly TriggerCatalog triggerCatalog;
+        private readonly TriggerOptionViewModel[] triggerOptions;
         private int actionTypeIndex = 0;
         private bool existingName;
 
         public ActionEditorViewModel(int deviceNum, IActionTriggerSource triggerSource, IActionEditTarget editTarget,
-            ActionTypeCatalog typeCatalog)
+            ActionTypeCatalog typeCatalog, TriggerCatalog triggerCatalog)
         {
             this.deviceNum = deviceNum;
             this.triggerSource = triggerSource ?? throw new System.ArgumentNullException(nameof(triggerSource));
             this.editTarget = editTarget ?? throw new System.ArgumentNullException(nameof(editTarget));
             this.typeCatalog = typeCatalog ?? throw new System.ArgumentNullException(nameof(typeCatalog));
+            this.triggerCatalog = triggerCatalog ?? throw new System.ArgumentNullException(nameof(triggerCatalog));
+
+            // Phase10-Step2 W2: トリガーの一覧は、データ駆動（旧: 名前つきのチェックボックス 49 個）。チェックの状態は、供給元が持つ
+            triggerOptions = triggerCatalog.Items.Select(item => new TriggerOptionViewModel(item, triggerSource)).ToArray();
         }
 
         public int DeviceNum { get => deviceNum; }
@@ -48,6 +55,10 @@ namespace DS4WinWPF.DS4Forms.ViewModels
         public IActionTriggerSource TriggerSource => triggerSource;
         public IActionEditTarget EditTarget => editTarget;
         public ActionTypeCatalog TypeCatalog => typeCatalog;
+        public TriggerCatalog TriggerCatalog => triggerCatalog;
+
+        /// <summary>画面に出すトリガーの一覧（チェックボックスの行。<c>ItemsSource</c> に結ぶ）。</summary>
+        public IReadOnlyList<TriggerOptionViewModel> TriggerOptions => triggerOptions;
 
         /// <summary>添字 → 種別の ID の配列（従来の <c>typeAssoc</c> と同じ並び）。</summary>
         public SpecialAction.ActionTypeId[] TypeAssoc { get => typeCatalog.TypeIds; }
@@ -81,6 +92,22 @@ namespace DS4WinWPF.DS4Forms.ViewModels
                         triggerSource.SetUnloadTrigger(s, true);
                     }
                 }
+            }
+
+            // 一覧にない名前は、外す（旧: コードビハインドが、対応するチェックボックスがなければ、リストから外していた）
+            foreach (string name in triggerSource.Triggers.ToArray())
+            {
+                if (!triggerCatalog.Contains(name)) triggerSource.SetTrigger(name, false);
+            }
+
+            foreach (string name in triggerSource.UnloadTriggers.ToArray())
+            {
+                if (!triggerCatalog.Contains(name)) triggerSource.SetUnloadTrigger(name, false);
+            }
+
+            foreach (TriggerOptionViewModel option in triggerOptions)
+            {
+                option.Refresh();
             }
 
             editTarget.Name = action.name;

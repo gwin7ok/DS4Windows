@@ -40,7 +40,7 @@ namespace DS4WinWPF.DS4Forms.ViewModels
         }
 
         private SpecialActEditorViewModel(int deviceNum, SpecialActionTriggerSource triggers, SpecialActionEditTarget target)
-            : base(deviceNum, triggers, target, new ActionTypeCatalog())
+            : base(deviceNum, triggers, target, new ActionTypeCatalog(), new TriggerCatalog())
         {
             specialTriggers = triggers;
         }
