@@ -12,7 +12,7 @@ Step1: `Phase10-Step1-Plan.md`
 | Step | 内容 | 状態 | 記録 |
 |---|---|---|---|
 | Step1 | マクロの再生オプションの共通部品（Execute Mode、Scan Code）と、Press Key の Scan Code の移動 | **完了**（2026-10-21。W1〜W4 ビルド・テスト成功、実機確認済み） | `Phase10-Step1-Plan.md` |
-| Step2 | 共通の編集画面の骨格（ViewModel の分離、Controls／SA の 2 モード化、優先順位・抑制の仕様の特性化テスト） | 未着手。C-5 の調査は完了（§4） | |
+| Step2 | 共通の編集画面の骨格（ViewModel の分離、Controls／SA の 2 モード化、優先順位・抑制の仕様の特性化テスト） | 計画書を作成（2026-10-21。Q1〜Q5 承認済み）。W0 から着手待ち。C-5 の調査は完了（§4） | `Phase10-Step2-Plan.md` |
 | Step3 | 保存形式の拡張（Controls に SA 専用の種別・項目。SA の文字列の受け渡しを、型のある独立した項目へ。Q7）と、往復変換のテスト | 未着手 | |
 | Step4 | Controls 側の各種別の移植。選択ダイアログ `BindingWindow` の統一（Record A Macro、Toggle、Scan Code の削除）、Execute Mode／Scan Code を共通画面の Macro タブへ | 未着手 | |
 | Step4b | SA 側のアナログ出力（固定値の強さ） | 未着手 | |
