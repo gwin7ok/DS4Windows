@@ -81,6 +81,9 @@ Controls タブ（トリガー＝単体のボタン）と SpecialActions（SA）
   - 逆に、Controls の単体トリガーに、SA 専用の項目（Hold 秒数、解除トリガーなど）を出す。
 - **Q3＝別ダイアログで開く**: `BindingWindow` の視覚的な選択 UI（キーボード、Xbox 画像、マウス）は、共通画面の「キー／ボタンを選ぶ」から開く選択ダイアログとして残す（埋め込まない）。
 - **Q4＝統合の前に調べる**: 持ち越し C-5（マウスボタンへの割り当てで Toggle を設定できない制限）を、Phase10 の Step2 の前に調べ、仕様か不具合かを確定する。
+  - **調査結果（2026-10-21）**: 原因は編集画面の書き込み漏れ。`OutBinding.WriteBind`（`OutBinding.cs` 398〜455 行付近）が `DS4KeyType.Toggle` を書くのは `OutType.Key` の分岐だけで、`OutType.Button`（マウスボタン `LeftMouse` ほか、パッドのボタンを含む）の分岐は書かない。一方、プロファイルの読み込み・保存（`ProfileButtonControlLoadSection`／`ProfileButtonSaveSection`）と実行側（`ControlBindingBuilder`、`ControlToggleOutputAction`。Phase8-Step7 7.8f-2 でマウス・パッドの Toggle を明示的にサポート）は、Button の Toggle に対応している。したがって、**仕様ではなく編集画面の欠落**（XML を直接編集した Toggle つきの Button は動く）。
+  - 注意: Step9 の B-11 の記録には「パッドのボタン（A）では Toggle が設定される」とあるが、コードの読み取りでは、Button の分岐は Toggle を書かない。この食い違いは未解決（A の割り当てが、既定値の `Default` に戻る経路や、既存の設定の再保存で残っていた可能性）。Step2 で、共通画面の Toggle を「Key と Button の両方で書く」ことを、往復変換テストで固定する際に再現して確定する。
+  - 対応: 別の是正は行わず、Phase10 の共通画面（Step2〜4）で、Key と Button の両方に Toggle を書く。
 - **Q5＝許容する**: 新しいファイルを旧バージョンで読めなくなることを許容する。旧 → 新の読み込みは完全に保つ（読込テストを先に作る）。
 
 ### 決定による Step への影響
