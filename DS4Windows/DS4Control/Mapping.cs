@@ -3187,12 +3187,7 @@ namespace DS4Windows
                     // If macro generates rumble effects then the macro can stop the rumble as a last step or wait for rumble watchdog timer to do it after few seconds.
                     //Program.rootHub.DS4Controllers[device].setRumble(0, 0);
 
-                    if (keyType.HasFlag(DS4KeyType.HoldMacro))
-                    {
-                        Task.Delay(50).Wait();
-                        if (control != DS4Controls.None)
-                            macrodone[DS4ControltoInt(control)] = false;
-                    }
+                    // Phase8-Fix-MacroRepeatUnify（D2）: 旧 HoldMacro の 50ms 待ち（と macrodone の解除）は廃止した（待ち時間は SA の仕様に統一）
                     // Per-macro-unit end handling: call EndMacro for this completed macro run
                     try
                     {
@@ -3218,9 +3213,8 @@ namespace DS4Windows
                 // additional macro runs), perform repeat-in-place. After a macro run completes, check the
                 // per-action BeingTriggered flag; if it remains true (trigger still held), run the macro again.
                 // This avoids accumulating a queue of runs that would execute after physical release.
-                // HoldMacro も「押している間は繰り返す」（旧経路は macrodone を 50ms 後に解除して毎フレーム再発火していた）。
-                // Controls タブのマクロは Phase8-Step7-8c 以降、立ち上がりエッジで 1 回だけ起動する経路に載ったため、HoldMacro だけのキー種別（Macro, HoldMacro）もこのループで繰り返す。
-                if (action != null && (keyType.HasFlag(DS4KeyType.RepeatMacro) || keyType.HasFlag(DS4KeyType.HoldMacro)) && actionDoneState != null)
+                // Phase8-Fix-MacroRepeatUnify（D1）: 「押している間繰り返す」は RepeatMacro に統合した（SA と Controls タブで共通。旧 HoldMacro は読込時に RepeatMacro になる）。
+                if (action != null && keyType.HasFlag(DS4KeyType.RepeatMacro) && actionDoneState != null)
                 {
                     bool keepRunning = true;
                     while (keepRunning)
@@ -3277,12 +3271,6 @@ namespace DS4Windows
                             DS4LightBar.forcelight[device] = false;
                         }
 
-                        if (keyType.HasFlag(DS4KeyType.HoldMacro))
-                        {
-                            Task.Delay(50).Wait();
-                            if (control != DS4Controls.None)
-                                macrodone[DS4ControltoInt(control)] = false;
-                        }
                         // Per-macro-unit end handling for this iteration
                         try
                         {

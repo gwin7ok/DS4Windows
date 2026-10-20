@@ -63,8 +63,9 @@ namespace DS4Windows.Services
                         keyType += DS4KeyType.Unbound;
                     }
 
-                    if (dcs.keyType.HasFlag(DS4KeyType.HoldMacro))
-                        keyType += DS4KeyType.HoldMacro;
+                    // Phase8-Fix-MacroRepeatUnify（D1・D3）: 「押している間繰り返す」は RepeatMacro に統合した（SA と同じ値）。旧値 HoldMacro は書かない（読込のみ受け付ける）
+                    if (dcs.keyType.HasFlag(DS4KeyType.RepeatMacro))
+                        keyType += DS4KeyType.RepeatMacro;
                     else if (dcs.keyType.HasFlag(DS4KeyType.Macro))
                         keyType += DS4KeyType.Macro;
 

@@ -36,6 +36,9 @@ namespace DS4Windows.Services
     /// </summary>
     internal sealed class ProfileButtonControlLoadSection : IProfileLoadSection
     {
+        // 旧版（Phase8-Fix-MacroRepeatUnify 以前）が KeyType に書いた「押している間繰り返す」の名前。読込のみ受け付ける（enum の HoldMacro は削除した）
+        private const string LegacyHoldMacroName = "HoldMacro";
+
         public void Load(ProfileLoadContext context)
         {
             BackingStore store = context.Store;
@@ -171,8 +174,10 @@ namespace DS4Windows.Services
                             keyType |= DS4KeyType.Toggle;
                         if (item.InnerText.Contains(DS4KeyType.Macro.ToString()))
                             keyType |= DS4KeyType.Macro;
-                        if (item.InnerText.Contains(DS4KeyType.HoldMacro.ToString()))
-                            keyType |= DS4KeyType.HoldMacro;
+                        // Phase8-Fix-MacroRepeatUnify（D1・D3）: 「押している間繰り返す」は RepeatMacro に統合した。旧版が書いた HoldMacro も、ここでは RepeatMacro として読む
+                        // （保存時に RepeatMacro へ置き換わる）。"RepeatMacro"／"HoldMacro" は "Macro" を含むため、上の Macro も同時に立つ（従来と同じ）
+                        if (item.InnerText.Contains(DS4KeyType.RepeatMacro.ToString()) || item.InnerText.Contains(LegacyHoldMacroName))
+                            keyType |= DS4KeyType.RepeatMacro;
                         if (item.InnerText.Contains(DS4KeyType.Unbound.ToString()))
                             keyType |= DS4KeyType.Unbound;
 

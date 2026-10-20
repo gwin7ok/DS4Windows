@@ -92,9 +92,10 @@ namespace DS4WindowsTests
         [Fact]
         public void RepeatWhileHeld_FlagsAreReported()
         {
-            // 編集画面が保存する「押している間繰り返す」（RepeatMacro と HoldMacro の両方）の挙動を記録する
+            // 「押している間繰り返す」（Phase8-Fix-MacroRepeatUnify で RepeatMacro だけに統合。旧: HoldMacro と RepeatMacro の両方）の挙動を記録する。
+            // プロファイルを読み直した後と同じ keyType（RepeatMacro のみ）で、押している間繰り返し、離すと止まることを確認する
             using var t = new ControlsKeyTestScope();
-            t.MapMacro(DS4Controls.Cross, StepsWithWait, DS4KeyType.HoldMacro | DS4KeyType.RepeatMacro);
+            t.MapMacro(DS4Controls.Cross, StepsWithWait, DS4KeyType.RepeatMacro);
             t.Publish();
 
             RunFor(t, Cross(false), 150);

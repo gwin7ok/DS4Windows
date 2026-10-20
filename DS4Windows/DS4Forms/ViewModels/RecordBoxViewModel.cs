@@ -147,7 +147,7 @@ namespace DS4WinWPF.DS4Forms.ViewModels
 
             this.deviceNum = deviceNum;
             settings = controlSettings;
-            if (settings.keyType.HasFlag(DS4KeyType.HoldMacro))
+            if (settings.keyType.HasFlag(DS4KeyType.RepeatMacro))
             {
                 macroModeIndex = 1;
             }
@@ -219,10 +219,7 @@ namespace DS4WinWPF.DS4Forms.ViewModels
             settings.keyType = DS4KeyType.Macro;
             if (macroModeIndex == 1)
             {
-                // When user selects "Repeat while held" in the macro editor,
-                // preserve both HoldMacro and RepeatMacro flags so the
-                // SpecialAction editor's Repeat checkbox stays in sync.
-                settings.keyType |= DS4KeyType.HoldMacro;
+                // Phase8-Fix-MacroRepeatUnify（D1）: 「Repeat while held」は RepeatMacro だけで表す（旧: HoldMacro と RepeatMacro の両方）
                 settings.keyType |= DS4KeyType.RepeatMacro;
             }
             if (useScanCode)

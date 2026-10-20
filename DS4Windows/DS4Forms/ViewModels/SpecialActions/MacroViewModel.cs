@@ -72,8 +72,7 @@ namespace DS4WinWPF.DS4Forms.ViewModels.SpecialActions
             runTriggerRelease = action.pressRelease;
             syncRun = action.synchronized;
             keepKeyState = action.keepKeyState;
-            // Treat either RepeatMacro or HoldMacro as "repeat while held" for compatibility
-            repeatHeld = action.keyType.HasFlag(DS4KeyType.RepeatMacro) || action.keyType.HasFlag(DS4KeyType.HoldMacro);
+            repeatHeld = action.keyType.HasFlag(DS4KeyType.RepeatMacro);
         }
 
         public DS4ControlSettings PrepareSettings()
@@ -84,10 +83,8 @@ namespace DS4WinWPF.DS4Forms.ViewModels.SpecialActions
             settings.keyType = DS4KeyType.Macro;
             if (repeatHeld)
             {
-                // Keep both RepeatMacro and HoldMacro flags in settings so
-                // macro editor (RecordBox) and special-action editor stay in sync.
+                // Phase8-Fix-MacroRepeatUnify（D1）: 「押している間繰り返す」は RepeatMacro だけで表す
                 settings.keyType |= DS4KeyType.RepeatMacro;
-                settings.keyType |= DS4KeyType.HoldMacro;
             }
             if (useScanCode)
             {

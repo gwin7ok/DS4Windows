@@ -63,7 +63,7 @@ namespace DS4WindowsTests
         public void TheBuilder_MakesAMacroBinding_OnTheSpecialActionPath_WithTheSaJudgement()
         {
             using var t = new ControlsKeyTestScope();
-            t.MapMacro(DS4Controls.Cross, Steps, DS4KeyType.HoldMacro | DS4KeyType.RepeatMacro | DS4KeyType.ScanCode);
+            t.MapMacro(DS4Controls.Cross, Steps, DS4KeyType.RepeatMacro | DS4KeyType.ScanCode);
             t.MapKey(DS4Controls.Circle, 66);
 
             IReadOnlyList<IActionBinding> bindings = TestHost.GetService<IControlBindingBuilder>().Build(Device);
@@ -81,7 +81,7 @@ namespace DS4WindowsTests
             Assert.Equal($"Synthetic_Macro_{Device}_{(int)DS4Controls.Cross}", macro.Source.name);
             Assert.Equal("65/65", macro.Source.details);
             Assert.Equal(new[] { 65, 65 }, macro.Source.macro.ToArray());
-            Assert.Equal(DS4KeyType.Macro | DS4KeyType.HoldMacro | DS4KeyType.RepeatMacro | DS4KeyType.ScanCode, macro.Source.keyType);   // dcs の keyType をそのままコピー（Macro の印を含む）
+            Assert.Equal(DS4KeyType.Macro | DS4KeyType.RepeatMacro | DS4KeyType.ScanCode, macro.Source.keyType);   // dcs の keyType をそのままコピー（Macro の印を含む）
             Assert.False(macro.Source.pressRelease);
             Assert.False(macro.Source.synchronized);
             Assert.Equal(macro.Source.name, macro.Source.controls);       // 繰り返しのマクロの同期キューは、ボタンごとに別

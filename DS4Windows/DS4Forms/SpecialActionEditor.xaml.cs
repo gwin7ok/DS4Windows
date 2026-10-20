@@ -448,7 +448,7 @@ namespace DS4WinWPF.DS4Forms
                 // Sync repeat and scan-code flags back to the MacroViewModel so the
                 // SpecialAction editor's checkboxes reflect changes made in RecordBox.
                 macroActVM.UseScanCode = settings.keyType.HasFlag(DS4KeyType.ScanCode);
-                macroActVM.RepeatHeld = settings.keyType.HasFlag(DS4KeyType.RepeatMacro) || settings.keyType.HasFlag(DS4KeyType.HoldMacro);
+                macroActVM.RepeatHeld = settings.keyType.HasFlag(DS4KeyType.RepeatMacro);
             };
 
             recordWin.ShowDialog();

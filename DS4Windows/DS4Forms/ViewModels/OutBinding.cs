@@ -431,13 +431,11 @@ namespace DS4WinWPF.DS4Forms.ViewModels
             {
                 settings.action.actionMacro = macro;
                 settings.actionType = DS4ControlSettings.ActionType.Macro;
-                if (macroType.HasFlag(DS4KeyType.HoldMacro))
+                // Phase8-Fix-MacroRepeatUnify（D1）: 「押している間繰り返す」は RepeatMacro に統合した（Macro の印は常に立てる）
+                settings.keyType |= DS4KeyType.Macro;
+                if (macroType.HasFlag(DS4KeyType.RepeatMacro))
                 {
-                    settings.keyType |= DS4KeyType.HoldMacro;
-                }
-                else
-                {
-                    settings.keyType |= DS4KeyType.Macro;
+                    settings.keyType |= DS4KeyType.RepeatMacro;
                 }
 
                 if (hasScanCode)
