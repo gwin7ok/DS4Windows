@@ -149,6 +149,14 @@ W1 の調査（§5.1）に **「ジャイロの出力モード `DirectionalSwipe
 - 旧関数を reflection で呼んで比べているテスト: `TriggerInputTests`、`Phase8Step78bW2ControlsKeyTests`、`Phase8Step78fW2ControlsPadTests`。W1 で、旧関数の値の表（乱数の入力と期待値）をテストデータに固定してから、置き換える。
 - ジャイロスワイプ関連のテストは、廃止（8-0）で削除・更新する（W1 で一覧にする）。
 
+### 5.9 W1 の実装（2026-10-20。ゴールデンを生成済み［Controls・Passthru の 2 ファイル。各 60 行 × 52 項目、例外 0 件、2 つの表は異なる］。コミット後の再実行で、照合が通ることを確認する）
+
+- `LegacyFunctionTable`（テスト用。旧関数 `getBoolSpecialActionMapping`／`GetBoolActionMapping`／`GetBoolMapping`／`GetByteMapping`／`GetXYAxisMapping` を reflection で呼び、決定的な入力［種 80801、60 回］で、全コントロールの戻り値を表にする。1 項目 ＝ 判定(SA)・判定(Controls)・`GetBoolMapping`・バイト値・軸(alt=false)・軸(alt=true)。例外は x）と、`Phase8Step8W1LegacyFunctionGoldenTests`。
+- (1) `LegacyFunctionGolden`（Controls／Passthru）: 旧関数の表を、`Golden/Phase7Step10c/step8-legacy-functions-{mode}.txt` と照合。**初回はファイルを生成して失敗する。内容を確認してコミットし、再実行する**（この Step の W1 は、旧関数がまだある今のうちに生成すること）。
+- (2) `NewFunctionsMatchTheGolden`: 新経路（`TriggerInput`）の表が、ゴールデンの該当の列と一致する（`GetBoolMapping` の列は新経路にないため除く。Q3＝A で SA の判定に揃えた）。旧関数を削除した後は、これが「旧と同じ値」の根拠になる。
+- 8a・8b で、旧関数を reflection で呼ぶ既存のテスト（`TriggerInputTests`、`Phase8Step78bW2ControlsKeyTests`、`Phase8Step78fW2ControlsPadTests` の比べ）は、旧関数の削除と同時に削除する（このゴールデンが置き換える）。
+- 新経路に入っていない割り当ての特性化（§2.3）は、Q2＝C により、ジャイロスワイプを 8-0 で廃止したため、残りは「値が読めない割り当て」のみ。これは 8a の W で、「束縛を作らない＝何もしない」を固定するテストを足す。
+
 ## 6. 質問（承認待ち）
 
 - **Q1（実機確認との順序）**: A（推奨）: 削除を 8a〜8d の小さな PR に分けて先に行い、実機確認（Step9。U-35〜U-47 をまとめて）を最後に行う。不具合が見つかったら、PR 単位で git で戻す。Step7 の PR は、すべてビルド・テスト成功済みで、旧・新の比べで同じ出力を確かめている。B: 削除の前に、実機確認の主要項目（U-27〜U-47 のうち、押す・離す・切断・プロファイル切替を含む短い版）を行い、合格してから削除する。ロールバックの 1 行が使えるうちに実機で確かめられるため安全だが、実機確認を 2 回行うことになる。
