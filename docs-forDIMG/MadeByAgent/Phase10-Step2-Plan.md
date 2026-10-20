@@ -97,6 +97,7 @@ SA の編集画面（`SpecialActionEditor`）を土台にして、**Controls の
    - テスト: 項目の並びと名前が、従来の XAML と一致すること。読み込み・選択・解除の動作。
    - 実機（画面）の確認: SA の新規作成・編集で、トリガーの選択・保存・再読み込みが従来どおり。既存の SA のトリガーが、すべて正しく復元される。
 4. **W3: Controls のモードの画面**（Name 欄の読み取り専用、トリガーの 1 つ固定、種別の一覧の無効化、Save／Cancel）。呼び出しは接続しない。
+   - **W3 の実装（2026-10-21、ビルド・テスト・実機確認待ち）**: 新規（`DS4Forms/ViewModels/`）: `ControlTriggerSource`（対象のボタン 1 つに固定）、`ControlEditTarget`（名前＝ボタンの表示名で固定、検査なし）、`ControlActionEditorViewModel`（Controls のモードの ViewModel）。変更: `ActionEditorViewModel`（`Mode`、`IsTypeEnabled(index)`、`ActionNameReadOnly`）、`SpecialActionEditor.xaml`（名前の欄に `IsReadOnly` の結び）、`SpecialActionEditor.xaml.cs`（Controls のモードの公開コンストラクターを追加［SA のモードの公開コンストラクターは不変］、種別の一覧の項目を、保存できる種別だけ有効にする、`ControlSaved` と、入力が無効なときの扱い）、`IEditorWindowFactory`／`EditorWindowFactory`（`CreateControlActionEditor`。呼び出し元はまだなく、TODO コメント）。保存の中身（`DS4ControlSettings` への書き込み）は W4。テスト: `Phase10Step2W3ControlTriggerSourceTests`、`Phase10Step2W3ControlEditTargetTests`、`Phase10Step2W3ControlActionEditorViewModelTests`、`Phase10Step2W3ControlModeGuardTests`（呼び出し元がないこと）。**Controls のモードの画面は、Step2 では、ユーザーの操作から開けない**（Q2）。実機（画面）で確認する対象は、SA のモードの回帰だけ（名前の欄が編集できる、種別の一覧が全部選べる）。
    - テスト: Controls のモードで、Name が対象のボタン名で編集不可、トリガーが 1 つで変更不可、保存できない種別が無効、など。
 5. **W4: Controls のモードの変換と、編集用のコピー**（`ControlSettingsEditTarget`）
    - テスト: `DS4ControlSettings` の往復（Default／Key／Button／Macro、Toggle／Scan Code／Repeat、`extras` の保持）。Cancel で元が変わらないこと。Button の Toggle が保たれること（C-5 の土台）。

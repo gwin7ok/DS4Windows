@@ -34,7 +34,9 @@ namespace DS4WinWPF.DS4Forms
     public partial class SpecialActionEditor : UserControl
     {
 
-        private SpecialActEditorViewModel specialActVM;
+        // Phase10-Step2 W3: SA のモードは SpecialActEditorViewModel、Controls のモードは ControlActionEditorViewModel（共通の土台は ActionEditorViewModel）
+        private ActionEditorViewModel specialActVM;
+        private readonly bool controlMode;
         private MacroViewModel macroActVM;
         private LaunchProgramViewModel launchProgVM;
         private LoadProfileViewModel loadProfileVM;
@@ -47,6 +49,15 @@ namespace DS4WinWPF.DS4Forms
         private SpecialActionViewModel calibrateGyroVM;
 
         public event EventHandler Cancel;
+
+        /// <summary>Controls のモードか。</summary>
+        public bool IsControlMode => controlMode;
+
+        /// <summary>Controls のモードで「保存」が押され、入力が有効なときに発生する（W4 で、保存の中身を足す）。</summary>
+        public event EventHandler ControlSaved;
+
+        /// <summary>Controls のモードで、保存が押されたときに選ばれていた種別。</summary>
+        public DS4Windows.SpecialAction.ActionTypeId ControlSaveTypeId { get; private set; }
         public delegate void SaveHandler(object sender, string actionName);
         public event SaveHandler Saved;
 
@@ -71,6 +82,7 @@ namespace DS4WinWPF.DS4Forms
         // Phase7-Step10e W2: スロット数の上限は、静的な ControlService.CURRENT_DS4_CONTROLLER_LIMIT ではなく、注入された環境サービスから読む
         private readonly DS4Windows.DI.IEnvironmentService environmentService;
 
+        /// <summary>SA のモード（従来どおり。SA の新規作成・編集）。</summary>
         public SpecialActionEditor(int deviceNum, ProfileList profileList, int targetDevice,
             DS4Windows.DI.IEditorWindowFactory editorWindowFactory,
             DS4Windows.DI.IViewModelFactory viewModelFactory,
@@ -79,6 +91,37 @@ namespace DS4WinWPF.DS4Forms
             DS4Windows.DI.IOutputSlotService outputSlotService,
             DS4Windows.DI.IEnvironmentService environmentService,
             DS4Windows.SpecialAction specialAction = null)
+            : this(deviceNum, (DS4Windows.DS4Controls?)null, profileList, targetDevice, editorWindowFactory, viewModelFactory,
+                specialActionRepository, profileSettingsService, outputSlotService, environmentService, specialAction)
+        {
+        }
+
+        /// <summary>
+        /// Controls のモード（Phase10-Step2 W3）: Controls のボタン 1 つの割り当てを編集する。名前は、ボタンの表示名で固定（編集不可）、
+        /// トリガーは、そのボタンだけ（変更不可）、種別の一覧は、Controls で現在保存できる種別だけ有効。
+        /// TODO(Phase10-Step4): <c>ProfileEditor</c> の Controls タブからの呼び出しは、Step4 まで接続しない（Phase10-Step2-Plan.md §7 Q2）。
+        /// 保存（<see cref="ControlSaved"/>）の中身（<c>DS4ControlSettings</c> への書き込み、編集用のコピー）は W4 で足す。
+        /// </summary>
+        public SpecialActionEditor(int deviceNum, DS4Windows.DS4Controls control, ProfileList profileList, int targetDevice,
+            DS4Windows.DI.IEditorWindowFactory editorWindowFactory,
+            DS4Windows.DI.IViewModelFactory viewModelFactory,
+            DS4Windows.DI.ISpecialActionRepository specialActionRepository,
+            DS4Windows.DI.IProfileSettingsService profileSettingsService,
+            DS4Windows.DI.IOutputSlotService outputSlotService,
+            DS4Windows.DI.IEnvironmentService environmentService)
+            : this(deviceNum, (DS4Windows.DS4Controls?)control, profileList, targetDevice, editorWindowFactory, viewModelFactory,
+                specialActionRepository, profileSettingsService, outputSlotService, environmentService, null)
+        {
+        }
+
+        private SpecialActionEditor(int deviceNum, DS4Windows.DS4Controls? control, ProfileList profileList, int targetDevice,
+            DS4Windows.DI.IEditorWindowFactory editorWindowFactory,
+            DS4Windows.DI.IViewModelFactory viewModelFactory,
+            DS4Windows.DI.ISpecialActionRepository specialActionRepository,
+            DS4Windows.DI.IProfileSettingsService profileSettingsService,
+            DS4Windows.DI.IOutputSlotService outputSlotService,
+            DS4Windows.DI.IEnvironmentService environmentService,
+            DS4Windows.SpecialAction specialAction)
         {
             this.environmentService = environmentService ?? throw new ArgumentNullException(nameof(environmentService));
             this.editorWindowFactory = editorWindowFactory ?? throw new ArgumentNullException(nameof(editorWindowFactory));
@@ -89,7 +132,10 @@ namespace DS4WinWPF.DS4Forms
             InitializeComponent();
             this.targetDevice = targetDevice;
 
-            specialActVM = viewModelFactory.CreateSpecialActEditorViewModel(deviceNum, specialAction);
+            controlMode = control.HasValue;
+            specialActVM = controlMode
+                ? new ControlActionEditorViewModel(deviceNum, control.Value)
+                : viewModelFactory.CreateSpecialActEditorViewModel(deviceNum, specialAction);
             macroActVM = new MacroViewModel(specialActionRepository);
             launchProgVM = new LaunchProgramViewModel(specialActionRepository);
             loadProfileVM = new LoadProfileViewModel(profileList, specialActionRepository);
@@ -126,6 +172,15 @@ namespace DS4WinWPF.DS4Forms
             multiActTab.Visibility = Visibility.Collapsed;
             sixaxisWheelCalibrateTab.Visibility = Visibility.Collapsed;
             gyroCalibrateTab.Visibility = Visibility.Collapsed;
+
+            // 種別の一覧には、全種別を出し、このモードで現在保存できない種別は、選べなくする（Controls は、Step3 まで Key・Button・Macro だけ）
+            for (int i = 0; i < actionTypeCombo.Items.Count; i++)
+            {
+                if (actionTypeCombo.Items[i] is ComboBoxItem typeItem && i < specialActVM.TypeCatalog.All.Count)
+                {
+                    typeItem.IsEnabled = specialActVM.IsTypeEnabled(i);
+                }
+            }
 
             if (specialAction != null)
             {
@@ -196,6 +251,17 @@ namespace DS4WinWPF.DS4Forms
             triggersListView.Visibility = Visibility.Visible;
         }
 
+        // Controls のモードの保存。入力が無効なときは、結びつきを外さず、エラーを表示したまま戻る（SA のモードと同じ）。
+        // TODO(Phase10-Step4): 有効なときの保存（DS4ControlSettings への書き込み。編集用のコピーの反映）は W4 で、ControlSaved の受け手（呼び出し側）に足す
+        private void SaveControlMode()
+        {
+            DS4Windows.SpecialAction tempAct = new DS4Windows.SpecialAction("null", "null", "null", "null");
+            if (!specialActVM.IsValid(tempAct)) return;
+
+            ControlSaveTypeId = specialActVM.TypeAssoc[specialActVM.ActionTypeIndex];
+            ControlSaved?.Invoke(this, EventArgs.Empty);
+        }
+
         private void CancelBtn_Click(object sender, RoutedEventArgs e)
         {
             UnregisterDataContext();
@@ -205,6 +271,12 @@ namespace DS4WinWPF.DS4Forms
 
         private void SaveBtn_Click(object sender, RoutedEventArgs e)
         {
+            if (controlMode)
+            {
+                SaveControlMode();
+                return;
+            }
+
             DS4Windows.SpecialAction.ActionTypeId typeId = specialActVM.TypeAssoc[specialActVM.ActionTypeIndex];
             DS4Windows.SpecialAction tempAct = new DS4Windows.SpecialAction("null", "null", "null", "null");
             bool valid = specialActVM.IsValid(tempAct);

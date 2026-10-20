@@ -19,18 +19,20 @@ namespace DS4WinWPF.DS4Forms.ViewModels
         private readonly IActionEditTarget editTarget;
         private readonly ActionTypeCatalog typeCatalog;
         private readonly TriggerCatalog triggerCatalog;
+        private readonly ActionEditorModes mode;
         private readonly TriggerOptionViewModel[] triggerOptions;
         private int actionTypeIndex = 0;
         private bool existingName;
 
         public ActionEditorViewModel(int deviceNum, IActionTriggerSource triggerSource, IActionEditTarget editTarget,
-            ActionTypeCatalog typeCatalog, TriggerCatalog triggerCatalog)
+            ActionTypeCatalog typeCatalog, TriggerCatalog triggerCatalog, ActionEditorModes mode)
         {
             this.deviceNum = deviceNum;
             this.triggerSource = triggerSource ?? throw new System.ArgumentNullException(nameof(triggerSource));
             this.editTarget = editTarget ?? throw new System.ArgumentNullException(nameof(editTarget));
             this.typeCatalog = typeCatalog ?? throw new System.ArgumentNullException(nameof(typeCatalog));
             this.triggerCatalog = triggerCatalog ?? throw new System.ArgumentNullException(nameof(triggerCatalog));
+            this.mode = mode;
 
             // Phase10-Step2 W2: トリガーの一覧は、データ駆動（旧: 名前つきのチェックボックス 49 個）。チェックの状態は、供給元が持つ
             triggerOptions = triggerCatalog.Items.Select(item => new TriggerOptionViewModel(item, triggerSource)).ToArray();
@@ -51,6 +53,21 @@ namespace DS4WinWPF.DS4Forms.ViewModels
 
         /// <summary>名前を編集できるか（Controls のモードは偽）。</summary>
         public bool ActionNameEditable => editTarget.NameEditable;
+
+        /// <summary>名前の欄を、読み取り専用にするか（<see cref="ActionNameEditable"/> の逆。XAML の <c>IsReadOnly</c> に結ぶ）。</summary>
+        public bool ActionNameReadOnly => !editTarget.NameEditable;
+
+        /// <summary>この画面のモード（SA のトリガーの編集か、Controls のボタン 1 つの割り当ての編集か）。</summary>
+        public ActionEditorModes Mode => mode;
+
+        /// <summary>
+        /// 種別の一覧の、添字の項目を、選べるか。0（「種別を選んでください」）は常に選べる。ほかは、このモードで<b>現在保存できる</b>種別だけ
+        /// （Controls は、保存形式が持つ Key・Button・Macro だけ。Step3 の保存形式の拡張で増やす）。一覧には、全種別を出す（承認済みの方針）。
+        /// </summary>
+        public bool IsTypeEnabled(int index)
+        {
+            return index == 0 || typeCatalog.At(index).IsSavableIn(mode);
+        }
 
         public IActionTriggerSource TriggerSource => triggerSource;
         public IActionEditTarget EditTarget => editTarget;
