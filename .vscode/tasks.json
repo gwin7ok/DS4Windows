@@ -104,15 +104,11 @@
             "label": "Build Debug",
             "dependsOn": "Remove bin",
             "type": "shell",
-            "command": "dotnet",
+            "command": "pwsh",
             "args": [
-                "build",
-                "./DS4Windows/DS4WinWPF.csproj",
-                "-c",
-                "Debug",
-                "/p:platform=x64",
-                "-o",
-                "./DS4Windows/bin/x64/Debug"
+                "-NoProfile",
+                "-File",
+                "./scripts/Build-Debug.ps1"
             ],
             "group": {
                 "kind": "build",

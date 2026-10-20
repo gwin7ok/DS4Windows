@@ -1,15 +1,23 @@
 using System.ComponentModel;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Controls.Primitives;
+using System.Windows.Data;
 using DS4WinWPF.DS4Forms.ViewModels;
+using DS4WinWPF.Translations;
 
 namespace DS4WinWPF.DS4Forms
 {
     /// <summary>
     /// Phase10-Step1 W2（Phase10-Step1-Plan.md §3.1）: マクロの再生オプション（Execute Mode、Scan Code）の共通の画面部品。
     /// <see cref="MacroPlaybackOptions"/> を DataContext に受ける。Controls の <c>RecordBox</c>（W2）と、SA の Macro タブ（W3）が使う。
+    /// <para>
+    /// XAML を持たない（コードだけで組み立てる）。XAML の部品を、同じプロジェクトの別の XAML（<c>RecordBox.xaml</c>、<c>SpecialActionEditor.xaml</c>）から
+    /// 参照すると、クリーンビルドで WPF の一時プロジェクト（<c>*_wpftmp.csproj</c>）が、この部品の生成コードや BAML を見つけられず失敗した
+    /// （「InitializeComponent が存在しない」「BG1002: .baml が見つかりません」。2026-10-21、Build-Debug.ps1 の再試行でも直らなかった）。コードだけの部品にして避ける。
+    /// </para>
     /// </summary>
-    public partial class MacroPlaybackOptionsPanel : UserControl
+    public class MacroPlaybackOptionsPanel : UserControl
     {
         /// <summary>
         /// Execute Mode のドロップダウンを、呼び出し側が一時的に無効にするための指定（<c>RecordBox</c> の記録中。従来の
@@ -31,6 +39,8 @@ namespace DS4WinWPF.DS4Forms
             new PropertyMetadata(HorizontalAlignment.Center, (d, e) => ((MacroPlaybackOptionsPanel)d).scanCodeCk.HorizontalAlignment =
                 (HorizontalAlignment)e.NewValue));
 
+        private readonly ComboBox playModeCombo;
+        private readonly CheckBox scanCodeCk;
         private MacroPlaybackOptions options;
 
         public HorizontalAlignment ScanCodeAlignment
@@ -53,7 +63,26 @@ namespace DS4WinWPF.DS4Forms
 
         public MacroPlaybackOptionsPanel()
         {
-            InitializeComponent();
+            playModeCombo = new ComboBox { Margin = new Thickness(0, 4, 0, 0) };
+            playModeCombo.Items.Add(new ComboBoxItem { Content = Strings.RecordBox_PlayOnce });
+            playModeCombo.Items.Add(new ComboBoxItem { Content = Strings.RecordBox_RepeatWhileHeld });
+            playModeCombo.SetBinding(Selector.SelectedIndexProperty,
+                new Binding(nameof(MacroPlaybackOptions.PlayModeIndex)) { FallbackValue = 0 });
+
+            scanCodeCk = new CheckBox
+            {
+                Content = Strings.ScanCode,
+                Margin = new Thickness(0, 10, 0, 0),
+                HorizontalAlignment = HorizontalAlignment.Center,
+            };
+            scanCodeCk.SetBinding(ToggleButton.IsCheckedProperty, new Binding(nameof(MacroPlaybackOptions.UseScanCode)));
+
+            var panel = new StackPanel();
+            panel.Children.Add(new TextBlock { Text = "Execute Mode:" });
+            panel.Children.Add(playModeCombo);
+            panel.Children.Add(scanCodeCk);
+            Content = panel;
+
             DataContextChanged += OnDataContextChanged;
         }
 

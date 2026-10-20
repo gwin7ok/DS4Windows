@@ -64,7 +64,7 @@ Press Key の値の流れ: `PrepareSettings` → `BindingWindow`（`OutBinding.W
 
 1. **W1: `MacroPlaybackOptions` と単体テスト**（画面は変えない。**実装済み、ビルド・テスト待ち**。ファイル: `DS4Forms/ViewModels/MacroPlaybackOptions.cs`、`DS4WindowsTests/Phase10Step1W1MacroPlaybackOptionsTests.cs`）
    - テスト: `FromKeyType`／`ApplyTo` の往復（`RepeatMacro`、`ScanCode`。他のビット［`Macro`、`Toggle`、`Unbound` など］を保つ）、`PlayModeIndex`↔`RepeatWhileHeld`、`Repeatable=false` でも読み込んだ `RepeatWhileHeld` を保つ、`PropertyChanged` の通知。
-2. **W2: `MacroPlaybackOptionsPanel` と、Controls（`RecordBox`）への適用**（**完了（ビルド・テスト成功、実機確認済み。2026-10-21）**。新規: `DS4Forms/MacroPlaybackOptionsPanel.xaml(.cs)`、`DS4WindowsTests/Phase10Step1W2RecordBoxPlaybackOptionsTests.cs`。変更: `RecordBox.xaml(.cs)`、`RecordBoxViewModel.cs`。パネルは、`AllowModeEdit`［記録中の一時無効］と `ShowScanCode`［従来の showscan］を持つ）
+2. **W2: `MacroPlaybackOptionsPanel` と、Controls（`RecordBox`）への適用**（**完了（ビルド・テスト成功、実機確認済み。2026-10-21）**。新規: `DS4Forms/MacroPlaybackOptionsPanel.cs`（XAML なし。コードだけ。§補足）、`DS4WindowsTests/Phase10Step1W2RecordBoxPlaybackOptionsTests.cs`。変更: `RecordBox.xaml(.cs)`、`RecordBoxViewModel.cs`。パネルは、`AllowModeEdit`［記録中の一時無効］と `ShowScanCode`［従来の showscan］を持つ）
    - `RecordBoxViewModel` の `MacroModeIndex`／`UseScanCode` を `MacroPlaybackOptions` に置き換える。
    - テスト: 読み込みで `keyType` の `RepeatMacro`／`ScanCode` を復元、`ExportMacro` が `RepeatMacro` だけを立てる、既存の `RecordBoxViewModelTargetDeviceTests`・`Phase8FixMacroRepeatUnifyPersistenceTests` が成功。
    - 実機（画面）の確認: Controls のマクロで、Execute Mode／Scan Code の設定・保存・再読み込みが従来どおり。
@@ -94,3 +94,8 @@ Press Key の値の流れ: `PrepareSettings` → `BindingWindow`（`OutBinding.W
 - Press Key は、保存の経路（`PrepareSettings`→ダイアログ→`ReadSettings`→保存）が長い。W4 の往復テストで、Scan Code・Toggle・既存のキーの値が、保たれることを固定する。
 - 画面（XAML）の変更は単体テストで検査できない。各 Wave の後の実機（画面）の確認が必須。
 - 4 言語の表示: 新しい文字列は、「Execute Mode」のラベル 1 つだけ（既存の `Switch Mode:` と同様に、直書きまたは新しいキー）。翻訳が要る場合は、既定の英語で出し、翻訳は後続にする。
+
+## 8. 補足: 画面部品を XAML なしにした理由（2026-10-21）
+
+`MacroPlaybackOptionsPanel` は、当初 XAML（`.xaml`＋`.xaml.cs`）で作ったが、**クリーンビルド**（`scripts\Remove-bin.bat` の直後）で、WPF の一時プロジェクト（`*_wpftmp.csproj`）が、この部品の生成コードや BAML を見つけられず失敗した（`InitializeComponent` が存在しない、`BG1002: ...MacroPlaybackOptionsPanel.baml が見つかりません`）。増分ビルドでは、成功していた。`scripts\Build-Debug.ps1` の自動の再試行でも直らなかったため、**XAML を持たない（コードだけで組み立てる）部品に作り直した**（見た目・動作・公開のプロパティ `AllowModeEdit`／`ShowScanCode`／`ScanCodeAlignment` は同じ）。原因（WPF のどの段階の問題か）は、特定していない。今後、同じプロジェクト内の別の XAML から参照される XAML の部品を新設するときは、クリーンビルドでの確認が要る。
+
