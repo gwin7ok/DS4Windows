@@ -135,7 +135,7 @@ W1 の調査（§5.1）に **「ジャイロの出力モード `DirectionalSwipe
 - **テスト**: 新規 `Phase8Step8W2RemovedGyroSwipeWiringTests`（設定・割り当て・モードの保持と書き戻し、削除、`ResetProfile`、メンバーがないこと、ソースのガード）。更新: `Phase8Step4bW2LoadFoundationTests`（節の名前）、`Phase8Step78bW2ControlsKeyTests`（スワイプの行を削除）。
 - **残す文言**: `Strings` の `DirectionalSwipe`（翻訳 4 言語）は未使用になるが、W3 の文言と一緒に整理する。
 
-### 5.8 8-0 W3 の実装（2026-10-20。ビルド・テストの結果待ち）
+### 5.8 8-0 W3 の実装（2026-10-20。ビルド・テスト成功）
 
 - 新設: `MessageBoxRemovedGyroSwipePrompt`（`DS4Forms/`。`IRemovedGyroSwipePrompt` の画面の実装。「はい」＝設定を削除、「いいえ」［またはダイアログを閉じる］＝残す。選択は記憶しない。Shift の `MessageBoxRemovedShiftPrompt` と同じ作り）。
 - 配線: `ProfileEditor.Reload`（`profileRepository.LoadProfile` の直後、Shift の警告に続けて `RemovedGyroSwipeNotice.Apply(…)`。プロファイルがあるときだけ）。Shift とジャイロスワイプの両方が残っているプロファイルでは、警告が 2 回続けて出る。
