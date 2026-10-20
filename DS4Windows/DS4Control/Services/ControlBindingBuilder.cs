@@ -13,13 +13,11 @@ namespace DS4Windows.Services
     /// Key（7.8b）の条件: 通常の割り当てが Key、<c>actionKey</c> が <c>ushort</c> の範囲内（シフトは 7.8d、Lightbar マクロは 7.8e で廃止した）。
     /// Extras（7.8e）は、通常の割り当て（Default／Key／Macro）と直交する部品で、別の束縛にする（<c>Synthetic_Extras_{device}_{control}</c>。通常の割り当ての束縛の前に並べる）。
     /// dcs が Extras を持つとき、Extras の区分が移行済みで、値が読める（9 個以上）ときだけ、dcs 全体を新経路が処理する。そうでなければ、束縛を 1 つも作らず、旧経路が全体を処理する。
-    /// ジャイロスワイプの割り当て（<c>GyroSwipe*</c>）は、前の方向を先に離す旧経路の順序に依存するため、対象にしない（旧経路が処理する）。
     /// </para>
     /// 「何をするか」の解釈（キー番号、Toggle、ScanCode、別名キー）はここで行い、出力（<c>KeyOutputAction</c>）には解釈済みの値を渡す（Q9＝A）。
     /// 識別用の <c>SpecialAction</c>（状態の鍵）は、旧経路の合成と同じ名前（<c>Synthetic_Key_{device}_{control}</c>）で作る。
     /// 旧経路の <c>FindSpecialActionForLogicalKey</c> による Key 特殊アクションとの状態の共有は、再現しない（Q4＝B。承認済みの動作変更）。
     /// </summary>
-    // TODO(Phase8-Step7 7.8f-3。規約 2.4): ジャイロスワイプの割り当ては、入力の作り方を確かめたうえで、この区分に足すかを決める（Phase8-Step7-8f-Plan.md §5.6）。ジャイロスワイプの割り当ては、7.8f-3 で扱う。
     public sealed class ControlBindingBuilder : IControlBindingBuilder
     {
         private readonly BindingMigrationOptions _options;

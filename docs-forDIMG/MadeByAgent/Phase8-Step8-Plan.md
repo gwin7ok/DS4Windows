@@ -122,6 +122,19 @@ Step8 で旧経路を消すと、処理する者がいなくなるもの。**W0 
 - テスト: `Phase8Step8W1RemovedGyroSwipeSpecTests`（既定・書き方の違いは保持しない、一つでも違えば保持、割り当ての項目、読込の始めに捨てる、書き出し［既定の要素は従来と同じ文字列］、グループへ戻す、警告［内容なしは尋ねない、削除、残すは毎回尋ねる、プロンプトなし］）。
 - 実行への影響: なし（どこからも使っていない）。
 
+### 5.7 8-0 W2 の実装（2026-10-20。ビルド・テストの結果待ち）
+
+W1 の調査（§5.1）に **「ジャイロの出力モード `DirectionalSwipe`」** が加わった（`GyroOutMode` の値で、編集画面の「ジャイロの出力モード」の選択肢にもあった。W2 の調査で判明）。廃止の範囲は、割り当て・設定・モード・処理・画面・保存形式の全体。
+
+- **削除（データモデル・実行）**: `DS4Controls` の `GyroSwipeLeft／Right／Up／Down`（列挙の値が 4 つ減り、後ろの値は繰り上がる。添字で引く表［`ds4ControlMapping`、`DS4StateFieldMapping`、`X360ControlTables`、`DS4ControlNames`、`ControlSettingsGroup`］は同じ 4 行を削除して整合。保存されている番号は `ds4ControlMapping` の値［変更なし］と名前だけ）、`GyroOutMode.DirectionalSwipe`、`GyroDirectionalSwipeInfo`（ファイルごと）、`BackingStore.gyroSwipeInfo`、`IProfileSettingsService.GyroSwipeInf`／`GetGyroSwipeInfo`、`Mouse.GyroSwipeData`・`gyroSwipe`・`SixDirectionalSwipe` と出力モードの枝、`Mapping` の `MapCustom` のスワイプの処理（約 75 行）。
+- **保持（Q9＝A）**: `BackingStore.removedGyroSwipeSettings`（スロットごと。`ResetProfile` で空に）、`IProfileSettingsService.GetRemovedGyroSwipeSettings`。`RemovedGyroSwipeSettings` に、ジャイロの出力モードの保持（`CaptureGyroOutputMode`／`GyroOutputModeTextForSave`／`HadDirectionalSwipeMode`／`ForgetDirectionalSwipeMode`）を追加した（W1 のテストも追加）。
+- **読込**: `ProfileGyroSwipeLoadSection` を `ProfileGyroMouseLoadSection` に改名（`GyroSwipeSettings` は保持だけ。同じ節のジャイロの感度・マウスの読込は変えない）。`ProfileGyroControlsLoadSection`（`GyroOutputMode` の値を保持用に取り込む。`DirectionalSwipe` は列挙に解けず、`None` になる）、`ProfileButtonControlLoadSection`（`Button`／`Macro`／`Key`／`Extras`／`KeyType` の各グループで、`GyroSwipe*` の項目を解釈せずに保持して飛ばす）。
+- **保存**: `ProfileMotionSaveSection`（`GyroSwipeSettings` は保持した内容、なければ従来と同じ既定値の要素。`GyroOutputMode` は保持していれば `DirectionalSwipe` のまま）、`ProfileButtonSaveSection`（保持した項目を元のグループへ戻す。保存の順序は、元のグループの末尾になる）。
+- **画面**: `ProfileEditor.xaml`（出力モードの選択肢と、スワイプのタブを削除。残りの選択肢は 0〜3）、`ProfileEditor.xaml.cs`（スワイプ用のメソッド・配線）、`ProfileSettingsViewModel`（スワイプの設定・メニュー。`GyroOutModeIndex` の添字の詰め直し。選び直したら保持した廃止されたモードを破棄）、`MappingListViewModel`、`ControlIndexCheck`。警告のダイアログは W3。
+- **ゴールデン**: `profile-gap.xml`、`profile-varied.xml`、`profile-gap.resaved.xml`、`profile-legacy.resaved.xml` から `GyroSwipe*` の割り当て 8 行を削除し、`<GyroSwipeSettings>` を既定値に。状態のゴールデン 3 つから、スワイプの項目と `gyroSwipeInfo` を削除し、`ds4settings` の添字 48（Capture）を 44 に繰り上げ。`profile-default.xml`、`profile-minimal.rewritten.xml` は変更なし。
+- **テスト**: 新規 `Phase8Step8W2RemovedGyroSwipeWiringTests`（設定・割り当て・モードの保持と書き戻し、削除、`ResetProfile`、メンバーがないこと、ソースのガード）。更新: `Phase8Step4bW2LoadFoundationTests`（節の名前）、`Phase8Step78bW2ControlsKeyTests`（スワイプの行を削除）。
+- **残す文言**: `Strings` の `DirectionalSwipe`（翻訳 4 言語）は未使用になるが、W3 の文言と一緒に整理する。
+
 ### 5.5 テストへの影響
 
 - 旧・新の両経路の Theory は `InlineData(false)` を持つファイルが 15、`migrated` 引数を取るテストが 36 ファイル、`MigratedTypes`／`MigratedControlKinds` を触るテストが 28 ファイル。

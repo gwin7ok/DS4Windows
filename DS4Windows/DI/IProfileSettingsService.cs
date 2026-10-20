@@ -102,7 +102,6 @@ namespace DS4Windows.DI
         // ---- Step10-2-A-4: ジャイロ関連 (m_Config委譲) ----
         GyroMouseStickInfo[] GyroMouseStickInf { get; }
         GyroMouseInfo[] GyroMouseInfo { get; }
-        GyroDirectionalSwipeInfo[] GyroSwipeInf { get; }
         GyroControlsInfo[] GyroControlsInf { get; }
         int[] GyroInvert { get; }
         int[] GyroSensitivity { get; }
@@ -119,7 +118,6 @@ namespace DS4Windows.DI
         bool GetGyroMouseStickTriggerTurns(int deviceIndex);
         int GetGyroMouseStickHorizontalAxis(int deviceIndex);
         GyroMouseStickInfo GetGyroMouseStickInfo(int deviceIndex);
-        GyroDirectionalSwipeInfo GetGyroSwipeInfo(int deviceIndex);
         int GetGyroSensitivity(int deviceIndex);
         int GetGyroSensVerticalScale(int deviceIndex);
         int GetGyroInvert(int deviceIndex);
@@ -236,5 +234,10 @@ namespace DS4Windows.DI
         /// 編集画面が、プロファイルを読み込んだあと、警告（削除か残すか）に使う。
         /// </summary>
         RemovedShiftSettings GetRemovedShiftSettings(int deviceIndex);
+
+        /// <summary>
+        /// Phase8-Step8 8-0: 廃止された「ジャイロスワイプ」機能の設定を保持する入れ物（スロットごと）。編集画面が、プロファイルを読み込んだあと、警告（削除か残すか）に使う。
+        /// </summary>
+        RemovedGyroSwipeSettings GetRemovedGyroSwipeSettings(int deviceIndex);
     }
 }

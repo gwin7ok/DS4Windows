@@ -491,14 +491,6 @@ namespace DS4Windows
             new GyroMouseStickInfo(), new GyroMouseStickInfo(),
             new GyroMouseStickInfo(),
         };
-        public GyroDirectionalSwipeInfo[] gyroSwipeInfo = new GyroDirectionalSwipeInfo[ControllerLimits.TestProfileItemCount]
-        {
-            new GyroDirectionalSwipeInfo(), new GyroDirectionalSwipeInfo(),
-            new GyroDirectionalSwipeInfo(), new GyroDirectionalSwipeInfo(),
-            new GyroDirectionalSwipeInfo(), new GyroDirectionalSwipeInfo(),
-            new GyroDirectionalSwipeInfo(), new GyroDirectionalSwipeInfo(),
-            new GyroDirectionalSwipeInfo(),
-        };
 
         public bool[] gyroMouseStickToggle = new bool[ControllerLimits.TestProfileItemCount] { false, false, false,
             false, false, false, false, false, false };
@@ -559,6 +551,12 @@ namespace DS4Windows
         /// 読込のたびに取り込み直し（<see cref="RemovedShiftSettings.Capture"/>）、保存で、そのまま書き出す（<see cref="RemovedShiftSettings.AppendTo"/>）。
         /// </summary>
         public readonly RemovedShiftSettings[] removedShiftSettings = new RemovedShiftSettings[ControllerLimits.TestProfileItemCount];
+
+        /// <summary>
+        /// Phase8-Step8 8-0（Q2＝C、Q9＝A）: 廃止された「ジャイロスワイプ」機能の設定（<c>&lt;GyroSwipeSettings&gt;</c>、<c>&lt;Control&gt;</c> 内の <c>GyroSwipe*</c> の割り当て、
+        /// ジャイロの出力モード <c>DirectionalSwipe</c>）を、解釈せずに保持する。スロットごと。読込のたびに取り込み直し、保存で、そのまま書き出す。
+        /// </summary>
+        public readonly RemovedGyroSwipeSettings[] removedGyroSwipeSettings = new RemovedGyroSwipeSettings[ControllerLimits.TestProfileItemCount];
 
         public List<DS4ControlSettings>[] ds4settings = new List<DS4ControlSettings>[ControllerLimits.TestProfileItemCount]
             { new List<DS4ControlSettings>(), new List<DS4ControlSettings>(), new List<DS4ControlSettings>(),
@@ -815,6 +813,7 @@ namespace DS4Windows
 
                 ds4controlSettings[i] = new ControlSettingsGroup(ds4settings[i]);
                 removedShiftSettings[i] = new RemovedShiftSettings();
+                removedGyroSwipeSettings[i] = new RemovedGyroSwipeSettings();
 
                 // RumbleSettings の変更を生配列 rumble / rumbleAutostopTime に連動させる
                 int slot = i;
@@ -1291,6 +1290,7 @@ namespace DS4Windows
         public void ResetProfile(int device)
         {
             removedShiftSettings[device].Clear();
+            removedGyroSwipeSettings[device].Clear();
             buttonMouseInfos[device].Reset();
             gyroControlsInf[device].Reset();
 
@@ -1392,7 +1392,6 @@ namespace DS4Windows
             sAMouseStickTriggerCond[device] = true;
 
             gyroMStickInfo[device].Reset();
-            gyroSwipeInfo[device].Reset();
 
             gyroMouseStickToggle[device] = false;
             gyroMouseStickTriggerTurns[device] = DEFAULT_GYRO_MSTICK_TRIGGER_TURNS;

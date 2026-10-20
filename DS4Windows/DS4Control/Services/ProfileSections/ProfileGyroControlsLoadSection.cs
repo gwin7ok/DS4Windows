@@ -113,6 +113,8 @@ namespace DS4Windows.Services
             {
                 Item = m_Xdoc.SelectSingleNode("/" + rootname + "/GyroOutputMode");
                 string tempMode = Item.InnerText;
+                // Phase8-Step8 8-0: 廃止された DirectionalSwipe のモードは、なかったことにして（None）、保持だけする
+                store.removedGyroSwipeSettings[device].CaptureGyroOutputMode(tempMode);
                 //gyroOutMode[device] = GetGyroOutModeType(tempMode);
                 Enum.TryParse(tempMode, out store.gyroOutMode[device]);
             }

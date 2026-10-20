@@ -79,10 +79,6 @@ namespace DS4Windows
             ControlType.SwipeDir, // DS4Controls.SwipeDown
             ControlType.Button, // DS4Controls.L2FullPull
             ControlType.Button, // DS4Controls.R2FullPull
-            ControlType.Button, // DS4Controls.GyroSwipeLeft
-            ControlType.Button, // DS4Controls.GyroSwipeRight
-            ControlType.Button, // DS4Controls.GyroSwipeUp
-            ControlType.Button, // DS4Controls.GyroSwipeDown
             ControlType.Button, // DS4Controls.Capture
             ControlType.Button, // DS4Controls.SideL
             ControlType.Button, // DS4Controls.SideR
@@ -171,10 +167,6 @@ namespace DS4Windows
                 swipedirbools[(int)DS4Controls.SwipeUp] = tp != null ? (!priorMouse ? tp.swipeUp : tp.priorSwipeUp) : false;
                 swipedirbools[(int)DS4Controls.SwipeDown] = tp != null ? (!priorMouse ? tp.swipeDown : tp.priorSwipeDown) : false;
 
-                buttons[(int)DS4Controls.GyroSwipeLeft] = tp != null ? tp.gyroSwipe.swipeLeft : false;
-                buttons[(int)DS4Controls.GyroSwipeRight] = tp != null ? tp.gyroSwipe.swipeRight : false;
-                buttons[(int)DS4Controls.GyroSwipeUp] = tp != null ? tp.gyroSwipe.swipeUp : false;
-                buttons[(int)DS4Controls.GyroSwipeDown] = tp != null ? tp.gyroSwipe.swipeDown : false;
                 buttons[(int)DS4Controls.TouchStarted] = tp != null ? tp.TouchStarted : false;
                 buttons[(int)DS4Controls.TouchEnded] = tp != null ? tp.TouchEnded : false;
 

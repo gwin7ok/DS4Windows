@@ -873,10 +873,8 @@ namespace DS4WinWPF.DS4Forms.ViewModels
                         index = 1; break;
                     case GyroOutMode.MouseJoystick:
                         index = 2; break;
-                    case GyroOutMode.DirectionalSwipe:
-                        index = 3; break;
                     case GyroOutMode.Passthru:
-                        index = 4; break;
+                        index = 3; break;
                     default: break;
                 }
 
@@ -893,14 +891,15 @@ namespace DS4WinWPF.DS4Forms.ViewModels
                     case 2:
                         temp = GyroOutMode.MouseJoystick; break;
                     case 3:
-                        temp = GyroOutMode.DirectionalSwipe; break;
-                    case 4:
                         temp = GyroOutMode.Passthru; break;
                     default: break;
                 }
 
                 GyroOutMode current = profileSettings.GyroOutputMode[device];
                 if (temp == current) return;
+
+                // Phase8-Step8 8-0: モードを選び直したら、保持していた廃止されたモード（DirectionalSwipe）は破棄する（保存で書き戻さない）
+                profileSettings.GetRemovedGyroSwipeSettings(device)?.ForgetDirectionalSwipeMode();
                 //GyroOutModeIndexChanging?.Invoke(this, EventArgs.Empty);
                 GyroOutModeIndexChanging?.Invoke(this, current, temp);
                 profileSettings.GyroOutputMode[device] = temp;
@@ -2812,63 +2811,6 @@ namespace DS4WinWPF.DS4Forms.ViewModels
 
         public event EventHandler GyroMouseStickTrigDisplayChanged;
 
-        private string gyroSwipeTrigDisplay = "Always On";
-        public string GyroSwipeTrigDisplay
-        {
-            get => gyroSwipeTrigDisplay;
-            set
-            {
-                gyroSwipeTrigDisplay = value;
-                GyroSwipeTrigDisplayChanged?.Invoke(this, EventArgs.Empty);
-            }
-        }
-        public event EventHandler GyroSwipeTrigDisplayChanged;
-
-        public bool GyroSwipeTurns
-        {
-            get => profileSettings.GyroSwipeInf[device].triggerTurns;
-            set => profileSettings.GyroSwipeInf[device].triggerTurns = value;
-        }
-
-        public int GyroSwipeEvalCondIndex
-        {
-            get => profileSettings.GyroSwipeInf[device].triggerCond ? 0 : 1;
-            set => profileSettings.GyroSwipeInf[device].triggerCond = value == 0 ? true : false;
-        }
-
-        public int GyroSwipeXAxis
-        {
-            get => (int)profileSettings.GyroSwipeInf[device].xAxis;
-            set => profileSettings.GyroSwipeInf[device].xAxis = (GyroDirectionalSwipeInfo.XAxisSwipe)value;
-        }
-
-        public int GyroSwipeDeadZoneX
-        {
-            get => profileSettings.GyroSwipeInf[device].deadzoneX;
-            set
-            {
-                profileSettings.GyroSwipeInf[device].deadzoneX = value;
-            }
-        }
-
-        public int GyroSwipeDeadZoneY
-        {
-            get => profileSettings.GyroSwipeInf[device].deadzoneY;
-            set
-            {
-                profileSettings.GyroSwipeInf[device].deadzoneY = value;
-            }
-        }
-
-        public int GyroSwipeDelayTime
-        {
-            get => profileSettings.GyroSwipeInf[device].delayTime;
-            set
-            {
-                profileSettings.GyroSwipeInf[device].delayTime = value;
-            }
-        }
-
         private PresetMenuHelper presetMenuUtil;
         public PresetMenuHelper PresetMenuUtil
         {
@@ -3414,82 +3356,6 @@ namespace DS4WinWPF.DS4Forms.ViewModels
 
             GyroMouseStickTrigDisplay = string.Join(", ", triggerName.ToArray());
         }
-
-        public void UpdateGyroSwipeTrig(ContextMenu menu, bool alwaysOnChecked)
-        {
-            int index = 0;
-            List<int> triggerList = new List<int>();
-            List<string> triggerName = new List<string>();
-
-            int itemCount = menu.Items.Count;
-            MenuItem alwaysOnItem = menu.Items[itemCount - 1] as MenuItem;
-            if (alwaysOnChecked)
-            {
-                for (int i = 0; i < itemCount - 1; i++)
-                {
-                    MenuItem item = menu.Items[i] as MenuItem;
-                    item.IsChecked = false;
-                }
-            }
-            else
-            {
-                alwaysOnItem.IsChecked = false;
-                foreach (MenuItem item in menu.Items)
-                {
-                    if (item.IsChecked)
-                    {
-                        triggerList.Add(index);
-                        triggerName.Add(item.Header.ToString());
-                    }
-
-                    index++;
-                }
-            }
-
-            if (triggerList.Count == 0)
-            {
-                triggerList.Add(-1);
-                triggerName.Add("Always On");
-                alwaysOnItem.IsChecked = true;
-            }
-
-            profileSettings.GyroSwipeInf[device].triggers = string.Join(",", triggerList.ToArray());
-            GyroSwipeTrigDisplay = string.Join(", ", triggerName.ToArray());
-        }
-
-        public void PopulateGyroSwipeTrig(ContextMenu menu)
-        {
-            string[] triggers = profileSettings.GyroSwipeInf[device].triggers.Split(',');
-            int itemCount = menu.Items.Count;
-            List<string> triggerName = new List<string>();
-            foreach (string trig in triggers)
-            {
-                bool valid = int.TryParse(trig, out int trigid);
-                if (valid && trigid >= 0 && trigid < itemCount - 1)
-                {
-                    MenuItem current = menu.Items[trigid] as MenuItem;
-                    current.IsChecked = true;
-                    triggerName.Add(current.Header.ToString());
-                }
-                else if (valid && trigid == -1)
-                {
-                    MenuItem current = menu.Items[itemCount - 1] as MenuItem;
-                    current.IsChecked = true;
-                    triggerName.Add("Always On");
-                    break;
-                }
-            }
-
-            if (triggerName.Count == 0)
-            {
-                MenuItem current = menu.Items[itemCount - 1] as MenuItem;
-                current.IsChecked = true;
-                triggerName.Add("Always On");
-            }
-
-            GyroSwipeTrigDisplay = string.Join(", ", triggerName.ToArray());
-        }
-
 
         public void UpdateGyroControlsTrig(ContextMenu menu, bool alwaysOnChecked)
         {

@@ -57,7 +57,7 @@ namespace DS4Windows.Services
         private readonly IProfileLoadSection _motionSensitivitySection = new ProfileMotionSensitivityLoadSection();
         private readonly IProfileLoadSection _miscSection = new ProfileMiscLoadSection();
         private readonly IProfileLoadSection _gyroControlsSection = new ProfileGyroControlsLoadSection();
-        private readonly IProfileLoadSection _gyroSwipeSection = new ProfileGyroSwipeLoadSection();
+        private readonly IProfileLoadSection _gyroMouseSection = new ProfileGyroMouseLoadSection();
         private readonly IProfileLoadSection _stickOutputSection = new ProfileStickOutputLoadSection();
         private readonly IProfileLoadSection _triggerCurveSection = new ProfileTriggerCurveLoadSection();
         private readonly IProfileLoadSection _touchpadMouseSection = new ProfileTouchpadMouseLoadSection();
@@ -164,7 +164,7 @@ namespace DS4Windows.Services
 
                 _gyroControlsSection.Load(context);
 
-                _gyroSwipeSection.Load(context);
+                _gyroMouseSection.Load(context);
 
                 _stickOutputSection.Load(context);
 

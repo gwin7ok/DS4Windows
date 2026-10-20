@@ -126,6 +126,50 @@ namespace DS4WindowsTests
             Assert.Equal(0, settings.EntryCount);
         }
 
+        // ---- 出力モード ----
+
+        [Theory]
+        [InlineData("DirectionalSwipe", true)]
+        [InlineData("directionalswipe", true)]
+        [InlineData(" DirectionalSwipe ", true)]
+        [InlineData("Controls", false)]
+        [InlineData("Passthru", false)]
+        [InlineData("", false)]
+        [InlineData(null, false)]
+        public void CaptureGyroOutputMode_KeepsOnlyTheRemovedMode(string text, bool expected)
+        {
+            var settings = new RemovedGyroSwipeSettings();
+
+            Assert.Equal(expected, settings.CaptureGyroOutputMode(text));
+            Assert.Equal(expected, settings.HadDirectionalSwipeMode);
+            Assert.Equal(expected, settings.HasContent);
+        }
+
+        [Fact]
+        public void GyroOutputModeTextForSave_WritesTheRemovedModeAsItWas_WhileKept()
+        {
+            var settings = new RemovedGyroSwipeSettings();
+            Assert.Equal("Controls", settings.GyroOutputModeTextForSave("Controls"));
+
+            settings.CaptureGyroOutputMode("DirectionalSwipe");
+            Assert.Equal("DirectionalSwipe", settings.GyroOutputModeTextForSave("None"));
+
+            settings.Clear();
+            Assert.Equal("None", settings.GyroOutputModeTextForSave("None"));   // 「削除」で捨てたあとは、現在のモード
+        }
+
+        [Fact]
+        public void CaptureGyroOutputMode_IsReplacedByTheNextLoad()
+        {
+            var settings = new RemovedGyroSwipeSettings();
+            settings.CaptureGyroOutputMode("DirectionalSwipe");
+
+            settings.BeginCapture();
+            settings.CaptureGyroOutputMode("Mouse");
+
+            Assert.False(settings.HasContent);
+        }
+
         // ---- 書き出し ----
 
         [Fact]

@@ -90,24 +90,6 @@ namespace DS4Windows
 
 
 
-        public struct GyroSwipeData
-        {
-            public bool swipeLeft, swipeRight, swipeUp, swipeDown;
-            public bool previousSwipeLeft, previousSwipeRight, previousSwipeUp, previousSwipeDown;
-            public enum XDir : ushort { None, Left, Right }
-            public enum YDir : ushort { None, Up, Down }
-
-            public XDir currentXDir;
-            public YDir currentYDir;
-            public bool xActive;
-            public bool yActive;
-
-            public DateTime initialTimeX;
-            public DateTime initialTimeY;
-        }
-
-        public GyroSwipeData gyroSwipe;
-
         public enum TouchButtonActivationMode : ushort
         {
             Click,
@@ -295,55 +277,6 @@ namespace DS4Windows
                     SixMouseStick(arg);
                 else
                     SixMouseReset(arg);
-            }
-            else if (outMode == GyroOutMode.DirectionalSwipe)
-            {
-                s = dev.getCurrentStateRef();
-
-                GyroDirectionalSwipeInfo swipeMapInfo = _profileSettings.GetGyroSwipeInfo(deviceNum);
-
-                useReverseRatchet = swipeMapInfo.triggerTurns;
-                int i = 0;
-                string[] ss = swipeMapInfo.triggers.Split(',');
-                bool andCond = swipeMapInfo.triggerCond;
-                triggeractivated = andCond ? true : false;
-                if (!string.IsNullOrEmpty(ss[0]))
-                {
-                    string s = string.Empty;
-                    for (int index = 0, arlen = ss.Length; index < arlen; index++)
-                    {
-                        s = ss[index];
-                        if (andCond && !(int.TryParse(s, out i) && getDS4ControlsByName(i)))
-                        {
-                            triggeractivated = false;
-                            break;
-                        }
-                        else if (!andCond && int.TryParse(s, out i) && getDS4ControlsByName(i))
-                        {
-                            triggeractivated = true;
-                            break;
-                        }
-                    }
-                }
-
-                gyroSwipe.previousSwipeLeft = gyroSwipe.swipeLeft;
-                gyroSwipe.previousSwipeRight = gyroSwipe.swipeRight;
-                gyroSwipe.previousSwipeUp = gyroSwipe.swipeUp;
-                gyroSwipe.previousSwipeDown = gyroSwipe.swipeDown;
-
-                if (useReverseRatchet && triggeractivated)
-                {
-                    SixDirectionalSwipe(arg, swipeMapInfo);
-                }
-                else if (!useReverseRatchet && !triggeractivated)
-                {
-                    SixDirectionalSwipe(arg, swipeMapInfo);
-                }
-                else
-                {
-                    gyroSwipe.swipeLeft = gyroSwipe.swipeRight =
-                        gyroSwipe.swipeUp = gyroSwipe.swipeDown = false;
-                }
             }
         }
 
@@ -698,91 +631,6 @@ namespace DS4Windows
                 }
 
                 _stickMotion.GyroStickY[deviceNum] = axisYOut;
-            }
-        }
-
-        private void SixDirectionalSwipe(SixAxisEventArgs arg, GyroDirectionalSwipeInfo swipeInfo)
-        {
-            double velX = swipeInfo.xAxis == GyroDirectionalSwipeInfo.XAxisSwipe.Yaw ?
-                arg.sixAxis.angVelYaw : arg.sixAxis.angVelRoll;
-            double velY = arg.sixAxis.angVelPitch;
-            int delayTime = swipeInfo.delayTime;
-
-            int deadzoneX = (int)Math.Abs(swipeInfo.deadzoneX);
-            int deadzoneY = (int)Math.Abs(swipeInfo.deadzoneY);
-
-            gyroSwipe.swipeLeft = gyroSwipe.swipeRight = false;
-            if (Math.Abs(velX) > deadzoneX)
-            {
-                if (velX > 0)
-                {
-                    if (gyroSwipe.currentXDir != GyroSwipeData.XDir.Right)
-                    {
-                        gyroSwipe.initialTimeX = DateTime.Now;
-                        gyroSwipe.currentXDir = GyroSwipeData.XDir.Right;
-                        gyroSwipe.xActive = delayTime == 0;
-                    }
-
-                    if (gyroSwipe.xActive || (gyroSwipe.xActive = gyroSwipe.initialTimeX + TimeSpan.FromMilliseconds(delayTime) < DateTime.Now))
-                    {
-                        gyroSwipe.swipeRight = true;
-                    }
-                }
-                else
-                {
-                    if (gyroSwipe.currentXDir != GyroSwipeData.XDir.Left)
-                    {
-                        gyroSwipe.initialTimeX = DateTime.Now;
-                        gyroSwipe.currentXDir = GyroSwipeData.XDir.Left;
-                        gyroSwipe.xActive = delayTime == 0;
-                    }
-
-                    if (gyroSwipe.xActive || (gyroSwipe.xActive = gyroSwipe.initialTimeX + TimeSpan.FromMilliseconds(delayTime) < DateTime.Now))
-                    {
-                        gyroSwipe.swipeLeft = true;
-                    }
-                }
-            }
-            else
-            {
-                gyroSwipe.currentXDir = GyroSwipeData.XDir.None;
-            }
-
-            gyroSwipe.swipeUp = gyroSwipe.swipeDown = false;
-            if (Math.Abs(velY) > deadzoneY)
-            {
-                if (velY > 0)
-                {
-                    if (gyroSwipe.currentYDir != GyroSwipeData.YDir.Up)
-                    {
-                        gyroSwipe.initialTimeY = DateTime.Now;
-                        gyroSwipe.currentYDir = GyroSwipeData.YDir.Up;
-                        gyroSwipe.yActive = delayTime == 0;
-                    }
-
-                    if (gyroSwipe.yActive || (gyroSwipe.yActive = gyroSwipe.initialTimeY + TimeSpan.FromMilliseconds(delayTime) < DateTime.Now))
-                    {
-                        gyroSwipe.swipeUp = true;
-                    }
-                }
-                else
-                {
-                    if (gyroSwipe.currentYDir != GyroSwipeData.YDir.Down)
-                    {
-                        gyroSwipe.initialTimeY = DateTime.Now;
-                        gyroSwipe.currentYDir = GyroSwipeData.YDir.Down;
-                        gyroSwipe.yActive = delayTime == 0;
-                    }
-
-                    if (gyroSwipe.yActive || (gyroSwipe.yActive = gyroSwipe.initialTimeY + TimeSpan.FromMilliseconds(delayTime) < DateTime.Now))
-                    {
-                        gyroSwipe.swipeDown = true;
-                    }
-                }
-            }
-            else
-            {
-                gyroSwipe.currentYDir = GyroSwipeData.YDir.None;
             }
         }
 

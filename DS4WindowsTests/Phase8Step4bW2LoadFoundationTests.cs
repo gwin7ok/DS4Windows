@@ -72,7 +72,7 @@ namespace DS4WindowsTests
             string[] order =
             {
                 "_generalSection", "LoadLegacyExtraSettings(device, rootname);", "_touchpadBasicSection", "_triggerStickBasicSection",
-                "_stickAxialSection", "_motionSensitivitySection", "_miscSection", "_gyroControlsSection", "_gyroSwipeSection",
+                "_stickAxialSection", "_motionSensitivitySection", "_miscSection", "_gyroControlsSection", "_gyroMouseSection",
                 "_stickOutputSection", "_triggerCurveSection", "_touchpadMouseSection", "_outputControllerSection",
                 "_profileActionsSection", "_buttonControlSection", "_buttonShiftSection",
             };

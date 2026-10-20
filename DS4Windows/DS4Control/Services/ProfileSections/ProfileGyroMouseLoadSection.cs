@@ -32,9 +32,10 @@ namespace DS4Windows.Services
 {
     /// <summary>
     /// Phase8-Step4b W4（Phase8-Step4b-Plan.md §3.2）: ジャイロのスワイプ・タッチパッドの出力モード・タッチパッドの反転の無効トリガー・ジャイロの感度とマウス（GyroSwipeSettings〜GyroMouseToggle）の読込。TouchpadOutputMode は UseTPforControls が無いときだけ読む。
+    /// Phase8-Step8 8-0: ジャイロスワイプの機能廃止に伴い、GyroSwipeSettings は保持だけ（<see cref="RemovedGyroSwipeSettings"/>）。名前を Swipe から Mouse に改めた。
     /// <c>LegacyProfileXmlSerializer.LoadProfile</c> から移したもの。移動のみで、要素の順序・既定値・例外の扱いは変えない。
     /// </summary>
-    internal sealed class ProfileGyroSwipeLoadSection : IProfileLoadSection
+    internal sealed class ProfileGyroMouseLoadSection : IProfileLoadSection
     {
         public void Load(ProfileLoadContext context)
         {
@@ -47,80 +48,8 @@ namespace DS4Windows.Services
             bool missingSetting = context.MissingSetting;
             XmlNode Item;
 
-            XmlNode xmlGyroSwipeElement =
-                m_Xdoc.SelectSingleNode("/" + rootname + "/GyroSwipeSettings");
-            if (xmlGyroSwipeElement != null)
-            {
-                try
-                {
-                    Item = xmlGyroSwipeElement.SelectSingleNode("DeadZoneX");
-                    if (int.TryParse(Item?.InnerText ?? "", out int tempDead))
-                    {
-                        store.gyroSwipeInfo[device].deadzoneX = tempDead;
-                    }
-                }
-                catch { }
-
-                try
-                {
-                    Item = xmlGyroSwipeElement.SelectSingleNode("DeadZoneY");
-                    if (int.TryParse(Item?.InnerText ?? "", out int tempDead))
-                    {
-                        store.gyroSwipeInfo[device].deadzoneY = tempDead;
-                    }
-                }
-                catch { }
-
-                try
-                {
-                    Item = xmlGyroSwipeElement.SelectSingleNode("Triggers");
-                    if (Item != null)
-                    {
-                        store.gyroSwipeInfo[device].triggers = Item.InnerText;
-                    }
-                }
-                catch { }
-
-                try
-                {
-                    Item = xmlGyroSwipeElement.SelectSingleNode("TriggerCond");
-                    if (Item != null)
-                    {
-                        store.gyroSwipeInfo[device].triggerCond = BackingStore.SaTriggerCondValue(Item.InnerText);
-                    }
-                }
-                catch { }
-
-                try
-                {
-                    Item = xmlGyroSwipeElement.SelectSingleNode("TriggerTurns");
-                    if (bool.TryParse(Item?.InnerText ?? "", out bool tempTurns))
-                    {
-                        store.gyroSwipeInfo[device].triggerTurns = tempTurns;
-                    }
-                }
-                catch { }
-
-                try
-                {
-                    Item = xmlGyroSwipeElement.SelectSingleNode("XAxis");
-                    if (Enum.TryParse(Item?.InnerText ?? "", out GyroDirectionalSwipeInfo.XAxisSwipe tempX))
-                    {
-                        store.gyroSwipeInfo[device].xAxis = tempX;
-                    }
-                }
-                catch { }
-
-                try
-                {
-                    Item = xmlGyroSwipeElement.SelectSingleNode("DelayTime");
-                    if (int.TryParse(Item?.InnerText ?? "", out int tempDelay))
-                    {
-                        store.gyroSwipeInfo[device].delayTime = tempDelay;
-                    }
-                }
-                catch { }
-            }
+            // Phase8-Step8 8-0: 廃止された「ジャイロスワイプ」の設定は解釈せず、既定値と異なるときだけ、そのまま保持する（編集画面で「残す」を選んだとき、保存で書き戻す）
+            store.removedGyroSwipeSettings[device].CaptureSettings(m_Xdoc.SelectSingleNode("/" + rootname + "/GyroSwipeSettings"));
 
             // Check for TouchpadOutputMode if UseTPforControls is not present in profile
             if (!tpForControlsPresent)

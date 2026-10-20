@@ -48,10 +48,5 @@ namespace DS4WinWPF.DS4Forms
 
         public int LSOuterBind { get => (int)DS4Controls.LSOuter; }
         public int RSOuterBind { get => (int)DS4Controls.RSOuter; }
-
-        public int GyroSwipeLeft { get => (int)DS4Controls.GyroSwipeLeft; }
-        public int GyroSwipeRight { get => (int)DS4Controls.GyroSwipeRight; }
-        public int GyroSwipeUp { get => (int)DS4Controls.GyroSwipeUp; }
-        public int GyroSwipeDown { get => (int)DS4Controls.GyroSwipeDown; }
     }
 }

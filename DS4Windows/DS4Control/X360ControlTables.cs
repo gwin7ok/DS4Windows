@@ -54,10 +54,6 @@ namespace DS4Windows
             X360Controls.None, // DS4Controls.SwipeDown
             X360Controls.None, // DS4Controls.L2FullPull
             X360Controls.None, // DS4Controls.R2FullPull
-            X360Controls.None, // DS4Controls.GyroSwipeLeft
-            X360Controls.None, // DS4Controls.GyroSwipeRight
-            X360Controls.None, // DS4Controls.GyroSwipeUp
-            X360Controls.None, // DS4Controls.GyroSwipeDown
             X360Controls.None, // DS4Controls.Capture
             X360Controls.None, // DS4Controls.SideL
             X360Controls.None, // DS4Controls.SideR

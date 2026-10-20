@@ -61,11 +61,6 @@ namespace DS4Windows
             [DS4Controls.LSOuter] = "LS Outer",
             [DS4Controls.RSOuter] = "RS Outer",
 
-            [DS4Controls.GyroSwipeLeft] = "Gyro Swipe Left",
-            [DS4Controls.GyroSwipeRight] = "Gyro Swipe Right",
-            [DS4Controls.GyroSwipeUp] = "Gyro Swipe Up",
-            [DS4Controls.GyroSwipeDown] = "Gyro Swipe Down",
-
             [DS4Controls.TouchStarted] = "Touch Started",
             [DS4Controls.TouchEnded] = "Touch Ended",
         };

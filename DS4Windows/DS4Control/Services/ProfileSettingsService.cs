@@ -273,7 +273,6 @@ namespace DS4Windows
         // ---- Step10-2-A-4: ジャイロ関連 (m_Config委譲) ----
         public GyroMouseStickInfo[] GyroMouseStickInf => SafeConfig?.gyroMStickInfo;
         public GyroMouseInfo[] GyroMouseInfo => SafeConfig?.gyroMouseInfo;
-        public GyroDirectionalSwipeInfo[] GyroSwipeInf => SafeConfig?.gyroSwipeInfo;
         public GyroControlsInfo[] GyroControlsInf => SafeConfig?.gyroControlsInf;
         public int[] GyroInvert => SafeConfig?.gyroInvert;
         public int[] GyroSensitivity => SafeConfig?.gyroSensitivity;
@@ -291,7 +290,6 @@ namespace DS4Windows
         public bool GetGyroMouseStickTriggerTurns(int deviceIndex) => SafeConfig != null && SafeConfig.gyroMouseStickTriggerTurns != null && SafeConfig.gyroMouseStickTriggerTurns[deviceIndex];
         public int GetGyroMouseStickHorizontalAxis(int deviceIndex) => SafeConfig != null && SafeConfig.gyroMouseStickHorizontalAxis != null ? SafeConfig.gyroMouseStickHorizontalAxis[deviceIndex] : 0;
         public GyroMouseStickInfo GetGyroMouseStickInfo(int deviceIndex) => SafeConfig?.gyroMStickInfo?[deviceIndex];
-        public GyroDirectionalSwipeInfo GetGyroSwipeInfo(int deviceIndex) => SafeConfig?.gyroSwipeInfo?[deviceIndex];
         public int GetGyroSensitivity(int deviceIndex) => SafeConfig != null && SafeConfig.gyroSensitivity != null ? SafeConfig.gyroSensitivity[deviceIndex] : 0;
         public int GetGyroSensVerticalScale(int deviceIndex) => SafeConfig != null && SafeConfig.gyroSensVerticalScale != null ? SafeConfig.gyroSensVerticalScale[deviceIndex] : 0;
         public int GetGyroInvert(int deviceIndex) => SafeConfig != null && SafeConfig.gyroInvert != null ? SafeConfig.gyroInvert[deviceIndex] : 0;
@@ -539,5 +537,6 @@ namespace DS4Windows
         public ControlSettingsGroup GetControlSettingsGroup(int deviceIndex) => SafeConfig?.ds4controlSettings[deviceIndex];
 
         public RemovedShiftSettings GetRemovedShiftSettings(int deviceIndex) => SafeConfig?.removedShiftSettings[deviceIndex];
+        public RemovedGyroSwipeSettings GetRemovedGyroSwipeSettings(int deviceIndex) => SafeConfig?.removedGyroSwipeSettings[deviceIndex];
     }
 }

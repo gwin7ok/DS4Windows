@@ -167,7 +167,6 @@ namespace DS4WindowsTests
             t.MapKey(DS4Controls.LXNeg, 66, DS4KeyType.Toggle);
             DS4ControlSettings withExtras = t.MapKey(DS4Controls.Circle, 67);
             withExtras.extras = "1,2,0,0,0,0,0,0,0";   // 7.8e: Extras つきも新経路が処理する（Extras の束縛 ＋ Key の束縛）
-            t.MapKey(DS4Controls.GyroSwipeLeft, 69);                        // 対象外
 
             IReadOnlyList<IActionBinding> all = TestHost.GetService<IControlBindingBuilder>().Build(Device);
 

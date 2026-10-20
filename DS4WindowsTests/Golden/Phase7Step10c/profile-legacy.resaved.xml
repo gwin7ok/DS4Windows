@@ -174,13 +174,13 @@
     <SmoothingBeta>1</SmoothingBeta>
   </GyroMouseStickSmoothingSettings>
   <GyroSwipeSettings>
-    <DeadZoneX>81</DeadZoneX>
-    <DeadZoneY>81</DeadZoneY>
-    <Triggers>-1_g</Triggers>
-    <TriggerCond>or</TriggerCond>
-    <TriggerTurns>False</TriggerTurns>
-    <XAxis>Roll</XAxis>
-    <DelayTime>1</DelayTime>
+    <DeadZoneX>80</DeadZoneX>
+    <DeadZoneY>80</DeadZoneY>
+    <Triggers>-1</Triggers>
+    <TriggerCond>and</TriggerCond>
+    <TriggerTurns>True</TriggerTurns>
+    <XAxis>Yaw</XAxis>
+    <DelayTime>0</DelayTime>
   </GyroSwipeSettings>
   <ProfileActions>Golden_Macro/Golden_Program/Golden_Key</ProfileActions>
   <BTPollRate>5</BTPollRate>
@@ -267,20 +267,12 @@
       <L3>0</L3>
       <R3>0</R3>
       <R2FullPull>0</R2FullPull>
-      <GyroSwipeLeft>0</GyroSwipeLeft>
-      <GyroSwipeRight>0</GyroSwipeRight>
-      <GyroSwipeUp>0</GyroSwipeUp>
-      <GyroSwipeDown>0</GyroSwipeDown>
       <Capture>0</Capture>
     </Key>
     <KeyType>
       <L3>ScanCode</L3>
       <R3>ScanCode</R3>
       <R2FullPull>ScanCode</R2FullPull>
-      <GyroSwipeLeft>ScanCode</GyroSwipeLeft>
-      <GyroSwipeRight>ScanCode</GyroSwipeRight>
-      <GyroSwipeUp>ScanCode</GyroSwipeUp>
-      <GyroSwipeDown>ScanCode</GyroSwipeDown>
       <Capture>ScanCode</Capture>
     </KeyType>
   </Control>

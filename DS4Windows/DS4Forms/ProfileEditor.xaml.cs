@@ -351,7 +351,6 @@ namespace DS4WinWPF.DS4Forms
             AssignSwipeAssociation();
             AssignTriggerFullPullAssociation();
             AssignStickOuterBindAssociation();
-            AssignGyroSwipeAssociation();
 
             inputTimer = new NonFormTimer(100);
             inputTimer.Elapsed += InputDS4;
@@ -483,9 +482,6 @@ namespace DS4WinWPF.DS4Forms
 
             profileSettingsVM.CreateGyroTriggerMenuItems(gyroMouseStickTrigBtn.ContextMenu,
                 GyroMouseStickTrigMenuItem_Click);
-
-            profileSettingsVM.CreateGyroTriggerMenuItems(gyroSwipeTrigBtn.ContextMenu,
-                GyroSwipeTrigMenuItem_Click);
         }
 
         private void SetupEvents()
@@ -677,14 +673,6 @@ namespace DS4WinWPF.DS4Forms
             rsOuterBindLb.DataContext = mappingListVM.ControlMap[DS4Controls.RSOuter];
         }
 
-        private void AssignGyroSwipeAssociation()
-        {
-            gyroSwipeLeftLb.DataContext = mappingListVM.ControlMap[DS4Controls.GyroSwipeLeft];
-            gyroSwipeRightLb.DataContext = mappingListVM.ControlMap[DS4Controls.GyroSwipeRight];
-            gyroSwipeUpLb.DataContext = mappingListVM.ControlMap[DS4Controls.GyroSwipeUp];
-            gyroSwipeDownLb.DataContext = mappingListVM.ControlMap[DS4Controls.GyroSwipeDown];
-        }
-
         private void MappingListBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             if (mappingListVM.SelectedIndex >= 0)
@@ -809,7 +797,6 @@ namespace DS4WinWPF.DS4Forms
             profileSettingsVM.PopulateTouchDisInver(touchDisInvertBtn.ContextMenu);
             profileSettingsVM.PopulateGyroMouseTrig(gyroMouseTrigBtn.ContextMenu);
             profileSettingsVM.PopulateGyroMouseStickTrig(gyroMouseStickTrigBtn.ContextMenu);
-            profileSettingsVM.PopulateGyroSwipeTrig(gyroSwipeTrigBtn.ContextMenu);
             profileSettingsVM.PopulateGyroControlsTrig(gyroControlsTrigBtn.ContextMenu);
             profileSettingsTabCon.DataContext = profileSettingsVM;
             mappingListBox.DataContext = mappingListVM;
@@ -896,7 +883,6 @@ namespace DS4WinWPF.DS4Forms
             profileSettingsVM.PopulateTouchDisInver(touchDisInvertBtn.ContextMenu);
             profileSettingsVM.PopulateGyroMouseTrig(gyroMouseTrigBtn.ContextMenu);
             profileSettingsVM.PopulateGyroMouseStickTrig(gyroMouseStickTrigBtn.ContextMenu);
-            profileSettingsVM.PopulateGyroSwipeTrig(gyroSwipeTrigBtn.ContextMenu);
             profileSettingsVM.PopulateGyroControlsTrig(gyroControlsTrigBtn.ContextMenu);
             profileSettingsTabCon.DataContext = profileSettingsVM;
             mappingListBox.DataContext = mappingListVM;
@@ -2007,32 +1993,6 @@ namespace DS4WinWPF.DS4Forms
                     tempDev?.SixAxis.ResetContinuousCalibration();
                 }
             }
-        }
-
-        private void GyroSwipeTrigBtn_Click(object sender, RoutedEventArgs e)
-        {
-            gyroSwipeTrigBtn.ContextMenu.IsOpen = true;
-        }
-
-        private void GyroSwipeTrigMenuItem_Click(object sender, RoutedEventArgs e)
-        {
-            ContextMenu menu = gyroSwipeTrigBtn.ContextMenu;
-            int itemCount = menu.Items.Count;
-            MenuItem alwaysOnItem = menu.Items[itemCount - 1] as MenuItem;
-
-            profileSettingsVM.UpdateGyroSwipeTrig(menu, e.OriginalSource == alwaysOnItem);
-        }
-
-        private void GyroSwipeControlsBtn_Click(object sender, RoutedEventArgs e)
-        {
-            Button btn = sender as Button;
-            DS4Controls control = (DS4Controls)Convert.ToInt32(btn.Tag);
-            MappedControl mpControl = mappingListVM.ControlMap[control];
-            BindingWindow window = editorWindowFactory.CreateBindingWindow(deviceNum, mpControl.Setting, targetDevice);
-            window.Owner = App.Current.MainWindow;
-            window.ShowDialog();
-            mpControl.UpdateMappingName();
-            profileSettingsVM.RefreshCustomsFlags();
         }
 
         private void GyroControlsTrigBtn_Click(object sender, RoutedEventArgs e)

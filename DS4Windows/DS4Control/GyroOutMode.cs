@@ -54,7 +54,6 @@ namespace DS4Windows
         Controls,
         Mouse,
         MouseJoystick,
-        DirectionalSwipe,
         Passthru,
     }
 }

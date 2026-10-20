@@ -57,6 +57,13 @@ namespace DS4Windows.Services
             {
                 foreach (XmlNode item in ParentItem.ChildNodes)
                 {
+                    // Phase8-Step8 8-0: 廃止された「ジャイロスワイプ」の割り当ては解釈せず、そのまま保持する
+                    if (RemovedGyroSwipeSettings.IsSwipeControlName(item.Name))
+                    {
+                        store.removedGyroSwipeSettings[device].CaptureControlEntry("Button", item);
+                        continue;
+                    }
+
                     if (Enum.TryParse(item.Name, out DS4Controls currentControl))
                     {
                         store.UpdateDS4CSetting(device, item.Name, X360ControlTables.getX360ControlsByName(item.InnerText), "", DS4KeyType.None);
@@ -70,6 +77,13 @@ namespace DS4Windows.Services
             {
                 foreach (XmlNode item in ParentItem.ChildNodes)
                 {
+                    // Phase8-Step8 8-0: 廃止された「ジャイロスワイプ」の割り当ては解釈せず、そのまま保持する
+                    if (RemovedGyroSwipeSettings.IsSwipeControlName(item.Name))
+                    {
+                        store.removedGyroSwipeSettings[device].CaptureControlEntry("Macro", item);
+                        continue;
+                    }
+
                     customMapMacros.Add(DS4ControlNames.getDS4ControlsByName(item.Name), item.InnerText);
                     string[] skeys;
                     int[] keys;
@@ -99,6 +113,13 @@ namespace DS4Windows.Services
             {
                 foreach (XmlNode item in ParentItem.ChildNodes)
                 {
+                    // Phase8-Step8 8-0: 廃止された「ジャイロスワイプ」の割り当ては解釈せず、そのまま保持する
+                    if (RemovedGyroSwipeSettings.IsSwipeControlName(item.Name))
+                    {
+                        store.removedGyroSwipeSettings[device].CaptureControlEntry("Key", item);
+                        continue;
+                    }
+
                     if (ushort.TryParse(item.InnerText, out wvk) && Enum.TryParse(item.Name, out DS4Controls currentControl))
                     {
                         store.UpdateDS4CSetting(device, item.Name, wvk, "", DS4KeyType.None);
@@ -112,6 +133,13 @@ namespace DS4Windows.Services
             {
                 foreach (XmlNode item in ParentItem.ChildNodes)
                 {
+                    // Phase8-Step8 8-0: 廃止された「ジャイロスワイプ」の割り当ては解釈せず、そのまま保持する
+                    if (RemovedGyroSwipeSettings.IsSwipeControlName(item.Name))
+                    {
+                        store.removedGyroSwipeSettings[device].CaptureControlEntry("Extras", item);
+                        continue;
+                    }
+
                     if (item.InnerText != string.Empty && Enum.TryParse(item.Name, out DS4Controls currentControl))
                     {
                         store.UpdateDS4CExtra(device, item.Name, item.InnerText);
@@ -127,6 +155,13 @@ namespace DS4Windows.Services
             {
                 foreach (XmlNode item in ParentItem.ChildNodes)
                 {
+                    // Phase8-Step8 8-0: 廃止された「ジャイロスワイプ」の割り当ては解釈せず、そのまま保持する
+                    if (RemovedGyroSwipeSettings.IsSwipeControlName(item.Name))
+                    {
+                        store.removedGyroSwipeSettings[device].CaptureControlEntry("KeyType", item);
+                        continue;
+                    }
+
                     if (item != null)
                     {
                         keyType = DS4KeyType.None;

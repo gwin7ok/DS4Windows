@@ -57,11 +57,6 @@ namespace DS4Windows
         public DS4ControlSettings R2;
         public DS4ControlSettings R2FullPull;
 
-        public DS4ControlSettings GyroSwipeLeft;
-        public DS4ControlSettings GyroSwipeRight;
-        public DS4ControlSettings GyroSwipeUp;
-        public DS4ControlSettings GyroSwipeDown;
-
         public List<DS4ControlSettings> ControlButtons =
             new List<DS4ControlSettings>();
 
@@ -89,11 +84,6 @@ namespace DS4Windows
 
             L2FullPull = settingsList[(int)DS4Controls.L2FullPull - 1];
             R2FullPull = settingsList[(int)DS4Controls.R2FullPull - 1];
-
-            GyroSwipeLeft = settingsList[(int)DS4Controls.GyroSwipeLeft - 1];
-            GyroSwipeRight = settingsList[(int)DS4Controls.GyroSwipeRight - 1];
-            GyroSwipeUp = settingsList[(int)DS4Controls.GyroSwipeUp - 1];
-            GyroSwipeDown = settingsList[(int)DS4Controls.GyroSwipeDown - 1];
 
             ControlButtons.Add(settingsList[(int)DS4Controls.L1 - 1]);
             ControlButtons.Add(settingsList[(int)DS4Controls.L3 - 1]);

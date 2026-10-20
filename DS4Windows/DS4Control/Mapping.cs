@@ -734,7 +734,7 @@ namespace DS4Windows
         // Button to index mapping used for macrodone array. Not even sure this
         // is needed. This was originally made to replace a switch test used in the DS4ControlToInt method.
         // DS4Controls -> Macro input map index
-        private static int[] ds4ControlMapping = new int[DS4_CONTROL_MACRO_ARRAY_LEN]
+        private static int[] ds4ControlMapping = new int[]
         {
             0, // DS4Controls.None
             16, // DS4Controls.LXNeg
@@ -777,10 +777,6 @@ namespace DS4Windows
             38, // DS4Controls.SwipeDown
             39, // DS4Controls.L2FullPull
             40, // DS4Controls.R2FullPull
-            41, // DS4Controls.GyroSwipeLeft
-            42, // DS4Controls.GyroSwipeRight
-            43, // DS4Controls.GyroSwipeUp
-            44, // DS4Controls.GyroSwipeDown
             45, // DS4Controls.Capture
             46, // DS4Controls.SideL
             47, // DS4Controls.SideR
@@ -2549,81 +2545,6 @@ namespace DS4Windows
                 ProcessControlSettingAction(dcs, device, cState, MappedState, eState,
                     tp, fieldMapping, outputfieldMapping, deviceState, ref tempMouseDeltaX,
                     ref tempMouseDeltaY, ctrl);
-            }
-
-            GyroOutMode imuOutMode = profileSettings.GetGyroOutMode(device);
-            if (imuOutMode == GyroOutMode.DirectionalSwipe)
-            {
-                DS4ControlSettings gyroSwipeXDcs = null;
-                DS4ControlSettings gyroSwipeYDcs = null;
-                DS4ControlSettings previousGyroSwipeXDcs = null;
-                DS4ControlSettings previousGyroSwipeYDcs = null;
-
-                if (tp.gyroSwipe.swipeLeft)
-                {
-                    gyroSwipeXDcs = controlSetGroup.GyroSwipeLeft;
-                }
-                else if (tp.gyroSwipe.swipeRight)
-                {
-                    gyroSwipeXDcs = controlSetGroup.GyroSwipeRight;
-                }
-
-                if (tp.gyroSwipe.previousSwipeLeft && !tp.gyroSwipe.swipeLeft)
-                {
-                    previousGyroSwipeXDcs = controlSetGroup.GyroSwipeLeft;
-                }
-                else if (tp.gyroSwipe.previousSwipeRight && !tp.gyroSwipe.swipeRight)
-                {
-                    previousGyroSwipeXDcs = controlSetGroup.GyroSwipeRight;
-                }
-
-                if (tp.gyroSwipe.swipeUp)
-                {
-                    gyroSwipeYDcs = controlSetGroup.GyroSwipeUp;
-                }
-                else if (tp.gyroSwipe.swipeDown)
-                {
-                    gyroSwipeYDcs = controlSetGroup.GyroSwipeDown;
-                }
-
-                if (tp.gyroSwipe.previousSwipeUp && !tp.gyroSwipe.swipeUp)
-                {
-                    previousGyroSwipeYDcs = controlSetGroup.GyroSwipeUp;
-                }
-                else if (tp.gyroSwipe.previousSwipeDown && !tp.gyroSwipe.swipeDown)
-                {
-                    previousGyroSwipeYDcs = controlSetGroup.GyroSwipeDown;
-                }
-
-                // Disable previous button before possibly activating current button
-                if (previousGyroSwipeXDcs != null)
-                {
-                    ProcessControlSettingAction(previousGyroSwipeXDcs, device, cState, MappedState, eState,
-                        tp, fieldMapping, outputfieldMapping, deviceState, ref tempMouseDeltaX,
-                        ref tempMouseDeltaY, ctrl);
-                }
-
-                if (gyroSwipeXDcs != null)
-                {
-                    ProcessControlSettingAction(gyroSwipeXDcs, device, cState, MappedState, eState,
-                        tp, fieldMapping, outputfieldMapping, deviceState, ref tempMouseDeltaX,
-                        ref tempMouseDeltaY, ctrl);
-                }
-
-                // Disable previous button before possibly activating current button
-                if (previousGyroSwipeYDcs != null)
-                {
-                    ProcessControlSettingAction(previousGyroSwipeYDcs, device, cState, MappedState, eState,
-                        tp, fieldMapping, outputfieldMapping, deviceState, ref tempMouseDeltaX,
-                        ref tempMouseDeltaY, ctrl);
-                }
-
-                if (gyroSwipeYDcs != null)
-                {
-                    ProcessControlSettingAction(gyroSwipeYDcs, device, cState, MappedState, eState,
-                        tp, fieldMapping, outputfieldMapping, deviceState, ref tempMouseDeltaX,
-                        ref tempMouseDeltaY, ctrl);
-                }
             }
 
             Queue<ControlToXInput> tempControl = customMapQueue[device];

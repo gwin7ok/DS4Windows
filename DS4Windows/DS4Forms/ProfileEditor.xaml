@@ -1656,7 +1656,6 @@
                                 <ComboBoxItem Content="{lex:Loc GyroControlsAccel}" />
                                 <ComboBoxItem Content="{lex:Loc Mouse}" />
                                 <ComboBoxItem Content="{lex:Loc MouseJoystick}" />
-                                <ComboBoxItem Content="{lex:Loc DirectionalSwipe}" />
                                 <ComboBoxItem Content="{lex:Loc Passthru}" />
                             </ComboBox>
                         </StackPanel>
@@ -2004,85 +2003,6 @@
 
                                     <StackPanel Orientation="Horizontal" Margin="0,8,0,8">
                                         <Button x:Name="gyroCalBtn1" Content="Reset Gyro Calibration" MinWidth="100" Padding="10,2" Click="GyroCalibration_Click" />
-                                    </StackPanel>
-                                </StackPanel>
-                            </TabItem>
-
-                            <TabItem Header="{lex:Loc DirectionalSwipe}" Visibility="Collapsed">
-                                <StackPanel x:Name="gyroDirSwipePanel">
-                                    <StackPanel Orientation="Horizontal" Margin="0,0,0,8">
-                                        <Button x:Name="gyroSwipeUpBtn" Content="Swipe Up" Width="100" Tag="{Binding GyroSwipeUp, Source={StaticResource controlIndexCheck}}" Click="GyroSwipeControlsBtn_Click" />
-                                        <Label x:Name="gyroSwipeUpLb" Content="{Binding MappingName,FallbackValue=Unassigned}" />
-                                    </StackPanel>
-
-                                    <StackPanel Orientation="Horizontal" Margin="0,0,0,8">
-                                        <Button x:Name="gyroSwipeDownBtn" Content="Swipe Down" Width="100" Tag="{Binding GyroSwipeDown, Source={StaticResource controlIndexCheck}}" Click="GyroSwipeControlsBtn_Click" />
-                                        <Label x:Name="gyroSwipeDownLb" Content="{Binding MappingName,FallbackValue=Unassigned}" />
-                                    </StackPanel>
-
-                                    <StackPanel Orientation="Horizontal" Margin="0,0,0,8">
-                                        <Button x:Name="gyroSwipeLeftBtn" Content="Swipe Left" Width="100" Tag="{Binding GyroSwipeLeft, Source={StaticResource controlIndexCheck}}" Click="GyroSwipeControlsBtn_Click" />
-                                        <Label x:Name="gyroSwipeLeftLb" Content="{Binding MappingName,FallbackValue=Unassigned}" />
-                                    </StackPanel>
-
-                                    <StackPanel Orientation="Horizontal" Margin="0,0,0,8">
-                                        <Button x:Name="gyroSwipeRightBtn" Content="Swipe Right" Width="100" Tag="{Binding GyroSwipeRight, Source={StaticResource controlIndexCheck}}" Click="GyroSwipeControlsBtn_Click" />
-                                        <Label x:Name="gyroSwipeRightLb" Content="{Binding MappingName,FallbackValue=Unassigned}" />
-                                    </StackPanel>
-
-                                    <StackPanel Orientation="Horizontal" Margin="0,8,0,0">
-                                        <Label Content="Triggers" />
-                                        <Button x:Name="gyroSwipeTrigBtn" Content="{Binding GyroSwipeTrigDisplay,FallbackValue=Always On}" MinWidth="160" Click="GyroSwipeTrigBtn_Click" >
-                                            <Button.ContextMenu>
-                                                <ContextMenu />
-                                            </Button.ContextMenu>
-                                        </Button>
-                                    </StackPanel>
-
-                                    <CheckBox Content="Turn Behavior - Turns Gyro" Margin="0,8,0,0"
-                                  IsChecked="{Binding GyroSwipeTurns}" ToolTip="{lex:Loc Resources:GyroTriggerBehavior}" />
-
-                                    <StackPanel Orientation="Horizontal" Margin="{StaticResource spaceMargin}">
-                                        <StackPanel>
-                                            <Label Content="Eval Cond." Margin="{StaticResource spaceMargin}" />
-                                            <ComboBox SelectedIndex="{Binding GyroSwipeEvalCondIndex,FallbackValue=0}">
-                                                <ComboBoxItem Content="And" />
-                                                <ComboBoxItem Content="Or" />
-                                            </ComboBox>
-                                        </StackPanel>
-
-                                        <StackPanel Margin="20,0,0,0">
-                                            <Label Content="X Axis" Margin="{StaticResource spaceMargin}" />
-                                            <ComboBox SelectedIndex="{Binding GyroSwipeXAxis,FallbackValue=0}">
-                                                <ComboBoxItem Content="Yaw" />
-                                                <ComboBoxItem Content="Roll" />
-                                            </ComboBox>
-                                        </StackPanel>
-                                    </StackPanel>
-
-                                    <StackPanel Orientation="Horizontal" Margin="{StaticResource spaceMargin}">
-                                        <Label Content="{lex:Loc DeadZoneX}" />
-                                        <xctk:IntegerUpDown d:IsHidden="True" MinWidth="60" Margin="8,0,0,0"
-                                                Value="{Binding GyroSwipeDeadZoneX}" Minimum="0" Maximum="2000" />
-                                        <Label Content="deg/sec." />
-                                    </StackPanel>
-
-                                    <StackPanel Orientation="Horizontal" Margin="{StaticResource spaceMargin}">
-                                        <Label Content="{lex:Loc DeadZoneY}" />
-                                        <xctk:IntegerUpDown d:IsHidden="True" MinWidth="60" Margin="8,0,0,0"
-                                                Value="{Binding GyroSwipeDeadZoneY}" Minimum="0" Maximum="2000" />
-                                        <Label Content="deg/sec." />
-                                    </StackPanel>
-
-                                    <StackPanel Orientation="Horizontal" Margin="0,0,0,8">
-                                        <Label Content="Delay Time" ContentStringFormat="{}{0}:" />
-                                        <xctk:IntegerUpDown d:IsHidden="True" MinWidth="60" Margin="8,0,0,0"
-                                                Value="{Binding GyroSwipeDelayTime}" Minimum="0" Maximum="5000" Increment="10" />
-                                        <Label Content="ms" />
-                                    </StackPanel>
-
-                                    <StackPanel Orientation="Horizontal" Margin="0,8,0,8">
-                                        <Button x:Name="gyroCalBtn2" Content="Reset Gyro Calibration" MinWidth="100" Padding="10,2" Click="GyroCalibration_Click" />
                                     </StackPanel>
                                 </StackPanel>
                             </TabItem>
