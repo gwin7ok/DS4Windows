@@ -73,10 +73,14 @@ namespace DS4WinWPF.DS4Forms.ViewModels.SpecialActions
             }
         }
 
-        /// <summary>Scan Code が効くのは、キーの割り当てだけ（ボタンのときは、チェックボックスを無効にする）。</summary>
-        public bool IsScanCodeEnabled => lastActionType != DS4ControlSettings.ActionType.Button;
+        /// <summary>Scan Code が効くのは、キーの割り当てだけ（ボタン、Default のときは、チェックボックスを無効にする）。</summary>
+        public bool IsScanCodeEnabled => lastActionType != DS4ControlSettings.ActionType.Button
+            && lastActionType != DS4ControlSettings.ActionType.Default;
 
-        /// <summary>Phase10-Step2 W4: 選ばれている割り当ての種別（<c>Key</c> か <c>Button</c>）。Controls のモードが、書き出しの分岐に使う。</summary>
+        /// <summary>
+        /// Phase10-Step2 W4: 選ばれている割り当ての種別（<c>Key</c> か <c>Button</c>）。Controls のモードが、書き出しの分岐に使う。
+        /// Phase10-Step3 W2: Controls のモードでは、<c>Default</c>（既定の割り当て）も取りうる（<see cref="ReadSettings"/> の <c>allowDefault</c>）。
+        /// </summary>
         public DS4ControlSettings.ActionType SelectedActionType => lastActionType;
 
         /// <summary>Phase10-Step2 W4: 選ばれているボタン（<c>X360Controls</c> の整数値）。キーのときは -1。</summary>
@@ -170,6 +174,9 @@ namespace DS4WinWPF.DS4Forms.ViewModels.SpecialActions
             UpdateToggleControls();
         }
 
+        /// <summary>Default が選ばれているときの表示（出力ピッカーの Default ボタンの表示と同じ）。</summary>
+        public const string DefaultText = "Default";
+
         public void UpdateDescribeText()
         {
             // If last binding was a Button, prefer showing the button name.
@@ -190,6 +197,10 @@ namespace DS4WinWPF.DS4Forms.ViewModels.SpecialActions
                 {
                     describeText = Properties.Resources.Unassigned;
                 }
+            }
+            else if (lastActionType == DS4ControlSettings.ActionType.Default)
+            {
+                describeText = DefaultText;
             }
             else
             {
@@ -214,9 +225,20 @@ namespace DS4WinWPF.DS4Forms.ViewModels.SpecialActions
             editorDeviceNum = deviceNum;
         }
 
-        public DS4ControlSettings PrepareSettings()
+        /// <summary>
+        /// 出力ピッカー（<c>BindingWindow</c>）へ渡す、一時的な設定を作る。
+        /// Phase10-Step3 W2: Controls のモードでは、対象のボタン（<paramref name="control"/>）と Extras を載せ、いまの割り当て（Button、Default を含む）も渡す
+        /// （ピッカーの Default ボタンが、そのボタンの既定値を使い、Extras のパネルに、いまの値が出るように）。
+        /// <paramref name="control"/> が <c>None</c>（SA のモード）のときは、従来どおり（キーの割り当てとして渡す）。
+        /// </summary>
+        public DS4ControlSettings PrepareSettings(DS4Controls control = DS4Controls.None, string extras = null)
         {
-            DS4ControlSettings settings = new DS4ControlSettings(DS4Controls.None);
+            DS4ControlSettings settings = new DS4ControlSettings(control);
+            if (control != DS4Controls.None && extras != null)
+            {
+                settings.extras = extras;
+            }
+
             settings.action.actionKey = value;
             // Ensure the keyType passed to the binding window reflects the editor's SwitchMode
             var keyTypeToPass = keyType;
@@ -232,11 +254,43 @@ namespace DS4WinWPF.DS4Forms.ViewModels.SpecialActions
             keyTypeToPass = useScanCode ? keyTypeToPass | DS4KeyType.ScanCode : keyTypeToPass & ~DS4KeyType.ScanCode;
             settings.keyType = keyTypeToPass;
             settings.actionType = DS4ControlSettings.ActionType.Key;
+            if (control != DS4Controls.None)
+            {
+                if (lastActionType == DS4ControlSettings.ActionType.Button && lastActionBtn >= 0)
+                {
+                    settings.actionType = DS4ControlSettings.ActionType.Button;
+                    settings.action.actionBtn = (X360Controls)lastActionBtn;
+                    settings.keyType &= ~DS4KeyType.Toggle;   // Button の Toggle は、割り当てエディターの Switch Mode が持つ（ピッカーは、書かない）
+                    if (lastActionBtn == (int)X360Controls.Unbound) settings.keyType |= DS4KeyType.Unbound;
+                }
+                else if (lastActionType == DS4ControlSettings.ActionType.Default)
+                {
+                    settings.actionType = DS4ControlSettings.ActionType.Default;
+                    settings.keyType = DS4KeyType.None;
+                    settings.action.actionKey = 0;
+                }
+            }
+
             return settings;
         }
 
-        public void ReadSettings(DS4ControlSettings settings, int deviceNum = -1)
+        /// <param name="allowDefault">
+        /// Phase10-Step3 W2: <c>true</c>（Controls のモード）のとき、<c>Default</c> の割り当てを「Default が選ばれた」状態として取り込む。
+        /// <c>false</c>（SA のモード。既定）では、従来どおり、キーの割り当てとして扱う（SA に「Default」はない）。
+        /// </param>
+        public void ReadSettings(DS4ControlSettings settings, int deviceNum = -1, bool allowDefault = false)
         {
+            if (allowDefault && settings.actionType == DS4ControlSettings.ActionType.Default)
+            {
+                lastActionType = DS4ControlSettings.ActionType.Default;
+                lastActionBtn = -1;
+                value = 0;
+                keyType = DS4KeyType.None;
+                UpdateDescribeText();
+                UpdateToggleControls();
+                return;
+            }
+
             // If the binding produced a Button action, show the button name
             if (settings.actionType == DS4ControlSettings.ActionType.Button)
             {

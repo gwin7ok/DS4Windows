@@ -466,6 +466,21 @@ namespace DS4WinWPF.DS4Forms
 
         private void PressKeySelectBtn_Click(object sender, RoutedEventArgs e)
         {
+            if (controlMode)
+            {
+                // Phase10-Step3 W2: Controls のモードは、対象のボタンと Extras を載せた一時設定を、Control のモードの出力ピッカーへ渡す。
+                // 結果は、Press Key の状態（Default を含む）と、編集用のコピーの Extras へ取り込む（元の設定は、Save まで変わらない）
+                DS4Windows.DS4ControlSettings controlSettings = pressKeyVM.PrepareSettings(controlTarget.Control, controlTarget.Extras);
+                BindingWindow controlWindow = editorWindowFactory.CreateBindingWindow(specialActVM.DeviceNum, controlSettings, targetDevice,
+                    BindingWindow.ExposeMode.Control);
+                controlWindow.Owner = App.Current.MainWindow;
+                controlWindow.ShowDialog();
+                pressKeyVM.ReadSettings(controlSettings, specialActVM.DeviceNum, allowDefault: true);
+                controlTarget.Extras = controlSettings.extras;
+                pressKeyVM.UpdateToggleControls();
+                return;
+            }
+
             DS4Windows.DS4ControlSettings settings = pressKeyVM.PrepareSettings();
             BindingWindow window = editorWindowFactory.CreateBindingWindow(specialActVM.DeviceNum, settings, targetDevice,
                 BindingWindow.ExposeMode.SpecialAction);

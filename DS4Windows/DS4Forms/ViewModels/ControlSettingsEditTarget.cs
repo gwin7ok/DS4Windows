@@ -12,13 +12,14 @@ namespace DS4WinWPF.DS4Forms.ViewModels
     /// 値を読み込み・書き出しする。<see cref="Apply"/>（Save）で、コピーを元へ反映し、反映しなければ（Cancel）、元は変わらない
     /// （従来の選択ダイアログ <c>BindingWindow</c> は、閉じると、元の設定を直接書き換えていた）。
     /// <para>
-    /// 対象は Default／Key／Button／Macro。<c>extras</c>（振動・ライトバー・マウス感度）は、編集せず、そのまま保って書き戻す（Extras の UI は Step4）。
+    /// 対象は Default／Key／Button／Macro。<c>extras</c>（振動・ライトバー・マウス感度）は、<see cref="WriteFrom"/> では変えず、出力ピッカーの結果を
+    /// <see cref="Extras"/> で取り込む（Phase10-Step3 W2。割り当てエディター自身には、Extras の欄を作らない）。
     /// Key と Button は、同じ入力（Press Key）で扱い、<b>Toggle は、Key と Button の両方に書く</b>（従来の <c>OutBinding.WriteBind</c> は、Key にしか書かず、
     /// Toggle つきの Button が、ダイアログを開いて閉じるだけで消えた。持ち越し C-5。<c>Phase10Step2W0ButtonToggleReproTests</c> で、その挙動を固定してある）。
     /// 保存形式（<c>keyType</c> の <c>Toggle</c> フラグ）は、Button でも、すでに読み書きでき、実行側も対応済みのため、変更は要らない。
     /// </para>
     /// <para>
-    /// TODO(Phase10-Step4): 呼び出しは、Step4 まで接続しない（Phase10-Step2-Plan.md §7 Q2＝接続しない）。
+    /// TODO(Phase10-Step3 W4): ProfileEditor からの呼び出しは、W4 で接続する（Phase10-Step3-Plan.md §3.4。順序の改訂で、旧 Step4 を繰り上げた）。
     /// </para>
     /// </summary>
     public sealed class ControlSettingsEditTarget : IActionEditTarget
@@ -45,6 +46,16 @@ namespace DS4WinWPF.DS4Forms.ViewModels
 
         /// <summary>編集の元。<see cref="Apply"/> のときだけ書き換わる。</summary>
         public DS4ControlSettings Original => original;
+
+        /// <summary>
+        /// Phase10-Step3 W2: 編集用のコピーの Extras（振動・ライトバー・マウス感度の文字列）。出力ピッカーで編集した結果を取り込む。
+        /// <see cref="WriteFrom"/> は、変えない。<see cref="Apply"/> で、元へ反映される（Cancel なら、反映されない）。
+        /// </summary>
+        public string Extras
+        {
+            get => working.extras;
+            set => working.extras = value ?? string.Empty;
+        }
 
         // ---- IActionEditTarget（名前は、ボタンの表示名で固定。検査なし）----
 
@@ -92,6 +103,10 @@ namespace DS4WinWPF.DS4Forms.ViewModels
 
             switch (working.actionType)
             {
+                case DS4ControlSettings.ActionType.Default:
+                    pressKey.ReadSettings(working, allowDefault: true);
+                    break;
+
                 case DS4ControlSettings.ActionType.Key:
                 case DS4ControlSettings.ActionType.Button:
                     pressKey.ReadSettings(working);
@@ -126,7 +141,9 @@ namespace DS4WinWPF.DS4Forms.ViewModels
             switch (descriptor.TypeId)
             {
                 case SpecialAction.ActionTypeId.Key:
-                    if (pressKey.SelectedActionType == DS4ControlSettings.ActionType.Button && pressKey.SelectedButton >= 0)
+                    if (pressKey.SelectedActionType == DS4ControlSettings.ActionType.Default)
+                        WriteDefault();
+                    else if (pressKey.SelectedActionType == DS4ControlSettings.ActionType.Button && pressKey.SelectedButton >= 0)
                         WriteButton(pressKey);
                     else
                         WriteKey(pressKey);
@@ -137,13 +154,18 @@ namespace DS4WinWPF.DS4Forms.ViewModels
                     break;
 
                 default:   // 0（None）
-                    working.keyType = DS4KeyType.None;
-                    working.action.actionKey = 0;
-                    working.actionType = DS4ControlSettings.ActionType.Default;
+                    WriteDefault();
                     break;
             }
 
             profileSettings.RefreshActionAlias(working);
+        }
+
+        private void WriteDefault()
+        {
+            working.keyType = DS4KeyType.None;
+            working.action.actionKey = 0;
+            working.actionType = DS4ControlSettings.ActionType.Default;
         }
 
         private void WriteKey(PressKeyViewModel pressKey)
