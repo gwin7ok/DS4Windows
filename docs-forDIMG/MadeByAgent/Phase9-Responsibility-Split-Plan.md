@@ -38,12 +38,14 @@
 - 対象: `getMouseMapping`（318 行）、`calculateFinalMouseMovement`、`GetMouseWheelMapping`、`TempMouseJoystick`、`GetByteMapping`、`GetBoolMapping`、`GetXYAxisMapping`、`getBool*Mapping` 群、`GetBoolMappingExternal`。
 - 前提: 値の特性化テスト。特殊アクション側の `getBoolSpecialActionMapping`／`GetBoolActionMapping` は、Phase8 の後の姿を見て扱う。
 
-### 9-C: マクロの再生（約 700 行）
-- 対象: `PlayMacro`、`PlayMacroTask`（230 行）、`PlayMacroCodeValue`（164 行）、`EndMacro*`、`RunLightbarMacro`。K3（マクロの二重実行防止。`MacroRuntimeState`）の恒久的な再設計を含む。
+### 9-C: マクロの再生（約 360 行。2026-10-21 に再計測）
+- **`Phase8-Fix-MacroRepeatUnify`（2026-10-21）の影響**: 死んだ経路（`macrodone`、`DispatchInFlight`、`EndMacro` の 3 オーバーロード）は削除済み、`PlayMacroTask` の重複は `RunMacroOnce` に統合済み、`HoldMacro` は `RepeatMacro` に統合済み。K3 の暫定対策も置き換え済みのため、**「K3 の恒久的な再設計」は 9-C から外れる**。`EndMacroDirect` は空実装で、TODO コメントを残してある。
+- 対象: `PlayMacro`（`Mapping.cs` 2964 行付近）、`PlayMacroTask`、`RunMacroOnce`、`PlayMacroCodeValue`（約 160 行）、`EndMacroDirect`、`RunLightbarMacro`。規模は約 700 行から約 360 行に縮小。
 - 注意: Phase8 の後の `IMacroPlayer`／`MacroAction` との境界を確認してから（Phase8 の Step7 で Macro 種別を切り替える際に、`PlayMacro` の呼び出しがどう変わるかに依存する）。
 
-### 9-D: `Mapping` の合成入力の確定と Controls タブのボタン割り当て（約 1,600 行）
-- 対象: `Commit`（176 行）と `SyntheticState` まわり、`MapCustom` の Controls タブ側、`ProcessControlSettingAction`（405 行）、`ShiftTrigger`。
+### 9-D: `Mapping` の合成入力の確定と Controls タブのボタン割り当て（**再計測で、ほぼ消滅。廃止を提案**）
+- 2026-10-21 の再計測: `ProcessControlSettingAction` は 405 行 → 約 30 行、`ShiftTrigger` は廃止済み。残るのは `Commit`（約 176 行）と `MapCustom`（約 505 行）。9-A〜9-C の各 Wave に吸収し、9-D 自体は廃止する案（Q7）。
+- 旧計画の対象: `Commit`（176 行）と `SyntheticState` まわり、`MapCustom` の Controls タブ側、`ProcessControlSettingAction`（405 行）、`ShiftTrigger`。
 - 注意: Phase8 は Controls タブのトリガー部分（Step3 以降で `ComboTriggerInputAction` に統一）を扱う。残る「ボタン → 出力の割り当て」部分を対象にする。
 
 ### 9-E: `ControlService` の責務分割（約 3,400 行）
@@ -51,7 +53,7 @@
 - 前提: OSC は競合の回帰テストのみで、送信内容を固定するテストがない。UDP・HidHide・出力デバイスは、実機が要る箇所が多い。ガードレール（6 大ガードレール。同一 XML 排他、適用時 Halt、スレッド直列化、On-Demand パス評価、ドライバ破棄順序、切断時クリーンアップ）を確実に守る。
 
 ### 9-F: アプリ層・UI のコードビハインド
-- **順序の注記（2026-10-20）**: `Phase10-Assignment-UI-Unification-Plan.md` の Step1（Controls／SA のマクロの割り当ての UI の共通化）は、`RecordBox`・`SpecialActionEditor`・`ProfileEditor` のコードビハインドを触るため、**9-F の前に行う**（二重の変更を避ける）。
+- **順序の注記（2026-10-21 改訂）**: `Phase10-Assignment-UI-Unification-Plan.md` は、範囲を「マクロだけ」から「割り当て編集画面の統合」（共通の編集画面、`BindingWindow` と `SpecialActionEditor` の置き換え）に拡大した。`RecordBox`・`SpecialActionEditor`・`BindingWindow`・`ProfileEditor` のコードビハインドを大きく作り直すため、**Phase10 全体を 9-F の前に行う**（二重の変更を避ける）。9-G も Phase10 の後に判断する。
 - 対象: `App.xaml.cs` の `Application_Startup`（393 行）と `CheckOptions`（136 行）→ 起動手順のクラス（Phase7-Step4 の起動順序・終了順序を維持）。`MainWindow` の `WndProc`（265 行）、電源イベント、コンストラクター（151 行・引数 18）。`ProfileEditor` の残りのイベントハンドラー（`Phase8` の Step4b で表を出した後）。
 - 前提: 起動順序の特性化（ホスト構築、ブートストラップ、設定の復元の順序）。実機（画面）での確認が必須。
 
@@ -108,6 +110,18 @@
 - Q4＝A: 名前空間・フォルダの再編（9-I の一部）は別の Phase（Phase10）にする。
 - Q5＝A: 9-H（第 1 層のデバイスクラス）は、K7b-1 の切り分けが済むまで着手しない。
 - Q6＝A: 各 Wave の前後で、1 フレームあたりの処理時間を簡易に計測して比較する。許容範囲の初期値は「悪化 5% 以内」とし、Phase9-0 で確定する。
+
+## 10. 再計測と前後関係の改訂（2026-10-21 追記、未承認の提案）
+
+- **`Mapping.cs`**: 4,626 行 → **4,406 行**（`Phase8-Fix-MacroRepeatUnify` で約 220 行減）。9-A（約 2,100 行）、9-B（約 600 行）の対象は、行数がほぼ変わらない。9-C は約 360 行に縮小（上記）。
+- **着手順の提案**: 9-A（4 Wave に分割）→ 9-B → 9-C → 9-E → **Phase10（割り当て編集画面の統合）** → 9-F → 9-G（判断）→ 9-I。9-D は廃止して吸収する。9-H は K7b-1 の切り分け後。
+- **Phase10 の名前空間・フォルダ再編との衝突**: Q4 は再編を「Phase10」に回すとしたが、Phase10 は割り当て編集画面の統合になった。再編は **Phase11** と読み替える。
+- **決定事項（2026-10-21、ユーザー承認）**:
+  - **Q7＝廃止して吸収**: 9-D を廃止し、残りの `Commit`／`MapCustom` は 9-A〜9-C の Wave で必要な分を切り出す。
+  - **Q8＝Phase10 を最初に**: **Phase10（割り当て編集画面の統合）を、Phase9 のどの Wave よりも先に行う**。着手順は Phase10 → 9-A → 9-B → 9-C → 9-E → 9-F → 9-G（判断）→ 9-I（上の「着手順の提案」を置き換える）。9-F・9-G は、Phase10 で作り直した画面を前提に行う。
+  - **Q9＝2 Wave**: 9-A を、(1) スティック・トリガー補正、(2) ジャイロ・フリックスティック・ステアリング較正の 2 Wave に分ける。
+  - **Q10＝Phase11 に読み替え**: Q4 の名前空間・フォルダ再編は Phase11。
+- 前提の注意: Phase10 は `Mapping` の補正・マウス変換の内部を変えないため、9-A の特性化テストは Phase10 の後に作っても、挙動の基準は変わらない。ただし Phase10 で `ControlBindingBuilder`／`ActionBindingBuilder` を拡張するため、9-B（マウス変換）の特性化テストは、その後の姿に対して作る。
 
 ## 9. Phase8 からの持ち越し（2026-10-20 追記）
 
