@@ -427,3 +427,17 @@ Step7 の 7.6 は、これで 4 種別（GyroCalibrate、DisconnectBT、BatteryC
 - **テスト**: `Phase8Step78f2W2ControlsMouseTests`。更新: 既定の区分の一覧、`ControlsKeyTestScope`、7.8e／7.8f-1 の旧経路の検査。
 - **残る旧経路**: アナログのホイール、マウスの移動、ジャイロスワイプ（7.8f-3）。旧経路の Button の枝は Step8 で削除する。
 - **実機確認（Step9。U-46）**: マウスのボタン 5 種、タッチパッドクリック、ホイール、Toggle（押すたびに 1 回だけ切り替わる）。
+
+## 7.8f-3 Controls タブの Button（マウスの移動・アナログのホイール）（2026-10-20。W0〜W2 完了。ビルド・テスト成功。実機確認は Step9 の U-47）
+
+計画書: `Phase8-Step7-8f-Plan.md` §5.6・§5.7（Q5＝B、Q6＝A、Q8＝A。他は推奨）。これで 7.8f（Controls タブの Button）の 3 つの PR がすべて完了した。
+
+- **対象**: Button のうち、マウスの移動（MouseUp／Down／Left／Right）と、元がスティック・トリガー・ジャイロのアナログのホイール（WUP／WDOWN）。Toggle つきも含む（`ButtonMouse` も要る）。
+- **W1**: `Phase8Step78f3W1ControlsAnalogMouseCharacterizationTests`（旧・新の両経路。ビルド・テスト成功）。
+- **W2**: `IMouseMoveFrameOutput`（デバイスごとの加算器。Q6＝A）、`ControlMouseMoveOutputAction`、`ControlAnalogWheelOutputAction`、区分 `ButtonAnalogMouse`、`IAnalogTriggerInput.GetMouseMovement`／`TriggerInput.MouseSampler`（旧 `getMouseMapping` を借りる）。`Mapping` の変更は、借り先の配線・今のフレームの入力の保持・フレーム最後の加算器の取り込みの 3 か所だけ。ビルド・テスト成功（§5.7）。
+- **承認済みの動作変更（Q5＝B）**: アナログのホイールの状態（端数・間隔の時刻）を束縛ごとに持つ。向きを変えても端数を捨てない、複数のアナログ元を同じ向きに割り当てても干渉しない、デジタルのホイールの繰り返し（`Commit` の 150ms）が遅れる癖がなくなる。
+- **ロールバック**: `ServiceRegistration` の `ButtonAnalogMouse` の 1 行を外す。
+- **テスト**: `Phase8Step78f3W2ControlsAnalogMouseTests`、`AnalogMouseTestHarness`、`RecordingVirtualKbmBase` のホイールの記録。
+- **残る旧経路**: ジャイロスワイプの割り当て（入力の作り方を確かめていないため、ビルダーの対象外のまま）、スティックのマウス・フリックスティックなど、dcs の外でマウスの移動量を足す処理。旧経路の Button の枝・`customMapQueue`・`GetMouseWheelMapping` などは Step8 で削除する。
+- **7.8f 全体の結果**: 区分 `ButtonPad`／`ButtonMouse`／`ButtonAnalogMouse` の 3 行で、Button の割り当てが新経路になった。承認済みの動作変更は、ジャイロの閾値（Q3＝A）、Toggle の是正（Q8＝A）、ホイールの状態（Q5＝B）の 3 つ。
+- **実機確認（Step9。U-47）**: マウスの移動 4 方向（ボタン元・スティック元）、アナログのホイール（トリガー・スティック元。軽い押下は遅い）、複数のアナログ元の同時、Extras との併用。
