@@ -149,3 +149,40 @@
 - **W4（完了 2026-10-21。ビルド・テスト成功、実機確認済み）**: `ProfileEditor` の接続。`controlEditorHost`（左ペイン全体に重ねるホスト）、共通の入口 `ShowControlAssignmentEditor`、6 か所の切り替え、二重に開かない判定（コントローラーの入力［タイマー］含む）。実機確認（4 点）は、概ね問題なし。
   - **実機確認での追加要望 1（ユーザー、2026-10-21）**: SA タブから SA を編集したとき、左ペインのタブが隠れず、ほかのタブへ切り替えられた → SA の新規・編集の編集画面も、Controls の割り当てエディターと同じ仕組み（`OpenLeftPaneEditor`／`CloseLeftPaneEditor`。左ペイン全体に重ねて、タブを隠す）で開くようにした。
   - **実機確認での追加要望 2（ユーザー、2026-10-21）**: 出力ピッカーに Default／Unbound ボタンがあるもの（Controls のモード）は、割り当てエディターの種別のプルダウンにも、Default と Unbound を選べる形で出し、出力ピッカーのボタンと同じ設定ができるようにする → Controls のモードだけの 2 項目を、種別の一覧の末尾に足した（添字 10＝Default、11＝Unbound。`ActionTypeCatalog(includeControlOnlyItems: true)`。Unbound は Button の Unbound）。**モードごとの入力の制限は、プルダウンの項目の表示・非表示だけで行う**（ユーザーの指示。最初は、添字 0 を Controls では「Default」と読み替え、検証にモードの条件を足したが、制御が 2 か所に分散するため取りやめた）: Controls のモードでは、添字 0 の「種別を選んでください」を隠し、SA のモードでは、足した 2 項目を隠す。検証（添字 0 は無効）と保存ボタン（添字 0 のとき無効）は、モードを区別せず、従来のまま。出力ピッカーで Default／Unbound を選んだら、プルダウンの項目も切り替わる。開き直したときは、Default の割り当ては Default の項目、Unbound の Button は Unbound の項目が選ばれる。テスト: `Phase10Step3W4DefaultUnboundTypeTests`。
+
+
+## 10. 完了の記録（2026-10-21）
+
+### 10.1 達成したこと
+
+| Wave | 内容 | 結果 |
+|---|---|---|
+| W0 | 特性化テスト（`OutBinding` の Extras の書式、`BindingWindowViewModel` の Default／Unbound／Key／Button の書き込みと Extras の保持、`ProfileEditor` の呼び出し 6 か所の構成） | 既存の癖（色の旗を下ろしても `FlashRate` が戻らない、色の判定は 3 チャンネルすべてが 255 以外のときだけ、Button は Toggle を書かない［C-5］）を固定 |
+| W1 | 出力ピッカー（`BindingWindow`）の表示モードの整理（`ForPressToggle`→`SpecialAction`、`Control` を追加。`Control` は Default／Unbound と Extras を出し、Record A Macro・Toggle・Scan Code を隠す） | SA の Press Key の回帰なし |
+| W2 | `PressKeyViewModel` の Default の状態（`ReadSettings` の `allowDefault`）と、ピッカーへ渡す一時設定（`PrepareSettings(control, extras)`）。`ControlSettingsEditTarget` の `Extras`（Save で反映、Cancel で破棄）と Default の読み書き。`SpecialActionEditor` の Controls のモードが、`Control` モードの出力ピッカーを開く | 回帰なし |
+| W3 | Controls のモードで、Macro タブの SA 専用の 3 項目を隠す（保存場所がないための暫定）。追加対応: 空のマクロの保存（SA）と、空のマクロの実行（Controls も SA と同じ。`ControlBindingBuilder`、`Mapping.PlayMacroTask` の繰り返しの間隔 50ms） | 実機で、Play Once は 1 回、Repeat は押している間実行・CPU 負荷なし・離すと停止 |
+| W4 | `ProfileEditor` の接続: 左ペイン全体に重ねるホスト `controlEditorHost`、共通の入口 `ShowControlAssignmentEditor`（6 か所とコントローラーの入力）、二重に開かない判定、SA の編集画面も同じ重ね表示（タブを隠す）、種別の一覧への Default／Unbound の追加 | 実機確認済み |
+
+### 10.2 実機確認で見つかり、是正した点
+
+| # | 内容 | 是正 |
+|---|---|---|
+| 1 | 空のマクロの SA が保存できない（「No macro defined」） | 検証を廃止（ユーザー承認）。空のマクロを実行し、何も出力しない |
+| 2 | 空のマクロで「Repeat」にしても、1 回しか実行されない（先に入れた空回り防止の `break` が原因） | 押している間、50ms の間隔を置いて繰り返す（CPU 負荷なし） |
+| 3 | SA タブから編集したとき、左ペインのタブが隠れず、ほかのタブへ切り替えられた | SA の新規・編集も、`OpenLeftPaneEditor`／`CloseLeftPaneEditor`（左ペイン全体に重ねる）で開く |
+| 4 | 出力ピッカーの Default／Unbound と同じ設定を、割り当てエディターの種別の一覧から選びたい（要望） | Controls のモードだけの 2 項目（添字 10＝Default、11＝Unbound）を足した。モードごとの制限は、一覧の項目の表示・非表示だけ（Controls は添字 0 を隠し、SA は 2 項目を隠す）。検証・保存ボタンは、モードを区別しない |
+| — | （調査のみ）空のマクロの試験中に「繰り返し・キューの滞留」に見えたのは、先に押した Circle の Toggle の `A`（`Synthetic_Key_0_17`）が、仕様（条件 2）どおり実行され続けていたもの | 不具合ではない（ログ `ds4windows_log_20261021_18.txt` で確認） |
+
+### 10.3 使われなくなったコード（撤去は Step6。規約 3.3 原則 4 の TODO コメントを付けてある）
+
+| コード | 状態 |
+|---|---|
+| `BindingWindow.ExposeMode.Full`（と、`Full` 専用の分岐） | `ProfileEditor` が呼ばなくなった。`Control` モードが、Controls 用の出力ピッカーとして残る |
+| `BindingWindow.ExposeMode.Keyboard` | 元から、呼び出し元なし |
+| `BindingWindow` の Record A Macro・Toggle・Scan Code のコード（`topOptsPanel`、`recordMacroBtn` ほか） | どのモードでも出さない |
+
+### 10.4 引き継ぎ
+
+- **Step3b**: Touchpad タブとジャイロタブを左ペインへ移す。あわせて、Axis Config の 4 つの入口（LS／RS の Outer Bind、L2／R2 の Full Pull）を、左ペインの Controls タブへ、ボタンとして追加する（これで、割り当てエディターの入口がすべて左ペインのタブのボタンになり、編集中は左ペイン全体が覆われるため、二重に開けない）。コントローラーの入力（タイマー）経由の判定は、安全装置として残す。
+- **Step4**: 保存形式の拡張（Controls で SA 専用の種別を保存・実行できるようにする）。Controls のモードで隠している Macro タブの 3 項目と、グレーアウトの種別を、順に出す。最終形（共通の割り当て定義と、束縛を作る builder の統合）は、マスター計画書 §5 を参照。
+- **既知の事項**: 割り当てエディターを開いたまま、プロファイルの「保存」「キャンセル」を押した場合は、エディターの未保存の内容を破棄する（SA の編集と同じ）。

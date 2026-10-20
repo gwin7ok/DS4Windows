@@ -13,7 +13,7 @@ Step1: `Phase10-Step1-Plan.md`
 |---|---|---|---|
 | Step1 | マクロの再生オプションの共通部品（Execute Mode、Scan Code）と、Press Key の Scan Code の移動 | **完了**（2026-10-21。W1〜W4 ビルド・テスト成功、実機確認済み） | `Phase10-Step1-Plan.md` |
 | Step2 | 共通の編集画面の骨格（ViewModel の分離、Controls／SA の 2 モード化、優先順位・抑制の仕様の特性化テスト） | **完了**（2026-10-21。W0〜W5。ビルド・テスト成功、実機確認済み） | `Phase10-Step2-Plan.md`（§9 に完了の記録、未接続のコードの一覧、Step3・4 への引き継ぎ） |
-| Step3（繰り上げ） | **Controls タブを割り当てエディターへ接続する**（選択ダイアログ `BindingWindow`＝出力ピッカーの統一、6 か所の呼び出しを、左ペイン全体に重ねる割り当てエディターへ切り替え） | W0〜W4 完了（2026-10-21）。次は W5（文書。実機確認の台帳、モデル図、完了の記録）、そのあと Step3b | `Phase10-Step3-Plan.md` |
+| Step3（繰り上げ） | **Controls タブを割り当てエディターへ接続する**（選択ダイアログ `BindingWindow`＝出力ピッカーの統一、6 か所の呼び出しを、左ペイン全体に重ねる割り当てエディターへ切り替え） | **完了（2026-10-21）**。完了の記録は `Phase10-Step3-Plan.md` §10。実機確認の台帳は `Phase6-Step11-RealDevice-Verification-Checklist.md` §15（P10-21 は未確認） | `Phase10-Step3-Plan.md` |
 | Step3b（追加） | Touchpad タブとジャイロタブを左ペインへ移す（レイアウトのみ。ユーザーの方針、2026-10-21） | 未着手 | |
 | Step4 | 保存形式の拡張と、Controls での SA 専用の種別の実行（旧 Step3＋旧 Step5）。Step3 のあとで、実施するか・後回しにするかを判断 | 未着手 | |
 | Step5 | SA 側のアナログ出力（旧 Step4b） | 未着手 | |
@@ -62,4 +62,4 @@ Step1: `Phase10-Step1-Plan.md`
 
 ## 6. 次の作業
 
-- Step3（Controls タブを共通画面へ接続する）の個別計画書（`Phase10-Step3-Plan.md`）を、ユーザーが確認してコミットする。承認後に、W0 から着手する（Q1〜Q4 は回答済み。Step3 の後に、Step3b［Touchpad・ジャイロのタブを左ペインへ移す］）。
+- Step3b（Touchpad タブとジャイロタブを左ペインへ移す。Axis Config の 4 つの入口を Controls タブへボタンとして追加）の個別計画書を作る。確認事項（レイアウトの幅、Axis Config のボタンの置き場所）をユーザーが決めてから着手する。

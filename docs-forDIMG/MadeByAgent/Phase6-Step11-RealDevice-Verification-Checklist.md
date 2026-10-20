@@ -305,3 +305,19 @@ Phase7 で先送りしてきた実機確認（§11 の U-11〜U-22（総合検�
 | P10-10 | SA の入力が無効なとき（トリガーのチェックをすべて外す、名前が空、種別未選択）に保存を押すと、編集画面が**空にならず**、エラーを表示したまま修正できる（以前からの不具合の是正） | ○ |
 | P10-11 | SA のモードの回帰（W3）: 名前の欄が編集できる。種別の一覧がすべて選べる | ○ |
 | P10-12 | SA の回帰（W4: `SpecialActionEditor` のコンストラクター、`PressKeyViewModel` の変更後）: 新規作成・編集・保存が従来どおり | ○ |
+
+## 15. Phase10-Step3 の実機確認（2026-10-21）
+
+`Phase10-Step3-Plan.md` の W1〜W4 を、実機（画面）で確認した。確認の途中で見つけた点（空のマクロの保存・Repeat、SA タブの編集中のタブ切り替え、Default／Unbound の保存）は、是正後に再確認した。
+
+| ID | 項目 | 結果 |
+|---|---|---|
+| P10-13 | SA の Press Key の回帰（W1／W2: 出力ピッカーの `SpecialAction` モード）: Select a Key で、Default／Unbound・Extras・Record・Toggle・Scan Code が出ず、選んだキーが反映・保存される | ○ |
+| P10-14 | SA の Macro タブの回帰（W3）: Run on trigger release／Synchronized Run／Keep key state が出て、保存・再読み込みで保たれる | ○ |
+| P10-15 | 空のマクロの SA: 保存できる。Play Once は 1 回で終わる。Repeat は押している間実行され、CPU 負荷が上がらず、離すと止まる | ○ |
+| P10-16 | Controls の絵のボタン・一覧のダブルクリックで、割り当てエディターが左ペイン全体に開く（タブの見出しが隠れ、画面の幅が変わらない）。Select a Key で出力ピッカーが開き、結果が Save で反映・Cancel で変わらない | ○ |
+| P10-17 | ほかの入口（Tilt、Swipe、Full Pull、Outer Bind、コントローラーのボタンを押す経路）でも、同じ割り当てエディターが開く | ○ |
+| P10-18 | 二重に開かない: 編集中に、ほかの入口を押しても、コントローラーのボタンを押しても、開き直さない | ○ |
+| P10-19 | SA タブの新規・編集でも、左ペインのタブが隠れ、切り替えられない。Save／Cancel で戻る | ○ |
+| P10-20 | Controls の割り当てエディターの種別のプルダウン: Default／Macro／Output Key/Mouse/Button／Unbound（「-Select an Action-」は出ない）。Default・Unbound を選んで Save でき、開き直すとその項目が選ばれる。出力ピッカーで Default／Unbound を選んで戻ると、プルダウンが切り替わる。SA のプルダウンは従来どおり | ○ |
+| P10-21 | Extras の設定（出力ピッカー）と、割り当てエディターの Save／Cancel での反映・破棄。既存のプロファイル（Extras・Macro・Toggle つき）の保存・動作が変わらない | 未確認（明示の報告なし。Step3b の確認とあわせて行う） |
