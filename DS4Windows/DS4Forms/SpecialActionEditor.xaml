@@ -63,7 +63,8 @@
                         <ComboBoxItem Content="{lex:Loc SpecialActionEdit.MultiAction}" />
                         <ComboBoxItem Content="{lex:Loc SpecialActionEdit.SixAxisWheelCalib}" />
                         <ComboBoxItem Content="{lex:Loc SpecialActionEdit.CalibrateGyro}" />
-                        <!-- Phase10-Step3: Controls のモードだけ（SA のモードでは、コードビハインドで隠す）。出力ピッカーの Unbound ボタンと同じ設定 -->
+                        <!-- Phase10-Step3: Controls のモードだけ（SA のモードでは、コードビハインドで隠す）。出力ピッカーの Default／Unbound ボタンと同じ設定 -->
+                        <ComboBoxItem x:Name="defaultTypeItem" Content="{lex:Loc Default}" />
                         <ComboBoxItem x:Name="unboundTypeItem" Content="{lex:Loc Unbound}" />
                     </ComboBox>
 
@@ -226,7 +227,9 @@
                                 <Label Content="secs" />
                             </StackPanel>
                         </TabItem>
-                        <!-- Phase10-Step3: 種別の「Unbound」（Controls のモードだけ）。入力欄はない -->
+                        <!-- Phase10-Step3: 種別の「Default」「Unbound」（Controls のモードだけ）。入力欄はない -->
+                        <TabItem x:Name="defaultActTab" Header="">
+                        </TabItem>
                         <TabItem x:Name="unboundActTab" Header="">
                         </TabItem>
                     </TabControl>

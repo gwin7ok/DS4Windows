@@ -86,7 +86,7 @@ namespace DS4WindowsTests
         {
             var rig = new Rig();
 
-            Assert.Equal(0, new ControlSettingsEditTarget(Default(), rig.Profile).InitialTypeIndex);
+            Assert.Equal(10, new ControlSettingsEditTarget(Default(), rig.Profile).InitialTypeIndex);   // Phase10-Step3: 「Default」の項目（添字 0 は、Controls のモードでは隠す）
             Assert.Equal(4, new ControlSettingsEditTarget(Key(65), rig.Profile).InitialTypeIndex);
             Assert.Equal(4, new ControlSettingsEditTarget(Button(X360Controls.A), rig.Profile).InitialTypeIndex);   // Button も Press Key の項目
             Assert.Equal(1, new ControlSettingsEditTarget(Macro(new[] { 350, 256 }), rig.Profile).InitialTypeIndex);
@@ -248,7 +248,7 @@ namespace DS4WindowsTests
             var rig = new Rig();
             var target = new ControlSettingsEditTarget(Default(), rig.Profile);
 
-            Assert.Throws<ArgumentOutOfRangeException>(() => target.WriteFrom(11, rig.PressKey, rig.Macro));   // Phase10-Step3: 添字 10 は「Unbound」（Controls のモードの項目）。範囲外は 11 から
+            Assert.Throws<ArgumentOutOfRangeException>(() => target.WriteFrom(12, rig.PressKey, rig.Macro));   // Phase10-Step3: 添字 10 は「Default」、11 は「Unbound」（Controls のモードの項目）。範囲外は 12 から
         }
 
         [Theory]

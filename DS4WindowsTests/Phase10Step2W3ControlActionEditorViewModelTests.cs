@@ -73,6 +73,8 @@ namespace DS4WindowsTests
         [InlineData(7, false)]   // Multi Action
         [InlineData(8, false)]   // 6 軸ホイール較正
         [InlineData(9, false)]   // ジャイロ較正
+        [InlineData(10, true)]   // Default（Controls のモードだけの項目。出力ピッカーの Default ボタンと同じ）
+        [InlineData(11, true)]   // Unbound（同上）
         public void OnlyTheTypesControlsCanSaveNow_AreSelectable(int index, bool expected)
         {
             Assert.Equal(expected, NewControlVm().IsTypeEnabled(index));
@@ -83,6 +85,7 @@ namespace DS4WindowsTests
         {
             ControlActionEditorViewModel vm = NewControlVm();
 
+            // 検証は、モードを区別しない（添字 0 は「種別を選んでください」で、無効）。Controls のモードは、画面が添字 0 の項目を隠して、選べなくする
             vm.ActionTypeIndex = 0;
             Assert.False(vm.IsValid(new SpecialAction("n", "n", "n", "n")));
             Assert.Equal(new[] { "Specify an action type" }, ErrorsOf(vm, "ActionTypeIndex"));

@@ -180,16 +180,19 @@ namespace DS4WinWPF.DS4Forms
             multiActTab.Visibility = Visibility.Collapsed;
             sixaxisWheelCalibrateTab.Visibility = Visibility.Collapsed;
             gyroCalibrateTab.Visibility = Visibility.Collapsed;
+            defaultActTab.Visibility = Visibility.Collapsed;
             unboundActTab.Visibility = Visibility.Collapsed;
 
-            // Phase10-Step3: 種別の一覧の、Controls のモードだけの項目。SA のモードでは、「Unbound」を隠す。
-            // Controls のモードでは、0（「種別を選んでください」）を「Default」と読む（出力ピッカーの Default ボタンと同じ設定。既定の割り当て）
+            // Phase10-Step3: 入力の制限は、種別の一覧の項目の表示・非表示だけで行う（検証・保存ボタンは、モードを区別しない）。
+            // Controls のモード: 「種別を選んでください」（添字 0）を隠す（選べるのは、Default／Macro／Output Key/Mouse/Button／Unbound）。
+            // SA のモード: Controls のモードだけの「Default」「Unbound」を隠す
             if (controlMode)
             {
-                ((ComboBoxItem)actionTypeCombo.Items[0]).Content = DS4WinWPF.Translations.Strings.Default;
+                ((ComboBoxItem)actionTypeCombo.Items[0]).Visibility = Visibility.Collapsed;
             }
             else
             {
+                defaultTypeItem.Visibility = Visibility.Collapsed;
                 unboundTypeItem.Visibility = Visibility.Collapsed;
             }
 
@@ -272,8 +275,7 @@ namespace DS4WinWPF.DS4Forms
 
         private void ActionTypeCombo_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            // Controls のモードの 0 は「Default」（保存できる）。SA のモードの 0 は「種別を選んでください」（保存できない）
-            if (specialActVM.ActionTypeIndex <= 0 && !controlMode)
+            if (specialActVM.ActionTypeIndex <= 0)
             {
                 saveBtn.IsEnabled = false;
             }
@@ -502,7 +504,7 @@ namespace DS4WinWPF.DS4Forms
                 // 出力ピッカーで Default／Unbound を選んだときは、種別の一覧の「Default」「Unbound」の項目へ切り替える（一覧と、選んだ内容を一致させる）
                 if (pressKeyVM.SelectedActionType == DS4Windows.DS4ControlSettings.ActionType.Default)
                 {
-                    actionTypeCombo.SelectedIndex = 0;
+                    actionTypeCombo.SelectedIndex = specialActVM.TypeCatalog.DefaultIndex;
                 }
                 else if (pressKeyVM.SelectedActionType == DS4Windows.DS4ControlSettings.ActionType.Button
                     && pressKeyVM.SelectedButton == (int)DS4Windows.X360Controls.Unbound)

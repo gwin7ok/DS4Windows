@@ -15,14 +15,20 @@ namespace DS4WinWPF.DS4Forms.ViewModels
         private readonly SpecialAction.ActionTypeId[] typeIds;
 
         /// <summary>
-        /// Phase10-Step3: Controls のモードの項目（<c>Unbound</c>）を足した一覧の添字。足していない一覧（SA のモード）では -1。
+        /// Phase10-Step3: Controls のモードの項目「Default」（既定の割り当て）の添字。足していない一覧（SA のモード）では -1。
+        /// </summary>
+        public int DefaultIndex { get; }
+
+        /// <summary>
+        /// Phase10-Step3: Controls のモードの項目「Unbound」（Button の Unbound。出力先がない）の添字。足していない一覧（SA のモード）では -1。
         /// </summary>
         public int UnboundIndex { get; }
 
         /// <param name="includeControlOnlyItems">
-        /// Phase10-Step3: <c>true</c>（Controls のモード）のとき、末尾に「Unbound」の項目（添字 10）を足す。出力ピッカーの Unbound ボタンと同じ設定
-        /// （Button の Unbound。出力先がない）を、種別の一覧から選べるようにするため。Default は、添字 0（Controls では、「種別を選んでください」ではなく
-        /// 「Default」と表示する）が表す。足さない一覧（SA のモード、既定）は、従来の <c>typeAssoc</c> と同じ並び。
+        /// Phase10-Step3: <c>true</c>（Controls のモード）のとき、末尾に「Default」（添字 10）と「Unbound」（添字 11）の項目を足す。出力ピッカーの
+        /// Default／Unbound ボタンと同じ設定を、種別の一覧から選べるようにするため。画面は、これらの項目の表示・非表示だけで、モードごとの入力を制限する
+        /// （Controls のモードでは、添字 0 の「種別を選んでください」を隠し、SA のモードでは、足した 2 項目を隠す。検証は、モードを区別しない）。
+        /// 足さない一覧（SA のモード、既定）は、従来の <c>typeAssoc</c> と同じ並び。
         /// </param>
         public ActionTypeCatalog(bool includeControlOnlyItems = false)
         {
@@ -44,12 +50,16 @@ namespace DS4WinWPF.DS4Forms.ViewModels
                 new ActionTypeDescriptor(9, SpecialAction.ActionTypeId.GyroCalibrate, "SpecialActionEdit.CalibrateGyro", Both, SaOnly),
             };
 
+            DefaultIndex = -1;
             UnboundIndex = -1;
             if (includeControlOnlyItems)
             {
                 const ActionEditorModes ControlOnly = ActionEditorModes.Control;
+                // 種別の ID は、Default が None（0 番の「種別を選んでください」と同じ。IndexOf(None) は、先頭の 0 を返すため、衝突しない）、
+                // Unbound が Button（Button の割り当ての 1 つ。IndexOf(Button) は、Key の項目を返すため、衝突しない）
+                DefaultIndex = items.Count;
+                items.Add(new ActionTypeDescriptor(DefaultIndex, SpecialAction.ActionTypeId.None, "Default", ControlOnly, ControlOnly));
                 UnboundIndex = items.Count;
-                // 種別の ID は Button（Unbound は、Button の割り当ての 1 つ）。IndexOf(Button) は、Key の項目を返すため、衝突しない
                 items.Add(new ActionTypeDescriptor(UnboundIndex, SpecialAction.ActionTypeId.Button, "Unbound", ControlOnly, ControlOnly));
             }
 

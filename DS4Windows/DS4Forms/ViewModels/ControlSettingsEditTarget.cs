@@ -76,7 +76,8 @@ namespace DS4WinWPF.DS4Forms.ViewModels
         // ---- 読み込み ----
 
         /// <summary>
-        /// 編集画面の種別の一覧の、初期の添字。Key と Button は、Press Key の項目、Macro は Macro の項目、Default は 0（「種別を選んでください」）。
+        /// 編集画面の種別の一覧の、初期の添字。Key と Button は、Press Key の項目、Macro は Macro の項目、Default は「Default」の項目、
+        /// Unbound の Button は「Unbound」の項目（Controls のモードは、添字 0 の「種別を選んでください」を選べない）。
         /// </summary>
         public int InitialTypeIndex
         {
@@ -93,7 +94,7 @@ namespace DS4WinWPF.DS4Forms.ViewModels
                     case DS4ControlSettings.ActionType.Macro:
                         return typeCatalog.IndexOf(SpecialAction.ActionTypeId.Macro);
                     default:
-                        return 0;
+                        return typeCatalog.DefaultIndex;
                 }
             }
         }
@@ -141,8 +142,15 @@ namespace DS4WinWPF.DS4Forms.ViewModels
             if (typeIndex != 0 && !descriptor.IsSavableIn(ActionEditorModes.Control))
                 throw new ArgumentException("この種別は、Controls には、まだ保存できない（Step3 の保存形式の拡張まで）: " + descriptor.TypeId, nameof(typeIndex));
 
-            // Phase10-Step3: 種別の一覧の「Unbound」の項目（出力ピッカーの Unbound ボタンと同じ。Button の Unbound）。添字 0 は、既定（Default）
-            if (typeIndex != 0 && typeIndex == typeCatalog.UnboundIndex)
+            // Phase10-Step3: 種別の一覧の「Default」「Unbound」の項目（出力ピッカーの Default／Unbound ボタンと同じ。Unbound は Button の Unbound）
+            if (typeIndex == typeCatalog.DefaultIndex)
+            {
+                WriteDefault();
+                profileSettings.RefreshActionAlias(working);
+                return;
+            }
+
+            if (typeIndex == typeCatalog.UnboundIndex)
             {
                 WriteUnbound();
                 profileSettings.RefreshActionAlias(working);
