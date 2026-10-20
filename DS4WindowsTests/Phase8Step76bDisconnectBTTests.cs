@@ -59,7 +59,7 @@ namespace DS4WindowsTests
         [Fact]
         public void ABluetoothDisconnect_IsRequestedOnce_AndTheFrameIsCutEveryFrame()
         {
-            using var t = new SpecialActionTestScope(true);
+            using var t = new SpecialActionTestScope();
             var port = new RecordingControllerDisconnectPort();
             SpecialAction dc = AddDisconnect(t, "L1", port);
             SpecialAction key = AddKeyAfter(t, port);
@@ -80,7 +80,7 @@ namespace DS4WindowsTests
         [Fact]
         public void AFailedRequest_IsRetriedWhileHeld_UntilItSucceeds()
         {
-            using var t = new SpecialActionTestScope(true);
+            using var t = new SpecialActionTestScope();
             var port = new RecordingControllerDisconnectPort();
             port.BluetoothResults.Enqueue(false);
             port.BluetoothResults.Enqueue(false);   // 3 回目から成功（既定）
@@ -106,7 +106,7 @@ namespace DS4WindowsTests
         [Fact]
         public void AfterTheTriggerIsReleased_ThePressDisconnectsAgain()
         {
-            using var t = new SpecialActionTestScope(true);
+            using var t = new SpecialActionTestScope();
             var port = new RecordingControllerDisconnectPort();
             AddDisconnect(t, "L1", port);
 
@@ -124,7 +124,7 @@ namespace DS4WindowsTests
         [InlineData(DisconnectTargetKind.Dongle)]
         public void WhenTheControllerCannotBeDisconnectedOverBluetooth_NothingIsRequested_AndTheFrameIsNotCut(DisconnectTargetKind kind)
         {
-            using var t = new SpecialActionTestScope(true);
+            using var t = new SpecialActionTestScope();
             var port = new RecordingControllerDisconnectPort { Kind = kind };
             AddDisconnect(t, "L1", port);
             SpecialAction key = AddKeyAfter(t, port);
@@ -141,7 +141,7 @@ namespace DS4WindowsTests
         [Fact]
         public void WhileTheFreshPressGuardIsOn_NothingIsRequested()
         {
-            using var t = new SpecialActionTestScope(true);
+            using var t = new SpecialActionTestScope();
             var port = new RecordingControllerDisconnectPort();
             AddDisconnect(t, "L1", port, freshPressGuard: true);
 
@@ -154,7 +154,7 @@ namespace DS4WindowsTests
         [Fact]
         public void AndCondition_NeedsAllTheTriggers()
         {
-            using var t = new SpecialActionTestScope(true);
+            using var t = new SpecialActionTestScope();
             var port = new RecordingControllerDisconnectPort();
             AddDisconnect(t, "L1/R1", port);
 
@@ -171,7 +171,7 @@ namespace DS4WindowsTests
         [Fact]
         public void ADongle_DisconnectsAfterTheTriggerIsReleased_AndTheControllerIsIdle()
         {
-            using var t = new SpecialActionTestScope(true);
+            using var t = new SpecialActionTestScope();
             var port = new RecordingControllerDisconnectPort { Kind = DisconnectTargetKind.Dongle, Idle = false };
             AddDisconnect(t, "L1", port);
 
@@ -196,7 +196,7 @@ namespace DS4WindowsTests
         [Fact]
         public void ADongleThatIsNotSynced_DoesNotDisconnect()
         {
-            using var t = new SpecialActionTestScope(true);
+            using var t = new SpecialActionTestScope();
             var port = new RecordingControllerDisconnectPort { Kind = DisconnectTargetKind.Dongle, DongleSynced = false };
             AddDisconnect(t, "L1", port);
 
@@ -230,7 +230,7 @@ namespace DS4WindowsTests
         {
             WithTheTriggerButtonsKeyAssigned(_ =>
             {
-                using var t = new SpecialActionTestScope(true);
+                using var t = new SpecialActionTestScope();
                 var port = new RecordingControllerDisconnectPort();
                 port.BluetoothResults.Enqueue(false);   // 1 回目は失敗
                 AddDisconnect(t, "L1", port);
@@ -252,7 +252,7 @@ namespace DS4WindowsTests
         {
             WithTheTriggerButtonsKeyAssigned(_ =>
             {
-                using var t = new SpecialActionTestScope(true);
+                using var t = new SpecialActionTestScope();
                 var port = new RecordingControllerDisconnectPort { Kind = DisconnectTargetKind.Dongle };
                 AddDisconnect(t, "L1", port);
                 int before = t.Scope.Recorder.KeyReleases.Count;
@@ -271,7 +271,7 @@ namespace DS4WindowsTests
         [Fact]
         public void TheBuilder_BuildsTheBindingOnlyWithAPort()
         {
-            using var t = new SpecialActionTestScope(true);
+            using var t = new SpecialActionTestScope();
             var port = new RecordingControllerDisconnectPort();
             SpecialAction sa = AddDisconnect(t, "L1", port);
 
@@ -297,7 +297,7 @@ namespace DS4WindowsTests
             LogManager.Configuration = config;
             try
             {
-                using (var t = new SpecialActionTestScope(true))
+                using (var t = new SpecialActionTestScope())
                 {
                     SpecialAction sa = t.Add(new SpecialAction(name, "L1", "DisconnectBT", string.Empty, 0, string.Empty));
                     t.StateOf(sa).RequiresFreshPressAfterReset = false;
@@ -357,7 +357,7 @@ namespace DS4WindowsTests
         {
             // 同じ件数の DisconnectBT で、トリガーが押されていない（R1。押すのは L1）場合を基準にする（Phase8Step76aGyroCalibrateTests と同じ方式）
             long baseline;
-            using (var t = new SpecialActionTestScope(true))
+            using (var t = new SpecialActionTestScope())
             {
                 AddDisconnect(t, "R1", new RecordingControllerDisconnectPort());
                 baseline = AllocatedWhileHeld(t);
@@ -365,7 +365,7 @@ namespace DS4WindowsTests
 
             long withDisconnect;
             var port = new RecordingControllerDisconnectPort();
-            using (var t = new SpecialActionTestScope(true))
+            using (var t = new SpecialActionTestScope())
             {
                 AddDisconnect(t, "L1", port);
                 withDisconnect = AllocatedWhileHeld(t);

@@ -14,6 +14,7 @@ namespace DS4WindowsTests
     /// 後半は、W2 で新経路を実装したあと、旧・新の両経路（<c>InlineData(false)</c>／<c>InlineData(true)</c>）の検査にした（7.5a-W2）。
     /// 観察は、<see cref="RecordingProfileApplicationService"/>（<c>InstallProfileRecorder</c>）で、実際のプロファイルの読込・適用は走らせない。
     /// 他の Host 構築テストと同じコレクションで直列に実行する。
+    /// Phase8-Step8 8d（持ち越し C-2）: 旧経路は削除済み。以前の「旧・新の両経路の比べ」は、新経路の期待値の固定（比べを除いた、残りの検査）に変えた。
     /// </summary>
     [Collection("ServiceProviderHolder")]
     public class Phase8Step75aW1ProfileSwitchDualPathTests
@@ -37,10 +38,10 @@ namespace DS4WindowsTests
         }
 
         /// <summary>入力の列を流し、フレームごとの（累計の切替の回数、累計の復帰の回数）を返す。</summary>
-        private static List<(int Applies, int Restores)> Run(bool migrated, string triggers, bool freshPressGuard, bool executing,
+        private static List<(int Applies, int Restores)> Run(string triggers, bool freshPressGuard, bool executing,
             DS4State[] frames, double delay = 0, int applyBeforeFrame = -1)
         {
-            using var t = new SpecialActionTestScope(migrated);
+            using var t = new SpecialActionTestScope();
             RecordingProfileApplicationService recorder = t.InstallProfileRecorder();
             SpecialAction sa = AddProfile(t, triggers, delay);
             ActionInstanceState state = t.StateOf(sa);
@@ -63,87 +64,54 @@ namespace DS4WindowsTests
         // ---- 前半: 旧・新の両経路 ----
 
         [Fact]
-        public void Sequence_BothPathsSwitchTheSameNumberOfTimes()
+        public void Sequence_SwitchesOnce()
         {
             DS4State[] frames = { Frame(false), Frame(true), Frame(true), Frame(true), Frame(false), Frame(false) };
 
-            var legacy = Run(false, "L1", false, false, frames);
-            var migrated = Run(true, "L1", false, false, frames);
+            var result = Run("L1", false, false, frames);
 
-            Assert.Equal(legacy, migrated);
-            Assert.Equal(1, legacy.Last().Applies);      // 押して 1 回だけ切り替える（保持中は再び切り替えない）
-            Assert.Equal(0, legacy.Last().Restores);     // 復帰なしの切替は、離しても復帰しない
+            Assert.Equal(1, result.Last().Applies);      // 押して 1 回だけ切り替える（保持中は再び切り替えない）
+            Assert.Equal(0, result.Last().Restores);     // 復帰なしの切替は、離しても復帰しない
         }
 
         [Fact]
-        public void WhileTheFreshPressGuardIsOn_NothingSwitches_OnEitherPath()
+        public void WhileTheFreshPressGuardIsOn_NothingSwitches()
         {
             DS4State[] frames = { Frame(true), Frame(true), Frame(true) };
 
-            var legacy = Run(false, "L1", true, false, frames);
-            var migrated = Run(true, "L1", true, false, frames);
+            var result = Run("L1", true, false, frames);
 
-            Assert.Equal(legacy, migrated);
-            Assert.Equal(0, legacy.Last().Applies);
+            Assert.Equal(0, result.Last().Applies);
         }
 
         [Fact]
-        public void WhileExecuting_NothingSwitches_OnEitherPath()
+        public void WhileExecuting_NothingSwitches()
         {
             DS4State[] frames = { Frame(true), Frame(true), Frame(false), Frame(true) };
 
-            var legacy = Run(false, "L1", false, true, frames);
-            var migrated = Run(true, "L1", false, true, frames);
+            var result = Run("L1", false, true, frames);
 
-            Assert.Equal(legacy, migrated);
-            Assert.Equal(0, legacy.Last().Applies);
+            Assert.Equal(0, result.Last().Applies);
         }
 
         [Fact]
-        public void AndCondition_BothPathsSwitchTheSameNumberOfTimes()
+        public void AndCondition_SwitchesOnce()
         {
             DS4State[] frames = { Frame(false, false), Frame(true, false), Frame(true, true), Frame(true, true), Frame(false, true), Frame(false, false) };
 
-            var legacy = Run(false, "L1/R1", false, false, frames);
-            var migrated = Run(true, "L1/R1", false, false, frames);
+            var result = Run("L1/R1", false, false, frames);
 
-            Assert.Equal(legacy, migrated);
-            Assert.Equal(1, legacy.Last().Applies);
-        }
-
-        [Fact]
-        public void AProfileApplyWhileHeld_BothPathsGiveTheSameCounts()
-        {
-            // 押している最中（フレーム 3 の前）に、適用の後始末が入る（再現。記録用の実装は、適用を呼ばない）
-            DS4State[] frames = { Frame(false), Frame(true), Frame(true), Frame(true), Frame(true), Frame(false), Frame(false) };
-
-            var legacy = Run(false, "L1", false, false, frames, applyBeforeFrame: 3);
-            var migrated = Run(true, "L1", false, false, frames, applyBeforeFrame: 3);
-
-            Assert.Equal(legacy, migrated);
-        }
-
-        [Fact]
-        public void ADelay_BehavesTheSame_OnEitherPath()
-        {
-            DS4State[] frames = { Frame(true), Frame(true), Frame(false), Frame(true) };
-
-            var legacy = Run(false, "L1", false, false, frames, delay: 60);
-            var migrated = Run(true, "L1", false, false, frames, delay: 60);
-
-            Assert.Equal(legacy, migrated);
+            Assert.Equal(1, result.Last().Applies);
         }
 
         // ---- 後半: 新経路に、まだ無い項目（旧経路の挙動の固定。W2 で新経路を足す）----
 
-        [Theory]
-        [InlineData(false)]
-        [InlineData(true)]
-        public void AfterTheSwitch_TheRestOfTheFrameIsNotProcessed(bool migrated)
+        [Fact]
+        public void AfterTheSwitch_TheRestOfTheFrameIsNotProcessed()
         {
             // 切替（Intent-Decisions 項目 5）のあと、同じフレームの後ろの特殊アクションは処理されない（旧ループの return）。
             // 後ろの Key は、次のフレーム（切替が済んでいる）で処理される。
-            using var t = new SpecialActionTestScope(migrated);
+            using var t = new SpecialActionTestScope();
             t.InstallProfileRecorder().SimulateStateReset = false;   // 状態の掃除をしない（Key の状態を、そのまま観察する）
             AddProfile(t, "L1");
             SpecialAction key = t.AddKey("L1", toggle: false);
@@ -159,10 +127,8 @@ namespace DS4WindowsTests
             Assert.True(nextFrame);              // 次のフレームで、処理される
         }
 
-        [Theory]
-        [InlineData(false)]
-        [InlineData(true)]
-        public void TheKeysOfTheTriggerButtonsOwnAssignment_AreReleasedBeforeTheSwitch(bool migrated)
+        [Fact]
+        public void TheKeysOfTheTriggerButtonsOwnAssignment_AreReleasedBeforeTheSwitch()
         {
             // トリガーのボタン（L1）の通常の割り当てがキーなら、切替の前にそのキーを離す
             DS4ControlSettings dcs = TestGlobals.Store.GetDS4CSetting(MappingCharacterizationScope.Device, DS4Controls.L1);
@@ -172,7 +138,7 @@ namespace DS4WindowsTests
                 dcs.actionType = DS4ControlSettings.ActionType.Key;
                 dcs.action.actionKey = 65;
 
-                using var t = new SpecialActionTestScope(migrated);
+                using var t = new SpecialActionTestScope();
                 RecordingProfileApplicationService recorder = t.InstallProfileRecorder();
                 AddProfile(t, "L1");
                 int before = t.Scope.Recorder.KeyReleases.Count;
@@ -188,14 +154,12 @@ namespace DS4WindowsTests
             }
         }
 
-        [Theory]
-        [InlineData(false)]
-        [InlineData(true)]
-        public void WhileATemporaryProfileHasAPendingProfileUntrigger_AnotherSwitchDoesNotStart(bool migrated)
+        [Fact]
+        public void WhileATemporaryProfileHasAPendingProfileUntrigger_AnotherSwitchDoesNotStart()
         {
             // 連鎖の防止: 一時プロファイルの間、復帰の合図が Profile なら、別の Profile 切替を始めない
             IProfileSettingsService settings = TestHost.GetService<IProfileSettingsService>();
-            using var t = new SpecialActionTestScope(migrated);
+            using var t = new SpecialActionTestScope();
             bool savedTemp = settings.GetUseTempProfile(t.Device);
             try
             {

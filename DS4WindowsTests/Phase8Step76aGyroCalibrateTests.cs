@@ -49,7 +49,7 @@ namespace DS4WindowsTests
         [Fact]
         public void Calibrates_OncePerPress_WithTheSlotIndex()
         {
-            using var t = new SpecialActionTestScope(true);
+            using var t = new SpecialActionTestScope();
             var port = new RecordingGyroCalibrationPort();
             SpecialAction sa = AddGyro(t, "L1", port);
             Assert.True(t.Engine.Owns(t.Device, sa));
@@ -74,7 +74,7 @@ namespace DS4WindowsTests
         [Fact]
         public void WhileTheFreshPressGuardIsOn_NothingIsCalibrated()
         {
-            using var t = new SpecialActionTestScope(true);
+            using var t = new SpecialActionTestScope();
             var port = new RecordingGyroCalibrationPort();
             AddGyro(t, "L1", port, freshPressGuard: true);
 
@@ -88,7 +88,7 @@ namespace DS4WindowsTests
         [Fact]
         public void AndCondition_NeedsAllTheTriggers()
         {
-            using var t = new SpecialActionTestScope(true);
+            using var t = new SpecialActionTestScope();
             var port = new RecordingGyroCalibrationPort();
             AddGyro(t, "L1/R1", port);
 
@@ -103,7 +103,7 @@ namespace DS4WindowsTests
         [Fact]
         public void TheBuilder_BuildsTheBindingOnlyWithAPort()
         {
-            using var t = new SpecialActionTestScope(true);
+            using var t = new SpecialActionTestScope();
             var port = new RecordingGyroCalibrationPort();
             SpecialAction sa = AddGyro(t, "L1", port);
 
@@ -119,7 +119,7 @@ namespace DS4WindowsTests
 
         // ---- ログ ----
 
-        private static List<string> RunLogged(bool migrated, string name, LogLevel minLevel, RecordingGyroCalibrationPort port)
+        private static List<string> RunLogged(string name, LogLevel minLevel, RecordingGyroCalibrationPort port)
         {
             LoggingConfiguration saved = LogManager.Configuration;
             var target = new MemoryTarget("p8s76a") { Layout = "${level}|${message}" };
@@ -129,13 +129,13 @@ namespace DS4WindowsTests
             LogManager.Configuration = config;
             try
             {
-                using (var t = new SpecialActionTestScope(migrated))
+                using (var t = new SpecialActionTestScope())
                 {
                     SpecialAction sa = t.Add(new SpecialAction(name, "L1", "GyroCalibration", string.Empty, 0, string.Empty));
                     t.StateOf(sa).RequiresFreshPressAfterReset = false;
-                    if (migrated) TestHost.GetService<IActionRegistry>().Replace(t.Device, NewBuilder(port).Build(t.Device));
+                    TestHost.GetService<IActionRegistry>().Replace(t.Device, NewBuilder(port).Build(t.Device));
                     t.RunFrame(Frame(false));
-                    t.RunFrame(Frame(true));   // 立ち上がりの 1 フレームだけ（旧経路は、実機がなく、効果の分岐で止まるため、保持中は繰り返される）
+                    t.RunFrame(Frame(true));   // 立ち上がりの 1 フレームだけ
                 }
 
                 return target.Logs.Where(l => l.Contains(name)
@@ -149,17 +149,16 @@ namespace DS4WindowsTests
         }
 
         [Fact]
-        public void TheRisingTraceLines_AreTheSameAsTheLegacyPath_AndTheDebugLineIsAdded()
+        public void TheRisingTraceLines_AndTheDebugLineAreLogged()
         {
             string name = "p8s76a_log_" + Guid.NewGuid().ToString("N");
 
-            List<string> legacy = RunLogged(false, name, LogLevel.Trace, null).Take(4).ToList();
-            List<string> migrated = RunLogged(true, name, LogLevel.Trace, new RecordingGyroCalibrationPort());
+            List<string> logged = RunLogged(name, LogLevel.Trace, new RecordingGyroCalibrationPort());
 
-            Assert.Equal(4, legacy.Count);
-            Assert.Equal(legacy, migrated.Take(4).ToList());
-            Assert.Contains(migrated, l => l.StartsWith("Debug|SpecialAction GyroCalibrate: device=") && l.Contains($"name={name}") && l.Contains("ActionEntries="));
-            Assert.Equal(5, migrated.Count);   // Trace 4 行 + Debug 1 行（立ち上がりの 1 回だけ）
+            Assert.Contains(logged, l => l.Contains("Trigger detected for SA"));
+            Assert.Contains(logged, l => l.Contains("maps to Type"));
+            Assert.Contains(logged, l => l.StartsWith("Debug|SpecialAction GyroCalibrate: device=") && l.Contains($"name={name}") && l.Contains("ActionEntries="));
+            Assert.Equal(5, logged.Count);   // Trace 4 行 + Debug 1 行（立ち上がりの 1 回だけ）
         }
 
         [Fact]
@@ -167,7 +166,7 @@ namespace DS4WindowsTests
         {
             string name = "p8s76a_off_" + Guid.NewGuid().ToString("N");
 
-            Assert.Empty(RunLogged(true, name, LogLevel.Warn, new RecordingGyroCalibrationPort()));
+            Assert.Empty(RunLogged(name, LogLevel.Warn, new RecordingGyroCalibrationPort()));
         }
 
         // ---- 割り当て ----
@@ -188,7 +187,7 @@ namespace DS4WindowsTests
             // 1 フレームの割り当ては、テストの足場（入力のコピー、特殊アクションがあるときの一覧の複製など）が約 6 KB 持つ。
             // 同じ件数の GyroCalibrate で、トリガーが押されていない（R1。押すのは L1）場合を基準にして、成立中に増えないことを確かめる
             long baseline;
-            using (var t = new SpecialActionTestScope(true))
+            using (var t = new SpecialActionTestScope())
             {
                 AddGyro(t, "R1", new RecordingGyroCalibrationPort());
                 baseline = AllocatedWhileHeld(t);
@@ -196,7 +195,7 @@ namespace DS4WindowsTests
 
             long withGyro;
             var port = new RecordingGyroCalibrationPort();
-            using (var t = new SpecialActionTestScope(true))
+            using (var t = new SpecialActionTestScope())
             {
                 AddGyro(t, "L1", port);
                 withGyro = AllocatedWhileHeld(t);

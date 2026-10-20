@@ -15,9 +15,9 @@ namespace DS4WindowsTests
         private readonly TestDs4Device _device = TestDs4Device.Create();
         private readonly DS4Device _savedDevice;
 
-        public AnalogMouseTestHarness(bool migrated, double elapsedMs = 5.0)
+        public AnalogMouseTestHarness(double elapsedMs = 5.0)
         {
-            T = new ControlsKeyTestScope(migrated);
+            T = new ControlsKeyTestScope();
             _savedDevice = T.Scope.Control.DS4Controllers[T.Device];
             _device.lastTimeElapsedDouble = elapsedMs;
             T.Scope.Control.DS4Controllers[T.Device] = _device;

@@ -28,17 +28,13 @@ namespace DS4WindowsTests
         // ---- マウスの移動 ----
 
         [Theory]
-        [InlineData(false, X360Controls.MouseRight, 1, 0)]
-        [InlineData(true, X360Controls.MouseRight, 1, 0)]
-        [InlineData(false, X360Controls.MouseLeft, -1, 0)]
-        [InlineData(true, X360Controls.MouseLeft, -1, 0)]
-        [InlineData(false, X360Controls.MouseDown, 0, 1)]
-        [InlineData(true, X360Controls.MouseDown, 0, 1)]
-        [InlineData(false, X360Controls.MouseUp, 0, -1)]
-        [InlineData(true, X360Controls.MouseUp, 0, -1)]
-        public void MouseMovement_FromAButton_MovesInItsDirection_AndErasesTheOriginal(bool migrated, X360Controls target, int signX, int signY)
+        [InlineData(X360Controls.MouseRight, 1, 0)]
+        [InlineData(X360Controls.MouseLeft, -1, 0)]
+        [InlineData(X360Controls.MouseDown, 0, 1)]
+        [InlineData(X360Controls.MouseUp, 0, -1)]
+        public void MouseMovement_FromAButton_MovesInItsDirection_AndErasesTheOriginal(X360Controls target, int signX, int signY)
         {
-            using var h = new AnalogMouseTestHarness(migrated);
+            using var h = new AnalogMouseTestHarness();
             h.T.MapButton(DS4Controls.Cross, target);
             h.T.Publish();
             h.T.MouseInfo.activeButtonSensitivity = 100;   // 1 フレームで 1 以上動く大きさにする（小さいと、端数が次のフレームに持ち越される）
@@ -48,7 +44,7 @@ namespace DS4WindowsTests
             input.Square = true;   // 割り当てのないボタンは、そのまま
             DS4State output = h.Step(input);
 
-            _output.WriteLine($"[7.8f-3 W1 {(migrated ? "migrated" : "legacy  ")}] {target}: moves = {string.Join(" ", h.Moves)}");
+            _output.WriteLine($"[7.8f-3 W1 new] {target}: moves = {string.Join(" ", h.Moves)}");
             Assert.False(output.Cross);
             Assert.True(output.Square);
             (int X, int Y) move = Assert.Single(h.Moves);
@@ -60,12 +56,10 @@ namespace DS4WindowsTests
             Assert.Empty(h.Moves);   // 離すと、動かない（端数は、押していない間に使われない）
         }
 
-        [Theory]
-        [InlineData(false)]
-        [InlineData(true)]
-        public void MouseMovement_TwoButtonsToTheSameDirection_DoNotAdd(bool migrated)
+        [Fact]
+        public void MouseMovement_TwoButtonsToTheSameDirection_DoNotAdd()
         {
-            using var h = new AnalogMouseTestHarness(migrated);
+            using var h = new AnalogMouseTestHarness();
             h.T.MapButton(DS4Controls.Cross, X360Controls.MouseRight);
             h.T.MapButton(DS4Controls.Circle, X360Controls.MouseRight);
             h.T.Publish();
@@ -78,17 +72,15 @@ namespace DS4WindowsTests
 
             // 先に書いた方が勝つ（局所変数が 0 のときだけ書く）。足し合わせない。1 つ分は 100 の感度で 2 前後、足すと 4 以上になる
             (int X, int Y) move = Assert.Single(h.Moves);
-            _output.WriteLine($"[7.8f-3 W1 {(migrated ? "migrated" : "legacy  ")}] two buttons → MouseRight: {move}");
+            _output.WriteLine($"[7.8f-3 W1 new] two buttons → MouseRight: {move}");
             Assert.InRange(move.X, 1, 3);
             Assert.Equal(0, move.Y);
         }
 
-        [Theory]
-        [InlineData(false)]
-        [InlineData(true)]
-        public void MouseMovement_FromAStick_ScalesWithTheDeflection_AndUsesTheElapsedTime(bool migrated)
+        [Fact]
+        public void MouseMovement_FromAStick_ScalesWithTheDeflection_AndUsesTheElapsedTime()
         {
-            using var h = new AnalogMouseTestHarness(migrated, 5.0);
+            using var h = new AnalogMouseTestHarness(5.0);
             h.T.MapButton(DS4Controls.LXPos, X360Controls.MouseRight);
             h.T.Publish();
 
@@ -97,7 +89,7 @@ namespace DS4WindowsTests
             DS4State output = h.Step(full);
             Assert.Equal(128, output.LX);   // 割り当てた軸の出力は消える
             (int X, int Y) fullMove = Assert.Single(h.Moves);
-            _output.WriteLine($"[7.8f-3 W1 {(migrated ? "migrated" : "legacy  ")}] stick full right, 5ms: {fullMove}");
+            _output.WriteLine($"[7.8f-3 W1 new] stick full right, 5ms: {fullMove}");
             Assert.InRange(fullMove.X, 4, 8);   // 感度 25 × 48 × 0.005 秒 ≒ 6
             Assert.Equal(0, fullMove.Y);
 
@@ -108,12 +100,10 @@ namespace DS4WindowsTests
 
         // ---- アナログのホイール ----
 
-        [Theory]
-        [InlineData(false)]
-        [InlineData(true)]
-        public void AnalogWheel_FromATrigger_NeedsThreeRunsForOneTick_AndErasesTheSource(bool migrated)
+        [Fact]
+        public void AnalogWheel_FromATrigger_NeedsThreeRunsForOneTick_AndErasesTheSource()
         {
-            using var h = new AnalogMouseTestHarness(migrated);
+            using var h = new AnalogMouseTestHarness();
             h.T.MapButton(DS4Controls.L2, X360Controls.WUP);
             h.T.Publish();
 
@@ -126,18 +116,16 @@ namespace DS4WindowsTests
             Assert.Empty(h.Wheels);
             h.Step(input);
 
-            _output.WriteLine($"[7.8f-3 W1 {(migrated ? "migrated" : "legacy  ")}] wheel after 3 runs: {string.Join(" ", h.Wheels)}");
+            _output.WriteLine($"[7.8f-3 W1 new] wheel after 3 runs: {string.Join(" ", h.Wheels)}");
             Assert.Single(h.Wheels);
             Assert.True(h.Wheels[0].Vertical > 0);   // WUP は正の向き
             Assert.Equal(0, h.Wheels[0].Horizontal);
         }
 
-        [Theory]
-        [InlineData(false)]
-        [InlineData(true)]
-        public void AnalogWheel_FromAStick_Down_IsNegative_AndALightPressIsSlower(bool migrated)
+        [Fact]
+        public void AnalogWheel_FromAStick_Down_IsNegative_AndALightPressIsSlower()
         {
-            using var h = new AnalogMouseTestHarness(migrated);
+            using var h = new AnalogMouseTestHarness();
             h.T.MapButton(DS4Controls.LYPos, X360Controls.WDOWN);   // 左スティックを下へ（値が大きい向き）
             h.T.Publish();
 
@@ -152,16 +140,14 @@ namespace DS4WindowsTests
             DS4State light = Neutral();
             light.LY = 128 + 70;   // 幅 55 を超えて、成立する
             for (int i = 0; i < 3; i++) h.Step(light);
-            _output.WriteLine($"[7.8f-3 W1 {(migrated ? "migrated" : "legacy  ")}] light press wheel events: {h.Wheels.Count}");
+            _output.WriteLine($"[7.8f-3 W1 new] light press wheel events: {h.Wheels.Count}");
             Assert.Empty(h.Wheels);
         }
 
-        [Theory]
-        [InlineData(false)]
-        [InlineData(true)]
-        public void AnalogWheel_Released_DoesNothing(bool migrated)
+        [Fact]
+        public void AnalogWheel_Released_DoesNothing()
         {
-            using var h = new AnalogMouseTestHarness(migrated);
+            using var h = new AnalogMouseTestHarness();
             h.T.MapButton(DS4Controls.R2, X360Controls.WUP);
             h.T.Publish();
 
@@ -169,12 +155,10 @@ namespace DS4WindowsTests
             Assert.Empty(h.Wheels);
         }
 
-        [Theory]
-        [InlineData(false)]
-        [InlineData(true)]
-        public void AMouseMovementWithExtras_BothWork(bool migrated)
+        [Fact]
+        public void AMouseMovementWithExtras_BothWork()
         {
-            using var h = new AnalogMouseTestHarness(migrated);
+            using var h = new AnalogMouseTestHarness();
             DS4ControlSettings dcs = h.T.MapButton(DS4Controls.Cross, X360Controls.MouseRight);
             dcs.extras = "100,50,1,10,20,30,5,1,7";
             h.T.PublishControlsOnly();

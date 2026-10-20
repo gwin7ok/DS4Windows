@@ -54,7 +54,7 @@ namespace DS4WindowsTests
         [Fact]
         public void TheRisingEdge_NotifiesSavesTheColorAndStartsTheFade()
         {
-            using var t = new SpecialActionTestScope(true);
+            using var t = new SpecialActionTestScope();
             var port = new RecordingBatteryCheckPort();
             SpecialAction sa = AddBattery(t, "L1", port);
             Assert.True(t.Engine.Owns(t.Device, sa));
@@ -72,7 +72,7 @@ namespace DS4WindowsTests
         [Fact]
         public void WhileHeld_TheFadeAdvancesByTwoEveryFrame_UpToOneHundred_AndThenStops()
         {
-            using var t = new SpecialActionTestScope(true);
+            using var t = new SpecialActionTestScope();
             var port = new RecordingBatteryCheckPort();
             AddBattery(t, "L1", port);
 
@@ -89,7 +89,7 @@ namespace DS4WindowsTests
         [Fact]
         public void OnRelease_TheFadeAndTheForcedColorAreReset_AndTheNextPressStartsOver()
         {
-            using var t = new SpecialActionTestScope(true);
+            using var t = new SpecialActionTestScope();
             var port = new RecordingBatteryCheckPort();
             AddBattery(t, "L1", port);
 
@@ -111,7 +111,7 @@ namespace DS4WindowsTests
         [Fact]
         public void TheFlagsInTheDetails_TurnTheNotificationAndTheLightBarOffIndependently()
         {
-            using (var t = new SpecialActionTestScope(true))
+            using (var t = new SpecialActionTestScope())
             {
                 var port = new RecordingBatteryCheckPort();
                 AddBattery(t, "L1", port, "|False|True|255|0|0|0|255|0");
@@ -119,7 +119,7 @@ namespace DS4WindowsTests
                 Assert.Equal(new[] { "force:on", "color" }, port.Events.ToArray());   // 通知なし
             }
 
-            using (var t = new SpecialActionTestScope(true))
+            using (var t = new SpecialActionTestScope())
             {
                 var port = new RecordingBatteryCheckPort();
                 AddBattery(t, "L1", port, "|True|False|0|0|0|0|0|0");
@@ -134,7 +134,7 @@ namespace DS4WindowsTests
         [Fact]
         public void WithoutAController_NothingIsDrawn()
         {
-            using var t = new SpecialActionTestScope(true);
+            using var t = new SpecialActionTestScope();
             var port = new RecordingBatteryCheckPort { Present = false };
             AddBattery(t, "L1", port);
 
@@ -148,7 +148,7 @@ namespace DS4WindowsTests
         [Fact]
         public void AnInvalidDetails_DoesNothing_AndDoesNotThrow()
         {
-            using var t = new SpecialActionTestScope(true);
+            using var t = new SpecialActionTestScope();
             var port = new RecordingBatteryCheckPort();
             AddBattery(t, "L1", port, "|maybe|True|255|0|0|0|255|0");
 
@@ -161,7 +161,7 @@ namespace DS4WindowsTests
         [Fact]
         public void WhileTheFreshPressGuardIsOn_NothingHappens()
         {
-            using var t = new SpecialActionTestScope(true);
+            using var t = new SpecialActionTestScope();
             var port = new RecordingBatteryCheckPort();
             AddBattery(t, "L1", port, freshPressGuard: true);
 
@@ -174,7 +174,7 @@ namespace DS4WindowsTests
         [Fact]
         public void AndCondition_NeedsAllTheTriggers()
         {
-            using var t = new SpecialActionTestScope(true);
+            using var t = new SpecialActionTestScope();
             var port = new RecordingBatteryCheckPort();
             AddBattery(t, "L1/R1", port);
 
@@ -191,7 +191,7 @@ namespace DS4WindowsTests
         [Fact]
         public void TheBuilder_BuildsTheBindingOnlyWithAPort()
         {
-            using var t = new SpecialActionTestScope(true);
+            using var t = new SpecialActionTestScope();
             var port = new RecordingBatteryCheckPort();
             SpecialAction sa = AddBattery(t, "L1", port);
 
@@ -218,7 +218,7 @@ namespace DS4WindowsTests
             LogManager.Configuration = config;
             try
             {
-                using (var t = new SpecialActionTestScope(true))
+                using (var t = new SpecialActionTestScope())
                 {
                     SpecialAction sa = t.Add(new SpecialAction(name, "L1", "BatteryCheck", FullDetails, 0, string.Empty));
                     t.StateOf(sa).RequiresFreshPressAfterReset = false;
@@ -278,7 +278,7 @@ namespace DS4WindowsTests
         {
             // 同じ件数の BatteryCheck で、トリガーが押されていない（R1。押すのは L1）場合を基準にする（Phase8Step76aGyroCalibrateTests と同じ方式）
             long baseline;
-            using (var t = new SpecialActionTestScope(true))
+            using (var t = new SpecialActionTestScope())
             {
                 AddBattery(t, "R1", new RecordingBatteryCheckPort { Record = false });
                 baseline = AllocatedWhileHeld(t);
@@ -286,7 +286,7 @@ namespace DS4WindowsTests
 
             long withBattery;
             var port = new RecordingBatteryCheckPort { Record = false };
-            using (var t = new SpecialActionTestScope(true))
+            using (var t = new SpecialActionTestScope())
             {
                 AddBattery(t, "L1", port);
                 withBattery = AllocatedWhileHeld(t);

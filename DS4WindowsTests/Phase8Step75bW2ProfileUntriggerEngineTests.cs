@@ -35,7 +35,7 @@ namespace DS4WindowsTests
         [Fact]
         public void TheSignalIsHeldByTheEngine_NotByMapping()
         {
-            using var t = new SpecialActionTestScope(true);
+            using var t = new SpecialActionTestScope();
             RecordingProfileApplicationService recorder = t.InstallProfileRecorder();
             SpecialAction sa = AddProfile(t, "L1", "AutomaticUntrigger");
             Assert.True(t.Engine.Owns(t.Device, sa));   // 復帰つきの Profile も、新経路が処理する
@@ -54,7 +54,7 @@ namespace DS4WindowsTests
         public void AProfileWithUntriggerButtons_IsOwned_AndHasNoSignal_AfterTheRemovalOfTheUnloadTrigger()
         {
             // Phase8-Step8 8b（機能廃止。ユーザー承認）: 解除トリガー（uTrigger）のボタンによる復帰は廃止した。切替は新経路が行い、復帰の合図は立たない
-            using var t = new SpecialActionTestScope(true);
+            using var t = new SpecialActionTestScope();
             RecordingProfileApplicationService recorder = t.InstallProfileRecorder();
             SpecialAction sa = AddProfile(t, "L1", "R1");
 
@@ -71,7 +71,7 @@ namespace DS4WindowsTests
         {
             // 一時プロファイルの間、復帰待ちの Profile（エンジンの合図）があれば、別の Profile 切替を始めない
             IProfileSettingsService settings = TestHost.GetService<IProfileSettingsService>();
-            using var t = new SpecialActionTestScope(true);
+            using var t = new SpecialActionTestScope();
             bool savedTemp = settings.GetUseTempProfile(t.Device);
             try
             {
@@ -106,7 +106,7 @@ namespace DS4WindowsTests
         public void TheReleaseEdgeDoesNotRestoreTwice_WhenTheApplyHasNotResetTheState()
         {
             // 適用が終わっていない（状態が作り直されていない）状態で離しても、復帰は 1 回だけ（離したエッジの Stop を、復帰つきの Profile は呼ばない。Q4）
-            using var t = new SpecialActionTestScope(true);
+            using var t = new SpecialActionTestScope();
             RecordingProfileApplicationService recorder = t.InstallProfileRecorder();
             recorder.SimulateStateReset = false;
             AddProfile(t, "L1", "AutomaticUntrigger");
@@ -123,7 +123,7 @@ namespace DS4WindowsTests
         public void TheBindingForAnAutomaticProfile_DoesNotStopOnRelease_AndASwitchOnlyOneDoes()
         {
             var builder = TestHost.GetService<IActionBindingBuilder>();
-            using var t = new SpecialActionTestScope(true);
+            using var t = new SpecialActionTestScope();
             t.InstallProfileRecorder();
             AddProfile(t, "L1", "AutomaticUntrigger");
             AddProfile(t, "R1", string.Empty);

@@ -112,7 +112,7 @@ namespace DS4WindowsTests
         [Fact]
         public void TheBuilder_MakesABindingForEachQualifyingAssignment_WithTheLegacySyntheticName()
         {
-            using var t = new ControlsKeyTestScope(true);
+            using var t = new ControlsKeyTestScope();
             t.MapKey(DS4Controls.Cross, 65);
             t.MapKey(DS4Controls.LXNeg, 66, DS4KeyType.Toggle);
             DS4ControlSettings withExtras = t.MapKey(DS4Controls.Circle, 67);
@@ -141,7 +141,7 @@ namespace DS4WindowsTests
         [Fact]
         public void TheActionBindingBuilder_AppendsTheControlBindings_AfterTheSpecialActionOnes()
         {
-            using var t = new SpecialActionTestScope(true);
+            using var t = new SpecialActionTestScope();
             DS4ControlSettings dcs = TestGlobals.Store.GetDS4CSetting(Device, DS4Controls.Cross);
             dcs.Reset();
             dcs.actionType = DS4ControlSettings.ActionType.Key;
@@ -167,7 +167,7 @@ namespace DS4WindowsTests
         [Fact]
         public void TheEngine_OwnsOnlyTheMappedControl()
         {
-            using var t = new ControlsKeyTestScope(true);
+            using var t = new ControlsKeyTestScope();
             t.MapKey(DS4Controls.Cross, 65);
             t.Publish();
             var engine = TestHost.GetService<ITriggerDispatchEngine>();
@@ -186,34 +186,9 @@ namespace DS4WindowsTests
             return GC.GetAllocatedBytesForCurrentThread() - before;
         }
 
-        [Fact]
-        public void TheNewPath_DoesNotAddAllocationsToTheFrame()
-        {
-            long legacyHeld = 0, legacyIdle = 0, migratedHeld = 0, migratedIdle = 0;
-            DS4State held = ControlsKeyTestScope.Neutral(); held.Cross = true; held.L1 = true;
-            DS4State idle = ControlsKeyTestScope.Neutral();
-
-            foreach (bool migrated in new[] { false, true })
-            {
-                using var t = new ControlsKeyTestScope(migrated);
-                foreach (DS4Controls control in new[] { DS4Controls.Cross, DS4Controls.Circle, DS4Controls.Square, DS4Controls.Triangle, DS4Controls.L1, DS4Controls.R1 })
-                    t.MapKey(control, 65);
-                t.Publish();
-                for (int i = 0; i < 300; i++) { t.Run(held); t.Run(idle); }
-                long h = Allocated(t, held);
-                long ix = Allocated(t, idle);
-                if (migrated) { migratedHeld = h; migratedIdle = ix; _output.WriteLine($"[7.8b Key] migrated held={h}B idle={ix}B"); }
-                else { legacyHeld = h; legacyIdle = ix; _output.WriteLine($"[7.8b Key] legacy   held={h}B idle={ix}B"); }
-            }
-
-            // Phase8-Step8 8a: 旧経路は削除した（両方とも新経路）。測定の揺れ（1000 フレームで数百 B）だけ許す
-            Assert.True(migratedHeld <= legacyHeld + 4096, $"押下: 新 {migratedHeld} B > 旧 {legacyHeld} B");
-            Assert.True(migratedIdle <= legacyIdle + 4096, $"未操作: 新 {migratedIdle} B > 旧 {legacyIdle} B");
-        }
-
         // ---- ログ（Q4＝A）----
 
-        private static List<string> RunLogged(bool migrated, bool[] crossFrames)
+        private static List<string> RunLogged(bool[] crossFrames)
         {
             LoggingConfiguration saved = LogManager.Configuration;
             var target = new MemoryTarget("p8s78b") { Layout = "${level}|${message}" };
@@ -223,7 +198,7 @@ namespace DS4WindowsTests
             LogManager.Configuration = config;
             try
             {
-                using (var t = new ControlsKeyTestScope(migrated))
+                using (var t = new ControlsKeyTestScope())
                 {
                     t.MapKey(DS4Controls.Cross, 65);
                     t.Publish();
@@ -249,18 +224,15 @@ namespace DS4WindowsTests
             bool[] frames = { false, true, true, false };
             string name = $"Synthetic_Key_{Device}_{(int)DS4Controls.Cross}";
 
-            var legacy = RunLogged(false, frames);
-            var migrated = RunLogged(true, frames);
+            var logged = RunLogged(frames);
 
             bool IsSpecialActionStyle(string l) => l.Contains(name) && (l.Contains("SpecialAction KEY") || l.Contains("SpecialAction Key") || l.Contains("Trigger detected for SA")
                 || l.Contains("maps to Type:Key") || l.Contains("Trigger keys for SA") || l.Contains("output combo"));
-            Assert.Empty(legacy.Where(IsSpecialActionStyle));     // 旧経路の Controls タブの Key は、これらを出していない
-            Assert.Empty(migrated.Where(IsSpecialActionStyle));
+            Assert.Empty(logged.Where(IsSpecialActionStyle));     // Controls タブの Key は、特殊アクションの書式のログを出さない
 
-            // KeyAction 以降のログ（同じ名前・同じキー）は、旧・新で同じ
+            // KeyAction 以降のログ（同じ名前・同じキー）は出る
             List<string> KeyActionLines(List<string> logs) => logs.Where(l => (l.Contains("KeyAction.On") || l.Contains("KeyAction: trigger")) && l.Contains(name)).Select(l => System.Text.RegularExpressions.Regex.Replace(l, @"controller=\d+", "controller=#")).ToList();   // コントローラーの番号は、生成のたびに増えるため、そろえる
-            Assert.NotEmpty(KeyActionLines(legacy));
-            Assert.Equal(KeyActionLines(legacy), KeyActionLines(migrated));
+            Assert.NotEmpty(KeyActionLines(logged));
         }
     }
 }

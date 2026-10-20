@@ -10,6 +10,7 @@ namespace DS4WindowsTests
     /// （差が出なければ <c>OnProfileApplied</c> は接続しない）、(2) 複数の Button の実行順序と二重ディスパッチの検出。
     /// 適用は <see cref="SpecialActionTestScope.SimulateProfileApply"/> で再現する（本番の掃除と同じ順序）。
     /// 他の Host 構築テストと同じコレクションで直列に実行する。
+    /// Phase8-Step8 8d（持ち越し C-2）: 旧経路は削除済み。以前の「旧・新の両経路の比べ」は、新経路の期待値の固定（比べを除いた、残りの検査）に変えた。
     /// </summary>
     [Collection("ServiceProviderHolder")]
     public class Phase8Step7W2ApplyAndOrderTests
@@ -23,9 +24,9 @@ namespace DS4WindowsTests
         }
 
         private static List<(bool Cross, bool Circle, bool L1, bool Suppressed, int LeftClicks)> Run(
-            bool migrated, string extras, (bool L1, bool ApplyBefore)[] steps)
+            string extras, (bool L1, bool ApplyBefore)[] steps)
         {
-            using var t = new SpecialActionTestScope(migrated);
+            using var t = new SpecialActionTestScope();
             SpecialAction sa = t.Add(new SpecialAction("p8s7w2_apply_" + Guid.NewGuid().ToString("N"), "L1", "Button",
                 ((int)X360Controls.A).ToString(), 0, extras));
             ActionInstanceState state = t.StateOf(sa);
@@ -51,7 +52,7 @@ namespace DS4WindowsTests
         [Theory]
         [InlineData("Press\n")]
         [InlineData("Toggle\n")]
-        public void ProfileApplyWhileHeld_NewPathMatchesTheLegacyPath_WithoutOnProfileApplied(string extras)
+        public void ProfileApplyWhileHeld_SuppressesTheTrigger_WithoutOnProfileApplied(string extras)
         {
             // 押している最中に適用（状態の初期化と束縛の差し替え）が入る。適用後は Fresh-press ガードが有効で、押し直すまで Toggle は反転しない
             var steps = new (bool, bool)[]
@@ -59,34 +60,16 @@ namespace DS4WindowsTests
                 (false, false), (true, false), (true, false), (true, true), (true, false), (false, false), (false, false)
             };
 
-            var legacy = Run(false, extras, steps);
-            var migrated = Run(true, extras, steps);
+            var observed = Run(extras, steps);
 
-            Assert.Equal(legacy, migrated);
-            Assert.Contains(legacy, f => f.Suppressed);
-        }
-
-        [Theory]
-        [InlineData("Press\n")]
-        [InlineData("Toggle\n")]
-        public void ProfileApplyWhileReleased_NewPathMatchesTheLegacyPath(string extras)
-        {
-            var steps = new (bool, bool)[]
-            {
-                (false, false), (true, false), (false, false), (false, true), (false, false), (true, false), (true, false), (false, false)
-            };
-
-            var legacy = Run(false, extras, steps);
-            var migrated = Run(true, extras, steps);
-
-            Assert.Equal(legacy, migrated);
+            Assert.Contains(observed, f => f.Suppressed);
         }
 
         [Fact]
-        public void TheSuppressionSet_SurvivesAProfileApply_OnTheLegacyPath()
+        public void TheSuppressionSet_SurvivesAProfileApply()
         {
             // 現行の挙動の固定: 適用（HandleDeviceDisconnect を含む後始末）は、抑制の集合を消さない。OnProfileApplied を無条件につなぐと、これが変わる（Q5 の B を採らない根拠）
-            using var t = new SpecialActionTestScope(false);
+            using var t = new SpecialActionTestScope();
             SpecialAction sa = t.AddButtonPress("L1");
             t.StateOf(sa).RequiresFreshPressAfterReset = false;
 
@@ -101,11 +84,11 @@ namespace DS4WindowsTests
         // ---- (2) 順序と二重ディスパッチ ----
 
         [Fact]
-        public void TwoButtons_NewPathMatchesTheLegacyPath_AndEachClickIsCountedOnce()
+        public void TwoButtons_EachClickIsCountedOnce()
         {
-            List<(bool, bool, int)> Sequence(bool migrated)
+            List<(bool, bool, int)> Sequence()
             {
-                using var t = new SpecialActionTestScope(migrated);
+                using var t = new SpecialActionTestScope();
                 t.Add(new SpecialAction("p8s7w2_two_a_" + Guid.NewGuid().ToString("N"), "L1", "Button", ((int)X360Controls.LeftMouse).ToString(), 0, "Press\n"));
                 t.Add(new SpecialAction("p8s7w2_two_b_" + Guid.NewGuid().ToString("N"), "R1", "Button", ((int)X360Controls.B).ToString(), 0, "Press\n"));
                 var result = new List<(bool, bool, int)>();
@@ -118,18 +101,16 @@ namespace DS4WindowsTests
                 return result;
             }
 
-            var legacy = Sequence(false);
-            var migrated = Sequence(true);
+            var observed = Sequence();
 
-            Assert.Equal(legacy, migrated);
             // 二重ディスパッチがないこと: 左クリックのカウンターは、押している 2 フレームで 1 ずつ（累積 1、2）になる
-            Assert.Equal(new[] { 0, 1, 2, 2, 2 }, new[] { migrated[0].Item3, migrated[1].Item3, migrated[2].Item3, migrated[3].Item3, migrated[4].Item3 });
+            Assert.Equal(new[] { 0, 1, 2, 2, 2 }, new[] { observed[0].Item3, observed[1].Item3, observed[2].Item3, observed[3].Item3, observed[4].Item3 });
         }
 
         [Fact]
         public void AMigratedButton_IsNotProcessedByTheLegacyStage3()
         {
-            using var t = new SpecialActionTestScope(true);
+            using var t = new SpecialActionTestScope();
             SpecialAction sa = t.AddButtonPress("L1");
 
             Assert.True(t.Engine.Owns(t.Device, sa));

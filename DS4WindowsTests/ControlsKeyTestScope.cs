@@ -9,16 +9,15 @@ namespace DS4WindowsTests
     /// <summary>
     /// Phase8-Step7 7.8b-W1（Phase8-Step7-8b-Plan.md §4）: Controls タブの Key の割り当て（<c>DS4ControlSettings</c>）で <c>Mapping.MapCustom</c> を実走行させる最小のハーネス。
     /// <see cref="MappingCharacterizationScope"/> の専用デバイス添字に対して、ボタンの割り当てを「キー」に変える（終了時に既定へ戻す）。
-    /// Phase8-Step8 8d: 常に新経路で処理する（移行のスイッチは削除した。引数 <paramref name="migrated"/> は、呼び出し側の整理を Phase9 に回すため残す）。
+    /// Phase8-Step8 8d: 常に新経路で処理する（旧経路と移行のスイッチは削除した）。
     /// </summary>
     public sealed class ControlsKeyTestScope : IDisposable
     {
         private readonly MappingCharacterizationScope _inner = new MappingCharacterizationScope();
         private readonly List<DS4Controls> _touched = new List<DS4Controls>();
 
-        public ControlsKeyTestScope(bool migrated)
+        public ControlsKeyTestScope()
         {
-            Migrated = true;   // Phase8-Step8 8a: 旧経路を削除したため、引数にかかわらず新経路（互換のために引数は残す）
             ExtrasPort = new RecordingControlExtrasPort(new DefaultControlExtrasPort(() => _inner.Control, _inner.Settings));
             Mapping = _inner.Mapper as Mapping;
             if (Mapping == null)
@@ -27,8 +26,6 @@ namespace DS4WindowsTests
             TestHost.GetService<ITriggerDispatchEngine>().OnDeviceDisconnected(Device);
             ResetExtrasObservables();
         }
-
-        public bool Migrated { get; }
 
         /// <summary>Phase8-Step7 7.8e: 新経路の Extras が使う窓口（振動は記録、ライトバーと感度は本番の窓口へ転送）。<see cref="PublishControlsOnly"/> が使う。</summary>
         public RecordingControlExtrasPort ExtrasPort { get; }

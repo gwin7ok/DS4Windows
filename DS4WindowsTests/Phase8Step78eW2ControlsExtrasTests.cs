@@ -198,7 +198,7 @@ namespace DS4WindowsTests
         [Fact]
         public void DefaultWithExtras_MakesOneExtrasBinding_ThatDoesNotEraseTheOutput()
         {
-            using var t = new ControlsKeyTestScope(true);
+            using var t = new ControlsKeyTestScope();
             t.MapExtras(DS4Controls.Cross, Full);
 
             IReadOnlyList<IActionBinding> bindings = Build();
@@ -219,7 +219,7 @@ namespace DS4WindowsTests
         [Fact]
         public void KeyAndMacroWithExtras_MakeTheExtrasBindingFirst_ThenTheAssignmentBinding()
         {
-            using var t = new ControlsKeyTestScope(true);
+            using var t = new ControlsKeyTestScope();
             t.MapKey(DS4Controls.Cross, 65).extras = Full;
             t.MapMacro(DS4Controls.Circle, new[] { 65, 65 }).extras = Full;
 
@@ -247,7 +247,7 @@ namespace DS4WindowsTests
         [Fact]
         public void ButtonWithExtras_AndShortExtras_AreNotOwned()
         {
-            using var t = new ControlsKeyTestScope(true);
+            using var t = new ControlsKeyTestScope();
             t.Scope.RemapToButton(DS4Controls.Cross, X360Controls.A);
             TestGlobals.Store.GetDS4CSetting(Device, DS4Controls.Cross).extras = "5,5,1";   // 値が読めない（Button も 7.8f で新経路になったため、Extras が読めないことで旧経路に残す）
             t.MapKey(DS4Controls.Circle, 65).extras = "5,5,1";                              // 値が読めない
@@ -258,7 +258,7 @@ namespace DS4WindowsTests
         [Fact]
         public void WithoutThePort_AnAssignmentWithExtrasIsNotOwnedAtAll()
         {
-            using var t = new ControlsKeyTestScope(true);
+            using var t = new ControlsKeyTestScope();
             t.MapKey(DS4Controls.Cross, 65).extras = Full;
             t.MapKey(DS4Controls.Circle, 66);
 
@@ -287,7 +287,7 @@ namespace DS4WindowsTests
         [Fact]
         public void TheEngine_OwnsAControlWithSeveralBindings_AndProcessesThemInOrder()
         {
-            using var t = new ControlsKeyTestScope(true);
+            using var t = new ControlsKeyTestScope();
             t.MapKey(DS4Controls.Cross, 65).extras = Full;
             t.PublishControlsOnly();
             var engine = TestHost.GetService<ITriggerDispatchEngine>();
@@ -307,7 +307,7 @@ namespace DS4WindowsTests
         [Fact]
         public void ADisconnectWhileHeld_RestoresTheEffects()
         {
-            using var t = new ControlsKeyTestScope(true);
+            using var t = new ControlsKeyTestScope();
             t.MapExtras(DS4Controls.Cross, Full);
             t.PublishControlsOnly();
 
@@ -327,7 +327,7 @@ namespace DS4WindowsTests
         public void AnOtherOutputsHeldAcrossAnApply_IsNotTouchedByTheReset()
         {
             // 後始末の契約は、Extras だけが実装する。押したままの適用で、Key の押下は従来どおり（エンジンは Stop を呼ばない）
-            using var t = new ControlsKeyTestScope(true);
+            using var t = new ControlsKeyTestScope();
             t.MapKey(DS4Controls.Cross, 65);
             t.PublishControlsOnly();
             SpecialAction key = t.SyntheticFor(DS4Controls.Cross, 65);
@@ -358,32 +358,6 @@ namespace DS4WindowsTests
             long before = GC.GetAllocatedBytesForCurrentThread();
             for (int i = 0; i < 1000; i++) t.Run(input);
             return GC.GetAllocatedBytesForCurrentThread() - before;
-        }
-
-        [Fact]
-        public void TheNewPath_DoesNotAddAllocationsToTheFrame()
-        {
-            long legacyHeld = 0, legacyIdle = 0, migratedHeld = 0, migratedIdle = 0;
-            DS4State held = ControlsKeyTestScope.Neutral(); held.Cross = true; held.L1 = true;
-            DS4State idle = ControlsKeyTestScope.Neutral();
-
-            foreach (bool migrated in new[] { false, true })
-            {
-                using var t = new ControlsKeyTestScope(migrated);
-                foreach (DS4Controls control in new[] { DS4Controls.Cross, DS4Controls.Circle, DS4Controls.Square, DS4Controls.Triangle, DS4Controls.L1, DS4Controls.R1 })
-                    t.MapExtras(control, Full);
-
-                var builder = new ControlBindingBuilder(t.Scope.Settings, TestHost.GetService<IMacroPlayer>(), new SilentPort());
-                TestHost.GetService<IActionRegistry>().Replace(Device, builder.Build(Device));
-                for (int i = 0; i < 300; i++) { t.Run(held); t.Run(idle); }
-                long h = Allocated(t, held);
-                long ix = Allocated(t, idle);
-                if (migrated) { migratedHeld = h; migratedIdle = ix; _output.WriteLine($"[7.8e Extras] migrated held={h}B idle={ix}B"); }
-                else { legacyHeld = h; legacyIdle = ix; _output.WriteLine($"[7.8e Extras] legacy   held={h}B idle={ix}B"); }
-            }
-
-            Assert.True(migratedHeld <= legacyHeld + 4096, $"押下: 新 {migratedHeld} B > 旧 {legacyHeld} B");
-            Assert.True(migratedIdle <= legacyIdle + 4096, $"未操作: 新 {migratedIdle} B > 旧 {legacyIdle} B");
         }
 
         // ---- ソースのガード ----

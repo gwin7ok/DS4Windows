@@ -10,7 +10,7 @@ namespace DS4WindowsTests
     /// <summary>
     /// Phase8-Step7 7.8c-W1（Phase8-Step7-8c-Plan.md §5）: Controls タブの Macro（<c>ProcessControlSettingAction</c> の Macro の枝）の特性化。
     /// 旧・新の両経路（<c>InlineData(false)</c>／<c>InlineData(true)</c>）で同じテストを走らせる。W2 で新経路（SA の Macro の仕様に合わせた）が入り、
-    /// <b>承認済みの動作の変更</b>（Play Once の連続再実行を、不具合として 1 回だけに直す。Fresh-press ガードを SA と同じく見る）は、<c>migrated</c> で期待値を分けて固定する。
+    /// <b>承認済みの動作の変更</b>（Play Once の連続再実行を、不具合として 1 回だけに直す。Fresh-press ガードを SA と同じく見る）を、期待値として固定する（Phase8-Step8 8d: 旧経路は削除した）。
     /// マクロは背景のタスクで再生されるため、実際に待つ（待ち時間に余裕を持たせる）。手順は { 65, 65 }（キー 65 を押して離す）。
     /// <b>押し続けたときの再実行の有無</b>など、読むだけでは断定できない挙動は、回数を <c>ITestOutputHelper</c> に出力して記録する（W2 で、SA の仕様に合わせたときの変更点を確定する材料）。
     /// 他の Host 構築テストと同じコレクションで直列に実行する。
@@ -59,11 +59,10 @@ namespace DS4WindowsTests
                 Thread.Sleep(10);
         }
 
-        [Theory]
-                [InlineData(true)]
-        public void Press_PlaysTheMacroSteps_AndNothingMoreAfterTheRelease(bool migrated)
+        [Fact]
+        public void Press_PlaysTheMacroSteps_AndNothingMoreAfterTheRelease()
         {
-            using var t = new ControlsKeyTestScope(migrated);
+            using var t = new ControlsKeyTestScope();
             t.MapMacro(DS4Controls.Cross, Steps);
             t.Publish();
 
@@ -83,21 +82,18 @@ namespace DS4WindowsTests
             RunFor(t, Cross(false), 300);
             int afterRelease = Presses(t);
 
-            _output.WriteLine($"[7.8c W1 {(migrated ? "migrated" : "legacy  ")}] 押し続けて: 300ms 後={whileHeld} 900ms 後={stillHeld} / 離したあと: {atRelease} → {afterRelease}");
+            _output.WriteLine($"[7.8c W1 new] 押し続けて: 300ms 後={whileHeld} 900ms 後={stillHeld} / 離したあと: {atRelease} → {afterRelease}");
             Assert.Equal(atRelease, afterRelease);   // 離したあとは、増えない
 
             // 承認済みの動作の変更: Play Once（フラグなし）は、旧経路では押している間ずっと再実行される（実測: 900ms で 58 回）。新経路（SA の仕様）では、押した瞬間の 1 回だけ
-            if (migrated) Assert.Equal(1, stillHeld);
-            else Assert.True(stillHeld > 5, $"旧経路は、押している間、再実行される（実測 {stillHeld} 回）");
+            Assert.Equal(1, stillHeld);
         }
 
-        [Theory]
-        [InlineData(false)]
-        [InlineData(true)]
-        public void RepeatWhileHeld_FlagsAreReported(bool migrated)
+        [Fact]
+        public void RepeatWhileHeld_FlagsAreReported()
         {
             // 編集画面が保存する「押している間繰り返す」（RepeatMacro と HoldMacro の両方）の挙動を記録する
-            using var t = new ControlsKeyTestScope(migrated);
+            using var t = new ControlsKeyTestScope();
             t.MapMacro(DS4Controls.Cross, StepsWithWait, DS4KeyType.HoldMacro | DS4KeyType.RepeatMacro);
             t.Publish();
 
@@ -114,18 +110,16 @@ namespace DS4WindowsTests
             RunFor(t, Cross(false), 300);
             int afterRelease = Presses(t);
 
-            _output.WriteLine($"[7.8c W1 {(migrated ? "migrated" : "legacy  ")}] 繰り返し: 300ms 後={early} 1000ms 後={later} / 離したあと: {atRelease} → {afterRelease}");
+            _output.WriteLine($"[7.8c W1 new] 繰り返し: 300ms 後={early} 1000ms 後={later} / 離したあと: {atRelease} → {afterRelease}");
             Assert.True(early >= 1);
             Assert.True(later > early);              // 「押している間繰り返す」は、旧・新とも、押している間に増える
             Assert.Equal(atRelease, afterRelease);   // 離したあとは、止まる
         }
 
-        [Theory]
-        [InlineData(false)]
-        [InlineData(true)]
-        public void StickDirection_UsesThe55WideThreshold(bool migrated)
+        [Fact]
+        public void StickDirection_UsesThe55WideThreshold()
         {
-            using var t = new ControlsKeyTestScope(migrated);
+            using var t = new ControlsKeyTestScope();
             t.MapMacro(DS4Controls.LXNeg, Steps);
             t.Publish();
 
@@ -142,12 +136,10 @@ namespace DS4WindowsTests
             Assert.True(Presses(t) >= 1);
         }
 
-        [Theory]
-        [InlineData(false)]
-        [InlineData(true)]
-        public void Trigger_IsPressedAbove100(bool migrated)
+        [Fact]
+        public void Trigger_IsPressedAbove100()
         {
-            using var t = new ControlsKeyTestScope(migrated);
+            using var t = new ControlsKeyTestScope();
             t.MapMacro(DS4Controls.L2, Steps);
             t.Publish();
 
@@ -164,12 +156,10 @@ namespace DS4WindowsTests
             Assert.True(Presses(t) >= 1);
         }
 
-        [Theory]
-        [InlineData(false)]
-        [InlineData(true)]
-        public void TheAssignedButtonsOutput_IsErasedWhileHeld(bool migrated)
+        [Fact]
+        public void TheAssignedButtonsOutput_IsErasedWhileHeld()
         {
-            using var t = new ControlsKeyTestScope(migrated);
+            using var t = new ControlsKeyTestScope();
             t.MapMacro(DS4Controls.Cross, Steps);
             t.Publish();
 
@@ -178,25 +168,22 @@ namespace DS4WindowsTests
             Assert.False(output.Cross);
         }
 
-        [Theory]
-                [InlineData(true)]
-        public void ADcsWithExtras_IsNotOwnedByTheNewPath(bool migrated)
+        [Fact]
+        public void ADcsWithExtras_IsNotOwnedByTheNewPath()
         {
             // 7.8e: Extras つきの Macro は、新経路が処理する（Extras の束縛 ＋ Macro の束縛）。新経路の指定がなければ、束縛を作らず、旧経路が処理する
-            using var t = new ControlsKeyTestScope(migrated);
+            using var t = new ControlsKeyTestScope();
             DS4ControlSettings dcs = t.MapMacro(DS4Controls.Cross, Steps);
             dcs.extras = "1,2,0,0,0,0,0,0,0";
             t.Publish();
 
-            Assert.Equal(migrated ? 2 : 0, TestHost.GetService<DS4Windows.DI.IControlBindingBuilder>().Build(t.Device).Count);
+            Assert.Equal(2, TestHost.GetService<DS4Windows.DI.IControlBindingBuilder>().Build(t.Device).Count);
         }
 
-        [Theory]
-        [InlineData(false)]
-        [InlineData(true)]
-        public void ProfileApplyOrDisconnectWhileHeld_IsReported(bool migrated)
+        [Fact]
+        public void ProfileApplyOrDisconnectWhileHeld_IsReported()
         {
-            using var t = new ControlsKeyTestScope(migrated);
+            using var t = new ControlsKeyTestScope();
             t.MapMacro(DS4Controls.Cross, Steps);
             t.Publish();
 
@@ -213,7 +200,7 @@ namespace DS4WindowsTests
             RunFor(t, Cross(true), 400);
             int afterDisconnect = Presses(t);
 
-            _output.WriteLine($"[7.8c W1 {(migrated ? "migrated" : "legacy  ")}] 押したまま: 最初={before} 適用のあと={afterApply} 切断のあと={afterDisconnect}");
+            _output.WriteLine($"[7.8c W1 new] 押したまま: 最初={before} 適用のあと={afterApply} 切断のあと={afterDisconnect}");
             Assert.True(before >= 1);
         }
     }

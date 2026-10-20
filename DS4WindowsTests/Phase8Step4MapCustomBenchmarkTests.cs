@@ -62,7 +62,7 @@ namespace DS4WindowsTests
         [Fact]
         public void MapCustom_ButtonMigrated_PerFrameTime_IsReported()
         {
-            using (var t = new SpecialActionTestScope(true))
+            using (var t = new SpecialActionTestScope())
             {
                 AddActions(t);
 
@@ -71,8 +71,8 @@ namespace DS4WindowsTests
                 pressed.Cross = true;
                 pressed.L1 = true;
 
-                Measure(t, "idle   (migrated)", idle);
-                Measure(t, "pressed(migrated)", pressed);
+                Measure(t, "idle   (new path)", idle);
+                Measure(t, "pressed(new path)", pressed);
             }
         }
 

@@ -51,7 +51,7 @@ namespace DS4WindowsTests
         [Fact]
         public void AtTheRisingEdge_AWaitingController_StartsTheCalibration_OnceUntilItMovesOn()
         {
-            using var t = new SpecialActionTestScope(true);
+            using var t = new SpecialActionTestScope();
             var port = new RecordingWheelCalibrationPort { State = 0 };
             SpecialAction sa = AddWheel(t, "L1", port);
             Assert.True(t.Engine.Owns(t.Device, sa));
@@ -72,7 +72,7 @@ namespace DS4WindowsTests
         [Fact]
         public void WhenTheCalibrationIsRunning_AHeldTriggerCompletesIt_AfterThreeSeconds()
         {
-            using var t = new SpecialActionTestScope(true);
+            using var t = new SpecialActionTestScope();
             var port = new RecordingWheelCalibrationPort { State = 2 };   // 較正の中（確定の待ち）
             SpecialAction sa = AddWheel(t, "L1", port);
             sa.firstTap = DateTime.UtcNow;   // 直前に操作した
@@ -89,7 +89,7 @@ namespace DS4WindowsTests
         [Fact]
         public void WithinThreeSecondsOfTheLastOperation_NothingStarts()
         {
-            using var t = new SpecialActionTestScope(true);
+            using var t = new SpecialActionTestScope();
             var port = new RecordingWheelCalibrationPort { State = 0 };
             SpecialAction sa = AddWheel(t, "L1", port);
             sa.firstTap = DateTime.UtcNow;
@@ -103,7 +103,7 @@ namespace DS4WindowsTests
         [Fact]
         public void AfterTheTriggerIsReleased_ThePressStartsAgainWhenTheControllerIsWaiting()
         {
-            using var t = new SpecialActionTestScope(true);
+            using var t = new SpecialActionTestScope();
             var port = new RecordingWheelCalibrationPort { State = 0 };
             SpecialAction sa = AddWheel(t, "L1", port);
 
@@ -122,7 +122,7 @@ namespace DS4WindowsTests
         [Fact]
         public void WhenTheControllerIsMissing_NothingIsWritten_AndItDoesNotThrow()
         {
-            using var t = new SpecialActionTestScope(true);
+            using var t = new SpecialActionTestScope();
             var port = new RecordingWheelCalibrationPort { State = -1 };
             AddWheel(t, "L1", port);
 
@@ -135,7 +135,7 @@ namespace DS4WindowsTests
         [Fact]
         public void WhileTheFreshPressGuardIsOn_NothingHappens()
         {
-            using var t = new SpecialActionTestScope(true);
+            using var t = new SpecialActionTestScope();
             var port = new RecordingWheelCalibrationPort { State = 0 };
             AddWheel(t, "L1", port, freshPressGuard: true);
 
@@ -148,7 +148,7 @@ namespace DS4WindowsTests
         [Fact]
         public void AndCondition_NeedsAllTheTriggers()
         {
-            using var t = new SpecialActionTestScope(true);
+            using var t = new SpecialActionTestScope();
             var port = new RecordingWheelCalibrationPort { State = 0 };
             AddWheel(t, "L1/R1", port);
 
@@ -165,7 +165,7 @@ namespace DS4WindowsTests
         [Fact]
         public void TheBuilder_BuildsTheBindingOnlyWithAPort()
         {
-            using var t = new SpecialActionTestScope(true);
+            using var t = new SpecialActionTestScope();
             var port = new RecordingWheelCalibrationPort();
             SpecialAction sa = AddWheel(t, "L1", port);
 
@@ -191,7 +191,7 @@ namespace DS4WindowsTests
             LogManager.Configuration = config;
             try
             {
-                using (var t = new SpecialActionTestScope(true))
+                using (var t = new SpecialActionTestScope())
                 {
                     SpecialAction sa = t.Add(new SpecialAction(name, "L1", "SASteeringWheelEmulationCalibrate", string.Empty, 0, string.Empty));
                     t.StateOf(sa).RequiresFreshPressAfterReset = false;
@@ -259,7 +259,7 @@ namespace DS4WindowsTests
         {
             // 同じ件数のステアリング較正で、トリガーが押されていない（R1。押すのは L1）場合を基準にする（Phase8Step76aGyroCalibrateTests と同じ方式）
             long baseline;
-            using (var t = new SpecialActionTestScope(true))
+            using (var t = new SpecialActionTestScope())
             {
                 AddWheel(t, "R1", new RecordingWheelCalibrationPort { State = 0 });
                 baseline = AllocatedWhileHeld(t);
@@ -267,7 +267,7 @@ namespace DS4WindowsTests
 
             long withWheel;
             var port = new RecordingWheelCalibrationPort { State = 0 };
-            using (var t = new SpecialActionTestScope(true))
+            using (var t = new SpecialActionTestScope())
             {
                 AddWheel(t, "L1", port);
                 withWheel = AllocatedWhileHeld(t);

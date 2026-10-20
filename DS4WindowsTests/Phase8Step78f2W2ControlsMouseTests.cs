@@ -92,7 +92,7 @@ namespace DS4WindowsTests
         [Fact]
         public void AMouseButton_MakesOneMouseBinding_ThatErasesTheOriginalEveryFrame()
         {
-            using var t = new ControlsKeyTestScope(true);
+            using var t = new ControlsKeyTestScope();
             t.MapButton(DS4Controls.Cross, X360Controls.RightMouse);
 
             IActionBinding b = Assert.Single(Build());
@@ -109,7 +109,7 @@ namespace DS4WindowsTests
         [Fact]
         public void TheTouchpadClick_UsesItsOwnOutput_AndToggleAddsTheToggleOutput()
         {
-            using var t = new ControlsKeyTestScope(true);
+            using var t = new ControlsKeyTestScope();
             t.MapButton(DS4Controls.Cross, X360Controls.TouchpadClick);
             t.MapButton(DS4Controls.Circle, X360Controls.LeftMouse, DS4KeyType.Toggle);
             t.MapButton(DS4Controls.Square, X360Controls.B, DS4KeyType.Toggle);
@@ -139,7 +139,7 @@ namespace DS4WindowsTests
         [Fact]
         public void ButtonWithExtras_MakesTheExtrasBindingFirst_ThenTheMouseBinding()
         {
-            using var t = new ControlsKeyTestScope(true);
+            using var t = new ControlsKeyTestScope();
             t.MapButton(DS4Controls.Cross, X360Controls.LeftMouse).extras = "100,50,1,10,20,30,5,1,7";
 
             var bindings = Build();
@@ -163,7 +163,7 @@ namespace DS4WindowsTests
         [Fact]
         public void Toggle_FlipsOnceAtTheRisingEdge_NotEveryFrame()
         {
-            using var t = new ControlsKeyTestScope(true);
+            using var t = new ControlsKeyTestScope();
             t.MapButton(DS4Controls.Cross, X360Controls.LeftMouse, DS4KeyType.Toggle);
             t.Publish();
 

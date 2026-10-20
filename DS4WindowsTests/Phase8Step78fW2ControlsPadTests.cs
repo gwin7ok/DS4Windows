@@ -107,7 +107,7 @@ namespace DS4WindowsTests
         [Fact]
         public void ButtonToPad_MakesOnePadBinding_ThatErasesTheOriginalEveryFrame()
         {
-            using var t = new ControlsKeyTestScope(true);
+            using var t = new ControlsKeyTestScope();
             t.MapButton(DS4Controls.Cross, X360Controls.B);
 
             IActionBinding b = Assert.Single(Build());
@@ -125,7 +125,7 @@ namespace DS4WindowsTests
         [Fact]
         public void UnboundTarget_MakesAnEraseOnlyBinding()
         {
-            using var t = new ControlsKeyTestScope(true);
+            using var t = new ControlsKeyTestScope();
             t.MapButton(DS4Controls.Cross, X360Controls.Unbound);
 
             IActionBinding b = Assert.Single(Build());
@@ -137,7 +137,7 @@ namespace DS4WindowsTests
         [Fact]
         public void MouseMovementAndAnalogWheel_AreNotPadBindings_AndToggleNeedsTheMouseKind()
         {
-            using var t = new ControlsKeyTestScope(true);
+            using var t = new ControlsKeyTestScope();
             t.MapButton(DS4Controls.Cross, X360Controls.MouseUp);       // マウスの移動は 7.8f-3（ButtonAnalogMouse）
             t.MapButton(DS4Controls.LXPos, X360Controls.WUP);           // 元がスティックのホイールは、アナログ（7.8f-3）
             t.MapButton(DS4Controls.L2, X360Controls.WDOWN);
@@ -148,7 +148,7 @@ namespace DS4WindowsTests
         [Fact]
         public void ButtonWithExtras_MakesTheExtrasBindingFirst_ThenThePadBinding()
         {
-            using var t = new ControlsKeyTestScope(true);
+            using var t = new ControlsKeyTestScope();
             t.MapButton(DS4Controls.Cross, X360Controls.B).extras = "100,50,1,10,20,30,5,1,7";
 
             IReadOnlyList<IActionBinding> bindings = Build();
@@ -161,7 +161,7 @@ namespace DS4WindowsTests
         [Fact]
         public void TheOppositeDirectionOfAnAssignedAxis_GetsAPassthroughBinding_OnlyWhenNeeded()
         {
-            using var t = new ControlsKeyTestScope(true);
+            using var t = new ControlsKeyTestScope();
 
             // 反対側（LXPos）が Default で、LXNeg が割り当て済み（Key）→ LXPos に素通し
             t.MapKey(DS4Controls.LXNeg, 66);
@@ -180,7 +180,7 @@ namespace DS4WindowsTests
         [Fact]
         public void ADefaultAxisWithExtras_AndAnAssignedPartner_GetsBothBindings_OrIsLeftToTheLegacyPathWithoutThePadKind()
         {
-            using var t = new ControlsKeyTestScope(true);
+            using var t = new ControlsKeyTestScope();
             t.MapKey(DS4Controls.LXNeg, 66);
             t.MapExtras(DS4Controls.LXPos, "100,50,1,10,20,30,5,1,7");   // スコープが後始末する（共有のストアに残さない）
 
@@ -195,7 +195,7 @@ namespace DS4WindowsTests
         [Fact]
         public void ThePadOutput_IsAppliedOnlyOnFramesWhereTheBindingWasEvaluated()
         {
-            using var t = new ControlsKeyTestScope(true);
+            using var t = new ControlsKeyTestScope();
             t.MapButton(DS4Controls.Cross, X360Controls.B);
             t.Publish();
             var engine = TestHost.GetService<ITriggerDispatchEngine>();
@@ -228,33 +228,6 @@ namespace DS4WindowsTests
             long before = GC.GetAllocatedBytesForCurrentThread();
             for (int i = 0; i < 1000; i++) t.Run(input);
             return GC.GetAllocatedBytesForCurrentThread() - before;
-        }
-
-        [Fact]
-        public void TheNewPath_DoesNotAddAllocationsToTheFrame()
-        {
-            long legacyHeld = 0, legacyIdle = 0, migratedHeld = 0, migratedIdle = 0;
-            DS4State held = ControlsKeyTestScope.Neutral(); held.Cross = true; held.L1 = true; held.LX = 40; held.R2 = 200;
-            DS4State idle = ControlsKeyTestScope.Neutral();
-
-            foreach (bool migrated in new[] { false, true })
-            {
-                using var t = new ControlsKeyTestScope(migrated);
-                t.MapButton(DS4Controls.Cross, X360Controls.B);
-                t.MapButton(DS4Controls.L1, X360Controls.RT);
-                t.MapButton(DS4Controls.LXNeg, X360Controls.LYPos);
-                t.MapButton(DS4Controls.R2, X360Controls.A);
-                t.MapButton(DS4Controls.Square, X360Controls.Unbound);
-                t.Publish();
-                for (int i = 0; i < 300; i++) { t.Run(held); t.Run(idle); }
-                long h = Allocated(t, held);
-                long ix = Allocated(t, idle);
-                if (migrated) { migratedHeld = h; migratedIdle = ix; _output.WriteLine($"[7.8f-1 Pad] migrated held={h}B idle={ix}B"); }
-                else { legacyHeld = h; legacyIdle = ix; _output.WriteLine($"[7.8f-1 Pad] legacy   held={h}B idle={ix}B"); }
-            }
-
-            Assert.True(migratedHeld <= legacyHeld + 4096, $"押下: 新 {migratedHeld} B > 旧 {legacyHeld} B");
-            Assert.True(migratedIdle <= legacyIdle + 4096, $"未操作: 新 {migratedIdle} B > 旧 {legacyIdle} B");
         }
 
         // ---- ソースのガード ----

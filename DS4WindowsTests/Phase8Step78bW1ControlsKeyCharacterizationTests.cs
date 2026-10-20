@@ -24,12 +24,10 @@ namespace DS4WindowsTests
             _output = output;
         }
 
-        [Theory]
-        [InlineData(false)]
-        [InlineData(true)]
-        public void Press_BeingTriggeredFollowsTheButton(bool migrated)
+        [Fact]
+        public void Press_BeingTriggeredFollowsTheButton()
         {
-            using var t = new ControlsKeyTestScope(migrated);
+            using var t = new ControlsKeyTestScope();
             t.MapKey(DS4Controls.Cross, Key);
             t.Publish();
             SpecialAction sa = t.SyntheticFor(DS4Controls.Cross, Key);
@@ -52,12 +50,10 @@ namespace DS4WindowsTests
             Assert.False(t.IsBeingTriggered(sa));
         }
 
-        [Theory]
-        [InlineData(false)]
-        [InlineData(true)]
-        public void Toggle_IsDispatchedAtThePress_AndTheToggleStateIsReported(bool migrated)
+        [Fact]
+        public void Toggle_IsDispatchedAtThePress_AndTheToggleStateIsReported()
         {
-            using var t = new ControlsKeyTestScope(migrated);
+            using var t = new ControlsKeyTestScope();
             t.MapKey(DS4Controls.Cross, Key, DS4KeyType.Toggle);
             t.Publish();
             SpecialAction sa = t.SyntheticFor(DS4Controls.Cross, Key, toggle: true);
@@ -78,17 +74,15 @@ namespace DS4WindowsTests
             bool onAtRelease = t.IsToggledOn(sa);
 
             // Toggle のオン／オフ（IsToggledOn）は、出力先のスタブ（リピーターの有無）で結果が分かれるため、値を記録するだけにする（W2 で旧・新の一致を比べる）
-            _output.WriteLine($"[7.8b W1 {(migrated ? "migrated" : "legacy  ")}] toggle: onAtPress={onAtPress} onAtRelease={onAtRelease}");
+            _output.WriteLine($"[7.8b W1 new] toggle: onAtPress={onAtPress} onAtRelease={onAtRelease}");
             Assert.True(triggeredAtPress);
             Assert.False(t.IsBeingTriggered(sa));
         }
 
-        [Theory]
-        [InlineData(false)]
-        [InlineData(true)]
-        public void StickDirection_UsesTheSectorRule_NotTheSpecialActionThreshold(bool migrated)
+        [Fact]
+        public void StickDirection_UsesTheSectorRule_NotTheSpecialActionThreshold()
         {
-            using var t = new ControlsKeyTestScope(migrated);
+            using var t = new ControlsKeyTestScope();
             t.MapKey(DS4Controls.LXNeg, Key);
             t.Publish();
             SpecialAction sa = t.SyntheticFor(DS4Controls.LXNeg, Key);
@@ -105,12 +99,10 @@ namespace DS4WindowsTests
             Assert.False(t.IsBeingTriggered(sa));
         }
 
-        [Theory]
-        [InlineData(false)]
-        [InlineData(true)]
-        public void MappedStickDirection_LeavesTheOppositeDirection_ToItsOwnAssignment(bool migrated)
+        [Fact]
+        public void MappedStickDirection_LeavesTheOppositeDirection_ToItsOwnAssignment()
         {
-            using var t = new ControlsKeyTestScope(migrated);
+            using var t = new ControlsKeyTestScope();
             t.MapKey(DS4Controls.LXNeg, Key);
             t.Publish();
             SpecialAction sa = t.SyntheticFor(DS4Controls.LXNeg, Key);
@@ -125,12 +117,10 @@ namespace DS4WindowsTests
             Assert.Equal(220, output.LX);
         }
 
-        [Theory]
-        [InlineData(false)]
-        [InlineData(true)]
-        public void Trigger_IsPressedAboveZero_NotAboveOneHundred(bool migrated)
+        [Fact]
+        public void Trigger_IsPressedAboveZero_NotAboveOneHundred()
         {
-            using var t = new ControlsKeyTestScope(migrated);
+            using var t = new ControlsKeyTestScope();
             t.MapKey(DS4Controls.L2, Key);
             t.Publish();
             SpecialAction sa = t.SyntheticFor(DS4Controls.L2, Key);
@@ -146,12 +136,10 @@ namespace DS4WindowsTests
             Assert.False(t.IsBeingTriggered(sa));
         }
 
-        [Theory]
-        [InlineData(false)]
-        [InlineData(true)]
-        public void AButtonWithoutAnAssignment_IsLeftAlone(bool migrated)
+        [Fact]
+        public void AButtonWithoutAnAssignment_IsLeftAlone()
         {
-            using var t = new ControlsKeyTestScope(migrated);
+            using var t = new ControlsKeyTestScope();
             t.MapKey(DS4Controls.L1, Key);
             t.Publish();
 
@@ -162,22 +150,20 @@ namespace DS4WindowsTests
             Assert.True(output.Cross);
         }
 
-        [Theory]
-                [InlineData(true)]
-        public void ADcsWithExtras_IsNotOwnedByTheNewPath(bool migrated)
+        [Fact]
+        public void ADcsWithExtras_IsNotOwnedByTheNewPath()
         {
             // 7.8e: Extras つきの Key は、新経路が処理する（Extras の束縛 ＋ Key の束縛）。新経路の指定がなければ、束縛を作らず、旧経路が処理する
-            using var t = new ControlsKeyTestScope(migrated);
+            using var t = new ControlsKeyTestScope();
             DS4ControlSettings dcs = t.MapKey(DS4Controls.Cross, Key);
             dcs.extras = "1,2,0,0,0,0,0,0,0";
             t.Publish();
 
-            Assert.Equal(migrated ? 2 : 0, TestHost.GetService<DS4Windows.DI.IControlBindingBuilder>().Build(t.Device).Count);
+            Assert.Equal(2, TestHost.GetService<DS4Windows.DI.IControlBindingBuilder>().Build(t.Device).Count);
         }
 
-        [Theory]
-                [InlineData(true)]
-        public void SharesTheStateWithAKeySpecialActionOfTheSameKey(bool migrated)
+        [Fact]
+        public void SharesTheStateWithAKeySpecialActionOfTheSameKey()
         {
             // 旧経路の癖（FindSpecialActionForLogicalKey）: 同じ論理キーの Key 特殊アクションが登録されていれば、Controls の Key はその状態を使う。
             // Q4＝B（Phase8-Step2b-ControlsTab-Design.md §10）で、新経路では共有をやめる。W2 で、新経路の期待値をこのテストで切り替える
@@ -186,7 +172,7 @@ namespace DS4WindowsTests
             ActionRegistry.Initialize(new[] { keyAction });
             try
             {
-                using var t = new ControlsKeyTestScope(migrated);
+                using var t = new ControlsKeyTestScope();
                 t.MapKey(DS4Controls.Cross, Key);
                 t.Publish();
                 SpecialAction synthetic = t.SyntheticFor(DS4Controls.Cross, Key);
@@ -195,7 +181,7 @@ namespace DS4WindowsTests
                 held.Cross = true;
                 t.Run(held);
 
-                bool shares = !migrated;   // Q4＝B（W2）: 新経路は共有しない（自分専用の状態を使う）。旧経路は共有する
+                bool shares = false;   // Q4＝B（W2）: 新経路は共有しない（自分専用の状態を使う）
                 Assert.Equal(shares, t.IsBeingTriggered(keyAction));
                 Assert.Equal(!shares, t.IsBeingTriggered(synthetic));
             }
@@ -205,13 +191,11 @@ namespace DS4WindowsTests
             }
         }
 
-        [Theory]
-        [InlineData(false)]
-        [InlineData(true)]
-        public void ProfileApplyOrDisconnectWhileHeld_IsReported(bool migrated)
+        [Fact]
+        public void ProfileApplyOrDisconnectWhileHeld_IsReported()
         {
             // 押したままプロファイルを適用した（ClearDeviceState）／切断した場合の、状態の変化を記録する（W2 で旧・新を比べる。期待値は結果を見て確定する）
-            using var t = new ControlsKeyTestScope(migrated);
+            using var t = new ControlsKeyTestScope();
             t.MapKey(DS4Controls.Cross, Key);
             t.Publish();
             SpecialAction sa = t.SyntheticFor(DS4Controls.Cross, Key);
@@ -232,7 +216,7 @@ namespace DS4WindowsTests
             t.Run(held);
             bool nextFrameAfterDisconnect = t.IsBeingTriggered(sa);
 
-            _output.WriteLine($"[7.8b W1 {(migrated ? "migrated" : "legacy  ")}] held={before} afterClear={afterClear} nextFrame={nextFrameAfterClear} afterDisconnect={afterDisconnect} nextFrame={nextFrameAfterDisconnect}");
+            _output.WriteLine($"[7.8b W1 new] held={before} afterClear={afterClear} nextFrame={nextFrameAfterClear} afterDisconnect={afterDisconnect} nextFrame={nextFrameAfterDisconnect}");
             Assert.True(before);
         }
     }

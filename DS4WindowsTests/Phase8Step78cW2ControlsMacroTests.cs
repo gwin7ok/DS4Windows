@@ -62,7 +62,7 @@ namespace DS4WindowsTests
         [Fact]
         public void TheBuilder_MakesAMacroBinding_OnTheSpecialActionPath_WithTheSaJudgement()
         {
-            using var t = new ControlsKeyTestScope(true);
+            using var t = new ControlsKeyTestScope();
             t.MapMacro(DS4Controls.Cross, Steps, DS4KeyType.HoldMacro | DS4KeyType.RepeatMacro | DS4KeyType.ScanCode);
             t.MapKey(DS4Controls.Circle, 66);
 
@@ -91,7 +91,7 @@ namespace DS4WindowsTests
         public void AMacroBuiltWithoutAPlayer_IsNotBuilt()
         {
             var builder = new ControlBindingBuilder(TestHost.GetService<IProfileSettingsService>());   // プレーヤーなし
-            using var t = new ControlsKeyTestScope(false);
+            using var t = new ControlsKeyTestScope();
             t.MapMacro(DS4Controls.Cross, Steps);
 
             Assert.Empty(builder.Build(Device));
@@ -120,7 +120,7 @@ namespace DS4WindowsTests
         [Fact]
         public void TheEngine_OwnsTheMacroControl()
         {
-            using var t = new ControlsKeyTestScope(true);
+            using var t = new ControlsKeyTestScope();
             t.MapMacro(DS4Controls.Cross, Steps);
             t.Publish();
             var engine = TestHost.GetService<ITriggerDispatchEngine>();
@@ -135,25 +135,5 @@ namespace DS4WindowsTests
             return GC.GetAllocatedBytesForCurrentThread() - before;
         }
 
-        [Fact]
-        public void TheNewPath_DoesNotAddAllocationsToTheIdleFrame()
-        {
-            long legacyIdle = 0, migratedIdle = 0;
-            DS4State idle = ControlsKeyTestScope.Neutral();
-
-            foreach (bool migrated in new[] { false, true })
-            {
-                using var t = new ControlsKeyTestScope(migrated);
-                foreach (DS4Controls control in new[] { DS4Controls.Cross, DS4Controls.Circle, DS4Controls.Square, DS4Controls.Triangle })
-                    t.MapMacro(control, Steps);
-                t.Publish();
-                for (int i = 0; i < 300; i++) t.Run(idle);
-                long ix = Allocated(t, idle);
-                if (migrated) migratedIdle = ix; else legacyIdle = ix;
-                _output.WriteLine($"[7.8c Macro] {(migrated ? "migrated" : "legacy  ")} idle={ix}B");
-            }
-
-            Assert.True(migratedIdle <= legacyIdle + 4096, $"未操作: 新 {migratedIdle} B > 旧 {legacyIdle} B");
-        }
     }
 }

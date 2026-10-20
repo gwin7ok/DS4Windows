@@ -13,6 +13,7 @@ namespace DS4WindowsTests
     /// Phase8-Step7 7.1-W2（Phase8-Step7-Plan.md §5.2・Q6＝A）: 旧 Stage3 が出していた Button の TRACE ログ（立ち上がり・立ち下がり、出力の組み合わせ、立ち上がりの詳細）を、
     /// 新経路が同じ文言・順序で出すことを確かめる。NLog の設定をテストの間だけ Trace 有効のメモリ出力へ差し替え、旧経路と新経路のログの行を比べる。
     /// 他の Host 構築テストと同じコレクションで直列に実行する。
+    /// Phase8-Step8 8d（持ち越し C-2）: 旧経路は削除済み。以前の「旧・新の両経路の比べ」は、新経路の期待値の固定（比べを除いた、残りの検査）に変えた。
     /// </summary>
     [Collection("ServiceProviderHolder")]
     public class Phase8Step7W2ButtonTraceLogTests
@@ -47,11 +48,11 @@ namespace DS4WindowsTests
             }
         }
 
-        private static List<string> RunLogged(bool migrated, string name, string details, string extras, bool[] l1Frames)
+        private static List<string> RunLogged(string name, string details, string extras, bool[] l1Frames)
         {
             return CaptureTrace(() =>
             {
-                using var t = new SpecialActionTestScope(migrated);
+                using var t = new SpecialActionTestScope();
                 SpecialAction sa = t.Add(new SpecialAction(name, "L1", "Button", details, 0, extras));
                 ActionInstanceState state = t.StateOf(sa);
                 state.IsToggledOn = false;
@@ -68,15 +69,13 @@ namespace DS4WindowsTests
             string name = "p8s7w2_press_" + Guid.NewGuid().ToString("N");
             bool[] frames = { false, true, true, false, true, false };
 
-            var legacy = RunLogged(false, name, ((int)X360Controls.A).ToString(), "Press\n", frames);
-            var migrated = RunLogged(true, name, ((int)X360Controls.A).ToString(), "Press\n", frames);
+            var result = RunLogged(name, ((int)X360Controls.A).ToString(), "Press\n", frames);
 
-            Assert.Equal(legacy, migrated);
-            Assert.Contains(legacy, l => l.Contains("Trigger detected for Button SA"));
-            Assert.Contains(legacy, l => l.Contains("Trigger no longer active for Button SA"));
-            Assert.Contains(legacy, l => l.Contains("maps to X360Controls"));
-            Assert.Contains(legacy, l => l.Contains("Trigger keys for SA") && l.EndsWith("<none>"));   // 旧経路は常に <none>（状態を渡さず例外を握りつぶす既存の挙動。新経路も同じにする）
-            Assert.Contains(legacy, l => l.Contains("output combo:"));
+            Assert.Contains(result, l => l.Contains("Trigger detected for Button SA"));
+            Assert.Contains(result, l => l.Contains("Trigger no longer active for Button SA"));
+            Assert.Contains(result, l => l.Contains("maps to X360Controls"));
+            Assert.Contains(result, l => l.Contains("Trigger keys for SA") && l.EndsWith("<none>"));   // 旧経路は常に <none>（状態を渡さず例外を握りつぶす既存の挙動。新経路も同じにする）
+            Assert.Contains(result, l => l.Contains("output combo:"));
         }
 
         [Fact]
@@ -85,11 +84,9 @@ namespace DS4WindowsTests
             string name = "p8s7w2_toggle_" + Guid.NewGuid().ToString("N");
             bool[] frames = { false, true, false, false, true, true, false };
 
-            var legacy = RunLogged(false, name, ((int)X360Controls.A).ToString(), "Toggle\n", frames);
-            var migrated = RunLogged(true, name, ((int)X360Controls.A).ToString(), "Toggle\n", frames);
+            var result = RunLogged(name, ((int)X360Controls.A).ToString(), "Toggle\n", frames);
 
-            Assert.Equal(legacy, migrated);
-            Assert.Contains(legacy, l => l.Contains("output combo:"));
+            Assert.Contains(result, l => l.Contains("output combo:"));
         }
 
         [Fact]
@@ -99,11 +96,9 @@ namespace DS4WindowsTests
             foreach (X360Controls control in new[] { X360Controls.LeftMouse, X360Controls.TouchpadClick })
             {
                 string name = "p8s7w2_" + control + "_" + Guid.NewGuid().ToString("N");
-                var legacy = RunLogged(false, name, ((int)control).ToString(), "Press\n", frames);
-                var migrated = RunLogged(true, name, ((int)control).ToString(), "Press\n", frames);
+                var result = RunLogged(name, ((int)control).ToString(), "Press\n", frames);
 
-                Assert.Equal(legacy, migrated);
-                Assert.Contains(legacy, l => l.Contains(control == X360Controls.LeftMouse ? "LeftMouse(" : "TouchpadClick"));
+                Assert.Contains(result, l => l.Contains(control == X360Controls.LeftMouse ? "LeftMouse(" : "TouchpadClick"));
             }
         }
 
@@ -113,15 +108,13 @@ namespace DS4WindowsTests
             string name = "p8s7w2_bad_" + Guid.NewGuid().ToString("N");
             bool[] frames = { true, true, false };
 
-            var legacy = RunLogged(false, name, "not-a-number", "Press\n", frames);
-            var migrated = RunLogged(true, name, "not-a-number", "Press\n", frames);
+            var result = RunLogged(name, "not-a-number", "Press\n", frames);
 
-            Assert.Equal(legacy, migrated);
-            Assert.Contains(legacy, l => l.Contains("Type:Button Details:not-a-number"));
+            Assert.Contains(result, l => l.Contains("Type:Button Details:not-a-number"));
         }
 
         [Fact]
-        public void WhenTraceIsOff_NothingIsLogged_OnEitherPath()
+        public void WhenTraceIsOff_NothingIsLogged()
         {
             string name = "p8s7w2_off_" + Guid.NewGuid().ToString("N");
             bool[] frames = { true, true, false };
@@ -134,9 +127,9 @@ namespace DS4WindowsTests
             LogManager.Configuration = config;
             try
             {
-                foreach (bool migrated in new[] { false, true })
+                foreach (bool result in new[] { false, true })
                 {
-                    using var t = new SpecialActionTestScope(migrated);
+                    using var t = new SpecialActionTestScope();
                     t.Add(new SpecialAction(name, "L1", "Button", ((int)X360Controls.A).ToString(), 0, "Press\n"));
                     foreach (bool l1 in frames) t.RunFrame(Frame(l1));
                 }

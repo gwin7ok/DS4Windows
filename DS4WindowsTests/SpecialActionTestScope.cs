@@ -26,7 +26,6 @@ namespace DS4WindowsTests
         private readonly Dictionary<string, int> _savedIndexDict;
         private readonly int _savedCount;
         private readonly List<SpecialAction> _added = new List<SpecialAction>();
-        private readonly bool _migrated;
 
         public int Device => MappingCharacterizationScope.Device;
         public MappingCharacterizationScope Scope => _inner;
@@ -49,19 +48,13 @@ namespace DS4WindowsTests
         /// <summary>デバイスのプロファイルのアクション名の一覧（実体。<c>Mapping</c> が生で読む <c>List&lt;string&gt;</c> と同一）。</summary>
         public List<string> ProfileActionNames => _store.profileActions[Device];
 
-        /// <summary>Phase8-Step7: 新経路（統一ディスパッチ）で Button を処理するか。</summary>
-        public bool Migrated => _migrated;
-
-        public SpecialActionTestScope(bool migrated = false)
+        public SpecialActionTestScope()
         {
             Mapping = _inner.Mapper as Mapping;
             if (Mapping == null)
                 throw new InvalidOperationException("IMapping の実体が Mapping ではない");
 
-            // Phase8-Step8 8b: SA の旧経路を削除したため、引数 migrated にかかわらず新経路で処理する（8d: 移行のスイッチ BindingMigrationOptions も削除した。
-            // 引数は、呼び出し側の整理を Phase9 に回すため残す）
-            _migrated = true;
-
+            // Phase8-Step8 8b・8d: SA の旧経路と移行のスイッチ（BindingMigrationOptions）を削除したため、常に新経路で処理する
             _savedNames = _store.profileActions[Device];
             _savedDict = new Dictionary<string, SpecialAction>(_store.profileActionDict[Device]);
             _savedIndexDict = new Dictionary<string, int>(_store.profileActionIndexDict[Device]);
@@ -84,8 +77,7 @@ namespace DS4WindowsTests
             _store.profileActionDict[Device][action.name] = action;
             _store.profileActionIndexDict[Device][action.name] = index;
             _store.profileActionCount[Device] = _store.profileActions[Device].Count;
-            if (_migrated)
-                PublishBindings();
+            PublishBindings();
             return action;
         }
 
@@ -97,8 +89,7 @@ namespace DS4WindowsTests
         {
             ActionManager.ClearDeviceState(Device);
             ActionManager.PreallocateForProfileApply(Device);
-            if (_migrated)
-                PublishBindings();
+            PublishBindings();
         }
 
         /// <summary>Phase8-Step7: 登録済みの特殊アクションから、本番と同じ経路で束縛を作って登録簿へ差し替える（新経路のときだけ使う）。</summary>

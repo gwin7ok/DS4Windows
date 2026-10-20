@@ -41,3 +41,12 @@
 ## 8d 移行スイッチなどの削除（2026-10-20。ビルド・テスト成功）
 
 詳細: `Phase8-Step8-Plan.md` §5.13。`BindingMigrationOptions` と、そのコンストラクター引数、`UntriggerPolicy.Buttons`／`BindingPolicy.UntriggerButtons`、`Mapping` の未使用の定数 2 つを削除した。本番の既定は全種別・全区分が有効だったため、実行・ログへの影響はない。テストは、スイッチを触るロールバックのテストを削除し、スコープからスイッチの退避・復元を外した。`Capture`／`RestoreProfileUntrigger` と、テストの `migrated` 引数は、Phase9 の整理に残した。
+
+## 持ち越し C-2: テストの `migrated` 引数の整理（2026-10-20。ビルド・テスト待ち）
+
+`Phase8-Completion-Report.md` §3 の C-2。小さな PR として、Phase9 の前に行った（コードの変更なし。テストのみ、43 ファイル）。
+
+- **削除した引数**: `SpecialActionTestScope(bool migrated)`、`ControlsKeyTestScope(bool migrated)`、`AnalogMouseTestHarness(bool migrated, …)`、各ファイルの `Run`／`RunLogged`／`TwoKeys`／`Harness` などの `bool migrated`、`[Theory]` の `InlineData(false/true)`（83 メソッド。引数が 1 つだけのものは `[Fact]` にした）、`foreach (bool migrated in new[] { false, true })`（6 か所）、`Migrated` プロパティ。
+- **旧・新の比べの扱い**: `Assert.Equal(legacy, migrated)` は、同じ経路どうしの比べで検査にならないため削除し、残りの検査（`Assert.Contains`／`Assert.Equal(期待値, …)`）は新経路の期待値として残した。比べだけが検査だったテストは、削除した（`Phase8Step73W1`／`74W1`／`75aW1` の `ADelay_BehavesTheSame`・`AProfileApplyWhileHeld_*`、`Phase8Step7W2ApplyAndOrderTests.ProfileApplyWhileReleased_*`）。旧・新の割り当ての比べだった `TheNewPath_DoesNotAddAllocationsToTheFrame_*`（72W3／73W3［2 件］／74W3／75aW3／75bW3／78bW2／78cW2／78eW2／78fW2）も削除した（`76a〜d`・`77b` の「ありとなし」の比べは、残した）。
+- **変更なしの注意**: テスト名の「BothPaths」「OnEitherPath」は外した。実行・ログへの影響はない（テストのみ）。
+- **ロールバック**: git のみ。

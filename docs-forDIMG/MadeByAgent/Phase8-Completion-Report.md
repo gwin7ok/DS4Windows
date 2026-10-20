@@ -27,7 +27,7 @@
 | ID | 内容 | 扱い |
 |---|---|---|
 | C-1 | `IMapping.CaptureProfileUntrigger`／`RestoreProfileUntrigger`、`ProfileUntriggerSnapshot`、`DeviceRuntimeState.UntriggerAction`／`UntriggerIndex`（合図は常に空。`ProfileSwitchAction` の保険の読み取りと Phase7b の保全テストが使う） | 影響を調べて削除（テストの書き換えを含む）。Phase9 の最終クリーンアップ（9-I）の候補 |
-| C-2 | テストの `migrated` 引数（`SpecialActionTestScope`、`ControlsKeyTestScope`、各ヘルパー。常に新経路。呼び出し約 220 か所）、`foreach (migrated in {false, true})` の重複実行 | 機械的な書き換え。ビルドで確かめながら行う（Phase9 の冒頭の小さな PR を推奨） |
+| C-2 | **実施（2026-10-20。ビルド・テスト待ち）**: テストの `migrated` 引数（`SpecialActionTestScope`／`ControlsKeyTestScope`／`AnalogMouseTestHarness`／各ヘルパー）、`[Theory]` の `InlineData(false/true)`（83 メソッド）、`foreach (migrated in {false, true})`、旧・新の比べ（`legacy` と `migrated` の `Assert.Equal`）を削除。比べだけが検査だったテスト 7 件（`ADelay_BehavesTheSame` ほか）と、旧・新の割り当ての比べだった 10 件（`TheNewPath_DoesNotAddAllocationsToTheFrame_*` など）は削除。比べを除いた残りの検査（`Assert.Contains` など）は、新経路の期待値として残した | 完了（詳細は `Phase8-Step8-Completion-Report.md` の C-2 節） |
 | C-3 | 残した系統 A の型: `KeyAction`、`KeyButtonActionController`、`KeyButtonActionControllerAdapter`、`PressActionController`、`RepeatHelperToIRepeaterAdapter`、`IControllerRegistry`／`DefaultControllerRegistry`、`IKeyButtonControllerRegistry`／`KeyButtonControllerRegistry`、`ActionInstanceState`。静的な `ActionManager`、`ActionEntry`（状態の入れ物） | Q6＝A（新経路が使う）。静的な窓口の整理は `Phase7-Residual-Ledger.md` §17.3 の目録と Phase9 で扱う |
 | C-4 | 廃止機能の通知部品の重複（`RemovedShift*` と `RemovedGyroSwipe*`）、未使用の文言（`Strings` の `DirectionalSwipe`、4 言語） | 共通化と翻訳ファイルの整理（Phase9） |
 | C-5 | 編集画面で、割り当てがマウスボタンのとき Toggle を設定できない制限の由来 | 調べて、仕様か不具合かを判断（Step9 の B-11） |

@@ -13,6 +13,7 @@ namespace DS4WindowsTests
     /// W1 の時点では、ビルダーが復帰つきの Profile の束縛を作らないため、新経路の指定でも旧経路が処理する。W2 で新経路が復帰を持つと、同じ検査が新経路を確かめる。
     /// 観察は <see cref="RecordingProfileApplicationService"/>（<c>InstallProfileRecorder</c>）で、実際のプロファイルの読込・適用は走らせない。
     /// 他の Host 構築テストと同じコレクションで直列に実行する。
+    /// Phase8-Step8 8d（持ち越し C-2）: 旧経路は削除済み。以前の「旧・新の両経路の比べ」は、新経路の期待値の固定（比べを除いた、残りの検査）に変えた。
     /// </summary>
     [Collection("ServiceProviderHolder")]
     public class Phase8Step75bW1ProfileUntriggerDualPathTests
@@ -43,10 +44,10 @@ namespace DS4WindowsTests
         }
 
         /// <summary>入力の列を流し、フレームごとの（累計の切替の回数、累計の復帰の回数）を返す。<paramref name="beforeFrame"/> は、フレームの前に行う操作（適用の後始末、切断など）。</summary>
-        private static List<(int Applies, int Restores)> Run(bool migrated, string triggers, DS4State[] frames,
+        private static List<(int Applies, int Restores)> Run(string triggers, DS4State[] frames,
             bool freshPressGuard = false, bool executing = false, Action<SpecialActionTestScope, int> beforeFrame = null)
         {
-            using var t = new SpecialActionTestScope(migrated);
+            using var t = new SpecialActionTestScope();
             RecordingProfileApplicationService recorder = t.InstallProfileRecorder();
             AddProfile(t, triggers, freshPressGuard, executing);
 
@@ -61,14 +62,12 @@ namespace DS4WindowsTests
             return result;
         }
 
-        [Theory]
-        [InlineData(false)]
-        [InlineData(true)]
-        public void RestoresOnce_WhenTheTriggerIsReleased(bool migrated)
+        [Fact]
+        public void RestoresOnce_WhenTheTriggerIsReleased()
         {
             DS4State[] frames = { Frame(false), Frame(true), Frame(true), Frame(true), Frame(false), Frame(false), Frame(false) };
 
-            var counts = Run(migrated, "L1", frames);
+            var counts = Run("L1", frames);
 
             Assert.Equal((0, 0), counts[0]);
             Assert.Equal((1, 0), counts[1]);   // 押して切り替える
@@ -77,14 +76,12 @@ namespace DS4WindowsTests
             Assert.Equal((1, 1), counts[6]);   // 合図が消えているので、繰り返し復帰しない
         }
 
-        [Theory]
-        [InlineData(false)]
-        [InlineData(true)]
-        public void AndCondition_RestoresWhenAnyOneOfTheTriggersIsReleased(bool migrated)
+        [Fact]
+        public void AndCondition_RestoresWhenAnyOneOfTheTriggersIsReleased()
         {
             DS4State[] frames = { Frame(false, false), Frame(true, true), Frame(true, true), Frame(true, false), Frame(true, false), Frame(false, false) };
 
-            var counts = Run(migrated, "L1/R1", frames);
+            var counts = Run("L1/R1", frames);
 
             Assert.Equal((1, 0), counts[1]);
             Assert.Equal((1, 0), counts[2]);
@@ -92,30 +89,26 @@ namespace DS4WindowsTests
             Assert.Equal((1, 1), counts[5]);
         }
 
-        [Theory]
-        [InlineData(false)]
-        [InlineData(true)]
-        public void WhenNothingSwitched_NothingIsRestored(bool migrated)
+        [Fact]
+        public void WhenNothingSwitched_NothingIsRestored()
         {
             // Fresh-press ガード中、実行中は、切り替えない。合図が立たないので、離しても復帰しない
             DS4State[] frames = { Frame(true), Frame(true), Frame(false), Frame(false) };
 
-            var guarded = Run(migrated, "L1", frames, freshPressGuard: true);
-            var executing = Run(migrated, "L1", frames, executing: true);
+            var guarded = Run("L1", frames, freshPressGuard: true);
+            var executing = Run("L1", frames, executing: true);
 
             Assert.Equal((0, 0), guarded.Last());
             Assert.Equal((0, 0), executing.Last());
         }
 
-        [Theory]
-        [InlineData(false)]
-        [InlineData(true)]
-        public void AProfileApplyWhileHeld_KeepsTheSignal_AndTheReleaseStillRestoresOnce(bool migrated)
+        [Fact]
+        public void AProfileApplyWhileHeld_KeepsTheSignal_AndTheReleaseStillRestoresOnce()
         {
             // Phase7b W1 の観点: 切替の適用の後始末（ClearDeviceState など）が入っても、復帰の合図は消えない
             DS4State[] frames = { Frame(false), Frame(true), Frame(true), Frame(true), Frame(false), Frame(false) };
 
-            var counts = Run(migrated, "L1", frames, beforeFrame: (t, i) =>
+            var counts = Run("L1", frames, beforeFrame: (t, i) =>
             {
                 if (i == 3) t.SimulateProfileApply();
             });
@@ -125,15 +118,13 @@ namespace DS4WindowsTests
             Assert.Equal((1, 1), counts[5]);
         }
 
-        [Theory]
-        [InlineData(false)]
-        [InlineData(true)]
-        public void APhysicalDisconnect_ClearsTheSignal_SoTheReleaseDoesNotRestore(bool migrated)
+        [Fact]
+        public void APhysicalDisconnect_ClearsTheSignal_SoTheReleaseDoesNotRestore()
         {
             // 本番の物理切断は、Mapping.HandleDeviceDisconnect（ControlService）と、エンジンの OnDeviceDisconnected（ProfileSlotApplier.ReleaseSlot）の両方を呼ぶ
             DS4State[] frames = { Frame(false), Frame(true), Frame(true), Frame(false), Frame(false) };
 
-            var counts = Run(migrated, "L1", frames, beforeFrame: (t, i) =>
+            var counts = Run("L1", frames, beforeFrame: (t, i) =>
             {
                 if (i == 2)
                 {
@@ -153,22 +144,19 @@ namespace DS4WindowsTests
         {
             // 記録用の実装が状態の掃除をしない（適用が終わっていない）状態で、押してすぐ離す。復帰が 1 回か、2 回（離したエッジの Stop が加わる）かを報告する。
             // 判定は付けない。Q4 の決定（Profile の離したエッジの Stop を、新経路で呼ぶか）の材料にする
-            foreach (bool migrated in new[] { false, true })
+            using var t = new SpecialActionTestScope();
+            RecordingProfileApplicationService recorder = t.InstallProfileRecorder();
+            recorder.SimulateStateReset = false;
+            AddProfile(t, "L1");
+
+            var restores = new List<int>();
+            foreach (bool l1 in new[] { false, true, true, false, false, false })
             {
-                using var t = new SpecialActionTestScope(migrated);
-                RecordingProfileApplicationService recorder = t.InstallProfileRecorder();
-                recorder.SimulateStateReset = false;
-                AddProfile(t, "L1");
-
-                var restores = new List<int>();
-                foreach (bool l1 in new[] { false, true, true, false, false, false })
-                {
-                    t.RunFrame(Frame(l1));
-                    restores.Add(recorder.RestoreFromActionCalls.Count);
-                }
-
-                _output.WriteLine($"[Phase8Step7.5b ReleaseBeforeApply] {(migrated ? "migrated" : "legacy  ")} applies={recorder.ApplyFromActionCalls.Count} restoresPerFrame=[{string.Join(",", restores)}]");
+                t.RunFrame(Frame(l1));
+                restores.Add(recorder.RestoreFromActionCalls.Count);
             }
+
+            _output.WriteLine($"[Phase8Step7.5b ReleaseBeforeApply] new applies={recorder.ApplyFromActionCalls.Count} restoresPerFrame=[{string.Join(",", restores)}]");
         }
     }
 }

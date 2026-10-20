@@ -47,54 +47,22 @@ namespace DS4WindowsTests
         }
 
         [Fact]
-        public void TheNewPath_DoesNotAddAllocationsToTheFrame_ForProgram()
-        {
-            long legacyHeld, legacyIdle, migratedHeld, migratedIdle;
-            DS4State held = Frame(true), idle = Frame(false);
-
-            using (var t = new SpecialActionTestScope(false))
-            {
-                AddProgram(t, "L1");
-                for (int i = 0; i < 300; i++) { t.RunFrame(held); t.RunFrame(idle); }
-                t.RunFrame(held);   // 立ち上がりの 1 フレーム（起動の試行で、1 回だけ大きく割り当てる）は、測定の外へ
-                legacyHeld = Allocated(t, held);
-                legacyIdle = Allocated(t, idle);
-            }
-
-            using (var t = new SpecialActionTestScope(true))
-            {
-                AddProgram(t, "L1");
-                for (int i = 0; i < 300; i++) { t.RunFrame(held); t.RunFrame(idle); }
-                t.RunFrame(held);
-                migratedHeld = Allocated(t, held);
-                migratedIdle = Allocated(t, idle);
-            }
-
-            _output.WriteLine($"[Phase8Step7.4 Program] held legacy={legacyHeld}B migrated={migratedHeld}B / idle legacy={legacyIdle}B migrated={migratedIdle}B");
-            Assert.True(migratedHeld <= legacyHeld + 4096, $"押下: 新 {migratedHeld} B > 旧 {legacyHeld} B");
-            Assert.True(migratedIdle <= legacyIdle + 4096, $"未操作: 新 {migratedIdle} B > 旧 {legacyIdle} B");
-        }
-
-        [Fact]
         public void MapCustom_ProgramMigrated_PerFrameTime_IsReported()
         {
-            foreach (bool migrated in new[] { false, true })
-            {
-                using var t = new SpecialActionTestScope(migrated);
-                string[] triggers = { "Cross", "Circle", "Square", "Triangle", "L1", "R1", "Cross/L1", "Circle/R1", "Share", "Options" };
-                for (int i = 0; i < 30; i++)
-                    AddProgram(t, triggers[i % triggers.Length]);
+            using var t = new SpecialActionTestScope();
+            string[] triggers = { "Cross", "Circle", "Square", "Triangle", "L1", "R1", "Cross/L1", "Circle/R1", "Share", "Options" };
+            for (int i = 0; i < 30; i++)
+                AddProgram(t, triggers[i % triggers.Length]);
 
-                DS4State pressed = SpecialActionTestScope.Neutral();
-                pressed.Cross = true;
-                pressed.L1 = true;
-                for (int i = 0; i < 300; i++) t.RunFrame(pressed);
+            DS4State pressed = SpecialActionTestScope.Neutral();
+            pressed.Cross = true;
+            pressed.L1 = true;
+            for (int i = 0; i < 300; i++) t.RunFrame(pressed);
 
-                var sw = Stopwatch.StartNew();
-                for (int i = 0; i < 5000; i++) t.RunFrame(pressed);
-                sw.Stop();
-                _output.WriteLine($"[Phase8Step7.4 Program] {(migrated ? "migrated" : "legacy  ")} actions=30 perFrame={sw.Elapsed.TotalMilliseconds * 1000.0 / 5000:F2}us");
-            }
+            var sw = Stopwatch.StartNew();
+            for (int i = 0; i < 5000; i++) t.RunFrame(pressed);
+            sw.Stop();
+            _output.WriteLine($"[Phase8Step7.4 Program] new actions=30 perFrame={sw.Elapsed.TotalMilliseconds * 1000.0 / 5000:F2}us");
         }
     }
 }

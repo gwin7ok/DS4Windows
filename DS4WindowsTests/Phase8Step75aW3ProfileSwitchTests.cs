@@ -44,7 +44,7 @@ namespace DS4WindowsTests
         {
             // Phase8-Step8 8b（機能廃止。ユーザー承認）: 解除トリガー（uTrigger）のボタンによる復帰は廃止した。uTrigger を持つ Profile も束縛になり、切替は行う
             var builder = TestHost.GetService<IActionBindingBuilder>();
-            using var t = new SpecialActionTestScope(true);
+            using var t = new SpecialActionTestScope();
             RecordingProfileApplicationService recorder = t.InstallProfileRecorder();
             SpecialAction sa = AddProfile(t, "L1", extras);
 
@@ -66,57 +66,23 @@ namespace DS4WindowsTests
         }
 
         [Fact]
-        public void TheNewPath_DoesNotAddAllocationsToTheFrame_ForProfile()
-        {
-            long legacyHeld, legacyIdle, migratedHeld, migratedIdle;
-            DS4State held = Frame(true), idle = Frame(false);
-
-            using (var t = new SpecialActionTestScope(false))
-            {
-                t.InstallProfileRecorder().SimulateStateReset = false;
-                AddProfile(t, "L1");
-                for (int i = 0; i < 300; i++) { t.RunFrame(held); t.RunFrame(idle); }
-                t.RunFrame(held);   // 立ち上がりの 1 フレーム（切替で、1 回だけ大きく割り当てる）は、測定の外へ
-                legacyHeld = Allocated(t, held);
-                legacyIdle = Allocated(t, idle);
-            }
-
-            using (var t = new SpecialActionTestScope(true))
-            {
-                t.InstallProfileRecorder().SimulateStateReset = false;
-                AddProfile(t, "L1");
-                for (int i = 0; i < 300; i++) { t.RunFrame(held); t.RunFrame(idle); }
-                t.RunFrame(held);
-                migratedHeld = Allocated(t, held);
-                migratedIdle = Allocated(t, idle);
-            }
-
-            _output.WriteLine($"[Phase8Step7.5a Profile] held legacy={legacyHeld}B migrated={migratedHeld}B / idle legacy={legacyIdle}B migrated={migratedIdle}B");
-            Assert.True(migratedHeld <= legacyHeld + 4096, $"押下: 新 {migratedHeld} B > 旧 {legacyHeld} B");
-            Assert.True(migratedIdle <= legacyIdle + 4096, $"未操作: 新 {migratedIdle} B > 旧 {legacyIdle} B");
-        }
-
-        [Fact]
         public void MapCustom_ProfileMigrated_PerFrameTime_IsReported()
         {
-            foreach (bool migrated in new[] { false, true })
-            {
-                using var t = new SpecialActionTestScope(migrated);
-                t.InstallProfileRecorder().SimulateStateReset = false;
-                string[] triggers = { "Cross", "Circle", "Square", "Triangle", "L1", "R1", "Cross/L1", "Circle/R1", "Share", "Options" };
-                for (int i = 0; i < 30; i++)
-                    AddProfile(t, triggers[i % triggers.Length]);
+            using var t = new SpecialActionTestScope();
+            t.InstallProfileRecorder().SimulateStateReset = false;
+            string[] triggers = { "Cross", "Circle", "Square", "Triangle", "L1", "R1", "Cross/L1", "Circle/R1", "Share", "Options" };
+            for (int i = 0; i < 30; i++)
+                AddProfile(t, triggers[i % triggers.Length]);
 
-                // 押している間（切替のあと、再び切り替えない）の費用
-                DS4State pressed = SpecialActionTestScope.Neutral();
-                pressed.Share = true;
-                for (int i = 0; i < 300; i++) t.RunFrame(pressed);
+            // 押している間（切替のあと、再び切り替えない）の費用
+            DS4State pressed = SpecialActionTestScope.Neutral();
+            pressed.Share = true;
+            for (int i = 0; i < 300; i++) t.RunFrame(pressed);
 
-                var sw = Stopwatch.StartNew();
-                for (int i = 0; i < 5000; i++) t.RunFrame(pressed);
-                sw.Stop();
-                _output.WriteLine($"[Phase8Step7.5a Profile] {(migrated ? "migrated" : "legacy  ")} actions=30 perFrame={sw.Elapsed.TotalMilliseconds * 1000.0 / 5000:F2}us");
-            }
+            var sw = Stopwatch.StartNew();
+            for (int i = 0; i < 5000; i++) t.RunFrame(pressed);
+            sw.Stop();
+            _output.WriteLine($"[Phase8Step7.5a Profile] new actions=30 perFrame={sw.Elapsed.TotalMilliseconds * 1000.0 / 5000:F2}us");
         }
     }
 }

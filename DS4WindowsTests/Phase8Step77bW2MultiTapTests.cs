@@ -262,7 +262,7 @@ namespace DS4WindowsTests
         [Fact]
         public void TheBuilder_BuildsTheIndependentInput_AndOneOutputPerGesture_OnlyWithAPlayer()
         {
-            using var t = new SpecialActionTestScope(true);
+            using var t = new SpecialActionTestScope();
             var player = new RecordingPlayer();
             SpecialAction sa = AddMulti(t, "L1", player);
 
@@ -288,7 +288,7 @@ namespace DS4WindowsTests
             var player = new RecordingPlayer();
             var ctx = new DummyContext();
 
-            using (var t = new SpecialActionTestScope(true))
+            using (var t = new SpecialActionTestScope())
             {
                 AddMulti(t, "L1", player, "65/65,,67/67");
                 IActionBinding binding = Assert.Single(NewBuilder(player).Build(t.Device));
@@ -297,7 +297,7 @@ namespace DS4WindowsTests
             }
 
             player.Calls.Clear();
-            using (var t = new SpecialActionTestScope(true))
+            using (var t = new SpecialActionTestScope())
             {
                 AddMulti(t, "L1", player, "65/65");   // details が足りない
                 IActionBinding few = Assert.Single(NewBuilder(player).Build(t.Device));
@@ -349,7 +349,7 @@ namespace DS4WindowsTests
 
         // ---- ログ ----
 
-        private static List<string> RunLogged(bool migrated, string name, LogLevel minLevel)
+        private static List<string> RunLogged(string name, LogLevel minLevel)
         {
             LoggingConfiguration saved = LogManager.Configuration;
             var target = new MemoryTarget("p8s77b") { Layout = "${level}|${message}" };
@@ -359,7 +359,7 @@ namespace DS4WindowsTests
             LogManager.Configuration = config;
             try
             {
-                using (var t = new SpecialActionTestScope(migrated))
+                using (var t = new SpecialActionTestScope())
                 {
                     TestDs4Device device = TestDs4Device.Create();
                     t.Scope.Control.DS4Controllers[t.Device] = device;
@@ -408,25 +408,22 @@ namespace DS4WindowsTests
         }
 
         [Fact]
-        public void TheTapLogs_NewPathLogsTheSameLinesAsTheLegacyPath()
+        public void TheTapLogs_AreLogged()
         {
             string name = "p8s77b_log_" + Guid.NewGuid().ToString("N");
 
-            List<string> legacy = RunLogged(false, name, LogLevel.Trace);
-            List<string> migrated = RunLogged(true, name, LogLevel.Trace);
+            List<string> logged = RunLogged(name, LogLevel.Trace);
 
-            Assert.Equal(4, legacy.Count);   // マクロを実行する直前の Trace 4 行。Debug はない
-            Assert.Equal(legacy, migrated);
-            Assert.Contains(legacy, l => l.Contains("maps to Type:MultiAction"));
+            Assert.Equal(4, logged.Count);   // マクロを実行する直前の Trace 4 行。Debug はない
+            Assert.Contains(logged, l => l.Contains("maps to Type:MultiAction"));
         }
 
         [Fact]
-        public void WhenOnlyWarningsAreEnabled_NothingIsLogged_OnEitherPath()
+        public void WhenOnlyWarningsAreEnabled_NothingIsLogged()
         {
             string name = "p8s77b_off_" + Guid.NewGuid().ToString("N");
 
-            Assert.Empty(RunLogged(false, name, LogLevel.Warn));
-            Assert.Empty(RunLogged(true, name, LogLevel.Warn));
+            Assert.Empty(RunLogged(name, LogLevel.Warn));
         }
 
         // ---- 割り当て ----
@@ -447,14 +444,14 @@ namespace DS4WindowsTests
         {
             // 同じ件数の MultiAction で、トリガーが押されていない（R1。押すのは L1）場合を基準にする（Phase8Step76aGyroCalibrateTests と同じ方式）
             long baseline;
-            using (var t = new SpecialActionTestScope(true))
+            using (var t = new SpecialActionTestScope())
             {
                 AddMulti(t, "R1", new RecordingPlayer());
                 baseline = AllocatedWhileHeld(t);
             }
 
             long withMulti;
-            using (var t = new SpecialActionTestScope(true))
+            using (var t = new SpecialActionTestScope())
             {
                 AddMulti(t, "L1", new RecordingPlayer());
                 withMulti = AllocatedWhileHeld(t);

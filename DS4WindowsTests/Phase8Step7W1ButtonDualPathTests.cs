@@ -13,6 +13,7 @@ namespace DS4WindowsTests
     /// 注意: 遅延（<c>delayTime</c>）は時刻に依存するため、ここでは「Button の出力は遅延（delayTime）で遅れない」ことだけを確かめる。時刻を伴う Fresh-press の解除は、
     /// <c>Phase7cW2SpecialActionTriggerCharacterizationTests</c>（両経路の <c>[Theory]</c>）が担う。
     /// 他の Host 構築テストと同じコレクションで直列に実行する。
+    /// Phase8-Step8 8d（持ち越し C-2）: 旧経路は削除済み。以前の「旧・新の両経路の比べ」は、新経路の期待値の固定（比べを除いた、残りの検査）に変えた。
     /// </summary>
     [Collection("ServiceProviderHolder")]
     public class Phase8Step7W1ButtonDualPathTests
@@ -27,9 +28,9 @@ namespace DS4WindowsTests
 
         /// <summary>1 つの Button 特殊アクションを登録し、入力の列を流して、フレームごとの出力を記録する。</summary>
         private static List<(bool Cross, bool L1, bool R1, bool Touch, int LeftClicks)> Run(
-            bool migrated, string triggers, string details, string extras, int delayMs, bool freshPressGuard, DS4State[] frames)
+            string triggers, string details, string extras, int delayMs, bool freshPressGuard, DS4State[] frames)
         {
-            using var t = new SpecialActionTestScope(migrated);
+            using var t = new SpecialActionTestScope();
             SpecialAction sa = t.Add(new SpecialAction("p8s7_btn_" + Guid.NewGuid().ToString("N"), triggers, "Button", details, delayMs, extras));
             ActionInstanceState state = t.StateOf(sa);
             state.IsToggledOn = false;
@@ -50,46 +51,40 @@ namespace DS4WindowsTests
         private static string Cross => ((int)X360Controls.A).ToString();
 
         [Fact]
-        public void Press_Sequence_BothPathsGiveTheSameOutput()
+        public void Press_Sequence_GivesTheOutput()
         {
             DS4State[] frames = { Frame(false), Frame(false), Frame(true), Frame(true), Frame(true), Frame(false), Frame(true), Frame(false), Frame(false), Frame(true), Frame(true), Frame(false) };
 
-            var legacy = Run(false, "L1", Cross, "Press\n", 0, false, frames);
-            var migrated = Run(true, "L1", Cross, "Press\n", 0, false, frames);
+            var result = Run("L1", Cross, "Press\n", 0, false, frames);
 
-            Assert.Equal(legacy, migrated);
-            Assert.Contains(legacy, f => f.Cross);       // 比較が「何も出力しない」同士にならないこと
-            Assert.Contains(legacy, f => !f.Cross);
+            Assert.Contains(result, f => f.Cross);       // 何も出力しないテストにならないこと
+            Assert.Contains(result, f => !f.Cross);
         }
 
         [Fact]
-        public void Toggle_Sequence_BothPathsGiveTheSameOutput()
+        public void Toggle_Sequence_GivesTheOutput()
         {
             DS4State[] frames = { Frame(false), Frame(false), Frame(true), Frame(true), Frame(false), Frame(false), Frame(true), Frame(false), Frame(true), Frame(true), Frame(false), Frame(false) };
 
-            var legacy = Run(false, "L1", Cross, "Toggle\n", 0, false, frames);
-            var migrated = Run(true, "L1", Cross, "Toggle\n", 0, false, frames);
+            var result = Run("L1", Cross, "Toggle\n", 0, false, frames);
 
-            Assert.Equal(legacy, migrated);
-            Assert.Contains(legacy, f => f.Cross);       // ON の区間がある
-            Assert.Contains(legacy, f => !f.Cross);      // OFF の区間がある
+            Assert.Contains(result, f => f.Cross);       // ON の区間がある
+            Assert.Contains(result, f => !f.Cross);      // OFF の区間がある
         }
 
         [Fact]
-        public void Toggle_WhileTheFreshPressGuardIsOn_DoesNotFlip_OnEitherPath()
+        public void Toggle_WhileTheFreshPressGuardIsOn_DoesNotFlip()
         {
             // 押しっぱなしの間は未成立のフレームがなく、ガードは解除されない（時刻に依存しない）
             DS4State[] frames = { Frame(true), Frame(true), Frame(true) };
 
-            var legacy = Run(false, "L1", Cross, "Toggle\n", 0, true, frames);
-            var migrated = Run(true, "L1", Cross, "Toggle\n", 0, true, frames);
+            var result = Run("L1", Cross, "Toggle\n", 0, true, frames);
 
-            Assert.Equal(legacy, migrated);
-            Assert.DoesNotContain(legacy, f => f.Cross);  // ガード中は反転しない
+            Assert.DoesNotContain(result, f => f.Cross);  // ガード中は反転しない
         }
 
         [Fact]
-        public void Press_AndCondition_BothPathsGiveTheSameOutput_IncludingThePassThrough()
+        public void Press_AndCondition_GivesTheOutput_IncludingThePassThrough()
         {
             DS4State[] frames =
             {
@@ -97,64 +92,54 @@ namespace DS4WindowsTests
                 Frame(false, true), Frame(true, true), Frame(false, false)
             };
 
-            var legacy = Run(false, "L1/R1", Cross, "Press\n", 0, false, frames);
-            var migrated = Run(true, "L1/R1", Cross, "Press\n", 0, false, frames);
+            var result = Run("L1/R1", Cross, "Press\n", 0, false, frames);
 
-            Assert.Equal(legacy, migrated);
-            Assert.Contains(legacy, f => f.Cross);
-            Assert.Contains(legacy, f => f.L1 && !f.Cross);   // 片方だけのときは素通し
+            Assert.Contains(result, f => f.Cross);
+            Assert.Contains(result, f => f.L1 && !f.Cross);   // 片方だけのときは素通し
         }
 
         [Fact]
-        public void TouchpadClickOutput_BothPathsGiveTheSameOutput()
+        public void TouchpadClickOutput_GivesTheOutput()
         {
             DS4State[] frames = { Frame(false), Frame(true), Frame(true), Frame(false), Frame(true), Frame(false) };
             string details = ((int)X360Controls.TouchpadClick).ToString();
 
-            var legacy = Run(false, "L1", details, "Press\n", 0, false, frames);
-            var migrated = Run(true, "L1", details, "Press\n", 0, false, frames);
+            var result = Run("L1", details, "Press\n", 0, false, frames);
 
-            Assert.Equal(legacy, migrated);
-            Assert.Contains(legacy, f => f.Touch);
+            Assert.Contains(result, f => f.Touch);
         }
 
         [Fact]
-        public void MouseClickOutput_BothPathsGiveTheSameClickCounts()
+        public void MouseClickOutput_GivesTheClickCounts()
         {
             DS4State[] frames = { Frame(false), Frame(true), Frame(true), Frame(false), Frame(true), Frame(false) };
             string details = ((int)X360Controls.LeftMouse).ToString();
 
-            var legacy = Run(false, "L1", details, "Press\n", 0, false, frames);
-            var migrated = Run(true, "L1", details, "Press\n", 0, false, frames);
+            var result = Run("L1", details, "Press\n", 0, false, frames);
 
-            Assert.Equal(legacy, migrated);
-            Assert.Contains(legacy, f => f.LeftClicks > 0);
+            Assert.Contains(result, f => f.LeftClicks > 0);
         }
 
         [Fact]
-        public void UnreadableDetails_OutputNothing_OnEitherPath()
+        public void UnreadableDetails_OutputNothing()
         {
             // 現行の Stage3 と同じ: details が整数として読めなければ、何も出力しない（トリガーのボタンは消える）
             DS4State[] frames = { Frame(false), Frame(true), Frame(true), Frame(false) };
 
-            var legacy = Run(false, "L1", "not-a-number", "Press\n", 0, false, frames);
-            var migrated = Run(true, "L1", "not-a-number", "Press\n", 0, false, frames);
+            var result = Run("L1", "not-a-number", "Press\n", 0, false, frames);
 
-            Assert.Equal(legacy, migrated);
-            Assert.DoesNotContain(legacy, f => f.Cross);
+            Assert.DoesNotContain(result, f => f.Cross);
         }
 
         [Fact]
-        public void Delay_DoesNotGateTheButtonOutput_OnEitherPath()
+        public void Delay_DoesNotGateTheButtonOutput()
         {
             DS4State[] frames = { Frame(true), Frame(true), Frame(true), Frame(false), Frame(true) };
 
-            var legacy = Run(false, "L1", Cross, "Press\n", 60_000, false, frames);
-            var migrated = Run(true, "L1", Cross, "Press\n", 60_000, false, frames);
+            var result = Run("L1", Cross, "Press\n", 60_000, false, frames);
 
-            Assert.Equal(legacy, migrated);
             // 現行の挙動の固定（W1 の実測）: delayTime は Button の出力を遅らせない。Press は成立中、そのまま出力される
-            Assert.Contains(legacy, f => f.Cross);
+            Assert.Contains(result, f => f.Cross);
         }
 
         [Fact]
@@ -163,7 +148,7 @@ namespace DS4WindowsTests
             var registry = TestHost.GetService<DS4Windows.Actions.IActionRegistry>();
             int device;
 
-            using (var t = new SpecialActionTestScope(true))
+            using (var t = new SpecialActionTestScope())
             {
                 device = t.Device;
                 t.AddButtonPress("L1");

@@ -73,7 +73,7 @@ namespace DS4WindowsTests
         [Fact]
         public void MovementAndAnalogWheel_MakeAnalogMouseBindings_ThatEraseTheOriginalEveryFrame()
         {
-            using var t = new ControlsKeyTestScope(true);
+            using var t = new ControlsKeyTestScope();
             t.MapButton(DS4Controls.Cross, X360Controls.MouseLeft);
             t.MapButton(DS4Controls.L2, X360Controls.WUP);
             t.MapButton(DS4Controls.Circle, X360Controls.MouseDown, DS4KeyType.Toggle);
@@ -97,7 +97,7 @@ namespace DS4WindowsTests
         [Fact]
         public void ADigitalWheelFromAButton_StaysAMouseBinding()
         {
-            using var t = new ControlsKeyTestScope(true);
+            using var t = new ControlsKeyTestScope();
             t.MapButton(DS4Controls.Cross, X360Controls.WUP);
 
             IActionBinding b = Assert.Single(Build());
@@ -126,7 +126,7 @@ namespace DS4WindowsTests
         [Fact]
         public void Wheel_KeepsItsOwnRemainder_PerBinding_SoSwitchingDirectionDoesNotDiscardIt()
         {
-            using var h = new AnalogMouseTestHarness(true);
+            using var h = new AnalogMouseTestHarness();
             h.T.MapButton(DS4Controls.L2, X360Controls.WUP);
             h.T.MapButton(DS4Controls.R2, X360Controls.WDOWN);
             h.T.Publish();
@@ -151,7 +151,7 @@ namespace DS4WindowsTests
         [Fact]
         public void Wheel_TwoSourcesOnTheSameDirection_AdvanceIndependently()
         {
-            using var h = new AnalogMouseTestHarness(true);
+            using var h = new AnalogMouseTestHarness();
             h.T.MapButton(DS4Controls.L2, X360Controls.WUP);
             h.T.MapButton(DS4Controls.R2, X360Controls.WUP);
             h.T.Publish();

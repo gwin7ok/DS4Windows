@@ -46,58 +46,23 @@ namespace DS4WindowsTests
         }
 
         [Fact]
-        public void TheNewPath_DoesNotAddAllocationsToTheFrame_WhileWaitingForTheUntrigger()
-        {
-            long legacyHeld, legacyIdle, migratedHeld, migratedIdle;
-            DS4State held = Frame(true), idle = Frame(false);
-
-            // 押している間（復帰待ち）の割り当て。離すと復帰して合図が消えるため、「未操作」は、合図がない状態の割り当て
-            using (var t = new SpecialActionTestScope(false))
-            {
-                t.InstallProfileRecorder();
-                AddProfile(t, "L1");
-                for (int i = 0; i < 300; i++) t.RunFrame(held);   // 切替の立ち上がり（1 回だけ大きく割り当てる）は、測定の外へ
-                legacyHeld = Allocated(t, held);
-                t.RunFrame(idle);                                  // 復帰して合図が消える
-                legacyIdle = Allocated(t, idle);
-            }
-
-            using (var t = new SpecialActionTestScope(true))
-            {
-                t.InstallProfileRecorder();
-                AddProfile(t, "L1");
-                for (int i = 0; i < 300; i++) t.RunFrame(held);
-                migratedHeld = Allocated(t, held);
-                t.RunFrame(idle);
-                migratedIdle = Allocated(t, idle);
-            }
-
-            _output.WriteLine($"[Phase8Step7.5b Profile untrigger] waiting legacy={legacyHeld}B migrated={migratedHeld}B / idle legacy={legacyIdle}B migrated={migratedIdle}B");
-            Assert.True(migratedHeld <= legacyHeld + 4096, $"復帰待ち: 新 {migratedHeld} B > 旧 {legacyHeld} B");
-            Assert.True(migratedIdle <= legacyIdle + 4096, $"未操作: 新 {migratedIdle} B > 旧 {legacyIdle} B");
-        }
-
-        [Fact]
         public void MapCustom_ProfileUntriggerMigrated_PerFrameTime_IsReported()
         {
-            foreach (bool migrated in new[] { false, true })
-            {
-                using var t = new SpecialActionTestScope(migrated);
-                t.InstallProfileRecorder();
-                string[] triggers = { "Cross", "Circle", "Square", "Triangle", "L1", "R1", "Cross/L1", "Circle/R1", "Share", "Options" };
-                for (int i = 0; i < 30; i++)
-                    AddProfile(t, triggers[i % triggers.Length]);
+            using var t = new SpecialActionTestScope();
+            t.InstallProfileRecorder();
+            string[] triggers = { "Cross", "Circle", "Square", "Triangle", "L1", "R1", "Cross/L1", "Circle/R1", "Share", "Options" };
+            for (int i = 0; i < 30; i++)
+                AddProfile(t, triggers[i % triggers.Length]);
 
-                // 押している間（切替のあと、復帰待ち）の費用
-                DS4State pressed = SpecialActionTestScope.Neutral();
-                pressed.Share = true;
-                for (int i = 0; i < 300; i++) t.RunFrame(pressed);
+            // 押している間（切替のあと、復帰待ち）の費用
+            DS4State pressed = SpecialActionTestScope.Neutral();
+            pressed.Share = true;
+            for (int i = 0; i < 300; i++) t.RunFrame(pressed);
 
-                var sw = Stopwatch.StartNew();
-                for (int i = 0; i < 5000; i++) t.RunFrame(pressed);
-                sw.Stop();
-                _output.WriteLine($"[Phase8Step7.5b Profile untrigger] {(migrated ? "migrated" : "legacy  ")} actions=30 perFrame={sw.Elapsed.TotalMilliseconds * 1000.0 / 5000:F2}us");
-            }
+            var sw = Stopwatch.StartNew();
+            for (int i = 0; i < 5000; i++) t.RunFrame(pressed);
+            sw.Stop();
+            _output.WriteLine($"[Phase8Step7.5b Profile untrigger] new actions=30 perFrame={sw.Elapsed.TotalMilliseconds * 1000.0 / 5000:F2}us");
         }
     }
 }

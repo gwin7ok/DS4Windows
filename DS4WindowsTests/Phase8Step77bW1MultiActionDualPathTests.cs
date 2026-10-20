@@ -12,6 +12,7 @@ namespace DS4WindowsTests
     /// 時刻は旧経路が <c>DateTime.UtcNow</c> を使うため、実際に待つ（待ち時間には余裕を持たせる）。マクロは背景のタスクで実行されるため、記録の出現を待つ。
     /// 旧・新の両経路（<c>InlineData(false)</c>／<c>InlineData(true)</c>）で同じ期待値。W1 の時点では、ビルダーが MultiAction の束縛を作らないため、新経路の指定でも旧経路が処理する。
     /// 他の Host 構築テストと同じコレクションで直列に実行する。
+    /// Phase8-Step8 8d（持ち越し C-2）: 旧経路は削除済み。以前の「旧・新の両経路の比べ」は、新経路の期待値の固定（比べを除いた、残りの検査）に変えた。
     /// </summary>
     [Collection("ServiceProviderHolder")]
     public class Phase8Step77bW1MultiActionDualPathTests
@@ -32,9 +33,9 @@ namespace DS4WindowsTests
             private DS4State _previous = SpecialActionTestScope.Neutral();
             private readonly int _savedDebounce;
 
-            public Harness(bool migrated)
+            public Harness()
             {
-                Scope = new SpecialActionTestScope(migrated);
+                Scope = new SpecialActionTestScope();
                 Scope.Scope.Control.DS4Controllers[Scope.Device] = _device;
                 _savedDebounce = Scope.Scope.Settings.DebouncingMs[Scope.Device];
                 Scope.Scope.Settings.DebouncingMs[Scope.Device] = 0;
@@ -96,12 +97,10 @@ namespace DS4WindowsTests
             return sa;
         }
 
-        [Theory]
-        [InlineData(false)]
-        [InlineData(true)]
-        public void ATap_PlaysTheFirstMacro_OnlyAfterTheIntervalHasPassed(bool migrated)
+        [Fact]
+        public void ATap_PlaysTheFirstMacro_OnlyAfterTheIntervalHasPassed()
         {
-            using var h = new Harness(migrated);
+            using var h = new Harness();
             AddMulti(h.Scope);
 
             h.Step(false);
@@ -119,12 +118,10 @@ namespace DS4WindowsTests
             Assert.Equal(1, h.Presses);   // 1 回だけ
         }
 
-        [Theory]
-        [InlineData(false)]
-        [InlineData(true)]
-        public void AHold_PlaysTheSecondMacroOnce_AndTheReleaseDoesNotPlayAnother(bool migrated)
+        [Fact]
+        public void AHold_PlaysTheSecondMacroOnce_AndTheReleaseDoesNotPlayAnother()
         {
-            using var h = new Harness(migrated);
+            using var h = new Harness();
             AddMulti(h.Scope);
 
             h.Step(false);
@@ -138,12 +135,10 @@ namespace DS4WindowsTests
             Assert.Equal(new[] { h.Native(66) }, h.PressedKeys);   // 離しても、タップのマクロは実行しない
         }
 
-        [Theory]
-        [InlineData(false)]
-        [InlineData(true)]
-        public void ADoubleTap_PlaysTheThirdMacroOnly(bool migrated)
+        [Fact]
+        public void ADoubleTap_PlaysTheThirdMacroOnly()
         {
-            using var h = new Harness(migrated);
+            using var h = new Harness();
             AddMulti(h.Scope);
 
             h.Step(false);
@@ -162,12 +157,10 @@ namespace DS4WindowsTests
             Assert.Equal(new[] { h.Native(67) }, h.PressedKeys);   // タップのマクロは実行しない
         }
 
-        [Theory]
-        [InlineData(false)]
-        [InlineData(true)]
-        public void EmptyMacros_PlayNothing_AndDoNotThrow(bool migrated)
+        [Fact]
+        public void EmptyMacros_PlayNothing_AndDoNotThrow()
         {
-            using var h = new Harness(migrated);
+            using var h = new Harness();
             AddMulti(h.Scope, ",,");
 
             h.Step(false);
@@ -181,12 +174,10 @@ namespace DS4WindowsTests
             Assert.Equal(0, h.Presses);
         }
 
-        [Theory]
-        [InlineData(false)]
-        [InlineData(true)]
-        public void TheDebouncingMs_ExtendsTheTapInterval(bool migrated)
+        [Fact]
+        public void TheDebouncingMs_ExtendsTheTapInterval()
         {
-            using var h = new Harness(migrated);
+            using var h = new Harness();
             h.SetDebounce(200);
             AddMulti(h.Scope);
 
@@ -204,12 +195,10 @@ namespace DS4WindowsTests
             Assert.Equal(new[] { h.Native(65) }, h.PressedKeys);
         }
 
-        [Theory]
-        [InlineData(false)]
-        [InlineData(true)]
-        public void TheFreshPressGuard_IsNotConsulted(bool migrated)
+        [Fact]
+        public void TheFreshPressGuard_IsNotConsulted()
         {
-            using var h = new Harness(migrated);
+            using var h = new Harness();
             AddMulti(h.Scope, freshPressGuard: true);
 
             h.Step(false);
@@ -222,32 +211,28 @@ namespace DS4WindowsTests
             Assert.Equal(new[] { h.Native(65) }, h.PressedKeys);
         }
 
-        [Theory]
-        [InlineData(false)]
-        [InlineData(true)]
-        public void WhileTheTriggerIsHeld_ItsOwnOutputIsErased(bool migrated)
+        [Fact]
+        public void WhileTheTriggerIsHeld_ItsOwnOutputIsErased()
         {
-            using (var plain = new Harness(migrated))
+            using (var plain = new Harness())
             {
                 plain.Step(false);
                 Assert.True(plain.Step(true).L1);   // 特殊アクションがなければ、そのまま出力される
             }
 
-            using var h = new Harness(migrated);
+            using var h = new Harness();
             AddMulti(h.Scope);
 
             h.Step(false);
             Assert.False(h.Step(true).L1);          // MultiAction のトリガーのボタンの通常の出力は、押している間、消える
         }
 
-        [Theory]
-        [InlineData(false)]
-        [InlineData(true)]
-        public void WhenAnEarlierSpecialActionEndsTheFrame_ThePressEdgeIsMissed(bool migrated)
+        [Fact]
+        public void WhenAnEarlierSpecialActionEndsTheFrame_ThePressEdgeIsMissed()
         {
             // 前の特殊アクション（Profile の切替）がフレームを打ち切ると、その後ろの MultiAction は、その押下のエッジを見逃す（旧ループの return）。
             // 次のフレーム以降は「前回も押している」ため、長押しにもならない（旧経路の性質。新経路も旧ループの位置で動くため同じ）
-            using var h = new Harness(migrated);
+            using var h = new Harness();
             h.Scope.InstallProfileRecorder();
             SpecialAction profile = h.Scope.Add(new SpecialAction("p8s77b_profile_" + Guid.NewGuid().ToString("N"), "L1", "Profile", "p8s77b-target", 0, string.Empty));
             h.Scope.StateOf(profile).RequiresFreshPressAfterReset = false;

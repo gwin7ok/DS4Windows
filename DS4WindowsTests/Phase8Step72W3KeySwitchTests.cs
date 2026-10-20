@@ -37,54 +37,22 @@ namespace DS4WindowsTests
         }
 
         [Fact]
-        public void TheNewPath_DoesNotAddAllocationsToTheFrame_ForKey()
-        {
-            long LegacyHeld, LegacyIdle, MigratedHeld, MigratedIdle;
-            DS4State held = Frame(true), idle = Frame(false);
-
-            using (var t = new SpecialActionTestScope(false))
-            {
-                SpecialAction sa = t.AddKey("L1", toggle: false);
-                t.StateOf(sa).RequiresFreshPressAfterReset = false;
-                for (int i = 0; i < 300; i++) { t.RunFrame(held); t.RunFrame(idle); }
-                LegacyHeld = Allocated(t, held);
-                LegacyIdle = Allocated(t, idle);
-            }
-
-            using (var t = new SpecialActionTestScope(true))
-            {
-                SpecialAction sa = t.AddKey("L1", toggle: false);
-                t.StateOf(sa).RequiresFreshPressAfterReset = false;
-                for (int i = 0; i < 300; i++) { t.RunFrame(held); t.RunFrame(idle); }
-                MigratedHeld = Allocated(t, held);
-                MigratedIdle = Allocated(t, idle);
-            }
-
-            _output.WriteLine($"[Phase8Step7.2 Key] held legacy={LegacyHeld}B migrated={MigratedHeld}B / idle legacy={LegacyIdle}B migrated={MigratedIdle}B");
-            Assert.True(MigratedHeld <= LegacyHeld + 4096, $"押下: 新 {MigratedHeld} B > 旧 {LegacyHeld} B");
-            Assert.True(MigratedIdle <= LegacyIdle + 4096, $"未操作: 新 {MigratedIdle} B > 旧 {LegacyIdle} B");
-        }
-
-        [Fact]
         public void MapCustom_KeyMigrated_PerFrameTime_IsReported()
         {
-            foreach (bool migrated in new[] { false, true })
-            {
-                using var t = new SpecialActionTestScope(migrated);
-                string[] triggers = { "Cross", "Circle", "Square", "Triangle", "L1", "R1", "Cross/L1", "Circle/R1", "Share", "Options" };
-                for (int i = 0; i < 30; i++)
-                    t.StateOf(t.AddKey(triggers[i % triggers.Length], toggle: false)).RequiresFreshPressAfterReset = false;
+            using var t = new SpecialActionTestScope();
+            string[] triggers = { "Cross", "Circle", "Square", "Triangle", "L1", "R1", "Cross/L1", "Circle/R1", "Share", "Options" };
+            for (int i = 0; i < 30; i++)
+                t.StateOf(t.AddKey(triggers[i % triggers.Length], toggle: false)).RequiresFreshPressAfterReset = false;
 
-                DS4State pressed = SpecialActionTestScope.Neutral();
-                pressed.Cross = true;
-                pressed.L1 = true;
-                for (int i = 0; i < 300; i++) t.RunFrame(pressed);
+            DS4State pressed = SpecialActionTestScope.Neutral();
+            pressed.Cross = true;
+            pressed.L1 = true;
+            for (int i = 0; i < 300; i++) t.RunFrame(pressed);
 
-                var sw = Stopwatch.StartNew();
-                for (int i = 0; i < 5000; i++) t.RunFrame(pressed);
-                sw.Stop();
-                _output.WriteLine($"[Phase8Step7.2 Key] {(migrated ? "migrated" : "legacy  ")} actions=30 perFrame={sw.Elapsed.TotalMilliseconds * 1000.0 / 5000:F2}us");
-            }
+            var sw = Stopwatch.StartNew();
+            for (int i = 0; i < 5000; i++) t.RunFrame(pressed);
+            sw.Stop();
+            _output.WriteLine($"[Phase8Step7.2 Key] new actions=30 perFrame={sw.Elapsed.TotalMilliseconds * 1000.0 / 5000:F2}us");
         }
     }
 }

@@ -23,12 +23,10 @@ namespace DS4WindowsTests
 
         private static DS4State Neutral() => ControlsKeyTestScope.Neutral();
 
-        [Theory]
-        [InlineData(false)]
-        [InlineData(true)]
-        public void ButtonToPadButton_MovesThePressToTheTarget_AndErasesTheOriginal(bool migrated)
+        [Fact]
+        public void ButtonToPadButton_MovesThePressToTheTarget_AndErasesTheOriginal()
         {
-            using var t = new ControlsKeyTestScope(migrated);
+            using var t = new ControlsKeyTestScope();
             t.MapButton(DS4Controls.Cross, X360Controls.B);   // B の標準の割り当ては Circle
             t.Publish();
 
@@ -46,12 +44,10 @@ namespace DS4WindowsTests
             Assert.False(released.Cross);
         }
 
-        [Theory]
-        [InlineData(false)]
-        [InlineData(true)]
-        public void PadButtonTarget_JudgesAStickDirectionBy55_AndATriggerAbove100(bool migrated)
+        [Fact]
+        public void PadButtonTarget_JudgesAStickDirectionBy55_AndATriggerAbove100()
         {
-            using var t = new ControlsKeyTestScope(migrated);
+            using var t = new ControlsKeyTestScope();
             t.MapButton(DS4Controls.LXNeg, X360Controls.A);   // A の標準の割り当ては Cross
             t.MapButton(DS4Controls.L2, X360Controls.Y);      // Y の標準の割り当ては Triangle
             t.Publish();
@@ -75,12 +71,10 @@ namespace DS4WindowsTests
             Assert.Equal(0, output.L2);   // 割り当てたトリガーの元の出力は消える
         }
 
-        [Theory]
-        [InlineData(false)]
-        [InlineData(true)]
-        public void ButtonToAxisTarget_DrivesTheAxisToItsEnd_AndTheReleasedAxisStaysNeutral(bool migrated)
+        [Fact]
+        public void ButtonToAxisTarget_DrivesTheAxisToItsEnd_AndTheReleasedAxisStaysNeutral()
         {
-            using var t = new ControlsKeyTestScope(migrated);
+            using var t = new ControlsKeyTestScope();
             t.MapButton(DS4Controls.Cross, X360Controls.LXPos);
             t.MapButton(DS4Controls.Circle, X360Controls.LYNeg);
             t.Publish();
@@ -102,12 +96,10 @@ namespace DS4WindowsTests
             Assert.Equal(128, output.LY);
         }
 
-        [Theory]
-        [InlineData(false)]
-        [InlineData(true)]
-        public void AnalogSourceToAxisTarget_KeepsTheAnalogValue_AndErasesTheSource(bool migrated)
+        [Fact]
+        public void AnalogSourceToAxisTarget_KeepsTheAnalogValue_AndErasesTheSource()
         {
-            using var t = new ControlsKeyTestScope(migrated);
+            using var t = new ControlsKeyTestScope();
             t.MapButton(DS4Controls.RXPos, X360Controls.LXPos);
             t.Publish();
 
@@ -115,17 +107,15 @@ namespace DS4WindowsTests
             input.RX = 200;
             DS4State output = t.Run(input);
 
-            _output.WriteLine($"[7.8f-1 W1 {(migrated ? "migrated" : "legacy  ")}] RX=200 → LXPos: LX={output.LX} RX={output.RX}");
+            _output.WriteLine($"[7.8f-1 W1 new] RX=200 → LXPos: LX={output.LX} RX={output.RX}");
             Assert.Equal(200, output.LX);
             Assert.Equal(128, output.RX);   // 元は消える。反対側（RXNeg）は Default の素通しだが、倒していないため 128 のまま
         }
 
-        [Theory]
-        [InlineData(false)]
-        [InlineData(true)]
-        public void TriggerTarget_FromAButtonIsFullScale_AndFromATriggerKeepsTheValue(bool migrated)
+        [Fact]
+        public void TriggerTarget_FromAButtonIsFullScale_AndFromATriggerKeepsTheValue()
         {
-            using var t = new ControlsKeyTestScope(migrated);
+            using var t = new ControlsKeyTestScope();
             t.MapButton(DS4Controls.R1, X360Controls.LT);
             t.MapButton(DS4Controls.R2, X360Controls.RT);
             t.Publish();
@@ -142,12 +132,10 @@ namespace DS4WindowsTests
             Assert.Equal(150, output.R2);   // R2 → RT。値を保つ
         }
 
-        [Theory]
-        [InlineData(false)]
-        [InlineData(true)]
-        public void UnboundTarget_OnlyErasesTheOriginal(bool migrated)
+        [Fact]
+        public void UnboundTarget_OnlyErasesTheOriginal()
         {
-            using var t = new ControlsKeyTestScope(migrated);
+            using var t = new ControlsKeyTestScope();
             t.MapButton(DS4Controls.Cross, X360Controls.Unbound);
             t.Publish();
 
@@ -162,12 +150,10 @@ namespace DS4WindowsTests
             Assert.False(output.Triangle);
         }
 
-        [Theory]
-        [InlineData(false)]
-        [InlineData(true)]
-        public void TheOppositeDirectionOfAMappedAxis_PassesThroughAsDefault(bool migrated)
+        [Fact]
+        public void TheOppositeDirectionOfAMappedAxis_PassesThroughAsDefault()
         {
-            using var t = new ControlsKeyTestScope(migrated);
+            using var t = new ControlsKeyTestScope();
             t.MapButton(DS4Controls.LXNeg, X360Controls.A);   // 左へ倒す側だけを割り当てる。右へ倒す側（LXPos）は Default
             t.Publish();
 
@@ -184,12 +170,10 @@ namespace DS4WindowsTests
             Assert.True(output.Cross);
         }
 
-        [Theory]
-        [InlineData(false)]
-        [InlineData(true)]
-        public void WithoutAnyAssignment_TheStickPassesThroughUnchanged(bool migrated)
+        [Fact]
+        public void WithoutAnyAssignment_TheStickPassesThroughUnchanged()
         {
-            using var t = new ControlsKeyTestScope(migrated);
+            using var t = new ControlsKeyTestScope();
             t.Publish();
 
             DS4State input = Neutral();
@@ -204,12 +188,10 @@ namespace DS4WindowsTests
             Assert.Equal(128, output.RY);
         }
 
-        [Theory]
-        [InlineData(false)]
-        [InlineData(true)]
-        public void APadButtonWithExtras_BothWork(bool migrated)
+        [Fact]
+        public void APadButtonWithExtras_BothWork()
         {
-            using var t = new ControlsKeyTestScope(migrated);
+            using var t = new ControlsKeyTestScope();
             DS4ControlSettings dcs = t.MapButton(DS4Controls.Cross, X360Controls.B);
             dcs.extras = "100,50,1,10,20,30,5,1,7";
             t.PublishControlsOnly();

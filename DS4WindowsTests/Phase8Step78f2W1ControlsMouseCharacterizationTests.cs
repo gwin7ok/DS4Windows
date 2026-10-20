@@ -47,19 +47,14 @@ namespace DS4WindowsTests
         }
 
         [Theory]
-        [InlineData(false, X360Controls.LeftMouse)]
-        [InlineData(true, X360Controls.LeftMouse)]
-        [InlineData(false, X360Controls.RightMouse)]
-        [InlineData(true, X360Controls.RightMouse)]
-        [InlineData(false, X360Controls.MiddleMouse)]
-        [InlineData(true, X360Controls.MiddleMouse)]
-        [InlineData(false, X360Controls.FourthMouse)]
-        [InlineData(true, X360Controls.FourthMouse)]
-        [InlineData(false, X360Controls.FifthMouse)]
-        [InlineData(true, X360Controls.FifthMouse)]
-        public void MouseButton_CountsOnlyItsOwnKind_WhileHeld_AndErasesTheOriginal(bool migrated, X360Controls target)
+        [InlineData(X360Controls.LeftMouse)]
+        [InlineData(X360Controls.RightMouse)]
+        [InlineData(X360Controls.MiddleMouse)]
+        [InlineData(X360Controls.FourthMouse)]
+        [InlineData(X360Controls.FifthMouse)]
+        public void MouseButton_CountsOnlyItsOwnKind_WhileHeld_AndErasesTheOriginal(X360Controls target)
         {
-            using var t = new ControlsKeyTestScope(migrated);
+            using var t = new ControlsKeyTestScope();
             t.MapButton(DS4Controls.Cross, target);
             t.Publish();
 
@@ -91,12 +86,10 @@ namespace DS4WindowsTests
             Assert.False(output.Cross);
         }
 
-        [Theory]
-        [InlineData(false)]
-        [InlineData(true)]
-        public void MouseButton_StickDirectionUsesTheSectorRule_AndTheTriggerIsPressedAboveZero(bool migrated)
+        [Fact]
+        public void MouseButton_StickDirectionUsesTheSectorRule_AndTheTriggerIsPressedAboveZero()
         {
-            using var t = new ControlsKeyTestScope(migrated);
+            using var t = new ControlsKeyTestScope();
             t.MapButton(DS4Controls.LXNeg, X360Controls.RightMouse);
             t.MapButton(DS4Controls.L2, X360Controls.MiddleMouse);
             t.Publish();
@@ -117,12 +110,10 @@ namespace DS4WindowsTests
             Assert.Equal(0, clicks.rightCount + clicks.middleCount);
         }
 
-        [Theory]
-        [InlineData(false)]
-        [InlineData(true)]
-        public void TouchpadClick_MovesThePressToTheTouchButton_JudgedLikeTheSpecialAction(bool migrated)
+        [Fact]
+        public void TouchpadClick_MovesThePressToTheTouchButton_JudgedLikeTheSpecialAction()
         {
-            using var t = new ControlsKeyTestScope(migrated);
+            using var t = new ControlsKeyTestScope();
             t.MapButton(DS4Controls.Cross, X360Controls.TouchpadClick);
             t.MapButton(DS4Controls.LXNeg, X360Controls.TouchpadClick);
             t.Publish();
@@ -146,12 +137,10 @@ namespace DS4WindowsTests
             Assert.False(Frame(t, Neutral()).Output.OutputTouchButton);
         }
 
-        [Theory]
-        [InlineData(false)]
-        [InlineData(true)]
-        public void DigitalWheel_FromAButton_CountsWheelUpAndDown(bool migrated)
+        [Fact]
+        public void DigitalWheel_FromAButton_CountsWheelUpAndDown()
         {
-            using var t = new ControlsKeyTestScope(migrated);
+            using var t = new ControlsKeyTestScope();
             t.MapButton(DS4Controls.Cross, X360Controls.WUP);
             t.MapButton(DS4Controls.Circle, X360Controls.WDOWN);
             t.Publish();
@@ -174,12 +163,10 @@ namespace DS4WindowsTests
             Assert.Equal(0, clicks.wUpCount + clicks.wDownCount);
         }
 
-        [Theory]
-        [InlineData(false)]
-        [InlineData(true)]
-        public void AMouseButtonWithExtras_BothWork(bool migrated)
+        [Fact]
+        public void AMouseButtonWithExtras_BothWork()
         {
-            using var t = new ControlsKeyTestScope(migrated);
+            using var t = new ControlsKeyTestScope();
             DS4ControlSettings dcs = t.MapButton(DS4Controls.Cross, X360Controls.LeftMouse);
             dcs.extras = "100,50,1,10,20,30,5,1,7";
             t.PublishControlsOnly();
@@ -198,12 +185,10 @@ namespace DS4WindowsTests
             Assert.False(t.ForceLight);
         }
 
-        [Theory]
-        [InlineData(false)]
-        [InlineData(true)]
-        public void ThePadTargetKeepsWorking_AndANeighbouringMouseAssignmentIsIndependent(bool migrated)
+        [Fact]
+        public void ThePadTargetKeepsWorking_AndANeighbouringMouseAssignmentIsIndependent()
         {
-            using var t = new ControlsKeyTestScope(migrated);
+            using var t = new ControlsKeyTestScope();
             t.MapButton(DS4Controls.Cross, X360Controls.B);          // パッド（7.8f-1）
             t.MapButton(DS4Controls.Square, X360Controls.LeftMouse); // マウス（7.8f-2）
             t.Publish();

@@ -9,7 +9,7 @@ namespace DS4WindowsTests
     /// Phase8-Step7 7.8e-W1（Phase8-Step7-8e-Plan.md §5）: Controls タブの Extras（<c>ProcessControlSettingAction</c> の Extras の枝）の特性化。Lightbar マクロは廃止した（Q8＝B）ため、対象外。
     /// 旧・新の両経路（<c>InlineData(false)</c>／<c>InlineData(true)</c>）で同じテストを走らせる。W1 の時点では新経路が未実装のため、どちらでも旧経路が処理する。
     /// W2 で新経路が入るとき、承認済みの動作の変更（Q3＝B: 2 つ同時のとき、ボタンごとに元に戻す。Q6＝B: 押したままの適用・切断で元に戻す）の
-    /// テストは、<c>migrated</c> で期待値を分ける（該当のテストに「W2」の注記がある）。
+    /// （Phase8-Step8 8d: 旧経路は削除した。期待値は、新経路のもの）。
     /// 観察は、旧経路が書く状態で行う: <c>Mapping.extrasRumbleActive</c>（振動を出したかの記録。デバイスがいないため、実際の振動は起きない）、
     /// <c>DS4LightBar.forcelight／forcedColor／forcedFlash</c>（静的配列）、<c>ButtonMouseInfo.tempButtonSensitivity／activeButtonSensitivity</c>。
     /// 値は「強い振動, 弱い振動, ライトバー(1=有効), R, G, B, 点滅, 感度(1=有効), 感度」の 9 個。
@@ -36,12 +36,10 @@ namespace DS4WindowsTests
             return state;
         }
 
-        [Theory]
-        [InlineData(false)]
-        [InlineData(true)]
-        public void Press_AppliesRumbleLightbarAndSensitivity_AndTheRelease_RestoresThem(bool migrated)
+        [Fact]
+        public void Press_AppliesRumbleLightbarAndSensitivity_AndTheRelease_RestoresThem()
         {
-            using var t = new ControlsKeyTestScope(migrated);
+            using var t = new ControlsKeyTestScope();
             t.MapExtras(DS4Controls.Cross, Full);
             t.PublishControlsOnly();
 
@@ -66,14 +64,12 @@ namespace DS4WindowsTests
             Assert.Equal(t.MouseInfo.buttonSensitivity, t.MouseInfo.activeButtonSensitivity);
         }
 
-        [Theory]
-        [InlineData(false)]
-        [InlineData(true)]
-        public void TheExtrasLightbar_IsForced_OnlyByItsOwnFlag(bool migrated)
+        [Fact]
+        public void TheExtrasLightbar_IsForced_OnlyByItsOwnFlag()
         {
             // 承認済みの修正（Q7＝B）: 旧経路は、条件 `!dcs.LightbarMacro?.Active ?? false` が、LightbarMacro が null だと偽になり、
             // Extras のライトバーが効かなかった。Lightbar マクロ機能の廃止（Q8＝B）とあわせて、条件を外した。旧経路で処理する割り当ても、直った
-            using var t = new ControlsKeyTestScope(migrated);
+            using var t = new ControlsKeyTestScope();
             t.MapExtras(DS4Controls.Cross, Full);
             t.PublishControlsOnly();
 
@@ -85,12 +81,10 @@ namespace DS4WindowsTests
             Assert.Equal(7, t.MouseInfo.tempButtonSensitivity);
         }
 
-        [Theory]
-        [InlineData(false)]
-        [InlineData(true)]
-        public void ZeroRumble_DoesNotMarkRumbleActive_ButTheLightbarIsStillForced(bool migrated)
+        [Fact]
+        public void ZeroRumble_DoesNotMarkRumbleActive_ButTheLightbarIsStillForced()
         {
-            using var t = new ControlsKeyTestScope(migrated);
+            using var t = new ControlsKeyTestScope();
             t.MapExtras(DS4Controls.Cross, "0,0,1,1,2,3,0,0,0");
             t.PublishControlsOnly();
 
@@ -101,13 +95,11 @@ namespace DS4WindowsTests
             Assert.True(t.ForceLight);
         }
 
-        [Theory]
-        [InlineData(false)]
-        [InlineData(true)]
-        public void LightbarFlagOff_DoesNotForceTheLight_ButTheReleaseStillClearsIt(bool migrated)
+        [Fact]
+        public void LightbarFlagOff_DoesNotForceTheLight_ButTheReleaseStillClearsIt()
         {
             // 離したときの元に戻す処理は、この dcs がライトバーを強制していなくても、強制を解除する（旧経路の癖。変えない）
-            using var t = new ControlsKeyTestScope(migrated);
+            using var t = new ControlsKeyTestScope();
             t.MapExtras(DS4Controls.Cross, "5,5,0,1,2,3,0,0,0");
             t.PublishControlsOnly();
 
@@ -121,12 +113,10 @@ namespace DS4WindowsTests
             Assert.False(t.ForceLight);
         }
 
-        [Theory]
-        [InlineData(false)]
-        [InlineData(true)]
-        public void Sensitivity_IsSetOnlyWhenNoTemporaryOneIsActive(bool migrated)
+        [Fact]
+        public void Sensitivity_IsSetOnlyWhenNoTemporaryOneIsActive()
         {
-            using var t = new ControlsKeyTestScope(migrated);
+            using var t = new ControlsKeyTestScope();
             t.MapExtras(DS4Controls.Cross, Full);
             t.PublishControlsOnly();
 
@@ -141,12 +131,10 @@ namespace DS4WindowsTests
             Assert.Equal(-1, t.MouseInfo.tempButtonSensitivity);   // 離すと、元に戻す（他者の一時の感度も解除する）
         }
 
-        [Theory]
-        [InlineData(false)]
-        [InlineData(true)]
-        public void WhileHeld_RumbleAndLightbarAreAppliedEveryFrame(bool migrated)
+        [Fact]
+        public void WhileHeld_RumbleAndLightbarAreAppliedEveryFrame()
         {
-            using var t = new ControlsKeyTestScope(migrated);
+            using var t = new ControlsKeyTestScope();
             t.MapExtras(DS4Controls.Cross, Full);
             t.PublishControlsOnly();
 
@@ -160,12 +148,10 @@ namespace DS4WindowsTests
             Assert.Equal(10, t.ForcedColor.red);
         }
 
-        [Theory]
-        [InlineData(false)]
-        [InlineData(true)]
-        public void Judgement_StickUsesTheSectorRule_AndL2IsPressedAboveZero(bool migrated)
+        [Fact]
+        public void Judgement_StickUsesTheSectorRule_AndL2IsPressedAboveZero()
         {
-            using var t = new ControlsKeyTestScope(migrated);
+            using var t = new ControlsKeyTestScope();
             t.MapExtras(DS4Controls.LXNeg, "0,0,1,1,1,1,0,0,0");
             t.MapExtras(DS4Controls.L2, "0,0,1,2,2,2,0,0,0");
             t.PublishControlsOnly();
@@ -183,13 +169,12 @@ namespace DS4WindowsTests
             Assert.Equal(2, t.ForcedColor.red);
         }
 
-        [Theory]
-                [InlineData(true)]
-        public void TwoButtonsHeldTogether_AreRestoredOnlyAfterBothAreReleased_ForEitherOrder(bool migrated)
+        [Fact]
+        public void TwoButtonsHeldTogether_AreRestoredOnlyAfterBothAreReleased_ForEitherOrder()
         {
             // 旧経路: held がデバイスに 1 つしかないため、2 つ同時に押すと、両方を離すまで元に戻す処理が走らない（どちらを先に離しても）。
-            // 新経路: 承認済みの動作の変更（Q3＝B）。ボタンごとに元に戻すため、migrated の期待値を分ける。
-            using var t = new ControlsKeyTestScope(migrated);
+            // 新経路: 承認済みの動作の変更（Q3＝B）。ボタンごとに元に戻す。
+            using var t = new ControlsKeyTestScope();
             t.MapExtras(DS4Controls.Cross, "10,10,1,1,1,1,1,0,0");
             t.MapExtras(DS4Controls.Circle, "20,20,1,2,2,2,2,0,0");
             t.PublishControlsOnly();
@@ -199,25 +184,18 @@ namespace DS4WindowsTests
             bool circleIsLast = t.ForcedColor.red == 2;   // 後に処理されたほうの色が残る
             bool crossIsLast = t.ForcedColor.red == 1;
             Assert.True(circleIsLast || crossIsLast);
-            _output.WriteLine($"[7.8e W1 {(migrated ? "migrated" : "legacy  ")}] 同時に押したとき、後に処理されるのは {(circleIsLast ? "Circle" : "Cross")}");
+            _output.WriteLine($"[7.8e W1 new] 同時に押したとき、後に処理されるのは {(circleIsLast ? "Circle" : "Cross")}");
 
             // 順序 1: 後に処理されるほうを先に離す
             DS4State firstOnly = circleIsLast ? State(cross: true) : State(circle: true);
             t.Run(firstOnly);
-            if (!migrated)
-            {
-                Assert.True(t.ForceLight);   // 旧経路: 両方を離すまで、元に戻らない
-                Assert.True(t.RumbleActive);
-            }
-            else
-            {
-                // 新経路（承認済み。Q3＝B）: 離したボタンの分を元に戻す。押したままのほうは、同じフレームでは先に処理されるため、一瞬途切れ、次のフレームで再び適用する
-                Assert.False(t.ForceLight);
-                Assert.False(t.RumbleActive);
-                t.Run(firstOnly);
-                Assert.True(t.ForceLight);
-                Assert.True(t.RumbleActive);
-            }
+            // 新経路（承認済み。Q3＝B）: 離したボタンの分を元に戻す。押したままのほうは、同じフレームでは先に処理されるため、一瞬途切れ、次のフレームで再び適用する
+            Assert.False(t.ForceLight);
+            Assert.False(t.RumbleActive);
+            t.Run(firstOnly);
+            Assert.True(t.ForceLight);
+            Assert.True(t.RumbleActive);
+            
 
             t.Run(State());
             Assert.False(t.ForceLight);
@@ -233,12 +211,10 @@ namespace DS4WindowsTests
             Assert.False(t.RumbleActive);
         }
 
-        [Theory]
-        [InlineData(false)]
-        [InlineData(true)]
-        public void DefaultAssignmentWithExtras_DoesNotEraseTheButtonsNormalOutput(bool migrated)
+        [Fact]
+        public void DefaultAssignmentWithExtras_DoesNotEraseTheButtonsNormalOutput()
         {
-            using var t = new ControlsKeyTestScope(migrated);
+            using var t = new ControlsKeyTestScope();
             t.MapExtras(DS4Controls.Cross, Full);
             t.PublishControlsOnly();
 
@@ -249,12 +225,10 @@ namespace DS4WindowsTests
             Assert.True(t.ForceLight);
         }
 
-        [Theory]
-        [InlineData(false)]
-        [InlineData(true)]
-        public void KeyAssignmentWithExtras_BothWork(bool migrated)
+        [Fact]
+        public void KeyAssignmentWithExtras_BothWork()
         {
-            using var t = new ControlsKeyTestScope(migrated);
+            using var t = new ControlsKeyTestScope();
             DS4ControlSettings dcs = t.MapKey(DS4Controls.Cross, 65);
             dcs.extras = Full;
             t.PublishControlsOnly();
@@ -273,12 +247,10 @@ namespace DS4WindowsTests
             Assert.False(t.ForceLight);
         }
 
-        [Theory]
-        [InlineData(false)]
-        [InlineData(true)]
-        public void ValuesThatAreNotNumbers_AreZero(bool migrated)
+        [Fact]
+        public void ValuesThatAreNotNumbers_AreZero()
         {
-            using var t = new ControlsKeyTestScope(migrated);
+            using var t = new ControlsKeyTestScope();
             t.MapExtras(DS4Controls.Cross, "x,y,1,a,b,c,d,0,0");
             t.PublishControlsOnly();
 
@@ -291,12 +263,11 @@ namespace DS4WindowsTests
             Assert.Equal(0, t.ForcedFlash);
         }
 
-        [Theory]
-                [InlineData(true)]
-        public void FewerThanNineValues_StopsHalfWay_ButStillRestoresOnRelease(bool migrated)
+        [Fact]
+        public void FewerThanNineValues_StopsHalfWay_ButStillRestoresOnRelease()
         {
             // 9 個未満だと、途中の欄の参照で例外になり（try で握りつぶす）、そこまでの効果だけが残る。新経路の所有の条件で除外する根拠
-            using var t = new ControlsKeyTestScope(migrated);
+            using var t = new ControlsKeyTestScope();
             t.MapExtras(DS4Controls.Cross, "5,5,1");
             t.PublishControlsOnly();
 
@@ -310,13 +281,12 @@ namespace DS4WindowsTests
             Assert.False(t.RumbleActive);   // 離すと、元に戻す
         }
 
-        [Theory]
-                [InlineData(true)]
-        public void ProfileApplyWhileHeld_LeavesTheEffectsOnlyOnTheLegacyPath(bool migrated)
+        [Fact]
+        public void ProfileApplyWhileHeld_LeavesTheEffectsOnlyOnTheLegacyPath()
         {
             // 押したままプロファイルが切り替わり、新しい割り当てには Extras がない場合:
             // 旧経路は元に戻す処理が走らず、振動・強制色・感度が残る。新経路は、承認済みの修正（Q6＝B）で、束縛の差し替えのときに元に戻す
-            using var t = new ControlsKeyTestScope(migrated);
+            using var t = new ControlsKeyTestScope();
             DS4ControlSettings dcs = t.MapExtras(DS4Controls.Cross, Full);
             t.PublishControlsOnly();
 
@@ -331,27 +301,17 @@ namespace DS4WindowsTests
             t.Run(State(cross: true));
             t.Run(State());
 
-            _output.WriteLine($"[7.8e W1 {(migrated ? "migrated" : "legacy  ")}] 適用のあと: 強制色={t.ForceLight} 振動の記録={t.RumbleActive} 一時の感度={t.MouseInfo.tempButtonSensitivity}");
-            if (!migrated)
-            {
-                Assert.True(t.ForceLight);
-                Assert.True(t.RumbleActive);
-                Assert.Equal(7, t.MouseInfo.tempButtonSensitivity);
-            }
-            else
-            {
-                Assert.False(t.ForceLight);
-                Assert.False(t.RumbleActive);
-                Assert.Equal(-1, t.MouseInfo.tempButtonSensitivity);
-            }
+            _output.WriteLine($"[7.8e W1 new] 適用のあと: 強制色={t.ForceLight} 振動の記録={t.RumbleActive} 一時の感度={t.MouseInfo.tempButtonSensitivity}");
+            Assert.False(t.ForceLight);
+            Assert.False(t.RumbleActive);
+            Assert.Equal(-1, t.MouseInfo.tempButtonSensitivity);
+            
         }
 
-        [Theory]
-        [InlineData(false)]
-        [InlineData(true)]
-        public void DisconnectWhileHeld_IsReported(bool migrated)
+        [Fact]
+        public void DisconnectWhileHeld_IsReported()
         {
-            using var t = new ControlsKeyTestScope(migrated);
+            using var t = new ControlsKeyTestScope();
             t.MapExtras(DS4Controls.Cross, Full);
             t.PublishControlsOnly();
 
@@ -359,7 +319,7 @@ namespace DS4WindowsTests
             t.Run(State(cross: true));
             t.Mapping.HandleDeviceDisconnect(t.Device);
 
-            _output.WriteLine($"[7.8e W1 {(migrated ? "migrated" : "legacy  ")}] 切断のあと: 強制色={t.ForceLight} 振動の記録={t.RumbleActive} 一時の感度={t.MouseInfo.tempButtonSensitivity}");
+            _output.WriteLine($"[7.8e W1 new] 切断のあと: 強制色={t.ForceLight} 振動の記録={t.RumbleActive} 一時の感度={t.MouseInfo.tempButtonSensitivity}");
             // 記録のみ（W2 で、Q6＝B の期待値を固定する）。HandleDeviceDisconnect は静的配列を触らない場合がある
         }
     }

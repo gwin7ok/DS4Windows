@@ -31,12 +31,10 @@ namespace DS4WindowsTests
             return s;
         }
 
-        [Theory]
-        [InlineData(false)]
-        [InlineData(true)]
-        public void Macro_WhileTheFreshPressGuardIsOn_DoesNotTrigger(bool migrated)
+        [Fact]
+        public void Macro_WhileTheFreshPressGuardIsOn_DoesNotTrigger()
         {
-            using var t = new SpecialActionTestScope(migrated);
+            using var t = new SpecialActionTestScope();
             SpecialAction sa = AddMacro(t, string.Empty);
             t.StateOf(sa).RequiresFreshPressAfterReset = true;
 
@@ -45,12 +43,10 @@ namespace DS4WindowsTests
             Assert.False(ActionManager.IsBeingTriggered(sa, t.Device));
         }
 
-        [Theory]
-        [InlineData(false)]
-        [InlineData(true)]
-        public void Macro_Press_TriggersOnceWhenEstablished_AndClearsWhenReleased(bool migrated)
+        [Fact]
+        public void Macro_Press_TriggersOnceWhenEstablished_AndClearsWhenReleased()
         {
-            using var t = new SpecialActionTestScope(migrated);
+            using var t = new SpecialActionTestScope();
             SpecialAction sa = AddMacro(t, string.Empty);
 
             t.RunFrame(HeldL1());
@@ -63,25 +59,24 @@ namespace DS4WindowsTests
             Assert.False(ActionManager.IsBeingTriggered(sa, t.Device));
         }
 
-        [Theory]
-                [InlineData(true)]
-        public void Macro_RunOnRelease_ArmsOnPress_AndFiresOnlyWhenTheTriggerIsReleased(bool migrated)
+        [Fact]
+        public void Macro_RunOnRelease_ArmsOnPress_AndFiresOnlyWhenTheTriggerIsReleased()
         {
-            using var t = new SpecialActionTestScope(migrated);
+            using var t = new SpecialActionTestScope();
             SpecialAction sa = AddMacro(t, "RunOnRelease");
             Assert.True(sa.pressRelease);
             Assert.False(sa.firstTouch);
 
             t.RunFrame(SpecialActionTestScope.Neutral()); // 押す前は、何も起きない
             Assert.False(ActionManager.IsBeingTriggered(sa, t.Device));
-            if (!migrated) Assert.False(sa.firstTouch);
+
 
             t.RunFrame(HeldL1()); // 押したとき: 準備（firstTouch）だけで、実行しない
-            if (!migrated) Assert.True(sa.firstTouch);   // Q2＝A: 新経路の「準備」は入力の内部の状態で、firstTouch は書かない
+   // Q2＝A: 新経路の「準備」は入力の内部の状態で、firstTouch は書かない
             Assert.False(ActionManager.IsBeingTriggered(sa, t.Device));
 
             t.RunFrame(SpecialActionTestScope.Neutral()); // 離したとき: 1 回実行（成立を反転して扱う）
-            if (!migrated) Assert.False(sa.firstTouch);
+
             Assert.True(ActionManager.IsBeingTriggered(sa, t.Device));
         }
     }

@@ -12,6 +12,7 @@ namespace DS4WindowsTests
     /// <c>AppLogger.LogToGui("Process launch failed for '&lt;パス&gt;': …")</c> を出すため、<c>AppLogger.GuiLog</c> を購読して、パスごとの起動の試行を数える
     /// （旧・新とも同じ部品を通るため、回数を比べられる）。
     /// 他の Host 構築テストと同じコレクションで直列に実行する。
+    /// Phase8-Step8 8d（持ち越し C-2）: 旧経路は削除済み。以前の「旧・新の両経路の比べ」は、新経路の期待値の固定（比べを除いた、残りの検査）に変えた。
     /// </summary>
     [Collection("ServiceProviderHolder")]
     public class Phase8Step74W1ProgramDualPathTests
@@ -47,12 +48,12 @@ namespace DS4WindowsTests
         }
 
         /// <summary>入力の列を流し、フレームごとの（累計の起動の試行、<c>BeingTriggered</c>、<c>IsExecuting</c>）を返す。</summary>
-        private static List<(int Launches, bool Being, bool Executing)> Run(bool migrated, string triggers, string extras, double delay,
+        private static List<(int Launches, bool Being, bool Executing)> Run(string triggers, string extras, double delay,
             bool freshPressGuard, bool executing, DS4State[] frames, int applyBeforeFrame = -1)
         {
             string path = NewPath();
             using var counter = new LaunchCounter(path);
-            using var t = new SpecialActionTestScope(migrated);
+            using var t = new SpecialActionTestScope();
             SpecialAction sa = t.Add(new SpecialAction("p8s74_prog_" + Guid.NewGuid().ToString("N"), triggers, "Program", path, delay, extras));
             ActionInstanceState state = t.StateOf(sa);
             state.RequiresFreshPressAfterReset = freshPressGuard;
@@ -80,88 +81,55 @@ namespace DS4WindowsTests
         }
 
         [Fact]
-        public void Sequence_BothPathsGiveTheSameLaunchesAndState()
+        public void Sequence_GivesTheLaunchesAndState()
         {
             DS4State[] frames = { Frame(false), Frame(true), Frame(true), Frame(true), Frame(false), Frame(false), Frame(true), Frame(true), Frame(false) };
 
-            var legacy = Run(false, "L1", string.Empty, 0, false, false, frames);
-            var migrated = Run(true, "L1", string.Empty, 0, false, false, frames);
+            var result = Run("L1", string.Empty, 0, false, false, frames);
 
-            Assert.Equal(legacy, migrated);
-            Assert.Equal(2, legacy.Last().Launches);    // 押すたびに 1 回（保持中は起動しない）。比較が「何もしない」同士にならないこと
+            Assert.Equal(2, result.Last().Launches);    // 押すたびに 1 回（保持中は起動しない）。何もしないテストにならないこと
         }
 
         [Fact]
-        public void WithTheHiddenKeyword_BothPathsGiveTheSameLaunches()
+        public void WithTheHiddenKeyword_GivesTheLaunches()
         {
             DS4State[] frames = { Frame(false), Frame(true), Frame(true), Frame(false), Frame(true) };
 
-            var legacy = Run(false, "L1", "-a $hidden -b", 0, false, false, frames);
-            var migrated = Run(true, "L1", "-a $hidden -b", 0, false, false, frames);
+            var result = Run("L1", "-a $hidden -b", 0, false, false, frames);
 
-            Assert.Equal(legacy, migrated);
-            Assert.Equal(2, legacy.Last().Launches);
+            Assert.Equal(2, result.Last().Launches);
         }
 
         [Fact]
-        public void WhileTheFreshPressGuardIsOn_NothingLaunches_OnEitherPath()
+        public void WhileTheFreshPressGuardIsOn_NothingLaunches()
         {
             DS4State[] frames = { Frame(true), Frame(true), Frame(true) };
 
-            var legacy = Run(false, "L1", string.Empty, 0, true, false, frames);
-            var migrated = Run(true, "L1", string.Empty, 0, true, false, frames);
+            var result = Run("L1", string.Empty, 0, true, false, frames);
 
-            Assert.Equal(legacy, migrated);
-            Assert.Equal(0, legacy.Last().Launches);
-            Assert.DoesNotContain(legacy, f => f.Being);
+            Assert.Equal(0, result.Last().Launches);
+            Assert.DoesNotContain(result, f => f.Being);
         }
 
         [Fact]
-        public void WhileExecuting_NothingLaunches_OnEitherPath()
+        public void WhileExecuting_NothingLaunches()
         {
             DS4State[] frames = { Frame(true), Frame(true), Frame(false), Frame(true) };
 
-            var legacy = Run(false, "L1", string.Empty, 0, false, true, frames);
-            var migrated = Run(true, "L1", string.Empty, 0, false, true, frames);
+            var result = Run("L1", string.Empty, 0, false, true, frames);
 
-            Assert.Equal(legacy, migrated);
-            Assert.Equal(0, legacy.Last().Launches);
+            Assert.Equal(0, result.Last().Launches);
         }
 
         [Fact]
-        public void AndCondition_BothPathsGiveTheSameLaunches()
+        public void AndCondition_GivesTheLaunches()
         {
             DS4State[] frames = { Frame(false, false), Frame(true, false), Frame(true, true), Frame(true, true), Frame(false, true), Frame(false, false) };
 
-            var legacy = Run(false, "L1/R1", string.Empty, 0, false, false, frames);
-            var migrated = Run(true, "L1/R1", string.Empty, 0, false, false, frames);
+            var result = Run("L1/R1", string.Empty, 0, false, false, frames);
 
-            Assert.Equal(legacy, migrated);
-            Assert.Equal(1, legacy.Last().Launches);
+            Assert.Equal(1, result.Last().Launches);
         }
 
-        [Fact]
-        public void ADelay_BehavesTheSame_OnEitherPath()
-        {
-            DS4State[] frames = { Frame(true), Frame(true), Frame(false), Frame(true) };
-
-            var legacy = Run(false, "L1", string.Empty, 60, false, false, frames);   // 60 秒
-            var migrated = Run(true, "L1", string.Empty, 60, false, false, frames);
-
-            // 現行の挙動に新経路を合わせる（Key・Macro と同じく、遅延の基準時刻の初期値が最小値のため、最初の押下は遅延なしで成立しうる）
-            Assert.Equal(legacy, migrated);
-        }
-
-        [Fact]
-        public void AProfileApplyWhileHeld_BothPathsGiveTheSameLaunches()
-        {
-            // 押している最中（フレーム 3 の前）に、適用の後始末が入る。適用の直後は Fresh-press ガードが有効で、押し直すまで起動しない
-            DS4State[] frames = { Frame(false), Frame(true), Frame(true), Frame(true), Frame(true), Frame(false), Frame(false) };
-
-            var legacy = Run(false, "L1", string.Empty, 0, false, false, frames, applyBeforeFrame: 3);
-            var migrated = Run(true, "L1", string.Empty, 0, false, false, frames, applyBeforeFrame: 3);
-
-            Assert.Equal(legacy, migrated);
-        }
     }
 }
