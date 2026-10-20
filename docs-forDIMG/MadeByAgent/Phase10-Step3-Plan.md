@@ -92,6 +92,8 @@
 - Macro タブの「Run on trigger release」「Synchronized Run」「Keep key state」を隠す（Controls に保存する場所がない。Step4 で、保存できるようにしたら、出す）。
 - Press Key タブの、SA 専用の項目は、特になし。
 
+**暫定である旨（ユーザーの確認、2026-10-21）**: Controls のモードで隠す項目（Macro タブの 3 つのチェックボックス）と、選べない種別（グレーアウト）は、**保存場所がないための暫定**。最終的には、Controls も SA と同じ状態（すべて表示・すべて選べる）にする（マスター計画書 §6 Q1）。実行のエンジンは、すでに共通（`TriggerDispatchEngine`。D2＝B1）のため、必要なのは、保存場所（`DS4ControlSettings`／`Profile.xml`）と、`ControlBindingBuilder` がこれらの項目を実行用の束縛へ変換する処理（`ActionBindingBuilder` と共通化）。これは Step4 の範囲。
+
 ### 3.6 動作の変更（ユーザーに見える違い）
 
 - **保存の方式**: 従来は、ダイアログを閉じると、設定が直接書き込まれた（キャンセルがない）。割り当てエディターは、**Save で反映、Cancel で破棄**。Controls の割り当ての操作が、SA の編集と同じになる（§8 Q3）。
@@ -140,3 +142,5 @@
 - **W0（完了 2026-10-21。ビルド・テスト成功）**: 特性化テスト 3 ファイルを追加した（製品コードは変更なし）。`Phase10Step3W0OutBindingExtrasTests`（Extras の書式・境界・不正値）、`Phase10Step3W0BindingWindowWriteTests`（Default／Unbound／Key／Button の書き込み、Extras の保持、C-5）、`Phase10Step3W0ProfileEditorCallSitesTests`（`CreateBindingWindow` の呼び出しが 6 か所。W4 で 0 か所へ更新する）。
   - **判明した既存の癖**（変更しない）: (1) 色の旗を下ろしても、点滅の間隔（`FlashRate`）は 0 に戻らず、Extras が「使用中」のまま書き出される。(2) `IsUsingExtras` の色の判定は「3 チャンネルすべてが 255 以外」のときだけ真。(3) Button の書き出しは、Toggle を書かない（C-5。割り当てエディターは書く）。
 - **W1（完了 2026-10-21。ビルド・テスト成功、実機確認済み）**: 出力ピッカー（`BindingWindow`）の表示モードを整理した。`ForPressToggle` を `SpecialAction` に改名し、`Control` を追加した（`Full`、`Keyboard` は残す。`Full` の撤去は Step6）。`Control` は、Default／Unbound と Extras を出し、Record A Macro・Toggle・Scan Code・マクロ表示を隠す。`SpecialAction` は従来どおり（Extras は、SA の保存先ができる Step4・5 まで出さない。TODO コメントあり）。`ProfileEditor` の呼び出しは、W4 まで変えない。ガードテスト: `Phase10Step3W1BindingWindowModeGuardTests`。実機確認: SA の Press Key の回帰なし。
+- **W2（完了 2026-10-21。ビルド・テスト成功、実機確認済み［SA の回帰なし］）**: Press Key の Default と、割り当てエディターと出力ピッカーとの受け渡し。`PressKeyViewModel` に「Default」の状態（`ReadSettings` の `allowDefault`、既定 false）と、ピッカーへ渡す一時設定（`PrepareSettings(control, extras)`。ボタン・Extras・いまの割り当てを載せる。引数なしは従来どおり）を追加。`ControlSettingsEditTarget` に `Extras`（出力ピッカーの結果を取り込み、Save で反映、Cancel で破棄）、Default の書き出し・読み込みを追加。`SpecialActionEditor` の Controls のモードは、「Select a Key」で `Control` モードの出力ピッカーを開き、結果を取り込む。テスト: `Phase10Step3W2ControlDefaultAndExtrasTests`。Controls のエディターは、W4 まで画面から開けない。
+- **W3（実装・テスト完了 2026-10-21。ビルド・テスト成功。SA の Macro タブの回帰の実機確認は、報告待ち）**: Controls のモードで、Macro タブの SA 専用の 3 項目（Run on trigger release、Synchronized Run、Keep key state）を隠す（保存場所がないための暫定。最終的には SA と同じ状態にする。§3.5）。ガードテスト: `Phase10Step3W3ControlMacroTabGuardTests`。

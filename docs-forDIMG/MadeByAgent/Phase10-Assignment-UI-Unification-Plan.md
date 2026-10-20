@@ -73,6 +73,7 @@ Controls タブ（トリガー＝単体のボタン）と SpecialActions（SA）
 - **Step4: 保存形式の拡張と、Controls での SA 専用の種別の実行**（旧 Step3＋旧 Step5）。`DS4ControlSettings`／`Profile.xml` に、SA 専用の種別・項目（プログラム起動、プロファイル切替、DisconnectBT、バッテリー確認、MultiAction、較正、Run on release、Sync、Keep key state、Hold 秒数）と、SA 側の Extras の保存先を足す。`ControlBindingBuilder` を拡張して、Controls のボタンから、これらを実行する。往復変換と読込のテストを先に作る。**Step3 のあとで、実施するか・後回しにするかを、ユーザーが判断する**（Controls で SA 専用の種別が必要になったとき）。
 - **Step5: SA 側のアナログ出力**（旧 Step4b。マウス移動・ホイール・アナログ軸を、固定値の強さで出す）。
 - **Step6: SA の文字列の受け渡しを、型のある独立した項目へ**（§6 Q7）、**旧 `BindingWindow`／旧エディタ（Full のモード、Extras のコード）の撤去**、`SpecialActionEditor` の `AssignmentEditor` への改名、モデル図・文書の更新、完了報告書。
+- **最終形の方針（追記。2026-10-21、ユーザーとの議論）: 束縛を作る builder の統合**。現在、`ActionBindingBuilder`（入力＝`SpecialAction`）と `ControlBindingBuilder`（入力＝`DS4ControlSettings`）が、同じ種類の処理（キー、マクロ、パッド、マウスなど）の解釈を、入力の形が違うために重複して持つ。出力は、どちらもエンジンの共通の束縛（`IActionBinding`）で、分ける本質的な理由は、保存形式の違いだけ。最終形は、(1) **共通の割り当て定義**（種別、型のある項目、トリガー、Extras。Step6 の Q7 が土台）、(2) 読み込みの部品を 2 つ（SA の保存形式 → 定義、Controls の保存形式 → 定義）、(3) 束縛を作る builder は **1 つ**。Controls 固有の方針（割り当てのないボタンの素通し、アナログ入力の強さで出すマウス移動）は、別の部品として分ける。これにより、Step4 の「Controls で SA 専用の種別を使う」は、builder への変換の追加が要らず、保存場所だけで済む形に近づく。進め方: Step6 で定義を作り、そのあとに builder を統合する（実行の中心部の変更のため、Phase8 の優先順位・抑制の特性化テストを守りにする）。統合の専用 Step を設けるかは、Step4 の計画時に判断する。
 
 各 Step の前に、個別計画書を作り、承認を得る。実機（画面）の確認項目は、`Phase6-Step11-RealDevice-Verification-Checklist.md` §11 の台帳に追加する。
 

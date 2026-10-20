@@ -200,6 +200,12 @@ namespace DS4WinWPF.DS4Forms
                 // 保存済みの割り当てを、種別ごとの入力へ読み込む。種別の一覧の初期の選択も、割り当てに合わせる
                 controlTarget.LoadInto(pressKeyVM, macroActVM);
                 specialActVM.ActionTypeIndex = controlTarget.InitialTypeIndex;
+
+                // Phase10-Step3 W3: Macro タブの SA 専用の項目は、Controls に保存する場所がないため、隠す。
+                // TODO(Phase10-Step4): 保存形式を拡張して、Controls にも保存できるようにしたら、出す（Phase10-Step3-Plan.md §3.5）
+                runTriggerReleaseChk.Visibility = Visibility.Collapsed;
+                syncRunChk.Visibility = Visibility.Collapsed;
+                keepKeyStateChk.Visibility = Visibility.Collapsed;
             }
 
             actionTypeTabControl.DataContext = specialActVM;

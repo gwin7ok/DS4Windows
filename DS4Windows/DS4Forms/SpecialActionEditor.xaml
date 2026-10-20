@@ -77,9 +77,9 @@
                                 <!-- Phase10-Step1 W3: Execute Mode（Play Once／Repeat While Held）と Scan Code は、共通部品 -->
                                 <local:MacroPlaybackOptionsPanel DataContext="{Binding PlaybackOptions}" ScanCodeAlignment="Left"
                                                                  HorizontalAlignment="Left" Width="200" Margin="{StaticResource spaceMargin}" />
-                                <CheckBox Content="{lex:Loc SpecialActionEdit.RunTriggerRelease}" Margin="{StaticResource spaceMargin}" IsChecked="{Binding RunTriggerRelease}" />
-                                <CheckBox Content="{lex:Loc SpecialActionEdit.SyncRun}" Margin="{StaticResource spaceMargin}" IsChecked="{Binding SyncRun}" />
-                                <CheckBox Content="{lex:Loc SpecialActionEdit.KeepKeyState}" Margin="{StaticResource spaceMargin}" IsChecked="{Binding KeepKeyState}" />
+                                <CheckBox x:Name="runTriggerReleaseChk" Content="{lex:Loc SpecialActionEdit.RunTriggerRelease}" Margin="{StaticResource spaceMargin}" IsChecked="{Binding RunTriggerRelease}" />
+                                <CheckBox x:Name="syncRunChk" Content="{lex:Loc SpecialActionEdit.SyncRun}" Margin="{StaticResource spaceMargin}" IsChecked="{Binding SyncRun}" />
+                                <CheckBox x:Name="keepKeyStateChk" Content="{lex:Loc SpecialActionEdit.KeepKeyState}" Margin="{StaticResource spaceMargin}" IsChecked="{Binding KeepKeyState}" />
                                 <TextBlock Text="{Binding Macrostring,FallbackValue={lex:Loc SpecialActionEdit.MacroRecorded}}" Margin="{StaticResource spaceMargin}" />
                             </StackPanel>
                         </TabItem>
