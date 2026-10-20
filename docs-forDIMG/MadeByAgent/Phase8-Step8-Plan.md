@@ -162,7 +162,7 @@ W1 の調査（§5.1）に **「ジャイロの出力モード `DirectionalSwipe
 - **ログ（規約 2.3）**: 画面に出るログが変わるのは L18・L19 の 2 件だけ（旧経路が消えれば起きない状況のログ）。新経路が同じ文言で出すものは、変更なし。
 - **ロールバック**: git のみ（Q1＝A）。
 
-### 5.12 8c の実装（2026-10-20。ビルド・テスト待ち）
+### 5.12 8c の実装（2026-10-20。ビルド・テスト成功）
 
 - **削除した型（14 ファイル）**: `IActionFactory`／`ActionFactory`（静的）／`DefaultActionFactory`、アダプター 4 つ（`KeyActionAdapter`／`MacroActionAdapter`／`ProfileSwitchActionAdapter`／`LaunchProcessActionAdapter`）、`SpecialActionBase`、`Action`（基底）、`MappingContext`、`IKeyActionCreator`／`DefaultKeyActionCreator`、`MouseOutputAction`（未完成のまま DI 未登録だったもの）、`TriggerContext`（`DS4Control/`）。呼び出し元は、旧経路の削除（8a・8b）で、`ActionManager` のディスパッチだけになっていた。
 - **変更**: `ActionEntry`（`ActionImpl` と工場の引数を削除。状態の入れ物だけ）、`DefaultActionManager`（コンストラクターは `Func<IMapping>` だけ。`GetActionByIndex`／`GetActionByName`／`Actions`／`DispatchTriggerEstablished`／`DispatchTriggerReleased` を削除）、`IManagedActionManager`（同じメンバーを削除）、静的な `ActionManager`（同じメンバーと `DispatchTrigger`／`DispatchTriggerEdge`、`actionInstances` を削除。`PreallocateOnStartup`／`PreallocateForProfileApply` の Action 実体の作成を削除）、`ServiceRegistration`（2 行）。

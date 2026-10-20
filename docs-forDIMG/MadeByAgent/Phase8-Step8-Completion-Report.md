@@ -2,7 +2,7 @@
 
 作成日: 2026-10-20
 計画書: `Phase8-Step8-Plan.md`
-状態: **8-0（ジャイロスワイプの廃止）完了。8a（Controls タブの旧枝）完了。8b（SA の旧枝）完了。8c（系統 B）はビルド・テスト待ち。8d は未着手。**
+状態: **8-0（ジャイロスワイプの廃止）完了。8a（Controls タブの旧枝）完了。8b（SA の旧枝）完了。8c（系統 B）完了。8d は未着手。**
 
 ---
 
@@ -34,6 +34,6 @@
 - **ログ**: 診断ログの削除一覧（L1〜L19、M1〜M7）を承認のうえ削除。画面に出るログが変わるのは 2 件（`BeingTriggered initialization failed ...`、Stage3 の `Synchronous Button SA handling error`）だけ。
 - **実機確認（Step9）**: 全種別の SA（Key／Macro／Button／Program／Profile［自動の復帰］／DisconnectBT／BatteryCheck／ステアリング較正／GyroCalibrate／MultiAction）が、従来どおり動くこと（U-35〜U-47 を含む）。
 
-## 8c 系統 B の削除（2026-10-20。ビルド・テスト待ち）
+## 8c 系統 B の削除（2026-10-20。ビルド・テスト成功）
 
 詳細: `Phase8-Step8-Plan.md` §5.12。`IActionFactory` 系（工場、アダプター 4 つ、`SpecialActionBase`、`Action`、`MappingContext`、`IKeyActionCreator` 系、`MouseOutputAction`、`TriggerContext`）の 14 ファイルを削除し、`DefaultActionManager`・`IManagedActionManager`・`ActionManager`・`ActionEntry` から Action 実体とディスパッチを外した。`KeyAction`／`KeyButtonActionController` ほか、新経路が使う型は残した。`ServiceProviderHolder` の参照は 17 → 10。実機確認への影響なし。
