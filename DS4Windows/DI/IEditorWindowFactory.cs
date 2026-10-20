@@ -38,7 +38,7 @@ namespace DS4Windows.DI
         /// TODO(Phase10-Step4): 呼び出し元は、まだない（Phase10-Step2-Plan.md §7 Q2＝接続しない）。Step4 で、<c>ProfileEditor</c> の Controls タブが、
         /// 従来の選択ダイアログ（<c>BindingWindow</c>）の代わりに、これを使う。
         /// </summary>
-        SpecialActionEditor CreateControlActionEditor(int deviceNum, DS4Controls control, ProfileList profileList, int targetDevice);
+        SpecialActionEditor CreateControlActionEditor(int deviceNum, DS4ControlSettings controlSettings, ProfileList profileList, int targetDevice);
 
         /// <summary>
         /// プロファイル編集画面（メイン画面に埋め込む）を生成する（Phase7-Step5 W5）。

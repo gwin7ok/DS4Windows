@@ -75,6 +75,12 @@ namespace DS4WinWPF.DS4Forms.ViewModels.SpecialActions
 
         /// <summary>Scan Code が効くのは、キーの割り当てだけ（ボタンのときは、チェックボックスを無効にする）。</summary>
         public bool IsScanCodeEnabled => lastActionType != DS4ControlSettings.ActionType.Button;
+
+        /// <summary>Phase10-Step2 W4: 選ばれている割り当ての種別（<c>Key</c> か <c>Button</c>）。Controls のモードが、書き出しの分岐に使う。</summary>
+        public DS4ControlSettings.ActionType SelectedActionType => lastActionType;
+
+        /// <summary>Phase10-Step2 W4: 選ばれているボタン（<c>X360Controls</c> の整数値）。キーのときは -1。</summary>
+        public int SelectedButton => lastActionBtn;
         public event EventHandler IsToggleChanged;
 
         public Visibility ShowToggleControls

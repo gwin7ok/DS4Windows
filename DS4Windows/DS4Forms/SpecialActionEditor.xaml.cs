@@ -37,6 +37,7 @@ namespace DS4WinWPF.DS4Forms
         // Phase10-Step2 W3: SA のモードは SpecialActEditorViewModel、Controls のモードは ControlActionEditorViewModel（共通の土台は ActionEditorViewModel）
         private ActionEditorViewModel specialActVM;
         private readonly bool controlMode;
+        private readonly ControlSettingsEditTarget controlTarget;
         private MacroViewModel macroActVM;
         private LaunchProgramViewModel launchProgVM;
         private LoadProfileViewModel loadProfileVM;
@@ -91,30 +92,30 @@ namespace DS4WinWPF.DS4Forms
             DS4Windows.DI.IOutputSlotService outputSlotService,
             DS4Windows.DI.IEnvironmentService environmentService,
             DS4Windows.SpecialAction specialAction = null)
-            : this(deviceNum, (DS4Windows.DS4Controls?)null, profileList, targetDevice, editorWindowFactory, viewModelFactory,
+            : this(deviceNum, (DS4Windows.DS4ControlSettings)null, profileList, targetDevice, editorWindowFactory, viewModelFactory,
                 specialActionRepository, profileSettingsService, outputSlotService, environmentService, specialAction)
         {
         }
 
         /// <summary>
-        /// Controls のモード（Phase10-Step2 W3）: Controls のボタン 1 つの割り当てを編集する。名前は、ボタンの表示名で固定（編集不可）、
+        /// Controls のモード（Phase10-Step2 W3・W4）: Controls のボタン 1 つの割り当て（<paramref name="controlSettings"/>）を編集する。名前は、ボタンの表示名で固定（編集不可）、
         /// トリガーは、そのボタンだけ（変更不可）、種別の一覧は、Controls で現在保存できる種別だけ有効。
         /// TODO(Phase10-Step4): <c>ProfileEditor</c> の Controls タブからの呼び出しは、Step4 まで接続しない（Phase10-Step2-Plan.md §7 Q2）。
         /// 保存（<see cref="ControlSaved"/>）の中身（<c>DS4ControlSettings</c> への書き込み、編集用のコピー）は W4 で足す。
         /// </summary>
-        public SpecialActionEditor(int deviceNum, DS4Windows.DS4Controls control, ProfileList profileList, int targetDevice,
+        public SpecialActionEditor(int deviceNum, DS4Windows.DS4ControlSettings controlSettings, ProfileList profileList, int targetDevice,
             DS4Windows.DI.IEditorWindowFactory editorWindowFactory,
             DS4Windows.DI.IViewModelFactory viewModelFactory,
             DS4Windows.DI.ISpecialActionRepository specialActionRepository,
             DS4Windows.DI.IProfileSettingsService profileSettingsService,
             DS4Windows.DI.IOutputSlotService outputSlotService,
             DS4Windows.DI.IEnvironmentService environmentService)
-            : this(deviceNum, (DS4Windows.DS4Controls?)control, profileList, targetDevice, editorWindowFactory, viewModelFactory,
-                specialActionRepository, profileSettingsService, outputSlotService, environmentService, null)
+            : this(deviceNum, controlSettings ?? throw new ArgumentNullException(nameof(controlSettings)), profileList, targetDevice,
+                editorWindowFactory, viewModelFactory, specialActionRepository, profileSettingsService, outputSlotService, environmentService, null)
         {
         }
 
-        private SpecialActionEditor(int deviceNum, DS4Windows.DS4Controls? control, ProfileList profileList, int targetDevice,
+        private SpecialActionEditor(int deviceNum, DS4Windows.DS4ControlSettings controlSettings, ProfileList profileList, int targetDevice,
             DS4Windows.DI.IEditorWindowFactory editorWindowFactory,
             DS4Windows.DI.IViewModelFactory viewModelFactory,
             DS4Windows.DI.ISpecialActionRepository specialActionRepository,
@@ -132,10 +133,17 @@ namespace DS4WinWPF.DS4Forms
             InitializeComponent();
             this.targetDevice = targetDevice;
 
-            controlMode = control.HasValue;
-            specialActVM = controlMode
-                ? new ControlActionEditorViewModel(deviceNum, control.Value)
-                : viewModelFactory.CreateSpecialActEditorViewModel(deviceNum, specialAction);
+            controlMode = controlSettings != null;
+            if (controlMode)
+            {
+                // Phase10-Step2 W4: 対象のボタンの設定は、編集用のコピーを編集し、Save で元へ反映する（Cancel では、元は変わらない）
+                controlTarget = new ControlSettingsEditTarget(controlSettings, profileSettingsService);
+                specialActVM = new ControlActionEditorViewModel(deviceNum, controlTarget);
+            }
+            else
+            {
+                specialActVM = viewModelFactory.CreateSpecialActEditorViewModel(deviceNum, specialAction);
+            }
             macroActVM = new MacroViewModel(specialActionRepository);
             launchProgVM = new LaunchProgramViewModel(specialActionRepository);
             loadProfileVM = new LoadProfileViewModel(profileList, specialActionRepository);
@@ -185,6 +193,13 @@ namespace DS4WinWPF.DS4Forms
             if (specialAction != null)
             {
                 LoadAction(specialAction);
+            }
+
+            if (controlMode)
+            {
+                // 保存済みの割り当てを、種別ごとの入力へ読み込む。種別の一覧の初期の選択も、割り当てに合わせる
+                controlTarget.LoadInto(pressKeyVM, macroActVM);
+                specialActVM.ActionTypeIndex = controlTarget.InitialTypeIndex;
             }
 
             actionTypeTabControl.DataContext = specialActVM;
@@ -252,11 +267,16 @@ namespace DS4WinWPF.DS4Forms
         }
 
         // Controls のモードの保存。入力が無効なときは、結びつきを外さず、エラーを表示したまま戻る（SA のモードと同じ）。
-        // TODO(Phase10-Step4): 有効なときの保存（DS4ControlSettings への書き込み。編集用のコピーの反映）は W4 で、ControlSaved の受け手（呼び出し側）に足す
+        // 有効なときは、種別ごとの入力から、編集用のコピーへ書き出し、元の設定へ反映してから ControlSaved を出す（Phase10-Step2 W4）。
+        // TODO(Phase10-Step4): ControlSaved の受け手（呼び出し側）は、Step4 で、ProfileEditor の Controls タブに足す
         private void SaveControlMode()
         {
             DS4Windows.SpecialAction tempAct = new DS4Windows.SpecialAction("null", "null", "null", "null");
             if (!specialActVM.IsValid(tempAct)) return;
+            if (!specialActVM.IsTypeEnabled(specialActVM.ActionTypeIndex)) return;   // Controls に、まだ保存できない種別
+
+            controlTarget.WriteFrom(specialActVM.ActionTypeIndex, pressKeyVM, macroActVM);
+            controlTarget.Apply();
 
             ControlSaveTypeId = specialActVM.TypeAssoc[specialActVM.ActionTypeIndex];
             ControlSaved?.Invoke(this, EventArgs.Empty);

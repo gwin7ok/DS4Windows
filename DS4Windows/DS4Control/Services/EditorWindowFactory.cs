@@ -82,8 +82,8 @@ namespace DS4Windows.Services
                 _specialActionRepository, _profileSettings, _outputSlotService, _environmentService, specialAction);
 
         // TODO(Phase10-Step4): 呼び出し元は、まだない（Phase10-Step2-Plan.md §7 Q2＝接続しない）
-        public SpecialActionEditor CreateControlActionEditor(int deviceNum, DS4Controls control, ProfileList profileList, int targetDevice)
-            => new SpecialActionEditor(deviceNum, control, profileList, targetDevice, this, _viewModelFactory,
+        public SpecialActionEditor CreateControlActionEditor(int deviceNum, DS4ControlSettings controlSettings, ProfileList profileList, int targetDevice)
+            => new SpecialActionEditor(deviceNum, controlSettings, profileList, targetDevice, this, _viewModelFactory,
                 _specialActionRepository, _profileSettings, _outputSlotService, _environmentService);
 
         public ProfileEditor CreateProfileEditor(int targetDevice)

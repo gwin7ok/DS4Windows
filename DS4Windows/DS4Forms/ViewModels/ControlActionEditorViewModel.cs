@@ -14,12 +14,19 @@ namespace DS4WinWPF.DS4Forms.ViewModels
     {
         private readonly DS4Controls control;
 
+        /// <summary>名前・トリガー・種別の骨格だけ（設定との変換なし）。</summary>
         public ControlActionEditorViewModel(int deviceNum, DS4Controls control)
             : this(deviceNum, control, new ControlEditTarget(control))
         {
         }
 
-        private ControlActionEditorViewModel(int deviceNum, DS4Controls control, ControlEditTarget target)
+        /// <summary>Phase10-Step2 W4: 対象のボタンの設定（編集用のコピー）との変換つき。</summary>
+        public ControlActionEditorViewModel(int deviceNum, ControlSettingsEditTarget target)
+            : this(deviceNum, (target ?? throw new System.ArgumentNullException(nameof(target))).Control, target)
+        {
+        }
+
+        private ControlActionEditorViewModel(int deviceNum, DS4Controls control, IActionEditTarget target)
             : base(deviceNum, new ControlTriggerSource(control.ToString()), target, new ActionTypeCatalog(),
                 new TriggerCatalog(new[] { new TriggerItem(control.ToString(), target.Name) }), ActionEditorModes.Control)
         {
