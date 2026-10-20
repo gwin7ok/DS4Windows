@@ -42,7 +42,7 @@
 
 詳細: `Phase8-Step8-Plan.md` §5.13。`BindingMigrationOptions` と、そのコンストラクター引数、`UntriggerPolicy.Buttons`／`BindingPolicy.UntriggerButtons`、`Mapping` の未使用の定数 2 つを削除した。本番の既定は全種別・全区分が有効だったため、実行・ログへの影響はない。テストは、スイッチを触るロールバックのテストを削除し、スコープからスイッチの退避・復元を外した。`Capture`／`RestoreProfileUntrigger` と、テストの `migrated` 引数は、Phase9 の整理に残した。
 
-## 持ち越し C-2: テストの `migrated` 引数の整理（2026-10-20。ビルド・テスト待ち）
+## 持ち越し C-2: テストの `migrated` 引数の整理（2026-10-20。ビルド・テスト成功）
 
 `Phase8-Completion-Report.md` §3 の C-2。小さな PR として、Phase9 の前に行った（コードの変更なし。テストのみ、43 ファイル）。
 
