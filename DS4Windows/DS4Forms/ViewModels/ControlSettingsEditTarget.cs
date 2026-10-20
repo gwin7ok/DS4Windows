@@ -27,7 +27,7 @@ namespace DS4WinWPF.DS4Forms.ViewModels
         private readonly DS4ControlSettings original;
         private readonly IProfileSettingsService profileSettings;
         private readonly ControlEditTarget nameTarget;
-        private readonly ActionTypeCatalog typeCatalog = new ActionTypeCatalog();
+        private readonly ActionTypeCatalog typeCatalog = new ActionTypeCatalog(includeControlOnlyItems: true);
         private DS4ControlSettings working;
 
         public ControlSettingsEditTarget(DS4ControlSettings original, IProfileSettingsService profileSettings)
@@ -84,8 +84,11 @@ namespace DS4WinWPF.DS4Forms.ViewModels
             {
                 switch (working.actionType)
                 {
-                    case DS4ControlSettings.ActionType.Key:
                     case DS4ControlSettings.ActionType.Button:
+                        // Phase10-Step3: Unbound は、種別の一覧の「Unbound」の項目で表す（Default は、添字 0）
+                        if (working.action.actionBtn == X360Controls.Unbound) return typeCatalog.UnboundIndex;
+                        return typeCatalog.IndexOf(SpecialAction.ActionTypeId.Key);
+                    case DS4ControlSettings.ActionType.Key:
                         return typeCatalog.IndexOf(SpecialAction.ActionTypeId.Key);
                     case DS4ControlSettings.ActionType.Macro:
                         return typeCatalog.IndexOf(SpecialAction.ActionTypeId.Macro);
@@ -138,6 +141,14 @@ namespace DS4WinWPF.DS4Forms.ViewModels
             if (typeIndex != 0 && !descriptor.IsSavableIn(ActionEditorModes.Control))
                 throw new ArgumentException("この種別は、Controls には、まだ保存できない（Step3 の保存形式の拡張まで）: " + descriptor.TypeId, nameof(typeIndex));
 
+            // Phase10-Step3: 種別の一覧の「Unbound」の項目（出力ピッカーの Unbound ボタンと同じ。Button の Unbound）。添字 0 は、既定（Default）
+            if (typeIndex != 0 && typeIndex == typeCatalog.UnboundIndex)
+            {
+                WriteUnbound();
+                profileSettings.RefreshActionAlias(working);
+                return;
+            }
+
             switch (descriptor.TypeId)
             {
                 case SpecialAction.ActionTypeId.Key:
@@ -159,6 +170,13 @@ namespace DS4WinWPF.DS4Forms.ViewModels
             }
 
             profileSettings.RefreshActionAlias(working);
+        }
+
+        private void WriteUnbound()
+        {
+            working.keyType = DS4KeyType.Unbound;   // 出力先がない（Toggle・Scan Code の対象も、ない）
+            working.actionType = DS4ControlSettings.ActionType.Button;
+            working.action.actionBtn = X360Controls.Unbound;
         }
 
         private void WriteDefault()

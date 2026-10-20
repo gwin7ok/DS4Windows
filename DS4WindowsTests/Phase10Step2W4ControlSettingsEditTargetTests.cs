@@ -248,7 +248,7 @@ namespace DS4WindowsTests
             var rig = new Rig();
             var target = new ControlSettingsEditTarget(Default(), rig.Profile);
 
-            Assert.Throws<ArgumentOutOfRangeException>(() => target.WriteFrom(10, rig.PressKey, rig.Macro));
+            Assert.Throws<ArgumentOutOfRangeException>(() => target.WriteFrom(11, rig.PressKey, rig.Macro));   // Phase10-Step3: 添字 10 は「Unbound」（Controls のモードの項目）。範囲外は 11 から
         }
 
         [Theory]

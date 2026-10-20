@@ -78,17 +78,17 @@ namespace DS4WindowsTests
                 return;
             }
 
-            Assert.Contains("editor.Cancel += (sender2, args) => CloseControlEditor();", source);
+            Assert.Contains("editor.Cancel += (sender2, args) => CloseLeftPaneEditor();", source);
 
             Match saved = Regex.Match(source, @"editor\.ControlSaved \+= \(sender2, args\) =>\s*\{(?<body>.*?)\n\s*\};", RegexOptions.Singleline);
             Assert.True(saved.Success, "ControlSaved の受け手が見つからない");
-            Assert.Contains("CloseControlEditor();", saved.Groups["body"].Value);
+            Assert.Contains("CloseLeftPaneEditor();", saved.Groups["body"].Value);
             Assert.Contains("mpControl.UpdateMappingName();", saved.Groups["body"].Value);
             Assert.Contains("profileSettingsVM.RefreshCustomsFlags();", saved.Groups["body"].Value);
 
-            Match close = Regex.Match(source, @"private void CloseControlEditor\(\)\s*\{(?<body>.*?)\n        \}", RegexOptions.Singleline);
+            Match close = Regex.Match(source, @"private void CloseLeftPaneEditor\(\)\s*\{(?<body>.*?)\n        \}", RegexOptions.Singleline);
             Assert.True(close.Success);
-            Assert.Contains("controlEditorHost.Children.Remove(controlEditor);", close.Groups["body"].Value);
+            Assert.Contains("controlEditorHost.Children.Remove(leftPaneEditor);", close.Groups["body"].Value);
             Assert.Contains("sidebarTabControl.Visibility = Visibility.Visible;", close.Groups["body"].Value);
             Assert.Contains("controlEditorHost.Visibility = Visibility.Collapsed;", close.Groups["body"].Value);
         }
@@ -103,11 +103,11 @@ namespace DS4WindowsTests
             }
 
             // 入口の判定（二重に開かない）
-            Assert.Contains("if (mpControl == null || controlEditor != null) return;", source);
+            Assert.Contains("if (mpControl == null || leftPaneEditor != null) return;", source);
 
             // コントローラーの入力（タイマー）: 開いている間は、選択も、開くことも、しない
-            Assert.Contains("if (index >= 0 && controlEditor == null)", source);
-            Assert.Contains("if (controlEditor != null) return;", source);
+            Assert.Contains("if (index >= 0 && leftPaneEditor == null)", source);
+            Assert.Contains("if (leftPaneEditor != null) return;", source);
         }
 
         [Fact]

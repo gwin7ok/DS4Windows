@@ -180,6 +180,18 @@ namespace DS4WinWPF.DS4Forms
             multiActTab.Visibility = Visibility.Collapsed;
             sixaxisWheelCalibrateTab.Visibility = Visibility.Collapsed;
             gyroCalibrateTab.Visibility = Visibility.Collapsed;
+            unboundActTab.Visibility = Visibility.Collapsed;
+
+            // Phase10-Step3: 種別の一覧の、Controls のモードだけの項目。SA のモードでは、「Unbound」を隠す。
+            // Controls のモードでは、0（「種別を選んでください」）を「Default」と読む（出力ピッカーの Default ボタンと同じ設定。既定の割り当て）
+            if (controlMode)
+            {
+                ((ComboBoxItem)actionTypeCombo.Items[0]).Content = DS4WinWPF.Translations.Strings.Default;
+            }
+            else
+            {
+                unboundTypeItem.Visibility = Visibility.Collapsed;
+            }
 
             // 種別の一覧には、全種別を出し、このモードで現在保存できない種別は、選べなくする（Controls は、Step3 まで Key・Button・Macro だけ）
             for (int i = 0; i < actionTypeCombo.Items.Count; i++)
@@ -260,7 +272,8 @@ namespace DS4WinWPF.DS4Forms
 
         private void ActionTypeCombo_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            if (specialActVM.ActionTypeIndex <= 0)
+            // Controls のモードの 0 は「Default」（保存できる）。SA のモードの 0 は「種別を選んでください」（保存できない）
+            if (specialActVM.ActionTypeIndex <= 0 && !controlMode)
             {
                 saveBtn.IsEnabled = false;
             }
@@ -485,6 +498,18 @@ namespace DS4WinWPF.DS4Forms
                 pressKeyVM.ReadSettings(controlSettings, specialActVM.DeviceNum, allowDefault: true);
                 controlTarget.Extras = controlSettings.extras;
                 pressKeyVM.UpdateToggleControls();
+
+                // 出力ピッカーで Default／Unbound を選んだときは、種別の一覧の「Default」「Unbound」の項目へ切り替える（一覧と、選んだ内容を一致させる）
+                if (pressKeyVM.SelectedActionType == DS4Windows.DS4ControlSettings.ActionType.Default)
+                {
+                    actionTypeCombo.SelectedIndex = 0;
+                }
+                else if (pressKeyVM.SelectedActionType == DS4Windows.DS4ControlSettings.ActionType.Button
+                    && pressKeyVM.SelectedButton == (int)DS4Windows.X360Controls.Unbound)
+                {
+                    actionTypeCombo.SelectedIndex = specialActVM.TypeCatalog.UnboundIndex;
+                }
+
                 return;
             }
 

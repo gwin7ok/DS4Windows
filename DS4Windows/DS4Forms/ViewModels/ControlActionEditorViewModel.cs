@@ -27,7 +27,7 @@ namespace DS4WinWPF.DS4Forms.ViewModels
         }
 
         private ControlActionEditorViewModel(int deviceNum, DS4Controls control, IActionEditTarget target)
-            : base(deviceNum, new ControlTriggerSource(control.ToString()), target, new ActionTypeCatalog(),
+            : base(deviceNum, new ControlTriggerSource(control.ToString()), target, new ActionTypeCatalog(includeControlOnlyItems: true),
                 new TriggerCatalog(new[] { new TriggerItem(control.ToString(), target.Name) }), ActionEditorModes.Control)
         {
             this.control = control;

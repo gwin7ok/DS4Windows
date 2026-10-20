@@ -1414,15 +1414,13 @@ namespace DS4WinWPF.DS4Forms
         }
         private void NewActionBtn_Click(object sender, RoutedEventArgs e)
         {
-            baseSpeActPanel.Visibility = Visibility.Collapsed;
+            if (leftPaneEditor != null) return;
             ProfileList profList = (Application.Current.MainWindow as MainWindow).ProfileListHolder;
             SpecialActionEditor actEditor = editorWindowFactory.CreateSpecialActionEditor(deviceNum, profList, targetDevice, null);
-            specialActionDockPanel.Children.Add(actEditor);
-            actEditor.Visibility = Visibility.Visible;
+            OpenLeftPaneEditor(actEditor);
             actEditor.Cancel += (sender2, args) =>
             {
-                specialActionDockPanel.Children.Remove(actEditor);
-                baseSpeActPanel.Visibility = Visibility.Visible;
+                CloseLeftPaneEditor();
             };
             actEditor.Saved += (sender2, actionName) =>
             {
@@ -1432,8 +1430,7 @@ namespace DS4WinWPF.DS4Forms
                 int lastIdx = specialActionsVM.ActionCol.Count;
                 newitem.Index = lastIdx;
                 specialActionsVM.ActionCol.Add(newitem);
-                specialActionDockPanel.Children.Remove(actEditor);
-                baseSpeActPanel.Visibility = Visibility.Visible;
+                CloseLeftPaneEditor();
                 // After adding a new special action, re-apply the current sort
                 // so the list reflects the user's chosen sort column and order.
                 SortSpecialActionsList(specialActionsVM.CurrentSortColumn, specialActionsVM.CurrentSortAscending);
@@ -1444,6 +1441,7 @@ namespace DS4WinWPF.DS4Forms
 
         private void EditActionBtn_Click(object sender, RoutedEventArgs e)
         {
+            if (leftPaneEditor != null) return;
             if (specialActionsVM.SpecialActionIndex >= 0)
             {
                 SpecialActionItem item = specialActionsVM.CurrentSpecialActionItem;
@@ -1451,15 +1449,12 @@ namespace DS4WinWPF.DS4Forms
                 //int viewIndex = specialActionsVM.SpecialActionIndex;
                 //int currentIndex = specialActionsVM.ActionCol[viewIndex].Index;
                 //SpecialActionItem item = specialActionsVM.ActionCol[currentIndex];
-                baseSpeActPanel.Visibility = Visibility.Collapsed;
                 ProfileList profList = (Application.Current.MainWindow as MainWindow).ProfileListHolder;
                 SpecialActionEditor actEditor = editorWindowFactory.CreateSpecialActionEditor(deviceNum, profList, targetDevice, item.SpecialAction);
-                specialActionDockPanel.Children.Add(actEditor);
-                actEditor.Visibility = Visibility.Visible;
+                OpenLeftPaneEditor(actEditor);
                 actEditor.Cancel += (sender2, args) =>
                 {
-                    specialActionDockPanel.Children.Remove(actEditor);
-                    baseSpeActPanel.Visibility = Visibility.Visible;
+                    CloseLeftPaneEditor();
                 };
                 actEditor.Saved += (sender2, actionName) =>
                 {
@@ -1510,8 +1505,7 @@ namespace DS4WinWPF.DS4Forms
                         }
                     });
 
-                    specialActionDockPanel.Children.Remove(actEditor);
-                    baseSpeActPanel.Visibility = Visibility.Visible;
+                    CloseLeftPaneEditor();
                     // After editing an existing special action, re-apply the
                     // current sort so any name/type changes are reflected
                     // according to the current sort column and direction.
@@ -1657,11 +1651,11 @@ namespace DS4WinWPF.DS4Forms
                     default: break;
                 }
 
-                if (index >= 0 && controlEditor == null)
+                if (index >= 0 && leftPaneEditor == null)
                 {
                     Dispatcher.BeginInvoke((System.Action)(() =>
                     {
-                        if (controlEditor != null) return;
+                        if (leftPaneEditor != null) return;
                         mappingListVM.SelectedIndex = index;
                         ShowControlBindingWindow();
                     }));
@@ -1707,11 +1701,34 @@ namespace DS4WinWPF.DS4Forms
             }
         }
 
-        // Phase10-Step3 W4: 割り当てエディター（SpecialActionEditor の Controls のモード）が、左ペイン全体に重なって表示されているあいだは、null でない。
-        // 開いているあいだは、新しく開かない（コントローラーの入力［タイマー］と、右ペインに残る入口からの二重起動を防ぐ）。
+        // Phase10-Step3 W4: 左ペイン全体（タブ）に重なって表示されている編集画面（Controls の割り当てエディター、SA の編集画面）。
+        // 表示されているあいだは null でない。開いているあいだは、新しく開かない（コントローラーの入力［タイマー］と、右ペインに残る入口からの二重起動を防ぐ）。
         // TODO(Phase10-Step3b): 入口をすべて左ペインのタブのボタンにする（Axis Config の 4 つの入口は、Controls タブへボタンとして追加）。
         //   そのあとも、この判定は、コントローラーの入力（タイマー）経由の安全装置として残す
-        private SpecialActionEditor controlEditor;
+        private UserControl leftPaneEditor;
+
+        /// <summary>編集画面を、左ペイン全体に重ねて表示する（タブを隠すため、編集中は、左ペインのタブを切り替えられない）。</summary>
+        private void OpenLeftPaneEditor(UserControl editor)
+        {
+            // 左の列の幅は Auto（中身で決まる）ため、タブを隠しても、列の幅が変わらないよう、いまの幅に固定する
+            controlEditorHost.Width = sidebarTabControl.ActualWidth;
+            leftPaneEditor = editor;
+            sidebarTabControl.Visibility = Visibility.Collapsed;
+            controlEditorHost.Children.Add(editor);
+            editor.Visibility = Visibility.Visible;
+            controlEditorHost.Visibility = Visibility.Visible;
+        }
+
+        private void CloseLeftPaneEditor()
+        {
+            if (leftPaneEditor == null) return;
+
+            controlEditorHost.Children.Remove(leftPaneEditor);
+            leftPaneEditor = null;
+            controlEditorHost.Visibility = Visibility.Collapsed;
+            controlEditorHost.ClearValue(WidthProperty);
+            sidebarTabControl.Visibility = Visibility.Visible;
+        }
 
         /// <summary>
         /// 割り当てエディターを、左ペイン全体に重ねて表示する。保存したら、従来と同じ更新（割り当て名、ハイライトのラベル、カスタムの印）を行う。
@@ -1719,13 +1736,13 @@ namespace DS4WinWPF.DS4Forms
         /// </summary>
         private void ShowControlAssignmentEditor(MappedControl mpControl, bool updateHighlight)
         {
-            if (mpControl == null || controlEditor != null) return;
+            if (mpControl == null || leftPaneEditor != null) return;
 
             ProfileList profList = (Application.Current.MainWindow as MainWindow).ProfileListHolder;
             SpecialActionEditor editor = editorWindowFactory.CreateControlActionEditor(deviceNum, mpControl.Setting, profList, targetDevice);
             editor.ControlSaved += (sender2, args) =>
             {
-                CloseControlEditor();
+                CloseLeftPaneEditor();
                 mpControl.UpdateMappingName();
                 if (updateHighlight)
                 {
@@ -1734,26 +1751,9 @@ namespace DS4WinWPF.DS4Forms
 
                 profileSettingsVM.RefreshCustomsFlags();
             };
-            editor.Cancel += (sender2, args) => CloseControlEditor();
+            editor.Cancel += (sender2, args) => CloseLeftPaneEditor();
 
-            // 左の列の幅は Auto（中身で決まる）ため、タブを隠しても、列の幅が変わらないよう、いまの幅に固定する
-            controlEditorHost.Width = sidebarTabControl.ActualWidth;
-            controlEditor = editor;
-            sidebarTabControl.Visibility = Visibility.Collapsed;
-            controlEditorHost.Children.Add(editor);
-            editor.Visibility = Visibility.Visible;
-            controlEditorHost.Visibility = Visibility.Visible;
-        }
-
-        private void CloseControlEditor()
-        {
-            if (controlEditor == null) return;
-
-            controlEditorHost.Children.Remove(controlEditor);
-            controlEditor = null;
-            controlEditorHost.Visibility = Visibility.Collapsed;
-            controlEditorHost.ClearValue(WidthProperty);
-            sidebarTabControl.Visibility = Visibility.Visible;
+            OpenLeftPaneEditor(editor);
         }
 
         private void ShowControlBindingWindow()
