@@ -21,8 +21,9 @@ namespace DS4WindowsTests
         // Phase8-Step8 8a: held の表を削除したため、較正の直後の文書コメント（Map DS4 Buttons/Axes…）を終端にする
         private const string CalibrationEnd = "/// Map DS4 Buttons/Axes to other DS4 Buttons/Axes";
         private const string CommitStart = "public void Commit(";
-        // Phase7-Step8 W1: MapClick を SyntheticInputState.CountClick へ移したため、Commit の次のメンバー（DS4ControltoInt）を終端にする
-        private const string CommitEnd = "public static int DS4ControltoInt(";
+        // Phase7-Step8 W1: MapClick を SyntheticInputState.CountClick へ移したため、Commit の次のメンバーを終端にする
+        // Phase8-Fix-MacroRepeatUnify（D5）: DS4ControltoInt を削除したため、次のメンバー（TValue）を終端にする
+        private const string CommitEnd = "static double TValue(";
 
         /// <summary>Step3-5 で `IProfileSettingsService` 経由へ置換済みの `Global` メンバ名（ドリフト補正）。</summary>
         private static readonly string[] MigratedCalibrationMembers =

@@ -24,7 +24,7 @@ namespace DS4WindowsTests
         // 状態を持たない表（読み取り専用の運用）。Q2＝A により static のまま残すもの
         private static readonly string[] AllowedStaticFields =
         {
-            "ds4ControlMapping", "macroEndIndex",
+            // Phase8-Fix-MacroRepeatUnify（D5）: ds4ControlMapping／macroEndIndex は、macrodone の添字の表だったため削除した
             "calibrationColor_0", "calibrationColor_1", "calibrationColor_2", "calibrationColor_3",
         };
 

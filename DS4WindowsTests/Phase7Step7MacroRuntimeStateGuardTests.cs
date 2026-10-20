@@ -39,31 +39,26 @@ namespace DS4WindowsTests
         {
             var state = new MacroRuntimeState();
 
-            Assert.Equal(52, MacroRuntimeState.ControlArrayLength);
-            Assert.Equal(52, state.MacroDone.Length);
-            Assert.Equal(52, state.DispatchInFlight.Length);
+            // Phase8-Fix-MacroRepeatUnify（D5）: MacroDone／DispatchInFlight（control 単位の暫定対策。本番では到達しなかった）は削除した
             Assert.Equal(26, state.MacroControl.Length);
             Assert.Equal(DS4Windows.ControllerLimits.MaxControllerCount, state.TaskQueue.Length);
             Assert.All(state.TaskQueue, q => Assert.NotNull(q));
 
             // 参照は安定（再代入されない）
-            var macroDone = state.MacroDone;
+            var macroControl = state.MacroControl;
             var taskQueue = state.TaskQueue;
-            state.ClearMacroDone();
-            Assert.Same(macroDone, state.MacroDone);
+            Assert.Same(macroControl, state.MacroControl);
             Assert.Same(taskQueue, state.TaskQueue);
         }
 
         [Fact]
-        public void ClearMacroDone_ResetsEveryFlag()
+        public void TheRemovedControlIndexedState_IsGone()
         {
-            var state = new MacroRuntimeState();
-            state.MacroDone[0] = true;
-            state.MacroDone[51] = true;
-
-            state.ClearMacroDone();
-
-            Assert.All(state.MacroDone, f => Assert.False(f));
+            Assert.Null(typeof(MacroRuntimeState).GetProperty("MacroDone"));
+            Assert.Null(typeof(MacroRuntimeState).GetProperty("DispatchInFlight"));
+            Assert.Null(typeof(MacroRuntimeState).GetMethod("ClearMacroDone"));
+            Assert.Null(typeof(MacroRuntimeState).GetMethod("TryBeginDispatch"));
+            Assert.Null(typeof(MacroRuntimeState).GetMethod("EndDispatch"));
         }
 
         [Fact]
@@ -74,15 +69,16 @@ namespace DS4WindowsTests
 
             // Phase7-Step8 W2: 転送プロパティは削除し、コンストラクターで受けた保持クラスの配列を readonly で複製して持つ
             Assert.Contains("private readonly MacroRuntimeState _macroRuntime;", mapping);
-            Assert.Contains("private readonly bool[] macrodone;", mapping);
-            // Phase7-Step9 W3（K3）: 二重実行防止のフラグとロックは MacroRuntimeState.TryBeginDispatch／EndDispatch に包んだ（Mapping は持たない）
+            // Phase8-Fix-MacroRepeatUnify（D5）: macrodone（と、その添字の表 ds4ControlMapping／DS4ControltoInt）、二重実行防止のフラグとロックは削除した
+            Assert.DoesNotContain("macrodone", mapping);
+            Assert.DoesNotContain("DS4ControltoInt", mapping);
             Assert.DoesNotContain("private readonly bool[] macroDispatchInFlight;", mapping);
             Assert.DoesNotContain("private readonly object macroDispatchLock;", mapping);
             Assert.Contains("private readonly bool[] macroControl;", mapping);
             Assert.Contains("private readonly Dictionary<string, Task>[] macroTaskQueue;", mapping);
             Assert.Contains("macroTaskQueue = macroRuntime.TaskQueue;", mapping);
             Assert.DoesNotContain("MacroRuntimeState.Shared", mapping);
-            Assert.Contains("DS4_CONTROL_MACRO_ARRAY_LEN = MacroRuntimeState.ControlArrayLength", mapping);
+            Assert.DoesNotContain("DS4_CONTROL_MACRO_ARRAY_LEN", mapping);
         }
 
         [Fact]

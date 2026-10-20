@@ -64,7 +64,6 @@ namespace DS4Windows
         private readonly StickMotionState _stickMotion;
         private readonly ReaderWriterLockSlim syncStateLock;
         private readonly SyntheticState[] deviceState;
-        private readonly bool[] macrodone;
         private readonly bool[] macroControl;
         private readonly Dictionary<string, Task>[] macroTaskQueue;
         private readonly byte[] gyroStickX;
@@ -152,7 +151,6 @@ namespace DS4Windows
 
             syncStateLock = syntheticInput.SyncStateLock;
             deviceState = syntheticInput.DeviceState;
-            macrodone = macroRuntime.MacroDone;
             macroControl = macroRuntime.MacroControl;
             macroTaskQueue = macroRuntime.TaskQueue;
             gyroStickX = stickMotion.GyroStickX;
@@ -352,35 +350,12 @@ namespace DS4Windows
 
         // Data needed to calculate Stick to Mouse Wheel conversion
 
-        // Phase7-Step7 W3（Q2＝A・Q3＝A）: マクロの実行時状態（macrodone／macroDispatchInFlight／macroDispatchLock／macroControl／
-        // MacroCount／macroTaskQueue）の実体は MacroRuntimeState が持つ。
+        // Phase7-Step7 W3（Q2＝A・Q3＝A）: マクロの実行時状態（macroControl／MacroCount／macroTaskQueue）の実体は MacroRuntimeState が持つ。
+        // Phase8-Fix-MacroRepeatUnify（D5）: 旧 macrodone／macroDispatchInFlight（control 単位の二重実行防止の暫定対策。呼び出しが常に control == None のため、本番では到達しなかった）と、
+        // その添字の表（ds4ControlMapping／DS4ControltoInt）は削除した。二重実行の防止は ActionInstanceState.IsMacroRunning が担う。
         // Phase7-Step8 W2: 転送プロパティは削除した（配列は上のフィールド宣言の readonly の複製、MacroCount は _macroRuntime を直接読み書きする）。
 
         //mapcustom
-
-        // ---- 暫定対策（申し送り: 下記コメント参照）----
-        // PlayMacro の「二重実行防止ガード」は、SpecialAction 経由（action != null）にしか
-        // 効いていなかった。Controls タブの直接マクロ割り当て（action == null）は、ボタンが
-        // 押されている間、入力ポーリングのたびに PlayMacro が呼ばれ続けるにもかかわらず、
-        // 二重実行防止ガードが素通りになり、既に実行中／クールダウン中でも毎ティック新しい
-        // Task を生成しようとしていた（216ms 間隔で約64回の無駄な Task 生成を実測）。
-        //
-        // macrodone[control] は PlayMacroTask 内部で「実際にキー送信を行うか」の判定に
-        // 使われている既存の実体であり、意味を変えずに流用することはできない（Task 生成前で
-        // true にしてしまうと、PlayMacroTask 内部の判定が常に false になり、通常マクロが
-        // 一切実行されなくなる）。そのため、Task 生成前だけを見る独立した実体を新設する。
-        //
-        // 【申し送り事項（恒久対応が必要）】
-        // これは暫定対策であり、根本的には「トリガー判定層」と「マクロ実行層」が分離できて
-        // いないことが原因である。docs-forDIMG/Model-Diagram/02-Layer-Architecture-Diagram.md・
-        // 03-Class-Interface-Diagram.md が示す理想構造（§3.3 の 2-d マクロの分解／3-b KBM出力）
-        // では、マクロの「実行」は Controls 由来か SpecialActions 由来かに関わらず単一の
-        // 実行層（IVirtualKBM 経由の逐次送出）に一本化される想定であり、二重実行防止も
-        // その単一の実行層で一元的に行われるべきである。Phase7（Mapping.cs 完全 instance 化、
-        // DI-App-Wide-Migration-Plan.md §6.9）で、この場当たり的な macroDispatchInFlight を
-        // 含めて再設計すること。
-        // Phase7-Step9 W3（K3）: フラグとロックの実体は MacroRuntimeState（TryBeginDispatch／EndDispatch）に包んだ（挙動は同一）。
-        // 上記の恒久対応（実行層の一本化）は Phase8（Actions サブシステム）へ持ち越した。
 
         //actions
         public int[] fadetimer = new int[ControllerLimits.MaxControllerCount] { 0, 0, 0, 0, 0, 0, 0, 0 };
@@ -428,66 +403,6 @@ namespace DS4Windows
 
         // Phase8-Step8 8b: 旧 oldnowKeyAct（タップ判定の特殊アクションの基準時刻）は、旧枝と一緒に削除した。
         // （Phase8-Step4 W4: 旧 nowAction／oldnowAction は _triggerInputs[device].Delay に置き換え済み）
-
-        private const int DS4_CONTROL_MACRO_ARRAY_LEN = MacroRuntimeState.ControlArrayLength; // Phase7-Step7 W3: 値の定義は MacroRuntimeState へ移した
-
-        // Button to index mapping used for macrodone array. Not even sure this
-        // is needed. This was originally made to replace a switch test used in the DS4ControlToInt method.
-        // DS4Controls -> Macro input map index
-        private static int[] ds4ControlMapping = new int[]
-        {
-            0, // DS4Controls.None
-            16, // DS4Controls.LXNeg
-            20, // DS4Controls.LXPos
-            17, // DS4Controls.LYNeg
-            21, // DS4Controls.LYPos
-            18, // DS4Controls.RXNeg
-            22, // DS4Controls.RXPos
-            19, // DS4Controls.RYNeg
-            23, // DS4Controls.RYPos
-            3,  // DS4Controls.L1
-            24, // DS4Controls.L2
-            5,  // DS4Controls.L3
-            4,  // DS4Controls.R1
-            25, // DS4Controls.R2
-            6,  // DS4Controls.R3
-            13, // DS4Controls.Square
-            14, // DS4Controls.Triangle
-            15, // DS4Controls.Circle
-            12, // DS4Controls.Cross
-            7,  // DS4Controls.DpadUp
-            10, // DS4Controls.DpadRight
-            8,  // DS4Controls.DpadDown
-            9,  // DS4Controls.DpadLeft
-            11, // DS4Controls.PS
-            27, // DS4Controls.TouchLeft
-            29, // DS4Controls.TouchUpper
-            26, // DS4Controls.TouchMulti
-            28, // DS4Controls.TouchRight
-            1,  // DS4Controls.Share
-            2,  // DS4Controls.Options
-            30, // DS4Controls.Mute
-            32, // DS4Controls.GyroXPos
-            31, // DS4Controls.GyroXNeg
-            34, // DS4Controls.GyroZPos
-            33, // DS4Controls.GyroZNeg
-            35, // DS4Controls.SwipeLeft
-            36, // DS4Controls.SwipeRight
-            37, // DS4Controls.SwipeUp
-            38, // DS4Controls.SwipeDown
-            39, // DS4Controls.L2FullPull
-            40, // DS4Controls.R2FullPull
-            45, // DS4Controls.Capture
-            46, // DS4Controls.SideL
-            47, // DS4Controls.SideR
-            48, // DS4Controls.FnL
-            49, // DS4Controls.FnR
-            50, // DS4Controls.BLP
-            51, // DS4Controls.BRP
-        };
-#pragma warning disable CS0414 // macroEndIndex assigned but not read; keep for readability of macro array length
-        private static int macroEndIndex = DS4_CONTROL_MACRO_ARRAY_LEN - 1;
-#pragma warning restore CS0414
 
         // Mouse
         public int mcounter = 34;
@@ -674,17 +589,6 @@ namespace DS4Windows
             VirtualKBM.Sync();
         }
 
-
-        public static int DS4ControltoInt(DS4Controls ctrl)
-        {
-            int result = 0;
-            if (ctrl >= DS4Controls.None && ctrl <= DS4Controls.SideR)
-            {
-                result = ds4ControlMapping[(int)ctrl];
-            }
-
-            return result;
-        }
 
         static double TValue(double value1, double value2, double percent)
         {
@@ -3025,7 +2929,7 @@ namespace DS4Windows
         {
             // Phase6-Step9b-3（F05）: 4 スロット固定だと、拡張スロット数が 8 のときデバイス 4〜7 のマクロが再生されなかった。
             if (device < 0 || device >= ControllerLimits.MaxControllerCount || action == null) return;
-            PlayMacro(device, new bool[4], String.Empty, action.macro, null, DS4Controls.None, action.keyType, action, null);
+            PlayMacro(device, String.Empty, action.macro, null, action.keyType, action, null);
         }
 
         /// <summary>
@@ -3035,7 +2939,7 @@ namespace DS4Windows
         public void PlayMacroString(int device, string macro)
         {
             if (device < 0 || device >= ControllerLimits.MaxControllerCount || string.IsNullOrEmpty(macro)) return;
-            PlayMacro(device, macroControl, macro, null, null, DS4Controls.None, DS4KeyType.None);
+            PlayMacro(device, macro, null, null, DS4KeyType.None);
         }
 
         /// <summary>
@@ -3044,7 +2948,9 @@ namespace DS4Windows
         public void EndMacroDirect(int device)
         {
             if (device < 0 || device >= ControllerLimits.MaxControllerCount) return;
-            EndMacro(device, new bool[4], string.Empty, DS4Controls.None);
+            // TODO(技術的負債・Phase9 候補): IMacroPlayer.Stop の実体。旧 EndMacro（control == None のときは何もしない空処理）を削除した（Phase8-Fix-MacroRepeatUnify D5）ため、
+            // 現状も何もしない（マクロの停止は、RepeatMacro のループが BeingTriggered を見て止まる）。インターフェース（IMapping の窓口）を保つために、空実装で残している。
+            // 離したときにマクロを中断してキーを解放する必要が出たら、ここで実装する。
         }
 
 
@@ -3053,7 +2959,9 @@ namespace DS4Windows
         // Play macro as a background task. Optionally the new macro play waits for completion of a previous macro execution (synchronized macro special action).
         // Macro steps are defined either as macrostr string value, macroLst list<int> object or as macroArr integer array. Only one of these should have a valid macro definition when this method is called.
         // If the macro definition is a macroStr string value then it will be converted as integer array on the fl. If steps are already defined as list or array of integers then there is no need to do type cast conversion.
-        private void PlayMacro(int device, bool[] macrocontrol, string macroStr, List<int> macroLst, int[] macroArr, DS4Controls control, DS4KeyType keyType, SpecialAction action = null, ActionInstanceState actionDoneState = null)
+        // Phase8-Fix-MacroRepeatUnify（D5）: 呼び出しは常に control == DS4Controls.None（SA・Controls タブ・MultiAction のすべて）だったため、control 単位の経路
+        // （macrodone、macroDispatchInFlight／TryBeginDispatch）と、未使用の引数 control／macrocontrol を削除した。二重起動の防止は ActionInstanceState.IsMacroRunning が担う。
+        private void PlayMacro(int device, string macroStr, List<int> macroLst, int[] macroArr, DS4KeyType keyType, SpecialAction action = null, ActionInstanceState actionDoneState = null)
         {
             // If caller didn't provide per-action state, obtain it so we can check for running macro.
             ActionInstanceState st = actionDoneState;
@@ -3064,31 +2972,12 @@ namespace DS4Windows
 
             // Startup guard: if a macro iteration is already running for this action/device,
             // skip starting another macro and log the decision (DECISION=RUN/NORUN).
-            //
-            // 暫定対策: action != null（SpecialAction経由）は上記の ActionInstanceState.IsMacroRunning
-            // で判定されるが、action == null（Controls タブの直接マクロ割り当て）にはこれが効かない
-            // （st が常に null のため isRunning が常に false になる）。そのため、control 単位の
-            // macroDispatchInFlight で同様の二重実行防止を行う。SpecialAction 経由の呼び出しは
-            // 常に control == DS4Controls.None で呼ばれるため、この分岐には入らず影響しない。
-            // 詳細・恒久対応の申し送りは macroDispatchInFlight 宣言部のコメントを参照。
-            bool controlIndexValid = control != DS4Controls.None;
-            int controlDispatchIdx = controlIndexValid ? DS4ControltoInt(control) : -1;
-
             try
             {
                 bool actionRunning = st != null && st.IsMacroRunning;
-                bool controlDispatchInFlight = false;
-
-                if (controlIndexValid)
-                {
-                    // Phase7-Step9 W3（K3、Q3＝A）: ロックと確保の処理は MacroRuntimeState.TryBeginDispatch に包んだ（挙動は同一）
-                    controlDispatchInFlight = !_macroRuntime.TryBeginDispatch(controlDispatchIdx);
-                }
-
-                bool isRunning = actionRunning || controlDispatchInFlight;
-                string decision = isRunning ? "NORUN" : "RUN";
-                AppLogger.LogTrace($"PlayMacro START GUARD: action={action?.name} device={device} control={control} IsMacroRunning={actionRunning} ControlDispatchInFlight={controlDispatchInFlight} DECISION={decision}");
-                if (isRunning) return;
+                string decision = actionRunning ? "NORUN" : "RUN";
+                AppLogger.LogTrace($"PlayMacro START GUARD: action={action?.name} device={device} IsMacroRunning={actionRunning} DECISION={decision}");
+                if (actionRunning) return;
             }
             catch { }
 
@@ -3103,18 +2992,18 @@ namespace DS4Windows
             {
                 // Run special action macros in synchronized order (ie. FirstIn-First-Out). The trigger control name string is the execution queue identifier (ie. each unique trigger combination has an own synchronization queue).
                 if (!macroTaskQueue[device].TryGetValue(action.controls, out Task prevTask))
-                    macroTaskQueue[device].Add(action.controls, (Task.Factory.StartNew(() => PlayMacroTask(device, macroControl, macroStr, macroLst, macroArr, control, keyType, action, actionDoneState))));
+                    macroTaskQueue[device].Add(action.controls, (Task.Factory.StartNew(() => PlayMacroTask(device, macroStr, macroLst, macroArr, keyType, action, actionDoneState))));
                 else
-                    macroTaskQueue[device][action.controls] = prevTask.ContinueWith((x) => PlayMacroTask(device, macroControl, macroStr, macroLst, macroArr, control, keyType, action, actionDoneState));
+                    macroTaskQueue[device][action.controls] = prevTask.ContinueWith((x) => PlayMacroTask(device, macroStr, macroLst, macroArr, keyType, action, actionDoneState));
             }
             else
                 // Run macro as "fire and forget" background task. No need to wait for completion of any of the other macros.
                 // If the same trigger macro is re-launched while previous macro is still running then the order of parallel macros is not guaranteed.
-                Task.Factory.StartNew(() => PlayMacroTask(device, macroControl, macroStr, macroLst, macroArr, control, keyType, action, actionDoneState));
+                Task.Factory.StartNew(() => PlayMacroTask(device, macroStr, macroLst, macroArr, keyType, action, actionDoneState));
         }
 
         // Play through a macro. The macro steps are defined either as string, List or Array object (always only one of those parameters is set to a valid value)
-        private void PlayMacroTask(int device, bool[] macrocontrol, string macroStr, List<int> macroLst, int[] macroArr, DS4Controls control, DS4KeyType keyType, SpecialAction action, ActionInstanceState actionDoneState)
+        private void PlayMacroTask(int device, string macroStr, List<int> macroLst, int[] macroArr, DS4KeyType keyType, SpecialAction action, ActionInstanceState actionDoneState)
         {
             // Ensure we have the per-action state from ActionManager if not provided by caller
             if (actionDoneState == null && action != null)
@@ -3140,74 +3029,8 @@ namespace DS4Windows
 
                 // Phase8-Step7-3a（機能廃止。ユーザー承認済み）: Alt-Tab の並び（Alt 押す・Tab 押す・Tab 離す・Alt 離す）で始まるマクロの特別扱いを廃止した。
                 // この並びのマクロも、他のマクロと同じく、手順どおりに再生する（Phase8-Step7-3a-AltTab-Removal-Plan.md）。
-                if (control == DS4Controls.None || !macrodone[DS4ControltoInt(control)])
-                {
-                    int macroCodeValue;
-                    bool[] keydown = new bool[512];
-
-                    if (control != DS4Controls.None)
-                        macrodone[DS4ControltoInt(control)] = true;
-
-                    // Play macro codes and simulate key down/up events (note! The same key may go through several up and down events during the same macro).
-                    // If the return value is TRUE then this method should do a asynchronized delay (the usual Thread.Sleep doesnt work here because it would block the main gamepad reading thread).
-                    if (macroLst != null)
-                    {
-                        for (int i = 0; i < macroLst.Count; i++)
-                        {
-                            macroCodeValue = macroLst[i];
-                            if (PlayMacroCodeValue(device, macrocontrol, keyType, macroCodeValue, keydown))
-                                Task.Delay(macroCodeValue - 300).Wait();
-                        }
-                    }
-                    else
-                    {
-                        for (int i = 0; i < macroArr.Length; i++)
-                        {
-                            macroCodeValue = macroArr[i];
-                            if (PlayMacroCodeValue(device, macrocontrol, keyType, macroCodeValue, keydown))
-                                Task.Delay(macroCodeValue - 300).Wait();
-                        }
-                    }
-
-                    // The macro is finished. If any of the keys is still in down state then release a key state (ie. simulate key up event) unless special action specified to keep the last state as it is left in a macro
-                    if (action == null || !action.keepKeyState)
-                    {
-                        for (int i = 0, arlength = keydown.Length; i < arlength; i++)
-                        {
-                            if (keydown[i])
-                                PlayMacroCodeValue(device, macrocontrol, keyType, i, keydown);
-                        }
-
-                        // Reset lightbar back to a default value (if the macro modified the color) because keepKeyState macro option was not set
-                        DS4LightBar.forcedFlash[device] = 0;
-                        DS4LightBar.forcelight[device] = false;
-                    }
-
-                    // Commented out rumble reset. No need to zero out rumble after a macro because it may conflict with a game generated rumble events (ie. macro would stop a game generated rumble effect).
-                    // If macro generates rumble effects then the macro can stop the rumble as a last step or wait for rumble watchdog timer to do it after few seconds.
-                    //Program.rootHub.DS4Controllers[device].setRumble(0, 0);
-
-                    // Phase8-Fix-MacroRepeatUnify（D2）: 旧 HoldMacro の 50ms 待ち（と macrodone の解除）は廃止した（待ち時間は SA の仕様に統一）
-                    // Per-macro-unit end handling: call EndMacro for this completed macro run
-                    try
-                    {
-                        // Clear iteration-running before end handling so logs show iteration completed
-                        if (actionDoneState != null)
-                        {
-                            try { lock (actionDoneState) { actionDoneState.IsMacroRunning = false; } } catch { }
-                        }
-
-                        if (!String.IsNullOrEmpty(macroStr))
-                            EndMacro(device, macrocontrol, macroStr, control);
-                        else if (macroLst != null)
-                            EndMacro(device, macrocontrol, macroLst, control);
-                        else if (macroArr != null)
-                            EndMacro(device, macrocontrol, macroArr, control);
-                        try { AppLogger.LogTrace($"PlayMacroTask MACRO EXECUTE END: action={action?.name} device={device} IsMacroRunning={(actionDoneState != null ? actionDoneState.IsMacroRunning : false)} IsBeingTriggered={(action != null ? ActionManager.IsBeingTriggered(action, device) : false)}"); } catch { }
-                    }
-                    catch { }
-
-                }
+                // 最初の 1 回は、IsMacroRunning を立てずに再生する（従来どおり）。
+                RunMacroOnce(device, macroLst, macroArr, keyType, action, actionDoneState, markRunning: false);
 
                 // Repeat-while-held handling: instead of re-dispatching a released edge (which may enqueue
                 // additional macro runs), perform repeat-in-place. After a macro run completes, check the
@@ -3232,63 +3055,8 @@ namespace DS4Windows
 
                         if (!keepRunning) break;
 
-                        // Mark iteration running for this inline repeat
-                        if (actionDoneState != null)
-                        {
-                            try { lock (actionDoneState) { actionDoneState.IsMacroRunning = true; } } catch { }
-                        }
-
-                        // Execute the macro sequence again inline
-                        bool[] keydown = new bool[512];
-                        if (macroLst != null)
-                        {
-                            for (int i = 0; i < macroLst.Count; i++)
-                            {
-                                int macroCodeValue = macroLst[i];
-                                if (PlayMacroCodeValue(device, macrocontrol, keyType, macroCodeValue, keydown))
-                                    Task.Delay(macroCodeValue - 300).Wait();
-                            }
-                        }
-                        else if (macroArr != null)
-                        {
-                            for (int i = 0; i < macroArr.Length; i++)
-                            {
-                                int macroCodeValue = macroArr[i];
-                                if (PlayMacroCodeValue(device, macrocontrol, keyType, macroCodeValue, keydown))
-                                    Task.Delay(macroCodeValue - 300).Wait();
-                            }
-                        }
-
-                        if (action == null || !action.keepKeyState)
-                        {
-                            for (int i = 0, arlength = keydown.Length; i < arlength; i++)
-                            {
-                                if (keydown[i])
-                                    PlayMacroCodeValue(device, macrocontrol, keyType, i, keydown);
-                            }
-
-                            DS4LightBar.forcedFlash[device] = 0;
-                            DS4LightBar.forcelight[device] = false;
-                        }
-
-                        // Per-macro-unit end handling for this iteration
-                        try
-                        {
-                            // Clear iteration-running so end/logging shows iteration completed
-                            if (actionDoneState != null)
-                            {
-                                try { lock (actionDoneState) { actionDoneState.IsMacroRunning = false; } } catch { }
-                            }
-
-                            if (!String.IsNullOrEmpty(macroStr))
-                                EndMacro(device, macrocontrol, macroStr, control);
-                            else if (macroLst != null)
-                                EndMacro(device, macrocontrol, macroLst, control);
-                            else if (macroArr != null)
-                                EndMacro(device, macrocontrol, macroArr, control);
-                            try { AppLogger.LogTrace($"PlayMacroTask MACRO EXECUTE END: action={action?.name} device={device} IsMacroRunning={(actionDoneState != null ? actionDoneState.IsMacroRunning : false)} IsBeingTriggered={(action != null ? ActionManager.IsBeingTriggered(action, device) : false)}"); } catch { }
-                        }
-                        catch { }
+                        // Execute the macro sequence again inline (the iteration is marked as running)
+                        RunMacroOnce(device, macroLst, macroArr, keyType, action, actionDoneState, markRunning: true);
 
                         // loop will check BeingTriggered again
                     }
@@ -3300,23 +3068,63 @@ namespace DS4Windows
                 {
                     try { lock (actionDoneState) { actionDoneState.IsMacroRunning = false; } } catch { }
                 }
-
-                // 暫定対策: PlayMacro の START GUARD で確保した control 単位の
-                // ディスパッチ中フラグを、このマクロ実行（1回の PlayMacroTask 呼び出し。
-                // HoldMacro/RepeatMacro の内部再実行ループも含む）の終了時に必ず解除する。
-                if (control != DS4Controls.None)
-                {
-                    try
-                    {
-                        _macroRuntime.EndDispatch(DS4ControltoInt(control));
-                    }
-                    catch { }
-                }
             }
             try { AppLogger.LogTrace($"PlayMacroTask END: action={action?.name} device={device} IsMacroRunning={(actionDoneState != null ? actionDoneState.IsMacroRunning : false)} IsBeingTriggered={(action != null ? ActionManager.IsBeingTriggered(action, device) : false)}"); } catch { }
         }
 
-        private bool PlayMacroCodeValue(int device, bool[] macrocontrol, DS4KeyType keyType, int macroCodeValue, bool[] keydown)
+        // Phase8-Fix-MacroRepeatUnify（D5）: 旧 PlayMacroTask の「最初の 1 回」と「繰り返しの 1 回」は、ほぼ同じコードが 2 つあったため、1 つにまとめた（挙動は同じ）。
+        // markRunning: 繰り返しの 1 回は、実行中に IsMacroRunning を立てる（最初の 1 回は、従来どおり立てない）。
+        private void RunMacroOnce(int device, List<int> macroLst, int[] macroArr, DS4KeyType keyType, SpecialAction action, ActionInstanceState actionDoneState, bool markRunning)
+        {
+            IList<int> steps = macroLst != null ? (IList<int>)macroLst : macroArr;
+
+            // Mark iteration running for this inline repeat
+            if (markRunning && actionDoneState != null)
+            {
+                try { lock (actionDoneState) { actionDoneState.IsMacroRunning = true; } } catch { }
+            }
+
+            bool[] keydown = new bool[512];
+
+            // Play macro codes and simulate key down/up events (note! The same key may go through several up and down events during the same macro).
+            // If the return value is TRUE then this method should do a asynchronized delay (the usual Thread.Sleep doesnt work here because it would block the main gamepad reading thread).
+            if (steps != null)
+            {
+                for (int i = 0; i < steps.Count; i++)
+                {
+                    int macroCodeValue = steps[i];
+                    if (PlayMacroCodeValue(device, keyType, macroCodeValue, keydown))
+                        Task.Delay(macroCodeValue - 300).Wait();
+                }
+            }
+
+            // The macro is finished. If any of the keys is still in down state then release a key state (ie. simulate key up event) unless special action specified to keep the last state as it is left in a macro
+            if (action == null || !action.keepKeyState)
+            {
+                for (int i = 0, arlength = keydown.Length; i < arlength; i++)
+                {
+                    if (keydown[i])
+                        PlayMacroCodeValue(device, keyType, i, keydown);
+                }
+
+                // Reset lightbar back to a default value (if the macro modified the color) because keepKeyState macro option was not set
+                DS4LightBar.forcedFlash[device] = 0;
+                DS4LightBar.forcelight[device] = false;
+            }
+
+            // Commented out rumble reset. No need to zero out rumble after a macro because it may conflict with a game generated rumble events (ie. macro would stop a game generated rumble effect).
+            // If macro generates rumble effects then the macro can stop the rumble as a last step or wait for rumble watchdog timer to do it after few seconds.
+            //Program.rootHub.DS4Controllers[device].setRumble(0, 0);
+
+            // Clear iteration-running so the log shows the iteration completed
+            if (actionDoneState != null)
+            {
+                try { lock (actionDoneState) { actionDoneState.IsMacroRunning = false; } } catch { }
+            }
+            try { AppLogger.LogTrace($"PlayMacroTask MACRO EXECUTE END: action={action?.name} device={device} IsMacroRunning={(actionDoneState != null ? actionDoneState.IsMacroRunning : false)} IsBeingTriggered={(action != null ? ActionManager.IsBeingTriggered(action, device) : false)}"); } catch { }
+        }
+
+        private bool PlayMacroCodeValue(int device, DS4KeyType keyType, int macroCodeValue, bool[] keydown)
         {
             // Phase6-Step3-6c（決定P2）: 非同期マクロ経路（別スレッド、ctrl を持たない連鎖）のため、Mapping が保持する profileSettings から読む。
             // Phase7-Step8 W2 で instance 化（コンストラクター注入）済み。この経路も instance の profileSettings を読む（Phase7c W3 でコメントを訂正）。
@@ -3478,24 +3286,6 @@ namespace DS4Windows
             }
 
             return doDelayOnCaller;
-        }
-
-        private void EndMacro(int device, bool[] macrocontrol, string macro, DS4Controls control)
-        {
-            if (control != DS4Controls.None)
-                macrodone[DS4ControltoInt(control)] = false;
-        }
-
-        private void EndMacro(int device, bool[] macrocontrol, List<int> macro, DS4Controls control)
-        {
-            if (control != DS4Controls.None)
-                macrodone[DS4ControltoInt(control)] = false;
-        }
-
-        private void EndMacro(int device, bool[] macrocontrol, int[] macro, DS4Controls control)
-        {
-            if (control != DS4Controls.None)
-                macrodone[DS4ControltoInt(control)] = false;
         }
 
         private double getMouseMapping(int device, DS4Controls control, DS4State cState, DS4StateExposed eState,

@@ -161,16 +161,13 @@ namespace DS4WindowsTests
         public void ActionsLoadedRuntimeReset_ResetsTheInjectedHolders()
         {
             var state = new SyntheticInputState();
-            var macro = new MacroRuntimeState();
             state.DeviceState[Device].keyPresses[Key] = new SyntheticState.KeyPresses();
             var oldGlobal = state.GlobalState;
-            macro.MacroDone[3] = true;
 
-            new ActionsLoadedRuntimeReset(state, macro).Reset();
+            new ActionsLoadedRuntimeReset(state).Reset();
 
             Assert.Empty(state.DeviceState[Device].keyPresses);
             Assert.NotSame(oldGlobal, state.GlobalState);
-            Assert.False(macro.MacroDone[3]);
         }
 
         [Fact]

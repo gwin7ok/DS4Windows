@@ -86,9 +86,10 @@ namespace DS4WindowsTests
 
             int state = reset.IndexOf("_syntheticInput.ResetAll();");
             int toggled = reset.IndexOf("ActionManager.ClearAllToggledOn();");
-            int macro = reset.IndexOf("_macroRuntime.ClearMacroDone();");
             int log = reset.IndexOf("Runtime synthetic state reset after Actions load");
-            Assert.True(state >= 0 && state < toggled && toggled < macro && macro < log);
+            // Phase8-Fix-MacroRepeatUnify（D5）: 旧 macrodone の解除（_macroRuntime.ClearMacroDone）は削除した
+            Assert.True(state >= 0 && state < toggled && toggled < log);
+            Assert.DoesNotContain("ClearMacroDone", reset);
         }
 
         [Fact]
