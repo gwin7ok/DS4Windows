@@ -347,3 +347,18 @@ Special Actions タブで種別ごとに作成し、プロファイルに有効�
 | P10-30 | Disconnect BT、Check Battery（押している間の色の遷移、離すと戻る）、Calibrate gyro、Calibrate sixaxis wheel が従来どおり動く | ○ |
 | P10-31 | Multi-action で、タップ・長押し・ダブルタップが、それぞれ別のマクロを実行する。ほかの SA が先にフレームを終えたときの挙動も従来どおり | ○ |
 | P10-32 | Controls タブの割り当て（Key、Button、Macro、Extras、Default、Unbound）と、SA の優先順位・抑制（SA が同じボタンの Controls の割り当てに勝つ）が従来どおり | ○ |
+
+## 18. Phase10-Step4 W3 の実機確認（2026-10-21）
+
+`Phase10-Step4-Plan.md` の W3（Controls の Macro に、SA 専用の 3 項目［Run on trigger release／Synchronized Run／Keep key state］を保存・実行・画面で編集できるようにした）の確認。
+
+| ID | 項目 | 結果 |
+|---|---|---|
+| P10-33 | Controls の Macro の割り当てエディターに、3 つのチェックボックス（Run on trigger release／Synchronized Run／Keep key state）が出る。SA のタブの Macro にも、従来どおり出る | |
+| P10-34 | 3 つとも外した Macro が、従来どおり動く（押したときに再生される）。保存した `Profile.xml` の `<Control>` に `<Special>` が増えない | |
+| P10-35 | Run on trigger release にチェックして保存すると、押している間は再生されず、**離した瞬間に 1 回だけ**再生される | |
+| P10-36 | Keep key state: キーを押すだけで離さないマクロ（例: `A` の押下のみ）で、チェックありは終了後もキーが押された状態、チェックなしは終了時に離される | |
+| P10-37 | 3 項目を保存し、プロファイルを保存→アプリの再起動（または別のプロファイルを選び直し）で、チェックの状態が残る。`<Special>` に書かれている | |
+| P10-38 | Cancel で、チェックの変更が捨てられる。Macro から別の種別（Key、Default）へ変えて保存すると、チェックの状態が残らない（再度 Macro にしてもすべて外れている） | |
+| P10-39 | Synchronized Run: チェックして保存し、再読み込みで状態が残る。動作に不具合がない（SA と同じ仕様で、Controls は 1 ボタン 1 マクロのため、違いは出にくい） | |
+| P10-40 | 既存の Controls（Key、Button、Default、Unbound、Extras）と、SA の全種別が従来どおり（W2 の確認の簡易版） | |

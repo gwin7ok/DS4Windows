@@ -122,6 +122,11 @@ namespace DS4WinWPF.DS4Forms.ViewModels
                     macro.Macro.Clear();
                     macro.Macro.AddRange(working.action.actionMacro ?? new int[0]);
                     macro.PlaybackOptions.LoadFrom(working.keyType);
+                    // Phase10-Step4 W3: Macro の SA 専用の 3 項目（型のある項目）。なければ、すべて偽
+                    ControlSpecialItem options = working.special != null && working.special.Type == SpecialAction.ActionTypeId.Macro ? working.special : null;
+                    macro.RunTriggerRelease = options != null && options.RunOnRelease;
+                    macro.SyncRun = options != null && options.Synchronized;
+                    macro.KeepKeyState = options != null && options.KeepKeyState;
                     macro.UpdateMacroString();
                     break;
             }
@@ -224,8 +229,16 @@ namespace DS4WinWPF.DS4Forms.ViewModels
 
         private void WriteMacro(MacroViewModel macro)
         {
-            // Macro の SA 専用の 3 項目は残す（画面で編集できるようにする Wave［Step4 W3］まで、この Wave では触らない）。別の種別の項目だったものは、捨てる
-            if (working.special != null && working.special.Type != SpecialAction.ActionTypeId.Macro) working.special = null;
+            // Phase10-Step4 W3: Macro の SA 専用の 3 項目を、型のある項目へ書く。1 つも立っていなければ、項目は持たない（従来の Macro と同じ形で保存される）
+            working.special = macro.RunTriggerRelease || macro.SyncRun || macro.KeepKeyState
+                ? new ControlSpecialItem
+                {
+                    Type = SpecialAction.ActionTypeId.Macro,
+                    RunOnRelease = macro.RunTriggerRelease,
+                    Synchronized = macro.SyncRun,
+                    KeepKeyState = macro.KeepKeyState,
+                }
+                : null;
             working.actionType = DS4ControlSettings.ActionType.Macro;
             working.action.actionMacro = macro.Macro.ToArray();
             // Phase8-Fix-MacroRepeatUnify（D1）: 「押している間繰り返す」は RepeatMacro だけで表す。Macro の印は、常に立てる

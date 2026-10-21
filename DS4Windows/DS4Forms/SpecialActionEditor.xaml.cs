@@ -216,11 +216,8 @@ namespace DS4WinWPF.DS4Forms
                 controlTarget.LoadInto(pressKeyVM, macroActVM);
                 specialActVM.ActionTypeIndex = controlTarget.InitialTypeIndex;
 
-                // Phase10-Step3 W3: Macro タブの SA 専用の項目は、Controls に保存する場所がないため、隠す。
-                // TODO(Phase10-Step4): 保存形式を拡張して、Controls にも保存できるようにしたら、出す（Phase10-Step3-Plan.md §3.5）
-                runTriggerReleaseChk.Visibility = Visibility.Collapsed;
-                syncRunChk.Visibility = Visibility.Collapsed;
-                keepKeyStateChk.Visibility = Visibility.Collapsed;
+                // Phase10-Step4 W3: Macro タブの SA 専用の項目（Run on trigger release／Synchronized Run／Keep key state）は、Controls にも保存できるようになったため、
+                // SA のモードと同じく出す（Step3 W3 までは、保存する場所がないため隠していた）
             }
 
             actionTypeTabControl.DataContext = specialActVM;

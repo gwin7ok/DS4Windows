@@ -6,8 +6,9 @@ using Xunit.Abstractions;
 namespace DS4WindowsTests
 {
     /// <summary>
-    /// Phase10-Step3 W3（Phase10-Step3-Plan.md §3.5）: Controls のモードの割り当てエディターは、Macro タブの SA 専用の項目
-    /// （Run on trigger release／Synchronized Run／Keep key state）を隠す（Controls に保存する場所がないため）。SA のモードでは、従来どおり出す。
+    /// Phase10-Step3 W3（Phase10-Step3-Plan.md §3.5）→ Phase10-Step4 W3 で更新: Macro タブの SA 専用の項目
+    /// （Run on trigger release／Synchronized Run／Keep key state）は、Step3 W3 では Controls のモードで隠していた（保存する場所がないため）。
+    /// Step4 W3 で、Controls にも保存できるようになったため、どちらのモードでも出す（隠すコードがないことを検査する）。
     /// ウィンドウは WPF の STA 上でしか作れないため、ソースの構成で検査する。ソースファイルが見つからない環境では、検査を行わず合格とする。
     /// </summary>
     public class Phase10Step3W3ControlMacroTabGuardTests
@@ -48,8 +49,9 @@ namespace DS4WindowsTests
         }
 
         [Fact]
-        public void TheControlMode_CollapsesThem_AndOnlyTheControlMode()
+        public void NoMode_CollapsesThem_SinceControlsCanSaveThemNow()
         {
+            // Phase10-Step4 W3: Controls にも保存できるようになったため、Controls のモードでも隠さない（Step3 W3 までは、保存する場所がなく、隠していた）
             string source = Read("DS4Windows/DS4Forms/SpecialActionEditor.xaml.cs");
             if (source == null)
             {
@@ -58,14 +60,7 @@ namespace DS4WindowsTests
 
             foreach (string name in SaOnlyCheckBoxes)
             {
-                string statement = name + ".Visibility = Visibility.Collapsed";
-                Assert.Single(Regex.Matches(source, Regex.Escape(statement)));
-
-                // if (controlMode) { ... } の中にある
-                int at = source.IndexOf(statement);
-                int branch = source.LastIndexOf("if (controlMode)", at);
-                Assert.True(branch >= 0, name + " が、controlMode の分岐の外にある");
-                Assert.DoesNotContain("else", source.Substring(branch, at - branch));
+                Assert.DoesNotContain(name + ".Visibility", source);
             }
         }
     }

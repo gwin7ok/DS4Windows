@@ -400,9 +400,17 @@ namespace DS4Windows.Services
             identity.keyType = dcs.keyType;
             identity.controls = identity.name;   // 同期実行のキューの識別子（RepeatMacro のマクロは、この名前ごとのキューで動く）。ボタンごとに別にする
 
+            // Phase10-Step4 W3: Macro の SA 専用の 3 項目（型のある項目。Run on trigger release／Synchronized Run／Keep key state）を、SA と同じ項目へ写す。
+            // 項目がなければ（従来の Macro）、すべて偽のまま。再生側（PlayMacro）は、SA と同じく synchronized／keepKeyState を見る
+            ControlSpecialItem options = dcs.special != null && dcs.special.Type == SpecialAction.ActionTypeId.Macro ? dcs.special : null;
+            identity.pressRelease = options != null && options.RunOnRelease;
+            identity.synchronized = options != null && options.Synchronized;
+            identity.keepKeyState = options != null && options.KeepKeyState;
+
             var policy = new BindingPolicy(respectsFreshPressGuard: true, suppressesTriggerButtons: false, resetsTriggerOutput: false,
                 erasesOutputEveryFrame: true);
-            result.Add(new TriggerBinding(new ControlButtonInputAction(identity.name, dcs.control, ControlBindingKind.Macro, ControlJudgement.Trigger),
+            result.Add(new TriggerBinding(new ControlButtonInputAction(identity.name, dcs.control, ControlBindingKind.Macro, ControlJudgement.Trigger,
+                    invertOnRelease: identity.pressRelease),
                 new IOutputAction[] { new MacroAction(identity, device, _macroPlayer) }, policy, identity, -1));
         }
 
