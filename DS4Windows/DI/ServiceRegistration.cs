@@ -160,6 +160,8 @@ namespace DS4Windows.DI
             services.AddSingleton<IActionRegistry, ActionBindingRegistry>();
             services.AddSingleton<ITriggerDispatchEngine, TriggerDispatchEngine>();
             // Phase8-Step5 W2（Q3＝A）: 束縛のビルダー。ProfileApplicationService は Func で遅延解決する（ビルダー → IProfileSwitcher → IProfileApplicationService の循環を避ける）
+            // Phase10-Step4 W2: 種別ごとの出力アクション・方針の作り方（SA タブの ActionBindingBuilder と、Controls タブの束縛を作る側［W3 以降］が共有する）
+            services.AddSingleton<ISpecialActionOutputFactory, SpecialActionOutputFactory>();
             services.AddSingleton<IActionBindingBuilder, ActionBindingBuilder>();
             services.AddSingleton<Func<IActionBindingBuilder>>(sp => () => sp.GetRequiredService<IActionBindingBuilder>());
             // Phase8-Step7 7.8a: Controls タブの束縛のビルダー（空の配線。区分ごとの組み立ては 7.8b 以降）

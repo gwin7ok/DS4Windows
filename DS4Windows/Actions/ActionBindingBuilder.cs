@@ -17,41 +17,32 @@ namespace DS4Windows.Actions
     {
         private readonly IProfileActionProvider _profileActions;
         private readonly IProfileSettingsService _profileSettings;
-        private readonly IManagedActionManager _manager;
-        private readonly IMacroPlayer _macroPlayer;
-        private readonly IProcessLauncher _processLauncher;
-        private readonly IProfileSwitcher _profileSwitcher;
-        private readonly ISpecialActionRepository _actionRepository;   // Key のログ（ActionEntries の数）用。省略可（テスト）
-        private readonly Func<IMapping> _mappingProvider;               // Profile の連鎖の防止（復帰の合図の参照）用。省略可（テスト）
-        private readonly IGyroCalibrationPort _gyroCalibration;         // GyroCalibrate（7.6a）。省略時（テスト）は束縛を作らず、旧経路が処理する
-        private readonly IControllerDisconnectPort _disconnectPort;     // DisconnectBT（7.6b）。省略時（テスト）は束縛を作らず、旧経路が処理する
-        private readonly IBatteryCheckPort _batteryCheckPort;           // BatteryCheck（7.6c）。省略時（テスト）は束縛を作らず、旧経路が処理する
-        private readonly IWheelCalibrationPort _wheelCalibrationPort;   // ステアリング較正（7.6d）。省略時（テスト）は束縛を作らず、旧経路が処理する
-        private readonly IMacroStringPlayer _macroStringPlayer;          // MultiAction（7.7b）。省略時（テスト）は束縛を作らず、旧経路が処理する
+        private readonly ISpecialActionOutputFactory _outputFactory;     // Phase10-Step4 W2: 種別ごとの出力アクション・方針の作り方（Controls タブの束縛を作る側と共有）
         private readonly IControlBindingBuilder _controlBuilder;         // Controls タブの束縛（7.8b）。省略時（テスト）は連結しない
 
+        /// <param name="outputFactory">
+        /// 種別ごとの出力と方針の作り方。省略時（テスト）は、同じ引数（窓口）から、この場で作る。DI からは、登録済みの共有のものが渡る。
+        /// 窓口の引数（<paramref name="actionRepository"/> 以降）は、<paramref name="outputFactory"/> を省略したときだけ使う。
+        /// </param>
         public ActionBindingBuilder(IProfileActionProvider profileActions, IProfileSettingsService profileSettings,
             IManagedActionManager manager, IMacroPlayer macroPlayer, IProcessLauncher processLauncher,
             IProfileSwitcher profileSwitcher, ISpecialActionRepository actionRepository = null,
             Func<IMapping> mappingProvider = null, IGyroCalibrationPort gyroCalibration = null,
             IControllerDisconnectPort disconnectPort = null, IBatteryCheckPort batteryCheckPort = null,
             IWheelCalibrationPort wheelCalibrationPort = null, IMacroStringPlayer macroStringPlayer = null,
-            IControlBindingBuilder controlBuilder = null)
+            IControlBindingBuilder controlBuilder = null, ISpecialActionOutputFactory outputFactory = null)
         {
-            _actionRepository = actionRepository;
-            _mappingProvider = mappingProvider;
-            _gyroCalibration = gyroCalibration;
-            _disconnectPort = disconnectPort;
-            _batteryCheckPort = batteryCheckPort;
-            _wheelCalibrationPort = wheelCalibrationPort;
-            _macroStringPlayer = macroStringPlayer;
             _controlBuilder = controlBuilder;
             _profileActions = profileActions ?? throw new ArgumentNullException(nameof(profileActions));
             _profileSettings = profileSettings ?? throw new ArgumentNullException(nameof(profileSettings));
-            _manager = manager ?? throw new ArgumentNullException(nameof(manager));
-            _macroPlayer = macroPlayer ?? throw new ArgumentNullException(nameof(macroPlayer));
-            _processLauncher = processLauncher ?? throw new ArgumentNullException(nameof(processLauncher));
-            _profileSwitcher = profileSwitcher ?? throw new ArgumentNullException(nameof(profileSwitcher));
+            if (manager == null) throw new ArgumentNullException(nameof(manager));
+            if (macroPlayer == null) throw new ArgumentNullException(nameof(macroPlayer));
+            if (processLauncher == null) throw new ArgumentNullException(nameof(processLauncher));
+            if (profileSwitcher == null) throw new ArgumentNullException(nameof(profileSwitcher));
+
+            _outputFactory = outputFactory ?? new SpecialActionOutputFactory(profileSettings, manager, macroPlayer, processLauncher,
+                profileSwitcher, actionRepository, mappingProvider, gyroCalibration, disconnectPort, batteryCheckPort,
+                wheelCalibrationPort, macroStringPlayer);
         }
 
         public IReadOnlyList<IActionBinding> Build(int device)
@@ -92,82 +83,15 @@ namespace DS4Windows.Actions
             // トリガーのボタンがない特殊アクションは、旧経路でも成立しない。束縛を作らない
             if (sa.trigger == null || sa.trigger.Count == 0) return null;
 
-            switch (sa.typeID)
-            {
-                case SpecialAction.ActionTypeId.Button:
-                {
-                    // 設計書 §6: Press は Fresh-press ガードを見ない／Toggle は見る（Stage3 の ButtonSpecialActionOutput と同じ規則）
-                    bool toggle = sa.KeyButtonSwitchMode.HasValue && sa.KeyButtonSwitchMode.Value == SpecialAction.KeyButtonSwitchModeEnum.Toggle;
-                    return new TriggerBinding(Input(sa, false), new IOutputAction[] { new ButtonOutputAction(sa, InterpretButton(sa), _manager) },
-                        new BindingPolicy(respectsFreshPressGuard: toggle), sa, index);
-                }
+            // Phase10-Step4 W2: 種別ごとの出力アクションと方針は、共通の部品が作る（動作は変えない）。未対応の種別・窓口が未接続の種別は null（旧経路が処理する）
+            SpecialActionOutputs outputs = _outputFactory.Create(device, sa, index);
+            if (outputs == null) return null;
 
-                case SpecialAction.ActionTypeId.Key:
-                    return new TriggerBinding(Input(sa, false), new IOutputAction[] { new KeyOutputAction(sa, InterpretKey(sa), _profileSettings, index, _actionRepository) },
-                        BindingPolicy.Default, sa, index);
-
-                case SpecialAction.ActionTypeId.Macro:
-                    return new TriggerBinding(Input(sa, sa.pressRelease), new IOutputAction[] { new MacroAction(sa, device, _macroPlayer, index, _actionRepository) },
-                        BindingPolicy.Default, sa, index);
-
-                case SpecialAction.ActionTypeId.Program:
-                    return new TriggerBinding(Input(sa, false), new IOutputAction[] { new LaunchProcessAction(sa, _processLauncher, index, _actionRepository) },
-                        new BindingPolicy(blocksWhileExecuting: true), sa, index);
-
-                case SpecialAction.ActionTypeId.Profile:
-                {
-                    // Phase8-Step8 8b（ユーザー承認、2026-10-20）: 解除トリガー（uTrigger）のボタンによる復帰は、機能廃止（規約 2.2）。UI から作れず
-                    // （a7277da9 で「Set Unload Trigger」を削除）、旧データ（Actions.xml）にだけ残っていた。uTrigger を持つ Profile も束縛を作り、
-                    // 切替は行う。復帰は、自動（AutomaticUntrigger）のときだけ。uTrigger の値は読み込みも保存もそのまま（ファイルは変えない）。
-                    UntriggerPolicy untrigger = sa.automaticUntrigger ? UntriggerPolicy.Automatic : UntriggerPolicy.None;
-                    return new TriggerBinding(Input(sa, false), new IOutputAction[] { new ProfileSwitchAction(sa, device, _profileSwitcher, index, _actionRepository, _profileSettings, _mappingProvider) },
-                        new BindingPolicy(blocksWhileExecuting: true, untrigger: untrigger,
-                            stopOnRelease: untrigger == UntriggerPolicy.None), sa, index);   // 復帰を持つ Profile は、離したエッジの Stop を呼ばない。復帰は ProcessUntrigger だけが担う（二重の復帰を防ぐ。Q4）
-                }
-
-                case SpecialAction.ActionTypeId.GyroCalibrate:
-                    // 立ち上がりの 1 回だけ。Fresh-press ガードは既定のまま（旧経路の独自の判定と同じ効果）。実行中のブロックなし
-                    if (_gyroCalibration == null) return null;
-                    return new TriggerBinding(Input(sa, false), new IOutputAction[] { new GyroCalibrateAction(sa, device, _gyroCalibration, index, _actionRepository) },
-                        BindingPolicy.Default, sa, index);
-
-                case SpecialAction.ActionTypeId.DisconnectBT:
-                    // 切断の要求が成功するまで、押している間は再試行する（Q3＝B）。Fresh-press ガードは既定のまま。実行中のブロックなし
-                    if (_disconnectPort == null) return null;
-                    return new TriggerBinding(Input(sa, false), new IOutputAction[] { new DisconnectBTAction(sa, device, _disconnectPort, _profileSettings) },
-                        BindingPolicy.Default, sa, index);
-
-                case SpecialAction.ActionTypeId.BatteryCheck:
-                    // 押している間、毎フレームの色の遷移。離したときに戻す（既定の StopOnRelease）。Fresh-press ガードは既定のまま。実行中のブロックなし
-                    if (_batteryCheckPort == null) return null;
-                    return new TriggerBinding(Input(sa, false), new IOutputAction[] { new BatteryCheckAction(sa, device, _batteryCheckPort, index, _actionRepository) },
-                        BindingPolicy.Default, sa, index);
-
-                case SpecialAction.ActionTypeId.SASteeringWheelEmulationCalibrate:
-                    // 押している間、毎フレーム判定する（立ち上がりも含む）。Fresh-press ガードは既定のまま。実行中のブロックなし
-                    if (_wheelCalibrationPort == null) return null;
-                    return new TriggerBinding(Input(sa, false), new IOutputAction[] { new SteeringWheelCalibrateAction(sa, device, _wheelCalibrationPort) },
-                        BindingPolicy.Default, sa, index);
-
-                case SpecialAction.ActionTypeId.MultiAction:
-                {
-                    // 独立した入力アクション（タップ・長押し・ダブルタップを Gesture で返す）。Fresh-press ガードを見ない。出力の Stop は不要（旧経路になし）。
-                    // 「どのジェスチャーでどのマクロか」の対応は、ここ（変換層）で決める: details を「,」で分けた 3 つ（タップ、長押し、ダブルタップの順。足りなければ空）から、
-                    // ジェスチャーごとの出力を 3 つそろえて作る（添字を固定するため、空でも作る）。エンジンが Outputs[Gesture - 1] を実行する（BindingPolicy.RoutesOutputsByGesture）
-                    if (_macroStringPlayer == null) return null;
-
-                    string[] macros = (sa.details ?? string.Empty).Split(',');
-                    var gestureOutputs = new IOutputAction[3];
-                    for (int g = 0; g < gestureOutputs.Length; g++)
-                        gestureOutputs[g] = new MacroStringAction(sa, device, g < macros.Length ? macros[g] : string.Empty, _macroStringPlayer);
-
-                    return new TriggerBinding(new MultiTapInputAction(sa.name, sa.trigger, _profileSettings, sa.delayTime), gestureOutputs,
-                        new BindingPolicy(respectsFreshPressGuard: false, stopOnRelease: false, routesOutputsByGesture: true), sa, index);
-                }
-
-                default:
-                    return null;
-            }
+            // 入力は、SA 側が作る（複数ボタンの組み合わせ。MultiAction だけは、タップ・長押し・ダブルタップを判定する独立した入力）
+            IInputAction input = outputs.IsMultiTap
+                ? (IInputAction)new MultiTapInputAction(sa.name, sa.trigger, _profileSettings, sa.delayTime)
+                : Input(sa, outputs.InvertOnRelease);
+            return new TriggerBinding(input, outputs.Outputs, outputs.Policy, sa, index);
         }
 
         /// <summary>
