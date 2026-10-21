@@ -54,7 +54,8 @@ namespace DS4WindowsTests
                 syntheticDispatcher ?? new SyntheticDispatcherService(synthetic, TestHost.GetService<OutputKBMHandlerAdapter>(), profileSettings),
                 () => TestHost.GetService<IDeviceStateAccessor>(),
                 triggerEngine,
-                TestHost.GetService<IStickDeadZoneProcessor>());   // Phase9 9-A(1) (b): 状態のない処理なので、ホストの共有のものを使う
+                TestHost.GetService<IStickDeadZoneProcessor>(),   // Phase9 9-A(1) (b): 状態のない処理なので、ホストの共有のものを使う
+                TestHost.GetService<IOutputCurveProcessor>());   // Phase9 9-A(1) (c)
         }
     }
 }

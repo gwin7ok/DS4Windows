@@ -182,6 +182,7 @@ namespace DS4Windows.DI
             // Phase7-Step8 W2（Q1＝A・Q4＝A・Q8＝A）: 入力の評価の窓口（Singleton）。Mapping は IDeviceStateAccessor（＝ControlService）を遅延で受け、
             // DefaultActionManager／DefaultMacroPlayer は Func<IMapping> で受ける（ホスト構築時に Mapping とその依存を作らないため。Phase5-Plan §5.4）。
             services.AddSingleton<IStickDeadZoneProcessor, StickDeadZoneProcessor>();   // Phase9 9-A(1) (b): スティックのデッドゾーンの補正（状態なし）
+            services.AddSingleton<IOutputCurveProcessor, OutputCurveProcessor>();   // Phase9 9-A(1) (c): スクエアスティックと出力カーブ（状態なし）
             services.AddSingleton<IMapping, Mapping>();
             services.AddSingleton<Func<IMapping>>(sp => () => sp.GetRequiredService<IMapping>());
             services.AddSingleton<Func<IDeviceStateAccessor>>(sp => () => sp.GetRequiredService<IDeviceStateAccessor>());

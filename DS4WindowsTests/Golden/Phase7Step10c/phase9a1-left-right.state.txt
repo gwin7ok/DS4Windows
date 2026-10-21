@@ -26,6 +26,35 @@
 ## stick radial dz10 out-curve-5: 差なし
 ## stick radial dz10 rotation-30: 差なし
 ## stick radial dz10 rotation-minus-45: 差なし
+## stick axial dz10 out-curve-1: 差なし
+## stick axial dz10 out-curve-2: 差なし
+## stick axial dz10 out-curve-3: 差なし
+## stick axial dz10 out-curve-4: 差なし
+## stick axial dz10 out-curve-5: 差なし
+## stick Radial dz10 out-curve-6-bezier: 64 点で差
+  1,128: L 15,128 R 0,128
+  1,129: L 15,128 R 0,128
+  32,64: L 65,86 R 21,58
+  32,100: L 73,112 R 8,94
+  32,127: L 74,127 R 5,126
+## stick Axial dz10 out-curve-6-bezier: 129 点で差
+  0,0: L 0,30 R 0,0
+  0,1: L 0,30 R 0,0
+  0,32: L 0,70 R 0,4
+  0,64: L 0,97 R 0,27
+  0,100: L 0,118 R 0,99
+## stick radial dz10 square-left-only out-curve-2: 123 点で差
+  0,1: L 0,0 R 0,1
+  0,32: L 0,0 R 0,33
+  0,64: L 0,49 R 0,66
+  0,100: L 0,100 R 0,101
+  0,127: L 0,126 R 0,127
+## stick axial dz10 square-right-only: 76 点で差
+  0,0: L 0,4 R 0,0
+  0,1: L 0,4 R 0,0
+  0,32: L 0,29 R 0,0
+  0,64: L 0,65 R 0,47
+  0,100: L 0,106 R 0,105
 ## trigger none (L2 と R2): 差なし
 ## trigger dz20 (L2 と R2): 差なし
 ## trigger dz20-anti10 (L2 と R2): 差なし
@@ -40,3 +69,4 @@
 ## trigger out-curve-4 (L2 と R2): 差なし
 ## trigger out-curve-5 (L2 と R2): 差なし
 ## trigger dz20-anti10-max90 out-curve-2 (L2 と R2): 差なし
+## trigger out-curve-6-bezier (L2 と R2): 7 点で差

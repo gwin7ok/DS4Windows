@@ -123,7 +123,8 @@ namespace DS4Windows
             DS4Windows.DI.ISyntheticDispatcher syntheticDispatcher,
             Func<IDeviceStateAccessor> deviceStateAccessor,
             DS4Windows.Actions.ITriggerDispatchEngine triggerEngine,
-            DS4Windows.DI.IStickDeadZoneProcessor stickDeadZone)
+            DS4Windows.DI.IStickDeadZoneProcessor stickDeadZone,
+            DS4Windows.DI.IOutputCurveProcessor outputCurve)
         {
             _syntheticInput = syntheticInput ?? throw new ArgumentNullException(nameof(syntheticInput));
             _macroRuntime = macroRuntime ?? throw new ArgumentNullException(nameof(macroRuntime));
@@ -138,6 +139,7 @@ namespace DS4Windows
             _deviceStateAccessor = deviceStateAccessor ?? throw new ArgumentNullException(nameof(deviceStateAccessor));
             _engine = triggerEngine ?? throw new ArgumentNullException(nameof(triggerEngine));
             _stickDeadZone = stickDeadZone ?? throw new ArgumentNullException(nameof(stickDeadZone));
+            _outputCurve = outputCurve ?? throw new ArgumentNullException(nameof(outputCurve));
 
             _triggerInputs = new DS4Windows.Actions.TriggerInput[ControllerLimits.MaxControllerCount];
             _frameOutputs = new DS4Windows.Actions.FrameOutput[ControllerLimits.MaxControllerCount];
@@ -170,85 +172,7 @@ namespace DS4Windows
         // GetOrCreateKeyButtonController／ClearKeyButtonControllersForDevice）は KeyButtonControllerRegistry へ移した。
 
 
-        struct DS4Vector2
-        {
-            public double x;
-            public double y;
-
-            public DS4Vector2(double x, double y)
-            {
-                this.x = x;
-                this.y = y;
-            }
-        }
-
-        class DS4SquareStick
-        {
-            public DS4Vector2 current;
-            public DS4Vector2 squared;
-
-            public DS4SquareStick()
-            {
-                current = new DS4Vector2(0.0, 0.0);
-                squared = new DS4Vector2(0.0, 0.0);
-            }
-
-            // Modification of squared stick routine documented
-            // at http://theinstructionlimit.com/squaring-the-thumbsticks
-            public void CircleToSquare(double roundness)
-            {
-                const double PiOverFour = Math.PI / 4.0;
-
-                // Determine the theta angle
-                double angle = Math.Atan2(current.y, -current.x);
-                angle += Math.PI;
-                double cosAng = Math.Cos(angle);
-                // Scale according to which wall we're clamping to
-                // X+ wall
-                if (angle <= PiOverFour || angle > 7.0 * PiOverFour)
-                {
-                    double tempVal = 1.0 / cosAng;
-                    //Console.WriteLine("1 ANG: {0} | TEMP: {1}", angle, tempVal);
-                    squared.x = current.x * tempVal;
-                    squared.y = current.y * tempVal;
-                }
-                // Y+ wall
-                else if (angle > PiOverFour && angle <= 3.0 * PiOverFour)
-                {
-                    double tempVal = 1.0 / Math.Sin(angle);
-                    //Console.WriteLine("2 ANG: {0} | TEMP: {1}", angle, tempVal);
-                    squared.x = current.x * tempVal;
-                    squared.y = current.y * tempVal;
-                }
-                // X- wall
-                else if (angle > 3.0 * PiOverFour && angle <= 5.0 * PiOverFour)
-                {
-                    double tempVal = -1.0 / cosAng;
-                    //Console.WriteLine("3 ANG: {0} | TEMP: {1}", angle, tempVal);
-                    squared.x = current.x * tempVal;
-                    squared.y = current.y * tempVal;
-                }
-                // Y- wall
-                else if (angle > 5.0 * PiOverFour && angle <= 7.0 * PiOverFour)
-                {
-                    double tempVal = -1.0 / Math.Sin(angle);
-                    //Console.WriteLine("4 ANG: {0} | TEMP: {1}", angle, tempVal);
-                    squared.x = current.x * tempVal;
-                    squared.y = current.y * tempVal;
-                }
-                else return;
-
-                //double lengthOld = Math.Sqrt((x * x) + (y * y));
-                double length = current.x / cosAng;
-                //Console.WriteLine("LENGTH TEST ({0}) ({1}) {2}", lengthOld, length, (lengthOld == length).ToString());
-                double factor = Math.Pow(length, roundness);
-                //double ogX = current.x, ogY = current.y;
-                current.x += (squared.x - current.x) * factor;
-                current.y += (squared.y - current.y) * factor;
-                //Console.WriteLine("INPUT: {0} {1} | {2} {3} | {4} {5} | {6} {7}",
-                //    ogX, ogY, current.x, current.y, squared.x, squared.y, length, factor);
-            }
-        }
+        // Phase9 9-A(1) (c): 旧 DS4Vector2／DS4SquareStick（スクエアスティックの作業用）は、OutputCurveProcessor（DS4Control/Services）へ移した（ローカル変数で計算する）。
 
         public struct DS4TimedStickAxisValue
         {
@@ -274,13 +198,6 @@ namespace DS4Windows
             new Queue<DS4TimedStickAxisValue>[2] { new Queue<DS4TimedStickAxisValue>(), new Queue<DS4TimedStickAxisValue>() },
             new Queue<DS4TimedStickAxisValue>[2] { new Queue<DS4TimedStickAxisValue>(), new Queue<DS4TimedStickAxisValue>() },
             new Queue<DS4TimedStickAxisValue>[2] { new Queue<DS4TimedStickAxisValue>(), new Queue<DS4TimedStickAxisValue>() }
-        };
-
-        private DS4SquareStick[] outSqrStk = new DS4SquareStick[ControllerLimits.TestProfileItemCount]
-        {
-            new DS4SquareStick(), new DS4SquareStick(), new DS4SquareStick(), new DS4SquareStick(),
-            new DS4SquareStick(), new DS4SquareStick(), new DS4SquareStick(), new DS4SquareStick(),
-            new DS4SquareStick(),
         };
 
         // Phase7-Step7 W4（Q2＝A・Q3＝A）: 外から触られるスティック・ジャイロ・トリガーの処理状態（gyroStickX／gyroStickY／mapStickActionData／
@@ -378,6 +295,7 @@ namespace DS4Windows
         // 新旧の経路が別々の集合を持つと、通常の割り当ての抑制が食い違うため（Phase8-Step2-Design.md §23.3）。
         private readonly DS4Windows.Actions.ITriggerDispatchEngine _engine;
         private readonly DS4Windows.DI.IStickDeadZoneProcessor _stickDeadZone;   // Phase9 9-A(1) (b): 左右のスティックのデッドゾーン（共通の処理）
+        private readonly DS4Windows.DI.IOutputCurveProcessor _outputCurve;   // Phase9 9-A(1) (c): スクエアスティックと出力カーブ（スティック、トリガー。共通の処理）
 
         // Phase8-Step4 W4: デバイスごとのトリガー判定の入力（毎フレーム MapCustom の先頭で更新する）と、フレームの出力への書き込み口。
         // 遅延の基準時刻（旧 nowAction／oldnowAction）は、_triggerInputs[device].Delay に置き換わった。
@@ -810,384 +728,28 @@ namespace DS4Windows
                 dState.R2 = (byte)NumericUtil.Clamp(0, r2Sens * dState.R2, 255);
 
             SquareStickInfo squStk = settings.SquStickInfo[device];
+            // Phase9 9-A(1) (c): スクエアスティックと出力カーブは IOutputCurveProcessor へ切り出した（左右・L2／R2 は同じ処理）。条件の判定は、ここに残す
             if (squStk.lsMode && (dState.LX != 128 || dState.LY != 128))
-            {
-                double capX = dState.LX >= 128 ? 127.0 : 128.0;
-                double capY = dState.LY >= 128 ? 127.0 : 128.0;
-                double tempX = (dState.LX - 128.0) / capX;
-                double tempY = (dState.LY - 128.0) / capY;
-                DS4SquareStick sqstick = outSqrStk[device];
-                sqstick.current.x = tempX; sqstick.current.y = tempY;
-                sqstick.CircleToSquare(squStk.lsRoundness);
-                //Console.WriteLine("Input ({0}) | Output ({1})", tempY, sqstick.current.y);
-                tempX = sqstick.current.x < -1.0 ? -1.0 : sqstick.current.x > 1.0
-                    ? 1.0 : sqstick.current.x;
-                tempY = sqstick.current.y < -1.0 ? -1.0 : sqstick.current.y > 1.0
-                    ? 1.0 : sqstick.current.y;
-                dState.LX = (byte)(tempX * capX + 128.0);
-                dState.LY = (byte)(tempY * capY + 128.0);
-            }
+                _outputCurve.ProcessSquareStick(squStk.lsRoundness, ref dState.LX, ref dState.LY);
 
             int lsOutCurveMode = settings.GetLsOutCurveMode(device);
             if (lsOutCurveMode > 0 && (dState.LX != 128 || dState.LY != 128))
-            {
-                double tempRatioX = 0.0, tempRatioY = 0.0;
-                double capX = 0.0, capY = 0.0;
-                if (lsMod.deadzoneType == StickDeadZoneInfo.DeadZoneType.Radial)
-                {
-                    double r = Math.Atan2(-(dState.LY - 128.0), (dState.LX - 128.0));
-                    double maxOutXRatio = Math.Abs(Math.Cos(r));
-                    double maxOutYRatio = Math.Abs(Math.Sin(r));
-                    double sideX = dState.LX - 128; double sideY = dState.LY - 128.0;
-                    capX = dState.LX >= 128 ? maxOutXRatio * 127.0 : maxOutXRatio * 128.0;
-                    capY = dState.LY >= 128 ? maxOutYRatio * 127.0 : maxOutYRatio * 128.0;
-                    double absSideX = Math.Abs(sideX); double absSideY = Math.Abs(sideY);
-                    if (absSideX > capX) capX = absSideX;
-                    if (absSideY > capY) capY = absSideY;
-                    tempRatioX = capX > 0 ? (dState.LX - 128.0) / capX : 0;
-                    tempRatioY = capY > 0 ? (dState.LY - 128.0) / capY : 0;
-                }
-                else if (lsMod.deadzoneType == StickDeadZoneInfo.DeadZoneType.Axial)
-                {
-                    capX = dState.LX >= 128 ? 127.0 : 128.0;
-                    capY = dState.LY >= 128 ? 127.0 : 128.0;
-                    tempRatioX = (dState.LX - 128.0) / capX;
-                    tempRatioY = (dState.LY - 128.0) / capY;
-                }
-
-                double signX = tempRatioX >= 0.0 ? 1.0 : -1.0;
-                double signY = tempRatioY >= 0.0 ? 1.0 : -1.0;
-
-                if (lsOutCurveMode == 1)
-                {
-                    double absX = Math.Abs(tempRatioX);
-                    double absY = Math.Abs(tempRatioY);
-                    double outputX = 0.0;
-                    double outputY = 0.0;
-
-                    if (absX <= 0.4)
-                    {
-                        outputX = 0.8 * absX;
-                    }
-                    else if (absX <= 0.75)
-                    {
-                        outputX = absX - 0.08;
-                    }
-                    else if (absX > 0.75)
-                    {
-                        outputX = (absX * 1.32) - 0.32;
-                    }
-
-                    if (absY <= 0.4)
-                    {
-                        outputY = 0.8 * absY;
-                    }
-                    else if (absY <= 0.75)
-                    {
-                        outputY = absY - 0.08;
-                    }
-                    else if (absY > 0.75)
-                    {
-                        outputY = (absY * 1.32) - 0.32;
-                    }
-
-                    dState.LX = (byte)(outputX * signX * capX + 128.0);
-                    dState.LY = (byte)(outputY * signY * capY + 128.0);
-                }
-                else if (lsOutCurveMode == 2)
-                {
-                    double outputX = tempRatioX * tempRatioX;
-                    double outputY = tempRatioY * tempRatioY;
-                    dState.LX = (byte)(outputX * signX * capX + 128.0);
-                    dState.LY = (byte)(outputY * signY * capY + 128.0);
-                }
-                else if (lsOutCurveMode == 3)
-                {
-                    double outputX = tempRatioX * tempRatioX * tempRatioX;
-                    double outputY = tempRatioY * tempRatioY * tempRatioY;
-                    dState.LX = (byte)(outputX * capX + 128.0);
-                    dState.LY = (byte)(outputY * capY + 128.0);
-                }
-                else if (lsOutCurveMode == 4)
-                {
-                    double absX = Math.Abs(tempRatioX);
-                    double absY = Math.Abs(tempRatioY);
-                    double outputX = absX * (absX - 2.0);
-                    double outputY = absY * (absY - 2.0);
-                    dState.LX = (byte)(-1.0 * outputX * signX * capX + 128.0);
-                    dState.LY = (byte)(-1.0 * outputY * signY * capY + 128.0);
-                }
-                else if (lsOutCurveMode == 5)
-                {
-                    double innerX = Math.Abs(tempRatioX) - 1.0;
-                    double innerY = Math.Abs(tempRatioY) - 1.0;
-                    double outputX = innerX * innerX * innerX + 1.0;
-                    double outputY = innerY * innerY * innerY + 1.0;
-                    dState.LX = (byte)(1.0 * outputX * signX * capX + 128.0);
-                    dState.LY = (byte)(1.0 * outputY * signY * capY + 128.0);
-                }
-                else if (lsOutCurveMode == 6)
-                {
-                    if (lsMod.deadzoneType == StickDeadZoneInfo.DeadZoneType.Radial)
-                    {
-                        // Get max values and circular distance of axes
-                        double maxX = (dState.LX >= 128 ? 127 : 128);
-                        double maxY = (dState.LY >= 128 ? 127 : 128);
-                        byte tempOutX = (byte)(tempRatioX * maxX + 128.0);
-                        byte tempOutY = (byte)(tempRatioY * maxY + 128.0);
-
-                        // Perform curve based on byte values from vector
-                        byte tempX = settings.LsOutBezierCurveObj[device].arrayBezierLUT[tempOutX];
-                        byte tempY = settings.LsOutBezierCurveObj[device].arrayBezierLUT[tempOutY];
-
-                        // Calculate new ratio
-                        double tempRatioOutX = (tempX - 128.0) / maxX;
-                        double tempRatioOutY = (tempY - 128.0) / maxY;
-
-                        // Map back to stick coordinates
-                        dState.LX = (byte)(tempRatioOutX * capX + 128);
-                        dState.LY = (byte)(tempRatioOutY * capY + 128);
-                        //Console.WriteLine("X(I){0} X(O){1} {2} {3}", tempOutX, dState.LX, tempOutY, dState.LY);
-                    }
-                    else if (lsMod.deadzoneType == StickDeadZoneInfo.DeadZoneType.Axial)
-                    {
-                        dState.LX = settings.LsOutBezierCurveObj[device].arrayBezierLUT[dState.LX];
-                        dState.LY = settings.LsOutBezierCurveObj[device].arrayBezierLUT[dState.LY];
-                    }
-                }
-            }
+                _outputCurve.ProcessStickCurve(lsOutCurveMode, lsMod.deadzoneType, settings.LsOutBezierCurveObj[device], ref dState.LX, ref dState.LY);
 
             if (squStk.rsMode && (dState.RX != 128 || dState.RY != 128))
-            {
-                double capX = dState.RX >= 128 ? 127.0 : 128.0;
-                double capY = dState.RY >= 128 ? 127.0 : 128.0;
-                double tempX = (dState.RX - 128.0) / capX;
-                double tempY = (dState.RY - 128.0) / capY;
-                DS4SquareStick sqstick = outSqrStk[device];
-                sqstick.current.x = tempX; sqstick.current.y = tempY;
-                sqstick.CircleToSquare(squStk.rsRoundness);
-                tempX = sqstick.current.x < -1.0 ? -1.0 : sqstick.current.x > 1.0
-                    ? 1.0 : sqstick.current.x;
-                tempY = sqstick.current.y < -1.0 ? -1.0 : sqstick.current.y > 1.0
-                    ? 1.0 : sqstick.current.y;
-                //Console.WriteLine("Input ({0}) | Output ({1})", tempY, sqstick.current.y);
-                dState.RX = (byte)(tempX * capX + 128.0);
-                dState.RY = (byte)(tempY * capY + 128.0);
-            }
+                _outputCurve.ProcessSquareStick(squStk.rsRoundness, ref dState.RX, ref dState.RY);
 
             int rsOutCurveMode = settings.GetRsOutCurveMode(device);
             if (rsOutCurveMode > 0 && (dState.RX != 128 || dState.RY != 128))
-            {
-                double tempRatioX = 0.0, tempRatioY = 0.0;
-                double capX = 0.0, capY = 0.0;
-                if (rsMod.deadzoneType == StickDeadZoneInfo.DeadZoneType.Radial)
-                {
-                    double r = Math.Atan2(-(dState.RY - 128.0), (dState.RX - 128.0));
-                    double maxOutXRatio = Math.Abs(Math.Cos(r));
-                    double maxOutYRatio = Math.Abs(Math.Sin(r));
-                    double sideX = dState.RX - 128; double sideY = dState.RY - 128.0;
-                    capX = dState.RX >= 128 ? maxOutXRatio * 127.0 : maxOutXRatio * 128.0;
-                    capY = dState.RY >= 128 ? maxOutYRatio * 127.0 : maxOutYRatio * 128.0;
-                    double absSideX = Math.Abs(sideX); double absSideY = Math.Abs(sideY);
-                    if (absSideX > capX) capX = absSideX;
-                    if (absSideY > capY) capY = absSideY;
-                    tempRatioX = capX > 0 ? (dState.RX - 128.0) / capX : 0;
-                    tempRatioY = capY > 0 ? (dState.RY - 128.0) / capY : 0;
-                }
-                else if (rsMod.deadzoneType == StickDeadZoneInfo.DeadZoneType.Axial)
-                {
-                    capX = dState.RX >= 128 ? 127.0 : 128.0;
-                    capY = dState.RY >= 128 ? 127.0 : 128.0;
-                    tempRatioX = (dState.RX - 128.0) / capX;
-                    tempRatioY = (dState.RY - 128.0) / capY;
-                }
-
-                double signX = tempRatioX >= 0.0 ? 1.0 : -1.0;
-                double signY = tempRatioY >= 0.0 ? 1.0 : -1.0;
-
-                if (rsOutCurveMode == 1)
-                {
-                    double absX = Math.Abs(tempRatioX);
-                    double absY = Math.Abs(tempRatioY);
-                    double outputX = 0.0;
-                    double outputY = 0.0;
-
-                    if (absX <= 0.4)
-                    {
-                        outputX = 0.8 * absX;
-                    }
-                    else if (absX <= 0.75)
-                    {
-                        outputX = absX - 0.08;
-                    }
-                    else if (absX > 0.75)
-                    {
-                        outputX = (absX * 1.32) - 0.32;
-                    }
-
-                    if (absY <= 0.4)
-                    {
-                        outputY = 0.8 * absY;
-                    }
-                    else if (absY <= 0.75)
-                    {
-                        outputY = absY - 0.08;
-                    }
-                    else if (absY > 0.75)
-                    {
-                        outputY = (absY * 1.32) - 0.32;
-                    }
-
-                    dState.RX = (byte)(outputX * signX * capX + 128.0);
-                    dState.RY = (byte)(outputY * signY * capY + 128.0);
-                }
-                else if (rsOutCurveMode == 2)
-                {
-                    double outputX = tempRatioX * tempRatioX;
-                    double outputY = tempRatioY * tempRatioY;
-                    dState.RX = (byte)(outputX * signX * capX + 128.0);
-                    dState.RY = (byte)(outputY * signY * capY + 128.0);
-                }
-                else if (rsOutCurveMode == 3)
-                {
-                    double outputX = tempRatioX * tempRatioX * tempRatioX;
-                    double outputY = tempRatioY * tempRatioY * tempRatioY;
-                    dState.RX = (byte)(outputX * capX + 128.0);
-                    dState.RY = (byte)(outputY * capY + 128.0);
-                }
-                else if (rsOutCurveMode == 4)
-                {
-                    double absX = Math.Abs(tempRatioX);
-                    double absY = Math.Abs(tempRatioY);
-                    double outputX = absX * (absX - 2.0);
-                    double outputY = absY * (absY - 2.0);
-                    dState.RX = (byte)(-1.0 * outputX * signX * capX + 128.0);
-                    dState.RY = (byte)(-1.0 * outputY * signY * capY + 128.0);
-                }
-                else if (rsOutCurveMode == 5)
-                {
-                    double innerX = Math.Abs(tempRatioX) - 1.0;
-                    double innerY = Math.Abs(tempRatioY) - 1.0;
-                    double outputX = innerX * innerX * innerX + 1.0;
-                    double outputY = innerY * innerY * innerY + 1.0;
-                    dState.RX = (byte)(1.0 * outputX * signX * capX + 128.0);
-                    dState.RY = (byte)(1.0 * outputY * signY * capY + 128.0);
-                }
-                else if (rsOutCurveMode == 6)
-                {
-                    if (rsMod.deadzoneType == StickDeadZoneInfo.DeadZoneType.Radial)
-                    {
-                        // Get max values and circular distance of axes
-                        double maxX = (dState.RX >= 128 ? 127 : 128);
-                        double maxY = (dState.RY >= 128 ? 127 : 128);
-                        byte tempOutX = (byte)(tempRatioX * maxX + 128.0);
-                        byte tempOutY = (byte)(tempRatioY * maxY + 128.0);
-
-                        // Perform curve based on byte values from vector
-                        byte tempX = settings.RsOutBezierCurveObj[device].arrayBezierLUT[tempOutX];
-                        byte tempY = settings.RsOutBezierCurveObj[device].arrayBezierLUT[tempOutY];
-
-                        // Calculate new ratio
-                        double tempRatioOutX = (tempX - 128.0) / maxX;
-                        double tempRatioOutY = (tempY - 128.0) / maxY;
-
-                        // Map back to stick coordinates
-                        dState.RX = (byte)(tempRatioOutX * capX + 128);
-                        dState.RY = (byte)(tempRatioOutY * capY + 128);
-                    }
-                    else if (rsMod.deadzoneType == StickDeadZoneInfo.DeadZoneType.Axial)
-                    {
-                        dState.RX = settings.RsOutBezierCurveObj[device].arrayBezierLUT[dState.RX];
-                        dState.RY = settings.RsOutBezierCurveObj[device].arrayBezierLUT[dState.RY];
-                    }
-                }
-            }
+                _outputCurve.ProcessStickCurve(rsOutCurveMode, rsMod.deadzoneType, settings.RsOutBezierCurveObj[device], ref dState.RX, ref dState.RY);
 
             int l2OutCurveMode = settings.GetL2OutCurveMode(device);
             if (l2OutCurveMode > 0 && dState.L2 != 0)
-            {
-                double temp = dState.L2 / 255.0;
-                if (l2OutCurveMode == 1)
-                {
-                    double output;
-
-                    if (temp <= 0.4)
-                        output = 0.55 * temp;
-                    else if (temp <= 0.75)
-                        output = temp - 0.18;
-                    else // if (temp > 0.75)
-                        output = (temp * 1.72) - 0.72;
-                    dState.L2 = (byte)(output * 255.0);
-                }
-                else if (l2OutCurveMode == 2)
-                {
-                    double output = temp * temp;
-                    dState.L2 = (byte)(output * 255.0);
-                }
-                else if (l2OutCurveMode == 3)
-                {
-                    double output = temp * temp * temp;
-                    dState.L2 = (byte)(output * 255.0);
-                }
-                else if (l2OutCurveMode == 4)
-                {
-                    double output = temp * (temp - 2.0);
-                    dState.L2 = (byte)(-1.0 * output * 255.0);
-                }
-                else if (l2OutCurveMode == 5)
-                {
-                    double inner = Math.Abs(temp) - 1.0;
-                    double output = inner * inner * inner + 1.0;
-                    dState.L2 = (byte)(-1.0 * output * 255.0);
-                }
-                else if (l2OutCurveMode == 6)
-                {
-                    dState.L2 = settings.L2OutBezierCurveObj[device].arrayBezierLUT[dState.L2];
-                }
-            }
+                _outputCurve.ProcessTriggerCurve(l2OutCurveMode, settings.L2OutBezierCurveObj[device], ref dState.L2);
 
             int r2OutCurveMode = settings.GetR2OutCurveMode(device);
             if (r2OutCurveMode > 0 && dState.R2 != 0)
-            {
-                double temp = dState.R2 / 255.0;
-                if (r2OutCurveMode == 1)
-                {
-                    double output;
-
-                    if (temp <= 0.4)
-                        output = 0.55 * temp;
-                    else if (temp <= 0.75)
-                        output = temp - 0.18;
-                    else // if (temp > 0.75)
-                        output = (temp * 1.72) - 0.72;
-                    dState.R2 = (byte)(output * 255.0);
-                }
-                else if (r2OutCurveMode == 2)
-                {
-                    double output = temp * temp;
-                    dState.R2 = (byte)(output * 255.0);
-                }
-                else if (r2OutCurveMode == 3)
-                {
-                    double output = temp * temp * temp;
-                    dState.R2 = (byte)(output * 255.0);
-                }
-                else if (r2OutCurveMode == 4)
-                {
-                    double output = temp * (temp - 2.0);
-                    dState.R2 = (byte)(-1.0 * output * 255.0);
-                }
-                else if (r2OutCurveMode == 5)
-                {
-                    double inner = Math.Abs(temp) - 1.0;
-                    double output = inner * inner * inner + 1.0;
-                    dState.R2 = (byte)(-1.0 * output * 255.0);
-                }
-                else if (r2OutCurveMode == 6)
-                {
-                    dState.R2 = settings.R2OutBezierCurveObj[device].arrayBezierLUT[dState.R2];
-                }
-            }
+                _outputCurve.ProcessTriggerCurve(r2OutCurveMode, settings.R2OutBezierCurveObj[device], ref dState.R2);
 
 
             bool saControls = settings.GyroOutputMode[device] == GyroOutMode.Controls;

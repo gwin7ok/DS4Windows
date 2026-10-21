@@ -156,6 +156,48 @@ namespace DS4WindowsTests
                 s.LSRotation[Slot] = -45.0;
                 s.RSRotation[Slot] = -45.0;
             });
+
+            // (c) の前に追加: 出力カーブを Axial のデッドゾーンでも通す。ベジェ曲線（モード 6。Radial と Axial で分岐する）と、スクエアスティックの片側だけの場面
+            for (int mode = 1; mode <= 5; mode++)
+            {
+                int curve = mode;
+                yield return new Scenario($"stick axial dz10 out-curve-{curve}", s =>
+                {
+                    Stick(s, axial, 10, 0, 100, 100.0, false);
+                    s.setLsOutCurveMode(Slot, curve);
+                    s.setRsOutCurveMode(Slot, curve);
+                });
+            }
+
+            foreach (var type in new[] { radial, axial })
+            {
+                var dzType = type;
+                yield return new Scenario($"stick {dzType} dz10 out-curve-6-bezier", s =>
+                {
+                    Stick(s, dzType, 10, 0, 100, 100.0, false);
+                    s.lsOutBezierCurveObj[Slot].InitBezierCurve("0.7,0.28,1.0,0.55", BezierCurve.AxisType.LSRS, true);
+                    s.rsOutBezierCurveObj[Slot].InitBezierCurve("0.25,0.1,0.25,1.0", BezierCurve.AxisType.LSRS, true);
+                    s.setLsOutCurveMode(Slot, 6);
+                    s.setRsOutCurveMode(Slot, 6);
+                });
+            }
+
+            yield return new Scenario("stick radial dz10 square-left-only out-curve-2", s =>
+            {
+                Stick(s, radial, 10, 0, 100, 100.0, false);
+                s.squStickInfo[Slot].lsMode = true;
+                s.squStickInfo[Slot].lsRoundness = 8.0;
+                s.squStickInfo[Slot].rsRoundness = 3.0;
+                s.setLsOutCurveMode(Slot, 2);
+                s.setRsOutCurveMode(Slot, 3);
+            });
+            yield return new Scenario("stick axial dz10 square-right-only", s =>
+            {
+                Stick(s, axial, 10, 0, 100, 100.0, false);
+                s.squStickInfo[Slot].rsMode = true;
+                s.squStickInfo[Slot].lsRoundness = 3.0;
+                s.squStickInfo[Slot].rsRoundness = 8.0;
+            });
         }
 
         private static IEnumerable<Scenario> TriggerScenarios()
@@ -217,6 +259,15 @@ namespace DS4WindowsTests
 
                 s.setL2OutCurveMode(Slot, 2);
                 s.setR2OutCurveMode(Slot, 2);
+            });
+
+            // (c) の前に追加: ベジェ曲線（モード 6）
+            yield return new Scenario("trigger out-curve-6-bezier", s =>
+            {
+                s.l2OutBezierCurveObj[Slot].InitBezierCurve("0.7,0.28,1.0,0.55", BezierCurve.AxisType.L2R2, true);
+                s.r2OutBezierCurveObj[Slot].InitBezierCurve("0.25,0.1,0.25,1.0", BezierCurve.AxisType.L2R2, true);
+                s.setL2OutCurveMode(Slot, 6);
+                s.setR2OutCurveMode(Slot, 6);
             });
         }
 
