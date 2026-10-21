@@ -3,7 +3,7 @@
 作成日: 2026-10-22  
 対象ブランチ: `For-DI-migration-work`  
 上位: `Phase9-Responsibility-Split-Plan.md` 9-A(2)、`.github/copilot-instructions.md` 2.2（機能廃止はユーザーの明示的な承認が要る）、2.4  
-状態: **Q1〜Q4 を推奨どおり承認（2026-10-22）。9-A(2) の A→B→C は完了。W1（割り当て種別の削除）は実機確認も合格（2026-10-22）。W2（本体の削除）は実装済み（2026-10-22。実機確認待ち）。W3 以降は、段階ごとに設計を説明し、承認を得てから着手する**。検討の発端: 9-A(2) の設計説明のとき、ユーザーが「ステアリングはどういう機能か。内容によっては機能ごと削除してもよい」と発言（2026-10-22）。エージェントが自らの判断で削除するものではない。
+状態: **Q1〜Q4 を推奨どおり承認（2026-10-22）。9-A(2) の A→B→C は完了。W1（割り当て種別の削除）は実機確認も合格（2026-10-22）。W2（本体）・W3（出力と vJoy）・W4（設定・画面・翻訳）は実装済み（2026-10-22。W2〜W4 の実機確認待ち）。残りは W5（文書・Changelog）**。検討の発端: 9-A(2) の設計説明のとき、ユーザーが「ステアリングはどういう機能か。内容によっては機能ごと削除してもよい」と発言（2026-10-22）。エージェントが自らの判断で削除するものではない。
 
 ---
 
@@ -140,3 +140,36 @@
 `Debug ALL`: 警告 0・エラー 0・全テスト合格（2,242 件、StandaloneTests 11 件）。ラチェットの一致検査（`Global`／`AppHost` ほか）は、基準値の変更なしで合格。
 
 **実機確認（依頼）**: (1) 起動して、コントローラーを接続できること（`ControllerConfigs.xml` の読み込みが壊れていないこと）。(2) コントローラー登録オプション画面で、オプションを変更して保存し、再起動しても保持されること。(3) プロファイル編集の画面が開き、通常のジャイロ機能（Controls へのジャイロ出力、マウス）が従来どおり動くこと。
+
+## 13. W3 の結果（2026-10-22。出力と vJoy の削除）
+
+| 区分 | 内容 |
+|---|---|
+| 出力デバイス | `Xbox360OutDevice`／`DS4OutDeviceBasic`／`DS4OutDeviceExt` の `ConvertandSendReport` から、ステアリングの軸の `switch`（LX／LY／RX／RY／L2R2／vJoy の分岐）を除き、通常の軸（左右スティックの X・Y）の出力だけを残した（軸が「None」だった利用者の出力は変わらない）。トリガー（L2／R2）の代入は、元から `switch` の前にあった |
+| 取得口 | `OutputDevice.GetSteeringWheelEmulationAxis`／`SteeringWheelAxisProvider`、`OutputSlotManager` のコンストラクター引数（`steeringWheelAxisProvider`）と設定の 1 行、`ControlService` の生成の引数を削除 |
+| `ControlService` | 出力デバイスがないとき（`else` 側。`UseDInputOnly`）の vJoy 送出を削除 |
+| `DS4State` | `SASteeringWheelEmulationUnit`（宣言、`Reset`、コピー 2 箇所）を削除 |
+| vJoy | `DS4Windows/VJoyFeeder/`（8 ファイル、852 行）を削除（Q2＝A） |
+| 画面 | About 画面の「vJoyInterfaceCS」の表記と、リンクのクリック処理を削除 |
+| 残したもの | ステアリングの設定とその入力欄（軸、範囲、ファズ、スムージング）、`SASteeringWheelEmulationAxisType`、`IProfileSettingsService` の該当（W4 で削除） |
+| テスト | 新規 `Phase9SteeringW3OutputDeviceGuardTests`（7 件。出力デバイス 3 つに通常の軸の出力が残り、ステアリング・vJoy の参照がないこと／`ControlService`・`OutputDevice`・`OutputSlotManager`・`DS4State` に vJoy とステアリングの参照がないこと［ソースの走査］）。追従: `OutputSlotManager` の生成（7 箇所）、`Phase7Step10dW3DeviceLayerSettingsGuardTests` の null 検査 |
+
+`Debug ALL`: 警告 0・エラー 0・全テスト合格（2,249 件、StandaloneTests 11 件）。
+
+**実機確認（依頼）**: (1) ゲームパッドとして、スティック・トリガー・ボタンが従来どおり出力されること（Xbox 360 出力、DS4 出力のそれぞれ）。(2) About 画面が開き、表示が崩れていないこと。
+
+## 14. W4 の結果（2026-10-22。設定・画面・翻訳の削除）
+
+| 区分 | 内容 |
+|---|---|
+| 型・設定 | `SASteeringWheelEmulationAxisType.cs`、`SteeringWheelSmoothingInfo.cs` を削除。`BackingStore`: `sASteeringWheelEmulationAxis`／`Range`、`saWheelFuzzValues`、`wheelSmoothInfo`、`DEFAULT_SA_WHEEL_EMULATION_RANGE`、`Reset` の該当 4 行（計 20 行）を削除。`IProfileSettingsService`／`ProfileSettingsService`: 7 メンバーを削除 |
+| プロファイル XML | `ProfileGyroControlsLoadSection`（読み込み）と `ProfileMotionSaveSection`（書き込み）から、`SASteeringWheelEmulationAxis`／`SASteeringWheelEmulationRange`／`SASteeringWheelFuzz`／`SASteeringWheelSmoothingOptions`（`SASteeringWheelUseSmoothing`／`SmoothMinCutoff`／`SmoothBeta`）を削除。書かれなくなった。古いプロファイルに要素が残っていても、無視される。欠けていても `missingSetting` にならない |
+| 画面 | `ProfileEditor.xaml`: 「360 Steering Wheel」のグループ（軸・範囲・ファズ・スムージング）を削除。`ProfileSettingsViewModel`: 該当のプロパティ・イベント（約 90 行）と、`CalcProfileFlags` への登録を削除 |
+| 翻訳 | `Resources*.resx`（4 言語）の 7 キー、`Strings*.resx`（15 言語）の 2 キー（`SASteeringWheelFuzzTooltip`、`SpecialActionEdit.SixAxisWheelCalib`）、`Resources.Designer.cs`（7 プロパティ）・`Strings.Designer.cs`（2 プロパティ）を削除（エンコード［BOM］と改行は保持。`resx` の差分は削除のみ） |
+| 残したもの | `OneEuroFilterPair`／`OneEuroFilter3D` の `DEFAULT_WHEEL_*` の定数（名前は WHEEL だが、ジャイロのフィルターの既定値として他の機能も使う）。旧データの取り除き（`ActionsDTO`、`ControlSpecialItemXml`）とそのログ |
+| ゴールデン | 保存形式の意図した変更として更新（`Phase7Step10c/README.txt` が許す、唯一のケース）: `profile-default.xml`、`profile-gap.xml／.state.txt／.resaved.xml`、`profile-legacy.state.txt／.resaved.xml`、`profile-minimal.rewritten.xml`、`profile-varied.xml／.state.txt`。**差分は削除のみ（追加 0 行。削除は、上の 4 要素と、状態の出力の該当フィールド）**を `git diff` で確認してから採用した |
+| テスト | 新規 `Phase9SteeringW4LegacyProfileTests`（2 件: 保存した XML にステアリングの要素がないこと／4 要素を含む旧プロファイルが、ほかの設定を壊さずに読まれ、再保存で要素が消えること）。追従: `ProfileLegacyXmlCompletenessTests`（期待する要素の一覧から 4 要素を除く［162→158］）、`Phase8Step4bProfileGoldenGapTests`、`ControlServicePr4ShimEquivalenceTests` |
+
+`Debug ALL`: 警告 0・エラー 0・全テスト合格（2,251 件、StandaloneTests 11 件）。残りの参照は、旧データの取り除き（意図）と、削除を検査するテストだけ。
+
+**実機確認（依頼）**: (1) プロファイル編集の画面が開き、「Gyro → Controls」画面に「360 Steering Wheel」のグループがなく、ほかの項目が崩れていないこと。(2) 既存のプロファイルを開いて保存し、再び開いても問題ないこと。(3) 表示言語を切り替えて（例: 日本語と英語）、画面が開くこと。

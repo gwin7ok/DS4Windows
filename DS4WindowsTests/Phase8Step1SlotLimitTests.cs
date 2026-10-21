@@ -163,7 +163,7 @@ namespace DS4WindowsTests
 
         private static OutputSlotManager NewSlotManager(int limit)
         {
-            return new OutputSlotManager(() => new Version(1, 0), _ => SASteeringWheelEmulationAxisType.None, limit);
+            return new OutputSlotManager(() => new Version(1, 0), limit);
         }
 
         [Theory]

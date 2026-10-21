@@ -70,7 +70,7 @@ namespace DS4WindowsTests
 
         public static OutputSlotManager CreateOutputSlotManager()
         {
-            return new OutputSlotManager(() => EnvironmentService.ViGEmBusVersionState, _ => SASteeringWheelEmulationAxisType.None, new EnvironmentService().ControllerSlotLimit);
+            return new OutputSlotManager(() => EnvironmentService.ViGEmBusVersionState, new EnvironmentService().ControllerSlotLimit);
         }
 
         public static OutputSlotService CreateOutputSlotService(OutputSlotManager manager = null,

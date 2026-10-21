@@ -53,14 +53,14 @@ namespace DS4WindowsTests
         [InlineData(8)]
         public void OutputSlotManager_SizesItsSlotsByTheGivenLimit(int limit)
         {
-            var manager = new OutputSlotManager(() => new Version(1, 0), _ => SASteeringWheelEmulationAxisType.None, limit);
+            var manager = new OutputSlotManager(() => new Version(1, 0), limit);
             Assert.Equal(limit, manager.OutputSlots.Length);
         }
 
         [Fact]
         public void OutputSlotManager_RejectsANonPositiveLimit()
         {
-            Assert.Throws<ArgumentOutOfRangeException>(() => new OutputSlotManager(() => new Version(1, 0), _ => SASteeringWheelEmulationAxisType.None, 0));
+            Assert.Throws<ArgumentOutOfRangeException>(() => new OutputSlotManager(() => new Version(1, 0), 0));
         }
 
         [Fact]
