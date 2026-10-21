@@ -107,14 +107,18 @@ namespace DS4WindowsTests
         }
 
         [Fact]
-        public void IsUsingGyroForControls_ReadsGyroOutputModeFromStaticProfileSettings()
+        public void IsUsingGyroForControls_MovedToControlActivityReader()
         {
             string text = ReadSourceWithoutComments();
             if (text == null) return;
 
-            string body = ExtractMethod(text, "private bool IsUsingGyroForControls(");
+            // Phase9 9-B: 旧 Mapping.IsUsingGyroForControls は ControlActivityReader（引数の settings）へ移った。Mapping.cs には残っていないことと、移し先の判定を確かめる
+            Assert.DoesNotContain("IsUsingGyroForControls", text);
 
-            Assert.Contains("profileSettings.GyroOutputMode[device] == GyroOutMode.Controls", body);
+            string readerPath = SourceFileLocator.Find("DS4Windows/DS4Control/Services/ControlActivityReader.cs");
+            if (readerPath == null) return;
+            string reader = File.ReadAllText(readerPath);
+            Assert.Contains("settings.GyroOutputMode[device] == GyroOutMode.Controls", reader);
         }
     }
 }
