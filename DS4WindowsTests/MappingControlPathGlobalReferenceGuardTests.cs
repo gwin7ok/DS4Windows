@@ -25,7 +25,6 @@ namespace DS4WindowsTests
             "private void ProcessControlSettingAction(",
             "private void MapCustomAction(",   // Phase8-Step8 8b: async void → void。ReleaseActionKeys は旧枝と一緒に削除
             "private double getMouseMapping(",
-            "protected Int32 Scale360degreeGyroAxis(",
         };
 
         /// <summary>Step3-6a で `IProfileSettingsService`／`IProfileActionProvider` 経由へ置換済みの `Global` メンバ名。</summary>

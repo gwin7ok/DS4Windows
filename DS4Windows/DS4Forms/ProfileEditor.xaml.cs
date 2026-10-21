@@ -1317,49 +1317,6 @@ namespace DS4WinWPF.DS4Forms
             profileSettingsVM.UpdateChargingColor(dialog.colorPicker.SelectedColor.GetValueOrDefault());
         }
 
-        private void SteeringWheelEmulationCalibrateBtn_Click(object sender, RoutedEventArgs e)
-        {
-            if (profileSettingsVM.SASteeringWheelEmulationAxisIndex > 0)
-            {
-                DS4Windows.DS4Device d = controlService.DS4Controllers[profileSettingsVM.FuncDevNum];
-                if (d != null)
-                {
-                    System.Drawing.Point origWheelCenterPoint = new System.Drawing.Point(d.wheelCenterPoint.X, d.wheelCenterPoint.Y);
-                    System.Drawing.Point origWheel90DegPointLeft = new System.Drawing.Point(d.wheel90DegPointLeft.X, d.wheel90DegPointLeft.Y);
-                    System.Drawing.Point origWheel90DegPointRight = new System.Drawing.Point(d.wheel90DegPointRight.X, d.wheel90DegPointRight.Y);
-
-                    d.WheelRecalibrateActiveState = 1;
-
-                    MessageBoxResult result = MessageBox.Show($"{Properties.Resources.SASteeringWheelEmulationCalibrate}.\n\n" +
-                            $"{Properties.Resources.SASteeringWheelEmulationCalibrateInstruction1}.\n" +
-                            $"{Properties.Resources.SASteeringWheelEmulationCalibrateInstruction2}.\n" +
-                            $"{Properties.Resources.SASteeringWheelEmulationCalibrateInstruction3}.\n\n" +
-                            $"{Properties.Resources.SASteeringWheelEmulationCalibrateInstruction}.\n",
-                        Properties.Resources.SASteeringWheelEmulationCalibrate, MessageBoxButton.OKCancel, MessageBoxImage.Information, MessageBoxResult.OK);
-
-                    if (result == MessageBoxResult.OK)
-                    {
-                        // Accept new calibration values (State 3 is "Complete calibration" state)
-                        d.WheelRecalibrateActiveState = 3;
-                    }
-                    else
-                    {
-                        // Cancel calibration and reset back to original calibration values
-                        d.WheelRecalibrateActiveState = 4;
-
-                        d.wheelFullTurnCount = 0;
-                        d.wheelCenterPoint = origWheelCenterPoint;
-                        d.wheel90DegPointLeft = origWheel90DegPointLeft;
-                        d.wheel90DegPointRight = origWheel90DegPointRight;
-                    }
-                }
-                else
-                {
-                    MessageBox.Show($"{Properties.Resources.SASteeringWheelEmulationCalibrateNoControllerError}.");
-                }
-            }
-        }
-
         private void TouchDisInvertBtn_Click(object sender, RoutedEventArgs e)
         {
             touchDisInvertBtn.ContextMenu.IsOpen = true;

@@ -705,8 +705,6 @@
                                                     <ComboBoxItem Content="1080" />
                                                     <ComboBoxItem Content="1440" />
                                                 </ComboBox>
-                                                <Button x:Name="steeringWheelEmulationCalibrateBtn" Content="Calibrate" Margin="8,0,0,0"
-                                        Click="SteeringWheelEmulationCalibrateBtn_Click" />
                                             </StackPanel>
 
                                             <StackPanel Orientation="Horizontal" Margin="0,0,0,8">

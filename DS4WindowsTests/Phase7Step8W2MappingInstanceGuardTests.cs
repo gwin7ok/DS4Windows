@@ -25,7 +25,7 @@ namespace DS4WindowsTests
         private static readonly string[] AllowedStaticFields =
         {
             // Phase8-Fix-MacroRepeatUnify（D5）: ds4ControlMapping／macroEndIndex は、macrodone の添字の表だったため削除した
-            "calibrationColor_0", "calibrationColor_1", "calibrationColor_2", "calibrationColor_3",
+            // Phase9 Steering 削除 W2: calibrationColor_0〜3（ステアリング較正のライトバーの色）は、機能ごと削除した
         };
 
         private readonly ITestOutputHelper _output;

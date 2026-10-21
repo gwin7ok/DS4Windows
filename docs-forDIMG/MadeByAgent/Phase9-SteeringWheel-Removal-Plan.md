@@ -3,7 +3,7 @@
 作成日: 2026-10-22  
 対象ブランチ: `For-DI-migration-work`  
 上位: `Phase9-Responsibility-Split-Plan.md` 9-A(2)、`.github/copilot-instructions.md` 2.2（機能廃止はユーザーの明示的な承認が要る）、2.4  
-状態: **Q1〜Q4 を推奨どおり承認（2026-10-22）。9-A(2) の A→B→C は完了。W1（割り当て種別の削除）は実装済み（2026-10-22。画面の実機確認待ち）。W2 以降は、段階ごとに設計を説明し、承認を得てから着手する**。検討の発端: 9-A(2) の設計説明のとき、ユーザーが「ステアリングはどういう機能か。内容によっては機能ごと削除してもよい」と発言（2026-10-22）。エージェントが自らの判断で削除するものではない。
+状態: **Q1〜Q4 を推奨どおり承認（2026-10-22）。9-A(2) の A→B→C は完了。W1（割り当て種別の削除）は実機確認も合格（2026-10-22）。W2（本体の削除）は実装済み（2026-10-22。実機確認待ち）。W3 以降は、段階ごとに設計を説明し、承認を得てから着手する**。検討の発端: 9-A(2) の設計説明のとき、ユーザーが「ステアリングはどういう機能か。内容によっては機能ごと削除してもよい」と発言（2026-10-22）。エージェントが自らの判断で削除するものではない。
 
 ---
 
@@ -122,3 +122,21 @@
 **実機確認（依頼）**: 割り当て編集画面（SA のモード／Controls のモード）で、(1) 種別の一覧に「Sixaxis Wheel」の項目がなく、並びが「種別を選んでください／Macro／Launch Program／Load Profile／Output Key…／Disconnect BT／Check Battery／Multi-action／Calibrate Gyro（／Default／Unbound）」であること。(2) Calibrate Gyro を選んで保存でき、再び開くと同じ種別が選ばれること。(3) 各種別（Default、Unbound を含む）を選んだときの入力欄・タブが、これまでどおりであること。(4) 古い Actions.xml に Steering Wheel Calibrate の項目がある場合、起動時に GUI ログへ `[DI] 廃止された割り当て種別…` が出ること（任意）。なお、プロファイル編集の Calibrate ボタンによる較正は、W4 まで従来どおり動く。
 
 **W1 の実機確認（2026-10-22）: 合格。** ユーザーが、Controls と Special Actions の両方で確認し、問題なし。
+
+## 12. W2 の結果（2026-10-22。本体の削除）
+
+**訂正（W2 の調査で判明）**: 提案書の §3.2 に「`ControllerConfigs.xml` の中身は車輪の較正値だけ」と書いたのは誤りで、このファイルは、コントローラーごとのオプション（`DS4Device.optionsStore`）も保存している。ファイルと読み書きの口は残し、**車輪の 3 要素だけ**を除いた（§3.2・§4・§5 を訂正済み）。
+
+| 区分 | 内容 |
+|---|---|
+| `Mapping.cs` | 「SA steering wheel emulation mapping」一式を削除: `Scale360degreeGyroAxis`、`SAWheelEmulationCalibration`、`CalculateControllerAngle`、`CalcWheelFuzz`、`CountNumOfSetBits`、`LogToGuiSACalibrationDebugMsg`、`C_WHEEL_ANGLE_PRECISION`、`calibrationColor_0〜3`、`LastWheelGyroCoord`／`lastWheelGyroValues`、`wheelFilters`、`MapCustom` の呼び出し。`Mapping.cs`: 3,072 → 2568 行 |
+| 状態 | `StickMotionState.WheelFilters`、`ControlService.SetupInitialHookEvents` のステアリング用フィルターの作成と、スムージング設定との連動 |
+| コントローラー | `DS4Device` の車輪の較正の状態一式（`wheelCenterPoint` ほか）と `WheelCalibrationPoint` |
+| ファイル | `ControllerConfigsXmlSerializer`: 車輪の 3 要素（`wheelCenterPoint`／`wheel90DegPointLeft`／`wheel90DegPointRight`）の読み書きを削除。Mac・ControllerType の属性と `optionsStore` の読み書きは残した。古いファイルの車輪の要素は無視され、次の保存で書かれなくなる |
+| 画面 | プロファイル編集の「Calibrate」ボタンとその処理（`SteeringWheelEmulationCalibrateBtn_Click`） |
+| 残したもの | `DS4State.SASteeringWheelEmulationUnit`（出力デバイスが読むため W3 まで。W2 の後は常に 0）、ステアリングの設定（軸、範囲、ファズ、スムージング）とその入力欄（W4 まで。W2〜W3 の間は設定しても何も起きない） |
+| テスト | 新規 `Phase9SteeringW2ControllerConfigsGuardTests`（2 件。オプションと属性の読み書きが残り、車輪の 3 要素が読み書きされないこと［ソースの走査。`DS4Device` は実機が要るため挙動のテストは作れない］）。追従: `Phase7Step7StickMotionStateGuardTests`（`WheelFilters`）、`MappingControlPathGlobalReferenceGuardTests`（検査対象から `Scale360degreeGyroAxis` を除く）、`Phase7Step8W2MappingInstanceGuardTests`（static の許可表から `calibrationColor_0〜3` を除く） |
+
+`Debug ALL`: 警告 0・エラー 0・全テスト合格（2,242 件、StandaloneTests 11 件）。ラチェットの一致検査（`Global`／`AppHost` ほか）は、基準値の変更なしで合格。
+
+**実機確認（依頼）**: (1) 起動して、コントローラーを接続できること（`ControllerConfigs.xml` の読み込みが壊れていないこと）。(2) コントローラー登録オプション画面で、オプションを変更して保存し、再起動しても保持されること。(3) プロファイル編集の画面が開き、通常のジャイロ機能（Controls へのジャイロ出力、マウス）が従来どおり動くこと。

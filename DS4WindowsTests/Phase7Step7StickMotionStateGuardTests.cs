@@ -42,7 +42,6 @@ namespace DS4WindowsTests
 
             Assert.Equal(count, state.GyroStickX.Length);
             Assert.Equal(count, state.GyroStickY.Length);
-            Assert.Equal(count, state.WheelFilters.Length);
             Assert.All(state.GyroStickX, v => Assert.Equal(128, v));
             Assert.All(state.GyroStickY, v => Assert.Equal(128, v));
 
@@ -82,7 +81,6 @@ namespace DS4WindowsTests
             Assert.Same(state.L2TwoStageMappingData, Field("l2TwoStageMappingData"));
             Assert.Same(state.R2TwoStageMappingData, Field("r2TwoStageMappingData"));
             Assert.Same(state.DeltaAccelProcessors, Field("deltaAccelProcessors"));
-            Assert.Same(state.WheelFilters, Field("wheelFilters"));
         }
 
         [Fact]
