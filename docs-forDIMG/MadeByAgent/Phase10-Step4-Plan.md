@@ -101,3 +101,9 @@ Controls のボタン 1 つの割り当てに、**SA 専用の種別**を、保�
 
 - **W0（完了 2026-10-21。ビルド・テスト成功）**: 特性化テスト 2 ファイルを追加した（製品コードは変更なし）。`Phase10Step4W0SaBindingTableTests`（`ActionBindingBuilder` の種別ごとの束縛の一覧表: 入力の型・出力アクションの型・方針、窓口がないときに束縛を作らない種別、トリガーのない SA）。`Phase10Step4W0ControlProfileXmlFormatTests`（`Profile.xml` の `<Control>` の読み込み・保存の形式、要素の順序［Button、Macro、Key、Extras、KeyType］、空の `<Control />`、未知の節は読み飛ばし・保存で失われるという互換の事実）。
   - 優先順位・抑制の規則 R10（Controls に割り当てた SA 専用の種別）は、現在は実装がなく再現できない（Step2 W0 の記録のとおり）。群ごとの縦通し（W3 以降）で、動くようになってから、テストを足す。
+- **W1（完了 2026-10-21。ビルド・テスト成功）**: 型のある項目と、`Profile.xml` への保存・読み込みを追加した（画面・実行への影響なし）。
+  - 新規: `ControlSpecialItem`（種別、秒数、Macro の 3 項目、Program、Profile、BatteryCheck、MultiAction の項目。`Clone`）、`ControlSpecialItemXml`（`DS4Control/Services/` 直下。書き出し・寛容な読み込み）。
+  - 変更: `DS4ControlSettings`（`ActionType.Special`、`special`）、`ProfileButtonSaveSection`／`ProfileButtonControlLoadSection`（`<Special>` を `<KeyType>` の後に書く／最後に読む。Special が同じボタンの Button／Macro／Key に優先）、`MappedControl`（一覧の表示）、`ControlSettingsEditTarget`（複製・クリア）。
+  - テスト: `Phase10Step4W1ControlSpecialItemTests`（14 件）。W0 の `AnUnknownSection_…` は、未知の節の例を `<Special>` から `<Future>` に変えた（`<Special>` を読むようになったため）。
+  - 配置の判断: `ControlSpecialItemXml` は節ではなく補助部品なので、`ProfileSections/` ではなく `Services/` 直下に置く（`Phase8Step4bW11LengthGuardTests` が、`ProfileSections/` 内を `internal sealed class` 1 つに限っているため）。
+  - 次: W2（`ActionBindingBuilder.Create` から、SA の出力アクションを作る共通部品を取り出す。挙動は変えず、W0 の表のテストで守る）。指示があるまで始めない。
