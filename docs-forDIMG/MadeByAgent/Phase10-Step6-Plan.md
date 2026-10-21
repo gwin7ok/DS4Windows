@@ -1,7 +1,7 @@
 # Phase10-Step6 計画書: 統合 Step（共通の割り当て定義と、builder の 1 本化）
 
 作成日: 2026-10-21
-状態: **承認済み（2026-10-21）。I1 完了。I2 以降は、Wave ごとに設計を説明し、承認を得てから実装する**
+状態: **完了（2026-10-22）。I1〜I7 の全 Wave が完了。完了報告書は Phase10-Step6-Completion-Report.md**
 前提: Step4（W0〜W6）、Step4c、Step4d は完了。目標モデルは `Phase10-Integration-Target-Model.md`（§3 完成形、§5 骨子）。
 位置づけ: 旧 Step6 の前倒し（2026-10-21 のユーザー決定）。この Step の後に、W7・W8 相当（Check Battery、Multi-action を Controls へ。Q5 を含む）→ Step5（SA 側のアナログ出力）の順に進める。
 
@@ -72,4 +72,9 @@ Controls タブと SpecialActions（SA）タブのどちらで設定したかに
   - [x] **I5c 実装済み（2026-10-22。`Debug ALL` 成功: 警告 0・エラー 0、テスト 2074 件と 11 件）**: 設計変更（ユーザー決定）＝UserControl の取り出しや「Extras…」ボタンは作らず、**割り当て編集画面（`SpecialActionEditor`）の SA のモードも、Controls のモードと同じ出力ピッカー（`BindingWindow`）で Extras を編集する**。2 つのモードの違いは Default／Unbound（`modePanel`）の表示だけ。出力ピッカーを開くのは、出力に Key／Mouse／Button を選ぶとき（Press Key）だけ。出力ピッカー: SA のモードの Extras 非表示と `mainBindGrid` 列の 0 幅化を外し、`extrasGB.DataContext` を SA のモードでも結びつけた（`ExposeMode.SpecialAction` の TODO を解消）。割り当て編集画面: 編集中の Extras（`saExtras`）を `SpecialAction.outputExtras` から読み、出力ピッカーへ渡して結果を受け取り（全部 0 は付けない）、SA の保存のあとに `ISpecialActionRepository.SaveActionExtras` で書く（SA の保存は SA を作り直すため）。既存の検査 `Phase10Step3W1BindingWindowModeGuardTests` の SA モードの検査を、新しい仕様（Extras を出す）に更新。テスト `Phase10Step6I5cSaExtrasEditorGuardTests`（2 件。画面は開けないため、ソースの接続を検査）。Extras を画面から付けられる SA は、Controls と同じく Press Key（Key／Button）だけ。保存と実行は全種別に対応済み。ほかの種別への入口は、Controls タブも含めた共通の追加として、あとで足せる。
   - **画面の呼び名**（ユーザー指示、2026-10-22）: 割り当て編集画面（`SpecialActionEditor`。I6 で `AssignmentEditor` に改名）、出力ピッカー（`BindingWindow`）。文書・コメント・報告で、画面を名前で指すときは、この呼び名を使う。
 - [x] **I5 完了**（I5a・I5b・I5c）。実機確認の項目は、台帳に追加する（下記の応答で説明）
-- [ ] I6・I7（未着手。指示があるまで始めない）
+- [x] **I6 完了（設計承認 2026-10-22。`Debug ALL` 成功: 警告 0・エラー 0、テスト 2086 件と 11 件）**: 暫定の構造の撤去と、画面の改名。
+  - **I6a 割り当て編集画面の改名**: `git mv` で `SpecialActionEditor.xaml`/`.xaml.cs` → `AssignmentEditor.xaml`/`.xaml.cs`。クラス名・`x:Class`・`CreateSpecialActionEditor` → `CreateAssignmentEditor`・参照するコード、テスト、コメントを更新（本体 14、テスト 15 ファイル）。出力ピッカー（`BindingWindow`）は名前を変えない。
+  - **I6b 暫定の構造の撤去**: `ControlBindingBuilder.BuiltSpecialTypes`（暫定の配列）→ 規則の表 `Actions/ControlsSpecialTypeTable`（`IsSupported`。実行時の builder と、種別の一覧 `ActionTypeCatalog` の「Controls で保存できる」が同じ表に従う。Check Battery と Multi-action を Controls へ移す作業では、この表に足す）。`ControlSpecialEditors`（種別ごとの入力の入れ物）を削除: `IActionTypeEditor` に既定の実装つきの `LoadControlItem`/`ToControlItem` を足し、`SpecialActionViewModel`（秒数）・`LaunchProgramViewModel`（パス・引数・`SplitArguments`/`ComposeArguments`）・`LoadProfileViewModel`（切り替え先・自動復帰）が実装。`ActionTypeEditorSet` が種別で中継し、`ControlSettingsEditTarget` の種別ごとの書き出し・読み込み（`WriteProgram`/`WriteProfile` ほか）を 1 本の `WriteSpecial`/`LoadSpecial` に集約。テスト `Phase10Step6I6bControlsSpecialTypeTableTests`（13 件）。
+  - **I6c 出力ピッカーの Full／Keyboard の撤去**: `ExposeMode` を SpecialAction と Control の 2 つに。Full と Keyboard の分岐、既定引数（`CreateBindingWindow`、`BindingWindow` のコンストラクター）を削除し、モードを必須にした。ガードテストを更新。旧データ用の「No unload triggers specified」の表示と、その検査・`UnloadError` プロパティを削除（ユーザー承認）。
+  - `forControls`、`ControlJudgement`、`BuiltSpecialTypes`、`ControlSpecialEditors`、`CanWrite` は、コード上から消えた（コメントの経緯の記述と、テスト用の補助 `OutputFactoryTestExtensions` のみ）。
+- [x] **I7 完了（2026-10-22）**: 文書（モデル図 `03` の追加クラス・注釈、`Phase10-Integration-Target-Model.md` §10、台帳 §28、`Phase10-Status.md`、完了報告書 `Phase10-Step6-Completion-Report.md`）。**Step6 完了。**

@@ -58,9 +58,6 @@ namespace DS4WinWPF.DS4Forms
 
         public enum ExposeMode : uint
         {
-            // TODO(Phase10-Step3 W1→Step6): Full は、Controls 用の旧モード。Step3 W4 で ProfileEditor の呼び出しがすべて割り当てエディター
-            //   （Control のモードの出力ピッカーを開く）へ切り替わると、使われなくなる。コードの撤去は Phase10-Step6（Phase10-Step3-Plan.md §3.2）
-            Full,
             // SA の Press Key 用（旧 ForPressToggle）。Default／Unbound を出さない（SA の Press Key に「Default」はない）。
             // Phase10-Step6 I5c: Extras は、SA に保存先（SpecialAction.outputExtras）ができたため、Control と同じく出す。
             //   2 つのモードの違いは Default／Unbound の表示だけ（Phase10-Step3-Plan.md §3.1 の最終形）
@@ -68,7 +65,6 @@ namespace DS4WinWPF.DS4Forms
             // Controls の割り当てエディターの Press Key 用（Phase10-Step3 W1）。Default／Unbound と Extras を出す。
             // どのモードでも、Record A Macro・Toggle・Scan Code は出さない（割り当てエディターで設定する）
             Control,
-            Keyboard,
         }
 
         /// <param name="deviceNum">設定を読み書きするスロット（プロファイル編集画面では編集用の作業スロット）</param>
@@ -83,7 +79,7 @@ namespace DS4WinWPF.DS4Forms
             DS4Windows.DI.IOutputSlotService outputSlotService,
             DS4Windows.DI.IEnvironmentService environmentService,
             DS4Windows.ControlService controlService,
-            ExposeMode expose = ExposeMode.Full)
+            ExposeMode expose)
         {
             this.editorWindowFactory = editorWindowFactory ?? throw new ArgumentNullException(nameof(editorWindowFactory));
             InitializeComponent();
@@ -107,11 +103,8 @@ namespace DS4WinWPF.DS4Forms
             highlightImg.Visibility = Visibility.Hidden;
             highlightLb.Visibility = Visibility.Hidden;
 
-            if (expose == ExposeMode.Full || expose == ExposeMode.SpecialAction || expose == ExposeMode.Control)
-            {
-                // Initialize controller/button bindings for full and press/toggle modes
-                InitButtonBindings();
-            }
+            // コントローラー／ボタンの割り当ての初期化（SA のモードも Control のモードも同じ）
+            InitButtonBindings();
 
             InitKeyBindings();
             InitInfoMaps();
@@ -139,24 +132,6 @@ namespace DS4WinWPF.DS4Forms
                 recordMacroBtn.Visibility = Visibility.Collapsed;
                 // Phase10-Step1 W4: Toggle（Switch Mode）と Scan Code は、Press Key タブで設定する。ダイアログは、値を通過させるだけ
                 topOptsPanel.Visibility = Visibility.Collapsed;
-            }
-            else if (expose == ExposeMode.Keyboard)
-            {
-                // Legacy Keyboard-only mode: hide many UI elements to present a compact view
-                topGrid.ColumnDefinitions.RemoveAt(3);
-                keyMouseTopTxt.Visibility = Visibility.Collapsed;
-                macroOnLb.Visibility = Visibility.Collapsed;
-                recordMacroBtn.Visibility = Visibility.Collapsed;
-                mouseCanvas.Visibility = Visibility.Collapsed;
-                bottomPanel.Visibility = Visibility.Collapsed;
-                extrasSidePanel.Visibility = Visibility.Collapsed;
-                try
-                {
-                    mainBindGrid.ColumnDefinitions[2].Width = new GridLength(0);
-                }
-                catch { }
-                Width = 950;
-                Height = 300;
             }
 
             ChangeForCurrentAction();
@@ -245,7 +220,7 @@ namespace DS4WinWPF.DS4Forms
             OutBinding bind = bindingVM.ActionBinding;
             topOptsPanel.DataContext = bind;
 
-            if (expose == ExposeMode.Full || expose == ExposeMode.Control)
+            if (expose == ExposeMode.Control)
             {
                 extrasGB.DataContext = bind;
                 modePanel.DataContext = bind;

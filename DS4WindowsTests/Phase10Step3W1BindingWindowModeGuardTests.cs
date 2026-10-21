@@ -52,7 +52,7 @@ namespace DS4WindowsTests
         }
 
         [Fact]
-        public void TheModes_AreFull_SpecialAction_Control_Keyboard()
+        public void TheModes_AreSpecialAction_AndControl_Only()
         {
             string source = Read("DS4Windows/DS4Forms/BindingWindow.xaml.cs");
             if (source == null)
@@ -63,7 +63,7 @@ namespace DS4WindowsTests
             Match m = Regex.Match(source, @"public enum ExposeMode : uint\s*\{(?<body>.*?)\}", RegexOptions.Singleline);
             Assert.True(m.Success);
             string body = Regex.Replace(m.Groups["body"].Value, @"//[^\r\n]*", "");
-            Assert.Matches(@"Full\s*,\s*SpecialAction\s*,\s*Control\s*,\s*Keyboard\s*,", body);
+            Assert.Matches(@"^\s*SpecialAction\s*,\s*Control\s*,\s*$", body);   // Phase10-Step6 I6c: Full と Keyboard は撤去した
             // コメント（「旧 ForPressToggle」の説明）は除いて、旧名の使用が残っていないことを検査する
             Assert.DoesNotContain("ForPressToggle", Regex.Replace(source, @"//[^\r\n]*", ""));
         }
@@ -125,7 +125,7 @@ namespace DS4WindowsTests
                 return;
             }
 
-            Match m = Regex.Match(source, @"if \(expose == ExposeMode\.Full \|\| expose == ExposeMode\.Control\)\s*\{(?<body>[^}]*)\}");
+            Match m = Regex.Match(source, @"if \(expose == ExposeMode\.Control\)\s*\{(?<body>[^}]*extrasGB[^}]*)\}");
             Assert.True(m.Success);
             Assert.Contains("extrasGB.DataContext = bind", m.Groups["body"].Value);
             Assert.Contains("modePanel.DataContext = bind", m.Groups["body"].Value);

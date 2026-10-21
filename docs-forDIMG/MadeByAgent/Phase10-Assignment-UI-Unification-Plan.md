@@ -1,7 +1,7 @@
 # Phase10 計画書（案）: 割り当て編集画面の統合（Controls タブと SpecialActions タブ）
 
 作成日: 2026-10-20  
-改訂日: 2026-10-21（範囲を「マクロだけ」から「共通の編集画面への統合」へ拡大。`Phase8-Fix-MacroRepeatUnify` の影響を反映）  
+改訂日: 2026-10-22（統合 Step 完了を反映）。前回: 2026-10-21（範囲を「マクロだけ」から「共通の編集画面への統合」へ拡大。`Phase8-Fix-MacroRepeatUnify` の影響を反映）  
 対象ブランチ: `For-DI-migration-work`  
 上位: `Phase8-Unified-Trigger-Dispatch-Plan.md`（D2＝B1: 違いはトリガーのボタン数だけ）、`Phase8-Step2b-ControlsTab-Design.md`、`Phase8-Step7-8c-Plan.md`（Controls の Macro を SA の仕様に合わせる）、`Phase8-Fix-MacroRepeatUnify-Plan.md`（マクロの繰り返しフラグの統合）、`Phase9-Responsibility-Split-Plan.md`  
 状態: **方針承認済み（2026-10-21、§6）。Step1 完了（2026-10-21）。Step2 以降は、個別計画書を作り、承認を得てから着手する。進捗は `Phase10-Status.md`**

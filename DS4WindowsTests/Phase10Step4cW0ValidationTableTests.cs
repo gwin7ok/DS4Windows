@@ -55,16 +55,17 @@ namespace DS4WindowsTests
             Assert.False(vm.HasErrors);
         }
 
+        // Phase10-Step6 I6c（ユーザー承認、2026-10-22）: 解除トリガーの機能は廃止済みで、入力する画面もないため、旧データ用の「No unload triggers specified」の表示ごと削除した。
+        // Toggle の Key は、解除トリガーがなくても、エラーなしで保存できる
         [Fact]
-        public void PressKey_ToggleWithoutUnloadTriggers_ShowsTheError_ButStaysValid()
+        public void PressKey_Toggle_IsValid_AndShowsNoUnloadError()
         {
-            // 解除トリガーの機能は廃止済みで、入力する画面もない。止めると Toggle の Key が保存できなくなるため、表示のみ
             var vm = PressKey();
             vm.Value = 65;
             vm.SwitchMode = "Toggle";
 
             Assert.True(vm.IsValid(Action));
-            Assert.Equal(new[] { "No unload triggers specified" }, Errors(vm, "UnloadError"));
+            Assert.False(vm.HasErrors);
         }
 
         [Fact]

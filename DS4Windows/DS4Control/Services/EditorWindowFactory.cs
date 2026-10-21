@@ -56,7 +56,7 @@ namespace DS4Windows.Services
         }
 
         public BindingWindow CreateBindingWindow(int deviceNum, DS4ControlSettings settings, int targetDevice,
-            BindingWindow.ExposeMode expose = BindingWindow.ExposeMode.Full)
+            BindingWindow.ExposeMode expose)
             => new BindingWindow(deviceNum, settings, targetDevice, this, _profileSettings, _outputSlotService,
                 _environmentService, _controlServiceAccessor(), expose);
 

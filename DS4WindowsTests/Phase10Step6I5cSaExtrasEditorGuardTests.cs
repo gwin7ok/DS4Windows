@@ -23,7 +23,7 @@ namespace DS4WindowsTests
             if (text == null) return;
 
             int start = text.IndexOf("else if (expose == ExposeMode.SpecialAction)", System.StringComparison.Ordinal);
-            int end = text.IndexOf("else if (expose == ExposeMode.Keyboard)", start, System.StringComparison.Ordinal);
+            int end = text.IndexOf("ChangeForCurrentAction();", start, System.StringComparison.Ordinal);
             Assert.True(start >= 0 && end > start);
             string saBlock = text.Substring(start, end - start);
 

@@ -570,6 +570,72 @@ classDiagram
     }
     TriggerDispatchEngine --> IManagedActionManager : ActionInstanceState
     ActionBindingBuilder ..> TriggerBinding : builds
+    class ControlBindingBuilder
+    class AssignmentDefinition {
+        +Id string
+        +Origin AssignmentOrigin
+        +Kind ActionTypeId
+        +Triggers IReadOnlyList~DS4Controls~
+        +HoldSeconds double
+        +Item ControlSpecialItem
+        +Key KeyBindingValues
+        +Button ButtonBindingValues
+        +Extras ExtrasBindingValues
+        +Macro IReadOnlyList~int~
+        +KeyType DS4KeyType
+    }
+    class AssignmentOrigin {
+        <<enumeration>>
+        Controls
+        SpecialAction
+    }
+    class SpecialActionAssignmentReader {
+        <<static>>
+        +Read(SpecialAction sa, AssignmentOrigin origin) AssignmentDefinition
+    }
+    class ControlsAssignmentReader {
+        <<static>>
+        +TryReadSpecial(...) bool
+        +TryReadKey(...) bool
+        +TryReadMacro(...) bool
+    }
+    class SpecialActionItemMapper {
+        <<static>>
+        +ToItem(SpecialAction sa) ControlSpecialItem
+        +ToSpecialAction(string name, triggers, ControlSpecialItem item) SpecialAction
+    }
+    class ISpecialActionOutputFactory {
+        <<interface>>
+        +Create(int device, AssignmentDefinition definition, SpecialAction source, int index) SpecialActionOutputs
+    }
+    class SpecialActionOutputFactory
+    class AssignmentBindingBuilder {
+        +Build(int device, AssignmentDefinition definition, SpecialAction source, int index) TriggerBinding
+        +BuildExtras(int device, AssignmentDefinition definition, SpecialAction source, BindingPolicy mainPolicy) TriggerBinding
+    }
+    class ControlsSpecialTypeTable {
+        <<static>>
+        +IsSupported(ActionTypeId type) bool
+    }
+    class ControlOutputNatureTable {
+        <<static>>
+    }
+    class FreshPressGuardTable {
+        <<static>>
+        +For(AssignmentOrigin origin, ActionTypeId type, bool toggle) bool
+    }
+    ISpecialActionOutputFactory <|.. SpecialActionOutputFactory : implements
+    ActionBindingBuilder ..> SpecialActionAssignmentReader : SA → definition
+    ControlBindingBuilder ..> ControlsAssignmentReader : Controls → definition
+    SpecialActionAssignmentReader ..> SpecialActionItemMapper : typed item
+    ControlsAssignmentReader ..> SpecialActionItemMapper : synthetic SA
+    ActionBindingBuilder ..> AssignmentBindingBuilder : assembles bindings
+    ControlBindingBuilder ..> AssignmentBindingBuilder : assembles bindings
+    AssignmentBindingBuilder --> ISpecialActionOutputFactory : outputs + policy
+    SpecialActionOutputFactory ..> FreshPressGuardTable : policy by kind x origin
+    ControlBindingBuilder ..> ControlsSpecialTypeTable : supported kinds
+    AssignmentBindingBuilder ..> ControlOutputNatureTable : input judgement
+    AssignmentDefinition --> AssignmentOrigin : Origin
     IMapping ..> ITriggerDispatchEngine : calls every frame
     IProfileApplicationService ..> IActionBindingBuilder : after profile applied
 ```
@@ -783,3 +849,13 @@ classDiagram
 %% - 実行時の保持（プロファイル）は、保管が ID で、名前を読み書きする窓口: `ProfileSlotNames`（`BackingStore` の `profilePath`／`olderProfilePath`／`selectedProfile`／`linkedProfileUI`、`ProfileSettingsService` の一時プロファイルの名前、`AutoProfileEntity.ProfileNames`）、`LinkedProfileMap`（`linkedProfiles`）。名前を変えても、読み出す名前が現在の名前になる。Load Profile は、実行の直前に `SpecialAction.profileId` から現在の名前を引く（`ProfileApplicationService.ResolveTarget`。Controls の合成 SA も `profileId` を持つ）。
 %% - SA の実行時の状態（`profileActions`、`ActionManager` の鍵）は名前のまま（W6 の決定）。追従のコードは、実行時に不要になったものを撤去し（`ReplaceLinkedProfileName`、`AutoProfileHolder.ReplaceProfileName`、スロットの配列の書き換え）、ID のない古いファイルのために `ReplaceControlProfileSwitchTarget`／`ReplaceActionReference`／`RemoveActionReference` を残す（TODO 付き）。名前変更の直後に、保存先のファイルを保存し直す（`SaveLinkedProfiles`、`AutoProfileHolder.Save`、アプリ設定、`RefreshProfileSwitchTargets`）。
 
+
+%% 注釈補強（2026-10-22 Phase10-Step6 反映: 統合 Step。共通の割り当て定義と、束縛の組み立ての 1 本化。I1〜I7。詳細は Phase10-Step6-Completion-Report.md、Phase10-Integration-Target-Model.md §10）
+%% - 共通の割り当て定義 `AssignmentDefinition`（`Actions/`。不変）: 設定の静的な内容（ID、名前、由来 `AssignmentOrigin`［Controls／SpecialAction］、種別、トリガー、押し続ける秒数、型のある項目 `ControlSpecialItem`、Key／Button の解釈済みの値、Extras、Macro の手順・keyType）。Controls 固有の種別（パッドへの出力、マウス、アナログマウス、素通し）は定義に入れず、`ControlBindingBuilder` に残る。
+%% - 読み込みの部品: `SpecialActionAssignmentReader`（SA → 定義）、`ControlsAssignmentReader`（Controls の Special／Key／Macro → 定義と、実行時の状態の入れ物［合成の `SpecialAction`］）。文字列（`details`／`extra`）の解釈は `SpecialActionItemMapper`（`SpecialAction` ⇄ 型のある項目）の 1 か所。`Actions.xml` と `SpecialAction` の形式は変えていない（旧版との互換を保つ）。
+%% - 束縛の組み立ては `AssignmentBindingBuilder` の 1 つ（出力と方針 = `ISpecialActionOutputFactory`［種別 × 由来の表］、入力 = 由来と種別から、`TriggerBinding` への包み）。一覧を歩く部分は `ActionBindingBuilder`（SA のリスト）と `ControlBindingBuilder`（Controls の dcs。Extras を前に置く順序と、扱えなければ dcs 全体を作らない門番）の 2 つのまま。実行時の状態は、引き続き `SpecialAction`（`TriggerBinding.Source`）が持つ（SA 由来は実物、Controls 由来は合成）。
+%% - 規則の表: `FreshPressGuardTable.For`（種別 × 由来）、`ControlOutputNatureTable`（出力の種類 = デジタル／アナログから、押下の判定の性質 `ControlOutputNature`）、`ControlsSpecialTypeTable`（Controls で実行時に束縛を作る SA 専用の種別。種別の一覧の「Controls で保存できる」も同じ表に従う）。
+%% - SA の Extras: `SpecialAction.outputExtras`（Controls の Extras と同じ書式）。`Actions.xml` の新要素 `OutputExtras`（あるときだけ）。`AssignmentBindingBuilder.BuildExtras` が別の束縛（`Synthetic_SaExtras_{device}_{SA の ID}`）を作り、SA の束縛の前に並べる。SA が成立している間だけ有効（SA のトリガー・押し続ける秒数と同じ押している間の入力。Fresh-press ガードは SA 本体と同じ）。SA の保存は SA を作り直すため、割り当て編集画面が、保存のあとに `ISpecialActionRepository.SaveActionExtras` を呼ぶ。
+%% - 画面: 割り当て編集画面（`AssignmentEditor`。旧 `SpecialActionEditor`）と出力ピッカー（`BindingWindow`）は、Controls のモードと SA のモードで共通。2 つのモードの違いは Default／Unbound の表示だけ（`ExposeMode` は SpecialAction と Control の 2 つ。Full と Keyboard は撤去）。Controls のモードで型のある項目と往復する種別ごとの入力は、`IActionTypeEditor.LoadControlItem`／`ToControlItem`（`ControlSpecialEditors` は削除）。
+%% - 撤去した暫定の構造: `forControls`、`ControlJudgement`、`ControlBindingBuilder.BuiltSpecialTypes`、`ControlSpecialEditors`、`ISpecialActionOutputFactory` の互換の入口。
+%% - 残した技術的負債: SA の出力アクション 9 クラスに重複する立ち上がりのログ（後回しを承認済み）。`SpecialAction` が実行時の状態を持つこと。ID のない古いファイルのための追従のコード。Extras を画面から付けられる SA は Press Key（Key／Button）だけ。

@@ -114,10 +114,6 @@ namespace DS4WinWPF.DS4Forms.ViewModels.SpecialActions
         public int Value { get => value; set => this.value = value; }
         public int PressReleaseIndex { get => pressReleaseIndex; set => pressReleaseIndex = value; }
         public bool NormalTrigger { get => normalTrigger; set => normalTrigger = value; }
-        public bool UnloadError
-        {
-            get => errors.TryGetValue("UnloadError", out _);
-        }
 
         public void LoadAction(SpecialAction action)
         {
@@ -378,7 +374,6 @@ namespace DS4WinWPF.DS4Forms.ViewModels.SpecialActions
 
             bool valid = true;
             List<string> valueErrors = new List<string>();
-            List<string> toggleErrors = new List<string>();
 
             if (lastActionType == DS4ControlSettings.ActionType.Key)
             {
@@ -400,15 +395,6 @@ namespace DS4WinWPF.DS4Forms.ViewModels.SpecialActions
                     RaiseErrorsChanged("Value");
                 }
             }
-            // If explicit SwitchMode says Toggle then require unload triggers
-            // Phase10-Step4c W3: このエラーは保存を止めない（解除トリガーの機能は Phase8-Step8 8b で廃止済みで、入力する画面もない。止めると Toggle の Key が保存できなくなる）。表示のみ
-            if (string.Equals(switchMode, "Toggle", StringComparison.OrdinalIgnoreCase) && string.IsNullOrEmpty(action.ucontrols))
-            {
-                toggleErrors.Add("No unload triggers specified");
-                errors["UnloadError"] = toggleErrors;
-                RaiseErrorsChanged("UnloadError");
-            }
-
             return valid;
         }
 
@@ -418,7 +404,6 @@ namespace DS4WinWPF.DS4Forms.ViewModels.SpecialActions
             {
                 errors.Clear();
                 RaiseErrorsChanged("Value");
-                RaiseErrorsChanged("UnloadError");
             }
         }
     }

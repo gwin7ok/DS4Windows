@@ -17,7 +17,7 @@ namespace DS4Windows.DI
         /// <param name="settings">編集対象のボタン設定</param>
         /// <param name="targetDevice">ランブルテスト・ライトバーのプレビュー・マクロ記録で使う実機のスロット番号。-1 は実機なし</param>
         BindingWindow CreateBindingWindow(int deviceNum, DS4ControlSettings settings, int targetDevice,
-            BindingWindow.ExposeMode expose = BindingWindow.ExposeMode.Full);
+            BindingWindow.ExposeMode expose);
 
         RecordBox CreateRecordBox(int deviceNum, DS4ControlSettings controlSettings, int targetDevice,
             bool showscan = true, bool repeatable = true, bool showPlaybackOptions = true);

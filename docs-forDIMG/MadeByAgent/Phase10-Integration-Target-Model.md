@@ -190,3 +190,25 @@ Step4d（W0〜W7。W6 は W6'）は完了した。完成形のうち、**参照�
 - 共通の割り当て定義（`AssignmentDefinition`）に、**固定 ID**（SA の `id`、Controls の割り当て）と、**切り替え先の ID**（`ProfileId`）を含める。Controls の定義は、プロファイル内の割り当てで、ID は持たない（SA は共有）。
 - 古いプロファイルのファイルへ ID を書き足す移行（起動時の一括書き込み）を用意し、`ReplaceControlProfileSwitchTarget`／`ReplaceActionReference` を撤去する（TODO）。
 - SA の実行時の状態（`profileActions`、`ActionManager` の鍵）を名前のまま残す決定（W6'）の見直しは、統合 Step で、合成 SA の鍵を整理するときに、改めて検討する。
+
+## 10. 統合 Step（Phase10-Step6）の結果（2026-10-22）
+
+統合 Step（I1〜I7。`Phase10-Step6-Plan.md`）は完了した。`Debug ALL` は、警告 0・エラー 0、テスト 2086 件と 11 件が成功した。実機確認は先送り（台帳 §27 と §28）。画面は、割り当て編集画面（`AssignmentEditor`）と出力ピッカー（`BindingWindow`）と呼ぶ。
+
+**§3 の完成形との差（計画から変わった点）**
+| 項目 | 計画（§3、§5） | 実際 |
+|---|---|---|
+| builder | 「1 本」 | **束縛の組み立て**が 1 つ（`AssignmentBindingBuilder`）。**一覧を歩く部分**は 2 つのまま（`ActionBindingBuilder`＝SA のリスト、`ControlBindingBuilder`＝Controls の dcs。Extras を前に置く順序と、扱えなければ dcs 全体を作らない門番が Controls にあるため。Phase8 の特性化テストが守る） |
+| 定義 | 状態を含めて置き換える | `AssignmentDefinition` は設定の静的な内容だけ。**実行時の状態は `SpecialAction`**（`TriggerBinding.Source`）が持つ（出力アクションが状態を書き込み、`ActionManager` が名前で引くため） |
+| Controls 固有の種別 | 定義に含めるか未定 | **含めない**（ユーザー決定）。パッドへの出力、マウス、アナログマウス、素通しは `ControlBindingBuilder` に残る。Step5（SA のアナログ出力）で取り込みを検討する |
+| 保存形式 | SA の項目を型のある形で保存 | **形式は変えず**、`SpecialActionItemMapper`（`SpecialAction` ⇄ 型のある項目）で対応（`Actions.xml` はもともと種別ごとの要素で、文字列の詰め込みは記憶上だけだったため）。旧版との互換を保つ |
+| 立ち上がりのログ | エンジン 1 か所へ | **後回し**（SA の出力アクション 9 クラスの重複する 4 行。ログ維持の規約 2.3 に触れるリスクが大きいため。承認済み） |
+| Controls の複数ボタン | 未決定 | **許さない**（ユーザー決定）。保存形式は不変 |
+| SA の Extras | 実装 | **実装**。`Actions.xml` の `OutputExtras` 要素。全種別で有効、SA が成立している間だけ。画面から付けられるのは Press Key（Key／Button）の SA だけ（Controls と同じ出力ピッカー） |
+| 暫定の構造 | 撤去 | `forControls`、`ControlJudgement`、`BuiltSpecialTypes`、`ControlSpecialEditors`、互換の入口を撤去（代わりの規則の表: `FreshPressGuardTable.For`、`ControlOutputNatureTable`、`ControlsSpecialTypeTable`） |
+| 出力ピッカー | Full／Keyboard の撤去 | 撤去。`ExposeMode` は SpecialAction と Control の 2 つ。違いは Default／Unbound の表示だけ |
+
+**引き継ぎ**
+- **W7・W8 相当（Check Battery、Multi-action を Controls へ）**: 次の作業。Controls で足すのは、(1) 保存形式（Check Battery の通知・ライトバーの 2 つの on／off を `<Special>` に）、(2) Multi-action の入力（Controls 由来でも専用の `MultiTapInputAction` を使う分岐）、(3) 画面の接続（`ControlsSpecialTypeTable` に 2 種別を足し、2 つの入力に `LoadControlItem`／`ToControlItem` を実装）と、Multi-action の未設定マクロの検証の決定。Q5（単体ボタンの Multi-action で、待ち時間のあいだ元の出力を消すか）の確認。
+- **Step5**（SA 側のアナログ出力）。
+- 残した技術的負債は `Phase10-Step6-Completion-Report.md` §5。
