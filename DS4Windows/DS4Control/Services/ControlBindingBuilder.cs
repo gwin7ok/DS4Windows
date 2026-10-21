@@ -24,6 +24,7 @@ namespace DS4Windows.Services
         private readonly IMacroPlayer _macroPlayer;   // Macro（7.8c）。省略時（テスト）は、Macro の束縛を作らず、旧経路が処理する
         private readonly IControlExtrasPort _extrasPort;   // Extras（7.8e）。省略時（テスト）は、Extras を持つ割り当ての束縛を作らず、旧経路が処理する
         private readonly ISpecialActionOutputFactory _outputFactory;   // Phase10-Step4 W4: SA 専用の種別（Special）の出力と方針。省略時（テスト）は、Special の束縛を作らない
+        private readonly ISpecialActionOutputFactory _controlsFactory;   // Phase10-Step6 I4b: Key と Macro 用。_outputFactory がなければ、最小の部品（Key と Macro だけを作る）
 
         /// <summary>
         /// Phase10-Step4 W4: Controls に割り当てられる、SA 専用の種別（<see cref="DS4ControlSettings.ActionType.Special"/>）のうち、束縛を作る種別。
@@ -48,6 +49,7 @@ namespace DS4Windows.Services
             _macroPlayer = macroPlayer;
             _extrasPort = extrasPort;
             _outputFactory = outputFactory;
+            _controlsFactory = SpecialActionOutputFactory.ForControlsKeyAndMacro(_profileSettings, macroPlayer);
         }
 
         public IReadOnlyList<IActionBinding> Build(int device)
@@ -278,17 +280,17 @@ namespace DS4Windows.Services
                         break;
                     }
                 case DS4ControlSettings.ActionType.Key:
-                    if (keys && TryInterpretKey(dcs, out KeyBindingValues values))
+                    if (keys && ControlsAssignmentReader.TryReadKey(device, dcs, out AssignmentDefinition keyDefinition, out SpecialAction keyIdentity))
                     {
                         if (hasExtras) AddExtras(device, dcs, extrasValues, result);
-                        AddKey(device, dcs, values, result);
+                        AddFromDefinition(dcs, ControlBindingKind.Key, device, keyDefinition, keyIdentity, result);
                     }
                     break;
                 case DS4ControlSettings.ActionType.Macro:
-                    if (macros && TryInterpretMacro(dcs, out int[] steps))
+                    if (macros && ControlsAssignmentReader.TryReadMacro(device, dcs, out AssignmentDefinition macroDefinition, out SpecialAction macroIdentity))
                     {
                         if (hasExtras) AddExtras(device, dcs, extrasValues, result);
-                        AddMacro(device, dcs, steps, result);
+                        AddFromDefinition(dcs, ControlBindingKind.Macro, device, macroDefinition, macroIdentity, result);
                     }
                     break;
                 case DS4ControlSettings.ActionType.Special:
@@ -454,49 +456,18 @@ namespace DS4Windows.Services
                 new IOutputAction[] { new ControlExtrasOutputAction(identity, values, _extrasPort) }, policy, identity, -1));
         }
 
-        // 設計書 §3.2（Phase8-Step7-8c-Plan.md §3.2）: Controls タブの Macro は、SA タブの Macro と同じ仕組み（MacroAction、SA と同じ押下の判定、ActionInstanceState）に載せる。
-        // 手順と keyType の解釈はここ（変換層）で行い、識別用の SpecialAction の項目として渡す。Fresh-press ガードは SA と同じく見る。割り当てたボタンの通常の出力は、毎フレーム消す（Controls の規則）
-        private void AddMacro(int device, DS4ControlSettings dcs, int[] steps, List<IActionBinding> result)
+        // Phase10-Step6 I4b: Key と Macro は、読み込みの部品（定義と、実行時の状態の入れ物）と、出力の部品（種別 × 由来の方針）を通して作る。
+        // 設計書 §3.2: Controls タブの Key は、Fresh-press ガードを見ず、トリガーのボタンを抑制せず、押していなくても毎フレーム通常の出力を消す（旧 ResetToDefaultValue）。
+        // Macro は SA と同じ仕組み（MacroAction、SA と同じ押下の判定、ActionInstanceState）に載せ、Fresh-press ガードは SA と同じく見る。割り当てたボタンの通常の出力は、毎フレーム消す
+        private void AddFromDefinition(DS4ControlSettings dcs, ControlBindingKind kind, int device, AssignmentDefinition definition, SpecialAction identity, List<IActionBinding> result)
         {
-            var identity = new SpecialAction($"Synthetic_Macro_{device}_{(int)dcs.control}", "Synthetic", "Macro", string.Join("/", steps), 0, string.Empty);
-            identity.typeID = SpecialAction.ActionTypeId.Macro;
-            identity.type = "Macro";
-            identity.keyType = dcs.keyType;
-            identity.controls = identity.name;   // 同期実行のキューの識別子（RepeatMacro のマクロは、この名前ごとのキューで動く）。ボタンごとに別にする
+            SpecialActionOutputs outputs = (_outputFactory ?? _controlsFactory).Create(device, definition, identity, -1);
+            if (outputs == null) return;
 
-            // Phase10-Step4 W3: Macro の SA 専用の 3 項目（型のある項目。Run on trigger release／Synchronized Run／Keep key state）を、SA と同じ項目へ写す。
-            // 項目がなければ（従来の Macro）、すべて偽のまま。再生側（PlayMacro）は、SA と同じく synchronized／keepKeyState を見る
-            ControlSpecialItem options = dcs.special != null && dcs.special.Type == SpecialAction.ActionTypeId.Macro ? dcs.special : null;
-            identity.pressRelease = options != null && options.RunOnRelease;
-            identity.synchronized = options != null && options.Synchronized;
-            identity.keepKeyState = options != null && options.KeepKeyState;
-
-            var policy = new BindingPolicy(respectsFreshPressGuard: FreshPressGuardTable.ForControls(ControlBindingKind.Macro), suppressesTriggerButtons: false, resetsTriggerOutput: false,
-                erasesOutputEveryFrame: true);
-            result.Add(new TriggerBinding(new ControlButtonInputAction(identity.name, dcs.control, ControlBindingKind.Macro, ControlOutputNatureTable.ForKind(ControlBindingKind.Macro),
-                    invertOnRelease: identity.pressRelease),
-                new IOutputAction[] { new MacroAction(identity, device, _macroPlayer, -1, null) }, policy, identity, -1));   // Phase10-Step4c W2: SA と同じ立ち上がりのログを出す版
-        }
-
-        private void AddKey(int device, DS4ControlSettings dcs, KeyBindingValues values, List<IActionBinding> result)
-        {
-
-            // 旧経路の合成 SpecialAction（Mapping.GetOrCreateSyntheticKeyAction）と同じ名前・種別。状態は名前で引かれる。解釈は値で渡すため、ここは識別用
-            var identity = new SpecialAction($"Synthetic_Key_{device}_{(int)dcs.control}", "Synthetic", "Key", "Key", 0, string.Empty);
-            identity.typeID = SpecialAction.ActionTypeId.Key;
-            identity.type = "Key";
-            identity.details = values.LogicalKey.ToString();
-            DS4KeyType keyType = DS4KeyType.None;
-            if (values.ScanCode) keyType |= DS4KeyType.ScanCode;
-            if (values.Toggle) keyType |= DS4KeyType.Toggle;
-            identity.keyType = keyType;
-
-            // 設計書 §3.2: Controls タブの Key は、Fresh-press ガードを見ず、トリガーのボタンを抑制せず、押していなくても毎フレーム通常の出力を消す（旧 ResetToDefaultValue）
-            var policy = new BindingPolicy(respectsFreshPressGuard: FreshPressGuardTable.ForControls(ControlBindingKind.Key), suppressesTriggerButtons: false, resetsTriggerOutput: false,
-                erasesOutputEveryFrame: true);
-            // Phase10-Step4c W4: Key（デジタルな出力）は、SA と同じ閾値で判定する（以前は Controls の判定）
-            result.Add(new TriggerBinding(new ControlButtonInputAction(identity.name, dcs.control, ControlBindingKind.Key, ControlOutputNatureTable.ForKind(ControlBindingKind.Key)),
-                new IOutputAction[] { new KeyOutputAction(identity, values, _profileSettings) }, policy, identity, -1));
+            // Phase10-Step4c W4: Key・Macro（デジタルな出力）は、SA と同じ閾値で判定する。Macro の「Run on trigger release」は、離したときに成立する入力にする
+            result.Add(new TriggerBinding(new ControlButtonInputAction(identity.name, dcs.control, kind, ControlOutputNatureTable.ForKind(kind),
+                    invertOnRelease: outputs.InvertOnRelease),
+                outputs.Outputs, outputs.Policy, identity, -1));
         }
     }
 }

@@ -29,6 +29,28 @@ namespace DS4Windows.Actions
             Func<IMapping> mappingProvider = null, IGyroCalibrationPort gyroCalibration = null,
             IControllerDisconnectPort disconnectPort = null, IBatteryCheckPort batteryCheckPort = null,
             IWheelCalibrationPort wheelCalibrationPort = null, IMacroStringPlayer macroStringPlayer = null)
+            : this(profileSettings, manager ?? throw new ArgumentNullException(nameof(manager)),
+                macroPlayer ?? throw new ArgumentNullException(nameof(macroPlayer)),
+                processLauncher ?? throw new ArgumentNullException(nameof(processLauncher)),
+                profileSwitcher ?? throw new ArgumentNullException(nameof(profileSwitcher)),
+                actionRepository, mappingProvider, gyroCalibration, disconnectPort, batteryCheckPort, wheelCalibrationPort, macroStringPlayer, true)
+        {
+        }
+
+        /// <summary>
+        /// Phase10-Step6 I4b: Controls の Key と Macro だけを作る最小の部品（<see cref="ControlBindingBuilder"/> が、出力の部品を渡されなかったとき［テスト］に使う）。
+        /// 他の種別（窓口が必要なもの）は、窓口が未接続として null を返す。
+        /// </summary>
+        public static SpecialActionOutputFactory ForControlsKeyAndMacro(IProfileSettingsService profileSettings, IMacroPlayer macroPlayer)
+            => new SpecialActionOutputFactory(profileSettings, null, macroPlayer, null, null, null, null, null, null, null, null, null, true);
+
+        // 最小の窓口だけで作る版も、この 1 本の本体を通す（flag は、公開のコンストラクターと見分けるためだけの印）
+        private SpecialActionOutputFactory(IProfileSettingsService profileSettings,
+            IManagedActionManager manager, IMacroPlayer macroPlayer, IProcessLauncher processLauncher,
+            IProfileSwitcher profileSwitcher, ISpecialActionRepository actionRepository,
+            Func<IMapping> mappingProvider, IGyroCalibrationPort gyroCalibration,
+            IControllerDisconnectPort disconnectPort, IBatteryCheckPort batteryCheckPort,
+            IWheelCalibrationPort wheelCalibrationPort, IMacroStringPlayer macroStringPlayer, bool bypassesRequiredChecks)
         {
             _actionRepository = actionRepository;
             _mappingProvider = mappingProvider;
@@ -38,10 +60,10 @@ namespace DS4Windows.Actions
             _wheelCalibrationPort = wheelCalibrationPort;
             _macroStringPlayer = macroStringPlayer;
             _profileSettings = profileSettings ?? throw new ArgumentNullException(nameof(profileSettings));
-            _manager = manager ?? throw new ArgumentNullException(nameof(manager));
-            _macroPlayer = macroPlayer ?? throw new ArgumentNullException(nameof(macroPlayer));
-            _processLauncher = processLauncher ?? throw new ArgumentNullException(nameof(processLauncher));
-            _profileSwitcher = profileSwitcher ?? throw new ArgumentNullException(nameof(profileSwitcher));
+            _manager = manager;
+            _macroPlayer = macroPlayer;
+            _processLauncher = processLauncher;
+            _profileSwitcher = profileSwitcher;
         }
 
         // Phase10-Step6 I3: 互換の入口。SA を読み込みの部品で定義にして、定義を受ける Create へ渡す（I4 で削除する。forControls は、由来に置き換わる）
@@ -59,7 +81,9 @@ namespace DS4Windows.Actions
             if (source == null) throw new ArgumentNullException(nameof(source));
 
             // 設定の内容は定義から、実行時の状態の入れ物（出力アクションが受け取る SpecialAction）は source から。由来が Controls のときは、方針を Controls の形にする
-            bool forControls = definition.Origin == AssignmentOrigin.Controls;
+            AssignmentOrigin origin = definition.Origin;
+            // Controls 由来の Key／Macro は、ログの index と ActionEntries の数（SA タブの設定の位置）を持たない（従来の Controls の束縛と同じ）
+            ISpecialActionRepository logRepository = origin == AssignmentOrigin.Controls ? null : _actionRepository;
             SpecialAction sa = source;
             ControlSpecialItem item = definition.Item;
 
@@ -68,32 +92,35 @@ namespace DS4Windows.Actions
                 case SpecialAction.ActionTypeId.Button:
                 {
                     // 設計書 §6: Press は Fresh-press ガードを見ない／Toggle は見る（規則は FreshPressGuardTable。Stage3 の ButtonSpecialActionOutput と同じ）
-                    if (!definition.Button.HasValue) return null;
+                    if (!definition.Button.HasValue || _manager == null) return null;
                     return new SpecialActionOutputs(new IOutputAction[] { new ButtonOutputAction(sa, definition.Button.Value, _manager) },
-                        Policy(forControls, definition));
+                        Policy(origin, definition));
                 }
 
                 case SpecialAction.ActionTypeId.Key:
                     if (!definition.Key.HasValue) return null;
-                    return new SpecialActionOutputs(new IOutputAction[] { new KeyOutputAction(sa, definition.Key.Value, _profileSettings, index, _actionRepository) },
-                        Policy(forControls, definition));
+                    return new SpecialActionOutputs(new IOutputAction[] { new KeyOutputAction(sa, definition.Key.Value, _profileSettings, index, logRepository) },
+                        Policy(origin, definition));
 
                 case SpecialAction.ActionTypeId.Macro:
-                    return new SpecialActionOutputs(new IOutputAction[] { new MacroAction(sa, device, _macroPlayer, index, _actionRepository) },
-                        Policy(forControls, definition), invertOnRelease: item != null && item.RunOnRelease);
+                    if (_macroPlayer == null) return null;
+                    return new SpecialActionOutputs(new IOutputAction[] { new MacroAction(sa, device, _macroPlayer, index, logRepository) },
+                        Policy(origin, definition), invertOnRelease: item != null && item.RunOnRelease);
 
                 case SpecialAction.ActionTypeId.Program:
+                    if (_processLauncher == null) return null;
                     return new SpecialActionOutputs(new IOutputAction[] { new LaunchProcessAction(sa, _processLauncher, index, _actionRepository) },
-                        Policy(forControls, definition, blocksWhileExecuting: true));
+                        Policy(origin, definition, blocksWhileExecuting: true));
 
                 case SpecialAction.ActionTypeId.Profile:
                 {
+                    if (_profileSwitcher == null) return null;
                     // Phase8-Step8 8b（ユーザー承認、2026-10-20）: 解除トリガー（uTrigger）のボタンによる復帰は、機能廃止（規約 2.2）。UI から作れず
                     // （a7277da9 で「Set Unload Trigger」を削除）、旧データ（Actions.xml）にだけ残っていた。uTrigger を持つ Profile も束縛を作り、
                     // 切替は行う。復帰は、自動（AutomaticUntrigger）のときだけ。uTrigger の値は読み込みも保存もそのまま（ファイルは変えない）。
                     UntriggerPolicy untrigger = item != null && item.AutomaticUntrigger ? UntriggerPolicy.Automatic : UntriggerPolicy.None;
                     return new SpecialActionOutputs(new IOutputAction[] { new ProfileSwitchAction(sa, device, _profileSwitcher, index, _actionRepository, _profileSettings, _mappingProvider) },
-                        Policy(forControls, definition, blocksWhileExecuting: true, untrigger: untrigger,
+                        Policy(origin, definition, blocksWhileExecuting: true, untrigger: untrigger,
                             stopOnRelease: untrigger == UntriggerPolicy.None));   // 復帰を持つ Profile は、離したエッジの Stop を呼ばない。復帰は ProcessUntrigger だけが担う（二重の復帰を防ぐ。Q4）
                 }
 
@@ -101,25 +128,25 @@ namespace DS4Windows.Actions
                     // 立ち上がりの 1 回だけ。Fresh-press ガードは既定のまま（旧経路の独自の判定と同じ効果）。実行中のブロックなし
                     if (_gyroCalibration == null) return null;
                     return new SpecialActionOutputs(new IOutputAction[] { new GyroCalibrateAction(sa, device, _gyroCalibration, index, _actionRepository) },
-                        Policy(forControls, definition));
+                        Policy(origin, definition));
 
                 case SpecialAction.ActionTypeId.DisconnectBT:
                     // 切断の要求が成功するまで、押している間は再試行する（Q3＝B）。Fresh-press ガードは既定のまま。実行中のブロックなし
                     if (_disconnectPort == null) return null;
                     return new SpecialActionOutputs(new IOutputAction[] { new DisconnectBTAction(sa, device, _disconnectPort, _profileSettings) },
-                        Policy(forControls, definition));
+                        Policy(origin, definition));
 
                 case SpecialAction.ActionTypeId.BatteryCheck:
                     // 押している間、毎フレームの色の遷移。離したときに戻す（既定の StopOnRelease）。Fresh-press ガードは既定のまま。実行中のブロックなし
                     if (_batteryCheckPort == null) return null;
                     return new SpecialActionOutputs(new IOutputAction[] { new BatteryCheckAction(sa, device, _batteryCheckPort, index, _actionRepository) },
-                        Policy(forControls, definition));
+                        Policy(origin, definition));
 
                 case SpecialAction.ActionTypeId.SASteeringWheelEmulationCalibrate:
                     // 押している間、毎フレーム判定する（立ち上がりも含む）。Fresh-press ガードは既定のまま。実行中のブロックなし
                     if (_wheelCalibrationPort == null) return null;
                     return new SpecialActionOutputs(new IOutputAction[] { new SteeringWheelCalibrateAction(sa, device, _wheelCalibrationPort) },
-                        Policy(forControls, definition));
+                        Policy(origin, definition));
 
                 case SpecialAction.ActionTypeId.MultiAction:
                 {
@@ -140,7 +167,7 @@ namespace DS4Windows.Actions
                         gestureOutputs[g] = new MacroStringAction(sa, device, macros[g], _macroStringPlayer);
 
                     return new SpecialActionOutputs(gestureOutputs,
-                        Policy(forControls, definition, stopOnRelease: false, routesOutputsByGesture: true),
+                        Policy(origin, definition, stopOnRelease: false, routesOutputsByGesture: true),
                         isMultiTap: true);
                 }
 
@@ -150,17 +177,17 @@ namespace DS4Windows.Actions
         }
 
         /// <summary>
-        /// 実行方針。SA 用（<paramref name="forControls"/> が偽）は、種別ごとの値のまま（すべて既定なら共有の <see cref="BindingPolicy.Default"/>）。
-        /// Controls 用は、Controls の既存の束縛（Key／Macro／Pad など）と同じく、トリガーのボタンを抑制せず・出力も消さず（<c>suppressesTriggerButtons: false</c>、
+        /// 実行方針。SA 用（由来が SA）は、種別ごとの値のまま（すべて既定なら共有の <see cref="BindingPolicy.Default"/>）。
+        /// Controls 用（由来が Controls）は、Controls の既存の束縛（Key／Macro／Pad など）と同じく、トリガーのボタンを抑制せず・出力も消さず（<c>suppressesTriggerButtons: false</c>、
         /// <c>resetsTriggerOutput: false</c>）、代わりに割り当てたボタンの通常の出力を毎フレーム消す（<c>erasesOutputEveryFrame: true</c>）。
         /// </summary>
-        private static BindingPolicy Policy(bool forControls, AssignmentDefinition definition, bool blocksWhileExecuting = false,
+        private static BindingPolicy Policy(AssignmentOrigin origin, AssignmentDefinition definition, bool blocksWhileExecuting = false,
             UntriggerPolicy untrigger = UntriggerPolicy.None, bool stopOnRelease = true, bool routesOutputsByGesture = false)
         {
             // Fresh-press ガードを見るかは、規則の表（FreshPressGuardTable）が決める（Phase10-Step4c W1）。Button の Toggle だけ、SA の設定に依存する
             bool toggle = definition.Button?.Toggle ?? definition.Key?.Toggle ?? false;   // Button の Toggle（SA の KeyButtonSwitchMode）。Key では表が見ない
-            bool respectsFreshPressGuard = FreshPressGuardTable.ForSpecialAction(definition.Kind, toggle);
-            if (!forControls)
+            bool respectsFreshPressGuard = FreshPressGuardTable.For(origin, definition.Kind, toggle);   // Phase10-Step6 I4b: 種別 × 由来の表
+            if (origin != AssignmentOrigin.Controls)
             {
                 bool isDefault = respectsFreshPressGuard && !blocksWhileExecuting && untrigger == UntriggerPolicy.None && stopOnRelease && !routesOutputsByGesture;
                 return isDefault

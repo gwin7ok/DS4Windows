@@ -26,6 +26,25 @@ namespace DS4Windows.Actions
         }
 
         /// <summary>
+        /// Phase10-Step6 I4b: 種別 × 由来の規則（方針の表の 1 列）。SA 由来は <see cref="ForSpecialAction"/>。Controls 由来は、Key は見ず、Macro と SA 専用の種別は見る
+        /// （<see cref="ForControls"/> の区分の規則と同じ）。
+        /// </summary>
+        public static bool For(AssignmentOrigin origin, SpecialAction.ActionTypeId type, bool toggle = false)
+        {
+            if (origin != AssignmentOrigin.Controls) return ForSpecialAction(type, toggle);
+
+            switch (type)
+            {
+                case SpecialAction.ActionTypeId.Key:
+                    return ForControls(ControlBindingKind.Key);
+                case SpecialAction.ActionTypeId.Macro:
+                    return ForControls(ControlBindingKind.Macro);
+                default:
+                    return ForControls(ControlBindingKind.Special);
+            }
+        }
+
+        /// <summary>
         /// Controls の区分ごとの規則。Macro と Special（Disconnect BT ほか。SA 専用の種別は SA の規則と同じく見る）は見る。
         /// Key、Pad、Mouse、AnalogMouse、Extras、素通し（Pad の区分）は見ない（Controls の Key などは、割り当てたボタンを毎フレーム置き換えるため）。
         /// </summary>
