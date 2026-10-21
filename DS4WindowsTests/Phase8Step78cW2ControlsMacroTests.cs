@@ -74,7 +74,7 @@ namespace DS4WindowsTests
             IActionBinding macro = bindings.Single(b => b.Source.typeID == SpecialAction.ActionTypeId.Macro);
             var input = Assert.IsType<ControlButtonInputAction>(macro.Input);
             Assert.Equal(ControlBindingKind.Macro, input.Kind);
-            Assert.Equal(ControlJudgement.Trigger, input.Judgement);
+            Assert.Equal(ControlOutputNature.Digital, input.OutputNature);
             Assert.Equal(new[] { DS4Controls.Cross }, input.Triggers.ToArray());
             Assert.IsType<MacroAction>(Assert.Single(macro.Outputs));
             Assert.True(macro.Policy.RespectsFreshPressGuard);            // SA の Macro と同じ安全弁
@@ -107,13 +107,13 @@ namespace DS4WindowsTests
             fields.triggers[(int)DS4Controls.L2] = 1;
             input.Update(new DS4State(), null, null, null, fields);
 
-            var trigger = new ControlButtonInputAction("p8s78c", DS4Controls.L2, ControlBindingKind.Macro, ControlJudgement.Trigger);
+            var trigger = new ControlButtonInputAction("p8s78c", DS4Controls.L2, ControlBindingKind.Macro, ControlOutputNature.Digital);
             var assignment = new ControlButtonInputAction("p8s78c", DS4Controls.L2);
 
             Assert.False(trigger.Evaluate(input).IsEstablished);     // 1 は、SA のトリガーの判定（100 より大きい）には届かない
             Assert.True(assignment.Evaluate(input).IsEstablished);   // Controls の Key の判定（0 より大きい）では押下
             Assert.Equal(ControlBindingKind.Key, assignment.Kind);
-            Assert.Equal(ControlJudgement.Assignment, assignment.Judgement);
+            Assert.Equal(ControlOutputNature.Analog, assignment.OutputNature);
 
             fields.triggers[(int)DS4Controls.L2] = 101;
             Assert.True(trigger.Evaluate(input).IsEstablished);

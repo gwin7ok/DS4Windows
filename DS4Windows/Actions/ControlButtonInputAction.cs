@@ -20,12 +20,12 @@ namespace DS4Windows.Actions
         private bool _armed;
 
         /// <param name="kind">所属の区分。束縛の区分（情報用）。</param>
-        /// <param name="judgement">押下の判定の種類（Key は Assignment、Macro は SA と同じ Trigger）。</param>
+        /// <param name="outputNature">出力の種類（Phase10-Step6 I4a）。デジタルは SA と同じ判定、アナログは Controls の従来の判定。決める箇所は <see cref="ControlOutputNatureTable"/>。</param>
         /// <param name="invertOnRelease">true なら、離したときに 1 回だけ成立する（Macro の Run on trigger release）。</param>
         /// <param name="delaySeconds">0 より大きいと、押し続けてこの秒数が経ったときに成立する（SA の <c>delayTime</c> と同じ規則）。</param>
         /// <param name="profileSettings">遅延の基準時刻の更新に使うデバウンス（<c>DebouncingMs</c>）の取得元。<paramref name="delaySeconds"/> が正のときだけ必要。</param>
         public ControlButtonInputAction(string name, DS4Controls control, ControlBindingKind kind = ControlBindingKind.Key,
-            ControlJudgement judgement = ControlJudgement.Assignment, bool invertOnRelease = false,
+            ControlOutputNature outputNature = ControlOutputNature.Analog, bool invertOnRelease = false,
             double delaySeconds = 0.0, IProfileSettingsService profileSettings = null)
         {
             if (delaySeconds > 0.0 && profileSettings == null) throw new ArgumentNullException(nameof(profileSettings));
@@ -34,7 +34,7 @@ namespace DS4Windows.Actions
             Name = name ?? string.Empty;
             _triggers = new[] { control };
             Kind = kind;
-            Judgement = judgement;
+            OutputNature = outputNature;
             _invertOnRelease = invertOnRelease;
         }
 
@@ -44,8 +44,8 @@ namespace DS4Windows.Actions
         /// <summary>所属の区分（7.8c）。</summary>
         public ControlBindingKind Kind { get; }
 
-        /// <summary>押下の判定の種類（7.8c）。</summary>
-        public ControlJudgement Judgement { get; }
+        /// <summary>出力の種類（Phase10-Step6 I4a。押下の判定はここから決まる）。</summary>
+        public ControlOutputNature OutputNature { get; }
 
         public string Name { get; }
 
@@ -55,8 +55,8 @@ namespace DS4Windows.Actions
         {
             if (input == null) throw new ArgumentNullException(nameof(input));
 
-            // Trigger: SA のトリガーと同じ判定（Controls の Macro。Phase8-Step7-8c-Plan.md §0）。Assignment: Controls の Key／Button の判定
-            bool active = Judgement == ControlJudgement.Trigger
+            // Digital: SA のトリガーと同じ判定（Phase8-Step7-8c-Plan.md §0、Phase10-Step4c W4）。Analog: Controls の従来の判定
+            bool active = OutputNature == ControlOutputNature.Digital
                 ? input.IsActive(_triggers[0])
                 : input is IControlTriggerInput control && control.IsControlActive(_triggers[0]);
 

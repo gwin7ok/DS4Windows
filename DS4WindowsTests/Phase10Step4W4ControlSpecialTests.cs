@@ -70,7 +70,7 @@ namespace DS4WindowsTests
         public void TheHoldSeconds_FollowTheSameRuleAsTheSaTriggerDelay()
         {
             using var h = new Harness();
-            var controls = new ControlButtonInputAction("c", DS4Controls.Cross, ControlBindingKind.Special, ControlJudgement.Trigger,
+            var controls = new ControlButtonInputAction("c", DS4Controls.Cross, ControlBindingKind.Special, ControlOutputNature.Digital,
                 delaySeconds: 0.5, profileSettings: h.Settings);
             var combo = new ComboTriggerInputAction("s", new[] { DS4Controls.Cross }, h.Settings, 0.5);
 
@@ -84,7 +84,7 @@ namespace DS4WindowsTests
 
             // 念のため、期待値そのものも固定する（0.5 秒ちょうどで成立）
             using var h2 = new Harness();
-            var action = new ControlButtonInputAction("c", DS4Controls.Cross, ControlBindingKind.Special, ControlJudgement.Trigger,
+            var action = new ControlButtonInputAction("c", DS4Controls.Cross, ControlBindingKind.Special, ControlOutputNature.Digital,
                 delaySeconds: 0.5, profileSettings: h2.Settings);
             h2.Frame(0, false);
             Assert.False(action.Evaluate(h2.Input).IsEstablished);
@@ -100,7 +100,7 @@ namespace DS4WindowsTests
         public void TheHoldSeconds_IgnoreTheInversion_LikeTheSaTrigger()
         {
             using var h = new Harness();
-            var action = new ControlButtonInputAction("c", DS4Controls.Cross, ControlBindingKind.Special, ControlJudgement.Trigger,
+            var action = new ControlButtonInputAction("c", DS4Controls.Cross, ControlBindingKind.Special, ControlOutputNature.Digital,
                 invertOnRelease: true, delaySeconds: 0.2, profileSettings: h.Settings);
 
             h.Frame(0, false);
@@ -115,8 +115,8 @@ namespace DS4WindowsTests
         public void ADelayWithoutTheSettings_IsRejected_AndNoDelayNeedsNone()
         {
             Assert.Throws<ArgumentNullException>(() =>
-                new ControlButtonInputAction("c", DS4Controls.Cross, ControlBindingKind.Special, ControlJudgement.Trigger, delaySeconds: 1.0));
-            Assert.NotNull(new ControlButtonInputAction("c", DS4Controls.Cross, ControlBindingKind.Special, ControlJudgement.Trigger));
+                new ControlButtonInputAction("c", DS4Controls.Cross, ControlBindingKind.Special, ControlOutputNature.Digital, delaySeconds: 1.0));
+            Assert.NotNull(new ControlButtonInputAction("c", DS4Controls.Cross, ControlBindingKind.Special, ControlOutputNature.Digital));
         }
 
         // ---- builder ----
@@ -143,7 +143,7 @@ namespace DS4WindowsTests
                 IActionBinding b = bindings.Single(x => x.Source.name == $"Synthetic_Special_{Device}_{(int)control}");
                 var input = Assert.IsType<ControlButtonInputAction>(b.Input);
                 Assert.Equal(ControlBindingKind.Special, input.Kind);
-                Assert.Equal(ControlJudgement.Trigger, input.Judgement);
+                Assert.Equal(ControlOutputNature.Digital, input.OutputNature);
                 Assert.Equal(new[] { control }, input.Triggers.ToArray());
                 Assert.IsType(output, Assert.Single(b.Outputs));
                 Assert.Equal(type, b.Source.typeID);

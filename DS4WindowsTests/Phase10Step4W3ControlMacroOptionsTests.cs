@@ -42,7 +42,7 @@ namespace DS4WindowsTests
         [Fact]
         public void TheInput_WithoutTheInversion_IsEstablishedWhileHeld_AsBefore()
         {
-            var action = new ControlButtonInputAction("n", DS4Controls.Cross, ControlBindingKind.Macro, ControlJudgement.Trigger);
+            var action = new ControlButtonInputAction("n", DS4Controls.Cross, ControlBindingKind.Macro, ControlOutputNature.Digital);
 
             Assert.False(action.InvertsOnRelease);
             Assert.True(action.Evaluate(InputWith(true)).IsEstablished);
@@ -53,7 +53,7 @@ namespace DS4WindowsTests
         [Fact]
         public void TheInput_WithTheInversion_ArmsOnPress_AndIsEstablishedOnceOnRelease()
         {
-            var action = new ControlButtonInputAction("n", DS4Controls.Cross, ControlBindingKind.Macro, ControlJudgement.Trigger, invertOnRelease: true);
+            var action = new ControlButtonInputAction("n", DS4Controls.Cross, ControlBindingKind.Macro, ControlOutputNature.Digital, invertOnRelease: true);
 
             Assert.True(action.InvertsOnRelease);
             Assert.False(action.Evaluate(InputWith(false)).IsEstablished);   // まだ押していない
@@ -68,7 +68,7 @@ namespace DS4WindowsTests
         [Fact]
         public void TheInput_Reset_DisarmsIt()
         {
-            var action = new ControlButtonInputAction("n", DS4Controls.Cross, ControlBindingKind.Macro, ControlJudgement.Trigger, invertOnRelease: true);
+            var action = new ControlButtonInputAction("n", DS4Controls.Cross, ControlBindingKind.Macro, ControlOutputNature.Digital, invertOnRelease: true);
 
             action.Evaluate(InputWith(true));   // 準備
             action.Reset();

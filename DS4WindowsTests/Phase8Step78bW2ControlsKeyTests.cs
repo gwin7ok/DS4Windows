@@ -40,7 +40,7 @@ namespace DS4WindowsTests
         // ---- 押下の判定: 現行の GetBoolActionMapping との一致 ----
 
         [Fact]
-        public void ControlButtonInputAction_IsEstablishedByTheControlJudgement_NotByTheSpecialActionOne()
+        public void ControlButtonInputAction_IsEstablishedByTheControlOutputNature_NotByTheSpecialActionOne()
         {
             IProfileSettingsService settings = Settings();
             var input = new TriggerInput(Device, settings);
