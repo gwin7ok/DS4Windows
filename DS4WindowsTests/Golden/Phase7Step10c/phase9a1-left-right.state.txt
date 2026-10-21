@@ -1,0 +1,42 @@
+## stick Radial none: 差なし
+## stick Radial dz10: 差なし
+## stick Radial dz10-anti20: 差なし
+## stick Radial dz40-anti20-max80: 差なし
+## stick Radial dz10-anti20-out70: 差なし
+## stick Radial dz10-anti20-out70-force: 差なし
+## stick Radial dz25-anti15-max90-out85-force: 差なし
+## stick Axial none: 差なし
+## stick Axial dz10: 差なし
+## stick Axial dz10-anti20: 差なし
+## stick Axial dz40-anti20-max80: 差なし
+## stick Axial dz10-anti20-out70: 差なし
+## stick Axial dz10-anti20-out70-force: 差なし
+## stick Axial dz25-anti15-max90-out85-force: 差なし
+## stick radial dz10-anti20 vertical-scale-150: 差なし
+## stick radial dz10-anti20 vertical-scale-60: 差なし
+## stick radial dz10 sensitivity-1.5: 差なし
+## stick radial dz10 sensitivity-0.6: 差なし
+## stick axial dz10 sensitivity-1.5 (ignored for axial): 差なし
+## stick radial dz10 square-roundness-5: 差なし
+## stick radial dz10 square-roundness-12: 差なし
+## stick radial dz10 out-curve-1: 差なし
+## stick radial dz10 out-curve-2: 差なし
+## stick radial dz10 out-curve-3: 差なし
+## stick radial dz10 out-curve-4: 差なし
+## stick radial dz10 out-curve-5: 差なし
+## stick radial dz10 rotation-30: 差なし
+## stick radial dz10 rotation-minus-45: 差なし
+## trigger none (L2 と R2): 差なし
+## trigger dz20 (L2 と R2): 差なし
+## trigger dz20-anti10 (L2 と R2): 差なし
+## trigger dz20-anti10-max90 (L2 と R2): 差なし
+## trigger dz20-anti10-max90-out60 (L2 と R2): 差なし
+## trigger dz50-anti30-max70-out80 (L2 と R2): 差なし
+## trigger sensitivity-1.4 (L2 と R2): 差なし
+## trigger sensitivity-0.7 (L2 と R2): 差なし
+## trigger out-curve-1 (L2 と R2): 差なし
+## trigger out-curve-2 (L2 と R2): 差なし
+## trigger out-curve-3 (L2 と R2): 差なし
+## trigger out-curve-4 (L2 と R2): 差なし
+## trigger out-curve-5 (L2 と R2): 差なし
+## trigger dz20-anti10-max90 out-curve-2 (L2 と R2): 差なし

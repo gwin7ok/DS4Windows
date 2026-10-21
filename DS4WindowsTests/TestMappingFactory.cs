@@ -53,7 +53,8 @@ namespace DS4WindowsTests
                 // 独立の合成状態（synthetic）に対して送出する、独立の送出役（出力先の既定はホストのアダプター）
                 syntheticDispatcher ?? new SyntheticDispatcherService(synthetic, TestHost.GetService<OutputKBMHandlerAdapter>(), profileSettings),
                 () => TestHost.GetService<IDeviceStateAccessor>(),
-                triggerEngine);
+                triggerEngine,
+                TestHost.GetService<IStickDeadZoneProcessor>());   // Phase9 9-A(1) (b): 状態のない処理なので、ホストの共有のものを使う
         }
     }
 }

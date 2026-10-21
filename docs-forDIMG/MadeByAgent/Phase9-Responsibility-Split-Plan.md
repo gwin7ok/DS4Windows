@@ -4,7 +4,7 @@
 対象ブランチ: `For-DI-migration-work`  
 上位計画書: `docs-forDIMG/DI-App-Wide-Migration-Plan.md`（本書を Phase9 として追加する）  
 関連: `Phase8-Unified-Trigger-Dispatch-Plan.md`（2026-10-19 追記［実行順序の改訂］）、`docs-forDIMG/Model-Diagram/01-Component-Dependency-Diagram.md` §2（解体の検証マトリクス）  
-状態: **計画確定（Q1〜Q6 を推奨どおり承認、2026-10-19）。着手は Phase8 の完了後**
+状態: **計画確定（Q1〜Q6 を推奨どおり承認、2026-10-19）。Phase8・Phase10 は完了。Phase9-0（再計測と準備。`Phase9-0-Plan.md`）を 2026-10-22 に実施。次は 9-A(1)（個別計画書を作り、承認を得てから着手）**
 
 ---
 
