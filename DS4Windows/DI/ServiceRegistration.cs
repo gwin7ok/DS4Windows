@@ -186,6 +186,10 @@ namespace DS4Windows.DI
             services.AddSingleton<IGyroControlsProcessor, GyroControlsProcessor>();   // Phase9 9-A(2)-A: ジャイロ → コントロールの補正（状態なし）
             services.AddSingleton<IStickInputConditioner, StickInputConditioner>();   // Phase9 9-A(2)-B: ドリフト補正・アンチスナップバック・ファズ（状態なし）
             services.AddSingleton<IFlickStickProcessor, FlickStickProcessor>();   // Phase9 9-A(2)-C: フリックスティック（状態なし）
+            services.AddSingleton<IButtonMouseMovementCalculator, ButtonMouseMovementCalculator>();   // Phase9 9-B: ボタン等 → マウスの生の移動量（マウス加速の状態をデバイスごとに持つ）
+            services.AddSingleton<IMouseMotionQuantizer, MouseMotionQuantizer>();   // Phase9 9-B: マウスの移動量の整数化（端数をデバイスごとに持つ）
+            services.AddSingleton<IGyroMouseStickBlender, GyroMouseStickBlender>();   // Phase9 9-B: ジャイロのマウススティック出力の合成（状態なし）
+            services.AddSingleton<IControlActivityReader, ControlActivityReader>();   // Phase9 9-B: コントロールが押されているかの判定（状態なし）
             services.AddSingleton<IMapping, Mapping>();
             services.AddSingleton<Func<IMapping>>(sp => () => sp.GetRequiredService<IMapping>());
             services.AddSingleton<Func<IDeviceStateAccessor>>(sp => () => sp.GetRequiredService<IDeviceStateAccessor>());

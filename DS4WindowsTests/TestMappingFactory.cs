@@ -59,7 +59,11 @@ namespace DS4WindowsTests
                 TestHost.GetService<ITriggerDeadZoneProcessor>(),   // Phase9 9-A(1) (d)
                 TestHost.GetService<IGyroControlsProcessor>(),   // Phase9 9-A(2)-A
                 TestHost.GetService<IStickInputConditioner>(),   // Phase9 9-A(2)-B
-                TestHost.GetService<IFlickStickProcessor>());   // Phase9 9-A(2)-C
+                TestHost.GetService<IFlickStickProcessor>(),   // Phase9 9-A(2)-C
+                new ButtonMouseMovementCalculator(),   // Phase9 9-B: 加速の状態を持つため、独立の instance にする（他のテストと状態を共有しない）
+                new MouseMotionQuantizer(),   // Phase9 9-B: 端数を持つため、独立の instance にする
+                TestHost.GetService<IGyroMouseStickBlender>(),   // Phase9 9-B: 状態なし
+                TestHost.GetService<IControlActivityReader>());   // Phase9 9-B: 状態なし
         }
     }
 }

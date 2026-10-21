@@ -45,8 +45,7 @@ namespace DS4WindowsTests
             Set("stickWheel", 0.0);
             Set("stickWheelDownDir", false);
             Set("pressagain", false);
-            Set("horizontalRemainder", 0.0);
-            Set("verticalRemainder", 0.0);
+            // Phase9 9-B: 旧 horizontalRemainder／verticalRemainder は MouseMotionQuantizer（TestMappingFactory が独立の instance を渡す）へ移ったため、作成時は 0 から始まる。
         }
 
         public void Dispose()

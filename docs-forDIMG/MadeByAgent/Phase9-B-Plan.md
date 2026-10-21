@@ -3,7 +3,7 @@
 作成日: 2026-10-22  
 対象ブランチ: `For-DI-migration-work`  
 上位: `Phase9-Responsibility-Split-Plan.md` 9-B、`Phase9-A1-Plan.md`・`Phase9-A2-Plan.md`（同じ進め方）  
-状態: **設計案（未承認）。承認を得るまで、コードは変えない**
+状態: **承認済み（2026-10-22。§8）。B-1〜B-3 を 1 回でまとめて実装済み（2026-10-22。ビルド・テストはユーザーの実行待ち）。次は B-2 の畳み込み（Q5）**
 
 ---
 
@@ -89,3 +89,32 @@
 ## 7. 次
 
 承認（Q1〜Q5）を得たら、B-1 から着手する。ビルド・テストが必要になった時点で、ユーザーへ依頼する（B-1 の実装後）。
+
+---
+
+## 8. 決定事項（2026-10-22、ユーザー承認）
+
+- **Q1＝まとめて 1 回**: B-1〜B-3 を 1 回で実装する（推奨は 3 回に分けることだったが、ユーザーが選んだ）。
+- **Q2＝両方、デバイスごとに分ける**: マウス加速（`mcounter`／`mouseaccel`／`prevmouseaccel`）と、移動の端数（`horizontalRemainder`／`verticalRemainder`）を、デバイスごとに持つ。**挙動の変更**（2 台以上でマウス移動を割り当てたときだけ変わる。1 台のときは変わらない）。端数は、ポインターが 1 つなので分ける利点はほとんどない（最大 1 ピクセル未満）が、加速と同じ作りにそろえるため分けた。
+- **Q3＝別の部品へ移す**: `GetBoolMappingExternal` の本体を `ControlActivityReader` へ。`IMapping` は薄い委譲で残す。
+- **Q4＝削除する**: `compare`、`MOUSESTICKANTIOFFSET`、`MOUSESTICKMINVELOCITY`（コメントアウトされた旧コードは残した）。
+- **Q5＝移した後に別コミットで畳む**: 畳み込みは未実施。**ビルド・テストでそのままの移動が合格してから**行う。
+
+## 9. 実装の結果（2026-10-22。コードを書いた。この環境に `dotnet` がないため、ビルド・テストは未実行）
+
+| 区分 | 内容 |
+|---|---|
+| 新規（契約） | `DI/IButtonMouseMovementCalculator.cs`、`DI/IMouseMotionQuantizer.cs`、`DI/IGyroMouseStickBlender.cs`、`DI/IControlActivityReader.cs` |
+| 新規（実装） | `DS4Control/Services/ButtonMouseMovementCalculator.cs`（旧 `getMouseMapping` を、そのまま移した。`ctrl`／`eState` の引数を外し、設定と経過時間は引数。加速の状態はデバイスごとの配列）、`MouseMotionQuantizer.cs`（旧 `calculateFinalMouseMovement`。端数はデバイスごとの配列）、`GyroMouseStickBlender.cs`（旧 `TempMouseJoystick` の内側）、`ControlActivityReader.cs`（旧 `GetBoolMappingExternal` の本体。設定は引数） |
+| `Mapping.cs` | 2,568 → **2,060 行**（508 行減）。`getMouseMapping`、`calculateFinalMouseMovement`、`compare`、`IsUsingGyroForControls`、加速と端数のフィールド、2 つの未使用定数を削除。`TempMouseJoystick`／`GetBoolMappingExternal` は薄い委譲に。`SampleMouseMovement` は、設定と経過時間を読んで部品を呼ぶ。コンストラクターの引数は 18 → 22 |
+| DI | 4 つの部品を Singleton で登録（`ServiceRegistration`） |
+| テスト（新規） | `Phase9BButtonMouseMovementDifferentialTests`（旧実装の写しとの差分。設定 48 通り × コントロール 15 × 方向 4 × 12 フレーム、デバイス独立、加速の増加）、`Phase9BMouseMotionQuantizerTests`（差分 20 列 × 400 回、デバイス独立）、`Phase9BGyroMouseStickBlenderTests`（6 件）、`Phase9BControlActivityReaderTests`（境界値。タッチパッド・スワイプは `Mouse` を作れないため null のみ）、`Phase9BMouseGuardTests`（移した／削除したものが `Mapping.cs` に無いこと、静的な窓口の不参照、Singleton 登録、台数ぶんの状態） |
+| テスト（追従） | `TestMappingFactory`（4 引数を追加。状態を持つ 2 つは独立の instance）、`Phase7Step8W2MappingInstanceGuardTests`（引数 22）、`MappingControlPathGlobalReferenceGuardTests`（検査対象から `getMouseMapping` を除く）、`AnalogMouseTestHarness`（端数のリセットを削除） |
+
+**差分テストの旧実装の写し**は、`getMouseMapping` と `calculateFinalMouseMovement` を、`HEAD`（切り出しの直前）のソースから機械的に写した（引数の差し替えだけ）。Phase9 の後のテスト整理まで残す。
+
+**実機確認（依頼。実装後）**: (1) スティック・ボタン・トリガーをマウス移動に割り当て、従来どおり動くこと（感度、加速）。(2) ジャイロのマウススティック出力が、通常のスティックと合成されること。(3) マクロ記録画面で、各ボタン・スティックの押下が検出されること。(4) 〔Q2 による変更〕2 台のコントローラーを同時につなぎ、両方にマウス移動を割り当てたとき、片方の加速が、もう片方の操作で途中でリセットされないこと。
+
+## 10. 次
+
+ユーザーが `Debug ALL`（ビルド・テスト）を実行する。合格したら、Q5 の畳み込み（`ButtonMouseMovementCalculator` の 8 方向の繰り返しを 1 つの補助に畳み、200 行以下にする）を別コミットで行い、再びビルド・テストを依頼する。

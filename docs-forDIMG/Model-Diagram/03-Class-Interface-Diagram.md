@@ -240,6 +240,26 @@ classDiagram
         <<interface>>
         +Process(FlickStickMappingData data, FlickStickSettings settings, double elapsedTime, byte stickX, byte stickY, byte prevStickX, byte prevStickY, ref double mouseDeltaX)
     }
+    class IButtonMouseMovementCalculator {
+        <<interface>>
+        +Calculate(int device, DS4Controls control, int mnum, DS4State cState, DS4StateFieldMapping fieldMapping, ButtonMouseInfo info, int lsDeadZone, int rsDeadZone, DeltaSettingsProcessorGroup accel, double timeElapsed) double
+    }
+    class IMouseMotionQuantizer {
+        <<interface>>
+        +Quantize(int device, ref double rawMouseX, ref double rawMouseY, out int mouseX, out int mouseY)
+    }
+    class IGyroMouseStickBlender {
+        <<interface>>
+        +Blend(GyroMouseStickInfo msinfo, byte gyroX, byte gyroY, DS4State mappedState, PostMapStickData data)
+    }
+    class IControlActivityReader {
+        <<interface>>
+        +IsActive(IProfileSettingsService settings, int device, DS4Controls control, DS4State cState, DS4StateExposed eState, Mouse tp) bool
+    }
+    class ButtonMouseMovementCalculator
+    class MouseMotionQuantizer
+    class GyroMouseStickBlender
+    class ControlActivityReader
     class StickDeadZoneProcessor
     class OutputCurveProcessor
     class TriggerDeadZoneProcessor
@@ -263,6 +283,14 @@ classDiagram
     IGyroControlsProcessor <|.. GyroControlsProcessor : implements
     IStickInputConditioner <|.. StickInputConditioner : implements
     IFlickStickProcessor <|.. FlickStickProcessor : implements
+    IButtonMouseMovementCalculator <|.. ButtonMouseMovementCalculator : implements
+    IMouseMotionQuantizer <|.. MouseMotionQuantizer : implements
+    IGyroMouseStickBlender <|.. GyroMouseStickBlender : implements
+    IControlActivityReader <|.. ControlActivityReader : implements
+    Mapping --> IButtonMouseMovementCalculator : ctor injection (Phase9 9-B。加速の状態はデバイスごと)
+    Mapping --> IMouseMotionQuantizer : ctor injection (端数はデバイスごと)
+    Mapping --> IGyroMouseStickBlender : ctor injection
+    Mapping --> IControlActivityReader : ctor injection
     Mapping --> IStickDeadZoneProcessor : ctor injection (Phase9 9-A)
     Mapping --> IOutputCurveProcessor : ctor injection
     Mapping --> ITriggerDeadZoneProcessor : ctor injection

@@ -82,7 +82,7 @@ namespace DS4WindowsTests
         {
             ConstructorInfo ctor = typeof(Mapping).GetConstructors().Single();
             ParameterInfo[] parameters = ctor.GetParameters();
-            Assert.Equal(18, parameters.Length); // Phase7-Step8 W3: ISyntheticDispatcher を追加。Phase8-Step4 W4: ITriggerDispatchEngine を追加。Phase9 9-A(1) (b): IStickDeadZoneProcessor を追加。(c): IOutputCurveProcessor を追加。(d): ITriggerDeadZoneProcessor を追加。9-A(2)-A: IGyroControlsProcessor を追加。9-A(2)-B: IStickInputConditioner を追加。9-A(2)-C: IFlickStickProcessor を追加
+            Assert.Equal(22, parameters.Length); // Phase7-Step8 W3: ISyntheticDispatcher を追加。Phase8-Step4 W4: ITriggerDispatchEngine を追加。Phase9 9-A(1) (b): IStickDeadZoneProcessor を追加。(c): IOutputCurveProcessor を追加。(d): ITriggerDeadZoneProcessor を追加。9-A(2)-A: IGyroControlsProcessor を追加。9-A(2)-B: IStickInputConditioner を追加。9-A(2)-C: IFlickStickProcessor を追加。9-B: IButtonMouseMovementCalculator／IMouseMotionQuantizer／IGyroMouseStickBlender／IControlActivityReader を追加
 
             // 実 DI ホストの部品で 1 つずつ null にして、ArgumentNullException になることを確認する
             var valid = new object[]
@@ -103,6 +103,10 @@ namespace DS4WindowsTests
                 TestHost.GetService<IGyroControlsProcessor>(),
                 TestHost.GetService<IStickInputConditioner>(),
                 TestHost.GetService<IFlickStickProcessor>(),
+                TestHost.GetService<IButtonMouseMovementCalculator>(),
+                TestHost.GetService<IMouseMotionQuantizer>(),
+                TestHost.GetService<IGyroMouseStickBlender>(),
+                TestHost.GetService<IControlActivityReader>(),
             };
 
             for (int i = 0; i < valid.Length; i++)

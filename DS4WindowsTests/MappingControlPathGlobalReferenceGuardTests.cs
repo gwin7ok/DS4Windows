@@ -24,7 +24,7 @@ namespace DS4WindowsTests
             "public void MapCustom(",
             "private void ProcessControlSettingAction(",
             "private void MapCustomAction(",   // Phase8-Step8 8b: async void → void。ReleaseActionKeys は旧枝と一緒に削除
-            "private double getMouseMapping(",
+            // Phase9 9-B: 旧 "private double getMouseMapping(" は ButtonMouseMovementCalculator へ移したため、Mapping.cs の検査対象から外した（移した先は Global を参照しない作りで、Phase9BMouseGuardTests が守る）。
         };
 
         /// <summary>Step3-6a で `IProfileSettingsService`／`IProfileActionProvider` 経由へ置換済みの `Global` メンバ名。</summary>
