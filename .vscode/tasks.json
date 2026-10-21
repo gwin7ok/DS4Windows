@@ -189,7 +189,7 @@
                 "--blame-hang-timeout",
                 "15s",
                 "-v",
-                "normal"
+                "minimal"
             ],
             "group": "test",
             "presentation": {
@@ -211,7 +211,7 @@
                 "--blame-hang-timeout",
                 "15s",
                 "-v",
-                "normal"
+                "minimal"
             ],
             "group": "test",
             "presentation": {
