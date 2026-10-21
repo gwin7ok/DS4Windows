@@ -50,9 +50,10 @@ namespace DS4Windows
 
     public class Changelog
     {
-        // Use the GitHub REST API /repos/ path so the app queries releases for the correct repo
-        public const string GITHUB_RELEASES_API_URI = "https://api.github.com/repos/gwin7ok/DS4Windows-Vader4Pro/releases";
-        public const string GITHUB_LATEST_RELEASE_API_URI = "https://api.github.com/repos/gwin7ok/DS4Windows-Vader4Pro/releases/latest";
+        // Use the GitHub REST API /repos/ path so the app queries releases for the correct repo.
+        // Phase10 以降: リポジトリの定義は ReleaseSource（Updater/）の 1 か所
+        public const string GITHUB_RELEASES_API_URI = DS4WinWPF.ReleaseSource.ReleasesApiUri;
+        public const string GITHUB_LATEST_RELEASE_API_URI = DS4WinWPF.ReleaseSource.LatestReleaseApiUri;
 
         private static bool? _newerVersionAvailable = null;
         private static Version _latestVersion;

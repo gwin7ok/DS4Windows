@@ -117,7 +117,7 @@ namespace DS4WinWPF.DS4Forms
                                 proc.WaitForExit();
                                 if (proc.ExitCode != 0)
                                 {
-                                    Util.StartProcessHelper("https://github.com/gwin7ok/DS4Windows-Vader4Pro/releases/latest");
+                                    Util.StartProcessHelper(DS4WinWPF.ReleaseSource.LatestReleasePageUri);
                                 }
                             }
                             catch { }
@@ -137,7 +137,7 @@ namespace DS4WinWPF.DS4Forms
                     try
                     {
                         // Determine repo for DS4Updater (default)
-                        string updaterRepo = "gwin7ok/DS4Updater";
+                        string updaterRepo = DS4WinWPF.ReleaseSource.UpdaterRepository;
 
                         // Query GitHub Releases API for latest release
                         string apiUrl = $"https://api.github.com/repos/{updaterRepo}/releases/latest";
@@ -227,7 +227,7 @@ namespace DS4WinWPF.DS4Forms
                                         MessageBoxButton.YesNo, MessageBoxImage.Warning);
                                     AppLogger.LogDebug($"[UpdaterInstall] User chose on InstallFailed dialog: {failMb}");
                                     if (failMb == MessageBoxResult.Yes)
-                                        Util.StartProcessHelper("https://github.com/gwin7ok/DS4Windows-Vader4Pro/releases/latest");
+                                        Util.StartProcessHelper(DS4WinWPF.ReleaseSource.LatestReleasePageUri);
                                 }
                                 else
                                 {
@@ -260,7 +260,7 @@ namespace DS4WinWPF.DS4Forms
                                                 AppLogger.LogDebug($"[UpdaterInstall] Updater process (elevated-launch) exited with code {proc2.ExitCode}");
                                                 if (proc2.ExitCode != 0)
                                                 {
-                                                    Util.StartProcessHelper("https://github.com/gwin7ok/DS4Windows-Vader4Pro/releases/latest");
+                                                    Util.StartProcessHelper(DS4WinWPF.ReleaseSource.LatestReleasePageUri);
                                                 }
                                             }
                                             catch (Exception ex) { AppLogger.LogError($"[UpdaterInstall] proc2 wait error: {ex.Message}"); }
@@ -276,7 +276,7 @@ namespace DS4WinWPF.DS4Forms
                                     MessageBoxButton.YesNo, MessageBoxImage.Information);
                                 AppLogger.LogDebug($"[UpdaterInstall] User declined elevation; chosen to open release page? {mb == MessageBoxResult.Yes}");
                                 if (mb == MessageBoxResult.Yes)
-                                    Util.StartProcessHelper("https://github.com/gwin7ok/DS4Windows-Vader4Pro/releases/latest");
+                                    Util.StartProcessHelper(DS4WinWPF.ReleaseSource.LatestReleasePageUri);
                             }
                         }
                         else
@@ -308,7 +308,7 @@ namespace DS4WinWPF.DS4Forms
                                         AppLogger.LogDebug($"[UpdaterInstall] Updater process (non-elevated-launch) exited with code {proc2.ExitCode}");
                                         if (proc2.ExitCode != 0)
                                         {
-                                            Util.StartProcessHelper("https://github.com/gwin7ok/DS4Windows-Vader4Pro/releases/latest");
+                                            Util.StartProcessHelper(DS4WinWPF.ReleaseSource.LatestReleasePageUri);
                                         }
                                     }
                                     catch (Exception ex) { AppLogger.LogError($"[UpdaterInstall] proc2 wait error: {ex.Message}"); }
@@ -326,7 +326,7 @@ namespace DS4WinWPF.DS4Forms
                                 MessageBoxButton.YesNo, MessageBoxImage.Information);
                             AppLogger.LogDebug($"[UpdaterInstall] User selected open release on exception dialog: {mb == MessageBoxResult.Yes}");
                             if (mb == MessageBoxResult.Yes)
-                                Util.StartProcessHelper("https://github.com/gwin7ok/DS4Windows-Vader4Pro/releases/latest");
+                                Util.StartProcessHelper(DS4WinWPF.ReleaseSource.LatestReleasePageUri);
                         }
                         catch (Exception ex2) { AppLogger.LogError($"[UpdaterInstall] error showing updater missing dialog: {ex2.Message}"); }
                     }
@@ -338,7 +338,7 @@ namespace DS4WinWPF.DS4Forms
             }
             catch
             {
-                try { Util.StartProcessHelper("https://github.com/gwin7ok/DS4Windows-Vader4Pro/releases/latest"); } catch { }
+                try { Util.StartProcessHelper(DS4WinWPF.ReleaseSource.LatestReleasePageUri); } catch { }
             }
             result = MessageBoxResult.Yes;
             Close();

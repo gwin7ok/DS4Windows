@@ -19,8 +19,8 @@ namespace DS4WinWPF.DS4Forms.ViewModels
 
         public string VersionText => $"v{_environmentService.ApplicationVersion}";
         public string AppTitle => "DS4Windows - Vader 4 Pro Edition";
-        public string GithubUrl => "https://github.com/gwin7ok/DS4Windows-Vader4Pro";
-        public string ChangelogUrl => "https://github.com/gwin7ok/DS4Windows-Vader4Pro/releases";
+        public string GithubUrl => DS4WinWPF.ReleaseSource.RepositoryPageUri;
+        public string ChangelogUrl => DS4WinWPF.ReleaseSource.RepositoryPageUri + "/releases";
 
         public AboutViewModel(IEnvironmentService environmentService)
         {
