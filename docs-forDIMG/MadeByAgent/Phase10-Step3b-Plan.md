@@ -67,11 +67,11 @@
 - 割り当てエディターのホスト（`controlEditorHost`）は、開いた時点の `sidebarTabControl` の幅に固定している（Step3）。タブが増えても、そのまま動く。
 
 ### 3.3 Axis Config の 4 つの入口を、Controls タブへ
-- Controls タブの `Grid` に、**行を 1 つ足し**（`Auto`。`Canvas` と `ListBox` の間）、4 つのボタンを並べる: `LS Outer`、`RS Outer`、`L2 Full Pull`、`R2 Full Pull`（§8 Q2）。
-- ボタンは、既存の `Click`（`StickOuterBindButton_Click`、`TriggerFullPullBtn_Click`）と `Tag`（`controlIndexCheck`）を、そのまま使う（ハンドラーは、変えない）。
-- 表示（Q2＝確定）: ボタンの内容は、コントロール名（例: `LS Outer`）。**現在の割り当て名は、ボタンの右に、常に表示する**（`MappingName` を結ぶラベル。`DataContext` は、従来と同じ `mappingListVM.ControlMap[…]`）。2 行 × 2 列（上: LS Outer・RS Outer、下: L2 Full Pull・R2 Full Pull）に並べて、幅（470）に収める。
-- Axis Config からは、4 つのボタンを外す。割り当て名のラベル（`lsOuterBindLb` ほか）は、**読み取り専用の表示として残す**（設定の文脈で、いまの割り当てが見える。`DataContext` の設定［666〜673 行］も、そのまま）。
-- 「Outer Btn Dead」（デッドゾーン）、「Invert」など、割り当て以外の設定は、Axis Config に残す。
+- **設計の変更（ユーザーの指示、2026-10-21。W2 の実機確認で）**: 当初は、Controls タブの絵と一覧の間に、専用のボタン 4 つ（2 行 × 2 列、横に割り当て名）を足した。ユーザーから、「絵の下の文字の一覧に、ほかのボタンと同じ形式で、4 つを表示してほしい」との指示があり、**専用のボタンは作らず、一覧の末尾に、4 つの項目を加える形**に改めた。
+- `MappingListViewModel` が、`LS Outer`、`RS Outer`、`L2 Full Pull`、`R2 Full Pull` の `MappedControl` を、一覧（`mappings`）の末尾（添字 34〜37）に加える（`ControlMap`・`ControlIndexMap` も、同じループで作る。以前の別扱い `extraControls` は、なくなった）。コントローラーの入力による選択の添字（0〜33）は、変わらない。
+- 入口は、ほかの項目と同じ（一覧のダブルクリック → `ShowControlBindingWindow` → `ShowControlAssignmentEditor`）。専用のボタンのクリックのハンドラー（`StickOuterBindButton_Click`、`TriggerFullPullBtn_Click`）は、不要になったため、なくした。Controls タブの行の構成（Canvas と一覧の 2 行）は、変えていない。
+- Axis Config からは、4 つのボタンを外す。割り当て名のラベル（`lsOuterBindLb` ほか）は、**読み取り専用の表示として残す**（`DataContext` の設定も、そのまま）。「Outer Btn Dead」（デッドゾーン）、「Invert」など、割り当て以外の設定は、Axis Config に残す。
+- 表示（Q2。専用のボタンでの「割り当て名の常時表示」）は、一覧の「LS Outer: 未割り当て」の形式の表示で満たされる。
 
 ### 3.4 二重に開かない仕組み
 - 入口がすべて左ペインのタブのボタンになると、編集中は左ペイン全体が覆われるため、ボタンを押せない（構造による防止）。

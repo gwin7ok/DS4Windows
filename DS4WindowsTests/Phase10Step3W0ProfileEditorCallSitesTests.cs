@@ -19,9 +19,9 @@ namespace DS4WindowsTests
             "ShowControlBindingWindow",
             "TiltControlsButton_Click",
             "SwipeControlsButton_Click",
-            "TriggerFullPullBtn_Click",
-            "StickOuterBindButton_Click",
         };
+        // Phase10-Step3b W2: Full Pull・Outer Bind の入口は、Controls タブの一覧の項目（LS／RS Outer、L2／R2 Full Pull）になった。
+        // 専用のボタンとクリックのハンドラー（TriggerFullPullBtn_Click、StickOuterBindButton_Click）は、なくなった。一覧の入口は、ShowControlBindingWindow（ダブルクリック）
 
         private readonly ITestOutputHelper _output;
 
@@ -85,7 +85,7 @@ namespace DS4WindowsTests
                 return;
             }
 
-            // 宣言 1 + 呼び出し 6（絵のボタン、一覧／コントローラーの入力、Tilt、Swipe、Full Pull、Outer Bind）
+            // 宣言 1 + 呼び出し 4（絵のボタン、一覧／コントローラーの入力［Full Pull・Outer Bind の項目を含む］、Tilt、Swipe）
             Assert.Equal(1 + CallerMethods.Length, Regex.Matches(source, @"ShowControlAssignmentEditor\(").Count);
         }
 

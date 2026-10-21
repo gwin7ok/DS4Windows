@@ -67,8 +67,6 @@ namespace DS4WinWPF.DS4Forms.ViewModels
         private MappedControl rsOuterBindControl;
         public MappedControl RsOuterBindControl { get => rsOuterBindControl; }
 
-        private List<MappedControl> extraControls = new List<MappedControl>();
-
         public MappingListViewModel(int devIndex, OutContType devType, IProfileSettingsService profileSettingsService)
         {
             if (profileSettingsService == null) throw new ArgumentNullException(nameof(profileSettingsService));
@@ -124,16 +122,10 @@ namespace DS4WinWPF.DS4Forms.ViewModels
             mappings.Add(new MappedControl(devIndex, DS4Controls.BLP, "Bottom Left Paddle", devType, profileSettingsService));
             mappings.Add(new MappedControl(devIndex, DS4Controls.BRP, "Bottom Right Paddle", devType, profileSettingsService));
 
-            int controlIndex = 0;
-            foreach (MappedControl mapped in mappings)
-            {
-                controlMap.Add(mapped.Control, mapped);
-                controlIndexMap.Add(mapped.Control, controlIndex);
-                controlIndex++;
-            }
-
             /*
-             * Establish data binding data for virtual button DS4ControlSettings instances
+             * Phase10-Step3b W2: 仮想ボタン（スティックの Outer Bind、トリガーの Full Pull）の DS4ControlSettings も、
+             * ほかのボタンと同じ形式で、一覧の末尾（添字 34〜37）に加える。Axis Config にあった入口を、Controls タブの一覧へ移したため
+             * （コントローラーの入力による選択の添字 0〜33 は、変わらない）
              */
             lsOuterBindControl = new MappedControl(devIndex, DS4Controls.LSOuter, "LS Outer", devType, profileSettingsService);
             rsOuterBindControl = new MappedControl(devIndex, DS4Controls.RSOuter, "RS Outer", devType, profileSettingsService);
@@ -141,15 +133,18 @@ namespace DS4WinWPF.DS4Forms.ViewModels
             l2FullPullControl = new MappedControl(devIndex, DS4Controls.L2FullPull, "L2 Full Pull", devType, profileSettingsService);
             r2FullPullControl = new MappedControl(devIndex, DS4Controls.R2FullPull, "R2 Full Pull", devType, profileSettingsService);
 
-            extraControls.Add(lsOuterBindControl);
-            extraControls.Add(rsOuterBindControl);
-            extraControls.Add(l2FullPullControl);
-            extraControls.Add(r2FullPullControl);
+            mappings.Add(lsOuterBindControl);
+            mappings.Add(rsOuterBindControl);
+            mappings.Add(l2FullPullControl);
+            mappings.Add(r2FullPullControl);
 
-            controlMap.Add(DS4Controls.LSOuter, lsOuterBindControl);
-            controlMap.Add(DS4Controls.RSOuter, rsOuterBindControl);
-            controlMap.Add(DS4Controls.L2FullPull, l2FullPullControl);
-            controlMap.Add(DS4Controls.R2FullPull, r2FullPullControl);
+            int controlIndex = 0;
+            foreach (MappedControl mapped in mappings)
+            {
+                controlMap.Add(mapped.Control, mapped);
+                controlIndexMap.Add(mapped.Control, controlIndex);
+                controlIndex++;
+            }
         }
 
         public void UpdateMappingDevType(OutContType devType)
@@ -158,21 +153,11 @@ namespace DS4WinWPF.DS4Forms.ViewModels
             {
                 mapped.DevType = devType;
             }
-
-            foreach (MappedControl mapped in extraControls)
-            {
-                mapped.DevType = devType;
-            }
         }
 
         public void UpdateMappings()
         {
             foreach (MappedControl mapped in mappings)
-            {
-                mapped.UpdateMappingName();
-            }
-
-            foreach (MappedControl mapped in extraControls)
             {
                 mapped.UpdateMappingName();
             }

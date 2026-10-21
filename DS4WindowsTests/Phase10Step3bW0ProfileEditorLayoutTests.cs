@@ -184,76 +184,96 @@ namespace DS4WindowsTests
         }
 
         [Fact]
-        public void TheAssignmentNameLabels_GetTheirDataContextFromTheMappingList_InBothTabs()
+        public void TheAssignmentNameLabels_GetTheirDataContextFromTheMappingList()
         {
             string code = Read("DS4Windows/DS4Forms/ProfileEditor.xaml.cs");
             if (code == null) return;
 
             // Axis Config の読み取り専用のラベルと、Controls タブの入口の横のラベル（Phase10-Step3b W2）。どちらも、同じ割り当て名を結ぶ
-            foreach (string suffix in new[] { "Lb", "EntryLb" })
-            {
-                Assert.Contains("l2FullPull" + suffix + ".DataContext = mappingListVM.ControlMap[DS4Controls.L2FullPull];", code);
-                Assert.Contains("r2FullPull" + suffix + ".DataContext = mappingListVM.ControlMap[DS4Controls.R2FullPull];", code);
-                Assert.Contains("lsOuterBind" + suffix + ".DataContext = mappingListVM.ControlMap[DS4Controls.LSOuter];", code);
-                Assert.Contains("rsOuterBind" + suffix + ".DataContext = mappingListVM.ControlMap[DS4Controls.RSOuter];", code);
-            }
+            Assert.Contains("l2FullPullLb.DataContext = mappingListVM.ControlMap[DS4Controls.L2FullPull];", code);
+            Assert.Contains("r2FullPullLb.DataContext = mappingListVM.ControlMap[DS4Controls.R2FullPull];", code);
+            Assert.Contains("lsOuterBindLb.DataContext = mappingListVM.ControlMap[DS4Controls.LSOuter];", code);
+            Assert.Contains("rsOuterBindLb.DataContext = mappingListVM.ControlMap[DS4Controls.RSOuter];", code);
         }
 
         [Fact]
-        public void TheControlsTab_HasTheFourEntryButtons_InARowBetweenTheCanvasAndTheList()
+        public void TheControlsTab_IsStillA470WideGrid_WithACanvasRowAndAListRow()
         {
             string xaml = Read("DS4Windows/DS4Forms/ProfileEditor.xaml");
             if (xaml == null) return;
 
             string controls = Between(xaml, "<TabItem Header=\"{lex:Loc Controls}\">", "<TabItem x:Name=\"specialActionsTab\"");
 
-            // 幅 470 の Grid。行は、Canvas（240）、4 つの入口（Auto）、一覧（*）の 3 つ
+            // Phase10-Step3b W2（ユーザーの指示）: 4 つの入口は、専用のボタンではなく、下の文字の一覧に、ほかのボタンと同じ形式で加えた。
+            // 絵と一覧の構成（幅 470、行は Canvas［240］と一覧［*］の 2 つ）は、変えていない
             Assert.Contains("<Grid Width=\"470\">", controls);
             Match rows = Regex.Match(controls, @"<Grid\.RowDefinitions>(?<body>.*?)</Grid\.RowDefinitions>", RegexOptions.Singleline);
             Assert.True(rows.Success);
-            Assert.Equal(3, Regex.Matches(rows.Groups["body"].Value, @"<RowDefinition ").Count);
+            Assert.Equal(2, Regex.Matches(rows.Groups["body"].Value, @"<RowDefinition ").Count);
             Assert.Contains("<RowDefinition Height=\"240\" />", rows.Groups["body"].Value);
-            Assert.Contains("<RowDefinition Height=\"Auto\" />", rows.Groups["body"].Value);
             Assert.Contains("<RowDefinition Height=\"*\" />", rows.Groups["body"].Value);
             Assert.Matches(@"<Canvas Grid\.Row=""0"" x:Name=""conCanvas""", controls);
-            Assert.Matches(@"<Grid x:Name=""axisEntriesPanel"" Grid\.Row=""1""", controls);
-            Assert.Matches(@"<ListBox\s+Grid\.Row=""2"" x:Name=""mappingListBox""", controls);
-
-            // 4 つのボタン: 従来と同じ Click・Tag（ハンドラーは変えない）
-            string panel = Between(controls, "<Grid x:Name=\"axisEntriesPanel\"", "<ListBox");
-            Assert.Equal(2, Regex.Matches(panel, @"Click=""StickOuterBindButton_Click""").Count);
-            Assert.Equal(2, Regex.Matches(panel, @"Click=""TriggerFullPullBtn_Click""").Count);
-            foreach (string tag in new[] { "LSOuterBind", "RSOuterBind", "L2FullPull", "R2FullPull" })
-            {
-                Assert.Contains("Tag=\"{Binding " + tag + ", Source={StaticResource controlIndexCheck}}\"", panel);
-            }
-
-            // ボタンの右に、いまの割り当て名を常に表示する
-            foreach (string label in new[] { "lsOuterBindEntryLb", "rsOuterBindEntryLb", "l2FullPullEntryLb", "r2FullPullEntryLb" })
-            {
-                Assert.Contains("x:Name=\"" + label + "\"", panel);
-            }
-
-            foreach (string text in new[] { "LS Outer", "RS Outer", "L2 Full Pull", "R2 Full Pull" })
-            {
-                Assert.Contains("Content=\"" + text + "\"", panel);
-            }
+            Assert.Matches(@"<ListBox\s+Grid\.Row=""1"" x:Name=""mappingListBox""", controls);
+            Assert.DoesNotContain("axisEntriesPanel", controls);
         }
 
         [Fact]
-        public void EveryEntryButtonOfTheProfileEditor_IsInTheLeftPane()
+        public void TheFourEntries_AreTheLastItemsOfTheMappingList_InTheSameFormatAsTheOtherButtons()
+        {
+            string vm = Read("DS4Windows/DS4Forms/ViewModels/MappingListViewModel.cs");
+            if (vm == null) return;
+
+            // 一覧の末尾に、4 つを、ほかのボタンと同じ MappedControl（表示名: 「LS Outer: …」の形式）で加える。コントローラーの入力による選択の添字（0〜33）は、変わらない
+            string[] order =
+            {
+                "mappings.Add(new MappedControl(devIndex, DS4Controls.BRP, \"Bottom Right Paddle\", devType, profileSettingsService));",
+                "lsOuterBindControl = new MappedControl(devIndex, DS4Controls.LSOuter, \"LS Outer\", devType, profileSettingsService);",
+                "rsOuterBindControl = new MappedControl(devIndex, DS4Controls.RSOuter, \"RS Outer\", devType, profileSettingsService);",
+                "l2FullPullControl = new MappedControl(devIndex, DS4Controls.L2FullPull, \"L2 Full Pull\", devType, profileSettingsService);",
+                "r2FullPullControl = new MappedControl(devIndex, DS4Controls.R2FullPull, \"R2 Full Pull\", devType, profileSettingsService);",
+                "mappings.Add(lsOuterBindControl);",
+                "mappings.Add(rsOuterBindControl);",
+                "mappings.Add(l2FullPullControl);",
+                "mappings.Add(r2FullPullControl);",
+                "foreach (MappedControl mapped in mappings)",
+            };
+
+            int at = -1;
+            foreach (string line in order)
+            {
+                int next = vm.IndexOf(line, at + 1, StringComparison.Ordinal);
+                Assert.True(next > at, line + " が、期待の順序にない");
+                at = next;
+            }
+
+            // 一覧とは別の「追加のコントロール」の扱い（extraControls）は、なくなった
+            Assert.DoesNotContain("extraControls", vm);
+
+            // ControlMap・ControlIndexMap は、一覧と同じループで作る（4 つも、含まれる）
+            Assert.Equal(1, Regex.Matches(vm, @"controlMap\.Add\(").Count);
+            Assert.Equal(1, Regex.Matches(vm, @"controlIndexMap\.Add\(").Count);
+        }
+
+        [Fact]
+        public void NoEntryClickHandlerIsLeftInTheXaml_ExceptTheOnesOfTheLeftPane()
         {
             string xaml = Read("DS4Windows/DS4Forms/ProfileEditor.xaml");
-            if (xaml == null) return;
+            string code = Read("DS4Windows/DS4Forms/ProfileEditor.xaml.cs");
+            if (xaml == null || code == null) return;
 
-            // 割り当てエディターの入口の Click ハンドラーは、すべて、左ペインのタブにある（右ペインに、入口がない）
+            // 専用のボタンがなくなったため、Full Pull・Outer Bind のクリックのハンドラーも、なくなった（入口は、一覧のダブルクリック）
+            Assert.DoesNotContain("StickOuterBindButton_Click", xaml);
+            Assert.DoesNotContain("TriggerFullPullBtn_Click", xaml);
+            Assert.DoesNotContain("StickOuterBindButton_Click", code);
+            Assert.DoesNotContain("TriggerFullPullBtn_Click", code);
+
+            // 残る入口の Click ハンドラーは、すべて、左ペインのタブにある（右ペインに、入口がない）
             string right = RightPane(xaml);
-            foreach (string handler in new[] { "StickOuterBindButton_Click", "TriggerFullPullBtn_Click", "TiltControlsButton_Click", "SwipeControlsButton_Click", "HoverConBtn_Click" })
+            foreach (string handler in new[] { "TiltControlsButton_Click", "SwipeControlsButton_Click", "HoverConBtn_Click" })
             {
                 Assert.DoesNotContain(handler, right);
                 Assert.Contains(handler, LeftPane(xaml));
             }
         }
-
     }
 }

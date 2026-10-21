@@ -665,16 +665,12 @@ namespace DS4WinWPF.DS4Forms
         {
             l2FullPullLb.DataContext = mappingListVM.ControlMap[DS4Controls.L2FullPull];
             r2FullPullLb.DataContext = mappingListVM.ControlMap[DS4Controls.R2FullPull];
-            l2FullPullEntryLb.DataContext = mappingListVM.ControlMap[DS4Controls.L2FullPull];   // Phase10-Step3b W2: Controls タブの入口の横の表示
-            r2FullPullEntryLb.DataContext = mappingListVM.ControlMap[DS4Controls.R2FullPull];
         }
 
         private void AssignStickOuterBindAssociation()
         {
             lsOuterBindLb.DataContext = mappingListVM.ControlMap[DS4Controls.LSOuter];
             rsOuterBindLb.DataContext = mappingListVM.ControlMap[DS4Controls.RSOuter];
-            lsOuterBindEntryLb.DataContext = mappingListVM.ControlMap[DS4Controls.LSOuter];   // Phase10-Step3b W2: Controls タブの入口の横の表示
-            rsOuterBindEntryLb.DataContext = mappingListVM.ControlMap[DS4Controls.RSOuter];
         }
 
         private void MappingListBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
@@ -2009,21 +2005,6 @@ namespace DS4WinWPF.DS4Forms
             }
         }
 
-        private void TriggerFullPullBtn_Click(object sender, RoutedEventArgs e)
-        {
-            Button btn = sender as Button;
-            int tag = Convert.ToInt32(btn.Tag);
-            DS4Controls ds4control = (DS4Controls)tag;
-            if (ds4control == DS4Controls.None)
-            {
-                return;
-            }
-
-            //DS4ControlSettings setting = Global.getDS4CSetting(tag, ds4control);
-            MappedControl mpControl = mappingListVM.ControlMap[ds4control];
-            ShowControlAssignmentEditor(mpControl, updateHighlight: false);
-        }
-
         private void GyroCalibration_Click(object sender, RoutedEventArgs e)
         {
             // Phase6-Step7b: 校正するのは実機（FuncDevNum＝targetDevice、実機なしならコントローラー0）。
@@ -2053,21 +2034,6 @@ namespace DS4WinWPF.DS4Forms
             MenuItem alwaysOnItem = menu.Items[itemCount - 1] as MenuItem;
 
             profileSettingsVM.UpdateGyroControlsTrig(menu, e.OriginalSource == alwaysOnItem);
-        }
-
-        private void StickOuterBindButton_Click(object sender, RoutedEventArgs e)
-        {
-            Button btn = sender as Button;
-            int tag = Convert.ToInt32(btn.Tag);
-            DS4Controls ds4control = (DS4Controls)tag;
-            if (ds4control == DS4Controls.None)
-            {
-                return;
-            }
-
-            //DS4ControlSettings setting = Global.getDS4CSetting(tag, ds4control);
-            MappedControl mpControl = mappingListVM.ControlMap[ds4control];
-            ShowControlAssignmentEditor(mpControl, updateHighlight: false);
         }
 
         private void CalibrateStick_OnClick(object sender, RoutedEventArgs e)
