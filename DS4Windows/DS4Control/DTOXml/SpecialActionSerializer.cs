@@ -34,6 +34,17 @@ namespace DS4WinWPF.DS4Control.DTOXml
             get; set;
         } = string.Empty;
 
+        // Phase10-Step4d W2: SA の固定 ID（GUID の N 形式）。古いファイルにはない。古いバージョンは、未知の属性として読み飛ばす
+        [XmlAttribute("Id")]
+        public string Id
+        {
+            get; set;
+        } = string.Empty;
+        public bool ShouldSerializeId()
+        {
+            return !string.IsNullOrEmpty(Id);
+        }
+
         [XmlElement("Trigger")]
         public string Trigger
         {

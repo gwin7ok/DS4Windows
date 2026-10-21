@@ -43,8 +43,12 @@ namespace DS4Windows.DI
         /// キー種別（<paramref name="mode"/>＝4）のランタイム状態のリセットまでを含む。
         /// </summary>
         /// <param name="mode">種別（1:マクロ、2:プログラム、3:プロファイル、4:キー、5:切断、6:バッテリー、7:複数アクション、8:ステアリング校正、9:ジャイロ校正、10:ボタン）</param>
+        /// <param name="actionId">
+        /// Phase10-Step4d W2: 保つ SA の固定 ID。名前の変更（古い名前を削除して作り直す経路）で、編集前の ID を引き継ぐために渡す。
+        /// null なら、編集（<paramref name="edit"/>）は同じ名前の SA の ID を、新規は新しい ID を使う。
+        /// </param>
         void SaveAction(string name, string controls, int mode, string details, bool edit,
-            double delayTime = 0.0, string extras = "");
+            double delayTime = 0.0, string extras = "", string actionId = null);
 
         /// <summary>
         /// アクションを削除して <c>Actions.xml</c> へ保存する（<c>Global.RemoveAction</c> と同じ動作）。

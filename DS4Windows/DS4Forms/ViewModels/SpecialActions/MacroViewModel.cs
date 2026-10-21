@@ -100,7 +100,7 @@ namespace DS4WinWPF.DS4Forms.ViewModels.SpecialActions
             extrasList.Add(keepKeyState ? "KeepKeyState" : null);
             extrasList.Add(PlaybackOptions.RepeatWhileHeld ? "Repeat" : null);
             specialActionRepository.SaveAction(action.name, action.controls, 1, string.Join("/", macro), edit,
-                extras: string.Join("/", extrasList.Where(s => !string.IsNullOrEmpty(s))));
+                extras: string.Join("/", extrasList.Where(s => !string.IsNullOrEmpty(s))), actionId: action.id);
         }
 
         public void UpdateMacroString()

@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--C-->
+
 <Actions>
   <Action Name="Golden_Macro">
     <Trigger>Cross</Trigger>
@@ -46,8 +47,6 @@
     <Trigger>Square</Trigger>
     <Type>Program</Type>
     <Details>C:/golden/c.exe</Details>
-    <Arguements>
-    </Arguements>
     <Delay>1</Delay>
   </Action>
 </Actions>

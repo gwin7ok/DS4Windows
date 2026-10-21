@@ -113,7 +113,7 @@ namespace DS4WinWPF.DS4Forms.ViewModels.SpecialActions
 
         public void SaveAction(SpecialAction action, bool edit = false)
         {
-            specialActionRepository.SaveAction(action.name, action.controls, 2, $"{filepath}?{delay.ToString("#.##", ConfigFileCulture.DecimalCulture)}", edit, delay, arguments);
+            specialActionRepository.SaveAction(action.name, action.controls, 2, $"{filepath}?{delay.ToString("#.##", ConfigFileCulture.DecimalCulture)}", edit, delay, arguments, actionId: action.id);
         }
 
         public override bool IsValid(SpecialAction action)

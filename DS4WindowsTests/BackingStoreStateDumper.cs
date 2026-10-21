@@ -21,6 +21,8 @@ namespace DS4WindowsTests
         private static readonly HashSet<string> ExcludedNames = new HashSet<string>(StringComparer.Ordinal)
         {
             "m_Profile", "m_Actions", "m_linkedProfiles", "m_controllerConfigs", "ProcessInspector", "loggedInvalidActions",
+            // Phase10-Step4d W2: SpecialAction.id（SA の固定 ID。新しく作ったものはランダム）。検査は Phase10Step4dW2ActionIdTests が持つ
+            "id",
         };
 
         public static string Dump(object root)

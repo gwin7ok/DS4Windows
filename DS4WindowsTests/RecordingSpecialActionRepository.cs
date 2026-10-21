@@ -19,6 +19,7 @@ namespace DS4WindowsTests
         public bool SavedEdit;
         public double SavedDelay;
         public string SavedExtras;
+        public string SavedActionId;   // Phase10-Step4d W2
 
         public string ActionsPath => string.Empty;
         public IReadOnlyList<SpecialAction> Actions => ActionList;
@@ -27,8 +28,9 @@ namespace DS4WindowsTests
         public void CreateStandardActions() { }
         public SpecialAction GetActionOrPlaceholder(string actionName) => null;
 
-        public void SaveAction(string name, string controls, int mode, string details, bool edit, double delayTime = 0.0, string extras = "")
+        public void SaveAction(string name, string controls, int mode, string details, bool edit, double delayTime = 0.0, string extras = "", string actionId = null)
         {
+            SavedActionId = actionId;
             SaveCount++;
             SavedName = name;
             SavedControls = controls;

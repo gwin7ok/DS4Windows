@@ -93,7 +93,7 @@ namespace DS4WinWPF.DS4Forms.ViewModels.SpecialActions
 
                 specialActionRepository.SaveAction(action.name, action.controls, 3, profilename, edit,
                     extras: action.ucontrols +
-                    (autoUntrigger ? (action.ucontrols.Length > 0 ? "/" : "") + "AutomaticUntrigger" : ""));
+                    (autoUntrigger ? (action.ucontrols.Length > 0 ? "/" : "") + "AutomaticUntrigger" : ""), actionId: action.id);
             }
         }
 

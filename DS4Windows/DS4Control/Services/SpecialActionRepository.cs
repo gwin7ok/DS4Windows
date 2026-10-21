@@ -127,9 +127,9 @@ namespace DS4Windows
         // 対象は Global.store（Global.m_Config と同じ実体）。本リポジトリの _config が Global.store 以外の場合でも、
         // Global と同じ実体に対して動作する。
         public void SaveAction(string name, string controls, int mode, string details, bool edit,
-            double delayTime = 0.0, string extras = "")
+            double delayTime = 0.0, string extras = "", string actionId = null)
         {
-            SaveActionAndReload(name, controls, mode, details, edit, delayTime, extras);
+            SaveActionAndReload(name, controls, mode, details, edit, delayTime, extras, actionId);
 
             // Phase7-Step8 W1: 旧 Global.SaveAction の末尾の処理。キー型（mode==4）を保存したときだけ、当該キーの実行時状態をリセットする
             try
@@ -167,13 +167,13 @@ namespace DS4Windows
             catch { }
         }
 
-        private void SaveActionAndReload(string name, string controls, int mode, string details, bool edit, double delayTime, string extras)
+        private void SaveActionAndReload(string name, string controls, int mode, string details, bool edit, double delayTime, string extras, string actionId)
         {
             // Mark actionDone as uninitialized before mutating actions to reduce
             // the window where MapCustomAction can observe an inconsistent size.
             ClearAllActionEntries();
 
-            _actionsXml.SaveActionNew(name, controls, mode, details, edit, delayTime, extras);
+            _actionsXml.SaveActionNew(name, controls, mode, details, edit, delayTime, extras, actionId);
 
             // Reload actions from file and verify counts to avoid duplicated in-memory entries.
             ReloadActionsAndVerify("SaveAction");

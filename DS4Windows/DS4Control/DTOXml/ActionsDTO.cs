@@ -31,6 +31,10 @@ namespace DS4WinWPF.DS4Control.DTOXml
         [XmlElement("Action")] // Use XmlElement here to skip container element
         public List<SpecialActionSerializer> actionSerializers;
 
+        /// <summary>Phase10-Step4d W2: <see cref="MapTo"/> で、ID のない（または形式が不正な）SA に、新しい ID を割り当てたか。</summary>
+        [XmlIgnore]
+        public bool AssignedNewIds { get; private set; }
+
         public ActionsDTO()
         {
             actionSerializers = new List<SpecialActionSerializer>();
@@ -123,6 +127,7 @@ namespace DS4WinWPF.DS4Control.DTOXml
 
                 if (actionSerializer != null)
                 {
+                    actionSerializer.Id = action.id;   // Phase10-Step4d W2
                     actionSerializers.Add(actionSerializer);
                 }
             }
@@ -243,6 +248,12 @@ namespace DS4WinWPF.DS4Control.DTOXml
 
                 if (tempAction != null)
                 {
+                    // Phase10-Step4d W2: ファイルの ID を引き継ぐ。ない（古いファイル）・形式が不正なら、SpecialAction が作った新しい ID のままにして、呼び出し側へ知らせる
+                    if (!string.IsNullOrEmpty(actionSerializer.Id) && Guid.TryParseExact(actionSerializer.Id, "N", out _))
+                        tempAction.id = actionSerializer.Id;
+                    else
+                        AssignedNewIds = true;
+
                     destination.actions.Add(tempAction);
                 }
             }

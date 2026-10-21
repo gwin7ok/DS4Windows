@@ -121,7 +121,32 @@ namespace DS4Windows.Services
             return saved;
         }
 
-        public void SaveActionNew(string name, string controls, int mode, string details, bool edit, double delayTime = 0.0, string extras = "")
+        /// <summary>
+        /// Phase10-Step4d W2: 同じ ID を持つ SA があれば、ファイルの順で先のものが保ち、後のものに新しい ID を振る。変えたら真。
+        /// </summary>
+        private bool FixDuplicateIds()
+        {
+            bool changed = false;
+            var seen = new HashSet<string>(StringComparer.Ordinal);
+            foreach (SpecialAction action in store.actions)
+            {
+                if (!seen.Add(action.id))
+                {
+                    action.id = Guid.NewGuid().ToString("N");
+                    seen.Add(action.id);
+                    changed = true;
+                }
+            }
+
+            return changed;
+        }
+
+        /// <param name="actionId">
+        /// Phase10-Step4d W2: 保つ ID。名前の変更（削除して作り直す経路）で、編集前の SA の ID を引き継ぐために、呼び出し側が渡す。
+        /// null のときは、編集（<paramref name="edit"/>）なら同じ名前の SA の ID を、新規なら新しい ID を使う。
+        /// </param>
+        public void SaveActionNew(string name, string controls, int mode, string details, bool edit, double delayTime = 0.0, string extras = "",
+            string actionId = null)
         {
             SpecialAction tempAction = null;
 
@@ -165,6 +190,19 @@ namespace DS4Windows.Services
                     break;
                 default:
                     break;
+            }
+
+            // Phase10-Step4d W2: ID は、編集では同じ名前の SA のものを、名前の変更では渡された ID を保つ。新規は新しい ID（SpecialAction が作る）
+            if (tempAction != null)
+            {
+                if (edit)
+                {
+                    SpecialAction existing = store.actions.Find(item => item.name == name);
+                    if (existing != null) tempAction.id = existing.id;
+                }
+
+                if (!string.IsNullOrEmpty(actionId) && Guid.TryParseExact(actionId, "N", out _))
+                    tempAction.id = actionId;
             }
 
             if (edit)
@@ -329,21 +367,34 @@ namespace DS4Windows.Services
             }
 
             XmlSerializer serializer = new XmlSerializer(typeof(ActionsDTO));
-            using StreamReader sr = new StreamReader(store.m_Actions);
-            try
+            bool idsChanged = false;
+            using (StreamReader sr = new StreamReader(store.m_Actions))
             {
-                ActionsDTO dto = serializer.Deserialize(sr) as ActionsDTO;
-                dto.MapTo(store);
+                try
+                {
+                    ActionsDTO dto = serializer.Deserialize(sr) as ActionsDTO;
+                    dto.MapTo(store);
+                    idsChanged = dto.AssignedNewIds;
+                }
+                catch (InvalidOperationException e)
+                {
+                    AppLogger.LogToGui($"Actions.xml contains invalid data. Could not be read. {e.InnerException.Message}", false);
+                    loaded = false;
+                }
+                catch (XmlException e)
+                {
+                    AppLogger.LogToGui($"Actions.xml could not be read. Invalid XML syntax. {e.InnerException.Message}", false);
+                    loaded = false;
+                }
             }
-            catch (InvalidOperationException e)
+
+            // Phase10-Step4d W2（Q4 の変更、2026-10-21）: ID のない SA（古いファイル）に新しい ID を割り当て、ID が重複した SA（ファイルの手編集・コピー）に新しい ID を振って、
+            // Actions.xml へ 1 回保存する（変更がなければ書き換えない）。ファイルの読み込みが終わってから書く
+            if (loaded && FixDuplicateIds()) idsChanged = true;
+            if (loaded && idsChanged)
             {
-                AppLogger.LogToGui($"Actions.xml contains invalid data. Could not be read. {e.InnerException.Message}", false);
-                loaded = false;
-            }
-            catch (XmlException e)
-            {
-                AppLogger.LogToGui($"Actions.xml could not be read. Invalid XML syntax. {e.InnerException.Message}", false);
-                loaded = false;
+                AppLogger.LogInfo("[DI] SpecialActionsXmlSerializer: assigned an ID to the special actions that had none (or a duplicate); saving Actions.xml");
+                SaveActions();
             }
 
             // After loading actions, clear ActionManager entries and reset runtime state

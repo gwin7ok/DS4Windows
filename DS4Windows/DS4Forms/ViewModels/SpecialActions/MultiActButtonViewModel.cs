@@ -153,7 +153,7 @@ namespace DS4WinWPF.DS4Forms.ViewModels.SpecialActions
             string details = string.Join("/", tapMacro) + "," +
                 string.Join("/", holdMacro) + "," +
                 string.Join("/", doubleTapMacro);
-            specialActionRepository.SaveAction(action.name, action.controls, 7, details, edit);
+            specialActionRepository.SaveAction(action.name, action.controls, 7, details, edit, actionId: action.id);
         }
 
         public override bool IsValid(SpecialAction action)

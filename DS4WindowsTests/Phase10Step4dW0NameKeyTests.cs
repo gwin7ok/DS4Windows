@@ -186,17 +186,7 @@ namespace DS4WindowsTests
             Assert.DoesNotContain("ActionId", xml);
         }
 
-        [Fact]
-        public void TheActionsXml_HasNoId()
-        {
-            using var ctx = new PersistenceGoldenContext();
-
-            string xml = PersistenceHarness.SaveActions(ctx, PersistenceHarness.NewStore());
-
-            Assert.DoesNotContain("ActionId", xml);
-            Assert.DoesNotContain("<Id>", xml);
-            Assert.DoesNotContain(" Id=", xml);
-        }
+        // Phase10-Step4d W2: 以前ここにあった「Actions.xml に ID がない」の検査は、W2 で Action に Id 属性を足したため、Phase10Step4dW2ActionIdTests に置き換えた
 
         // ---- 実行時の鍵 ----
 

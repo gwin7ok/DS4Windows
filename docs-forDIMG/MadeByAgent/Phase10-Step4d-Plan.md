@@ -126,4 +126,11 @@
   - golden: 保存されたプロファイル XML の `<ProfileId>`（保存のたびに変わる）は、比較の正規化で除いた（`PersistenceGoldenContext.Normalize`）。golden のファイルは変更なし。ID の検査は新しいテストが持つ。
   - テスト: `Phase10Step4dW1ProfileIdTests`（15 件。保存で先頭に ID、上書きで保つ・別名で新しい ID、名前変更で変わらない、起動時の割り当て［内容を保つ、安定、コピーで付け替え、作成日時が同じなら名前順、書けない・壊れたファイルは報告、フォルダーなし］、`EnsurePersisted`、`TryResolve`、形式が不正な ID、DI の登録と起動の配線）。`Phase10Step4dW0NameKeyTests` の保存形式の検査を、新しい形（プロファイルに ID あり、SA への参照は名前）へ更新した。
   - 実機確認: 台帳 §27 の P10-90（統合版に追加）。先送り。
-  - 次: W2（SA の ID）。指示があるまで始めない（設計を説明して承認を得る）。
+- **W2（完了 2026-10-21。`Debug ALL` 成功: 警告 0・エラー 0、テスト 1940 件と 11 件が成功。実機確認 P10-91 は先送り）**: SA の ID。参照はまだ名前のまま（追加のみ）。
+  - 保存形式: `Actions.xml` の `Action` に `Id` 属性（GUID の `N` 形式。`SpecialActionSerializer.Id`）。古いバージョンは、未知の属性として読み飛ばす。メモリでは `SpecialAction.id`（コンストラクターで新しい ID を割り当て、読み込みでファイルの ID に置き換える）。
+  - 起動時の一括割り当て（W1 と同じ方針）: `SpecialActionsXmlSerializer.LoadActions` が、ID のない（または不正な）SA に新しい ID を割り当て、重複（ファイルの順で先のものが保ち、後のものに新しい ID）を付け替えて、`Actions.xml` を 1 回保存する。変更がなければ書き換えない。読み込みの `StreamReader` を閉じてから書く。
+  - 編集・名前変更での引き継ぎ: `ISpecialActionRepository.SaveAction` に省略可能な `actionId` を追加。8 か所の保存の呼び出しが `actionId: action.id` を渡す。`ActionEditorViewModel.SetAction` が、保存済みの SA の ID を、保存用の `SpecialAction` へ写す。`SaveActionNew` は、編集では同じ名前の SA の ID を、名前の変更では渡された ID を保ち、新規は新しい ID にする。
+  - golden: `Actions.xml` の `Id` 属性は、比較の正規化で除いた。状態のダンプ（`BackingStoreStateDumper`）から、`id` を除いた。**`actions.xml` の golden を更新した**: 旧形式の保存（`SpecialActionsXmlSerializer.SaveAction`。テストの準備だけが使う）は、最後に `LoadActions` を呼ぶため、ID の割り当てで `Actions.xml` が DTO の書式で保存し直される。その結果、コメントの後の空行が 1 つ増え、空の `<Arguements>` 要素がなくなった（意図した変更）。
+  - テスト: `Phase10Step4dW2ActionIdTests`（12 件。保存で ID、往復、編集で保つ、名前変更で引き継ぐ［渡さなければ新しい ID、不正な ID は無視］、ID のない古いファイルへの割り当てと 1 回の保存、ID があれば書き換えない、重複・不正な ID の付け替え、新規インストールの既定の SA、古い読み方でも読める、編集画面が ID を引き継ぐ、8 か所の呼び出し）。`RecordingSpecialActionRepository` ほか、`ISpecialActionRepository` を実装するテスト用の偽物 3 つに、`actionId` を追加。`Phase10Step4dW0NameKeyTests` の「Actions.xml に ID がない」の検査を削除（W2 のテストへ置き換え）。
+  - 実機確認: 台帳 §27 の P10-91（統合版に追加）。先送り。
+  - 次: W3（保存する参照を ID に: SA と Controls の Load Profile、`<ProfileActions>`）。指示があるまで始めない（設計を説明して承認を得る）。

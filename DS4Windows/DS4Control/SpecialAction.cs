@@ -55,6 +55,9 @@ namespace DS4Windows
         public enum KeyButtonSwitchModeEnum { Press, Toggle }
 
         public string name;
+        // Phase10-Step4d W2（Phase10-Step4d-Plan.md §3）: SA の固定 ID（GUID の N 形式）。Actions.xml の Action の Id 属性に保存する。名前を変えても変わらない
+        // （編集では、保存済みの SA の ID を引き継ぐ）。新しく作る SA は、ここで新しい ID になる。保存済みのものは、読み込みで、ファイルの ID に置き換える
+        public string id = Guid.NewGuid().ToString("N");
         public List<DS4Controls> trigger = new List<DS4Controls>();
         public string type;
         public ActionTypeId typeID;

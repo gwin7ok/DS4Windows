@@ -145,6 +145,9 @@ namespace DS4WinWPF.DS4Forms.ViewModels
             }
 
             action.typeID = typeCatalog.TypeIds[actionTypeIndex];
+
+            // Phase10-Step4d W2: 保存済みの SA を編集するときは、その ID を引き継ぐ（名前を変えると、古い名前を削除して作り直すため、渡さないと ID が変わる）
+            if (editTarget.SavedAction != null) action.id = editTarget.SavedAction.id;
         }
 
         public override bool IsValid(SpecialAction action)

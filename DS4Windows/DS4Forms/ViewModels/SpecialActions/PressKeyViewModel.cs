@@ -364,12 +364,12 @@ namespace DS4WinWPF.DS4Forms.ViewModels.SpecialActions
             if (lastActionType == DS4ControlSettings.ActionType.Button && lastActionBtn >= 0)
             {
                 specialActionRepository.SaveAction(action.name, action.controls, 10, lastActionBtn.ToString(), edit,
-                    extras: $"{modeToSave}\n{action.ucontrols}");
+                    extras: $"{modeToSave}\n{action.ucontrols}", actionId: action.id);
                 return;
             }
             specialActionRepository.SaveAction(action.name, action.controls, 4,
                 $"{value}{(useScanCode ? " Scan Code" : "")}", edit,
-                extras: $"{modeToSave}\n{action.ucontrols}");
+                extras: $"{modeToSave}\n{action.ucontrols}", actionId: action.id);
         }
 
         public override bool IsValid(SpecialAction action)
