@@ -730,3 +730,10 @@ classDiagram
 %% 注釈補強（2026-10-21 Phase10-Step3b 反映: 割り当てエディターの入口を、すべて左ペインのタブへ）
 %% - `ProfileEditor` の画面構成: 左ペイン（`sidebarTabControl`）は、Controls、Special Actions、Touchpad、ジャイロ、Controller Readings。右ペイン（`profileSettingsTabCon`）は、Axis Config、Lightbar、Other。割り当て操作の入口（Controls の絵のボタン・一覧、Tilt、Swipe、スティックの Outer Bind、トリガーの Full Pull）は、すべて左ペインのタブにあり、編集中は左ペイン全体が割り当てエディターで覆われるため、二重に開けない（`leftPaneEditor` の判定は、コントローラーの入力［タイマー］経由の安全装置）。
 %% - `MappingListViewModel` の一覧は、スティックの Outer Bind（LS／RS）とトリガーの Full Pull（L2／R2）の 4 項目を、末尾（添字 34〜37）に含む（以前の別扱い `extraControls` は廃止）。専用のボタンのクリックのハンドラーは、なくなった。
+
+%% 注釈補強（2026-10-21 Phase10-Step4 反映: Controls での SA 専用の種別。W6 で締め）
+%% - `DS4ControlSettings` に `ActionType.Special` と `special`（`ControlSpecialItem`。型のある項目: 種別、Hold 秒数、Macro の 3 項目、Program、Profile、BatteryCheck、MultiAction の項目）を足した。`Profile.xml` の `<Control><Special>` に、ボタンごとの要素（`Type` 属性）として保存する（`ControlSpecialItemXml`）。既存の節の形式・順序は不変。
+%% - `ISpecialActionOutputFactory`／`SpecialActionOutputFactory`／`SpecialActionOutputs`（`Actions/`）が、SA の種別ごとの出力アクション・方針・入力の種類を作る。`ActionBindingBuilder` は、これを使う。`ControlBindingBuilder` は、Special の割り当て（Disconnect BT、Calibrate gyro、Calibrate sixaxis wheel、Launch Program、Load Profile）で、`forControls: true`（抑制せず・出力を消さず・割り当てたボタンの出力を毎フレーム消す）で使う。Macro の 3 項目は、`AddMacro` が合成 `SpecialAction` へ写す。
+%% - `ControlButtonInputAction` は、離したとき成立（`invertOnRelease`）と押し続ける秒数（`delaySeconds`）を持つ。`ControlBindingKind.Special` を追加。
+%% - 画面: `ControlSettingsEditTarget` が、`ControlSpecialEditors`（秒数の入力、Launch Program、Load Profile）と型のある項目を往復する。`CanWrite` が、Load Profile の未選択の Save を止める。`IProfileRepository.ReplaceControlProfileSwitchTarget` が、プロファイルの名前変更で、全プロファイルの `<Special>` の切り替え先を書き換える。
+%% - 暫定（統合の Step で整理）: `forControls`、`ControlJudgement`、`ControlBindingBuilder.BuiltSpecialTypes`、`ControlSpecialEditors`。Check Battery と Multi-action は、保存形式のみ（画面・実行は統合後）。

@@ -15,9 +15,12 @@ Step1: `Phase10-Step1-Plan.md`
 | Step2 | 共通の編集画面の骨格（ViewModel の分離、Controls／SA の 2 モード化、優先順位・抑制の仕様の特性化テスト） | **完了**（2026-10-21。W0〜W5。ビルド・テスト成功、実機確認済み） | `Phase10-Step2-Plan.md`（§9 に完了の記録、未接続のコードの一覧、Step3・4 への引き継ぎ） |
 | Step3（繰り上げ） | **Controls タブを割り当てエディターへ接続する**（選択ダイアログ `BindingWindow`＝出力ピッカーの統一、6 か所の呼び出しを、左ペイン全体に重ねる割り当てエディターへ切り替え） | **完了（2026-10-21）**。完了の記録は `Phase10-Step3-Plan.md` §10。実機確認の台帳は `Phase6-Step11-RealDevice-Verification-Checklist.md` §15（P10-21 は未確認） | `Phase10-Step3-Plan.md` |
 | Step3b（追加） | Touchpad タブとジャイロタブを左ペインへ移す。Axis Config の 4 つの入口を、Controls タブの一覧へ加える（レイアウトのみ） | **完了（2026-10-21）**。完了の記録は `Phase10-Step3b-Plan.md` §9。実機確認の台帳は `Phase6-Step11-RealDevice-Verification-Checklist.md` §16（P10-26 まで確認済み。P10-21 のみ未確認） | `Phase10-Step3b-Plan.md` |
-| Step4 | 保存形式の拡張と、Controls での SA 専用の種別の実行（型のある項目の定義、`Profile.xml` への保存、出力アクションの作り方の共通化、画面の解除を、群ごとに縦通し） | W0〜W5 完了（2026-10-21。実機確認の先送り: W5 の P10-47〜51、W4 の P10-44、W3 の P10-39）。W6（Load Profile）は実装完了、実機確認 P10-52〜57 は未確認。次は W7（第 5 群: Check Battery）。Q5 は最後の群で判断 | `Phase10-Step4-Plan.md` |
-| Step5 | SA 側のアナログ出力（旧 Step4b） | 未着手 | |
-| Step6 | SA の文字列の受け渡しを型のある項目へ（Q7）、旧画面の撤去・改名、モデル図・文書の更新、完了報告書 | 未着手 |  |
+| Step4 | 保存形式の拡張と、Controls での SA 専用の種別の実行（型のある項目の定義、`Profile.xml` への保存、出力アクションの作り方の共通化、画面の解除を、群ごとに縦通し） | **W6 で締め**（2026-10-21、ユーザー決定）。W0〜W6 の実装は完了（Macro の 3 項目、Disconnect BT、較正 2 種、Launch Program、Load Profile）。**W7（Check Battery）・W8（Multi-action。Q5 を含む）は、統合後へ繰り延べ**。実機確認は未確認のまま進む（P10-39、44、47〜51、52〜57。仕様変更・統合の後に回帰としてまとめて確認） | `Phase10-Step4-Plan.md`（§10「Step4 の締め」） |
+| Step4c（仮称・新設） | **仕様変更**: Controls と SA の共通度を高める（押下判定の閾値、Fresh-press ガード、元の出力の扱い、ログ、プロファイルの固定 ID、Hold の共有、検証の揃え）。項目ごとに、ユーザーの承認を得て、採否を決める。実機の挙動が変わるため、構造の統合とは別の Step | 計画書 `Phase10-Step4c-Plan.md` を作成。採否は確定（項目 1・2・4・7 を採用。3・6 は見送り。5 は Step4d へ）。Wave の着手の承認待ち | `Phase10-Step4c-Plan.md` |
+| Step4d（新設） | **固定 ID**: プロファイルと SA の両方で、名前をキーにしているもの（`ProfileActions`、Load Profile の切り替え先［SA と Controls］、リンクプロファイル、自動プロファイルほか）を、固定 ID をキーにする。名前変更の追従（`ReplaceActionReference`、`ReplaceProfileSwitchTarget`、`ReplaceControlProfileSwitchTarget`）が不要になる。既存ファイルの移行、ID の重複、取り込みの扱いを設計する | 未着手（Step4c の後に、独立の計画書 `Phase10-Step4d-Plan.md` を作る） | |
+| Step6' （旧 Step6 を前倒し） | **統合**: SA の文字列の受け渡しを型のある項目へ（Q7）、`ActionBindingBuilder`／`ControlBindingBuilder` の統合、暫定の構造（`forControls`、`ControlJudgement`、`BuiltSpecialTypes`、`ControlSpecialEditors`）の整理、`SpecialActionEditor` → `AssignmentEditor` の改名、旧 `BindingWindow` の Full／Keyboard の撤去。最初に、Controls にも複数ボタンの組み合わせを許すか（8）を、ユーザーに確認する | 未着手 | |
+| （W7・W8 相当） | Check Battery と Multi-action を Controls へ（統合後は、種別の追加が 1 か所で済む）。Q5 の判断を含む | 統合後 | |
+| Step5 | SA 側のアナログ出力（旧 Step4b） | 未着手（最後） | |
 
 ## 2. Step1 の Wave
 

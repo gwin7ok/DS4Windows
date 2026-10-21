@@ -69,7 +69,7 @@ Controls のボタン 1 つの割り当てに、**SA 専用の種別**を、保�
 2. **W1: 型のある項目と保存・読み込み**（画面なし・実行なし）: §3.1・§3.2。往復のテストを先に作る。
 3. **W2: 出力アクションの作り方の共通化**（動作は変えない）: §3.3 の取り出し。SA の束縛が、変わらないこと（W0 のテストで固定）。
 4. **W3: 第 1 群の縦通し**（案: Macro の SA 専用の項目）: 保存・読み込み・実行・画面（3 つのチェックボックスの表示）。実機確認。
-5. **W4 以降: 群ごとに、同じ縦通し**（案: Disconnect BT、Calibrate gyro／sixaxis wheel → Launch Program → Load Profile → Check Battery → Multi-action）。簡単で、危険の少ないものから。各群で、実機確認と、優先順位・抑制の規則の確認。
+5. **W4 以降: 群ごとに、同じ縦通し**（**2026-10-21 の改訂: W6 で締める。W7・W8 は統合後へ繰り延べ**。§10 の「Step4 の締め」）（案: Disconnect BT、Calibrate gyro／sixaxis wheel → Launch Program → Load Profile → Check Battery → Multi-action）。簡単で、危険の少ないものから。各群で、実機確認と、優先順位・抑制の規則の確認。
 6. **最終 W: 文書**。
 
 ## 6. テスト
@@ -95,7 +95,7 @@ Controls のボタン 1 つの割り当てに、**SA 専用の種別**を、保�
 - **Q2＝`DS4ControlSettings.actionType` に `Special` を足し、型のある項目を別のプロパティで持つ（確定、2026-10-21）**。既存の 4 種別（Default／Key／Button／Macro）の処理は、変えない。
 - **Q3＝アナログ入力（スティック、L2／R2）に割り当てたときの判定は、SA の閾値を使う（確定、2026-10-21）**。SA と同じ動作にする。
 - **Q4＝SA 専用の種別でも、割り当てたボタンの通常の出力は、毎フレーム消す（確定、2026-10-21）**。Controls の割り当ては、すべて、そのボタンの既定の出力を置き換える（R10）。
-- **Q5: Multi-action の扱い**: 単体ボタンの Multi-action（`MultiTapInputAction`）を、最後の群で、実現可否を確認してから決める（推奨）。
+- **Q5: Multi-action の扱い**: 単体ボタンの Multi-action（`MultiTapInputAction`）を、最後の群で、実現可否を確認してから決める（推奨）。**（2026-10-21 の改訂: 統合後の Step へ移す。W8 相当の作業の前に判断する）**
 
 ## 10. 進捗の記録
 
@@ -142,3 +142,13 @@ Controls のボタン 1 つの割り当てに、**SA 専用の種別**を、保�
   - テスト: `Phase10Step4W6ControlProfileTests`（束縛、空の切り替え先、実行、押して 1 回の切り替えと離して 1 回の復帰、編集対象の往復、`CanWrite`、保存と再読み込み、名前変更の書き換え）。テストの記録用の切り替え役は、本物と同じく、状態の初期化と一時プロファイルの使用を行う。
   - 実機確認（台帳 §21 P10-52〜57）: 未確認。
   - 次: W7（第 5 群: Check Battery）。指示があるまで始めない。
+
+### Step4 の締め（2026-10-21、ユーザー決定）
+
+- **Step4 は W6 で締める**。W7（Check Battery）と W8（Multi-action。Q5 の判断を含む）は行わず、**統合後へ繰り延べる**。
+  - 状態: Check Battery と Multi-action は、Controls の種別の一覧でグレーアウトのまま。保存形式の `<Special>` は、両方の項目（`EmptyColor`／`FullColor`、`TapMacro`／`HoldMacro`／`DoubleTapMacro`）を読み書きできる（W1）。**画面と実行の接続が未実装**（`ControlBindingBuilder.BuiltSpecialTypes` に含めておらず、種別の保存可否も SA のみ）。
+  - Q5（単体ボタンの Multi-action）は、統合後の Step で判断する。
+- **理由と新しい順序**: Controls と SA の共通度を高める仕様変更（押下判定の閾値、Fresh-press ガード、元の出力の扱い、ログ、プロファイルの固定 ID、Hold の共有、検証の揃え）と、builder の統合を先に行うと、種別の追加が 1 か所で済むため。順序: 先送りの実機確認 → **仕様変更の Step（仮称 Step4c）** → **統合の Step（旧 Step6 を前倒し）** → W7・W8 相当 → Step5（SA 側のアナログ出力）。
+- **先送りの実機確認（未確認のまま進む）**: W3 の P10-39（Synchronized Run）、W4 の P10-44（ホイール較正の 1→2 以降）、W5 の P10-47〜51（Launch Program）、W6 の P10-52〜57（Load Profile、名前変更への追従を含む）。仕様変更・統合の後に、**回帰としてまとめて確認する**（台帳に明記）。変更前に消化しておくと、変更後の問題と切り分けられるが、ユーザーが「未確認のまま進む」ことを選んだ。
+- **統合・仕様変更の Step に持ち越す暫定の構造**: `forControls`（factory の Controls 用の 3 フラグ）、`ControlJudgement`、`ControlBindingBuilder.BuiltSpecialTypes`、`ControlSpecialEditors`、`ControlSettingsEditTarget` の種別ごとの分岐。
+- **既知の課題（別件。仕様変更の Step で扱う）**: SA 側の `IsValid`（`LaunchProgramViewModel`、`LoadProfileViewModel`、`SpecialActionViewModel` ほか）が、エラーを表示するだけで常に true を返す問題。`LaunchProgramViewModel.IsValid` は `filepath` が null のとき `NullReferenceException`。W6 では Load Profile だけ、Controls の未選択の Save を許さない（`CanWrite`）。
