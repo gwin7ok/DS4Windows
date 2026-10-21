@@ -86,17 +86,13 @@ namespace DS4Windows
         // Phase6-Step10-4-3a: ViGEmBus のバージョンは RefreshViGEmBusInfo で実行時に更新されるため、都度読み取る関数で受け取る
         private readonly System.Func<System.Version> vigemBusVersionProvider;
 
-        // Phase7-Step10d W3（Q4＝A）: ステアリングホイールのエミュレーションの軸は、生成した出力デバイスへ関数で渡す（旧: 出力デバイスが Global を参照していた）
-        private readonly System.Func<int, SASteeringWheelEmulationAxisType> steeringWheelAxisProvider;
 
         public OutputSlotManager(System.Func<System.Version> vigemBusVersionProvider,
-            System.Func<int, SASteeringWheelEmulationAxisType> steeringWheelAxisProvider,
             int slotLimit)
         {
             if (slotLimit <= 0)
                 throw new System.ArgumentOutOfRangeException(nameof(slotLimit));
             outputDevices = new OutputDevice[slotLimit];
-            this.steeringWheelAxisProvider = steeringWheelAxisProvider ?? throw new System.ArgumentNullException(nameof(steeringWheelAxisProvider));
             this.vigemBusVersionProvider = vigemBusVersionProvider ?? throw new System.ArgumentNullException(nameof(vigemBusVersionProvider));
             outputSlots = new OutSlotDevice[slotLimit];
             for (int i = 0; i < slotLimit; i++)
@@ -148,11 +144,6 @@ namespace DS4Windows
                 case OutContType.None:
                 default:
                     break;
-            }
-
-            if (outputDevice != null)
-            {
-                outputDevice.SteeringWheelAxisProvider = steeringWheelAxisProvider;
             }
 
             return outputDevice;

@@ -50,7 +50,6 @@ namespace DS4Windows
         public ushort ds4Timestamp = 0;
         public SixAxis Motion = null;
         public static readonly int DEFAULT_AXISDIR_VALUE = 127;
-        public Int32 SASteeringWheelEmulationUnit;
 
         public struct TrackPadTouch
         {
@@ -95,7 +94,6 @@ namespace DS4Windows
             Motion = new SixAxis(0, 0, 0, 0, 0, 0, 0.0);
             TrackPadTouch0.IsActive = false;
             TrackPadTouch1.IsActive = false;
-            SASteeringWheelEmulationUnit = 0;
             OutputLSOuter = OutputRSOuter = 0;
         }
 
@@ -163,7 +161,6 @@ namespace DS4Windows
             Motion = state.Motion;
             TrackPadTouch0 = state.TrackPadTouch0;
             TrackPadTouch1 = state.TrackPadTouch1;
-            SASteeringWheelEmulationUnit = state.SASteeringWheelEmulationUnit;
             OutputLSOuter = state.OutputLSOuter;
             OutputRSOuter = state.OutputRSOuter;
         }
@@ -237,7 +234,6 @@ namespace DS4Windows
             state.Motion = Motion;
             state.TrackPadTouch0 = TrackPadTouch0;
             state.TrackPadTouch1 = TrackPadTouch1;
-            state.SASteeringWheelEmulationUnit = SASteeringWheelEmulationUnit;
             state.OutputLSOuter = OutputLSOuter;
             state.OutputRSOuter = OutputRSOuter;
         }

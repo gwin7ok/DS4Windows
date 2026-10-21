@@ -24,14 +24,9 @@ namespace DS4Windows
     {
         protected bool connected;
 
-        // Phase7-Step10d W3（Q4＝A）: スロットのステアリングホイールのエミュレーションの軸を返す関数。OutputSlotManager が、デバイスの生成時に設定する。
-        // 未設定のとき（テスト）は None として扱う。
-        public Func<int, SASteeringWheelEmulationAxisType> SteeringWheelAxisProvider { get; set; }
-
-        protected SASteeringWheelEmulationAxisType GetSteeringWheelEmulationAxis(int device)
-            => SteeringWheelAxisProvider?.Invoke(device) ?? SASteeringWheelEmulationAxisType.None;
-
+        // Phase9 Steering 削除 W3: 旧「SteeringWheelAxisProvider／GetSteeringWheelEmulationAxis」（ステアリングの軸の出力先の取得口）は、機能ごと削除した。
         public abstract void ConvertandSendReport(DS4State state, int device);
+
         public abstract void Connect();
         public abstract void Disconnect();
         public abstract void ResetState(bool submit=true);

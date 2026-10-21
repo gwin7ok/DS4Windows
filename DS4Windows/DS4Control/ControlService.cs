@@ -337,7 +337,6 @@ namespace DS4Windows
             }
 
             outputslotMan = new OutputSlotManager(() => _environmentService.ViGEmBusVersion,
-                slot => _profileSettings.GetSASteeringWheelEmulationAxis(slot),
                 _controllerSlotLimit);
             //outputslotMan.SlotAssigned += OutputslotMan_SlotAssigned;
             deviceOptions = _appSettings.DeviceOptions;
@@ -3019,33 +3018,7 @@ namespace DS4Windows
                     }
                     */
                 }
-                else
-                {
-                    // UseDInputOnly profile may re-map sixaxis gyro sensor values as a VJoy joystick axis (steering wheel emulation mode using VJoy output device). Handle this option because VJoy output works even in USeDInputOnly mode.
-                    // If steering wheel emulation uses LS/RS/R2/L2 output axies then the profile should NOT use UseDInputOnly option at all because those require a virtual output device.
-                    SASteeringWheelEmulationAxisType steeringWheelMappedAxis = _profileSettings.GetSASteeringWheelEmulationAxis(ind);
-                    switch (steeringWheelMappedAxis)
-                    {
-                        case SASteeringWheelEmulationAxisType.None: break;
-
-                        case SASteeringWheelEmulationAxisType.VJoy1X:
-                        case SASteeringWheelEmulationAxisType.VJoy2X:
-                            VJoyFeeder.vJoyFeeder.FeedAxisValue(cState.SASteeringWheelEmulationUnit, ((((uint)steeringWheelMappedAxis) - ((uint)SASteeringWheelEmulationAxisType.VJoy1X)) / 3) + 1, VJoyFeeder.HID_USAGES.HID_USAGE_X);
-                            break;
-
-                        case SASteeringWheelEmulationAxisType.VJoy1Y:
-                        case SASteeringWheelEmulationAxisType.VJoy2Y:
-                            VJoyFeeder.vJoyFeeder.FeedAxisValue(cState.SASteeringWheelEmulationUnit, ((((uint)steeringWheelMappedAxis) - ((uint)SASteeringWheelEmulationAxisType.VJoy1X)) / 3) + 1, VJoyFeeder.HID_USAGES.HID_USAGE_Y);
-                            break;
-
-                        case SASteeringWheelEmulationAxisType.VJoy1Z:
-                        case SASteeringWheelEmulationAxisType.VJoy2Z:
-                            VJoyFeeder.vJoyFeeder.FeedAxisValue(cState.SASteeringWheelEmulationUnit, ((((uint)steeringWheelMappedAxis) - ((uint)SASteeringWheelEmulationAxisType.VJoy1X)) / 3) + 1, VJoyFeeder.HID_USAGES.HID_USAGE_Z);
-                            break;
-
-                        default: break;
-                    }
-                }
+                // Phase9 Steering 削除 W3: 旧「出力デバイスがないとき［UseDInputOnly］の、ステアリングの vJoy 軸への送出」（else 側）は、機能ごと削除した（vJoy も削除）。
 
                 // Output any synthetic events.
                 _mapping.Commit(ind, _profileSettings);

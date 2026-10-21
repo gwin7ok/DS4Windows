@@ -109,69 +109,11 @@ namespace DS4Windows
             cont.LeftTrigger = state.L2;
             cont.RightTrigger = state.R2;
 
-            SASteeringWheelEmulationAxisType steeringWheelMappedAxis = GetSteeringWheelEmulationAxis(device);
-            switch (steeringWheelMappedAxis)
-            {
-                case SASteeringWheelEmulationAxisType.None:
-                    cont.LeftThumbX = AxisScale(state.LX, false);
-                    cont.LeftThumbY = AxisScale(state.LY, true);
-                    cont.RightThumbX = AxisScale(state.RX, false);
-                    cont.RightThumbY = AxisScale(state.RY, true);
-                    break;
-
-                case SASteeringWheelEmulationAxisType.LX:
-                    cont.LeftThumbX = (short)state.SASteeringWheelEmulationUnit;
-                    cont.LeftThumbY = AxisScale(state.LY, true);
-                    cont.RightThumbX = AxisScale(state.RX, false);
-                    cont.RightThumbY = AxisScale(state.RY, true);
-                    break;
-
-                case SASteeringWheelEmulationAxisType.LY:
-                    cont.LeftThumbX = AxisScale(state.LX, false);
-                    cont.LeftThumbY = (short)state.SASteeringWheelEmulationUnit;
-                    cont.RightThumbX = AxisScale(state.RX, false);
-                    cont.RightThumbY = AxisScale(state.RY, true);
-                    break;
-
-                case SASteeringWheelEmulationAxisType.RX:
-                    cont.LeftThumbX = AxisScale(state.LX, false);
-                    cont.LeftThumbY = AxisScale(state.LY, true);
-                    cont.RightThumbX = (short)state.SASteeringWheelEmulationUnit;
-                    cont.RightThumbY = AxisScale(state.RY, true);
-                    break;
-
-                case SASteeringWheelEmulationAxisType.RY:
-                    cont.LeftThumbX = AxisScale(state.LX, false);
-                    cont.LeftThumbY = AxisScale(state.LY, true);
-                    cont.RightThumbX = AxisScale(state.RX, false);
-                    cont.RightThumbY = (short)state.SASteeringWheelEmulationUnit;
-                    break;
-
-                case SASteeringWheelEmulationAxisType.L2R2:
-                    cont.LeftTrigger = cont.RightTrigger = 0;
-                    if (state.SASteeringWheelEmulationUnit >= 0) cont.LeftTrigger = (Byte)state.SASteeringWheelEmulationUnit;
-                    else cont.RightTrigger = (Byte)state.SASteeringWheelEmulationUnit;
-                    goto case SASteeringWheelEmulationAxisType.None;
-
-                case SASteeringWheelEmulationAxisType.VJoy1X:
-                case SASteeringWheelEmulationAxisType.VJoy2X:
-                    DS4Windows.VJoyFeeder.vJoyFeeder.FeedAxisValue(state.SASteeringWheelEmulationUnit, ((((uint)steeringWheelMappedAxis) - ((uint)SASteeringWheelEmulationAxisType.VJoy1X)) / 3) + 1, DS4Windows.VJoyFeeder.HID_USAGES.HID_USAGE_X);
-                    goto case SASteeringWheelEmulationAxisType.None;
-
-                case SASteeringWheelEmulationAxisType.VJoy1Y:
-                case SASteeringWheelEmulationAxisType.VJoy2Y:
-                    DS4Windows.VJoyFeeder.vJoyFeeder.FeedAxisValue(state.SASteeringWheelEmulationUnit, ((((uint)steeringWheelMappedAxis) - ((uint)SASteeringWheelEmulationAxisType.VJoy1X)) / 3) + 1, DS4Windows.VJoyFeeder.HID_USAGES.HID_USAGE_Y);
-                    goto case SASteeringWheelEmulationAxisType.None;
-
-                case SASteeringWheelEmulationAxisType.VJoy1Z:
-                case SASteeringWheelEmulationAxisType.VJoy2Z:
-                    DS4Windows.VJoyFeeder.vJoyFeeder.FeedAxisValue(state.SASteeringWheelEmulationUnit, ((((uint)steeringWheelMappedAxis) - ((uint)SASteeringWheelEmulationAxisType.VJoy1X)) / 3) + 1, DS4Windows.VJoyFeeder.HID_USAGES.HID_USAGE_Z);
-                    goto case SASteeringWheelEmulationAxisType.None;
-
-                default:
-                    // Should never come here but just in case use the NONE case as default handler....
-                    goto case SASteeringWheelEmulationAxisType.None;
-            }
+            // Phase9 Steering 削除 W3: 旧「ステアリング（ジャイロでハンドル操作）の軸の出力先」の switch は削除した（機能ごと削除。Phase9-SteeringWheel-Removal-Plan.md）。通常の軸の出力だけを行う
+            cont.LeftThumbX = AxisScale(state.LX, false);
+            cont.LeftThumbY = AxisScale(state.LY, true);
+            cont.RightThumbX = AxisScale(state.RX, false);
+            cont.RightThumbY = AxisScale(state.RY, true);
 
             cont.SubmitReport();
         }
