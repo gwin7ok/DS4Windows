@@ -742,6 +742,8 @@ namespace DS4WinWPF.DS4Forms
         public void Reload(ProfileEntity profile = null)
         {
             profileSettingsTabCon.DataContext = null;
+            touchpadTab.DataContext = null;
+            gyroTab.DataContext = null;
             mappingListBox.DataContext = null;
             specialActionsTab.DataContext = null;
             lightbarRect.DataContext = null;
@@ -803,6 +805,8 @@ namespace DS4WinWPF.DS4Forms
             profileSettingsVM.PopulateGyroMouseStickTrig(gyroMouseStickTrigBtn.ContextMenu);
             profileSettingsVM.PopulateGyroControlsTrig(gyroControlsTrigBtn.ContextMenu);
             profileSettingsTabCon.DataContext = profileSettingsVM;
+            touchpadTab.DataContext = profileSettingsVM;
+            gyroTab.DataContext = profileSettingsVM;
             mappingListBox.DataContext = mappingListVM;
             specialActionsTab.DataContext = specialActionsVM;
             lightbarRect.DataContext = profileSettingsVM;
@@ -863,6 +867,8 @@ namespace DS4WinWPF.DS4Forms
         private void StopEditorBindings()
         {
             profileSettingsTabCon.DataContext = null;
+            touchpadTab.DataContext = null;
+            gyroTab.DataContext = null;
             mappingListBox.DataContext = null;
             specialActionsTab.DataContext = null;
             lightbarRect.DataContext = null;
@@ -889,6 +895,8 @@ namespace DS4WinWPF.DS4Forms
             profileSettingsVM.PopulateGyroMouseStickTrig(gyroMouseStickTrigBtn.ContextMenu);
             profileSettingsVM.PopulateGyroControlsTrig(gyroControlsTrigBtn.ContextMenu);
             profileSettingsTabCon.DataContext = profileSettingsVM;
+            touchpadTab.DataContext = profileSettingsVM;
+            gyroTab.DataContext = profileSettingsVM;
             mappingListBox.DataContext = mappingListVM;
             specialActionsTab.DataContext = specialActionsVM;
             lightbarRect.DataContext = profileSettingsVM;
@@ -1772,6 +1780,10 @@ namespace DS4WinWPF.DS4Forms
 
         private void SidebarTabControl_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
+            // Phase10-Step3b W1: 左ペインのタブの中の ComboBox や入れ子の TabControl（Touchpad・ジャイロの Output Mode ほか）の選択変更も、
+            // このイベントとして届く。左ペインのタブ自身の選択変更だけを扱う
+            if (e.OriginalSource != sidebarTabControl) return;
+
             App.logHolder?.Logger?.Debug($"[SidebarTabControl_SelectionChanged] SelectedItem={sidebarTabControl.SelectedItem?.GetType().Name}, SelectedIndex={sidebarTabControl.SelectedIndex}, IsLoaded={sidebarTabControl.IsLoaded}, IsVisible={sidebarTabControl.IsVisible}, Added={e.AddedItems?.Count}, Removed={e.RemovedItems?.Count}");
             // Special Actions タブに切り替えられたときは毎回ソートとヘッダー更新を行う。
             // ユーザーがタブを行き来したときに最新の表示状態を反映させたい。

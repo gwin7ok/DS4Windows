@@ -11,7 +11,8 @@ namespace DS4WindowsTests
     /// Phase10-Step3b W0（Phase10-Step3b-Plan.md §2・§5）: <c>ProfileEditor.xaml</c> の画面構成の特性化（ソース走査）。製品コードは変えない。
     /// 左ペイン（<c>sidebarTabControl</c>）と右ペイン（<c>profileSettingsTabCon</c>）のタブの構成、右ペインのタブが依存するリソース、
     /// 右ペインのタブの番号・選択に依存するコードがないこと、Axis Config の 4 つの入口（Outer Bind／Full Pull）の構成、Controls タブの行の構成を固定する。
-    /// W1（Touchpad・ジャイロのタブの移動）、W2（4 つの入口の Controls タブへの追加）で、これらの検査を、変更後の構成へ更新する。
+    /// W1（Touchpad・ジャイロのタブの移動。実施済み）で、左右のタブの構成、リソース、DataContext の検査を、移動後の構成へ更新した。
+    /// W2（4 つの入口の Controls タブへの追加）で、Axis Config の入口と Controls タブの行の検査を、変更後の構成へ更新する。
     /// ソースファイルが見つからない環境では、検査を行わず合格とする。
     /// </summary>
     public class Phase10Step3bW0ProfileEditorLayoutTests
@@ -65,21 +66,22 @@ namespace DS4WindowsTests
         private string RightPane(string xaml) => Between(xaml, "<TabControl x:Name=\"profileSettingsTabCon\"", null);
 
         [Fact]
-        public void TheLeftPane_HasControls_SpecialActions_ControllerReadings_InThatOrder()
+        public void TheLeftPane_HasControls_SpecialActions_Touchpad_Gyro_ControllerReadings_InThatOrder()
         {
             string xaml = Read("DS4Windows/DS4Forms/ProfileEditor.xaml");
             if (xaml == null) return;
 
-            Assert.Equal(new[] { "Controls", "specialActionsTab", "contReadingsTab" }, TopLevelTabs(LeftPane(xaml)));
+            // Phase10-Step3b W1: Touchpad・ジャイロを、Special Actions の次へ移した（Controller Readings は、最後）
+            Assert.Equal(new[] { "Controls", "specialActionsTab", "touchpadTab", "gyroTab", "contReadingsTab" }, TopLevelTabs(LeftPane(xaml)));
         }
 
         [Fact]
-        public void TheRightPane_HasAxisConfig_Lightbar_Touchpad_Gyro_Other_InThatOrder()
+        public void TheRightPane_HasOnlyAxisConfig_Lightbar_Other_InThatOrder()
         {
             string xaml = Read("DS4Windows/DS4Forms/ProfileEditor.xaml");
             if (xaml == null) return;
 
-            Assert.Equal(new[] { "AxisConfig", "Lightbar", "Touchpad", "Gyro", "Other" }, TopLevelTabs(RightPane(xaml)));
+            Assert.Equal(new[] { "AxisConfig", "Lightbar", "Other" }, TopLevelTabs(RightPane(xaml)));
         }
 
         [Fact]
@@ -102,21 +104,27 @@ namespace DS4WindowsTests
             // 右ペインのタブの移動で壊れるコード（番号、選択中の項目、項目の一覧への依存）がない
             Assert.Empty(Regex.Matches(code, @"profileSettingsTabCon\.(SelectedIndex|SelectedItem|SelectedContent|Items|SelectionChanged)"));
 
-            // 右ペインへの参照は、DataContext の設定・解除の 4 か所だけ（移したタブにも、同じ設定が要る）
+            // 右ペインへの参照は、DataContext の設定・解除の 4 か所だけ
             Assert.Equal(4, Regex.Matches(code, @"profileSettingsTabCon\.").Count);
             Assert.Equal(2, Regex.Matches(code, @"profileSettingsTabCon\.DataContext = profileSettingsVM;").Count);
             Assert.Equal(2, Regex.Matches(code, @"profileSettingsTabCon\.DataContext = null;").Count);
+
+            // Phase10-Step3b W1: 左ペインへ移した 2 つのタブにも、同じ場所で、同じ設定・解除を行う（古い参照を残さない）
+            foreach (string tab in new[] { "touchpadTab", "gyroTab" })
+            {
+                Assert.Equal(2, Regex.Matches(code, tab + @"\.DataContext = profileSettingsVM;").Count);
+                Assert.Equal(2, Regex.Matches(code, tab + @"\.DataContext = null;").Count);
+            }
         }
 
         [Fact]
-        public void TheTabsToMove_UseOnlyThreeStaticResources_AndOnlyGyroLacksItsOwnSpaceMargin()
+        public void TheMovedTabs_UseOnlyThreeStaticResources_AndEachDefinesItsOwnSpaceMargin()
         {
             string xaml = Read("DS4Windows/DS4Forms/ProfileEditor.xaml");
             if (xaml == null) return;
 
-            string touchpad = Between(xaml, "<TabItem Header=\"{lex:Loc Touchpad}\"", "<TabItem Header=\"{lex:Loc Gyro}\"");
-            string gyro = Between(xaml, "<TabItem Header=\"{lex:Loc Gyro}\"", "<TabItem Header=\"{lex:Loc Other}\"");
-            string right = RightPane(xaml);
+            string touchpad = Between(xaml, "<TabItem x:Name=\"touchpadTab\"", "<TabItem x:Name=\"gyroTab\"");
+            string gyro = Between(xaml, "<TabItem x:Name=\"gyroTab\"", "<TabItem x:Name=\"contReadingsTab\"");
 
             foreach (string tab in new[] { touchpad, gyro })
             {
@@ -129,12 +137,31 @@ namespace DS4WindowsTests
             Assert.Contains("x:Key=\"InvertBoolToVisibilityConverter\"", head);
             Assert.Contains("x:Key=\"controlIndexCheck\"", head);
 
-            // spaceMargin: Touchpad は、自分のタブに持つ。ジャイロは、持たず、右ペインの TabControl.Resources から取る（W1 で、ジャイロのタブへ定義する）
+            // spaceMargin: どちらのタブも、自分のタブに持つ（ジャイロは、以前は右ペインの TabControl.Resources から取っていたため、W1 で、自分のタブへ定義した）
             Assert.Contains("<TabItem.Resources>", touchpad);
             Assert.Contains("x:Key=\"spaceMargin\"", touchpad);
-            Assert.DoesNotContain("x:Key=\"spaceMargin\"", gyro);
-            Assert.Contains("<TabControl.Resources>", right);
-            Assert.Contains("x:Key=\"spaceMargin\"", right.Substring(0, right.IndexOf("<TabItem Header=\"{lex:Loc AxisConfig}\"", StringComparison.Ordinal)));
+            Assert.Contains("<TabItem.Resources>", gyro);
+            Assert.Contains("x:Key=\"spaceMargin\"", gyro);
+
+            // 右ペインの見出しの高さ調整（Touchpad の Height／VerticalAlignment）は、外した
+            string touchpadHeader = Regex.Match(touchpad, @"<TabItem x:Name=""touchpadTab""[^>]*>").Value;
+            Assert.DoesNotContain("Height=", touchpadHeader);
+            Assert.DoesNotContain("VerticalAlignment=", touchpadHeader);
+        }
+
+        [Fact]
+        public void TheLeftTabSelectionHandler_IgnoresEventsBubblingUpFromTheTabsContents()
+        {
+            string code = Read("DS4Windows/DS4Forms/ProfileEditor.xaml.cs");
+            if (code == null) return;
+
+            // Touchpad・ジャイロの Output Mode（ComboBox）や入れ子の TabControl の選択変更が、左ペインのタブの選択変更として扱われない
+            int handler = code.IndexOf("private void SidebarTabControl_SelectionChanged(", StringComparison.Ordinal);
+            Assert.True(handler >= 0);
+            int guard = code.IndexOf("if (e.OriginalSource != sidebarTabControl) return;", handler, StringComparison.Ordinal);
+            int firstLog = code.IndexOf("[SidebarTabControl_SelectionChanged] SelectedItem=", handler, StringComparison.Ordinal);
+            Assert.True(guard > handler, "判定がない");
+            Assert.True(guard < firstLog, "判定が、最初のログ・処理より前にない");
         }
 
         [Fact]
