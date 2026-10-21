@@ -33,6 +33,11 @@ Controls タブの割り当てと SA（Special Actions）の割り当ては、�
 | 6 | 押し続ける秒数（Hold） | SA 専用の種別（Launch Program ほか）だけが入力欄を持つ | Key／Macro／Button の Hold の持ち方の差 |
 | 7 | 保存の可否の検証 | 種別ごとの入力の `IsValid` は、エラーを表示するだけで、保存を止めない | `CanWrite`（Load Profile だけの暫定） |
 
+| 9 | 入力の集合 | SA にあって Controls にない: Touch Started／Touch Ended。Controls にあって SA にない: LS Outer／RS Outer | なし（追加のみ） |
+| 10 | SA の Extras | Extras（振動・ライトバー・マウス感度）は Controls だけ | Extras の持ち方の差 |
+
+（項目 9・10 は、2026-10-21 の追加調査で見つかり、追加した。詳細は §2 の末尾）
+
 ### 項目 1: 押下判定の閾値
 
 現行（`TriggerInput`）:
@@ -107,6 +112,32 @@ Controls タブの割り当てと SA（Special Actions）の割り当ては、�
 - 影響: B・C は、**SA の挙動が変わる**（いままで保存できた不完全な SA が、保存できなくなる）。既存の `Actions.xml` の読み込みには影響しない。
 - 推奨: **B**。Controls と SA で、同じ規則になり、`CanWrite` も不要になる。`NullReferenceException` は、どの案でも直す。
 
+### 項目 9: 入力の集合を同じにする（追加。採用）
+
+- 現行（コードで確認）: SA のトリガーの一覧（49 項目）にあって Controls の一覧（38 項目）にないのは **Touch Started、Touch Ended**。Controls にあって SA にないのは **LS Outer、RS Outer**（`DS4StateFieldMapping` の種別は `Trigger`。SA の判定［100 超］で扱える）。`DS4ControlSettings` は、`DS4Controls` の全値に枠がある。ただし `ControlSettingsGroup` が束ねているのは、一覧に出ている入力だけで、Touch Started／Ended は束ねられていない（束縛を作る対象外）。
+- 決定（2026-10-21、ユーザー）:
+  - **SA のトリガーの一覧に、LS Outer／RS Outer を追加する**。判定は SA の閾値（100 超）。既存の SA の挙動は変わらない。
+  - **Controls の一覧に、Touch Started／Touch Ended を追加する**（一覧の末尾の添字 38・39。コントローラーの入力による選択の添字 0〜33 と、既存の並びは変えない）。`ControlSettingsGroup` に束ねて、束縛の対象にする。Key を出すと、1 フレームだけ押される制約は、SA と同じ。
+- 影響: 追加のみ。既存の割り当て・プロファイルの読み込みは変わらない。
+
+### 項目 10: SA にも Extras を付けられるようにする（追加。設計のみ決定。実装は統合の Step）
+
+- 現行: Extras（振動・ライトバー・マウス感度）は、Controls のボタンにだけ付けられる。SA の編集画面には、出力ピッカーの Extras がない。Step4 当初の計画にも「SA 側の Extras の保存先」があった。
+- 決定（2026-10-21、ユーザー）:
+  - **実装の時期は、統合の Step（SA の型のある項目）と一緒に行う**。`details`／`extra` の文字列に Extras を詰める保存を、一度作って作り直すことを避けるため。Step4c では実装しない。統合の計画書に、設計を入れる。
+  - **動作**は Controls と同じ（トリガーが成立している間、振動・ライトバー・マウス感度を適用し、離すと戻す。組み合わせのトリガーでは、成立している間）。付けられる SA の種別は、すべて（統合後は、種別ごとの差をなくせる）を想定する（統合の計画書で、再確認する）。
+  - **同じボタンで、Controls の Extras と SA の Extras が重なったとき**: **SA が勝つ**（Controls の Extras は適用しない）。優先順位の規則（SA が Controls に勝つ）と揃える。「SA の Extras が成立している間だけ」か「SA のトリガーに含まれるボタンはつねに」かの細部は、統合の計画書で決める。
+- 影響: 追加のみ。既存の Controls の Extras と SA の挙動は、変わらない。
+
+### 検討して見送った項目（2026-10-21、ユーザー決定）
+
+| 項目 | 内容 | 見送りの理由 |
+|---|---|---|
+| E | SA をプロファイルの所有にする（共有をやめ、Controls と同じ所有モデルにする） | 管理が難しくなる（複製になり、編集が他のプロファイルに反映されない）。SA の定義は、`Actions.xml` の共有のまま。Step4d は、プロファイルと SA の両方に固定 ID を持たせる案のまま |
+| D | Controls にも、割り当てを残したまま無効にする切り替え（Active）を足す | 画面の違いは許容する |
+| G | SA のトリガーの選び方を、Controls のように「コントローラーのボタンを押して選ぶ」にする | 画面の違いは許容する |
+| （軽微） | 種別 Unbound を SA にも | 優先度が低い |
+
 ## 3. 推奨のまとめ（採否の確定は §6）
 
 | # | 推奨 | 理由 |
@@ -130,9 +161,10 @@ Controls タブの割り当てと SA（Special Actions）の割り当ては、�
 3. **W2: 項目 4（ログ）**: Controls の既存の種別（Key／Macro／Pad／Mouse／AnalogMouse／Extras）にも、SA と同じ立ち上がりのログ（Trace 4 行、Debug 1 行）を出す。先頭で、種別ごとに出る行の例を示して確認する。Key の `suppressSpecialActionLogs`（Controls の Key が SA 形式のログを抑止している仕組み）の扱いも、この Wave で決める。ログの変更のため、実機（ログ画面）の確認を付ける。
 4. **W3: 項目 7**: `NullReferenceException` の是正、必須の値のないエラーで保存を止める（SA と Controls で共通の規則。「ファイルが存在しない」は警告のみ）、`CanWrite` の置き換え。SA の保存の可否が変わるため、実機確認を付ける。
 5. **W4: 項目 1**: デジタルな出力だけ SA の閾値に揃える。先頭で、現行と新しい閾値の差を、数値で見せて、最終決定する。実機確認（スティック・トリガーからキーを出す割り当て）を付ける。
-6. **最終 W: 文書**（完了の記録、モデル図、台帳）。
+6. **W5: 項目 9（入力の集合）**: SA のトリガーの一覧に LS Outer／RS Outer を追加（`TriggerCatalog`）。Controls の一覧に Touch Started／Ended を追加（`MappingListViewModel` の末尾、`ControlSettingsGroup`、`MappedControl`、言語リソース）。追加のみのため、既存の挙動は変わらない。実機確認を付ける（新しい入力で Key を出す、既存の入力が変わらない）。
+7. **最終 W: 文書**（完了の記録、モデル図、台帳。項目 10 の設計を、統合の計画書に引き継ぐ）。
 
-項目 3・6 は見送りのため、Wave を作らない。項目 5（固定 ID）は、**別の Step（Step4d）**として、独立の計画書を作る（Step4c の後。§6）。
+項目 3・6 と、§2 の末尾の見送り項目は、Wave を作らない。項目 10 は、統合の Step で実装する。項目 5（固定 ID）は、**別の Step（Step4d）**として、独立の計画書を作る（Step4c の後。§6）。
 
 ## 5. テスト
 
@@ -151,8 +183,10 @@ Controls タブの割り当てと SA（Special Actions）の割り当ては、�
 | 5 | **採用。ただし別の Step（Step4d）**。プロファイルと SA の両方で、名前をキーにしているものを、固定 ID をキーにする（`ProfileActions`、Load Profile の切り替え先、リンクプロファイル、自動プロファイルほか）。独立の計画書を作る |
 | 6 | **見送り**（Controls と SA の共通度の向上に寄与しないため） |
 | 7 | **B 採用**（必須の値がないエラーは保存を止める。ファイルが存在しないのは警告のみ。`NullReferenceException` は直す） |
+| 9 | **採用**（SA に LS Outer／RS Outer を追加。Controls に Touch Started／Ended を追加。追加のみ） |
+| 10 | **設計のみ採用。実装は統合の Step**（SA の Extras。Controls と同じ動作。重なったときは SA が勝つ） |
 
-この Step で挙動が変わるのは、項目 1（デジタルな出力の閾値）、項目 4（Controls のログ）、項目 7（SA の保存の可否）の 3 つ。項目 2 は挙動を変えない整理。
+この Step で挙動が変わるのは、項目 1（デジタルな出力の閾値）、項目 4（Controls のログ）、項目 7（SA の保存の可否）の 3 つ。項目 2 は挙動を変えない整理。項目 9 は追加のみ（既存の挙動は変わらない）。
 
 ## 7. 想定されるリスク
 
