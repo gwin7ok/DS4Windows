@@ -14,6 +14,8 @@ Controls タブの割り当てと SA（Special Actions）の割り当ては、�
 
 この Step は、**実機の挙動を変える**仕様変更だけを扱う。構造の統合（builder の統合、SA の型のある項目、改名、旧コードの撤去）は、次の Step（統合）で行う。**挙動の変更と構造の変更を同じ Step に混ぜない**（問題が出たとき、原因を切り分けるため）。
 
+**最終的な目的（2026-10-21、ユーザー）**: 入力信号を DS4Windows が受け取った以降の処理を、Controls タブ・SpecialActions タブのどちらで設定されたかに依存せず、**共通の経路**を通して処理する形にする。Step4c は、そのために**挙動の差を減らす**役目（構造の統合は次の統合 Step）。完成形のモデル図、差の一覧（どの Step で消えるか）、統合 Step の骨子は `Phase10-Integration-Target-Model.md` を参照。各 Wave が完成形のどこを埋めるかは、同文書 §7。
+
 進め方の原則:
 
 - **項目ごとに、ユーザーが採否を決める**（採用、見送り、一部だけ採用）。見送った項目は、挙動を変えない。
@@ -73,7 +75,7 @@ Controls タブの割り当てと SA（Special Actions）の割り当ては、�
 - この差は、**偶然ではなく仕様**（`Phase10-Assignment-UI-Unification-Plan.md` §7 の R1〜R10）。「SA も、トリガーにしたボタンは、有効な間は常に元の出力を消す」にすると、**組み合わせのトリガーで、先に押したボタンの通常の出力が、組み合わせを押す前から消える**。例: L1+R1 を SA にすると、L1 単独の通常の出力が、SA が有効な間ずっと出なくなる。
 - 影響: 組み合わせのトリガーを使っているプロファイルの挙動が、大きく変わる。
 - 選択肢:
-  - **A. 見送り（推奨）**: 「ボタン 1 つの割り当て」と「複数ボタンの組み合わせ」の差として、統合の Step で、方針の中の 1 つの項目（`ErasesOutputEveryFrame`）として、残す。`forControls` は、「トリガーが 1 つか」の判定へ置き換える（挙動は変えない）。
+  - **A. 見送り（推奨）**: 統合の Step で、方針の中の 1 つの項目（`ErasesOutputEveryFrame`）として、残す。`forControls` は、**定義の由来（Controls／SA）**で決める形へ置き換える（挙動は変えない）。（2026-10-21 訂正: 当初は「トリガーが 1 つか」の判定としていたが、単体トリガーの SA［遅延つき、Run on release、MultiAction］は現行で「成立中だけ抑える」ため、トリガー数で切り替えると挙動が変わる［R1 に反する］。このため由来で決める。`Phase10-Integration-Target-Model.md` §6）
   - B. 単体のトリガーの SA だけ、常に消す（Controls と同じ）。組み合わせは従来どおり。
 - 推奨: **A**。変更の利益（`forControls` の廃止）は、統合の Step で、挙動を変えずに得られる。
 
@@ -178,7 +180,7 @@ Controls タブの割り当てと SA（Special Actions）の割り当ては、�
 |---|---|
 | 1 | **B 採用**（デジタルな出力だけ SA の閾値に揃える）。W4 の先頭で、数値の差を見せて最終決定する |
 | 2 | **B 採用**（表にまとめる。挙動は変えない） |
-| 3 | **見送り**（統合の Step で、挙動を保って整理する。`forControls` は「トリガーが 1 つか」の判定へ置き換える） |
+| 3 | **見送り**（統合の Step で、挙動を保って整理する。`forControls` は、定義の由来［Controls／SA］で決める形へ置き換える。2026-10-21 訂正: 「トリガーが 1 つか」では単体トリガーの SA の挙動が変わるため） |
 | 4 | **採用**（向きは B: Controls の既存の種別にも SA と同じ立ち上がりのログを出す） |
 | 5 | **採用。ただし別の Step（Step4d）**。プロファイルと SA の両方で、名前をキーにしているものを、固定 ID をキーにする（`ProfileActions`、Load Profile の切り替え先、リンクプロファイル、自動プロファイルほか）。独立の計画書を作る |
 | 6 | **見送り**（Controls と SA の共通度の向上に寄与しないため） |
@@ -196,4 +198,12 @@ Controls タブの割り当てと SA（Special Actions）の割り当ては、�
 
 ## 8. 進捗の記録
 
-（未着手）
+- **W0（完了 2026-10-21。ビルド・テスト成功）**: 特性化テスト 5 ファイルを追加した（製品コードは変更なし）。
+  - `Phase10Step4cW0JudgementTableTests`: SA（`IsActive`）と Controls（`IsControlActive`）の判定を、同じ入力で並べて固定（スティック 8 方向、L2／R2／Outer、ボタン・タッチ・スワイプ、ジャイロ）。W4 で書き換える。
+  - `Phase10Step4cW0PolicyTableTests`: Controls の束縛 12 本（Key、Macro、Pad、Mouse、AnalogMouse、Extras、素通し、Key［反対側の軸］、Special 5 種）の方針。Fresh-press ガードを見るのは Macro と Special だけ。W1 で、変わらないことを確認する。
+  - `Phase10Step4cW0LogTableTests`: Controls の既存の種別は SA 形式のログを出さず、Special は立ち上がりで 1 回出す。W2 で書き換える。
+  - `Phase10Step4cW0ValidationTableTests`: 全種別の `IsValid` は、エラーを記録しても true を返す。`LaunchProgramViewModel` はパス未選択で `NullReferenceException`。Controls の Save は種別ごとの検証を呼ばない。W3 で書き換える。
+  - `Phase10Step4cW0InputSetTests`: SA だけの入力は Touch Started／Ended、Controls だけの入力は LS Outer／RS Outer。SA の一覧 49 項目、Controls の一覧 49 項目（末尾の 4 つが仮想ボタン）。W5 で書き換える。
+  - 発見: **Capture／SideL などの拡張ボタンは、コントローラーが接続されたときにだけ `ControlSettingsGroup` に束ねられる**（`EstablishExtraButtons`）。Touch Started／Ended は、どの組にも入っていない。W5 で、Controls の束縛の対象にするには、組へ加える必要がある。
+  - 計画書の訂正: Controls の一覧は 38 項目ではなく 49 項目。
+  - 次: W1（項目 2: Fresh-press ガードの規則を 1 か所の表にまとめる。挙動は変えない）。指示があるまで始めない。
