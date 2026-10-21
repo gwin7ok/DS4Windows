@@ -125,7 +125,8 @@ namespace DS4Windows
             DS4Windows.Actions.ITriggerDispatchEngine triggerEngine,
             DS4Windows.DI.IStickDeadZoneProcessor stickDeadZone,
             DS4Windows.DI.IOutputCurveProcessor outputCurve,
-            DS4Windows.DI.ITriggerDeadZoneProcessor triggerDeadZone)
+            DS4Windows.DI.ITriggerDeadZoneProcessor triggerDeadZone,
+            DS4Windows.DI.IGyroControlsProcessor gyroControls)
         {
             _syntheticInput = syntheticInput ?? throw new ArgumentNullException(nameof(syntheticInput));
             _macroRuntime = macroRuntime ?? throw new ArgumentNullException(nameof(macroRuntime));
@@ -142,6 +143,7 @@ namespace DS4Windows
             _stickDeadZone = stickDeadZone ?? throw new ArgumentNullException(nameof(stickDeadZone));
             _outputCurve = outputCurve ?? throw new ArgumentNullException(nameof(outputCurve));
             _triggerDeadZone = triggerDeadZone ?? throw new ArgumentNullException(nameof(triggerDeadZone));
+            _gyroControls = gyroControls ?? throw new ArgumentNullException(nameof(gyroControls));
 
             _triggerInputs = new DS4Windows.Actions.TriggerInput[ControllerLimits.MaxControllerCount];
             _frameOutputs = new DS4Windows.Actions.FrameOutput[ControllerLimits.MaxControllerCount];
@@ -299,6 +301,7 @@ namespace DS4Windows
         private readonly DS4Windows.DI.IStickDeadZoneProcessor _stickDeadZone;   // Phase9 9-A(1) (b): 左右のスティックのデッドゾーン（共通の処理）
         private readonly DS4Windows.DI.IOutputCurveProcessor _outputCurve;   // Phase9 9-A(1) (c): スクエアスティックと出力カーブ（スティック、トリガー。共通の処理）
         private readonly DS4Windows.DI.ITriggerDeadZoneProcessor _triggerDeadZone;   // Phase9 9-A(1) (d): L2／R2 のデッドゾーン（共通の処理）
+        private readonly DS4Windows.DI.IGyroControlsProcessor _gyroControls;   // Phase9 9-A(2)-A: ジャイロ → コントロールの補正（X／Z 共通の処理）
 
         // Phase8-Step4 W4: デバイスごとのトリガー判定の入力（毎フレーム MapCustom の先頭で更新する）と、フレームの出力への書き込み口。
         // 遅延の基準時刻（旧 nowAction／oldnowAction）は、_triggerInputs[device].Delay に置き換わった。
@@ -674,152 +677,21 @@ namespace DS4Windows
                 double szAntiDead = settings.SZAntiDeadzone[device];
                 double sxsens = settings.SXSens[device];
                 double szsens = settings.SZSens[device];
-                int result = 0;
 
                 int gyroX = cState.Motion.accelX, gyroZ = cState.Motion.accelZ;
-                int absx = Math.Abs(gyroX), absz = Math.Abs(gyroZ);
 
-                if (SXD > 0 || SXMax < 1.0 || sxAntiDead > 0)
-                {
-                    int maxValue = (int)(SXMax * 128d);
-                    if (absx > SXD)
-                    {
-                        double ratioX = absx < maxValue ? (absx - SXD) / (double)(maxValue - SXD) : 1.0;
-                        dState.Motion.outputAccelX = Math.Sign(gyroX) *
-                            (int)Math.Min(128d, sxsens * 128d * ((1.0 - sxAntiDead) * ratioX + sxAntiDead));
-                    }
-                    else
-                    {
-                        dState.Motion.outputAccelX = 0;
-                    }
-                }
-                else
-                {
-                    dState.Motion.outputAccelX = Math.Sign(gyroX) *
-                        (int)Math.Min(128d, sxsens * 128d * (absx / 128d));
-                }
-
-                if (SZD > 0 || SZMax < 1.0 || szAntiDead > 0)
-                {
-                    int maxValue = (int)(SZMax * 128d);
-                    if (absz > SZD)
-                    {
-                        double ratioZ = absz < maxValue ? (absz - SZD) / (double)(maxValue - SZD) : 1.0;
-                        dState.Motion.outputAccelZ = Math.Sign(gyroZ) *
-                            (int)Math.Min(128d, szsens * 128d * ((1.0 - szAntiDead) * ratioZ + szAntiDead));
-                    }
-                    else
-                    {
-                        dState.Motion.outputAccelZ = 0;
-                    }
-                }
-                else
-                {
-                    dState.Motion.outputAccelZ = Math.Sign(gyroZ) *
-                        (int)Math.Min(128d, szsens * 128d * (absz / 128d));
-                }
+                // Phase9 9-A(2)-A: ジャイロの補正（デッドゾーン、最大ゾーン、アンチデッドゾーン、感度、出力カーブ）は、X／Z とも共通の処理（IGyroControlsProcessor）が行う。
+                // 以前は、ここに、X と Z で同じコードが 2 回あった（約 150 行）。値は Phase9A2GyroControlsGoldenTests が守る。出力カーブを適用する条件は、X と Z で違うため、ここに残す
+                dState.Motion.outputAccelX = _gyroControls.Correct(gyroX, SXD, SXMax, sxAntiDead, sxsens);
+                dState.Motion.outputAccelZ = _gyroControls.Correct(gyroZ, SZD, SZMax, szAntiDead, szsens);
 
                 int sxOutCurveMode = settings.GetSxOutCurveMode(device);
                 if (sxOutCurveMode > 0)
-                {
-                    double temp = dState.Motion.outputAccelX / 128.0;
-                    double sign = Math.Sign(temp);
-                    if (sxOutCurveMode == 1)
-                    {
-                        double output;
-                        double abs = Math.Abs(temp);
-
-                        if (abs <= 0.4)
-                            output = 0.55 * abs;
-                        else if (abs <= 0.75)
-                            output = abs - 0.18;
-                        else // if (abs > 0.75)
-                            output = (abs * 1.72) - 0.72;
-                        dState.Motion.outputAccelX = (int)(output * sign * 128.0);
-                    }
-                    else if (sxOutCurveMode == 2)
-                    {
-                        double output = temp * temp;
-                        result = (int)(output * sign * 128.0);
-                        dState.Motion.outputAccelX = result;
-                    }
-                    else if (sxOutCurveMode == 3)
-                    {
-                        double output = temp * temp * temp;
-                        result = (int)(output * 128.0);
-                        dState.Motion.outputAccelX = result;
-                    }
-                    else if (sxOutCurveMode == 4)
-                    {
-                        double abs = Math.Abs(temp);
-                        double output = abs * (abs - 2.0);
-                        dState.Motion.outputAccelX = (int)(-1.0 * output *
-                            sign * 128.0);
-                    }
-                    else if (sxOutCurveMode == 5)
-                    {
-                        double inner = Math.Abs(temp) - 1.0;
-                        double output = inner * inner * inner + 1.0;
-                        dState.Motion.outputAccelX = (int)(output *
-                            sign * 128.0);
-                    }
-                    else if (sxOutCurveMode == 6)
-                    {
-                        int signSA = Math.Sign(dState.Motion.outputAccelX);
-                        dState.Motion.outputAccelX = settings.SxOutBezierCurveObj[device].arrayBezierLUT[Math.Min(Math.Abs(dState.Motion.outputAccelX), 128)] * signSA;
-                    }
-                }
+                    dState.Motion.outputAccelX = _gyroControls.ApplyCurve(sxOutCurveMode, settings.SxOutBezierCurveObj[device], dState.Motion.outputAccelX);
 
                 int szOutCurveMode = settings.GetSzOutCurveMode(device);
                 if (szOutCurveMode > 0 && dState.Motion.outputAccelZ != 0)
-                {
-                    double temp = dState.Motion.outputAccelZ / 128.0;
-                    double sign = Math.Sign(temp);
-                    if (szOutCurveMode == 1)
-                    {
-                        double output;
-                        double abs = Math.Abs(temp);
-
-                        if (abs <= 0.4)
-                            output = 0.55 * abs;
-                        else if (abs <= 0.75)
-                            output = abs - 0.18;
-                        else // if (abs > 0.75)
-                            output = (abs * 1.72) - 0.72;
-                        dState.Motion.outputAccelZ = (int)(output * sign * 128.0);
-                    }
-                    else if (szOutCurveMode == 2)
-                    {
-                        double output = temp * temp;
-                        result = (int)(output * sign * 128.0);
-                        dState.Motion.outputAccelZ = result;
-                    }
-                    else if (szOutCurveMode == 3)
-                    {
-                        double output = temp * temp * temp;
-                        result = (int)(output * 128.0);
-                        dState.Motion.outputAccelZ = result;
-                    }
-                    else if (szOutCurveMode == 4)
-                    {
-                        double abs = Math.Abs(temp);
-                        double output = abs * (abs - 2.0);
-                        dState.Motion.outputAccelZ = (int)(-1.0 * output *
-                            sign * 128.0);
-                    }
-                    else if (szOutCurveMode == 5)
-                    {
-                        double inner = Math.Abs(temp) - 1.0;
-                        double output = inner * inner * inner + 1.0;
-                        dState.Motion.outputAccelZ = (int)(output *
-                            sign * 128.0);
-                    }
-                    else if (szOutCurveMode == 6)
-                    {
-                        int signSA = Math.Sign(dState.Motion.outputAccelZ);
-                        dState.Motion.outputAccelZ = settings.SzOutBezierCurveObj[device].arrayBezierLUT[Math.Min(Math.Abs(dState.Motion.outputAccelZ), 128)] * signSA;
-                    }
-                }
+                    dState.Motion.outputAccelZ = _gyroControls.ApplyCurve(szOutCurveMode, settings.SzOutBezierCurveObj[device], dState.Motion.outputAccelZ);
             }
 
             return dState;

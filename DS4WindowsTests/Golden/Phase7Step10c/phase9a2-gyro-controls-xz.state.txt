@@ -1,0 +1,44 @@
+## gyro none: 差なし
+## gyro sens-1.5: 差なし
+## gyro sens-0.5: 差なし
+## gyro dz-0.1: 差なし
+## gyro dz-0.3-anti-0.2: 差なし
+## gyro dz-0.1-max-0.8: 差なし
+## gyro dz-0.1-anti-0.1-max-0.7-sens-1.3: 差なし
+## gyro max-0.5-only: 差なし
+## gyro anti-0.3-only: 差なし
+## gyro dz-0.5-max-0.6: 差なし
+## gyro none out-curve-1: 差なし
+## gyro dz-0.1-anti-0.1 out-curve-1: 差なし
+## gyro none out-curve-2: 差なし
+## gyro dz-0.1-anti-0.1 out-curve-2: 差なし
+## gyro none out-curve-3: 差なし
+## gyro dz-0.1-anti-0.1 out-curve-3: 差なし
+## gyro none out-curve-4: 差なし
+## gyro dz-0.1-anti-0.1 out-curve-4: 差なし
+## gyro none out-curve-5: 差なし
+## gyro dz-0.1-anti-0.1 out-curve-5: 差なし
+## gyro none out-curve-6-bezier: 10 点で差
+  -100: X -58 Z -124
+  -64: X -31 Z -103
+  -30: X -13 Z -48
+  -10: X -4 Z -8
+  -3: X -1 Z -2
+## gyro X and Z differ: 10 点で差
+  -200: X -128 Z -43
+  -128: X -128 Z -43
+  -100: X -105 Z -40
+  -64: X -36 Z -6
+  -30: X -4 Z 0
+## gyro only X curve: 10 点で差
+  -100: X -121 Z -100
+  -64: X -96 Z -64
+  -30: X -52 Z -30
+  -10: X -19 Z -10
+  -3: X -5 Z -3
+## gyro only Z curve: 10 点で差
+  -100: X -100 Z -126
+  -64: X -64 Z -112
+  -30: X -30 Z -70
+  -10: X -10 Z -27
+  -3: X -3 Z -8

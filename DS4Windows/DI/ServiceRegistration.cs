@@ -184,6 +184,7 @@ namespace DS4Windows.DI
             services.AddSingleton<IStickDeadZoneProcessor, StickDeadZoneProcessor>();   // Phase9 9-A(1) (b): スティックのデッドゾーンの補正（状態なし）
             services.AddSingleton<IOutputCurveProcessor, OutputCurveProcessor>();   // Phase9 9-A(1) (c): スクエアスティックと出力カーブ（状態なし）
             services.AddSingleton<ITriggerDeadZoneProcessor, TriggerDeadZoneProcessor>();   // Phase9 9-A(1) (d): トリガーのデッドゾーンの補正（状態なし）
+            services.AddSingleton<IGyroControlsProcessor, GyroControlsProcessor>();   // Phase9 9-A(2)-A: ジャイロ → コントロールの補正（状態なし）
             services.AddSingleton<IMapping, Mapping>();
             services.AddSingleton<Func<IMapping>>(sp => () => sp.GetRequiredService<IMapping>());
             services.AddSingleton<Func<IDeviceStateAccessor>>(sp => () => sp.GetRequiredService<IDeviceStateAccessor>());

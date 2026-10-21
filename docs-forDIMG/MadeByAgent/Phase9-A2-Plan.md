@@ -1,0 +1,48 @@
+# Phase9-A2 計画書: 9-A(2) ジャイロ・スティックの前処理・フリックスティックの切り出し
+
+作成日: 2026-10-22  
+対象ブランチ: `For-DI-migration-work`  
+上位: `Phase9-Responsibility-Split-Plan.md` 9-A（Q9: 2 Wave に分ける）、`Phase9-A1-Plan.md`（9-A(1) は完了）、`Phase9-SteeringWheel-Removal-Plan.md`  
+状態: **A 完了（2026-10-22）。B・C は、段階ごとに設計を説明し、承認を得てから着手する**
+
+---
+
+## 1. 目的と範囲
+
+`Mapping.SetCurveAndDeadzone` の残り（ジャイロ → コントロール、スティックの前処理）と、`MapCustom` の流れにあるフリックスティックを、責務ごとのクラスへ切り出す。挙動は変えない（入力 → 出力の値、ログ、割り当て 0）。
+
+**ステアリング（旧 D 区分）は、9-A(2) から外した**: SA ステアリング・ホイール・エミュレーションは、機能ごと削除する（ユーザー承認済み。`Phase9-SteeringWheel-Removal-Plan.md`）。実施は A→B→C の後。それまでステアリングのコードは変えない。
+
+## 2. 段階
+
+| 段階 | 内容 | 守り | 状態 |
+|---|---|---|---|
+| A | ジャイロ → コントロール（`GyroOutMode.Controls` の SX／SZ の補正）を切り出す | 値の特性化（先に追加）、割り当て 0、性能の計測 | **完了**（§3） |
+| B | スティックの前処理（アンチスナップバック、ファズ、ドリフト補正［`ApplyStickCalibration`］、回転）を切り出す。アンチスナップバックは時刻（`DateTimeOffset.Now`）に依存するため、時計を差し替えられるようにしてから特性化する | 同上 | 未着手 |
+| C | フリックスティック（`ProcessFlickStick`／`HandleFlickStickAngle`／`WarpEaseOut`）を切り出す。`cState.elapsedTime` を引数で渡す形にし、角度の列を与えて変化量を固定する特性化を先に足す | 同上 | 未着手 |
+
+各段階の前に、設計を説明し、承認を得る。各段階の終わりで、`Debug ALL`（警告 0・エラー 0・全テスト合格）と、割り当て 0（`MappingHotPathAllocationTests`）、性能の計測（`Phase9HotPathTimingBenchmark`。基準を `git worktree` で別に建て、交互に 3 回ずつ。悪化 5% 以内）を確認する。
+
+## 3. A の結果（2026-10-22）
+
+**調査**: `SetCurveAndDeadzone` 末尾の `saControls` ブロック（約 160 行）。X（SX）と Z（SZ）で、デッドゾーン部分は名前以外が完全に同じ。出力カーブ部分は同じだが、適用する条件が違う（X: `sxOutCurveMode > 0`、Z: `szOutCurveMode > 0 && outputAccelZ != 0`）。挙動を変えないため、この条件は呼び出し側に残した。
+
+| 区分 | 内容 |
+|---|---|
+| テスト（置き換えの前に追加） | `DS4WindowsTests/Phase9A2GyroControlsGoldenTests.cs`。ジャイロの X・Z の格子（15 × 15）と、設定の場面（デッドゾーン、最大ゾーン、アンチデッドゾーン、感度、出力カーブ 1〜6［ベジェを含む］、X と Z で設定が違う場面）。ゴールデン `Golden/Phase7Step10c/phase9a2-gyro-controls.state.txt`（約 5,400 行）と、X と Z の差の一覧 `phase9a2-gyro-controls-xz.state.txt`（同じ設定では、差なし） |
+| 新規 | `DI/IGyroControlsProcessor.cs`（`Correct(accel, deadZone, maxZone, antiDead, sens)`、`ApplyCurve(mode, bezier, outputAccel)`）、`DS4Control/Services/GyroControlsProcessor.cs`（X のコードをそのまま移し、Z を統合。`[SkipLocalsInit]`） |
+| `Mapping.cs` | `saControls` ブロックの約 150 行を、設定の読み取りと 4 つの呼び出しに置き換えた。`Mapping.cs`: 3,444 → 3,317 行 |
+| DI | `IGyroControlsProcessor` を Singleton で登録。`Mapping` のコンストラクターの引数を追加（15 → 16）。`TestMappingFactory`、`Phase7Step8W2MappingInstanceGuardTests` を更新 |
+
+置き換え後も、ゴールデンは 1 バイトも変わらなかった。`Debug ALL`: 警告 0・エラー 0・全テスト合格（2,251 件、StandaloneTests 11 件）。
+
+**性能の計測**（Release。基準＝変更前の HEAD［3db35508］を別の `git worktree` に建て、交互に 3 回ずつ。場面ごとの中央値の最小同士。この回も機材の揺れが大きかった）:
+
+| 場面 | 基準（ns／回） | 新（ns／回） | 差 |
+|---|---|---|---|
+| 既定 | 325.9 | 309.9 | −4.9% |
+| 出力カーブあり | 474.0 | 463.2 | −2.3% |
+| トリガーの補正 | 458.3 | 408.6 | −10.8% |
+| ジャイロ → コントロール | 368.7 | 333.2 | −9.6% |
+
+許容（5% 以内の悪化）に収まった（悪化した場面なし）。
