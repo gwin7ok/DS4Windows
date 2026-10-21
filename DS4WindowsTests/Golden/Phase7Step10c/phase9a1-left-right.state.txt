@@ -69,4 +69,8 @@
 ## trigger out-curve-4 (L2 と R2): 差なし
 ## trigger out-curve-5 (L2 と R2): 差なし
 ## trigger dz20-anti10-max90 out-curve-2 (L2 と R2): 差なし
+## trigger anti15-only (L2 と R2): 差なし
+## trigger max50-only (L2 と R2): 差なし
+## trigger out40-only (L2 と R2): 差なし
+## trigger dz10-max30 (L2 and R2 differ) (L2 と R2): 7 点で差
 ## trigger out-curve-6-bezier (L2 と R2): 7 点で差

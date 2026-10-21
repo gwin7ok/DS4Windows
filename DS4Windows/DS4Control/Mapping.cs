@@ -124,7 +124,8 @@ namespace DS4Windows
             Func<IDeviceStateAccessor> deviceStateAccessor,
             DS4Windows.Actions.ITriggerDispatchEngine triggerEngine,
             DS4Windows.DI.IStickDeadZoneProcessor stickDeadZone,
-            DS4Windows.DI.IOutputCurveProcessor outputCurve)
+            DS4Windows.DI.IOutputCurveProcessor outputCurve,
+            DS4Windows.DI.ITriggerDeadZoneProcessor triggerDeadZone)
         {
             _syntheticInput = syntheticInput ?? throw new ArgumentNullException(nameof(syntheticInput));
             _macroRuntime = macroRuntime ?? throw new ArgumentNullException(nameof(macroRuntime));
@@ -140,6 +141,7 @@ namespace DS4Windows
             _engine = triggerEngine ?? throw new ArgumentNullException(nameof(triggerEngine));
             _stickDeadZone = stickDeadZone ?? throw new ArgumentNullException(nameof(stickDeadZone));
             _outputCurve = outputCurve ?? throw new ArgumentNullException(nameof(outputCurve));
+            _triggerDeadZone = triggerDeadZone ?? throw new ArgumentNullException(nameof(triggerDeadZone));
 
             _triggerInputs = new DS4Windows.Actions.TriggerInput[ControllerLimits.MaxControllerCount];
             _frameOutputs = new DS4Windows.Actions.FrameOutput[ControllerLimits.MaxControllerCount];
@@ -296,6 +298,7 @@ namespace DS4Windows
         private readonly DS4Windows.Actions.ITriggerDispatchEngine _engine;
         private readonly DS4Windows.DI.IStickDeadZoneProcessor _stickDeadZone;   // Phase9 9-A(1) (b): 左右のスティックのデッドゾーン（共通の処理）
         private readonly DS4Windows.DI.IOutputCurveProcessor _outputCurve;   // Phase9 9-A(1) (c): スクエアスティックと出力カーブ（スティック、トリガー。共通の処理）
+        private readonly DS4Windows.DI.ITriggerDeadZoneProcessor _triggerDeadZone;   // Phase9 9-A(1) (d): L2／R2 のデッドゾーン（共通の処理）
 
         // Phase8-Step4 W4: デバイスごとのトリガー判定の入力（毎フレーム MapCustom の先頭で更新する）と、フレームの出力への書き込み口。
         // 遅延の基準時刻（旧 nowAction／oldnowAction）は、_triggerInputs[device].Delay に置き換わった。
@@ -591,111 +594,19 @@ namespace DS4Windows
             int l2Maxzone = getL2Maxzone(device);
             */
 
+            // Phase9 9-A(1) (d): トリガーのデッドゾーン（デッドゾーン、アンチデッドゾーン、最大ゾーン、最大出力）は、L2／R2 とも共通の処理（ITriggerDeadZoneProcessor）が行う。
+            // 以前は、ここに、L2 と R2 で同じコードが 2 回あった（約 100 行）。値は Phase9A1SetCurveAndDeadzoneGoldenTests と Phase7bTriggerDeadZoneRoundingTests が守る
             TriggerDeadZoneZInfo l2ModInfo = settings.L2ModInfo[device];
-            byte l2Deadzone = l2ModInfo.deadZone;
-            int l2AntiDeadzone = l2ModInfo.antiDeadZone;
-            int l2Maxzone = l2ModInfo.maxZone;
-            double l2MaxOutput = l2ModInfo.maxOutput;
-            if (l2Deadzone > 0 || l2AntiDeadzone > 0 || l2Maxzone != 100 || l2MaxOutput != 100.0)
-            {
-                double tempL2Output = cState.L2 / 255.0;
-                double tempL2AntiDead = 0.0;
-                double ratio = l2Maxzone / 100.0;
-                double maxValue = 255.0 * ratio;
-
-                if (l2Deadzone > 0)
-                {
-                    if (cState.L2 > l2Deadzone)
-                    {
-                        double current = NumericUtil.Clamp(0, dState.L2, maxValue);
-                        tempL2Output = (current - l2Deadzone) / (maxValue - l2Deadzone);
-                    }
-                    else
-                    {
-                        tempL2Output = 0.0;
-                    }
-                }
-                else
-                {
-                    double current = NumericUtil.Clamp(0, dState.L2, maxValue);
-                    tempL2Output = current / maxValue;
-                }
-
-                if (l2MaxOutput != 100.0)
-                {
-                    double maxOutRatio = l2MaxOutput / 100.0;
-                    tempL2Output = Math.Min(Math.Max(tempL2Output, 0.0), maxOutRatio);
-                }
-
-                if (l2AntiDeadzone > 0)
-                {
-                    tempL2AntiDead = l2AntiDeadzone * 0.01;
-                }
-
-                if (tempL2Output > 0.0)
-                {
-                    dState.L2 = (byte)(((1.0 - tempL2AntiDead) * tempL2Output + tempL2AntiDead) * 255.0);
-                }
-                else
-                {
-                    dState.L2 = 0;
-                }
-            }
+            if (l2ModInfo.deadZone > 0 || l2ModInfo.antiDeadZone > 0 || l2ModInfo.maxZone != 100 || l2ModInfo.maxOutput != 100.0)
+                _triggerDeadZone.Process(l2ModInfo, cState.L2, ref dState.L2);
 
             /*byte r2Deadzone = getR2Deadzone(device);
             int r2AntiDeadzone = getR2AntiDeadzone(device);
             int r2Maxzone = getR2Maxzone(device);
             */
             TriggerDeadZoneZInfo r2ModInfo = settings.R2ModInfo[device];
-            byte r2Deadzone = r2ModInfo.deadZone;
-            int r2AntiDeadzone = r2ModInfo.antiDeadZone;
-            int r2Maxzone = r2ModInfo.maxZone;
-            double r2MaxOutput = r2ModInfo.maxOutput;
-            if (r2Deadzone > 0 || r2AntiDeadzone > 0 || r2Maxzone != 100 || r2MaxOutput != 100.0)
-            {
-                double tempR2Output = cState.R2 / 255.0;
-                double tempR2AntiDead = 0.0;
-                double ratio = r2Maxzone / 100.0;
-                double maxValue = 255 * ratio;
-
-                if (r2Deadzone > 0)
-                {
-                    if (cState.R2 > r2Deadzone)
-                    {
-                        double current = NumericUtil.Clamp(0, dState.R2, maxValue);
-                        tempR2Output = (current - r2Deadzone) / (maxValue - r2Deadzone);
-                    }
-                    else
-                    {
-                        tempR2Output = 0.0;
-                    }
-                }
-                else
-                {
-                    double current = NumericUtil.Clamp(0, dState.R2, maxValue);
-                    tempR2Output = current / maxValue;
-                }
-
-                if (r2MaxOutput != 100.0)
-                {
-                    double maxOutRatio = r2MaxOutput / 100.0;
-                    tempR2Output = Math.Min(Math.Max(tempR2Output, 0.0), maxOutRatio);
-                }
-
-                if (r2AntiDeadzone > 0)
-                {
-                    tempR2AntiDead = r2AntiDeadzone * 0.01;
-                }
-
-                if (tempR2Output > 0.0)
-                {
-                    dState.R2 = (byte)(((1.0 - tempR2AntiDead) * tempR2Output + tempR2AntiDead) * 255.0);
-                }
-                else
-                {
-                    dState.R2 = 0;
-                }
-            }
+            if (r2ModInfo.deadZone > 0 || r2ModInfo.antiDeadZone > 0 || r2ModInfo.maxZone != 100 || r2ModInfo.maxOutput != 100.0)
+                _triggerDeadZone.Process(r2ModInfo, cState.R2, ref dState.R2);
 
             // Only apply deprecated Sensitivity modifier for Radial DZ
             if (lsMod.deadzoneType == StickDeadZoneInfo.DeadZoneType.Radial)

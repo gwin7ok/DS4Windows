@@ -261,6 +261,28 @@ namespace DS4WindowsTests
                 s.setR2OutCurveMode(Slot, 2);
             });
 
+            // (d) の前に追加: 単独の設定（アンチデッドゾーンのみ、小さい最大ゾーンのみ、最大出力のみ）と、L2 と R2 で設定が違う場面（取り違えの検出）
+            yield return new Scenario("trigger anti15-only", s =>
+            {
+                foreach (TriggerDeadZoneZInfo info in new[] { s.l2ModInfo[Slot], s.r2ModInfo[Slot] }) info.antiDeadZone = 15;
+            });
+            yield return new Scenario("trigger max50-only", s =>
+            {
+                foreach (TriggerDeadZoneZInfo info in new[] { s.l2ModInfo[Slot], s.r2ModInfo[Slot] }) info.maxZone = 50;
+            });
+            yield return new Scenario("trigger out40-only", s =>
+            {
+                foreach (TriggerDeadZoneZInfo info in new[] { s.l2ModInfo[Slot], s.r2ModInfo[Slot] }) info.maxOutput = 40.0;
+            });
+            yield return new Scenario("trigger dz10-max30 (L2 and R2 differ)", s =>
+            {
+                s.l2ModInfo[Slot].deadZone = 10;
+                s.l2ModInfo[Slot].maxZone = 30;
+                s.r2ModInfo[Slot].deadZone = 60;
+                s.r2ModInfo[Slot].antiDeadZone = 20;
+                s.r2ModInfo[Slot].maxOutput = 70.0;
+            });
+
             // (c) の前に追加: ベジェ曲線（モード 6）
             yield return new Scenario("trigger out-curve-6-bezier", s =>
             {
