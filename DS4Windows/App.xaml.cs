@@ -82,6 +82,7 @@ namespace DS4WinWPF
         private IPathService _pathService;
         private IEnvironmentService _environmentService;
         private IProfileRepository _profileRepository;
+        private IProfileIdentityService _profileIdentityService;   // Phase10-Step4d W1
         private ISpecialActionRepository _specialActionRepository;
         private IAppearanceSettingsService _appearanceSettingsService;
         private IDeviceStateService _deviceStateService;
@@ -544,6 +545,10 @@ namespace DS4WinWPF
             // Diagnostic: log culture state after applying theme to detect theme-induced localization regressions
             AppLogger.LogDebug($"Post-ChangeTheme: LocalizeDictionary={LocalizeDictionary.Instance.Culture}, SetCurrentThreadCulture={LocalizeDictionary.Instance.SetCurrentThreadCulture}, DefaultThreadCurrentUICulture={CultureInfo.DefaultThreadCurrentUICulture}, CurrentUICulture={Thread.CurrentThread.CurrentUICulture}");
 
+            // Phase10-Step4d W1（Q4 の変更、2026-10-21）: すべてのプロファイルのファイルに固定 ID を書く（ID がないものに割り当て、ファイルのコピーで重複したものに付け替える）。
+            // プロファイルをスロットへ読み込む前（メイン画面の生成の前）に行う。書けなかったファイル（読み取り専用など）は、参照を保存する直前に改めて試す
+            _profileIdentityService.EnsureAllPersisted();
+
             _profileRepository.LoadLinkedProfiles();
             // Phase7-Step5 W5（Q4＝A）: メイン画面の生成の窓口を、生成の直前に解決する（窓口が受け取る多数のサービスの生成が
             // 設定の読込より前にならないよう、InitializePostHostServices では解決しない。旧: MainWindow のコンストラクター内で解決していた）
@@ -586,6 +591,7 @@ namespace DS4WinWPF
             _pathService = ResolvePostHostService<IPathService>();
             _environmentService = ResolvePostHostService<IEnvironmentService>();
             _profileRepository = ResolvePostHostService<IProfileRepository>();
+            _profileIdentityService = ResolvePostHostService<IProfileIdentityService>();
             _specialActionRepository = ResolvePostHostService<ISpecialActionRepository>();
             _appearanceSettingsService = ResolvePostHostService<IAppearanceSettingsService>();
             _deviceStateService = ResolvePostHostService<IDeviceStateService>();

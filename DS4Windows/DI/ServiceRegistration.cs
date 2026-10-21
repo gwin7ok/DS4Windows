@@ -52,6 +52,8 @@ namespace DS4Windows.DI
                 return dispatcher;
             });
             services.AddSingleton<IPathService, PathService>();
+            // Phase10-Step4d W1: プロファイルの固定 ID と名前（ファイル名）を結ぶ登録簿
+            services.AddSingleton<IProfileIdentityService, ProfileIdentityService>();
             services.AddSingleton<IDeviceStateService, DeviceStateService>();
             services.AddSingleton<IEnvironmentService, EnvironmentService>();
             services.AddSingleton<IAppearanceSettingsService, AppearanceSettingsService>();

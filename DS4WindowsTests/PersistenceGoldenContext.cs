@@ -58,6 +58,8 @@ namespace DS4WindowsTests
             text = Regex.Replace(text, "<!--.*?-->", "<!--C-->", RegexOptions.Singleline);
             // 読込の入力にもゴールデンを使うため、置換後も妥当な XML でなければならない（属性値に < を含めない）
             text = Regex.Replace(text, "app_version=\"[^\"]*\"", "app_version=\"0.0.0.0\"");
+            // Phase10-Step4d W1: プロファイルの固定 ID（保存のたびに新しい値になる GUID）は、ゴールデンの比較から除く（ID の検査は Phase10Step4dW1ProfileIdTests が持つ）
+            text = Regex.Replace(text, @"\s*<ProfileId>[0-9a-fA-F]{32}</ProfileId>", string.Empty);
             return text;
         }
 

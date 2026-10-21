@@ -70,6 +70,7 @@ namespace DS4Windows.Services
         private readonly IProfileSaveSection _triggerStickSaveSection = new ProfileTriggerStickSaveSection();
         private readonly IProfileSaveSection _motionSaveSection = new ProfileMotionSaveSection();
         private readonly IProfileSaveSection _profileActionsSaveSection = new ProfileActionsSaveSection();
+        private readonly ProfileIdFile _profileIdFile = new ProfileIdFile();   // Phase10-Step4d W1: プロファイルの固定 ID
         private readonly IProfileSaveSection _outputCurveSaveSection = new ProfileOutputCurveSaveSection();
         private readonly IProfileSaveSection _outputControllerSaveSection = new ProfileOutputControllerSaveSection();
         private readonly IProfileSaveSection _buttonSaveSection = new ProfileButtonSaveSection();
@@ -330,6 +331,12 @@ namespace DS4Windows.Services
                 LightbarSettingInfo lightbarSettings = store.lightbarSettingInfo[device];
                 LightbarDS4WinInfo lightInfo = lightbarSettings.ds4winSettings;
                 var context = new ProfileSaveContext(store, m_Xdoc, rootElement, device, lightbarSettings, lightInfo);
+
+                // Phase10-Step4d W1（Phase10-Step4d-Plan.md §3.1）: プロファイルの固定 ID を、ルート直下の先頭に書く。保存先のファイルがすでに ID を持つなら、それを保つ
+                // （上書き保存は ID を変えない）。保存先が新しいファイル（別名で保存、新規作成）なら、新しい ID を振る。古いバージョンは、この要素を読み飛ばす
+                XmlNode xmlProfileId = m_Xdoc.CreateNode(XmlNodeType.Element, ProfileIdFile.ElementName, null);
+                xmlProfileId.InnerText = _profileIdFile.ReadIdOrNew(path);
+                rootElement.AppendChild(xmlProfileId);
 
                 _generalSaveSection.Save(context);
                 // Phase6-Step12: 旧形式（3.9.9 互換）の保存で欠けていた 10 要素（要素名は ProfileDTO と同じ。旧版は未知の要素を無視する）

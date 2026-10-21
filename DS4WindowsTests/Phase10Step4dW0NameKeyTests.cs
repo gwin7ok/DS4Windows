@@ -173,8 +173,9 @@ namespace DS4WindowsTests
         // ---- 保存形式（ID がない現行の形）----
 
         [Fact]
-        public void TheProfileXml_HasNoId_AndListsTheActionsByName()
+        public void TheProfileXml_ListsTheActionsByName()
         {
+            // Phase10-Step4d W1 で、プロファイル自身の ID（<ProfileId>）が足された。SA への参照は、W3 までは名前のまま
             using var ctx = new PersistenceGoldenContext();
             BackingStore store = PersistenceHarness.NewStore();
             store.profileActions[PersistenceHarness.Slot] = new List<string> { "ActionA", "ActionB" };
@@ -182,8 +183,7 @@ namespace DS4WindowsTests
             string xml = PersistenceHarness.SaveProfile(ctx, store, "Step4dW0Format");
 
             Assert.Contains("<ProfileActions>ActionA/ActionB</ProfileActions>", xml);
-            Assert.DoesNotContain("ProfileId", xml);
-            Assert.DoesNotContain("<Id>", xml);
+            Assert.DoesNotContain("ActionId", xml);
         }
 
         [Fact]

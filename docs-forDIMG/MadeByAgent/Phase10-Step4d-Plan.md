@@ -117,4 +117,13 @@
   - `Phase10Step4dW0NameKeyTests`（11 件）: リンクプロファイルの名前変更（`ReplaceLinkedProfileName`。大文字小文字を無視、表と画面表示用の値、保存）、自動プロファイルの名前変更（`AutoProfileHolder.ReplaceProfileName`。`Auto Profiles.xml` へ保存）、SA の名前変更・削除（`ReplaceActionReference`／`RemoveActionReference`。全プロファイルの `<ProfileActions>`、Ordinal の比較、重複の除去、空・同名は無視）、`GetAppliedProfilesUsingAction`、保存形式に ID がないこと（プロファイル XML、`Actions.xml`）、`ActionManager` の登録簿が SA の名前で状態を引くこと、画面の経路（`MainWindow` の名前変更が 4 つの追従を順に呼ぶこと、`ProfilePath`／`OlderProfilePath` の書き換え、`ProfileEditor` の SA の名前変更が `ReplaceActionReference` を呼ぶこと）。
   - `Phase10Step4dW0RuntimeKeyRatchetTests`（1 件）: 名前をキーにする実行時の参照の件数を、ファイルごとに固定（`ProfilePath`／`OlderProfilePath` 71 件、`profileActions`／`ProfileActions` 62 件。28 ファイル）。実数と一致することを検査する。W5・W6 で ID に替えて件数が減ったら、基準値も同時に更新する。
   - 既存で固定済み: 保存形式の golden（`Phase7Step10cGoldenPersistenceTests`）、SA の Load Profile の追従（`ProfileRenamePropagationTests`）、Controls の Load Profile の追従（`Phase10Step4W6ControlProfileTests`）。
-  - 次: W1（プロファイルの ID）。指示があるまで始めない（設計を説明して承認を得る）。
+- **W1（完了 2026-10-21。`Debug ALL` 成功: 警告 0・エラー 0、テスト 1928 件と 11 件が成功。実機確認 P10-90 は先送り）**: プロファイルの ID。参照はまだ名前のまま（追加のみ）。
+  - 保存形式: プロファイル XML のルート直下の先頭に `<ProfileId>`（GUID の `N` 形式）を保存する。**ID はファイルの中**にあるため、名前の変更（ファイル名の変更）では変わらない。保存時は、保存先のファイルがすでに ID を持つならそれを保ち（上書き保存）、なければ新しい ID を振る（別名で保存、新規作成）。このため、スロットごとの ID の状態（`BackingStore`）や、読み込みの節は不要になった（計画の当初案から簡素化）。
+  - 登録簿: `IProfileIdentityService`（`DI/`）／`ProfileIdentityService`（`Services/`、Singleton）。`EnsureAllPersisted()`（ID のないファイルへ書く。重複を付け替える）、`GetId`、`GetName`、`EnsurePersisted`、`TryResolve`（ID を優先し、なければ名前）。ファイルの読み書きは `ProfileIdFile`（内部の部品。ID は `XmlReader` で先頭から読み、書くときは `XmlDocument` で、ほかの内容を変えずに先頭へ足す）。排他は `ProfileXmlStore.XmlIoLock`。
+  - **決定の変更（ユーザー、2026-10-21）: Q4 の移行の時期は、「起動時に全ファイルへ一括で ID を書く」**（当初の推奨は、参照を保存する直前と通常の保存のとき）。`App` の起動で、メイン画面の生成（プロファイルのスロットへの読み込み）の前に `EnsureAllPersisted()` を呼ぶ。書けなかったファイル（読み取り専用、壊れたファイル）は、ログに警告を出し、参照を保存する直前（W3〜W4）の `EnsurePersisted` で改めて試す。
+  - 重複（Q3・Q4 の b）: 同じ ID のファイルのうち、作成日時が古いほうが ID を保ち、ほかには新しい ID を書く（同じ作成日時なら名前順で先のもの）。
+  - 当初案から外したもの: `ProfileEntity.Id`（画面の一覧への ID の持たせ方は、一覧が ID を必要とする W3〜W4 で決める。一覧の作成時に全ファイルを読むことを避ける）。
+  - golden: 保存されたプロファイル XML の `<ProfileId>`（保存のたびに変わる）は、比較の正規化で除いた（`PersistenceGoldenContext.Normalize`）。golden のファイルは変更なし。ID の検査は新しいテストが持つ。
+  - テスト: `Phase10Step4dW1ProfileIdTests`（15 件。保存で先頭に ID、上書きで保つ・別名で新しい ID、名前変更で変わらない、起動時の割り当て［内容を保つ、安定、コピーで付け替え、作成日時が同じなら名前順、書けない・壊れたファイルは報告、フォルダーなし］、`EnsurePersisted`、`TryResolve`、形式が不正な ID、DI の登録と起動の配線）。`Phase10Step4dW0NameKeyTests` の保存形式の検査を、新しい形（プロファイルに ID あり、SA への参照は名前）へ更新した。
+  - 実機確認: 台帳 §27 の P10-90（統合版に追加）。先送り。
+  - 次: W2（SA の ID）。指示があるまで始めない（設計を説明して承認を得る）。
