@@ -58,6 +58,7 @@ namespace DS4Windows.DI
             {
                 var service = new ProfileIdentityService(sp.GetRequiredService<IPathService>());
                 sp.GetRequiredService<BackingStore>().AttachProfileIdentity(service);
+                (sp.GetRequiredService<IProfileSettingsService>() as ProfileSettingsService)?.AttachProfileIdentity(service);   // W5c: 一時プロファイルの名前
                 return service;
             });
             services.AddSingleton<IDeviceStateService, DeviceStateService>();

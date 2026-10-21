@@ -127,7 +127,8 @@ namespace DS4WindowsTests
             IProfileActionProvider actionProvider = null, BackingStore store = null,
             IKeyButtonControllerRegistry keyButtonControllers = null,
             DS4Windows.Actions.IActionRegistry actionRegistry = null,
-            Func<DS4Windows.Actions.IActionBindingBuilder> bindingBuilderProvider = null)
+            Func<DS4Windows.Actions.IActionBindingBuilder> bindingBuilderProvider = null,
+            IProfileIdentityService profileIdentity = null)
         {
             return new ProfileApplicationService(settings, control, profileRepository, environmentService,
                 xmlStore ?? CreateProfileXmlStore(store),
@@ -135,7 +136,8 @@ namespace DS4WindowsTests
                 store ?? TestGlobals.Store,
                 keyButtonControllers ?? TestHost.GetService<IKeyButtonControllerRegistry>(),
                 actionRegistry ?? TestHost.GetService<DS4Windows.Actions.IActionRegistry>(),
-                bindingBuilderProvider ?? (() => TestHost.GetService<DS4Windows.Actions.IActionBindingBuilder>()));
+                bindingBuilderProvider ?? (() => TestHost.GetService<DS4Windows.Actions.IActionBindingBuilder>()),
+                profileIdentity);
         }
 
         public static ProfileSlotApplier CreateProfileSlotApplier(IProfileApplicationService profileApplication = null,

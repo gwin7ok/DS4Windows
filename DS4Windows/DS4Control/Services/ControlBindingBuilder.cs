@@ -366,6 +366,7 @@ namespace DS4Windows.Services
                 // Phase10-Step4 W6: 切り替え先を details、「離したら戻る」を automaticUntrigger に入れる（SA の Profile と同じ形）。
                 // 復帰は、エンジンが、この SpecialAction の trigger（そのボタン）の離れを見て行う。IsTemporaryProfileAction は automaticUntrigger から決まる
                 identity.details = item.ProfileName;
+                identity.profileId = string.IsNullOrEmpty(item.ProfileId) ? null : item.ProfileId;   // Phase10-Step4d W5c: 実行の直前に、ID から現在の名前を引く
                 identity.automaticUntrigger = item.AutomaticUntrigger;
             }
 

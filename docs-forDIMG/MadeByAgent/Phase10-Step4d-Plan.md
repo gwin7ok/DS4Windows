@@ -164,4 +164,11 @@
   - テスト: `Phase10Step4dW5bProfileSlotNamesTests`（11 件。登録簿なしは配列と同じ、書くと ID・名前変更に追従、未登録・空は名前のまま、削除で最後の名前、あとから作られた・作り直したプロファイルへの結び、結びの付け外し、`BackingStore` の 3 つの配列、DI の結び、XML の排他を待たない、並行アクセス）。`BackingStoreStateDumper` は `ProfileSlotNames` を配列として出力する（golden は変更なし）。`ControlServicePr4ShimEquivalenceTests`／`Phase6Step10GroupThreeBContractTests` の型を更新。ラチェットの基準値を更新（`BackingStore` 7 → 9）。
   - `MainWindow` の名前変更の再構築（`ProfilePath[i] = newProfile` など）は、まだ残す（W7 で撤去）。残しても、窓口の書き込みが同じ ID を引くため、結果は変わらない。
   - 実機確認: 台帳 §27 の P10-94（統合版に追加）。先送り。
-  - 次: W5c（一時プロファイルの復帰、SA の Load Profile の実行時の解決、自動プロファイルの実行経路）。指示があるまで始めない（設計を説明して承認を得る）。
+- **W5c（完了 2026-10-21。`Debug ALL` 成功: 警告 0・エラー 0、テスト 1990 件と 11 件が成功。実機確認 P10-95 は先送り）**: 切り替え・復帰の実行経路を ID に（W5 の範囲 1・2。ユーザー承認）。実行時に名前を持つ残りの箇所のうち、自動プロファイルのルール（`AutoProfileEntity.ProfileNames`）とリンクプロファイル（`BackingStore.linkedProfiles`、`linkedProfileUI`）は **W5d** に分けた（一覧と画面に広がる別の性質の変更のため）。
+  - 一時プロファイルの名前: `ProfileSettingsService` の `_tempProfileName` を `ProfileSlotNames`（保管は ID の窓口）にした。`GetTempProfileName`／`SetTempProfileName` の外向きの形は変えない。登録簿は、DI の登録（登録簿を作るとき）が `AttachProfileIdentity` で結ぶ（`BackingStore` と同じ）。
+  - SA の Load Profile の実行時の解決: `ProfileApplicationService.ApplyFromAction` が、切り替えの直前に、`SpecialAction.profileId`（W3 で持たせた切り替え先の ID）から現在の名前を引く（`ResolveTarget`。引けたら `details` も直す）。引けない・ID がないときは、従来どおり `details`。コンストラクターに、省略可能な `IProfileIdentityService`（11 個目）を足した。
+  - Controls の Load Profile: 合成 SA（`ControlBindingBuilder.CreateSpecialIdentity`）に `ControlSpecialItem.ProfileId` を `profileId` として渡す。実行の直前の解決は、SA と同じ経路。
+  - これで、プロファイルの名前を変えても、SA の定義や束縛を作り直さなくても、押したときの切り替えが新しい名前で動く。追従のコード（`ReplaceProfileSwitchTarget`、`ReplaceControlProfileSwitchTarget` ほか）は、W7 まで残す（二重の安全策）。
+  - テスト: `Phase10Step4dW5cRuntimeSwitchTests`（7 件。一時プロファイルの名前が名前変更に追従［登録簿あり］・登録簿なしは従来どおり・DI の結び、切り替え先の解決［名前変更後は現在の名前、ID なし・引けない・登録簿なしは名前］、Controls の合成 SA が ID を持つこと、`ApplyFromAction` が解決した名前を使うこと）。`Phase7Step10bW3ContractCleanupGuardTests` のコンストラクターの引数の数を更新（10 → 11）。
+  - 実機確認: 台帳 §27 の P10-95（統合版に追加）。先送り。
+  - 次: W5d（自動プロファイルのルールとリンクプロファイルの、実行時の名前を ID に）。指示があるまで始めない（設計を説明して承認を得る）。

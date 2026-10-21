@@ -12,6 +12,8 @@ namespace DS4Windows
         // Phase6-Step10-4-2a: ControlService は遅延解決（Func）で受け取る（Program.rootHub/AppHost 参照の廃止。決定 D4-3）
         private ControlService _control => _controlProvider();
         private readonly IProfileRepository _profileRepo;
+        // Phase10-Step4d W5c: Load Profile の切り替え先を、実行の直前に ID から現在の名前に引く。省略可（なければ、従来どおり details の名前）
+        private readonly DS4Windows.DI.IProfileIdentityService _profileIdentity;
         // Phase6-Step10-4-2f（K1 是正）: スロット上限は、固定の 4 ではなく、環境（Windows 8 以上は 8）から取得する
         private readonly IEnvironmentService _environmentService;
         // Phase7-Step3c W3: 適用の核（旧 Global.ApplyProfile）に必要な依存
@@ -34,8 +36,10 @@ namespace DS4Windows
             BackingStore config,
             IKeyButtonControllerRegistry keyButtonControllers,
             DS4Windows.Actions.IActionRegistry actionRegistry,
-            Func<DS4Windows.Actions.IActionBindingBuilder> bindingBuilderProvider)
+            Func<DS4Windows.Actions.IActionBindingBuilder> bindingBuilderProvider,
+            DS4Windows.DI.IProfileIdentityService profileIdentity = null)
         {
+            _profileIdentity = profileIdentity;
             _actionRegistry = actionRegistry ?? throw new ArgumentNullException(nameof(actionRegistry));
             _bindingBuilderProvider = bindingBuilderProvider ?? throw new ArgumentNullException(nameof(bindingBuilderProvider));
             _keyButtonControllers = keyButtonControllers ?? throw new ArgumentNullException(nameof(keyButtonControllers));
@@ -56,8 +60,11 @@ namespace DS4Windows
 
             DS4Device device = _control?.DS4Controllers?[deviceIndex];
 
+            // Phase10-Step4d W5c: 切り替え先の名前は、ID があれば ID から引く（プロファイルの名前を変えたあとも、SA を作り直さずに、現在の名前で切り替える）
+            string target = ResolveTarget(action);
+
             string prolog = string.Format(DS4WinWPF.Properties.Resources.UsingProfile,
-                (deviceIndex + 1).ToString(), action.details, device != null ? $"{device.Battery}" : "N/A");
+                (deviceIndex + 1).ToString(), target, device != null ? $"{device.Battery}" : "N/A");
 
             Task.Run(() =>
             {
@@ -72,16 +79,33 @@ namespace DS4Windows
                     // 呼び足すと同一切替に対して二重表示になるため、以前あった追加呼び出しは撤去した。
                     device.HaltReportingRunAction(() =>
                     {
-                        ApplyCore(deviceIndex, action.details, action.IsTemporaryProfileAction, true, _control,
+                        ApplyCore(deviceIndex, target, action.IsTemporaryProfileAction, true, _control,
                             ProfileChangeSource.MappingAction, prolog);
                     });
                 }
                 else
                 {
-                    ApplyCore(deviceIndex, action.details, action.IsTemporaryProfileAction, true, _control,
+                    ApplyCore(deviceIndex, target, action.IsTemporaryProfileAction, true, _control,
                         ProfileChangeSource.MappingAction, prolog);
                 }
             });
+        }
+
+        // Phase10-Step4d W5c: Load Profile の切り替え先。SA の切り替え先の ID（profileId）が引ければ、現在の名前を返す（details も同じ名前に直す）。
+        // 引けない・ID がないときは、details の名前（従来どおり）
+        public string ResolveTarget(SpecialAction action)
+        {
+            if (_profileIdentity != null && !string.IsNullOrEmpty(action.profileId))
+            {
+                string current = _profileIdentity.GetName(action.profileId);
+                if (current != null)
+                {
+                    if (!string.Equals(action.details, current, StringComparison.Ordinal)) action.details = current;
+                    return current;
+                }
+            }
+
+            return action.details;
         }
 
         public bool RestoreFromAction(int deviceIndex)

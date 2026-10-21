@@ -45,7 +45,11 @@ namespace DS4Windows
 
         private bool[] _touchpadActive = new bool[TEST_PROFILE_ITEM_COUNT] { true, true, true, true, true, true, true, true, true };
         private bool[] _useTempProfile = new bool[TEST_PROFILE_ITEM_COUNT] { false, false, false, false, false, false, false, false, false };
-        private string[] _tempProfileName = new string[TEST_PROFILE_ITEM_COUNT] { string.Empty, string.Empty, string.Empty, string.Empty, string.Empty, string.Empty, string.Empty, string.Empty, string.Empty };
+        // Phase10-Step4d W5c: 一時プロファイルの名前の保管は、プロファイルの固定 ID（名前を読み書きする窓口。ProfileSlotNames）。名前を変えても、読み出す名前は現在の名前になる
+        private ProfileSlotNames _tempProfileName = new ProfileSlotNames(TEST_PROFILE_ITEM_COUNT);
+
+        /// <summary>Phase10-Step4d W5c: 登録簿を結ぶ（DI の登録が、登録簿を作るときに呼ぶ。BackingStore のスロットの保管と同じ）。</summary>
+        public void AttachProfileIdentity(DS4Windows.DI.IProfileIdentityService identity) => _tempProfileName.AttachIdentity(identity);
         private bool[] _tempProfileDistance = new bool[TEST_PROFILE_ITEM_COUNT] { false, false, false, false, false, false, false, false, false };
         private bool[] _useDInputOnly = new bool[TEST_PROFILE_ITEM_COUNT] { true, true, true, true, true, true, true, true, true };
         private bool[] _linkedProfileCheck = new bool[MAX_DS4_CONTROLLER_COUNT] { false, false, false, false, false, false, false, false };
