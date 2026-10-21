@@ -57,6 +57,13 @@ namespace DS4WinWPF
             this.pathService = pathService ?? throw new System.ArgumentNullException(nameof(pathService));
             this.environmentService = environmentService ?? throw new System.ArgumentNullException(nameof(environmentService));
             autoProfileColl = new ObservableCollection<AutoProfileEntity>();
+            // Phase10-Step4d W5d: ルールが入るとき（ファイルの読み込み、画面からの追加）に、登録簿を結ぶ（各コントローラーのプロファイルの保管は ID）。Load より前に結ぶ
+            autoProfileColl.CollectionChanged += (sender, e) =>
+            {
+                if (e.NewItems == null) return;
+                foreach (AutoProfileEntity added in e.NewItems.OfType<AutoProfileEntity>())
+                    added.AttachProfileIdentity(this.profileIdentity);
+            };
             //autoProfileDict = new Dictionary<string, AutoProfileEntity>();
             Load();
 
@@ -146,7 +153,7 @@ namespace DS4WinWPF
             {
                 foreach (AutoProfileEntity entity in autoProfileColl)
                 {
-                    string[] names = entity.ProfileNames;
+                    ProfileSlotNames names = entity.ProfileNames;
                     if (names == null) continue;
 
                     for (int i = 0; i < names.Length; i++)

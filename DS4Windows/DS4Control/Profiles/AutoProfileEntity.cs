@@ -39,14 +39,17 @@ namespace DS4WinWPF
         private string path_lowercase;
         private string title_lowercase;
         private bool turnoff;
-        private string[] profileNames = new string[ControllerLimits.MaxControllerCount] { string.Empty, string.Empty,
-            string.Empty, string.Empty, string.Empty, string.Empty, string.Empty, string.Empty };
+        // Phase10-Step4d W5d: 各コントローラーのプロファイルの保管は ID（名前を読み書きする窓口）。登録簿は、ルールがホルダーに入るとき（AutoProfileHolder）に結ぶ
+        private ProfileSlotNames profileNames = new ProfileSlotNames(ControllerLimits.MaxControllerCount);
         public const string NONE_STRING = "(none)";
 
         public string Path { get => path; set => SetSearchPath(value); }
         public string Title { get => title; set => SetSearchTitle(value); }
         public bool Turnoff { get => turnoff; set => turnoff = value; }
-        public string[] ProfileNames { get => profileNames; set => profileNames = value; }
+        public ProfileSlotNames ProfileNames { get => profileNames; set => profileNames = value; }
+
+        /// <summary>Phase10-Step4d W5d: 登録簿を結ぶ（ID ↔ 名前を引く）。null なら、結びを外す。</summary>
+        public void AttachProfileIdentity(DS4Windows.DI.IProfileIdentityService identity) => profileNames.AttachIdentity(identity);
 
         public AutoProfileEntity(string pathStr, string titleStr)
         {

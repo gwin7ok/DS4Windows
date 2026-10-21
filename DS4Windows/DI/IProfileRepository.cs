@@ -24,7 +24,7 @@ namespace DS4Windows.DI
         ProfileSlotNames ProfilePath { get; }
         ProfileSlotNames OlderProfilePath { get; }
         ProfileSlotNames SelectedProfile { get; }
-        string[] LinkedProfileUI { get; }
+        ProfileSlotNames LinkedProfileUI { get; }   // Phase10-Step4d W5d: 保管はプロファイルの固定 ID（名前を読み書きする窓口）
 
         event EventHandler<SelectedProfileChangedEventArgs> SelectedProfileChanged;
         void RaiseSelectedProfileChanged(int deviceIndex, string profileName);

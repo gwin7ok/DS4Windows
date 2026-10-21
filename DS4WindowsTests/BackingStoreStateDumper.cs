@@ -98,6 +98,8 @@ namespace DS4WindowsTests
             if (value == null) { Line(sb, path, "null"); return; }
             // Phase10-Step4d W5b: スロットの名前の窓口（ProfileSlotNames）は、従来の string[] と同じ出力にする（現在の名前の配列として）
             if (value is DS4Windows.ProfileSlotNames slotNames) value = slotNames.ToArray();
+            // Phase10-Step4d W5d: リンクプロファイルの窓口（LinkedProfileMap）は、従来の辞書と同じ出力にする（現在の名前の辞書として）
+            if (value is DS4Windows.LinkedProfileMap linkedMap) value = linkedMap.ToDictionary();
             Type t = value.GetType();
             if (IsScalar(t)) { Line(sb, path, Format(value)); return; }
             if (t == typeof(System.Drawing.Color))

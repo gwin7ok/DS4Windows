@@ -164,7 +164,7 @@ namespace DS4Windows
         public ProfileSlotNames ProfilePath => _config.profilePath;
         public ProfileSlotNames OlderProfilePath => _config.olderProfilePath;
         public ProfileSlotNames SelectedProfile => _config.selectedProfile;
-        public string[] LinkedProfileUI => _config.linkedProfileUI;
+        public ProfileSlotNames LinkedProfileUI => _config.linkedProfileUI;
 
         // Phase7-Step3c W4: Global の静的イベントから、このリポジトリ（DI のシングルトン）のインスタンスイベントにした。
         // 発火元は ProfileApplicationService（RaiseSelectedProfileChanged 経由）。購読者は ControllerListViewModel のみ。
@@ -213,7 +213,7 @@ namespace DS4Windows
                 }
             }
 
-            string[] ui = _config.linkedProfileUI;
+            ProfileSlotNames ui = _config.linkedProfileUI;
             if (ui != null)
             {
                 for (int i = 0; i < ui.Length; i++)

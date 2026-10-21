@@ -171,4 +171,11 @@
   - これで、プロファイルの名前を変えても、SA の定義や束縛を作り直さなくても、押したときの切り替えが新しい名前で動く。追従のコード（`ReplaceProfileSwitchTarget`、`ReplaceControlProfileSwitchTarget` ほか）は、W7 まで残す（二重の安全策）。
   - テスト: `Phase10Step4dW5cRuntimeSwitchTests`（7 件。一時プロファイルの名前が名前変更に追従［登録簿あり］・登録簿なしは従来どおり・DI の結び、切り替え先の解決［名前変更後は現在の名前、ID なし・引けない・登録簿なしは名前］、Controls の合成 SA が ID を持つこと、`ApplyFromAction` が解決した名前を使うこと）。`Phase7Step10bW3ContractCleanupGuardTests` のコンストラクターの引数の数を更新（10 → 11）。
   - 実機確認: 台帳 §27 の P10-95（統合版に追加）。先送り。
-  - 次: W5d（自動プロファイルのルールとリンクプロファイルの、実行時の名前を ID に）。指示があるまで始めない（設計を説明して承認を得る）。
+- **W5d（完了 2026-10-21。`Debug ALL` 成功: 警告 0・エラー 0、テスト 1998 件と 11 件が成功。実機確認 P10-96 は先送り）**: 自動プロファイルのルールとリンクプロファイルの、実行時の保持を ID に（W5 の範囲 3・4）。これで、**実行時にプロファイルの名前を持つ箇所は、すべて ID を保管する窓口になった**。
+  - 自動プロファイル: `AutoProfileEntity.ProfileNames` を `ProfileSlotNames` にした（以前は `string[]`）。登録簿は、`AutoProfileHolder` が、ルールが入るとき（`CollectionChanged`。ファイルの読み込み、画面からの追加）に `AttachProfileIdentity` で結ぶ（`Load` より前にフックする）。ホルダーに入る前に設定した名前も、入るときに ID に結ばれる。
+  - リンクプロファイル: `BackingStore.linkedProfiles` を新しい型 `LinkedProfileMap` にした（以前は `Dictionary<string, string>`）。使い方は辞書と同じ（インデクサー、`ContainsKey`、`Remove`、`TryGetValue`、`Count`、`Keys`［写し］、列挙）で、値は名前を読み書きする窓口（保管は ID）。`BackingStore.linkedProfileUI`（画面表示用）は `ProfileSlotNames`。`IProfileRepository.LinkedProfileUI` の型を替えた。`BackingStore.AttachProfileIdentity` が、5 つ（現在・直前・選択・リンク・リンクの表示用）をまとめて結ぶ。
+  - 呼び出し側の本体は、ほとんど変更なし（インデクサーの読み書き。`AutoProfileHolder.ReplaceProfileName` と `ProfileRepository.ReplaceLinkedProfileName` の型の宣言のみ）。
+  - テスト: `Phase10Step4dW5dTests`（8 件。`LinkedProfileMap` が辞書と同じに動く・名前変更に追従・削除で最後の名前・結びの付け直し、`BackingStore` のリンクと表示用の追従、`ProfileRepository.GetLinkedProfile` が `ReplaceLinkedProfileName` なしで現在の名前を返す、自動プロファイルのルールの追従［ホルダーに入った後、ファイルから読み込んだ後］、ホルダーの外・登録簿なしは名前のまま）。`BackingStoreStateDumper` は `LinkedProfileMap` を辞書として出力する（golden は変更なし）。
+  - 追従のコード（`ReplaceLinkedProfileName`、`AutoProfileHolder.ReplaceProfileName`、`ReplaceProfileSwitchTarget` ほか）は、W7 で撤去するまで残す（二重の安全策）。
+  - 実機確認: 台帳 §27 の P10-96（統合版に追加）。先送り。
+  - 次: W6（実行時の状態を ID に: SA）。指示があるまで始めない（設計を説明して承認を得る）。

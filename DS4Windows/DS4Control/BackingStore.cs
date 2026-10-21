@@ -169,12 +169,14 @@ namespace DS4Windows
             profilePath.AttachIdentity(identity);
             olderProfilePath.AttachIdentity(identity);
             selectedProfile.AttachIdentity(identity);
+            linkedProfileUI.AttachIdentity(identity);   // Phase10-Step4d W5d
+            linkedProfiles.AttachIdentity(identity);
         }
-        public string[] linkedProfileUI = new string[ControllerLimits.TestProfileItemCount] { string.Empty, string.Empty, string.Empty, string.Empty, string.Empty, string.Empty, string.Empty, string.Empty, string.Empty };
+        public ProfileSlotNames linkedProfileUI = new ProfileSlotNames(ControllerLimits.TestProfileItemCount);
         // プロファイル切り替え時の無効アクション名エラーログ抑制用（Phase7-Step3c W3: Global の静的フィールドから移した）
         public HashSet<string> loggedInvalidActions = new HashSet<string>();
         public bool[] firstConnectionAfterStartup = new bool[ControllerLimits.TestProfileItemCount] { true, true, true, true, true, true, true, true, true };
-        public Dictionary<string, string> linkedProfiles = new Dictionary<string, string>();
+        public LinkedProfileMap linkedProfiles = new LinkedProfileMap();   // Phase10-Step4d W5d: 値は、プロファイルの名前を読み書きする窓口（保管は ID）
         // Cache properties instead of performing a string comparison every frame
         public bool[] distanceProfiles = new bool[ControllerLimits.TestProfileItemCount] { false, false, false, false, false, false, false, false, false };
         public Byte[] rumble = new Byte[ControllerLimits.TestProfileItemCount]
