@@ -49,6 +49,7 @@ namespace DS4Windows.Services
             XmlNode KeyType = m_Xdoc.CreateNode(XmlNodeType.Element, "KeyType", null);
             XmlNode Button = m_Xdoc.CreateNode(XmlNodeType.Element, "Button", null);
             XmlNode Extras = m_Xdoc.CreateNode(XmlNodeType.Element, "Extras", null);
+            XmlNode Special = m_Xdoc.CreateNode(XmlNodeType.Element, "Special", null);   // Phase10-Step4 W1: SA 専用の割り当て（型のある項目）
 
             foreach (DS4ControlSettings dcs in store.ds4settings[device])
             {
@@ -100,6 +101,21 @@ namespace DS4Windows.Services
                     }
                 }
 
+                // Phase10-Step4 W1: SA 専用の種別（Special）と、Macro の SA 専用の 3 項目は、型のある項目として、<Special> に書く
+                if (dcs.special != null)
+                {
+                    if (dcs.actionType == DS4ControlSettings.ActionType.Special)
+                    {
+                        Special.AppendChild(ControlSpecialItemXml.Write(m_Xdoc, dcs.control.ToString(), dcs.special));
+                    }
+                    else if (dcs.actionType == DS4ControlSettings.ActionType.Macro && dcs.special.HasMacroOptions)
+                    {
+                        ControlSpecialItem macroOptions = dcs.special.Clone();
+                        macroOptions.Type = SpecialAction.ActionTypeId.Macro;
+                        Special.AppendChild(ControlSpecialItemXml.Write(m_Xdoc, dcs.control.ToString(), macroOptions));
+                    }
+                }
+
                 bool hasvalue = false;
                 if (!string.IsNullOrEmpty(dcs.extras))
                 {
@@ -132,6 +148,8 @@ namespace DS4Windows.Services
                 NodeControl.AppendChild(Extras);
             if (KeyType.HasChildNodes)
                 NodeControl.AppendChild(KeyType);
+            if (Special.HasChildNodes)
+                NodeControl.AppendChild(Special);
 
             // Phase8-Step8 8-0: 廃止された「ジャイロスワイプ」の割り当ては、保持した項目を、元のグループへそのまま戻す
             store.removedGyroSwipeSettings[device].AppendControlsTo(m_Xdoc, NodeControl);

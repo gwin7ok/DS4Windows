@@ -182,6 +182,7 @@ namespace DS4WinWPF.DS4Forms.ViewModels
 
         private void WriteUnbound()
         {
+            working.special = null;
             working.keyType = DS4KeyType.Unbound;   // 出力先がない（Toggle・Scan Code の対象も、ない）
             working.actionType = DS4ControlSettings.ActionType.Button;
             working.action.actionBtn = X360Controls.Unbound;
@@ -189,6 +190,7 @@ namespace DS4WinWPF.DS4Forms.ViewModels
 
         private void WriteDefault()
         {
+            working.special = null;
             working.keyType = DS4KeyType.None;
             working.action.actionKey = 0;
             working.actionType = DS4ControlSettings.ActionType.Default;
@@ -196,6 +198,7 @@ namespace DS4WinWPF.DS4Forms.ViewModels
 
         private void WriteKey(PressKeyViewModel pressKey)
         {
+            working.special = null;
             working.keyType = DS4KeyType.None;
             working.actionType = DS4ControlSettings.ActionType.Key;
             working.action.actionKey = pressKey.Value;
@@ -205,6 +208,7 @@ namespace DS4WinWPF.DS4Forms.ViewModels
 
         private void WriteButton(PressKeyViewModel pressKey)
         {
+            working.special = null;
             working.keyType = DS4KeyType.None;
             working.actionType = DS4ControlSettings.ActionType.Button;
             working.action.actionBtn = (X360Controls)pressKey.SelectedButton;
@@ -220,6 +224,8 @@ namespace DS4WinWPF.DS4Forms.ViewModels
 
         private void WriteMacro(MacroViewModel macro)
         {
+            // Macro の SA 専用の 3 項目は残す（画面で編集できるようにする Wave［Step4 W3］まで、この Wave では触らない）。別の種別の項目だったものは、捨てる
+            if (working.special != null && working.special.Type != SpecialAction.ActionTypeId.Macro) working.special = null;
             working.actionType = DS4ControlSettings.ActionType.Macro;
             working.action.actionMacro = macro.Macro.ToArray();
             // Phase8-Fix-MacroRepeatUnify（D1）: 「押している間繰り返す」は RepeatMacro だけで表す。Macro の印は、常に立てる
@@ -255,6 +261,7 @@ namespace DS4WinWPF.DS4Forms.ViewModels
             to.extras = from.extras;
             to.keyType = from.keyType;
             to.actionType = from.actionType;
+            to.special = from.special?.Clone();   // Phase10-Step4 W1: SA 専用の項目も、独立した複製にする
             to.action = new ControlActionData
             {
                 actionKey = from.action.actionKey,

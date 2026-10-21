@@ -190,6 +190,33 @@ namespace DS4Windows.Services
                 }
             }
 
+            // Phase10-Step4 W1: SA 専用の割り当て（型のある項目）。最後に読む。種別が未知のもの、ボタン名が不明なものは、その要素だけ読み飛ばす。
+            // Macro の要素は、そのボタンが Macro のときだけ、3 項目の入れ物として取り込む。Macro 以外の種別は、そのボタンの割り当てを Special にする（同じボタンの
+            // Button／Macro／Key があっても、Special が優先する）
+            ParentItem = m_Xdoc.SelectSingleNode("/" + rootname + "/Control/Special");
+            if (ParentItem != null)
+            {
+                foreach (XmlNode item in ParentItem.ChildNodes)
+                {
+                    if (!(item is XmlElement)) continue;
+                    if (!Enum.TryParse(item.Name, out DS4Controls specialControl) || specialControl == DS4Controls.None) continue;
+                    if (!ControlSpecialItemXml.TryRead(item, out ControlSpecialItem specialItem)) continue;
+
+                    DS4ControlSettings dcs = store.GetDS4CSetting(device, specialControl);
+                    if (dcs == null) continue;
+
+                    if (specialItem.Type == SpecialAction.ActionTypeId.Macro)
+                    {
+                        if (dcs.actionType == DS4ControlSettings.ActionType.Macro) dcs.special = specialItem;
+                    }
+                    else
+                    {
+                        dcs.actionType = DS4ControlSettings.ActionType.Special;
+                        dcs.special = specialItem;
+                    }
+                }
+            }
+
             context.MissingSetting = missingSetting;
         }
     }

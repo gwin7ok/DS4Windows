@@ -101,9 +101,9 @@ namespace DS4WindowsTests
         [Fact]
         public void AnUnknownSection_InControl_IsIgnoredOnLoad_AndLostOnResave()
         {
-            // 互換の事実（Step4 の W1 で、SA 専用の割り当ての節［Special］を足すとき、古い版のアプリは、同じように、読み飛ばし、保存し直すと失う。ユーザーが許容済み）
+            // 互換の事実（W1 で <Special> を読むようになったため、未知の節の例は <Future> にした。古い版のアプリが <Special> を、同じように、読み飛ばし、保存し直すと失うことは、ユーザーが許容済み）
             const string withUnknown =
-                "<Control><Button><Cross>A</Cross></Button><Special><Square Type=\"Program\">C:\\x.exe</Square></Special></Control>";
+                "<Control><Button><Cross>A</Cross></Button><Future><Square Type=\"Program\">C:\\x.exe</Square></Future></Control>";
             using var ctx = new PersistenceGoldenContext();
 
             BackingStore loaded = PersistenceHarness.LoadProfile(ctx, XmlWith(ctx, "Step4W0In4", withUnknown), "Step4W0Load4");
@@ -112,7 +112,7 @@ namespace DS4WindowsTests
             Assert.Equal(DS4ControlSettings.ActionType.Default, loaded.GetDS4CSetting(Slot, DS4Controls.Square).actionType);
 
             XmlDocument resaved = Parse(PersistenceHarness.SaveProfile(ctx, loaded, "Step4W0Resave4"));
-            Assert.Null(resaved.SelectSingleNode("/DS4Windows/Control/Special"));
+            Assert.Null(resaved.SelectSingleNode("/DS4Windows/Control/Future"));
             Assert.NotNull(resaved.SelectSingleNode("/DS4Windows/Control/Button/Cross"));
         }
     }

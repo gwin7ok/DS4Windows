@@ -104,6 +104,11 @@ namespace DS4WinWPF.DS4Forms.ViewModels
                 {
                     temp = Properties.Resources.Macro + (sc ? " (" + Properties.Resources.ScanCode + ")" : "");
                 }
+                else if (actionType == DS4ControlSettings.ActionType.Special)
+                {
+                    // Phase10-Step4 W1: SA 専用の種別。TODO(Phase10-Step4 W3 以降): 種別名を、言語リソースの表示名にする（画面で選べるようにする Wave で）
+                    temp = setting.special != null ? setting.special.Type.ToString() : Properties.Resources.Unassigned;
+                }
                 else if (actionType == DS4ControlSettings.ActionType.Button)
                 {
                     string tag;
