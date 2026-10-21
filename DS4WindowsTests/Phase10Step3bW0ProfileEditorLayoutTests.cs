@@ -250,8 +250,8 @@ namespace DS4WindowsTests
             Assert.DoesNotContain("extraControls", vm);
 
             // ControlMap・ControlIndexMap は、一覧と同じループで作る（4 つも、含まれる）
-            Assert.Equal(1, Regex.Matches(vm, @"controlMap\.Add\(").Count);
-            Assert.Equal(1, Regex.Matches(vm, @"controlIndexMap\.Add\(").Count);
+            Assert.Single(Regex.Matches(vm, @"controlMap\.Add\("));
+            Assert.Single(Regex.Matches(vm, @"controlIndexMap\.Add\("));
         }
 
         [Fact]
