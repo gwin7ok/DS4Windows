@@ -268,9 +268,17 @@ namespace DS4WindowsTests
             DS4State held = Frame(true);
             for (int i = 0; i < 300; i++) t.RunFrame(held);   // 立ち上がり、フェードの完了（50 フレーム）、JIT は、測定の外へ
 
-            long before = GC.GetAllocatedBytesForCurrentThread();
-            for (int i = 0; i < 1000; i++) t.RunFrame(held);
-            return GC.GetAllocatedBytesForCurrentThread() - before;
+            // Phase10-Step4 W4: 5 ラウンド測って最小値を使う。一度きりの割り当て（遅延初期化など。実測で 0.5〜4MB が 1 回だけ混ざることがある）が測定の窓に入っても、
+            // 結果が変わらないようにするため。フレームごとの本物の割り当ては、全ラウンドに出るので、最小値にも出る
+            long min = long.MaxValue;
+            for (int round = 0; round < 5; round++)
+            {
+                long before = GC.GetAllocatedBytesForCurrentThread();
+                for (int i = 0; i < 1000; i++) t.RunFrame(held);
+                min = Math.Min(min, GC.GetAllocatedBytesForCurrentThread() - before);
+            }
+
+            return min;
         }
 
         [Fact]

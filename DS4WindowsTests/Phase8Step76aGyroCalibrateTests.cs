@@ -176,9 +176,16 @@ namespace DS4WindowsTests
             DS4State held = Frame(true);
             for (int i = 0; i < 300; i++) t.RunFrame(held);   // 立ち上がり（1 回だけ割り当てる）と JIT は、測定の外へ
 
-            long before = GC.GetAllocatedBytesForCurrentThread();
-            for (int i = 0; i < 1000; i++) t.RunFrame(held);
-            return GC.GetAllocatedBytesForCurrentThread() - before;
+            // Phase10-Step4 W4: 5 ラウンド測って最小値を使う（一度きりの割り当てが測定の窓に入っても結果が変わらないように。Phase8Step76cBatteryCheckTests と同じ）
+            long min = long.MaxValue;
+            for (int round = 0; round < 5; round++)
+            {
+                long before = GC.GetAllocatedBytesForCurrentThread();
+                for (int i = 0; i < 1000; i++) t.RunFrame(held);
+                min = Math.Min(min, GC.GetAllocatedBytesForCurrentThread() - before);
+            }
+
+            return min;
         }
 
         [Fact]
