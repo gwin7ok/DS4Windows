@@ -726,3 +726,7 @@ classDiagram
 %% - 出力ピッカー（`BindingWindow`）は、割り当てエディターの「Select a Key」から開く。表示モードは `SpecialAction`（Default／Unbound・Extras を出さない）と `Control`（Default／Unbound と Extras を出す）。どちらも、Record A Macro・Toggle・Scan Code は出さない（割り当てエディターで設定する）。`Full`・`Keyboard` は使われない（撤去は Phase10-Step6）。
 %% - 種別の一覧（`ActionTypeCatalog`）は、Controls のモードだけ、末尾に Default（添字 10）と Unbound（添字 11）を足す（`includeControlOnlyItems`）。モードごとの入力の制限は、一覧の項目の表示・非表示だけで行う（Controls は添字 0 を隠し、SA は足した 2 項目を隠す）。`ControlSettingsEditTarget` は、`Extras` を持ち（出力ピッカーの結果を取り込む。Save で反映、Cancel で破棄）、Default・Unbound を書き出す。
 %% - Controls の空のマクロは、SA と同じく `ControlBindingBuilder` が所有する。「押している間繰り返す」の空のマクロは、`Mapping.PlayMacroTask` が 50ms の間隔を置いて繰り返す。
+
+%% 注釈補強（2026-10-21 Phase10-Step3b 反映: 割り当てエディターの入口を、すべて左ペインのタブへ）
+%% - `ProfileEditor` の画面構成: 左ペイン（`sidebarTabControl`）は、Controls、Special Actions、Touchpad、ジャイロ、Controller Readings。右ペイン（`profileSettingsTabCon`）は、Axis Config、Lightbar、Other。割り当て操作の入口（Controls の絵のボタン・一覧、Tilt、Swipe、スティックの Outer Bind、トリガーの Full Pull）は、すべて左ペインのタブにあり、編集中は左ペイン全体が割り当てエディターで覆われるため、二重に開けない（`leftPaneEditor` の判定は、コントローラーの入力［タイマー］経由の安全装置）。
+%% - `MappingListViewModel` の一覧は、スティックの Outer Bind（LS／RS）とトリガーの Full Pull（L2／R2）の 4 項目を、末尾（添字 34〜37）に含む（以前の別扱い `extraControls` は廃止）。専用のボタンのクリックのハンドラーは、なくなった。

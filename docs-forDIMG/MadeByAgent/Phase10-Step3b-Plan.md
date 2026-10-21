@@ -109,3 +109,27 @@
 - **Q1＝Controls、Special Actions、Touchpad、ジャイロ、Controller Readings（確定、2026-10-21）**。Controller Readings（診断用）を最後に置く。
 - **Q2＝割り当て名も常時表示（確定、2026-10-21）**: Controls タブの 4 つのボタンの右に、いまの割り当て名を常に出す（§3.3）。Axis Config の割り当て名のラベルは、読み取り専用の表示として残す。
 - **Q3＝実機で見て判断（確定、2026-10-21）**: Axis Config の見出しの高さ調整（`Height="24" Margin="-2,0,-2,0"`）は、Touchpad・ジャイロが抜けたあとの見た目を確認して、必要なら外す。
+
+## 9. 完了の記録（2026-10-21）
+
+### 9.1 達成したこと
+
+| Wave | 内容 | 結果 |
+|---|---|---|
+| W0 | `ProfileEditor.xaml` の画面構成の特性化テスト（ソース走査）: 左右のタブの構成、移すタブのリソース依存、右ペインのタブの番号・選択に依存するコードがないこと、4 つの入口の構成 | 調査で、ジャイロのタブだけが `spaceMargin` を右ペインのリソースに依存していたことが判明 |
+| W1 | Touchpad・ジャイロのタブを、左ペイン（Special Actions の次）へ移した。`touchpadTab`／`gyroTab` に名前を付け、`DataContext` の設定・解除を足し、ジャイロに `spaceMargin` を定義、Touchpad の見出しの高さ調整を外した。`SidebarTabControl_SelectionChanged` に、タブの中身から届く選択変更を無視する判定（`e.OriginalSource != sidebarTabControl`）を足した | 実機確認済み（全 Output Mode の表示・動作、左ペインの幅が変わらない、Swipe・Tilt の入口、保存・再読み込み、Controller Readings） |
+| W2 | Axis Config の 4 つの入口（LS／RS Outer Bind、L2／R2 Full Pull）を、Controls タブの一覧の末尾（添字 34〜37）へ、ほかの項目と同じ形式で加えた。Axis Config のボタンと、専用のクリックのハンドラーは、なくした（割り当て名のラベルは、読み取り専用の表示として残す） | 実機確認済み |
+| W3 | 二重に開かない仕組みの確認: 割り当てエディターの入口（Controls の絵のボタン・一覧、Tilt、Swipe、Full Pull・Outer Bind の一覧の項目）が、すべて左ペインのタブにあること（右ペインに入口がない）を、ソース走査で固定した（W2 のテストに含む）。コントローラーの入力（タイマー）経由の判定は、安全装置として残した | 実機確認は、§9.3 のとおり未確認の項目あり |
+
+### 9.2 設計の変更と決定
+- **Q3（Axis Config の見出しの高さ調整）**: Touchpad・ジャイロが抜けたあとの右ペインの見た目を、実機で確認し、問題がなかったため、**外さず、そのまま残した**。
+- **W2 の設計の変更（ユーザーの指示）**: 当初の「Controls タブの絵と一覧の間に、専用のボタン 4 つを足す」を取りやめ、「一覧の末尾に、4 つの項目を加える」へ改めた（§3.3）。専用のボタンのハンドラー（`StickOuterBindButton_Click`、`TriggerFullPullBtn_Click`）は、不要になったため、なくした。
+
+### 9.3 未確認の項目
+- 二重に開かない仕組みの、実機での最終確認（編集中に、コントローラーのボタンを押しても開き直さない。左ペインのタブを切り替えられない）は、Step3 の確認（P10-18・19）で、一覧・絵・Tilt・Swipe の入口については済んでいる。Step3b で入口をすべて左ペインにしたあとの、再確認の報告は、明示がない。
+- Step3 の台帳の P10-21（Extras、既存プロファイルの回帰）も、未確認のまま。
+
+### 9.4 引き継ぎ
+- 左ペインに、割り当てエディターの入口がすべてそろった。これで、割り当て操作が、Controls、Special Actions、Touchpad、ジャイロの 4 つのタブで、同じ編集画面になった。
+- **Step4**: 保存形式の拡張（Controls で SA 専用の種別を保存・実行できるようにする）。Controls のモードで隠している Macro タブの 3 項目と、グレーアウトの種別を、順に出す。最終形（共通の割り当て定義と、束縛を作る builder の統合）は、マスター計画書 §5 を参照。
+- 使われなくなったもの（撤去・整理の候補）: `ControlIndexCheck` の `LSOuterBind`／`RSOuterBind`／`L2FullPull`／`R2FullPull`（Axis Config のボタンの `Tag` 用だった。使い道がなくなった）。

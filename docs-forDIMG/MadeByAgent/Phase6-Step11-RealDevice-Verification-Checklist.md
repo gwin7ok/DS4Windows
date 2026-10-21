@@ -321,3 +321,15 @@ Phase7 で先送りしてきた実機確認（§11 の U-11〜U-22（総合検�
 | P10-19 | SA タブの新規・編集でも、左ペインのタブが隠れ、切り替えられない。Save／Cancel で戻る | ○ |
 | P10-20 | Controls の割り当てエディターの種別のプルダウン: Default／Macro／Output Key/Mouse/Button／Unbound（「-Select an Action-」は出ない）。Default・Unbound を選んで Save でき、開き直すとその項目が選ばれる。出力ピッカーで Default／Unbound を選んで戻ると、プルダウンが切り替わる。SA のプルダウンは従来どおり | ○ |
 | P10-21 | Extras の設定（出力ピッカー）と、割り当てエディターの Save／Cancel での反映・破棄。既存のプロファイル（Extras・Macro・Toggle つき）の保存・動作が変わらない | 未確認（明示の報告なし。Step3b の確認とあわせて行う） |
+
+## 16. Phase10-Step3b の実機確認（2026-10-21）
+
+`Phase10-Step3b-Plan.md` の W1〜W2 を、実機（画面）で確認した。
+
+| ID | 項目 | 結果 |
+|---|---|---|
+| P10-22 | 左ペインのタブが、Controls、Special Actions、Touchpad、ジャイロ、Controller Readings の順。右ペインは、Axis Config、Lightbar、Other（見出しの見た目に問題なし） | ○ |
+| P10-23 | Touchpad・ジャイロで、Output Mode の全選択肢の表示と動作が従来どおり。左ペインの幅が変わらない。縦にスクロールできる | ○ |
+| P10-24 | Swipe（Touchpad）・Tilt（ジャイロ）のボタンで、割り当てエディターが左ペイン全体に開き、Save／Cancel で元のタブへ戻る。プロファイルの保存・再読み込み・Apply で設定値が変わらない。Controller Readings が従来どおり | ○ |
+| P10-25 | Controls タブの一覧の末尾に、LS Outer／RS Outer／L2 Full Pull／R2 Full Pull が、ほかの項目と同じ形式（「…: 未割り当て」）で出る。ダブルクリックで割り当てエディターが開き、保存で一覧と Axis Config のラベルが更新される。コントローラーの入力による選択（添字 0〜33）が従来どおり。Axis Config にボタンがなく、ほかの設定が残っている | ○ |
+| P10-26 | 入口がすべて左ペインのタブにあるため、編集中に、ほかの入口を押せない。コントローラーのボタンを押しても、開き直さない（Step3b 後の再確認） | 未確認（明示の報告なし） |
