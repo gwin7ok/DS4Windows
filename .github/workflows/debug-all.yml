@@ -36,10 +36,10 @@ jobs:
         run: dotnet build ./StandaloneTests/StandaloneTests.csproj -c Debug /p:platform=x64 --no-dependencies
 
       - name: Execute Test (Actions)
-        run: dotnet test ./DS4WindowsTests/DS4Windows.Actions.Tests.csproj -c Debug /p:platform=x64 --no-build --blame-hang --blame-hang-timeout 15s -v normal --logger "trx;LogFileName=actions.trx" --results-directory ./TestResults
+        run: dotnet test ./DS4WindowsTests/DS4Windows.Actions.Tests.csproj -c Debug /p:platform=x64 --no-build --blame-hang --blame-hang-timeout 15s -v minimal --logger "trx;LogFileName=actions.trx" --results-directory ./TestResults
 
       - name: Execute Test (Standalone)
-        run: dotnet test ./StandaloneTests/StandaloneTests.csproj -c Debug /p:platform=x64 --no-build --blame-hang --blame-hang-timeout 15s -v normal --logger "trx;LogFileName=standalone.trx" --results-directory ./TestResults
+        run: dotnet test ./StandaloneTests/StandaloneTests.csproj -c Debug /p:platform=x64 --no-build --blame-hang --blame-hang-timeout 15s -v minimal --logger "trx;LogFileName=standalone.trx" --results-directory ./TestResults
 
       - name: Upload test results
         if: always()
