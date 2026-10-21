@@ -52,23 +52,22 @@ namespace DS4Windows.Actions
             {
                 case SpecialAction.ActionTypeId.Button:
                 {
-                    // 設計書 §6: Press は Fresh-press ガードを見ない／Toggle は見る（Stage3 の ButtonSpecialActionOutput と同じ規則）
-                    bool toggle = sa.KeyButtonSwitchMode.HasValue && sa.KeyButtonSwitchMode.Value == SpecialAction.KeyButtonSwitchModeEnum.Toggle;
+                    // 設計書 §6: Press は Fresh-press ガードを見ない／Toggle は見る（規則は FreshPressGuardTable。Stage3 の ButtonSpecialActionOutput と同じ）
                     return new SpecialActionOutputs(new IOutputAction[] { new ButtonOutputAction(sa, ActionBindingBuilder.InterpretButton(sa), _manager) },
-                        Policy(forControls, respectsFreshPressGuard: toggle));
+                        Policy(forControls, sa));
                 }
 
                 case SpecialAction.ActionTypeId.Key:
                     return new SpecialActionOutputs(new IOutputAction[] { new KeyOutputAction(sa, ActionBindingBuilder.InterpretKey(sa), _profileSettings, index, _actionRepository) },
-                        Policy(forControls));
+                        Policy(forControls, sa));
 
                 case SpecialAction.ActionTypeId.Macro:
                     return new SpecialActionOutputs(new IOutputAction[] { new MacroAction(sa, device, _macroPlayer, index, _actionRepository) },
-                        Policy(forControls), invertOnRelease: sa.pressRelease);
+                        Policy(forControls, sa), invertOnRelease: sa.pressRelease);
 
                 case SpecialAction.ActionTypeId.Program:
                     return new SpecialActionOutputs(new IOutputAction[] { new LaunchProcessAction(sa, _processLauncher, index, _actionRepository) },
-                        Policy(forControls, blocksWhileExecuting: true));
+                        Policy(forControls, sa, blocksWhileExecuting: true));
 
                 case SpecialAction.ActionTypeId.Profile:
                 {
@@ -77,7 +76,7 @@ namespace DS4Windows.Actions
                     // 切替は行う。復帰は、自動（AutomaticUntrigger）のときだけ。uTrigger の値は読み込みも保存もそのまま（ファイルは変えない）。
                     UntriggerPolicy untrigger = sa.automaticUntrigger ? UntriggerPolicy.Automatic : UntriggerPolicy.None;
                     return new SpecialActionOutputs(new IOutputAction[] { new ProfileSwitchAction(sa, device, _profileSwitcher, index, _actionRepository, _profileSettings, _mappingProvider) },
-                        Policy(forControls, blocksWhileExecuting: true, untrigger: untrigger,
+                        Policy(forControls, sa, blocksWhileExecuting: true, untrigger: untrigger,
                             stopOnRelease: untrigger == UntriggerPolicy.None));   // 復帰を持つ Profile は、離したエッジの Stop を呼ばない。復帰は ProcessUntrigger だけが担う（二重の復帰を防ぐ。Q4）
                 }
 
@@ -85,25 +84,25 @@ namespace DS4Windows.Actions
                     // 立ち上がりの 1 回だけ。Fresh-press ガードは既定のまま（旧経路の独自の判定と同じ効果）。実行中のブロックなし
                     if (_gyroCalibration == null) return null;
                     return new SpecialActionOutputs(new IOutputAction[] { new GyroCalibrateAction(sa, device, _gyroCalibration, index, _actionRepository) },
-                        Policy(forControls));
+                        Policy(forControls, sa));
 
                 case SpecialAction.ActionTypeId.DisconnectBT:
                     // 切断の要求が成功するまで、押している間は再試行する（Q3＝B）。Fresh-press ガードは既定のまま。実行中のブロックなし
                     if (_disconnectPort == null) return null;
                     return new SpecialActionOutputs(new IOutputAction[] { new DisconnectBTAction(sa, device, _disconnectPort, _profileSettings) },
-                        Policy(forControls));
+                        Policy(forControls, sa));
 
                 case SpecialAction.ActionTypeId.BatteryCheck:
                     // 押している間、毎フレームの色の遷移。離したときに戻す（既定の StopOnRelease）。Fresh-press ガードは既定のまま。実行中のブロックなし
                     if (_batteryCheckPort == null) return null;
                     return new SpecialActionOutputs(new IOutputAction[] { new BatteryCheckAction(sa, device, _batteryCheckPort, index, _actionRepository) },
-                        Policy(forControls));
+                        Policy(forControls, sa));
 
                 case SpecialAction.ActionTypeId.SASteeringWheelEmulationCalibrate:
                     // 押している間、毎フレーム判定する（立ち上がりも含む）。Fresh-press ガードは既定のまま。実行中のブロックなし
                     if (_wheelCalibrationPort == null) return null;
                     return new SpecialActionOutputs(new IOutputAction[] { new SteeringWheelCalibrateAction(sa, device, _wheelCalibrationPort) },
-                        Policy(forControls));
+                        Policy(forControls, sa));
 
                 case SpecialAction.ActionTypeId.MultiAction:
                 {
@@ -118,7 +117,7 @@ namespace DS4Windows.Actions
                         gestureOutputs[g] = new MacroStringAction(sa, device, g < macros.Length ? macros[g] : string.Empty, _macroStringPlayer);
 
                     return new SpecialActionOutputs(gestureOutputs,
-                        Policy(forControls, respectsFreshPressGuard: false, stopOnRelease: false, routesOutputsByGesture: true),
+                        Policy(forControls, sa, stopOnRelease: false, routesOutputsByGesture: true),
                         isMultiTap: true);
                 }
 
@@ -132,9 +131,12 @@ namespace DS4Windows.Actions
         /// Controls 用は、Controls の既存の束縛（Key／Macro／Pad など）と同じく、トリガーのボタンを抑制せず・出力も消さず（<c>suppressesTriggerButtons: false</c>、
         /// <c>resetsTriggerOutput: false</c>）、代わりに割り当てたボタンの通常の出力を毎フレーム消す（<c>erasesOutputEveryFrame: true</c>）。
         /// </summary>
-        private static BindingPolicy Policy(bool forControls, bool respectsFreshPressGuard = true, bool blocksWhileExecuting = false,
+        private static BindingPolicy Policy(bool forControls, SpecialAction sa, bool blocksWhileExecuting = false,
             UntriggerPolicy untrigger = UntriggerPolicy.None, bool stopOnRelease = true, bool routesOutputsByGesture = false)
         {
+            // Fresh-press ガードを見るかは、規則の表（FreshPressGuardTable）が決める（Phase10-Step4c W1）。Button の Toggle だけ、SA の設定に依存する
+            bool toggle = sa.KeyButtonSwitchMode.HasValue && sa.KeyButtonSwitchMode.Value == SpecialAction.KeyButtonSwitchModeEnum.Toggle;
+            bool respectsFreshPressGuard = FreshPressGuardTable.ForSpecialAction(sa.typeID, toggle);
             if (!forControls)
             {
                 bool isDefault = respectsFreshPressGuard && !blocksWhileExecuting && untrigger == UntriggerPolicy.None && stopOnRelease && !routesOutputsByGesture;

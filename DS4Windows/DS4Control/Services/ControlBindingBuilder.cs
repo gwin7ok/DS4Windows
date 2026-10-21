@@ -396,7 +396,7 @@ namespace DS4Windows.Services
             identity.type = "Pad";
             identity.controls = identity.name;
 
-            var policy = new BindingPolicy(respectsFreshPressGuard: false, suppressesTriggerButtons: false, resetsTriggerOutput: false,
+            var policy = new BindingPolicy(respectsFreshPressGuard: FreshPressGuardTable.ForControls(ControlBindingKind.ButtonPad), suppressesTriggerButtons: false, resetsTriggerOutput: false,
                 erasesOutputEveryFrame: true);
             var outputs = new List<IOutputAction>(2);
             if (!eraseOnly) outputs.Add(new ControlPadOutputAction(identity, values));
@@ -413,7 +413,7 @@ namespace DS4Windows.Services
             identity.type = "AnalogMouse";
             identity.controls = identity.name;
 
-            var policy = new BindingPolicy(respectsFreshPressGuard: false, suppressesTriggerButtons: false, resetsTriggerOutput: false,
+            var policy = new BindingPolicy(respectsFreshPressGuard: FreshPressGuardTable.ForControls(ControlBindingKind.ButtonAnalogMouse), suppressesTriggerButtons: false, resetsTriggerOutput: false,
                 erasesOutputEveryFrame: true);
             var outputs = new List<IOutputAction>(2);
             switch (target)
@@ -438,7 +438,7 @@ namespace DS4Windows.Services
             identity.type = "Mouse";
             identity.controls = identity.name;
 
-            var policy = new BindingPolicy(respectsFreshPressGuard: false, suppressesTriggerButtons: false, resetsTriggerOutput: false,
+            var policy = new BindingPolicy(respectsFreshPressGuard: FreshPressGuardTable.ForControls(ControlBindingKind.ButtonMouse), suppressesTriggerButtons: false, resetsTriggerOutput: false,
                 erasesOutputEveryFrame: true);
             var outputs = new List<IOutputAction>(2);
             if (target == X360Controls.TouchpadClick) outputs.Add(new ControlTouchpadClickOutputAction(identity, dcs.control));
@@ -455,7 +455,7 @@ namespace DS4Windows.Services
             identity.type = "PadPassthrough";
             identity.controls = identity.name;
 
-            var policy = new BindingPolicy(respectsFreshPressGuard: false, suppressesTriggerButtons: false, resetsTriggerOutput: false,
+            var policy = new BindingPolicy(respectsFreshPressGuard: FreshPressGuardTable.ForControls(ControlBindingKind.ButtonPad), suppressesTriggerButtons: false, resetsTriggerOutput: false,
                 erasesOutputEveryFrame: false);
             result.Add(new TriggerBinding(new ControlButtonInputAction(identity.name, dcs.control, ControlBindingKind.ButtonPad, ControlJudgement.Assignment),
                 new IOutputAction[] { new ControlPassthroughOutputAction(identity, dcs.control) }, policy, identity, -1));
@@ -469,7 +469,7 @@ namespace DS4Windows.Services
             identity.type = "Extras";
             identity.controls = identity.name;
 
-            var policy = new BindingPolicy(respectsFreshPressGuard: false, suppressesTriggerButtons: false, resetsTriggerOutput: false,
+            var policy = new BindingPolicy(respectsFreshPressGuard: FreshPressGuardTable.ForControls(ControlBindingKind.Extras), suppressesTriggerButtons: false, resetsTriggerOutput: false,
                 erasesOutputEveryFrame: false);
             result.Add(new TriggerBinding(new ControlButtonInputAction(identity.name, dcs.control, ControlBindingKind.Extras, ControlJudgement.Assignment),
                 new IOutputAction[] { new ControlExtrasOutputAction(identity, values, _extrasPort) }, policy, identity, -1));
@@ -492,7 +492,7 @@ namespace DS4Windows.Services
             identity.synchronized = options != null && options.Synchronized;
             identity.keepKeyState = options != null && options.KeepKeyState;
 
-            var policy = new BindingPolicy(respectsFreshPressGuard: true, suppressesTriggerButtons: false, resetsTriggerOutput: false,
+            var policy = new BindingPolicy(respectsFreshPressGuard: FreshPressGuardTable.ForControls(ControlBindingKind.Macro), suppressesTriggerButtons: false, resetsTriggerOutput: false,
                 erasesOutputEveryFrame: true);
             result.Add(new TriggerBinding(new ControlButtonInputAction(identity.name, dcs.control, ControlBindingKind.Macro, ControlJudgement.Trigger,
                     invertOnRelease: identity.pressRelease),
@@ -513,7 +513,7 @@ namespace DS4Windows.Services
             identity.keyType = keyType;
 
             // 設計書 §3.2: Controls タブの Key は、Fresh-press ガードを見ず、トリガーのボタンを抑制せず、押していなくても毎フレーム通常の出力を消す（旧 ResetToDefaultValue）
-            var policy = new BindingPolicy(respectsFreshPressGuard: false, suppressesTriggerButtons: false, resetsTriggerOutput: false,
+            var policy = new BindingPolicy(respectsFreshPressGuard: FreshPressGuardTable.ForControls(ControlBindingKind.Key), suppressesTriggerButtons: false, resetsTriggerOutput: false,
                 erasesOutputEveryFrame: true);
             result.Add(new TriggerBinding(new ControlButtonInputAction(identity.name, dcs.control),
                 new IOutputAction[] { new KeyOutputAction(identity, values, _profileSettings) }, policy, identity, -1));

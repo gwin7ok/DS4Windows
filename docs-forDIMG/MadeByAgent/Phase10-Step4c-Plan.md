@@ -206,4 +206,10 @@ Controls タブの割り当てと SA（Special Actions）の割り当ては、�
   - `Phase10Step4cW0InputSetTests`: SA だけの入力は Touch Started／Ended、Controls だけの入力は LS Outer／RS Outer。SA の一覧 49 項目、Controls の一覧 49 項目（末尾の 4 つが仮想ボタン）。W5 で書き換える。
   - 発見: **Capture／SideL などの拡張ボタンは、コントローラーが接続されたときにだけ `ControlSettingsGroup` に束ねられる**（`EstablishExtraButtons`）。Touch Started／Ended は、どの組にも入っていない。W5 で、Controls の束縛の対象にするには、組へ加える必要がある。
   - 計画書の訂正: Controls の一覧は 38 項目ではなく 49 項目。
-  - 次: W1（項目 2: Fresh-press ガードの規則を 1 か所の表にまとめる。挙動は変えない）。指示があるまで始めない。
+  - （W0 の「次」は W1 へ進んだため更新）
+- **W1（実装済み 2026-10-21。ビルド・テストの結果待ち）**: 項目 2。Fresh-press ガードを見るかの規則を、`FreshPressGuardTable`（`Actions/`、静的クラス）の 1 か所にまとめた。挙動は変えない。
+  - `ForSpecialAction(種別, toggle)`: Button は Toggle のときだけ見る、MultiAction は見ない、それ以外は見る。`SpecialActionOutputFactory` の `Policy(...)` が、`SpecialAction` を受けて、この表を引く（個別の `respectsFreshPressGuard:` 指定を廃止）。
+  - `ForControls(区分)`: Macro と Special は見る、Key／Pad／Mouse／AnalogMouse／Extras／素通しは見ない。`ControlBindingBuilder` の 7 か所の直書きを、この表の呼び出しへ置き換えた。
+  - テスト: `Phase10Step4cW1FreshPressGuardTableTests`（表の全行。`ControlBindingKind` の件数が 7 のままかも検査し、区分を足したときの行の足し忘れを防ぐ）。束縛に現れる値は、W0 の方針の表と SA の表のテストが守る（期待値は変更なし）。
+  - 実機確認: 挙動が変わらないため、付けない。
+  - 次: W2（項目 4: Controls の既存の種別にも SA 形式の立ち上がりのログ）。指示があるまで始めない。先頭で、種別ごとに出る行の例を示して確認する。
