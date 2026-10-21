@@ -369,11 +369,11 @@ Special Actions タブで種別ごとに作成し、プロファイルに有効�
 
 | ID | 項目 | 結果 |
 |---|---|---|
-| P10-41 | Controls タブでボタンを開き、種別の一覧から Disconnect BT／Calibrate gyro／Calibrate sixaxis wheel を選べる（グレーアウトしていない）。Hold interval を入れて Save でき、ボタン一覧に種別名（言語リソースの表示名）が出る | |
-| P10-42 | Calibrate gyro: 割り当てたボタンを押すと、ジャイロの較正のやり直しが 1 回走る（押し続けても繰り返さない）。そのボタンの元の出力（パッドのボタン）は出ない。ログに SA と同じ形の行が出る | |
-| P10-43 | Disconnect BT: Hold interval を設定したボタンを、その秒数押し続けると Bluetooth が切断される。秒数に満たず離したときは切断されない | |
-| P10-44 | Calibrate sixaxis wheel: 割り当てたボタンを押し続けると、ステアリングの較正が進む（SA と同じ動き） | |
-| P10-45 | Hold interval の保存と再読み込み（プロファイルを保存→再起動）で値が残る。`Profile.xml` の `<Control><Special>` に書かれる。別の種別（Key、Default）へ変えて保存すると、Special の設定が消える | |
-| P10-46 | 優先順位: 同じボタンを Special Actions のトリガーにも使うと、Special Actions が勝つ（Controls の Special は動かない）。ほかのボタンを先に押していた場合の抑制も、Controls の Macro と同じ | |
-| P10-39 | （W3 から）Synchronized Run: 保存でき、再読み込みで状態が残り、動作に不具合がない | |
-| P10-40 | （W3 から）既存の Controls（Key、Button、Default、Unbound、Extras）と SA の全種別が従来どおり | |
+| P10-41 | Controls タブでボタンを開き、種別の一覧から Disconnect BT／Calibrate gyro／Calibrate sixaxis wheel を選べる（グレーアウトしていない）。Hold interval を入れて Save でき、ボタン一覧に種別名（言語リソースの表示名）が出る | ○ |
+| P10-42 | Calibrate gyro: 割り当てたボタンを押すと、ジャイロの較正のやり直しが 1 回走る（押し続けても繰り返さない）。そのボタンの元の出力（パッドのボタン）は出ない。ログに SA と同じ形の行が出る | ○ |
+| P10-43 | Disconnect BT: Hold interval を設定したボタンを、その秒数押し続けると Bluetooth が切断される。秒数に満たず離したときは切断されない | ○ |
+| P10-44 | Calibrate sixaxis wheel: 割り当てたボタンを押し続けると、ステアリングの較正が進む（SA と同じ動き） | 先送り（状態 0→1 の開始とトレースの 4 行は確認済み。1→2 以降は、ジャイロのステアリング出力の軸が有効なときだけ進むため、実機で確認しにくい） |
+| P10-45 | Hold interval の保存と再読み込み（プロファイルを保存→再起動）で値が残る。`Profile.xml` の `<Control><Special>` に書かれる。別の種別（Key、Default）へ変えて保存すると、Special の設定が消える | ○ |
+| P10-46 | 優先順位: 同じボタンを Special Actions のトリガーにも使うと、Special Actions が勝つ（Controls の Special は動かない）。ほかのボタンを先に押していた場合の抑制も、Controls の Macro と同じ | ○ |
+| P10-39 | （W3 から）Synchronized Run: 保存でき、再読み込みで状態が残り、動作に不具合がない | 先送り（再度。W5 以降の確認へ） |
+| P10-40 | （W3 から）既存の Controls（Key、Button、Default、Unbound、Extras）と SA の全種別が従来どおり（Calibrate gyro を割り当てたボタンを含む） | ○ |

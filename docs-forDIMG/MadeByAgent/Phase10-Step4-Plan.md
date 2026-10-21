@@ -119,4 +119,12 @@ Controls のボタン 1 つの割り当てに、**SA 専用の種別**を、保�
   - 決定: Macro は factory（W2）を使わない。factory の SA 用の出力は立ち上がりのログを出し（Controls の Macro は出さない）、Controls の方針は `suppressesTriggerButtons: false`／`resetsTriggerOutput: false`／`erasesOutputEveryFrame: true` の 3 つで、factory の引数 `erasesOutputEveryFrame` だけでは足りないため。**W4 以降の持ち越し**: factory に Controls 用の方針（3 つ）と、ログの扱い（出す／出さない。ユーザーの承認が要る）を、群を始めるときに決める。
   - テスト: `Phase10Step4W3ControlMacroOptionsTests`（入力の invert、builder の写し、項目なし・別の種別の無影響、実際の再生［離したとき 1 回、Keep key state の解放の有無］、編集対象の往復、保存と再読み込み）。
   - 実機確認（台帳 §18）: P10-33〜38 問題なし。P10-39（Synchronized Run）・P10-40（既存の簡易回帰）は先送り。次の W4 の確認のときにまとめて行う。
-  - 次: W4（第 2 群: Disconnect BT、Calibrate gyro、Calibrate sixaxis wheel。簡単で危険の少ないものから）。指示があるまで始めない。
+- **W4（完了 2026-10-21。ビルド・テスト成功、実機確認 P10-41・42・43・45・46・40 問題なし。P10-44・39 は先送り）**: 第 2 群（Disconnect BT、Calibrate gyro、Calibrate sixaxis wheel。設定は押し続ける秒数だけ）を、Controls で保存・実行・編集できるようにした。
+  - factory（W2 の見直し）: 引数を `erasesOutputEveryFrame` から `forControls` に変更。Controls 用は、Controls の既存の束縛と同じ 3 つのフラグ（`suppressesTriggerButtons: false`、`resetsTriggerOutput: false`、`erasesOutputEveryFrame: true`）。SA 用は不変（既定なら共有の `BindingPolicy.Default`）。
+  - 入力: `ControlButtonInputAction` に押し続ける秒数（`delaySeconds`＋`IProfileSettingsService`）。`ComboTriggerInputAction` と同じ規則（共有の `DelayClock`、遅延つきは反転を無視）。
+  - 実行: `ControlBindingBuilder` に `Special` の分岐（`TryInterpretSpecial`＝束縛を作る種別は Disconnect BT／Calibrate gyro／Calibrate sixaxis wheel だけ。`CreateSpecialIdentity`＝合成 `SpecialAction` `Synthetic_Special_{device}_{control}`、`AddSpecial`）。factory は省略可（なければ束縛を作らない）。出力は SA と同じログを出す（ユーザー承認）。`ControlBindingKind.Special` を追加。Extras があれば先に束縛する。
+  - 画面: 種別の一覧の 5・8・9 を Controls でも保存可。`ControlSettingsEditTarget` が押し続ける秒数を往復（`LoadInto`／`WriteFrom` に省略可の `holdIntervals`。Special を書くと通常の割り当てを残さない）。`SpecialActionEditor` が `SpecialActionViewModel` 3 つを渡す。一覧の表示は言語リソースの表示名。
+  - テスト: `Phase10Step4W4ControlSpecialTests`（押し続ける秒数が SA と同じ結果、束縛の入力・出力・3 つのフラグ・秒数、未対応の種別・項目なし・factory なしで束縛なし、Extras との順序、Calibrate gyro の実行［押して 1 回、出力が消える、Fresh-press ガード、秒数待ち］、ホイール較正の開始、編集対象の往復、保存と再読み込み）。種別の保存可否に関する既存の 3 つのテストと W2 の factory のテストを更新。
+  - **R10（優先順位・抑制）の自動テストは入れていない**: 実機で確認した（P10-46: 同じボタンの SA が勝つ）。自動化は、後続の群で、まとめて行うかを判断する。
+  - 実機確認（台帳 §19）: P10-41（選べる・保存・一覧表示）、42（Calibrate gyro）、43（Disconnect BT）、45（保存と再読み込み・種別変更で消える）、46（SA が勝つ）、40（簡易回帰）が問題なし。**P10-44（Calibrate sixaxis wheel）は先送り**: 状態 0→1 の開始とトレースの 4 行は確認済み。1→2 以降は、ジャイロのステアリング出力の軸が有効なときだけ進むため、実機で確認しにくい（SA で作った場合と同じコードで、変更なし）。**P10-39（Synchronized Run）も先送り**。
+  - 次: W5（第 3 群: Launch Program）。指示があるまで始めない。
