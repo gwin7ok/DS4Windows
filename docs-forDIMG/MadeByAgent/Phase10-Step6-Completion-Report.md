@@ -60,5 +60,5 @@ Controls タブと SpecialActions（SA）タブの、どちらで設定したか
 ## 6. 次の作業
 
 1. （完了 2026-10-22）W7・W8 相当（Check Battery、Multi-action を Controls へ。Q5 を含む）。結果は `Phase10-Integration-Target-Model.md` §11、台帳 §29。
-2. Step5（SA 側のアナログ出力）。
+2. （完了 2026-10-22）Step5（SA 側のアナログ出力）。`Phase10-Step5-Plan.md`、`Phase10-Integration-Target-Model.md` §12。
 3. 先送りの実機確認（台帳 §27、§28）。

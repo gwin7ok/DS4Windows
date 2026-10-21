@@ -21,7 +21,7 @@ Step1: `Phase10-Step1-Plan.md`
 | （完成形の文書） | 完成形のモデル図、差の一覧、統合 Step の骨子（案）。ユーザーの承認待ち | 2026-10-21 作成 | `Phase10-Integration-Target-Model.md` |
 | Step6' （旧 Step6 を前倒し） | **統合**: SA の文字列の受け渡しを型のある項目へ（Q7）、`ActionBindingBuilder`／`ControlBindingBuilder` の統合、暫定の構造（`forControls`、`ControlJudgement`、`BuiltSpecialTypes`、`ControlSpecialEditors`）の整理、`SpecialActionEditor` → `AssignmentEditor` の改名、旧 `BindingWindow` の Full／Keyboard の撤去。最初に、Controls にも複数ボタンの組み合わせを許すか（8）を、ユーザーに確認する。SA にも Extras を付けられるようにする（Step4c の項目 10）も、この Step で実装する | **完了（2026-10-22）**。I1〜I7 の全 Wave が完了（`Debug ALL` 成功: 警告 0・エラー 0、テスト 2086 件と 11 件）。結果と差は `Phase10-Integration-Target-Model.md` §10、完了報告書は `Phase10-Step6-Completion-Report.md`。実機確認は先送り（台帳 §27、§28）。次は W7・W8 相当（Check Battery、Multi-action を Controls へ。Q5 を含む）→ Step5 |
 | （W7・W8 相当） | Check Battery と Multi-action を Controls へ（統合後は、種別の追加が 1 か所で済む）。Q5 の判断を含む | **完了（2026-10-22）。`Debug ALL` 成功: 警告 0・エラー 0、テスト 2102 件と 11 件。結果は `Phase10-Integration-Target-Model.md` §11。実機確認は先送り（台帳 §29）** | |
-| Step5 | SA 側のアナログ出力（旧 Step4b） | 未着手（最後） | |
+| Step5 | SA 側のアナログ出力（旧 Step4b） | **完了（2026-10-22）。`Phase10-Step5-Plan.md`。`Debug ALL` 成功: テスト 2150 件と 11 件。実機確認は先送り（台帳 §30）** | |
 
 ## 2. Step1 の Wave
 

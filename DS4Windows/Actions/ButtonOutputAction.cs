@@ -18,6 +18,8 @@ namespace DS4Windows.Actions
         private readonly bool _hasControl;
         private readonly X360Controls _control;
         private readonly bool _toggle;
+        private readonly int _strength;   // Phase10-Step6 後の Step5: アナログな出力（軸・トリガー・マウス移動）の強さ（0〜100%）
+        private readonly AnalogOutputKind _analogKind;
 
         // 前のフレームの成立（旧 Mapping.lastButtonTriggerState 相当。立ち下がりのログ用）。ApplyFrame は毎フレーム、このアクションの所有する束縛で呼ばれる
         private bool _prevActive;
@@ -40,6 +42,8 @@ namespace DS4Windows.Actions
             _hasControl = values.HasControl;
             _control = values.Control;
             _toggle = values.Toggle;
+            _strength = values.Strength;
+            _analogKind = values.HasControl ? AnalogOutputTargets.KindOf(values.Control) : AnalogOutputKind.None;
         }
 
         public string Id => string.IsNullOrEmpty(_sa.name) ? "ButtonOutput" : _sa.name;
@@ -69,7 +73,8 @@ namespace DS4Windows.Actions
 
             if (outputActive && _hasControl)
             {
-                ctx.Frame?.PressX360(_control);
+                if (_analogKind == AnalogOutputKind.None) ctx.Frame?.PressX360(_control);
+                else ApplyAnalog(ctx);   // Phase10-Step6 後の Step5: 軸・トリガー・マウス移動は、強さの固定値で出す
 
                 // 現行の Stage3 と同じ: 出力しているフレームごとに、出力の組み合わせを記録する
                 if (trace) LogOutputCombo(ctx);
@@ -118,6 +123,59 @@ namespace DS4Windows.Actions
             catch (Exception ex)
             {
                 AppLogger.LogTrace($"Failed to build output combo log for SA '{_sa.name}': {ex}");
+            }
+        }
+
+        // Phase10-Step6 後の Step5（SA 側のアナログ出力）: 成立中（または Toggle が ON の間）、強さ（0〜100%）の固定値で出す。Controls のボタンが元のときの出力を 100% として、比例させる。
+        //  - 軸: 中立（128）から、向きの端（正は 255、負は 0）へ、強さの分だけ振る。向きは、出力先の添字が偶数なら正（Controls のパッドへの割り当てと同じ）
+        //  - トリガー: 255 × 強さ
+        //  - マウス移動: Controls のボタンが元のときと同じ量 × 強さ（IFixedMouseInput）
+        private void ApplyAnalog(IOutputContext ctx)
+        {
+            double fraction = _strength / 100.0;
+            switch (_analogKind)
+            {
+                case AnalogOutputKind.PadAxis:
+                    {
+                        var frame = ctx.Frame as IPadFrameOutput;
+                        if (frame == null) return;
+
+                        DS4Controls output = X360ControlTables.reverseX360ButtonMapping[(int)_control];
+                        bool positive = ((int)output) % 2 == 0;
+                        byte value = positive
+                            ? (byte)Math.Round(128 + (255 - 128) * fraction)
+                            : (byte)Math.Round(128 - 128 * fraction);
+                        frame.SetAxisPair(output, value);
+                        break;
+                    }
+                case AnalogOutputKind.PadTrigger:
+                    {
+                        var frame = ctx.Frame as IPadFrameOutput;
+                        if (frame == null) return;
+
+                        frame.SetTrigger(X360ControlTables.reverseX360ButtonMapping[(int)_control], (byte)Math.Round(255 * fraction));
+                        break;
+                    }
+                case AnalogOutputKind.MouseMove:
+                    {
+                        var frame = ctx.Frame as IMouseMoveFrameOutput;
+                        var input = (ctx as IOutputContextInput)?.Input as IFixedMouseInput;
+                        if (frame == null || input == null) return;
+
+                        int direction = _control == X360Controls.MouseUp ? 0
+                            : _control == X360Controls.MouseDown ? 1
+                            : _control == X360Controls.MouseLeft ? 2 : 3;
+                        double magnitude = Math.Abs(input.GetFixedMouseMovement(direction, fraction));
+                        switch (direction)
+                        {
+                            case 0: frame.SetMouseDeltaY(-magnitude); break;
+                            case 1: frame.SetMouseDeltaY(magnitude); break;
+                            case 2: frame.SetMouseDeltaX(-magnitude); break;
+                            default: frame.SetMouseDeltaX(magnitude); break;
+                        }
+
+                        break;
+                    }
             }
         }
 

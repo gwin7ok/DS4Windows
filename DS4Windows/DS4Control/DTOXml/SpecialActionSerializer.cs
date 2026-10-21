@@ -166,5 +166,13 @@ namespace DS4WinWPF.DS4Control.DTOXml
         {
             return !string.IsNullOrEmpty(OutputExtras);
         }
+
+        // Phase10-Step6 後の Step5: Button の出力先がアナログ（軸・トリガー・マウス移動）のときの強さ（0〜100%）。100（既定）のときは書かない。古いバージョンは、未知の要素として読み飛ばす
+        [XmlElement("Strength")]
+        public int Strength { get; set; } = 100;
+        public bool ShouldSerializeStrength()
+        {
+            return TypeString == "Button" && Strength != 100;
+        }
     }
 }

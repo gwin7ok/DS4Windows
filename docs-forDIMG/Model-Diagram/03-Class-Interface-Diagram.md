@@ -865,3 +865,8 @@ classDiagram
 %% - 入力の印 `IControlBoundInput`（`Actions/`）を新設。`ControlButtonInputAction` と、新しい `ControlMultiTapInputAction`（`MultiTapInputAction` に判定を任せる、Controls 由来の Multi-action の入力）が実装する。`TriggerDispatchEngine` は、この印で、Controls の束縛をボタンごとの処理の表（`ProcessControl`／`OwnsControl`）に登録する（以前は `ControlButtonInputAction` の型で見分けていた）。
 %% - 方針: Controls の Multi-action は、元のボタンの出力を常に消す（待ち時間のあいだだけでなく）。未設定のマクロは、保存を止めず（赤い枠）、実行自体を行わない（`MacroStringAction` は空文字を実行しない）。
 %% - 画面: `CheckBatteryViewModel`／`MultiActButtonViewModel` が `IActionTypeEditor.LoadControlItem`／`ToControlItem` を実装。
+
+%% 注釈補強（2026-10-22 Step5 反映: SA 側のアナログ出力。詳細は Phase10-Step5-Plan.md、Phase10-Integration-Target-Model.md §12）
+%% - SA の Button の出力先がパッドの軸・トリガー、マウス移動のとき、強さ（0〜100%。既定 100）の固定値で出す。`SpecialAction.analogStrength`（`Actions.xml` の Button の `Strength`。100 以外のときだけ）、`ButtonBindingValues.Strength`。
+%% - 出力先の分類は `AnalogOutputTargets.KindOf`（`AnalogOutputKind`: PadAxis、PadTrigger、MouseMove、None）の 1 か所。`ButtonOutputAction` がアナログの分岐を持つ（軸は中立 128 から端へ、トリガーは 255 × 強さ、マウス移動は `IFixedMouseInput`［`TriggerInput` が実装。`Mapping.SampleFixedMouseMovement` が、ボタンが元のときの量 × 強さを返す］）。100% は、Controls のボタンが元のときの出力と同じ。ホイールは、今のまま（デジタル）。
+%% - 画面: 割り当て編集画面（SA のモード）の Press Key のタブに、出力先がアナログのときだけ「Strength」を出す（`PressKeyViewModel.ShowAnalogStrength`）。保存は、SA の保存のあとに `ISpecialActionRepository.SaveActionAnalogStrength`。Controls のモードには出さない。

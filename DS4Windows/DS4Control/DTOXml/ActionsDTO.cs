@@ -130,6 +130,7 @@ namespace DS4WinWPF.DS4Control.DTOXml
                 {
                     actionSerializer.Id = action.id;   // Phase10-Step4d W2
                     actionSerializer.OutputExtras = action.outputExtras ?? string.Empty;   // Phase10-Step6 I5a
+                    actionSerializer.Strength = action.analogStrength;   // Phase10-Step6 後の Step5（Button だけ、100 以外のときに書く）
                     actionSerializers.Add(actionSerializer);
                 }
             }
@@ -256,6 +257,10 @@ namespace DS4WinWPF.DS4Control.DTOXml
 
                     // Phase10-Step6 I5a: SA に付けた Extras。ない（古いファイル）・空白だけのときは、付けない
                     if (!string.IsNullOrWhiteSpace(actionSerializer.OutputExtras)) tempAction.outputExtras = actionSerializer.OutputExtras.Trim();
+
+                    // Phase10-Step6 後の Step5: アナログな出力の強さ。ない（古いファイル）ときは 100。範囲外は 0〜100 に丸める
+                    if (tempAction.typeID == SpecialAction.ActionTypeId.Button)
+                        tempAction.analogStrength = Math.Max(0, Math.Min(100, actionSerializer.Strength));
 
                     if (!string.IsNullOrEmpty(actionSerializer.Id) && Guid.TryParseExact(actionSerializer.Id, "N", out _))
                         tempAction.id = actionSerializer.Id;

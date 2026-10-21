@@ -8,7 +8,7 @@ namespace DS4Windows.Actions
     /// <see cref="IsActive"/> の本体は、現行の <c>Mapping.getBoolSpecialActionMapping</c> をそのまま移したもの（意味は同じ。<c>TriggerInputTests</c> が全コントロールで比較する）。
     /// 割り当て 0: 判定は表の参照のみ。前フレームの表（<c>_previousFields</c>）は、コンストラクターで 1 回だけ作り、最初に <see cref="WasActive"/> が呼ばれたときだけ展開する（遅延）。
     /// </summary>
-    public sealed class TriggerInput : IAnalogTriggerInput
+    public sealed class TriggerInput : IAnalogTriggerInput, IFixedMouseInput
     {
         // L2／R2 の「押された」とみなす値、軸の「倒された」とみなす幅、ジャイロの「傾いた」とみなす値（現行の getBoolSpecialActionMapping と同じ）
         private const byte TriggerThreshold = 100;
@@ -71,6 +71,18 @@ namespace DS4Windows.Actions
         {
             Func<DS4Controls, int, double> sampler = MouseSampler;
             return sampler == null ? 0.0 : sampler(control, direction);
+        }
+
+        /// <summary>
+        /// Phase10-Step6 後の Step5: SA のマウス移動（強さの固定値）の量の計算の借り先（<c>Mapping</c> が、デバイスごとに 1 回だけ設定する）。
+        /// 引数は、方向（0＝Up、1＝Down、2＝Left、3＝Right）と強さ（0〜1）。
+        /// </summary>
+        public Func<int, double, double> FixedMouseSampler { get; set; }
+
+        public double GetFixedMouseMovement(int direction, double fraction)
+        {
+            Func<int, double, double> sampler = FixedMouseSampler;
+            return sampler == null ? 0.0 : sampler(direction, fraction);
         }
 
         public bool IsActive(DS4Controls control)

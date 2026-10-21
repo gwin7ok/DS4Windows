@@ -123,8 +123,8 @@ namespace DS4Windows.Actions
             bool toggle = sa != null && sa.KeyButtonSwitchMode.HasValue &&
                 sa.KeyButtonSwitchMode.Value == SpecialAction.KeyButtonSwitchModeEnum.Toggle;
             if (sa != null && int.TryParse(sa.details, out int value))
-                return new ButtonBindingValues(true, (X360Controls)value, toggle);
-            return new ButtonBindingValues(false, X360Controls.None, toggle);
+                return new ButtonBindingValues(true, (X360Controls)value, toggle, sa.analogStrength);   // Phase10-Step6 後の Step5: アナログな出力の強さ
+            return new ButtonBindingValues(false, X360Controls.None, toggle, sa != null ? sa.analogStrength : 100);
         }
 
     }

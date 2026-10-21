@@ -25,6 +25,7 @@ namespace DS4WindowsTests
             "id",
             "profileId",   // Phase10-Step4d W3: SpecialAction.profileId（Load Profile の切り替え先の ID）。検査は Phase10Step4dW3ReferenceIdTests が持つ
             "outputExtras",   // Phase10-Step6 I5a: SpecialAction.outputExtras（SA に付ける Extras。ゴールデンの SA にはない。検査は Phase10Step6I5aSaExtrasStorageTests が持つ）
+            "analogStrength",   // Phase10-Step6 後の Step5: SpecialAction.analogStrength（Button のアナログな出力の強さ。既定 100。ゴールデンの SA は既定のまま。検査は Phase10Step5SaAnalogStrengthStorageTests が持つ）
         };
 
         public static string Dump(object root)

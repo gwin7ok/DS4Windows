@@ -159,6 +159,20 @@ namespace DS4Windows
             return found;
         }
 
+        // Phase10-Step6 後の Step5: SA の保存のあとに、Button の SA のアナログな出力の強さを設定して保存する（SaveActionExtras と同じ形。読み直しはしない）
+        public bool SaveActionAnalogStrength(string actionName, int strength)
+        {
+            bool found = _actionsXml.SetActionAnalogStrength(actionName, strength);
+            if (found)
+            {
+                if (AppLogger.IsTraceEnabled)
+                    AppLogger.LogTrace($"[DI] SpecialActionRepository.SaveActionAnalogStrength: Action '{actionName}' strength saved via DI");
+                OnActionsChanged();
+            }
+
+            return found;
+        }
+
         public bool RemoveActionAndSave(string actionName)
         {
             bool existed = ActionExists(actionName);

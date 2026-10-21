@@ -34,6 +34,7 @@ namespace DS4WindowsTests
 
             public bool RemoveActionAndSave(string actionName) => true;
             public bool SaveActionExtras(string actionName, string outputExtras) => true;
+            public bool SaveActionAnalogStrength(string actionName, int strength) => true;
             public event EventHandler ActionsChanged { add { } remove { } }
         }
 

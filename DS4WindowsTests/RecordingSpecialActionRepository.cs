@@ -45,6 +45,9 @@ namespace DS4WindowsTests
         // Phase10-Step6 I5a: SA の保存のあとに呼ばれる Extras の保存を記録する
         public System.Collections.Generic.List<(string Name, string Extras)> ExtrasSaves { get; } = new System.Collections.Generic.List<(string, string)>();
         public bool SaveActionExtras(string actionName, string outputExtras) { ExtrasSaves.Add((actionName, outputExtras)); return true; }
+        // Phase10-Step6 後の Step5: SA の保存のあとに呼ばれる、アナログな出力の強さの保存を記録する
+        public System.Collections.Generic.List<(string Name, int Strength)> StrengthSaves { get; } = new System.Collections.Generic.List<(string, int)>();
+        public bool SaveActionAnalogStrength(string actionName, int strength) { StrengthSaves.Add((actionName, strength)); return true; }
         public event EventHandler ActionsChanged { add { } remove { } }
     }
 }

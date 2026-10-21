@@ -58,6 +58,13 @@ namespace DS4Windows.DI
         bool SaveActionExtras(string actionName, string outputExtras);
 
         /// <summary>
+        /// Phase10-Step6 後の Step5: 名前で探した Button の SA に、アナログな出力の強さ（0〜100%）を設定して <c>Actions.xml</c> へ保存する。
+        /// <see cref="SaveAction"/> は SA を作り直すため、強さを持たない（既定の 100）。エディターは、SA の保存のあとにこれを呼ぶ。
+        /// </summary>
+        /// <returns>Button の SA が見つかれば true</returns>
+        bool SaveActionAnalogStrength(string actionName, int strength);
+
+        /// <summary>
         /// アクションを削除して <c>Actions.xml</c> へ保存する（<c>Global.RemoveAction</c> と同じ動作）。
         /// 実行中のアクション状態のクリア、ファイルへの保存、読み直しと件数の検証を含む。
         /// </summary>

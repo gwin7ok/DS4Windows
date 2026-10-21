@@ -156,6 +156,12 @@
                                 <Button x:Name="pressKeySelectBtn" Content="{Binding DescribeText,FallbackValue={lex:Loc SpecialActionEdit.SelectKey}}"
                                         Tag="{Binding Value,Mode=OneWay,ValidatesOnNotifyDataErrors=True}"
                                         Margin="{StaticResource spaceMargin}" Click="PressKeySelectBtn_Click" />
+                                <!-- Phase10-Step6 後の Step5（SA 側のアナログ出力）: 出力先が軸・トリガー・マウス移動のときだけ、強さ（0〜100%）を指定する（Controls のモードには出さない） -->
+                                <StackPanel Orientation="Horizontal" Margin="0,0,0,6" VerticalAlignment="Center" Visibility="{Binding ShowAnalogStrength}">
+                                    <Label Content="Strength:" VerticalAlignment="Center" />
+                                    <xctk:IntegerUpDown Value="{Binding AnalogStrength, Mode=TwoWay}" Minimum="0" Maximum="100" Width="70" Margin="8,0,0,0" />
+                                    <Label Content="%" VerticalAlignment="Center" />
+                                </StackPanel>
                                 <!-- Unload trigger UI removed: Key-type SpecialActions now use single-trigger toggle by design -->
                             </StackPanel>
                         </TabItem>

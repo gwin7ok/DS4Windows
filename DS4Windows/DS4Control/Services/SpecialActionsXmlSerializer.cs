@@ -330,6 +330,21 @@ namespace DS4Windows.Services
             return true;
         }
 
+        /// <summary>
+        /// Phase10-Step6 後の Step5: 名前で探した Button の SA に、アナログな出力の強さ（<see cref="SpecialAction.analogStrength"/>。0〜100 に丸める）を設定して保存する。
+        /// SA の保存（<see cref="SaveActionNew"/>）は、SA を作り直すため強さを持たない（既定の 100）。エディターは、SA の保存のあとにこれを呼ぶ。
+        /// </summary>
+        /// <returns>Button の SA が見つかれば true</returns>
+        public bool SetActionAnalogStrength(string name, int strength)
+        {
+            SpecialAction action = store.actions.Find(item => item.name == name);
+            if (action == null || action.typeID != SpecialAction.ActionTypeId.Button) return false;
+
+            action.analogStrength = Math.Max(0, Math.Min(100, strength));
+            SaveActions();
+            return true;
+        }
+
         public bool SaveAction(string name, string controls, int mode, string details, bool edit, string extras = "")
         {
             bool saved = true;

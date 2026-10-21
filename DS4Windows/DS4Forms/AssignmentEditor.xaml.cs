@@ -159,6 +159,9 @@ namespace DS4WinWPF.DS4Forms
             saSteeringWheelVM = new SpecialActionViewModel(8, specialActionRepository);
             calibrateGyroVM = new SpecialActionViewModel(9, specialActionRepository);
 
+            // Phase10-Step6 後の Step5: アナログな出力の強さの入力は、SA のモードだけに出す（Controls は、入力のアナログ値で強さが決まる）
+            pressKeyVM.StrengthApplies = !controlMode;
+
             // Phase10-Step2 W1: 種別ごとの入力の対応は、ActionTypeEditorSet に 1 か所で持つ（旧: LoadAction／CheckActionValid／SaveBtn_Click の 3 つの switch）
             typeEditors = new ActionTypeEditorSet(new Dictionary<DS4Windows.SpecialAction.ActionTypeId, IActionTypeEditor>
             {

@@ -63,6 +63,9 @@ namespace DS4Windows
         // Phase10-Step6 I5a（Phase10-Step6-Plan.md §4）: SA に付ける Extras（振動、ライトバーの強制色と点滅、ボタン感度の一時変更）。Controls の Extras（DS4ControlSettings.extras）と同じ書式
         // （カンマ区切りの 9 個）。Actions.xml の OutputExtras 要素に保存する。付けないときは null。その SA が成立している間だけ有効（束縛は I5b で作る）
         public string outputExtras;
+        // Phase10-Step6 後の Step5（SA 側のアナログ出力）: Button の出力先がアナログ（パッドの軸・トリガー、マウス移動。AnalogOutputTargets）のときの強さ（0〜100%）。
+        // SA の組み合わせトリガーはオン／オフのため、成立中はこの固定値で出す。Actions.xml の Button の Strength 要素（100 以外のときだけ）に保存する。既定は 100（古いファイルも 100 として読む）
+        public int analogStrength = 100;
         public List<DS4Controls> trigger = new List<DS4Controls>();
         public string type;
         public ActionTypeId typeID;

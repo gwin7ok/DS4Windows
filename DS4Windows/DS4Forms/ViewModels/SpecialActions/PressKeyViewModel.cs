@@ -24,6 +24,7 @@ using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Input;
 using DS4Windows;
+using DS4Windows.Actions;
 using DS4Windows.DI;
 using DS4WinWPF.DS4Forms.ViewModels.Util;
 using System.ComponentModel;
@@ -96,6 +97,30 @@ namespace DS4WinWPF.DS4Forms.ViewModels.SpecialActions
         }
         public event EventHandler ShowToggleControlsChanged;
 
+        // Phase10-Step6 後の Step5（SA 側のアナログ出力）: 出力先がアナログ（パッドの軸・トリガー、マウス移動）のときの強さ（0〜100%）。
+        // SA の組み合わせトリガーはオン／オフのため、成立中はこの固定値で出す。Controls のモードには出さない（Controls は、入力のアナログ値で強さが決まる）
+        private int analogStrength = 100;
+        public int AnalogStrength
+        {
+            get => analogStrength;
+            set
+            {
+                int clamped = Math.Max(0, Math.Min(100, value));
+                if (analogStrength == clamped) return;
+                analogStrength = clamped;
+                OnPropertyChanged(nameof(AnalogStrength));
+            }
+        }
+
+        /// <summary>強さの入力を出すモードか（SA のモードは真。Controls のモードは、割り当て編集画面が偽にする）。</summary>
+        public bool StrengthApplies { get; set; } = true;
+
+        /// <summary>選ばれている出力先が、アナログな出力（強さが効く）か。</summary>
+        public bool IsAnalogOutput => lastActionType == DS4ControlSettings.ActionType.Button && lastActionBtn >= 0
+            && AnalogOutputTargets.KindOf((X360Controls)lastActionBtn) != AnalogOutputKind.None;
+
+        public Visibility ShowAnalogStrength => StrengthApplies && IsAnalogOutput ? Visibility.Visible : Visibility.Collapsed;
+
         public string DescribeText
         {
             get
@@ -166,6 +191,8 @@ namespace DS4WinWPF.DS4Forms.ViewModels.SpecialActions
                 pressReleaseIndex = 1;
             }
 
+            AnalogStrength = action.analogStrength;   // Phase10-Step6 後の Step5
+
             UpdateDescribeText();
             UpdateToggleControls();
         }
@@ -214,6 +241,7 @@ namespace DS4WinWPF.DS4Forms.ViewModels.SpecialActions
         {
             IsToggleChanged?.Invoke(this, EventArgs.Empty);
             ShowToggleControlsChanged?.Invoke(this, EventArgs.Empty);
+            OnPropertyChanged(nameof(ShowAnalogStrength));   // Phase10-Step6 後の Step5: 出力先が変わったとき、強さの入力の表示も更新する
         }
 
         public void SetDeviceNum(int deviceNum)
@@ -361,6 +389,10 @@ namespace DS4WinWPF.DS4Forms.ViewModels.SpecialActions
             {
                 specialActionRepository.SaveAction(action.name, action.controls, 10, lastActionBtn.ToString(), edit,
                     extras: $"{modeToSave}\n{action.ucontrols}", actionId: action.id);
+
+                // Phase10-Step6 後の Step5: アナログな出力の強さは、SA の保存のあとに書く（SA の保存は SA を作り直すため）。既定の 100 は書かない
+                if (IsAnalogOutput && analogStrength != 100)
+                    specialActionRepository.SaveActionAnalogStrength(action.name, analogStrength);
                 return;
             }
             specialActionRepository.SaveAction(action.name, action.controls, 4,

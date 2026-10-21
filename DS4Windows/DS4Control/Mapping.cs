@@ -147,6 +147,7 @@ namespace DS4Windows
                 // Phase8-Step7 7.8f-3: 新経路のマウスの移動が、生の量の計算（getMouseMapping）を借りる。デバイスごとに 1 回だけ作る（フレームごとの割り当てなし）
                 int sampleDevice = device;
                 _triggerInputs[device].MouseSampler = (control, direction) => SampleMouseMovement(sampleDevice, control, direction);
+                _triggerInputs[device].FixedMouseSampler = (direction, fraction) => SampleFixedMouseMovement(sampleDevice, direction, fraction);   // Phase10-Step6 後の Step5: SA のマウス移動（強さの固定値）
             }
 
             syncStateLock = syntheticInput.SyncStateLock;
@@ -395,6 +396,21 @@ namespace DS4Windows
             if (state == null || fields == null || ctrl == null) return 0.0;
 
             return getMouseMapping(device, control, state, _sampleExposed[device], fields, direction, ctrl);
+        }
+
+        // Phase10-Step6 後の Step5: SA のマウス移動（強さの固定値）が、TriggerInput 経由で呼ぶ。getMouseMapping の「ボタンが元のとき」（押している）の量
+        // （感度 activeButtonSensitivity と、縦方向の倍率 buttonVerticalScale）に、強さ（0〜1）を掛ける。1 は、Controls のボタンからのマウス移動と同じ量
+        private double SampleFixedMouseMovement(int device, int direction, double fraction)
+        {
+            ControlService ctrl = _sampleControl[device];
+            if (ctrl == null) return 0.0;
+
+            ButtonMouseInfo buttonMouseInfo = ctrl.ProfileSettingsService.ButtonMouseInfos[device];
+            const double root = 1.002;
+            const double divide = 10000d;
+            double value = Math.Pow(root + buttonMouseInfo.activeButtonSensitivity / divide, 100) - 1;
+            if (direction == 0 || direction == 1) value *= buttonMouseInfo.buttonVerticalScale;
+            return value * fraction;
         }
 
 

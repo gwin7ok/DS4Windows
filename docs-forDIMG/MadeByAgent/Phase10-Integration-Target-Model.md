@@ -228,3 +228,15 @@ Step4d（W0〜W7。W6 は W6'）は完了した。完成形のうち、**参照�
 | 画面 | `CheckBatteryViewModel`／`MultiActButtonViewModel` が `LoadControlItem`／`ToControlItem` を実装（SA と同じ入力・同じ検証） |
 
 **残り**: Step5（SA 側のアナログ出力）。
+
+## 12. Step5（SA 側のアナログ出力）の結果（2026-10-22）
+
+`Phase10-Step5-Plan.md` のとおり完了した（`Debug ALL` 成功: 警告 0・エラー 0、テスト 2150 件と 11 件。実機確認は先送り: 台帳 §30）。SA の Button の出力先が、パッドの軸・トリガー、マウス移動のとき、利用者が指定する強さ（0〜100%、既定 100）の固定値で出す。これで、Phase10 の計画した Step（Step1〜Step5、Step4c、Step4d、統合 Step、W7・W8 相当）はすべて完了した。残りは、先送りの実機確認（台帳 §27〜§30）。
+
+| 項目 | 内容 |
+|---|---|
+| 保存 | `Actions.xml` の SA の Button の `Strength` 要素（100 以外のときだけ）。`SpecialAction.analogStrength`。SA の保存のあとに `ISpecialActionRepository.SaveActionAnalogStrength` で書く |
+| 規則 | `AnalogOutputTargets.KindOf(X360Controls)`（軸、トリガー、マウス移動、なし）。割り当て編集画面（強さの入力を出すか）と、出力の部品が同じ規則を使う |
+| 実行 | `ButtonOutputAction` がアナログの分岐を持つ（軸は中立 128 から端へ、トリガーは 255 × 強さ、マウス移動は `IFixedMouseInput`）。100% は、Controls のボタンが元のときの出力と同じ。Toggle・ログは、デジタルの Button と同じ |
+| 画面 | 割り当て編集画面の Press Key のタブの「Strength: __ %」（出力先がアナログのときだけ。SA のモードだけ） |
+| ホイール | 今のまま（デジタル。強さなし） |
