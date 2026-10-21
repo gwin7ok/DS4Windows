@@ -31,7 +31,8 @@ namespace DS4Windows.Actions
             Func<IMapping> mappingProvider = null, IGyroCalibrationPort gyroCalibration = null,
             IControllerDisconnectPort disconnectPort = null, IBatteryCheckPort batteryCheckPort = null,
             IWheelCalibrationPort wheelCalibrationPort = null, IMacroStringPlayer macroStringPlayer = null,
-            IControlBindingBuilder controlBuilder = null, ISpecialActionOutputFactory outputFactory = null)
+            IControlBindingBuilder controlBuilder = null, ISpecialActionOutputFactory outputFactory = null,
+            IControlExtrasPort extrasPort = null)
         {
             _controlBuilder = controlBuilder;
             _profileActions = profileActions ?? throw new ArgumentNullException(nameof(profileActions));
@@ -44,7 +45,7 @@ namespace DS4Windows.Actions
             _outputFactory = outputFactory ?? new SpecialActionOutputFactory(profileSettings, manager, macroPlayer, processLauncher,
                 profileSwitcher, actionRepository, mappingProvider, gyroCalibration, disconnectPort, batteryCheckPort,
                 wheelCalibrationPort, macroStringPlayer);
-            _assignmentBuilder = new AssignmentBindingBuilder(_outputFactory, _profileSettings);   // Phase10-Step6 I4c: 束縛の組み立ては、共通の部品が行う
+            _assignmentBuilder = new AssignmentBindingBuilder(_outputFactory, _profileSettings, extrasPort);   // Phase10-Step6 I4c: 束縛の組み立ては、共通の部品が行う
         }
 
         public IReadOnlyList<IActionBinding> Build(int device)
@@ -73,25 +74,31 @@ namespace DS4Windows.Actions
                 SpecialAction sa = _profileActions.GetProfileAction(device, names[i]);
                 if (sa == null) continue;   // 旧ループと同じ: 見つからない名前は飛ばす（警告ログは EmitMissingActionLogsForDevice が出す）
 
-                IActionBinding binding = Create(device, sa, _profileActions.GetProfileActionIndexOf(device, names[i]));
-                if (binding != null) result.Add(binding);
+                AddBindings(device, sa, _profileActions.GetProfileActionIndexOf(device, names[i]), result);
             }
 
             return result.Count == 0 ? (IReadOnlyList<IActionBinding>)Array.Empty<IActionBinding>() : result.ToArray();
         }
 
-        private IActionBinding Create(int device, SpecialAction sa, int index)
+        // Phase10-Step6 I5b: SA の束縛（と、SA に Extras が付いていれば、その前に並べる Extras の束縛）を一覧へ足す
+        private void AddBindings(int device, SpecialAction sa, int index, List<IActionBinding> result)
         {
             // トリガーのボタンがない特殊アクションは、旧経路でも成立しない。束縛を作らない
-            if (sa.trigger == null || sa.trigger.Count == 0) return null;
+            if (sa.trigger == null || sa.trigger.Count == 0) return;
 
             // Phase10-Step4 W2: 種別ごとの出力アクションと方針は、共通の部品が作る（動作は変えない）。未対応の種別・窓口が未接続の種別は null（旧経路が処理する）
             // Phase10-Step6 I3: SA を読み込みの部品で定義にして、定義を受ける Create へ渡す（実行時の状態は、プロファイルの SpecialAction の実物が持つ）
             AssignmentDefinition definition = SpecialActionAssignmentReader.Read(sa);
-            if (definition == null) return null;
+            if (definition == null) return;
 
             // Phase10-Step6 I4c: 出力・方針・入力・包みは、共通の組み立て（AssignmentBindingBuilder）が行う。入力は SA 由来（複数ボタンの組み合わせ。MultiAction は独立した入力）
-            return _assignmentBuilder.Build(device, definition, sa, index);
+            TriggerBinding binding = _assignmentBuilder.Build(device, definition, sa, index);
+            if (binding == null) return;
+
+            // Extras は、SA の束縛が作れたときだけ（SA の束縛がなければ、Extras だけが効くことはない）
+            TriggerBinding extras = _assignmentBuilder.BuildExtras(device, definition, sa, binding.Policy);
+            if (extras != null) result.Add(extras);
+            result.Add(binding);
         }
 
         /// <summary>

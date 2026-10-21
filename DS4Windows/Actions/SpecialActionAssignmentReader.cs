@@ -26,7 +26,11 @@ namespace DS4Windows.Actions
                 SpecialActionItemMapper.ToItem(sa),
                 key: sa.typeID == SpecialAction.ActionTypeId.Key ? ActionBindingBuilder.InterpretKey(sa) : (KeyBindingValues?)null,
                 button: sa.typeID == SpecialAction.ActionTypeId.Button ? ActionBindingBuilder.InterpretButton(sa) : (ButtonBindingValues?)null,
-                macro: sa.macro, keyType: sa.keyType);
+                macro: sa.macro, keyType: sa.keyType, extras: ReadExtras(sa));
         }
+
+        // Phase10-Step6 I5b: SA に付けた Extras（Controls と同じ書式）。付けていない・読めないときは null
+        private static ExtrasBindingValues? ReadExtras(SpecialAction sa)
+            => Services.ControlBindingBuilder.TryInterpretExtras(sa.outputExtras, out ExtrasBindingValues values) ? values : (ExtrasBindingValues?)null;
     }
 }
