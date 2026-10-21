@@ -333,3 +333,17 @@ Phase7 で先送りしてきた実機確認（§11 の U-11〜U-22（総合検�
 | P10-24 | Swipe（Touchpad）・Tilt（ジャイロ）のボタンで、割り当てエディターが左ペイン全体に開き、Save／Cancel で元のタブへ戻る。プロファイルの保存・再読み込み・Apply で設定値が変わらない。Controller Readings が従来どおり | ○ |
 | P10-25 | Controls タブの一覧の末尾に、LS Outer／RS Outer／L2 Full Pull／R2 Full Pull が、ほかの項目と同じ形式（「…: 未割り当て」）で出る。ダブルクリックで割り当てエディターが開き、保存で一覧と Axis Config のラベルが更新される。コントローラーの入力による選択（添字 0〜33）が従来どおり。Axis Config にボタンがなく、ほかの設定が残っている | ○ |
 | P10-26 | 入口がすべて左ペインのタブにあるため、編集中に、ほかの入口を押せない。コントローラーのボタンを押しても、開き直さない（Step3b 後の再確認） | ○ |
+
+## 17. Phase10-Step4 W2 の実機確認（2026-10-21）
+
+`Phase10-Step4-Plan.md` の W2（SA の出力アクション・方針の作り方を、共通の部品 `SpecialActionOutputFactory` へ取り出した。動作は変えていない）の回帰確認。
+Special Actions タブで種別ごとに作成し、プロファイルに有効化して、トリガーのボタンを押して確認する（ログも、従来と同じ行・順序であること）。
+
+| ID | 項目 | 結果 |
+|---|---|---|
+| P10-27 | Key（Press／Toggle）、Button（Press／Toggle）が従来どおり動く。Button の Press は Fresh-press ガードを見ない（プロファイルの適用直後、押しっぱなしでも出る）。Toggle は適用直後の押しっぱなしでは切り替わらない（Toggle のボタン・キーは、プロファイル適用時にリセットされるのが仕様） | ○ |
+| P10-28 | Macro（通常、Run on release、Repeat）が従来どおり動く | ○ |
+| P10-29 | Launch Program が起動し、実行中は重ねて起動しない。Load Profile が切り替わり、Automatic untrigger で離したときに戻る。連鎖（適用直後の押しっぱなし）で再発火しない | ○ |
+| P10-30 | Disconnect BT、Check Battery（押している間の色の遷移、離すと戻る）、Calibrate gyro、Calibrate sixaxis wheel が従来どおり動く | ○ |
+| P10-31 | Multi-action で、タップ・長押し・ダブルタップが、それぞれ別のマクロを実行する。ほかの SA が先にフレームを終えたときの挙動も従来どおり | ○ |
+| P10-32 | Controls タブの割り当て（Key、Button、Macro、Extras、Default、Unbound）と、SA の優先順位・抑制（SA が同じボタンの Controls の割り当てに勝つ）が従来どおり | ○ |

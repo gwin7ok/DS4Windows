@@ -106,4 +106,11 @@ Controls のボタン 1 つの割り当てに、**SA 専用の種別**を、保�
   - 変更: `DS4ControlSettings`（`ActionType.Special`、`special`）、`ProfileButtonSaveSection`／`ProfileButtonControlLoadSection`（`<Special>` を `<KeyType>` の後に書く／最後に読む。Special が同じボタンの Button／Macro／Key に優先）、`MappedControl`（一覧の表示）、`ControlSettingsEditTarget`（複製・クリア）。
   - テスト: `Phase10Step4W1ControlSpecialItemTests`（14 件）。W0 の `AnUnknownSection_…` は、未知の節の例を `<Special>` から `<Future>` に変えた（`<Special>` を読むようになったため）。
   - 配置の判断: `ControlSpecialItemXml` は節ではなく補助部品なので、`ProfileSections/` ではなく `Services/` 直下に置く（`Phase8Step4bW11LengthGuardTests` が、`ProfileSections/` 内を `internal sealed class` 1 つに限っているため）。
-  - 次: W2（`ActionBindingBuilder.Create` から、SA の出力アクションを作る共通部品を取り出す。挙動は変えず、W0 の表のテストで守る）。指示があるまで始めない。
+  - 次: W2（下記）。
+- **W2（完了 2026-10-21。ビルド・テスト成功、実機確認 P10-27〜32 すべて問題なし）**: SA の種別ごとの出力アクション・方針の作り方を、共通の部品へ取り出した（動作は変えていない）。
+  - 新規（`Actions/`）: `ISpecialActionOutputFactory`（`Create(device, sa, index, erasesOutputEveryFrame = false)`。未対応の種別・窓口が未接続は null）、`SpecialActionOutputFactory`（`Create` の `switch` を移した。窓口はここが持つ）、`SpecialActionOutputs`（出力の配列［複製］、方針、入力の種類［`InvertOnRelease`＝Macro の離したとき成立、`IsMultiTap`＝MultiAction］）。
+  - 変更: `ActionBindingBuilder`（`Create` は、トリガーの有無の判定、factory の結果、入力［`ComboTriggerInputAction`／`MultiTapInputAction`］の組み立てだけ。引数の並びは変えず、末尾に `outputFactory = null` を足した。省略時は同じ引数から factory を作るので、既存のテストの `new` は無変更）、`ServiceRegistration`（factory を Singleton で登録）。
+  - 決定: 結果に「入力の種類」を持たせる（種別と入力の対応を factory に集め、Controls 側で再判断しない）。Controls 用の `erasesOutputEveryFrame` は、factory の引数で方針に足す（SA では共有の `BindingPolicy.Default` のまま）。
+  - テスト: `Phase10Step4W2SpecialActionOutputFactoryTests`（全種別で SA の builder と factory が同じ出力の型・方針・入力、factory 省略時と共有時が同じ結果、`erasesOutputEveryFrame` が 1 つのフラグだけを変える、入力の種類、MultiAction の出力 3 つ、窓口の未接続で null、null 引数、ホストの Singleton）。W0 の一覧表のテストと既存の builder のテストは、無変更で成功。
+  - 実機確認（台帳 §17 P10-27〜32）: Key／Button（Press・Toggle）、Macro（通常・Run on release・Repeat）、Launch Program、Load Profile、Disconnect BT、Check Battery、較正 2 種、Multi-action、Controls の割り当てと SA の優先順位が、従来どおり。Toggle のボタン・キーが、プロファイル適用時にリセットされるのは仕様。
+  - 次: W3（第 1 群の縦通し: Macro の SA 専用の項目）。指示があるまで始めない。
