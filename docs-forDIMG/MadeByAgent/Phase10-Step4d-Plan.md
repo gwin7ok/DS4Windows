@@ -81,7 +81,7 @@
 4. **W3: 参照を ID に（SA と Controls の Load Profile、`<ProfileActions>`）**。ID を主、名前を併記。ID→名前の解決は 1 か所の部品にまとめる。
 5. **W4: 参照を ID に（スロットの選択、リンクプロファイル、自動プロファイル）**。
 6. **W5: 実行時の状態を ID に（プロファイル）**。`ProfilePath[]`、`OlderProfilePath[]`、一時プロファイル（復帰の状態）、`IProfileSwitcher`、`ProfileApplicationService`／`ProfileSlotApplier`、画面（`ProfileEntity`、`ControllerListViewModel`、`TrayIconViewModel`、`CompositeDeviceModel`）を、プロファイルの ID をキーにする。ファイルのパス・表示名は、ID から引く。
-7. **W6: 実行時の状態を ID に（SA）**。`profileActions[device]`、`GetProfileAction`、`ActionManager` の登録簿（`ActionInstanceState` の鍵）を、SA の ID をキーにする。合成の SA（`Synthetic_*`）の鍵は、1 つの鍵の型にまとめる。
+7. **W6: 実行時の状態を ID に（SA）→ 見直し（W6'。2026-10-21、ユーザー決定）**。調査の結果、SA 側の実行時の状態（`profileActions[device]`、`ActionManager` の登録簿）は、**名前のまま残す**。理由は §8 の W6'。W7 で `ReplaceActionReference`（全プロファイルの XML の書き換え）を撤去する。
 8. **W7: 追従のコードの撤去**。不要になった `Replace*`／`RemoveActionReference` と、`MainWindow` の再構築の一部を撤去。名前変更・削除の挙動（切り替わる、選択が残る、参照が外れる）を、テストと実機で確認。
 9. **最終 W: 文書**（完了の記録、モデル図、台帳、実機確認の統合）。
 
@@ -178,4 +178,10 @@
   - テスト: `Phase10Step4dW5dTests`（8 件。`LinkedProfileMap` が辞書と同じに動く・名前変更に追従・削除で最後の名前・結びの付け直し、`BackingStore` のリンクと表示用の追従、`ProfileRepository.GetLinkedProfile` が `ReplaceLinkedProfileName` なしで現在の名前を返す、自動プロファイルのルールの追従［ホルダーに入った後、ファイルから読み込んだ後］、ホルダーの外・登録簿なしは名前のまま）。`BackingStoreStateDumper` は `LinkedProfileMap` を辞書として出力する（golden は変更なし）。
   - 追従のコード（`ReplaceLinkedProfileName`、`AutoProfileHolder.ReplaceProfileName`、`ReplaceProfileSwitchTarget` ほか）は、W7 で撤去するまで残す（二重の安全策）。
   - 実機確認: 台帳 §27 の P10-96（統合版に追加）。先送り。
-  - 次: W6（実行時の状態を ID に: SA）。指示があるまで始めない（設計を説明して承認を得る）。
+- **W6'（決定 2026-10-21。コードの変更なし）**: SA 側の実行時の状態は、名前のまま残す（ユーザー決定。当初の W6［ID に替える］から見直し）。理由（調査の結果）:
+  1. `ActionManager` の登録簿（`ActionInstanceState` の鍵）は、SA の一覧を読み込み直すたびに（SA の保存、名前変更、削除のたびに）全エントリーを破棄する（`ClearAllEntries`）。名前を変えると必ず読み込み直しになるため、古い名前の状態が残って困る場面がない。Controls の合成 SA（`Synthetic_*`）は保存する ID を持たず、束縛を作り直すたびに新しい `SpecialAction` ができるため、ID を鍵にすると、作り直しのたびに状態（トグルなど）が引き継がれなくなる危険がある（名前が鍵だから引き継がれている）。
+  2. `profileActions[device]`（`List<string>`）は約 47 か所が `List<string>` の API で使い、`List<string>[]` を受け渡す契約・テストが約 10 か所ある。ID の窓口にするには `IList<string>` を実装する新しい型が要る。しかも、SA を編集すると（名前が同じでも）、実行中のスロットが持つ `profileActionDict`（名前 → 古い定義）は古いままなので、プロファイルの再適用が必要。これは ID にしても変わらず、再適用が不要になるわけではない。
+  3. 保存する参照は、W3 で ID が主になっている（`<ProfileActionIds>`）。SA の名前を変えたあと、プロファイルを再適用すれば、ファイルの `<ProfileActions>` を書き換えなくても、新しい名前で読み込まれる。
+  - 帰結: W7 で、SA の名前変更の追従のうち、全プロファイルの XML の書き換え（`ReplaceActionReference`）を撤去する（再適用は残す）。削除（`RemoveActionReference`）は、古い参照の片付けとして残す。
+  - ラチェット（`profileActions` 系の件数）は、W6' では動かさない（基準値は現状のまま）。
+  - 次: W7（追従のコードの撤去）。指示があるまで始めない（実際の呼び出し経路を調べ、設計を説明して承認を得る）。

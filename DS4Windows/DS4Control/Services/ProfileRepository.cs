@@ -194,77 +194,14 @@ namespace DS4Windows
         public bool SaveLinkedProfiles()
             => _linkedProfilesXml.SaveLinkedProfiles();
 
-        // Phase6-Step10-4-5b: 名前変更後に、リンクプロファイルの旧名が残って「Selected Profile が空欄になる」不具合の是正
-        public int ReplaceLinkedProfileName(string oldName, string newName)
-        {
-            if (string.IsNullOrWhiteSpace(oldName) || string.IsNullOrWhiteSpace(newName)) return 0;
+        // Phase10-Step4d W7: 以前ここにあった ReplaceLinkedProfileName（リンクプロファイルの旧名の置き換え）は撤去した。リンクプロファイル（LinkedProfiles.xml の実行時の保持）は、
+        // W5d で、プロファイルの固定 ID を保管する窓口（LinkedProfileMap）になり、名前を変えても、読み出す名前が現在の名前になるため。
+        // 保存先のファイルの名前と ID は、名前変更の直後に SaveLinkedProfiles で書き直す（MainWindow）
 
-            int replaced = 0;
-            var linked = _config.linkedProfiles;
-            if (linked != null)
-            {
-                foreach (string serial in linked.Keys.ToList())
-                {
-                    if (string.Equals(linked[serial], oldName, StringComparison.CurrentCultureIgnoreCase))
-                    {
-                        linked[serial] = newName;
-                        replaced++;
-                    }
-                }
-            }
-
-            ProfileSlotNames ui = _config.linkedProfileUI;
-            if (ui != null)
-            {
-                for (int i = 0; i < ui.Length; i++)
-                {
-                    if (string.Equals(ui[i], oldName, StringComparison.CurrentCultureIgnoreCase))
-                    {
-                        ui[i] = newName;
-                        replaced++;
-                    }
-                }
-            }
-
-            if (replaced > 0)
-            {
-                _linkedProfilesXml.SaveLinkedProfiles();
-            }
-
-            return replaced;
-        }
-
-        // Phase6-Step10-4-5d: 名前変更後に、プロファイル切替のスペシャルアクションの切替先が、旧名のまま（なし扱い）になる不具合の是正
-        public int ReplaceProfileSwitchTarget(string oldName, string newName)
-        {
-            if (string.IsNullOrWhiteSpace(oldName) || string.IsNullOrWhiteSpace(newName)) return 0;
-
-            int replaced = 0;
-            var actions = _config.actions;
-            if (actions != null)
-            {
-                lock (actions)
-                {
-                    foreach (SpecialAction action in actions)
-                    {
-                        if (action != null && action.typeID == SpecialAction.ActionTypeId.Profile &&
-                            string.Equals(action.details, oldName, StringComparison.CurrentCultureIgnoreCase))
-                        {
-                            // 実行時は action.details を参照する（読み込み済みの定義へ、そのまま反映される）
-                            action.details = newName;
-                            replaced++;
-                        }
-                    }
-                }
-            }
-
-            if (replaced > 0)
-            {
-                _actionsXml.SaveActions();
-            }
-
-            return replaced;
-        }
+        // Phase10-Step4d W7: 以前の ReplaceProfileSwitchTarget（Phase6-Step10-4-5d）は、名前で置き換える処理だった。切り替え先の ID（SpecialAction.profileId、W3）から現在の名前を引き直し、
+        // Actions.xml を保存し直す処理に替えた（メモリの details は、編集画面が読む。実行時の切り替えは、実行の直前に ID から引く［W5c］）。ID のない SA は、旧名との一致で、従来どおり置き換える
+        public int RefreshProfileSwitchTargets(string oldName, string newName)
+            => _actionsXml.RefreshProfileTargets(oldName, newName);
 
         // Phase10-Step4 W6: 名前変更後に、Controls のボタンに割り当てた Load Profile の切り替え先が、旧名のまま（切り替わらない）になる不具合の予防。
         // 各プロファイルのファイルの <Control><Special> を読み、Type="Profile" の ProfileName が旧名なら、新名へ書き換えて保存する（ReplaceProfileSwitchTarget の Controls 版）。

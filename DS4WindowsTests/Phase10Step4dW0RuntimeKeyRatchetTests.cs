@@ -40,7 +40,7 @@ namespace DS4WindowsTests
             ["DS4Windows/DS4Control/Services/ProfileSections/ProfileMotionSaveSection.cs"] = (0, 2),
             ["DS4Windows/DS4Control/Services/ProfileSettingsService.cs"] = (0, 3),
             ["DS4Windows/DS4Control/Services/SpecialActionRepository.cs"] = (0, 2),
-            ["DS4Windows/DS4Forms/MainWindow.xaml.cs"] = (6, 0),
+            ["DS4Windows/DS4Forms/MainWindow.xaml.cs"] = (4, 0),   // Phase10-Step4d W7: 名前変更の追従で、スロットの配列を書き換える代入（ProfilePath／OlderProfilePath）を撤去して 2 件減った
             ["DS4Windows/DS4Forms/ProfileEditor.xaml.cs"] = (1, 4),
             ["DS4Windows/DS4Forms/ViewModels/CompositeDeviceModel.cs"] = (5, 0),
             ["DS4Windows/DS4Forms/ViewModels/ControllerListViewModel.cs"] = (3, 0),

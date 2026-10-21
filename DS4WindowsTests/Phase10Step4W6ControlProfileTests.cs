@@ -411,7 +411,7 @@ namespace DS4WindowsTests
             if (path == null) return;
 
             string source = File.ReadAllText(path);
-            int sa = source.IndexOf("profileRepo.ReplaceProfileSwitchTarget(oldProfile, newProfile);");
+            int sa = source.IndexOf("profileRepo.RefreshProfileSwitchTargets(oldProfile, newProfile);");
             int controls = source.IndexOf("profileRepo.ReplaceControlProfileSwitchTarget(oldProfile, newProfile);");
             Assert.True(sa >= 0 && controls > sa, "名前変更の処理に、Controls の切り替え先の更新が、SA の更新の後にあること");
         }

@@ -2033,23 +2033,17 @@ Suspend support not enabled.", true);
                 bool isRename = !string.IsNullOrWhiteSpace(oldProfile) && !string.IsNullOrWhiteSpace(newProfile);
                 if (isRename)
                 {
-                    for (int i = 0; i < slotCount; i++)
-                    {
-                        if (string.Equals(activeProfiles[i], oldProfile, StringComparison.CurrentCultureIgnoreCase))
-                        {
-                            activeProfiles[i] = newProfile;
-                            profileRepo.ProfilePath[i] = newProfile;
-                            profileRepo.OlderProfilePath[i] = newProfile;
-                        }
-                    }
-                    // Phase6-Step10-4-5b: リンクプロファイル（LinkedProfiles.xml と画面表示用の値）の旧名も、新名へ置き換える
-                    profileRepo.ReplaceLinkedProfileName(oldProfile, newProfile);
-                    // Phase6-Step10-4-5d: プロファイル切替のスペシャルアクションの切替先（Actions.xml）の旧名も、新名へ置き換える
-                    profileRepo.ReplaceProfileSwitchTarget(oldProfile, newProfile);
-                    // Phase10-Step4 W6: Controls のボタンに割り当てた Load Profile の切り替え先（各プロファイルの <Control><Special>）の旧名も、新名へ置き換える
+                    // Phase10-Step4d W7: 実行時の保持（スロットの現在・直前・選択、一時プロファイル、リンク、自動プロファイルのルール）は、プロファイルの固定 ID を保管する窓口のため
+                    // （W5b〜W5d）、名前を変えても、読み出す名前が自動で現在の名前になる。ここで配列や一覧を書き換える処理は、不要になった。
+                    // 保存先のファイルの名前と ID を、現在の状態で書き直す（名前変更の直後に、1 回）
+                    profileRepo.SaveLinkedProfiles();
+                    _autoProfileService?.Holder?.Save();
+                    appSettingsService.Save();
+                    // SA（Actions.xml）の切り替え先は、ID から現在の名前に引き直して保存する
+                    profileRepo.RefreshProfileSwitchTargets(oldProfile, newProfile);
+                    // Phase10-Step4 W6: Controls の Load Profile の切り替え先（各プロファイルの <Control><Special>）は、ID のない古いプロファイルのファイルのため、旧名を新名へ書き換える処理を残す
+                    // （TODO（Phase10-Step4d W7）: 全プロファイルのファイルに ID を書き足す移行ができたら撤去する。ReplaceActionReference も同じ）
                     profileRepo.ReplaceControlProfileSwitchTarget(oldProfile, newProfile);
-                    // Phase6-Step10-4-5c: 自動プロファイルのルールが参照している旧名も、新名へ置き換える（Auto Profiles.xml へ保存）
-                    _autoProfileService?.Holder?.ReplaceProfileName(oldProfile, newProfile);
                 }
 
                 // ディスク全XMLを正（SSOT）としてプロファイル一覧を再構築

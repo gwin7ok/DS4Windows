@@ -143,7 +143,6 @@ namespace DS4WindowsTests
                 "DS4Windows/DS4Control/Services/AppSettingsXmlSerializer.cs",
                 "DS4Windows/DS4Control/Services/ProfileApplicationService.cs",   // 適用での更新、RestoreFromAction
                 "DS4Windows/DS4Control/Services/ProfileRepository.cs",
-                "DS4Windows/DS4Forms/MainWindow.xaml.cs",                        // 名前変更の追従
                 "DS4Windows/DS4Forms/ViewModels/CompositeDeviceModel.cs",        // 画面の選択、リンクの解除
             }, files);
         }

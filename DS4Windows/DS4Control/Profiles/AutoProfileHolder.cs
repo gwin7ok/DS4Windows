@@ -140,40 +140,11 @@ namespace DS4WinWPF
             return saved;
         }
 
-        /// <summary>
-        /// Phase6-Step10-4-5c: プロファイルの名前変更に伴い、各ルールが参照している旧名（コントローラーごとのプロファイル名）を
-        /// 新名へ置き換える。置き換えた件数を返す。1 件以上置き換えた場合は、Auto Profiles.xml へ保存する。
-        /// </summary>
-        public int ReplaceProfileName(string oldName, string newName)
-        {
-            if (string.IsNullOrWhiteSpace(oldName) || string.IsNullOrWhiteSpace(newName)) return 0;
+        // Phase10-Step4d W7: 以前ここにあった ReplaceProfileName（ルールが参照している旧名の置き換え）は撤去した。各ルールのプロファイルの保持は、W5d で、
+        // プロファイルの固定 ID を保管する窓口になり、名前を変えても、読み出す名前が現在の名前になるため。保存先のファイルの名前と ID は、名前変更の直後に Save で書き直す（MainWindow）
 
-            int replaced = 0;
-            lock (_colLockobj)
-            {
-                foreach (AutoProfileEntity entity in autoProfileColl)
-                {
-                    ProfileSlotNames names = entity.ProfileNames;
-                    if (names == null) continue;
-
-                    for (int i = 0; i < names.Length; i++)
-                    {
-                        if (string.Equals(names[i], oldName, StringComparison.CurrentCultureIgnoreCase))
-                        {
-                            names[i] = newName;
-                            replaced++;
-                        }
-                    }
-                }
-            }
-
-            if (replaced > 0)
-            {
-                Save(Path.Combine(pathService.AppDataPath, "Auto Profiles.xml"));
-            }
-
-            return replaced;
-        }
+        /// <summary>Phase10-Step4d W7: 既定の保存先（Auto Profiles.xml）へ保存する。</summary>
+        public bool Save() => Save(Path.Combine(pathService.AppDataPath, "Auto Profiles.xml"));
 
         public void Remove(AutoProfileEntity item)
         {

@@ -14,7 +14,7 @@ namespace DS4WindowsTests
     public class ProfileRenamePropagationTests
     {
         [Fact]
-        public void ReplaceProfileSwitchTarget_ReplacesOnlyMatchingProfileActions_AndSaves()
+        public void RefreshProfileSwitchTargets_ReplacesTheNameOfAnActionWithoutAnId_OnlyWhenItMatches_AndSaves()
         {
             string dir = Path.Combine(Path.GetTempPath(), "ds4w-step10-4-5d-" + Guid.NewGuid().ToString("N"));
             Directory.CreateDirectory(dir);
@@ -32,12 +32,13 @@ namespace DS4WindowsTests
 
                 var repo = TestRepositoryFactory.CreateProfileRepository(TestRepositoryFactory.CreateProfileSettingsService());
 
-                Assert.Equal(0, repo.ReplaceProfileSwitchTarget(" ", "x"));
-                Assert.Equal(1, repo.ReplaceProfileSwitchTarget("oldprofile", "NewProfile"));
+                // Phase10-Step4d W7: ID のない SA（この SA は profileId を持たない）は、従来どおり、旧名との一致（大文字小文字を区別しない）で置き換える
+                Assert.Equal(0, repo.RefreshProfileSwitchTargets(" ", "x"));
+                Assert.Equal(1, repo.RefreshProfileSwitchTargets("oldprofile", "NewProfile"));
                 Assert.Equal("NewProfile", match.details);
                 Assert.Equal("AnotherProfile", other.details);
                 Assert.True(File.Exists(store.m_Actions));
-                Assert.Equal(0, repo.ReplaceProfileSwitchTarget("oldprofile", "NewProfile"));
+                Assert.Equal(0, repo.RefreshProfileSwitchTargets("oldprofile", "NewProfile"));
             }
             finally
             {

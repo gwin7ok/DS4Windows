@@ -44,64 +44,8 @@ namespace DS4WindowsTests
 
         // ---- リンクプロファイル ----
 
-        [Fact]
-        public void TheLinkedProfileRename_ReplacesByName_IgnoringCase_InTheTableAndTheUiValues_AndSaves()
-        {
-            using var ctx = new PersistenceGoldenContext();
-            BackingStore store = PersistenceHarness.NewStore();
-            store.m_linkedProfiles = Path.Combine(ctx.AppData, "LinkedProfiles.xml");
-            Assert.True(new LinkedProfilesXmlSerializer(store).createLinkedProfiles());
-            store.linkedProfiles["0123456789AB"] = "Old";
-            store.linkedProfiles["BA9876543210"] = "OLD";   // 大文字小文字は区別しない
-            store.linkedProfiles["111111111111"] = "Other";
-            store.linkedProfileUI[0] = "old";
-            store.linkedProfileUI[1] = "Other";
-
-            ProfileRepository repo = NewRepository(ctx, store);
-
-            Assert.Equal(0, repo.ReplaceLinkedProfileName(" ", "New"));
-            Assert.Equal(0, repo.ReplaceLinkedProfileName("Old", string.Empty));
-            Assert.Equal(3, repo.ReplaceLinkedProfileName("Old", "New"));   // 表の 2 件と、画面表示用の 1 件
-
-            Assert.Equal("New", store.linkedProfiles["0123456789AB"]);
-            Assert.Equal("New", store.linkedProfiles["BA9876543210"]);
-            Assert.Equal("Other", store.linkedProfiles["111111111111"]);
-            Assert.Equal("New", store.linkedProfileUI[0]);
-            Assert.Equal("Other", store.linkedProfileUI[1]);
-
-            string xml = File.ReadAllText(store.m_linkedProfiles);
-            Assert.Contains("New", xml);
-            Assert.DoesNotContain("Old", xml);
-            Assert.Equal(0, repo.ReplaceLinkedProfileName("Old", "New"));   // 2 回目は何も置換しない
-        }
-
-        // ---- 自動プロファイル ----
-
-        [Fact]
-        public void TheAutoProfileRename_ReplacesTheControllerProfileNames_IgnoringCase_AndSaves()
-        {
-            using var ctx = new PersistenceGoldenContext();
-            var holder = new AutoProfileHolder(new PathService(ctx.AppData), new EnvironmentService());
-            var entity = new AutoProfileEntity(@"C:\p10s4d\a.exe", "Title");
-            entity.ProfileNames[0] = "Old";
-            entity.ProfileNames[1] = "OLD";
-            entity.ProfileNames[2] = "Keep";
-            holder.AutoProfileColl.Add(entity);
-
-            Assert.Equal(0, holder.ReplaceProfileName(" ", "New"));
-            Assert.Equal(2, holder.ReplaceProfileName("old", "New"));
-
-            Assert.Equal(new[] { "New", "New", "Keep" }, entity.ProfileNames.Take(3).ToArray());
-            string file = Path.Combine(ctx.AppData, "Auto Profiles.xml");
-            Assert.True(File.Exists(file));
-            string xml = File.ReadAllText(file);
-            Assert.Contains("New", xml);
-            Assert.Contains("Keep", xml);
-            Assert.DoesNotContain(">Old<", xml);
-            Assert.Equal(0, holder.ReplaceProfileName("old", "New"));
-        }
-
-        // ---- SA の名前変更・削除（全プロファイルの <ProfileActions>）----
+        // Phase10-Step4d W7: 以前ここにあった、リンクプロファイル（ReplaceLinkedProfileName）と自動プロファイル（ReplaceProfileName）の名前変更の追従のテストは、撤去したメンバーのため削除した。
+        // 同じ振る舞い（名前変更に追従し、保存し直すと新しい名前と ID が書かれる）は、Phase10Step4dW5dTests／Phase10Step4dW7FollowUpTests が固定する
 
         [Fact]
         public void TheActionRename_RewritesEveryProfileThatListsTheOldName_ComparingByOrdinal()
@@ -209,23 +153,6 @@ namespace DS4WindowsTests
 
         // ---- 画面の経路（ソースの検査）----
 
-        [Fact]
-        public void TheProfileRename_CallsTheFiveFollowUps_InTheMainWindow_AndTheActionRenameCallsReplaceActionReference()
-        {
-            string main = SourceFileLocator.Find("DS4Windows/DS4Forms/MainWindow.xaml.cs");
-            string editor = SourceFileLocator.Find("DS4Windows/DS4Forms/ProfileEditor.xaml.cs");
-            if (main == null || editor == null) return;
-
-            string source = File.ReadAllText(main);
-            int a = source.IndexOf("profileRepo.ReplaceLinkedProfileName(", StringComparison.Ordinal);
-            int b = source.IndexOf("profileRepo.ReplaceProfileSwitchTarget(", StringComparison.Ordinal);
-            int c = source.IndexOf("profileRepo.ReplaceControlProfileSwitchTarget(", StringComparison.Ordinal);
-            int d = source.IndexOf("Holder?.ReplaceProfileName(", StringComparison.Ordinal);
-            Assert.True(a > 0 && b > a && c > b && d > c, "プロファイルの名前変更の追従（リンク → SA → Controls → 自動プロファイル）の順序が変わった");
-            Assert.Contains("profileRepo.ProfilePath[i] = newProfile;", source);
-            Assert.Contains("profileRepo.OlderProfilePath[i] = newProfile;", source);
-
-            Assert.Contains("profileRepository.ReplaceActionReference(oldName, newName)", File.ReadAllText(editor));
-        }
+        // Phase10-Step4d W7: MainWindow の名前変更の追従の検査は、Phase10Step4dW7FollowUpTests に置き換えた（SA の名前変更が ReplaceActionReference を呼ぶ検査は、同ファイルに移した）
     }
 }

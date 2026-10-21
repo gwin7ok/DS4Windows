@@ -160,6 +160,45 @@ namespace DS4Windows.Services
         }
 
         /// <summary>
+        /// Phase10-Step4d W7: プロファイルの名前変更の直後に、Load Profile の SA の切り替え先を更新する。切り替え先の ID が引ければ、現在の名前（details）に引き直す（ID が勝つ）。
+        /// ID のない（または不正な）SA は、details が <paramref name="oldName"/> と一致すれば（大文字小文字を区別しない）<paramref name="newName"/> に置き換え、ID を引ける場合は割り当てる。
+        /// 更新した件数を返す。1 件以上あれば、Actions.xml へ保存する（保存の前に、切り替え先の ID も確定する）。
+        /// </summary>
+        public int RefreshProfileTargets(string oldName, string newName)
+        {
+            int updated = 0;
+            lock (store.actions)
+            {
+                foreach (SpecialAction action in store.actions)
+                {
+                    if (action.typeID != SpecialAction.ActionTypeId.Profile) continue;
+
+                    bool hasId = !string.IsNullOrEmpty(action.profileId) && Guid.TryParseExact(action.profileId, "N", out _);
+                    if (hasId && profileIdentity != null)
+                    {
+                        string current = profileIdentity.GetName(action.profileId);
+                        if (current != null && !string.Equals(action.details, current, StringComparison.Ordinal))
+                        {
+                            action.details = current;
+                            updated++;
+                        }
+                    }
+                    else if (!string.IsNullOrWhiteSpace(oldName) && !string.IsNullOrWhiteSpace(newName) &&
+                        string.Equals(action.details, oldName, StringComparison.CurrentCultureIgnoreCase))
+                    {
+                        action.details = newName;
+                        string id = profileIdentity?.GetId(newName);
+                        if (id != null) action.profileId = id;
+                        updated++;
+                    }
+                }
+            }
+
+            if (updated > 0) SaveActions();
+            return updated;
+        }
+
+        /// <summary>
         /// Phase10-Step4d W3: 保存の前に、Load Profile の SA の切り替え先の ID を、名前から引いて更新する（ID が確定していなければ、ここで確定する）。
         /// プロファイルが見つからなければ（名前だけの参照、削除済み）、そのままにする。
         /// </summary>

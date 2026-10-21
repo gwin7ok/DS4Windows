@@ -34,22 +34,18 @@ namespace DS4Windows.DI
         void RemoveLinkedProfile(string serial);
         bool SaveLinkedProfiles();
 
-        /// <summary>
-        /// Phase6-Step10-4-5b: プロファイルの名前変更に伴い、リンクプロファイル（コントローラーとプロファイルの紐づけ）と、
-        /// 画面表示用の <see cref="LinkedProfileUI"/> に残っている旧名を、新名へ置き換える。置き換えた件数を返す。
-        /// 1 件以上置き換えた場合は、LinkedProfiles.xml へ保存する（接続中でないコントローラーの紐づけも対象）。
-        /// </summary>
-        int ReplaceLinkedProfileName(string oldName, string newName);
+        // Phase10-Step4d W7: ReplaceLinkedProfileName は撤去した（リンクプロファイルの実行時の保持は、W5d で、プロファイルの固定 ID を保管する窓口になった）。
 
         /// <summary>
-        /// Phase6-Step10-4-5d: プロファイルの名前変更に伴い、スペシャルアクション（プロファイル切替）の切替先として
-        /// 保存されている旧名を、新名へ置き換える。置き換えた件数を返す。1 件以上置き換えた場合は、Actions.xml へ保存する。
+        /// Phase10-Step4d W7（旧 ReplaceProfileSwitchTarget）: プロファイルの名前変更の直後に、スペシャルアクション（プロファイル切替）の切替先を更新する。
+        /// 切替先の ID（<c>SpecialAction.profileId</c>）が引ければ、現在の名前に引き直す。ID のない SA は、<paramref name="oldName"/> と一致すれば、<paramref name="newName"/> に置き換える
+        /// （大文字小文字を区別しない）。更新した件数を返す。1 件以上更新した場合は、Actions.xml へ保存する。
         /// </summary>
-        int ReplaceProfileSwitchTarget(string oldName, string newName);
+        int RefreshProfileSwitchTargets(string oldName, string newName);
 
         /// <summary>
         /// Phase10-Step4 W6: プロファイルの名前変更のとき、Controls のボタンに割り当てた Load Profile（各プロファイルの <c>&lt;Control&gt;&lt;Special&gt;</c> の
-        /// <c>Type="Profile"</c> の <c>ProfileName</c>）の切り替え先が、旧名を指していれば、新名へ書き換えて保存する（<see cref="ReplaceProfileSwitchTarget"/> の Controls 版）。
+        /// <c>Type="Profile"</c> の <c>ProfileName</c>）の切り替え先が、旧名を指していれば、新名へ書き換えて保存する（Controls 版。<see cref="RefreshProfileSwitchTargets"/> は SA 版）。
         /// 全プロファイルのファイルを対象にする（同一 XML 排他ロックの下）。名前の比較は大文字小文字を区別しない。読めない・書けないファイルは飛ばして続ける。
         /// 書き換えたプロファイルの名前（拡張子なし）を返す。
         /// </summary>
