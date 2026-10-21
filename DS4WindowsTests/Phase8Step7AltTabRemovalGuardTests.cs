@@ -25,8 +25,11 @@ namespace DS4WindowsTests
         [Fact]
         public void TheAltTabSpecialCase_IsGoneFromMapping()
         {
+            // Phase9 9-C: 旧 PlayMacroTask ほかは MacroPlayback／MacroStepExecutor へ移したため、移し先も含めて検査する
             string text = Read("DS4Windows/DS4Control/Mapping.cs");
             if (text == null) return;
+            text += Read("DS4Windows/DS4Control/Services/MacroPlayback.cs") ?? string.Empty;
+            text += Read("DS4Windows/DS4Control/Services/MacroStepExecutor.cs") ?? string.Empty;
 
             foreach (string token in new[] { "AltTabSwapping", "altTabDone", "altTabNow", "oldAltTabNow", "164/9/9/164", "18/9/9/18", "macro[0] == 164", "macroLst[0] == 164", "macroArr[0] == 164" })
                 Assert.DoesNotContain(token, text);

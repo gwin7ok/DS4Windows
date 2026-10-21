@@ -20,7 +20,7 @@ namespace DS4WindowsTests
         /// <summary>検査対象メソッドの宣言（一意に特定できる先頭部分）。</summary>
         private static readonly string[] MethodMarkers =
         {
-            "private bool PlayMacroCodeValue(",
+            "public bool Execute(",   // Phase9 9-C: 旧 Mapping.PlayMacroCodeValue は MacroStepExecutor.Execute へ移した（検査の対象のファイルも MacroStepExecutor.cs）
             // Phase8-Step7-3a: AltTabSwapping／AltTabSwappingRelease は、機能廃止により削除した
         };
 
@@ -35,12 +35,12 @@ namespace DS4WindowsTests
         }
 
         /// <summary>コメント（ブロック・行）を除いた Mapping.cs 全体のテキスト。見つからなければ null。</summary>
-        private string ReadSourceWithoutComments()
+        private string ReadSourceWithoutComments(string relativePath = "DS4Windows/DS4Control/Mapping.cs")
         {
-            string path = SourceFileLocator.Find("DS4Windows/DS4Control/Mapping.cs");
+            string path = SourceFileLocator.Find(relativePath);
             if (path == null)
             {
-                _output.WriteLine("Mapping.cs が見つからないため検査を省略した。");
+                _output.WriteLine(relativePath + " が見つからないため検査を省略した。");
                 return null;
             }
 
@@ -85,7 +85,8 @@ namespace DS4WindowsTests
         [Fact]
         public void MacroPathMethods_ReadOutputKbmMappingFromStaticProfileSettings()
         {
-            string text = ReadSourceWithoutComments();
+            // Phase9 9-C: 検査の対象は MacroStepExecutor.cs（設定は注入された _profileSettings から読む）
+            string text = ReadSourceWithoutComments("DS4Windows/DS4Control/Services/MacroStepExecutor.cs");
             if (text == null) return;
 
             foreach (string marker in MethodMarkers)
@@ -94,7 +95,7 @@ namespace DS4WindowsTests
 
                 Assert.False(BareReference.IsMatch(body), $"outputKBMMapping への非修飾参照（Global）が {marker} に残っている");
                 Assert.False(QualifiedReference.IsMatch(body), $"Global.outputKBMMapping への修飾参照が {marker} に残っている");
-                Assert.Contains("profileSettings.OutputKBMMapping.", body);
+                Assert.Contains("_profileSettings.OutputKBMMapping.", body);
             }
         }
 

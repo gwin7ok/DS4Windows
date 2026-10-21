@@ -256,6 +256,17 @@ classDiagram
         <<interface>>
         +IsActive(IProfileSettingsService settings, int device, DS4Controls control, DS4State cState, DS4StateExposed eState, Mouse tp) bool
     }
+    class IMacroStepExecutor {
+        <<interface>>
+        +Execute(int device, DS4KeyType keyType, int macroCodeValue, bool[] keydown) bool
+    }
+    class IMacroPlayback {
+        <<interface>>
+        +Play(int device, string macroStr, List macroLst, int[] macroArr, DS4KeyType keyType, SpecialAction action, ActionInstanceState state)
+        +ClearDevice(int device)
+    }
+    class MacroStepExecutor
+    class MacroPlayback
     class ButtonMouseMovementCalculator
     class MouseMotionQuantizer
     class GyroMouseStickBlender
@@ -287,6 +298,12 @@ classDiagram
     IMouseMotionQuantizer <|.. MouseMotionQuantizer : implements
     IGyroMouseStickBlender <|.. GyroMouseStickBlender : implements
     IControlActivityReader <|.. ControlActivityReader : implements
+    IMacroStepExecutor <|.. MacroStepExecutor : implements
+    IMacroPlayback <|.. MacroPlayback : implements
+    Mapping --> IMacroPlayback : ctor injection (Phase9 9-C)
+    MacroPlayback --> IMacroStepExecutor
+    MacroPlayback --> MacroRuntimeState : TaskQueue（デバイスごと）
+    MacroStepExecutor --> MacroRuntimeState : MacroControl／MacroCount（デバイスごと。Phase9 9-C Q2）
     Mapping --> IButtonMouseMovementCalculator : ctor injection (Phase9 9-B。加速の状態はデバイスごと)
     Mapping --> IMouseMotionQuantizer : ctor injection (端数はデバイスごと)
     Mapping --> IGyroMouseStickBlender : ctor injection

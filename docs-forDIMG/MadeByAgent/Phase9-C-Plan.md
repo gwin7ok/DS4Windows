@@ -3,7 +3,7 @@
 作成日: 2026-10-22  
 対象ブランチ: `For-DI-migration-work`  
 上位: `Phase9-Responsibility-Split-Plan.md` 9-C、`Phase9-B-Plan.md`（同じ進め方）  
-状態: **設計案（未承認）。承認を得るまで、コードは変えない**
+状態: **承認済み（2026-10-22。§8）。C-1・C-2 を 1 回でまとめて実装済み（ビルド・テストはユーザーの実行待ち）。次は押下・離上の switch の畳み込み（Q4。別コミット）**
 
 ---
 
@@ -60,6 +60,7 @@
 | M3 | 同期キュー（`macroTaskQueue[device]`）への `TryGetValue`／`Add`／代入は、**ロックなし**（複数スレッドから `PlayMacro` が呼ばれると競合しうる） | そのまま移す。是正は別途 |
 | M4 | 振動のマクロ値は、`IDeviceStateAccessor.GetController` が null を返すと `d.setRumble` で NullReferenceException になる（呼び出し側の `Task` の中。握りつぶされる） | そのまま移す。差分テストで固定 |
 | M5 | マクロの再生は `Task.Delay(...).Wait()` でスレッドプールのスレッドを塞ぐ | そのまま移す（今回の範囲外） |
+| M6 | ゲームパッドのマクロ値の範囲は 261〜`MAX_MACRO_VALUE`（288）だが、出力フラグの配列は 26 個（261〜286）。**287・288 は `IndexOutOfRangeException` になる**（`Task` の中で握りつぎれる） | そのまま移す。差分テストで「旧と新が同じ例外」を固定。是正は別途（`MacroControlLength` を 28 にするか、値の範囲を 286 までに絞る） |
 
 ## 4. 質問（推奨は A）
 
@@ -84,3 +85,26 @@
 ## 7. 次
 
 承認（Q1〜Q4）を得たら、C-1 から着手する。ビルド・テストが必要になった時点で、ユーザーへ依頼する。
+
+---
+
+## 8. 決定事項（2026-10-22、ユーザー承認）
+
+- **Q1＝まとめて 1 回**: C-1・C-2 を 1 回で実装する。
+- **Q2＝デバイスごとに分ける**: マクロが押すゲームパッドのボタンのフラグ（`MacroControl`）と個数（`MacroCount`）を、`MacroRuntimeState` にデバイスごとに持つ（`bool[][]`／`uint[]`）。**挙動の変更**（2 台以上のとき、コントローラー 1 のマクロのボタンが、コントローラー 2 の出力に出なくなる。1 台のときは変わらない）。
+- **Q3＝Q2 の結果に合わせる**: Q2＝デバイスごとのため、未使用だった `DeviceRuntimeState.MacroControl`／`MacroCount` を削除した（コメントで経緯を残した）。
+- **Q4＝別コミットで畳む**: 押下・離上の switch の畳み込みは未実施。**ビルド・テストでそのままの移動が合格してから**行う。
+
+## 9. 実装の結果（2026-10-22。この環境に `dotnet` がないため、ビルド・テストは未実行）
+
+| 区分 | 内容 |
+|---|---|
+| 新規（契約） | `DI/IMacroStepExecutor.cs`、`DI/IMacroPlayback.cs` |
+| 新規（実装） | `DS4Control/Services/MacroStepExecutor.cs`（旧 `PlayMacroCodeValue` を、そのまま移した。約 165 行）、`MacroPlayback.cs`（旧 `PlayMacro`／`PlayMacroTask`／`RunMacroOnce` と定数を移し、切断時のキューのクリア `ClearDevice` を持つ） |
+| `MacroRuntimeState` | `MacroControl` を `bool[][]`、`MacroCount` を `uint[]`（デバイスごと）に変更。`ApplyHeldControls(int device, DS4State mapped)` を追加（旧 `MapCustom` の末尾のブロック） |
+| `Mapping.cs` | 2,060 → **1,686 行**（374 行減）。マクロの 4 メソッド、`macroControl`／`macroTaskQueue` の複製、`_deviceStateAccessor` を削除。`PlayMacroDirect`／`PlayMacroString` は `IMacroPlayback.Play` へ、`HandleDeviceDisconnect` は `ClearDevice` へ、重ね書きは `ApplyHeldControls` 1 行に。コンストラクターの引数は 22 のまま（`Func<IDeviceStateAccessor>` を `IMacroPlayback` に置き換え） |
+| DI | `IMacroStepExecutor`／`IMacroPlayback` を Singleton で登録 |
+| テスト（新規） | `Phase9CMacroStepExecutorDifferentialTests`（旧実装との差分。キー、マウス、ゲームパッド、待ち、ライトバーの値 × 押下・離上 × スキャンコードの有無。振動と M6 は「同じ例外」、デバイス独立）、`Phase9CMacroRuntimeStateTests`（26 フラグの出力の表、デバイス独立）、`Phase9CMacroPlaybackTests`（文字列・リスト・配列、終わりの後始末、`ClearDevice`）、`Phase9CMacroGuardTests` |
+| テスト（追従） | `TestMappingFactory`、`Phase7Step8W2MappingInstanceGuardTests`、`MappingMacroPathGlobalReferenceGuardTests`（検査の対象を `MacroStepExecutor.cs` に）、`Phase7Step7MacroRuntimeStateGuardTests`、`Phase10Step3W3EmptyMacroTests`（`MacroPlayback.cs` を走査）、`Phase8Step7AltTabRemovalGuardTests`（移し先も走査） |
+
+**実機確認（依頼。実装後）**: 台帳 §32（P9C-1〜4）。

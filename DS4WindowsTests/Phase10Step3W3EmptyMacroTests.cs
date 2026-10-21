@@ -63,10 +63,11 @@ namespace DS4WindowsTests
         [Fact]
         public void TheRepeatLoop_WaitsBetweenRuns_OfAnEmptyMacro_InsteadOfSpinningOrStopping()
         {
-            string path = SourceFileLocator.Find("DS4Windows/DS4Control/Mapping.cs");
+            // Phase9 9-C: 旧 Mapping.PlayMacroTask は MacroPlayback へ移した
+            string path = SourceFileLocator.Find("DS4Windows/DS4Control/Services/MacroPlayback.cs");
             if (path == null)
             {
-                _output.WriteLine("Mapping.cs が見つからないため検査を省略した。");
+                _output.WriteLine("MacroPlayback.cs が見つからないため検査を省略した。");
                 return;
             }
 

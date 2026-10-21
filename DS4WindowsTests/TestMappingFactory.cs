@@ -35,6 +35,7 @@ namespace DS4WindowsTests
         {
             DS4WinWPF.AppHost.CreateHost();
             var synthetic = syntheticInput ?? new SyntheticInputState();
+            var macroState = macroRuntime ?? new MacroRuntimeState();
             var profileSettings = settings ?? TestHost.GetService<IProfileSettingsService>();
             var kbm = virtualKbm ?? TestHost.GetService<IVirtualKBM>();
             // Phase8-Step4 W4: 抑制の集合を持つエンジンも、独立の instance にする（他のテストと状態を共有しない。ホストの登録簿は使わない）
@@ -42,7 +43,7 @@ namespace DS4WindowsTests
                 TestHost.GetService<IManagedActionManager>(), kbm);
             return new Mapping(
                 synthetic,
-                macroRuntime ?? new MacroRuntimeState(),
+                macroState,
                 stickMotion ?? new StickMotionState(),
                 profileSettings,
                 TestHost.GetService<IProfileApplicationService>(),
@@ -52,7 +53,8 @@ namespace DS4WindowsTests
                 TestHost.GetService<IProfileSwitcher>(),
                 // 独立の合成状態（synthetic）に対して送出する、独立の送出役（出力先の既定はホストのアダプター）
                 syntheticDispatcher ?? new SyntheticDispatcherService(synthetic, TestHost.GetService<OutputKBMHandlerAdapter>(), profileSettings),
-                () => TestHost.GetService<IDeviceStateAccessor>(),
+                // Phase9 9-C: マクロの再生は、この Mapping と同じ macroState・kbm・設定を使う独立の instance にする（他のテストと状態を共有しない）
+                new MacroPlayback(new MacroStepExecutor(kbm, profileSettings, macroState, () => TestHost.GetService<IDeviceStateAccessor>()), macroState),
                 triggerEngine,
                 TestHost.GetService<IStickDeadZoneProcessor>(),   // Phase9 9-A(1) (b): 状態のない処理なので、ホストの共有のものを使う
                 TestHost.GetService<IOutputCurveProcessor>(),   // Phase9 9-A(1) (c)

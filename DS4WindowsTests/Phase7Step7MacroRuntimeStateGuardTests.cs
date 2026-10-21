@@ -40,7 +40,10 @@ namespace DS4WindowsTests
             var state = new MacroRuntimeState();
 
             // Phase8-Fix-MacroRepeatUnify（D5）: MacroDone／DispatchInFlight（control 単位の暫定対策。本番では到達しなかった）は削除した
-            Assert.Equal(26, state.MacroControl.Length);
+            // Phase9 9-C（ユーザー判断 Q2）: MacroControl／MacroCount はデバイスごと（旧: 全コントローラーで 1 つを共有）
+            Assert.Equal(DS4Windows.ControllerLimits.MaxControllerCount, state.MacroControl.Length);
+            Assert.All(state.MacroControl, flags => Assert.Equal(26, flags.Length));
+            Assert.Equal(DS4Windows.ControllerLimits.MaxControllerCount, state.MacroCount.Length);
             Assert.Equal(DS4Windows.ControllerLimits.MaxControllerCount, state.TaskQueue.Length);
             Assert.All(state.TaskQueue, q => Assert.NotNull(q));
 
@@ -74,9 +77,10 @@ namespace DS4WindowsTests
             Assert.DoesNotContain("DS4ControltoInt", mapping);
             Assert.DoesNotContain("private readonly bool[] macroDispatchInFlight;", mapping);
             Assert.DoesNotContain("private readonly object macroDispatchLock;", mapping);
-            Assert.Contains("private readonly bool[] macroControl;", mapping);
-            Assert.Contains("private readonly Dictionary<string, Task>[] macroTaskQueue;", mapping);
-            Assert.Contains("macroTaskQueue = macroRuntime.TaskQueue;", mapping);
+            // Phase9 9-C: macroControl／macroTaskQueue の複製は Mapping から無くなった（マクロの再生の部品と MacroRuntimeState.ApplyHeldControls へ移した）
+            Assert.DoesNotContain("private readonly bool[] macroControl;", mapping);
+            Assert.DoesNotContain("private readonly Dictionary<string, Task>[] macroTaskQueue;", mapping);
+            Assert.DoesNotContain("macroTaskQueue = macroRuntime.TaskQueue;", mapping);
             Assert.DoesNotContain("MacroRuntimeState.Shared", mapping);
             Assert.DoesNotContain("DS4_CONTROL_MACRO_ARRAY_LEN", mapping);
         }

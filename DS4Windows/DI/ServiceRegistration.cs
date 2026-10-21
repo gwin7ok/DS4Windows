@@ -189,6 +189,8 @@ namespace DS4Windows.DI
             services.AddSingleton<IButtonMouseMovementCalculator, ButtonMouseMovementCalculator>();   // Phase9 9-B: ボタン等 → マウスの生の移動量（マウス加速の状態をデバイスごとに持つ）
             services.AddSingleton<IMouseMotionQuantizer, MouseMotionQuantizer>();   // Phase9 9-B: マウスの移動量の整数化（端数をデバイスごとに持つ）
             services.AddSingleton<IGyroMouseStickBlender, GyroMouseStickBlender>();   // Phase9 9-B: ジャイロのマウススティック出力の合成（状態なし）
+            services.AddSingleton<IMacroStepExecutor, MacroStepExecutor>();   // Phase9 9-C: マクロの 1 つの値の実行（状態は MacroRuntimeState に持つ）
+            services.AddSingleton<IMacroPlayback, MacroPlayback>();   // Phase9 9-C: マクロの再生の予約・繰り返し・後始末
             services.AddSingleton<IControlActivityReader, ControlActivityReader>();   // Phase9 9-B: コントロールが押されているかの判定（状態なし）
             services.AddSingleton<IMapping, Mapping>();
             services.AddSingleton<Func<IMapping>>(sp => () => sp.GetRequiredService<IMapping>());
