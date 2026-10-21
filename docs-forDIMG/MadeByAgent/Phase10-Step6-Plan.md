@@ -1,7 +1,7 @@
 # Phase10-Step6 計画書: 統合 Step（共通の割り当て定義と、builder の 1 本化）
 
 作成日: 2026-10-21
-状態: **案（ユーザーの承認後、I1 から着手する。Wave ごとに設計を説明し、承認を得てから実装する）**
+状態: **承認済み（2026-10-21）。I1 完了。I2 以降は、Wave ごとに設計を説明し、承認を得てから実装する**
 前提: Step4（W0〜W6）、Step4c、Step4d は完了。目標モデルは `Phase10-Integration-Target-Model.md`（§3 完成形、§5 骨子）。
 位置づけ: 旧 Step6 の前倒し（2026-10-21 のユーザー決定）。この Step の後に、W7・W8 相当（Check Battery、Multi-action を Controls へ。Q5 を含む）→ Step5（SA 側のアナログ出力）の順に進める。
 
@@ -53,4 +53,5 @@ Controls タブと SpecialActions（SA）タブのどちらで設定したかに
 
 ## 7. 進捗
 
-- [ ] I1 〜 [ ] I7（未着手。承認待ち）
+- [x] **I1 完了（2026-10-21。`Debug ALL` 成功: 警告 0・エラー 0、テスト 2005 件と 11 件が成功）**: 新規 `Actions/AssignmentOrigin.cs`、`Actions/AssignmentDefinition.cs`（Controls 固有の種別は定義に入れない設計。ユーザー決定）、テスト `Phase10Step6I1AssignmentDefinitionTests`（7 件）。定義は I3 まで未接続（TODO コメント付き）。
+- [ ] I2 〜 [ ] I7（未着手。指示があるまで始めない）
