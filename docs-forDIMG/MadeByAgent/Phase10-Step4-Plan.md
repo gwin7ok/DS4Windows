@@ -113,4 +113,10 @@ Controls のボタン 1 つの割り当てに、**SA 専用の種別**を、保�
   - 決定: 結果に「入力の種類」を持たせる（種別と入力の対応を factory に集め、Controls 側で再判断しない）。Controls 用の `erasesOutputEveryFrame` は、factory の引数で方針に足す（SA では共有の `BindingPolicy.Default` のまま）。
   - テスト: `Phase10Step4W2SpecialActionOutputFactoryTests`（全種別で SA の builder と factory が同じ出力の型・方針・入力、factory 省略時と共有時が同じ結果、`erasesOutputEveryFrame` が 1 つのフラグだけを変える、入力の種類、MultiAction の出力 3 つ、窓口の未接続で null、null 引数、ホストの Singleton）。W0 の一覧表のテストと既存の builder のテストは、無変更で成功。
   - 実機確認（台帳 §17 P10-27〜32）: Key／Button（Press・Toggle）、Macro（通常・Run on release・Repeat）、Launch Program、Load Profile、Disconnect BT、Check Battery、較正 2 種、Multi-action、Controls の割り当てと SA の優先順位が、従来どおり。Toggle のボタン・キーが、プロファイル適用時にリセットされるのは仕様。
-  - 次: W3（第 1 群の縦通し: Macro の SA 専用の項目）。指示があるまで始めない。
+- **W3（完了 2026-10-21。ビルド・テスト成功、実機確認 P10-33〜38 問題なし。P10-39・40 は先送り）**: Controls の Macro に、SA 専用の 3 項目（Run on trigger release／Synchronized Run／Keep key state）を、保存・実行・画面で扱えるようにした（第 1 群の縦通し）。
+  - 実行: `ControlButtonInputAction` に `invertOnRelease`（離したときに 1 回成立。既定は偽で従来どおり。`Reset` で解除）。`ControlBindingBuilder.AddMacro` が、型のある項目の 3 項目を、合成 `SpecialAction` の `pressRelease`／`synchronized`／`keepKeyState` へ写す（種別が Macro の項目だけ。方針・名前・ログは不変）。再生側（`PlayMacro`）は、すでに SA と同じ項目を見る。
+  - 画面・保存: `ControlSettingsEditTarget` が 3 項目を `MacroViewModel` と型のある項目の間で往復（1 つも立っていなければ項目なし＝従来の Macro と同じ形で保存。別の種別を書くと捨てる）。`SpecialActionEditor` は、Controls のモードで隠していた 3 つのチェックボックスを出す。`Phase10Step3W3ControlMacroTabGuardTests` は「隠す」検査を「どのモードでも隠さない」検査に更新。
+  - 決定: Macro は factory（W2）を使わない。factory の SA 用の出力は立ち上がりのログを出し（Controls の Macro は出さない）、Controls の方針は `suppressesTriggerButtons: false`／`resetsTriggerOutput: false`／`erasesOutputEveryFrame: true` の 3 つで、factory の引数 `erasesOutputEveryFrame` だけでは足りないため。**W4 以降の持ち越し**: factory に Controls 用の方針（3 つ）と、ログの扱い（出す／出さない。ユーザーの承認が要る）を、群を始めるときに決める。
+  - テスト: `Phase10Step4W3ControlMacroOptionsTests`（入力の invert、builder の写し、項目なし・別の種別の無影響、実際の再生［離したとき 1 回、Keep key state の解放の有無］、編集対象の往復、保存と再読み込み）。
+  - 実機確認（台帳 §18）: P10-33〜38 問題なし。P10-39（Synchronized Run）・P10-40（既存の簡易回帰）は先送り。次の W4 の確認のときにまとめて行う。
+  - 次: W4（第 2 群: Disconnect BT、Calibrate gyro、Calibrate sixaxis wheel。簡単で危険の少ないものから）。指示があるまで始めない。
