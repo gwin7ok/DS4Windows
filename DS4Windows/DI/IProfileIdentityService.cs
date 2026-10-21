@@ -16,7 +16,13 @@ namespace DS4Windows.DI
         /// </summary>
         IReadOnlyList<string> EnsureAllPersisted();
 
-        /// <summary>名前のプロファイルの ID を読む。ファイルがない・ID がないときは null。</summary>
+        /// <summary>
+        /// Phase10-Step4d W5a: メモリの索引（ID ↔ 名前）を、プロファイルのフォルダーから作り直す。通常は不要（フォルダーの変更を、検索のたびに見分けて、自動で作り直す）。
+        /// 外から ID の中身だけを書き換えた直後など、確実に反映したいときに呼ぶ。
+        /// </summary>
+        void Refresh();
+
+        /// <summary>名前のプロファイルの ID を読む（メモリの索引から引く）。ファイルがない・ID がないときは null。</summary>
         string GetId(string profileName);
 
         /// <summary>ID のプロファイルの名前を探す。見つからなければ null。</summary>

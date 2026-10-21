@@ -9,14 +9,32 @@ namespace DS4Windows.Services
     /// <summary>
     /// Phase10-Step4d W1（Phase10-Step4d-Plan.md §3）: <see cref="IProfileIdentityService"/> の実装（DI の Singleton）。
     /// プロファイルのフォルダー（<see cref="IPathService.ProfilesPath"/>）の各ファイルの <c>&lt;ProfileId&gt;</c> を、同一 XML 排他ロックの下で読み書きする。
-    /// 状態は持たない（そのつどファイルを調べる）。
+    /// <para>
+    /// Phase10-Step4d W5a: ID ↔ 名前の<b>メモリの索引</b>を持つ（実行時に頻繁に引くため。挙動は変えない）。索引の鮮度は、プロファイルのフォルダーの最終更新時刻で判定する
+    /// （ファイルの追加・削除・名前変更・コピーはフォルダーの時刻を変える）。フォルダーの時刻が変わった、またはフォルダーのパスが変わったら、作り直す。
+    /// ファイルシステムの時刻の粗さで直後の変更を見逃さないよう、フォルダーの時刻が <see cref="TrustAfter"/> 以内に新しいあいだは、索引を信用せず、毎回作り直す。
+    /// 例外: ファイルの中身だけを外から書き換えた場合（ID の手編集）は、フォルダーの時刻が変わらないため、次にフォルダーが変わるまで反映されない
+    /// （アプリ自身の書き込みは、その場で索引を更新する）。排他は <c>ProfileXmlStore.XmlIoLock</c> → 索引のロックの順（デッドロック防止）。
+    /// </para>
     /// </summary>
     public sealed class ProfileIdentityService : IProfileIdentityService
     {
         private const string XmlExtension = ".xml";
 
+        /// <summary>索引を信用するために、フォルダーの最終更新時刻が、索引を作った時点より、これ以上古い必要がある。</summary>
+        internal static readonly TimeSpan TrustAfter = TimeSpan.FromSeconds(1);
+
         private readonly IPathService _pathService;
         private readonly ProfileIdFile _file = new ProfileIdFile();
+
+        // 索引（_gate で保護する）
+        private readonly object _gate = new object();
+        private readonly Dictionary<string, string> _idToName = new Dictionary<string, string>(StringComparer.Ordinal);
+        private readonly Dictionary<string, string> _nameToId = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
+        private bool _built;
+        private bool _trusted;
+        private string _indexedFolder;
+        private DateTime _indexedStamp;
 
         public ProfileIdentityService(IPathService pathService)
         {
@@ -49,10 +67,21 @@ namespace DS4Windows.Services
 
                 foreach (Entry entry in entries.Where(e => e.Id == null))
                 {
-                    if (_file.WriteId(entry.Path, _file.NewId()))
+                    string id = _file.NewId();
+                    if (_file.WriteId(entry.Path, id))
+                    {
+                        entry.Id = id;
                         written++;
+                    }
                     else
+                    {
                         failed.Add(entry.Name);
+                    }
+                }
+
+                lock (_gate)
+                {
+                    Rebuild(entries);
                 }
             }
 
@@ -64,14 +93,28 @@ namespace DS4Windows.Services
             return failed;
         }
 
+        public void Refresh()
+        {
+            lock (ProfileXmlStore.XmlIoLock)
+            {
+                lock (_gate)
+                {
+                    Rebuild(ReadEntries());
+                }
+            }
+        }
+
         public string GetId(string profileName)
         {
-            string path = PathOf(profileName);
-            if (path == null) return null;
+            if (string.IsNullOrWhiteSpace(profileName)) return null;
 
             lock (ProfileXmlStore.XmlIoLock)
             {
-                return _file.ReadId(path);
+                lock (_gate)
+                {
+                    EnsureIndex();
+                    return _nameToId.TryGetValue(profileName, out string id) ? id : null;
+                }
             }
         }
 
@@ -81,7 +124,11 @@ namespace DS4Windows.Services
 
             lock (ProfileXmlStore.XmlIoLock)
             {
-                return ReadEntries().FirstOrDefault(e => string.Equals(e.Id, profileId, StringComparison.Ordinal))?.Name;
+                lock (_gate)
+                {
+                    EnsureIndex();
+                    return _idToName.TryGetValue(profileId, out string name) ? name : null;
+                }
             }
         }
 
@@ -92,11 +139,25 @@ namespace DS4Windows.Services
 
             lock (ProfileXmlStore.XmlIoLock)
             {
-                string id = _file.ReadId(path);
-                if (id != null) return id;
+                lock (_gate)
+                {
+                    EnsureIndex();
 
-                id = _file.NewId();
-                return _file.WriteId(path, id) ? id : null;
+                    string name = Path.GetFileNameWithoutExtension(path);
+                    if (_nameToId.TryGetValue(name, out string known)) return known;
+
+                    // 索引にない: ファイルを読み（外から作られた直後など）、ID がなければ書く
+                    string id = _file.ReadId(path);
+                    if (id == null)
+                    {
+                        id = _file.NewId();
+                        if (!_file.WriteId(path, id)) return null;
+                    }
+
+                    _idToName[id] = name;
+                    _nameToId[name] = id;
+                    return id;
+                }
             }
         }
 
@@ -118,6 +179,55 @@ namespace DS4Windows.Services
 
             profileName = null;
             return false;
+        }
+
+        // ---- 索引（呼び出し側が XmlIoLock と _gate を取る）----
+
+        private void EnsureIndex()
+        {
+            string folder = _pathService.ProfilesPath;
+            DateTime stamp = StampOf(folder);
+
+            if (_built && _trusted && string.Equals(folder, _indexedFolder, StringComparison.Ordinal) && stamp == _indexedStamp)
+                return;
+
+            Rebuild(ReadEntries());
+        }
+
+        private void Rebuild(List<Entry> entries)
+        {
+            string folder = _pathService.ProfilesPath;
+            DateTime stamp = StampOf(folder);
+
+            _idToName.Clear();
+            _nameToId.Clear();
+            foreach (Entry entry in entries)
+            {
+                if (entry.Id == null) continue;
+
+                // 重複した ID は、最初に見つかったものを残す（EnsureAllPersisted が付け替えるまでの暫定）
+                if (!_idToName.ContainsKey(entry.Id)) _idToName[entry.Id] = entry.Name;
+                _nameToId[entry.Name] = entry.Id;
+            }
+
+            _built = true;
+            _indexedFolder = folder;
+            _indexedStamp = stamp;
+
+            // フォルダーの時刻が、いま作った時点から TrustAfter 以内に新しければ、直後の変更を時刻で見分けられないため、次の呼び出しでも作り直す
+            _trusted = stamp != DateTime.MinValue && DateTime.UtcNow - stamp > TrustAfter;
+        }
+
+        private static DateTime StampOf(string folder)
+        {
+            try
+            {
+                return !string.IsNullOrEmpty(folder) && Directory.Exists(folder) ? Directory.GetLastWriteTimeUtc(folder) : DateTime.MinValue;
+            }
+            catch
+            {
+                return DateTime.MinValue;
+            }
         }
 
         // 呼び出し側が XmlIoLock を取る
