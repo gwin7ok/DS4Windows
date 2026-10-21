@@ -4,7 +4,7 @@
 対象ブランチ: `For-DI-migration-work`  
 上位計画書: `docs-forDIMG/DI-App-Wide-Migration-Plan.md`（本書を Phase9 として追加する）  
 関連: `Phase8-Unified-Trigger-Dispatch-Plan.md`（2026-10-19 追記［実行順序の改訂］）、`docs-forDIMG/Model-Diagram/01-Component-Dependency-Diagram.md` §2（解体の検証マトリクス）  
-状態: **計画確定（Q1〜Q6 を推奨どおり承認、2026-10-19）。Phase8・Phase10 は完了。Phase9-0（再計測と準備。`Phase9-0-Plan.md`）を 2026-10-22 に実施。次は 9-A(1)（個別計画書を作り、承認を得てから着手）**
+状態: **計画確定（Q1〜Q6 を推奨どおり承認、2026-10-19）。Phase8・Phase10 は完了。Phase9-0 を 2026-10-22 に実施。9-A(1)・9-A(2) は完了し、ステアリング＋vJoy の削除も W1〜W5 を実施済み（W2〜W4 は実機確認待ち）。`Mapping.cs` は実測 2,568 行（§11）。次の候補は 9-B（設計を説明し、承認を得てから着手）**
 
 ---
 
@@ -30,7 +30,8 @@
 各領域は独立しており、順序は入れ替えられる。推奨は、リスクの小さい順（9-A → 9-B ほか）。
 
 ### 9-A: `Mapping` のスティック・トリガー・ジャイロの補正（約 2,600 行）
-- 対象: `SetCurveAndDeadzone`（1,194 行）、`ApplyStickCalibration`、`CalcStickAxisFuzz`、`CalcAntiSnapbackStick`、`CalcWheelFuzz`、`ProcessTwoStageTrigger`（196 行）、`ProcessFlickStick`／`HandleFlickStickAngle`／`WarpEaseOut`、`Scale360degreeGyroAxis`（253 行）、`SAWheelEmulationCalibration`、`CalculateControllerAngle`。
+- 対象: `SetCurveAndDeadzone`（1,194 行）、`ApplyStickCalibration`、`CalcStickAxisFuzz`、`CalcAntiSnapbackStick`、`ProcessTwoStageTrigger`（196 行。**`MapCustom` の流れにあるため、MapCustom の分割 Wave で扱う**）、`ProcessFlickStick`／`HandleFlickStickAngle`／`WarpEaseOut`。
+- **削除済み（2026-10-22。ステアリング機能ごと廃止。`Phase9-SteeringWheel-Removal-Plan.md`）**: ~~`CalcWheelFuzz`、`Scale360degreeGyroAxis`（253 行）、`SAWheelEmulationCalibration`、`CalculateControllerAngle`~~（ステアリング較正）。切り出し先の案の「ステアリング較正」も不要になった。
 - 切り出し先の案: スティック補正、トリガー補正（2 段階含む）、ジャイロ→コントロール、フリックスティック、ステアリング較正。状態は `StickMotionState` に既にある。
 - 前提: 値の特性化テスト（デッドゾーン［Radial／Axial］、アンチデッドゾーン、カーブ、ドリフト補正、2 段階トリガー、フリックの境界値）。Phase7b で是正した丸め（`Math.Round`）の挙動も固定する。
 
@@ -126,3 +127,11 @@
 ## 9. Phase8 からの持ち越し（2026-10-20 追記）
 
 `Phase8-Completion-Report.md` §3 の C-1〜C-9。特に、着手前に小さな PR として行うことを推奨するもの: **C-2（テストの `migrated` 引数の整理）**。9-I（最終クリーンアップ）の候補: C-1（`Capture/RestoreProfileUntrigger` ほか）、C-4（廃止機能の通知部品の共通化、未使用の文言）。`Mapping.cs` は Phase8 で 4,626 行になったため、§3 の 9-A〜9-D の行数は、着手時に測り直すこと。
+
+## 11. Phase9 の進捗（2026-10-22 追記）
+
+- **9-A(1)（スティック・トリガー補正）: 完了**（`Phase9-A1-Plan.md`）。**9-A(2)（ジャイロ→コントロール、スティック前処理、フリックスティック）: 完了**（`Phase9-A2-Plan.md`）。
+- **ステアリング（SA Steering Wheel Emulation）と vJoy の削除: W1〜W5 実施済み**（W1 は実機確認も合格。W2〜W4 は実機確認待ち）。ステアリング較正の 4 件は、9-A の対象から外れた（上記）。
+- **`Mapping.cs` の行数（2026-10-22 実測）: 2,568 行**（Phase9 の着手時 4,430 行。9-A の Wave 後に 3,072 行、ステアリング削除の W2 で 2,568 行）。
+- **2 段階トリガー（`ProcessTwoStageTrigger`）は 9-A では扱わず、`MapCustom` の分割 Wave で扱う**（9-A(1) の調査で判明。`SetCurveAndDeadzone` ではなく `MapCustom` の流れにあるため）。
+- **次の候補: 9-B**（マウス・ホイール変換と入力の解決: `getMouseMapping` ほか）。着手の前に、設計を説明して承認を得る。

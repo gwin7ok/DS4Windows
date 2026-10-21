@@ -848,7 +848,7 @@ classDiagram
 %% Phase7-Step10d（2026-10-18）: Global の削除と BackingStore のコンストラクター注入。
 %%   - Global（Global.cs）を削除。BackingStore(IEnvironmentService)。BackingStore.ProfileSettings（ProfileSettingsService が生成時に登録）。
 %%   - 新設: IDeviceLayerSettings／DeviceLayerSettings（第 1 層の設定）、AdminCheck、DevicePathProbe、ConfigFileCulture、UiCulture。
-%%   - イベントの移行: AppearanceSettingsService.BatteryChanged、DeviceStateService.DeviceSerialChange。出力デバイスは SteeringWheelAxisProvider を受ける。
+%%   - イベントの移行: AppearanceSettingsService.BatteryChanged、DeviceStateService.DeviceSerialChange。出力デバイスは SteeringWheelAxisProvider を受ける（**Phase9 W3［2026-10-22］で削除済み**。ステアリング機能ごと廃止）。
 %%   - 詳細は Phase7-Step10d-Plan.md、Phase7-Step10d-Completion-Report.md、台帳は Phase7-Residual-Ledger.md §16。
 %% Phase7-Step10e（2026-10-18）: 仕上げ（契約・コンストラクターの変更）。
 %%   - 削除したメンバー（呼び出し 0 件）: IAppSettingsService.CheckWhen、IProfileSettingsService.SATriggerCond（GetSATriggerCond は残る）、IAutoProfileService.ClearState、IProfileRepository.GetProfilePath（ProfileRepository の public メソッドは残る。窓口は IPathService.GetProfilePath）。

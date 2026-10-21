@@ -1,5 +1,7 @@
 # Phase10-Step4 計画書: Controls で SA 専用の種別を保存・実行する
 
+> **注記（2026-10-22）**: 本書の「Calibrate sixaxis wheel／Calibration of sixaxis wheel」（SA ステアリング較正）は、Phase9 で機能ごと削除された（`Phase9-SteeringWheel-Removal-Plan.md`）。以下の記述は当時の履歴である。
+
 作成日: 2026-10-21  
 対象ブランチ: `For-DI-migration-work`  
 上位: `Phase10-Assignment-UI-Unification-Plan.md`（§5 Step4、§6 Q1・Q7、§7 優先順位・抑制の仕様 R1〜R10）、`Phase10-Step3-Plan.md`（§3.5 暫定の隠し・グレーアウト）、`Phase8-Unified-Trigger-Dispatch-Plan.md`（D2＝B1）、`Phase10-Status.md`  
