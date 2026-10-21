@@ -97,8 +97,10 @@ namespace DS4WindowsTests
             Assert.DoesNotContain("extrasSidePanel.Visibility = Visibility.Collapsed", body);
         }
 
+        // Phase10-Step6 I5c（ユーザー承認）: SA のモードも Extras を出す（SA に保存先ができたため）。Default／Unbound・Record A Macro・Toggle／Scan Code は、引き続き隠す。
+        // 以前は「Extras も隠す」検査だった（TheSpecialActionMode_StillHidesDefaultUnboundExtrasAndRecord）
         [Fact]
-        public void TheSpecialActionMode_StillHidesDefaultUnboundExtrasAndRecord()
+        public void TheSpecialActionMode_ShowsExtras_AndStillHidesDefaultUnboundAndRecord()
         {
             string source = Read("DS4Windows/DS4Forms/BindingWindow.xaml.cs");
             if (source == null)
@@ -109,8 +111,9 @@ namespace DS4WindowsTests
             string rest = BranchBody(source, "SpecialAction");
             Assert.Contains("modePanel.Visibility = Visibility.Collapsed", rest);
             Assert.Contains("recordMacroBtn.Visibility = Visibility.Collapsed", rest);
-            Assert.Contains("extrasSidePanel.Visibility = Visibility.Collapsed", rest);
+            Assert.DoesNotContain("extrasSidePanel.Visibility = Visibility.Collapsed", rest);
             Assert.Contains("topOptsPanel.Visibility = Visibility.Collapsed", rest);
+            Assert.Matches(@"else if \(expose == ExposeMode\.SpecialAction\)\s*\{[^}]*extrasGB\.DataContext = bind;", source);
         }
 
         [Fact]

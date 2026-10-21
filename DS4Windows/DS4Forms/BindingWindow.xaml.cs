@@ -62,8 +62,8 @@ namespace DS4WinWPF.DS4Forms
             //   （Control のモードの出力ピッカーを開く）へ切り替わると、使われなくなる。コードの撤去は Phase10-Step6（Phase10-Step3-Plan.md §3.2）
             Full,
             // SA の Press Key 用（旧 ForPressToggle）。Default／Unbound を出さない（SA の Press Key に「Default」はない）。
-            // TODO(Phase10-Step4・5): Extras は、SA に保存先がないため、今は出さない。SA に Extras の保存先を作ったら、出す
-            //   （Phase10-Step3-Plan.md §3.1。最終的に、2 つのモードの違いは Default／Unbound の表示だけになる）
+            // Phase10-Step6 I5c: Extras は、SA に保存先（SpecialAction.outputExtras）ができたため、Control と同じく出す。
+            //   2 つのモードの違いは Default／Unbound の表示だけ（Phase10-Step3-Plan.md §3.1 の最終形）
             SpecialAction,
             // Controls の割り当てエディターの Press Key 用（Phase10-Step3 W1）。Default／Unbound と Extras を出す。
             // どのモードでも、Record A Macro・Toggle・Scan Code は出さない（割り当てエディターで設定する）
@@ -133,18 +133,12 @@ namespace DS4WinWPF.DS4Forms
             else if (expose == ExposeMode.SpecialAction)
             {
                 // For Press/Toggle selection: show keyboard, mouse and controller areas,
-                // but hide auxiliary UI panels (mode panel, record macro and extras).
+                // but hide auxiliary UI panels (mode panel and record macro).
+                // Phase10-Step6 I5c: Extras（extrasSidePanel）は、Controls のモードと同じく出す（SA に保存先ができたため。2 つのモードの違いは Default／Unbound［modePanel］の表示だけ）
                 modePanel.Visibility = Visibility.Collapsed;
                 recordMacroBtn.Visibility = Visibility.Collapsed;
-                extrasSidePanel.Visibility = Visibility.Collapsed;
                 // Phase10-Step1 W4: Toggle（Switch Mode）と Scan Code は、Press Key タブで設定する。ダイアログは、値を通過させるだけ
                 topOptsPanel.Visibility = Visibility.Collapsed;
-                // Keep main layout size but reduce right-hand grid column for extras
-                try
-                {
-                    mainBindGrid.ColumnDefinitions[2].Width = new GridLength(0);
-                }
-                catch { }
             }
             else if (expose == ExposeMode.Keyboard)
             {
@@ -256,6 +250,11 @@ namespace DS4WinWPF.DS4Forms
                 extrasGB.DataContext = bind;
                 modePanel.DataContext = bind;
                 macroOnLb.DataContext = bind;
+            }
+            else if (expose == ExposeMode.SpecialAction)
+            {
+                // Phase10-Step6 I5c: SA のモードも Extras を出す。結びつけるのは Extras だけ（Default／Unbound と、マクロの表示は出さない）
+                extrasGB.DataContext = bind;
             }
 
             FindCurrentHighlightButton();

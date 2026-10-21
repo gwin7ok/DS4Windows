@@ -49,6 +49,10 @@ namespace DS4WinWPF.DS4Forms
         private SpecialActionViewModel saSteeringWheelVM;
         private SpecialActionViewModel calibrateGyroVM;
 
+        // Phase10-Step6 I5c: SA のモードで編集中の SA に付ける Extras（SpecialAction.outputExtras と同じ書式。付けないときは null）。
+        // Press Key の出力ピッカー（BindingWindow）で編集する（Controls のモードと同じ）。SA の保存のあとに SaveActionExtras で書く
+        private string saExtras;
+
         public event EventHandler Cancel;
 
         /// <summary>Controls のモードか。</summary>
@@ -265,6 +269,7 @@ namespace DS4WinWPF.DS4Forms
         {
             // Phase10-Step2 W2: トリガーの読み込みと、一覧にない名前の除外は、ViewModel が行う（旧: チェックボックス 49＋49 個を、ここで 1 つずつ照合）
             specialActVM.LoadAction(specialAction);
+            saExtras = specialAction.outputExtras;   // Phase10-Step6 I5c
 
             // Phase10-Step2 W1: 種別に対応する入力へ読み込む（Button も、Press Key のタブ）
             typeEditors.Load(specialAction);
@@ -386,6 +391,9 @@ namespace DS4WinWPF.DS4Forms
 
                 // Phase10-Step2 W1: 種別に対応する入力を保存する
                 typeEditors.Save(typeId, tempAct, editMode);
+
+                // Phase10-Step6 I5c: SA の保存は SA を作り直すため、Extras は保存のあとに書く（付けていないときは、書くものがない）
+                if (!string.IsNullOrWhiteSpace(saExtras)) specialActionRepository.SaveActionExtras(tempAct.name, saExtras);
 
                 Saved?.Invoke(this, tempAct.name);
             }
@@ -535,10 +543,13 @@ namespace DS4WinWPF.DS4Forms
             }
 
             DS4Windows.DS4ControlSettings settings = pressKeyVM.PrepareSettings();
+            // Phase10-Step6 I5c: 編集中の SA の Extras を、出力ピッカーへ渡して、結果を受け取る（Controls のモードと同じ）。何も設定されていない値（全部 0）は、付けない
+            if (!string.IsNullOrEmpty(saExtras)) settings.extras = saExtras;
             BindingWindow window = editorWindowFactory.CreateBindingWindow(specialActVM.DeviceNum, settings, targetDevice,
                 BindingWindow.ExposeMode.SpecialAction);
             window.Owner = App.Current.MainWindow;
             window.ShowDialog();
+            saExtras = settings.IsExtrasEmpty(settings.extras) ? null : settings.extras;
             pressKeyVM.ReadSettings(settings, specialActVM.DeviceNum);
             pressKeyVM.UpdateToggleControls();
         }
