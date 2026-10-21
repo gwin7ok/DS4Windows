@@ -54,4 +54,5 @@ Controls タブと SpecialActions（SA）タブのどちらで設定したかに
 ## 7. 進捗
 
 - [x] **I1 完了（2026-10-21。`Debug ALL` 成功: 警告 0・エラー 0、テスト 2005 件と 11 件が成功）**: 新規 `Actions/AssignmentOrigin.cs`、`Actions/AssignmentDefinition.cs`（Controls 固有の種別は定義に入れない設計。ユーザー決定）、テスト `Phase10Step6I1AssignmentDefinitionTests`（7 件）。定義は I3 まで未接続（TODO コメント付き）。
-- [ ] I2 〜 [ ] I7（未着手。指示があるまで始めない）
+- [x] **I2 完了（2026-10-22。`Debug ALL` 成功: 警告 0・エラー 0、テスト 2022 件と 11 件が成功）**: 設計変更（ユーザー決定）＝Actions.xml は種別ごとの要素で保存済みのため、**ファイル形式と `SpecialAction` は変えず**、変換部品を作った。新規 `Actions/SpecialActionItemMapper.cs`（`ToItem`＝SA → 項目、`ToSpecialAction`＝項目 → 合成の SA。Program の `$hidden`、Battery の「,」「|」、MultiAction の 3 マクロ、Profile の ID、Macro の 3 項目、遅延のみの 3 種）。`ControlSpecialItem` に `BatteryNotification`/`BatteryLightbar` を追加（プロファイル XML には書かない。Check Battery を Controls へ移す作業［W7 相当］で保存を足す。TODO 付き）。`AssignmentDefinition` に `Macro`（手順）と `KeyType` を追加。テスト `Phase10Step6I2SpecialActionItemMapperTests`（17 件）と I1 のテスト 1 件。変換部品は I3 まで未接続（TODO 付き）。
+- [ ] I3 〜 [ ] I7（未着手。指示があるまで始めない）

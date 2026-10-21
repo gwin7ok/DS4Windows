@@ -78,6 +78,19 @@ namespace DS4WindowsTests
         }
 
         [Fact]
+        public void MacroSteps_AreCopied_AndKeyTypeIsCarried()
+        {
+            var steps = new System.Collections.Generic.List<int> { 1, 2 };
+            var d = new AssignmentDefinition("m", "m", AssignmentOrigin.SpecialAction, SpecialAction.ActionTypeId.Macro, One,
+                macro: steps, keyType: DS4KeyType.ScanCode | DS4KeyType.RepeatMacro);
+            steps.Add(3);
+
+            Assert.Equal(new[] { 1, 2 }, d.Macro);
+            Assert.Equal(DS4KeyType.ScanCode | DS4KeyType.RepeatMacro, d.KeyType);
+            Assert.Empty(new AssignmentDefinition("n", "n", AssignmentOrigin.Controls, SpecialAction.ActionTypeId.Key, One).Macro);
+        }
+
+        [Fact]
         public void KeyAndButtonValues_AreCarried()
         {
             var d = new AssignmentDefinition("k", "k", AssignmentOrigin.Controls, SpecialAction.ActionTypeId.Key, One,

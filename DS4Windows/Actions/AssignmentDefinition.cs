@@ -27,9 +27,12 @@ namespace DS4Windows.Actions
         /// <param name="key">Key の解釈済みの値。Key 以外は null。</param>
         /// <param name="button">Button の解釈済みの値。Button 以外は null。</param>
         /// <param name="extras">Extras（ボタンの割り当てに添える追加の出力）。ないときは null。</param>
+        /// <param name="macro">Macro の手順（SA の <c>macro</c>）。Macro 以外は null。</param>
+        /// <param name="keyType">Macro の再生の指定（ScanCode、Repeat。SA の <c>keyType</c>）。</param>
         public AssignmentDefinition(string id, string name, AssignmentOrigin origin, SpecialAction.ActionTypeId kind,
             IReadOnlyList<DS4Controls> triggers, double holdSeconds = 0, ControlSpecialItem item = null,
-            KeyBindingValues? key = null, ButtonBindingValues? button = null, ExtrasBindingValues? extras = null)
+            KeyBindingValues? key = null, ButtonBindingValues? button = null, ExtrasBindingValues? extras = null,
+            IReadOnlyList<int> macro = null, DS4KeyType keyType = DS4KeyType.None)
         {
             if (triggers == null || triggers.Count == 0)
                 throw new ArgumentException("トリガーのボタンは 1 つ以上必要です。", nameof(triggers));
@@ -48,6 +51,8 @@ namespace DS4Windows.Actions
             Key = key;
             Button = button;
             Extras = extras;
+            Macro = new List<int>(macro ?? Array.Empty<int>()).AsReadOnly();
+            KeyType = keyType;
         }
 
         public string Id { get; }
@@ -70,5 +75,9 @@ namespace DS4Windows.Actions
         public ButtonBindingValues? Button { get; }
 
         public ExtrasBindingValues? Extras { get; }
+
+        public IReadOnlyList<int> Macro { get; }
+
+        public DS4KeyType KeyType { get; }
     }
 }
