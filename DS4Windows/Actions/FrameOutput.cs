@@ -162,7 +162,12 @@ namespace DS4Windows.Actions
             }
             else if ((int)xboxControl < fields.buttons.Length && xboxControl != X360Controls.None)
             {
-                fields.buttons[(int)xboxControl] = true;
+                // Phase10 完了後の点検（2026-10-22）: パッドのボタンは、Controls と同じ変換表（reverseX360ButtonMapping）で DS4 のボタンへ写す。以前は X360 の番号をそのまま使い、
+                // Back・Start だけ、別のボタン（TouchLeft・TouchUpper）へ書いていた（ほかのボタンは、番号が一致するため、変換しても同じ）
+                int outputIndex = xboxControl >= X360Controls.LXNeg && xboxControl <= X360Controls.Start
+                    ? (int)X360ControlTables.reverseX360ButtonMapping[(int)xboxControl]
+                    : (int)xboxControl;
+                if (outputIndex < fields.buttons.Length) fields.buttons[outputIndex] = true;
             }
         }
     }

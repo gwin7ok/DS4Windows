@@ -51,7 +51,8 @@ namespace DS4Windows.Actions
             var policy = new BindingPolicy(respectsFreshPressGuard: mainPolicy.RespectsFreshPressGuard, suppressesTriggerButtons: false, resetsTriggerOutput: false,
                 erasesOutputEveryFrame: false, logsRisingEdge: true);
             return new TriggerBinding(new ComboTriggerInputAction(name, definition.Triggers, _profileSettings, hold),
-                new IOutputAction[] { new ControlExtrasOutputAction(identity, definition.Extras.Value, _extrasPort) }, policy, identity, -1);
+                new IOutputAction[] { new ControlExtrasOutputAction(identity, definition.Extras.Value, _extrasPort) }, policy, identity, -1,
+                primarySource: source);   // SA 本体と一緒に、エンジンが処理する（SA は、プロファイルの SA の一覧の順に処理されるため）
         }
 
         /// <summary>

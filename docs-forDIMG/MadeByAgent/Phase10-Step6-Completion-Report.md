@@ -62,3 +62,9 @@ Controls タブと SpecialActions（SA）タブの、どちらで設定したか
 1. （完了 2026-10-22）W7・W8 相当（Check Battery、Multi-action を Controls へ。Q5 を含む）。結果は `Phase10-Integration-Target-Model.md` §11、台帳 §29。
 2. （完了 2026-10-22）Step5（SA 側のアナログ出力）。`Phase10-Step5-Plan.md`、`Phase10-Integration-Target-Model.md` §12。
 3. 先送りの実機確認（台帳 §27、§28）。
+
+## 7. 実機確認で見つかった不具合と修正（2026-10-22）
+
+- **SA の Extras が動かない**（確認 4）。原因: Extras の束縛（合成の SA）が、プロファイルの SA の一覧にないため、エンジンの SA ループ（`ProcessOwned`）で処理されなかった。単体テストは、束縛を作るところまでしか検査していなかった。修正: `TriggerBinding.PrimarySource`（付随先の SA）を追加し、エンジンが SA 本体の直前に付随する束縛を処理する（Extras 全体＝振動、ライトバー、感度が動く）。エンジンを通すテストを追加した（`Phase10Step6I5SaExtrasEngineTests`）。Controls の Multi-action（W8）は、同種の問題を、別の方法（`IControlBoundInput`）で、実装時に防いでいた。
+- **Controls と SA の実装漏れの点検**（2026-10-22。ユーザー依頼）: 出力ピッカーで選べる X360 の全出力先（Toggle あり・なし）と、全種別（Macro、Program、Profile、Disconnect BT、Check Battery、Multi-action、較正 2 種）を総当たりで調べ、どちらの側でも束縛ができることを確認した（テスト `Phase10ControlsSaParityAuditTests`）。見つかった不具合は 1 件: **SA の出力先 Back・Start が、別のボタン（TouchLeft・TouchUpper）へ書かれていた**（`FrameOutput.PressX360` が X360 の番号をそのまま DS4 のボタンの番号に使い、この 2 つだけ番号が違うため。以前からの不具合）。Controls と同じ変換表（`reverseX360ButtonMapping`）で写すよう修正した（ユーザー承認）。設計上の違い（Default／Unbound は Controls のみ、強さは SA のみ、アナログのホイールと別名キーは Controls のみ）は、点検の対象外。
+- ローカルの `Debug ALL` で、`Phase10Step4cW2EdgeLogTests.ASpecialActionMacro_LogsTheReleaseToo` が、まれに（これまでに 2 回）失敗し、再実行で成功する（「Destination array was not long enough」）。原因は未特定の一過性の失敗（再発したら調べる）。

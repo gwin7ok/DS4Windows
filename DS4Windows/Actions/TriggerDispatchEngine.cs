@@ -102,6 +102,16 @@ namespace DS4Windows.Actions
                 IActionBinding binding = rt.Bindings[i];
                 if (!IsOwnedBinding(binding)) return FrameResult.Continue;
 
+                // Phase10-Step6 I5 の修正: SA に付随する束縛（SA の Extras）は、SA 本体の直前に処理する（本体が途中で終了を要求しても、必ず処理する）
+                if (rt.CompanionHead != null)
+                {
+                    for (int j = rt.CompanionHead[i]; j >= 0; j = rt.CompanionNext[j])
+                    {
+                        IActionBinding companion = rt.Bindings[j];
+                        if (IsOwnedBinding(companion)) ProcessBinding(device, rt, j, companion, input, frame);
+                    }
+                }
+
                 return ProcessBinding(device, rt, i, binding, input, frame);
             }
         }
@@ -385,6 +395,8 @@ namespace DS4Windows.Actions
             rt.ControlNext = new int[count];
             Array.Fill(rt.ControlNext, -1);
             rt.ControlCount = 0;
+            rt.CompanionHead = null;
+            rt.CompanionNext = null;
             for (int i = 0; i < count; i++)
             {
                 SpecialAction source = snapshot[i]?.Source;
@@ -412,6 +424,24 @@ namespace DS4Windows.Actions
                         rt.ControlCount++;
                     }
                 }
+            }
+
+            // Phase10-Step6 I5 の修正: SA に付随する束縛（SA の Extras）を、SA 本体の添字につなぐ（SA 本体の ProcessOwned が、一緒に処理する）
+            for (int j = 0; j < count; j++)
+            {
+                SpecialAction primary = (snapshot[j] as TriggerBinding)?.PrimarySource;
+                if (primary == null || !rt.Index.TryGetValue(primary, out int main) || main == j) continue;
+
+                if (rt.CompanionHead == null)
+                {
+                    rt.CompanionHead = new int[count];
+                    rt.CompanionNext = new int[count];
+                    Array.Fill(rt.CompanionHead, -1);
+                    Array.Fill(rt.CompanionNext, -1);
+                }
+
+                rt.CompanionNext[j] = rt.CompanionHead[main];
+                rt.CompanionHead[main] = j;
             }
 
             rt.Frame++; // 古い評価結果を使わない
@@ -663,6 +693,8 @@ namespace DS4Windows.Actions
             public int[] ControlTail;    // 7.8e: DS4Controls → 鎖の最後の添字（Rebuild の間だけ使う）
             public int[] ControlNext;    // 7.8e: 束縛の添字 → 同じボタンの次の束縛の添字（なしは -1）
             public volatile int ControlCount;
+            public int[] CompanionHead;  // Phase10-Step6 I5 の修正: SA 本体の添字 → 付随する束縛（SA の Extras）の先頭の添字（なしは -1。付随する束縛がなければ null）
+            public int[] CompanionNext;  // 付随する束縛の添字 → 同じ SA 本体の次の付随する束縛の添字（なしは -1）
             public int Frame = 1;
             public ITriggerInput ReleaseInput;
             public volatile IActionBinding Pending;   // 復帰の合図（切替前の束縛）。適用では消えず、物理切断で消える
