@@ -108,7 +108,7 @@ namespace DS4Windows.Services
 
             DS4KeyType keyType = dcs.keyType;
             values = new KeyBindingValues((ushort)key, keyType.HasFlag(DS4KeyType.ScanCode), keyType.HasFlag(DS4KeyType.Toggle),
-                dcs.action.actionAlias, suppressSpecialActionLogs: true);
+                dcs.action.actionAlias);
             return true;
         }
 
@@ -394,10 +394,12 @@ namespace DS4Windows.Services
         {
             var identity = new SpecialAction($"Synthetic_Pad_{device}_{(int)dcs.control}", "Synthetic", "Pad", "Pad", 0, string.Empty);
             identity.type = "Pad";
+            identity.details = dcs.action.actionBtn.ToString();   // ログの「maps to」に出る（出力の部品は values を使い、details は読まない）
             identity.controls = identity.name;
 
+            // Phase10-Step4c W2: 立ち上がり・離したときのログはエンジンが出す。出力先が Unbound／None の消すだけの束縛は、ユーザーの操作ではないので出さない
             var policy = new BindingPolicy(respectsFreshPressGuard: FreshPressGuardTable.ForControls(ControlBindingKind.ButtonPad), suppressesTriggerButtons: false, resetsTriggerOutput: false,
-                erasesOutputEveryFrame: true);
+                erasesOutputEveryFrame: true, logsRisingEdge: !eraseOnly, logsReleaseEdge: !eraseOnly);
             var outputs = new List<IOutputAction>(2);
             if (!eraseOnly) outputs.Add(new ControlPadOutputAction(identity, values));
             if (toggle) outputs.Add(new ControlToggleOutputAction(identity));   // 7.8f-2（Q8＝A）。Toggle の出力は ButtonMouse の区分
@@ -411,10 +413,11 @@ namespace DS4Windows.Services
         {
             var identity = new SpecialAction($"Synthetic_AnalogMouse_{device}_{(int)dcs.control}", "Synthetic", "AnalogMouse", "AnalogMouse", 0, string.Empty);
             identity.type = "AnalogMouse";
+            identity.details = target.ToString();
             identity.controls = identity.name;
 
             var policy = new BindingPolicy(respectsFreshPressGuard: FreshPressGuardTable.ForControls(ControlBindingKind.ButtonAnalogMouse), suppressesTriggerButtons: false, resetsTriggerOutput: false,
-                erasesOutputEveryFrame: true);
+                erasesOutputEveryFrame: true, logsRisingEdge: true);
             var outputs = new List<IOutputAction>(2);
             switch (target)
             {
@@ -436,10 +439,11 @@ namespace DS4Windows.Services
         {
             var identity = new SpecialAction($"Synthetic_Mouse_{device}_{(int)dcs.control}", "Synthetic", "Mouse", "Mouse", 0, string.Empty);
             identity.type = "Mouse";
+            identity.details = target.ToString();
             identity.controls = identity.name;
 
             var policy = new BindingPolicy(respectsFreshPressGuard: FreshPressGuardTable.ForControls(ControlBindingKind.ButtonMouse), suppressesTriggerButtons: false, resetsTriggerOutput: false,
-                erasesOutputEveryFrame: true);
+                erasesOutputEveryFrame: true, logsRisingEdge: true);
             var outputs = new List<IOutputAction>(2);
             if (target == X360Controls.TouchpadClick) outputs.Add(new ControlTouchpadClickOutputAction(identity, dcs.control));
             else outputs.Add(new ControlMouseOutputAction(identity, target));
@@ -456,7 +460,7 @@ namespace DS4Windows.Services
             identity.controls = identity.name;
 
             var policy = new BindingPolicy(respectsFreshPressGuard: FreshPressGuardTable.ForControls(ControlBindingKind.ButtonPad), suppressesTriggerButtons: false, resetsTriggerOutput: false,
-                erasesOutputEveryFrame: false);
+                erasesOutputEveryFrame: false, logsReleaseEdge: false);   // Phase10-Step4c W2: 素通しは、ユーザーの操作ではないので、ログを出さない
             result.Add(new TriggerBinding(new ControlButtonInputAction(identity.name, dcs.control, ControlBindingKind.ButtonPad, ControlJudgement.Assignment),
                 new IOutputAction[] { new ControlPassthroughOutputAction(identity, dcs.control) }, policy, identity, -1));
         }
@@ -467,10 +471,11 @@ namespace DS4Windows.Services
         {
             var identity = new SpecialAction($"Synthetic_Extras_{device}_{(int)dcs.control}", "Synthetic", "Extras", "Extras", 0, string.Empty);
             identity.type = "Extras";
+            identity.details = dcs.extras;
             identity.controls = identity.name;
 
             var policy = new BindingPolicy(respectsFreshPressGuard: FreshPressGuardTable.ForControls(ControlBindingKind.Extras), suppressesTriggerButtons: false, resetsTriggerOutput: false,
-                erasesOutputEveryFrame: false);
+                erasesOutputEveryFrame: false, logsRisingEdge: true);
             result.Add(new TriggerBinding(new ControlButtonInputAction(identity.name, dcs.control, ControlBindingKind.Extras, ControlJudgement.Assignment),
                 new IOutputAction[] { new ControlExtrasOutputAction(identity, values, _extrasPort) }, policy, identity, -1));
         }
@@ -496,7 +501,7 @@ namespace DS4Windows.Services
                 erasesOutputEveryFrame: true);
             result.Add(new TriggerBinding(new ControlButtonInputAction(identity.name, dcs.control, ControlBindingKind.Macro, ControlJudgement.Trigger,
                     invertOnRelease: identity.pressRelease),
-                new IOutputAction[] { new MacroAction(identity, device, _macroPlayer) }, policy, identity, -1));
+                new IOutputAction[] { new MacroAction(identity, device, _macroPlayer, -1, null) }, policy, identity, -1));   // Phase10-Step4c W2: SA と同じ立ち上がりのログを出す版
         }
 
         private void AddKey(int device, DS4ControlSettings dcs, KeyBindingValues values, List<IActionBinding> result)

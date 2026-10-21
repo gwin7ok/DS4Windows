@@ -207,9 +207,16 @@ Controls タブの割り当てと SA（Special Actions）の割り当ては、�
   - 発見: **Capture／SideL などの拡張ボタンは、コントローラーが接続されたときにだけ `ControlSettingsGroup` に束ねられる**（`EstablishExtraButtons`）。Touch Started／Ended は、どの組にも入っていない。W5 で、Controls の束縛の対象にするには、組へ加える必要がある。
   - 計画書の訂正: Controls の一覧は 38 項目ではなく 49 項目。
   - （W0 の「次」は W1 へ進んだため更新）
-- **W1（実装済み 2026-10-21。ビルド・テストの結果待ち）**: 項目 2。Fresh-press ガードを見るかの規則を、`FreshPressGuardTable`（`Actions/`、静的クラス）の 1 か所にまとめた。挙動は変えない。
+- **W1（完了 2026-10-21。ビルド・テスト成功）**: 項目 2。Fresh-press ガードを見るかの規則を、`FreshPressGuardTable`（`Actions/`、静的クラス）の 1 か所にまとめた。挙動は変えない。
   - `ForSpecialAction(種別, toggle)`: Button は Toggle のときだけ見る、MultiAction は見ない、それ以外は見る。`SpecialActionOutputFactory` の `Policy(...)` が、`SpecialAction` を受けて、この表を引く（個別の `respectsFreshPressGuard:` 指定を廃止）。
   - `ForControls(区分)`: Macro と Special は見る、Key／Pad／Mouse／AnalogMouse／Extras／素通しは見ない。`ControlBindingBuilder` の 7 か所の直書きを、この表の呼び出しへ置き換えた。
   - テスト: `Phase10Step4cW1FreshPressGuardTableTests`（表の全行。`ControlBindingKind` の件数が 7 のままかも検査し、区分を足したときの行の足し忘れを防ぐ）。束縛に現れる値は、W0 の方針の表と SA の表のテストが守る（期待値は変更なし）。
   - 実機確認: 挙動が変わらないため、付けない。
-  - 次: W2（項目 4: Controls の既存の種別にも SA 形式の立ち上がりのログ）。指示があるまで始めない。先頭で、種別ごとに出る行の例を示して確認する。
+- **W2（実装済み 2026-10-21。ビルド・テストの結果待ち）**: 項目 4。ユーザー指示（2026-10-21）で範囲を広げ、**Controls と SA の全種別で、立ち上がり（トリガー成立）と離したときの両方にログを出す**。ログは増えるだけで、既存の文言・順序は変えない。
+  - 離したとき: エンジン（`TriggerDispatchEngine.ProcessBinding` の離したエッジ）が、全種別で出す。Trace: `Trigger released for SA '<名前>' on device N`、Debug: `SpecialAction <種別> released: device=N, name=<名前>`。方針 `BindingPolicy.LogsReleaseEdge`（既定は真。Default の軸の素通しと、出力先が Unbound の消すだけの束縛は偽）。Key は既存の `KeyReleased` に加えて出る。Multi-action は離したエッジの概念がないため出ない。
+  - 立ち上がり: Controls の Key は、止めていた仕組み（`suppressSpecialActionLogs`）を解除。Controls の Macro は、ログを出す版のコンストラクターに切り替え。Controls の Pad／Mouse／AnalogMouse／Extras は、出力アクションにログがないため、エンジンが出す（方針 `BindingPolicy.LogsRisingEdge`。Trace 3 行 `Trigger detected`／`maps to`／`Trigger keys`、Debug 1 行 `SpecialAction <種別>: device=N, name=<名前>`）。出力の組み合わせの行は、毎フレームの出力が立ち上がりの時点で確定しないため、出さない。
+  - 「maps to」を読めるものにするため、Pad／Mouse／AnalogMouse／Extras の合成 `SpecialAction` の `details` に、割り当て先（例: X360 のボタン名、Extras の値）を入れた（出力の部品は `details` を読まない）。
+  - 追加: `AppLogger.IsDebugEnabled`（Debug の文字列組み立てを、無効のときに省く）。
+  - テスト: `Phase10Step4cW2EdgeLogTests`（方針の各フラグ、素通しと Unbound はログなし、Warn のみなら何も出ない、SA の Macro の離したとき）。`Phase10Step4cW0LogTableTests`（既存の種別が立ち上がり・離したときを 1 回ずつ出す）、`Phase8Step78bW2ControlsKeyTests`（Key のログ抑止の前提を、出す形へ）を書き換えた。
+  - 実機確認: 台帳 §23（P10-58〜62）。
+  - 次: W3（項目 7: 検証）。指示があるまで始めない。

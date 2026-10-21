@@ -530,6 +530,8 @@ namespace DS4Windows.Actions
                                 return FrameResult.Continue;
                         }
 
+                        if (policy.LogsRisingEdge) LogRisingEdge(device, source);
+
                         if (policy.BlocksWhileExecuting) state.IsExecuting = true;
                         try
                         {
@@ -564,6 +566,7 @@ namespace DS4Windows.Actions
                 {
                     // 離したエッジ
                     lock (state) { state.SetBeingTriggeredInternal(false); }
+                    if (policy.LogsReleaseEdge) LogReleaseEdge(device, source);
                     if (policy.StopOnRelease)
                     {
                         EngineContext ctx = rt.Context;
@@ -582,6 +585,39 @@ namespace DS4Windows.Actions
             }
 
             return FrameResult.Continue;
+        }
+
+        // Phase10-Step4c W2（項目 4）: 立ち上がりのログ。出力アクションが自分で出さない種別（BindingPolicy.LogsRisingEdge）だけ。SA の出力アクションのログと同じ形
+        // （出力の組み合わせの行は、フレームの出力が立ち上がりの時点では確定しない［毎フレームの出力は、あとで適用される］ため、出さない）
+        private static void LogRisingEdge(int device, SpecialAction source)
+        {
+            try
+            {
+                if (AppLogger.IsTraceEnabled)
+                {
+                    AppLogger.LogTrace($"Trigger detected for SA '{source.name}' on device {device}");
+                    AppLogger.LogTrace($"SA '{source.name}' maps to Type:{source.type} Details:{source.details}");
+                    AppLogger.LogTrace($"Trigger keys for SA '{source.name}': <none>");
+                }
+
+                if (AppLogger.IsDebugEnabled)
+                    AppLogger.LogDebug($"SpecialAction {source.type}: device={device}, name={source.name}");
+            }
+            catch { }
+        }
+
+        // Phase10-Step4c W2（項目 4）: 離したエッジのログ。全種別共通（BindingPolicy.LogsReleaseEdge）。Key の KeyReleased は、Key の出力アクションが別に出す
+        private static void LogReleaseEdge(int device, SpecialAction source)
+        {
+            try
+            {
+                if (AppLogger.IsTraceEnabled)
+                    AppLogger.LogTrace($"Trigger released for SA '{source.name}' on device {device}");
+
+                if (AppLogger.IsDebugEnabled)
+                    AppLogger.LogDebug($"SpecialAction {source.type} released: device={device}, name={source.name}");
+            }
+            catch { }
         }
 
         // 現行の MapCustomAction と同じ: 未成立が FreshPressReleaseHoldMs 連続して初めて、Fresh-press ガードを解除する

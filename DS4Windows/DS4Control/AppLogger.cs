@@ -60,6 +60,9 @@ namespace DS4Windows
         // Expose trace-enabled flag to avoid expensive string formatting when trace is off
         public static bool IsTraceEnabled => Logger.IsTraceEnabled;
 
+        // Phase10-Step4c W2: Debug の文字列の組み立て（割り当てを伴う）を、無効のときに省くため
+        public static bool IsDebugEnabled => Logger.IsDebugEnabled;
+
         // Errorレベルログ専用メソッド（エラー情報用）
         // Warnレベルログ専用メソッド（警告情報用）
         public static void LogWarn(string data)

@@ -20,7 +20,9 @@ namespace DS4Windows.Actions
             bool stopOnRelease = true,
             string exclusionGroup = null,
             bool routesOutputsByGesture = false,
-            bool erasesOutputEveryFrame = false)
+            bool erasesOutputEveryFrame = false,
+            bool logsRisingEdge = false,
+            bool logsReleaseEdge = true)
         {
             RespectsFreshPressGuard = respectsFreshPressGuard;
             BlocksWhileExecuting = blocksWhileExecuting;
@@ -31,6 +33,8 @@ namespace DS4Windows.Actions
             ExclusionGroup = exclusionGroup;
             RoutesOutputsByGesture = routesOutputsByGesture;
             ErasesOutputEveryFrame = erasesOutputEveryFrame;
+            LogsRisingEdge = logsRisingEdge;
+            LogsReleaseEdge = logsReleaseEdge;
         }
 
         /// <summary>トリガーが連続して未成立になるまで（<c>RequiresFreshPressAfterReset</c> が true の間）、実行しないか。台帳 §4.2: Button の Press のみ false。</summary>
@@ -66,5 +70,18 @@ namespace DS4Windows.Actions
         /// 割り当てのあるボタンだけが対象（Default＝未設定は消さない）。既定は偽（特殊アクションは、成立中だけ <see cref="ResetsTriggerOutput"/> で消す）。
         /// </summary>
         public bool ErasesOutputEveryFrame { get; }
+
+        /// <summary>
+        /// Phase10-Step4c W2（項目 4）: 立ち上がり（トリガー成立）のログ（SA 形式の Trace と Debug）を、<b>エンジンが</b>出すか。
+        /// 出力アクションが自分で立ち上がりのログを出す種別（SA の全種別、Controls の Key／Macro／Special）は偽。出力アクションが出さない Controls の
+        /// Pad／Mouse／AnalogMouse／Extras は真。既定は偽。
+        /// </summary>
+        public bool LogsRisingEdge { get; }
+
+        /// <summary>
+        /// Phase10-Step4c W2（項目 4）: 離したエッジ（成立 → 未成立）のログ（Trace と Debug）を、エンジンが出すか。全種別で真。
+        /// ユーザーの操作ではない束縛（Default の軸の素通し、出力先が Unbound の消すだけの束縛）だけ偽。既定は真。
+        /// </summary>
+        public bool LogsReleaseEdge { get; }
     }
 }
