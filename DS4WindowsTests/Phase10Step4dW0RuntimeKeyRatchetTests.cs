@@ -25,7 +25,7 @@ namespace DS4WindowsTests
             ["DS4Windows/DI/IProfileSettingsService.cs"] = (0, 1),
             ["DS4Windows/DS4Control/BackingStore.cs"] = (7, 9),
             ["DS4Windows/DS4Control/ControlService.cs"] = (2, 0),
-            ["DS4Windows/DS4Control/DTOXml/AppSettingsDTO.cs"] = (16, 0),
+            ["DS4Windows/DS4Control/DTOXml/AppSettingsDTO.cs"] = (18, 0),   // Phase10-Step4d W4: ID から現在の名前に引き直す代入で 2 件増えた（W5 で ID に替える）
             ["DS4Windows/DS4Control/Mapping.cs"] = (0, 3),
             ["DS4Windows/DS4Control/ProfileActions.cs"] = (0, 1),
             ["DS4Windows/DS4Control/Services/AppSettingsXmlSerializer.cs"] = (6, 0),

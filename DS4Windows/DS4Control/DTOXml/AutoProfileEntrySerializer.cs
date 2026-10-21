@@ -39,6 +39,17 @@ namespace DS4WinWPF.DS4Control.DTOXml
             get; set;
         } = string.Empty;
 
+        // Phase10-Step4d W4: Controller1〜8 のプロファイルの固定 ID を、同じ並びで「/」区切りに書く（名前の要素は、古いバージョンのために残す）。1 つも ID がなければ、書かない
+        [XmlElement("ControllerProfileIds")]
+        public string ControllerProfileIds
+        {
+            get; set;
+        } = string.Empty;
+        public bool ShouldSerializeControllerProfileIds()
+        {
+            return !string.IsNullOrEmpty(ControllerProfileIds);
+        }
+
         [XmlElement("Controller1")]
         public string Controller1
         {

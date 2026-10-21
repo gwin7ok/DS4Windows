@@ -191,6 +191,20 @@ public class AppSettingsDTO
             ControllerLimits.MaxControllerCount >= 8;
     }
 
+    // Phase10-Step4d W4（Phase10-Step4d-Plan.md §3.2）: 各スロットの選択（Controller1〜8）のプロファイルの固定 ID を、同じ並びで「/」区切りに書く（名前の要素は、古いバージョンのために残す）。
+    // 読み込みは、ID を主にして、現在の名前に引き直す（プロファイルの名前変更に追従する。ID が勝つ）。ない・見つからないときは、名前のまま。1 つも ID がなければ、書かない
+    [XmlElement("ControllerProfileIds")]
+    public string ControllerProfileIds { get; set; }
+    public bool ShouldSerializeControllerProfileIds() => !string.IsNullOrEmpty(ControllerProfileIds);
+
+    /// <summary>名前 → ID（保存で使う）。省略可（登録簿がなければ、ID を書かない）。シリアライザーが設定する。</summary>
+    [XmlIgnore]
+    public Func<string, string> ProfileIdOf { get; set; }
+
+    /// <summary>ID → 現在の名前（読み込みで使う）。見つからなければ null を返す。省略可。シリアライザーが設定する。</summary>
+    [XmlIgnore]
+    public Func<string, string> ProfileNameOf { get; set; }
+
     // Selected Profile settings
     [XmlElement("SelectedProfile1")]
     public string SelectedProfile1 { get; set; }
@@ -907,6 +921,22 @@ public class AppSettingsDTO
         Controller7CurrentProfile = !string.IsNullOrEmpty(source.selectedProfile[6]) ? source.selectedProfile[6] : string.Empty;
         Controller8CurrentProfile = !string.IsNullOrEmpty(source.selectedProfile[7]) ? source.selectedProfile[7] : string.Empty;
 
+        // Phase10-Step4d W4: 選択しているプロファイルの固定 ID（名前の要素と同じ並び。ないスロットは空）
+        if (ProfileIdOf != null)
+        {
+            var ids = new string[8];
+            bool anyId = false;
+            for (int i = 0; i < ids.Length; i++)
+            {
+                string selected = source.selectedProfile[i];
+                string id = !string.IsNullOrEmpty(selected) ? ProfileIdOf(selected) : null;
+                ids[i] = id ?? string.Empty;
+                anyId |= ids[i].Length > 0;
+            }
+
+            ControllerProfileIds = anyId ? string.Join("/", ids) : string.Empty;
+        }
+
         LastChecked = source.lastChecked;
         // Map legacy CheckWhen into new fields if present in source profiles.
         // Prefer explicit fields when available (checkEveryValue/checkEveryUnit).
@@ -1037,6 +1067,20 @@ public class AppSettingsDTO
         destination.profilePath[5] = destination.olderProfilePath[5] = destination.selectedProfile[5] = !string.IsNullOrEmpty(Controller6CurrentProfile) ? Controller6CurrentProfile : string.Empty;
         destination.profilePath[6] = destination.olderProfilePath[6] = destination.selectedProfile[6] = !string.IsNullOrEmpty(Controller7CurrentProfile) ? Controller7CurrentProfile : string.Empty;
         destination.profilePath[7] = destination.olderProfilePath[7] = destination.selectedProfile[7] = !string.IsNullOrEmpty(Controller8CurrentProfile) ? Controller8CurrentProfile : string.Empty;
+
+        // Phase10-Step4d W4: ID が見つかれば、現在の名前に置き換える（名前変更に追従。ID が勝つ）。ない・見つからないときは、名前のまま
+        if (ProfileNameOf != null && !string.IsNullOrEmpty(ControllerProfileIds))
+        {
+            string[] ids = ControllerProfileIds.Split('/');
+            for (int i = 0; i < ids.Length && i < 8; i++)
+            {
+                if (ids[i].Length == 0) continue;
+
+                string resolved = ProfileNameOf(ids[i]);
+                if (!string.IsNullOrEmpty(resolved))
+                    destination.profilePath[i] = destination.olderProfilePath[i] = destination.selectedProfile[i] = resolved;
+            }
+        }
 
         destination.lastChecked = LastChecked;
         // Persist new explicit startup-check settings in place of legacy CheckWhen.

@@ -142,4 +142,12 @@
   - 追従のコード（`Replace*`／`RemoveActionReference`）は、W7 まで残す（二重の安全策）。
   - テスト: `Phase10Step4dW3ReferenceIdTests`（16 件）。`TestRepositoryFactory` に登録簿の引数を追加。`BackingStoreStateDumper` の除外に `profileId` を追加。`Phase10Step4dW0RuntimeKeyRatchetTests` の基準値を更新（`ProfileActionsSaveSection` の `profileActions` 2 → 3）。
   - 実機確認: 台帳 §27 の P10-92（統合版に追加）。先送り。
-  - 次: W4（保存する参照を ID に: スロットの選択、リンクプロファイル、自動プロファイル）。指示があるまで始めない（設計を説明して承認を得る）。
+- **W4（完了 2026-10-21。`Debug ALL` 成功: 警告 0・エラー 0、テスト 1963 件と 11 件が成功。実機確認 P10-93 は先送り）**: 保存する参照を ID に（残り 3 つ）。ID を主、名前を併記。実行時の内部（`ProfilePath[]` ほか）は、まだ名前のまま（W5〜W6）。
+  - **スロットの選択（`Profiles.xml`）**: 名前の要素（`Controller1`〜`8`）は残し、同じ並びのプロファイルの ID を `<ControllerProfileIds>`（`/` 区切り。ないスロットは空。1 つも ID がなければ書かない）で足す。読み込みは、ID が見つかれば `profilePath`／`olderProfilePath`／`selectedProfile` を現在の名前に置き換える（ID が勝つ）。保存は、名前から `EnsurePersisted` で ID を引く。`AppSettingsDTO`（`ProfileIdOf`／`ProfileNameOf`）、`AppSettingsXmlSerializer`（省略可能な登録簿）。
+  - **リンクプロファイル（`LinkedProfiles.xml`）**: 各 `MAC…` 要素に属性 `Id`（要素の中身の名前は従来のまま。古いバージョンは中身だけを読む）。`LinkedProfileItem.ProfileId`、`LinkedProfilesDTO`（`ProfileIdOf`／`ProfileNameOf`、`ReadXml`／`WriteXml`）、`LinkedProfilesXmlSerializer`。
+  - **自動プロファイル（`Auto Profiles.xml`）**: 各 `Program` に `<ControllerProfileIds>`（`Controller1`〜`8` と同じ並び。「(none)」と見つからないものは空）。`AutoProfileEntrySerializer.ControllerProfileIds`、`AutoProfilesDTO`、`AutoProfileHolder`（省略可能な登録簿。`Load` が使うため、コンストラクターで受ける）。
+  - DI: 3 つとも具象クラスの Singleton のまま。省略可能な引数に、登録済みの `IProfileIdentityService` が渡る。登録簿がなければ（テスト）、従来どおり名前だけ。
+  - 注意: `Profiles.xml` は起動の最初に読むため、プロファイルに ID が書かれる前の最初の起動では ID で解決できず、名前のまま。次の保存から ID が書かれ、以後は ID で解決される。
+  - テスト: `Phase10Step4dW4ReferenceIdTests`（7 件。3 つの保存先の往復と名前変更への追従、登録簿なしでは従来の形式、ID のない古いファイルは名前で読む、DI の配線）。`Phase10Step4dW0RuntimeKeyRatchetTests` の基準値を更新（`AppSettingsDTO` の `ProfilePath` 系 16 → 18）。
+  - 実機確認: 台帳 §27 の P10-93（統合版に追加）。先送り。
+  - 次: W5（実行時の状態を ID に: プロファイル）。指示があるまで始めない（設計を説明して承認を得る）。

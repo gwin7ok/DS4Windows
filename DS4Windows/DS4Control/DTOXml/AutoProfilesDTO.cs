@@ -30,6 +30,14 @@ namespace DS4WinWPF.DS4Control.DTOXml
         [XmlElement("Program")] // Use XmlElement here to skip container element
         public List<AutoProfileEntrySerializer> programEntries;
 
+        /// <summary>Phase10-Step4d W4: 名前 → ID（保存で使う）。省略可（なければ、ID を書かない）。ホルダーが設定する。</summary>
+        [XmlIgnore]
+        public System.Func<string, string> ProfileIdOf { get; set; }
+
+        /// <summary>Phase10-Step4d W4: ID → 現在の名前（読み込みで使う）。見つからなければ null。省略可。ホルダーが設定する。</summary>
+        [XmlIgnore]
+        public System.Func<string, string> ProfileNameOf { get; set; }
+
         public AutoProfilesDTO()
         {
             programEntries = new List<AutoProfileEntrySerializer>();
@@ -58,6 +66,22 @@ namespace DS4WinWPF.DS4Control.DTOXml
                     temp.Controller8 = entity.ProfileNames[7];
                 }
 
+                // Phase10-Step4d W4: プロファイルの固定 ID（Controller1〜8 と同じ並び。ないものは空）
+                if (ProfileIdOf != null)
+                {
+                    var ids = new string[entity.ProfileNames.Length];
+                    bool anyId = false;
+                    for (int i = 0; i < ids.Length; i++)
+                    {
+                        string profileName = entity.ProfileNames[i];
+                        string id = !string.IsNullOrEmpty(profileName) && profileName != AutoProfileEntity.NONE_STRING ? ProfileIdOf(profileName) : null;
+                        ids[i] = id ?? string.Empty;
+                        anyId |= ids[i].Length > 0;
+                    }
+
+                    temp.ControllerProfileIds = anyId ? string.Join("/", ids) : string.Empty;
+                }
+
                 programEntries.Add(temp);
             }
         }
@@ -80,6 +104,19 @@ namespace DS4WinWPF.DS4Control.DTOXml
                     autoprof.ProfileNames[5] = serializier.Controller6;
                     autoprof.ProfileNames[6] = serializier.Controller7;
                     autoprof.ProfileNames[7] = serializier.Controller8;
+                }
+
+                // Phase10-Step4d W4: ID が見つかれば、現在の名前に置き換える（名前変更に追従。ID が勝つ）。ない・見つからないときは、名前のまま
+                if (ProfileNameOf != null && !string.IsNullOrEmpty(serializier.ControllerProfileIds))
+                {
+                    string[] ids = serializier.ControllerProfileIds.Split('/');
+                    for (int i = 0; i < ids.Length && i < autoprof.ProfileNames.Length; i++)
+                    {
+                        if (ids[i].Length == 0) continue;
+
+                        string resolved = ProfileNameOf(ids[i]);
+                        if (!string.IsNullOrEmpty(resolved)) autoprof.ProfileNames[i] = resolved;
+                    }
                 }
 
                 autoprof.Turnoff = serializier.TurnOff;

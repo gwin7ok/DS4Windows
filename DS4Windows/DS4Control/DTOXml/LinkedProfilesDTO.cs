@@ -30,6 +30,12 @@ namespace DS4WinWPF.DS4Control.DTOXml
     {
         private List<LinkedProfileItem> linkedProfileItems;
 
+        /// <summary>Phase10-Step4d W4: 名前 → ID（保存で使う）。省略可（なければ、ID を書かない）。シリアライザーが設定する。</summary>
+        public Func<string, string> ProfileIdOf { get; set; }
+
+        /// <summary>Phase10-Step4d W4: ID → 現在の名前（読み込みで使う）。見つからなければ null。省略可。シリアライザーが設定する。</summary>
+        public Func<string, string> ProfileNameOf { get; set; }
+
         public LinkedProfilesDTO()
         {
             linkedProfileItems = new List<LinkedProfileItem>();
@@ -43,6 +49,7 @@ namespace DS4WinWPF.DS4Control.DTOXml
                 {
                     Serial = pair.Key.Replace("MAC", string.Empty),
                     Profile = pair.Value,
+                    ProfileId = !string.IsNullOrEmpty(pair.Value) ? ProfileIdOf?.Invoke(pair.Value) : null,   // Phase10-Step4d W4
                 };
 
                 linkedProfileItems.Add(tempItem);
@@ -53,7 +60,15 @@ namespace DS4WinWPF.DS4Control.DTOXml
         {
             foreach(LinkedProfileItem item in linkedProfileItems)
             {
-                destination.linkedProfiles[item.Serial] = item.Profile;
+                // Phase10-Step4d W4: ID が見つかれば、現在の名前に置き換える（名前変更に追従。ID が勝つ）。ない・見つからないときは、名前のまま
+                string profile = item.Profile;
+                if (!string.IsNullOrEmpty(item.ProfileId))
+                {
+                    string resolved = ProfileNameOf?.Invoke(item.ProfileId);
+                    if (!string.IsNullOrEmpty(resolved)) profile = resolved;
+                }
+
+                destination.linkedProfiles[item.Serial] = profile;
             }
         }
 
@@ -85,6 +100,7 @@ namespace DS4WinWPF.DS4Control.DTOXml
                     {
                         Serial = serial,
                         Profile = profile,
+                        ProfileId = current.Attributes?["Id"]?.Value,   // Phase10-Step4d W4
                     };
 
                     linkedProfileItems.Add(tempItem);
@@ -100,7 +116,11 @@ namespace DS4WinWPF.DS4Control.DTOXml
 
             foreach (LinkedProfileItem item in linkedProfileItems)
             {
-                writer.WriteElementString($"MAC{item.Serial}", item.Profile);
+                // 要素の中身（名前）は従来のまま。Phase10-Step4d W4 で、ID があれば Id 属性を足す（古いバージョンは中身だけを読む）
+                writer.WriteStartElement($"MAC{item.Serial}");
+                if (!string.IsNullOrEmpty(item.ProfileId)) writer.WriteAttributeString("Id", item.ProfileId);
+                writer.WriteString(item.Profile);
+                writer.WriteEndElement();
             }
         }
     }

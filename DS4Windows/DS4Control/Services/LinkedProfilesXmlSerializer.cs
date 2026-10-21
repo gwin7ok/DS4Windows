@@ -38,9 +38,13 @@ namespace DS4Windows.Services
     {
         private readonly BackingStore store;
 
-        public LinkedProfilesXmlSerializer(BackingStore store)
+        // Phase10-Step4d W4: 紐付けたプロファイルの ID と名前を結ぶ。省略可（登録簿がなければ、従来どおり名前だけ）
+        private readonly DS4Windows.DI.IProfileIdentityService profileIdentity;
+
+        public LinkedProfilesXmlSerializer(BackingStore store, DS4Windows.DI.IProfileIdentityService profileIdentityService = null)
         {
             this.store = store ?? throw new ArgumentNullException(nameof(store));
+            profileIdentity = profileIdentityService;
         }
 
         public bool createLinkedProfiles()
@@ -67,6 +71,7 @@ namespace DS4Windows.Services
 
                 // Write root element and children
                 LinkedProfilesDTO dto = new LinkedProfilesDTO();
+                if (profileIdentity != null) dto.ProfileIdOf = profileIdentity.EnsurePersisted;   // Phase10-Step4d W4
                 dto.MapFrom(store);
                 // Omit xmlns:xsi and xmlns:xsd from output
                 serializer.Serialize(xmlWriter, dto,
@@ -126,6 +131,7 @@ namespace DS4Windows.Services
                 try
                 {
                     LinkedProfilesDTO dto = serializer.Deserialize(sr) as LinkedProfilesDTO;
+                    if (profileIdentity != null) dto.ProfileNameOf = profileIdentity.GetName;   // Phase10-Step4d W4
                     dto.MapTo(store);
                 }
                 catch (InvalidOperationException e)
@@ -203,6 +209,7 @@ namespace DS4Windows.Services
 
                     // Write root element and children
                     LinkedProfilesDTO dto = new LinkedProfilesDTO();
+                    if (profileIdentity != null) dto.ProfileIdOf = profileIdentity.EnsurePersisted;   // Phase10-Step4d W4
                     dto.MapFrom(store);
                     // Omit xmlns:xsi and xmlns:xsd from output
                     serializer.Serialize(xmlWriter, dto,

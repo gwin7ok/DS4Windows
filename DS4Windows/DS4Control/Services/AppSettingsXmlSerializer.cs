@@ -47,8 +47,13 @@ namespace DS4Windows.Services
         private readonly DS4Windows.DI.IEnvironmentService _environment;
         private readonly XmlDocument m_Xdoc = new XmlDocument(); // 旧 BackingStore.m_Xdoc と同じ使い方（排他は呼び出し側のロック）
 
-        public AppSettingsXmlSerializer(BackingStore store, DS4Windows.DI.IPathService pathService, DS4Windows.DI.IEnvironmentService environment)
+        // Phase10-Step4d W4: スロットの選択のプロファイルの ID と名前を結ぶ。省略可（登録簿がなければ、従来どおり名前だけ）
+        private readonly DS4Windows.DI.IProfileIdentityService _profileIdentity;
+
+        public AppSettingsXmlSerializer(BackingStore store, DS4Windows.DI.IPathService pathService, DS4Windows.DI.IEnvironmentService environment,
+            DS4Windows.DI.IProfileIdentityService profileIdentity = null)
         {
+            _profileIdentity = profileIdentity;
             this.store = store ?? throw new ArgumentNullException(nameof(store));
             _pathService = pathService ?? throw new ArgumentNullException(nameof(pathService));
             _environment = environment ?? throw new ArgumentNullException(nameof(environment));
@@ -98,6 +103,7 @@ namespace DS4Windows.Services
                         if (dto != null)
                         {
                             // Map DTO into this backing store
+                            if (_profileIdentity != null) dto.ProfileNameOf = _profileIdentity.GetName;   // Phase10-Step4d W4
                             dto.MapTo(store);
                             dtoLoaded = true;
                         }
@@ -509,6 +515,7 @@ namespace DS4Windows.Services
 
                 // Serialize DTO with root <Profile>
                 AppSettingsDTO dto = new AppSettingsDTO();
+                if (_profileIdentity != null) dto.ProfileIdOf = _profileIdentity.EnsurePersisted;   // Phase10-Step4d W4
                 dto.MapFrom(store);
                 serializer.Serialize(xmlWriter, dto,
                     new XmlSerializerNamespaces(new[] { XmlQualifiedName.Empty }));

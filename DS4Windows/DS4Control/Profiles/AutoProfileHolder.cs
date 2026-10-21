@@ -47,8 +47,13 @@ namespace DS4WinWPF
         private readonly DS4Windows.DI.IEnvironmentService environmentService;
         public bool UsingMaxControllers => environmentService.UsingMaxControllers;
 
-        public AutoProfileHolder(DS4Windows.DI.IPathService pathService, DS4Windows.DI.IEnvironmentService environmentService)
+        // Phase10-Step4d W4: 各ルールのプロファイルの ID と名前を結ぶ。省略可（登録簿がなければ、従来どおり名前だけ）。Load が使うため、先に設定する
+        private readonly DS4Windows.DI.IProfileIdentityService profileIdentity;
+
+        public AutoProfileHolder(DS4Windows.DI.IPathService pathService, DS4Windows.DI.IEnvironmentService environmentService,
+            DS4Windows.DI.IProfileIdentityService profileIdentity = null)
         {
+            this.profileIdentity = profileIdentity;
             this.pathService = pathService ?? throw new System.ArgumentNullException(nameof(pathService));
             this.environmentService = environmentService ?? throw new System.ArgumentNullException(nameof(environmentService));
             autoProfileColl = new ObservableCollection<AutoProfileEntity>();
@@ -69,6 +74,7 @@ namespace DS4WinWPF
             try
             {
                 AutoProfilesDTO dto = serializer.Deserialize(sr) as AutoProfilesDTO;
+                if (profileIdentity != null) dto.ProfileNameOf = profileIdentity.GetName;   // Phase10-Step4d W4
                 dto.MapTo(this);
             }
             catch (InvalidOperationException) {}
@@ -99,6 +105,7 @@ namespace DS4WinWPF
 
                 // Write root element and children
                 AutoProfilesDTO dto = new AutoProfilesDTO();
+                if (profileIdentity != null) dto.ProfileIdOf = profileIdentity.EnsurePersisted;   // Phase10-Step4d W4
                 dto.MapFrom(this);
                 // Omit xmlns:xsi and xmlns:xsd from output
                 serializer.Serialize(xmlWriter, dto,
