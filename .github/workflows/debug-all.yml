@@ -2,10 +2,8 @@ name: Debug ALL (build and test)
 
 # .vscode/tasks.json の "Debug ALL"（Build Debug -> Build Test -> Execute Test）と同じ手順を Windows ランナーで実行する。
 on:
-  push:
-    # 作業ブランチだけ。For-DI-migration-work への反映は、検証済みのコミットなので走らせない（手動実行は workflow_dispatch で可能）
-    branches:
-      - for-di-migration-work-hsoyim
+  # push 契機は止めた（2026-10-22。実行が遅いため）。ビルドとテストはローカルで行い、必要なときだけ Actions の画面から手動実行する。
+  # 以前の push 契機: branches: [for-di-migration-work-hsoyim]
   workflow_dispatch:
 
 concurrency:
