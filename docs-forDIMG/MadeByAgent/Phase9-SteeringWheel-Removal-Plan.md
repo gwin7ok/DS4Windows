@@ -35,7 +35,7 @@
 ### 3.2 コントローラー・状態
 - `DS4Device` の車輪の較正用のフィールド一式（`wheelCenterPoint`、`wheel90DegPointLeft／Right`、`wheelCircleCenterPointLeft／Right`、`wheelPrevPhysicalAngle`、`wheelPrevFullAngle`、`wheelFullTurnCount`、`wheelPrevRecalibrateTime`、`WheelRecalibrateActiveState`、`WheelCalibrationPoint`、`wheelCalibratedAxisBitmask`）。
 - `DS4State.SASteeringWheelEmulationUnit`（複製の 2 箇所も）。
-- コントローラーごとの設定ファイル: `ControllerConfigsXmlSerializer`（**中身は車輪の較正値だけ**）、`IProfileXmlStore` の `LoadControllerConfigsForDevice`／`SaveControllerConfigsForDevice`、`ProfileXmlStore`、`PathService`／`IPathService` の該当パス、`ProgramFolderSettingsCleaner` の該当、`ControlService` の呼び出し（`DS4 接続時の読み込み`）、`ControllerRegisterOptionsWindow`／`ControllerRegDeviceOptsViewModel` の該当（要確認）。
+- コントローラーごとの設定ファイル（`ControllerConfigs.xml`）の**車輪の較正値の部分だけ**（**訂正［2026-10-22。W2 の調査で判明］: このファイルは、車輪の較正値のほかに、コントローラーごとのオプション［`DS4Device.optionsStore`、コントローラー登録オプション画面の設定］も保存している。ファイル・`ControllerConfigsXmlSerializer`・`IProfileXmlStore` の読み書きの口は残し、車輪の部分［`wheelCenterPoint`／`wheel90DegPointLeft`／`wheel90DegPointRight`］だけを除く**）。除くものの一覧: `IProfileXmlStore` の `LoadControllerConfigsForDevice`／`SaveControllerConfigsForDevice`、`ProfileXmlStore`、`PathService`／`IPathService` の該当パス、`ProgramFolderSettingsCleaner` の該当、`ControlService` の呼び出し（`DS4 接続時の読み込み`）、`ControllerRegisterOptionsWindow`／`ControllerRegDeviceOptsViewModel` の該当（要確認）。
 
 ### 3.3 出力
 - `Xbox360OutDevice`（軸の書き込み 11 分岐）、`DS4OutDeviceBasic`、`DS4OutDeviceExt`、`OutputDevice`、`OutputSlotManager` の `GetSteeringWheelEmulationAxis` の取得口。
@@ -58,7 +58,7 @@
 | ジャイロでハンドル操作（11 の出力先、較正、回転範囲、ファズ、スムージング） | できる | できない（機能の廃止） |
 | プロファイル（XML）に `SASteeringWheelEmulationAxis` などの要素がある | 読み込む | **要素を無視する**（他の設定には影響しない。次に保存するとき、要素は書かれない） |
 | Special Action／Controls に「Steering Wheel Calibrate」がある | 実行できる | **要確認（Q3）**: 種別が不明な割り当てとして、読み込み時に取り除くか、そのまま保持するか |
-| コントローラーごとの設定ファイル（`Controllers` の XML） | 較正値を読み書き | 読まない・書かない（ファイルは残る。削除しない） |
+| コントローラーごとの設定ファイル（`ControllerConfigs.xml`） | 較正値と、コントローラーごとのオプションを読み書き | **較正値［車輪の 3 要素］だけ**読まない・書かない（オプションの読み書きは、これまでどおり）。古いファイルの車輪の要素は無視され、次の保存で書かれなくなる |
 | vJoy への送出 | できる | できない（`UseDInputOnly` のときのステアリング限定の機能だった） |
 | 通常のジャイロ機能（マウス、Controls の SX／SZ） | できる | **変わらない** |
 | ログ | 較正のときの GUI ログあり | 該当ログも無くなる（機能ごと廃止のため） |
@@ -68,8 +68,8 @@
 | Wave | 内容 |
 |---|---|
 | W1 | 割り当ての種別「Steering Wheel Calibrate」の削除（Controls／SA。画面、表、アクション、ポート）。旧データの扱いは Q3 に従う |
-| W2 | 本体の削除（`Mapping.cs` のステアリング一式、`StickMotionState.WheelFilters`、`DS4Device` の車輪の状態、`DS4State.SASteeringWheelEmulationUnit`） |
-| W3 | 出力の削除（`Xbox360OutDevice` ほか、`ControlService` の vJoy 送出、`VJoyFeeder`、コントローラーごとの設定ファイル）。vJoy の扱いは Q2 |
+| W2 | 本体の削除（`Mapping.cs` のステアリング一式、`StickMotionState.WheelFilters` と `ControlService` のフィルター作成、`DS4Device` の車輪の状態、`ControllerConfigsXmlSerializer` の車輪の 3 要素、プロファイル編集の Calibrate ボタンとその処理）。`DS4State.SASteeringWheelEmulationUnit` は、出力側が読むため W3 まで残す［W2 の後は、常に 0］ |
+| W3 | 出力の削除（`Xbox360OutDevice` ほか、`DS4State.SASteeringWheelEmulationUnit`、`ControlService` の vJoy 送出、`VJoyFeeder`）。vJoy の扱いは Q2 |
 | W4 | 設定・画面の削除（`BackingStore`、プロファイル XML の読み書き、`ProfileEditor` の「360 Steering Wheel」グループ、翻訳の文字列）。ラチェットの基準値の更新 |
 | W5 | 文書の更新（`Model-Diagram/03`、`Phase9-Responsibility-Split-Plan.md`、`Phase10-*` の該当）と完了報告。`Changelog` の追記 |
 
@@ -120,3 +120,5 @@
 `Debug ALL`: 警告 0・エラー 0・全テスト合格（2,240 件、StandaloneTests 11 件）。
 
 **実機確認（依頼）**: 割り当て編集画面（SA のモード／Controls のモード）で、(1) 種別の一覧に「Sixaxis Wheel」の項目がなく、並びが「種別を選んでください／Macro／Launch Program／Load Profile／Output Key…／Disconnect BT／Check Battery／Multi-action／Calibrate Gyro（／Default／Unbound）」であること。(2) Calibrate Gyro を選んで保存でき、再び開くと同じ種別が選ばれること。(3) 各種別（Default、Unbound を含む）を選んだときの入力欄・タブが、これまでどおりであること。(4) 古い Actions.xml に Steering Wheel Calibrate の項目がある場合、起動時に GUI ログへ `[DI] 廃止された割り当て種別…` が出ること（任意）。なお、プロファイル編集の Calibrate ボタンによる較正は、W4 まで従来どおり動く。
+
+**W1 の実機確認（2026-10-22）: 合格。** ユーザーが、Controls と Special Actions の両方で確認し、問題なし。
