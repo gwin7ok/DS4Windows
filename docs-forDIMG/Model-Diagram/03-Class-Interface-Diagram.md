@@ -494,6 +494,29 @@ classDiagram
         +ForSpecialAction(type, toggle) bool
         +ForControls(kind) bool
     }
+    class IProfileIdentityService {
+        <<interface>>
+        +EnsureAllPersisted() IReadOnlyList~string~
+        +Refresh()
+        +GetId(string profileName) string
+        +GetName(string profileId) string
+        +EnsurePersisted(string profileName) string
+        +TryResolve(string profileId, string nameHint, out string profileName) bool
+    }
+    class ProfileIdentityService
+    class ProfileSlotNames {
+        +Length int
+        +this[int index] string
+        +IdAt(int index) string
+        +AttachIdentity(IProfileIdentityService identity)
+    }
+    class LinkedProfileMap {
+        +this[string serial] string
+        +AttachIdentity(IProfileIdentityService identity)
+    }
+    IProfileIdentityService <|.. ProfileIdentityService : implements
+    ProfileSlotNames ..> IProfileIdentityService : name by ID
+    LinkedProfileMap ..> ProfileSlotNames : value cells
     class IActionRegistry {
         <<interface>>
         +GetBindings(int device) IReadOnlyList~IActionBinding~
@@ -752,4 +775,11 @@ classDiagram
 %% - 保存の可否: 種別ごとの入力（`IActionTypeEditor`）の `IsValid` は、必須の値がないとき（キー・ボタン未選択、Launch Program のパスが空、Load Profile 未選択、Check Battery の方法が未選択・2 色が同じ、Hold が範囲外）に偽を返し、保存を止める。「ファイルが存在しない」（警告）、Toggle の「解除トリガーなし」（機能廃止済み）、Multi-action の未設定のマクロは、表示のみ。対象の入力は赤い枠（`ValidatesOnNotifyDataErrors`）。Controls の Save（`SaveControlMode`）も `typeEditors.IsValid` を呼ぶ。`ControlSettingsEditTarget.CanWrite` は削除。
 %% - 押下判定: デジタルな出力（Key、Extras、パッドのボタン、マウスのボタン・タッチパッドクリック・デジタルのホイール［Toggle つきを含む］）は SA の閾値（`ControlJudgement.Trigger`）。アナログな出力（パッドの軸・トリガー、マウス移動、アナログのホイール、素通し）は従来の判定（`Assignment`）。判定は `ControlBindingBuilder` が束縛ごとに選ぶ。
 %% - 入力の集合: SA のトリガー一覧は 51 項目（末尾に LS Outer／RS Outer を追加。`SpecialAction.getDS4ControlsByName` にも）。Controls の一覧は 51 項目（末尾の後ろに Touch Started／Touch Ended を追加。`ControlSettingsGroup.ControlButtons` にも）。
+
+%% 注釈補強（2026-10-21 Phase10-Step4d 反映: プロファイルと SA の固定 ID。W0〜W7。完成形は Phase10-Integration-Target-Model.md §9）
+%% - 固定 ID（GUID の N 形式）: プロファイル XML のルート直下の先頭の `<ProfileId>`（ファイルの中にあるため、名前［ファイル名］を変えても変わらない。保存は、保存先のファイルの ID を保ち、新しいファイルには新しい ID を振る）と、`Actions.xml` の `Action` の `Id` 属性（`SpecialAction.id`。編集・名前変更で `SaveAction` の `actionId` で引き継ぐ）。起動時に、ID のない（または重複・不正な）ファイル・SA へ一括で割り当てる。
+%% - 登録簿 `IProfileIdentityService`／`ProfileIdentityService`（Singleton）: ID ↔ 名前。メモリの索引（プロファイルのフォルダーの最終更新時刻で鮮度を判定し、1 秒以内に新しいあいだは毎回作り直す）。DI の登録が、作るときに `BackingStore`（`AttachProfileIdentity`）と `ProfileSettingsService` に結ぶ。
+%% - 保存する参照は、ID を主・名前を併記（ID が勝つ。見つからなければ名前）: `<ProfileActions>` ＋ `<ProfileActionIds>`、SA の Load Profile（`Actions.xml` の `ProfileId`）、Controls の Load Profile（`<Control><Special>` の `ProfileId`）、スロットの選択（`Profiles.xml` の `<ControllerProfileIds>`）、リンク（`LinkedProfiles.xml` の `MAC…` の `Id` 属性）、自動プロファイル（`Auto Profiles.xml` の `<ControllerProfileIds>`）。
+%% - 実行時の保持（プロファイル）は、保管が ID で、名前を読み書きする窓口: `ProfileSlotNames`（`BackingStore` の `profilePath`／`olderProfilePath`／`selectedProfile`／`linkedProfileUI`、`ProfileSettingsService` の一時プロファイルの名前、`AutoProfileEntity.ProfileNames`）、`LinkedProfileMap`（`linkedProfiles`）。名前を変えても、読み出す名前が現在の名前になる。Load Profile は、実行の直前に `SpecialAction.profileId` から現在の名前を引く（`ProfileApplicationService.ResolveTarget`。Controls の合成 SA も `profileId` を持つ）。
+%% - SA の実行時の状態（`profileActions`、`ActionManager` の鍵）は名前のまま（W6 の決定）。追従のコードは、実行時に不要になったものを撤去し（`ReplaceLinkedProfileName`、`AutoProfileHolder.ReplaceProfileName`、スロットの配列の書き換え）、ID のない古いファイルのために `ReplaceControlProfileSwitchTarget`／`ReplaceActionReference`／`RemoveActionReference` を残す（TODO 付き）。名前変更の直後に、保存先のファイルを保存し直す（`SaveLinkedProfiles`、`AutoProfileHolder.Save`、アプリ設定、`RefreshProfileSwitchTargets`）。
 

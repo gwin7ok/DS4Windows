@@ -172,3 +172,21 @@ Step4c（W0〜W5）は完了した。完成形のうち、**挙動の差は次�
 - Multi-action の未設定のマクロ（保存を止めるか）は、Controls に Multi-action が来る段階（W8 相当）で決める。
 - 解除トリガーの旧データのエラー表示「No unload triggers specified」は、機能廃止済みで入力する画面もない。表示のみ（保存は止めない）。統合 Step で、表示ごと削除するか決める。
 - 先送りの実機確認（台帳 §27）は、統合 Step の後に回帰として確認する。
+
+## 9. Step4d の結果と、統合 Step への引き継ぎ（2026-10-21）
+
+Step4d（W0〜W7。W6 は W6'）は完了した。完成形のうち、**参照の持ち方**は次のとおり変わった。実機確認（台帳 §27）は先送り中。
+
+| 項目 | Step4d の後の状態 |
+|---|---|
+| プロファイルの識別 | プロファイル XML のルート直下の先頭の `<ProfileId>`（GUID の `N` 形式）。名前（ファイル名）を変えても変わらない。起動時に全ファイルへ一括で書く |
+| SA の識別 | `Actions.xml` の `Action` の `Id` 属性（`SpecialAction.id`）。編集・名前変更で引き継ぐ（`SaveAction` の `actionId`）。起動時に割り当てる |
+| 保存する参照 | ID が主・名前を併記（ID が勝つ。見つからなければ名前）: `<ProfileActionIds>`、SA／Controls の Load Profile（`ProfileId`）、スロットの選択・自動プロファイル（`<ControllerProfileIds>`）、リンク（`Id` 属性） |
+| 実行時の保持（プロファイル） | 保管は ID で、名前を読み書きする窓口: `ProfileSlotNames`（スロットの現在・直前・選択、一時プロファイル、リンクの表示用、自動プロファイル）、`LinkedProfileMap`（リンク）。登録簿 `IProfileIdentityService` が ID ↔ 名前を引く（メモリの索引） |
+| 実行時の保持（SA） | 名前のまま（W6' の決定。`ActionManager` の登録簿は、SA の一覧の読み込み直しのたびに破棄される。合成 SA は ID を持たない） |
+| 追従のコード | 実行時に不要になったものは撤去。ID のない古いプロファイルのファイルのために、`ReplaceControlProfileSwitchTarget`／`ReplaceActionReference` を残す |
+
+**統合 Step に引き継ぐこと**
+- 共通の割り当て定義（`AssignmentDefinition`）に、**固定 ID**（SA の `id`、Controls の割り当て）と、**切り替え先の ID**（`ProfileId`）を含める。Controls の定義は、プロファイル内の割り当てで、ID は持たない（SA は共有）。
+- 古いプロファイルのファイルへ ID を書き足す移行（起動時の一括書き込み）を用意し、`ReplaceControlProfileSwitchTarget`／`ReplaceActionReference` を撤去する（TODO）。
+- SA の実行時の状態（`profileActions`、`ActionManager` の鍵）を名前のまま残す決定（W6'）の見直しは、統合 Step で、合成 SA の鍵を整理するときに、改めて検討する。

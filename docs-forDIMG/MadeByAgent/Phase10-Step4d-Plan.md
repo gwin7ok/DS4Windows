@@ -4,7 +4,7 @@
 対象ブランチ: `For-DI-migration-work`
 前提: `Phase10-Step4c-Plan.md`（完了。項目 5 を本 Step に分離）、`Phase10-Integration-Target-Model.md`、`Phase10-Status.md`
 
-> 状態: **決定事項は確定（2026-10-21、ユーザー。§6。Q5 は「内部の実行時の状態も ID をキーにする」へ変更）。Wave の着手の承認待ち**。製品コードは、まだ変えていない。
+> 状態: **完了（2026-10-21。W0〜W7 と最終 W。W6 は W6' に見直し。`Debug ALL` 成功: 警告 0・エラー 0、テスト 1998 件と 11 件が成功）。実機確認は、統合版の台帳 §27［P10-90〜97］を、ユーザー判断で先送り（統合 Step の後に、回帰としてまとめて確認）**。次は統合 Step の計画書。
 
 ---
 
@@ -184,4 +184,20 @@
   3. 保存する参照は、W3 で ID が主になっている（`<ProfileActionIds>`）。SA の名前を変えたあと、プロファイルを再適用すれば、ファイルの `<ProfileActions>` を書き換えなくても、新しい名前で読み込まれる。
   - 帰結: W7 で、SA の名前変更の追従のうち、全プロファイルの XML の書き換え（`ReplaceActionReference`）を撤去する（再適用は残す）。削除（`RemoveActionReference`）は、古い参照の片付けとして残す。
   - ラチェット（`profileActions` 系の件数）は、W6' では動かさない（基準値は現状のまま）。
-  - 次: W7（追従のコードの撤去）。指示があるまで始めない（実際の呼び出し経路を調べ、設計を説明して承認を得る）。
+- **W7（完了 2026-10-21。`Debug ALL` 成功: 警告 0・エラー 0、テスト 1998 件と 11 件が成功。実機確認 P10-97 は先送り）**: 追従のコードの撤去（案 A。ユーザー決定）。実行時に不要になったものだけを撤去し、ファイルを書き換える 2 つは、ID のない古いプロファイルのファイルのために残した。
+  - 調査（名前変更の経路 `MainWindow.SyncProfileListAndControllers`）: スロットの配列の書き換えは、名前変更の直前にファイルを移動するため、窓口が新しい名前を返し、何もしない処理になっていた。リンク・自動プロファイル・SA の切り替え先の実行時の追従は、W5c〜W5d で自動になった。ファイルの名前を更新する役目だけが残っていた。
+  - 撤去: `MainWindow` の、スロットの配列（`ProfilePath`／`OlderProfilePath`）の書き換え。`IProfileRepository.ReplaceLinkedProfileName`（と実装）。`AutoProfileHolder.ReplaceProfileName`。
+  - 替えたもの: 名前変更の直後に、`SaveLinkedProfiles()`、`AutoProfileHolder.Save()`（既定の保存先の新しいオーバーロード）、`appSettingsService.Save()` で、保存先のファイルの名前と ID を書き直す。`ReplaceProfileSwitchTarget` は `RefreshProfileSwitchTargets(oldName, newName)` に替えた（`SpecialActionsXmlSerializer.RefreshProfileTargets`。切り替え先の ID から現在の名前に引き直し、Actions.xml を保存する。ID のない SA は、旧名との一致で置き換える）。
+  - 残したもの（TODO 付き）: `ReplaceControlProfileSwitchTarget`（各プロファイル XML の Controls の Load Profile の書き換え）、`ReplaceActionReference`（SA の名前変更での、各プロファイル XML の `<ProfileActions>` の書き換え）、`RemoveActionReference`（SA の削除の片付け）。理由: W3 より前に保存されて、まだ保存し直していないプロファイルのファイルには、ID（`ProfileId`、`<ProfileActionIds>`）がなく、撤去すると、名前変更でその参照が切れる。**撤去の条件**: 全プロファイルのファイルへ ID を書き足す移行（起動時の一括書き込み）を用意するか、保存し直されることを確認したとき。
+  - テスト: `Phase10Step4dW7FollowUpTests`（6 件。撤去したメンバーがないこと・残したものがあること、名前変更後の保存でリンク・自動プロファイルが新しい名前と同じ ID を書くこと、`RefreshProfileTargets`［ID から引き直す・ID のない SA は旧名で置き換える］、`MainWindow` の名前変更の共通の経路）。撤去したメンバーの旧いテスト（`Phase10Step4dW0NameKeyTests`、`Step10FourTwoGlobalReferenceGuardTests` の 3 件）を削除。`ProfileRenamePropagationTests`、`Phase10Step4W6ControlProfileTests`、`Phase8Step6W1DisconnectCharacterizationTests`（`olderProfilePath` を参照するファイルの一覧から `MainWindow` を除く）、ラチェット（`MainWindow` 6 → 4）を更新。
+  - 実機確認: 台帳 §27 の P10-97（統合版に追加）。先送り。
+- **最終 W（完了 2026-10-21。文書のみ）**: 完了の記録（本節）、`Phase10-Status.md`、モデル図 `03-Class-Interface-Diagram.md`（Step4d の注釈とクラス）、`Phase10-Integration-Target-Model.md`（Step4d の結果と引き継ぎ。§9）、台帳（§27 の導入）を更新した。
+  - **Step4d の結果（保存する参照と、実行時の保持は、固定 ID が主になった）**:
+    - 固定 ID: プロファイル XML のルート直下の先頭に `<ProfileId>`（W1。起動時に全ファイルへ一括で書く）、`Actions.xml` の `Action` の `Id` 属性（W2。同じく起動時）。GUID の `N` 形式。名前を変えても変わらない。
+    - 保存する参照（ID を主、名前を併記。ID が勝つ。見つからなければ名前。W3〜W4）: プロファイルが使う SA（`<ProfileActionIds>`）、SA の Load Profile（`ProfileId`）、Controls の Load Profile（`ProfileId`）、スロットの選択（`<ControllerProfileIds>`）、リンクプロファイル（`MAC…` の `Id` 属性）、自動プロファイル（`<ControllerProfileIds>`）。
+    - 登録簿 `IProfileIdentityService`（W1、W5a）: ID ↔ 名前。メモリの索引（フォルダーの最終更新時刻で鮮度を判定）。
+    - 実行時の保持（W5b〜W5d）: 保管は ID で、名前を読み書きする窓口。`ProfileSlotNames`（スロットの現在・直前・選択、一時プロファイル、リンクの表示用、自動プロファイルの各コントローラー）、`LinkedProfileMap`（リンク）。名前を変えても、読み出す名前が自動で現在の名前になる。Load Profile は、実行の直前に ID から現在の名前を引く（W5c）。
+    - SA 側の実行時の状態は、名前のまま（W6' の決定。理由は §8）。
+    - 追従のコード: 実行時に不要になったもの（スロットの配列の書き換え、`ReplaceLinkedProfileName`、`AutoProfileHolder.ReplaceProfileName`）を撤去し、保存先のファイルは、名前変更の直後に保存し直す（W7）。`ReplaceControlProfileSwitchTarget`、`ReplaceActionReference`、`RemoveActionReference` は、ID のない古いプロファイルのファイルのために残した（TODO 付き）。
+  - **残る課題（TODO）**: 古いプロファイルのファイルへ ID を書き足す移行（起動時の一括書き込み）を用意できたら、`ReplaceControlProfileSwitchTarget`／`ReplaceActionReference` を撤去する。W2 以降の golden の正規化（`<ProfileId>`、`Id` 属性）は、そのまま。
+  - 実機確認 P10-90〜97 は先送り（統合 Step の後に回帰として確認）。
