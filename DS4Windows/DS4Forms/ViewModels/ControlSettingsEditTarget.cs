@@ -188,12 +188,9 @@ namespace DS4WinWPF.DS4Forms.ViewModels
                     WriteMacro(macro);
                     break;
 
-                case SpecialAction.ActionTypeId.DisconnectBT:
-                case SpecialAction.ActionTypeId.GyroCalibrate:
-                case SpecialAction.ActionTypeId.SASteeringWheelEmulationCalibrate:
-                case SpecialAction.ActionTypeId.Program:
-                case SpecialAction.ActionTypeId.Profile:
-                    WriteSpecial(descriptor.TypeId, editors);
+                // Phase10-Step6 I6b/W7: Controls で実行時に束縛を作る SA 専用の種別（ControlsSpecialTypeTable）。種別が増えても、ここは変えない
+                case SpecialAction.ActionTypeId typeId when DS4Windows.Actions.ControlsSpecialTypeTable.IsSupported(typeId):
+                    WriteSpecial(typeId, editors);
                     break;
 
                 default:   // 0（None）

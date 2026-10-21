@@ -30,6 +30,8 @@ namespace DS4WindowsTests
             SpecialAction.ActionTypeId.DisconnectBT,
             SpecialAction.ActionTypeId.GyroCalibrate,
             SpecialAction.ActionTypeId.SASteeringWheelEmulationCalibrate,
+            SpecialAction.ActionTypeId.BatteryCheck,   // Phase10-Step6 W7 相当
+            SpecialAction.ActionTypeId.MultiAction,   // Phase10-Step6 W8 相当
         };
 
         private static ControlSpecialItem Item(SpecialAction.ActionTypeId type, double seconds = 0)
@@ -161,8 +163,8 @@ namespace DS4WindowsTests
         public void TheTypesNotBuiltYet_AndAMissingItem_MakeNoBinding()
         {
             using var t = new ControlsKeyTestScope();
-            t.MapSpecial(DS4Controls.Square, Item(SpecialAction.ActionTypeId.BatteryCheck));
-            t.MapSpecial(DS4Controls.Triangle, Item(SpecialAction.ActionTypeId.MultiAction));   // Program は W5 で束縛を作るようになった
+            t.MapSpecial(DS4Controls.Square, Item(SpecialAction.ActionTypeId.Macro));   // Macro は Macro の割り当て（3 項目の入れ物）で扱う。Check Battery は Phase10-Step6 W7 相当で束縛を作るようになった
+            t.MapSpecial(DS4Controls.Triangle, Item(SpecialAction.ActionTypeId.None));   // Program は W5、Multi-action は Phase10-Step6 W8 相当で束縛を作るようになった
             t.MapSpecial(DS4Controls.L1, null);
 
             Assert.Empty(TestHost.GetService<IControlBindingBuilder>().Build(Device));
@@ -194,7 +196,7 @@ namespace DS4WindowsTests
             Assert.False(ControlBindingBuilder.TryInterpretSpecial(
                 new DS4ControlSettings(DS4Controls.Cross) { actionType = DS4ControlSettings.ActionType.Special }, out _));
             Assert.False(ControlBindingBuilder.TryInterpretSpecial(
-                new DS4ControlSettings(DS4Controls.Cross) { actionType = DS4ControlSettings.ActionType.Special, special = Item(SpecialAction.ActionTypeId.BatteryCheck) }, out _));
+                new DS4ControlSettings(DS4Controls.Cross) { actionType = DS4ControlSettings.ActionType.Special, special = Item(SpecialAction.ActionTypeId.Macro) }, out _));   // Macro は Macro の割り当て（3 項目の入れ物）で扱う（Check Battery・Multi-action は、Phase10-Step6 W7・W8 相当で対象になった）
         }
 
         [Fact]

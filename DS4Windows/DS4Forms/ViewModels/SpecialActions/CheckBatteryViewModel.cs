@@ -106,6 +106,36 @@ namespace DS4WinWPF.DS4Forms.ViewModels.SpecialActions
             fullColor = Color.FromArgb(255, byte.Parse(details[6]), byte.Parse(details[7]), byte.Parse(details[8]));
         }
 
+        // Phase10-Step6 W7 相当: Controls のモード。型のある項目との往復（SA と同じ入力・同じ検証。色は Color ⇄ DS4Color）
+        public void LoadControlItem(ControlSpecialItem item)
+        {
+            if (item == null) return;
+
+            delay = item.HoldSeconds;
+            notification = item.BatteryNotification;
+            lightbar = item.BatteryLightbar;
+
+            // 2 色とも既定（黒）のときは、色が保存されていない項目。入力の既定の色（空＝赤、満タン＝緑）のままにする
+            if (!item.EmptyColor.Equals(default(DS4Color)) || !item.FullColor.Equals(default(DS4Color)))
+            {
+                EmptyColor = Color.FromArgb(255, item.EmptyColor.red, item.EmptyColor.green, item.EmptyColor.blue);
+                FullColor = Color.FromArgb(255, item.FullColor.red, item.FullColor.green, item.FullColor.blue);
+            }
+        }
+
+        public ControlSpecialItem ToControlItem(SpecialAction.ActionTypeId type)
+        {
+            return new ControlSpecialItem
+            {
+                Type = type,
+                HoldSeconds = delay,
+                BatteryNotification = notification,
+                BatteryLightbar = lightbar,
+                EmptyColor = new DS4Color(emptyColor.R, emptyColor.G, emptyColor.B),
+                FullColor = new DS4Color(fullColor.R, fullColor.G, fullColor.B),
+            };
+        }
+
         // Phase6-Step10-3-2: Global.SaveAction の置換先（必須引数）
         private readonly ISpecialActionRepository specialActionRepository;
         // Phase7-Step10e W2: スロット数の上限は、静的な ControlService.CURRENT_DS4_CONTROLLER_LIMIT ではなく、注入された環境サービスから読む

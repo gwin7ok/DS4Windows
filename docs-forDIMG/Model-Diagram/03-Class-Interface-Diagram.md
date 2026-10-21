@@ -859,3 +859,9 @@ classDiagram
 %% - 画面: 割り当て編集画面（`AssignmentEditor`。旧 `SpecialActionEditor`）と出力ピッカー（`BindingWindow`）は、Controls のモードと SA のモードで共通。2 つのモードの違いは Default／Unbound の表示だけ（`ExposeMode` は SpecialAction と Control の 2 つ。Full と Keyboard は撤去）。Controls のモードで型のある項目と往復する種別ごとの入力は、`IActionTypeEditor.LoadControlItem`／`ToControlItem`（`ControlSpecialEditors` は削除）。
 %% - 撤去した暫定の構造: `forControls`、`ControlJudgement`、`ControlBindingBuilder.BuiltSpecialTypes`、`ControlSpecialEditors`、`ISpecialActionOutputFactory` の互換の入口。
 %% - 残した技術的負債: SA の出力アクション 9 クラスに重複する立ち上がりのログ（後回しを承認済み）。`SpecialAction` が実行時の状態を持つこと。ID のない古いファイルのための追従のコード。Extras を画面から付けられる SA は Press Key（Key／Button）だけ。
+
+%% 注釈補強（2026-10-22 W7・W8 相当 反映: Check Battery、Multi-action を Controls へ。詳細は Phase10-Integration-Target-Model.md §11）
+%% - `ControlsSpecialTypeTable` に Check Battery と Multi-action を追加（実行時の builder、種別の一覧の「Controls で保存できる」、`ControlSettingsEditTarget.WriteFrom` の分岐が、この表に従う）。`ControlSpecialItem` の Check Battery の通知・ライトバーを `<Control><Special>` に保存する（`ControlSpecialItemXml`）。
+%% - 入力の印 `IControlBoundInput`（`Actions/`）を新設。`ControlButtonInputAction` と、新しい `ControlMultiTapInputAction`（`MultiTapInputAction` に判定を任せる、Controls 由来の Multi-action の入力）が実装する。`TriggerDispatchEngine` は、この印で、Controls の束縛をボタンごとの処理の表（`ProcessControl`／`OwnsControl`）に登録する（以前は `ControlButtonInputAction` の型で見分けていた）。
+%% - 方針: Controls の Multi-action は、元のボタンの出力を常に消す（待ち時間のあいだだけでなく）。未設定のマクロは、保存を止めず（赤い枠）、実行自体を行わない（`MacroStringAction` は空文字を実行しない）。
+%% - 画面: `CheckBatteryViewModel`／`MultiActButtonViewModel` が `IActionTypeEditor.LoadControlItem`／`ToControlItem` を実装。

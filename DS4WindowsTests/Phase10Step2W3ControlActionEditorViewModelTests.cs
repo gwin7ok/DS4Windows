@@ -69,8 +69,8 @@ namespace DS4WindowsTests
         [InlineData(3, true)]   // Load Profile
         [InlineData(4, true)]    // Output Key/Mouse/Button（Key・Button）
         [InlineData(5, true)]   // Disconnect BT
-        [InlineData(6, false)]   // Check Battery
-        [InlineData(7, false)]   // Multi Action
+        [InlineData(6, true)]   // Check Battery（Phase10-Step6 W7 相当で保存可能になった）
+        [InlineData(7, true)]   // Multi Action（Phase10-Step6 W8 相当で保存可能になった）
         [InlineData(8, true)]   // 6 軸ホイール較正（Phase10-Step4 W4 で保存可能になった）
         [InlineData(9, true)]   // ジャイロ較正（同上）
         [InlineData(10, true)]   // Default（Controls のモードだけの項目。出力ピッカーの Default ボタンと同じ）

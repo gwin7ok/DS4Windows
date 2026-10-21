@@ -227,18 +227,9 @@ namespace DS4WindowsTests
             Assert.Equal(0, target.Working.action.actionKey);
         }
 
-        [Theory]
-        [InlineData(6)]
-        [InlineData(7)]
-        public void WriteFrom_ATypeControlsCannotSaveYet_IsRefused_AndChangesNothing(int typeIndex)
-        {
-            var rig = new Rig();
-            var target = new ControlSettingsEditTarget(Key(65), rig.Profile);
-
-            Assert.Throws<ArgumentException>(() => target.WriteFrom(typeIndex, rig.PressKey, rig.Macro));
-
-            AssertSameAssignment(Key(65), target.Working);
-        }
+        // Phase10-Step6 W7・W8 相当: Check Battery と Multi-action も Controls に保存できるようになり、「Controls にまだ保存できない種別」は一覧になくなった。
+        // 以前ここにあった、保存できない種別（Check Battery、Multi-action）の拒否の検査（WriteFrom_ATypeControlsCannotSaveYet_IsRefused_AndChangesNothing）は、対象がなくなったため削除した。
+        // 拒否の規則そのもの（WriteFrom の「保存できない種別は例外」）は、種別の表（ControlsSpecialTypeTable）に種別がないとき働く。
 
         [Fact]
         public void WriteFrom_AnIndexOutOfRange_Throws()

@@ -103,6 +103,31 @@ namespace DS4WinWPF.DS4Forms.ViewModels.SpecialActions
             }
         }
 
+        // Phase10-Step6 W8 相当: Controls のモード。型のある項目（3 つのマクロ）との往復（SA と同じ入力・同じ検証）
+        public void LoadControlItem(ControlSpecialItem item)
+        {
+            if (item == null) return;
+
+            for (int i = 0; i < 3; i++) loadAccessArray[i].Clear();
+            tapMacro.AddRange(item.TapMacro);
+            holdMacro.AddRange(item.HoldMacro);
+            doubleTapMacro.AddRange(item.DoubleTapMacro);
+            UpdateTapDisplayText();
+            UpdateHoldDisplayText();
+            UpdateDoubleTapDisplayText();
+        }
+
+        public ControlSpecialItem ToControlItem(SpecialAction.ActionTypeId type)
+        {
+            return new ControlSpecialItem
+            {
+                Type = type,
+                TapMacro = new List<int>(tapMacro),
+                HoldMacro = new List<int>(holdMacro),
+                DoubleTapMacro = new List<int>(doubleTapMacro),
+            };
+        }
+
         public void UpdateTapDisplayText()
         {
             TapMacroTextChanged?.Invoke(this, EventArgs.Empty);

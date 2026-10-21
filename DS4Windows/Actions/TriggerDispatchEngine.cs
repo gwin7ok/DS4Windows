@@ -392,7 +392,7 @@ namespace DS4Windows.Actions
                     rt.Index.Add(source, i);
 
                 // Controls タブの束縛（7.8b）: ボタン → 束縛の添字の表
-                if (snapshot[i]?.Input is ControlButtonInputAction controlInput)
+                if (snapshot[i]?.Input is IControlBoundInput controlInput)   // Phase10-Step6 W8 相当: 型ではなく印で見分ける（Controls の Multi-action も載せる）
                 {
                     if (rt.ControlIndex == null || rt.ControlCount == 0)
                     {

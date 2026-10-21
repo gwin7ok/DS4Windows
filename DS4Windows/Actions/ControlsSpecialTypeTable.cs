@@ -17,6 +17,8 @@ namespace DS4Windows.Actions
                 case SpecialAction.ActionTypeId.Profile:
                 case SpecialAction.ActionTypeId.DisconnectBT:
                 case SpecialAction.ActionTypeId.GyroCalibrate:
+                case SpecialAction.ActionTypeId.BatteryCheck:   // Phase10-Step6 W7 相当
+                case SpecialAction.ActionTypeId.MultiAction:   // Phase10-Step6 W8 相当
                 case SpecialAction.ActionTypeId.SASteeringWheelEmulationCalibrate:
                     return true;
                 default:

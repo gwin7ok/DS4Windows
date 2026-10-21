@@ -102,6 +102,8 @@ namespace DS4WindowsTests
                 SpecialAction.ActionTypeId.Profile,
                 SpecialAction.ActionTypeId.Key,
                 SpecialAction.ActionTypeId.DisconnectBT,
+                SpecialAction.ActionTypeId.BatteryCheck,   // Phase10-Step6 W7 相当
+                SpecialAction.ActionTypeId.MultiAction,   // Phase10-Step6 W8 相当
                 SpecialAction.ActionTypeId.SASteeringWheelEmulationCalibrate,
                 SpecialAction.ActionTypeId.GyroCalibrate,
             }, controlsSavable);

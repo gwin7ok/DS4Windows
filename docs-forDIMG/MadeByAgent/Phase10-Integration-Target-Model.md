@@ -212,3 +212,19 @@ Step4d（W0〜W7。W6 は W6'）は完了した。完成形のうち、**参照�
 - **W7・W8 相当（Check Battery、Multi-action を Controls へ）**: 次の作業。Controls で足すのは、(1) 保存形式（Check Battery の通知・ライトバーの 2 つの on／off を `<Special>` に）、(2) Multi-action の入力（Controls 由来でも専用の `MultiTapInputAction` を使う分岐）、(3) 画面の接続（`ControlsSpecialTypeTable` に 2 種別を足し、2 つの入力に `LoadControlItem`／`ToControlItem` を実装）と、Multi-action の未設定マクロの検証の決定。Q5（単体ボタンの Multi-action で、待ち時間のあいだ元の出力を消すか）の確認。
 - **Step5**（SA 側のアナログ出力）。
 - 残した技術的負債は `Phase10-Step6-Completion-Report.md` §5。
+
+## 11. W7・W8 相当（Check Battery、Multi-action を Controls へ）の結果（2026-10-22）
+
+統合 Step の後の作業として実装した（設計はユーザー承認済み）。`Debug ALL` は、警告 0・エラー 0、テスト 2102 件と 11 件が成功。実機確認は先送り（台帳 §29）。
+
+| 項目 | 内容 |
+|---|---|
+| 規則の表 | `ControlsSpecialTypeTable` に Check Battery と Multi-action を追加（種別の一覧の「Controls で保存できる」、`ControlSettingsEditTarget.WriteFrom` の分岐、実行時の builder が、この表に従う。`WriteFrom` は表に種別が増えても変更不要にした） |
+| 保存（Check Battery） | `<Control><Special>` に `BatteryNotification`／`BatteryLightbar`（種別が Check Battery のときだけ、明示して書く）。空・満の色と秒数は従来どおり |
+| 保存（Multi-action） | 3 つのマクロ（`TapMacro`／`HoldMacro`／`DoubleTapMacro`）は従来の項目（変更なし） |
+| 入力（Multi-action） | `ControlMultiTapInputAction`（`MultiTapInputAction` に判定を任せる。押下の判定は SA と同じ閾値）。エンジンのボタンごとの表（`ProcessControl`／`OwnsControl`）に載せるため、Controls の入力の**印** `IControlBoundInput` を新設（`ControlButtonInputAction` も実装。以前は型で見分けていた） |
+| 方針（Q5。ユーザー決定） | 元のボタンの出力は、待ち時間のあいだだけでなく**常に**消す（ほかの Controls の割り当てと同じ）。Multi-action は Fresh-press ガードを見ない（SA と同じ） |
+| 未設定のマクロ（ユーザー決定） | 保存を止めない（赤い枠で示すだけ。SA と同じ）。未設定のジェスチャーは、空のマクロを実行するのではなく、**実行自体を行わない**（`MacroStringAction` が空文字は実行しない）。割り当て自体はあるので、元の出力は常に消える |
+| 画面 | `CheckBatteryViewModel`／`MultiActButtonViewModel` が `LoadControlItem`／`ToControlItem` を実装（SA と同じ入力・同じ検証） |
+
+**残り**: Step5（SA 側のアナログ出力）。

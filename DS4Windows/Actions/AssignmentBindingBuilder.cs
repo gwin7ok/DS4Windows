@@ -72,6 +72,11 @@ namespace DS4Windows.Actions
 
         private IInputAction CreateInput(AssignmentDefinition definition, SpecialAction source, SpecialActionOutputs outputs)
         {
+            // Phase10-Step6 W8 相当: Multi-action は、Controls 由来でも、タップ・長押し・ダブルタップを判定する独立した入力（トリガーは 1 つのボタン。押下の判定は SA と同じ閾値）。
+            // 元のボタンの出力は、方針（Controls は毎フレーム消す）で、待ち時間のあいだだけでなく常に消す（ユーザー決定）
+            if (definition.Origin == AssignmentOrigin.Controls && outputs.IsMultiTap)
+                return new ControlMultiTapInputAction(source.name, definition.Triggers[0], _profileSettings, definition.HoldSeconds);
+
             if (definition.Origin == AssignmentOrigin.Controls)
             {
                 // Controls は、1 ボタン。区分は種別から（Key、Macro、それ以外は SA 専用の種別）。押下の判定は、出力の種類（デジタル）から決まる性質

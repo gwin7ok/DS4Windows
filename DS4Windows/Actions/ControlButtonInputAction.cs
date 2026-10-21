@@ -11,7 +11,7 @@ namespace DS4Windows.Actions
     /// Phase10-Step4 W3: Macro の「Run on trigger release」のために、離したときに成立する反転（<c>invertOnRelease</c>）を持てる
     /// （<see cref="ComboTriggerInputAction"/> と同じ規則: 押された時点で準備、離された時点で 1 回だけ成立。既定は偽で、従来と同じ）。
     /// </summary>
-    public sealed class ControlButtonInputAction : IInputAction
+    public sealed class ControlButtonInputAction : IControlBoundInput
     {
         private readonly DS4Controls[] _triggers;
         private readonly bool _invertOnRelease;

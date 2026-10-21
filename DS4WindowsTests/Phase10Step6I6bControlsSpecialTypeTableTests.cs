@@ -20,8 +20,8 @@ namespace DS4WindowsTests
         [InlineData(SpecialAction.ActionTypeId.DisconnectBT, true)]
         [InlineData(SpecialAction.ActionTypeId.GyroCalibrate, true)]
         [InlineData(SpecialAction.ActionTypeId.SASteeringWheelEmulationCalibrate, true)]
-        [InlineData(SpecialAction.ActionTypeId.BatteryCheck, false)]
-        [InlineData(SpecialAction.ActionTypeId.MultiAction, false)]
+        [InlineData(SpecialAction.ActionTypeId.BatteryCheck, true)]   // Phase10-Step6 W7 相当
+        [InlineData(SpecialAction.ActionTypeId.MultiAction, true)]   // Phase10-Step6 W8 相当
         [InlineData(SpecialAction.ActionTypeId.Macro, false)]   // Macro は Macro の割り当て（3 項目の入れ物）で扱う
         [InlineData(SpecialAction.ActionTypeId.Key, false)]
         public void TheTable_ListsTheTypesThatControlsBuilds(SpecialAction.ActionTypeId type, bool expected)

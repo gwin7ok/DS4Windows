@@ -65,9 +65,8 @@ namespace DS4Windows
         /// <summary>電池が満タンのときの色（同、後半）。</summary>
         public DS4Color FullColor { get; set; }
 
-        // TODO(Phase10-Step6 I2 → W7 相当): 作られた経緯＝SA の BatteryCheck の通知・ライトバーの 2 項目（details の 2 番目・3 番目）を、型のある項目として受けるため（変換部品 SpecialActionItemMapper が使う）。
-        // 未接続である理由＝Check Battery はまだ Controls に来ていない（ControlsSpecialTypeTable に入らない）ため、プロファイル XML（ControlSpecialItemXml）には書かない。
-        // 接続予定＝Check Battery を Controls へ移す作業（W7 相当）で、保存・読み込みと UI を足す。
+        // Phase10-Step6 W7 相当（接続済み）: SA の BatteryCheck の通知・ライトバーの 2 項目（details の 2 番目・3 番目）を受ける型のある項目。Controls の Check Battery（ControlsSpecialTypeTable）で、
+        // プロファイル XML（ControlSpecialItemXml）に保存する（種別が Check Battery のときだけ、明示して書く）。
 
         /// <summary>電池の残量を通知する（SA の BatteryCheck の通知）。</summary>
         public bool BatteryNotification { get; set; } = true;

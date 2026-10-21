@@ -51,6 +51,13 @@ namespace DS4Windows.Services
             if (item.AutomaticUntrigger) Child("AutomaticUntrigger", "true");
             if (!item.EmptyColor.Equals(default(DS4Color))) Child("EmptyColor", ColorText(item.EmptyColor));
             if (!item.FullColor.Equals(default(DS4Color))) Child("FullColor", ColorText(item.FullColor));
+            // Phase10-Step6 W7 相当: Check Battery の通知とライトバーの on／off。種別が Check Battery のときだけ、明示して書く（既定の値でも書く。入力の既定と項目の既定が違うため）
+            if (item.Type == SpecialAction.ActionTypeId.BatteryCheck)
+            {
+                Child("BatteryNotification", item.BatteryNotification ? "true" : "false");
+                Child("BatteryLightbar", item.BatteryLightbar ? "true" : "false");
+            }
+
             if (item.TapMacro.Count > 0) Child("TapMacro", string.Join("/", item.TapMacro));
             if (item.HoldMacro.Count > 0) Child("HoldMacro", string.Join("/", item.HoldMacro));
             if (item.DoubleTapMacro.Count > 0) Child("DoubleTapMacro", string.Join("/", item.DoubleTapMacro));
@@ -93,6 +100,8 @@ namespace DS4Windows.Services
                     case "AutomaticUntrigger": result.AutomaticUntrigger = IsTrue(text); break;
                     case "EmptyColor": if (TryColor(text, out DS4Color empty)) result.EmptyColor = empty; break;
                     case "FullColor": if (TryColor(text, out DS4Color full)) result.FullColor = full; break;
+                    case "BatteryNotification": result.BatteryNotification = IsTrue(text); break;   // Phase10-Step6 W7 相当
+                    case "BatteryLightbar": result.BatteryLightbar = IsTrue(text); break;
                     case "TapMacro": result.TapMacro = ParseSteps(text); break;
                     case "HoldMacro": result.HoldMacro = ParseSteps(text); break;
                     case "DoubleTapMacro": result.DoubleTapMacro = ParseSteps(text); break;
