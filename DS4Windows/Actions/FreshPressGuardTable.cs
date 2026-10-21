@@ -40,7 +40,7 @@ namespace DS4Windows.Actions
                 case SpecialAction.ActionTypeId.Macro:
                     return ForControls(ControlBindingKind.Macro);
                 default:
-                    return ForControls(ControlBindingKind.Special);
+                    return ForSpecialAction(type, toggle);   // SA 専用の種別は SA と同じ規則（Controls の Special の区分も、これらは見る）。Button の Press と MultiAction は Controls に来ないが、従来のファクトリーの動作（SA と同じ）を保つ
             }
         }
 
