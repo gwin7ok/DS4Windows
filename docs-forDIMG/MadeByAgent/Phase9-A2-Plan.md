@@ -3,7 +3,7 @@
 作成日: 2026-10-22  
 対象ブランチ: `For-DI-migration-work`  
 上位: `Phase9-Responsibility-Split-Plan.md` 9-A（Q9: 2 Wave に分ける）、`Phase9-A1-Plan.md`（9-A(1) は完了）、`Phase9-SteeringWheel-Removal-Plan.md`  
-状態: **A・B 完了（2026-10-22）。C は、設計を説明し、承認を得てから着手する**
+状態: **A・B・C 完了（2026-10-22）。9-A(2) 完了。次はステアリング＋vJoy の削除（Phase9-SteeringWheel-Removal-Plan.md）**
 
 ---
 
@@ -19,7 +19,7 @@
 |---|---|---|---|
 | A | ジャイロ → コントロール（`GyroOutMode.Controls` の SX／SZ の補正）を切り出す | 値の特性化（先に追加）、割り当て 0、性能の計測 | **完了**（§3） |
 | B | スティックの前処理（アンチスナップバック、ファズ、ドリフト補正［`ApplyStickCalibration`］、回転）を切り出す。アンチスナップバックは時刻（`DateTimeOffset.Now`）に依存するため、時計を差し替えられるようにしてから特性化する | 同上 | **完了**（§4） |
-| C | フリックスティック（`ProcessFlickStick`／`HandleFlickStickAngle`／`WarpEaseOut`）を切り出す。`cState.elapsedTime` を引数で渡す形にし、角度の列を与えて変化量を固定する特性化を先に足す | 同上 | 未着手 |
+| C | フリックスティック（`ProcessFlickStick`／`HandleFlickStickAngle`／`WarpEaseOut`）を切り出す。`cState.elapsedTime` を引数で渡す形にし、角度の列を与えて変化量を固定する特性化を先に足す | 同上 | **完了**（§5） |
 
 各段階の前に、設計を説明し、承認を得る。各段階の終わりで、`Debug ALL`（警告 0・エラー 0・全テスト合格）と、割り当て 0（`MappingHotPathAllocationTests`）、性能の計測（`Phase9HotPathTimingBenchmark`。基準を `git worktree` で別に建て、交互に 3 回ずつ。悪化 5% 以内）を確認する。
 
@@ -74,3 +74,33 @@
 | ジャイロ → コントロール | 300.4 | 300.9 | +0.2% |
 
 許容（5% 以内の悪化）に収まった。
+
+## 5. C の結果（2026-10-22）
+
+**調査**: `Mapping` の private メソッド `ProcessFlickStick`（約 40 行）、`HandleFlickStickAngle`（約 75 行）、`WarpEaseOut`。呼び出しは、`MapCustom` の流れのスティックモード `StickMode.FlickStick` の 2 箇所（左・右）。時刻（`DateTime`）は使わず、フレーム間隔は `cState.elapsedTime`。`ProcessFlickStick` の `device`・`ControlService ctrl` は未使用だった。状態 `FlickStickMappingData` は、すでに独立したクラスで、`StickMotionState` が持っている。
+
+| 区分 | 内容 |
+|---|---|
+| テスト（置き換えの前に追加） | `DS4WindowsTests/Phase9A2FlickStickGoldenTests.cs`。現行の private メソッド `ProcessFlickStick` を、**リフレクションで呼んで**ゴールデンを作った。スティックの列 3 種（フリック、旋回 2 周＋逆回り、小さな動き）× 設定 6 種（しきい値、フリック時間、補正係数、最小角度、フレーム間隔）。1 フレームごとのマウス X の増分と持ち越しの端数を記録。ゴールデン `Golden/Phase7Step10c/phase9a2-flick-stick.state.txt`（約 2,700 行）。切り出し後は、呼び出し先だけを新しい処理に変えた（ゴールデンは 1 バイトも変わらない） |
+| 新規 | `DI/IFlickStickProcessor.cs`（`Process(data, settings, elapsedTime, stickX, stickY, prevStickX, prevStickY, ref mouseDeltaX)`）、`DS4Control/Services/FlickStickProcessor.cs`（3 メソッドをそのまま移した。未使用の引数は外した） |
+| `Mapping.cs` | 3 メソッド（約 120 行）を削除し、呼び出し 2 箇所を置き換えた。`Mapping.cs`: 3,188 → 3071 行 |
+| DI | `IFlickStickProcessor` を Singleton で登録。`Mapping` のコンストラクターの引数を追加（17 → 18）。`TestMappingFactory`、`Phase7Step8W2MappingInstanceGuardTests` を更新 |
+
+`Debug ALL`: 警告 0・エラー 0・全テスト合格（2,259 件、StandaloneTests 11 件）。
+
+**性能の計測**（Release。基準＝変更前の HEAD［62079ab8］を別の `git worktree` に建て、交互に 3 回ずつ。場面ごとの中央値の最小同士。フリックはベンチマークの場面に入らないため、既存の場面で、ほかへの影響がないことを確認した）:
+
+| 場面 | 基準（ns／回） | 新（ns／回） | 差 |
+|---|---|---|---|
+| 既定 | 311.2 | 304.0 | −2.3% |
+| 出力カーブあり | 448.1 | 444.0 | −0.9% |
+| トリガーの補正 | 355.8 | 335.5 | −5.7% |
+| ジャイロ → コントロール | 321.9 | 324.9 | +0.9% |
+
+許容（5% 以内の悪化）に収まった。
+
+## 6. 9-A(2) の総括
+
+`Mapping.cs` は 3,444 → 3071 行（9-A(2) で約 370 行減）。9-A 全体では 4,430 → 3071 行（約 1,360 行減）。新しい処理は 6 つ（`IStickDeadZoneProcessor`、`IOutputCurveProcessor`、`ITriggerDeadZoneProcessor`、`IGyroControlsProcessor`、`IStickInputConditioner`、`IFlickStickProcessor`）。モデル図 `Model-Diagram/03-Class-Interface-Diagram.md` に反映した。`SetCurveAndDeadzone` は、回転、前処理の呼び出し、各補正の呼び出しを順に行う司令塔になった。
+
+**残り**: ステアリング（旧 D 区分）は、機能ごと削除する（`Phase9-SteeringWheel-Removal-Plan.md`。承認済み）。2 段階トリガー（`ProcessTwoStageTrigger`）は、`MapCustom` の責務分割の Wave で扱う（時刻の差し替えが要る）。

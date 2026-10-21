@@ -129,7 +129,8 @@ namespace DS4Windows
             DS4Windows.DI.IOutputCurveProcessor outputCurve,
             DS4Windows.DI.ITriggerDeadZoneProcessor triggerDeadZone,
             DS4Windows.DI.IGyroControlsProcessor gyroControls,
-            DS4Windows.DI.IStickInputConditioner stickConditioner)
+            DS4Windows.DI.IStickInputConditioner stickConditioner,
+            DS4Windows.DI.IFlickStickProcessor flickStick)
         {
             _syntheticInput = syntheticInput ?? throw new ArgumentNullException(nameof(syntheticInput));
             _macroRuntime = macroRuntime ?? throw new ArgumentNullException(nameof(macroRuntime));
@@ -148,6 +149,7 @@ namespace DS4Windows
             _triggerDeadZone = triggerDeadZone ?? throw new ArgumentNullException(nameof(triggerDeadZone));
             _gyroControls = gyroControls ?? throw new ArgumentNullException(nameof(gyroControls));
             _stickConditioner = stickConditioner ?? throw new ArgumentNullException(nameof(stickConditioner));
+            _flickStick = flickStick ?? throw new ArgumentNullException(nameof(flickStick));
 
             _triggerInputs = new DS4Windows.Actions.TriggerInput[ControllerLimits.MaxControllerCount];
             _frameOutputs = new DS4Windows.Actions.FrameOutput[ControllerLimits.MaxControllerCount];
@@ -275,6 +277,7 @@ namespace DS4Windows
         private readonly DS4Windows.DI.ITriggerDeadZoneProcessor _triggerDeadZone;   // Phase9 9-A(1) (d): L2／R2 のデッドゾーン（共通の処理）
         private readonly DS4Windows.DI.IGyroControlsProcessor _gyroControls;   // Phase9 9-A(2)-A: ジャイロ → コントロールの補正（X／Z 共通の処理）
         private readonly DS4Windows.DI.IStickInputConditioner _stickConditioner;   // Phase9 9-A(2)-B: ドリフト補正・アンチスナップバック・ファズ（共通の処理）
+        private readonly DS4Windows.DI.IFlickStickProcessor _flickStick;   // Phase9 9-A(2)-C: フリックスティック（共通の処理）
 
         // Phase8-Step4 W4: デバイスごとのトリガー判定の入力（毎フレーム MapCustom の先頭で更新する）と、フレームの出力への書き込み口。
         // 遅延の基準時刻（旧 nowAction／oldnowAction）は、_triggerInputs[device].Delay に置き換わった。
@@ -767,8 +770,8 @@ namespace DS4Windows
                         DS4State cRawState = d.getCurrentStateRef();
                         DS4State pState = d.getPreviousStateRef();
 
-                        ProcessFlickStick(device, cRawState, cRawState.LX, cRawState.LY, pState.LX, pState.LY, ctrl,
-                            stickSettings.outputSettings.flickSettings, ref tempMouseDeltaX);
+                        _flickStick.Process(flickMappingData[device], stickSettings.outputSettings.flickSettings, cRawState.elapsedTime,
+                            cRawState.LX, cRawState.LY, pState.LX, pState.LY, ref tempMouseDeltaX);
                         break;
                     default:
                         break;
@@ -824,8 +827,8 @@ namespace DS4Windows
                         DS4State cRawState = d.getCurrentStateRef();
                         DS4State pState = d.getPreviousStateRef();
 
-                        ProcessFlickStick(device, cRawState, cRawState.RX, cRawState.RY, pState.RX, pState.RY, ctrl,
-                            stickSettings.outputSettings.flickSettings, ref tempMouseDeltaX);
+                        _flickStick.Process(flickMappingData[device], stickSettings.outputSettings.flickSettings, cRawState.elapsedTime,
+                            cRawState.RX, cRawState.RY, pState.RX, pState.RY, ref tempMouseDeltaX);
                         break;
                     default:
                         break;
@@ -1550,127 +1553,7 @@ namespace DS4Windows
             outputFullPull = dcsFullPull;
         }
 
-        private void ProcessFlickStick(int device, DS4State cRawState, byte stickX, byte stickY, byte prevStickX, byte prevStickY, ControlService ctrl, FlickStickSettings flickSettings, ref double tempMouseDeltaX)
-        {
-            FlickStickMappingData tempFlickData = flickMappingData[device];
-            double angleChange = HandleFlickStickAngle(cRawState, stickX, stickY, prevStickX, prevStickY,
-                tempFlickData, flickSettings);
-            //angleChange = flickFilter.Filter(angleChange, cState.elapsedTime);
-            //Console.WriteLine(angleChange);
-            //if (angleChange != 0.0)
-            double lsangle = angleChange * 180.0 / Math.PI;
-            if (lsangle == 0.0)
-            {
-                tempFlickData.flickAngleRemainder = 0.0;
-            }
-            else if (lsangle >= 0.0 && tempFlickData.flickAngleRemainder >= 0.0)
-            {
-                lsangle += tempFlickData.flickAngleRemainder;
-            }
-
-            tempFlickData.flickAngleRemainder = 0.0;
-            //Console.WriteLine(lsangle);
-            //if (angleChange != 0.0)
-            if (flickSettings.minAngleThreshold == 0.0 && lsangle != 0.0)
-            //if (Math.Abs(lsangle) >= 0.5)
-            {
-                tempFlickData.flickAngleRemainder = 0.0;
-                //flickAngleRemainder = lsangle - (int)lsangle;
-                //lsangle = (int)lsangle;
-                tempMouseDeltaX += lsangle * flickSettings.realWorldCalibration;
-            }
-            else if (Math.Abs(lsangle) >= flickSettings.minAngleThreshold)
-            {
-                tempFlickData.flickAngleRemainder = 0.0;
-                //flickAngleRemainder = lsangle - (int)lsangle;
-                //lsangle = (int)lsangle;
-                tempMouseDeltaX += lsangle * flickSettings.realWorldCalibration;
-            }
-            else
-            {
-                tempFlickData.flickAngleRemainder = lsangle;
-            }
-        }
-
-        private double HandleFlickStickAngle(DS4State cState, byte stickX, byte stickY, byte prevStickX, byte prevStickY,
-            FlickStickMappingData flickData, FlickStickSettings flickSettings)
-        {
-            double result = 0.0;
-
-            double lastXMax = prevStickX >= 128 ? 127.0 : -128.0;
-            double lastTestX = (prevStickX - 128) / lastXMax;
-            double lastYMax = prevStickY >= 128 ? 127.0 : -128.0;
-            double lastTestY = (prevStickY - 128) / lastYMax;
-
-            double currentXMax = stickX >= 128 ? 127.0 : -128.0;
-            double currentTestX = (stickX - 128) / currentXMax;
-            double currentYMax = stickY >= 128 ? 127.0 : -128.0;
-            double currentTestY = (stickY - 128) / currentYMax;
-
-            double lastLength = (lastTestX * lastTestX) + (lastTestY * lastTestY);
-            double length = (currentTestX * currentTestX) + (currentTestY * currentTestY);
-            double testLength = flickSettings.flickThreshold * flickSettings.flickThreshold;
-
-            if (length >= testLength)
-            {
-                if (lastLength < testLength)
-                {
-                    // Start new Flick
-                    flickData.flickProgress = 0.0; // Reset Flick progress
-                    flickData.flickSize = Math.Atan2((stickX - 128), -(stickY - 128));
-                    //flickData.flickFilter.Filter(0.0, cState.elapsedTime);
-                }
-                else
-                {
-                    // Turn camera
-                    double stickAngle = Math.Atan2((stickX - 128), -(stickY - 128));
-                    double lastStickAngle = Math.Atan2((prevStickX - 128), -(prevStickY - 128));
-                    double angleChange = (stickAngle - lastStickAngle);
-                    double rawAngleChange = angleChange;
-                    angleChange = (angleChange + Math.PI) % (2 * Math.PI);
-                    if (angleChange < 0)
-                    {
-                        angleChange += 2 * Math.PI;
-                    }
-                    angleChange -= Math.PI;
-                    //Console.WriteLine("ANGLE CHANGE: {0} {1} {2}", stickAngle, lastStickAngle, rawAngleChange);
-                    //Console.WriteLine("{0} {1} | {2} {3}", cState.RX, pState.RX, cState.RY, pState.RY);
-                    //angleChange = flickData.flickFilter.Filter(angleChange, cState.elapsedTime);
-                    result += angleChange;
-                }
-            }
-            else
-            {
-                // Cleanup
-                //flickData.flickFilter.Filter(0.0, cState.elapsedTime);
-                result = 0.0;
-            }
-
-            // Continue Flick motion
-            double lastFlickProgress = flickData.flickProgress;
-            double flickTime = flickSettings.flickTime;
-            if (lastFlickProgress < flickTime)
-            {
-                flickData.flickProgress = Math.Min(flickData.flickProgress + cState.elapsedTime, flickTime);
-
-                double lastPerOne = lastFlickProgress / flickTime;
-                double thisPerOne = flickData.flickProgress / flickTime;
-
-                double warpedLastPerOne = WarpEaseOut(lastPerOne);
-                double warpedThisPerone = WarpEaseOut(thisPerOne);
-                //Console.WriteLine("{0} {1}", warpedThisPerone, warpedLastPerOne);
-
-                result += (warpedThisPerone - warpedLastPerOne) * flickData.flickSize;
-            }
-
-            return result;
-        }
-
-        private static double WarpEaseOut(double input)
-        {
-            double flipped = 1.0 - input;
-            return 1.0 - flipped * flipped;
-        }
+        // Phase9 9-A(2)-C: 旧 ProcessFlickStick／HandleFlickStickAngle／WarpEaseOut（フリックスティック）は、FlickStickProcessor（DS4Control/Services）へ移した。
 
         //private static OneEuroFilter flickFilter = new OneEuroFilter(0.4, 0.4);
         //private static double flickProgress = 0.0;

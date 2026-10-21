@@ -210,6 +210,42 @@ classDiagram
     class SyntheticInputState
     class MacroRuntimeState
     class StickMotionState
+    %% Phase9 9-A（2026-10-22）: Mapping から切り出した、状態を持たない補正処理（Singleton。値の特性化はゴールデンテストが守る）
+    class IStickDeadZoneProcessor {
+        <<interface>>
+        +Process(StickDeadZoneInfo mod, byte rawX, byte rawY, ref byte x, ref byte y, ref byte outer)
+    }
+    class IOutputCurveProcessor {
+        <<interface>>
+        +ProcessSquareStick(double roundness, ref byte x, ref byte y)
+        +ProcessStickCurve(int mode, DeadZoneType type, BezierCurve bezier, ref byte x, ref byte y)
+        +ProcessTriggerCurve(int mode, BezierCurve bezier, ref byte value)
+    }
+    class ITriggerDeadZoneProcessor {
+        <<interface>>
+        +Process(TriggerDeadZoneZInfo mod, byte rawValue, ref byte value)
+    }
+    class IGyroControlsProcessor {
+        <<interface>>
+        +Correct(int accel, int deadZone, double maxZone, double antiDead, double sens) int
+        +ApplyCurve(int mode, BezierCurve bezier, int outputAccel) int
+    }
+    class IStickInputConditioner {
+        <<interface>>
+        +ApplyDrift(int device, DS4State state, IProfileSettingsService settings) DS4State
+        +AntiSnapback(Queue history, double delta, long timeoutMs, long timestamp, ref byte x, ref byte y)
+        +Fuzz(byte[] last, int stickId, int delta, ref byte x, ref byte y)
+    }
+    class IFlickStickProcessor {
+        <<interface>>
+        +Process(FlickStickMappingData data, FlickStickSettings settings, double elapsedTime, byte stickX, byte stickY, byte prevStickX, byte prevStickY, ref double mouseDeltaX)
+    }
+    class StickDeadZoneProcessor
+    class OutputCurveProcessor
+    class TriggerDeadZoneProcessor
+    class GyroControlsProcessor
+    class StickInputConditioner
+    class FlickStickProcessor
     IMapping <|.. Mapping : implements
     IKeyButtonControllerRegistry <|.. KeyButtonControllerRegistry : implements
     ISyntheticDispatcher <|.. SyntheticDispatcherService : implements
@@ -221,6 +257,19 @@ classDiagram
     Mapping --> IVirtualKBM
     Mapping --> IKeyButtonControllerRegistry
     Mapping --> ISyntheticDispatcher
+    IStickDeadZoneProcessor <|.. StickDeadZoneProcessor : implements
+    IOutputCurveProcessor <|.. OutputCurveProcessor : implements
+    ITriggerDeadZoneProcessor <|.. TriggerDeadZoneProcessor : implements
+    IGyroControlsProcessor <|.. GyroControlsProcessor : implements
+    IStickInputConditioner <|.. StickInputConditioner : implements
+    IFlickStickProcessor <|.. FlickStickProcessor : implements
+    Mapping --> IStickDeadZoneProcessor : ctor injection (Phase9 9-A)
+    Mapping --> IOutputCurveProcessor : ctor injection
+    Mapping --> ITriggerDeadZoneProcessor : ctor injection
+    Mapping --> IGyroControlsProcessor : ctor injection
+    Mapping --> IStickInputConditioner : ctor injection
+    Mapping --> IFlickStickProcessor : ctor injection
+    IStickInputConditioner ..> StickMotionState : 履歴・前回の値は呼び出し側が持ち、引数で渡す
     ProfileApplicationService --> IKeyButtonControllerRegistry : ClearForDevice
     SyntheticDispatcherService --> SyntheticInputState
     SyntheticDispatcherService --> OutputKBMHandlerAdapter : default output (Handler)

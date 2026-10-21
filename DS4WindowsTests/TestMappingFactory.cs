@@ -58,7 +58,8 @@ namespace DS4WindowsTests
                 TestHost.GetService<IOutputCurveProcessor>(),   // Phase9 9-A(1) (c)
                 TestHost.GetService<ITriggerDeadZoneProcessor>(),   // Phase9 9-A(1) (d)
                 TestHost.GetService<IGyroControlsProcessor>(),   // Phase9 9-A(2)-A
-                TestHost.GetService<IStickInputConditioner>());   // Phase9 9-A(2)-B
+                TestHost.GetService<IStickInputConditioner>(),   // Phase9 9-A(2)-B
+                TestHost.GetService<IFlickStickProcessor>());   // Phase9 9-A(2)-C
         }
     }
 }
