@@ -1,7 +1,7 @@
 # フェーズ10 進捗管理文書: 割り当て編集画面の統合（Controls タブと SpecialActions タブ）
 
 最終更新日: 2026-10-22  
-状態: **Step1・Step2 完了（2026-10-21）。Step3 以降は未着手（Step3 の個別計画書を作り、承認を得てから着手する）**  
+状態: **Phase10 の計画した Step は、すべて完了（2026-10-22）。Step1〜Step5、Step3b、Step4c、Step4d、統合 Step（Step6）、W7・W8 相当。残りは、先送りの実機確認（台帳 §27〜§30）。結果と差は `Phase10-Integration-Target-Model.md` §10〜§12、完了報告書は `Phase10-Step6-Completion-Report.md`**
 計画書: `Phase10-Assignment-UI-Unification-Plan.md`（方針承認済み。§6 の決定事項 Q1〜Q7、§7 の優先順位と抑制の仕様 R1〜R10）  
 Step1: `Phase10-Step1-Plan.md`
 
