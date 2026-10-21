@@ -113,4 +113,8 @@
 
 ## 8. 進捗の記録
 
-（未着手）
+- **W0（完了 2026-10-21。`Debug ALL` 成功: 警告 0・エラー 0、テスト 1913 件と 11 件が成功）**: 特性化テスト 2 ファイルを追加した（製品コードは変更なし。実機確認なし）。
+  - `Phase10Step4dW0NameKeyTests`（11 件）: リンクプロファイルの名前変更（`ReplaceLinkedProfileName`。大文字小文字を無視、表と画面表示用の値、保存）、自動プロファイルの名前変更（`AutoProfileHolder.ReplaceProfileName`。`Auto Profiles.xml` へ保存）、SA の名前変更・削除（`ReplaceActionReference`／`RemoveActionReference`。全プロファイルの `<ProfileActions>`、Ordinal の比較、重複の除去、空・同名は無視）、`GetAppliedProfilesUsingAction`、保存形式に ID がないこと（プロファイル XML、`Actions.xml`）、`ActionManager` の登録簿が SA の名前で状態を引くこと、画面の経路（`MainWindow` の名前変更が 4 つの追従を順に呼ぶこと、`ProfilePath`／`OlderProfilePath` の書き換え、`ProfileEditor` の SA の名前変更が `ReplaceActionReference` を呼ぶこと）。
+  - `Phase10Step4dW0RuntimeKeyRatchetTests`（1 件）: 名前をキーにする実行時の参照の件数を、ファイルごとに固定（`ProfilePath`／`OlderProfilePath` 71 件、`profileActions`／`ProfileActions` 62 件。28 ファイル）。実数と一致することを検査する。W5・W6 で ID に替えて件数が減ったら、基準値も同時に更新する。
+  - 既存で固定済み: 保存形式の golden（`Phase7Step10cGoldenPersistenceTests`）、SA の Load Profile の追従（`ProfileRenamePropagationTests`）、Controls の Load Profile の追従（`Phase10Step4W6ControlProfileTests`）。
+  - 次: W1（プロファイルの ID）。指示があるまで始めない（設計を説明して承認を得る）。
