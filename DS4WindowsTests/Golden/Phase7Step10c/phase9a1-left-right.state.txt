@@ -55,6 +55,18 @@
   0,32: L 0,29 R 0,0
   0,64: L 0,65 R 0,47
   0,100: L 0,106 R 0,105
+## stick radial dz10 drift-ls10-minus20-rs-minus30-40: 144 点で差
+  0,0: L 0,21 R 31,0
+  0,1: L 0,22 R 31,0
+  0,32: L 0,54 R 31,0
+  0,64: L 0,86 R 31,25
+  0,100: L 0,120 R 32,62
+## stick axial none drift-large: 144 点で差
+  0,0: L 0,97 R 100,4
+  0,1: L 0,98 R 100,4
+  0,32: L 0,128 R 100,4
+  0,64: L 0,166 R 100,4
+  0,100: L 0,204 R 100,4
 ## trigger none (L2 と R2): 差なし
 ## trigger dz20 (L2 と R2): 差なし
 ## trigger dz20-anti10 (L2 と R2): 差なし

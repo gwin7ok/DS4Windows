@@ -198,6 +198,24 @@ namespace DS4WindowsTests
                 s.squStickInfo[Slot].lsRoundness = 3.0;
                 s.squStickInfo[Slot].rsRoundness = 8.0;
             });
+
+            // 9-A(2)-B の前に追加: ドリフト補正（ApplyStickCalibration。左右・X／Y で量と符号を変える。範囲外はクランプ）
+            yield return new Scenario("stick radial dz10 drift-ls10-minus20-rs-minus30-40", s =>
+            {
+                Stick(s, radial, 10, 0, 100, 100.0, false);
+                s.leftStickDriftXAxis[Slot] = 10;
+                s.leftStickDriftYAxis[Slot] = -20;
+                s.rightStickDriftXAxis[Slot] = -30;
+                s.rightStickDriftYAxis[Slot] = 40;
+            });
+            yield return new Scenario("stick axial none drift-large", s =>
+            {
+                Stick(s, axial, 0, 0, 100, 100.0, false);
+                s.leftStickDriftXAxis[Slot] = 100;
+                s.leftStickDriftYAxis[Slot] = -100;
+                s.rightStickDriftXAxis[Slot] = -100;
+                s.rightStickDriftYAxis[Slot] = 100;
+            });
         }
 
         private static IEnumerable<Scenario> TriggerScenarios()

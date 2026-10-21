@@ -17,9 +17,11 @@ namespace DS4WindowsTests
     /// </summary>
     public class MappingCommitAndCalibrationGlobalReferenceGuardTests
     {
-        private const string CalibrationStart = "public DS4State ApplyStickCalibration(";
+        // Phase9 9-A(2)-B: ドリフト補正は Mapping.ApplyStickCalibration から StickInputConditioner.ApplyDrift へ移した（検査の対象も、移動先のファイルにした）
+        private const string CalibrationPath = "DS4Windows/DS4Control/Services/StickInputConditioner.cs";
+        private const string CalibrationStart = "public DS4State ApplyDrift(";
         // Phase8-Step8 8a: held の表を削除したため、較正の直後の文書コメント（Map DS4 Buttons/Axes…）を終端にする
-        private const string CalibrationEnd = "/// Map DS4 Buttons/Axes to other DS4 Buttons/Axes";
+        private const string CalibrationEnd = "public void Fuzz(";
         private const string CommitStart = "public void Commit(";
         // Phase7-Step8 W1: MapClick を SyntheticInputState.CountClick へ移したため、Commit の次のメンバーを終端にする
         // Phase8-Fix-MacroRepeatUnify（D5）: DS4ControltoInt を削除したため、次のメンバー（TValue）を終端にする
@@ -46,12 +48,12 @@ namespace DS4WindowsTests
         }
 
         /// <summary>コメント（ブロック・行）を除いた、指定範囲のソーステキストを返す。ファイルが見つからなければ null。</summary>
-        private string ReadRangeWithoutComments(string startMarker, string endMarker)
+        private string ReadRangeWithoutComments(string startMarker, string endMarker, string relativePath = "DS4Windows/DS4Control/Mapping.cs")
         {
-            string path = SourceFileLocator.Find("DS4Windows/DS4Control/Mapping.cs");
+            string path = SourceFileLocator.Find(relativePath);
             if (path == null)
             {
-                _output.WriteLine("Mapping.cs が見つからないため検査を省略した。");
+                _output.WriteLine(relativePath + " が見つからないため検査を省略した。");
                 return null;
             }
 
@@ -81,22 +83,22 @@ namespace DS4WindowsTests
         }
 
         [Fact]
-        public void ApplyStickCalibration_TakesProfileSettingsAsParameter()
+        public void ApplyDrift_TakesProfileSettingsAsParameter()
         {
             // 検査範囲はシグネチャ行から始まるため、引数リストも含まれる。
-            string body = ReadRangeWithoutComments(CalibrationStart, CalibrationEnd);
+            string body = ReadRangeWithoutComments(CalibrationStart, CalibrationEnd, CalibrationPath);
             if (body == null) return;
 
             Assert.Contains("IProfileSettingsService settings", body);
         }
 
         [Fact]
-        public void ApplyStickCalibration_HasNoReferenceToMigratedGlobalMembers()
+        public void ApplyDrift_HasNoReferenceToMigratedGlobalMembers()
         {
-            string body = ReadRangeWithoutComments(CalibrationStart, CalibrationEnd);
+            string body = ReadRangeWithoutComments(CalibrationStart, CalibrationEnd, CalibrationPath);
             if (body == null) return;
 
-            AssertNoGlobalReference(body, MigratedCalibrationMembers, "ApplyStickCalibration");
+            AssertNoGlobalReference(body, MigratedCalibrationMembers, "ApplyDrift");
         }
 
         [Fact]

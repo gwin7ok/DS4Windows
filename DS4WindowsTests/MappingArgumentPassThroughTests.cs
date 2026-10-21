@@ -1,6 +1,8 @@
 using System;
 using Xunit;
 using DS4Windows;
+using DS4Windows.DI;
+using DS4Windows.Services;
 
 namespace DS4WindowsTests
 {
@@ -20,6 +22,7 @@ namespace DS4WindowsTests
     {
         // Phase7-Step8 W2: Mapping は instance になった。他のテストと状態を共有しない独立の instance を使う
         private static readonly Mapping Mapper = TestMappingFactory.Create();
+        private static readonly IStickInputConditioner Conditioner = new StickInputConditioner();   // Phase9 9-A(2)-B: ApplyStickCalibration は StickInputConditioner.ApplyDrift へ移した
 
         private const int Slot = 0;
 
@@ -259,8 +262,8 @@ namespace DS4WindowsTests
             driftStore.leftStickDriftXAxis[Slot] = 30;
             driftStore.leftStickDriftYAxis[Slot] = 40;
 
-            DS4State a = Mapper.ApplyStickCalibration(Slot, new DS4State { LX = 100, LY = 100, RX = 100, RY = 100 }, neutral);
-            DS4State b = Mapper.ApplyStickCalibration(Slot, new DS4State { LX = 100, LY = 100, RX = 100, RY = 100 }, drifted);
+            DS4State a = Conditioner.ApplyDrift(Slot, new DS4State { LX = 100, LY = 100, RX = 100, RY = 100 }, neutral);
+            DS4State b = Conditioner.ApplyDrift(Slot, new DS4State { LX = 100, LY = 100, RX = 100, RY = 100 }, drifted);
 
             // 補正なし（対照）: 入力がそのまま出力される
             Assert.Equal(100, a.RX);
@@ -281,7 +284,7 @@ namespace DS4WindowsTests
             var drifted = CreateIsolatedService(out BackingStore driftStore);
             driftStore.leftStickDriftXAxis[Slot] = 50; // 10 - 50 が負になる → 0 に丸める
 
-            DS4State b = Mapper.ApplyStickCalibration(Slot, new DS4State { LX = 10, LY = 128, RX = 128, RY = 128 }, drifted);
+            DS4State b = Conditioner.ApplyDrift(Slot, new DS4State { LX = 10, LY = 128, RX = 128, RY = 128 }, drifted);
 
             Assert.Equal(0, b.LX);
         }

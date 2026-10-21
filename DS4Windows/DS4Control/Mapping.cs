@@ -73,6 +73,8 @@ namespace DS4Windows
         private readonly FlickStickMappingData[] flickMappingData;
         private readonly TwoStageTriggerMappingData[] l2TwoStageMappingData;
         private readonly TwoStageTriggerMappingData[] r2TwoStageMappingData;
+        private readonly Queue<DS4TimedStickAxisValue>[][] stickValueHistory;   // Phase9 9-A(2)-B: StickMotionState.StickValueHistory の複製（旧: Mapping の public フィールド）
+        private readonly byte[][] lastStickAxisValues;   // Phase9 9-A(2)-B: StickMotionState.LastStickAxisValues の複製（[デバイス][LX, LY, RX, RY]）
         private readonly DeltaSettingsProcessorGroup[] deltaAccelProcessors;
 
         // SpecialAction名ごとのエラーログ抑制用（1プロファイル切り替えごとに1回だけ）
@@ -126,7 +128,8 @@ namespace DS4Windows
             DS4Windows.DI.IStickDeadZoneProcessor stickDeadZone,
             DS4Windows.DI.IOutputCurveProcessor outputCurve,
             DS4Windows.DI.ITriggerDeadZoneProcessor triggerDeadZone,
-            DS4Windows.DI.IGyroControlsProcessor gyroControls)
+            DS4Windows.DI.IGyroControlsProcessor gyroControls,
+            DS4Windows.DI.IStickInputConditioner stickConditioner)
         {
             _syntheticInput = syntheticInput ?? throw new ArgumentNullException(nameof(syntheticInput));
             _macroRuntime = macroRuntime ?? throw new ArgumentNullException(nameof(macroRuntime));
@@ -144,6 +147,7 @@ namespace DS4Windows
             _outputCurve = outputCurve ?? throw new ArgumentNullException(nameof(outputCurve));
             _triggerDeadZone = triggerDeadZone ?? throw new ArgumentNullException(nameof(triggerDeadZone));
             _gyroControls = gyroControls ?? throw new ArgumentNullException(nameof(gyroControls));
+            _stickConditioner = stickConditioner ?? throw new ArgumentNullException(nameof(stickConditioner));
 
             _triggerInputs = new DS4Windows.Actions.TriggerInput[ControllerLimits.MaxControllerCount];
             _frameOutputs = new DS4Windows.Actions.FrameOutput[ControllerLimits.MaxControllerCount];
@@ -170,6 +174,8 @@ namespace DS4Windows
             l2TwoStageMappingData = stickMotion.L2TwoStageMappingData;
             r2TwoStageMappingData = stickMotion.R2TwoStageMappingData;
             deltaAccelProcessors = stickMotion.DeltaAccelProcessors;
+            stickValueHistory = stickMotion.StickValueHistory;
+            lastStickAxisValues = stickMotion.LastStickAxisValues;
         }
 
         // Phase7-Step8 W2（Q3＝A）: デバイス × アクション名ごとの KeyButtonActionController の登録簿（旧: keyButtonControllers／
@@ -178,47 +184,13 @@ namespace DS4Windows
 
         // Phase9 9-A(1) (c): 旧 DS4Vector2／DS4SquareStick（スクエアスティックの作業用）は、OutputCurveProcessor（DS4Control/Services）へ移した（ローカル変数で計算する）。
 
-        public struct DS4TimedStickAxisValue
-        {
-            public long timestamp;
-            public double x;
-            public double y;
-            public DS4TimedStickAxisValue(byte x, byte y, long timestamp)
-            {
-                this.timestamp = timestamp;
-                this.x = x;
-                this.y = y;
-            }
-        }
-
-        public Queue<DS4TimedStickAxisValue>[][] stickValueHistory = new Queue<DS4TimedStickAxisValue>[ControllerLimits.TestProfileItemCount][]
-        {
-            new Queue<DS4TimedStickAxisValue>[2] { new Queue<DS4TimedStickAxisValue>(), new Queue<DS4TimedStickAxisValue>() },
-            new Queue<DS4TimedStickAxisValue>[2] { new Queue<DS4TimedStickAxisValue>(), new Queue<DS4TimedStickAxisValue>() },
-            new Queue<DS4TimedStickAxisValue>[2] { new Queue<DS4TimedStickAxisValue>(), new Queue<DS4TimedStickAxisValue>() },
-            new Queue<DS4TimedStickAxisValue>[2] { new Queue<DS4TimedStickAxisValue>(), new Queue<DS4TimedStickAxisValue>() },
-            new Queue<DS4TimedStickAxisValue>[2] { new Queue<DS4TimedStickAxisValue>(), new Queue<DS4TimedStickAxisValue>() },
-            new Queue<DS4TimedStickAxisValue>[2] { new Queue<DS4TimedStickAxisValue>(), new Queue<DS4TimedStickAxisValue>() },
-            new Queue<DS4TimedStickAxisValue>[2] { new Queue<DS4TimedStickAxisValue>(), new Queue<DS4TimedStickAxisValue>() },
-            new Queue<DS4TimedStickAxisValue>[2] { new Queue<DS4TimedStickAxisValue>(), new Queue<DS4TimedStickAxisValue>() },
-            new Queue<DS4TimedStickAxisValue>[2] { new Queue<DS4TimedStickAxisValue>(), new Queue<DS4TimedStickAxisValue>() }
-        };
+        // Phase9 9-A(2)-B: 旧 DS4TimedStickAxisValue（入れ子の構造体）は DS4Control/DS4TimedStickAxisValue.cs へ、旧 stickValueHistory／lastStickAxisValues は StickMotionState へ移した。
 
         // Phase7-Step7 W4（Q2＝A・Q3＝A）: 外から触られるスティック・ジャイロ・トリガーの処理状態（gyroStickX／gyroStickY／mapStickActionData／
         // flickMappingData／l2TwoStageMappingData／r2TwoStageMappingData／wheelFilters／deltaAccelProcessors）の実体は StickMotionState が持つ。
         // Phase7-Step8 W2: 転送プロパティは削除した。上のフィールド宣言（保持クラスの配列の readonly の複製）が、その代わりである。
         //public static byte[] touchStickX = new byte[Global.MAX_DS4_CONTROLLER_COUNT] { 128, 128, 128, 128, 128, 128, 128, 128 };
         //public static byte[] touchStickY = new byte[Global.MAX_DS4_CONTROLLER_COUNT] { 128, 128, 128, 128, 128, 128, 128, 128 };
-
-        // [<Device>][<AxisId>]. LX = 0, LY = 1, RX = 2, RY = 3
-        public byte[][] lastStickAxisValues = new byte[ControllerLimits.TestProfileItemCount][]
-        {
-            new byte[4] {128, 128, 128, 128}, new byte[4] {128, 128, 128, 128},
-            new byte[4] {128, 128, 128, 128}, new byte[4] {128, 128, 128, 128},
-            new byte[4] {128, 128, 128, 128}, new byte[4] {128, 128, 128, 128},
-            new byte[4] {128, 128, 128, 128}, new byte[4] {128, 128, 128, 128},
-            new byte[4] {128, 128, 128, 128}
-        };
 
         private class LastWheelGyroCoord
         {
@@ -302,6 +274,7 @@ namespace DS4Windows
         private readonly DS4Windows.DI.IOutputCurveProcessor _outputCurve;   // Phase9 9-A(1) (c): スクエアスティックと出力カーブ（スティック、トリガー。共通の処理）
         private readonly DS4Windows.DI.ITriggerDeadZoneProcessor _triggerDeadZone;   // Phase9 9-A(1) (d): L2／R2 のデッドゾーン（共通の処理）
         private readonly DS4Windows.DI.IGyroControlsProcessor _gyroControls;   // Phase9 9-A(2)-A: ジャイロ → コントロールの補正（X／Z 共通の処理）
+        private readonly DS4Windows.DI.IStickInputConditioner _stickConditioner;   // Phase9 9-A(2)-B: ドリフト補正・アンチスナップバック・ファズ（共通の処理）
 
         // Phase8-Step4 W4: デバイスごとのトリガー判定の入力（毎フレーム MapCustom の先頭で更新する）と、フレームの出力への書き込み口。
         // 遅延の基準時刻（旧 nowAction／oldnowAction）は、_triggerInputs[device].Delay に置き換わった。
@@ -560,12 +533,12 @@ namespace DS4Windows
 
             if (lsAntiSnapback.enabled)
             {
-                CalcAntiSnapbackStick(device, 0, lsAntiSnapback.delta, lsAntiSnapback.timeout, cState.LX, cState.LY, out cState.LX, out cState.LY);
+                _stickConditioner.AntiSnapback(stickValueHistory[device][0], lsAntiSnapback.delta, lsAntiSnapback.timeout, DateTimeOffset.Now.ToUnixTimeMilliseconds(), ref cState.LX, ref cState.LY);
             }
 
             if (rsAntiSnapback.enabled)
             {
-                CalcAntiSnapbackStick(device, 1, rsAntiSnapback.delta, rsAntiSnapback.timeout, cState.RX, cState.RY, out cState.RX, out cState.RY);
+                _stickConditioner.AntiSnapback(stickValueHistory[device][1], rsAntiSnapback.delta, rsAntiSnapback.timeout, DateTimeOffset.Now.ToUnixTimeMilliseconds(), ref cState.RX, ref cState.RY);
             }
 
             StickDeadZoneInfo lsMod = settings.LSModInfo[device];
@@ -573,18 +546,19 @@ namespace DS4Windows
 
             if (lsMod.fuzz > 0)
             {
-                CalcStickAxisFuzz(device, 0, lsMod.fuzz, cState.LX, cState.LY, out cState.LX, out cState.LY);
+                _stickConditioner.Fuzz(lastStickAxisValues[device], 0, lsMod.fuzz, ref cState.LX, ref cState.LY);
             }
 
             if (rsMod.fuzz > 0)
             {
-                CalcStickAxisFuzz(device, 1, rsMod.fuzz, cState.RX, cState.RY, out cState.RX, out cState.RY);
+                _stickConditioner.Fuzz(lastStickAxisValues[device], 1, rsMod.fuzz, ref cState.RX, ref cState.RY);
             }
 
             cState.CopyTo(dState);
             //DS4State dState = new DS4State(cState);
 
-            cState = ApplyStickCalibration(device, dState, settings);
+            // Phase9 9-A(2)-B: ドリフト補正・アンチスナップバック・ファズは、共通の処理（IStickInputConditioner）が行う。状態（履歴、前回の値）は StickMotionState が持つ。
+            cState = _stickConditioner.ApplyDrift(device, dState, settings);
 
 
             // Phase9 9-A(1) (b): 左右のスティックのデッドゾーン（Radial・Axial、Radial の外側の出力）は、共通の処理（IStickDeadZoneProcessor）が行う。
@@ -695,34 +669,6 @@ namespace DS4Windows
             }
 
             return dState;
-        }
-
-        public DS4State ApplyStickCalibration(int device, DS4State state, DS4Windows.DI.IProfileSettingsService settings)
-        {
-            if (settings.RightStickDriftXAxis[device] != 0)
-            {
-                var translated = state.RX - settings.RightStickDriftXAxis[device];
-                state.RX = (byte)Math.Clamp(translated, 0, 255);
-            }
-            if (settings.RightStickDriftYAxis[device] != 0)
-            {
-                var translated = state.RY - settings.RightStickDriftYAxis[device];
-                state.RY = (byte)Math.Clamp(translated, 0, 255);
-            }
-
-            if (settings.LeftStickDriftXAxis[device] != 0)
-            {
-                var translated = state.LX - settings.LeftStickDriftXAxis[device];
-                state.LX = (byte)Math.Clamp(translated, 0, 255);
-            }
-
-            if (settings.LeftStickDriftYAxis[device] != 0)
-            {
-                var translated = state.LY - settings.LeftStickDriftYAxis[device];
-                state.LY = (byte)Math.Clamp(translated, 0, 255);
-            }
-
-            return state;
         }
 
         /// <summary>
@@ -2971,43 +2917,6 @@ namespace DS4Windows
             }
         }
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        private void CalcStickAxisFuzz(int device,
-            int stickId, int delta, byte axisXValue, byte axisYValue,
-            out byte useAxisX, out byte useAxisY)
-        {
-            if (stickId < 0 || stickId > 2)
-            {
-                throw new ArgumentOutOfRangeException("Stick ID has to be either 0 or 1");
-            }
-
-            int xIdX = stickId == 0 ? 0 : 2;
-            int yIdX = stickId == 1 ? 1 : 3;
-            ref byte lastXVal = ref lastStickAxisValues[device][xIdX];
-            ref byte lastYVal = ref lastStickAxisValues[device][yIdX];
-            useAxisX = lastXVal;
-            useAxisY = lastYVal;
-
-            int deltaX = axisXValue - lastXVal;
-            int deltaY = axisYValue - lastYVal;
-            int magSqu = (deltaX * deltaX) + (deltaY * deltaY);
-            int deltaSqu = delta * delta;
-            //if (stickId == 0)
-            //    Console.WriteLine("DELTA MAG SQU: {0} {1}", magSqu, deltaSqu);
-
-            if (axisXValue == 0 || axisXValue == 255 || magSqu > deltaSqu)
-            {
-                useAxisX = axisXValue;
-                lastXVal = axisXValue;
-            }
-
-            if (axisYValue == 0 || axisYValue == 255 || magSqu > deltaSqu)
-            {
-                useAxisY = axisYValue;
-                lastYVal = axisYValue;
-            }
-        }
-
         private void CalcWheelFuzz(int gyroX, int gyroZ, int lastGyroX, int lastGyroZ,
             int delta, out int useGyroX, out int useGyroZ)
         {
@@ -3275,43 +3184,6 @@ namespace DS4Windows
                         return 0;
                 }
             }
-        }
-
-        private void CalcAntiSnapbackStick(int device,
-            int stickId, double delta, long timeout, byte axisXValue, byte axisYValue,
-            out byte useAxisX, out byte useAxisY)
-        {
-            long timestamp = DateTimeOffset.Now.ToUnixTimeMilliseconds();
-            ref Queue<DS4TimedStickAxisValue> queue = ref stickValueHistory[device][stickId];
-            while (queue.Count > 0 && queue.Peek().timestamp < timestamp - timeout)
-            {
-                queue.Dequeue();
-            }
-            if (queue.Any(oldValues =>
-            {
-                double distanceSquared = Math.Pow(axisXValue - oldValues.x, 2) + Math.Pow(axisYValue - oldValues.y, 2);
-                if (distanceSquared >= (delta * delta))
-                {
-                    //Checks if the line between two points touches a 15 unit circle in the middle
-                    double t = ((128 - axisXValue) * (oldValues.x - axisXValue) + (128 - axisYValue) * (oldValues.y - axisYValue)) / distanceSquared;
-                    t = Math.Max(0, Math.Min(1, t));
-                    double distanceToMiddleSquared = Math.Pow(128 - (axisXValue + t * (oldValues.x - axisXValue)), 2) + Math.Pow(128 - (axisYValue + t * (oldValues.y - axisYValue)), 2);
-                    return distanceToMiddleSquared <= 15 * 15;
-                }
-                else
-                {
-                    return false;
-                }
-            }))
-            {
-                useAxisX = useAxisY = 128;
-            }
-            else
-            {
-                useAxisX = axisXValue;
-                useAxisY = axisYValue;
-            }
-            queue.Enqueue(new DS4TimedStickAxisValue(axisXValue, axisYValue, timestamp));
         }
     }
 }

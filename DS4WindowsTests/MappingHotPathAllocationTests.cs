@@ -2,6 +2,8 @@ using System;
 using Xunit;
 using Xunit.Abstractions;
 using DS4Windows;
+using DS4Windows.DI;
+using DS4Windows.Services;
 
 namespace DS4WindowsTests
 {
@@ -18,6 +20,7 @@ namespace DS4WindowsTests
     {
         // Phase7-Step8 W2: Mapping は instance になった。他のテストと状態を共有しない独立の instance を使う
         private static readonly Mapping Mapper = TestMappingFactory.Create();
+        private static readonly IStickInputConditioner Conditioner = new StickInputConditioner();   // Phase9 9-A(2)-B: ApplyStickCalibration は StickInputConditioner.ApplyDrift へ移した
 
         private const int Slot = 0;
         private const int Iterations = 20000;
@@ -127,7 +130,7 @@ namespace DS4WindowsTests
             void RunOnce()
             {
                 state.LX = 128; state.LY = 128; state.RX = 128; state.RY = 128;
-                sink += Mapper.ApplyStickCalibration(Slot, state, settings).LX;
+                sink += Conditioner.ApplyDrift(Slot, state, settings).LX;
             }
 
             long allocated = MeasureMinAllocatedBytes(RunOnce);
