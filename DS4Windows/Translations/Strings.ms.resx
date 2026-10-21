@@ -529,9 +529,6 @@ Contoh: whyme_DS4Windows</value>
   <data name="StickOuterBindTooltip" xml:space="preserve">
     <value>Tindakan untuk dilaksanakan apabila perjalanan kayu(stick) melepasi ambang. Berguna untuk kekunci pemetaan untuk tindakan Berjalan atau Pecut. Songsang menyebabkan tindakan menyala sehingga ambang</value>
   </data>
-  <data name="SASteeringWheelFuzzTooltip" xml:space="preserve">
-    <value>Fuzz menentukan bilangan minimum unit peranti, dalam zon aktif, yang Accel perlu diputar sebelum output didaftarkan seperti diubah dalam pemeta. Nilai dinyatakan dalam unit Accel mentah.</value>
-  </data>
   <data name="StickRotationTooltip" xml:space="preserve">
     <value>+ = Mengikut arah jam. - = lawan arah jam.
 

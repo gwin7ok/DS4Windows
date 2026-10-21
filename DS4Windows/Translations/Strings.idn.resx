@@ -529,9 +529,6 @@ Perubahan pada opsi ini berlaku saat kontroler terhubung</value>
   <data name="StickOuterBindTooltip" xml:space="preserve">
     <value>Tindakan yang dieksekusi ketika pergerakan stick melewati ambang batas. Berguna untuk mengatur tombol untuk Berjalan atau Berlari. Inversi menyebabkan tindakan akan aktif hingga mencapai ambang batas.</value>
   </data>
-  <data name="SASteeringWheelFuzzTooltip" xml:space="preserve">
-    <value>Fuzz menentukan jumlah minimum unit perangkat, dalam zona aktif, yang harus dirotasi oleh Akselerometer sebelum keluaran didaftarkan sebagai berubah dalam pemeta. Nilai ini diukur dalam unit Akselerometer mentah.</value>
-  </data>
   <data name="StickRotationTooltip" xml:space="preserve">
     <value>+ = Putaran searah jarum jam. - = Putaran berlawanan arah jarum jam.
 Pengaturan rotasi dimaksudkan untuk membantu memperbaiki orientasi stik analog jika jempol Anda sedikit tergeser saat memindahkan stik analog. Misalnya, jempol Anda mungkin sedikit tergeser dari pusat saat stik analog digerakkan sepenuhnya ke utara. Jempol saya sedikit bergeser ke kanan saat memindahkan stik analog sepenuhnya ke utara karena cara saya memegang kontroler DS4. Nilai yang digunakan menunjukkan jumlah derajat yang digunakan untuk menyesuaikan nilai output sumbu akhir. Nilai yang diperbolehkan berkisar dari -180 hingga 180. Default adalah 0.</value>

@@ -535,9 +535,6 @@ Maps the controller output to mixed XInput gamepad + RS mouse.</value>
   <data name="StickOuterBindTooltip" xml:space="preserve">
     <value>當搖桿行程超過一個臨界點時執行的動作。對於對應行走或衝刺動作的按鍵很有用。顛倒的情況下，動作會一直持續到閾值。</value>
   </data>
-  <data name="SASteeringWheelFuzzTooltip" xml:space="preserve">
-    <value>Fuzz（模糊）指定了裝置單位的最小數量，在活動區，在輸出被註冊為映射器中的變化之前，Accel必須被旋轉。該值以原始Accel單位表示。</value>
-  </data>
   <data name="StickRotationTooltip" xml:space="preserve">
     <value>旋轉設定是為了幫助糾正類比搖桿的方向，如果你的拇指在移動類比搖桿時略有偏移。例如，當類比搖桿完全向北移動時，你的拇指可能會從中心稍微偏移。由於我的手握住DS4的方式，當類比搖桿完全向北移動時，我的拇指會稍微向右移動。使用的數值表示用於調整最終軸輸出值的度數。允許的數值範圍是-180到180。預設值為0。</value>
   </data>

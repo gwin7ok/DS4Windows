@@ -529,9 +529,6 @@ Exempel: whyme_DS4Windows</value>
   <data name="StickOuterBindTooltip" xml:space="preserve">
     <value>Åtgärd som ska utföras när pinnrörelse når förbi en tröskel. Användbar för att kartlägga nycklar för Walk- eller Sprint-åtgärder. Invert får handlingen att skjuta upp till tröskeln</value>
   </data>
-  <data name="SASteeringWheelFuzzTooltip" xml:space="preserve">
-    <value>Fuzz specificerar det minsta antalet enhetsenheter, i aktiv zon, som Accel måste roteras innan utgången registreras som ändrad i mapparen. Värdet uttrycks i råa Accel-enheter.</value>
-  </data>
   <data name="StickRotationTooltip" xml:space="preserve">
     <value>Rotationsinställningen är avsedd att hjälpa till att korrigera orienteringen av en analog sticka om din tumme förskjuts något när du flyttar en analog sticka. Till exempel kan din tumme vara något förskjuten från mitten när den analoga spaken förs helt norrut. Mina tummar förskjuts något åt ​​höger när jag flyttar en analog sticka helt norrut på grund av hur mina händer greppar DS4. Värdet som används anger antalet grader som används för att justera det slutliga axelutgångsvärdet. Värden tillåter intervall från -180 till 180. Standard är 0.</value>
   </data>

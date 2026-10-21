@@ -2939,15 +2939,6 @@ namespace DS4WinWPF.Translations {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Fuzz specifies the minimum number of device units, in active zone, that the Accel has to be rotated before the output is registered as changed in the mapper. The value is expressed in raw Accel units..
-        /// </summary>
-        public static string SASteeringWheelFuzzTooltip {
-            get {
-                return ResourceManager.GetString("SASteeringWheelFuzzTooltip", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to Save.
         /// </summary>
         public static string Save {
@@ -3314,15 +3305,6 @@ namespace DS4WinWPF.Translations {
         public static string SpecialActionEdit_SetUnloadTrigger {
             get {
                 return ResourceManager.GetString("SpecialActionEdit.SetUnloadTrigger", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Calibration of sixaxis wheel calibration.
-        /// </summary>
-        public static string SpecialActionEdit_SixAxisWheelCalib {
-            get {
-                return ResourceManager.GetString("SpecialActionEdit.SixAxisWheelCalib", resourceCulture);
             }
         }
         

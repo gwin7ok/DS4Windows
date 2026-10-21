@@ -120,14 +120,6 @@
   <TouchpadOutputMode>Controls</TouchpadOutputMode>
   <SATriggers>-1_g</SATriggers>
   <SATriggerCond>or</SATriggerCond>
-  <SASteeringWheelEmulationAxis>LX</SASteeringWheelEmulationAxis>
-  <SASteeringWheelEmulationRange>361</SASteeringWheelEmulationRange>
-  <SASteeringWheelFuzz>1</SASteeringWheelFuzz>
-  <SASteeringWheelSmoothingOptions>
-    <SASteeringWheelUseSmoothing>False</SASteeringWheelUseSmoothing>
-    <SASteeringWheelSmoothMinCutoff>0.35</SASteeringWheelSmoothMinCutoff>
-    <SASteeringWheelSmoothBeta>0.35</SASteeringWheelSmoothBeta>
-  </SASteeringWheelSmoothingOptions>
   <TouchDisInvTriggers>-1</TouchDisInvTriggers>
   <GyroSensitivity>101</GyroSensitivity>
   <GyroSensVerticalScale>101</GyroSensVerticalScale>

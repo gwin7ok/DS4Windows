@@ -539,9 +539,6 @@ Beispiel: whyme_DS4Windows</value>
   <data name="StickOuterBindTooltip" xml:space="preserve">
     <value>Aktion, die ausgeführt werden soll, wenn der Steuerknüppel einen bestimmten Schwellenwert überschreitet. Nützlich für die Zuweisung von Tasten für die Aktionen Gehen oder Sprinten. Invertieren bewirkt, dass die Aktion bis zum Schwellenwert ausgelöst wird.</value>
   </data>
-  <data name="SASteeringWheelFuzzTooltip" xml:space="preserve">
-    <value>Fuzz gibt die Mindestanzahl von Geräteeinheiten in der aktiven Zone an, um die der Achse gedreht werden muss, bevor der Ausgang im Mapper als geändert registriert wird. Der Wert wird in rohen Achse-Einheiten angegeben.</value>
-  </data>
   <data name="StickRotationTooltip" xml:space="preserve">
     <value>Die Rotationseinstellung soll helfen, die Ausrichtung eines Analogsticks zu korrigieren, wenn Ihr Daumen beim Bewegen eines Analogsticks leicht verschoben ist. Zum Beispiel könnte Ihr Daumen leicht aus der Mitte verschoben sein, wenn der Analogstick ganz nach Norden bewegt wird. Meine Daumen verschieben sich leicht nach rechts, wenn ich den Analog-Stick ganz nach Norden bewege, was an der Art liegt, wie meine Hände den DS4 halten. Der verwendete Wert gibt die Anzahl der Grad an, die zur Anpassung des endgültigen Achsenausgangswertes verwendet wird. Zulässige Werte reichen von -180 bis 180. Die Voreinstellung ist 0.</value>
   </data>

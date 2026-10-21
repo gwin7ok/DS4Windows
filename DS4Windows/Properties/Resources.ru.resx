@@ -455,27 +455,6 @@
   <data name="Shortcuts" xml:space="preserve">
     <value>Ярлыки</value>
   </data>
-  <data name="SASteeringWheelEmulationCalibrate" xml:space="preserve">
-    <value>Калибровка эмуляции шестиосного колеса</value>
-  </data>
-  <data name="SASteeringWheelEmulationCalibrateInstruction1" xml:space="preserve">
-    <value>(1) Отцентрируйте контроллер, удерживайте его и нажмите "X"</value>
-  </data>
-  <data name="SASteeringWheelEmulationCalibrateInstruction2" xml:space="preserve">
-    <value>(2) Поверните на 90Â° влево (или вправо) и нажмите "X"</value>
-  </data>
-  <data name="SASteeringWheelEmulationCalibrateInstruction3" xml:space="preserve">
-    <value>(3) Поверните на 90Â° вправо (или влево) и нажмите "X"</value>
-  </data>
-  <data name="SASteeringWheelEmulationCalibrateInstruction" xml:space="preserve">
-    <value>Все точки калибровки устанавливаются, когда цвет светлой полосы становится зеленым. При повороте контроллера цвет индикатора мигает, когда контроллер находится в точке калибровки. Подтвердите калибровку кнопкой ОК</value>
-  </data>
-  <data name="SASteeringWheelEmulationCalibrateNoControllerError" xml:space="preserve">
-    <value>Невозможно откалибровать значения эмуляции гироскопического (шестиосного) рулевого колеса без контроллера. Подключите контроллер через Bluetooth или USB</value>
-  </data>
-  <data name="SASteeringWheelEmulationCalibrateNoneAxisError" xml:space="preserve">
-    <value>Опция оси эмуляции рулевого колеса гироскопа установлена на НЕТ (эмуляция не используется). Пожалуйста, выберите опцию оси перед калибровкой эмуляции шестиосного гироскопа</value>
-  </data>
   <data name="SixAxisReading" xml:space="preserve">
     <value>Нажмите для считывания дополнительных возможностей Sixaxis</value>
   </data>

@@ -529,9 +529,6 @@ Example: whyme_DS4Windows</value>
   <data name="StickOuterBindTooltip" xml:space="preserve">
     <value>Ενέργεια που θα εκτελεστεί όταν το travel του μοχλού ξεπεράσει ένα όριο. Χρήσιμο για την αντιστοίχιση κουμπιών για ενέργειες Περπάτημα ή Τρέξιμο. Η αντιστροφή κάνει την ενέργεια να εκκινείται μέχρι το όριο</value>
   </data>
-  <data name="SASteeringWheelFuzzTooltip" xml:space="preserve">
-    <value> Το Fuzz προσδιορίζει τον ελάχιστο αριθμό συσκευών, σε ενεργή ζώνη, όπου το Επιταχυνσιόμετρο πρέπει να περιστραφεί πριν η έξοδος καταγραφεί ως αλλαγμένη στην αντιστοίχιση. Η τιμή προσδιορίζεται ως μονάδες Επιταχυνσιόμετρου.</value>
-  </data>
   <data name="StickRotationTooltip" xml:space="preserve">
     <value>+ = Δεξιόστροφα. - = Αριστερόστροφα.
 

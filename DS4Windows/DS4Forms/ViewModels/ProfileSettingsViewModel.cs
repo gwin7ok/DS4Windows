@@ -919,96 +919,6 @@ namespace DS4WinWPF.DS4Forms.ViewModels
             get => profileSettings.OutContType[device];
         }
 
-        public int SASteeringWheelEmulationAxisIndex
-        {
-            get => (int)profileSettings.SASteeringWheelEmulationAxis[device];
-            set
-            {
-                int temp = (int)profileSettings.SASteeringWheelEmulationAxis[device];
-                if (temp == value) return;
-
-                profileSettings.SASteeringWheelEmulationAxis[device] = (SASteeringWheelEmulationAxisType)value;
-                SASteeringWheelEmulationAxisIndexChanged?.Invoke(this, EventArgs.Empty);
-            }
-        }
-        public event EventHandler SASteeringWheelEmulationAxisIndexChanged;
-
-        private int[] saSteeringRangeValues =
-            new int[9] { 90, 180, 270, 360, 450, 720, 900, 1080, 1440 };
-        public int SASteeringWheelEmulationRangeIndex
-        {
-            get
-            {
-                int index = 360;
-                switch (profileSettings.SASteeringWheelEmulationRange[device])
-                {
-                    case 90:
-                        index = 0; break;
-                    case 180:
-                        index = 1; break;
-                    case 270:
-                        index = 2; break;
-                    case 360:
-                        index = 3; break;
-                    case 450:
-                        index = 4; break;
-                    case 720:
-                        index = 5; break;
-                    case 900:
-                        index = 6; break;
-                    case 1080:
-                        index = 7; break;
-                    case 1440:
-                        index = 8; break;
-                    default: break;
-                }
-
-                return index;
-            }
-            set
-            {
-                int temp = saSteeringRangeValues[value];
-                profileSettings.SASteeringWheelEmulationRange[device] = temp;
-            }
-        }
-
-        public int SASteeringWheelEmulationRange
-        {
-            get => profileSettings.SASteeringWheelEmulationRange[device];
-            set => profileSettings.SASteeringWheelEmulationRange[device] = value;
-        }
-
-        public int SASteeringWheelFuzz
-        {
-            get => profileSettings.SAWheelFuzzValues[device];
-            set => profileSettings.SAWheelFuzzValues[device] = value;
-        }
-
-        public bool SASteeringWheelUseSmoothing
-        {
-            get => profileSettings.WheelSmoothInfo[device].Enabled;
-            set
-            {
-                bool temp = profileSettings.WheelSmoothInfo[device].Enabled;
-                if (temp == value) return;
-                profileSettings.WheelSmoothInfo[device].Enabled = value;
-                SASteeringWheelUseSmoothingChanged?.Invoke(this, EventArgs.Empty);
-            }
-        }
-        public event EventHandler SASteeringWheelUseSmoothingChanged;
-
-        public double SASteeringWheelSmoothMinCutoff
-        {
-            get => profileSettings.WheelSmoothInfo[device].MinCutoff;
-            set => profileSettings.WheelSmoothInfo[device].MinCutoff = value;
-        }
-
-        public double SASteeringWheelSmoothBeta
-        {
-            get => profileSettings.WheelSmoothInfo[device].Beta;
-            set => profileSettings.WheelSmoothInfo[device].Beta = value;
-        }
-
         public double LSDeadZone
         {
             get => Math.Round(profileSettings.LSModInfo[device].deadZone / 127d, 2);
@@ -3015,7 +2925,6 @@ namespace DS4WinWPF.DS4Forms.ViewModels
             };
 
             GyroOutModeIndexChanged += CalcProfileFlags;
-            SASteeringWheelEmulationAxisIndexChanged += CalcProfileFlags;
             LSOutputIndexChanged += CalcProfileFlags;
             RSOutputIndexChanged += CalcProfileFlags;
             ButtonMouseOffsetChanged += ProfileSettingsViewModel_ButtonMouseOffsetChanged;

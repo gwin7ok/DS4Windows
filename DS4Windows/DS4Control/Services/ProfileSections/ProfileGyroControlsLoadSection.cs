@@ -60,54 +60,8 @@ namespace DS4Windows.Services
             try { Item = m_Xdoc.SelectSingleNode("/" + rootname + "/SATriggerCond"); store.sATriggerCond[device] = BackingStore.SaTriggerCondValue(Item.InnerText); }
             catch { store.sATriggerCond[device] = true; missingSetting = true; }
 
-            try { Item = m_Xdoc.SelectSingleNode("/" + rootname + "/SASteeringWheelEmulationAxis"); SASteeringWheelEmulationAxisType.TryParse(Item.InnerText, out store.sASteeringWheelEmulationAxis[device]); }
-            catch { store.sASteeringWheelEmulationAxis[device] = SASteeringWheelEmulationAxisType.None; missingSetting = true; }
-
-            try { Item = m_Xdoc.SelectSingleNode("/" + rootname + "/SASteeringWheelEmulationRange"); int.TryParse(Item.InnerText, out store.sASteeringWheelEmulationRange[device]); }
-            catch { store.sASteeringWheelEmulationRange[device] = 360; missingSetting = true; }
-
-            bool sASteeringWheelSmoothingGroup = false;
-            XmlNode xmlSASteeringWheelSmoothElement =
-                m_Xdoc.SelectSingleNode("/" + rootname + "/SASteeringWheelSmoothingOptions");
-            sASteeringWheelSmoothingGroup = xmlSASteeringWheelSmoothElement != null;
-
-            if (sASteeringWheelSmoothingGroup)
-            {
-                try
-                {
-                    Item = xmlSASteeringWheelSmoothElement.SelectSingleNode("SASteeringWheelUseSmoothing");
-                    //Item = m_Xdoc.SelectSingleNode("/" + rootname + "/SASteeringWheelUseSmoothing");
-                    bool.TryParse(Item.InnerText, out bool temp);
-                    store.wheelSmoothInfo[device].Enabled = temp;
-                }
-                catch { store.wheelSmoothInfo[device].Reset(); missingSetting = true; }
-
-                try
-                {
-                    Item = xmlSASteeringWheelSmoothElement.SelectSingleNode("SASteeringWheelSmoothMinCutoff");
-                    //Item = m_Xdoc.SelectSingleNode("/" + rootname + "/SASteeringWheelSmoothMinCutoff");
-                    double.TryParse(Item.InnerText, out double temp);
-                    store.wheelSmoothInfo[device].MinCutoff = temp;
-                }
-                catch { store.wheelSmoothInfo[device].MinCutoff = OneEuroFilterPair.DEFAULT_WHEEL_CUTOFF; missingSetting = true; }
-
-                try
-                {
-                    Item = xmlSASteeringWheelSmoothElement.SelectSingleNode("SASteeringWheelSmoothBeta");
-                    //Item = m_Xdoc.SelectSingleNode("/" + rootname + "/SASteeringWheelSmoothBeta");
-                    double.TryParse(Item.InnerText, out double temp);
-                    store.wheelSmoothInfo[device].Beta = temp;
-                }
-                catch { store.wheelSmoothInfo[device].Beta = OneEuroFilterPair.DEFAULT_WHEEL_BETA; missingSetting = true; }
-            }
-
-            try
-            {
-                Item = m_Xdoc.SelectSingleNode("/" + rootname + "/SASteeringWheelFuzz");
-                int.TryParse(Item.InnerText, out int temp);
-                store.saWheelFuzzValues[device] = temp >= 0 && temp <= 100 ? temp : 0;
-            }
-            catch { store.saWheelFuzzValues[device] = 0; missingSetting = true; }
+            // Phase9 Steering 削除 W4: 旧「SASteeringWheelEmulationAxis／SASteeringWheelEmulationRange／SASteeringWheelFuzz／SASteeringWheelSmoothingOptions」（ステアリングの設定）は、機能ごと削除した。
+            // 古いプロファイルに要素が残っていても、読み込まずに無視する（再保存すると、書かれなくなる）。
 
             try
             {

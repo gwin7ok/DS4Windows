@@ -71,7 +71,6 @@ namespace DS4WindowsTests
             // 初回呼び出しの JIT・初期化の影響を除くため、ウォームアップしてから計測する。
             const int iterations = 10000;
             GyroOutMode gyro = _profileSettings.GetGyroOutMode(0);
-            SASteeringWheelEmulationAxisType axis = _profileSettings.GetSASteeringWheelEmulationAxis(0);
             ProfileSlotNames profilePath = _profileRepository.ProfilePath;
 
             // 実際のウォームアップ（コメントのとおり）: 初回呼び出しの JIT による割り当て（他のテストが先に走っていないと、1 KB 程度出る）を、計測の外へ出す。
@@ -79,7 +78,6 @@ namespace DS4WindowsTests
             for (int i = 0; i < 200; i++)
             {
                 gyro = _profileSettings.GetGyroOutMode(0);
-                axis = _profileSettings.GetSASteeringWheelEmulationAxis(0);
                 profilePath = _profileRepository.ProfilePath;
             }
 
@@ -87,7 +85,6 @@ namespace DS4WindowsTests
             for (int i = 0; i < iterations; i++)
             {
                 gyro = _profileSettings.GetGyroOutMode(0);
-                axis = _profileSettings.GetSASteeringWheelEmulationAxis(0);
                 profilePath = _profileRepository.ProfilePath;
             }
             long allocated = GC.GetAllocatedBytesForCurrentThread() - before;
@@ -95,7 +92,6 @@ namespace DS4WindowsTests
             Assert.Equal(0L, allocated);
             Assert.NotNull(profilePath);
             GC.KeepAlive(gyro);
-            GC.KeepAlive(axis);
         }
     }
 }

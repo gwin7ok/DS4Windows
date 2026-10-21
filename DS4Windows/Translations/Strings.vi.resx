@@ -529,9 +529,6 @@ Example: whyme_DS4Windows</value>
   <data name="StickOuterBindTooltip" xml:space="preserve">
     <value>Hành động thực hiện khi hành trình của gậy vượt qua ngưỡng. Hữu ích để lập bản đồ các phím cho các hành động Đi bộ hoặc Chạy nước rút. Đảo ngược khiến hành động kích hoạt cho đến khi đạt ngưỡng</value>
   </data>
-  <data name="SASteeringWheelFuzzTooltip" xml:space="preserve">
-    <value>Fuzz chỉ định số lượng đơn vị thiết bị tối thiểu, trong vùng hoạt động, mà Gia tốc phải được xoay trước khi đầu ra được đăng ký là đã thay đổi trong trình ánh xạ. Giá trị được biểu thị bằng đơn vị Gia tốc thô.</value>
-  </data>
   <data name="StickRotationTooltip" xml:space="preserve">
     <value>+ = Clockwise. - = Counter-clockwise.
 

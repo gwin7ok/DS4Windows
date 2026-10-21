@@ -145,7 +145,6 @@ namespace DS4Windows.DI
         // ---- Step10-2-A-6: ボタン/マウス出力関連 (m_Config委譲) ----
         ButtonMouseInfo[] ButtonMouseInfos { get; }
         bool[] EnableTouchToggle { get; }
-        SteeringWheelSmoothingInfo[] WheelSmoothInfo { get; }
         bool[] DoubleTap { get; }
         int[] ScrollSensitivity { get; }
         bool[] TrackballMode { get; }
@@ -158,9 +157,6 @@ namespace DS4Windows.DI
         // ---- Step10-2-A-7: SA/デッドゾーン関連 (m_Config委譲) ----
         string[] SATriggers { get; }
         string[] SAMousestickTriggers { get; }
-        SASteeringWheelEmulationAxisType[] SASteeringWheelEmulationAxis { get; }
-        int[] SASteeringWheelEmulationRange { get; }
-        int[] SAWheelFuzzValues { get; }
         double[] SXDeadzone { get; }
         double[] SZDeadzone { get; }
         double[] SXSens { get; }
@@ -175,8 +171,6 @@ namespace DS4Windows.DI
         bool GetSATriggerCond(int deviceIndex);
         string GetSAMouseStickTriggers(int deviceIndex);
         bool GetSAMouseStickTriggerCond(int deviceIndex);
-        SASteeringWheelEmulationAxisType GetSASteeringWheelEmulationAxis(int deviceIndex);
-        int GetSASteeringWheelEmulationRange(int deviceIndex);
         void SetSaTriggerCond(int index, string text);
         void SetSaMouseStickTriggerCond(int index, string text);
         int GetSxOutCurveMode(int index);

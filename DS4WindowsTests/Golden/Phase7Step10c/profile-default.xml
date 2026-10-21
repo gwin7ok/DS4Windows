@@ -121,14 +121,6 @@
   <TouchpadOutputMode>Mouse</TouchpadOutputMode>
   <SATriggers>-1</SATriggers>
   <SATriggerCond>and</SATriggerCond>
-  <SASteeringWheelEmulationAxis>None</SASteeringWheelEmulationAxis>
-  <SASteeringWheelEmulationRange>360</SASteeringWheelEmulationRange>
-  <SASteeringWheelFuzz>0</SASteeringWheelFuzz>
-  <SASteeringWheelSmoothingOptions>
-    <SASteeringWheelUseSmoothing>False</SASteeringWheelUseSmoothing>
-    <SASteeringWheelSmoothMinCutoff>0.1</SASteeringWheelSmoothMinCutoff>
-    <SASteeringWheelSmoothBeta>0.1</SASteeringWheelSmoothBeta>
-  </SASteeringWheelSmoothingOptions>
   <TouchDisInvTriggers>-1</TouchDisInvTriggers>
   <GyroSensitivity>100</GyroSensitivity>
   <GyroSensVerticalScale>100</GyroSensVerticalScale>

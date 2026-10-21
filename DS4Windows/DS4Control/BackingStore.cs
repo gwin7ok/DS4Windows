@@ -120,7 +120,6 @@ namespace DS4Windows
         public const bool DEFAULT_SA_MSTICK_TRIGGER_COND = true;
         public const bool DEFAULT_GYRO_TRIGGER_TURNS = true;
         public const bool DEFAULT_GYRO_MSTICK_TRIGGER_TURNS = true;
-        public const int DEFAULT_SA_WHEEL_EMULATION_RANGE = 360;
         public const int DEFAULT_GYRO_SENS = 100;
         public const int DEFAULT_GYRO_SENS_VERTICAL_SCALE = 100;
         public const int DEFAULT_TOUCH_DIS_INVERT_TRIGGER = -1;
@@ -335,16 +334,6 @@ namespace DS4Windows
             new TriggerOutputSettings(), new TriggerOutputSettings(), new TriggerOutputSettings(),
         };
 
-        public SteeringWheelSmoothingInfo[] wheelSmoothInfo = new SteeringWheelSmoothingInfo[ControllerLimits.TestProfileItemCount]
-        {
-            new SteeringWheelSmoothingInfo(), new SteeringWheelSmoothingInfo(),
-            new SteeringWheelSmoothingInfo(), new SteeringWheelSmoothingInfo(),
-            new SteeringWheelSmoothingInfo(), new SteeringWheelSmoothingInfo(),
-            new SteeringWheelSmoothingInfo(), new SteeringWheelSmoothingInfo(),
-            new SteeringWheelSmoothingInfo(),
-        };
-
-        public int[] saWheelFuzzValues = new int[ControllerLimits.TestProfileItemCount];
 
 
         // Start of DualSense specific profile options
@@ -505,11 +494,6 @@ namespace DS4Windows
         public bool[] gyroMouseStickToggle = new bool[ControllerLimits.TestProfileItemCount] { false, false, false,
             false, false, false, false, false, false };
 
-        public SASteeringWheelEmulationAxisType[] sASteeringWheelEmulationAxis = new SASteeringWheelEmulationAxisType[ControllerLimits.TestProfileItemCount] { SASteeringWheelEmulationAxisType.None, SASteeringWheelEmulationAxisType.None, SASteeringWheelEmulationAxisType.None, SASteeringWheelEmulationAxisType.None, SASteeringWheelEmulationAxisType.None, SASteeringWheelEmulationAxisType.None, SASteeringWheelEmulationAxisType.None, SASteeringWheelEmulationAxisType.None, SASteeringWheelEmulationAxisType.None };
-        public int[] sASteeringWheelEmulationRange = new int[ControllerLimits.TestProfileItemCount]
-        { DEFAULT_SA_WHEEL_EMULATION_RANGE, DEFAULT_SA_WHEEL_EMULATION_RANGE, DEFAULT_SA_WHEEL_EMULATION_RANGE,
-          DEFAULT_SA_WHEEL_EMULATION_RANGE, DEFAULT_SA_WHEEL_EMULATION_RANGE, DEFAULT_SA_WHEEL_EMULATION_RANGE,
-          DEFAULT_SA_WHEEL_EMULATION_RANGE, DEFAULT_SA_WHEEL_EMULATION_RANGE, DEFAULT_SA_WHEEL_EMULATION_RANGE };
         public int[][] touchDisInvertTriggers = new int[ControllerLimits.TestProfileItemCount][]
         { new int[1] { DEFAULT_TOUCH_DIS_INVERT_TRIGGER}, new int[1] { DEFAULT_TOUCH_DIS_INVERT_TRIGGER}, new int[1] { DEFAULT_TOUCH_DIS_INVERT_TRIGGER },
           new int[1] { DEFAULT_TOUCH_DIS_INVERT_TRIGGER}, new int[1] { DEFAULT_TOUCH_DIS_INVERT_TRIGGER }, new int[1] { DEFAULT_TOUCH_DIS_INVERT_TRIGGER },
@@ -1405,10 +1389,6 @@ namespace DS4Windows
 
             gyroMouseStickToggle[device] = false;
             gyroMouseStickTriggerTurns[device] = DEFAULT_GYRO_MSTICK_TRIGGER_TURNS;
-            sASteeringWheelEmulationAxis[device] = SASteeringWheelEmulationAxisType.None;
-            sASteeringWheelEmulationRange[device] = DEFAULT_SA_WHEEL_EMULATION_RANGE;
-            saWheelFuzzValues[device] = 0;
-            wheelSmoothInfo[device].Reset();
             touchDisInvertTriggers[device] = new int[1] { DEFAULT_TOUCH_DIS_INVERT_TRIGGER };
             gyroSensitivity[device] = DEFAULT_GYRO_SENS;
             gyroSensVerticalScale[device] = DEFAULT_GYRO_SENS_VERTICAL_SCALE;

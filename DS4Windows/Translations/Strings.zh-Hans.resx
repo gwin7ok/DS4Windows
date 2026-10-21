@@ -627,10 +627,6 @@
   <data name="StickOuterBindInvertTooltip" xml:space="preserve">
     <value>让额外按键绑定在达到阈值前触发。动作会在超过阈值后结束。</value>
   </data>
-  <data name="SASteeringWheelFuzzTooltip" xml:space="preserve">
-    <value>Fuzz specifies the minimum number of device units, in active zone, that the Accel has to be rotated before the output is registered as changed in the mapper. The value is expressed in raw Accel units.</value>
-    <comment/>
-  </data>
   <data name="StickRotationTooltip" xml:space="preserve">
     <value>正数为顺时针， 负数为逆时针。旋转设置旨在帮助校正模拟摇杆的方向，如果在移动模拟摇杆时你的拇指略微偏移。例如，当模拟摇杆完全向北移动时，你的拇指可能会从中心略微偏移。由于我的手握持DS4的方式，当我完全将模拟摇杆移动到北方时，我的拇指会略微向右偏移。所使用的值表示用于调整最终轴输出值的角度数。值的范围允许从-180到180。默认值为0</value>
   </data>
@@ -1436,9 +1432,6 @@
   </data>
   <data name="SpecialActionEdit.SelectMacro" xml:space="preserve">
     <value>选择一个宏</value>
-  </data>
-  <data name="SpecialActionEdit.SixAxisWheelCalib" xml:space="preserve">
-    <value>六轴方向盘的校准</value>
   </data>
   <data name="SpecialActionEdit.SyncRun" xml:space="preserve">
     <value>同步运行</value>

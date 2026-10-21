@@ -528,9 +528,6 @@ Exemple : tu_es_tilte_boubou_DS4Windows</value>
   <data name="StickOuterBindTooltip" xml:space="preserve">
     <value>Action à exécuter lorsque le déplacement du joystick dépasse un seuil. Utile pour attribuer des touches aux actions de marche ou de sprint. L'inversion provoque l'activation de l'action jusqu'au seuil.</value>
   </data>
-  <data name="SASteeringWheelFuzzTooltip" xml:space="preserve">
-    <value>La valeur 'Fuzz' spécifie le nombre minimum d'unités de l'appareil, dans la zone active, que l'accéléromètre doit être tourné avant que le changement soit enregistré dans le mappeur. Cette valeur est exprimée en unités brutes de l'accéléromètre.</value>
-  </data>
   <data name="StickRotationTooltip" xml:space="preserve">
     <value>[+] Sens horaire | [-] Sens anti-horaire
 

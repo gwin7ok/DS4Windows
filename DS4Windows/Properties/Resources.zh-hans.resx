@@ -344,9 +344,6 @@
     <data name="RunAtStartup" xml:space="preserve">
         <value>让Windows在登录后启动DS4Windows</value>
     </data>
-    <data name="SASteeringWheelEmulationCalibrate" xml:space="preserve">
-        <value>六轴方向盘模拟的校准</value>
-    </data>
     <data name="SaveRecordedMacro" xml:space="preserve">
         <value>保存已录制的宏？</value>
     </data>
@@ -514,23 +511,5 @@
     </data>
     <data name="XMLFiles" xml:space="preserve">
         <value>XML 文件 (*.xml)</value>
-    </data>
-    <data name="SASteeringWheelEmulationCalibrateInstruction" xml:space="preserve">
-        <value>所有校准点都设置好后灯条会变绿。在转动控制器到校准点时，灯条会闪烁。按下OK按钮接受校准</value>
-    </data>
-    <data name="SASteeringWheelEmulationCalibrateInstruction1" xml:space="preserve">
-        <value>（1）回中控制器，保持稳定并按”X”</value>
-    </data>
-    <data name="SASteeringWheelEmulationCalibrateInstruction2" xml:space="preserve">
-        <value>（2）左转90Â°（或右转）并按“X”</value>
-    </data>
-    <data name="SASteeringWheelEmulationCalibrateInstruction3" xml:space="preserve">
-        <value>（3）右转90Â°（或左转）并按“X”</value>
-    </data>
-    <data name="SASteeringWheelEmulationCalibrateNoControllerError" xml:space="preserve">
-        <value>无控制器时无法校准陀螺仪（六轴）方向盘模拟。请通过蓝牙或者USB连接一个控制器</value>
-    </data>
-    <data name="SASteeringWheelEmulationCalibrateNoneAxisError" xml:space="preserve">
-        <value>陀螺仪方向盘模拟选项被设置为NONE（模拟未启用）。请在校准六轴陀螺仪方向盘模拟前选择一个轴选项。</value>
     </data>
 </root>

@@ -57,7 +57,6 @@ namespace DS4WindowsTests
             store.profileActions[slot].Add("Golden_Program");
             store.profileActions[slot].Add("Golden_Key");
 
-            store.wheelSmoothInfo[slot].Enabled = true;
             store.touchDisInvertTriggers[slot] = new int[] { 1, 2 };
             store.lsModInfo[slot].outerBindDeadZone = 12.0;
             store.rsModInfo[slot].outerBindDeadZone = 34.0;

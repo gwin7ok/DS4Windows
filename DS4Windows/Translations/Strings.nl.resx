@@ -506,9 +506,6 @@ Verbind gewoon je DualShock 4 en PC met een micro-USB kabel.
   <data name="SpecialActionEdit.SyncRun" xml:space="preserve">
     <value>Voer gesynchroniseerd uit</value>
   </data>
-  <data name="SpecialActionEdit.SixAxisWheelCalib" xml:space="preserve">
-    <value>Sixaxis stuur calibreren</value>
-  </data>
   <data name="SpecialActionEdit.SelectMacro" xml:space="preserve">
     <value>Selecteer een macro</value>
   </data>
@@ -1032,9 +1029,6 @@ Let op: deze optie werkt niet in een admin map zonder gebruikersaccountbeheer</v
   </data>
   <data name="DualSRumbleForceGenericRescale" xml:space="preserve">
     <value>Forceer gebruik van beide % sterkteniveaus (algemeen en DualSense-specifiek)</value>
-  </data>
-  <data name="SASteeringWheelFuzzTooltip" xml:space="preserve">
-    <value>Fuzz specifieert hoeveel de versnellingsmeter gedraaid moet worden, in de actieve zone, voor de uitvoer geregistreerd wordt. De uitgedrukte waarde is ruwe invoer.</value>
   </data>
   <data name="StickRotationTooltip" xml:space="preserve">
     <value>+ = Met de klok mee. - = Tegen de klok in.

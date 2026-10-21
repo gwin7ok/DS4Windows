@@ -529,9 +529,6 @@ Bu seçenekteki değişiklikler denetleyici bağlandığında geçerli olur.</va
   <data name="StickOuterBindTooltip" xml:space="preserve">
     <value>Oyun Çubuğu hareketi belirli bir eşiği aştığında gerçekleştirilecek eylem. Yürüme veya Koşma gibi tuşları atamak için kullanışlıdır. Tersine çevirme, eylemin eşik değerine kadar tetiklenmesine neden olur.</value>
   </data>
-  <data name="SASteeringWheelFuzzTooltip" xml:space="preserve">
-    <value>Fuzz, en düşük cihaz birimi sayısını belirler, aktif bölgede, Hızlanma, çıktı değiştirilmiş olarak kaydedilmeden önce çevirilmelidir. Değer, ham Hızlanma biriminde ifade edilmiştir.</value>
-  </data>
   <data name="StickRotationTooltip" xml:space="preserve">
     <value>+ = Saat yönünde. - = Saat yönünün tersinde.
 

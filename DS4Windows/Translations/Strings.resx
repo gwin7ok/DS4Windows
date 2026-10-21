@@ -591,9 +591,6 @@ Example: whyme_DS4Windows</value>
   <data name="StickOuterBindTooltip" xml:space="preserve">
     <value>Action to execute when stick travel reaches past a treshold. Useful for mapping keys for Walk or Sprint actions. Invert casues the action to fire up until the threshold</value>
   </data>
-  <data name="SASteeringWheelFuzzTooltip" xml:space="preserve">
-    <value>Fuzz specifies the minimum number of device units, in active zone, that the Accel has to be rotated before the output is registered as changed in the mapper. The value is expressed in raw Accel units.</value>
-  </data>
   <data name="StickRotationTooltip" xml:space="preserve">
     <value>+ = Clockwise. - = Counter-clockwise.
 
@@ -1421,9 +1418,6 @@ To setup Bluetooth (optional): Hold the PS Button and Share for 3 seconds. The l
   </data>
   <data name="SpecialActionEdit.SetUnloadTrigger" xml:space="preserve">
     <value>Set Unload Trigger</value>
-  </data>
-  <data name="SpecialActionEdit.SixAxisWheelCalib" xml:space="preserve">
-    <value>Calibration of sixaxis wheel calibration</value>
   </data>
   <data name="SpecialActionEdit.SyncRun" xml:space="preserve">
     <value>Synchronized Run</value>

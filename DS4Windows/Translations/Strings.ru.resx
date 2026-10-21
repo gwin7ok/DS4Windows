@@ -1233,9 +1233,6 @@
   <data name="SpecialActionEdit.SetUnloadTrigger" xml:space="preserve">
     <value>Установить триггер выгрузки</value>
   </data>
-  <data name="SpecialActionEdit.SixAxisWheelCalib" xml:space="preserve">
-    <value>Калибровка шестиосного колеса</value>
-  </data>
   <data name="SpecialActionEdit.SyncRun" xml:space="preserve">
     <value>Синхронный запуск</value>
   </data>

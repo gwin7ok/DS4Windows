@@ -397,7 +397,6 @@ namespace DS4Windows
         // ---- Step10-2-A-6: ボタン/マウス出力関連 (m_Config委譲) ----
         public ButtonMouseInfo[] ButtonMouseInfos => SafeConfig?.buttonMouseInfos;
         public bool[] EnableTouchToggle => SafeConfig?.enableTouchToggle;
-        public SteeringWheelSmoothingInfo[] WheelSmoothInfo => SafeConfig?.wheelSmoothInfo;
         public bool[] DoubleTap => SafeConfig?.doubleTap;
         public int[] ScrollSensitivity => SafeConfig?.scrollSensitivity;
         public bool[] TrackballMode => SafeConfig?.trackballMode;
@@ -410,9 +409,6 @@ namespace DS4Windows
         // ---- Step10-2-A-7: SA/デッドゾーン関連 (m_Config委譲) ----
         public string[] SATriggers => SafeConfig?.sATriggers;
         public string[] SAMousestickTriggers => SafeConfig?.sAMouseStickTriggers;
-        public SASteeringWheelEmulationAxisType[] SASteeringWheelEmulationAxis => SafeConfig?.sASteeringWheelEmulationAxis;
-        public int[] SASteeringWheelEmulationRange => SafeConfig?.sASteeringWheelEmulationRange;
-        public int[] SAWheelFuzzValues => SafeConfig?.saWheelFuzzValues;
         public double[] SXDeadzone => SafeConfig?.SXDeadzone;
         public double[] SZDeadzone => SafeConfig?.SZDeadzone;
         public double[] SXSens => SafeConfig?.SXSens;
@@ -427,8 +423,6 @@ namespace DS4Windows
         public bool GetSATriggerCond(int deviceIndex) => SafeConfig != null && SafeConfig.sATriggerCond != null && SafeConfig.sATriggerCond[deviceIndex];
         public string GetSAMouseStickTriggers(int deviceIndex) => SafeConfig != null && SafeConfig.sAMouseStickTriggers != null ? SafeConfig.sAMouseStickTriggers[deviceIndex] : string.Empty;
         public bool GetSAMouseStickTriggerCond(int deviceIndex) => SafeConfig != null && SafeConfig.sAMouseStickTriggerCond != null && SafeConfig.sAMouseStickTriggerCond[deviceIndex];
-        public SASteeringWheelEmulationAxisType GetSASteeringWheelEmulationAxis(int deviceIndex) => SafeConfig != null && SafeConfig.sASteeringWheelEmulationAxis != null ? SafeConfig.sASteeringWheelEmulationAxis[deviceIndex] : SASteeringWheelEmulationAxisType.None;
-        public int GetSASteeringWheelEmulationRange(int deviceIndex) => SafeConfig != null && SafeConfig.sASteeringWheelEmulationRange != null ? SafeConfig.sASteeringWheelEmulationRange[deviceIndex] : 0;
         public void SetSaTriggerCond(int index, string text) => SafeConfig?.SetSaTriggerCond(index, text);
         public void SetSaMouseStickTriggerCond(int index, string text) => SafeConfig?.SetSaMouseStickTriggerCond(index, text);
         public int GetSxOutCurveMode(int index) => SafeConfig != null ? SafeConfig.getSXOutCurveMode(index) : 0;

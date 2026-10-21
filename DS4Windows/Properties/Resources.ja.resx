@@ -139,24 +139,6 @@
   <data name="QuitOtherPrograms" xml:space="preserve">
     <value>'DS4コントローラーを隠す'オプションを有効にする前に、UWPアプリ(Netflix)、Steam、Uplay、Edge、NVIDIA IN-GAMEなどの他のアプリケーションを終了する必要があります。詳しくは https://github.com/Ryochan7/DS4Windows/wiki/Exclusive-Mode-(Hide-DS4-Controller-config-option)-tips-and-issues をご覧ください。</value>
   </data>
-  <data name="SASteeringWheelEmulationCalibrate" xml:space="preserve">
-    <value>6軸ホイールエミュレーションの調整</value>
-  </data>
-  <data name="SASteeringWheelEmulationCalibrateInstruction" xml:space="preserve">
-    <value>ライトバーが緑色になるとすべての調整ポイントが設定されます。コントローラーの回転中はライトバーが点滅し、調整中であることを示します。OKボタンで調整を開始します</value>
-  </data>
-  <data name="SASteeringWheelEmulationCalibrateInstruction1" xml:space="preserve">
-    <value>(1) コントローラーを中央で固定し、"X"ボタンを押してください</value>
-  </data>
-  <data name="SASteeringWheelEmulationCalibrateInstruction2" xml:space="preserve">
-    <value>(2) 左(または右)に90度回転し、"X"ボタンを押してください</value>
-  </data>
-  <data name="SASteeringWheelEmulationCalibrateInstruction3" xml:space="preserve">
-    <value>(3) 右(または左)に90度回転し、"X"ボタンを押してください</value>
-  </data>
-  <data name="SASteeringWheelEmulationCalibrateNoControllerError" xml:space="preserve">
-    <value>コントローラーなしでは、(6軸)ジャイロステアリングホイールのエミュレーションを調整できません。Bluetooth または USB でコントローラーを接続してください</value>
-  </data>
   <data name="ScanCode" xml:space="preserve">
     <value>コードをスキャン</value>
   </data>
