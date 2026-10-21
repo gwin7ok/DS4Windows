@@ -1,5 +1,4 @@
 using System.Collections.Generic;
-using Sensorit.Base;
 
 namespace DS4Windows
 {
@@ -34,8 +33,6 @@ namespace DS4Windows
         /// <summary>ファズの前回の値（[デバイス][LX＝0, LY＝1, RX＝2, RY＝3]。128＝中立）。旧 <c>Mapping.lastStickAxisValues</c>。添字は <c>ControllerLimits.TestProfileItemCount</c>。</summary>
         public byte[][] LastStickAxisValues { get; }
 
-        /// <summary>ステアリングホイールのジャイロ用のフィルター（<c>ControlService</c> が設定の適用時に差し替える。初期値は null）。</summary>
-        public OneEuroFilter[] WheelFilters { get; } = new OneEuroFilter[ControlService.MAX_DS4_CONTROLLER_COUNT];
 
         public StickMotionState()
         {

@@ -110,37 +110,8 @@ namespace DS4Windows
         public ControllerOptionsStore optionsStore;
         private DS4ControllerOptions nativeOptionsStore;
 
-        public Int32 wheelPrevPhysicalAngle = 0;
-        public Int32 wheelPrevFullAngle = 0;
-        public Int32 wheelFullTurnCount = 0;
-
-        public Point wheelCenterPoint;
-        public Point wheel90DegPointLeft;
-        public Point wheelCircleCenterPointLeft;
-        public Point wheel90DegPointRight;
-        public Point wheelCircleCenterPointRight;
-
-        public DateTime wheelPrevRecalibrateTime;
-
-        protected int wheelRecalibrateActiveState = 0;
-        public int WheelRecalibrateActiveState
-        {
-            get { return wheelRecalibrateActiveState; }
-            set
-            {
-                wheelRecalibrateActiveState = value;
-            }
-        }
-
-        public enum WheelCalibrationPoint
-        {
-            None = 0,
-            Center = 1,
-            Right90 = 2,
-            Left90 = 4,
-            All = Center | Right90 | Left90
-        }
-        public WheelCalibrationPoint wheelCalibratedAxisBitmask;
+        // Phase9 Steering 削除 W2: 旧「ステアリング（ジャイロでハンドル操作）の較正の状態」（wheelCenterPoint／wheel90DegPointLeft／Right／wheelCircle…／wheelPrev…／wheelFullTurnCount／WheelRecalibrateActiveState／
+        // WheelCalibrationPoint／wheelCalibratedAxisBitmask）は、機能ごと削除した（ユーザーの承認。Phase9-SteeringWheel-Removal-Plan.md）。
 
         protected bool exitOutputThread = false;
         public bool ExitOutputThread => exitOutputThread;

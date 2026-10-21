@@ -2489,16 +2489,7 @@ namespace DS4Windows
         {
             ResetUdpSmoothingFilters(ind);
 
-            // Set up filter for new input device
-            OneEuroFilter tempFilter = new OneEuroFilter(OneEuroFilterPair.DEFAULT_WHEEL_CUTOFF,
-                OneEuroFilterPair.DEFAULT_WHEEL_BETA);
-            _stickMotion.WheelFilters[ind] = tempFilter;
-
-            // Carry over initial profile wheel smoothing values to filter instances.
-            // Set up event hooks to keep values in sync
-            SteeringWheelSmoothingInfo wheelSmoothInfo = _profileSettings.WheelSmoothInfo[ind];
-            wheelSmoothInfo.SetFilterAttrs(tempFilter);
-            wheelSmoothInfo.SetRefreshEvents(tempFilter);
+            // Phase9 Steering 削除 W2: 旧「ステアリング用のフィルター（OneEuroFilter）の作成と、設定［スムージング］との連動」は削除した（機能ごと削除）
 
             FlickStickSettings flickStickSettings = _profileSettings.LSOutputSettings[ind].outputSettings.flickSettings;
             flickStickSettings.RemoveRefreshEvents();

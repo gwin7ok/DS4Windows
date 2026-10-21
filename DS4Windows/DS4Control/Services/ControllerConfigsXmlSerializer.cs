@@ -82,13 +82,7 @@ namespace DS4Windows.Services
                 XmlNode node = xmlDoc.SelectSingleNode("/Controllers/Controller[@Mac=\"" + device.getMacAddress() + "\"]");
                 if (node != null)
                 {
-                    Int32 intValue;
-                    if (Int32.TryParse(node["wheelCenterPoint"]?.InnerText.Split(',')[0] ?? "", out intValue)) device.wheelCenterPoint.X = intValue;
-                    if (Int32.TryParse(node["wheelCenterPoint"]?.InnerText.Split(',')[1] ?? "", out intValue)) device.wheelCenterPoint.Y = intValue;
-                    if (Int32.TryParse(node["wheel90DegPointLeft"]?.InnerText.Split(',')[0] ?? "", out intValue)) device.wheel90DegPointLeft.X = intValue;
-                    if (Int32.TryParse(node["wheel90DegPointLeft"]?.InnerText.Split(',')[1] ?? "", out intValue)) device.wheel90DegPointLeft.Y = intValue;
-                    if (Int32.TryParse(node["wheel90DegPointRight"]?.InnerText.Split(',')[0] ?? "", out intValue)) device.wheel90DegPointRight.X = intValue;
-                    if (Int32.TryParse(node["wheel90DegPointRight"]?.InnerText.Split(',')[1] ?? "", out intValue)) device.wheel90DegPointRight.Y = intValue;
+                    // Phase9 Steering 削除 W2: 旧「車輪の較正値」（wheelCenterPoint／wheel90DegPointLeft／wheel90DegPointRight）の読み込みは削除した。古いファイルに要素が残っていても、無視される
 
                     device.optionsStore?.LoadSettings(xmlDoc, node);
 
@@ -137,21 +131,7 @@ namespace DS4Windows.Services
                 contTypeAttr.Value = device.DeviceType.ToString();
                 node.Attributes.Append(contTypeAttr);
 
-                if (!device.wheelCenterPoint.IsEmpty)
-                {
-                    XmlElement wheelCenterEl = xmlDoc.CreateElement("wheelCenterPoint");
-                    wheelCenterEl.InnerText = $"{device.wheelCenterPoint.X},{device.wheelCenterPoint.Y}";
-                    node.AppendChild(wheelCenterEl);
-
-                    XmlElement wheel90DegPointLeftEl = xmlDoc.CreateElement("wheel90DegPointLeft");
-                    wheel90DegPointLeftEl.InnerText = $"{device.wheel90DegPointLeft.X},{device.wheel90DegPointLeft.Y}";
-                    node.AppendChild(wheel90DegPointLeftEl);
-
-                    XmlElement wheel90DegPointRightEl = xmlDoc.CreateElement("wheel90DegPointRight");
-                    wheel90DegPointRightEl.InnerText = $"{device.wheel90DegPointRight.X},{device.wheel90DegPointRight.Y}";
-                    node.AppendChild(wheel90DegPointRightEl);
-                }
-
+                // Phase9 Steering 削除 W2: 旧「車輪の較正値」の書き込みは削除した（Mac と ControllerType の属性、optionsStore の設定は、これまでどおり）
                 device.optionsStore?.PersistSettings(xmlDoc, node);
 
                 // Remove old elements
