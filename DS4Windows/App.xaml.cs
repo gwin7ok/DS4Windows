@@ -513,8 +513,8 @@ namespace DS4WinWPF
                 AttemptSave();
 
                 _profileRepository.SaveAsProfile(0, "Default");
-                string[] profilePath = _profileRepository.ProfilePath;
-                string[] olderProfilePath = _profileRepository.OlderProfilePath;
+                ProfileSlotNames profilePath = _profileRepository.ProfilePath;
+                ProfileSlotNames olderProfilePath = _profileRepository.OlderProfilePath;
                 for (int i = 0; i < DS4Windows.ControlService.MAX_DS4_CONTROLLER_COUNT; i++)
                 {
                     profilePath[i] = olderProfilePath[i] = "Default";

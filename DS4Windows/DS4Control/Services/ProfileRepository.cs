@@ -161,9 +161,9 @@ namespace DS4Windows
         // Global.ProfilePath 等は m_Config(BackingStore) への薄い公開アクセサであり、
         // 本クラスの LoadProfile 内でも同一配列(Global.ProfilePath[deviceIndex])へ直接書き込んでいる
         // 既存の単一の実体であるため、状態を複製せずそのまま公開する(Phase4-Step10の知見に準拠)。
-        public string[] ProfilePath => _config.profilePath;
-        public string[] OlderProfilePath => _config.olderProfilePath;
-        public string[] SelectedProfile => _config.selectedProfile;
+        public ProfileSlotNames ProfilePath => _config.profilePath;
+        public ProfileSlotNames OlderProfilePath => _config.olderProfilePath;
+        public ProfileSlotNames SelectedProfile => _config.selectedProfile;
         public string[] LinkedProfileUI => _config.linkedProfileUI;
 
         // Phase7-Step3c W4: Global の静的イベントから、このリポジトリ（DI のシングルトン）のインスタンスイベントにした。
@@ -393,7 +393,7 @@ namespace DS4Windows
                 return result;
 
             List<string>[] actions = ProfileActions;
-            string[] paths = ProfilePath;
+            ProfileSlotNames paths = ProfilePath;
             if (actions == null || paths == null)
                 return result;
 

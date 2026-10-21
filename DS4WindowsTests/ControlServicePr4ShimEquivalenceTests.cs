@@ -72,7 +72,7 @@ namespace DS4WindowsTests
             const int iterations = 10000;
             GyroOutMode gyro = _profileSettings.GetGyroOutMode(0);
             SASteeringWheelEmulationAxisType axis = _profileSettings.GetSASteeringWheelEmulationAxis(0);
-            string[] profilePath = _profileRepository.ProfilePath;
+            ProfileSlotNames profilePath = _profileRepository.ProfilePath;
 
             // 実際のウォームアップ（コメントのとおり）: 初回呼び出しの JIT による割り当て（他のテストが先に走っていないと、1 KB 程度出る）を、計測の外へ出す。
             // Phase8-Step7 7.5a-W2 のテスト実行で、この JIT の割り当てによる偶発的な失敗が出たため、ウォームアップを足した（検査の厳しさは同じ: 0 バイト）

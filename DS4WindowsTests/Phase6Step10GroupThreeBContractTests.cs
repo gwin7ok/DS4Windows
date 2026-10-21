@@ -146,7 +146,7 @@ namespace DS4WindowsTests
         public void GetAppliedProfilesUsingAction_ReturnsProfilesOfSlotsThatUseTheAction()
         {
             // Global の実行時状態（スロット別のプロファイル名とアクション一覧）を退避し、必ず戻す
-            string[] paths = TestGlobals.Store.profilePath;
+            ProfileSlotNames paths = TestGlobals.Store.profilePath;
             List<string>[] actions = TestGlobals.Store.profileActions;
             string path0 = paths[0], path1 = paths[1], path2 = paths[2];
             List<string> actions0 = actions[0], actions1 = actions[1], actions2 = actions[2];

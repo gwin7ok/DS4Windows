@@ -53,7 +53,13 @@ namespace DS4Windows.DI
             });
             services.AddSingleton<IPathService, PathService>();
             // Phase10-Step4d W1: プロファイルの固定 ID と名前（ファイル名）を結ぶ登録簿
-            services.AddSingleton<IProfileIdentityService, ProfileIdentityService>();
+            // W5b: 登録簿を作るとき、BackingStore のスロットの保管（ProfileSlotNames）へ結ぶ（ID ↔ 名前を引く）
+            services.AddSingleton<IProfileIdentityService>(sp =>
+            {
+                var service = new ProfileIdentityService(sp.GetRequiredService<IPathService>());
+                sp.GetRequiredService<BackingStore>().AttachProfileIdentity(service);
+                return service;
+            });
             services.AddSingleton<IDeviceStateService, DeviceStateService>();
             services.AddSingleton<IEnvironmentService, EnvironmentService>();
             services.AddSingleton<IAppearanceSettingsService, AppearanceSettingsService>();

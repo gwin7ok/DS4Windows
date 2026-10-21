@@ -23,7 +23,7 @@ namespace DS4WindowsTests
             ["DS4Windows/App.xaml.cs"] = (6, 0),
             ["DS4Windows/DI/IProfileRepository.cs"] = (2, 1),
             ["DS4Windows/DI/IProfileSettingsService.cs"] = (0, 1),
-            ["DS4Windows/DS4Control/BackingStore.cs"] = (7, 9),
+            ["DS4Windows/DS4Control/BackingStore.cs"] = (9, 9),   // Phase10-Step4d W5b: 保管を ID にした窓口（ProfileSlotNames）の宣言と、登録簿との結び（AttachProfileIdentity）で 2 件増えた。名前の配列そのものは、もうない
             ["DS4Windows/DS4Control/ControlService.cs"] = (2, 0),
             ["DS4Windows/DS4Control/DTOXml/AppSettingsDTO.cs"] = (18, 0),   // Phase10-Step4d W4: ID から現在の名前に引き直す代入で 2 件増えた（W5 で ID に替える）
             ["DS4Windows/DS4Control/Mapping.cs"] = (0, 3),

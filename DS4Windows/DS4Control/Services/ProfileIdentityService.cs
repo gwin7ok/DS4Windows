@@ -108,6 +108,12 @@ namespace DS4Windows.Services
         {
             if (string.IsNullOrWhiteSpace(profileName)) return null;
 
+            // 速い経路: 索引が有効なら、索引のロックだけで引く（実行時の読み取りが、長い XML の読み書き［XmlIoLock］を待たないように）
+            lock (_gate)
+            {
+                if (IsFresh()) return _nameToId.TryGetValue(profileName, out string fast) ? fast : null;
+            }
+
             lock (ProfileXmlStore.XmlIoLock)
             {
                 lock (_gate)
@@ -121,6 +127,11 @@ namespace DS4Windows.Services
         public string GetName(string profileId)
         {
             if (!_file.IsValid(profileId)) return null;
+
+            lock (_gate)
+            {
+                if (IsFresh()) return _idToName.TryGetValue(profileId, out string fast) ? fast : null;
+            }
 
             lock (ProfileXmlStore.XmlIoLock)
             {
@@ -183,13 +194,18 @@ namespace DS4Windows.Services
 
         // ---- 索引（呼び出し側が XmlIoLock と _gate を取る）----
 
+        // 索引が有効か（作り直しが要らないか）。呼び出し側が _gate を取る
+        private bool IsFresh()
+        {
+            if (!_built || !_trusted) return false;
+
+            string folder = _pathService.ProfilesPath;
+            return string.Equals(folder, _indexedFolder, StringComparison.Ordinal) && StampOf(folder) == _indexedStamp;
+        }
+
         private void EnsureIndex()
         {
-            string folder = _pathService.ProfilesPath;
-            DateTime stamp = StampOf(folder);
-
-            if (_built && _trusted && string.Equals(folder, _indexedFolder, StringComparison.Ordinal) && stamp == _indexedStamp)
-                return;
+            if (IsFresh()) return;
 
             Rebuild(ReadEntries());
         }

@@ -96,6 +96,8 @@ namespace DS4WindowsTests
         private static void Visit(StringBuilder sb, string path, object value, int depth, List<object> stack)
         {
             if (value == null) { Line(sb, path, "null"); return; }
+            // Phase10-Step4d W5b: スロットの名前の窓口（ProfileSlotNames）は、従来の string[] と同じ出力にする（現在の名前の配列として）
+            if (value is DS4Windows.ProfileSlotNames slotNames) value = slotNames.ToArray();
             Type t = value.GetType();
             if (IsScalar(t)) { Line(sb, path, Format(value)); return; }
             if (t == typeof(System.Drawing.Color))

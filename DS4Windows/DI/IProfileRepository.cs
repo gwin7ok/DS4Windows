@@ -20,9 +20,10 @@ namespace DS4Windows.DI
         bool RestoreProfileDirect(int deviceIndex);
 
         // ---- Phase5-Step13-2: デバイススロット別・実行時プロファイル状態 (m_Config委譲、BackingStore共有参照) ----
-        string[] ProfilePath { get; }
-        string[] OlderProfilePath { get; }
-        string[] SelectedProfile { get; }
+        // Phase10-Step4d W5b: 保管はプロファイルの固定 ID で、名前を読み書きする窓口（ProfileSlotNames）。プロファイルの名前を変えても、読み出す名前は現在の名前になる
+        ProfileSlotNames ProfilePath { get; }
+        ProfileSlotNames OlderProfilePath { get; }
+        ProfileSlotNames SelectedProfile { get; }
         string[] LinkedProfileUI { get; }
 
         event EventHandler<SelectedProfileChangedEventArgs> SelectedProfileChanged;

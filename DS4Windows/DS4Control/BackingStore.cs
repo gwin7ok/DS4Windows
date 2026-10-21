@@ -159,9 +159,17 @@ namespace DS4Windows
           DEFAULT_TOUCHPAD_JITTER_COMP, DEFAULT_TOUCHPAD_JITTER_COMP, DEFAULT_TOUCHPAD_JITTER_COMP };
         public bool[] lowerRCOn = new bool[ControllerLimits.TestProfileItemCount] { false, false, false, false, false, false, false, false, false };
         public bool[] touchClickPassthru = new bool[ControllerLimits.TestProfileItemCount] { false, false, false, false, false, false, false, false, false };
-        public string[] profilePath = new string[ControllerLimits.TestProfileItemCount] { string.Empty, string.Empty, string.Empty, string.Empty, string.Empty, string.Empty, string.Empty, string.Empty, string.Empty };
-        public string[] olderProfilePath = new string[ControllerLimits.TestProfileItemCount] { string.Empty, string.Empty, string.Empty, string.Empty, string.Empty, string.Empty, string.Empty, string.Empty, string.Empty };
-        public string[] selectedProfile = new string[ControllerLimits.TestProfileItemCount] { string.Empty, string.Empty, string.Empty, string.Empty, string.Empty, string.Empty, string.Empty, string.Empty, string.Empty };
+        public ProfileSlotNames profilePath = new ProfileSlotNames(ControllerLimits.TestProfileItemCount);
+        public ProfileSlotNames olderProfilePath = new ProfileSlotNames(ControllerLimits.TestProfileItemCount);
+        public ProfileSlotNames selectedProfile = new ProfileSlotNames(ControllerLimits.TestProfileItemCount);
+        // Phase10-Step4d W5b: 上の 3 つ（現在・直前・選択のプロファイル）は、保管がプロファイルの固定 ID で、名前を読み書きする窓口（ProfileSlotNames）。
+        // 登録簿は、DI の登録が結ぶ（登録簿が BackingStore に依存しない向き）。結ばなければ、名前の控えだけで、従来の配列と同じに動く
+        public void AttachProfileIdentity(DS4Windows.DI.IProfileIdentityService identity)
+        {
+            profilePath.AttachIdentity(identity);
+            olderProfilePath.AttachIdentity(identity);
+            selectedProfile.AttachIdentity(identity);
+        }
         public string[] linkedProfileUI = new string[ControllerLimits.TestProfileItemCount] { string.Empty, string.Empty, string.Empty, string.Empty, string.Empty, string.Empty, string.Empty, string.Empty, string.Empty };
         // プロファイル切り替え時の無効アクション名エラーログ抑制用（Phase7-Step3c W3: Global の静的フィールドから移した）
         public HashSet<string> loggedInvalidActions = new HashSet<string>();
