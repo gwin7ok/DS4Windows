@@ -87,8 +87,8 @@
 
 	<Target Name="UpdateLatestBuildSummary" AfterTargets="Build">
 		<!-- Write local build timestamp and the git commit into build_timestamp.txt in output folder -->
-		<!-- コミットのハッシュ（8 桁）。未コミットの変更があれば、末尾に「-dirty」を付ける。git がない・リポジトリでないときは「unknown」 -->
-		<Exec Command="git rev-parse --short=8 HEAD" WorkingDirectory="$(MSBuildProjectDirectory)" ConsoleToMSBuild="true" IgnoreExitCode="true" ContinueOnError="true" StandardOutputImportance="low" StandardErrorImportance="low">
+		<!-- コミットのハッシュ（7 桁。VSCode などの表示に合わせる）。未コミットの変更があれば、末尾に「-dirty」を付ける。git がない・リポジトリでないときは「unknown」 -->
+		<Exec Command="git rev-parse --short=7 HEAD" WorkingDirectory="$(MSBuildProjectDirectory)" ConsoleToMSBuild="true" IgnoreExitCode="true" ContinueOnError="true" StandardOutputImportance="low" StandardErrorImportance="low">
 			<Output TaskParameter="ConsoleOutput" PropertyName="GitCommitHash" />
 			<Output TaskParameter="ExitCode" PropertyName="GitHashExitCode" />
 		</Exec>

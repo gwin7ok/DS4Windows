@@ -18,7 +18,7 @@ namespace DS4WindowsTests
             if (path == null) return;
             string text = File.ReadAllText(path);
 
-            Assert.Contains("git rev-parse --short=8 HEAD", text);
+            Assert.Contains("git rev-parse --short=7 HEAD", text);
             Assert.Contains("git status --porcelain", text);
             Assert.Contains("commit=$(BuildCommit)", text);
             Assert.Contains("$(BuildCommit)-dirty", text);

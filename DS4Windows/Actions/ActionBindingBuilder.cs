@@ -18,6 +18,7 @@ namespace DS4Windows.Actions
         private readonly IProfileActionProvider _profileActions;
         private readonly IProfileSettingsService _profileSettings;
         private readonly ISpecialActionOutputFactory _outputFactory;     // Phase10-Step4 W2: 種別ごとの出力アクション・方針の作り方（Controls タブの束縛を作る側と共有）
+        private readonly AssignmentBindingBuilder _assignmentBuilder;   // Phase10-Step6 I4c: 定義 → 束縛の組み立て（Controls タブ側と同じ部品）
         private readonly IControlBindingBuilder _controlBuilder;         // Controls タブの束縛（7.8b）。省略時（テスト）は連結しない
 
         /// <param name="outputFactory">
@@ -43,6 +44,7 @@ namespace DS4Windows.Actions
             _outputFactory = outputFactory ?? new SpecialActionOutputFactory(profileSettings, manager, macroPlayer, processLauncher,
                 profileSwitcher, actionRepository, mappingProvider, gyroCalibration, disconnectPort, batteryCheckPort,
                 wheelCalibrationPort, macroStringPlayer);
+            _assignmentBuilder = new AssignmentBindingBuilder(_outputFactory, _profileSettings);   // Phase10-Step6 I4c: 束縛の組み立ては、共通の部品が行う
         }
 
         public IReadOnlyList<IActionBinding> Build(int device)
@@ -88,14 +90,8 @@ namespace DS4Windows.Actions
             AssignmentDefinition definition = SpecialActionAssignmentReader.Read(sa);
             if (definition == null) return null;
 
-            SpecialActionOutputs outputs = _outputFactory.Create(device, definition, sa, index);
-            if (outputs == null) return null;
-
-            // 入力は、SA 側が作る（複数ボタンの組み合わせ。MultiAction だけは、タップ・長押し・ダブルタップを判定する独立した入力）
-            IInputAction input = outputs.IsMultiTap
-                ? (IInputAction)new MultiTapInputAction(sa.name, sa.trigger, _profileSettings, sa.delayTime)
-                : Input(sa, outputs.InvertOnRelease);
-            return new TriggerBinding(input, outputs.Outputs, outputs.Policy, sa, index);
+            // Phase10-Step6 I4c: 出力・方針・入力・包みは、共通の組み立て（AssignmentBindingBuilder）が行う。入力は SA 由来（複数ボタンの組み合わせ。MultiAction は独立した入力）
+            return _assignmentBuilder.Build(device, definition, sa, index);
         }
 
         /// <summary>
@@ -124,7 +120,5 @@ namespace DS4Windows.Actions
             return new ButtonBindingValues(false, X360Controls.None, toggle);
         }
 
-        private ComboTriggerInputAction Input(SpecialAction sa, bool invertOnRelease)
-            => new ComboTriggerInputAction(sa.name, sa.trigger, _profileSettings, sa.delayTime, invertOnRelease);
     }
 }

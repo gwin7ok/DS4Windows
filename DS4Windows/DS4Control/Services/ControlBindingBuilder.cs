@@ -24,6 +24,7 @@ namespace DS4Windows.Services
         private readonly IMacroPlayer _macroPlayer;   // Macro（7.8c）。省略時（テスト）は、Macro の束縛を作らず、旧経路が処理する
         private readonly IControlExtrasPort _extrasPort;   // Extras（7.8e）。省略時（テスト）は、Extras を持つ割り当ての束縛を作らず、旧経路が処理する
         private readonly ISpecialActionOutputFactory _outputFactory;   // Phase10-Step4 W4: SA 専用の種別（Special）の出力と方針。省略時（テスト）は、Special の束縛を作らない
+        private readonly AssignmentBindingBuilder _assignmentBuilder;   // Phase10-Step6 I4c: Key／Macro／Special の束縛の組み立て（SA タブ側と同じ部品）
         private readonly ISpecialActionOutputFactory _controlsFactory;   // Phase10-Step6 I4b: Key と Macro 用。_outputFactory がなければ、最小の部品（Key と Macro だけを作る）
 
         /// <summary>
@@ -50,6 +51,7 @@ namespace DS4Windows.Services
             _extrasPort = extrasPort;
             _outputFactory = outputFactory;
             _controlsFactory = SpecialActionOutputFactory.ForControlsKeyAndMacro(_profileSettings, macroPlayer);
+            _assignmentBuilder = new AssignmentBindingBuilder(_outputFactory ?? _controlsFactory, _profileSettings);   // Phase10-Step6 I4c: 束縛の組み立ては、SA タブ側と同じ部品
         }
 
         public IReadOnlyList<IActionBinding> Build(int device)
@@ -283,14 +285,14 @@ namespace DS4Windows.Services
                     if (keys && ControlsAssignmentReader.TryReadKey(device, dcs, out AssignmentDefinition keyDefinition, out SpecialAction keyIdentity))
                     {
                         if (hasExtras) AddExtras(device, dcs, extrasValues, result);
-                        AddFromDefinition(dcs, ControlBindingKind.Key, device, keyDefinition, keyIdentity, result);
+                        AddFromDefinition(device, keyDefinition, keyIdentity, result);
                     }
                     break;
                 case DS4ControlSettings.ActionType.Macro:
                     if (macros && ControlsAssignmentReader.TryReadMacro(device, dcs, out AssignmentDefinition macroDefinition, out SpecialAction macroIdentity))
                     {
                         if (hasExtras) AddExtras(device, dcs, extrasValues, result);
-                        AddFromDefinition(dcs, ControlBindingKind.Macro, device, macroDefinition, macroIdentity, result);
+                        AddFromDefinition(device, macroDefinition, macroIdentity, result);
                     }
                     break;
                 case DS4ControlSettings.ActionType.Special:
@@ -298,11 +300,11 @@ namespace DS4Windows.Services
                     if (_outputFactory != null && ControlsAssignmentReader.TryReadSpecial(device, dcs, out AssignmentDefinition special, out SpecialAction identity))
                     {
                         // 出力を作れない種別（窓口が未接続のテスト）は、束縛を 1 つも作らない（Extras も含め、dcs 全体を作らない）
-                        SpecialActionOutputs outputs = _outputFactory.Create(device, special, identity, -1);
-                        if (outputs == null) break;
+                        TriggerBinding binding = _assignmentBuilder.Build(device, special, identity, -1);
+                        if (binding == null) break;
 
                         if (hasExtras) AddExtras(device, dcs, extrasValues, result);
-                        AddSpecial(dcs, identity, special.Item, outputs, result);
+                        result.Add(binding);
                     }
                     break;
                 case DS4ControlSettings.ActionType.Button:
@@ -350,14 +352,6 @@ namespace DS4Windows.Services
 
             item = dcs.special;
             return true;
-        }
-
-        // 入力は、Controls の 1 ボタン（SA と同じ閾値の判定。押し続ける秒数つき）。方針は、factory の Controls 用（抑制も消去もせず、割り当てたボタンの出力を毎フレーム消す）
-        private void AddSpecial(DS4ControlSettings dcs, SpecialAction identity, ControlSpecialItem item, SpecialActionOutputs outputs, List<IActionBinding> result)
-        {
-            result.Add(new TriggerBinding(new ControlButtonInputAction(identity.name, dcs.control, ControlBindingKind.Special, ControlOutputNatureTable.ForKind(ControlBindingKind.Special),
-                    delaySeconds: item.HoldSeconds, profileSettings: _profileSettings),
-                outputs.Outputs, outputs.Policy, identity, -1));
         }
 
         // 設計: Phase8-Step7-8f-Plan.md §3.2。パッドへの割り当て。割り当てたボタンの通常の出力は、毎フレーム消す（Controls の規則）。値の出力は、評価されたフレームごとに、全 dcs のあと（Stage3 と同じ段階）で書く。
@@ -459,15 +453,12 @@ namespace DS4Windows.Services
         // Phase10-Step6 I4b: Key と Macro は、読み込みの部品（定義と、実行時の状態の入れ物）と、出力の部品（種別 × 由来の方針）を通して作る。
         // 設計書 §3.2: Controls タブの Key は、Fresh-press ガードを見ず、トリガーのボタンを抑制せず、押していなくても毎フレーム通常の出力を消す（旧 ResetToDefaultValue）。
         // Macro は SA と同じ仕組み（MacroAction、SA と同じ押下の判定、ActionInstanceState）に載せ、Fresh-press ガードは SA と同じく見る。割り当てたボタンの通常の出力は、毎フレーム消す
-        private void AddFromDefinition(DS4ControlSettings dcs, ControlBindingKind kind, int device, AssignmentDefinition definition, SpecialAction identity, List<IActionBinding> result)
+        private void AddFromDefinition(int device, AssignmentDefinition definition, SpecialAction identity, List<IActionBinding> result)
         {
-            SpecialActionOutputs outputs = (_outputFactory ?? _controlsFactory).Create(device, definition, identity, -1);
-            if (outputs == null) return;
-
             // Phase10-Step4c W4: Key・Macro（デジタルな出力）は、SA と同じ閾値で判定する。Macro の「Run on trigger release」は、離したときに成立する入力にする
-            result.Add(new TriggerBinding(new ControlButtonInputAction(identity.name, dcs.control, kind, ControlOutputNatureTable.ForKind(kind),
-                    invertOnRelease: outputs.InvertOnRelease),
-                outputs.Outputs, outputs.Policy, identity, -1));
+            // Phase10-Step6 I4c: 入力の組み立て（区分、判定の性質、離したとき成立）は AssignmentBindingBuilder が行う
+            TriggerBinding binding = _assignmentBuilder.Build(device, definition, identity, -1);
+            if (binding != null) result.Add(binding);
         }
     }
 }

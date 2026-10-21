@@ -66,15 +66,6 @@ namespace DS4Windows.Actions
             _profileSwitcher = profileSwitcher;
         }
 
-        // Phase10-Step6 I3: 互換の入口。SA を読み込みの部品で定義にして、定義を受ける Create へ渡す（I4 で削除する。forControls は、由来に置き換わる）
-        public SpecialActionOutputs Create(int device, SpecialAction sa, int index, bool forControls = false)
-        {
-            if (sa == null) throw new ArgumentNullException(nameof(sa));
-
-            AssignmentDefinition definition = SpecialActionAssignmentReader.Read(sa, forControls ? AssignmentOrigin.Controls : AssignmentOrigin.SpecialAction);
-            return definition == null ? null : Create(device, definition, sa, index);
-        }
-
         public SpecialActionOutputs Create(int device, AssignmentDefinition definition, SpecialAction source, int index)
         {
             if (definition == null) throw new ArgumentNullException(nameof(definition));
