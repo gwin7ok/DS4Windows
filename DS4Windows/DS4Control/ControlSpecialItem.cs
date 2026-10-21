@@ -48,6 +48,12 @@ namespace DS4Windows
         /// <summary>切り替え先のプロファイル名（SA の <c>details</c>）。</summary>
         public string ProfileName { get; set; } = string.Empty;
 
+        /// <summary>
+        /// Phase10-Step4d W3: 切り替え先のプロファイルの固定 ID（プロファイル XML の <c>&lt;ProfileId&gt;</c>）。保存のとき、名前から引いて書く。
+        /// 読み込みでは、ID が見つかれば、現在の名前（<see cref="ProfileName"/>）に置き換える（名前変更への追従）。ない・見つからないときは、名前のまま。
+        /// </summary>
+        public string ProfileId { get; set; } = string.Empty;
+
         /// <summary>離したときに、元のプロファイルへ自動で戻る（SA の <c>AutomaticUntrigger</c>）。</summary>
         public bool AutomaticUntrigger { get; set; }
 
@@ -87,6 +93,7 @@ namespace DS4Windows
                 ProgramArguments = ProgramArguments,
                 HideWindow = HideWindow,
                 ProfileName = ProfileName,
+                ProfileId = ProfileId,
                 AutomaticUntrigger = AutomaticUntrigger,
                 EmptyColor = EmptyColor,
                 FullColor = FullColor,

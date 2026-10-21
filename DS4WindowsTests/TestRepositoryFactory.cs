@@ -23,8 +23,9 @@ namespace DS4WindowsTests
         }
 
         /// <summary>Phase7-Step10c W2: Actions.xml の保存・読込（旧: BackingStore のメソッド）。</summary>
-        public static DS4Windows.Services.SpecialActionsXmlSerializer CreateActionsXml(BackingStore store = null)
-            => new DS4Windows.Services.SpecialActionsXmlSerializer(store ?? TestGlobals.Store);
+        public static DS4Windows.Services.SpecialActionsXmlSerializer CreateActionsXml(BackingStore store = null,
+            IProfileIdentityService profileIdentity = null)
+            => new DS4Windows.Services.SpecialActionsXmlSerializer(store ?? TestGlobals.Store, profileIdentity);
 
         /// <summary>Phase7-Step10c W2: リンクプロファイルの保存・読込（旧: BackingStore のメソッド）。</summary>
         public static DS4Windows.Services.LinkedProfilesXmlSerializer CreateLinkedProfilesXml(BackingStore store = null)
@@ -37,9 +38,9 @@ namespace DS4WindowsTests
 
         /// <summary>Phase7-Step10c W4: プロファイル（旧形式の XML）の保存・読込（旧: BackingStore のメソッド）。</summary>
         public static DS4Windows.Services.LegacyProfileXmlSerializer CreateLegacyProfileXml(BackingStore store = null,
-            IProfileSettingsService settings = null, IPathService pathService = null)
+            IProfileSettingsService settings = null, IPathService pathService = null, IProfileIdentityService profileIdentity = null)
             => new DS4Windows.Services.LegacyProfileXmlSerializer(store ?? TestGlobals.Store, pathService ?? new PathService(),
-                settings ?? TestGlobals.ProfileSettingsServiceInstance, new EnvironmentService());
+                settings ?? TestGlobals.ProfileSettingsServiceInstance, new EnvironmentService(), profileIdentity);
 
         /// <summary>Phase7-Step10c W3: アプリ設定（Profiles.xml）の保存・読込（旧: BackingStore.Load／Save）。</summary>
         public static DS4Windows.Services.AppSettingsXmlSerializer CreateAppSettingsXml(BackingStore store = null,

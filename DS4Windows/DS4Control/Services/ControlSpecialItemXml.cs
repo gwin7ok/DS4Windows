@@ -47,6 +47,7 @@ namespace DS4Windows.Services
             if (!string.IsNullOrEmpty(item.ProgramArguments)) Child("ProgramArguments", item.ProgramArguments);
             if (item.HideWindow) Child("HideWindow", "true");
             if (!string.IsNullOrEmpty(item.ProfileName)) Child("ProfileName", item.ProfileName);
+            if (!string.IsNullOrEmpty(item.ProfileId)) Child("ProfileId", item.ProfileId);   // Phase10-Step4d W3
             if (item.AutomaticUntrigger) Child("AutomaticUntrigger", "true");
             if (!item.EmptyColor.Equals(default(DS4Color))) Child("EmptyColor", ColorText(item.EmptyColor));
             if (!item.FullColor.Equals(default(DS4Color))) Child("FullColor", ColorText(item.FullColor));
@@ -88,6 +89,7 @@ namespace DS4Windows.Services
                     case "ProgramArguments": result.ProgramArguments = text; break;
                     case "HideWindow": result.HideWindow = IsTrue(text); break;
                     case "ProfileName": result.ProfileName = text; break;
+                    case "ProfileId": result.ProfileId = text; break;   // Phase10-Step4d W3
                     case "AutomaticUntrigger": result.AutomaticUntrigger = IsTrue(text); break;
                     case "EmptyColor": if (TryColor(text, out DS4Color empty)) result.EmptyColor = empty; break;
                     case "FullColor": if (TryColor(text, out DS4Color full)) result.FullColor = full; break;

@@ -52,9 +52,37 @@ namespace DS4Windows.Services
                 if (!string.IsNullOrEmpty(Item.InnerText))
                 {
                     string[] actionNames = Item.InnerText.Split('/');
+
+                    // Phase10-Step4d W3: <ProfileActionIds>（名前の一覧と同じ並びの SA の固定 ID）があれば、ID を主にして、現在の名前に引き直す
+                    // （SA の名前変更に追従する。ID が勝つ）。ない（古いファイル）・並びが合わない・SA が見つからないときは、名前のまま
+                    string[] actionIds = null;
+                    try
+                    {
+                        XmlNode idsNode = m_Xdoc.SelectSingleNode("/" + rootname + "/ProfileActionIds");
+                        if (idsNode != null && !string.IsNullOrEmpty(idsNode.InnerText))
+                        {
+                            string[] split = idsNode.InnerText.Split('/');
+                            if (split.Length == actionNames.Length) actionIds = split;
+                        }
+                    }
+                    catch { actionIds = null; }
+
                     for (int actIndex = 0, actLen = actionNames.Length; actIndex < actLen; actIndex++)
                     {
                         string tempActionName = actionNames[actIndex];
+                        if (actionIds != null && actionIds[actIndex].Length > 0)
+                        {
+                            for (int a = 0, count = store.actions.Count; a < count; a++)
+                            {
+                                SpecialAction byId = store.actions[a];
+                                if (byId != null && string.Equals(byId.id, actionIds[actIndex], StringComparison.Ordinal))
+                                {
+                                    tempActionName = byId.name;
+                                    break;
+                                }
+                            }
+                        }
+
                         if (!store.profileActions[device].Contains(tempActionName))
                         {
                             store.profileActions[device].Add(tempActionName);

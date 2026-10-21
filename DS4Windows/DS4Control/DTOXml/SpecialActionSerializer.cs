@@ -45,6 +45,17 @@ namespace DS4WinWPF.DS4Control.DTOXml
             return !string.IsNullOrEmpty(Id);
         }
 
+        // Phase10-Step4d W3: 種別が Profile の SA の、切り替え先のプロファイルの固定 ID（Details は名前のまま）。古いバージョンは、未知の要素として読み飛ばす
+        [XmlElement("ProfileId")]
+        public string ProfileId
+        {
+            get; set;
+        } = string.Empty;
+        public bool ShouldSerializeProfileId()
+        {
+            return TypeString == "Profile" && !string.IsNullOrEmpty(ProfileId);
+        }
+
         [XmlElement("Trigger")]
         public string Trigger
         {

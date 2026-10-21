@@ -36,7 +36,7 @@ namespace DS4WindowsTests
             ["DS4Windows/DS4Control/Services/ProfilePresets.cs"] = (0, 7),
             ["DS4Windows/DS4Control/Services/ProfileRepository.cs"] = (6, 4),
             ["DS4Windows/DS4Control/Services/ProfileSections/ProfileActionsLoadSection.cs"] = (0, 7),
-            ["DS4Windows/DS4Control/Services/ProfileSections/ProfileActionsSaveSection.cs"] = (0, 2),
+            ["DS4Windows/DS4Control/Services/ProfileSections/ProfileActionsSaveSection.cs"] = (0, 3),   // Phase10-Step4d W3: SA の固定 ID を書く繰り返しで 1 件増えた（W6 で ID に替える）
             ["DS4Windows/DS4Control/Services/ProfileSections/ProfileMotionSaveSection.cs"] = (0, 2),
             ["DS4Windows/DS4Control/Services/ProfileSettingsService.cs"] = (0, 3),
             ["DS4Windows/DS4Control/Services/SpecialActionRepository.cs"] = (0, 2),

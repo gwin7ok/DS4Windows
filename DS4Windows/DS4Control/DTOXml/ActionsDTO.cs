@@ -68,6 +68,7 @@ namespace DS4WinWPF.DS4Control.DTOXml
                         actionSerializer.TypeString = action.type;
                         actionSerializer.Details = action.details;
                         actionSerializer.UnloadTrigger = action.extra;
+                        actionSerializer.ProfileId = action.profileId ?? string.Empty;   // Phase10-Step4d W3
                         break;
 
                     case SpecialAction.ActionTypeId.Key:
@@ -249,6 +250,9 @@ namespace DS4WinWPF.DS4Control.DTOXml
                 if (tempAction != null)
                 {
                     // Phase10-Step4d W2: ファイルの ID を引き継ぐ。ない（古いファイル）・形式が不正なら、SpecialAction が作った新しい ID のままにして、呼び出し側へ知らせる
+                    if (tempAction.typeID == SpecialAction.ActionTypeId.Profile && !string.IsNullOrEmpty(actionSerializer.ProfileId))
+                        tempAction.profileId = actionSerializer.ProfileId;   // Phase10-Step4d W3
+
                     if (!string.IsNullOrEmpty(actionSerializer.Id) && Guid.TryParseExact(actionSerializer.Id, "N", out _))
                         tempAction.id = actionSerializer.Id;
                     else

@@ -133,4 +133,13 @@
   - golden: `Actions.xml` の `Id` 属性は、比較の正規化で除いた。状態のダンプ（`BackingStoreStateDumper`）から、`id` を除いた。**`actions.xml` の golden を更新した**: 旧形式の保存（`SpecialActionsXmlSerializer.SaveAction`。テストの準備だけが使う）は、最後に `LoadActions` を呼ぶため、ID の割り当てで `Actions.xml` が DTO の書式で保存し直される。その結果、コメントの後の空行が 1 つ増え、空の `<Arguements>` 要素がなくなった（意図した変更）。
   - テスト: `Phase10Step4dW2ActionIdTests`（12 件。保存で ID、往復、編集で保つ、名前変更で引き継ぐ［渡さなければ新しい ID、不正な ID は無視］、ID のない古いファイルへの割り当てと 1 回の保存、ID があれば書き換えない、重複・不正な ID の付け替え、新規インストールの既定の SA、古い読み方でも読める、編集画面が ID を引き継ぐ、8 か所の呼び出し）。`RecordingSpecialActionRepository` ほか、`ISpecialActionRepository` を実装するテスト用の偽物 3 つに、`actionId` を追加。`Phase10Step4dW0NameKeyTests` の「Actions.xml に ID がない」の検査を削除（W2 のテストへ置き換え）。
   - 実機確認: 台帳 §27 の P10-91（統合版に追加）。先送り。
-  - 次: W3（保存する参照を ID に: SA と Controls の Load Profile、`<ProfileActions>`）。指示があるまで始めない（設計を説明して承認を得る）。
+- **W3（完了 2026-10-21。`Debug ALL` 成功: 警告 0・エラー 0、テスト 1956 件と 11 件が成功。実機確認 P10-92 は先送り）**: 保存する参照を ID に（ID を主、名前を併記）。実行時の内部は、まだ名前のまま（W5〜W6）。
+  - **`<ProfileActions>`**（プロファイルが使う SA）: 名前の一覧は残し（古いバージョンのため）、並びが同じ SA の固定 ID の一覧 `<ProfileActionIds>`（`/` 区切り）を足す。見つからない SA の ID は空。1 つも ID がなければ、要素を書かない（golden は変更なし）。読み込みは、ID を主にして、現在の SA の名前に引き直す（SA の名前変更に追従）。ない・個数が合わない・SA が見つからないときは、名前のまま。同じ SA に解決された名前は 1 つにまとめる。`ProfileActionsSaveSection`／`ProfileActionsLoadSection`。
+  - **SA の Load Profile の切り替え先**: `Actions.xml` の `Action`（種別 Profile）に `ProfileId` 要素（切り替え先のプロファイルの ID）を足す（`Details` は名前のまま）。`SpecialActionsXmlSerializer` は、省略可能な `IProfileIdentityService` を受ける。保存の前に、名前から ID を引く（`EnsurePersisted`）。読み込みでは、ID が見つかれば `details` を現在の名前に置き換える（ID が勝つ）。ID のない古いファイルは、名前から引いた ID を割り当てて、1 回保存する。見つからなければ名前のまま。`SpecialAction.profileId`、`SpecialActionSerializer.ProfileId`。
+  - **Controls の Load Profile の切り替え先**: `<Control><Special>` の項目（種別 Profile）に `ProfileId` を足す（`ProfileName` は残す）。`ControlSpecialItem.ProfileId`、`ControlSpecialItemXml`。`LegacyProfileXmlSerializer` は、省略可能な `IProfileIdentityService` を受け、保存の前に名前から ID を引き、読み込みの後に、ID から現在の名前に置き換える（ID が勝つ）。
+  - 規則（ユーザー承認）: a＝名前の一覧は残し、ID の一覧を別の要素で足す。b＝ID と名前が食い違うときは ID が勝つ（名前は次の保存で直る）。c＝切り替え先を保存するとき、先に `EnsurePersisted` で ID を確定する。
+  - 起動の順序: `EnsureAllPersisted()` を、`LoadActions()` の前（Load Profile の切り替え先を ID で解決するため）へ移した。
+  - 追従のコード（`Replace*`／`RemoveActionReference`）は、W7 まで残す（二重の安全策）。
+  - テスト: `Phase10Step4dW3ReferenceIdTests`（16 件）。`TestRepositoryFactory` に登録簿の引数を追加。`BackingStoreStateDumper` の除外に `profileId` を追加。`Phase10Step4dW0RuntimeKeyRatchetTests` の基準値を更新（`ProfileActionsSaveSection` の `profileActions` 2 → 3）。
+  - 実機確認: 台帳 §27 の P10-92（統合版に追加）。先送り。
+  - 次: W4（保存する参照を ID に: スロットの選択、リンクプロファイル、自動プロファイル）。指示があるまで始めない（設計を説明して承認を得る）。

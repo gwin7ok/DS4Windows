@@ -23,6 +23,7 @@ namespace DS4WindowsTests
             "m_Profile", "m_Actions", "m_linkedProfiles", "m_controllerConfigs", "ProcessInspector", "loggedInvalidActions",
             // Phase10-Step4d W2: SpecialAction.id（SA の固定 ID。新しく作ったものはランダム）。検査は Phase10Step4dW2ActionIdTests が持つ
             "id",
+            "profileId",   // Phase10-Step4d W3: SpecialAction.profileId（Load Profile の切り替え先の ID）。検査は Phase10Step4dW3ReferenceIdTests が持つ
         };
 
         public static string Dump(object root)

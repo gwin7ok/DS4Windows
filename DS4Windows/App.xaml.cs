@@ -528,6 +528,11 @@ namespace DS4WinWPF
 
             skipSave = false;
 
+            // Phase10-Step4d W1（Q4 の変更、2026-10-21）: すべてのプロファイルのファイルに固定 ID を書く（ID がないものに割り当て、ファイルのコピーで重複したものに付け替える）。
+            // SA の読み込み（下の LoadActions。Load Profile の切り替え先を ID で解決する。W3）と、プロファイルをスロットへ読み込む前（メイン画面の生成の前）に行う。
+            // 書けなかったファイル（読み取り専用など）は、参照を保存する直前に改めて試す
+            _profileIdentityService.EnsureAllPersisted();
+
             // Phase6-Step7（決定2＝L2）: SpecialActionRepository.LoadActions は Step7-1 で Global.LoadActions と同じ動作
             // （Actions.xml がなければ既定アクションを作って true）に是正済み。
             if (!_specialActionRepository.LoadActions())
@@ -544,10 +549,6 @@ namespace DS4WinWPF
             ChangeTheme(_appearanceSettingsService.UseCurrentTheme, false);
             // Diagnostic: log culture state after applying theme to detect theme-induced localization regressions
             AppLogger.LogDebug($"Post-ChangeTheme: LocalizeDictionary={LocalizeDictionary.Instance.Culture}, SetCurrentThreadCulture={LocalizeDictionary.Instance.SetCurrentThreadCulture}, DefaultThreadCurrentUICulture={CultureInfo.DefaultThreadCurrentUICulture}, CurrentUICulture={Thread.CurrentThread.CurrentUICulture}");
-
-            // Phase10-Step4d W1（Q4 の変更、2026-10-21）: すべてのプロファイルのファイルに固定 ID を書く（ID がないものに割り当て、ファイルのコピーで重複したものに付け替える）。
-            // プロファイルをスロットへ読み込む前（メイン画面の生成の前）に行う。書けなかったファイル（読み取り専用など）は、参照を保存する直前に改めて試す
-            _profileIdentityService.EnsureAllPersisted();
 
             _profileRepository.LoadLinkedProfiles();
             // Phase7-Step5 W5（Q4＝A）: メイン画面の生成の窓口を、生成の直前に解決する（窓口が受け取る多数のサービスの生成が

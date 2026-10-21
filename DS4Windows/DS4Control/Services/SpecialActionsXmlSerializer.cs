@@ -41,9 +41,13 @@ namespace DS4Windows.Services
         private readonly BackingStore store;
         private readonly XmlDocument m_Xdoc = new XmlDocument(); // 旧 BackingStore.m_Xdoc と同じ使い方（排他は呼び出し側のロック）
 
-        public SpecialActionsXmlSerializer(BackingStore store)
+        // Phase10-Step4d W3: Load Profile の切り替え先の ID と名前を結ぶ。省略可（登録簿がなければ、従来どおり名前だけ）
+        private readonly DS4Windows.DI.IProfileIdentityService profileIdentity;
+
+        public SpecialActionsXmlSerializer(BackingStore store, DS4Windows.DI.IProfileIdentityService profileIdentityService = null)
         {
             this.store = store ?? throw new ArgumentNullException(nameof(store));
+            profileIdentity = profileIdentityService;
         }
 
         private void CreateAction()
@@ -73,6 +77,7 @@ namespace DS4Windows.Services
         public bool SaveActions()
         {
             bool saved = true;
+            FillProfileTargetIds();   // Phase10-Step4d W3
 
             string output_path = store.m_Actions;
             string testStr = string.Empty;
@@ -119,6 +124,56 @@ namespace DS4Windows.Services
             }
 
             return saved;
+        }
+
+        /// <summary>
+        /// Phase10-Step4d W3: Load Profile の SA の切り替え先を、ID で解決する。ID が見つかれば、現在の名前（details）に置き換える（名前変更への追従。ID が勝つ）。
+        /// ID がない（古いファイル）SA には、名前から引いた ID を割り当てる（割り当てたら真。呼び出し側が、Actions.xml を 1 回保存する）。見つからなければ、名前のまま。
+        /// </summary>
+        private bool ResolveProfileTargets()
+        {
+            if (profileIdentity == null) return false;
+
+            bool assigned = false;
+            foreach (SpecialAction action in store.actions)
+            {
+                if (action.typeID != SpecialAction.ActionTypeId.Profile) continue;
+
+                if (!string.IsNullOrEmpty(action.profileId) && Guid.TryParseExact(action.profileId, "N", out _))
+                {
+                    string name = profileIdentity.GetName(action.profileId);
+                    if (name != null && !string.Equals(action.details, name, StringComparison.Ordinal))
+                        action.details = name;
+                }
+                else
+                {
+                    string id = profileIdentity.GetId(action.details);
+                    if (id != null)
+                    {
+                        action.profileId = id;
+                        assigned = true;
+                    }
+                }
+            }
+
+            return assigned;
+        }
+
+        /// <summary>
+        /// Phase10-Step4d W3: 保存の前に、Load Profile の SA の切り替え先の ID を、名前から引いて更新する（ID が確定していなければ、ここで確定する）。
+        /// プロファイルが見つからなければ（名前だけの参照、削除済み）、そのままにする。
+        /// </summary>
+        private void FillProfileTargetIds()
+        {
+            if (profileIdentity == null) return;
+
+            foreach (SpecialAction action in store.actions)
+            {
+                if (action.typeID != SpecialAction.ActionTypeId.Profile) continue;
+
+                string id = profileIdentity.EnsurePersisted(action.details);
+                if (id != null) action.profileId = id;
+            }
         }
 
         /// <summary>
@@ -391,6 +446,7 @@ namespace DS4Windows.Services
             // Phase10-Step4d W2（Q4 の変更、2026-10-21）: ID のない SA（古いファイル）に新しい ID を割り当て、ID が重複した SA（ファイルの手編集・コピー）に新しい ID を振って、
             // Actions.xml へ 1 回保存する（変更がなければ書き換えない）。ファイルの読み込みが終わってから書く
             if (loaded && FixDuplicateIds()) idsChanged = true;
+            if (loaded && ResolveProfileTargets()) idsChanged = true;
             if (loaded && idsChanged)
             {
                 AppLogger.LogInfo("[DI] SpecialActionsXmlSerializer: assigned an ID to the special actions that had none (or a duplicate); saving Actions.xml");

@@ -76,9 +76,13 @@ namespace DS4Windows.Services
         private readonly IProfileSaveSection _buttonSaveSection = new ProfileButtonSaveSection();
 
 
+        // Phase10-Step4d W3: Controls の Load Profile の切り替え先の ID と名前を結ぶ。省略可（登録簿がなければ、従来どおり名前だけ）
+        private readonly DS4Windows.DI.IProfileIdentityService _profileIdentity;
+
         public LegacyProfileXmlSerializer(BackingStore store, DS4Windows.DI.IPathService pathService, DS4Windows.DI.IProfileSettingsService profileSettings,
-            DS4Windows.DI.IEnvironmentService environment)
+            DS4Windows.DI.IEnvironmentService environment, DS4Windows.DI.IProfileIdentityService profileIdentity = null)
         {
+            _profileIdentity = profileIdentity;
             _environment = environment ?? throw new ArgumentNullException(nameof(environment));
             this.store = store ?? throw new ArgumentNullException(nameof(store));
             _pathService = pathService ?? throw new ArgumentNullException(nameof(pathService));
@@ -178,6 +182,7 @@ namespace DS4Windows.Services
                 _profileActionsSection.Load(context);
 
                 _buttonControlSection.Load(context);
+                ResolveControlProfileTargets(device);   // Phase10-Step4d W3
 
                 _buttonShiftSection.Load(context);
 
@@ -338,6 +343,8 @@ namespace DS4Windows.Services
                 xmlProfileId.InnerText = _profileIdFile.ReadIdOrNew(path);
                 rootElement.AppendChild(xmlProfileId);
 
+                FillControlProfileTargetIds(device);   // Phase10-Step4d W3
+
                 _generalSaveSection.Save(context);
                 // Phase6-Step12: 旧形式（3.9.9 互換）の保存で欠けていた 10 要素（要素名は ProfileDTO と同じ。旧版は未知の要素を無視する）
                 SaveLegacyExtraSettings(rootElement, device);
@@ -355,6 +362,42 @@ namespace DS4Windows.Services
             }
             catch { Saved = false; }
             return Saved;
+        }
+
+        /// <summary>
+        /// Phase10-Step4d W3: Controls の Load Profile の切り替え先を、ID で解決する。ID が見つかれば、現在の名前に置き換える（名前変更への追従。ID が勝つ）。
+        /// ID がない・見つからないときは、名前のまま。
+        /// </summary>
+        private void ResolveControlProfileTargets(int device)
+        {
+            if (_profileIdentity == null) return;
+
+            foreach (DS4ControlSettings dcs in store.ds4settings[device])
+            {
+                ControlSpecialItem special = dcs.special;
+                if (special == null || special.Type != SpecialAction.ActionTypeId.Profile || string.IsNullOrEmpty(special.ProfileId)) continue;
+
+                string name = _profileIdentity.GetName(special.ProfileId);
+                if (name != null) special.ProfileName = name;
+            }
+        }
+
+        /// <summary>
+        /// Phase10-Step4d W3: 保存の前に、Controls の Load Profile の切り替え先の ID を、名前から引いて更新する（ID が確定していなければ、ここで確定する）。
+        /// プロファイルが見つからなければ（削除済み）、そのままにする。
+        /// </summary>
+        private void FillControlProfileTargetIds(int device)
+        {
+            if (_profileIdentity == null) return;
+
+            foreach (DS4ControlSettings dcs in store.ds4settings[device])
+            {
+                ControlSpecialItem special = dcs.special;
+                if (special == null || special.Type != SpecialAction.ActionTypeId.Profile || string.IsNullOrEmpty(special.ProfileName)) continue;
+
+                string id = _profileIdentity.EnsurePersisted(special.ProfileName);
+                if (id != null) special.ProfileId = id;
+            }
         }
 
         public void SaveLegacyExtraSettings(XmlNode rootElement, int device)
