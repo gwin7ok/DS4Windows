@@ -127,4 +127,10 @@ Controls のボタン 1 つの割り当てに、**SA 専用の種別**を、保�
   - テスト: `Phase10Step4W4ControlSpecialTests`（押し続ける秒数が SA と同じ結果、束縛の入力・出力・3 つのフラグ・秒数、未対応の種別・項目なし・factory なしで束縛なし、Extras との順序、Calibrate gyro の実行［押して 1 回、出力が消える、Fresh-press ガード、秒数待ち］、ホイール較正の開始、編集対象の往復、保存と再読み込み）。種別の保存可否に関する既存の 3 つのテストと W2 の factory のテストを更新。
   - **R10（優先順位・抑制）の自動テストは入れていない**: 実機で確認した（P10-46: 同じボタンの SA が勝つ）。自動化は、後続の群で、まとめて行うかを判断する。
   - 実機確認（台帳 §19）: P10-41（選べる・保存・一覧表示）、42（Calibrate gyro）、43（Disconnect BT）、45（保存と再読み込み・種別変更で消える）、46（SA が勝つ）、40（簡易回帰）が問題なし。**P10-44（Calibrate sixaxis wheel）は先送り**: 状態 0→1 の開始とトレースの 4 行は確認済み。1→2 以降は、ジャイロのステアリング出力の軸が有効なときだけ進むため、実機で確認しにくい（SA で作った場合と同じコードで、変更なし）。**P10-39（Synchronized Run）も先送り**。
-  - 次: W5（第 3 群: Launch Program）。指示があるまで始めない。
+- **W5（完了 2026-10-21。ビルド・テスト成功。実機確認 P10-47〜51 は先送り）**: 第 3 群（Launch Program）を、Controls で保存・実行・編集できるようにした。
+  - 実行: `ControlBindingBuilder` の束縛する種別に Program を追加。合成 `SpecialAction` に `details`＝パス、`extra`＝引数（`HideWindow` のときは先頭に `$hidden`）。SA の起動処理が受け取る最終的な引数は SA と同じ（`.bat`／`.cmd` も同じ）。方針・ログは W4 と同じ。
+  - 画面: 種別の一覧の項目 2 を Controls でも保存可。`ControlSettingsEditTarget` が引数の欄の `$hidden`（大文字小文字不問）を 1 回取り除いて `HideWindow` に分け（`SplitArguments`）、読み込みで先頭に戻す（`ComposeArguments`）。保存し直すと `$hidden` の位置が先頭に移るが、起動時の引数は同じ。`LoadInto`／`WriteFrom` に省略可の `launchProgram`。一覧の表示は言語リソースの表示名。UI の変更なし（ユーザー承認: A）。
+  - **検証は SA に合わせて足さない**: 既存の `LaunchProgramViewModel.IsValid` は、エラーを表示するだけで常に true を返す（SA でもファイルがなくても保存できる）。Controls も同じ動作。**別件（未対応）**: この `IsValid` は、パスが未選択（null）のとき `NullReferenceException` になる。直す場合は動作の変更のため、別途承認を得る。
+  - テスト: `Phase10Step4W5ControlProgramTests`（`$hidden` の分離と合成、builder の合成 SA、起動処理に渡る引数が SA と同じ［`.bat` を含む］、パスが空なら何も起動しない、編集対象の往復、保存と再読み込み）。種別の保存可否の 4 つのテストを更新。
+  - 実機確認（台帳 §20 P10-47〜51）: ユーザー判断で先送り（W6 以降の確認へ）。
+  - 次: W6（第 4 群: Load Profile）。指示があるまで始めない。

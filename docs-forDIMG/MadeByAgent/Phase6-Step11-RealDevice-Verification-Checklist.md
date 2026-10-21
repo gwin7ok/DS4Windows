@@ -377,3 +377,17 @@ Special Actions タブで種別ごとに作成し、プロファイルに有効�
 | P10-46 | 優先順位: 同じボタンを Special Actions のトリガーにも使うと、Special Actions が勝つ（Controls の Special は動かない）。ほかのボタンを先に押していた場合の抑制も、Controls の Macro と同じ | ○ |
 | P10-39 | （W3 から）Synchronized Run: 保存でき、再読み込みで状態が残り、動作に不具合がない | 先送り（再度。W5 以降の確認へ） |
 | P10-40 | （W3 から）既存の Controls（Key、Button、Default、Unbound、Extras）と SA の全種別が従来どおり（Calibrate gyro を割り当てたボタンを含む） | ○ |
+
+## 20. Phase10-Step4 W5 の実機確認（2026-10-21）
+
+`Phase10-Step4-Plan.md` の W5（Controls のボタンに Launch Program を割り当てられるようにした）の確認。設定は、プログラムのパス、押し続ける秒数、引数（`$hidden` でウィンドウを隠す）。
+
+| ID | 項目 | 結果 |
+|---|---|---|
+| P10-47 | Controls タブでボタンを開き、種別の一覧から Launch Program を選べる。パス（Browse）、Hold、Arguments を入れて Save でき、一覧に「Launch Program」が出る | 先送り（W6 以降の確認へ） |
+| P10-48 | 割り当てたボタンを押すと、プログラムが 1 回起動する（押し続けても繰り返さない）。そのボタンの元の出力は出ない。Hold を設定すると、その秒数押し続けたときだけ起動する | 先送り（W6 以降の確認へ） |
+| P10-49 | 引数が渡る（例: メモ帳に既存のファイルのパスを引数にして、開く）。引数に `$hidden` を書くと、ウィンドウが表示されずに起動する（保存し直すと `$hidden` が先頭に移るが、動作は同じ） | 先送り（W6 以降の確認へ） |
+| P10-50 | 保存と再読み込み（再起動）で、パス・Hold・引数・`$hidden` が残る。`Profile.xml` の `<Control><Special>` に書かれる。別の種別へ変えると消える | 先送り（W6 以降の確認へ） |
+| P10-51 | 同じボタンを Special Actions のトリガーにも使うと、Special Actions が勝つ。ファイルを選ばずに保存しても、SA と同じく保存できる（エラー表示は SA の動きに合わせて確認しない） | 先送り（W6 以降の確認へ） |
+| P10-39 | （W3 から先送り）Synchronized Run: 保存でき、再読み込みで状態が残り、動作に不具合がない | |
+| P10-44 | （W4 から先送り）Calibrate sixaxis wheel の 1→2 以降 | |
