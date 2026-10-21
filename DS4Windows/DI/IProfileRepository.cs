@@ -45,6 +45,14 @@ namespace DS4Windows.DI
         /// 保存されている旧名を、新名へ置き換える。置き換えた件数を返す。1 件以上置き換えた場合は、Actions.xml へ保存する。
         /// </summary>
         int ReplaceProfileSwitchTarget(string oldName, string newName);
+
+        /// <summary>
+        /// Phase10-Step4 W6: プロファイルの名前変更のとき、Controls のボタンに割り当てた Load Profile（各プロファイルの <c>&lt;Control&gt;&lt;Special&gt;</c> の
+        /// <c>Type="Profile"</c> の <c>ProfileName</c>）の切り替え先が、旧名を指していれば、新名へ書き換えて保存する（<see cref="ReplaceProfileSwitchTarget"/> の Controls 版）。
+        /// 全プロファイルのファイルを対象にする（同一 XML 排他ロックの下）。名前の比較は大文字小文字を区別しない。読めない・書けないファイルは飛ばして続ける。
+        /// 書き換えたプロファイルの名前（拡張子なし）を返す。
+        /// </summary>
+        IReadOnlyList<string> ReplaceControlProfileSwitchTarget(string oldName, string newName);
         // ---- Phase5-Step13-5: デバイス別・割当済みSpecialAction名リスト ----
         List<string>[] ProfileActions { get; }
         void CacheExtraProfileInfo(int deviceIndex);

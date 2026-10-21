@@ -93,12 +93,13 @@ namespace DS4WindowsTests
             Assert.All(catalog.All.Skip(1), d => Assert.True(d.IsSavableIn(ActionEditorModes.SpecialAction)));
 
             // Controls: Key・Button・Macro に加えて、Phase10-Step4 の群ごとの縦通しで、保存・実行・画面が通った SA 専用の種別を足していく
-            // （W4: Disconnect BT、Calibrate sixaxis wheel、Calibrate gyro。W5: Launch Program）
+            // （W4: Disconnect BT、Calibrate sixaxis wheel、Calibrate gyro。W5: Launch Program。W6: Load Profile）
             var controlsSavable = catalog.All.Where(d => d.IsSavableIn(ActionEditorModes.Control)).Select(d => d.TypeId).ToArray();
             Assert.Equal(new[]
             {
                 SpecialAction.ActionTypeId.Macro,
                 SpecialAction.ActionTypeId.Program,
+                SpecialAction.ActionTypeId.Profile,
                 SpecialAction.ActionTypeId.Key,
                 SpecialAction.ActionTypeId.DisconnectBT,
                 SpecialAction.ActionTypeId.SASteeringWheelEmulationCalibrate,

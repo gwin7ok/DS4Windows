@@ -228,7 +228,6 @@ namespace DS4WindowsTests
         }
 
         [Theory]
-        [InlineData(3)]
         [InlineData(6)]
         [InlineData(7)]
         public void WriteFrom_ATypeControlsCannotSaveYet_IsRefused_AndChangesNothing(int typeIndex)

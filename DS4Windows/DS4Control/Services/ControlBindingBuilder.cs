@@ -32,6 +32,7 @@ namespace DS4Windows.Services
         private static readonly SpecialAction.ActionTypeId[] BuiltSpecialTypes =
         {
             SpecialAction.ActionTypeId.Program,
+            SpecialAction.ActionTypeId.Profile,
             SpecialAction.ActionTypeId.DisconnectBT,
             SpecialAction.ActionTypeId.GyroCalibrate,
             SpecialAction.ActionTypeId.SASteeringWheelEmulationCalibrate,
@@ -342,6 +343,9 @@ namespace DS4Windows.Services
             if (dcs.actionType != DS4ControlSettings.ActionType.Special) return false;
             if (dcs.special == null || Array.IndexOf(BuiltSpecialTypes, dcs.special.Type) < 0) return false;
 
+            // Phase10-Step4 W6: 切り替え先のない Load Profile は、束縛を作らない（作ると、切り替えに失敗し続けながら、割り当てたボタンの元の出力だけが消える）
+            if (dcs.special.Type == SpecialAction.ActionTypeId.Profile && string.IsNullOrWhiteSpace(dcs.special.ProfileName)) return false;
+
             item = dcs.special;
             return true;
         }
@@ -356,6 +360,14 @@ namespace DS4Windows.Services
             identity.controls = identity.name;
             identity.delayTime = item.HoldSeconds;
             identity.trigger = new List<DS4Controls> { dcs.control };
+
+            if (item.Type == SpecialAction.ActionTypeId.Profile)
+            {
+                // Phase10-Step4 W6: 切り替え先を details、「離したら戻る」を automaticUntrigger に入れる（SA の Profile と同じ形）。
+                // 復帰は、エンジンが、この SpecialAction の trigger（そのボタン）の離れを見て行う。IsTemporaryProfileAction は automaticUntrigger から決まる
+                identity.details = item.ProfileName;
+                identity.automaticUntrigger = item.AutomaticUntrigger;
+            }
 
             if (item.Type == SpecialAction.ActionTypeId.Program)
             {

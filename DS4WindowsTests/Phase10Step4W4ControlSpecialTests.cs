@@ -161,7 +161,6 @@ namespace DS4WindowsTests
         public void TheTypesNotBuiltYet_AndAMissingItem_MakeNoBinding()
         {
             using var t = new ControlsKeyTestScope();
-            t.MapSpecial(DS4Controls.Cross, Item(SpecialAction.ActionTypeId.Profile));
             t.MapSpecial(DS4Controls.Square, Item(SpecialAction.ActionTypeId.BatteryCheck));
             t.MapSpecial(DS4Controls.Triangle, Item(SpecialAction.ActionTypeId.MultiAction));   // Program は W5 で束縛を作るようになった
             t.MapSpecial(DS4Controls.L1, null);
@@ -195,7 +194,7 @@ namespace DS4WindowsTests
             Assert.False(ControlBindingBuilder.TryInterpretSpecial(
                 new DS4ControlSettings(DS4Controls.Cross) { actionType = DS4ControlSettings.ActionType.Special }, out _));
             Assert.False(ControlBindingBuilder.TryInterpretSpecial(
-                new DS4ControlSettings(DS4Controls.Cross) { actionType = DS4ControlSettings.ActionType.Special, special = Item(SpecialAction.ActionTypeId.Profile) }, out _));
+                new DS4ControlSettings(DS4Controls.Cross) { actionType = DS4ControlSettings.ActionType.Special, special = Item(SpecialAction.ActionTypeId.BatteryCheck) }, out _));
         }
 
         [Fact]
@@ -309,6 +308,7 @@ namespace DS4WindowsTests
             public readonly SpecialActionViewModel Wheel;
             public readonly SpecialActionViewModel Gyro;
             public readonly IReadOnlyDictionary<SpecialAction.ActionTypeId, SpecialActionViewModel> HoldEditors;
+            public ControlSpecialEditors Editors => new ControlSpecialEditors { HoldIntervals = HoldEditors };
 
             public Rig()
             {
@@ -342,7 +342,7 @@ namespace DS4WindowsTests
             var target = new ControlSettingsEditTarget(original, rig.Profile);
             rig.HoldEditors[type].HoldInterval = 2.5;
 
-            target.WriteFrom(typeIndex, rig.PressKey, rig.Macro, rig.HoldEditors);
+            target.WriteFrom(typeIndex, rig.PressKey, rig.Macro, rig.Editors);
 
             Assert.Equal(DS4ControlSettings.ActionType.Special, target.Working.actionType);
             Assert.Equal(type, target.Working.special.Type);
@@ -376,7 +376,7 @@ namespace DS4WindowsTests
             var rig = new Rig();
             var target = new ControlSettingsEditTarget(SpecialSettings(Item(type, 3.25)), rig.Profile);
 
-            target.LoadInto(rig.PressKey, rig.Macro, rig.HoldEditors);
+            target.LoadInto(rig.PressKey, rig.Macro, rig.Editors);
 
             Assert.Equal(expectedIndex, target.InitialTypeIndex);
             Assert.Equal(3.25, rig.HoldEditors[type].HoldInterval);
@@ -388,7 +388,7 @@ namespace DS4WindowsTests
             var rig = new Rig();
             var target = new ControlSettingsEditTarget(SpecialSettings(Item(SpecialAction.ActionTypeId.GyroCalibrate, 1)), rig.Profile);
 
-            target.WriteFrom(10, rig.PressKey, rig.Macro, rig.HoldEditors);   // Default
+            target.WriteFrom(10, rig.PressKey, rig.Macro, rig.Editors);   // Default
 
             Assert.Null(target.Working.special);
             Assert.Equal(DS4ControlSettings.ActionType.Default, target.Working.actionType);
@@ -404,7 +404,7 @@ namespace DS4WindowsTests
             var original = new DS4ControlSettings(DS4Controls.Cross);
             var target = new ControlSettingsEditTarget(original, rig.Profile);
             rig.Disconnect.HoldInterval = 1.75;
-            target.WriteFrom(5, rig.PressKey, rig.Macro, rig.HoldEditors);
+            target.WriteFrom(5, rig.PressKey, rig.Macro, rig.Editors);
             target.Apply();
 
             BackingStore store = PersistenceHarness.NewStore();

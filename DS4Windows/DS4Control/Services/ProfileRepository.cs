@@ -266,6 +266,73 @@ namespace DS4Windows
             return replaced;
         }
 
+        // Phase10-Step4 W6: 名前変更後に、Controls のボタンに割り当てた Load Profile の切り替え先が、旧名のまま（切り替わらない）になる不具合の予防。
+        // 各プロファイルのファイルの <Control><Special> を読み、Type="Profile" の ProfileName が旧名なら、新名へ書き換えて保存する（ReplaceProfileSwitchTarget の Controls 版）。
+        // 実行中のスロットのプロファイルは、名前変更の直後の再適用（MainWindow）でファイルから読み直されるため、ファイルの書き換えだけでよい
+        public IReadOnlyList<string> ReplaceControlProfileSwitchTarget(string oldName, string newName)
+        {
+            var changed = new List<string>();
+            if (string.IsNullOrWhiteSpace(oldName) || string.IsNullOrWhiteSpace(newName) ||
+                string.Equals(oldName, newName, StringComparison.Ordinal))
+                return changed;
+
+            string[] files;
+            try
+            {
+                if (!Directory.Exists(ProfilesPath))
+                    return changed;
+                files = Directory.GetFiles(ProfilesPath, "*.xml");
+            }
+            catch (Exception ex)
+            {
+                AppLogger.LogToGui($"[DI] ProfileRepository: cannot enumerate profiles for Controls profile switch target update: {ex.Message}", true);
+                return changed;
+            }
+
+            foreach (string file in files)
+            {
+                try
+                {
+                    lock (ProfileXmlStore.XmlIoLock)
+                    {
+                        var doc = new System.Xml.XmlDocument { PreserveWhitespace = true };
+                        doc.Load(file);
+
+                        bool modified = false;
+                        System.Xml.XmlNodeList nodes = doc.SelectNodes("DS4Windows/Control/Special/*[@Type='Profile']/ProfileName");
+                        if (nodes == null || nodes.Count == 0)
+                            continue;
+
+                        foreach (System.Xml.XmlNode node in nodes)
+                        {
+                            if (string.Equals(node.InnerText, oldName, StringComparison.CurrentCultureIgnoreCase))
+                            {
+                                node.InnerText = newName;
+                                modified = true;
+                            }
+                        }
+
+                        if (!modified)
+                            continue;
+
+                        doc.Save(file);
+                        changed.Add(Path.GetFileNameWithoutExtension(file));
+                    }
+                }
+                catch (Exception ex)
+                {
+                    AppLogger.LogToGui($"[DI] ProfileRepository: failed to update the Controls profile switch target in '{Path.GetFileName(file)}': {ex.Message}", true);
+                }
+            }
+
+            if (changed.Count > 0)
+            {
+                AppLogger.LogToGui($"[DI] Controls profile switch target renamed '{oldName}' to '{newName}' in {changed.Count} profile(s): {string.Join(", ", changed)}", false);
+            }
+
+            return changed;
+        }
+
         // ---- Phase5-Step13-5: デバイス別・割当済みSpecialAction名リスト ----
         public List<string>[] ProfileActions => _config.profileActions;
         public void CacheExtraProfileInfo(int deviceIndex) => _config.CacheExtraProfileInfo(deviceIndex);

@@ -213,7 +213,7 @@ namespace DS4WinWPF.DS4Forms
             if (controlMode)
             {
                 // 保存済みの割り当てを、種別ごとの入力へ読み込む。種別の一覧の初期の選択も、割り当てに合わせる
-                controlTarget.LoadInto(pressKeyVM, macroActVM, HoldIntervalEditors(), launchProgVM);
+                controlTarget.LoadInto(pressKeyVM, macroActVM, SpecialEditors());
                 specialActVM.ActionTypeIndex = controlTarget.InitialTypeIndex;
 
                 // Phase10-Step4 W3: Macro タブの SA 専用の項目（Run on trigger release／Synchronized Run／Keep key state）は、Controls にも保存できるようになったため、
@@ -270,14 +270,19 @@ namespace DS4WinWPF.DS4Forms
             typeEditors.Load(specialAction);
         }
 
-        // Phase10-Step4 W4: 押し続ける秒数だけを持つ種別の入力（Controls のモードで、型のある項目と往復する）
-        private IReadOnlyDictionary<DS4Windows.SpecialAction.ActionTypeId, SpecialActionViewModel> HoldIntervalEditors()
+        // Phase10-Step4 W4〜: SA 専用の種別ごとの入力の一式（Controls のモードで、型のある項目と往復する）
+        private ControlSpecialEditors SpecialEditors()
         {
-            return new Dictionary<DS4Windows.SpecialAction.ActionTypeId, SpecialActionViewModel>
+            return new ControlSpecialEditors
             {
-                [DS4Windows.SpecialAction.ActionTypeId.DisconnectBT] = disconnectBtVM,
-                [DS4Windows.SpecialAction.ActionTypeId.SASteeringWheelEmulationCalibrate] = saSteeringWheelVM,
-                [DS4Windows.SpecialAction.ActionTypeId.GyroCalibrate] = calibrateGyroVM,
+                HoldIntervals = new Dictionary<DS4Windows.SpecialAction.ActionTypeId, SpecialActionViewModel>
+                {
+                    [DS4Windows.SpecialAction.ActionTypeId.DisconnectBT] = disconnectBtVM,
+                    [DS4Windows.SpecialAction.ActionTypeId.SASteeringWheelEmulationCalibrate] = saSteeringWheelVM,
+                    [DS4Windows.SpecialAction.ActionTypeId.GyroCalibrate] = calibrateGyroVM,
+                },
+                LaunchProgram = launchProgVM,
+                LoadProfile = loadProfileVM,
             };
         }
 
@@ -304,7 +309,14 @@ namespace DS4WinWPF.DS4Forms
             if (!specialActVM.IsValid(tempAct)) return;
             if (!specialActVM.IsTypeEnabled(specialActVM.ActionTypeIndex)) return;   // Controls に、まだ保存できない種別
 
-            controlTarget.WriteFrom(specialActVM.ActionTypeIndex, pressKeyVM, macroActVM, HoldIntervalEditors(), launchProgVM);
+            // Phase10-Step4 W6: Load Profile は、切り替え先を選んでいないと Save できない（既存のエラー「No profile given」を表示して、エディターを開いたままにする）
+            if (!controlTarget.CanWrite(specialActVM.ActionTypeIndex, SpecialEditors()))
+            {
+                loadProfileVM.IsValid(tempAct);
+                return;
+            }
+
+            controlTarget.WriteFrom(specialActVM.ActionTypeIndex, pressKeyVM, macroActVM, SpecialEditors());
             controlTarget.Apply();
 
             ControlSaveTypeId = specialActVM.TypeAssoc[specialActVM.ActionTypeIndex];

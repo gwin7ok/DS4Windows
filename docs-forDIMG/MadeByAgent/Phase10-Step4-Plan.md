@@ -133,4 +133,12 @@ Controls のボタン 1 つの割り当てに、**SA 専用の種別**を、保�
   - **検証は SA に合わせて足さない**: 既存の `LaunchProgramViewModel.IsValid` は、エラーを表示するだけで常に true を返す（SA でもファイルがなくても保存できる）。Controls も同じ動作。**別件（未対応）**: この `IsValid` は、パスが未選択（null）のとき `NullReferenceException` になる。直す場合は動作の変更のため、別途承認を得る。
   - テスト: `Phase10Step4W5ControlProgramTests`（`$hidden` の分離と合成、builder の合成 SA、起動処理に渡る引数が SA と同じ［`.bat` を含む］、パスが空なら何も起動しない、編集対象の往復、保存と再読み込み）。種別の保存可否の 4 つのテストを更新。
   - 実機確認（台帳 §20 P10-47〜51）: ユーザー判断で先送り（W6 以降の確認へ）。
-  - 次: W6（第 4 群: Load Profile）。指示があるまで始めない。
+- **W6（実装完了 2026-10-21。ビルド・テスト成功。実機確認 P10-52〜57 は未確認）**: 第 4 群（Load Profile）を、Controls で保存・実行・編集できるようにした。
+  - 実行: `ControlBindingBuilder` の束縛する種別に Profile を追加。合成 `SpecialAction` に `details`＝切り替え先、`automaticUntrigger`、`trigger`＝そのボタン（復帰はエンジンが、この `trigger` の離れを見て行う）。**切り替え先が空の Load Profile は束縛を作らない**（作ると、切り替えに失敗し続けながら、ボタンの元の出力だけが消えるため）。
+  - 画面: 種別の一覧の項目 3 を Controls でも保存可。読み込みは名前から一覧の位置を探す（大文字小文字不問。名前を変えた・消したプロファイルは未選択）。**Save は、切り替え先を選んでいないとできない**（ユーザー承認: 案 A。`ControlSettingsEditTarget.CanWrite`、エディターは既存のエラー「No profile given」を表示して開いたまま）。SA は、選ばないと割り当てを作らないだけ。
+  - 整理: `ControlSettingsEditTarget` の `LoadInto`／`WriteFrom` の省略可の引数を、`ControlSpecialEditors`（秒数の入力、Launch Program、Load Profile）に集約。
+  - 名前変更への追従（ユーザー承認: 案 B）: `IProfileRepository.ReplaceControlProfileSwitchTarget`。全プロファイルの XML の `<Control><Special>` の `Type="Profile"` の `ProfileName` が旧名なら新名へ書き換えて保存（同一 XML 排他ロック、大文字小文字不問、壊れたファイルは飛ばす）。`MainWindow` の名前変更で、SA の切り替え先の更新の直後に呼ぶ。プロファイルの**削除**への追従は、SA と同じく行わない。
+  - 復帰の注意（確認済みの事実）: 復帰の確認（`ProcessUntrigger`）は、SA が有効か、一時プロファイル使用中のときだけ動く。本物の切り替えは、「離したら戻る」のとき、一時プロファイル使用中にするため、Controls だけの Load Profile でも復帰する。
+  - テスト: `Phase10Step4W6ControlProfileTests`（束縛、空の切り替え先、実行、押して 1 回の切り替えと離して 1 回の復帰、編集対象の往復、`CanWrite`、保存と再読み込み、名前変更の書き換え）。テストの記録用の切り替え役は、本物と同じく、状態の初期化と一時プロファイルの使用を行う。
+  - 実機確認（台帳 §21 P10-52〜57）: 未確認。
+  - 次: W7（第 5 群: Check Battery）。指示があるまで始めない。

@@ -2046,6 +2046,8 @@ Suspend support not enabled.", true);
                     profileRepo.ReplaceLinkedProfileName(oldProfile, newProfile);
                     // Phase6-Step10-4-5d: プロファイル切替のスペシャルアクションの切替先（Actions.xml）の旧名も、新名へ置き換える
                     profileRepo.ReplaceProfileSwitchTarget(oldProfile, newProfile);
+                    // Phase10-Step4 W6: Controls のボタンに割り当てた Load Profile の切り替え先（各プロファイルの <Control><Special>）の旧名も、新名へ置き換える
+                    profileRepo.ReplaceControlProfileSwitchTarget(oldProfile, newProfile);
                     // Phase6-Step10-4-5c: 自動プロファイルのルールが参照している旧名も、新名へ置き換える（Auto Profiles.xml へ保存）
                     _autoProfileService?.Holder?.ReplaceProfileName(oldProfile, newProfile);
                 }

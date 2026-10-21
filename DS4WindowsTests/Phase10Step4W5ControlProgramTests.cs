@@ -205,6 +205,7 @@ namespace DS4WindowsTests
             public readonly PressKeyViewModel PressKey;
             public readonly MacroViewModel Macro;
             public readonly LaunchProgramViewModel Launch;
+            public ControlSpecialEditors Editors => new ControlSpecialEditors { LaunchProgram = Launch };
 
             public Rig()
             {
@@ -226,7 +227,7 @@ namespace DS4WindowsTests
             rig.Launch.Delay = 2.5;
             rig.Launch.Arguments = "-a $hidden -b";
 
-            target.WriteFrom(ProgramIndex, rig.PressKey, rig.Macro, null, rig.Launch);
+            target.WriteFrom(ProgramIndex, rig.PressKey, rig.Macro, rig.Editors);
 
             Assert.Equal(DS4ControlSettings.ActionType.Special, target.Working.actionType);
             ControlSpecialItem item = target.Working.special;
@@ -243,7 +244,7 @@ namespace DS4WindowsTests
             var rig = new Rig();   // Filepath は未選択（null）
             var target = new ControlSettingsEditTarget(new DS4ControlSettings(DS4Controls.Cross), rig.Profile);
 
-            target.WriteFrom(ProgramIndex, rig.PressKey, rig.Macro, null, rig.Launch);
+            target.WriteFrom(ProgramIndex, rig.PressKey, rig.Macro, rig.Editors);
             Assert.Equal(string.Empty, target.Working.special.ProgramPath);
 
             target.WriteFrom(ProgramIndex, rig.PressKey, rig.Macro);   // 入力そのものがないとき
@@ -258,7 +259,7 @@ namespace DS4WindowsTests
             var original = new DS4ControlSettings(DS4Controls.Cross) { actionType = DS4ControlSettings.ActionType.Special, special = Program("C:\\tools\\app.exe", "-a", hide: true, seconds: 3) };
             var target = new ControlSettingsEditTarget(original, rig.Profile);
 
-            target.LoadInto(rig.PressKey, rig.Macro, null, rig.Launch);
+            target.LoadInto(rig.PressKey, rig.Macro, rig.Editors);
 
             Assert.Equal(ProgramIndex, target.InitialTypeIndex);
             Assert.Equal("C:\\tools\\app.exe", rig.Launch.Filepath);
@@ -273,7 +274,7 @@ namespace DS4WindowsTests
             var original = new DS4ControlSettings(DS4Controls.Cross) { actionType = DS4ControlSettings.ActionType.Special, special = Program() };
             var target = new ControlSettingsEditTarget(original, rig.Profile);
 
-            target.WriteFrom(10, rig.PressKey, rig.Macro, null, rig.Launch);   // Default
+            target.WriteFrom(10, rig.PressKey, rig.Macro, rig.Editors);   // Default
 
             Assert.Null(target.Working.special);
             Assert.Equal(DS4ControlSettings.ActionType.Default, target.Working.actionType);
@@ -291,7 +292,7 @@ namespace DS4WindowsTests
             rig.Launch.Filepath = "C:\\Program Files\\Tool\\tool.exe";
             rig.Launch.Delay = 0.75;
             rig.Launch.Arguments = "$hidden -a \"b c\"";
-            target.WriteFrom(ProgramIndex, rig.PressKey, rig.Macro, null, rig.Launch);
+            target.WriteFrom(ProgramIndex, rig.PressKey, rig.Macro, rig.Editors);
             target.Apply();
 
             BackingStore store = PersistenceHarness.NewStore();
