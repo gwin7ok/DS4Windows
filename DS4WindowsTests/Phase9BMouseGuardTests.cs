@@ -104,6 +104,21 @@ namespace DS4WindowsTests
         }
 
         [Fact]
+        public void ButtonMouseMovementCalculator_CalculateIsAtMostTwoHundredLines()
+        {
+            // Phase9 完了条件: 巨大メソッドは 200 行以下（getMouseMapping 相当は 318 行 → Q5 の畳み込みで縮小）
+            string path = SourceFileLocator.Find("DS4Windows/DS4Control/Services/ButtonMouseMovementCalculator.cs");
+            if (path == null) return;
+
+            string text = File.ReadAllText(path);
+            int start = text.IndexOf("public double Calculate(", StringComparison.Ordinal);
+            int end = text.IndexOf("private static double AxisDirMovement(", StringComparison.Ordinal);
+            Assert.True(start >= 0 && end > start);
+            int lines = text.Substring(start, end - start).Split('\n').Length;
+            Assert.True(lines <= 200, $"Calculate が {lines} 行ある（200 行以下にする）");
+        }
+
+        [Fact]
         public void Mapping_StatefulMouseFieldsAreGone_ByReflection()
         {
             string[] removed = { "mcounter", "mouseaccel", "prevmouseaccel", "horizontalRemainder", "verticalRemainder" };

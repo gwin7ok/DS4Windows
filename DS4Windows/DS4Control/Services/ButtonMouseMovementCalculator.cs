@@ -46,7 +46,6 @@ namespace DS4Windows.Services
             DS4StateFieldMapping.ControlType controlType = DS4StateFieldMapping.mappedType[controlNum];
             //long timeElapsed = ctrl.DS4Controllers[device].getLastTimeElapsed();
             //double mouseOffset = 0.025;
-            double tempMouseOffsetX = 0.0, tempMouseOffsetY = 0.0;
             double mouseVerticalScale = 1.0;
             bool verticalDir = false;
             // 0 = MouseUp, 1 = MouseDown
@@ -73,200 +72,36 @@ namespace DS4Windows.Services
                 // Cap mouse offset to final mouse velocity
                 //double mouseOffset = mouseVelocity >= MOUSESTICKMINVELOCITY ? MOUSESTICKMINVELOCITY : mouseVelocity;
 
+                // Phase9 9-B（Q5）: 旧 8 方向の case（ほぼ同じコードの繰り返し）を AxisDirMovement に畳んだ。式と演算の順序は変えていない
+                // （旧実装との一致は Phase9BButtonMouseMovementDifferentialTests が守る）。コメントアウトされていた旧式は、AxisDirMovement の上にまとめて残した。
+                DeltaSettingsProcessor lsAccel = deltaAccelProcessorGroup.LSProcessor;
+                DeltaSettingsProcessor rsAccel = deltaAccelProcessorGroup.RSProcessor;
                 switch (control)
                 {
                     case DS4Controls.LXNeg:
-                        {
-                            if (cState.LX < 128 - deadzoneL)
-                            {
-                                double diff;
-                                if (!deltaAccelProcessorGroup.LSProcessor.useDeltaAccel)
-                                {
-                                    diff = -(cState.LX - 128 - deadzoneL) / (double)(0 - 128 - deadzoneL);
-                                }
-                                else
-                                {
-                                    diff = -deltaAccelProcessorGroup.LSProcessor.AccelOutXNorm;
-                                }
-
-                                //tempMouseOffsetX = Math.Abs(Math.Cos(cState.LSAngleRad)) * MOUSESTICKOFFSET;
-                                //tempMouseOffsetX = MOUSESTICKOFFSET;
-                                tempMouseOffsetX = cState.LXUnit * mouseOffset;
-                                value = (mouseVelocity - tempMouseOffsetX) * timeDelta * diff + (tempMouseOffsetX * -1.0 * timeDelta);
-                                //value = diff * MOUSESPEEDFACTOR * (timeElapsed * 0.001) * speed;
-                                //value = -(cState.LX - 127 - deadzoneL) / 2550d * speed;
-                            }
-
-                            break;
-                        }
+                        value = AxisDirMovement(false, cState.LX, deadzoneL, lsAccel.useDeltaAccel, lsAccel.AccelOutXNorm, cState.LXUnit, mouseOffset, mouseVelocity, timeDelta);
+                        break;
                     case DS4Controls.LXPos:
-                        {
-                            if (cState.LX > 128 + deadzoneL)
-                            {
-                                double diff;
-                                if (!deltaAccelProcessorGroup.LSProcessor.useDeltaAccel)
-                                {
-                                    diff = (cState.LX - 128 + deadzoneL) / (double)(255 - 128 + deadzoneL);
-                                }
-                                else
-                                {
-                                    diff = deltaAccelProcessorGroup.LSProcessor.AccelOutXNorm;
-                                }
-
-                                tempMouseOffsetX = cState.LXUnit * mouseOffset;
-                                //tempMouseOffsetX = Math.Abs(Math.Cos(cState.LSAngleRad)) * MOUSESTICKOFFSET;
-                                //tempMouseOffsetX = MOUSESTICKOFFSET;
-                                value = (mouseVelocity - tempMouseOffsetX) * timeDelta * diff + (tempMouseOffsetX * timeDelta);
-                                //value = diff * MOUSESPEEDFACTOR * (timeElapsed * 0.001) * speed;
-                                //value = (cState.LX - 127 + deadzoneL) / 2550d * speed;
-                            }
-
-                            break;
-                        }
+                        value = AxisDirMovement(true, cState.LX, deadzoneL, lsAccel.useDeltaAccel, lsAccel.AccelOutXNorm, cState.LXUnit, mouseOffset, mouseVelocity, timeDelta);
+                        break;
                     case DS4Controls.RXNeg:
-                        {
-                            if (cState.RX < 128 - deadzoneR)
-                            {
-                                double diff;
-                                if (!deltaAccelProcessorGroup.RSProcessor.useDeltaAccel)
-                                {
-                                    diff = -(cState.RX - 128 - deadzoneR) / (double)(0 - 128 - deadzoneR);
-                                }
-                                else
-                                {
-                                    diff = -deltaAccelProcessorGroup.RSProcessor.AccelOutXNorm;
-                                }
-
-                                tempMouseOffsetX = cState.RXUnit * mouseOffset;
-                                //tempMouseOffsetX = MOUSESTICKOFFSET;
-                                //tempMouseOffsetX = Math.Abs(Math.Cos(cState.RSAngleRad)) * MOUSESTICKOFFSET;
-                                value = (mouseVelocity - tempMouseOffsetX) * timeDelta * diff + (tempMouseOffsetX * -1.0 * timeDelta);
-                                //value = diff * MOUSESPEEDFACTOR * (timeElapsed * 0.001) * speed;
-                                //value = -(cState.RX - 127 - deadzoneR) / 2550d * speed;
-                            }
-
-                            break;
-                        }
+                        value = AxisDirMovement(false, cState.RX, deadzoneR, rsAccel.useDeltaAccel, rsAccel.AccelOutXNorm, cState.RXUnit, mouseOffset, mouseVelocity, timeDelta);
+                        break;
                     case DS4Controls.RXPos:
-                        {
-                            if (cState.RX > 128 + deadzoneR)
-                            {
-                                double diff;
-                                if (!deltaAccelProcessorGroup.RSProcessor.useDeltaAccel)
-                                {
-                                    diff = (cState.RX - 128 + deadzoneR) / (double)(255 - 128 + deadzoneR);
-                                }
-                                else
-                                {
-                                    diff = deltaAccelProcessorGroup.RSProcessor.AccelOutXNorm;
-                                }
-
-                                tempMouseOffsetX = cState.RXUnit * mouseOffset;
-                                //tempMouseOffsetX = MOUSESTICKOFFSET;
-                                //tempMouseOffsetX = Math.Abs(Math.Cos(cState.RSAngleRad)) * MOUSESTICKOFFSET;
-                                value = (mouseVelocity - tempMouseOffsetX) * timeDelta * diff + (tempMouseOffsetX * timeDelta);
-                                //value = diff * MOUSESPEEDFACTOR * (timeElapsed * 0.001) * speed;
-                                //value = (cState.RX - 127 + deadzoneR) / 2550d * speed;
-                            }
-
-                            break;
-                        }
+                        value = AxisDirMovement(true, cState.RX, deadzoneR, rsAccel.useDeltaAccel, rsAccel.AccelOutXNorm, cState.RXUnit, mouseOffset, mouseVelocity, timeDelta);
+                        break;
                     case DS4Controls.LYNeg:
-                        {
-                            if (cState.LY < 128 - deadzoneL)
-                            {
-                                double diff;
-                                if (!deltaAccelProcessorGroup.LSProcessor.useDeltaAccel)
-                                {
-                                    diff = -(cState.LY - 128 - deadzoneL) / (double)(0 - 128 - deadzoneL);
-                                }
-                                else
-                                {
-                                    diff = -deltaAccelProcessorGroup.LSProcessor.AccelOutYNorm;
-                                }
-
-                                tempMouseOffsetY = cState.LYUnit * mouseOffset;
-                                //tempMouseOffsetY = MOUSESTICKOFFSET;
-                                //tempMouseOffsetY = Math.Abs(Math.Sin(cState.LSAngleRad)) * MOUSESTICKOFFSET;
-                                value = (mouseVelocity - tempMouseOffsetY) * timeDelta * diff + (tempMouseOffsetY * -1.0 * timeDelta);
-                                //value = diff * MOUSESPEEDFACTOR * (timeElapsed * 0.001) * speed;
-                                //value = -(cState.LY - 127 - deadzoneL) / 2550d * speed;
-                            }
-
-                            break;
-                        }
+                        value = AxisDirMovement(false, cState.LY, deadzoneL, lsAccel.useDeltaAccel, lsAccel.AccelOutYNorm, cState.LYUnit, mouseOffset, mouseVelocity, timeDelta);
+                        break;
                     case DS4Controls.LYPos:
-                        {
-                            if (cState.LY > 128 + deadzoneL)
-                            {
-                                double diff;
-                                if (!deltaAccelProcessorGroup.LSProcessor.useDeltaAccel)
-                                {
-                                    diff = (cState.LY - 128 + deadzoneL) / (double)(255 - 128 + deadzoneL);
-                                }
-                                else
-                                {
-                                    diff = deltaAccelProcessorGroup.LSProcessor.AccelOutYNorm;
-                                }
-
-                                tempMouseOffsetY = cState.LYUnit * mouseOffset;
-                                //tempMouseOffsetY = MOUSESTICKOFFSET;
-                                //tempMouseOffsetY = Math.Abs(Math.Sin(cState.LSAngleRad)) * MOUSESTICKOFFSET;
-                                value = (mouseVelocity - tempMouseOffsetY) * timeDelta * diff + (tempMouseOffsetY * timeDelta);
-                                //value = diff * MOUSESPEEDFACTOR * (timeElapsed * 0.001) * speed;
-                                //value = (cState.LY - 127 + deadzoneL) / 2550d * speed;
-                            }
-
-                            break;
-                        }
+                        value = AxisDirMovement(true, cState.LY, deadzoneL, lsAccel.useDeltaAccel, lsAccel.AccelOutYNorm, cState.LYUnit, mouseOffset, mouseVelocity, timeDelta);
+                        break;
                     case DS4Controls.RYNeg:
-                        {
-                            if (cState.RY < 128 - deadzoneR)
-                            {
-                                double diff;
-                                if (!deltaAccelProcessorGroup.RSProcessor.useDeltaAccel)
-                                {
-                                    diff = -(cState.RY - 128 - deadzoneR) / (double)(0 - 128 - deadzoneR);
-                                }
-                                else
-                                {
-                                    diff = -deltaAccelProcessorGroup.RSProcessor.AccelOutYNorm;
-                                }
-
-                                tempMouseOffsetY = cState.RYUnit * mouseOffset;
-                                //tempMouseOffsetY = MOUSESTICKOFFSET;
-                                //tempMouseOffsetY = Math.Abs(Math.Sin(cState.RSAngleRad)) * MOUSESTICKOFFSET;
-                                value = (mouseVelocity - tempMouseOffsetY) * timeDelta * diff + (tempMouseOffsetY * -1.0 * timeDelta);
-                                //value = diff * MOUSESPEEDFACTOR * (timeElapsed * 0.001) * speed;
-                                //value = -(cState.RY - 127 - deadzoneR) / 2550d * speed;
-                            }
-
-                            break;
-                        }
+                        value = AxisDirMovement(false, cState.RY, deadzoneR, rsAccel.useDeltaAccel, rsAccel.AccelOutYNorm, cState.RYUnit, mouseOffset, mouseVelocity, timeDelta);
+                        break;
                     case DS4Controls.RYPos:
-                        {
-                            if (cState.RY > 128 + deadzoneR)
-                            {
-                                double diff;
-                                if (!deltaAccelProcessorGroup.RSProcessor.useDeltaAccel)
-                                {
-                                    diff = (cState.RY - 128 + deadzoneR) / (double)(255 - 128 + deadzoneR);
-                                }
-                                else
-                                {
-                                    diff = deltaAccelProcessorGroup.RSProcessor.AccelOutYNorm;
-                                }
-
-                                tempMouseOffsetY = cState.RYUnit * mouseOffset;
-                                //tempMouseOffsetY = MOUSESTICKOFFSET;
-                                //tempMouseOffsetY = Math.Abs(Math.Sin(cState.RSAngleRad)) * MOUSESTICKOFFSET;
-                                value = (mouseVelocity - tempMouseOffsetY) * timeDelta * diff + (tempMouseOffsetY * timeDelta);
-                                //value = diff * MOUSESPEEDFACTOR * (timeElapsed * 0.001) * speed;
-                                //value = (cState.RY - 127 + deadzoneR) / 2550d * speed;
-                            }
-
-                            break;
-                        }
+                        value = AxisDirMovement(true, cState.RY, deadzoneR, rsAccel.useDeltaAccel, rsAccel.AccelOutYNorm, cState.RYUnit, mouseOffset, mouseVelocity, timeDelta);
+                        break;
 
                     default: break;
                 }
@@ -282,33 +117,23 @@ namespace DS4Windows.Services
                 //double SXD = getSXDeadzone(device);
                 //double SZD = getSZDeadzone(device);
 
+                // Phase9 9-B（Q5）: 旧 4 方向の case は、正方向（X／Z）と負方向（X／Z）の 2 つにまとめた。式は変えていない
+                // （旧: 値は byte に切り詰められる。上限の 255 を超えると桁あふれする。旧実装から同じ癖。計画書 K2）。
                 switch (control)
                 {
                     case DS4Controls.GyroXPos:
+                    case DS4Controls.GyroZPos:
                         {
-                            int gyroX = fieldMapping.gryodirs[controlNum];
-                            value = (byte)(gyroX > 0 ? Math.Pow(root + speed / divide, gyroX) : 0);
+                            int gyro = fieldMapping.gryodirs[controlNum];
+                            value = (byte)(gyro > 0 ? Math.Pow(root + speed / divide, gyro) : 0);
                             if (verticalDir) value *= mouseVerticalScale;
                             break;
                         }
                     case DS4Controls.GyroXNeg:
-                        {
-                            int gyroX = fieldMapping.gryodirs[controlNum];
-                            value = (byte)(gyroX < 0 ? Math.Pow(root + speed / divide, -gyroX) : 0);
-                            if (verticalDir) value *= mouseVerticalScale;
-                            break;
-                        }
-                    case DS4Controls.GyroZPos:
-                        {
-                            int gyroZ = fieldMapping.gryodirs[controlNum];
-                            value = (byte)(gyroZ > 0 ? Math.Pow(root + speed / divide, gyroZ) : 0);
-                            if (verticalDir) value *= mouseVerticalScale;
-                            break;
-                        }
                     case DS4Controls.GyroZNeg:
                         {
-                            int gyroZ = fieldMapping.gryodirs[controlNum];
-                            value = (byte)(gyroZ < 0 ? Math.Pow(root + speed / divide, -gyroZ) : 0);
+                            int gyro = fieldMapping.gryodirs[controlNum];
+                            value = (byte)(gyro < 0 ? Math.Pow(root + speed / divide, -gyro) : 0);
                             if (verticalDir) value *= mouseVerticalScale;
                             break;
                         }
@@ -340,6 +165,81 @@ namespace DS4Windows.Services
             }
 
             return value;
+        }
+
+        // 旧 8 つの case にコメントアウトで残っていた旧式（Q5 の畳み込みで case をまとめたため、ここに原文のまま集めた。参考。削除しない）:
+        //tempMouseOffsetX = Math.Abs(Math.Cos(cState.LSAngleRad)) * MOUSESTICKOFFSET;
+        //tempMouseOffsetX = MOUSESTICKOFFSET;
+        //value = -(cState.LX - 127 - deadzoneL) / 2550d * speed;
+        //tempMouseOffsetX = Math.Abs(Math.Cos(cState.LSAngleRad)) * MOUSESTICKOFFSET;
+        //tempMouseOffsetX = MOUSESTICKOFFSET;
+        //value = (cState.LX - 127 + deadzoneL) / 2550d * speed;
+        //tempMouseOffsetX = MOUSESTICKOFFSET;
+        //tempMouseOffsetX = Math.Abs(Math.Cos(cState.RSAngleRad)) * MOUSESTICKOFFSET;
+        //value = -(cState.RX - 127 - deadzoneR) / 2550d * speed;
+        //tempMouseOffsetX = MOUSESTICKOFFSET;
+        //tempMouseOffsetX = Math.Abs(Math.Cos(cState.RSAngleRad)) * MOUSESTICKOFFSET;
+        //value = (cState.RX - 127 + deadzoneR) / 2550d * speed;
+        //tempMouseOffsetY = MOUSESTICKOFFSET;
+        //tempMouseOffsetY = Math.Abs(Math.Sin(cState.LSAngleRad)) * MOUSESTICKOFFSET;
+        //value = -(cState.LY - 127 - deadzoneL) / 2550d * speed;
+        //tempMouseOffsetY = MOUSESTICKOFFSET;
+        //tempMouseOffsetY = Math.Abs(Math.Sin(cState.LSAngleRad)) * MOUSESTICKOFFSET;
+        //value = (cState.LY - 127 + deadzoneL) / 2550d * speed;
+        //tempMouseOffsetY = MOUSESTICKOFFSET;
+        //tempMouseOffsetY = Math.Abs(Math.Sin(cState.RSAngleRad)) * MOUSESTICKOFFSET;
+        //value = -(cState.RY - 127 - deadzoneR) / 2550d * speed;
+        //tempMouseOffsetY = MOUSESTICKOFFSET;
+        //tempMouseOffsetY = Math.Abs(Math.Sin(cState.RSAngleRad)) * MOUSESTICKOFFSET;
+        //value = (cState.RY - 127 + deadzoneR) / 2550d * speed;
+
+        /// <summary>
+        /// スティックの 1 方向（左右・上下 × 正負の 8 通りの 1 つ）の移動量。倒していない（デッドゾーン内の）ときは 0。
+        /// 旧 <c>getMouseMapping</c> の 8 つの case の共通部分。<paramref name="positive"/> が false のとき、負方向（中心より小さい側）。
+        /// </summary>
+        private static double AxisDirMovement(bool positive, int axisValue, int deadzone, bool useDeltaAccel,
+            double accelNorm, double unit, double mouseOffset, int mouseVelocity, double timeDelta)
+        {
+            if (positive)
+            {
+                if (axisValue > 128 + deadzone)
+                {
+                    double diff;
+                    if (!useDeltaAccel)
+                    {
+                        diff = (axisValue - 128 + deadzone) / (double)(255 - 128 + deadzone);
+                    }
+                    else
+                    {
+                        diff = accelNorm;
+                    }
+
+                    double tempMouseOffset = unit * mouseOffset;
+                    //value = diff * MOUSESPEEDFACTOR * (timeElapsed * 0.001) * speed;
+                    return (mouseVelocity - tempMouseOffset) * timeDelta * diff + (tempMouseOffset * timeDelta);
+                }
+            }
+            else
+            {
+                if (axisValue < 128 - deadzone)
+                {
+                    double diff;
+                    if (!useDeltaAccel)
+                    {
+                        diff = -(axisValue - 128 - deadzone) / (double)(0 - 128 - deadzone);
+                    }
+                    else
+                    {
+                        diff = -accelNorm;
+                    }
+
+                    double tempMouseOffset = unit * mouseOffset;
+                    //value = diff * MOUSESPEEDFACTOR * (timeElapsed * 0.001) * speed;
+                    return (mouseVelocity - tempMouseOffset) * timeDelta * diff + (tempMouseOffset * -1.0 * timeDelta);
+                }
+            }
+
+            return 0.0;
         }
     }
 }
