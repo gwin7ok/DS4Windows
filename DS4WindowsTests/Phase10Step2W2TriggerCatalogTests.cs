@@ -35,12 +35,15 @@ namespace DS4WindowsTests
         };
 
         [Fact]
-        public void TheDefaultCatalog_HasTheLegacy49Items_InTheSameOrder_WithTheSameNamesAndLabels()
+        public void TheDefaultCatalog_StartsWithTheLegacy49Items_InTheSameOrder_WithTheSameNamesAndLabels()
         {
             var catalog = new TriggerCatalog();
 
+            // Phase10-Step4c W5（ユーザー承認、2026-10-21）: 末尾に LS Outer／RS Outer を足した（51 項目）。従来の 49 項目の並び・名前・表示名は変わらない
             Assert.Equal(49, LegacyCheckBoxes.Length);
-            Assert.Equal(LegacyCheckBoxes, catalog.Items.Select(i => (i.Name, i.Label)).ToArray());
+            Assert.Equal(51, catalog.Items.Count);
+            Assert.Equal(LegacyCheckBoxes, catalog.Items.Take(49).Select(i => (i.Name, i.Label)).ToArray());
+            Assert.Equal(new[] { ("LS Outer", "LS Outer"), ("RS Outer", "RS Outer") }, catalog.Items.Skip(49).Select(i => (i.Name, i.Label)).ToArray());
         }
 
         [Fact]

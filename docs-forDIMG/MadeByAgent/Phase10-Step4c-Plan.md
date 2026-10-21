@@ -236,4 +236,10 @@ Controls タブの割り当てと SA（Special Actions）の割り当ては、�
   - 影響: スティック・L2／R2・ジャイロを、キー・パッドのボタン・マウスのボタン・Extras に割り当てている場合、わずかな傾き・軽い押し込みでは反応しなくなる（全開に近い傾きでは、扇形の境目の角度の差を除き、ほぼ同じ）。R6（アナログ入力。`Phase10-Assignment-UI-Unification-Plan.md` §7.2）の「閾値に達する前の Controls の出力は出る」は、Key などのデジタルな出力では、閾値が同じになったため、「どちらも成立しない」になった。
   - テスト: 旧い閾値を固定していた 6 件（`Phase10Step2W0PriorityAndSuppressionCharacterizationTests` の R6、`Phase8Step78bW1ControlsKeyCharacterizationTests` の 2 件、`Phase8Step78eW1ControlsExtrasCharacterizationTests`、`Phase8Step78eW2ControlsExtrasTests`、`Phase8Step78f2W1ControlsMouseCharacterizationTests`）を新しい期待値へ書き換えた。新規 `Phase10Step4cW4JudgementTests`（束縛の種類ごとの判定、Toggle つきの扱い）。
   - 実機確認: 台帳 §25（P10-69〜73）。ユーザー判断で先送り（未確認のまま W5 へ進む）。台帳 §22 に追記。
-  - 次: W5（項目 9: 入力の集合）。指示があるまで始めない。
+- **W5（実装済み 2026-10-21。`Debug ALL` 成功: 警告 0・エラー 0、テスト 1902 件と 11 件が成功。実機確認 P10-74〜78 は未実施）**: 項目 9。追加のみ（既存の挙動は変わらない）。**Controls と SA の入力の集合が同じになった**。
+  - SA: トリガー一覧（`TriggerCatalog`）の末尾に `LS Outer`／`RS Outer` を追加（51 項目。従来の 49 項目の並びは不変）。保存した名前を読み戻す対応表（`SpecialAction.getDS4ControlsByName`）にも追加。判定は SA の閾値（100 を超える）。
+  - Controls: 一覧（`MappingListViewModel`）の末尾の後ろに `Touch Started`／`Touch Ended` を追加（51 項目。添字 49・50。既存の仮想ボタン LS／RS Outer、L2／R2 Full Pull の添字 45〜48 は不変）。`ControlSettingsGroup.ControlButtons` に 2 つを加え、束縛の対象にした（以前は、どの組にも入っていなかった）。
+  - プロファイル XML は、要素名が `DS4Controls` の列挙名（`TouchStarted`／`TouchEnded`）のため、保存・読み込みは変更不要（往復をテストで確認）。
+  - テスト: `Phase10Step4cW0InputSetTests` を新しい期待値へ書き換え（差は空、どちらも 51 項目、添字）。`Phase10Step2W2TriggerCatalogTests` は、従来の 49 項目が先頭にあり、末尾に 2 項目が増えた形へ。新規 `Phase10Step4cW5InputSetTests`（Touch の Key の束縛、XML の保存・読み込み、Outer 名の読み戻し）。
+  - 実機確認: 台帳 §26（P10-74〜78）。
+  - 次: 最終 W（文書。完了の記録、モデル図 `03` の更新、台帳、項目 10 の設計を統合の計画書に引き継ぐ）。指示があるまで始めない。

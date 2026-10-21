@@ -104,6 +104,10 @@ namespace DS4Windows
                 ControlButtons.Add(settingsList[i - 1]);
             }
 
+            // Phase10-Step4c W5（項目 9）: Touch Started／Touch Ended も、束縛を作る対象にする（Controls の一覧に足したため。以前は、どの組にも入っていなかった）
+            ControlButtons.Add(settingsList[(int)DS4Controls.TouchStarted - 1]);
+            ControlButtons.Add(settingsList[(int)DS4Controls.TouchEnded - 1]);
+
             this.settingsList = settingsList;
         }
 

@@ -138,6 +138,11 @@ namespace DS4WinWPF.DS4Forms.ViewModels
             mappings.Add(l2FullPullControl);
             mappings.Add(r2FullPullControl);
 
+            // Phase10-Step4c W5（項目 9、ユーザー承認 2026-10-21）: SA のトリガーにあって Controls の一覧になかった Touch Started／Touch Ended を、末尾の後ろに足す
+            // （既存の項目の添字、コントローラーの入力による選択の添字は変えない）。SA の一覧と入力の集合を同じにするため
+            mappings.Add(new MappedControl(devIndex, DS4Controls.TouchStarted, "Touch Started", devType, profileSettingsService));
+            mappings.Add(new MappedControl(devIndex, DS4Controls.TouchEnded, "Touch Ended", devType, profileSettingsService));
+
             int controlIndex = 0;
             foreach (MappedControl mapped in mappings)
             {

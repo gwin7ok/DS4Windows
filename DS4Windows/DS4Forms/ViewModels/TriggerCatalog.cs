@@ -4,8 +4,9 @@ using System.Collections.Generic;
 namespace DS4WinWPF.DS4Forms.ViewModels
 {
     /// <summary>
-    /// Phase10-Step2 W2（Phase10-Step2-Plan.md §3.2）: トリガーの一覧。引数なしの構築は、SA のモードの全トリガー（49 項目）。並び・名前・表示名は、
+    /// Phase10-Step2 W2（Phase10-Step2-Plan.md §3.2）: トリガーの一覧。引数なしの構築は、SA のモードの全トリガー（51 項目）。並び・名前・表示名は、
     /// 従来の <c>SpecialActionEditor.xaml</c> の、名前つきのチェックボックス 49 個（と、その <c>Tag</c>／<c>Content</c>）と同じ。
+    /// Phase10-Step4c W5（項目 9、ユーザー承認 2026-10-21）: 末尾に LS Outer／RS Outer を足した（Controls の一覧と入力の集合を同じにするため。既存の並びは変えない）。
     /// Controls のモード（W3）は、対象のボタン 1 つだけの一覧を、引数つきで作る。状態を持たない（不変）。
     /// </summary>
     public sealed class TriggerCatalog
@@ -39,6 +40,7 @@ namespace DS4WinWPF.DS4Forms.ViewModels
                 new TriggerItem("Tilt Up", "Tilt Up"), new TriggerItem("Tilt Down", "Tilt Down"),
                 new TriggerItem("Tilt Left", "Tilt Left"), new TriggerItem("Tilt Right", "Tilt Right"),
                 new TriggerItem("Touch Started", "Touch Started"), new TriggerItem("Touch Ended", "Touch Ended"),
+                new TriggerItem("LS Outer", "LS Outer"), new TriggerItem("RS Outer", "RS Outer"),
             })
         {
         }

@@ -297,6 +297,10 @@ namespace DS4Windows
                 case "Touch Started": return DS4Controls.TouchStarted;
                 case "Touch Ended": return DS4Controls.TouchEnded;
 
+                // Phase10-Step4c W5（項目 9）: スティックの Outer（Controls の一覧にあった仮想ボタン）。判定は SA の閾値（100 を超える）
+                case "LS Outer": return DS4Controls.LSOuter;
+                case "RS Outer": return DS4Controls.RSOuter;
+
             }
 
             return 0;
