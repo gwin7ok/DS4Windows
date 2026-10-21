@@ -86,6 +86,7 @@
                     </Grid.Background>
                     <Grid.RowDefinitions>
                         <RowDefinition Height="240" />
+                        <RowDefinition Height="Auto" />
                         <RowDefinition Height="*" />
                     </Grid.RowDefinitions>
                     <Canvas Grid.Row="0" x:Name="conCanvas" Width="440" Margin="0,10,0,0" DockPanel.Dock="Top" >
@@ -241,7 +242,39 @@
                         </Label>
                     </Canvas>
 
-                    <ListBox  Grid.Row="1" x:Name="mappingListBox" DockPanel.Dock="Bottom" ItemsSource="{Binding Mappings}"
+                    <!-- Phase10-Step3b W2: Axis Config にあった割り当ての入口（スティックの Outer Bind、トリガーの Full Pull）。
+                         割り当てエディターの入口を、すべて左ペインのタブのボタンにするため、ここへ移した（ボタンの右に、いまの割り当て名を常に表示する） -->
+                    <Grid x:Name="axisEntriesPanel" Grid.Row="1" Margin="8,4,8,4">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="*" />
+                        </Grid.ColumnDefinitions>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto" />
+                            <RowDefinition Height="Auto" />
+                        </Grid.RowDefinitions>
+                        <DockPanel Grid.Row="0" Grid.Column="0" Margin="0,2,4,2">
+                            <Button Content="LS Outer" Width="96" Tag="{Binding LSOuterBind, Source={StaticResource controlIndexCheck}}"
+                                    Click="StickOuterBindButton_Click" ToolTip="{lex:Loc StickOuterBindTooltip}" DockPanel.Dock="Left" />
+                            <Label x:Name="lsOuterBindEntryLb" Content="{Binding MappingName,FallbackValue=Unassigned}" Foreground="White" Margin="6,0,0,0" VerticalAlignment="Center" />
+                        </DockPanel>
+                        <DockPanel Grid.Row="0" Grid.Column="1" Margin="4,2,0,2">
+                            <Button Content="RS Outer" Width="96" Tag="{Binding RSOuterBind, Source={StaticResource controlIndexCheck}}"
+                                    Click="StickOuterBindButton_Click" ToolTip="{lex:Loc StickOuterBindTooltip}" DockPanel.Dock="Left" />
+                            <Label x:Name="rsOuterBindEntryLb" Content="{Binding MappingName,FallbackValue=Unassigned}" Foreground="White" Margin="6,0,0,0" VerticalAlignment="Center" />
+                        </DockPanel>
+                        <DockPanel Grid.Row="1" Grid.Column="0" Margin="0,2,4,2">
+                            <Button Content="L2 Full Pull" Width="96" Tag="{Binding L2FullPull, Source={StaticResource controlIndexCheck}}"
+                                    Click="TriggerFullPullBtn_Click" DockPanel.Dock="Left" />
+                            <Label x:Name="l2FullPullEntryLb" Content="{Binding MappingName,FallbackValue=Unassigned}" Foreground="White" Margin="6,0,0,0" VerticalAlignment="Center" />
+                        </DockPanel>
+                        <DockPanel Grid.Row="1" Grid.Column="1" Margin="4,2,0,2">
+                            <Button Content="R2 Full Pull" Width="96" Tag="{Binding R2FullPull, Source={StaticResource controlIndexCheck}}"
+                                    Click="TriggerFullPullBtn_Click" DockPanel.Dock="Left" />
+                            <Label x:Name="r2FullPullEntryLb" Content="{Binding MappingName,FallbackValue=Unassigned}" Foreground="White" Margin="6,0,0,0" VerticalAlignment="Center" />
+                        </DockPanel>
+                    </Grid>
+                    <ListBox  Grid.Row="2" x:Name="mappingListBox" DockPanel.Dock="Bottom" ItemsSource="{Binding Mappings}"
                                 SelectedIndex="{Binding SelectedIndex}" Margin="6" ScrollViewer.HorizontalScrollBarVisibility="Disabled"
                                 MouseDoubleClick="MappingListBox_MouseDoubleClick">
                         <ListBox.ItemTemplate>
@@ -1212,9 +1245,6 @@
 
                                                 <Label Content="{lex:Loc OuterBtn}" ContentStringFormat="{}{0}:" Grid.Row="7" Grid.Column="0" />
                                                 <DockPanel Grid.Row="7" Grid.Column="1">
-                                                    <Button Content="{lex:Loc OuterBind}" MinWidth="40" Tag="{Binding LSOuterBind, Source={StaticResource controlIndexCheck}}"
-                                                            Click="StickOuterBindButton_Click"
-                                                            Margin="{StaticResource spaceMargin}" ToolTip="{lex:Loc StickOuterBindTooltip}"  DockPanel.Dock="Top" />
                                                     <Label x:Name="lsOuterBindLb" Content="{Binding MappingName,FallbackValue=Unassigned}"
                                                         Margin="{StaticResource spaceMargin}" HorizontalAlignment="Center" DockPanel.Dock="Top"/>
                                                 </DockPanel>
@@ -1521,9 +1551,6 @@
 
                                                 <Label Content="{lex:Loc OuterBtn}" ContentStringFormat="{}{0}:" Grid.Row="7" Grid.Column="0" />
                                                 <DockPanel Grid.Row="7" Grid.Column="1">
-                                                    <Button Content="{lex:Loc OuterBind}" MinWidth="40" Tag="{Binding RSOuterBind, Source={StaticResource controlIndexCheck}}"
-                                                        Click="StickOuterBindButton_Click"
-                                                        Margin="{StaticResource spaceMargin}" ToolTip="{lex:Loc StickOuterBindTooltip}" DockPanel.Dock="Top" />
                                                     <Label x:Name="rsOuterBindLb" Content="{Binding MappingName,FallbackValue=Unassigned}"
                                                         Margin="{StaticResource spaceMargin}" HorizontalAlignment="Center" DockPanel.Dock="Top"/>
                                                 </DockPanel>
@@ -1796,14 +1823,10 @@
 
                                 <Label Content="{lex:Loc FullBtnPull}" ContentStringFormat="{}{0}:" Grid.Row="9" Grid.Column="0" />
                                 <DockPanel Grid.Row="9" Grid.Column="1">
-                                    <Button Content="{lex:Loc Full}" MinWidth="40" Tag="{Binding L2FullPull, Source={StaticResource controlIndexCheck}}" Click="TriggerFullPullBtn_Click"
-                                            Margin="{StaticResource spaceMargin}" DockPanel.Dock="Top" />
                                     <Label x:Name="l2FullPullLb" Content="{Binding MappingName,FallbackValue=Unassigned}"
                                            Margin="{StaticResource spaceMargin}" HorizontalAlignment="Center" DockPanel.Dock="Top"/>
                                 </DockPanel>
                                 <DockPanel Grid.Row="9" Grid.Column="2">
-                                    <Button Content="{lex:Loc Full}" MinWidth="40" Tag="{Binding R2FullPull, Source={StaticResource controlIndexCheck}}" Click="TriggerFullPullBtn_Click"
-                                            Margin="{StaticResource spaceMargin}" DockPanel.Dock="Top" />
                                     <Label x:Name="r2FullPullLb" Content="{Binding MappingName,FallbackValue=Unassigned}"
                                            Margin="{StaticResource spaceMargin}" HorizontalAlignment="Center" DockPanel.Dock="Top" />
                                 </DockPanel>

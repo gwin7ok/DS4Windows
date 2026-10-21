@@ -165,21 +165,18 @@ namespace DS4WindowsTests
         }
 
         [Fact]
-        public void TheFourAxisConfigEntries_AreInTheAxisConfigTab_WithTheirClickHandlersAndTags()
+        public void TheAxisConfigTab_NoLongerHasTheFourEntryButtons_ButKeepsTheReadOnlyAssignmentNames()
         {
             string xaml = Read("DS4Windows/DS4Forms/ProfileEditor.xaml");
             if (xaml == null) return;
 
             string axis = Between(xaml, "<TabItem Header=\"{lex:Loc AxisConfig}\"", "<TabItem Header=\"{lex:Loc Lightbar}\"");
 
-            Assert.Equal(2, Regex.Matches(axis, @"Click=""StickOuterBindButton_Click""").Count);
-            Assert.Equal(2, Regex.Matches(axis, @"Click=""TriggerFullPullBtn_Click""").Count);
-            foreach (string tag in new[] { "LSOuterBind", "RSOuterBind", "L2FullPull", "R2FullPull" })
-            {
-                Assert.Contains("Tag=\"{Binding " + tag + ", Source={StaticResource controlIndexCheck}}\"", axis);
-            }
+            // Phase10-Step3b W2: 入口のボタンは、Controls タブへ移した（割り当てエディターの入口を、すべて左ペインのタブのボタンにする）
+            Assert.DoesNotContain("StickOuterBindButton_Click", axis);
+            Assert.DoesNotContain("TriggerFullPullBtn_Click", axis);
 
-            // 割り当て名の表示ラベル（読み取り専用。W2 で、ボタンを Controls タブへ移したあとも残す）
+            // 割り当て名の表示ラベルは、読み取り専用の表示として残す
             foreach (string label in new[] { "lsOuterBindLb", "rsOuterBindLb", "l2FullPullLb", "r2FullPullLb" })
             {
                 Assert.Contains("x:Name=\"" + label + "\"", axis);
@@ -187,33 +184,76 @@ namespace DS4WindowsTests
         }
 
         [Fact]
-        public void TheAssignmentNameLabels_GetTheirDataContextFromTheMappingList()
+        public void TheAssignmentNameLabels_GetTheirDataContextFromTheMappingList_InBothTabs()
         {
             string code = Read("DS4Windows/DS4Forms/ProfileEditor.xaml.cs");
             if (code == null) return;
 
-            Assert.Contains("l2FullPullLb.DataContext = mappingListVM.ControlMap[DS4Controls.L2FullPull];", code);
-            Assert.Contains("r2FullPullLb.DataContext = mappingListVM.ControlMap[DS4Controls.R2FullPull];", code);
-            Assert.Contains("lsOuterBindLb.DataContext = mappingListVM.ControlMap[DS4Controls.LSOuter];", code);
-            Assert.Contains("rsOuterBindLb.DataContext = mappingListVM.ControlMap[DS4Controls.RSOuter];", code);
+            // Axis Config の読み取り専用のラベルと、Controls タブの入口の横のラベル（Phase10-Step3b W2）。どちらも、同じ割り当て名を結ぶ
+            foreach (string suffix in new[] { "Lb", "EntryLb" })
+            {
+                Assert.Contains("l2FullPull" + suffix + ".DataContext = mappingListVM.ControlMap[DS4Controls.L2FullPull];", code);
+                Assert.Contains("r2FullPull" + suffix + ".DataContext = mappingListVM.ControlMap[DS4Controls.R2FullPull];", code);
+                Assert.Contains("lsOuterBind" + suffix + ".DataContext = mappingListVM.ControlMap[DS4Controls.LSOuter];", code);
+                Assert.Contains("rsOuterBind" + suffix + ".DataContext = mappingListVM.ControlMap[DS4Controls.RSOuter];", code);
+            }
         }
 
         [Fact]
-        public void TheControlsTab_IsA470WideGrid_WithACanvasRowAndAListRow()
+        public void TheControlsTab_HasTheFourEntryButtons_InARowBetweenTheCanvasAndTheList()
         {
             string xaml = Read("DS4Windows/DS4Forms/ProfileEditor.xaml");
             if (xaml == null) return;
 
             string controls = Between(xaml, "<TabItem Header=\"{lex:Loc Controls}\">", "<TabItem x:Name=\"specialActionsTab\"");
 
+            // 幅 470 の Grid。行は、Canvas（240）、4 つの入口（Auto）、一覧（*）の 3 つ
             Assert.Contains("<Grid Width=\"470\">", controls);
             Match rows = Regex.Match(controls, @"<Grid\.RowDefinitions>(?<body>.*?)</Grid\.RowDefinitions>", RegexOptions.Singleline);
             Assert.True(rows.Success);
-            Assert.Equal(2, Regex.Matches(rows.Groups["body"].Value, @"<RowDefinition ").Count);
+            Assert.Equal(3, Regex.Matches(rows.Groups["body"].Value, @"<RowDefinition ").Count);
             Assert.Contains("<RowDefinition Height=\"240\" />", rows.Groups["body"].Value);
+            Assert.Contains("<RowDefinition Height=\"Auto\" />", rows.Groups["body"].Value);
             Assert.Contains("<RowDefinition Height=\"*\" />", rows.Groups["body"].Value);
-            Assert.Contains("x:Name=\"conCanvas\"", controls);
-            Assert.Contains("x:Name=\"mappingListBox\"", controls);
+            Assert.Matches(@"<Canvas Grid\.Row=""0"" x:Name=""conCanvas""", controls);
+            Assert.Matches(@"<Grid x:Name=""axisEntriesPanel"" Grid\.Row=""1""", controls);
+            Assert.Matches(@"<ListBox\s+Grid\.Row=""2"" x:Name=""mappingListBox""", controls);
+
+            // 4 つのボタン: 従来と同じ Click・Tag（ハンドラーは変えない）
+            string panel = Between(controls, "<Grid x:Name=\"axisEntriesPanel\"", "<ListBox");
+            Assert.Equal(2, Regex.Matches(panel, @"Click=""StickOuterBindButton_Click""").Count);
+            Assert.Equal(2, Regex.Matches(panel, @"Click=""TriggerFullPullBtn_Click""").Count);
+            foreach (string tag in new[] { "LSOuterBind", "RSOuterBind", "L2FullPull", "R2FullPull" })
+            {
+                Assert.Contains("Tag=\"{Binding " + tag + ", Source={StaticResource controlIndexCheck}}\"", panel);
+            }
+
+            // ボタンの右に、いまの割り当て名を常に表示する
+            foreach (string label in new[] { "lsOuterBindEntryLb", "rsOuterBindEntryLb", "l2FullPullEntryLb", "r2FullPullEntryLb" })
+            {
+                Assert.Contains("x:Name=\"" + label + "\"", panel);
+            }
+
+            foreach (string text in new[] { "LS Outer", "RS Outer", "L2 Full Pull", "R2 Full Pull" })
+            {
+                Assert.Contains("Content=\"" + text + "\"", panel);
+            }
         }
+
+        [Fact]
+        public void EveryEntryButtonOfTheProfileEditor_IsInTheLeftPane()
+        {
+            string xaml = Read("DS4Windows/DS4Forms/ProfileEditor.xaml");
+            if (xaml == null) return;
+
+            // 割り当てエディターの入口の Click ハンドラーは、すべて、左ペインのタブにある（右ペインに、入口がない）
+            string right = RightPane(xaml);
+            foreach (string handler in new[] { "StickOuterBindButton_Click", "TriggerFullPullBtn_Click", "TiltControlsButton_Click", "SwipeControlsButton_Click", "HoverConBtn_Click" })
+            {
+                Assert.DoesNotContain(handler, right);
+                Assert.Contains(handler, LeftPane(xaml));
+            }
+        }
+
     }
 }

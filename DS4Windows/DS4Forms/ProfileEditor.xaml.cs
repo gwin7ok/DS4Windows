@@ -665,12 +665,16 @@ namespace DS4WinWPF.DS4Forms
         {
             l2FullPullLb.DataContext = mappingListVM.ControlMap[DS4Controls.L2FullPull];
             r2FullPullLb.DataContext = mappingListVM.ControlMap[DS4Controls.R2FullPull];
+            l2FullPullEntryLb.DataContext = mappingListVM.ControlMap[DS4Controls.L2FullPull];   // Phase10-Step3b W2: Controls タブの入口の横の表示
+            r2FullPullEntryLb.DataContext = mappingListVM.ControlMap[DS4Controls.R2FullPull];
         }
 
         private void AssignStickOuterBindAssociation()
         {
             lsOuterBindLb.DataContext = mappingListVM.ControlMap[DS4Controls.LSOuter];
             rsOuterBindLb.DataContext = mappingListVM.ControlMap[DS4Controls.RSOuter];
+            lsOuterBindEntryLb.DataContext = mappingListVM.ControlMap[DS4Controls.LSOuter];   // Phase10-Step3b W2: Controls タブの入口の横の表示
+            rsOuterBindEntryLb.DataContext = mappingListVM.ControlMap[DS4Controls.RSOuter];
         }
 
         private void MappingListBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
