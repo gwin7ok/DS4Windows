@@ -227,20 +227,23 @@ namespace DS4WindowsTests
         }
 
         // ---- R6: アナログ（L2 の軸）。閾値に達する前は Controls が出て、成立後は SA が優先 ----
+        // Phase10-Step4c W4（ユーザー承認、2026-10-21）: Controls の Key（デジタルな出力）は SA と同じ閾値（100 を超える）で判定する。
+        // そのため、Key では、閾値に達する前の Controls の出力はなくなった（閾値までは、どちらも成立しない）。アナログな出力（パッドの軸）は従来の判定のまま
 
         [Fact]
-        public void R6_AnalogTrigger_ControlsOutputBelowTheThreshold_ThenTheSpecialActionIsEstablished()
+        public void R6_AnalogTrigger_ControlsKeyAndTheSpecialActionShareTheThreshold()
         {
             using var t = new Rig();
             t.MapKey(DS4Controls.L2, ControlsKeyL2);
             SpecialAction sa = t.AddKey("L2");
 
-            t.Run(Nothing, l2: 50);   // 0 より大きい（Controls の判定）。SA のトリガーの閾値（100 より大きい）には届かない
+            t.Run(Nothing, l2: 50);   // 100 以下。Controls の Key も、SA も成立しない
             Assert.False(t.Triggered(sa));
-            Assert.True(t.ControlsDispatched(DS4Controls.L2, ControlsKeyL2));
+            Assert.False(t.ControlsDispatched(DS4Controls.L2, ControlsKeyL2));
 
-            t.Run(Nothing, l2: 200);  // 閾値を超えて成立
+            t.Run(Nothing, l2: 200);  // 閾値を超えて成立。SA が優先し、Controls の Key は出ない
             Assert.True(t.Triggered(sa));
+            Assert.False(t.ControlsDispatched(DS4Controls.L2, ControlsKeyL2));
         }
 
         // ---- R7: 先に押したボタンを離して、再び押したとき、SA が再成立し、そのボタンが「最後」として抑制される ----

@@ -212,11 +212,28 @@ Controls タブの割り当てと SA（Special Actions）の割り当ては、�
   - `ForControls(区分)`: Macro と Special は見る、Key／Pad／Mouse／AnalogMouse／Extras／素通しは見ない。`ControlBindingBuilder` の 7 か所の直書きを、この表の呼び出しへ置き換えた。
   - テスト: `Phase10Step4cW1FreshPressGuardTableTests`（表の全行。`ControlBindingKind` の件数が 7 のままかも検査し、区分を足したときの行の足し忘れを防ぐ）。束縛に現れる値は、W0 の方針の表と SA の表のテストが守る（期待値は変更なし）。
   - 実機確認: 挙動が変わらないため、付けない。
-- **W2（実装済み 2026-10-21。ビルド・テストの結果待ち）**: 項目 4。ユーザー指示（2026-10-21）で範囲を広げ、**Controls と SA の全種別で、立ち上がり（トリガー成立）と離したときの両方にログを出す**。ログは増えるだけで、既存の文言・順序は変えない。
+- **W2（完了 2026-10-21。`Debug ALL` 成功: 警告 0・エラー 0、テスト 1889 件と 11 件が成功。実機確認 P10-58〜62 は先送り）**: 項目 4。ユーザー指示（2026-10-21）で範囲を広げ、**Controls と SA の全種別で、立ち上がり（トリガー成立）と離したときの両方にログを出す**。ログは増えるだけで、既存の文言・順序は変えない。
   - 離したとき: エンジン（`TriggerDispatchEngine.ProcessBinding` の離したエッジ）が、全種別で出す。Trace: `Trigger released for SA '<名前>' on device N`、Debug: `SpecialAction <種別> released: device=N, name=<名前>`。方針 `BindingPolicy.LogsReleaseEdge`（既定は真。Default の軸の素通しと、出力先が Unbound の消すだけの束縛は偽）。Key は既存の `KeyReleased` に加えて出る。Multi-action は離したエッジの概念がないため出ない。
   - 立ち上がり: Controls の Key は、止めていた仕組み（`suppressSpecialActionLogs`）を解除。Controls の Macro は、ログを出す版のコンストラクターに切り替え。Controls の Pad／Mouse／AnalogMouse／Extras は、出力アクションにログがないため、エンジンが出す（方針 `BindingPolicy.LogsRisingEdge`。Trace 3 行 `Trigger detected`／`maps to`／`Trigger keys`、Debug 1 行 `SpecialAction <種別>: device=N, name=<名前>`）。出力の組み合わせの行は、毎フレームの出力が立ち上がりの時点で確定しないため、出さない。
   - 「maps to」を読めるものにするため、Pad／Mouse／AnalogMouse／Extras の合成 `SpecialAction` の `details` に、割り当て先（例: X360 のボタン名、Extras の値）を入れた（出力の部品は `details` を読まない）。
   - 追加: `AppLogger.IsDebugEnabled`（Debug の文字列組み立てを、無効のときに省く）。
   - テスト: `Phase10Step4cW2EdgeLogTests`（方針の各フラグ、素通しと Unbound はログなし、Warn のみなら何も出ない、SA の Macro の離したとき）。`Phase10Step4cW0LogTableTests`（既存の種別が立ち上がり・離したときを 1 回ずつ出す）、`Phase8Step78bW2ControlsKeyTests`（Key のログ抑止の前提を、出す形へ）を書き換えた。
-  - 実機確認: 台帳 §23（P10-58〜62）。
-  - 次: W3（項目 7: 検証）。指示があるまで始めない。
+  - 実機確認: 台帳 §23（P10-58〜62）。ユーザー判断で先送り（未確認のまま W3 へ進む）。台帳 §22 に追記。
+  - 経過: 既存の `Phase8Step7W2ButtonTraceLogTests.WhenTraceIsOff_NothingIsLogged` は、Button に Debug の離した行が出るようになったため、Trace と Debug を無効にする形へ直した。新規テストの「素通しと Unbound はログなし」は、状態の生成ログを拾っていたため、エッジのログの行だけを調べる形へ直した。
+- **W3（完了 2026-10-21。`Debug ALL` 成功: 警告 0・エラー 0、テスト 1894 件と 11 件が成功。実機確認 P10-63〜68 は先送り）**: 項目 7。必須の値がないエラーは保存を止める（SA と Controls で共通）。エラーの入力は、赤い枠で示す（ユーザー指示 2026-10-21。名前欄・トリガー欄と同じ `ValidatesOnNotifyDataErrors`）。
+  - 保存を止める: Press Key／Button のキー・ボタン未選択、Launch Program のパス未選択・空、Load Profile の未選択、Check Battery の方法が未選択・ライトバーの 2 色が同じ、Hold の秒数が範囲外（`IsValid` が `false` を返す）。
+  - 保存を止めない（表示のみ）: Launch Program の「ファイルが存在しない」（警告）、Press Key の Toggle の「解除トリガーなし」（解除トリガーの機能は Phase8-Step8 8b で廃止済みで、入力する画面もない。止めると Toggle の Key が保存できなくなる）、Multi-action の未設定のマクロ（空のジェスチャーは何もしない。Controls に来る段階［W8 相当］で改めて決める）。
+  - `LaunchProgramViewModel.IsValid` の `NullReferenceException`（パス未選択）を直した（空と同じエラー）。
+  - Controls の Save（`SaveControlMode`）が、SA のモードと同じく `typeEditors.IsValid` を呼ぶ（Default と Unbound は入力がないため除く）。W6 の暫定の `ControlSettingsEditTarget.CanWrite` を削除した（一覧の範囲外の添字での Load Profile の検査はなくなるが、画面からは選べない）。
+  - 赤い枠: Press Key の「Select a Key」ボタン、Launch Program の Browse ボタン（存在しない警告も同じ枠）、Load Profile の欄、Check Battery の 2 つのチェックボックス、Hold の秒数（4 か所）。
+  - テスト: `Phase10Step4cW0ValidationTableTests` を新しい期待値へ書き換え（必須の値がないものは `false`、警告のみは `true`、NRE の解消、Controls の Save が `IsValid` を呼ぶこと、赤い枠の結びつき）。`Phase10Step4W6ControlProfileTests` の `CanWrite` のテストを削除した。
+  - 実機確認: 台帳 §24（P10-63〜68）。ユーザー判断で先送り（未確認のまま W4 へ進む）。台帳 §22 に追記。
+- **W4（完了 2026-10-21。`Debug ALL` 成功: 警告 0・エラー 0、テスト 1896 件と 11 件が成功。実機確認 P10-69〜73 は先送り）**: 項目 1。先頭で、現行と新しい閾値の差を数値で見せ、**案 B（デジタルな出力だけ SA の閾値に揃える）で最終決定**（ユーザー、2026-10-21）。
+  - 閾値の差: スティックの向き＝Controls は傾き 1 以上＋8 方向の扇形（幅 135°）／SA は傾き 56 以上（約 44%）で角度は見ない。L2／R2・Outer＝Controls は 1 以上／SA は 101 以上（約 40%）。ジャイロ＝Controls は絶対値 1 以上／SA は 68 以上。ボタン・タッチ・スワイプは差なし。
+  - SA の閾値に変わった（デジタルな出力）: Key、Extras、Button のうち、パッドのボタン・マウスのボタン・タッチパッドクリック・デジタルのホイール（Toggle つきを含む）。Macro と Special は、以前から SA の閾値。
+  - 従来の判定のまま（アナログな出力）: パッドの軸・トリガー（Toggle つきも）、マウスの移動、アナログのホイール、Default の軸の素通し。
+  - 判定は `ControlBindingBuilder` が束縛ごとに選ぶ（`ControlJudgement.Trigger`／`Assignment`）。統合 Step では、この選択を「出力の種類（デジタル／アナログ）から決まる性質」に置き換える（`Phase10-Integration-Target-Model.md` §4）。
+  - 影響: スティック・L2／R2・ジャイロを、キー・パッドのボタン・マウスのボタン・Extras に割り当てている場合、わずかな傾き・軽い押し込みでは反応しなくなる（全開に近い傾きでは、扇形の境目の角度の差を除き、ほぼ同じ）。R6（アナログ入力。`Phase10-Assignment-UI-Unification-Plan.md` §7.2）の「閾値に達する前の Controls の出力は出る」は、Key などのデジタルな出力では、閾値が同じになったため、「どちらも成立しない」になった。
+  - テスト: 旧い閾値を固定していた 6 件（`Phase10Step2W0PriorityAndSuppressionCharacterizationTests` の R6、`Phase8Step78bW1ControlsKeyCharacterizationTests` の 2 件、`Phase8Step78eW1ControlsExtrasCharacterizationTests`、`Phase8Step78eW2ControlsExtrasTests`、`Phase8Step78f2W1ControlsMouseCharacterizationTests`）を新しい期待値へ書き換えた。新規 `Phase10Step4cW4JudgementTests`（束縛の種類ごとの判定、Toggle つきの扱い）。
+  - 実機確認: 台帳 §25（P10-69〜73）。ユーザー判断で先送り（未確認のまま W5 へ進む）。台帳 §22 に追記。
+  - 次: W5（項目 9: 入力の集合）。指示があるまで始めない。

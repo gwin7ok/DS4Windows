@@ -106,6 +106,7 @@ namespace DS4WinWPF.DS4Forms.ViewModels.SpecialActions
 
             if (profileIndex == 0)
             {
+                valid = false;   // Phase10-Step4c W3: 必須の値がないエラーは、保存を止める
                 profileIndexErrors.Add("No profile given");
                 errors["ProfileIndex"] = profileIndexErrors;
                 RaiseErrorsChanged("ProfileIndex");

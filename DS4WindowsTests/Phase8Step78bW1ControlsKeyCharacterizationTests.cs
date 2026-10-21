@@ -80,19 +80,25 @@ namespace DS4WindowsTests
         }
 
         [Fact]
-        public void StickDirection_UsesTheSectorRule_NotTheSpecialActionThreshold()
+        public void StickDirection_UsesTheSpecialActionThreshold()
         {
             using var t = new ControlsKeyTestScope();
             t.MapKey(DS4Controls.LXNeg, Key);
             t.Publish();
             SpecialAction sa = t.SyntheticFor(DS4Controls.LXNeg, Key);
 
-            // わずかに左へ倒した（128 − 100 ＝ 28。特殊アクションのトリガー判定の幅 55 には届かない）。角度の扇形の中なので、押している
+            // Phase10-Step4c W4（ユーザー承認、2026-10-21）: Controls の Key は、SA と同じ閾値（中心から幅 55 を超える）で判定する。以前は、わずかな傾きでも、角度の扇形の中なら押下だった
             DS4State slightlyLeft = ControlsKeyTestScope.Neutral();
-            slightlyLeft.LX = 100;
+            slightlyLeft.LX = 100;   // 128 − 100 ＝ 28。幅 55 には届かない
             DS4State output = t.Run(slightlyLeft);
+            Assert.False(t.IsBeingTriggered(sa));
+            Assert.Equal(128, output.LX);          // 方向の出力は消える（毎フレーム）
+
+            DS4State farLeft = ControlsKeyTestScope.Neutral();
+            farLeft.LX = 72;   // 128 − 72 ＝ 56。幅 55 を超える
+            output = t.Run(farLeft);
             Assert.True(t.IsBeingTriggered(sa));
-            Assert.Equal(128, output.LX);          // 方向の出力は消える
+            Assert.Equal(128, output.LX);
 
             DS4State idle = ControlsKeyTestScope.Neutral();
             t.Run(idle);
@@ -118,19 +124,27 @@ namespace DS4WindowsTests
         }
 
         [Fact]
-        public void Trigger_IsPressedAboveZero_NotAboveOneHundred()
+        public void Trigger_IsPressedAboveOneHundred_LikeTheSpecialAction()
         {
             using var t = new ControlsKeyTestScope();
             t.MapKey(DS4Controls.L2, Key);
             t.Publish();
             SpecialAction sa = t.SyntheticFor(DS4Controls.L2, Key);
 
+            // Phase10-Step4c W4（ユーザー承認、2026-10-21）: Controls の Key は、SA と同じ閾値（100 を超える）で判定する。以前は 0 より大きければ押下だった
             DS4State slight = ControlsKeyTestScope.Neutral();
-            slight.L2 = 1;   // 特殊アクションのトリガー判定（100 より大きい）には届かない
+            slight.L2 = 1;
             DS4State output = t.Run(slight);
 
+            Assert.False(t.IsBeingTriggered(sa));
+            Assert.Equal(0, output.L2);            // トリガーの出力は消える（毎フレーム）
+
+            DS4State pressed = ControlsKeyTestScope.Neutral();
+            pressed.L2 = 101;
+            output = t.Run(pressed);
+
             Assert.True(t.IsBeingTriggered(sa));
-            Assert.Equal(0, output.L2);            // トリガーの出力は消える
+            Assert.Equal(0, output.L2);
 
             t.Run(ControlsKeyTestScope.Neutral());
             Assert.False(t.IsBeingTriggered(sa));

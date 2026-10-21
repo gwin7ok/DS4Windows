@@ -79,7 +79,7 @@ namespace DS4WindowsTests
             Assert.True(v.ScanCode);
             Assert.True(v.Toggle);
             Assert.Equal(7u, v.AliasKey);
-            Assert.True(v.SuppressSpecialActionLogs);   // 旧経路の Controls タブの Key は、SA タブ形式のログを出していない（Q4＝A）
+            Assert.False(v.SuppressSpecialActionLogs);   // Phase10-Step4c W2（ユーザー承認、2026-10-21）: Controls の Key も、SA と同じ形式のログを出す（以前は Q4＝A で抑止していた）
         }
 
         [Fact]
@@ -219,16 +219,18 @@ namespace DS4WindowsTests
         }
 
         [Fact]
-        public void TheNewPath_LogsNoSpecialActionStyleLines_AndKeepsTheKeyActionLines()
+        public void TheNewPath_LogsTheSpecialActionStyleLines_AndKeepsTheKeyActionLines()
         {
             bool[] frames = { false, true, true, false };
             string name = $"Synthetic_Key_{Device}_{(int)DS4Controls.Cross}";
 
             var logged = RunLogged(frames);
 
-            bool IsSpecialActionStyle(string l) => l.Contains(name) && (l.Contains("SpecialAction KEY") || l.Contains("SpecialAction Key") || l.Contains("Trigger detected for SA")
-                || l.Contains("maps to Type:Key") || l.Contains("Trigger keys for SA") || l.Contains("output combo"));
-            Assert.Empty(logged.Where(IsSpecialActionStyle));     // Controls タブの Key は、特殊アクションの書式のログを出さない
+            // Phase10-Step4c W2（ユーザー承認、2026-10-21）: Controls タブの Key も、特殊アクションの書式のログを出す（立ち上がりは Trace と Debug、離したときは KeyReleased。以前は抑止していた［Q4＝A］）
+            Assert.Contains(logged, l => l.Contains("Trigger detected for SA '" + name + "'"));
+            Assert.Contains(logged, l => l.Contains("SpecialAction KEY triggered: name=" + name));
+            Assert.Contains(logged, l => l.Contains("SpecialAction KeyReleased: device=" + Device + ", name=" + name));
+            Assert.Contains(logged, l => l.Contains("Trigger released for SA '" + name + "'"));
 
             // KeyAction 以降のログ（同じ名前・同じキー）は出る
             List<string> KeyActionLines(List<string> logs) => logs.Where(l => (l.Contains("KeyAction.On") || l.Contains("KeyAction: trigger")) && l.Contains(name)).Select(l => System.Text.RegularExpressions.Regex.Replace(l, @"controller=\d+", "controller=#")).ToList();   // コントローラーの番号は、生成のたびに増えるため、そろえる

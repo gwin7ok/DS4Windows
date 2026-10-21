@@ -38,6 +38,7 @@ public class SpecialActionViewModel : NotifyDataErrorBase, IActionTypeEditor
 
         if (holdInterval < 0 || holdInterval > 60)
         {
+            valid = false;   // Phase10-Step4c W3: 範囲外の値は、保存を止める
             holdIntervalErrors.Add("Interval not valid");
             errors["HoldInterval"] = holdIntervalErrors;
             RaiseErrorsChanged("HoldInterval");

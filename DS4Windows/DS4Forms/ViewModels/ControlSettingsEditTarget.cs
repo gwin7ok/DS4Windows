@@ -264,16 +264,6 @@ namespace DS4WinWPF.DS4Forms.ViewModels
             working.action = new ControlActionData();
         }
 
-        /// <summary>
-        /// Phase10-Step4 W6: 種別の添字の入力が、Save できる状態か。Load Profile は、切り替え先のプロファイルを選んでいないと、Save できない
-        /// （保存すると、押しても切り替わらず、割り当てたボタンの元の出力だけが消えるため。SA は、選ばないと割り当てを作らないだけ）。ほかの種別は、常に可。
-        /// </summary>
-        public bool CanWrite(int typeIndex, ControlSpecialEditors editors)
-        {
-            if (typeIndex < 0 || typeIndex >= typeCatalog.All.Count) return true;
-            return typeCatalog.At(typeIndex).TypeId != SpecialAction.ActionTypeId.Profile || SelectedProfileName(editors?.LoadProfile) != null;
-        }
-
         // 読み込み: SA 専用の種別の項目を、種別ごとの入力へ入れる
         private void LoadSpecial(ControlSpecialEditors editors)
         {

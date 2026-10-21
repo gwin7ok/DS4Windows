@@ -207,7 +207,7 @@ namespace DS4WindowsTests
             Assert.Equal($"Synthetic_Extras_{Device}_{(int)DS4Controls.Cross}", b.Source.name);
             var input = Assert.IsType<ControlButtonInputAction>(b.Input);
             Assert.Equal(ControlBindingKind.Extras, input.Kind);
-            Assert.Equal(ControlJudgement.Assignment, input.Judgement);
+            Assert.Equal(ControlJudgement.Trigger, input.Judgement);   // Phase10-Step4c W4: SA と同じ閾値
             Assert.False(b.Policy.RespectsFreshPressGuard);
             Assert.False(b.Policy.SuppressesTriggerButtons);
             Assert.False(b.Policy.ResetsTriggerOutput);

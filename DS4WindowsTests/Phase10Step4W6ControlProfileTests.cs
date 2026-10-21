@@ -277,25 +277,8 @@ namespace DS4WindowsTests
             Assert.Equal(0, rig.LoadProfile.ProfileIndex);
         }
 
-        [Fact]
-        public void CanWrite_NeedsAChosenProfile_OnlyForLoadProfile()
-        {
-            var rig = new Rig("First");
-            var target = new ControlSettingsEditTarget(new DS4ControlSettings(DS4Controls.Cross), rig.Profile);
-
-            Assert.False(target.CanWrite(ProfileIndex, rig.Editors));   // 未選択
-            Assert.False(target.CanWrite(ProfileIndex, null));          // 入力がない
-
-            rig.LoadProfile.ProfileIndex = 1;
-            Assert.True(target.CanWrite(ProfileIndex, rig.Editors));
-
-            rig.LoadProfile.ProfileIndex = 5;                           // 一覧の範囲外
-            Assert.False(target.CanWrite(ProfileIndex, rig.Editors));
-
-            rig.LoadProfile.ProfileIndex = 0;
-            foreach (int other in new[] { 0, 1, 2, 4, 5, 8, 9, 10, 11 })
-                Assert.True(target.CanWrite(other, rig.Editors), "種別 " + other);
-        }
+        // Phase10-Step4c W3: 以前ここにあった CanWrite（Load Profile の未選択で Save を止める暫定）は、種別ごとの入力の IsValid（偽を返す）に置き換えた。
+        // 検証は Phase10Step4cW0ValidationTableTests が持つ
 
         [Fact]
         public void WriteFrom_WithoutAChosenProfile_WritesAnEmptyName()

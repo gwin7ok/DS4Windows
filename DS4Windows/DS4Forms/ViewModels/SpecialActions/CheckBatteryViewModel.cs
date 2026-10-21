@@ -133,8 +133,10 @@ namespace DS4WinWPF.DS4Forms.ViewModels.SpecialActions
             List<string> notificationErrors = new List<string>();
             List<string> lightbarErrors = new List<string>();
 
+            // Phase10-Step4c W3: 必須の値がないエラー（どちらの方法も選んでいない、ライトバーの 2 色が同じ）は、保存を止める
             if (!notification && !lightbar)
             {
+                valid = false;
                 notificationErrors.Add("Need status option");
                 lightbarErrors.Add("Need status option");
             }
@@ -142,6 +144,7 @@ namespace DS4WinWPF.DS4Forms.ViewModels.SpecialActions
             {
                 if (emptyColor == fullColor)
                 {
+                    valid = false;
                     lightbarErrors.Add("Need to set two different colors");
                 }
             }

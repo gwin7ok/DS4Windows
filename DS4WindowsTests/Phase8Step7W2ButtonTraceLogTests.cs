@@ -123,7 +123,8 @@ namespace DS4WindowsTests
             var target = new MemoryTarget("p8s7w2off") { Layout = "${message}" };
             var config = new LoggingConfiguration();
             config.AddTarget(target);
-            config.AddRule(LogLevel.Debug, LogLevel.Fatal, target);   // Trace は無効
+            // Trace は無効。Phase10-Step4c W2（ユーザー承認、2026-10-21）で、離したときの Debug の行（SpecialAction Button released: …）を全種別に足したため、Debug も無効にする
+            config.AddRule(LogLevel.Info, LogLevel.Fatal, target);
             LogManager.Configuration = config;
             try
             {

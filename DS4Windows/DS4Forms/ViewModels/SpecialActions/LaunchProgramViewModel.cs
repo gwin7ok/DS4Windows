@@ -123,8 +123,11 @@ namespace DS4WinWPF.DS4Forms.ViewModels.SpecialActions
             bool valid = true;
             List<string> filepathErrors = new List<string>();
 
-            if (filepath.Length == 0)
+            // Phase10-Step4c W3: パスが未選択（null）・空は、必須の値がないエラー（保存を止める。以前は null で NullReferenceException）。
+            // ファイルが存在しないのは警告のみ（別のドライブ、あとで作る場合があるため。表示するが、保存は止めない）
+            if (string.IsNullOrWhiteSpace(filepath))
             {
+                valid = false;
                 filepathErrors.Add("Filepath empty");
             }
             else if (!File.Exists(filepath))

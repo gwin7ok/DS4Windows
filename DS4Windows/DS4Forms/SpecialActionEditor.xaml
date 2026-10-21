@@ -93,7 +93,9 @@
                                     <xctk:DecimalUpDown Value="{Binding Delay}" Width="60" Minimum="0" Maximum="60" FormatString= "F2" Increment="0.5" />
                                     <Label Content="secs" />
                                 </StackPanel>
+                                <!-- Phase10-Step4c W3: 必須の値がないエラー（パスが空）は、赤い枠で示す（名前欄・トリガー欄と同じ仕組み）。ファイルが存在しない警告も、同じ枠で示す（保存は止めない） -->
                                 <Button x:Name="launchProgBrowseBtn" Content="{lex:Loc Browse}" Margin="{StaticResource spaceMargin}"
+                                        Tag="{Binding Filepath,Mode=OneWay,ValidatesOnNotifyDataErrors=True}"
                                         Click="LaunchProgBrowseBtn_Click" />
                                 <!-- 参照ボタンと同じ幅（親の StackPanel の幅いっぱい）を使い、アイコンは右端に固定する。
                                      固定幅 150 では長いファイル名が切れていたため、残りの幅をプログラム名に割り当てる -->
@@ -115,7 +117,7 @@
                         </TabItem>
                         <TabItem x:Name="loadProfileTab" Header="Load Profile">
                             <StackPanel Margin="{StaticResource spaceMargin}">
-                                <ComboBox SelectedIndex="{Binding ProfileIndex,FallbackValue=0}"
+                                <ComboBox SelectedIndex="{Binding ProfileIndex,FallbackValue=0,ValidatesOnNotifyDataErrors=True}"
                                           Margin="{StaticResource spaceMargin}">
                                     <ComboBox.Resources>
                                         <DataTemplate DataType="{x:Type ComboBoxItem}">
@@ -150,7 +152,9 @@
                                 <!-- Phase10-Step1 W4: Scan Code は、選択ダイアログではなく、この画面で設定する -->
                                 <CheckBox Content="{lex:Loc ScanCode}" IsChecked="{Binding UseScanCode}" IsEnabled="{Binding IsScanCodeEnabled}"
                                           Margin="0,0,0,6" />
+                                <!-- Phase10-Step4c W3: キーが未選択のエラーは、赤い枠で示す -->
                                 <Button x:Name="pressKeySelectBtn" Content="{Binding DescribeText,FallbackValue={lex:Loc SpecialActionEdit.SelectKey}}"
+                                        Tag="{Binding Value,Mode=OneWay,ValidatesOnNotifyDataErrors=True}"
                                         Margin="{StaticResource spaceMargin}" Click="PressKeySelectBtn_Click" />
                                 <!-- Unload trigger UI removed: Key-type SpecialActions now use single-trigger toggle by design -->
                             </StackPanel>
@@ -158,7 +162,7 @@
                         <TabItem x:Name="disconnectBTTab" Header="DisBT">
                             <StackPanel Orientation="Horizontal" Margin="{StaticResource spaceMargin}">
                                 <Label Content="{lex:Loc SpecialActionEdit.HoldFor}" ContentStringFormat="{}{0} "></Label>
-                                <xctk:DecimalUpDown Value="{Binding HoldInterval}" Width="60" Minimum="0" Maximum="60" FormatString= "F2" Increment="0.5" />
+                                <xctk:DecimalUpDown Value="{Binding HoldInterval,ValidatesOnNotifyDataErrors=True}" Width="60" Minimum="0" Maximum="60" FormatString= "F2" Increment="0.5" />
                                 <Label Content="secs" />
                             </StackPanel>
                         </TabItem>
@@ -166,11 +170,11 @@
                             <StackPanel Margin="{StaticResource spaceMargin}">
                                 <StackPanel Orientation="Horizontal" Margin="0,8,0,8">
                                     <Label Content="{lex:Loc SpecialActionEdit.HoldFor}" ContentStringFormat="{}{0} "></Label>
-                                    <xctk:DecimalUpDown Value="{Binding HoldInterval}" Width="60" Minimum="0" Maximum="60" FormatString= "F2" Increment="0.5"/>
+                                    <xctk:DecimalUpDown Value="{Binding HoldInterval,ValidatesOnNotifyDataErrors=True}" Width="60" Minimum="0" Maximum="60" FormatString= "F2" Increment="0.5"/>
                                     <Label Content="secs" />
                                 </StackPanel>
-                                <CheckBox Content="{lex:Loc SpecialActionEdit.ViaNotification}" IsChecked="{Binding Notification}" Margin="{StaticResource spaceMargin}" />
-                                <CheckBox Content="{lex:Loc SpecialActionEdit.ViaLightbar}" IsChecked="{Binding Lightbar}" Margin="{StaticResource spaceMargin}" />
+                                <CheckBox Content="{lex:Loc SpecialActionEdit.ViaNotification}" IsChecked="{Binding Notification,ValidatesOnNotifyDataErrors=True}" Margin="{StaticResource spaceMargin}" />
+                                <CheckBox Content="{lex:Loc SpecialActionEdit.ViaLightbar}" IsChecked="{Binding Lightbar,ValidatesOnNotifyDataErrors=True}" Margin="{StaticResource spaceMargin}" />
                                 <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Margin="0,8,0,8">
                                     <StackPanel HorizontalAlignment="Left">
                                         <Button x:Name="batteryLowColorBtn" Width="20" Height="20" Click="BatteryEmptyColorBtn_Click">
@@ -216,14 +220,14 @@
                         <TabItem x:Name="sixaxisWheelCalibrateTab" Header="Sixaxis Wheel">
                             <StackPanel Orientation="Horizontal" Margin="{StaticResource spaceMargin}">
                                 <Label Content="{lex:Loc HoldFor}" ContentStringFormat="{}{0} "></Label>
-                                <xctk:DecimalUpDown Value="{Binding HoldInterval}" Width="60" Minimum="0" Maximum="60" FormatString= "F2" Increment="0.5" />
+                                <xctk:DecimalUpDown Value="{Binding HoldInterval,ValidatesOnNotifyDataErrors=True}" Width="60" Minimum="0" Maximum="60" FormatString= "F2" Increment="0.5" />
                                 <Label Content="secs" />
                             </StackPanel>
                         </TabItem>
                         <TabItem x:Name="gyroCalibrateTab" Header="{lex:Loc SpecialActionEdit.CalibrateGyro}">
                             <StackPanel Orientation="Horizontal" Margin="{StaticResource spaceMargin}">
                                 <Label Content="{lex:Loc HoldFor}" ContentStringFormat="{}{0} "></Label>
-                                <xctk:DecimalUpDown Value="{Binding HoldInterval}" Width="60" Minimum="0" Maximum="60" FormatString= "F2" Increment="0.5" />
+                                <xctk:DecimalUpDown Value="{Binding HoldInterval,ValidatesOnNotifyDataErrors=True}" Width="60" Minimum="0" Maximum="60" FormatString= "F2" Increment="0.5" />
                                 <Label Content="secs" />
                             </StackPanel>
                         </TabItem>

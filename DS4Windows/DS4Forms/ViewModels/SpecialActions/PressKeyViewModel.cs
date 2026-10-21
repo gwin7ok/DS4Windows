@@ -384,6 +384,7 @@ namespace DS4WinWPF.DS4Forms.ViewModels.SpecialActions
             {
                 if (value == 0)
                 {
+                    valid = false;   // Phase10-Step4c W3: 必須の値がないエラーは、保存を止める
                     valueErrors.Add("No key defined");
                     errors["Value"] = valueErrors;
                     RaiseErrorsChanged("Value");
@@ -393,12 +394,14 @@ namespace DS4WinWPF.DS4Forms.ViewModels.SpecialActions
             {
                 if (lastActionBtn < 0)
                 {
+                    valid = false;
                     valueErrors.Add("No button defined");
                     errors["Value"] = valueErrors;
                     RaiseErrorsChanged("Value");
                 }
             }
             // If explicit SwitchMode says Toggle then require unload triggers
+            // Phase10-Step4c W3: このエラーは保存を止めない（解除トリガーの機能は Phase8-Step8 8b で廃止済みで、入力する画面もない。止めると Toggle の Key が保存できなくなる）。表示のみ
             if (string.Equals(switchMode, "Toggle", StringComparison.OrdinalIgnoreCase) && string.IsNullOrEmpty(action.ucontrols))
             {
                 toggleErrors.Add("No unload triggers specified");

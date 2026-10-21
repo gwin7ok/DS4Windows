@@ -403,7 +403,9 @@ namespace DS4Windows.Services
             var outputs = new List<IOutputAction>(2);
             if (!eraseOnly) outputs.Add(new ControlPadOutputAction(identity, values));
             if (toggle) outputs.Add(new ControlToggleOutputAction(identity));   // 7.8f-2（Q8＝A）。Toggle の出力は ButtonMouse の区分
-            result.Add(new TriggerBinding(new ControlButtonInputAction(identity.name, dcs.control, toggle ? ControlBindingKind.ButtonMouse : ControlBindingKind.ButtonPad, ControlJudgement.Assignment),
+            // Phase10-Step4c W4（ユーザー承認、2026-10-21）: パッドのボタンへの割り当て（デジタルな出力）は、SA と同じ閾値で判定する。軸・トリガーへの割り当て（アナログな出力）は、従来の判定のまま
+            ControlJudgement judgement = !eraseOnly && values.Kind == PadTargetKind.Button ? ControlJudgement.Trigger : ControlJudgement.Assignment;
+            result.Add(new TriggerBinding(new ControlButtonInputAction(identity.name, dcs.control, toggle ? ControlBindingKind.ButtonMouse : ControlBindingKind.ButtonPad, judgement),
                 outputs.ToArray(), policy, identity, -1));
         }
 
@@ -448,7 +450,8 @@ namespace DS4Windows.Services
             if (target == X360Controls.TouchpadClick) outputs.Add(new ControlTouchpadClickOutputAction(identity, dcs.control));
             else outputs.Add(new ControlMouseOutputAction(identity, target));
             if (toggle) outputs.Add(new ControlToggleOutputAction(identity));
-            result.Add(new TriggerBinding(new ControlButtonInputAction(identity.name, dcs.control, ControlBindingKind.ButtonMouse, ControlJudgement.Assignment),
+            // Phase10-Step4c W4: マウスのボタン・タッチパッドクリック・デジタルのホイール（デジタルな出力）は、SA と同じ閾値で判定する
+            result.Add(new TriggerBinding(new ControlButtonInputAction(identity.name, dcs.control, ControlBindingKind.ButtonMouse, ControlJudgement.Trigger),
                 outputs.ToArray(), policy, identity, -1));
         }
 
@@ -476,7 +479,8 @@ namespace DS4Windows.Services
 
             var policy = new BindingPolicy(respectsFreshPressGuard: FreshPressGuardTable.ForControls(ControlBindingKind.Extras), suppressesTriggerButtons: false, resetsTriggerOutput: false,
                 erasesOutputEveryFrame: false, logsRisingEdge: true);
-            result.Add(new TriggerBinding(new ControlButtonInputAction(identity.name, dcs.control, ControlBindingKind.Extras, ControlJudgement.Assignment),
+            // Phase10-Step4c W4: Extras（振動・ライトバー・感度。オン／オフの出力）は、SA と同じ閾値で判定する
+            result.Add(new TriggerBinding(new ControlButtonInputAction(identity.name, dcs.control, ControlBindingKind.Extras, ControlJudgement.Trigger),
                 new IOutputAction[] { new ControlExtrasOutputAction(identity, values, _extrasPort) }, policy, identity, -1));
         }
 
@@ -520,7 +524,8 @@ namespace DS4Windows.Services
             // 設計書 §3.2: Controls タブの Key は、Fresh-press ガードを見ず、トリガーのボタンを抑制せず、押していなくても毎フレーム通常の出力を消す（旧 ResetToDefaultValue）
             var policy = new BindingPolicy(respectsFreshPressGuard: FreshPressGuardTable.ForControls(ControlBindingKind.Key), suppressesTriggerButtons: false, resetsTriggerOutput: false,
                 erasesOutputEveryFrame: true);
-            result.Add(new TriggerBinding(new ControlButtonInputAction(identity.name, dcs.control),
+            // Phase10-Step4c W4: Key（デジタルな出力）は、SA と同じ閾値で判定する（以前は Controls の判定）
+            result.Add(new TriggerBinding(new ControlButtonInputAction(identity.name, dcs.control, ControlBindingKind.Key, ControlJudgement.Trigger),
                 new IOutputAction[] { new KeyOutputAction(identity, values, _profileSettings) }, policy, identity, -1));
         }
     }

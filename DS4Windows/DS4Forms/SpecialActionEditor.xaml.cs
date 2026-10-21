@@ -309,12 +309,11 @@ namespace DS4WinWPF.DS4Forms
             if (!specialActVM.IsValid(tempAct)) return;
             if (!specialActVM.IsTypeEnabled(specialActVM.ActionTypeIndex)) return;   // Controls に、まだ保存できない種別
 
-            // Phase10-Step4 W6: Load Profile は、切り替え先を選んでいないと Save できない（既存のエラー「No profile given」を表示して、エディターを開いたままにする）
-            if (!controlTarget.CanWrite(specialActVM.ActionTypeIndex, SpecialEditors()))
-            {
-                loadProfileVM.IsValid(tempAct);
-                return;
-            }
+            // Phase10-Step4c W3（項目 7）: 種別ごとの入力の検証を、SA のモードと同じく呼ぶ。必須の値がない（キー未選択、プロファイル未選択、プログラムのパスが空ほか）とき、
+            // エラー（赤い枠）を表示したまま、エディターを開いたままにする。Default（None）と Unbound（Button に写る）は、入力がないため検証しない
+            int typeIndex = specialActVM.ActionTypeIndex;
+            bool hasInput = typeIndex != specialActVM.TypeCatalog.DefaultIndex && typeIndex != specialActVM.TypeCatalog.UnboundIndex;
+            if (hasInput && !typeEditors.IsValid(specialActVM.TypeAssoc[typeIndex], tempAct)) return;
 
             controlTarget.WriteFrom(specialActVM.ActionTypeIndex, pressKeyVM, macroActVM, SpecialEditors());
             controlTarget.Apply();
