@@ -14,8 +14,8 @@ Step1: `Phase10-Step1-Plan.md`
 | Step1 | マクロの再生オプションの共通部品（Execute Mode、Scan Code）と、Press Key の Scan Code の移動 | **完了**（2026-10-21。W1〜W4 ビルド・テスト成功、実機確認済み） | `Phase10-Step1-Plan.md` |
 | Step2 | 共通の編集画面の骨格（ViewModel の分離、Controls／SA の 2 モード化、優先順位・抑制の仕様の特性化テスト） | **完了**（2026-10-21。W0〜W5。ビルド・テスト成功、実機確認済み） | `Phase10-Step2-Plan.md`（§9 に完了の記録、未接続のコードの一覧、Step3・4 への引き継ぎ） |
 | Step3（繰り上げ） | **Controls タブを割り当てエディターへ接続する**（選択ダイアログ `BindingWindow`＝出力ピッカーの統一、6 か所の呼び出しを、左ペイン全体に重ねる割り当てエディターへ切り替え） | **完了（2026-10-21）**。完了の記録は `Phase10-Step3-Plan.md` §10。実機確認の台帳は `Phase6-Step11-RealDevice-Verification-Checklist.md` §15（P10-21 は未確認） | `Phase10-Step3-Plan.md` |
-| Step3b（追加） | Touchpad タブとジャイロタブを左ペインへ移す。Axis Config の 4 つの入口を、Controls タブの一覧へ加える（レイアウトのみ） | **完了（2026-10-21）**。完了の記録は `Phase10-Step3b-Plan.md` §9。実機確認の台帳は `Phase6-Step11-RealDevice-Verification-Checklist.md` §16（P10-26 は未確認） | `Phase10-Step3b-Plan.md` |
-| Step4 | 保存形式の拡張と、Controls での SA 専用の種別の実行（旧 Step3＋旧 Step5）。Step3 のあとで、実施するか・後回しにするかを判断 | 未着手 | |
+| Step3b（追加） | Touchpad タブとジャイロタブを左ペインへ移す。Axis Config の 4 つの入口を、Controls タブの一覧へ加える（レイアウトのみ） | **完了（2026-10-21）**。完了の記録は `Phase10-Step3b-Plan.md` §9。実機確認の台帳は `Phase6-Step11-RealDevice-Verification-Checklist.md` §16（P10-26 まで確認済み。P10-21 のみ未確認） | `Phase10-Step3b-Plan.md` |
+| Step4 | 保存形式の拡張と、Controls での SA 専用の種別の実行（型のある項目の定義、`Profile.xml` への保存、出力アクションの作り方の共通化、画面の解除を、群ごとに縦通し） | 計画書は確定（Q1〜Q4 回答済み。Q5 は最後の群で判断）。ユーザーの承認待ち | `Phase10-Step4-Plan.md` |
 | Step5 | SA 側のアナログ出力（旧 Step4b） | 未着手 | |
 | Step6 | SA の文字列の受け渡しを型のある項目へ（Q7）、旧画面の撤去・改名、モデル図・文書の更新、完了報告書 | 未着手 |  |
 
@@ -63,4 +63,4 @@ Step1: `Phase10-Step1-Plan.md`
 ## 6. 次の作業
 
 - Step4（保存形式の拡張と、Controls での SA 専用の種別の実行）の、実施の判断と個別計画書の作成。Controls のモードで暫定的に隠している項目（Macro タブの 3 つのチェックボックス）と、グレーアウトの種別を、順に出す。最終形（共通の割り当て定義と、束縛を作る builder の統合）の進め方も、あわせて決める。
-- 未確認の台帳の項目（P10-21、P10-26）の、実機での確認。
+- 未確認の台帳の項目（P10-21: 出力ピッカーでの Extras の設定と、割り当てエディターの Save／Cancel での反映・破棄、既存プロファイルの回帰）の、実機での確認。
