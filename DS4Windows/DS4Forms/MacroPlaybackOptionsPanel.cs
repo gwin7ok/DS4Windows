@@ -12,7 +12,7 @@ namespace DS4WinWPF.DS4Forms
     /// Phase10-Step1 W2（Phase10-Step1-Plan.md §3.1）: マクロの再生オプション（Execute Mode、Scan Code）の共通の画面部品。
     /// <see cref="MacroPlaybackOptions"/> を DataContext に受ける。Controls の <c>RecordBox</c>（W2）と、SA の Macro タブ（W3）が使う。
     /// <para>
-    /// XAML を持たない（コードだけで組み立てる）。XAML の部品を、同じプロジェクトの別の XAML（<c>RecordBox.xaml</c>、<c>SpecialActionEditor.xaml</c>）から
+    /// XAML を持たない（コードだけで組み立てる）。XAML の部品を、同じプロジェクトの別の XAML（<c>RecordBox.xaml</c>、<c>AssignmentEditor.xaml</c>）から
     /// 参照すると、クリーンビルドで WPF の一時プロジェクト（<c>*_wpftmp.csproj</c>）が、この部品の生成コードや BAML を見つけられず失敗した
     /// （「InitializeComponent が存在しない」「BG1002: .baml が見つかりません」。2026-10-21、Build-Debug.ps1 の再試行でも直らなかった）。コードだけの部品にして避ける。
     /// </para>

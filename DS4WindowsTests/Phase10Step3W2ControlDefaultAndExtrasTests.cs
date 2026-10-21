@@ -293,7 +293,7 @@ namespace DS4WindowsTests
         [Fact]
         public void TheEditor_OpensThePickerInTheControlMode_WithTheButtonAndTheExtras()
         {
-            string path = SourceFileLocator.Find("DS4Windows/DS4Forms/SpecialActionEditor.xaml.cs");
+            string path = SourceFileLocator.Find("DS4Windows/DS4Forms/AssignmentEditor.xaml.cs");
             if (path == null)
             {
                 _output.WriteLine("ソースが見つからないため検査を省略した。");

@@ -107,7 +107,7 @@ namespace DS4WinWPF.DS4Forms.ViewModels
         /// <param name="editors">
         /// Phase10-Step4 W4〜: SA 専用の種別ごとの入力の一式（押し続ける秒数、Launch Program、Load Profile ほか）。省略可（なければ、その種別の値は読み書きしない）。
         /// </param>
-        public void LoadInto(PressKeyViewModel pressKey, MacroViewModel macro, ControlSpecialEditors editors = null)
+        public void LoadInto(PressKeyViewModel pressKey, MacroViewModel macro, ActionTypeEditorSet editors = null)
         {
             if (pressKey == null) throw new ArgumentNullException(nameof(pressKey));
             if (macro == null) throw new ArgumentNullException(nameof(macro));
@@ -149,7 +149,7 @@ namespace DS4WinWPF.DS4Forms.ViewModels
         /// 種別の添字（<see cref="ActionTypeCatalog"/>）に対応する入力から、編集用のコピーへ書き出す。<c>extras</c> は、変えない。
         /// 0 は、既定（割り当てなし）。Controls で、現在保存できない種別（Step3 まで）は、例外。
         /// </summary>
-        public void WriteFrom(int typeIndex, PressKeyViewModel pressKey, MacroViewModel macro, ControlSpecialEditors editors = null)
+        public void WriteFrom(int typeIndex, PressKeyViewModel pressKey, MacroViewModel macro, ActionTypeEditorSet editors = null)
         {
             if (pressKey == null) throw new ArgumentNullException(nameof(pressKey));
             if (macro == null) throw new ArgumentNullException(nameof(macro));
@@ -191,15 +191,9 @@ namespace DS4WinWPF.DS4Forms.ViewModels
                 case SpecialAction.ActionTypeId.DisconnectBT:
                 case SpecialAction.ActionTypeId.GyroCalibrate:
                 case SpecialAction.ActionTypeId.SASteeringWheelEmulationCalibrate:
-                    WriteSpecial(descriptor.TypeId, editors?.HoldIntervals);
-                    break;
-
                 case SpecialAction.ActionTypeId.Program:
-                    WriteProgram(editors?.LaunchProgram);
-                    break;
-
                 case SpecialAction.ActionTypeId.Profile:
-                    WriteProfile(editors?.LoadProfile);
+                    WriteSpecial(descriptor.TypeId, editors);
                     break;
 
                 default:   // 0（None）
@@ -252,113 +246,24 @@ namespace DS4WinWPF.DS4Forms.ViewModels
             if (IsToggle(pressKey)) working.keyType |= DS4KeyType.Toggle;
         }
 
-        // Phase10-Step4 W4: SA 専用の種別（押し続ける秒数だけを持つもの）。通常の割り当て（キー・マクロの手順）は残さない
-        private void WriteSpecial(SpecialAction.ActionTypeId type, IReadOnlyDictionary<SpecialAction.ActionTypeId, SpecialActionViewModel> holdIntervals)
+        // Phase10-Step6 I6b: SA 専用の種別（Disconnect BT、較正 2 種、Launch Program、Load Profile）。型のある項目は、種別ごとの入力（ActionTypeEditorSet）が作る
+        // （以前は、種別ごとの書き出しを、この型が持っていた）。通常の割り当て（キー・マクロの手順）は残さない。入力がなければ（テスト）、種別だけの項目
+        private void WriteSpecial(SpecialAction.ActionTypeId type, ActionTypeEditorSet editors)
         {
-            double seconds = 0;
-            if (holdIntervals != null && holdIntervals.TryGetValue(type, out SpecialActionViewModel holdVm)) seconds = holdVm.HoldInterval;
-
-            working.special = new ControlSpecialItem { Type = type, HoldSeconds = seconds };
+            working.special = editors != null ? editors.ToControlItem(type) : new ControlSpecialItem { Type = type };
             working.actionType = DS4ControlSettings.ActionType.Special;
             working.keyType = DS4KeyType.None;
             working.action = new ControlActionData();
         }
 
         // 読み込み: SA 専用の種別の項目を、種別ごとの入力へ入れる
-        private void LoadSpecial(ControlSpecialEditors editors)
+        private void LoadSpecial(ActionTypeEditorSet editors)
         {
-            ControlSpecialItem item = working.special;
-            if (item == null || editors == null) return;
+            if (working.special == null || editors == null) return;
 
-            if (editors.HoldIntervals != null && editors.HoldIntervals.TryGetValue(item.Type, out SpecialActionViewModel holdVm))
-                holdVm.HoldInterval = item.HoldSeconds;
-
-            if (item.Type == SpecialAction.ActionTypeId.Program && editors.LaunchProgram != null)
-            {
-                editors.LaunchProgram.Filepath = item.ProgramPath;
-                editors.LaunchProgram.Delay = item.HoldSeconds;
-                editors.LaunchProgram.Arguments = ComposeArguments(item.ProgramArguments, item.HideWindow);
-            }
-
-            if (item.Type == SpecialAction.ActionTypeId.Profile && editors.LoadProfile != null)
-            {
-                // 名前から一覧の位置を探す（0 は未選択）。名前を変えた・消したプロファイルは、見つからず、未選択になる
-                editors.LoadProfile.ProfileIndex = IndexOfProfile(editors.LoadProfile, item.ProfileName);
-                editors.LoadProfile.AutoUntrigger = item.AutomaticUntrigger;
-            }
+            editors.LoadControlItem(working.special);
         }
 
-        private static int IndexOfProfile(LoadProfileViewModel loadProfile, string name)
-        {
-            if (string.IsNullOrWhiteSpace(name)) return 0;
-
-            var list = loadProfile.ProfileList?.ProfileListCol;
-            if (list == null) return 0;
-
-            for (int i = 0; i < list.Count; i++)
-            {
-                if (string.Equals(list[i].Name, name, StringComparison.CurrentCultureIgnoreCase)) return i + 1;
-            }
-
-            return 0;
-        }
-
-        // 選んでいるプロファイルの名前。未選択（添字 0）、一覧の範囲外、入力がないときは null
-        private static string SelectedProfileName(LoadProfileViewModel loadProfile)
-        {
-            var list = loadProfile?.ProfileList?.ProfileListCol;
-            int index = loadProfile?.ProfileIndex ?? 0;
-            if (list == null || index <= 0 || index > list.Count) return null;
-
-            return list[index - 1].Name;
-        }
-
-        // Phase10-Step4 W6: Load Profile。未選択のときは、空の名前（束縛は作られない。エディターは、未選択の Save を許さない）
-        private void WriteProfile(LoadProfileViewModel loadProfile)
-        {
-            working.special = new ControlSpecialItem
-            {
-                Type = SpecialAction.ActionTypeId.Profile,
-                ProfileName = SelectedProfileName(loadProfile) ?? string.Empty,
-                AutomaticUntrigger = loadProfile != null && loadProfile.AutoUntrigger,
-            };
-            working.actionType = DS4ControlSettings.ActionType.Special;
-            working.keyType = DS4KeyType.None;
-            working.action = new ControlActionData();
-        }
-
-        // Phase10-Step4 W5: Launch Program。入力がなければ（テスト）、空のパス・0 秒。パスは未選択（null）でも空にする
-        private void WriteProgram(LaunchProgramViewModel launchProgram)
-        {
-            SplitArguments(launchProgram?.Arguments, out string arguments, out bool hideWindow);
-            working.special = new ControlSpecialItem
-            {
-                Type = SpecialAction.ActionTypeId.Program,
-                ProgramPath = launchProgram?.Filepath ?? string.Empty,
-                HoldSeconds = launchProgram?.Delay ?? 0,
-                ProgramArguments = arguments,
-                HideWindow = hideWindow,
-            };
-            working.actionType = DS4ControlSettings.ActionType.Special;
-            working.keyType = DS4KeyType.None;
-            working.action = new ControlActionData();
-        }
-
-        /// <summary>
-        /// 引数の欄の文字列から、ウィンドウを隠す語（<c>$hidden</c>。大文字小文字不問）を、SA の起動処理と同じく 1 回だけ取り除く。
-        /// 語があれば <paramref name="hideWindow"/> が真で、<paramref name="arguments"/> は、取り除いた残り（空白はそのまま）。
-        /// </summary>
-        public static void SplitArguments(string text, out string arguments, out bool hideWindow)
-        {
-            text = text ?? string.Empty;
-            int pos = text.IndexOf(ControlBindingBuilder.HiddenKeyword, StringComparison.OrdinalIgnoreCase);
-            hideWindow = pos >= 0;
-            arguments = hideWindow ? text.Remove(pos, ControlBindingBuilder.HiddenKeyword.Length) : text;
-        }
-
-        /// <summary>引数の欄に表示する文字列。ウィンドウを隠すときは、先頭に語を付ける（起動時の引数は同じ。語の位置は先頭に移る）。</summary>
-        public static string ComposeArguments(string arguments, bool hideWindow)
-            => (hideWindow ? ControlBindingBuilder.HiddenKeyword : string.Empty) + (arguments ?? string.Empty);
 
         private void WriteMacro(MacroViewModel macro)
         {

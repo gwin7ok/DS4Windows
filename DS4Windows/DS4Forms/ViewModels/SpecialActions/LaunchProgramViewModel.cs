@@ -108,6 +108,46 @@ namespace DS4WinWPF.DS4Forms.ViewModels.SpecialActions
             arguments = action.extra;
         }
 
+        // Phase10-Step6 I6b: Controls のモード。型のある項目との往復（以前は ControlSettingsEditTarget が書いていた）
+        public void LoadControlItem(ControlSpecialItem item)
+        {
+            if (item == null) return;
+
+            Filepath = item.ProgramPath;
+            Delay = item.HoldSeconds;
+            Arguments = ComposeArguments(item.ProgramArguments, item.HideWindow);
+        }
+
+        // Phase10-Step4 W5: Launch Program。パスは未選択（null）でも空にする
+        public ControlSpecialItem ToControlItem(SpecialAction.ActionTypeId type)
+        {
+            SplitArguments(Arguments, out string args, out bool hideWindow);
+            return new ControlSpecialItem
+            {
+                Type = type,
+                ProgramPath = Filepath ?? string.Empty,
+                HoldSeconds = Delay,
+                ProgramArguments = args,
+                HideWindow = hideWindow,
+            };
+        }
+
+        /// <summary>
+        /// 引数の欄の文字列から、ウィンドウを隠す語（<c>$hidden</c>。大文字小文字不問）を、SA の起動処理と同じく 1 回だけ取り除く。
+        /// 語があれば <paramref name="hideWindow"/> が真で、<paramref name="arguments"/> は、取り除いた残り（空白はそのまま）。
+        /// </summary>
+        public static void SplitArguments(string text, out string arguments, out bool hideWindow)
+        {
+            text = text ?? string.Empty;
+            int pos = text.IndexOf(DS4Windows.Services.ControlBindingBuilder.HiddenKeyword, StringComparison.OrdinalIgnoreCase);
+            hideWindow = pos >= 0;
+            arguments = hideWindow ? text.Remove(pos, DS4Windows.Services.ControlBindingBuilder.HiddenKeyword.Length) : text;
+        }
+
+        /// <summary>引数の欄に表示する文字列。ウィンドウを隠すときは、先頭に語を付ける（起動時の引数は同じ。語の位置は先頭に移る）。</summary>
+        public static string ComposeArguments(string arguments, bool hideWindow)
+            => (hideWindow ? DS4Windows.Services.ControlBindingBuilder.HiddenKeyword : string.Empty) + (arguments ?? string.Empty);
+
         // Phase6-Step10-3-2: Global.SaveAction の置換先（必須引数）
         private readonly ISpecialActionRepository specialActionRepository;
 

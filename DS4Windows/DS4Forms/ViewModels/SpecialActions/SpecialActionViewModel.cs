@@ -24,6 +24,15 @@ public class SpecialActionViewModel : NotifyDataErrorBase, IActionTypeEditor
         holdInterval = action.delayTime;
     }
 
+    // Phase10-Step6 I6b: Controls のモード。押し続ける秒数だけを持つ種別（Disconnect BT、Calibrate gyro、Calibrate sixaxis wheel）の項目との往復
+    public void LoadControlItem(ControlSpecialItem item)
+    {
+        if (item != null) holdInterval = item.HoldSeconds;
+    }
+
+    // 通常の割り当て（キー・マクロの手順）は残さない種別。秒数だけを項目に入れる
+    public ControlSpecialItem ToControlItem(SpecialAction.ActionTypeId type) => new ControlSpecialItem { Type = type, HoldSeconds = holdInterval };
+
     public void SaveAction(SpecialAction action, bool edit = false)
     {
         specialActionRepository.SaveAction(action.name, action.controls, actionIndex, $"{holdInterval.ToString("#.##", ConfigFileCulture.DecimalCulture)}", edit, holdInterval, actionId: action.id);

@@ -64,7 +64,7 @@ namespace DS4WindowsTests
         [InlineData("$hidden $hidden", " $hidden", true)]   // SA の起動処理と同じく、取り除くのは 1 回だけ
         public void SplitArguments_RemovesTheKeywordOnce_LikeTheLaunchAction(string text, string expectedArguments, bool expectedHide)
         {
-            ControlSettingsEditTarget.SplitArguments(text, out string arguments, out bool hide);
+            LaunchProgramViewModel.SplitArguments(text, out string arguments, out bool hide);
 
             Assert.Equal(expectedArguments, arguments);
             Assert.Equal(expectedHide, hide);
@@ -73,10 +73,10 @@ namespace DS4WindowsTests
         [Fact]
         public void ComposeArguments_PutsTheKeywordFirst_OnlyWhenHidden()
         {
-            Assert.Equal("-a -b", ControlSettingsEditTarget.ComposeArguments("-a -b", false));
-            Assert.Equal("$hidden-a -b", ControlSettingsEditTarget.ComposeArguments("-a -b", true));
-            Assert.Equal("$hidden", ControlSettingsEditTarget.ComposeArguments(null, true));
-            Assert.Equal(string.Empty, ControlSettingsEditTarget.ComposeArguments(null, false));
+            Assert.Equal("-a -b", LaunchProgramViewModel.ComposeArguments("-a -b", false));
+            Assert.Equal("$hidden-a -b", LaunchProgramViewModel.ComposeArguments("-a -b", true));
+            Assert.Equal("$hidden", LaunchProgramViewModel.ComposeArguments(null, true));
+            Assert.Equal(string.Empty, LaunchProgramViewModel.ComposeArguments(null, false));
         }
 
         [Theory]
@@ -87,9 +87,9 @@ namespace DS4WindowsTests
         [InlineData("-a $hidden -b")]
         public void SplitThenCompose_KeepsTheEffectiveArguments(string text)
         {
-            ControlSettingsEditTarget.SplitArguments(text, out string arguments, out bool hide);
-            string recomposed = ControlSettingsEditTarget.ComposeArguments(arguments, hide);
-            ControlSettingsEditTarget.SplitArguments(recomposed, out string againArguments, out bool againHide);
+            LaunchProgramViewModel.SplitArguments(text, out string arguments, out bool hide);
+            string recomposed = LaunchProgramViewModel.ComposeArguments(arguments, hide);
+            LaunchProgramViewModel.SplitArguments(recomposed, out string againArguments, out bool againHide);
 
             // 語の位置は先頭に移るが、起動時の引数（語を除いたもの）と、隠すかどうかは、変わらない
             Assert.Equal(arguments, againArguments);
@@ -149,7 +149,7 @@ namespace DS4WindowsTests
 
             // SA: 同じ文字列（隠すときは、利用者が引数の欄に書く形）から作る SpecialAction
             var saLauncher = new RecordingLauncher();
-            string saExtra = ControlSettingsEditTarget.ComposeArguments(args, hide);
+            string saExtra = LaunchProgramViewModel.ComposeArguments(args, hide);
             var sa = new SpecialAction("sa", "Cross", "Program", path, 0, saExtra);
             new LaunchProcessAction(sa, saLauncher).Execute(new NullContext());
 
@@ -205,7 +205,7 @@ namespace DS4WindowsTests
             public readonly PressKeyViewModel PressKey;
             public readonly MacroViewModel Macro;
             public readonly LaunchProgramViewModel Launch;
-            public ControlSpecialEditors Editors => new ControlSpecialEditors { LaunchProgram = Launch };
+            public ActionTypeEditorSet Editors => new ActionTypeEditorSet(new Dictionary<SpecialAction.ActionTypeId, IActionTypeEditor> { [SpecialAction.ActionTypeId.Program] = Launch });
 
             public Rig()
             {

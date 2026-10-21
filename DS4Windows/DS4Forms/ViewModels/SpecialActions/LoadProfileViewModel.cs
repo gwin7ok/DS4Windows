@@ -73,6 +73,51 @@ namespace DS4WinWPF.DS4Forms.ViewModels.SpecialActions
             }
         }
 
+        // Phase10-Step6 I6b: Controls のモード。型のある項目との往復（以前は ControlSettingsEditTarget が書いていた）
+        public void LoadControlItem(ControlSpecialItem item)
+        {
+            if (item == null) return;
+
+            // 名前から一覧の位置を探す（0 は未選択）。名前を変えた・消したプロファイルは、見つからず、未選択になる
+            ProfileIndex = IndexOfProfile(item.ProfileName);
+            AutoUntrigger = item.AutomaticUntrigger;
+        }
+
+        // Phase10-Step4 W6: Load Profile。未選択のときは、空の名前（束縛は作られない。割り当て編集画面は、未選択の Save を許さない）
+        public ControlSpecialItem ToControlItem(SpecialAction.ActionTypeId type)
+        {
+            return new ControlSpecialItem
+            {
+                Type = type,
+                ProfileName = SelectedProfileName() ?? string.Empty,
+                AutomaticUntrigger = AutoUntrigger,
+            };
+        }
+
+        private int IndexOfProfile(string name)
+        {
+            if (string.IsNullOrWhiteSpace(name)) return 0;
+
+            var list = ProfileList?.ProfileListCol;
+            if (list == null) return 0;
+
+            for (int i = 0; i < list.Count; i++)
+            {
+                if (string.Equals(list[i].Name, name, StringComparison.CurrentCultureIgnoreCase)) return i + 1;
+            }
+
+            return 0;
+        }
+
+        // 選んでいるプロファイルの名前。未選択（添字 0）、一覧の範囲外のときは null
+        private string SelectedProfileName()
+        {
+            var list = ProfileList?.ProfileListCol;
+            if (list == null || ProfileIndex <= 0 || ProfileIndex > list.Count) return null;
+
+            return list[ProfileIndex - 1].Name;
+        }
+
         private void LoadProfileViewModel_ProfileIndexChanged(object sender, EventArgs e)
         {
             UnloadEnabledChanged?.Invoke(this, EventArgs.Empty);

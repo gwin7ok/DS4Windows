@@ -7,7 +7,7 @@ namespace DS4WinWPF.DS4Forms.ViewModels
     /// <summary>
     /// Phase10-Step2 W2（Phase10-Step2-Plan.md §3.2）: トリガーの一覧の 1 行（チェックボックス 1 つ）の ViewModel。チェックの状態は、
     /// トリガーの供給元（<see cref="IActionTriggerSource"/>）が持つ値そのもの（このクラスは、値を重複して持たない）。
-    /// 従来は、<c>SpecialActionEditor</c> のコードビハインドが、名前つきのチェックボックス 49 個の <c>Click</c> で、リストを書き換えていた。
+    /// 従来は、<c>AssignmentEditor</c> のコードビハインドが、名前つきのチェックボックス 49 個の <c>Click</c> で、リストを書き換えていた。
     /// </summary>
     public sealed class TriggerOptionViewModel : INotifyPropertyChanged
     {

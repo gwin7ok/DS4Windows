@@ -30,14 +30,14 @@ namespace DS4Windows.DI
         StickCalibrationWindow CreateStickCalibrationWindow(Stick stick, int device,
             ProfileSettingsViewModel profileSettingsViewModel);
 
-        SpecialActionEditor CreateSpecialActionEditor(int deviceNum, ProfileList profileList, int targetDevice,
+        AssignmentEditor CreateAssignmentEditor(int deviceNum, ProfileList profileList, int targetDevice,
             SpecialAction specialAction = null);
 
         /// <summary>
         /// Phase10-Step2 W3: 共通の編集画面の、Controls のモード（Controls のボタン 1 つの割り当ての編集）。
         /// Phase10-Step3 W4: <c>ProfileEditor</c> の <c>ShowControlAssignmentEditor</c> が、従来の選択ダイアログ（<c>BindingWindow</c> の Full のモード）の代わりに、これを使う。
         /// </summary>
-        SpecialActionEditor CreateControlActionEditor(int deviceNum, DS4ControlSettings controlSettings, ProfileList profileList, int targetDevice);
+        AssignmentEditor CreateControlActionEditor(int deviceNum, DS4ControlSettings controlSettings, ProfileList profileList, int targetDevice);
 
         /// <summary>
         /// プロファイル編集画面（メイン画面に埋め込む）を生成する（Phase7-Step5 W5）。

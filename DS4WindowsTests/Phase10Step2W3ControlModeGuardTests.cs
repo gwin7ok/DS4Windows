@@ -23,10 +23,10 @@ namespace DS4WindowsTests
         [Fact]
         public void TheNameField_BindsItsReadOnlyFlag_ToTheViewModel()
         {
-            string path = SourceFileLocator.Find("DS4Windows/DS4Forms/SpecialActionEditor.xaml");
+            string path = SourceFileLocator.Find("DS4Windows/DS4Forms/AssignmentEditor.xaml");
             if (path == null)
             {
-                _output.WriteLine("SpecialActionEditor.xaml が見つからないため検査を省略した。");
+                _output.WriteLine("AssignmentEditor.xaml が見つからないため検査を省略した。");
                 return;
             }
 

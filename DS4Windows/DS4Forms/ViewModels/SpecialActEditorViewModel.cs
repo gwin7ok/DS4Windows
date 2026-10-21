@@ -24,7 +24,7 @@ using DS4Windows.DI;
 namespace DS4WinWPF.DS4Forms.ViewModels
 {
     /// <summary>
-    /// SA の編集画面（<c>SpecialActionEditor</c>）の ViewModel。Phase10-Step2 W1（Phase10-Step2-Plan.md §3.1）で、中身を
+    /// SA の編集画面（<c>AssignmentEditor</c>）の ViewModel。Phase10-Step2 W1（Phase10-Step2-Plan.md §3.1）で、中身を
     /// <see cref="ActionEditorViewModel"/>（共通の土台）へ移し、これは、SA のモードの部品（<see cref="SpecialActionTriggerSource"/>、
     /// <see cref="SpecialActionEditTarget"/>、<see cref="ActionTypeCatalog"/>）を組み合わせるだけの薄い派生クラスにした。
     /// 公開メンバー・検証・エラーの文言は、従来と同じ。

@@ -308,7 +308,7 @@ namespace DS4WindowsTests
             public readonly SpecialActionViewModel Wheel;
             public readonly SpecialActionViewModel Gyro;
             public readonly IReadOnlyDictionary<SpecialAction.ActionTypeId, SpecialActionViewModel> HoldEditors;
-            public ControlSpecialEditors Editors => new ControlSpecialEditors { HoldIntervals = HoldEditors };
+            public ActionTypeEditorSet Editors => new ActionTypeEditorSet(HoldEditors.ToDictionary(pair => pair.Key, pair => (IActionTypeEditor)pair.Value));
 
             public Rig()
             {

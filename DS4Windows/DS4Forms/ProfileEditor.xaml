@@ -1001,7 +1001,7 @@
             </TabItem>
         </TabControl>
 
-    <!-- Phase10-Step3 W4: Controls の割り当てエディター（SpecialActionEditor の Controls のモード）の表示場所。
+    <!-- Phase10-Step3 W4: Controls の割り当てエディター（AssignmentEditor の Controls のモード）の表示場所。
          編集中は、左ペイン全体（sidebarTabControl）の代わりに、ここへ表示する（コードビハインドで切り替える） -->
     <Grid x:Name="controlEditorHost" Grid.Row="1" Grid.Column="0" Margin="0,0,5,0" Visibility="Collapsed" />
 

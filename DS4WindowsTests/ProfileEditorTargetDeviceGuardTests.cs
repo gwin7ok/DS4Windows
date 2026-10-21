@@ -191,7 +191,7 @@ namespace DS4WindowsTests
             var checks = new (string Call, int MinCount)[]
             {
                 ("CreateControlActionEditor(", 1),   // Phase10-Step3 W4: Controls の割り当ての編集は、6 か所の呼び出しが ShowControlAssignmentEditor の 1 か所へまとまった（旧: CreateBindingWindow の 6 か所）
-                ("CreateSpecialActionEditor(", 2),
+                ("CreateAssignmentEditor(", 2),
                 ("CreateProfileSettingsViewModel(", 1),
             };
 
@@ -279,8 +279,8 @@ namespace DS4WindowsTests
                 ("DS4Windows/DS4Forms/BindingWindow.xaml.cs", "new BindingWindowViewModel("),
                 ("DS4Windows/DS4Forms/RecordBoxWindow.xaml.cs", "CreateRecordBox("),
                 ("DS4Windows/DS4Forms/RecordBox.xaml.cs", "CreateRecordBoxViewModel("),
-                ("DS4Windows/DS4Forms/SpecialActionEditor.xaml.cs", "CreateRecordBoxWindow("),
-                ("DS4Windows/DS4Forms/SpecialActionEditor.xaml.cs", "CreateBindingWindow("),
+                ("DS4Windows/DS4Forms/AssignmentEditor.xaml.cs", "CreateRecordBoxWindow("),
+                ("DS4Windows/DS4Forms/AssignmentEditor.xaml.cs", "CreateBindingWindow("),
             };
 
             foreach (var group in checks.GroupBy(c => c.File))

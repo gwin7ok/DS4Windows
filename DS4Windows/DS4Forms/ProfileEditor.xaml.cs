@@ -1424,7 +1424,7 @@ namespace DS4WinWPF.DS4Forms
         {
             if (leftPaneEditor != null) return;
             ProfileList profList = (Application.Current.MainWindow as MainWindow).ProfileListHolder;
-            SpecialActionEditor actEditor = editorWindowFactory.CreateSpecialActionEditor(deviceNum, profList, targetDevice, null);
+            AssignmentEditor actEditor = editorWindowFactory.CreateAssignmentEditor(deviceNum, profList, targetDevice, null);
             OpenLeftPaneEditor(actEditor);
             actEditor.Cancel += (sender2, args) =>
             {
@@ -1458,7 +1458,7 @@ namespace DS4WinWPF.DS4Forms
                 //int currentIndex = specialActionsVM.ActionCol[viewIndex].Index;
                 //SpecialActionItem item = specialActionsVM.ActionCol[currentIndex];
                 ProfileList profList = (Application.Current.MainWindow as MainWindow).ProfileListHolder;
-                SpecialActionEditor actEditor = editorWindowFactory.CreateSpecialActionEditor(deviceNum, profList, targetDevice, item.SpecialAction);
+                AssignmentEditor actEditor = editorWindowFactory.CreateAssignmentEditor(deviceNum, profList, targetDevice, item.SpecialAction);
                 OpenLeftPaneEditor(actEditor);
                 actEditor.Cancel += (sender2, args) =>
                 {
@@ -1747,7 +1747,7 @@ namespace DS4WinWPF.DS4Forms
             if (mpControl == null || leftPaneEditor != null) return;
 
             ProfileList profList = (Application.Current.MainWindow as MainWindow).ProfileListHolder;
-            SpecialActionEditor editor = editorWindowFactory.CreateControlActionEditor(deviceNum, mpControl.Setting, profList, targetDevice);
+            AssignmentEditor editor = editorWindowFactory.CreateControlActionEditor(deviceNum, mpControl.Setting, profList, targetDevice);
             editor.ControlSaved += (sender2, args) =>
             {
                 CloseLeftPaneEditor();

@@ -9,7 +9,7 @@ namespace DS4WindowsTests
 {
     /// <summary>
     /// Phase10-Step2 W2（Phase10-Step2-Plan.md §3.2・§5）: トリガーの一覧（<see cref="TriggerCatalog"/>）。並び・保存する名前（<c>Tag</c>）・
-    /// 表示名（<c>Content</c>）は、従来の <c>SpecialActionEditor.xaml</c> の、名前つきのチェックボックス 49 個と同じ。既存の <c>Actions.xml</c> を
+    /// 表示名（<c>Content</c>）は、従来の <c>AssignmentEditor.xaml</c> の、名前つきのチェックボックス 49 個と同じ。既存の <c>Actions.xml</c> を
     /// 読めるように、保存する名前は、すべて <c>SpecialAction</c> が解釈できる名前であること。
     /// </summary>
     public class Phase10Step2W2TriggerCatalogTests

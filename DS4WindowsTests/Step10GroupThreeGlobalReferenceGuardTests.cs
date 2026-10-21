@@ -35,7 +35,7 @@ namespace DS4WindowsTests
             ["DS4Windows/DS4Forms/ViewModels/SpecialActions/MultiActButtonViewModel.cs"] = new string[0],
             ["DS4Windows/DS4Forms/ViewModels/SpecialActions/PressKeyViewModel.cs"] = new[] { "getX360ControlString" },
             ["DS4Windows/DS4Forms/ViewModels/SpecialActions/SpecialActionViewModel.cs"] = new string[0],
-            ["DS4Windows/DS4Forms/SpecialActionEditor.xaml.cs"] = new string[0],
+            ["DS4Windows/DS4Forms/AssignmentEditor.xaml.cs"] = new string[0],
             // Step10-3-3
             ["DS4Windows/DS4Forms/ViewModels/SpecialActionsListViewModel.cs"] = new string[0],
         };

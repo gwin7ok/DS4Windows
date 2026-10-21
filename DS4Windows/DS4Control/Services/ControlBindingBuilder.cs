@@ -27,19 +27,6 @@ namespace DS4Windows.Services
         private readonly AssignmentBindingBuilder _assignmentBuilder;   // Phase10-Step6 I4c: Key／Macro／Special の束縛の組み立て（SA タブ側と同じ部品）
         private readonly ISpecialActionOutputFactory _controlsFactory;   // Phase10-Step6 I4b: Key と Macro 用。_outputFactory がなければ、最小の部品（Key と Macro だけを作る）
 
-        /// <summary>
-        /// Phase10-Step4 W4: Controls に割り当てられる、SA 専用の種別（<see cref="DS4ControlSettings.ActionType.Special"/>）のうち、束縛を作る種別。
-        /// 群ごとの縦通し（Phase10-Step4-Plan.md §5）で、保存・実行・画面が通ったものから足す。Macro は Macro の割り当て（3 項目の入れ物）で扱うため含めない。
-        /// </summary>
-        private static readonly SpecialAction.ActionTypeId[] BuiltSpecialTypes =
-        {
-            SpecialAction.ActionTypeId.Program,
-            SpecialAction.ActionTypeId.Profile,
-            SpecialAction.ActionTypeId.DisconnectBT,
-            SpecialAction.ActionTypeId.GyroCalibrate,
-            SpecialAction.ActionTypeId.SASteeringWheelEmulationCalibrate,
-        };
-
         /// <summary>Program の引数に書くと、ウィンドウを隠して起動する語（SA の仕様。大文字小文字不問）。</summary>
         public const string HiddenKeyword = "$hidden";
 
@@ -338,14 +325,14 @@ namespace DS4Windows.Services
         }
 
         /// <summary>
-        /// Phase10-Step4 W4: SA 専用の種別の割り当てが、新経路の条件（<see cref="BuiltSpecialTypes"/> の種別で、型のある項目を持つ）を満たすか。
+        /// Phase10-Step4 W4: SA 専用の種別の割り当てが、新経路の条件（<see cref="ControlsSpecialTypeTable"/> の種別で、型のある項目を持つ）を満たすか。
         /// </summary>
         public static bool TryInterpretSpecial(DS4ControlSettings dcs, out ControlSpecialItem item)
         {
             item = null;
             if (dcs == null) return false;
             if (dcs.actionType != DS4ControlSettings.ActionType.Special) return false;
-            if (dcs.special == null || Array.IndexOf(BuiltSpecialTypes, dcs.special.Type) < 0) return false;
+            if (dcs.special == null || !ControlsSpecialTypeTable.IsSupported(dcs.special.Type)) return false;
 
             // Phase10-Step4 W6: 切り替え先のない Load Profile は、束縛を作らない（作ると、切り替えに失敗し続けながら、割り当てたボタンの元の出力だけが消える）
             if (dcs.special.Type == SpecialAction.ActionTypeId.Profile && string.IsNullOrWhiteSpace(dcs.special.ProfileName)) return false;

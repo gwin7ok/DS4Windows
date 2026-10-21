@@ -29,9 +29,9 @@ using System.Windows.Media;
 namespace DS4WinWPF.DS4Forms
 {
     /// <summary>
-    /// Interaction logic for SpecialActionEditor.xaml
+    /// Interaction logic for AssignmentEditor.xaml
     /// </summary>
-    public partial class SpecialActionEditor : UserControl
+    public partial class AssignmentEditor : UserControl
     {
 
         // Phase10-Step2 W3: SA のモードは SpecialActEditorViewModel、Controls のモードは ControlActionEditorViewModel（共通の土台は ActionEditorViewModel）
@@ -88,7 +88,7 @@ namespace DS4WinWPF.DS4Forms
         private readonly DS4Windows.DI.IEnvironmentService environmentService;
 
         /// <summary>SA のモード（従来どおり。SA の新規作成・編集）。</summary>
-        public SpecialActionEditor(int deviceNum, ProfileList profileList, int targetDevice,
+        public AssignmentEditor(int deviceNum, ProfileList profileList, int targetDevice,
             DS4Windows.DI.IEditorWindowFactory editorWindowFactory,
             DS4Windows.DI.IViewModelFactory viewModelFactory,
             DS4Windows.DI.ISpecialActionRepository specialActionRepository,
@@ -107,7 +107,7 @@ namespace DS4WinWPF.DS4Forms
         /// Phase10-Step3 W4: <c>ProfileEditor</c> の <c>ShowControlAssignmentEditor</c> が、これを左ペイン全体に重ねて表示する（Controls の絵のボタン・一覧、Tilt、Swipe、Full Pull、Outer Bind、
         /// コントローラーの入力。Phase10-Step3-Plan.md §3.4）。保存（<see cref="ControlSaved"/>）は、編集用のコピーを元の設定へ反映してから発生する。
         /// </summary>
-        public SpecialActionEditor(int deviceNum, DS4Windows.DS4ControlSettings controlSettings, ProfileList profileList, int targetDevice,
+        public AssignmentEditor(int deviceNum, DS4Windows.DS4ControlSettings controlSettings, ProfileList profileList, int targetDevice,
             DS4Windows.DI.IEditorWindowFactory editorWindowFactory,
             DS4Windows.DI.IViewModelFactory viewModelFactory,
             DS4Windows.DI.ISpecialActionRepository specialActionRepository,
@@ -119,7 +119,7 @@ namespace DS4WinWPF.DS4Forms
         {
         }
 
-        private SpecialActionEditor(int deviceNum, DS4Windows.DS4ControlSettings controlSettings, ProfileList profileList, int targetDevice,
+        private AssignmentEditor(int deviceNum, DS4Windows.DS4ControlSettings controlSettings, ProfileList profileList, int targetDevice,
             DS4Windows.DI.IEditorWindowFactory editorWindowFactory,
             DS4Windows.DI.IViewModelFactory viewModelFactory,
             DS4Windows.DI.ISpecialActionRepository specialActionRepository,
@@ -217,7 +217,7 @@ namespace DS4WinWPF.DS4Forms
             if (controlMode)
             {
                 // 保存済みの割り当てを、種別ごとの入力へ読み込む。種別の一覧の初期の選択も、割り当てに合わせる
-                controlTarget.LoadInto(pressKeyVM, macroActVM, SpecialEditors());
+                controlTarget.LoadInto(pressKeyVM, macroActVM, typeEditors);
                 specialActVM.ActionTypeIndex = controlTarget.InitialTypeIndex;
 
                 // Phase10-Step4 W3: Macro タブの SA 専用の項目（Run on trigger release／Synchronized Run／Keep key state）は、Controls にも保存できるようになったため、
@@ -275,22 +275,6 @@ namespace DS4WinWPF.DS4Forms
             typeEditors.Load(specialAction);
         }
 
-        // Phase10-Step4 W4〜: SA 専用の種別ごとの入力の一式（Controls のモードで、型のある項目と往復する）
-        private ControlSpecialEditors SpecialEditors()
-        {
-            return new ControlSpecialEditors
-            {
-                HoldIntervals = new Dictionary<DS4Windows.SpecialAction.ActionTypeId, SpecialActionViewModel>
-                {
-                    [DS4Windows.SpecialAction.ActionTypeId.DisconnectBT] = disconnectBtVM,
-                    [DS4Windows.SpecialAction.ActionTypeId.SASteeringWheelEmulationCalibrate] = saSteeringWheelVM,
-                    [DS4Windows.SpecialAction.ActionTypeId.GyroCalibrate] = calibrateGyroVM,
-                },
-                LaunchProgram = launchProgVM,
-                LoadProfile = loadProfileVM,
-            };
-        }
-
         private void ActionTypeCombo_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             if (specialActVM.ActionTypeIndex <= 0)
@@ -320,7 +304,7 @@ namespace DS4WinWPF.DS4Forms
             bool hasInput = typeIndex != specialActVM.TypeCatalog.DefaultIndex && typeIndex != specialActVM.TypeCatalog.UnboundIndex;
             if (hasInput && !typeEditors.IsValid(specialActVM.TypeAssoc[typeIndex], tempAct)) return;
 
-            controlTarget.WriteFrom(specialActVM.ActionTypeIndex, pressKeyVM, macroActVM, SpecialEditors());
+            controlTarget.WriteFrom(specialActVM.ActionTypeIndex, pressKeyVM, macroActVM, typeEditors);
             controlTarget.Apply();
 
             ControlSaveTypeId = specialActVM.TypeAssoc[specialActVM.ActionTypeIndex];
@@ -602,7 +586,7 @@ namespace DS4WinWPF.DS4Forms
                     {
                         var transform = src.CompositionTarget.TransformFromDevice;
                         var dpiPt = transform.Transform(anchorPt);
-                        AppLogger.LogDebug($"SpecialActionEditor: anchorPt(physical)={anchorPt} dpiPt(logical)={dpiPt} anchorSize=({anchor.ActualWidth}x{anchor.ActualHeight})");
+                        AppLogger.LogDebug($"AssignmentEditor: anchorPt(physical)={anchorPt} dpiPt(logical)={dpiPt} anchorSize=({anchor.ActualWidth}x{anchor.ActualHeight})");
                         centerX = dpiPt.X + anchor.ActualWidth / 2.0;
                         top = dpiPt.Y + anchor.ActualHeight + 8; // slightly below anchor
                     }
@@ -648,7 +632,7 @@ namespace DS4WinWPF.DS4Forms
                     {
                         var transform = src.CompositionTarget.TransformFromDevice;
                         var dpiPt = transform.Transform(anchorPt);
-                        AppLogger.LogDebug($"SpecialActionEditor.ShowPositionedMessageBox: anchorPt(physical)={anchorPt} dpiPt(logical)={dpiPt} anchorSize=({anchor.ActualWidth}x{anchor.ActualHeight})");
+                        AppLogger.LogDebug($"AssignmentEditor.ShowPositionedMessageBox: anchorPt(physical)={anchorPt} dpiPt(logical)={dpiPt} anchorSize=({anchor.ActualWidth}x{anchor.ActualHeight})");
                         left = dpiPt.X + anchor.ActualWidth / 2.0; // center anchor horizontally
                         top = dpiPt.Y + anchor.ActualHeight + 8; // slightly below anchor
                     }

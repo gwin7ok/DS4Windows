@@ -6,7 +6,7 @@ using Xunit.Abstractions;
 namespace DS4WindowsTests
 {
     /// <summary>
-    /// Phase10-Step3 W4（Phase10-Step3-Plan.md §3.4）: <c>ProfileEditor</c> が、割り当てエディター（<c>SpecialActionEditor</c> の Controls のモード）を、
+    /// Phase10-Step3 W4（Phase10-Step3-Plan.md §3.4）: <c>ProfileEditor</c> が、割り当てエディター（<c>AssignmentEditor</c> の Controls のモード）を、
     /// 左ペイン全体に重ねて表示する仕組みを固定するソース走査ガード。表示場所（ホスト）、幅の固定、保存・キャンセルでの後始末、
     /// 二重に開かない判定（コントローラーの入力［タイマー］経由を含む）。ウィンドウは WPF の STA 上でしか作れないため、ソースの構成で検査する。
     /// ソースファイルが見つからない環境では、検査を行わず合格とする。
@@ -113,7 +113,7 @@ namespace DS4WindowsTests
         [Fact]
         public void TheEditor_UnregistersItsDataContexts_OnControlModeSave()
         {
-            string source = Read("DS4Windows/DS4Forms/SpecialActionEditor.xaml.cs");
+            string source = Read("DS4Windows/DS4Forms/AssignmentEditor.xaml.cs");
             if (source == null)
             {
                 return;

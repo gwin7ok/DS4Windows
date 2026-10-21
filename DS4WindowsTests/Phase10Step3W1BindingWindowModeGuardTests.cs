@@ -69,9 +69,9 @@ namespace DS4WindowsTests
         }
 
         [Fact]
-        public void TheSpecialActionEditor_OpensThePickerInTheSpecialActionMode()
+        public void TheAssignmentEditor_OpensThePickerInTheSpecialActionMode()
         {
-            string source = Read("DS4Windows/DS4Forms/SpecialActionEditor.xaml.cs");
+            string source = Read("DS4Windows/DS4Forms/AssignmentEditor.xaml.cs");
             if (source == null)
             {
                 return;

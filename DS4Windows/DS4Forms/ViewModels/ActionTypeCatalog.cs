@@ -6,7 +6,7 @@ namespace DS4WinWPF.DS4Forms.ViewModels
 {
     /// <summary>
     /// Phase10-Step2 W1（Phase10-Step2-Plan.md §3.1）: 編集画面の種別の一覧。並び・種別の ID は、従来の <c>SpecialActEditorViewModel.typeAssoc</c>
-    /// （と、<c>SpecialActionEditor.xaml</c> のドロップダウンの項目の並び）と同じ。画面の添字（<c>ActionTypeIndex</c>）と種別の ID の、相互変換を担う。
+    /// （と、<c>AssignmentEditor.xaml</c> のドロップダウンの項目の並び）と同じ。画面の添字（<c>ActionTypeIndex</c>）と種別の ID の、相互変換を担う。
     /// 状態を持たない（不変）。
     /// </summary>
     public sealed class ActionTypeCatalog
@@ -33,21 +33,20 @@ namespace DS4WinWPF.DS4Forms.ViewModels
         public ActionTypeCatalog(bool includeControlOnlyItems = false)
         {
             const ActionEditorModes Both = ActionEditorModes.Both;
-            const ActionEditorModes SaOnly = ActionEditorModes.SpecialAction;
 
-            // 並びは、SpecialActionEditor.xaml の actionTypeCombo の項目と同じ（0 は「種別を選んでください」）
+            // 並びは、AssignmentEditor.xaml の actionTypeCombo の項目と同じ（0 は「種別を選んでください」）
             var items = new System.Collections.Generic.List<ActionTypeDescriptor>
             {
                 new ActionTypeDescriptor(0, SpecialAction.ActionTypeId.None, "SpecialActionEdit.SelectAction", Both, ActionEditorModes.None),
                 new ActionTypeDescriptor(1, SpecialAction.ActionTypeId.Macro, "SpecialActionEdit.RecordMacro", Both, Both),
-                new ActionTypeDescriptor(2, SpecialAction.ActionTypeId.Program, "SpecialActionEdit.LaunchProgram", Both, Both),
-                new ActionTypeDescriptor(3, SpecialAction.ActionTypeId.Profile, "SpecialActionEdit.LoadProfile", Both, Both),
+                new ActionTypeDescriptor(2, SpecialAction.ActionTypeId.Program, "SpecialActionEdit.LaunchProgram", Both, ControlsSavable(SpecialAction.ActionTypeId.Program)),
+                new ActionTypeDescriptor(3, SpecialAction.ActionTypeId.Profile, "SpecialActionEdit.LoadProfile", Both, ControlsSavable(SpecialAction.ActionTypeId.Profile)),
                 new ActionTypeDescriptor(4, SpecialAction.ActionTypeId.Key, "SpecialActionEdit.PressKey", Both, Both),   // Button もこの項目で編集する
-                new ActionTypeDescriptor(5, SpecialAction.ActionTypeId.DisconnectBT, "SpecialActionEdit.DisconnectBT", Both, Both),
-                new ActionTypeDescriptor(6, SpecialAction.ActionTypeId.BatteryCheck, "SpecialActionEdit.CheckBattery", Both, SaOnly),
-                new ActionTypeDescriptor(7, SpecialAction.ActionTypeId.MultiAction, "SpecialActionEdit.MultiAction", Both, SaOnly),
-                new ActionTypeDescriptor(8, SpecialAction.ActionTypeId.SASteeringWheelEmulationCalibrate, "SpecialActionEdit.SixAxisWheelCalib", Both, Both),
-                new ActionTypeDescriptor(9, SpecialAction.ActionTypeId.GyroCalibrate, "SpecialActionEdit.CalibrateGyro", Both, Both),
+                new ActionTypeDescriptor(5, SpecialAction.ActionTypeId.DisconnectBT, "SpecialActionEdit.DisconnectBT", Both, ControlsSavable(SpecialAction.ActionTypeId.DisconnectBT)),
+                new ActionTypeDescriptor(6, SpecialAction.ActionTypeId.BatteryCheck, "SpecialActionEdit.CheckBattery", Both, ControlsSavable(SpecialAction.ActionTypeId.BatteryCheck)),
+                new ActionTypeDescriptor(7, SpecialAction.ActionTypeId.MultiAction, "SpecialActionEdit.MultiAction", Both, ControlsSavable(SpecialAction.ActionTypeId.MultiAction)),
+                new ActionTypeDescriptor(8, SpecialAction.ActionTypeId.SASteeringWheelEmulationCalibrate, "SpecialActionEdit.SixAxisWheelCalib", Both, ControlsSavable(SpecialAction.ActionTypeId.SASteeringWheelEmulationCalibrate)),
+                new ActionTypeDescriptor(9, SpecialAction.ActionTypeId.GyroCalibrate, "SpecialActionEdit.CalibrateGyro", Both, ControlsSavable(SpecialAction.ActionTypeId.GyroCalibrate)),
             };
 
             DefaultIndex = -1;
@@ -69,6 +68,10 @@ namespace DS4WinWPF.DS4Forms.ViewModels
             for (int i = 0; i < descriptors.Length; i++)
                 typeIds[i] = descriptors[i].TypeId;
         }
+
+        // Phase10-Step6 I6b: SA 専用の種別が Controls で保存できるかは、規則の表（ControlsSpecialTypeTable。実行時に束縛が作られる種別）に従う（以前は、ここに直書きしていた）
+        private static ActionEditorModes ControlsSavable(SpecialAction.ActionTypeId type)
+            => DS4Windows.Actions.ControlsSpecialTypeTable.IsSupported(type) ? ActionEditorModes.Both : ActionEditorModes.SpecialAction;
 
         /// <summary>全項目（添字の順）。</summary>
         public IReadOnlyList<ActionTypeDescriptor> All => descriptors;

@@ -218,7 +218,7 @@ namespace DS4WindowsTests
             public readonly PressKeyViewModel PressKey;
             public readonly MacroViewModel Macro;
             public readonly LoadProfileViewModel LoadProfile;
-            public ControlSpecialEditors Editors => new ControlSpecialEditors { LoadProfile = LoadProfile };
+            public ActionTypeEditorSet Editors => new ActionTypeEditorSet(new Dictionary<SpecialAction.ActionTypeId, IActionTypeEditor> { [SpecialAction.ActionTypeId.Profile] = LoadProfile });
 
             public Rig(params string[] profileNames)
             {

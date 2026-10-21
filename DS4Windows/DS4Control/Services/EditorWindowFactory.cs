@@ -76,14 +76,14 @@ namespace DS4Windows.Services
             ProfileSettingsViewModel profileSettingsViewModel)
             => new StickCalibrationWindow(stick, device, profileSettingsViewModel, _controlServiceAccessor());
 
-        public SpecialActionEditor CreateSpecialActionEditor(int deviceNum, ProfileList profileList, int targetDevice,
+        public AssignmentEditor CreateAssignmentEditor(int deviceNum, ProfileList profileList, int targetDevice,
             SpecialAction specialAction = null)
-            => new SpecialActionEditor(deviceNum, profileList, targetDevice, this, _viewModelFactory,
+            => new AssignmentEditor(deviceNum, profileList, targetDevice, this, _viewModelFactory,
                 _specialActionRepository, _profileSettings, _outputSlotService, _environmentService, specialAction);
 
         // Phase10-Step3 W4: ProfileEditor.ShowControlAssignmentEditor が呼ぶ
-        public SpecialActionEditor CreateControlActionEditor(int deviceNum, DS4ControlSettings controlSettings, ProfileList profileList, int targetDevice)
-            => new SpecialActionEditor(deviceNum, controlSettings, profileList, targetDevice, this, _viewModelFactory,
+        public AssignmentEditor CreateControlActionEditor(int deviceNum, DS4ControlSettings controlSettings, ProfileList profileList, int targetDevice)
+            => new AssignmentEditor(deviceNum, controlSettings, profileList, targetDevice, this, _viewModelFactory,
                 _specialActionRepository, _profileSettings, _outputSlotService, _environmentService);
 
         public ProfileEditor CreateProfileEditor(int targetDevice)
