@@ -221,7 +221,7 @@ namespace DS4WindowsTests
             Assert.Contains("Binding ProfileIndex,FallbackValue=0,ValidatesOnNotifyDataErrors=True", xaml);   // Load Profile
             Assert.Contains("Binding Notification,ValidatesOnNotifyDataErrors=True", xaml);             // Check Battery
             Assert.Contains("Binding Lightbar,ValidatesOnNotifyDataErrors=True", xaml);
-            Assert.Equal(4, xaml.Split(new[] { "Binding HoldInterval,ValidatesOnNotifyDataErrors=True" }, StringSplitOptions.None).Length - 1);   // Hold の秒数（4 か所）
+            Assert.Equal(3, xaml.Split(new[] { "Binding HoldInterval,ValidatesOnNotifyDataErrors=True" }, StringSplitOptions.None).Length - 1);   // Hold の秒数（3 か所。Phase9 Steering 削除 W1 で 1 か所減）
         }
     }
 }

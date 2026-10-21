@@ -246,7 +246,7 @@ namespace DS4WindowsTests
             => new ActionBindingBuilder(TestHost.GetService<IProfileActionProvider>(), TestHost.GetService<IProfileSettingsService>(),
                 TestHost.GetService<IManagedActionManager>(), TestHost.GetService<IMacroPlayer>(), TestHost.GetService<IProcessLauncher>(),
                 TestHost.GetService<IProfileSwitcher>(), TestHost.GetService<ISpecialActionRepository>(),
-                TestHost.GetService<Func<IMapping>>(), null, null, null, null, player);
+                TestHost.GetService<Func<IMapping>>(), null, null, null, player);
 
         private static void Publish(SpecialActionTestScope t, IMacroStringPlayer player)
             => TestHost.GetService<IActionRegistry>().Replace(t.Device, NewBuilder(player).Build(t.Device));

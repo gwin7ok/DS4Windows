@@ -20,7 +20,6 @@ namespace DS4Windows.Actions
         private readonly IGyroCalibrationPort _gyroCalibration;         // GyroCalibrate（7.6a）。省略時（テスト）は束縛を作らない
         private readonly IControllerDisconnectPort _disconnectPort;     // DisconnectBT（7.6b）。同上
         private readonly IBatteryCheckPort _batteryCheckPort;           // BatteryCheck（7.6c）。同上
-        private readonly IWheelCalibrationPort _wheelCalibrationPort;   // ステアリング較正（7.6d）。同上
         private readonly IMacroStringPlayer _macroStringPlayer;          // MultiAction（7.7b）。同上
 
         public SpecialActionOutputFactory(IProfileSettingsService profileSettings,
@@ -28,12 +27,12 @@ namespace DS4Windows.Actions
             IProfileSwitcher profileSwitcher, ISpecialActionRepository actionRepository = null,
             Func<IMapping> mappingProvider = null, IGyroCalibrationPort gyroCalibration = null,
             IControllerDisconnectPort disconnectPort = null, IBatteryCheckPort batteryCheckPort = null,
-            IWheelCalibrationPort wheelCalibrationPort = null, IMacroStringPlayer macroStringPlayer = null)
+            IMacroStringPlayer macroStringPlayer = null)
             : this(profileSettings, manager ?? throw new ArgumentNullException(nameof(manager)),
                 macroPlayer ?? throw new ArgumentNullException(nameof(macroPlayer)),
                 processLauncher ?? throw new ArgumentNullException(nameof(processLauncher)),
                 profileSwitcher ?? throw new ArgumentNullException(nameof(profileSwitcher)),
-                actionRepository, mappingProvider, gyroCalibration, disconnectPort, batteryCheckPort, wheelCalibrationPort, macroStringPlayer, true)
+                actionRepository, mappingProvider, gyroCalibration, disconnectPort, batteryCheckPort, macroStringPlayer, true)
         {
         }
 
@@ -42,7 +41,7 @@ namespace DS4Windows.Actions
         /// 他の種別（窓口が必要なもの）は、窓口が未接続として null を返す。
         /// </summary>
         public static SpecialActionOutputFactory ForControlsKeyAndMacro(IProfileSettingsService profileSettings, IMacroPlayer macroPlayer)
-            => new SpecialActionOutputFactory(profileSettings, null, macroPlayer, null, null, null, null, null, null, null, null, null, true);
+            => new SpecialActionOutputFactory(profileSettings, null, macroPlayer, null, null, null, null, null, null, null, null, true);
 
         // 最小の窓口だけで作る版も、この 1 本の本体を通す（flag は、公開のコンストラクターと見分けるためだけの印）
         private SpecialActionOutputFactory(IProfileSettingsService profileSettings,
@@ -50,14 +49,13 @@ namespace DS4Windows.Actions
             IProfileSwitcher profileSwitcher, ISpecialActionRepository actionRepository,
             Func<IMapping> mappingProvider, IGyroCalibrationPort gyroCalibration,
             IControllerDisconnectPort disconnectPort, IBatteryCheckPort batteryCheckPort,
-            IWheelCalibrationPort wheelCalibrationPort, IMacroStringPlayer macroStringPlayer, bool bypassesRequiredChecks)
+            IMacroStringPlayer macroStringPlayer, bool bypassesRequiredChecks)
         {
             _actionRepository = actionRepository;
             _mappingProvider = mappingProvider;
             _gyroCalibration = gyroCalibration;
             _disconnectPort = disconnectPort;
             _batteryCheckPort = batteryCheckPort;
-            _wheelCalibrationPort = wheelCalibrationPort;
             _macroStringPlayer = macroStringPlayer;
             _profileSettings = profileSettings ?? throw new ArgumentNullException(nameof(profileSettings));
             _manager = manager;
@@ -131,12 +129,6 @@ namespace DS4Windows.Actions
                     // 押している間、毎フレームの色の遷移。離したときに戻す（既定の StopOnRelease）。Fresh-press ガードは既定のまま。実行中のブロックなし
                     if (_batteryCheckPort == null) return null;
                     return new SpecialActionOutputs(new IOutputAction[] { new BatteryCheckAction(sa, device, _batteryCheckPort, index, _actionRepository) },
-                        Policy(origin, definition));
-
-                case SpecialAction.ActionTypeId.SASteeringWheelEmulationCalibrate:
-                    // 押している間、毎フレーム判定する（立ち上がりも含む）。Fresh-press ガードは既定のまま。実行中のブロックなし
-                    if (_wheelCalibrationPort == null) return null;
-                    return new SpecialActionOutputs(new IOutputAction[] { new SteeringWheelCalibrateAction(sa, device, _wheelCalibrationPort) },
                         Policy(origin, definition));
 
                 case SpecialAction.ActionTypeId.MultiAction:

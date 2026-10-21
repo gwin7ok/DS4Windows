@@ -144,7 +144,6 @@ namespace DS4WindowsTests
 
         [Theory]
         [InlineData("DisconnectBT", SpecialAction.ActionTypeId.DisconnectBT)]
-        [InlineData("SASteeringWheelEmulationCalibrate", SpecialAction.ActionTypeId.SASteeringWheelEmulationCalibrate)]
         [InlineData("GyroCalibration", SpecialAction.ActionTypeId.GyroCalibrate)]
         public void DelayOnlyTypes_CarryTheHoldSeconds(string type, SpecialAction.ActionTypeId id)
         {

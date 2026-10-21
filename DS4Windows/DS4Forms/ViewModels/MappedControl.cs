@@ -94,7 +94,6 @@ namespace DS4WinWPF.DS4Forms.ViewModels
                 case SpecialAction.ActionTypeId.Profile: return Translations.Strings.SpecialActionEdit_LoadProfile;
                 case SpecialAction.ActionTypeId.DisconnectBT: return Translations.Strings.SpecialActionEdit_DisconnectBT;
                 case SpecialAction.ActionTypeId.GyroCalibrate: return Translations.Strings.SpecialActionEdit_CalibrateGyro;
-                case SpecialAction.ActionTypeId.SASteeringWheelEmulationCalibrate: return Translations.Strings.SpecialActionEdit_SixAxisWheelCalib;
                 default: return type.ToString();
             }
         }

@@ -31,7 +31,6 @@ namespace DS4WindowsTests
         {
             SpecialAction.ActionTypeId.Macro, SpecialAction.ActionTypeId.Program, SpecialAction.ActionTypeId.Profile,
             SpecialAction.ActionTypeId.Key, SpecialAction.ActionTypeId.DisconnectBT, SpecialAction.ActionTypeId.BatteryCheck,
-            SpecialAction.ActionTypeId.MultiAction, SpecialAction.ActionTypeId.SASteeringWheelEmulationCalibrate,
             SpecialAction.ActionTypeId.GyroCalibrate,
         };
 
@@ -211,7 +210,6 @@ namespace DS4WindowsTests
 
         [Theory]
         [InlineData(5, SpecialAction.ActionTypeId.DisconnectBT, 3.0, "3")]
-        [InlineData(8, SpecialAction.ActionTypeId.SASteeringWheelEmulationCalibrate, 1.5, "1.5")]
         [InlineData(9, SpecialAction.ActionTypeId.GyroCalibrate, 1.0, "1")]
         public void TheHoldIntervalTypes_SaveTheirOwnMode_WithTheInterval(int mode, SpecialAction.ActionTypeId typeId, double interval, string expectedDetails)
         {

@@ -3,7 +3,7 @@
 作成日: 2026-10-22  
 対象ブランチ: `For-DI-migration-work`  
 上位: `Phase9-Responsibility-Split-Plan.md` 9-A(2)、`.github/copilot-instructions.md` 2.2（機能廃止はユーザーの明示的な承認が要る）、2.4  
-状態: **Q1〜Q4 を推奨どおり承認（2026-10-22）。実施は 9-A(2) の A→B→C の後（Q4＝A）。それまでコードは変えない**。検討の発端: 9-A(2) の設計説明のとき、ユーザーが「ステアリングはどういう機能か。内容によっては機能ごと削除してもよい」と発言（2026-10-22）。エージェントが自らの判断で削除するものではない。
+状態: **Q1〜Q4 を推奨どおり承認（2026-10-22）。9-A(2) の A→B→C は完了。W1（割り当て種別の削除）は実装済み（2026-10-22。画面の実機確認待ち）。W2 以降は、段階ごとに設計を説明し、承認を得てから着手する**。検討の発端: 9-A(2) の設計説明のとき、ユーザーが「ステアリングはどういう機能か。内容によっては機能ごと削除してもよい」と発言（2026-10-22）。エージェントが自らの判断で削除するものではない。
 
 ---
 
@@ -105,3 +105,18 @@
 - Q2＝A: vJoy（`VJoyFeeder`）も一緒に削除する。
 - Q3＝A: 旧データの「Steering Wheel Calibrate」の割り当ては、読み込み時に取り除く（`[DI]` 接頭辞付きのログで通知）。
 - Q4＝A: 9-A(2) の A（ジャイロ → コントロール）→ B（スティックの前処理）→ C（フリックスティック）の**後**に実施する。それまで、ステアリングのコードは変えない。9-A(2) からは D（ステアリング）を外す。
+
+## 11. W1 の結果（2026-10-22。割り当て種別「Steering Wheel Calibrate」の削除）
+
+| 区分 | 内容 |
+|---|---|
+| 削除 | `Actions/SteeringWheelCalibrateAction.cs`、`Actions/IWheelCalibrationPort.cs`、`Actions/DefaultWheelCalibrationPort.cs`。テスト: `Phase8Step76dSteeringWheelCalibrateTests.cs`、`RecordingWheelCalibrationPort.cs`、`Phase10Step4W4ControlSpecialTests` の「SixaxisWheelCalibration_...」ほか、種別を網羅するテストのステアリングの項目 |
+| 種別 | `ActionTypeId` から `SASteeringWheelEmulationCalibrate` を除いた（保存は名前［文字列］のため、数値の並びの変化は保存形式に影響しない）。`SpecialAction` の文字列の分岐、`SpecialActionOutputFactory`（フィールド・引数・case）、`ActionBindingBuilder`（引数）、`ControlsSpecialTypeTable`、`SpecialActionItemMapper`、`ControlSpecialItemXml.AllowedTypes`、`SpecialActionsXmlSerializer`（作成・書き込みの case 8）、`ActionsDTO`（書き込み・読み込み）、`ServiceRegistration`（`IWheelCalibrationPort`）から除いた |
+| 画面 | `AssignmentEditor.xaml`: 種別の一覧の「Sixaxis Wheel」の項目と、専用のタブ（`sixaxisWheelCalibrateTab`）を除いた。`AssignmentEditor.xaml.cs`: `saSteeringWheelVM`（生成、辞書、タブの `DataContext`）を除いた。`ActionTypeCatalog`: 添字 8 の項目を除き、Gyro Calibration を 9→8 に詰めた（Default 10→9、Unbound 11→10 は、項目数から自動で詰まる）。`MappedControl`: 表示名の分岐を除いた。`SpecialAction` の保存の「mode」番号（Gyro＝9 など）は、`SpecialActionViewModel` の生成引数と `SpecialActionsXmlSerializer` の case で固定のため、変えていない（8 は欠番） |
+| 旧データ（Q3＝A） | **Actions.xml**: `ActionsDTO` の読み込みで、種別 `SASteeringWheelEmulationCalibrate` の項目を一覧に入れず、`[DI] 廃止された割り当て種別 'SASteeringWheelEmulationCalibrate'（Special Action: <名前>）を、読み込み時に取り除きました。` をログに出す。**プロファイルの Controls**: `ControlSpecialItemXml.TryRead` が、その種別を読み込まずに `[DI] …（プロファイルの Controls: <ボタン>）…` をログに出す（そのボタンは既定に戻る）。どちらも、次の保存でファイルから消える |
+| テスト（新規） | `Phase9SteeringW1LegacyAssignmentTests`（3 件）: 旧 Actions.xml の項目が取り除かれ、ほかの項目が読み込まれ、ログが出ること／旧プロファイルの Controls の割り当てが取り除かれ、ほかの割り当てが残り、ログが出ること／種別が enum から消え、文字列で作ると None になること |
+| 追従したテスト | 種別を網羅するテスト（カタログ、エディターの集合、SA の束縛の表、出力の工場、マッパー、Controls の種別表、監査ほか）から、ステアリングの項目を除いた。添字（Gyro 9→8、Default 10→9、Unbound 11→10、項目数 10→9、12→11）を更新。`PersistenceHarness` のコメント（モード 8）を更新 |
+
+`Debug ALL`: 警告 0・エラー 0・全テスト合格（2,240 件、StandaloneTests 11 件）。
+
+**実機確認（依頼）**: 割り当て編集画面（SA のモード／Controls のモード）で、(1) 種別の一覧に「Sixaxis Wheel」の項目がなく、並びが「種別を選んでください／Macro／Launch Program／Load Profile／Output Key…／Disconnect BT／Check Battery／Multi-action／Calibrate Gyro（／Default／Unbound）」であること。(2) Calibrate Gyro を選んで保存でき、再び開くと同じ種別が選ばれること。(3) 各種別（Default、Unbound を含む）を選んだときの入力欄・タブが、これまでどおりであること。(4) 古い Actions.xml に Steering Wheel Calibrate の項目がある場合、起動時に GUI ログへ `[DI] 廃止された割り当て種別…` が出ること（任意）。なお、プロファイル編集の Calibrate ボタンによる較正は、W4 まで従来どおり動く。

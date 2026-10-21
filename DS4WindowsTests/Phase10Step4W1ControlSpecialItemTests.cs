@@ -100,7 +100,7 @@ namespace DS4WindowsTests
                 DoubleTapMacro = new List<int> { 70, 350, 70 },
                 HoldSeconds = 0.3,
             });
-            SetSpecial(store, DS4Controls.R1, new ControlSpecialItem { Type = SpecialAction.ActionTypeId.SASteeringWheelEmulationCalibrate });
+            SetSpecial(store, DS4Controls.R1, new ControlSpecialItem { Type = SpecialAction.ActionTypeId.DisconnectBT });
             SetSpecial(store, DS4Controls.L2, new ControlSpecialItem { Type = SpecialAction.ActionTypeId.GyroCalibrate });
 
             BackingStore loaded = PersistenceHarness.LoadProfile(ctx, PersistenceHarness.SaveProfile(ctx, store, "S4W1Many"), "S4W1ManyLoad");
@@ -121,7 +121,7 @@ namespace DS4WindowsTests
             Assert.Equal(new[] { 70, 350, 70 }, multi.DoubleTapMacro);
             Assert.Equal(0.3, multi.HoldSeconds);
 
-            Assert.Equal(SpecialAction.ActionTypeId.SASteeringWheelEmulationCalibrate, loaded.GetDS4CSetting(Slot, DS4Controls.R1).special.Type);
+            Assert.Equal(SpecialAction.ActionTypeId.DisconnectBT, loaded.GetDS4CSetting(Slot, DS4Controls.R1).special.Type);
             Assert.Equal(SpecialAction.ActionTypeId.GyroCalibrate, loaded.GetDS4CSetting(Slot, DS4Controls.L2).special.Type);
         }
 
@@ -368,7 +368,7 @@ namespace DS4WindowsTests
             var repo = new RecordingSpecialActionRepository();
             var pressKey = new PressKeyViewModel(repo, profile, TestRepositoryFactory.CreateOutputSlotService());
             var macro = new MacroViewModel(repo);
-            target.WriteFrom(10, pressKey, macro);   // 添字 10＝Default（Controls のモードの項目）
+            target.WriteFrom(9, pressKey, macro);   // 添字 10＝Default（Controls のモードの項目）
             Assert.Null(target.Working.special);
             Assert.NotNull(original.special);   // Save（Apply）するまで、元は変わらない
 

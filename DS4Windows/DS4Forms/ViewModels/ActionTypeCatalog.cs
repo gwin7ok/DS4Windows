@@ -45,8 +45,7 @@ namespace DS4WinWPF.DS4Forms.ViewModels
                 new ActionTypeDescriptor(5, SpecialAction.ActionTypeId.DisconnectBT, "SpecialActionEdit.DisconnectBT", Both, ControlsSavable(SpecialAction.ActionTypeId.DisconnectBT)),
                 new ActionTypeDescriptor(6, SpecialAction.ActionTypeId.BatteryCheck, "SpecialActionEdit.CheckBattery", Both, ControlsSavable(SpecialAction.ActionTypeId.BatteryCheck)),
                 new ActionTypeDescriptor(7, SpecialAction.ActionTypeId.MultiAction, "SpecialActionEdit.MultiAction", Both, ControlsSavable(SpecialAction.ActionTypeId.MultiAction)),
-                new ActionTypeDescriptor(8, SpecialAction.ActionTypeId.SASteeringWheelEmulationCalibrate, "SpecialActionEdit.SixAxisWheelCalib", Both, ControlsSavable(SpecialAction.ActionTypeId.SASteeringWheelEmulationCalibrate)),
-                new ActionTypeDescriptor(9, SpecialAction.ActionTypeId.GyroCalibrate, "SpecialActionEdit.CalibrateGyro", Both, ControlsSavable(SpecialAction.ActionTypeId.GyroCalibrate)),
+                new ActionTypeDescriptor(8, SpecialAction.ActionTypeId.GyroCalibrate, "SpecialActionEdit.CalibrateGyro", Both, ControlsSavable(SpecialAction.ActionTypeId.GyroCalibrate)),
             };
 
             DefaultIndex = -1;

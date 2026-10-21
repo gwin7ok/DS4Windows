@@ -61,7 +61,6 @@
                         <ComboBoxItem Content="{lex:Loc SpecialActionEdit.DisconnectBT}" />
                         <ComboBoxItem Content="{lex:Loc SpecialActionEdit.CheckBattery}" />
                         <ComboBoxItem Content="{lex:Loc SpecialActionEdit.MultiAction}" />
-                        <ComboBoxItem Content="{lex:Loc SpecialActionEdit.SixAxisWheelCalib}" />
                         <ComboBoxItem Content="{lex:Loc SpecialActionEdit.CalibrateGyro}" />
                         <!-- Phase10-Step3: Controls のモードだけ（SA のモードでは、コードビハインドで隠す）。出力ピッカーの Default／Unbound ボタンと同じ設定 -->
                         <ComboBoxItem x:Name="defaultTypeItem" Content="{lex:Loc Default}" />
@@ -221,13 +220,6 @@
                                 <Label Content="{lex:Loc SpecialActionEdit.DoubleTapTrigger}" Margin="{StaticResource spaceMargin}" />
                                 <Button x:Name="multiDoubleTapTrigBtn" Content="{Binding DoubleTapMacroText,FallbackValue={lex:Loc SpecialActionEdit.SelectMacro}}"
                                         Margin="{StaticResource spaceMargin}" Click="MultiDoubleTapTrigBtn_Click" />
-                            </StackPanel>
-                        </TabItem>
-                        <TabItem x:Name="sixaxisWheelCalibrateTab" Header="Sixaxis Wheel">
-                            <StackPanel Orientation="Horizontal" Margin="{StaticResource spaceMargin}">
-                                <Label Content="{lex:Loc HoldFor}" ContentStringFormat="{}{0} "></Label>
-                                <xctk:DecimalUpDown Value="{Binding HoldInterval,ValidatesOnNotifyDataErrors=True}" Width="60" Minimum="0" Maximum="60" FormatString= "F2" Increment="0.5" />
-                                <Label Content="secs" />
                             </StackPanel>
                         </TabItem>
                         <TabItem x:Name="gyroCalibrateTab" Header="{lex:Loc SpecialActionEdit.CalibrateGyro}">

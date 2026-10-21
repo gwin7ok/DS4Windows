@@ -70,7 +70,6 @@ namespace DS4Windows.Actions
 
                     break;
                 case SpecialAction.ActionTypeId.DisconnectBT:
-                case SpecialAction.ActionTypeId.SASteeringWheelEmulationCalibrate:
                 case SpecialAction.ActionTypeId.GyroCalibrate:
                     break;
                 default:

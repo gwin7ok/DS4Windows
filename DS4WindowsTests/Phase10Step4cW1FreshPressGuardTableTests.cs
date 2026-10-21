@@ -19,7 +19,6 @@ namespace DS4WindowsTests
         [InlineData(SpecialAction.ActionTypeId.DisconnectBT, true)]
         [InlineData(SpecialAction.ActionTypeId.BatteryCheck, true)]
         [InlineData(SpecialAction.ActionTypeId.GyroCalibrate, true)]
-        [InlineData(SpecialAction.ActionTypeId.SASteeringWheelEmulationCalibrate, true)]
         [InlineData(SpecialAction.ActionTypeId.MultiAction, false)]
         public void SpecialActionTypes_FollowTheCurrentRule(SpecialAction.ActionTypeId type, bool expected)
         {

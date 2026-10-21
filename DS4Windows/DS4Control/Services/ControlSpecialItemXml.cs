@@ -23,7 +23,6 @@ namespace DS4Windows.Services
             SpecialAction.ActionTypeId.DisconnectBT,
             SpecialAction.ActionTypeId.BatteryCheck,
             SpecialAction.ActionTypeId.MultiAction,
-            SpecialAction.ActionTypeId.SASteeringWheelEmulationCalibrate,
             SpecialAction.ActionTypeId.GyroCalibrate,
         };
 
@@ -71,6 +70,13 @@ namespace DS4Windows.Services
             if (node == null) return false;
 
             string typeText = node.Attributes?["Type"]?.Value;
+            if (typeText == "SASteeringWheelEmulationCalibrate")
+            {
+                // Phase9 Steering 削除 W1: 廃止した種別。読み込まずに取り除く（次の保存でファイルから消え、そのボタンは既定に戻る）
+                AppLogger.LogToGui($"[DI] 廃止された割り当て種別 '{typeText}'（プロファイルの Controls: {node.Name}）を、読み込み時に取り除きました。", false);
+                return false;
+            }
+
             if (!Enum.TryParse(typeText, out SpecialAction.ActionTypeId type) || !AllowedTypes.Contains(type)) return false;
 
             var result = new ControlSpecialItem { Type = type };

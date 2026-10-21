@@ -29,7 +29,6 @@ namespace DS4WindowsTests
             SpecialAction.ActionTypeId.Program,
             SpecialAction.ActionTypeId.DisconnectBT,
             SpecialAction.ActionTypeId.GyroCalibrate,
-            SpecialAction.ActionTypeId.SASteeringWheelEmulationCalibrate,
             SpecialAction.ActionTypeId.BatteryCheck,   // Phase10-Step6 W7 相当
             SpecialAction.ActionTypeId.MultiAction,   // Phase10-Step6 W8 相当
         };
@@ -129,16 +128,14 @@ namespace DS4WindowsTests
             using var t = new ControlsKeyTestScope();
             t.MapSpecial(DS4Controls.Cross, Item(SpecialAction.ActionTypeId.DisconnectBT, 1.5));
             t.MapSpecial(DS4Controls.Circle, Item(SpecialAction.ActionTypeId.GyroCalibrate));
-            t.MapSpecial(DS4Controls.Square, Item(SpecialAction.ActionTypeId.SASteeringWheelEmulationCalibrate, 0.25));
 
             IReadOnlyList<IActionBinding> bindings = TestHost.GetService<IControlBindingBuilder>().Build(Device);
 
-            Assert.Equal(3, bindings.Count);
+            Assert.Equal(2, bindings.Count);
             var expected = new[]
             {
                 (DS4Controls.Cross, SpecialAction.ActionTypeId.DisconnectBT, typeof(DisconnectBTAction), 1.5),
                 (DS4Controls.Circle, SpecialAction.ActionTypeId.GyroCalibrate, typeof(GyroCalibrateAction), 0.0),
-                (DS4Controls.Square, SpecialAction.ActionTypeId.SASteeringWheelEmulationCalibrate, typeof(SteeringWheelCalibrateAction), 0.25),
             };
             foreach ((DS4Controls control, SpecialAction.ActionTypeId type, Type output, double seconds) in expected)
             {
@@ -237,11 +234,11 @@ namespace DS4WindowsTests
             return last;
         }
 
-        private static ControlBindingBuilder BuilderWith(RecordingGyroCalibrationPort gyro, RecordingWheelCalibrationPort wheel)
+        private static ControlBindingBuilder BuilderWith(RecordingGyroCalibrationPort gyro)
         {
             var factory = new SpecialActionOutputFactory(TestHost.GetService<IProfileSettingsService>(), TestHost.GetService<IManagedActionManager>(),
                 TestHost.GetService<IMacroPlayer>(), TestHost.GetService<IProcessLauncher>(), TestHost.GetService<IProfileSwitcher>(),
-                TestHost.GetService<ISpecialActionRepository>(), TestHost.GetService<Func<IMapping>>(), gyroCalibration: gyro, wheelCalibrationPort: wheel);
+                TestHost.GetService<ISpecialActionRepository>(), TestHost.GetService<Func<IMapping>>(), gyroCalibration: gyro);
             return new ControlBindingBuilder(TestHost.GetService<IProfileSettingsService>(), null, null, factory);
         }
 
@@ -251,7 +248,7 @@ namespace DS4WindowsTests
             using var t = new ControlsKeyTestScope();
             var gyro = new RecordingGyroCalibrationPort();
             t.MapSpecial(DS4Controls.Cross, Item(SpecialAction.ActionTypeId.GyroCalibrate));
-            t.PublishWith(BuilderWith(gyro, new RecordingWheelCalibrationPort()));
+            t.PublishWith(BuilderWith(gyro));
 
             RunFor(t, Cross(false), 150);   // SA と同じ Fresh-press ガード（離して 80ms 続くまで実行しない）
             Assert.Empty(gyro.Calls);
@@ -274,7 +271,7 @@ namespace DS4WindowsTests
             using var t = new ControlsKeyTestScope();
             var gyro = new RecordingGyroCalibrationPort();
             t.MapSpecial(DS4Controls.Cross, Item(SpecialAction.ActionTypeId.GyroCalibrate, 0.4));
-            t.PublishWith(BuilderWith(gyro, new RecordingWheelCalibrationPort()));
+            t.PublishWith(BuilderWith(gyro));
 
             RunFor(t, Cross(false), 150);
             RunFor(t, Cross(true), 200);
@@ -282,20 +279,6 @@ namespace DS4WindowsTests
 
             RunFor(t, Cross(true), 500);
             Assert.Single(gyro.Calls);
-        }
-
-        [Fact]
-        public void SixaxisWheelCalibration_StartsWhileHeld_ThroughTheControlsBinding()
-        {
-            using var t = new ControlsKeyTestScope();
-            var wheel = new RecordingWheelCalibrationPort { State = 0 };
-            t.MapSpecial(DS4Controls.Cross, Item(SpecialAction.ActionTypeId.SASteeringWheelEmulationCalibrate));
-            t.PublishWith(BuilderWith(new RecordingGyroCalibrationPort(), wheel));
-
-            RunFor(t, Cross(false), 150);
-            RunFor(t, Cross(true), 300);
-
-            Assert.Equal(new[] { 1 }, wheel.Writes.ToArray());   // 状態 0（待機）から 1（較正の開始の要求）へ
         }
 
         // ---- 編集対象（画面との往復） ----
@@ -307,7 +290,6 @@ namespace DS4WindowsTests
             public readonly PressKeyViewModel PressKey;
             public readonly MacroViewModel Macro;
             public readonly SpecialActionViewModel Disconnect;
-            public readonly SpecialActionViewModel Wheel;
             public readonly SpecialActionViewModel Gyro;
             public readonly IReadOnlyDictionary<SpecialAction.ActionTypeId, SpecialActionViewModel> HoldEditors;
             public ActionTypeEditorSet Editors => new ActionTypeEditorSet(HoldEditors.ToDictionary(pair => pair.Key, pair => (IActionTypeEditor)pair.Value));
@@ -318,12 +300,10 @@ namespace DS4WindowsTests
                 PressKey = new PressKeyViewModel(Repo, Profile, TestRepositoryFactory.CreateOutputSlotService());
                 Macro = new MacroViewModel(Repo);
                 Disconnect = new SpecialActionViewModel(5, Repo);
-                Wheel = new SpecialActionViewModel(8, Repo);
                 Gyro = new SpecialActionViewModel(9, Repo);
                 HoldEditors = new Dictionary<SpecialAction.ActionTypeId, SpecialActionViewModel>
                 {
                     [SpecialAction.ActionTypeId.DisconnectBT] = Disconnect,
-                    [SpecialAction.ActionTypeId.SASteeringWheelEmulationCalibrate] = Wheel,
                     [SpecialAction.ActionTypeId.GyroCalibrate] = Gyro,
                 };
             }
@@ -334,8 +314,7 @@ namespace DS4WindowsTests
 
         [Theory]
         [InlineData(5, SpecialAction.ActionTypeId.DisconnectBT)]
-        [InlineData(8, SpecialAction.ActionTypeId.SASteeringWheelEmulationCalibrate)]
-        [InlineData(9, SpecialAction.ActionTypeId.GyroCalibrate)]
+        [InlineData(8, SpecialAction.ActionTypeId.GyroCalibrate)]
         public void WriteFrom_WritesTheTypeAndTheHoldSeconds_AndNothingElse(int typeIndex, SpecialAction.ActionTypeId type)
         {
             var rig = new Rig();
@@ -363,7 +342,7 @@ namespace DS4WindowsTests
             var rig = new Rig();
             var target = new ControlSettingsEditTarget(new DS4ControlSettings(DS4Controls.Cross), rig.Profile);
 
-            target.WriteFrom(9, rig.PressKey, rig.Macro);
+            target.WriteFrom(8, rig.PressKey, rig.Macro);
 
             Assert.Equal(SpecialAction.ActionTypeId.GyroCalibrate, target.Working.special.Type);
             Assert.Equal(0, target.Working.special.HoldSeconds);
@@ -371,8 +350,7 @@ namespace DS4WindowsTests
 
         [Theory]
         [InlineData(SpecialAction.ActionTypeId.DisconnectBT, 5)]
-        [InlineData(SpecialAction.ActionTypeId.SASteeringWheelEmulationCalibrate, 8)]
-        [InlineData(SpecialAction.ActionTypeId.GyroCalibrate, 9)]
+        [InlineData(SpecialAction.ActionTypeId.GyroCalibrate, 8)]   // Phase9 Steering 削除 W1: 添字を詰めた（9→8）
         public void TheInitialType_AndTheLoadedSeconds_FollowTheItem(SpecialAction.ActionTypeId type, int expectedIndex)
         {
             var rig = new Rig();
@@ -390,7 +368,7 @@ namespace DS4WindowsTests
             var rig = new Rig();
             var target = new ControlSettingsEditTarget(SpecialSettings(Item(SpecialAction.ActionTypeId.GyroCalibrate, 1)), rig.Profile);
 
-            target.WriteFrom(10, rig.PressKey, rig.Macro, rig.Editors);   // Default
+            target.WriteFrom(9, rig.PressKey, rig.Macro, rig.Editors);   // Default
 
             Assert.Null(target.Working.special);
             Assert.Equal(DS4ControlSettings.ActionType.Default, target.Working.actionType);

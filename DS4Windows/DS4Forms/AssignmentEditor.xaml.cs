@@ -46,7 +46,6 @@ namespace DS4WinWPF.DS4Forms
         private SpecialActionViewModel disconnectBtVM;
         private CheckBatteryViewModel checkBatteryVM;
         private MultiActButtonViewModel multiActButtonVM;
-        private SpecialActionViewModel saSteeringWheelVM;
         private SpecialActionViewModel calibrateGyroVM;
 
         // Phase10-Step6 I5c: SA のモードで編集中の SA に付ける Extras（SpecialAction.outputExtras と同じ書式。付けないときは null）。
@@ -156,7 +155,6 @@ namespace DS4WinWPF.DS4Forms
             disconnectBtVM = new SpecialActionViewModel(5, specialActionRepository);
             checkBatteryVM = new CheckBatteryViewModel(specialActionRepository, environmentService);
             multiActButtonVM = new MultiActButtonViewModel(specialActionRepository);
-            saSteeringWheelVM = new SpecialActionViewModel(8, specialActionRepository);
             calibrateGyroVM = new SpecialActionViewModel(9, specialActionRepository);
 
             // Phase10-Step6 後の Step5: アナログな出力の強さの入力は、SA のモードだけに出す（Controls は、入力のアナログ値で強さが決まる）
@@ -172,7 +170,6 @@ namespace DS4WinWPF.DS4Forms
                 [DS4Windows.SpecialAction.ActionTypeId.DisconnectBT] = disconnectBtVM,
                 [DS4Windows.SpecialAction.ActionTypeId.BatteryCheck] = checkBatteryVM,
                 [DS4Windows.SpecialAction.ActionTypeId.MultiAction] = multiActButtonVM,
-                [DS4Windows.SpecialAction.ActionTypeId.SASteeringWheelEmulationCalibrate] = saSteeringWheelVM,
                 [DS4Windows.SpecialAction.ActionTypeId.GyroCalibrate] = calibrateGyroVM,
             });
 
@@ -185,7 +182,6 @@ namespace DS4WinWPF.DS4Forms
             disconnectBTTab.Visibility = Visibility.Collapsed;
             checkBatteryTab.Visibility = Visibility.Collapsed;
             multiActTab.Visibility = Visibility.Collapsed;
-            sixaxisWheelCalibrateTab.Visibility = Visibility.Collapsed;
             gyroCalibrateTab.Visibility = Visibility.Collapsed;
             defaultActTab.Visibility = Visibility.Collapsed;
             unboundActTab.Visibility = Visibility.Collapsed;
@@ -239,7 +235,6 @@ namespace DS4WinWPF.DS4Forms
             disconnectBTTab.DataContext = disconnectBtVM;
             checkBatteryTab.DataContext = checkBatteryVM;
             multiActTab.DataContext = multiActButtonVM;
-            sixaxisWheelCalibrateTab.DataContext = saSteeringWheelVM;
             gyroCalibrateTab.DataContext = calibrateGyroVM;
 
             SetupLateEvents();
@@ -264,7 +259,6 @@ namespace DS4WinWPF.DS4Forms
             disconnectBTTab.DataContext = null;
             checkBatteryTab.DataContext = null;
             multiActTab.DataContext = null;
-            sixaxisWheelCalibrateTab.DataContext = null;
             gyroCalibrateTab.DataContext = null;
         }
 

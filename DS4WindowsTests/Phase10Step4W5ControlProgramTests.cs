@@ -274,7 +274,7 @@ namespace DS4WindowsTests
             var original = new DS4ControlSettings(DS4Controls.Cross) { actionType = DS4ControlSettings.ActionType.Special, special = Program() };
             var target = new ControlSettingsEditTarget(original, rig.Profile);
 
-            target.WriteFrom(10, rig.PressKey, rig.Macro, rig.Editors);   // Default
+            target.WriteFrom(9, rig.PressKey, rig.Macro, rig.Editors);   // Default
 
             Assert.Null(target.Working.special);
             Assert.Equal(DS4ControlSettings.ActionType.Default, target.Working.actionType);

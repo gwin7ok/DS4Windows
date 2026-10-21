@@ -13,7 +13,7 @@ namespace DS4WindowsTests
 {
     /// <summary>
     /// Phase10-Step3 W4（実機確認での追加要望）: 割り当てエディターの種別の一覧（Controls のモード）で、出力ピッカーの Default／Unbound ボタンと同じ設定を選べる。
-    /// Controls のモードだけの 2 項目（添字 10＝Default、11＝Unbound）を末尾に足す。モードごとの入力の制限は、一覧の項目の表示・非表示だけで行う
+    /// Controls のモードだけの 2 項目（添字 9＝Default、10＝Unbound（Phase9 Steering 削除 W1 で詰めた））を末尾に足す。モードごとの入力の制限は、一覧の項目の表示・非表示だけで行う
     /// （Controls のモードでは、添字 0 の「種別を選んでください」を隠し、SA のモードでは、足した 2 項目を隠す。検証・保存ボタンは、モードを区別しない）。
     /// SA のモードの一覧は、従来のまま。左ペインのタブを隠す表示（SA の編集画面も、Controls の割り当てエディターと同じ場所に重ねる）のソース走査も含む。
     /// </summary>
@@ -21,8 +21,8 @@ namespace DS4WindowsTests
     {
         private const string SomeExtras = "10,20,1,255,0,0,1,0,25";
         private const int KeyIndex = 4;
-        private const int DefaultIndex = 10;
-        private const int UnboundIndex = 11;
+        private const int DefaultIndex = 9;   // Phase9 Steering 削除 W1: 添字を詰めた（10→9）
+        private const int UnboundIndex = 10;   // 11→10
 
         private readonly ITestOutputHelper _output;
 
@@ -70,7 +70,7 @@ namespace DS4WindowsTests
         {
             var catalog = new ActionTypeCatalog();
 
-            Assert.Equal(10, catalog.All.Count);
+            Assert.Equal(9, catalog.All.Count);
             Assert.Equal(-1, catalog.DefaultIndex);
             Assert.Equal(-1, catalog.UnboundIndex);
         }
@@ -80,7 +80,7 @@ namespace DS4WindowsTests
         {
             var catalog = new ActionTypeCatalog(includeControlOnlyItems: true);
 
-            Assert.Equal(12, catalog.All.Count);
+            Assert.Equal(11, catalog.All.Count);
             Assert.Equal(DefaultIndex, catalog.DefaultIndex);
             Assert.Equal(UnboundIndex, catalog.UnboundIndex);
 
@@ -116,7 +116,7 @@ namespace DS4WindowsTests
 
             Assert.True(vm.IsTypeEnabled(DefaultIndex));
             Assert.True(vm.IsTypeEnabled(UnboundIndex));
-            Assert.Equal(12, vm.TypeAssoc.Length);
+            Assert.Equal(11, vm.TypeAssoc.Length);
         }
 
         // ---- 割り当ての読み込み・書き出し ----

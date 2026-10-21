@@ -71,10 +71,9 @@ namespace DS4WindowsTests
         [InlineData(5, true)]   // Disconnect BT
         [InlineData(6, true)]   // Check Battery（Phase10-Step6 W7 相当で保存可能になった）
         [InlineData(7, true)]   // Multi Action（Phase10-Step6 W8 相当で保存可能になった）
-        [InlineData(8, true)]   // 6 軸ホイール較正（Phase10-Step4 W4 で保存可能になった）
-        [InlineData(9, true)]   // ジャイロ較正（同上）
-        [InlineData(10, true)]   // Default（Controls のモードだけの項目。出力ピッカーの Default ボタンと同じ）
-        [InlineData(11, true)]   // Unbound（同上）
+        [InlineData(8, true)]   // ジャイロ較正（Phase10-Step4 W4 で保存可能になった。Phase9 Steering 削除 W1 で添字を 9→8 に詰めた）
+        [InlineData(9, true)]   // Default（Controls のモードだけの項目。出力ピッカーの Default ボタンと同じ）
+        [InlineData(10, true)]   // Unbound（同上）
         public void OnlyTheTypesControlsCanSaveNow_AreSelectable(int index, bool expected)
         {
             Assert.Equal(expected, NewControlVm().IsTypeEnabled(index));
@@ -123,7 +122,7 @@ namespace DS4WindowsTests
             Assert.Equal(ActionEditorModes.SpecialAction, vm.Mode);
             Assert.True(vm.ActionNameEditable);
             Assert.False(vm.ActionNameReadOnly);
-            for (int i = 0; i < 10; i++)
+            for (int i = 0; i < 9; i++)
                 Assert.True(vm.IsTypeEnabled(i));
         }
     }

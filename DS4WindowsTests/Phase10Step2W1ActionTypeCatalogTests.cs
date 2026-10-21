@@ -18,7 +18,7 @@ namespace DS4WindowsTests
             SpecialAction.ActionTypeId.Program, SpecialAction.ActionTypeId.Profile,
             SpecialAction.ActionTypeId.Key, SpecialAction.ActionTypeId.DisconnectBT,
             SpecialAction.ActionTypeId.BatteryCheck, SpecialAction.ActionTypeId.MultiAction,
-            SpecialAction.ActionTypeId.SASteeringWheelEmulationCalibrate, SpecialAction.ActionTypeId.GyroCalibrate
+            SpecialAction.ActionTypeId.GyroCalibrate
         };
 
         [Fact]
@@ -35,12 +35,12 @@ namespace DS4WindowsTests
         {
             var catalog = new ActionTypeCatalog();
 
-            Assert.Equal(Enumerable.Range(0, 10), catalog.All.Select(d => d.Index));
+            Assert.Equal(Enumerable.Range(0, 9), catalog.All.Select(d => d.Index));
             Assert.Equal(new[]
             {
                 "SpecialActionEdit.SelectAction", "SpecialActionEdit.RecordMacro", "SpecialActionEdit.LaunchProgram",
                 "SpecialActionEdit.LoadProfile", "SpecialActionEdit.PressKey", "SpecialActionEdit.DisconnectBT",
-                "SpecialActionEdit.CheckBattery", "SpecialActionEdit.MultiAction", "SpecialActionEdit.SixAxisWheelCalib",
+                "SpecialActionEdit.CheckBattery", "SpecialActionEdit.MultiAction",
                 "SpecialActionEdit.CalibrateGyro"
             }, catalog.All.Select(d => d.LabelKey).ToArray());
         }
@@ -70,7 +70,7 @@ namespace DS4WindowsTests
 
             Assert.Equal(SpecialAction.ActionTypeId.Program, catalog.At(2).TypeId);
             Assert.Throws<ArgumentOutOfRangeException>(() => catalog.At(-1));
-            Assert.Throws<ArgumentOutOfRangeException>(() => catalog.At(10));
+            Assert.Throws<ArgumentOutOfRangeException>(() => catalog.At(9));
         }
 
         [Fact]
@@ -80,7 +80,7 @@ namespace DS4WindowsTests
 
             Assert.All(catalog.All, d => Assert.True(d.IsAvailableIn(ActionEditorModes.SpecialAction)));
             Assert.All(catalog.All, d => Assert.True(d.IsAvailableIn(ActionEditorModes.Control)));
-            Assert.Equal(10, catalog.For(ActionEditorModes.Both).Count());
+            Assert.Equal(9, catalog.For(ActionEditorModes.Both).Count());
         }
 
         [Fact]
@@ -104,7 +104,6 @@ namespace DS4WindowsTests
                 SpecialAction.ActionTypeId.DisconnectBT,
                 SpecialAction.ActionTypeId.BatteryCheck,   // Phase10-Step6 W7 相当
                 SpecialAction.ActionTypeId.MultiAction,   // Phase10-Step6 W8 相当
-                SpecialAction.ActionTypeId.SASteeringWheelEmulationCalibrate,
                 SpecialAction.ActionTypeId.GyroCalibrate,
             }, controlsSavable);
         }

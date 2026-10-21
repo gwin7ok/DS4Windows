@@ -286,7 +286,7 @@ namespace DS4WindowsTests
             var target = new ControlSettingsEditTarget(MacroSettings(Options(release: true)), rig.Profile);
             target.LoadInto(rig.PressKey, rig.Macro);
 
-            target.WriteFrom(10, rig.PressKey, rig.Macro);   // 10＝Default
+            target.WriteFrom(9, rig.PressKey, rig.Macro);   // 10＝Default
 
             Assert.Null(target.Working.special);
             Assert.Equal(DS4ControlSettings.ActionType.Default, target.Working.actionType);

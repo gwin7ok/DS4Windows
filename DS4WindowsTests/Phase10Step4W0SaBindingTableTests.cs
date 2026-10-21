@@ -61,7 +61,7 @@ namespace DS4WindowsTests
                 ? new ActionBindingBuilder(provider, TestHost.GetService<IProfileSettingsService>(), TestHost.GetService<IManagedActionManager>(),
                     new NoMacroPlayer(), new NoLauncher(), new NoSwitcher(), gyroCalibration: new RecordingGyroCalibrationPort(),
                     disconnectPort: new RecordingControllerDisconnectPort(), batteryCheckPort: new RecordingBatteryCheckPort(),
-                    wheelCalibrationPort: new RecordingWheelCalibrationPort(), macroStringPlayer: new NoMacroStringPlayer())
+                    macroStringPlayer: new NoMacroStringPlayer())
                 : new ActionBindingBuilder(provider, TestHost.GetService<IProfileSettingsService>(), TestHost.GetService<IManagedActionManager>(),
                     new NoMacroPlayer(), new NoLauncher(), new NoSwitcher());
 
@@ -84,7 +84,7 @@ namespace DS4WindowsTests
         }
 
         [Fact]
-        public void Key_Macro_GyroCalibrate_DisconnectBT_BatteryCheck_Wheel_UseTheDefaultPolicy_WithAComboTriggerInput()
+        public void Key_Macro_GyroCalibrate_DisconnectBT_BatteryCheck_UseTheDefaultPolicy_WithAComboTriggerInput()
         {
             var cases = new (SpecialAction Sa, Type Output)[]
             {
@@ -93,7 +93,6 @@ namespace DS4WindowsTests
                 (new SpecialAction("gyro", "Cross", "GyroCalibration", ""), typeof(GyroCalibrateAction)),
                 (new SpecialAction("disc", "Cross", "DisconnectBT", "", 0.5), typeof(DisconnectBTAction)),
                 (new SpecialAction("batt", "Cross", "BatteryCheck", "1,2,3|4,5,6"), typeof(BatteryCheckAction)),
-                (new SpecialAction("wheel", "Cross", "SASteeringWheelEmulationCalibrate", ""), typeof(SteeringWheelCalibrateAction)),
             };
 
             foreach ((SpecialAction sa, Type output) in cases)
@@ -169,7 +168,6 @@ namespace DS4WindowsTests
         [InlineData("GyroCalibration", "")]
         [InlineData("DisconnectBT", "")]
         [InlineData("BatteryCheck", "1,2,3|4,5,6")]
-        [InlineData("SASteeringWheelEmulationCalibrate", "")]
         [InlineData("MultiAction", "1,2,3")]
         public void WithoutThePort_TheTypeBuildsNoBinding(string type, string details)
         {

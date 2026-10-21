@@ -275,10 +275,6 @@ namespace DS4Windows.Services
                 case 7:
                     tempAction = new SpecialAction(name, controls, "MultiAction", details);
                     break;
-                case 8:
-                    tempAction = new SpecialAction(name, controls, "SASteeringWheelEmulationCalibrate",
-                        details, delayTime);
-                    break;
                 case 9:
                     tempAction = new SpecialAction(name, controls, "GyroCalibration", details, delayTime);
                     break;
@@ -418,10 +414,6 @@ namespace DS4Windows.Services
                     break;
                 case 7:
                     el.AppendChild(m_Xdoc.CreateElement("Type")).InnerText = "MultiAction";
-                    el.AppendChild(m_Xdoc.CreateElement("Details")).InnerText = details;
-                    break;
-                case 8:
-                    el.AppendChild(m_Xdoc.CreateElement("Type")).InnerText = "SASteeringWheelEmulationCalibrate";
                     el.AppendChild(m_Xdoc.CreateElement("Details")).InnerText = details;
                     break;
             }

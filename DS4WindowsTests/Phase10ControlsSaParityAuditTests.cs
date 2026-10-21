@@ -37,7 +37,7 @@ namespace DS4WindowsTests
                 TestHost.GetService<IMacroPlayer>(), TestHost.GetService<IProcessLauncher>(), TestHost.GetService<IProfileSwitcher>(),
                 TestHost.GetService<ISpecialActionRepository>(), TestHost.GetService<Func<IMapping>>(),
                 TestHost.GetService<IGyroCalibrationPort>(), TestHost.GetService<IControllerDisconnectPort>(), TestHost.GetService<IBatteryCheckPort>(),
-                TestHost.GetService<IWheelCalibrationPort>(), TestHost.GetService<IMacroStringPlayer>(), outputFactory: TestHost.GetService<ISpecialActionOutputFactory>(),
+                TestHost.GetService<IMacroStringPlayer>(), outputFactory: TestHost.GetService<ISpecialActionOutputFactory>(),
                 extrasPort: TestHost.GetService<IControlExtrasPort>());
             return builder.Build(device);
         }
@@ -113,7 +113,6 @@ namespace DS4WindowsTests
             yield return new SpecialAction("disconnect", "Cross", "DisconnectBT", "1", 1.0);
             yield return new SpecialAction("battery", "Cross", "BatteryCheck", "0|True|True|1|2|3|4|5|6");
             yield return new SpecialAction("multi", "Cross", "MultiAction", "1,2,3");
-            yield return new SpecialAction("wheel", "Cross", "SASteeringWheelEmulationCalibrate", "", 1.0);
             yield return new SpecialAction("gyro", "Cross", "GyroCalibration", "1", 1.0);
         }
 

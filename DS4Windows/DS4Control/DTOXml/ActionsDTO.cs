@@ -105,7 +105,6 @@ namespace DS4WinWPF.DS4Control.DTOXml
                     case SpecialAction.ActionTypeId.DisconnectBT:
                     case SpecialAction.ActionTypeId.BatteryCheck:
                     case SpecialAction.ActionTypeId.MultiAction:
-                    case SpecialAction.ActionTypeId.SASteeringWheelEmulationCalibrate:
                     case SpecialAction.ActionTypeId.GyroCalibrate:
                         actionSerializer.Name = action.name;
                         actionSerializer.Trigger = action.controls;
@@ -236,9 +235,8 @@ namespace DS4WinWPF.DS4Control.DTOXml
                             actionSerializer.Extras);
                         break;
                     case "SASteeringWheelEmulationCalibrate":
-                        tempAction = new SpecialAction(actionSerializer.Name,
-                            actionSerializer.Trigger, actionSerializer.TypeString,
-                            "", actionSerializer.Delay);
+                        // Phase9 Steering 削除 W1: 廃止した種別。読み込まずに取り除く（tempAction は null のまま＝一覧に入らない。次の保存でファイルから消える）
+                        AppLogger.LogToGui($"[DI] 廃止された割り当て種別 'SASteeringWheelEmulationCalibrate'（Special Action: {actionSerializer.Name}）を、読み込み時に取り除きました。", false);
                         break;
                     case "GyroCalibration":
                         double.TryParse(actionSerializer.Details, System.Globalization.NumberStyles.Float, DS4Windows.ConfigFileCulture.DecimalCulture, out var delay);

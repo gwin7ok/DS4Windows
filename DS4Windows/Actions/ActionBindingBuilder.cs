@@ -6,7 +6,7 @@ namespace DS4Windows.Actions
 {
     /// <summary>
     /// Phase8-Step5 W1（Phase8-Step5-Plan.md §3.1。Phase8-Step2-Design.md §6・§8）: <see cref="IActionBindingBuilder"/> の実装（DI の Singleton）。
-    /// 種別ごとの構成は設計書 §6 のとおり（Button／Key／Macro／Program／Profile／GyroCalibrate／DisconnectBT／BatteryCheck／SASteeringWheelEmulationCalibrate／MultiAction の 10 種）。それ以外の種別
+    /// 種別ごとの構成は設計書 §6 のとおり（Button／Key／Macro／Program／Profile／GyroCalibrate／DisconnectBT／BatteryCheck／MultiAction の 9 種。SASteeringWheelEmulationCalibrate は Phase9 Steering 削除 W1 で削除）。それ以外の種別
     /// （<c>None</c>）は束縛を作らず、旧経路が処理する。
     /// <para>
     /// TODO（Phase8-Step7。規約 2.4）: 本クラスは Step5 で作り、本番の適用の経路（<c>ProfileApplicationService</c>）から呼ぶが、
@@ -30,7 +30,7 @@ namespace DS4Windows.Actions
             IProfileSwitcher profileSwitcher, ISpecialActionRepository actionRepository = null,
             Func<IMapping> mappingProvider = null, IGyroCalibrationPort gyroCalibration = null,
             IControllerDisconnectPort disconnectPort = null, IBatteryCheckPort batteryCheckPort = null,
-            IWheelCalibrationPort wheelCalibrationPort = null, IMacroStringPlayer macroStringPlayer = null,
+            IMacroStringPlayer macroStringPlayer = null,
             IControlBindingBuilder controlBuilder = null, ISpecialActionOutputFactory outputFactory = null,
             IControlExtrasPort extrasPort = null)
         {
@@ -44,7 +44,7 @@ namespace DS4Windows.Actions
 
             _outputFactory = outputFactory ?? new SpecialActionOutputFactory(profileSettings, manager, macroPlayer, processLauncher,
                 profileSwitcher, actionRepository, mappingProvider, gyroCalibration, disconnectPort, batteryCheckPort,
-                wheelCalibrationPort, macroStringPlayer);
+                macroStringPlayer);
             _assignmentBuilder = new AssignmentBindingBuilder(_outputFactory, _profileSettings, extrasPort);   // Phase10-Step6 I4c: 束縛の組み立ては、共通の部品が行う
         }
 

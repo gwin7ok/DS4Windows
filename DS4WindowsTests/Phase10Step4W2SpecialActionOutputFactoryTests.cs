@@ -58,7 +58,7 @@ namespace DS4WindowsTests
                 ? new SpecialActionOutputFactory(TestHost.GetService<IProfileSettingsService>(), TestHost.GetService<IManagedActionManager>(),
                     new NoMacroPlayer(), new NoLauncher(), new NoSwitcher(), gyroCalibration: new RecordingGyroCalibrationPort(),
                     disconnectPort: new RecordingControllerDisconnectPort(), batteryCheckPort: new RecordingBatteryCheckPort(),
-                    wheelCalibrationPort: new RecordingWheelCalibrationPort(), macroStringPlayer: new NoMacroStringPlayer())
+                    macroStringPlayer: new NoMacroStringPlayer())
                 : new SpecialActionOutputFactory(TestHost.GetService<IProfileSettingsService>(), TestHost.GetService<IManagedActionManager>(),
                     new NoMacroPlayer(), new NoLauncher(), new NoSwitcher());
         }
@@ -75,7 +75,6 @@ namespace DS4WindowsTests
             yield return new SpecialAction("gyro", "Cross", "GyroCalibration", "");
             yield return new SpecialAction("disc", "Cross", "DisconnectBT", "", 0.5);
             yield return new SpecialAction("batt", "Cross", "BatteryCheck", "1,2,3|4,5,6");
-            yield return new SpecialAction("wheel", "Cross", "SASteeringWheelEmulationCalibrate", "");
             yield return new SpecialAction("multi", "Cross", "MultiAction", "1,2,3");
         }
 
@@ -143,7 +142,7 @@ namespace DS4WindowsTests
                 : new ActionBindingBuilder(provider, TestHost.GetService<IProfileSettingsService>(), TestHost.GetService<IManagedActionManager>(),
                     new NoMacroPlayer(), new NoLauncher(), new NoSwitcher(), gyroCalibration: new RecordingGyroCalibrationPort(),
                     disconnectPort: new RecordingControllerDisconnectPort(), batteryCheckPort: new RecordingBatteryCheckPort(),
-                    wheelCalibrationPort: new RecordingWheelCalibrationPort(), macroStringPlayer: new NoMacroStringPlayer());
+                    macroStringPlayer: new NoMacroStringPlayer());
 
             IReadOnlyList<IActionBinding> result = builder.Build(0);
             return result.Count == 0 ? null : Assert.IsType<TriggerBinding>(result[0]);
@@ -231,7 +230,6 @@ namespace DS4WindowsTests
             Assert.Null(factory.Create(0, new SpecialAction("g", "Cross", "GyroCalibration", ""), 0));
             Assert.Null(factory.Create(0, new SpecialAction("d", "Cross", "DisconnectBT", ""), 0));
             Assert.Null(factory.Create(0, new SpecialAction("b", "Cross", "BatteryCheck", "1,2,3|4,5,6"), 0));
-            Assert.Null(factory.Create(0, new SpecialAction("w", "Cross", "SASteeringWheelEmulationCalibrate", ""), 0));
             Assert.Null(factory.Create(0, new SpecialAction("x", "Cross", "MultiAction", "1,2,3"), 0));
 
             Assert.NotNull(factory.Create(0, new SpecialAction("k", "Cross", "Key", "65"), 0));

@@ -209,8 +209,7 @@ namespace DS4WindowsTests
         [InlineData(SpecialAction.ActionTypeId.DisconnectBT, 5)]
         [InlineData(SpecialAction.ActionTypeId.BatteryCheck, 6)]
         [InlineData(SpecialAction.ActionTypeId.MultiAction, 7)]
-        [InlineData(SpecialAction.ActionTypeId.SASteeringWheelEmulationCalibrate, 8)]
-        [InlineData(SpecialAction.ActionTypeId.GyroCalibrate, 9)]
+        [InlineData(SpecialAction.ActionTypeId.GyroCalibrate, 8)]   // Phase9 Steering 削除 W1: 添字を詰めた（9→8）
         public void LoadAction_SelectsTheTypeItem(SpecialAction.ActionTypeId typeId, int expectedIndex)
         {
             SpecialActEditorViewModel vm = New();
@@ -227,7 +226,7 @@ namespace DS4WindowsTests
             SpecialActEditorViewModel vm = New();
 
             Assert.Equal(new ActionTypeCatalog().TypeIds, vm.TypeAssoc);
-            Assert.Equal(SpecialAction.ActionTypeId.GyroCalibrate, vm.TypeAssoc[9]);
+            Assert.Equal(SpecialAction.ActionTypeId.GyroCalibrate, vm.TypeAssoc[8]);
         }
 
         [Fact]

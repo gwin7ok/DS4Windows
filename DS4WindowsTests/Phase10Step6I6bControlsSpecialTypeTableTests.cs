@@ -19,7 +19,6 @@ namespace DS4WindowsTests
         [InlineData(SpecialAction.ActionTypeId.Profile, true)]
         [InlineData(SpecialAction.ActionTypeId.DisconnectBT, true)]
         [InlineData(SpecialAction.ActionTypeId.GyroCalibrate, true)]
-        [InlineData(SpecialAction.ActionTypeId.SASteeringWheelEmulationCalibrate, true)]
         [InlineData(SpecialAction.ActionTypeId.BatteryCheck, true)]   // Phase10-Step6 W7 相当
         [InlineData(SpecialAction.ActionTypeId.MultiAction, true)]   // Phase10-Step6 W8 相当
         [InlineData(SpecialAction.ActionTypeId.Macro, false)]   // Macro は Macro の割り当て（3 項目の入れ物）で扱う
@@ -43,7 +42,6 @@ namespace DS4WindowsTests
                     case SpecialAction.ActionTypeId.DisconnectBT:
                     case SpecialAction.ActionTypeId.BatteryCheck:
                     case SpecialAction.ActionTypeId.MultiAction:
-                    case SpecialAction.ActionTypeId.SASteeringWheelEmulationCalibrate:
                     case SpecialAction.ActionTypeId.GyroCalibrate:
                         Assert.Equal(ControlsSpecialTypeTable.IsSupported(descriptor.TypeId), descriptor.IsSavableIn(ActionEditorModes.Control));
                         Assert.True(descriptor.IsSavableIn(ActionEditorModes.SpecialAction));

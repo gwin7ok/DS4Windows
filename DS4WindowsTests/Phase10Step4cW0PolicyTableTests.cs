@@ -45,7 +45,6 @@ namespace DS4WindowsTests
             t.MapKey(DS4Controls.LXPos, 66);   // 反対側の向きが割り当て済みの軸の Default は、素通しの束縛になる（LXNeg）
             t.MapSpecial(DS4Controls.Share, new ControlSpecialItem { Type = SpecialAction.ActionTypeId.DisconnectBT });
             t.MapSpecial(DS4Controls.Options, new ControlSpecialItem { Type = SpecialAction.ActionTypeId.GyroCalibrate });
-            t.MapSpecial(DS4Controls.PS, new ControlSpecialItem { Type = SpecialAction.ActionTypeId.SASteeringWheelEmulationCalibrate });
             t.MapSpecial(DS4Controls.Mute, new ControlSpecialItem { Type = SpecialAction.ActionTypeId.Program, ProgramPath = "C:\\p10step4c-nonexistent\\a.exe" });
             // Capture／SideL などの拡張ボタンは、コントローラーが接続されたときにだけ束ねられる（ControlSettingsGroup.EstablishExtraButtons）ため、通常のボタンを使う
             t.MapSpecial(DS4Controls.L3, new ControlSpecialItem { Type = SpecialAction.ActionTypeId.Profile, ProfileName = "Other" });
@@ -67,7 +66,6 @@ namespace DS4WindowsTests
                 Controls("Synthetic_Key", DS4Controls.LXPos, ControlBindingKind.Key, fresh: false, erase: true),
                 Controls("Synthetic_Special", DS4Controls.Share, ControlBindingKind.Special, fresh: true, erase: true),
                 Controls("Synthetic_Special", DS4Controls.Options, ControlBindingKind.Special, fresh: true, erase: true),
-                Controls("Synthetic_Special", DS4Controls.PS, ControlBindingKind.Special, fresh: true, erase: true),
                 Controls("Synthetic_Special", DS4Controls.Mute, ControlBindingKind.Special, fresh: true, erase: true, blocks: true),
                 Controls("Synthetic_Special", DS4Controls.L3, ControlBindingKind.Special, fresh: true, erase: true, blocks: true),
                 Controls("Synthetic_Special", DS4Controls.R3, ControlBindingKind.Special, fresh: true, erase: true, blocks: true, stop: false, untrigger: UntriggerPolicy.Automatic),
