@@ -166,7 +166,8 @@ namespace DS4WindowsTests
                 Assert.False(erasing.Policy.SuppressesTriggerButtons);
                 Assert.False(erasing.Policy.ResetsTriggerOutput);
                 Assert.True(erasing.Policy.ErasesOutputEveryFrame);
-                Assert.Equal(plain.Policy.RespectsFreshPressGuard, erasing.Policy.RespectsFreshPressGuard);
+                // Phase10-Step6 I4b: Fresh-press ガードの規則は、種別 × 由来の表（FreshPressGuardTable.For）。Controls の Key だけ見ない（従来の Controls の Key の束縛と同じ）。他の種別は、SA と同じ
+                Assert.Equal(sa.typeID == SpecialAction.ActionTypeId.Key ? false : plain.Policy.RespectsFreshPressGuard, erasing.Policy.RespectsFreshPressGuard);
                 Assert.Equal(plain.Policy.BlocksWhileExecuting, erasing.Policy.BlocksWhileExecuting);
                 Assert.Equal(plain.Policy.Untrigger, erasing.Policy.Untrigger);
                 Assert.Equal(plain.Policy.StopOnRelease, erasing.Policy.StopOnRelease);

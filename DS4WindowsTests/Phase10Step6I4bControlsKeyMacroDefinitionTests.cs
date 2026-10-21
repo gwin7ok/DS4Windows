@@ -76,7 +76,11 @@ namespace DS4WindowsTests
         {
             Assert.False(ControlsAssignmentReader.TryReadKey(0, new DS4ControlSettings(DS4Controls.Cross), out _, out _));
             Assert.False(ControlsAssignmentReader.TryReadKey(0, null, out _, out _));
-            Assert.False(ControlsAssignmentReader.TryReadMacro(0, new DS4ControlSettings(DS4Controls.Cross) { actionType = DS4ControlSettings.ActionType.Macro }, out _, out _));
+            // 手順そのものがない（null）Macro は読まない。空の手順は読む（Phase10-Step3。SA の Macro と同じく、実行して何も再生しない）
+            var noSteps = new DS4ControlSettings(DS4Controls.Cross) { actionType = DS4ControlSettings.ActionType.Macro };
+            noSteps.action.actionMacro = null;
+            Assert.False(ControlsAssignmentReader.TryReadMacro(0, noSteps, out _, out _));
+            Assert.False(ControlsAssignmentReader.TryReadMacro(0, new DS4ControlSettings(DS4Controls.Cross), out _, out _));
         }
 
         [Fact]
