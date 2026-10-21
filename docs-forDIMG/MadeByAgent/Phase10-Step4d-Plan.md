@@ -156,4 +156,12 @@
   - 制約: ファイルの中身だけを外から書き換えた場合（ID の手編集）は、次にフォルダーが変わるまで反映されない（`Refresh()` で明示的に作り直せる）。
   - インターフェース: `IProfileIdentityService` に `Refresh()` を追加。
   - テスト: `Phase10Step4dW5aIdentityIndexTests`（9 件。名前変更・追加・削除の反映、名前は大文字小文字無視・ID は区別、フォルダーが変わらないあいだは索引を使う、変わったら作り直す、速度［40 ファイル × 4000 回が 2 秒以内］、`EnsurePersisted`／`EnsureAllPersisted` の索引への反映、保存場所の変更）。W1 の登録簿のテストは変更なしで通る。
-  - 次: W5b（スロットの保管を ID に: `ProfilePath`／`OlderProfilePath` を窓口にする）。指示があるまで始めない（設計を説明して承認を得る）。
+- **W5b（完了 2026-10-21。`Debug ALL` 成功: 警告 0・エラー 0、テスト 1983 件と 11 件が成功。実機確認 P10-94 は先送り）**: スロットの保管を ID に（案 1）。
+  - 新しい型 `ProfileSlotNames`（`DS4Control/`）: スロットごとの「ID と名前の控え」を持つ、名前を読み書きする窓口。`BackingStore` の `profilePath`（現在）、`olderProfilePath`（直前）、`selectedProfile`（選択）の型（以前は `string[]`）。書くと、名前の控えを保存し、登録簿から ID を引いて保存する（見つからない名前・空・「(none)」は、ID なし）。読むと、ID が引ければ現在の名前を返す（名前を変えても、保管を書き換えなくてよい）。引けなければ名前の控え（削除されたプロファイルは、最後の名前が残る。従来と同じ）。ID がない・無効になったときは、読むときに名前から ID を引き直す（あとで作られたプロファイル、同じ名前で作り直したプロファイルに結ぶ）。登録簿がなければ（テストの新しい `BackingStore`）、従来の配列と同じに動く。
+  - 結び: `BackingStore.AttachProfileIdentity`。DI の登録が、登録簿を作るときに結ぶ（登録簿が `BackingStore` に依存しない向き）。
+  - `IProfileRepository`／`ProfileRepository` の `ProfilePath`／`OlderProfilePath`／`SelectedProfile` の型を `ProfileSlotNames` に替えた。呼び出し側の本体は、ほとんど変更なし（インデクサーの読み書きのため。`App` の 2 行のみ）。
+  - 登録簿の排他: 索引が有効なら、`XmlIoLock` を取らず、索引のロックだけで引く（実行時の読み取りが、長い XML の読み書きを待たない）。作り直すときだけ `XmlIoLock` → 索引のロックの順。
+  - テスト: `Phase10Step4dW5bProfileSlotNamesTests`（11 件。登録簿なしは配列と同じ、書くと ID・名前変更に追従、未登録・空は名前のまま、削除で最後の名前、あとから作られた・作り直したプロファイルへの結び、結びの付け外し、`BackingStore` の 3 つの配列、DI の結び、XML の排他を待たない、並行アクセス）。`BackingStoreStateDumper` は `ProfileSlotNames` を配列として出力する（golden は変更なし）。`ControlServicePr4ShimEquivalenceTests`／`Phase6Step10GroupThreeBContractTests` の型を更新。ラチェットの基準値を更新（`BackingStore` 7 → 9）。
+  - `MainWindow` の名前変更の再構築（`ProfilePath[i] = newProfile` など）は、まだ残す（W7 で撤去）。残しても、窓口の書き込みが同じ ID を引くため、結果は変わらない。
+  - 実機確認: 台帳 §27 の P10-94（統合版に追加）。先送り。
+  - 次: W5c（一時プロファイルの復帰、SA の Load Profile の実行時の解決、自動プロファイルの実行経路）。指示があるまで始めない（設計を説明して承認を得る）。
