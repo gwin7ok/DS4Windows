@@ -51,6 +51,13 @@ namespace DS4Windows.DI
             double delayTime = 0.0, string extras = "", string actionId = null);
 
         /// <summary>
+        /// Phase10-Step6 I5a: 名前で探した SA に、Extras（<see cref="SpecialAction.outputExtras"/>。Controls の Extras と同じ書式）を設定して <c>Actions.xml</c> へ保存する。
+        /// null／空白で付けない状態にする。<see cref="SaveAction"/> は SA を作り直すため、Extras を持たない。エディターは、SA の保存のあとにこれを呼ぶ。
+        /// </summary>
+        /// <returns>SA が見つかれば true</returns>
+        bool SaveActionExtras(string actionName, string outputExtras);
+
+        /// <summary>
         /// アクションを削除して <c>Actions.xml</c> へ保存する（<c>Global.RemoveAction</c> と同じ動作）。
         /// 実行中のアクション状態のクリア、ファイルへの保存、読み直しと件数の検証を含む。
         /// </summary>

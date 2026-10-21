@@ -60,6 +60,9 @@ namespace DS4Windows
         public string id = Guid.NewGuid().ToString("N");
         // Phase10-Step4d W3: 種別が Profile の SA の、切り替え先のプロファイルの固定 ID（details は名前）。Actions.xml の ProfileId 要素に保存する。ない（古いファイル）ときは null
         public string profileId;
+        // Phase10-Step6 I5a（Phase10-Step6-Plan.md §4）: SA に付ける Extras（振動、ライトバーの強制色と点滅、ボタン感度の一時変更）。Controls の Extras（DS4ControlSettings.extras）と同じ書式
+        // （カンマ区切りの 9 個）。Actions.xml の OutputExtras 要素に保存する。付けないときは null。その SA が成立している間だけ有効（束縛は I5b で作る）
+        public string outputExtras;
         public List<DS4Controls> trigger = new List<DS4Controls>();
         public string type;
         public ActionTypeId typeID;

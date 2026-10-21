@@ -157,5 +157,14 @@ namespace DS4WinWPF.DS4Control.DTOXml
             // Phase6-Step10-3c: Button（コントローラーのボタンの割り当て）も、Press／Toggle を保存する
             return (TypeString == "Key" || TypeString == "Button") && !string.IsNullOrEmpty(SwitchMode);
         }
+
+        // Phase10-Step6 I5a: SA に付ける Extras（振動、ライトバーの強制色と点滅、ボタン感度の一時変更）。Controls の Extras と同じ書式（カンマ区切りの 9 個）。
+        // Extras 要素は Macro の旗に使っているため、別の名前にした。全種別で、あるときだけ書く。古いバージョンは、未知の要素として読み飛ばす
+        [XmlElement("OutputExtras")]
+        public string OutputExtras { get; set; } = string.Empty;
+        public bool ShouldSerializeOutputExtras()
+        {
+            return !string.IsNullOrEmpty(OutputExtras);
+        }
     }
 }

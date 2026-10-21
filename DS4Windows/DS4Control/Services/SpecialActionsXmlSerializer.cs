@@ -315,6 +315,21 @@ namespace DS4Windows.Services
             SaveActions();
         }
 
+        /// <summary>
+        /// Phase10-Step6 I5a: 名前で探した SA に、Extras（<see cref="SpecialAction.outputExtras"/>）を設定して保存する。null／空白で、付けない状態にする。
+        /// SA の保存（<see cref="SaveActionNew"/>）は、SA を作り直すため Extras を持たない。エディターは、SA の保存のあとにこれを呼ぶ。
+        /// </summary>
+        /// <returns>SA が見つかれば true</returns>
+        public bool SetActionExtras(string name, string outputExtras)
+        {
+            SpecialAction action = store.actions.Find(item => item.name == name);
+            if (action == null) return false;
+
+            action.outputExtras = string.IsNullOrWhiteSpace(outputExtras) ? null : outputExtras.Trim();
+            SaveActions();
+            return true;
+        }
+
         public bool SaveAction(string name, string controls, int mode, string details, bool edit, string extras = "")
         {
             bool saved = true;

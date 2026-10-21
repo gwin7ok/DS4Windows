@@ -145,6 +145,20 @@ namespace DS4Windows
             OnActionsChanged();
         }
 
+        // Phase10-Step6 I5a: SA の保存のあとに、SA に付ける Extras を設定して保存する。読み直しはしない（SA の保存の読み直しで、メモリは最新。ログを増やさない）
+        public bool SaveActionExtras(string actionName, string outputExtras)
+        {
+            bool found = _actionsXml.SetActionExtras(actionName, outputExtras);
+            if (found)
+            {
+                if (AppLogger.IsTraceEnabled)
+                    AppLogger.LogTrace($"[DI] SpecialActionRepository.SaveActionExtras: Action '{actionName}' extras saved via DI");
+                OnActionsChanged();
+            }
+
+            return found;
+        }
+
         public bool RemoveActionAndSave(string actionName)
         {
             bool existed = ActionExists(actionName);

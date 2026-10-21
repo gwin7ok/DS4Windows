@@ -129,6 +129,7 @@ namespace DS4WinWPF.DS4Control.DTOXml
                 if (actionSerializer != null)
                 {
                     actionSerializer.Id = action.id;   // Phase10-Step4d W2
+                    actionSerializer.OutputExtras = action.outputExtras ?? string.Empty;   // Phase10-Step6 I5a
                     actionSerializers.Add(actionSerializer);
                 }
             }
@@ -252,6 +253,9 @@ namespace DS4WinWPF.DS4Control.DTOXml
                     // Phase10-Step4d W2: ファイルの ID を引き継ぐ。ない（古いファイル）・形式が不正なら、SpecialAction が作った新しい ID のままにして、呼び出し側へ知らせる
                     if (tempAction.typeID == SpecialAction.ActionTypeId.Profile && !string.IsNullOrEmpty(actionSerializer.ProfileId))
                         tempAction.profileId = actionSerializer.ProfileId;   // Phase10-Step4d W3
+
+                    // Phase10-Step6 I5a: SA に付けた Extras。ない（古いファイル）・空白だけのときは、付けない
+                    if (!string.IsNullOrWhiteSpace(actionSerializer.OutputExtras)) tempAction.outputExtras = actionSerializer.OutputExtras.Trim();
 
                     if (!string.IsNullOrEmpty(actionSerializer.Id) && Guid.TryParseExact(actionSerializer.Id, "N", out _))
                         tempAction.id = actionSerializer.Id;
