@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using DS4Windows.DI;
 
 namespace DS4Windows.Actions
 {
@@ -14,14 +15,22 @@ namespace DS4Windows.Actions
     {
         private readonly DS4Controls[] _triggers;
         private readonly bool _invertOnRelease;
+        private readonly double _delaySeconds;
+        private readonly IProfileSettingsService _profileSettings;
         private bool _armed;
 
         /// <param name="kind">所属の区分。束縛の区分（情報用）。</param>
         /// <param name="judgement">押下の判定の種類（Key は Assignment、Macro は SA と同じ Trigger）。</param>
         /// <param name="invertOnRelease">true なら、離したときに 1 回だけ成立する（Macro の Run on trigger release）。</param>
+        /// <param name="delaySeconds">0 より大きいと、押し続けてこの秒数が経ったときに成立する（SA の <c>delayTime</c> と同じ規則）。</param>
+        /// <param name="profileSettings">遅延の基準時刻の更新に使うデバウンス（<c>DebouncingMs</c>）の取得元。<paramref name="delaySeconds"/> が正のときだけ必要。</param>
         public ControlButtonInputAction(string name, DS4Controls control, ControlBindingKind kind = ControlBindingKind.Key,
-            ControlJudgement judgement = ControlJudgement.Assignment, bool invertOnRelease = false)
+            ControlJudgement judgement = ControlJudgement.Assignment, bool invertOnRelease = false,
+            double delaySeconds = 0.0, IProfileSettingsService profileSettings = null)
         {
+            if (delaySeconds > 0.0 && profileSettings == null) throw new ArgumentNullException(nameof(profileSettings));
+            _delaySeconds = delaySeconds;
+            _profileSettings = profileSettings;
             Name = name ?? string.Empty;
             _triggers = new[] { control };
             Kind = kind;
@@ -51,6 +60,10 @@ namespace DS4Windows.Actions
                 ? input.IsActive(_triggers[0])
                 : input is IControlTriggerInput control && control.IsControlActive(_triggers[0]);
 
+            // Phase10-Step4 W4: 押し続ける秒数。遅延つきのときは、反転を無視する（ComboTriggerInputAction と同じ）
+            if (_delaySeconds > 0.0)
+                return EvaluateDelayed(input, active);
+
             if (!_invertOnRelease)
                 return active ? TriggerState.Established : TriggerState.NotEstablished;
 
@@ -62,6 +75,26 @@ namespace DS4Windows.Actions
             }
 
             if (active) _armed = true;                            // 押された: 準備（成立にはしない）
+            return TriggerState.NotEstablished;
+        }
+
+        // ComboTriggerInputAction.EvaluateDelayed と同じ更新の規則（基準時刻は、入力の共有の DelayClock）
+        private TriggerState EvaluateDelayed(ITriggerInput input, bool active)
+        {
+            DelayClock clock = input.Delay;
+            DateTime utcNow = input.UtcNow;
+
+            if (active)
+            {
+                clock.Now = utcNow;
+                return clock.Now >= clock.Old + TimeSpan.FromSeconds(_delaySeconds)
+                    ? TriggerState.Established
+                    : TriggerState.NotEstablished;
+            }
+
+            if (clock.Now < utcNow - TimeSpan.FromMilliseconds(100) + TimeSpan.FromMilliseconds(_profileSettings.DebouncingMs[input.Device]))
+                clock.Old = utcNow;
+
             return TriggerState.NotEstablished;
         }
 

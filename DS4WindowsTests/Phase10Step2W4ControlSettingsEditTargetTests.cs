@@ -230,8 +230,8 @@ namespace DS4WindowsTests
         [Theory]
         [InlineData(2)]
         [InlineData(3)]
-        [InlineData(5)]
-        [InlineData(9)]
+        [InlineData(6)]
+        [InlineData(7)]
         public void WriteFrom_ATypeControlsCannotSaveYet_IsRefused_AndChangesNothing(int typeIndex)
         {
             var rig = new Rig();

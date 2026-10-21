@@ -68,11 +68,11 @@ namespace DS4WindowsTests
         [InlineData(2, false)]   // Launch Program（Step3 まで、Controls に保存する場所がない）
         [InlineData(3, false)]   // Load Profile
         [InlineData(4, true)]    // Output Key/Mouse/Button（Key・Button）
-        [InlineData(5, false)]   // Disconnect BT
+        [InlineData(5, true)]   // Disconnect BT
         [InlineData(6, false)]   // Check Battery
         [InlineData(7, false)]   // Multi Action
-        [InlineData(8, false)]   // 6 軸ホイール較正
-        [InlineData(9, false)]   // ジャイロ較正
+        [InlineData(8, true)]   // 6 軸ホイール較正（Phase10-Step4 W4 で保存可能になった）
+        [InlineData(9, true)]   // ジャイロ較正（同上）
         [InlineData(10, true)]   // Default（Controls のモードだけの項目。出力ピッカーの Default ボタンと同じ）
         [InlineData(11, true)]   // Unbound（同上）
         public void OnlyTheTypesControlsCanSaveNow_AreSelectable(int index, bool expected)

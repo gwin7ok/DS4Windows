@@ -150,16 +150,21 @@ namespace DS4WindowsTests
         }
 
         [Fact]
-        public void ErasingEveryFrame_OnlyChangesThatOneFlagOfThePolicy_ForEveryType()
+        public void ForControls_ChangesOnlyTheThreeControlsFlagsOfThePolicy_ForEveryType()
         {
             SpecialActionOutputFactory factory = NewFactory(withPorts: true);
 
             foreach (SpecialAction sa in EveryType())
             {
                 SpecialActionOutputs plain = factory.Create(0, sa, 0);
-                SpecialActionOutputs erasing = factory.Create(0, sa, 0, erasesOutputEveryFrame: true);
+                SpecialActionOutputs erasing = factory.Create(0, sa, 0, forControls: true);
 
+                // Phase10-Step4 W4: Controls 用は、Controls の既存の束縛と同じ 3 つのフラグ（抑制しない・出力を消さない・割り当てたボタンの出力を毎フレーム消す）
+                Assert.True(plain.Policy.SuppressesTriggerButtons);
+                Assert.True(plain.Policy.ResetsTriggerOutput);
                 Assert.False(plain.Policy.ErasesOutputEveryFrame);
+                Assert.False(erasing.Policy.SuppressesTriggerButtons);
+                Assert.False(erasing.Policy.ResetsTriggerOutput);
                 Assert.True(erasing.Policy.ErasesOutputEveryFrame);
                 Assert.Equal(plain.Policy.RespectsFreshPressGuard, erasing.Policy.RespectsFreshPressGuard);
                 Assert.Equal(plain.Policy.BlocksWhileExecuting, erasing.Policy.BlocksWhileExecuting);
@@ -173,13 +178,13 @@ namespace DS4WindowsTests
         }
 
         [Fact]
-        public void TheDefaultPolicy_IsSharedForTheSa_AndANewOneIsMadeOnlyWhenErasing()
+        public void TheDefaultPolicy_IsSharedForTheSa_AndANewOneIsMadeOnlyForControls()
         {
             SpecialActionOutputFactory factory = NewFactory(withPorts: true);
             var key = new SpecialAction("key", "Cross", "Key", "65", 0, "Press\n");
 
             Assert.Same(BindingPolicy.Default, factory.Create(0, key, 0).Policy);
-            Assert.NotSame(BindingPolicy.Default, factory.Create(0, key, 0, erasesOutputEveryFrame: true).Policy);
+            Assert.NotSame(BindingPolicy.Default, factory.Create(0, key, 0, forControls: true).Policy);
         }
 
         [Fact]

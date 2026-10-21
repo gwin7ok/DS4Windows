@@ -362,3 +362,18 @@ Special Actions タブで種別ごとに作成し、プロファイルに有効�
 | P10-38 | Cancel で、チェックの変更が捨てられる。Macro から別の種別（Key、Default）へ変えて保存すると、チェックの状態が残らない（再度 Macro にしてもすべて外れている） | ○ |
 | P10-39 | Synchronized Run: チェックして保存し、再読み込みで状態が残る。動作に不具合がない（SA と同じ仕様で、Controls は 1 ボタン 1 マクロのため、違いは出にくい） | 先送り（W4 の確認のときにまとめて行う） |
 | P10-40 | 既存の Controls（Key、Button、Default、Unbound、Extras）と、SA の全種別が従来どおり（W2 の確認の簡易版） | 先送り（同上） |
+
+## 19. Phase10-Step4 W4 の実機確認（2026-10-21）
+
+`Phase10-Step4-Plan.md` の W4（Controls のボタンに、Disconnect BT、Calibrate gyro、Calibrate sixaxis wheel を割り当てられるようにした）の確認。設定は、押し続ける秒数（Hold interval）だけ。W3 から持ち越した P10-39・40 も、ここでまとめて行う。
+
+| ID | 項目 | 結果 |
+|---|---|---|
+| P10-41 | Controls タブでボタンを開き、種別の一覧から Disconnect BT／Calibrate gyro／Calibrate sixaxis wheel を選べる（グレーアウトしていない）。Hold interval を入れて Save でき、ボタン一覧に種別名（言語リソースの表示名）が出る | |
+| P10-42 | Calibrate gyro: 割り当てたボタンを押すと、ジャイロの較正のやり直しが 1 回走る（押し続けても繰り返さない）。そのボタンの元の出力（パッドのボタン）は出ない。ログに SA と同じ形の行が出る | |
+| P10-43 | Disconnect BT: Hold interval を設定したボタンを、その秒数押し続けると Bluetooth が切断される。秒数に満たず離したときは切断されない | |
+| P10-44 | Calibrate sixaxis wheel: 割り当てたボタンを押し続けると、ステアリングの較正が進む（SA と同じ動き） | |
+| P10-45 | Hold interval の保存と再読み込み（プロファイルを保存→再起動）で値が残る。`Profile.xml` の `<Control><Special>` に書かれる。別の種別（Key、Default）へ変えて保存すると、Special の設定が消える | |
+| P10-46 | 優先順位: 同じボタンを Special Actions のトリガーにも使うと、Special Actions が勝つ（Controls の Special は動かない）。ほかのボタンを先に押していた場合の抑制も、Controls の Macro と同じ | |
+| P10-39 | （W3 から）Synchronized Run: 保存でき、再読み込みで状態が残り、動作に不具合がない | |
+| P10-40 | （W3 から）既存の Controls（Key、Button、Default、Unbound、Extras）と SA の全種別が従来どおり | |

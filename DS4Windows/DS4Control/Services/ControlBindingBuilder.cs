@@ -23,13 +23,26 @@ namespace DS4Windows.Services
         private readonly IProfileSettingsService _profileSettings;
         private readonly IMacroPlayer _macroPlayer;   // Macro（7.8c）。省略時（テスト）は、Macro の束縛を作らず、旧経路が処理する
         private readonly IControlExtrasPort _extrasPort;   // Extras（7.8e）。省略時（テスト）は、Extras を持つ割り当ての束縛を作らず、旧経路が処理する
+        private readonly ISpecialActionOutputFactory _outputFactory;   // Phase10-Step4 W4: SA 専用の種別（Special）の出力と方針。省略時（テスト）は、Special の束縛を作らない
+
+        /// <summary>
+        /// Phase10-Step4 W4: Controls に割り当てられる、SA 専用の種別（<see cref="DS4ControlSettings.ActionType.Special"/>）のうち、束縛を作る種別。
+        /// 群ごとの縦通し（Phase10-Step4-Plan.md §5）で、保存・実行・画面が通ったものから足す。Macro は Macro の割り当て（3 項目の入れ物）で扱うため含めない。
+        /// </summary>
+        private static readonly SpecialAction.ActionTypeId[] BuiltSpecialTypes =
+        {
+            SpecialAction.ActionTypeId.DisconnectBT,
+            SpecialAction.ActionTypeId.GyroCalibrate,
+            SpecialAction.ActionTypeId.SASteeringWheelEmulationCalibrate,
+        };
 
         public ControlBindingBuilder(IProfileSettingsService profileSettings, IMacroPlayer macroPlayer = null,
-            IControlExtrasPort extrasPort = null)
+            IControlExtrasPort extrasPort = null, ISpecialActionOutputFactory outputFactory = null)
         {
             _profileSettings = profileSettings ?? throw new ArgumentNullException(nameof(profileSettings));
             _macroPlayer = macroPlayer;
             _extrasPort = extrasPort;
+            _outputFactory = outputFactory;
         }
 
         public IReadOnlyList<IActionBinding> Build(int device)
@@ -273,6 +286,18 @@ namespace DS4Windows.Services
                         AddMacro(device, dcs, steps, result);
                     }
                     break;
+                case DS4ControlSettings.ActionType.Special:
+                    if (TryInterpretSpecial(dcs, out ControlSpecialItem special) && _outputFactory != null)
+                    {
+                        // 出力を作れない種別（窓口が未接続のテスト）は、束縛を 1 つも作らない（Extras も含め、dcs 全体を作らない）
+                        var identity = CreateSpecialIdentity(device, dcs, special);
+                        SpecialActionOutputs outputs = _outputFactory.Create(device, identity, -1, forControls: true);
+                        if (outputs == null) break;
+
+                        if (hasExtras) AddExtras(device, dcs, extrasValues, result);
+                        AddSpecial(dcs, identity, special, outputs, result);
+                    }
+                    break;
                 case DS4ControlSettings.ActionType.Button:
                     {
                         // Phase8-Step7 7.8f-2: Toggle つきは、ButtonMouse が有効なときだけ（Toggle の出力は ButtonMouse の区分）。出力先がパッドなら ButtonPad も要る
@@ -301,6 +326,41 @@ namespace DS4Windows.Services
                 default:
                     break;
             }
+        }
+
+        /// <summary>
+        /// Phase10-Step4 W4: SA 専用の種別の割り当てが、新経路の条件（<see cref="BuiltSpecialTypes"/> の種別で、型のある項目を持つ）を満たすか。
+        /// </summary>
+        public static bool TryInterpretSpecial(DS4ControlSettings dcs, out ControlSpecialItem item)
+        {
+            item = null;
+            if (dcs == null) return false;
+            if (dcs.actionType != DS4ControlSettings.ActionType.Special) return false;
+            if (dcs.special == null || Array.IndexOf(BuiltSpecialTypes, dcs.special.Type) < 0) return false;
+
+            item = dcs.special;
+            return true;
+        }
+
+        // 設計: Phase10-Step4-Plan.md §3.3。SA 専用の割り当てを、合成の SpecialAction（SA と同じ出力アクションが受け取る形）で表す。
+        // トリガーは、そのボタン 1 つ。押し続ける秒数は delayTime（入力が SA と同じ規則で見る）
+        private static SpecialAction CreateSpecialIdentity(int device, DS4ControlSettings dcs, ControlSpecialItem item)
+        {
+            var identity = new SpecialAction($"Synthetic_Special_{device}_{(int)dcs.control}", "Synthetic", "Special", string.Empty, 0, string.Empty);
+            identity.typeID = item.Type;
+            identity.type = item.Type.ToString();
+            identity.controls = identity.name;
+            identity.delayTime = item.HoldSeconds;
+            identity.trigger = new List<DS4Controls> { dcs.control };
+            return identity;
+        }
+
+        // 入力は、Controls の 1 ボタン（SA と同じ閾値の判定。押し続ける秒数つき）。方針は、factory の Controls 用（抑制も消去もせず、割り当てたボタンの出力を毎フレーム消す）
+        private void AddSpecial(DS4ControlSettings dcs, SpecialAction identity, ControlSpecialItem item, SpecialActionOutputs outputs, List<IActionBinding> result)
+        {
+            result.Add(new TriggerBinding(new ControlButtonInputAction(identity.name, dcs.control, ControlBindingKind.Special, ControlJudgement.Trigger,
+                    delaySeconds: item.HoldSeconds, profileSettings: _profileSettings),
+                outputs.Outputs, outputs.Policy, identity, -1));
         }
 
         // 設計: Phase8-Step7-8f-Plan.md §3.2。パッドへの割り当て。割り当てたボタンの通常の出力は、毎フレーム消す（Controls の規則）。値の出力は、評価されたフレームごとに、全 dcs のあと（Stage3 と同じ段階）で書く。

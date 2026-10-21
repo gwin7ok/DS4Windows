@@ -43,11 +43,11 @@ namespace DS4WinWPF.DS4Forms.ViewModels
                 new ActionTypeDescriptor(2, SpecialAction.ActionTypeId.Program, "SpecialActionEdit.LaunchProgram", Both, SaOnly),
                 new ActionTypeDescriptor(3, SpecialAction.ActionTypeId.Profile, "SpecialActionEdit.LoadProfile", Both, SaOnly),
                 new ActionTypeDescriptor(4, SpecialAction.ActionTypeId.Key, "SpecialActionEdit.PressKey", Both, Both),   // Button もこの項目で編集する
-                new ActionTypeDescriptor(5, SpecialAction.ActionTypeId.DisconnectBT, "SpecialActionEdit.DisconnectBT", Both, SaOnly),
+                new ActionTypeDescriptor(5, SpecialAction.ActionTypeId.DisconnectBT, "SpecialActionEdit.DisconnectBT", Both, Both),
                 new ActionTypeDescriptor(6, SpecialAction.ActionTypeId.BatteryCheck, "SpecialActionEdit.CheckBattery", Both, SaOnly),
                 new ActionTypeDescriptor(7, SpecialAction.ActionTypeId.MultiAction, "SpecialActionEdit.MultiAction", Both, SaOnly),
-                new ActionTypeDescriptor(8, SpecialAction.ActionTypeId.SASteeringWheelEmulationCalibrate, "SpecialActionEdit.SixAxisWheelCalib", Both, SaOnly),
-                new ActionTypeDescriptor(9, SpecialAction.ActionTypeId.GyroCalibrate, "SpecialActionEdit.CalibrateGyro", Both, SaOnly),
+                new ActionTypeDescriptor(8, SpecialAction.ActionTypeId.SASteeringWheelEmulationCalibrate, "SpecialActionEdit.SixAxisWheelCalib", Both, Both),
+                new ActionTypeDescriptor(9, SpecialAction.ActionTypeId.GyroCalibrate, "SpecialActionEdit.CalibrateGyro", Both, Both),
             };
 
             DefaultIndex = -1;

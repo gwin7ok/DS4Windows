@@ -44,7 +44,7 @@ namespace DS4Windows.Actions
             _profileSwitcher = profileSwitcher ?? throw new ArgumentNullException(nameof(profileSwitcher));
         }
 
-        public SpecialActionOutputs Create(int device, SpecialAction sa, int index, bool erasesOutputEveryFrame = false)
+        public SpecialActionOutputs Create(int device, SpecialAction sa, int index, bool forControls = false)
         {
             if (sa == null) throw new ArgumentNullException(nameof(sa));
 
@@ -55,20 +55,20 @@ namespace DS4Windows.Actions
                     // 設計書 §6: Press は Fresh-press ガードを見ない／Toggle は見る（Stage3 の ButtonSpecialActionOutput と同じ規則）
                     bool toggle = sa.KeyButtonSwitchMode.HasValue && sa.KeyButtonSwitchMode.Value == SpecialAction.KeyButtonSwitchModeEnum.Toggle;
                     return new SpecialActionOutputs(new IOutputAction[] { new ButtonOutputAction(sa, ActionBindingBuilder.InterpretButton(sa), _manager) },
-                        new BindingPolicy(respectsFreshPressGuard: toggle, erasesOutputEveryFrame: erasesOutputEveryFrame));
+                        Policy(forControls, respectsFreshPressGuard: toggle));
                 }
 
                 case SpecialAction.ActionTypeId.Key:
                     return new SpecialActionOutputs(new IOutputAction[] { new KeyOutputAction(sa, ActionBindingBuilder.InterpretKey(sa), _profileSettings, index, _actionRepository) },
-                        Policy(erasesOutputEveryFrame));
+                        Policy(forControls));
 
                 case SpecialAction.ActionTypeId.Macro:
                     return new SpecialActionOutputs(new IOutputAction[] { new MacroAction(sa, device, _macroPlayer, index, _actionRepository) },
-                        Policy(erasesOutputEveryFrame), invertOnRelease: sa.pressRelease);
+                        Policy(forControls), invertOnRelease: sa.pressRelease);
 
                 case SpecialAction.ActionTypeId.Program:
                     return new SpecialActionOutputs(new IOutputAction[] { new LaunchProcessAction(sa, _processLauncher, index, _actionRepository) },
-                        new BindingPolicy(blocksWhileExecuting: true, erasesOutputEveryFrame: erasesOutputEveryFrame));
+                        Policy(forControls, blocksWhileExecuting: true));
 
                 case SpecialAction.ActionTypeId.Profile:
                 {
@@ -77,34 +77,33 @@ namespace DS4Windows.Actions
                     // 切替は行う。復帰は、自動（AutomaticUntrigger）のときだけ。uTrigger の値は読み込みも保存もそのまま（ファイルは変えない）。
                     UntriggerPolicy untrigger = sa.automaticUntrigger ? UntriggerPolicy.Automatic : UntriggerPolicy.None;
                     return new SpecialActionOutputs(new IOutputAction[] { new ProfileSwitchAction(sa, device, _profileSwitcher, index, _actionRepository, _profileSettings, _mappingProvider) },
-                        new BindingPolicy(blocksWhileExecuting: true, untrigger: untrigger,
-                            stopOnRelease: untrigger == UntriggerPolicy.None,   // 復帰を持つ Profile は、離したエッジの Stop を呼ばない。復帰は ProcessUntrigger だけが担う（二重の復帰を防ぐ。Q4）
-                            erasesOutputEveryFrame: erasesOutputEveryFrame));
+                        Policy(forControls, blocksWhileExecuting: true, untrigger: untrigger,
+                            stopOnRelease: untrigger == UntriggerPolicy.None));   // 復帰を持つ Profile は、離したエッジの Stop を呼ばない。復帰は ProcessUntrigger だけが担う（二重の復帰を防ぐ。Q4）
                 }
 
                 case SpecialAction.ActionTypeId.GyroCalibrate:
                     // 立ち上がりの 1 回だけ。Fresh-press ガードは既定のまま（旧経路の独自の判定と同じ効果）。実行中のブロックなし
                     if (_gyroCalibration == null) return null;
                     return new SpecialActionOutputs(new IOutputAction[] { new GyroCalibrateAction(sa, device, _gyroCalibration, index, _actionRepository) },
-                        Policy(erasesOutputEveryFrame));
+                        Policy(forControls));
 
                 case SpecialAction.ActionTypeId.DisconnectBT:
                     // 切断の要求が成功するまで、押している間は再試行する（Q3＝B）。Fresh-press ガードは既定のまま。実行中のブロックなし
                     if (_disconnectPort == null) return null;
                     return new SpecialActionOutputs(new IOutputAction[] { new DisconnectBTAction(sa, device, _disconnectPort, _profileSettings) },
-                        Policy(erasesOutputEveryFrame));
+                        Policy(forControls));
 
                 case SpecialAction.ActionTypeId.BatteryCheck:
                     // 押している間、毎フレームの色の遷移。離したときに戻す（既定の StopOnRelease）。Fresh-press ガードは既定のまま。実行中のブロックなし
                     if (_batteryCheckPort == null) return null;
                     return new SpecialActionOutputs(new IOutputAction[] { new BatteryCheckAction(sa, device, _batteryCheckPort, index, _actionRepository) },
-                        Policy(erasesOutputEveryFrame));
+                        Policy(forControls));
 
                 case SpecialAction.ActionTypeId.SASteeringWheelEmulationCalibrate:
                     // 押している間、毎フレーム判定する（立ち上がりも含む）。Fresh-press ガードは既定のまま。実行中のブロックなし
                     if (_wheelCalibrationPort == null) return null;
                     return new SpecialActionOutputs(new IOutputAction[] { new SteeringWheelCalibrateAction(sa, device, _wheelCalibrationPort) },
-                        Policy(erasesOutputEveryFrame));
+                        Policy(forControls));
 
                 case SpecialAction.ActionTypeId.MultiAction:
                 {
@@ -119,7 +118,7 @@ namespace DS4Windows.Actions
                         gestureOutputs[g] = new MacroStringAction(sa, device, g < macros.Length ? macros[g] : string.Empty, _macroStringPlayer);
 
                     return new SpecialActionOutputs(gestureOutputs,
-                        new BindingPolicy(respectsFreshPressGuard: false, stopOnRelease: false, routesOutputsByGesture: true, erasesOutputEveryFrame: erasesOutputEveryFrame),
+                        Policy(forControls, respectsFreshPressGuard: false, stopOnRelease: false, routesOutputsByGesture: true),
                         isMultiTap: true);
                 }
 
@@ -128,8 +127,26 @@ namespace DS4Windows.Actions
             }
         }
 
-        /// <summary>既定の方針。Controls 用（毎フレーム消去）のときだけ、新しい方針を作る（SA は共有の既定をそのまま使う）。</summary>
-        private static BindingPolicy Policy(bool erasesOutputEveryFrame)
-            => erasesOutputEveryFrame ? new BindingPolicy(erasesOutputEveryFrame: true) : BindingPolicy.Default;
+        /// <summary>
+        /// 実行方針。SA 用（<paramref name="forControls"/> が偽）は、種別ごとの値のまま（すべて既定なら共有の <see cref="BindingPolicy.Default"/>）。
+        /// Controls 用は、Controls の既存の束縛（Key／Macro／Pad など）と同じく、トリガーのボタンを抑制せず・出力も消さず（<c>suppressesTriggerButtons: false</c>、
+        /// <c>resetsTriggerOutput: false</c>）、代わりに割り当てたボタンの通常の出力を毎フレーム消す（<c>erasesOutputEveryFrame: true</c>）。
+        /// </summary>
+        private static BindingPolicy Policy(bool forControls, bool respectsFreshPressGuard = true, bool blocksWhileExecuting = false,
+            UntriggerPolicy untrigger = UntriggerPolicy.None, bool stopOnRelease = true, bool routesOutputsByGesture = false)
+        {
+            if (!forControls)
+            {
+                bool isDefault = respectsFreshPressGuard && !blocksWhileExecuting && untrigger == UntriggerPolicy.None && stopOnRelease && !routesOutputsByGesture;
+                return isDefault
+                    ? BindingPolicy.Default
+                    : new BindingPolicy(respectsFreshPressGuard: respectsFreshPressGuard, blocksWhileExecuting: blocksWhileExecuting, untrigger: untrigger,
+                        stopOnRelease: stopOnRelease, routesOutputsByGesture: routesOutputsByGesture);
+            }
+
+            return new BindingPolicy(respectsFreshPressGuard: respectsFreshPressGuard, blocksWhileExecuting: blocksWhileExecuting, untrigger: untrigger,
+                suppressesTriggerButtons: false, resetsTriggerOutput: false, stopOnRelease: stopOnRelease,
+                routesOutputsByGesture: routesOutputsByGesture, erasesOutputEveryFrame: true);
+        }
     }
 }

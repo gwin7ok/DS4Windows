@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using DS4Windows;
 using DS4Windows.Actions;
+using DS4Windows.DI;
 
 namespace DS4WindowsTests
 {
@@ -59,6 +60,23 @@ namespace DS4WindowsTests
             dcs.keyType = keyType | DS4KeyType.Macro;
             _touched.Add(control);
             return dcs;
+        }
+
+        /// <summary>Phase10-Step4 W4: ボタンの割り当てを、SA 専用の種別（型のある項目）にする。</summary>
+        public DS4ControlSettings MapSpecial(DS4Controls control, ControlSpecialItem item)
+        {
+            DS4ControlSettings dcs = TestGlobals.Store.GetDS4CSetting(Device, control);
+            dcs.Reset();
+            dcs.actionType = DS4ControlSettings.ActionType.Special;
+            dcs.special = item;
+            _touched.Add(control);
+            return dcs;
+        }
+
+        /// <summary>Phase10-Step4 W4: 指定のビルダー（記録用の窓口つき）で組み立てた束縛を、登録簿へ差し替える。</summary>
+        public void PublishWith(IControlBindingBuilder builder)
+        {
+            TestHost.GetService<IActionRegistry>().Replace(Device, builder.Build(Device));
         }
 
         /// <summary>Phase8-Step7 7.8e: ボタンに Extras（振動・ライトバー・感度の 9 個の値）だけを付ける（通常の割り当ては Default）。</summary>

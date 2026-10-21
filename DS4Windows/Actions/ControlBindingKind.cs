@@ -24,5 +24,8 @@ namespace DS4Windows.Actions
 
         /// <summary>Extras（振動、ライトバー、感度。7.8e）。Lightbar マクロは、7.8e で機能を廃止した。</summary>
         Extras,
+
+        /// <summary>SA 専用の種別（Disconnect BT、Calibrate gyro、Calibrate sixaxis wheel ほか）の割り当て（Phase10-Step4 W4）。出力は SA と同じ部品が作る。</summary>
+        Special,
     }
 }

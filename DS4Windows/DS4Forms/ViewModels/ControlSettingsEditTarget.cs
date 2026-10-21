@@ -93,6 +93,9 @@ namespace DS4WinWPF.DS4Forms.ViewModels
                         return typeCatalog.IndexOf(SpecialAction.ActionTypeId.Key);
                     case DS4ControlSettings.ActionType.Macro:
                         return typeCatalog.IndexOf(SpecialAction.ActionTypeId.Macro);
+                    case DS4ControlSettings.ActionType.Special:
+                        // Phase10-Step4 W4: SA 専用の種別は、その種別の項目（項目がなければ Default）
+                        return working.special != null ? typeCatalog.IndexOf(working.special.Type) : typeCatalog.DefaultIndex;
                     default:
                         return typeCatalog.DefaultIndex;
                 }
@@ -100,7 +103,11 @@ namespace DS4WinWPF.DS4Forms.ViewModels
         }
 
         /// <summary>編集用のコピーの値を、種別ごとの入力へ読み込む（Default のときは、何も読み込まない）。</summary>
-        public void LoadInto(PressKeyViewModel pressKey, MacroViewModel macro)
+        /// <param name="holdIntervals">
+        /// Phase10-Step4 W4: 押し続ける秒数だけを持つ種別（Disconnect BT、Calibrate gyro、Calibrate sixaxis wheel）の入力。省略可（なければ、秒数は読み書きしない）。
+        /// </param>
+        public void LoadInto(PressKeyViewModel pressKey, MacroViewModel macro,
+            IReadOnlyDictionary<SpecialAction.ActionTypeId, SpecialActionViewModel> holdIntervals = null)
         {
             if (pressKey == null) throw new ArgumentNullException(nameof(pressKey));
             if (macro == null) throw new ArgumentNullException(nameof(macro));
@@ -116,6 +123,11 @@ namespace DS4WinWPF.DS4Forms.ViewModels
                     pressKey.ReadSettings(working);
                     // Button の読み込みは、SwitchMode を変えない（SA の編集では、ダイアログが Toggle を落とすため）。Controls は、保存された Toggle を使う
                     pressKey.SwitchMode = working.keyType.HasFlag(DS4KeyType.Toggle) ? "Toggle" : "Press";
+                    break;
+
+                case DS4ControlSettings.ActionType.Special:
+                    if (working.special != null && holdIntervals != null && holdIntervals.TryGetValue(working.special.Type, out SpecialActionViewModel holdVm))
+                        holdVm.HoldInterval = working.special.HoldSeconds;
                     break;
 
                 case DS4ControlSettings.ActionType.Macro:
@@ -138,7 +150,8 @@ namespace DS4WinWPF.DS4Forms.ViewModels
         /// 種別の添字（<see cref="ActionTypeCatalog"/>）に対応する入力から、編集用のコピーへ書き出す。<c>extras</c> は、変えない。
         /// 0 は、既定（割り当てなし）。Controls で、現在保存できない種別（Step3 まで）は、例外。
         /// </summary>
-        public void WriteFrom(int typeIndex, PressKeyViewModel pressKey, MacroViewModel macro)
+        public void WriteFrom(int typeIndex, PressKeyViewModel pressKey, MacroViewModel macro,
+            IReadOnlyDictionary<SpecialAction.ActionTypeId, SpecialActionViewModel> holdIntervals = null)
         {
             if (pressKey == null) throw new ArgumentNullException(nameof(pressKey));
             if (macro == null) throw new ArgumentNullException(nameof(macro));
@@ -175,6 +188,12 @@ namespace DS4WinWPF.DS4Forms.ViewModels
 
                 case SpecialAction.ActionTypeId.Macro:
                     WriteMacro(macro);
+                    break;
+
+                case SpecialAction.ActionTypeId.DisconnectBT:
+                case SpecialAction.ActionTypeId.GyroCalibrate:
+                case SpecialAction.ActionTypeId.SASteeringWheelEmulationCalibrate:
+                    WriteSpecial(descriptor.TypeId, holdIntervals);
                     break;
 
                 default:   // 0（None）
@@ -225,6 +244,18 @@ namespace DS4WinWPF.DS4Forms.ViewModels
 
             // C-5 の是正: Toggle は、Button（マウスボタン、パッドのボタン）にも書く
             if (IsToggle(pressKey)) working.keyType |= DS4KeyType.Toggle;
+        }
+
+        // Phase10-Step4 W4: SA 専用の種別（押し続ける秒数だけを持つもの）。通常の割り当て（キー・マクロの手順）は残さない
+        private void WriteSpecial(SpecialAction.ActionTypeId type, IReadOnlyDictionary<SpecialAction.ActionTypeId, SpecialActionViewModel> holdIntervals)
+        {
+            double seconds = 0;
+            if (holdIntervals != null && holdIntervals.TryGetValue(type, out SpecialActionViewModel holdVm)) seconds = holdVm.HoldInterval;
+
+            working.special = new ControlSpecialItem { Type = type, HoldSeconds = seconds };
+            working.actionType = DS4ControlSettings.ActionType.Special;
+            working.keyType = DS4KeyType.None;
+            working.action = new ControlActionData();
         }
 
         private void WriteMacro(MacroViewModel macro)
