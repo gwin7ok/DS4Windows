@@ -13,8 +13,7 @@ namespace DS4Windows.Actions
     /// Key と Button は、解釈済みの値（<see cref="KeyBindingValues"/>／<see cref="ButtonBindingValues"/>）が別にあるため、項目では表さない。
     /// </para>
     /// </summary>
-    // TODO(Phase10-Step6 I3／I4): 作られた経緯＝統合 Step の I2。未接続である理由＝読み込みの部品（SpecialActionAssignmentReader）が I3 で作られ、そこが ToItem を使う。
-    // 接続予定＝I3（SA → 定義）、I4（出力の factory が定義を受け取る形になれば、ControlBindingBuilder.CreateSpecialIdentity の代わりに ToSpecialAction を使う）。
+    // 接続済み（I3）: SpecialActionAssignmentReader が ToItem を、ControlsAssignmentReader が ToSpecialAction を使う（ControlBindingBuilder.CreateSpecialIdentity の置き換え）。
     // 現状の呼び出し側（SpecialActionOutputFactory／ControlBindingBuilder）は、まだ SpecialAction の文字列を直接読む・合成の SpecialAction を自前で作る。呼出元が 0 件でも、削除しない（CLAUDE.md 2.4）
     public static class SpecialActionItemMapper
     {
@@ -83,7 +82,7 @@ namespace DS4Windows.Actions
 
         /// <summary>
         /// 項目から、合成の <see cref="SpecialAction"/>（SA の出力アクションが受け取る形）を作る。<see cref="ToItem"/> の逆。
-        /// Controls の SA 専用の割り当て（<c>ControlBindingBuilder.CreateSpecialIdentity</c>）が作る形と同じ。Macro の手順（<c>macro</c>）と再生の指定（<c>keyType</c>）は、項目にないため、呼び出し側が足す。
+        /// Controls の SA 専用の割り当て（<c>ControlBindingBuilder</c> が、Phase10-Step6 I3 まで自前で作っていた形［CreateSpecialIdentity。削除済み］と同じ。Macro の手順（<c>macro</c>）と再生の指定（<c>keyType</c>）は、項目にないため、呼び出し側が足す。
         /// </summary>
         public static SpecialAction ToSpecialAction(string name, IReadOnlyList<DS4Controls> triggers, ControlSpecialItem item)
         {

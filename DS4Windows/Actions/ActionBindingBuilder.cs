@@ -84,7 +84,11 @@ namespace DS4Windows.Actions
             if (sa.trigger == null || sa.trigger.Count == 0) return null;
 
             // Phase10-Step4 W2: 種別ごとの出力アクションと方針は、共通の部品が作る（動作は変えない）。未対応の種別・窓口が未接続の種別は null（旧経路が処理する）
-            SpecialActionOutputs outputs = _outputFactory.Create(device, sa, index);
+            // Phase10-Step6 I3: SA を読み込みの部品で定義にして、定義を受ける Create へ渡す（実行時の状態は、プロファイルの SpecialAction の実物が持つ）
+            AssignmentDefinition definition = SpecialActionAssignmentReader.Read(sa);
+            if (definition == null) return null;
+
+            SpecialActionOutputs outputs = _outputFactory.Create(device, definition, sa, index);
             if (outputs == null) return null;
 
             // 入力は、SA 側が作る（複数ボタンの組み合わせ。MultiAction だけは、タップ・長押し・ダブルタップを判定する独立した入力）

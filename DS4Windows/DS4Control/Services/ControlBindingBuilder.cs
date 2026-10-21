@@ -292,15 +292,15 @@ namespace DS4Windows.Services
                     }
                     break;
                 case DS4ControlSettings.ActionType.Special:
-                    if (TryInterpretSpecial(dcs, out ControlSpecialItem special) && _outputFactory != null)
+                    // Phase10-Step6 I3: 定義と、実行時の状態の入れ物（合成の SpecialAction）は、読み込みの部品が作る
+                    if (_outputFactory != null && ControlsAssignmentReader.TryReadSpecial(device, dcs, out AssignmentDefinition special, out SpecialAction identity))
                     {
                         // 出力を作れない種別（窓口が未接続のテスト）は、束縛を 1 つも作らない（Extras も含め、dcs 全体を作らない）
-                        var identity = CreateSpecialIdentity(device, dcs, special);
-                        SpecialActionOutputs outputs = _outputFactory.Create(device, identity, -1, forControls: true);
+                        SpecialActionOutputs outputs = _outputFactory.Create(device, special, identity, -1);
                         if (outputs == null) break;
 
                         if (hasExtras) AddExtras(device, dcs, extrasValues, result);
-                        AddSpecial(dcs, identity, special, outputs, result);
+                        AddSpecial(dcs, identity, special.Item, outputs, result);
                     }
                     break;
                 case DS4ControlSettings.ActionType.Button:
@@ -348,37 +348,6 @@ namespace DS4Windows.Services
 
             item = dcs.special;
             return true;
-        }
-
-        // 設計: Phase10-Step4-Plan.md §3.3。SA 専用の割り当てを、合成の SpecialAction（SA と同じ出力アクションが受け取る形）で表す。
-        // トリガーは、そのボタン 1 つ。押し続ける秒数は delayTime（入力が SA と同じ規則で見る）
-        private static SpecialAction CreateSpecialIdentity(int device, DS4ControlSettings dcs, ControlSpecialItem item)
-        {
-            var identity = new SpecialAction($"Synthetic_Special_{device}_{(int)dcs.control}", "Synthetic", "Special", string.Empty, 0, string.Empty);
-            identity.typeID = item.Type;
-            identity.type = item.Type.ToString();
-            identity.controls = identity.name;
-            identity.delayTime = item.HoldSeconds;
-            identity.trigger = new List<DS4Controls> { dcs.control };
-
-            if (item.Type == SpecialAction.ActionTypeId.Profile)
-            {
-                // Phase10-Step4 W6: 切り替え先を details、「離したら戻る」を automaticUntrigger に入れる（SA の Profile と同じ形）。
-                // 復帰は、エンジンが、この SpecialAction の trigger（そのボタン）の離れを見て行う。IsTemporaryProfileAction は automaticUntrigger から決まる
-                identity.details = item.ProfileName;
-                identity.profileId = string.IsNullOrEmpty(item.ProfileId) ? null : item.ProfileId;   // Phase10-Step4d W5c: 実行の直前に、ID から現在の名前を引く
-                identity.automaticUntrigger = item.AutomaticUntrigger;
-            }
-
-            if (item.Type == SpecialAction.ActionTypeId.Program)
-            {
-                // Phase10-Step4 W5: Program は、パスを details、引数を extra に入れる（SA の起動処理が読む形）。ウィンドウを隠すときは、extra の先頭に $hidden を付ける
-                // （起動処理は、この語を 1 回取り除いて、残りを引数にする。結果の引数は、型のある項目の ProgramArguments と同じ）
-                identity.details = item.ProgramPath ?? string.Empty;
-                identity.extra = (item.HideWindow ? HiddenKeyword : string.Empty) + (item.ProgramArguments ?? string.Empty);
-            }
-
-            return identity;
         }
 
         // 入力は、Controls の 1 ボタン（SA と同じ閾値の判定。押し続ける秒数つき）。方針は、factory の Controls 用（抑制も消去もせず、割り当てたボタンの出力を毎フレーム消す）

@@ -33,7 +33,7 @@ Controls タブと SpecialActions（SA）タブのどちらで設定したかに
 | Wave | 内容 | 挙動の変化 |
 |---|---|---|
 | I1 | `AssignmentDefinition`（共通の割り当て定義: 種別、型のある項目、トリガー 1〜n、Extras、由来、ID）と `AssignmentOrigin`（Controls／SA）を作る。`ControlSpecialItem` を土台にする | なし（型の追加のみ） |
-| I2 | SA の型のある項目（`SpecialActionItem` 相当）。`SpecialAction` ⇄ `Actions.xml` を型のある項目で往復。旧書式（`details`／`extra` 文字列）の読み込みを維持 | なし（旧ファイルを読めること、新しく保存したものを旧版が読み飛ばす点は計画書に明記し、承認を得る） |
+| I2 | **（2026-10-22 変更）** SA の型のある項目（Q7）。保存形式は変えず、`SpecialAction` ⇄ 型のある項目の変換部品（`SpecialActionItemMapper`）を作る。旧書式の文字列を同じ項目として読める | なし |
 | I3 | 読み込みの部品 2 つ（`ControlsAssignmentReader`、`SpecialActionAssignmentReader`）。builder の入力を定義にする（出力は同じ束縛） | なし |
 | I4 | builder を `AssignmentBindingBuilder` 1 本に統合。`forControls` → 由来、`ControlJudgement` → 出力の種類（デジタル／アナログ）の性質、方針の表を種別 × 由来で引く。立ち上がりのログをエンジンの 1 か所にまとめる（SA の出力アクション 9 クラスの重複を除く） | なし |
 | I5 | SA の Extras を実装（保存・読み込み・UI・束縛）。重なりは SA が勝つ | **あり（新機能）**。実機確認 |
@@ -55,4 +55,5 @@ Controls タブと SpecialActions（SA）タブのどちらで設定したかに
 
 - [x] **I1 完了（2026-10-21。`Debug ALL` 成功: 警告 0・エラー 0、テスト 2005 件と 11 件が成功）**: 新規 `Actions/AssignmentOrigin.cs`、`Actions/AssignmentDefinition.cs`（Controls 固有の種別は定義に入れない設計。ユーザー決定）、テスト `Phase10Step6I1AssignmentDefinitionTests`（7 件）。定義は I3 まで未接続（TODO コメント付き）。
 - [x] **I2 完了（2026-10-22。`Debug ALL` 成功: 警告 0・エラー 0、テスト 2022 件と 11 件が成功）**: 設計変更（ユーザー決定）＝Actions.xml は種別ごとの要素で保存済みのため、**ファイル形式と `SpecialAction` は変えず**、変換部品を作った。新規 `Actions/SpecialActionItemMapper.cs`（`ToItem`＝SA → 項目、`ToSpecialAction`＝項目 → 合成の SA。Program の `$hidden`、Battery の「,」「|」、MultiAction の 3 マクロ、Profile の ID、Macro の 3 項目、遅延のみの 3 種）。`ControlSpecialItem` に `BatteryNotification`/`BatteryLightbar` を追加（プロファイル XML には書かない。Check Battery を Controls へ移す作業［W7 相当］で保存を足す。TODO 付き）。`AssignmentDefinition` に `Macro`（手順）と `KeyType` を追加。テスト `Phase10Step6I2SpecialActionItemMapperTests`（17 件）と I1 のテスト 1 件。変換部品は I3 まで未接続（TODO 付き）。
-- [ ] I3 〜 [ ] I7（未着手。指示があるまで始めない）
+- [x] **I3 完了（2026-10-22。`Debug ALL` 成功: 警告 0・エラー 0、テスト 2031 件と 11 件が成功）**: 新規 `Actions/SpecialActionAssignmentReader.cs`（SA → 定義。Key/Button の解釈済みの値、Macro の手順・keyType、型のある項目）、`DS4Control/Services/ControlsAssignmentReader.cs`（Controls の SA 専用の種別 → 定義と、合成の SA）。`ISpecialActionOutputFactory` に定義を受ける `Create(device, definition, source, index)` を追加（方針の分岐は `forControls` ではなく定義の由来）。旧 `Create(device, sa, index, forControls)` は、リーダー経由で新しい `Create` を呼ぶ互換の入口にした（I4 で削除。TODO 付き）。`ActionBindingBuilder.Create` と `ControlBindingBuilder` の Special の経路を新しい `Create` へ替え、`CreateSpecialIdentity` を削除（`SpecialActionItemMapper.ToSpecialAction` が代わり）。MultiAction のマクロは項目の 3 つを「/」でつないで渡す（正常なデータでは旧と同じ。壊れた数値のマクロは、旧は再生タスクが失敗して何も再生されず、新は空で何も再生されない）。テスト `Phase10Step6I3AssignmentReaderTests`（9 件）。既存テストは変更なしで合格。出力アクション 9 クラスは、引き続き実行時の状態の入れ物（`SpecialAction`）を受け取る。
+- [ ] I4 〜 [ ] I7（未着手。指示があるまで始めない）
