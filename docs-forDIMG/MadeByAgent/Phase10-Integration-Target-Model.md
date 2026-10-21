@@ -143,7 +143,7 @@ flowchart TB
 2. **Controls にも複数ボタンの組み合わせを許すか**（項目 8）。許すなら、トリガーの供給元と、保存形式（`Profile.xml`）が変わる。許さないなら、由来が Controls の定義は、トリガーが常に 1 つ。
 3. **SA の Extras を付けられる種別**: すべての種別か。重なったときの細部（「SA の Extras が成立している間だけ」か「SA のトリガーのボタンはつねに」か）。
 
-## 7. Step4c の各 Wave が埋める場所
+## 7. Step4c の各 Wave が埋める場所（2026-10-21 完了）
 
 | Wave | 完成形で埋める場所 |
 |---|---|
@@ -152,3 +152,23 @@ flowchart TB
 | W3 | 検証の規則（種別ごとの入力に 1 本） |
 | W4 | `TriggerInput` の判定（デジタルな出力は 1 つの閾値） |
 | W5 | 入力の集合（`TriggerCatalog`、`MappingListViewModel`、`ControlSettingsGroup`） |
+
+## 8. Step4c の結果と、統合 Step への引き継ぎ（2026-10-21）
+
+Step4c（W0〜W5）は完了した。完成形のうち、**挙動の差は次のとおり減った**。実機確認（台帳 §27）は先送り中。
+
+| 差 | Step4c の後の状態 |
+|---|---|
+| Fresh-press ガード | 規則は `FreshPressGuardTable`（`ForSpecialAction`／`ForControls`）の 1 か所。統合 Step で、方針の表（種別 × 由来）の 1 列にする |
+| ログ | 立ち上がり・離したときを、全種別が出す。離したときはエンジンが全種別で出す（`BindingPolicy.LogsReleaseEdge`）。立ち上がりは、出力アクションが出す種別と、エンジンが出す種別（Controls の Pad／Mouse／AnalogMouse／Extras。`LogsRisingEdge`）がある。統合 Step で、立ち上がりも 1 か所（エンジン）にまとめられる（SA の出力アクション 9 クラスに、同じ Trace の 4 行が重複している） |
+| 保存の可否の検証 | 必須の値がないエラーは `IsValid` が偽を返し、保存を止める（SA・Controls 共通）。対象の入力は赤い枠で示す。`CanWrite` は削除済み。統合 Step の検証は、これを引き継ぐ |
+| 押下判定の閾値 | デジタルな出力は SA の閾値（`ControlJudgement.Trigger`）、アナログな出力は従来の判定（`Assignment`）。統合 Step で、`ControlJudgement` を「出力の種類（デジタル／アナログ）から決まる性質」に置き換える |
+| 入力の集合 | Controls と SA で同じ（51 項目ずつ） |
+
+**統合 Step に引き継ぐこと**
+- 項目 10（SA の Extras）の設計（§4・§6）。動作は Controls と同じ。同じボタンで重なったら SA が勝つ。付けられる種別と細部は I0 で決める。
+- §6 の確認事項 2・3（Controls の複数ボタン、SA の Extras の種別・細部）。
+- 暫定の構造の撤去: `forControls`、`ControlJudgement`、`ControlBindingBuilder.BuiltSpecialTypes`、`ControlSpecialEditors`。
+- Multi-action の未設定のマクロ（保存を止めるか）は、Controls に Multi-action が来る段階（W8 相当）で決める。
+- 解除トリガーの旧データのエラー表示「No unload triggers specified」は、機能廃止済みで入力する画面もない。表示のみ（保存は止めない）。統合 Step で、表示ごと削除するか決める。
+- 先送りの実機確認（台帳 §27）は、統合 Step の後に回帰として確認する。

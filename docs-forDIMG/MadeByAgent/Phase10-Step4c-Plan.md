@@ -4,7 +4,7 @@
 対象ブランチ: `For-DI-migration-work`
 前提: `Phase10-Step4-Plan.md`（W6 で締め。§10「Step4 の締め」）、`Phase10-Assignment-UI-Unification-Plan.md`（順序の改訂）、`Phase10-Status.md`
 
-> 状態: **採否は確定（2026-10-21、ユーザー決定。§6）。Wave の着手の承認待ち**。製品コードは、まだ変えていない。
+> 状態: **完了（2026-10-21。W0〜W5 と最終 W。`Debug ALL` 成功: 警告 0・エラー 0、テスト 1902 件と 11 件が成功）。実機確認は、統合版の台帳 §27［P10-79〜89］を、ユーザー判断で先送り（統合 Step の後に、回帰としてまとめて確認）**。次は Step4d（固定 ID）と統合 Step の計画書。
 
 ---
 
@@ -242,4 +242,7 @@ Controls タブの割り当てと SA（Special Actions）の割り当ては、�
   - プロファイル XML は、要素名が `DS4Controls` の列挙名（`TouchStarted`／`TouchEnded`）のため、保存・読み込みは変更不要（往復をテストで確認）。
   - テスト: `Phase10Step4cW0InputSetTests` を新しい期待値へ書き換え（差は空、どちらも 51 項目、添字）。`Phase10Step2W2TriggerCatalogTests` は、従来の 49 項目が先頭にあり、末尾に 2 項目が増えた形へ。新規 `Phase10Step4cW5InputSetTests`（Touch の Key の束縛、XML の保存・読み込み、Outer 名の読み戻し）。
   - 実機確認: 台帳 §26（P10-74〜78）。**2026-10-21、ユーザー指示で、先送りの実機確認（P10-39〜78）を、重複をまとめ、重要なものだけに絞って、台帳 §27（P10-79〜89）に統合した**。以後の実機確認は §27 で行う（省略: P10-39［違いが出にくい］、P10-44［確認しにくい］）。
-  - 次: 最終 W（文書。完了の記録、モデル図 `03` の更新、台帳、項目 10 の設計を統合の計画書に引き継ぐ）。指示があるまで始めない。
+- **最終 W（完了 2026-10-21。文書のみ）**: 実機確認 P10-79〜89 は、ユーザー判断で先送り（統合 Step の後に回帰として確認）。
+  - 完了の記録（本節）、`Phase10-Status.md`、台帳（§22・§27）、モデル図 `03-Class-Interface-Diagram.md`（Step4c の注釈）、`Phase10-Integration-Target-Model.md`（Step4c の結果と引き継ぎ。§8）を更新した。
+  - Step4c の結果: Fresh-press ガードの規則を 1 か所の表に（`FreshPressGuardTable`）。Controls／SA の全種別で、立ち上がりと離したときのログ（`BindingPolicy.LogsRisingEdge`／`LogsReleaseEdge`）。必須の値がないエラーは保存を止め、赤い枠で示す（`IsValid` が偽を返す。`CanWrite` を削除）。デジタルな出力の押下判定を SA の閾値へ。Controls と SA の入力の集合を同じに（SA に LS／RS Outer、Controls に Touch Started／Ended）。
+  - 見送った項目（3・6、E・D・G）は変更なし。項目 5 は Step4d、項目 10（SA の Extras）は統合 Step。

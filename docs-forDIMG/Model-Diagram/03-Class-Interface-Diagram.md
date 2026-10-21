@@ -485,6 +485,14 @@ classDiagram
         +ResetsTriggerOutput bool
         +StopOnRelease bool
         +ExclusionGroup string
+        +ErasesOutputEveryFrame bool
+        +LogsRisingEdge bool
+        +LogsReleaseEdge bool
+    }
+    class FreshPressGuardTable {
+        <<static>>
+        +ForSpecialAction(type, toggle) bool
+        +ForControls(kind) bool
     }
     class IActionRegistry {
         <<interface>>
@@ -737,3 +745,11 @@ classDiagram
 %% - `ControlButtonInputAction` は、離したとき成立（`invertOnRelease`）と押し続ける秒数（`delaySeconds`）を持つ。`ControlBindingKind.Special` を追加。
 %% - 画面: `ControlSettingsEditTarget` が、`ControlSpecialEditors`（秒数の入力、Launch Program、Load Profile）と型のある項目を往復する。`CanWrite` が、Load Profile の未選択の Save を止める。`IProfileRepository.ReplaceControlProfileSwitchTarget` が、プロファイルの名前変更で、全プロファイルの `<Special>` の切り替え先を書き換える。
 %% - 暫定（統合の Step で整理）: `forControls`、`ControlJudgement`、`ControlBindingBuilder.BuiltSpecialTypes`、`ControlSpecialEditors`。Check Battery と Multi-action は、保存形式のみ（画面・実行は統合後）。
+
+%% 注釈補強（2026-10-21 Phase10-Step4c 反映: Controls と SA の挙動の差を減らす仕様変更。W0〜W5。完成形は Phase10-Integration-Target-Model.md）
+%% - Fresh-press ガード: 「見るか」の規則は `FreshPressGuardTable`（`Actions/`、静的）の 1 か所（`ForSpecialAction`／`ForControls`）。`SpecialActionOutputFactory.Policy` と `ControlBindingBuilder` が引く。挙動は不変。
+%% - ログ: 離したエッジのログ（Trace `Trigger released for SA '…'`、Debug `SpecialAction <種別> released: …`）は、`TriggerDispatchEngine` が全種別で出す（`BindingPolicy.LogsReleaseEdge`。既定は真。Default の軸の素通しと Unbound の消すだけの束縛は偽）。立ち上がりのログは、出力アクションが出す種別（SA の全種別、Controls の Key／Macro／Special）と、エンジンが出す種別（Controls の Pad／Mouse／AnalogMouse／Extras。`BindingPolicy.LogsRisingEdge`）がある。Controls の Key の `suppressSpecialActionLogs` は解除。`AppLogger.IsDebugEnabled` を追加。
+%% - 保存の可否: 種別ごとの入力（`IActionTypeEditor`）の `IsValid` は、必須の値がないとき（キー・ボタン未選択、Launch Program のパスが空、Load Profile 未選択、Check Battery の方法が未選択・2 色が同じ、Hold が範囲外）に偽を返し、保存を止める。「ファイルが存在しない」（警告）、Toggle の「解除トリガーなし」（機能廃止済み）、Multi-action の未設定のマクロは、表示のみ。対象の入力は赤い枠（`ValidatesOnNotifyDataErrors`）。Controls の Save（`SaveControlMode`）も `typeEditors.IsValid` を呼ぶ。`ControlSettingsEditTarget.CanWrite` は削除。
+%% - 押下判定: デジタルな出力（Key、Extras、パッドのボタン、マウスのボタン・タッチパッドクリック・デジタルのホイール［Toggle つきを含む］）は SA の閾値（`ControlJudgement.Trigger`）。アナログな出力（パッドの軸・トリガー、マウス移動、アナログのホイール、素通し）は従来の判定（`Assignment`）。判定は `ControlBindingBuilder` が束縛ごとに選ぶ。
+%% - 入力の集合: SA のトリガー一覧は 51 項目（末尾に LS Outer／RS Outer を追加。`SpecialAction.getDS4ControlsByName` にも）。Controls の一覧は 51 項目（末尾の後ろに Touch Started／Touch Ended を追加。`ControlSettingsGroup.ControlButtons` にも）。
+
