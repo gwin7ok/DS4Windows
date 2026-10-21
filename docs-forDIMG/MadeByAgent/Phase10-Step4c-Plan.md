@@ -114,10 +114,10 @@ Controls タブの割り当てと SA（Special Actions）の割り当ては、�
 
 ### 項目 9: 入力の集合を同じにする（追加。採用）
 
-- 現行（コードで確認）: SA のトリガーの一覧（49 項目）にあって Controls の一覧（38 項目）にないのは **Touch Started、Touch Ended**。Controls にあって SA にないのは **LS Outer、RS Outer**（`DS4StateFieldMapping` の種別は `Trigger`。SA の判定［100 超］で扱える）。`DS4ControlSettings` は、`DS4Controls` の全値に枠がある。ただし `ControlSettingsGroup` が束ねているのは、一覧に出ている入力だけで、Touch Started／Ended は束ねられていない（束縛を作る対象外）。
+- 現行（コードで確認）: SA のトリガーの一覧（49 項目）にあって Controls の一覧（49 項目。末尾の 4 つは LS／RS Outer と L2／R2 Full Pull）にないのは **Touch Started、Touch Ended**。Controls にあって SA にないのは **LS Outer、RS Outer**（`DS4StateFieldMapping` の種別は `Trigger`。SA の判定［100 超］で扱える）。`DS4ControlSettings` は、`DS4Controls` の全値に枠がある。ただし `ControlSettingsGroup` が束ねているのは、一覧に出ている入力だけで、Touch Started／Ended は束ねられていない（束縛を作る対象外）。
 - 決定（2026-10-21、ユーザー）:
   - **SA のトリガーの一覧に、LS Outer／RS Outer を追加する**。判定は SA の閾値（100 超）。既存の SA の挙動は変わらない。
-  - **Controls の一覧に、Touch Started／Touch Ended を追加する**（一覧の末尾の添字 38・39。コントローラーの入力による選択の添字 0〜33 と、既存の並びは変えない）。`ControlSettingsGroup` に束ねて、束縛の対象にする。Key を出すと、1 フレームだけ押される制約は、SA と同じ。
+  - **Controls の一覧に、Touch Started／Touch Ended を追加する**（一覧の末尾の後ろに足す。既存の項目の添字、コントローラーの入力による選択の添字は変えない）。`ControlSettingsGroup` に束ねて、束縛の対象にする。Key を出すと、1 フレームだけ押される制約は、SA と同じ。
 - 影響: 追加のみ。既存の割り当て・プロファイルの読み込みは変わらない。
 
 ### 項目 10: SA にも Extras を付けられるようにする（追加。設計のみ決定。実装は統合の Step）
