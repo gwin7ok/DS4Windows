@@ -31,10 +31,14 @@ namespace DS4Windows.Services
         /// </summary>
         private static readonly SpecialAction.ActionTypeId[] BuiltSpecialTypes =
         {
+            SpecialAction.ActionTypeId.Program,
             SpecialAction.ActionTypeId.DisconnectBT,
             SpecialAction.ActionTypeId.GyroCalibrate,
             SpecialAction.ActionTypeId.SASteeringWheelEmulationCalibrate,
         };
+
+        /// <summary>Program の引数に書くと、ウィンドウを隠して起動する語（SA の仕様。大文字小文字不問）。</summary>
+        public const string HiddenKeyword = "$hidden";
 
         public ControlBindingBuilder(IProfileSettingsService profileSettings, IMacroPlayer macroPlayer = null,
             IControlExtrasPort extrasPort = null, ISpecialActionOutputFactory outputFactory = null)
@@ -352,6 +356,15 @@ namespace DS4Windows.Services
             identity.controls = identity.name;
             identity.delayTime = item.HoldSeconds;
             identity.trigger = new List<DS4Controls> { dcs.control };
+
+            if (item.Type == SpecialAction.ActionTypeId.Program)
+            {
+                // Phase10-Step4 W5: Program は、パスを details、引数を extra に入れる（SA の起動処理が読む形）。ウィンドウを隠すときは、extra の先頭に $hidden を付ける
+                // （起動処理は、この語を 1 回取り除いて、残りを引数にする。結果の引数は、型のある項目の ProgramArguments と同じ）
+                identity.details = item.ProgramPath ?? string.Empty;
+                identity.extra = (item.HideWindow ? HiddenKeyword : string.Empty) + (item.ProgramArguments ?? string.Empty);
+            }
+
             return identity;
         }
 

@@ -65,7 +65,7 @@ namespace DS4WindowsTests
         [Theory]
         [InlineData(0, true)]    // 種別を選んでください（常に選べる）
         [InlineData(1, true)]    // Macro
-        [InlineData(2, false)]   // Launch Program（Step3 まで、Controls に保存する場所がない）
+        [InlineData(2, true)]   // Launch Program（Phase10-Step4 W5 で保存可能になった）
         [InlineData(3, false)]   // Load Profile
         [InlineData(4, true)]    // Output Key/Mouse/Button（Key・Button）
         [InlineData(5, true)]   // Disconnect BT

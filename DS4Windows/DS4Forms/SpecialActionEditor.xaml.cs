@@ -213,7 +213,7 @@ namespace DS4WinWPF.DS4Forms
             if (controlMode)
             {
                 // 保存済みの割り当てを、種別ごとの入力へ読み込む。種別の一覧の初期の選択も、割り当てに合わせる
-                controlTarget.LoadInto(pressKeyVM, macroActVM, HoldIntervalEditors());
+                controlTarget.LoadInto(pressKeyVM, macroActVM, HoldIntervalEditors(), launchProgVM);
                 specialActVM.ActionTypeIndex = controlTarget.InitialTypeIndex;
 
                 // Phase10-Step4 W3: Macro タブの SA 専用の項目（Run on trigger release／Synchronized Run／Keep key state）は、Controls にも保存できるようになったため、
@@ -304,7 +304,7 @@ namespace DS4WinWPF.DS4Forms
             if (!specialActVM.IsValid(tempAct)) return;
             if (!specialActVM.IsTypeEnabled(specialActVM.ActionTypeIndex)) return;   // Controls に、まだ保存できない種別
 
-            controlTarget.WriteFrom(specialActVM.ActionTypeIndex, pressKeyVM, macroActVM, HoldIntervalEditors());
+            controlTarget.WriteFrom(specialActVM.ActionTypeIndex, pressKeyVM, macroActVM, HoldIntervalEditors(), launchProgVM);
             controlTarget.Apply();
 
             ControlSaveTypeId = specialActVM.TypeAssoc[specialActVM.ActionTypeIndex];

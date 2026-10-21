@@ -90,6 +90,7 @@ namespace DS4WinWPF.DS4Forms.ViewModels
         {
             switch (type)
             {
+                case SpecialAction.ActionTypeId.Program: return Translations.Strings.SpecialActionEdit_LaunchProgram;
                 case SpecialAction.ActionTypeId.DisconnectBT: return Translations.Strings.SpecialActionEdit_DisconnectBT;
                 case SpecialAction.ActionTypeId.GyroCalibrate: return Translations.Strings.SpecialActionEdit_CalibrateGyro;
                 case SpecialAction.ActionTypeId.SASteeringWheelEmulationCalibrate: return Translations.Strings.SpecialActionEdit_SixAxisWheelCalib;
@@ -118,7 +119,7 @@ namespace DS4WinWPF.DS4Forms.ViewModels
                 else if (actionType == DS4ControlSettings.ActionType.Special)
                 {
                     // Phase10-Step4 W4: SA 専用の種別。エディターの種別の一覧と同じ表示名（言語リソース）。
-                    // TODO(Phase10-Step4 W5 以降): 群が増えるたびに、表示名を足す（Program、Profile、Battery、Multi-action）。未対応の種別は、種別名をそのまま出す
+                    // TODO(Phase10-Step4 W6 以降): 群が増えるたびに、表示名を足す（Profile、Battery、Multi-action）。未対応の種別は、種別名をそのまま出す
                     temp = setting.special != null ? SpecialTypeDisplayName(setting.special.Type) : Properties.Resources.Unassigned;
                 }
                 else if (actionType == DS4ControlSettings.ActionType.Button)

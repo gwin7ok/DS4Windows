@@ -26,6 +26,7 @@ namespace DS4WindowsTests
 
         private static readonly SpecialAction.ActionTypeId[] Built =
         {
+            SpecialAction.ActionTypeId.Program,
             SpecialAction.ActionTypeId.DisconnectBT,
             SpecialAction.ActionTypeId.GyroCalibrate,
             SpecialAction.ActionTypeId.SASteeringWheelEmulationCalibrate,
@@ -160,10 +161,9 @@ namespace DS4WindowsTests
         public void TheTypesNotBuiltYet_AndAMissingItem_MakeNoBinding()
         {
             using var t = new ControlsKeyTestScope();
-            t.MapSpecial(DS4Controls.Cross, Item(SpecialAction.ActionTypeId.Program));
-            t.MapSpecial(DS4Controls.Circle, Item(SpecialAction.ActionTypeId.Profile));
+            t.MapSpecial(DS4Controls.Cross, Item(SpecialAction.ActionTypeId.Profile));
             t.MapSpecial(DS4Controls.Square, Item(SpecialAction.ActionTypeId.BatteryCheck));
-            t.MapSpecial(DS4Controls.Triangle, Item(SpecialAction.ActionTypeId.MultiAction));
+            t.MapSpecial(DS4Controls.Triangle, Item(SpecialAction.ActionTypeId.MultiAction));   // Program は W5 で束縛を作るようになった
             t.MapSpecial(DS4Controls.L1, null);
 
             Assert.Empty(TestHost.GetService<IControlBindingBuilder>().Build(Device));
@@ -195,7 +195,7 @@ namespace DS4WindowsTests
             Assert.False(ControlBindingBuilder.TryInterpretSpecial(
                 new DS4ControlSettings(DS4Controls.Cross) { actionType = DS4ControlSettings.ActionType.Special }, out _));
             Assert.False(ControlBindingBuilder.TryInterpretSpecial(
-                new DS4ControlSettings(DS4Controls.Cross) { actionType = DS4ControlSettings.ActionType.Special, special = Item(SpecialAction.ActionTypeId.Program) }, out _));
+                new DS4ControlSettings(DS4Controls.Cross) { actionType = DS4ControlSettings.ActionType.Special, special = Item(SpecialAction.ActionTypeId.Profile) }, out _));
         }
 
         [Fact]

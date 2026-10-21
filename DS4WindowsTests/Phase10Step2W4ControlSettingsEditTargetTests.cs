@@ -228,7 +228,6 @@ namespace DS4WindowsTests
         }
 
         [Theory]
-        [InlineData(2)]
         [InlineData(3)]
         [InlineData(6)]
         [InlineData(7)]

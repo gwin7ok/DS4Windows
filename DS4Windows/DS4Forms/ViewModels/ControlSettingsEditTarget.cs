@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using DS4Windows;
 using DS4Windows.DI;
+using DS4Windows.Services;
 using DS4WinWPF.DS4Forms.ViewModels.SpecialActions;
 
 namespace DS4WinWPF.DS4Forms.ViewModels
@@ -106,8 +107,10 @@ namespace DS4WinWPF.DS4Forms.ViewModels
         /// <param name="holdIntervals">
         /// Phase10-Step4 W4: 押し続ける秒数だけを持つ種別（Disconnect BT、Calibrate gyro、Calibrate sixaxis wheel）の入力。省略可（なければ、秒数は読み書きしない）。
         /// </param>
+        /// <param name="launchProgram">Phase10-Step4 W5: Launch Program の入力（パス、押し続ける秒数、引数）。省略可。</param>
         public void LoadInto(PressKeyViewModel pressKey, MacroViewModel macro,
-            IReadOnlyDictionary<SpecialAction.ActionTypeId, SpecialActionViewModel> holdIntervals = null)
+            IReadOnlyDictionary<SpecialAction.ActionTypeId, SpecialActionViewModel> holdIntervals = null,
+            LaunchProgramViewModel launchProgram = null)
         {
             if (pressKey == null) throw new ArgumentNullException(nameof(pressKey));
             if (macro == null) throw new ArgumentNullException(nameof(macro));
@@ -128,6 +131,13 @@ namespace DS4WinWPF.DS4Forms.ViewModels
                 case DS4ControlSettings.ActionType.Special:
                     if (working.special != null && holdIntervals != null && holdIntervals.TryGetValue(working.special.Type, out SpecialActionViewModel holdVm))
                         holdVm.HoldInterval = working.special.HoldSeconds;
+                    if (working.special != null && working.special.Type == SpecialAction.ActionTypeId.Program && launchProgram != null)
+                    {
+                        launchProgram.Filepath = working.special.ProgramPath;
+                        launchProgram.Delay = working.special.HoldSeconds;
+                        launchProgram.Arguments = ComposeArguments(working.special.ProgramArguments, working.special.HideWindow);
+                    }
+
                     break;
 
                 case DS4ControlSettings.ActionType.Macro:
@@ -151,7 +161,8 @@ namespace DS4WinWPF.DS4Forms.ViewModels
         /// 0 は、既定（割り当てなし）。Controls で、現在保存できない種別（Step3 まで）は、例外。
         /// </summary>
         public void WriteFrom(int typeIndex, PressKeyViewModel pressKey, MacroViewModel macro,
-            IReadOnlyDictionary<SpecialAction.ActionTypeId, SpecialActionViewModel> holdIntervals = null)
+            IReadOnlyDictionary<SpecialAction.ActionTypeId, SpecialActionViewModel> holdIntervals = null,
+            LaunchProgramViewModel launchProgram = null)
         {
             if (pressKey == null) throw new ArgumentNullException(nameof(pressKey));
             if (macro == null) throw new ArgumentNullException(nameof(macro));
@@ -194,6 +205,10 @@ namespace DS4WinWPF.DS4Forms.ViewModels
                 case SpecialAction.ActionTypeId.GyroCalibrate:
                 case SpecialAction.ActionTypeId.SASteeringWheelEmulationCalibrate:
                     WriteSpecial(descriptor.TypeId, holdIntervals);
+                    break;
+
+                case SpecialAction.ActionTypeId.Program:
+                    WriteProgram(launchProgram);
                     break;
 
                 default:   // 0（None）
@@ -257,6 +272,39 @@ namespace DS4WinWPF.DS4Forms.ViewModels
             working.keyType = DS4KeyType.None;
             working.action = new ControlActionData();
         }
+
+        // Phase10-Step4 W5: Launch Program。入力がなければ（テスト）、空のパス・0 秒。パスは未選択（null）でも空にする
+        private void WriteProgram(LaunchProgramViewModel launchProgram)
+        {
+            SplitArguments(launchProgram?.Arguments, out string arguments, out bool hideWindow);
+            working.special = new ControlSpecialItem
+            {
+                Type = SpecialAction.ActionTypeId.Program,
+                ProgramPath = launchProgram?.Filepath ?? string.Empty,
+                HoldSeconds = launchProgram?.Delay ?? 0,
+                ProgramArguments = arguments,
+                HideWindow = hideWindow,
+            };
+            working.actionType = DS4ControlSettings.ActionType.Special;
+            working.keyType = DS4KeyType.None;
+            working.action = new ControlActionData();
+        }
+
+        /// <summary>
+        /// 引数の欄の文字列から、ウィンドウを隠す語（<c>$hidden</c>。大文字小文字不問）を、SA の起動処理と同じく 1 回だけ取り除く。
+        /// 語があれば <paramref name="hideWindow"/> が真で、<paramref name="arguments"/> は、取り除いた残り（空白はそのまま）。
+        /// </summary>
+        public static void SplitArguments(string text, out string arguments, out bool hideWindow)
+        {
+            text = text ?? string.Empty;
+            int pos = text.IndexOf(ControlBindingBuilder.HiddenKeyword, StringComparison.OrdinalIgnoreCase);
+            hideWindow = pos >= 0;
+            arguments = hideWindow ? text.Remove(pos, ControlBindingBuilder.HiddenKeyword.Length) : text;
+        }
+
+        /// <summary>引数の欄に表示する文字列。ウィンドウを隠すときは、先頭に語を付ける（起動時の引数は同じ。語の位置は先頭に移る）。</summary>
+        public static string ComposeArguments(string arguments, bool hideWindow)
+            => (hideWindow ? ControlBindingBuilder.HiddenKeyword : string.Empty) + (arguments ?? string.Empty);
 
         private void WriteMacro(MacroViewModel macro)
         {

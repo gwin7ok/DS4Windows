@@ -40,7 +40,7 @@ namespace DS4WinWPF.DS4Forms.ViewModels
             {
                 new ActionTypeDescriptor(0, SpecialAction.ActionTypeId.None, "SpecialActionEdit.SelectAction", Both, ActionEditorModes.None),
                 new ActionTypeDescriptor(1, SpecialAction.ActionTypeId.Macro, "SpecialActionEdit.RecordMacro", Both, Both),
-                new ActionTypeDescriptor(2, SpecialAction.ActionTypeId.Program, "SpecialActionEdit.LaunchProgram", Both, SaOnly),
+                new ActionTypeDescriptor(2, SpecialAction.ActionTypeId.Program, "SpecialActionEdit.LaunchProgram", Both, Both),
                 new ActionTypeDescriptor(3, SpecialAction.ActionTypeId.Profile, "SpecialActionEdit.LoadProfile", Both, SaOnly),
                 new ActionTypeDescriptor(4, SpecialAction.ActionTypeId.Key, "SpecialActionEdit.PressKey", Both, Both),   // Button もこの項目で編集する
                 new ActionTypeDescriptor(5, SpecialAction.ActionTypeId.DisconnectBT, "SpecialActionEdit.DisconnectBT", Both, Both),
