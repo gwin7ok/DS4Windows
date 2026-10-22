@@ -36,7 +36,14 @@ namespace DS4WindowsTests
             try
             {
                 action();
-                return target.Logs.ToList();
+                // バックグラウンドの Task（マクロの再生など）がまだログを書いていると、一覧の複製の最中に変わって例外になることがある。
+                // 少し待って取り直す（ログの内容は変えない）
+                for (int attempt = 0; ; attempt++)
+                {
+                    try { return target.Logs.ToList(); }
+                    catch (ArgumentException) when (attempt < 10) { System.Threading.Thread.Sleep(20); }
+                    catch (InvalidOperationException) when (attempt < 10) { System.Threading.Thread.Sleep(20); }
+                }
             }
             finally
             {

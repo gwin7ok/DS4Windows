@@ -42,7 +42,8 @@ namespace DS4WindowsTests
             // Phase8-Fix-MacroRepeatUnify（D5）: MacroDone／DispatchInFlight（control 単位の暫定対策。本番では到達しなかった）は削除した
             // Phase9 9-C（ユーザー判断 Q2）: MacroControl／MacroCount はデバイスごと（旧: 全コントローラーで 1 つを共有）
             Assert.Equal(DS4Windows.ControllerLimits.MaxControllerCount, state.MacroControl.Length);
-            Assert.All(state.MacroControl, flags => Assert.Equal(26, flags.Length));
+            Assert.All(state.MacroControl, flags => Assert.Equal(MacroRuntimeState.MacroControlLength, flags.Length));
+            Assert.Equal(28, MacroRuntimeState.MacroControlLength);   // Phase9 9-C: 261〜288 のぶん（旧 26 は 287・288 で範囲外になっていた）
             Assert.Equal(DS4Windows.ControllerLimits.MaxControllerCount, state.MacroCount.Length);
             Assert.Equal(DS4Windows.ControllerLimits.MaxControllerCount, state.TaskQueue.Length);
             Assert.All(state.TaskQueue, q => Assert.NotNull(q));

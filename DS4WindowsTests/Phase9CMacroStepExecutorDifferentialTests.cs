@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using DS4Windows;
 using DS4Windows.DI;
+using DS4Windows.DS4Control;
 using DS4Windows.Services;
 using Xunit;
 
@@ -230,6 +231,25 @@ namespace DS4WindowsTests
             return list.Distinct().ToArray();
         }
 
+        /// <summary>共有ホストの設定には出力 KBM マッピングがない（null）ため、テストの間だけ設定し、終わりに戻す。</summary>
+        private sealed class KbmMappingScope : IDisposable
+        {
+            private readonly IProfileSettingsService _settings;
+            private readonly VirtualKBMMapping _saved;
+
+            public KbmMappingScope(IProfileSettingsService settings)
+            {
+                _settings = settings;
+                _saved = settings.OutputKBMMapping;
+                VirtualKBMMapping mapping = VirtualKBMFactory.GetMappingInstance();
+                mapping.PopulateConstants();
+                mapping.PopulateMappings();
+                settings.OutputKBMMapping = mapping;
+            }
+
+            public void Dispose() => _settings.OutputKBMMapping = _saved;
+        }
+
         private const int OldDevice = 5;   // 旧実装とライトバーの静的な配列を共有するため、別のスロットを使う
         private const int NewDevice = 6;
 
@@ -239,6 +259,7 @@ namespace DS4WindowsTests
         public void Execute_MatchesTheOldImplementation_ForEveryCodeValue(DS4KeyType keyType)
         {
             IProfileSettingsService settings = TestHost.GetService<IProfileSettingsService>();
+            using var kbmMapping = new KbmMappingScope(settings);
             var oldKbm = new LogKbm();
             var newKbm = new LogKbm();
             var oldImpl = new OldMacroStep(oldKbm, settings, () => null);
@@ -292,19 +313,29 @@ namespace DS4WindowsTests
         [Theory]
         [InlineData(287)]
         [InlineData(288)]
-        public void ValuesAboveTheFlagArray_ThrowTheSameExceptionAsTheOldImplementation(int code)
+        public void TouchStartedAndEndedValues_NoLongerThrow_ButOutputNothing(int code)
         {
-            // 旧実装の癖（計画書 M6）: ゲームパッドの範囲（261〜MAX_MACRO_VALUE=288）のうち、フラグの配列（26 個＝261〜286）を超える 287・288 は、
-            // IndexOutOfRangeException になる。そのまま移した（是正は別途）
+            // 計画書 M6 の是正（ユーザー承認）: 旧実装は、ゲームパッドの範囲（261〜288）のうち、フラグの配列（26 個＝261〜286）を超える 287（Touch Started）・
+            // 288（Touch Ended）で IndexOutOfRangeException になっていた（旧実装の写しは、今も同じ例外を出す）。新しい実装は、フラグの配列を 28 個にして例外にしない。
             IProfileSettingsService settings = TestHost.GetService<IProfileSettingsService>();
             var oldImpl = new OldMacroStep(new LogKbm(), settings, () => null);
-            var newImpl = new MacroStepExecutor(new LogKbm(), settings, new MacroRuntimeState(), () => null);
+            Assert.IsType<IndexOutOfRangeException>(Record.Exception(() => oldImpl.PlayMacroCodeValue(OldDevice, DS4KeyType.None, code, new bool[512])));
 
-            Exception expected = Record.Exception(() => oldImpl.PlayMacroCodeValue(OldDevice, DS4KeyType.None, code, new bool[512]));
-            Exception actual = Record.Exception(() => newImpl.Execute(NewDevice, DS4KeyType.None, code, new bool[512]));
+            var state = new MacroRuntimeState();
+            var newImpl = new MacroStepExecutor(new LogKbm(), settings, state, () => null);
+            var keydown = new bool[512];
 
-            Assert.IsType<IndexOutOfRangeException>(expected);
-            Assert.IsType<IndexOutOfRangeException>(actual);
+            newImpl.Execute(NewDevice, DS4KeyType.None, code, keydown);   // 押下: 例外にならない
+            Assert.True(state.MacroControl[NewDevice][code - 261]);
+            Assert.Equal(1u, state.MacroCount[NewDevice]);
+            var mapped = new DS4State();
+            state.ApplyHeldControls(NewDevice, mapped);   // 対応する出力がないので、何も重ならない
+            Assert.False(mapped.Cross);
+            Assert.Equal(new DS4State().LX, mapped.LX);
+
+            newImpl.Execute(NewDevice, DS4KeyType.None, code, keydown);   // 離上
+            Assert.False(state.MacroControl[NewDevice][code - 261]);
+            Assert.Equal(0u, state.MacroCount[NewDevice]);
         }
 
         [Fact]

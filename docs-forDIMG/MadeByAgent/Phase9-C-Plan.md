@@ -60,7 +60,7 @@
 | M3 | 同期キュー（`macroTaskQueue[device]`）への `TryGetValue`／`Add`／代入は、**ロックなし**（複数スレッドから `PlayMacro` が呼ばれると競合しうる） | そのまま移す。是正は別途 |
 | M4 | 振動のマクロ値は、`IDeviceStateAccessor.GetController` が null を返すと `d.setRumble` で NullReferenceException になる（呼び出し側の `Task` の中。握りつぶされる） | そのまま移す。差分テストで固定 |
 | M5 | マクロの再生は `Task.Delay(...).Wait()` でスレッドプールのスレッドを塞ぐ | そのまま移す（今回の範囲外） |
-| M6 | ゲームパッドのマクロ値の範囲は 261〜`MAX_MACRO_VALUE`（288）だが、出力フラグの配列は 26 個（261〜286）。**287・288 は `IndexOutOfRangeException` になる**（`Task` の中で握りつぎれる） | そのまま移す。差分テストで「旧と新が同じ例外」を固定。是正は別途（`MacroControlLength` を 28 にするか、値の範囲を 286 までに絞る） |
+| M6 | **〔是正済み。ユーザー承認、2026-10-22〕** ゲームパッドのマクロ値の範囲は 261〜`MAX_MACRO_VALUE`（288）だが、出力フラグの配列は 26 個（261〜286）。**287・288 は `IndexOutOfRangeException` になる**（`Task` の中で握りつぎれる） | **`MacroControlLength` を 28（`MAX_MACRO_VALUE - 261 + 1`）に広げて是正した**（287［Touch Started］・288［Touch Ended］は、フラグが立つだけで、対応する出力はない＝例外にならないだけ）。旧実装の写しが今も例外を出すことと、新しい実装が出さないことを、`Phase9CMacroStepExecutorDifferentialTests` で固定 |
 
 ## 4. 質問（推奨は A）
 
@@ -108,3 +108,13 @@
 | テスト（追従） | `TestMappingFactory`、`Phase7Step8W2MappingInstanceGuardTests`、`MappingMacroPathGlobalReferenceGuardTests`（検査の対象を `MacroStepExecutor.cs` に）、`Phase7Step7MacroRuntimeStateGuardTests`、`Phase10Step3W3EmptyMacroTests`（`MacroPlayback.cs` を走査）、`Phase8Step7AltTabRemovalGuardTests`（移し先も走査） |
 
 **実機確認（依頼。実装後）**: 台帳 §32（P9C-1〜4）。
+
+## 10. ビルド・テストの結果と追従（2026-10-22）
+
+初回のテスト実行（合格 2,321 件、失敗 3 件）の原因と対応:
+
+| 失敗 | 原因 | 対応 |
+|---|---|---|
+| `Phase9CMacroStepExecutorDifferentialTests.Execute_MatchesTheOldImplementation_ForEveryCodeValue`（2 件） | 共有ホストの設定に出力 KBM マッピング（`OutputKBMMapping`）がなく、旧実装の写しが `NullReferenceException` になった（テストの前提の漏れ。製品コードの不具合ではない） | テストの間だけ `VirtualKBMFactory` のマッピングを設定し、終わりに戻す |
+| `Phase10Step4cW2EdgeLogTests.ASpecialActionMacro_LogsTheReleaseToo` | ログを複製する最中に、バックグラウンドのマクロの Task がログを書き、`ToList()` が `ArgumentException`（競合。以前から起こりうる脆いテスト） | `Capture` で、複製に失敗したら少し待って取り直す |
+| （M6） | 287・288 の範囲外アクセス | 上記のとおり、フラグの配列を 28 個に広げて是正（ユーザー承認） |

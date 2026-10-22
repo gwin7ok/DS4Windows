@@ -13,8 +13,13 @@ namespace DS4Windows
     /// </summary>
     public class MacroRuntimeState
     {
-        /// <summary>マクロが送出するボタン／スティック／トリガーの出力フラグの数（旧: <c>macroControl</c> の長さ）。</summary>
-        public const int MacroControlLength = 26;
+        /// <summary>
+        /// マクロが送出するボタン／スティック／トリガーの出力フラグの数（旧: <c>macroControl</c> の長さ 26）。
+        /// Phase9 9-C（ユーザー承認）: マクロ値の範囲は 261〜<c>DS4ControlSettings.MAX_MACRO_VALUE</c>（288）で、フラグの添字は 0〜27。
+        /// 旧実装は配列が 26 個（添字 0〜25）しかなく、287（Touch Started）・288（Touch Ended）で <c>IndexOutOfRangeException</c> になっていたため、28 個に広げた
+        /// （添字 26・27 には対応する出力がなく、<see cref="ApplyHeldControls"/> は何も重ねない。例外にならないだけ）。
+        /// </summary>
+        public const int MacroControlLength = DS4ControlSettings.MAX_MACRO_VALUE - 261 + 1;
 
         // Phase8-Fix-MacroRepeatUnify（D5）: 旧 MacroDone（macrodone）／DispatchInFlight／TryBeginDispatch／EndDispatch（control 単位の二重実行防止の暫定対策。K3）は削除した。
         // PlayMacro の呼び出しは常に control == None で、本番では到達しない経路だったため。二重実行の防止は ActionInstanceState.IsMacroRunning が担う。
