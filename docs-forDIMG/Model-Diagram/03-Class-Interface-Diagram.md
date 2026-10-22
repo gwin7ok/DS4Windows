@@ -334,6 +334,13 @@ classDiagram
         +ApplyOnConnect(int index, bool useAutoProfile, bool isValidSerial, string macAddress) bool
     }
     class ConnectionProfileSelector
+    class IDeviceConnectionSetup {
+        <<interface>>
+        +ApplyProfileOptions(int ind, DS4Device device, Mouse touchPad, bool startUp)
+        +WireInitialHooks(int ind, DS4Device device)
+        +AttachTouchpad(int ind, DS4Device device, Mouse[] touchPads)
+    }
+    class DeviceConnectionSetup
     class LatencyMonitor
     class TouchpadToggleService
     class ActiveInputProbe
@@ -411,6 +418,8 @@ classDiagram
     ITouchpadToggleService <|.. TouchpadToggleService : implements
     IActiveInputProbe <|.. ActiveInputProbe : implements
     IConnectionProfileSelector <|.. ConnectionProfileSelector : implements
+    IDeviceConnectionSetup <|.. DeviceConnectionSetup : implements
+    ControlService --> IDeviceConnectionSetup : ctor injection（Phase9 9-E E-6b。接続時の設定の反映とイベントの配線）
     ControlService --> IConnectionProfileSelector : ctor injection（Phase9 9-E E-6a。接続時のプロファイルの選択と適用）
     ControlService --> ILatencyMonitor : ctor injection（Phase9 9-E E-5。On_Report の遅延の監視）
     ControlService --> ITouchpadToggleService : ctor injection（Phase9 9-E E-5。タッチパッドの切り替え・スライド）

@@ -60,7 +60,8 @@ namespace DS4WindowsTests
         [Fact]
         public void ControlService_CheckProfileOptions_UpdatesDebouncerDuration()
         {
-            string path = SourceFileLocator.Find("DS4Windows/DS4Control/ControlService.cs");
+            // Phase9 9-E E-6b: 設定の反映は DeviceConnectionSetup.ApplyProfileOptions へ移った（ControlService.CheckProfileOptions は委譲）
+            string path = SourceFileLocator.Find("DS4Windows/DS4Control/Services/DeviceConnectionSetup.cs");
             if (path == null)
             {
                 _output.WriteLine("ソースが見つからないため検査を省略した。");
@@ -68,8 +69,8 @@ namespace DS4WindowsTests
             }
 
             string text = File.ReadAllText(path);
-            Match method = Regex.Match(text, @"public void CheckProfileOptions\(.*?\r?\n        \}\r?\n", RegexOptions.Singleline);
-            Assert.True(method.Success, "CheckProfileOptions が見つからない");
+            Match method = Regex.Match(text, @"public void ApplyProfileOptions\(.*?\r?\n        \}\r?\n", RegexOptions.Singleline);
+            Assert.True(method.Success, "ApplyProfileOptions が見つからない");
             Assert.Matches(@"Debouncer\?\.SetDuration\(.*DebouncingMs\[ind\]", method.Value);
         }
     }

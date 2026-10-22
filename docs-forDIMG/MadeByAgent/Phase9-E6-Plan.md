@@ -1,7 +1,7 @@
 # Phase9 9-E E-6（ライフサイクル：接続・切断・開始・停止、デバイス種類ごとの部品化）計画書
 
 作成日: 2026-10-22（改訂: ユーザーの方針「全部切り出す。実機がなくても。カートリッジのように入れ替えられる形にする」を反映）
-状態: **承認済み（2026-10-22。§8）。E-6a 実装済み（ビルド・テストはユーザーの実行待ち）。E-6b 以降は段階ごとに進める**
+状態: **承認済み（2026-10-22。§8）。E-6a 完了（ビルド・テスト・実機確認 OK）。E-6b 以降は段階ごとに進める**
 上位: `Phase9-E-Plan.md`（E-1〜E-5 は完了）、`Phase9-Responsibility-Split-Plan.md`
 
 ## 1. 目的と現状
@@ -104,8 +104,8 @@
 
 | 段階 | 状態 |
 |---|---|
-| E-6a プロファイル選択（`IConnectionProfileSelector`） | **実装済み（2026-10-22）**。ビルド・テストはユーザーの実行待ち |
-| E-6b 設定の反映 | 未 |
+| E-6a プロファイル選択（`IConnectionProfileSelector`） | **完了（2026-10-22）**。ビルド・テスト合格、実機確認 OK |
+| E-6b 設定の反映（`IDeviceConnectionSetup`） | **実装済み（2026-10-22）**。ビルド・テストはユーザーの実行待ち |
 | E-6c 種類のカートリッジ | 未 |
 | E-6d Joy-Con の結合 | 未 |
 | E-6e 切断・同期 | 未 |
@@ -115,3 +115,10 @@
 - 計画（§3.3）では「適用するプロファイル名を返し、`ApplyToSlot` は `ControlService` に残す」としていたが、`MarkConnected`／`SelectedProfile`／`RememberProfile`／Linked の UI 状態／`ApplyToSlot` が**順序つきで連続する一続きの処理**だったため、順序を変えないよう、**`ApplyToSlot` と `PublishSlot` も含めて**まとめて移した。`ControlService` は、適用の成否（`profileLoaded`）を受け取って、仮想パッドの接続以降を続ける。
 - `DS4Device` は作れないため、窓口は `isValidSerial` と `macAddress`（有効なシリアルのときだけ `getMacAddress()` の値）をプリミティブで受ける。
 - テスト: `Phase9E6ConnectionProfileSelectorTests`（偽物の `IProfileSlotApplier` で、一時プロファイル、初回接続、再接続、シリアルなし、戻り値を固定）、`Phase9E6ConnectionGuardTests`（移した文字列が `ControlService` に無いこと、呼び出し順序、DI 登録）。
+
+### E-6b の実装メモ
+- 移したもの: `CheckProfileOptions`（`ApplyProfileOptions`）、`CheckLauchProfileOption`（private）、`SetupInitialHookEvents`（`WireInitialHooks`）、`TouchPadOn`（`AttachTouchpad`）。`ControlService` の `CheckProfileOptions`（BackingStore が使う）と `TouchPadOn` は薄い委譲として残した。
+- `touchPad[ind]` は、`ApplyProfileOptions` では呼び出し時の値を引数で渡す（旧コードも同じ時点で配列から読んでいた）。`AttachTouchpad` は、旧 `TouchPadOn` の `PreTouchProcess` のラムダが**発火のたびに配列から引き直していた**ため、配列そのものを渡す（切断後に null になっても、旧コードと同じ挙動）。
+- DualSense の振動設定の枝は、そのまま `ApplyProfileOptions` に入っている。E-6c で種類ごとの部品へ移す（TODO をクラスに明記）。
+- 既存の `DebouncerSetDurationTests` の走査先を `DeviceConnectionSetup.ApplyProfileOptions` へ更新した。
+- テスト: `Phase9E6ConnectionGuardTests` に追加（移した文字列の不在、薄い委譲、呼び出し順序、DI 登録、イベント発火時の引き直し）。`DS4Device`／`Mouse` が作れないため、値の差分テストは書けず、ソースの走査と実機確認（台帳 §39）で担保する。
