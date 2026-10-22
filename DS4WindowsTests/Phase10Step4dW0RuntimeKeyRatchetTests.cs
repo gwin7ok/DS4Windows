@@ -24,12 +24,13 @@ namespace DS4WindowsTests
             ["DS4Windows/DI/IProfileRepository.cs"] = (2, 1),
             ["DS4Windows/DI/IProfileSettingsService.cs"] = (0, 1),
             ["DS4Windows/DS4Control/BackingStore.cs"] = (9, 9),   // Phase10-Step4d W5b: 保管を ID にした窓口（ProfileSlotNames）の宣言と、登録簿との結び（AttachProfileIdentity）で 2 件増えた。名前の配列そのものは、もうない
-            ["DS4Windows/DS4Control/ControlService.cs"] = (2, 0),
+            ["DS4Windows/DS4Control/ControlService.cs"] = (1, 0),   // Phase9 9-E E-6a: プロファイル選択を ConnectionProfileSelector へ移し、1 件減った
             ["DS4Windows/DS4Control/DTOXml/AppSettingsDTO.cs"] = (18, 0),   // Phase10-Step4d W4: ID から現在の名前に引き直す代入で 2 件増えた（W5 で ID に替える）
             ["DS4Windows/DS4Control/Mapping.cs"] = (0, 3),
             ["DS4Windows/DS4Control/ProfileActions.cs"] = (0, 1),
             ["DS4Windows/DS4Control/Services/AppSettingsXmlSerializer.cs"] = (6, 0),
             ["DS4Windows/DS4Control/Services/AutoProfileService.cs"] = (2, 0),
+            ["DS4Windows/DS4Control/Services/ConnectionProfileSelector.cs"] = (1, 0),   // Phase9 9-E E-6a: ControlService から移した（合計は増えていない）
             ["DS4Windows/DS4Control/Services/LegacyProfileXmlSerializer.cs"] = (1, 0),
             ["DS4Windows/DS4Control/Services/ProfileActionProvider.cs"] = (0, 2),
             ["DS4Windows/DS4Control/Services/ProfileApplicationService.cs"] = (7, 1),

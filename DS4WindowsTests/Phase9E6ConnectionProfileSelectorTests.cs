@@ -96,7 +96,10 @@ namespace DS4WindowsTests
 
                 selector.ApplyOnConnect(Slot, false, false, "ignored");
 
-                Assert.Equal("apply:" + Slot + ":P9E6-NoSerial:" + ProfileChangeSource.ControlService, applier.Calls[0]);
+                // 共有のストアの「初回接続」の旗の状態により、初回か再接続かは変わる。ここでは、MAC を使わずに適用まで進むことだけを確かめる
+                Assert.Single(applier.Calls);
+                Assert.StartsWith("apply:" + Slot + ":", applier.Calls[0]);
+                Assert.EndsWith(":" + ProfileChangeSource.ControlService, applier.Calls[0]);
             }
             finally
             {

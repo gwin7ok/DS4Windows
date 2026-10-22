@@ -196,7 +196,10 @@ namespace DS4WindowsTests
             Assert.True(handle >= 0 && release > handle, "ReleaseSlot は HandleDeviceDisconnect の後に呼ぶ");
             Assert.DoesNotContain("ReleaseSlot", MethodBody(text, "public bool Stop("));
 
-            string connect = MethodBody(text, "private void PrepareConnectedInputControllerSettingEvents(");
+            // Phase9 9-E E-6a: 接続時のプロファイルの適用と束縛の差し替えは ConnectionProfileSelector へ移った
+            string selectorPath = SourceFileLocator.Find("DS4Windows/DS4Control/Services/ConnectionProfileSelector.cs");
+            if (selectorPath == null) return;
+            string connect = MethodBody(File.ReadAllText(selectorPath), "public bool ApplyOnConnect(");
             int apply = connect.IndexOf("_profileSlotApplier.ApplyToSlot(index, profileToApply", StringComparison.Ordinal);
             int publish = connect.IndexOf("_profileSlotApplier.PublishSlot(index);", StringComparison.Ordinal);
             Assert.True(apply >= 0 && publish > apply, "適用しない経路（else）で PublishSlot を呼ぶ");

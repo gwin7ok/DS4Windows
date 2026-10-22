@@ -71,7 +71,7 @@ namespace DS4WindowsTests
 
             Assert.DoesNotContain("AppHost", text);
             Assert.DoesNotContain("ServiceProviderHolder", text);
-            Assert.DoesNotContain("ControlService", text);
+            Assert.False(Regex.IsMatch(text, @"(?<!ProfileChangeSource\.)\bControlService\b"), "ConnectionProfileSelector が ControlService を参照している");
             Assert.False(Regex.IsMatch(text, @"\bGlobal\."), "ConnectionProfileSelector が Global を参照している");
         }
     }

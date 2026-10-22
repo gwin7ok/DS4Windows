@@ -96,10 +96,11 @@ namespace DS4WindowsTests
         [Fact]
         public void TheFirstConnection_UsesTheOlderProfilePath_AndAReconnectionUsesTheSelectedProfile()
         {
-            string path = SourceFileLocator.Find("DS4Windows/DS4Control/ControlService.cs");
+            // Phase9 9-E E-6a: プロファイルの選択は ConnectionProfileSelector へ移った
+            string path = SourceFileLocator.Find("DS4Windows/DS4Control/Services/ConnectionProfileSelector.cs");
             if (path == null) return;
 
-            string body = MethodBody(File.ReadAllText(path), "private void PrepareConnectedInputControllerSettingEvents(");
+            string body = MethodBody(File.ReadAllText(path), "public bool ApplyOnConnect(");
             int first = body.IndexOf("IsFirstConnection(index, connectedMac)", StringComparison.Ordinal);
             int older = body.IndexOf("profileToApply = _profileRepository.OlderProfilePath[index];", StringComparison.Ordinal);
             int selected = body.IndexOf("profileToApply = _profileRepository.SelectedProfile[index];", StringComparison.Ordinal);
@@ -138,9 +139,9 @@ namespace DS4WindowsTests
                 "DS4Windows/App.xaml.cs",                                        // 起動時の既定の設定
                 "DS4Windows/DI/IProfileRepository.cs",
                 "DS4Windows/DS4Control/BackingStore.cs",
-                "DS4Windows/DS4Control/ControlService.cs",                       // 初回接続の既定
                 "DS4Windows/DS4Control/DTOXml/AppSettingsDTO.cs",                // アプリ設定の読込
                 "DS4Windows/DS4Control/Services/AppSettingsXmlSerializer.cs",
+                "DS4Windows/DS4Control/Services/ConnectionProfileSelector.cs",   // 初回接続の既定（Phase9 9-E E-6a: ControlService から移した）
                 "DS4Windows/DS4Control/Services/ProfileApplicationService.cs",   // 適用での更新、RestoreFromAction
                 "DS4Windows/DS4Control/Services/ProfileRepository.cs",
                 "DS4Windows/DS4Forms/ViewModels/CompositeDeviceModel.cs",        // 画面の選択、リンクの解除

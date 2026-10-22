@@ -119,7 +119,11 @@ namespace DS4WindowsTests
             string path = SourceFileLocator.Find("DS4Windows/DS4Control/ControlService.cs");
             if (path == null) return;
 
-            string text = File.ReadAllText(path);
+            string controlServiceText = File.ReadAllText(path);
+            // Phase9 9-E E-6a: 判定の本体は ConnectionProfileSelector へ移った
+            string selectorPath = SourceFileLocator.Find("DS4Windows/DS4Control/Services/ConnectionProfileSelector.cs");
+            if (selectorPath == null) return;
+            string text = File.ReadAllText(selectorPath);
             int first = text.IndexOf("_deviceStateService.IsFirstConnection(index, connectedMac)", StringComparison.Ordinal);
             int older = text.IndexOf("profileToApply = _profileRepository.OlderProfilePath[index];", StringComparison.Ordinal);
             int remembered = text.IndexOf("profileToApply = _deviceStateService.GetRememberedProfile(connectedMac);", StringComparison.Ordinal);
@@ -131,7 +135,8 @@ namespace DS4WindowsTests
             Assert.Contains("_deviceStateService.RememberProfile(connectedMac, profileToApply);", text);
             Assert.DoesNotContain("_deviceStateService.IsFirstConnection(index)", text);   // スロット単位の判定は使わない
 
-            // 適用のたびに記憶する
+            // 適用のたびに記憶する（こちらは ControlService に残っている）
+            text = controlServiceText;
             Assert.Contains("_profileRepository.SelectedProfileChanged += RememberAppliedProfile;", text);
             Assert.Contains("_deviceStateService.RememberProfile(device.getMacAddress(), e.ProfileName);", text);
         }
