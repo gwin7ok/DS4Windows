@@ -95,7 +95,6 @@ namespace DS4WindowsTests
             Assert.DoesNotContain("ServiceProviderHolder", text);
             Assert.False(Regex.IsMatch(text, @"\bGlobal\."), "SyntheticInputCommitter が Global を参照している");
         }
-    }
 
         [Theory]
         [InlineData(@"\bTwoStageTriggerMode\.(Normal|ExclusiveButtons|HairTrigger|HipFire|HipFireExclusiveButtons)\b")]
