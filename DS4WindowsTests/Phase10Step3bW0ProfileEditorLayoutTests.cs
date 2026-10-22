@@ -210,7 +210,7 @@ namespace DS4WindowsTests
             Match rows = Regex.Match(controls, @"<Grid\.RowDefinitions>(?<body>.*?)</Grid\.RowDefinitions>", RegexOptions.Singleline);
             Assert.True(rows.Success);
             Assert.Equal(2, Regex.Matches(rows.Groups["body"].Value, @"<RowDefinition ").Count);
-            Assert.Contains("<RowDefinition Height=\"266\" />", rows.Groups["body"].Value);   // Phase9 UI 変更: 割り当て表示の下に余白（240 → 266）
+            Assert.Contains("<RowDefinition Height=\"252\" />", rows.Groups["body"].Value);   // Phase9 UI 変更: 割り当て表示の下に余白（240 → 252）
             Assert.Contains("<RowDefinition Height=\"*\" />", rows.Groups["body"].Value);
             Assert.Matches(@"<Canvas Grid\.Row=""0"" x:Name=""conCanvas""", controls);
             Assert.Matches(@"<ListView\s+Grid\.Row=""1"" x:Name=""mappingListBox""", controls);   // Phase9 UI 変更: 割り当て一覧は、2 列の表（ListView）
