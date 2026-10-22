@@ -3,7 +3,7 @@
 作成日: 2026-10-22  
 対象ブランチ: `For-DI-migration-work`  
 上位: `Phase9-Responsibility-Split-Plan.md` 9-C、`Phase9-B-Plan.md`（同じ進め方）  
-状態: **承認済み（2026-10-22。§8）。C-1・C-2 を 1 回でまとめて実装済み（ビルド・テストはユーザーの実行待ち）。次は押下・離上の switch の畳み込み（Q4。別コミット）**
+状態: **承認済み（2026-10-22。§8）。C-1・C-2 を 1 回でまとめて実装済み（ビルド・テストはユーザーの実行待ち）。押下・離上の switch の畳み込み（Q4）も実装済み（§11。ビルド・テストはユーザーの実行待ち）。残りは実機確認（台帳 §32）**
 
 ---
 
@@ -118,3 +118,17 @@
 | `Phase9CMacroStepExecutorDifferentialTests.Execute_MatchesTheOldImplementation_ForEveryCodeValue`（2 件） | 共有ホストの設定に出力 KBM マッピング（`OutputKBMMapping`）がなく、旧実装の写しが `NullReferenceException` になった（テストの前提の漏れ。製品コードの不具合ではない） | テストの間だけ `VirtualKBMFactory` のマッピングを設定し、終わりに戻す |
 | `Phase10Step4cW2EdgeLogTests.ASpecialActionMacro_LogsTheReleaseToo` | ログを複製する最中に、バックグラウンドのマクロの Task がログを書き、`ToList()` が `ArgumentException`（競合。以前から起こりうる脆いテスト） | `Capture` で、複製に失敗したら少し待って取り直す |
 | （M6） | 287・288 の範囲外アクセス | 上記のとおり、フラグの配列を 28 個に広げて是正（ユーザー承認） |
+
+## 11. Q4 の畳み込みの結果（2026-10-22。ビルド・テストはユーザーの実行待ち）
+
+初回の移動はビルド・テストで合格した（2026-10-22）ため、別コミットで畳んだ。
+
+| 区分 | 内容 |
+|---|---|
+| `MacroStepExecutor` | 押下と離上の 2 つの switch（マウスボタン 5 種、キー、スキャンコード）を、`SendKeyOrMouseButton`（押下／離上の別を引数に取る）と、`SendMouseButton`／`SendMouseXButton` にまとめた。送出するイベント、その順序、ログの文言（`EVENT SENT [INLINE] …`、`INLINE RELEASE TRACE …`）は変えていない。使われていない局所変数 `_nowTicksDbg`（値を読まない）を除いた。ファイル 195 → 約 178 行。`Execute` は約 55 行 |
+| テスト | 既存の `Phase9CMacroStepExecutorDifferentialTests`（旧実装との完全一致。キーとマウスの押下・離上、スキャンコードの有無）がそのまま守る |
+
+## 12. 完了の状況
+
+- 9-C のコード作業は完了。残りは実機確認（台帳 §32、P9C-1〜4）。
+- 技術的負債（記録）: `ActionManager`（静的）と `DS4LightBar`（静的な配列）の直接参照は、移し先のコードに TODO を付けて残した（Actions サブシステムの DI 化とライトバーのサービス化で解消）。

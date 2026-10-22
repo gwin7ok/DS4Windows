@@ -1,5 +1,6 @@
 using System;
 using DS4Windows.DI;
+using DS4Windows.DS4Control;
 
 namespace DS4Windows.Services
 {
@@ -50,98 +51,16 @@ namespace DS4Windows.Services
             else if (macroCodeValue < 300)
             {
                 // Keyboard key or mouse button macro event
+                // Phase9 9-C（Q4）: 旧・押下と離上の 2 つの switch（マウスボタン 5 種、キー、スキャンコード）は、SendKeyOrMouseButton にまとめた。
+                // 送出するイベント、その順序、ログの文言は変えていない（旧実装との一致は Phase9CMacroStepExecutorDifferentialTests が守る）。
                 if (!keydown[macroCodeValue])
                 {
-                    switch (macroCodeValue)
-                    {
-                        //anything above 255 is not a keyvalue
-                        case 256:
-                            AppLogger.LogDebug($"EVENT SENT [INLINE] device={device} macroCode={macroCodeValue} event=MouseLeftDown");
-                            _virtualKbm.PerformMouseButtonEvent(_profileSettings.OutputKBMMapping.MOUSEEVENTF_LEFTDOWN);
-                            break;
-                        case 257:
-                            AppLogger.LogDebug($"EVENT SENT [INLINE] device={device} macroCode={macroCodeValue} event=MouseRightDown");
-                            _virtualKbm.PerformMouseButtonEvent(_profileSettings.OutputKBMMapping.MOUSEEVENTF_RIGHTDOWN);
-                            break;
-                        case 258:
-                            AppLogger.LogDebug($"EVENT SENT [INLINE] device={device} macroCode={macroCodeValue} event=MouseMiddleDown");
-                            _virtualKbm.PerformMouseButtonEvent(_profileSettings.OutputKBMMapping.MOUSEEVENTF_MIDDLEDOWN);
-                            break;
-                        case 259:
-                            AppLogger.LogDebug($"EVENT SENT [INLINE] device={device} macroCode={macroCodeValue} event=MouseXButtonDown btn=1");
-                            _virtualKbm.PerformMouseButtonEventAlt(_profileSettings.OutputKBMMapping.MOUSEEVENTF_XBUTTONDOWN, 1);
-                            break;
-                        case 260:
-                            AppLogger.LogDebug($"EVENT SENT [INLINE] device={device} macroCode={macroCodeValue} event=MouseXButtonDown btn=2");
-                            _virtualKbm.PerformMouseButtonEventAlt(_profileSettings.OutputKBMMapping.MOUSEEVENTF_XBUTTONDOWN, 2);
-                            break;
-
-                        default:
-                            uint eventMacroCode = !_profileSettings.OutputKBMMapping.macroKeyTranslate ? (uint)macroCodeValue :
-                                _profileSettings.OutputKBMMapping.GetRealEventKey((uint)macroCodeValue);
-
-                            if (keyType.HasFlag(DS4KeyType.ScanCode))
-                            {
-                                AppLogger.LogDebug($"EVENT SENT [INLINE] device={device} macroCode={macroCodeValue} event=KeyPressAlt native={eventMacroCode}");
-                                _virtualKbm.PerformKeyPressAlt(eventMacroCode);
-                            }
-                            else
-                            {
-                                AppLogger.LogDebug($"EVENT SENT [INLINE] device={device} macroCode={macroCodeValue} event=KeyPress native={eventMacroCode}");
-                                _virtualKbm.PerformKeyPress(eventMacroCode);
-                            }
-                            break;
-                    }
+                    SendKeyOrMouseButton(device, keyType, macroCodeValue, down: true);
                     keydown[macroCodeValue] = true;
                 }
                 else
                 {
-                    switch (macroCodeValue)
-                    {
-                        //anything above 255 is not a keyvalue
-                        case 256:
-                            AppLogger.LogDebug($"EVENT SENT [INLINE] device={device} macroCode={macroCodeValue} event=MouseLeftUp");
-                            _virtualKbm.PerformMouseButtonEvent(_profileSettings.OutputKBMMapping.MOUSEEVENTF_LEFTUP);
-                            break;
-                        case 257:
-                            AppLogger.LogDebug($"EVENT SENT [INLINE] device={device} macroCode={macroCodeValue} event=MouseRightUp");
-                            _virtualKbm.PerformMouseButtonEvent(_profileSettings.OutputKBMMapping.MOUSEEVENTF_RIGHTUP);
-                            break;
-                        case 258:
-                            AppLogger.LogDebug($"EVENT SENT [INLINE] device={device} macroCode={macroCodeValue} event=MouseMiddleUp");
-                            _virtualKbm.PerformMouseButtonEvent(_profileSettings.OutputKBMMapping.MOUSEEVENTF_MIDDLEUP);
-                            break;
-                        case 259:
-                            AppLogger.LogDebug($"EVENT SENT [INLINE] device={device} macroCode={macroCodeValue} event=MouseXButtonUp btn=1");
-                            _virtualKbm.PerformMouseButtonEventAlt(_profileSettings.OutputKBMMapping.MOUSEEVENTF_XBUTTONUP, 1);
-                            break;
-                        case 260:
-                            AppLogger.LogDebug($"EVENT SENT [INLINE] device={device} macroCode={macroCodeValue} event=MouseXButtonUp btn=2");
-                            _virtualKbm.PerformMouseButtonEventAlt(_profileSettings.OutputKBMMapping.MOUSEEVENTF_XBUTTONUP, 2);
-                            break;
-
-                        default:
-                            uint eventMacroCode = !_profileSettings.OutputKBMMapping.macroKeyTranslate ? (uint)macroCodeValue :
-                                _profileSettings.OutputKBMMapping.GetRealEventKey((uint)macroCodeValue);
-
-                            if (keyType.HasFlag(DS4KeyType.ScanCode))
-                            {
-                                long _nowTicksDbg = DateTime.UtcNow.Ticks;
-                                long _deltaSendDbg = 0; // inline macro release: lastSyntheticSend not tracked here
-                                AppLogger.LogTrace($"INLINE RELEASE TRACE device={device} macroCode={macroCodeValue} native={eventMacroCode} lastSendDeltaMs={_deltaSendDbg}");
-                                AppLogger.LogDebug($"EVENT SENT [INLINE] device={device} macroCode={macroCodeValue} event=KeyReleaseAlt native={eventMacroCode}");
-                                _virtualKbm.PerformKeyReleaseAlt(eventMacroCode);
-                            }
-                            else
-                            {
-                                long _nowTicksDbg = DateTime.UtcNow.Ticks;
-                                long _deltaSendDbg = 0;
-                                AppLogger.LogTrace($"INLINE RELEASE TRACE device={device} macroCode={macroCodeValue} native={eventMacroCode} lastSendDeltaMs={_deltaSendDbg}");
-                                AppLogger.LogDebug($"EVENT SENT [INLINE] device={device} macroCode={macroCodeValue} event=KeyRelease native={eventMacroCode}");
-                                _virtualKbm.PerformKeyRelease(eventMacroCode);
-                            }
-                            break;
-                    }
+                    SendKeyOrMouseButton(device, keyType, macroCodeValue, down: false);
                     keydown[macroCodeValue] = false;
                 }
             }
@@ -190,6 +109,70 @@ namespace DS4Windows.Services
             }
 
             return doDelayOnCaller;
+        }
+
+        /// <summary>キー（0〜255）またはマウスボタン（256〜260）の押下／離上を送出する。旧 <c>PlayMacroCodeValue</c> の、押下と離上の 2 つの switch の共通部分。</summary>
+        private void SendKeyOrMouseButton(int device, DS4KeyType keyType, int macroCodeValue, bool down)
+        {
+            VirtualKBMMapping kbm = _profileSettings.OutputKBMMapping;
+            switch (macroCodeValue)
+            {
+                //anything above 255 is not a keyvalue
+                case 256:
+                    SendMouseButton(device, macroCodeValue, down ? "MouseLeftDown" : "MouseLeftUp",
+                        down ? kbm.MOUSEEVENTF_LEFTDOWN : kbm.MOUSEEVENTF_LEFTUP);
+                    break;
+                case 257:
+                    SendMouseButton(device, macroCodeValue, down ? "MouseRightDown" : "MouseRightUp",
+                        down ? kbm.MOUSEEVENTF_RIGHTDOWN : kbm.MOUSEEVENTF_RIGHTUP);
+                    break;
+                case 258:
+                    SendMouseButton(device, macroCodeValue, down ? "MouseMiddleDown" : "MouseMiddleUp",
+                        down ? kbm.MOUSEEVENTF_MIDDLEDOWN : kbm.MOUSEEVENTF_MIDDLEUP);
+                    break;
+                case 259:
+                    SendMouseXButton(device, macroCodeValue, down ? "MouseXButtonDown btn=1" : "MouseXButtonUp btn=1",
+                        down ? kbm.MOUSEEVENTF_XBUTTONDOWN : kbm.MOUSEEVENTF_XBUTTONUP, 1);
+                    break;
+                case 260:
+                    SendMouseXButton(device, macroCodeValue, down ? "MouseXButtonDown btn=2" : "MouseXButtonUp btn=2",
+                        down ? kbm.MOUSEEVENTF_XBUTTONDOWN : kbm.MOUSEEVENTF_XBUTTONUP, 2);
+                    break;
+
+                default:
+                    uint eventMacroCode = !kbm.macroKeyTranslate ? (uint)macroCodeValue :
+                        kbm.GetRealEventKey((uint)macroCodeValue);
+                    bool scanCode = keyType.HasFlag(DS4KeyType.ScanCode);
+
+                    if (down)
+                    {
+                        AppLogger.LogDebug($"EVENT SENT [INLINE] device={device} macroCode={macroCodeValue} event={(scanCode ? "KeyPressAlt" : "KeyPress")} native={eventMacroCode}");
+                        if (scanCode) _virtualKbm.PerformKeyPressAlt(eventMacroCode);
+                        else _virtualKbm.PerformKeyPress(eventMacroCode);
+                    }
+                    else
+                    {
+                        long _deltaSendDbg = 0; // inline macro release: lastSyntheticSend not tracked here
+                        AppLogger.LogTrace($"INLINE RELEASE TRACE device={device} macroCode={macroCodeValue} native={eventMacroCode} lastSendDeltaMs={_deltaSendDbg}");
+                        AppLogger.LogDebug($"EVENT SENT [INLINE] device={device} macroCode={macroCodeValue} event={(scanCode ? "KeyReleaseAlt" : "KeyRelease")} native={eventMacroCode}");
+                        if (scanCode) _virtualKbm.PerformKeyReleaseAlt(eventMacroCode);
+                        else _virtualKbm.PerformKeyRelease(eventMacroCode);
+                    }
+
+                    break;
+            }
+        }
+
+        private void SendMouseButton(int device, int macroCodeValue, string eventName, uint mouseButton)
+        {
+            AppLogger.LogDebug($"EVENT SENT [INLINE] device={device} macroCode={macroCodeValue} event={eventName}");
+            _virtualKbm.PerformMouseButtonEvent(mouseButton);
+        }
+
+        private void SendMouseXButton(int device, int macroCodeValue, string eventName, uint mouseButton, int xButton)
+        {
+            AppLogger.LogDebug($"EVENT SENT [INLINE] device={device} macroCode={macroCodeValue} event={eventName}");
+            _virtualKbm.PerformMouseButtonEventAlt(mouseButton, xButton);
         }
     }
 }
