@@ -124,11 +124,11 @@ namespace DS4WindowsTests
             Assert.IsType<ControlMouseOutputAction>(mouseToggle.Outputs[0]);
             Assert.IsType<ControlToggleOutputAction>(mouseToggle.Outputs[1]);
 
-            // パッド＋Toggle: パッドの出力と Toggle の出力。区分は Toggle の出力の ButtonMouse
+            // パッド＋Toggle（Phase9: Controls のパッドボタンの Toggle）: SA の Button と同じ出力（ButtonOutputAction）が、Toggle の反転と出力を担う。
+            // 元のボタンの通常の出力は、方針（毎フレーム消す）で消える
             IActionBinding padToggle = Assert.Single(bindings, b => b.Source.name == $"Synthetic_Pad_{Device}_{(int)DS4Controls.Square}");
-            Assert.IsType<ControlPadOutputAction>(padToggle.Outputs[0]);
-            Assert.IsType<ControlToggleOutputAction>(padToggle.Outputs[1]);
-            Assert.Equal(ControlBindingKind.ButtonMouse, ((ControlButtonInputAction)padToggle.Input).Kind);
+            Assert.IsType<ButtonOutputAction>(Assert.Single(padToggle.Outputs));
+            Assert.True(padToggle.Policy.ErasesOutputEveryFrame);
 
             // Unbound＋Toggle: 消して、Toggle の出力だけ
             IActionBinding unboundToggle = Assert.Single(bindings, b => b.Source.name == $"Synthetic_Pad_{Device}_{(int)DS4Controls.Triangle}");

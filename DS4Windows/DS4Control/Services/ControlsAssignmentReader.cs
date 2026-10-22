@@ -55,6 +55,33 @@ namespace DS4Windows.Services
         }
 
         /// <summary>
+        /// Phase9（Controls のパッドボタンの Toggle。Phase9-ControlsPadToggle-Plan.md）: Toggle つきの Button で、出力先が仮想パッド（ボタン・軸・トリガー）のものを、
+        /// SA の Button と同じ定義にする。Toggle の規則（立ち上がりで反転し、ON の間は出力する。軸・トリガーは強さ 100%）は、SA と同じ <c>ButtonOutputAction</c> が担う。
+        /// 実行時の状態の入れ物は、これまでのパッドの束縛と同じ名前（<c>Synthetic_Pad_{device}_{control}</c>）。
+        /// 条件を満たさないとき（Toggle なし、出力先がマウスなど、出力先なし［Unbound］）は偽。
+        /// </summary>
+        public static bool TryReadPadToggle(int device, DS4ControlSettings dcs, out AssignmentDefinition definition, out SpecialAction source)
+        {
+            definition = null;
+            source = null;
+            if (dcs == null || !dcs.keyType.HasFlag(DS4KeyType.Toggle)) return false;
+            if (!ControlBindingBuilder.TryInterpretPadTarget(dcs, out _, out bool eraseOnly) || eraseOnly) return false;
+
+            string name = $"Synthetic_Pad_{device}_{(int)dcs.control}";
+            var identity = new SpecialAction(name, "Synthetic", "Button", "Button", 0, string.Empty);
+            identity.typeID = SpecialAction.ActionTypeId.Button;
+            identity.type = "Button";
+            identity.details = ((int)dcs.action.actionBtn).ToString();
+            identity.KeyButtonSwitchMode = SpecialAction.KeyButtonSwitchModeEnum.Toggle;
+            identity.controls = name;
+
+            source = identity;
+            definition = new AssignmentDefinition(name, name, AssignmentOrigin.Controls, SpecialAction.ActionTypeId.Button,
+                new List<DS4Controls> { dcs.control }, button: ActionBindingBuilder.InterpretButton(identity));
+            return true;
+        }
+
+        /// <summary>
         /// Phase10-Step6 I4b: Macro の割り当てを定義にする。手順と keyType は定義へ、「Run on trigger release」などの 3 項目（型のある項目）は <see cref="AssignmentDefinition.Item"/> へ。
         /// 実行時の状態の入れ物は、旧経路の合成と同じ名前（<c>Synthetic_Macro_{device}_{control}</c>。再生のキューの識別子は、ボタンごとに別）。
         /// Macro の新経路の条件（<see cref="ControlBindingBuilder.TryInterpretMacro"/>）を満たさないときは偽。

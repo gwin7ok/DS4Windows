@@ -315,6 +315,20 @@ namespace DS4Windows.Services
                         else if (pads && TryInterpretPadTarget(dcs, out PadBindingValues pad, out bool eraseOnly))
                         {
                             if (hasExtras) AddExtras(device, dcs, extrasValues, result);
+
+                            // Phase9（Phase9-ControlsPadToggle-Plan.md）: パッドへの Toggle は、SA の Button と同じ部品（ButtonOutputAction）で処理する。
+                            // 以前は ControlToggleOutputAction（マウスのボタンの Toggle の仕組み）しかなく、仮想パッドのボタンには Toggle が効かなかった。
+                            // 部品を作れない（窓口が未接続のテスト）ときは、従来の束縛にする
+                            if (toggle && ControlsAssignmentReader.TryReadPadToggle(device, dcs, out AssignmentDefinition padToggle, out SpecialAction padToggleIdentity))
+                            {
+                                TriggerBinding padToggleBinding = _assignmentBuilder.Build(device, padToggle, padToggleIdentity, -1);
+                                if (padToggleBinding != null)
+                                {
+                                    result.Add(padToggleBinding);
+                                    break;
+                                }
+                            }
+
                             AddPad(device, dcs, pad, eraseOnly, toggle, result);
                         }
                     }
