@@ -55,15 +55,18 @@ namespace DS4WindowsTests
         }
 
         [Fact]
-        public void ControlService_KeepsTheThinDelegates_ForStartAndHotPlug()
+        public void ControlService_KeepsOnReport_AndTheLifecycleCallsTheConnector()
         {
             string text = ReadWithoutComments("DS4Windows/DS4Control/ControlService.cs");
             if (text == null) return;
 
-            Assert.Contains("private void PrepareConnectedInputControllerSettingEvents(int numControllers, DS4Device device, int index)", text);
-            Assert.Contains("_deviceConnector.PrepareConnected(numControllers, device, index);", text);
-            Assert.Contains("private void BeginPrepareConnectedInputController(DS4Device device, bool showlog = false)", text);
-            Assert.Contains("_deviceConnector.BeginPrepare(device, showlog);", text);
+            // Phase9 9-E E-6f2: Start／HotPlug の本体が ServiceLifecycle へ移ったため、薄い委譲は不要になった（ライフサイクルが DeviceConnector を直接呼ぶ）
+            Assert.DoesNotContain("PrepareConnectedInputControllerSettingEvents", text);
+            Assert.DoesNotContain("BeginPrepareConnectedInputController", text);
+            string lifecycle = ReadWithoutComments("DS4Windows/DS4Control/Services/ServiceLifecycle.cs");
+            if (lifecycle == null) return;
+            Assert.Contains("_deviceConnector.PrepareConnected(numControllers, device, index: i)", lifecycle);
+            Assert.Contains("_deviceConnector.PrepareConnected(numControllers, device, Index)", lifecycle);
             // 入力レポートの処理（ホットパス）は ControlService に残り、窓口から呼ばれる
             Assert.Contains("protected void On_Report(DS4Device device, EventArgs e, int ind)", text);
             Assert.Contains("=> On_Report(device, e, ind);", text);

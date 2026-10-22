@@ -108,9 +108,9 @@
 | E-6b 設定の反映（`IDeviceConnectionSetup`） | **完了（2026-10-22）**。ビルド・テスト合格、実機確認 OK（P9E6b-1・6。タッチパッド・DualSense・起動プログラムは機材／設定なしで未実施） |
 | E-6c 種類のカートリッジ（`IInputDeviceModule` ×5 と `Registry`） | **完了（2026-10-22）**。ビルド・テスト合格、実機確認 OK（P9E6c-1。DualSense／Edge／Joy-Con／Switch Pro の固有部分は機材なしで未実施、差分テストで担保） |
 | E-6d Joy-Con の結合（`IJoyConLinker`、`IJoinableDevice`） | **完了（2026-10-22）**。ビルド・テスト合格（偽物のデバイスの差分テスト約 3.3 万通り含む）。実機はなし（台帳 §41 は Joy-Con が手に入ったとき） |
-| E-6e 切断・同期（`IDeviceDisconnectHandler`、`IDeviceSlotHost`） | **実装済み（2026-10-22）**。ビルド・テスト合格。実機確認（台帳 §42）はユーザーの実行待ち |
-| E-6f1 接続の組み立て（`IDeviceConnector`） | **実装済み（2026-10-22）**。ビルド・テストはユーザーの実行待ち |
-| E-6f2 開始・停止・ホットプラグ（`IServiceLifecycle`） | 未（f1 の後） |
+| E-6e 切断・同期（`IDeviceDisconnectHandler`、`IDeviceSlotHost`） | **完了（2026-10-22）**。ビルド・テスト合格、実機確認 OK（P9E6e-1〜3。E-6f1 の確認で兼ねた） |
+| E-6f1 接続の組み立て（`IDeviceConnector`） | **完了（2026-10-22）**。ビルド・テスト合格、実機確認 OK（P9E6f1-1・2・4） |
+| E-6f2 開始・停止・ホットプラグ（`IServiceLifecycle`） | **実装済み（2026-10-22）**。ビルド・テストはユーザーの実行待ち |
 
 ### E-6a の実装メモ
 - 計画（§3.3）では「適用するプロファイル名を返し、`ApplyToSlot` は `ControlService` に残す」としていたが、`MarkConnected`／`SelectedProfile`／`RememberProfile`／Linked の UI 状態／`ApplyToSlot` が**順序つきで連続する一続きの処理**だったため、順序を変えないよう、**`ApplyToSlot` と `PublishSlot` も含めて**まとめて移した。`ControlService` は、適用の成否（`profileLoaded`）を受け取って、仮想パッドの接続以降を続ける。
@@ -179,3 +179,13 @@
 - `ControlService` の `Start`／`HotPlug` が呼ぶ `PrepareConnectedInputControllerSettingEvents`／`BeginPrepareConnectedInputController` は、1 行の委譲で残した。イベントの購読先だった `On_DS4Removal`／`On_SyncChange`／`On_SerialChange`（E-6e で委譲にした）は、`DeviceConnector` が `IDeviceDisconnectHandler` を直接購読するため、不要になって削除した。未使用になった `PrepareDS4DeviceSettingHooks`／`GetKnownExtraButtons`／`CheckQuickCharge` も削除した（呼び出し元は `DeviceConnector` に移っている）。
 - 既存テストの走査先を更新: `Phase7Step5Ds3GyroTriggerTests`、`Phase9E6ConnectionGuardTests`、`Phase9E6DisconnectGuardTests`。新規: `Phase9E6ConnectorGuardTests`（移した処理の不在、薄い委譲、組み立ての**順序**、`host.OnReport`、DI 登録）。
 - `On_Report` の経路の変化は、ラムダ内の呼び出しが `this.On_Report(...)` から `host.OnReport(...)`（1 段の委譲）になったこと。ホットパスの割り当てが増えないことは、`ControlServiceHotPathAllocationTests` ほかのテストで確認する。
+
+### E-6f2 の実装メモ
+- 契約 `IServiceLifecycle`（状態 `Running`／`LoopControllers`／`InServiceTask`／`ActiveControllers`／`Suspending`、イベント `ServiceStarted`／`PreServiceStop`／`ServiceStopped`／`RunningChanged`／`HotplugController`、メソッド `Start`／`Stop`／`HotPlug`／`PrepareAbort`）と実装 `ServiceLifecycle`（Singleton）。`Start`／`Stop`／`HotPlug`／`PrepareAbort` の本体を、そのまま移した。
+- `ControlService` が頼られる機能は、窓口 `IServiceLifecycleHost` の 2 つだけ: `InvokeOnEventThread`（旧 `eventDispatcher.Invoke`）と `InitializeOutputKbmHandler`（旧 `InitOutputKBMHandler`。`RefreshOutputKBMHandler` も使うため `ControlService` に残る）。スロットの配列は E-6e の `IDeviceSlotHost`。いずれも `Func` で遅延して受ける（循環なし）。OSC／UDP／HidHide は、`ControlService` の薄い委譲を経由せず、サービスを直接呼ぶ。
+- `ControlService` の公開メンバー（`running`／`suspending`／`loopControllers`／`inServiceTask`／`activeControllers` と、`Start`／`Stop`／`HotPlug`／`PrepareAbort`、5 つのイベント）は、同名のまま転送で残した（公開フィールド→公開プロパティ。UI の呼び出しはそのまま動く）。イベントは、送り主を `ControlService` にして再発火する（`HotplugController` は `ControlService` の型を送り主に取るため）。
+- **UI への静的な参照の解消（Q3）**: 旧 `Start` の末尾の `MainWindow.ProcessPriorityClasses[...]` は、`ServiceLifecycle` が同じ順序の配列を持つ形にした（UI 側は変えていない）。順序が同じことは、ソース走査テストで固定した。
+- `E-6f1` で薄い委譲として残していた `PrepareConnectedInputControllerSettingEvents`／`BeginPrepareConnectedInputController` は、ライフサイクルが `IDeviceConnector` を直接呼ぶため、削除した。
+- 既存テストの走査先を更新: `Phase8Step6W1`／`Phase8Step6W3`（`Stop` の本文）、`Phase9E6ConnectionGuardTests`（`Start`／`HotPlug` の呼び出し順序）、`Phase9E6ConnectorGuardTests`。
+- 新規: `Phase9E6LifecycleGuardTests`（移した処理の不在、転送の存在、**`Start` と `Stop` の安全弁の順序**［ViGEm の開始・破棄順序、`Thread.Sleep`、通知の順序］、プロセス優先度の配列の順序が UI と同じこと、DI 登録、起動直後の状態）。`DS4Device` を使う部分は、順序のソース走査と実機確認（台帳 §44）で担保する。
+- `ControlService.cs` は 1,377 → 約 1,050 行（E-6 の開始時 2,015 行から約 960 行減、Phase9-E の開始時 3,438 行から約 2,390 行減）。

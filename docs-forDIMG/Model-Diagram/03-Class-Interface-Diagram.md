@@ -395,6 +395,29 @@ classDiagram
         +PrepareConnected(int numControllers, DS4Device device, int index)
     }
     class DeviceConnector
+    class IServiceLifecycle {
+        <<interface>>
+        +Running bool
+        +LoopControllers bool
+        +InServiceTask bool
+        +ActiveControllers int
+        +Suspending bool
+        +ServiceStarted event
+        +PreServiceStop event
+        +ServiceStopped event
+        +RunningChanged event
+        +HotplugController event
+        +Start(bool showlog) bool
+        +Stop(bool showlog, bool immediateUnplug) bool
+        +HotPlug() bool
+        +PrepareAbort()
+    }
+    class IServiceLifecycleHost {
+        <<interface>>
+        +InvokeOnEventThread(Action action)
+        +InitializeOutputKbmHandler()
+    }
+    class ServiceLifecycle
     class JoinableDeviceAdapter
     class Ds4DeviceModule
     class DualSenseDeviceModule
@@ -479,6 +502,13 @@ classDiagram
     IActiveInputProbe <|.. ActiveInputProbe : implements
     IConnectionProfileSelector <|.. ConnectionProfileSelector : implements
     IDeviceConnectionSetup <|.. DeviceConnectionSetup : implements
+    IServiceLifecycle <|.. ServiceLifecycle : implements
+    ServiceLifecycle --> IServiceLifecycleHost : Func による遅延取得（実体は ControlService。イベントスレッド、KBM 出力の初期化）
+    ServiceLifecycle --> IDeviceSlotHost : Func による遅延取得（スロットの配列）
+    ServiceLifecycle --> IDeviceConnector : 接続の組み立て
+    ServiceLifecycle --> IJoyConLinker : Joy-Con の結合
+    ServiceLifecycle --> IVirtualPadService : ViGEm の開始・破棄、仮想パッドの取り外し
+    ControlService --> IServiceLifecycle : ctor injection（Phase9 9-E E-6f2。Start／Stop／HotPlug と状態・イベントの転送）
     IDeviceConnector <|.. DeviceConnector : implements
     DeviceConnector --> IDeviceSlotHost : Func による遅延取得（スロットの配列、On_Report への橋渡し）
     DeviceConnector --> IConnectionProfileSelector : プロファイルの選択と適用

@@ -210,6 +210,8 @@ namespace DS4Windows.DI
             services.AddSingleton<IInputDeviceModule, JoyConDeviceModule>();
             services.AddSingleton<IInputDeviceModule, Ds3DeviceModule>();
             services.AddSingleton<IInputDeviceModuleRegistry, InputDeviceModuleRegistry>();
+            services.AddSingleton<IServiceLifecycle, ServiceLifecycle>();   // Phase9 9-E E-6f2: 開始・停止・ホットプラグと、その状態・イベント
+            services.AddSingleton<Func<IServiceLifecycleHost>>(sp => () => sp.GetRequiredService<IServiceLifecycleHost>());   // ServiceLifecycle が遅延で取得する（実体は ControlService）
             services.AddSingleton<IDeviceConnector, DeviceConnector>();   // Phase9 9-E E-6f1: 接続の組み立て
             services.AddSingleton<IDeviceDisconnectHandler, DeviceDisconnectHandler>();   // Phase9 9-E E-6e: 切断・同期・シリアル変更の処理
             services.AddSingleton<Func<IDeviceSlotHost>>(sp => () => sp.GetRequiredService<IDeviceSlotHost>());   // DeviceDisconnectHandler が遅延で取得する（実体は ControlService）
@@ -296,13 +298,15 @@ namespace DS4Windows.DI
                     sp.GetRequiredService<IInputDeviceModuleRegistry>(),   // Phase9 9-E E-6c
                     sp.GetRequiredService<IJoyConLinker>(),   // Phase9 9-E E-6d
                     sp.GetRequiredService<IDeviceDisconnectHandler>(),   // Phase9 9-E E-6e
-                    sp.GetRequiredService<IDeviceConnector>()   // Phase9 9-E E-6f1
+                    sp.GetRequiredService<IDeviceConnector>(),   // Phase9 9-E E-6f1
+                    sp.GetRequiredService<IServiceLifecycle>()   // Phase9 9-E E-6f2
                 );
             });
             services.AddSingleton<IDeviceStateAccessor>(sp => sp.GetRequiredService<ControlService>());
             services.AddSingleton<IUdpMotionHost>(sp => sp.GetRequiredService<ControlService>());   // Phase9 9-E E-3
             services.AddSingleton<IVirtualPadHost>(sp => sp.GetRequiredService<ControlService>());
-            services.AddSingleton<IDeviceSlotHost>(sp => sp.GetRequiredService<ControlService>());   // Phase9 9-E E-6e   // Phase9 9-E E-4
+            services.AddSingleton<IDeviceSlotHost>(sp => sp.GetRequiredService<ControlService>());   // Phase9 9-E E-6e
+            services.AddSingleton<IServiceLifecycleHost>(sp => sp.GetRequiredService<ControlService>());   // Phase9 9-E E-6f2   // Phase9 9-E E-4
 
             return services;
         }

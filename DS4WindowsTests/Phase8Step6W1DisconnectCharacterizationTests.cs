@@ -91,7 +91,10 @@ namespace DS4WindowsTests
             string removal = MethodBody(File.ReadAllText(handlerPath), "public void OnRemoval(");
             Assert.Contains("_mapping.HandleDeviceDisconnect(ind);", removal);
 
-            string stop = MethodBody(text, "public bool Stop(");
+            // Phase9 9-E E-6f2: Stop の本体は ServiceLifecycle へ移った
+            string lifecyclePath = SourceFileLocator.Find("DS4Windows/DS4Control/Services/ServiceLifecycle.cs");
+            if (lifecyclePath == null) return;
+            string stop = MethodBody(File.ReadAllText(lifecyclePath), "public bool Stop(");
             Assert.DoesNotContain("HandleDeviceDisconnect", stop);
             Assert.DoesNotContain("On_DS4Removal", stop);
         }

@@ -36,7 +36,7 @@ using DS4WinWPF.DS4Forms;
 namespace DS4Windows
 {
 #pragma warning disable CS0219 // some local variables are assigned but not read in legacy handlers
-    public class ControlService : IInstanceIdentifiable, DS4Windows.Services.IDeviceStateAccessor, DI.IUdpMotionHost, DI.IVirtualPadHost, DI.IDeviceSlotHost
+    public class ControlService : IInstanceIdentifiable, DS4Windows.Services.IDeviceStateAccessor, DI.IUdpMotionHost, DI.IVirtualPadHost, DI.IDeviceSlotHost, DI.IServiceLifecycleHost
     {
         public int InstanceId => this.GetHashCode();
         // Might be useful for ScpVBus build
@@ -51,11 +51,12 @@ namespace DS4Windows
             if (deviceIndex < 0 || deviceIndex >= DS4Controllers.Length) return null;
             return DS4Controllers[deviceIndex];
         }
-        public int activeControllers = 0;
+        // Phase9 9-E E-6f2: 状態（activeControllers／running／loopControllers／inServiceTask／suspending）は ServiceLifecycle が持つ。外部（UI）が直接使うため、同名の公開プロパティで転送する
+        public int activeControllers { get => _lifecycle.ActiveControllers; set => _lifecycle.ActiveControllers = value; }
         public Mouse[] touchPad = new Mouse[MAX_DS4_CONTROLLER_COUNT];
-        public bool running = false;
-        public bool loopControllers = true;
-        public bool inServiceTask = false;
+        public bool running { get => _lifecycle.Running; set => _lifecycle.Running = value; }
+        public bool loopControllers { get => _lifecycle.LoopControllers; set => _lifecycle.LoopControllers = value; }
+        public bool inServiceTask { get => _lifecycle.InServiceTask; set => _lifecycle.InServiceTask = value; }
         private DS4State[] MappedState = new DS4State[MAX_DS4_CONTROLLER_COUNT];
         private DS4State[] CurrentState = new DS4State[MAX_DS4_CONTROLLER_COUNT];
         private DS4State[] PreviousState = new DS4State[MAX_DS4_CONTROLLER_COUNT];
@@ -79,6 +80,10 @@ namespace DS4Windows
         int DI.IDeviceSlotHost.ActiveControllers => activeControllers;
         void DI.IDeviceSlotHost.OnReport(DS4Device device, EventArgs e, int ind) => On_Report(device, e, ind);
 
+        // Phase9 9-E E-6f2: サービスの開始・停止（ServiceLifecycle）が頼る、イベントスレッドの実行とキーボード／マウス出力の初期化
+        void DI.IServiceLifecycleHost.InvokeOnEventThread(Action action) => eventDispatcher.Invoke(action);
+        void DI.IServiceLifecycleHost.InitializeOutputKbmHandler() => InitOutputKBMHandler();
+
         // ControllerReadings タブ表示中のみ有効化される遅延計測用
         public bool IsMeasuringProcessingDelay = false;
         public double[] ProcessingDelayMs = new double[MAX_DS4_CONTROLLER_COUNT];
@@ -94,7 +99,7 @@ namespace DS4Windows
 #pragma warning restore CS0169
         Thread eventDispatchThread;
         Dispatcher eventDispatcher;
-        public bool suspending;
+        public bool suspending { get => _lifecycle.Suspending; set => _lifecycle.Suspending = value; }
 
         // Phase9 9-E E-3: 旧 _udpServer／udpOutBuffers／udpChangeStatus などは UdpMotionService へ移した
         private readonly DI.IUdpMotionService _udpMotion;
@@ -186,6 +191,9 @@ namespace DS4Windows
 
         // Phase9 9-E E-6f1: 接続の組み立て
         private readonly DI.IDeviceConnector _deviceConnector;
+
+        // Phase9 9-E E-6f2: 開始・停止・ホットプラグと、その状態・イベント
+        private readonly DI.IServiceLifecycle _lifecycle;
 
         private ControlServiceDeviceOptions deviceOptions;
         public ControlServiceDeviceOptions DeviceOptions { get => deviceOptions; }
@@ -301,7 +309,8 @@ namespace DS4Windows
             DI.IInputDeviceModuleRegistry deviceModules,
             DI.IJoyConLinker joyConLinker,
             DI.IDeviceDisconnectHandler deviceDisconnect,
-            DI.IDeviceConnector deviceConnector)
+            DI.IDeviceConnector deviceConnector,
+            DI.IServiceLifecycle lifecycle)
         {
             this.cmdParser = cmdParser;
             this._deviceRegistry = deviceRegistry;
@@ -341,6 +350,14 @@ namespace DS4Windows
             this._joyConLinker = joyConLinker ?? throw new ArgumentNullException(nameof(joyConLinker));
             this._deviceDisconnect = deviceDisconnect ?? throw new ArgumentNullException(nameof(deviceDisconnect));
             this._deviceConnector = deviceConnector ?? throw new ArgumentNullException(nameof(deviceConnector));
+            this._lifecycle = lifecycle ?? throw new ArgumentNullException(nameof(lifecycle));
+            // 開始・停止のログとイベントも、これまでどおり ControlService の Debug イベント／公開イベント（送り主は ControlService）へ流す
+            this._lifecycle.DebugMessage += (data, warning) => LogDebug(data, warning);
+            this._lifecycle.ServiceStarted += (sender, e) => ServiceStarted?.Invoke(this, e);
+            this._lifecycle.PreServiceStop += (sender, e) => PreServiceStop?.Invoke(this, e);
+            this._lifecycle.ServiceStopped += (sender, e) => ServiceStopped?.Invoke(this, e);
+            this._lifecycle.RunningChanged += (sender, e) => RunningChanged?.Invoke(this, e);
+            this._lifecycle.HotplugController += (device, index) => HotplugController?.Invoke(this, device, index);
             // 切断・同期の処理のログも、これまでどおり ControlService の Debug イベントへ流す
             this._deviceDisconnect.DebugMessage += (data, warning) => LogDebug(data, warning);
             // 設定の反映のログも、これまでどおり ControlService の Debug イベントへ流す
@@ -637,132 +654,10 @@ namespace DS4Windows
             _virtualPad.UnplugOutDev(index, device, immediate, force);
         }
 
+        // Phase9 9-E E-6f2: 本体は ServiceLifecycle へ移した（薄い委譲。呼び出し側は 9-F まで変えない）
         public bool Start(bool showlog = true)
         {
-            inServiceTask = true;
-            _virtualPad.StartViGEm();
-            if (_virtualPad.HasViGEmClient)
-            //if (x360Bus.Open() && x360Bus.Start())
-            {
-                // Initialize output KBM handler at start of ControlService
-                InitOutputKBMHandler();
-
-                if (showlog)
-                    LogDebug(DS4WinWPF.Properties.Resources.Starting);
-
-                Thread.Sleep(2000);
-
-                bool runningAsAdmin = _environmentService.IsAdministrator();
-                if (_virtualKBM.GetIdentifier() != FakerInputHandler.IDENTIFIER && !runningAsAdmin)
-                {
-                    string helpURL = @"https://ryochan7.github.io/ds4windows-site/troubleshooting/kb-mouse-issues/#windows-not-responding-to-ds4ws-kb-m-commands-in-some-situations";
-                    LogDebug($"Some applications may block controller inputs. (Windows UAC Conflictions). Please go to {helpURL} for more information and workarounds.");
-                }
-
-                LogDebug($"Using output KB+M handler: {_virtualKBM.GetFullDisplayName()}");
-                LogDebug($"Connection to ViGEmBus {_environmentService.ViGEmBusVersion} established");
-
-                _deviceRegistry.IsExclusiveMode = _appSettings.UseExclusiveMode; //Re-enable Exclusive Mode
-
-                UpdateHidHiddenAttributes();
-
-                if (showlog)
-                {
-                    LogDebug(DS4WinWPF.Properties.Resources.SearchingController);
-                    LogDebug(_deviceRegistry.IsExclusiveMode ? DS4WinWPF.Properties.Resources.UsingExclusive : DS4WinWPF.Properties.Resources.UsingShared);
-                }
-
-                if (_appSettings.UseOscServer && !_oscService.HasListener)
-                {
-                    ChangeOSCListenerStatus(true);
-                }
-
-                if (_appSettings.UseOscSender && !_oscService.HasSender)
-                {
-                    ChangeOSCSenderStatus(true);
-                }
-
-                if (_appSettings.UseUdpServer && !_udpMotion.HasServer)
-                {
-                    ChangeUDPStatus(true, false);
-                    while (_udpMotion.IsChangingStatus)
-                    {
-                        Thread.SpinWait(500);
-                    }
-                }
-
-                try
-                {
-                    loopControllers = true;
-                    _virtualPad.AssignInitialDevices();   // Phase9 9-E E-4: 旧 AssignInitialDevices（恒久スロットの割り当て）は VirtualPadService へ移した
-
-                    eventDispatcher.Invoke(() =>
-                    {
-                        _deviceRegistry.FindControllers();
-                    });
-
-                    IEnumerable<DS4Device> devices = _deviceRegistry.GetDS4Controllers();
-                    int numControllers = devices.Count();
-                    activeControllers = numControllers;
-                    DS4LightBar.defaultLight = false;
-                    int i = 0;
-                    DI.IJoinableDevice tempPrimaryJoyDev = null;
-                    for (var devEnum = devices.GetEnumerator();
-                        devEnum.MoveNext() && loopControllers; i++)
-                    {
-                        DS4Device device = devEnum.Current;
-
-                        BeginPrepareConnectedInputController(device, showlog: true);
-
-                        // Phase9 9-E E-6d: Joy-Con の結合の手順（先に来たものを主にして順に組む）は JoyConLinker へ移した
-                        tempPrimaryJoyDev = _joyConLinker.LinkOnStart(new Services.JoinableDeviceAdapter(device), tempPrimaryJoyDev,
-                            deviceOptions.JoyConDeviceOpts.LinkedMode);
-
-                        DS4Controllers[i] = device;
-                        device.DeviceSlotNumber = i;
-                        PrepareConnectedInputControllerSettingEvents(numControllers, device, index: i);
-
-                        if (i >= _controllerSlotLimit) // out of Xinput devices!
-                            break;
-                    }
-                }
-                catch (Exception e)
-                {
-                    LogDebug(e.Message, true);
-                    AppLogger.LogToTray(e.Message, true);
-                }
-
-                running = true;
-
-                _udpMotion.StartListeningIfCreated();   // Phase9 9-E E-3: 旧: _udpServer != null のときの待ち受けの開始（ブロックを UdpMotionService へ移した）
-            }
-            else
-            {
-                string logMessage = string.Empty;
-                if (!_environmentService.IsViGEmBusInstalled())
-                {
-                    logMessage = "ViGEmBus is not installed";
-                }
-                else if (!_environmentService.IsRunningSupportedViGEmBus())
-                {
-                    logMessage = string.Format("Unsupported ViGEmBus found ({0}). Please install at least ViGEmBus 1.17.333.0", _environmentService.ViGEmBusVersion);
-                }
-                else
-                {
-                    logMessage = "Could not connect to ViGEmBus. Please check the status of the System device in Device Manager and if Visual C++ 2017 Redistributable is installed.";
-                }
-
-                LogDebug(logMessage);
-                AppLogger.LogToTray(logMessage);
-            }
-
-            inServiceTask = false;
-            _appSettings.RunHotPlug = true;
-            ServiceStarted?.Invoke(this, EventArgs.Empty);
-            RunningChanged?.Invoke(this, EventArgs.Empty);
-            using var process = Process.GetCurrentProcess();
-            process.PriorityClass = MainWindow.ProcessPriorityClasses[_appSettings.ProcessPriority];
-            return true;
+            return _lifecycle.Start(showlog);
         }
 
         // Phase9 9-E E-3: 旧 PrepareDevUDPMotion（モーションの送出のハンドラー）は UdpMotionService.PrepareDeviceMotion へ移した。
@@ -771,219 +666,22 @@ namespace DS4Windows
 
         public void PrepareAbort()
         {
-            for (int i = 0, arlength = DS4Controllers.Length; i < arlength; i++)
-            {
-                DS4Device tempDevice = DS4Controllers[i];
-                if (tempDevice != null)
-                {
-                    tempDevice.PrepareAbort();
-                }
-            }
+            _lifecycle.PrepareAbort();
         }
 
         public bool Stop(bool showlog = true, bool immediateUnplug = false)
         {
-            if (running)
-            {
-                running = false;
-                _appSettings.RunHotPlug = false;
-                inServiceTask = true;
-                PreServiceStop?.Invoke(this, EventArgs.Empty);
-
-                if (showlog)
-                    LogDebug(DS4WinWPF.Properties.Resources.StoppingX360);
-
-                LogDebug("Closing connection to ViGEmBus");
-
-                bool anyUnplugged = false;
-                for (int i = 0, arlength = DS4Controllers.Length; i < arlength; i++)
-                {
-                    DS4Device tempDevice = DS4Controllers[i];
-                    if (tempDevice != null)
-                    {
-                        if ((_appSettings.DCBTatStop && !tempDevice.isCharging()) || suspending)
-                        {
-                            if (tempDevice.getConnectionType() == ConnectionType.BT)
-                            {
-                                tempDevice.StopUpdate();
-                                tempDevice.DisconnectBT(true);
-                            }
-                            else if (tempDevice.getConnectionType() == ConnectionType.SONYWA)
-                            {
-                                // Controller disconnect will complete on next attempted read.
-                                // Do not use StopUpdate here
-                                tempDevice.DisconnectDongle(true);
-                            }
-                            else
-                            {
-                                tempDevice.StopUpdate();
-                            }
-                        }
-                        else
-                        {
-                            DS4LightBar.forcelight[i] = false;
-                            DS4LightBar.forcedFlash[i] = 0;
-                            DS4LightBar.defaultLight = true;
-                            DS4LightBar.updateLightBar(DS4Controllers[i], i, _profileSettings);
-                            tempDevice.IsRemoved = true;
-                            tempDevice.StopUpdate();
-                            _deviceRegistry.RemoveDevice(tempDevice);
-                            Thread.Sleep(50);
-                        }
-
-                        CurrentState[i].Battery = PreviousState[i].Battery = 0; // Reset for the next connection's initial status change.
-                        OutputDevice tempout = outputDevices[i];
-                        if (tempout != null)
-                        {
-                            UnplugOutDev(i, tempDevice, immediate: immediateUnplug, force: true);
-                            anyUnplugged = true;
-                        }
-
-                        //outputDevices[i] = null;
-                        //useDInputOnly[i] = true;
-                        //Global.activeOutDevType[i] = OutContType.None;
-                        _profileSettings.UseDInputOnlyArray[i] = true;
-                        DS4Controllers[i] = null;
-                        _oscService.ResetDeviceState(i);
-                        touchPad[i] = null;
-                        _latencyMonitor.Reset(i);
-                    }
-                }
-
-                if (showlog)
-                    LogDebug(DS4WinWPF.Properties.Resources.StoppingDS4);
-
-                _deviceRegistry.StopControllers();
-                slotManager.ClearControllerList();
-
-                if (_oscService.HasListener)
-                {
-                    ChangeOSCListenerStatus(false);
-                }
-
-                if (_oscService.HasSender)
-                {
-                    ChangeOSCSenderStatus(false);
-                }
-
-                if (_udpMotion.HasServer)
-                {
-                    ChangeUDPStatus(false);
-                }
-
-                if (showlog)
-                    LogDebug(DS4WinWPF.Properties.Resources.StoppedDS4Windows);
-
-                while (_virtualPad.OutputSlotManager.RunningQueue)
-                {
-                    Thread.SpinWait(500);
-                }
-                _virtualPad.OutputSlotManager.Stop(true);
-
-                if (anyUnplugged)
-                {
-                    Thread.Sleep(OutputSlotManager.DELAY_TIME);
-                }
-
-                _virtualPad.StopViGEm();
-
-                // Disconnect from KBM system when stopping ControlService
-                LogDebug($"Closing connection to output handler {_virtualKBM.GetDisplayName()}");
-                _virtualKBM.Disconnect();
-                inServiceTask = false;
-                activeControllers = 0;
-            }
-
-            _appSettings.RunHotPlug = false;
-            ServiceStopped?.Invoke(this, EventArgs.Empty);
-            RunningChanged?.Invoke(this, EventArgs.Empty);
-            return true;
+            return _lifecycle.Stop(showlog, immediateUnplug);
         }
 
         public bool HotPlug()
         {
-            if (running)
-            {
-                inServiceTask = true;
-                loopControllers = true;
-                eventDispatcher.Invoke(() =>
-                {
-                    _deviceRegistry.FindControllers();
-                });
-
-                IEnumerable<DS4Device> devices = _deviceRegistry.GetDS4Controllers();
-                int numControllers = devices.Count();
-                activeControllers = numControllers;
-                // Phase9 9-E E-6d: Joy-Con の結合の手順（主と副を先に探してから組む）は JoyConLinker へ移した
-                DI.IJoinableDevice tempPrimaryJoyDev = null;
-                DI.IJoinableDevice tempSecondaryJoyDev = null;
-                _joyConLinker.FindPendingForHotPlug(devices.Select(d => (DI.IJoinableDevice)new Services.JoinableDeviceAdapter(d)),
-                    deviceOptions.JoyConDeviceOpts.LinkedMode, out tempPrimaryJoyDev, out tempSecondaryJoyDev);
-
-                for (var devEnum = devices.GetEnumerator(); devEnum.MoveNext() && loopControllers;)
-                {
-                    DS4Device device = devEnum.Current;
-
-                    if (device.isDisconnectingStatus())
-                        continue;
-
-                    // Use local method rather than Func
-                    bool checkAlreadyExists()
-                    {
-                        for (int Index = 0, arlength = DS4Controllers.Length; Index < arlength; Index++)
-                        {
-                            if (DS4Controllers[Index] != null &&
-                                DS4Controllers[Index].getMacAddress() == device.getMacAddress())
-                            {
-                                device.CheckControllerNumDeviceSettings(numControllers);
-                                return true;
-                            }
-                        }
-
-                        return false;
-                    }
-
-                    if (checkAlreadyExists())
-                    {
-                        continue;
-                    }
-
-                    for (int Index = 0, arlength = DS4Controllers.Length;
-                        Index < arlength && Index < _controllerSlotLimit; Index++)
-                    {
-                        if (DS4Controllers[Index] == null)
-                        {
-                            BeginPrepareConnectedInputController(device);
-
-                            _joyConLinker.LinkOnHotPlug(new Services.JoinableDeviceAdapter(device), ref tempPrimaryJoyDev, ref tempSecondaryJoyDev,
-                                deviceOptions.JoyConDeviceOpts.LinkedMode);
-
-                            DS4Controllers[Index] = device;
-                            device.DeviceSlotNumber = Index;
-                            PrepareConnectedInputControllerSettingEvents(numControllers, device, Index);
-
-                            HotplugController?.Invoke(this, device, Index);
-                            break;
-                        }
-                    }
-                }
-
-                inServiceTask = false;
-            }
-
-            return true;
+            return _lifecycle.HotPlug();
         }
 
-        // Phase9 9-E E-6f1: 接続の組み立ては DeviceConnector へ移した。Start／HotPlug の呼び出し元を変えないため、薄い委譲で残す
-        private void PrepareConnectedInputControllerSettingEvents(int numControllers, DS4Device device, int index)
-        {
-            _deviceConnector.PrepareConnected(numControllers, device, index);
-        }
 
-        private void BeginPrepareConnectedInputController(DS4Device device, bool showlog = false)
-        {
-            _deviceConnector.BeginPrepare(device, showlog);
-        }
+
+
 
         // Phase9 9-E E-3: 旧 ResetUdpSmoothingFilters／ChangeUdpSmoothingAttrs（スムージングのフィルター）は UdpMotionService へ移した。
 

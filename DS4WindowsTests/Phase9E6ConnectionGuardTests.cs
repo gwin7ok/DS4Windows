@@ -197,19 +197,20 @@ namespace DS4WindowsTests
         [Fact]
         public void ControlService_CallsTheLinker_AfterThePreparation_AndBeforeTheSlotAssignment()
         {
-            string text = ReadWithoutComments("DS4Windows/DS4Control/ControlService.cs");
+            // Phase9 9-E E-6f2: Start／HotPlug の本体は ServiceLifecycle へ移った
+            string text = ReadWithoutComments("DS4Windows/DS4Control/Services/ServiceLifecycle.cs");
             if (text == null) return;
 
             // Start: 準備（BeginPrepareConnectedInputController）→ 結合（LinkOnStart）→ スロットへの割り当て（DS4Controllers[i] = device）
-            int begin = text.IndexOf("BeginPrepareConnectedInputController(device, showlog: true);");
+            int begin = text.IndexOf("_deviceConnector.BeginPrepare(device, showlog: true);");
             int linkStart = text.IndexOf("_joyConLinker.LinkOnStart(", begin < 0 ? 0 : begin);
-            int assign = text.IndexOf("DS4Controllers[i] = device;", linkStart < 0 ? 0 : linkStart);
+            int assign = text.IndexOf("slots.DS4Controllers[i] = device;", linkStart < 0 ? 0 : linkStart);
             Assert.True(begin > 0 && linkStart > begin && assign > linkStart, "Start の順序（準備 → 結合 → 割り当て）が変わっている");
 
             // HotPlug: 準備 → 結合（LinkOnHotPlug）→ 割り当て（DS4Controllers[Index] = device）
-            int beginHot = text.IndexOf("BeginPrepareConnectedInputController(device);");
+            int beginHot = text.IndexOf("_deviceConnector.BeginPrepare(device);");
             int linkHot = text.IndexOf("_joyConLinker.LinkOnHotPlug(", beginHot < 0 ? 0 : beginHot);
-            int assignHot = text.IndexOf("DS4Controllers[Index] = device;", linkHot < 0 ? 0 : linkHot);
+            int assignHot = text.IndexOf("slots.DS4Controllers[Index] = device;", linkHot < 0 ? 0 : linkHot);
             Assert.True(beginHot > 0 && linkHot > beginHot && assignHot > linkHot, "HotPlug の順序（準備 → 結合 → 割り当て）が変わっている");
 
             // HotPlug の保留の探索は、ループの前
