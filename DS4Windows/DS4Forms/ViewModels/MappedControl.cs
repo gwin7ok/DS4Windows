@@ -84,6 +84,7 @@ namespace DS4WinWPF.DS4Forms.ViewModels
             mappingName = GetMappingString();
 
             MappingNameChanged?.Invoke(this, EventArgs.Empty);
+            IsCustomizedChanged?.Invoke(this, EventArgs.Empty);
         }
 
         private static string SpecialTypeDisplayName(SpecialAction.ActionTypeId type)
@@ -98,52 +99,20 @@ namespace DS4WinWPF.DS4Forms.ViewModels
             }
         }
 
+        /// <summary>
+        /// Phase9 UI 変更: 割り当ての説明文（<see cref="AssignmentDescriber"/>。出力ピッカーのボタンのラベル、SA タブの一覧と同じ書式）。
+        /// </summary>
         public string GetMappingString()
         {
-            string temp = Properties.Resources.Unassigned;
-            ControlActionData action = setting.action;
-            bool sc = setting.keyType.HasFlag(DS4KeyType.ScanCode);
             bool extra = control >= DS4Controls.GyroXPos && control <= DS4Controls.SwipeDown;
-            DS4ControlSettings.ActionType actionType = setting.actionType;
-            if (actionType != DS4ControlSettings.ActionType.Default)
-            {
-                if (actionType == DS4ControlSettings.ActionType.Key)
-                {
-                    //return (Keys)int.Parse(action.ToString()) + (sc ? " (" + Properties.Resources.ScanCode + ")" : "");
-                    temp = KeyInterop.KeyFromVirtualKey(action.actionKey) + (sc ? " (" + Properties.Resources.ScanCode + ")" : "");
-                }
-                else if (actionType == DS4ControlSettings.ActionType.Macro)
-                {
-                    temp = Properties.Resources.Macro + (sc ? " (" + Properties.Resources.ScanCode + ")" : "");
-                }
-                else if (actionType == DS4ControlSettings.ActionType.Special)
-                {
-                    // Phase10-Step4 W4: SA 専用の種別。エディターの種別の一覧と同じ表示名（言語リソース）。
-                    // TODO(Phase10-Step4 W7 以降): 群が増えるたびに、表示名を足す（Battery、Multi-action）。未対応の種別は、種別名をそのまま出す
-                    temp = setting.special != null ? SpecialTypeDisplayName(setting.special.Type) : Properties.Resources.Unassigned;
-                }
-                else if (actionType == DS4ControlSettings.ActionType.Button)
-                {
-                    string tag;
-                    tag = X360ControlTables.getX360ControlString((X360Controls)action.actionBtn, devType);
-                    temp = tag;
-                }
-                else
-                {
-                    temp = X360ControlTables.getX360ControlString(profileSettingsService.GetDefaultButtonMapping()[(int)control], devType);
-                }
-            }
-            else if (!extra)
-            {
-                X360Controls tempOutControl = profileSettingsService.GetDefaultButtonMapping()[(int)control];
-                if (tempOutControl != X360Controls.None)
-                {
-                    temp = X360ControlTables.getX360ControlString(tempOutControl, devType);
-                }
-            }
-
-            return temp;
+            return AssignmentDescriber.ForControl(setting, x => X360ControlTables.getX360ControlString(x, devType),
+                profileSettingsService.GetDefaultButtonMapping()[(int)control], extra, Properties.Resources.Unassigned);
         }
+
+        /// <summary>Default 以外の割り当て、または Extras があるか（一覧で太字にする）。</summary>
+        public bool IsCustomized => setting.actionType != DS4ControlSettings.ActionType.Default || !setting.IsExtrasEmpty(setting.extras);
+
+        public event EventHandler IsCustomizedChanged;
 
     }
 }

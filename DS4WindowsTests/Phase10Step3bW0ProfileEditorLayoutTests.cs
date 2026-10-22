@@ -213,7 +213,7 @@ namespace DS4WindowsTests
             Assert.Contains("<RowDefinition Height=\"240\" />", rows.Groups["body"].Value);
             Assert.Contains("<RowDefinition Height=\"*\" />", rows.Groups["body"].Value);
             Assert.Matches(@"<Canvas Grid\.Row=""0"" x:Name=""conCanvas""", controls);
-            Assert.Matches(@"<ListBox\s+Grid\.Row=""1"" x:Name=""mappingListBox""", controls);
+            Assert.Matches(@"<ListView\s+Grid\.Row=""1"" x:Name=""mappingListBox""", controls);   // Phase9 UI 変更: 割り当て一覧は、2 列の表（ListView）
             Assert.DoesNotContain("axisEntriesPanel", controls);
         }
 

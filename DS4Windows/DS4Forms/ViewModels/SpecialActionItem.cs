@@ -112,6 +112,15 @@ namespace DS4WinWPF.DS4Forms.ViewModels
             }
         }
 
+        /// <summary>
+        /// Phase9 UI 変更: 一覧の「アクション」列の表示（種別名に、詳細を続ける）。Controls タブの一覧、出力ピッカーのボタンと同じ書式（<see cref="AssignmentDescriber"/>）。
+        /// 並べ替えは、これまでどおり <see cref="TypeName"/> を使う。
+        /// </summary>
+        public string ActionDescription
+            => specialAction != null
+                ? AssignmentDescriber.ForSpecialAction(specialAction, x => X360ControlTables.getX360ControlString(x))
+                : typeName;
+
         public string Controls
         {
             get => controls;

@@ -225,14 +225,20 @@ namespace DS4WinWPF.DS4Forms.ViewModels.SpecialActions
             {
                 try
                 {
+                    string buttonName;
                     if (editorDeviceNum >= 0 && editorDeviceNum < profileSettingsService.OutContType.Length)
                     {
-                        describeText = X360ControlTables.getX360ControlString((X360Controls)lastActionBtn, profileSettingsService.OutContType[editorDeviceNum]);
+                        buttonName = X360ControlTables.getX360ControlString((X360Controls)lastActionBtn, profileSettingsService.OutContType[editorDeviceNum]);
                     }
                     else
                     {
-                        describeText = X360ControlTables.getX360ControlString((X360Controls)lastActionBtn);
+                        buttonName = X360ControlTables.getX360ControlString((X360Controls)lastActionBtn);
                     }
+
+                    // Phase9 UI 変更: 書式は AssignmentDescriber（Controls の一覧、SA の一覧と同じ）。Unbound は、モードを付けない
+                    describeText = (X360Controls)lastActionBtn == X360Controls.Unbound
+                        ? buttonName
+                        : AssignmentDescriber.ForButton(buttonName, string.Equals(switchMode, "Toggle", StringComparison.OrdinalIgnoreCase));
                 }
                 catch
                 {
@@ -243,15 +249,12 @@ namespace DS4WinWPF.DS4Forms.ViewModels.SpecialActions
             {
                 // Phase9 UI 変更（ユーザー承認 2026-10-22）: 「Default (A)」のように、そのボタンの既定の出力名を添える。取得できなければ「Default」のみ
                 string defaultName = GetDefaultOutputName();
-                describeText = string.IsNullOrEmpty(defaultName) ? DefaultText : $"{DefaultText} ({defaultName})";
                 // Toggle のときは、保存すると「既定の出力への Button ＋ Toggle」になる（ControlSettingsEditTarget.WriteFrom）
-                if (string.Equals(switchMode, "Toggle", StringComparison.OrdinalIgnoreCase)) describeText += " (Toggle)";
+                describeText = AssignmentDescriber.ForDefault(defaultName, string.Equals(switchMode, "Toggle", StringComparison.OrdinalIgnoreCase));
             }
             else
             {
-                    describeText = KeyInterop.KeyFromVirtualKey(value).ToString() +
-                        (useScanCode ? " (SC)" : "") +
-                        (string.Equals(switchMode, "Toggle", StringComparison.OrdinalIgnoreCase) ? " (Toggle)" : " (Press)");
+                    describeText = AssignmentDescriber.ForKey(value, useScanCode, string.Equals(switchMode, "Toggle", StringComparison.OrdinalIgnoreCase));
             }
 
             DescribeTextChanged?.Invoke(this, EventArgs.Empty);

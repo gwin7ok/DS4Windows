@@ -244,18 +244,44 @@
                                 Click="ResetAllControlsBtn_Click" />
                     </Canvas>
 
-                    <ListBox  Grid.Row="1" x:Name="mappingListBox" DockPanel.Dock="Bottom" ItemsSource="{Binding Mappings}"
+                    <!-- Phase9 UI 変更: 割り当て一覧は、2 列の表（ラベル、設定値。どちらも左寄せ）。設定値は出力ピッカーのボタンのラベルと同じ書式で、Default 以外は太字 -->
+                    <ListView Grid.Row="1" x:Name="mappingListBox" DockPanel.Dock="Bottom" ItemsSource="{Binding Mappings}"
                                 SelectedIndex="{Binding SelectedIndex}" Margin="6" ScrollViewer.HorizontalScrollBarVisibility="Disabled"
                                 MouseDoubleClick="MappingListBox_MouseDoubleClick">
-                        <ListBox.ItemTemplate>
-                            <DataTemplate>
-                                <StackPanel Orientation="Horizontal">
-                                    <TextBlock Text="{Binding ControlName,StringFormat='\{0\}: '}" />
-                                    <TextBlock Text="{Binding MappingName}"/>
-                                </StackPanel>
-                            </DataTemplate>
-                        </ListBox.ItemTemplate>
-                    </ListBox>
+                        <ListView.View>
+                            <GridView>
+                                <GridView.ColumnHeaderContainerStyle>
+                                    <Style TargetType="{x:Type GridViewColumnHeader}">
+                                        <Setter Property="Visibility" Value="Collapsed" />
+                                    </Style>
+                                </GridView.ColumnHeaderContainerStyle>
+                                <GridViewColumn Width="150">
+                                    <GridViewColumn.CellTemplate>
+                                        <DataTemplate>
+                                            <TextBlock Text="{Binding ControlName}" HorizontalAlignment="Left" />
+                                        </DataTemplate>
+                                    </GridViewColumn.CellTemplate>
+                                </GridViewColumn>
+                                <GridViewColumn Width="280">
+                                    <GridViewColumn.CellTemplate>
+                                        <DataTemplate>
+                                            <TextBlock Text="{Binding MappingName}" HorizontalAlignment="Left" TextTrimming="CharacterEllipsis" ToolTip="{Binding MappingName}">
+                                                <TextBlock.Style>
+                                                    <Style TargetType="{x:Type TextBlock}">
+                                                        <Style.Triggers>
+                                                            <DataTrigger Binding="{Binding IsCustomized}" Value="True">
+                                                                <Setter Property="FontWeight" Value="Bold" />
+                                                            </DataTrigger>
+                                                        </Style.Triggers>
+                                                    </Style>
+                                                </TextBlock.Style>
+                                            </TextBlock>
+                                        </DataTemplate>
+                                    </GridViewColumn.CellTemplate>
+                                </GridViewColumn>
+                            </GridView>
+                        </ListView.View>
+                    </ListView>
                 </Grid>
             </TabItem>
             <TabItem x:Name="specialActionsTab" Header="Special Actions">
@@ -309,7 +335,7 @@
                                             <ContentControl ContentTemplate="{StaticResource ActionHeaderTemplate}" />
                                         </GridViewColumn.Header>
                                         <GridViewColumn.DisplayMemberBinding>
-                                            <Binding Path="TypeName" />
+                                            <Binding Path="ActionDescription" />
                                         </GridViewColumn.DisplayMemberBinding>
                                     </GridViewColumn>
                                 </GridView>
