@@ -98,3 +98,12 @@ M1 の実装前に、`Commit` の構造を読み直して、Q3 の前提が誤�
 - `MapCustom` の L2／R2 の呼び出しだけを `_twoStageTrigger.Process(...)` に置き換えた（呼び出しの順序は同じ）。`Mapping.cs` は 1,518 → 1,327 行。
 - テスト: `Phase9MapCustomTwoStageDifferentialTests`（旧メソッドの逐語コピーと、6 つのモード［無効を含む］× 入力の列［引きの量 4 種・時計のずれ 2 種の 8 通りを 1〜4 ステップ］で、返す割り当てと状態の全項目が各ステップで一致。HipFire の待ち時間）、`Phase9MapCustomGuardTests` に追加（移した状態機械の不在、L2 → R2 → 通常ボタンの順序、DI 登録）。
 - 実機確認（台帳 §45）: 2 段階トリガーは、DualSense／DS4 の実機で、モードごとの動作を確認する。
+
+
+## 10. M3 の結果（2026-10-22）
+- **特性化テスト**: `Phase9MapCustomTwoStageCharacterizationTests` を M3 の前に追加（ビルド・テスト OK）。
+- **挙動修正（別枠）**: 特性化の実機確認で、Exclusive Buttons の深い引きの後の戻りで浅い引きが出る取りこぼしを発見。ユーザー承認のうえ `Phase9-ExclusiveReturn-Fix-Plan.md` で修正（ビルド・テスト・実機確認 OK）。
+- **M3a**: コメントアウトされた旧コード（`MapCustom` 内とその直前の `/* */`）を削除。
+- **M3b**: L2／R2 の複製を `ProcessTriggerWithTwoStage` へ。
+- **M3c**: LS／RS の複製を `ProcessStick` へ（RS だけのデルタ加速は `isRightStick` で分岐）。
+- `Mapping.cs`: 1,327 → 約 1,100 行。状態: M3a〜c のビルド・テスト・実機確認は待ち（確認項目はチェックリスト §46）。

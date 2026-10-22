@@ -543,99 +543,13 @@ namespace DS4Windows
             if (ctrl.ProfileActionProvider.GetProfileActionCount(device) > 0 || profileSettings.GetUseTempProfile(device))
                 MapCustomAction(device, ctrl);
 
-            // Process LS
-            ControlSettingsGroup controlSetGroup = profileSettings.GetControlSettingsGroup(device);
-            StickOutputSetting stickSettings = profileSettings.LSOutputSettings[device];
-            if (stickSettings.mode == StickMode.Controls)
-            {
-                for (var settingEnum = controlSetGroup.LS.GetEnumerator(); settingEnum.MoveNext();)
-                {
-                    DS4ControlSettings dcs = settingEnum.Current;
-                    ProcessControlSettingAction(dcs, device, cState, MappedState, eState,
-                        tp, fieldMapping, outputfieldMapping, deviceState, ref tempMouseDeltaX,
-                        ref tempMouseDeltaY, ctrl);
-                }
-            }
-            else
-            {
-                outputfieldMapping.axisdirs[(int)DS4Controls.LXNeg] = 128;
-                outputfieldMapping.axisdirs[(int)DS4Controls.LXPos] = 128;
-                outputfieldMapping.axisdirs[(int)DS4Controls.LYNeg] = 128;
-                outputfieldMapping.axisdirs[(int)DS4Controls.LYPos] = 128;
-
-                switch (stickSettings.mode)
-                {
-                    case StickMode.None:
-                        break;
-                    case StickMode.FlickStick:
-                        DS4Device d = ctrl.DS4Controllers[device];
-                        DS4State cRawState = d.getCurrentStateRef();
-                        DS4State pState = d.getPreviousStateRef();
-
-                        _flickStick.Process(flickMappingData[device], stickSettings.outputSettings.flickSettings, cRawState.elapsedTime,
-                            cRawState.LX, cRawState.LY, pState.LX, pState.LY, ref tempMouseDeltaX);
-                        break;
-                    default:
-                        break;
-                }
-            }
-
-            // Process RS
-            stickSettings = profileSettings.RSOutputSettings[device];
-            if (stickSettings.mode == StickMode.Controls)
-            {
-                if (stickSettings.outputSettings.controlSettings.deltaAccelSettings.enabled)
-                {
-                    DS4Device d = ctrl.DS4Controllers[device];
-                    DS4State cRawState = d.getCurrentStateRef();
-                    cRawState.calculateStickAngles();
-
-                    double maxXValue = cState.RX >= 128.0 ? 255.0 : 0.0;
-                    double maxYValue = cState.RY >= 128.0 ? 255.0 : 0.0;
-                    double maxXDir = maxXValue - 128.0;
-                    double maxYDir = maxYValue - 128.0;
-                    double axisDirX = cState.RX - 128.0;
-                    double axisDirY = cState.RY - 128.0;
-                    double axisRawDirX = cRawState.RX - 128.0;
-                    double axisRawDirY = cRawState.RY - 128.0;
-
-                    deltaAccelProcessors[device].RSProcessor.Process(device, axisDirX, axisDirY,
-                        axisRawDirX, axisRawDirY,
-                        maxXDir, maxYDir,
-                        stickSettings.outputSettings.controlSettings.deltaAccelSettings);
-                }
-
-                for (var settingEnum = controlSetGroup.RS.GetEnumerator(); settingEnum.MoveNext();)
-                {
-                    DS4ControlSettings dcs = settingEnum.Current;
-                    ProcessControlSettingAction(dcs, device, cState, MappedState, eState,
-                        tp, fieldMapping, outputfieldMapping, deviceState, ref tempMouseDeltaX,
-                        ref tempMouseDeltaY, ctrl);
-                }
-            }
-            else
-            {
-                outputfieldMapping.axisdirs[(int)DS4Controls.RXNeg] = 128;
-                outputfieldMapping.axisdirs[(int)DS4Controls.RXPos] = 128;
-                outputfieldMapping.axisdirs[(int)DS4Controls.RYNeg] = 128;
-                outputfieldMapping.axisdirs[(int)DS4Controls.RYPos] = 128;
-
-                switch (stickSettings.mode)
-                {
-                    case StickMode.None:
-                        break;
-                    case StickMode.FlickStick:
-                        DS4Device d = ctrl.DS4Controllers[device];
-                        DS4State cRawState = d.getCurrentStateRef();
-                        DS4State pState = d.getPreviousStateRef();
-
-                        _flickStick.Process(flickMappingData[device], stickSettings.outputSettings.flickSettings, cRawState.elapsedTime,
-                            cRawState.RX, cRawState.RY, pState.RX, pState.RY, ref tempMouseDeltaX);
-                        break;
-                    default:
-                        break;
-                }
-            }
+            // Process LS／RS（Phase9 MapCustom の分割 M3c: 左右で似たコードが 2 回あった。LS → RS の順は変えない）
+            ProcessStick(device, cState, MappedState, eState, tp, fieldMapping, outputfieldMapping, deviceState,
+                ref tempMouseDeltaX, ref tempMouseDeltaY, ctrl,
+                profileSettings.LSOutputSettings[device], controlSetGroup.LS, false);
+            ProcessStick(device, cState, MappedState, eState, tp, fieldMapping, outputfieldMapping, deviceState,
+                ref tempMouseDeltaX, ref tempMouseDeltaY, ctrl,
+                profileSettings.RSOutputSettings[device], controlSetGroup.RS, true);
 
             // Process L2／R2（Phase9 MapCustom の分割 M3b: 左右で同じコードが 2 回あった［約 130 行］。L2 → R2 の順は変えない）
             ProcessTriggerWithTwoStage(device, cState, MappedState, eState, tp, fieldMapping, outputfieldMapping, deviceState,
@@ -717,6 +631,78 @@ namespace DS4Windows
             if (mouseDeltaX != 0 || mouseDeltaY != 0)
             {
                 VirtualKBM.MoveRelativeMouse(mouseDeltaX, mouseDeltaY);
+            }
+        }
+
+        // Phase9 MapCustom の分割 M3c: LS／RS の 1 スティック分の処理（旧 MapCustom の「Process LS」「Process RS」）。
+        // 左右の違い: 軸の添字、フリックスティックの読む軸、RS だけの「デルタ加速」（Controls モードのとき、割り当ての処理の前に実行）。ホットパスのため割り当てを増やさない
+        private void ProcessStick(int device, DS4State cState, DS4State MappedState, DS4StateExposed eState,
+            Mouse tp, DS4StateFieldMapping fieldMapping, DS4StateFieldMapping outputfieldMapping, SyntheticState deviceState,
+            ref double tempMouseDeltaX, ref double tempMouseDeltaY, ControlService ctrl,
+            StickOutputSetting stickSettings, List<DS4ControlSettings> stickControls, bool isRightStick)
+        {
+            if (stickSettings.mode == StickMode.Controls)
+            {
+                if (isRightStick && stickSettings.outputSettings.controlSettings.deltaAccelSettings.enabled)
+                {
+                    DS4Device d = ctrl.DS4Controllers[device];
+                    DS4State cRawState = d.getCurrentStateRef();
+                    cRawState.calculateStickAngles();
+
+                    double maxXValue = cState.RX >= 128.0 ? 255.0 : 0.0;
+                    double maxYValue = cState.RY >= 128.0 ? 255.0 : 0.0;
+                    double maxXDir = maxXValue - 128.0;
+                    double maxYDir = maxYValue - 128.0;
+                    double axisDirX = cState.RX - 128.0;
+                    double axisDirY = cState.RY - 128.0;
+                    double axisRawDirX = cRawState.RX - 128.0;
+                    double axisRawDirY = cRawState.RY - 128.0;
+
+                    deltaAccelProcessors[device].RSProcessor.Process(device, axisDirX, axisDirY,
+                        axisRawDirX, axisRawDirY,
+                        maxXDir, maxYDir,
+                        stickSettings.outputSettings.controlSettings.deltaAccelSettings);
+                }
+
+                for (var settingEnum = stickControls.GetEnumerator(); settingEnum.MoveNext();)
+                {
+                    DS4ControlSettings dcs = settingEnum.Current;
+                    ProcessControlSettingAction(dcs, device, cState, MappedState, eState,
+                        tp, fieldMapping, outputfieldMapping, deviceState, ref tempMouseDeltaX,
+                        ref tempMouseDeltaY, ctrl);
+                }
+            }
+            else
+            {
+                outputfieldMapping.axisdirs[(int)(isRightStick ? DS4Controls.RXNeg : DS4Controls.LXNeg)] = 128;
+                outputfieldMapping.axisdirs[(int)(isRightStick ? DS4Controls.RXPos : DS4Controls.LXPos)] = 128;
+                outputfieldMapping.axisdirs[(int)(isRightStick ? DS4Controls.RYNeg : DS4Controls.LYNeg)] = 128;
+                outputfieldMapping.axisdirs[(int)(isRightStick ? DS4Controls.RYPos : DS4Controls.LYPos)] = 128;
+
+                switch (stickSettings.mode)
+                {
+                    case StickMode.None:
+                        break;
+                    case StickMode.FlickStick:
+                        DS4Device d = ctrl.DS4Controllers[device];
+                        DS4State cRawState = d.getCurrentStateRef();
+                        DS4State pState = d.getPreviousStateRef();
+
+                        if (isRightStick)
+                        {
+                            _flickStick.Process(flickMappingData[device], stickSettings.outputSettings.flickSettings, cRawState.elapsedTime,
+                                cRawState.RX, cRawState.RY, pState.RX, pState.RY, ref tempMouseDeltaX);
+                        }
+                        else
+                        {
+                            _flickStick.Process(flickMappingData[device], stickSettings.outputSettings.flickSettings, cRawState.elapsedTime,
+                                cRawState.LX, cRawState.LY, pState.LX, pState.LY, ref tempMouseDeltaX);
+                        }
+
+                        break;
+                    default:
+                        break;
+                }
             }
         }
 
