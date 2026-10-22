@@ -202,6 +202,7 @@ namespace DS4Windows.DI
             services.AddSingleton<Func<IUdpMotionHost>>(sp => () => sp.GetRequiredService<IUdpMotionHost>());   // ControlService が部品を受けるため、遅延で取得（循環を避ける）
             services.AddSingleton<ILatencyMonitor, LatencyMonitor>();   // Phase9 9-E E-5: 入力レポートのエラーのログと遅延の監視
             services.AddSingleton<ITouchpadToggleService, TouchpadToggleService>();   // Phase9 9-E E-5: タッチパッドの切り替え・スライドの判定
+            services.AddSingleton<IConnectionProfileSelector, ConnectionProfileSelector>();   // Phase9 9-E E-6a: 接続時のプロファイルの選択と適用
             services.AddSingleton<IActiveInputProbe, ActiveInputProbe>();   // Phase9 9-E E-5: 押されている入力の探索（状態なし）
             services.AddSingleton<IMacroStepExecutor, MacroStepExecutor>();   // Phase9 9-C: マクロの 1 つの値の実行（状態は MacroRuntimeState に持つ）
             services.AddSingleton<IMacroPlayback, MacroPlayback>();   // Phase9 9-C: マクロの再生の予約・繰り返し・後始末
@@ -277,7 +278,8 @@ namespace DS4Windows.DI
                     sp.GetRequiredService<IVirtualPadService>(),   // Phase9 9-E E-4
                     sp.GetRequiredService<ILatencyMonitor>(),   // Phase9 9-E E-5
                     sp.GetRequiredService<ITouchpadToggleService>(),   // Phase9 9-E E-5
-                    sp.GetRequiredService<IActiveInputProbe>()   // Phase9 9-E E-5
+                    sp.GetRequiredService<IActiveInputProbe>(),   // Phase9 9-E E-5
+                    sp.GetRequiredService<IConnectionProfileSelector>()   // Phase9 9-E E-6a
                 );
             });
             services.AddSingleton<IDeviceStateAccessor>(sp => sp.GetRequiredService<ControlService>());

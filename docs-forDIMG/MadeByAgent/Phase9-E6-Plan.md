@@ -1,7 +1,7 @@
 # Phase9 9-E E-6（ライフサイクル：接続・切断・開始・停止、デバイス種類ごとの部品化）計画書
 
 作成日: 2026-10-22（改訂: ユーザーの方針「全部切り出す。実機がなくても。カートリッジのように入れ替えられる形にする」を反映）
-状態: **提案（承認待ち。§7 の質問に答えてから実装する）**
+状態: **承認済み（2026-10-22。§8）。E-6a 実装済み（ビルド・テストはユーザーの実行待ち）。E-6b 以降は段階ごとに進める**
 上位: `Phase9-E-Plan.md`（E-1〜E-5 は完了）、`Phase9-Responsibility-Split-Plan.md`
 
 ## 1. 目的と現状
@@ -96,3 +96,22 @@
 - **Q2（Joy-Con の検証）**: 実機がないため、`IJoinableDevice` の窓口と偽物による差分テストで担保する案（§3.2）でよいか。
 - **Q3（`Start`／`Stop` の移し方）**: 本体と状態・イベントを `ServiceLifecycle` へ移し、`ControlService` は転送で残す案（§3.5）でよいか。
 - **Q4（進め方）**: 段階ごとにビルド・テストを挟む（推奨）／E-6a〜E-6c をまとめてから挟む。
+
+## 8. 決定事項（2026-10-22 承認）と進捗
+
+- **Q1＝この設計で進める**（種類のカートリッジ化を含む 6 段階）。**Q2＝窓口＋偽物の差分テストで担保**。**Q3＝`ServiceLifecycle` へ移し、`ControlService` は転送で残す**。**Q4＝段階ごとにビルド・テストを挟む**。
+- ユーザーの方針: 「全部切り出す。実機がなくても。カートリッジのように入れ替えられるようにしたい」。
+
+| 段階 | 状態 |
+|---|---|
+| E-6a プロファイル選択（`IConnectionProfileSelector`） | **実装済み（2026-10-22）**。ビルド・テストはユーザーの実行待ち |
+| E-6b 設定の反映 | 未 |
+| E-6c 種類のカートリッジ | 未 |
+| E-6d Joy-Con の結合 | 未 |
+| E-6e 切断・同期 | 未 |
+| E-6f 開始・停止・ホットプラグ | 未 |
+
+### E-6a の実装メモ
+- 計画（§3.3）では「適用するプロファイル名を返し、`ApplyToSlot` は `ControlService` に残す」としていたが、`MarkConnected`／`SelectedProfile`／`RememberProfile`／Linked の UI 状態／`ApplyToSlot` が**順序つきで連続する一続きの処理**だったため、順序を変えないよう、**`ApplyToSlot` と `PublishSlot` も含めて**まとめて移した。`ControlService` は、適用の成否（`profileLoaded`）を受け取って、仮想パッドの接続以降を続ける。
+- `DS4Device` は作れないため、窓口は `isValidSerial` と `macAddress`（有効なシリアルのときだけ `getMacAddress()` の値）をプリミティブで受ける。
+- テスト: `Phase9E6ConnectionProfileSelectorTests`（偽物の `IProfileSlotApplier` で、一時プロファイル、初回接続、再接続、シリアルなし、戻り値を固定）、`Phase9E6ConnectionGuardTests`（移した文字列が `ControlService` に無いこと、呼び出し順序、DI 登録）。
