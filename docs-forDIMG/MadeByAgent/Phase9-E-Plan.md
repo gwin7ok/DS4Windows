@@ -218,6 +218,6 @@ E-2・E-3 は、E-1 の結果を見てから、**この計画書に設計を追�
 | DI | `IVirtualPadService`、`Func<IVirtualPadService>`、`Func<IVirtualPadHost>`、`IVirtualPadHost`（`ControlService`）を登録。`IOutputSlotService` の生成は `IVirtualPadService.OutputSlotManager` を使う。手書きの `ControlService` 生成にも追加 |
 | テスト（新規） | `Phase9EVirtualPadServiceTests`（窓口、事前条件による何もしない経路、ホストへの委譲、`ControlService` の窓口が同じ実体を返すこと）、`Phase9EVirtualPadGuardTests`（移した／削除したメンバー、逆依存の解消、静的な窓口の不参照、登録） |
 | テスト（追従） | `TestRepositoryFactory`、`Step10FourTwoGlobalReferenceGuardTests`（`OutputSlotService` の第 3 引数の型） |
-| 規約 2.4 の判断の記録 | `AssignInitialDevices`・`AttachNewUnboundOutDev`（呼び出し元 0 件）は、`VirtualPadService` に移し、TODO を付けた（9-F で、使う予定がなければ削除をユーザーへ提案）。`ControlService` の委譲は残していない |
+| 規約 2.4 の判断の記録 | `AttachNewUnboundOutDev`（呼び出し元 0 件）は、`VirtualPadService` に移し、TODO を付けた（9-F で、使う予定がなければ削除をユーザーへ提案）。`ControlService` の委譲は残していない。**訂正（ビルドエラーで判明）**: 最初は `AssignInitialDevices` も呼び出し元 0 件と誤認していた。実際は `ControlService.Start` から呼ばれており（`_virtualPad.AssignInitialDevices()` に替えた）、未参照ではない。調査で、定義だけを数え、同じクラス内の呼び出しを見落としていた |
 
 **実機でなければ確かめられないもの**: 仮想パッドの作成・割り当て・取り外し（ViGEmBus）、振動・ライトバーの戻り、結合デバイス（Joy-Con）、恒久スロット、`OutputSlotManager` の非同期キューの順序。**台帳 §36** で確認する。

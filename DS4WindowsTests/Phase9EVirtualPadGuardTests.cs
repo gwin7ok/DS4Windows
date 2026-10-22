@@ -46,7 +46,7 @@ namespace DS4WindowsTests
         [InlineData(@"\bStartViGEm\(")]
         [InlineData(@"\bEstablishOutDevice\(")]
         [InlineData(@"\bnew OutputSlotManager\(")]
-        [InlineData(@"\bAssignInitialDevices\b")]
+        [InlineData(@"(?<!_virtualPad\.)\bAssignInitialDevices\b")]   // Start からの呼び出し（_virtualPad.AssignInitialDevices()）は残る
         [InlineData(@"\bAttachNewUnboundOutDev\b")]
         [InlineData(@"\bAttachUnboundOutDev\b")]
         [InlineData(@"\bDetachUnboundOutDev\b")]

@@ -101,8 +101,7 @@ namespace DS4Windows.Services
             }
         }
 
-        // TODO(技術的負債・Phase9 9-E E-4): 呼び出し元 0 件（旧 ControlService から移した。Start の中の呼び出しは以前に外れている）。
-        // 恒久スロット（OutSlotDevice.ReserveStatus.Permanent）を起動時に割り当てる処理の名残り。使う予定が無ければ、9-F で削除をユーザーへ提案する（規約 2.4）。
+        // 恒久スロット（OutSlotDevice.ReserveStatus.Permanent）を、サービスの開始時に割り当てる（ControlService.Start から呼ばれる）。
         public void AssignInitialDevices()
         {
             foreach (OutSlotDevice slotDevice in outputslotMan.OutputSlots)

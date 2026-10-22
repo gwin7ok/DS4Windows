@@ -736,7 +736,7 @@ namespace DS4Windows
                 try
                 {
                     loopControllers = true;
-                    AssignInitialDevices();
+                    _virtualPad.AssignInitialDevices();   // Phase9 9-E E-4: 旧 AssignInitialDevices（恒久スロットの割り当て）は VirtualPadService へ移した
 
                     eventDispatcher.Invoke(() =>
                     {
