@@ -248,6 +248,7 @@ namespace DS4WinWPF.DS4Forms.ViewModels
         {
             working.special = null;
             working.keyType = DS4KeyType.Toggle;
+            working.action.actionKey = 0;   // 前の割り当て（Key）の値を残さない（WriteDefault と同じ）
             working.actionType = DS4ControlSettings.ActionType.Button;
             working.action.actionBtn = defaultOutput;
         }
