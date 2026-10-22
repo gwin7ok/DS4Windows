@@ -33,7 +33,10 @@ namespace DS4WindowsTests
         public DS4State Step(DS4State input)
         {
             Thread.Sleep(12);
-            T.Mapping.oldnow = DateTime.MinValue;   // 旧経路の 10ms の間隔を満たした状態にする
+            // 旧経路のホイールの繰り返しの基準時刻を最古に戻し、間隔を満たした状態にする（Phase9 MapCustom の分割 M1: 基準時刻は SyntheticInputCommitter が持つ）
+            ((DS4Windows.Services.SyntheticInputCommitter)typeof(Mapping)
+                .GetField("_syntheticCommitter", System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.NonPublic)
+                .GetValue(T.Mapping)).SetWheelRepeatBase(DateTime.MinValue);
             return T.Run(input);
         }
 
@@ -44,7 +47,6 @@ namespace DS4WindowsTests
             Set("stickWheelRemainder", 0.0);
             Set("stickWheel", 0.0);
             Set("stickWheelDownDir", false);
-            Set("pressagain", false);
             // Phase9 9-B: 旧 horizontalRemainder／verticalRemainder は MouseMotionQuantizer（TestMappingFactory が独立の instance を渡す）へ移ったため、作成時は 0 から始まる。
         }
 

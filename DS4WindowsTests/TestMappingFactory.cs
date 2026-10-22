@@ -65,7 +65,8 @@ namespace DS4WindowsTests
                 new ButtonMouseMovementCalculator(),   // Phase9 9-B: 加速の状態を持つため、独立の instance にする（他のテストと状態を共有しない）
                 new MouseMotionQuantizer(),   // Phase9 9-B: 端数を持つため、独立の instance にする
                 TestHost.GetService<IGyroMouseStickBlender>(),   // Phase9 9-B: 状態なし
-                TestHost.GetService<IControlActivityReader>());   // Phase9 9-B: 状態なし
+                TestHost.GetService<IControlActivityReader>(),   // Phase9 9-B: 状態なし
+                new SyntheticInputCommitter(synthetic, kbm));   // Phase9 MapCustom の分割 M1: ホイールの繰り返しの状態を持つため、独立の instance にする
         }
     }
 }
