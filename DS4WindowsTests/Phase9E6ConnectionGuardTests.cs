@@ -174,7 +174,6 @@ namespace DS4WindowsTests
                 Assert.False(Regex.IsMatch(text, @"\bGlobal\."), file + " が Global を参照している");
             }
         }
-    }
 
         [Theory]
         [InlineData(@"\bJoyConDevice\b")]
