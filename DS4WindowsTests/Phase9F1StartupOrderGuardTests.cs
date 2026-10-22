@@ -62,6 +62,7 @@ namespace DS4WindowsTests
                 "if (exitApp)",
                 "SetProcessPriorities();",
                 "EnsureSingleInstance()",
+                "RotateLogsAndLogStartupDiagnostics(e);",
                 "InitializeProcessWideSettings();",
                 "BuildHostAndServices(parser);",
                 "bool firstRun = _appSettingsService.FirstRun;",
@@ -91,14 +92,35 @@ namespace DS4WindowsTests
         }
 
         [Fact]
+        public void TheLogRotation_HappensOnlyAfterTheSingleInstanceCheck()
+        {
+            string text = Read();
+            if (text == null) return;
+
+            // 2 つ目のインスタンスが、動いている 1 つ目のインスタンスのログをアーカイブへ回さないこと。ローテーションは、確認の後の 1 か所だけ
+            Assert.Single(Regex.Matches(text, @"PerformStartupRotation\("));
+            Assert.DoesNotContain("PerformStartupRotation(", BodyOf(text, "private void RunPreHostBootstrap("));
+            Assert.DoesNotContain("PerformStartupRotation(", BodyOf(text, "private bool EnsureSingleInstance("));
+            Assert.DoesNotContain("PerformStartupRotation(", BodyOf(text, "private void CheckOptions("));
+            Assert.DoesNotContain("StartupDiagnostics.", BodyOf(text, "private void RunPreHostBootstrap("));
+
+            string body = BodyOf(text, "private void Application_Startup(");
+            Assert.True(body.IndexOf("RotateLogsAndLogStartupDiagnostics(e);", StringComparison.Ordinal) > body.IndexOf("EnsureSingleInstance()", StringComparison.Ordinal));
+        }
+
+        [Fact]
         public void TheStepsKeepTheirSafetyOrder()
         {
             string text = Read();
             if (text == null) return;
 
-            // Pre-Host: 設定の場所 → ログのローテーション → 診断ログ
+            // Pre-Host: ブートストラップのサービス → 設定の場所
             AssertOrder(BodyOf(text, "private void RunPreHostBootstrap("),
-                "new DS4Windows.EnvironmentService()", "FindConfigLocation()", "PerformStartupRotation(", "StartupDiagnostics.CultureMessage()");
+                "new DS4Windows.EnvironmentService()", "FindConfigLocation()");
+
+            // ログのローテーション → 診断ログ（単一起動の確認の後。Phase9 9-F、ユーザー指示 2026-10-23）
+            AssertOrder(BodyOf(text, "private void RotateLogsAndLogStartupDiagnostics("),
+                "PerformStartupRotation(", "ApplyBootstrapMinLogLevel(", "StartupDiagnostics.CultureMessage()");
 
             // 単一起動の通知は、ホストの構築より前
             AssertOrder(BodyOf(text, "private void InitializeProcessWideSettings("),

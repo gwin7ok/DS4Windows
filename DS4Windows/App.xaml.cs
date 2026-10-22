@@ -219,6 +219,9 @@ namespace DS4WinWPF
                 return;   // 別のインスタンスが動いている（そちらへ通知して、この一時的なインスタンスは終了する）
             }
 
+            // ログのローテーションと診断ログは、単一起動の確認の後（別のインスタンスのログを、アーカイブへ回さないため）
+            RotateLogsAndLogStartupDiagnostics(e);
+
             InitializeProcessWideSettings();
 
             BuildHostAndServices(parser);
@@ -251,7 +254,8 @@ namespace DS4WinWPF
         }
 
         /// <summary>
-        /// Phase9 9-F F-1b: ブートストラップのサービス、設定の場所の決定、ログのローテーション、起動時の診断ログ（Pre-Host。旧 Application_Startup の先頭の部分）。
+        /// Phase9 9-F F-1b: ブートストラップのサービスと、設定の場所の決定（Pre-Host。旧 Application_Startup の先頭の部分）。
+        /// ログのローテーションと起動時の診断ログは、単一起動の確認の後（<see cref="RotateLogsAndLogStartupDiagnostics"/>）。
         /// </summary>
         private void RunPreHostBootstrap(StartupEventArgs e)
         {
@@ -260,12 +264,31 @@ namespace DS4WinWPF
             _bootstrapBackingStore = new DS4Windows.BackingStore(_bootstrapEnvironmentService);
             _bootstrapPathService = new DS4Windows.PathService(config: _bootstrapBackingStore);
 
-            // Locate config location and perform startup log rotation as early as possible
+            // Locate config location as early as possible
             try
             {
                 _bootstrapPathService.FindConfigLocation();
+                _bootstrapConfigLocationFound = true;
+            }
+            catch { }
+        }
 
-                // Perform deterministic startup rotation as early as possible
+        // 設定の場所を決められたか（決められなかったときは、従来どおり、ローテーションも行わない）
+        private bool _bootstrapConfigLocationFound;
+
+        /// <summary>
+        /// ログのローテーション（決定的な起動時のローテーション）と、起動時の診断ログ。
+        /// 変更（Phase9 9-F、ユーザー指示 2026-10-23）: 単一起動の確認（<see cref="EnsureSingleInstance"/>）の<b>後</b>に行う。以前は確認の前に行っていたため、
+        /// 2 つ目のインスタンスを起動すると、動いている 1 つ目のインスタンスのログが、アーカイブへ回されていた。別のインスタンスが動いていれば、ここへは来ない
+        /// （ログのファイルに、何も書かない）。
+        /// </summary>
+        private void RotateLogsAndLogStartupDiagnostics(StartupEventArgs e)
+        {
+            try
+            {
+                if (!_bootstrapConfigLocationFound) throw new InvalidOperationException("config location not found");
+
+                // Perform deterministic startup rotation
                 // （Phase7-Step4 W4: appdatapath は null の可能性がある（初回起動）ため、AppDataPath（null のとき実行フォルダ）ではなく状態そのものを渡す）
                 LogRotator.PerformStartupRotation(DS4Windows.PathService.AppDataPathState, _bootstrapBackingStore.logMaxArchiveFiles);
 

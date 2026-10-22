@@ -115,7 +115,7 @@ namespace DS4WindowsTests
         // （Pre-Host: ホストの構築の前、Post-Host: CreateControlService(parser); 以降）として扱う。順序は Phase9F1StartupOrderGuardTests が守る
         private static readonly string[] StartupPreHostMethods =
         {
-            "Application_Startup", "RunPreHostBootstrap", "TryHandleCompleteInstall", "SetProcessPriorities", "EnsureSingleInstance", "InitializeProcessWideSettings",
+            "Application_Startup", "RunPreHostBootstrap", "TryHandleCompleteInstall", "SetProcessPriorities", "EnsureSingleInstance", "RotateLogsAndLogStartupDiagnostics", "InitializeProcessWideSettings",
         };
 
         private static readonly string[] StartupPostHostMethods =
