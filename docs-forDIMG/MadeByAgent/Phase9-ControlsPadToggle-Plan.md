@@ -28,3 +28,27 @@ Controls タブで、割り当てが Button（仮想パッドのボタン）で 
 ## 5. 残る確認
 - アナログの出力先（軸・トリガー）に Toggle を付けたときの挙動は、SA と同じ（ON の間は端まで出す）でよいか。
 - 実装前に、`FreshPressGuardTable`、`ControlOutputNatureTable` で、Controls のパッド Toggle の区分（`ButtonPad`）に影響がないかを確認する。
+
+## 6. 追加調査: Controls 側で、SA 側の部品（`ButtonOutputAction`）を使える箇所（2026-10-22）
+
+### 6.1 すでに SA と共有している部品
+Key（`KeyOutputAction`）、Macro（`MacroAction`）、SA 専用の種別（Special）、MultiAction の入力、Extras の出力（`ControlExtrasOutputAction`）、そして今回のパッドの Toggle（`ButtonOutputAction`）。
+
+### 6.2 SA の `ButtonOutputAction` で扱えるのに、Controls が別の部品を使っている箇所
+`ButtonOutputAction`（`FrameOutput.PressX360` と `ApplyAnalog`）は、仮想パッド（ボタン・軸・トリガー）、マウスのボタン、タッチパッドクリック、ホイール（デジタル）、マウス移動を扱える。Toggle の状態は SA の名前ごとに持つ（`ActionInstanceState`）。
+
+| 箇所（Controls） | 現状 | 問題・可否 |
+|---|---|---|
+| マウスのボタン／タッチパッドクリック／デジタルのホイール ＋ **Toggle**（`AddMouse`） | `ControlMouseOutputAction` ＋ `ControlToggleOutputAction` | `ControlToggleOutputAction` は、**デバイスに 1 つだけの `currentClicks.toggle` フラグ**を反転する。Toggle を付けたマウスのボタンが 2 つあると、2 つの ON／OFF が連動して干渉する。`ButtonOutputAction` なら、ボタンごとに独立。**使える（効果あり）** |
+| マウス移動（MouseUp／Down／Left／Right）、アナログのホイール ＋ **Toggle**（`AddAnalogMouse`） | 移動の出力 ＋ `ControlToggleOutputAction` | Toggle のフラグはマウスのボタンの押下だけに使われるため、**移動には Toggle が効かない**（パッドと同じ、未実装の状態）。`ButtonOutputAction` は、ON の間、固定量（強さ 100%）で動かせる。**使える（効果あり）** |
+| 上記の **Toggle なし**（Press） | `ControlMouseOutputAction` など | `PressX360` と同じ動き。統一しても利用者の見た目は変わらない。**使えるが、効果がない（リスクのみ）ため、見送りを推奨** |
+| パッドの軸・トリガー（Toggle なし）、マウス移動・アナログのホイール（Toggle なし） | 元の入力のアナログ値に比例して出す（`ControlPadOutputAction` ほか） | SA は固定の強さで出す仕様。Controls の通常の割り当ては、比例が仕様。**統一できない（Controls 固有）** |
+| Default の素通し（`ControlPassthroughOutputAction`） | 軸のペアの素通し | **Controls 固有** |
+
+### 6.3 付随する整理
+パッドと上記 2 つの Toggle を `ButtonOutputAction` へ移すと、`ControlToggleOutputAction`（と `IToggleFrameOutput`、`Commit` の toggle の処理）は、「Unbound ＋ Toggle」（出力先がなく、意味のない組み合わせ）以外で使われなくなる。使われなくなった後の整理は、規約 2.4 に従い、別の Step で経緯を確認して判断する。
+
+### 6.4 提案
+- 提案 A: マウスのボタン等の Toggle を `ButtonOutputAction` へ（干渉の是正）。
+- 提案 B: マウス移動・アナログのホイールの Toggle を `ButtonOutputAction` へ（Toggle が効かない不具合の是正）。
+- Toggle なしの経路は、変えない。
