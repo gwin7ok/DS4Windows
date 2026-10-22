@@ -189,8 +189,10 @@ namespace DS4WindowsTests
         }
 
         [Fact]
-        public void WriteFrom_PressKeyInTheDefaultState_WritesTheDefault_EvenWithToggleAndScanCode()
+        public void WriteFrom_PressKeyInTheDefaultState_WithToggle_WritesAToggleButtonToTheDefaultOutput_AndIgnoresScanCode()
         {
+            // Phase9 UI 変更（ユーザー指示 2026-10-22）: 旧仕様は、Default のとき Toggle も捨てて Default を書いた。
+            // 新仕様: Toggle は捨てず、既定の出力への Button ＋ Toggle として書く。Scan Code は、キーボードのキーだけに効くため、書かない
             var rig = new Rig();
             DS4ControlSettings original = Settings(DS4ControlSettings.ActionType.Key);
             original.action.actionKey = 65;
@@ -198,6 +200,25 @@ namespace DS4WindowsTests
             var target = new ControlSettingsEditTarget(original, rig.Profile);
             rig.PressKey.ReadSettings(Settings(DS4ControlSettings.ActionType.Default), allowDefault: true);
             rig.PressKey.SwitchMode = "Toggle";
+            rig.PressKey.UseScanCode = true;
+
+            target.WriteFrom(KeyIndex, rig.PressKey, rig.Macro);
+
+            Assert.Equal(DS4ControlSettings.ActionType.Button, target.Working.actionType);
+            Assert.Equal(rig.Profile.GetDefaultButtonMapping()[(int)DS4Controls.Circle], target.Working.action.actionBtn);
+            Assert.Equal(DS4KeyType.Toggle, target.Working.keyType);
+            Assert.Equal(0, target.Working.action.actionKey);
+        }
+
+        [Fact]
+        public void WriteFrom_PressKeyInTheDefaultState_WithPress_WritesTheDefault_EvenWithScanCode()
+        {
+            var rig = new Rig();
+            DS4ControlSettings original = Settings(DS4ControlSettings.ActionType.Key);
+            original.action.actionKey = 65;
+            original.keyType = DS4KeyType.Toggle | DS4KeyType.ScanCode;
+            var target = new ControlSettingsEditTarget(original, rig.Profile);
+            rig.PressKey.ReadSettings(Settings(DS4ControlSettings.ActionType.Default), allowDefault: true);
             rig.PressKey.UseScanCode = true;
 
             target.WriteFrom(KeyIndex, rig.PressKey, rig.Macro);
