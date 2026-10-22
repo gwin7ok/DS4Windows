@@ -47,6 +47,29 @@ namespace DS4WinWPF.DS4Forms.ViewModels
         #pragma warning restore CS0414
 
 
+        // TODO(一時的な診断ログ・Phase9 E-6f2 後のトレイのメニューがすぐ消える不具合の調査用。原因が分かったら削除する)
+        private static void TrayDiag(string message, bool withStack = false)
+        {
+            string stack = string.Empty;
+            if (withStack)
+            {
+                var frames = new System.Diagnostics.StackTrace(2, false).GetFrames();
+                if (frames != null)
+                {
+                    var names = new List<string>();
+                    for (int i = 0; i < frames.Length && names.Count < 6; i++)
+                    {
+                        var m = frames[i].GetMethod();
+                        names.Add(m?.DeclaringType?.Name + "." + m?.Name);
+                    }
+
+                    stack = " <- " + string.Join(" <- ", names);
+                }
+            }
+
+            AppLogger.LogToGui($"[TrayDiag] {message}{stack}", false);
+        }
+
         public string TooltipText
         {
             get => tooltipText;
@@ -56,6 +79,7 @@ namespace DS4WinWPF.DS4Forms.ViewModels
                 if (value.Length > 63) temp = value.Substring(0, 63);
                 if (tooltipText == temp) return;
                 tooltipText = temp;
+                TrayDiag($"TooltipText changed: '{temp.Replace('\n', '|')}'");
                 //Trace.WriteLine(tooltipText);
                 try
                 {
@@ -71,6 +95,7 @@ namespace DS4WinWPF.DS4Forms.ViewModels
             {
                 if (iconSource == value) return;
                 iconSource = value;
+                TrayDiag($"IconSource changed: {value}");
                 IconSourceChanged?.Invoke(this, EventArgs.Empty);
             }
         }
@@ -115,6 +140,8 @@ namespace DS4WinWPF.DS4Forms.ViewModels
             this.controlService = service;
             trayTitle = $"DS4Windows v{environmentService.ApplicationVersion}";
             contextMenu = new ContextMenu();
+            contextMenu.Opened += (sender, e) => TrayDiag("ContextMenu Opened");
+            contextMenu.Closed += (sender, e) => TrayDiag("ContextMenu Closed");
             iconSource = appearanceSettings.GetIconResourcePath(appearanceSettings.UseIconChoice);
             appearanceSettings.BatteryChanged += UpdateTrayBattery;
             if (AppLogger.IsTraceEnabled)
@@ -204,6 +231,7 @@ namespace DS4WinWPF.DS4Forms.ViewModels
 
         public void PopulateContextMenu()
         {
+            TrayDiag($"PopulateContextMenu (menu open: {contextMenu.IsOpen})", true);
             contextMenu.Items.Clear();
             ItemCollection items = contextMenu.Items;
             MenuItem item;
@@ -458,6 +486,7 @@ namespace DS4WinWPF.DS4Forms.ViewModels
 
         public void ClearContextMenu()
         {
+            TrayDiag($"ClearContextMenu (menu open: {contextMenu.IsOpen})", true);
             contextMenu.Items.Clear();
             PopulateStaticItems();
         }
