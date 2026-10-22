@@ -1,61 +1,98 @@
-# Phase9 9-E E-6（ライフサイクル：接続・切断・開始・停止）計画書
+# Phase9 9-E E-6（ライフサイクル：接続・切断・開始・停止、デバイス種類ごとの部品化）計画書
 
-作成日: 2026-10-22
-状態: **提案（承認待ち。§6 の質問に答えてから実装する）**
+作成日: 2026-10-22（改訂: ユーザーの方針「全部切り出す。実機がなくても。カートリッジのように入れ替えられる形にする」を反映）
+状態: **提案（承認待ち。§7 の質問に答えてから実装する）**
 上位: `Phase9-E-Plan.md`（E-1〜E-5 は完了）、`Phase9-Responsibility-Split-Plan.md`
 
 ## 1. 目的と現状
 
-`ControlService.cs` は E-5 の後で約 2,015 行。残る塊の大半は、コントローラーの「つなぐ・外す・サービスを始める／止める」の流れ（ライフサイクル）。
-ここは、**ガードレール（`Phase5-Plan.md` §5）に直接かかわる**部分が多い（ドライバ破棄順序、切断時クリーンアップ、スレッド直列化）。E-1〜E-5 より慎重に進める。
+`ControlService.cs` は E-5 の後で約 2,015 行。残る塊の大半は、コントローラーの「つなぐ・外す・サービスを始める／止める」の流れ（ライフサイクル）と、**デバイスの種類（DS4／DualSense／Switch Pro／Joy-Con／DS3）ごとの分岐**。
+
+目的は 2 つ。
+1. ライフサイクルを `ControlService` から切り出し、`ControlService` を窓口（ファサード）にする。
+2. デバイスの種類ごとの処理を、**種類ごとの部品（カートリッジ）**にまとめる。新しい種類の追加・差し替えが、`ControlService` を触らずにできるようにする（Pure DI 化の重要な一歩）。
+
+ここは、ガードレール（`Phase5-Plan.md` §5: ドライバ破棄順序、切断時クリーンアップ、スレッド直列化）に直接かかわる。**1 回で全部は実装せず、段階（E-6a〜E-6f）に分けて、段階ごとにビルド・テスト（と、できる範囲の実機確認）を挟む。**
 
 ## 2. 現状の塊（`ControlService.cs`）
 
-| 区分 | メソッド | 行数の目安 | 触る状態 | 性質 |
+| 区分 | メソッド | 行数 | 触る状態 | 備考 |
 |---|---|---|---|---|
-| a. 開始 | `Start` | 約 155 | `running`、`loopControllers`、`inServiceTask`、`DS4Controllers` ほか | ガードレール（ViGEm の開始順、`Thread.Sleep(2000)`、UDP の待ち）。イベント `ServiceStarted`／`RunningChanged` |
-| b. 停止 | `Stop` | 約 120 | 同上＋`outputDevices`、`slotManager` | ガードレール（**ドライバ破棄順序**、切断時クリーンアップ）。イベント `PreServiceStop`／`ServiceStopped` |
-| c. ホットプラグ | `HotPlug` | 約 130 | `DS4Controllers`、Joy-Con の結合 | スレッド直列化（`inServiceTask`）。Joy-Con の結合ロジック約 50 行を含む |
-| d. 接続時のプロファイル選択 | `PrepareConnectedInputControllerSettingEvents` のうち、プロファイルの選択と適用（初回／再接続） | 約 70 | `IDeviceStateService`、`IProfileRepository`、`IProfileSlotApplier` | 状態を持たない。**テストしやすい** |
-| e. 接続時の設定の反映 | `CheckProfileOptions`、`CheckLauchProfileOption`、`SetupInitialHookEvents`、`TouchPadOn`、`GetKnownExtraButtons` | 約 220 | `touchPad[]`、デバイス、プロファイル設定 | ほぼ「デバイスと設定を引数に受けて反映する」だけ |
-| f. 切断・同期の処理 | `On_DS4Removal`、`On_SyncChange`、`On_SerialChange` | 約 150 | `CurrentState`／`PreviousState`／`DS4Controllers`／`touchPad`／`outputDevices`／`slotManager` | ガードレール（切断時クリーンアップ）。複数の配列に触る |
+| d. 接続時のプロファイル選択 | `PrepareConnectedInputControllerSettingEvents` の前半（初回／再接続、Linked、適用） | 約 70 | `IDeviceStateService`、`IProfileRepository`、`IProfileSlotApplier` | 状態なし。テストしやすい |
+| e. 接続時の設定の反映 | `CheckProfileOptions`、`CheckLauchProfileOption`、`SetupInitialHookEvents`、`TouchPadOn` | 約 190 | `touchPad[]`、デバイス、プロファイル設定 | 引数で受ければ状態なし |
+| **種類ごとの分岐** | `PostDS4DeviceInit`（Joy-Con の結合の初期値）、`PrepareDS4DeviceSettingHooks`（DualSense の LED）、`CheckForSupportedDevice`（種類ごとの有効設定）、`GetKnownExtraButtons`（種類ごとの追加ボタン）、`CheckProfileOptions` の DualSense の振動設定 | 約 120 | `deviceOptions`、デバイス | **カートリッジ化の対象（E-6c）** |
+| **Joy-Con の結合** | `Start` と `HotPlug` の中の、L と R を 1 つに結合する手順（2 通り） | 約 100 | `JoyConDevice` の `JointDevice`／`JointState`／`Removal` | **カートリッジ化の対象（E-6d）。実機なし** |
+| f. 切断・同期の処理 | `On_DS4Removal`、`On_SyncChange`、`On_SerialChange` | 約 150 | `CurrentState`／`PreviousState`／`DS4Controllers`／`touchPad`／`outputDevices`／`slotManager` | ガードレール（切断時クリーンアップ） |
+| a/b/c. 開始・停止・ホットプラグ | `Start`、`Stop`、`HotPlug` | 約 400 | `running`、`inServiceTask`、`loopControllers`、`activeControllers`、`suspending` ほか。イベント `ServiceStarted`／`PreServiceStop`／`ServiceStopped`／`RunningChanged`／`HotplugController` | ガードレール（ViGEm の開始・破棄順序、`inServiceTask` による直列化、`Thread.Sleep`） |
 
-## 3. 切り出しの候補
+## 3. 設計
 
-### 部品 1（推奨）: 接続時の準備（d＋e）
-`IDeviceConnectionSetup` ／ `DeviceConnectionSetup`（Singleton、状態なし）に、次を移す。
-- 接続時のプロファイル選択（初回接続は Linked プロファイルか OlderProfilePath、再接続は直前のプロファイル）。結果として「適用するプロファイル名」を返す部分を切り出し、`ApplyToSlot` の呼び出しは `ControlService` に残す（呼び出しの順序を変えない）。
-- `CheckProfileOptions`、`CheckLauchProfileOption`、`SetupInitialHookEvents`、`GetKnownExtraButtons`、`TouchPadOn`。`touchPad[ind]` は引数で受ける。
-- `ControlService` の同名の公開メソッド（`CheckProfileOptions`、`TouchPadOn`、`PreLoadReset` など、外部が使うもの）は薄い委譲として残す。
-- 見込み: 約 290 行減（2,015 → 約 1,725 行）。
-- テスト: プロファイル選択の分岐（初回／再接続／Linked の有無）を差分テストで固める（`IDeviceStateService` などは偽物で差し替え可）。デバイスを使う反映は、`DS4Device` が作れないため、ソースの走査と実機で担保する。
+### 3.1 デバイス種類のカートリッジ（E-6c・E-6d）
+契約 `IInputDeviceModule`（`DS4Windows/DI/`）。種類ごとに 1 つ実装し、すべて Singleton として登録する。`IInputDeviceModuleRegistry`（実装は `InputDeviceModuleRegistry`）が、`InputDeviceType` から部品を引く。
 
-### 部品 2（任意）: 切断・同期の処理（f）
-`IDeviceDisconnectHandler`。複数の配列（`CurrentState`／`PreviousState`／`DS4Controllers`／`touchPad`／`outputDevices`／`slotManager`）へ触るため、ホストの窓口（`IDeviceSlotHost`）を作って受ける必要がある。ガードレール（切断時クリーンアップ）に直結するので、実機で切断・再接続を繰り返して確かめる必要がある。見込み: 約 150 行減。
+| メンバー | 旧コード | 内容 |
+|---|---|---|
+| `bool Handles(InputDeviceType type)` | （新設） | この部品が扱う種類 |
+| `bool IsEnabled(ControlServiceDeviceOptions options)` | `CheckForSupportedDevice` の switch | 種類ごとの有効設定 |
+| `IReadOnlyList<DS4Controls> GetKnownExtraButtons(DS4Device device)` | `GetKnownExtraButtons` の switch | 種類ごとの追加ボタン |
+| `void OnDeviceInit(DS4Device device, ControlServiceDeviceOptions options)` | `PostDS4DeviceInit` | Joy-Con の結合の初期値（`PerformStateMerge`、`PrimaryDevice`、`OutputMapGyro`） |
+| `void HookSettings(DS4Device device, Func<int> activeControllers)` | `PrepareDS4DeviceSettingHooks` | DualSense の LED モードの変更への反応 |
+| `void ApplyProfileOptions(DS4Device device, int ind, IProfileSettingsService settings)` | `CheckProfileOptions` の DualSense の枝 | DualSense の振動エミュレーション、触覚の強さ |
 
-### 部品 3（今回は見送りを推奨）: Joy-Con の結合ロジック（c の一部と a の一部）
-`Start` と `HotPlug` に、似ているが違う結合の手順がある。**Joy-Con の実機がない**ため、実機確認ができない。差分テストも `JoyConDevice` を作れず難しい。実機を用意できるときまで残す。
+実装は 5 つ（`Ds4DeviceModule`、`DualSenseDeviceModule`、`SwitchProDeviceModule`、`JoyConDeviceModule`、`Ds3DeviceModule`）。**既存の分岐を、部品ごとに逐語で移す**（挙動は変えない）。種類が見つからなければ、旧コードの `default:`（何もしない、`false`）と同じ結果にする。
 
-### 部品 4（今回は見送りを推奨）: `Start`／`Stop`／`HotPlug` 本体
-ドライバ破棄順序、スレッドの直列化、イベントの発火の順序など、安全弁が集中している。分割の見返り（行数）に対して危険が大きい。`ControlService` は、サービスの開始・停止の窓口（ファサード）として残す。E-6 の後で、まだ必要なら別途検討する。
+### 3.2 Joy-Con の結合（E-6d）
+`Start` の手順と `HotPlug` の手順は、似ているが違う（`Start` は先に来たものを主にして順に組む。`HotPlug` は主と副を先に探してから組む）。**2 通りの手順をそのまま 1 つのクラス `JoyConLinker` に移し、メソッドを 2 つ（`LinkOnStart`／`LinkOnHotPlug`）にする**（手順は統合しない。挙動を変えないため）。
 
-## 4. 守ること（共通）
+**実機がなくても検証できるようにする**: 結合が触る最小のメンバーだけの窓口 `IJoinableDevice`（`DeviceType`、`PerformStateMerge`、`PrimaryDevice`、`JointDeviceSlotNumber`、`JointDevice` の設定、`JointState`、`Removal` イベント）を作り、`JoyConDevice` を包むアダプターを使う。テストでは偽物のデバイスで、旧コードの逐語コピーと結果を比べる（差分テスト）。
 
-- 呼び出しの順序を変えない（特に `Start`／`Stop` の中の順序、`PrepareConnectedInputControllerSettingEvents` の中の順序）。
-- ログの文言とレベルを変えない（`AppLogger.LogDebug`、`LogDebug`、`LogToTray`）。
-- `[DI]` の接頭辞が付いた既存のログは、そのまま維持する。
-- 一部のイベント（`Removal`／`SyncChange`／`Report` の購読）の登録順を変えない。
-- 薄い委譲メソッドは `ControlService` に残す（呼び出し側は 9-F まで変えない）。
+### 3.3 接続時の準備（E-6a・E-6b）
+- E-6a `IConnectionProfileSelector`: 接続時のプロファイル選択（初回接続は Linked か OlderProfilePath、再接続は直前のプロファイル）。「適用するプロファイル名」を返す。`ApplyToSlot` の呼び出しは `ControlService` に残す（順序を変えない）。
+- E-6b `IDeviceConnectionSetup`: `CheckProfileOptions`（種類ごとの部分を除く）、`CheckLauchProfileOption`、`SetupInitialHookEvents`、`TouchPadOn`。`touchPad[ind]` は引数で受ける。
 
-## 5. 実機確認が要るもの（部品 1 の場合）
+### 3.4 切断・同期の処理（E-6e）
+`IDeviceDisconnectHandler`（`On_DS4Removal`／`On_SyncChange`／`On_SerialChange`）。複数の配列に触るため、ホストの窓口 `IDeviceSlotHost`（`CurrentState`／`PreviousState`／`DS4Controllers`／`touchPad`／`outputDevices` の読み書き）を `ControlService` が実装し、遅延（`Func`）で受ける（E-3・E-4 と同じ形）。切断の後始末の順序は、逐語で保つ。
 
-- 初回接続と再接続で、適用されるプロファイルが従来どおりか（Linked プロファイルあり／なし、再接続で直前のプロファイルに戻る）。
-- 接続時に、ライトバー、トリガーの効果、振動の自動停止、アイドル切断、ポーリング間隔が、プロファイルの設定どおりに反映される。
-- 「プロファイルでアプリを起動」（`LaunchProgram`）が動く。
-- DualSense の振動エミュレーションの設定が反映される（DualSense がある場合）。
+### 3.5 開始・停止・ホットプラグ（E-6f）
+`IServiceLifecycle`（実装 `ServiceLifecycle`）に、`Start`／`Stop`／`HotPlug` の本体と、状態（`running`、`inServiceTask`、`loopControllers`、`activeControllers`、`suspending`）、イベント（`ServiceStarted`／`PreServiceStop`／`ServiceStopped`／`RunningChanged`／`HotplugController`）を移す。`ControlService` は薄い委譲を残し、状態とイベントは `ControlService` の公開メンバーのまま転送する（外部の呼び出し 19 件を変えない）。
+- 守ること: `Start` の `Thread.Sleep(2000)`、UDP の待ちのループ、`Stop` の `ViGEm` の破棄順序（`OutputSlotManager.Stop` → `Thread.Sleep(DELAY_TIME)` → `StopViGEm`）、`inServiceTask` による直列化、イベントの発火の順序。
+- 偽物のホスト（`IDeviceSlotHost`、`IVirtualPadService` など）で、`Start`／`Stop` の呼び出しの順序を記録して固定する差分テストを書く（旧コードの手順は、ソースの走査テストで固定する）。
 
-## 6. 決めてほしいこと
+## 4. 段階と順序
 
-- **Q1（範囲）**: 部品 1 のみ（推奨）／部品 1＋2／部品 1＋2＋3／切り出さない。
-- **Q2（進め方）**: 部品 1 を 1 回で実装（推奨）／d と e を分けて 2 回に分ける。
-- **Q3（見送りの記録）**: 部品 3・4 は、見送りとして `Phase9-Responsibility-Split-Plan.md` に記録する（推奨）／今回の範囲に含める。
+依存の順に、小さく安全なものから。**段階ごとに、ビルド・テスト実行（と該当する実機確認）を挟む。**
+
+| 段階 | 内容 | 見込み | 実機確認 |
+|---|---|---|---|
+| E-6a | プロファイル選択（`IConnectionProfileSelector`） | 約 70 行減 | 初回／再接続のプロファイル |
+| E-6b | 接続時の設定の反映（`IDeviceConnectionSetup`） | 約 190 行減 | 接続時の設定の反映 |
+| E-6c | 種類のカートリッジ（`IInputDeviceModule` ×5 と `Registry`） | 約 120 行減 | DS4／DualSense（手元の種類）で、追加ボタン、LED、振動設定 |
+| E-6d | Joy-Con の結合（`JoyConLinker`、`IJoinableDevice`） | 約 100 行減 | **実機なし。偽物のデバイスの差分テストで担保** |
+| E-6e | 切断・同期の処理（`IDeviceDisconnectHandler`、`IDeviceSlotHost`） | 約 150 行減 | 切断・再接続を繰り返す |
+| E-6f | 開始・停止・ホットプラグ（`IServiceLifecycle`） | 約 400 行減 | サービスの停止／開始の繰り返し、アプリの終了 |
+
+合計で約 1,030 行減（2,015 → 約 985 行）の見込み。
+
+## 5. 守ること（共通）
+
+- 呼び出しの順序を変えない。特に `Start`／`Stop`／`PrepareConnectedInputControllerSettingEvents` の中。
+- ログの文言とレベルを変えない（`AppLogger.LogDebug`、`LogDebug`、`LogToTray`。`[DI]` の接頭辞付きの既存ログもそのまま）。
+- イベントの購読の登録順（`Removal`、`SyncChange`、`Report`）を変えない。
+- 薄い委譲メソッドとイベント、公開フィールドは `ControlService` に残す（呼び出し側は 9-F まで変えない）。
+- 逐語で移し、リファクタリング（手順の統合など）は同じ変更に混ぜない。
+
+## 6. リスクと対策
+
+| リスク | 対策 |
+|---|---|
+| Joy-Con 等、実機のない種類が壊れても気づけない | 窓口（`IJoinableDevice`）と偽物で差分テスト。旧コードの逐語コピーとの比較。ユーザーが実機を用意できたときの確認項目を台帳（§38 以降）に先に書いておく |
+| `Start`／`Stop` の順序の変更 | 順序を記録する差分テストと、ソースの走査テスト（旧コードのメソッド名と呼び出し順） |
+| 高頻度の経路（`On_Report`）への影響 | E-6 では `On_Report` を触らない。E-5 の部品はそのまま |
+| 一度に大きく変えて原因が分からなくなる | 段階ごとにビルド・テスト・コミット。失敗は、その段階だけを直す |
+
+## 7. 決めてほしいこと
+
+- **Q1（全体の設計）**: §3 の「種類ごとのカートリッジ（`IInputDeviceModule` ＋ Registry）」と、E-6a〜E-6f の 6 段階で進めてよいか。
+- **Q2（Joy-Con の検証）**: 実機がないため、`IJoinableDevice` の窓口と偽物による差分テストで担保する案（§3.2）でよいか。
+- **Q3（`Start`／`Stop` の移し方）**: 本体と状態・イベントを `ServiceLifecycle` へ移し、`ControlService` は転送で残す案（§3.5）でよいか。
+- **Q4（進め方）**: 段階ごとにビルド・テストを挟む（推奨）／E-6a〜E-6c をまとめてから挟む。
