@@ -4,7 +4,7 @@
 対象ブランチ: `For-DI-migration-work`  
 上位計画書: `docs-forDIMG/DI-App-Wide-Migration-Plan.md`（本書を Phase9 として追加する）  
 関連: `Phase8-Unified-Trigger-Dispatch-Plan.md`（2026-10-19 追記［実行順序の改訂］）、`docs-forDIMG/Model-Diagram/01-Component-Dependency-Diagram.md` §2（解体の検証マトリクス）  
-状態: **計画確定（Q1〜Q6 を推奨どおり承認、2026-10-19）。Phase8・Phase10 は完了。Phase9-0 を 2026-10-22 に実施。9-A(1)・9-A(2) は完了し、ステアリング＋vJoy の削除も W1〜W5 を実施済み（W2〜W4 は実機確認待ち）。`Mapping.cs` は実測 2,568 行（§11）。次の候補は 9-B（設計を説明し、承認を得てから着手）**
+状態: **計画確定（Q1〜Q6 を推奨どおり承認、2026-10-19）。Phase8・Phase10 は完了。Phase9-0 を 2026-10-22 に実施。9-A(1)・9-A(2) は完了し、ステアリング＋vJoy の削除も W1〜W5 を実施済み（W2〜W4 は実機確認待ち）。`Mapping.cs` は実測 2,568 行（§11）。次の候補は 9-B（設計を説明し、承認を得てから着手）**  **［2026-10-22 見直し］9-A・9-B・9-C・9-E（E-1〜E-6f2）は完了（ビルド・テスト・実機確認 OK。機材なしの項目は差分テストで担保）。残りは §12。**
 
 ---
 
@@ -142,3 +142,38 @@
 - **9-E E-2（HidHide）: 実装済み（2026-10-22。ビルド・テストはユーザーの実行待ち）**。`ControlService.cs` は 3,028 → 2,914 行。次は E-3（UDP モーション）。
 - **9-E E-3（UDP モーション）: 実装済み（2026-10-22。ビルド・テストはユーザーの実行待ち）**。`ControlService.cs` は 2,914 → 2,707 行（9-E の開始時 3,438 行から 731 行減）。E-1〜E-3 で OSC・HidHide・UDP が完了。仮想パッドの出力・入力レポートの処理・ライフサイクルは、別の計画書で設計する。
 - **9-E E-4（仮想パッドの出力）: 実装済み（2026-10-22。ビルド・テストと実機確認はユーザーの実行待ち）**。`ControlService.cs` は 2,707 → 2,168 行（9-E の開始時 3,438 行から 1,270 行減）。`OutputSlotService` → `ControlService` の過渡期の逆依存を解消。残りは E-5（入力レポートの処理）・E-6（ライフサイクル）。
+
+## 12. Phase9 の現況と残り（2026-10-22 見直し）
+
+### 12.1 完了した領域（ビルド・テスト合格、実機確認 OK）
+| 領域 | 内容 | 計画書 | 行数の変化 |
+|---|---|---|---|
+| 9-A(1)・9-A(2) | スティック・トリガー補正、ジャイロ→コントロール、スティック前処理、フリックスティック | `Phase9-A1-Plan.md`・`Phase9-A2-Plan.md` | `Mapping.cs` 4,430 → 3,072 行 |
+| ステアリング／vJoy の削除 | 機能ごと廃止（W1〜W5） | `Phase9-SteeringWheel-Removal-Plan.md` | 3,072 → 2,568 行 |
+| 9-B | マウス・ホイール変換、入力の解決（`ButtonMouseMovementCalculator` ほか 4 部品） | `Phase9-B-Plan.md` | 2,568 → 2,060 行 |
+| 9-C | マクロの再生（`MacroStepExecutor`／`MacroPlayback`） | `Phase9-C-Plan.md` | 2,060 → **1,686 行** |
+| 9-E E-1〜E-4 | OSC、HidHide、UDP モーション、仮想パッド（ViGEm） | `Phase9-E-Plan.md` | `ControlService.cs` 3,438 → 2,168 行 |
+| 9-E E-5 | 入力レポートの処理（遅延の監視、タッチパッドの切り替え、押されている入力の探索） | `Phase9-E5-Plan.md` | 2,168 → 2,015 行 |
+| 9-E E-6 | 接続時のプロファイル選択、設定の反映、デバイス種類のカートリッジ（`IInputDeviceModule` ×5）、Joy-Con の結合、切断・同期、接続の組み立て、開始・停止・ホットプラグ（`IServiceLifecycle`） | `Phase9-E6-Plan.md` | 2,015 → **1,075 行** |
+| 9-D | 廃止（Q7。残りは下の「`MapCustom` の分割」に吸収） | — | — |
+
+### 12.2 完了条件（§6）の達成状況
+- 「`Mapping.cs`・`ControlService.cs` の行数が着手時の半分以下」: **達成**（`Mapping.cs` 7,611 → 1,686 行［22%］、`ControlService.cs` 3,436 → 1,075 行［31%］）。
+- 「巨大メソッドが 200 行以下」: `On_Report` は E-5 で約 130 行に。**未達**: `MapCustom` 473 行、`ProcessTwoStageTrigger` 195 行（200 行以下だが `MapCustom` の流れ）、`Commit` 174 行、`SetCurveAndDeadzone` 153 行（200 行以下）。`Application_Startup` は 9-F で扱う。
+- 全テスト成功、ビルド警告 0、複数型ファイル 0: 達成（ラチェットの一致検査も成功）。
+
+### 12.3 残り（優先順の提案）
+| 項目 | 内容 | 現況・前提 |
+|---|---|---|
+| **`MapCustom` の分割**（旧 9-D の吸収先） | `MapCustom` 473 行、`ProcessTwoStageTrigger` 195 行、`Commit` 174 行（合計約 840 行）。2 段階トリガー、合成入力の確定、Controls タブ側の割り当て | **高頻度の経路**（毎秒 250〜1000 回）。割り当て 0 の維持と、速度の計測が要る。値の特性化テストを先に足す。別途、設計案を作って承認を得る |
+| **9-F: UI のコードビハインド** | `Application_Startup`（393 行）、`CheckOptions`、`MainWindow`（2,269 行）、`ProfileEditor`（2,061 行）ほか | Phase10 は完了済みのため着手できる。実機（画面）での確認が必須。**トレイのメニューの再クリックの課題**（§3 の 9-F の項）を含める。起動順序の特性化テストが先 |
+| 9-G: `ProfileSettingsViewModel` のサブ ViewModel 化 | 3,427 行、公開プロパティ約 258 | Q3: 9-F の後に、効果とコストを比べて判断する。**実施しない選択肢も残す** |
+| 9-H: 第 1 層のデバイスクラス | `DS4Device.performDs4Input` ほか | Q5: K7b-1（異常終了の切り分け）が済むまで着手しない。E-6c で種類ごとの部品化が進んだため、**デバイスの通信・解析の分離とは別に**、種類の追加がしやすい状態にはなった |
+| 9-I: 最終クリーンアップ | モデル図 01〜04 の更新（実在／未実装の区別）、規約 §3.2 の行数、完了報告書。名前空間・フォルダの再編は Phase11 | 各 Wave の都度、03 は更新済み。01・02・04 の見直しが残る |
+
+### 12.4 E-6 で追加された設計上の要点（9-I・9-F で参照する）
+- `ControlService` は「窓口（ファサード）」になった: 開始・停止（`IServiceLifecycle`）、接続の組み立て（`IDeviceConnector`）、切断（`IDeviceDisconnectHandler`）、種類ごとの部品（`IInputDeviceModuleRegistry`）、仮想パッド（`IVirtualPadService`）、OSC・UDP・HidHide の各サービスに委譲する。UI が直接使う公開メンバー（`running`、`suspending`、`Start`／`Stop`／`HotPlug`、5 つのイベントほか）は、同名のまま転送で残してある（9-F で UI の呼び出しを抽象経由に切り替えるときに削除する）。
+- 窓口（ホスト）は 4 つ: `IVirtualPadHost`、`IUdpMotionHost`、`IDeviceSlotHost`、`IServiceLifecycleHost`。いずれも `ControlService` が実装し、部品が `Func` で遅延して取得する（循環を避ける）。9-F で、これらの実体を `ControlService` から、スロット状態の保持クラスへ移すかを検討できる。
+- 新しい種類のデバイスを足すときは、`IInputDeviceModule` を実装して `ServiceRegistration` へ登録する（`ControlService` は触らない）。
+- `ServiceLifecycle` が持つプロセス優先度の配列は、UI の `MainWindow.ProcessPriorityClasses` と同じ順序の複製（UI への静的な参照をなくすため）。9-F で、優先度の設定を型付きの値にして、複製をなくす。
+
