@@ -73,6 +73,7 @@ namespace DS4WindowsTests
             Assert.Equal(DS4ControlSettings.ActionType.Default, rig.PressKey.SelectedActionType);
             Assert.StartsWith(PressKeyViewModel.DefaultText, rig.PressKey.DescribeText);   // Phase9 UI 変更: 「Default (既定の出力名)」
             Assert.False(rig.PressKey.IsScanCodeEnabled);
+            Assert.Equal("Press", rig.PressKey.SwitchMode);   // Phase9 UI 変更: Default の実際の動きは Press（Switch Mode の欄を空欄にしない）
             Assert.Equal(0, rig.PressKey.Value);
         }
 

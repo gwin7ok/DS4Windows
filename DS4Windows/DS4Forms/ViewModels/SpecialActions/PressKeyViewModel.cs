@@ -331,6 +331,9 @@ namespace DS4WinWPF.DS4Forms.ViewModels.SpecialActions
                 value = 0;
                 keyType = DS4KeyType.None;
                 defaultOutputInput = settings.control;   // Phase9 UI 変更: 「Default (既定の出力名)」の表示に使う
+                // Default の実際の動きは Press（押している間だけ出力）。Switch Mode の欄が空欄にならないよう、Press を表示する（Default の保存には使わない）
+                switchMode = "Press";
+                OnPropertyChanged(nameof(SwitchMode));
                 editorDeviceNum = deviceNum >= 0 ? deviceNum : editorDeviceNum;
                 UpdateDescribeText();
                 UpdateToggleControls();
