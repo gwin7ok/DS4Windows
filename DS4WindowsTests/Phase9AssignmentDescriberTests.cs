@@ -39,8 +39,9 @@ namespace DS4WindowsTests
         public void ForControl_CoversEveryAssignmentType()
         {
             Assert.Equal("Default (A)", AssignmentDescriber.ForControl(Setting(DS4ControlSettings.ActionType.Default), Name, X360Controls.A, false, "Unassigned"));
-            Assert.Equal("Unassigned", AssignmentDescriber.ForControl(Setting(DS4ControlSettings.ActionType.Default), Name, X360Controls.None, false, "Unassigned"));
-            Assert.Equal("Unassigned", AssignmentDescriber.ForControl(Setting(DS4ControlSettings.ActionType.Default), Name, X360Controls.A, true, "Unassigned"));
+            // 対応するボタンがない Default は「Default (No matching button)」（Unbound とは別の表現）
+            Assert.Equal("Default (No matching button)", AssignmentDescriber.ForControl(Setting(DS4ControlSettings.ActionType.Default), Name, X360Controls.None, false, "Unassigned"));
+            Assert.Equal("Default (No matching button)", AssignmentDescriber.ForControl(Setting(DS4ControlSettings.ActionType.Default), Name, X360Controls.A, true, "Unassigned"));
 
             DS4ControlSettings button = Setting(DS4ControlSettings.ActionType.Button, DS4KeyType.Toggle);
             button.action.actionBtn = X360Controls.B;

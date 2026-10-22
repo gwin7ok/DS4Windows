@@ -16,6 +16,9 @@ namespace DS4WinWPF.DS4Forms.ViewModels
     {
         public const string DefaultText = "Default";
         public const string UnboundText = "Unbound";
+
+        /// <summary>Default のままで、そのボタンに対応する出力（Xbox のボタンなど）がないときの表示。Unbound（出力を明示的に無効にした設定）と区別する。</summary>
+        public const string DefaultNoMatchText = "Default (No matching button)";
         public const string ExtrasSuffix = " + Extras";
 
         public static string Mode(bool toggle) => toggle ? "Toggle" : "Press";
@@ -77,8 +80,8 @@ namespace DS4WinWPF.DS4Forms.ViewModels
                     text = setting.action.actionBtn == X360Controls.Unbound ? UnboundText : ForButton(buttonName(setting.action.actionBtn), toggle);
                     break;
                 default:
-                    if (isExtraControl || defaultOutput == X360Controls.None) return unassignedText;
-                    text = ForDefault(buttonName(defaultOutput));
+                    // Phase9 UI 変更: 対応するボタンがない Default は「Default (No matching button)」（以前は「未割り当て」）
+                    text = isExtraControl || defaultOutput == X360Controls.None ? DefaultNoMatchText : ForDefault(buttonName(defaultOutput));
                     break;
             }
 
