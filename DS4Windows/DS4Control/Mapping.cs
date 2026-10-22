@@ -543,6 +543,8 @@ namespace DS4Windows
             if (ctrl.ProfileActionProvider.GetProfileActionCount(device) > 0 || profileSettings.GetUseTempProfile(device))
                 MapCustomAction(device, ctrl);
 
+            ControlSettingsGroup controlSetGroup = profileSettings.GetControlSettingsGroup(device);
+
             // Process LS／RS（Phase9 MapCustom の分割 M3c: 左右で似たコードが 2 回あった。LS → RS の順は変えない）
             ProcessStick(device, cState, MappedState, eState, tp, fieldMapping, outputfieldMapping, deviceState,
                 ref tempMouseDeltaX, ref tempMouseDeltaY, ctrl,
