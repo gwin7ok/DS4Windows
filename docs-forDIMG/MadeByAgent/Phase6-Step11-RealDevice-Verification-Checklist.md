@@ -736,3 +736,16 @@ Special Actions タブで種別ごとに作成し、プロファイルに有効�
 | P9M3-4 | 右スティックの「デルタ加速」を有効にして、右スティックを倒す | 従来どおりの加速 | OK（2026-10-22 ユーザー確認） |
 | P9M3-5 | 左右スティックの割り当て（例：左スティック上→キー）を試す | 従来どおり | OK（2026-10-22 ユーザー確認） |
 
+## §47 Phase9 UI の仕様変更（Controls／SA タブ）と、Toggle の実装（2026-10-22 ユーザー確認。すべて OK）
+
+| ID | 内容 | 結果 |
+|---|---|---|
+| P9UI-1 | Default のボタンの編集画面が「Output Key/Mouse/Button」で開き、出力の欄が「Default (A)」。Switch Mode は Press を表示。変更せずに Save しても Default のまま | OK |
+| P9UI-2 | Default のまま Switch Mode を Toggle にして Save すると、既定の出力（パッドのボタン）が Toggle で動く | OK |
+| P9UI-3 | Controls タブの「すべて Default に戻す」（確認ダイアログつき） | OK |
+| P9UI-4 | パッドのボタン、マウスのボタン（複数が独立）、マウス移動の Toggle（Phase9-ControlsPadToggle-Plan.md） | OK |
+| P9UI-5 | Controls の一覧が 2 列の表（左寄せ、Default 以外は太字、「Default (No matching button)」）。SA のアクション列も同じ書式 | OK |
+| P9UI-6 | SA の行のダブルクリックで編集画面が開く（「有効」のチェックボックスでは開かない） | OK |
+| P9UI-7 | 表示順（LS／RS Outer は LS／RS の下、L2／R2 Full Pull は L2／R2 の下）。SA のトリガーの一覧と共通（`InputControlCatalog`）、表示名は LS Up／Function L／Paddle L | OK |
+| P9UI-8 | 割り当て表示が左寄せで、足にかぶらず、「すべて Default に戻す」ボタンが足の近くに収まる | OK |
+
