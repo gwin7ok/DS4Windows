@@ -282,6 +282,19 @@ classDiagram
         +CreateListener(int port, Action onMessage) IOscListenerHandle
         +CreateSender(string address, int port) IOscMessageSender
     }
+    class IHidHideService {
+        <<interface>>
+        +CheckPresence(string ExePath, string ExeName, bool AddExe)
+        +UpdateAttributes()
+        +IsAffected(DS4Device dev) bool
+        +MarkAffected(DS4Device dev)
+    }
+    class IHidHideApiFactory {
+        <<interface>>
+        +Open() IHidHideApi
+    }
+    class HidHideService
+    class HidHideApiFactory
     class OscService
     class SharpOscTransportFactory
     class MacroStepExecutor
@@ -319,6 +332,10 @@ classDiagram
     IControlActivityReader <|.. ControlActivityReader : implements
     IMacroStepExecutor <|.. MacroStepExecutor : implements
     IOscService <|.. OscService : implements
+    IHidHideService <|.. HidHideService : implements
+    IHidHideApiFactory <|.. HidHideApiFactory : implements
+    HidHideService --> IHidHideApiFactory : ドライバー（HidHideAPIDevice）の窓口（Phase9 9-E E-2）
+    ControlService --> IHidHideService : ctor injection（CheckHidHidePresence／UpdateHidHiddenAttributes は薄い委譲）
     IOscTransportFactory <|.. SharpOscTransportFactory : implements
     OscService --> IOscTransportFactory : SharpOSC の型は SharpOsc* の中に閉じる（Phase9 9-E E-1）
     ControlService --> IOscService : ctor injection（OSC 系の本体。ChangeOSC*Status は薄い委譲）

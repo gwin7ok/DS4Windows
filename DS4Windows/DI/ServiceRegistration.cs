@@ -191,6 +191,8 @@ namespace DS4Windows.DI
             services.AddSingleton<IGyroMouseStickBlender, GyroMouseStickBlender>();   // Phase9 9-B: ジャイロのマウススティック出力の合成（状態なし）
             services.AddSingleton<IOscTransportFactory, SharpOscTransportFactory>();   // Phase9 9-E E-1: OSC の通信（SharpOSC）の生成
             services.AddSingleton<IOscService, OscService>();   // Phase9 9-E E-1: OSC（受信の解釈、送信、入力への重ね合わせ、変化の送信）
+            services.AddSingleton<IHidHideApiFactory, HidHideApiFactory>();   // Phase9 9-E E-2: HidHide ドライバーの窓口の生成
+            services.AddSingleton<IHidHideService, HidHideService>();   // Phase9 9-E E-2: HidHide（ホワイトリストの確認、影響を受けるデバイスの判定）
             services.AddSingleton<IMacroStepExecutor, MacroStepExecutor>();   // Phase9 9-C: マクロの 1 つの値の実行（状態は MacroRuntimeState に持つ）
             services.AddSingleton<IMacroPlayback, MacroPlayback>();   // Phase9 9-C: マクロの再生の予約・繰り返し・後始末
             services.AddSingleton<IControlActivityReader, ControlActivityReader>();   // Phase9 9-B: コントロールが押されているかの判定（状態なし）
@@ -259,7 +261,8 @@ namespace DS4Windows.DI
                     sp.GetRequiredService<StickMotionState>(),
                     sp.GetRequiredService<SyntheticInputState>(),
                     sp.GetRequiredService<IMapping>(),
-                    sp.GetRequiredService<IOscService>()   // Phase9 9-E E-1
+                    sp.GetRequiredService<IOscService>(),   // Phase9 9-E E-1
+                    sp.GetRequiredService<IHidHideService>()   // Phase9 9-E E-2
                 );
             });
             services.AddSingleton<IDeviceStateAccessor>(sp => sp.GetRequiredService<ControlService>());

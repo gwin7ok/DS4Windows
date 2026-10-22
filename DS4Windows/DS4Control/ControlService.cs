@@ -159,10 +159,8 @@ namespace DS4Windows
         // Step3-6（GetControlSettingsGroup 等）で再利用する汎用アクセサとして存置している。
         internal DI.IProfileSettingsService ProfileSettingsService => _profileSettings;
 
-        private HashSet<string> hidDeviceHidingAffectedDevs = new HashSet<string>();
-        private HashSet<string> hidDeviceHidingExemptedDevs = new HashSet<string>();
-        private bool hidDeviceHidingForced = false;
-        private bool hidDeviceHidingEnabled = false;
+        // Phase9 9-E E-2: 旧 hidDeviceHiding*（HidHide の状態）は HidHideService へ移した
+        private readonly DI.IHidHideService _hidHideService;
 
         private ControlServiceDeviceOptions deviceOptions;
         public ControlServiceDeviceOptions DeviceOptions { get => deviceOptions; }
@@ -272,7 +270,8 @@ namespace DS4Windows
             StickMotionState stickMotion,
             SyntheticInputState syntheticInput,
             DI.IMapping mapping,
-            DI.IOscService oscService)
+            DI.IOscService oscService,
+            DI.IHidHideService hidHideService)
         {
             this.cmdParser = cmdParser;
             this._deviceRegistry = deviceRegistry;
@@ -300,6 +299,9 @@ namespace DS4Windows
             this._syntheticInput = syntheticInput ?? throw new ArgumentNullException(nameof(syntheticInput));
             this._mapping = mapping ?? throw new ArgumentNullException(nameof(mapping));
             this._oscService = oscService ?? throw new ArgumentNullException(nameof(oscService));
+            this._hidHideService = hidHideService ?? throw new ArgumentNullException(nameof(hidHideService));
+            // HidHide のログは、これまでどおり ControlService の Debug イベント（GUI のログ、ログファイル）へ流す
+            this._hidHideService.DebugMessage += (data, warning) => LogDebug(data, warning);
 
             Crc32Algorithm.InitializeTable(DS4Device.DefaultPolynomial);
 
@@ -565,129 +567,19 @@ namespace DS4Windows
             }
         }
 
+        // Phase9 9-E E-2: 旧 CheckHidHidePresence／UpdateHidHideAttributes の本体は HidHideService へ移した（薄い委譲。呼び出し側は 9-F まで変えない）
         public void CheckHidHidePresence(string ExePath = "", string ExeName = "Autoprofile Exe", bool AddExe = true) // Default value for D4W Startup
         {
-            if (_environmentService.HidHideInstalled)
-            {
-                LogDebug("HidHide control device found");
-                using (HidHideAPIDevice hidHideDevice = new HidHideAPIDevice())
-                {
-                    if (!hidHideDevice.IsOpen())
-                    {
-                        return;
-                    }
-                    // Catch Blank Values and initialize for Startup. Also catches empty Values.
-                    // Also Catches Empty values in auto-profiler, and defaults to trying to re-add D4W. Will fail harmlessly later.
-                    if (ExePath == "") { ExePath = _pathService.ExecutablePath; ExeName = "DS4Windows"; AddExe = true; }
-
-                    // Check for inverse application cloak. If setting is being used in HidHide,
-                    // skip checking HidHide whitelist for DS4Windows.
-                    bool inverseAppCloak = hidHideDevice.GetWhiteListInverseState();
-                    if (inverseAppCloak)
-                    {
-                        return;
-                    }
-
-
-                    List<string> dosPaths = hidHideDevice.GetWhitelist();
-
-                    int maxPathCheckLength = 512;
-                    StringBuilder sb = new StringBuilder(maxPathCheckLength);
-
-                    DirectoryInfo dirInfo = new DirectoryInfo(Path.GetDirectoryName(ExePath));
-                    // Check if exe is placed in a junction symlink directory (done with Scoop).
-                    // Good enough
-                    if (dirInfo.Attributes.HasFlag(FileAttributes.ReparsePoint) &&
-                        dirInfo.LinkTarget != null)
-                    {
-                        // App directory is a junction. Find real directory and get proper path
-                        // for inserting into HidHide
-                        ExePath = Path.Combine(dirInfo.LinkTarget, Path.GetFileName(ExePath));
-                    }
-
-                    string driveLetter = Path.GetPathRoot(ExePath).Replace("\\", "");
-                    uint _ = NativeMethods.QueryDosDevice(driveLetter, sb, maxPathCheckLength);
-                    //int error = Marshal.GetLastWin32Error();
-
-                    string dosDrivePath = sb.ToString();
-                    // Strip a possible \??\ prefix.
-                    if (dosDrivePath.StartsWith(@"\??\"))
-                    {
-                        dosDrivePath = dosDrivePath.Remove(0, 4);
-                    }
-
-                    string partial = ExePath.Replace(driveLetter, "");
-                    // Need to trim starting '\\' from path2 or Path.Combine will
-                    // treat it as an absolute path and only return path2
-                    string realPath = Path.Combine(dosDrivePath, partial.TrimStart('\\'));
-                    bool exists = dosPaths.Contains(realPath);
-                    if (!exists && AddExe)
-                    {
-                        LogDebug($"{ExeName} not found in HidHide whitelist. Adding to list");
-                        dosPaths.Add(realPath);
-                        hidHideDevice.SetWhitelist(dosPaths);
-                    }
-                    if (exists && !AddExe)
-                    {
-                        LogDebug($"{ExeName} found in HidHide whitelist. Removing from list");
-                        dosPaths.Remove(realPath);
-                        hidHideDevice.SetWhitelist(dosPaths);
-                    }
-                }
-            }
-        }
-
-        public void UpdateHidHideAttributes()
-        {
-            if (_environmentService.HidHideInstalled)
-            {
-                hidDeviceHidingAffectedDevs.Clear();
-                hidDeviceHidingExemptedDevs.Clear(); // No known equivalent in HidHide
-                hidDeviceHidingForced = false; // No known equivalent in HidHide
-                hidDeviceHidingEnabled = false;
-
-                using (HidHideAPIDevice hidHideDevice = new HidHideAPIDevice())
-                {
-                    if (!hidHideDevice.IsOpen())
-                    {
-                        return;
-                    }
-
-                    bool active = hidHideDevice.GetActiveState();
-                    List<string> instances = hidHideDevice.GetBlacklist();
-
-                    hidDeviceHidingEnabled = active;
-                    foreach (string instance in instances)
-                    {
-                        hidDeviceHidingAffectedDevs.Add(instance.ToUpper());
-                    }
-                }
-            }
+            _hidHideService.CheckPresence(ExePath, ExeName, AddExe);
         }
 
         public void UpdateHidHiddenAttributes()
         {
-            if (_environmentService.HidHideInstalled)
-            {
-                UpdateHidHideAttributes();
-            }
+            // 旧: HidHideInstalled の確認のあと UpdateHidHideAttributes（その中でも同じ確認）。確認は HidHideService.UpdateAttributes の中に 1 つにまとめた
+            _hidHideService.UpdateAttributes();
         }
 
-        private bool CheckAffected(DS4Device dev)
-        {
-            bool result = false;
-            if (dev != null && hidDeviceHidingEnabled)
-            {
-                string deviceInstanceId = _environmentService.GetInstanceIdFromDevicePath(dev.HidDevice.DevicePath);
-                if (_environmentService.HidHideInstalled)
-                {
-                    result = _environmentService.CheckHidHideAffectedStatus(deviceInstanceId,
-                        hidDeviceHidingAffectedDevs, hidDeviceHidingExemptedDevs, hidDeviceHidingForced);
-                }
-            }
-
-            return result;
-        }
+        // Phase9 9-E E-2: 旧 CheckAffected は HidHideService.IsAffected へ移した。
 
         /// <summary>
         /// Obtain extra mappable controls not on a DS4 that should be added
@@ -728,13 +620,7 @@ namespace DS4Windows
             return result;
         }
 
-        private void ChangeExclusiveStatus(DS4Device dev)
-        {
-            if (_environmentService.HidHideInstalled)
-            {
-                dev.CurrentExclusiveStatus = DS4Device.ExclusiveStatus.HidHideAffected;
-            }
-        }
+        // Phase9 9-E E-2: 旧 ChangeExclusiveStatus は HidHideService.MarkAffected へ移した。
 
         private void TestQueueBus(Action temp)
         {
@@ -2110,10 +1996,10 @@ namespace DS4Windows
 
         private void BeginPrepareConnectedInputController(DS4Device device, bool showlog = false)
         {
-            if (hidDeviceHidingEnabled && CheckAffected(device))
+            if (_hidHideService.IsAffected(device))
             {
                 //device.CurrentExclusiveStatus = DS4Device.ExclusiveStatus.HidGuardAffected;
-                ChangeExclusiveStatus(device);
+                _hidHideService.MarkAffected(device);
             }
 
             //Task task = new Task(() => { Thread.Sleep(5); WarnExclusiveModeFailure(device); });

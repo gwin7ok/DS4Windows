@@ -3,7 +3,7 @@
 作成日: 2026-10-22  
 対象ブランチ: `For-DI-migration-work`  
 上位: `Phase9-Responsibility-Split-Plan.md` 9-E、`Phase9-B-Plan.md`・`Phase9-C-Plan.md`（同じ進め方）  
-状態: **承認済み（2026-10-22。§8）。E-1（OSC）は実装済み（ビルド・テストはユーザーの実行待ち）。E-2（HidHide）・E-3（UDP モーション）は、E-1 の結果を見て設計を追記する**
+状態: **承認済み（2026-10-22。§8）。E-1（OSC）はビルド・テスト合格、E-2（HidHide）は実装済み（ビルド・テストはユーザーの実行待ち）。E-3（UDP モーション）は、E-2 の結果を見て設計を追記する**
 
 ---
 
@@ -118,3 +118,18 @@ E-2・E-3 は、E-1 の結果を見てから、**この計画書に設計を追�
 | アドレスの要素が足りない（`/ds4windows/0`） | `IndexOutOfRangeException` | ログを出して捨てる |
 
 **挙動の変更**: 正しいメッセージの結果は変わらない（差分テストで確認）。不正なメッセージが「例外」から「無視（ログあり）」または「端に丸める」に変わる。
+
+## 11. E-2（HidHide）の結果（2026-10-22。この環境に `dotnet` がないため、ビルド・テストは未実行）
+
+**設計の修正**: §1.1 の表で HidHide の領域に入れた `GetKnownExtraButtons`（32 行）は、HidHide と関係がなく、デバイスの種類から「追加で見るボタン」を返す純粋な関数だった。**ControlService に残した**（デバイスの準備＝E-6［ライフサイクル］で扱う）。
+
+| 区分 | 内容 |
+|---|---|
+| 新規（契約） | `DI/IHidHideService.cs`、`IHidHideApi.cs`（ドライバーの制御デバイスの窓口。ホワイトリストの確認をドライバーなしでテストするための境界）、`IHidHideApiFactory.cs` |
+| 新規（実装） | `DS4Control/Services/HidHideService.cs`（旧 `CheckHidHidePresence`／`UpdateHidHideAttributes`／`CheckAffected`／`ChangeExclusiveStatus` と状態 `hidDeviceHiding*` を、そのまま移した。ログは `DebugMessage` イベント）、`HidHideApiAdapter.cs`（`HidHideAPIDevice` を包む）、`HidHideApiFactory.cs` |
+| `ControlService.cs` | 3,028 → **2,914 行**（114 行減）。`CheckHidHidePresence`／`UpdateHidHiddenAttributes` は薄い委譲。`UpdateHidHideAttributes`（外部の呼び出し 0 件。`UpdateHidHiddenAttributes` の内側の重複）は削除。`BeginPrepareConnectedInputController` の判定は `IsAffected`／`MarkAffected` に。HidHide のログは、`DebugMessage` を購読して `LogDebug`（Debug イベント）へ流す。コンストラクターの引数 +1（`IHidHideService`） |
+| DI | `IHidHideService`（`HidHideService`）、`IHidHideApiFactory`（`HidHideApiFactory`）を Singleton で登録。手書きの `ControlService` 生成にも追加 |
+| テスト（新規） | `Phase9EHidHideServiceDifferentialTests`（旧実装との差分: 導入／制御デバイスの開閉／インバース／既にある／追加・削除／空のパス の全組み合わせの書き込み・ログ・開閉回数、有効状態と非表示の一覧の読み直し）、`Phase9EHidHideGuardTests`、スタブ `FakeHidHideApi` |
+| 実機でなければ確かめられないもの | `IsAffected` の本体（`DS4Device` と HidHide が必要）。「無効のとき false」だけをテスト |
+
+**実機確認（依頼。実装後）**: 台帳 §34（P9E-4〜5）。
