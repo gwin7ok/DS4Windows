@@ -1404,6 +1404,23 @@ namespace DS4WinWPF.DS4Forms
             };
         }
 
+        // Phase9 UI 変更: SA の行をダブルクリックすると、「アクションを編集」と同じ編集画面を開く（Controls タブの一覧のダブルクリックと同じ）。
+        // ヘッダー、空きの領域、「有効」のチェックボックスのダブルクリックは対象外
+        private void SpecialActionsLV_MouseDoubleClick(object sender, MouseButtonEventArgs e)
+        {
+            DependencyObject source = e.OriginalSource as DependencyObject;
+            while (source != null && !(source is ListViewItem) && !(source is System.Windows.Controls.Primitives.ButtonBase))
+            {
+                source = source is Visual || source is System.Windows.Media.Media3D.Visual3D
+                    ? VisualTreeHelper.GetParent(source)
+                    : LogicalTreeHelper.GetParent(source);
+            }
+
+            if (!(source is ListViewItem)) return;
+
+            EditActionBtn_Click(sender, e);
+        }
+
         private void EditActionBtn_Click(object sender, RoutedEventArgs e)
         {
             if (leftPaneEditor != null) return;

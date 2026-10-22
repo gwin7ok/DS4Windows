@@ -298,7 +298,8 @@
                             <Button Content="{lex:Loc ExportSpecialActions}" Margin="5 0 0 0" Click="ExportSpecialActions_OnClick"/>
                         </StackPanel>
 
-                        <ListView x:Name="specialActionsLV" ItemsSource="{Binding ActionCol}" SelectedIndex="{Binding SpecialActionIndex}" SelectedItem="{Binding CurrentSpecialActionItem,Mode=OneWayToSource}" Margin="0,0,0,0" Grid.Row="1" HorizontalAlignment="Stretch" Width="Auto" ScrollViewer.HorizontalScrollBarVisibility="Auto">
+                        <ListView x:Name="specialActionsLV" ItemsSource="{Binding ActionCol}" SelectedIndex="{Binding SpecialActionIndex}" SelectedItem="{Binding CurrentSpecialActionItem,Mode=OneWayToSource}" Margin="0,0,0,0" Grid.Row="1" HorizontalAlignment="Stretch" Width="Auto" ScrollViewer.HorizontalScrollBarVisibility="Auto"
+                                  MouseDoubleClick="SpecialActionsLV_MouseDoubleClick">
                             <ListView.View>
                                 <GridView>
                                     <!-- New leftmost column: separate checkbox for Active -->
