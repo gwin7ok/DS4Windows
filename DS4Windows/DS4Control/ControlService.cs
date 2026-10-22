@@ -36,7 +36,7 @@ using DS4WinWPF.DS4Forms;
 namespace DS4Windows
 {
 #pragma warning disable CS0219 // some local variables are assigned but not read in legacy handlers
-    public class ControlService : IInstanceIdentifiable, DS4Windows.Services.IDeviceStateAccessor
+    public class ControlService : IInstanceIdentifiable, DS4Windows.Services.IDeviceStateAccessor, DI.IUdpMotionHost
     {
         public int InstanceId => this.GetHashCode();
         public ViGEmClient vigemTestClient = null;
@@ -79,16 +79,7 @@ namespace DS4Windows
                 return ProcessingDelayMs[deviceIndex];
             return 0.0;
         }
-        private OneEuroFilter3D[] udpEuroPairAccel = new OneEuroFilter3D[UdpServer.NUMBER_SLOTS]
-        {
-            new OneEuroFilter3D(), new OneEuroFilter3D(),
-            new OneEuroFilter3D(), new OneEuroFilter3D(),
-        };
-        private OneEuroFilter3D[] udpEuroPairGyro = new OneEuroFilter3D[UdpServer.NUMBER_SLOTS]
-        {
-            new OneEuroFilter3D(), new OneEuroFilter3D(),
-            new OneEuroFilter3D(), new OneEuroFilter3D(),
-        };
+        // Phase9 9-E E-3: 旧 udpEuroPairAccel／udpEuroPairGyro（UDP モーションのスムージングのフィルター）は UdpMotionService へ移した
         Thread tempThread;
 #pragma warning disable CS0169 // tempBusThread is intentionally unused currently
         Thread tempBusThread;
@@ -97,7 +88,8 @@ namespace DS4Windows
         Dispatcher eventDispatcher;
         public bool suspending;
 
-        private UdpServer _udpServer;
+        // Phase9 9-E E-3: 旧 _udpServer／udpOutBuffers／udpChangeStatus などは UdpMotionService へ移した
+        private readonly DI.IUdpMotionService _udpMotion;
         private OutputSlotManager outputslotMan;
 
         // Phase 3 Followup Step F-2: DS4Devices static access routed through DI.
@@ -174,12 +166,6 @@ namespace DS4Windows
         //public event EventHandler HotplugFinished;
         public delegate void HotplugControllerHandler(ControlService sender, DS4Device device, int index);
         public event HotplugControllerHandler HotplugController;
-
-        private byte[][] udpOutBuffers = new byte[UdpServer.NUMBER_SLOTS][]
-        {
-            new byte[UdpServer.DATA_RSP_PACKET_LEN], new byte[UdpServer.DATA_RSP_PACKET_LEN],
-            new byte[UdpServer.DATA_RSP_PACKET_LEN], new byte[UdpServer.DATA_RSP_PACKET_LEN],
-        };
 
         // Phase9 9-E E-1: 旧 oscState／oscCallback／oscListener／oscSender（OSC の状態・受信・送信）は OscService へ移した
         private readonly DI.IOscService _oscService;
@@ -271,7 +257,8 @@ namespace DS4Windows
             SyntheticInputState syntheticInput,
             DI.IMapping mapping,
             DI.IOscService oscService,
-            DI.IHidHideService hidHideService)
+            DI.IHidHideService hidHideService,
+            DI.IUdpMotionService udpMotionService)
         {
             this.cmdParser = cmdParser;
             this._deviceRegistry = deviceRegistry;
@@ -300,6 +287,9 @@ namespace DS4Windows
             this._mapping = mapping ?? throw new ArgumentNullException(nameof(mapping));
             this._oscService = oscService ?? throw new ArgumentNullException(nameof(oscService));
             this._hidHideService = hidHideService ?? throw new ArgumentNullException(nameof(hidHideService));
+            this._udpMotion = udpMotionService ?? throw new ArgumentNullException(nameof(udpMotionService));
+            // UDP モーションのログも、これまでどおり ControlService の Debug イベントへ流す
+            this._udpMotion.DebugMessage += (data, warning) => LogDebug(data, warning);
             // HidHide のログは、これまでどおり ControlService の Debug イベント（GUI のログ、ログファイル）へ流す
             this._hidHideService.DebugMessage += (data, warning) => LogDebug(data, warning);
 
@@ -347,8 +337,7 @@ namespace DS4Windows
             _deviceRegistry.PreparePendingDevice = CheckForSupportedDevice;
             outputslotMan.ViGEmFailure += OutputslotMan_ViGEmFailure;
 
-            _appSettings.UDPServerSmoothingMincutoffChanged += ChangeUdpSmoothingAttrs;
-            _appSettings.UDPServerSmoothingBetaChanged += ChangeUdpSmoothingAttrs;
+            // Phase9 9-E E-3: スムージング設定の変更の購読（旧 ChangeUdpSmoothingAttrs）は UdpMotionService のコンストラクターへ移した
 
             // Phase9 9-E E-1: 旧 CreateOSCCallback() は OscService へ移した（受信のコールバックは OscService.HandleMessage）
 
@@ -622,7 +611,8 @@ namespace DS4Windows
 
         // Phase9 9-E E-2: 旧 ChangeExclusiveStatus は HidHideService.MarkAffected へ移した。
 
-        private void TestQueueBus(Action temp)
+        // Phase9 9-E E-3: 旧 TestQueueBus（イベントスレッドでの実行）は IUdpMotionHost.QueueOnEventThread として公開した
+        public void QueueOnEventThread(Action temp)
         {
             eventDispatcher.BeginInvoke(() =>
             {
@@ -630,57 +620,15 @@ namespace DS4Windows
             });
         }
 
+        // IUdpMotionHost: UDP モーションの部品が使う、このクラスが持つ状態への窓口
+        public DS4State GetCurrentState(int ind) => CurrentState[ind];
+
+        public DS4State GetTempState(int ind) => TempState[ind];
+
+        // Phase9 9-E E-3: 旧 ChangeUDPStatus の本体は UdpMotionService.ChangeStatus へ移した（薄い委譲。呼び出し側は 9-F まで変えない）
         public void ChangeUDPStatus(bool state, bool openPort = true)
         {
-
-            if (state && _udpServer == null)
-            {
-                udpChangeStatus = true;
-                TestQueueBus(() =>
-                {
-                    _udpServer = new UdpServer(GetPadDetailForIdx);
-                    if (openPort)
-                    {
-                        // Change thread affinity of object to have normal priority
-                        Task.Run(() =>
-                        {
-                            var UDP_SERVER_PORT = _appSettings.UdpServerPort;
-                            var UDP_SERVER_LISTEN_ADDRESS = _appSettings.UdpServerListenAddress;
-
-                            try
-                            {
-                                _udpServer.Start(UDP_SERVER_PORT, UDP_SERVER_LISTEN_ADDRESS);
-                                LogDebug($"UDP server listening on address {UDP_SERVER_LISTEN_ADDRESS} port {UDP_SERVER_PORT}");
-                            }
-                            catch (System.Net.Sockets.SocketException ex)
-                            {
-                                var errMsg = String.Format("Couldn't start UDP server on address {0}:{1}, outside applications won't be able to access pad data ({2})", UDP_SERVER_LISTEN_ADDRESS, UDP_SERVER_PORT, ex.SocketErrorCode);
-
-                                LogDebug(errMsg, true);
-                                AppLogger.LogToTray(errMsg, true, true);
-                            }
-                        }).Wait();
-                    }
-
-                    udpChangeStatus = false;
-                });
-            }
-            else if (!state && _udpServer != null)
-            {
-                TestQueueBus(() =>
-                {
-                    udpChangeStatus = true;
-                    _udpServer.Stop();
-                    _udpServer = null;
-                    AppLogger.LogToGui("Closed UDP server", false);
-                    udpChangeStatus = false;
-
-                    for (int i = 0; i < UdpServer.NUMBER_SLOTS; i++)
-                    {
-                        ResetUdpSmoothingFilters(i);
-                    }
-                });
-            }
+            _udpMotion.ChangeStatus(state, openPort);
         }
 
         public void ChangeOSCListenerStatus(bool state)
@@ -698,87 +646,10 @@ namespace DS4Windows
 
         public void ChangeMotionEventStatus(bool state)
         {
-            IEnumerable<DS4Device> devices = _deviceRegistry.GetDS4Controllers();
-            if (state)
-            {
-                int i = 0;
-                foreach (DS4Device dev in devices)
-                {
-                    int tempIdx = i;
-                    dev.queueEvent(() =>
-                    {
-                        if (i < UdpServer.NUMBER_SLOTS)
-                        {
-                            PrepareDevUDPMotion(dev, tempIdx);
-                        }
-                    });
-
-                    i++;
-                }
-            }
-            else
-            {
-                foreach (DS4Device dev in devices)
-                {
-                    dev.queueEvent(() =>
-                    {
-                        if (dev.MotionEvent != null)
-                        {
-                            dev.Report -= dev.MotionEvent;
-                            dev.MotionEvent = null;
-                        }
-                    });
-                }
-            }
+            _udpMotion.ChangeMotionEventStatus(state);
         }
 
-        private bool udpChangeStatus = false;
-        public bool changingUDPPort = false;
-        public async void UseUDPPort()
-        {
-            changingUDPPort = true;
-            IEnumerable<DS4Device> devices = _deviceRegistry.GetDS4Controllers();
-            foreach (DS4Device dev in devices)
-            {
-                dev.queueEvent(() =>
-                {
-                    if (dev.MotionEvent != null)
-                    {
-                        dev.Report -= dev.MotionEvent;
-                    }
-                });
-            }
-
-            await Task.Delay(100);
-
-            var UDP_SERVER_PORT = _appSettings.UdpServerPort;
-            var UDP_SERVER_LISTEN_ADDRESS = _appSettings.UdpServerListenAddress;
-
-            try
-            {
-                _udpServer.Start(UDP_SERVER_PORT, UDP_SERVER_LISTEN_ADDRESS);
-                foreach (DS4Device dev in devices)
-                {
-                    dev.queueEvent(() =>
-                    {
-                        if (dev.MotionEvent != null)
-                        {
-                            dev.Report += dev.MotionEvent;
-                        }
-                    });
-                }
-                LogDebug($"UDP server listening on address {UDP_SERVER_LISTEN_ADDRESS} port {UDP_SERVER_PORT}");
-            }
-            catch (System.Net.Sockets.SocketException ex)
-            {
-                var errMsg = String.Format("Couldn't start UDP server on address {0}:{1}, outside applications won't be able to access pad data ({2})", UDP_SERVER_LISTEN_ADDRESS, UDP_SERVER_PORT, ex.SocketErrorCode);
-
-                LogDebug(errMsg, true);
-                AppLogger.LogToTray(errMsg, true, true);
-            }
-
-            changingUDPPort = false;
-        }
+        // Phase9 9-E E-3: 旧 udpChangeStatus／changingUDPPort／UseUDPPort は UdpMotionService へ移した（UseUDPPort は呼び出し元 0 件のため、ここには委譲を残さない）。
 
         private void WarnExclusiveModeFailure(DS4Device device)
         {
@@ -1392,10 +1263,10 @@ namespace DS4Windows
                     ChangeOSCSenderStatus(true);
                 }
 
-                if (_appSettings.UseUdpServer && _udpServer == null)
+                if (_appSettings.UseUdpServer && !_udpMotion.HasServer)
                 {
                     ChangeUDPStatus(true, false);
-                    while (udpChangeStatus == true)
+                    while (_udpMotion.IsChangingStatus)
                     {
                         Thread.SpinWait(500);
                     }
@@ -1472,25 +1343,7 @@ namespace DS4Windows
 
                 running = true;
 
-                if (_udpServer != null)
-                {
-                    //var UDP_SERVER_PORT = 26760;
-                    var UDP_SERVER_PORT = _appSettings.UdpServerPort;
-                    var UDP_SERVER_LISTEN_ADDRESS = _appSettings.UdpServerListenAddress;
-
-                    try
-                    {
-                        _udpServer.Start(UDP_SERVER_PORT, UDP_SERVER_LISTEN_ADDRESS);
-                        LogDebug($"UDP server listening on address {UDP_SERVER_LISTEN_ADDRESS} port {UDP_SERVER_PORT}");
-                    }
-                    catch (System.Net.Sockets.SocketException ex)
-                    {
-                        var errMsg = string.Format("Couldn't start UDP server on address {0}:{1}, outside applications won't be able to access pad data ({2})", UDP_SERVER_LISTEN_ADDRESS, UDP_SERVER_PORT, ex.SocketErrorCode);
-
-                        LogDebug(errMsg, true);
-                        AppLogger.LogToTray(errMsg, true, true);
-                    }
-                }
+                _udpMotion.StartListeningIfCreated();   // Phase9 9-E E-3: 旧: _udpServer != null のときの待ち受けの開始（ブロックを UdpMotionService へ移した）
             }
             else
             {
@@ -1521,42 +1374,7 @@ namespace DS4Windows
             return true;
         }
 
-        private void PrepareDevUDPMotion(DS4Device device, int index)
-        {
-            int tempIdx = index;
-            DS4Device.ReportHandler<EventArgs> tempEvnt = (sender, args) =>
-            {
-                DualShockPadMeta padDetail = new DualShockPadMeta();
-                GetPadDetailForIdx(tempIdx, ref padDetail);
-                DS4State stateForUdp = TempState[tempIdx];
-
-                CurrentState[tempIdx].CopyTo(stateForUdp);
-                if (_appSettings.UseUdpServerSmoothing)
-                {
-                    if (stateForUdp.elapsedTime == 0)
-                    {
-                        // No timestamp was found. Exit out of routine
-                        return;
-                    }
-
-                    double rate = 1.0 / stateForUdp.elapsedTime;
-                    OneEuroFilter3D accelFilter = udpEuroPairAccel[tempIdx];
-                    stateForUdp.Motion.accelXG = accelFilter.axis1Filter.Filter(stateForUdp.Motion.accelXG, rate);
-                    stateForUdp.Motion.accelYG = accelFilter.axis2Filter.Filter(stateForUdp.Motion.accelYG, rate);
-                    stateForUdp.Motion.accelZG = accelFilter.axis3Filter.Filter(stateForUdp.Motion.accelZG, rate);
-
-                    OneEuroFilter3D gyroFilter = udpEuroPairGyro[tempIdx];
-                    stateForUdp.Motion.angVelYaw = gyroFilter.axis1Filter.Filter(stateForUdp.Motion.angVelYaw, rate);
-                    stateForUdp.Motion.angVelPitch = gyroFilter.axis2Filter.Filter(stateForUdp.Motion.angVelPitch, rate);
-                    stateForUdp.Motion.angVelRoll = gyroFilter.axis3Filter.Filter(stateForUdp.Motion.angVelRoll, rate);
-                }
-
-                _udpServer?.NewReportIncoming(ref padDetail, stateForUdp, udpOutBuffers[tempIdx]);
-            };
-
-            device.MotionEvent = tempEvnt;
-            device.Report += tempEvnt;
-        }
+        // Phase9 9-E E-3: 旧 PrepareDevUDPMotion（モーションの送出のハンドラー）は UdpMotionService.PrepareDeviceMotion へ移した。
 
         private void CheckQuickCharge(object sender, EventArgs e)
         {
@@ -1668,7 +1486,7 @@ namespace DS4Windows
                     ChangeOSCSenderStatus(false);
                 }
 
-                if (_udpServer != null)
+                if (_udpMotion.HasServer)
                 {
                     ChangeUDPStatus(false);
                 }
@@ -1986,9 +1804,9 @@ namespace DS4Windows
                 this.On_Report(sender, e, tempIdx);
             };
 
-            if (_udpServer != null && index < UdpServer.NUMBER_SLOTS)
+            if (_udpMotion.HasServer && index < _udpMotion.SlotCount)
             {
-                PrepareDevUDPMotion(device, tempIdx);
+                _udpMotion.PrepareDeviceMotion(device, tempIdx);
             }
 
             device.StartUpdate();
@@ -2008,32 +1826,7 @@ namespace DS4Windows
             PrepareDS4DeviceSettingHooks(device);
         }
 
-        public void ResetUdpSmoothingFilters(int idx)
-        {
-            if (idx < UdpServer.NUMBER_SLOTS)
-            {
-                OneEuroFilter3D temp = udpEuroPairAccel[idx] = new OneEuroFilter3D();
-                temp.SetFilterAttrs(_appSettings.UDPServerSmoothingMincutoff, _appSettings.UDPServerSmoothingBeta);
-
-                temp = udpEuroPairGyro[idx] = new OneEuroFilter3D();
-                temp.SetFilterAttrs(_appSettings.UDPServerSmoothingMincutoff, _appSettings.UDPServerSmoothingBeta);
-            }
-        }
-
-        private void ChangeUdpSmoothingAttrs(object sender, EventArgs e)
-        {
-            for (int i = 0; i < udpEuroPairAccel.Length; i++)
-            {
-                OneEuroFilter3D temp = udpEuroPairAccel[i];
-                temp.SetFilterAttrs(_appSettings.UDPServerSmoothingMincutoff, _appSettings.UDPServerSmoothingBeta);
-            }
-
-            for (int i = 0; i < udpEuroPairGyro.Length; i++)
-            {
-                OneEuroFilter3D temp = udpEuroPairGyro[i];
-                temp.SetFilterAttrs(_appSettings.UDPServerSmoothingMincutoff, _appSettings.UDPServerSmoothingBeta);
-            }
-        }
+        // Phase9 9-E E-3: 旧 ResetUdpSmoothingFilters／ChangeUdpSmoothingAttrs（スムージングのフィルター）は UdpMotionService へ移した。
 
         public void CheckProfileOptions(int ind, DS4Device device, bool startUp = false)
         {
@@ -2136,7 +1929,7 @@ namespace DS4Windows
 
         private void SetupInitialHookEvents(int ind, DS4Device device)
         {
-            ResetUdpSmoothingFilters(ind);
+            _udpMotion.ResetSmoothingFilters(ind);   // Phase9 9-E E-3: 旧 ResetUdpSmoothingFilters
 
             // Phase9 Steering 削除 W2: 旧「ステアリング用のフィルター（OneEuroFilter）の作成と、設定［スムージング］との連動」は削除した（機能ごと削除）
 

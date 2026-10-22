@@ -293,6 +293,30 @@ classDiagram
         <<interface>>
         +Open() IHidHideApi
     }
+    class IUdpMotionService {
+        <<interface>>
+        +HasServer bool
+        +IsChangingStatus bool
+        +SlotCount int
+        +ChangeStatus(bool state, bool openPort)
+        +StartListeningIfCreated()
+        +ChangeMotionEventStatus(bool state)
+        +PrepareDeviceMotion(DS4Device device, int index)
+        +ResetSmoothingFilters(int idx)
+    }
+    class IUdpMotionHost {
+        <<interface>>
+        +GetPadDetailForIdx(int padIdx, ref DualShockPadMeta meta)
+        +GetCurrentState(int ind) DS4State
+        +GetTempState(int ind) DS4State
+        +QueueOnEventThread(Action action)
+    }
+    class IUdpMotionServerFactory {
+        <<interface>>
+        +Create(UdpPadDetailProvider getPadDetail) IUdpMotionServer
+    }
+    class UdpMotionService
+    class UdpMotionServerFactory
     class HidHideService
     class HidHideApiFactory
     class OscService
@@ -333,6 +357,12 @@ classDiagram
     IMacroStepExecutor <|.. MacroStepExecutor : implements
     IOscService <|.. OscService : implements
     IHidHideService <|.. HidHideService : implements
+    IUdpMotionService <|.. UdpMotionService : implements
+    IUdpMotionServerFactory <|.. UdpMotionServerFactory : implements
+    ControlService ..|> IUdpMotionHost : implements（Phase9 9-E E-3）
+    UdpMotionService --> IUdpMotionHost : Func による遅延取得（循環を避ける）
+    UdpMotionService --> IUdpMotionServerFactory : UdpServer（internal）の窓口
+    ControlService --> IUdpMotionService : ctor injection（ChangeUDPStatus／ChangeMotionEventStatus は薄い委譲）
     IHidHideApiFactory <|.. HidHideApiFactory : implements
     HidHideService --> IHidHideApiFactory : ドライバー（HidHideAPIDevice）の窓口（Phase9 9-E E-2）
     ControlService --> IHidHideService : ctor injection（CheckHidHidePresence／UpdateHidHiddenAttributes は薄い委譲）

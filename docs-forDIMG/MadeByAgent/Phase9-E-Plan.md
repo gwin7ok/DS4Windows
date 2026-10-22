@@ -3,7 +3,7 @@
 作成日: 2026-10-22  
 対象ブランチ: `For-DI-migration-work`  
 上位: `Phase9-Responsibility-Split-Plan.md` 9-E、`Phase9-B-Plan.md`・`Phase9-C-Plan.md`（同じ進め方）  
-状態: **承認済み（2026-10-22。§8）。E-1（OSC）はビルド・テスト合格、E-2（HidHide）は実装済み（ビルド・テストはユーザーの実行待ち）。E-3（UDP モーション）は、E-2 の結果を見て設計を追記する**
+状態: **承認済み（2026-10-22。§8）。E-1（OSC）はビルド・テスト合格、E-2（HidHide）もビルド・テスト合格。E-3（UDP モーション）は実装済み（ビルド・テストはユーザーの実行待ち）。E-4 以降は別の計画書**
 
 ---
 
@@ -133,3 +133,19 @@ E-2・E-3 は、E-1 の結果を見てから、**この計画書に設計を追�
 | 実機でなければ確かめられないもの | `IsAffected` の本体（`DS4Device` と HidHide が必要）。「無効のとき false」だけをテスト |
 
 **実機確認（依頼。実装後）**: 台帳 §34（P9E-4〜5）。
+
+## 12. E-3（UDP モーション）の結果（2026-10-22。この環境に `dotnet` がないため、ビルド・テストは未実行）
+
+**設計**: UDP のモーションの処理は、`ControlService` の状態（`CurrentState`／`TempState`、イベントスレッド、パッドの情報）に絡むため、`IUdpMotionHost`（実装は `ControlService`）を介し、部品は `Func<IUdpMotionHost>` で遅延して受ける（`ControlService` が部品を受けるため、循環を避ける。マクロの振動で使った `IDeviceStateAccessor` と同じ方法）。サーバー（`UdpServer`、internal）は `IUdpMotionServer`／`IUdpMotionServerFactory` の背後に置き、ソケットなしでテストできるようにした。
+
+| 区分 | 内容 |
+|---|---|
+| 新規（契約） | `DI/IUdpMotionService.cs`、`IUdpMotionHost.cs`、`IUdpMotionServer.cs`、`IUdpMotionServerFactory.cs`、`UdpPadDetailProvider.cs`（デリゲート） |
+| 新規（実装） | `DS4Control/Services/UdpMotionService.cs`（旧 `ChangeUDPStatus`／`ChangeMotionEventStatus`／`UseUDPPort`／`PrepareDevUDPMotion`／`ResetUdpSmoothingFilters`／`ChangeUdpSmoothingAttrs` と、フィルター・出力バッファー・`_udpServer`・`udpChangeStatus` を、そのまま移した）、`UdpMotionServerAdapter.cs`、`UdpMotionServerFactory.cs` |
+| `ControlService.cs` | 2,914 → **2,707 行**（207 行減）。`ChangeUDPStatus`／`ChangeMotionEventStatus` は薄い委譲。`Start`／`Stop`／デバイスの準備の呼び出しは `IUdpMotionService` に替えた。`IUdpMotionHost` を実装（`GetCurrentState`／`GetTempState`／`QueueOnEventThread`［旧 `TestQueueBus`］）。スムージング設定の変更の購読は、部品のコンストラクターへ移した。コンストラクターの引数 +1 |
+| DI | 部品、工場、`Func<IUdpMotionHost>`、`IUdpMotionHost`（`ControlService`）を登録。手書きの `ControlService` 生成にも追加 |
+| テスト（新規） | `Phase9EUdpMotionServiceTests`（作成・開始・停止・失敗のログ、ハンドラーのスムージングの有無・タイムスタンプ 0 の読み飛ばし・バッファーの再利用、フィルターの作り直し）、`Phase9EUdpMotionGuardTests`、スタブ `FakeUdpMotion` |
+
+**規約 2.4（未参照コード）の判断の記録**:
+- `ControlService.UseUDPPort`（外部の呼び出し 0 件）: `UdpMotionService.UsePort` に移し、TODO を付けた（9-F で、使う予定がなければ削除をユーザーへ提案）。`ControlService` の委譲は残していない（呼び出し 0 件）。
+- **`IUdpServerService`／`UdpServerService`（Phase5-Step10 で作った、UDP サーバーの安全な起動・停止の契約。DI に登録済みだが、呼び出しが 0 件）**: 契約のコメントにある「接続予定: ControlService の UDP の起動・停止を本サービス経由にする」が、E-3 の `UdpMotionService` で実現された。形が合わない（`Start(ControlService, …)` が起動と待ち受けを一度に行い、作成と待ち受けを分けられない）ため、**使うべきでない「正規の経路と重複する並行実装」と判断し、削除を提案する**（ユーザーの承認を得てから。承認までは TODO を付けて残す）。
