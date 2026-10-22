@@ -66,7 +66,8 @@ namespace DS4WindowsTests
                 new MouseMotionQuantizer(),   // Phase9 9-B: 端数を持つため、独立の instance にする
                 TestHost.GetService<IGyroMouseStickBlender>(),   // Phase9 9-B: 状態なし
                 TestHost.GetService<IControlActivityReader>(),   // Phase9 9-B: 状態なし
-                new SyntheticInputCommitter(synthetic, kbm));   // Phase9 MapCustom の分割 M1: ホイールの繰り返しの状態を持つため、独立の instance にする
+                new SyntheticInputCommitter(synthetic, kbm),
+                new TwoStageTriggerProcessor(profileSettings));   // Phase9 MapCustom の分割 M2: 状態なし   // Phase9 MapCustom の分割 M1: ホイールの繰り返しの状態を持つため、独立の instance にする
         }
     }
 }

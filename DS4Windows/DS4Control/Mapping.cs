@@ -134,7 +134,8 @@ namespace DS4Windows
             DS4Windows.DI.IMouseMotionQuantizer mouseMotionQuantizer,
             DS4Windows.DI.IGyroMouseStickBlender gyroMouseStickBlender,
             DS4Windows.DI.IControlActivityReader controlActivityReader,
-            DS4Windows.DI.ISyntheticInputCommitter syntheticCommitter)
+            DS4Windows.DI.ISyntheticInputCommitter syntheticCommitter,
+            DS4Windows.DI.ITwoStageTriggerProcessor twoStageTrigger)
         {
             _syntheticInput = syntheticInput ?? throw new ArgumentNullException(nameof(syntheticInput));
             _macroRuntime = macroRuntime ?? throw new ArgumentNullException(nameof(macroRuntime));
@@ -159,6 +160,7 @@ namespace DS4Windows
             _gyroMouseStickBlender = gyroMouseStickBlender ?? throw new ArgumentNullException(nameof(gyroMouseStickBlender));
             _controlActivityReader = controlActivityReader ?? throw new ArgumentNullException(nameof(controlActivityReader));
             _syntheticCommitter = syntheticCommitter ?? throw new ArgumentNullException(nameof(syntheticCommitter));
+            _twoStageTrigger = twoStageTrigger ?? throw new ArgumentNullException(nameof(twoStageTrigger));
 
             _triggerInputs = new DS4Windows.Actions.TriggerInput[ControllerLimits.MaxControllerCount];
             _frameOutputs = new DS4Windows.Actions.FrameOutput[ControllerLimits.MaxControllerCount];
@@ -274,6 +276,7 @@ namespace DS4Windows
         private readonly DS4Windows.DI.IButtonMouseMovementCalculator _buttonMouseMovement;   // Phase9 9-B: ボタン・スティック・トリガー・ジャイロ方向 → マウスの生の移動量（旧 getMouseMapping。加速の状態はデバイスごと）
         private readonly DS4Windows.DI.IMouseMotionQuantizer _mouseMotionQuantizer;   // Phase9 9-B: マウスの移動量の整数化と端数の持ち越し（旧 calculateFinalMouseMovement。端数はデバイスごと）
         private readonly DS4Windows.DI.IGyroMouseStickBlender _gyroMouseStickBlender;   // Phase9 9-B: ジャイロのマウススティック出力の合成（旧 TempMouseJoystick の内側）
+        private readonly DS4Windows.DI.ITwoStageTriggerProcessor _twoStageTrigger;   // Phase9 MapCustom の分割 M2: 2 段階トリガーの状態機械（旧 ProcessTwoStageTrigger）
         private readonly DS4Windows.DI.ISyntheticInputCommitter _syntheticCommitter;   // Phase9 MapCustom の分割 M1: 合成入力の確定（旧 Commit の本体）
         private readonly DS4Windows.DI.IControlActivityReader _controlActivityReader;   // Phase9 9-B: コントロールが押されているかの判定（旧 GetBoolMappingExternal の本体）
 
@@ -680,7 +683,7 @@ namespace DS4Windows
             {
                 DS4ControlSettings l2FullPull = controlSetGroup.L2FullPull;
                 TwoStageTriggerMappingData l2TwoStageData = l2TwoStageMappingData[device];
-                ProcessTwoStageTrigger(device, cState, cState.L2, cState.L2Raw, ref dcsTemp, ref l2FullPull,
+                _twoStageTrigger.Process(device, cState.L2, cState.L2Raw, ref dcsTemp, ref l2FullPull,
                     l2TriggerSettings, l2TwoStageData, out DS4ControlSettings outputSoftPull, out DS4ControlSettings outputFullPull);
 
                 TwoStageTriggerMappingData.ActiveZoneButtons tempButtons = TwoStageTriggerMappingData.ActiveZoneButtons.None;
@@ -747,7 +750,7 @@ namespace DS4Windows
             {
                 DS4ControlSettings r2FullPull = controlSetGroup.R2FullPull;
                 TwoStageTriggerMappingData r2TwoStageData = r2TwoStageMappingData[device];
-                ProcessTwoStageTrigger(device, cState, cState.R2, cState.R2Raw, ref dcsTemp, ref r2FullPull,
+                _twoStageTrigger.Process(device, cState.R2, cState.R2Raw, ref dcsTemp, ref r2FullPull,
                     r2TriggerSettings, r2TwoStageData, out DS4ControlSettings outputSoftPull, out DS4ControlSettings outputFullPull);
 
                 TwoStageTriggerMappingData.ActiveZoneButtons tempButtons = TwoStageTriggerMappingData.ActiveZoneButtons.None;
@@ -1090,201 +1093,7 @@ namespace DS4Windows
             catch { }
         }
 
-        private void ProcessTwoStageTrigger(int device, DS4State cState, byte triggerValue, byte triggerRawValue,
-            ref DS4ControlSettings inputSoftPull, ref DS4ControlSettings inputFullPull, TriggerOutputSettings outputSettings,
-            TwoStageTriggerMappingData twoStageData, out DS4ControlSettings outputSoftPull, out DS4ControlSettings outputFullPull)
-        {
-            DS4ControlSettings dcsTemp = inputSoftPull;
-            DS4ControlSettings dcsFullPull = null;
-            TwoStageTriggerMappingData triggerData = twoStageData;
-
-            switch (outputSettings.twoStageMode)
-            {
-                case TwoStageTriggerMode.Normal:
-                    if (triggerRawValue == 255)
-                    {
-                        dcsFullPull = inputFullPull;
-                    }
-
-                    break;
-                case TwoStageTriggerMode.ExclusiveButtons:
-                    if (triggerRawValue == 255)
-                    {
-                        dcsFullPull = inputFullPull;
-                        dcsTemp = null;
-                        triggerData.actionStateMode =
-                            TwoStageTriggerMappingData.EngageButtonsMode.FullPullOnly;
-                        triggerData.outputActive = true;
-                    }
-                    else if (triggerValue != 0 && triggerData.actionStateMode !=
-                        TwoStageTriggerMappingData.EngageButtonsMode.FullPullOnly)
-                    {
-                        triggerData.actionStateMode =
-                            TwoStageTriggerMappingData.EngageButtonsMode.Both;
-                        triggerData.outputActive = true;
-                    }
-                    else if (triggerValue == 0 && triggerData.outputActive)
-                    {
-                        triggerData.Reset();
-                    }
-
-                    break;
-                case TwoStageTriggerMode.HairTrigger:
-                    dcsTemp = null;
-
-                    triggerData.actionStateMode = TwoStageTriggerMappingData.EngageButtonsMode.Both;
-
-                    if (triggerRawValue == 255)
-                    {
-                        // Full pull now activates both. Soft pull action
-                        // no longer engaged with threshold
-                        dcsTemp = inputSoftPull;
-                        dcsFullPull = inputFullPull;
-                        triggerData.softPullActActive = true;
-                        triggerData.fullPullActActive = true;
-                        triggerData.outputActive = true;
-                    }
-                    else if (triggerValue != 0 && !triggerData.fullPullActActive)
-                    {
-                        // Full pull not engaged yet. Activate Soft pull action.
-                        dcsTemp = inputSoftPull;
-                        triggerData.softPullActActive = true;
-                        triggerData.outputActive = true;
-                    }
-                    else if (triggerValue == 0 && triggerData.outputActive)
-                    {
-                        triggerData.Reset();
-                    }
-                    //else if (triggerData.outputActive)
-                    //{
-                    //    Console.WriteLine(triggerValue);
-                    //}
-
-                    break;
-
-                case TwoStageTriggerMode.HipFire:
-                    dcsTemp = null;
-
-                    if (triggerValue != 0 && !triggerData.startCheck)
-                    {
-                        triggerData.StartProcessing();
-                        dcsTemp = null;
-                    }
-                    else if (triggerValue != 0 && !triggerData.outputActive)
-                    {
-                        bool outputActive = triggerData.checkTime +
-                            TimeSpan.FromMilliseconds(outputSettings.hipFireMS) + TimeSpan.FromMilliseconds(profileSettings.DebouncingMs[device]) < DateTime.Now;
-                        if (outputActive)
-                        {
-                            triggerData.outputActive = true;
-
-                            if (triggerRawValue == 255)
-                            {
-                                dcsFullPull = inputFullPull;
-                                triggerData.fullPullActActive = true;
-                                triggerData.actionStateMode = TwoStageTriggerMappingData.EngageButtonsMode.FullPullOnly;
-                            }
-                            else if (triggerValue != 0)
-                            {
-                                dcsTemp = inputSoftPull;
-                                triggerData.softPullActActive = true;
-                                triggerData.actionStateMode = TwoStageTriggerMappingData.EngageButtonsMode.Both;
-                            }
-                        }
-                    }
-                    else if (triggerData.outputActive)
-                    {
-                        //DS4State pState = d.getPreviousStateRef();
-                        if (triggerRawValue == 255)
-                        {
-                            dcsFullPull = inputFullPull;
-                            triggerData.fullPullActActive = true;
-                            if (triggerData.actionStateMode == TwoStageTriggerMappingData.EngageButtonsMode.Both)
-                            {
-                                dcsTemp = inputSoftPull;
-                            }
-                        }
-                        else if (triggerValue != 0 && triggerData.actionStateMode ==
-                            TwoStageTriggerMappingData.EngageButtonsMode.Both)
-                        {
-                            triggerData.fullPullActActive = false;
-
-                            dcsTemp = inputSoftPull;
-                            triggerData.softPullActActive = true;
-                        }
-                        else if (triggerValue == 0)
-                        {
-                            triggerData.Reset();
-                        }
-                    }
-                    else if (triggerData.startCheck)
-                    {
-                        triggerData.Reset();
-                    }
-
-                    break;
-                case TwoStageTriggerMode.HipFireExclusiveButtons:
-                    dcsTemp = null;
-
-                    if (triggerValue != 0 && !triggerData.startCheck)
-                    {
-                        triggerData.StartProcessing();
-                        dcsTemp = null;
-                    }
-                    else if (triggerValue != 0 && !triggerData.outputActive)
-                    {
-                        bool outputActive = triggerData.checkTime + TimeSpan.FromMilliseconds(outputSettings.hipFireMS) + TimeSpan.FromMilliseconds(profileSettings.DebouncingMs[device]) < DateTime.Now;
-                        if (outputActive)
-                        {
-                            triggerData.outputActive = true;
-
-                            if (triggerRawValue == 255)
-                            {
-                                dcsFullPull = inputFullPull;
-                                triggerData.fullPullActActive = true;
-                                triggerData.actionStateMode =
-                                    TwoStageTriggerMappingData.EngageButtonsMode.FullPullOnly;
-                            }
-                            else if (triggerValue != 0)
-                            {
-                                dcsTemp = inputSoftPull;
-                                triggerData.softPullActActive = true;
-                                triggerData.actionStateMode =
-                                    TwoStageTriggerMappingData.EngageButtonsMode.SoftPullOnly;
-                            }
-                        }
-                    }
-                    else if (triggerData.outputActive)
-                    {
-                        //DS4State pState = d.getPreviousStateRef();
-                        if (triggerRawValue == 255 &&
-                            triggerData.actionStateMode == TwoStageTriggerMappingData.EngageButtonsMode.FullPullOnly)
-                        {
-                            dcsFullPull = inputFullPull;
-                        }
-                        else if (triggerValue != 0 && triggerData.actionStateMode ==
-                            TwoStageTriggerMappingData.EngageButtonsMode.SoftPullOnly)
-                        {
-                            dcsTemp = inputSoftPull;
-                        }
-                        else if (triggerValue == 0)
-                        {
-                            triggerData.Reset();
-                        }
-                    }
-                    else if (triggerData.startCheck)
-                    {
-                        triggerData.Reset();
-                    }
-
-                    break;
-                default:
-                    break;
-            }
-
-            outputSoftPull = dcsTemp;
-            outputFullPull = dcsFullPull;
-        }
+        // Phase9 MapCustom の分割 M2: 2 段階トリガーの状態機械（約 195 行）は TwoStageTriggerProcessor へ移した
 
         // Phase9 9-A(2)-C: 旧 ProcessFlickStick／HandleFlickStickAngle／WarpEaseOut（フリックスティック）は、FlickStickProcessor（DS4Control/Services）へ移した。
 

@@ -220,6 +220,7 @@ namespace DS4Windows.DI
             services.AddSingleton<IActiveInputProbe, ActiveInputProbe>();   // Phase9 9-E E-5: 押されている入力の探索（状態なし）
             services.AddSingleton<IMacroStepExecutor, MacroStepExecutor>();   // Phase9 9-C: マクロの 1 つの値の実行（状態は MacroRuntimeState に持つ）
             services.AddSingleton<IMacroPlayback, MacroPlayback>();   // Phase9 9-C: マクロの再生の予約・繰り返し・後始末
+            services.AddSingleton<ITwoStageTriggerProcessor, TwoStageTriggerProcessor>();   // Phase9 MapCustom の分割 M2: 2 段階トリガーの状態機械（状態なし。状態は StickMotionState の TwoStageTriggerMappingData）
             services.AddSingleton<ISyntheticInputCommitter, SyntheticInputCommitter>();   // Phase9 MapCustom の分割 M1: 合成入力の確定（クリック・ホイール。ホイールの繰り返しの状態を持つ）
             services.AddSingleton<IControlActivityReader, ControlActivityReader>();   // Phase9 9-B: コントロールが押されているかの判定（状態なし）
             services.AddSingleton<IMapping, Mapping>();

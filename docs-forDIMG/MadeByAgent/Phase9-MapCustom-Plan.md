@@ -1,7 +1,7 @@
 # Phase9 `MapCustom` の分割（旧 9-D の吸収先）計画書
 
 作成日: 2026-10-22
-状態: **承認済み（2026-10-22。§8）。M1 実装済み（ビルド・テストはユーザーの実行待ち）。M2・M3 は段階ごとに進める**
+状態: **承認済み（2026-10-22。§8）。M1 完了（ビルド・テスト・実機確認 OK）。M2 実装済み（ビルド・テストはユーザーの実行待ち）。M3 は段階ごとに進める**
 上位: `Phase9-Responsibility-Split-Plan.md`（§12.3 の最優先の残り）
 
 ## 1. 目的と現状
@@ -89,3 +89,12 @@ M1 の実装前に、`Commit` の構造を読み直して、Q3 の前提が誤�
 ### M1 の実装（2026-10-22）
 - 契約 `ISyntheticInputCommitter`（`Commit`）と実装 `SyntheticInputCommitter`（Singleton。状態は `_oldnow`／`_wheel`。時計は注入可能で、テストでは偽の時計を渡す）。`Mapping.Commit` は薄い委譲に（約 170 行減）。`Mapping.oldnow`／`wheel`／`pressagain` は削除。
 - テスト: `Phase9MapCustomCommitterDifferentialTests`（旧 `Commit` の逐語コピーと、デバイス 2 台・クリックの列［約 1 万通り］・偽の時計［100ms ずつ進める］で、出力の全記録が一致。ホイールの 150ms の繰り返しと停止、別デバイスでの離上）、`Phase9MapCustomGuardTests`（移した呼び出しの不在、薄い委譲、確定の順序とロックの範囲、DI 登録）。既存の `Phase7Step7CommitCharacterizationTests` もそのまま通る。`AnalogMouseTestHarness` は、`oldnow` の代入を、委譲先の `SetWheelRepeatBase` に置き換えた。
+
+### M1 の結果（2026-10-22）
+ビルド・テスト合格。実機確認 OK（マウスのクリック、ホイールの押しっぱなしの繰り返しと停止）。`Mapping.cs` は 1,686 → 1,518 行。
+
+### M2 の実装（2026-10-22）
+- 契約 `ITwoStageTriggerProcessor`（`Process`）と実装 `TwoStageTriggerProcessor`（Singleton、状態なし。状態は呼び出し側が渡す `TwoStageTriggerMappingData`）。旧 `Mapping.ProcessTwoStageTrigger`（195 行）を、そのまま移した。使われていなかった引数 `cState` は削除した。時計（`DateTime.Now`）はテストで差し替えられる。
+- `MapCustom` の L2／R2 の呼び出しだけを `_twoStageTrigger.Process(...)` に置き換えた（呼び出しの順序は同じ）。`Mapping.cs` は 1,518 → 1,327 行。
+- テスト: `Phase9MapCustomTwoStageDifferentialTests`（旧メソッドの逐語コピーと、6 つのモード［無効を含む］× 入力の列［引きの量 4 種・時計のずれ 2 種の 8 通りを 1〜4 ステップ］で、返す割り当てと状態の全項目が各ステップで一致。HipFire の待ち時間）、`Phase9MapCustomGuardTests` に追加（移した状態機械の不在、L2 → R2 → 通常ボタンの順序、DI 登録）。
+- 実機確認（台帳 §45）: 2 段階トリガーは、DualSense／DS4 の実機で、モードごとの動作を確認する。
