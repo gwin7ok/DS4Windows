@@ -200,13 +200,13 @@ namespace DS4WindowsTests
             DS4State crossHeld = ControlsKeyTestScope.Neutral();
             crossHeld.Cross = true;
 
-            t.Run(ControlsKeyTestScope.Neutral());
-            Thread.Sleep(120);                                   // Fresh-press ガードの解除（80ms 連続して未成立）
-            t.Run(ControlsKeyTestScope.Neutral());
-            t.Run(crossHeld);                                    // Cross だけ ON にする
-            t.Run(ControlsKeyTestScope.Neutral());
-
             SyntheticState state = t.Scope.Synthetic.DeviceState[t.Device];
+
+            t.Run(ControlsKeyTestScope.Neutral()); state.SaveToPrevious(true);
+            Thread.Sleep(120);                                   // Fresh-press ガードの解除（80ms 連続して未成立）
+            t.Run(ControlsKeyTestScope.Neutral()); state.SaveToPrevious(true);
+            t.Run(crossHeld); state.SaveToPrevious(true);        // Cross だけ ON にする
+            t.Run(ControlsKeyTestScope.Neutral());               // 離しても ON のまま。このフレームのカウンターを見る
             Assert.Equal(1, state.currentClicks.leftCount);
             Assert.Equal(0, state.currentClicks.rightCount);     // Circle は、連動して ON にならない
         }
