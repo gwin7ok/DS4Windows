@@ -355,6 +355,24 @@ classDiagram
         +Resolve(InputDeviceType type) IInputDeviceModule
     }
     class InputDeviceModuleRegistry
+    class IJoinableDevice {
+        <<interface>>
+        +DeviceType InputDeviceType
+        +PerformStateMerge bool
+        +PrimaryDevice bool
+        +JointDeviceSlotNumber int
+        +SetJointDevice(IJoinableDevice other)
+        +CopyJointStateFrom(IJoinableDevice other)
+        +OnRemoval(Action handler)
+    }
+    class IJoyConLinker {
+        <<interface>>
+        +LinkOnStart(IJoinableDevice device, IJoinableDevice pendingPrimary, LinkMode mode) IJoinableDevice
+        +FindPendingForHotPlug(devices, mode, out primary, out secondary)
+        +LinkOnHotPlug(IJoinableDevice device, ref primary, ref secondary, LinkMode mode)
+    }
+    class JoyConLinker
+    class JoinableDeviceAdapter
     class Ds4DeviceModule
     class DualSenseDeviceModule
     class SwitchProDeviceModule
@@ -438,6 +456,10 @@ classDiagram
     IActiveInputProbe <|.. ActiveInputProbe : implements
     IConnectionProfileSelector <|.. ConnectionProfileSelector : implements
     IDeviceConnectionSetup <|.. DeviceConnectionSetup : implements
+    IJoyConLinker <|.. JoyConLinker : implements
+    IJoinableDevice <|.. JoinableDeviceAdapter : implements（実機の DS4Device を包む。テストでは偽物を差し込む）
+    JoyConLinker --> IJoinableDevice : 結合が触る最小の窓口
+    ControlService --> IJoyConLinker : ctor injection（Phase9 9-E E-6d。Start／HotPlug の Joy-Con の結合）
     IInputDeviceModuleRegistry <|.. InputDeviceModuleRegistry : implements
     IInputDeviceModule <|.. Ds4DeviceModule : implements（デバイス種類のカートリッジ）
     IInputDeviceModule <|.. DualSenseDeviceModule : implements

@@ -169,6 +169,9 @@ namespace DS4Windows
         // Phase9 9-E E-6c: デバイスの種類ごとの部品（カートリッジ）
         private readonly DI.IInputDeviceModuleRegistry _deviceModules;
 
+        // Phase9 9-E E-6d: Joy-Con の結合の手順
+        private readonly DI.IJoyConLinker _joyConLinker;
+
         private ControlServiceDeviceOptions deviceOptions;
         public ControlServiceDeviceOptions DeviceOptions { get => deviceOptions; }
 
@@ -280,7 +283,8 @@ namespace DS4Windows
             DI.IActiveInputProbe activeInputProbe,
             DI.IConnectionProfileSelector connectionProfileSelector,
             DI.IDeviceConnectionSetup deviceConnectionSetup,
-            DI.IInputDeviceModuleRegistry deviceModules)
+            DI.IInputDeviceModuleRegistry deviceModules,
+            DI.IJoyConLinker joyConLinker)
         {
             this.cmdParser = cmdParser;
             this._deviceRegistry = deviceRegistry;
@@ -317,6 +321,7 @@ namespace DS4Windows
             this._connectionProfileSelector = connectionProfileSelector ?? throw new ArgumentNullException(nameof(connectionProfileSelector));
             this._deviceConnectionSetup = deviceConnectionSetup ?? throw new ArgumentNullException(nameof(deviceConnectionSetup));
             this._deviceModules = deviceModules ?? throw new ArgumentNullException(nameof(deviceModules));
+            this._joyConLinker = joyConLinker ?? throw new ArgumentNullException(nameof(joyConLinker));
             // 設定の反映のログも、これまでどおり ControlService の Debug イベントへ流す
             this._deviceConnectionSetup.DebugMessage += (data, warning) => LogDebug(data, warning);
             // 遅延の監視・タッチパッドの切り替えのログも、これまでどおり ControlService の Debug イベントへ流す
@@ -689,7 +694,7 @@ namespace DS4Windows
                     activeControllers = numControllers;
                     DS4LightBar.defaultLight = false;
                     int i = 0;
-                    InputDevices.JoyConDevice tempPrimaryJoyDev = null;
+                    DI.IJoinableDevice tempPrimaryJoyDev = null;
                     for (var devEnum = devices.GetEnumerator();
                         devEnum.MoveNext() && loopControllers; i++)
                     {
@@ -697,37 +702,9 @@ namespace DS4Windows
 
                         BeginPrepareConnectedInputController(device, showlog: true);
 
-                        if (deviceOptions.JoyConDeviceOpts.LinkedMode == JoyConDeviceOptions.LinkMode.Joined)
-                        {
-                            if ((device.DeviceType == InputDevices.InputDeviceType.JoyConL ||
-                                device.DeviceType == InputDevices.InputDeviceType.JoyConR) && device.PerformStateMerge)
-                            {
-                                if (tempPrimaryJoyDev == null)
-                                {
-                                    tempPrimaryJoyDev = device as InputDevices.JoyConDevice;
-                                }
-                                else
-                                {
-                                    InputDevices.JoyConDevice currentJoyDev = device as InputDevices.JoyConDevice;
-                                    tempPrimaryJoyDev.JointDevice = currentJoyDev;
-                                    currentJoyDev.JointDevice = tempPrimaryJoyDev;
-
-                                    tempPrimaryJoyDev.JointState = currentJoyDev.JointState;
-
-                                    InputDevices.JoyConDevice parentJoy = tempPrimaryJoyDev;
-                                    tempPrimaryJoyDev.Removal += (sender, args) =>
-                                    {
-                                        currentJoyDev.JointDevice = null;
-                                    };
-                                    currentJoyDev.Removal += (sender, args) =>
-                                    {
-                                        parentJoy.JointDevice = null;
-                                    };
-
-                                    tempPrimaryJoyDev = null;
-                                }
-                            }
-                        }
+                        // Phase9 9-E E-6d: Joy-Con の結合の手順（先に来たものを主にして順に組む）は JoyConLinker へ移した
+                        tempPrimaryJoyDev = _joyConLinker.LinkOnStart(new Services.JoinableDeviceAdapter(device), tempPrimaryJoyDev,
+                            deviceOptions.JoyConDeviceOpts.LinkedMode);
 
                         DS4Controllers[i] = device;
                         device.DeviceSlotNumber = i;
@@ -935,19 +912,11 @@ namespace DS4Windows
                 IEnumerable<DS4Device> devices = _deviceRegistry.GetDS4Controllers();
                 int numControllers = devices.Count();
                 activeControllers = numControllers;
-                InputDevices.JoyConDevice tempPrimaryJoyDev = null;
-                InputDevices.JoyConDevice tempSecondaryJoyDev = null;
-
-                if (deviceOptions.JoyConDeviceOpts.LinkedMode == JoyConDeviceOptions.LinkMode.Joined)
-                {
-                    tempPrimaryJoyDev = devices.Where(d =>
-                        (d.DeviceType == InputDevices.InputDeviceType.JoyConL || d.DeviceType == InputDevices.InputDeviceType.JoyConR)
-                         && d.PrimaryDevice && d.JointDeviceSlotNumber == -1).FirstOrDefault() as InputDevices.JoyConDevice;
-
-                    tempSecondaryJoyDev = devices.Where(d =>
-                        (d.DeviceType == InputDevices.InputDeviceType.JoyConL || d.DeviceType == InputDevices.InputDeviceType.JoyConR)
-                        && !d.PrimaryDevice && d.JointDeviceSlotNumber == -1).FirstOrDefault() as InputDevices.JoyConDevice;
-                }
+                // Phase9 9-E E-6d: Joy-Con の結合の手順（主と副を先に探してから組む）は JoyConLinker へ移した
+                DI.IJoinableDevice tempPrimaryJoyDev = null;
+                DI.IJoinableDevice tempSecondaryJoyDev = null;
+                _joyConLinker.FindPendingForHotPlug(devices.Select(d => (DI.IJoinableDevice)new Services.JoinableDeviceAdapter(d)),
+                    deviceOptions.JoyConDeviceOpts.LinkedMode, out tempPrimaryJoyDev, out tempSecondaryJoyDev);
 
                 for (var devEnum = devices.GetEnumerator(); devEnum.MoveNext() && loopControllers;)
                 {
@@ -984,56 +953,8 @@ namespace DS4Windows
                         {
                             BeginPrepareConnectedInputController(device);
 
-                            if (deviceOptions.JoyConDeviceOpts.LinkedMode == JoyConDeviceOptions.LinkMode.Joined)
-                            {
-                                if ((device.DeviceType == InputDevices.InputDeviceType.JoyConL ||
-                                    device.DeviceType == InputDevices.InputDeviceType.JoyConR) && device.PerformStateMerge)
-                                {
-                                    if (device.PrimaryDevice &&
-                                        tempSecondaryJoyDev != null)
-                                    {
-                                        InputDevices.JoyConDevice currentJoyDev = device as InputDevices.JoyConDevice;
-                                        tempSecondaryJoyDev.JointDevice = currentJoyDev;
-                                        currentJoyDev.JointDevice = tempSecondaryJoyDev;
-
-                                        tempSecondaryJoyDev.JointState = currentJoyDev.JointState;
-
-                                        InputDevices.JoyConDevice secondaryJoy = tempSecondaryJoyDev;
-                                        secondaryJoy.Removal += (sender, args) =>
-                                        {
-                                            currentJoyDev.JointDevice = null;
-                                        };
-                                        currentJoyDev.Removal += (sender, args) =>
-                                        {
-                                            secondaryJoy.JointDevice = null;
-                                        };
-
-                                        tempSecondaryJoyDev = null;
-                                        tempPrimaryJoyDev = null;
-                                    }
-                                    else if (!device.PrimaryDevice &&
-                                        tempPrimaryJoyDev != null)
-                                    {
-                                        InputDevices.JoyConDevice currentJoyDev = device as InputDevices.JoyConDevice;
-                                        tempPrimaryJoyDev.JointDevice = currentJoyDev;
-                                        currentJoyDev.JointDevice = tempPrimaryJoyDev;
-
-                                        tempPrimaryJoyDev.JointState = currentJoyDev.JointState;
-
-                                        InputDevices.JoyConDevice parentJoy = tempPrimaryJoyDev;
-                                        tempPrimaryJoyDev.Removal += (sender, args) =>
-                                        {
-                                            currentJoyDev.JointDevice = null;
-                                        };
-                                        currentJoyDev.Removal += (sender, args) =>
-                                        {
-                                            parentJoy.JointDevice = null;
-                                        };
-
-                                        tempPrimaryJoyDev = null;
-                                    }
-                                }
-                            }
+                            _joyConLinker.LinkOnHotPlug(new Services.JoinableDeviceAdapter(device), ref tempPrimaryJoyDev, ref tempSecondaryJoyDev,
+                                deviceOptions.JoyConDeviceOpts.LinkedMode);
 
                             DS4Controllers[Index] = device;
                             device.DeviceSlotNumber = Index;

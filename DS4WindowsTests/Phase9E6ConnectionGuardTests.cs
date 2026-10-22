@@ -12,6 +12,7 @@ namespace DS4WindowsTests
     /// E-6a: 接続時のプロファイルの選択と適用が <c>ConnectionProfileSelector</c> へ移り、<c>ControlService</c> は委譲だけを持つこと。
     /// E-6b: 設定の反映とイベントの配線が <c>DeviceConnectionSetup</c> へ移り、<c>ControlService</c> は薄い委譲だけを持つこと。
     /// E-6c: デバイスの種類ごとの分岐が <c>IInputDeviceModule</c>（カートリッジ）へ移り、<c>ControlService</c> には種類ごとの分岐が残らないこと。
+    /// E-6d: Joy-Con の結合の手順が <c>JoyConLinker</c> へ移り、<c>ControlService</c> は呼び出しだけを持つこと。
     /// </summary>
     public class Phase9E6ConnectionGuardTests
     {
@@ -133,14 +134,13 @@ namespace DS4WindowsTests
         [InlineData(@"\bDS3DeviceOpts\b")]
         [InlineData(@"\bJoinGyroProv\b")]
         [InlineData(@"\bNativeOptionsStore\b")]
-        public void ControlService_NoLongerBranchesOnTheDeviceType_ExceptForTheJoyConLinking(string pattern)
+        public void ControlService_NoLongerBranchesOnTheDeviceType(string pattern)
         {
             string text = ReadWithoutComments("DS4Windows/DS4Control/ControlService.cs");
             if (text == null) return;
 
-            // Joy-Con の結合の手順（Start／HotPlug の中）は E-6d で JoyConLinker へ移す。それまでは InputDeviceType.JoyConL／JoyConR だけが残る
-            string withoutJoyConLinking = Regex.Replace(text, @"InputDevices\.InputDeviceType\.JoyCon[LR]\b", string.Empty);
-            Assert.False(Regex.IsMatch(withoutJoyConLinking, pattern), $"ControlService.cs に '{pattern}' が残っている（9-E E-6c で IInputDeviceModule へ移した）");
+            // Joy-Con の結合の手順（Start／HotPlug の中）も、E-6d で JoyConLinker へ移したため、例外はない
+            Assert.False(Regex.IsMatch(text, pattern), $"ControlService.cs に '{pattern}' が残っている（9-E E-6c で IInputDeviceModule へ移した）");
         }
 
         [Fact]
@@ -171,6 +171,59 @@ namespace DS4WindowsTests
                 Assert.DoesNotContain("AppHost", text);
                 Assert.DoesNotContain("ServiceProviderHolder", text);
                 Assert.False(Regex.IsMatch(text, @"\bControlService\b(?!DeviceOptions)"), file + " が ControlService を参照している");
+                Assert.False(Regex.IsMatch(text, @"\bGlobal\."), file + " が Global を参照している");
+            }
+        }
+    }
+
+        [Theory]
+        [InlineData(@"\bJoyConDevice\b")]
+        [InlineData(@"\.JointDevice\b")]
+        [InlineData(@"\.JointState\b")]
+        public void ControlService_NoLongerContains_TheJoyConLinking(string pattern)
+        {
+            string text = ReadWithoutComments("DS4Windows/DS4Control/ControlService.cs");
+            if (text == null) return;
+
+            Assert.False(Regex.IsMatch(text, pattern), $"ControlService.cs に '{pattern}' が残っている（9-E E-6d で JoyConLinker へ移した）");
+        }
+
+        [Fact]
+        public void ControlService_CallsTheLinker_AfterThePreparation_AndBeforeTheSlotAssignment()
+        {
+            string text = ReadWithoutComments("DS4Windows/DS4Control/ControlService.cs");
+            if (text == null) return;
+
+            // Start: 準備（BeginPrepareConnectedInputController）→ 結合（LinkOnStart）→ スロットへの割り当て（DS4Controllers[i] = device）
+            int begin = text.IndexOf("BeginPrepareConnectedInputController(device, showlog: true);");
+            int linkStart = text.IndexOf("_joyConLinker.LinkOnStart(", begin < 0 ? 0 : begin);
+            int assign = text.IndexOf("DS4Controllers[i] = device;", linkStart < 0 ? 0 : linkStart);
+            Assert.True(begin > 0 && linkStart > begin && assign > linkStart, "Start の順序（準備 → 結合 → 割り当て）が変わっている");
+
+            // HotPlug: 準備 → 結合（LinkOnHotPlug）→ 割り当て（DS4Controllers[Index] = device）
+            int beginHot = text.IndexOf("BeginPrepareConnectedInputController(device);");
+            int linkHot = text.IndexOf("_joyConLinker.LinkOnHotPlug(", beginHot < 0 ? 0 : beginHot);
+            int assignHot = text.IndexOf("DS4Controllers[Index] = device;", linkHot < 0 ? 0 : linkHot);
+            Assert.True(beginHot > 0 && linkHot > beginHot && assignHot > linkHot, "HotPlug の順序（準備 → 結合 → 割り当て）が変わっている");
+
+            // HotPlug の保留の探索は、ループの前
+            int find = text.IndexOf("_joyConLinker.FindPendingForHotPlug(");
+            Assert.True(find > 0 && find < beginHot, "HotPlug の保留の探索は、デバイスのループより前に行う");
+        }
+
+        [Fact]
+        public void JoyConLinker_IsRegistered_AndHasNoStaticEntryPoints()
+        {
+            Assert.IsType<JoyConLinker>(TestHost.GetService<IJoyConLinker>());
+
+            foreach (string file in new[] { "JoyConLinker", "JoinableDeviceAdapter" })
+            {
+                string text = ReadWithoutComments("DS4Windows/DS4Control/Services/" + file + ".cs");
+                if (text == null) continue;
+
+                Assert.DoesNotContain("AppHost", text);
+                Assert.DoesNotContain("ServiceProviderHolder", text);
+                Assert.False(Regex.IsMatch(text, @"\bControlService\b"), file + " が ControlService を参照している");
                 Assert.False(Regex.IsMatch(text, @"\bGlobal\."), file + " が Global を参照している");
             }
         }

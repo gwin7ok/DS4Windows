@@ -210,6 +210,7 @@ namespace DS4Windows.DI
             services.AddSingleton<IInputDeviceModule, JoyConDeviceModule>();
             services.AddSingleton<IInputDeviceModule, Ds3DeviceModule>();
             services.AddSingleton<IInputDeviceModuleRegistry, InputDeviceModuleRegistry>();
+            services.AddSingleton<IJoyConLinker, JoyConLinker>();   // Phase9 9-E E-6d: Joy-Con の結合の手順（実機なしでも偽物のデバイスでテストできる）
             services.AddSingleton<IDeviceConnectionSetup, DeviceConnectionSetup>();   // Phase9 9-E E-6b: 接続時の設定の反映とイベントの配線
             services.AddSingleton<IActiveInputProbe, ActiveInputProbe>();   // Phase9 9-E E-5: 押されている入力の探索（状態なし）
             services.AddSingleton<IMacroStepExecutor, MacroStepExecutor>();   // Phase9 9-C: マクロの 1 つの値の実行（状態は MacroRuntimeState に持つ）
@@ -289,7 +290,8 @@ namespace DS4Windows.DI
                     sp.GetRequiredService<IActiveInputProbe>(),   // Phase9 9-E E-5
                     sp.GetRequiredService<IConnectionProfileSelector>(),   // Phase9 9-E E-6a
                     sp.GetRequiredService<IDeviceConnectionSetup>(),   // Phase9 9-E E-6b
-                    sp.GetRequiredService<IInputDeviceModuleRegistry>()   // Phase9 9-E E-6c
+                    sp.GetRequiredService<IInputDeviceModuleRegistry>(),   // Phase9 9-E E-6c
+                    sp.GetRequiredService<IJoyConLinker>()   // Phase9 9-E E-6d
                 );
             });
             services.AddSingleton<IDeviceStateAccessor>(sp => sp.GetRequiredService<ControlService>());

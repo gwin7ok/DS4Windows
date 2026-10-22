@@ -106,8 +106,8 @@
 |---|---|
 | E-6a プロファイル選択（`IConnectionProfileSelector`） | **完了（2026-10-22）**。ビルド・テスト合格、実機確認 OK |
 | E-6b 設定の反映（`IDeviceConnectionSetup`） | **完了（2026-10-22）**。ビルド・テスト合格、実機確認 OK（P9E6b-1・6。タッチパッド・DualSense・起動プログラムは機材／設定なしで未実施） |
-| E-6c 種類のカートリッジ（`IInputDeviceModule` ×5 と `Registry`） | **実装済み（2026-10-22）**。ビルド・テストはユーザーの実行待ち |
-| E-6d Joy-Con の結合 | 未 |
+| E-6c 種類のカートリッジ（`IInputDeviceModule` ×5 と `Registry`） | **完了（2026-10-22）**。ビルド・テスト合格、実機確認 OK（P9E6c-1。DualSense／Edge／Joy-Con／Switch Pro の固有部分は機材なしで未実施、差分テストで担保） |
+| E-6d Joy-Con の結合（`IJoyConLinker`、`IJoinableDevice`） | **実装済み（2026-10-22）**。ビルド・テストはユーザーの実行待ち |
 | E-6e 切断・同期 | 未 |
 | E-6f 開始・停止・ホットプラグ | 未 |
 
@@ -129,3 +129,9 @@
 - `activeControllers` は、旧コードと同じく LED モード変更の発火のたびに読む（`Func<int>`）。
 - Joy-Con の結合の初期値は、デバイスなしで確かめられる純粋な関数 `JoyConDeviceModule.DecideJoin` に分けた。`Phase9E6DeviceModuleTests` が、旧 `PostDS4DeviceInit` の逐語コピーと、全ての種類×結合モード×ジャイロ提供側で突き合わせる。有効設定も、旧 `CheckForSupportedDevice` の逐語コピーと、全ての種類×フラグの組み合わせで突き合わせる（実機のない種類［Joy-Con、Switch Pro、DS3］もここで担保）。
 - `Start`／`HotPlug` の中の Joy-Con の結合の手順（`InputDeviceType.JoyConL`／`JoyConR` の判定）は、E-6d で `JoyConLinker` へ移す。ガードテストはその 2 つだけを例外として許している。
+
+### E-6d の実装メモ
+- 契約: `IJoinableDevice`（結合が触る最小のメンバー: 種類、`PerformStateMerge`、`PrimaryDevice`、`JointDeviceSlotNumber`、`SetJointDevice`、`CopyJointStateFrom`、`OnRemoval`）と `IJoyConLinker`（`LinkOnStart`／`FindPendingForHotPlug`／`LinkOnHotPlug`）。実装は `JoyConLinker`（状態なし）と、実機の `DS4Device` を包む `JoinableDeviceAdapter`。
+- `Start` の手順と `HotPlug` の手順は、統合せずに別のメソッドにした（挙動を変えないため）。3 か所で同じだった「相互に結合相手を設定 → `JointState` を相手のものに → 取り外しで相手の結合を解除する処理を両方に足す」は、private の `Join` にまとめた（順序はそのまま）。保留中の主／副は、これまでどおり呼び出し側のループの局所変数（`ref`／戻り値）で持つ。
+- 旧コードの `device as JoyConDevice` の型の絞り込みは、アダプターの `SetJointDevice` の中に移した。Joy-Con の種類（L／R）のデバイスは必ず `JoyConDevice` なので、結果は同じ。
+- テスト: `Phase9E6JoyConLinkerTests` が、旧 `Start`／`HotPlug` の逐語コピーと、**偽物のデバイスで** 全ての小さな組み合わせ（種類 4 × 結合の可否 × 主／副 × 結合済みか＝32 通りのデバイスを 1〜3 台、2 つの結合モード）を突き合わせる。結合後の相手・状態と、各デバイスを取り外した後の状態まで同じことを確かめる（実機の Joy-Con はなくても担保）。ガードテストで、`ControlService` に `JoyConDevice`／`.JointDevice`／`.JointState` が残っていないこと、呼び出しの順序（準備 → 結合 → 割り当て）を検査する。
