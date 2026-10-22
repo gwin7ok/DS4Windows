@@ -280,7 +280,9 @@ namespace DS4WindowsTests
                     Assert.True(expectedDelay == actualDelay, where + ": 待ちの要否が違う");
                     Assert.Equal(oldKbm.Log, newKbm.Log);
                     Assert.True(oldKeydown.SequenceEqual(newKeydown), where + ": 押下の表が違う");
-                    Assert.True(oldImpl.macroControl.SequenceEqual(state.MacroControl[NewDevice]), where + ": ボタンの出力フラグが違う");
+                    // 旧実装の写しの配列は 26 個、新しい実装は 28 個（M6 の是正）。共通の 0〜25 を比べ、広げた 26・27 は立たないことを確かめる
+                    Assert.True(oldImpl.macroControl.SequenceEqual(state.MacroControl[NewDevice].Take(oldImpl.macroControl.Length)), where + ": ボタンの出力フラグが違う");
+                    Assert.False(state.MacroControl[NewDevice][26] || state.MacroControl[NewDevice][27], where + ": 広げたフラグが立っている");
                     Assert.True(oldImpl.MacroCount == state.MacroCount[NewDevice], where + ": 個数が違う");
                     Assert.True(DS4LightBar.forcelight[OldDevice] == DS4LightBar.forcelight[NewDevice], where + ": 強制点灯が違う");
                     Assert.True(DS4LightBar.forcedFlash[OldDevice] == DS4LightBar.forcedFlash[NewDevice], where + ": 強制の点滅が違う");
