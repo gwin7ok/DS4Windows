@@ -1,7 +1,7 @@
 # Phase9 9-F（UI のコードビハインド）計画書
 
 作成日: 2026-10-22
-状態: 範囲を決定（2026-10-22）。F-3（トレイ）は、利用者が「解決しているようだ」と判断したため、範囲から外す。F-4（`ProfileEditor`）は、今回は先送り。着手は F-1 → F-2 → F-5。F-1 の設計は §5（承認待ち）
+状態: F-1（起動処理の分割。F-1a・F-1b）は完了（2026-10-23。実機確認 OK。台帳 §48）。F-2 の設計案は §6（承認待ち）。範囲を決定（2026-10-22）。F-3（トレイ）は、利用者が「解決しているようだ」と判断したため、範囲から外す。F-4（`ProfileEditor`）は、今回は先送り。着手は F-1 → F-2 → F-5。F-1 の設計は §5（承認待ち）
 上位: `Phase9-Responsibility-Split-Plan.md` §3 の 9-F、§12
 
 ## 1. 現状（測定、2026-10-22）
@@ -67,3 +67,23 @@ Windows メッセージの種類ごと（デバイスの着脱、電源、IPC、
 ### 決めてほしいこと
 - Q1: F-1a（純粋な部分の部品化）と F-1b（手順ごとのメソッド）を、この順で進める（推奨）／F-1b だけ。
 - Q2: F-1c は、F-1b の後に判断する（推奨）／今回は行わない。
+
+
+## 6. F-2（`MainWindow.WndProc`、267 行）の設計案（2026-10-23）
+`WndProc` は、2 種類のメッセージを扱う。
+- `WM_DEVICECHANGE`（約 25 行）: ホットプラグ。`RunHotPlug` の設定が有効で、デバイスの着脱（`DBT_DEVICEARRIVAL`／`DBT_DEVICEREMOVECOMPLETE`）のとき、カウンターを増やし、実行中でなければ `InnerHotplug2` をタスクで起動する。**ロック（`hotplugCounterLock`）と、実行中のフラグ（`inHotPlug`）が安全弁**。
+- `WM_COPYDATA`（約 230 行）: IPC のコマンド（コマンドラインからの `start`／`stop`／`cycle`／`shutdown`／`disconnect`／`changeledcolor`／`loadprofile`／`loadtempprofile`／`outputslot`／`query`）。文字列を `.` で区切り、1 つの巨大な `if` の連なりで処理する。例外は、すべて握りつぶす（致命的でないため）。
+
+### 分け方の案
+- **F-2a（純粋な部分）**: ① コマンドの読み取り（`COPYDATASTRUCT` のサイズ検査 4〜256、ASCII 変換、`.` で分割、先頭を小文字へ）を `IpcCommandParser` に。② `query` の「プロパティ名 → 値」の対応表のうち、デバイスの有無に依らず引ける部分。状態を持たず、単体テストで値を固定できる。
+- **F-2b（コマンドごとのメソッドへ）**: `WndProc` を、`HandleDeviceChange`／`HandleCopyData` に分け、`HandleCopyData` は、コマンドごとの private メソッド（`IpcStart`、`IpcStop`、`IpcCycle`、`IpcShutdown`、`IpcDisconnect`、`IpcChangeLedColor`、`IpcLoadProfile`、`IpcOutputSlot`、`IpcQuery`）を呼ぶ形にする。MainWindow が持つ UI の部品（`ChangeService`、`conLvViewModel`、閉じる処理）に触れるため、**クラスの外へは出さず、`MainWindow` の partial（`MainWindow.Ipc.cs`、`MainWindow.HotPlug.cs`）へ移す**。コマンドの受け付け順、分岐の順序（`if`／`else if` の順）、例外の握りつぶし、`query` の結果の書き込み（`WriteIPCResultDataMMF`）は、変えない。
+- **F-2c（任意）**: コマンドの実行を、UI から独立した `IpcCommandProcessor`（窓口 `IIpcCommandHost`）へ。窓口のメンバーが多く（サービス状態、デバイス一覧、プロファイル、出力スロット）、効果に比べて変更が大きいため、F-2b の後に判断する。
+
+### 検証
+- 特性化テスト: コマンドの読み取り（F-2a）、`WndProc` の分岐の順序とコマンド名の集合（ソースの照合。F-1b と同じ方式）。
+- 実機: コマンドラインから `-command start`／`stop`／`cycle`／`disconnect`／`loadprofile`／`outputslot`／`query` などを送って、従来どおりに動く（既存の Phase5/Phase8 の IPC の確認手順があれば、それを流用）。ホットプラグ（USB の抜き差し）が動く。
+
+### 決めてほしいこと
+- Q1: F-2a → F-2b の順で進める（推奨）／F-2b だけ。
+- Q2: F-2c は、F-2b の後に判断する（推奨）／今回は行わない。
+- Q3: 実機の IPC の確認は、どのコマンドを必須にするか（推奨: `start`／`stop`／`cycle`／`query`／`loadprofile` の 5 つ。`shutdown` と `outputslot`、`changeledcolor`、`disconnect` は、特性化テストと目視でよいか）。
