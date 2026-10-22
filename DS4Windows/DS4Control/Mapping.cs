@@ -512,27 +512,6 @@ namespace DS4Windows
         /// <summary>
         /// Map DS4 Buttons/Axes to other DS4 Buttons/Axes (largely the same as Xinput ones) and to keyboard and mouse buttons.
         /// </summary>
-        /*static double previousPointerX = 0.0;
-        //double accelHelperX = 0.0;
-        //double accelTravelX = 0.0;
-        //Stopwatch deltaEasingTimeX = new Stopwatch();
-
-        double previousPointerY = 0.0;
-        //double accelHelperY = 0.0;
-        //double accelTravelY = 0.0;
-        //Stopwatch deltaEasingTimeY = new Stopwatch();
-
-        double previousPointerRadial = 0.0;
-        double accelCurrentMultiRadial = 0.0;
-        double accelEasingMultiRadial = 0.0;
-        double accelTravelRadial = 0.0;
-        Stopwatch deltaEasingTimeRadial = new Stopwatch();
-        double totalTravelRadial = 0.0;
-
-        double tempOutXNorm = 0.0;
-        double tempOutYNorm = 0.0;
-        bool usingDeltaAccel = false;
-        */
 
         public void MapCustom(int device, DS4State cState, DS4State MappedState, DS4StateExposed eState,
             Mouse tp, ControlService ctrl)
@@ -559,22 +538,10 @@ namespace DS4Windows
             _sampleExposed[device] = eState;
             _sampleFields[device] = fieldMapping;
             _sampleControl[device] = ctrl;
-            //DS4StateFieldMapping fieldMapping = new DS4StateFieldMapping(cState, eState, tp);
-            //DS4StateFieldMapping outputfieldMapping = new DS4StateFieldMapping(cState, eState, tp);
 
             SyntheticState deviceState = this.deviceState[device];
             if (ctrl.ProfileActionProvider.GetProfileActionCount(device) > 0 || profileSettings.GetUseTempProfile(device))
                 MapCustomAction(device, ctrl);
-            //if (ctrl.DS4Controllers[device] == null) return;
-
-            //cState.CopyTo(MappedState);
-
-            //Dictionary<DS4Controls, DS4Controls> tempControlDict = new Dictionary<DS4Controls, DS4Controls>();
-            //MultiValueDict<DS4Controls, DS4Controls> tempControlDict = new MultiValueDict<DS4Controls, DS4Controls>();
-
-            //List<DS4ControlSettings> tempSettingsList = getDS4CSettings(device);
-            //foreach (DS4ControlSettings dcs in getDS4CSettings(device))
-            //for (int settingIndex = 0, arlen = tempSettingsList.Count; settingIndex < arlen; settingIndex++)
 
             // Process LS
             ControlSettingsGroup controlSetGroup = profileSettings.GetControlSettingsGroup(device);
@@ -833,7 +800,6 @@ namespace DS4Windows
             // Phase9 9-C: マクロが押しているゲームパッドのボタン等を出力へ重ねる処理は、MacroRuntimeState.ApplyHeldControls へ移した（デバイスごと。ユーザー判断 Q2）
             _macroRuntime.ApplyHeldControls(device, MappedState);
 
-
             PostMapStickData mapStickData = mapStickActionData[device];
             if (mapStickData.dirty)
             {
@@ -864,136 +830,6 @@ namespace DS4Windows
                 mapStickData.Reset();
                 mapStickData.dirty = false;
             }
-
-            //if (imuOutMode == GyroOutMode.MouseJoystick)
-            //{
-            //    GyroMouseStickInfo msinfo = Global.GetGyroMouseStickInfo(device);
-            //    if (msinfo.outputStick != GyroMouseStickInfo.OutputStick.None)
-            //    {
-            //        ref byte gyroTempX = ref gyroStickX[device];
-            //        if (msinfo.OutputHorizontal() && gyroTempX != 128)
-            //        {
-            //            byte outputStickXVal = msinfo.outputStick == GyroMouseStickInfo.OutputStick.RightStick ?
-            //                MappedState.RX : MappedState.LX;
-            //            byte tempAxisVal = 128;
-
-            //            if (outputStickXVal != 128)
-            //            {
-            //                tempAxisVal = Math.Abs(gyroTempX - 128) > Math.Abs(outputStickXVal - 128) ?
-            //                    gyroTempX : outputStickXVal;
-            //            }
-            //            else
-            //            {
-            //                tempAxisVal = gyroTempX;
-            //            }
-
-            //            if (msinfo.outputStick ==
-            //                GyroMouseStickInfo.OutputStick.RightStick)
-            //            {
-            //                MappedState.RX = tempAxisVal;
-            //            }
-            //            else if (msinfo.outputStick ==
-            //                GyroMouseStickInfo.OutputStick.LeftStick)
-            //            {
-            //                MappedState.LX = tempAxisVal;
-            //            }
-            //        }
-
-            //        ref byte gyroTempY = ref gyroStickY[device];
-            //        if (msinfo.OutputVertical() && gyroTempY != 128)
-            //        {
-            //            byte outputStickYVal = msinfo.outputStick == GyroMouseStickInfo.OutputStick.RightStick ?
-            //                MappedState.RY : MappedState.LY;
-            //            byte tempAxisVal = 128;
-
-            //            if (outputStickYVal != 128)
-            //                tempAxisVal = Math.Abs(gyroTempY - 128) > Math.Abs(outputStickYVal - 128) ?
-            //                    gyroTempY : outputStickYVal;
-            //            else
-            //                tempAxisVal = gyroTempY;
-
-            //            if (msinfo.outputStick ==
-            //                GyroMouseStickInfo.OutputStick.RightStick)
-            //            {
-            //                MappedState.RY = tempAxisVal;
-            //            }
-            //            else if (msinfo.outputStick ==
-            //                GyroMouseStickInfo.OutputStick.LeftStick)
-            //            {
-            //                MappedState.LY = tempAxisVal;
-            //            }
-            //        }
-
-            //        gyroTempX = gyroTempY = 128;
-            //    }
-            //}
-
-            //TouchpadOutMode tempMode = Global.TouchOutMode[device];
-            //if (tempMode == TouchpadOutMode.MouseJoystick)
-            //{
-            //    TouchMouseStickInfo msinfo = Global.GetTouchMouseStickInfo(device);
-            //    if (msinfo.outputStick != TouchMouseStickInfo.OutputStick.None)
-            //    {
-            //        ref byte touchTempX = ref touchStickX[device];
-            //        if (msinfo.OutputHorizontal() && touchTempX != 128)
-            //        //if (touchTempX != 128)
-            //        {
-            //            byte outputStickXVal = msinfo.outputStick == TouchMouseStickInfo.OutputStick.RightStick ?
-            //                MappedState.RX : MappedState.LX;
-            //            byte tempAxisVal = 128;
-
-            //            if (outputStickXVal != 128)
-            //            {
-            //                tempAxisVal = Math.Abs(touchTempX - 128) > Math.Abs(outputStickXVal - 128) ?
-            //                    touchTempX : outputStickXVal;
-            //            }
-            //            else
-            //            {
-            //                tempAxisVal = touchTempX;
-            //            }
-
-            //            if (msinfo.outputStick ==
-            //                TouchMouseStickInfo.OutputStick.RightStick)
-            //            {
-            //                MappedState.RX = tempAxisVal;
-            //            }
-            //            else if (msinfo.outputStick ==
-            //                TouchMouseStickInfo.OutputStick.LeftStick)
-            //            {
-            //                MappedState.LX = tempAxisVal;
-            //            }
-            //        }
-
-            //        ref byte touchTempY = ref touchStickY[device];
-            //        if (msinfo.OutputVertical() && touchTempY != 128)
-            //        //if (touchTempY != 128)
-            //        {
-            //            byte outputStickYVal = msinfo.outputStick == TouchMouseStickInfo.OutputStick.RightStick ?
-            //                MappedState.RY : MappedState.LY;
-            //            //byte outputStickYVal = MappedState.RY;
-            //            byte tempAxisVal = 128;
-
-            //            if (outputStickYVal != 128)
-            //                tempAxisVal = Math.Abs(touchTempY - 128) > Math.Abs(outputStickYVal - 128) ?
-            //                    touchTempY : outputStickYVal;
-            //            else
-            //                tempAxisVal = touchTempY;
-
-            //            if (msinfo.outputStick ==
-            //                TouchMouseStickInfo.OutputStick.RightStick)
-            //            {
-            //                MappedState.RY = tempAxisVal;
-            //            }
-            //            else if (msinfo.outputStick ==
-            //                TouchMouseStickInfo.OutputStick.LeftStick)
-            //            {
-            //                MappedState.LY = tempAxisVal;
-            //            }
-            //        }
-
-            //        touchTempX = touchTempY = 128;
-            //    }
-            //}
 
             // Phase8-Step7 7.8f-3（Q6＝A）: 新経路が書いたマウスの移動量。旧経路（局所変数）が何も書いていないときだけ使う（先に書いた方が勝つ、の規則のまま）
             DS4Windows.Actions.FrameOutput frameOutput = _frameOutputs[device];
