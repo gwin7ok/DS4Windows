@@ -105,8 +105,8 @@
 | 段階 | 状態 |
 |---|---|
 | E-6a プロファイル選択（`IConnectionProfileSelector`） | **完了（2026-10-22）**。ビルド・テスト合格、実機確認 OK |
-| E-6b 設定の反映（`IDeviceConnectionSetup`） | **実装済み（2026-10-22）**。ビルド・テストはユーザーの実行待ち |
-| E-6c 種類のカートリッジ | 未 |
+| E-6b 設定の反映（`IDeviceConnectionSetup`） | **完了（2026-10-22）**。ビルド・テスト合格、実機確認 OK（P9E6b-1・6。タッチパッド・DualSense・起動プログラムは機材／設定なしで未実施） |
+| E-6c 種類のカートリッジ（`IInputDeviceModule` ×5 と `Registry`） | **実装済み（2026-10-22）**。ビルド・テストはユーザーの実行待ち |
 | E-6d Joy-Con の結合 | 未 |
 | E-6e 切断・同期 | 未 |
 | E-6f 開始・停止・ホットプラグ | 未 |
@@ -122,3 +122,10 @@
 - DualSense の振動設定の枝は、そのまま `ApplyProfileOptions` に入っている。E-6c で種類ごとの部品へ移す（TODO をクラスに明記）。
 - 既存の `DebouncerSetDurationTests` の走査先を `DeviceConnectionSetup.ApplyProfileOptions` へ更新した。
 - テスト: `Phase9E6ConnectionGuardTests` に追加（移した文字列の不在、薄い委譲、呼び出し順序、DI 登録、イベント発火時の引き直し）。`DS4Device`／`Mouse` が作れないため、値の差分テストは書けず、ソースの走査と実機確認（台帳 §39）で担保する。
+
+### E-6c の実装メモ
+- 契約 `IInputDeviceModule`（`Handles`／`IsEnabled`／`GetKnownExtraButtons`／`OnDeviceInit`／`HookSettings`／`ApplyProfileOptions`）と `IInputDeviceModuleRegistry.Resolve(type)`。実装は `Ds4DeviceModule`／`DualSenseDeviceModule`／`SwitchProDeviceModule`／`JoyConDeviceModule`／`Ds3DeviceModule`、共通の土台 `InputDeviceModuleBase`、扱う部品がない種類のための `NullInputDeviceModule`（旧コードの `default:` と同じ）、引き当ての `InputDeviceModuleRegistry`。新しい種類は、`IInputDeviceModule` を実装して `ServiceRegistration` へ 1 行足すだけ。
+- `ControlService` は、`PostDS4DeviceInit`／`PrepareDS4DeviceSettingHooks`／`CheckForSupportedDevice`／`GetKnownExtraButtons` を 1 行の委譲にした。`DeviceConnectionSetup.ApplyProfileOptions` の DualSense の枝は、`_deviceModules.Resolve(device.DeviceType).ApplyProfileOptions(...)` に置き換えた（位置は元のまま）。
+- `activeControllers` は、旧コードと同じく LED モード変更の発火のたびに読む（`Func<int>`）。
+- Joy-Con の結合の初期値は、デバイスなしで確かめられる純粋な関数 `JoyConDeviceModule.DecideJoin` に分けた。`Phase9E6DeviceModuleTests` が、旧 `PostDS4DeviceInit` の逐語コピーと、全ての種類×結合モード×ジャイロ提供側で突き合わせる。有効設定も、旧 `CheckForSupportedDevice` の逐語コピーと、全ての種類×フラグの組み合わせで突き合わせる（実機のない種類［Joy-Con、Switch Pro、DS3］もここで担保）。
+- `Start`／`HotPlug` の中の Joy-Con の結合の手順（`InputDeviceType.JoyConL`／`JoyConR` の判定）は、E-6d で `JoyConLinker` へ移す。ガードテストはその 2 つだけを例外として許している。

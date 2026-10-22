@@ -11,21 +11,24 @@ namespace DS4Windows.Services
     /// Phase9 9-E E-6b（Phase9-E6-Plan.md）: <see cref="IDeviceConnectionSetup"/> の実装（DI の Singleton。状態なし）。
     /// 旧 <c>ControlService</c> の <c>CheckProfileOptions</c>／<c>CheckLauchProfileOption</c>／<c>SetupInitialHookEvents</c>／<c>TouchPadOn</c> を、そのまま移したもの
     /// （<c>touchPad[ind]</c> は引数で受ける。<c>TouchPadOn</c> のイベントは、旧コードと同じく、発火のたびに配列から引き直す）。
-    /// DualSense の振動設定の枝は、E-6c で種類ごとの部品（<c>IInputDeviceModule</c>）へ移す（TODO: Phase9 9-E E-6c）。
+    /// DualSense の振動設定の枝は、E-6c で種類ごとの部品（<c>IInputDeviceModule</c>）へ移した。
     /// </summary>
     public sealed class DeviceConnectionSetup : IDeviceConnectionSetup
     {
         private readonly IProfileSettingsService _profileSettings;
         private readonly IUdpMotionService _udpMotion;
         private readonly StickMotionState _stickMotion;
+        private readonly IInputDeviceModuleRegistry _deviceModules;
 
         public event Action<string, bool> DebugMessage;
 
-        public DeviceConnectionSetup(IProfileSettingsService profileSettings, IUdpMotionService udpMotion, StickMotionState stickMotion)
+        public DeviceConnectionSetup(IProfileSettingsService profileSettings, IUdpMotionService udpMotion, StickMotionState stickMotion,
+            IInputDeviceModuleRegistry deviceModules)
         {
             _profileSettings = profileSettings ?? throw new ArgumentNullException(nameof(profileSettings));
             _udpMotion = udpMotion ?? throw new ArgumentNullException(nameof(udpMotion));
             _stickMotion = stickMotion ?? throw new ArgumentNullException(nameof(stickMotion));
+            _deviceModules = deviceModules ?? throw new ArgumentNullException(nameof(deviceModules));
         }
 
         private void LogDebug(string data, bool warning = false)
@@ -64,27 +67,8 @@ namespace DS4Windows.Services
             device.setRumble(0, 0);
             device.LightBarColor = _profileSettings.GetMainColor(ind);
 
-            // DualSense specific profile settings
-            if (device is InputDevices.DualSenseDevice dualsense)
-            {
-                switch (_profileSettings.DualSenseRumbleEmulationMode[ind])
-                {
-                    case InputDevices.DualSenseDevice.RumbleEmulationMode.Disabled:
-                        dualsense.UseRumble = false;
-                        dualsense.UseAccurateRumble = false;
-                        break;
-                    case InputDevices.DualSenseDevice.RumbleEmulationMode.Legacy:
-                        dualsense.UseRumble = true;
-                        dualsense.UseAccurateRumble = false;
-                        break;
-                    case InputDevices.DualSenseDevice.RumbleEmulationMode.Accurate:
-                    default:
-                        dualsense.UseRumble = true;
-                        dualsense.UseAccurateRumble = true;
-                        break;
-                }
-                dualsense.HapticPowerLevel = _profileSettings.DualSenseHapticPowerLevel[ind];
-            }
+            // 種類ごとの設定（DualSense の振動エミュレーションと触覚の強さ）は、種類ごとの部品（Phase9 9-E E-6c）が反映する
+            _deviceModules.Resolve(device.DeviceType).ApplyProfileOptions(device, ind, _profileSettings);
 
             if (!startUp)
             {

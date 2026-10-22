@@ -166,6 +166,9 @@ namespace DS4Windows
         // Phase9 9-E E-6b: 接続時の設定の反映とイベントの配線
         private readonly DI.IDeviceConnectionSetup _deviceConnectionSetup;
 
+        // Phase9 9-E E-6c: デバイスの種類ごとの部品（カートリッジ）
+        private readonly DI.IInputDeviceModuleRegistry _deviceModules;
+
         private ControlServiceDeviceOptions deviceOptions;
         public ControlServiceDeviceOptions DeviceOptions { get => deviceOptions; }
 
@@ -276,7 +279,8 @@ namespace DS4Windows
             DI.ITouchpadToggleService touchpadToggle,
             DI.IActiveInputProbe activeInputProbe,
             DI.IConnectionProfileSelector connectionProfileSelector,
-            DI.IDeviceConnectionSetup deviceConnectionSetup)
+            DI.IDeviceConnectionSetup deviceConnectionSetup,
+            DI.IInputDeviceModuleRegistry deviceModules)
         {
             this.cmdParser = cmdParser;
             this._deviceRegistry = deviceRegistry;
@@ -312,6 +316,7 @@ namespace DS4Windows
             this._activeInputProbe = activeInputProbe ?? throw new ArgumentNullException(nameof(activeInputProbe));
             this._connectionProfileSelector = connectionProfileSelector ?? throw new ArgumentNullException(nameof(connectionProfileSelector));
             this._deviceConnectionSetup = deviceConnectionSetup ?? throw new ArgumentNullException(nameof(deviceConnectionSetup));
+            this._deviceModules = deviceModules ?? throw new ArgumentNullException(nameof(deviceModules));
             // 設定の反映のログも、これまでどおり ControlService の Debug イベントへ流す
             this._deviceConnectionSetup.DebugMessage += (data, warning) => LogDebug(data, warning);
             // 遅延の監視・タッチパッドの切り替えのログも、これまでどおり ControlService の Debug イベントへ流す
@@ -440,86 +445,22 @@ namespace DS4Windows
             }));
         }
 
+        // Phase9 9-E E-6c: 種類ごとの処理（Joy-Con の結合の初期値）は IInputDeviceModule へ移した
         public void PostDS4DeviceInit(DS4Device device)
         {
-            if (device.DeviceType == InputDevices.InputDeviceType.JoyConL ||
-                device.DeviceType == InputDevices.InputDeviceType.JoyConR)
-            {
-                if (deviceOptions.JoyConDeviceOpts.LinkedMode == JoyConDeviceOptions.LinkMode.Joined)
-                {
-                    InputDevices.JoyConDevice tempJoyDev = device as InputDevices.JoyConDevice;
-                    tempJoyDev.PerformStateMerge = true;
-
-                    if (device.DeviceType == InputDevices.InputDeviceType.JoyConL)
-                    {
-                        tempJoyDev.PrimaryDevice = true;
-                        if (deviceOptions.JoyConDeviceOpts.JoinGyroProv == JoyConDeviceOptions.JoinedGyroProvider.JoyConL)
-                        {
-                            tempJoyDev.OutputMapGyro = true;
-                        }
-                        else
-                        {
-                            tempJoyDev.OutputMapGyro = false;
-                        }
-                    }
-                    else
-                    {
-                        tempJoyDev.PrimaryDevice = false;
-                        if (deviceOptions.JoyConDeviceOpts.JoinGyroProv == JoyConDeviceOptions.JoinedGyroProvider.JoyConR)
-                        {
-                            tempJoyDev.OutputMapGyro = true;
-                        }
-                        else
-                        {
-                            tempJoyDev.OutputMapGyro = false;
-                        }
-                    }
-                }
-            }
+            _deviceModules.Resolve(device.DeviceType).OnDeviceInit(device, deviceOptions);
         }
 
+        // Phase9 9-E E-6c: 種類ごとの処理（DualSense の LED モード変更への反応）は IInputDeviceModule へ移した。activeControllers は、発火のたびに読む
         private void PrepareDS4DeviceSettingHooks(DS4Device device)
         {
-            if (device.DeviceType == InputDevices.InputDeviceType.DualSense)
-            {
-                InputDevices.DualSenseDevice tempDSDev = device as InputDevices.DualSenseDevice;
-
-                DualSenseControllerOptions dSOpts = tempDSDev.NativeOptionsStore;
-                dSOpts.LedModeChanged += (sender, e) => { tempDSDev.CheckControllerNumDeviceSettings(activeControllers); };
-            }
-            else if (device.DeviceType == InputDevices.InputDeviceType.JoyConL ||
-                device.DeviceType == InputDevices.InputDeviceType.JoyConR)
-            {
-            }
+            _deviceModules.Resolve(device.DeviceType).HookSettings(device, () => activeControllers);
         }
 
+        // Phase9 9-E E-6c: 種類ごとの有効設定の判定は IInputDeviceModule へ移した（扱う部品がない種類は false）
         public bool CheckForSupportedDevice(HidDevice device, VidPidInfo metaInfo)
         {
-            bool result = false;
-            switch (metaInfo.inputDevType)
-            {
-                case InputDevices.InputDeviceType.DS4:
-                    result = deviceOptions.DS4DeviceOpts.Enabled;
-                    break;
-                case InputDevices.InputDeviceType.DualSense:
-                    result = deviceOptions.DualSenseOpts.Enabled;
-                    break;
-                case InputDevices.InputDeviceType.SwitchPro:
-                    result = deviceOptions.SwitchProDeviceOpts.Enabled;
-                    break;
-                case InputDevices.InputDeviceType.JoyConL:
-                case InputDevices.InputDeviceType.JoyConR:
-                case InputDevices.InputDeviceType.JoyConGrip:
-                    result = deviceOptions.JoyConDeviceOpts.Enabled;
-                    break;
-                case InputDevices.InputDeviceType.DS3:
-                    result = deviceOptions.DS3DeviceOpts.Enabled;
-                    break;
-                default:
-                    break;
-            }
-
-            return result;
+            return _deviceModules.Resolve(metaInfo.inputDevType).IsEnabled(deviceOptions);
         }
 
         public void PrepareDS4DeviceInit(DS4Device device)
@@ -607,36 +548,10 @@ namespace DS4Windows
         /// </summary>
         /// <param name="dev">Instance of input device</param>
         /// <returns>List of extra controls to check in Mapping class</returns>
+        // Phase9 9-E E-6c: 種類ごとの追加ボタンは IInputDeviceModule へ移した
         private List<DS4Controls> GetKnownExtraButtons(DS4Device dev)
         {
-            List<DS4Controls> result = new List<DS4Controls>();
-            switch (dev.DeviceType)
-            {
-                case InputDevices.InputDeviceType.DualSense:
-                    {
-                        InputDevices.DualSenseDevice tempDev = dev as InputDevices.DualSenseDevice;
-                        if (tempDev != null &&
-                            tempDev.SubType == InputDevices.DualSenseDevice.DeviceSubType.DSEdge)
-                        {
-                            // Added extra DualSense Edge buttons as extra in the mapper.
-                            // Keeps from checking non-existent buttons on other device types.
-                            result.AddRange(new DS4Controls[] { DS4Controls.FnL, DS4Controls.FnR, DS4Controls.BLP, DS4Controls.BRP });
-                        }
-                    }
-
-                    break;
-                case InputDevices.InputDeviceType.JoyConL:
-                case InputDevices.InputDeviceType.JoyConR:
-                    result.AddRange(new DS4Controls[] { DS4Controls.Capture, DS4Controls.SideL, DS4Controls.SideR, DS4Controls.FnL, DS4Controls.FnR });
-                    break;
-                case InputDevices.InputDeviceType.SwitchPro:
-                    result.AddRange(new DS4Controls[] { DS4Controls.Capture });
-                    break;
-                default:
-                    break;
-            }
-
-            return result;
+            return _deviceModules.Resolve(dev.DeviceType).GetKnownExtraButtons(dev);
         }
 
         // Phase9 9-E E-2: 旧 ChangeExclusiveStatus は HidHideService.MarkAffected へ移した。

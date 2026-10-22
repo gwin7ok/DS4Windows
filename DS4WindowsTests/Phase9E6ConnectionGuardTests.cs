@@ -11,6 +11,7 @@ namespace DS4WindowsTests
     /// Phase9 9-E E-6（Phase9-E6-Plan.md）: ライフサイクルの切り出しの守り（段階ごとに検査を足していく）。
     /// E-6a: 接続時のプロファイルの選択と適用が <c>ConnectionProfileSelector</c> へ移り、<c>ControlService</c> は委譲だけを持つこと。
     /// E-6b: 設定の反映とイベントの配線が <c>DeviceConnectionSetup</c> へ移り、<c>ControlService</c> は薄い委譲だけを持つこと。
+    /// E-6c: デバイスの種類ごとの分岐が <c>IInputDeviceModule</c>（カートリッジ）へ移り、<c>ControlService</c> には種類ごとの分岐が残らないこと。
     /// </summary>
     public class Phase9E6ConnectionGuardTests
     {
@@ -122,6 +123,56 @@ namespace DS4WindowsTests
             Assert.DoesNotContain("ServiceProviderHolder", text);
             Assert.False(Regex.IsMatch(text, @"(?<!ProfileChangeSource\.)\bControlService\b"), "DeviceConnectionSetup が ControlService を参照している");
             Assert.False(Regex.IsMatch(text, @"\bGlobal\."), "DeviceConnectionSetup が Global を参照している");
+        }
+    
+        [Theory]
+        [InlineData(@"\bInputDeviceType\.")]
+        [InlineData(@"\bDS4DeviceOpts\b")]
+        [InlineData(@"\bDualSenseOpts\b")]
+        [InlineData(@"\bSwitchProDeviceOpts\b")]
+        [InlineData(@"\bDS3DeviceOpts\b")]
+        [InlineData(@"\bJoinGyroProv\b")]
+        [InlineData(@"\bNativeOptionsStore\b")]
+        public void ControlService_NoLongerBranchesOnTheDeviceType_ExceptForTheJoyConLinking(string pattern)
+        {
+            string text = ReadWithoutComments("DS4Windows/DS4Control/ControlService.cs");
+            if (text == null) return;
+
+            // Joy-Con の結合の手順（Start／HotPlug の中）は E-6d で JoyConLinker へ移す。それまでは InputDeviceType.JoyConL／JoyConR だけが残る
+            string withoutJoyConLinking = Regex.Replace(text, @"InputDevices\.InputDeviceType\.JoyCon[LR]\b", string.Empty);
+            Assert.False(Regex.IsMatch(withoutJoyConLinking, pattern), $"ControlService.cs に '{pattern}' が残っている（9-E E-6c で IInputDeviceModule へ移した）");
+        }
+
+        [Fact]
+        public void ControlService_DelegatesToTheDeviceModules()
+        {
+            string text = ReadWithoutComments("DS4Windows/DS4Control/ControlService.cs");
+            if (text == null) return;
+
+            Assert.Contains("_deviceModules.Resolve(device.DeviceType).OnDeviceInit(device, deviceOptions);", text);
+            Assert.Contains("_deviceModules.Resolve(device.DeviceType).HookSettings(device, () => activeControllers);", text);
+            Assert.Contains("_deviceModules.Resolve(metaInfo.inputDevType).IsEnabled(deviceOptions);", text);
+            Assert.Contains("_deviceModules.Resolve(dev.DeviceType).GetKnownExtraButtons(dev);", text);
+        }
+
+        [Fact]
+        public void TheDeviceModules_AreRegistered_AllFiveOfThem_AndHaveNoStaticEntryPoints()
+        {
+            var modules = new System.Collections.Generic.List<IInputDeviceModule>(
+                (System.Collections.Generic.IEnumerable<IInputDeviceModule>)TestHost.GetService(typeof(System.Collections.Generic.IEnumerable<IInputDeviceModule>)));
+            Assert.Equal(5, modules.Count);
+            Assert.IsType<InputDeviceModuleRegistry>(TestHost.GetService<IInputDeviceModuleRegistry>());
+
+            foreach (string file in new[] { "Ds4DeviceModule", "DualSenseDeviceModule", "SwitchProDeviceModule", "JoyConDeviceModule", "Ds3DeviceModule", "NullInputDeviceModule", "InputDeviceModuleBase", "InputDeviceModuleRegistry" })
+            {
+                string text = ReadWithoutComments("DS4Windows/DS4Control/Services/" + file + ".cs");
+                if (text == null) continue;
+
+                Assert.DoesNotContain("AppHost", text);
+                Assert.DoesNotContain("ServiceProviderHolder", text);
+                Assert.False(Regex.IsMatch(text, @"\bControlService\b(?!DeviceOptions)"), file + " が ControlService を参照している");
+                Assert.False(Regex.IsMatch(text, @"\bGlobal\."), file + " が Global を参照している");
+            }
         }
     }
 }

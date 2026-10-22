@@ -341,6 +341,25 @@ classDiagram
         +AttachTouchpad(int ind, DS4Device device, Mouse[] touchPads)
     }
     class DeviceConnectionSetup
+    class IInputDeviceModule {
+        <<interface>>
+        +Handles(InputDeviceType type) bool
+        +IsEnabled(ControlServiceDeviceOptions options) bool
+        +GetKnownExtraButtons(DS4Device device) List
+        +OnDeviceInit(DS4Device device, ControlServiceDeviceOptions options)
+        +HookSettings(DS4Device device, Func activeControllers)
+        +ApplyProfileOptions(DS4Device device, int ind, IProfileSettingsService settings)
+    }
+    class IInputDeviceModuleRegistry {
+        <<interface>>
+        +Resolve(InputDeviceType type) IInputDeviceModule
+    }
+    class InputDeviceModuleRegistry
+    class Ds4DeviceModule
+    class DualSenseDeviceModule
+    class SwitchProDeviceModule
+    class JoyConDeviceModule
+    class Ds3DeviceModule
     class LatencyMonitor
     class TouchpadToggleService
     class ActiveInputProbe
@@ -419,6 +438,15 @@ classDiagram
     IActiveInputProbe <|.. ActiveInputProbe : implements
     IConnectionProfileSelector <|.. ConnectionProfileSelector : implements
     IDeviceConnectionSetup <|.. DeviceConnectionSetup : implements
+    IInputDeviceModuleRegistry <|.. InputDeviceModuleRegistry : implements
+    IInputDeviceModule <|.. Ds4DeviceModule : implements（デバイス種類のカートリッジ）
+    IInputDeviceModule <|.. DualSenseDeviceModule : implements
+    IInputDeviceModule <|.. SwitchProDeviceModule : implements
+    IInputDeviceModule <|.. JoyConDeviceModule : implements
+    IInputDeviceModule <|.. Ds3DeviceModule : implements
+    InputDeviceModuleRegistry --> IInputDeviceModule : 全部を受け取り、種類から引き当てる
+    DeviceConnectionSetup --> IInputDeviceModuleRegistry : 種類ごとの設定の反映
+    ControlService --> IInputDeviceModuleRegistry : ctor injection（Phase9 9-E E-6c。種類ごとの判定・初期化・追加ボタン）
     ControlService --> IDeviceConnectionSetup : ctor injection（Phase9 9-E E-6b。接続時の設定の反映とイベントの配線）
     ControlService --> IConnectionProfileSelector : ctor injection（Phase9 9-E E-6a。接続時のプロファイルの選択と適用）
     ControlService --> ILatencyMonitor : ctor injection（Phase9 9-E E-5。On_Report の遅延の監視）
