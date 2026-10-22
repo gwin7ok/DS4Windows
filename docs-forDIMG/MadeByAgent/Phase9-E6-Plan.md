@@ -108,8 +108,8 @@
 | E-6b 設定の反映（`IDeviceConnectionSetup`） | **完了（2026-10-22）**。ビルド・テスト合格、実機確認 OK（P9E6b-1・6。タッチパッド・DualSense・起動プログラムは機材／設定なしで未実施） |
 | E-6c 種類のカートリッジ（`IInputDeviceModule` ×5 と `Registry`） | **完了（2026-10-22）**。ビルド・テスト合格、実機確認 OK（P9E6c-1。DualSense／Edge／Joy-Con／Switch Pro の固有部分は機材なしで未実施、差分テストで担保） |
 | E-6d Joy-Con の結合（`IJoyConLinker`、`IJoinableDevice`） | **完了（2026-10-22）**。ビルド・テスト合格（偽物のデバイスの差分テスト約 3.3 万通り含む）。実機はなし（台帳 §41 は Joy-Con が手に入ったとき） |
-| E-6e 切断・同期（`IDeviceDisconnectHandler`、`IDeviceSlotHost`） | **実装済み（2026-10-22）**。ビルド・テストはユーザーの実行待ち |
-| E-6f 開始・停止・ホットプラグ | 未 |
+| E-6e 切断・同期（`IDeviceDisconnectHandler`、`IDeviceSlotHost`） | **実装済み（2026-10-22）**。ビルド・テスト合格。実機確認（台帳 §42）はユーザーの実行待ち |
+| E-6f 開始・停止・ホットプラグ | **詳細設計の承認待ち（§9）** |
 
 ### E-6a の実装メモ
 - 計画（§3.3）では「適用するプロファイル名を返し、`ApplyToSlot` は `ControlService` に残す」としていたが、`MarkConnected`／`SelectedProfile`／`RememberProfile`／Linked の UI 状態／`ApplyToSlot` が**順序つきで連続する一続きの処理**だったため、順序を変えないよう、**`ApplyToSlot` と `PublishSlot` も含めて**まとめて移した。`ControlService` は、適用の成否（`profileLoaded`）を受け取って、仮想パッドの接続以降を続ける。
@@ -142,3 +142,31 @@
 - `ControlService` の `On_DS4Removal`／`On_SyncChange`／`On_SerialChange`（protected）は、イベントの購読先として、1 行の委譲で残した。購読の登録順は変えていない。
 - 既存テスト `Phase8Step6W1DisconnectCharacterizationTests`／`Phase8Step6W3SlotLifecycleTests` の走査先を `DeviceDisconnectHandler.OnRemoval` へ更新した。
 - テスト: `Phase9E6DisconnectGuardTests`（移した呼び出しの不在、薄い委譲、購読の登録順、**切断の後始末の順序**［仮想パッドの取り外し → コミット → エンジンの切断 → スロットの解放 → 通知 → 状態の初期化 → スロット管理の解除 → OSC → 遅延監視のリセット］、DI 登録とホスト）。`DS4Device` が作れないため、値の差分テストは書けず、順序のソース走査と実機確認（台帳 §42）で担保する。
+
+## 9. E-6f の詳細設計（2026-10-22。承認待ち）
+
+`Start`（約 155 行）／`Stop`（約 120 行）／`HotPlug`（約 90 行）と、その土台の `PrepareConnectedInputControllerSettingEvents`（約 95 行）／`BeginPrepareConnectedInputController`／`InitOutputKBMHandler` を調べた結果、**一度に `ServiceLifecycle` へ移すのは、窓口が大きくなりすぎる**ことが分かった。次の 2 段階（f1・f2）に分ける案とする。
+
+### 9.1 調査で分かったこと
+| 項目 | 内容 |
+|---|---|
+| 外部が直接使うもの | `running`、`suspending`（MainWindow が代入）、イベント `ServiceStarted`／`PreServiceStop`／`ServiceStopped`／`RunningChanged`／`HotplugController`（MainWindow、ControllerListViewModel、TrayIconViewModel が購読）、`Start`／`Stop`／`HotPlug`／`PrepareAbort` の呼び出し約 19 件。**これらは変えない**（9-F まで） |
+| 状態 | `running`、`loopControllers`、`inServiceTask`、`activeControllers`、`suspending`。`ControlService` の他の箇所（ViGEm 失敗の処理、LED 設定への反応）も読む |
+| `Start`／`HotPlug` の依存 | イベントスレッド（`eventDispatcher.Invoke`）、`InitOutputKBMHandler`、`PrepareConnectedInputControllerSettingEvents`（`On_Report` を購読する）、OSC／UDP の開始、HidHide、デバイス登録簿、仮想パッド、Joy-Con の結合 |
+| UI への静的な参照 | `Start` の末尾の `MainWindow.ProcessPriorityClasses[...]`（第 2 層から UI の静的リストを参照している。依存の向きの違反）。UI の他の箇所でも使う |
+| `PrepareConnectedInputControllerSettingEvents` | 新しい `Mouse` を作って `touchPad[]` に入れる、`On_Report` へ購読する、`GyroControlsTriggerActive` のラムダなど、`ControlService` の状態に深く触る |
+
+### 9.2 段階
+- **E-6f1: 接続の組み立て（`IDeviceConnector`）**: `BeginPrepareConnectedInputController`、`PrepareConnectedInputControllerSettingEvents`（E-6a・b・c で部品へ移した残り）を `DeviceConnector` へ移す。`ControlService` 側の窓口（`IDeviceSlotHost`）に、`On_Report` を呼ぶ口（`OnReport(DS4Device, EventArgs, int)`）と、`touchPad[]` への書き込みの口を足す。`On_Report`（ホットパス）は `ControlService` に残し、購読のラムダの中身だけが `host.OnReport(...)` になる（呼び出しの 1 段が増えるだけ。E-5 の割り当てテストで確認する）。
+- **E-6f2: 開始・停止・ホットプラグ（`IServiceLifecycle`）**: `Start`／`Stop`／`HotPlug` の本体と状態（`running` ほか 5 つ）、イベントを `ServiceLifecycle` へ移す。`ControlService` は、同名の公開メンバー（`running`、`suspending`、`Start`、`Stop`、`HotPlug`、`PrepareAbort`、5 つのイベント）を、転送で残す（イベントは、送り主を `ControlService` にして再発火する）。依存する `ControlService` の機能（イベントスレッドでの実行、キーボード／マウス出力の初期化、OSC／UDP の状態変更）は、窓口 `IServiceLifecycleHost` で受ける。
+- **UI への静的な参照の解消**: プロセス優先度のリストを、UI の静的リストを参照しない形にする（`IAppSettingsService` の添字を、`ProcessPriorityClass` に変える小さな関数を、ライフサイクルが持つ。UI のリストの順序と同じ配列を、ライフサイクル側に置く。**UI 側は変えない**）。
+
+### 9.3 守ること
+- `Start` の順序（ViGEm の開始 → KBM の初期化 → `Thread.Sleep(2000)` → 排他モード → HidHide → OSC／UDP → `AssignInitialDevices` → デバイス列挙 → 接続の組み立て → `running = true` → UDP の待ち受け）、`Stop` の順序（`running = false` → `PreServiceStop` → 各デバイスの停止と仮想パッドの取り外し → 登録簿の停止 → OSC／UDP の停止 → 出力キューの待ち → `OutputSlotManager.Stop` → `Thread.Sleep` → `StopViGEm` → KBM の切断 → `ServiceStopped`／`RunningChanged`）を、**逐語で**保つ。ソース走査のテストで順序を固定する。
+- `inServiceTask` による直列化（`OutputSlotManager_ViGEmFailure` が待つ）を保つ。
+- ログの文言とレベルを変えない。
+
+### 9.4 決めてほしいこと
+- **Q1**: E-6f を f1（接続の組み立て）と f2（開始・停止・ホットプラグ）の 2 段階に分けてよいか。
+- **Q2**: `On_Report` を `ControlService` に残し、購読のラムダが `host.OnReport(...)` を呼ぶ形（呼び出しが 1 段増える）でよいか。割り当て（GC Alloc）は E-5 のテストで確認する。
+- **Q3**: `MainWindow.ProcessPriorityClasses` への参照は、ライフサイクルが同じ内容の配列を自分で持つ形でよいか（UI 側は変えない）。
