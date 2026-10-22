@@ -43,7 +43,7 @@ namespace DS4WindowsTests
         [InlineData(@"\boutputslotMan\b")]
         [InlineData(@"\bvigemTestClient\b")]
         [InlineData(@"\btempThread\b")]
-        [InlineData(@"\bStartViGEm\(")]
+        [InlineData(@"(?<!_virtualPad\.)\bStartViGEm\(")]   // Start からの呼び出し（_virtualPad.StartViGEm()）は残る
         [InlineData(@"\bEstablishOutDevice\(")]
         [InlineData(@"\bnew OutputSlotManager\(")]
         [InlineData(@"(?<!_virtualPad\.)\bAssignInitialDevices\b")]   // Start からの呼び出し（_virtualPad.AssignInitialDevices()）は残る
