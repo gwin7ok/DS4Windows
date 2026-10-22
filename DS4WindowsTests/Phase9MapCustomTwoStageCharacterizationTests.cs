@@ -82,6 +82,54 @@ namespace DS4WindowsTests
         }
 
         [Theory]
+        [InlineData(true)]
+        [InlineData(false)]
+        public void ExclusiveButtons_ReturnFromFullPull_OutputsNothingUntilReleased(bool isL2)
+        {
+            using var scope = new MappingCharacterizationScope();
+            TriggerOutputSettings settings = isL2
+                ? scope.Settings.L2OutputSettings[MappingCharacterizationScope.Device]
+                : scope.Settings.R2OutputSettings[MappingCharacterizationScope.Device];
+            TwoStageTriggerMode saved = settings.twoStageMode;
+            try
+            {
+                settings.twoStageMode = TwoStageTriggerMode.ExclusiveButtons;
+                scope.RemapToButton(isL2 ? DS4Controls.L2 : DS4Controls.R2, X360Controls.Y);
+                scope.RemapToButton(isL2 ? DS4Controls.L2FullPull : DS4Controls.R2FullPull, X360Controls.B);
+
+                DS4State Frame(byte v, byte raw)
+                {
+                    DS4State input = MappingCharacterizationScope.NeutralState();
+                    if (isL2) { input.L2 = v; input.L2Raw = raw; } else { input.R2 = v; input.R2Raw = raw; }
+                    return scope.RunMapCustom(input);
+                }
+
+                DS4State soft = Frame(120, 120);
+                Assert.True(soft.Triangle);
+                Assert.False(soft.Circle);
+
+                DS4State full = Frame(255, 255);
+                Assert.False(full.Triangle);
+                Assert.True(full.Circle);
+
+                DS4State returning = Frame(150, 150);   // 戻る途中: 浅い引きも出さない
+                Assert.False(returning.Triangle);
+                Assert.False(returning.Circle);
+
+                DS4State released = Frame(0, 0);
+                Assert.False(released.Triangle);
+                Assert.False(released.Circle);
+
+                DS4State again = Frame(120, 120);       // 離した後の次の浅い引きは、また出る
+                Assert.True(again.Triangle);
+            }
+            finally
+            {
+                settings.twoStageMode = saved;
+            }
+        }
+
+        [Theory]
         [InlineData(true, TwoStageTriggerMode.Normal)]
         [InlineData(true, TwoStageTriggerMode.ExclusiveButtons)]
         [InlineData(false, TwoStageTriggerMode.Normal)]

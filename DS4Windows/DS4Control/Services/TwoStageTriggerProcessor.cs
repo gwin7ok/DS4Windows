@@ -57,6 +57,13 @@ namespace DS4Windows.Services
                     {
                         triggerData.Reset();
                     }
+                    else if (triggerValue != 0 && triggerData.actionStateMode ==
+                        TwoStageTriggerMappingData.EngageButtonsMode.FullPullOnly)
+                    {
+                        // Phase9 MapCustom の分割 M3 の後の挙動修正（ユーザー承認 2026-10-22）: 深い引きの後、戻る途中（生値 < 255、値 != 0）に
+                        // 浅い引きが出てしまっていた（旧コードの取りこぼし）。HipFireExclusiveButtons と同様、離す（値 0）までは何も出さない。
+                        dcsTemp = null;
+                    }
 
                     break;
                 case TwoStageTriggerMode.HairTrigger:

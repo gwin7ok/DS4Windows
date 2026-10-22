@@ -287,6 +287,11 @@ namespace DS4WindowsTests
                         var step = Steps[code];
                         oldClock.OffsetMs = newClock.OffsetMs = step.OffsetMs;
 
+                        // 唯一の意図した差: Exclusive Buttons で、深い引きの後の戻る途中（値 != 0、生値 != 255）は、浅い引きを出さない（Phase9-ExclusiveReturn-Fix-Plan.md）
+                        bool returnFromFullPull = mode == TwoStageTriggerMode.ExclusiveButtons
+                            && newData.actionStateMode == TwoStageTriggerMappingData.EngageButtonsMode.FullPullOnly
+                            && step.Value != 0 && step.Raw != 255;
+
                         DS4ControlSettings oldSoft = softBinding, oldFull = fullBinding;
                         DS4ControlSettings newSoft = softBinding, newFull = fullBinding;
                         oldProcessor.ProcessTwoStageTrigger(Device, null, step.Value, step.Raw, ref oldSoft, ref oldFull, settingsOut, oldData,
@@ -294,7 +299,7 @@ namespace DS4WindowsTests
                         newProcessor.Process(Device, step.Value, step.Raw, ref newSoft, ref newFull, settingsOut, newData,
                             out DS4ControlSettings newOutSoft, out DS4ControlSettings newOutFull);
 
-                        Assert.Same(oldOutSoft, newOutSoft);
+                        Assert.Same(returnFromFullPull ? null : oldOutSoft, newOutSoft);
                         Assert.Same(oldOutFull, newOutFull);
                         Assert.Equal(StateOf(oldData), StateOf(newData));
                     }
