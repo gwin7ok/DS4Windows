@@ -149,3 +149,4 @@ E-2・E-3 は、E-1 の結果を見てから、**この計画書に設計を追�
 **規約 2.4（未参照コード）の判断の記録**:
 - `ControlService.UseUDPPort`（外部の呼び出し 0 件）: `UdpMotionService.UsePort` に移し、TODO を付けた（9-F で、使う予定がなければ削除をユーザーへ提案）。`ControlService` の委譲は残していない（呼び出し 0 件）。
 - **`IUdpServerService`／`UdpServerService`（Phase5-Step10 で作った、UDP サーバーの安全な起動・停止の契約。DI に登録済みだが、呼び出しが 0 件）**: 契約のコメントにある「接続予定: ControlService の UDP の起動・停止を本サービス経由にする」が、E-3 の `UdpMotionService` で実現された。形が合わない（`Start(ControlService, …)` が起動と待ち受けを一度に行い、作成と待ち受けを分けられない）ため、**使うべきでない「正規の経路と重複する並行実装」と判断し、削除を提案する**（ユーザーの承認を得てから。承認までは TODO を付けて残す）。
+  - **〔削除済み。ユーザー承認、2026-10-22〕** `DI/IUdpServerService.cs`、`DS4Control/Services/UdpServerService.cs`、`DS4WindowsTests/UdpServerServiceTests.cs`（3 件）を削除。DI の登録を削除。`Phase7Step2RemovedContractMembersGuardTests` の「残した契約」から外し、「削除したファイル」に追加。モデル図 01・02・04 の記載を `IUdpMotionService` に更新。

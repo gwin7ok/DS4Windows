@@ -152,7 +152,7 @@ flowchart TD
 
         subgraph Out_Actions ["3-c: アプリ・OS副作用実行"]
             Out_Launcher["IProcessLauncher / IElevatedProcessLauncher<br>(通常起動 / UAC昇格起動)"]:::egressLayer
-            Out_UDP["IUdpServerService<br>(Cemuhook Motion UDP配信)"]:::egressLayer
+            Out_UDP["IUdpMotionService<br>(Cemuhook Motion UDP配信。Phase9 9-E E-3)"]:::egressLayer
             Out_LED["ILightbarService<br>(LED/ライトバー計算・出力指示)"]:::egressLayer
         end
     end

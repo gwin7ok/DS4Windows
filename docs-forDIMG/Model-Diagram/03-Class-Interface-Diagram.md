@@ -891,7 +891,7 @@ classDiagram
 %% Phase7-Step2（2026-10-17）: DI インターフェースの、本体の呼び出しが 0 件だったメンバー（削除 51 メンバー）を整理した。詳細は `Phase7-Step2-Plan.md` §2・§8。
 %% - `IProfileSettingsService`: 色・配列の重複アクセサ、`ProfileSettingChanged`／`Wire/UnwireSubSettingsEvents`、`ResetToDefaults` ほかを削除。
 %% - `IDeviceStateService`: デバイス一覧・接続状態・電池残量（常に空の孤立実装）を削除。初回接続判定とシリアル変更通知だけを持つ。`ControllersViewModel` を削除。
-%% - `IOutputSlotService`: `OutputDevices`／`GetOutputDevice`／`IsSlotPlugin` を削除。`IProfileRepository`、`ISpecialActionRepository`（メモリ上だけの `AddAction`／`ReplaceAction`／`RemoveAction`）、`IDs4DeviceRegistry`、`IVirtualKBM`、`IUdpServerService`、`INotificationService`、`IPathService` の孤立・重複メンバーを削除。
+%% - `IOutputSlotService`: `OutputDevices`／`GetOutputDevice`／`IsSlotPlugin` を削除。`IProfileRepository`、`ISpecialActionRepository`（メモリ上だけの `AddAction`／`ReplaceAction`／`RemoveAction`）、`IDs4DeviceRegistry`、`IVirtualKBM`、`IUdpServerService`［Phase9 9-E E-3 で、契約ごと削除。後継は `IUdpMotionService`］、`INotificationService`、`IPathService` の孤立・重複メンバーを削除。
 %% - 「使うべきだが未接続」として TODO 付きで残した契約: `IEnvironmentService.UsingMaxControllers`、`IDs4DeviceRegistry.ReEnableDevice`、`IOutputSlotService.LoadOutputSlots`／`SaveOutputSlots`、`OutputSlotChanged`（温存）。
 %%
 %% Phase7-Step3（2026-10-17）: `BackingStore` が DI のシングルトンになり、サービスの構成が変わった（クラス間の関係線は変わらない。依存が `Global` 経由から `BackingStore` の直接注入に変わった）。

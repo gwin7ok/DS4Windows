@@ -45,7 +45,7 @@
 │     ├─ DS4ReportParser / Encoder              │  │  3-c 副作用実行:                               │
 │     ├─ Vader4ProReportParser / Encoder        │  │      ├─ IProcessLauncher / ElevatedLauncher    │
 │     └─ DualSenseReportParser / Encoder        │  │         (IProfileSwitcher は第2層へ移した)│
-│                                               │  │      ├─ IUdpServerService (Cemuhook Motion)    │
+│                                               │  │      ├─ IUdpMotionService (Cemuhook Motion)    │
 │                                               │  │      └─ ILightbarService (LED/発光色計算)      │
 └───────────────────────────────────────────────┘  └───────────────────────────────────────────────┘
   ▲                                                  │

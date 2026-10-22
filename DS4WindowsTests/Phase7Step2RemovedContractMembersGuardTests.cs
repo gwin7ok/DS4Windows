@@ -34,7 +34,6 @@ namespace DS4WindowsTests
             },
             ["IOutputSlotService"] = new[] { "OutputDevices", "GetOutputDevice", "IsSlotPlugin" },
             ["IVirtualKBM"] = new[] { "ErrorMessage", "Version" },
-            ["IUdpServerService"] = new[] { "ListenAddress" },
             ["INotificationService"] = new[] { "NotificationsEnabled", "FlashTaskbar" },
             ["IPathService"] = new[] { "GetAutoProfilesPath", "ActionsPath" },
             ["IProfileRepository"] = new[] { "GetProfileNames", "ProfileExists", "LoadProfileToSlot", "LoadDefaultProfile" },
@@ -48,6 +47,8 @@ namespace DS4WindowsTests
             "DS4Windows/DI/DeviceStateChangedEventArgs.cs",
             "DS4Windows/DI/ProfileSettingChangedEventArgs.cs",
             "DS4Windows/DS4Forms/ViewModels/ControllersViewModel.cs",
+            "DS4Windows/DI/IUdpServerService.cs",   // Phase9 9-E E-3: 未接続の並行実装として削除（ユーザー承認）。UDP の窓口は IUdpMotionService
+            "DS4Windows/DS4Control/Services/UdpServerService.cs",
         };
 
         // 残した契約（本来使うべきだが、呼び出し側の切り替えが未実施。TODO 付き）
@@ -57,7 +58,6 @@ namespace DS4WindowsTests
             ["IDs4DeviceRegistry"] = new[] { "ReEnableDevice" },
             ["IOutputSlotService"] = new[] { "LoadOutputSlots", "SaveOutputSlots", "OutputSlotChanged" },
             ["IDeviceStateService"] = new[] { "IsFirstConnection", "MarkConnected", "ResetConnectionFlags", "OnDeviceSerialChange" },
-            ["IUdpServerService"] = new[] { "IsRunning", "Port", "Start", "Stop" },
         };
 
         private readonly ITestOutputHelper _output;

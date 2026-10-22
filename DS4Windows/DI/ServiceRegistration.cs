@@ -130,7 +130,7 @@ namespace DS4Windows.DI
             services.AddSingleton<IAppSettingsService, DS4Windows.Services.AppSettingsService>();
 
             // Phase 5 Step 10: UDP サーバーサービス（Cemuhook モーションサーバー境界化）
-            services.AddSingleton<IUdpServerService, UdpServerService>();
+            // Phase9 9-E E-3: 旧 IUdpServerService／UdpServerService（未接続の並行実装）は削除した（ユーザー承認）。UDP の窓口は IUdpMotionService
 
             // === 第3層: Actions基盤サービス ===
             services.AddSingleton<IKeyButtonActionControllerFactory, DefaultKeyButtonActionControllerFactory>();
