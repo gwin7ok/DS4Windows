@@ -196,6 +196,7 @@ namespace DS4Windows.DI
             services.AddSingleton<IVirtualPadService, VirtualPadService>();   // Phase9 9-E E-4: 仮想パッド（ViGEm）の出力。OutputSlotManager、割り当て、振動・ライトバーの戻り
             services.AddSingleton<Func<IVirtualPadService>>(sp => () => sp.GetRequiredService<IVirtualPadService>());   // OutputSlotService が遅延で取得する（循環を避ける）
             services.AddSingleton<Func<IVirtualPadHost>>(sp => () => sp.GetRequiredService<IVirtualPadHost>());   // VirtualPadService が遅延で取得する（実体は ControlService）
+            services.AddSingleton<Func<IOutputSlotService>>(sp => () => sp.GetRequiredService<IOutputSlotService>());   // VirtualPadService が遅延で取得する（循環を避ける）
             services.AddSingleton<IUdpMotionServerFactory, UdpMotionServerFactory>();   // Phase9 9-E E-3: UDP サーバー（UdpServer）の生成
             services.AddSingleton<IUdpMotionService, UdpMotionService>();   // Phase9 9-E E-3: UDP モーションの送出（サーバーの作成・開始・停止、ハンドラー、スムージング）
             services.AddSingleton<Func<IUdpMotionHost>>(sp => () => sp.GetRequiredService<IUdpMotionHost>());   // ControlService が部品を受けるため、遅延で取得（循環を避ける）
