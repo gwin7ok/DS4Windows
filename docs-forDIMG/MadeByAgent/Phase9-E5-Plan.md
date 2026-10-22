@@ -1,7 +1,7 @@
 # Phase9 9-E E-5（入力レポートの処理の切り出し）計画書
 
 作成日: 2026-10-22
-状態: **提案（承認待ち。§6 の質問に答えてから実装する）**
+状態: **承認済み（2026-10-22。§7）。実装済み（ビルド・テストはユーザーの実行待ち）**
 上位: `Phase9-E-Plan.md`（E-1〜E-4 は完了）、`Phase9-Responsibility-Split-Plan.md`
 
 ## 1. 目的と現状
@@ -63,3 +63,23 @@ ControlService は約 2,170 → 約 1,950 行になる見込み。
 - **Q1（範囲）**: 案 A（最小）／案 B（大）／案 C（切り出さない）。推奨は案 A。
 - **Q2（ActiveInputProbe）**: `GetActiveInputControl` を純粋な関数として出す（推奨）／ControlService に残す。
 - **Q3（進め方）**: 案 A なら、3 部品を 1 回でまとめて実装する（推奨。どれも小さい）／部品ごとに分けて、ビルド・テストを挟む。
+
+## 7. 決定事項（2026-10-22 承認）
+
+- **Q1＝案 A（最小）**: `On_Report` 本体は `ControlService` に残し、遅延の監視、タッチパッドの切り替え、押されている入力の探索の 3 部品だけを出す。高頻度の経路の構造は変えない。
+- **Q2＝純粋な関数として出す**: `GetActiveInputControl` の本体は `ActiveInputProbe`（状態なし）へ。`ControlService` に薄い委譲を残す。
+- **Q3＝3 部品を 1 回で**。
+
+## 8. 実装（2026-10-22）
+
+| 部品 | 契約（`DS4Windows/DI/`） | 実装（`DS4Windows/DS4Control/Services/`） | 移したもの |
+|---|---|---|---|
+| 遅延の監視 | `ILatencyMonitor` | `LatencyMonitor` | `On_Report` 先頭のエラーのログと遅延の監視、`LagFlashWarning`、状態 `lag`／`inWarnMonitor`／`tempStrings` |
+| タッチパッドの切り替え | `ITouchpadToggleService` | `TouchpadToggleService` | `CheckForTouchToggle`／`StartTPOff`／`TouchpadSlide`、状態 `touchreleased`／`touchslid` |
+| 押されている入力の探索 | `IActiveInputProbe` | `ActiveInputProbe` | `GetActiveInputControl` の本体（状態なし） |
+
+- `ControlService` の `lag`／`inWarnMonitor`（public の配列）は、外部の参照が 0 件だったため、部品の private に移して公開をやめた。
+- `ControlService` の `CheckForTouchToggle`／`StartTPOff`／`TouchpadSlide`／`GetActiveInputControl` は、薄い委譲として残した（画面とプロファイル読み込みが使う）。
+- ログは、各部品の `DebugMessage` イベントを `ControlService` が購読して、これまでどおり Debug イベントへ流す（文言とレベルは同じ）。
+- 切断・停止時の `lag[i] = false; inWarnMonitor[i] = false;` は `_latencyMonitor.Reset(i)` に置き換えた（呼び出す位置は同じ）。
+- テスト: `Phase9EInputReportPartsTests`（値の特性化）、`Phase9EInputReportGuardTests`（移したメンバーの不在、薄い委譲の存在、`On_Report` の呼び出し順序、DI 登録、静的な窓口の不参照）。`DS4Device`／`Mouse` は作れないため、それらを読まない経路を調べ、遅延の監視の本体は実機で担保する（台帳 §37）。

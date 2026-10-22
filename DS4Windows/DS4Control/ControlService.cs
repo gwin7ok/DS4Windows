@@ -155,6 +155,11 @@ namespace DS4Windows
         // Phase9 9-E E-2: 旧 hidDeviceHiding*（HidHide の状態）は HidHideService へ移した
         private readonly DI.IHidHideService _hidHideService;
 
+        // Phase9 9-E E-5: 入力レポートの処理から切り出した部品（遅延の監視、タッチパッドの切り替え、押されている入力の探索）
+        private readonly DI.ILatencyMonitor _latencyMonitor;
+        private readonly DI.ITouchpadToggleService _touchpadToggle;
+        private readonly DI.IActiveInputProbe _activeInputProbe;
+
         private ControlServiceDeviceOptions deviceOptions;
         public ControlServiceDeviceOptions DeviceOptions { get => deviceOptions; }
 
@@ -260,7 +265,10 @@ namespace DS4Windows
             DI.IOscService oscService,
             DI.IHidHideService hidHideService,
             DI.IUdpMotionService udpMotionService,
-            DI.IVirtualPadService virtualPadService)
+            DI.IVirtualPadService virtualPadService,
+            DI.ILatencyMonitor latencyMonitor,
+            DI.ITouchpadToggleService touchpadToggle,
+            DI.IActiveInputProbe activeInputProbe)
         {
             this.cmdParser = cmdParser;
             this._deviceRegistry = deviceRegistry;
@@ -291,6 +299,12 @@ namespace DS4Windows
             this._hidHideService = hidHideService ?? throw new ArgumentNullException(nameof(hidHideService));
             this._udpMotion = udpMotionService ?? throw new ArgumentNullException(nameof(udpMotionService));
             this._virtualPad = virtualPadService ?? throw new ArgumentNullException(nameof(virtualPadService));
+            this._latencyMonitor = latencyMonitor ?? throw new ArgumentNullException(nameof(latencyMonitor));
+            this._touchpadToggle = touchpadToggle ?? throw new ArgumentNullException(nameof(touchpadToggle));
+            this._activeInputProbe = activeInputProbe ?? throw new ArgumentNullException(nameof(activeInputProbe));
+            // 遅延の監視・タッチパッドの切り替えのログも、これまでどおり ControlService の Debug イベントへ流す
+            this._latencyMonitor.DebugMessage += (data, warning) => LogDebug(data, warning);
+            this._touchpadToggle.DebugMessage += (data, warning) => LogDebug(data, warning);
             // 仮想パッド系のログも、これまでどおり ControlService の Debug イベントへ流す
             this._virtualPad.DebugMessage += (data, warning) => LogDebug(data, warning);
             // UDP モーションのログも、これまでどおり ControlService の Debug イベントへ流す
@@ -926,8 +940,7 @@ namespace DS4Windows
                         DS4Controllers[i] = null;
                         _oscService.ResetDeviceState(i);
                         touchPad[i] = null;
-                        lag[i] = false;
-                        inWarnMonitor[i] = false;
+                        _latencyMonitor.Reset(i);
                     }
                 }
 
@@ -1693,8 +1706,7 @@ namespace DS4Windows
                     //});
 
                     touchPad[ind] = null;
-                    lag[ind] = false;
-                    inWarnMonitor[ind] = false;
+                    _latencyMonitor.Reset(ind);
                     _profileSettings.UseDInputOnlyArray[ind] = true;
                     ActiveOutDevType[ind] = OutContType.None;
                     /* Leave up to Auto Profile system to change the following flags? */
@@ -1707,44 +1719,14 @@ namespace DS4Windows
             }
         }
 
-        public bool[] lag = new bool[MAX_DS4_CONTROLLER_COUNT] { false, false, false, false, false, false, false, false };
-        public bool[] inWarnMonitor = new bool[MAX_DS4_CONTROLLER_COUNT] { false, false, false, false, false, false, false, false };
-        private byte[] currentBattery = new byte[MAX_DS4_CONTROLLER_COUNT] { 0, 0, 0, 0, 0, 0, 0, 0 };
-        private bool[] charging = new bool[MAX_DS4_CONTROLLER_COUNT] { false, false, false, false, false, false, false, false };
-        private string[] tempStrings = new string[MAX_DS4_CONTROLLER_COUNT] { string.Empty, string.Empty, string.Empty, string.Empty, string.Empty, string.Empty, string.Empty, string.Empty };
+        // Phase9 9-E E-5: 旧 lag／inWarnMonitor／tempStrings（遅延の監視の状態）は LatencyMonitor へ移した。
 
         // Called every time a new input report has arrived
         protected void On_Report(DS4Device device, EventArgs e, int ind)
         {
             if (ind != -1)
             {
-                string devError = tempStrings[ind] = device.error;
-                if (!string.IsNullOrEmpty(devError))
-                {
-                    LogDebug(devError);
-                }
-
-                if (inWarnMonitor[ind])
-                {
-                    int flashWhenLateAt = _appSettings.FlashWhenLateAt;
-                    if (!lag[ind] && device.Latency >= flashWhenLateAt)
-                    {
-                        lag[ind] = true;
-                        LagFlashWarning(device, ind, true);
-                    }
-                    else if (lag[ind] && device.Latency < flashWhenLateAt)
-                    {
-                        lag[ind] = false;
-                        LagFlashWarning(device, ind, false);
-                    }
-                }
-                else
-                {
-                    if (DateTime.UtcNow - device.firstActive > TimeSpan.FromSeconds(5))
-                    {
-                        inWarnMonitor[ind] = true;
-                    }
-                }
+                _latencyMonitor.OnReport(device, ind);
 
                 DS4State cState, tempControlState;
                 if (!device.PerformStateMerge)
@@ -1832,7 +1814,7 @@ namespace DS4Windows
 
                 if (_profileSettings.GetEnableTouchToggle(ind))
                 {
-                    CheckForTouchToggle(ind, cState, pState);
+                    _touchpadToggle.CheckForToggle(ind, cState, pState);
                 }
 
                 cState = device.Debouncer.ProcessInput(cState);
@@ -1944,164 +1926,29 @@ namespace DS4Windows
 
         // Phase9 9-E E-1: 旧 OSCPostMappingStep／OSCPreMappingStep／CompareAndSendChangesToOSC（OSC の入力への重ね合わせと変化の送信）は OscService へ移した。
 
-        private void LagFlashWarning(DS4Device device, int ind, bool on)
-        {
-            if (on)
-            {
-                lag[ind] = true;
-                LogDebug(string.Format(DS4WinWPF.Properties.Resources.LatencyOverTen, (ind + 1), device.Latency), true);
-                if (_appSettings.FlashWhenLate)
-                {
-                    DS4Color color = new DS4Color { red = 50, green = 0, blue = 0 };
-                    DS4LightBar.forcedColor[ind] = color;
-                    DS4LightBar.forcedFlash[ind] = 2;
-                    DS4LightBar.forcelight[ind] = true;
-                }
-            }
-            else
-            {
-                lag[ind] = false;
-                LogDebug(DS4WinWPF.Properties.Resources.LatencyNotOverTen.Replace("*number*", (ind + 1).ToString()));
-                DS4LightBar.forcelight[ind] = false;
-                DS4LightBar.forcedFlash[ind] = 0;
-                device.LightBarColor = _profileSettings.GetMainColor(ind);
-            }
-        }
-
+        // Phase9 9-E E-5: 判定の本体（約 70 行）は ActiveInputProbe へ移した
         public DS4Controls GetActiveInputControl(int ind)
         {
-            DS4State cState = CurrentState[ind];
-            DS4StateExposed eState = ExposedState[ind];
-            Mouse tp = touchPad[ind];
-            DS4Controls result = DS4Controls.None;
-
-            if (DS4Controllers[ind] != null)
-            {
-                if (Mapping.getBoolButtonMapping(cState.Cross))
-                    result = DS4Controls.Cross;
-                else if (Mapping.getBoolButtonMapping(cState.Circle))
-                    result = DS4Controls.Circle;
-                else if (Mapping.getBoolButtonMapping(cState.Triangle))
-                    result = DS4Controls.Triangle;
-                else if (Mapping.getBoolButtonMapping(cState.Square))
-                    result = DS4Controls.Square;
-                else if (Mapping.getBoolButtonMapping(cState.L1))
-                    result = DS4Controls.L1;
-                else if (Mapping.getBoolTriggerMapping(cState.L2))
-                    result = DS4Controls.L2;
-                else if (Mapping.getBoolButtonMapping(cState.L3))
-                    result = DS4Controls.L3;
-                else if (Mapping.getBoolButtonMapping(cState.R1))
-                    result = DS4Controls.R1;
-                else if (Mapping.getBoolTriggerMapping(cState.R2))
-                    result = DS4Controls.R2;
-                else if (Mapping.getBoolButtonMapping(cState.R3))
-                    result = DS4Controls.R3;
-                else if (Mapping.getBoolButtonMapping(cState.DpadUp))
-                    result = DS4Controls.DpadUp;
-                else if (Mapping.getBoolButtonMapping(cState.DpadDown))
-                    result = DS4Controls.DpadDown;
-                else if (Mapping.getBoolButtonMapping(cState.DpadLeft))
-                    result = DS4Controls.DpadLeft;
-                else if (Mapping.getBoolButtonMapping(cState.DpadRight))
-                    result = DS4Controls.DpadRight;
-                else if (Mapping.getBoolButtonMapping(cState.Share))
-                    result = DS4Controls.Share;
-                else if (Mapping.getBoolButtonMapping(cState.Options))
-                    result = DS4Controls.Options;
-                else if (Mapping.getBoolButtonMapping(cState.PS))
-                    result = DS4Controls.PS;
-                else if (Mapping.getBoolAxisDirMapping(cState.LX, true))
-                    result = DS4Controls.LXPos;
-                else if (Mapping.getBoolAxisDirMapping(cState.LX, false))
-                    result = DS4Controls.LXNeg;
-                else if (Mapping.getBoolAxisDirMapping(cState.LY, true))
-                    result = DS4Controls.LYPos;
-                else if (Mapping.getBoolAxisDirMapping(cState.LY, false))
-                    result = DS4Controls.LYNeg;
-                else if (Mapping.getBoolAxisDirMapping(cState.RX, true))
-                    result = DS4Controls.RXPos;
-                else if (Mapping.getBoolAxisDirMapping(cState.RX, false))
-                    result = DS4Controls.RXNeg;
-                else if (Mapping.getBoolAxisDirMapping(cState.RY, true))
-                    result = DS4Controls.RYPos;
-                else if (Mapping.getBoolAxisDirMapping(cState.RY, false))
-                    result = DS4Controls.RYNeg;
-                else if (Mapping.getBoolTouchMapping(tp.leftDown))
-                    result = DS4Controls.TouchLeft;
-                else if (Mapping.getBoolTouchMapping(tp.rightDown))
-                    result = DS4Controls.TouchRight;
-                else if (Mapping.getBoolTouchMapping(tp.multiDown))
-                    result = DS4Controls.TouchMulti;
-                else if (Mapping.getBoolTouchMapping(tp.upperDown))
-                    result = DS4Controls.TouchUpper;
-            }
-
-            return result;
+            return _activeInputProbe.GetActive(CurrentState[ind], touchPad[ind], DS4Controllers[ind] != null);
         }
-
-        public bool[] touchreleased = new bool[MAX_DS4_CONTROLLER_COUNT] { true, true, true, true, true, true, true, true },
-            touchslid = new bool[MAX_DS4_CONTROLLER_COUNT] { false, false, false, false, false, false, false, false };
 
         public Dispatcher EventDispatcher { get => eventDispatcher; }
         public OutputSlotManager OutputslotMan { get => _virtualPad.OutputSlotManager; }
 
+        // Phase9 9-E E-5: 判定の本体は TouchpadToggleService へ移した（状態 touchreleased／touchslid も）
         protected void CheckForTouchToggle(int deviceID, DS4State cState, DS4State pState)
         {
-            if (_profileSettings.TouchOutMode[deviceID] != TouchpadOutMode.Controls && cState.Touch1 && pState.PS)
-            {
-                if (_profileSettings.TouchpadActiveArray[deviceID] && touchreleased[deviceID])
-                {
-                    _profileSettings.TouchpadActiveArray[deviceID] = false;
-                    LogDebug(DS4WinWPF.Properties.Resources.TouchpadMovementOff);
-                    AppLogger.LogToTray(DS4WinWPF.Properties.Resources.TouchpadMovementOff);
-                    touchreleased[deviceID] = false;
-                }
-                else if (touchreleased[deviceID])
-                {
-                    _profileSettings.TouchpadActiveArray[deviceID] = true;
-                    LogDebug(DS4WinWPF.Properties.Resources.TouchpadMovementOn);
-                    AppLogger.LogToTray(DS4WinWPF.Properties.Resources.TouchpadMovementOn);
-                    touchreleased[deviceID] = false;
-                }
-            }
-            else
-                touchreleased[deviceID] = true;
+            _touchpadToggle.CheckForToggle(deviceID, cState, pState);
         }
 
         public void StartTPOff(int deviceID)
         {
-            if (deviceID < _controllerSlotLimit)
-            {
-                _profileSettings.TouchpadActiveArray[deviceID] = false;
-            }
+            _touchpadToggle.StartTouchpadOff(deviceID);
         }
 
         public string TouchpadSlide(int ind)
         {
-            DS4State cState = CurrentState[ind];
-            string slidedir = "none";
-            if (DS4Controllers[ind] != null && cState.Touch2 &&
-               !(touchPad[ind].dragging || touchPad[ind].dragging2))
-            {
-                if (touchPad[ind].slideright && !touchslid[ind])
-                {
-                    slidedir = "right";
-                    touchslid[ind] = true;
-                }
-                else if (touchPad[ind].slideleft && !touchslid[ind])
-                {
-                    slidedir = "left";
-                    touchslid[ind] = true;
-                }
-                else if (!touchPad[ind].slideleft && !touchPad[ind].slideright)
-                {
-                    slidedir = "";
-                    touchslid[ind] = false;
-                }
-            }
-
-            return slidedir;
+            return _touchpadToggle.Slide(ind, CurrentState[ind], touchPad[ind], DS4Controllers[ind] != null);
         }
 
         public void LogDebug(String Data, bool warning = false)

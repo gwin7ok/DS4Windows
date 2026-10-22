@@ -314,6 +314,24 @@ classDiagram
         +QueueOnEventThread(Action action)
     }
     class VirtualPadService
+    class ILatencyMonitor {
+        <<interface>>
+        +OnReport(DS4Device device, int ind)
+        +Reset(int ind)
+    }
+    class ITouchpadToggleService {
+        <<interface>>
+        +CheckForToggle(int deviceID, DS4State cState, DS4State pState)
+        +StartTouchpadOff(int deviceID)
+        +Slide(int ind, DS4State cState, Mouse touchPad, bool connected) string
+    }
+    class IActiveInputProbe {
+        <<interface>>
+        +GetActive(DS4State cState, Mouse tp, bool connected) DS4Controls
+    }
+    class LatencyMonitor
+    class TouchpadToggleService
+    class ActiveInputProbe
     class IUdpMotionService {
         <<interface>>
         +HasServer bool
@@ -384,6 +402,12 @@ classDiagram
     VirtualPadService --> IVirtualPadHost : Func による遅延取得（循環を避ける）
     VirtualPadService --> OutputSlotManager : 所有（旧: ControlService）
     OutputSlotService --> IVirtualPadService : 抜き差しの窓口（Phase9 9-E E-4。旧: ControlService への逆依存）
+    ILatencyMonitor <|.. LatencyMonitor : implements
+    ITouchpadToggleService <|.. TouchpadToggleService : implements
+    IActiveInputProbe <|.. ActiveInputProbe : implements
+    ControlService --> ILatencyMonitor : ctor injection（Phase9 9-E E-5。On_Report の遅延の監視）
+    ControlService --> ITouchpadToggleService : ctor injection（Phase9 9-E E-5。タッチパッドの切り替え・スライド）
+    ControlService --> IActiveInputProbe : ctor injection（Phase9 9-E E-5。押されている入力の探索）
     ControlService --> IVirtualPadService : ctor injection（PluginOutDev／UnplugOutDev／OutputslotMan／outputDevices は窓口）
     IUdpMotionServerFactory <|.. UdpMotionServerFactory : implements
     ControlService ..|> IUdpMotionHost : implements（Phase9 9-E E-3）
