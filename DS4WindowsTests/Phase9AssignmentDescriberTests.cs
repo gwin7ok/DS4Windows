@@ -60,7 +60,7 @@ namespace DS4WindowsTests
         {
             DS4ControlSettings withExtras = Setting(DS4ControlSettings.ActionType.Default);
             withExtras.extras = "100,50,1,10,20,30,5,1,7";
-            Assert.Equal("Default (Cross) + Extras", AssignmentDescriber.ForControl(withExtras, Name, X360Controls.A, false, "Unassigned"));
+            Assert.Equal("Default (A) + Extras", AssignmentDescriber.ForControl(withExtras, Name, X360Controls.A, false, "Unassigned"));
 
             DS4ControlSettings empty = Setting(DS4ControlSettings.ActionType.Default);
             empty.extras = "0,0,0,0,0,0,0,0,0";
