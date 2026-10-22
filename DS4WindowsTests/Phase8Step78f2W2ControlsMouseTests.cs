@@ -121,8 +121,9 @@ namespace DS4WindowsTests
             Assert.IsType<ControlTouchpadClickOutputAction>(Assert.Single(touch.Outputs));
 
             IActionBinding mouseToggle = Assert.Single(bindings, b => b.Source.name == $"Synthetic_Mouse_{Device}_{(int)DS4Controls.Circle}");
-            Assert.IsType<ControlMouseOutputAction>(mouseToggle.Outputs[0]);
-            Assert.IsType<ControlToggleOutputAction>(mouseToggle.Outputs[1]);
+            // Phase9: マウスのボタン＋Toggle は、SA の Button と同じ出力（ボタンごとの Toggle の状態）
+            Assert.IsType<ButtonOutputAction>(Assert.Single(mouseToggle.Outputs));
+            Assert.True(mouseToggle.Policy.ErasesOutputEveryFrame);
 
             // パッド＋Toggle（Phase9: Controls のパッドボタンの Toggle）: SA の Button と同じ出力（ButtonOutputAction）が、Toggle の反転と出力を担う。
             // 元のボタンの通常の出力は、方針（毎フレーム消す）で消える
@@ -161,35 +162,47 @@ namespace DS4WindowsTests
         }
 
         [Fact]
-        public void Toggle_FlipsOnceAtTheRisingEdge_NotEveryFrame()
+        public void Toggle_FlipsOnceAtTheRisingEdge_AndHoldsTheClickWhileOn()
         {
+            // Phase9: 旧テストはデバイスの toggle フラグを見ていた。SA の Button と同じ部品になり、ON の間は、クリックが押され続ける（ボタンごとの状態）
             using var t = new ControlsKeyTestScope();
             t.MapButton(DS4Controls.Cross, X360Controls.LeftMouse, DS4KeyType.Toggle);
             t.Publish();
 
-            SyntheticState state = t.Scope.Synthetic.DeviceState[t.Device];
-            var reset = state.currentClicks;
-            reset.toggle = false;
-            state.currentClicks = reset;
-            state.previousClicks = reset;
-
             DS4State held = ControlsKeyTestScope.Neutral();
             held.Cross = true;
 
+            Assert.Equal(0, Frame(t, ControlsKeyTestScope.Neutral()).Left);
+
             var frames = new (bool Toggle, int ToggleCount, int Left)[4];
             for (int i = 0; i < frames.Length; i++) frames[i] = Frame(t, held);
-            _output.WriteLine($"[7.8f-2 W2 migrated] toggle while held: {string.Join(",", frames.Select(f => f.Toggle))}");
+            Assert.All(frames, f => Assert.Equal(1, f.Left));                 // 立ち上がりで ON。押している間は、そのまま
 
-            Assert.All(frames, f => Assert.True(f.Toggle));                  // 立ち上がりで 1 回だけ反転。押している間は変わらない
-            Assert.All(frames, f => Assert.Equal(1, f.ToggleCount));          // 数は、旧経路と同じく毎フレーム 1
-            Assert.All(frames, f => Assert.Equal(1, f.Left));
+            Assert.Equal(1, Frame(t, ControlsKeyTestScope.Neutral()).Left);   // 離しても、ON のまま
 
-            var released = Frame(t, ControlsKeyTestScope.Neutral());
-            Assert.Equal(0, released.ToggleCount);
-            Assert.True(released.Toggle);                                     // 離しても、値はそのまま
+            Assert.Equal(0, Frame(t, held).Left);                             // もう一度押すと OFF
+            Assert.Equal(0, Frame(t, ControlsKeyTestScope.Neutral()).Left);
+        }
 
-            // もう一度押すと、もう 1 回反転する（押す→離す の 2 回目は「離す」の合図）
-            Assert.False(Frame(t, held).Toggle);
+        [Fact]
+        public void TwoToggledMouseButtons_KeepTheirOwnState()
+        {
+            // Phase9: 以前は、デバイスに 1 つの toggle フラグを共有し、2 つの Toggle が連動した
+            using var t = new ControlsKeyTestScope();
+            t.MapButton(DS4Controls.Cross, X360Controls.LeftMouse, DS4KeyType.Toggle);
+            t.MapButton(DS4Controls.Circle, X360Controls.RightMouse, DS4KeyType.Toggle);
+            t.Publish();
+
+            DS4State crossHeld = ControlsKeyTestScope.Neutral();
+            crossHeld.Cross = true;
+
+            t.Run(ControlsKeyTestScope.Neutral());
+            t.Run(crossHeld);                                    // Cross だけ ON にする
+            t.Run(ControlsKeyTestScope.Neutral());
+
+            SyntheticState state = t.Scope.Synthetic.DeviceState[t.Device];
+            Assert.Equal(1, state.currentClicks.leftCount);
+            Assert.Equal(0, state.currentClicks.rightCount);     // Circle は、連動して ON にならない
         }
 
         // ---- ソースのガード ----

@@ -304,12 +304,36 @@ namespace DS4Windows.Services
                         {
                             if (!mice) break;
                             if (hasExtras) AddExtras(device, dcs, extrasValues, result);
+
+                            // Phase9: マウスのボタン等の Toggle も、SA の Button と同じ部品（ボタンごとの状態）で処理する。作れないときは、従来の束縛
+                            if (toggle && ControlsAssignmentReader.TryReadMouseToggle(device, dcs, out AssignmentDefinition mouseToggle, out SpecialAction mouseToggleIdentity))
+                            {
+                                TriggerBinding mouseToggleBinding = _assignmentBuilder.Build(device, mouseToggle, mouseToggleIdentity, -1);
+                                if (mouseToggleBinding != null)
+                                {
+                                    result.Add(mouseToggleBinding);
+                                    break;
+                                }
+                            }
+
                             AddMouse(device, dcs, mouseTarget, toggle, result);
                         }
                         else if (TryInterpretAnalogMouse(dcs, out X360Controls analogTarget))
                         {
                             if (!analogMice) break;
                             if (hasExtras) AddExtras(device, dcs, extrasValues, result);
+
+                            // Phase9: マウスの移動・アナログのホイールの Toggle も、SA の Button と同じ部品で処理する（以前は、Toggle が移動に効かなかった）。作れないときは、従来の束縛
+                            if (toggle && ControlsAssignmentReader.TryReadAnalogMouseToggle(device, dcs, out AssignmentDefinition analogToggle, out SpecialAction analogToggleIdentity))
+                            {
+                                TriggerBinding analogToggleBinding = _assignmentBuilder.Build(device, analogToggle, analogToggleIdentity, -1);
+                                if (analogToggleBinding != null)
+                                {
+                                    result.Add(analogToggleBinding);
+                                    break;
+                                }
+                            }
+
                             AddAnalogMouse(device, dcs, analogTarget, toggle, result);
                         }
                         else if (pads && TryInterpretPadTarget(dcs, out PadBindingValues pad, out bool eraseOnly))

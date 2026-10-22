@@ -90,8 +90,9 @@ namespace DS4WindowsTests
             Assert.IsType<ControlAnalogWheelOutputAction>(Assert.Single(wheel.Outputs));
 
             IActionBinding toggled = Assert.Single(bindings, b => b.Source.name == $"Synthetic_AnalogMouse_{Device}_{(int)DS4Controls.Circle}");
-            Assert.IsType<ControlMouseMoveOutputAction>(toggled.Outputs[0]);
-            Assert.IsType<ControlToggleOutputAction>(toggled.Outputs[1]);
+            // Phase9: マウス移動＋Toggle は、SA の Button と同じ出力（以前は Toggle の出力が移動に効かなかった。ON の間は固定量で動く）
+            Assert.IsType<ButtonOutputAction>(Assert.Single(toggled.Outputs));
+            Assert.True(toggled.Policy.ErasesOutputEveryFrame);
         }
 
         [Fact]

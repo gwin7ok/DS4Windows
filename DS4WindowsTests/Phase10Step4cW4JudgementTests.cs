@@ -75,7 +75,8 @@ namespace DS4WindowsTests
             Assert.Equal(ControlOutputNature.Digital, Of("Synthetic_Mouse", DS4Controls.Circle));
             // Phase9（Controls のパッドボタンの Toggle）: パッドの軸 + Toggle も、SA の Button と同じ部品（ON の間は端まで出す）になり、SA と同じ閾値（デジタル）で判定する
             Assert.Equal(ControlOutputNature.Digital, Of("Synthetic_Pad", DS4Controls.Share));
-            Assert.Equal(ControlOutputNature.Analog, Of("Synthetic_AnalogMouse", DS4Controls.Square));
+            // Phase9: マウスの移動 + Toggle も、SA の Button と同じ部品（SA と同じ閾値のデジタルな判定）
+            Assert.Equal(ControlOutputNature.Digital, Of("Synthetic_AnalogMouse", DS4Controls.Square));
         }
     }
 }

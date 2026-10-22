@@ -55,7 +55,7 @@ namespace DS4Windows.Services
         }
 
         /// <summary>
-        /// Phase9（Controls のパッドボタンの Toggle。Phase9-ControlsPadToggle-Plan.md）: Toggle つきの Button で、出力先が仮想パッド（ボタン・軸・トリガー）のものを、
+        /// Phase9（Controls のパッドボタン等の Toggle。Phase9-ControlsPadToggle-Plan.md）: Toggle つきの Button で、出力先が仮想パッド（ボタン・軸・トリガー）のものを、
         /// SA の Button と同じ定義にする。Toggle の規則（立ち上がりで反転し、ON の間は出力する。軸・トリガーは強さ 100%）は、SA と同じ <c>ButtonOutputAction</c> が担う。
         /// 実行時の状態の入れ物は、これまでのパッドの束縛と同じ名前（<c>Synthetic_Pad_{device}_{control}</c>）。
         /// 条件を満たさないとき（Toggle なし、出力先がマウスなど、出力先なし［Unbound］）は偽。
@@ -67,7 +67,40 @@ namespace DS4Windows.Services
             if (dcs == null || !dcs.keyType.HasFlag(DS4KeyType.Toggle)) return false;
             if (!ControlBindingBuilder.TryInterpretPadTarget(dcs, out _, out bool eraseOnly) || eraseOnly) return false;
 
-            string name = $"Synthetic_Pad_{device}_{(int)dcs.control}";
+            return TryBuildButtonToggle(device, dcs, "Synthetic_Pad", out definition, out source);
+        }
+
+        /// <summary>
+        /// Phase9: Toggle つきの Button で、出力先がマウスのボタン・タッチパッドクリック・デジタルのホイールのものを、SA の Button と同じ定義にする（名前は <c>Synthetic_Mouse_...</c>）。
+        /// 以前は、デバイスに 1 つだけの toggle フラグ（<c>ControlToggleOutputAction</c>）を使い、Toggle つきのボタンが複数あると、状態が連動した。ボタンごとの状態になる。
+        /// </summary>
+        public static bool TryReadMouseToggle(int device, DS4ControlSettings dcs, out AssignmentDefinition definition, out SpecialAction source)
+        {
+            definition = null;
+            source = null;
+            if (dcs == null || !dcs.keyType.HasFlag(DS4KeyType.Toggle)) return false;
+            if (!ControlBindingBuilder.TryInterpretMouse(dcs, out _)) return false;
+
+            return TryBuildButtonToggle(device, dcs, "Synthetic_Mouse", out definition, out source);
+        }
+
+        /// <summary>
+        /// Phase9: Toggle つきの Button で、出力先がマウスの移動・アナログのホイール（元がスティック・トリガー・ジャイロ）のものを、SA の Button と同じ定義にする
+        /// （名前は <c>Synthetic_AnalogMouse_...</c>）。以前は、Toggle の出力が移動に効かず、Toggle にならなかった。ON の間は、SA と同じ固定量（強さ 100%）で動かす。
+        /// </summary>
+        public static bool TryReadAnalogMouseToggle(int device, DS4ControlSettings dcs, out AssignmentDefinition definition, out SpecialAction source)
+        {
+            definition = null;
+            source = null;
+            if (dcs == null || !dcs.keyType.HasFlag(DS4KeyType.Toggle)) return false;
+            if (!ControlBindingBuilder.TryInterpretAnalogMouse(dcs, out _)) return false;
+
+            return TryBuildButtonToggle(device, dcs, "Synthetic_AnalogMouse", out definition, out source);
+        }
+
+        private static bool TryBuildButtonToggle(int device, DS4ControlSettings dcs, string namePrefix, out AssignmentDefinition definition, out SpecialAction source)
+        {
+            string name = $"{namePrefix}_{device}_{(int)dcs.control}";
             var identity = new SpecialAction(name, "Synthetic", "Button", "Button", 0, string.Empty);
             identity.typeID = SpecialAction.ActionTypeId.Button;
             identity.type = "Button";
