@@ -637,139 +637,15 @@ namespace DS4Windows
                 }
             }
 
-            // Process L2
-            TriggerOutputSettings l2TriggerSettings = profileSettings.L2OutputSettings[device];
-            DS4ControlSettings dcsTemp = controlSetGroup.L2;
-            if (l2TriggerSettings.twoStageMode == TwoStageTriggerMode.Disabled)
-            {
-                ProcessControlSettingAction(dcsTemp, device, cState, MappedState, eState,
-                    tp, fieldMapping, outputfieldMapping, deviceState, ref tempMouseDeltaX,
-                    ref tempMouseDeltaY, ctrl);
-            }
-            else
-            {
-                DS4ControlSettings l2FullPull = controlSetGroup.L2FullPull;
-                TwoStageTriggerMappingData l2TwoStageData = l2TwoStageMappingData[device];
-                _twoStageTrigger.Process(device, cState.L2, cState.L2Raw, ref dcsTemp, ref l2FullPull,
-                    l2TriggerSettings, l2TwoStageData, out DS4ControlSettings outputSoftPull, out DS4ControlSettings outputFullPull);
-
-                TwoStageTriggerMappingData.ActiveZoneButtons tempButtons = TwoStageTriggerMappingData.ActiveZoneButtons.None;
-                // Check for Soft Pull activation
-                if (outputSoftPull != null ||
-                    (l2TwoStageData.previousActiveButtons & TwoStageTriggerMappingData.ActiveZoneButtons.SoftPull) != 0)
-                {
-                    if (outputSoftPull != null)
-                    {
-                        tempButtons |= TwoStageTriggerMappingData.ActiveZoneButtons.SoftPull;
-                    }
-                    else
-                    {
-                        // Need to reset input state so output binding is not activated.
-                        // Used to de-activate Extras
-                        fieldMapping.triggers[(int)DS4Controls.L2] = 0;
-                        outputfieldMapping.triggers[(int)DS4Controls.L2] = 0;
-                    }
-
-                    ProcessControlSettingAction(dcsTemp, device, cState, MappedState, eState,
-                        tp, fieldMapping, outputfieldMapping, deviceState, ref tempMouseDeltaX,
-                        ref tempMouseDeltaY, ctrl);
-                }
-                else
-                {
-                    // Soft Pull binding not engaged
-                    outputfieldMapping.triggers[(int)DS4Controls.L2] = 0;
-                }
-
-                // Check for Full Pull activation
-                if (outputFullPull != null ||
-                    (l2TwoStageData.previousActiveButtons & TwoStageTriggerMappingData.ActiveZoneButtons.FullPull) != 0)
-                {
-                    if (outputFullPull != null)
-                    {
-                        tempButtons |= TwoStageTriggerMappingData.ActiveZoneButtons.FullPull;
-                    }
-                    else
-                    {
-                        // Need to reset input state so output binding is not activated.
-                        // Used to de-activate Extras
-                        fieldMapping.buttons[(int)DS4Controls.L2FullPull] = false;
-                    }
-
-                    ProcessControlSettingAction(l2FullPull, device, cState, MappedState, eState,
-                        tp, fieldMapping, outputfieldMapping, deviceState, ref tempMouseDeltaX,
-                        ref tempMouseDeltaY, ctrl);
-                }
-
-                // Store active buttons state
-                l2TwoStageData.previousActiveButtons = tempButtons;
-            }
-
-            // Process R2
-            TriggerOutputSettings r2TriggerSettings = profileSettings.R2OutputSettings[device];
-            dcsTemp = controlSetGroup.R2;
-            if (r2TriggerSettings.twoStageMode == TwoStageTriggerMode.Disabled)
-            {
-                ProcessControlSettingAction(dcsTemp, device, cState, MappedState, eState,
-                    tp, fieldMapping, outputfieldMapping, deviceState, ref tempMouseDeltaX,
-                    ref tempMouseDeltaY, ctrl);
-            }
-            else
-            {
-                DS4ControlSettings r2FullPull = controlSetGroup.R2FullPull;
-                TwoStageTriggerMappingData r2TwoStageData = r2TwoStageMappingData[device];
-                _twoStageTrigger.Process(device, cState.R2, cState.R2Raw, ref dcsTemp, ref r2FullPull,
-                    r2TriggerSettings, r2TwoStageData, out DS4ControlSettings outputSoftPull, out DS4ControlSettings outputFullPull);
-
-                TwoStageTriggerMappingData.ActiveZoneButtons tempButtons = TwoStageTriggerMappingData.ActiveZoneButtons.None;
-                // Check for Soft Pull activation
-                if (outputSoftPull != null ||
-                    (r2TwoStageData.previousActiveButtons & TwoStageTriggerMappingData.ActiveZoneButtons.SoftPull) != 0)
-                {
-                    if (outputSoftPull != null)
-                    {
-                        tempButtons |= TwoStageTriggerMappingData.ActiveZoneButtons.SoftPull;
-                    }
-                    else
-                    {
-                        // Need to reset input state so output binding is not activated.
-                        // Used to de-activate Extras
-                        fieldMapping.triggers[(int)DS4Controls.R2] = 0;
-                        outputfieldMapping.triggers[(int)DS4Controls.R2] = 0;
-                    }
-
-                    ProcessControlSettingAction(dcsTemp, device, cState, MappedState, eState,
-                        tp, fieldMapping, outputfieldMapping, deviceState, ref tempMouseDeltaX,
-                        ref tempMouseDeltaY, ctrl);
-                }
-                else
-                {
-                    // Soft Pull binding not engaged
-                    outputfieldMapping.triggers[(int)DS4Controls.R2] = 0;
-                }
-
-                // Check for Full Pull activation
-                if (outputFullPull != null ||
-                    (r2TwoStageData.previousActiveButtons & TwoStageTriggerMappingData.ActiveZoneButtons.FullPull) != 0)
-                {
-                    if (outputFullPull != null)
-                    {
-                        tempButtons |= TwoStageTriggerMappingData.ActiveZoneButtons.FullPull;
-                    }
-                    else
-                    {
-                        // Need to reset input state so output binding is not activated.
-                        // Used to de-activate Extras
-                        fieldMapping.buttons[(int)DS4Controls.R2FullPull] = false;
-                    }
-
-                    ProcessControlSettingAction(r2FullPull, device, cState, MappedState, eState,
-                        tp, fieldMapping, outputfieldMapping, deviceState, ref tempMouseDeltaX,
-                        ref tempMouseDeltaY, ctrl);
-                }
-
-                // Store active buttons state
-                r2TwoStageData.previousActiveButtons = tempButtons;
-            }
+            // Process L2／R2（Phase9 MapCustom の分割 M3b: 左右で同じコードが 2 回あった［約 130 行］。L2 → R2 の順は変えない）
+            ProcessTriggerWithTwoStage(device, cState, MappedState, eState, tp, fieldMapping, outputfieldMapping, deviceState,
+                ref tempMouseDeltaX, ref tempMouseDeltaY, ctrl,
+                controlSetGroup.L2, controlSetGroup.L2FullPull, DS4Controls.L2, DS4Controls.L2FullPull,
+                cState.L2, cState.L2Raw, profileSettings.L2OutputSettings[device], l2TwoStageMappingData[device]);
+            ProcessTriggerWithTwoStage(device, cState, MappedState, eState, tp, fieldMapping, outputfieldMapping, deviceState,
+                ref tempMouseDeltaX, ref tempMouseDeltaY, ctrl,
+                controlSetGroup.R2, controlSetGroup.R2FullPull, DS4Controls.R2, DS4Controls.R2FullPull,
+                cState.R2, cState.R2Raw, profileSettings.R2OutputSettings[device], r2TwoStageMappingData[device]);
 
             // Process Standard buttons
             for (var settingEnum = controlSetGroup.ControlButtons.GetEnumerator(); settingEnum.MoveNext();)
@@ -841,6 +717,78 @@ namespace DS4Windows
             if (mouseDeltaX != 0 || mouseDeltaY != 0)
             {
                 VirtualKBM.MoveRelativeMouse(mouseDeltaX, mouseDeltaY);
+            }
+        }
+
+        // Phase9 MapCustom の分割 M3b: L2／R2 の 1 トリガー分の処理（旧 MapCustom の「Process L2」「Process R2」。値は Phase9MapCustomTwoStageCharacterizationTests が守る）。
+        // ホットパスのため、ラムダや割り当てを使わない
+        private void ProcessTriggerWithTwoStage(int device, DS4State cState, DS4State MappedState, DS4StateExposed eState,
+            Mouse tp, DS4StateFieldMapping fieldMapping, DS4StateFieldMapping outputfieldMapping, SyntheticState deviceState,
+            ref double tempMouseDeltaX, ref double tempMouseDeltaY, ControlService ctrl,
+            DS4ControlSettings dcsTemp, DS4ControlSettings fullPullSettings, DS4Controls softControl, DS4Controls fullControl,
+            byte triggerValue, byte triggerRawValue, TriggerOutputSettings triggerSettings, TwoStageTriggerMappingData twoStageData)
+        {
+            if (triggerSettings.twoStageMode == TwoStageTriggerMode.Disabled)
+            {
+                ProcessControlSettingAction(dcsTemp, device, cState, MappedState, eState,
+                    tp, fieldMapping, outputfieldMapping, deviceState, ref tempMouseDeltaX,
+                    ref tempMouseDeltaY, ctrl);
+            }
+            else
+            {
+                DS4ControlSettings fullPull = fullPullSettings;
+                _twoStageTrigger.Process(device, triggerValue, triggerRawValue, ref dcsTemp, ref fullPull,
+                    triggerSettings, twoStageData, out DS4ControlSettings outputSoftPull, out DS4ControlSettings outputFullPull);
+
+                TwoStageTriggerMappingData.ActiveZoneButtons tempButtons = TwoStageTriggerMappingData.ActiveZoneButtons.None;
+                // Check for Soft Pull activation
+                if (outputSoftPull != null ||
+                    (twoStageData.previousActiveButtons & TwoStageTriggerMappingData.ActiveZoneButtons.SoftPull) != 0)
+                {
+                    if (outputSoftPull != null)
+                    {
+                        tempButtons |= TwoStageTriggerMappingData.ActiveZoneButtons.SoftPull;
+                    }
+                    else
+                    {
+                        // Need to reset input state so output binding is not activated.
+                        // Used to de-activate Extras
+                        fieldMapping.triggers[(int)softControl] = 0;
+                        outputfieldMapping.triggers[(int)softControl] = 0;
+                    }
+
+                    ProcessControlSettingAction(dcsTemp, device, cState, MappedState, eState,
+                        tp, fieldMapping, outputfieldMapping, deviceState, ref tempMouseDeltaX,
+                        ref tempMouseDeltaY, ctrl);
+                }
+                else
+                {
+                    // Soft Pull binding not engaged
+                    outputfieldMapping.triggers[(int)softControl] = 0;
+                }
+
+                // Check for Full Pull activation
+                if (outputFullPull != null ||
+                    (twoStageData.previousActiveButtons & TwoStageTriggerMappingData.ActiveZoneButtons.FullPull) != 0)
+                {
+                    if (outputFullPull != null)
+                    {
+                        tempButtons |= TwoStageTriggerMappingData.ActiveZoneButtons.FullPull;
+                    }
+                    else
+                    {
+                        // Need to reset input state so output binding is not activated.
+                        // Used to de-activate Extras
+                        fieldMapping.buttons[(int)fullControl] = false;
+                    }
+
+                    ProcessControlSettingAction(fullPull, device, cState, MappedState, eState,
+                        tp, fieldMapping, outputfieldMapping, deviceState, ref tempMouseDeltaX,
+                        ref tempMouseDeltaY, ctrl);
+                }
+
+                // Store active buttons state
+                twoStageData.previousActiveButtons = tempButtons;
             }
         }
 

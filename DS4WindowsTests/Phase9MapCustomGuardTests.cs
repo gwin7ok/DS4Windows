@@ -115,8 +115,10 @@ namespace DS4WindowsTests
             string text = ReadWithoutComments("DS4Windows/DS4Control/Mapping.cs");
             if (text == null) return;
 
-            int l2 = text.IndexOf("_twoStageTrigger.Process(device, cState.L2, cState.L2Raw,");
-            int r2 = text.IndexOf("_twoStageTrigger.Process(device, cState.R2, cState.R2Raw,");
+            // M3b: L2／R2 は 1 つの private メソッド（ProcessTriggerWithTwoStage）を、この順で呼ぶ
+            int l2 = text.IndexOf("controlSetGroup.L2, controlSetGroup.L2FullPull, DS4Controls.L2, DS4Controls.L2FullPull,");
+            int r2 = text.IndexOf("controlSetGroup.R2, controlSetGroup.R2FullPull, DS4Controls.R2, DS4Controls.R2FullPull,");
+            Assert.Equal(1, Regex.Matches(text, @"_twoStageTrigger\.Process\(").Count);
             int buttons = text.IndexOf("controlSetGroup.ControlButtons.GetEnumerator()");
             Assert.True(l2 > 0 && r2 > l2 && buttons > r2, "MapCustom の順序（L2 の 2 段階 → R2 の 2 段階 → 通常ボタン）が変わっている");
         }
