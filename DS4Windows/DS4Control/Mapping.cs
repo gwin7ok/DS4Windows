@@ -725,13 +725,16 @@ namespace DS4Windows
             else
             {
                 DS4ControlSettings fullPull = fullPullSettings;
+                // 前のフレームで出力していたボタン。Process は、トリガーを離したフレームで状態を Reset()（previousActiveButtons も消える）するため、
+                // 呼ぶ前に退避する。退避しないと、離したフレームで割り当てを処理できず、Key が押されたままになる（Phase9-TwoStageStuckKey-Fix-Plan.md）
+                TwoStageTriggerMappingData.ActiveZoneButtons previousButtons = twoStageData.previousActiveButtons;
                 _twoStageTrigger.Process(device, triggerValue, triggerRawValue, ref dcsTemp, ref fullPull,
                     triggerSettings, twoStageData, out DS4ControlSettings outputSoftPull, out DS4ControlSettings outputFullPull);
 
                 TwoStageTriggerMappingData.ActiveZoneButtons tempButtons = TwoStageTriggerMappingData.ActiveZoneButtons.None;
                 // Check for Soft Pull activation
                 if (outputSoftPull != null ||
-                    (twoStageData.previousActiveButtons & TwoStageTriggerMappingData.ActiveZoneButtons.SoftPull) != 0)
+                    (previousButtons & TwoStageTriggerMappingData.ActiveZoneButtons.SoftPull) != 0)
                 {
                     if (outputSoftPull != null)
                     {
@@ -757,7 +760,7 @@ namespace DS4Windows
 
                 // Check for Full Pull activation
                 if (outputFullPull != null ||
-                    (twoStageData.previousActiveButtons & TwoStageTriggerMappingData.ActiveZoneButtons.FullPull) != 0)
+                    (previousButtons & TwoStageTriggerMappingData.ActiveZoneButtons.FullPull) != 0)
                 {
                     if (outputFullPull != null)
                     {
