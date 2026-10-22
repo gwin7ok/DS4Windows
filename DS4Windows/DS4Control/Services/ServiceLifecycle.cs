@@ -4,7 +4,9 @@ using System.Diagnostics;
 using System.Linq;
 using System.Threading;
 using DS4Windows.DI;
+using DS4Windows.DS4Control;
 using DS4Windows.InputDevices;
+using DS4WinWPF.DS4Control;
 
 namespace DS4Windows.Services
 {
