@@ -31,6 +31,7 @@ namespace DS4WindowsTests
             "DS4Windows/DS4Control/Services/EnvironmentService.cs",
             "DS4Windows/DS4Control/Services/OutputSlotService.cs",
             "DS4Windows/DS4Forms/MainWindow.xaml.cs",
+            "DS4Windows/DS4Forms/MainWindow.Ipc.cs",   // Phase9 9-F F-2b: IPC の処理を移した
             "DS4Windows/DS4Forms/ProfileEditor.xaml.cs",
         };
 
