@@ -38,9 +38,9 @@ namespace DS4WindowsTests
         [Fact]
         public void ForControl_CoversEveryAssignmentType()
         {
-            Assert.Equal("Default (Cross)", AssignmentDescriber.ForControl(Setting(DS4ControlSettings.ActionType.Default), Name, X360Controls.Cross, false, "Unassigned"));
+            Assert.Equal("Default (A)", AssignmentDescriber.ForControl(Setting(DS4ControlSettings.ActionType.Default), Name, X360Controls.A, false, "Unassigned"));
             Assert.Equal("Unassigned", AssignmentDescriber.ForControl(Setting(DS4ControlSettings.ActionType.Default), Name, X360Controls.None, false, "Unassigned"));
-            Assert.Equal("Unassigned", AssignmentDescriber.ForControl(Setting(DS4ControlSettings.ActionType.Default), Name, X360Controls.Cross, true, "Unassigned"));
+            Assert.Equal("Unassigned", AssignmentDescriber.ForControl(Setting(DS4ControlSettings.ActionType.Default), Name, X360Controls.A, true, "Unassigned"));
 
             DS4ControlSettings button = Setting(DS4ControlSettings.ActionType.Button, DS4KeyType.Toggle);
             button.action.actionBtn = X360Controls.B;
@@ -60,11 +60,11 @@ namespace DS4WindowsTests
         {
             DS4ControlSettings withExtras = Setting(DS4ControlSettings.ActionType.Default);
             withExtras.extras = "100,50,1,10,20,30,5,1,7";
-            Assert.Equal("Default (Cross) + Extras", AssignmentDescriber.ForControl(withExtras, Name, X360Controls.Cross, false, "Unassigned"));
+            Assert.Equal("Default (Cross) + Extras", AssignmentDescriber.ForControl(withExtras, Name, X360Controls.A, false, "Unassigned"));
 
             DS4ControlSettings empty = Setting(DS4ControlSettings.ActionType.Default);
             empty.extras = "0,0,0,0,0,0,0,0,0";
-            Assert.Equal("Default (Cross)", AssignmentDescriber.ForControl(empty, Name, X360Controls.Cross, false, "Unassigned"));
+            Assert.Equal("Default (A)", AssignmentDescriber.ForControl(empty, Name, X360Controls.A, false, "Unassigned"));
         }
 
         [Fact]
