@@ -150,3 +150,50 @@ E-2・E-3 は、E-1 の結果を見てから、**この計画書に設計を追�
 - `ControlService.UseUDPPort`（外部の呼び出し 0 件）: `UdpMotionService.UsePort` に移し、TODO を付けた（9-F で、使う予定がなければ削除をユーザーへ提案）。`ControlService` の委譲は残していない（呼び出し 0 件）。
 - **`IUdpServerService`／`UdpServerService`（Phase5-Step10 で作った、UDP サーバーの安全な起動・停止の契約。DI に登録済みだが、呼び出しが 0 件）**: 契約のコメントにある「接続予定: ControlService の UDP の起動・停止を本サービス経由にする」が、E-3 の `UdpMotionService` で実現された。形が合わない（`Start(ControlService, …)` が起動と待ち受けを一度に行い、作成と待ち受けを分けられない）ため、**使うべきでない「正規の経路と重複する並行実装」と判断し、削除を提案する**（ユーザーの承認を得てから。承認までは TODO を付けて残す）。
   - **〔削除済み。ユーザー承認、2026-10-22〕** `DI/IUdpServerService.cs`、`DS4Control/Services/UdpServerService.cs`、`DS4WindowsTests/UdpServerServiceTests.cs`（3 件）を削除。DI の登録を削除。`Phase7Step2RemovedContractMembersGuardTests` の「残した契約」から外し、「削除したファイル」に追加。モデル図 01・02・04 の記載を `IUdpMotionService` に更新。
+
+---
+
+## 13. E-4（仮想パッドの出力）の設計案（2026-10-22。未承認。承認を得るまで、コードは変えない）
+
+**前提の更新**: ユーザーの環境には、コントローラー（USB／Bluetooth）、ViGEmBus、HidHide がある。**E-4 以降の実機確認は、すべて実際に行える**（先送りにした台帳 §31〜§35 も、まとめて確認できる）。
+
+### 13.1 対象と、つながり（2026-10-22 の再計測）
+
+| 対象（`ControlService.cs` 2,707 行のうち） | 行 | 内容 |
+|---|---|---|
+| `StartViGEm`／`StopViGEm`、`vigemTestClient` | 約 35 | ViGEm のクライアントの生成・破棄（`Start` から。生成は別スレッドで待つ） |
+| `EstablishOutDevice`、`AssignInitialDevices`、`OutputslotMan_ViGEmFailure` | 約 70 | 仮想パッドの作成、恒久スロットの割り当て、ViGEm の失敗の通知 |
+| `EstablishOutFeedback`（約 228）、`RemoveOutFeedback`（約 23） | 約 250 | ViGEm からの振動・ライトバーの要求を、`DS4Device` へ戻す（Xbox 360 は `FeedbackReceived`、DS4 は出力バッファーの解析） |
+| `PluginOutDev`（約 158）、`UnplugOutDev`（約 36） | 約 195 | デバイスに仮想パッドを割り当てる／外す（種類は X360／DS4、結合デバイス、恒久スロット、排他） |
+| `AttachNewUnboundOutDev`／`AttachUnboundOutDev`／`DetachUnboundOutDev` | 約 32 | 入力に紐づかない仮想パッドの追加・削除（画面の「出力スロット」） |
+| 状態 | | `outputslotMan`（`OutputSlotManager`）、公開配列 `outputDevices[8]`、公開プロパティ `OutputslotMan` |
+
+- **外部からの参照**: `outputDevices`（`BackingStore`、`LegacyProfileXmlSerializer`）、`OutputslotMan`（`MainWindow` の画面、`ServiceRegistration` の `IOutputSlotService` の生成、テストの工場）、`PluginOutDev`／`UnplugOutDev`（`BackingStore`、`LegacyProfileXmlSerializer`、`Start`／`Stop`／`HotPlug`／`On_DS4Removal`）、`AttachUnboundOutDev`／`DetachUnboundOutDev`（`OutputSlotService`。**過渡期の逆依存**。`OutputSlotService` → `ControlService`）。
+- **`ControlService` に頼るもの**: `DS4Controllers`（結合デバイスの相手の取得）、`SetDevRumble`（振動のブースト込み）、`LogDebug`／トレイ通知、`ActiveOutDevType`（`IOutputSlotService` の配列。遅延取得）、`_profileSettings`（出力の種類、`UseDInputOnlyArray`、`EnableOutputDataToDS4`）。
+
+### 13.2 設計
+
+| Wave | 部品 | 引き受けるもの | 依存 |
+|---|---|---|---|
+| **E-4a** | `IVirtualPadFeedback`（仮称）／`VirtualPadFeedback` | `EstablishOutFeedback`／`RemoveOutFeedback`（ViGEm から `DS4Device` への振動・ライトバーの戻り）。DS4 の出力バッファーの解析は、純粋な関数として取り出し、テストで固定する | `Func<IUdpMotionHost>` と同じ形の遅延ホスト（`SetDevRumble`）、`IProfileSettingsService` |
+| **E-4b** | `IVirtualPadService`（仮称）／`VirtualPadService` | `StartViGEm`／`StopViGEm`、`EstablishOutDevice`、`PluginOutDev`／`UnplugOutDev`、`Attach/Detach*UnboundOutDev`、`AssignInitialDevices`、`outputslotMan`、`outputDevices`、`vigemTestClient`。`IOutputSlotService`／`OutputSlotService` の逆依存（`ControlService` を直接呼ぶ）を解消し、`OutputSlotService` が新しい部品を呼ぶようにする | `IVirtualPadFeedback`、`IEnvironmentService`、`IProfileSettingsService`、遅延ホスト（`DS4Controllers`、ログ） |
+
+- `ControlService` の公開メンバー（`PluginOutDev`、`UnplugOutDev`、`Attach*`、`Detach*`、`outputDevices`、`OutputslotMan`）は、**薄い委譲（配列とプロパティは、同じ実体を返す窓口）として残す**。呼び出し側は 9-F まで変えない。
+- **テスト**: ViGEm の本物は、テストでは扱えないため、`OutputSlotManager` と仮想パッドの作成を窓口（工場）の背後に置き、スタブで「どの順に何を呼ぶか」（割り当て、結合デバイス、恒久スロット、種類の切り替え、排他の判断、後始末の順序）を固定する。振動・ライトバーの変換（Xbox 360 の `LargeMotor`／`SmallMotor` → `DS4Device.setRumble`、DS4 の出力バッファー → 振動／ライトバー）は、値の表で固定する。**実機が必要な部分は、台帳に確認項目を足す**（今回は実際に確認できる）。
+- **ガードレール**（`Phase5-Plan.md` §5）のうち、「ドライバ破棄順序」（`Stop` の中で、仮想パッド → `OutputSlotManager` の停止 → ViGEm の破棄）と「切断時クリーンアップ」（`UnplugOutDev`）に直結する。**呼び出しの順序は、そのまま保つ**。
+
+### 13.3 調査で見つけた癖（挙動を変えない前提で記録する）
+
+| # | 内容 | 扱い |
+|---|---|---|
+| V1 | `PluginOutDev` の X360 の枝と DS4 の枝は、約 80 行がほぼ同じ（作成の型と `EstablishOutFeedback` の引数だけが違う）。結合デバイス（`JointDeviceSlotNumber`）の相手にも同じ処理を繰り返す | まず、そのまま移す。実機確認のあと、別コミットで畳む案（Q3） |
+| V2 | `EstablishOutFeedback` の DS4 の枝には、使われていない大きなコメントアウト（旧実装）が残っている。コメントは消さない | 移し先へ原文のまま移す |
+| V3 | `StartViGEm` は、別スレッドで `ViGEmClient` を作り、`SpinWait` で待つ（UI スレッドを塞ぐ） | そのまま移す（今回の範囲外） |
+| V4 | `outputDevices` は公開された配列で、外から要素が書き換えられる（`BackingStore` が読む） | 窓口として、同じ配列を返す（コピーしない） |
+
+### 13.4 質問（推奨は A）
+
+- **Q1（Wave の粒度）**: A＝E-4a（振動・ライトバーの戻り）→ E-4b（作成・割り当て・取り外し）の 2 回（推奨。E-4a は純粋な変換が多く、テストで固めやすい）／B＝まとめて 1 回。
+- **Q2（実機確認の時期）**: A＝**各 Wave のビルド・テストが通ったあと、実機確認をしてから次の Wave へ進む**（推奨。ここから先は、実機でしか確認できない箇所が増えるため）／B＝実機確認は E-4 全体の終わりにまとめる。
+- **Q3（V1 の畳み込み）**: A＝移した後に別コミットで畳む。**実機確認が済んでから**（推奨）／B＝畳まない。
+- **Q4（`OutputSlotService` の逆依存の解消）**: A＝E-4b で、`OutputSlotService` が新しい部品を呼ぶようにする（推奨。過渡期の逆依存の解消）／B＝今回は触らず、`ControlService` の委譲を経由させたままにする。
