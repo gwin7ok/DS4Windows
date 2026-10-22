@@ -3,7 +3,7 @@
 作成日: 2026-10-22  
 対象ブランチ: `For-DI-migration-work`  
 上位: `Phase9-Responsibility-Split-Plan.md` 9-E、`Phase9-B-Plan.md`・`Phase9-C-Plan.md`（同じ進め方）  
-状態: **設計案（未承認）。承認を得るまで、コードは変えない**
+状態: **承認済み（2026-10-22。§8）。E-1（OSC）は実装済み（ビルド・テストはユーザーの実行待ち）。E-2（HidHide）・E-3（UDP モーション）は、E-1 の結果を見て設計を追記する**
 
 ---
 
@@ -83,3 +83,25 @@ E-2・E-3 は、E-1 の結果を見てから、**この計画書に設計を追�
 ## 7. 次
 
 承認（Q1〜Q4）を得たら、E-1 から着手する。ビルド・テストが必要になった時点で、ユーザーへ依頼する。
+
+---
+
+## 8. 決定事項（2026-10-22、すべて推奨どおり承認）
+
+- **Q1＝E-1〜E-3 を承認**: E-1 から着手し、E-2・E-3 は E-1 の結果を見て設計を追記する（承認は都度）。
+- **Q2＝1 領域ごとに確認**: OSC、HidHide、UDP を 1 つずつ実装し、そのつどビルド・テストを確認する。
+- **Q3＝今回はそのまま移す**: 範囲外のコントローラー番号・値で例外になる癖（E1・E2）は、そのまま。別の是正として後で判断する。
+- **Q4＝薄い委譲として残す**: `ControlService.ChangeOSCListenerStatus`／`ChangeOSCSenderStatus` は残し、呼び出し側は 9-F まで変えない。
+
+## 9. E-1（OSC）の結果（2026-10-22。この環境に `dotnet` がないため、ビルド・テストは未実行）
+
+| 区分 | 内容 |
+|---|---|
+| 新規（契約） | `DI/IOscService.cs`、`IOscTransportFactory.cs`、`IOscMessageSender.cs`、`IOscListenerHandle.cs` |
+| 新規（実装） | `DS4Control/Services/OscService.cs`（旧 OSC 系を、そのまま移した。受信の解釈は `HandleMessage(address, arguments)`、マッピング前後は `PreMappingStep`／`PostMappingStep`、変化の送信、`SendOsc` と K9-1 の競合対策、リスナー／送信側のライフサイクル）、`SharpOscTransportFactory.cs`・`SharpOscListenerHandle.cs`・`SharpOscMessageSender.cs`（SharpOSC の型は、ここだけに閉じた） |
+| `ControlService.cs` | 3,438 → **3,028 行**（410 行減）。`oscState`／`oscCallback`／`oscListener`／`oscSender`、`MapMonitoringOscMessageToCommand`、`CreateOSCCallback`、`SendOsc`、`OSCPreMappingStep`／`OSCPostMappingStep`、`CompareAndSendChangesToOSC` を削除。`ChangeOSCListenerStatus`／`ChangeOSCSenderStatus` は `IOscService` への薄い委譲。`Start`／`Stop`／`HotPlug`／`On_DS4Removal`／`On_Report` の呼び出しを `IOscService` に替えた（条件 `UseOscSender`／`UseOscServer` の置き場は変えていない）。コンストラクターの引数 +1（`IOscService`） |
+| DI | `IOscService`（`OscService`）、`IOscTransportFactory`（`SharpOscTransportFactory`）を Singleton で登録 |
+| テスト（新規） | `Phase9EOscServiceDifferentialTests`（旧実装との差分: 受信の全メッセージ、範囲外の例外、null アドレス、マッピング前後の重ね合わせ 200 ラウンド、`SendPlug`、`ResetDeviceState`、ライフサイクル）、`Phase9EOscGuardTests`、スタブ `RecordingOscTransportFactory` |
+| テスト（追従） | `ControlServiceOscSenderRaceTests`（検査の対象を `OscService` に） |
+
+**実機確認（依頼。実装後）**: 台帳 §33（P9E-1〜3）。

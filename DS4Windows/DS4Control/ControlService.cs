@@ -183,11 +183,8 @@ namespace DS4Windows
             new byte[UdpServer.DATA_RSP_PACKET_LEN], new byte[UdpServer.DATA_RSP_PACKET_LEN],
         };
 
-        private DS4State[] oscState = new DS4State[MAX_DS4_CONTROLLER_COUNT];
-        public HandleOscPacket oscCallback;
-
-        public UDPListener oscListener;
-        public UDPSender oscSender;
+        // Phase9 9-E E-1: 旧 oscState／oscCallback／oscListener／oscSender（OSC の状態・受信・送信）は OscService へ移した
+        private readonly DI.IOscService _oscService;
 
         public void GetPadDetailForIdx(int padIdx, ref DualShockPadMeta meta)
         {
@@ -274,7 +271,8 @@ namespace DS4Windows
             Services.IElevatedProcessLauncher elevatedProcessLauncher,
             StickMotionState stickMotion,
             SyntheticInputState syntheticInput,
-            DI.IMapping mapping)
+            DI.IMapping mapping,
+            DI.IOscService oscService)
         {
             this.cmdParser = cmdParser;
             this._deviceRegistry = deviceRegistry;
@@ -301,6 +299,7 @@ namespace DS4Windows
             this._stickMotion = stickMotion ?? throw new ArgumentNullException(nameof(stickMotion));
             this._syntheticInput = syntheticInput ?? throw new ArgumentNullException(nameof(syntheticInput));
             this._mapping = mapping ?? throw new ArgumentNullException(nameof(mapping));
+            this._oscService = oscService ?? throw new ArgumentNullException(nameof(oscService));
 
             Crc32Algorithm.InitializeTable(DS4Device.DefaultPolynomial);
 
@@ -322,7 +321,6 @@ namespace DS4Windows
                 TempState[i] = new DS4State();
                 PreviousState[i] = new DS4State();
                 ExposedState[i] = new DS4StateExposed(CurrentState[i]);
-                oscState[i] = new DS4State();
 
                 int tempDev = i;
                 _profileSettings.L2OutputSettings[i].TwoStageModeChanged += (sender, e) =>
@@ -350,7 +348,7 @@ namespace DS4Windows
             _appSettings.UDPServerSmoothingMincutoffChanged += ChangeUdpSmoothingAttrs;
             _appSettings.UDPServerSmoothingBetaChanged += ChangeUdpSmoothingAttrs;
 
-            CreateOSCCallback();
+            // Phase9 9-E E-1: 旧 CreateOSCCallback() は OscService へ移した（受信のコールバックは OscService.HandleMessage）
 
             //oscListener = new UDPListener(Global.getOSCServerPortNum(), callback: oscCallback);
             //AppLogger.LogToGui("OSC LISTENER STARTED", false);
@@ -361,211 +359,7 @@ namespace DS4Windows
         //    LogDebug($"Associated input controller #{outSlotDev.InputIndex + 1} ({outSlotDev.InputDisplayString}) to virtual {outSlotDev.OutputDevice.GetDeviceType()} Controller in{(outSlotDev.PermanentType != OutContType.None ? " permanent" : "")} output slot #{outSlotDev.Index + 1}");
         //}
 
-        private string[] MapMonitoringOscMessageToCommand(string[] command)
-        {
-            // Overwrite "monitor" with the controller Id
-            command[2] = command[3];
-
-            switch (command[4])
-            {
-                case "battery":
-                    command[3] = "battery";
-                    break;
-                case "l2":
-                case "r2":
-                    command[3] = "trigger";
-                    break;
-                case "rx":
-                case "ry":
-                case "lx":
-                case "ly":
-                    command[3] = "stick";
-                    break;
-                default:
-                    command[3] = "press";
-                    break;
-            }
-
-            return command;
-        }
-
-        private void CreateOSCCallback()
-        {
-            oscCallback = delegate (OscPacket packet)
-            {
-                var messageReceived = (OscMessage)packet;
-
-                // If typecase fails, exit
-                if (messageReceived == null)
-                {
-                    return;
-                }
-
-                string[] command = null;
-                try
-                {
-                    command = messageReceived.Address.Split("/");
-                }
-                catch (Exception e)
-                {
-                    AppLogger.LogToGui("Error Receiving OSC Message: " + e.Message, false, true);
-                }
-
-                if (command == null)
-                {
-                    return;
-                }
-
-                if (command[1] != "ds4windows")
-                {
-                    return;
-                }
-
-                if (command[2] == "monitor")
-                {
-                    if (_appSettings.InterpretingOscMonitoring)
-                    {
-                        command = MapMonitoringOscMessageToCommand(command);
-                    }
-                    else
-                    {
-                        return;
-                    }
-                }
-
-                int stateInd = -1;
-                if (!int.TryParse(command[2], out stateInd))
-                {
-                    stateInd = -1;
-                }
-
-                if (stateInd == -1)
-                {
-                    AppLogger.LogToGui("Received malformed OSC address: " + messageReceived.Address, false);
-                    return;
-                }
-
-                if (command[3] == "battery")
-                {
-                    if (!_appSettings.UseOscSender)
-                    {
-                        AppLogger.LogToGui("Battery level requested, but the OSC Sender isn't active. Turn it on in Settings.", false);
-                    }
-                    else
-                    {
-                        SendOsc(new SharpOSC.OscMessage("/ds4windows/monitor/" + stateInd + "/battery", oscState[stateInd].Battery));
-                    }
-                    return;
-                }
-                else if (command[3] == "press")
-                {
-                    int messageValue = Convert.ToInt32(messageReceived.Arguments[0]);
-                    bool buttonBool = messageValue == 1 ? true : false;
-
-                    switch (command[4])
-                    {
-                        case "cross":
-                            oscState[stateInd].Cross = buttonBool;
-                            break;
-                        case "square":
-                            oscState[stateInd].Square = buttonBool;
-                            break;
-                        case "circle":
-                            oscState[stateInd].Circle = buttonBool;
-                            break;
-                        case "triangle":
-                            oscState[stateInd].Triangle = buttonBool;
-                            break;
-                        case "r1":
-                            oscState[stateInd].R1 = buttonBool;
-                            break;
-                        case "r2":
-                            oscState[stateInd].R2 = Convert.ToByte(buttonBool ? 255 : 0);
-                            break;
-                        case "r3":
-                            oscState[stateInd].R3 = buttonBool;
-                            break;
-                        case "l1":
-                            oscState[stateInd].L1 = buttonBool;
-                            break;
-                        case "l2":
-                            oscState[stateInd].L2 = Convert.ToByte(buttonBool ? 255 : 0);
-                            break;
-                        case "l3":
-                            oscState[stateInd].L3 = buttonBool;
-                            break;
-                        case "dpadup":
-                        case "dup":
-                            oscState[stateInd].DpadUp = buttonBool;
-                            break;
-                        case "dpaddown":
-                        case "ddown":
-                            oscState[stateInd].DpadDown = buttonBool;
-                            break;
-                        case "dpadleft":
-                        case "dleft":
-                            oscState[stateInd].DpadLeft = buttonBool;
-                            break;
-                        case "dpadright":
-                        case "dright":
-                            oscState[stateInd].DpadRight = buttonBool;
-                            break;
-                        case "options":
-                            oscState[stateInd].Options = buttonBool;
-                            break;
-                        case "share":
-                            oscState[stateInd].Share = buttonBool;
-                            break;
-                    }
-                }
-                else if (command[3] == "stick" && messageReceived.Arguments.Count == 1)
-                {
-                    switch (command[4])
-                    {
-                        case "lx":
-                            oscState[stateInd].LX = Convert.ToByte(Convert.ToSingle(messageReceived.Arguments[0]));
-                            break;
-                        case "ly":
-                            oscState[stateInd].LY = Convert.ToByte(Convert.ToSingle(messageReceived.Arguments[0]));
-                            break;
-                        case "rx":
-                            oscState[stateInd].RX = Convert.ToByte(Convert.ToSingle(messageReceived.Arguments[0]));
-                            break;
-                        case "ry":
-                            oscState[stateInd].RY = Convert.ToByte(Convert.ToSingle(messageReceived.Arguments[0]));
-                            break;
-                    }
-                }
-                else if (command[3] == "stick" && messageReceived.Arguments.Count == 2)
-                {
-                    float xValue = Convert.ToSingle(messageReceived.Arguments[0]);
-                    float yValue = Convert.ToSingle(messageReceived.Arguments[1]);
-
-                    if (command[4] == "left")
-                    {
-                        oscState[stateInd].LX = Convert.ToByte(xValue * 255);
-                        oscState[stateInd].LY = Convert.ToByte(yValue * 255);
-                    }
-                    else if (command[4] == "right")
-                    {
-                        oscState[stateInd].RX = Convert.ToByte(xValue * 255);
-                        oscState[stateInd].RY = Convert.ToByte(yValue * 255);
-                    }
-                }
-                else if (command[3] == "trigger")
-                {
-                    switch (command[4])
-                    {
-                        case "r2":
-                            oscState[stateInd].R2 = Convert.ToByte(Convert.ToSingle(messageReceived.Arguments[0]));
-                            break;
-                        case "l2":
-                            oscState[stateInd].L2 = Convert.ToByte(Convert.ToSingle(messageReceived.Arguments[0]));
-                            break;
-                    }
-                }
-            };
-        }
+        // Phase9 9-E E-1: 旧 MapMonitoringOscMessageToCommand／CreateOSCCallback（OSC の受信の解釈）は OscService へ移した。
 
         public void RefreshOutputKBMHandler()
         {
@@ -1005,46 +799,16 @@ namespace DS4Windows
 
         public void ChangeOSCListenerStatus(bool state)
         {
-            if (state)
-            {
-                oscListener = new UDPListener(_appSettings.OscServerPort, callback: oscCallback);
-
-                AppLogger.LogToGui("OSC LISTENER STARTED AT PORT: " + _appSettings.OscServerPort, false);
-            }
-            else
-            {
-                oscListener.Close();
-                oscListener = null;
-                AppLogger.LogToGui("OSC LISTENER STOPPED", false);
-            }
+            // Phase9 9-E E-1: 本体は OscService へ移した（薄い委譲。呼び出し側は 9-F まで変えない）
+            _oscService.ChangeListenerStatus(state);
         }
 
         public void ChangeOSCSenderStatus(bool state)
         {
-            if (state)
-            {
-                AppLogger.LogToGui("OSC SENDER STARTED AT IP: " + _appSettings.OscSenderAddress + " PORT: " + _appSettings.OscSenderPort, false);
-                oscSender = new UDPSender(_appSettings.OscSenderAddress, _appSettings.OscSenderPort);
-            }
-            else
-            {
-                AppLogger.LogToGui("OSC SENDER STOPPED", false);
-                // Phase6-Step9-3c: フィールドを先に null にしてから閉じる（入力スレッドが閉じたソケットへ送らないようにする）
-                UDPSender sender = oscSender;
-                if (sender == null) { return; }
-                oscSender = null;
-                sender.Close();
-            }
+            _oscService.ChangeSenderStatus(state);
         }
 
-        // Phase6-Step9-3c（K9-1）: UseOscSender が先に true になり、oscSender の生成（ChangeOSCSenderStatus）が
-        // 終わる前に入力スレッドが送信すると NullReferenceException でアプリが終了していた（Step2 より前から存在した競合）。
-        // 送信側が未生成・破棄済みの間は送信しない。フィールドをローカルに取り、取得後に null になっても安全にする。
-        private void SendOsc(OscMessage message)
-        {
-            UDPSender sender = oscSender;
-            sender?.Send(message);
-        }
+        // Phase9 9-E E-1: 旧 SendOsc（Phase6-Step9-3c の K9-1 の競合対策つき）は OscService.SendOsc へ移した。
 
         public void ChangeMotionEventStatus(bool state)
         {
@@ -1732,12 +1496,12 @@ namespace DS4Windows
                     LogDebug(_deviceRegistry.IsExclusiveMode ? DS4WinWPF.Properties.Resources.UsingExclusive : DS4WinWPF.Properties.Resources.UsingShared);
                 }
 
-                if (_appSettings.UseOscServer && oscListener == null)
+                if (_appSettings.UseOscServer && !_oscService.HasListener)
                 {
                     ChangeOSCListenerStatus(true);
                 }
 
-                if (_appSettings.UseOscSender && oscSender == null)
+                if (_appSettings.UseOscSender && !_oscService.HasSender)
                 {
                     ChangeOSCSenderStatus(true);
                 }
@@ -1995,7 +1759,7 @@ namespace DS4Windows
                         //Global.activeOutDevType[i] = OutContType.None;
                         _profileSettings.UseDInputOnlyArray[i] = true;
                         DS4Controllers[i] = null;
-                        oscState[i] = new DS4State();
+                        _oscService.ResetDeviceState(i);
                         touchPad[i] = null;
                         lag[i] = false;
                         inWarnMonitor[i] = false;
@@ -2008,12 +1772,12 @@ namespace DS4Windows
                 _deviceRegistry.StopControllers();
                 slotManager.ClearControllerList();
 
-                if (oscListener != null)
+                if (_oscService.HasListener)
                 {
                     ChangeOSCListenerStatus(false);
                 }
 
-                if (oscSender != null)
+                if (_oscService.HasSender)
                 {
                     ChangeOSCSenderStatus(false);
                 }
@@ -2192,7 +1956,7 @@ namespace DS4Windows
             slotManager.AddController(device, index);
             if (_appSettings.UseOscSender)
             {
-                SendOsc(new OscMessage("/ds4windows/monitor/" + index + "/plug", 1));
+                _oscService.SendPlug(index, true);
             }
             device.Removal += this.On_DS4Removal;
             device.Removal += _deviceRegistry.OnRemoval;
@@ -2778,13 +2542,13 @@ namespace DS4Windows
                     device.IsRemoved = true;
                     device.Synced = false;
                     DS4Controllers[ind] = null;
-                    oscState[ind] = new DS4State();
+                    _oscService.ResetDeviceState(ind);
                     //eventDispatcher.Invoke(() =>
                     //{
                     slotManager.RemoveController(device, ind);
                     if (_appSettings.UseOscSender)
                     {
-                        SendOsc(new SharpOSC.OscMessage("/ds4windows/monitor/" + ind + "/plug", 0));
+                        _oscService.SendPlug(ind, false);
                     }
                     //});
 
@@ -2940,11 +2704,10 @@ namespace DS4Windows
                     _profileActionProvider.GetProfileActionCount(ind) > 0))
                 {
                     DS4State tempMapState = MappedState[ind];
-                    DS4State oscMapState = oscState[ind];
 
                     if (_appSettings.UseOscSender)
                     {
-                        OSCPreMappingStep(ind, cState, tempMapState, oscMapState);
+                        _oscService.PreMappingStep(ind, cState, tempMapState);
                     }
 
                     _mapping.MapCustom(ind, cState, tempMapState, ExposedState[ind], touchPad[ind], this);
@@ -2960,7 +2723,7 @@ namespace DS4Windows
 
                     if (_appSettings.UseOscServer)
                     {
-                        OSCPostMappingStep(tempMapState, oscMapState);
+                        _oscService.PostMappingStep(ind, tempMapState);
                     }
 
                     cState = tempMapState;
@@ -3039,180 +2802,7 @@ namespace DS4Windows
             }
         }
 
-        private static void OSCPostMappingStep(DS4State tempMapState, DS4State oscMapState)
-        {
-            tempMapState.Cross |= oscMapState.Cross;
-            tempMapState.Square |= oscMapState.Square;
-            tempMapState.Circle |= oscMapState.Circle;
-            tempMapState.Triangle |= oscMapState.Triangle;
-            tempMapState.R1 |= oscMapState.R1;
-            tempMapState.R3 |= oscMapState.R3;
-            tempMapState.L1 |= oscMapState.L1;
-            tempMapState.L3 |= oscMapState.L3;
-            tempMapState.DpadUp |= oscMapState.DpadUp;
-            tempMapState.DpadLeft |= oscMapState.DpadLeft;
-            tempMapState.DpadRight |= oscMapState.DpadRight;
-            tempMapState.DpadDown |= oscMapState.DpadDown;
-            tempMapState.Options |= oscMapState.Options;
-            tempMapState.Share |= oscMapState.Share;
-
-            tempMapState.LX = oscMapState.LX != 128 ? oscMapState.LX : tempMapState.LX;
-            tempMapState.LY = oscMapState.LY != 128 ? oscMapState.LY : tempMapState.LY;
-            tempMapState.L2 = oscMapState.L2 != 0 ? oscMapState.L2 : tempMapState.L2;
-            tempMapState.RX = oscMapState.RX != 128 ? oscMapState.RX : tempMapState.RX;
-            tempMapState.RY = oscMapState.RY != 128 ? oscMapState.RY : tempMapState.RY;
-            tempMapState.R2 = oscMapState.R2 != 0 ? oscMapState.R2 : tempMapState.R2;
-        }
-
-        private void OSCPreMappingStep(int ind, DS4State cState, DS4State tempMapState,
-            DS4State oscMapState)
-        {
-            if (cState.Battery != oscMapState.Battery)
-            {
-                SendOsc(new OscMessage("/ds4windows/monitor/" + ind + "/battery", Convert.ToInt32(cState.Battery)));
-                oscMapState.Battery = cState.Battery;
-            }
-            cState.Cross |= oscMapState.Cross;
-            cState.Square |= oscMapState.Square;
-            cState.Circle |= oscMapState.Circle;
-            cState.Triangle |= oscMapState.Triangle;
-            cState.R1 |= oscMapState.R1;
-            cState.R3 |= oscMapState.R3;
-            cState.L1 |= oscMapState.L1;
-            cState.L3 |= oscMapState.L3;
-            cState.DpadUp |= oscMapState.DpadUp;
-            cState.DpadLeft |= oscMapState.DpadLeft;
-            cState.DpadRight |= oscMapState.DpadRight;
-            cState.DpadDown |= oscMapState.DpadDown;
-            cState.Options |= oscMapState.Options;
-            cState.Share |= oscMapState.Share;
-
-            cState.LX = oscMapState.LX != 128 ? oscMapState.LX : cState.LX;
-            cState.LY = oscMapState.LY != 128 ? oscMapState.LY : cState.LY;
-            cState.L2 = oscMapState.L2 != 0 ? oscMapState.L2 : cState.L2;
-            cState.RX = oscMapState.RX != 128 ? oscMapState.RX : cState.RX;
-            cState.RY = oscMapState.RY != 128 ? oscMapState.RY : cState.RY;
-            cState.R2 = oscMapState.R2 != 0 ? oscMapState.R2 : cState.R2;
-
-            CompareAndSendChangesToOSC(ind, tempMapState, cState);
-        }
-
-        private void CompareAndSendChangesToOSC(int index, DS4State oldState, DS4State newState)
-        {
-            // Buttons
-            if (oldState.Square != newState.Square)
-            {
-                SendOsc(new OscMessage("/ds4windows/monitor/" + index + "/square", newState.Square == true ? 1 : 0));
-            }
-
-            if (oldState.Triangle != newState.Triangle)
-            {
-                SendOsc(new OscMessage("/ds4windows/monitor/" + index + "/triangle", newState.Triangle == true ? 1 : 0));
-            }
-
-            if (oldState.Circle != newState.Circle)
-            {
-                SendOsc(new OscMessage("/ds4windows/monitor/" + index + "/circle", newState.Circle == true ? 1 : 0));
-            }
-
-            if (oldState.Cross != newState.Cross)
-            {
-                SendOsc(new OscMessage("/ds4windows/monitor/" + index + "/cross", newState.Cross == true ? 1 : 0));
-            }
-
-            if (oldState.DpadUp != newState.DpadUp)
-            {
-                SendOsc(new OscMessage("/ds4windows/monitor/" + index + "/dpadup", newState.DpadUp == true ? 1 : 0));
-            }
-
-            if (oldState.DpadDown != newState.DpadDown)
-            {
-                SendOsc(new OscMessage("/ds4windows/monitor/" + index + "/dpaddown", newState.DpadDown == true ? 1 : 0));
-            }
-
-            if (oldState.DpadLeft != newState.DpadLeft)
-            {
-                SendOsc(new OscMessage("/ds4windows/monitor/" + index + "/dpadleft", newState.DpadLeft == true ? 1 : 0));
-            }
-
-            if (oldState.DpadRight != newState.DpadRight)
-            {
-                SendOsc(new OscMessage("/ds4windows/monitor/" + index + "/dpadright", newState.DpadRight == true ? 1 : 0));
-            }
-
-            if (oldState.L1 != newState.L1)
-            {
-                SendOsc(new OscMessage("/ds4windows/monitor/" + index + "/l1", newState.L1 == true ? 1 : 0));
-            }
-
-            if (oldState.L3 != newState.L3)
-            {
-                SendOsc(new OscMessage("/ds4windows/monitor/" + index + "/l3", newState.L3 == true ? 1 : 0));
-            }
-
-            if (oldState.R1 != newState.R1)
-            {
-                SendOsc(new OscMessage("/ds4windows/monitor/" + index + "/r1", newState.R1 == true ? 1 : 0));
-            }
-
-            if (oldState.R3 != newState.R3)
-            {
-                SendOsc(new OscMessage("/ds4windows/monitor/" + index + "/r3", newState.R3 == true ? 1 : 0));
-            }
-
-            if (oldState.Options != newState.Options)
-            {
-                SendOsc(new OscMessage("/ds4windows/monitor/" + index + "/options", newState.Options == true ? 1 : 0));
-            }
-
-            if (oldState.Share != newState.Share)
-            {
-                SendOsc(new OscMessage("/ds4windows/monitor/" + index + "/share", newState.Share == true ? 1 : 0));
-            }
-
-            if (oldState.PS != newState.PS)
-            {
-                SendOsc(new OscMessage("/ds4windows/monitor/" + index + "/ps", newState.PS == true ? 1 : 0));
-            }
-
-            // Sticks
-            if (oldState.LX != newState.LX)
-            {
-                SendOsc(new OscMessage("/ds4windows/monitor/" + index + "/lx", Convert.ToInt32(newState.LX)));
-            }
-
-            if (oldState.LY != newState.LY)
-            {
-                SendOsc(new OscMessage("/ds4windows/monitor/" + index + "/ly", Convert.ToInt32(newState.LY)));
-            }
-
-            if (oldState.RX != newState.RX)
-            {
-                SendOsc(new OscMessage("/ds4windows/monitor/" + index + "/rx", Convert.ToInt32(newState.RX)));
-            }
-
-            if (oldState.RY != newState.RY)
-            {
-                SendOsc(new OscMessage("/ds4windows/monitor/" + index + "/ry", Convert.ToInt32(newState.RY)));
-            }
-
-            // Triggers
-            if (oldState.L2 != newState.L2)
-            {
-                SendOsc(new OscMessage("/ds4windows/monitor/" + index + "/l2", Convert.ToInt32(newState.L2)));
-            }
-
-            if (oldState.R2 != newState.R2)
-            {
-                SendOsc(new OscMessage("/ds4windows/monitor/" + index + "/r2", Convert.ToInt32(newState.R2)));
-            }
-
-            // if (oldState.Battery != newState.Battery)
-            // {
-            //     AppLogger.LogToGui("BATTERY " + oldState.Battery + " : " + newState.Battery, false);
-            //     SendOsc(new SharpOSC.OscMessage("/ds4windows/monitor/" + index + "/battery", Convert.ToInt32(newState.Battery)));
-            // }
-        }
+        // Phase9 9-E E-1: 旧 OSCPostMappingStep／OSCPreMappingStep／CompareAndSendChangesToOSC（OSC の入力への重ね合わせと変化の送信）は OscService へ移した。
 
         private void LagFlashWarning(DS4Device device, int ind, bool on)
         {

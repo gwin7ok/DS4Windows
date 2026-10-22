@@ -265,6 +265,25 @@ classDiagram
         +Play(int device, string macroStr, List macroLst, int[] macroArr, DS4KeyType keyType, SpecialAction action, ActionInstanceState state)
         +ClearDevice(int device)
     }
+    class IOscService {
+        <<interface>>
+        +HasListener bool
+        +HasSender bool
+        +ChangeListenerStatus(bool state)
+        +ChangeSenderStatus(bool state)
+        +SendPlug(int index, bool plugged)
+        +ResetDeviceState(int index)
+        +HandleMessage(string address, IList arguments)
+        +PreMappingStep(int ind, DS4State cState, DS4State tempMapState)
+        +PostMappingStep(int ind, DS4State tempMapState)
+    }
+    class IOscTransportFactory {
+        <<interface>>
+        +CreateListener(int port, Action onMessage) IOscListenerHandle
+        +CreateSender(string address, int port) IOscMessageSender
+    }
+    class OscService
+    class SharpOscTransportFactory
     class MacroStepExecutor
     class MacroPlayback
     class ButtonMouseMovementCalculator
@@ -299,6 +318,10 @@ classDiagram
     IGyroMouseStickBlender <|.. GyroMouseStickBlender : implements
     IControlActivityReader <|.. ControlActivityReader : implements
     IMacroStepExecutor <|.. MacroStepExecutor : implements
+    IOscService <|.. OscService : implements
+    IOscTransportFactory <|.. SharpOscTransportFactory : implements
+    OscService --> IOscTransportFactory : SharpOSC の型は SharpOsc* の中に閉じる（Phase9 9-E E-1）
+    ControlService --> IOscService : ctor injection（OSC 系の本体。ChangeOSC*Status は薄い委譲）
     IMacroPlayback <|.. MacroPlayback : implements
     Mapping --> IMacroPlayback : ctor injection (Phase9 9-C)
     MacroPlayback --> IMacroStepExecutor
