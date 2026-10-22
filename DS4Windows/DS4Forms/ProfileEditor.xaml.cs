@@ -1409,14 +1409,14 @@ namespace DS4WinWPF.DS4Forms
         private void SpecialActionsLV_MouseDoubleClick(object sender, MouseButtonEventArgs e)
         {
             DependencyObject source = e.OriginalSource as DependencyObject;
-            while (source != null && !(source is ListViewItem) && !(source is System.Windows.Controls.Primitives.ButtonBase))
+            while (source != null && !(source is System.Windows.Controls.ListViewItem) && !(source is System.Windows.Controls.Primitives.ButtonBase))
             {
                 source = source is Visual || source is System.Windows.Media.Media3D.Visual3D
                     ? VisualTreeHelper.GetParent(source)
                     : LogicalTreeHelper.GetParent(source);
             }
 
-            if (!(source is ListViewItem)) return;
+            if (!(source is System.Windows.Controls.ListViewItem)) return;
 
             EditActionBtn_Click(sender, e);
         }
