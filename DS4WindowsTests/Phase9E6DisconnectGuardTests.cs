@@ -1,5 +1,6 @@
 using System.IO;
 using System.Text.RegularExpressions;
+using DS4Windows;
 using DS4Windows.DI;
 using DS4Windows.Services;
 using Xunit;
