@@ -85,7 +85,10 @@ namespace DS4WindowsTests
             if (path == null) return;
             string text = File.ReadAllText(path);
 
-            string removal = MethodBody(text, "protected void On_DS4Removal(");
+            // Phase9 9-E E-6e: 切断の処理は DeviceDisconnectHandler.OnRemoval へ移った（ControlService.On_DS4Removal は委譲）
+            string handlerPath = SourceFileLocator.Find("DS4Windows/DS4Control/Services/DeviceDisconnectHandler.cs");
+            if (handlerPath == null) return;
+            string removal = MethodBody(File.ReadAllText(handlerPath), "public void OnRemoval(");
             Assert.Contains("_mapping.HandleDeviceDisconnect(ind);", removal);
 
             string stop = MethodBody(text, "public bool Stop(");

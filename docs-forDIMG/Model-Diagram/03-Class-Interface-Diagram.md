@@ -372,6 +372,21 @@ classDiagram
         +LinkOnHotPlug(IJoinableDevice device, ref primary, ref secondary, LinkMode mode)
     }
     class JoyConLinker
+    class IDeviceDisconnectHandler {
+        <<interface>>
+        +OnRemoval(object sender, EventArgs e)
+        +OnSyncChange(object sender, EventArgs e)
+        +OnSerialChange(object sender, EventArgs e)
+    }
+    class IDeviceSlotHost {
+        <<interface>>
+        +DS4Controllers DS4Device[]
+        +CurrentStates DS4State[]
+        +PreviousStates DS4State[]
+        +TouchPads Mouse[]
+        +SlotManager ControllerSlotManager
+    }
+    class DeviceDisconnectHandler
     class JoinableDeviceAdapter
     class Ds4DeviceModule
     class DualSenseDeviceModule
@@ -456,6 +471,10 @@ classDiagram
     IActiveInputProbe <|.. ActiveInputProbe : implements
     IConnectionProfileSelector <|.. ConnectionProfileSelector : implements
     IDeviceConnectionSetup <|.. DeviceConnectionSetup : implements
+    IDeviceDisconnectHandler <|.. DeviceDisconnectHandler : implements
+    DeviceDisconnectHandler --> IDeviceSlotHost : Func による遅延取得（実体は ControlService。配列の所有者）
+    DeviceDisconnectHandler --> IVirtualPadService : 仮想パッドの取り外し
+    ControlService --> IDeviceDisconnectHandler : ctor injection（Phase9 9-E E-6e。切断・同期・シリアル変更。イベントの購読先は薄い委譲）
     IJoyConLinker <|.. JoyConLinker : implements
     IJoinableDevice <|.. JoinableDeviceAdapter : implements（実機の DS4Device を包む。テストでは偽物を差し込む）
     JoyConLinker --> IJoinableDevice : 結合が触る最小の窓口

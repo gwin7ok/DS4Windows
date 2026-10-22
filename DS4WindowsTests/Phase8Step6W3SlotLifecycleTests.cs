@@ -190,7 +190,10 @@ namespace DS4WindowsTests
             if (controlService == null || mapping == null) return;
 
             string text = File.ReadAllText(controlService);
-            string removal = MethodBody(text, "protected void On_DS4Removal(");
+            // Phase9 9-E E-6e: 切断の処理は DeviceDisconnectHandler.OnRemoval へ移った
+            string handlerPath = SourceFileLocator.Find("DS4Windows/DS4Control/Services/DeviceDisconnectHandler.cs");
+            if (handlerPath == null) return;
+            string removal = MethodBody(File.ReadAllText(handlerPath), "public void OnRemoval(");
             int handle = removal.IndexOf("_mapping.HandleDeviceDisconnect(ind);", StringComparison.Ordinal);
             int release = removal.IndexOf("_profileSlotApplier.ReleaseSlot(ind);", StringComparison.Ordinal);
             Assert.True(handle >= 0 && release > handle, "ReleaseSlot は HandleDeviceDisconnect の後に呼ぶ");

@@ -107,8 +107,8 @@
 | E-6a プロファイル選択（`IConnectionProfileSelector`） | **完了（2026-10-22）**。ビルド・テスト合格、実機確認 OK |
 | E-6b 設定の反映（`IDeviceConnectionSetup`） | **完了（2026-10-22）**。ビルド・テスト合格、実機確認 OK（P9E6b-1・6。タッチパッド・DualSense・起動プログラムは機材／設定なしで未実施） |
 | E-6c 種類のカートリッジ（`IInputDeviceModule` ×5 と `Registry`） | **完了（2026-10-22）**。ビルド・テスト合格、実機確認 OK（P9E6c-1。DualSense／Edge／Joy-Con／Switch Pro の固有部分は機材なしで未実施、差分テストで担保） |
-| E-6d Joy-Con の結合（`IJoyConLinker`、`IJoinableDevice`） | **実装済み（2026-10-22）**。ビルド・テストはユーザーの実行待ち |
-| E-6e 切断・同期 | 未 |
+| E-6d Joy-Con の結合（`IJoyConLinker`、`IJoinableDevice`） | **完了（2026-10-22）**。ビルド・テスト合格（偽物のデバイスの差分テスト約 3.3 万通り含む）。実機はなし（台帳 §41 は Joy-Con が手に入ったとき） |
+| E-6e 切断・同期（`IDeviceDisconnectHandler`、`IDeviceSlotHost`） | **実装済み（2026-10-22）**。ビルド・テストはユーザーの実行待ち |
 | E-6f 開始・停止・ホットプラグ | 未 |
 
 ### E-6a の実装メモ
@@ -135,3 +135,10 @@
 - `Start` の手順と `HotPlug` の手順は、統合せずに別のメソッドにした（挙動を変えないため）。3 か所で同じだった「相互に結合相手を設定 → `JointState` を相手のものに → 取り外しで相手の結合を解除する処理を両方に足す」は、private の `Join` にまとめた（順序はそのまま）。保留中の主／副は、これまでどおり呼び出し側のループの局所変数（`ref`／戻り値）で持つ。
 - 旧コードの `device as JoyConDevice` の型の絞り込みは、アダプターの `SetJointDevice` の中に移した。Joy-Con の種類（L／R）のデバイスは必ず `JoyConDevice` なので、結果は同じ。
 - テスト: `Phase9E6JoyConLinkerTests` が、旧 `Start`／`HotPlug` の逐語コピーと、**偽物のデバイスで** 全ての小さな組み合わせ（種類 4 × 結合の可否 × 主／副 × 結合済みか＝32 通りのデバイスを 1〜3 台、2 つの結合モード）を突き合わせる。結合後の相手・状態と、各デバイスを取り外した後の状態まで同じことを確かめる（実機の Joy-Con はなくても担保）。ガードテストで、`ControlService` に `JoyConDevice`／`.JointDevice`／`.JointState` が残っていないこと、呼び出しの順序（準備 → 結合 → 割り当て）を検査する。
+
+### E-6e の実装メモ
+- 契約: `IDeviceDisconnectHandler`（`OnRemoval`／`OnSyncChange`／`OnSerialChange`／`DebugMessage`）と、スロットごとの状態への窓口 `IDeviceSlotHost`（`DS4Controllers`／`CurrentStates`／`PreviousStates`／`TouchPads`／`SlotManager`）。実装は `DeviceDisconnectHandler`（Singleton、状態なし）。`ControlService` が `IDeviceSlotHost` を明示実装し（配列の所有者のまま）、`Func<IDeviceSlotHost>` で遅延して渡す（E-3・E-4 と同じ形。構築の循環なし）。
+- 旧 3 メソッドを逐語で移した。配列の参照は `host.XXX` に、`outputDevices`／`UnplugOutDev`／`PluginOutDev` は `IVirtualPadService` 経由に、`ActiveOutDevType` は `IOutputSlotService` の同じ配列に置き換えただけ。`OnDeviceSerialChange(this, ...)` の送り主は、同じ `ControlService` のインスタンス（`IDeviceSlotHost` の実体）を渡す。
+- `ControlService` の `On_DS4Removal`／`On_SyncChange`／`On_SerialChange`（protected）は、イベントの購読先として、1 行の委譲で残した。購読の登録順は変えていない。
+- 既存テスト `Phase8Step6W1DisconnectCharacterizationTests`／`Phase8Step6W3SlotLifecycleTests` の走査先を `DeviceDisconnectHandler.OnRemoval` へ更新した。
+- テスト: `Phase9E6DisconnectGuardTests`（移した呼び出しの不在、薄い委譲、購読の登録順、**切断の後始末の順序**［仮想パッドの取り外し → コミット → エンジンの切断 → スロットの解放 → 通知 → 状態の初期化 → スロット管理の解除 → OSC → 遅延監視のリセット］、DI 登録とホスト）。`DS4Device` が作れないため、値の差分テストは書けず、順序のソース走査と実機確認（台帳 §42）で担保する。
