@@ -177,8 +177,8 @@ namespace DS4WindowsTests
 
         [Theory]
         [InlineData(@"\bJoyConDevice\b")]
-        [InlineData(@"\.JointDevice\b")]
-        [InlineData(@"\.JointState\b")]
+        [InlineData(@"\.JointDevice\s*=[^=]")]
+        [InlineData(@"\.JointState\s*=[^=]")]   // 代入だけ。On_Report の「cState = device.JointState」（読み取り）は残る
         public void ControlService_NoLongerContains_TheJoyConLinking(string pattern)
         {
             string text = ReadWithoutComments("DS4Windows/DS4Control/ControlService.cs");
