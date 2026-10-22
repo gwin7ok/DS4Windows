@@ -20,6 +20,7 @@ namespace DS4WindowsTests
         /// <summary>検査対象メソッドの宣言（一意に特定できる先頭部分）。</summary>
         private static readonly string[] MethodMarkers =
         {
+            "private void SendKeyOrMouseButton(",   // Phase9 9-C Q4: 押下・離上の送出（OutputKBMMapping を読む）
             "public bool Execute(",   // Phase9 9-C: 旧 Mapping.PlayMacroCodeValue は MacroStepExecutor.Execute へ移した（検査の対象のファイルも MacroStepExecutor.cs）
             // Phase8-Step7-3a: AltTabSwapping／AltTabSwappingRelease は、機能廃止により削除した
         };
@@ -95,7 +96,8 @@ namespace DS4WindowsTests
 
                 Assert.False(BareReference.IsMatch(body), $"outputKBMMapping への非修飾参照（Global）が {marker} に残っている");
                 Assert.False(QualifiedReference.IsMatch(body), $"Global.outputKBMMapping への修飾参照が {marker} に残っている");
-                Assert.Contains("_profileSettings.OutputKBMMapping.", body);
+                // Phase9 9-C Q4: 押下・離上の送出は SendKeyOrMouseButton にまとめたため、設定の読み取りは、ファイル全体で確かめる
+                Assert.Contains("_profileSettings.OutputKBMMapping", text);
             }
         }
 
