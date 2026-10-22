@@ -19,6 +19,7 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Linq;
 using System.Text.RegularExpressions;
 using System.Threading;
 using System.Windows;
@@ -67,7 +68,34 @@ namespace DS4WinWPF.DS4Forms.ViewModels
                 }
             }
 
-            AppLogger.LogToGui($"[TrayDiag] {message}{stack}", false);
+            AppLogger.LogToGui($"[TrayDiag] {message}{stack} | fg={ForegroundInfo()} | active={System.Windows.Application.Current?.Windows.OfType<System.Windows.Window>().FirstOrDefault(w => w.IsActive)?.GetType().Name ?? "none"}", false);
+        }
+
+        [System.Runtime.InteropServices.DllImport("user32.dll")]
+        private static extern IntPtr GetForegroundWindow();
+
+        [System.Runtime.InteropServices.DllImport("user32.dll")]
+        private static extern uint GetWindowThreadProcessId(IntPtr hWnd, out uint processId);
+
+        [System.Runtime.InteropServices.DllImport("user32.dll", CharSet = System.Runtime.InteropServices.CharSet.Unicode)]
+        private static extern int GetClassName(IntPtr hWnd, System.Text.StringBuilder text, int count);
+
+        private static string ForegroundInfo()
+        {
+            try
+            {
+                IntPtr hwnd = GetForegroundWindow();
+                GetWindowThreadProcessId(hwnd, out uint pid);
+                var cls = new System.Text.StringBuilder(64);
+                GetClassName(hwnd, cls, cls.Capacity);
+                string name;
+                try { name = Process.GetProcessById((int)pid).ProcessName; } catch { name = "?"; }
+                return $"{name}(pid {pid}, class {cls})";
+            }
+            catch
+            {
+                return "error";
+            }
         }
 
         public string TooltipText
