@@ -203,6 +203,7 @@ E-2・E-3 は、E-1 の結果を見てから、**この計画書に設計を追�
 - **Q1＝まとめて 1 回**: E-4a（振動・ライトバーの戻り）と E-4b（作成・割り当て・取り外し）を 1 回で実装する。
 - **Q2＝E-4 の最後にまとめて実機確認**: ビルド・テストのあと、台帳 §36 を一括して確認する（ViGEmBus、コントローラー［USB／Bluetooth］、HidHide が揃っている）。先送りにした §31〜§35 も、同じ機会にまとめて確認できる。
 - **Q3＝実機確認の後に別コミットで畳む**: `PluginOutDev` の X360／DS4 の重複の畳み込みは、実機確認が済んでから。
+  - **実施済み（2026-10-22）**: 実機確認（§36）の後に畳んだ。X360／DS4 の枝を 1 つにし、旧コードの `as Xbox360OutDevice`／`as DS4OutDevice` と同じ結果にする `CastOutDevice` と、結合デバイスの相手にも付ける `EstablishOutFeedbackIfEnabled` を VirtualPadService の private に切り出した（呼び出しの順序は変えていない）。再確認は、台帳 §36 の P9E-9〜10・12・14（USB／Bluetooth の接続、種類の切り替え、複数台）。
 - **Q4＝E-4b で逆依存を解消**: `OutputSlotService` は `ControlService` ではなく `IVirtualPadService` を呼ぶ。
 
 ## 14. E-4 の結果（2026-10-22。この環境に `dotnet` がないため、ビルド・テストは未実行）

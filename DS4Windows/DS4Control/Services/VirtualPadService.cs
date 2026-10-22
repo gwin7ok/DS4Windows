@@ -14,7 +14,7 @@ namespace DS4Windows.Services
     /// 状態 <c>outputslotMan</c>／<c>outputDevices</c>／<c>vigemTestClient</c>）を、そのまま移したもの（呼び出しの順序は変えていない。ガードレール: ドライバ破棄順序、切断時クリーンアップ）。
     /// <c>ControlService</c> が持つもの（振動のブースト込みの設定、イベントスレッド）は <see cref="IVirtualPadHost"/> 経由で、デバイスは <see cref="IDeviceStateAccessor"/> 経由で、
     /// いずれも遅延して受ける（循環を避ける）。実機（ViGEmBus とコントローラー）でなければ確かめられない部分は、台帳 §36 の確認項目で担保する。
-    /// TODO(技術的負債): PluginOutDev の X360 の枝と DS4 の枝は約 80 行がほぼ同じ。実機確認のあと、別コミットで畳む（Phase9-E-Plan.md §13 の Q3）。
+    /// PluginOutDev の X360 の枝と DS4 の枝は、実機確認のあとに 1 つへ畳んだ（Phase9-E-Plan.md §13 の Q3）。
     /// </summary>
     public sealed class VirtualPadService : IVirtualPadService
     {
@@ -444,35 +444,22 @@ namespace DS4Windows.Services
             if (_profileSettings.UseDInputOnlyArray[index])
             {
                 bool success = false;
-                if (contType == OutContType.X360)
+                // Phase9 9-E E-4（Q3）: X360 の枝と DS4 の枝は、型の違い（Xbox360OutDevice／DS4OutDevice）以外が同一だったため、1 つにまとめた。
+                if (contType == OutContType.X360 || contType == OutContType.DS4)
                 {
-                    ActiveOutDevType[index] = OutContType.X360;
+                    ActiveOutDevType[index] = contType;
 
                     if (slotDevice == null)
                     {
                         slotDevice = outputslotMan.FindOpenSlot();
                         if (slotDevice != null)
                         {
-                            Xbox360OutDevice tempXbox = EstablishOutDevice(index, OutContType.X360)
-                            as Xbox360OutDevice;
-                            //outputDevices[index] = tempXbox;
+                            OutputDevice tempOut = CastOutDevice(EstablishOutDevice(index, contType), contType);
 
                             // Enable ViGem feedback callback handler only if lightbar/rumble data output is enabled (if those are disabled then no point enabling ViGem callback handler call)
-                            if (_profileSettings.EnableOutputDataToDS4[index])
-                            {
-                                EstablishOutFeedback(index, OutContType.X360, tempXbox, device);
+                            EstablishOutFeedbackIfEnabled(index, contType, tempOut, device);
 
-                                if (device.JointDeviceSlotNumber != -1)
-                                {
-                                    DS4Device tempDS4Device = _deviceAccessor().GetController(device.JointDeviceSlotNumber);
-                                    if (tempDS4Device != null)
-                                    {
-                                        EstablishOutFeedback(device.JointDeviceSlotNumber, OutContType.X360, tempXbox, tempDS4Device);
-                                    }
-                                }
-                            }
-
-                            outputslotMan.DeferredPlugin(tempXbox, index, $"{device.DisplayName} [{device.MacAddress}]", outputDevices, contType);
+                            outputslotMan.DeferredPlugin(tempOut, index, $"{device.DisplayName} [{device.MacAddress}]", outputDevices, contType);
                             //slotDevice.CurrentInputBound = OutSlotDevice.InputBound.Bound;
 
                             success = true;
@@ -485,99 +472,15 @@ namespace DS4Windows.Services
                     else
                     {
                         slotDevice.CurrentInputBound = OutSlotDevice.InputBound.Bound;
-                        Xbox360OutDevice tempXbox = slotDevice.OutputDevice as Xbox360OutDevice;
+                        OutputDevice tempOut = CastOutDevice(slotDevice.OutputDevice, contType);
 
                         // Enable ViGem feedback callback handler only if lightbar/rumble data output is enabled (if those are disabled then no point enabling ViGem callback handler call)
-                        if (_profileSettings.EnableOutputDataToDS4[index])
-                        {
-                            EstablishOutFeedback(index, OutContType.X360, tempXbox, device);
+                        EstablishOutFeedbackIfEnabled(index, contType, tempOut, device);
 
-                            if (device.JointDeviceSlotNumber != -1)
-                            {
-                                DS4Device tempDS4Device = _deviceAccessor().GetController(device.JointDeviceSlotNumber);
-                                if (tempDS4Device != null)
-                                {
-                                    EstablishOutFeedback(device.JointDeviceSlotNumber, OutContType.X360, tempXbox, tempDS4Device);
-                                }
-                            }
-                        }
-
-                        outputDevices[index] = tempXbox;
+                        outputDevices[index] = tempOut;
                         slotDevice.CurrentType = contType;
                         success = true;
                     }
-
-                    //tempXbox.Connect();
-                    //LogDebug("X360 Controller #" + (index + 1) + " connected");
-                }
-                else if (contType == OutContType.DS4)
-                {
-                    ActiveOutDevType[index] = OutContType.DS4;
-                    if (slotDevice == null)
-                    {
-                        slotDevice = outputslotMan.FindOpenSlot();
-                        if (slotDevice != null)
-                        {
-                            DS4OutDevice tempDS4 = EstablishOutDevice(index, OutContType.DS4)
-                            as DS4OutDevice;
-
-                            // Enable ViGem feedback callback handler only if DS4 lightbar/rumble data output is enabled (if those are disabled then no point enabling ViGem callback handler call)
-                            if (_profileSettings.EnableOutputDataToDS4[index])
-                            {
-                                EstablishOutFeedback(index, OutContType.DS4, tempDS4, device);
-
-                                if (device.JointDeviceSlotNumber != -1)
-                                {
-                                    DS4Device tempDS4Device = _deviceAccessor().GetController(device.JointDeviceSlotNumber);
-                                    if (tempDS4Device != null)
-                                    {
-                                        EstablishOutFeedback(device.JointDeviceSlotNumber, OutContType.DS4, tempDS4, tempDS4Device);
-                                    }
-                                }
-                            }
-
-                            outputslotMan.DeferredPlugin(tempDS4, index, $"{device.DisplayName} [{device.MacAddress}]", outputDevices, contType);
-                            //slotDevice.CurrentInputBound = OutSlotDevice.InputBound.Bound;
-
-                            success = true;
-                        }
-                        else
-                        {
-                            LogDebug("Failed. No open output slot found");
-                        }
-                    }
-                    else
-                    {
-                        slotDevice.CurrentInputBound = OutSlotDevice.InputBound.Bound;
-                        DS4OutDevice tempDS4 = slotDevice.OutputDevice as DS4OutDevice;
-
-                        // Enable ViGem feedback callback handler only if lightbar/rumble data output is enabled (if those are disabled then no point enabling ViGem callback handler call)
-                        if (_profileSettings.EnableOutputDataToDS4[index])
-                        {
-                            EstablishOutFeedback(index, OutContType.DS4, tempDS4, device);
-
-                            if (device.JointDeviceSlotNumber != -1)
-                            {
-                                DS4Device tempDS4Device = _deviceAccessor().GetController(device.JointDeviceSlotNumber);
-                                if (tempDS4Device != null)
-                                {
-                                    EstablishOutFeedback(device.JointDeviceSlotNumber, OutContType.DS4, tempDS4, tempDS4Device);
-                                }
-                            }
-                        }
-
-                        outputDevices[index] = tempDS4;
-                        slotDevice.CurrentType = contType;
-                        success = true;
-                    }
-
-                    //DS4OutDevice tempDS4 = new DS4OutDevice(vigemTestClient);
-                    //DS4OutDevice tempDS4 = outputslotMan.AllocateController(OutContType.DS4, vigemTestClient)
-                    //    as DS4OutDevice;
-                    //outputDevices[index] = tempDS4;
-
-                    //tempDS4.Connect();
-                    //LogDebug("DS4 Controller #" + (index + 1) + " connected");
                 }
 
                 // Need to check for possible ViGEmBus failure here
@@ -585,6 +488,30 @@ namespace DS4Windows.Services
                 {
                     LogDebug($"Associated input controller #{index + 1} ({device.DisplayName}) to virtual {slotDevice.OutputDevice.GetDeviceType()} Controller in{(slotDevice.PermanentType != OutContType.None ? " permanent" : "")} output slot #{slotDevice.Index + 1}");
                     _profileSettings.UseDInputOnlyArray[index] = false;
+                }
+            }
+        }
+
+        // 旧コードの "as Xbox360OutDevice"／"as DS4OutDevice" と同じ結果（種類が合わなければ null）にするための型の絞り込み
+        private static OutputDevice CastOutDevice(OutputDevice device, OutContType contType)
+        {
+            return contType == OutContType.X360 ? (OutputDevice)(device as Xbox360OutDevice) : (OutputDevice)(device as DS4OutDevice);
+        }
+
+        // 振動・ライトバーの出力が有効なときだけ、ViGEm の戻りのハンドラーを付ける（結合デバイスの相手側にも付ける）
+        private void EstablishOutFeedbackIfEnabled(int index, OutContType contType, OutputDevice outDevice, DS4Device device)
+        {
+            if (_profileSettings.EnableOutputDataToDS4[index])
+            {
+                EstablishOutFeedback(index, contType, outDevice, device);
+
+                if (device.JointDeviceSlotNumber != -1)
+                {
+                    DS4Device tempDS4Device = _deviceAccessor().GetController(device.JointDeviceSlotNumber);
+                    if (tempDS4Device != null)
+                    {
+                        EstablishOutFeedback(device.JointDeviceSlotNumber, contType, outDevice, tempDS4Device);
+                    }
                 }
             }
         }
