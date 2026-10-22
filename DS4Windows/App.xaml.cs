@@ -1,4 +1,4 @@
-﻿/*
+/*
 DS4Windows
 Copyright (C) 2023  Travis Nickles
 
@@ -219,25 +219,24 @@ namespace DS4WinWPF
             try
             {
                 // Detailed diagnostics at Debug level
-                AppLogger.LogInfo($"Startup culture: CurrentCulture={System.Globalization.CultureInfo.CurrentCulture}, CurrentUICulture={System.Globalization.CultureInfo.CurrentUICulture}");
-                AppLogger.LogInfo($"DefaultThreadCurrentCulture={System.Globalization.CultureInfo.DefaultThreadCurrentCulture}, DefaultThreadCurrentUICulture={System.Globalization.CultureInfo.DefaultThreadCurrentUICulture}");
+                // Phase9 9-F F-1a: 文言は StartupDiagnostics（文言とレベル、順序は変えない）
+                AppLogger.LogInfo(StartupDiagnostics.CultureMessage());
+                AppLogger.LogInfo(StartupDiagnostics.DefaultCultureMessage());
 
                 // Log command-line args for Updater-related diagnostic
                 try
                 {
-                    var argsJoined = string.Join(' ', e.Args ?? Array.Empty<string>());
-                    AppLogger.LogInfo($"Startup args: {argsJoined}");
+                    AppLogger.LogInfo(StartupDiagnostics.ArgsMessage(e.Args));
                 }
                 catch { }
 
                 string langDir = System.IO.Path.Combine(AppContext.BaseDirectory, "Lang");
-                AppLogger.LogInfo($"Lang folder exists: {System.IO.Directory.Exists(langDir)} at {langDir}");
+                AppLogger.LogInfo(StartupDiagnostics.LangFolderMessage(langDir));
                 if (System.IO.Directory.Exists(langDir))
                 {
                     try
                     {
-                        var dirs = System.IO.Directory.GetDirectories(langDir);
-                        AppLogger.LogInfo($"Lang subdirs: {string.Join(',', System.Array.ConvertAll(dirs, d => System.IO.Path.GetFileName(d)))}");
+                        AppLogger.LogInfo(StartupDiagnostics.LangSubdirsMessage(langDir));
                     }
                     catch (Exception ex) { AppLogger.LogError($"LangDirList exception: {ex}"); }
                 }
@@ -249,22 +248,8 @@ namespace DS4WinWPF
             // If process started with --complete-install, perform the file move and exit with code.
             try
             {
-                string[] cmdArgs = e.Args;
-                string src = null;
-                string tgt = null;
-                for (int i = 0; i < cmdArgs.Length; i++)
-                {
-                    if (cmdArgs[i] == "--complete-install" && i + 1 < cmdArgs.Length)
-                    {
-                        src = cmdArgs[++i];
-                    }
-                    else if (cmdArgs[i] == "--complete-install-target" && i + 1 < cmdArgs.Length)
-                    {
-                        tgt = cmdArgs[++i];
-                    }
-                }
-
-                if (!string.IsNullOrEmpty(src) && !string.IsNullOrEmpty(tgt))
+                // Phase9 9-F F-1a: 引数の読み取りは CompleteInstallArguments
+                if (CompleteInstallArguments.TryParse(e.Args, out string src, out string tgt))
                 {
                     // We are in elevated completion mode — perform move/copy and exit
                     int exit = DS4WinWPF.UpdaterElevatedHelper.CompleteInstall(src, tgt);
@@ -444,13 +429,12 @@ namespace DS4WinWPF
             try { AppLogger.LogInfo($"Process exe: {Process.GetCurrentProcess().MainModule?.FileName}"); } catch { }
             try { AppLogger.LogInfo($"AppDomain BaseDirectory: {AppContext.BaseDirectory}"); } catch { }
             try { AppLogger.LogInfo($"Current working directory: {Environment.CurrentDirectory}"); } catch { }
-            AppLogger.LogInfo($"DS4Windows version {version}");
-            AppLogger.LogInfo($"DS4Windows exe file: {Path.GetFileName(_pathService.ExecutablePath)}");
-            AppLogger.LogInfo($"DS4Windows Assembly Architecture: {(Environment.Is64BitProcess ? "x64" : "x86")}");
-            AppLogger.LogInfo($"OS Version: {Environment.OSVersion}");
-            AppLogger.LogInfo($"OS Product Name: {DS4Windows.Util.GetOSProductName()}");
-            AppLogger.LogInfo($"OS Release ID: {DS4Windows.Util.GetOSReleaseId()}");
-            AppLogger.LogInfo($"System Architecture: {(Environment.Is64BitOperatingSystem ? "x64" : "x86")}");
+            // Phase9 9-F F-1a: 文言は StartupDiagnostics（文言と順序は変えない）
+            foreach (string environmentMessage in StartupDiagnostics.EnvironmentMessages(version, _pathService.ExecutablePath,
+                DS4Windows.Util.GetOSProductName(), DS4Windows.Util.GetOSReleaseId()))
+            {
+                AppLogger.LogInfo(environmentMessage);
+            }
             AppLogger.LogInfo("Logger created");
 
             // Startup summary: read from build_timestamp.txt in the executable folder
@@ -460,25 +444,9 @@ namespace DS4WinWPF
                 fp = Path.GetFullPath(fp);
                 if (File.Exists(fp))
                 {
-                    string summary = File.ReadAllText(fp).Trim();
-                    string single = summary.Replace(Environment.NewLine, " ").Replace('\n', ' ');
-                    // English message: try to extract an ISO-like timestamp from the summary and display it in English
-                    try
-                    {
-                        var m = Regex.Match(single, @"(?<date>\d{4}-\d{2}-\d{2}[ T]\d{2}:\d{2}:\d{2})");
-                        if (m.Success)
-                        {
-                            // ビルドのコミット（build_timestamp.txt の「commit=」。未コミットの変更があれば「-dirty」つき）。古い形式のファイルには、ない
-                            Match commit = Regex.Match(single, @"commit=(?<hash>\S+)");
-                            string commitText = commit.Success ? $" (commit {commit.Groups["hash"].Value})" : string.Empty;
-                            AppLogger.LogInfo($"This binary was built at {m.Groups["date"].Value}{commitText}");
-                        }
-                        else
-                        {
-                            AppLogger.LogInfo($"This binary was built: {single}");
-                        }
-                    }
-                    catch { }
+                    // Phase9 9-F F-1a: 文言づくりは BuildStampReader（解釈中の例外は、これまでどおり握りつぶす）
+                    string buildMessage = BuildStampReader.BuildLogMessage(File.ReadAllText(fp));
+                    if (buildMessage != null) AppLogger.LogInfo(buildMessage);
                 }
                 else
                 {
