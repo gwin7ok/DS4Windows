@@ -90,7 +90,7 @@ namespace DS4Windows.DI
         int OscSenderPort { get; set; }
         bool QuickCharge { get; set; }
         bool DCBTatStop { get; set; }
-        /// <summary>プロセス優先度の選択インデックス（MainWindow.ProcessPriorityClasses の添字）。</summary>
+        /// <summary>プロセス優先度の選択インデックス（ProcessPriorityOptions.Classes の添字）。</summary>
         int ProcessPriority { get; set; }
         ControlServiceDeviceOptions DeviceOptions { get; }
         event EventHandler UDPServerSmoothingMincutoffChanged;

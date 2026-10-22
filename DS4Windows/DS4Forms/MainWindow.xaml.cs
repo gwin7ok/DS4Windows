@@ -100,12 +100,6 @@ namespace DS4WinWPF.DS4Forms
 
         public bool IsInitialShow { get; set; }
 
-        public static List<ProcessPriorityClass> ProcessPriorityClasses =
-        [
-            ProcessPriorityClass.Normal, ProcessPriorityClass.AboveNormal,
-            ProcessPriorityClass.High, ProcessPriorityClass.RealTime
-        ];
-
         // Phase7-Step5 W5（Q4＝A）: 旧 AppHost.GetService の 17 件を、コンストラクター引数に替えた。
         // IMainWindowFactory（実装は MainWindowFactory）が DI から解決して渡す。
         public MainWindow(ArgumentParser parser,
@@ -166,7 +160,7 @@ namespace DS4WinWPF.DS4Forms
             //logListView.ItemsSource = logvm.LogItems;
             logListView.DataContext = logvm;
             lastMsgLb.DataContext = lastLogMsg;
-            ProcessPriorityComboBox.ItemsSource = ProcessPriorityClasses;
+            ProcessPriorityComboBox.ItemsSource = DS4Windows.Services.ProcessPriorityOptions.Classes;
 
             profileListHolder.Refresh();
             profilesListBox.ItemsSource = profileListHolder.ProfileListCol;
@@ -2041,7 +2035,7 @@ Suspend support not enabled.", true);
             {
                 MessageBox.Show(Strings.RealTimeNoAdmin);
                 selectedPriority = ProcessPriorityClass.High;
-                settingsWrapVM.ProcessPriorityIndex = ProcessPriorityClasses.IndexOf(ProcessPriorityClass.High);
+                settingsWrapVM.ProcessPriorityIndex = DS4Windows.Services.ProcessPriorityOptions.IndexOf(ProcessPriorityClass.High);
             }
             process.PriorityClass = selectedPriority;
         }

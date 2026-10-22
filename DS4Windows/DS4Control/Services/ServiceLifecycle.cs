@@ -19,13 +19,6 @@ namespace DS4Windows.Services
     /// </summary>
     public sealed class ServiceLifecycle : IServiceLifecycle
     {
-        // 旧 MainWindow.ProcessPriorityClasses（UI の静的リスト）と同じ順序。第 2 層から UI を参照しないよう、ここに持つ（設定は添字で保存されている）
-        private static readonly ProcessPriorityClass[] ProcessPriorityClasses =
-        {
-            ProcessPriorityClass.Normal, ProcessPriorityClass.AboveNormal,
-            ProcessPriorityClass.High, ProcessPriorityClass.RealTime
-        };
-
         private readonly IAppSettingsService _appSettings;
         private readonly IEnvironmentService _environmentService;
         private readonly IProfileSettingsService _profileSettings;
@@ -216,7 +209,7 @@ namespace DS4Windows.Services
             ServiceStarted?.Invoke(this, EventArgs.Empty);
             RunningChanged?.Invoke(this, EventArgs.Empty);
             using var process = Process.GetCurrentProcess();
-            process.PriorityClass = ProcessPriorityClasses[_appSettings.ProcessPriority];
+            process.PriorityClass = ProcessPriorityOptions.Classes[_appSettings.ProcessPriority];
             return true;
         }
 

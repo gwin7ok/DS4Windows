@@ -129,7 +129,7 @@ namespace DS4WindowsTests
                 "_appSettings.RunHotPlug = true;",
                 "ServiceStarted?.Invoke(this, EventArgs.Empty);",
                 "RunningChanged?.Invoke(this, EventArgs.Empty);",
-                "process.PriorityClass = ProcessPriorityClasses[_appSettings.ProcessPriority];",
+                "process.PriorityClass = ProcessPriorityOptions.Classes[_appSettings.ProcessPriority];",
             }, "Start");
         }
 
@@ -170,19 +170,22 @@ namespace DS4WindowsTests
         }
 
         [Fact]
-        public void TheProcessPriorityList_HasTheSameOrderAsTheUiList()
+        public void TheProcessPriorityList_IsDefinedOnlyInProcessPriorityOptions_AndKeepsTheSavedOrder()
         {
             string ui = ReadWithoutComments("DS4Windows/DS4Forms/MainWindow.xaml.cs");
             string lifecycle = ReadWithoutComments("DS4Windows/DS4Control/Services/ServiceLifecycle.cs");
-            if (ui == null || lifecycle == null) return;
+            string options = ReadWithoutComments("DS4Windows/DS4Control/Services/ProcessPriorityOptions.cs");
+            if (ui == null || lifecycle == null || options == null) return;
 
-            var uiList = Regex.Match(ui, @"ProcessPriorityClasses\s*=\s*\[(?<items>[^\]]*)\]", RegexOptions.Singleline);
-            var lifecycleList = Regex.Match(lifecycle, @"ProcessPriorityClasses\s*=\s*\{(?<items>[^}]*)\}", RegexOptions.Singleline);
-            Assert.True(uiList.Success && lifecycleList.Success);
+            Assert.DoesNotContain("ProcessPriorityClass.AboveNormal", ui);
+            Assert.DoesNotContain("ProcessPriorityClass.AboveNormal", lifecycle);
+            Assert.Contains("ProcessPriorityOptions.Classes", ui);
+            Assert.Contains("ProcessPriorityOptions.Classes", lifecycle);
 
-            string[] Names(Match m) => Regex.Matches(m.Groups["items"].Value, @"ProcessPriorityClass\.(\w+)").Cast<Match>().Select(x => x.Groups[1].Value).ToArray();
-            Assert.Equal(Names(uiList), Names(lifecycleList));
-            Assert.Equal(4, Names(uiList).Length);
+            var list = Regex.Match(options, @"Classes\s*=\s*new\[\]\s*\{(?<items>[^}]*)\}", RegexOptions.Singleline);
+            Assert.True(list.Success);
+            string[] names = Regex.Matches(list.Groups["items"].Value, @"ProcessPriorityClass\.(\w+)").Cast<Match>().Select(x => x.Groups[1].Value).ToArray();
+            Assert.Equal(new[] { "Normal", "AboveNormal", "High", "RealTime" }, names);
         }
 
         [Fact]

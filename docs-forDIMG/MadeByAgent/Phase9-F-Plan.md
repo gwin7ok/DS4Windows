@@ -29,6 +29,9 @@ Windows メッセージの種類ごと（デバイスの着脱、電源、IPC、
 ### F-5: 残った課題の整理
 プロセス優先度の型付き化（配列の複製をなくす）、`ControlService` の転送メンバーの削除（UI を抽象経由へ）。
 
+- **F-5a（完了。2026-10-23）**: 優先度の表を `ProcessPriorityOptions`（`DS4Windows/DS4Control/Services/`）へ 1 か所にまとめた。`MainWindow` と `ServiceLifecycle` の複製を削除。並び順（Normal／AboveNormal／High／RealTime。設定は添字で保存）は、ガードテストで固定。
+- **F-5b（未着手。承認待ち）**: 調査の結果、UI などの外部から使われている転送メンバーは `running` だけ（`App.xaml.cs` 1 件、`MainWindow.Ipc.cs` 4 件、`MainWindow.xaml.cs` 7 件、`TrayIconViewModel` 1 件）。`loopControllers`／`inServiceTask`／`activeControllers` は外部からの参照が 0 件。案: 外部が 0 件のものを `ControlService` から削除し、`running` は `IServiceLifecycle.Running` をコンストラクターで受けて置き換える（`MainWindow`／`TrayIconViewModel`／`App` の配線の変更を伴う）。
+
 ## 3. 進め方（提案）
 1. **F-3 の事前調査**（回帰かどうか。実機の比較が要る。利用者の作業）は、後回しのまま。
 2. **F-1 → F-2 → F-4 → F-5** の順（推奨）。各 F で、特性化テスト → 切り出し → ビルド・テスト → 実機（画面）確認。
