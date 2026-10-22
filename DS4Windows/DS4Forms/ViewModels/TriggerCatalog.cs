@@ -16,33 +16,20 @@ namespace DS4WinWPF.DS4Forms.ViewModels
 
         /// <summary>SA のモードの全トリガー。</summary>
         public TriggerCatalog()
-            : this(new[]
-            {
-                new TriggerItem("Cross", "Cross"), new TriggerItem("Circle", "Circle"), new TriggerItem("Square", "Square"),
-                new TriggerItem("Triangle", "Triangle"), new TriggerItem("Options", "Options"), new TriggerItem("Share", "Share"),
-                new TriggerItem("Up", "Up"), new TriggerItem("Down", "Down"), new TriggerItem("Left", "Left"),
-                new TriggerItem("Right", "Right"), new TriggerItem("PS", "PS"), new TriggerItem("Mute", "Mute"),
-                new TriggerItem("Capture", "Capture"), new TriggerItem("SideL", "Side L"), new TriggerItem("SideR", "Side R"),
-                new TriggerItem("L1", "L1"), new TriggerItem("R1", "R1"), new TriggerItem("L2", "L2"),
-                new TriggerItem("L2 Full Pull", "L2 Full Pull"), new TriggerItem("R2", "R2"), new TriggerItem("R2 Full Pull", "R2 Full Pull"),
-                new TriggerItem("L3", "L3"), new TriggerItem("R3", "R3"),
-                // DualSense Edge の追加ボタン
-                new TriggerItem("Function Left", "Function L"), new TriggerItem("Function Right", "Function R"),
-                new TriggerItem("Bottom Left Paddle", "Paddle L"), new TriggerItem("Bottom Right Paddle", "Paddle R"),
-                new TriggerItem("Left Touch", "Left Touch"), new TriggerItem("Upper Touch", "Upper Touch"),
-                new TriggerItem("Multitouch", "Multitouch"), new TriggerItem("Right Touch", "Right Touch"),
-                new TriggerItem("Left Stick Up", "Left Stick Up"), new TriggerItem("Left Stick Down", "Left Stick Down"),
-                new TriggerItem("Left Stick Left", "Left Stick Left"), new TriggerItem("Left Stick Right", "Left Stick Right"),
-                new TriggerItem("Right Stick Up", "Right Stick Up"), new TriggerItem("Right Stick Down", "Right Stick Down"),
-                new TriggerItem("Right Stick Left", "Right Stick Left"), new TriggerItem("Right Stick Right", "Right Stick Right"),
-                new TriggerItem("Swipe Up", "Swipe Up"), new TriggerItem("Swipe Down", "Swipe Down"),
-                new TriggerItem("Swipe Left", "Swipe Left"), new TriggerItem("Swipe Right", "Swipe Right"),
-                new TriggerItem("Tilt Up", "Tilt Up"), new TriggerItem("Tilt Down", "Tilt Down"),
-                new TriggerItem("Tilt Left", "Tilt Left"), new TriggerItem("Tilt Right", "Tilt Right"),
-                new TriggerItem("Touch Started", "Touch Started"), new TriggerItem("Touch Ended", "Touch Ended"),
-                new TriggerItem("LS Outer", "LS Outer"), new TriggerItem("RS Outer", "RS Outer"),
-            })
+            : this(FromInputControls())
         {
+        }
+
+        // Phase9 UI 変更: 並びと表示名は、InputControlCatalog（Controls の一覧と共通）。保存する名前（Name）は、従来のまま
+        private static TriggerItem[] FromInputControls()
+        {
+            var result = new TriggerItem[InputControlCatalog.Entries.Count];
+            for (int i = 0; i < result.Length; i++)
+            {
+                result[i] = new TriggerItem(InputControlCatalog.Entries[i].Name, InputControlCatalog.Entries[i].Label);
+            }
+
+            return result;
         }
 
         /// <summary>指定の項目の一覧（Controls のモードの、対象のボタン 1 つだけ、など）。</summary>

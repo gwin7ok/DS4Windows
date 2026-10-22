@@ -92,68 +92,68 @@ namespace DS4WinWPF.DS4Forms.ViewModels
         public MappingListViewModel(int devIndex, OutContType devType, IProfileSettingsService profileSettingsService)
         {
             if (profileSettingsService == null) throw new ArgumentNullException(nameof(profileSettingsService));
-            mappings.Add(new MappedControl(devIndex, DS4Controls.Cross, "Cross", devType, profileSettingsService));
-            mappings.Add(new MappedControl(devIndex, DS4Controls.Circle, "Circle", devType, profileSettingsService));
-            mappings.Add(new MappedControl(devIndex, DS4Controls.Square, "Square", devType, profileSettingsService));
-            mappings.Add(new MappedControl(devIndex, DS4Controls.Triangle, "Triangle", devType, profileSettingsService));
-            mappings.Add(new MappedControl(devIndex, DS4Controls.Options, "Options", devType, profileSettingsService));
-            mappings.Add(new MappedControl(devIndex, DS4Controls.Share, "Share", devType, profileSettingsService));
-            mappings.Add(new MappedControl(devIndex, DS4Controls.DpadUp, "Up", devType, profileSettingsService));
-            mappings.Add(new MappedControl(devIndex, DS4Controls.DpadDown, "Down", devType, profileSettingsService));
-            mappings.Add(new MappedControl(devIndex, DS4Controls.DpadLeft, "Left", devType, profileSettingsService));
-            mappings.Add(new MappedControl(devIndex, DS4Controls.DpadRight, "Right", devType, profileSettingsService));
-            mappings.Add(new MappedControl(devIndex, DS4Controls.PS, "PS", devType, profileSettingsService));
-            mappings.Add(new MappedControl(devIndex, DS4Controls.Mute, "Mute", devType, profileSettingsService));
-            mappings.Add(new MappedControl(devIndex, DS4Controls.L1, "L1", devType, profileSettingsService));
-            mappings.Add(new MappedControl(devIndex, DS4Controls.R1, "R1", devType, profileSettingsService));
-            mappings.Add(new MappedControl(devIndex, DS4Controls.L2, "L2", devType, profileSettingsService));
-            mappings.Add(new MappedControl(devIndex, DS4Controls.R2, "R2", devType, profileSettingsService));
-            mappings.Add(new MappedControl(devIndex, DS4Controls.L3, "L3", devType, profileSettingsService));
-            mappings.Add(new MappedControl(devIndex, DS4Controls.R3, "R3", devType, profileSettingsService));
-            mappings.Add(new MappedControl(devIndex, DS4Controls.Capture, "Capture", devType, profileSettingsService));
-            mappings.Add(new MappedControl(devIndex, DS4Controls.SideL, "Side L", devType, profileSettingsService));
-            mappings.Add(new MappedControl(devIndex, DS4Controls.SideR, "Side R", devType, profileSettingsService));
+            mappings.Add(new MappedControl(devIndex, DS4Controls.Cross, InputControlCatalog.LabelOf(DS4Controls.Cross), devType, profileSettingsService));
+            mappings.Add(new MappedControl(devIndex, DS4Controls.Circle, InputControlCatalog.LabelOf(DS4Controls.Circle), devType, profileSettingsService));
+            mappings.Add(new MappedControl(devIndex, DS4Controls.Square, InputControlCatalog.LabelOf(DS4Controls.Square), devType, profileSettingsService));
+            mappings.Add(new MappedControl(devIndex, DS4Controls.Triangle, InputControlCatalog.LabelOf(DS4Controls.Triangle), devType, profileSettingsService));
+            mappings.Add(new MappedControl(devIndex, DS4Controls.Options, InputControlCatalog.LabelOf(DS4Controls.Options), devType, profileSettingsService));
+            mappings.Add(new MappedControl(devIndex, DS4Controls.Share, InputControlCatalog.LabelOf(DS4Controls.Share), devType, profileSettingsService));
+            mappings.Add(new MappedControl(devIndex, DS4Controls.DpadUp, InputControlCatalog.LabelOf(DS4Controls.DpadUp), devType, profileSettingsService));
+            mappings.Add(new MappedControl(devIndex, DS4Controls.DpadDown, InputControlCatalog.LabelOf(DS4Controls.DpadDown), devType, profileSettingsService));
+            mappings.Add(new MappedControl(devIndex, DS4Controls.DpadLeft, InputControlCatalog.LabelOf(DS4Controls.DpadLeft), devType, profileSettingsService));
+            mappings.Add(new MappedControl(devIndex, DS4Controls.DpadRight, InputControlCatalog.LabelOf(DS4Controls.DpadRight), devType, profileSettingsService));
+            mappings.Add(new MappedControl(devIndex, DS4Controls.PS, InputControlCatalog.LabelOf(DS4Controls.PS), devType, profileSettingsService));
+            mappings.Add(new MappedControl(devIndex, DS4Controls.Mute, InputControlCatalog.LabelOf(DS4Controls.Mute), devType, profileSettingsService));
+            mappings.Add(new MappedControl(devIndex, DS4Controls.L1, InputControlCatalog.LabelOf(DS4Controls.L1), devType, profileSettingsService));
+            mappings.Add(new MappedControl(devIndex, DS4Controls.R1, InputControlCatalog.LabelOf(DS4Controls.R1), devType, profileSettingsService));
+            mappings.Add(new MappedControl(devIndex, DS4Controls.L2, InputControlCatalog.LabelOf(DS4Controls.L2), devType, profileSettingsService));
+            mappings.Add(new MappedControl(devIndex, DS4Controls.R2, InputControlCatalog.LabelOf(DS4Controls.R2), devType, profileSettingsService));
+            mappings.Add(new MappedControl(devIndex, DS4Controls.L3, InputControlCatalog.LabelOf(DS4Controls.L3), devType, profileSettingsService));
+            mappings.Add(new MappedControl(devIndex, DS4Controls.R3, InputControlCatalog.LabelOf(DS4Controls.R3), devType, profileSettingsService));
+            mappings.Add(new MappedControl(devIndex, DS4Controls.Capture, InputControlCatalog.LabelOf(DS4Controls.Capture), devType, profileSettingsService));
+            mappings.Add(new MappedControl(devIndex, DS4Controls.SideL, InputControlCatalog.LabelOf(DS4Controls.SideL), devType, profileSettingsService));
+            mappings.Add(new MappedControl(devIndex, DS4Controls.SideR, InputControlCatalog.LabelOf(DS4Controls.SideR), devType, profileSettingsService));
 
-            mappings.Add(new MappedControl(devIndex, DS4Controls.TouchLeft, "Left Touch", devType, profileSettingsService));
-            mappings.Add(new MappedControl(devIndex, DS4Controls.TouchRight, "Right Touch", devType, profileSettingsService));
-            mappings.Add(new MappedControl(devIndex, DS4Controls.TouchMulti, "Multitouch", devType, profileSettingsService));
-            mappings.Add(new MappedControl(devIndex, DS4Controls.TouchUpper, "Upper Touch", devType, profileSettingsService));
+            mappings.Add(new MappedControl(devIndex, DS4Controls.TouchLeft, InputControlCatalog.LabelOf(DS4Controls.TouchLeft), devType, profileSettingsService));
+            mappings.Add(new MappedControl(devIndex, DS4Controls.TouchRight, InputControlCatalog.LabelOf(DS4Controls.TouchRight), devType, profileSettingsService));
+            mappings.Add(new MappedControl(devIndex, DS4Controls.TouchMulti, InputControlCatalog.LabelOf(DS4Controls.TouchMulti), devType, profileSettingsService));
+            mappings.Add(new MappedControl(devIndex, DS4Controls.TouchUpper, InputControlCatalog.LabelOf(DS4Controls.TouchUpper), devType, profileSettingsService));
 
-            mappings.Add(new MappedControl(devIndex, DS4Controls.LYNeg, "LS Up", devType, profileSettingsService));
-            mappings.Add(new MappedControl(devIndex, DS4Controls.LYPos, "LS Down", devType, profileSettingsService));
-            mappings.Add(new MappedControl(devIndex, DS4Controls.LXNeg, "LS Left", devType, profileSettingsService));
-            mappings.Add(new MappedControl(devIndex, DS4Controls.LXPos, "LS Right", devType, profileSettingsService));
+            mappings.Add(new MappedControl(devIndex, DS4Controls.LYNeg, InputControlCatalog.LabelOf(DS4Controls.LYNeg), devType, profileSettingsService));
+            mappings.Add(new MappedControl(devIndex, DS4Controls.LYPos, InputControlCatalog.LabelOf(DS4Controls.LYPos), devType, profileSettingsService));
+            mappings.Add(new MappedControl(devIndex, DS4Controls.LXNeg, InputControlCatalog.LabelOf(DS4Controls.LXNeg), devType, profileSettingsService));
+            mappings.Add(new MappedControl(devIndex, DS4Controls.LXPos, InputControlCatalog.LabelOf(DS4Controls.LXPos), devType, profileSettingsService));
 
-            mappings.Add(new MappedControl(devIndex, DS4Controls.RYNeg, "RS Up", devType, profileSettingsService));
-            mappings.Add(new MappedControl(devIndex, DS4Controls.RYPos, "RS Down", devType, profileSettingsService));
-            mappings.Add(new MappedControl(devIndex, DS4Controls.RXNeg, "RS Left", devType, profileSettingsService));
-            mappings.Add(new MappedControl(devIndex, DS4Controls.RXPos, "RS Right", devType, profileSettingsService));
+            mappings.Add(new MappedControl(devIndex, DS4Controls.RYNeg, InputControlCatalog.LabelOf(DS4Controls.RYNeg), devType, profileSettingsService));
+            mappings.Add(new MappedControl(devIndex, DS4Controls.RYPos, InputControlCatalog.LabelOf(DS4Controls.RYPos), devType, profileSettingsService));
+            mappings.Add(new MappedControl(devIndex, DS4Controls.RXNeg, InputControlCatalog.LabelOf(DS4Controls.RXNeg), devType, profileSettingsService));
+            mappings.Add(new MappedControl(devIndex, DS4Controls.RXPos, InputControlCatalog.LabelOf(DS4Controls.RXPos), devType, profileSettingsService));
 
-            mappings.Add(new MappedControl(devIndex, DS4Controls.GyroZNeg, "Tilt Up", devType, profileSettingsService));
-            mappings.Add(new MappedControl(devIndex, DS4Controls.GyroZPos, "Tilt Down", devType, profileSettingsService));
-            mappings.Add(new MappedControl(devIndex, DS4Controls.GyroXPos, "Tilt Left", devType, profileSettingsService));
-            mappings.Add(new MappedControl(devIndex, DS4Controls.GyroXNeg, "Tilt Right", devType, profileSettingsService));
+            mappings.Add(new MappedControl(devIndex, DS4Controls.GyroZNeg, InputControlCatalog.LabelOf(DS4Controls.GyroZNeg), devType, profileSettingsService));
+            mappings.Add(new MappedControl(devIndex, DS4Controls.GyroZPos, InputControlCatalog.LabelOf(DS4Controls.GyroZPos), devType, profileSettingsService));
+            mappings.Add(new MappedControl(devIndex, DS4Controls.GyroXPos, InputControlCatalog.LabelOf(DS4Controls.GyroXPos), devType, profileSettingsService));
+            mappings.Add(new MappedControl(devIndex, DS4Controls.GyroXNeg, InputControlCatalog.LabelOf(DS4Controls.GyroXNeg), devType, profileSettingsService));
 
-            mappings.Add(new MappedControl(devIndex, DS4Controls.SwipeUp, "Swipe Up", devType, profileSettingsService));
-            mappings.Add(new MappedControl(devIndex, DS4Controls.SwipeDown, "Swipe Down", devType, profileSettingsService));
-            mappings.Add(new MappedControl(devIndex, DS4Controls.SwipeLeft, "Swipe Left", devType, profileSettingsService));
-            mappings.Add(new MappedControl(devIndex, DS4Controls.SwipeRight, "Swipe Right", devType, profileSettingsService));
+            mappings.Add(new MappedControl(devIndex, DS4Controls.SwipeUp, InputControlCatalog.LabelOf(DS4Controls.SwipeUp), devType, profileSettingsService));
+            mappings.Add(new MappedControl(devIndex, DS4Controls.SwipeDown, InputControlCatalog.LabelOf(DS4Controls.SwipeDown), devType, profileSettingsService));
+            mappings.Add(new MappedControl(devIndex, DS4Controls.SwipeLeft, InputControlCatalog.LabelOf(DS4Controls.SwipeLeft), devType, profileSettingsService));
+            mappings.Add(new MappedControl(devIndex, DS4Controls.SwipeRight, InputControlCatalog.LabelOf(DS4Controls.SwipeRight), devType, profileSettingsService));
 
-            mappings.Add(new MappedControl(devIndex, DS4Controls.FnL, "Function Left", devType, profileSettingsService));
-            mappings.Add(new MappedControl(devIndex, DS4Controls.FnR, "Function Right", devType, profileSettingsService));
-            mappings.Add(new MappedControl(devIndex, DS4Controls.BLP, "Bottom Left Paddle", devType, profileSettingsService));
-            mappings.Add(new MappedControl(devIndex, DS4Controls.BRP, "Bottom Right Paddle", devType, profileSettingsService));
+            mappings.Add(new MappedControl(devIndex, DS4Controls.FnL, InputControlCatalog.LabelOf(DS4Controls.FnL), devType, profileSettingsService));
+            mappings.Add(new MappedControl(devIndex, DS4Controls.FnR, InputControlCatalog.LabelOf(DS4Controls.FnR), devType, profileSettingsService));
+            mappings.Add(new MappedControl(devIndex, DS4Controls.BLP, InputControlCatalog.LabelOf(DS4Controls.BLP), devType, profileSettingsService));
+            mappings.Add(new MappedControl(devIndex, DS4Controls.BRP, InputControlCatalog.LabelOf(DS4Controls.BRP), devType, profileSettingsService));
 
             /*
              * Phase10-Step3b W2: 仮想ボタン（スティックの Outer Bind、トリガーの Full Pull）の DS4ControlSettings も、
              * ほかのボタンと同じ形式で、一覧の末尾（添字 34〜37）に加える。Axis Config にあった入口を、Controls タブの一覧へ移したため
              * （コントローラーの入力による選択の添字 0〜33 は、変わらない）
              */
-            lsOuterBindControl = new MappedControl(devIndex, DS4Controls.LSOuter, "LS Outer", devType, profileSettingsService);
-            rsOuterBindControl = new MappedControl(devIndex, DS4Controls.RSOuter, "RS Outer", devType, profileSettingsService);
+            lsOuterBindControl = new MappedControl(devIndex, DS4Controls.LSOuter, InputControlCatalog.LabelOf(DS4Controls.LSOuter), devType, profileSettingsService);
+            rsOuterBindControl = new MappedControl(devIndex, DS4Controls.RSOuter, InputControlCatalog.LabelOf(DS4Controls.RSOuter), devType, profileSettingsService);
 
-            l2FullPullControl = new MappedControl(devIndex, DS4Controls.L2FullPull, "L2 Full Pull", devType, profileSettingsService);
-            r2FullPullControl = new MappedControl(devIndex, DS4Controls.R2FullPull, "R2 Full Pull", devType, profileSettingsService);
+            l2FullPullControl = new MappedControl(devIndex, DS4Controls.L2FullPull, InputControlCatalog.LabelOf(DS4Controls.L2FullPull), devType, profileSettingsService);
+            r2FullPullControl = new MappedControl(devIndex, DS4Controls.R2FullPull, InputControlCatalog.LabelOf(DS4Controls.R2FullPull), devType, profileSettingsService);
 
             mappings.Add(lsOuterBindControl);
             mappings.Add(rsOuterBindControl);
@@ -162,8 +162,8 @@ namespace DS4WinWPF.DS4Forms.ViewModels
 
             // Phase10-Step4c W5（項目 9、ユーザー承認 2026-10-21）: SA のトリガーにあって Controls の一覧になかった Touch Started／Touch Ended を、末尾の後ろに足す
             // （既存の項目の添字、コントローラーの入力による選択の添字は変えない）。SA の一覧と入力の集合を同じにするため
-            mappings.Add(new MappedControl(devIndex, DS4Controls.TouchStarted, "Touch Started", devType, profileSettingsService));
-            mappings.Add(new MappedControl(devIndex, DS4Controls.TouchEnded, "Touch Ended", devType, profileSettingsService));
+            mappings.Add(new MappedControl(devIndex, DS4Controls.TouchStarted, InputControlCatalog.LabelOf(DS4Controls.TouchStarted), devType, profileSettingsService));
+            mappings.Add(new MappedControl(devIndex, DS4Controls.TouchEnded, InputControlCatalog.LabelOf(DS4Controls.TouchEnded), devType, profileSettingsService));
 
             int controlIndex = 0;
             foreach (MappedControl mapped in mappings)
@@ -176,21 +176,21 @@ namespace DS4WinWPF.DS4Forms.ViewModels
             BuildDisplayMappings();
         }
 
-        // Phase9 UI 変更: 表示用の並び。LS Right の次に LS Outer、RS Right の次に RS Outer、L2 の次に L2 Full Pull、R2 の次に R2 Full Pull
+        // Phase9 UI 変更: 表示用の並びは、InputControlCatalog（SA のトリガーの一覧と共通）の順。カタログにない項目は、末尾に足す
         private void BuildDisplayMappings()
         {
+            var added = new HashSet<MappedControl>();
+            foreach (InputControlEntry entry in InputControlCatalog.Entries)
+            {
+                if (controlMap.TryGetValue(entry.Control, out MappedControl mapped) && added.Add(mapped))
+                {
+                    displayMappings.Add(mapped);
+                }
+            }
+
             foreach (MappedControl mapped in mappings)
             {
-                if (mapped == lsOuterBindControl || mapped == rsOuterBindControl || mapped == l2FullPullControl || mapped == r2FullPullControl) continue;
-
-                displayMappings.Add(mapped);
-                switch (mapped.Control)
-                {
-                    case DS4Controls.LXPos: displayMappings.Add(lsOuterBindControl); break;
-                    case DS4Controls.RXPos: displayMappings.Add(rsOuterBindControl); break;
-                    case DS4Controls.L2: displayMappings.Add(l2FullPullControl); break;
-                    case DS4Controls.R2: displayMappings.Add(r2FullPullControl); break;
-                }
+                if (added.Add(mapped)) displayMappings.Add(mapped);
             }
         }
 

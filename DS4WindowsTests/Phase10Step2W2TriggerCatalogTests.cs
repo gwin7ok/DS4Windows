@@ -35,15 +35,39 @@ namespace DS4WindowsTests
         };
 
         [Fact]
-        public void TheDefaultCatalog_StartsWithTheLegacy49Items_InTheSameOrder_WithTheSameNamesAndLabels()
+        public void TheDefaultCatalog_KeepsTheSavedNamesOfTheLegacyItems_AndFollowsTheInputControlCatalog()
         {
             var catalog = new TriggerCatalog();
 
-            // Phase10-Step4c W5（ユーザー承認、2026-10-21）: 末尾に LS Outer／RS Outer を足した（51 項目）。従来の 49 項目の並び・名前・表示名は変わらない
+            // Phase9 UI 変更: 並びと表示名は InputControlCatalog（Controls の一覧と共通）。保存する名前は、従来の 49 項目（＋ LS／RS Outer）のまま
             Assert.Equal(49, LegacyCheckBoxes.Length);
             Assert.Equal(51, catalog.Items.Count);
-            Assert.Equal(LegacyCheckBoxes, catalog.Items.Take(49).Select(i => (i.Name, i.Label)).ToArray());
-            Assert.Equal(new[] { ("LS Outer", "LS Outer"), ("RS Outer", "RS Outer") }, catalog.Items.Skip(49).Select(i => (i.Name, i.Label)).ToArray());
+            Assert.Equal(LegacyCheckBoxes.Select(x => x.Name).Concat(new[] { "LS Outer", "RS Outer" }).OrderBy(x => x, System.StringComparer.Ordinal),
+                catalog.Items.Select(i => i.Name).OrderBy(x => x, System.StringComparer.Ordinal));
+            Assert.Equal(InputControlCatalog.Entries.Select(e => (e.Name, e.Label)), catalog.Items.Select(i => (i.Name, i.Label)));
+
+            var names = catalog.Items.Select(i => i.Name).ToList();
+            Assert.Equal("LS Outer", names[names.IndexOf("Left Stick Right") + 1]);    // Outer は、スティックの 4 方向の下
+            Assert.Equal("RS Outer", names[names.IndexOf("Right Stick Right") + 1]);
+            Assert.Equal("L2 Full Pull", names[names.IndexOf("L2") + 1]);
+            Assert.Equal("R2 Full Pull", names[names.IndexOf("R2") + 1]);
+
+            // 表示名: スティックは LS／RS、DualSense Edge は Function L／Paddle L
+            Assert.Equal("LS Up", catalog.Items.Single(i => i.Name == "Left Stick Up").Label);
+            Assert.Equal("RS Right", catalog.Items.Single(i => i.Name == "Right Stick Right").Label);
+            Assert.Equal("Function L", catalog.Items.Single(i => i.Name == "Function Left").Label);
+            Assert.Equal("Paddle L", catalog.Items.Single(i => i.Name == "Bottom Left Paddle").Label);
+        }
+
+        [Fact]
+        public void EveryInputControlEntry_NameResolvesToItsControl()
+        {
+            // SA が Actions.xml の名前から入力を引く規則（SpecialAction）と、カタログの対応が一致すること
+            foreach (InputControlEntry entry in InputControlCatalog.Entries)
+            {
+                var action = new SpecialAction("t", entry.Name, "Key", "65");
+                Assert.Equal(entry.Control, action.trigger[0]);
+            }
         }
 
         [Fact]
