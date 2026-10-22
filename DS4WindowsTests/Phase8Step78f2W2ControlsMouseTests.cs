@@ -1,3 +1,4 @@
+using System.Threading;
 using System.IO;
 using System.Linq;
 using DS4Windows;
@@ -172,6 +173,9 @@ namespace DS4WindowsTests
             DS4State held = ControlsKeyTestScope.Neutral();
             held.Cross = true;
 
+            // Toggle は Fresh-press ガードを見る（SA・Key と同じ）。ガードは、トリガーが 80ms 連続して未成立になるまで解除されない
+            Frame(t, ControlsKeyTestScope.Neutral());
+            Thread.Sleep(120);
             Assert.Equal(0, Frame(t, ControlsKeyTestScope.Neutral()).Left);
 
             var frames = new (bool Toggle, int ToggleCount, int Left)[4];
@@ -196,6 +200,8 @@ namespace DS4WindowsTests
             DS4State crossHeld = ControlsKeyTestScope.Neutral();
             crossHeld.Cross = true;
 
+            t.Run(ControlsKeyTestScope.Neutral());
+            Thread.Sleep(120);                                   // Fresh-press ガードの解除（80ms 連続して未成立）
             t.Run(ControlsKeyTestScope.Neutral());
             t.Run(crossHeld);                                    // Cross だけ ON にする
             t.Run(ControlsKeyTestScope.Neutral());
