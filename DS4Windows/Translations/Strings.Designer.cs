@@ -3815,6 +3815,24 @@ namespace DS4WinWPF.Translations {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Reset all to Default.
+        /// </summary>
+        public static string ResetAllControls {
+            get {
+                return ResourceManager.GetString("ResetAllControls", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Reset the assignments of all buttons to Default?.
+        /// </summary>
+        public static string ResetAllControlsConfirm {
+            get {
+                return ResourceManager.GetString("ResetAllControlsConfirm", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Waking Up From Suspend.
         /// </summary>
         public static string WakeupFromSuspend {

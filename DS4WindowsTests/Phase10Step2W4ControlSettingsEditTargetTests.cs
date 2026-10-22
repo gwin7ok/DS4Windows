@@ -86,7 +86,7 @@ namespace DS4WindowsTests
         {
             var rig = new Rig();
 
-            Assert.Equal(9, new ControlSettingsEditTarget(Default(), rig.Profile).InitialTypeIndex);   // Phase10-Step3: 「Default」の項目（添字 0 は、Controls のモードでは隠す）
+            Assert.Equal(4, new ControlSettingsEditTarget(Default(), rig.Profile).InitialTypeIndex);   // Phase9 UI 変更: Default も Press Key の項目で開く（出力の欄が「Default (既定の出力名)」。旧: 「Default」の項目［添字 9］）
             Assert.Equal(4, new ControlSettingsEditTarget(Key(65), rig.Profile).InitialTypeIndex);
             Assert.Equal(4, new ControlSettingsEditTarget(Button(X360Controls.A), rig.Profile).InitialTypeIndex);   // Button も Press Key の項目
             Assert.Equal(1, new ControlSettingsEditTarget(Macro(new[] { 350, 256 }), rig.Profile).InitialTypeIndex);

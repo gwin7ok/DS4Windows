@@ -1727,6 +1727,26 @@ namespace DS4WinWPF.DS4Forms
             ShowControlAssignmentEditor(mpControl, updateHighlight: true);
         }
 
+        // Phase9 UI 変更: Controls タブの全ての割り当て（L2／R2 Full Pull、スティックの Outer Bind を含む一覧の全項目）を Default に戻す。
+        // Extras、マクロも含めて、そのボタンの設定を初期化する（DS4ControlSettings.Reset）。プロファイルは Save するまで保存されない
+        private void ResetAllControlsBtn_Click(object sender, RoutedEventArgs e)
+        {
+            MessageBoxResult confirm = MessageBox.Show(
+                DS4WinWPF.Translations.Strings.ResetAllControlsConfirm,
+                "DS4Windows", MessageBoxButton.YesNo, MessageBoxImage.Question, MessageBoxResult.No);
+            if (confirm != MessageBoxResult.Yes) return;
+
+            foreach (MappedControl mpControl in mappingListVM.Mappings)
+            {
+                mpControl.Setting.Reset();
+                mpControl.UpdateMappingName();
+            }
+
+            profileSettingsVM.RefreshCustomsFlags();
+            highlightControlDisplayLb.Content = "";
+            AppLogger.LogToGui("[DI] Controls tab: reset all assignments to Default", false);
+        }
+
         private void MappingListBox_MouseDoubleClick(object sender, MouseButtonEventArgs e)
         {
             if (mappingListVM.SelectedIndex >= 0)

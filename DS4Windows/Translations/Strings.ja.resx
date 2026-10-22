@@ -368,6 +368,13 @@
   <data name="KeepWindowSize" xml:space="preserve">
     <value>ウィンドウサイズを閉じた後も保持</value>
   </data>
+  <data name="ResetAllControls" xml:space="preserve">
+    <value>すべて Default に戻す</value>
+  </data>
+  <data name="ResetAllControlsConfirm" xml:space="preserve">
+    <value>すべてのボタンの割り当てを Default に戻します。よろしいですか？
+これらのボタンの Extras とマクロも消えます。</value>
+  </data>
   <data name="WindowSizeReset" xml:space="preserve">
     <value>ウィンドウサイズ初期化</value>
   </data>

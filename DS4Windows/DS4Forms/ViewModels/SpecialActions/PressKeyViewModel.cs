@@ -200,6 +200,24 @@ namespace DS4WinWPF.DS4Forms.ViewModels.SpecialActions
         /// <summary>Default が選ばれているときの表示（出力ピッカーの Default ボタンの表示と同じ）。</summary>
         public const string DefaultText = "Default";
 
+        private DS4Controls defaultOutputInput = DS4Controls.None;
+
+        private string GetDefaultOutputName()
+        {
+            try
+            {
+                if (defaultOutputInput == DS4Controls.None) return null;
+                X360Controls output = profileSettingsService.GetDefaultButtonMapping()[(int)defaultOutputInput];
+                if (editorDeviceNum >= 0 && editorDeviceNum < profileSettingsService.OutContType.Length)
+                    return X360ControlTables.getX360ControlString(output, profileSettingsService.OutContType[editorDeviceNum]);
+                return X360ControlTables.getX360ControlString(output);
+            }
+            catch
+            {
+                return null;
+            }
+        }
+
         public void UpdateDescribeText()
         {
             // If last binding was a Button, prefer showing the button name.
@@ -223,7 +241,9 @@ namespace DS4WinWPF.DS4Forms.ViewModels.SpecialActions
             }
             else if (lastActionType == DS4ControlSettings.ActionType.Default)
             {
-                describeText = DefaultText;
+                // Phase9 UI 変更（ユーザー承認 2026-10-22）: 「Default (A)」のように、そのボタンの既定の出力名を添える。取得できなければ「Default」のみ
+                string defaultName = GetDefaultOutputName();
+                describeText = string.IsNullOrEmpty(defaultName) ? DefaultText : $"{DefaultText} ({defaultName})";
             }
             else
             {
@@ -310,6 +330,8 @@ namespace DS4WinWPF.DS4Forms.ViewModels.SpecialActions
                 lastActionBtn = -1;
                 value = 0;
                 keyType = DS4KeyType.None;
+                defaultOutputInput = settings.control;   // Phase9 UI 変更: 「Default (既定の出力名)」の表示に使う
+                editorDeviceNum = deviceNum >= 0 ? deviceNum : editorDeviceNum;
                 UpdateDescribeText();
                 UpdateToggleControls();
                 return;

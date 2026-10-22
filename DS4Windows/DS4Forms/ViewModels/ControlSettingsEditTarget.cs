@@ -97,6 +97,11 @@ namespace DS4WinWPF.DS4Forms.ViewModels
                     case DS4ControlSettings.ActionType.Special:
                         // Phase10-Step4 W4: SA 専用の種別は、その種別の項目（項目がなければ Default）
                         return working.special != null ? typeCatalog.IndexOf(working.special.Type) : typeCatalog.DefaultIndex;
+                    case DS4ControlSettings.ActionType.Default:
+                        // Phase9 UI 変更（ユーザー承認 2026-10-22）: Default の割り当ても、種別は「Output Key/Mouse/Button」を選んだ状態で開く
+                        // （出力の欄には「Default (既定の出力名)」を表示する。そのまま Save しても Default のまま［WriteFrom の Key の枝が WriteDefault を呼ぶ］）。
+                        // 種別の一覧の「Default」の項目は、これまでどおり選べる
+                        return typeCatalog.IndexOf(SpecialAction.ActionTypeId.Key);
                     default:
                         return typeCatalog.DefaultIndex;
                 }

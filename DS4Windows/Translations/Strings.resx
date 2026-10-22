@@ -275,6 +275,13 @@
   <data name="KeepWindowSize" xml:space="preserve">
     <value>Keep window size after closing</value>
   </data>
+  <data name="ResetAllControls" xml:space="preserve">
+    <value>Reset all to Default</value>
+  </data>
+  <data name="ResetAllControlsConfirm" xml:space="preserve">
+    <value>Reset the assignments of all buttons to Default?
+Extras and macros of those buttons are also cleared.</value>
+  </data>
   <data name="WindowSizeReset" xml:space="preserve">
     <value>Reset window size</value>
   </data>

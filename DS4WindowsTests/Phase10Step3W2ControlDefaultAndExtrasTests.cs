@@ -71,9 +71,21 @@ namespace DS4WindowsTests
             rig.PressKey.ReadSettings(Settings(DS4ControlSettings.ActionType.Default), allowDefault: true);
 
             Assert.Equal(DS4ControlSettings.ActionType.Default, rig.PressKey.SelectedActionType);
-            Assert.Equal(PressKeyViewModel.DefaultText, rig.PressKey.DescribeText);
+            Assert.StartsWith(PressKeyViewModel.DefaultText, rig.PressKey.DescribeText);   // Phase9 UI 変更: 「Default (既定の出力名)」
             Assert.False(rig.PressKey.IsScanCodeEnabled);
             Assert.Equal(0, rig.PressKey.Value);
+        }
+
+        [Fact]
+        public void ReadSettings_Default_DescribesTheButtonsDefaultOutput()
+        {
+            var rig = new Rig();
+
+            rig.PressKey.ReadSettings(Settings(DS4ControlSettings.ActionType.Default), allowDefault: true);
+
+            // Phase9 UI 変更: 「Default (既定の出力名)」（Circle の既定の出力は B）
+            Assert.StartsWith(PressKeyViewModel.DefaultText + " (", rig.PressKey.DescribeText);
+            Assert.EndsWith(")", rig.PressKey.DescribeText);
         }
 
         [Fact]
