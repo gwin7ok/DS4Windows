@@ -282,10 +282,13 @@ namespace DS4WindowsTests
             using var scope = new MappingCharacterizationScope();
             IProfileSettingsService settings = scope.Settings;
 
-            // 1 ティックの押し方: 何も押さない／左／右／中／4／5／ホイール上／ホイール下／左＋右／ホイール上下 など
-            int[] masks = { 0, 1, 4, 2, 8, 16, 32, 64, 5, 96, 127 };
+            // 1 ティックの押し方: 何も押さない／左／右／中／4／5／ホイール上／ホイール下／左＋右／ホイール上下 など（ビット列: 1=左, 2=中, 4=右, 8=4, 16=5, 32=ホイール上, 64=ホイール下）
+            int[] allMasks = { 0, 1, 4, 2, 8, 16, 32, 64, 5, 96, 127 };
+            int[] fewMasks = { 0, 1, 4, 32, 64, 96 };
             int checkedCount = 0;
-            foreach (int length in new[] { 1, 2, 3 })
+
+            // 全種類は 2 ティックまで（11^4 通り）、主要な 6 種類は 3 ティックまで（6^6 通り）。組み合わせの爆発を避ける
+            foreach (var (length, masks) in new[] { (1, allMasks), (2, allMasks), (3, fewMasks) })
             {
                 foreach (int[] codes in Sequences(length * 2, masks.Length))
                 {
@@ -318,7 +321,7 @@ namespace DS4WindowsTests
                 }
             }
 
-            Assert.True(checkedCount > 1000);
+            Assert.True(checkedCount > 10000);
         }
 
         [Fact]

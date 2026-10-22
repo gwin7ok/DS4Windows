@@ -22,10 +22,12 @@ namespace DS4WindowsTests
         private const string CalibrationStart = "public DS4State ApplyDrift(";
         // Phase8-Step8 8a: held の表を削除したため、較正の直後の文書コメント（Map DS4 Buttons/Axes…）を終端にする
         private const string CalibrationEnd = "public void Fuzz(";
+        // Phase9 MapCustom の分割 M1: Commit の本体は SyntheticInputCommitter へ移した（検査の対象も、移動先のファイルにした）
+        private const string CommitPath = "DS4Windows/DS4Control/Services/SyntheticInputCommitter.cs";
         private const string CommitStart = "public void Commit(";
         // Phase7-Step8 W1: MapClick を SyntheticInputState.CountClick へ移したため、Commit の次のメンバーを終端にする
         // Phase8-Fix-MacroRepeatUnify（D5）: DS4ControltoInt を削除したため、次のメンバー（TValue）を終端にする
-        private const string CommitEnd = "static double TValue(";
+        private const string CommitEnd = "_virtualKbm.Sync();";
 
         /// <summary>Step3-5 で `IProfileSettingsService` 経由へ置換済みの `Global` メンバ名（ドリフト補正）。</summary>
         private static readonly string[] MigratedCalibrationMembers =
@@ -104,7 +106,7 @@ namespace DS4WindowsTests
         [Fact]
         public void Commit_TakesProfileSettingsAsParameter()
         {
-            string body = ReadRangeWithoutComments(CommitStart, CommitEnd);
+            string body = ReadRangeWithoutComments(CommitStart, CommitEnd, CommitPath);
             if (body == null) return;
 
             Assert.Contains("IProfileSettingsService settings", body);
@@ -113,7 +115,7 @@ namespace DS4WindowsTests
         [Fact]
         public void Commit_HasNoReferenceToMigratedGlobalMembers()
         {
-            string body = ReadRangeWithoutComments(CommitStart, CommitEnd);
+            string body = ReadRangeWithoutComments(CommitStart, CommitEnd, CommitPath);
             if (body == null) return;
 
             AssertNoGlobalReference(body, MigratedCommitMembers, "Commit");
@@ -123,7 +125,7 @@ namespace DS4WindowsTests
         public void Commit_ReadsOutputKbmMappingFromPassedSettings()
         {
             // 置換漏れの検出（Global 参照が残っていないことの裏返しとして、引数経由の参照が存在することも確認する）。
-            string body = ReadRangeWithoutComments(CommitStart, CommitEnd);
+            string body = ReadRangeWithoutComments(CommitStart, CommitEnd, CommitPath);
             if (body == null) return;
 
             Assert.Contains("settings.OutputKBMMapping.", body);
