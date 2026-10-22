@@ -31,6 +31,13 @@ namespace DS4WinWPF.DS4Forms.ViewModels
         private ObservableCollection<MappedControl> mappings = new ObservableCollection<MappedControl>();
         public ObservableCollection<MappedControl> Mappings { get => mappings; }
 
+        /// <summary>
+        /// Phase9 UI 変更: 一覧の<b>表示用</b>の並び。LS／RS Outer は LS／RS の下、L2／R2 Full Pull は L2／R2 の下に置く。
+        /// <see cref="Mappings"/>（添字がコントローラーの入力による選択、ホバーの表などに使われる）の順序は、変えない。同じ <see cref="MappedControl"/> を、別の順で並べるだけ。
+        /// </summary>
+        private ObservableCollection<MappedControl> displayMappings = new ObservableCollection<MappedControl>();
+        public ObservableCollection<MappedControl> DisplayMappings { get => displayMappings; }
+
         private int selectedIndex = -1;
         public int SelectedIndex
         {
@@ -40,9 +47,24 @@ namespace DS4WinWPF.DS4Forms.ViewModels
                 if (selectedIndex == value) return;
                 selectedIndex = value;
                 SelectedIndexChanged?.Invoke(this, EventArgs.Empty);
+                SelectedMappingChanged?.Invoke(this, EventArgs.Empty);
             }
         }
         public event EventHandler SelectedIndexChanged;
+
+        /// <summary>選ばれている項目（<see cref="SelectedIndex"/> は <see cref="Mappings"/> の添字）。表示用の一覧の選択と結びつける。</summary>
+        public MappedControl SelectedMapping
+        {
+            get => selectedIndex >= 0 && selectedIndex < mappings.Count ? mappings[selectedIndex] : null;
+            set
+            {
+                // 一覧の選択が外れたとき（null）は、選択を変えない（一覧の更新中に、ホバーの選択が消えないように）
+                if (value == null) return;
+                int index = mappings.IndexOf(value);
+                if (index >= 0) SelectedIndex = index;
+            }
+        }
+        public event EventHandler SelectedMappingChanged;
 
         private Dictionary<DS4Controls, MappedControl> controlMap =
             new Dictionary<DS4Controls, MappedControl>();
@@ -149,6 +171,26 @@ namespace DS4WinWPF.DS4Forms.ViewModels
                 controlMap.Add(mapped.Control, mapped);
                 controlIndexMap.Add(mapped.Control, controlIndex);
                 controlIndex++;
+            }
+
+            BuildDisplayMappings();
+        }
+
+        // Phase9 UI 変更: 表示用の並び。LS Right の次に LS Outer、RS Right の次に RS Outer、L2 の次に L2 Full Pull、R2 の次に R2 Full Pull
+        private void BuildDisplayMappings()
+        {
+            foreach (MappedControl mapped in mappings)
+            {
+                if (mapped == lsOuterBindControl || mapped == rsOuterBindControl || mapped == l2FullPullControl || mapped == r2FullPullControl) continue;
+
+                displayMappings.Add(mapped);
+                switch (mapped.Control)
+                {
+                    case DS4Controls.LXPos: displayMappings.Add(lsOuterBindControl); break;
+                    case DS4Controls.RXPos: displayMappings.Add(rsOuterBindControl); break;
+                    case DS4Controls.L2: displayMappings.Add(l2FullPullControl); break;
+                    case DS4Controls.R2: displayMappings.Add(r2FullPullControl); break;
+                }
             }
         }
 

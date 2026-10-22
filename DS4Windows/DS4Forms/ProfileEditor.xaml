@@ -245,8 +245,8 @@
                     </Canvas>
 
                     <!-- Phase9 UI 変更: 割り当て一覧は、2 列の表（ラベル、設定値。どちらも左寄せ）。設定値は出力ピッカーのボタンのラベルと同じ書式で、Default 以外は太字 -->
-                    <ListView Grid.Row="1" x:Name="mappingListBox" DockPanel.Dock="Bottom" ItemsSource="{Binding Mappings}"
-                                SelectedIndex="{Binding SelectedIndex}" Margin="6" ScrollViewer.HorizontalScrollBarVisibility="Disabled"
+                    <ListView Grid.Row="1" x:Name="mappingListBox" DockPanel.Dock="Bottom" ItemsSource="{Binding DisplayMappings}"
+                                SelectedItem="{Binding SelectedMapping}" Margin="6" ScrollViewer.HorizontalScrollBarVisibility="Disabled"
                                 MouseDoubleClick="MappingListBox_MouseDoubleClick">
                         <ListView.View>
                             <GridView>
