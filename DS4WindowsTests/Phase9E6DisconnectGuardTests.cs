@@ -53,21 +53,23 @@ namespace DS4WindowsTests
         }
 
         [Fact]
-        public void ControlService_KeepsTheEventHandlers_AsThinDelegates()
+        public void ControlService_NoLongerKeepsTheEventHandlers_AndTheConnectorSubscribesInTheOriginalOrder()
         {
             string text = ReadWithoutComments("DS4Windows/DS4Control/ControlService.cs");
             if (text == null) return;
 
-            Assert.Contains("protected void On_DS4Removal(object sender, EventArgs e)", text);
-            Assert.Contains("_deviceDisconnect.OnRemoval(sender, e);", text);
-            Assert.Contains("protected void On_SyncChange(object sender, EventArgs e)", text);
-            Assert.Contains("_deviceDisconnect.OnSyncChange(sender, e);", text);
-            Assert.Contains("protected void On_SerialChange(object sender, EventArgs e)", text);
-            Assert.Contains("_deviceDisconnect.OnSerialChange(sender, e);", text);
+            // Phase9 9-E E-6f1: イベントの購読先の委譲は不要になった（接続の組み立て［DeviceConnector］が、ハンドラーを直接購読する）
+            Assert.DoesNotContain("On_DS4Removal", text);
+            Assert.DoesNotContain("On_SyncChange", text);
+            Assert.DoesNotContain("On_SerialChange", text);
+
+            string connector = ReadWithoutComments("DS4Windows/DS4Control/Services/DeviceConnector.cs");
+            if (connector == null) return;
             // イベントの購読の登録順は変えない（Removal: 自分 → レジストリ、SyncChange: 自分 → レジストリ）
-            int removal = text.IndexOf("device.Removal += this.On_DS4Removal;");
+            text = connector;
+            int removal = text.IndexOf("device.Removal += _deviceDisconnect.OnRemoval;");
             int registryRemoval = text.IndexOf("device.Removal += _deviceRegistry.OnRemoval;");
-            int sync = text.IndexOf("device.SyncChange += this.On_SyncChange;");
+            int sync = text.IndexOf("device.SyncChange += _deviceDisconnect.OnSyncChange;");
             int registrySync = text.IndexOf("device.SyncChange += _deviceRegistry.UpdateSerial;");
             Assert.True(removal > 0 && registryRemoval > removal && sync > registryRemoval && registrySync > sync);
         }

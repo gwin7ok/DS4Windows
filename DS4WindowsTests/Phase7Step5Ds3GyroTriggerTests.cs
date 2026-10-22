@@ -100,7 +100,8 @@ namespace DS4WindowsTests
         [Fact]
         public void ControlService_WiresTheTriggerFunctionWhenConnectingADevice()
         {
-            string text = Read("DS4Windows/DS4Control/ControlService.cs");
+            // Phase9 9-E E-6f1: 接続の組み立ては DeviceConnector へ移った
+            string text = Read("DS4Windows/DS4Control/Services/DeviceConnector.cs");
             if (text == null) return;
 
             Assert.Matches(@"device\.SixAxis\.GyroControlsTriggerActive\s*=", text);

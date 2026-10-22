@@ -55,7 +55,8 @@ namespace DS4WindowsTests
         [Fact]
         public void ControlService_DelegatesTheSelection_BeforeThePluginStep()
         {
-            string text = ReadWithoutComments("DS4Windows/DS4Control/ControlService.cs");
+            // Phase9 9-E E-6f1: 接続の組み立ては DeviceConnector へ移った
+            string text = ReadWithoutComments("DS4Windows/DS4Control/Services/DeviceConnector.cs");
             if (text == null) return;
 
             int select = text.IndexOf("_connectionProfileSelector.ApplyOnConnect(");
@@ -103,10 +104,12 @@ namespace DS4WindowsTests
             Assert.Contains("public void TouchPadOn(int ind, DS4Device device)", text);
             Assert.Contains("_deviceConnectionSetup.AttachTouchpad(ind, device, touchPad);", text);
 
-            // 接続時の順序: 設定の反映 → イベントの配線（旧: CheckProfileOptions → SetupInitialHookEvents）
-            int options = text.IndexOf("CheckProfileOptions(index, device);");
-            int hooks = text.IndexOf("_deviceConnectionSetup.WireInitialHooks(index, device);");
-            Assert.True(options > 0 && hooks > options, "設定の反映（CheckProfileOptions）は、イベントの配線（WireInitialHooks）より前に呼ぶ");
+            // 接続時の順序: 設定の反映 → イベントの配線（旧: CheckProfileOptions → SetupInitialHookEvents）。接続の組み立ては DeviceConnector へ移った（E-6f1）
+            string connector = ReadWithoutComments("DS4Windows/DS4Control/Services/DeviceConnector.cs");
+            if (connector == null) return;
+            int options = connector.IndexOf("_deviceConnectionSetup.ApplyProfileOptions(index, device, touchPads[index]);");
+            int hooks = connector.IndexOf("_deviceConnectionSetup.WireInitialHooks(index, device);");
+            Assert.True(options > 0 && hooks > options, "設定の反映（ApplyProfileOptions）は、イベントの配線（WireInitialHooks）より前に呼ぶ");
         }
 
         [Fact]
@@ -150,9 +153,13 @@ namespace DS4WindowsTests
             if (text == null) return;
 
             Assert.Contains("_deviceModules.Resolve(device.DeviceType).OnDeviceInit(device, deviceOptions);", text);
-            Assert.Contains("_deviceModules.Resolve(device.DeviceType).HookSettings(device, () => activeControllers);", text);
             Assert.Contains("_deviceModules.Resolve(metaInfo.inputDevType).IsEnabled(deviceOptions);", text);
-            Assert.Contains("_deviceModules.Resolve(dev.DeviceType).GetKnownExtraButtons(dev);", text);
+
+            // 接続の組み立て（E-6f1 で DeviceConnector へ移った）が呼ぶもの
+            string connector = ReadWithoutComments("DS4Windows/DS4Control/Services/DeviceConnector.cs");
+            if (connector == null) return;
+            Assert.Contains("_deviceModules.Resolve(device.DeviceType).HookSettings(device, () => _host().ActiveControllers);", connector);
+            Assert.Contains("_deviceModules.Resolve(device.DeviceType).GetKnownExtraButtons(device)", connector);
         }
 
         [Fact]

@@ -385,8 +385,16 @@ classDiagram
         +PreviousStates DS4State[]
         +TouchPads Mouse[]
         +SlotManager ControllerSlotManager
+        +ActiveControllers int
+        +OnReport(DS4Device device, EventArgs e, int ind)
     }
     class DeviceDisconnectHandler
+    class IDeviceConnector {
+        <<interface>>
+        +BeginPrepare(DS4Device device, bool showlog)
+        +PrepareConnected(int numControllers, DS4Device device, int index)
+    }
+    class DeviceConnector
     class JoinableDeviceAdapter
     class Ds4DeviceModule
     class DualSenseDeviceModule
@@ -471,6 +479,13 @@ classDiagram
     IActiveInputProbe <|.. ActiveInputProbe : implements
     IConnectionProfileSelector <|.. ConnectionProfileSelector : implements
     IDeviceConnectionSetup <|.. DeviceConnectionSetup : implements
+    IDeviceConnector <|.. DeviceConnector : implements
+    DeviceConnector --> IDeviceSlotHost : Func による遅延取得（スロットの配列、On_Report への橋渡し）
+    DeviceConnector --> IConnectionProfileSelector : プロファイルの選択と適用
+    DeviceConnector --> IDeviceConnectionSetup : 設定の反映とイベントの配線
+    DeviceConnector --> IInputDeviceModuleRegistry : 種類ごとの追加ボタン・設定の変更への反応
+    DeviceConnector --> IDeviceDisconnectHandler : Removal／SyncChange／SerialChange の購読
+    ControlService --> IDeviceConnector : ctor injection（Phase9 9-E E-6f1。Start／HotPlug の接続の組み立て）
     IDeviceDisconnectHandler <|.. DeviceDisconnectHandler : implements
     DeviceDisconnectHandler --> IDeviceSlotHost : Func による遅延取得（実体は ControlService。配列の所有者）
     DeviceDisconnectHandler --> IVirtualPadService : 仮想パッドの取り外し

@@ -210,6 +210,7 @@ namespace DS4Windows.DI
             services.AddSingleton<IInputDeviceModule, JoyConDeviceModule>();
             services.AddSingleton<IInputDeviceModule, Ds3DeviceModule>();
             services.AddSingleton<IInputDeviceModuleRegistry, InputDeviceModuleRegistry>();
+            services.AddSingleton<IDeviceConnector, DeviceConnector>();   // Phase9 9-E E-6f1: 接続の組み立て
             services.AddSingleton<IDeviceDisconnectHandler, DeviceDisconnectHandler>();   // Phase9 9-E E-6e: 切断・同期・シリアル変更の処理
             services.AddSingleton<Func<IDeviceSlotHost>>(sp => () => sp.GetRequiredService<IDeviceSlotHost>());   // DeviceDisconnectHandler が遅延で取得する（実体は ControlService）
             services.AddSingleton<IJoyConLinker, JoyConLinker>();   // Phase9 9-E E-6d: Joy-Con の結合の手順（実機なしでも偽物のデバイスでテストできる）
@@ -294,7 +295,8 @@ namespace DS4Windows.DI
                     sp.GetRequiredService<IDeviceConnectionSetup>(),   // Phase9 9-E E-6b
                     sp.GetRequiredService<IInputDeviceModuleRegistry>(),   // Phase9 9-E E-6c
                     sp.GetRequiredService<IJoyConLinker>(),   // Phase9 9-E E-6d
-                    sp.GetRequiredService<IDeviceDisconnectHandler>()   // Phase9 9-E E-6e
+                    sp.GetRequiredService<IDeviceDisconnectHandler>(),   // Phase9 9-E E-6e
+                    sp.GetRequiredService<IDeviceConnector>()   // Phase9 9-E E-6f1
                 );
             });
             services.AddSingleton<IDeviceStateAccessor>(sp => sp.GetRequiredService<ControlService>());

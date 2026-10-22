@@ -76,6 +76,8 @@ namespace DS4Windows
         DS4State[] DI.IDeviceSlotHost.PreviousStates => PreviousState;
         Mouse[] DI.IDeviceSlotHost.TouchPads => touchPad;
         ControllerSlotManager DI.IDeviceSlotHost.SlotManager => slotManager;
+        int DI.IDeviceSlotHost.ActiveControllers => activeControllers;
+        void DI.IDeviceSlotHost.OnReport(DS4Device device, EventArgs e, int ind) => On_Report(device, e, ind);
 
         // ControllerReadings タブ表示中のみ有効化される遅延計測用
         public bool IsMeasuringProcessingDelay = false;
@@ -181,6 +183,9 @@ namespace DS4Windows
 
         // Phase9 9-E E-6e: 切断・同期・シリアル変更の処理
         private readonly DI.IDeviceDisconnectHandler _deviceDisconnect;
+
+        // Phase9 9-E E-6f1: 接続の組み立て
+        private readonly DI.IDeviceConnector _deviceConnector;
 
         private ControlServiceDeviceOptions deviceOptions;
         public ControlServiceDeviceOptions DeviceOptions { get => deviceOptions; }
@@ -295,7 +300,8 @@ namespace DS4Windows
             DI.IDeviceConnectionSetup deviceConnectionSetup,
             DI.IInputDeviceModuleRegistry deviceModules,
             DI.IJoyConLinker joyConLinker,
-            DI.IDeviceDisconnectHandler deviceDisconnect)
+            DI.IDeviceDisconnectHandler deviceDisconnect,
+            DI.IDeviceConnector deviceConnector)
         {
             this.cmdParser = cmdParser;
             this._deviceRegistry = deviceRegistry;
@@ -334,6 +340,7 @@ namespace DS4Windows
             this._deviceModules = deviceModules ?? throw new ArgumentNullException(nameof(deviceModules));
             this._joyConLinker = joyConLinker ?? throw new ArgumentNullException(nameof(joyConLinker));
             this._deviceDisconnect = deviceDisconnect ?? throw new ArgumentNullException(nameof(deviceDisconnect));
+            this._deviceConnector = deviceConnector ?? throw new ArgumentNullException(nameof(deviceConnector));
             // 切断・同期の処理のログも、これまでどおり ControlService の Debug イベントへ流す
             this._deviceDisconnect.DebugMessage += (data, warning) => LogDebug(data, warning);
             // 設定の反映のログも、これまでどおり ControlService の Debug イベントへ流す
@@ -470,11 +477,7 @@ namespace DS4Windows
             _deviceModules.Resolve(device.DeviceType).OnDeviceInit(device, deviceOptions);
         }
 
-        // Phase9 9-E E-6c: 種類ごとの処理（DualSense の LED モード変更への反応）は IInputDeviceModule へ移した。activeControllers は、発火のたびに読む
-        private void PrepareDS4DeviceSettingHooks(DS4Device device)
-        {
-            _deviceModules.Resolve(device.DeviceType).HookSettings(device, () => activeControllers);
-        }
+
 
         // Phase9 9-E E-6c: 種類ごとの有効設定の判定は IInputDeviceModule へ移した（扱う部品がない種類は false）
         public bool CheckForSupportedDevice(HidDevice device, VidPidInfo metaInfo)
@@ -567,11 +570,6 @@ namespace DS4Windows
         /// </summary>
         /// <param name="dev">Instance of input device</param>
         /// <returns>List of extra controls to check in Mapping class</returns>
-        // Phase9 9-E E-6c: 種類ごとの追加ボタンは IInputDeviceModule へ移した
-        private List<DS4Controls> GetKnownExtraButtons(DS4Device dev)
-        {
-            return _deviceModules.Resolve(dev.DeviceType).GetKnownExtraButtons(dev);
-        }
 
         // Phase9 9-E E-2: 旧 ChangeExclusiveStatus は HidHideService.MarkAffected へ移した。
 
@@ -769,17 +767,7 @@ namespace DS4Windows
 
         // Phase9 9-E E-3: 旧 PrepareDevUDPMotion（モーションの送出のハンドラー）は UdpMotionService.PrepareDeviceMotion へ移した。
 
-        private void CheckQuickCharge(object sender, EventArgs e)
-        {
-            DS4Device device = sender as DS4Device;
-            if (device.ConnectionType == ConnectionType.BT && _appSettings.QuickCharge &&
-                device.Charging)
-            {
-                // Set disconnect flag here. Later Hotplug event will check
-                // for presence of flag and remove the device then
-                device.ReadyQuickChargeDisconnect = true;
-            }
-        }
+
 
         public void PrepareAbort()
         {
@@ -986,115 +974,15 @@ namespace DS4Windows
             return true;
         }
 
+        // Phase9 9-E E-6f1: 接続の組み立ては DeviceConnector へ移した。Start／HotPlug の呼び出し元を変えないため、薄い委譲で残す
         private void PrepareConnectedInputControllerSettingEvents(int numControllers, DS4Device device, int index)
         {
-            _profileSettings.RefreshExtrasButtons(index, GetKnownExtraButtons(device));
-            _profileXmlStore.LoadControllerConfigsForDevice(device);
-            device.LoadStoreSettings();
-            device.CheckControllerNumDeviceSettings(numControllers);
-
-            slotManager.AddController(device, index);
-            if (_appSettings.UseOscSender)
-            {
-                _oscService.SendPlug(index, true);
-            }
-            device.Removal += this.On_DS4Removal;
-            device.Removal += _deviceRegistry.OnRemoval;
-            device.SyncChange += this.On_SyncChange;
-            device.SyncChange += _deviceRegistry.UpdateSerial;
-            device.SerialChange += this.On_SerialChange;
-            device.ChargingChanged += CheckQuickCharge;
-
-            touchPad[index] = new Mouse(index, device, _profileSettings, _virtualKBM, _stickMotion, _syntheticInput);
-            // Phase7-Step5 W1: DS3 のジャイロトリガー（Controls モード）の判定を、このスロットの Mouse へつなぐ。
-            // DS4SixAxis は ControlService を直接参照しない（旧: Program.rootHub。DI 移行後は参照が失われていた）。
-            device.SixAxis.GyroControlsTriggerActive =
-                slot => touchPad[slot]?.IsGyroTriggerActive(GyroOutMode.Controls) ?? false;
-            bool profileLoaded = false;
-            bool useAutoProfile = _profileSettings.GetUseTempProfile(index);
-
-            // Phase9 9-E E-6a: プロファイルの選択と適用（初回接続／再接続、Linked、一時プロファイル）は ConnectionProfileSelector へ移した
-            bool isValidSerial = device.isValidSerial();
-            profileLoaded = _connectionProfileSelector.ApplyOnConnect(index, useAutoProfile, isValidSerial, isValidSerial ? device.getMacAddress() : null);
-
-            if (profileLoaded || useAutoProfile)
-            {
-                device.LightBarColor = _profileSettings.GetMainColor(index);
-
-                if (!_profileSettings.GetDInputOnly(index) && device.isSynced())
-                {
-                    if (device.PrimaryDevice)
-                    {
-                        PluginOutDev(index, device);
-                    }
-                    else if (device.JointDeviceSlotNumber != DS4Device.DEFAULT_JOINT_SLOT_NUMBER)
-                    {
-                        int otherIdx = device.JointDeviceSlotNumber;
-                        OutputDevice tempOutDev = outputDevices[otherIdx];
-                        if (tempOutDev != null)
-                        {
-                            OutContType tempConType = ActiveOutDevType[otherIdx];
-                            _virtualPad.EstablishOutFeedback(index, tempConType, tempOutDev, device);
-                            outputDevices[index] = tempOutDev;
-                            ActiveOutDevType[index] = tempConType;
-                        }
-                    }
-                }
-                else
-                {
-                    _profileSettings.UseDInputOnlyArray[index] = true;
-                    ActiveOutDevType[index] = OutContType.None;
-                }
-
-                if (device.PrimaryDevice && device.OutputMapGyro)
-                {
-                    TouchPadOn(index, device);
-                }
-                else if (device.JointDeviceSlotNumber != DS4Device.DEFAULT_JOINT_SLOT_NUMBER)
-                {
-                    int otherIdx = device.JointDeviceSlotNumber;
-                    DS4Device tempDev = DS4Controllers[otherIdx];
-                    if (tempDev != null)
-                    {
-                        int mappedIdx = tempDev.PrimaryDevice ? otherIdx : index;
-                        DS4Device gyroDev = device.OutputMapGyro ? device : (tempDev.OutputMapGyro ? tempDev : null);
-                        if (gyroDev != null)
-                        {
-                            TouchPadOn(mappedIdx, gyroDev);
-                        }
-                    }
-                }
-
-                CheckProfileOptions(index, device);
-                _deviceConnectionSetup.WireInitialHooks(index, device);
-            }
-
-            int tempIdx = index;
-            device.Report += (sender, e) =>
-            {
-                this.On_Report(sender, e, tempIdx);
-            };
-
-            if (_udpMotion.HasServer && index < _udpMotion.SlotCount)
-            {
-                _udpMotion.PrepareDeviceMotion(device, tempIdx);
-            }
-
-            device.StartUpdate();
+            _deviceConnector.PrepareConnected(numControllers, device, index);
         }
 
         private void BeginPrepareConnectedInputController(DS4Device device, bool showlog = false)
         {
-            if (_hidHideService.IsAffected(device))
-            {
-                //device.CurrentExclusiveStatus = DS4Device.ExclusiveStatus.HidGuardAffected;
-                _hidHideService.MarkAffected(device);
-            }
-
-            //Task task = new Task(() => { Thread.Sleep(5); WarnExclusiveModeFailure(device); });
-            //task.Start();
-
-            PrepareDS4DeviceSettingHooks(device);
+            _deviceConnector.BeginPrepare(device, showlog);
         }
 
         // Phase9 9-E E-3: 旧 ResetUdpSmoothingFilters／ChangeUdpSmoothingAttrs（スムージングのフィルター）は UdpMotionService へ移した。
@@ -1186,24 +1074,12 @@ namespace DS4Windows
             }
         }
 
-        // Phase9 9-E E-6e: 処理の本体は DeviceDisconnectHandler へ移した。イベントの購読先として、薄い委譲で残す
-        protected void On_SerialChange(object sender, EventArgs e)
-        {
-            _deviceDisconnect.OnSerialChange(sender, e);
-        }
 
-        // Phase9 9-E E-6e: 処理の本体は DeviceDisconnectHandler へ移した。イベントの購読先として、薄い委譲で残す
-        protected void On_SyncChange(object sender, EventArgs e)
-        {
-            _deviceDisconnect.OnSyncChange(sender, e);
-        }
+
+
 
         // Called when DS4 is disconnected or timed out
-        // Phase9 9-E E-6e: 処理の本体は DeviceDisconnectHandler へ移した。イベントの購読先として、薄い委譲で残す
-        protected void On_DS4Removal(object sender, EventArgs e)
-        {
-            _deviceDisconnect.OnRemoval(sender, e);
-        }
+
 
         // Phase9 9-E E-5: 旧 lag／inWarnMonitor／tempStrings（遅延の監視の状態）は LatencyMonitor へ移した。
 
