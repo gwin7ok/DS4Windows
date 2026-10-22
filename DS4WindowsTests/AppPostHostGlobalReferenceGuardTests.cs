@@ -111,6 +111,30 @@ namespace DS4WindowsTests
             throw new InvalidOperationException($"メソッド {methodName} の終わりが見つからない。");
         }
 
+        // Phase9 9-F F-1b: Application_Startup は、手順ごとのメソッドを呼ぶだけになった。従来の「Application_Startup」の領域は、それらのメソッドの合計
+        // （Pre-Host: ホストの構築の前、Post-Host: CreateControlService(parser); 以降）として扱う。順序は Phase9F1StartupOrderGuardTests が守る
+        private static readonly string[] StartupPreHostMethods =
+        {
+            "Application_Startup", "RunPreHostBootstrap", "TryHandleCompleteInstall", "SetProcessPriorities", "EnsureSingleInstance", "InitializeProcessWideSettings",
+        };
+
+        private static readonly string[] StartupPostHostMethods =
+        {
+            "RunFirstRunLanguageSelection", "RunFirstRunSaveLocationAndSkeleton", "EnsureMacrosFolder", "LoadAppSettings", "ConfigureLoggingAndDiagnostics",
+            "RunFirstLaunchSetup", "PrepareProfilesCultureAndTheme", "ShowMainWindowAndFinish",
+        };
+
+        private static (string PreHost, string PostHost) SplitStartup(string text)
+        {
+            string buildHost = ExtractMethodBody(text, "BuildHostAndServices");
+            int anchor = buildHost.IndexOf(PostHostAnchor, StringComparison.Ordinal);
+            Assert.True(anchor >= 0, "BuildHostAndServices に CreateControlService(parser); が見つからない。");
+
+            string pre = string.Concat(StartupPreHostMethods.Select(m => ExtractMethodBody(text, m))) + buildHost.Substring(0, anchor);
+            string post = buildHost.Substring(anchor) + string.Concat(StartupPostHostMethods.Select(m => ExtractMethodBody(text, m)));
+            return (pre, post);
+        }
+
         private static Dictionary<string, int> CountGlobalMembers(string region)
         {
             return Regex.Matches(region, @"\bGlobal\.(\w+)")
@@ -139,7 +163,7 @@ namespace DS4WindowsTests
             string text = ReadSourceWithoutComments();
             if (text == null) return;
 
-            string startup = ExtractMethodBody(text, "Application_Startup");
+            string startup = ExtractMethodBody(text, "BuildHostAndServices");   // Phase9 9-F F-1b: ホストの構築の手順の中
             Assert.Matches(@"CreateControlService\(parser\);\s*InitializePostHostServices\(\);", startup);
             Assert.Single(Regex.Matches(text, @"\bInitializePostHostServices\(\);"));
         }
@@ -150,11 +174,7 @@ namespace DS4WindowsTests
             string text = ReadSourceWithoutComments();
             if (text == null) return;
 
-            string startup = ExtractMethodBody(text, "Application_Startup");
-            int anchor = startup.IndexOf(PostHostAnchor, StringComparison.Ordinal);
-            Assert.True(anchor >= 0, "Application_Startup に CreateControlService(parser); が見つからない。");
-            string startupPreHost = startup.Substring(0, anchor);
-            string startupPostHost = startup.Substring(anchor);
+            (string startupPreHost, string startupPostHost) = SplitStartup(text);
 
             string checkOptions = ExtractMethodBody(text, "CheckOptions");
             string applyLanguage = ExtractMethodBody(text, "ApplyLanguageSetting");
