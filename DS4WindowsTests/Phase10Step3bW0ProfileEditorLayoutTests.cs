@@ -210,7 +210,7 @@ namespace DS4WindowsTests
             Match rows = Regex.Match(controls, @"<Grid\.RowDefinitions>(?<body>.*?)</Grid\.RowDefinitions>", RegexOptions.Singleline);
             Assert.True(rows.Success);
             Assert.Equal(2, Regex.Matches(rows.Groups["body"].Value, @"<RowDefinition ").Count);
-            Assert.Contains("<RowDefinition Height=\"240\" />", rows.Groups["body"].Value);
+            Assert.Contains("<RowDefinition Height=\"266\" />", rows.Groups["body"].Value);   // Phase9 UI 変更: 割り当て表示の下に余白（240 → 266）
             Assert.Contains("<RowDefinition Height=\"*\" />", rows.Groups["body"].Value);
             Assert.Matches(@"<Canvas Grid\.Row=""0"" x:Name=""conCanvas""", controls);
             Assert.Matches(@"<ListView\s+Grid\.Row=""1"" x:Name=""mappingListBox""", controls);   // Phase9 UI 変更: 割り当て一覧は、2 列の表（ListView）
@@ -226,11 +226,11 @@ namespace DS4WindowsTests
             // 一覧の末尾に、4 つを、ほかのボタンと同じ MappedControl（表示名: 「LS Outer: …」の形式）で加える。コントローラーの入力による選択の添字（0〜33）は、変わらない
             string[] order =
             {
-                "mappings.Add(new MappedControl(devIndex, DS4Controls.BRP, \"Bottom Right Paddle\", devType, profileSettingsService));",
-                "lsOuterBindControl = new MappedControl(devIndex, DS4Controls.LSOuter, \"LS Outer\", devType, profileSettingsService);",
-                "rsOuterBindControl = new MappedControl(devIndex, DS4Controls.RSOuter, \"RS Outer\", devType, profileSettingsService);",
-                "l2FullPullControl = new MappedControl(devIndex, DS4Controls.L2FullPull, \"L2 Full Pull\", devType, profileSettingsService);",
-                "r2FullPullControl = new MappedControl(devIndex, DS4Controls.R2FullPull, \"R2 Full Pull\", devType, profileSettingsService);",
+                "mappings.Add(new MappedControl(devIndex, DS4Controls.BRP, InputControlCatalog.LabelOf(DS4Controls.BRP), devType, profileSettingsService));",
+                "lsOuterBindControl = new MappedControl(devIndex, DS4Controls.LSOuter, InputControlCatalog.LabelOf(DS4Controls.LSOuter), devType, profileSettingsService);",
+                "rsOuterBindControl = new MappedControl(devIndex, DS4Controls.RSOuter, InputControlCatalog.LabelOf(DS4Controls.RSOuter), devType, profileSettingsService);",
+                "l2FullPullControl = new MappedControl(devIndex, DS4Controls.L2FullPull, InputControlCatalog.LabelOf(DS4Controls.L2FullPull), devType, profileSettingsService);",
+                "r2FullPullControl = new MappedControl(devIndex, DS4Controls.R2FullPull, InputControlCatalog.LabelOf(DS4Controls.R2FullPull), devType, profileSettingsService);",
                 "mappings.Add(lsOuterBindControl);",
                 "mappings.Add(rsOuterBindControl);",
                 "mappings.Add(l2FullPullControl);",

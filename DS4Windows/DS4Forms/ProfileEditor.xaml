@@ -85,7 +85,7 @@
                         <SolidColorBrush Color="DimGray"/>
                     </Grid.Background>
                     <Grid.RowDefinitions>
-                        <RowDefinition Height="240" />
+                        <RowDefinition Height="266" />
                         <RowDefinition Height="*" />
                     </Grid.RowDefinitions>
                     <Canvas Grid.Row="0" x:Name="conCanvas" Width="440" Margin="0,10,0,0" DockPanel.Dock="Top" >
@@ -233,14 +233,14 @@
                         <Button Content="Left" x:Name="leftConBtn" Canvas.Left="56" Canvas.Top="103" Width="35" Height="20" Style="{StaticResource NoBGHoverBtn}" Click="HoverConBtn_Click" MouseEnter="ContBtn_MouseEnter" MouseLeave="ContBtn_MouseLeave"
                                 MouseRightButtonUp="ConBtn_MouseRightButtonUp" />
 
-                        <Label x:Name="highlightControlDisplayLb" Content="" Canvas.Left="150" Canvas.Top="208" MinWidth="150"
-                               HorizontalContentAlignment="Center">
+                        <Label x:Name="highlightControlDisplayLb" Content="" Canvas.Left="0" Canvas.Top="236" Width="295"
+                               HorizontalContentAlignment="Left">
                             <Label.Foreground>
                                 <SolidColorBrush Color="{DynamicResource {x:Static SystemColors.ControlColorKey}}"/>
                             </Label.Foreground>
                         </Label>
                         <!-- Phase9 UI 変更: Controls タブの全ての割り当てを Default に戻す（確認つき）。コントローラーの画像の右下 -->
-                        <Button x:Name="resetAllControlsBtn" Content="{lex:Loc ResetAllControls}" Canvas.Left="300" Canvas.Top="210" Padding="8,1"
+                        <Button x:Name="resetAllControlsBtn" Content="{lex:Loc ResetAllControls}" Canvas.Left="300" Canvas.Top="238" Padding="8,1"
                                 Click="ResetAllControlsBtn_Click" />
                     </Canvas>
 

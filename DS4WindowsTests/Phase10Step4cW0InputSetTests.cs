@@ -63,14 +63,15 @@ namespace DS4WindowsTests
         }
 
         [Fact]
-        public void TheSaCatalog_Has51Items_AndTheTwoOutersAreAppendedAtTheEnd()
+        public void TheSaCatalog_Has51Items_AndTheOutersAreNextToTheSticks()
         {
             var items = new TriggerCatalog().Items;
 
             Assert.Equal(51, items.Count);
-            Assert.Equal("Touch Ended", items[48].Name);   // 以前の末尾（既存の並びは変わらない）
-            Assert.Equal("LS Outer", items[49].Name);
-            Assert.Equal("RS Outer", items[50].Name);
+            // Phase9 UI 変更: Outer は、スティックの 4 方向の下（InputControlCatalog の並び）。末尾は Touch Ended
+            Assert.Equal("Touch Ended", items[50].Name);
+            Assert.Equal("LS Outer", items[items.ToList().FindIndex(i => i.Name == "Left Stick Right") + 1].Name);
+            Assert.Equal("RS Outer", items[items.ToList().FindIndex(i => i.Name == "Right Stick Right") + 1].Name);
         }
     }
 }
