@@ -157,6 +157,35 @@ namespace DS4WindowsTests
         }
 
         [Fact]
+        public void WriteFrom_Default_WithToggle_KeepsTheToggle_AsAButtonToTheDefaultOutput()
+        {
+            // Phase9 UI 変更: Default のまま Toggle を選んだ設定を、捨てない（既定の出力への Button ＋ Toggle として保存）
+            var rig = new Rig();
+            var target = new ControlSettingsEditTarget(Default(), rig.Profile);
+            target.LoadInto(rig.PressKey, rig.Macro);
+            rig.PressKey.SwitchMode = "Toggle";
+
+            target.WriteFrom(4, rig.PressKey, rig.Macro);
+
+            Assert.Equal(DS4ControlSettings.ActionType.Button, target.Working.actionType);
+            Assert.Equal(rig.Profile.GetDefaultButtonMapping()[(int)DS4Controls.Circle], target.Working.action.actionBtn);
+            Assert.Equal(DS4KeyType.Toggle, target.Working.keyType);
+        }
+
+        [Fact]
+        public void WriteFrom_Default_WithPress_StaysDefault()
+        {
+            var rig = new Rig();
+            var target = new ControlSettingsEditTarget(Default(), rig.Profile);
+            target.LoadInto(rig.PressKey, rig.Macro);
+
+            target.WriteFrom(4, rig.PressKey, rig.Macro);
+
+            Assert.Equal(DS4ControlSettings.ActionType.Default, target.Working.actionType);
+            Assert.Equal(DS4KeyType.None, target.Working.keyType);
+        }
+
+        [Fact]
         public void WriteFrom_Button_WritesTheToggle_TheFixForC5()
         {
             // 従来の選択ダイアログ（OutBinding.WriteBind）は、Button に Toggle を書かなかった（Phase10Step2W0ButtonToggleReproTests）。共通の編集画面は、書く

@@ -182,7 +182,15 @@ namespace DS4WinWPF.DS4Forms.ViewModels
             {
                 case SpecialAction.ActionTypeId.Key:
                     if (pressKey.SelectedActionType == DS4ControlSettings.ActionType.Default)
-                        WriteDefault();
+                    {
+                        // Phase9 UI 変更（ユーザー指示 2026-10-22）: Default のまま Switch Mode を Toggle にしたときは、設定を捨てず、
+                        // 「そのボタンの既定の出力（パッドのボタン等）」への Button ＋ Toggle として保存する（実行時は、既定の出力を Toggle で出す）。
+                        // Press のままなら、従来どおり Default（XML に項目を書かない）。Scan Code は、キーボードのキーだけに効くため、Default（出力はパッドのボタン等）には効かない
+                        if (IsToggle(pressKey) && TryGetDefaultOutputButton(out X360Controls defaultOutput))
+                            WriteDefaultAsToggleButton(defaultOutput);
+                        else
+                            WriteDefault();
+                    }
                     else if (pressKey.SelectedActionType == DS4ControlSettings.ActionType.Button && pressKey.SelectedButton >= 0)
                         WriteButton(pressKey);
                     else
@@ -220,6 +228,28 @@ namespace DS4WinWPF.DS4Forms.ViewModels
             working.keyType = DS4KeyType.None;
             working.action.actionKey = 0;
             working.actionType = DS4ControlSettings.ActionType.Default;
+        }
+
+        private bool TryGetDefaultOutputButton(out X360Controls output)
+        {
+            output = X360Controls.Unbound;
+            try
+            {
+                output = profileSettings.GetDefaultButtonMapping()[(int)original.control];
+                return output != X360Controls.Unbound;
+            }
+            catch
+            {
+                return false;
+            }
+        }
+
+        private void WriteDefaultAsToggleButton(X360Controls defaultOutput)
+        {
+            working.special = null;
+            working.keyType = DS4KeyType.Toggle;
+            working.actionType = DS4ControlSettings.ActionType.Button;
+            working.action.actionBtn = defaultOutput;
         }
 
         private void WriteKey(PressKeyViewModel pressKey)

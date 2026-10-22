@@ -244,6 +244,8 @@ namespace DS4WinWPF.DS4Forms.ViewModels.SpecialActions
                 // Phase9 UI 変更（ユーザー承認 2026-10-22）: 「Default (A)」のように、そのボタンの既定の出力名を添える。取得できなければ「Default」のみ
                 string defaultName = GetDefaultOutputName();
                 describeText = string.IsNullOrEmpty(defaultName) ? DefaultText : $"{DefaultText} ({defaultName})";
+                // Toggle のときは、保存すると「既定の出力への Button ＋ Toggle」になる（ControlSettingsEditTarget.WriteFrom）
+                if (string.Equals(switchMode, "Toggle", StringComparison.OrdinalIgnoreCase)) describeText += " (Toggle)";
             }
             else
             {
