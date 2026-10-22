@@ -1132,8 +1132,11 @@ namespace DS4WinWPF
                     {
                         int strNullCharIdx;
                         byte[] buffer = new byte[256];
-                        MemoryMappedViewAccessor ipcResultDataMMA = ipcClassNameMMF.CreateViewAccessor(0, buffer.Length);
+                        // 不具合の修正（2026-10-23。Phase10-Step4d W3 の dd10cbb で混入）: 結果の MMF（ipcResultDataMMF）ではなく、クラス名の MMF（ipcClassNameMMF。
+                        // クライアントのプロセスでは null）を読んでいたため、query の結果が常に空になっていた
+                        MemoryMappedViewAccessor ipcResultDataMMA = ipcResultDataMMF.CreateViewAccessor(0, buffer.Length);
                         ipcResultDataMMA.ReadArray(0, buffer, 0, buffer.Length);
+                        ipcResultDataMMA.Dispose();
                         strNullCharIdx = Array.FindIndex(buffer, byteVal => byteVal == 0);
                         return ASCIIEncoding.ASCII.GetString(buffer, 0, (strNullCharIdx <= 1 ? 1 : strNullCharIdx));
                     }
