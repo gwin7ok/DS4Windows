@@ -1,7 +1,7 @@
 # Phase9 9-F（UI のコードビハインド）計画書
 
 作成日: 2026-10-22
-状態: 提案（承認待ち）
+状態: 範囲を決定（2026-10-22）。F-3（トレイ）は、利用者が「解決しているようだ」と判断したため、範囲から外す。F-4（`ProfileEditor`）は、今回は先送り。着手は F-1 → F-2 → F-5。F-1 の設計は §5（承認待ち）
 上位: `Phase9-Responsibility-Split-Plan.md` §3 の 9-F、§12
 
 ## 1. 現状（測定、2026-10-22）
@@ -38,3 +38,32 @@ Windows メッセージの種類ごと（デバイスの着脱、電源、IPC、
 - Q1: 着手順（F-1 から／F-4 から／F-2 から）。
 - Q2: F-3（トレイ）を、今回の 9-F に含めるか（回帰の確認を先に行う）。
 - Q3: 9-F の範囲を、`App.xaml.cs` と `MainWindow` までにし、`ProfileEditor`（F-4）は、今回の UI 変更で内容が変わったため見送るか。
+
+
+## 5. F-1（`Application_Startup`）の設計案（2026-10-22）
+`Application_Startup`（401 行）の流れ（順序は変えない）:
+1. AUMID とレジストリの初期化、ブートストラップのサービス、設定の場所、ログのローテーション（Pre-Host）
+2. 起動時の診断ログ（文化、引数、言語フォルダ）
+3. `--complete-install` の引数の処理（昇格した更新の完了。処理して終了）
+4. `CheckOptions`、優先度の設定、単一起動の確認（既存のインスタンスへ通知して終了）
+5. タイマー精度、キーボードのリピートの設定、ViGEmBus の情報、IPC のイベント、一時ワーカー
+6. ホスト構築、`CreateControlService`、`InitializePostHostServices`
+7. 初回起動の流れ（言語選択、保存先、設定フォルダの骨格）
+8. `Macros` フォルダ、設定の読み込み、言語の再適用
+9. ログの設定（`LoggerHolder`）、例外ハンドラー、環境のログ、ビルドの日時のログ
+10. 初回のデバイス設定、既定の設定の作成
+11. 接続フラグのリセット、プロファイル ID、SA の読み込み、言語・テーマ
+12. メイン画面の生成と表示、IPC、`LateChecks`
+
+### 分け方の案
+- **F-1a（純粋な部分を、部品へ）**: ① `--complete-install` の引数の読み取り（`CompleteInstallArguments`）、② ビルドの日時のログの文言づくり（`BuildStampReader`。`build_timestamp.txt` の文字列 → ログの文言）、③ 環境の診断ログ（`StartupDiagnostics`）。いずれも状態を持たず、単体テストで値を固定できる。
+- **F-1b（手順ごとのメソッドへ）**: 上の 12 の区分を、`App` の private メソッド（`RunPreHostBootstrap`、`HandleCompleteInstall`、`EnsureSingleInstance`、`BuildHostAndServices`、`RunFirstRunFlow`、`LoadSettingsAndLogging`、`PrepareProfilesAndActions`、`ShowMainWindow` ほか）に分ける。`Application_Startup` は、それらを順に呼ぶだけにする。早期 return（終了、他のインスタンスへの通知）は、各手順が「続けるか」を返す。呼び出しの順序は、ソースの順序のガードテストで固定する。
+- **F-1c（任意）**: 手順を `App` の外（`AppStartupSequence`）へ移す。`runShutdown`／`skipSave`／`exitApp` などの状態の持ち主を決める必要があり、F-1b の後に判断する。
+
+### 検証
+- 起動のログの順序（`ds4windows_log` の先頭の行）が、変更の前後で同じであること（実機）。
+- 初回起動の流れ（言語選択 → 保存先 → デバイス設定）は、実機でしか確認できない。設定フォルダのない環境での確認が要る（既存の設定を、別の場所へ退避して行う）。
+
+### 決めてほしいこと
+- Q1: F-1a（純粋な部分の部品化）と F-1b（手順ごとのメソッド）を、この順で進める（推奨）／F-1b だけ。
+- Q2: F-1c は、F-1b の後に判断する（推奨）／今回は行わない。
