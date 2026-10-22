@@ -56,7 +56,8 @@ namespace DS4WindowsTests
         {
             Assert.Equal("This binary was built at 2026-10-22 21:50:14 (commit 0bdfe58)",
                 BuildStampReader.BuildLogMessage("built 2026-10-22 21:50:14 commit=0bdfe58\n"));
-            Assert.Equal("This binary was built at 2026-10-22 21:50:14 (commit 0bdfe58-dirty)",
+            // 日時は、読み取った文字列のまま出す（旧コードと同じ。「T」区切りもそのまま）
+            Assert.Equal("This binary was built at 2026-10-22T21:50:14 (commit 0bdfe58-dirty)",
                 BuildStampReader.BuildLogMessage("2026-10-22T21:50:14 commit=0bdfe58-dirty"));
         }
 

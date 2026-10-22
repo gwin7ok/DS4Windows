@@ -28,7 +28,8 @@ namespace DS4WindowsTests
         [Fact]
         public void TheStartupLogShowsTheCommit_AndStillReadsTheOldFormat()
         {
-            string path = SourceFileLocator.Find("DS4Windows/App.xaml.cs");
+            // Phase9 9-F F-1a: 文言づくりは BuildStampReader へ移した（App.xaml.cs は、それを呼んでログに出す）
+            string path = SourceFileLocator.Find("DS4Windows/Startup/BuildStampReader.cs");
             if (path == null) return;
             string text = File.ReadAllText(path);
 
