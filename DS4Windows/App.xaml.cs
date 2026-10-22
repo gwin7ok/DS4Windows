@@ -193,6 +193,68 @@ namespace DS4WinWPF
             runShutdown = true;
             skipSave = true;
 
+            // Phase9 9-F F-1b（Phase9-F-Plan.md §5）: 起動の手順を、順に呼ぶだけにした（各手順は、下のメソッド。順序と、早期の終了の条件は、従来のまま。
+            // 呼び出しの順序は Phase9F1StartupOrderGuardTests が守る）
+            RunPreHostBootstrap(e);
+
+            ArgumentParser parser = new ArgumentParser();
+            // Early check: handle elevated 'complete install' mode before normal startup
+            if (TryHandleCompleteInstall(e))
+            {
+                return;
+            }
+
+            parser.Parse(e.Args);
+            CheckOptions(parser);
+
+            if (exitApp)
+            {
+                return;
+            }
+
+            SetProcessPriorities();
+
+            if (!EnsureSingleInstance())
+            {
+                return;   // 別のインスタンスが動いている（そちらへ通知して、この一時的なインスタンスは終了する）
+            }
+
+            InitializeProcessWideSettings();
+
+            BuildHostAndServices(parser);
+
+            // FindConfigLocation was already called earlier to enable rotation as early as possible
+            bool firstRun = _appSettingsService.FirstRun;
+            string selectedLanguage = null;
+
+            if (!RunFirstRunLanguageSelection(firstRun, ref selectedLanguage))
+            {
+                return;
+            }
+
+            if (!RunFirstRunSaveLocationAndSkeleton(firstRun))
+            {
+                return;
+            }
+
+            EnsureMacrosFolder();
+
+            bool readAppConfig = LoadAppSettings(firstRun, selectedLanguage);
+
+            ConfigureLoggingAndDiagnostics(firstRun, readAppConfig);
+
+            RunFirstLaunchSetup(firstRun);
+
+            PrepareProfilesCultureAndTheme();
+
+            ShowMainWindowAndFinish(parser);
+        }
+
+        /// <summary>
+        /// Phase9 9-F F-1b: ブートストラップのサービス、設定の場所の決定、ログのローテーション、起動時の診断ログ（Pre-Host。旧 Application_Startup の先頭の部分）。
+        /// </summary>
+        private void RunPreHostBootstrap(StartupEventArgs e)
+        {
             // Phase7-Step4 W4: ブートストラップのサービスを、コンテナの構築より前に作る
             _bootstrapEnvironmentService = new DS4Windows.EnvironmentService();
             _bootstrapBackingStore = new DS4Windows.BackingStore(_bootstrapEnvironmentService);
@@ -242,10 +304,13 @@ namespace DS4WinWPF
                 }
             }
             catch (Exception) { }
+        }
 
-            ArgumentParser parser = new ArgumentParser();
-            // Early check: handle elevated 'complete install' mode before normal startup
-            // If process started with --complete-install, perform the file move and exit with code.
+        /// <summary>
+        /// Phase9 9-F F-1b: 昇格した更新の完了モード（--complete-install）の処理。完了モードなら、処理して終了コードで終了する（戻らない）。通常の起動なら false。
+        /// </summary>
+        private bool TryHandleCompleteInstall(StartupEventArgs e)
+        {
             try
             {
                 // Phase9 9-F F-1a: 引数の読み取りは CompleteInstallArguments
@@ -256,7 +321,7 @@ namespace DS4WinWPF
                     // Ensure logs flushed then exit
                     try { NLog.LogManager.Flush(); } catch { }
                     Environment.Exit(exit);
-                    return;
+                    return true;
                 }
             }
             catch (Exception ex)
@@ -264,15 +329,14 @@ namespace DS4WinWPF
                 // If something goes wrong here, log and continue with normal startup
                 NLog.LogManager.GetCurrentClassLogger().Error(ex, "Error handling --complete-install args");
             }
+            return false;
+        }
 
-            parser.Parse(e.Args);
-            CheckOptions(parser);
-
-            if (exitApp)
-            {
-                return;
-            }
-
+        /// <summary>
+        /// Phase9 9-F F-1b: プロセスの優先度（High）、IO の優先度、ページの優先度（Normal）の設定。
+        /// </summary>
+        private void SetProcessPriorities()
+        {
             try
             {
                 Process.GetCurrentProcess().PriorityClass =
@@ -289,7 +353,13 @@ namespace DS4WinWPF
             IntPtr pagePrio = new IntPtr(5);
             DS4Windows.Util.NtSetInformationProcess(Process.GetCurrentProcess().Handle,
                 DS4Windows.Util.PROCESS_INFORMATION_CLASS.ProcessPagePriority, ref pagePrio, 4);
+        }
 
+        /// <summary>
+        /// Phase9 9-F F-1b: 単一起動の確認。別のインスタンスが動いていれば、そちらへ通知して、このインスタンスの終了を要求し、false を返す。
+        /// </summary>
+        private bool EnsureSingleInstance()
+        {
             // another instance is already running if TryOpenExisting returns true.
             try
             {
@@ -303,14 +373,21 @@ namespace DS4WinWPF
 
                     runShutdown = false;
                     Current.Shutdown();    // Quit temp instance
-                    return;
+                    return false;
                 }
             }
             catch (System.UnauthorizedAccessException)
             {
                 // Ignore exception
             }
+            return true;
+        }
 
+        /// <summary>
+        /// Phase9 9-F F-1b: タイマーの精度、キーボードのリピート設定、ViGEmBus の情報、単一起動の通知用イベントと一時ワーカー（Pre-Host の最後）。
+        /// </summary>
+        private void InitializeProcessWideSettings()
+        {
             // Allow sleep time durations less than 16 ms
             DS4Windows.Util.timeBeginPeriod(1);
 
@@ -328,7 +405,13 @@ namespace DS4WinWPF
             // Create the Event handle
             threadComEvent = new EventWaitHandle(false, EventResetMode.ManualReset, SingleAppComEventName);
             CreateTempWorkerThread();
+        }
 
+        /// <summary>
+        /// Phase9 9-F F-1b: ホストの構築、ControlService の作成、Post-Host のサービスの解決（Pre-Host 領域の終わり）。
+        /// </summary>
+        private void BuildHostAndServices(ArgumentParser parser)
+        {
             // Phase6-Step7: ここまでが Pre-Host 領域（明示的なホスト構築より前に実行される起動処理）。
             // この領域と CheckOptions（-driverinstall 分岐を含む）の Global 参照（起動時ログローテーション・
             // 設定の場所の決定・ViGEmBus 情報など）は、ブートストラップ処理として意図的に静的のまま温存する
@@ -351,11 +434,13 @@ namespace DS4WinWPF
             CreateControlService(parser);
             InitializePostHostServices();
             RenderOptions.ProcessRenderMode = RenderMode.SoftwareOnly;
+        }
 
-            // FindConfigLocation was already called earlier to enable rotation as early as possible
-            bool firstRun = _appSettingsService.FirstRun;
-            string selectedLanguage = null;
-
+        /// <summary>
+        /// Phase9 9-F F-1b: 初回起動の言語の選択（ダイアログ）。選ばずに閉じられたら、終了を要求して false を返す。
+        /// </summary>
+        private bool RunFirstRunLanguageSelection(bool firstRun, ref string selectedLanguage)
+        {
             // On first run, show language selection dialog first
             if (firstRun)
             {
@@ -365,14 +450,21 @@ namespace DS4WinWPF
                 {
                     runShutdown = false;
                     Current.Shutdown();
-                    return;
+                    return false;
                 }
 
                 // Store selected language and apply it immediately for dialogs
                 selectedLanguage = langDialog.SelectedCulture;
                 ApplyLanguageSetting(selectedLanguage);
             }
+            return true;
+        }
 
+        /// <summary>
+        /// Phase9 9-F F-1b: 初回起動の保存先の選択と、設定フォルダの骨格の作成。選ばなかった、または作れなかったときは、終了を要求して false を返す。
+        /// </summary>
+        private bool RunFirstRunSaveLocationAndSkeleton(bool firstRun)
+        {
             // Could not find unique profile location; does not exist or multiple places.
             // Advise user to specify where DS4Windows should save its configuation files
             // and profiles
@@ -385,7 +477,7 @@ namespace DS4WinWPF
                 {
                     runShutdown = false;
                     Current.Shutdown();
-                    return;
+                    return false;
                 }
             }
 
@@ -395,9 +487,16 @@ namespace DS4WinWPF
                 MessageBox.Show($"Cannot create config folder structure in {_pathService.AppDataPath}. Exiting",
                     "DS4Windows", MessageBoxButton.OK, MessageBoxImage.Error);
                 Current.Shutdown(1);
-                return;
+                return false;
             }
+            return true;
+        }
 
+        /// <summary>
+        /// Phase9 9-F F-1b: マクロの保存・読込ダイアログの初期フォルダ（Macros）を、毎回の起動で確認する。
+        /// </summary>
+        private void EnsureMacrosFolder()
+        {
             // マクロの保存・読込ダイアログの初期フォルダ（RecordBox が <保存場所>\Macros を指定する）。
             // CreateConfDirSkeleton は初回起動時しか呼ばれないため、既存の環境にも作られるよう毎回確認する。
             // 作成できなくても（書き込み権限がない場合など）起動は続ける。
@@ -408,7 +507,13 @@ namespace DS4WinWPF
             catch (Exception)
             {
             }
+        }
 
+        /// <summary>
+        /// Phase9 9-F F-1b: Profiles.xml の読み込み（ログの設定を使うため、LoggerHolder の作成より前）と、初回起動で選んだ言語の再適用・保存。読み込めたかを返す。
+        /// </summary>
+        private bool LoadAppSettings(bool firstRun, string selectedLanguage)
+        {
             // Load Profiles.xml BEFORE creating LoggerHolder so log settings are available
             bool readAppConfig = _appSettingsService.Load();
 
@@ -418,7 +523,14 @@ namespace DS4WinWPF
                 ApplyLanguageSetting(selectedLanguage);
                 _appSettingsService.Save();
             }
+            return readAppConfig;
+        }
 
+        /// <summary>
+        /// Phase9 9-F F-1b: LoggerHolder の作成、例外ハンドラーの登録、環境・ビルド日時のログ。
+        /// </summary>
+        private void ConfigureLoggingAndDiagnostics(bool firstRun, bool readAppConfig)
+        {
             logHolder = new LoggerHolder(_controlService, _appSettingsService);
             // Phase6-Step10-1-5（決定D7＝A）: 設定画面がログ設定の変更を反映する窓口（ILogSettingsApplier）へ、生成した LoggerHolder を接続する
             _logSettingsApplierProxy.Attach(logHolder);
@@ -462,7 +574,13 @@ namespace DS4WinWPF
             {
                 AppLogger.LogInfo($@"Profiles.xml not read at location ${_pathService.AppDataPath}\Profiles.xml. Using default app settings");
             }
+        }
 
+        /// <summary>
+        /// Phase9 9-F F-1b: 初回起動のデバイスの選択と既定の設定の作成、接続フラグのリセット。最後に skipSave を解除する（保存を許可する）。
+        /// </summary>
+        private void RunFirstLaunchSetup(bool firstRun)
+        {
             // Ask user which devices the mapper should attempt to open when detected.
             // Currently only support DS4 by default to avoid extra complications from
             // Steam Input
@@ -495,7 +613,13 @@ namespace DS4WinWPF
             _deviceStateService.ResetConnectionFlags();
 
             skipSave = false;
+        }
 
+        /// <summary>
+        /// Phase9 9-F F-1b: プロファイルの固定 ID、SA の読み込み、言語とテーマの適用、リンクされたプロファイルの読み込み（メイン画面の生成の前）。
+        /// </summary>
+        private void PrepareProfilesCultureAndTheme()
+        {
             // Phase10-Step4d W1（Q4 の変更、2026-10-21）: すべてのプロファイルのファイルに固定 ID を書く（ID がないものに割り当て、ファイルのコピーで重複したものに付け替える）。
             // SA の読み込み（下の LoadActions。Load Profile の切り替え先を ID で解決する。W3）と、プロファイルをスロットへ読み込む前（メイン画面の生成の前）に行う。
             // 書けなかったファイル（読み取り専用など）は、参照を保存する直前に改めて試す
@@ -519,6 +643,13 @@ namespace DS4WinWPF
             AppLogger.LogDebug($"Post-ChangeTheme: LocalizeDictionary={LocalizeDictionary.Instance.Culture}, SetCurrentThreadCulture={LocalizeDictionary.Instance.SetCurrentThreadCulture}, DefaultThreadCurrentUICulture={CultureInfo.DefaultThreadCurrentUICulture}, CurrentUICulture={Thread.CurrentThread.CurrentUICulture}");
 
             _profileRepository.LoadLinkedProfiles();
+        }
+
+        /// <summary>
+        /// Phase9 9-F F-1b: メイン画面の生成と表示、IPC の準備、HidHide の確認、出力スロットの読み込み、LateChecks（起動の最後）。
+        /// </summary>
+        private void ShowMainWindowAndFinish(ArgumentParser parser)
+        {
             // Phase7-Step5 W5（Q4＝A）: メイン画面の生成の窓口を、生成の直前に解決する（窓口が受け取る多数のサービスの生成が
             // 設定の読込より前にならないよう、InitializePostHostServices では解決しない。旧: MainWindow のコンストラクター内で解決していた）
             DS4Forms.MainWindow window = ResolvePostHostService<IMainWindowFactory>().Create(parser);
