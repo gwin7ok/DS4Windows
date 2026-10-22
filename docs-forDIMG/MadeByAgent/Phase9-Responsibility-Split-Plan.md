@@ -54,6 +54,7 @@
 - 前提: OSC は競合の回帰テストのみで、送信内容を固定するテストがない。UDP・HidHide・出力デバイスは、実機が要る箇所が多い。ガードレール（6 大ガードレール。同一 XML 排他、適用時 Halt、スレッド直列化、On-Demand パス評価、ドライバ破棄順序、切断時クリーンアップ）を確実に守る。
 
 ### 9-F: アプリ層・UI のコードビハインド
+- **9-F の課題（2026-10-22 記録。E-6f2 の確認中に発見）: トレイのメニューの再クリック**: トレイのアイコンのメニューを**開いたまま、もう一度右クリックすると、「メニューが表示される」と「一瞬表示されてすぐ消える」が交互に起きる**（通常の操作［右クリックで表示 → 左クリックで消す → 右クリックで表示］は正常）。診断ログ（2026-10-22）では、`Opened` の約 0.2 秒後に `Closed` が出る。メニューの作り直し・ツールチップ・アイコンの変更は、その間に起きていない。`Opened` のとき、前面のウィンドウは `explorer`（`Shell_TrayWnd`）で、メニューが前面を取れていない。トレイは `H.NotifyIcon.Wpf` 2.0.74 を、`MainWindow` のビジュアルツリーから外して `ForceCreate` で作り、`TrayRightMouseUp` で `notifyIcon.ContextMenu` を設定している。Phase9 の分割（`ControlService` まわり）とは結び付きにくいため、**回帰かどうかは未確認**（古い版との比較は、利用者が後回しとした）。9-F（`MainWindow` のコードビハインド）で、開いているときの右クリックの扱い（閉じる、または再表示）を含めて見直す。診断用の一時ログ（`TrayIconViewModel`）は削除した。
 - **順序の注記（2026-10-21 改訂）**: `Phase10-Assignment-UI-Unification-Plan.md` は、範囲を「マクロだけ」から「割り当て編集画面の統合」（共通の編集画面、`BindingWindow` と `SpecialActionEditor` の置き換え）に拡大した。`RecordBox`・`SpecialActionEditor`・`BindingWindow`・`ProfileEditor` のコードビハインドを大きく作り直すため、**Phase10 全体を 9-F の前に行う**（二重の変更を避ける）。9-G も Phase10 の後に判断する。
 - 対象: `App.xaml.cs` の `Application_Startup`（393 行）と `CheckOptions`（136 行）→ 起動手順のクラス（Phase7-Step4 の起動順序・終了順序を維持）。`MainWindow` の `WndProc`（265 行）、電源イベント、コンストラクター（151 行・引数 18）。`ProfileEditor` の残りのイベントハンドラー（`Phase8` の Step4b で表を出した後）。
 - 前提: 起動順序の特性化（ホスト構築、ブートストラップ、設定の復元の順序）。実機（画面）での確認が必須。
