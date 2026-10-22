@@ -126,7 +126,8 @@ namespace DS4WindowsTests
         {
             var rig = new Rig();
 
-            Assert.Equal(DefaultIndex, new ControlSettingsEditTarget(Settings(DS4ControlSettings.ActionType.Default), rig.Profile).InitialTypeIndex);
+            // Phase9 UI 変更: Default も Press Key の項目（添字 4）で開く（出力の欄が「Default (既定の出力名)」）
+            Assert.Equal(4, new ControlSettingsEditTarget(Settings(DS4ControlSettings.ActionType.Default), rig.Profile).InitialTypeIndex);
 
             DS4ControlSettings unbound = Settings(DS4ControlSettings.ActionType.Button, DS4KeyType.Unbound);
             unbound.action.actionBtn = X360Controls.Unbound;
@@ -194,7 +195,9 @@ namespace DS4WindowsTests
             var toDefault = new ControlSettingsEditTarget(original, rig.Profile);
             toDefault.WriteFrom(DefaultIndex, rig.PressKey, rig.Macro);
             toDefault.Apply();
-            Assert.Equal(DefaultIndex, new ControlSettingsEditTarget(original, rig.Profile).InitialTypeIndex);
+            // Phase9 UI 変更: Default は Press Key の項目（添字 4）で開き直す。保存し直しても Default のまま
+            Assert.Equal(4, new ControlSettingsEditTarget(original, rig.Profile).InitialTypeIndex);
+            Assert.Equal(DS4ControlSettings.ActionType.Default, original.actionType);
         }
 
         // ---- 画面（ソース走査）----
