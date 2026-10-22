@@ -1,4 +1,5 @@
 using System;
+using DS4WinWPF.DS4Control;   // OutSlotDevice
 
 namespace DS4Windows.DI
 {
