@@ -78,9 +78,9 @@ namespace DS4Windows.DI
             services.AddSingleton<IOutputSlotService>(sp =>
             {
                 var service = new OutputSlotService(
-                    () => sp.GetRequiredService<ControlService>().OutputslotMan,
+                    () => sp.GetRequiredService<IVirtualPadService>().OutputSlotManager,   // Phase9 9-E E-4: スロット管理の実体は VirtualPadService が持つ（旧: ControlService.OutputslotMan）
                     sp.GetRequiredService<IOutputSlotStore>(),
-                    sp.GetRequiredService<Func<ControlService>>());
+                    sp.GetRequiredService<Func<IVirtualPadService>>());
                 sp.GetRequiredService<BackingStore>().ActiveOutDevType = service.ActiveOutDevType;
                 return service;
             });
@@ -193,6 +193,9 @@ namespace DS4Windows.DI
             services.AddSingleton<IOscService, OscService>();   // Phase9 9-E E-1: OSC（受信の解釈、送信、入力への重ね合わせ、変化の送信）
             services.AddSingleton<IHidHideApiFactory, HidHideApiFactory>();   // Phase9 9-E E-2: HidHide ドライバーの窓口の生成
             services.AddSingleton<IHidHideService, HidHideService>();   // Phase9 9-E E-2: HidHide（ホワイトリストの確認、影響を受けるデバイスの判定）
+            services.AddSingleton<IVirtualPadService, VirtualPadService>();   // Phase9 9-E E-4: 仮想パッド（ViGEm）の出力。OutputSlotManager、割り当て、振動・ライトバーの戻り
+            services.AddSingleton<Func<IVirtualPadService>>(sp => () => sp.GetRequiredService<IVirtualPadService>());   // OutputSlotService が遅延で取得する（循環を避ける）
+            services.AddSingleton<Func<IVirtualPadHost>>(sp => () => sp.GetRequiredService<IVirtualPadHost>());   // VirtualPadService が遅延で取得する（実体は ControlService）
             services.AddSingleton<IUdpMotionServerFactory, UdpMotionServerFactory>();   // Phase9 9-E E-3: UDP サーバー（UdpServer）の生成
             services.AddSingleton<IUdpMotionService, UdpMotionService>();   // Phase9 9-E E-3: UDP モーションの送出（サーバーの作成・開始・停止、ハンドラー、スムージング）
             services.AddSingleton<Func<IUdpMotionHost>>(sp => () => sp.GetRequiredService<IUdpMotionHost>());   // ControlService が部品を受けるため、遅延で取得（循環を避ける）
@@ -266,11 +269,13 @@ namespace DS4Windows.DI
                     sp.GetRequiredService<IMapping>(),
                     sp.GetRequiredService<IOscService>(),   // Phase9 9-E E-1
                     sp.GetRequiredService<IHidHideService>(),   // Phase9 9-E E-2
-                    sp.GetRequiredService<IUdpMotionService>()   // Phase9 9-E E-3
+                    sp.GetRequiredService<IUdpMotionService>(),   // Phase9 9-E E-3
+                    sp.GetRequiredService<IVirtualPadService>()   // Phase9 9-E E-4
                 );
             });
             services.AddSingleton<IDeviceStateAccessor>(sp => sp.GetRequiredService<ControlService>());
             services.AddSingleton<IUdpMotionHost>(sp => sp.GetRequiredService<ControlService>());   // Phase9 9-E E-3
+            services.AddSingleton<IVirtualPadHost>(sp => sp.GetRequiredService<ControlService>());   // Phase9 9-E E-4
 
             return services;
         }

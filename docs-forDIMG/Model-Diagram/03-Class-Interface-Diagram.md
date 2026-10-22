@@ -293,6 +293,27 @@ classDiagram
         <<interface>>
         +Open() IHidHideApi
     }
+    class IVirtualPadService {
+        <<interface>>
+        +OutputSlotManager OutputSlotManager
+        +OutputDevices OutputDevice[]
+        +HasViGEmClient bool
+        +StartViGEm()
+        +StopViGEm()
+        +PluginOutDev(int index, DS4Device device)
+        +UnplugOutDev(int index, DS4Device device, bool immediate, bool force)
+        +AttachUnboundOutDev(OutSlotDevice slotDevice, OutContType contType)
+        +DetachUnboundOutDev(OutSlotDevice slotDevice)
+        +EstablishOutFeedback(int index, OutContType contType, OutputDevice outDevice, DS4Device device)
+        +RemoveOutFeedback(OutContType contType, OutputDevice outDevice, int inIdx)
+        +QueueOnEventThread(Action action)
+    }
+    class IVirtualPadHost {
+        <<interface>>
+        +SetDevRumble(DS4Device device, byte heavyMotor, byte lightMotor, int deviceNum)
+        +QueueOnEventThread(Action action)
+    }
+    class VirtualPadService
     class IUdpMotionService {
         <<interface>>
         +HasServer bool
@@ -358,6 +379,12 @@ classDiagram
     IOscService <|.. OscService : implements
     IHidHideService <|.. HidHideService : implements
     IUdpMotionService <|.. UdpMotionService : implements
+    IVirtualPadService <|.. VirtualPadService : implements
+    ControlService ..|> IVirtualPadHost : implements（Phase9 9-E E-4）
+    VirtualPadService --> IVirtualPadHost : Func による遅延取得（循環を避ける）
+    VirtualPadService --> OutputSlotManager : 所有（旧: ControlService）
+    OutputSlotService --> IVirtualPadService : 抜き差しの窓口（Phase9 9-E E-4。旧: ControlService への逆依存）
+    ControlService --> IVirtualPadService : ctor injection（PluginOutDev／UnplugOutDev／OutputslotMan／outputDevices は窓口）
     IUdpMotionServerFactory <|.. UdpMotionServerFactory : implements
     ControlService ..|> IUdpMotionHost : implements（Phase9 9-E E-3）
     UdpMotionService --> IUdpMotionHost : Func による遅延取得（循環を避ける）

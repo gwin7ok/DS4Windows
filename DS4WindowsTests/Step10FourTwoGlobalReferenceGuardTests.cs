@@ -186,7 +186,7 @@ namespace DS4WindowsTests
         {
             var store = new OutputSlotStore(new PathService());
             Func<OutputSlotManager> manager = () => null;
-            Func<ControlService> control = () => null;
+            Func<IVirtualPadService> control = () => null;   // Phase9 9-E E-4: 旧 Func<ControlService>
 
             Assert.Throws<ArgumentNullException>(() => new OutputSlotStore(null));
             Assert.Throws<ArgumentNullException>(() => new OutputSlotManager(null, 4));

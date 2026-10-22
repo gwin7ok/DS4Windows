@@ -81,7 +81,7 @@ namespace DS4WindowsTests
             OutputSlotManager mgr = manager ?? ctl?.OutputslotMan ?? CreateOutputSlotManager();
             return new OutputSlotService(() => mgr,
                 store ?? new OutputSlotStore(new PathService()),
-                () => ctl);
+                () => ctl?.VirtualPadService);   // Phase9 9-E E-4: 抜き差しの窓口は ControlService ではなく VirtualPadService
         }
 
         public static ProfileActionProvider CreateProfileActionProvider(BackingStore store = null)

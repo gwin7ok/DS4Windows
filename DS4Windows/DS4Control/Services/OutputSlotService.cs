@@ -11,12 +11,14 @@ namespace DS4Windows
     {
         // Phase6-Step10-4-3: 全ての依存を必須化（Program.rootHub／AppHost／new のフォールバックを廃止。Phase6-Step10 §8 の TODO を解消）。
         // ControlService は Func<IOutputSlotService> で本サービスへ依存している（Phase6-Step2 決定D1）ため、直接のコンストラクタ注入は
-        // 循環する。Func による遅延解決で受け取る（決定 D4-3）。スロット管理（OutputSlotManager）の実体は ControlService が所有する。
+        // 循環する。Func による遅延解決で受け取る（決定 D4-3）。
+        // Phase9 9-E E-4: スロット管理（OutputSlotManager）の実体と、仮想スロットの抜き差しは、ControlService ではなく VirtualPadService が持つ
+        // （過渡期の逆依存 OutputSlotService → ControlService を解消した）。
         private readonly Func<OutputSlotManager> _slotManagerProvider;
         private readonly IOutputSlotStore _store;
-        private readonly Func<ControlService> _controlProvider;
+        private readonly Func<IVirtualPadService> _virtualPadProvider;
         private OutputSlotManager SlotManager => _slotManagerProvider();
-        private ControlService Control => _controlProvider();
+        private IVirtualPadService VirtualPad => _virtualPadProvider();
         private readonly object _syncLock = new object();
         public const int MAX_SLOTS = 8;
 
@@ -28,11 +30,11 @@ namespace DS4Windows
         // 実行時接続状態＝ActiveOutDevType、UI一時状態＝OutDevTypeTemp を参照すること。
 
         public OutputSlotService(Func<OutputSlotManager> slotManagerProvider, IOutputSlotStore store,
-            Func<ControlService> controlProvider)
+            Func<IVirtualPadService> virtualPadProvider)
         {
             _slotManagerProvider = slotManagerProvider ?? throw new ArgumentNullException(nameof(slotManagerProvider));
             _store = store ?? throw new ArgumentNullException(nameof(store));
-            _controlProvider = controlProvider ?? throw new ArgumentNullException(nameof(controlProvider));
+            _virtualPadProvider = virtualPadProvider ?? throw new ArgumentNullException(nameof(virtualPadProvider));
         }
 
         /// <summary>
@@ -66,8 +68,8 @@ namespace DS4Windows
         }
 
         // Phase6-Step10-5: UI（出力スロット管理画面）・UDP コマンドから仮想スロットを抜き差しする正式な入口。
-        // 画面の従来の挙動と同等にする: 事前条件（未接続かつ入力未割り当て）を確認し、ControlService.EventDispatcher
-        // （UI スレッド）へ切り替えて ControlService の正規 API を呼ぶ。戻り値は「要求を受け付けたか」。
+        // 画面の従来の挙動と同等にする: 事前条件（未接続かつ入力未割り当て）を確認し、イベントスレッド
+        // （Phase9 E-4 以降は IVirtualPadService.QueueOnEventThread。旧: ControlService.EventDispatcher）へ切り替えて VirtualPadService の正規 API を呼ぶ。戻り値は「要求を受け付けたか」。
         // OutputSlotChanged は、抜き差しの要求を実行した後に発行する。
         // §5.5 最重要ガードレール: ViGEm ネイティブドライバ保護（OutputSlotManager の非同期キューと破棄順序には触れない）。
         public bool PluginSlot(int slotNumber, OutContType devType)
@@ -77,8 +79,8 @@ namespace DS4Windows
             try
             {
                 var slotDevice = GetOutSlotDevice(slotNumber);
-                var control = Control;
-                if (slotDevice == null || control == null) return false;
+                var virtualPad = VirtualPad;
+                if (slotDevice == null || virtualPad == null) return false;
 
                 if (slotDevice.CurrentAttachedStatus != OutSlotDevice.AttachedStatus.UnAttached ||
                     slotDevice.CurrentInputBound != OutSlotDevice.InputBound.Unbound)
@@ -86,11 +88,11 @@ namespace DS4Windows
                     return false;
                 }
 
-                control.EventDispatcher.BeginInvoke((System.Action)(() =>
+                virtualPad.QueueOnEventThread(() =>
                 {
                     try
                     {
-                        control.AttachUnboundOutDev(slotDevice, devType);
+                        virtualPad.AttachUnboundOutDev(slotDevice, devType);
                         RaiseOutputSlotChanged(slotNumber, devType, null);
                     }
                     catch (Exception ex)
@@ -98,7 +100,7 @@ namespace DS4Windows
                         if (AppLogger.IsTraceEnabled)
                             AppLogger.LogTrace($"[DI] OutputSlotService.PluginSlot dispatch failed: {ex}");
                     }
-                }));
+                });
                 return true;
             }
             catch (Exception ex)
@@ -117,8 +119,8 @@ namespace DS4Windows
             try
             {
                 var slotDevice = GetOutSlotDevice(slotNumber);
-                var control = Control;
-                if (slotDevice == null || control == null) return false;
+                var virtualPad = VirtualPad;
+                if (slotDevice == null || virtualPad == null) return false;
 
                 if (slotDevice.CurrentAttachedStatus != OutSlotDevice.AttachedStatus.Attached ||
                     slotDevice.CurrentInputBound != OutSlotDevice.InputBound.Unbound)
@@ -126,11 +128,11 @@ namespace DS4Windows
                     return false;
                 }
 
-                control.EventDispatcher.BeginInvoke((System.Action)(() =>
+                virtualPad.QueueOnEventThread(() =>
                 {
                     try
                     {
-                        control.DetachUnboundOutDev(slotDevice);
+                        virtualPad.DetachUnboundOutDev(slotDevice);
                         RaiseOutputSlotChanged(slotNumber, OutContType.None, null);
                     }
                     catch (Exception ex)
@@ -138,7 +140,7 @@ namespace DS4Windows
                         if (AppLogger.IsTraceEnabled)
                             AppLogger.LogTrace($"[DI] OutputSlotService.UnplugSlot dispatch failed: {ex}");
                     }
-                }));
+                });
                 return true;
             }
             catch (Exception ex)

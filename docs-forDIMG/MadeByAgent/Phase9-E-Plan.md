@@ -3,7 +3,7 @@
 作成日: 2026-10-22  
 対象ブランチ: `For-DI-migration-work`  
 上位: `Phase9-Responsibility-Split-Plan.md` 9-E、`Phase9-B-Plan.md`・`Phase9-C-Plan.md`（同じ進め方）  
-状態: **承認済み（2026-10-22。§8）。E-1（OSC）はビルド・テスト合格、E-2（HidHide）もビルド・テスト合格。E-3（UDP モーション）は実装済み（ビルド・テストはユーザーの実行待ち）。E-4 以降は別の計画書**
+状態: **承認済み（2026-10-22。§8）。E-1（OSC）はビルド・テスト合格、E-2（HidHide）もビルド・テスト合格。E-3（UDP モーション）もビルド・テスト合格。E-4（仮想パッドの出力）は実装済み（ビルド・テストと実機確認はユーザーの実行待ち）。E-5（入力レポートの処理）・E-6（ライフサイクル）は別途設計**
 
 ---
 
@@ -197,3 +197,27 @@ E-2・E-3 は、E-1 の結果を見てから、**この計画書に設計を追�
 - **Q2（実機確認の時期）**: A＝**各 Wave のビルド・テストが通ったあと、実機確認をしてから次の Wave へ進む**（推奨。ここから先は、実機でしか確認できない箇所が増えるため）／B＝実機確認は E-4 全体の終わりにまとめる。
 - **Q3（V1 の畳み込み）**: A＝移した後に別コミットで畳む。**実機確認が済んでから**（推奨）／B＝畳まない。
 - **Q4（`OutputSlotService` の逆依存の解消）**: A＝E-4b で、`OutputSlotService` が新しい部品を呼ぶようにする（推奨。過渡期の逆依存の解消）／B＝今回は触らず、`ControlService` の委譲を経由させたままにする。
+
+### 13.5 決定事項（2026-10-22、ユーザー承認）
+
+- **Q1＝まとめて 1 回**: E-4a（振動・ライトバーの戻り）と E-4b（作成・割り当て・取り外し）を 1 回で実装する。
+- **Q2＝E-4 の最後にまとめて実機確認**: ビルド・テストのあと、台帳 §36 を一括して確認する（ViGEmBus、コントローラー［USB／Bluetooth］、HidHide が揃っている）。先送りにした §31〜§35 も、同じ機会にまとめて確認できる。
+- **Q3＝実機確認の後に別コミットで畳む**: `PluginOutDev` の X360／DS4 の重複の畳み込みは、実機確認が済んでから。
+- **Q4＝E-4b で逆依存を解消**: `OutputSlotService` は `ControlService` ではなく `IVirtualPadService` を呼ぶ。
+
+## 14. E-4 の結果（2026-10-22。この環境に `dotnet` がないため、ビルド・テストは未実行）
+
+**設計の調整**: E-4a・E-4b を分ける案だったが、承認（Q1）により 1 つの部品 `VirtualPadService` にまとめた（振動・ライトバーの戻りは、割り当てと同じ状態を使うため、分けても依存は減らない）。
+
+| 区分 | 内容 |
+|---|---|
+| 新規（契約） | `DI/IVirtualPadService.cs`、`DI/IVirtualPadHost.cs`（`SetDevRumble`、`QueueOnEventThread`。実装は `ControlService`） |
+| 新規（実装） | `DS4Control/Services/VirtualPadService.cs`（旧 `StartViGEm`／`StopViGEm`／`AssignInitialDevices`／`EstablishOutDevice`／`EstablishOutFeedback`／`RemoveOutFeedback`／`AttachNewUnboundOutDev`／`AttachUnboundOutDev`／`DetachUnboundOutDev`／`PluginOutDev`／`UnplugOutDev` と、`outputslotMan`／`outputDevices`／`vigemTestClient` を、そのまま移した。`OutputSlotManager` はコンストラクターで作る。デバイスは `IDeviceStateAccessor`、ホストは `Func` で遅延取得） |
+| `ControlService.cs` | 2,707 → **2,168 行**（539 行減。9-E の開始時 3,438 行から 1,270 行減）。`PluginOutDev`／`UnplugOutDev` は薄い委譲。`outputDevices`（公開フィールド → 同じ配列を返す読み取り専用プロパティ）、`OutputslotMan`、新しい `VirtualPadService` プロパティ。`Start`／`Stop`／`HotPlug` の呼び出しを `_virtualPad` に替えた（呼び出しの順序は不変）。`OutputslotMan_ViGEmFailure` は、ControlService の状態（`loopControllers`、`Stop`）を使うため残した。コンストラクターの引数 +1 |
+| `OutputSlotService.cs` | **過渡期の逆依存を解消**: `Func<ControlService>` → `Func<IVirtualPadService>`。抜き差しは `virtualPad.QueueOnEventThread`（旧: `control.EventDispatcher.BeginInvoke`）と `AttachUnboundOutDev`／`DetachUnboundOutDev` を呼ぶ |
+| DI | `IVirtualPadService`、`Func<IVirtualPadService>`、`Func<IVirtualPadHost>`、`IVirtualPadHost`（`ControlService`）を登録。`IOutputSlotService` の生成は `IVirtualPadService.OutputSlotManager` を使う。手書きの `ControlService` 生成にも追加 |
+| テスト（新規） | `Phase9EVirtualPadServiceTests`（窓口、事前条件による何もしない経路、ホストへの委譲、`ControlService` の窓口が同じ実体を返すこと）、`Phase9EVirtualPadGuardTests`（移した／削除したメンバー、逆依存の解消、静的な窓口の不参照、登録） |
+| テスト（追従） | `TestRepositoryFactory`、`Step10FourTwoGlobalReferenceGuardTests`（`OutputSlotService` の第 3 引数の型） |
+| 規約 2.4 の判断の記録 | `AssignInitialDevices`・`AttachNewUnboundOutDev`（呼び出し元 0 件）は、`VirtualPadService` に移し、TODO を付けた（9-F で、使う予定がなければ削除をユーザーへ提案）。`ControlService` の委譲は残していない |
+
+**実機でなければ確かめられないもの**: 仮想パッドの作成・割り当て・取り外し（ViGEmBus）、振動・ライトバーの戻り、結合デバイス（Joy-Con）、恒久スロット、`OutputSlotManager` の非同期キューの順序。**台帳 §36** で確認する。
