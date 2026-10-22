@@ -758,3 +758,15 @@ Special Actions タブで種別ごとに作成し、プロファイルに有効�
 | P9F1-3 | 2 つ目のインスタンスを起動しても、動いている 1 つ目のインスタンスのログが、アーカイブへ回されない（ログのローテーションを、単一起動の確認の後へ移した。挙動の改善。ユーザー指示） | OK |
 | P9F1-4 | 初回起動の流れ（言語の選択、保存先、デバイス設定） | 未（設定のない環境が要る。起動の流れは変えていない） |
 
+
+## §49 Phase9 9-F F-2（WndProc／IPC の分割）の実機確認（2026-10-23 ユーザー確認。すべて OK）
+
+IPC のクライアント側で、`query` の結果が常に空になる不具合（Phase10-Step4d W3 の dd10cbb で混入）を、84194cd で修正した。
+
+| ID | 内容 | 結果 |
+|---|---|---|
+| P9F2-1 | `-command query.1.profilename`（`verifyA`／`verifyB` が返る。出力は `\| more` で確認） | OK |
+| P9F2-2 | `-command query.1.apprunning`（`True`）、`query.1.outconttype`（`DS4`） | OK |
+| P9F2-3 | `-command loadprofile.1.verifyB`（プロファイルが切り替わる。`query` の値も追従） | OK |
+| P9F2-4 | `-command stop`／`start`／`cycle`（動作する） | OK |
+| P9F2-5 | USB の抜き差し（HandleDeviceChange → HotPlug。再接続で既存のプロファイル `verifyB` を適用、仮想 DS4 を接続・切断し、設定を保存する） | OK |
