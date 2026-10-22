@@ -1,7 +1,7 @@
 # Phase9 9-E E-6（ライフサイクル：接続・切断・開始・停止、デバイス種類ごとの部品化）計画書
 
 作成日: 2026-10-22（改訂: ユーザーの方針「全部切り出す。実機がなくても。カートリッジのように入れ替えられる形にする」を反映）
-状態: **承認済み（2026-10-22。§8）。E-6a 完了（ビルド・テスト・実機確認 OK）。E-6b 以降は段階ごとに進める**
+状態: **完了（2026-10-22）。E-6a〜E-6f2 の全段階で、ビルド・テスト合格、実機確認 OK（機材なしの Joy-Con などは差分テストで担保）。`ControlService.cs` は 2,015 → 1,075 行**
 上位: `Phase9-E-Plan.md`（E-1〜E-5 は完了）、`Phase9-Responsibility-Split-Plan.md`
 
 ## 1. 目的と現状
@@ -110,7 +110,7 @@
 | E-6d Joy-Con の結合（`IJoyConLinker`、`IJoinableDevice`） | **完了（2026-10-22）**。ビルド・テスト合格（偽物のデバイスの差分テスト約 3.3 万通り含む）。実機はなし（台帳 §41 は Joy-Con が手に入ったとき） |
 | E-6e 切断・同期（`IDeviceDisconnectHandler`、`IDeviceSlotHost`） | **完了（2026-10-22）**。ビルド・テスト合格、実機確認 OK（P9E6e-1〜3。E-6f1 の確認で兼ねた） |
 | E-6f1 接続の組み立て（`IDeviceConnector`） | **完了（2026-10-22）**。ビルド・テスト合格、実機確認 OK（P9E6f1-1・2・4） |
-| E-6f2 開始・停止・ホットプラグ（`IServiceLifecycle`） | **実装済み（2026-10-22）**。ビルド・テストはユーザーの実行待ち |
+| E-6f2 開始・停止・ホットプラグ（`IServiceLifecycle`） | **完了（2026-10-22）**。ビルド・テスト合格、実機確認 OK（P9E6f2-1〜5。P9E6f2-6・7 は任意のため未実施） |
 
 ### E-6a の実装メモ
 - 計画（§3.3）では「適用するプロファイル名を返し、`ApplyToSlot` は `ControlService` に残す」としていたが、`MarkConnected`／`SelectedProfile`／`RememberProfile`／Linked の UI 状態／`ApplyToSlot` が**順序つきで連続する一続きの処理**だったため、順序を変えないよう、**`ApplyToSlot` と `PublishSlot` も含めて**まとめて移した。`ControlService` は、適用の成否（`profileLoaded`）を受け取って、仮想パッドの接続以降を続ける。
