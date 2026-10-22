@@ -9,7 +9,8 @@ namespace DS4Windows.Services
     /// 旧 <c>ControlService</c> の OSC 系（受信の解釈 <c>CreateOSCCallback</c>、リスナー／送信側のライフサイクル、<c>SendOsc</c>、<c>OSCPreMappingStep</c>／<c>OSCPostMappingStep</c>、
     /// <c>CompareAndSendChangesToOSC</c>、状態 <c>oscState</c>）を、そのまま移したもの（SharpOSC の型は <see cref="IOscTransportFactory"/> の実装の中に閉じた。送信する値は旧実装と同じ型のまま渡す）。
     /// 値の特性化は <c>Phase9EOscServiceDifferentialTests</c>（旧実装との差分テスト）が守る。
-    /// 現行の癖（計画書 E1〜E5。ユーザー判断 Q3 によりそのまま移した）: 範囲外のコントローラー番号や値は例外になる／リスナーが null のときの停止は <see cref="NullReferenceException"/>。
+    /// 現行の癖: リスナーが null のときの停止は <see cref="NullReferenceException"/>（計画書 E3。呼び出し側が <see cref="HasListener"/> を確かめてから呼ぶ）。
+    /// 範囲外のコントローラー番号・値・不正なメッセージ（計画書 E1・E2）は、旧実装では例外だったが、ユーザー承認により是正した（範囲外の番号は捨てる／値は 0〜255 に丸める／不正なメッセージはログに出して捨てる）。
     /// </summary>
     public sealed class OscService : IOscService
     {
@@ -132,6 +133,36 @@ namespace DS4Windows.Services
                 return;
             }
 
+            // Phase9 9-E E-1 の是正（ユーザー承認）: 不正なメッセージ（アドレスの要素不足、引数の数・型の不一致、NaN など）で、例外を外へ出さない。
+            // 旧実装は、受信スレッドで例外が出ていた（スレッドが落ちて、アプリの異常終了になりうる）。ログに出して捨てる。
+            try
+            {
+                HandleCommand(command, address, arguments);
+            }
+            catch (Exception ex)
+            {
+                AppLogger.LogToGui("Received malformed OSC message: " + address + " (" + ex.GetType().Name + ": " + ex.Message + ")", false);
+            }
+        }
+
+        /// <summary>
+        /// 値（0.0〜255.0 の想定）を 0〜255 の byte にする。範囲外は端に丸める（旧実装は <see cref="OverflowException"/>）。
+        /// 範囲内の値は、旧実装（<c>Convert.ToByte</c>。偶数丸め）と同じ結果になる。NaN は丸められないため <see cref="OverflowException"/>（呼び出し側が捨てる）。
+        /// </summary>
+        private static byte ToByteClamped(float value)
+        {
+            if (float.IsNaN(value))
+            {
+                throw new OverflowException("NaN is not a valid OSC value");
+            }
+
+            if (value >= 255.0f) return 255;
+            if (value <= 0.0f) return 0;
+            return Convert.ToByte(value);
+        }
+
+        private void HandleCommand(string[] command, string address, IList<object> arguments)
+        {
             if (command[1] != "ds4windows")
             {
                 return;
@@ -155,7 +186,8 @@ namespace DS4Windows.Services
                 stateInd = -1;
             }
 
-            if (stateInd == -1)
+            // Phase9 9-E E-1 の是正: 範囲外のコントローラー番号（負、スロット数以上）も不正なアドレスとして捨てる（旧実装は IndexOutOfRangeException）
+            if (stateInd < 0 || stateInd >= _oscState.Length)
             {
                 AppLogger.LogToGui("Received malformed OSC address: " + address, false);
                 return;
@@ -239,16 +271,16 @@ namespace DS4Windows.Services
                 switch (command[4])
                 {
                     case "lx":
-                        _oscState[stateInd].LX = Convert.ToByte(Convert.ToSingle(arguments[0]));
+                        _oscState[stateInd].LX = ToByteClamped(Convert.ToSingle(arguments[0]));
                         break;
                     case "ly":
-                        _oscState[stateInd].LY = Convert.ToByte(Convert.ToSingle(arguments[0]));
+                        _oscState[stateInd].LY = ToByteClamped(Convert.ToSingle(arguments[0]));
                         break;
                     case "rx":
-                        _oscState[stateInd].RX = Convert.ToByte(Convert.ToSingle(arguments[0]));
+                        _oscState[stateInd].RX = ToByteClamped(Convert.ToSingle(arguments[0]));
                         break;
                     case "ry":
-                        _oscState[stateInd].RY = Convert.ToByte(Convert.ToSingle(arguments[0]));
+                        _oscState[stateInd].RY = ToByteClamped(Convert.ToSingle(arguments[0]));
                         break;
                 }
             }
@@ -259,13 +291,18 @@ namespace DS4Windows.Services
 
                 if (command[4] == "left")
                 {
-                    _oscState[stateInd].LX = Convert.ToByte(xValue * 255);
-                    _oscState[stateInd].LY = Convert.ToByte(yValue * 255);
+                    // 先に 2 つとも変換してから代入する（片方だけ更新されるのを避ける）
+                    byte lx = ToByteClamped(xValue * 255);
+                    byte ly = ToByteClamped(yValue * 255);
+                    _oscState[stateInd].LX = lx;
+                    _oscState[stateInd].LY = ly;
                 }
                 else if (command[4] == "right")
                 {
-                    _oscState[stateInd].RX = Convert.ToByte(xValue * 255);
-                    _oscState[stateInd].RY = Convert.ToByte(yValue * 255);
+                    byte rx = ToByteClamped(xValue * 255);
+                    byte ry = ToByteClamped(yValue * 255);
+                    _oscState[stateInd].RX = rx;
+                    _oscState[stateInd].RY = ry;
                 }
             }
             else if (command[3] == "trigger")
@@ -273,10 +310,10 @@ namespace DS4Windows.Services
                 switch (command[4])
                 {
                     case "r2":
-                        _oscState[stateInd].R2 = Convert.ToByte(Convert.ToSingle(arguments[0]));
+                        _oscState[stateInd].R2 = ToByteClamped(Convert.ToSingle(arguments[0]));
                         break;
                     case "l2":
-                        _oscState[stateInd].L2 = Convert.ToByte(Convert.ToSingle(arguments[0]));
+                        _oscState[stateInd].L2 = ToByteClamped(Convert.ToSingle(arguments[0]));
                         break;
                 }
             }

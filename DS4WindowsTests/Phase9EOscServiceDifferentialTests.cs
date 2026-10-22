@@ -11,7 +11,7 @@ namespace DS4WindowsTests
     /// <summary>
     /// Phase9 9-E E-1（Phase9-E-Plan.md）: <see cref="OscService"/> を、旧実装（<c>ControlService</c> の OSC 系を逐語的に写したもの。
     /// 送信は <c>SendOsc(アドレス, 値)</c> に直し、設定の 2 つのフラグはフィールドにした）と<b>突き合わせる差分テスト</b>。
-    /// 受信の解釈（ボタン、スティック、トリガー、バッテリー、監視形式、不正なアドレス、範囲外の例外）、マッピング前後の重ね合わせ、変化の送信（全フィールド）、
+    /// 受信の解釈（ボタン、スティック、トリガー、バッテリー、監視形式、不正なアドレス）、範囲外・不正なメッセージ（旧実装は例外。是正して、捨てる／丸める）、マッピング前後の重ね合わせ、変化の送信（全フィールド）、
     /// リスナー／送信側のライフサイクルを調べる。旧実装の写しは、Phase9 の後のテスト整理まで残す。
     /// </summary>
     public class Phase9EOscServiceDifferentialTests
@@ -535,26 +535,78 @@ namespace DS4WindowsTests
             }
         }
 
-        [Fact]
-        public void HandleMessage_ThrowsTheSameExceptionsAsTheOldImplementation_ForOutOfRangeInput()
+        [Theory]
+        [InlineData("/ds4windows/99/press/cross")]
+        [InlineData("/ds4windows/8/press/cross")]
+        [InlineData("/ds4windows/-2/press/cross")]
+        [InlineData("/ds4windows/monitor/99/cross")]
+        public void HandleMessage_IgnoresAnOutOfRangeControllerNumber(string address)
         {
-            // 現行の癖（計画書 E1・E2。ユーザー判断 Q3 によりそのまま移した）
-            using var f = new Fixture(false, false);
-            var cases = new List<(string, object[])>
-            {
-                ("/ds4windows/99/press/cross", new object[] { 1 }),            // 番号が範囲外
-                ("/ds4windows/0/stick/lx", new object[] { 300f }),            // 値が範囲外（OverflowException）
-                ("/ds4windows/0/trigger/l2", new object[] { -5f }),
-                ("/ds4windows/0/press/cross", new object[0]),                   // 引数がない
-            };
+            // 計画書 E1 の是正（ユーザー承認）: 旧実装は IndexOutOfRangeException。新しい実装は、不正なアドレスとして捨てる（状態は変わらず、送信もしない）
+            using var f = new Fixture(true, true);
 
-            foreach ((string address, object[] args) in cases)
+            Exception ex = Record.Exception(() => f.New.HandleMessage(address, new object[] { 1 }));
+
+            Assert.Null(ex);
+            for (int i = 0; i < ControllerLimits.MaxControllerCount; i++)
             {
-                Exception expected = Record.Exception(() => f.Old.Callback(address, args));
-                Exception actual = Record.Exception(() => f.New.HandleMessage(address, args));
-                Assert.NotNull(expected);
-                Assert.True(actual != null && expected.GetType() == actual.GetType(), $"{address}: 旧={expected?.GetType().Name} 新={actual?.GetType().Name}");
+                Assert.Equal(Describe(new DS4State()), Describe(NewState(f.New, i)));
             }
+
+            Assert.Empty(f.Factory.Sent);
+        }
+
+        [Fact]
+        public void HandleMessage_ClampsOutOfRangeValuesInsteadOfThrowing()
+        {
+            // 計画書 E2 の是正（ユーザー承認）: 旧実装は、値が範囲外（負、256 以上）だと OverflowException。新しい実装は 0〜255 に丸める
+            using var f = new Fixture(false, false);
+
+            f.New.HandleMessage("/ds4windows/0/stick/lx", new object[] { 300f });
+            f.New.HandleMessage("/ds4windows/0/stick/ly", new object[] { -5f });
+            f.New.HandleMessage("/ds4windows/0/trigger/r2", new object[] { 400f });
+            f.New.HandleMessage("/ds4windows/0/trigger/l2", new object[] { -1f });
+            f.New.HandleMessage("/ds4windows/0/stick/left", new object[] { 2.0f, -1.0f });   // 2.0 * 255 = 510 → 255、-1.0 * 255 → 0
+
+            var probe = NewState(f.New, 0);
+            Assert.Equal(255, probe.LX);   // 300 → 255（左のスティックの 2 引数形でも 255 で上書き）
+            Assert.Equal(0, probe.LY);
+            Assert.Equal(255, probe.R2);
+            Assert.Equal(0, probe.L2);
+        }
+
+        [Fact]
+        public void HandleMessage_InRangeValuesAreUnchangedByTheClamp()
+        {
+            // 範囲内（0〜255。丸めで 255.4 など端を含む）は、旧実装と同じ結果になる
+            using var f = new Fixture(false, false);
+            foreach (float value in new[] { 0f, 0.4f, 0.5f, 1.5f, 2.5f, 127.5f, 254.5f, 254.6f, 255f, 255.4f })
+            {
+                f.Old.Callback("/ds4windows/1/stick/rx", new object[] { value });
+                f.New.HandleMessage("/ds4windows/1/stick/rx", new object[] { value });
+                AssertSame(f, $"value={value:R}");
+            }
+        }
+
+        [Theory]
+        [InlineData("/ds4windows/0/press/cross", new object[0])]                          // 引数がない
+        [InlineData("/ds4windows/0/press/cross", new object[] { "abc" })]                 // 数値でない引数
+        [InlineData("/ds4windows/0/stick/lx", new object[] { float.NaN })]                // NaN
+        [InlineData("/ds4windows/0/stick/left", new object[] { float.NaN, 0.5f })]        // 片方が NaN
+        [InlineData("/ds4windows/0/trigger/l2", new object[0])]
+        [InlineData("/ds4windows/0", new object[] { 1 })]                                 // アドレスの要素が足りない
+        [InlineData("/ds4windows", new object[] { 1 })]
+        [InlineData("x", new object[] { 1 })]
+        public void HandleMessage_MalformedMessages_DoNotThrowAndChangeNothing(string address, object[] args)
+        {
+            // 計画書 E2 の是正: 旧実装は ArgumentOutOfRangeException／FormatException／OverflowException／IndexOutOfRangeException などを外へ出していた
+            using var f = new Fixture(false, false);
+
+            Exception ex = Record.Exception(() => f.New.HandleMessage(address, args));
+
+            Assert.Null(ex);
+            Assert.Equal(Describe(new DS4State()), Describe(NewState(f.New, 0)));   // 2 引数形の片方が不正でも、片方だけは更新されない
+            Assert.Empty(f.Factory.Sent);
         }
 
         [Fact]

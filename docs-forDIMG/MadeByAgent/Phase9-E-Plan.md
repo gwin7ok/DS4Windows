@@ -53,8 +53,8 @@ E-2・E-3 は、E-1 の結果を見てから、**この計画書に設計を追�
 
 | # | 内容 | 扱い |
 |---|---|---|
-| E1 | OSC の受信で、コントローラー番号（`command[2]`）が範囲外（負、8 以上）だと、`oscState[stateInd]` で `IndexOutOfRangeException` になる（`int.TryParse` が成功し、範囲を確かめていない）。`UDPListener` のスレッド内で発生し、握りつぶされるか、アプリの異常終了になりうる | そのまま移す。差分テストで「同じ例外」を固定。是正は Q3 で判断 |
-| E2 | 受信した値の変換（`Convert.ToByte(Convert.ToSingle(...))`）は、範囲外（256 以上、負）で `OverflowException` になる。引数の数が足りないと `ArgumentOutOfRangeException` | 同上 |
+| E1 | **〔是正済み。ユーザー承認、2026-10-22〕** OSC の受信で、コントローラー番号（`command[2]`）が範囲外（負、8 以上）だと、`oscState[stateInd]` で `IndexOutOfRangeException` になる（`int.TryParse` が成功し、範囲を確かめていない）。`UDPListener` のスレッド内で発生し、握りつぶされるか、アプリの異常終了になりうる | 範囲外（負、スロット数以上）のコントローラー番号は、`Received malformed OSC address` のログを出して捨てる（`IndexOutOfRangeException` にならない） |
+| E2 | **〔是正済み。ユーザー承認、2026-10-22〕** 受信した値の変換（`Convert.ToByte(Convert.ToSingle(...))`）は、範囲外（256 以上、負）で `OverflowException` になる。引数の数が足りないと `ArgumentOutOfRangeException` | 値は 0〜255 に丸める（範囲内は旧実装と同じ結果）。引数の不足・型の不一致・NaN・アドレスの要素不足などの不正なメッセージは、`Received malformed OSC message: …` のログを出して捨てる（例外を外へ出さない）。2 引数のスティック（`left`／`right`）は、2 つとも変換してから代入する（片方だけ更新されない） |
 | E3 | `ChangeOSCListenerStatus(false)` は、リスナーが null だと `NullReferenceException`（呼び出し側が `oscListener != null` を確かめてから呼ぶ前提） | そのまま移す（呼び出し側の条件も移す） |
 | E4 | `OSCPreMappingStep` は、引数の入力状態 `cState` を直接書き換える（重ね合わせ） | そのまま移す |
 | E5 | OSC の送信は、`UseOscSender` が true のときだけ呼ばれる（`ControlService` 内の条件）。条件の置き場が複数ある（`On_Report`、`On_DS4Removal`、`HotPlug`） | 条件の置き場は変えず、呼び出しだけを `IOscService` へ替える |
@@ -105,3 +105,16 @@ E-2・E-3 は、E-1 の結果を見てから、**この計画書に設計を追�
 | テスト（追従） | `ControlServiceOscSenderRaceTests`（検査の対象を `OscService` に） |
 
 **実機確認（依頼。実装後）**: 台帳 §33（P9E-1〜3）。
+
+## 10. E1・E2 の是正（2026-10-22。ユーザー承認。ビルド・テストはユーザーの実行待ち）
+
+**何が起きていたか**: OSC は、外部のツール（VRChat など）から、UDP で「コントローラー 0 の cross を押した」のようなメッセージを受ける機能。受信は専用のスレッドで動く。旧実装は、次のような**外部から届く不正なメッセージ**で、例外が出ていた（例外は受信スレッドの中で起きるため、握りつぶされるか、最悪はアプリの異常終了になる）:
+
+| 届くメッセージ | 旧実装 | 新しい実装 |
+|---|---|---|
+| コントローラー番号が範囲外（`/ds4windows/99/press/cross`、`-2`） | `IndexOutOfRangeException` | ログを出して捨てる |
+| 値が範囲外（スティック `300`、負、トリガー `400`） | `OverflowException` | 0〜255 に丸める |
+| 引数がない・数値でない・NaN | `ArgumentOutOfRangeException`／`FormatException`／`OverflowException` | ログを出して捨てる |
+| アドレスの要素が足りない（`/ds4windows/0`） | `IndexOutOfRangeException` | ログを出して捨てる |
+
+**挙動の変更**: 正しいメッセージの結果は変わらない（差分テストで確認）。不正なメッセージが「例外」から「無視（ログあり）」または「端に丸める」に変わる。

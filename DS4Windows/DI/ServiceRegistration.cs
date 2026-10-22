@@ -258,7 +258,8 @@ namespace DS4Windows.DI
                     // Phase7-Step8 W1: 保持クラスをコンストラクターで受ける（旧: ControlService／Mouse が Shared を参照）
                     sp.GetRequiredService<StickMotionState>(),
                     sp.GetRequiredService<SyntheticInputState>(),
-                    sp.GetRequiredService<IMapping>()
+                    sp.GetRequiredService<IMapping>(),
+                    sp.GetRequiredService<IOscService>()   // Phase9 9-E E-1
                 );
             });
             services.AddSingleton<IDeviceStateAccessor>(sp => sp.GetRequiredService<ControlService>());
