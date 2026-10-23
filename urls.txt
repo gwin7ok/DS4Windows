@@ -1381,6 +1381,8 @@ https://raw.githubusercontent.com/gwin7ok/DS4Windows/refs/heads/master/doc/dev/p
 https://raw.githubusercontent.com/gwin7ok/DS4Windows/refs/heads/master/doc/moonlight_support.md
 https://raw.githubusercontent.com/gwin7ok/DS4Windows/refs/heads/master/doc/test-plans/special-action-save.md
 https://raw.githubusercontent.com/gwin7ok/DS4Windows/refs/heads/master/docs-forDIMG/DI-App-Wide-Migration-Plan.md
+https://raw.githubusercontent.com/gwin7ok/DS4Windows/refs/heads/master/docs-forDIMG/FurtherImprovements/01_DS4Windows_Architecture_Analysis_Report.md
+https://raw.githubusercontent.com/gwin7ok/DS4Windows/refs/heads/master/docs-forDIMG/FurtherImprovements/02_DS4Windows_Refactoring_Design_Proposal.md
 https://raw.githubusercontent.com/gwin7ok/DS4Windows/refs/heads/master/docs-forDIMG/MadeByAgent/AutoProfile-NoController-Investigation.md
 https://raw.githubusercontent.com/gwin7ok/DS4Windows/refs/heads/master/docs-forDIMG/MadeByAgent/K7b1-Investigation.md
 https://raw.githubusercontent.com/gwin7ok/DS4Windows/refs/heads/master/docs-forDIMG/MadeByAgent/Notification-Legacy-Path-Cleanup-Report.md
