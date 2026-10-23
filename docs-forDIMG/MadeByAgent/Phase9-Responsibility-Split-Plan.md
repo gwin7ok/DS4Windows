@@ -5,6 +5,7 @@
 上位計画書: `docs-forDIMG/DI-App-Wide-Migration-Plan.md`（本書を Phase9 として追加する）  
 関連: `Phase8-Unified-Trigger-Dispatch-Plan.md`（2026-10-19 追記［実行順序の改訂］）、`docs-forDIMG/Model-Diagram/01-Component-Dependency-Diagram.md` §2（解体の検証マトリクス）  
 状態: **計画確定（Q1〜Q6 を推奨どおり承認、2026-10-19）。Phase8・Phase10 は完了。Phase9-0 を 2026-10-22 に実施。9-A(1)・9-A(2) は完了し、ステアリング＋vJoy の削除も W1〜W5 を実施済み（W2〜W4 は実機確認待ち）。`Mapping.cs` は実測 2,568 行（§11）。次の候補は 9-B（設計を説明し、承認を得てから着手）**  **［2026-10-22 見直し］9-A・9-B・9-C・9-E（E-1〜E-6f2）は完了（ビルド・テスト・実機確認 OK。機材なしの項目は差分テストで担保）。残りは §12。**
+**【2026-10-23 更新】9-A〜9-F・MapCustom・9-I は完了。9-G は先送り、9-H は条件待ち。結果は `Phase9-Completion-Report.md`、先送りは `Phase9-Deferred-Ledger.md`。**
 
 ---
 
