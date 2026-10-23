@@ -4,6 +4,12 @@ All notable changes to this project are recorded in this file.
 
 ## [Unreleased]
 
+### Added
+- Macros: a new Execute Mode, "Repeat (Toggle)". Press the trigger once to start repeating the macro (it keeps repeating after you release), and press again to stop (the macro in progress finishes its current run). Available for Special Actions and for Controls macros. "Run on trigger release" cannot be combined with it.
+
+### Changed
+- The macro Execute Mode is now saved as its own setting (`MacroExecuteMode` in Actions.xml and in the profile) instead of inside the Extras / KeyType text. Profiles and Actions.xml saved by earlier versions are still read correctly. Profiles saved by this version cannot be read correctly by earlier versions (a repeating macro plays once there).
+
 ## [4.1.0] - 2026-10-23
 
 ### Changed

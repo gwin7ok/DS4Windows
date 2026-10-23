@@ -779,3 +779,17 @@ IPC のクライアント側で、`query` の結果が常に空になる不具�
 | R6-1 | マウスホイール: Windows の設定が「1 画面ずつ」のとき、1 ノッチで 1 ページ。「行数」のときは数行ずつ | OK |
 | R5-1 | SA の組み合わせ（L2 + ボタン）、SA のスティック、Controls の L2（デジタルな出力）: 閾値なし（L2 は 0 超、スティックは少しでも傾いたら）で成立。デッドゾーンの内側では出ない | OK |
 | R5-2 | アナログ: SA の L2 単体 → RT、Controls の L2 → RT は押し込みに比例。SA の複数トリガー → RT は固定の強さ | OK |
+
+## §51 R-2 マクロの Execute Mode「Repeat (Toggle)」（2026-10-23 実装。実機確認待ち）
+
+計画: `R2-MacroToggleRepeat-Plan.md`、[Issue #1](https://github.com/gwin7ok/DS4Windows/issues/1)。単体・結合テストは合格（W1〜W4）。以下は、実機（画面・実際のキー入力）での確認。
+
+| ID | 内容 | 結果 |
+|---|---|---|
+| R2-1 | SA の Macro: Execute Mode に「Repeat (Toggle)」が出る。選んで保存 → トリガーを 1 回押す → 繰り返しが始まり、離しても続く。もう 1 回押す → 止まる（実行中の 1 回分は最後まで再生してから） | |
+| R2-2 | Controls の Macro（Record a macro → Execute Mode）: 同上 | |
+| R2-3 | Repeat (Toggle) を選ぶと、SA の「Run on trigger release」のチェックが外れ、無効になる。ほかのモードに戻すと、有効に戻る | |
+| R2-4 | 繰り返しの最中に、プロファイルを切り替える／コントローラーを切断する → 止まる。再接続（再適用）後、1 回押して始まる（反転が逆にならない） | |
+| R2-5 | プロファイル・SA を保存し、アプリを再起動しても、モードが Repeat (Toggle) のまま。Actions.xml に `<MacroExecuteMode>Toggle</MacroExecuteMode>`、プロファイルの `Control/MacroExecuteMode` に `Toggle` がある（任意） | |
+| R2-6 | 既存のマクロ（Play Once／Repeat While Held）が、従来どおり動く。4.1.0 までに保存したプロファイル・Actions.xml の「Repeat While Held」が、そのまま Repeat While Held として読める（保存し直すと `MacroExecuteMode` が `Held` になる） | |
+| R2-7 | 素早く連打しても、重なって二重に実行されない。マクロ編集のために SA を保存（編集画面の保存）すると、繰り返しが止まる | |

@@ -457,6 +457,7 @@ classDiagram
     class SharpOscTransportFactory
     class MacroStepExecutor
     class MacroPlayback
+    class MacroExecuteModes
     class ButtonMouseMovementCalculator
     class MouseMotionQuantizer
     class GyroMouseStickBlender
@@ -553,6 +554,9 @@ classDiagram
     IMacroPlayback <|.. MacroPlayback : implements
     Mapping --> IMacroPlayback : ctor injection (Phase9 9-C)
     MacroPlayback --> IMacroStepExecutor
+    %% R-2: マクロの Execute Mode（Once／Held／Toggle）。保存は独立した設定項目 MacroExecuteMode（SA の Actions.xml、Controls のプロファイル）、実行時は DS4KeyType の RepeatMacro／RepeatLatchMacro。変換は MacroExecuteModes（静的）。MacroAction が Toggle の立ち上がりで IsToggledOn を反転し、MacroPlayback が IsToggledOn の間繰り返す
+    SpecialActionsXmlSerializer ..> MacroExecuteModes : R-2 convert
+    MacroPlayback ..> MacroExecuteModes : R-2 (flag check)
     MacroPlayback --> MacroRuntimeState : TaskQueue（デバイスごと）
     MacroStepExecutor --> MacroRuntimeState : MacroControl／MacroCount（デバイスごと。Phase9 9-C Q2）
     Mapping --> IButtonMouseMovementCalculator : ctor injection (Phase9 9-B。加速の状態はデバイスごと)
