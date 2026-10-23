@@ -48,6 +48,6 @@ using static DS4Windows.Util;
 namespace DS4Windows
 {
     [Flags]
-    public enum DS4KeyType : byte { None = 0, ScanCode = 1, Toggle = 2, Unbound = 4, Macro = 8, RepeatMacro = 32 }; // Increment by exponents of 2*, starting at 2^0。値 16（旧 HoldMacro）は欠番（Phase8-Fix-MacroRepeatUnify で RepeatMacro に統合。保存はビット値ではなく名前）
+    public enum DS4KeyType : byte { None = 0, ScanCode = 1, Toggle = 2, Unbound = 4, Macro = 8, RepeatMacro = 32, RepeatLatchMacro = 64 }; // Increment by exponents of 2*, starting at 2^0。値 16（旧 HoldMacro）は欠番（Phase8-Fix-MacroRepeatUnify で RepeatMacro に統合。保存はビット値ではなく名前）。RepeatLatchMacro（R-2）は、マクロの「繰り返しをトグルする」Execute Mode の実行時の表現で、保存には書かない（保存は MacroExecuteMode の設定項目。R2-MacroToggleRepeat-Plan.md §3.1）
 }
 
