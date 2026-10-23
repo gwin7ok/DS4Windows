@@ -139,7 +139,8 @@
                 "-c",
                 "Debug",
                 "/p:platform=x64",
-                "--no-dependencies"
+                "--no-dependencies",
+                "-clp:NoSummary"
             ],
             "group": "build",
             "presentation": {
@@ -156,7 +157,8 @@
                 "-c",
                 "Debug",
                 "/p:platform=x64",
-                "--no-dependencies"
+                "--no-dependencies",
+                "-clp:NoSummary"
             ],
             "group": "build",
             "presentation": {
