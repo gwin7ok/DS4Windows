@@ -231,14 +231,18 @@ namespace DS4WindowsTests
         // そのため、Key では、閾値に達する前の Controls の出力はなくなった（閾値までは、どちらも成立しない）。アナログな出力（パッドの軸）は従来の判定のまま
 
         [Fact]
-        public void R6_AnalogTrigger_ControlsKeyAndTheSpecialActionShareTheThreshold()
+        public void R6_AnalogTrigger_TheSpecialActionHasNoThreshold_ControlsKeyKeepsTheThreshold()
         {
             using var t = new Rig();
             t.MapKey(DS4Controls.L2, ControlsKeyL2);
             SpecialAction sa = t.AddKey("L2");
 
-            t.Run(Nothing, l2: 50);   // 100 以下。Controls の Key も、SA も成立しない
+            t.Run(Nothing, l2: 0);
             Assert.False(t.Triggered(sa));
+
+            // R-5（2026-10-23）: SA は、閾値なし（0 を超えれば成立）。Controls の Key は、従来どおり閾値（100 超）で、成立せず、SA が優先する
+            t.Run(Nothing, l2: 50);
+            Assert.True(t.Triggered(sa));
             Assert.False(t.ControlsDispatched(DS4Controls.L2, ControlsKeyL2));
 
             t.Run(Nothing, l2: 200);  // 閾値を超えて成立。SA が優先し、Controls の Key は出ない
