@@ -12,7 +12,7 @@ All notable changes to this project are recorded in this file.
 ### Changed
 - The macro Execute Mode is now saved as its own setting (`MacroExecuteMode` in Actions.xml and in the profile) instead of inside the Extras / KeyType text. Profiles and Actions.xml saved by earlier versions are still read correctly. Profiles saved by this version cannot be read correctly by earlier versions (a repeating macro plays once there).
 
-ビルドリリース)## [4.1.0] - 2026-10-23
+## [4.1.0] - 2026-10-23
 
 ### Changed
 - The project moved to https://github.com/gwin7ok/DS4Windows (formerly gwin7ok/DS4Windows-Vader4Pro). From this version on, update checks, the release page links and the updater use the new repository. Updating from 4.0.1 or earlier to this version works as usual (the old repository only delivers this release). The README and the introduction guide point to the new location.

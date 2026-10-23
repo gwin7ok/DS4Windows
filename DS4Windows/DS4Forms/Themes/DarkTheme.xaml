@@ -64,6 +64,12 @@
     <SolidColorBrush x:Key="AccentColor"
                      Color="#FF2563EB"/>
 
+    <SolidColorBrush x:Key="ControllerCanvasBackground"
+                     Color="#FF32323A"/>
+    <!-- Select action画面: ダークモード時は上品なグレーのパネルにする -->
+    <SolidColorBrush x:Key="BindingCanvasBackground"
+            Color="#FF32323A"/>
+
     <system:String x:Key="KeyImageImg">key-solid_white.png</system:String>
     <system:String x:Key="CancelImg">cancel_white.png</system:String>
     <system:String x:Key="CheckedImg">checked_white.png</system:String>
@@ -72,7 +78,7 @@
     <system:String x:Key="KeyUpImg">keyup_white.png</system:String>
     <system:String x:Key="KeyDownImg">keydown_white.png</system:String>
     <system:String x:Key="ClockImg">clock_white.png</system:String>
-    <system:String x:Key="DS4ConfigImg">DS4 Config_white.png</system:String>
+    <system:String x:Key="DS4ConfigImg">DS4 Config.png</system:String>
 
     <system:String x:Key="CopyImg">copy_white.png</system:String>
     <system:String x:Key="DeleteImg">delete_white.png</system:String>
@@ -1082,6 +1088,10 @@
     <!-- ListViewItem style -->
     <Style x:Key="ListViewItemStyle"
            TargetType="{x:Type ListViewItem}">
+        <!-- ▼▼▼ ここを追加（ベースの背景色を指定） ▼▼▼ -->
+        <Setter Property="Background"
+                Value="{StaticResource BackgroundColor}"/>
+        <!-- ▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲ -->
         <Setter Property="BorderThickness"
                 Value="1"/>
         <Setter Property="Padding"
@@ -1098,6 +1108,14 @@
                                               SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}"/>
                     </Grid>
                     <ControlTemplate.Triggers>
+                        <!-- ▼▼▼ 奇数行(0)を BackgroundColor に確実に固定 ▼▼▼ -->
+                        <Trigger Property="ItemsControl.AlternationIndex"
+                                 Value="0">
+                            <Setter TargetName="innerBorder"
+                                    Property="Background"
+                                    Value="{StaticResource BackgroundColor}"/>
+                        </Trigger>
+                        <!-- ▼▼▼ 偶数行(1)を AltRowColor に設定 ▼▼▼ -->
                         <Trigger Property="ItemsControl.AlternationIndex"
                                  Value="1">
                             <Setter TargetName="innerBorder"
