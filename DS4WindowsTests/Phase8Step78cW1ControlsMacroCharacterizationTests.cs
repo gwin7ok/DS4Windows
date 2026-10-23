@@ -127,6 +127,7 @@ namespace DS4WindowsTests
             // R-5（ユーザー決定 2026-10-23）: デジタルな出力は閾値なし。中心から少しでも傾けば押下（以前は、SA と同じ幅 55）
             DS4State slightlyLeft = ControlsKeyTestScope.Neutral();
             slightlyLeft.LX = 100;   // 128 − 100 ＝ 28
+            RunFor(t, ControlsKeyTestScope.Neutral(), 150);   // Fresh-press ガード（離して 80ms 続くまで実行しない）を先に満たす
             RunFor(t, slightlyLeft, 300);
             WaitForPresses(t, 1);
             Assert.True(Presses(t) >= 1);
@@ -142,6 +143,7 @@ namespace DS4WindowsTests
             // R-5（ユーザー決定 2026-10-23）: デジタルな出力は閾値なし（以前は 100 を超えるまで不成立）
             DS4State at1 = ControlsKeyTestScope.Neutral();
             at1.L2 = 1;
+            RunFor(t, ControlsKeyTestScope.Neutral(), 150);   // Fresh-press ガード（離して 80ms 続くまで実行しない）を先に満たす
             RunFor(t, at1, 300);
             WaitForPresses(t, 1);
             Assert.True(Presses(t) >= 1);

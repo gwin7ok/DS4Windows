@@ -260,9 +260,15 @@ namespace DS4WindowsTests
             var frame = new RecordingFrame();
             var context = new AnalogContext(frame, new AnalogInput { Value = 51 });
 
-            Action("L2", X360Controls.RT, 100, toggle: true).ApplyFrame(context, active: true, risingEdge: true);
+            // Toggle が ON の状態（立ち上がりの Fresh-press ガードを経た後）を、管理役に直接作る。ON の間は、トリガーを離していても出力し続ける
+            var sa = new SpecialAction("analog", "L2", "Button", ((int)X360Controls.RT).ToString());
+            IManagedActionManager manager = TestHost.GetService<IManagedActionManager>();
+            var action = new ButtonOutputAction(sa, new ButtonBindingValues(true, X360Controls.RT, true, 100), manager);
+            manager.SetToggledOn(sa, 0, true);
 
-            Assert.Equal(255, Assert.Single(frame.TriggerValues));
+            action.ApplyFrame(context, active: false, risingEdge: false);
+
+            Assert.Equal(255, Assert.Single(frame.TriggerValues));   // 入力の値（51）ではなく、強さの固定値
         }
     }
 }
