@@ -30,14 +30,14 @@ namespace DS4WindowsTests
             Assert.Matches(@"^[^/\s]+/[^/\s]+$", repo);
             Assert.Matches(@"^[^/\s]+/[^/\s]+$", ReleaseSource.UpdaterRepository);
 
-            Assert.Equal("https://github.com/" + repo, ReleaseSource.RepositoryPageUri);
-            Assert.Equal("https://api.github.com/repos/" + repo + "/releases", ReleaseSource.ReleasesApiUri);
-            Assert.Equal("https://api.github.com/repos/" + repo + "/releases/latest", ReleaseSource.LatestReleaseApiUri);
-            Assert.Equal("https://github.com/" + repo + "/releases/latest", ReleaseSource.LatestReleasePageUri);
+            Assert.Equal(ReleaseSource.RepositoryPageUri, "https://github.com/" + repo);
+            Assert.Equal(ReleaseSource.ReleasesApiUri, "https://api.github.com/repos/" + repo + "/releases");
+            Assert.Equal(ReleaseSource.LatestReleaseApiUri, "https://api.github.com/repos/" + repo + "/releases/latest");
+            Assert.Equal(ReleaseSource.LatestReleasePageUri, "https://github.com/" + repo + "/releases/latest");
             Assert.StartsWith(ReleaseSource.RepositoryPageUri + "/", ReleaseSource.ContributorsPageUri);
             Assert.StartsWith(ReleaseSource.RepositoryPageUri + "/", ReleaseSource.MoonlightDocPageUri);
-            Assert.Equal("https://api.github.com/repos/" + ReleaseSource.UpdaterRepository + "/releases/latest",
-                ReleaseSource.UpdaterLatestReleaseApiUri);
+            Assert.Equal(ReleaseSource.UpdaterLatestReleaseApiUri,
+                "https://api.github.com/repos/" + ReleaseSource.UpdaterRepository + "/releases/latest");
         }
 
         [Fact]
