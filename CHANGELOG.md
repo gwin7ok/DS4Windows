@@ -4,6 +4,10 @@ All notable changes to this project are recorded in this file.
 
 ## [Unreleased]
 
+### Changed
+- The project moved to https://github.com/gwin7ok/DS4Windows (formerly gwin7ok/DS4Windows-Vader4Pro). From this version on, update checks, the release page links and the updater use the new repository. Updating from 4.0.1 or earlier to this version works as usual (the old repository only delivers this release). The README and the introduction guide point to the new location.
+- DS4Windows now tells DS4Updater which repository to update from (`--ds4windows-repo`), so an older DS4Updater that is already installed no longer looks at the old repository.
+
 ## [4.0.1] - 2026-10-23
 
 ### Changed

@@ -5,6 +5,7 @@ namespace DS4WinWPF
     /// 以前は、<c>Changelog</c>（API の URL）と <c>UpdaterWindow</c>（ページの URL 5 か所、DS4Updater のリポジトリ）に、リポジトリ名が散らばっていた。
     /// コンパイル時の定数だけを持つ（状態を持たない）。リポジトリを移すときは、ここだけを書き換える。
     /// <para>
+    /// 4.0.2 でリポジトリを gwin7ok/DS4Windows-Vader4Pro から gwin7ok/DS4Windows（祖父 schmaldeo/DS4Windows からのフォーク）へ移した（この値が橋渡しの版）。
     /// 移行の方針（リポジトリを祖父から新たにフォークし直す場合）: すでに配布した古いバージョンは、旧リポジトリの URL を埋め込んでいるため変えられない。
     /// そのため、<b>旧リポジトリに、新しいリポジトリの URL をここへ埋め込んだ「橋渡し」のバージョンを Release として出す</b>。
     /// 古いバージョンのユーザーは、いつもの更新チェックでそれを見つけて更新し、以降は新しいリポジトリを見る。旧リポジトリは、橋渡しが行き渡るまで残す
@@ -14,7 +15,7 @@ namespace DS4WinWPF
     public static class ReleaseSource
     {
         /// <summary>DS4Windows 本体のリポジトリ（<c>所有者/名前</c>）。</summary>
-        public const string Repository = "gwin7ok/DS4Windows-Vader4Pro";
+        public const string Repository = "gwin7ok/DS4Windows";
 
         /// <summary>DS4Updater のリポジトリ（<c>所有者/名前</c>）。DS4Windows 本体のリポジトリとは別に移せる。</summary>
         public const string UpdaterRepository = "gwin7ok/DS4Updater";

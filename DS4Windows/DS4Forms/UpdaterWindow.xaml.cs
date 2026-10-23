@@ -103,7 +103,7 @@ namespace DS4WinWPF.DS4Forms
                     var psi = new System.Diagnostics.ProcessStartInfo(ds4UpdaterExe)
                     {
                         UseShellExecute = false,
-                        Arguments = $"--ds4windows-path \"{ds4WindowsDir}\" --ds4updater-path \"{ds4UpdaterDir}\" -autolaunch --launchExe \"{ds4WindowsExe}\" --launch-mode={launchMode}"
+                        Arguments = DS4WinWPF.UpdaterLaunchArguments.Build(ds4WindowsDir, ds4UpdaterDir, ds4WindowsExe, launchMode)
                     };
 
                     var proc = System.Diagnostics.Process.Start(psi);
@@ -243,7 +243,7 @@ namespace DS4WinWPF.DS4Forms
                                     var psi2 = new System.Diagnostics.ProcessStartInfo(System.IO.Path.Combine(ds4UpdaterDir, "DS4Updater.exe"))
                                     {
                                         UseShellExecute = false,
-                                        Arguments = $"--ds4windows-path \"{ds4WindowsDir}\" --ds4updater-path \"{ds4UpdaterDir}\" -autolaunch --launchExe \"{ds4WindowsExe}\" --launch-mode={launchMode2}"
+                                        Arguments = DS4WinWPF.UpdaterLaunchArguments.Build(ds4WindowsDir, ds4UpdaterDir, ds4WindowsExe, launchMode2)
                                     };
                                     AppLogger.LogDebug($"[UpdaterInstall] ProcessStartInfo (elevated launch): FileName={psi2.FileName} Arguments={psi2.Arguments} UseShellExecute={psi2.UseShellExecute} Verb={psi2.Verb} WorkingDirectory={psi2.WorkingDirectory}");
                                     var proc2 = System.Diagnostics.Process.Start(psi2);
@@ -291,7 +291,7 @@ namespace DS4WinWPF.DS4Forms
                             var psi2 = new System.Diagnostics.ProcessStartInfo(System.IO.Path.Combine(ds4UpdaterDir, "DS4Updater.exe"))
                             {
                                 UseShellExecute = false,
-                                Arguments = $"--ds4windows-path \"{ds4WindowsDir}\" --ds4updater-path \"{ds4UpdaterDir}\" -autolaunch --launchExe \"{ds4WindowsExe}\""
+                                Arguments = DS4WinWPF.UpdaterLaunchArguments.Build(ds4WindowsDir, ds4UpdaterDir, ds4WindowsExe)
                             };
                             AppLogger.LogDebug($"[UpdaterInstall] ProcessStartInfo (non-elevated launch): FileName={psi2.FileName} Arguments={psi2.Arguments} UseShellExecute={psi2.UseShellExecute} Verb={psi2.Verb} WorkingDirectory={psi2.WorkingDirectory}");
                             var proc2 = System.Diagnostics.Process.Start(psi2);

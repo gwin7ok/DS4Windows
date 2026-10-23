@@ -221,12 +221,12 @@ DS4Updater.exe 起動引数一覧と DS4Windows 側の設定
  - DS4Windows は通常、`--ci` を渡さず GUI モードで Updater を起動します。CI 用の挙動をテストする場合は明示的に `--ci` を付与してください。
 
 互換性と運用ノート
- - `--ds4updater-repo` / `--ds4windows-repo` は開発／テスト用のオーバーライド引数です。本番運用では指定しない運用が標準です。
+ - `--ds4updater-repo` は開発／テスト用のオーバーライド引数です。`--ds4windows-repo` は、DS4Windows 4.0.2 以降が常に渡します（リポジトリの移行後も、古い DS4Updater が正しい取得先を使うため）。
  - 昇格フローで渡す `--complete-install` 系引数は一時ファイルのパスやターゲットパスを明示することになり、ログに出力する際は秘密情報（ユーザーのホームディレクトリなど）を不用意に晒さないよう取り扱いに注意してください。
   - 説明: Updater のリポジトリをオーバーライドする開発／テスト用引数。通常は渡しません（デフォルト: `gwin7ok/DS4Updater`）。
 
 - `--ds4windows-repo "<owner/repo>"`（任意）
-  - 説明: DS4Windows のリポジトリをオーバーライドする引数。通常は渡しません（デフォルト: `gwin7ok/DS4Windows-Vader4Pro`）。開発／テスト目的でリリース参照先を差し替える場合に使用します。
+  - 説明: DS4Windows のリポジトリを指定する引数（GitHub の URL。例: `https://github.com/gwin7ok/DS4Windows`）。**DS4Windows 4.0.2 以降は、常に渡します**（値は `ReleaseSource.RepositoryPageUri`。`UpdaterLaunchArguments` が組み立てる）。DS4Updater の既定値は、引数がないときだけ使われます（古い DS4Updater では、移行前の `gwin7ok/DS4Windows-Vader4Pro`）。
 
 実装に合わせた補足:
 - DS4Windows は Updater を起動する際に起動ヘルパー（`StartProcessDetached` 相当）を使用します。ヘルパーは起動対象が DS4Windows の再起動を伴う場合に既存プロセスを検出し、重複起動を抑止する前処理を行います。

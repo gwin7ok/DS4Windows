@@ -5,7 +5,7 @@ setlocal enabledelayedexpansion
 set INSTALL_PATH=%LOCALAPPDATA%\DS4Windows
 
 :: GitHub repository that provides the releases (owner/name). Change only this line when the repository moves.
-set REPO=gwin7ok/DS4Windows-Vader4Pro
+set REPO=gwin7ok/DS4Windows
 
 :: Prompt for version choice
 set /p VERSION_CHOICE="Do you want to install the latest version? (y/n): "
