@@ -69,6 +69,11 @@ namespace DS4Windows
             out uint lpNumberOfBytesTransferred,
             uint dwMilliseconds,
             bool bAlertable);
+
+        [DllImport("kernel32.dll", SetLastError = true)]
+        private static extern unsafe bool CancelIoEx(
+            SafeFileHandle hFile,
+            NativeOverlapped* lpOverlapped);
         #endregion
 
         private readonly string _description;
@@ -211,6 +216,9 @@ namespace DS4Windows
             }
         }
 
+        // K7b-1: 非同期 I/O が完了するまで、バッファ（fixed）・NativeOverlapped（スタック）・イベントを有効に保つ。
+        // 以前は fixed が ReadFile の呼び出しの直後に終わり、保留中の読み取りの間にバッファが固定されていなかった（GC が配列を移動すると、
+        // カーネルが古い位置へ書き込み、ヒープを壊す）。また、待ちが失敗・タイムアウトした場合は、I/O が保留のまま ov とイベントが破棄された。
         public unsafe ReadStatus ReadFile(Span<byte> inputBuffer, uint timeout = uint.MaxValue)
         {
             SafeReadHandle ??= OpenHandle(_devicePath, true, false);
@@ -223,14 +231,17 @@ namespace DS4Windows
             {
                 if (ReadFile(SafeReadHandle, pBuffer, (uint)inputBuffer.Length, null, &ov))
                     return ReadStatus.Success;
-            }
 
-            if (Marshal.GetLastWin32Error() != ERROR_IO_PENDING) return ReadStatus.ReadError;
+                if (Marshal.GetLastWin32Error() != ERROR_IO_PENDING) return ReadStatus.ReadError;
 
-            if (!GetOverlappedResultEx(SafeReadHandle, ov, out _, timeout, true))
+                if (GetOverlappedResultEx(SafeReadHandle, ov, out _, timeout, true))
+                    return ReadStatus.Success;
+
+                // 待ちが失敗・タイムアウトした。I/O が保留のままなら、取り消して、完了するまで待つ（バッファ・ov・イベントを有効に保つため）
+                CancelIoEx(SafeReadHandle, &ov);
+                GetOverlappedResult(SafeReadHandle, ov, out _, true);
                 return ReadStatus.ReadError;
-
-            return ReadStatus.Success;
+            }
         }
 
         public bool WriteOutputReportViaControl(byte[] outputBuffer)
@@ -246,18 +257,21 @@ namespace DS4Windows
             using AutoResetEvent wait = new(false);
             var ov = new NativeOverlapped { EventHandle = wait.SafeWaitHandle.DangerousGetHandle() };
 
+            // K7b-1: ReadFile と同じく、書き込みが完了するまで、バッファの固定を保つ
             fixed (byte* pBuffer = outputBuffer)
             {
                 if (WriteFile(SafeReadHandle, pBuffer, (uint)outputBuffer.Length, null, &ov))
                     return true;
-            }
 
-            if (Marshal.GetLastWin32Error() != ERROR_IO_PENDING) return false;
+                if (Marshal.GetLastWin32Error() != ERROR_IO_PENDING) return false;
 
-            if (!GetOverlappedResult(SafeReadHandle, ov, out _, true))
+                if (GetOverlappedResult(SafeReadHandle, ov, out _, true))
+                    return true;
+
+                CancelIoEx(SafeReadHandle, &ov);
+                GetOverlappedResult(SafeReadHandle, ov, out _, true);
                 return false;
-
-            return true;
+            }
         }
 
         private SafeFileHandle OpenHandle(string devicePathName, bool isExclusive, bool enumerate)
