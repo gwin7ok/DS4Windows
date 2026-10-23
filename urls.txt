@@ -335,6 +335,8 @@ https://raw.githubusercontent.com/gwin7ok/DS4Windows/refs/heads/master/DS4Window
 https://raw.githubusercontent.com/gwin7ok/DS4Windows/refs/heads/master/DS4Windows/DS4Control/LightbarMode.cs
 https://raw.githubusercontent.com/gwin7ok/DS4Windows/refs/heads/master/DS4Windows/DS4Control/LightbarSettingInfo.cs
 https://raw.githubusercontent.com/gwin7ok/DS4Windows/refs/heads/master/DS4Windows/DS4Control/LinkedProfileMap.cs
+https://raw.githubusercontent.com/gwin7ok/DS4Windows/refs/heads/master/DS4Windows/DS4Control/MacroExecuteMode.cs
+https://raw.githubusercontent.com/gwin7ok/DS4Windows/refs/heads/master/DS4Windows/DS4Control/MacroExecuteModes.cs
 https://raw.githubusercontent.com/gwin7ok/DS4Windows/refs/heads/master/DS4Windows/DS4Control/MacroParser.cs
 https://raw.githubusercontent.com/gwin7ok/DS4Windows/refs/heads/master/DS4Windows/DS4Control/MacroRuntimeState.cs
 https://raw.githubusercontent.com/gwin7ok/DS4Windows/refs/heads/master/DS4Windows/DS4Control/MacroStep.cs
@@ -1299,6 +1301,11 @@ https://raw.githubusercontent.com/gwin7ok/DS4Windows/refs/heads/master/DS4Window
 https://raw.githubusercontent.com/gwin7ok/DS4Windows/refs/heads/master/DS4WindowsTests/ProfileXmlStoreTests.cs
 https://raw.githubusercontent.com/gwin7ok/DS4Windows/refs/heads/master/DS4WindowsTests/ProgramFolderSettingsCleanerTests.cs
 https://raw.githubusercontent.com/gwin7ok/DS4Windows/refs/heads/master/DS4WindowsTests/R1DuplicateSpecialActionTests.cs
+https://raw.githubusercontent.com/gwin7ok/DS4Windows/refs/heads/master/DS4WindowsTests/R2W1MacroPlaybackOptionsToggleTests.cs
+https://raw.githubusercontent.com/gwin7ok/DS4Windows/refs/heads/master/DS4WindowsTests/R2W2ControlsExecuteModePersistenceTests.cs
+https://raw.githubusercontent.com/gwin7ok/DS4Windows/refs/heads/master/DS4WindowsTests/R2W2SpecialActionExecuteModePersistenceTests.cs
+https://raw.githubusercontent.com/gwin7ok/DS4Windows/refs/heads/master/DS4WindowsTests/R2W3ExecuteModeUiTests.cs
+https://raw.githubusercontent.com/gwin7ok/DS4Windows/refs/heads/master/DS4WindowsTests/R2W4MacroToggleRepeatTests.cs
 https://raw.githubusercontent.com/gwin7ok/DS4Windows/refs/heads/master/DS4WindowsTests/R5SaDigitalJudgementTests.cs
 https://raw.githubusercontent.com/gwin7ok/DS4Windows/refs/heads/master/DS4WindowsTests/R6PageScrollWheelTests.cs
 https://raw.githubusercontent.com/gwin7ok/DS4Windows/refs/heads/master/DS4WindowsTests/ReconnectProfilePerControllerTests.cs
@@ -1738,6 +1745,7 @@ https://raw.githubusercontent.com/gwin7ok/DS4Windows/refs/heads/master/docs-forD
 https://raw.githubusercontent.com/gwin7ok/DS4Windows/refs/heads/master/docs-forDIMG/MadeByAgent/Phase9-SteeringWheel-Removal-Plan.md
 https://raw.githubusercontent.com/gwin7ok/DS4Windows/refs/heads/master/docs-forDIMG/MadeByAgent/Phase9-TwoStageStuckKey-Fix-Plan.md
 https://raw.githubusercontent.com/gwin7ok/DS4Windows/refs/heads/master/docs-forDIMG/MadeByAgent/Phase9-UI-ControlsDefault-Plan.md
+https://raw.githubusercontent.com/gwin7ok/DS4Windows/refs/heads/master/docs-forDIMG/MadeByAgent/R2-MacroToggleRepeat-Plan.md
 https://raw.githubusercontent.com/gwin7ok/DS4Windows/refs/heads/master/docs-forDIMG/MadeByAgent/Reconnect-Profile-PerController-Fix-Plan.md
 https://raw.githubusercontent.com/gwin7ok/DS4Windows/refs/heads/master/docs-forDIMG/MadeByAgent/Release-Backlog.md
 https://raw.githubusercontent.com/gwin7ok/DS4Windows/refs/heads/master/docs-forDIMG/MadeByAgent/tools/Step10b/README.md
