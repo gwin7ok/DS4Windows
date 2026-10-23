@@ -93,7 +93,7 @@ namespace DS4Windows.Actions
 
                 case SpecialAction.ActionTypeId.Macro:
                     if (_macroPlayer == null) return null;
-                    return new SpecialActionOutputs(new IOutputAction[] { new MacroAction(sa, device, _macroPlayer, index, logRepository) },
+                    return new SpecialActionOutputs(new IOutputAction[] { new MacroAction(sa, device, _macroPlayer, index, logRepository, _manager) },
                         Policy(origin, definition), invertOnRelease: item != null && item.RunOnRelease);
 
                 case SpecialAction.ActionTypeId.Program:

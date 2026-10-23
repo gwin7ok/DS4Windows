@@ -75,7 +75,8 @@ namespace DS4Windows.Services
             // start; synchronization for repeat macros is handled via `MacroRuntimeState.TaskQueue`.
             // For "Repeat while held" macros we must avoid overlapping executions.
             // Treat repeat-macros as synchronized so a new run waits for previous to finish.
-            bool shouldSync = action != null && (action.synchronized || keyType.HasFlag(DS4KeyType.RepeatMacro));
+            // R-2: Repeat (Toggle)（RepeatLatchMacro）も、繰り返しのマクロなので、重なり実行を防ぐために同期キューへ入れる
+            bool shouldSync = action != null && (action.synchronized || keyType.HasFlag(DS4KeyType.RepeatMacro) || keyType.HasFlag(DS4KeyType.RepeatLatchMacro));
             if (shouldSync)
             {
                 // Run special action macros in synchronized order (ie. FirstIn-First-Out). The trigger control name string is the execution queue identifier (ie. each unique trigger combination has an own synchronization queue).
@@ -101,10 +102,17 @@ namespace DS4Windows.Services
             {
                 try { actionDoneState = ActionManager.GetStateFor(action, device); } catch { }
             }
+            // R-2: Repeat (Toggle) のマクロが、同期キューで待っている間にトグルが OFF になったときは、何もせずに終える（OFF の後に、1 回再生してしまうのを防ぐ）
+            bool latch = action != null && keyType.HasFlag(DS4KeyType.RepeatLatchMacro);
+            if (latch && !IsToggledOnNow(action, device))
+            {
+                try { AppLogger.LogTrace($"PlayMacroTask SKIP: action={action?.name} device={device} (toggle is OFF)"); } catch { }
+                return;
+            }
+
             if (!String.IsNullOrEmpty(macroStr))
             {
                 string[] skeys;
-
                 skeys = macroStr.Split('/');
                 macroArr = new int[skeys.Length];
                 for (int i = 0; i < macroArr.Length; i++)
@@ -128,19 +136,21 @@ namespace DS4Windows.Services
                 // per-action BeingTriggered flag; if it remains true (trigger still held), run the macro again.
                 // This avoids accumulating a queue of runs that would execute after physical release.
                 // Phase8-Fix-MacroRepeatUnify（D1）: 「押している間繰り返す」は RepeatMacro に統合した（SA と Controls タブで共通。旧 HoldMacro は読込時に RepeatMacro になる）。
-                if (action != null && keyType.HasFlag(DS4KeyType.RepeatMacro) && actionDoneState != null)
+                // R-2: Repeat (Toggle) は、押している間（BeingTriggered）ではなく、トグルの状態（IsToggledOn）が ON の間、繰り返す
+                if (action != null && (keyType.HasFlag(DS4KeyType.RepeatMacro) || latch) && actionDoneState != null)
                 {
                     bool keepRunning = true;
                     while (keepRunning)
                     {
                         bool curBeing = false;
-                        try { curBeing = ActionManager.IsBeingTriggered(action, device); keepRunning = curBeing; } catch { keepRunning = false; curBeing = false; }
+                        // トグルの状態は、毎回取り直す（切断・プロファイル適用の ClearDeviceState／ClearAllEntries で、状態が新しいものに替わり、OFF に戻るため）
+                        try { curBeing = latch ? IsToggledOnNow(action, device) : ActionManager.IsBeingTriggered(action, device); keepRunning = curBeing; } catch { keepRunning = false; curBeing = false; }
 
                         // Log the recheck result and the decision whether we'll rerun this macro
                         try
                         {
                             string decision = keepRunning ? "RERUN" : "NORUN";
-                            AppLogger.LogTrace($"PlayMacroTask ITERATION CHECK: action={action?.name} device={device} IsMacroRunning={actionDoneState?.IsMacroRunning ?? false} IsBeingTriggered={curBeing} DECISION={decision}");
+                            AppLogger.LogTrace($"PlayMacroTask ITERATION CHECK: action={action?.name} device={device} IsMacroRunning={actionDoneState?.IsMacroRunning ?? false} IsBeingTriggered={curBeing} mode={(latch ? "LATCH" : "HELD")} DECISION={decision}");
                         }
                         catch { }
 
@@ -166,6 +176,13 @@ namespace DS4Windows.Services
                 }
             }
             try { AppLogger.LogTrace($"PlayMacroTask END: action={action?.name} device={device} IsMacroRunning={(actionDoneState != null ? actionDoneState.IsMacroRunning : false)} IsBeingTriggered={(action != null ? ActionManager.IsBeingTriggered(action, device) : false)}"); } catch { }
+        }
+
+        /// <summary>R-2: そのアクション・デバイスの、トグルの状態（<c>IsToggledOn</c>）。状態が取れないときは偽（＝繰り返しを止める）。</summary>
+        private static bool IsToggledOnNow(SpecialAction action, int device)
+        {
+            try { return ActionManager.GetStateFor(action, device)?.IsToggledOn ?? false; }
+            catch { return false; }
         }
 
         // Phase8-Fix-MacroRepeatUnify（D5）: 旧 PlayMacroTask の「最初の 1 回」と「繰り返しの 1 回」は、ほぼ同じコードが 2 つあったため、1 つにまとめた（挙動は同じ）。

@@ -89,13 +89,29 @@ namespace DS4WinWPF.DS4Forms.ViewModels.SpecialActions
         public MacroViewModel(ISpecialActionRepository specialActionRepository)
         {
             this.specialActionRepository = specialActionRepository ?? throw new ArgumentNullException(nameof(specialActionRepository));
+            PlaybackOptions.PropertyChanged += OnPlaybackOptionsChanged;
+        }
+
+        /// <summary>
+        /// R-2: Repeat (Toggle) のときは、「離したときに実行（Run on trigger release）」を使えない（意味が曖昧になるため。計画書 §7 の決定）。
+        /// 画面では、チェックボックスを無効にする。
+        /// </summary>
+        public bool CanRunTriggerRelease => !PlaybackOptions.RepeatToggle;
+
+        private void OnPlaybackOptionsChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e)
+        {
+            if (e.PropertyName != nameof(MacroPlaybackOptions.RepeatToggle)) return;
+
+            // Repeat (Toggle) を選んだら、「離したときに実行」は外す
+            if (PlaybackOptions.RepeatToggle && runTriggerRelease) RunTriggerRelease = false;
+            OnPropertyChanged(nameof(CanRunTriggerRelease));
         }
 
         public void SaveAction(SpecialAction action, bool edit = false)
         {
             List<string> extrasList = new List<string>();
             extrasList.Add(PlaybackOptions.UseScanCode ? "Scan Code" : null);
-            extrasList.Add(runTriggerRelease ? "RunOnRelease" : null);
+            extrasList.Add(runTriggerRelease && !PlaybackOptions.RepeatToggle ? "RunOnRelease" : null);   // R-2: Repeat (Toggle) とは併用しない
             extrasList.Add(syncRun ? "Sync" : null);
             extrasList.Add(keepKeyState ? "KeepKeyState" : null);
             // R-2: Execute Mode（Once／Held／Toggle）は、extras ではなく、独立した MacroExecuteMode 要素へ保存する（旧: extras の Repeat）
