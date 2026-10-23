@@ -558,6 +558,12 @@
                             <Setter Property="Foreground" Value="{StaticResource ForegroundColor}" />
                             <Setter Property="BorderBrush" TargetName="tabBorder" Value="{StaticResource AccentColor}" />
                         </Trigger>
+                        <!-- Tab that cannot be switched to: same background as the page, disabled text color (last, so it wins over hover/selected) -->
+                        <Trigger Property="IsEnabled" Value="False">
+                            <Setter Property="Background" Value="{StaticResource BackgroundColor}" />
+                            <Setter Property="Foreground" Value="{StaticResource DisabledForegroundColor}" />
+                            <Setter Property="BorderBrush" TargetName="tabBorder" Value="{StaticResource PaneGapColor}" />
+                        </Trigger>
                     </ControlTemplate.Triggers>
                 </ControlTemplate>
             </Setter.Value>

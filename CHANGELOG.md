@@ -11,6 +11,7 @@ All notable changes to this project are recorded in this file.
 - Dark theme: all text is white (disabled controls are only slightly dimmed).
 - Dark theme: text that cannot be changed (disabled) uses one light gray (`#C0C0C0`) everywhere, including number boxes, text boxes and labels; expanders, tool bars and color pickers now follow the theme.
 - Dark theme: links (Settings tab, About, welcome dialogs), warning messages (red) and the Controller Readings labels (L2/R2 values, input delay) now use colors that are readable on the dark background; disabled menu items use the same light gray as other disabled text.
+- Dark theme: tabs that cannot be switched to (disabled) are shown with the page background and the light gray disabled text color, so they are distinguishable from the other tabs.
 - Dark theme: hyperlinks (Settings tab and others) use a lighter blue that is easier to read.
 - Dark theme: the output picker window ("Select action for ...") now follows the theme (keyboard keys, number boxes and the Extra panel were light gray / white), and the selected output uses a green that white text is readable on.
 - Dark theme: lists have alternating row shading and more row padding, and column headers have separators (easier to read, closer to the light theme).
