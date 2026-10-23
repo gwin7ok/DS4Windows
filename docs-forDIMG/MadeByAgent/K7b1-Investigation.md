@@ -71,3 +71,17 @@ GetOverlappedResultEx(handle, ov, out _, timeout, true)   // ← 保留中の I/
 - Server GC（`DS4WinWPF.csproj` の `ServerGarbageCollection`＝true。32 ヒープ）は、元からの設定。ヒープが多く、GC による移動の機会が多いため、症状が出やすい。設定は変えない（是正は `HidDevice` 側）。
 
 結論: **K7b-1 の原因を特定した**（`HidDevice.ReadFile` の、保留中の読み取りのバッファが固定されていない）。是正は 7033089。是正後の実機確認（§5）で、ダンプが増えないことを確かめる。
+
+## 7. 7 個のダンプの分類（2026-10-23）
+
+| ダンプ | 日時（日本時間） | 種別 | 原因 | 状況 |
+|---|---|---|---|---|
+| 9212 | 10-23 5:29 | GC のマーク処理で落ちた（ヒープ破壊） | HID の読み取りが、移動した配列の古い位置へ書き込んだ（§6） | 7033089 で是正 |
+| 15576 | 10-22 4:37 | 同上（`mark_object_simple1`、静的参照の列挙） | 同上と推定 | 7033089 で是正（様子見） |
+| 34332 | 10-22 4:40 | 同上（`find_first_object`、カードのマーキング） | 同上と推定 | 7033089 で是正（様子見） |
+| 17488 | 10-22 20:24 | `InvalidOperationException`（`Application.Windows` を、UI でないスレッドから） | **トレイの診断用の一時ログ `TrayDiag`**（5b9a3a0 で追加、84fb2fd で削除）が、コントローラーの切断（入力スレッド）で呼ばれていた | **解消済み**（診断コードは削除済み。ダンプは、診断を入れたビルドのもの） |
+| 43304 | 10-22 20:18 | 同上 | 同上 | **解消済み** |
+| 28824 | 10-21 12:42 | `NullReferenceException`（`ProfileEditor.GyroCalibration_Click`） | コントローラー未接続のスロットで、Gyro の校正ボタン。`DS4Controllers[slot]` が null | **是正**（null の確認を追加。`GyroCalibrationNullDeviceGuardTests`） |
+| 57596 | 10-21 11:10 | `NullReferenceException`（`DS4Device.performDs4Input`、入力スレッド） | 未特定（落ちた行の特定には、`!pe` と `!clrstack -a` が要る） | 調査中 |
+
+ヒープ破壊の 3 件（約 4 割）と、診断コードの 2 件、Gyro の校正 1 件が分かり、残りは `performDs4Input` の NullReferenceException 1 件。

@@ -2007,6 +2007,8 @@ namespace DS4WinWPF.DS4Forms
             if (calibrationDevice < environmentService.ControllerSlotLimit)
             {
                 DS4Device d = controlService.DS4Controllers[calibrationDevice];
+                // K7b-1 の調査（ダンプ 28824）: コントローラーが未接続のスロットでは d が null になり、NullReferenceException でアプリが終了していた
+                if (d == null) return;
                 d.SixAxis.ResetContinuousCalibration();
                 if (d.JointDeviceSlotNumber != DS4Device.DEFAULT_JOINT_SLOT_NUMBER)
                 {
