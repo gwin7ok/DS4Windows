@@ -1532,7 +1532,7 @@ namespace DS4WinWPF.DS4Forms
             SpecialActionItem newItem = specialActionsVM.DuplicateAction(item);
             if (newItem == null)
             {
-                MessageBox.Show($"Special action "{item.ActionName}" can't be duplicated because it isn't saved in Actions.xml.",
+                MessageBox.Show($"Special action \"{item.ActionName}\" can't be duplicated because it isn't saved in Actions.xml.",
                     "DS4Windows", MessageBoxButton.OK, MessageBoxImage.Information);
                 return;
             }
