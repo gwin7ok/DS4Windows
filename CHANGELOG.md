@@ -9,6 +9,7 @@ All notable changes to this project are recorded in this file.
 - The default app theme is now the light theme (it used to follow the Windows apps theme mode). The dark theme can still be chosen in Settings.
 - Dark theme: the background is now a dark gray, and buttons, combo boxes, column headers and inactive tabs use a lighter surface color. Borders (buttons, group boxes, lists, tab pages, scroll bars) and the pane divider in the profile editor are brighter, so their edges are easy to see.
 - Dark theme: all text is white (disabled controls are only slightly dimmed).
+- Dark theme: text that cannot be changed (disabled) uses one light gray (`#C0C0C0`) everywhere, including number boxes, text boxes and labels; expanders, tool bars and color pickers now follow the theme.
 - Dark theme: hyperlinks (Settings tab and others) use a lighter blue that is easier to read.
 - Dark theme: the output picker window ("Select action for ...") now follows the theme (keyboard keys, number boxes and the Extra panel were light gray / white), and the selected output uses a green that white text is readable on.
 - Dark theme: lists have alternating row shading and more row padding, and column headers have separators (easier to read, closer to the light theme).
