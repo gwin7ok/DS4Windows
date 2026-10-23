@@ -46,6 +46,7 @@ namespace DS4Windows.Services
             XmlNode NodeControl = m_Xdoc.CreateNode(XmlNodeType.Element, "Control", null);
             XmlNode Key = m_Xdoc.CreateNode(XmlNodeType.Element, "Key", null);
             XmlNode Macro = m_Xdoc.CreateNode(XmlNodeType.Element, "Macro", null);
+            XmlNode MacroExecuteModeNode = m_Xdoc.CreateNode(XmlNodeType.Element, "MacroExecuteMode", null);   // R-2: マクロの Execute Mode（Held／Toggle。Once は書かない）
             XmlNode KeyType = m_Xdoc.CreateNode(XmlNodeType.Element, "KeyType", null);
             XmlNode Button = m_Xdoc.CreateNode(XmlNodeType.Element, "Button", null);
             XmlNode Extras = m_Xdoc.CreateNode(XmlNodeType.Element, "Extras", null);
@@ -64,10 +65,9 @@ namespace DS4Windows.Services
                         keyType += DS4KeyType.Unbound;
                     }
 
-                    // Phase8-Fix-MacroRepeatUnify（D1・D3）: 「押している間繰り返す」は RepeatMacro に統合した（SA と同じ値）。旧値 HoldMacro は書かない（読込のみ受け付ける）
-                    if (dcs.keyType.HasFlag(DS4KeyType.RepeatMacro))
-                        keyType += DS4KeyType.RepeatMacro;
-                    else if (dcs.keyType.HasFlag(DS4KeyType.Macro))
+                    // R-2: Execute Mode（Held／Toggle）は、KeyType ではなく、独立した MacroExecuteMode ノードへ書く（SA の MacroExecuteMode 要素と同じ値）。
+                    // KeyType には、マクロであることを示す Macro だけを書く。旧値の RepeatMacro／HoldMacro は書かない（読込のみ受け付ける）
+                    if (dcs.keyType.HasFlag(DS4KeyType.Macro) || dcs.keyType.HasFlag(DS4KeyType.RepeatMacro) || dcs.keyType.HasFlag(DS4KeyType.RepeatLatchMacro))
                         keyType += DS4KeyType.Macro;
 
                     if (dcs.keyType.HasFlag(DS4KeyType.Toggle))
@@ -88,6 +88,14 @@ namespace DS4Windows.Services
                         int[] ii = dcs.action.actionMacro;
                         buttonNode.InnerText = string.Join("/", ii);
                         Macro.AppendChild(buttonNode);
+
+                        string executeMode = MacroExecuteModes.ToXmlValue(MacroExecuteModes.FromKeyType(dcs.keyType));
+                        if (executeMode != string.Empty)
+                        {
+                            XmlNode modeNode = m_Xdoc.CreateNode(XmlNodeType.Element, dcs.control.ToString(), null);
+                            modeNode.InnerText = executeMode;
+                            MacroExecuteModeNode.AppendChild(modeNode);
+                        }
                     }
                     else if (dcs.actionType == DS4ControlSettings.ActionType.Key)
                     {
@@ -142,6 +150,8 @@ namespace DS4Windows.Services
                 NodeControl.AppendChild(Button);
             if (Macro.HasChildNodes)
                 NodeControl.AppendChild(Macro);
+            if (MacroExecuteModeNode.HasChildNodes)
+                NodeControl.AppendChild(MacroExecuteModeNode);
             if (Key.HasChildNodes)
                 NodeControl.AppendChild(Key);
             if (Extras.HasChildNodes)

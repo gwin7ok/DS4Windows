@@ -1,7 +1,7 @@
 # R-2 マクロの「繰り返しをトグルする」再生モード 実装計画書
 
 作成日: 2026-10-23
-状態: **承認済み（2026-10-23）。W1 実装中**
+状態: **承認済み（2026-10-23）。W1 完了、W2 実装済み（ビルド・テストの確認待ち）**
 関連: [Issue #1](https://github.com/gwin7ok/DS4Windows/issues/1)、`Release-Backlog.md` R-2
 
 ## 1. 目的と仕様案
@@ -44,12 +44,13 @@
 - `SpecialActionSerializer` に、独立した要素 `<MacroExecuteMode>` を追加する（`ProfileId`、`OutputExtras` と同じ形。種別が Macro のときだけ、`ShouldSerializeMacroExecuteMode` で書く）。
 - 保存: `MacroViewModel.SaveAction` は、`extras` に `Repeat` を書かなくなる。`Scan Code`／`RunOnRelease`／`Sync`／`KeepKeyState` は、今回は `extras` のまま。
 - 読込: `<MacroExecuteMode>` があればそれを使う。なければ、古い形式として `extras` の `Repeat` を `Held` に変換する（次に保存したとき、新しい形になる）。
-- ファイルの内容が `Once` のときも、要素を書く（省略を「未指定」と区別するため。省略＝古い形式として `Repeat` を見る）。
+- `Once`（既定）のときは、要素を書かない。新しい形式のファイルの Extras には `Repeat` が出ないため、要素がなければ、古い形式として `Repeat` を見ても、結果は `Once` で矛盾しない（実装: W2。`ActionsDTO`）。
+- 保存する値は、`SaveAction` の新しい引数 `MacroExecuteMode`（列挙型。`Once`／`Held`／`Toggle`）で、画面から渡す（`extras` の文字列には混ぜない）。変換は `MacroExecuteModes`。
 
 **Controls（プロファイル XML）**
 - `Control` の下に、ボタンごとの要素を持つ新しいノード `<MacroExecuteMode>` を追加する（既存の `<Macro>` ノードと同じ構造。要素名＝ボタン名、値＝`Once`／`Held`／`Toggle`）。
-- 保存: `KeyType` ノードには、`RepeatMacro` を書かなくなる（`Macro`、`ScanCode`、`Toggle` などは今回は `KeyType` のまま）。
-- 読込: `<MacroExecuteMode>` があればそれを使う。なければ、古い形式として `KeyType` の `RepeatMacro`／`HoldMacro` を `Held` に変換する。
+- 保存: `KeyType` ノードには、`RepeatMacro` を書かなくなる（`Macro`、`ScanCode`、`Toggle` などは今回は `KeyType` のまま）。`Once` のボタンは、ノードに書かない。
+- 読込: `<MacroExecuteMode>` があれば、それを使う（マクロの割り当てのボタンだけ）。なければ（または値が不明なら）、古い形式として `KeyType` の `RepeatMacro`／`HoldMacro` を `Held` に変換する。
 
 **実行時の表現（変えない）**
 - メモリ上の `keyType` のフラグは、`RepeatMacro`（＝`Held`）に加えて、新しいフラグ `RepeatLatchMacro = 64`（＝`Toggle`）を持つ。エンジン（`MacroAction`、`MacroPlayback`）は、フラグを見る（Controls と SA で、実行の経路が共通のため）。保存と読込の層だけが、`MacroExecuteMode` とフラグを変換する。

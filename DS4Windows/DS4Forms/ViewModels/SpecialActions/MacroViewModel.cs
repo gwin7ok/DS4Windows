@@ -98,9 +98,10 @@ namespace DS4WinWPF.DS4Forms.ViewModels.SpecialActions
             extrasList.Add(runTriggerRelease ? "RunOnRelease" : null);
             extrasList.Add(syncRun ? "Sync" : null);
             extrasList.Add(keepKeyState ? "KeepKeyState" : null);
-            extrasList.Add(PlaybackOptions.RepeatWhileHeld ? "Repeat" : null);
+            // R-2: Execute Mode（Once／Held／Toggle）は、extras ではなく、独立した MacroExecuteMode 要素へ保存する（旧: extras の Repeat）
+            MacroExecuteMode executeMode = MacroExecuteModes.FromKeyType(PlaybackOptions.ApplyTo(DS4KeyType.Macro));
             specialActionRepository.SaveAction(action.name, action.controls, 1, string.Join("/", macro), edit,
-                extras: string.Join("/", extrasList.Where(s => !string.IsNullOrEmpty(s))), actionId: action.id);
+                extras: string.Join("/", extrasList.Where(s => !string.IsNullOrEmpty(s))), actionId: action.id, macroExecuteMode: executeMode);
         }
 
         public void UpdateMacroString()

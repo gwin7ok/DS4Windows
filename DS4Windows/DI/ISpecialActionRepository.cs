@@ -47,8 +47,13 @@ namespace DS4Windows.DI
         /// Phase10-Step4d W2: 保つ SA の固定 ID。名前の変更（古い名前を削除して作り直す経路）で、編集前の ID を引き継ぐために渡す。
         /// null なら、編集（<paramref name="edit"/>）は同じ名前の SA の ID を、新規は新しい ID を使う。
         /// </param>
+        /// <param name="macroExecuteMode">
+        /// R-2: マクロ（<paramref name="mode"/>＝1）の Execute Mode（Once／Held／Toggle）。<c>Actions.xml</c> の <c>MacroExecuteMode</c> 要素に保存される
+        /// （<paramref name="extras"/> には書かない）。マクロ以外では使わない。
+        /// </param>
         void SaveAction(string name, string controls, int mode, string details, bool edit,
-            double delayTime = 0.0, string extras = "", string actionId = null);
+            double delayTime = 0.0, string extras = "", string actionId = null,
+            MacroExecuteMode macroExecuteMode = MacroExecuteMode.Once);
 
         /// <summary>
         /// Phase10-Step6 I5a: 名前で探した SA に、Extras（<see cref="SpecialAction.outputExtras"/>。Controls の Extras と同じ書式）を設定して <c>Actions.xml</c> へ保存する。

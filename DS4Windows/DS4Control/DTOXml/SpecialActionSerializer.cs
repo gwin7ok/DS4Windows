@@ -84,6 +84,18 @@ namespace DS4WinWPF.DS4Control.DTOXml
             return TypeString == "Macro" && !string.IsNullOrEmpty(Extras);
         }
 
+        // R-2: マクロの Execute Mode（Held／Toggle）。Once（既定）のときは書かない。ない（古いファイル）ときは、Extras の Repeat を古い形式として読む
+        // （ActionsDTO.MapTo）。古いバージョンは、未知の要素として読み飛ばす（繰り返しは効かず、Play Once になる）
+        [XmlElement("MacroExecuteMode")]
+        public string MacroExecuteMode
+        {
+            get; set;
+        } = string.Empty;
+        public bool ShouldSerializeMacroExecuteMode()
+        {
+            return TypeString == "Macro" && !string.IsNullOrEmpty(MacroExecuteMode);
+        }
+
         [XmlElement("Arguements")]
         public string Arguments
         {

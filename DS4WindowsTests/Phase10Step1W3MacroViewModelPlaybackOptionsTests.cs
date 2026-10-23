@@ -18,6 +18,7 @@ namespace DS4WindowsTests
         {
             public string SavedDetails;
             public string SavedExtras;
+            public MacroExecuteMode SavedMacroExecuteMode;
 
             public string ActionsPath => string.Empty;
             public IReadOnlyList<SpecialAction> Actions => new List<SpecialAction>();
@@ -26,10 +27,12 @@ namespace DS4WindowsTests
             public void CreateStandardActions() { }
             public SpecialAction GetActionOrPlaceholder(string actionName) => null;
 
-            public void SaveAction(string name, string controls, int mode, string details, bool edit, double delayTime = 0.0, string extras = "", string actionId = null)
+            public void SaveAction(string name, string controls, int mode, string details, bool edit, double delayTime = 0.0, string extras = "", string actionId = null,
+                MacroExecuteMode macroExecuteMode = MacroExecuteMode.Once)
             {
                 SavedDetails = details;
                 SavedExtras = extras;
+                SavedMacroExecuteMode = macroExecuteMode;
             }
 
             public bool RemoveActionAndSave(string actionName) => true;
@@ -78,6 +81,20 @@ namespace DS4WindowsTests
         }
 
         [Fact]
+        public void SaveAction_PassesTheToggleMode()
+        {
+            var repo = new RecordingRepository();
+            var vm = new MacroViewModel(repo);
+            vm.PlaybackOptions.RepeatToggle = true;
+            vm.Macro.AddRange(new[] { 350, 256 });
+
+            vm.SaveAction(new SpecialAction("m", "Cross", "Macro", "350/256"));
+
+            Assert.Equal(MacroExecuteMode.Toggle, repo.SavedMacroExecuteMode);
+            Assert.Equal(string.Empty, repo.SavedExtras);
+        }
+
+        [Fact]
         public void RecordBoxRoundTrip_KeepsTheOptions_WithoutAnyWriteBack()
         {
             // 記録画面は、PrepareSettings の keyType から読み、ExportMacro で同じ値を書く（オプションを出さないため、変えない）。
@@ -99,9 +116,9 @@ namespace DS4WindowsTests
         [Theory]
         [InlineData(false, false, false, false, false, "")]
         [InlineData(true, false, false, false, false, "Scan Code")]
-        [InlineData(false, true, false, false, false, "Repeat")]
-        [InlineData(true, true, true, true, true, "Scan Code/RunOnRelease/Sync/KeepKeyState/Repeat")]
-        public void SaveAction_WritesTheSameExtrasAsBefore(bool scan, bool repeat, bool runRelease, bool sync, bool keep, string expectedExtras)
+        [InlineData(false, true, false, false, false, "")]   // R-2: Repeat は extras に書かない（MacroExecuteMode の要素へ）
+        [InlineData(true, true, true, true, true, "Scan Code/RunOnRelease/Sync/KeepKeyState")]
+        public void SaveAction_WritesTheExtras_WithoutTheExecuteMode(bool scan, bool repeat, bool runRelease, bool sync, bool keep, string expectedExtras)
         {
             var repo = new RecordingRepository();
             var vm = new MacroViewModel(repo);
@@ -115,6 +132,7 @@ namespace DS4WindowsTests
             vm.SaveAction(new SpecialAction("m", "Cross", "Macro", "350/256"));
 
             Assert.Equal(expectedExtras, repo.SavedExtras);
+            Assert.Equal(repeat ? MacroExecuteMode.Held : MacroExecuteMode.Once, repo.SavedMacroExecuteMode);
             Assert.Equal("350/256", repo.SavedDetails);
         }
     }

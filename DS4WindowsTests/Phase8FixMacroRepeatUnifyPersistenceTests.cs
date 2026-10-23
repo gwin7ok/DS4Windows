@@ -7,6 +7,7 @@ namespace DS4WindowsTests
     /// <summary>
     /// Phase8-Fix-MacroRepeatUnify W1（Phase8-Fix-MacroRepeatUnify-Plan.md §3.1。D1・D3）: Controls タブのマクロの「押している間繰り返す」は、
     /// プロファイル XML の KeyType に <c>RepeatMacro</c> と書く（SA と同じ値）。旧版が書いた <c>HoldMacro</c> は、読込だけ受け付けて RepeatMacro として読み、保存時に RepeatMacro へ置き換える。
+    /// R-2 W2: 保存は、Execute Mode を独立した <c>Control/MacroExecuteMode</c> ノード（<c>Held</c>）へ書き、KeyType には <c>Macro</c> だけを書く。旧形式（KeyType の <c>RepeatMacro</c>／<c>HoldMacro</c>）の読込は、そのまま受け付ける。
     /// </summary>
     [Collection("ServiceProviderHolder")]
     public class Phase8FixMacroRepeatUnifyPersistenceTests
@@ -28,6 +29,13 @@ namespace DS4WindowsTests
             return doc.SelectSingleNode("/DS4Windows/Control/KeyType/Square")?.InnerText;
         }
 
+        private static string SavedModeOfSquare(string xml)
+        {
+            var doc = new XmlDocument();
+            doc.LoadXml(xml);
+            return doc.SelectSingleNode("/DS4Windows/Control/MacroExecuteMode/Square")?.InnerText;
+        }
+
         [Theory]
         [InlineData("RepeatMacro")]
         [InlineData("HoldMacro")]   // 旧版が書いた値。読込だけ受け付ける
@@ -45,14 +53,15 @@ namespace DS4WindowsTests
         [Theory]
         [InlineData("RepeatMacro")]
         [InlineData("HoldMacro")]
-        public void Save_WritesRepeatMacro_NeverTheLegacyHoldMacro(string written)
+        public void Save_WritesMacroAndTheHeldMode_NeverTheLegacyNames(string written)
         {
             using var ctx = new PersistenceGoldenContext();
             BackingStore loaded = PersistenceHarness.LoadProfile(ctx, XmlWith(ctx, "RepeatIn2_" + written, written), "RepeatLoad2_" + written);
 
             string resaved = PersistenceHarness.SaveProfile(ctx, loaded, "RepeatResave_" + written);
 
-            Assert.Equal("RepeatMacro", SavedKeyTypeOfSquare(resaved));
+            Assert.Equal("Macro", SavedKeyTypeOfSquare(resaved));
+            Assert.Equal("Held", SavedModeOfSquare(resaved));
         }
 
         [Fact]
@@ -65,7 +74,9 @@ namespace DS4WindowsTests
             DS4KeyType keyType = loaded.GetDS4CSetting(Slot, DS4Controls.Square).keyType;
             Assert.True(keyType.HasFlag(DS4KeyType.Macro));
             Assert.False(keyType.HasFlag(DS4KeyType.RepeatMacro));
-            Assert.Equal("Macro", SavedKeyTypeOfSquare(PersistenceHarness.SaveProfile(ctx, loaded, "PlainResave")));
+            string resaved = PersistenceHarness.SaveProfile(ctx, loaded, "PlainResave");
+            Assert.Equal("Macro", SavedKeyTypeOfSquare(resaved));
+            Assert.Null(SavedModeOfSquare(resaved));   // Once は、ノードを書かない
         }
     }
 }

@@ -240,7 +240,7 @@ namespace DS4Windows.Services
         /// null のときは、編集（<paramref name="edit"/>）なら同じ名前の SA の ID を、新規なら新しい ID を使う。
         /// </param>
         public void SaveActionNew(string name, string controls, int mode, string details, bool edit, double delayTime = 0.0, string extras = "",
-            string actionId = null)
+            string actionId = null, MacroExecuteMode macroExecuteMode = MacroExecuteMode.Once)
         {
             SpecialAction tempAction = null;
 
@@ -248,6 +248,8 @@ namespace DS4Windows.Services
             {
                 case 1:
                     tempAction = new SpecialAction(name, controls, "Macro", details, extras: extras);
+                    // R-2: Execute Mode は、extras ではなく、独立した引数で受ける（Extras の Repeat は、古い形式として SpecialAction が読むだけ）
+                    tempAction.keyType = MacroExecuteModes.ApplyTo(tempAction.keyType, macroExecuteMode);
                     break;
                 case 2:
                     string[] tempDetails = details.Split("?");

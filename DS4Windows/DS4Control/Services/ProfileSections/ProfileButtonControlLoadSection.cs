@@ -190,6 +190,26 @@ namespace DS4Windows.Services
                 }
             }
 
+            // R-2: マクロの Execute Mode（独立したノード。Held／Toggle）。KeyType の後に読み、あれば、KeyType の旧形式の RepeatMacro／HoldMacro より優先する。
+            // マクロの割り当て（actionType が Macro）のボタンだけに効く（Macro 以外のボタンの値は読み飛ばす）
+            ParentItem = m_Xdoc.SelectSingleNode("/" + rootname + "/Control/MacroExecuteMode");
+            if (ParentItem != null)
+            {
+                foreach (XmlNode item in ParentItem.ChildNodes)
+                {
+                    if (!(item is XmlElement)) continue;
+                    if (!Enum.TryParse(item.Name, out DS4Controls modeControl) || modeControl == DS4Controls.None) continue;
+                    if (!MacroExecuteModes.TryParse(item.InnerText, out MacroExecuteMode executeMode)) continue;
+
+                    DS4ControlSettings modeSetting = store.GetDS4CSetting(device, modeControl);
+                    if (modeSetting == null || modeSetting.actionType != DS4ControlSettings.ActionType.Macro) continue;
+
+                    DS4KeyType updated = MacroExecuteModes.ApplyTo(modeSetting.keyType, executeMode);
+                    store.UpdateDS4CKeyType(device, item.Name, updated);
+                    customMapKeyTypes[DS4ControlNames.getDS4ControlsByName(item.Name)] = updated;
+                }
+            }
+
             // Phase10-Step4 W1: SA 専用の割り当て（型のある項目）。最後に読む。種別が未知のもの、ボタン名が不明なものは、その要素だけ読み飛ばす。
             // Macro の要素は、そのボタンが Macro のときだけ、3 項目の入れ物として取り込む。Macro 以外の種別は、そのボタンの割り当てを Special にする（同じボタンの
             // Button／Macro／Key があっても、Special が優先する）

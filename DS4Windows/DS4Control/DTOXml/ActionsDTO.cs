@@ -52,7 +52,9 @@ namespace DS4WinWPF.DS4Control.DTOXml
                         actionSerializer.Trigger = action.controls;
                         actionSerializer.TypeString = action.type;
                         actionSerializer.Details = action.details;
-                        actionSerializer.Extras = action.extra;
+                        // R-2: Execute Mode は、独立した要素へ書く。Extras には、古い形式の Repeat を書かない（読込のみ受け付ける。MapTo）
+                        actionSerializer.Extras = RemoveLegacyRepeatToken(action.extra);
+                        actionSerializer.MacroExecuteMode = MacroExecuteModes.ToXmlValue(MacroExecuteModes.FromKeyType(action.keyType));
                         break;
                     case SpecialAction.ActionTypeId.Program:
                         actionSerializer.Name = action.name;
@@ -135,6 +137,13 @@ namespace DS4WinWPF.DS4Control.DTOXml
             }
         }
 
+        /// <summary>R-2: Macro の Extras（<c>/</c> 区切り）から、古い形式の <c>Repeat</c> のトークン（完全一致）を取り除く。</summary>
+        public static string RemoveLegacyRepeatToken(string extras)
+        {
+            if (string.IsNullOrEmpty(extras)) return extras;
+            return string.Join("/", extras.Split('/').Where(token => token != "Repeat"));
+        }
+
         public void MapTo(BackingStore destination)
         {
             foreach(SpecialActionSerializer actionSerializer in actionSerializers)
@@ -146,6 +155,10 @@ namespace DS4WinWPF.DS4Control.DTOXml
                         tempAction = new SpecialAction(actionSerializer.Name,
                             actionSerializer.Trigger, actionSerializer.TypeString,
                             actionSerializer.Details, 0, actionSerializer.Extras);
+                        // R-2: 独立した MacroExecuteMode 要素があれば、それを使う（古い形式の Extras の Repeat［SpecialAction が RepeatMacro にする］より優先）。
+                        // ない（古いファイル、または Once）ときは、Extras の Repeat がそのまま効く
+                        if (MacroExecuteModes.TryParse(actionSerializer.MacroExecuteMode, out MacroExecuteMode executeMode))
+                            tempAction.keyType = MacroExecuteModes.ApplyTo(tempAction.keyType, executeMode);
                         break;
                     case "Program":
                         {
