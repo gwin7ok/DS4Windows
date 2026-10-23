@@ -49,7 +49,7 @@
 
 - **Phase5-Step3 の完了報告と実コードの不一致**（W4 で発見）: 「切断時スタック残留防止」の `IProfileSwitcher.ClearState`／`IProfileApplicationService.ClearPendingRestore` は契約だけ配備され、物理切断の経路から呼ばれていない。意味（`OlderProfilePath` の扱い）を調べて、Phase8 の Step6 で接続する（`IProfileSwitcher.ClearState` に TODO を付与済み）。
 
-- K7b-1（異常終了）: 先送り。切り分け手順は `Phase7c-Completion-Report.md` §4。
+- K7b-1（異常終了）: 先送り。切り分け手順は `Phase7c-Completion-Report.md` §4。【2026-10-23 更新】原因を特定して修正済み（`K7b1-Investigation.md`）。観察中。
 - K9-3（プリセットのサブメニュー）: 先送り。
 - `RetainedGlobalReferences_HaveTodoComments`（`AppPostHostGlobalReferenceGuardTests`）: 存在しない `Global` の TODO を要求する陳腐化したテスト。整理を判断する。
 - `Phase7-Status.md` §1 の Step6・Step7 行の記録列が空欄。

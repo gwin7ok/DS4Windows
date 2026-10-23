@@ -727,6 +727,7 @@ classDiagram
         +SaveAction(name, controls, mode, details, edit, delayTime, extras)「Actions.xml へ保存・読み直し・状態リセット」
         +RemoveActionAndSave(actionName) bool「Actions.xml へ保存・読み直し」
         +GetActionOrPlaceholder(actionName) SpecialAction
+        +DuplicateAction(actionName) string「R-1。Actions.xml の要素を複製し、新しい ID・重複しない名前で保存。複製の名前を返す」
     }
     ViewModelFactory ..> ProfileSettingsViewModel : creates
 
@@ -769,6 +770,8 @@ classDiagram
         +Device int
         +IsActive(DS4Controls control) bool
         +WasActive(DS4Controls control) bool
+        +IsDigitalActive(DS4Controls control) bool「R-5。閾値なしの判定。既定実装は IsActive」
+        +WasDigitalActive(DS4Controls control) bool
         +Delay DelayClock
         +UtcNow DateTime
         +TickCount64 long
@@ -1215,3 +1218,9 @@ classDiagram
 %% - SA の Button の出力先がパッドの軸・トリガー、マウス移動のとき、強さ（0〜100%。既定 100）の固定値で出す。`SpecialAction.analogStrength`（`Actions.xml` の Button の `Strength`。100 以外のときだけ）、`ButtonBindingValues.Strength`。
 %% - 出力先の分類は `AnalogOutputTargets.KindOf`（`AnalogOutputKind`: PadAxis、PadTrigger、MouseMove、None）の 1 か所。`ButtonOutputAction` がアナログの分岐を持つ（軸は中立 128 から端へ、トリガーは 255 × 強さ、マウス移動は `IFixedMouseInput`［`TriggerInput` が実装。`Mapping.SampleFixedMouseMovement` が、ボタンが元のときの量 × 強さを返す］）。100% は、Controls のボタンが元のときの出力と同じ。ホイールは、今のまま（デジタル）。
 %% - 画面: 割り当て編集画面（SA のモード）の Press Key のタブに、出力先がアナログのときだけ「Strength」を出す（`PressKeyViewModel.ShowAnalogStrength`）。保存は、SA の保存のあとに `ISpecialActionRepository.SaveActionAnalogStrength`。Controls のモードには出さない。
+
+%% 注釈補強（2026-10-23 リリース前の追加・修正 R-1／R-5／R-6 と K7b-1 の修正）
+%% - R-1: `ISpecialActionRepository.DuplicateAction`（実装は `SpecialActionRepository`＋`SpecialActionsXmlSerializer.DuplicateAction`。名前は `MakeCopyName`［「元の名前 (Copy)」「(Copy 2)」…］。複製は無効で一覧に追加）。画面は `ProfileEditor` の `DuplicateActionBtn_Click` と `SpecialActionsListViewModel.DuplicateAction`。
+%% - R-5: `ITriggerInput` に既定実装つきの `IsDigitalActive`／`WasDigitalActive`（トリガー > 0、スティックはデッドゾーン後に少しでも傾けば成立）。複数トリガー（`ComboTriggerInputAction`／`MultiTapInputAction`）と、デジタルな出力先の SA・Controls（`ControlButtonInputAction`／`ControlPadOutputAction`／`ControlTouchpadClickOutputAction`）、`TriggerDispatchEngine` の解除判定が使う。`IControlTriggerInput.IsControlActive`（Controls のアナログ判定）は、トリガー単体でアナログな出力先のときのために残る。`ButtonOutputAction.ApplyAnalog` は、トグルでなくトリガー単体のとき、入力の値（`IAnalogTriggerInput.GetByteValue`）に比例して出す。Phase10 Step4c W4 の「SA の閾値に揃える」は、これで置き換わった。
+%% - R-6: `PageScrollWheelHandler`（UI 層。`App.InitializeProcessWideSettings` で登録）。Windows の「1 画面ずつ」のホイール設定に、`ScrollViewer` の MouseWheel を合わせる。DI の対象ではない（静的なクラスハンドラー）。
+%% - K7b-1: 第 1 層 `HidDevice` の非同期 I/O（`ReadFile`／`WriteOutputReportViaInterrupt`）が、完了まで `fixed` を保ち、失敗時は `CancelIoEx` で取り消して待つ。依存の向きの変更はない。

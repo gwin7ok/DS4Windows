@@ -315,3 +315,5 @@
 %% - TriggerBinding の生成と破棄: プロファイルの適用の完了後に構築し、IActionRegistry.Replace で差し替える（旧リストは参照が外れて GC）。切断で Clear。ITriggerInput（TriggerInput）は DI 登録せず、Mapping がデバイスごとに保持する再利用オブジェクト（接続で作り、切断で破棄）。
 
 %% 2026-10-20（Phase8-Step8 8c・8d）: `IActionFactory`／`DefaultActionFactory` の行（系統 B。8c で撤去）と `BindingMigrationOptions` の行（種別ごとの移行スイッチ。8d で撤去）を削除した。エンジン・ビルダーは、束縛があれば常に処理する。
+
+%% - 2026-10-23: `ISpecialActionRepository` に `DuplicateAction`（R-1。SA の複製）を追加した。ライフタイム・依存は変わらない。`PageScrollWheelHandler`（R-6）は静的なクラスハンドラーで、サービスの一覧には載せない。
