@@ -4,6 +4,12 @@ All notable changes to this project are recorded in this file.
 
 ## [Unreleased]
 
+### Changed
+- Dark theme: the color palette was refreshed for a more refined look (backgrounds, surfaces, borders, text, links, warning and accent colors). The theme resources and the XAML of the dark and default themes, the profile editor, the binding window and the controller readings were reorganized and reformatted; there are no behavior changes.
+
+### Documentation
+- README: added a section about AI-assisted development (how changes are tested, verified on real hardware and documented, and the expectations for pull requests), and removed the "project has moved" notice.
+
 ## [4.2.0] - 2026-10-23
 
 ### Added
