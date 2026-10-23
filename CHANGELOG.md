@@ -3,6 +3,15 @@
 All notable changes to this project are recorded in this file.
 
 
+## [Unreleased]
+
+### Changed
+- The default app theme is now the light theme (it used to follow the Windows apps theme mode). The dark theme can still be chosen in Settings.
+- Dark theme: buttons, combo boxes, column headers and inactive tabs now use a lighter surface color, and borders (buttons, group boxes, lists, tab pages, scroll bars) and the pane divider in the profile editor are brighter, so their edges are easy to see.
+
+### Fixed
+- Dark theme: the text of a hovered tab was unreadable (white on white).
+
 ## [4.0.0] - 2026-10-23
 
 This is a major release. The internal architecture was rebuilt on dependency injection, and the Controls and Special Actions editors were unified. The unreleased 3.11.7 changes are included.

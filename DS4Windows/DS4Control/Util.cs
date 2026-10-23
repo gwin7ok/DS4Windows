@@ -333,6 +333,9 @@ namespace DS4Windows
             return result;
         }
 
+        // TODO(technical debt): 4.0.1 made AppThemeChoice.Default the light theme, so nothing calls this method now
+        // (App.ChangeTheme used it to follow the Windows apps theme mode). Kept in case a "Follow Windows" choice is added;
+        // delete it if that is not planned (see copilot-instructions 2.4).
         public static bool SystemAppsUsingDarkTheme()
         {
             bool result = false;

@@ -973,14 +973,14 @@
 
     <!-- 仕切り線（ドラッグ可能） -->
     <!-- 両側4pxの背景（背景色と同じ） -->
-    <Border Grid.Row="1" Grid.Column="1" Width="10" Background="{x:Static SystemColors.ControlBrush}" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" IsHitTestVisible="False" />
+    <Border Grid.Row="1" Grid.Column="1" Width="10" Background="{DynamicResource PaneGapColor}" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" IsHitTestVisible="False" />
     <!-- 中央2pxのGridSplitter本体（幅10pxでTemplateで中央2pxのみ色付け） -->
     <GridSplitter Grid.Row="1" Grid.Column="1" Width="10" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" ShowsPreview="True">
         <GridSplitter.Template>
             <ControlTemplate TargetType="GridSplitter">
                 <Grid>
-                    <Rectangle Fill="{x:Static SystemColors.ControlBrush}" Width="10" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" />
-                    <Rectangle Fill="Gray" Width="2" HorizontalAlignment="Center" VerticalAlignment="Stretch" />
+                    <Rectangle Fill="{DynamicResource PaneGapColor}" Width="10" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" />
+                    <Rectangle Fill="{DynamicResource PaneDividerColor}" Width="2" HorizontalAlignment="Center" VerticalAlignment="Stretch" />
                 </Grid>
             </ControlTemplate>
         </GridSplitter.Template>

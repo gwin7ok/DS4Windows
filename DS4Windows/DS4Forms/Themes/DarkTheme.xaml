@@ -7,7 +7,12 @@
 
     <!-- Brushes -->
     <SolidColorBrush x:Key="BackgroundColor" Color="#FF202020" />
-    <SolidColorBrush x:Key="BorderColor" Color="#FF3F3F46" />
+    <SolidColorBrush x:Key="BorderColor" Color="#FF8A8A96" />
+    <!-- Raised surface for buttons, combo boxes, column headers and inactive tabs (lighter than BackgroundColor so their edges are visible) -->
+    <SolidColorBrush x:Key="ControlColor" Color="#FF3C3C3C" />
+    <!-- Gap and divider between panes (ProfileEditor's GridSplitter) -->
+    <SolidColorBrush x:Key="PaneGapColor" Color="#FF2B2B2B" />
+    <SolidColorBrush x:Key="PaneDividerColor" Color="#FF8A8A96" />
     <SolidColorBrush x:Key="ForegroundColor" Color="White" />
     <SolidColorBrush x:Key="SecondaryColor" Color="#FF2d5a8c" />
     <SolidColorBrush x:Key="AccentColor" Color="#FF007ACC" />
@@ -95,7 +100,7 @@
     <!-- Button Style -->
     <Style x:Key="ButtonStyle" TargetType="{x:Type Button}">
         <Setter Property="FocusVisualStyle" Value="{x:Null}"/>
-        <Setter Property="Background" Value="{StaticResource BackgroundColor}"/>
+        <Setter Property="Background" Value="{StaticResource ControlColor}"/>
         <Setter Property="BorderBrush" Value="{StaticResource BorderColor}"/>
         <Setter Property="Foreground" Value="{StaticResource ForegroundColor}"/>
         <Setter Property="Padding" Value="1"/>
@@ -130,7 +135,7 @@
     <!-- Repeat Button Style -->
     <Style x:Key="RepeatButtonStyle" TargetType="{x:Type RepeatButton}">
         <Setter Property="FocusVisualStyle" Value="{x:Null}"/>
-        <Setter Property="Background" Value="{StaticResource BackgroundColor}"/>
+        <Setter Property="Background" Value="{StaticResource ControlColor}"/>
         <Setter Property="BorderBrush" Value="{StaticResource BorderColor}"/>
         <Setter Property="Foreground" Value="{StaticResource ForegroundColor}"/>
         <Setter Property="Padding" Value="1"/>
@@ -493,25 +498,26 @@
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="{x:Type TabItem}">
-                    <Border BorderBrush="Transparent" Width="{TemplateBinding Width}" 
+                    <Border x:Name="tabBorder" BorderBrush="{StaticResource BorderColor}" BorderThickness="1,1,1,0" Margin="0,0,2,0" Width="{TemplateBinding Width}" 
                                     Background="{TemplateBinding Background}" Padding="{TemplateBinding Padding}">
                         <TextBlock Text="{TemplateBinding Header}" Foreground="{TemplateBinding Foreground}"/>
                     </Border>
                     <ControlTemplate.Triggers>
-                        <Trigger Property="IsSelected" Value="True">
-                            <Setter Property="Background" Value="{StaticResource AccentColor}" />
-                            <Setter Property="Foreground" Value="{StaticResource ForegroundColor}" />
-                        </Trigger>
                         <Trigger Property="IsMouseDirectlyOver" Value="True">
-                            <Setter Property="Background" Value="{StaticResource ForegroundColor}"/>
+                            <Setter Property="Background" Value="{StaticResource SecondaryColor}"/>
                         </Trigger>
                         <MultiTrigger>
                             <MultiTrigger.Conditions>
                                 <Condition Property="IsMouseOver" Value="False"/>
                                 <Condition Property="IsSelected" Value="False"/>
                             </MultiTrigger.Conditions>
-                            <Setter Property="Background" Value="Transparent"/>
+                            <Setter Property="Background" Value="{StaticResource ControlColor}"/>
                         </MultiTrigger>
+                        <Trigger Property="IsSelected" Value="True">
+                            <Setter Property="Background" Value="{StaticResource AccentColor}" />
+                            <Setter Property="Foreground" Value="{StaticResource ForegroundColor}" />
+                            <Setter Property="BorderBrush" TargetName="tabBorder" Value="{StaticResource AccentColor}" />
+                        </Trigger>
                     </ControlTemplate.Triggers>
                 </ControlTemplate>
             </Setter.Value>
@@ -686,7 +692,7 @@
 
     <!-- GridViewColumnHeader style -->
     <Style x:Key="GridViewColumnHeaderStyle" TargetType="{x:Type GridViewColumnHeader}">
-        <Setter Property="Background" Value="{StaticResource BackgroundColor}"/>
+        <Setter Property="Background" Value="{StaticResource ControlColor}"/>
         <Setter Property="Height" Value="22"/>
         <Setter Property="MinWidth" Value="30"/>
         <Setter Property="Template">
@@ -731,7 +737,7 @@
         <Setter Property="HorizontalContentAlignment" Value="Center"/>
         <Setter Property="VerticalContentAlignment" Value="Center"/>
         <Setter Property="Foreground" Value="{StaticResource ForegroundColor}"/>
-        <Setter Property="Background" Value="{StaticResource BackgroundColor}"/>
+        <Setter Property="Background" Value="{StaticResource ControlColor}"/>
         <Setter Property="BorderBrush" Value="{StaticResource BorderColor}"/>
         <Setter Property="DropDownContentBackground" Value="{StaticResource BackgroundColor}"/>
         <Setter Property="Padding" Value="3"/>
@@ -800,7 +806,7 @@
             <Setter.Value>
                 <ControlTemplate TargetType="{x:Type ToggleButton}">
                     <Grid HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
-                        <Border BorderThickness="1" BorderBrush="{TemplateBinding BorderBrush}" Background="{StaticResource BackgroundColor}">
+                        <Border BorderThickness="1" BorderBrush="{TemplateBinding BorderBrush}" Background="{StaticResource ControlColor}">
                             <Path Data="M 0 0 L 4 4 L 8 0 Z" VerticalAlignment="Center" HorizontalAlignment="Right" Margin="0,0,5,0" Fill="{StaticResource ForegroundColor}"/>
                         </Border>
                     </Grid>
@@ -1377,7 +1383,7 @@
         <Setter Property="IsTabStop" Value="False"/>
         <Setter Property="SnapsToDevicePixels" Value="True"/>
         <Setter Property="FocusVisualStyle" Value="{x:Null}"/>
-        <Setter Property="Background" Value="{StaticResource BackgroundColor}"/>
+        <Setter Property="Background" Value="{StaticResource ControlColor}"/>
         <Setter Property="BorderBrush" Value="{StaticResource ForegroundColor}"/>
         <Setter Property="BorderThickness" Value="1"/>
         <Setter Property="Template">

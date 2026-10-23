@@ -1210,10 +1210,9 @@ namespace DS4WinWPF
             {
                 Application.Current.Resources.MergedDictionaries.Clear();
 
-                // Attempt to switch theme based on currently selected Windows apps theme mode
-                DS4Windows.AppThemeChoice implicitTheme = DS4Windows.Util.SystemAppsUsingDarkTheme() ?
-                    DS4Windows.AppThemeChoice.Dark : DS4Windows.AppThemeChoice.Light;
-                themeLocs.TryGetValue(implicitTheme, out string loc);
+                // 4.0.1: Default is the light theme (it used to follow the Windows apps theme mode, which made the
+                // dark theme the default for many users). Choose Dark explicitly to use the dark theme.
+                themeLocs.TryGetValue(DS4Windows.AppThemeChoice.Light, out string loc);
                 Application.Current.Resources.MergedDictionaries.Add(new ResourceDictionary() { Source = new Uri(loc, uriKind: UriKind.Relative) });
 
                 if (fireChanged)
