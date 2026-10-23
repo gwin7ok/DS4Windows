@@ -58,3 +58,16 @@ GetOverlappedResultEx(handle, ov, out _, timeout, true)   // ← 保留中の I/
 - 是正後のビルドで、これまで落ちていた操作（コントローラーを接続したまま、ColorPicker／Controller Readings を繰り返し開閉する、プロファイルの切替、長時間の使用）を行い、**3 日間ほど**、ダンプが増えないかを見る。
 - 落ちなければ、K7b-1 の原因を特定できたとして閉じる（根拠: 是正の前後の発生頻度の比較）。
 - 落ち続けるなら、ダンプで落ちた場所を確認し、残りの候補（`DS4Device` の `fixed` ブロック［`performDs4Input`、`PrepareOutputReportInner`］、`DS4SixAxis`、`HidHideAPIDevice`、`DS4OutDeviceExtras` の `GCHandle` の使い方）を、順に調べる。
+
+## 6. ダンプの解析結果（2026-10-23。`DS4Windows.exe.9212.dmp`）
+
+- 落ちた場所: GC のマーク処理（`coreclr!SVR::gc_heap::mark_object_simple1`）。型情報が null のオブジェクトを踏んだ（`0xc0000005`）。
+- `!verifyheap`: 481,611 個中、エラー 5 件。古い世代（segment 5）の約 440 バイトに集中。4 個のオブジェクトが、別の領域（heap 12 の第 2 世代）の、壊れたアドレスを指す。指す先の 1 つは、型情報が `1`。
+- **決定的な証拠**: 壊れたアドレス（`236a1442018`〜`236a1442067`）の生のバイト列が、**DS4 の Bluetooth 入力レポート（レポート ID 0x11）**だった。
+  - `11 c0 00 7f 80 a5 56 08 00 78 …`（`11`＝レポート ID、`c0`＝ヘッダー、`7f 80 a5 56`＝スティック、`08`＝十字キーの中立値）
+  - `80 00 00 00` の繰り返し（タッチパッドの、指が触れていない状態）
+  - 末尾の 4 バイト（`6c 18 e8 cf`）＝ CRC32
+- つまり、**HID の読み取り（カーネル）が、入力レポートを、GC ヒープの別のオブジェクトの上に書き込んだ**。読み取りのバッファ（`DS4Device.btInputReport`／`inputReport`）が、保留中の非同期 I/O の間に GC によって移動され、カーネルが古い位置へ書き込んだ、という §2.1 の原因と一致する。
+- Server GC（`DS4WinWPF.csproj` の `ServerGarbageCollection`＝true。32 ヒープ）は、元からの設定。ヒープが多く、GC による移動の機会が多いため、症状が出やすい。設定は変えない（是正は `HidDevice` 側）。
+
+結論: **K7b-1 の原因を特定した**（`HidDevice.ReadFile` の、保留中の読み取りのバッファが固定されていない）。是正は 7033089。是正後の実機確認（§5）で、ダンプが増えないことを確かめる。
