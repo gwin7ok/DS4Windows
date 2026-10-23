@@ -233,6 +233,22 @@ flowchart TD
 | **`ProfileSettingsViewModel.cs`**<br>(158 KB) | 全UI設定プロパティの抱え込み | `ProfileSettingsViewModel`(親Mediator) ＋ `StickSubVM`, `TriggerSubVM`, `ButtonSubVM`, `SpecialActionsSubVM` | **4. UI層** |
 | **`DS4Device.cs`**<br>(87 KB) | 通信、パケット解析、CRC32、振動出力の混在 | `IHidTransport`(通信), `DS4ReportParser`(解析), `DS4OutputReportEncoder`(生成) | **1. 入力監視層** |
 
+### 2.1 実装の現状（2026-10-23 Phase9 9-I。目標像との違い）
+
+上の表は**目標像**である。Phase9（責務分割）の結果、実在するものと、目標のままのもの（未実装）を区別して示す。
+
+| 解体対象 | 現在の行数 | 実在する受け皿 | 未実装（目標像の名前のまま） |
+| :--- | :--- | :--- | :--- |
+| `ScpUtil.cs` | 解体済み（`Global` 削除） | `ProfileXmlStore`, `AppSettingsService`, `PathService`, `EnvironmentService` ほか（Phase6〜7） | `DeviceOptionRepository`, `XmlIoLock`（この名前の型は実在しない。同じ XML への排他は、`ProfileXmlStore` などの保存処理が担う） |
+| `Mapping.cs` | 約 1,100（7,322 から削減） | `StickDeadZoneProcessor`, `TriggerDeadZoneProcessor`, `OutputCurveProcessor`, `GyroControlsProcessor`, `StickInputConditioner`, `FlickStickProcessor`, `TwoStageTriggerProcessor`, `ButtonMouseMovementCalculator`, `MouseMotionQuantizer`, `GyroMouseStickBlender`, `SyntheticInputCommitter`, `MacroPlayback`, `MacroStepExecutor`, `ControlActivityReader`、統一トリガーディスパッチ（Phase8）。`Mapping` 自体は `IMapping` の Singleton として残り、各部品を順に呼ぶ | `IInputMappingPipeline`, `ButtonProcessor`, `StickProcessor`, `TriggerProcessor`, `TouchGyroProcessor`（名前と形は、実在の部品へ読み替える） |
+| `Mouse.cs` | 1,808（未着手） | `OneEuroFilter3D`, `MouseCursor`, `MouseWheel` などは別ファイルとして実在 | `IMouseEngine`（未着手。9-I の後に判断） |
+| `ControlService.cs` | 約 1,075（約 3,400 から削減） | `IServiceLifecycle`／`DeviceConnector`／`DeviceDisconnectHandler`／`JoyConLinker`／`VirtualPadService`／`HidHideService`／`OscService`／`LatencyMonitor`／`TouchpadToggleService`／`ActiveInputProbe`／`IInputDeviceModule`（5 種） | `InputLoopCoordinator`, `IDeviceHotplugMonitor`（ホットプラグは `ServiceLifecycle`／`MainWindow.HandleDeviceChange` が担う）, `ILightbarService`。`ControlService` はスロットの配列と `Func` 経由の窓口を持つ統括役として残る（先送り台帳 F-5c） |
+| `ProfileSettingsViewModel.cs` | 3,427（未着手） | 親 `ProfileSettingsViewModel` のみ（`IViewModelFactory` 経由の生成は実在） | `StickSubVM`, `TriggerSubVM`, `ButtonSubVM`, `SpecialActionsSubVM`（9-G。効果とコストの判断待ち） |
+| `DS4Device.cs` | 2,011（未着手） | 種類ごとの `IInputDeviceModule`（接続時の処理）。通信・解析は未分離 | `IHidTransport`, `DS4ReportParser`, `DS4OutputReportEncoder`（9-H。K7b-1 の切り分けが済むまで着手しない） |
+
+先送りの項目は `Phase9-Deferred-Ledger.md` に記録している。
+
+
 ---
 
 ## 3. 依存関係の境界ルール（アーキテクチャ・ガードレール）

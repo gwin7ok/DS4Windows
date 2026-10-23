@@ -94,6 +94,51 @@
 
 ---
 
+## 2.5 Phase8〜Phase10 で追加されたサービス（2026-10-23 Phase9 9-I で追記）
+
+上の一覧表に載っていなかった登録を、領域別にまとめる。ライフタイムは、特記のない限りすべて **Singleton**（状態を持つものは、デバイスのスロット別、または専用の状態オブジェクトに持つ）。`ServiceRegistration.cs` の登録と一致させている（登録数は 116）。
+
+| 領域（層） | サービス（インターフェース → 実装） | 責務 | 備考 |
+| :--- | :--- | :--- | :--- |
+| 2. 入力処理（スティック・トリガー・ジャイロの補正。Phase9 9-A） | `IStickInputConditioner` → `StickInputConditioner` | ドリフト補正・アンチスナップバック・ファズ | 状態なし |
+| | `IStickDeadZoneProcessor` → `StickDeadZoneProcessor` | スティック 1 本のデッドゾーン（Radial／Axial、Outer） | 状態なし |
+| | `ITriggerDeadZoneProcessor` → `TriggerDeadZoneProcessor` | トリガー 1 本のデッドゾーン | 状態なし |
+| | `IOutputCurveProcessor` → `OutputCurveProcessor` | スクエアスティックと出力カーブ | 状態なし |
+| | `IGyroControlsProcessor` → `GyroControlsProcessor` | ジャイロ → コントロールの補正 | 状態なし |
+| | `IFlickStickProcessor` → `FlickStickProcessor` | フリックスティック | 状態は呼び出し側が持つ |
+| | `IGyroMouseStickBlender` → `GyroMouseStickBlender` | ジャイロのマウススティック出力の合成（Phase9 9-B） | 状態なし |
+| | `ITwoStageTriggerProcessor` → `TwoStageTriggerProcessor` | 2 段階トリガーの状態機械（Phase9 MapCustom M2） | 状態は `TwoStageTriggerMappingData` |
+| 2. 入力処理（マウス・合成入力） | `IButtonMouseMovementCalculator` → `ButtonMouseMovementCalculator` | ボタン等 → マウスの生の移動量（Phase9 9-B） | マウス加速の状態をデバイス別に持つ |
+| | `IMouseMotionQuantizer` → `MouseMotionQuantizer` | 移動量の整数化（端数の持ち越し） | 端数をデバイス別に持つ |
+| | `ISyntheticInputCommitter` → `SyntheticInputCommitter` | 合成入力（クリック・ホイール）の確定と出力（Phase9 MapCustom M1） | ホイールの繰り返しの状態を持つ |
+| | `IControlActivityReader` → `ControlActivityReader` | コントロールが押されているかの判定（マクロ記録画面） | 状態なし |
+| | `IActiveInputProbe` → `ActiveInputProbe` | いま押されている入力を 1 つ探す（Phase9 9-E E-5） | 状態なし |
+| 2. 入力処理（マクロ。Phase9 9-C） | `IMacroPlayback` → `MacroPlayback` | マクロの再生の予約・繰り返し・後始末 | |
+| | `IMacroStepExecutor` → `MacroStepExecutor` | マクロの 1 つの値の実行 | 状態は `MacroRuntimeState` |
+| | `IMacroStringPlayer` → `DefaultMacroStringPlayer` | マクロを文字列で指定して実行する窓口（Phase8-Step7） | |
+| 2. 入力処理（割り当ての組み立て。Phase8〜10） | `IControlBindingBuilder` → `ControlBindingBuilder` | Controls タブの割り当てから、エンジンの束縛を組み立てる | |
+| | `ISpecialActionOutputFactory` → `SpecialActionOutputFactory` | 特殊アクションの種別ごとの出力アクションと実行方針（Phase10-Step4） | SA タブと Controls タブで共有 |
+| | `IProfileIdentityService` → `ProfileIdentityService` | プロファイルの ID と名前の対応（Phase10-Step4d） | |
+| | `IRepeater` → `RepeatHelperToIRepeaterAdapter` | キーの繰り返しの周期呼び出し | |
+| 2. 出力アクションの窓口（Phase8-Step7。実機・静的な窓口をアクションから隠す） | `IGyroCalibrationPort` → `DefaultGyroCalibrationPort` | GyroCalibrate の実機操作 | テストでは偽物に差し替える |
+| | `IControllerDisconnectPort` → `DefaultControllerDisconnectPort` | DisconnectBT の実機操作 | 同上 |
+| | `IBatteryCheckPort` → `DefaultBatteryCheckPort` | BatteryCheck の実機・ライトバー・通知 | 同上 |
+| | `IControlExtrasPort` → `DefaultControlExtrasPort` | Controls の Extras（振動・ライトバー等） | 同上 |
+| 1／2. デバイスの接続（Phase9 9-E E-6） | `IInputDeviceModule` → `Ds4DeviceModule`／`DualSenseDeviceModule`／`SwitchProDeviceModule`／`JoyConDeviceModule`／`Ds3DeviceModule` | デバイスの種類ごとの処理（カートリッジ） | 5 つを複数登録 |
+| | `IInputDeviceModuleRegistry` → `InputDeviceModuleRegistry` | 種類から部品を引く | 該当なしは何もしない部品を返す |
+| | `IConnectionProfileSelector` → `ConnectionProfileSelector` | 接続時のプロファイルの選択と適用（E-6a） | |
+| | `IDeviceConnectionSetup` → `DeviceConnectionSetup` | 接続時の設定の反映とイベントの配線（E-6b） | |
+| | `IJoyConLinker` → `JoyConLinker` | Joy-Con の L と R の結合（E-6d） | |
+| | `IDeviceConnector` → `DeviceConnector` | 接続の組み立て（E-6f1） | |
+| | `IDeviceDisconnectHandler` → `DeviceDisconnectHandler` | 切断・同期・シリアル変更の処理（E-6e） | |
+| | `IServiceLifecycle` → `ServiceLifecycle` | 開始・停止・ホットプラグと、その状態・イベント（E-6f2） | `ControlService` は `running` などを転送（`Phase9-Deferred-Ledger.md` F-5c） |
+| | `ILatencyMonitor` → `LatencyMonitor` | 入力レポートのエラーのログと遅延の監視（E-5） | |
+| | `ITouchpadToggleService` → `TouchpadToggleService` | タッチパッドの切り替え・スライドの判定（E-5） | |
+| 3. 仮想出力・外部連携（Phase9 9-E） | `IVirtualPadService` → `VirtualPadService` | 仮想パッド（ViGEm）の出力、`OutputSlotManager`、割り当て、振動（E-4） | `IOutputSlotService` は、ここから `OutputSlotManager` を引く |
+| | `IHidHideService` → `HidHideService`、`IHidHideApiFactory` → `HidHideApiFactory` | HidHide との連携（E-2） | |
+| | `IOscService` → `OscService`、`IOscTransportFactory` → `SharpOscTransportFactory` | OSC の受信・送信・入力への重ね合わせ（E-1） | SharpOSC の型は境界の内側に閉じる |
+| 窓口（ホスト）。`ControlService` が実装 | `IVirtualPadHost`、`IDeviceSlotHost`、`IServiceLifecycleHost`（`Func` で遅延して解決） | 部品が `ControlService` に頼る機能（スロットの配列、イベントスレッド、キーボード／マウス出力の初期化など）の窓口 | **過渡期の逆依存**。`ControlService` の残りの分割（先送り台帳 F-5c）と同時に解消する |
+
 ## 3. リソース破棄と安全な終了手順
 
 1. **破棄の依存順序制御（LIFO / 逆順破棄）:**
