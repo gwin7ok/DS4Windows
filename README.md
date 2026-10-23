@@ -67,6 +67,12 @@ This fork's executable is configured to always run with administrator privileges
 
 The detailed history of changes for this fork has been moved to `CHANGELOG.md`.
 
+### Version 4.0.0
+4.0.0 is a major release: the internal architecture was rebuilt on dependency injection, and the Controls and Special Actions tabs now share one assignment editor (Switch Mode for every assignment, SA Extras, a Duplicate button, and a "Reset all to Default" button). The "360 Steering Wheel" emulation and the XboxGameDVR special action were removed.
+**Please back up your profile folder before updating**, because profiles saved by 4.0.0 may not be readable by 3.x. See [CHANGELOG.md](./CHANGELOG.md) for details.
+
+4.0.0 では内部構造を DI（依存性注入）ベースに全面的に作り直し、Controls タブと Special Actions タブの割り当て画面を統一しました。「360 Steering Wheel」と XboxGameDVR は廃止されました。**更新前にプロファイルのバックアップを取ってください**（4.0.0 で保存したプロファイルは 3.x で読めない場合があります）。
+
 Please see [CHANGELOG.md](./CHANGELOG.md) for versioned release notes and details. Visit the Releases page for the latest build.
 
 _This README retains a short pointer — full changelog entries are maintained in `CHANGELOG.md`._

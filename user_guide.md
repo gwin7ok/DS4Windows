@@ -28,11 +28,11 @@ On the resulting screen is where you can fully customize the new profile.
 
 <img src="https://user-images.githubusercontent.com/32114370/189565801-485819c1-cfdc-4aca-8b28-1a91b925c5d9.png" width=75% height=75%>
 
-The **Controls** tab is for remapping the controller button outputs. To open the page below, click on the desired button to remap on the image of the controller. Then select the desired new output for that input.
+The **Controls** tab is for remapping the controller button outputs. To open the page below, click on the desired button to remap on the image of the controller. Then select the desired new output for that input. Since 4.0.0, the same assignment editor is used here and in the **Special Actions** tab, so macros, launching a program, loading a profile and the other special action types can be assigned from either tab. Every assignment has a Switch Mode (Press / Toggle), and the **Reset all to Default** button restores all assignments of the profile.
 
 <img src="https://user-images.githubusercontent.com/32114370/189566012-a734210b-05e6-45f7-a1f8-8a1d5f71514f.png" width=75% height=75%>
 
-The **Special Actions** tab allows you to create actions that are triggered when a button or combination of button presses occur.
+The **Special Actions** tab allows you to create actions that are triggered when a button or combination of button presses occur. An existing action can be copied with the **Duplicate** button (the copy is added disabled), and double-clicking a row opens its editor. Analog inputs (triggers, stick axes) used as triggers are treated as pressed as soon as they move beyond the dead zone.
 
 The **Controller Readings** tab gives a live readout of the data from the joysticks being transmitted to DS4Windows
 
