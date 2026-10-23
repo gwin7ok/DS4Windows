@@ -1,12 +1,5 @@
 # DS4Windows
 
-> **This project has moved.** It continues at **https://github.com/gwin7ok/DS4Windows** (formerly `gwin7ok/DS4Windows-Vader4Pro`).
-> Version 4.0.2 and later check for updates there, and the update from 4.0.1 or earlier is delivered by the 4.0.2 release.
-> The old repository is kept only so that older versions can still find 4.0.2.
->
-> **このプロジェクトは移転しました。** 今後は **https://github.com/gwin7ok/DS4Windows**（旧 `gwin7ok/DS4Windows-Vader4Pro`）で開発・配布します。
-> 4.0.2 以降は、更新の確認先がこちらになります。4.0.1 以前からは、4.0.2 への更新で移行されます。旧リポジトリは、古いバージョンが 4.0.2 を見つけるために残してあります。
-
 Like those other DS4 tools, but sexier.
 
 DS4Windows is an extract anywhere program that allows you to get the best
