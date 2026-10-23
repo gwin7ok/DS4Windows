@@ -45,28 +45,28 @@ namespace DS4WindowsTests
         }
 
         [Fact]
-        public void PadButtonTarget_JudgesAStickDirectionBy55_AndATriggerAbove100()
+        public void PadButtonTarget_JudgesAStickDirectionAndATriggerWithoutAThreshold()
         {
             using var t = new ControlsKeyTestScope();
             t.MapButton(DS4Controls.LXNeg, X360Controls.A);   // A の標準の割り当ては Cross
             t.MapButton(DS4Controls.L2, X360Controls.Y);      // Y の標準の割り当ては Triangle
             t.Publish();
 
+            // R-5（ユーザー決定 2026-10-23）: デジタルな出力先は閾値なし（以前は、スティックが幅 55、L2 が 100 を超えるまで不成立）
             DS4State slightlyLeft = Neutral();
-            slightlyLeft.LX = 100;   // 128 − 100 ＝ 28。幅 55 に届かない
-            Assert.False(t.Run(slightlyLeft).Cross);
+            slightlyLeft.LX = 100;   // 128 − 100 ＝ 28
+            Assert.True(t.Run(slightlyLeft).Cross);
 
             DS4State farLeft = Neutral();
-            farLeft.LX = 60;         // 128 − 60 ＝ 68 > 55
+            farLeft.LX = 60;         // 128 − 60 ＝ 68
             Assert.True(t.Run(farLeft).Cross);
 
-            DS4State at100 = Neutral();
-            at100.L2 = 100;
-            Assert.False(t.Run(at100).Triangle);
+            DS4State at0 = Neutral();
+            Assert.False(t.Run(at0).Triangle);
 
-            DS4State at101 = Neutral();
-            at101.L2 = 101;
-            DS4State output = t.Run(at101);
+            DS4State at1 = Neutral();
+            at1.L2 = 1;
+            DS4State output = t.Run(at1);
             Assert.True(output.Triangle);
             Assert.Equal(0, output.L2);   // 割り当てたトリガーの元の出力は消える
         }

@@ -55,9 +55,10 @@ namespace DS4Windows.Actions
         {
             if (input == null) throw new ArgumentNullException(nameof(input));
 
-            // Digital: SA のトリガーと同じ判定（Phase8-Step7-8c-Plan.md §0、Phase10-Step4c W4）。Analog: Controls の従来の判定
+            // Digital: SA のトリガーと同じ判定（Phase8-Step7-8c-Plan.md §0、Phase10-Step4c W4）。R-5（ユーザー決定 2026-10-23）: 閾値なしのデジタルな判定（IsDigitalActive）。
+            // Analog: Controls の従来の判定
             bool active = OutputNature == ControlOutputNature.Digital
-                ? input.IsActive(_triggers[0])
+                ? input.IsDigitalActive(_triggers[0])
                 : input is IControlTriggerInput control && control.IsControlActive(_triggers[0]);
 
             // Phase10-Step4 W4: 押し続ける秒数。遅延つきのときは、反転を無視する（ComboTriggerInputAction と同じ）

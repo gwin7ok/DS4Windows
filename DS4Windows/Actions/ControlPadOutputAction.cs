@@ -52,7 +52,7 @@ namespace DS4Windows.Actions
                     }
                 default:
                     {
-                        if (input.IsActive(_values.Source)) frame.SetButton(_values.Output);
+                        if (input.IsDigitalActive(_values.Source)) frame.SetButton(_values.Output);   // R-5: デジタルな出力先は、閾値なしの判定
                         break;
                     }
             }

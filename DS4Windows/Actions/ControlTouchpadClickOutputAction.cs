@@ -32,7 +32,7 @@ namespace DS4Windows.Actions
             var input = (ctx as IOutputContextInput)?.Input as IAnalogTriggerInput;
             if (input == null) return;
 
-            if (input.IsActive(_source)) ctx.Frame?.PressX360(X360Controls.TouchpadClick);
+            if (input.IsDigitalActive(_source)) ctx.Frame?.PressX360(X360Controls.TouchpadClick);   // R-5: デジタルな出力先は、閾値なしの判定
         }
     }
 }

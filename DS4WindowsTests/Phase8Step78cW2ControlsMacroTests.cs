@@ -100,7 +100,7 @@ namespace DS4WindowsTests
         }
 
         [Fact]
-        public void TheTriggerJudgement_UsesTheSaThreshold_AndTheAssignmentJudgementTheControlOne()
+        public void TheTriggerJudgement_HasNoThreshold_AndTheAssignmentJudgementTheControlOne()
         {
             var input = new TriggerInput(Device, TestHost.GetService<IProfileSettingsService>());
             DS4StateFieldMapping fields = new DS4StateFieldMapping();
@@ -110,7 +110,7 @@ namespace DS4WindowsTests
             var trigger = new ControlButtonInputAction("p8s78c", DS4Controls.L2, ControlBindingKind.Macro, ControlOutputNature.Digital);
             var assignment = new ControlButtonInputAction("p8s78c", DS4Controls.L2);
 
-            Assert.False(trigger.Evaluate(input).IsEstablished);     // 1 は、SA のトリガーの判定（100 より大きい）には届かない
+            Assert.True(trigger.Evaluate(input).IsEstablished);      // R-5（2026-10-23）: デジタルな判定は閾値なし（以前は、SA の 100 より大きい）
             Assert.True(assignment.Evaluate(input).IsEstablished);   // Controls の Key の判定（0 より大きい）では押下
             Assert.Equal(ControlBindingKind.Key, assignment.Kind);
             Assert.Equal(ControlOutputNature.Analog, assignment.OutputNature);

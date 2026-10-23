@@ -136,7 +136,7 @@ namespace DS4Windows.Actions
                     {
                         for (int i = 0; i < _sa.trigger.Count; i++)
                         {
-                            if (!input.IsActive(_sa.trigger[i])) { released = _sa.trigger[i].ToString(); break; }
+                            if (!input.IsDigitalActive(_sa.trigger[i])) { released = _sa.trigger[i].ToString(); break; }
                         }
                     }
 
@@ -144,7 +144,7 @@ namespace DS4Windows.Actions
                     {
                         for (int i = 0; i < _sa.uTrigger.Count; i++)
                         {
-                            if (!input.IsActive(_sa.uTrigger[i])) { released = _sa.uTrigger[i].ToString(); break; }
+                            if (!input.IsDigitalActive(_sa.uTrigger[i])) { released = _sa.uTrigger[i].ToString(); break; }
                         }
                     }
                 }

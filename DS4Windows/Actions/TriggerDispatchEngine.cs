@@ -703,7 +703,7 @@ namespace DS4Windows.Actions
             public DeviceRuntime(int device, IVirtualKBM virtualKbm)
             {
                 Context = new EngineContext(device, virtualKbm, this);
-                ReleasePredicate = control => !ReleaseInput.IsActive(control);
+                ReleasePredicate = control => !ReleaseInput.IsDigitalActive(control);   // R-5: 成立の判定（閾値なし）に合わせる
             }
         }
 

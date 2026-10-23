@@ -87,35 +87,25 @@ namespace DS4WindowsTests
         }
 
         [Fact]
-        public void MouseButton_UsesTheSpecialActionThreshold_ForTheStickAndTheTrigger()
+        public void MouseButton_HasNoThreshold_ForTheStickAndTheTrigger()
         {
             using var t = new ControlsKeyTestScope();
             t.MapButton(DS4Controls.LXNeg, X360Controls.RightMouse);
             t.MapButton(DS4Controls.L2, X360Controls.MiddleMouse);
             t.Publish();
 
-            // Phase10-Step4c W4（ユーザー承認、2026-10-21）: マウスのボタンは、SA と同じ閾値で判定する（以前は、扇形の判定と、L2 が 0 より大きければ押下）
+            // Phase10-Step4c W4（ユーザー承認、2026-10-21）で、マウスのボタンは SA と同じ閾値の判定になった。R-5（ユーザー決定 2026-10-23）: SA も Controls も閾値なし
             DS4State slightlyLeft = Neutral();
-            slightlyLeft.LX = 100;   // 128 − 100 ＝ 28。幅 55 には届かない
+            slightlyLeft.LX = 100;   // 128 − 100 ＝ 28。閾値なしなので押下
             var (output, clicks) = Frame(t, slightlyLeft);
-            Assert.Equal(0, clicks.rightCount);
+            Assert.Equal(1, clicks.rightCount);
             Assert.Equal(128, output.LX);   // 方向の出力は消える
 
-            DS4State farLeft = Neutral();
-            farLeft.LX = 72;   // 128 − 72 ＝ 56。幅 55 を超える
-            (output, clicks) = Frame(t, farLeft);
-            Assert.Equal(1, clicks.rightCount);
-            Assert.Equal(128, output.LX);
+            (output, clicks) = Frame(t, Neutral());
 
             DS4State slightTrigger = Neutral();
-            slightTrigger.L2 = 1;   // 100 には届かない
+            slightTrigger.L2 = 1;   // 0 を超えれば押下
             (output, clicks) = Frame(t, slightTrigger);
-            Assert.Equal(0, clicks.middleCount);
-            Assert.Equal(0, output.L2);
-
-            DS4State pressedTrigger = Neutral();
-            pressedTrigger.L2 = 101;   // 100 を超える
-            (output, clicks) = Frame(t, pressedTrigger);
             Assert.Equal(1, clicks.middleCount);
             Assert.Equal(0, output.L2);
 
@@ -138,10 +128,10 @@ namespace DS4WindowsTests
             Assert.False(output.Cross);
             Assert.Equal(0, clicks.leftCount);   // マウスのカウンターは動かない
 
-            // スティックは、Controls の判定ではなく、幅 55 の判定（GetBoolMapping）
+            // スティックは、Controls の判定（扇形）ではなく、SA と同じデジタルな判定。R-5（ユーザー決定 2026-10-23）: 閾値なし（以前は、幅 55）
             DS4State slightlyLeft = Neutral();
             slightlyLeft.LX = 100;
-            Assert.False(Frame(t, slightlyLeft).Output.OutputTouchButton);
+            Assert.True(Frame(t, slightlyLeft).Output.OutputTouchButton);
 
             DS4State farLeft = Neutral();
             farLeft.LX = 60;

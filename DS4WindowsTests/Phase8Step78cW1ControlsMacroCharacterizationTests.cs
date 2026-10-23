@@ -118,41 +118,31 @@ namespace DS4WindowsTests
         }
 
         [Fact]
-        public void StickDirection_UsesThe55WideThreshold()
+        public void StickDirection_IsPressedOnAnyDeflection()
         {
             using var t = new ControlsKeyTestScope();
             t.MapMacro(DS4Controls.LXNeg, Steps);
             t.Publish();
 
+            // R-5（ユーザー決定 2026-10-23）: デジタルな出力は閾値なし。中心から少しでも傾けば押下（以前は、SA と同じ幅 55）
             DS4State slightlyLeft = ControlsKeyTestScope.Neutral();
-            slightlyLeft.LX = 100;   // 128 − 100 ＝ 28。幅 55 に届かない（Key の判定［角度の扇形］では押下になる）
-            RunFor(t, slightlyLeft, 400);
-            Assert.Equal(0, Presses(t));
-
-            t.Run(ControlsKeyTestScope.Neutral());
-            DS4State farLeft = ControlsKeyTestScope.Neutral();
-            farLeft.LX = 60;         // 128 − 60 ＝ 68 > 55
-            RunFor(t, farLeft, 300);
+            slightlyLeft.LX = 100;   // 128 − 100 ＝ 28
+            RunFor(t, slightlyLeft, 300);
             WaitForPresses(t, 1);
             Assert.True(Presses(t) >= 1);
         }
 
         [Fact]
-        public void Trigger_IsPressedAbove100()
+        public void Trigger_IsPressedAboveZero()
         {
             using var t = new ControlsKeyTestScope();
             t.MapMacro(DS4Controls.L2, Steps);
             t.Publish();
 
-            DS4State at100 = ControlsKeyTestScope.Neutral();
-            at100.L2 = 100;
-            RunFor(t, at100, 400);
-            Assert.Equal(0, Presses(t));
-
-            t.Run(ControlsKeyTestScope.Neutral());
-            DS4State at101 = ControlsKeyTestScope.Neutral();
-            at101.L2 = 101;
-            RunFor(t, at101, 300);
+            // R-5（ユーザー決定 2026-10-23）: デジタルな出力は閾値なし（以前は 100 を超えるまで不成立）
+            DS4State at1 = ControlsKeyTestScope.Neutral();
+            at1.L2 = 1;
+            RunFor(t, at1, 300);
             WaitForPresses(t, 1);
             Assert.True(Presses(t) >= 1);
         }

@@ -80,22 +80,23 @@ namespace DS4WindowsTests
         }
 
         [Fact]
-        public void StickDirection_UsesTheSpecialActionThreshold()
+        public void StickDirection_IsPressedOnAnyDeflection()
         {
             using var t = new ControlsKeyTestScope();
             t.MapKey(DS4Controls.LXNeg, Key);
             t.Publish();
             SpecialAction sa = t.SyntheticFor(DS4Controls.LXNeg, Key);
 
-            // Phase10-Step4c W4（ユーザー承認、2026-10-21）: Controls の Key は、SA と同じ閾値（中心から幅 55 を超える）で判定する。以前は、わずかな傾きでも、角度の扇形の中なら押下だった
+            // Phase10-Step4c W4（ユーザー承認、2026-10-21）で、Controls の Key は SA と同じ判定（中心から幅 55 を超える）になった。
+            // R-5（ユーザー決定 2026-10-23）: デジタルな出力は、SA も Controls も閾値なし（中心から少しでも傾けば押下。値はデッドゾーンの補正の後）
             DS4State slightlyLeft = ControlsKeyTestScope.Neutral();
-            slightlyLeft.LX = 100;   // 128 − 100 ＝ 28。幅 55 には届かない
+            slightlyLeft.LX = 100;   // 128 − 100 ＝ 28。閾値なしなので押下
             DS4State output = t.Run(slightlyLeft);
-            Assert.False(t.IsBeingTriggered(sa));
+            Assert.True(t.IsBeingTriggered(sa));
             Assert.Equal(128, output.LX);          // 方向の出力は消える（毎フレーム）
 
             DS4State farLeft = ControlsKeyTestScope.Neutral();
-            farLeft.LX = 72;   // 128 − 72 ＝ 56。幅 55 を超える
+            farLeft.LX = 72;   // 128 − 72 ＝ 56
             output = t.Run(farLeft);
             Assert.True(t.IsBeingTriggered(sa));
             Assert.Equal(128, output.LX);
@@ -124,19 +125,20 @@ namespace DS4WindowsTests
         }
 
         [Fact]
-        public void Trigger_IsPressedAboveOneHundred_LikeTheSpecialAction()
+        public void Trigger_IsPressedAboveZero_LikeTheSpecialAction()
         {
             using var t = new ControlsKeyTestScope();
             t.MapKey(DS4Controls.L2, Key);
             t.Publish();
             SpecialAction sa = t.SyntheticFor(DS4Controls.L2, Key);
 
-            // Phase10-Step4c W4（ユーザー承認、2026-10-21）: Controls の Key は、SA と同じ閾値（100 を超える）で判定する。以前は 0 より大きければ押下だった
+            // Phase10-Step4c W4（ユーザー承認、2026-10-21）で、Controls の Key は SA と同じ判定（100 を超える）になった。
+            // R-5（ユーザー決定 2026-10-23）: SA も Controls も閾値なし（0 を超えれば押下）
             DS4State slight = ControlsKeyTestScope.Neutral();
             slight.L2 = 1;
             DS4State output = t.Run(slight);
 
-            Assert.False(t.IsBeingTriggered(sa));
+            Assert.True(t.IsBeingTriggered(sa));
             Assert.Equal(0, output.L2);            // トリガーの出力は消える（毎フレーム）
 
             DS4State pressed = ControlsKeyTestScope.Neutral();

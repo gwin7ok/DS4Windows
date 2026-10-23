@@ -11,7 +11,8 @@ namespace DS4WindowsTests
     /// R-5（Release-Backlog.md。ユーザー決定 2026-10-23）: SA の割り当ての押下の判定。
     /// ① 複数トリガーの組み合わせ、② 割り当て先がデジタル: 閾値なしのデジタルな判定（L2／R2 は 0 を超えたら、スティックの軸は中心から少しでも傾いたら。値は、デッドゾーンの補正の後）。
     /// ③ トリガーが単体で、割り当て先がアナログ（パッドの軸・トリガー、マウス移動）: トリガーの値に比例したアナログな出力（強さは上限）。
-    /// Controls の割り当ては、変えない（閾値つきの <see cref="ITriggerInput.IsActive"/> のまま。Phase10-Step4c W4 で承認済み）。
+    /// Controls のデジタルな出力も、同じ判定（<see cref="ITriggerInput.IsDigitalActive"/>。ユーザー決定 2026-10-23。Phase10-Step4c W4 の「SA と同じ判定」は維持し、閾値だけをなくした）。
+    /// アナログな出力（Controls のパッドの軸・トリガー、マウスの移動）は、従来の Controls の判定（<c>IsControlActive</c>）のまま。
     /// </summary>
     [Collection("ServiceProviderHolder")]
     public class R5SaDigitalJudgementTests

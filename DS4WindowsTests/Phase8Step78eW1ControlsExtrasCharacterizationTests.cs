@@ -149,29 +149,23 @@ namespace DS4WindowsTests
         }
 
         [Fact]
-        public void Judgement_UsesTheSpecialActionThreshold_ForTheStickAndL2()
+        public void Judgement_HasNoThreshold_ForTheStickAndL2()
         {
             using var t = new ControlsKeyTestScope();
             t.MapExtras(DS4Controls.LXNeg, "0,0,1,1,1,1,0,0,0");
             t.MapExtras(DS4Controls.L2, "0,0,1,2,2,2,0,0,0");
             t.PublishControlsOnly();
 
-            // Phase10-Step4c W4（ユーザー承認、2026-10-21）: Extras は、SA と同じ閾値で判定する（以前は、扇形の判定と、L2 が 0 より大きければ押下）
+            // Phase10-Step4c W4（ユーザー承認、2026-10-21）で、Extras は SA と同じ閾値の判定になった。R-5（ユーザー決定 2026-10-23）: SA も Controls も閾値なし
             t.Run(State());
-            t.Run(State(lx: 100));   // 128 − 100 ＝ 28（SA の幅 55 には届かない）
-            Assert.False(t.ForceLight);
-
-            t.Run(State(lx: 72));    // 128 − 72 ＝ 56（幅 55 を超える）
+            t.Run(State(lx: 100));   // 128 − 100 ＝ 28。閾値なしなので成立
             Assert.True(t.ForceLight);
             Assert.Equal(1, t.ForcedColor.red);
 
             t.Run(State());
             Assert.False(t.ForceLight);
 
-            t.Run(State(l2: 1));      // SA は 100 超
-            Assert.False(t.ForceLight);
-
-            t.Run(State(l2: 101));
+            t.Run(State(l2: 1));      // 0 を超えれば成立
             Assert.True(t.ForceLight);
             Assert.Equal(2, t.ForcedColor.red);
         }
