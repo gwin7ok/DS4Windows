@@ -18,7 +18,7 @@ namespace DS4WinWPF.DS4Forms.ViewModels
         public event PropertyChangedEventHandler PropertyChanged;
 
         public string VersionText => $"v{_environmentService.ApplicationVersion}";
-        public string AppTitle => "DS4Windows - Vader 4 Pro Edition";
+        public string AppTitle => "DS4Windows";
         public string GithubUrl => DS4WinWPF.ReleaseSource.RepositoryPageUri;
         public string ChangelogUrl => DS4WinWPF.ReleaseSource.RepositoryPageUri + "/releases";
 

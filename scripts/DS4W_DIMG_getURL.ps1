@@ -1,16 +1,16 @@
 chcp 65001
 
 # 出力先ファイルパスの定数定義
-$OUTPUT_PATH = "G:\Cursor_Folder\DS4Windows-Vader4Pro\urls.txt"
+$OUTPUT_PATH = Join-Path (Split-Path -Parent $PSScriptRoot) "urls.txt"
 
 # 一時的に浅いクローンを作成（ファイルの実体はダウンロードしないため高速です）
-git clone --depth 1 -b For-DI-migration-work --filter=blob:none https://github.com/gwin7ok/DS4Windows-Vader4Pro.git temp_repo
+git clone --depth 1 -b master --filter=blob:none https://github.com/gwin7ok/DS4Windows.git temp_repo
 Set-Location temp_repo
 
 # 全ファイルのURL一覧を作成し、Raw URLに変換して出力
 $urls = git ls-tree -r --name-only HEAD | ForEach-Object {
     # 1. 通常のblob用URLを作成
-    $blobUrl = "https://github.com/gwin7ok/DS4Windows-Vader4Pro/blob/For-DI-migration-work/$_"
+    $blobUrl = "https://github.com/gwin7ok/DS4Windows/blob/master/$_"
     
     # 2. Raw URLへ変換
     # 例: github.com/user/repo/blob/branch/path -> raw.githubusercontent.com/user/repo/refs/heads/branch/path
