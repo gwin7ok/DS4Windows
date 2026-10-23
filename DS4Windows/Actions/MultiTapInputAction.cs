@@ -28,11 +28,15 @@ namespace DS4Windows.Actions
         private DateTime _pastTime;
         private DateTime _firstTap;
         private DateTime _timeOfEnd;
+        private readonly bool _digital;
 
-        public MultiTapInputAction(string name, IReadOnlyList<DS4Controls> triggers, IProfileSettingsService profileSettings, double delaySeconds = 0.0)
+        /// <param name="digitalJudgement">true（既定。SA の割り当て）なら、閾値なしのデジタルな判定（R-5）。false（Controls の Multi-action）なら、従来の閾値つきの判定。</param>
+        public MultiTapInputAction(string name, IReadOnlyList<DS4Controls> triggers, IProfileSettingsService profileSettings, double delaySeconds = 0.0,
+            bool digitalJudgement = true)
         {
             _profileSettings = profileSettings ?? throw new ArgumentNullException(nameof(profileSettings));
-            _combo = new ComboTriggerInputAction(name, triggers, profileSettings, delaySeconds);
+            _digital = digitalJudgement;
+            _combo = new ComboTriggerInputAction(name, triggers, profileSettings, delaySeconds, digitalJudgement: digitalJudgement);
         }
 
         public string Name => _combo.Name;
@@ -52,8 +56,8 @@ namespace DS4Windows.Actions
         private int Advance(ITriggerInput input)
         {
             DS4Controls first = _combo.Triggers[0];
-            bool activeCur = input.IsActive(first);
-            bool activePrev = input.WasActive(first);
+            bool activeCur = _digital ? input.IsDigitalActive(first) : input.IsActive(first);
+            bool activePrev = _digital ? input.WasDigitalActive(first) : input.WasActive(first);
             DateTime now = input.UtcNow;
             TimeSpan debounce = TimeSpan.FromMilliseconds(_profileSettings.DebouncingMs[input.Device]);
 

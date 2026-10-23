@@ -20,14 +20,19 @@ namespace DS4Windows.Actions
         private readonly IProfileSettingsService _profileSettings;
         private readonly double _delaySeconds;
         private readonly bool _invertOnRelease;
+        private readonly bool _digital;
         private bool _armed;
 
         /// <param name="triggers">構成するボタン（1 つ以上）。</param>
         /// <param name="profileSettings">遅延の基準時刻の更新に使うデバウンス（<c>DebouncingMs</c>）の取得元。</param>
         /// <param name="delaySeconds">0 より大きいと、押し続けてこの秒数が経ったときに成立する（現行の <c>delayTime</c>）。</param>
         /// <param name="invertOnRelease">true なら、離したときに成立する（現行の Macro の <c>RunOnRelease</c>）。</param>
+        /// <param name="digitalJudgement">
+        /// true（既定。SA の割り当て）なら、押下の判定は、閾値なしのデジタルな判定（<see cref="ITriggerInput.IsDigitalActive"/>。R-5）。
+        /// false なら、従来の閾値つきの判定（<see cref="ITriggerInput.IsActive"/>）。
+        /// </param>
         public ComboTriggerInputAction(string name, IReadOnlyList<DS4Controls> triggers, IProfileSettingsService profileSettings,
-            double delaySeconds = 0.0, bool invertOnRelease = false)
+            double delaySeconds = 0.0, bool invertOnRelease = false, bool digitalJudgement = true)
         {
             if (triggers == null) throw new ArgumentNullException(nameof(triggers));
             if (triggers.Count == 0) throw new ArgumentException("トリガーのボタンが 1 つ以上必要です。", nameof(triggers));
@@ -38,6 +43,7 @@ namespace DS4Windows.Actions
             _profileSettings = profileSettings ?? throw new ArgumentNullException(nameof(profileSettings));
             _delaySeconds = delaySeconds;
             _invertOnRelease = invertOnRelease;
+            _digital = digitalJudgement;
         }
 
         public string Name { get; }
@@ -57,7 +63,7 @@ namespace DS4Windows.Actions
             bool allActive = true;
             for (int i = 0; i < _triggers.Length; i++)
             {
-                if (!input.IsActive(_triggers[i]))
+                if (!(_digital ? input.IsDigitalActive(_triggers[i]) : input.IsActive(_triggers[i])))
                 {
                     allActive = false;
                     break;

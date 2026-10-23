@@ -130,9 +130,18 @@ namespace DS4Windows.Actions
         //  - 軸: 中立（128）から、向きの端（正は 255、負は 0）へ、強さの分だけ振る。向きは、出力先の添字が偶数なら正（Controls のパッドへの割り当てと同じ）
         //  - トリガー: 255 × 強さ
         //  - マウス移動: Controls のボタンが元のときと同じ量 × 強さ（IFixedMouseInput）
+        //  - R-5（Release-Backlog.md ③。2026-10-23）: トリガーが 1 つで、Toggle でないときは、トリガーの値（L2／R2 の押し込み、スティックの倒し具合）に比例させる
+        //    （強さは、その上限。Controls の Button と同じく、押し込み・倒し具合に応じたアナログな出力）。トリガーが複数（組み合わせ。デジタルな判定）のとき、
+        //    Toggle のとき（離した後も出し続けるため、値がない）、アナログな入力がないとき（テスト）は、強さの固定値で出す
         private void ApplyAnalog(IOutputContext ctx)
         {
             double fraction = _strength / 100.0;
+            if (!_toggle && _sa.trigger != null && _sa.trigger.Count == 1)
+            {
+                var analogInput = (ctx as IOutputContextInput)?.Input as IAnalogTriggerInput;
+                if (analogInput != null) fraction *= analogInput.GetByteValue(_sa.trigger[0]) / 255.0;
+            }
+
             switch (_analogKind)
             {
                 case AnalogOutputKind.PadAxis:

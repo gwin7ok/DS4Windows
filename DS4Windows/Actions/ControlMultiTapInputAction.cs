@@ -15,7 +15,8 @@ namespace DS4Windows.Actions
 
         public ControlMultiTapInputAction(string name, DS4Controls control, IProfileSettingsService profileSettings, double delaySeconds = 0.0)
         {
-            _inner = new MultiTapInputAction(name, new[] { control }, profileSettings, delaySeconds);
+            // R-5: SA の MultiAction は閾値なしのデジタルな判定になったが、Controls の Multi-action は、従来の閾値つきの判定のまま（digitalJudgement: false）
+            _inner = new MultiTapInputAction(name, new[] { control }, profileSettings, delaySeconds, digitalJudgement: false);
         }
 
         public string Name => _inner.Name;

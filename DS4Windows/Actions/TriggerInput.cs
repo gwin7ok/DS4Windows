@@ -91,6 +91,26 @@ namespace DS4Windows.Actions
             return Evaluate(control, _current, _fields);
         }
 
+        /// <summary>R-5: SA の割り当てのデジタルな押下の判定（閾値なし）。<see cref="ITriggerInput.IsDigitalActive"/>。</summary>
+        public bool IsDigitalActive(DS4Controls control)
+        {
+            if (_current == null || _fields == null) return false;
+            return Evaluate(control, _current, _fields, digital: true);
+        }
+
+        public bool WasDigitalActive(DS4Controls control)
+        {
+            if (_previous == null || _exposed == null) return false;
+
+            if (!_previousPopulated)
+            {
+                _previousFields.PopulateFieldMapping(_previous, _exposed, _mouse, true);
+                _previousPopulated = true;
+            }
+
+            return Evaluate(control, _previous, _previousFields, digital: true);
+        }
+
         public bool WasActive(DS4Controls control)
         {
             if (_previous == null || _exposed == null) return false;
@@ -317,9 +337,12 @@ namespace DS4Windows.Actions
             return result;
         }
 
-        // 現行の Mapping.getBoolSpecialActionMapping（cState／fieldMap を引数に取る形）と同じ判定
-        private bool Evaluate(DS4Controls control, DS4State cState, DS4StateFieldMapping fieldMap)
+        // 現行の Mapping.getBoolSpecialActionMapping（cState／fieldMap を引数に取る形）と同じ判定。
+        // digital が true のとき（R-5。SA の割り当て）は、軸と L2・R2 の閾値（幅 55／100）をなくす（軸は 128 から少しでも傾けば、L2・R2 は 0 を超えれば成立）
+        private bool Evaluate(DS4Controls control, DS4State cState, DS4StateFieldMapping fieldMap, bool digital = false)
         {
+            int axisWidth = digital ? 0 : AxisDeadWidth;
+            int triggerThreshold = digital ? 0 : TriggerThreshold;
             int controlNum = (int)control;
             if (controlNum < 0 || controlNum >= DS4StateFieldMapping.mappedType.Length)
                 return false;
@@ -336,16 +359,16 @@ namespace DS4Windows.Actions
 
                 switch (control)
                 {
-                    case DS4Controls.LXNeg: result = cState.LX < 128 - AxisDeadWidth; break;
-                    case DS4Controls.LYNeg: result = cState.LY < 128 - AxisDeadWidth; break;
-                    case DS4Controls.RXNeg: result = cState.RX < 128 - AxisDeadWidth; break;
-                    case DS4Controls.RYNeg: result = cState.RY < 128 - AxisDeadWidth; break;
-                    default: result = axisValue > 128 + AxisDeadWidth; break;
+                    case DS4Controls.LXNeg: result = cState.LX < 128 - axisWidth; break;
+                    case DS4Controls.LYNeg: result = cState.LY < 128 - axisWidth; break;
+                    case DS4Controls.RXNeg: result = cState.RX < 128 - axisWidth; break;
+                    case DS4Controls.RYNeg: result = cState.RY < 128 - axisWidth; break;
+                    default: result = axisValue > 128 + axisWidth; break;
                 }
             }
             else if (controlType == DS4StateFieldMapping.ControlType.Trigger)
             {
-                result = fieldMap.triggers[controlNum] > TriggerThreshold;
+                result = fieldMap.triggers[controlNum] > triggerThreshold;
             }
             else if (controlType == DS4StateFieldMapping.ControlType.Touch)
             {

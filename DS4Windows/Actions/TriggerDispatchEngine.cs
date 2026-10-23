@@ -212,7 +212,7 @@ namespace DS4Windows.Actions
                     var triggers = action.trigger;
                     for (int i = 0, count = triggers.Count; i < count; i++)
                     {
-                        if (!input.IsActive(triggers[i]))
+                        if (!input.IsDigitalActive(triggers[i]))   // R-5: SA の割り当ての判定（閾値なし）に合わせる
                         {
                             activated = true;
                             break;

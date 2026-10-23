@@ -20,6 +20,16 @@ namespace DS4Windows.Actions
         /// <summary>前のフレームで押されていたか（MultiAction のエッジ判定用）。前フレームの表は、最初に要求されたときにだけ作る（遅延）。</summary>
         bool WasActive(DS4Controls control);
 
+        /// <summary>
+        /// R-5（Release-Backlog.md。ユーザー決定 2026-10-23）: SA タブの割り当ての、デジタルな押下の判定（閾値なし）。<see cref="IsActive"/> との違いは、スティックの軸と L2・R2 だけ:
+        /// 軸は中心（128）から少しでも傾いたら、L2・R2 は 0 を超えたら成立する（値は、デッドゾーンの補正の後の値）。ボタン、タッチ、スワイプ、ジャイロは <see cref="IsActive"/> と同じ。
+        /// Controls タブの割り当て（<see cref="IsActive"/> を使う。Phase10-Step4c W4 で承認済みの閾値）は、変えない。既定の実装は <see cref="IsActive"/>（テスト用の偽物は、そのまま動く）。
+        /// </summary>
+        bool IsDigitalActive(DS4Controls control) => IsActive(control);
+
+        /// <summary>前のフレームの <see cref="IsDigitalActive"/>（MultiAction のエッジ判定用）。既定の実装は <see cref="WasActive"/>。</summary>
+        bool WasDigitalActive(DS4Controls control) => WasActive(control);
+
         /// <summary><c>delayTime</c> つきのアクションが共有する、デバイスごとの基準時刻。</summary>
         DelayClock Delay { get; }
 
