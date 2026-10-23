@@ -88,3 +88,9 @@ _This README retains a short pointer — full changelog entries are maintained i
 
 - See the installation and setup guide: [Installation Guide (Japanese)](導入ガイド.md)
 - インストール手順と初回セットアップは次のガイドを参照してください: [導入ガイド](導入ガイド.md)
+
+## About AI-assisted development / AI 支援による開発について
+
+This project is developed with the help of AI coding tools, under human direction. Every change is covered by characterization tests, verified on real hardware, and documented (docs-forDIMG/). Crashes are root-caused from memory dumps, not guessed. Pull requests are welcome, but you are responsible for understanding and testing what you submit.
+
+このプロジェクトは、人の判断のもとで、AI のコーディング支援を使って開発しています。変更ごとに、特性化テスト、実機での確認、文書化を行います。クラッシュは、メモリのダンプから原因を特定します。PR は歓迎しますが、提出する内容を理解して、テストする責任は提出者にあります。
