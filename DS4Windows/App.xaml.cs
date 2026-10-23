@@ -421,6 +421,9 @@ namespace DS4WinWPF
             }
             catch { }
 
+            // R-6: マウスホイールを、Windows の設定（1 画面ずつ／行数）に合わせる。最初の画面ができる前に、1 回だけ登録する
+            DS4WinWPF.DS4Forms.PageScrollWheelHandler.Register();
+
             // Retrieve info about installed ViGEmBus device if found
             // Phase7-Step4 W1／W4: 調べ物と状態は EnvironmentService（状態は static）が持つ。ブートストラップのインスタンスを使う。
             _bootstrapEnvironmentService.RefreshViGEmBusInfo();
