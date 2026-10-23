@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using DS4Windows;
 using DS4Windows.Actions;
 using DS4Windows.DI;
+using DS4Windows.Services;
 using Xunit;
 
 namespace DS4WindowsTests
