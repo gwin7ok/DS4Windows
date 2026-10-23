@@ -44,7 +44,7 @@
                 <TextBlock TextAlignment="Center" TextWrapping="Wrap" Style="{StaticResource CommonMarginTxt}" DockPanel.Dock="Bottom">
                     <Run Text="{lex:Loc Welcome.Step3BluetoothHelpText}" />
                     <LineBreak />
-                    <Hyperlink x:Name="bluetoothSetLink" Click="BluetoothSetLink_Click" Foreground="{DynamicResource AccentColor}">
+                    <Hyperlink x:Name="bluetoothSetLink" Click="BluetoothSetLink_Click" Foreground="{DynamicResource LinkAccentColor}">
                         <Run Text="{lex:Loc Welcome.BluetoothSettings}" />
                     </Hyperlink>
                 </TextBlock>

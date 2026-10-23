@@ -10,6 +10,9 @@
     <SolidColorBrush x:Key="PaneGapColor" Color="{x:Static SystemColors.ControlColor}"/>
     <SolidColorBrush x:Key="PaneDividerColor" Color="Gray"/>
     <SolidColorBrush x:Key="OutputSelectedColor" Color="LimeGreen"/>
+    <SolidColorBrush x:Key="WarningColor" Color="Red"/>
+    <SolidColorBrush x:Key="LinkColor" Color="#FF3881D8"/>
+    <SolidColorBrush x:Key="LinkAccentColor" Color="#FF0066CC"/>
 
     <system:String x:Key="KeyImageImg">key-solid.png</system:String>
     <system:String x:Key="CancelImg">cancel.png</system:String>

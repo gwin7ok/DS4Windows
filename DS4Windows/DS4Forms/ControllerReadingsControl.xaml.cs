@@ -232,6 +232,13 @@ namespace DS4WinWPF.DS4Forms
         // Initialize の前は null（null の間は、ControlService を使う処理をすべてスキップする既存の null 検査が働く）。
         private DS4Windows.ControlService controlService;
 
+        /// <summary>現在のテーマの文字色（テーマの ForegroundColor。見つからなければ SystemColors.WindowTextColor）。</summary>
+        private static Color ThemeForegroundColor()
+        {
+            return (Application.Current?.TryFindResource("ForegroundColor") as SolidColorBrush)?.Color
+                ?? SystemColors.WindowTextColor;
+        }
+
         public void Initialize(DS4Windows.ControlService controlService)
         {
             this.controlService = controlService ?? throw new ArgumentNullException(nameof(controlService));
@@ -240,6 +247,10 @@ namespace DS4WinWPF.DS4Forms
         public ControllerReadingsControl()
         {
             InitializeComponent();
+            // 4.0.1: XAML の初期値は Black（ダークテーマで読めない）。テーマの文字色にそろえる
+            inpuDelayForeBrush.Color = ThemeForegroundColor();
+            l2ValLbBrush.Color = ThemeForegroundColor();
+            r2ValLbBrush.Color = ThemeForegroundColor();
             inputContNum.Content = $"#{deviceNum + 1}";
             exposeState = new DS4StateExposed(baseState);
 
@@ -527,7 +538,7 @@ namespace DS4WinWPF.DS4Forms
             {
                 l2Slider.Value = inL2;
                 l2ValLbTrans.Y = Math.Min(outL2, Math.Max(0, 255)) / 255.0 * -70.0 + TRIG_LB_TRANSFORM_OFFSETY;
-                l2ValLbBrush.Color = outL2 >= 255 ? Colors.Green : (outL2 == 0 ? Colors.Red : Colors.Black);
+                l2ValLbBrush.Color = outL2 >= 255 ? Colors.Green : (outL2 == 0 ? Colors.Red : ThemeForegroundColor());
                 l2InValLb.Content = inL2;
                 l2OutValLb.Content = outL2;
                 lastInL2 = inL2;
@@ -541,7 +552,7 @@ namespace DS4WinWPF.DS4Forms
             {
                 r2Slider.Value = inR2;
                 r2ValLbTrans.Y = Math.Min(outR2, Math.Max(0, 255)) / 255.0 * -70.0 + TRIG_LB_TRANSFORM_OFFSETY;
-                r2ValLbBrush.Color = outR2 >= 255 ? Colors.Green : (outR2 == 0 ? Colors.Red : Colors.Black);
+                r2ValLbBrush.Color = outR2 >= 255 ? Colors.Green : (outR2 == 0 ? Colors.Red : ThemeForegroundColor());
                 r2InValLb.Content = inR2;
                 r2OutValLb.Content = outR2;
                 lastInR2 = inR2;
@@ -599,7 +610,7 @@ namespace DS4WinWPF.DS4Forms
                 else
                 {
                     inpuDelayBackBrush.Color = Colors.Transparent;
-                    inpuDelayForeBrush.Color = SystemColors.WindowTextColor;
+                    inpuDelayForeBrush.Color = ThemeForegroundColor();
                 }
                 lastLatencyInt = latencyInt;
             }

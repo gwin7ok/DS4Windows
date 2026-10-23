@@ -16,7 +16,11 @@
     <SolidColorBrush x:Key="OutputSelectedColor" Color="#FF228B22" />
     <!-- Hyperlinks (the default dark blue was 2.4:1 on the background) -->
     <SolidColorBrush x:Key="LinkColor" Color="#FF6CB6FF" />
+    <!-- Warning text (Red was 3.1:1 on the background) -->
+    <SolidColorBrush x:Key="WarningColor" Color="#FFFF7B7B" />
     <SolidColorBrush x:Key="LinkHoverColor" Color="#FFA8D4FF" />
+    <!-- Links drawn as a TextBlock/Hyperlink with an explicit color (Settings tab, About) -->
+    <SolidColorBrush x:Key="LinkAccentColor" Color="#FF6CB6FF" />
     <!-- Every second row of a list (ListView) -->
     <SolidColorBrush x:Key="AltRowColor" Color="#FF3A3A3A" />
     <SolidColorBrush x:Key="PaneDividerColor" Color="#FF8A8A96" />
@@ -835,7 +839,7 @@
                     <ControlTemplate.Triggers>
                         <Trigger Property="IsEnabled" Value="False">
                             <Setter Property="Fill" TargetName="Arrow" Value="#AFAFAF"/>
-                            <Setter Property="Foreground" TargetName="ActionButtonChrome" Value="{DynamicResource {x:Static SystemColors.GrayTextBrushKey}}"/>
+                            <Setter Property="Foreground" TargetName="ActionButtonChrome" Value="{StaticResource DisabledForegroundColor}"/>
                         </Trigger>
                     </ControlTemplate.Triggers>
                 </ControlTemplate>
@@ -1340,7 +1344,7 @@
                             <Setter Property="Background" TargetName="GlyphPanel" Value="#FFEEF5FD"/>
                         </Trigger>
                         <Trigger Property="IsEnabled" Value="False">
-                            <Setter Property="Foreground" Value="{DynamicResource {x:Static SystemColors.GrayTextBrushKey}}"/>
+                            <Setter Property="Foreground" Value="{StaticResource DisabledForegroundColor}"/>
                         </Trigger>
                     </ControlTemplate.Triggers>
                 </ControlTemplate>
@@ -1400,7 +1404,7 @@
                                     <Setter Property="Background" TargetName="Border" Value="#FFEEF5FD"/>
                                 </Trigger>
                                 <Trigger Property="IsEnabled" Value="False">
-                                    <Setter Property="Foreground" Value="{DynamicResource {x:Static SystemColors.GrayTextBrushKey}}"/>
+                                    <Setter Property="Foreground" Value="{StaticResource DisabledForegroundColor}"/>
                                 </Trigger>
                                 <Trigger Property="CanContentScroll" SourceName="SubMenuScrollViewer" Value="False">
                                     <Setter Property="Canvas.Top" TargetName="OpaqueRect" Value="{Binding VerticalOffset, ElementName=SubMenuScrollViewer}"/>
@@ -1438,7 +1442,7 @@
                                     <Setter Property="Background" TargetName="Border" Value="#210080FF"/>
                                 </Trigger>
                                 <Trigger Property="IsEnabled" Value="False">
-                                    <Setter Property="Foreground" Value="{DynamicResource {x:Static SystemColors.GrayTextBrushKey}}"/>
+                                    <Setter Property="Foreground" Value="{StaticResource DisabledForegroundColor}"/>
                                 </Trigger>
                             </ControlTemplate.Triggers>
                         </ControlTemplate>
@@ -1474,7 +1478,7 @@
                                     <Setter Property="Background" TargetName="Border" Value="{StaticResource AccentColor}"/>
                                 </Trigger>
                                 <Trigger Property="IsEnabled" Value="False">
-                                    <Setter Property="Foreground" Value="{DynamicResource {x:Static SystemColors.GrayTextBrushKey}}"/>
+                                    <Setter Property="Foreground" Value="{StaticResource DisabledForegroundColor}"/>
                                 </Trigger>
                             </ControlTemplate.Triggers>
                         </ControlTemplate>
@@ -1539,7 +1543,7 @@
                                     <Setter Property="Background" TargetName="GlyphPanel" Value="#FFEEF5FD"/>
                                 </Trigger>
                                 <Trigger Property="IsEnabled" Value="False">
-                                    <Setter Property="Foreground" Value="{DynamicResource {x:Static SystemColors.GrayTextBrushKey}}"/>
+                                    <Setter Property="Foreground" Value="{StaticResource DisabledForegroundColor}"/>
                                 </Trigger>
                                 <Trigger Property="CanContentScroll" SourceName="SubMenuScrollViewer" Value="False">
                                     <Setter Property="Canvas.Top" TargetName="OpaqueRect" Value="{Binding VerticalOffset, ElementName=SubMenuScrollViewer}"/>

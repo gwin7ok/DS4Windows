@@ -712,19 +712,19 @@ Public License instead of this License.  But first, please read
                 <DockPanel>
                     <StackPanel DockPanel.Dock="Top" Margin="10,0">
                         <StackPanel Orientation="Horizontal">
-                            <!-- <TextBlock><Hyperlink x:Name="siteLink" Click="SiteLink_Click" Foreground="{DynamicResource AccentColor}">Site</Hyperlink></TextBlock> -->
-                            <TextBlock Margin="20,0,0,0"><Hyperlink x:Name="sourceLink" Click="SourceLink_Click" Foreground="{DynamicResource AccentColor}">Source</Hyperlink></TextBlock>
-                            <TextBlock Margin="20,0,0,0"><Hyperlink Click="gwin7okLink_Click" Foreground="{DynamicResource AccentColor}">gwin7ok</Hyperlink></TextBlock>
+                            <!-- <TextBlock><Hyperlink x:Name="siteLink" Click="SiteLink_Click" Foreground="{DynamicResource LinkAccentColor}">Site</Hyperlink></TextBlock> -->
+                            <TextBlock Margin="20,0,0,0"><Hyperlink x:Name="sourceLink" Click="SourceLink_Click" Foreground="{DynamicResource LinkAccentColor}">Source</Hyperlink></TextBlock>
+                            <TextBlock Margin="20,0,0,0"><Hyperlink Click="gwin7okLink_Click" Foreground="{DynamicResource LinkAccentColor}">gwin7ok</Hyperlink></TextBlock>
                         </StackPanel>
                         <StackPanel Orientation="Horizontal">
-                            <TextBlock><Hyperlink x:Name="jays2KingsLink" Click="Jays2KingsLink_Click" Foreground="{DynamicResource AccentColor}">Jays2Kings</Hyperlink></TextBlock>
-                            <TextBlock Margin="20,0,0,0"><Hyperlink x:Name="inhexSTERLink" Click="InhexSTERLink_Click" Foreground="{DynamicResource AccentColor}">InhexSTER (Starter of DS4Tool)</Hyperlink></TextBlock>
+                            <TextBlock><Hyperlink x:Name="jays2KingsLink" Click="Jays2KingsLink_Click" Foreground="{DynamicResource LinkAccentColor}">Jays2Kings</Hyperlink></TextBlock>
+                            <TextBlock Margin="20,0,0,0"><Hyperlink x:Name="inhexSTERLink" Click="InhexSTERLink_Click" Foreground="{DynamicResource LinkAccentColor}">InhexSTER (Starter of DS4Tool)</Hyperlink></TextBlock>
                         </StackPanel>
                         <StackPanel Orientation="Horizontal">
-                            <TextBlock><Hyperlink x:Name="electrobrainsLink" Click="ElectrobrainsLink_Click" Foreground="{DynamicResource AccentColor}">electrobrains (Branched off of)</Hyperlink></TextBlock>
+                            <TextBlock><Hyperlink x:Name="electrobrainsLink" Click="ElectrobrainsLink_Click" Foreground="{DynamicResource LinkAccentColor}">electrobrains (Branched off of)</Hyperlink></TextBlock>
                         </StackPanel>
                         <StackPanel Orientation="Horizontal">
-                            <TextBlock><Hyperlink Click="ContributorsLink_OnClick" Foreground="{DynamicResource AccentColor}">Contributors</Hyperlink></TextBlock>
+                            <TextBlock><Hyperlink Click="ContributorsLink_OnClick" Foreground="{DynamicResource LinkAccentColor}">Contributors</Hyperlink></TextBlock>
                         </StackPanel>
                         <Label Content="Translators:" Margin="0,20,0,0" />
                     </StackPanel>
@@ -756,7 +756,7 @@ dondrakon - Ukranian
                                 <StackPanel Orientation="Horizontal" Margin="0,8,0,0">
                                     <TextBlock Text="Project URL:" />
                                     <TextBlock Margin="8,0,0,0">
-                                    <Hyperlink x:Name="viGEmBusLink" Click="ViGEmBusLink_Click" Foreground="{DynamicResource AccentColor}">https://github.com/nefarius/ViGEmBus/</Hyperlink>
+                                    <Hyperlink x:Name="viGEmBusLink" Click="ViGEmBusLink_Click" Foreground="{DynamicResource LinkAccentColor}">https://github.com/nefarius/ViGEmBus/</Hyperlink>
                                     </TextBlock>
                                 </StackPanel>
                                 <Expander Header="Description" Margin="0,8,0,0">
@@ -777,7 +777,7 @@ dondrakon - Ukranian
                                 <StackPanel Orientation="Horizontal" Margin="0,8,0,0">
                                     <TextBlock Text="Project URL:" />
                                     <TextBlock Margin="8,0,0,0">
-                                    <Hyperlink x:Name="hidHideLink" Click="HidHideLink_Click" Foreground="{DynamicResource AccentColor}">https://github.com/nefarius/HidHide/</Hyperlink>
+                                    <Hyperlink x:Name="hidHideLink" Click="HidHideLink_Click" Foreground="{DynamicResource LinkAccentColor}">https://github.com/nefarius/HidHide/</Hyperlink>
                                     </TextBlock>
                                 </StackPanel>
                                 <Expander Header="Description" Margin="0,8,0,0">
@@ -799,7 +799,7 @@ dondrakon - Ukranian
                                 <StackPanel Orientation="Horizontal" Margin="0,8,0,0">
                                     <TextBlock Text="Project URL:" />
                                     <TextBlock Margin="8,0,0,0">
-                                    <Hyperlink x:Name="fakerInputLink" Click="FakerInputLink_Click" Foreground="{DynamicResource AccentColor}">https://github.com/Ryochan7/FakerInput/</Hyperlink>
+                                    <Hyperlink x:Name="fakerInputLink" Click="FakerInputLink_Click" Foreground="{DynamicResource LinkAccentColor}">https://github.com/Ryochan7/FakerInput/</Hyperlink>
                                     </TextBlock>
                                 </StackPanel>
                                 <Expander Header="Description" Margin="0,8,0,0">
@@ -824,7 +824,7 @@ dondrakon - Ukranian
                                 <StackPanel Orientation="Horizontal" Margin="0,8,0,0">
                                     <TextBlock Text="Project URL:" />
                                     <TextBlock Margin="8,0,0,0">
-                                    <Hyperlink x:Name="crc32Link" Click="Crc32Link_Click" Foreground="{DynamicResource AccentColor}">https://github.com/dariogriffo/Crc32</Hyperlink>
+                                    <Hyperlink x:Name="crc32Link" Click="Crc32Link_Click" Foreground="{DynamicResource LinkAccentColor}">https://github.com/dariogriffo/Crc32</Hyperlink>
                                     </TextBlock>
                                 </StackPanel>
                             </StackPanel>
@@ -836,7 +836,7 @@ dondrakon - Ukranian
                                 <StackPanel Orientation="Horizontal" Margin="0,8,0,0">
                                     <TextBlock Text="Project URL:" />
                                     <TextBlock Margin="8,0,0,0">
-                                    <Hyperlink x:Name="oneEuroLink" Click="OneEuroLink_Click" Foreground="{DynamicResource AccentColor}">http://cristal.univ-lille.fr/~casiez/1euro/</Hyperlink>
+                                    <Hyperlink x:Name="oneEuroLink" Click="OneEuroLink_Click" Foreground="{DynamicResource LinkAccentColor}">http://cristal.univ-lille.fr/~casiez/1euro/</Hyperlink>
                                     </TextBlock>
                                 </StackPanel>
                             </StackPanel>
@@ -848,7 +848,7 @@ dondrakon - Ukranian
                                 <StackPanel Orientation="Horizontal" Margin="0,8,0,0">
                                     <TextBlock Text="Project URL:" />
                                     <TextBlock Margin="8,0,0,0">
-                                    <Hyperlink x:Name="hNotifyIconLink" Click="HNotifyIconLink_Click" Foreground="{DynamicResource AccentColor}">https://github.com/HavenDV/H.NotifyIcon/</Hyperlink>
+                                    <Hyperlink x:Name="hNotifyIconLink" Click="HNotifyIconLink_Click" Foreground="{DynamicResource LinkAccentColor}">https://github.com/HavenDV/H.NotifyIcon/</Hyperlink>
                                     </TextBlock>
                                 </StackPanel>
                             </StackPanel>

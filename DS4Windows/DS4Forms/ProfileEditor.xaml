@@ -640,7 +640,7 @@
 
                             <TabItem Header="{lex:Loc Passthru}" Visibility="Collapsed">
                                 <StackPanel>
-                                    <TextBlock Foreground="Red" Visibility="{Binding UsingMinViGEm173333, Mode=OneWay, Converter={StaticResource InvertBoolToVisibilityConverter}}"
+                                    <TextBlock Foreground="{DynamicResource WarningColor}" Visibility="{Binding UsingMinViGEm173333, Mode=OneWay, Converter={StaticResource InvertBoolToVisibilityConverter}}"
                                                Text="{lex:Loc ViGEm117MinNeeded}">
                                     </TextBlock>
                                 </StackPanel>
@@ -952,7 +952,7 @@
 
                             <TabItem Header="{lex:Loc Passthru}" Visibility="Collapsed">
                                 <StackPanel x:Name="passthruPanel">
-                                    <TextBlock Foreground="Red"
+                                    <TextBlock Foreground="{DynamicResource WarningColor}"
                                                Visibility="{Binding UsingMinViGEm173333, Mode=OneWay, Converter={StaticResource InvertBoolToVisibilityConverter}}"
                                                Text="{lex:Loc ViGEm117MinNeeded}">
                                     </TextBlock>
@@ -1995,7 +1995,7 @@
 
                         <TabItem Header="{lex:Loc Passthru}" Visibility="Collapsed">
                             <StackPanel>
-                                <TextBlock Foreground="Red" Text="{lex:Loc DS4LightbarPassthruDisabled}" TextWrapping="Wrap"
+                                <TextBlock Foreground="{DynamicResource WarningColor}" Text="{lex:Loc DS4LightbarPassthruDisabled}" TextWrapping="Wrap"
                                            Visibility="{Binding UsingMinViGEm173333, Mode=OneWay, Converter={StaticResource InvertBoolToVisibilityConverter}}">
                                 </TextBlock>
                             </StackPanel>
