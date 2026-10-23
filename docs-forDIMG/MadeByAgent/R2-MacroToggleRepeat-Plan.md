@@ -31,16 +31,29 @@
 
 ## 3. 設計
 
-### 3.1 保存形式（古い版との互換）
+### 3.1 保存形式（ユーザー決定: 2026-10-23）
 
-`DS4Windows.Toggle` は既存の意味が重い（部分一致の衝突）ため、**新しい名前のフラグ `RepeatLatchMacro = 64`** を `DS4KeyType` に追加する。
+ユーザーの決定:
+- **Execute Mode は、独立した設定項目として保存する**（`extras` の文字列や `KeyType` の名前の連なりに入れない）。3 つのモードすべてを移す。
+- **新しい版が書いた設定を古い版で読む互換（ダウングレード）は、放棄する**。古い版が書いた設定を新しい版で読む互換は、残す（読込時に新しい形へ変換する）。
+- 他のモード的な設定（`extras` などの文字列に複数の値を入れているもの）の独立化は、今回は行わない（§8）。
 
-- 名前に `Toggle` を含まない（部分一致で `Toggle` フラグが立たない）。`RepeatMacro` を含まない（部分一致で `RepeatMacro` が立たない）。`Macro` は含む（既存の読込で `Macro` フラグが立つ。従来どおり）。
-- 「Repeat (Toggle)」は **`RepeatLatchMacro` だけ**で表す（`RepeatMacro` とは同時に立てない。モードは 3 つのうち 1 つ）。
-- Controls の保存: `RepeatMacro` → `RepeatLatchMacro` → `Macro` の順に、1 つだけ書く（`ProfileButtonSaveSection`）。読込は `Contains("RepeatLatchMacro")` を追加（`ProfileButtonControlLoadSection`）。
-- SA の保存: `extras` に `RepeatLatch` を追加（`MacroViewModel.SaveAction`）。読込は `extras.Contains("RepeatLatch")`（`SpecialAction`）。
-  - 注意: `extras.Contains("Repeat")` は `RepeatLatch` にも一致する。**`RepeatLatch` を先に判定し、一致したら `RepeatMacro` を立てない**ように書く。
-- 古い版でプロファイルを読んだ場合（ダウングレード）: Controls は「Play Once」、SA は「Repeat While Held」になる（壊れない。トグルの機能が使えないだけ）。
+名称は、画面のラベル「Execute Mode」に合わせて **`MacroExecuteMode`**。値は `Once`／`Held`／`Toggle`。
+
+**SA（Actions.xml）**
+- `SpecialActionSerializer` に、独立した要素 `<MacroExecuteMode>` を追加する（`ProfileId`、`OutputExtras` と同じ形。種別が Macro のときだけ、`ShouldSerializeMacroExecuteMode` で書く）。
+- 保存: `MacroViewModel.SaveAction` は、`extras` に `Repeat` を書かなくなる。`Scan Code`／`RunOnRelease`／`Sync`／`KeepKeyState` は、今回は `extras` のまま。
+- 読込: `<MacroExecuteMode>` があればそれを使う。なければ、古い形式として `extras` の `Repeat` を `Held` に変換する（次に保存したとき、新しい形になる）。
+- ファイルの内容が `Once` のときも、要素を書く（省略を「未指定」と区別するため。省略＝古い形式として `Repeat` を見る）。
+
+**Controls（プロファイル XML）**
+- `Control` の下に、ボタンごとの要素を持つ新しいノード `<MacroExecuteMode>` を追加する（既存の `<Macro>` ノードと同じ構造。要素名＝ボタン名、値＝`Once`／`Held`／`Toggle`）。
+- 保存: `KeyType` ノードには、`RepeatMacro` を書かなくなる（`Macro`、`ScanCode`、`Toggle` などは今回は `KeyType` のまま）。
+- 読込: `<MacroExecuteMode>` があればそれを使う。なければ、古い形式として `KeyType` の `RepeatMacro`／`HoldMacro` を `Held` に変換する。
+
+**実行時の表現（変えない）**
+- メモリ上の `keyType` のフラグは、`RepeatMacro`（＝`Held`）に加えて、新しいフラグ `RepeatLatchMacro = 64`（＝`Toggle`）を持つ。エンジン（`MacroAction`、`MacroPlayback`）は、フラグを見る（Controls と SA で、実行の経路が共通のため）。保存と読込の層だけが、`MacroExecuteMode` とフラグを変換する。
+- `RepeatLatchMacro` は、`Toggle`、`RepeatMacro` の名前を含まないため、読込の部分一致の衝突は起きない（実行時のフラグであり、`KeyType` の文字列には書かない）。
 
 ### 3.2 実行（エンジン側）
 
@@ -66,7 +79,7 @@
 | Step | 内容 | 主なファイル |
 |---|---|---|
 | W1 | `DS4KeyType.RepeatLatchMacro` と `MacroPlaybackOptions.RepeatLatch`（排他、`LoadFrom`／`ApplyTo`）。単体テスト | `DS4KeyType.cs`、`MacroPlaybackOptions.cs` |
-| W2 | 保存と読込（Controls の `KeyType`、SA の `extras`）。往復テストと、古い形式の読込テスト | `ProfileButtonSaveSection`、`ProfileButtonControlLoadSection`、`SpecialAction.cs`、`MacroViewModel.cs` |
+| W2 | 保存と読込（SA の `<MacroExecuteMode>`、Controls の `<MacroExecuteMode>` ノード）。往復テスト、古い形式［`extras` の `Repeat`、`KeyType` の `RepeatMacro`／`HoldMacro`］の読込テスト | `SpecialActionSerializer.cs`、`ActionsDTO.cs`、`SpecialAction.cs`、`MacroViewModel.cs`、`ProfileButtonSaveSection`、`ProfileButtonControlLoadSection` |
 | W3 | 画面（3 項目目、文字列、説明文、Controls の `OutBinding`）。ViewModel のテスト | `MacroPlaybackOptionsPanel.cs`、`Strings.*`、`AssignmentDescriber.cs`、`OutBinding.cs`、`RecordBoxViewModel.cs` |
 | W4 | 実行（`MacroAction` の反転、`MacroPlayback` の繰り返し条件、同期キュー、先頭の確認）。ループの停止（OFF、状態の差し替え）のテスト | `MacroAction.cs`、`SpecialActionOutputFactory.cs`、`MacroPlayback.cs` |
 | W5 | 実機確認の手順を `Phase6-Step11-RealDevice-Verification-Checklist.md` に追記。台帳・完了報告・モデル図 03 を更新 | docs |
@@ -90,9 +103,17 @@
 - **状態のリーク**: トグルが ON のまま、設定画面でそのマクロを編集・削除したとき。`ActionManager` の登録の入れ替え時に `SetToggledOn(false)` が呼ばれる箇所があり（`ActionManager.cs`／`DefaultActionManager.cs`）、ループは次の確認で止まる。W4 のテストで確認する。
 - **LED などの強制状態**: 繰り返しの最後の 1 回の後始末（`keepKeyState` の扱い）は、現行のまま。
 
-## 7. 決めてほしいこと
+## 7. 決定事項と、残りの確認
 
-1. **名称**: 画面の表示名は「Repeat (Toggle)」でよいか（既存の「Play Once」「Repeat While Held」に合わせた英語）。
-2. **停止の挙動**: 停止の操作で、実行中の 1 回分を最後まで再生してから止めるのでよいか（案）。途中で即座に止める（キーも解放する）ほうがよいか。後者は `EndMacroDirect` の実装と、押しっぱなしのキーの解放が必要で、作業が増える。
-3. **`RunOnRelease`（SA の「離したときに実行」）との組み合わせ**: 組み合わせを許可するか。案は、`Repeat (Toggle)` を選んだら `RunOnRelease` を無効にする（意味が曖昧になるため）。
-4. **状態の表示**: トグルが ON であることを、画面やライトバーで示すか。案は、今回は行わない（ログのみ）。
+決定済み（2026-10-23）:
+- 保存形式: 独立した設定項目 `MacroExecuteMode`（3 モードすべて）。ダウングレードの互換は放棄、古い形式の読込は残す（§3.1）。
+
+確認してほしいこと（案を添える）:
+1. **名称**: 画面の表示名は「Repeat (Toggle)」でよいか。
+2. **停止の挙動**: 実行中の 1 回分を最後まで再生してから止める（案）。途中で即座に止める（キーも解放する）には、`EndMacroDirect` の実装が要り、作業が増える。
+3. **`RunOnRelease`（SA の「離したときに実行」）との組み合わせ**: `Repeat (Toggle)` を選んだら無効にする（案）。
+4. **状態の表示**: トグルが ON であることの画面・ライトバー表示は、今回は行わない（案。ログのみ）。
+
+## 8. 今後の候補（今回は行わない）
+
+`extras`（SA）や `KeyType`（Controls）のように、モード的な設定を 1 つの文字列に連ねて保存しているものは、独立した設定項目へ移したい（ユーザーの希望）。今回は、マクロの Execute Mode だけを移す。残り（`Scan Code`、`RunOnRelease`、`Sync`、`KeepKeyState`、Controls の `Toggle`／`ScanCode` など）は、R-2 の後に、別の Step として計画する。
