@@ -30,7 +30,8 @@ Windows メッセージの種類ごと（デバイスの着脱、電源、IPC、
 プロセス優先度の型付き化（配列の複製をなくす）、`ControlService` の転送メンバーの削除（UI を抽象経由へ）。
 
 - **F-5a（完了。2026-10-23）**: 優先度の表を `ProcessPriorityOptions`（`DS4Windows/DS4Control/Services/`）へ 1 か所にまとめた。`MainWindow` と `ServiceLifecycle` の複製を削除。並び順（Normal／AboveNormal／High／RealTime。設定は添字で保存）は、ガードテストで固定。
-- **F-5b（未着手。承認待ち）**: 調査の結果、UI などの外部から使われている転送メンバーは `running` だけ（`App.xaml.cs` 1 件、`MainWindow.Ipc.cs` 4 件、`MainWindow.xaml.cs` 7 件、`TrayIconViewModel` 1 件）。`loopControllers`／`inServiceTask`／`activeControllers` は外部からの参照が 0 件。案: 外部が 0 件のものを `ControlService` から削除し、`running` は `IServiceLifecycle.Running` をコンストラクターで受けて置き換える（`MainWindow`／`TrayIconViewModel`／`App` の配線の変更を伴う）。
+- **F-5b（完了。2026-10-23）**: 外部の参照が 0 件だった転送（`activeControllers`／`loopControllers`／`inServiceTask`）を `ControlService` から削除し、内部は `_lifecycle` を直接使う。
+- **F-5c（先送り）**: `running`（外部の利用者は `AutoProfileService`／`App`／`MainWindow`／`TrayIconViewModel` の 4 つ）と `suspending`（`MainWindow` のみ）の転送は残す。理由: 4 つの利用者はいずれも `ControlService` を、`Start`／`Stop`／`slotManager` などのためにも直接持っており、`running` だけを抽象へ替えると、コンストラクターの引数（`MainWindow`・`TrayIconViewModel`・`MainWindowFactory`・`AutoProfileService` と、そのテスト）が増えて割に合わない。`ControlService` の他のメンバーの切り離しと同時に行う（`ControlService.cs` に TODO を記載）。
 
 ## 3. 進め方（提案）
 1. **F-3 の事前調査**（回帰かどうか。実機の比較が要る。利用者の作業）は、後回しのまま。

@@ -85,9 +85,12 @@ namespace DS4WindowsTests
             Assert.Contains("public void PrepareAbort()", text);
             Assert.Contains("public bool running { get => _lifecycle.Running; set => _lifecycle.Running = value; }", text);
             Assert.Contains("public bool suspending { get => _lifecycle.Suspending; set => _lifecycle.Suspending = value; }", text);
-            Assert.Contains("public bool loopControllers { get => _lifecycle.LoopControllers; set => _lifecycle.LoopControllers = value; }", text);
-            Assert.Contains("public bool inServiceTask { get => _lifecycle.InServiceTask; set => _lifecycle.InServiceTask = value; }", text);
-            Assert.Contains("public int activeControllers { get => _lifecycle.ActiveControllers; set => _lifecycle.ActiveControllers = value; }", text);
+            // Phase9 9-F F-5b: 外部の参照が 0 件の転送は削除した。内部は _lifecycle を直接使う
+            Assert.DoesNotContain("public bool loopControllers", text);
+            Assert.DoesNotContain("public bool inServiceTask", text);
+            Assert.DoesNotContain("public int activeControllers", text);
+            Assert.Contains("_lifecycle.LoopControllers = false;", text);
+            Assert.Contains("while (_lifecycle.InServiceTask)", text);
 
             // イベントは、送り主を ControlService にして再発火する
             Assert.Contains("ServiceStarted?.Invoke(this, e)", text);

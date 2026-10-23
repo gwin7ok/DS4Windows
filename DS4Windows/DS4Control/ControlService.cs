@@ -51,12 +51,11 @@ namespace DS4Windows
             if (deviceIndex < 0 || deviceIndex >= DS4Controllers.Length) return null;
             return DS4Controllers[deviceIndex];
         }
-        // Phase9 9-E E-6f2: 状態（activeControllers／running／loopControllers／inServiceTask／suspending）は ServiceLifecycle が持つ。外部（UI）が直接使うため、同名の公開プロパティで転送する
-        public int activeControllers { get => _lifecycle.ActiveControllers; set => _lifecycle.ActiveControllers = value; }
+        // Phase9 9-E E-6f2: 状態は ServiceLifecycle が持つ。Phase9 9-F F-5b: 外部の参照が 0 件の activeControllers／loopControllers／inServiceTask の転送を削除した。
+        // TODO(Phase9 9-F F-5c 以降): running は、外部の 4 つの利用者（AutoProfileService／App／MainWindow／TrayIconViewModel）がまだ ControlService を直接持つため、転送を残している。
+        //   利用者が IServiceLifecycle.Running を受けるように切り替えた時点で削除する（Start／Stop／slotManager など、ControlService の他のメンバーの切り離しと同時に行う）。
         public Mouse[] touchPad = new Mouse[MAX_DS4_CONTROLLER_COUNT];
         public bool running { get => _lifecycle.Running; set => _lifecycle.Running = value; }
-        public bool loopControllers { get => _lifecycle.LoopControllers; set => _lifecycle.LoopControllers = value; }
-        public bool inServiceTask { get => _lifecycle.InServiceTask; set => _lifecycle.InServiceTask = value; }
         private DS4State[] MappedState = new DS4State[MAX_DS4_CONTROLLER_COUNT];
         private DS4State[] CurrentState = new DS4State[MAX_DS4_CONTROLLER_COUNT];
         private DS4State[] PreviousState = new DS4State[MAX_DS4_CONTROLLER_COUNT];
@@ -77,7 +76,7 @@ namespace DS4Windows
         DS4State[] DI.IDeviceSlotHost.PreviousStates => PreviousState;
         Mouse[] DI.IDeviceSlotHost.TouchPads => touchPad;
         ControllerSlotManager DI.IDeviceSlotHost.SlotManager => slotManager;
-        int DI.IDeviceSlotHost.ActiveControllers => activeControllers;
+        int DI.IDeviceSlotHost.ActiveControllers => _lifecycle.ActiveControllers;
         void DI.IDeviceSlotHost.OnReport(DS4Device device, EventArgs e, int ind) => On_Report(device, e, ind);
 
         // Phase9 9-E E-6f2: サービスの開始・停止（ServiceLifecycle）が頼る、イベントスレッドの実行とキーボード／マウス出力の初期化
@@ -478,8 +477,8 @@ namespace DS4Windows
         {
             eventDispatcher.BeginInvoke((Action)(() =>
             {
-                loopControllers = false;
-                while (inServiceTask)
+                _lifecycle.LoopControllers = false;
+                while (_lifecycle.InServiceTask)
                     Thread.SpinWait(1000);
 
                 LogDebug(string.Format(DS4WinWPF.Translations.Strings.ViGEmPluginFailure, errorCode),
