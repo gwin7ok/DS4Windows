@@ -66,7 +66,75 @@
             }
         },
         {
+            // リリースの手順 1/2（ctrl+shift+2）: 更新履歴の更新と、版の更新（docs/リリース手順.md）
             "label": "Update Changelog",
+            "type": "shell",
+            "command": "pwsh",
+            "args": [
+                "-NoProfile",
+                "-File",
+                "./scripts/release-bump.ps1"
+            ],
+            "presentation": {
+                "reveal": "always",
+                "panel": "shared",
+                "showReuseMessage": false,
+                "focus": true
+            }
+        },
+        {
+            // リリースの手順 2/2（ctrl+shift+3）: コミット → push → タグ → Actions がビルドと Release の作成
+            "label": "release-tag-and-push-short",
+            "type": "shell",
+            "command": "pwsh",
+            "args": [
+                "-NoProfile",
+                "-File",
+                "./scripts/release-tag.ps1"
+            ],
+            "presentation": {
+                "reveal": "always",
+                "panel": "shared",
+                "showReuseMessage": false,
+                "focus": true
+            }
+        },
+        {
+            "label": "Update Changelog: dry run",
+            "type": "shell",
+            "command": "pwsh",
+            "args": [
+                "-NoProfile",
+                "-File",
+                "./scripts/release-bump.ps1",
+                "-DryRun"
+            ],
+            "presentation": {
+                "reveal": "always",
+                "panel": "shared",
+                "showReuseMessage": false,
+                "focus": true
+            }
+        },
+        {
+            "label": "release-tag: dry run",
+            "type": "shell",
+            "command": "pwsh",
+            "args": [
+                "-NoProfile",
+                "-File",
+                "./scripts/release-tag.ps1",
+                "-DryRun"
+            ],
+            "presentation": {
+                "reveal": "always",
+                "panel": "shared",
+                "showReuseMessage": false,
+                "focus": true
+            }
+        },
+        {
+            "label": "Update Build Summary",
             "type": "shell",
             "command": "pwsh",
             "args": [
@@ -75,22 +143,6 @@
                 "./scripts/update-summary.ps1"
             ],
             "presentation": {
-                "showReuseMessage": false
-            }
-        },
-        {
-            "label": "release-tag-and-push-short",
-            "type": "shell",
-            "command": "pwsh",
-            "args": [
-                "-NoProfile",
-                "-File",
-                "./scripts/release-tag.ps1",
-                "-WithV"
-            ],
-            "presentation": {
-                "reveal": "always",
-                "panel": "shared",
                 "showReuseMessage": false
             }
         },

@@ -15,6 +15,16 @@
         "args": "clean-output"
     },
     {
+        "key": "ctrl+shift+2",
+        "command": "workbench.action.tasks.runTask",
+        "args": "Update Changelog"
+    },
+    {
+        "key": "ctrl+shift+3",
+        "command": "workbench.action.tasks.runTask",
+        "args": "release-tag-and-push-short"
+    },
+    {
         "key": "ctrl+alt+f1",
         "command": "workbench.action.tasks.runTask",
         "args": "release-tag-and-push-short",

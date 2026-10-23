@@ -13,6 +13,8 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
 
       - name: Setup .NET
         uses: actions/setup-dotnet@v4
@@ -24,11 +26,11 @@ jobs:
         shell: pwsh
         run: |
           $refName = '${{ github.ref_name }}'
-          if ($refName -match '^v(.+)$') {
+          if ($refName -match '^v(\d+\.\d+\.\d+)$') {
             $v = $Matches[1]
             echo "version=$v" | Out-File -FilePath $env:GITHUB_OUTPUT -Encoding ascii -Append
           } else {
-            Write-Error "Ref name is not a v* tag: $refName"
+            Write-Error "Ref name is not a vX.Y.Z tag: $refName"
             exit 1
           }
 
@@ -43,6 +45,20 @@ jobs:
             exit 1
           }
           Write-Host "Tag version and Directory.Build.props version match: $tagVersion"
+
+      - name: Verify tag commit is on the default branch
+        shell: pwsh
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          $default = (gh api "repos/${{ github.repository }}" --jq .default_branch).Trim()
+          git fetch origin $default
+          git merge-base --is-ancestor $env:GITHUB_SHA "origin/$default"
+          if ($LASTEXITCODE -ne 0) {
+            Write-Error "The tagged commit is not contained in '$default'. Push the commit to '$default' first, then create the tag."
+            exit 1
+          }
+          Write-Host "Tagged commit is contained in $default."
 
       - name: Extract changelog section
         id: extract_changelog
