@@ -37,7 +37,6 @@ Internal
 - Rebuilt on dependency injection and a layered structure: `Global` and the static service holders were removed, `Mapping.cs` and `ControlService.cs` were split into focused components, and special actions run on a unified trigger-dispatch engine.
 - Repository references (update check, release page, updater) are centralized in `ReleaseSource`.
 - `ds4w.bat` and `scripts/release-and-publish.ps1` no longer hard-code the repository.
-- The automated test suite now has about 2,150 tests.
 
 ## [3.11.6] - 2025-12-14
 
