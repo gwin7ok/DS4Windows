@@ -82,6 +82,6 @@ GetOverlappedResultEx(handle, ov, out _, timeout, true)   // ← 保留中の I/
 | 17488 | 10-22 20:24 | `InvalidOperationException`（`Application.Windows` を、UI でないスレッドから） | **トレイの診断用の一時ログ `TrayDiag`**（5b9a3a0 で追加、84fb2fd で削除）が、コントローラーの切断（入力スレッド）で呼ばれていた | **解消済み**（診断コードは削除済み。ダンプは、診断を入れたビルドのもの） |
 | 43304 | 10-22 20:18 | 同上 | 同上 | **解消済み** |
 | 28824 | 10-21 12:42 | `NullReferenceException`（`ProfileEditor.GyroCalibration_Click`） | コントローラー未接続のスロットで、Gyro の校正ボタン。`DS4Controllers[slot]` が null | **是正**（null の確認を追加。`GyroCalibrationNullDeviceGuardTests`） |
-| 57596 | 10-21 11:10 | `NullReferenceException`（`DS4Device.performDs4Input`、入力スレッド） | 未特定（落ちた行の特定には、`!pe` と `!clrstack -a` が要る） | 調査中 |
+| 57596 | 10-21 11:10 | `NullReferenceException`（`DS4Device.performDs4Input`、入力スレッド） | 未特定。`!pe`／`!clrstack -a` の結果では、`performDs4Input` のフレームが例外の再スローで巻き戻されており、ローカル変数が読めない（`<no data>`）。ダンプは最も古い（10-21 11:10）ビルドのもの | **これ以上の調査は行わない**。様子見で、新しいビルドで再発したときに、新しいダンプで調べる |
 
 ヒープ破壊の 3 件（約 4 割）と、診断コードの 2 件、Gyro の校正 1 件が分かり、残りは `performDs4Input` の NullReferenceException 1 件。
