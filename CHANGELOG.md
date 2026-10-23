@@ -2,8 +2,9 @@
 
 All notable changes to this project are recorded in this file.
 
-
 ## [Unreleased]
+
+## [4.0.1] - 2026-10-23
 
 ### Changed
 - The default app theme is now the light theme (it used to follow the Windows apps theme mode). The dark theme can still be chosen in Settings.
