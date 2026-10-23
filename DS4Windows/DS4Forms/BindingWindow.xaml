@@ -16,16 +16,17 @@
         <local:BindingWinResourcePaths x:Key="resourcePaths" />
         <local:IntToBoolConverter x:Key="IntToBoolConverter" />
         <!-- Exceptions: input controls should remain at readable size -->
-        <Style TargetType="TextBox">
+        <!-- 4.0.1: BasedOn を付けて、テーマ（ダークテーマ）の配色を引き継ぐ。付けないと、テーマの暗い配色が外れて、白い背景＋黒い文字（または白い文字）になる -->
+        <Style TargetType="TextBox" BasedOn="{StaticResource {x:Type TextBox}}">
             <Setter Property="FontSize" Value="12" />
         </Style>
-        <Style TargetType="ComboBox">
+        <Style TargetType="ComboBox" BasedOn="{StaticResource {x:Type ComboBox}}">
             <Setter Property="FontSize" Value="12" />
         </Style>
-        <Style TargetType="PasswordBox">
+        <Style TargetType="PasswordBox" BasedOn="{StaticResource {x:Type PasswordBox}}">
             <Setter Property="FontSize" Value="12" />
         </Style>
-        <Style TargetType="xctk:IntegerUpDown">
+        <Style TargetType="xctk:IntegerUpDown" BasedOn="{StaticResource {x:Type xctk:IntegerUpDown}}">
             <Setter Property="FontSize" Value="12" />
         </Style>
     </Window.Resources>
@@ -195,7 +196,7 @@
                             <UniformGrid Columns="1" Grid.Column="0">
                                 <UniformGrid.Resources>
                                     <!-- Reduce keyboard button font size to ~0.8x for better fit -->
-                                    <Style TargetType="Button">
+                                    <Style TargetType="Button" BasedOn="{StaticResource {x:Type Button}}">
                                         <Setter Property="FontSize" Value="10" />
                                     </Style>
                                 </UniformGrid.Resources>

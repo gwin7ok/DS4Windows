@@ -217,6 +217,13 @@ namespace DS4WinWPF.DS4Forms.ViewModels
             }
         }
 
+        /// <summary>選択中の出力の色（テーマの OutputSelectedColor。無ければ LimeGreen）。</summary>
+        private static string SelectedColorString()
+        {
+            return (Application.Current?.TryFindResource("OutputSelectedColor") as SolidColorBrush)?.Color.ToString()
+                ?? Colors.LimeGreen.ToString();
+        }
+
         public string DefaultColor
         {
             get
@@ -224,7 +231,7 @@ namespace DS4WinWPF.DS4Forms.ViewModels
                 string color = string.Empty;
                 if (outputType == OutType.Default)
                 {
-                    color =  Colors.LimeGreen.ToString();
+                    color = SelectedColorString();
                 }
                 else
                 {
@@ -243,7 +250,7 @@ namespace DS4WinWPF.DS4Forms.ViewModels
                 string color = string.Empty;
                 if (outputType == OutType.Button && control == X360Controls.Unbound)
                 {
-                    color = Colors.LimeGreen.ToString();
+                    color = SelectedColorString();
                 }
                 else
                 {

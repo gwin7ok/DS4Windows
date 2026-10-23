@@ -12,6 +12,11 @@
     <SolidColorBrush x:Key="ControlColor" Color="#FF484848" />
     <!-- Gap and divider between panes (ProfileEditor's GridSplitter) -->
     <SolidColorBrush x:Key="PaneGapColor" Color="#FF3A3A3A" />
+    <!-- Selected output in the output picker (white text is readable on it; LimeGreen was 2.1:1) -->
+    <SolidColorBrush x:Key="OutputSelectedColor" Color="#FF228B22" />
+    <!-- Hyperlinks (the default dark blue was 2.4:1 on the background) -->
+    <SolidColorBrush x:Key="LinkColor" Color="#FF6CB6FF" />
+    <SolidColorBrush x:Key="LinkHoverColor" Color="#FFA8D4FF" />
     <!-- Every second row of a list (ListView) -->
     <SolidColorBrush x:Key="AltRowColor" Color="#FF3A3A3A" />
     <SolidColorBrush x:Key="PaneDividerColor" Color="#FF8A8A96" />
@@ -372,6 +377,20 @@
     <Style x:Key="RichTextBoxStyle" TargetType="{x:Type RichTextBox}">
         <Setter Property="Background" Value="{StaticResource BackgroundColor}" />
         <Setter Property="Foreground" Value="{StaticResource ForegroundColor}" />
+    </Style>
+
+    <!-- Hyperlink style -->
+    <Style x:Key="HyperlinkStyle" TargetType="{x:Type Hyperlink}">
+        <Setter Property="Foreground" Value="{StaticResource LinkColor}"/>
+        <Setter Property="Cursor" Value="Hand"/>
+        <Style.Triggers>
+            <Trigger Property="IsMouseOver" Value="True">
+                <Setter Property="Foreground" Value="{StaticResource LinkHoverColor}"/>
+            </Trigger>
+            <Trigger Property="IsEnabled" Value="False">
+                <Setter Property="Foreground" Value="#FFB4B4B4"/>
+            </Trigger>
+        </Style.Triggers>
     </Style>
 
     <Style x:Key="TextBlockStyle" TargetType="{x:Type TextBlock}">
@@ -1915,6 +1934,7 @@
     <Style BasedOn="{StaticResource TabItemStyle}" TargetType="{x:Type TabItem}" />
     <Style BasedOn="{StaticResource RadioButtonStyle}" TargetType="{x:Type RadioButton}" />
     <Style BasedOn="{StaticResource TextBlockStyle}" TargetType="{x:Type TextBlock}" />
+    <Style BasedOn="{StaticResource HyperlinkStyle}" TargetType="{x:Type Hyperlink}" />
     <Style BasedOn="{StaticResource ListBoxStyle}" TargetType="{x:Type ListBox}" />
     <Style BasedOn="{StaticResource ComboBoxStyle}" TargetType="{x:Type ComboBox}" />
     <Style BasedOn="{StaticResource ComboBoxItemStyle}" TargetType="{x:Type ComboBoxItem}" />

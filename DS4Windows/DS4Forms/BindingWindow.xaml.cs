@@ -235,11 +235,18 @@ namespace DS4WinWPF.DS4Forms
             FindCurrentHighlightButton();
         }
 
+        /// <summary>選択中の出力の色。テーマの OutputSelectedColor（ライト: LimeGreen、ダーク: 白い文字が読める緑）。無ければ LimeGreen。</summary>
+        private Brush SelectedBrush()
+        {
+            return TryFindResource("OutputSelectedColor") as Brush ?? new SolidColorBrush(Colors.LimeGreen);
+        }
+
         private void FindCurrentHighlightButton()
         {
             if (highlightBtn != null)
             {
-                highlightBtn.Background = SystemColors.ControlBrush;
+                // テーマの既定の配色へ戻す（以前は SystemColors.ControlBrush を固定で入れていたため、ダークテーマで明るい灰色になった）
+                highlightBtn.ClearValue(Button.BackgroundProperty);
             }
 
             OutBinding binding = bindingVM.ActionBinding;
@@ -258,7 +265,7 @@ namespace DS4WinWPF.DS4Forms
                 {
                     if (mouseBtnMap.TryGetValue(defaultBind, out Button tempBtn))
                     {
-                        tempBtn.Background = new SolidColorBrush(Colors.LimeGreen);
+                        tempBtn.Background = SelectedBrush();
                         highlightBtn = tempBtn;
                     }
                 }
@@ -277,7 +284,7 @@ namespace DS4WinWPF.DS4Forms
                 {
                     if (mouseBtnMap.TryGetValue(binding.control, out Button tempBtn))
                     {
-                        tempBtn.Background = new SolidColorBrush(Colors.LimeGreen);
+                        tempBtn.Background = SelectedBrush();
                         highlightBtn = tempBtn;
                     }
                 }
@@ -286,7 +293,7 @@ namespace DS4WinWPF.DS4Forms
             {
                 if (keyBtnMap.TryGetValue(binding.outkey, out Button tempBtn))
                 {
-                    tempBtn.Background = new SolidColorBrush(Colors.LimeGreen);
+                    tempBtn.Background = SelectedBrush();
                     highlightBtn = tempBtn;
                 }
             }
