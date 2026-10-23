@@ -3,14 +3,41 @@
 All notable changes to this project are recorded in this file.
 
 
-## [Unreleased]
+## [4.0.0] - 2026-10-23
 
-Migration: replace legacy global action runtime flags with `ActionManager` and `ActionInstanceState`.
-- Remove `actionDone` and `pressedonce` global arrays; centralize per-action×device state in `ActionManager`.
-- Update `Mapping.cs`, `ScpUtil.cs`, tests and docs to use the new API.
+This is a major release. The internal architecture was rebuilt on dependency injection, and the Controls and Special Actions editors were unified. The unreleased 3.11.7 changes are included.
 
+**Back up your profile folder (`Profiles` and `Actions.xml`) before updating.** Profiles and special actions saved by 4.0.0 may not be readable by 3.x.
 
+Assignment editor
+- Controls tab and Special Actions (SA) tab now share one assignment editor and one output picker. Macro, Launch Program, Load Profile, Disconnect BT, Calibrate gyro / sixaxis, Check Battery and Multi-action can be assigned from either tab.
+- Switch Mode (Press / Toggle) is available for every assignment. A Toggle set on a Default assignment is now kept instead of being discarded.
+- SA can now have Extras (an additional key output that is active while the SA is satisfied).
+- Added a "Reset all to Default" button on the Controls tab. Default assignments are shown as Output Key / Mouse / Button, and "Default (No matching button)" is distinguished from "Unbound".
+- Added a Duplicate button on the Special Actions tab (the copy is added disabled, named "<name> (Copy)"). Double-clicking an SA row opens its editor.
+- Touchpad and Gyro tabs were moved into the left pane; the Controls list order for LS/RS Outer and L2/R2 Full Pull was adjusted.
+- SA trigger detection for analog inputs (triggers, stick axes) is now digital (no threshold). When a lone trigger drives an analog output, the output follows the input value.
+- Special actions and profiles are now referenced by fixed IDs instead of names.
 
+Fixes
+- Fixed a crash when clicking the gyro calibration button while no controller was connected in that slot.
+- Fixed a possible memory corruption in asynchronous HID I/O (pending reads/writes could write into moved memory).
+- Fixed a Key staying pressed after a two-stage trigger was released.
+- The profile applied on reconnect is now managed per controller (MAC address) instead of per slot, so a different controller no longer receives another controller's profile.
+- Fixed the command-line query always returning an empty result.
+- Log rotation and diagnostic logging now run after the single-instance check, so a second instance no longer disturbs the running one.
+- UI scrolling with the mouse wheel now follows the Windows "scroll one screen at a time" setting.
+- Fixed the link to the virtual controller (Moonlight) support document, which pointed to a branch that does not exist.
+
+Removed features
+- Removed "360 Steering Wheel" emulation (gyro steering wheel, its calibration special action, and the related profile and controller settings).
+- Removed the XboxGameDVR special action.
+
+Internal
+- Rebuilt on dependency injection and a layered structure: `Global` and the static service holders were removed, `Mapping.cs` and `ControlService.cs` were split into focused components, and special actions run on a unified trigger-dispatch engine.
+- Repository references (update check, release page, updater) are centralized in `ReleaseSource`.
+- `ds4w.bat` and `scripts/release-and-publish.ps1` no longer hard-code the repository.
+- The automated test suite now has about 2,150 tests.
 
 ## [3.11.6] - 2025-12-14
 
