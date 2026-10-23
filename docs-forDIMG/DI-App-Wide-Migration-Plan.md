@@ -1054,4 +1054,4 @@ static結合を先に減らしておくことが本フェーズの下地にな�
 ### 追記（2026-10-23）: Phase9 の完了とリリース前の状況
 
 - Phase9（巨大クラスの責務分割）は、9-A〜9-F・MapCustom・9-I が完了（9-G は先送り、9-H は K7b-1 の観察の完了待ち）。結果は `MadeByAgent/Phase9-Completion-Report.md`、先送りは `MadeByAgent/Phase9-Deferred-Ledger.md`。
-- リリース前の追加・修正は `MadeByAgent/Release-Backlog.md`（R-1・R-5・R-6 は実装済み・実機確認合格。R-2・R-3・R-4 はリリース後）。バージョンは 4.0.0。次の大きな作業は Phase11（名前空間・フォルダの再編）で、F-4・G-1・9-H の判断の後。
+- リリース前の追加・修正は `MadeByAgent/Release-Backlog.md`（R-1・R-2・R-5・R-6 は実装済み・実機確認合格。R-2 は 4.2.0 向け［`R2-MacroToggleRepeat-Plan.md`］。R-3・R-4 は次の版）。公開済みの最新は 4.1.0。次の大きな作業は Phase11（名前空間・フォルダの再編）で、F-4・G-1・9-H の判断の後。
