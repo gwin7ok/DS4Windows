@@ -48,6 +48,7 @@ namespace DS4WinWPF.DS4Forms
             DS4Windows.DI.IAppSettingsService appSettingsService, DS4Windows.DI.IProfileXmlStore profileXmlStore)
         {
             InitializeComponent();
+            moonlightDocLink.NavigateUri = new Uri(ReleaseSource.MoonlightDocPageUri);
 
             deviceOptsVM = new ControllerRegDeviceOptsViewModel(deviceOptions, service, appSettingsService, profileXmlStore);
 

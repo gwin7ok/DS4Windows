@@ -34,6 +34,9 @@ namespace DS4WinWPF
         /// <summary>貢献者の一覧のファイル。</summary>
         public const string ContributorsPageUri = "https://github.com/" + Repository + "/blob/master/contributors.txt";
 
+        /// <summary>仮想コントローラー（Moonlight）対応の説明ドキュメント。</summary>
+        public const string MoonlightDocPageUri = "https://github.com/" + Repository + "/blob/master/doc/moonlight_support.md";
+
         /// <summary>DS4Updater の最新のリリースの API（DS4Updater が見つからないときの取得）。</summary>
         public const string UpdaterLatestReleaseApiUri = "https://api.github.com/repos/" + UpdaterRepository + "/releases/latest";
     }

@@ -4,11 +4,14 @@ setlocal enabledelayedexpansion
 :: Define the installation path in AppData local folder
 set INSTALL_PATH=%LOCALAPPDATA%\DS4Windows
 
+:: GitHub repository that provides the releases (owner/name). Change only this line when the repository moves.
+set REPO=gwin7ok/DS4Windows-Vader4Pro
+
 :: Prompt for version choice
 set /p VERSION_CHOICE="Do you want to install the latest version? (y/n): "
 if /i "%VERSION_CHOICE%"=="y" (
     :: Get the latest version using GitHub API
-    for /f "delims=" %%A in ('powershell -Command "(Invoke-WebRequest -Uri 'https://api.github.com/repos/gwin7ok/DS4Windows-Vader4Pro/releases/latest' -Headers @{ 'User-Agent' = 'Mozilla/5.0' }).Content | ConvertFrom-Json | Select-Object -ExpandProperty tag_name"') do (
+    for /f "delims=" %%A in ('powershell -Command "(Invoke-WebRequest -Uri 'https://api.github.com/repos/%REPO%/releases/latest' -Headers @{ 'User-Agent' = 'Mozilla/5.0' }).Content | ConvertFrom-Json | Select-Object -ExpandProperty tag_name"') do (
         set LATEST_VERSION=%%A
     )
     
@@ -36,7 +39,7 @@ if "%ARCH%"=="" (
     set ARCH=x64
 )
 
-set BASE_URL=https://github.com/gwin7ok/DS4Windows-Vader4Pro/releases/download
+set BASE_URL=https://github.com/%REPO%/releases/download
 set DOWNLOAD_URL=%BASE_URL%/v!VERSION!/DS4Windows_!VERSION!_!ARCH!.zip
 
 :: Download the file

@@ -136,11 +136,8 @@ namespace DS4WinWPF.DS4Forms
 
                     try
                     {
-                        // Determine repo for DS4Updater (default)
-                        string updaterRepo = DS4WinWPF.ReleaseSource.UpdaterRepository;
-
-                        // Query GitHub Releases API for latest release
-                        string apiUrl = $"https://api.github.com/repos/{updaterRepo}/releases/latest";
+                        // Query GitHub Releases API for the DS4Updater latest release
+                        string apiUrl = DS4WinWPF.ReleaseSource.UpdaterLatestReleaseApiUri;
                         using (var client = new System.Net.Http.HttpClient())
                         {
                             client.DefaultRequestHeaders.UserAgent.ParseAdd("DS4Windows-Updater-Installer");

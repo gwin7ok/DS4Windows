@@ -1,6 +1,7 @@
 Param(
     [switch]$WithV,
     [string]$Remote = 'origin',
+    [string]$Repository = '',
     [switch]$DryRun,
     [switch]$SkipBuild,
     [string]$TokenEnvVar = 'GITHUB_TOKEN'
@@ -8,13 +9,21 @@ Param(
 
 Set-StrictMode -Version Latest
 
-# repo info
-$repoOwner = 'gwin7ok'
-$repoName = 'DS4Windows-Vader4Pro'
 
 $scriptDir = Split-Path -Path $MyInvocation.MyCommand.Definition -Parent
 $repoRoot = (Resolve-Path -Path (Join-Path $scriptDir "..")).ProviderPath
 Set-Location $repoRoot
+
+# repo info
+# Resolved from -Repository (owner/name), otherwise from the URL of -Remote, so a repository move needs no edit here.
+if (-not $Repository) {
+    $remoteUrl = (git remote get-url $Remote 2>$null)
+    if ($remoteUrl -match 'github\.com[:/](?<owner>[^/]+)/(?<name>[^/]+?)(\.git)?/?$') {
+        $Repository = "$($Matches['owner'])/$($Matches['name'])"
+    }
+}
+if ($Repository -notmatch '^[^/]+/[^/]+$') { Write-Error "Cannot determine the GitHub repository. Pass -Repository owner/name."; exit 4 }
+$repoOwner, $repoName = $Repository -split '/', 2
 
 $propsPath = Join-Path $repoRoot 'Directory.Build.props'
 if (-not (Test-Path $propsPath)) { Write-Error "Directory.Build.props not found at $propsPath"; exit 2 }
