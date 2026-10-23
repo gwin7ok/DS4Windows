@@ -403,10 +403,6 @@
     <Style x:Key="ExpanderStyle" TargetType="{x:Type Expander}">
         <Setter Property="Foreground" Value="{StaticResource ForegroundColor}"/>
     </Style>
-    <Style x:Key="ToolBarStyle" TargetType="{x:Type ToolBar}">
-        <Setter Property="Foreground" Value="{StaticResource ForegroundColor}"/>
-        <Setter Property="Background" Value="{StaticResource ControlColor}"/>
-    </Style>
     <Style x:Key="ColorCanvasStyle" TargetType="{x:Type xctk:ColorCanvas}">
         <Setter Property="Foreground" Value="{StaticResource ForegroundColor}"/>
         <Setter Property="Background" Value="{StaticResource BackgroundColor}"/>
@@ -2145,7 +2141,6 @@
     <Style BasedOn="{StaticResource TextBlockStyle}" TargetType="{x:Type TextBlock}" />
     <Style BasedOn="{StaticResource HyperlinkStyle}" TargetType="{x:Type Hyperlink}" />
     <Style BasedOn="{StaticResource ExpanderStyle}" TargetType="{x:Type Expander}" />
-    <Style BasedOn="{StaticResource ToolBarStyle}" TargetType="{x:Type ToolBar}" />
     <Style BasedOn="{StaticResource ColorCanvasStyle}" TargetType="{x:Type xctk:ColorCanvas}" />
     <Style BasedOn="{StaticResource ColorPickerStyle}" TargetType="{x:Type xctk:ColorPicker}" />
     <Style BasedOn="{StaticResource ListBoxStyle}" TargetType="{x:Type ListBox}" />
