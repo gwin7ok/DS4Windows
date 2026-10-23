@@ -4,6 +4,8 @@ All notable changes to this project are recorded in this file.
 
 ## [Unreleased]
 
+## [4.2.1] - 2026-10-24
+
 ### Changed
 - Dark theme: the color palette was refreshed for a more refined look (backgrounds, surfaces, borders, text, links, warning and accent colors). The theme resources and the XAML of the dark and default themes, the profile editor, the binding window and the controller readings were reorganized and reformatted; there are no behavior changes.
 
