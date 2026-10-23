@@ -445,6 +445,12 @@ namespace DS4WinWPF.DS4Forms.ViewModels
                     settings.keyType |= DS4KeyType.RepeatMacro;
                 }
 
+                // R-2: 「繰り返しをトグルする」（Execute Mode の Repeat (Toggle)）
+                if (macroType.HasFlag(DS4KeyType.RepeatLatchMacro))
+                {
+                    settings.keyType |= DS4KeyType.RepeatLatchMacro;
+                }
+
                 if (hasScanCode)
                 {
                     settings.keyType |= DS4KeyType.ScanCode;

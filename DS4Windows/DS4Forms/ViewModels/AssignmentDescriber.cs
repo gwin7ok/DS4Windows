@@ -37,7 +37,9 @@ namespace DS4WinWPF.DS4Forms.ViewModels
         /// <summary>Macro: 「Macro: 12 steps (Play once)」。再生の指定、Scan Code、SA 専用の 3 項目を、この順に足す。</summary>
         public static string ForMacro(int stepCount, DS4KeyType keyType, bool runOnRelease, bool synchronized, bool keepKeyState)
         {
-            string text = $"Macro: {stepCount} steps ({(keyType.HasFlag(DS4KeyType.RepeatMacro) ? "Repeat while held" : "Play once")})";
+            // R-2: Repeat (Toggle) を追加（RepeatLatchMacro を優先）
+            string mode = keyType.HasFlag(DS4KeyType.RepeatLatchMacro) ? "Repeat (toggle)" : keyType.HasFlag(DS4KeyType.RepeatMacro) ? "Repeat while held" : "Play once";
+            string text = $"Macro: {stepCount} steps ({mode})";
             if (keyType.HasFlag(DS4KeyType.ScanCode)) text += " (SC)";
             if (runOnRelease) text += " (Run on release)";
             if (synchronized) text += " (Synchronized)";

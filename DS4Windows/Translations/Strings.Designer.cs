@@ -2759,6 +2759,15 @@ namespace DS4WinWPF.Translations {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Repeat (Toggle).
+        /// </summary>
+        public static string RecordBox_RepeatToggle {
+            get {
+                return ResourceManager.GetString("RecordBox.RepeatToggle", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Repeat While Held.
         /// </summary>
         public static string RecordBox_RepeatWhileHeld {

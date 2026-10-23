@@ -1165,6 +1165,9 @@ Disabled:
   <data name="RecordBox.RecordDelays" xml:space="preserve">
     <value>Record Delays</value>
   </data>
+  <data name="RecordBox.RepeatToggle" xml:space="preserve">
+    <value>Repeat (Toggle)</value>
+  </data>
   <data name="RecordBox.RepeatWhileHeld" xml:space="preserve">
     <value>Repeat While Held</value>
   </data>

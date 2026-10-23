@@ -66,6 +66,7 @@ namespace DS4WinWPF.DS4Forms
             playModeCombo = new ComboBox { Margin = new Thickness(0, 4, 0, 0) };
             playModeCombo.Items.Add(new ComboBoxItem { Content = Strings.RecordBox_PlayOnce });
             playModeCombo.Items.Add(new ComboBoxItem { Content = Strings.RecordBox_RepeatWhileHeld });
+            playModeCombo.Items.Add(new ComboBoxItem { Content = Strings.RecordBox_RepeatToggle });   // R-2: 添字は MacroPlaybackOptions.RepeatToggleIndex
             playModeCombo.SetBinding(Selector.SelectedIndexProperty,
                 new Binding(nameof(MacroPlaybackOptions.PlayModeIndex)) { FallbackValue = 0 });
 
