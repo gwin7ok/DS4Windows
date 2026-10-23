@@ -206,14 +206,15 @@ namespace DS4WindowsTests
 
             // Phase10-Step3b W2（ユーザーの指示）: 4 つの入口は、専用のボタンではなく、下の文字の一覧に、ほかのボタンと同じ形式で加えた。
             // 絵と一覧の構成（幅 470、行は Canvas［240］と一覧［*］の 2 つ）は、変えていない
-            Assert.Contains("<Grid Width=\"470\">", controls);
+            // 構造だけを確かめる。属性の並び・空白・改行・「/>」の前の空白は、XAML の整形で変わるため、固定しない
+            Assert.Matches(@"<Grid\s+Width=""470""\s*>", controls);
             Match rows = Regex.Match(controls, @"<Grid\.RowDefinitions>(?<body>.*?)</Grid\.RowDefinitions>", RegexOptions.Singleline);
             Assert.True(rows.Success);
             Assert.Equal(2, Regex.Matches(rows.Groups["body"].Value, @"<RowDefinition ").Count);
-            Assert.Contains("<RowDefinition Height=\"252\"/>", rows.Groups["body"].Value);   // Phase9 UI 変更: 割り当て表示の下に余白（240 → 252）
-            Assert.Contains("<RowDefinition Height=\"*\"/>", rows.Groups["body"].Value);
-            Assert.Matches(@"<Canvas Grid\.Row=""0"" x:Name=""conCanvas""", controls);
-            Assert.Matches(@"<ListView\s+Grid\.Row=""1"" x:Name=""mappingListBox""", controls);   // Phase9 UI 変更: 割り当て一覧は、2 列の表（ListView）
+            Assert.Matches(@"<RowDefinition\s+Height=""252""\s*/>", rows.Groups["body"].Value);   // Phase9 UI 変更: 割り当て表示の下に余白（240 → 252）
+            Assert.Matches(@"<RowDefinition\s+Height=""\*""\s*/>", rows.Groups["body"].Value);
+            Assert.Matches(@"<Canvas\s+Grid\.Row=""0""\s+x:Name=""conCanvas""", controls);
+            Assert.Matches(@"<ListView\s+Grid\.Row=""1""\s+x:Name=""mappingListBox""", controls);   // Phase9 UI 変更: 割り当て一覧は、2 列の表（ListView）
             Assert.DoesNotContain("axisEntriesPanel", controls);
         }
 
