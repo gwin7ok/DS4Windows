@@ -242,6 +242,9 @@
   <data name="Duplicate" xml:space="preserve">
     <value>Duplicate</value>
   </data>
+  <data name="DuplicateAction" xml:space="preserve">
+    <value>Duplicate</value>
+  </data>
   <data name="Edit" xml:space="preserve">
     <value>Edit</value>
   </data>

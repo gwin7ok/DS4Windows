@@ -294,6 +294,7 @@
                         <StackPanel Orientation="Horizontal" Margin="0,0,0,8" Grid.Row="0" VerticalAlignment="Top">
                             <Button x:Name="newActionBtn" Content="{lex:Loc NewAction}" Margin="0,0,5,0" Click="NewActionBtn_Click" />
                             <Button x:Name="editActionBtn" Content="{lex:Loc EditAction}" IsEnabled="{Binding ItemSelected}" Margin="5,0" Click="EditActionBtn_Click" />
+                            <Button x:Name="duplicateActionBtn" Content="{lex:Loc DuplicateAction}" IsEnabled="{Binding ItemSelected}" Margin="5,0" Click="DuplicateActionBtn_Click" />
                             <Button x:Name="removeActionBtn" Content="{lex:Loc RemoveAction}" IsEnabled="{Binding ItemSelected}" Margin="5,0,0,0" Click="RemoveActionBtn_Click" />
                             <Button Content="{lex:Loc ExportSpecialActions}" Margin="5 0 0 0" Click="ExportSpecialActions_OnClick"/>
                         </StackPanel>

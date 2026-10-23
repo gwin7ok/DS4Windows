@@ -1252,6 +1252,15 @@ namespace DS4WinWPF.Translations {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Duplicate.
+        /// </summary>
+        public static string DuplicateAction {
+            get {
+                return ResourceManager.GetString("DuplicateAction", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Edit Action.
         /// </summary>
         public static string EditAction {

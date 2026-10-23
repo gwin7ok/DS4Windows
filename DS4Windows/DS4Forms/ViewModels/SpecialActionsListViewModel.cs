@@ -412,6 +412,26 @@ namespace DS4WinWPF.DS4Forms.ViewModels
             SyncProfileActionsString();
         }
 
+        /// <summary>
+        /// R-1: アクションを複製する（<see cref="ISpecialActionRepository.DuplicateAction"/>。Actions.xml へ保存される）。複製は、一覧の末尾に、
+        /// <b>無効（チェックなし）</b>で追加する（同じトリガーの 2 つが、同時に有効になって二重に動くのを避ける。使うときは、チェックを入れる）。
+        /// Actions.xml に無い項目（グレーの項目）は複製できない。
+        /// </summary>
+        /// <returns>追加した項目。複製できなかったときは null</returns>
+        public SpecialActionItem DuplicateAction(SpecialActionItem item)
+        {
+            if (item == null || item.IsMissing) return null;
+
+            string newName = specialActionRepo.DuplicateAction(item.ActionName);
+            if (newName == null) return null;
+
+            SpecialAction action = specialActionRepo.GetActionOrPlaceholder(newName);
+            SpecialActionItem newItem = CreateActionItem(action);
+            newItem.Active = false;
+            actionCol.Add(newItem);
+            return newItem;
+        }
+
         protected void OnPropertyChanged([CallerMemberName] string propertyName = null)
         {
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));

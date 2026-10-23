@@ -42,6 +42,7 @@ namespace DS4WindowsTests
         }
 
         public bool RemoveActionAndSave(string actionName) => true;
+        public string DuplicateAction(string actionName) => null;
         // Phase10-Step6 I5a: SA の保存のあとに呼ばれる Extras の保存を記録する
         public System.Collections.Generic.List<(string Name, string Extras)> ExtrasSaves { get; } = new System.Collections.Generic.List<(string, string)>();
         public bool SaveActionExtras(string actionName, string outputExtras) { ExtrasSaves.Add((actionName, outputExtras)); return true; }

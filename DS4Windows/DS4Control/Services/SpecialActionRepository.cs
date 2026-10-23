@@ -184,6 +184,43 @@ namespace DS4Windows
         }
 
 
+        // R-1: アクションの複製。保存と同じ順序（実行中の状態のクリア → Actions.xml への書き込み → 読み直しと件数の検証）
+        public string DuplicateAction(string actionName)
+        {
+            if (ActionList == null || !ActionList.Exists(item => item.name == actionName)) return null;
+
+            string newName = MakeCopyName(actionName, ActionList.ConvertAll(item => item.name));
+            ClearAllActionEntries();
+            if (!_actionsXml.DuplicateAction(actionName, newName)) return null;
+
+            ReloadActionsAndVerify("DuplicateAction");
+            if (AppLogger.IsTraceEnabled)
+                AppLogger.LogTrace($"[DI] SpecialActionRepository.DuplicateAction: Action '{actionName}' duplicated as '{newName}' and saved via DI");
+            OnActionsChanged();
+            return newName;
+        }
+
+        private static readonly System.Text.RegularExpressions.Regex CopySuffix =
+            new System.Text.RegularExpressions.Regex(@" \(Copy(?: \d+)?\)$");
+
+        /// <summary>
+        /// 複製の名前を作る。「元の名前 (Copy)」、使われていれば「(Copy 2)」、「(Copy 3)」…（大文字小文字を区別せず、重複しない最初のもの）。
+        /// 元の名前が既に「(Copy)」「(Copy N)」で終わっているときは、その部分を除いた名前を基にする（「A (Copy) (Copy)」にしない）。
+        /// </summary>
+        public static string MakeCopyName(string baseName, System.Collections.Generic.IEnumerable<string> existingNames)
+        {
+            string stem = CopySuffix.Replace(baseName ?? string.Empty, string.Empty);
+            var used = new System.Collections.Generic.HashSet<string>(existingNames ?? System.Linq.Enumerable.Empty<string>(),
+                StringComparer.OrdinalIgnoreCase);
+            string candidate = $"{stem} (Copy)";
+            for (int n = 2; used.Contains(candidate); n++)
+            {
+                candidate = $"{stem} (Copy {n})";
+            }
+
+            return candidate;
+        }
+
         // ---- Phase7-Step10c W2: 旧 Global.SaveAction／RemoveAction／ReloadActionsAndVerify（Actions.xml の保存・読込のシム）の移動先 ----
         // 実行中のアクション状態のクリア → Actions.xml への書き込み（SpecialActionsXmlSerializer）→ 読み直しと件数の検証、の順序・ログは従来のまま。
         private static void ClearAllActionEntries()

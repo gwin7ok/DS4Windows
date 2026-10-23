@@ -432,6 +432,55 @@ namespace DS4Windows.Services
             return saved;
         }
 
+        /// <summary>
+        /// R-1: <c>Actions.xml</c> の、名前が <paramref name="sourceName"/> の Action 要素を、そのまま複製する（子要素と属性をすべて引き継ぐ）。
+        /// 複製は、名前を <paramref name="newName"/>、Id を新しい GUID（N 形式）にして、元の直後へ挿入する。複製の後、呼び出し側が <see cref="LoadActions"/> で読み直す。
+        /// 要素のまま複製するのは、SA の種別ごとに持つ設定（マクロ、Extras、強さ、解除トリガーなど）を、すべて漏れなく引き継ぐため。
+        /// </summary>
+        /// <returns>複製できたら true。元が見つからない、<paramref name="newName"/> が空、または既に使われている、ファイルを書けないときは false</returns>
+        public bool DuplicateAction(string sourceName, string newName)
+        {
+            if (string.IsNullOrEmpty(newName)) return false;
+            if (store.actions.Find(item => item.name == sourceName) == null) return false;
+            if (store.actions.Exists(item => string.Equals(item.name, newName, StringComparison.OrdinalIgnoreCase))) return false;
+
+            // ファイルを、メモリの最新の状態に合わせてから、要素を複製する
+            if (!SaveActions()) return false;
+
+            XmlDocument doc = new XmlDocument();
+            doc.Load(store.m_Actions);
+            XmlNode root = doc.SelectSingleNode("/Actions");
+            if (root == null) return false;
+
+            XmlNode source = null;
+            foreach (XmlNode node in root.SelectNodes("Action"))
+            {
+                if (node.Attributes?["Name"]?.Value == sourceName)
+                {
+                    source = node;
+                    break;
+                }
+            }
+
+            if (source == null) return false;
+
+            XmlElement copy = (XmlElement)source.CloneNode(true);
+            copy.SetAttribute("Name", newName);
+            copy.SetAttribute("Id", Guid.NewGuid().ToString("N"));
+            root.InsertAfter(copy, source);
+
+            try
+            {
+                doc.Save(store.m_Actions);
+            }
+            catch (UnauthorizedAccessException)
+            {
+                return false;
+            }
+
+            return true;
+        }
+
         public void RemoveAction(string name)
         {
             int tempIndex = store.actions.FindIndex(item => item.name == name);

@@ -1520,6 +1520,26 @@ namespace DS4WinWPF.DS4Forms
             }
         }
 
+        // R-1: 選んだ SA を複製する。複製は無効（チェックなし）で一覧に加わる。保存（Actions.xml）は、複製の時点で行われる
+        private void DuplicateActionBtn_Click(object sender, RoutedEventArgs e)
+        {
+            if (leftPaneEditor != null) return;
+            if (specialActionsVM.SpecialActionIndex < 0) return;
+
+            SpecialActionItem item = specialActionsVM.CurrentSpecialActionItem;
+            if (item == null) return;
+
+            SpecialActionItem newItem = specialActionsVM.DuplicateAction(item);
+            if (newItem == null)
+            {
+                MessageBox.Show($"Special action "{item.ActionName}" can't be duplicated because it isn't saved in Actions.xml.",
+                    "DS4Windows", MessageBoxButton.OK, MessageBoxImage.Information);
+                return;
+            }
+
+            SortSpecialActionsList(specialActionsVM.CurrentSortColumn, specialActionsVM.CurrentSortAscending);
+        }
+
         private void RemoveActionBtn_Click(object sender, RoutedEventArgs e)
         {
             if (specialActionsVM.SpecialActionIndex >= 0)

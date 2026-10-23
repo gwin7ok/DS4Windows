@@ -71,6 +71,14 @@ namespace DS4Windows.DI
         /// <returns>削除前に、その名前のアクションが存在していれば true</returns>
         bool RemoveActionAndSave(string actionName);
 
+        /// <summary>
+        /// R-1（Release-Backlog.md）: アクションを複製して <c>Actions.xml</c> へ保存する。複製は、すべての設定（トリガー、種別、詳細、Extras、アナログの強さなど）を引き継ぎ、
+        /// 新しい固定 ID と、重複しない名前（「元の名前 (Copy)」、「(Copy 2)」…）を持つ。プロファイルの有効・無効（ProfileActions）には触れない。
+        /// 実行中のアクション状態のクリア、ファイルへの保存、読み直しと件数の検証を含む（<see cref="SaveAction"/> と同じ）。
+        /// </summary>
+        /// <returns>複製の名前。元のアクションが保存されていない（見つからない）、または保存できなかったときは null</returns>
+        string DuplicateAction(string actionName);
+
         // TODO(Phase8): 購読者が 0 件のまま維持している。実装は保存・削除のたびに正しく発火する。旧 ProfileActions.ActionsChanged も購読者がなかった（移行前から同じ）。
         // 画面の特殊アクション一覧の更新通知への接続は Phase8 で行う。Phase7-Step10e W4 で経緯を確認し、削除せず維持と判断した。
         event EventHandler ActionsChanged;
