@@ -32,6 +32,18 @@ jobs:
             exit 1
           }
 
+      - name: Verify tag matches Directory.Build.props version
+        shell: pwsh
+        run: |
+          $tagVersion = '${{ steps.get_version.outputs.version }}'
+          [xml]$props = Get-Content -Path 'Directory.Build.props' -Raw
+          $propsVersion = $props.SelectSingleNode('//Version').InnerText.Trim()
+          if ($tagVersion -ne $propsVersion) {
+            Write-Error "Tag version '$tagVersion' does not match Directory.Build.props <Version> '$propsVersion'. Delete the tag, fix the version or the tag, and push the tag again."
+            exit 1
+          }
+          Write-Host "Tag version and Directory.Build.props version match: $tagVersion"
+
       - name: Extract changelog section
         id: extract_changelog
         shell: pwsh
