@@ -1383,6 +1383,10 @@ https://raw.githubusercontent.com/gwin7ok/DS4Windows/refs/heads/master/doc/test-
 https://raw.githubusercontent.com/gwin7ok/DS4Windows/refs/heads/master/docs-forDIMG/DI-App-Wide-Migration-Plan.md
 https://raw.githubusercontent.com/gwin7ok/DS4Windows/refs/heads/master/docs-forDIMG/FurtherImprovements/01_DS4Windows_Architecture_Analysis_Report.md
 https://raw.githubusercontent.com/gwin7ok/DS4Windows/refs/heads/master/docs-forDIMG/FurtherImprovements/02_DS4Windows_Refactoring_Design_Proposal.md
+https://raw.githubusercontent.com/gwin7ok/DS4Windows/refs/heads/master/docs-forDIMG/FurtherImprovements/03_DS4Windows_Migration_Runbook_and_Phased_Execution_Plan.md
+https://raw.githubusercontent.com/gwin7ok/DS4Windows/refs/heads/master/docs-forDIMG/FurtherImprovements/04_DS4Windows_High_Performance_Input_Pipeline_Spec.md
+https://raw.githubusercontent.com/gwin7ok/DS4Windows/refs/heads/master/docs-forDIMG/FurtherImprovements/05_DS4Windows_Device_and_Action_Plugin_Developer_Guide.md
+https://raw.githubusercontent.com/gwin7ok/DS4Windows/refs/heads/master/docs-forDIMG/FurtherImprovements/06_DS4Windows_Modern_WPF_UI_and_Design_System_Spec.md
 https://raw.githubusercontent.com/gwin7ok/DS4Windows/refs/heads/master/docs-forDIMG/MadeByAgent/AutoProfile-NoController-Investigation.md
 https://raw.githubusercontent.com/gwin7ok/DS4Windows/refs/heads/master/docs-forDIMG/MadeByAgent/K7b1-Investigation.md
 https://raw.githubusercontent.com/gwin7ok/DS4Windows/refs/heads/master/docs-forDIMG/MadeByAgent/Notification-Legacy-Path-Cleanup-Report.md
