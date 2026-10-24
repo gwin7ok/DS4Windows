@@ -783,10 +783,13 @@ namespace DS4WinWPF.DS4Forms.ViewModels
         private int tempBtPollRate;
         public int TempBTPollRateIndex
         {
-            get => tempBtPollRate;
-            set => tempBtPollRate = value;
+            get => profileSettings.BTPollRate[device];
+            set
+            {
+                if (profileSettings.BTPollRate[device] == value) return;
+                profileSettings.BTPollRate[device] = value;
+            }
         }
-
         public int ControllerTypeIndex
         {
             get => profileSettings.OutContType[device] == OutContType.DS4 ? 1 : 0;

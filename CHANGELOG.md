@@ -4,6 +4,9 @@ All notable changes to this project are recorded in this file.
 
 ## [Unreleased]
 
+### Fixed
+- Fixed an issue where the DS4 BT Poll Rate was not being reflected after making a change.
+
 ## [4.2.1] - 2026-10-24
 
 ### Changed
