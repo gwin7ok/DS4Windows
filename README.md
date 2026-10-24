@@ -82,6 +82,11 @@ _This README retains a short pointer — full changelog entries are maintained i
 - See the installation and setup guide: [Installation Guide (Japanese)](導入ガイド.md)
 - インストール手順と初回セットアップは次のガイドを参照してください: [導入ガイド](導入ガイド.md)
 
+## Screenshots / スクリーンショット
+
+- See the screenshots of each screen: [Screenshots](docs-forDIMG/imageshot/imageshot.md)
+- 各画面のスクリーンショットは次を参照してください: [スクリーンショット](docs-forDIMG/imageshot/imageshot.md)
+
 ## About AI-assisted development / AI 支援による開発について
 
 This project is developed with the help of AI coding tools, under human direction. Every change is covered by characterization tests, verified on real hardware, and documented (docs-forDIMG/). Crashes are root-caused from memory dumps, not guessed. Pull requests are welcome, but you are responsible for understanding and testing what you submit.
