@@ -4,6 +4,9 @@ All notable changes to this project are recorded in this file.
 
 ## [Unreleased]
 
+### Fixed
+- Some messages in the Log tab (for example "Starting...", "Searching for controllers...", "Found Controller") and the "Output Delay" label in Controller Readings were shown in Japanese even when the language was set to "No (English UI)". They now follow the selected language: Japanese in Japanese mode, English otherwise.
+
 ## [4.2.2] - 2026-10-24
 
 ### Fixed
