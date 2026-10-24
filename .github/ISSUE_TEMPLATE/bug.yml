@@ -1,0 +1,22 @@
+name: "[Bug Report / 不具合報告] 不具合・おかしな動き"
+description: "Report unexpected behavior, incorrect results, or display issues / 動作がおかしい、計算結果が合わない、画面が崩れる、など"
+title: "[🐛Bug Report / 不具合報告] "
+labels: ["🐛Bug Report / 不具合報告"]
+body:
+  - type: textarea
+    id: what
+    attributes:
+      label: "What happened / 起きたこと"
+      description: "Describe what you expected and what actually happened / 期待していた動きと、実際の動きを書いてください"
+    validations:
+      required: true
+  - type: textarea
+    id: steps
+    attributes:
+      label: "Steps to reproduce (optional) / 再現の手順（任意）"
+      description: "List the actions that cause the issue, in order / どの操作をしたら起きるかを、順番に書いてください"
+  - type: input
+    id: version
+    attributes:
+      label: "App version (optional) / アプリのバージョン（任意）"
+      description: 'Shown at the bottom of the screen as "Version vX.X.X" / 画面の下部に「バージョン v○.○.○」と表示されています'
