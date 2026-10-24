@@ -640,7 +640,7 @@ namespace DS4WinWPF.DS4Forms
                 outputDelayLabel ??= FindName("outputDelayLb") as Label;
                 if (outputDelayLabel != null)
                 {
-                    outputDelayLabel.Content = procDelay > 0.0 ? $"出力遅延: {procDelay:0.00} ms (Max: {maxProcDelay:0.00} ms)" : "出力遅延: -- ms";
+                    outputDelayLabel.Content = procDelay > 0.0 ? $"{string.Format(Properties.Resources.OutputDelay, procDelay)} (Max: {maxProcDelay:0.00} ms)" : Properties.Resources.OutputDelayNA;
                 }
                 lastProcDelayInt = procDelayInt;
             }

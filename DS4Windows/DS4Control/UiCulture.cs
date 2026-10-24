@@ -12,8 +12,12 @@ namespace DS4Windows
         {
             try
             {
-                Thread.CurrentThread.CurrentUICulture = CultureInfo.GetCultureInfo(culture);
-                CultureInfo.DefaultThreadCurrentUICulture = CultureInfo.GetCultureInfo(culture);
+                CultureInfo ci = CultureInfo.GetCultureInfo(culture);
+                Thread.CurrentThread.CurrentUICulture = ci;
+                CultureInfo.DefaultThreadCurrentUICulture = ci;
+                // Resources.Culture が null のままだと、ログを書くバックグラウンドスレッドが OS の言語（日本語など）で文言を引いてしまう。
+                // 空文字（English UI）はインバリアントカルチャ＝既定の英語になる。
+                DS4WinWPF.Properties.Resources.Culture = ci;
             }
             catch { /* Skip setting culture that we cannot set */ }
         }

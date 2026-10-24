@@ -214,6 +214,18 @@
   <data name="IfRemovingDS4Windows" xml:space="preserve">
     <value>If removing DS4Windows, You can delete the settings following the profile folder link</value>
   </data>
+  <data name="ObsoleteAssignmentRemovedProfile" xml:space="preserve">
+    <value>[DI] Removed obsolete assignment type '{0}' (profile Controls: {1}) while loading.</value>
+  </data>
+  <data name="ObsoleteAssignmentRemovedSpecialAction" xml:space="preserve">
+    <value>[DI] Removed obsolete assignment type '{0}' (Special Action: {1}) while loading.</value>
+  </data>
+  <data name="OutputDelay" xml:space="preserve">
+    <value>Output Delay: {0:0.00} ms</value>
+  </data>
+  <data name="OutputDelayNA" xml:space="preserve">
+    <value>Output Delay: -- ms</value>
+  </data>
   <data name="InputDelay" xml:space="preserve">
     <value>Input Delay: {0:0.##} ms</value>
   </data>

@@ -73,6 +73,18 @@
   <data name="Full" xml:space="preserve">
     <value>満充電</value>
   </data>
+  <data name="ObsoleteAssignmentRemovedProfile" xml:space="preserve">
+    <value>[DI] 廃止された割り当て種別 '{0}'（プロファイルの Controls: {1}）を、読み込み時に取り除きました。</value>
+  </data>
+  <data name="ObsoleteAssignmentRemovedSpecialAction" xml:space="preserve">
+    <value>[DI] 廃止された割り当て種別 '{0}'（Special Action: {1}）を、読み込み時に取り除きました。</value>
+  </data>
+  <data name="OutputDelay" xml:space="preserve">
+    <value>出力遅延: {0:0.00} ms</value>
+  </data>
+  <data name="OutputDelayNA" xml:space="preserve">
+    <value>出力遅延: -- ms</value>
+  </data>
   <data name="InputDelay" xml:space="preserve">
     <value>入力遅延: {0:0.##} ms</value>
   </data>

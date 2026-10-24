@@ -685,6 +685,42 @@ namespace DS4WinWPF.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to [DI] Removed obsolete assignment type.
+        /// </summary>
+        public static string ObsoleteAssignmentRemovedProfile {
+            get {
+                return ResourceManager.GetString("ObsoleteAssignmentRemovedProfile", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to [DI] Removed obsolete assignment type (Special Action).
+        /// </summary>
+        public static string ObsoleteAssignmentRemovedSpecialAction {
+            get {
+                return ResourceManager.GetString("ObsoleteAssignmentRemovedSpecialAction", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Output Delay: {0:0.00} ms.
+        /// </summary>
+        public static string OutputDelay {
+            get {
+                return ResourceManager.GetString("OutputDelay", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Output Delay: -- ms.
+        /// </summary>
+        public static string OutputDelayNA {
+            get {
+                return ResourceManager.GetString("OutputDelayNA", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Install Complete.
         /// </summary>
         public static string InstallComplete {
