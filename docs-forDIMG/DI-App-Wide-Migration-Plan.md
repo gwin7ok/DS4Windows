@@ -1055,4 +1055,4 @@ static結合を先に減らしておくことが本フェーズの下地にな�
 
 - Phase9（巨大クラスの責務分割）は、9-A〜9-F・MapCustom・9-I が完了（9-G は先送り、9-H は K7b-1 の観察の完了待ち）。結果は `MadeByAgent/Phase9-Completion-Report.md`、先送りは `MadeByAgent/Phase9-Deferred-Ledger.md`。
 - リリース前の追加・修正は `MadeByAgent/Release-Backlog.md`（R-1・R-2・R-5・R-6 は実装済み・実機確認合格。R-2 は 4.2.0 向け［`R2-MacroToggleRepeat-Plan.md`］。R-3・R-4 は次の版）。公開済みの最新は 4.2.3（2026-11-02 に更新。リリースと R 項目の対応は `MadeByAgent/Release-Backlog.md` §4）。次の大きな作業は Phase11（名前空間・フォルダの再編）で、F-4・G-1・9-H の判断の後。
-- 追記（2026-11-02）: `FurtherImprovements/01〜06`（アーキテクチャ分析、リファクタリング設計、移行ランブック、入力パイプライン仕様、プラグイン開発ガイド、UI デザイン仕様。2026-10-24 追加）は、DI 移行後の発展案の参考資料で、本計画の Phase には組み込んでいない。Phase11 以降の計画を立てるときの入力として参照する。対応関係と実施順（A → C → Phase11 → B → D）の案は `MadeByAgent/Phase11-and-Beyond-Roadmap.md`（承認待ち）。
+- 追記（2026-11-02）: `FurtherImprovements/01〜06`（アーキテクチャ分析、リファクタリング設計、移行ランブック、入力パイプライン仕様、プラグイン開発ガイド、UI デザイン仕様。2026-10-24 追加）は、DI 移行後の発展案の参考資料で、本計画の Phase には組み込んでいない。Phase11 以降の計画を立てるときの入力として参照する。対応関係とPhase の組み直し（Phase11 安定化／12 機能追加／13 ControlService 整理／14 名前空間・フォルダ再編／15 UI 共通化／16 Layer 1）の案は `MadeByAgent/Phase11-and-Beyond-Roadmap.md`（承認待ち）。
