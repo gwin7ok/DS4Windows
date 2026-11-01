@@ -455,3 +455,10 @@
 - テスト（作成済み。実装時に戻す）: `Phase11W5StatusMessageVisibilityTests`（欄がタブの外にあり `Visibility` を持たない、`SelectionChanged` と `lastMsgLb.Visibility` がコードにない）。変更前は 1 件失敗することを確認済み。
 - 実機確認: 修正後に、P11-7 の手順 A を Settings タブのまま再確認する。
 - それまでは、P11-7 の警告は、Settings 以外のタブへ移って確認する。
+
+**K-W6-2: サービス停止中に、プロファイルを Save／Apply すると、接続していないスロットへ適用され、ログと独自ウィンドウ通知が出る**（P11-6 の手順 C で発見）
+- 症状: サービスを Stop した状態で、直前まで使っていたプロファイル（例: verifyA）を Edit から Save または Apply すると、Gyro 設定に関係なく、ログに `Controller 1 is now using Profile "verifyA" (Battery: N/A%)` が出て、独自ウィンドウの通知も出る。サービスは起動しない（P11-6 の期待どおり）。
+- 原因（調査済み・コードの読みのみ）: `ProfileEditor` の Save／Apply → `MainWindow.Editor_ProfileSaved` → `SyncProfileListAndControllers`（`MainWindow.xaml.cs` の ④ 再適用）が、`profileRepo.ProfilePath[i]` が保存したプロファイルと一致する**全スロット**へ `profileSlotApplier.ApplyToSlot(i, …, Manual)` を呼ぶ。停止中でもスロット 0 の `ProfilePath` は前回の名前のまま残るため一致する。`ProfileSlotApplier.ApplyToSlot` は範囲と名前の検査だけで、そのスロットに**デバイスが接続されているか、サービスが動いているか**を見ない。`ApplyProfileWithoutHalt` → `ApplyCore` → `CompleteProfileApplication` が、`ds4Device == null` のとき電池 `N/A`、`LogToGui` と `LogProfileChanged`（→ `MainWindow.OnProfileChanged` → 通知）を出す。
+- 影響: 動作中でも、接続していないスロット（`ProfilePath` が同じプロファイルを指す）に対して、同じ無意味な適用・ログ・通知が出る可能性がある（未確認。S2 以降で観察する）。XML の読み込みは行われるため、停止中の副作用は通知とログと `SelectedProfile`・`OlderProfilePath` の更新。
+- 方針（案。ユーザー承認待ち。修正は全部の実機テストが終わってから）: `SyncProfileListAndControllers` の再適用ループで、**そのスロットにデバイスが接続されている**（`ControlService.DS4Controllers[i] != null`）ときだけ `ApplyToSlot` を呼ぶ。停止中は何も適用しない（プロファイルの XML はディスクに保存済みで、次の接続時に読まれる）。`ProfilePath` の更新（③）は従来どおり。
+- 注意: 機能の削減にならないか（接続前のスロットの `SelectedProfile` が Save で更新されなくなる影響）を、実装前に確認する。通知・ログ文言は変えない。
