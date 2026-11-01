@@ -86,6 +86,7 @@
 
 - 3: まず検査・破棄の場所を特定し、現象を再現する。**決定済み（Q3）: 警告を出し、保存は続ける**（利用者の入力を黙って捨てない）。警告の文言は日本語・英語のリソースに足す（直書きにしない。4.2.3 の方針）。
 - 4: 目視で、OFF のとき数値が操作できないことを確認する。**決定済み（Q4）: 仕様として閉じる**。コードの変更なし（コメントとテストで意図を残す）。操作できてしまう場合のみ、ユーザーに再確認する。
+- **結果: 実装と自動検証は完了（2026-11-02）。** 3 は、警告を出して保存を続けるよう修正（`SettingsViewModel.CustomSteamFolder` の setter。JA/EN のリソースを追加）。4 は、挙動を変えず、仕様として閉じた（コメントとテストで意図を固定）。実アプリでの目視は W6 の台帳（P11-n）で行う（§12）。
 
 ### W6: 実機確認の消化
 
@@ -379,3 +380,40 @@
 - **DS3 の実機での擬似の効果は `不能`**（DS3 が無い。§7.4）。ユニットテスト（旧コードの動きの特性化）で担保する。
 - **DS4 での再起動の安全性は未了。** W6 の台帳（P11-n）に足す: プロファイル編集で `UseDs3PitchRollSim` を変えて**保存** → サービスが停止→開始し、DS4 が再接続され、プロファイルが再適用され、仮想パッドが付け外しされること。適用だけでは再起動しないこと。サービスを止めた状態で保存しても、開始されないこと。再起動中に [Start/Stop] ボタンが一時的に無効になり、終われば「停止」表示で有効に戻ること（停止の通知で一度有効になる瞬間がある点も観察する）。
 - (c)-2 の GUI ログは、`EnableOutputDataToDS4` を ON・出力 X360 で保存または適用したときに 1 行出る（実アプリでの目視は W6）。
+
+## 12. W5 の結果（2026-11-02。`CustomSteamFolder`、`CheckEvery`）
+
+### 12.1 `CustomSteamFolder`（Issue #4 の 3）— 修正
+
+**調査**: §1.1 の「`AppSettingsService` は代入するだけ」は正しいが、破棄の場所はそこではなかった。**画面の ViewModel `SettingsViewModel.CustomSteamFolder` の setter** が、`Directory.Exists(value) || value == string.Empty` のときだけ保存し、それ以外は何も言わずに捨てていた（この検査が入ったのは `68844a3a`「Fixed saving of custom steam folder setting」）。`TextBox`（`UpdateSourceTrigger=LostFocus`）には入力が残るため、保存されたように見える。Issue の主張どおり。
+
+**決定（Q3）に沿った変更**:
+
+| 対象 | 変更 |
+|---|---|
+| `SettingsViewModel.cs` | setter: 値は常に保存し（`null` は空文字として扱う）、空でなく存在しないフォルダーのときは `AppLogger.LogToGui(..., warning: true)` で警告を出す。同じ値の再入力では、くり返さない |
+| `Strings.resx`／`Strings.ja.resx`／`Strings.Designer.cs` | 新しいリソース `CustomSteamFolderNotFound`（英語は既定、日本語は `ja`。`{0}` に入力したパス）。直書きにしない（4.2.3 の方針） |
+
+- 警告の出し方は、既存の方式に合わせた GUI ログの warning。メインウィンドウの下端（`lastMsgLb`）に、どのタブでも警告の色で出て、ログの一覧とログファイルにも残る。モーダルのダイアログは、`LostFocus` の直後に割り込むため避けた。
+- **保存しても害がないこと**: 値を使う側は `AutoProfiles` だけで、`UseCustomSteamFolder && Directory.Exists(CustomSteamFolder)` で確かめ、無ければ既定の Steam フォルダー（x86／通常）へ戻る。この確認が残ることは、テストで固定した。
+- 文言（英）: `Custom Steam folder not found: {0}. The path was saved, but it is not used until the folder exists (the default Steam folders are used instead).` （日）`カスタム Steam フォルダーが見つかりません: {0}。入力したパスは保存しましたが、フォルダーが存在するまでは使われません（代わりに既定の Steam フォルダーを使います）。`
+
+### 12.2 `CheckEvery`（Issue #4 の 4）— 仕様として閉じる
+
+- **コードの動き**: `SettingsViewModel.CheckEvery` の setter は、「更新確認」（`CheckUpdateStartupEnabled`）が OFF のとき何もしない。ON のときは、値を保存して `Save()` する。
+- **目視の代わりの検証**: 数値の入力欄を含む行 `checkEveryOptionsStack` は、XAML で `IsEnabled="{Binding CheckForUpdates}"`（入力欄自身は `IsEnabled` を上書きしない）。実物の `SettingsViewModel` に、同じ形のバインディング（チェックボックスと行の `IsEnabled`）をつなぐと、チェックを外した瞬間に行と中の入力欄が無効になり、戻すと有効に戻る。VM は `INotifyPropertyChanged` を実装しないが、書き戻しの経路で他のバインディングが更新されることを実測で確認した。**OFF のとき数値は操作できない**ので、Q4 の「操作できてしまう場合のみ再確認」には当たらない。
+- **変更**: コードの動きは変えていない。意図を残すコメントを、setter（`SettingsViewModel.cs`）と `checkEveryOptionsStack`（`MainWindow.xaml`）に足した。setter が何もしないのは、無効な入力欄のバインディングが値を書き戻して更新確認を ON に戻すのを防ぐ安全弁。
+
+### 12.3 検証
+
+- 新しいテスト（13 件）:
+  - `Phase11W5CustomSteamFolderTests`（9 件）: 存在しないフォルダーは**保存され、警告（warning）が 1 件出る**、存在するフォルダーは警告なしで保存、空文字は警告なしでクリア、`null` は空文字として保存、同じ値では警告をくり返さない、存在しない→存在するへの変更、警告文の英語・日本語のリソース（`{0}` あり、日本語は英語のコピーでない）、Designer の入口、使う側の `Directory.Exists` の確認が残ること（ソース走査）
+  - `Phase11W5CheckEveryTests`（4 件）: OFF のとき数値の変更は無視される（保存もしない）、ON のとき保存される、`checkEveryOptionsStack` が行ごと `IsEnabled` に束縛されること（XAML）、実物の VM でチェックの外し／戻しに行が追随すること（STA）
+- **赤→緑**: 変更前の setter では、`ANonExistentFolder_IsKept_AndWarned`・`TheSameNonExistentFolder_IsNotWarnedAgain`・`ANullValue_IsStoredAsEmpty` の 3 件が失敗（入力が保存されない）、リソースを足して setter を直したあと 13 件すべて合格。`CheckEvery` の 4 件と残りは特性化のため、変更前後とも合格。
+- `Debug ALL` 相当: Build 警告 0・エラー 0。Actions **2,772 件**（W4 の 2,759 件＋13 件）・Standalone 11 件がすべて合格。
+
+### 12.4 未確認
+
+実アプリでの目視は未了。W6 の台帳（P11-n）に足す:
+- 設定タブの「Use custom Steam Folder」を ON にし、存在しないパスを入れてフォーカスを外す → メインウィンドウの下端に警告が出る。アプリを再起動しても入力したパスが残る。存在するフォルダーを入れると、警告が出ず、自動プロファイルの Steam メニューがそのフォルダーを使う。
+- 設定タブの「更新確認」を OFF にする → 間隔の数値と単位が灰色になり、操作できない。ON に戻すと操作できる。数値を変えると保存される。

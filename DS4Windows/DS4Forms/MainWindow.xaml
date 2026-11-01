@@ -347,6 +347,7 @@
 
                         <CheckBox Content="{lex:Loc CheckUpdateStartup}" Margin="{StaticResource spaceMargin}"
                               IsChecked="{Binding CheckForUpdates}" />
+                        <!-- Phase11 W5: 「更新確認」が OFF のときは、この行ごと無効にする（数値は操作できない。SettingsViewModel.CheckEvery は OFF のとき保存しない仕様） -->
                         <StackPanel x:Name="checkEveryOptionsStack" Orientation="Horizontal" Margin="{StaticResource spaceMargin}"
                                 IsEnabled="{Binding CheckForUpdates}">
                             <Label Content="{lex:Loc CheckEvery}" />

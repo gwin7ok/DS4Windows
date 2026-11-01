@@ -189,6 +189,10 @@ namespace DS4WinWPF.DS4Forms.ViewModels
                 // underlying `CheckWhen` from the numeric control. This prevents
                 // the numeric binding from re-enabling checks when the checkbox
                 // is unchecked.
+                // Phase11 W5（Issue #4 の 4、Q4）: 「OFF のとき数値が保存されない」のは仕様。OFF のときは、数値を入力する行
+                // （MainWindow.xaml の checkEveryOptionsStack）ごと IsEnabled で無効になり、利用者は数値を操作できない。
+                // ここで何もしないのは、無効な入力欄のバインディングが値を書き戻して、更新確認を ON に戻すのを防ぐ安全弁。
+                // 意図は Phase11W5CheckEveryTests で固定している。
                 if (!_appSettings.CheckUpdateStartupEnabled)
                 {
                     return;
@@ -338,11 +342,18 @@ namespace DS4WinWPF.DS4Forms.ViewModels
             get => _appSettings.CustomSteamFolder;
             set
             {
+                // Phase11 W5（Issue #4 の 3、Q3）: 存在しないフォルダーでも、入力を黙って捨てない。値は保存し、警告を出す。
+                // 旧コードは、存在するフォルダーか空文字のときだけ保存し、それ以外は何も言わずに捨てていた
+                // （TextBox には入力が残るため、保存されたように見えた）。使う側（AutoProfiles）は Directory.Exists で確かめ、
+                // 無ければ既定の Steam フォルダーへ戻るため、存在しないパスを保存しても害はない。
+                value ??= string.Empty;
                 string temp = _appSettings.CustomSteamFolder;
                 if (temp == value) return;
-                if (Directory.Exists(value) || value == string.Empty)
+
+                _appSettings.CustomSteamFolder = value;
+                if (value != string.Empty && !Directory.Exists(value))
                 {
-                    _appSettings.CustomSteamFolder = value;
+                    AppLogger.LogToGui(string.Format(Translations.Strings.CustomSteamFolderNotFound, value), true);
                 }
             }
         }

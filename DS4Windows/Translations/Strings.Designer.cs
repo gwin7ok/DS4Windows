@@ -900,6 +900,15 @@ namespace DS4WinWPF.Translations {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Custom Steam folder not found: {0}. The path was saved, but it is not used until the folder exists (the default Steam folders are used instead)..
+        /// </summary>
+        public static string CustomSteamFolderNotFound {
+            get {
+                return ResourceManager.GetString("CustomSteamFolderNotFound", resourceCulture);
+            }
+        }
+
+        /// <summary>
         ///   Looks up a localized string similar to Dark.
         /// </summary>
         public static string Dark {

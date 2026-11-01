@@ -793,6 +793,9 @@ Disabled:
   <data name="UseCustomSteamFolder" xml:space="preserve">
     <value>Use custom Steam Folder</value>
   </data>
+  <data name="CustomSteamFolderNotFound" xml:space="preserve">
+    <value>Custom Steam folder not found: {0}. The path was saved, but it is not used until the folder exists (the default Steam folders are used instead).</value>
+  </data>
   <data name="Utils" xml:space="preserve">
     <value>Utils</value>
   </data>
