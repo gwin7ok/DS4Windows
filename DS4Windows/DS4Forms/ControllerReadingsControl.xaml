@@ -107,42 +107,51 @@
                                Fill="{DynamicResource ForegroundColor}">
                     </Rectangle>
                 </Canvas>
-                <StackPanel Orientation="Horizontal"
-                            HorizontalAlignment="Center"
-                            Margin="0,4,0,0">
-                    <Label Content="LX (I):"
-                           Padding="2,2"/>
-                    <Label x:Name="lxInValLb"
-                           Content=""
-                           Width="32"
-                           Padding="2,2"
-                           HorizontalContentAlignment="Right"/>
-                    <Label Content="LX (O):"
-                           Padding="6,2,2,2"/>
-                    <Label x:Name="lxOutValLb"
-                           Content=""
-                           Width="32"
-                           Padding="2,2"
-                           HorizontalContentAlignment="Right"/>
-                </StackPanel>
-                <StackPanel Orientation="Horizontal"
-                            HorizontalAlignment="Center"
-                            Margin="0,2,0,0">
-                    <Label Content="LY (I):"
-                           Padding="2,2"/>
-                    <Label x:Name="lyInValLb"
-                           Content=""
-                           Width="32"
-                           Padding="2,2"
-                           HorizontalContentAlignment="Right"/>
-                    <Label Content="LY (O):"
-                           Padding="6,2,2,2"/>
-                    <Label x:Name="lyOutValLb"
-                           Content=""
-                           Width="32"
-                           Padding="2,2"
-                           HorizontalContentAlignment="Right"/>
-                </StackPanel>
+                <!-- Phase11 W2: 数値の見切れ防止。(I)/(O) の組を WrapPanel に入れ、列の幅に収まらない大きなフォントでは 2 行に折り返す（右スティック・SixAxis も同じ） -->
+                <WrapPanel HorizontalAlignment="Center"
+                           Margin="0,4,0,0">
+                    <StackPanel Orientation="Horizontal"
+             Margin="0,0,4,0">
+                        <Label Content="LX (I):"
+                               Padding="2,2"/>
+                        <Label x:Name="lxInValLb"
+                               Content=""
+                               Width="34"
+                               Padding="1,2"
+                               HorizontalContentAlignment="Right"/>
+                    </StackPanel>
+                    <StackPanel Orientation="Horizontal">
+                        <Label Content="LX (O):"
+                               Padding="2,2"/>
+                        <Label x:Name="lxOutValLb"
+                               Content=""
+                               Width="34"
+                               Padding="1,2"
+                               HorizontalContentAlignment="Right"/>
+                    </StackPanel>
+                </WrapPanel>
+                <WrapPanel HorizontalAlignment="Center"
+                           Margin="0,2,0,0">
+                    <StackPanel Orientation="Horizontal"
+             Margin="0,0,4,0">
+                        <Label Content="LY (I):"
+                               Padding="2,2"/>
+                        <Label x:Name="lyInValLb"
+                               Content=""
+                               Width="34"
+                               Padding="1,2"
+                               HorizontalContentAlignment="Right"/>
+                    </StackPanel>
+                    <StackPanel Orientation="Horizontal">
+                        <Label Content="LY (O):"
+                               Padding="2,2"/>
+                        <Label x:Name="lyOutValLb"
+                               Content=""
+                               Width="34"
+                               Padding="1,2"
+                               HorizontalContentAlignment="Right"/>
+                    </StackPanel>
+                </WrapPanel>
             </StackPanel>
 
             <!-- 右スティック -->
@@ -188,42 +197,50 @@
                                Fill="{DynamicResource ForegroundColor}">
                     </Rectangle>
                 </Canvas>
-                <StackPanel Orientation="Horizontal"
-                            HorizontalAlignment="Center"
-                            Margin="0,4,0,0">
-                    <Label Content="RX (I):"
-                           Padding="2,2"/>
-                    <Label x:Name="rxInValLb"
-                           Content=""
-                           Width="32"
-                           Padding="2,2"
-                           HorizontalContentAlignment="Right"/>
-                    <Label Content="RX (O):"
-                           Padding="6,2,2,2"/>
-                    <Label x:Name="rxOutValLb"
-                           Content=""
-                           Width="32"
-                           Padding="2,2"
-                           HorizontalContentAlignment="Right"/>
-                </StackPanel>
-                <StackPanel Orientation="Horizontal"
-                            HorizontalAlignment="Center"
-                            Margin="0,2,0,0">
-                    <Label Content="RY (I):"
-                           Padding="2,2"/>
-                    <Label x:Name="ryInValLb"
-                           Content=""
-                           Width="32"
-                           Padding="2,2"
-                           HorizontalContentAlignment="Right"/>
-                    <Label Content="RY (O):"
-                           Padding="6,2,2,2"/>
-                    <Label x:Name="ryOutValLb"
-                           Content=""
-                           Width="32"
-                           Padding="2,2"
-                           HorizontalContentAlignment="Right"/>
-                </StackPanel>
+                <WrapPanel HorizontalAlignment="Center"
+                           Margin="0,4,0,0">
+                    <StackPanel Orientation="Horizontal"
+             Margin="0,0,4,0">
+                        <Label Content="RX (I):"
+                               Padding="2,2"/>
+                        <Label x:Name="rxInValLb"
+                               Content=""
+                               Width="34"
+                               Padding="1,2"
+                               HorizontalContentAlignment="Right"/>
+                    </StackPanel>
+                    <StackPanel Orientation="Horizontal">
+                        <Label Content="RX (O):"
+                               Padding="2,2"/>
+                        <Label x:Name="rxOutValLb"
+                               Content=""
+                               Width="34"
+                               Padding="1,2"
+                               HorizontalContentAlignment="Right"/>
+                    </StackPanel>
+                </WrapPanel>
+                <WrapPanel HorizontalAlignment="Center"
+                           Margin="0,2,0,0">
+                    <StackPanel Orientation="Horizontal"
+             Margin="0,0,4,0">
+                        <Label Content="RY (I):"
+                               Padding="2,2"/>
+                        <Label x:Name="ryInValLb"
+                               Content=""
+                               Width="34"
+                               Padding="1,2"
+                               HorizontalContentAlignment="Right"/>
+                    </StackPanel>
+                    <StackPanel Orientation="Horizontal">
+                        <Label Content="RY (O):"
+                               Padding="2,2"/>
+                        <Label x:Name="ryOutValLb"
+                               Content=""
+                               Width="34"
+                               Padding="1,2"
+                               HorizontalContentAlignment="Right"/>
+                    </StackPanel>
+                </WrapPanel>
             </StackPanel>
 
             <!-- SixAxis -->
@@ -268,42 +285,50 @@
                              Canvas.Top="10"
                              Width="32"/>
                 </Canvas>
-                <StackPanel Orientation="Horizontal"
-                            HorizontalAlignment="Center"
-                            Margin="0,4,0,0">
-                    <Label Content="X (I):"
-                           Padding="2,2"/>
-                    <Label x:Name="sixAxisXInValLb"
-                           Content=""
-                           Width="36"
-                           Padding="2,2"
-                           HorizontalContentAlignment="Right"/>
-                    <Label Content="X (O):"
-                           Padding="6,2,2,2"/>
-                    <Label x:Name="sixAxisXOutValLb"
-                           Content=""
-                           Width="36"
-                           Padding="2,2"
-                           HorizontalContentAlignment="Right"/>
-                </StackPanel>
-                <StackPanel Orientation="Horizontal"
-                            HorizontalAlignment="Center"
-                            Margin="0,2,0,0">
-                    <Label Content="Z (I):"
-                           Padding="2,2"/>
-                    <Label x:Name="sixAxisZInValLb"
-                           Content=""
-                           Width="36"
-                           Padding="2,2"
-                           HorizontalContentAlignment="Right"/>
-                    <Label Content="Z (O):"
-                           Padding="6,2,2,2"/>
-                    <Label x:Name="sixAxisZOutValLb"
-                           Content=""
-                           Width="36"
-                           Padding="2,2"
-                           HorizontalContentAlignment="Right"/>
-                </StackPanel>
+                <WrapPanel HorizontalAlignment="Center"
+                           Margin="0,4,0,0">
+                    <StackPanel Orientation="Horizontal"
+             Margin="0,0,4,0">
+                        <Label Content="X (I):"
+                               Padding="2,2"/>
+                        <Label x:Name="sixAxisXInValLb"
+                               Content=""
+                               Width="40"
+                               Padding="1,2"
+                               HorizontalContentAlignment="Right"/>
+                    </StackPanel>
+                    <StackPanel Orientation="Horizontal">
+                        <Label Content="X (O):"
+                               Padding="2,2"/>
+                        <Label x:Name="sixAxisXOutValLb"
+                               Content=""
+                               Width="40"
+                               Padding="1,2"
+                               HorizontalContentAlignment="Right"/>
+                    </StackPanel>
+                </WrapPanel>
+                <WrapPanel HorizontalAlignment="Center"
+                           Margin="0,2,0,0">
+                    <StackPanel Orientation="Horizontal"
+             Margin="0,0,4,0">
+                        <Label Content="Z (I):"
+                               Padding="2,2"/>
+                        <Label x:Name="sixAxisZInValLb"
+                               Content=""
+                               Width="40"
+                               Padding="1,2"
+                               HorizontalContentAlignment="Right"/>
+                    </StackPanel>
+                    <StackPanel Orientation="Horizontal">
+                        <Label Content="Z (O):"
+                               Padding="2,2"/>
+                        <Label x:Name="sixAxisZOutValLb"
+                               Content=""
+                               Width="40"
+                               Padding="1,2"
+                               HorizontalContentAlignment="Right"/>
+                    </StackPanel>
+                </WrapPanel>
             </StackPanel>
         </Grid>
 
@@ -311,8 +336,8 @@
         <Grid DockPanel.Dock="Top"
               Margin="8,30,8,8">
             <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="1.3*"/>
-                <ColumnDefinition Width="1.7*"/>
+                <ColumnDefinition Width="1.35*"/>
+                <ColumnDefinition Width="1.65*"/>
             </Grid.ColumnDefinitions>
 
             <!-- トリガー (L2 / R2) および タッチパッド (TX / TY) 表示エリア -->
@@ -321,9 +346,10 @@
                         Grid.Column="0"
                         HorizontalAlignment="Center">
 
+                <!-- Phase11 W2: 幅 470 のとき、この列は約 205。グループの固定幅を詰め（L2/R2: 58＋右余白 4、TX/TY: 70。合計 194）、右端の TX/TY が欠けないようにした -->
                 <!-- === L2 グループ === -->
-                <StackPanel Width="70"
-                            Margin="0,0,12,0">
+                <StackPanel Width="58"
+                            Margin="0,0,4,0">
                     <!-- 上段: スライダーとL2インジケーター (中央揃え) -->
                     <StackPanel Orientation="Horizontal"
                                 HorizontalAlignment="Center"
@@ -387,8 +413,8 @@
                 </StackPanel>
 
                 <!-- === R2 グループ === -->
-                <StackPanel Width="70"
-                            Margin="0,0,12,0">
+                <StackPanel Width="58"
+                            Margin="0,0,4,0">
                     <!-- 上段: スライダーとR2インジケーター (中央揃え) -->
                     <StackPanel Orientation="Horizontal"
                                 HorizontalAlignment="Center"
@@ -452,14 +478,14 @@
                 </StackPanel>
 
                 <!-- === TX / TY グループ (タッチパッド) === -->
-                <StackPanel Width="65">
+                <StackPanel Width="70">
                     <StackPanel Height="80"/>
                     <!-- 下段: TX / TY 数値 -->
                     <StackPanel HorizontalAlignment="Center"
                                 Margin="0,4,0,0">
                         <StackPanel Orientation="Horizontal">
                             <Label Content="TX:"
-                                   Width="24"
+                                   Width="28"
                                    Padding="1,1"
                                    VerticalAlignment="Center"/>
                             <Label x:Name="touchXValLb"
@@ -471,7 +497,7 @@
                         </StackPanel>
                         <StackPanel Orientation="Horizontal">
                             <Label Content="TY:"
-                                   Width="24"
+                                   Width="28"
                                    Padding="1,1"
                                    VerticalAlignment="Center"/>
                             <Label x:Name="touchYValLb"
@@ -497,7 +523,7 @@
                                Padding="0"/>
                         <StackPanel Orientation="Horizontal">
                             <Label Content="{lex:Loc Yaw}"
-                                   Width="40"/>
+                                   Width="46"/>
                             <Slider x:Name="gyroYawSlider"
                                     Width="80"
                                     Minimum="-9000"
@@ -508,7 +534,7 @@
                         </StackPanel>
                         <StackPanel Orientation="Horizontal">
                             <Label Content="{lex:Loc Pitch}"
-                                   Width="40"/>
+                                   Width="46"/>
                             <Slider x:Name="gyroPitchSlider"
                                     Width="80"
                                     Minimum="-9000"
@@ -519,7 +545,7 @@
                         </StackPanel>
                         <StackPanel Orientation="Horizontal">
                             <Label Content="{lex:Loc Roll}"
-                                   Width="40"/>
+                                   Width="46"/>
                             <Slider x:Name="gyroRollSlider"
                                     Width="80"
                                     Minimum="-9000"
