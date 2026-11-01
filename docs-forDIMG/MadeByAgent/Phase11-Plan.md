@@ -446,3 +446,12 @@
 ### 13.3 結果
 
 （実機確認の結果を、まとまりごとに記録する。）
+
+### 13.4 実機確認で見つかった課題と修正方針（修正は、全部の実機テストが終わってから行う。ユーザー決定 2026-11-02）
+
+**K-W6-1: Settings タブで、最下部の 1 行メッセージ欄（`lastMsgLb`）が隠れる**（P11-7 で発見）
+- 原因: `MainWindow.xaml.cs` の `MainTabCon_SelectionChanged` が、タブの番号（`SelectedIndex == 4`）で欄を隠す。本来は Log タブを隠す意図と思われるが、Output Slots タブが途中に入って番号がずれ、実際は **Settings** で隠れる（取り込んだ初期コミット `906946a7` から同じ書き方。今回の変更とは無関係）。Settings で出る警告（P11-7 の Steam フォルダーなど）が、他のタブへ移るまで見えない。
+- 方針（決定）: **すべてのタブで表示する**。`MainTabCon_SelectionChanged` と、`MainWindow.xaml` の `mainTabCon` の `SelectionChanged` 属性を削除し、欄を隠す処理を持たない。
+- テスト（作成済み。実装時に戻す）: `Phase11W5StatusMessageVisibilityTests`（欄がタブの外にあり `Visibility` を持たない、`SelectionChanged` と `lastMsgLb.Visibility` がコードにない）。変更前は 1 件失敗することを確認済み。
+- 実機確認: 修正後に、P11-7 の手順 A を Settings タブのまま再確認する。
+- それまでは、P11-7 の警告は、Settings 以外のタブへ移って確認する。
