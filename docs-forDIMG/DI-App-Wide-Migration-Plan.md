@@ -5,7 +5,7 @@
 改訂履歴: 2026-09-23（Phase8 新設）／2026-09-09（Phase6「残存Global実利用箇所の解体」、Phase7「Mapping.cs完全instance化（延期）」を追加。
 DI化対象外項目をカテゴリA〜Fとして確定）
 対象ブランチ: `インターフェース化`（以降の実装は `For-DI-migration-work` ブランチで実施）
-対象リポジトリ: https://github.com/gwin7ok/DS4Windows-Vader4Pro
+対象リポジトリ: https://github.com/gwin7ok/DS4Windows（旧 gwin7ok/DS4Windows-Vader4Pro。2026-10-23 の 4.1.0 で移転。本書の作成当時の名称は旧名）
 保存想定パス: `docs/DI-App-Wide-Migration-Plan.md`
 
 本書は `01-現状分析.md` 〜 `05-段階移行ロードマップ.md`（調査ステージ1〜4）および
@@ -1054,4 +1054,5 @@ static結合を先に減らしておくことが本フェーズの下地にな�
 ### 追記（2026-10-23）: Phase9 の完了とリリース前の状況
 
 - Phase9（巨大クラスの責務分割）は、9-A〜9-F・MapCustom・9-I が完了（9-G は先送り、9-H は K7b-1 の観察の完了待ち）。結果は `MadeByAgent/Phase9-Completion-Report.md`、先送りは `MadeByAgent/Phase9-Deferred-Ledger.md`。
-- リリース前の追加・修正は `MadeByAgent/Release-Backlog.md`（R-1・R-2・R-5・R-6 は実装済み・実機確認合格。R-2 は 4.2.0 向け［`R2-MacroToggleRepeat-Plan.md`］。R-3・R-4 は次の版）。公開済みの最新は 4.1.0。次の大きな作業は Phase11（名前空間・フォルダの再編）で、F-4・G-1・9-H の判断の後。
+- リリース前の追加・修正は `MadeByAgent/Release-Backlog.md`（R-1・R-2・R-5・R-6 は実装済み・実機確認合格。R-2 は 4.2.0 向け［`R2-MacroToggleRepeat-Plan.md`］。R-3・R-4 は次の版）。公開済みの最新は 4.2.3（2026-11-02 に更新。リリースと R 項目の対応は `MadeByAgent/Release-Backlog.md` §4）。次の大きな作業は Phase11（名前空間・フォルダの再編）で、F-4・G-1・9-H の判断の後。
+- 追記（2026-11-02）: `FurtherImprovements/01〜06`（アーキテクチャ分析、リファクタリング設計、移行ランブック、入力パイプライン仕様、プラグイン開発ガイド、UI デザイン仕様。2026-10-24 追加）は、DI 移行後の発展案の参考資料で、本計画の Phase には組み込んでいない。Phase11 以降の計画を立てるときの入力として参照する。
