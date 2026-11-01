@@ -447,6 +447,8 @@
 
 （実機確認の結果を、まとまりごとに記録する。）
 
+- **S1（P11-1〜8）: 2026-11-02 完了。8 件とも ○**（詳細は台帳 §52）。確認中に、W4・W5 の変更とは無関係の既存の課題を 3 件見つけた（K-W6-1〜3、§13.4。修正は全部の実機テストが終わってから）。
+
 ### 13.4 実機確認で見つかった課題と修正方針（修正は、全部の実機テストが終わってから行う。ユーザー決定 2026-11-02）
 
 **K-W6-1: Settings タブで、最下部の 1 行メッセージ欄（`lastMsgLb`）が隠れる**（P11-7 で発見）
@@ -460,5 +462,14 @@
 - 症状: サービスを Stop した状態で、直前まで使っていたプロファイル（例: verifyA）を Edit から Save または Apply すると、Gyro 設定に関係なく、ログに `Controller 1 is now using Profile "verifyA" (Battery: N/A%)` が出て、独自ウィンドウの通知も出る。サービスは起動しない（P11-6 の期待どおり）。
 - 原因（調査済み・コードの読みのみ）: `ProfileEditor` の Save／Apply → `MainWindow.Editor_ProfileSaved` → `SyncProfileListAndControllers`（`MainWindow.xaml.cs` の ④ 再適用）が、`profileRepo.ProfilePath[i]` が保存したプロファイルと一致する**全スロット**へ `profileSlotApplier.ApplyToSlot(i, …, Manual)` を呼ぶ。停止中でもスロット 0 の `ProfilePath` は前回の名前のまま残るため一致する。`ProfileSlotApplier.ApplyToSlot` は範囲と名前の検査だけで、そのスロットに**デバイスが接続されているか、サービスが動いているか**を見ない。`ApplyProfileWithoutHalt` → `ApplyCore` → `CompleteProfileApplication` が、`ds4Device == null` のとき電池 `N/A`、`LogToGui` と `LogProfileChanged`（→ `MainWindow.OnProfileChanged` → 通知）を出す。
 - 影響: 動作中でも、接続していないスロット（`ProfilePath` が同じプロファイルを指す）に対して、同じ無意味な適用・ログ・通知が出る可能性がある（未確認。S2 以降で観察する）。XML の読み込みは行われるため、停止中の副作用は通知とログと `SelectedProfile`・`OlderProfilePath` の更新。
-- 方針（案。ユーザー承認待ち。修正は全部の実機テストが終わってから）: `SyncProfileListAndControllers` の再適用ループで、**そのスロットにデバイスが接続されている**（`ControlService.DS4Controllers[i] != null`）ときだけ `ApplyToSlot` を呼ぶ。停止中は何も適用しない（プロファイルの XML はディスクに保存済みで、次の接続時に読まれる）。`ProfilePath` の更新（③）は従来どおり。
+- 方針（ユーザー承認済み 2026-11-02。修正は全部の実機テストが終わってから）: `SyncProfileListAndControllers` の再適用ループで、**そのスロットにデバイスが接続されている**（`ControlService.DS4Controllers[i] != null`）ときだけ `ApplyToSlot` を呼ぶ。停止中は何も適用しない（プロファイルの XML はディスクに保存済みで、次の接続時に読まれる）。`ProfilePath` の更新（③）は従来どおり。
 - 注意: 機能の削減にならないか（接続前のスロットの `SelectedProfile` が Save で更新されなくなる影響）を、実装前に確認する。通知・ログ文言は変えない。
+
+**K-W6-3: コントローラーの接続直後のログ・通知で、電池残量が 0% と表示される**（P11-6 手順 D の確認中に発見）
+- 症状: 接続時のログ `Controller 1 is now using Profile "verifyA" (Battery: 0%)` と、通知 `Battery level is 0%` が 0% になる。同じプロファイルを接続後に Save すると、`Battery: 100%` と正しく出る。
+- 原因（調査済み・コードの読みのみ）: 電池残量 `DS4Device.battery` は、入力レポートの読み取りループ（`DS4Device.cs` 1137〜1156 行付近）だけが更新する。`DeviceConnector.PrepareConnected` は、`ApplyOnConnect`（プロファイルの適用。ここで `CompleteProfileApplication` が `device.Battery` を読んでログ・通知を作る）を呼んだあとの最後（169 行）で `device.StartUpdate()` を呼ぶ。したがって、ログを作る時点では、最初の入力レポートがまだ読まれておらず、`battery` は初期値の 0。
+- 方針の案（ユーザー承認待ち。修正は全部の実機テストが終わってから）:
+  - 案 A（推奨）: `StartUpdate` の前に、**最初の入力レポートを 1 回だけ同期で読み、電池残量だけを取り込む**（`DS4Device` に `PrimeBatteryReading` のような仮想メソッドを足し、DS4 の USB／BT を実装。レポートの種類が違う DualSense・Switch Pro・Joy-Con・DS3 は、従来どおり 0 → 後で更新のままにするか、各クラスの電池の取り出しを共通の小メソッドへ切り出す）。プロファイル適用の順序、ログ文言は変えない。
+  - 案 B: 電池がまだ読まれていない間は、数値ではなく `N/A` を出す（`DS4Device` に `HasBatteryReading` を足す）。0% とは出なくなるが、「最初のログから正しい値」にはならない。
+  - 案 C: 接続時のログ・通知を、最初の入力レポートが届いてから出す。ただしプロファイル適用はレポートの処理前に終える必要があり（適用前のレポートが既定の割り当てで処理されるため）、ログだけ遅らせると順序が変わる。リスクが大きく非推奨。
+- 注意: 今回の変更（Phase11）が原因ではなく、接続処理の順序が元からこの形である可能性が高い（上流のコードの流れ。履歴の確認は未実施）。機種ごとの電池の取り出しが違うため、案 A は DS4 だけ実機で確認できる（他機種は 不能、U-51）。
