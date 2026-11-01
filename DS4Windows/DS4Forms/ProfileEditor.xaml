@@ -120,9 +120,10 @@
                     Content="Select Preset"
                     Margin="10,0,0,0"
                     Click="PresetBtn_Click"/>
+            <!-- Phase11 W3: 状態は Click ハンドラー（ProfileEditor.Keepsize の元）が持つ。以前の IsChecked="{Binding Keepsize, Mode=TwoWay}" は、
+                 DataContext がメインウィンドウの MainWindowsViewModel（Keepsize を持たない）のため、最初から解決していなかったので外した -->
             <CheckBox x:Name="keepSizeCheckBox"
                       Margin="10,0,0,0"
-                      IsChecked="{Binding Keepsize, Mode=TwoWay}"
                       Click="KeepSizeCheckBox_Click"
                       VerticalAlignment="Center">
                 <StackPanel Orientation="Horizontal"

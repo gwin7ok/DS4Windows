@@ -212,6 +212,8 @@ namespace DS4WinWPF.DS4Forms
         private bool keepsize;
         private bool controllerReadingsTabActive = false;
 
+        // Phase11 W3: 読み取り専用のままにする。書き込みの経路は KeepSizeCheckBox_Click（Click イベント）だけで、XAML のバインディングは使わない
+        // （以前の IsChecked="{Binding Keepsize, Mode=TwoWay}" は、DataContext がメインウィンドウの MainWindowsViewModel のため解決せず、外した）。
         public bool Keepsize
         {
             get => keepsize;

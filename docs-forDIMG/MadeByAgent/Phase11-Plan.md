@@ -70,6 +70,7 @@
 - 案 A（推奨）: `set` を足す（`Keepsize { get => keepsize; set => keepsize = value; }`）。`Click` ハンドラーは残し、バインディングと二重にならないことを確認する。
 - 案 B: `Mode=TwoWay` を外す（`OneWay`）。
 - 受入: チェックの ON／OFF で、保存・適用時のウィンドウサイズ保持（`ProfileEditor.xaml.cs` の `keepsize` の分岐）が従来どおり。特性化テストを先に書く。
+- **結果: 完了（2026-11-02）。ただし、案 A・B のどちらでもなく、「死んでいるバインディングを外す」で閉じた**（調査で、案 A の前提が成り立たないと判明したため。§10）。
 
 ### W4: Issue #4 の 1 — `UseDs3PitchRollSim`（欠落した補正の復元）
 
@@ -300,3 +301,36 @@
 - **実アプリでの目視は未了。** 画像は、実物のコントロールを `RenderTargetBitmap` で描いたもので、実アプリの左ペインの実際の幅は測っていない（470 以上と見込む）。W6 の台帳に項目を足して確認する（ダーク・ライトの両テーマ、日本語・英語、L2／R2 全開、タッチパッドの右端）。
 - 左ペインが 470 より狭くなる使い方は、想定していない（Controls タブが 470 の固定幅のため）。
 - ジャイロの枠のほかの非数値のラベルは、確認の範囲外（`Pitch` だけ、同じ原因として直した）。
+
+## 10. W3 の結果（2026-11-02。`Keepsize`）
+
+### 10.1 調査で分かったこと（計画の前提の訂正）
+
+§1.1 の 2 は「XAML は `Mode=TwoWay`、C# は get-only」という**事実**どおりだが、原因の見立てが違った。
+
+- `ProfileEditor` は `DataContext` を自分に設定しておらず（`ProfileEditor.xaml.cs` の `DataContext` 代入は、個々の要素へのみ）、メインウィンドウの `DataContext = mainWinVM`（`MainWindowsViewModel`）を継承する。
+- よって `IsChecked="{Binding Keepsize, Mode=TwoWay}"` は **`MainWindowsViewModel` の `Keepsize`** を探す。そこには `Keepsize` が無い（`Keepsize` を持つのは `ProfileEditor` だけ）。**バインディングは最初から解決していなかった**（`PathError`。実測で確認）。
+- 状態を持っていたのは、Click ハンドラー `KeepSizeCheckBox_Click`（2025-11-06 の `d9cede6f` で、画像のボタンからチェックボックスへ変えたときに加わった）だけ。
+- したがって、案 A（`set` を足す）は、バインディングの宛先が違うため、足しても何も変わらない。案 B（`OneWay` にする）も、宛先は同じく違う。
+
+### 10.2 変更（挙動は変わらない）
+
+| 対象 | 変更 |
+|---|---|
+| `ProfileEditor.xaml` | 解決しないバインディング `IsChecked="{Binding Keepsize, Mode=TwoWay}"` を外す。理由のコメントを足す。`Click="KeepSizeCheckBox_Click"` は残す |
+| `ProfileEditor.xaml.cs` | `Keepsize` は get-only のまま。書き込みの経路が Click ハンドラーだけであることのコメントを足す |
+
+`Keepsize` を読む側（`MainWindow` の SizeChanged・LocationChanged・`ProfileEditor_Closed`、`ProfileEditor` の `Close`・`ProfileEditor_Closed`）は変えていない。外したバインディングは、解決しないために、何も読み書きしていなかった（実行時に、出力のバインディングエラーが 1 件減る）。
+
+### 10.3 検証
+
+- 新しいテスト `Phase11W3KeepsizeTests`（4 件）:
+  1. **証拠**: 本物の `MainWindowsViewModel` を DataContext にした `CheckBox` で、`Keepsize` のバインディングが `PathError` になり、チェックの操作で例外にならないこと（変更の前後とも合格）
+  2. XAML: `keepSizeCheckBox` が Click ハンドラーだけを持ち、`IsChecked` のバインディング（`Keepsize`）がないこと（**変更前は失敗、変更後は合格**）
+  3. Click ハンドラーがチェックの状態をフィールドへ入れること、`Keepsize` が get-only であること（特性化。変更の前後とも合格）
+  4. 保存・復元の分岐が従来どおりであること（`ProfileEditor` の `if (keepsize)` の 2 か所、`MainWindow` の `editor.Keepsize` の 3 か所。特性化。変更の前後とも合格）
+- `Debug ALL` 相当: Build 警告 0・エラー 0。Actions **2,744 件**（W2 の 2,740 件＋4 件）・Standalone 11 件がすべて合格。
+
+### 10.4 未確認
+
+- 実アプリでの目視は未了。W6 の台帳（P11-n）に、「画面サイズを保持」の確認を足す: ON のまま編集画面を閉じる → ウィンドウのサイズ・位置が設定に保存され、次回も同じ。OFF のまま閉じる → 編集画面を開く前のサイズへ戻る。
