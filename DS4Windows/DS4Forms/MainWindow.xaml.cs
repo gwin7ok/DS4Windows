@@ -1750,6 +1750,7 @@ Suspend support not enabled.", true);
 
                 editor = editorWindowFactory.CreateProfileEditor(targetDevice);
                 editor.ProfileSaved += Editor_ProfileSaved;
+                editor.ServiceRestartRequested += Editor_ServiceRestartRequested;
                 editor.ProfilesUpdatedExternally += Editor_ProfilesUpdatedExternally;
                 editor.Closed += ProfileEditor_Closed;
                 profDockPanel.Children.Add(editor);
@@ -1864,6 +1865,35 @@ Suspend support not enabled.", true);
         {
             // 保存されたプロファイルを対象として、安全にリスト再同期＆該当スロットのホットリロードを実行
             SyncProfileListAndControllers(oldProfile: profile, newProfile: null);
+        }
+
+        // Phase11 W4（Issue #4 の 1）: 編集画面が保存のときに求める、サービスの再起動（DS3 のピッチ／ロールの擬似の設定が変わったとき）
+        private void Editor_ServiceRestartRequested(object sender, EventArgs e)
+        {
+            RestartService();
+        }
+
+        /// <summary>
+        /// Phase11 W4: サービスを、停止→開始の順に 1 つの処理で再起動する。旧 ProfileEditor.SaveBtn_Click は、ChangeService
+        /// （停止／開始の切り替え）を 2 回続けて呼んでおり、1 回目の完了を待たなかった。ここでは切り替えを使わず、順に行う。
+        /// 止まっているサービスは開始しない（ユーザーが止めたものを勝手に動かさない。設定は、次の開始で効く）。
+        /// </summary>
+        private async void RestartService()
+        {
+            ControlService service = controlService;
+            if (!service.running) { return; }
+
+            AppLogger.LogDebug("[MainWindow] UseDs3PitchRollSim の変更を反映するため、サービスを再起動する");
+            StartStopBtn.IsEnabled = false;
+            Task serviceTask = Task.Run(() =>
+            {
+                service.Stop(immediateUnplug: true);
+                service.Start();
+            });
+
+            // Log exceptions that might occur
+            Util.LogAssistBackgroundTask(serviceTask);
+            await serviceTask;
         }
         // Phase6-Step10-3b-3: アクションの除去・名前変更でプロファイルの XML が書き換わったときも、
         // 保存時と同じ経路（一覧の読み直し＋該当スロットへの再適用）を使う

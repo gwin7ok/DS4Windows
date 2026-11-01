@@ -510,6 +510,15 @@ namespace DS4WinWPF.DS4Forms.ViewModels
         //     return UseDs3PitchRollSim != Global.UseDs3PitchRollSim;
         // }
 
+        /// <summary>
+        /// Phase11 W4（Issue #4 の 1）: サービスの再起動を求めたあとに、<see cref="HasUseDs3PitchRollSimChanged"/> の印を戻す。
+        /// 同じ変更のために、再起動をくり返し求めないようにするため。
+        /// </summary>
+        public void AcknowledgeUseDs3PitchRollSimChange()
+        {
+            HasUseDs3PitchRollSimChanged = false;
+        }
+
         public int RumbleBoost
         {
             get => profileSettings.RumbleBoost[device];
@@ -823,6 +832,47 @@ namespace DS4WinWPF.DS4Forms.ViewModels
                 TempControllerIndex = newIndex;
             }
         }
+        /// <summary>
+        /// Phase11 W4（Issue #4 の 1）: DS4 の出力でしか成り立たない設定が ON なのに、出力の種類（Emulated Controller）が DS4 でないとき、
+        /// DS4 へ補正する。保存・適用の両方が通る <c>ProfileEditor.ExecuteSaveOrApply</c> から、保存する前に呼ぶ。
+        /// 2026-09-14 の保存・適用の統合（<c>9da60b85</c>）で失われた、旧 <c>ProfileEditor</c> の補正の復元（旧コードの動きに合わせる）:
+        /// <list type="bullet">
+        /// <item>(a) <see cref="UseDs3PitchRollSim"/> が ON なら DS4（旧 <c>SaveBtn_Click</c>。GUI ログなし）</item>
+        /// <item>(c) <see cref="EnableOutputDataToDS4"/> が ON で、(a) のあとも DS4 でなければ DS4（旧 <c>SetLateProperties</c> の
+        /// Phase5-Step14 (c)-2。呼び出し側が GUI ログを出す）</item>
+        /// </list>
+        /// OFF のときは何もしない（DS4 から X360 へ戻すことはしない）。
+        /// 「DS4 でない」の判定は、保存される値（<see cref="ControllerTypeIndex"/>）と画面の選択（<see cref="TempControllerIndex"/>）の
+        /// どちらかが DS4 でなければ、とする（ずれていても、保存される値を DS4 にそろえるため）。
+        /// </summary>
+        /// <returns>DS4 へ変えた理由。変えなかった場合は <see cref="Ds4OutputCorrectionReason.None"/></returns>
+        public Ds4OutputCorrectionReason CorrectOutputTypeToDs4()
+        {
+            bool notDs4 = ControllerTypeIndex != 1 || TempControllerIndex != 1;
+            if (!notDs4)
+            {
+                return Ds4OutputCorrectionReason.None;
+            }
+
+            Ds4OutputCorrectionReason reason;
+            if (UseDs3PitchRollSim)
+            {
+                reason = Ds4OutputCorrectionReason.Ds3PitchRollSim;
+            }
+            else if (EnableOutputDataToDS4)
+            {
+                reason = Ds4OutputCorrectionReason.EnableOutputDataToDS4;
+            }
+            else
+            {
+                return Ds4OutputCorrectionReason.None;
+            }
+
+            ControllerTypeIndex = 1;   // 保存される値（profileSettings.OutContType）
+            TempControllerIndex = 1;   // 画面の選択
+            return reason;
+        }
+
         /// <summary>
         /// Phase6-Step8-3: キャンセル時に、編集中に変えた一時的な出力種別（<c>OutDevTypeTemp</c>）を X360 へ戻す。
         /// ProfileEditor.CancelBtn_Click の 旧 <c>Global.outDevTypeTemp[deviceNum] = X360</c>（現在は OutputSlotService の配列）の置換。

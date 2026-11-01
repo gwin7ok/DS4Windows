@@ -80,6 +80,7 @@
 - 受入: 擬似を ON にして **保存** と **適用** のどちらでも、出力が DS4 になる。OFF のときは従来どおり。(c) も同様。ログは §2.3 に従い、旧文言があれば維持する。
 - 実機: DS3 で擬似の効果を確認する（機材がなければ「不能」として記録し、ユニットテストで担保する）。
 - **決定済み**（Q1: 補正を復元する、Q2: 再起動も復元する）。再起動は、旧コードの動き（`MainWindow.ChangeService` による非同期の再起動）を特性化してから、現在のアーキテクチャ（`IServiceLifecycle` など）に合わせて呼び出す。復元した再起動が実機（DS3 または DS4）で問題を起こさないことを、W6 で確認する。
+- **結果: 実装と自動検証は完了（2026-11-02）。** 補正は保存・適用の両方、再起動は保存のみ（旧コードと同じ）。実機（DS4 での再起動の安全性）は W6 の台帳（P11-n）で行う（§11）。
 
 ### W5: Issue #4 の 3・4 — `CustomSteamFolder`、`CheckEvery`
 
@@ -334,3 +335,47 @@
 ### 10.4 未確認
 
 - 実アプリでの目視は未了。W6 の台帳（P11-n）に、「画面サイズを保持」の確認を足す: ON のまま編集画面を閉じる → ウィンドウのサイズ・位置が設定に保存され、次回も同じ。OFF のまま閉じる → 編集画面を開く前のサイズへ戻る。
+
+## 11. W4 の結果（2026-11-02。DS4 への出力補正とサービス再起動の復元）
+
+### 11.1 失われていた挙動（旧コード＝`9da60b85` の親の特性化）
+
+2026-09-14 の保存・適用の統合（`9da60b85`）で、旧 `SaveBtn_Click`／`SetLateProperties` にあった次の動きが落ちていた。
+
+| 記号 | 旧コード | 保存 | 適用 | ログ |
+|---|---|---|---|---|
+| (a) | `UseDs3PitchRollSim` が ON なら `TempControllerIndex = 1`（出力を DS4 へ。出力が今何かは見ない） | ○ | なし | なし |
+| (b) | `HasUseDs3PitchRollSimChanged` なら、`MainWindow.ChangeService`（停止／開始の**切り替え**）を 2 回続けて呼ぶ | ○ | なし | なし |
+| (c)-2 | `EnableOutputDataToDS4` が ON で出力が DS4 でないなら `TempControllerIndex = 1` ((a) のあとなので、擬似が ON のときは動かない) | ○ | ○ | `LogToGui`（エラーではない） |
+
+### 11.2 変更
+
+| 対象 | 変更 |
+|---|---|
+| `Ds4OutputCorrectionReason.cs`（新規） | 補正の理由（`None`／`Ds3PitchRollSim`／`EnableOutputDataToDS4`）。1 ファイル 1 型 |
+| `ProfileSettingsViewModel.cs` | `CorrectOutputTypeToDs4()`: 保存される値（`ControllerTypeIndex`）と画面の選択（`TempControllerIndex`）のどちらかが DS4 でなく、かつ擬似または `EnableOutputDataToDS4` が ON なら、両方を DS4 にして理由を返す。OFF のときは何もしない（DS4 から X360 へは戻さない）。`AcknowledgeUseDs3PitchRollSimChange()`: 再起動を求めたあとに変更の印を戻す |
+| `ProfileEditor.xaml.cs` | `ExecuteSaveOrApply`（保存・適用の合流点）で、名前の検査のあと・保存の前に補正を呼ぶ。補正したら `outConTypeCombo.SelectedIndex = 1`（`SelectionChanged` が、設定・マッピング一覧の出力の種類も更新する）。(c)-2 の GUI ログは旧文言のまま。イベント `ServiceRestartRequested` を足し、保存が成功したときだけ `RequestServiceRestartIfNeeded()` で出す |
+| `MainWindow.xaml.cs` | `ServiceRestartRequested` を購読し、`RestartService()` を呼ぶ。サービスが動いているときだけ、1 つの `Task.Run` の中で `Stop(immediateUnplug: true)` → `Start()` を順に行う |
+
+### 11.3 設計上の選択（旧コードとの違い。要・ユーザー確認）
+
+1. **再起動は保存のときだけ**（旧コードと同じ）。適用では再起動しない。適用のあとに保存すると、変更の印は再起動を求めたときだけ戻すので、保存で再起動を求める。
+2. **旧コードの「切り替えを 2 回呼ぶ」は戻さない。** `ChangeService` は停止／開始の切り替えで、旧コードは 1 回目の完了を待たずに 2 回目を呼んでいた。復元では、停止→開始を 1 つの処理で順に行う。
+3. **止まっているサービスは再起動しない**（ユーザーが止めたものを勝手に動かさない。設定は、次の開始で効く）。
+4. **(a) の補正は GUI ログを出さない**（旧コードと同じ）。デバッグログ（`LogDebug`）だけ足した。(c)-2 は旧文言の `LogToGui` を維持した。
+5. **Pure DI**: 編集画面は `Application.Current.MainWindow` を取り出さず、イベントで MainWindow に依頼する（旧コードは取り出して `ChangeService` を直接呼んでいた）。
+6. 補正は、擬似が ON のとき**無条件に DS4 を保存する**ため、`OutContType` が X360 の既存プロファイルで擬似を ON にして保存すると、出力が DS4 に変わる（旧コードと同じ。Q1 の決定）。
+
+### 11.4 検証
+
+- 新しいテスト（15 件）:
+  - `Phase11W4Ds4OutputCorrectionTests`（11 件）: 補正の組み合わせ 7 通り（X360／DS4 × 擬似 × `EnableOutputDataToDS4`）の期待値（理由・保存される値・画面の選択）、保存される値が基準であること（画面の選択だけが DS4 でも補正する）、くり返しても変わらないこと、変更の印の設定・解除、同じ値は変更ではないこと
+  - `Phase11W4SaveApplyWiringGuardTests`（4 件。ソース走査）: 補正が名前の検査のあと・保存の前にあること、(c)-2 のログ文言が旧文言のままであること、再起動が保存だけでイベント経由であること（`ChangeService` を戻していないこと）、MainWindow が動いているときだけ停止→開始を 1 処理で行うこと
+- **赤→緑**: 配線のガード 4 件は、変更前のソース（`HEAD`）では 4 件とも失敗、変更後は合格。ViewModel のテストは、変更前は新しい API が無くコンパイルできないため赤は取れない（特性化の期待値を、旧コードの動きから書いた）。
+- `Debug ALL` 相当: Build 警告 0・エラー 0。Actions **2,759 件**（W3 の 2,744 件＋15 件）・Standalone 11 件がすべて合格。ラチェット（`Global`／`AppHost`／`Program.rootHub`）は増やしていない。
+
+### 11.5 未確認
+
+- **DS3 の実機での擬似の効果は `不能`**（DS3 が無い。§7.4）。ユニットテスト（旧コードの動きの特性化）で担保する。
+- **DS4 での再起動の安全性は未了。** W6 の台帳（P11-n）に足す: プロファイル編集で `UseDs3PitchRollSim` を変えて**保存** → サービスが停止→開始し、DS4 が再接続され、プロファイルが再適用され、仮想パッドが付け外しされること。適用だけでは再起動しないこと。サービスを止めた状態で保存しても、開始されないこと。再起動中に [Start/Stop] ボタンが一時的に無効になり、終われば「停止」表示で有効に戻ること（停止の通知で一度有効になる瞬間がある点も観察する）。
+- (c)-2 の GUI ログは、`EnableOutputDataToDS4` を ON・出力 X360 で保存または適用したときに 1 行出る（実アプリでの目視は W6）。
