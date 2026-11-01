@@ -2,6 +2,7 @@ using System;
 using System.IO;
 using System.Linq;
 using System.Text.RegularExpressions;
+using System.Xml.Linq;
 using Xunit;
 using Xunit.Abstractions;
 
@@ -36,39 +37,33 @@ namespace DS4WindowsTests
             return File.ReadAllText(path).Replace("\r\n", "\n");
         }
 
-        private static string Between(string text, string startMarker, string endMarker)
+        private const string ProfileEditorXaml = "DS4Windows/DS4Forms/ProfileEditor.xaml";
+
+        private XDocument LoadXaml(string relative)
         {
-            int start = text.IndexOf(startMarker, StringComparison.Ordinal);
-            Assert.True(start >= 0, startMarker + " が見つからない");
-            int end = endMarker == null ? text.Length : text.IndexOf(endMarker, start + startMarker.Length, StringComparison.Ordinal);
-            Assert.True(end >= 0, endMarker + " が見つからない");
-            return text.Substring(start, end - start);
+            XDocument document = XamlTestHelper.Load(relative);
+            if (document == null)
+            {
+                _output.WriteLine(relative + " が見つからないため検査を省略した。");
+            }
+
+            return document;
         }
 
-        /// <summary>タブ（12 空白の字下げの <c>&lt;TabItem</c>）の見出し。名前つきのタブは、<c>x:Name</c> を返す。</summary>
-        private static string[] TopLevelTabs(string pane)
+        /// <summary>タブ（<c>TabItem</c>）の識別名。名前つきのタブは <c>x:Name</c>、ほかは <c>Header="{lex:Loc …}"</c> のキー。</summary>
+        private static string[] TopLevelTabs(XElement pane)
         {
-            return Regex.Matches(pane, @"\n {12}<TabItem (?<attrs>[^>]*)>")
-                .Cast<Match>()
-                .Select(m =>
-                {
-                    string attrs = m.Groups["attrs"].Value;
-                    Match name = Regex.Match(attrs, @"x:Name=""(?<n>\w+)""");
-                    if (name.Success) return name.Groups["n"].Value;
-                    Match header = Regex.Match(attrs, @"Header=""\{lex:Loc (?<h>\w+)\}""");
-                    return header.Success ? header.Groups["h"].Value : attrs;
-                })
-                .ToArray();
+            return XamlTestHelper.ChildElements(pane, "TabItem").Select(XamlTestHelper.Describe).ToArray();
         }
 
-        private string LeftPane(string xaml) => Between(xaml, "<TabControl x:Name=\"sidebarTabControl\"", "<TabControl x:Name=\"profileSettingsTabCon\"");
+        private static XElement LeftPane(XDocument xaml) => XamlTestHelper.FindByName(xaml, "sidebarTabControl");
 
-        private string RightPane(string xaml) => Between(xaml, "<TabControl x:Name=\"profileSettingsTabCon\"", null);
+        private static XElement RightPane(XDocument xaml) => XamlTestHelper.FindByName(xaml, "profileSettingsTabCon");
 
         [Fact]
         public void TheLeftPane_HasControls_SpecialActions_Touchpad_Gyro_ControllerReadings_InThatOrder()
         {
-            string xaml = Read("DS4Windows/DS4Forms/ProfileEditor.xaml");
+            XDocument xaml = LoadXaml(ProfileEditorXaml);
             if (xaml == null) return;
 
             // Phase10-Step3b W1: Touchpad・ジャイロを、Special Actions の次へ移した（Controller Readings は、最後）
@@ -78,7 +73,7 @@ namespace DS4WindowsTests
         [Fact]
         public void TheRightPane_HasOnlyAxisConfig_Lightbar_Other_InThatOrder()
         {
-            string xaml = Read("DS4Windows/DS4Forms/ProfileEditor.xaml");
+            XDocument xaml = LoadXaml(ProfileEditorXaml);
             if (xaml == null) return;
 
             Assert.Equal(new[] { "AxisConfig", "Lightbar", "Other" }, TopLevelTabs(RightPane(xaml)));
@@ -87,7 +82,7 @@ namespace DS4WindowsTests
         [Fact]
         public void ControlsIsTheFirstLeftTab_SoThePresetButtonsIndexZeroStillMeansControls()
         {
-            string xaml = Read("DS4Windows/DS4Forms/ProfileEditor.xaml");
+            XDocument xaml = LoadXaml(ProfileEditorXaml);
             string code = Read("DS4Windows/DS4Forms/ProfileEditor.xaml.cs");
             if (xaml == null || code == null) return;
 
@@ -120,33 +115,34 @@ namespace DS4WindowsTests
         [Fact]
         public void TheMovedTabs_UseOnlyThreeStaticResources_AndEachDefinesItsOwnSpaceMargin()
         {
-            string xaml = Read("DS4Windows/DS4Forms/ProfileEditor.xaml");
+            XDocument xaml = LoadXaml(ProfileEditorXaml);
             if (xaml == null) return;
 
-            string touchpad = Between(xaml, "<TabItem x:Name=\"touchpadTab\"", "<TabItem x:Name=\"gyroTab\"");
-            string gyro = Between(xaml, "<TabItem x:Name=\"gyroTab\"", "<TabItem x:Name=\"contReadingsTab\"");
+            XElement touchpad = XamlTestHelper.FindByName(xaml, "touchpadTab");
+            XElement gyro = XamlTestHelper.FindByName(xaml, "gyroTab");
 
-            foreach (string tab in new[] { touchpad, gyro })
+            foreach (XElement tab in new[] { touchpad, gyro })
             {
-                string[] keys = Regex.Matches(tab, @"StaticResource (\w+)").Cast<Match>().Select(m => m.Groups[1].Value).Distinct().OrderBy(k => k, StringComparer.Ordinal).ToArray();
-                Assert.Equal(new[] { "InvertBoolToVisibilityConverter", "controlIndexCheck", "spaceMargin" }, keys);
+                Assert.Equal(new[] { "InvertBoolToVisibilityConverter", "controlIndexCheck", "spaceMargin" }, XamlTestHelper.StaticResourceKeys(tab));
             }
 
-            // InvertBoolToVisibilityConverter・controlIndexCheck は、画面全体のリソース（右ペインの外）にある
-            string head = xaml.Substring(0, xaml.IndexOf("<TabControl x:Name=\"sidebarTabControl\"", StringComparison.Ordinal));
-            Assert.Contains("x:Key=\"InvertBoolToVisibilityConverter\"", head);
-            Assert.Contains("x:Key=\"controlIndexCheck\"", head);
+            // InvertBoolToVisibilityConverter・controlIndexCheck は、画面全体のリソース（左右のペインの外）にある
+            XElement sidebar = LeftPane(xaml);
+            XElement rightPane = RightPane(xaml);
+            foreach (string key in new[] { "InvertBoolToVisibilityConverter", "controlIndexCheck" })
+            {
+                XElement definition = xaml.Descendants().FirstOrDefault(e => XamlTestHelper.KeyOf(e) == key);
+                Assert.True(definition != null, "x:Key=\"" + key + "\" の定義がない");
+                Assert.DoesNotContain(definition.Ancestors(), a => ReferenceEquals(a, sidebar) || ReferenceEquals(a, rightPane));
+            }
 
-            // spaceMargin: どちらのタブも、自分のタブに持つ（ジャイロは、以前は右ペインの TabControl.Resources から取っていたため、W1 で、自分のタブへ定義した）
-            Assert.Contains("<TabItem.Resources>", touchpad);
-            Assert.Contains("x:Key=\"spaceMargin\"", touchpad);
-            Assert.Contains("<TabItem.Resources>", gyro);
-            Assert.Contains("x:Key=\"spaceMargin\"", gyro);
+            // spaceMargin: どちらのタブも、自分のタブに持つ（ジャイロは、以前は右ペインの TabControl.Resources から取っていたため、W1 で、自分のタブに持たせた）
+            Assert.Contains("spaceMargin", XamlTestHelper.OwnResourceKeys(touchpad));
+            Assert.Contains("spaceMargin", XamlTestHelper.OwnResourceKeys(gyro));
 
             // 右ペインの見出しの高さ調整（Touchpad の Height／VerticalAlignment）は、外した
-            string touchpadHeader = Regex.Match(touchpad, @"<TabItem x:Name=""touchpadTab""[^>]*>").Value;
-            Assert.DoesNotContain("Height=", touchpadHeader);
-            Assert.DoesNotContain("VerticalAlignment=", touchpadHeader);
+            Assert.Null(XamlTestHelper.Attr(touchpad, "Height"));
+            Assert.Null(XamlTestHelper.Attr(touchpad, "VerticalAlignment"));
         }
 
         [Fact]
@@ -167,19 +163,21 @@ namespace DS4WindowsTests
         [Fact]
         public void TheAxisConfigTab_NoLongerHasTheFourEntryButtons_ButKeepsTheReadOnlyAssignmentNames()
         {
-            string xaml = Read("DS4Windows/DS4Forms/ProfileEditor.xaml");
+            XDocument xaml = LoadXaml(ProfileEditorXaml);
             if (xaml == null) return;
 
-            string axis = Between(xaml, "<TabItem Header=\"{lex:Loc AxisConfig}\"", "<TabItem Header=\"{lex:Loc Lightbar}\"");
+            XElement axis = XamlTestHelper.ChildElements(RightPane(xaml), "TabItem").First();
+            Assert.Equal("AxisConfig", XamlTestHelper.Describe(axis));
 
             // Phase10-Step3b W2: 入口のボタンは、Controls タブへ移した（割り当てエディターの入口を、すべて左ペインのタブのボタンにする）
-            Assert.DoesNotContain("StickOuterBindButton_Click", axis);
-            Assert.DoesNotContain("TriggerFullPullBtn_Click", axis);
+            string[] values = XamlTestHelper.AllAttributeValues(axis).ToArray();
+            Assert.DoesNotContain(values, v => v.Contains("StickOuterBindButton_Click"));
+            Assert.DoesNotContain(values, v => v.Contains("TriggerFullPullBtn_Click"));
 
             // 割り当て名の表示ラベルは、読み取り専用の表示として残す
             foreach (string label in new[] { "lsOuterBindLb", "rsOuterBindLb", "l2FullPullLb", "r2FullPullLb" })
             {
-                Assert.Contains("x:Name=\"" + label + "\"", axis);
+                Assert.True(XamlTestHelper.HasName(axis, label), label + " が Axis Config のタブにない");
             }
         }
 
@@ -199,23 +197,31 @@ namespace DS4WindowsTests
         [Fact]
         public void TheControlsTab_IsStillA470WideGrid_WithACanvasRowAndAListRow()
         {
-            string xaml = Read("DS4Windows/DS4Forms/ProfileEditor.xaml");
+            XDocument xaml = LoadXaml(ProfileEditorXaml);
             if (xaml == null) return;
 
-            string controls = Between(xaml, "<TabItem Header=\"{lex:Loc Controls}\">", "<TabItem x:Name=\"specialActionsTab\"");
+            XElement controls = XamlTestHelper.ChildElements(LeftPane(xaml), "TabItem").First();
+            Assert.Equal("Controls", XamlTestHelper.Describe(controls));
 
             // Phase10-Step3b W2（ユーザーの指示）: 4 つの入口は、専用のボタンではなく、下の文字の一覧に、ほかのボタンと同じ形式で加えた。
-            // 絵と一覧の構成（幅 470、行は Canvas［240］と一覧［*］の 2 つ）は、変えていない
+            // 絵と一覧の構成（幅 470、行は Canvas［高さは下記］と一覧［*］の 2 つ）は、変えていない
             // 構造だけを確かめる。属性の並び・空白・改行・「/>」の前の空白は、XAML の整形で変わるため、固定しない
-            Assert.Matches(@"<Grid\s+Width=""470""\s*>", controls);
-            Match rows = Regex.Match(controls, @"<Grid\.RowDefinitions>(?<body>.*?)</Grid\.RowDefinitions>", RegexOptions.Singleline);
-            Assert.True(rows.Success);
-            Assert.Equal(2, Regex.Matches(rows.Groups["body"].Value, @"<RowDefinition ").Count);
-            Assert.Matches(@"<RowDefinition\s+Height=""252""\s*/>", rows.Groups["body"].Value);   // Phase9 UI 変更: 割り当て表示の下に余白（240 → 252）
-            Assert.Matches(@"<RowDefinition\s+Height=""\*""\s*/>", rows.Groups["body"].Value);
-            Assert.Matches(@"<Canvas\s+Grid\.Row=""0""\s+x:Name=""conCanvas""", controls);
-            Assert.Matches(@"<ListView\s+Grid\.Row=""1""\s+x:Name=""mappingListBox""", controls);   // Phase9 UI 変更: 割り当て一覧は、2 列の表（ListView）
-            Assert.DoesNotContain("axisEntriesPanel", controls);
+            XElement grid = XamlTestHelper.ChildElements(controls, "Grid").Single(g => XamlTestHelper.Attr(g, "Width") == "470");
+            XElement rows = XamlTestHelper.PropertyElement(grid, "RowDefinitions");
+            Assert.NotNull(rows);
+            string[] heights = XamlTestHelper.ChildElements(rows, "RowDefinition").Select(r => XamlTestHelper.Attr(r, "Height")).ToArray();
+            Assert.Equal(new[] { "252", "*" }, heights);   // Phase9 UI 変更: 割り当て表示の下に余白（240 → 252）
+
+            XElement canvas = XamlTestHelper.ChildElements(grid, "Canvas").Single();
+            Assert.Equal("0", XamlTestHelper.Attr(canvas, "Grid.Row"));
+            Assert.Equal("conCanvas", XamlTestHelper.NameOf(canvas));
+
+            XElement list = XamlTestHelper.ChildElements(grid, "ListView").Single();   // Phase9 UI 変更: 割り当て一覧は、2 列の表（ListView）
+            Assert.Equal("1", XamlTestHelper.Attr(list, "Grid.Row"));
+            Assert.Equal("mappingListBox", XamlTestHelper.NameOf(list));
+
+            Assert.False(XamlTestHelper.HasName(controls, "axisEntriesPanel"));
+            Assert.DoesNotContain(XamlTestHelper.AllAttributeValues(controls), v => v.Contains("axisEntriesPanel"));
         }
 
         [Fact]
@@ -258,22 +264,24 @@ namespace DS4WindowsTests
         [Fact]
         public void NoEntryClickHandlerIsLeftInTheXaml_ExceptTheOnesOfTheLeftPane()
         {
-            string xaml = Read("DS4Windows/DS4Forms/ProfileEditor.xaml");
+            XDocument xaml = LoadXaml(ProfileEditorXaml);
             string code = Read("DS4Windows/DS4Forms/ProfileEditor.xaml.cs");
             if (xaml == null || code == null) return;
 
             // 専用のボタンがなくなったため、Full Pull・Outer Bind のクリックのハンドラーも、なくなった（入口は、一覧のダブルクリック）
-            Assert.DoesNotContain("StickOuterBindButton_Click", xaml);
-            Assert.DoesNotContain("TriggerFullPullBtn_Click", xaml);
+            string[] xamlValues = XamlTestHelper.AllAttributeValues(xaml.Root).ToArray();
+            Assert.DoesNotContain(xamlValues, v => v.Contains("StickOuterBindButton_Click"));
+            Assert.DoesNotContain(xamlValues, v => v.Contains("TriggerFullPullBtn_Click"));
             Assert.DoesNotContain("StickOuterBindButton_Click", code);
             Assert.DoesNotContain("TriggerFullPullBtn_Click", code);
 
             // 残る入口の Click ハンドラーは、すべて、左ペインのタブにある（右ペインに、入口がない）
-            string right = RightPane(xaml);
+            string[] right = XamlTestHelper.AllAttributeValues(RightPane(xaml)).ToArray();
+            string[] left = XamlTestHelper.AllAttributeValues(LeftPane(xaml)).ToArray();
             foreach (string handler in new[] { "TiltControlsButton_Click", "SwipeControlsButton_Click", "HoverConBtn_Click" })
             {
-                Assert.DoesNotContain(handler, right);
-                Assert.Contains(handler, LeftPane(xaml));
+                Assert.DoesNotContain(right, v => v == handler);
+                Assert.Contains(left, v => v == handler);
             }
         }
     }

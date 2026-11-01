@@ -1,5 +1,6 @@
 using System.IO;
 using System.Text.RegularExpressions;
+using System.Xml.Linq;
 using Xunit;
 using Xunit.Abstractions;
 
@@ -37,15 +38,17 @@ namespace DS4WindowsTests
         [Fact]
         public void TheThreeSaOnlyCheckBoxes_AreNamedInTheXaml_AndBoundToTheMacroViewModel()
         {
-            string xaml = Read("DS4Windows/DS4Forms/AssignmentEditor.xaml");
+            XDocument xaml = XamlTestHelper.Load("DS4Windows/DS4Forms/AssignmentEditor.xaml");
             if (xaml == null)
             {
+                _output.WriteLine("DS4Windows/DS4Forms/AssignmentEditor.xaml が見つからないため検査を省略した。");
                 return;
             }
 
-            Assert.Matches(@"x:Name=""runTriggerReleaseChk""[^>]*IsChecked=""\{Binding RunTriggerRelease\}""", xaml);
-            Assert.Matches(@"x:Name=""syncRunChk""[^>]*IsChecked=""\{Binding SyncRun\}""", xaml);
-            Assert.Matches(@"x:Name=""keepKeyStateChk""[^>]*IsChecked=""\{Binding KeepKeyState\}""", xaml);
+            // 属性の並び・空白・改行は固定しない（XAML の整形で変わるため）。名前つきの要素の IsChecked が、期待のバインディングであること
+            Assert.Equal("{Binding RunTriggerRelease}", XamlTestHelper.Attr(XamlTestHelper.FindByName(xaml, "runTriggerReleaseChk"), "IsChecked"));
+            Assert.Equal("{Binding SyncRun}", XamlTestHelper.Attr(XamlTestHelper.FindByName(xaml, "syncRunChk"), "IsChecked"));
+            Assert.Equal("{Binding KeepKeyState}", XamlTestHelper.Attr(XamlTestHelper.FindByName(xaml, "keepKeyStateChk"), "IsChecked"));
         }
 
         [Fact]

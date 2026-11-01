@@ -1,5 +1,6 @@
 using System.IO;
 using System.Text.RegularExpressions;
+using System.Xml.Linq;
 using Xunit;
 using Xunit.Abstractions;
 
@@ -35,23 +36,25 @@ namespace DS4WindowsTests
         [Fact]
         public void TheHost_SitsInTheSameCellAsTheLeftPane_AndStartsCollapsed()
         {
-            string xaml = Read("DS4Windows/DS4Forms/ProfileEditor.xaml");
+            XDocument xaml = XamlTestHelper.Load("DS4Windows/DS4Forms/ProfileEditor.xaml");
             if (xaml == null)
             {
+                _output.WriteLine("DS4Windows/DS4Forms/ProfileEditor.xaml が見つからないため検査を省略した。");
                 return;
             }
 
-            Match host = Regex.Match(xaml, @"<Grid x:Name=""controlEditorHost""[^>]*/>");
-            Assert.True(host.Success, "controlEditorHost が見つからない");
-            Assert.Contains("Grid.Row=\"1\"", host.Value);
-            Assert.Contains("Grid.Column=\"0\"", host.Value);
-            Assert.Contains("Visibility=\"Collapsed\"", host.Value);
+            // 属性の並び・空白・改行・「/>」の形は固定しない（XAML の整形で変わるため）
+            XElement host = XamlTestHelper.FindByName(xaml, "controlEditorHost");
+            Assert.Equal("Grid", host.Name.LocalName);
+            Assert.Equal("1", XamlTestHelper.Attr(host, "Grid.Row"));
+            Assert.Equal("0", XamlTestHelper.Attr(host, "Grid.Column"));
+            Assert.Equal("Collapsed", XamlTestHelper.Attr(host, "Visibility"));
 
             // 左ペイン（sidebarTabControl）と、同じセル
-            Match sidebar = Regex.Match(xaml, @"<TabControl x:Name=""sidebarTabControl""[^>]*>");
-            Assert.True(sidebar.Success);
-            Assert.Contains("Grid.Row=\"1\"", sidebar.Value);
-            Assert.Contains("Grid.Column=\"0\"", sidebar.Value);
+            XElement sidebar = XamlTestHelper.FindByName(xaml, "sidebarTabControl");
+            Assert.Equal("TabControl", sidebar.Name.LocalName);
+            Assert.Equal("1", XamlTestHelper.Attr(sidebar, "Grid.Row"));
+            Assert.Equal("0", XamlTestHelper.Attr(sidebar, "Grid.Column"));
         }
 
         [Fact]
