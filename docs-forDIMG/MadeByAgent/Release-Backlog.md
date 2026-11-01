@@ -14,7 +14,7 @@
 | R-4 | 機能追加 | 割り当て機能（SA）に、プログラム（ウィンドウ）をフォーカスする機能を追加 | 未着手（[Issue #3](https://github.com/gwin7ok/DS4Windows/issues/3)。Phase12 で対応予定） |
 | R-5 | 修正（仕様の見直し） | SA 側の割り当てで、アナログのボタン（トリガー、スティックの軸など）の押下判定を、デジタルにする。①複数トリガーの場合: 押下判定はデジタル（閾値なし）。②割り当て先のボタンがデジタルの場合: 押下判定はデジタル（閾値なし）。③Controls、または SA で、トリガーが単体で、割り当て先のボタンがアナログの場合: 押下判定はアナログ | **実装済み・実機確認 OK（391419b、76a68a3: Controls のデジタルな出力も同じ判定）**（ユーザー決定: 閾値なし＝L2／R2 は 0 超、スティックは少しでも傾いたら。デッドゾーン後の値で判定。デジタルな割り当て先は、SA も Controls も同じ判定） |
 | R-6 | 修正 | UI を操作するときの、マウスホイールの挙動を、Windows の設定に合わせる | **実装済み・実機確認 OK（d523f55）**（現象: Windows の設定が「1 画面ずつ」なのに、数行ずつ送られる） |
-| R-7 | 修正 | 設定の「画面で変えても保存されない／反映が漏れる」4 件（`UseDs3PitchRollSim`、`Keepsize`、`CustomSteamFolder`、`CheckEvery`）。[Issue #4](https://github.com/gwin7ok/DS4Windows/issues/4)。現状との再照合が先（`Phase11-and-Beyond-Roadmap.md` §3） | 未着手（Phase11 で対応予定） |
+| R-7 | 修正 | 設定の「画面で変えても保存されない／反映が漏れる」4 件（`UseDs3PitchRollSim`、`Keepsize`、`CustomSteamFolder`、`CheckEvery`）。[Issue #4](https://github.com/gwin7ok/DS4Windows/issues/4)。再照合済み（`Phase11-Plan.md` §1.1。`UseDs3PitchRollSim` は補正の欠落） | 未着手（Phase11 で対応予定。計画書は承認待ち） |
 
 ## 2. 現状の調査（2026-10-23）
 

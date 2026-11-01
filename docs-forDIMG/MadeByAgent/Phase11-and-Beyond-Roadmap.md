@@ -33,6 +33,8 @@
 
 ### Phase11: 安定化と不具合修正
 
+個別計画書: `Phase11-Plan.md`。
+
 1. **先送りの実機確認の消化**: 台帳 §27〜§30、P9M3-3、P9F1-4、P9M2-2〜4。
 2. **K7b-1 の締め**: 新しいダンプの有無をユーザーが確認 → 「解消」として閉じる（`Release-Backlog.md` §5）。
 3. **Issue #4（R-7）**: 設定の「画面で変えても保存されない／反映が漏れる」4 件。着手前に **現状を再照合**する（下表）。
@@ -42,10 +44,10 @@ Issue #4 の 4 件と、2026-11-02 時点のコードとの照合:
 
 | # | 項目 | Issue の主張 | 照合の結果 |
 |---|---|---|---|
-| 1 | `UseDs3PitchRollSim` | 「適用」で DS4 への補正が漏れる。直し先は `SetLateProperties`（`ProfileEditor.xaml.cs`） | **場所が古い**。`SetLateProperties` は現存せず、補正の処理は別の場所へ移っている。症状を実機で再現してから、直し先を決める |
+| 1 | `UseDs3PitchRollSim` | 「適用」で DS4 への補正が漏れる。直し先は `SetLateProperties` | **主張の前提が古く、実態はより重い**。`SetLateProperties` は存在せず、DS3 の擬似を ON にしたときの DS4 への補正は、保存でも適用でも行われない（2026-09-14 の保存処理の統合で消えた回帰）。詳細は `Phase11-Plan.md` §1.1 |
 | 2 | `Keepsize` | XAML は `Mode=TwoWay`、C# は get-only | **事実**（`ProfileEditor.xaml.cs:215`、`ProfileEditor.xaml:125`）。`set` を足すか、`Mode=TwoWay` を外す |
 | 3 | `CustomSteamFolder` | 存在しないパスを入れると警告なしで破棄される | 未照合。仕様（警告を出す）の決定が要る |
-| 4 | `CheckEvery` | 「更新確認」が OFF のとき、数値を変えても保存されない | 未照合。名前は現在 `CheckEveryValue`／`CheckEveryUnit`。仕様の決定が要る |
+| 4 | `CheckEvery` | 「更新確認」が OFF のとき、数値を変えても保存されない | setter はそのとおりだが、OFF のときは数値入力自体が無効（`IsEnabled`）で、**仕様として閉じる見込み**（`Phase11-Plan.md` §1.1） |
 
 - 2 は挙動を変えない整理。1・3・4 は挙動が変わるため、規約 §2.2（No Feature Drop）に照らし、仕様をユーザーが決めてから実装する。
 
