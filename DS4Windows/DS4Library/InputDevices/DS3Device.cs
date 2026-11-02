@@ -102,7 +102,6 @@ namespace DS4Windows.InputDevices
         {
             unchecked
             {
-                Debouncer = SetupDebouncer();
                 firstActive = DateTime.UtcNow;
                 NativeMethods.HidD_SetNumInputBuffers(hDevice.SafeReadHandle.DangerousGetHandle(), 3);
                 Queue<long> latencyQueue = new Queue<long>(21); // Set capacity at max + 1 to avoid any resizing

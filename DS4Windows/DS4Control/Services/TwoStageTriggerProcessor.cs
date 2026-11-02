@@ -11,12 +11,11 @@ namespace DS4Windows.Services
     /// </summary>
     public sealed class TwoStageTriggerProcessor : ITwoStageTriggerProcessor
     {
-        private readonly IProfileSettingsService _profileSettings;
         private readonly Func<DateTime> _now;
 
         public TwoStageTriggerProcessor(IProfileSettingsService profileSettings, Func<DateTime> now = null)
         {
-            _profileSettings = profileSettings ?? throw new ArgumentNullException(nameof(profileSettings));
+            if (profileSettings == null) throw new ArgumentNullException(nameof(profileSettings));   // Phase11 K-W6-10: DebouncingMs の項を廃止したため、設定は使わない（呼び出し側とテストの変更を避けるため、引数は残した）
             _now = now ?? (() => DateTime.Now);
         }
 
@@ -110,7 +109,7 @@ namespace DS4Windows.Services
                     else if (triggerValue != 0 && !triggerData.outputActive)
                     {
                         bool outputActive = triggerData.checkTime +
-                            TimeSpan.FromMilliseconds(outputSettings.hipFireMS) + TimeSpan.FromMilliseconds(_profileSettings.DebouncingMs[device]) < _now();
+                            TimeSpan.FromMilliseconds(outputSettings.hipFireMS) < _now();
                         if (outputActive)
                         {
                             triggerData.outputActive = true;
@@ -170,7 +169,7 @@ namespace DS4Windows.Services
                     }
                     else if (triggerValue != 0 && !triggerData.outputActive)
                     {
-                        bool outputActive = triggerData.checkTime + TimeSpan.FromMilliseconds(outputSettings.hipFireMS) + TimeSpan.FromMilliseconds(_profileSettings.DebouncingMs[device]) < _now();
+                        bool outputActive = triggerData.checkTime + TimeSpan.FromMilliseconds(outputSettings.hipFireMS) < _now();
                         if (outputActive)
                         {
                             triggerData.outputActive = true;

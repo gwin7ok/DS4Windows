@@ -467,20 +467,7 @@ namespace DS4WinWPF.DS4Forms.ViewModels
 
         public event EventHandler RightStickDriftYAxisChanged;
 
-        public bool HasDebouncingMsChanged { get; private set; }
-
-        public int DebouncingMs
-        {
-            get => profileSettings.DebouncingMs[device];
-            set
-            {
-                HasDebouncingMsChanged = profileSettings.DebouncingMs[device] != value;
-                profileSettings.DebouncingMs[device] = value;
-                DebouncingMsChanged?.Invoke(this, EventArgs.Empty);
-            }
-        }
-
-        public event EventHandler DebouncingMsChanged;
+        // Phase11 K-W6-10: DebouncingMs（デバウンス時間）のプロパティとイベントは機能廃止で削除した
 
         public bool HasUseDs3PitchRollSimChanged
         {

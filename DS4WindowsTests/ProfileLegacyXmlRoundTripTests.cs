@@ -49,7 +49,6 @@ namespace DS4WindowsTests
         public void SaveThenLoad_RestoresAllTenSettings()
         {
             var source = new DS4Windows.BackingStore(new DS4Windows.EnvironmentService());
-            source.debouncingMs[Device] = 500;
             source.inverseRumbleMotors[Device] = true;
             source.useDs3PitchRollSim = true;
             source.leftStickDriftXAxis[Device] = -5;
@@ -68,7 +67,6 @@ namespace DS4WindowsTests
             ResetProfile(target);
             targetXml.LoadLegacyExtraSettings(Device, Root);
 
-            Assert.Equal(500, target.debouncingMs[Device]);
             Assert.True(target.inverseRumbleMotors[Device]);
             Assert.True(target.useDs3PitchRollSim);
             Assert.Equal(-5, target.leftStickDriftXAxis[Device]);
@@ -82,7 +80,7 @@ namespace DS4WindowsTests
             // 要素名は ProfileDTO と同じ（旧版・DTO 経路との互換）
             foreach (string name in new[]
             {
-                "DebouncingMs", "InverseRumbleMotors", "UseDs3PitchRollSim", "LeftStickDriftXAxis", "LeftStickDriftYAxis",
+                "InverseRumbleMotors", "UseDs3PitchRollSim", "LeftStickDriftXAxis", "LeftStickDriftYAxis",
                 "RightStickDriftXAxis", "RightStickDriftYAxis", "DS4OutputTriggerMode", "GyroMouseJitterCompensation",
                 "GyroMouseStickJitterCompensation",
             })
@@ -96,7 +94,6 @@ namespace DS4WindowsTests
         {
             // 古いプロファイル（10 要素が無い）を読み込んでも、既定値になること（前のプロファイルの値を引き継がない）
             var store = new DS4Windows.BackingStore(new DS4Windows.EnvironmentService());
-            store.debouncingMs[Device] = 500;
             store.inverseRumbleMotors[Device] = true;
             store.leftStickDriftXAxis[Device] = -5;
             store.rightStickDriftYAxis[Device] = 9;
@@ -108,7 +105,6 @@ namespace DS4WindowsTests
             ResetProfile(store);
             xml.LoadLegacyExtraSettings(Device, Root);
 
-            Assert.Equal(0, store.debouncingMs[Device]);
             Assert.False(store.inverseRumbleMotors[Device]);
             Assert.Equal(0, store.leftStickDriftXAxis[Device]);
             Assert.Equal(0, store.rightStickDriftYAxis[Device]);
@@ -132,34 +128,33 @@ namespace DS4WindowsTests
                 doc.DocumentElement.AppendChild(element);
             }
 
-            Add("DebouncingMs", "abc");
             Add("LeftStickDriftXAxis", "9999");
             Add("DS4OutputTriggerMode", "NoSuchMode");
             Add("InverseRumbleMotors", "maybe");
 
             xml.LoadLegacyExtraSettings(Device, Root);
 
-            Assert.Equal(0, store.debouncingMs[Device]);
             Assert.Equal(0, store.leftStickDriftXAxis[Device]);
             Assert.Equal(BackingStore.DEFAULT_DS4_TRIGGER_OUTPUT, store.outputDS4TriggerMode[Device]);
             Assert.False(store.inverseRumbleMotors[Device]);
         }
 
         [Fact]
-        public void Load_DebouncingMs_IsClampedToUiRange()
+        public void Save_DoesNotWriteDebouncingMs_AndLoad_IgnoresAnOldDebouncingMsElement()
         {
+            // Phase11 K-W6-10: デバウンス機能の廃止。保存はしない。古いプロファイルの <DebouncingMs> は、読み捨てる（エラーにしない）
             var store = new DS4Windows.BackingStore(new DS4Windows.EnvironmentService());
             XmlDocument doc = NewDocument(store);
             var xml = NewSerializer(store, doc);
-            ResetProfile(store);
+            xml.SaveLegacyExtraSettings(doc.DocumentElement, Device);
+            Assert.Null(doc.SelectSingleNode("/" + Root + "/DebouncingMs"));
 
+            ResetProfile(store);
             XmlElement element = doc.CreateElement("DebouncingMs");
             element.InnerText = "5000";
             doc.DocumentElement.AppendChild(element);
 
             xml.LoadLegacyExtraSettings(Device, Root);
-
-            Assert.Equal(1000, store.debouncingMs[Device]);
         }
 
         [Fact]

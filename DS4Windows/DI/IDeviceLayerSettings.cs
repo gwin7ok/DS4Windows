@@ -16,9 +16,6 @@ namespace DS4Windows.DI
         /// <summary>HID の列挙などで詳細なログを出すか。</summary>
         bool VerboseLogMessages { get; }
 
-        /// <summary>入力のデバウンス時間（ミリ秒）。</summary>
-        int GetDebouncingMs(int slot);
-
         /// <summary>DS3 の加速度から pitch／roll を疑似計算するか。</summary>
         bool UseDs3PitchRollSim { get; }
     }

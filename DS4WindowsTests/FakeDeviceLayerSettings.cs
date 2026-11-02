@@ -10,9 +10,6 @@ namespace DS4WindowsTests
         public bool UseMoonlight { get; set; }
         public bool UseAdvancedMoonlight { get; set; }
         public bool VerboseLogMessages { get; set; }
-        public int DebouncingMs { get; set; }
         public bool UseDs3PitchRollSim { get; set; }
-
-        public int GetDebouncingMs(int slot) => DebouncingMs;
     }
 }

@@ -546,6 +546,7 @@
 - ユーザー決定（2026-11-02）: 挙動の修正は大変なので、**デバウンス機能そのものをあとで削除したい**。デバウンス関連のテストはこれ以上実施しない。
 - 位置づけ: 機能廃止なので copilot-instructions §2.2 の例外に当たる。ユーザーの承認（本件の希望）は得ているが、実施前に別 Issue 化と個別計画書（影響範囲: `Debouncer`／`DebouncerInstance`、`DS4Device.SetupDebouncer` と各デバイスの呼び出し、`ControlService` の `Debouncer.ProcessInput`、プロファイルの `DebouncingMs` ほか設定・XML・UI の Debouncing グループ・ガードテストの基準値）を作る。Phase11 の範囲に入れるか Phase12 以降に回すかは、全部の実機テストの後に決める（Q5 は重大な不具合のみ。これは重大ではない）。
 - **個別計画書を作成（2026-11-03）**: `Phase11-Debounce-Removal-Plan.md`（承認待ち。調査で、`DebouncingMs` がフィルター本体のほかに、MultiAction・遅延・2 段階トリガーのタイミング項としても使われていることが分かった。D1〜D4 の決定が必要）。
+- **実装済み（2026-11-03。D1〜D4 を推奨案で承認）**: `Debouncer`・`SetupDebouncer`・`ProcessInput` の呼び出し・`GetDebouncingMs`・タイミング項・`DebouncingMs` の設定／保存／UI（Debouncing グループ）を削除。古いプロファイルの `<DebouncingMs>` は読み捨て、保存しない。**実機での確認は未実施**（E5: 編集画面の Debouncing グループが消えている、Cross の押し離しが正常、古いプロファイルが読める）。CHANGELOG への「機能廃止」の明記は W8。
 
 **W6 後の修正の方針の決定（2026-11-03 ユーザー）**
 - K-W6-1・2・3・4・11: 承認済み（上記の各方針のとおり）。

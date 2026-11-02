@@ -99,13 +99,9 @@ namespace DS4WindowsTests
             public readonly FakeInput Input = new FakeInput();
             public readonly RecordingFrame Frame = new RecordingFrame();
             private readonly TriggerDispatchEngine _engine;
-            private readonly int _savedDebounce;
 
             public EngineRig(ControlSpecialItem item)
             {
-                _savedDebounce = TestHost.GetService<IProfileSettingsService>().DebouncingMs[EngineDevice];
-                TestHost.GetService<IProfileSettingsService>().DebouncingMs[EngineDevice] = 0;
-
                 var dcs = new DS4ControlSettings(DS4Controls.Cross) { actionType = DS4ControlSettings.ActionType.Special, special = item };
                 ControlsAssignmentReader.TryReadSpecial(EngineDevice, dcs, out AssignmentDefinition definition, out SpecialAction source);
                 var factory = new SpecialActionOutputFactory(TestHost.GetService<IProfileSettingsService>(), TestHost.GetService<IManagedActionManager>(),
@@ -118,7 +114,7 @@ namespace DS4WindowsTests
                 _engine = new TriggerDispatchEngine(registry, TestHost.GetService<IManagedActionManager>(), null);
             }
 
-            public void Restore() => TestHost.GetService<IProfileSettingsService>().DebouncingMs[EngineDevice] = _savedDebounce;
+            public void Restore() { }
 
             /// <summary>t=elapsedMs の 1 フレーム。held はこのフレームの押下。</summary>
             public void Frame1(int elapsedMs, bool held)

@@ -623,10 +623,7 @@ namespace DS4Windows
             0, 0, 0, 0, 0, 0, 0, 0, 0
         };
 
-        public int[] debouncingMs = new int[ControllerLimits.TestProfileItemCount]
-        {
-            0, 0, 0, 0, 0, 0, 0, 0, 0
-        };
+        // Phase11 K-W6-10: debouncingMs（デバウンス時間）は機能廃止で削除した（Phase11-Debounce-Removal-Plan.md）
 
         public bool[] inverseRumbleMotors = {
             false, false, false, false, false, false, false, false, false
@@ -1294,7 +1291,6 @@ namespace DS4Windows
             touchpadJitterCompensation[device] = DEFAULT_TOUCHPAD_JITTER_COMP;
             // Phase6-Step12: 旧形式の読込に追加した設定の既定値（要素の無いプロファイルで、前の値を引き継がないようにする）。
             // useDs3PitchRollSim は全体で 1 つの値のため、ここではリセットしない。
-            debouncingMs[device] = 0;
             inverseRumbleMotors[device] = false;
             leftStickDriftXAxis[device] = 0;
             leftStickDriftYAxis[device] = 0;

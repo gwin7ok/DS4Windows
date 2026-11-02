@@ -25,7 +25,6 @@ namespace DS4WindowsTests
         private sealed class Harness : IDisposable
         {
             private readonly IProfileSettingsService _settings;
-            private readonly int _savedDebounce;
             private readonly DS4StateFieldMapping _fields = new DS4StateFieldMapping();
             private readonly DS4State _state = new DS4State();
             private DateTime _now = T;
@@ -33,8 +32,6 @@ namespace DS4WindowsTests
             public Harness()
             {
                 _settings = Settings();
-                _savedDebounce = _settings.DebouncingMs[Device];
-                _settings.DebouncingMs[Device] = 0;
                 Settings = _settings;
                 Input = new TriggerInput(Device, _settings, () => _now);
             }
@@ -51,7 +48,7 @@ namespace DS4WindowsTests
                 Input.Update(_state, null, null, null, _fields);
             }
 
-            public void Dispose() => _settings.DebouncingMs[Device] = _savedDebounce;
+            public void Dispose() { }
         }
 
         private static ComboTriggerInputAction Combo(Harness h, double delay = 0.0, bool invert = false, params DS4Controls[] triggers)

@@ -2,7 +2,9 @@
 
 作成日: 2026-11-03
 関連: `Phase11-Plan.md` §13.4 の K-W6-10、copilot-instructions §2.2（機能廃止の例外）
-状態: **承認待ち**（本書の決定事項 D1〜D4 と、Issue 化）。承認前にコードは変えない。
+状態: **D1〜D4 を推奨案で承認（2026-11-03）。E1〜E4 を実装済み（同日）。E5（実機確認）が残る**。GitHub Issue は未作成（外部への公開になるため、作成はユーザーの判断に委ねる）。
+
+実装メモ（2026-11-03）: E1〜E3 は、依存の連鎖が小さいため 1 コミットにまとめた。`ControlButtonInputAction`／`ComboTriggerInputAction`／`MultiTapInputAction`／`TwoStageTriggerProcessor` は、設定を使わなくなったが、呼び出し側とテストの変更を避けるため、コンストラクター引数は残した（理由のコメントつき。後続の整理の候補）。黄金ファイル（`Golden/Phase7Step10c`）の `<DebouncingMs>` と `debouncingMs` の行は、意図した変更として更新した（差分はその行のみ）。テスト: `DebouncerSetDurationTests` と、`DebouncingMs` を延長する 2 件のテストを削除し、XML は「保存しない・古いタグは読み捨て」のテストに差し替えた。Debug ALL 警告 0・エラー 0、Actions 2,803 件・Standalone 11 件合格。
 
 ## 1. 背景
 

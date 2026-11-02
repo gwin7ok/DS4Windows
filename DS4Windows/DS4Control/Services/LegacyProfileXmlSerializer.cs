@@ -262,9 +262,7 @@ namespace DS4Windows.Services
 
         public void LoadLegacyExtraSettings(int device, string rootname)
         {
-            if (int.TryParse(ReadLegacyElement(rootname, "DebouncingMs"), out int debounceMs))
-                store.debouncingMs[device] = Math.Min(Math.Max(debounceMs, 0), 1000);
-
+            // Phase11 K-W6-10: <DebouncingMs> は機能廃止で読み捨てる（古いプロファイルの互換のため、タグがあっても無視する）。保存もしない
             if (bool.TryParse(ReadLegacyElement(rootname, "InverseRumbleMotors"), out bool inverseRumble))
                 store.inverseRumbleMotors[device] = inverseRumble;
 
@@ -402,7 +400,6 @@ namespace DS4Windows.Services
 
         public void SaveLegacyExtraSettings(XmlNode rootElement, int device)
         {
-            AppendLegacyElement(rootElement, "DebouncingMs", store.debouncingMs[device].ToString());
             AppendLegacyElement(rootElement, "InverseRumbleMotors", store.inverseRumbleMotors[device].ToString());
             AppendLegacyElement(rootElement, "UseDs3PitchRollSim", store.useDs3PitchRollSim.ToString());
             AppendLegacyElement(rootElement, "LeftStickDriftXAxis", store.leftStickDriftXAxis[device].ToString());

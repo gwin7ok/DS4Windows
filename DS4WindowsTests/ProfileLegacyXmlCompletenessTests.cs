@@ -22,7 +22,7 @@ namespace DS4WindowsTests
         private static readonly string[] ExpectedRootElements =
         {
             "BTPollRate", "ButtonMouseOffset", "ButtonMouseSensitivity", "ButtonMouseVerticalScale", "ChargingColor", "ChargingType",
-            "Color", "Control", "DS4OutputTriggerMode", "DebouncingMs", "DinputOnly", "DualSenseControllerSettings", "FlashColor",
+            "Color", "Control", "DS4OutputTriggerMode", "DinputOnly", "DualSenseControllerSettings", "FlashColor",
             "FlashType", "GyroControlsSettings", "GyroInvert", "GyroMouseDeadZone", "GyroMouseHAxis", "GyroMouseJitterCompensation",
             "GyroMouseMinThreshold", "GyroMouseSmoothingSettings", "GyroMouseStickAntiDeadX", "GyroMouseStickAntiDeadY",
             "GyroMouseStickDeadZone", "GyroMouseStickHAxis", "GyroMouseStickInvert", "GyroMouseStickJitterCompensation",

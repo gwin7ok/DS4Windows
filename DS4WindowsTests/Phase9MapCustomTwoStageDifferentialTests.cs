@@ -106,7 +106,7 @@ namespace DS4WindowsTests
                         else if (triggerValue != 0 && !triggerData.outputActive)
                         {
                             bool outputActive = triggerData.checkTime +
-                                TimeSpan.FromMilliseconds(outputSettings.hipFireMS) + TimeSpan.FromMilliseconds(_profileSettings.DebouncingMs[device]) < _now();
+                                TimeSpan.FromMilliseconds(outputSettings.hipFireMS) + TimeSpan.Zero /* Phase11 K-W6-10: DebouncingMs の項は廃止（0 と同じ） */ < _now();
                             if (outputActive)
                             {
                                 triggerData.outputActive = true;
@@ -165,7 +165,7 @@ namespace DS4WindowsTests
                         }
                         else if (triggerValue != 0 && !triggerData.outputActive)
                         {
-                            bool outputActive = triggerData.checkTime + TimeSpan.FromMilliseconds(outputSettings.hipFireMS) + TimeSpan.FromMilliseconds(_profileSettings.DebouncingMs[device]) < _now();
+                            bool outputActive = triggerData.checkTime + TimeSpan.FromMilliseconds(outputSettings.hipFireMS) + TimeSpan.Zero /* Phase11 K-W6-10: DebouncingMs の項は廃止（0 と同じ） */ < _now();
                             if (outputActive)
                             {
                                 triggerData.outputActive = true;
@@ -265,7 +265,6 @@ namespace DS4WindowsTests
         public void TheNewProcessor_MatchesTheOldMethod_ForEveryModeAndInputSequence(TwoStageTriggerMode mode)
         {
             IProfileSettingsService settings = TestRepositoryFactory.CreateProfileSettingsService();
-            settings.DebouncingMs[Device] = 0;
             var settingsOut = new TriggerOutputSettings { twoStageMode = mode, hipFireMS = 100 };
             var softBinding = new DS4ControlSettings(DS4Controls.L2);
             var fullBinding = new DS4ControlSettings(DS4Controls.L2FullPull);
@@ -315,7 +314,6 @@ namespace DS4WindowsTests
         public void HipFire_ActivatesTheSoftPullOnlyAfterTheDelay()
         {
             IProfileSettingsService settings = TestRepositoryFactory.CreateProfileSettingsService();
-            settings.DebouncingMs[Device] = 0;
             var clock = new Clock();
             var processor = new TwoStageTriggerProcessor(settings, clock.Get);
             var data = new TwoStageTriggerMappingData();

@@ -4202,20 +4202,6 @@
                                   Margin="0,8,0,0" />-->
                             </StackPanel>
                         </GroupBox>
-                        <GroupBox Header="Debouncing"
-                                  MinHeight="30"
-                                  Margin="4,4,4,0"
-                                  Padding="0,4,0,4">
-                            <StackPanel Orientation="Horizontal">
-                                <xctk:IntegerUpDown x:Name="Debouncing"
-                                                    Value="{Binding DebouncingMs}"
-                                                    Minimum="0"
-                                                    Maximum="1000"
-                                                    MinWidth="50"
-                                                    DockPanel.Dock="Left"/>
-                                <Label Content="ms"/>
-                            </StackPanel>
-                        </GroupBox>
                         <GroupBox Header="{lex:Loc Rumble}"
                                   MinHeight="50"
                                   Margin="4,4,4,0"

@@ -31,14 +31,11 @@ namespace DS4WindowsTests
         {
             private readonly TestDs4Device _device = TestDs4Device.Create();
             private DS4State _previous = SpecialActionTestScope.Neutral();
-            private readonly int _savedDebounce;
 
             public Harness()
             {
                 Scope = new SpecialActionTestScope();
                 Scope.Scope.Control.DS4Controllers[Scope.Device] = _device;
-                _savedDebounce = Scope.Scope.Settings.DebouncingMs[Scope.Device];
-                Scope.Scope.Settings.DebouncingMs[Scope.Device] = 0;
             }
 
             public SpecialActionTestScope Scope { get; }
@@ -64,8 +61,6 @@ namespace DS4WindowsTests
                 while (sw.ElapsedMilliseconds < milliseconds);
             }
 
-            public void SetDebounce(int ms) => Scope.Scope.Settings.DebouncingMs[Scope.Device] = ms;
-
             public uint Native(uint key) => Scope.Scope.KbmMapping.macroKeyTranslate ? Scope.Scope.KbmMapping.GetRealEventKey(key) : key;
 
             public int Presses => Scope.Scope.Recorder.KeyPresses.Count;
@@ -82,7 +77,6 @@ namespace DS4WindowsTests
 
             public void Dispose()
             {
-                Scope.Scope.Settings.DebouncingMs[Scope.Device] = _savedDebounce;
                 Scope.Scope.Control.DS4Controllers[Scope.Device] = null;
                 Scope.Dispose();
             }
@@ -172,27 +166,6 @@ namespace DS4WindowsTests
             h.Step(false);
 
             Assert.Equal(0, h.Presses);
-        }
-
-        [Fact]
-        public void TheDebouncingMs_ExtendsTheTapInterval()
-        {
-            using var h = new Harness();
-            h.SetDebounce(200);
-            AddMulti(h.Scope);
-
-            h.Step(false);
-            h.Step(true);
-            Thread.Sleep(30);
-            h.Step(false);
-            h.Run(false, 250);
-
-            Assert.Equal(0, h.Presses);   // 150ms ＋ 200ms ＝ 350ms を過ぎるまでは実行しない
-
-            h.Run(false, 400);
-            h.WaitForPresses(1);
-
-            Assert.Equal(new[] { h.Native(65) }, h.PressedKeys);
         }
 
         [Fact]

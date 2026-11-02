@@ -210,7 +210,6 @@ namespace DS4Windows.DI
 
         // ---- Step10-2-A-9: Mapping.cs専用 ----
         bool ProfileChangedNotification { get; set; }
-        int[] DebouncingMs { get; }
         VirtualKBMMapping OutputKBMMapping { get; set; }
 
         // ---- Phase6-Step2-2 (PR-2): 接続時のエクストラボタン再構築（Global への薄い委譲）----

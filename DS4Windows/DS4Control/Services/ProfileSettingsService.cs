@@ -490,7 +490,6 @@ namespace DS4Windows
                 if (SafeConfig != null) SafeConfig.profileChangedNotification = value;
             }
         }
-        public int[] DebouncingMs => SafeConfig?.debouncingMs;
         public VirtualKBMMapping OutputKBMMapping { get; set; }
 
         public X360Controls[] GetDefaultButtonMapping()

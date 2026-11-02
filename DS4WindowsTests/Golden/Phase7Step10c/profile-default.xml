@@ -18,7 +18,6 @@
   <ChargingColor>0,0,0</ChargingColor>
   <FlashColor>0,0,0</FlashColor>
   <touchpadJitterCompensation>True</touchpadJitterCompensation>
-  <DebouncingMs>0</DebouncingMs>
   <InverseRumbleMotors>False</InverseRumbleMotors>
   <UseDs3PitchRollSim>False</UseDs3PitchRollSim>
   <LeftStickDriftXAxis>0</LeftStickDriftXAxis>

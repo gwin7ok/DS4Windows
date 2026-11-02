@@ -49,10 +49,6 @@ namespace DS4Windows.Services
             device.setIdleTimeout(_profileSettings.GetIdleDisconnectTimeout(ind));
             device.setBTPollRate(_profileSettings.GetBTPollRate(ind));
 
-            // Phase6-Step12（デバウンス時間の回帰是正）: 接続中のデバイスのデバウンス時間を、適用するプロファイルの値へ更新する。
-            // 移行前は、編集画面の保存が Global.DebouncingMsHasChanged() を呼んで更新していたが、9da60b85 で ApplyProfile に置き換わり更新されなくなった。
-            device.Debouncer?.SetDuration(TimeSpan.FromMilliseconds(_profileSettings.DebouncingMs[ind]));
-
             touchPad.ResetTrackAccel(_profileSettings.GetTrackballFriction(ind));
             touchPad.ResetToggleGyroModes();
 

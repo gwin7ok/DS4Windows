@@ -133,33 +133,6 @@ namespace DS4WindowsTests
         }
 
         [Fact]
-        public void TheDebouncingMs_ExtendsTheIntervals()
-        {
-            IProfileSettingsService settings = TestHost.GetService<IProfileSettingsService>();
-            int device = 3;
-            int saved = settings.DebouncingMs[device];
-            try
-            {
-                settings.DebouncingMs[device] = 200;
-                var input = NewInput(DS4Controls.L1);
-                var fake = new FakeInput { Device = device };
-
-                fake.Press(DS4Controls.L1);
-                Frame(input, fake, 30);
-                fake.Release(DS4Controls.L1);
-                Frame(input, fake, 100);                                       // 離した
-                Assert.Equal(TriggerState.NoGesture, Frame(input, fake, 100)); // 100ms
-                Assert.Equal(TriggerState.NoGesture, Frame(input, fake, 100)); // 200ms（150ms ＋ 200ms ＝ 350ms までは待つ）
-                Assert.Equal(TriggerState.NoGesture, Frame(input, fake, 100)); // 300ms
-                Assert.Equal(TriggerState.Tap, Frame(input, fake, 100));       // 400ms（> 350ms）
-            }
-            finally
-            {
-                settings.DebouncingMs[device] = saved;
-            }
-        }
-
-        [Fact]
         public void TheEstablishedState_FollowsTheAndConditionOfAllTheTriggers()
         {
             var input = NewInput(DS4Controls.L1, DS4Controls.R1);

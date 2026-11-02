@@ -8,10 +8,10 @@ namespace DS4Windows.Actions
     /// Phase8-Step7 7.7b（Phase8-Step7-7-Plan.md §3.2。Q2＝B）: MultiAction の入力アクション（独立した入力アクション）。
     /// 成立（<see cref="TriggerState.IsEstablished"/>）は、<see cref="ComboTriggerInputAction"/>（トリガーの AND、<c>delayTime</c>）と同じ。トリガーのボタンの抑制・出力の消去を、エンジンの共通の方針で行うため。
     /// それに加えて、**毎フレーム（<see cref="Evaluate"/> を 1 フレームに 1 回呼ぶこと）**、<c>trigger[0]</c> の押下・解放のエッジ（<see cref="ITriggerInput.IsActive"/>／<see cref="ITriggerInput.WasActive"/>）と時刻
-    /// （<see cref="ITriggerInput.UtcNow"/>）、<c>DebouncingMs</c> から、旧 <c>MapCustomAction</c> の MultiAction の枝と同じ状態機械を動かし、結果を <see cref="TriggerState.Gesture"/> で返す。
-    ///  - 押した: 前回のタップの終わりから間隔（150ms ＋ debounce）以内なら、ダブルタップの開始。そうでなければ最初の接触。
+    /// （<see cref="ITriggerInput.UtcNow"/>）から、旧 <c>MapCustomAction</c> の MultiAction の枝と同じ状態機械を動かし、結果を <see cref="TriggerState.Gesture"/> で返す。
+    ///  - 押した: 前回のタップの終わりから間隔（150ms）以内なら、ダブルタップの開始。そうでなければ最初の接触。
     ///  - 離した: ダブルタップの開始中なら戻す。最初の接触なら、押した時間が間隔以内でタップ成立（時刻を保存）。
-    ///  - タップ（終わりから間隔を過ぎたら）→ <see cref="TriggerState.Tap"/>。長押し（最初の接触のまま 500ms ＋ debounce を過ぎたら）→ <see cref="TriggerState.Hold"/>。ダブルタップの開始 → <see cref="TriggerState.DoubleTap"/>。
+    ///  - タップ（終わりから間隔を過ぎたら）→ <see cref="TriggerState.Tap"/>。長押し（最初の接触のまま 500ms を過ぎたら）→ <see cref="TriggerState.Hold"/>。ダブルタップの開始 → <see cref="TriggerState.DoubleTap"/>。
     /// 状態（旧 <c>SpecialAction</c> の <c>tappedOnce</c>／<c>firstTouch</c>／<c>secondtouchbegin</c>／<c>pastTime</c>／<c>firstTap</c>／<c>TimeofEnd</c>）は、このインスタンスが持つ（Q3＝A）。
     /// </summary>
     public sealed class MultiTapInputAction : IInputAction
@@ -20,7 +20,6 @@ namespace DS4Windows.Actions
         private static readonly TimeSpan HoldTime = TimeSpan.FromMilliseconds(500);
 
         private readonly ComboTriggerInputAction _combo;
-        private readonly IProfileSettingsService _profileSettings;
 
         private bool _tappedOnce;
         private bool _firstTouch;
@@ -34,7 +33,7 @@ namespace DS4Windows.Actions
         public MultiTapInputAction(string name, IReadOnlyList<DS4Controls> triggers, IProfileSettingsService profileSettings, double delaySeconds = 0.0,
             bool digitalJudgement = true)
         {
-            _profileSettings = profileSettings ?? throw new ArgumentNullException(nameof(profileSettings));
+            if (profileSettings == null) throw new ArgumentNullException(nameof(profileSettings));   // Phase11 K-W6-10: DebouncingMs の項を廃止したため、設定は使わない（呼び出し側とテストの変更を避けるため、引数は残した）
             _digital = digitalJudgement;
             _combo = new ComboTriggerInputAction(name, triggers, profileSettings, delaySeconds, digitalJudgement: digitalJudgement);
         }
@@ -59,13 +58,12 @@ namespace DS4Windows.Actions
             bool activeCur = _digital ? input.IsDigitalActive(first) : input.IsActive(first);
             bool activePrev = _digital ? input.WasDigitalActive(first) : input.WasActive(first);
             DateTime now = input.UtcNow;
-            TimeSpan debounce = TimeSpan.FromMilliseconds(_profileSettings.DebouncingMs[input.Device]);
 
             if (activeCur && !activePrev)
             {
                 // 押した
                 _pastTime = now;
-                if (_pastTime <= _firstTap + Interval + debounce)
+                if (_pastTime <= _firstTap + Interval)
                 {
                     _tappedOnce = false;
                     _secondTouchBegin = true;
@@ -86,7 +84,7 @@ namespace DS4Windows.Actions
                 else if (_firstTouch)
                 {
                     _firstTouch = false;
-                    if (now <= _pastTime + Interval + debounce && !_tappedOnce)
+                    if (now <= _pastTime + Interval && !_tappedOnce)
                     {
                         _tappedOnce = true;
                         _firstTap = now;
@@ -98,13 +96,13 @@ namespace DS4Windows.Actions
             if (_tappedOnce)
             {
                 // タップ: 終わりから間隔を過ぎたら（ダブルタップの余地を残すための遅延）
-                if (now - _timeOfEnd > Interval + debounce)
+                if (now - _timeOfEnd > Interval)
                 {
                     _tappedOnce = false;
                     return TriggerState.Tap;
                 }
             }
-            else if (_firstTouch && now - _pastTime > HoldTime + debounce)
+            else if (_firstTouch && now - _pastTime > HoldTime)
             {
                 _firstTouch = false;
                 return TriggerState.Hold;

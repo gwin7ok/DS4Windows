@@ -92,10 +92,7 @@ namespace DS4Windows
         protected bool readyQuickChargeDisconnect;
         protected int warnInterval = WARN_INTERVAL_USB;
 
-        public Debouncer Debouncer
-        {
-            get; protected set;
-        }
+        // Phase11 K-W6-10: Debouncer（デバウンスのフィルター）は機能廃止で削除した（Phase11-Debounce-Removal-Plan.md）
         public int getWarnInterval()
         {
             return warnInterval;
@@ -968,7 +965,6 @@ namespace DS4Windows
         {
             unchecked
             {
-                Debouncer = SetupDebouncer();
                 firstActive = DateTime.UtcNow;
                 NativeMethods.HidD_SetNumInputBuffers(hDevice.SafeReadHandle.DangerousGetHandle(), 3);
                 Queue<long> latencyQueue = new Queue<long>(21); // Set capacity at max + 1 to avoid any resizing
@@ -1473,36 +1469,6 @@ namespace DS4Windows
             }
 
             timeoutExecuted = true;
-        }
-
-        protected Debouncer SetupDebouncer()
-        {
-            var debouncingMs = TimeSpan.FromMilliseconds(layerSettings?.GetDebouncingMs(deviceSlotNumber) ?? 0);
-            Debouncer debouncer = new(debouncingMs);
-            debouncer.AddDebouncer(nameof(DS4State.Cross));
-            debouncer.AddDebouncer(nameof(DS4State.Triangle));
-            debouncer.AddDebouncer(nameof(DS4State.Circle));
-            debouncer.AddDebouncer(nameof(DS4State.Square));
-            debouncer.AddDebouncer(nameof(DS4State.R3));
-            debouncer.AddDebouncer(nameof(DS4State.L3));
-            debouncer.AddDebouncer(nameof(DS4State.Options));
-            debouncer.AddDebouncer(nameof(DS4State.Share));
-            debouncer.AddDebouncer(nameof(DS4State.R2Btn));
-            debouncer.AddDebouncer(nameof(DS4State.L2Btn));
-            debouncer.AddDebouncer(nameof(DS4State.R1));
-            debouncer.AddDebouncer(nameof(DS4State.L1));
-            debouncer.AddDebouncer(nameof(DS4State.PS));
-            debouncer.AddDebouncer(nameof(DS4State.TouchButton));
-            debouncer.AddDebouncer(nameof(DS4State.Capture));
-            debouncer.AddDebouncer(nameof(DS4State.SideL));
-            debouncer.AddDebouncer(nameof(DS4State.SideR));
-            debouncer.AddDebouncer(nameof(DS4State.DpadUp));
-            debouncer.AddDebouncer(nameof(DS4State.DpadDown));
-            debouncer.AddDebouncer(nameof(DS4State.DpadLeft));
-            debouncer.AddDebouncer(nameof(DS4State.DpadRight));
-            // Phase6-Step12: デバウンス時間の更新は、プロファイルの適用時に ControlService.CheckProfileOptions が行う
-            // （旧: Global.DebouncingMsChanged の購読。発火元が無く、購読が解除されないリークもあったため削除）
-            return debouncer;
         }
 
         private unsafe void PrepareOutputReportInner(ref bool change, ref bool haptime)

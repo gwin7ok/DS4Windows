@@ -24,8 +24,6 @@ namespace DS4Windows.Services
 
         public bool VerboseLogMessages => _appSettings.DeviceOptions.VerboseLogMessages;
 
-        public int GetDebouncingMs(int slot) => _profileSettings.DebouncingMs[slot];
-
         public bool UseDs3PitchRollSim => _profileSettings.UseDs3PitchRollSim;
     }
 }

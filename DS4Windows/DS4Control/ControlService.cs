@@ -876,8 +876,6 @@ namespace DS4Windows
                     _touchpadToggle.CheckForToggle(ind, cState, pState);
                 }
 
-                cState = device.Debouncer.ProcessInput(cState);
-
                 cState = _mapping.SetCurveAndDeadzone(ind, cState, TempState[ind], _profileSettings);
 
                 if (!recordingMacro && (_profileSettings.GetUseTempProfile(ind) ||

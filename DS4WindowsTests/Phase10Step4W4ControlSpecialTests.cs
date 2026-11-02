@@ -40,7 +40,6 @@ namespace DS4WindowsTests
 
         private sealed class Harness : IDisposable
         {
-            private readonly int _savedDebounce;
             private readonly DS4StateFieldMapping _fields = new DS4StateFieldMapping();
             private readonly DS4State _state = new DS4State();
             private DateTime _now = T;
@@ -48,8 +47,6 @@ namespace DS4WindowsTests
             public Harness()
             {
                 Settings = TestHost.GetService<IProfileSettingsService>();
-                _savedDebounce = Settings.DebouncingMs[Device];
-                Settings.DebouncingMs[Device] = 0;
                 Input = new TriggerInput(Device, Settings, () => _now);
             }
 
@@ -64,7 +61,7 @@ namespace DS4WindowsTests
                 Input.Update(_state, null, null, null, _fields);
             }
 
-            public void Dispose() => Settings.DebouncingMs[Device] = _savedDebounce;
+            public void Dispose() { }
         }
 
         [Fact]

@@ -17,14 +17,13 @@ namespace DS4Windows.Actions
     public sealed class ComboTriggerInputAction : IInputAction
     {
         private readonly DS4Controls[] _triggers;
-        private readonly IProfileSettingsService _profileSettings;
         private readonly double _delaySeconds;
         private readonly bool _invertOnRelease;
         private readonly bool _digital;
         private bool _armed;
 
         /// <param name="triggers">構成するボタン（1 つ以上）。</param>
-        /// <param name="profileSettings">遅延の基準時刻の更新に使うデバウンス（<c>DebouncingMs</c>）の取得元。</param>
+        /// <param name="profileSettings">以前は、遅延の基準時刻の更新に使うデバウンス（<c>DebouncingMs</c>）の取得元だった。機能廃止（Phase11 K-W6-10）で使わない（null は許さない）。</param>
         /// <param name="delaySeconds">0 より大きいと、押し続けてこの秒数が経ったときに成立する（現行の <c>delayTime</c>）。</param>
         /// <param name="invertOnRelease">true なら、離したときに成立する（現行の Macro の <c>RunOnRelease</c>）。</param>
         /// <param name="digitalJudgement">
@@ -40,7 +39,7 @@ namespace DS4Windows.Actions
             Name = name ?? string.Empty;
             _triggers = new DS4Controls[triggers.Count];
             for (int i = 0; i < _triggers.Length; i++) _triggers[i] = triggers[i];
-            _profileSettings = profileSettings ?? throw new ArgumentNullException(nameof(profileSettings));
+            if (profileSettings == null) throw new ArgumentNullException(nameof(profileSettings));   // Phase11 K-W6-10: DebouncingMs の項を廃止したため、設定は使わない（呼び出し側とテストの変更を避けるため、引数は残した）
             _delaySeconds = delaySeconds;
             _invertOnRelease = invertOnRelease;
             _digital = digitalJudgement;
@@ -101,7 +100,7 @@ namespace DS4Windows.Actions
                     : TriggerState.NotEstablished;
             }
 
-            if (clock.Now < utcNow - TimeSpan.FromMilliseconds(100) + TimeSpan.FromMilliseconds(_profileSettings.DebouncingMs[input.Device]))
+            if (clock.Now < utcNow - TimeSpan.FromMilliseconds(100))
                 clock.Old = utcNow;
 
             return TriggerState.NotEstablished;
