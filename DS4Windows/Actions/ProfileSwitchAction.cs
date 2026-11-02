@@ -51,10 +51,19 @@ namespace DS4Windows.Actions
 
         public string Id => sa?.name ?? "ProfileSwitch";
 
+        // Phase11 W6 K-W6-7: 切り替え先が空・削除済みで何もしなかった。離したときの復帰［Stop］も行わない（元のプロファイルの再適用で仮想コントローラーが再接続されるのを防ぐ）
+        private bool _skippedNoTarget;
+
         public void Execute(IOutputContext ctx)
         {
             if (sa == null) return;
             int dev = (deviceIndex >= 0) ? deviceIndex : (ctx != null ? ctx.Device : 0);
+            _skippedNoTarget = !profileSwitcher.CanSwitch(sa);
+            if (_skippedNoTarget)
+            {
+                AppLogger.LogDebug($"SpecialAction PROFILE: skipped (target profile is empty or deleted), device={dev}, action={sa.name}");
+                return;
+            }
             if (_engineMode && ctx != null)
             {
                 LogRising(ctx, dev);
@@ -122,6 +131,7 @@ namespace DS4Windows.Actions
         public void Stop(IOutputContext ctx)
         {
             if (sa == null) return;
+            if (_skippedNoTarget) { _skippedNoTarget = false; return; }
             int dev = (deviceIndex >= 0) ? deviceIndex : (ctx != null ? ctx.Device : 0);
             profileSwitcher.RestoreProfile(dev);
         }

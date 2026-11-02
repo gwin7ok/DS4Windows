@@ -58,6 +58,12 @@ namespace DS4Windows
             if (deviceIndex < 0 || deviceIndex >= _environmentService.ControllerSlotLimit || action == null)
                 return;
 
+            if (!HasLoadableTarget(action))
+            {
+                AppLogger.LogWarn($"[DI] ProfileApplicationService.ApplyFromAction: target profile of '{action.name}' is empty or deleted; nothing to do (slot {deviceIndex})");
+                return;
+            }
+
             DS4Device device = _control?.DS4Controllers?[deviceIndex];
 
             // Phase10-Step4d W5c: 切り替え先の名前は、ID があれば ID から引く（プロファイルの名前を変えたあとも、SA を作り直さずに、現在の名前で切り替える）
@@ -89,6 +95,22 @@ namespace DS4Windows
                         ProfileChangeSource.MappingAction, prolog);
                 }
             });
+        }
+
+        // Phase11 W6 K-W6-7: 切り替え先が空、または ID が引けず（プロファイルが削除された）名前でも見つからないときは、読み込めない。
+        // ID のない古い SA は、判定できないため従来どおり（読み込める扱い）
+        public bool HasLoadableTarget(SpecialAction action)
+        {
+            if (action == null) return false;
+
+            string target = ResolveTarget(action);
+            if (string.IsNullOrWhiteSpace(target)) return false;
+
+            if (_profileIdentity != null && !string.IsNullOrEmpty(action.profileId)
+                && _profileIdentity.GetName(action.profileId) == null && _profileIdentity.GetId(target) == null)
+                return false;
+
+            return true;
         }
 
         // Phase10-Step4d W5c: Load Profile の切り替え先。SA の切り替え先の ID（profileId）が引ければ、現在の名前を返す（details も同じ名前に直す）。

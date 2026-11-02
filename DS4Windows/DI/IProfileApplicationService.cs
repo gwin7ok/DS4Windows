@@ -8,6 +8,12 @@ namespace DS4Windows.DI
         bool RestoreFromAction(int deviceIndex);
 
         /// <summary>
+        /// Phase11 W6 K-W6-7: Load Profile の切り替え先が読み込める状態か。切り替え先が空、または削除されて見つからない（割り当て編集画面で (none) 表示）ときは false
+        /// （そのとき、ボタンを押しても何もせず、離しても元のプロファイルを適用し直さない）。既定は true（実装しない差し替え用の型のため）。
+        /// </summary>
+        bool HasLoadableTarget(SpecialAction action) => true;
+
+        /// <summary>
         /// 指定されたスロットに対してプロファイルを適用します（Halt保護を内包）。
         /// </summary>
         /// <param name="deviceIndex">デバイスインデックス（0〜スロット上限 − 1。最大 8 台のとき 0〜7）</param>

@@ -509,6 +509,7 @@
 - 症状: Controls のボタンに「Load Profile」を割り当て、切り替え先のプロファイルを削除すると、割り当て編集画面の切り替え先は (none) 表示になる。この状態でボタンを押すと、仮想コントローラーが切断され（Windows の切断音）、離すと現在のプロファイル（verifyA）が適用され直して独自の通知ウィンドウが出て、仮想コントローラーが再接続される（接続音）。
 - ユーザー要望（2026-11-02）: (none) のときは「何もしない」形に変えられるなら、テスト終了後に調査して修正する。現状の動きのままでも許容できる。
 - 方針: 全部の実機テストが終わってから調査する。調べる場所は、Load Profile（`ProfileApplicationService.ApplyFromAction`／`ResolveTarget`）で切り替え先が空のとき。空の名前のまま `ApplyCore` へ進んでいないか。空なら先頭で何もせずに戻す案（ログ文言と機能は変えない）。実装前にユーザーの承認を得る。
+- **修正済み（2026-11-03）**: 原因は、切り替え先が削除済み（ID が引けず、名前のファイルもない）でも `ApplyFromAction` が存在しない名前の読み込みへ進み（離したときの `RestoreProfile` も元のプロファイルを再適用）、仮想コントローラーが切断・再接続されること。`IProfileApplicationService.HasLoadableTarget`／`IProfileSwitcher.CanSwitch`（既定 true の既定実装）を追加し、切り替え先が空、または ID・名前とも見つからないときは、押しても何もせず（警告ログ）、離しても復帰しない（`ProfileSwitchAction`）。ID のない古い SA は従来どおり。テスト `Phase11W6LoadProfileNoTargetTests`［+7］。Debug ALL 警告 0・エラー 0、Actions 2,802 件合格。**実機での再確認は未実施**（P10-82: 切り替え先を削除して (none) にし、ボタンを押し離しても仮想コントローラーが切断されないこと）。
 
 **K-W6-8: アプリの「複製（Duplicate）」で作ったプロファイルが、元と同じ ProfileId のまま（再起動するまで）**（S4 の P10-90 で発見）
 - 症状: Profiles タブの複製で verifyC3 を作ると、verifyC3.xml の `<ProfileId>` が元の verifyC2 と同じ。アプリを再起動すると、コピー側だけに新しい ID が振られる（起動時の補正）。

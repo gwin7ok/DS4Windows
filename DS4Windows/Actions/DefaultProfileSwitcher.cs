@@ -23,6 +23,11 @@ namespace DS4Windows.Actions
             profileAppService?.ApplyFromAction(deviceIndex, action);
         }
 
+        public bool CanSwitch(SpecialAction action)
+        {
+            return profileAppService == null || profileAppService.HasLoadableTarget(action);
+        }
+
         public void RestoreProfile(int deviceIndex)
         {
             profileAppService?.RestoreFromAction(deviceIndex);
