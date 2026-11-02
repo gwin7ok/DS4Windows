@@ -473,3 +473,9 @@
   - 案 B: 電池がまだ読まれていない間は、数値ではなく `N/A` を出す（`DS4Device` に `HasBatteryReading` を足す）。0% とは出なくなるが、「最初のログから正しい値」にはならない。
   - 案 C: 接続時のログ・通知を、最初の入力レポートが届いてから出す。ただしプロファイル適用はレポートの処理前に終える必要があり（適用前のレポートが既定の割り当てで処理されるため）、ログだけ遅らせると順序が変わる。リスクが大きく非推奨。
 - 注意: 今回の変更（Phase11）が原因ではなく、接続処理の順序が元からこの形である可能性が高い（上流のコードの流れ。履歴の確認は未実施）。機種ごとの電池の取り出しが違うため、案 A は DS4 だけ実機で確認できる（他機種は 不能、U-51）。
+
+**K-W6-4: 編集画面で Emulated Controller を DS4 ↔ Xbox 360 に変えても、そのまま開いた出力ピッカー（BindingWindow）の Pad タブが前の種類のまま**（S2 の P10-84 準備中に発見）
+- 症状: プロファイルの編集中に Emulated Controller を DS4 から Xbox 360 へ変え、保存せずに出力ピッカーを開くと、Pad の表示が DS4 のまま。いったん保存し、割り当て編集画面を開き直してから出力ピッカーを開くと、Xbox 360 の表示になる。
+- 原因（調査済み・コードの読みのみ）: `BindingWindowViewModel` のコンストラクター（77 行）は、`outputSlotService.OutDevTypeTemp[deviceNum]` から Xbox 360 モードかどうかを決める。一方、編集画面のコンボを変えたときに更新される `ProfileSettingsViewModel.TempControllerIndex`（814〜823 行）は、`profileSettings.OutContType[device]` だけを書き換え、`OutDevTypeTemp[device]` は更新しない。`OutDevTypeTemp` は、編集画面を開いたとき（2861・3469 行付近）にしか書かれないため、画面を開き直すまで古いまま。
+- 方針の案（ユーザー承認待ち。修正は全部の実機テストが終わってから）: `TempControllerIndex` の setter で、`outputSlotService.OutDevTypeTemp[device]` も同じ種類へ更新する（`TempConType` 経由も同じ setter を通る）。保存する値（`OutContType`）の扱いと、W4 の補正（`CorrectOutputTypeToDs4`）は変えない。
+- テスト案: `TempControllerIndex` を 0 ↔ 1 に変えたあとの `OutDevTypeTemp[device]` を検査する（変更前は失敗する）。
