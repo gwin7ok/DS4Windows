@@ -504,13 +504,17 @@ namespace DS4WinWPF.DS4Forms
                 BindingWindow controlWindow = editorWindowFactory.CreateBindingWindow(specialActVM.DeviceNum, controlSettings, targetDevice,
                     BindingWindow.ExposeMode.Control);
                 controlWindow.Owner = App.Current.MainWindow;
+                bool wasDefault = pressKeyVM.SelectedActionType == DS4Windows.DS4ControlSettings.ActionType.Default;
                 controlWindow.ShowDialog();
                 pressKeyVM.ReadSettings(controlSettings, specialActVM.DeviceNum, allowDefault: true);
                 controlTarget.Extras = controlSettings.extras;
                 pressKeyVM.UpdateToggleControls();
 
                 // 出力ピッカーで Default／Unbound を選んだときは、種別の一覧の「Default」「Unbound」の項目へ切り替える（一覧と、選んだ内容を一致させる）
-                if (pressKeyVM.SelectedActionType == DS4Windows.DS4ControlSettings.ActionType.Default)
+                // Phase11 W6 K-W6-6: 何も選ばずに閉じた［× ほか］ときは切り替えない。Default だった状態で、種別だけを Output Key などに変えてから
+                // ピッカーを開き、× で閉じると、状態は Default のまま（変わっていない）で、一覧が Default に戻って見えていた
+                if (pressKeyVM.SelectedActionType == DS4Windows.DS4ControlSettings.ActionType.Default
+                    && (!wasDefault || controlWindow.DefaultPicked))
                 {
                     actionTypeCombo.SelectedIndex = specialActVM.TypeCatalog.DefaultIndex;
                 }

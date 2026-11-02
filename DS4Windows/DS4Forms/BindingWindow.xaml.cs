@@ -194,6 +194,13 @@ namespace DS4WinWPF.DS4Forms
             Close();
         }
 
+        /// <summary>
+        /// Phase11 W6 K-W6-6: ユーザーが、このピッカーで「Default」を選んだ（Default ボタン、または既定の割り当てと同じ Pad のボタン）か。
+        /// × で何も選ばずに閉じたときは false。割り当てエディターが、種別の一覧を Default へ切り替えるかの判断に使う
+        /// （以前は、Default のボタンで種別を Output Key などに変えてピッカーを開き、× で閉じただけで Default に戻って見えた）。
+        /// </summary>
+        public bool DefaultPicked { get; private set; }
+
         private void OutputButtonBtn_Click(object sender, RoutedEventArgs e)
         {
             OutBinding binding = bindingVM.ActionBinding;
@@ -203,6 +210,7 @@ namespace DS4WinWPF.DS4Forms
             {
                 if (defaultControl == bind.control)
                 {
+                    DefaultPicked = true;
                     binding.outputType = OutBinding.OutType.Default;
                 }
                 else
@@ -898,8 +906,9 @@ namespace DS4WinWPF.DS4Forms
         {
             OutBinding actBind = bindingVM.ActionBinding;
 
+            DefaultPicked = true;
             actBind.outputType = OutBinding.OutType.Default;
-            actBind.control = profileSettingsService.GetDefaultButtonMapping()[(int)actBind.input];
+            actBind.control =profileSettingsService.GetDefaultButtonMapping()[(int)actBind.input];
 
             Close();
         }
