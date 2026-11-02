@@ -763,6 +763,11 @@ namespace DS4Windows
                 DS4Device device = DS4Controllers[slot];
                 if (device == null || !device.isValidSerial()) return;
 
+                // Phase11 W6 K-W6-11（S9-5 の実機で判明）: 一時プロファイル（自動プロファイル、一時の Load Profile）は記憶しない。
+                // 記憶すると、切断前に自動プロファイル（verifyG）だった場合、再接続でそれが「通常のプロファイル」として最初から適用されてしまう。
+                // 一時プロファイルの適用は LoadTempProfile が UseTempProfile を立てたあとで、このイベントが発火する
+                if (_profileSettings.GetUseTempProfile(slot)) return;
+
                 _deviceStateService.RememberProfile(device.getMacAddress(), e.ProfileName);
             }
             catch
