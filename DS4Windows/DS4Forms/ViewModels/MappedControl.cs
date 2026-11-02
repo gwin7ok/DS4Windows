@@ -106,8 +106,11 @@ namespace DS4WinWPF.DS4Forms.ViewModels
         {
             bool extra = control >= DS4Controls.GyroXPos && control <= DS4Controls.SwipeDown;
             return AssignmentDescriber.ForControl(setting, x => X360ControlTables.getX360ControlString(x, devType),
-                profileSettingsService.GetDefaultButtonMapping()[(int)control], extra, Properties.Resources.Unassigned);
+                profileSettingsService.GetDefaultButtonMapping()[(int)control], extra, Properties.Resources.Unassigned, ProfileExists);
         }
+
+        /// <summary>Load Profile の参照先が今もあるかの確認（S9-10）。設定されていなければ確認しない。</summary>
+        public Func<string, bool> ProfileExists { get; set; }
 
         /// <summary>Default 以外の割り当て、または Extras があるか（一覧で太字にする）。</summary>
         public bool IsCustomized => setting.actionType != DS4ControlSettings.ActionType.Default || !setting.IsExtrasEmpty(setting.extras);

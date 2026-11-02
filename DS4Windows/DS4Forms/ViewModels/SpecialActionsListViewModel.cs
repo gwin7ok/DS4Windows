@@ -218,6 +218,9 @@ namespace DS4WinWPF.DS4Forms.ViewModels
             profileRepo.ProfileActions[deviceNum] = GetEnabledActionNames();
         }
 
+        /// <summary>Load Profile の参照先が今もあるかの確認（S9-10）。一覧に加わる項目へ渡す。</summary>
+        public Func<string, bool> ProfileExists { get; set; }
+
         public SpecialActionItem CreateActionItem(SpecialAction action)
         {
             SpecialActionItem item = new SpecialActionItem(action, GetActionDisplayName(action), actionCol.Count);
@@ -244,6 +247,7 @@ namespace DS4WinWPF.DS4Forms.ViewModels
             {
                 foreach (SpecialActionItem item in e.NewItems)
                 {
+                    item.ProfileExists = ProfileExists;
                     item.PropertyChanged += Item_PropertyChanged;
                 }
             }

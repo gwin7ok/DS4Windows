@@ -118,8 +118,11 @@ namespace DS4WinWPF.DS4Forms.ViewModels
         /// </summary>
         public string ActionDescription
             => specialAction != null
-                ? AssignmentDescriber.ForSpecialAction(specialAction, x => X360ControlTables.getX360ControlString(x))
+                ? AssignmentDescriber.ForSpecialAction(specialAction, x => X360ControlTables.getX360ControlString(x), ProfileExists)
                 : typeName;
+
+        /// <summary>Load Profile の参照先が今もあるかの確認（S9-10）。設定されていなければ確認しない。</summary>
+        public Func<string, bool> ProfileExists { get; set; }
 
         public string Controls
         {

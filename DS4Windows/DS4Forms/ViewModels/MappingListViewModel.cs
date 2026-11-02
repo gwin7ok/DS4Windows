@@ -202,6 +202,18 @@ namespace DS4WinWPF.DS4Forms.ViewModels
             }
         }
 
+        /// <summary>Load Profile の参照先が今もあるかの確認（S9-10）。各項目に渡す。</summary>
+        public Func<string, bool> ProfileExists
+        {
+            set
+            {
+                foreach (MappedControl mapped in mappings)
+                {
+                    mapped.ProfileExists = value;
+                }
+            }
+        }
+
         public void UpdateMappings()
         {
             foreach (MappedControl mapped in mappings)

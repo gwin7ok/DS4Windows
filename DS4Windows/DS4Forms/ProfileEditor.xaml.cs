@@ -176,6 +176,15 @@ namespace DS4WinWPF.DS4Forms
         private readonly DS4Windows.Actions.IProfileSwitcher profileSwitcher;
         private readonly DS4Windows.ControlService controlService;
         private MappingListViewModel mappingListVM;
+
+        // 一覧（メイン画面のプロファイル一覧）に名前があるか。一覧が取れないときは、あるものとして扱う
+        private static bool LoadProfileTargetExists(string name)
+        {
+            var holder = (Application.Current?.MainWindow as MainWindow)?.ProfileListHolder;
+            if (holder?.ProfileListCol == null) return true;
+
+            return holder.ProfileListCol.Any(x => string.Equals(x.Name, name, StringComparison.CurrentCultureIgnoreCase));
+        }
         private ProfileEntity currentProfile;
         private SpecialActionsListViewModel specialActionsVM;
         // Active 列の初期幅は BackingStore の定数を使う（プロファイルに永続化しない）
@@ -344,6 +353,10 @@ namespace DS4WinWPF.DS4Forms
 
             mappingListVM = new MappingListViewModel(deviceNum, profileSettingsVM.ContType, profileSettingsService);
             specialActionsVM = vmFactory.CreateSpecialActionsListViewModel(deviceNum);
+
+            // S9-10: 削除されたプロファイルを参照する Load Profile は、一覧でも「(none)」と表示する（割り当て編集画面と同じ）
+            mappingListVM.ProfileExists = LoadProfileTargetExists;
+            specialActionsVM.ProfileExists = LoadProfileTargetExists;
 
             touchButtonUC = new TouchButtonUserControl(deviceNum, profileSettingsService);
             TouchpadButtonControlDisplaySetup();

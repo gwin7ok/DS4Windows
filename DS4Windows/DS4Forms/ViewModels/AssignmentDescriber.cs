@@ -59,7 +59,9 @@ namespace DS4WinWPF.DS4Forms.ViewModels
         /// <param name="defaultOutput">そのボタンの既定の出力。</param>
         /// <param name="isExtraControl">ジャイロ・スワイプなど、既定の出力を持たない入力か。</param>
         /// <param name="unassignedText">割り当てがない（既定の出力もない）ときの表示（アプリの言語の「未割り当て」）。</param>
-        public static string ForControl(DS4ControlSettings setting, Func<X360Controls, string> buttonName, X360Controls defaultOutput, bool isExtraControl, string unassignedText)
+        /// <param name="profileExists">Load Profile の参照先が今もあるか（null のときは確認しない）。ないときは「(none)」と表示する（割り当て編集画面の「未選択」と同じ扱い。S9-10）。</param>
+        public static string ForControl(DS4ControlSettings setting, Func<X360Controls, string> buttonName, X360Controls defaultOutput, bool isExtraControl, string unassignedText,
+            Func<string, bool> profileExists = null)
         {
             if (setting == null) return unassignedText;
 
@@ -76,7 +78,7 @@ namespace DS4WinWPF.DS4Forms.ViewModels
                         options != null && options.RunOnRelease, options != null && options.Synchronized, options != null && options.KeepKeyState);
                     break;
                 case DS4ControlSettings.ActionType.Special:
-                    text = setting.special != null ? ForSpecialItem(setting.special) : unassignedText;
+                    text = setting.special != null ? ForSpecialItem(setting.special, profileExists) : unassignedText;
                     break;
                 case DS4ControlSettings.ActionType.Button:
                     text = setting.action.actionBtn == X360Controls.Unbound ? UnboundText : ForButton(buttonName(setting.action.actionBtn), toggle);
@@ -91,14 +93,14 @@ namespace DS4WinWPF.DS4Forms.ViewModels
         }
 
         /// <summary>Controls の SA 専用の種別（型のある項目）。</summary>
-        public static string ForSpecialItem(ControlSpecialItem item)
+        public static string ForSpecialItem(ControlSpecialItem item, Func<string, bool> profileExists = null)
         {
             switch (item.Type)
             {
                 case SpecialAction.ActionTypeId.Program:
                     return "Launch Program: " + FileNameOf(item.ProgramPath) + Hold(item.HoldSeconds);
                 case SpecialAction.ActionTypeId.Profile:
-                    return "Load Profile: " + item.ProfileName + (item.AutomaticUntrigger ? " (Auto untrigger)" : string.Empty) + Hold(item.HoldSeconds);
+                    return "Load Profile: " + ProfileLabel(item.ProfileName, profileExists) + (item.AutomaticUntrigger ? " (Auto untrigger)" : string.Empty) + Hold(item.HoldSeconds);
                 case SpecialAction.ActionTypeId.DisconnectBT:
                     return "Disconnect Controller" + Hold(item.HoldSeconds);
                 case SpecialAction.ActionTypeId.BatteryCheck:
@@ -119,7 +121,7 @@ namespace DS4WinWPF.DS4Forms.ViewModels
         // ---- SA タブ ----
 
         /// <summary>SA タブの一覧の「アクション」列。種別名に、詳細を続ける。</summary>
-        public static string ForSpecialAction(SpecialAction sa, Func<X360Controls, string> buttonName)
+        public static string ForSpecialAction(SpecialAction sa, Func<X360Controls, string> buttonName, Func<string, bool> profileExists = null)
         {
             if (sa == null) return string.Empty;
 
@@ -148,7 +150,7 @@ namespace DS4WinWPF.DS4Forms.ViewModels
                     text = "Launch Program: " + FileNameOf(sa.details);
                     break;
                 case SpecialAction.ActionTypeId.Profile:
-                    text = "Load Profile: " + sa.details + (sa.automaticUntrigger ? " (Auto untrigger)" : string.Empty);
+                    text = "Load Profile: " + ProfileLabel(sa.details, profileExists) + (sa.automaticUntrigger ? " (Auto untrigger)" : string.Empty);
                     break;
                 case SpecialAction.ActionTypeId.DisconnectBT:
                     text = "Disconnect Controller";
@@ -169,6 +171,12 @@ namespace DS4WinWPF.DS4Forms.ViewModels
 
             return WithExtras(text + Hold(hold), !string.IsNullOrEmpty(sa.outputExtras));
         }
+
+        /// <summary>Load Profile の参照先の表示。削除された（一覧にない）プロファイルは「(none)」。確認の関数がない、または名前が空のときは、名前をそのまま出す。</summary>
+        private static string ProfileLabel(string name, Func<string, bool> profileExists)
+            => profileExists != null && !string.IsNullOrEmpty(name) && !profileExists(name) ? NoProfileText : name;
+
+        public const string NoProfileText = "(none)";
 
         private static string FileNameOf(string path)
         {

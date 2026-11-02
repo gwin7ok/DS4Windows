@@ -79,6 +79,20 @@ namespace DS4WindowsTests
         }
 
         [Fact]
+        public void LoadProfile_ShowsNone_WhenTheTargetProfileWasDeleted()
+        {
+            // S9-10（実機）: 削除済みのプロファイルを参照する Load Profile が、一覧に削除前の名前のまま出ていた
+            var item = new ControlSpecialItem { Type = SpecialAction.ActionTypeId.Profile, ProfileName = "Gone" };
+            Assert.Equal("Load Profile: (none)", AssignmentDescriber.ForSpecialItem(item, n => n == "Alive"));
+            Assert.Equal("Load Profile: Gone", AssignmentDescriber.ForSpecialItem(item, n => n == "Gone"));
+            Assert.Equal("Load Profile: Gone", AssignmentDescriber.ForSpecialItem(item));
+
+            var sa = new SpecialAction("p", "Cross", "LoadProfile", "Gone") { typeID = SpecialAction.ActionTypeId.Profile };
+            Assert.Equal("Load Profile: (none)", AssignmentDescriber.ForSpecialAction(sa, Name, n => false));
+            Assert.Equal("Load Profile: Gone", AssignmentDescriber.ForSpecialAction(sa, Name, n => true));
+        }
+
+        [Fact]
         public void TheSpecialActionList_UsesTheSameFormat()
         {
             var key = new SpecialAction("k", "Cross", "Key", "87") { keyType = DS4KeyType.Toggle };
