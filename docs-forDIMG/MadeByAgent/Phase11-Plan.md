@@ -491,6 +491,7 @@
 **K-W6-5: 出力を Xbox 360 にすると、ライトバーが正しく表示されないことがある**（S2 の P10-84 の確認中にユーザーが報告）
 - 症状: Emulated Controller を Xbox 360 にしたとき、ライトバーが消える、または別の色になることがある（再現条件は未特定）。
 - 方針（ユーザー決定 2026-11-02）: 全部の実機テストが終わってから調査する。原因・修正案は未調査。調査では、Xbox 360 のときのライトバーの色の決まり方（プロファイルの色、バッテリー色、Xbox の LED 通知の取り込みの有無）と、プロファイル適用・接続時の順序を見る。
+- 調査の途中経過（2026-11-03。ユーザーの報告と、コードの読み）: **Enable Output data to DS4（`outputDataToDS4`）が OFF のとき、エミュレート種類が DS4 だとプロファイルを適用してもライトバーが点灯しない［Xbox 360 だと点灯する］。** `EnableOutputDataToDS4` は、接続・プロファイル適用時に `DeviceConnectionSetup.ApplyProfileOptions` が `VidPidFeatureSet.NoOutputData` をデバイスへ設定する［OFF なら立てる］。`DS4Device.sendOutputReport` は、このフラグが立っていると**何も書かずに戻る**［ライトバーの色・振動・トリガー効果・触覚をすべて物理パッドへ送らない］。ログには「Output data to DS4 disabled. Lightbar and rumble events are not written to DS4 gamepad…」が出る。ツールチップも「Untick if the gamepad doesn't support data receiving」と明記しており、**OFF でライトバーが点灯しないのは、設計どおり（仕様）**。既定値は ON［`DEFAULT_OUTPUT_TO_DS4 = true`］。`VirtualPadService.EstablishOutFeedbackIfEnabled` も、ON のときだけ、ゲームからの振動・ライトバーの戻りを物理パッドへ中継する。**未解明: Xbox 360 のときだけ点灯する理由。** このフラグは種類に依存せず、コードの読みでは Xbox 360 でも OFF なら書かないはず。点灯は、パッドが接続時に自分で出す既定色か、OFF にする前の状態の残りの可能性がある。K-W6-5 の調査で、OFF／ON × DS4／Xbox 360 の 4 通りで、ログと点灯を確かめる。
 
 **K-W6-6: 出力が Default のボタンで、出力ピッカーを何も選ばずに × で閉じると、行のプルダウンが Default 以外の種別から Default に切り替わって見える**（S2 の P10-85 準備中にユーザーが報告）
 - 症状: 出力が Default になっているボタンの行で、出力ピッカー（BindingWindow）を開き、何も押さずに右上の × で閉じると、行のプルダウンの表示が「Output Key／Mouse／Button」ではなく Default に切り替わる（詳細な前後の状態は未確認）。
