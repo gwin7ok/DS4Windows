@@ -476,6 +476,7 @@
 - 原因（調査済み・コードの読みのみ）: `ProfileEditor` の Save／Apply → `MainWindow.Editor_ProfileSaved` → `SyncProfileListAndControllers`（`MainWindow.xaml.cs` の ④ 再適用）が、`profileRepo.ProfilePath[i]` が保存したプロファイルと一致する**全スロット**へ `profileSlotApplier.ApplyToSlot(i, …, Manual)` を呼ぶ。停止中でもスロット 0 の `ProfilePath` は前回の名前のまま残るため一致する。`ProfileSlotApplier.ApplyToSlot` は範囲と名前の検査だけで、そのスロットに**デバイスが接続されているか、サービスが動いているか**を見ない。`ApplyProfileWithoutHalt` → `ApplyCore` → `CompleteProfileApplication` が、`ds4Device == null` のとき電池 `N/A`、`LogToGui` と `LogProfileChanged`（→ `MainWindow.OnProfileChanged` → 通知）を出す。
 - 影響: 動作中でも、接続していないスロット（`ProfilePath` が同じプロファイルを指す）に対して、同じ無意味な適用・ログ・通知が出る可能性がある（未確認。S2 以降で観察する）。XML の読み込みは行われるため、停止中の副作用は通知とログと `SelectedProfile`・`OlderProfilePath` の更新。
 - 方針（ユーザー承認済み 2026-11-02。修正は全部の実機テストが終わってから）: `SyncProfileListAndControllers` の再適用ループで、**そのスロットにデバイスが接続されている**（`ControlService.DS4Controllers[i] != null`）ときだけ `ApplyToSlot` を呼ぶ。停止中は何も適用しない（プロファイルの XML はディスクに保存済みで、次の接続時に読まれる）。`ProfilePath` の更新（③）は従来どおり。
+- **修正済み（2026-11-03）**: `MainWindow.SyncProfileListAndControllers` の ④ 再適用で、`IsSlotConnected(i)`［`controlService.DS4Controllers[i] != null`］のスロットにだけ `ApplyToSlot` を呼ぶ。③ の `ProfilePath` の更新は従来どおり。テスト `Phase11W6ReapplyConnectedSlotsOnlyTests`［ソースの走査。+2］。`Debug ALL` 警告 0・エラー 0、Actions 2,778 件合格。**実機での再確認は未実施**（P11-6 (2): サービス停止中に Save/Apply しても、ログと通知が出ない。接続中の Save/Apply では従来どおり適用される）。
 - 注意: 機能の削減にならないか（接続前のスロットの `SelectedProfile` が Save で更新されなくなる影響）を、実装前に確認する。通知・ログ文言は変えない。
 
 **K-W6-3: コントローラーの接続直後のログ・通知で、電池残量が 0% と表示される**（P11-6 手順 D の確認中に発見）

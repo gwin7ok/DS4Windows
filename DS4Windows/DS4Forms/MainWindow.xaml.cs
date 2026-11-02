@@ -1840,11 +1840,20 @@ Suspend support not enabled.", true);
                         string.Equals(p, activeProfiles[i], StringComparison.CurrentCultureIgnoreCase))
                     : string.IsNullOrEmpty(targetProfile) ||
                       string.Equals(activeProfiles[i], targetProfile, StringComparison.CurrentCultureIgnoreCase);
-                if (matches)
+                // Phase11 W6 K-W6-2: コントローラーが接続されているスロットにだけ適用する。サービスの停止中は、ProfilePath が同じ名前のまま残っているため、
+                // 接続していないスロットにも適用され、無意味なログと通知が出ていた。プロファイルの XML は保存済みで、次の接続時に読まれる
+                if (matches && IsSlotConnected(i))
                 {
                     profileSlotApplier.ApplyToSlot(i, activeProfiles[i], ProfileChangeSource.Manual);
                 }
             }
+        }
+
+        // Phase11 W6 K-W6-2: そのスロットに、接続中のコントローラーがあるか（サービス停止中は、どのスロットも false）
+        private bool IsSlotConnected(int slot)
+        {
+            var controllers = controlService.DS4Controllers;
+            return controllers != null && slot >= 0 && slot < controllers.Length && controllers[slot] != null;
         }
 
         #endregion

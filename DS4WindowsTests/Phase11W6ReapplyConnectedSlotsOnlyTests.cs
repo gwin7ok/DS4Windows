@@ -1,0 +1,60 @@
+using System.IO;
+using System.Text.RegularExpressions;
+using Xunit;
+using Xunit.Abstractions;
+
+namespace DS4WindowsTests
+{
+    /// <summary>
+    /// Phase11 W6 K-W6-2: プロファイルの保存・適用の後の再適用（<c>MainWindow.SyncProfileListAndControllers</c> の ④）は、
+    /// コントローラーが接続されているスロットにだけ行う。サービスの停止中は、<c>ProfilePath</c> が同じ名前のまま残るため、
+    /// 接続していないスロットにも適用され、無意味なログ（<c>Controller 1 is now using Profile … (Battery: N/A%)</c>）と通知が出ていた。
+    /// MainWindow は WPF のウィンドウで単体駆動が困難なため、ソースの走査で担保する（ソースが見つからない環境では、検査を行わず合格とする）。
+    /// </summary>
+    public class Phase11W6ReapplyConnectedSlotsOnlyTests
+    {
+        private const string MainWindowCode = "DS4Windows/DS4Forms/MainWindow.xaml.cs";
+
+        private readonly ITestOutputHelper _output;
+
+        public Phase11W6ReapplyConnectedSlotsOnlyTests(ITestOutputHelper output)
+        {
+            _output = output;
+        }
+
+        private string ReadNormalizedSource(string relativePath)
+        {
+            string path = SourceFileLocator.Find(relativePath);
+            if (path == null)
+            {
+                _output.WriteLine(relativePath + " が見つからないため検査を省略した。");
+                return null;
+            }
+
+            string text = File.ReadAllText(path);
+            text = Regex.Replace(text, @"/\*.*?\*/", string.Empty, RegexOptions.Singleline);
+            text = Regex.Replace(text, @"//[^\r\n]*", string.Empty);
+            return Regex.Replace(text, @"\s+", " ");
+        }
+
+        [Fact]
+        public void TheReapplyLoop_AppliesOnlyToConnectedSlots()
+        {
+            string code = ReadNormalizedSource(MainWindowCode);
+            if (code == null) return;
+
+            // 再適用の ApplyToSlot（Manual）は、接続の判定の後ろにだけある
+            Assert.Single(Regex.Matches(code, @"profileSlotApplier\.ApplyToSlot\(i, activeProfiles\[i\], ProfileChangeSource\.Manual\)"));
+            Assert.Contains("if (matches && IsSlotConnected(i)) { profileSlotApplier.ApplyToSlot(i, activeProfiles[i], ProfileChangeSource.Manual); }", code);
+        }
+
+        [Fact]
+        public void IsSlotConnected_ReadsTheControllerOfTheSlot()
+        {
+            string code = ReadNormalizedSource(MainWindowCode);
+            if (code == null) return;
+
+            Assert.Contains("private bool IsSlotConnected(int slot) { var controllers = controlService.DS4Controllers; return controllers != null && slot >= 0 && slot < controllers.Length && controllers[slot] != null; }", code);
+        }
+    }
+}
