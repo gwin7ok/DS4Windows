@@ -119,7 +119,8 @@ namespace DS4WinWPF.DS4Forms
             MainWindowsViewModel mainWindowsViewModel,
             DS4Windows.DI.ILogSettingsApplier logSettingsApplier,
             IAutoProfileService autoProfileService,
-            DS4Windows.DI.IViewModelFactory viewModelFactory)
+            DS4Windows.DI.IViewModelFactory viewModelFactory,
+            DS4Windows.DI.IProfileIdentityService profileIdentityService)
         {
             // XAML初期化前にウィンドウサイズを設定（WindowLayoutDefaults から）
             Width = WindowLayoutDefaults.MAIN_WINDOW_WIDTH;
@@ -226,7 +227,7 @@ namespace DS4WinWPF.DS4Forms
             // Phase6-Step10-2-3: XAML から生成されるコントロールへ、保持済みのサービスを渡す（AutoProfileHolder を読む前に呼ぶ）
             autoProfControl.Initialize(pathService, appSettingsService, _autoProfileService,
                 viewModelFactory ?? throw new ArgumentNullException(nameof(viewModelFactory)), environmentService);
-            dupBox.Initialize(pathService);
+            dupBox.Initialize(pathService, profileIdentityService ?? throw new ArgumentNullException(nameof(profileIdentityService)));
             autoProfileHolder = autoProfControl.AutoProfileHolder;
             autoProfControl.SetupDataContext(profileListHolder);
 

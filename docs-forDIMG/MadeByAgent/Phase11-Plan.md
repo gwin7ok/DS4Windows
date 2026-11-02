@@ -513,6 +513,7 @@
 - 症状: Profiles タブの複製で verifyC3 を作ると、verifyC3.xml の `<ProfileId>` が元の verifyC2 と同じ。アプリを再起動すると、コピー側だけに新しい ID が振られる（起動時の補正）。
 - 原因（調査済み・コードの読みのみ）: `DupBox.xaml.cs` の `SaveBtn_Click` が `File.Copy` で XML をそのままコピーするだけで、新しい ID を振らない（63〜72 行）。P10-90 の仕様は「ファイルをコピーして起動し直すと新 ID」だが、アプリ内の複製は、起動し直す前から別のプロファイルなので、複製の直後に新しい ID を振るのが自然。同じ ID のまま使うと、ID で引く参照（スロット・リンク・自動プロファイル・Load Profile）が、どちらを指すか曖昧になる期間が生じる。
 - 方針の案（ユーザー承認待ち。修正は全部の実機テストが終わってから）: `DupBox` の複製の直後（`Save?.Invoke` の前）に、コピー側へ新しい ID を振る（`IProfileIdentityService` に、既存の「別名で保存」「新規作成」が新 ID を得ている経路と同じ手段があれば、それを使う。実装前に確認）。起動時の補正は、そのまま残す。
+- **修正済み（2026-11-03。ユーザー承認済み）**: `IProfileIdentityService.AssignNewId(profileName)` を追加［新しい ID を書き、索引を作り直す。ファイルがない・書けないときは null］。`DupBox` は、`File.Copy` の直後・`Save?.Invoke` の前に呼ぶ。`DupBox.Initialize` が `IProfileIdentityService` を受け取る［`MainWindow` のコンストラクターと `MainWindowFactory` に注入を追加。Pure DI］。起動時の補正は残した。テスト `Phase11W6DuplicateAssignsNewIdTests`［+4］。`Debug ALL` 警告 0・エラー 0、Actions 2,785 件合格。**実機での再確認は未実施**（P10-90 の副次: 複製の直後に、コピー側の `<ProfileId>` が元と異なる）。
 
 **K-W6-9【重大・クラッシュ】: 自動プロファイル（またはリンク）が指しているプロファイルを削除すると、アプリが落ちる（`TargetException: Object does not match target type`）**（S4 の P10-96 手順 3 で発見。2026-11-02 12:55:21）
 - 症状: リンクと自動プロファイルのルールから指されているプロファイル（verifyD1）を Profiles タブで削除すると、`[ERROR] Thread Crashed with message Object does not match target type.`（`System.Reflection.TargetException`）でアプリが異常終了した（WER のダンプも出力された）。直前に Controllers タブの選択を `aimlabs` に変えていた。

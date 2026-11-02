@@ -28,6 +28,7 @@ namespace DS4Windows.Services
         private readonly MainWindowsViewModel _mainWindowsViewModel;
         private readonly ILogSettingsApplier _logSettingsApplier;
         private readonly IViewModelFactory _viewModelFactory;
+        private readonly IProfileIdentityService _profileIdentityService;
         private readonly Func<ControlService> _controlServiceAccessor;
         private readonly Func<IAutoProfileService> _autoProfileServiceAccessor;
 
@@ -47,6 +48,7 @@ namespace DS4Windows.Services
             MainWindowsViewModel mainWindowsViewModel,
             ILogSettingsApplier logSettingsApplier,
             IViewModelFactory viewModelFactory,
+            IProfileIdentityService profileIdentityService,
             Func<ControlService> controlServiceAccessor,
             Func<IAutoProfileService> autoProfileServiceAccessor)
         {
@@ -65,6 +67,7 @@ namespace DS4Windows.Services
             _mainWindowsViewModel = mainWindowsViewModel ?? throw new ArgumentNullException(nameof(mainWindowsViewModel));
             _logSettingsApplier = logSettingsApplier ?? throw new ArgumentNullException(nameof(logSettingsApplier));
             _viewModelFactory = viewModelFactory ?? throw new ArgumentNullException(nameof(viewModelFactory));
+            _profileIdentityService = profileIdentityService ?? throw new ArgumentNullException(nameof(profileIdentityService));
             _controlServiceAccessor = controlServiceAccessor ?? throw new ArgumentNullException(nameof(controlServiceAccessor));
             _autoProfileServiceAccessor = autoProfileServiceAccessor ?? throw new ArgumentNullException(nameof(autoProfileServiceAccessor));
         }
@@ -73,6 +76,6 @@ namespace DS4Windows.Services
             => new MainWindow(parser, _profileSettings, _appSettings, _profileXmlStore, _editorWindowFactory,
                 _pathService, _environmentService, _appearanceSettings, _profileApplication, _outputSlotService,
                 _profileRepository, _notificationService, _controlServiceAccessor(), _profileSlotApplier,
-                _mainWindowsViewModel, _logSettingsApplier, _autoProfileServiceAccessor(), _viewModelFactory);
+                _mainWindowsViewModel, _logSettingsApplier, _autoProfileServiceAccessor(), _viewModelFactory, _profileIdentityService);
     }
 }

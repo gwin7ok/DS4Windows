@@ -32,6 +32,13 @@ namespace DS4Windows.DI
         string EnsurePersisted(string profileName);
 
         /// <summary>
+        /// Phase11 W6 K-W6-8: 名前のプロファイルに、<b>新しい ID を振って書く</b>（すでに ID があっても置き換える）。アプリ内の複製（Duplicate）が、
+        /// ファイルのコピーの直後に、コピー側が元と同じ ID を持たないようにするために呼ぶ。書いた ID を返す。ファイルがない・書けないときは null
+        /// （起動時の <see cref="EnsureAllPersisted"/> が、重複を直す）。
+        /// </summary>
+        string AssignNewId(string profileName);
+
+        /// <summary>
         /// 参照の解決。ID でプロファイルを探し、見つかればその名前を返す。見つからないとき（古いファイル、手編集）は、<paramref name="nameHint"/> の
         /// プロファイルがあれば、その名前を返す。どちらもなければ偽。
         /// </summary>

@@ -48,16 +48,19 @@ namespace DS4WinWPF.DS4Forms
         // Phase6-Step10-2-3: 本コントロールは MainWindow.xaml から生成されるため、引数なしのコンストラクタが必要。
         // 依存は Initialize で受け取る（MainWindow のコンストラクタが 1 回だけ呼ぶ）。
         private DS4Windows.DI.IPathService pathService;
+        // Phase11 W6 K-W6-8: 複製の直後に、コピー側へ新しい ProfileId を振るために使う
+        private DS4Windows.DI.IProfileIdentityService profileIdentity;
 
         public DupBox()
         {
             InitializeComponent();
         }
 
-        public void Initialize(DS4Windows.DI.IPathService pathService)
+        public void Initialize(DS4Windows.DI.IPathService pathService, DS4Windows.DI.IProfileIdentityService profileIdentity)
         {
             if (this.pathService != null) throw new InvalidOperationException("DupBox is already initialized.");
             this.pathService = pathService ?? throw new ArgumentNullException(nameof(pathService));
+            this.profileIdentity = profileIdentity ?? throw new ArgumentNullException(nameof(profileIdentity));
         }
 
         private void SaveBtn_Click(object sender, RoutedEventArgs e)
@@ -68,6 +71,8 @@ namespace DS4WinWPF.DS4Forms
             {
                 System.IO.File.Copy(pathService.AppDataPath + "\\Profiles\\" + oldfilename + ".xml",
                 pathService.AppDataPath + "\\Profiles\\" + profile + ".xml", true);
+                // Phase11 W6 K-W6-8: コピー側は元と同じ ProfileId を持つため、新しい ID を振る（書けなければ、起動時の補正が直す）
+                profileIdentity.AssignNewId(profile);
                 Save?.Invoke(this, profile);
             }
             else

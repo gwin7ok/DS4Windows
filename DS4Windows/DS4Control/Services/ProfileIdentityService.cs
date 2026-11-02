@@ -172,6 +172,26 @@ namespace DS4Windows.Services
             }
         }
 
+        public string AssignNewId(string profileName)
+        {
+            string path = PathOf(profileName);
+            if (path == null || !File.Exists(path)) return null;
+
+            lock (ProfileXmlStore.XmlIoLock)
+            {
+                string id = _file.NewId();
+                if (!_file.WriteId(path, id)) return null;
+
+                // 元と同じ ID を持っていた間の索引を、作り直す
+                lock (_gate)
+                {
+                    Rebuild(ReadEntries());
+                }
+
+                return id;
+            }
+        }
+
         public bool TryResolve(string profileId, string nameHint, out string profileName)
         {
             string byId = GetName(profileId);
