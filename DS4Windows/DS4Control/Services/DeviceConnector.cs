@@ -96,6 +96,10 @@ namespace DS4Windows.Services
             // DS4SixAxis は ControlService を直接参照しない（旧: Program.rootHub。DI 移行後は参照が失われていた）。
             device.SixAxis.GyroControlsTriggerActive =
                 slot => touchPads[slot]?.IsGyroTriggerActive(GyroOutMode.Controls) ?? false;
+            // Phase11 W6 K-W6-3: プロファイルの適用のログ・通知が電池残量を使うため、その前に、最初の入力レポートから電池残量を取り込む
+            // （StartUpdate はこのあとのため、読み取りのスレッドはまだ動いていない）
+            device.PrimeBatteryReading();
+
             bool profileLoaded = false;
             bool useAutoProfile = _profileSettings.GetUseTempProfile(index);
 

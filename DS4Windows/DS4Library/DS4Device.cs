@@ -691,6 +691,63 @@ namespace DS4Windows
             }
         }
 
+        /// <summary>
+        /// DS4 の入力レポートの電源のバイト（30 番）から、電池残量（％）と充電中かを求める。読み取りループ（<c>performDs4Input</c>）と同じ式。
+        /// </summary>
+        public static int DecodeBatteryPercent(byte powerByte, out bool charging)
+        {
+            charging = (powerByte & 0x10) != 0;
+            int maxBatteryValue = charging ? BATTERY_MAX_USB : BATTERY_MAX;
+            int percent = (powerByte & 0x0f) * 100 / maxBatteryValue;
+            return Math.Min(percent, 100);
+        }
+
+        /// <summary>
+        /// Phase11 W6 K-W6-3: 読み取りのスレッドを始める前（<see cref="StartUpdate"/> の前）に、最初の入力レポートを同期で読み、電池残量だけを取り込む。
+        /// 以前は、接続時のプロファイルの適用（ログ・通知に電池残量を使う）が、最初の入力レポートの読み取りより前に行われるため、
+        /// 「Battery: 0%」と出ていた。DS4 だけが対象（DualSense・Switch Pro・Joy-Con・DS3 は、従来どおり読み取りのスレッドが更新する）。
+        /// 充電の状態［<c>charging</c>］とイベント［<c>BatteryChanged</c>・<c>ChargingChanged</c>］には触れない
+        /// （最初のレポートで、読み取りのスレッドが従来どおり通知する）。読めなかったときは、何もしない（従来どおり 0 のまま、あとで更新される）。
+        /// </summary>
+        public void PrimeBatteryReading()
+        {
+            if (deviceType != InputDevices.InputDeviceType.DS4 || !postInitDone || ds4Input != null || isDisconnecting)
+                return;
+
+            if ((featureSet & VidPidFeatureSet.NoBatteryReading) != 0)
+            {
+                // 読み取りのスレッドと同じ、固定値（電池の値を送らないゲームパッド）
+                battery = 99;
+                return;
+            }
+
+            try
+            {
+                bool btReport = conType == ConnectionType.BT && (featureSet & VidPidFeatureSet.OnlyInputData0x01) == 0;
+                // BT で、最初の数個が 0x11 でない（読み取りのスレッドは読み飛ばす）ことがあるため、数回まで読む。読めなければ、すぐにやめる
+                for (int attempt = 0; attempt < 3; attempt++)
+                {
+                    if (btReport)
+                    {
+                        if (hDevice.ReadFile(btInputReport) != HidDevice.ReadStatus.Success) return;
+                        if (btInputReport[0] != 0x11) continue;
+                        battery = DecodeBatteryPercent(btInputReport[2 + 30], out _);   // inputReport[30] は btInputReport[2 + 30]
+                    }
+                    else
+                    {
+                        if (hDevice.ReadFile(inputReport) != HidDevice.ReadStatus.Success) return;
+                        battery = DecodeBatteryPercent(inputReport[30], out _);
+                    }
+
+                    return;
+                }
+            }
+            catch (Exception ex)
+            {
+                AppLogger.LogDebug($"[DI] PrimeBatteryReading failed: {ex.Message}");
+            }
+        }
+
         public virtual void StartUpdate()
         {
             this.inputReportErrorCount = 0;
