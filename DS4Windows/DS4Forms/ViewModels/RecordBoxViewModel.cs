@@ -178,11 +178,14 @@ namespace DS4WinWPF.DS4Forms.ViewModels
             };
         }
 
+        /// <summary>編集中のプロファイルの Emulated Controller。ボタン系のステップの表記（Xbox／DS4）を決める。</summary>
+        public OutContType MacroOutType => profileSettingsService.OutContType[deviceNum];
+
         public void LoadMacro()
         {
             int[] macro = (int[])settings.action.actionMacro;
 
-            MacroParser macroParser = new MacroParser(macro);
+            MacroParser macroParser = new MacroParser(macro, MacroOutType);
             macroParser.LoadMacro();
             foreach (MacroStep step in macroParser.MacroSteps)
             {
@@ -218,7 +221,7 @@ namespace DS4WinWPF.DS4Forms.ViewModels
                     tmpmacro.Add(temp);
             }
 
-            MacroParser macroParser = new MacroParser(tmpmacro.ToArray());
+            MacroParser macroParser = new MacroParser(tmpmacro.ToArray(), MacroOutType);
             macroParser.LoadMacro();
             foreach (MacroStep step in macroParser.MacroSteps)
             {
@@ -350,7 +353,7 @@ namespace DS4WinWPF.DS4Forms.ViewModels
                     keysdownMap.TryGetValue(macroValue, out bool outputExists);
                     if (!isdown && controlService.MappingService.GetBoolMappingExternal(0, dc, cState, null, tp))
                     {
-                        MacroStep step = new MacroStep(macroValue, MacroParser.macroInputNames[macroValue],
+                        MacroStep step = new MacroStep(macroValue, MacroParser.InputName(macroValue, MacroOutType),
                                 MacroStep.StepType.ActDown, MacroStep.StepOutput.Button);
                         AddMacroStep(step);
                         ds4InputMap.Add((int)dc, true);
@@ -361,7 +364,7 @@ namespace DS4WinWPF.DS4Forms.ViewModels
                     }
                     else if (isdown && !controlService.MappingService.GetBoolMappingExternal(0, dc, cState, null, tp))
                     {
-                        MacroStep step = new MacroStep(macroValue, MacroParser.macroInputNames[macroValue],
+                        MacroStep step = new MacroStep(macroValue, MacroParser.InputName(macroValue, MacroOutType),
                                 MacroStep.StepType.ActUp, MacroStep.StepOutput.Button);
                         AddMacroStep(step);
                         ds4InputMap.Remove((int)dc);

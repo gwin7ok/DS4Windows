@@ -66,12 +66,55 @@ namespace DS4Windows
             [288] = "Touch Ended",
         };
 
+        // K-W6（S9 の追加修正）: コントローラーのボタン系のマクロ値と、出力（X360Controls）の対応。
+        // Emulated Controller が DS4 のときの表記（Cross、L1 ほか）を、X360ControlTables.ds4DefaultNames から引くために使う。
+        // スティックの軸（278〜285）、マウス（256〜260）、Touch Started／Ended（287・288）は、出力タイプによらず従来の名前のまま
+        private static readonly Dictionary<int, X360Controls> macroValueOutputs = new Dictionary<int, X360Controls>()
+        {
+            [261] = X360Controls.A,
+            [262] = X360Controls.B,
+            [263] = X360Controls.X,
+            [264] = X360Controls.Y,
+            [265] = X360Controls.Start,
+            [266] = X360Controls.Back,
+            [267] = X360Controls.DpadUp,
+            [268] = X360Controls.DpadDown,
+            [269] = X360Controls.DpadLeft,
+            [270] = X360Controls.DpadRight,
+            [271] = X360Controls.Guide,
+            [272] = X360Controls.LB,
+            [273] = X360Controls.RB,
+            [274] = X360Controls.LT,
+            [275] = X360Controls.RT,
+            [276] = X360Controls.LS,
+            [277] = X360Controls.RS,
+            [286] = X360Controls.TouchpadClick,
+        };
+
+        /// <summary>
+        /// マクロ値（256〜288）のボタン名。Emulated Controller が DS4 のときは DS4 の表記、それ以外（Xbox 360、省略）は従来の Xbox の表記。
+        /// </summary>
+        public static string InputName(int value, OutContType outType = OutContType.X360)
+        {
+            if (outType == OutContType.DS4 && macroValueOutputs.TryGetValue(value, out X360Controls output) &&
+                X360ControlTables.ds4DefaultNames.TryGetValue(output, out string ds4Name))
+            {
+                return ds4Name;
+            }
+
+            macroInputNames.TryGetValue(value, out string name);
+            return name;
+        }
+
+        private readonly OutContType outType;
+
         public List<MacroStep> MacroSteps { get => macroSteps; }
 
-        public MacroParser(int[] macro)
+        public MacroParser(int[] macro, OutContType outType = OutContType.X360)
         {
             macroSteps = new List<MacroStep>();
             inputMacro = macro;
+            this.outType = outType;
         }
 
         public void LoadMacro()
@@ -170,7 +213,7 @@ namespace DS4Windows
                     }
                     else
                     {
-                        macroInputNames.TryGetValue(value, out name);
+                        name = InputName(value, this.outType);
                     }
                 }
                 else
@@ -183,7 +226,7 @@ namespace DS4Windows
                     }
                     else
                     {
-                        macroInputNames.TryGetValue(value, out name);
+                        name = InputName(value, this.outType);
                     }
                 }
             }

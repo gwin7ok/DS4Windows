@@ -1,4 +1,4 @@
-﻿/*
+/*
 DS4Windows
 Copyright (C) 2023  Travis Nickles
 
@@ -529,14 +529,14 @@ namespace DS4WinWPF.DS4Forms
             recordBoxVM.KeysdownMap.TryGetValue(value, out bool isdown);
             if (!isdown)
             {
-                DS4Windows.MacroStep step = new DS4Windows.MacroStep(value, DS4Windows.MacroParser.macroInputNames[value],
+                DS4Windows.MacroStep step = new DS4Windows.MacroStep(value, DS4Windows.MacroParser.InputName(value, recordBoxVM.MacroOutType),
                             DS4Windows.MacroStep.StepType.ActDown, DS4Windows.MacroStep.StepOutput.Button);
                 recordBoxVM.AddMacroStep(step);
                 recordBoxVM.KeysdownMap.Add(value, true);
             }
             else
             {
-                DS4Windows.MacroStep step = new DS4Windows.MacroStep(value, DS4Windows.MacroParser.macroInputNames[value],
+                DS4Windows.MacroStep step = new DS4Windows.MacroStep(value, DS4Windows.MacroParser.InputName(value, recordBoxVM.MacroOutType),
                             DS4Windows.MacroStep.StepType.ActUp, DS4Windows.MacroStep.StepOutput.Button);
                 recordBoxVM.AddMacroStep(step);
                 recordBoxVM.KeysdownMap.Remove(value);
@@ -554,14 +554,14 @@ namespace DS4WinWPF.DS4Forms
             recordBoxVM.KeysdownMap.TryGetValue(value, out bool isdown);
             if (!isdown)
             {
-                DS4Windows.MacroStep step = new DS4Windows.MacroStep(value, DS4Windows.MacroParser.macroInputNames[value],
+                DS4Windows.MacroStep step = new DS4Windows.MacroStep(value, DS4Windows.MacroParser.InputName(value, recordBoxVM.MacroOutType),
                             DS4Windows.MacroStep.StepType.ActDown, DS4Windows.MacroStep.StepOutput.Button);
                 recordBoxVM.AddMacroStep(step);
                 recordBoxVM.KeysdownMap.Add(value, true);
             }
             else
             {
-                DS4Windows.MacroStep step = new DS4Windows.MacroStep(value, DS4Windows.MacroParser.macroInputNames[value],
+                DS4Windows.MacroStep step = new DS4Windows.MacroStep(value, DS4Windows.MacroParser.InputName(value, recordBoxVM.MacroOutType),
                             DS4Windows.MacroStep.StepType.ActUp, DS4Windows.MacroStep.StepOutput.Button);
                 recordBoxVM.AddMacroStep(step);
                 recordBoxVM.KeysdownMap.Remove(value);
@@ -588,7 +588,7 @@ namespace DS4WinWPF.DS4Forms
                     default: value = 0; break;
                 }
 
-                DS4Windows.MacroStep step = new DS4Windows.MacroStep(value, DS4Windows.MacroParser.macroInputNames[value],
+                DS4Windows.MacroStep step = new DS4Windows.MacroStep(value, DS4Windows.MacroParser.InputName(value, recordBoxVM.MacroOutType),
                             DS4Windows.MacroStep.StepType.ActDown, DS4Windows.MacroStep.StepOutput.Button);
                 recordBoxVM.AddMacroStep(step);
                 recordBoxVM.KeysdownMap.Add(value, true);
@@ -611,7 +611,7 @@ namespace DS4WinWPF.DS4Forms
                     default: value = 0; break;
                 }
 
-                DS4Windows.MacroStep step = new DS4Windows.MacroStep(value, DS4Windows.MacroParser.macroInputNames[value],
+                DS4Windows.MacroStep step = new DS4Windows.MacroStep(value, DS4Windows.MacroParser.InputName(value, recordBoxVM.MacroOutType),
                             DS4Windows.MacroStep.StepType.ActUp, DS4Windows.MacroStep.StepOutput.Button);
                 recordBoxVM.AddMacroStep(step);
                 recordBoxVM.KeysdownMap.Remove(value);
