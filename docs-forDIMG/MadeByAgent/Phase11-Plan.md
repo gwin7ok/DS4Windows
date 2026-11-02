@@ -492,6 +492,7 @@
 - 症状: プロファイルの編集中に Emulated Controller を DS4 から Xbox 360 へ変え、保存せずに出力ピッカーを開くと、Pad の表示が DS4 のまま。いったん保存し、割り当て編集画面を開き直してから出力ピッカーを開くと、Xbox 360 の表示になる。
 - 原因（調査済み・コードの読みのみ）: `BindingWindowViewModel` のコンストラクター（77 行）は、`outputSlotService.OutDevTypeTemp[deviceNum]` から Xbox 360 モードかどうかを決める。一方、編集画面のコンボを変えたときに更新される `ProfileSettingsViewModel.TempControllerIndex`（814〜823 行）は、`profileSettings.OutContType[device]` だけを書き換え、`OutDevTypeTemp[device]` は更新しない。`OutDevTypeTemp` は、編集画面を開いたとき（2861・3469 行付近）にしか書かれないため、画面を開き直すまで古いまま。
 - 方針（ユーザー承認済み 2026-11-02。修正は全部の実機テストが終わってから）: `TempControllerIndex` の setter で、`outputSlotService.OutDevTypeTemp[device]` も同じ種類へ更新する（`TempConType` 経由も同じ setter を通る）。保存する値（`OutContType`）の扱いと、W4 の補正（`CorrectOutputTypeToDs4`）は変えない。
+- **修正済み（2026-11-03）**: `ProfileSettingsViewModel.TempControllerIndex` の setter で、`outputSlotService.OutDevTypeTemp[device]` も同じ種類へ更新する［補正 `CorrectOutputTypeToDs4` も同じ setter を通る］。テスト `Phase11W6OutDevTypeTempFollowsEditorTests`［+3］。`Debug ALL` 警告 0・エラー 0、Actions 2,781 件合格。**実機での再確認は未実施**（P10-84 準備の手順: Emulated Controller を変えて、保存せずに出力ピッカーを開き、Pad タブが新しい種類になる）。
 - テスト案: `TempControllerIndex` を 0 ↔ 1 に変えたあとの `OutDevTypeTemp[device]` を検査する（変更前は失敗する）。
 
 **K-W6-5: 出力を Xbox 360 にすると、ライトバーが正しく表示されないことがある**（S2 の P10-84 の確認中にユーザーが報告）

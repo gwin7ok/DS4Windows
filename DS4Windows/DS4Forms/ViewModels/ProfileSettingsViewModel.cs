@@ -818,7 +818,11 @@ namespace DS4WinWPF.DS4Forms.ViewModels
             {
                 if (tempControllerIndex == value) return;
                 tempControllerIndex = value;
-                profileSettings.OutContType[device] = value == 1 ? OutContType.DS4 : OutContType.X360;
+                OutContType type = value == 1 ? OutContType.DS4 : OutContType.X360;
+                profileSettings.OutContType[device] = type;
+                // Phase11 W6 K-W6-4: 出力ピッカー（BindingWindow）は OutDevTypeTemp から、Pad タブの表示（DS4／Xbox 360）を決める。
+                // 以前はここで更新せず、編集画面を開き直すまで前の種類のままだった
+                outputSlotService.OutDevTypeTemp[device] = type;
             }
         }
 
