@@ -826,10 +826,10 @@ R-5（2026-10-23）以後、デジタルな出力先と複数トリガーは**�
 
 | ID | 内容（手順・期待結果の全文は §27 の同じ ID。ここでは読み替えだけ） | 結果 |
 |---|---|---|
-| P10-83 | スティック「左」→ キー、L2 → キー。**少しでも倒す／押し込むと出る**（旧: 約 44%／約 40%）。デッドゾーン内では出ない | 未 |
-| P10-84 | パッドのボタン、マウスのボタン、Extras も同じく**閾値なし**。アナログな出力（スティック → パッドの軸、スティック → マウス移動、L2 → パッドのトリガー）は、入力の値に比例する | 未 |
-| P10-85 | ログ（Trace）: Controls の Key／Macro／Pad／マウス／Extras で `Trigger detected for SA 'Synthetic_…'`（押したとき 1 回）と `Trigger released for SA …`（離したとき 1 回）。Default の軸の素通しと Unbound は出ない。Warn 以上にすると出ない | 未 |
-| P10-86 | ログ（SA）: 離したときに `Trigger released for SA …` と `SpecialAction <種別> released: …` が出る | 未 |
+| P10-83 | スティック「左」→ キー、L2 → キー。**少しでも倒す／押し込むと出る**（旧: 約 44%／約 40%）。デッドゾーン内では出ない | ○（2026-11-02。スティック「左」→ キー、L2 → キーとも、少し倒す／押すと出る） |
+| P10-84 | パッドのボタン、マウスのボタン、Extras も同じく**閾値なし**。アナログな出力（スティック → パッドの軸、スティック → マウス移動、L2 → パッドのトリガー）は、入力の値に比例する | ○（2026-11-02。パッドのボタン・マウスのボタンは少しの傾きで反応。スティック → マウス移動、R2 → パッドのトリガーは量に比例。Extras は P10-84 では未操作。副次: K-W6-4／K-W6-5） |
+| P10-85 | ログ（Trace）: Controls の Key／Macro／Pad／マウス／Extras で `Trigger detected for SA 'Synthetic_…'`（押したとき 1 回）と `Trigger released for SA …`（離したとき 1 回）。Default の軸の素通しと Unbound は出ない。Warn 以上にすると出ない | ○（2026-11-02。Key／Macro／Pad／マウス／Extras で detected／released が各 1 回、Unbound は出ず、Warn では増えない。副次: K-W6-6） |
+| P10-86 | ログ（SA）: 離したときに `Trigger released for SA …` と `SpecialAction <種別> released: …` が出る | ○（2026-11-02。Macro の SA で Trigger released と SpecialAction released の両方が出る） |
 
 ### S3: Launch Program・Load Profile・保存の可否（P10-79〜82）
 
