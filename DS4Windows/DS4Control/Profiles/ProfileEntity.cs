@@ -18,6 +18,7 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -25,7 +26,11 @@ using System.Threading.Tasks;
 
 namespace DS4WinWPF
 {
-    public class ProfileEntity
+    // Phase11 W6 K-W6-9: INotifyPropertyChanged を実装した。以前は旧式の NameChanged イベントだけで名前の変更を通知しており、
+    // WPF は {Binding Name} に、リフレクションによる旧式の購読（ValueChangedEventManager）を使っていた。リンクのコンボの選択項目が
+    // 一覧から削除されると、選択欄の中身の型が入れ替わる途中で、この購読が TargetException（Object does not match target type）で
+    // 失敗し、アプリが落ちた。NameChanged は、既存の購読先のために残す。
+    public class ProfileEntity : INotifyPropertyChanged
     {
         private string name;
         public string Name
@@ -36,10 +41,12 @@ namespace DS4WinWPF
                 if (name == value) return;
                 name = value;
                 NameChanged?.Invoke(this, EventArgs.Empty);
+                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(Name)));
             }
         }
 
         public event EventHandler NameChanged;
+        public event PropertyChangedEventHandler PropertyChanged;
         // Phase6-Step10-4-1: Global.appdatapath の直接参照を廃止し、IPathService を ProfileList から受け取る
         private readonly DS4Windows.DI.IPathService pathService;
 
