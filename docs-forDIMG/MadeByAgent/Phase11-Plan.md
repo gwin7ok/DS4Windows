@@ -453,7 +453,7 @@
 - **S4（P10-90〜97）: 2026-11-02 完了。7 件 ○、P10-96 は △**（台帳 §52）。リンクが指すプロファイルの削除でクラッシュする重大な不具合 K-W6-9 と、複製の直後の ID の不具合 K-W6-8 を見つけた（§13.4）。
 - **S5（P10-87・88・98・21）: 2026-11-02 完了。4 件とも ○**（台帳 §52）。P10-98 の振動は不能［U-53］。
 - **S6（P10-89 と残り 5 行）: 2026-11-02 完了。6 件とも ○**（台帳 §52）。P10-89 の Macro の Scan Code・Synchronized Run・Keep key state は見送り［ユニットテストで担保。W8 の完了報告に明記］。
-- **S7（途中）: 2026-11-02。P9M2-2・3・4 は 2026-10-22 の P9EX-1・P9M3-1 の確認を根拠に ○、P9E6e-4 は P10-96 ① を根拠に ○**（台帳 §52。再実施なし）。残りの 6 行（P9M3-3、P9E6b-2・5、P9E6e-6、P9E6a-4、P9F1-4）は未。
+- **S7（途中）: 2026-11-02。P9M2-2・3・4 は 2026-10-22 の P9EX-1・P9M3-1 の確認を根拠に ○、P9E6e-4 は P10-96 ① を根拠に ○**（台帳 §52。再実施なし）。P9M3-3 も ○（右スティックのフリックスティック）。P9E6b-2 は ×（デバウンスの挙動の不具合。機能ごと削除の希望: K-W6-10）。残りの 4 行（P9E6b-5、P9E6e-6、P9E6a-4、P9F1-4）は未。
 
 ### 13.4 実機確認で見つかった課題と修正方針（修正は、全部の実機テストが終わってから行う。ユーザー決定 2026-11-02）
 
@@ -513,3 +513,8 @@
 - **絞り込みの結果（2026-11-02、再起動後に再現確認）**: 自動プロファイルのルールだけが指すプロファイル（verifyE）の削除は**落ちない**。**リンク（Linked Profile）だけが指すプロファイル（verifyF）の削除は落ちる**。スタックの末尾は `MainWindow.DeleteProfBtn_Click`（1581 行 `profileListHolder.ProfileListCol.RemoveAt(idx)`）→ `ObservableCollection.OnCollectionChanged` → コンボの `Selector.RemoveFromSelection` → `UpdateSelectionBoxItem`。よって原因のコンボは、**Controllers タブの Linked Profile コンボ（`linkedProfCombo`、`MainWindow.xaml` 137〜145 行。`SelectedItem="{Binding LinkedProfileName, Mode=TwoWay}"`）**。Auto Profiles のコンボは原因ではない（上の「有力な原因」は誤り。訂正する）。
 - 追加の手がかり: `ProfileEntity`（`DS4Control/Profiles/ProfileEntity.cs`）は `INotifyPropertyChanged` ではなく、旧式の `NameChanged` イベント（30〜42 行）で名前の変更を通知する。WPF はこの形のオブジェクトへのバインディング（`{Binding Name}`）に `ValueChangedEventManager`＋リフレクション（スタックの `ReflectEventDescriptor.AddEventHandler`）を使う。選択欄の中身が入れ替わるとき、前の型のプロパティ記述子で別の型のオブジェクトにイベントを付けようとして落ちている可能性が高い（選択が外れた瞬間に、選択欄の `Content` が `ProfileEntity` から別の型［null のプレースホルダーなど］へ変わる経路）。
 - 修正方針の候補（承認待ち。全部の実機テストが終わってから）: (a) **`ProfileEntity` に `INotifyPropertyChanged` を実装**し、WPF の旧式イベント経路（`ValueChangedEventManager`）を使わせない（`NameChanged` の既存の購読先は維持）。(b) 削除の前に、そのプロファイルを `LinkedProfileName` に持つ行のコンボの選択を外す（削除対象の `ProfileEntity` を指す行の `LinkedProfileName` を null/(none) へ）。(a) は構造的な対策、(b) は症状の回避。まず単体テスト（STA で `linkedProfCombo` 相当のコンボを作り、`SelectedItem` の項目を `RemoveAt`）で再現して、(a)／(b) のどちらで直るかを確かめる。
+
+**K-W6-10【機能廃止の提案をユーザーが希望】: Debouncing（デバウンス）の挙動がおかしい。機能ごと削除したい**（S7 の P9E6b-2 で発見。2026-11-02）
+- 症状: 数値を大きくして（500 ms を試行）Cross を押すと、ボタンを放しても押したままの判定が続き、少し後に離した判定になる。結果、キーが連続して入力され、少し後に止まる。
+- ユーザー決定（2026-11-02）: 挙動の修正は大変なので、**デバウンス機能そのものをあとで削除したい**。デバウンス関連のテストはこれ以上実施しない。
+- 位置づけ: 機能廃止なので copilot-instructions §2.2 の例外に当たる。ユーザーの承認（本件の希望）は得ているが、実施前に別 Issue 化と個別計画書（影響範囲: `Debouncer`／`DebouncerInstance`、`DS4Device.SetupDebouncer` と各デバイスの呼び出し、`ControlService` の `Debouncer.ProcessInput`、プロファイルの `DebouncingMs` ほか設定・XML・UI の Debouncing グループ・ガードテストの基準値）を作る。Phase11 の範囲に入れるか Phase12 以降に回すかは、全部の実機テストの後に決める（Q5 は重大な不具合のみ。これは重大ではない）。
