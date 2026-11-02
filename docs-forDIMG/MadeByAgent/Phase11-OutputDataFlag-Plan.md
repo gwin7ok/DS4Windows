@@ -47,7 +47,12 @@
 
 ## 6. 調査結果（C0 で記録する）
 
-（未実施）
+**C0（コードの読みによる調査。2026-11-03。実機ログは未取得）**
+- (I2) 同じプロファイルの再適用でも、`ProfileXmlStore` の読込 → `BackingStore.PostLoadSnippet` → `device.queueEvent(... ControlService.CheckProfileOptions ...)` → `DeviceConnectionSetup.ApplyProfileOptions` が呼ばれ、`NoOutputData` は更新される（`ProfileApplicationService` は同名で省略しない）。したがって、S3 の不整合は「フラグが更新されない」ためではなく、(I3) による。
+- (I3) `DS4Device.sendOutputReport` は、`NoOutputData` が立つと何も書かずに戻る。ON → OFF にしても、パッドは最後の色を保持する。別のプロファイルへ切り替えると消える理由は、コードからは特定できていない（実機のログで確認する）。対策は D2＝案 B（C3）。
+- (I4) OFF → ON は、フラグが外れ、次の出力サイクルから `PrepareOutputReportInner` が現在の色・振動を書く（`LightBarColor = GetMainColor` が `ApplyProfileOptions` で設定される）。
+- (I5) フラグを読む箇所: `DeviceConnectionSetup`（接続時・適用時）、`VirtualPadService.EstablishOutFeedbackIfEnabled`（ON のときだけ、ゲームからの振動・ライトバーを物理パッドへ中継。Xbox 360 でも同じ。S1 に合う）、`ProfileSettingsViewModel`／`ProfileEditor`（補正 (c)。C1 で廃止）。フラグを参照するのは `DS4Device`（DS4 の種類）だけで、DualSense・Switch Pro・Joy-Con は参照しない（今回の範囲外。別の機会）。
+- (I1) Xbox 360 のとき OFF でも点灯する原因は、コードの読みだけでは特定できていない。`sendOutputReport` 以外の書き込みの経路は、接続直後の初期化（`PostInit` の `sendOutputReport(true, true, false)`。フラグを立てる前に実行される）以外に見つからない。その初期化で点灯した色が残っている可能性がある（D2＝案 B で、フラグを立てる前に 1 度消灯を書くため、接続時の OFF では消灯する見込み）。**実機で、OFF／ON × DS4／Xbox 360 の 4 通りを確認し、残る場合は C2 として調べる。**
 
 ## 7. 受入条件
 

@@ -539,6 +539,7 @@
 **K-W6-12【仕様変更の指示】: 「Enable Output data to DS4」を、Emulated Controller の選択にかかわらず機能させ、同じプロファイルの再適用でも反映させる**（2026-11-03 ユーザー指示。K-W6-5 の調査から）
 - 実機の不整合: (1) ON にすると Emulated Controller が強制的に DS4 になる、(2) OFF でも Xbox 360 だとライトバーが点灯する、(3) DS4 で ON → OFF にして Apply／Save［再適用］しても点灯し続け、別のプロファイルへ切り替えて戻すと消える。
 - 変更後の仕様: 種類に関係なく機能する、ON でも強制しない［W4 の補正 (c) の廃止］、同じプロファイルの再適用でも反映する。詳細・調査項目・Step（C0〜C5）・決定事項（D1〜D3）は `Phase11-OutputDataFlag-Plan.md`（W6c）。K-W6-5［Xbox 360 のライトバー］は、この調査（I1）に統合する。
+- **実装済み（2026-11-03。C0・C1・C3・C4。C2・C5 は実機待ち）**: (C1) 補正 (c) と `Ds4OutputCorrectionReason.EnableOutputDataToDS4`、補正の GUI ログを廃止（(a) の `UseDs3PitchRollSim` は残す）。(C3) `DS4Device.WriteOutputOffOnce()` を追加し、`DeviceConnectionSetup.ApplyProfileOptions` が、OFF のとき `NoOutputData` を立てる前に 1 度だけ消灯・振動ゼロを書く（DS4 の種類のみ、書けないパッドは何もしない、失敗しても続行）。同じプロファイルの再適用も `ApplyProfileOptions` を通る。(C4) 表示名を英語 "Send output data to physical controller"、日本語「物理コントローラーへ出力データを送る」に変更し、説明文を更新（「接続時に反映」の文を削除）。キー名・XML・コード上の名前は不変。テスト `Phase11W6cOutputDataFlagTests`［+4］と、W4 のテストの差し替え。Debug ALL 警告 0・エラー 0、Actions 2,808 件合格。**(C2)＝Xbox 360 で OFF でも点灯する原因は未特定。実機の 4 通りの確認（OFF／ON × DS4／Xbox 360。同じプロファイルの Apply／Save、別プロファイルへの切替）が必要。**
 
 **K-W6-10【機能廃止の提案をユーザーが希望】: Debouncing（デバウンス）の挙動がおかしい。機能ごと削除したい**（S7 の P9E6b-2 で発見。2026-11-02）
 - 症状: 数値を大きくして（500 ms を試行）Cross を押すと、ボタンを放しても押したままの判定が続き、少し後に離した判定になる。結果、キーが連続して入力され、少し後に止まる。
