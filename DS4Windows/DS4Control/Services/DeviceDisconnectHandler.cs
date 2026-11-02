@@ -148,6 +148,12 @@ namespace DS4Windows.Services
                     //Global.useTempProfile[ind] = false;
                     //Global.tempprofilename[ind] = string.Empty;
                     //Global.tempprofileDistance[ind] = false;
+                    // Phase11 W6 K-W6-11（ユーザー承認済み仕様）: 切断したら一時プロファイルの状態は維持しない。
+                    // 再接続では通常のルールでプロファイルが決まり、その後に AutoProfileService.CheckProfilesForConnectedController が
+                    // 前面のプログラムに従って自動プロファイルを割り当てる（上のコメントアウトは、この仕様へ置き換えた）。
+                    _profileSettings.SetTempProfileName(ind, string.Empty);
+                    _profileSettings.SetUseTempProfile(ind, false);
+                    _profileSettings.SetTempProfileDistance(ind, false);
 
                     //Thread.Sleep(XINPUT_UNPLUG_SETTLE_TIME);
                 }
