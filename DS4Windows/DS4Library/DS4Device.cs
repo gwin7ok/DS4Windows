@@ -243,6 +243,30 @@ namespace DS4Windows
             return featureSet;
         }
 
+        /// <summary>
+        /// Phase11 W6c（K-W6-12。D2＝案 B）: 「物理コントローラーへ出力データを送る」を ON → OFF にする直前に、<b>1 度だけ</b>、ライトバー消灯・振動ゼロを書く
+        /// （フラグを立てたあとは何も書かれず、パッドが最後の色を保持するため）。書けなかったときは例外にせず、続行する。
+        /// すでに書かない状態［NoOutputData］のパッド（書き込みを受け付けない互換パッドなど）と、DS4 以外の種類は、何もしない。
+        /// 呼び出し側［<c>DeviceConnectionSetup.ApplyProfileOptions</c>］は、<see cref="ModifyFeatureSetFlag"/> で NoOutputData を立てる<b>前</b>に呼ぶ。
+        /// </summary>
+        public void WriteOutputOffOnce()
+        {
+            if (deviceType != InputDevices.InputDeviceType.DS4 || (featureSet & VidPidFeatureSet.NoOutputData) != 0 || !postInitDone || isDisconnecting)
+                return;
+
+            try
+            {
+                currentHap.lightbarState.LightBarColor = new DS4Color(0, 0, 0);
+                setRumble(0, 0);
+                sendOutputReport(true, true, false);
+                AppLogger.LogDebug("[DI] WriteOutputOffOnce: wrote lightbar off / rumble zero once before disabling output data");
+            }
+            catch (Exception ex)
+            {
+                AppLogger.LogDebug($"[DI] WriteOutputOffOnce failed: {ex.Message}");
+            }
+        }
+
         private const byte DEFAULT_BT_REPORT_TYPE = 0x11;
         private byte knownGoodBTOutputReportType = DEFAULT_BT_REPORT_TYPE;
         private int btOutputPayloadLen = BT_OUTPUT_REPORT_LENGTH;

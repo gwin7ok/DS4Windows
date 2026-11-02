@@ -38,6 +38,10 @@ namespace DS4Windows.Services
 
         public void ApplyProfileOptions(int ind, DS4Device device, Mouse touchPad, bool startUp = false)
         {
+            // Phase11 W6c（K-W6-12。D2＝案 B）: 書く状態から書かない状態（OFF）へ変わるときは、フラグを立てる前に、消灯・振動ゼロを 1 度だけ書く
+            // （同じプロファイルの再適用でも、OFF の結果が見える。フラグ後は何も書かれず、パッドが最後の色を保持するため）
+            if (!_profileSettings.GetEnableOutputDataToDS4(ind))
+                device.WriteOutputOffOnce();
             device.ModifyFeatureSetFlag(VidPidFeatureSet.NoOutputData, !_profileSettings.GetEnableOutputDataToDS4(ind));
             if (!_profileSettings.GetEnableOutputDataToDS4(ind))
                 LogDebug("Output data to DS4 disabled. Lightbar and rumble events are not written to DS4 gamepad. If the gamepad is connected over BT then IdleDisconnect option is recommended to let DS4Windows to close the connection after long period of idling.");

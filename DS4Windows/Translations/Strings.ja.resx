@@ -406,11 +406,11 @@
     <value>ゲームパッド入力テスト</value>
   </data>
   <data name="EnableOutputDataToDS4" xml:space="preserve">
-    <value>DS4にデータを出力する</value>
+    <value>物理コントローラーへ出力データを送る</value>
   </data>
   <data name="EnableOutputDataToDS4Tip" xml:space="preserve">
-    <value>ライトバーと振動のデータを定期的にDS4に送ります。データ受信をサポートしないゲームパッドではチェックを外してください。
-設定変更はゲームパッドの次回接続時に反映されます。</value>
+    <value>ライトバー・振動・トリガー効果などの出力データを、物理コントローラーへ定期的に送ります。OFFにすると、これらがすべて物理コントローラーへ送られません。データを受け取れないコントローラーではOFFにしてください。
+この設定は、Emulated Controllerの種類に関係なく働きます。</value>
     <comment>To enter a line break into a string resource value in VisualStudio resource editor press Shift+Enter.</comment>
   </data>
   <data name="Apply" xml:space="preserve">

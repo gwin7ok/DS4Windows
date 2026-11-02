@@ -863,10 +863,8 @@ namespace DS4WinWPF.DS4Forms.ViewModels
             {
                 reason = Ds4OutputCorrectionReason.Ds3PitchRollSim;
             }
-            else if (EnableOutputDataToDS4)
-            {
-                reason = Ds4OutputCorrectionReason.EnableOutputDataToDS4;
-            }
+            // Phase11 W6c（K-W6-12。ユーザー指示 2026-11-03）: (c)［EnableOutputDataToDS4 が ON なら DS4 へ強制］は廃止した。
+            // この設定は「物理コントローラーへ出力データを送るか」であり、仮想パッドの種類（Emulated Controller）とは無関係
             else
             {
                 return Ds4OutputCorrectionReason.None;

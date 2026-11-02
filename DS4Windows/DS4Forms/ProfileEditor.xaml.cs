@@ -1032,16 +1032,8 @@ namespace DS4WinWPF.DS4Forms
             {
                 // 画面の選択も DS4 にそろえる（SelectionChanged が、設定・マッピング一覧の出力の種類も更新する）
                 outConTypeCombo.SelectedIndex = 1;
-                if (correction == Ds4OutputCorrectionReason.EnableOutputDataToDS4)
-                {
-                    AppLogger.LogToGui(
-                        "EnableOutputDataToDS4 が有効なため、Emulated Controller を自動的に DS4 へ補正しました。",
-                        false);
-                }
-                else
-                {
-                    AppLogger.LogDebug("[ProfileEditor] UseDs3PitchRollSim が有効なため、Emulated Controller を DS4 へ補正した");
-                }
+                // Phase11 W6c（K-W6-12）: EnableOutputDataToDS4 による補正（と、その GUI ログ）は廃止した。残るのは UseDs3PitchRollSim の補正だけ
+                AppLogger.LogDebug("[ProfileEditor] UseDs3PitchRollSim が有効なため、Emulated Controller を DS4 へ補正した");
             }
 
             // Phase 5 Step 14: SpecialActionsListViewModel から有効なアクション名リストを取得し、Global.ProfileActions に確実に反映

@@ -50,10 +50,10 @@ namespace DS4WindowsTests
         // 擬似が ON: 出力が DS4 でなければ DS4 へ（旧 SaveBtn_Click）
         [InlineData(OutContType.X360, true, false, Ds4OutputCorrectionReason.Ds3PitchRollSim, OutContType.DS4)]
         [InlineData(OutContType.DS4, true, false, Ds4OutputCorrectionReason.None, OutContType.DS4)]
-        // EnableOutputDataToDS4 が ON: 出力が DS4 でなければ DS4 へ（旧 SetLateProperties の (c)-2）
-        [InlineData(OutContType.X360, false, true, Ds4OutputCorrectionReason.EnableOutputDataToDS4, OutContType.DS4)]
+        // Phase11 W6c（K-W6-12）: EnableOutputDataToDS4 が ON でも、出力の種類は強制しない（旧 SetLateProperties の (c)-2 を廃止）
+        [InlineData(OutContType.X360, false, true, Ds4OutputCorrectionReason.None, OutContType.X360)]
         [InlineData(OutContType.DS4, false, true, Ds4OutputCorrectionReason.None, OutContType.DS4)]
-        // 両方 ON: (a) が先に DS4 にするため、(c)-2 のログは出ない（理由は擬似）
+        // 両方 ON: (a) が DS4 にする（理由は擬似）
         [InlineData(OutContType.X360, true, true, Ds4OutputCorrectionReason.Ds3PitchRollSim, OutContType.DS4)]
         // 両方 OFF: 何もしない。DS4 を X360 へ戻すこともしない
         [InlineData(OutContType.X360, false, false, Ds4OutputCorrectionReason.None, OutContType.X360)]

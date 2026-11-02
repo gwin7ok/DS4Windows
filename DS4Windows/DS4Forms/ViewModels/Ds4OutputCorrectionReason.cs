@@ -11,7 +11,6 @@ namespace DS4WinWPF.DS4Forms.ViewModels
         /// <summary>DS3 のピッチ／ロールの擬似（<c>UseDs3PitchRollSim</c>）が ON のため、DS4 へ変えた</summary>
         Ds3PitchRollSim,
 
-        /// <summary>DS4 固有データの出力（<c>EnableOutputDataToDS4</c>）が ON のため、DS4 へ変えた</summary>
-        EnableOutputDataToDS4,
+        // Phase11 W6c（K-W6-12）: 以前ここにあった EnableOutputDataToDS4［DS4 固有データの出力が ON のため DS4 へ変えた］は、補正 (c) の廃止に伴い削除した
     }
 }

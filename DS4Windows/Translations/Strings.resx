@@ -394,11 +394,11 @@ Extras and macros of those buttons are also cleared.</value>
     <value>Gamepad Test</value>
   </data>
   <data name="EnableOutputDataToDS4" xml:space="preserve">
-    <value>Enable Output data to DS4</value>
+    <value>Send output data to physical controller</value>
   </data>
   <data name="EnableOutputDataToDS4Tip" xml:space="preserve">
-    <value>Output lightbar and rumble data periodically to DS4 gamepad. Untick if the gamepad doesn't support data receiving.
-Changes to this option takes effect at the gamepad connection time.</value>
+    <value>Send output data (lightbar, rumble, trigger effects, etc.) periodically to the physical controller. When unticked, none of these are sent to the physical controller. Untick if the controller doesn't support data receiving.
+This option works regardless of the Emulated Controller type.</value>
     <comment>To enter a line break into a string resource value in VisualStudio resource editor press Shift+Enter.</comment>
   </data>
   <data name="Apply" xml:space="preserve">

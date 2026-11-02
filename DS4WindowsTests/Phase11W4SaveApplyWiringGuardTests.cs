@@ -83,13 +83,14 @@ namespace DS4WindowsTests
         }
 
         [Fact]
-        public void TheEnableOutputDataToDs4Correction_KeepsTheOldGuiLogMessage()
+        public void TheEnableOutputDataToDs4Correction_IsRemoved()
         {
             string code = ReadNormalizedSource(EditorCode);
             if (code == null) return;
 
-            // 旧 SetLateProperties の文言と引数（GUI ログ、エラーではない）のまま
-            Assert.Contains("AppLogger.LogToGui( \"EnableOutputDataToDS4 が有効なため、Emulated Controller を自動的に DS4 へ補正しました。\", false);", code);
+            // Phase11 W6c（K-W6-12）: 補正 (c) を廃止した。補正の GUI ログも出さない
+            Assert.DoesNotContain("EnableOutputDataToDS4 が有効なため", code);
+            Assert.DoesNotContain("Ds4OutputCorrectionReason.EnableOutputDataToDS4", code);
         }
 
         [Fact]
