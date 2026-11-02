@@ -449,6 +449,7 @@
 
 - **S1（P11-1〜8）: 2026-11-02 完了。8 件とも ○**（詳細は台帳 §52）。確認中に、W4・W5 の変更とは無関係の既存の課題を 3 件見つけた（K-W6-1〜3、§13.4。修正は全部の実機テストが終わってから）。
 - **S2（P10-83〜86）: 2026-11-02 完了。4 件とも ○**（台帳 §52）。確認中に K-W6-4〜6 を見つけた（§13.4。K-W6-4 は方針案［承認待ち］、K-W6-5・6 は調査待ち）。
+- **S3（P10-79〜82）: 2026-11-02 完了。4 件とも ○**（台帳 §52）。P10-82 の確認中に K-W6-7 を見つけた（§13.4。テスト後に調査）。
 
 ### 13.4 実機確認で見つかった課題と修正方針（修正は、全部の実機テストが終わってから行う。ユーザー決定 2026-11-02）
 
@@ -478,7 +479,7 @@
 **K-W6-4: 編集画面で Emulated Controller を DS4 ↔ Xbox 360 に変えても、そのまま開いた出力ピッカー（BindingWindow）の Pad タブが前の種類のまま**（S2 の P10-84 準備中に発見）
 - 症状: プロファイルの編集中に Emulated Controller を DS4 から Xbox 360 へ変え、保存せずに出力ピッカーを開くと、Pad の表示が DS4 のまま。いったん保存し、割り当て編集画面を開き直してから出力ピッカーを開くと、Xbox 360 の表示になる。
 - 原因（調査済み・コードの読みのみ）: `BindingWindowViewModel` のコンストラクター（77 行）は、`outputSlotService.OutDevTypeTemp[deviceNum]` から Xbox 360 モードかどうかを決める。一方、編集画面のコンボを変えたときに更新される `ProfileSettingsViewModel.TempControllerIndex`（814〜823 行）は、`profileSettings.OutContType[device]` だけを書き換え、`OutDevTypeTemp[device]` は更新しない。`OutDevTypeTemp` は、編集画面を開いたとき（2861・3469 行付近）にしか書かれないため、画面を開き直すまで古いまま。
-- 方針の案（ユーザー承認待ち。修正は全部の実機テストが終わってから）: `TempControllerIndex` の setter で、`outputSlotService.OutDevTypeTemp[device]` も同じ種類へ更新する（`TempConType` 経由も同じ setter を通る）。保存する値（`OutContType`）の扱いと、W4 の補正（`CorrectOutputTypeToDs4`）は変えない。
+- 方針（ユーザー承認済み 2026-11-02。修正は全部の実機テストが終わってから）: `TempControllerIndex` の setter で、`outputSlotService.OutDevTypeTemp[device]` も同じ種類へ更新する（`TempConType` 経由も同じ setter を通る）。保存する値（`OutContType`）の扱いと、W4 の補正（`CorrectOutputTypeToDs4`）は変えない。
 - テスト案: `TempControllerIndex` を 0 ↔ 1 に変えたあとの `OutDevTypeTemp[device]` を検査する（変更前は失敗する）。
 
 **K-W6-5: 出力を Xbox 360 にすると、ライトバーが正しく表示されないことがある**（S2 の P10-84 の確認中にユーザーが報告）
@@ -488,3 +489,8 @@
 **K-W6-6: 出力が Default のボタンで、出力ピッカーを何も選ばずに × で閉じると、行のプルダウンが Default 以外の種別から Default に切り替わって見える**（S2 の P10-85 準備中にユーザーが報告）
 - 症状: 出力が Default になっているボタンの行で、出力ピッカー（BindingWindow）を開き、何も押さずに右上の × で閉じると、行のプルダウンの表示が「Output Key／Mouse／Button」ではなく Default に切り替わる（詳細な前後の状態は未確認）。
 - 方針（ユーザー決定 2026-11-02）: 全部の実機テストが終わってから原因を調べる。原因・修正案は未調査。調べる場所は、`BindingWindow` を閉じたときに行へ結果を書き戻す処理（キャンセルと決定の区別）と、行のプルダウンの選択の更新。
+
+**K-W6-7: Load Profile の切り替え先が (none)（削除で未選択）のとき、ボタンを押すと仮想コントローラーが切断され、離すと元のプロファイルが再適用されて再接続する**（S3 の P10-82 で発見）
+- 症状: Controls のボタンに「Load Profile」を割り当て、切り替え先のプロファイルを削除すると、割り当て編集画面の切り替え先は (none) 表示になる。この状態でボタンを押すと、仮想コントローラーが切断され（Windows の切断音）、離すと現在のプロファイル（verifyA）が適用され直して独自の通知ウィンドウが出て、仮想コントローラーが再接続される（接続音）。
+- ユーザー要望（2026-11-02）: (none) のときは「何もしない」形に変えられるなら、テスト終了後に調査して修正する。現状の動きのままでも許容できる。
+- 方針: 全部の実機テストが終わってから調査する。調べる場所は、Load Profile（`ProfileApplicationService.ApplyFromAction`／`ResolveTarget`）で切り替え先が空のとき。空の名前のまま `ApplyCore` へ進んでいないか。空なら先頭で何もせずに戻す案（ログ文言と機能は変えない）。実装前にユーザーの承認を得る。
