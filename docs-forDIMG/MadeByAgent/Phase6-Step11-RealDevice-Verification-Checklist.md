@@ -869,12 +869,12 @@ R-5（2026-10-23）以後、デジタルな出力先と複数トリガーは**�
 
 | ID | 内容（全文は §27・§29・§30） | 結果 |
 |---|---|---|
-| P10-89 | 回帰: 従来の Controls（Key、Button、Default、Unbound、Extras、Macro）と SA の全種別が従来どおり動く。同じボタンを SA のトリガーにも使うと SA が勝つ（Controls の Launch Program／Load Profile も）。**未確認の種別**: Controls の Disconnect BT・較正 2 種、SA の Program・Load Profile・Macro の各種オプション | 未 |
-| P10-99 残り | Check Battery: 保存して**再起動しても残る**（`Profile.xml` の `BatteryNotification`／`BatteryLightbar`）。通知もライトバーもオフ、または 2 色が同じで Save → 保存されず赤い枠 | 未 |
-| P10-100 残り | Multi-action: 保存して**再起動しても残る**。同じボタンを SA のトリガーにも使うと SA が勝つ | 未 |
-| P10-101 残り | SA の軸: 出力先がアナログのときだけ「Strength」の入力が出る（ボタン・キーでは出ない）。強さ 50% で約半分 | 未 |
-| P10-103 残り | SA のマウス移動: 縦と横で、縦方向の倍率の違いが Controls と同じように効く | 未 |
-| P10-104 残り | 既存の SA: `Actions.xml` に、100 のとき `Strength` が書かれない／変えると書かれて開き直すと残る。ホイールの出力先は強さの入力が出ない | 未 |
+| P10-89 | 回帰: 従来の Controls（Key、Button、Default、Unbound、Extras、Macro）と SA の全種別が従来どおり動く。同じボタンを SA のトリガーにも使うと SA が勝つ（Controls の Launch Program／Load Profile も）。**未確認の種別**: Controls の Disconnect BT・較正 2 種、SA の Program・Load Profile・Macro の各種オプション | ○（2026-11-02。Controls の Key／Button／Default／Unbound／Extras／Macro は S2・S5 の操作で従来どおり、Calibrate gyro と Disconnect BT［Hold 2 秒で動く、すぐ離すと何も起きない、3 秒で切断］、SA の Press Key／Launch Program［1 回起動］／Load Profile／Macro の Run on Trigger Release が従来どおり。同じボタンを SA のトリガーにも使うと SA が勝つ［Circle・L3］。Macro の Scan Code・Synchronized Run・Keep key state は見送り［ユニットテストで担保。W8 の完了報告に明記］。Calibrate gyro は Touchpad click の行が無く別の行で試した［行名は未記録］） |
+| P10-99 残り | Check Battery: 保存して**再起動しても残る**（`Profile.xml` の `BatteryNotification`／`BatteryLightbar`）。通知もライトバーもオフ、または 2 色が同じで Save → 保存されず赤い枠 | ○（2026-11-02。Share に Check Battery を設定、再起動後も残り BatteryNotification／BatteryLightbar が XML にある。通知もライトバーもオフ、または 2 色が同じで Save すると保存されず赤い枠） |
+| P10-100 残り | Multi-action: 保存して**再起動しても残る**。同じボタンを SA のトリガーにも使うと SA が勝つ | ○（2026-11-02。L3 の Multi-action: タップ x／長押し y／ダブル z が各 1 回、再起動後も 3 つ残る。同じボタンを SA のトリガーにも使うと SA が勝つ） |
+| P10-101 残り | SA の軸: 出力先がアナログのときだけ「Strength」の入力が出る（ボタン・キーでは出ない）。強さ 50% で約半分 | ○（2026-11-02。Strength は割り当て編集画面の Select のすぐ下に、出力先がアナログのときだけ出る。100% は端、50% は約半分） |
+| P10-103 残り | SA のマウス移動: 縦と横で、縦方向の倍率の違いが Controls と同じように効く | ○（2026-11-02。Mouse Vertical Scale 200 で、下へ動く距離が右の約 2 倍） |
+| P10-104 残り | 既存の SA: `Actions.xml` に、100 のとき `Strength` が書かれない／変えると書かれて開き直すと残る。ホイールの出力先は強さの入力が出ない | ○（2026-11-02。Strength 100 のとき Strength 要素は無い、60 で書かれ再起動後も残る、100 に戻すと消える。ホイールは強さの入力が出ない） |
 | P10-102 | SA のトリガー（LT／RT の強さ） | ○（§28.1 確認 7。2026-10-22） |
 | P10-105 | SA の出力先 Back・Start | ○（§28.1 確認 11。2026-10-22） |
 
