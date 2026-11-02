@@ -39,7 +39,18 @@ namespace DS4WinWPF.DS4Forms
     public partial class DupBox : UserControl
     {
         private string oldfilename;
-        public string OldFilename { get => oldfilename; set => oldfilename = value; }
+        public string OldFilename
+        {
+            get => oldfilename;
+            set
+            {
+                oldfilename = value;
+                // S9-14: 入力欄の初期値は複製元の名前（そのまま編集して別名にする）
+                profileTxt.Text = value ?? string.Empty;
+                profileTxt.SelectAll();
+                profileTxt.Focus();
+            }
+        }
 
         public event EventHandler Cancel;
         public delegate void SaveHandler(DupBox sender, string profilename);
@@ -66,7 +77,9 @@ namespace DS4WinWPF.DS4Forms
         private void SaveBtn_Click(object sender, RoutedEventArgs e)
         {
             string profile = profileTxt.Text;
+            // 初期値が複製元の名前になったため、変えずに保存すると自分自身へのコピーになる（File.Copy が失敗する）。無効な名前として扱う
             if (!string.IsNullOrWhiteSpace(profile) &&
+                !string.Equals(profile, oldfilename, StringComparison.OrdinalIgnoreCase) &&
                 profile.IndexOfAny(System.IO.Path.GetInvalidFileNameChars()) == -1)
             {
                 System.IO.File.Copy(pathService.AppDataPath + "\\Profiles\\" + oldfilename + ".xml",
