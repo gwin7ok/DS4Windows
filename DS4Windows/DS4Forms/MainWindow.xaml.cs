@@ -1007,17 +1007,9 @@ Suspend support not enabled.", true);
             logvm.LogItems.Clear();
         }
 
-        private void MainTabCon_SelectionChanged(object sender, SelectionChangedEventArgs e)
-        {
-            if (mainTabCon.SelectedIndex == 4)
-            {
-                lastMsgLb.Visibility = Visibility.Hidden;
-            }
-            else
-            {
-                lastMsgLb.Visibility = Visibility.Visible;
-            }
-        }
+        // Phase11 W6 K-W6-1: 旧 MainTabCon_SelectionChanged（タブの番号 4 のとき、最下部の 1 行メッセージ欄 lastMsgLb を隠していた）は削除した。
+        // 本来は Log タブを隠す意図と思われるが、Output Slots タブが途中に入って番号がずれ、実際は Settings タブで隠れ、
+        // Settings で出る警告が見えなかった。すべてのタブで表示する（ユーザー決定 2026-11-02）。
 
         private void ProfilesListBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
