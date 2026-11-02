@@ -453,7 +453,7 @@
 - **S4（P10-90〜97）: 2026-11-02 完了。7 件 ○、P10-96 は △**（台帳 §52）。リンクが指すプロファイルの削除でクラッシュする重大な不具合 K-W6-9 と、複製の直後の ID の不具合 K-W6-8 を見つけた（§13.4）。
 - **S5（P10-87・88・98・21）: 2026-11-02 完了。4 件とも ○**（台帳 §52）。P10-98 の振動は不能［U-53］。
 - **S6（P10-89 と残り 5 行）: 2026-11-02 完了。6 件とも ○**（台帳 §52）。P10-89 の Macro の Scan Code・Synchronized Run・Keep key state は見送り［ユニットテストで担保。W8 の完了報告に明記］。
-- **S7（途中）: 2026-11-02。P9M2-2・3・4 は 2026-10-22 の P9EX-1・P9M3-1 の確認を根拠に ○、P9E6e-4 は P10-96 ① を根拠に ○**（台帳 §52。再実施なし）。P9M3-3 も ○（右スティックのフリックスティック）。P9E6b-2 は ×（デバウンスの挙動の不具合。機能ごと削除の希望: K-W6-10）。P9E6b-5 は ○（charmap.exe。ストア版メモ帳は起動中でも再起動する制約あり: `DeviceConnectionSetup.CheckLauchProfileOption` が実行中プロセスの MainModule のパスを完全一致で比べるため。機能は従来どおりで、修正対象にはしない）。P9E6a-4 は ×（再接続で自動プロファイルが効かない: K-W6-11）。残りの 2 行（P9E6e-6、P9F1-4）は未。
+- **S7（途中）: 2026-11-02。P9M2-2・3・4 は 2026-10-22 の P9EX-1・P9M3-1 の確認を根拠に ○、P9E6e-4 は P10-96 ① を根拠に ○**（台帳 §52。再実施なし）。P9M3-3 も ○（右スティックのフリックスティック）。P9E6b-2 は ×（デバウンスの挙動の不具合。機能ごと削除の希望: K-W6-10）。P9E6b-5 は ○（charmap.exe。ストア版メモ帳は起動中でも再起動する制約あり: `DeviceConnectionSetup.CheckLauchProfileOption` が実行中プロセスの MainModule のパスを完全一致で比べるため。機能は従来どおりで、修正対象にはしない）。P9E6a-4 は ×（再接続で自動プロファイルが効かない: K-W6-11）。P9E6e-6 は見送り［再現が難しい。W8 の完了報告に明記］。残りの 1 行（P9F1-4）は未。
 
 ### 13.4 実機確認で見つかった課題と修正方針（修正は、全部の実機テストが終わってから行う。ユーザー決定 2026-11-02）
 
@@ -518,7 +518,7 @@
 - 症状: 文字マップ（ルール: charmap.exe → verifyG）を前面にして verifyG に切り替わった状態で、DS4 を切断→再接続（DS4Windows の画面はクリックしない）。再接続後は verifyA が適用され、文字マップを前面にしたままでも verifyG に切り替わらない。台帳の期待［一時プロファイルが維持される］とは異なる。
 - コードの読み（実装前に実機ログで確認する）: 設計は、切断で一時プロファイルの状態［`UseTempProfile`／`TempProfileName`］を消さず（`DeviceDisconnectHandler` の該当行はコメントアウトのまま）、再接続では `ConnectionProfileSelector.ApplyOnConnect` が `useAutoProfile=true` なら適用し直さず `PublishSlot` だけを行う。接続後は `MainWindow.ControlService_HotplugControllerRecheckAutoProfile` → `AutoProfileService.CheckProfilesForConnectedController` が前面の情報で再照合する。実際は verifyA になっているので、どこかで一時プロファイルの状態が消えているか、再照合が働いていない。
 - ユーザーの希望する仕様（2026-11-02）: **切断したら一時プロファイルの状態は維持しない。再接続したときは通常のルールでプロファイルを決め［verifyA など］、その後に、前面のプログラムに従って自動プロファイルを割り当てる**（＝ 台帳の「維持される」ではなく、この動きを仕様とする）。これは仕様変更なので、ユーザーの承認を得たものとして扱い、台帳の P9E6a-4 の期待を差し替える。
-- 方針の案（承認待ち。修正は全部の実機テストの後）: (1) 切断時に `UseTempProfile`／`TempProfileName`／`TempProfileDistance` を空に戻す［`DeviceDisconnectHandler` のコメントアウトを有効化する案。ただし他の経路への影響を調べる］。(2) 再接続の通常適用の後に、`CheckProfilesForConnectedController` が前面の情報で再照合して自動プロファイルを適用することを、実機のログとテストで確かめる。(3) 現在の「再接続で verifyA になり、再照合されない」原因を、`AutoProfileDebugLogLevel` を上げたログで特定する。
+- 方針の案（**2026-11-02 ユーザー承認済み**。修正は全部の実機テストの後）: (1) 切断時に `UseTempProfile`／`TempProfileName`／`TempProfileDistance` を空に戻す［`DeviceDisconnectHandler` のコメントアウトを有効化する案。ただし他の経路への影響を調べる］。(2) 再接続の通常適用の後に、`CheckProfilesForConnectedController` が前面の情報で再照合して自動プロファイルを適用することを、実機のログとテストで確かめる。(3) 現在の「再接続で verifyA になり、再照合されない」原因を、`AutoProfileDebugLogLevel` を上げたログで特定する。
 
 **K-W6-10【機能廃止の提案をユーザーが希望】: Debouncing（デバウンス）の挙動がおかしい。機能ごと削除したい**（S7 の P9E6b-2 で発見。2026-11-02）
 - 症状: 数値を大きくして（500 ms を試行）Cross を押すと、ボタンを放しても押したままの判定が続き、少し後に離した判定になる。結果、キーが連続して入力され、少し後に止まる。
