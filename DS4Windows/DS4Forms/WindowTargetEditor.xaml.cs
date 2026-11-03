@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Windows;
 using System.Windows.Controls;
+using DS4WinWPF.DS4Forms.ViewModels.SpecialActions;
 using Microsoft.Win32;
 
 namespace DS4WinWPF.DS4Forms
@@ -20,6 +21,23 @@ namespace DS4WinWPF.DS4Forms
             nameof(Title), typeof(string), typeof(WindowTargetEditor),
             new FrameworkPropertyMetadata(string.Empty, FrameworkPropertyMetadataOptions.BindsTwoWayByDefault));
 
+        // Phase12-Step2 2h: タイトルの一致方法（一覧の添字と WindowTitleMatchMode の値は同じ並び）
+        public static readonly DependencyProperty TitleMatchModeProperty = DependencyProperty.Register(
+            nameof(TitleMatchMode), typeof(WindowTitleMatchMode), typeof(WindowTargetEditor),
+            new FrameworkPropertyMetadata(WindowTitleMatchMode.Exact, FrameworkPropertyMetadataOptions.BindsTwoWayByDefault, OnTitleMatchModeChanged));
+
+        public WindowTitleMatchMode TitleMatchMode
+        {
+            get => (WindowTitleMatchMode)GetValue(TitleMatchModeProperty);
+            set => SetValue(TitleMatchModeProperty, value);
+        }
+
+        private static void OnTitleMatchModeChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
+        {
+            var editor = (WindowTargetEditor)d;
+            editor.titleMatchCombo.SelectedIndex = (int)(WindowTitleMatchMode)e.NewValue;
+        }
+
         public string Path
         {
             get => (string)GetValue(PathProperty);
@@ -35,6 +53,17 @@ namespace DS4WinWPF.DS4Forms
         public WindowTargetEditor()
         {
             InitializeComponent();
+            titleMatchCombo.SelectedIndex = (int)TitleMatchMode;
+        }
+
+        private void TitleMatchCombo_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            if (titleMatchCombo.SelectedIndex >= 0) TitleMatchMode = (WindowTitleMatchMode)titleMatchCombo.SelectedIndex;
+        }
+
+        private void ExeNameOnlyBtn_Click(object sender, RoutedEventArgs e)
+        {
+            Path = WindowTargetText.ToExecutableNameOnly(Path);
         }
 
         private void BrowseBtn_Click(object sender, RoutedEventArgs e)

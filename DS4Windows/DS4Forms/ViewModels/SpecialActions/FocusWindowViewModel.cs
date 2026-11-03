@@ -15,11 +15,12 @@ namespace DS4WinWPF.DS4Forms.ViewModels.SpecialActions
     public class FocusWindowViewModel : NotifyDataErrorBase, IActionTypeEditor, INotifyPropertyChanged
     {
         private const string PathProperty = nameof(WindowPath);
-        private const string TitleProperty = nameof(WindowTitle);
+        private const string TitleProperty = nameof(TitleText);   // 画面の入力欄の結びつき名（検証エラーの付け先）
 
         private readonly ISpecialActionRepository specialActionRepository;
         private string windowPath = string.Empty;
-        private string windowTitle = string.Empty;
+        private string titleText = string.Empty;
+        private WindowTitleMatchMode titleMatchMode = WindowTitleMatchMode.Exact;
         private double delay;
 
         public event PropertyChangedEventHandler PropertyChanged;
@@ -36,16 +37,58 @@ namespace DS4WinWPF.DS4Forms.ViewModels.SpecialActions
             }
         }
 
+        /// <summary>
+        /// 保存用のウインドウ名（Phase12-Step2 2h: 一致方法の印を含む。<c>^</c> 前方、<c>$</c> 後方、<c>*</c> 部分、印なし＝完全）。
+        /// 画面の入力は、印を除いた <see cref="TitleText"/> と <see cref="TitleMatchMode"/> に分けて持ち、この値は両方から組み立てる。
+        /// </summary>
         public string WindowTitle
         {
-            get => windowTitle;
+            get => WindowTargetText.ComposeTitle(titleText, titleMatchMode);
             set
             {
-                value = value ?? string.Empty;
-                if (windowTitle == value) return;
-                windowTitle = value;
-                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(TitleProperty));
+                string text = WindowTargetText.ParseTitle(value, out WindowTitleMatchMode mode);
+                if (titleText == text && titleMatchMode == mode) return;
+                titleText = text;
+                titleMatchMode = mode;
+                RaiseTitleChanged(true, true);
             }
+        }
+
+        /// <summary>入力欄に出す、印を除いたウインドウ名。入力に印が混ざっても、一致方法は一覧の選択を優先し、印は取り除く。</summary>
+        public string TitleText
+        {
+            get => titleText;
+            set
+            {
+                string text = WindowTargetText.ParseTitle(value, out _);
+                if (titleText == text)
+                {
+                    // 印を取り除いたために、入力欄の表示とずれた場合は、表示を戻す
+                    if (value != text) RaiseTitleChanged(true, false);
+                    return;
+                }
+
+                titleText = text;
+                RaiseTitleChanged(value != text, false);
+            }
+        }
+
+        public WindowTitleMatchMode TitleMatchMode
+        {
+            get => titleMatchMode;
+            set
+            {
+                if (titleMatchMode == value) return;
+                titleMatchMode = value;
+                RaiseTitleChanged(false, true);
+            }
+        }
+
+        private void RaiseTitleChanged(bool textChanged, bool modeChanged)
+        {
+            if (textChanged) PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(TitleText)));
+            if (modeChanged) PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(TitleMatchMode)));
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(WindowTitle)));
         }
 
         public double Delay { get => delay; set => delay = value; }
@@ -77,21 +120,21 @@ namespace DS4WinWPF.DS4Forms.ViewModels.SpecialActions
             {
                 Type = type,
                 WindowPath = windowPath,
-                WindowTitle = windowTitle,
+                WindowTitle = WindowTitle,
                 HoldSeconds = Delay,
             };
         }
 
         public void SaveAction(SpecialAction action, bool edit = false)
         {
-            specialActionRepository.SaveAction(action.name, action.controls, 11, windowPath, edit, delay, windowTitle, actionId: action.id);
+            specialActionRepository.SaveAction(action.name, action.controls, 11, windowPath, edit, delay, WindowTitle, actionId: action.id);
         }
 
         public override bool IsValid(SpecialAction action)
         {
             ClearOldErrors();
 
-            if (!string.IsNullOrWhiteSpace(windowPath) || !string.IsNullOrWhiteSpace(windowTitle)) return true;
+            if (!string.IsNullOrWhiteSpace(windowPath) || !string.IsNullOrWhiteSpace(titleText)) return true;
 
             // 両方が空は、必須の値がないエラー（保存を止める）。入力欄（パス・タイトル）に赤い枠で示す
             errors[PathProperty] = new List<string> { "Program path or window title is required" };

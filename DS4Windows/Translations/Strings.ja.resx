@@ -153,6 +153,21 @@
   <data name="SpecialActionEdit.FocusWindowPath" xml:space="preserve">
     <value>プログラムのパス</value>
   </data>
+  <data name="SpecialActionEdit.FocusWindowExeNameOnly" xml:space="preserve">
+    <value>実行ファイル名のみで判定</value>
+  </data>
+  <data name="SpecialActionEdit.FocusWindowMatchExact" xml:space="preserve">
+    <value>完全一致</value>
+  </data>
+  <data name="SpecialActionEdit.FocusWindowMatchStartsWith" xml:space="preserve">
+    <value>前方一致</value>
+  </data>
+  <data name="SpecialActionEdit.FocusWindowMatchEndsWith" xml:space="preserve">
+    <value>後方一致</value>
+  </data>
+  <data name="SpecialActionEdit.FocusWindowMatchContains" xml:space="preserve">
+    <value>部分一致</value>
+  </data>
   <data name="BrowseOtherPrograms" xml:space="preserve">
     <value>その他のプログラムを参照</value>
   </data>

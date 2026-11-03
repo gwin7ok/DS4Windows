@@ -3235,6 +3235,51 @@ namespace DS4WinWPF.Translations {
                 return ResourceManager.GetString("SpecialActionEdit.FocusWindowPath", resourceCulture);
             }
         }
+
+        /// <summary>
+        ///   Looks up a localized string similar to Match executable name only.
+        /// </summary>
+        public static string SpecialActionEdit_FocusWindowExeNameOnly {
+            get {
+                return ResourceManager.GetString("SpecialActionEdit.FocusWindowExeNameOnly", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to Exact match.
+        /// </summary>
+        public static string SpecialActionEdit_FocusWindowMatchExact {
+            get {
+                return ResourceManager.GetString("SpecialActionEdit.FocusWindowMatchExact", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to Starts with.
+        /// </summary>
+        public static string SpecialActionEdit_FocusWindowMatchStartsWith {
+            get {
+                return ResourceManager.GetString("SpecialActionEdit.FocusWindowMatchStartsWith", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to Ends with.
+        /// </summary>
+        public static string SpecialActionEdit_FocusWindowMatchEndsWith {
+            get {
+                return ResourceManager.GetString("SpecialActionEdit.FocusWindowMatchEndsWith", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to Contains.
+        /// </summary>
+        public static string SpecialActionEdit_FocusWindowMatchContains {
+            get {
+                return ResourceManager.GetString("SpecialActionEdit.FocusWindowMatchContains", resourceCulture);
+            }
+        }
         
         /// <summary>
         ///   Looks up a localized string similar to Load a profile.

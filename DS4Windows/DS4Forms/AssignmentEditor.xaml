@@ -239,7 +239,8 @@
                                     <Label Content="secs" />
                                 </StackPanel>
                                 <local:WindowTargetEditor Path="{Binding WindowPath, ValidatesOnNotifyDataErrors=True}"
-                                                          Title="{Binding WindowTitle, ValidatesOnNotifyDataErrors=True}" />
+                                                          Title="{Binding TitleText, ValidatesOnNotifyDataErrors=True}"
+                                                          TitleMatchMode="{Binding TitleMatchMode}" />
                             </StackPanel>
                         </TabItem>
                         <!-- Phase10-Step3: 種別の「Default」「Unbound」（Controls のモードだけ）。入力欄はない -->

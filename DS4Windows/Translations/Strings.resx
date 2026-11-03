@@ -1402,6 +1402,21 @@ To setup Bluetooth (optional): Hold the PS Button and Share for 3 seconds. The l
   <data name="SpecialActionEdit.FocusWindowPath" xml:space="preserve">
     <value>Program path</value>
   </data>
+  <data name="SpecialActionEdit.FocusWindowExeNameOnly" xml:space="preserve">
+    <value>Match executable name only</value>
+  </data>
+  <data name="SpecialActionEdit.FocusWindowMatchExact" xml:space="preserve">
+    <value>Exact match</value>
+  </data>
+  <data name="SpecialActionEdit.FocusWindowMatchStartsWith" xml:space="preserve">
+    <value>Starts with</value>
+  </data>
+  <data name="SpecialActionEdit.FocusWindowMatchEndsWith" xml:space="preserve">
+    <value>Ends with</value>
+  </data>
+  <data name="SpecialActionEdit.FocusWindowMatchContains" xml:space="preserve">
+    <value>Contains</value>
+  </data>
   <data name="SpecialActionEdit.LoadProfile" xml:space="preserve">
     <value>Load a profile</value>
   </data>

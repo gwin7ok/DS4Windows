@@ -7,14 +7,25 @@
              lex:ResxLocalizationProvider.DefaultDictionary="Strings"
              x:Name="root">
     <!-- Phase12-Step2 2e（R-4）: 対象のウィンドウの指定（プログラムのパスとウィンドウタイトル）。Auto-Profile と同じ書式（^先頭 / 末尾$ / *含む）。
-         入力の検証エラーは、外側の結びつき（Path／Title）に付き、この部品全体に赤い枠で出る -->
+         入力の検証エラーは、外側の結びつき（Path／Title）に付き、この部品全体に赤い枠で出る。
+         Phase12-Step2 2h: ウインドウ名の一致方法は、入力欄の下の一覧で選ぶ（保存の形式は印のまま）。パス欄の右上に「実行ファイル名のみで判定」ボタン -->
     <StackPanel>
-        <Label Content="{lex:Loc SpecialActionEdit.FocusWindowPath}" Padding="0,0,0,2" />
+        <DockPanel Margin="0,0,0,2">
+            <Button x:Name="exeNameOnlyBtn" Content="{lex:Loc SpecialActionEdit.FocusWindowExeNameOnly}" DockPanel.Dock="Right"
+                    Padding="8,0" Click="ExeNameOnlyBtn_Click" />
+            <Label Content="{lex:Loc SpecialActionEdit.FocusWindowPath}" Padding="0,0,0,2" VerticalAlignment="Center" />
+        </DockPanel>
         <DockPanel Margin="0,0,0,8">
             <Button Content="{lex:Loc Browse}" DockPanel.Dock="Right" Margin="8,0,0,0" Padding="8,0" Click="BrowseBtn_Click" />
             <TextBox Text="{Binding Path, ElementName=root, UpdateSourceTrigger=PropertyChanged}" ToolTip="{lex:Loc AutoProfPathTip}" />
         </DockPanel>
         <Label Content="{lex:Loc WindowTitle}" Padding="0,0,0,2" />
         <TextBox Text="{Binding Title, ElementName=root, UpdateSourceTrigger=PropertyChanged}" ToolTip="{lex:Loc AutoProfTitleTip}" />
+        <ComboBox x:Name="titleMatchCombo" Margin="0,4,0,0" SelectionChanged="TitleMatchCombo_SelectionChanged">
+            <ComboBoxItem Content="{lex:Loc SpecialActionEdit.FocusWindowMatchExact}" />
+            <ComboBoxItem Content="{lex:Loc SpecialActionEdit.FocusWindowMatchStartsWith}" />
+            <ComboBoxItem Content="{lex:Loc SpecialActionEdit.FocusWindowMatchEndsWith}" />
+            <ComboBoxItem Content="{lex:Loc SpecialActionEdit.FocusWindowMatchContains}" />
+        </ComboBox>
     </StackPanel>
 </UserControl>
