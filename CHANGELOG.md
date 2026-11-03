@@ -4,6 +4,8 @@ All notable changes to this project are recorded in this file.
 
 ## [Unreleased]
 
+## [4.3.0] - 2026-11-03
+
 ### Added
 - **Macro: mouse pointer movement.** A macro step can move the mouse pointer to a screen position ("Move to (x, y)") or to a position inside the foreground window ("Move in window (x, y)"; the origin is the top-left of the window's outer frame). Steps are added with "Add Mouse Move" in the macro recording screen and the coordinates can be edited by double-clicking the step. The new "Record mouse movement" check box (off by default) records real mouse moves and clicks made outside the recording box, either as screen or as window-relative coordinates. Macros that contain pointer moves are stored as ordinary step values; older versions read them as light bar colors, so do not go back to an older version with such macros.
 - **Macro recording screen: list editing.** Select several steps with Ctrl+click or Shift+click, delete them with the Delete key, reorder them by drag and drop, and click an empty area of the list to clear the selection. When nothing is selected, Record, Insert Wait and Add Mouse Move add steps at the bottom. The buttons on the right were re-ordered.
@@ -35,7 +37,6 @@ All notable changes to this project are recorded in this file.
 - Closing the output picker with the window's close button no longer switches a Default assignment's type to another one.
 - After changing the Emulated Controller in the profile editor, the Pad tab of an already opened output picker shows the new type.
 - Controller Readings: values such as 255 are no longer clipped.
-
 
 ## [4.2.3] - 2026-10-25
 
