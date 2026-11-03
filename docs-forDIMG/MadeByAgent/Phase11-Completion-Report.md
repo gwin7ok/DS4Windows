@@ -31,7 +31,7 @@
 | W3 | `Keepsize`（死んだバインディングを外した） | 完了（2026-11-02） |
 | W4 | `UseDs3PitchRollSim`（DS4 への補正と、保存時のサービス再起動の復元） | 完了（2026-11-02） |
 | W5 | `CustomSteamFolder`（警告を出し保存は続ける）、`CheckEvery`（仕様として閉じた） | 完了（2026-11-02） |
-| W6 | 実機確認の消化（S1〜S8）と、見つかった課題 K-W6-1〜12 の修正、S9 の再確認 | 完了（2026-11-03）。S9-17 のみ時間経過の確認が残る |
+| W6 | 実機確認の消化（S1〜S8）と、見つかった課題 K-W6-1〜12 の修正、S9 の再確認 | 完了（2026-11-03）。S9-17 は実機確認不能で閉じた |
 | W6c | 「Enable Output data to DS4」の仕様変更（K-W6-12） | 完了（2026-11-03） |
 | W7 | K7b-1 の締め | 完了（2026-11-03） |
 | W8 | 文書とリリース（本書、`Phase11-Status.md`、CHANGELOG、`Release-Backlog.md`、4.2.4） | 完了（2026-11-03） |
@@ -61,7 +61,7 @@ S9 の再確認で、次の追加の要望・課題も対応した（すべて�
 - マクロの記録画面のボタン名を、Emulated Controller に合わせる（DS4 は Cross／Circle／L1／PS など。S9-15）。
 - Controls タブのコントローラー図のマウスオーバーによる一覧の選択の切り替えを、500ms 遅らせる。遅延中にクリックしても、クリックしたボタンを開く（S9-16）。
 - 自動プロファイルから元のプロファイルへ戻す通知の電池残量を、「N/A」固定でなく実際の値にする（S9-5 の追加分）。
-- Controllers タブの電池表示を、60 秒ごとに読み直す（S9-17。**時間経過の実機確認が残る**）。**根本原因（2026-11-03）**: `CompositeDeviceModel` は `INotifyPropertyChanged` を実装しているのに、電池表示では `PropertyChanged` を出さず、旧式の `BatteryStateChanged` イベントだけを出していた。WPF は INPC を実装した型では旧式のイベントを使わないため、表示は行を作った時点の値のまま更新されなかった（再接続で行が作り直されると一致した）。`PropertyChanged(BatteryState)` を出すよう修正。同じ形の `IdText`（`IdTextChanged`）、`LightColor` 等は未調査で、Phase13b 以降の整理の候補。
+- Controllers タブの電池表示を、60 秒ごとに読み直す（S9-17。**実機では観察できず「不能」で閉じた（ユーザー判断。単体テストで担保）**）。**根本原因（2026-11-03）**: `CompositeDeviceModel` は `INotifyPropertyChanged` を実装しているのに、電池表示では `PropertyChanged` を出さず、旧式の `BatteryStateChanged` イベントだけを出していた。WPF は INPC を実装した型では旧式のイベントを使わないため、表示は行を作った時点の値のまま更新されなかった（再接続で行が作り直されると一致した）。`PropertyChanged(BatteryState)` を出すよう修正。同じ形の `IdText`（`IdTextChanged`）、`LightColor` 等は未調査で、Phase13b 以降の整理の候補。
 
 ## 4. 機能の変更・廃止（ユーザー承認済み）
 
@@ -85,7 +85,7 @@ S9 の再確認で、次の追加の要望・課題も対応した（すべて�
 
 - `ControlButtonInputAction`／`ComboTriggerInputAction`／`MultiTapInputAction`／`TwoStageTriggerProcessor` に、`DebouncingMs` を使わなくなった後も、呼び出し側とテストの変更を避けるため、コンストラクター引数が残っている（各クラスに理由のコメントあり）。**Phase13 の Step にする**（`Phase11-and-Beyond-Roadmap.md`）。
 - アプリ全体のログ整理（レベルの振り分け、文言の統一）: **Phase12 の最初の Step（L1: 方針）と Phase13b（L2: 一括整理）**。規約 §2.3 の改定は、ユーザーの承認を得て行う。
-- S9-17（電池表示の定期更新）の実機確認: 時間経過で行い、結果を台帳に記録する。
+- S9-17（電池表示の定期更新）: 実機確認不能で閉じた（2026-11-03）。
 
 ## 7. 検証
 
