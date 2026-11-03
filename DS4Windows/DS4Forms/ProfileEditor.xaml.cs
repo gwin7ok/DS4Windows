@@ -959,7 +959,47 @@ namespace DS4WinWPF.DS4Forms
             ShowControlAssignmentEditor(mpControl, updateHighlight: true);
         }
 
-        private void InputControlHighlight(Button control)
+        // S9 の追加要望: コントローラー図のマウスオーバーでボタン一覧の選択を切り替える処理に、500ms の遅延を入れる
+        // （通過しただけの意図しないマウスオーバーで、選択が切り替わらないようにする）。ホバー画像の表示は即時のまま
+        private const int HoverSelectDelayMs = 500;
+        private System.Windows.Threading.DispatcherTimer hoverSelectTimer;
+        private Button hoverSelectPending;
+
+        private void CancelHoverSelect()
+        {
+            hoverSelectTimer?.Stop();
+            hoverSelectPending = null;
+        }
+
+        private void StartHoverSelect(Button control)
+        {
+            if (hoverSelectTimer == null)
+            {
+                hoverSelectTimer = new System.Windows.Threading.DispatcherTimer
+                {
+                    Interval = TimeSpan.FromMilliseconds(HoverSelectDelayMs),
+                };
+                hoverSelectTimer.Tick += (s, e) =>
+                {
+                    hoverSelectTimer.Stop();
+                    Button pending = hoverSelectPending;
+                    hoverSelectPending = null;
+                    if (pending != null) SelectHoveredControl(pending);
+                };
+            }
+
+            hoverSelectTimer.Stop();
+            hoverSelectPending = control;
+            hoverSelectTimer.Start();
+        }
+
+        private void InputControlHighlight(Button control, bool selectNow = true)
+        {
+            HighlightHoverImage(control);
+            if (selectNow) SelectHoveredControl(control);
+        }
+
+        private void HighlightHoverImage(Button control)
         {
             if (hoverImages.TryGetValue(control, out ImageBrush tempBrush))
             {
@@ -981,7 +1021,10 @@ namespace DS4WinWPF.DS4Forms
                 picBoxHover.Stretch = Stretch.Fill;
                 picBoxHover.Visibility = Visibility.Visible;
             }
+        }
 
+        private void SelectHoveredControl(Button control)
+        {
             if (hoverIndexes.TryGetValue(control, out int tempIndex))
             {
                 mappingListVM.SelectedIndex = tempIndex;
@@ -1001,11 +1044,13 @@ namespace DS4WinWPF.DS4Forms
         private void ContBtn_MouseEnter(object sender, MouseEventArgs e)
         {
             Button control = sender as Button;
-            InputControlHighlight(control);
+            InputControlHighlight(control, selectNow: false);
+            StartHoverSelect(control);
         }
 
         private void ContBtn_MouseLeave(object sender, MouseEventArgs e)
         {
+            CancelHoverSelect();
             //Button control = sender as Button;
             //control.Background = new SolidColorBrush(Colors.Transparent);
             Canvas.SetLeft(picBoxHover, 0);
