@@ -102,11 +102,13 @@
 
 - 新しいダンプが出ていないかの確認（ユーザー）→ 「解消」として閉じる（`Release-Backlog.md` §5、`K7b1-Investigation.md`、`Phase9-Completion-Report.md` §5）。
 - 閉じたら、9-H（Phase16）の前提が満たされる。
+- **結果: 完了（2026-11-03）。** 新しいダンプは出ていないとユーザーが確認し、K7b-1 を解消として閉じた。9-H（Phase16）の前提が満たされた。
 
 ### W8: 文書とリリース
 
 - 完了報告書 `Phase11-Completion-Report.md`、`Phase11-Status.md`、全体計画書の追記、`Release-Backlog.md`（R-7 の状態）、`Phase11-and-Beyond-Roadmap.md`、CHANGELOG。
 - 版数: **決定済み（Q6）: Phase11 の完了で 4.2.4（パッチ）を出す**（W4 の復元ほか、利用者に見える修正を含むため）。
+- **結果: 完了（2026-11-03）。** Phase11-Completion-Report.md、Phase11-Status.md を作成。CHANGELOG（Debouncing の機能廃止を明記）、Release-Backlog.md（R-7）、ロードマップを更新。版は 4.2.4。全体計画書（DI-App-Wide-Migration-Plan.md）には Phase9 以降の記述がないため追記なし。
 
 ## 3. 決定事項（2026-11-02 にユーザーが回答）
 

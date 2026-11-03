@@ -4,6 +4,33 @@ All notable changes to this project are recorded in this file.
 
 ## [Unreleased]
 
+## [4.2.4] - 2026-11-03
+
+### Removed
+- **Debouncing** (the per-profile "Debouncing" setting and its input filter). With a large value, a pressed button stayed "held" for a while after it was released. The setting is no longer shown or saved. `<DebouncingMs>` in older profiles is ignored when the profile is loaded, and a non-zero value no longer shifts the timing of Multi-action, delays and two-stage triggers.
+
+### Changed
+- "Enable Output data to DS4" is now "Send output data to the physical controller". It works regardless of the Emulated Controller (DS4 or Xbox 360), turning it on no longer forces the Emulated Controller to DS4, and re-applying the same profile reflects the setting (turning it off switches the light bar off once).
+- The button names in the macro recording screen follow the profile's Emulated Controller (for example Cross, Circle, L1, PS for DS4; A, B, LB, Guide for Xbox 360), both when recording and when a saved macro is opened.
+- The hover highlight on the controller picture in the Controls tab now changes the selected row of the button list only after the pointer stays for 0.5 seconds (the highlight itself is immediate).
+- A Load Profile whose target profile was deleted is shown as "Load Profile: (none)" in the Controls and Special Actions lists, like in the assignment editor.
+- The duplicate-profile box starts with the name of the source profile.
+- When a disconnected controller reconnects, temporary (auto) profile state is no longer kept: the usual profile is applied first, and the Auto Profile rule is checked again shortly after.
+
+### Fixed
+- Crash when deleting a profile that was used as a Linked Profile.
+- Turning on the DS3 pitch/roll simulation now switches the output to DS4 again when saving or applying (and the service is restarted on save, as in older versions). This had been lost in an earlier refactoring.
+- A custom Steam folder that does not exist now shows a warning (the value is still saved) instead of being dropped silently.
+- A duplicated profile now gets its own profile ID right away (it kept the ID of the original until the next restart).
+- Special Action "Load Profile" with a deleted target no longer disconnects the virtual controller when pressed and re-applies the previous profile on release; it does nothing and logs a message.
+- The battery level shown in the log and notifications right after a controller connects was 0%; it is now read from the first report. The Controllers tab battery label is also refreshed every 60 seconds, and the "back to profile" log line after leaving an Auto Profile program shows the real battery level instead of N/A.
+- Saving or applying a profile while the service is stopped no longer applies it to slots without a controller or logs notifications.
+- The Settings tab status line is no longer hidden.
+- Closing the output picker with the window's close button no longer switches a Default assignment's type to another one.
+- After changing the Emulated Controller in the profile editor, the Pad tab of an already opened output picker shows the new type.
+- Controller Readings: values such as 255 are no longer clipped.
+
+
 ## [4.2.3] - 2026-10-25
 
 ### Fixed
