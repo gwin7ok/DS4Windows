@@ -92,6 +92,34 @@ namespace DS4WinWPF.DS4Forms.ViewModels
         }
         public event EventHandler BatteryStateChanged;
 
+        /// <summary>電池表示を読み直す間隔（ミリ秒。ユーザー指定: 60 秒）。</summary>
+        public const int BatteryRefreshIntervalMs = 60000;
+        private Timer batteryRefreshTimer;
+        private string lastBatteryState;
+
+        private void RaiseBatteryStateChanged(EventArgs e)
+        {
+            lastBatteryState = BatteryState;
+            BatteryStateChanged?.Invoke(this, e);
+        }
+
+        /// <summary>電池表示を読み直し、前回の通知から文字列が変わっていたときだけ <see cref="BatteryStateChanged"/> を出す。</summary>
+        public void RefreshBatteryState()
+        {
+            if (device == null) return;
+
+            string current = BatteryState;
+            if (current == lastBatteryState) return;
+
+            RaiseBatteryStateChanged(EventArgs.Empty);
+        }
+
+        private void StopBatteryRefresh()
+        {
+            Timer timer = Interlocked.Exchange(ref batteryRefreshTimer, null);
+            timer?.Dispose();
+        }
+
         public int SelectedIndex
         {
             get => selectedIndex;
@@ -328,8 +356,13 @@ namespace DS4WinWPF.DS4Forms.ViewModels
             this.profileSettingsService = profileSettingsService ?? throw new ArgumentNullException(nameof(profileSettingsService));
             this.profileRepo = profileRepo ?? throw new ArgumentNullException(nameof(profileRepo));
             this.device = device;
-            device.BatteryChanged += (sender, e) => BatteryStateChanged?.Invoke(this, e);
-            device.ChargingChanged += (sender, e) => BatteryStateChanged?.Invoke(this, e);
+            device.BatteryChanged += (sender, e) => RaiseBatteryStateChanged(e);
+            device.ChargingChanged += (sender, e) => RaiseBatteryStateChanged(e);
+            // S9-5 の確認で判明: 変化通知だけでは、表示が古い値のまま止まることがあった（実機: 表示 50%、実際 37%）。
+            // 通知に頼らず、一定間隔で読み直す（文字列が変わったときだけ画面へ通知する）。コントローラーが外れたら止める
+            lastBatteryState = BatteryState;
+            batteryRefreshTimer = new Timer(_ => RefreshBatteryState(), null, BatteryRefreshIntervalMs, BatteryRefreshIntervalMs);
+            device.Removal += (sender, e) => StopBatteryRefresh();
             device.MacAddressChanged += (sender, e) => IdTextChanged?.Invoke(this, e);
             this.devIndex = devIndex;
             this.selectedProfile = profile;
