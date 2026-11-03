@@ -42,7 +42,7 @@ namespace DS4WindowsTests
             IProfileSettingsService settings = TestHost.GetService<IProfileSettingsService>();
             var factory = new SpecialActionOutputFactory(settings, TestHost.GetService<IManagedActionManager>(),
                 new NoMacroPlayer(), new NoLauncher(), new NoSwitcher(), macroStringPlayer: new NoMacroStringPlayer());
-            return new AssignmentBindingBuilder(factory, settings);
+            return new AssignmentBindingBuilder(factory);
         }
 
         [Fact]

@@ -67,7 +67,7 @@ namespace DS4WindowsTests
                 TestHost.GetService<IGyroMouseStickBlender>(),   // Phase9 9-B: 状態なし
                 TestHost.GetService<IControlActivityReader>(),   // Phase9 9-B: 状態なし
                 new SyntheticInputCommitter(synthetic, kbm),
-                new TwoStageTriggerProcessor(profileSettings));   // Phase9 MapCustom の分割 M2: 状態なし   // Phase9 MapCustom の分割 M1: ホイールの繰り返しの状態を持つため、独立の instance にする
+                new TwoStageTriggerProcessor());   // Phase9 MapCustom の分割 M2: 状態なし   // Phase9 MapCustom の分割 M1: ホイールの繰り返しの状態を持つため、独立の instance にする
         }
     }
 }

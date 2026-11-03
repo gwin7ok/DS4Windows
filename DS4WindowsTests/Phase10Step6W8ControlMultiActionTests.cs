@@ -107,7 +107,7 @@ namespace DS4WindowsTests
                 var factory = new SpecialActionOutputFactory(TestHost.GetService<IProfileSettingsService>(), TestHost.GetService<IManagedActionManager>(),
                     TestHost.GetService<IMacroPlayer>(), TestHost.GetService<IProcessLauncher>(), TestHost.GetService<IProfileSwitcher>(),
                     macroStringPlayer: Player);
-                TriggerBinding binding = new AssignmentBindingBuilder(factory, TestHost.GetService<IProfileSettingsService>()).Build(EngineDevice, definition, source, -1);
+                TriggerBinding binding = new AssignmentBindingBuilder(factory).Build(EngineDevice, definition, source, -1);
 
                 var registry = new ActionBindingRegistry();
                 registry.Replace(EngineDevice, new IActionBinding[] { binding });

@@ -45,7 +45,7 @@ namespace DS4Windows.Actions
             _outputFactory = outputFactory ?? new SpecialActionOutputFactory(profileSettings, manager, macroPlayer, processLauncher,
                 profileSwitcher, actionRepository, mappingProvider, gyroCalibration, disconnectPort, batteryCheckPort,
                 macroStringPlayer);
-            _assignmentBuilder = new AssignmentBindingBuilder(_outputFactory, _profileSettings, extrasPort);   // Phase10-Step6 I4c: 束縛の組み立ては、共通の部品が行う
+            _assignmentBuilder = new AssignmentBindingBuilder(_outputFactory, extrasPort);   // Phase10-Step6 I4c: 束縛の組み立ては、共通の部品が行う
         }
 
         public IReadOnlyList<IActionBinding> Build(int device)

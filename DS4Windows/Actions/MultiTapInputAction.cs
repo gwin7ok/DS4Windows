@@ -30,12 +30,11 @@ namespace DS4Windows.Actions
         private readonly bool _digital;
 
         /// <param name="digitalJudgement">true（既定。SA の割り当て）なら、閾値なしのデジタルな判定（R-5）。false（Controls の Multi-action）なら、従来の閾値つきの判定。</param>
-        public MultiTapInputAction(string name, IReadOnlyList<DS4Controls> triggers, IProfileSettingsService profileSettings, double delaySeconds = 0.0,
+        public MultiTapInputAction(string name, IReadOnlyList<DS4Controls> triggers, double delaySeconds = 0.0,
             bool digitalJudgement = true)
         {
-            if (profileSettings == null) throw new ArgumentNullException(nameof(profileSettings));   // Phase11 K-W6-10: DebouncingMs の項を廃止したため、設定は使わない（呼び出し側とテストの変更を避けるため、引数は残した）
             _digital = digitalJudgement;
-            _combo = new ComboTriggerInputAction(name, triggers, profileSettings, delaySeconds, digitalJudgement: digitalJudgement);
+            _combo = new ComboTriggerInputAction(name, triggers, delaySeconds, digitalJudgement: digitalJudgement);
         }
 
         public string Name => _combo.Name;

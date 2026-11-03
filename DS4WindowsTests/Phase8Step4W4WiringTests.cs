@@ -101,7 +101,7 @@ namespace DS4WindowsTests
             IProfileSettingsService settings = TestHost.GetService<IProfileSettingsService>();
             IManagedActionManager manager = TestHost.GetService<IManagedActionManager>();
             return new TriggerBinding(
-                new ComboTriggerInputAction(sa.name, new[] { DS4Controls.L1 }, settings),
+                new ComboTriggerInputAction(sa.name, new[] { DS4Controls.L1 }),
                 new IOutputAction[] { new ButtonOutputAction(sa, manager) },
                 new BindingPolicy(respectsFreshPressGuard: toggle),   // 設計書 §6: Press は false、Toggle は true
                 sa, 0);

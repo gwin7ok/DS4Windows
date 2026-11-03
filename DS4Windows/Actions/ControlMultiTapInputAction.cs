@@ -13,10 +13,10 @@ namespace DS4Windows.Actions
     {
         private readonly MultiTapInputAction _inner;
 
-        public ControlMultiTapInputAction(string name, DS4Controls control, IProfileSettingsService profileSettings, double delaySeconds = 0.0)
+        public ControlMultiTapInputAction(string name, DS4Controls control, double delaySeconds = 0.0)
         {
             // R-5: SA の MultiAction と同じ、閾値なしのデジタルな判定（既定）
-            _inner = new MultiTapInputAction(name, new[] { control }, profileSettings, delaySeconds);
+            _inner = new MultiTapInputAction(name, new[] { control }, delaySeconds);
         }
 
         public string Name => _inner.Name;

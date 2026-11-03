@@ -38,7 +38,7 @@ namespace DS4Windows.Services
             _extrasPort = extrasPort;
             _outputFactory = outputFactory;
             _controlsFactory = SpecialActionOutputFactory.ForControlsKeyAndMacro(_profileSettings, macroPlayer);
-            _assignmentBuilder = new AssignmentBindingBuilder(_outputFactory ?? _controlsFactory, _profileSettings);   // Phase10-Step6 I4c: 束縛の組み立ては、SA タブ側と同じ部品
+            _assignmentBuilder = new AssignmentBindingBuilder(_outputFactory ?? _controlsFactory);   // Phase10-Step6 I4c: 束縛の組み立ては、SA タブ側と同じ部品
         }
 
         public IReadOnlyList<IActionBinding> Build(int device)

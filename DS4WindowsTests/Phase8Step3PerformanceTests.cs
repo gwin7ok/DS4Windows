@@ -41,7 +41,7 @@ namespace DS4WindowsTests
             {
                 DS4Controls a = buttons[i % buttons.Length];
                 DS4Controls b = buttons[(i + 3) % buttons.Length];
-                result[i] = new ComboTriggerInputAction("b" + i, new[] { a, b }, settings,
+                result[i] = new ComboTriggerInputAction("b" + i, new[] { a, b },
                     delaySeconds: i % 5 == 0 ? 0.5 : 0.0, invertOnRelease: i % 7 == 0);
             }
 

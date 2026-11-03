@@ -69,8 +69,8 @@ namespace DS4WindowsTests
         {
             using var h = new Harness();
             var controls = new ControlButtonInputAction("c", DS4Controls.Cross, ControlBindingKind.Special, ControlOutputNature.Digital,
-                delaySeconds: 0.5, profileSettings: h.Settings);
-            var combo = new ComboTriggerInputAction("s", new[] { DS4Controls.Cross }, h.Settings, 0.5);
+                delaySeconds: 0.5);
+            var combo = new ComboTriggerInputAction("s", new[] { DS4Controls.Cross }, 0.5);
 
             // 押す・離す・押し直す、の列で、SA のトリガーと同じ結果になる
             var frames = new (int Ms, bool Held)[] { (0, false), (100, true), (400, true), (500, true), (700, false), (800, true), (1200, true), (1300, true) };
@@ -83,7 +83,7 @@ namespace DS4WindowsTests
             // 念のため、期待値そのものも固定する（0.5 秒ちょうどで成立）
             using var h2 = new Harness();
             var action = new ControlButtonInputAction("c", DS4Controls.Cross, ControlBindingKind.Special, ControlOutputNature.Digital,
-                delaySeconds: 0.5, profileSettings: h2.Settings);
+                delaySeconds: 0.5);
             h2.Frame(0, false);
             Assert.False(action.Evaluate(h2.Input).IsEstablished);
             h2.Frame(100, true);
@@ -99,7 +99,7 @@ namespace DS4WindowsTests
         {
             using var h = new Harness();
             var action = new ControlButtonInputAction("c", DS4Controls.Cross, ControlBindingKind.Special, ControlOutputNature.Digital,
-                invertOnRelease: true, delaySeconds: 0.2, profileSettings: h.Settings);
+                invertOnRelease: true, delaySeconds: 0.2);
 
             h.Frame(0, false);
             action.Evaluate(h.Input);
@@ -109,12 +109,11 @@ namespace DS4WindowsTests
             Assert.False(action.Evaluate(h.Input).IsEstablished);
         }
 
+        // Phase13-Step1: 旧 ADelayWithoutTheSettings_IsRejected_AndNoDelayNeedsNone は、profileSettings 引数の削除で前提がなくなったため削除した
         [Fact]
-        public void ADelayWithoutTheSettings_IsRejected_AndNoDelayNeedsNone()
+        public void ADelayWithoutAnyOtherArgument_IsAccepted()
         {
-            Assert.Throws<ArgumentNullException>(() =>
-                new ControlButtonInputAction("c", DS4Controls.Cross, ControlBindingKind.Special, ControlOutputNature.Digital, delaySeconds: 1.0));
-            Assert.NotNull(new ControlButtonInputAction("c", DS4Controls.Cross, ControlBindingKind.Special, ControlOutputNature.Digital));
+            Assert.NotNull(new ControlButtonInputAction("c", DS4Controls.Cross, ControlBindingKind.Special, ControlOutputNature.Digital, delaySeconds: 1.0));
         }
 
         // ---- builder ----

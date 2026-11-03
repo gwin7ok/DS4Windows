@@ -52,7 +52,7 @@ namespace DS4WindowsTests
         }
 
         private static ComboTriggerInputAction Combo(Harness h, double delay = 0.0, bool invert = false, params DS4Controls[] triggers)
-            => new ComboTriggerInputAction("t", triggers.Length == 0 ? new[] { DS4Controls.L1 } : triggers, h.Settings, delay, invert);
+            => new ComboTriggerInputAction("t", triggers.Length == 0 ? new[] { DS4Controls.L1 } : triggers, delay, invert);
 
         // ---- AND 条件 ----
 
@@ -79,15 +79,14 @@ namespace DS4WindowsTests
         {
             using var h = new Harness();
             var list = new System.Collections.Generic.List<DS4Controls> { DS4Controls.L1, DS4Controls.R1 };
-            var action = new ComboTriggerInputAction("n", list, h.Settings);
+            var action = new ComboTriggerInputAction("n", list);
 
             list.Clear();
             Assert.Equal(new[] { DS4Controls.L1, DS4Controls.R1 }, action.Triggers);
             Assert.Equal("n", action.Name);
 
-            Assert.Throws<ArgumentNullException>(() => new ComboTriggerInputAction("n", null, h.Settings));
-            Assert.Throws<ArgumentException>(() => new ComboTriggerInputAction("n", new DS4Controls[0], h.Settings));
-            Assert.Throws<ArgumentNullException>(() => new ComboTriggerInputAction("n", list = new System.Collections.Generic.List<DS4Controls> { DS4Controls.L1 }, null));
+            Assert.Throws<ArgumentNullException>(() => new ComboTriggerInputAction("n", null));
+            Assert.Throws<ArgumentException>(() => new ComboTriggerInputAction("n", new DS4Controls[0]));
             Assert.Throws<ArgumentNullException>(() => action.Evaluate(null));
         }
 

@@ -13,9 +13,8 @@ namespace DS4Windows.Services
     {
         private readonly Func<DateTime> _now;
 
-        public TwoStageTriggerProcessor(IProfileSettingsService profileSettings, Func<DateTime> now = null)
+        public TwoStageTriggerProcessor(Func<DateTime> now = null)
         {
-            if (profileSettings == null) throw new ArgumentNullException(nameof(profileSettings));   // Phase11 K-W6-10: DebouncingMs の項を廃止したため、設定は使わない（呼び出し側とテストの変更を避けるため、引数は残した）
             _now = now ?? (() => DateTime.Now);
         }
 

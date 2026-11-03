@@ -51,7 +51,7 @@ namespace DS4WindowsTests
         }
 
         private static MultiTapInputAction NewInput(params DS4Controls[] triggers)
-            => new MultiTapInputAction("p8s77b_multi", triggers, TestHost.GetService<IProfileSettingsService>());
+            => new MultiTapInputAction("p8s77b_multi", triggers);
 
         /// <summary>1 フレーム評価し、ジェスチャーを返す。</summary>
         private static int Frame(MultiTapInputAction input, FakeInput fake, int advanceMilliseconds)

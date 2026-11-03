@@ -13,15 +13,13 @@ namespace DS4Windows.Actions
     public sealed class AssignmentBindingBuilder
     {
         private readonly ISpecialActionOutputFactory _outputFactory;
-        private readonly IProfileSettingsService _profileSettings;
 
         private readonly IControlExtrasPort _extrasPort;   // Phase10-Step6 I5b: SA に付ける Extras の実行。省略時（テスト）は、Extras の束縛を作らない
 
-        public AssignmentBindingBuilder(ISpecialActionOutputFactory outputFactory, IProfileSettingsService profileSettings,
+        public AssignmentBindingBuilder(ISpecialActionOutputFactory outputFactory,
             IControlExtrasPort extrasPort = null)
         {
             _outputFactory = outputFactory ?? throw new ArgumentNullException(nameof(outputFactory));
-            _profileSettings = profileSettings ?? throw new ArgumentNullException(nameof(profileSettings));
             _extrasPort = extrasPort;
         }
 
@@ -50,7 +48,7 @@ namespace DS4Windows.Actions
             double hold = definition.Kind == SpecialAction.ActionTypeId.MultiAction ? 0.0 : definition.HoldSeconds;
             var policy = new BindingPolicy(respectsFreshPressGuard: mainPolicy.RespectsFreshPressGuard, suppressesTriggerButtons: false, resetsTriggerOutput: false,
                 erasesOutputEveryFrame: false, logsRisingEdge: true);
-            return new TriggerBinding(new ComboTriggerInputAction(name, definition.Triggers, _profileSettings, hold),
+            return new TriggerBinding(new ComboTriggerInputAction(name, definition.Triggers, hold),
                 new IOutputAction[] { new ControlExtrasOutputAction(identity, definition.Extras.Value, _extrasPort) }, policy, identity, -1,
                 primarySource: source);   // SA 本体と一緒に、エンジンが処理する（SA は、プロファイルの SA の一覧の順に処理されるため）
         }
@@ -76,7 +74,7 @@ namespace DS4Windows.Actions
             // Phase10-Step6 W8 相当: Multi-action は、Controls 由来でも、タップ・長押し・ダブルタップを判定する独立した入力（トリガーは 1 つのボタン。押下の判定は SA と同じ閾値）。
             // 元のボタンの出力は、方針（Controls は毎フレーム消す）で、待ち時間のあいだだけでなく常に消す（ユーザー決定）
             if (definition.Origin == AssignmentOrigin.Controls && outputs.IsMultiTap)
-                return new ControlMultiTapInputAction(source.name, definition.Triggers[0], _profileSettings, definition.HoldSeconds);
+                return new ControlMultiTapInputAction(source.name, definition.Triggers[0], definition.HoldSeconds);
 
             if (definition.Origin == AssignmentOrigin.Controls)
             {
@@ -85,13 +83,13 @@ namespace DS4Windows.Actions
                     : definition.Kind == SpecialAction.ActionTypeId.Macro ? ControlBindingKind.Macro
                     : ControlBindingKind.Special;
                 return new ControlButtonInputAction(source.name, definition.Triggers[0], kind, ControlOutputNatureTable.ForKind(kind),
-                    invertOnRelease: outputs.InvertOnRelease, delaySeconds: definition.HoldSeconds, profileSettings: _profileSettings);
+                    invertOnRelease: outputs.InvertOnRelease, delaySeconds: definition.HoldSeconds);
             }
 
             // SA は、複数ボタンの組み合わせ。MultiAction だけは、タップ・長押し・ダブルタップを判定する独立した入力
             return outputs.IsMultiTap
-                ? (IInputAction)new MultiTapInputAction(source.name, definition.Triggers, _profileSettings, definition.HoldSeconds)
-                : new ComboTriggerInputAction(source.name, definition.Triggers, _profileSettings, definition.HoldSeconds, outputs.InvertOnRelease);
+                ? (IInputAction)new MultiTapInputAction(source.name, definition.Triggers, definition.HoldSeconds)
+                : new ComboTriggerInputAction(source.name, definition.Triggers, definition.HoldSeconds, outputs.InvertOnRelease);
         }
     }
 }

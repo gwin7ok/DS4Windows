@@ -146,8 +146,8 @@ namespace DS4WindowsTests
             var triggers = new[] { DS4Controls.L2, DS4Controls.Cross };
             var input = new LightInput { Digital = true, Threshold = false };
 
-            Assert.True(new ComboTriggerInputAction("sa", triggers, settings).Evaluate(input).IsEstablished);
-            Assert.False(new ComboTriggerInputAction("sa", triggers, settings, digitalJudgement: false).Evaluate(input).IsEstablished);
+            Assert.True(new ComboTriggerInputAction("sa", triggers).Evaluate(input).IsEstablished);
+            Assert.False(new ComboTriggerInputAction("sa", triggers, digitalJudgement: false).Evaluate(input).IsEstablished);
         }
 
         // ---- ③ アナログな出力 ----

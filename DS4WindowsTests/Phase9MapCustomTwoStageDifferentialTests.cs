@@ -277,7 +277,7 @@ namespace DS4WindowsTests
                     var oldClock = new Clock();
                     var newClock = new Clock();
                     var oldProcessor = new OldProcessor(settings, oldClock.Get);
-                    var newProcessor = new TwoStageTriggerProcessor(settings, newClock.Get);
+                    var newProcessor = new TwoStageTriggerProcessor(newClock.Get);
                     var oldData = new TwoStageTriggerMappingData();
                     var newData = new TwoStageTriggerMappingData();
 
@@ -315,7 +315,7 @@ namespace DS4WindowsTests
         {
             IProfileSettingsService settings = TestRepositoryFactory.CreateProfileSettingsService();
             var clock = new Clock();
-            var processor = new TwoStageTriggerProcessor(settings, clock.Get);
+            var processor = new TwoStageTriggerProcessor(clock.Get);
             var data = new TwoStageTriggerMappingData();
             var outSettings = new TriggerOutputSettings { twoStageMode = TwoStageTriggerMode.HipFire, hipFireMS = 100 };
             var soft = new DS4ControlSettings(DS4Controls.L2);
