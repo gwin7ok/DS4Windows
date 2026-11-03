@@ -102,6 +102,8 @@
 - 実機でのフォーカスの確認は、2d（実行）と 2e（画面）が揃ったため、2f で行う。
 - 2f 完了（2026-11-03、DS4 実機）: 編集画面（種別の追加、入力欄、両方空で保存停止）、SA での前面化（パス指定・ウインドウ名指定）、最小化からの復元、対象なしで落ちず警告ログ、Controls での割り当て・実行・再起動後の保持・説明文の表示。すべて想定どおり。
 - 2h 実装済み（2026-11-03。実機確認の前）: `WindowTitleMatchMode`（列挙）、`WindowTargetText`（印と一致方法の相互変換、実行ファイル名のみへの変換）、`FocusWindowViewModel`（`TitleText`／`TitleMatchMode` を追加し、`WindowTitle` は組み立てた保存用の文字列）、`WindowTargetEditor`（一覧とボタン）、翻訳 5 件。検証: Debug ALL 警告 0・エラー 0、DS4WindowsTests 2,930 件（+42）と StandaloneTests 11 件が合格。
+- 2h 完了（2026-11-03、DS4 実機で確認し、コミット済み）。
+- 2i 実装済み・DS4 実機で確認済み（2026-11-03。マークの見た目、ドロップでの取得、自分自身・背景の除外、取得した値での前面化、保存後の再表示。すべて想定どおり）: `IWindowSystem.GetWindowUnderCursor()`（`GetCursorPos`→`WindowFromPoint`→`GetAncestor(GA_ROOT)`。戻りは `CapturedWindow`＝元の大文字小文字のフルパス・タイトル・プロセス ID）、`WindowTargetPicker`（自分自身のウィンドウは除外）、`WindowTargetEditor` にターゲットマーク（ウインドウ名のラベルの右。マウスキャプチャ＋カーソル変更）。`AssignmentEditor`／`EditorWindowFactory` は、`IWindowSystem` を必須引数で受ける。ドロップ後は一致方法を完全一致に戻し、フルパスとタイトル全文を入れる。既知の制限: タイトルが `^` で始まる・`$` で終わる・`*` で始まる場合、入力欄の「印は取り除く」規則（2h）で先頭／末尾の 1 文字が落ちる。検証: Debug ALL 警告 0・エラー 0、DS4WindowsTests 2,938 件（+8）と StandaloneTests 11 件が合格。
 
 ## 6. 完了条件
 

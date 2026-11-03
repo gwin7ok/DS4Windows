@@ -38,6 +38,8 @@ namespace DS4WindowsTests
                 return Windows;
             }
 
+            public CapturedWindow GetWindowUnderCursor() => null;
+
             public bool IsMinimized(IntPtr window) => Minimized.Contains(window);
 
             public void Restore(IntPtr window)

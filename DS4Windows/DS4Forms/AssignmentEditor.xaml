@@ -238,7 +238,7 @@
                                     <xctk:DecimalUpDown Value="{Binding Delay}" Width="60" Minimum="0" Maximum="60" FormatString= "F2" Increment="0.5" />
                                     <Label Content="secs" />
                                 </StackPanel>
-                                <local:WindowTargetEditor Path="{Binding WindowPath, ValidatesOnNotifyDataErrors=True}"
+                                <local:WindowTargetEditor x:Name="focusWindowTarget" Path="{Binding WindowPath, ValidatesOnNotifyDataErrors=True}"
                                                           Title="{Binding TitleText, ValidatesOnNotifyDataErrors=True}"
                                                           TitleMatchMode="{Binding TitleMatchMode}" />
                             </StackPanel>

@@ -28,6 +28,8 @@ namespace DS4Windows.Services
         private readonly IProfileSwitcher _profileSwitcher;
         // Phase7-Step10e W2: 画面・ViewModel が上限を読むための環境サービス
         private readonly IEnvironmentService _environmentService;
+        // Phase12-Step2 2i: FocusWindow の編集画面のターゲットマークが、ドロップしたウィンドウを取得するための窓口
+        private readonly IWindowSystem _windowSystem;
 
         public EditorWindowFactory(
             IProfileSettingsService profileSettings,
@@ -40,9 +42,11 @@ namespace DS4Windows.Services
             IAppSettingsService appSettings,
             IProfileRepository profileRepository,
             IProfileSwitcher profileSwitcher,
-            IEnvironmentService environmentService)
+            IEnvironmentService environmentService,
+            IWindowSystem windowSystem)
         {
             _environmentService = environmentService ?? throw new ArgumentNullException(nameof(environmentService));
+            _windowSystem = windowSystem ?? throw new ArgumentNullException(nameof(windowSystem));
             _profileSettings = profileSettings ?? throw new ArgumentNullException(nameof(profileSettings));
             _outputSlotService = outputSlotService ?? throw new ArgumentNullException(nameof(outputSlotService));
             _pathService = pathService ?? throw new ArgumentNullException(nameof(pathService));
@@ -79,12 +83,12 @@ namespace DS4Windows.Services
         public AssignmentEditor CreateAssignmentEditor(int deviceNum, ProfileList profileList, int targetDevice,
             SpecialAction specialAction = null)
             => new AssignmentEditor(deviceNum, profileList, targetDevice, this, _viewModelFactory,
-                _specialActionRepository, _profileSettings, _outputSlotService, _environmentService, specialAction);
+                _specialActionRepository, _profileSettings, _outputSlotService, _environmentService, _windowSystem, specialAction);
 
         // Phase10-Step3 W4: ProfileEditor.ShowControlAssignmentEditor が呼ぶ
         public AssignmentEditor CreateControlActionEditor(int deviceNum, DS4ControlSettings controlSettings, ProfileList profileList, int targetDevice)
             => new AssignmentEditor(deviceNum, controlSettings, profileList, targetDevice, this, _viewModelFactory,
-                _specialActionRepository, _profileSettings, _outputSlotService, _environmentService);
+                _specialActionRepository, _profileSettings, _outputSlotService, _environmentService, _windowSystem);
 
         public ProfileEditor CreateProfileEditor(int targetDevice)
             => new ProfileEditor(targetDevice, _appSettings, _profileSettings, this, _profileRepository,

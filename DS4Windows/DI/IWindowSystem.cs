@@ -39,5 +39,11 @@ namespace DS4Windows.Services
 
         /// <summary>Z 順の最上位へ出す。</summary>
         void BringToTop(IntPtr window);
+
+        /// <summary>
+        /// Phase12-Step2 2i: 今のマウスカーソルの位置にあるウィンドウの、最上位の親（トップレベル）。ウィンドウがない・取得できないときは null。
+        /// 位置は画面の座標（物理ピクセル）で、カーソルの取得と同じ座標系のため、画面の拡大率の変換は要らない。
+        /// </summary>
+        CapturedWindow GetWindowUnderCursor();
     }
 }

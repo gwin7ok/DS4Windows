@@ -103,6 +103,23 @@ namespace DS4Windows.Services
 
         public void BringToTop(IntPtr window) => BringWindowToTop(window);
 
+        public CapturedWindow GetWindowUnderCursor()
+        {
+            if (!GetCursorPos(out POINT point)) return null;
+
+            IntPtr window = WindowFromPoint(point);
+            if (window == IntPtr.Zero) return null;
+
+            IntPtr root = GetAncestor(window, GA_ROOT);
+            if (root != IntPtr.Zero) window = root;
+
+            var text = new StringBuilder(1024);
+            GetWindowText(window, text, text.Capacity);
+            GetWindowThreadProcessId(window, out uint processId);
+
+            return new CapturedWindow(window, (int)processId, GetProcessPathRaw(processId), text.ToString());
+        }
+
         private static bool IsCloaked(IntPtr hWnd)
         {
             try
@@ -116,6 +133,10 @@ namespace DS4Windows.Services
         }
 
         private static string GetProcessPath(uint processId)
+            => GetProcessPathRaw(processId).Replace('/', '\\').ToLower();
+
+        /// <summary>元の大文字小文字のままのフルパス（照合用の正規化は <see cref="GetProcessPath"/>）。</summary>
+        private static string GetProcessPathRaw(uint processId)
         {
             IntPtr process = OpenProcess(PROCESS_QUERY_LIMITED_INFORMATION, false, processId);
             if (process == IntPtr.Zero) return string.Empty;
@@ -125,7 +146,7 @@ namespace DS4Windows.Services
                 var buffer = new StringBuilder(1024);
                 int size = buffer.Capacity;
                 if (!QueryFullProcessImageName(process, 0, buffer, ref size)) return string.Empty;
-                return buffer.ToString().Replace('/', '\\').ToLower();
+                return buffer.ToString();
             }
             finally
             {
@@ -175,6 +196,24 @@ namespace DS4Windows.Services
 
         [DllImport("user32.dll")]
         private static extern bool EnumWindows(EnumWindowsProc lpEnumFunc, IntPtr lParam);
+
+        [StructLayout(LayoutKind.Sequential)]
+        private struct POINT
+        {
+            public int X;
+            public int Y;
+        }
+
+        private const uint GA_ROOT = 2;
+
+        [DllImport("user32.dll")]
+        private static extern bool GetCursorPos(out POINT lpPoint);
+
+        [DllImport("user32.dll")]
+        private static extern IntPtr WindowFromPoint(POINT point);
+
+        [DllImport("user32.dll")]
+        private static extern IntPtr GetAncestor(IntPtr hWnd, uint gaFlags);
 
         [DllImport("user32.dll")]
         private static extern bool IsWindowVisible(IntPtr hWnd);

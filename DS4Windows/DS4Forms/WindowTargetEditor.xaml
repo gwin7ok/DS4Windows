@@ -19,7 +19,24 @@
             <Button Content="{lex:Loc Browse}" DockPanel.Dock="Right" Margin="8,0,0,0" Padding="8,0" Click="BrowseBtn_Click" />
             <TextBox Text="{Binding Path, ElementName=root, UpdateSourceTrigger=PropertyChanged}" ToolTip="{lex:Loc AutoProfPathTip}" />
         </DockPanel>
-        <Label Content="{lex:Loc WindowTitle}" Padding="0,0,0,2" />
+        <DockPanel Margin="0,0,0,2">
+            <!-- Phase12-Step2 2i: ターゲットマーク。ドラッグして他のウィンドウの上で離すと、そのウィンドウのパスとタイトルを入れる -->
+            <Border x:Name="targetMark" DockPanel.Dock="Right" Width="22" Height="22" Background="Transparent"
+                    BorderBrush="{DynamicResource ForegroundColor}" BorderThickness="1.5" Cursor="Cross"
+                    ToolTip="{lex:Loc SpecialActionEdit.FocusWindowDragTip}"
+                    MouseLeftButtonDown="TargetMark_MouseLeftButtonDown" MouseLeftButtonUp="TargetMark_MouseLeftButtonUp"
+                    LostMouseCapture="TargetMark_LostMouseCapture">
+                <Grid>
+                    <Ellipse Width="10" Height="10" Stroke="{DynamicResource ForegroundColor}" StrokeThickness="1.5"
+                             HorizontalAlignment="Center" VerticalAlignment="Center" IsHitTestVisible="False" />
+                    <Rectangle Width="1.5" Height="6" Fill="{DynamicResource ForegroundColor}" HorizontalAlignment="Center" VerticalAlignment="Top" IsHitTestVisible="False" />
+                    <Rectangle Width="1.5" Height="6" Fill="{DynamicResource ForegroundColor}" HorizontalAlignment="Center" VerticalAlignment="Bottom" IsHitTestVisible="False" />
+                    <Rectangle Width="6" Height="1.5" Fill="{DynamicResource ForegroundColor}" HorizontalAlignment="Left" VerticalAlignment="Center" IsHitTestVisible="False" />
+                    <Rectangle Width="6" Height="1.5" Fill="{DynamicResource ForegroundColor}" HorizontalAlignment="Right" VerticalAlignment="Center" IsHitTestVisible="False" />
+                </Grid>
+            </Border>
+            <Label Content="{lex:Loc WindowTitle}" Padding="0,0,0,2" VerticalAlignment="Center" />
+        </DockPanel>
         <TextBox Text="{Binding Title, ElementName=root, UpdateSourceTrigger=PropertyChanged}" ToolTip="{lex:Loc AutoProfTitleTip}" />
         <ComboBox x:Name="titleMatchCombo" Margin="0,4,0,0" SelectionChanged="TitleMatchCombo_SelectionChanged">
             <ComboBoxItem Content="{lex:Loc SpecialActionEdit.FocusWindowMatchExact}" />

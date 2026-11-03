@@ -95,9 +95,10 @@ namespace DS4WinWPF.DS4Forms
             DS4Windows.DI.IProfileSettingsService profileSettingsService,
             DS4Windows.DI.IOutputSlotService outputSlotService,
             DS4Windows.DI.IEnvironmentService environmentService,
+            DS4Windows.Services.IWindowSystem windowSystem,
             DS4Windows.SpecialAction specialAction = null)
             : this(deviceNum, (DS4Windows.DS4ControlSettings)null, profileList, targetDevice, editorWindowFactory, viewModelFactory,
-                specialActionRepository, profileSettingsService, outputSlotService, environmentService, specialAction)
+                specialActionRepository, profileSettingsService, outputSlotService, environmentService, windowSystem, specialAction)
         {
         }
 
@@ -113,9 +114,10 @@ namespace DS4WinWPF.DS4Forms
             DS4Windows.DI.ISpecialActionRepository specialActionRepository,
             DS4Windows.DI.IProfileSettingsService profileSettingsService,
             DS4Windows.DI.IOutputSlotService outputSlotService,
-            DS4Windows.DI.IEnvironmentService environmentService)
+            DS4Windows.DI.IEnvironmentService environmentService,
+            DS4Windows.Services.IWindowSystem windowSystem)
             : this(deviceNum, controlSettings ?? throw new ArgumentNullException(nameof(controlSettings)), profileList, targetDevice,
-                editorWindowFactory, viewModelFactory, specialActionRepository, profileSettingsService, outputSlotService, environmentService, null)
+                editorWindowFactory, viewModelFactory, specialActionRepository, profileSettingsService, outputSlotService, environmentService, windowSystem, null)
         {
         }
 
@@ -126,6 +128,7 @@ namespace DS4WinWPF.DS4Forms
             DS4Windows.DI.IProfileSettingsService profileSettingsService,
             DS4Windows.DI.IOutputSlotService outputSlotService,
             DS4Windows.DI.IEnvironmentService environmentService,
+            DS4Windows.Services.IWindowSystem windowSystem,
             DS4Windows.SpecialAction specialAction)
         {
             this.environmentService = environmentService ?? throw new ArgumentNullException(nameof(environmentService));
@@ -134,7 +137,10 @@ namespace DS4WinWPF.DS4Forms
             this.specialActionRepository = specialActionRepository ?? throw new ArgumentNullException(nameof(specialActionRepository));
             if (profileSettingsService == null) throw new ArgumentNullException(nameof(profileSettingsService));
             if (outputSlotService == null) throw new ArgumentNullException(nameof(outputSlotService));
+            if (windowSystem == null) throw new ArgumentNullException(nameof(windowSystem));
             InitializeComponent();
+            // Phase12-Step2 2i: FocusWindow のターゲットマークで、ドロップしたウィンドウを取得する（DS4Windows 自身のウィンドウは対象にしない）
+            focusWindowTarget.Picker = new WindowTargetPicker(windowSystem, Environment.ProcessId);
             this.targetDevice = targetDevice;
 
             controlMode = controlSettings != null;

@@ -3237,6 +3237,15 @@ namespace DS4WinWPF.Translations {
         }
 
         /// <summary>
+        ///   Looks up a localized string similar to Drag this mark onto a window and release to set its program path and window title.
+        /// </summary>
+        public static string SpecialActionEdit_FocusWindowDragTip {
+            get {
+                return ResourceManager.GetString("SpecialActionEdit.FocusWindowDragTip", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Match executable name only.
         /// </summary>
         public static string SpecialActionEdit_FocusWindowExeNameOnly {
