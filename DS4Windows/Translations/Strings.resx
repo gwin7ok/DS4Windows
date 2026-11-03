@@ -1156,6 +1156,12 @@ Disabled:
   <data name="RecordBox.DoubleClickMoveEdit" xml:space="preserve">
     <value>Double click on a mouse move to edit its position</value>
   </data>
+  <data name="RecordBox.RecordMouseMovement" xml:space="preserve">
+    <value>Record mouse movement</value>
+  </data>
+  <data name="RecordBox.MoveRecordLimitReached" xml:space="preserve">
+    <value>Recording stopped: the number of mouse move steps reached the limit ({0}).</value>
+  </data>
   <data name="RecordBox.DoubleClickWaitEdit" xml:space="preserve">
     <value>Double click on a wait to edit the time</value>
   </data>

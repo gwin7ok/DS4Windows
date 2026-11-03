@@ -110,6 +110,7 @@ namespace DS4Windows.DI
             // Phase12-Step2 2b-2（R-4）: ウィンドウのフォーカス（Win32 の操作と、手順を分ける）
             services.AddSingleton<IWindowSystem, Win32WindowSystem>();
             services.AddSingleton<IWindowFocuser, WindowFocuser>();
+            services.AddSingleton<IMouseInputHook, LowLevelMouseHook>();   // Phase12-Step3 3e: マクロの記録で、画面全体のマウス入力を監視する
 
 
             // プロファイルのアクション取得（ControlService が使用）。Phase6-Step10-4-2d: アクション連鎖サービスは廃止

@@ -30,6 +30,8 @@ namespace DS4Windows.Services
         private readonly IEnvironmentService _environmentService;
         // Phase12-Step2 2i: FocusWindow の編集画面のターゲットマークが、ドロップしたウィンドウを取得するための窓口
         private readonly IWindowSystem _windowSystem;
+        // Phase12-Step3 3e: マクロの記録で、画面全体のマウス入力（移動・ボタン）を記録するための監視
+        private readonly IMouseInputHook _mouseHook;
 
         public EditorWindowFactory(
             IProfileSettingsService profileSettings,
@@ -43,8 +45,10 @@ namespace DS4Windows.Services
             IProfileRepository profileRepository,
             IProfileSwitcher profileSwitcher,
             IEnvironmentService environmentService,
-            IWindowSystem windowSystem)
+            IWindowSystem windowSystem,
+            IMouseInputHook mouseHook)
         {
+            _mouseHook = mouseHook ?? throw new ArgumentNullException(nameof(mouseHook));
             _environmentService = environmentService ?? throw new ArgumentNullException(nameof(environmentService));
             _windowSystem = windowSystem ?? throw new ArgumentNullException(nameof(windowSystem));
             _profileSettings = profileSettings ?? throw new ArgumentNullException(nameof(profileSettings));
@@ -67,7 +71,7 @@ namespace DS4Windows.Services
         public RecordBox CreateRecordBox(int deviceNum, DS4ControlSettings controlSettings, int targetDevice,
             bool showscan = true, bool repeatable = true, bool showPlaybackOptions = true)
             => new RecordBox(deviceNum, controlSettings, targetDevice, showscan, repeatable, showPlaybackOptions,
-                _controlServiceAccessor(), _pathService, _viewModelFactory);
+                _controlServiceAccessor(), _pathService, _viewModelFactory, _windowSystem, _mouseHook);
 
         public RecordBoxWindow CreateRecordBoxWindow(int deviceNum, DS4ControlSettings settings, int targetDevice,
             bool repeatable = true, bool showPlaybackOptions = true)

@@ -55,6 +55,12 @@ namespace DS4WinWPF.DS4Forms.ViewModels
         private bool toggleLightbar;
         public bool ToggleLightbar { get => toggleLightbar; set => toggleLightbar = value; }
 
+        /// <summary>Phase12-Step3 3e（R-3）: 記録中に、ほかのウィンドウの上も含めて、マウスの移動とボタンを記録する。</summary>
+        public bool RecordMouseMovement { get; set; }
+
+        /// <summary>Phase12-Step3 3e: 記録する座標の基準。0＝画面の座標、1＝ポインターの下のウィンドウ内の座標（<see cref="MacroPointerMoveMode"/> と同じ番号）。</summary>
+        public int PointerRecordModeIndex { get; set; }
+
         private bool toggleRummble;
         public bool ToggleRumble { get => toggleRummble; set => toggleRummble = value; }
 

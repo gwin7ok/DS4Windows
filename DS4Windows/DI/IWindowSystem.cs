@@ -63,5 +63,12 @@ namespace DS4Windows.Services
         /// 前面ウィンドウがない・最小化されている・外枠が取れない・面積がないときは false。
         /// </summary>
         bool TryGetForegroundWindowOrigin(out int x, out int y);
+
+        /// <summary>
+        /// Phase12-Step3 3e（R-3）: 画面の座標 (<paramref name="x"/>, <paramref name="y"/>) にあるウィンドウの、最上位の親（トップレベル）の、
+        /// プロセスの ID と外枠の左上（画面の座標）。マクロの記録が、自分のウィンドウの上の操作を除くのと、ウィンドウ基準の座標を求めるのに使う。
+        /// ウィンドウがない・外枠が取れないときは false。
+        /// </summary>
+        bool TryGetWindowAtPoint(int x, int y, out int processId, out int originX, out int originY);
     }
 }

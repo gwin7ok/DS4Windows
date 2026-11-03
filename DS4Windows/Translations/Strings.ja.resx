@@ -699,4 +699,10 @@ Bluetooth接続の設定（オプション）：PSボタンとShareボタンを3
   <data name="RecordBox.DoubleClickMoveEdit" xml:space="preserve">
     <value>マウス移動をダブルクリックすると、座標を編集できます</value>
   </data>
+  <data name="RecordBox.RecordMouseMovement" xml:space="preserve">
+    <value>マウスの移動を記録する</value>
+  </data>
+  <data name="RecordBox.MoveRecordLimitReached" xml:space="preserve">
+    <value>記録を止めました: マウス移動のステップが上限（{0} 個）に達しました。</value>
+  </data>
 </root>

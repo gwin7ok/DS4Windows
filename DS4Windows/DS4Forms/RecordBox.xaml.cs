@@ -43,6 +43,11 @@ namespace DS4WinWPF.DS4Forms
     public partial class RecordBox : UserControl
     {
         private RecordBoxViewModel recordBoxVM;
+        // Phase12-Step3 3e（R-3）: マウスの移動の記録（画面全体のマウス入力の監視と、記録のロジック）
+        private readonly DS4Windows.Services.IWindowSystem windowSystem;
+        private readonly DS4Windows.Services.IMouseInputHook mouseHook;
+        private DS4Windows.MacroPointerRecorder pointerRecorder;
+        private bool limitStopRequested;
         public RecordBoxViewModel RecordBoxVM { get => recordBoxVM; }
 
         private bool saved;
@@ -65,8 +70,11 @@ namespace DS4WinWPF.DS4Forms
         public RecordBox(int deviceNum, DS4Windows.DS4ControlSettings controlSettings, int targetDevice,
             bool showscan, bool repeatable, bool showPlaybackOptions,
             DS4Windows.ControlService controlService, DS4Windows.DI.IPathService pathService,
-            DS4Windows.DI.IViewModelFactory viewModelFactory)
+            DS4Windows.DI.IViewModelFactory viewModelFactory,
+            DS4Windows.Services.IWindowSystem windowSystem, DS4Windows.Services.IMouseInputHook mouseHook)
         {
+            this.windowSystem = windowSystem ?? throw new ArgumentNullException(nameof(windowSystem));
+            this.mouseHook = mouseHook ?? throw new ArgumentNullException(nameof(mouseHook));
             this.controlService = controlService ?? throw new ArgumentNullException(nameof(controlService));
             this.pathService = pathService ?? throw new ArgumentNullException(nameof(pathService));
             if (viewModelFactory == null) throw new ArgumentNullException(nameof(viewModelFactory));
@@ -104,6 +112,7 @@ namespace DS4WinWPF.DS4Forms
             recordBoxVM.MacroSteps.CollectionChanged += MacroSteps_CollectionChanged;
             Save += RecordBox_Save;
             Cancel += RecordBox_Cancel;
+            Unloaded += (sender, e) => StopMouseRecording();
         }
 
         private void RecordBox_Cancel(object sender, EventArgs e)
@@ -216,11 +225,13 @@ namespace DS4WinWPF.DS4Forms
                 Enable_Controls(false);
                 recordBoxVM.Sw.Restart();
                 this.Focus();
+                StartMouseRecording();
             }
             else
             {
                 controlService.recordingMacro = false;
                 recordBoxVM.AppendIndex = -1;
+                StopMouseRecording();
                 ds4.Stop();
                 recordBtn.Content = "Record";
                 mouseButtonsPanel.Visibility = Visibility.Hidden;
@@ -276,6 +287,8 @@ namespace DS4WinWPF.DS4Forms
             clearStepsBtn.IsEnabled = on;
             addWaitTimeBtn.IsEnabled = on;
             addMouseMoveBtn.IsEnabled = on;
+            recordMouseMoveCk.IsEnabled = on;
+            pointerRecordModeCb.IsEnabled = on;
         }
 
         private void ChangeLightbarAction()
@@ -657,6 +670,86 @@ namespace DS4WinWPF.DS4Forms
         }
 
         // Phase12-Step3 3d（R-3）: マウス移動のステップを、選択した位置の前（選択がなければ末尾）へ入れ、選択する。座標は、ダブルクリックで直す
+        private void StartMouseRecording()
+        {
+            if (!recordBoxVM.RecordMouseMovement) return;
+
+            limitStopRequested = false;
+            pointerRecorder = new DS4Windows.MacroPointerRecorder((DS4Windows.MacroPointerMoveMode)recordBoxVM.PointerRecordModeIndex,
+                windowSystem, Environment.ProcessId);
+            mouseHook.PointerMoved += MouseHook_PointerMoved;
+            mouseHook.ButtonChanged += MouseHook_ButtonChanged;
+            if (!mouseHook.Start())
+            {
+                StopMouseRecording();
+            }
+        }
+
+        private void StopMouseRecording()
+        {
+            mouseHook.PointerMoved -= MouseHook_PointerMoved;
+            mouseHook.ButtonChanged -= MouseHook_ButtonChanged;
+            mouseHook.Stop();
+            pointerRecorder = null;
+        }
+
+        private void AddPointerMoveStep(int macroValue)
+        {
+            var move = DS4Windows.MacroPointerMove.TryFromMacroValue(macroValue, out DS4Windows.MacroPointerMove decoded) ? decoded.DisplayName : "Move";
+            recordBoxVM.AddMacroStep(new DS4Windows.MacroStep(macroValue, move,
+                DS4Windows.MacroStep.StepType.ActDown, DS4Windows.MacroStep.StepOutput.PointerMove));
+        }
+
+        private void MouseHook_PointerMoved(int x, int y)
+        {
+            if (!recordBoxVM.Recording || pointerRecorder == null) return;
+
+            if (pointerRecorder.TryRecordMove(x, y, Environment.TickCount64, out int macroValue))
+            {
+                AddPointerMoveStep(macroValue);
+                StopWhenLimitReached();
+            }
+        }
+
+        private void MouseHook_ButtonChanged(int value, bool isDown, int x, int y)
+        {
+            if (!recordBoxVM.Recording || pointerRecorder == null) return;
+            if (!pointerRecorder.TryBeginButton(x, y, Environment.TickCount64, out bool hasMove, out int moveValue)) return;
+
+            if (hasMove)
+            {
+                AddPointerMoveStep(moveValue);
+            }
+
+            recordBoxVM.AddMacroStep(new DS4Windows.MacroStep(value, DS4Windows.MacroParser.InputName(value, recordBoxVM.MacroOutType),
+                isDown ? DS4Windows.MacroStep.StepType.ActDown : DS4Windows.MacroStep.StepType.ActUp, DS4Windows.MacroStep.StepOutput.Button));
+            if (isDown)
+            {
+                recordBoxVM.KeysdownMap[value] = true;
+            }
+            else
+            {
+                recordBoxVM.KeysdownMap.Remove(value);
+            }
+
+            StopWhenLimitReached();
+        }
+
+        // 移動ステップが上限に達したら、記録を止めて知らせる（フックのコールバックの中では止めず、あとで UI のスレッドで止める）
+        private void StopWhenLimitReached()
+        {
+            if (pointerRecorder == null || !pointerRecorder.LimitReached || limitStopRequested) return;
+
+            limitStopRequested = true;
+            Dispatcher.BeginInvoke(new Action(() =>
+            {
+                if (!recordBoxVM.Recording) return;
+
+                RecordBtn_Click(this, new RoutedEventArgs());
+                System.Windows.MessageBox.Show(string.Format(DS4WinWPF.Translations.Strings.RecordBox_MoveRecordLimitReached, DS4Windows.MacroPointerRecorder.MaxMoveSteps));
+            }));
+        }
+
         private void AddMouseMoveBtn_Click(object sender, RoutedEventArgs e)
         {
             if (recordBoxVM.Recording) return;

@@ -15,6 +15,9 @@ namespace DS4WindowsTests
         public (int X, int Y) ForegroundOrigin = (0, 0);
         public bool MoveResult = true;
 
+        /// <summary>座標にあるウィンドウ（見つかったか、プロセスの ID、外枠の左上）。既定は、どこでも別のプロセスのウィンドウ（左上は 0, 0）。</summary>
+        public Func<int, int, (bool Found, int ProcessId, int OriginX, int OriginY)> WindowAt = (x, y) => (true, 1234, 0, 0);
+
         public bool MoveCursorTo(int x, int y)
         {
             MovedTo.Add((x, y));
@@ -26,6 +29,15 @@ namespace DS4WindowsTests
             x = ForegroundOrigin.X;
             y = ForegroundOrigin.Y;
             return HasForegroundWindow;
+        }
+
+        public bool TryGetWindowAtPoint(int x, int y, out int processId, out int originX, out int originY)
+        {
+            (bool found, int pid, int ox, int oy) = WindowAt(x, y);
+            processId = pid;
+            originX = ox;
+            originY = oy;
+            return found;
         }
 
         public IReadOnlyList<WindowCandidate> EnumerateWindows() => throw new NotSupportedException();

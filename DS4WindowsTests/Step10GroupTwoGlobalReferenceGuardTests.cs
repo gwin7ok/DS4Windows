@@ -170,19 +170,21 @@ namespace DS4WindowsTests
             var switcher = new DS4Windows.Actions.DefaultProfileSwitcher();
             var vm = new NullViewModelFactory();
             var windowSystem = new DS4Windows.Services.Win32WindowSystem();
+            var mouseHook = new DS4Windows.Services.LowLevelMouseHook();
 
-            Assert.Throws<ArgumentNullException>(() => new DS4Windows.Services.EditorWindowFactory(null, slots, path, vm, repo, loader, cs, app, profiles, switcher, new DS4Windows.EnvironmentService(), windowSystem));
-            Assert.Throws<ArgumentNullException>(() => new DS4Windows.Services.EditorWindowFactory(settings, null, path, vm, repo, loader, cs, app, profiles, switcher, new DS4Windows.EnvironmentService(), windowSystem));
-            Assert.Throws<ArgumentNullException>(() => new DS4Windows.Services.EditorWindowFactory(settings, slots, null, vm, repo, loader, cs, app, profiles, switcher, new DS4Windows.EnvironmentService(), windowSystem));
-            Assert.Throws<ArgumentNullException>(() => new DS4Windows.Services.EditorWindowFactory(settings, slots, path, null, repo, loader, cs, app, profiles, switcher, new DS4Windows.EnvironmentService(), windowSystem));
-            Assert.Throws<ArgumentNullException>(() => new DS4Windows.Services.EditorWindowFactory(settings, slots, path, vm, null, loader, cs, app, profiles, switcher, new DS4Windows.EnvironmentService(), windowSystem));
-            Assert.Throws<ArgumentNullException>(() => new DS4Windows.Services.EditorWindowFactory(settings, slots, path, vm, repo, null, cs, app, profiles, switcher, new DS4Windows.EnvironmentService(), windowSystem));
-            Assert.Throws<ArgumentNullException>(() => new DS4Windows.Services.EditorWindowFactory(settings, slots, path, vm, repo, loader, null, app, profiles, switcher, new DS4Windows.EnvironmentService(), windowSystem));
-            Assert.Throws<ArgumentNullException>(() => new DS4Windows.Services.EditorWindowFactory(settings, slots, path, vm, repo, loader, cs, null, profiles, switcher, new DS4Windows.EnvironmentService(), windowSystem));
-            Assert.Throws<ArgumentNullException>(() => new DS4Windows.Services.EditorWindowFactory(settings, slots, path, vm, repo, loader, cs, app, null, switcher, new DS4Windows.EnvironmentService(), windowSystem));
-            Assert.Throws<ArgumentNullException>(() => new DS4Windows.Services.EditorWindowFactory(settings, slots, path, vm, repo, loader, cs, app, profiles, switcher, null, windowSystem));
-            Assert.Throws<ArgumentNullException>(() => new DS4Windows.Services.EditorWindowFactory(settings, slots, path, vm, repo, loader, cs, app, profiles, null, new DS4Windows.EnvironmentService(), windowSystem));
-            Assert.Throws<ArgumentNullException>(() => new DS4Windows.Services.EditorWindowFactory(settings, slots, path, vm, repo, loader, cs, app, profiles, switcher, new DS4Windows.EnvironmentService(), null));
+            Assert.Throws<ArgumentNullException>(() => new DS4Windows.Services.EditorWindowFactory(null, slots, path, vm, repo, loader, cs, app, profiles, switcher, new DS4Windows.EnvironmentService(), windowSystem, mouseHook));
+            Assert.Throws<ArgumentNullException>(() => new DS4Windows.Services.EditorWindowFactory(settings, null, path, vm, repo, loader, cs, app, profiles, switcher, new DS4Windows.EnvironmentService(), windowSystem, mouseHook));
+            Assert.Throws<ArgumentNullException>(() => new DS4Windows.Services.EditorWindowFactory(settings, slots, null, vm, repo, loader, cs, app, profiles, switcher, new DS4Windows.EnvironmentService(), windowSystem, mouseHook));
+            Assert.Throws<ArgumentNullException>(() => new DS4Windows.Services.EditorWindowFactory(settings, slots, path, null, repo, loader, cs, app, profiles, switcher, new DS4Windows.EnvironmentService(), windowSystem, mouseHook));
+            Assert.Throws<ArgumentNullException>(() => new DS4Windows.Services.EditorWindowFactory(settings, slots, path, vm, null, loader, cs, app, profiles, switcher, new DS4Windows.EnvironmentService(), windowSystem, mouseHook));
+            Assert.Throws<ArgumentNullException>(() => new DS4Windows.Services.EditorWindowFactory(settings, slots, path, vm, repo, null, cs, app, profiles, switcher, new DS4Windows.EnvironmentService(), windowSystem, mouseHook));
+            Assert.Throws<ArgumentNullException>(() => new DS4Windows.Services.EditorWindowFactory(settings, slots, path, vm, repo, loader, null, app, profiles, switcher, new DS4Windows.EnvironmentService(), windowSystem, mouseHook));
+            Assert.Throws<ArgumentNullException>(() => new DS4Windows.Services.EditorWindowFactory(settings, slots, path, vm, repo, loader, cs, null, profiles, switcher, new DS4Windows.EnvironmentService(), windowSystem, mouseHook));
+            Assert.Throws<ArgumentNullException>(() => new DS4Windows.Services.EditorWindowFactory(settings, slots, path, vm, repo, loader, cs, app, null, switcher, new DS4Windows.EnvironmentService(), windowSystem, mouseHook));
+            Assert.Throws<ArgumentNullException>(() => new DS4Windows.Services.EditorWindowFactory(settings, slots, path, vm, repo, loader, cs, app, profiles, switcher, null, windowSystem, mouseHook));
+            Assert.Throws<ArgumentNullException>(() => new DS4Windows.Services.EditorWindowFactory(settings, slots, path, vm, repo, loader, cs, app, profiles, null, new DS4Windows.EnvironmentService(), windowSystem, mouseHook));
+            Assert.Throws<ArgumentNullException>(() => new DS4Windows.Services.EditorWindowFactory(settings, slots, path, vm, repo, loader, cs, app, profiles, switcher, new DS4Windows.EnvironmentService(), null, mouseHook));
+            Assert.Throws<ArgumentNullException>(() => new DS4Windows.Services.EditorWindowFactory(settings, slots, path, vm, repo, loader, cs, app, profiles, switcher, new DS4Windows.EnvironmentService(), windowSystem, null));
         }
 
         private class NullViewModelFactory : IViewModelFactory

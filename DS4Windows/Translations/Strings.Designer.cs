@@ -2759,6 +2759,24 @@ namespace DS4WinWPF.Translations {
         }
 
         /// <summary>
+        ///   Looks up a localized string similar to Record mouse movement.
+        /// </summary>
+        public static string RecordBox_RecordMouseMovement {
+            get {
+                return ResourceManager.GetString("RecordBox.RecordMouseMovement", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to Recording stopped: the number of mouse move steps reached the limit ({0})..
+        /// </summary>
+        public static string RecordBox_MoveRecordLimitReached {
+            get {
+                return ResourceManager.GetString("RecordBox.MoveRecordLimitReached", resourceCulture);
+            }
+        }
+
+        /// <summary>
         ///   Looks up a localized string similar to Insert Wait.
         /// </summary>
         public static string RecordBox_InsertWait {

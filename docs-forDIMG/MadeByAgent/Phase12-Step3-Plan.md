@@ -1,7 +1,7 @@
 # Phase12-Step3 個別計画書: R-3（マクロのマウスポインター移動）
 
 作成日: 2026-11-03
-状態: **承認済み（2026-11-03。D1〜D6 はそのまま）。着手中（3d まで実装）**
+状態: **承認済み（2026-11-03。D1〜D6 はそのまま）。着手中（3e まで実装・実機確認済み。残りは 3f）**
 関連: `Release-Backlog.md` R-3、[Issue #2](https://github.com/gwin7ok/DS4Windows/issues/2)（本文は取得できず。台帳のタイトル「マクロに、マウスポインタを移動する機能を追加」を正とする）、`Log-Policy.md`、`Phase12-Step2-Plan.md`（2h〜2j の部品を再利用する）
 ブランチ: `Phase12`
 
@@ -105,3 +105,5 @@
 - 3c 実装済み（2026-11-03。実機確認の前）: `IWindowSystem` に `MoveCursorTo`（`SetCursorPos`）と `TryGetForegroundWindowOrigin`（前面ウィンドウの外枠の左上）を追加、`MacroStepExecutor` が移動ステップを実行（ウィンドウ基準は前面なし・最小化のとき移動しない。ログ `[MacroMove]` は Debug）。`MacroStepExecutor` は `IWindowSystem` を受ける。差分テスト `Phase9CMacroStepExecutorDifferentialTests` は、1,300,000,000 以上が移動に変わったため、ライトバーの値を 1,255,255,255 までに改めた（旧実装との比較の対象外になっただけで、既存の値の動作は変わらない）。検証: Debug ALL 警告 0・エラー 0、DS4WindowsTests 2,993 件（+10）と StandaloneTests 11 件が合格。実機（ポインターの移動、ゲームでの効き方）は、3d の編集部品ができてから 3e と合わせて確認する。
 - 3c コミット済み（8039aee0）。
 - 3d 実装済み・実機確認 OK（2026-11-03。確認 A: 追加・編集・保存・再読込。初回は、編集部品の ComboBox の SelectionChanged が ListBox のハンドラへ伝わり、操作中に編集部品を差し替えてクラッシュした。ListBox 自身の選択の変更だけを扱うよう直して再確認）: 記録画面に「Add Mouse Move」ボタン（選択した位置の前、選択がなければ末尾へ、絶対の (0, 0) を入れる）。移動ステップをダブルクリックすると、モード（画面の座標／ウィンドウ内の座標）・X・Y の編集部品が出る（Enter、選択の変更、保存で確定。範囲外は丸める）。`MacroStepItem` に `PointerModeIndex`／`PointerX`／`PointerY`、`RecordBoxViewModel.AddPointerMoveStep`。翻訳 4 件（en／ja）。プリセットの読み書きは、整数の列のため変更なし。検証: Debug ALL 警告 0・エラー 0、DS4WindowsTests 3,000 件（+7）と StandaloneTests 11 件が合格。
+- 3d コミット済み（d825ac08）。
+- 3e 実装済み・実機確認 OK（2026-11-03。確認 B: 絶対座標で記録→再生、確認 C: ウィンドウ基準で記録し、ウィンドウを動かして再生。これで 3c の実行も実機で確認済み）: `IMouseInputHook`／`LowLevelMouseHook`（`WH_MOUSE_LL`。UI スレッドで通知）、`MacroPointerRecorder`（間引き 5 px・20 ms、ボタンの直前の位置、自分のウィンドウの除外、上限 2,000）、`IWindowSystem.TryGetWindowAtPoint`。記録画面に「Record mouse movement」チェックボックス（既定オフ）と基準の選択。ウィンドウ基準は、ポインターの下のウィンドウの外枠の左上を原点にする（クリックで前面になるため、再生時の前面ウィンドウと一致する）。上限に達したら記録を止めて知らせる。`EditorWindowFactory` が `IMouseInputHook` を受ける。検証: Debug ALL 警告 0・エラー 0、DS4WindowsTests 3,023 件（+23）と StandaloneTests 11 件が合格。

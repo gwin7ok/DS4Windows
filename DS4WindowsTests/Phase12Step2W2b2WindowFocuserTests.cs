@@ -44,6 +44,7 @@ namespace DS4WindowsTests
             public bool CursorMoveResult = true;
 
             public bool MoveCursorTo(int x, int y) => throw new NotSupportedException();
+            public bool TryGetWindowAtPoint(int x, int y, out int processId, out int originX, out int originY) => throw new NotSupportedException();
             public bool TryGetForegroundWindowOrigin(out int x, out int y) => throw new NotSupportedException();
             public bool MoveCursorToCenter(IntPtr window)
             {

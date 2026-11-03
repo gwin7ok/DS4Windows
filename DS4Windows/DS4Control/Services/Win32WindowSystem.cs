@@ -129,6 +129,27 @@ namespace DS4Windows.Services
             return true;
         }
 
+        public bool TryGetWindowAtPoint(int x, int y, out int processId, out int originX, out int originY)
+        {
+            processId = 0;
+            originX = 0;
+            originY = 0;
+
+            IntPtr window = WindowFromPoint(new POINT { X = x, Y = y });
+            if (window == IntPtr.Zero) return false;
+
+            IntPtr root = GetAncestor(window, GA_ROOT);
+            if (root != IntPtr.Zero) window = root;
+
+            GetWindowThreadProcessId(window, out uint pid);
+            if (!GetWindowRect(window, out RECT rect)) return false;
+
+            processId = (int)pid;
+            originX = rect.Left;
+            originY = rect.Top;
+            return true;
+        }
+
         public CapturedWindow GetWindowUnderCursor()
         {
             if (!GetCursorPos(out POINT point)) return null;
