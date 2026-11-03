@@ -24,6 +24,7 @@ All notable changes to this project are recorded in this file.
 - A duplicated profile now gets its own profile ID right away (it kept the ID of the original until the next restart).
 - Special Action "Load Profile" with a deleted target no longer disconnects the virtual controller when pressed and re-applies the previous profile on release; it does nothing and logs a message.
 - The battery level shown in the log and notifications right after a controller connects was 0%; it is now read from the first report. The Controllers tab battery label is also refreshed every 60 seconds, and the "back to profile" log line after leaving an Auto Profile program shows the real battery level instead of N/A.
+- After a controller was disconnected and reconnected, the Controllers tab could keep showing the previous battery level, and the profile-applied notification window could show 0%. Battery reporting is now unified: every controller type (DS4, DualSense, DS3, Switch Pro, Joy-Con) updates the battery through one path and one pair of change events, the notification window reads the level from the controller itself, and a stale list row is replaced on reconnect. Verified on a real DS4 only.
 - Saving or applying a profile while the service is stopped no longer applies it to slots without a controller or logs notifications.
 - The Settings tab status line is no longer hidden.
 - Closing the output picker with the window's close button no longer switches a Default assignment's type to another one.
