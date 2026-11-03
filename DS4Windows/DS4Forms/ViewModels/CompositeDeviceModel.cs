@@ -101,6 +101,10 @@ namespace DS4WinWPF.DS4Forms.ViewModels
         {
             lastBatteryState = BatteryState;
             BatteryStateChanged?.Invoke(this, e);
+            // このクラスは INotifyPropertyChanged を実装しているため、WPF のバインディングは「<プロパティ名>Changed」イベントを使わず、
+            // PropertyChanged だけを見る。以前は PropertyChanged を出していなかったため、一覧の電池表示が、行を作った時点の値のまま更新されなかった
+            // （S9-5 の確認で判明。60 秒ごとの読み直しも、これがないと画面に届かない）
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(BatteryState)));
         }
 
         /// <summary>電池表示を読み直し、前回の通知から文字列が変わっていたときだけ <see cref="BatteryStateChanged"/> を出す。</summary>
