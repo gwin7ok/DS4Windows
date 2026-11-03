@@ -12,10 +12,11 @@
 
 **凡例と読み方（2026-10-19 追記）**
 - **依存の方向**: UI層(4) → 信号変換層(2) → { 入力監視層(1)、信号・アクション出力層(3)、横断基盤・永続化層 }。信号変換層が核で、層の番号の大小ではなく、この向きが依存の規則である。第1層・第3層・横断基盤から第2層への参照は禁止（`.github/copilot-instructions.md` §1）。
-- **横断基盤・永続化層への依存は、図では大半を省略している**。実際には、ほぼすべてのサービスが設定・パス・環境・ストアに依存する（例: `ControlService` のコンストラクターは 19 引数で、10 個以上が基盤）。基盤は「どの層からも使える」ものとして扱い、辺を描かない（図の辺は、特定の部品が特定の基盤を使うことを説明したいものだけ）。
-- **ノードの実在**: 本図は目標構造である。2026-10-19 時点で、コードに実在しないノードがある（`InputLoopCoordinator`、`MappingPipelineContext`、`IInputMappingPipeline` と各 Processor、`IMouseEngine`、`IHidTransport`、各機種のパーサー、`IDeviceHotplugMonitor`、`ILightbarService`、`IDeviceOptionRepository`、サブ ViewModel 群）。Phase8 の Step2 で、実在／未実装の区別を図に反映する。
+- **横断基盤・永続化層への依存は、図では大半を省略している**。実際には、ほぼすべてのサービスが設定・パス・環境・ストアに依存する（例: `ControlService` のコンストラクターは 34 引数［2026-11-04 実測］で、半数以上が基盤）。基盤は「どの層からも使える」ものとして扱い、辺を描かない（図の辺は、特定の部品が特定の基盤を使うことを説明したいものだけ）。
+- **ノードの実在（2026-11-04 現状合わせ）**: 本図は目標構造である。コードに実在しないノードは、`InputLoopCoordinator`、`MappingPipelineContext`、`IInputMappingPipeline` と各 Processor、`IMouseEngine`、`IHidTransport`、各機種のパーサー、`IDeviceHotplugMonitor`、`ILightbarService`、`IDeviceOptionRepository`、`XmlIoLock`、サブ ViewModel 群。それ以外は実在する（Phase8 の統一トリガーディスパッチ、Phase12 のウィンドウ操作・マウス監視を含む）。実在／未実装の対応は §2.1。
 - **層をまたぐ辺**: 第2層 → 第3層の辺は、第2層が出力のポート（インターフェース）を使うことを表す。向きは常に「第2層から出る」だけで、第3層から第2層へ戻る辺はない。
-- **点線（Phase8 の目標像。2026-10-19 追加）**: 枠が点線のノード（`ITriggerDispatchEngine`、`IActionRegistry`、`IActionBindingBuilder`、`TriggerBinding`）と、点線の辺は、未実装の目標像。Step7 の各 PR で実線化し、Step8 で旧い辺（`IManagedActionManager` から出力・切替への辺。系統 B）を撤去する。層をまたぐ辺は、実線 16 本に、点線 3 本（`Core_Engine` から出力）が加わっているが、Step8 で旧い 3 本と置き換わり、**最終は 16 本のまま**。
+- **統一トリガーディスパッチ（Phase8。2026-11-04 に実線化）**: `ITriggerDispatchEngine`、`IActionRegistry`、`IActionBindingBuilder`、`TriggerBinding` は実装済み（Phase8 の Step7・Step8 で、旧い辺［`IManagedActionManager` から出力・切替への辺。系統 B］を撤去した）。点線は、残る「未接続・過渡期」の辺（`IProfileSlotApplier` から `IProfileApplicationService` への委譲のみ）に使う。
+- **UI から第1層・第3層への辺（Phase12。是正候補）**: `RecordBox`（マクロ記録画面）は、`IMouseInputHook`（第1層）と `IWindowSystem`（第3層）を、`EditorWindowFactory` 経由で直接受ける。規約 §1（UI は第2層だけに依存する）に反するため、図では破線で描き、是正の候補とする（第2層に記録用のサービスを置いて包む。Phase15 の UI 整理で判断）。
 
 ```mermaid
 flowchart TD
@@ -67,10 +68,10 @@ flowchart TD
         Core_ProfileApp["IProfileApplicationService<br>(プロファイル切替/復帰/Halt保護)"]:::coreLayer
         Core_SlotApplier["IProfileSlotApplier<br>(接続時プロファイル適用の出力ポート。ControlService が定義)"]:::coreLayer
         Core_AutoProfile["IAutoProfileService<br>(プロセス監視切替)"]:::coreLayer
-        Core_ActionMgr["IManagedActionManager<br>(アクションの状態: BeingTriggered／IsToggledOn／ガード。<br>実行の統括は Core_Engine へ移行［Step8 で撤去］)"]:::coreLayer
+        Core_ActionMgr["IManagedActionManager<br>(アクションの状態: BeingTriggered／IsToggledOn／ガード。<br>実行の統括は Core_Engine が担う)"]:::coreLayer
         Core_Switcher["IProfileSwitcher<br>(アクション内のプロファイル切替。第2層の内部契約)"]:::coreLayer
 
-        subgraph TriggerDispatch ["統一トリガーディスパッチ (Phase8・未実装)"]
+        subgraph TriggerDispatch ["統一トリガーディスパッチ (Phase8・実装済み)"]
             Core_Engine["ITriggerDispatchEngine<br>(判定→実行・ガード・抑制・復帰)"]:::coreLayer
             Core_Registry["IActionRegistry<br>(ActionBindingRegistry: スロット別の不変の束縛リスト)"]:::coreLayer
             Core_Builder["IActionBindingBuilder<br>(プロファイルから束縛を構築)"]:::coreLayer
@@ -96,19 +97,17 @@ flowchart TD
         Core_Coordinator --> Pipe_Master
         Core_Coordinator --> Core_SlotApplier
         Core_SlotApplier -. 委譲（フェーズG以降） .-> Core_ProfileApp
-        Pipe_Master --> Core_ActionMgr
         Core_AutoProfile --> Core_ProfileApp
-        Core_ActionMgr --> Core_Switcher
         Core_Switcher --> Core_ProfileApp
 
-        %% Phase8 の目標像（点線の辺）。Step7 の各 PR で実線化し、Step8 で旧い辺（Core_ActionMgr 起点）を撤去する
-        Pipe_Master -.-> Core_Engine
-        Core_Engine -.-> Core_Registry
-        Core_Engine -.-> Core_ActionMgr
-        Core_Engine -.-> Core_Switcher
-        Core_Registry -.-> Core_Binding
-        Core_ProfileApp -.-> Core_Builder
-        Core_Builder -.-> Core_Registry
+        %% Phase8（2026-11-04 に実線化）。旧い辺（Pipe_Master／Core_ActionMgr 起点の系統 B）は Step8 で撤去済み
+        Pipe_Master --> Core_Engine
+        Core_Engine --> Core_Registry
+        Core_Engine --> Core_ActionMgr
+        Core_Engine --> Core_Switcher
+        Core_Registry --> Core_Binding
+        Core_ProfileApp --> Core_Builder
+        Core_Builder --> Core_Registry
     end
 
     %% ==========================================
@@ -119,6 +118,7 @@ flowchart TD
         In_Hotplug["IDeviceHotplugMonitor<br>(Win32 RAW/HID挿抜検知)"]:::ingressLayer
 
         subgraph In_DeviceUnits ["Input Device Abstraction & Parsers"]
+            In_MouseHook["IMouseInputHook<br>(LowLevelMouseHook: マクロ記録用の、画面全体のマウス監視。Phase12)"]:::ingressLayer
             Dev_Transport["IHidTransport<br>(USB / Bluetooth HID 通信)"]:::ingressLayer
             Parser_DS4["DS4ReportParser / Encoder<br>(DS4 パケット解析・出力パケット生成)"]:::ingressLayer
             Parser_Vader["Vader4ProReportParser / Encoder<br>(Vader4Pro パケット解析・出力生成)"]:::ingressLayer
@@ -154,6 +154,9 @@ flowchart TD
             Out_Launcher["IProcessLauncher / IElevatedProcessLauncher<br>(通常起動 / UAC昇格起動)"]:::egressLayer
             Out_UDP["IUdpMotionService<br>(Cemuhook Motion UDP配信。Phase9 9-E E-3)"]:::egressLayer
             Out_LED["ILightbarService<br>(LED/ライトバー計算・出力指示)"]:::egressLayer
+            Out_Focuser["IWindowFocuser<br>(WindowFocuser: ウィンドウの探索・前面化。Phase12)"]:::egressLayer
+            Out_WinSys["IWindowSystem<br>(Win32WindowSystem: ウィンドウ列挙・前面化・カーソル移動・原点の取得。Phase12)"]:::egressLayer
+            Out_Focuser --> Out_WinSys
         end
     end
 
@@ -191,18 +194,21 @@ flowchart TD
     Pipe_Master --> Out_SlotSvc
     Proc_Mouse --> Out_KBMHandler
 
-    %% 現状は Core_ActionMgr（系統 B）が出力を呼ぶ。Phase8 の目標像では、束縛が保持する出力アクションを通して Core_Engine が呼ぶ（層をまたぐ辺は 3 本のまま）
-    Core_ActionMgr --> Out_KBMHandler
-    Core_ActionMgr --> Out_Launcher
-    Core_ActionMgr --> Out_SlotSvc
-    Core_Engine -.-> Out_KBMHandler
-    Core_Engine -.-> Out_Launcher
-    Core_Engine -.-> Out_SlotSvc
+    %% 束縛が保持する出力アクションを通して Core_Engine が出力を呼ぶ（Phase8。2026-11-04 に実線化）。Phase12 で FocusWindow（Out_Focuser）が加わった。マクロの移動は Out_Macro（MacroStepExecutor）が IWindowSystem を使う
+    Core_Engine --> Out_KBMHandler
+    Core_Engine --> Out_Launcher
+    Core_Engine --> Out_SlotSvc
+    Core_Engine --> Out_Focuser
+    Out_Macro --> Out_WinSys
 
     Core_ProfileApp --> Store_Profile
 
-    %% 未実装ノードの点線スタイル
-    class Core_Engine,Core_Registry,Core_Builder,Core_Binding plannedNode;
+    %% Phase12: マクロ記録画面（RecordBox）は、IMouseInputHook と IWindowSystem を直接受ける。規約 §1 に反するため破線（是正候補）
+    UI_Record["RecordBox / RecordBoxViewModel<br>(マクロ記録画面。MacroPointerRecorder は記録の間引きロジック)"]:::uiLayer
+    UI_Views --> UI_Record
+    UI_Record --> Layer2
+    UI_Record -.->|是正候補| In_MouseHook
+    UI_Record -.->|是正候補| Out_WinSys
 
 %% 注釈補強（2026-09-19 Phase6-Step2 決定O1=B／O4=B-2 反映）
 %% - `ControlService` は `IProfileApplicationService` に直接依存せず、自身が定義する出力ポート `IProfileSlotApplier` のみに依存する（依存の逆転）。現状の実装は `Global.ApplyProfileToSlot` へ委譲し、K1（`IProfileApplicationService.ApplyProfile` のスロット上限ハードコード等）の是正後に `IProfileApplicationService` へ委譲する（点線）。
@@ -240,11 +246,11 @@ flowchart TD
 | 解体対象 | 現在の行数 | 実在する受け皿 | 未実装（目標像の名前のまま） |
 | :--- | :--- | :--- | :--- |
 | `ScpUtil.cs` | 解体済み（`Global` 削除） | `ProfileXmlStore`, `AppSettingsService`, `PathService`, `EnvironmentService` ほか（Phase6〜7） | `DeviceOptionRepository`, `XmlIoLock`（この名前の型は実在しない。同じ XML への排他は、`ProfileXmlStore` などの保存処理が担う） |
-| `Mapping.cs` | 約 1,100（7,322 から削減） | `StickDeadZoneProcessor`, `TriggerDeadZoneProcessor`, `OutputCurveProcessor`, `GyroControlsProcessor`, `StickInputConditioner`, `FlickStickProcessor`, `TwoStageTriggerProcessor`, `ButtonMouseMovementCalculator`, `MouseMotionQuantizer`, `GyroMouseStickBlender`, `SyntheticInputCommitter`, `MacroPlayback`, `MacroStepExecutor`, `ControlActivityReader`、統一トリガーディスパッチ（Phase8）。`Mapping` 自体は `IMapping` の Singleton として残り、各部品を順に呼ぶ | `IInputMappingPipeline`, `ButtonProcessor`, `StickProcessor`, `TriggerProcessor`, `TouchGyroProcessor`（名前と形は、実在の部品へ読み替える） |
+| `Mapping.cs` | 約 1,100（7,322 から削減。実測 1,102 行） | `StickDeadZoneProcessor`, `TriggerDeadZoneProcessor`, `OutputCurveProcessor`, `GyroControlsProcessor`, `StickInputConditioner`, `FlickStickProcessor`, `TwoStageTriggerProcessor`, `ButtonMouseMovementCalculator`, `MouseMotionQuantizer`, `GyroMouseStickBlender`, `SyntheticInputCommitter`, `MacroPlayback`, `MacroStepExecutor`（Phase12 でマウスポインターの移動を実行）, `ControlActivityReader`、統一トリガーディスパッチ（Phase8。実装済み）。`Mapping` 自体は `IMapping` の Singleton として残り、各部品を順に呼ぶ | `IInputMappingPipeline`, `ButtonProcessor`, `StickProcessor`, `TriggerProcessor`, `TouchGyroProcessor`（名前と形は、実在の部品へ読み替える） |
 | `Mouse.cs` | 1,808（未着手） | `OneEuroFilter3D`, `MouseCursor`, `MouseWheel` などは別ファイルとして実在 | `IMouseEngine`（未着手。9-I の後に判断） |
-| `ControlService.cs` | 約 1,075（約 3,400 から削減） | `IServiceLifecycle`／`DeviceConnector`／`DeviceDisconnectHandler`／`JoyConLinker`／`VirtualPadService`／`HidHideService`／`OscService`／`LatencyMonitor`／`TouchpadToggleService`／`ActiveInputProbe`／`IInputDeviceModule`（5 種） | `InputLoopCoordinator`, `IDeviceHotplugMonitor`（ホットプラグは `ServiceLifecycle`／`MainWindow.HandleDeviceChange` が担う）, `ILightbarService`。`ControlService` はスロットの配列と `Func` 経由の窓口を持つ統括役として残る（先送り台帳 F-5c） |
-| `ProfileSettingsViewModel.cs` | 3,427（未着手） | 親 `ProfileSettingsViewModel` のみ（`IViewModelFactory` 経由の生成は実在） | `StickSubVM`, `TriggerSubVM`, `ButtonSubVM`, `SpecialActionsSubVM`（9-G。効果とコストの判断待ち） |
-| `DS4Device.cs` | 2,011（未着手） | 種類ごとの `IInputDeviceModule`（接続時の処理）。通信・解析は未分離 | `IHidTransport`, `DS4ReportParser`, `DS4OutputReportEncoder`（9-H。K7b-1 の切り分けが済むまで着手しない） |
+| `ControlService.cs` | 約 1,077（約 3,400 から削減。コンストラクター 34 引数、`Func<>` 2 件） | `IServiceLifecycle`／`DeviceConnector`／`DeviceDisconnectHandler`／`JoyConLinker`／`VirtualPadService`／`HidHideService`／`OscService`／`LatencyMonitor`／`TouchpadToggleService`／`ActiveInputProbe`／`IInputDeviceModule`（5 種） | `InputLoopCoordinator`, `IDeviceHotplugMonitor`（ホットプラグは `ServiceLifecycle`／`MainWindow.HandleDeviceChange` が担う）, `ILightbarService`。`ControlService` はスロットの配列と `Func` 経由の窓口を持つ統括役として残る（先送り台帳 F-5c） |
+| `ProfileSettingsViewModel.cs` | 3,469（未着手） | 親 `ProfileSettingsViewModel` のみ（`IViewModelFactory` 経由の生成は実在） | `StickSubVM`, `TriggerSubVM`, `ButtonSubVM`, `SpecialActionsSubVM`（9-G。効果とコストの判断待ち） |
+| `DS4Device.cs` | 2,068（未着手。電池は Phase11 で `UpdateBattery` に一本化） | 種類ごとの `IInputDeviceModule`（接続時の処理）。通信・解析は未分離 | `IHidTransport`, `DS4ReportParser`, `DS4OutputReportEncoder`（9-H。K7b-1 の切り分けが済むまで着手しない） |
 
 先送りの項目は `Phase9-Deferred-Ledger.md` に記録している。
 
@@ -285,3 +291,9 @@ flowchart TD
 %% - 第2層に「統一トリガーディスパッチ」（ITriggerDispatchEngine／IActionRegistry／IActionBindingBuilder／TriggerBinding）を点線で追加した。Mapping（図では Pipe_Master）が毎フレームエンジンを呼び、エンジンが登録簿の束縛を処理して、出力アクション（MacroAction／ProfileSwitchAction／LaunchProcessAction ほか）を通して第3層へ出力する。状態は IManagedActionManager（ActionInstanceState）に残す。
 %% - エンジンは IMapping に依存しない（Mapping がエンジンを呼ぶ）。登録簿の更新は、プロファイル適用の後に IActionBindingBuilder が組み立てた不変リストの参照の差し替え（読込中の Clear→Add の競合を構造的に排除）。
 %% - 旧い辺（Core_ActionMgr から出力・切替への辺。系統 B）は、実装の現状を表すため残し、Step8 で撤去する。詳細は Phase8-Step2-Design.md、更新案は Phase8-Step2-ModelDiagram-Update-Proposal.md。
+
+%% 注釈補強（2026-11-04 モデル図の現状合わせ。構造の目標は変更しない）
+%% - Phase8 の統一トリガーディスパッチ（ITriggerDispatchEngine／IActionRegistry／IActionBindingBuilder／TriggerBinding）を実線にし、旧い辺（Pipe_Master／Core_ActionMgr 起点の系統 B）を削除した。層をまたぐ辺は Core_Engine から出力（IVirtualKBM／ランチャー／スロット出力）と、Phase12 で加わった IWindowFocuser。
+%% - Phase12: 第1層に IMouseInputHook（LowLevelMouseHook）、第3層 3-c に IWindowFocuser／IWindowSystem（Win32WindowSystem）、UI にマクロ記録画面（RecordBox）を追加した。RecordBox から第1層・第3層への直接の参照は是正候補（破線）。FocusWindowAction（Actions/）は Core_Engine の束縛が持つ出力アクションで、WindowTargetMatcher（照合）と IWindowFocuser（前面化）を使う。
+%% - Phase11: 電池の書き込みの入口を DS4Device 基底の UpdateBattery／UpdateCharging に一本化した（第1層。構造の変更なし）。Debouncing は機能廃止（Debouncer と入力フィルターを削除。図に該当のノードはなかった）。「物理コントローラーへ出力データを送る」設定は、Emulated Controller に関係なく働く。
+%% - 行数・引数の数は 2026-11-04 の実測（§2.1）。

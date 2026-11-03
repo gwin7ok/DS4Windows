@@ -28,7 +28,7 @@
 │  【ループ統括】 ControlService (ファサード) ──> IInputLoopCoordinator (高速ループ実行エンジン)       │
 │  【状態管理】   MappingPipelineContext Pool (スロット別常駐バッファ: インプレース更新 / Zero-GC)   │
 │  【切替制御】   IProfileApplicationService (適用/復帰/Halt) / IAutoProfileService / IProfileSwitcher │
-│  【アクション】 ITriggerDispatchEngine (判定→実行の統一) / IActionRegistry (束縛の一覧)  ※Phase8 目標像│
+│  【アクション】 ITriggerDispatchEngine (判定→実行の統一) / IActionRegistry (束縛の一覧)  ※Phase8 実装済│
 │                 IActionBindingBuilder (束縛の構築) / IManagedActionManager (アクションの状態)    │
 │  【マッピング】 IInputMappingPipeline (変換パイプライン親: Context統括)                           │
 │                 ├── IButtonProcessor (ボタン変換・シフト)   IStickProcessor (軸/カーブ/AntiSnap)   │
@@ -157,3 +157,7 @@
 %% 注釈補強（2026-10-19 Phase8-Step2 W5［段階 A］: 統一トリガーディスパッチの目標像を追加。構造の目標は変更しない）
 %% - 第2層の【アクション】の行を、目標像（ITriggerDispatchEngine／IActionRegistry／IActionBindingBuilder／IManagedActionManager［状態］）に書き換えた。特殊アクションと Controls タブの「トリガー成立→処理実行」を、第2層の統一エンジンに集約する（Phase8）。未実装。Step7 の各 PR で種別ごとに実装済みになる。
 %% - 入力の 1 フレームは 2 段階: 通常の割り当ての前（トリガーの実行・ボタンの出力の消去）と、後（Button の毎フレームの出力）。依存方向（UI → 変換 → 入力／出力／基盤）は変更なし。
+
+%% 注釈補強（2026-11-04 モデル図の現状合わせ）
+%% - Phase8 の統一トリガーディスパッチは実装済み（スタック図の「※Phase8 目標像」を「※Phase8 実装済」に改めた）。
+%% - Phase12: 第1層に IMouseInputHook（マクロ記録用の画面全体のマウス監視）、第3層に IWindowFocuser／IWindowSystem（ウィンドウの前面化・カーソル移動）が加わった。依存の向き（第4層 → 第2層 → { 第1層、第3層、横断基盤 }）は変えていない。ただし RecordBox は IMouseInputHook／IWindowSystem を直接受けており、是正候補（01 の凡例を参照）。

@@ -132,7 +132,8 @@ Issue #4 の 4 件と、2026-11-02 時点のコードとの照合:
 ## 7. 次の作業
 
 1. 済み: 本書の承認、Phase11（4.2.4）、Phase12（4.3.0。`Phase12-Completion-Report.md`）。
-2. 次: モデル図の現状合わせ（§8.3。Phase13 の前の 1 回。文書だけ）→ Phase13 の個別計画書の作成（着手前に `ControlService` の引数・`Func<T>`・`ServiceProviderHolder` の現状を再照合する。§5）。
+2. 済み（2026-11-04）: モデル図の現状合わせ（§8.3。`Model-Diagram/01〜04`。Phase8 の部品を実線化、Phase11・12 を反映、行数を更新）。
+3. 次: Phase13 の個別計画書の作成（着手前に `ControlService` の引数・`Func<T>`・`ServiceProviderHolder` の現状を再照合する。§5）。
 
 ## 8. 追加案（2026-11-04。FurtherImprovements との照合で見つかった抜け。**承認済み: 8.1〜8.3 すべて採用**）
 

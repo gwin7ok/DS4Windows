@@ -54,12 +54,12 @@
 | **2.変換**| `IProfileSlotApplier` | `ProfileSlotApplier` | **Singleton** | 接続時などにスロットへプロファイルを適用する、`ControlService` 側の出力ポート（依存の逆転）。現状は `Global.ApplyProfileToSlot` へ委譲し、K1 是正後に `IProfileApplicationService` へ委譲する | なし（目標: `IProfileApplicationService`） |
 | **2.変換**| `IProfileActionProvider` | `ProfileActionProvider` | **Singleton** | プロファイルに紐づくアクション定義の解決 | `ISpecialActionRepository` |
 | **2.変換**| `IAutoProfileService` | `AutoProfileService` | **Singleton** | フォアグラウンドアプリ監視とプロファイル自動切替 | `IProcessInspector`, `IProfileApplicationService` |
-| **2.変換**| `IManagedActionManager` | `DefaultActionManager` | **Singleton** | マクロ・キー・プロファイル切替アクションの実行統括。2026-09-04〜2026-10-14 は登録が欠落していた（Phase6-Step9b-2 で再登録）。【Phase8 目標像】アクションの状態（`ActionInstanceState`）の管理に縮小し、実行の統括は `ITriggerDispatchEngine` へ移行（Phase8-Step8 の 8c で、系統 B の `IActionFactory` ほかを撤去し、コンストラクターは `Func<IMapping>` のみになった） | `Func<IMapping>` |
+| **2.変換**| `IManagedActionManager` | `DefaultActionManager` | **Singleton** | マクロ・キー・プロファイル切替アクションの実行統括。2026-09-04〜2026-10-14 は登録が欠落していた（Phase6-Step9b-2 で再登録）。【Phase8】アクションの状態（`ActionInstanceState`）の管理に縮小し、実行の統括は `ITriggerDispatchEngine` へ移行済み（Phase8-Step8 の 8c で、系統 B の `IActionFactory` ほかを撤去し、コンストラクターは `Func<IMapping>` のみになった） | `Func<IMapping>` |
 | **2.変換**| `IControllerRegistry` | `DefaultControllerRegistry` | **Singleton** | `KeyButtonActionController` の登録と、デバイス単位・終了時の破棄（Phase6-Step9b-2 で再登録）。【Phase8】使うか廃止するかを Step6 で確定 | なし |
 | **2.変換**| `IMapping` | `Mapping` | **Singleton** | 入力の評価（カーブ・割り当て・合成入力の確定・切断の後始末・マクロ）。旧: メンバーのほぼすべてが static（Phase7-Step8）。`DefaultActionManager`／`DefaultMacroPlayer` は `Func<IMapping>` で遅延して受ける | `ITriggerDispatchEngine`※2, `SyntheticInputState`, `MacroRuntimeState`, `StickMotionState`, `IProfileSettingsService`, `IProfileApplicationService`, `IVirtualKBM`, `IKeyButtonControllerRegistry`, `IProcessLauncher`, `IProfileSwitcher`, `ISyntheticDispatcher`, `Func<IDeviceStateAccessor>`※1 |
-| **2.変換**| `ITriggerDispatchEngine` | `TriggerDispatchEngine` | **Singleton** | 【Phase8・目標像・未実装】特殊アクション（と、後に Controls タブ）の判定→実行の統一。エッジ検出・Fresh-press ガード・実行中の再実行防止・抑制・復帰の合図を一元的に担う。`Mapping` が毎フレーム呼ぶ（通常の割り当ての前後に 2 回） | `IActionRegistry`, `IManagedActionManager` |
-| **2.変換**| `IActionRegistry` | `ActionBindingRegistry` | **Singleton** | 【Phase8・目標像・未実装】スロット別の不変の束縛リスト（`TriggerBinding`）。更新は参照ごとの差し替え（読込中の競合を排除）。切断で空にする | なし |
-| **2.変換**| `IActionBindingBuilder` | `ActionBindingBuilder` | **Singleton** | 【Phase8・目標像・未実装】プロファイルのスペシャルアクションと Controls タブの割り当てから、束縛を組み立てる（プロファイル適用の完了後） | `IProfileActionProvider`, `IProfileSettingsService`, `IMacroPlayer`, `IProcessLauncher`, `IProfileSwitcher`, `IKeyActionCreator`, `BindingMigrationOptions` |
+| **2.変換**| `ITriggerDispatchEngine` | `TriggerDispatchEngine` | **Singleton** | 【Phase8・実装済み】特殊アクションと Controls タブの判定→実行の統一。エッジ検出・Fresh-press ガード・実行中の再実行防止・抑制・復帰の合図を一元的に担う。`Mapping` が毎フレーム呼ぶ（通常の割り当ての前後に 2 回） | `IActionRegistry`, `IManagedActionManager` |
+| **2.変換**| `IActionRegistry` | `ActionBindingRegistry` | **Singleton** | 【Phase8・実装済み】スロット別の不変の束縛リスト（`TriggerBinding`）。更新は参照ごとの差し替え（読込中の競合を排除）。切断で空にする | なし |
+| **2.変換**| `IActionBindingBuilder` | `ActionBindingBuilder` | **Singleton** | 【Phase8・実装済み】プロファイルのスペシャルアクションと Controls タブの割り当てから、束縛を組み立てる（プロファイル適用の完了後） | `IProfileActionProvider`, `IProfileSettingsService`, `IMacroPlayer`, `IProcessLauncher`, `IProfileSwitcher`, `IKeyActionCreator`（`BindingMigrationOptions` は Phase8-Step8 の 8d で撤去） |
 | **2.変換**| `IKeyButtonControllerRegistry` | `KeyButtonControllerRegistry` | **Singleton** | デバイス × アクション名ごとの `KeyButtonActionController` の登録簿（生成・再利用・破棄）。旧: `Mapping` の静的フィールド | `IKeyButtonActionControllerFactory`, `IControllerRegistry` |
 | **2.変換**| `ISyntheticDispatcher` | `SyntheticDispatcherService` | **Singleton** | 合成キーの押下・解放・タイミングのリセット。静的な `SyntheticDispatcher` は、Actions サブシステム用の暫定の橋渡し（Phase8 で削除） | `SyntheticInputState`, `OutputKBMHandlerAdapter`, `IProfileSettingsService` |
 | **2.変換**| `SyntheticInputState` | `SyntheticInputState` | **Singleton** | 合成キー・マウス入力の状態（`GlobalState`／`DeviceState`／`SyncStateLock`） | なし |
@@ -94,7 +94,7 @@
 
 ---
 
-## 2.5 Phase8〜Phase10 で追加されたサービス（2026-10-23 Phase9 9-I で追記）
+## 2.5 Phase8〜Phase12 で追加されたサービス（2026-10-23 Phase9 9-I で追記。2026-11-04 に Phase12 を追記）
 
 上の一覧表に載っていなかった登録を、領域別にまとめる。ライフタイムは、特記のない限りすべて **Singleton**（状態を持つものは、デバイスのスロット別、または専用の状態オブジェクトに持つ）。`ServiceRegistration.cs` の登録と一致させている（登録数は 116）。
 
@@ -120,6 +120,9 @@
 | | `ISpecialActionOutputFactory` → `SpecialActionOutputFactory` | 特殊アクションの種別ごとの出力アクションと実行方針（Phase10-Step4） | SA タブと Controls タブで共有 |
 | | `IProfileIdentityService` → `ProfileIdentityService` | プロファイルの ID と名前の対応（Phase10-Step4d） | |
 | | `IRepeater` → `RepeatHelperToIRepeaterAdapter` | キーの繰り返しの周期呼び出し | |
+| 3. アプリ・OS 副作用（Phase12。ウィンドウ操作） | `IWindowSystem` → `Win32WindowSystem` | ウィンドウの列挙・前面化・最小化の判定・カーソル移動・前面ウィンドウの原点・座標の下のウィンドウ（Win32 の操作を包む） | `MacroStepExecutor` と `WindowFocuser` が使う。テストでは `RecordingWindowSystem` に差し替える |
+| | `IWindowFocuser` → `WindowFocuser` | 対象（Path／Title）に合うウィンドウを探し、前面へ出す手順（Phase12-Step2） | `FocusWindowAction` が使う。依存: `IWindowSystem` |
+| 1. 入力監視（Phase12） | `IMouseInputHook` → `LowLevelMouseHook` | マクロ記録用の、画面全体のマウスの移動・ボタンの監視（`WH_MOUSE_LL`。コールバックは UI スレッド） | 記録の開始で設定し、停止で解除。`RecordBox` が `EditorWindowFactory` 経由で受ける |
 | 2. 出力アクションの窓口（Phase8-Step7。実機・静的な窓口をアクションから隠す） | `IGyroCalibrationPort` → `DefaultGyroCalibrationPort` | GyroCalibrate の実機操作 | テストでは偽物に差し替える |
 | | `IControllerDisconnectPort` → `DefaultControllerDisconnectPort` | DisconnectBT の実機操作 | 同上 |
 | | `IBatteryCheckPort` → `DefaultBatteryCheckPort` | BatteryCheck の実機・ライトバー・通知 | 同上 |
@@ -317,3 +320,8 @@
 %% 2026-10-20（Phase8-Step8 8c・8d）: `IActionFactory`／`DefaultActionFactory` の行（系統 B。8c で撤去）と `BindingMigrationOptions` の行（種別ごとの移行スイッチ。8d で撤去）を削除した。エンジン・ビルダーは、束縛があれば常に処理する。
 
 %% - 2026-10-23: `ISpecialActionRepository` に `DuplicateAction`（R-1。SA の複製）を追加した。ライフタイム・依存は変わらない。`PageScrollWheelHandler`（R-6）は静的なクラスハンドラーで、サービスの一覧には載せない。
+
+%% 注釈補強（2026-11-04 モデル図の現状合わせ）
+%% - Phase8 の ITriggerDispatchEngine／IActionRegistry／IActionBindingBuilder の行を「実装済み」に改め、IActionBindingBuilder の依存から撤去済みの BindingMigrationOptions を外した。
+%% - Phase12: IWindowSystem／IWindowFocuser／IMouseInputHook を §2.5 に追加した（すべて Singleton。ServiceRegistration.cs に登録）。MacroStepExecutor は IWindowSystem を最後の引数で受ける。EditorWindowFactory は IMouseInputHook を受ける。
+%% - Phase11: ライフタイム・登録の変更はない（電池の一本化は DS4Device 基底の内部。Debouncing の廃止で、登録していたサービスはなかった）。

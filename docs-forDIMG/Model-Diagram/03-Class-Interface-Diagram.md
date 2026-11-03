@@ -764,8 +764,8 @@ classDiagram
     ProfileXmlStore --> XmlIoLock : uses
 
     %% ==========================================
-    %% 統一トリガーディスパッチ（Phase8・目標像。未実装。2026-10-19 追加［段階 A］）
-    %% 設計: docs-forDIMG/MadeByAgent/Phase8-Step2-Design.md。Step7 の各 PR で実装済みになる。
+    %% 統一トリガーディスパッチ（Phase8。実装済み［2026-11-04 の現状合わせ］。2026-10-19 に目標像として追加）
+    %% 設計: docs-forDIMG/MadeByAgent/Phase8-Step2-Design.md。Step7 の各 PR で実装済みになった。
     %% 撤去済み（Phase8-Step8 8c・8d）: IActionFactory／DefaultActionFactory／ActionFactory、Actions.Action／SpecialActionBase／*ActionAdapter、BindingMigrationOptions、UntriggerPolicy.Buttons。残る: ActionEntry（状態の入れ物）、ActionManager（静的。Phase9 で整理）
     %% IMapping は、Step7.5（Profile）で CaptureProfileUntrigger／RestoreProfileUntrigger を削除して 8 メンバーになり、ITriggerDispatchEngine を使う
     %% ==========================================
@@ -1228,3 +1228,8 @@ classDiagram
 %% - R-5: `ITriggerInput` に既定実装つきの `IsDigitalActive`／`WasDigitalActive`（トリガー > 0、スティックはデッドゾーン後に少しでも傾けば成立）。複数トリガー（`ComboTriggerInputAction`／`MultiTapInputAction`）と、デジタルな出力先の SA・Controls（`ControlButtonInputAction`／`ControlPadOutputAction`／`ControlTouchpadClickOutputAction`）、`TriggerDispatchEngine` の解除判定が使う。`IControlTriggerInput.IsControlActive`（Controls のアナログ判定）は、トリガー単体でアナログな出力先のときのために残る。`ButtonOutputAction.ApplyAnalog` は、トグルでなくトリガー単体のとき、入力の値（`IAnalogTriggerInput.GetByteValue`）に比例して出す。Phase10 Step4c W4 の「SA の閾値に揃える」は、これで置き換わった。
 %% - R-6: `PageScrollWheelHandler`（UI 層。`App.InitializeProcessWideSettings` で登録）。Windows の「1 画面ずつ」のホイール設定に、`ScrollViewer` の MouseWheel を合わせる。DI の対象ではない（静的なクラスハンドラー）。
 %% - K7b-1: 第 1 層 `HidDevice` の非同期 I/O（`ReadFile`／`WriteOutputReportViaInterrupt`）が、完了まで `fixed` を保ち、失敗時は `CancelIoEx` で取り消して待つ。依存の向きの変更はない。
+
+%% 注釈補強（2026-11-04 モデル図の現状合わせ: Phase11・12 の追加。クラス図の本体は変更しない）
+%% - Phase12（R-4）: IWindowSystem（Win32WindowSystem。列挙・前面化・MoveCursorTo・TryGetForegroundWindowOrigin・TryGetWindowAtPoint）、IWindowFocuser（WindowFocuser。手順）、WindowTargetMatcher（Path／Title の照合。AutoProfileEntity と共有）、WindowCandidate／WindowFocusResult／CapturedWindow（DI/）、FocusWindowAction（Actions/。IOutputAction）、ActionTypeId.FocusWindow、FocusWindowViewModel／WindowTargetEditor／WindowTargetPicker／WindowTitleMatchMode／WindowTargetText（UI）。SpecialActionOutputFactory が IWindowFocuser を受けて FocusWindow の束縛を作る。
+%% - Phase12（R-3）: MacroPointerMove／MacroPointerMoveMode（値の体系。1,300,000,000 以上。MacroParser が StepOutput.PointerMove として解釈）、MacroStepExecutor が IWindowSystem を受けて移動を実行、IMouseInputHook（LowLevelMouseHook。WH_MOUSE_LL）、MacroPointerRecorder（記録の間引きの純粋なロジック）、RecordBox／RecordBoxViewModel（記録画面。IMouseInputHook／IWindowSystem を EditorWindowFactory 経由で受ける）。
+%% - Phase11: DS4Device 基底に UpdateBattery／UpdateCharging（電池の書き込みの入口。全機種で共通のイベント 1 組）。Debouncer と入力フィルター、DebouncingMs は削除（機能廃止）。ControlButtonInputAction／ComboTriggerInputAction／MultiTapInputAction／TwoStageTriggerProcessor には、DebouncingMs を使わなくなった引数が残る（Phase13 で整理）。
