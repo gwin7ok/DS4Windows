@@ -33,7 +33,7 @@ namespace DS4WindowsTests
             => new ActionBindingBuilder(TestHost.GetService<IProfileActionProvider>(), TestHost.GetService<IProfileSettingsService>(),
                 TestHost.GetService<IManagedActionManager>(), TestHost.GetService<IMacroPlayer>(), TestHost.GetService<IProcessLauncher>(),
                 TestHost.GetService<IProfileSwitcher>(), TestHost.GetService<ISpecialActionRepository>(),
-                TestHost.GetService<Func<IMapping>>(), port);
+                TestHost.GetService<Func<IMapping>>(), port, controllers: TestActions.Controllers);
 
         /// <summary>登録した GyroCalibrate の特殊アクションの束縛を、記録用のポートを持つビルダーで作り直して登録簿へ差し替える。</summary>
         private static SpecialAction AddGyro(SpecialActionTestScope t, string triggers, RecordingGyroCalibrationPort port, bool freshPressGuard = false)

@@ -19,13 +19,13 @@ namespace DS4WindowsTests
         public static SpecialActionRepository CreateSpecialActionRepository(BackingStore store = null, IPathService pathService = null)
         {
             return new SpecialActionRepository(store ?? TestGlobals.Store, pathService ?? new PathService(), new SyntheticInputState(),
-                CreateActionsXml(store));
+                CreateActionsXml(store), TestActions.Manager);
         }
 
         /// <summary>Phase7-Step10c W2: Actions.xml の保存・読込（旧: BackingStore のメソッド）。</summary>
         public static DS4Windows.Services.SpecialActionsXmlSerializer CreateActionsXml(BackingStore store = null,
             IProfileIdentityService profileIdentity = null)
-            => new DS4Windows.Services.SpecialActionsXmlSerializer(store ?? TestGlobals.Store, profileIdentity);
+            => new DS4Windows.Services.SpecialActionsXmlSerializer(store ?? TestGlobals.Store, TestActions.Manager, profileIdentity);
 
         /// <summary>Phase7-Step10c W2: リンクプロファイルの保存・読込（旧: BackingStore のメソッド）。</summary>
         public static DS4Windows.Services.LinkedProfilesXmlSerializer CreateLinkedProfilesXml(BackingStore store = null)
@@ -137,6 +137,7 @@ namespace DS4WindowsTests
                 keyButtonControllers ?? TestHost.GetService<IKeyButtonControllerRegistry>(),
                 actionRegistry ?? TestHost.GetService<DS4Windows.Actions.IActionRegistry>(),
                 bindingBuilderProvider ?? (() => TestHost.GetService<DS4Windows.Actions.IActionBindingBuilder>()),
+                TestActions.Manager,
                 profileIdentity);
         }
 

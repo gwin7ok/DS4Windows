@@ -201,7 +201,7 @@ namespace DS4WindowsTests
             {
                 t.RunFrame(input);
 
-                Assert.False(ActionManager.IsBeingTriggered(sa, t.Device));
+                Assert.False(TestActions.Manager.IsBeingTriggered(sa, t.Device));
                 Assert.Null(t.Mapping.deviceRuntime[t.Device].UntriggerAction);
                 Assert.True(state.IsExecuting == isExecuting, "ブロックされた実行は、IsExecuting を変えない");
             }
@@ -224,15 +224,15 @@ namespace DS4WindowsTests
             held.L1 = true;
 
             t.RunFrame(held);
-            Assert.True(ActionManager.IsBeingTriggered(sa, t.Device));
+            Assert.True(TestActions.Manager.IsBeingTriggered(sa, t.Device));
             Assert.Equal(-1, t.Mapping.deviceRuntime[t.Device].UntriggerIndex);   // Q1: 新経路は UntriggerIndex を書かない
 
             t.RunFrame(held); // 保持中も成立のまま
-            Assert.True(ActionManager.IsBeingTriggered(sa, t.Device));
+            Assert.True(TestActions.Manager.IsBeingTriggered(sa, t.Device));
             Assert.Equal(-1, t.Mapping.deviceRuntime[t.Device].UntriggerIndex);   // Q1: 新経路は UntriggerIndex を書かない
 
             t.RunFrame(SpecialActionTestScope.Neutral()); // 離す
-            Assert.False(ActionManager.IsBeingTriggered(sa, t.Device));
+            Assert.False(TestActions.Manager.IsBeingTriggered(sa, t.Device));
             Assert.Equal(-1, t.Mapping.deviceRuntime[t.Device].UntriggerIndex);
         }
 
@@ -247,7 +247,7 @@ namespace DS4WindowsTests
 
             t.RunFrame(held);
 
-            Assert.False(ActionManager.IsBeingTriggered(sa, t.Device));
+            Assert.False(TestActions.Manager.IsBeingTriggered(sa, t.Device));
             Assert.Equal(-1, t.Mapping.deviceRuntime[t.Device].UntriggerIndex);
         }
 

@@ -102,7 +102,8 @@ namespace DS4Windows.DI
             services.AddSingleton<IProfileSlotApplier, ProfileSlotApplier>();
             services.AddSingleton<ISpecialActionRepository>(sp => new SpecialActionRepository(
                 sp.GetRequiredService<BackingStore>(), sp.GetRequiredService<IPathService>(),
-                sp.GetRequiredService<SyntheticInputState>(), sp.GetRequiredService<SpecialActionsXmlSerializer>()));
+                sp.GetRequiredService<SyntheticInputState>(), sp.GetRequiredService<SpecialActionsXmlSerializer>(),
+                sp.GetRequiredService<DS4Windows.Actions.IManagedActionManager>()));
 
             // Phase 3 Step 3-6: プロセス検査・昇格起動サービスの登録
             services.AddSingleton<IProcessInspector, DefaultProcessInspector>();

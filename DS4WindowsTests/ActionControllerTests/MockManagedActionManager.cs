@@ -17,6 +17,7 @@ namespace DS4Windows.Actions.Tests
         public event Action<SpecialAction, int, bool, bool> ToggledOnChanged;
 
         public ActionInstanceState GetStateFor(SpecialAction action, int device) => new ActionInstanceState();
+        public bool IsBeingTriggered(SpecialAction action, int device) => false;
         public void ClearToggledOnForKey(ushort key) { }
         public void ClearAllToggledOn() { }
         public void ClearAllEntries() { }

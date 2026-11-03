@@ -53,7 +53,7 @@ namespace DS4WindowsTests
             public void SwitchProfile(int deviceIndex, SpecialAction action)
             {
                 Switches.Add((deviceIndex, action.details, action.IsTemporaryProfileAction));
-                ActionManager.ClearDeviceState(deviceIndex);
+                TestActions.Manager.ClearDeviceState(deviceIndex);
                 TestHost.GetService<IProfileSettingsService>().SetUseTempProfile(deviceIndex, action.IsTemporaryProfileAction);
             }
 
@@ -72,7 +72,7 @@ namespace DS4WindowsTests
             => new ControlSpecialItem { Type = SpecialAction.ActionTypeId.Profile, ProfileName = name, AutomaticUntrigger = auto };
 
         private static SpecialActionOutputFactory NewFactory(IProfileSwitcher switcher)
-            => new SpecialActionOutputFactory(TestHost.GetService<IProfileSettingsService>(), TestHost.GetService<IManagedActionManager>(),
+            => new SpecialActionOutputFactory(TestHost.GetService<IProfileSettingsService>(), TestHost.GetService<IManagedActionManager>(), TestHost.GetService<IKeyButtonControllerRegistry>(),
                 TestHost.GetService<IMacroPlayer>(), TestHost.GetService<IProcessLauncher>(), switcher,
                 TestHost.GetService<ISpecialActionRepository>(), TestHost.GetService<Func<IMapping>>());
 

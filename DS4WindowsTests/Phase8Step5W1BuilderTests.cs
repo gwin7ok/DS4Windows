@@ -54,7 +54,7 @@ namespace DS4WindowsTests
 
         private static ActionBindingBuilder NewBuilder(FakeProvider provider)
             => new ActionBindingBuilder(provider, TestHost.GetService<IProfileSettingsService>(), TestHost.GetService<IManagedActionManager>(),
-                new NoMacroPlayer(), new NoLauncher(), new NoSwitcher());
+                new NoMacroPlayer(), new NoLauncher(), new NoSwitcher(), controllers: TestActions.Controllers);
 
         private static SpecialAction Button(string name, string triggers, string mode, double delay = 0)
             => new SpecialAction(name, triggers, "Button", ((int)X360Controls.A).ToString(), delay, mode + "\n");
@@ -211,7 +211,7 @@ namespace DS4WindowsTests
             Assert.Throws<ArgumentNullException>(() => new ActionBindingBuilder(null, s, m, new NoMacroPlayer(), new NoLauncher(), new NoSwitcher()));
             Assert.Throws<ArgumentNullException>(() => new ActionBindingBuilder(p, null, m, new NoMacroPlayer(), new NoLauncher(), new NoSwitcher()));
             Assert.Throws<ArgumentNullException>(() => new ActionBindingBuilder(p, s, null, new NoMacroPlayer(), new NoLauncher(), new NoSwitcher()));
-            Assert.Throws<ArgumentNullException>(() => new ActionBindingBuilder(p, s, m, null, new NoLauncher(), new NoSwitcher()));
+            Assert.Throws<ArgumentNullException>(() => new ActionBindingBuilder(p, s, m, null, new NoLauncher(), new NoSwitcher(), controllers: TestActions.Controllers));
             Assert.Throws<ArgumentNullException>(() => new ActionBindingBuilder(p, s, m, new NoMacroPlayer(), null, new NoSwitcher()));
             Assert.Throws<ArgumentNullException>(() => new ActionBindingBuilder(p, s, m, new NoMacroPlayer(), new NoLauncher(), null));
         }

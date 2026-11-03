@@ -48,7 +48,7 @@ namespace DS4WindowsTests
             public bool ControlsDispatched(DS4Controls control, int key)
             {
                 SpecialAction synthetic = SyntheticKeyActionFactory.Create(Device, (int)control, (uint)key, false, false);
-                return ActionManager.IsBeingTriggered(synthetic, Device);
+                return TestActions.Manager.IsBeingTriggered(synthetic, Device);
             }
 
             /// <summary>
@@ -63,7 +63,7 @@ namespace DS4WindowsTests
                 return sa;
             }
 
-            public bool Triggered(SpecialAction sa) => ActionManager.IsBeingTriggered(sa, Device);
+            public bool Triggered(SpecialAction sa) => TestActions.Manager.IsBeingTriggered(sa, Device);
 
             /// <summary>指定のボタンを押した 1 フレームを流す（L2 は 0〜255 の値）。</summary>
             public DS4State Run(DS4Controls[] held = null, byte l2 = 0)
@@ -92,7 +92,7 @@ namespace DS4WindowsTests
                 foreach (DS4Controls c in _touched)
                     TestGlobals.Store.GetDS4CSetting(Device, c)?.Reset();
 
-                ActionManager.ClearDeviceState(Device);   // 実行状態を、次のテストへ残さない
+                TestActions.Manager.ClearDeviceState(Device);   // 実行状態を、次のテストへ残さない
                 Sa.Dispose();
             }
         }

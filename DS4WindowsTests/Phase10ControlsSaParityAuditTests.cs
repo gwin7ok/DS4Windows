@@ -38,7 +38,7 @@ namespace DS4WindowsTests
                 TestHost.GetService<ISpecialActionRepository>(), TestHost.GetService<Func<IMapping>>(),
                 TestHost.GetService<IGyroCalibrationPort>(), TestHost.GetService<IControllerDisconnectPort>(), TestHost.GetService<IBatteryCheckPort>(),
                 TestHost.GetService<IMacroStringPlayer>(), outputFactory: TestHost.GetService<ISpecialActionOutputFactory>(),
-                extrasPort: TestHost.GetService<IControlExtrasPort>());
+                extrasPort: TestHost.GetService<IControlExtrasPort>(), controllers: TestActions.Controllers);
             return builder.Build(device);
         }
 

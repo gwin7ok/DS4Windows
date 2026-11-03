@@ -10,21 +10,8 @@ namespace StandaloneTests
     public class MappingControllerLifecycleTests
     {
         // Phase7-Step8 W2: 登録簿は Mapping から KeyButtonControllerRegistry へ移った。
-        // ActionManager.ClearDeviceState（静的ファサード）は、コンテナから IMapping を解決して HandleDeviceDisconnect を呼ぶ。
+        // Phase13-Step4: 静的 ActionManager.ClearDeviceState は廃止した。管理役（DefaultActionManager）が、遅延で受けた IMapping の HandleDeviceDisconnect を呼ぶ。
         // ここでは IMapping の代わりに、登録簿を破棄するだけの偽物を差す。
-        private class TestServiceProvider : IServiceProvider
-        {
-            private readonly object registry;
-            private readonly object mapping;
-            public TestServiceProvider(object registry, object mapping) { this.registry = registry; this.mapping = mapping; }
-            public object GetService(Type serviceType)
-            {
-                if (serviceType == typeof(DS4Windows.DI.IKeyButtonControllerRegistry)) return registry;
-                if (serviceType == typeof(DS4Windows.DI.IMapping)) return mapping;
-                return null;
-            }
-        }
-
         private class DisconnectOnlyMapping : DS4Windows.DI.IMapping
         {
             private readonly DS4Windows.DI.IKeyButtonControllerRegistry registry;
@@ -48,15 +35,16 @@ namespace StandaloneTests
             // Arrange: ensure no controllers for device 5
             int device = 5;
 
-            var registry = new DS4Windows.Services.KeyButtonControllerRegistry(
-                new DS4Windows.Actions.DefaultKeyButtonActionControllerFactory(), new DS4Windows.Actions.DefaultControllerRegistry());
+            DS4Windows.Services.KeyButtonControllerRegistry registry = null;
+            var manager = new DS4Windows.Actions.DefaultActionManager(() => new DisconnectOnlyMapping(registry));
+            registry = new DS4Windows.Services.KeyButtonControllerRegistry(
+                new DS4Windows.Actions.DefaultKeyButtonActionControllerFactory(new DS4Windows.Actions.DefaultControllerRegistry(), manager),
+                new DS4Windows.Actions.DefaultControllerRegistry(), manager);
             var dictField = typeof(DS4Windows.Services.KeyButtonControllerRegistry).GetField("_controllers", BindingFlags.Instance | BindingFlags.NonPublic);
             Assert.IsNotNull(dictField, "Could not find _controllers field via reflection");
             var dict = dictField.GetValue(registry) as System.Collections.IDictionary;
             Assert.IsNotNull(dict);
 
-            DS4Windows.DI.ServiceProviderHolder.SetProvider(new TestServiceProvider(registry, new DisconnectOnlyMapping(registry)));
-            try
             {
                 // Create entries
                 registry.GetOrCreate(device, KeyButtonActionController.Mode.Press, "test-action-1");
@@ -66,16 +54,12 @@ namespace StandaloneTests
                 var keysBefore = dict.Keys.Cast<object>().Select(k => k.ToString()).Where(s => s.StartsWith(device + ":")).ToArray();
                 Assert.IsTrue(keysBefore.Length >= 1, "Expected at least one KeyButtonActionController entry for device before clear");
 
-                // Act: clear device state via ActionManager (which calls IMapping.HandleDeviceDisconnect → registry.ClearForDevice)
-                ActionManager.ClearDeviceState(device);
+                // Act: clear device state via the manager (which calls IMapping.HandleDeviceDisconnect → registry.ClearForDevice)
+                manager.ClearDeviceState(device);
 
                 // Assert: no entries remain for that device
                 var keysAfter = dict.Keys.Cast<object>().Select(k => k.ToString()).Where(s => s.StartsWith(device + ":")).ToArray();
                 Assert.IsTrue(keysAfter.Length == 0, "Expected no KeyButtonActionController entries for device after ClearDeviceState");
-            }
-            finally
-            {
-                DS4Windows.DI.ServiceProviderHolder.SetProvider(null);
             }
         }
     }

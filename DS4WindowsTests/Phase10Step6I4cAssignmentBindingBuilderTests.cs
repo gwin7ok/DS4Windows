@@ -40,7 +40,7 @@ namespace DS4WindowsTests
         private static AssignmentBindingBuilder NewBuilder()
         {
             IProfileSettingsService settings = TestHost.GetService<IProfileSettingsService>();
-            var factory = new SpecialActionOutputFactory(settings, TestHost.GetService<IManagedActionManager>(),
+            var factory = new SpecialActionOutputFactory(settings, TestHost.GetService<IManagedActionManager>(), TestHost.GetService<IKeyButtonControllerRegistry>(),
                 new NoMacroPlayer(), new NoLauncher(), new NoSwitcher(), macroStringPlayer: new NoMacroStringPlayer());
             return new AssignmentBindingBuilder(factory);
         }

@@ -7,138 +7,127 @@ using Xunit;
 namespace DS4Windows.Actions.Tests
 {
 
-    // ServiceProviderHolder（静的）を差し替えるテストは同じコレクションで直列に実行する
+    // 共有のテスト用ホストのサービスを使うテストは同じコレクションで直列に実行する
     [Collection("ServiceProviderHolder")]
     public class ToggleAndToggledOnTests
     {
+        /// <summary>
+        /// Phase13-Step4: 旧 <c>ServiceProviderHolder.SetProvider(TestServiceProvider)</c> の代わりに、テストごとに独立の管理役・登録簿を作って
+        /// <see cref="KeyAction"/>／アダプターへ直接渡す（静的な Service Locator を介さない）。
+        /// </summary>
+        private sealed class Parts
+        {
+            public readonly DefaultActionManager Manager = new DefaultActionManager(TestRepositoryFactory.MappingProvider);
+            public readonly DS4Windows.Services.KeyButtonControllerRegistry Registry;
+
+            public Parts()
+            {
+                var controllerRegistry = new DefaultControllerRegistry();
+                Registry = new DS4Windows.Services.KeyButtonControllerRegistry(
+                    new DefaultKeyButtonActionControllerFactory(controllerRegistry, Manager), controllerRegistry, Manager);
+            }
+        }
+
         [Fact]
         public void Toggle_OnTrigger_Toggles_IsToggledOn_State()
         {
-            var dam = new DS4Windows.Actions.DefaultActionManager(DS4WindowsTests.TestRepositoryFactory.MappingProvider);
-            var registry = new DS4Windows.Services.KeyButtonControllerRegistry(
-                new DS4Windows.Actions.DefaultKeyButtonActionControllerFactory(), new DS4Windows.Actions.DefaultControllerRegistry());
-            var srv = new TestServiceProvider(dam, registry);
-            DS4Windows.DI.ServiceProviderHolder.SetProvider(srv);
+            var p = new Parts();
+            var dam = p.Manager;
+            var registry = p.Registry;
 
-            try
+            // create a SpecialAction configured as Toggle
+            var sa = new DS4Windows.SpecialAction("toggletest", "0", "Key", "0");
+            sa.KeyButtonSwitchMode = DS4Windows.SpecialAction.KeyButtonSwitchModeEnum.Toggle;
+
+            var ka = new DS4Windows.KeyAction(sa, 0, dam, registry);
+            var handler = new FakeKBMHandler();
+
+            // Ensure a clean starting state
+            dam.ClearAllToggledOn();
+            dam.ClearAllEntries();
+
+            // First trigger should set IsToggledOn true
+            ka.OnTrigger(0, 0, 0, false, handler);
+            var stateAfter = dam.GetStateFor(sa, 0);
+            Assert.True(stateAfter.IsToggledOn);
+
+            // Simulate explicit Toggle-OFF by invoking controller's OnSATriggerToggleOff
+            // Phase7-Step8 W2: 登録簿は Mapping から KeyButtonControllerRegistry へ移った
+            var dictField = typeof(DS4Windows.Services.KeyButtonControllerRegistry).GetField("_controllers", System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.NonPublic);
+            var dict = dictField.GetValue(registry) as System.Collections.IDictionary;
+            // Find controller instance matching action name (sa.name) and invoke ToggleOff
+            if (dict != null)
             {
-                // create a SpecialAction configured as Toggle
-                var sa = new DS4Windows.SpecialAction("toggletest", "0", "Key", "0");
-                sa.KeyButtonSwitchMode = DS4Windows.SpecialAction.KeyButtonSwitchModeEnum.Toggle;
-
-                var ka = new DS4Windows.KeyAction(sa, 0);
-                var handler = new FakeKBMHandler();
-
-                // Ensure a clean starting state
-                dam.ClearAllToggledOn();
-                dam.ClearAllEntries();
-
-                // First trigger should set IsToggledOn true
-                ka.OnTrigger(0, 0, 0, false, handler);
-                var stateAfter = ActionManager.GetStateFor(sa, 0);
-                Assert.True(stateAfter.IsToggledOn);
-
-                // Simulate explicit Toggle-OFF by invoking controller's OnSATriggerToggleOff
-                // Phase7-Step8 W2: 登録簿は Mapping から KeyButtonControllerRegistry へ移った
-                var dictField = typeof(DS4Windows.Services.KeyButtonControllerRegistry).GetField("_controllers", System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.NonPublic);
-                var dict = dictField.GetValue(registry) as System.Collections.IDictionary;
-                // Find controller instance matching action name (sa.name) and invoke ToggleOff
-                if (dict != null)
+                // As a last resort in tests, invoke ToggleOff on every controller to ensure any active toggle is cleared.
+                foreach (System.Collections.DictionaryEntry de in dict)
                 {
-                    // As a last resort in tests, invoke ToggleOff on every controller to ensure any active toggle is cleared.
-                    foreach (System.Collections.DictionaryEntry de in dict)
-                    {
-                        var inst = de.Value as DS4Windows.KeyButtonActionController;
-                        try { inst?.OnSATriggerToggleOff(0, 0, false, handler); } catch { }
-                    }
+                    var inst = de.Value as DS4Windows.KeyButtonActionController;
+                    try { inst?.OnSATriggerToggleOff(0, 0, false, handler); } catch { }
                 }
+            }
 
-                var stateAfterOff = ActionManager.GetStateFor(sa, 0);
-                Assert.False(stateAfterOff.IsToggledOn);
-            }
-            finally
-            {
-                DS4Windows.DI.ServiceProviderHolder.SetProvider(null);
-            }
+            var stateAfterOff = dam.GetStateFor(sa, 0);
+            Assert.False(stateAfterOff.IsToggledOn);
         }
 
         [Fact]
         public void Press_OnTrigger_DoesNot_Set_IsToggledOn()
         {
-            var dam = new DS4Windows.Actions.DefaultActionManager(DS4WindowsTests.TestRepositoryFactory.MappingProvider);
-            var srv = new TestServiceProvider(dam);
-            DS4Windows.DI.ServiceProviderHolder.SetProvider(srv);
+            var p = new Parts();
+            var dam = p.Manager;
 
-            try
-            {
-                var sa = new DS4Windows.SpecialAction("presstest", "0", "Key", "0");
-                // ensure Press mode
-                sa.KeyButtonSwitchMode = DS4Windows.SpecialAction.KeyButtonSwitchModeEnum.Press;
+            var sa = new DS4Windows.SpecialAction("presstest", "0", "Key", "0");
+            // ensure Press mode
+            sa.KeyButtonSwitchMode = DS4Windows.SpecialAction.KeyButtonSwitchModeEnum.Press;
 
-                var ka = new DS4Windows.KeyAction(sa, 0);
-                var handler = new FakeKBMHandler();
+            var ka = new DS4Windows.KeyAction(sa, 0, dam, p.Registry);
+            var handler = new FakeKBMHandler();
 
-                // Ensure a clean starting state
-                dam.ClearAllToggledOn();
-                dam.ClearAllEntries();
+            // Ensure a clean starting state
+            dam.ClearAllToggledOn();
+            dam.ClearAllEntries();
 
-                ka.OnTrigger(0, 0, 0, false, handler);
-                var stateAfter = ActionManager.GetStateFor(sa, 0);
-                Assert.False(stateAfter.IsToggledOn);
-            }
-            finally
-            {
-                DS4Windows.DI.ServiceProviderHolder.SetProvider(null);
-            }
+            ka.OnTrigger(0, 0, 0, false, handler);
+            var stateAfter = dam.GetStateFor(sa, 0);
+            Assert.False(stateAfter.IsToggledOn);
         }
 
         [Fact]
         public void IsToggledOn_SingleWriter_EventOnlyFromManager()
         {
-            var dam = new DS4Windows.Actions.DefaultActionManager(DS4WindowsTests.TestRepositoryFactory.MappingProvider);
-            var srv = new TestServiceProvider(dam);
-            DS4Windows.DI.ServiceProviderHolder.SetProvider(srv);
+            var dam = new DefaultActionManager(TestRepositoryFactory.MappingProvider);
 
-            try
-            {
-                var sa = new DS4Windows.SpecialAction("invarianttest", "0", "Key", "0");
-                sa.KeyButtonSwitchMode = DS4Windows.SpecialAction.KeyButtonSwitchModeEnum.Toggle;
+            var sa = new DS4Windows.SpecialAction("invarianttest", "0", "Key", "0");
+            sa.KeyButtonSwitchMode = DS4Windows.SpecialAction.KeyButtonSwitchModeEnum.Toggle;
 
-                dam.ClearAllToggledOn();
-                dam.ClearAllEntries();
+            dam.ClearAllToggledOn();
+            dam.ClearAllEntries();
 
-                bool eventFired = false;
-                Action<DS4Windows.SpecialAction, int, bool, bool> handler = (a, d, oldv, newv) => { eventFired = true; };
-                try { DS4Windows.ActionManager.ToggledOnChanged += handler; } catch { }
+            bool eventFired = false;
+            Action<DS4Windows.SpecialAction, int, bool, bool> handler = (a, d, oldv, newv) => { eventFired = true; };
+            dam.ToggledOnChanged += handler;
 
-                // Directly mutate state: should NOT fire ToggledOnChanged event
-                var st = DS4Windows.ActionManager.GetStateFor(sa, 0);
-                Assert.NotNull(st);
-                st.IsToggledOn = true;
-                Assert.True(st.IsToggledOn);
-                Assert.False(eventFired);
+            // Directly mutate state: should NOT fire ToggledOnChanged event
+            var st = dam.GetStateFor(sa, 0);
+            Assert.NotNull(st);
+            st.IsToggledOn = true;
+            Assert.True(st.IsToggledOn);
+            Assert.False(eventFired);
 
-                // Now use manager API to change: this SHOULD fire the event
-                DS4Windows.ActionManager.SetToggledOn(sa, 0, false);
-                Assert.False(st.IsToggledOn);
-                Assert.True(eventFired);
+            // Now use manager API to change: this SHOULD fire the event
+            dam.SetToggledOn(sa, 0, false);
+            Assert.False(st.IsToggledOn);
+            Assert.True(eventFired);
 
-                try { DS4Windows.ActionManager.ToggledOnChanged -= handler; } catch { }
-            }
-            finally
-            {
-                DS4Windows.DI.ServiceProviderHolder.SetProvider(null);
-            }
+            dam.ToggledOnChanged -= handler;
         }
 
         [Fact]
         public void DeterministicRepeater_TriggerViaFake()
         {
-            var dam = new DS4Windows.Actions.DefaultActionManager(DS4WindowsTests.TestRepositoryFactory.MappingProvider);
-            var registry = new DS4Windows.Services.KeyButtonControllerRegistry(
-                new DS4Windows.Actions.DefaultKeyButtonActionControllerFactory(), new DS4Windows.Actions.DefaultControllerRegistry());
-            var srv = new TestServiceProvider(dam, registry);
-            DS4Windows.DI.ServiceProviderHolder.SetProvider(srv);
+            var p = new Parts();
+            var dam = p.Manager;
+            var registry = p.Registry;
 
             // Install override to create FakeDeterministicRepeater for any adapter constructions
             DS4Windows.Actions.RepeatHelperToIRepeaterAdapter.RepeaterFactoryOverride = (origFactory) => new FakeDeterministicRepeater();
@@ -148,7 +137,7 @@ namespace DS4Windows.Actions.Tests
                 // Create a SpecialAction configured as Toggle to drive controller path
                 var sa = new DS4Windows.SpecialAction("repeattest", "0", "Key", "0");
                 sa.KeyButtonSwitchMode = DS4Windows.SpecialAction.KeyButtonSwitchModeEnum.Toggle;
-                var ka = new DS4Windows.KeyAction(sa, 0);
+                var ka = new DS4Windows.KeyAction(sa, 0, dam, registry);
                 var handler = new FakeKBMHandler();
 
                 dam.ClearAllToggledOn();
@@ -188,108 +177,127 @@ namespace DS4Windows.Actions.Tests
             finally
             {
                 DS4Windows.Actions.RepeatHelperToIRepeaterAdapter.RepeaterFactoryOverride = null;
-                DS4Windows.DI.ServiceProviderHolder.SetProvider(null);
             }
         }
 
         [Fact]
         public void KeyButtonActionControllerAdapter_StartStop_Toggle_Clears_IsToggledOn()
         {
-            var dam = new DS4Windows.Actions.DefaultActionManager(DS4WindowsTests.TestRepositoryFactory.MappingProvider);
-            var srv = new TestServiceProvider(dam);
-            DS4Windows.DI.ServiceProviderHolder.SetProvider(srv);
+            var dam = new DefaultActionManager(TestRepositoryFactory.MappingProvider);
 
-            try
+            var sa = new DS4Windows.SpecialAction("adaptertoggle", "0", "Key", "0");
+            sa.KeyButtonSwitchMode = DS4Windows.SpecialAction.KeyButtonSwitchModeEnum.Toggle;
+
+            dam.ClearAllToggledOn();
+            dam.ClearAllEntries();
+
+            var handler = new FakeKBMHandler();
+            var adapter = new DS4Windows.Actions.KeyButtonActionControllerAdapter(0, sa, dam);
+            var binding = new DS4Windows.Actions.KeyActionBinding(sa);
+            var trigger = new DS4Windows.Actions.TriggerContextImpl
             {
-                var sa = new DS4Windows.SpecialAction("adaptertoggle", "0", "Key", "0");
-                sa.KeyButtonSwitchMode = DS4Windows.SpecialAction.KeyButtonSwitchModeEnum.Toggle;
+                Device = 0,
+                IsEdgeEstablished = true,
+                LogicalValue = 0,
+                NativeValue = 0,
+                OutputHandler = handler,
+                Timestamp = DateTime.UtcNow
+            };
 
-                dam.ClearAllToggledOn();
-                dam.ClearAllEntries();
+            // Start should set IsToggledOn
+            adapter.Start(binding, trigger);
+            var st = dam.GetStateFor(sa, 0);
+            Assert.NotNull(st);
+            Assert.True(st.IsToggledOn);
 
-                var handler = new FakeKBMHandler();
-                var adapter = new DS4Windows.Actions.KeyButtonActionControllerAdapter(0, sa);
-                var binding = new DS4Windows.Actions.KeyActionBinding(sa);
-                var trigger = new DS4Windows.Actions.TriggerContextImpl
-                {
-                    Device = 0,
-                    IsEdgeEstablished = true,
-                    LogicalValue = 0,
-                    NativeValue = 0,
-                    OutputHandler = handler,
-                    Timestamp = DateTime.UtcNow
-                };
-
-                // Start should set IsToggledOn
-                adapter.Start(binding, trigger);
-                var st = ActionManager.GetStateFor(sa, 0);
-                Assert.NotNull(st);
-                Assert.True(st.IsToggledOn);
-
-                // Stop should clear IsToggledOn via ToggleOff path
-                adapter.Stop(binding, trigger);
-                Assert.False(st.IsToggledOn);
-            }
-            finally
-            {
-                DS4Windows.DI.ServiceProviderHolder.SetProvider(null);
-            }
+            // Stop should clear IsToggledOn via ToggleOff path
+            adapter.Stop(binding, trigger);
+            Assert.False(st.IsToggledOn);
         }
 
         [Fact]
         public void KeyButtonActionControllerAdapter_Handle_Release_DoesNot_Clear_Toggle()
         {
-            var dam = new DS4Windows.Actions.DefaultActionManager(DS4WindowsTests.TestRepositoryFactory.MappingProvider);
-            var srv = new TestServiceProvider(dam);
-            DS4Windows.DI.ServiceProviderHolder.SetProvider(srv);
+            var dam = new DefaultActionManager(TestRepositoryFactory.MappingProvider);
 
-            try
+            var sa = new DS4Windows.SpecialAction("adaptertoggle_handle", "0", "Key", "0");
+            sa.KeyButtonSwitchMode = DS4Windows.SpecialAction.KeyButtonSwitchModeEnum.Toggle;
+
+            dam.ClearAllToggledOn();
+            dam.ClearAllEntries();
+
+            var handler = new FakeKBMHandler();
+            var adapter = new DS4Windows.Actions.KeyButtonActionControllerAdapter(0, sa, dam);
+            var binding = new DS4Windows.Actions.KeyActionBinding(sa);
+            var triggerEst = new DS4Windows.Actions.TriggerContextImpl
             {
-                var sa = new DS4Windows.SpecialAction("adaptertoggle_handle", "0", "Key", "0");
-                sa.KeyButtonSwitchMode = DS4Windows.SpecialAction.KeyButtonSwitchModeEnum.Toggle;
+                Device = 0,
+                IsEdgeEstablished = true,
+                LogicalValue = 0,
+                NativeValue = 0,
+                OutputHandler = handler,
+                Timestamp = DateTime.UtcNow
+            };
 
-                dam.ClearAllToggledOn();
-                dam.ClearAllEntries();
+            // Start should set IsToggledOn
+            adapter.Start(binding, triggerEst);
+            var st = dam.GetStateFor(sa, 0);
+            Assert.NotNull(st);
+            Assert.True(st.IsToggledOn);
 
-                var handler = new FakeKBMHandler();
-                var adapter = new DS4Windows.Actions.KeyButtonActionControllerAdapter(0, sa);
-                var binding = new DS4Windows.Actions.KeyActionBinding(sa);
-                var triggerEst = new DS4Windows.Actions.TriggerContextImpl
-                {
-                    Device = 0,
-                    IsEdgeEstablished = true,
-                    LogicalValue = 0,
-                    NativeValue = 0,
-                    OutputHandler = handler,
-                    Timestamp = DateTime.UtcNow
-                };
-
-                // Start should set IsToggledOn
-                adapter.Start(binding, triggerEst);
-                var st = ActionManager.GetStateFor(sa, 0);
-                Assert.NotNull(st);
-                Assert.True(st.IsToggledOn);
-
-                // Now call Handle with a release edge — toggle-mode controllers should ignore release
-                var triggerRel = new DS4Windows.Actions.TriggerContextImpl
-                {
-                    Device = 0,
-                    IsEdgeEstablished = false,
-                    LogicalValue = 0,
-                    NativeValue = 0,
-                    OutputHandler = handler,
-                    Timestamp = DateTime.UtcNow
-                };
-
-                adapter.Handle(binding, triggerRel);
-
-                // Toggled state should remain true after release handled
-                Assert.True(st.IsToggledOn);
-            }
-            finally
+            // Now call Handle with a release edge — toggle-mode controllers should ignore release
+            var triggerRel = new DS4Windows.Actions.TriggerContextImpl
             {
-                DS4Windows.DI.ServiceProviderHolder.SetProvider(null);
-            }
+                Device = 0,
+                IsEdgeEstablished = false,
+                LogicalValue = 0,
+                NativeValue = 0,
+                OutputHandler = handler,
+                Timestamp = DateTime.UtcNow
+            };
+
+            adapter.Handle(binding, triggerRel);
+
+            // Toggled state should remain true after release handled
+            Assert.True(st.IsToggledOn);
+        }
+
+        /// <summary>
+        /// Phase13-Step4: コントローラーは、注入された管理役のイベントを購読する。OFF になったら（旧: 静的イベント）保持中の出力を解放し、
+        /// 破棄したあとは反応しない（購読を解除する）。
+        /// </summary>
+        [Fact]
+        public void KeyButtonActionController_SubscribesToTheInjectedManager_AndUnsubscribesOnDispose()
+        {
+            var dam = new DefaultActionManager(TestRepositoryFactory.MappingProvider);
+            var sa = new DS4Windows.SpecialAction("injectedsub", "0", "Key", "0");
+            sa.KeyButtonSwitchMode = DS4Windows.SpecialAction.KeyButtonSwitchModeEnum.Toggle;
+
+            var controller = new DS4Windows.KeyButtonActionController(0, sa, dam, "injectedsub");
+            var handler = new FakeKBMHandler();
+
+            controller.OnSATriggerEstablished(30, 0, false, handler, true);
+            Assert.True(dam.GetStateFor(sa, 0).IsToggledOn);
+
+            // 購読の有無は、イベントのデリゲートの購読者数で確かめる
+            var evt = typeof(DefaultActionManager).GetField("ToggledOnChanged", System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.NonPublic);
+            var del = (Delegate)evt.GetValue(dam);
+            int before = del.GetInvocationList().Length;
+
+            controller.Dispose();
+
+            del = (Delegate)evt.GetValue(dam);
+            Assert.Equal(before - 1, del.GetInvocationList().Length);
+        }
+
+        [Fact]
+        public void Constructors_RequireTheirManager()
+        {
+            var sa = new DS4Windows.SpecialAction("ctorreq", "0", "Key", "0");
+            Assert.Throws<ArgumentNullException>(() => new DS4Windows.KeyButtonActionController(0, sa, null, "x"));
+            Assert.Throws<ArgumentNullException>(() => new DS4Windows.KeyButtonActionController(0, DS4Windows.KeyButtonActionController.Mode.Press, null, "x"));
+            Assert.Throws<ArgumentNullException>(() => new DefaultKeyButtonActionControllerFactory(new DefaultControllerRegistry(), null));
+            Assert.Throws<ArgumentNullException>(() => new DefaultKeyButtonActionControllerFactory(null, new DefaultActionManager(TestRepositoryFactory.MappingProvider)));
         }
     }
 }

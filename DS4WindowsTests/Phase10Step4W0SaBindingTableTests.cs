@@ -61,9 +61,9 @@ namespace DS4WindowsTests
                 ? new ActionBindingBuilder(provider, TestHost.GetService<IProfileSettingsService>(), TestHost.GetService<IManagedActionManager>(),
                     new NoMacroPlayer(), new NoLauncher(), new NoSwitcher(), gyroCalibration: new RecordingGyroCalibrationPort(),
                     disconnectPort: new RecordingControllerDisconnectPort(), batteryCheckPort: new RecordingBatteryCheckPort(),
-                    macroStringPlayer: new NoMacroStringPlayer())
+                    macroStringPlayer: new NoMacroStringPlayer(), controllers: TestActions.Controllers)
                 : new ActionBindingBuilder(provider, TestHost.GetService<IProfileSettingsService>(), TestHost.GetService<IManagedActionManager>(),
-                    new NoMacroPlayer(), new NoLauncher(), new NoSwitcher());
+                    new NoMacroPlayer(), new NoLauncher(), new NoSwitcher(), controllers: TestActions.Controllers);
 
             IReadOnlyList<IActionBinding> result = builder.Build(0);
             if (result.Count == 0) return null;

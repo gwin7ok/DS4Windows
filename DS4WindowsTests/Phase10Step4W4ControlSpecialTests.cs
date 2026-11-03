@@ -169,7 +169,7 @@ namespace DS4WindowsTests
             using var t = new ControlsKeyTestScope();
             t.MapSpecial(DS4Controls.Cross, Item(SpecialAction.ActionTypeId.GyroCalibrate));
 
-            var builder = new ControlBindingBuilder(TestHost.GetService<IProfileSettingsService>());
+            var builder = new ControlBindingBuilder(TestHost.GetService<IProfileSettingsService>(), manager: TestActions.Manager, controllers: TestActions.Controllers);
 
             Assert.Empty(builder.Build(Device));
         }
@@ -232,7 +232,7 @@ namespace DS4WindowsTests
 
         private static ControlBindingBuilder BuilderWith(RecordingGyroCalibrationPort gyro)
         {
-            var factory = new SpecialActionOutputFactory(TestHost.GetService<IProfileSettingsService>(), TestHost.GetService<IManagedActionManager>(),
+            var factory = new SpecialActionOutputFactory(TestHost.GetService<IProfileSettingsService>(), TestHost.GetService<IManagedActionManager>(), TestHost.GetService<IKeyButtonControllerRegistry>(),
                 TestHost.GetService<IMacroPlayer>(), TestHost.GetService<IProcessLauncher>(), TestHost.GetService<IProfileSwitcher>(),
                 TestHost.GetService<ISpecialActionRepository>(), TestHost.GetService<Func<IMapping>>(), gyroCalibration: gyro);
             return new ControlBindingBuilder(TestHost.GetService<IProfileSettingsService>(), null, null, factory);

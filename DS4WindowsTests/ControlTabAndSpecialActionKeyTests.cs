@@ -17,7 +17,7 @@ namespace DS4WindowsTests
             sa.typeID = SpecialAction.ActionTypeId.Key;
             sa.details = "30"; // 0x1E ('A')
 
-            var adapter = new KeyButtonActionControllerAdapter(0, sa);
+            var adapter = new KeyButtonActionControllerAdapter(0, sa, TestActions.Manager);
             var binding = new KeyActionBinding(sa);
 
             var triggerDown = new TriggerContextImpl
@@ -32,7 +32,7 @@ namespace DS4WindowsTests
 
             // 押下エッジ (Start)
             adapter.Start(binding, triggerDown);
-            var state = ActionManager.GetStateFor(sa, 0);
+            var state = TestActions.Manager.GetStateFor(sa, 0);
             Assert.NotNull(state);
 
             // Phase8-Step1 W3（B-5）: Press は押下で 1 回だけ押し、まだ離していない（保持中）。トグル状態は使わない
@@ -67,7 +67,7 @@ namespace DS4WindowsTests
             sa.typeID = SpecialAction.ActionTypeId.Key;
             sa.details = "30";
 
-            var inner = new KeyButtonActionController(0, KeyButtonActionController.Mode.Toggle, "Key_Toggle_Test");
+            var inner = new KeyButtonActionController(0, KeyButtonActionController.Mode.Toggle, TestActions.Manager, "Key_Toggle_Test");
             var adapter = new KeyButtonActionControllerAdapter(inner);
             var binding = new KeyActionBinding(sa);
 

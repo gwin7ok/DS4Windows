@@ -98,10 +98,7 @@ namespace DS4WindowsTests
                 Assert.True(CountSubscriptions(instance, type, vm) == 0,
                     $"ViewModel が {type.Name} のイベントを購読している（Singleton からの強参照リーク）");
             }
-
-            // 静的イベント（ActionManager.ToggledOnChanged など）も対象
-            Assert.True(CountSubscriptions(null, typeof(ActionManager), vm) == 0,
-                "ViewModel が ActionManager の静的イベントを購読している");
+            // Phase13-Step4: 静的イベント（旧 ActionManager.ToggledOnChanged）は廃止した。IManagedActionManager のイベントは上の publishers が対象
         }
 
         [Fact]

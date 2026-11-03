@@ -32,7 +32,7 @@ namespace DS4WindowsTests
             => new ActionBindingBuilder(TestHost.GetService<IProfileActionProvider>(), TestHost.GetService<IProfileSettingsService>(),
                 TestHost.GetService<IManagedActionManager>(), TestHost.GetService<IMacroPlayer>(), TestHost.GetService<IProcessLauncher>(),
                 TestHost.GetService<IProfileSwitcher>(), TestHost.GetService<ISpecialActionRepository>(),
-                TestHost.GetService<Func<IMapping>>(), null, port);
+                TestHost.GetService<Func<IMapping>>(), null, port, controllers: TestActions.Controllers);
 
         private static void Publish(SpecialActionTestScope t, IControllerDisconnectPort port)
             => TestHost.GetService<IActionRegistry>().Replace(t.Device, NewBuilder(port).Build(t.Device));
@@ -69,12 +69,12 @@ namespace DS4WindowsTests
             t.RunFrame(Frame(true));
             Assert.Equal(1, port.BluetoothCalls);
             Assert.Equal(new[] { t.Device }, port.Devices.ToArray());
-            Assert.False(ActionManager.IsBeingTriggered(key, t.Device));   // 切断のフレームでは、後ろの Key は処理されない
+            Assert.False(TestActions.Manager.IsBeingTriggered(key, t.Device));   // 切断のフレームでは、後ろの Key は処理されない
 
             t.RunFrame(Frame(true));
             t.RunFrame(Frame(true));
             Assert.Equal(1, port.BluetoothCalls);                           // 成功したので、繰り返さない（旧経路は切断の完了まで毎フレーム繰り返した）
-            Assert.False(ActionManager.IsBeingTriggered(key, t.Device));   // 切断の完了までの間、フレームの打ち切りは続く（旧経路の return と同じ）
+            Assert.False(TestActions.Manager.IsBeingTriggered(key, t.Device));   // 切断の完了までの間、フレームの打ち切りは続く（旧経路の return と同じ）
         }
 
         [Fact]
@@ -90,7 +90,7 @@ namespace DS4WindowsTests
             t.RunFrame(Frame(false));
             t.RunFrame(Frame(true));
             Assert.Equal(1, port.BluetoothCalls);                          // 失敗
-            Assert.True(ActionManager.IsBeingTriggered(key, t.Device));    // 失敗したときは、フレームを打ち切らない（後ろの Key が処理される）
+            Assert.True(TestActions.Manager.IsBeingTriggered(key, t.Device));    // 失敗したときは、フレームを打ち切らない（後ろの Key が処理される）
 
             t.RunFrame(Frame(true));
             Assert.Equal(2, port.BluetoothCalls);                          // 再試行（失敗）
@@ -134,7 +134,7 @@ namespace DS4WindowsTests
             t.RunFrame(Frame(true));
 
             Assert.Equal(0, port.BluetoothCalls);
-            Assert.True(ActionManager.IsBeingTriggered(key, t.Device));   // 後ろの Key が処理される
+            Assert.True(TestActions.Manager.IsBeingTriggered(key, t.Device));   // 後ろの Key が処理される
             Assert.Equal(0, port.DongleCalls);                             // 押している間は、ドングルも切断しない
         }
 

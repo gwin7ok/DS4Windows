@@ -139,7 +139,7 @@ namespace DS4WindowsTests
         /// </summary>
         public void PublishControlsOnly()
         {
-            var builder = new DS4Windows.Services.ControlBindingBuilder(_inner.Settings, TestHost.GetService<IMacroPlayer>(), ExtrasPort);
+            var builder = new DS4Windows.Services.ControlBindingBuilder(_inner.Settings, TestHost.GetService<IMacroPlayer>(), ExtrasPort, manager: TestActions.Manager, controllers: TestActions.Controllers);
             TestHost.GetService<IActionRegistry>().Replace(Device, builder.Build(Device));
         }
 
@@ -151,9 +151,9 @@ namespace DS4WindowsTests
 
         public static DS4State Neutral() => MappingCharacterizationScope.NeutralState();
 
-        public bool IsBeingTriggered(SpecialAction sa) => ActionManager.IsBeingTriggered(sa, Device);
+        public bool IsBeingTriggered(SpecialAction sa) => TestActions.Manager.IsBeingTriggered(sa, Device);
 
-        public bool IsToggledOn(SpecialAction sa) => ActionManager.GetStateFor(sa, Device)?.IsToggledOn ?? false;
+        public bool IsToggledOn(SpecialAction sa) => TestActions.Manager.GetStateFor(sa, Device)?.IsToggledOn ?? false;
 
         public void Dispose()
         {
@@ -163,7 +163,7 @@ namespace DS4WindowsTests
                 TestGlobals.Store.GetDS4CSetting(Device, control)?.Reset();
 
             ResetExtrasObservables();
-            ActionManager.ClearDeviceState(Device);   // Toggle の状態を次のテストへ残さない
+            TestActions.Manager.ClearDeviceState(Device);   // Toggle の状態を次のテストへ残さない
             _inner.Dispose();
         }
     }

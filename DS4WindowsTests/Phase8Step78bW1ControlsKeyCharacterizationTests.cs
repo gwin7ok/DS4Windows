@@ -222,7 +222,7 @@ namespace DS4WindowsTests
             t.Run(held);
             bool before = t.IsBeingTriggered(sa);
 
-            ActionManager.ClearDeviceState(t.Device);
+            TestActions.Manager.ClearDeviceState(t.Device);
             bool afterClear = t.IsBeingTriggered(sa);
             t.Run(held);
             bool nextFrameAfterClear = t.IsBeingTriggered(sa);

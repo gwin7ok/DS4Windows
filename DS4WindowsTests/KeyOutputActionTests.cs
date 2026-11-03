@@ -67,7 +67,7 @@ namespace DS4WindowsTests
 
             var newKbm = new MockVirtualKBM();
             var newSa = NewKeyAction("p8s3_key_new_" + keyType, keyType);
-            var output = new KeyOutputAction(newSa, settings);
+            var output = new KeyOutputAction(newSa, settings, TestActions.Manager, TestActions.Controllers);
             var newCtx = new Context(newKbm);
             output.Execute(newCtx);
             output.Stop(newCtx);
@@ -95,7 +95,7 @@ namespace DS4WindowsTests
             using var scope = new MappingScope(settings);
             var kbm = new MockVirtualKBM();
             var sa = NewKeyAction("p8s3_key_native", DS4KeyType.None);
-            var output = new KeyOutputAction(sa, settings);
+            var output = new KeyOutputAction(sa, settings, TestActions.Manager, TestActions.Controllers);
 
             output.Execute(new Context(kbm));
 
@@ -108,14 +108,14 @@ namespace DS4WindowsTests
         {
             IProfileSettingsService settings = Settings();
             var sa = NewKeyAction("p8s3_key_id", DS4KeyType.None);
-            var output = new KeyOutputAction(sa, settings);
+            var output = new KeyOutputAction(sa, settings, TestActions.Manager, TestActions.Controllers);
 
             Assert.Equal("p8s3_key_id", output.Id);
             output.Execute(null); // 例外にならない
             output.Stop(null);
 
-            Assert.Throws<ArgumentNullException>(() => new KeyOutputAction(null, settings));
-            Assert.Throws<ArgumentNullException>(() => new KeyOutputAction(sa, null));
+            Assert.Throws<ArgumentNullException>(() => new KeyOutputAction(null, settings, TestActions.Manager, TestActions.Controllers));
+            Assert.Throws<ArgumentNullException>(() => new KeyOutputAction(sa, null, TestActions.Manager, TestActions.Controllers));
         }
 
         [Fact]
@@ -123,7 +123,7 @@ namespace DS4WindowsTests
         {
             IProfileSettingsService settings = Settings();
             var sa = NewKeyAction("p8s3_key_binding", DS4KeyType.None);
-            var output = new KeyOutputAction(sa, settings);
+            var output = new KeyOutputAction(sa, settings, TestActions.Manager, TestActions.Controllers);
 
             var binding = new KeyActionBinding(sa, output);
 

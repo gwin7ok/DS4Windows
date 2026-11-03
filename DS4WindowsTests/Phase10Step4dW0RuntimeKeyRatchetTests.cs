@@ -19,7 +19,6 @@ namespace DS4WindowsTests
         private static readonly Dictionary<string, (int Path, int Actions)> Baseline = new Dictionary<string, (int, int)>
         {
             ["DS4Windows/Actions/ActionBindingBuilder.cs"] = (0, 3),
-            ["DS4Windows/Actions/ActionManager.cs"] = (0, 3),
             ["DS4Windows/App.xaml.cs"] = (6, 0),
             ["DS4Windows/DI/IProfileRepository.cs"] = (2, 1),
             ["DS4Windows/DI/IProfileSettingsService.cs"] = (0, 1),
@@ -33,7 +32,7 @@ namespace DS4WindowsTests
             ["DS4Windows/DS4Control/Services/ConnectionProfileSelector.cs"] = (1, 0),   // Phase9 9-E E-6a: ControlService から移した（合計は増えていない）
             ["DS4Windows/DS4Control/Services/LegacyProfileXmlSerializer.cs"] = (1, 0),
             ["DS4Windows/DS4Control/Services/ProfileActionProvider.cs"] = (0, 2),
-            ["DS4Windows/DS4Control/Services/ProfileApplicationService.cs"] = (7, 1),
+            ["DS4Windows/DS4Control/Services/ProfileApplicationService.cs"] = (7, 4),
             ["DS4Windows/DS4Control/Services/ProfilePresets.cs"] = (0, 7),
             ["DS4Windows/DS4Control/Services/ProfileRepository.cs"] = (6, 4),
             ["DS4Windows/DS4Control/Services/ProfileSections/ProfileActionsLoadSection.cs"] = (0, 7),

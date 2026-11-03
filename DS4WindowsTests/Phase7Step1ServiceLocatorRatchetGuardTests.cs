@@ -12,22 +12,16 @@ namespace DS4WindowsTests
     /// <c>ServiceProviderHolder</c> は台帳・ラチェットの対象外だったため、Phase7-0 の調査（<c>Phase7-0-Survey.md</c> §1.5 F-A）で追加した。
     /// - 件数が減るのは許可する（基準値を更新して、さらに固定すること）。
     /// - 件数が増える、または基準値に無いファイルに現れる場合は失敗する。
-    /// 基準値は 2026-10-17 の走査値（計 23 件）。<c>SetProvider</c>（Composition Root が設定する側。<c>DI/AppHost.cs</c>）は数えない。
-    /// <c>Actions/</c> の 10 件（Phase8-Step8 8c で 17 → 10）は Phase8（Controls／SpecialActions の統合ディスパッチ）の持ち越し。
+    /// Phase13-Step4: <c>ServiceProviderHolder</c>（型ごと）と <c>AppHost</c> の <c>SetProvider</c> 呼び出しを撤廃した。基準値は空（全ファイル 0 件）。
+    /// 経緯: 2026-10-17 の走査値は計 23 件、Phase8-Step8 8c で 10 件（<c>Actions/</c>）まで減り、Phase13-Step4 で 0 件になった。
     /// ソースが見つからない環境では、検査を行わず合格とする。
     /// </summary>
     public class Phase7Step1ServiceLocatorRatchetGuardTests
     {
         private static readonly Dictionary<string, int> Baseline = new Dictionary<string, int>
         {
-            // Phase8 の持ち越し（Actions サブシステム。計 10）
-            ["DS4Windows/Actions/ActionManager.cs"] = 8,   // Phase8-Step8 8c: 系統 B の取得・ディスパッチの削除で 13 → 8
-            ["DS4Windows/Actions/DefaultKeyButtonActionControllerFactory.cs"] = 2,
-            // Phase7 の対象（Step5 で、コンストラクター注入または App の保持へ置き換える。計 6）
-            // Phase7-Step5 W4: CleanShutdown のレジストリ破棄を、InitializePostHostServices で解決した IControllerRegistry に置き換え（1 → 0）
-            ["DS4Windows/App.xaml.cs"] = 0,
-            // Phase7-Step8 W2: Mapping のコンストラクター注入（登録簿 KeyButtonControllerRegistry、MouseOutputAction の無効な検索の削除）で、5 → 0
-            ["DS4Windows/DS4Control/Mapping.cs"] = 0,
+            // Phase13-Step4: ServiceProviderHolder を撤廃した（静的 ActionManager の廃止と、DefaultKeyButtonActionControllerFactory のコンストラクター注入）。
+            // 基準値は空＝どのファイルでも 0 件。新しい参照を持ち込むと、この検査と一致の検査（Phase7Step10eW5RatchetEqualityGuardTests）が失敗する。
         };
 
         private static readonly Regex LocatorPattern =

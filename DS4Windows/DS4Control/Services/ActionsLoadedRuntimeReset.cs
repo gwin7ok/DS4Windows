@@ -12,10 +12,12 @@ namespace DS4Windows.Services
     public class ActionsLoadedRuntimeReset
     {
         private readonly SyntheticInputState _syntheticInput;
+        private readonly DS4Windows.Actions.IManagedActionManager _actionManager;   // Phase13-Step4: 旧 静的 ActionManager.ClearAllToggledOn の代わり
 
         // Phase8-Fix-MacroRepeatUnify（D5）: macrodone の解除を削除したため、MacroRuntimeState への依存（コンストラクターの引数）も削除した
-        public ActionsLoadedRuntimeReset(SyntheticInputState syntheticInput)
+        public ActionsLoadedRuntimeReset(SyntheticInputState syntheticInput, DS4Windows.Actions.IManagedActionManager actionManager)
         {
+            _actionManager = actionManager ?? throw new ArgumentNullException(nameof(actionManager));
             _syntheticInput = syntheticInput ?? throw new ArgumentNullException(nameof(syntheticInput));
         }
 
@@ -24,7 +26,7 @@ namespace DS4Windows.Services
             try
             {
                 _syntheticInput.ResetAll();
-                try { ActionManager.ClearAllToggledOn(); } catch { }
+                try { _actionManager.ClearAllToggledOn(); } catch { }
                 // Phase8-Fix-MacroRepeatUnify（D5）: 旧 macrodone の解除は削除した（macrodone 自体を削除。本番では到達しない経路だった）
                 AppLogger.LogToGui("Runtime synthetic state reset after Actions load", false);
             }

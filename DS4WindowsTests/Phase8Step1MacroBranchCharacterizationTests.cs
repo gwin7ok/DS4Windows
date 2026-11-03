@@ -40,7 +40,7 @@ namespace DS4WindowsTests
 
             t.RunFrame(HeldL1());
 
-            Assert.False(ActionManager.IsBeingTriggered(sa, t.Device));
+            Assert.False(TestActions.Manager.IsBeingTriggered(sa, t.Device));
         }
 
         [Fact]
@@ -50,13 +50,13 @@ namespace DS4WindowsTests
             SpecialAction sa = AddMacro(t, string.Empty);
 
             t.RunFrame(HeldL1());
-            Assert.True(ActionManager.IsBeingTriggered(sa, t.Device));
+            Assert.True(TestActions.Manager.IsBeingTriggered(sa, t.Device));
 
             t.RunFrame(HeldL1()); // 保持中も、成立のまま（再実行しない）
-            Assert.True(ActionManager.IsBeingTriggered(sa, t.Device));
+            Assert.True(TestActions.Manager.IsBeingTriggered(sa, t.Device));
 
             t.RunFrame(SpecialActionTestScope.Neutral()); // 離す
-            Assert.False(ActionManager.IsBeingTriggered(sa, t.Device));
+            Assert.False(TestActions.Manager.IsBeingTriggered(sa, t.Device));
         }
 
         [Fact]
@@ -68,16 +68,16 @@ namespace DS4WindowsTests
             Assert.False(sa.firstTouch);
 
             t.RunFrame(SpecialActionTestScope.Neutral()); // 押す前は、何も起きない
-            Assert.False(ActionManager.IsBeingTriggered(sa, t.Device));
+            Assert.False(TestActions.Manager.IsBeingTriggered(sa, t.Device));
 
 
             t.RunFrame(HeldL1()); // 押したとき: 準備（firstTouch）だけで、実行しない
    // Q2＝A: 新経路の「準備」は入力の内部の状態で、firstTouch は書かない
-            Assert.False(ActionManager.IsBeingTriggered(sa, t.Device));
+            Assert.False(TestActions.Manager.IsBeingTriggered(sa, t.Device));
 
             t.RunFrame(SpecialActionTestScope.Neutral()); // 離したとき: 1 回実行（成立を反転して扱う）
 
-            Assert.True(ActionManager.IsBeingTriggered(sa, t.Device));
+            Assert.True(TestActions.Manager.IsBeingTriggered(sa, t.Device));
         }
     }
 }

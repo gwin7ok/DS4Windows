@@ -19,9 +19,13 @@ namespace DS4Windows
 
         public event EventHandler ActionsChanged;
 
+        // Phase13-Step4: 旧 静的 ActionManager（ClearAllEntries、ResetRuntimeStateForKey のトグル状態の解除）の代わり
+        private readonly DS4Windows.Actions.IManagedActionManager _actionManager;
+
         public SpecialActionRepository(BackingStore config, IPathService pathService, SyntheticInputState syntheticInput,
-            Services.SpecialActionsXmlSerializer actionsXml)
+            Services.SpecialActionsXmlSerializer actionsXml, DS4Windows.Actions.IManagedActionManager actionManager)
         {
+            _actionManager = actionManager ?? throw new ArgumentNullException(nameof(actionManager));
             _actionsXml = actionsXml ?? throw new ArgumentNullException(nameof(actionsXml));
             _syntheticInput = syntheticInput ?? throw new ArgumentNullException(nameof(syntheticInput));
             _config = config ?? throw new ArgumentNullException(nameof(config));
@@ -137,7 +141,7 @@ namespace DS4Windows
             {
                 if (mode == 4 && ushort.TryParse(details.Split(' ')[0], out ushort savedKey))   // Scan Code つきは「65 Scan Code」
                 {
-                    _syntheticInput.ResetRuntimeStateForKey(savedKey);
+                    _syntheticInput.ResetRuntimeStateForKey(savedKey, _actionManager);
                 }
             }
             catch { }
@@ -224,11 +228,11 @@ namespace DS4Windows
 
         // ---- Phase7-Step10c W2: 旧 Global.SaveAction／RemoveAction／ReloadActionsAndVerify（Actions.xml の保存・読込のシム）の移動先 ----
         // 実行中のアクション状態のクリア → Actions.xml への書き込み（SpecialActionsXmlSerializer）→ 読み直しと件数の検証、の順序・ログは従来のまま。
-        private static void ClearAllActionEntries()
+        private void ClearAllActionEntries()
         {
             try
             {
-                try { ActionManager.ClearAllEntries(); } catch { }
+                try { _actionManager.ClearAllEntries(); } catch { }
             }
             catch { }
         }

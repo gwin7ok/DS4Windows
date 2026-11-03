@@ -86,7 +86,7 @@ namespace DS4WindowsTests
         [Fact]
         public void MinimalFactory_MakesTheControlsPolicyForKeyAndMacro_AndNothingForTheOthers()
         {
-            SpecialActionOutputFactory factory = SpecialActionOutputFactory.ForControlsKeyAndMacro(TestHost.GetService<IProfileSettingsService>(), new NoMacroPlayer());
+            SpecialActionOutputFactory factory = SpecialActionOutputFactory.ForControlsKeyAndMacro(TestHost.GetService<IProfileSettingsService>(), TestActions.Manager, TestActions.Controllers, new NoMacroPlayer());
 
             var key = new DS4ControlSettings(DS4Controls.L1) { actionType = DS4ControlSettings.ActionType.Key };
             key.action.actionKey = 65;

@@ -21,6 +21,8 @@ namespace DS4Windows
         private readonly SpecialAction assignedActionDef;
         private readonly IKeyController impl;
         private readonly Action<SpecialAction, int, bool, bool> toggledOnHandler;
+        // Phase13-Step4: 旧 静的 ActionManager の代わりに、トグル状態の管理役をコンストラクターで受ける
+        private readonly IManagedActionManager _manager;
 
         // Expose assigned action name for diagnostics
         public string AssignedActionName => assignedActionName;
@@ -28,8 +30,9 @@ namespace DS4Windows
         // Expose whether this controller was created in Toggle mode (used by adapters)
         public bool IsToggleMode { get { return this.mode == Mode.Toggle; } }
 
-        public KeyButtonActionController(int device, Mode mode, string actionName = "<unknown>")
+        public KeyButtonActionController(int device, Mode mode, IManagedActionManager manager, string actionName = "<unknown>")
         {
+            _manager = manager ?? throw new ArgumentNullException(nameof(manager));
             this.device = device;
             this.mode = mode;
             this.assignedActionName = actionName ?? "<null>";
@@ -43,7 +46,7 @@ namespace DS4Windows
             // Create concrete implementation based on mode. These implementations are lightweight wrappers
             // around the existing static controllers for now; this allows per-device instance semantics later.
             if (mode == Mode.Toggle)
-                impl = new ToggleImpl(device, this.GetHashCode(), this.assignedActionDef);
+                impl = new ToggleImpl(device, this.GetHashCode(), this.assignedActionDef, _manager);
             else
                 impl = new PressImpl(device, this.GetHashCode());
 
@@ -59,13 +62,14 @@ namespace DS4Windows
                 }
                 catch { }
             };
-            try { ActionManager.ToggledOnChanged += toggledOnHandler; } catch { }
+            try { _manager.ToggledOnChanged += toggledOnHandler; } catch { }
 
         }
 
         // New constructor: determine mode from SpecialAction info (KeyButtonSwitchMode or keyType flags)
-        public KeyButtonActionController(int device, SpecialAction sa, string actionName = "<unknown>")
+        public KeyButtonActionController(int device, SpecialAction sa, IManagedActionManager manager, string actionName = "<unknown>")
         {
+            _manager = manager ?? throw new ArgumentNullException(nameof(manager));
             this.device = device;
             this.assignedActionName = actionName ?? (sa?.name ?? "<null>");
             this.assignedActionDef = sa;
@@ -85,7 +89,7 @@ namespace DS4Windows
             catch { }
 
             if (this.mode == Mode.Toggle)
-                impl = new ToggleImpl(device, this.GetHashCode(), this.assignedActionDef);
+                impl = new ToggleImpl(device, this.GetHashCode(), this.assignedActionDef, _manager);
             else
                 impl = new PressImpl(device, this.GetHashCode());
 
@@ -101,7 +105,7 @@ namespace DS4Windows
                 }
                 catch { }
             };
-            try { ActionManager.ToggledOnChanged += toggledOnHandler; } catch { }
+            try { _manager.ToggledOnChanged += toggledOnHandler; } catch { }
 
         }
 
@@ -122,6 +126,7 @@ namespace DS4Windows
             private readonly int device;
             private readonly int controllerId;
             private readonly SpecialAction assignedActionDef;
+            private readonly IManagedActionManager manager;
 
             private class Entry
             {
@@ -133,11 +138,12 @@ namespace DS4Windows
 
             private readonly Dictionary<ushort, Entry> entries = new Dictionary<ushort, Entry>();
 
-            public ToggleImpl(int device, int controllerId, SpecialAction assignedActionDef)
+            public ToggleImpl(int device, int controllerId, SpecialAction assignedActionDef, IManagedActionManager manager)
             {
                 this.device = device;
                 this.controllerId = controllerId;
                 this.assignedActionDef = assignedActionDef;
+                this.manager = manager;
             }
 
             public void OnDown(ushort kvpKey, uint nativeKey, bool useScanCode, IVirtualKBM handler, bool isSpecialAction)
@@ -150,7 +156,7 @@ namespace DS4Windows
 
                 try
                 {
-                    var st = assignedActionDef != null ? ActionManager.GetStateFor(assignedActionDef, device) : null;
+                    var st = assignedActionDef != null ? manager.GetStateFor(assignedActionDef, device) : null;
                     bool wasPressed = st?.IsToggledOn ?? false;
                     if (!wasPressed)
                     {
@@ -176,7 +182,7 @@ namespace DS4Windows
                                 }
                         }
 
-                        try { if (assignedActionDef != null) ActionManager.SetToggledOn(assignedActionDef, device, true); } catch { }
+                        try { if (assignedActionDef != null) manager.SetToggledOn(assignedActionDef, device, true); } catch { }
                     }
                     else
                     {
@@ -205,7 +211,7 @@ namespace DS4Windows
                         try
                         {
                             // Ensure toggled-on flag is cleared by the same component that set it true.
-                            try { if (assignedActionDef != null) ActionManager.SetToggledOn(assignedActionDef, device, false); } catch { }
+                            try { if (assignedActionDef != null) manager.SetToggledOn(assignedActionDef, device, false); } catch { }
                             if (e.nativeKey == 0) e.nativeKey = SyntheticDispatcher.ResolveNativeKey(kvpKey);
                             SyntheticDispatcher.SendRelease(device, kvpKey, e.nativeKey, e.useScanCode, e.handler);
                         }
@@ -451,6 +457,8 @@ namespace DS4Windows
                 impl.ClearAll();
             }
             catch { }
+            // Phase13-Step4: 静的イベントでは購読が残り続けていた。破棄後は反応しないよう、注入された管理役の購読を解除する
+            try { _manager.ToggledOnChanged -= toggledOnHandler; } catch { }
             try { AppLogger.LogTrace($"KeyButtonActionController destroyed: device={device} assignedAction={this.assignedActionName}"); } catch { }
         }
 

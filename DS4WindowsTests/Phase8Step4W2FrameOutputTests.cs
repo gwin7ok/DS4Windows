@@ -185,7 +185,25 @@ namespace DS4WindowsTests
             Assert.Equal(0L, GC.GetAllocatedBytesForCurrentThread() - before);
         }
 
-        // ---- ButtonOutputAction: ButtonSpecialActionOutput との一致 ----
+        // ---- ButtonOutputAction: 旧 ButtonSpecialActionOutput（テスト内のオラクル）との一致 ----
+
+        // Phase13-Step4: 旧 ButtonSpecialActionOutput.ResolveOutputActive（Stage3 の残骸。本番の呼び出し元 0 件のため削除）の規則を、
+        // ButtonOutputAction の一致の検査用の基準（オラクル）として、このテストの中に残した。
+        private static bool ReferenceResolveOutputActive(SpecialAction sa, int device, bool triggered, bool prevTriggered)
+        {
+            bool isToggle = sa != null && sa.KeyButtonSwitchMode.HasValue &&
+                sa.KeyButtonSwitchMode.Value == SpecialAction.KeyButtonSwitchModeEnum.Toggle;
+            if (!isToggle) return triggered;
+
+            ActionInstanceState state = TestActions.Manager.GetStateFor(sa, device);
+            if (state == null) return triggered;
+
+            bool risingEdge = triggered && !prevTriggered;
+            if (risingEdge && !state.RequiresFreshPressAfterReset)
+                TestActions.Manager.SetToggledOn(sa, device, !state.IsToggledOn);
+
+            return state.IsToggledOn;
+        }
 
         private static SpecialAction NewButton(string name, string mode, string details = "18")
             => new SpecialAction(name, "Cross", "Button", details, 0, mode + "\n");
@@ -203,7 +221,7 @@ namespace DS4WindowsTests
             var recorder = new RecordingFrame();
             var ctx = new Context(recorder);
 
-            ActionInstanceState refState = ActionManager.GetStateFor(reference, Device);
+            ActionInstanceState refState = TestActions.Manager.GetStateFor(reference, Device);
             ActionInstanceState newState = manager.GetStateFor(subject, Device);
             Assert.NotNull(refState);
             Assert.NotNull(newState);
@@ -219,7 +237,7 @@ namespace DS4WindowsTests
                 newState.RequiresFreshPressAfterReset = guard;
                 bool triggered = random.Next(2) == 0 ? previous : random.Next(2) == 0; // 前の状態が続きやすい列
 
-                bool expected = ButtonSpecialActionOutput.ResolveOutputActive(reference, Device, triggered, previous);
+                bool expected = ReferenceResolveOutputActive(reference, Device, triggered, previous);
 
                 recorder.Presses = 0;
                 action.ApplyFrame(ctx, triggered, triggered && !previous);

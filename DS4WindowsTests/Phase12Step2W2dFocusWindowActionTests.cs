@@ -55,7 +55,7 @@ namespace DS4WindowsTests
             => new SpecialAction(name, "Cross", "FocusWindow", path, 0, title);
 
         private static SpecialActionOutputFactory NewFactory(IWindowFocuser focuser)
-            => new SpecialActionOutputFactory(TestHost.GetService<IProfileSettingsService>(), TestHost.GetService<IManagedActionManager>(),
+            => new SpecialActionOutputFactory(TestHost.GetService<IProfileSettingsService>(), TestHost.GetService<IManagedActionManager>(), TestHost.GetService<IKeyButtonControllerRegistry>(),
                 new NoMacroPlayer(), new NoLauncher(), new NoSwitcher(), windowFocuser: focuser);
 
         [Fact]

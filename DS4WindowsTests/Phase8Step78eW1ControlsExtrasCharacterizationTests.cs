@@ -297,7 +297,7 @@ namespace DS4WindowsTests
 
             dcs.Reset();   // 新しいプロファイル（Extras なし）
             t.PublishControlsOnly();
-            ActionManager.ClearDeviceState(t.Device);
+            TestActions.Manager.ClearDeviceState(t.Device);
             TestHost.GetService<DS4Windows.Actions.ITriggerDispatchEngine>().OnProfileApplied(t.Device);
             t.Run(State(cross: true));
             t.Run(State());

@@ -25,6 +25,12 @@ namespace DS4Windows.Actions
         public DefaultActionManager(Func<DS4Windows.DI.IMapping> mappingProvider)
         {
             _mappingProvider = mappingProvider ?? throw new ArgumentNullException(nameof(mappingProvider));
+
+            // Phase13-Step4: 旧 静的 ActionManager の静的コンストラクターが購読していたログ（文言は同じ）。静的イベントの廃止に伴い、本クラスが持つ
+            ToggledOnChanged += (sa, dev, oldv, newv) =>
+            {
+                try { AppLogger.LogTrace($"ActionManager.ToggledOnChanged: name={sa?.name} device={dev} old={oldv} new={newv}"); } catch { }
+            };
         }
 
         private static ActionEntry GetOrCreateEntryInternal(Dictionary<string, ActionEntry> actionsDict, SpecialAction action)
@@ -66,6 +72,17 @@ namespace DS4Windows.Actions
                 catch { }
             }
             catch { }
+        }
+
+        public bool IsBeingTriggered(SpecialAction action, int device)
+        {
+            try
+            {
+                var st = GetStateFor(action, device);
+                if (st != null) return st.BeingTriggered;
+            }
+            catch { }
+            return false;
         }
 
         public ActionInstanceState GetStateFor(SpecialAction action, int device)
@@ -156,7 +173,6 @@ namespace DS4Windows.Actions
                                     if (old != false)
                                     {
                                         try { ToggledOnChanged?.Invoke(ent.ActionDef, device, old, false); } catch { }
-                                        try { ActionManager.FireToggledOnChanged(ent.ActionDef, device, old, false); } catch { }
                                     }
                                 }
                                 catch { }
@@ -166,7 +182,7 @@ namespace DS4Windows.Actions
                     }
                 }
 
-                // Phase6-Step9b-2（F02）: 静的ファサード ActionManager.ClearDeviceState のフォールバック実装と同じく
+                // Phase6-Step9b-2（F02）: （Phase13-Step4 で廃止した旧 静的ファサード ActionManager.ClearDeviceState と同じく）
                 // Mapping.HandleDeviceDisconnect を呼ぶ（保持中の合成キーの解放、カスタムマッピングキューとマクロキューの
                 // クリア、KeyButtonActionController の破棄［ClearKeyButtonControllersForDevice を内包］）。
                 // 2026-09-04（31dddc43）から本クラスは未登録で静的実装が使われ、実機確認はその挙動で行われていたため、
@@ -201,7 +217,6 @@ namespace DS4Windows.Actions
                 if (old == value) return;
                 st.IsToggledOn = value;
                 try { ToggledOnChanged?.Invoke(action, device, old, value); } catch { }
-                try { ActionManager.FireToggledOnChanged(action, device, old, value); } catch { }
 
                 try
                 {

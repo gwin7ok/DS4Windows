@@ -185,7 +185,7 @@ namespace DS4WindowsTests
             WaitForPresses(t, 1);
             int before = Presses(t);
 
-            ActionManager.ClearDeviceState(t.Device);
+            TestActions.Manager.ClearDeviceState(t.Device);
             RunFor(t, Cross(true), 400);
             int afterApply = Presses(t);
 

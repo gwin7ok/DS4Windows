@@ -147,7 +147,7 @@ namespace DS4WindowsTests
                 Path = System.IO.Path.Combine(Context.AppData, "Actions.xml");
                 Store.m_Actions = Path;
                 Identity = withIdentity ? new ProfileIdentityService(new PathService(Context.AppData)) : null;
-                Xml = new SpecialActionsXmlSerializer(Store, Identity);
+                Xml = new SpecialActionsXmlSerializer(Store, TestActions.Manager, Identity);
             }
 
             public void Dispose() => Context.Dispose();
@@ -163,7 +163,7 @@ namespace DS4WindowsTests
             {
                 BackingStore store = PersistenceHarness.NewStore();
                 store.m_Actions = Path;
-                Assert.True(new SpecialActionsXmlSerializer(store, Identity).LoadActions());
+                Assert.True(new SpecialActionsXmlSerializer(store, TestActions.Manager, Identity).LoadActions());
                 return store;
             }
         }

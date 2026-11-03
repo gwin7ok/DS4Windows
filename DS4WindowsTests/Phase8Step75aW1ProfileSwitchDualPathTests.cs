@@ -119,9 +119,9 @@ namespace DS4WindowsTests
 
             t.RunFrame(Frame(false));
             t.RunFrame(Frame(true));
-            bool afterTheSwitchFrame = ActionManager.IsBeingTriggered(key, t.Device);
+            bool afterTheSwitchFrame = TestActions.Manager.IsBeingTriggered(key, t.Device);
             t.RunFrame(Frame(true));
-            bool nextFrame = ActionManager.IsBeingTriggered(key, t.Device);
+            bool nextFrame = TestActions.Manager.IsBeingTriggered(key, t.Device);
 
             Assert.False(afterTheSwitchFrame);   // 切替のフレームでは、Key は処理されない
             Assert.True(nextFrame);              // 次のフレームで、処理される

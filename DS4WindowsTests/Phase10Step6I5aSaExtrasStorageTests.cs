@@ -27,7 +27,7 @@ namespace DS4WindowsTests
             {
                 Path = System.IO.Path.Combine(Context.AppData, "Actions.xml");
                 Store.m_Actions = Path;
-                Xml = new SpecialActionsXmlSerializer(Store);
+                Xml = new SpecialActionsXmlSerializer(Store, TestActions.Manager);
             }
 
             public void Dispose() => Context.Dispose();
@@ -43,7 +43,7 @@ namespace DS4WindowsTests
             {
                 BackingStore store = PersistenceHarness.NewStore();
                 store.m_Actions = Path;
-                Assert.True(new SpecialActionsXmlSerializer(store).LoadActions());
+                Assert.True(new SpecialActionsXmlSerializer(store, TestActions.Manager).LoadActions());
                 return store;
             }
         }

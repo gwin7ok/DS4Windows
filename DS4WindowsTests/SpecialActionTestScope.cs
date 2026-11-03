@@ -87,8 +87,8 @@ namespace DS4WindowsTests
         /// </summary>
         public void SimulateProfileApply()
         {
-            ActionManager.ClearDeviceState(Device);
-            ActionManager.PreallocateForProfileApply(Device);
+            TestActions.Manager.ClearDeviceState(Device);
+            TestActions.PreallocateForProfileApply(Device);
             PublishBindings();
         }
 
@@ -153,7 +153,7 @@ namespace DS4WindowsTests
 
         public ActionInstanceState StateOf(SpecialAction action)
         {
-            return ActionManager.GetStateFor(action, Device);
+            return TestActions.Manager.GetStateFor(action, Device);
         }
 
         public void Dispose()

@@ -26,7 +26,7 @@ namespace DS4WindowsTests
 
         private static string Save(BackingStore store, string path, string title, double delay = 0)
         {
-            new DS4Windows.Services.SpecialActionsXmlSerializer(store).SaveActionNew("f", "Cross", 11, path, false, delay, title);
+            new DS4Windows.Services.SpecialActionsXmlSerializer(store, TestActions.Manager).SaveActionNew("f", "Cross", 11, path, false, delay, title);
             return File.ReadAllText(store.m_Actions);
         }
 
@@ -95,7 +95,7 @@ namespace DS4WindowsTests
             string first = Save(NewStoreFor(ctx), "game.exe$", "Window$", 1);
             BackingStore store = PersistenceHarness.LoadActions(ctx, first);
 
-            Assert.True(new DS4Windows.Services.SpecialActionsXmlSerializer(store).SaveActions());
+            Assert.True(new DS4Windows.Services.SpecialActionsXmlSerializer(store, TestActions.Manager).SaveActions());
 
             XmlNode node = ActionNode(File.ReadAllText(store.m_Actions));
             Assert.Equal("game.exe$", node.SelectSingleNode("Details")?.InnerText);

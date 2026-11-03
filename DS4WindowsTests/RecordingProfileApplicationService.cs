@@ -31,8 +31,8 @@ namespace DS4WindowsTests
         private void ResetActionState(int deviceIndex)
         {
             if (!SimulateStateReset) return;
-            try { DS4Windows.ActionManager.ClearAllEntries(); } catch { }
-            try { DS4Windows.ActionManager.ClearDeviceState(deviceIndex); } catch { }
+            try { TestActions.Manager.ClearAllEntries(); } catch { }
+            try { TestActions.Manager.ClearDeviceState(deviceIndex); } catch { }
         }
 
         public void ApplyFromAction(int deviceIndex, SpecialAction action)

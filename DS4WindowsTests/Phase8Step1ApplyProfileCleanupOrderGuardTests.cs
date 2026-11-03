@@ -28,10 +28,10 @@ namespace DS4WindowsTests
             Assert.True(start >= 0, "CompleteProfileApplication が見つからない");
             string body = text.Substring(start);
 
-            int clearAll = body.IndexOf("ActionManager.ClearAllEntries(", System.StringComparison.Ordinal);
+            int clearAll = body.IndexOf("_actionManager.ClearAllEntries(", System.StringComparison.Ordinal);
             int clearForDevice = body.IndexOf("_keyButtonControllers.ClearForDevice(", System.StringComparison.Ordinal);
-            int clearDeviceState = body.IndexOf("ActionManager.ClearDeviceState(", System.StringComparison.Ordinal);
-            int preallocate = body.IndexOf("ActionManager.PreallocateForProfileApply(", System.StringComparison.Ordinal);
+            int clearDeviceState = body.IndexOf("_actionManager.ClearDeviceState(", System.StringComparison.Ordinal);
+            int preallocate = body.IndexOf("PreallocateForProfileApply(device);", System.StringComparison.Ordinal);
 
             Assert.True(clearAll >= 0, "ClearAllEntries の呼び出しが見つからない");
             Assert.True(clearForDevice > clearAll, "ClearForDevice は ClearAllEntries の後");

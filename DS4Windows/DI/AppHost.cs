@@ -42,7 +42,6 @@ namespace DS4WinWPF
                     });
 
                 _host = builder.Build();
-                DS4Windows.DI.ServiceProviderHolder.SetProvider(_host.Services);
                 PreallocateActionEntries();
                 BindSyntheticDispatcher();
                 CreationNote = "explicit CreateHost() created the host";
@@ -94,7 +93,6 @@ namespace DS4WinWPF
                     });
 
                 _host = builder.Build();
-                DS4Windows.DI.ServiceProviderHolder.SetProvider(_host.Services);
                 PreallocateActionEntries();
                 BindSyntheticDispatcher();
                 CreationNote = "explicit CreateHost(config, parser) created the host";

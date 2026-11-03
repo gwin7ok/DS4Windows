@@ -9,8 +9,7 @@ namespace DS4Windows.Services
     /// Phase9 9-C（Phase9-C-Plan.md）: <see cref="IMacroPlayback"/> の実装（DI の Singleton）。
     /// 旧 <c>Mapping.PlayMacro</c>／<c>PlayMacroTask</c>／<c>RunMacroOnce</c>（予約、同期キュー、押している間の繰り返し、1 回分の再生、後始末）を、そのまま移したもの。
     /// 1 つのマクロ値の実行は <see cref="IMacroStepExecutor"/> へ、同期キューの Task の連鎖は <c>MacroRuntimeState.TaskQueue</c> に持つ。
-    /// TODO(技術的負債・Phase9 9-E 付近): <c>ActionManager.GetStateFor</c>／<c>ActionManager.IsBeingTriggered</c>（Actions サブシステムの静的な窓口）は、旧実装どおり直接呼ぶ。
-    /// <c>IManagedActionManager</c> に <c>IsBeingTriggered</c> がまだなく、Actions サブシステムの DI 化（規約 R3）の範囲のため、今回は変えない。
+    /// Phase13-Step4: 旧 静的な <c>ActionManager.GetStateFor</c>／<c>IsBeingTriggered</c> は、注入された <c>IManagedActionManager</c> を使う（<c>IsBeingTriggered</c> を契約へ追加した）。
     /// ライトバーの強制色の復帰（<c>DS4LightBar.forcedFlash</c>／<c>forcelight</c>）も、静的な配列へ直接書く（ライトバーのサービス化で置き換える）。
     /// 実際の挙動は、入口の <c>PlayMacroDirect</c>／<c>PlayMacroString</c> を通る既存の挙動テスト（<c>Phase8Step78cW2ControlsMacroTests</c> ほか）が守る。
     /// </summary>
@@ -18,9 +17,11 @@ namespace DS4Windows.Services
     {
         private readonly IMacroStepExecutor _stepExecutor;
         private readonly MacroRuntimeState _macroRuntime;
+        private readonly DS4Windows.Actions.IManagedActionManager _manager;
 
-        public MacroPlayback(IMacroStepExecutor stepExecutor, MacroRuntimeState macroRuntime)
+        public MacroPlayback(IMacroStepExecutor stepExecutor, MacroRuntimeState macroRuntime, DS4Windows.Actions.IManagedActionManager manager)
         {
+            _manager = manager ?? throw new ArgumentNullException(nameof(manager));
             _stepExecutor = stepExecutor ?? throw new ArgumentNullException(nameof(stepExecutor));
             _macroRuntime = macroRuntime ?? throw new ArgumentNullException(nameof(macroRuntime));
         }
@@ -55,7 +56,7 @@ namespace DS4Windows.Services
             ActionInstanceState st = actionDoneState;
             if (st == null && action != null)
             {
-                try { st = ActionManager.GetStateFor(action, device); } catch { st = null; }
+                try { st = _manager.GetStateFor(action, device); } catch { st = null; }
             }
 
             // Startup guard: if a macro iteration is already running for this action/device,
@@ -100,7 +101,7 @@ namespace DS4Windows.Services
             // Ensure we have the per-action state from ActionManager if not provided by caller
             if (actionDoneState == null && action != null)
             {
-                try { actionDoneState = ActionManager.GetStateFor(action, device); } catch { }
+                try { actionDoneState = _manager.GetStateFor(action, device); } catch { }
             }
             // R-2: Repeat (Toggle) のマクロが、同期キューで待っている間にトグルが OFF になったときは、何もせずに終える（OFF の後に、1 回再生してしまうのを防ぐ）
             bool latch = action != null && keyType.HasFlag(DS4KeyType.RepeatLatchMacro);
@@ -124,7 +125,7 @@ namespace DS4Windows.Services
 
             try
             {
-                try { AppLogger.LogTrace($"PlayMacroTask START: action={action?.name} device={device} IsMacroRunning={(actionDoneState != null ? actionDoneState.IsMacroRunning : false)} IsBeingTriggered={(action != null ? ActionManager.IsBeingTriggered(action, device) : false)} keyType={keyType}"); } catch { }
+                try { AppLogger.LogTrace($"PlayMacroTask START: action={action?.name} device={device} IsMacroRunning={(actionDoneState != null ? actionDoneState.IsMacroRunning : false)} IsBeingTriggered={(action != null ? _manager.IsBeingTriggered(action, device) : false)} keyType={keyType}"); } catch { }
 
                 // Phase8-Step7-3a（機能廃止。ユーザー承認済み）: Alt-Tab の並び（Alt 押す・Tab 押す・Tab 離す・Alt 離す）で始まるマクロの特別扱いを廃止した。
                 // この並びのマクロも、他のマクロと同じく、手順どおりに再生する（Phase8-Step7-3a-AltTab-Removal-Plan.md）。
@@ -144,7 +145,7 @@ namespace DS4Windows.Services
                     {
                         bool curBeing = false;
                         // トグルの状態は、毎回取り直す（切断・プロファイル適用の ClearDeviceState／ClearAllEntries で、状態が新しいものに替わり、OFF に戻るため）
-                        try { curBeing = latch ? IsToggledOnNow(action, device) : ActionManager.IsBeingTriggered(action, device); keepRunning = curBeing; } catch { keepRunning = false; curBeing = false; }
+                        try { curBeing = latch ? IsToggledOnNow(action, device) : _manager.IsBeingTriggered(action, device); keepRunning = curBeing; } catch { keepRunning = false; curBeing = false; }
 
                         // Log the recheck result and the decision whether we'll rerun this macro
                         try
@@ -175,13 +176,13 @@ namespace DS4Windows.Services
                     try { lock (actionDoneState) { actionDoneState.IsMacroRunning = false; } } catch { }
                 }
             }
-            try { AppLogger.LogTrace($"PlayMacroTask END: action={action?.name} device={device} IsMacroRunning={(actionDoneState != null ? actionDoneState.IsMacroRunning : false)} IsBeingTriggered={(action != null ? ActionManager.IsBeingTriggered(action, device) : false)}"); } catch { }
+            try { AppLogger.LogTrace($"PlayMacroTask END: action={action?.name} device={device} IsMacroRunning={(actionDoneState != null ? actionDoneState.IsMacroRunning : false)} IsBeingTriggered={(action != null ? _manager.IsBeingTriggered(action, device) : false)}"); } catch { }
         }
 
         /// <summary>R-2: そのアクション・デバイスの、トグルの状態（<c>IsToggledOn</c>）。状態が取れないときは偽（＝繰り返しを止める）。</summary>
-        private static bool IsToggledOnNow(SpecialAction action, int device)
+        private bool IsToggledOnNow(SpecialAction action, int device)
         {
-            try { return ActionManager.GetStateFor(action, device)?.IsToggledOn ?? false; }
+            try { return _manager.GetStateFor(action, device)?.IsToggledOn ?? false; }
             catch { return false; }
         }
 
@@ -234,7 +235,7 @@ namespace DS4Windows.Services
             {
                 try { lock (actionDoneState) { actionDoneState.IsMacroRunning = false; } } catch { }
             }
-            try { AppLogger.LogTrace($"PlayMacroTask MACRO EXECUTE END: action={action?.name} device={device} IsMacroRunning={(actionDoneState != null ? actionDoneState.IsMacroRunning : false)} IsBeingTriggered={(action != null ? ActionManager.IsBeingTriggered(action, device) : false)}"); } catch { }
+            try { AppLogger.LogTrace($"PlayMacroTask MACRO EXECUTE END: action={action?.name} device={device} IsMacroRunning={(actionDoneState != null ? actionDoneState.IsMacroRunning : false)} IsBeingTriggered={(action != null ? _manager.IsBeingTriggered(action, device) : false)}"); } catch { }
         }
     }
 }

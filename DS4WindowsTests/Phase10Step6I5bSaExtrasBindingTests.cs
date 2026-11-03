@@ -66,7 +66,7 @@ namespace DS4WindowsTests
         private static AssignmentBindingBuilder NewBuilder(bool withPort = true)
         {
             IProfileSettingsService settings = TestHost.GetService<IProfileSettingsService>();
-            var factory = new SpecialActionOutputFactory(settings, TestHost.GetService<IManagedActionManager>(),
+            var factory = new SpecialActionOutputFactory(settings, TestHost.GetService<IManagedActionManager>(), TestHost.GetService<IKeyButtonControllerRegistry>(),
                 new NoMacroPlayer(), new NoLauncher(), new NoSwitcher(), macroStringPlayer: new NoMacroStringPlayer());
             return new AssignmentBindingBuilder(factory, withPort ? new SilentPort() : null);
         }
@@ -176,7 +176,7 @@ namespace DS4WindowsTests
             provider.Add(withExtras);
             provider.Add(plain);
             var builder = new ActionBindingBuilder(provider, TestHost.GetService<IProfileSettingsService>(), TestHost.GetService<IManagedActionManager>(),
-                new NoMacroPlayer(), new NoLauncher(), new NoSwitcher(), extrasPort: new SilentPort());
+                new NoMacroPlayer(), new NoLauncher(), new NoSwitcher(), extrasPort: new SilentPort(), controllers: TestActions.Controllers);
 
             IReadOnlyList<IActionBinding> result = builder.Build(0);
 

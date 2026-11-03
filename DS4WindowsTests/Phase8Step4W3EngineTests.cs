@@ -57,7 +57,7 @@ namespace DS4WindowsTests
             public void Execute(IOutputContext ctx)
             {
                 Events.Add("execute");
-                if (Source != null) ExecutingDuringExecute = ActionManager.GetStateFor(Source, Phase8Step4W3EngineTests.Device).IsExecuting;
+                if (Source != null) ExecutingDuringExecute = TestActions.Manager.GetStateFor(Source, Phase8Step4W3EngineTests.Device).IsExecuting;
                 if (ThrowOnExecute) throw new InvalidOperationException("boom");
                 if (RequestEndFrameOnExecute) ctx.RequestEndFrame();
             }

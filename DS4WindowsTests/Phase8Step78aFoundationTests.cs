@@ -80,14 +80,14 @@ namespace DS4WindowsTests
             var settings = TestHost.GetService<IProfileSettingsService>();
             var sa = new SpecialAction("p8s78a_keyid_" + Guid.NewGuid().ToString("N"), "Cross", "Key", "65", 0, string.Empty);
 
-            var output = new KeyOutputAction(sa, new KeyBindingValues(65, false, false), settings);
+            var output = new KeyOutputAction(sa, new KeyBindingValues(65, false, false), settings, TestActions.Manager, TestActions.Controllers);
 
             Assert.Equal(sa.name, output.Id);
-            Assert.Throws<ArgumentNullException>(() => new KeyOutputAction(null, new KeyBindingValues(65, false, false), settings));
-            Assert.Throws<ArgumentNullException>(() => new KeyOutputAction(sa, new KeyBindingValues(65, false, false), null));
+            Assert.Throws<ArgumentNullException>(() => new KeyOutputAction(null, new KeyBindingValues(65, false, false), settings, TestActions.Manager, TestActions.Controllers));
+            Assert.Throws<ArgumentNullException>(() => new KeyOutputAction(sa, new KeyBindingValues(65, false, false), null, TestActions.Manager, TestActions.Controllers));
             // 互換のコンストラクターも、従来どおり引数を検査する
-            Assert.Throws<ArgumentNullException>(() => new KeyOutputAction(null, settings));
-            Assert.Throws<ArgumentNullException>(() => new KeyOutputAction(sa, null));
+            Assert.Throws<ArgumentNullException>(() => new KeyOutputAction(null, settings, TestActions.Manager, TestActions.Controllers));
+            Assert.Throws<ArgumentNullException>(() => new KeyOutputAction(sa, null, TestActions.Manager, TestActions.Controllers));
         }
 
         [Fact]
@@ -95,7 +95,7 @@ namespace DS4WindowsTests
         {
             var sa = new SpecialAction("p8s78a_keyact_" + Guid.NewGuid().ToString("N"), "Cross", "Key", "not a number", 0, string.Empty);
 
-            var action = new KeyAction(sa, -1, 65, true);   // details が読めなくても、渡された値を使う
+            var action = new KeyAction(sa, -1, 65, true, TestActions.Manager, TestActions.Controllers);   // details が読めなくても、渡された値を使う
 
             Assert.NotNull(action);
         }
@@ -214,7 +214,7 @@ namespace DS4WindowsTests
         public void TheControlBindingBuilder_ReturnsAnEmptyList_WhenNoAssignmentQualifies()
         {
             var settings = TestHost.GetService<IProfileSettingsService>();
-            var builder = new ControlBindingBuilder(settings);
+            var builder = new ControlBindingBuilder(settings, manager: TestActions.Manager, controllers: TestActions.Controllers);
 
             Assert.Empty(builder.Build(MappingCharacterizationScope.Device));   // 割り当てが全部 Default なら、束縛はない
             Assert.Throws<ArgumentNullException>(() => new ControlBindingBuilder(null));

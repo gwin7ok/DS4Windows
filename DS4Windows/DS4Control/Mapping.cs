@@ -97,19 +97,6 @@ namespace DS4Windows
         //     loggedInvalidActions.Clear();
         // }
 
-        // Phase7-Step8 W2: 静的コンストラクターは、ログ出力だけの購読を 1 度だけ行う（Mapping の instance ごとに購読を増やさない）。
-        static Mapping()
-        {
-            try
-            {
-                ActionManager.ToggledOnChanged += (sa, dev, oldv, newv) =>
-                {
-                    try { AppLogger.LogTrace($"Mapping: ToggledOnChanged name={sa?.name} device={dev} old={oldv} new={newv}"); } catch { }
-                };
-            }
-            catch { }
-        }
-
         // Phase7-Step8 W2（Q1＝A）: DI の Singleton（IMapping）。旧: メンバーのほぼすべてが static で、サービスは AppHost／Global の静的な束縛だった。
         public Mapping(
             SyntheticInputState syntheticInput,
@@ -135,8 +122,20 @@ namespace DS4Windows
             DS4Windows.DI.IGyroMouseStickBlender gyroMouseStickBlender,
             DS4Windows.DI.IControlActivityReader controlActivityReader,
             DS4Windows.DI.ISyntheticInputCommitter syntheticCommitter,
-            DS4Windows.DI.ITwoStageTriggerProcessor twoStageTrigger)
+            DS4Windows.DI.ITwoStageTriggerProcessor twoStageTrigger,
+            DS4Windows.Actions.IManagedActionManager actionManager)
         {
+            // Phase13-Step4: ログ出力だけの購読。旧: 静的コンストラクターで静的イベントを購読していた（本番の Mapping は Singleton のため、購読は 1 回で変わらない）
+            if (actionManager == null) throw new ArgumentNullException(nameof(actionManager));
+            try
+            {
+                actionManager.ToggledOnChanged += (sa, dev, oldv, newv) =>
+                {
+                    try { AppLogger.LogTrace($"Mapping: ToggledOnChanged name={sa?.name} device={dev} old={oldv} new={newv}"); } catch { }
+                };
+            }
+            catch { }
+
             _syntheticInput = syntheticInput ?? throw new ArgumentNullException(nameof(syntheticInput));
             _macroRuntime = macroRuntime ?? throw new ArgumentNullException(nameof(macroRuntime));
             _stickMotion = stickMotion ?? throw new ArgumentNullException(nameof(stickMotion));

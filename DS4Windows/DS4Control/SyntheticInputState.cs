@@ -59,7 +59,7 @@ namespace DS4Windows
         /// Phase7-Step8 W1: 旧 <c>Mapping.ResetRuntimeStateForKey</c>。キー型スペシャルアクションの保存直後に、当該キーの合成キーの記録と
         /// トグル状態を全デバイスから消す（古い合成キューや押下フラグの残留を防ぐ）。ログは従来どおり。
         /// </summary>
-        public void ResetRuntimeStateForKey(ushort key)
+        public void ResetRuntimeStateForKey(ushort key, DS4Windows.Actions.IManagedActionManager actionManager)
         {
             try
             {
@@ -74,8 +74,8 @@ namespace DS4Windows
                         DeviceState[d].nativeKeyAlias.Remove(key);
                 }
 
-                // 押下済みフラグをクリア（ActionManager が持つ IsToggledOn）
-                try { ActionManager.ClearToggledOnForKey(key); } catch { }
+                // 押下済みフラグをクリア（ActionManager が持つ IsToggledOn）。Phase13-Step4: 管理役は引数で受ける（旧: 静的 ActionManager）
+                try { actionManager?.ClearToggledOnForKey(key); } catch { }
 
                 AppLogger.LogToGui($"Runtime state for key {key} cleared on all devices.", false);
             }

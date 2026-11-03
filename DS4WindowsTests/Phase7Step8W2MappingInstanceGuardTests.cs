@@ -82,7 +82,7 @@ namespace DS4WindowsTests
         {
             ConstructorInfo ctor = typeof(Mapping).GetConstructors().Single();
             ParameterInfo[] parameters = ctor.GetParameters();
-            Assert.Equal(24, parameters.Length); // Phase7-Step8 W3: ISyntheticDispatcher を追加。Phase8-Step4 W4: ITriggerDispatchEngine を追加。Phase9 9-A(1) (b): IStickDeadZoneProcessor を追加。(c): IOutputCurveProcessor を追加。(d): ITriggerDeadZoneProcessor を追加。9-A(2)-A: IGyroControlsProcessor を追加。9-A(2)-B: IStickInputConditioner を追加。9-A(2)-C: IFlickStickProcessor を追加。9-C: Func<IDeviceStateAccessor> を IMacroPlayback に置き換え（引数の数は同じ）。9-B: IButtonMouseMovementCalculator／IMouseMotionQuantizer／IGyroMouseStickBlender／IControlActivityReader を追加。Phase9 MapCustom の分割 M1: ISyntheticInputCommitter、M2: ITwoStageTriggerProcessor を追加
+            Assert.Equal(25, parameters.Length); // Phase13-Step4: IManagedActionManager を追加（静的 ActionManager の廃止）。 Phase7-Step8 W3: ISyntheticDispatcher を追加。Phase8-Step4 W4: ITriggerDispatchEngine を追加。Phase9 9-A(1) (b): IStickDeadZoneProcessor を追加。(c): IOutputCurveProcessor を追加。(d): ITriggerDeadZoneProcessor を追加。9-A(2)-A: IGyroControlsProcessor を追加。9-A(2)-B: IStickInputConditioner を追加。9-A(2)-C: IFlickStickProcessor を追加。9-C: Func<IDeviceStateAccessor> を IMacroPlayback に置き換え（引数の数は同じ）。9-B: IButtonMouseMovementCalculator／IMouseMotionQuantizer／IGyroMouseStickBlender／IControlActivityReader を追加。Phase9 MapCustom の分割 M1: ISyntheticInputCommitter、M2: ITwoStageTriggerProcessor を追加
 
             // 実 DI ホストの部品で 1 つずつ null にして、ArgumentNullException になることを確認する
             var valid = new object[]
@@ -109,6 +109,7 @@ namespace DS4WindowsTests
                 TestHost.GetService<IControlActivityReader>(),
                 TestHost.GetService<ISyntheticInputCommitter>(),
                 TestHost.GetService<ITwoStageTriggerProcessor>(),
+                TestHost.GetService<IManagedActionManager>(),   // Phase13-Step4: 静的 ActionManager の廃止で追加
             };
 
             for (int i = 0; i < valid.Length; i++)
@@ -175,7 +176,7 @@ namespace DS4WindowsTests
         [Fact]
         public void Registry_ReusesTheControllerPerDeviceAndName_AndClearsOnlyTheGivenDevice()
         {
-            var registry = new KeyButtonControllerRegistry(new DefaultKeyButtonActionControllerFactory(), new DefaultControllerRegistry());
+            var registry = new KeyButtonControllerRegistry(new DefaultKeyButtonActionControllerFactory(new DefaultControllerRegistry(), TestActions.Manager), new DefaultControllerRegistry(), TestActions.Manager);
             const int deviceA = 6;
             const int deviceB = 7;
 
@@ -201,8 +202,8 @@ namespace DS4WindowsTests
         [Fact]
         public void Registry_RequiresItsDependencies()
         {
-            Assert.Throws<ArgumentNullException>(() => new KeyButtonControllerRegistry(null, new DefaultControllerRegistry()));
-            Assert.Throws<ArgumentNullException>(() => new KeyButtonControllerRegistry(new DefaultKeyButtonActionControllerFactory(), null));
+            Assert.Throws<ArgumentNullException>(() => new KeyButtonControllerRegistry(null, new DefaultControllerRegistry(), TestActions.Manager));
+            Assert.Throws<ArgumentNullException>(() => new KeyButtonControllerRegistry(new DefaultKeyButtonActionControllerFactory(new DefaultControllerRegistry(), TestActions.Manager), null, TestActions.Manager));
             Assert.Contains(typeof(ProfileApplicationService).GetConstructors().Single().GetParameters(), p => p.ParameterType == typeof(IKeyButtonControllerRegistry));
         }
     }

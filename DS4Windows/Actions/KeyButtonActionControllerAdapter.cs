@@ -12,9 +12,9 @@ namespace DS4Windows.Actions
         private readonly bool isToggle;
 
         public int ControllerId => inner?.InstanceId ?? -1;
-        public KeyButtonActionControllerAdapter(int device, SpecialAction sa)
+        public KeyButtonActionControllerAdapter(int device, SpecialAction sa, IManagedActionManager manager)
         {
-            inner = new KeyButtonActionController(device, sa, sa?.name ?? "<unknown>");
+            inner = new KeyButtonActionController(device, sa, manager, sa?.name ?? "<unknown>");
             try
             {
                 if (sa != null)

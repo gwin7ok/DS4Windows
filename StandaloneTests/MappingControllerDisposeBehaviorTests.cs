@@ -9,27 +9,20 @@ namespace StandaloneTests
     [TestClass]
     public class MappingControllerDisposeBehaviorTests
     {
-        // Phase7-Step8 W2: 登録簿は Mapping から KeyButtonControllerRegistry へ移った。ActionManager.ClearDeviceState（静的ファサード）は、
-        // コンテナから IMapping を解決して HandleDeviceDisconnect を呼ぶ。ここでは IMapping の代わりに、登録簿を破棄するだけの偽物を差す。
-        private class TestServiceProvider : IServiceProvider
+        // Phase7-Step8 W2: 登録簿は Mapping から KeyButtonControllerRegistry へ移った。
+        // Phase13-Step4: 静的 ActionManager.ClearDeviceState は廃止した。管理役（DefaultActionManager）が、遅延で受けた IMapping の HandleDeviceDisconnect を呼ぶ。
+        // ここでは IMapping の代わりに、登録簿を破棄するだけの偽物を差す。
+        private class Parts
         {
-            private readonly object factory;
-            private readonly DS4Windows.Services.KeyButtonControllerRegistry registry;
-            private readonly object mapping;
-            public TestServiceProvider(object factory)
+            public readonly DS4Windows.Actions.DefaultActionManager Manager;
+            public readonly DS4Windows.Services.KeyButtonControllerRegistry Registry;
+
+            public Parts(Func<DS4Windows.Actions.IManagedActionManager, DS4Windows.Actions.IKeyButtonActionControllerFactory> factoryOf)
             {
-                this.factory = factory;
-                registry = new DS4Windows.Services.KeyButtonControllerRegistry(
-                    (DS4Windows.Actions.IKeyButtonActionControllerFactory)factory, new DS4Windows.Actions.DefaultControllerRegistry());
-                mapping = new DisconnectOnlyMapping(registry);
-            }
-            public DS4Windows.Services.KeyButtonControllerRegistry Registry => registry;
-            public object GetService(Type serviceType)
-            {
-                if (serviceType == typeof(DS4Windows.Actions.IKeyButtonActionControllerFactory)) return factory;
-                if (serviceType == typeof(DS4Windows.DI.IKeyButtonControllerRegistry)) return registry;
-                if (serviceType == typeof(DS4Windows.DI.IMapping)) return mapping;
-                return null;
+                DS4Windows.Services.KeyButtonControllerRegistry registry = null;
+                Manager = new DS4Windows.Actions.DefaultActionManager(() => new DisconnectOnlyMapping(registry));
+                registry = new DS4Windows.Services.KeyButtonControllerRegistry(factoryOf(Manager), new DS4Windows.Actions.DefaultControllerRegistry(), Manager);
+                Registry = registry;
             }
         }
 
@@ -79,7 +72,7 @@ namespace StandaloneTests
         {
             public bool WasDisposed { get; private set; }
             private readonly bool throwOnDispose;
-            public TestKeyButtonActionController(int device, Mode mode, string name = null, bool throwOnDispose = false) : base(device, mode, name)
+            public TestKeyButtonActionController(int device, Mode mode, DS4Windows.Actions.IManagedActionManager manager, string name = null, bool throwOnDispose = false) : base(device, mode, manager, name)
             {
                 this.throwOnDispose = throwOnDispose;
             }
@@ -96,11 +89,9 @@ namespace StandaloneTests
         {
             int device = 7;
             // arrange: install service provider returning factory that creates TestKeyButtonActionController
-            var factory = new TestFactory((d, m, n) => new TestKeyButtonActionController(d, m, n));
-            var provider = new TestServiceProvider(factory);
-            DS4Windows.DI.ServiceProviderHolder.SetProvider(provider);
+            var provider = new Parts(manager => new TestFactory((d, m, n) => new TestKeyButtonActionController(d, m, manager, n)));
+            var manager = provider.Manager;
 
-            try
             {
                 // create controllers via the registry
                 provider.Registry.GetOrCreate(device, KeyButtonActionController.Mode.Press, "t1");
@@ -112,16 +103,12 @@ namespace StandaloneTests
                 Assert.IsTrue(instances.Length >= 1);
 
                 // act
-                ActionManager.ClearDeviceState(device);
+                manager.ClearDeviceState(device);
 
                 // assert: each instance was disposed and mapping entries removed
                 foreach (var inst in instances) Assert.IsTrue(inst.WasDisposed, "Expected controller disposed");
                 var keysAfter = dict.Keys.Cast<object>().Select(k => k.ToString()).Where(s => s.StartsWith(device + ":")).ToArray();
                 Assert.AreEqual(0, keysAfter.Length);
-            }
-            finally
-            {
-                DS4Windows.DI.ServiceProviderHolder.SetProvider(null);
             }
         }
 
@@ -129,19 +116,21 @@ namespace StandaloneTests
         public void ClearDeviceState_Continues_WhenDisposeThrows()
         {
             int device = 8;
-            var throwing = new TestKeyButtonActionController(device, KeyButtonActionController.Mode.Press, "bad", true);
-            var normal = new TestKeyButtonActionController(device, KeyButtonActionController.Mode.Toggle, "good", false);
+            TestKeyButtonActionController throwing = null;
+            TestKeyButtonActionController normal = null;
 
-            var factory = new TestFactory((d, m, n) =>
+            var provider = new Parts(manager =>
             {
-                // alternate creations to return throwing then normal
-                if (n == "bad") return (KeyButtonActionController)throwing;
-                return (KeyButtonActionController)normal;
+                throwing = new TestKeyButtonActionController(device, KeyButtonActionController.Mode.Press, manager, "bad", true);
+                normal = new TestKeyButtonActionController(device, KeyButtonActionController.Mode.Toggle, manager, "good", false);
+                return new TestFactory((d, m, n) =>
+                {
+                    // alternate creations to return throwing then normal
+                    if (n == "bad") return (KeyButtonActionController)throwing;
+                    return (KeyButtonActionController)normal;
+                });
             });
-
-            var provider = new TestServiceProvider(factory);
-            DS4Windows.DI.ServiceProviderHolder.SetProvider(provider);
-            try
+            var manager = provider.Manager;
             {
                 provider.Registry.GetOrCreate(device, KeyButtonActionController.Mode.Press, "bad");
                 provider.Registry.GetOrCreate(device, KeyButtonActionController.Mode.Toggle, "good");
@@ -149,16 +138,12 @@ namespace StandaloneTests
                 var dict = ControllersOf(provider.Registry);
 
                 // act
-                ActionManager.ClearDeviceState(device);
+                manager.ClearDeviceState(device);
 
                 // assert: mapping entries cleared and normal controller disposed (throwing one may have thrown but should not block)
                 Assert.IsTrue(normal.WasDisposed, "Expected normal controller disposed even if another threw");
                 var keysAfter = dict.Keys.Cast<object>().Select(k => k.ToString()).Where(s => s.StartsWith(device + ":")).ToArray();
                 Assert.AreEqual(0, keysAfter.Length);
-            }
-            finally
-            {
-                DS4Windows.DI.ServiceProviderHolder.SetProvider(null);
             }
         }
     }

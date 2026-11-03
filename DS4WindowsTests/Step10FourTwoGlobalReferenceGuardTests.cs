@@ -84,9 +84,9 @@ namespace DS4WindowsTests
         [Fact]
         public void SpecialActionRepository_RequiresStoreAndPathService()
         {
-            Assert.Throws<ArgumentNullException>(() => new SpecialActionRepository(null, new PathService(), new SyntheticInputState(), TestRepositoryFactory.CreateActionsXml()));
-            Assert.Throws<ArgumentNullException>(() => new SpecialActionRepository(new DS4Windows.BackingStore(new DS4Windows.EnvironmentService()), null, new SyntheticInputState(), TestRepositoryFactory.CreateActionsXml()));
-            Assert.Throws<ArgumentNullException>(() => new SpecialActionRepository(new DS4Windows.BackingStore(new DS4Windows.EnvironmentService()), new PathService(), new SyntheticInputState(), null));
+            Assert.Throws<ArgumentNullException>(() => new SpecialActionRepository(null, new PathService(), new SyntheticInputState(), TestRepositoryFactory.CreateActionsXml(), TestActions.Manager));
+            Assert.Throws<ArgumentNullException>(() => new SpecialActionRepository(new DS4Windows.BackingStore(new DS4Windows.EnvironmentService()), null, new SyntheticInputState(), TestRepositoryFactory.CreateActionsXml(), TestActions.Manager));
+            Assert.Throws<ArgumentNullException>(() => new SpecialActionRepository(new DS4Windows.BackingStore(new DS4Windows.EnvironmentService()), new PathService(), new SyntheticInputState(), null, TestActions.Manager));
         }
 
         [Fact]

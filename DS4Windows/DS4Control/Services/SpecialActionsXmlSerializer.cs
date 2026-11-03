@@ -44,8 +44,13 @@ namespace DS4Windows.Services
         // Phase10-Step4d W3: Load Profile の切り替え先の ID と名前を結ぶ。省略可（登録簿がなければ、従来どおり名前だけ）
         private readonly DS4Windows.DI.IProfileIdentityService profileIdentity;
 
-        public SpecialActionsXmlSerializer(BackingStore store, DS4Windows.DI.IProfileIdentityService profileIdentityService = null)
+        // Phase13-Step4: 旧 静的 ActionManager.ClearAllEntries の代わり
+        private readonly DS4Windows.Actions.IManagedActionManager _actionManager;
+
+        public SpecialActionsXmlSerializer(BackingStore store, DS4Windows.Actions.IManagedActionManager actionManager,
+            DS4Windows.DI.IProfileIdentityService profileIdentityService = null)
         {
+            _actionManager = actionManager ?? throw new ArgumentNullException(nameof(actionManager));
             this.store = store ?? throw new ArgumentNullException(nameof(store));
             profileIdentity = profileIdentityService;
         }
@@ -514,7 +519,7 @@ namespace DS4Windows.Services
             bool loaded = true;
 
             store.actions.Clear();
-            try { ActionManager.ClearAllEntries(); } catch { }
+            try { _actionManager.ClearAllEntries(); } catch { }
 
             //string configFile = Path.Combine(Global.appdatapath, "Actions.xml");
             if (!File.Exists(store.m_Actions))
@@ -527,7 +532,7 @@ namespace DS4Windows.Services
                 {
                     try
                     {
-                        try { ActionManager.ClearAllEntries(); } catch { }
+                        try { _actionManager.ClearAllEntries(); } catch { }
                         // Phase7-Step7 W2（Q4＝A）: 合成入力・マクロの実行時状態のリセット（旧: Mapping の静的な状態を直接書き換え）は、
                         // ActionsLoaded の購読者（ServiceRegistration が登録する ActionsLoadedRuntimeReset）が行う。
                         store.RaiseActionsLoaded();
@@ -575,7 +580,7 @@ namespace DS4Windows.Services
             {
                 try
                 {
-                    try { ActionManager.ClearAllEntries(); } catch { }
+                    try { _actionManager.ClearAllEntries(); } catch { }
                     store.RaiseActionsLoaded();
                 }
                 catch { }

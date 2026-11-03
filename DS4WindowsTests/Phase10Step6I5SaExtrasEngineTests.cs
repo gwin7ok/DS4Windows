@@ -93,7 +93,7 @@ namespace DS4WindowsTests
                 var provider = new FakeProvider();
                 provider.Add(Sa);
                 var builder = new ActionBindingBuilder(provider, TestHost.GetService<IProfileSettingsService>(), TestHost.GetService<IManagedActionManager>(),
-                    new NoMacroPlayer(), new NoLauncher(), new NoSwitcher(), extrasPort: Port);
+                    new NoMacroPlayer(), new NoLauncher(), new NoSwitcher(), extrasPort: Port, controllers: TestActions.Controllers);
                 var registry = new ActionBindingRegistry();
                 registry.Replace(Device, builder.Build(Device));
                 _engine = new TriggerDispatchEngine(registry, TestHost.GetService<IManagedActionManager>(), null);

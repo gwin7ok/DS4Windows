@@ -32,7 +32,7 @@ namespace DS4Windows.Actions
             IControllerDisconnectPort disconnectPort = null, IBatteryCheckPort batteryCheckPort = null,
             IMacroStringPlayer macroStringPlayer = null,
             IControlBindingBuilder controlBuilder = null, ISpecialActionOutputFactory outputFactory = null,
-            IControlExtrasPort extrasPort = null)
+            IControlExtrasPort extrasPort = null, IKeyButtonControllerRegistry controllers = null)
         {
             _controlBuilder = controlBuilder;
             _profileActions = profileActions ?? throw new ArgumentNullException(nameof(profileActions));
@@ -42,7 +42,7 @@ namespace DS4Windows.Actions
             if (processLauncher == null) throw new ArgumentNullException(nameof(processLauncher));
             if (profileSwitcher == null) throw new ArgumentNullException(nameof(profileSwitcher));
 
-            _outputFactory = outputFactory ?? new SpecialActionOutputFactory(profileSettings, manager, macroPlayer, processLauncher,
+            _outputFactory = outputFactory ?? new SpecialActionOutputFactory(profileSettings, manager, controllers, macroPlayer, processLauncher,
                 profileSwitcher, actionRepository, mappingProvider, gyroCalibration, disconnectPort, batteryCheckPort,
                 macroStringPlayer);
             _assignmentBuilder = new AssignmentBindingBuilder(_outputFactory, extrasPort);   // Phase10-Step6 I4c: 束縛の組み立ては、共通の部品が行う

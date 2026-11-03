@@ -31,13 +31,17 @@ namespace DS4Windows.Services
         public const string HiddenKeyword = "$hidden";
 
         public ControlBindingBuilder(IProfileSettingsService profileSettings, IMacroPlayer macroPlayer = null,
-            IControlExtrasPort extrasPort = null, ISpecialActionOutputFactory outputFactory = null)
+            IControlExtrasPort extrasPort = null, ISpecialActionOutputFactory outputFactory = null,
+            IManagedActionManager manager = null, IKeyButtonControllerRegistry controllers = null)
         {
             _profileSettings = profileSettings ?? throw new ArgumentNullException(nameof(profileSettings));
             _macroPlayer = macroPlayer;
             _extrasPort = extrasPort;
             _outputFactory = outputFactory;
-            _controlsFactory = SpecialActionOutputFactory.ForControlsKeyAndMacro(_profileSettings, macroPlayer);
+            // Phase13-Step4: 最小の部品は _outputFactory がないとき（テスト）だけ使う。Key の出力が使う管理役と登録簿は、ここで受ける（旧: 静的 ActionManager）
+            _controlsFactory = outputFactory == null
+                ? SpecialActionOutputFactory.ForControlsKeyAndMacro(_profileSettings, manager, controllers, macroPlayer)
+                : null;
             _assignmentBuilder = new AssignmentBindingBuilder(_outputFactory ?? _controlsFactory);   // Phase10-Step6 I4c: 束縛の組み立ては、SA タブ側と同じ部品
         }
 

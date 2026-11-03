@@ -13,6 +13,7 @@ namespace DS4Windows.Actions
     {
         private readonly IProfileSettingsService _profileSettings;
         private readonly IManagedActionManager _manager;
+        private readonly IKeyButtonControllerRegistry _controllers;      // Phase13-Step4: Key 出力（KeyAction）が使う登録簿。旧: ServiceProviderHolder の解決
         private readonly IMacroPlayer _macroPlayer;
         private readonly IProcessLauncher _processLauncher;
         private readonly IProfileSwitcher _profileSwitcher;
@@ -25,12 +26,13 @@ namespace DS4Windows.Actions
         private readonly IWindowFocuser _windowFocuser;                  // FocusWindow（Phase12-Step2 2d）。同上
 
         public SpecialActionOutputFactory(IProfileSettingsService profileSettings,
-            IManagedActionManager manager, IMacroPlayer macroPlayer, IProcessLauncher processLauncher,
+            IManagedActionManager manager, IKeyButtonControllerRegistry controllers, IMacroPlayer macroPlayer, IProcessLauncher processLauncher,
             IProfileSwitcher profileSwitcher, ISpecialActionRepository actionRepository = null,
             Func<IMapping> mappingProvider = null, IGyroCalibrationPort gyroCalibration = null,
             IControllerDisconnectPort disconnectPort = null, IBatteryCheckPort batteryCheckPort = null,
             IMacroStringPlayer macroStringPlayer = null, IWindowFocuser windowFocuser = null)
             : this(profileSettings, manager ?? throw new ArgumentNullException(nameof(manager)),
+                controllers ?? throw new ArgumentNullException(nameof(controllers)),
                 macroPlayer ?? throw new ArgumentNullException(nameof(macroPlayer)),
                 processLauncher ?? throw new ArgumentNullException(nameof(processLauncher)),
                 profileSwitcher ?? throw new ArgumentNullException(nameof(profileSwitcher)),
@@ -42,12 +44,13 @@ namespace DS4Windows.Actions
         /// Phase10-Step6 I4b: Controls の Key と Macro だけを作る最小の部品（<see cref="ControlBindingBuilder"/> が、出力の部品を渡されなかったとき［テスト］に使う）。
         /// 他の種別（窓口が必要なもの）は、窓口が未接続として null を返す。
         /// </summary>
-        public static SpecialActionOutputFactory ForControlsKeyAndMacro(IProfileSettingsService profileSettings, IMacroPlayer macroPlayer)
-            => new SpecialActionOutputFactory(profileSettings, null, macroPlayer, null, null, null, null, null, null, null, null, null, true);
+        public static SpecialActionOutputFactory ForControlsKeyAndMacro(IProfileSettingsService profileSettings, IManagedActionManager manager,
+            IKeyButtonControllerRegistry controllers, IMacroPlayer macroPlayer)
+            => new SpecialActionOutputFactory(profileSettings, manager, controllers, macroPlayer, null, null, null, null, null, null, null, null, null, true);
 
         // 最小の窓口だけで作る版も、この 1 本の本体を通す（flag は、公開のコンストラクターと見分けるためだけの印）
         private SpecialActionOutputFactory(IProfileSettingsService profileSettings,
-            IManagedActionManager manager, IMacroPlayer macroPlayer, IProcessLauncher processLauncher,
+            IManagedActionManager manager, IKeyButtonControllerRegistry controllers, IMacroPlayer macroPlayer, IProcessLauncher processLauncher,
             IProfileSwitcher profileSwitcher, ISpecialActionRepository actionRepository,
             Func<IMapping> mappingProvider, IGyroCalibrationPort gyroCalibration,
             IControllerDisconnectPort disconnectPort, IBatteryCheckPort batteryCheckPort,
@@ -62,6 +65,7 @@ namespace DS4Windows.Actions
             _macroStringPlayer = macroStringPlayer;
             _profileSettings = profileSettings ?? throw new ArgumentNullException(nameof(profileSettings));
             _manager = manager;
+            _controllers = controllers;
             _macroPlayer = macroPlayer;
             _processLauncher = processLauncher;
             _profileSwitcher = profileSwitcher;
@@ -91,7 +95,7 @@ namespace DS4Windows.Actions
 
                 case SpecialAction.ActionTypeId.Key:
                     if (!definition.Key.HasValue) return null;
-                    return new SpecialActionOutputs(new IOutputAction[] { new KeyOutputAction(sa, definition.Key.Value, _profileSettings, index, logRepository) },
+                    return new SpecialActionOutputs(new IOutputAction[] { new KeyOutputAction(sa, definition.Key.Value, _profileSettings, _manager, _controllers, index, logRepository) },
                         Policy(origin, definition));
 
                 case SpecialAction.ActionTypeId.Macro:

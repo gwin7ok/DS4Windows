@@ -65,7 +65,7 @@ namespace DS4WindowsTests
                 state.DeviceState[d].nativeKeyAlias[Key] = 1;
             }
 
-            state.ResetRuntimeStateForKey(Key);
+            state.ResetRuntimeStateForKey(Key, TestActions.Manager);
 
             for (int d = 0; d < state.DeviceState.Length; d++)
             {

@@ -15,7 +15,7 @@ namespace DS4WindowsTests
     /// 「基準値を超えない」ことしか見ないため、件数を減らしたのに基準値を更新し忘れても見つからない（10c の教訓）。
     /// 本検査は、基準値が実数より大きい場合も失敗させ、更新漏れを防ぐ。基準値に無いファイルは 0 として扱う。
     /// 数え方（コメントの除去と正規表現）は既存のラチェットと同じ。基準値は、既存のラチェットの定義をそのまま読む。
-    /// Phase8 で <c>ServiceProviderHolder</c> を減らすときも、同じ検査で基準値を同時に更新させる。
+    /// Phase13-Step4: <c>ServiceProviderHolder</c> は撤廃した（基準値は空。以後も 0 件であることをこの検査が守る）。
     /// ソースが見つからない環境では、検査を行わず合格とする。
     /// </summary>
     public class Phase7Step10eW5RatchetEqualityGuardTests
@@ -138,7 +138,7 @@ namespace DS4WindowsTests
             Assert.Equal(0, rootHub);
             Assert.Equal(3, appHost);   // App.xaml.cs の窓口 1 + AppHost.cs のログ文言 2
             Assert.Equal(2, global);    // ログ文言の文字列 2（LanguageSelectDialog.xaml.cs／LanguagePackViewModel.cs）
-            Assert.Equal(10, locator);  // Actions/ の 10（Phase8 の持ち越し。8c で 17 → 10）
+            Assert.Equal(0, locator);   // Phase13-Step4: ServiceProviderHolder を撤廃した（Actions/ の 10 → 0）
         }
     }
 }

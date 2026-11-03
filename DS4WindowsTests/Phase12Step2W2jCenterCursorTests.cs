@@ -30,7 +30,7 @@ namespace DS4WindowsTests
 
         private static string Save(BackingStore store, bool centerCursor)
         {
-            new SpecialActionsXmlSerializer(store).SaveActionNew("f", "Cross", 11, "game.exe$", false, 0, "*Test", centerCursor: centerCursor);
+            new SpecialActionsXmlSerializer(store, TestActions.Manager).SaveActionNew("f", "Cross", 11, "game.exe$", false, 0, "*Test", centerCursor: centerCursor);
             return File.ReadAllText(store.m_Actions);
         }
 
@@ -63,7 +63,7 @@ namespace DS4WindowsTests
             using var ctx = new PersistenceGoldenContext();
             BackingStore store = PersistenceHarness.LoadActions(ctx, Save(NewStoreFor(ctx), true));
 
-            Assert.True(new SpecialActionsXmlSerializer(store).SaveActions());
+            Assert.True(new SpecialActionsXmlSerializer(store, TestActions.Manager).SaveActions());
 
             Assert.Equal("true", ActionNode(File.ReadAllText(store.m_Actions)).SelectSingleNode("CenterCursor")?.InnerText);
         }

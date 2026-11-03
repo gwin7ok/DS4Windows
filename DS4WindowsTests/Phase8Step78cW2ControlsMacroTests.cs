@@ -92,7 +92,7 @@ namespace DS4WindowsTests
         [Fact]
         public void AMacroBuiltWithoutAPlayer_IsNotBuilt()
         {
-            var builder = new ControlBindingBuilder(TestHost.GetService<IProfileSettingsService>());   // プレーヤーなし
+            var builder = new ControlBindingBuilder(TestHost.GetService<IProfileSettingsService>(), manager: TestActions.Manager, controllers: TestActions.Controllers);   // プレーヤーなし
             using var t = new ControlsKeyTestScope();
             t.MapMacro(DS4Controls.Cross, Steps);
 

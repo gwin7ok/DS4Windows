@@ -27,16 +27,16 @@ namespace DS4Windows.Actions
         /// <summary>
         /// エンジン用: 旧経路のログ（立ち上がり）も出す。<paramref name="actionIndex"/> と <paramref name="actionRepository"/> は、ログの「index」「ActionEntries」用。
         /// <paramref name="manager"/>: R-2 の Execute Mode が Repeat (Toggle) のとき、トグルの状態（<c>IsToggledOn</c>）を反転するために使う（<see cref="ButtonOutputAction"/> と同じ管理役）。
-        /// 省略（null）のときは、従来の静的な窓口（<see cref="ActionManager"/>）を使う。
+        /// Phase13-Step4: 必須（旧: 省略のときは静的な ActionManager を使っていた。静的な窓口は廃止した）。
         /// </summary>
         public MacroAction(SpecialAction sa, int deviceIndex, IMacroPlayer macroPlayer, int actionIndex, ISpecialActionRepository actionRepository,
-            IManagedActionManager manager = null)
+            IManagedActionManager manager)
             : this(sa, deviceIndex, macroPlayer)
         {
             _logTrigger = true;
             _actionIndex = actionIndex;
             _actionRepository = actionRepository;
-            _manager = manager;
+            _manager = manager ?? throw new ArgumentNullException(nameof(manager));
         }
 
         public MacroAction(SpecialAction sa, int deviceIndex, IMacroPlayer macroPlayer)
@@ -70,14 +70,13 @@ namespace DS4Windows.Actions
         /// <summary>トグルの状態を反転し、反転後の値（真＝ON）を返す。状態を取れないときは、ON にする（従来どおり再生する）。</summary>
         private bool FlipToggleOn(int device)
         {
-            ActionInstanceState state = _manager != null ? _manager.GetStateFor(sa, device) : ActionManager.GetStateFor(sa, device);
+            ActionInstanceState state = _manager?.GetStateFor(sa, device);
             if (state == null) return true;
 
             bool next = !state.IsToggledOn;
             try
             {
-                if (_manager != null) _manager.SetToggledOn(sa, device, next);
-                else ActionManager.SetToggledOn(sa, device, next);
+                _manager.SetToggledOn(sa, device, next);
             }
             catch
             {

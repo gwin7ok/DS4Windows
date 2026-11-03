@@ -25,6 +25,8 @@ namespace DS4Windows
         // Phase8-Step5 W2（Q3＝A）: 束縛の登録簿と、ビルダーの遅延解決（ビルダー → IProfileSwitcher → 本サービス、の循環を避ける）
         private readonly DS4Windows.Actions.IActionRegistry _actionRegistry;
         private readonly Func<DS4Windows.Actions.IActionBindingBuilder> _bindingBuilderProvider;
+        // Phase13-Step4: 旧 静的 ActionManager（ClearAllEntries／ClearDeviceState／PreallocateForProfileApply）の代わり
+        private readonly DS4Windows.Actions.IManagedActionManager _actionManager;
 
         public ProfileApplicationService(
             IProfileSettingsService profileSettings,
@@ -37,8 +39,10 @@ namespace DS4Windows
             IKeyButtonControllerRegistry keyButtonControllers,
             DS4Windows.Actions.IActionRegistry actionRegistry,
             Func<DS4Windows.Actions.IActionBindingBuilder> bindingBuilderProvider,
+            DS4Windows.Actions.IManagedActionManager actionManager,
             DS4Windows.DI.IProfileIdentityService profileIdentity = null)
         {
+            _actionManager = actionManager ?? throw new ArgumentNullException(nameof(actionManager));
             _profileIdentity = profileIdentity;
             _actionRegistry = actionRegistry ?? throw new ArgumentNullException(nameof(actionRegistry));
             _bindingBuilderProvider = bindingBuilderProvider ?? throw new ArgumentNullException(nameof(bindingBuilderProvider));
@@ -51,6 +55,35 @@ namespace DS4Windows
             _controlProvider = controlProvider ?? throw new ArgumentNullException(nameof(controlProvider));
             _profileRepo = profileRepo ?? throw new ArgumentNullException(nameof(profileRepo));
             _environmentService = environmentService ?? throw new ArgumentNullException(nameof(environmentService));
+        }
+
+        /// <summary>
+        /// 旧 静的 <c>ActionManager.PreallocateForProfileApply</c>（Phase13-Step4 で本サービスへ移した）。適用するプロファイルの特殊アクションについて、
+        /// 状態とコントローラーを先に作る。ログは従来のまま。
+        /// </summary>
+        private void PreallocateForProfileApply(int device)
+        {
+            try
+            {
+                var profileActions = _profileActionProvider.GetProfileActionNames(device);
+                if (profileActions == null) return;
+
+                foreach (var actionName in profileActions)
+                {
+                    try
+                    {
+                        var sa = _profileActionProvider.GetProfileAction(device, actionName);
+                        if (sa == null) continue;
+
+                        try { _actionManager.GetStateFor(sa, device); } catch { }
+                        try { _keyButtonControllers.GetOrCreateForAction(device, sa); } catch { }
+                    }
+                    catch { }
+                }
+
+                try { AppLogger.LogTrace($"ActionManager.PreallocateForProfileApply: preallocated actions/controllers for device {device}"); } catch { }
+            }
+            catch { }
         }
 
         public void ApplyFromAction(int deviceIndex, SpecialAction action)
@@ -293,7 +326,7 @@ namespace DS4Windows
 
             try
             {
-                try { DS4Windows.ActionManager.ClearAllEntries(); } catch { }
+                try { _actionManager.ClearAllEntries(); } catch { }
                 AppLogger.LogDebug($"ApplyProfile: Cleared ActionManager global entries to force re-creation of Action instances for new profile");
             }
             catch (Exception ex)
@@ -304,7 +337,7 @@ namespace DS4Windows
             try
             {
                 _keyButtonControllers.ClearForDevice(device);
-                try { DS4Windows.ActionManager.ClearDeviceState(device); } catch { }
+                try { _actionManager.ClearDeviceState(device); } catch { }
                 AppLogger.LogDebug($"ApplyProfile: Cleared per-device SpecialAction controllers and ActionManager state for device {device}");
             }
             catch (Exception ex)
@@ -312,7 +345,7 @@ namespace DS4Windows
                 AppLogger.LogTrace($"ApplyProfile: Failed to clear per-device controllers: {ex}");
             }
 
-            try { DS4Windows.ActionManager.PreallocateForProfileApply(device); } catch { }
+            try { PreallocateForProfileApply(device); } catch { }
 
             try
             {

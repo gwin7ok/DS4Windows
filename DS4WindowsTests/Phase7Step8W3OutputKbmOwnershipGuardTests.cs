@@ -164,7 +164,7 @@ namespace DS4WindowsTests
             state.DeviceState[Device].keyPresses[Key] = new SyntheticState.KeyPresses();
             var oldGlobal = state.GlobalState;
 
-            new ActionsLoadedRuntimeReset(state).Reset();
+            new ActionsLoadedRuntimeReset(state, TestActions.Manager).Reset();
 
             Assert.Empty(state.DeviceState[Device].keyPresses);
             Assert.NotSame(oldGlobal, state.GlobalState);

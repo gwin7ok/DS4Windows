@@ -6,8 +6,9 @@
 |---|---|---|
 | 1 | トリガー系クラスの未使用 `profileSettings` 引数の削除 | 完了（`d0729a8c`） |
 | 2 | `ControlService` の未使用引数 6 個の削除（34→28） | 完了（`668bdea6`） |
-| 3 | 状態を持たないホストの分離（イベントスレッド・振動・KBM 初期化） | **実装完了（2026-11-04）。未コミット** |
-| 4〜12 | 計画書 §4 のとおり | 未着手 |
+| 3 | 状態を持たないホストの分離（イベントスレッド・振動・KBM 初期化） | 完了（`b8ba2fca`） |
+| 4 | `ServiceProviderHolder` の撤廃（静的 `ActionManager` の廃止と注入） | **実装完了（2026-11-04。コミット待ち）。** 静的 `ActionManager`・`ServiceProviderHolder`・`ButtonSpecialActionOutput`（とそのテスト）を削除し、`IManagedActionManager`／`IKeyButtonControllerRegistry` をコンストラクターで注入。Debug ALL: 警告 0・エラー 0、Actions.Tests 3054 件・Standalone 11 件すべて合格。残り: テストの `[Collection("ServiceProviderHolder")]` の改名（別コミット） |
+| 5〜12 | 計画書 §4 のとおり | 未着手 |
 
 ## Step1 の結果
 

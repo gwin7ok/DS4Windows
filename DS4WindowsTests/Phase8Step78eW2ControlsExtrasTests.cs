@@ -263,7 +263,7 @@ namespace DS4WindowsTests
             t.MapKey(DS4Controls.Circle, 66);
 
             // 窓口がない（テスト用の構築）: Extras つきの割り当ては、Key も含めて束縛を作らない。Extras なしの Key は束縛になる
-            var withoutPort = new ControlBindingBuilder(t.Scope.Settings, TestHost.GetService<IMacroPlayer>());
+            var withoutPort = new ControlBindingBuilder(t.Scope.Settings, TestHost.GetService<IMacroPlayer>(), manager: TestActions.Manager, controllers: TestActions.Controllers);
             IActionBinding alsoOnly = Assert.Single(withoutPort.Build(Device));
             Assert.Equal(DS4Controls.Circle, ((ControlButtonInputAction)alsoOnly.Input).Triggers[0]);
         }
