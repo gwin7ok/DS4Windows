@@ -127,8 +127,6 @@ namespace DS4Windows
             => _activeOutDevType ?? (_activeOutDevType = _outputSlotServiceFactory().ActiveOutDevType);
         private readonly DI.IProfileRepository _profileRepository;
         private readonly DI.IDeviceStateService _deviceStateService;
-        private readonly DI.IProfileXmlStore _profileXmlStore;
-        private readonly Services.IProfileSlotApplier _profileSlotApplier;
 
         // Phase6-Step2-3 (PR-3): KBM 出力の送出（IVirtualKBM）とハンドラのライフサイクル（IVirtualKBMLifecycle）を分離（決定D3）
         private readonly Services.IVirtualKBM _virtualKBM;
@@ -144,7 +142,6 @@ namespace DS4Windows
         private readonly Services.IElevatedProcessLauncher _elevatedProcessLauncher;
         // Phase7-Step8 W1: 旧 StickMotionState.Shared／SyntheticInputState.Shared（静的な窓口）。コンストラクターで受ける。
         private readonly StickMotionState _stickMotion;
-        private readonly SyntheticInputState _syntheticInput;
         // Phase7-Step8 W2: 入力の評価の窓口（旧: Mapping の静的メソッド）。画面（ControllerReadingsControl、RecordBoxViewModel）も、これを経由して使う
         private readonly DI.IMapping _mapping;
         public DI.IMapping MappingService => _mapping;
@@ -155,7 +152,6 @@ namespace DS4Windows
         // Mapping.cs の各メソッドは既に ControlService（ctrl）を引数として受け取っているため、
         // 新たな static Service Locator を追加せず、この既存の受け渡し経路を通じてサービスを渡す。
         internal DI.IProfileActionProvider ProfileActionProvider => _profileActionProvider;
-        internal DI.IProfileXmlStore ProfileXmlStore => _profileXmlStore;
         internal DI.IProfileRepository ProfileRepository => _profileRepository;
         internal DI.ISpecialActionRepository SpecialActionRepository => _specialActionRepository;
         // Phase6-Step3-3: MapCustom の ButtonAbsMouseInfos（絶対マウス出力の座標系設定）参照を
@@ -173,23 +169,14 @@ namespace DS4Windows
         private readonly DI.ITouchpadToggleService _touchpadToggle;
         private readonly DI.IActiveInputProbe _activeInputProbe;
 
-        // Phase9 9-E E-6a: 接続時のプロファイルの選択と適用
-        private readonly DI.IConnectionProfileSelector _connectionProfileSelector;
-
         // Phase9 9-E E-6b: 接続時の設定の反映とイベントの配線
         private readonly DI.IDeviceConnectionSetup _deviceConnectionSetup;
 
         // Phase9 9-E E-6c: デバイスの種類ごとの部品（カートリッジ）
         private readonly DI.IInputDeviceModuleRegistry _deviceModules;
 
-        // Phase9 9-E E-6d: Joy-Con の結合の手順
-        private readonly DI.IJoyConLinker _joyConLinker;
-
         // Phase9 9-E E-6e: 切断・同期・シリアル変更の処理
         private readonly DI.IDeviceDisconnectHandler _deviceDisconnect;
-
-        // Phase9 9-E E-6f1: 接続の組み立て
-        private readonly DI.IDeviceConnector _deviceConnector;
 
         // Phase9 9-E E-6f2: 開始・停止・ホットプラグと、その状態・イベント
         private readonly DI.IServiceLifecycle _lifecycle;
@@ -285,8 +272,6 @@ namespace DS4Windows
             Func<DI.IOutputSlotService> outputSlotServiceFactory,
             DI.IProfileRepository profileRepository,
             DI.IDeviceStateService deviceStateService,
-            DI.IProfileXmlStore profileXmlStore,
-            Services.IProfileSlotApplier profileSlotApplier,
             Services.IVirtualKBM virtualKBM,
             Services.IVirtualKBMLifecycle kbmLifecycle,
             DI.IAppearanceSettingsService appearanceSettings,
@@ -294,7 +279,6 @@ namespace DS4Windows
             DI.ISpecialActionRepository specialActionRepository,
             Services.IElevatedProcessLauncher elevatedProcessLauncher,
             StickMotionState stickMotion,
-            SyntheticInputState syntheticInput,
             DI.IMapping mapping,
             DI.IOscService oscService,
             DI.IHidHideService hidHideService,
@@ -303,12 +287,9 @@ namespace DS4Windows
             DI.ILatencyMonitor latencyMonitor,
             DI.ITouchpadToggleService touchpadToggle,
             DI.IActiveInputProbe activeInputProbe,
-            DI.IConnectionProfileSelector connectionProfileSelector,
             DI.IDeviceConnectionSetup deviceConnectionSetup,
             DI.IInputDeviceModuleRegistry deviceModules,
-            DI.IJoyConLinker joyConLinker,
             DI.IDeviceDisconnectHandler deviceDisconnect,
-            DI.IDeviceConnector deviceConnector,
             DI.IServiceLifecycle lifecycle)
         {
             this.cmdParser = cmdParser;
@@ -325,8 +306,6 @@ namespace DS4Windows
             this._deviceStateService = deviceStateService ?? throw new ArgumentNullException(nameof(deviceStateService));
             // 適用のたびに、そのスロットのコントローラー（MAC）に、適用したプロファイルを記憶する（再接続で使う）
             this._profileRepository.SelectedProfileChanged += RememberAppliedProfile;
-            this._profileXmlStore = profileXmlStore ?? throw new ArgumentNullException(nameof(profileXmlStore));
-            this._profileSlotApplier = profileSlotApplier ?? throw new ArgumentNullException(nameof(profileSlotApplier));
             this._virtualKBM = virtualKBM ?? throw new ArgumentNullException(nameof(virtualKBM));
             this._kbmLifecycle = kbmLifecycle ?? throw new ArgumentNullException(nameof(kbmLifecycle));
             this._appearanceSettings = appearanceSettings ?? throw new ArgumentNullException(nameof(appearanceSettings));
@@ -334,7 +313,6 @@ namespace DS4Windows
             this._specialActionRepository = specialActionRepository ?? throw new ArgumentNullException(nameof(specialActionRepository));
             this._elevatedProcessLauncher = elevatedProcessLauncher ?? throw new ArgumentNullException(nameof(elevatedProcessLauncher));
             this._stickMotion = stickMotion ?? throw new ArgumentNullException(nameof(stickMotion));
-            this._syntheticInput = syntheticInput ?? throw new ArgumentNullException(nameof(syntheticInput));
             this._mapping = mapping ?? throw new ArgumentNullException(nameof(mapping));
             this._oscService = oscService ?? throw new ArgumentNullException(nameof(oscService));
             this._hidHideService = hidHideService ?? throw new ArgumentNullException(nameof(hidHideService));
@@ -343,12 +321,9 @@ namespace DS4Windows
             this._latencyMonitor = latencyMonitor ?? throw new ArgumentNullException(nameof(latencyMonitor));
             this._touchpadToggle = touchpadToggle ?? throw new ArgumentNullException(nameof(touchpadToggle));
             this._activeInputProbe = activeInputProbe ?? throw new ArgumentNullException(nameof(activeInputProbe));
-            this._connectionProfileSelector = connectionProfileSelector ?? throw new ArgumentNullException(nameof(connectionProfileSelector));
             this._deviceConnectionSetup = deviceConnectionSetup ?? throw new ArgumentNullException(nameof(deviceConnectionSetup));
             this._deviceModules = deviceModules ?? throw new ArgumentNullException(nameof(deviceModules));
-            this._joyConLinker = joyConLinker ?? throw new ArgumentNullException(nameof(joyConLinker));
             this._deviceDisconnect = deviceDisconnect ?? throw new ArgumentNullException(nameof(deviceDisconnect));
-            this._deviceConnector = deviceConnector ?? throw new ArgumentNullException(nameof(deviceConnector));
             this._lifecycle = lifecycle ?? throw new ArgumentNullException(nameof(lifecycle));
             // 開始・停止のログとイベントも、これまでどおり ControlService の Debug イベント／公開イベント（送り主は ControlService）へ流す
             this._lifecycle.DebugMessage += (data, warning) => LogDebug(data, warning);

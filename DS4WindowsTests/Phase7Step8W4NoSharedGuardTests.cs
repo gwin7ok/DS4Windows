@@ -66,7 +66,6 @@ namespace DS4WindowsTests
 
             var control = TestHost.GetService<ControlService>();
             Assert.Same(stick, Field(typeof(ControlService), control, "_stickMotion"));
-            Assert.Same(synthetic, Field(typeof(ControlService), control, "_syntheticInput"));
         }
 
         [Fact]

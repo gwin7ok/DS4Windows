@@ -55,8 +55,6 @@ namespace DS4WindowsTests
         [InlineData("outputSlotServiceFactory")]
         [InlineData("profileRepository")]
         [InlineData("deviceStateService")]
-        [InlineData("profileXmlStore")]
-        [InlineData("profileSlotApplier")]
         public void Constructor_NullRequiredParameter_ThrowsArgumentNullException(string parameterName)
         {
             var ex = Assert.Throws<ArgumentNullException>(() => ControlServiceTestFactory.Create(parameterName));

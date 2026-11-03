@@ -58,7 +58,6 @@ namespace DS4WindowsTests
 
         [Theory]
         [InlineData("ProfileActionProvider", typeof(IProfileActionProvider))]
-        [InlineData("ProfileXmlStore", typeof(IProfileXmlStore))]
         [InlineData("ProfileRepository", typeof(IProfileRepository))]
         [InlineData("SpecialActionRepository", typeof(ISpecialActionRepository))]
         public void InternalAccessor_ReturnsSameInstanceAsAppHost(string propertyName, Type serviceType)

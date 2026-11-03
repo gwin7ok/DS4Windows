@@ -280,8 +280,6 @@ namespace DS4Windows.DI
                     () => sp.GetRequiredService<IOutputSlotService>(), // 決定D1: 遅延解決（OutputSlotService → ControlService の逆依存を回避）
                     sp.GetRequiredService<IProfileRepository>(),
                     sp.GetRequiredService<IDeviceStateService>(),
-                    sp.GetRequiredService<IProfileXmlStore>(),
-                    sp.GetRequiredService<IProfileSlotApplier>(),
                     sp.GetRequiredService<IVirtualKBM>(),
                     sp.GetRequiredService<IVirtualKBMLifecycle>(),
                     sp.GetRequiredService<IAppearanceSettingsService>(),
@@ -290,7 +288,6 @@ namespace DS4Windows.DI
                     sp.GetRequiredService<IElevatedProcessLauncher>(),
                     // Phase7-Step8 W1: 保持クラスをコンストラクターで受ける（旧: ControlService／Mouse が Shared を参照）
                     sp.GetRequiredService<StickMotionState>(),
-                    sp.GetRequiredService<SyntheticInputState>(),
                     sp.GetRequiredService<IMapping>(),
                     sp.GetRequiredService<IOscService>(),   // Phase9 9-E E-1
                     sp.GetRequiredService<IHidHideService>(),   // Phase9 9-E E-2
@@ -299,12 +296,9 @@ namespace DS4Windows.DI
                     sp.GetRequiredService<ILatencyMonitor>(),   // Phase9 9-E E-5
                     sp.GetRequiredService<ITouchpadToggleService>(),   // Phase9 9-E E-5
                     sp.GetRequiredService<IActiveInputProbe>(),   // Phase9 9-E E-5
-                    sp.GetRequiredService<IConnectionProfileSelector>(),   // Phase9 9-E E-6a
                     sp.GetRequiredService<IDeviceConnectionSetup>(),   // Phase9 9-E E-6b
                     sp.GetRequiredService<IInputDeviceModuleRegistry>(),   // Phase9 9-E E-6c
-                    sp.GetRequiredService<IJoyConLinker>(),   // Phase9 9-E E-6d
                     sp.GetRequiredService<IDeviceDisconnectHandler>(),   // Phase9 9-E E-6e
-                    sp.GetRequiredService<IDeviceConnector>(),   // Phase9 9-E E-6f1
                     sp.GetRequiredService<IServiceLifecycle>()   // Phase9 9-E E-6f2
                 );
             });
