@@ -103,9 +103,14 @@
                 <Label Content="{lex:Loc RecordBox.MacroOrder}" />
                 <Label Content="{lex:Loc RecordBox.UseActionToRecord}" DockPanel.Dock="Right" HorizontalAlignment="Right" />
             </DockPanel>
-            <ListBox x:Name="macroListBox" ItemsSource="{Binding MacroSteps}" SelectedIndex="{Binding MacroStepIndex}"
+            <!-- Ctrl+クリックで複数選択、Shift+クリックで範囲選択（Extended）。空白のクリックで選択解除、Delete で選択行を削除、ドラッグ＆ドロップで並べ替え -->
+            <ListBox x:Name="macroListBox" ItemsSource="{Binding MacroSteps}" SelectionMode="Extended" AllowDrop="True"
                      ItemTemplate="{StaticResource DisplayTemplate}" MouseDoubleClick="MacroListBox_MouseDoubleClick"
-                     LostFocus="MacroListBox_LostFocus">
+                     LostFocus="MacroListBox_LostFocus"
+                     PreviewMouseLeftButtonDown="MacroListBox_PreviewMouseLeftButtonDown"
+                     PreviewMouseMove="MacroListBox_PreviewMouseMove"
+                     PreviewMouseLeftButtonUp="MacroListBox_PreviewMouseLeftButtonUp"
+                     DragOver="MacroListBox_DragOver" Drop="MacroListBox_Drop">
             </ListBox>
         </DockPanel>
     </DockPanel>

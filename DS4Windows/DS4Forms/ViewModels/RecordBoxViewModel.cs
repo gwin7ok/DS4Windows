@@ -319,6 +319,61 @@ namespace DS4WinWPF.DS4Forms.ViewModels
             return index;
         }
 
+        /// <summary>
+        /// 選択された行のうち、いちばん上の行の位置。選択がなければ -1。
+        /// Record／Insert の挿入位置になる（複数選択のときは、いちばん上の選択行の前。選択がなければ、いちばん下に足す）。
+        /// </summary>
+        public static int FirstIndexOf(IEnumerable<int> selectedIndexes)
+        {
+            int first = -1;
+            foreach (int index in selectedIndexes)
+            {
+                if (index >= 0 && (first < 0 || index < first)) first = index;
+            }
+
+            return first;
+        }
+
+        /// <summary>指定した位置の行をすべて消す（範囲外・重複は無視）。消した行数を返す。</summary>
+        public int RemoveSteps(IEnumerable<int> indexes)
+        {
+            List<int> targets = indexes.Where(i => i >= 0 && i < macroSteps.Count).Distinct().OrderByDescending(i => i).ToList();
+            foreach (int index in targets)
+            {
+                macroSteps.RemoveAt(index);
+            }
+
+            return targets.Count;
+        }
+
+        /// <summary>
+        /// 指定した位置の行を、元の並びのまま 1 かたまりにして、<paramref name="targetIndex"/>（移す前の並びでの、挿入先の行の位置。末尾は行数）の前へ移す。
+        /// 移した行の、新しい位置を返す。並びが変わらないとき（かたまりの中・すぐ前後へ落とす）は、何も変えず null。
+        /// </summary>
+        public int[] MoveSteps(IEnumerable<int> sourceIndexes, int targetIndex)
+        {
+            List<int> sources = sourceIndexes.Where(i => i >= 0 && i < macroSteps.Count).Distinct().OrderBy(i => i).ToList();
+            if (sources.Count == 0) return null;
+
+            targetIndex = Math.Min(Math.Max(targetIndex, 0), macroSteps.Count);
+            int insertAt = targetIndex - sources.Count(i => i < targetIndex);
+            int[] newIndexes = Enumerable.Range(insertAt, sources.Count).ToArray();
+            if (sources.SequenceEqual(newIndexes)) return null;
+
+            List<MacroStepItem> moving = sources.Select(i => macroSteps[i]).ToList();
+            foreach (int index in sources.OrderByDescending(i => i))
+            {
+                macroSteps.RemoveAt(index);
+            }
+
+            for (int i = 0; i < moving.Count; i++)
+            {
+                macroSteps.Insert(insertAt + i, moving[i]);
+            }
+
+            return newIndexes;
+        }
+
         public void InsertMacroStep(int index, MacroStep step)
         {
             MacroStepItem item = new MacroStepItem(step);

@@ -107,3 +107,10 @@
 - 3d 実装済み・実機確認 OK（2026-11-03。確認 A: 追加・編集・保存・再読込。初回は、編集部品の ComboBox の SelectionChanged が ListBox のハンドラへ伝わり、操作中に編集部品を差し替えてクラッシュした。ListBox 自身の選択の変更だけを扱うよう直して再確認）: 記録画面に「Add Mouse Move」ボタン（選択した位置の前、選択がなければ末尾へ、絶対の (0, 0) を入れる）。移動ステップをダブルクリックすると、モード（画面の座標／ウィンドウ内の座標）・X・Y の編集部品が出る（Enter、選択の変更、保存で確定。範囲外は丸める）。`MacroStepItem` に `PointerModeIndex`／`PointerX`／`PointerY`、`RecordBoxViewModel.AddPointerMoveStep`。翻訳 4 件（en／ja）。プリセットの読み書きは、整数の列のため変更なし。検証: Debug ALL 警告 0・エラー 0、DS4WindowsTests 3,000 件（+7）と StandaloneTests 11 件が合格。
 - 3d コミット済み（d825ac08）。
 - 3e 実装済み・実機確認 OK（2026-11-03。確認 B: 絶対座標で記録→再生、確認 C: ウィンドウ基準で記録し、ウィンドウを動かして再生。これで 3c の実行も実機で確認済み）: `IMouseInputHook`／`LowLevelMouseHook`（`WH_MOUSE_LL`。UI スレッドで通知）、`MacroPointerRecorder`（間引き 5 px・20 ms、ボタンの直前の位置、自分のウィンドウの除外、上限 2,000）、`IWindowSystem.TryGetWindowAtPoint`。記録画面に「Record mouse movement」チェックボックス（既定オフ）と基準の選択。ウィンドウ基準は、ポインターの下のウィンドウの外枠の左上を原点にする（クリックで前面になるため、再生時の前面ウィンドウと一致する）。上限に達したら記録を止めて知らせる。`EditorWindowFactory` が `IMouseInputHook` を受ける。検証: Debug ALL 警告 0・エラー 0、DS4WindowsTests 3,023 件（+23）と StandaloneTests 11 件が合格。
+
+## 10. 追加要望: 記録画面（RecordBox）のコマンド一覧の編集（2026-11-03。3e のあと）
+
+- 要望: ①Ctrl＋クリックで複数選択、Shift＋クリックで範囲選択、②Delete で選択行をすべて削除、③コマンドのない行（空白）のクリックで選択解除、④選択がないとき Record／Insert Wait はいちばん下に追加、⑤選択した行のドラッグ＆ドロップで並べ替え。
+- 実装済み・実機確認 OK（2026-11-03）: 一覧を `SelectionMode="Extended"` にし、`MacroStepIndex` は「選択行のうちいちばん上の行（なければ -1）」に変えた（`RecordBoxViewModel.FirstIndexOf`）。Record／Insert Wait／Add Mouse Move は、選択がなければいちばん下へ、複数選択ならいちばん上の選択行の前へ入れる（Insert Wait は、以前は選択がないと何もしなかった）。削除は `RemoveSteps`、並べ替えは `MoveSteps`（選んだ行を元の順のまま 1 かたまりで移す。同じ位置へ落としたら何も変えない）。複数選択の行を押してドラッグするときは、ドラッグせずに離すまで選択を 1 行にしない。行の編集中は Delete で行を消さない。
+- 検証: Debug ALL 警告 0・エラー 0、DS4WindowsTests 3,041 件（+18）と StandaloneTests 11 件が合格。
+
