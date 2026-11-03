@@ -43,6 +43,14 @@ namespace DS4Windows
         /// <summary>ウィンドウを表示せずに起動する（SA の <c>extra</c> の <c>$hidden</c>）。</summary>
         public bool HideWindow { get; set; }
 
+        // ---- FocusWindow（Phase12-Step2 2c。R-4） ----
+
+        /// <summary>前面へ出すウィンドウのプログラムのパス（SA の <c>details</c>）。Auto-Profile と同じ記号（<c>^</c> <c>$</c> <c>*</c>）を使える。省略可。</summary>
+        public string WindowPath { get; set; } = string.Empty;
+
+        /// <summary>前面へ出すウィンドウのタイトル（SA の <c>extra</c>）。<see cref="WindowPath"/> と同じ規則。省略可（パスとタイトルの両方が空の指定は無効）。</summary>
+        public string WindowTitle { get; set; } = string.Empty;
+
         // ---- Profile ----
 
         /// <summary>切り替え先のプロファイル名（SA の <c>details</c>）。</summary>
@@ -101,6 +109,8 @@ namespace DS4Windows
                 ProgramPath = ProgramPath,
                 ProgramArguments = ProgramArguments,
                 HideWindow = HideWindow,
+                WindowPath = WindowPath,
+                WindowTitle = WindowTitle,
                 ProfileName = ProfileName,
                 ProfileId = ProfileId,
                 AutomaticUntrigger = AutomaticUntrigger,

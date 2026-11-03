@@ -280,6 +280,10 @@ namespace DS4Windows.Services
                 case 9:
                     tempAction = new SpecialAction(name, controls, "GyroCalibration", details, delayTime);
                     break;
+                case 11:
+                    // Phase12-Step2 2c（R-4）: ウィンドウのフォーカス。details＝プログラムのパス、extras＝ウィンドウタイトル
+                    tempAction = new SpecialAction(name, controls, "FocusWindow", details, delayTime, extras);
+                    break;
                 default:
                     break;
             }

@@ -64,6 +64,15 @@ namespace DS4WinWPF.DS4Control.DTOXml
                         actionSerializer.Arguments = action.extra;
                         actionSerializer.Delay = action.delayTime;
                         break;
+                    case SpecialAction.ActionTypeId.FocusWindow:
+                        // Phase12-Step2 2c（R-4）: Details＝プログラムのパス、WindowTitle＝ウィンドウタイトル。古いバージョンは、未知の種別の項目として読み飛ばす（実行されない）
+                        actionSerializer.Name = action.name;
+                        actionSerializer.Trigger = action.controls;
+                        actionSerializer.TypeString = action.type;
+                        actionSerializer.Details = action.details;
+                        actionSerializer.WindowTitle = action.extra ?? string.Empty;
+                        actionSerializer.Delay = action.delayTime;
+                        break;
                     case SpecialAction.ActionTypeId.Profile:
                         actionSerializer.Name = action.name;
                         actionSerializer.Trigger = action.controls;
@@ -170,6 +179,12 @@ namespace DS4WinWPF.DS4Control.DTOXml
                             );
                         }
 
+                        break;
+                    case "FocusWindow":
+                        tempAction = new SpecialAction(actionSerializer.Name,
+                            actionSerializer.Trigger, actionSerializer.TypeString,
+                            actionSerializer.Details, actionSerializer.Delay,
+                            actionSerializer.WindowTitle);
                         break;
                     case "Profile":
                         {

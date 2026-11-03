@@ -24,6 +24,7 @@ namespace DS4Windows.Services
             SpecialAction.ActionTypeId.BatteryCheck,
             SpecialAction.ActionTypeId.MultiAction,
             SpecialAction.ActionTypeId.GyroCalibrate,
+            SpecialAction.ActionTypeId.FocusWindow,   // Phase12-Step2 2c（R-4）。古いバージョンは、未知の種別として読み飛ばす
         };
 
         public static XmlElement Write(XmlDocument doc, string controlName, ControlSpecialItem item)
@@ -45,6 +46,8 @@ namespace DS4Windows.Services
             if (!string.IsNullOrEmpty(item.ProgramPath)) Child("ProgramPath", item.ProgramPath);
             if (!string.IsNullOrEmpty(item.ProgramArguments)) Child("ProgramArguments", item.ProgramArguments);
             if (item.HideWindow) Child("HideWindow", "true");
+            if (!string.IsNullOrEmpty(item.WindowPath)) Child("WindowPath", item.WindowPath);
+            if (!string.IsNullOrEmpty(item.WindowTitle)) Child("WindowTitle", item.WindowTitle);
             if (!string.IsNullOrEmpty(item.ProfileName)) Child("ProfileName", item.ProfileName);
             if (!string.IsNullOrEmpty(item.ProfileId)) Child("ProfileId", item.ProfileId);   // Phase10-Step4d W3
             if (item.AutomaticUntrigger) Child("AutomaticUntrigger", "true");
@@ -101,6 +104,8 @@ namespace DS4Windows.Services
                     case "ProgramPath": result.ProgramPath = text; break;
                     case "ProgramArguments": result.ProgramArguments = text; break;
                     case "HideWindow": result.HideWindow = IsTrue(text); break;
+                    case "WindowPath": result.WindowPath = text; break;
+                    case "WindowTitle": result.WindowTitle = text; break;
                     case "ProfileName": result.ProfileName = text; break;
                     case "ProfileId": result.ProfileId = text; break;   // Phase10-Step4d W3
                     case "AutomaticUntrigger": result.AutomaticUntrigger = IsTrue(text); break;

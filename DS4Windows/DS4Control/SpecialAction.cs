@@ -50,7 +50,7 @@ namespace DS4Windows
 
     public class SpecialAction
     {
-        public enum ActionTypeId { None, Key, Program, Profile, Macro, DisconnectBT, BatteryCheck, MultiAction, GyroCalibrate, Button }
+        public enum ActionTypeId { None, Key, Program, Profile, Macro, DisconnectBT, BatteryCheck, MultiAction, GyroCalibrate, Button, FocusWindow }
 
         public enum KeyButtonSwitchModeEnum { Press, Toggle }
 
@@ -168,6 +168,15 @@ namespace DS4Windows
                 if (extras != string.Empty)
                     extra = extras;
             }
+            else if (type == "FocusWindow")
+            {
+                // Phase12-Step2 2c（R-4）: 指定のウィンドウを前面へ出す。details＝プログラムのパス、extra＝ウィンドウタイトル
+                // （どちらも Auto-Profile と同じ規則の指定。WindowTargetMatcher）。タイトルは、extras 先頭の「トリガー解除」の解釈（下）から外す
+                typeID = ActionTypeId.FocusWindow;
+                this.details = details;
+                if (!string.IsNullOrEmpty(extras))
+                    extra = extras;
+            }
             else if (type == "Profile")
             {
                 typeID = ActionTypeId.Profile;
@@ -233,7 +242,7 @@ namespace DS4Windows
             else
                 this.details = details;
 
-            if (type != "Key" && !string.IsNullOrEmpty(extras))
+            if (type != "Key" && type != "FocusWindow" && !string.IsNullOrEmpty(extras))
             {
                 this.ucontrols = extras;
                 string[] uctrls = extras.Split('/');

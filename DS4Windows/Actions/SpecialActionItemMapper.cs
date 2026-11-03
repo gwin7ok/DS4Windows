@@ -51,6 +51,10 @@ namespace DS4Windows.Actions
                     }
 
                     break;
+                case SpecialAction.ActionTypeId.FocusWindow:
+                    item.WindowPath = sa.details ?? string.Empty;
+                    item.WindowTitle = sa.extra ?? string.Empty;
+                    break;
                 case SpecialAction.ActionTypeId.Profile:
                     item.ProfileName = sa.details ?? string.Empty;
                     item.ProfileId = sa.profileId ?? string.Empty;
@@ -105,6 +109,10 @@ namespace DS4Windows.Actions
                     // パスを details、引数を extra に入れる。ウィンドウを隠すときは、extra の先頭に "$hidden" を付ける
                     sa.details = item.ProgramPath ?? string.Empty;
                     sa.extra = (item.HideWindow ? HiddenKeyword : string.Empty) + (item.ProgramArguments ?? string.Empty);
+                    break;
+                case SpecialAction.ActionTypeId.FocusWindow:
+                    sa.details = item.WindowPath ?? string.Empty;
+                    sa.extra = item.WindowTitle ?? string.Empty;
                     break;
                 case SpecialAction.ActionTypeId.Profile:
                     sa.details = item.ProfileName;

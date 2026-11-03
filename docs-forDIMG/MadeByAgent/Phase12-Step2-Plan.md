@@ -82,6 +82,12 @@
 
 - 2a 完了（§5b）。2b-1 完了（`WindowTargetMatcher`。コミット 5dd6fd00）。
 - 2b-2 完了（2026-11-03）: `IWindowFocuser`／`IWindowSystem`／`WindowFocusResult`／`WindowCandidate`（`DS4Windows/DI/`）、`WindowFocuser`／`Win32WindowSystem`（`DS4Control/Services/`）、`ServiceRegistration` に登録。`WindowTargetMatcher.IsEmpty` を追加。単体テスト 15 件（偽の `IWindowSystem` による手順の検査と、Win32 の列挙の煙テスト）。Debug は警告 0・エラー 0、全 2,854 件合格。
+- 2c 完了（2026-11-03）: 新しい種別 `ActionTypeId.FocusWindow`（enum の末尾に追加）。モデルと保存・読込まで（実行と画面は 2d・2e）。
+  - SA（Actions.xml）: `Type=FocusWindow`、`Details`＝プログラムのパス、新要素 `WindowTitle`＝ウィンドウタイトル（空なら書かない）、`Delay`。`SpecialAction` のコンストラクターでは、タイトルを「トリガー解除」のボタン名として読まない（Program 以外の種別の既存の解釈から除外）。`SaveActionNew` の mode 11。
+  - Controls（プロファイル XML）: `ControlSpecialItem` に `WindowPath`／`WindowTitle`、`Type=FocusWindow`。
+  - 古い版との互換: 古い版は、未知の種別として読み飛ばす（SA は一覧に入らず、Controls はそのボタンが未割り当てのまま）。**古い版で開いて保存し直すと、その割り当ては消える**（既存の読込の仕様。R-2 の `MacroExecuteMode` と違い、種別そのものが未知のため、劣化した形では残らない）。
+  - 単体テスト 8 件。Debug は警告 0・エラー 0、全 2,862 件合格。
+  - 未接続（2d・2e で接続）: `ControlsSpecialTypeTable`（Controls で実行時に束縛を作る種別の表）、`SpecialActionOutputFactory`（実行）、`ActionTypeCatalog`／`AssignmentEditor`／`AssignmentDescriber`／`MappedControl`（画面と表示名）。
 - 実機でのフォーカスの確認は、2d（実行）と 2e（画面）が揃ってから 2f で行う（この時点では、画面からも実行からも呼ばれない）。
 
 ## 6. 完了条件

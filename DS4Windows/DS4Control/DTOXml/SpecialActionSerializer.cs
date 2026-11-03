@@ -134,7 +134,15 @@ namespace DS4WinWPF.DS4Control.DTOXml
         }
         public bool ShouldSerializeDelayString()
         {
-            return TypeString == "Program";
+            return TypeString == "Program" || TypeString == "FocusWindow";
+        }
+
+        // Phase12-Step2 2c（R-4）: 種別が FocusWindow の SA の、対象のウィンドウタイトル（Details はプログラムのパス）。どちらも Auto-Profile と同じ記号（^ $ *）を使える
+        [XmlElement("WindowTitle")]
+        public string WindowTitle { get; set; } = string.Empty;
+        public bool ShouldSerializeWindowTitle()
+        {
+            return TypeString == "FocusWindow" && !string.IsNullOrEmpty(WindowTitle);
         }
 
         [XmlElement("UnloadTrigger")]
