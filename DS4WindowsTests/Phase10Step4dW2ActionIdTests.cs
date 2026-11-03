@@ -262,7 +262,7 @@ namespace DS4WindowsTests
                 }
             }
 
-            Assert.Equal(8, calls);
+            Assert.Equal(9, calls);
             Assert.Equal(calls, withId);
         }
     }

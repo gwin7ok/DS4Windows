@@ -3217,6 +3217,24 @@ namespace DS4WinWPF.Translations {
                 return ResourceManager.GetString("SpecialActionEdit.LaunchProgram", resourceCulture);
             }
         }
+
+        /// <summary>
+        ///   Looks up a localized string similar to Focus a window.
+        /// </summary>
+        public static string SpecialActionEdit_FocusWindow {
+            get {
+                return ResourceManager.GetString("SpecialActionEdit.FocusWindow", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to Program path.
+        /// </summary>
+        public static string SpecialActionEdit_FocusWindowPath {
+            get {
+                return ResourceManager.GetString("SpecialActionEdit.FocusWindowPath", resourceCulture);
+            }
+        }
         
         /// <summary>
         ///   Looks up a localized string similar to Load a profile.

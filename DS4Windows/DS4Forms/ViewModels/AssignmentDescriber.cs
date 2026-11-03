@@ -99,6 +99,8 @@ namespace DS4WinWPF.DS4Forms.ViewModels
             {
                 case SpecialAction.ActionTypeId.Program:
                     return "Launch Program: " + FileNameOf(item.ProgramPath) + Hold(item.HoldSeconds);
+                case SpecialAction.ActionTypeId.FocusWindow:
+                    return "Focus Window: " + FocusTargetOf(item.WindowPath, item.WindowTitle) + Hold(item.HoldSeconds);
                 case SpecialAction.ActionTypeId.Profile:
                     return "Load Profile: " + ProfileLabel(item.ProfileName, profileExists) + (item.AutomaticUntrigger ? " (Auto untrigger)" : string.Empty) + Hold(item.HoldSeconds);
                 case SpecialAction.ActionTypeId.DisconnectBT:
@@ -149,6 +151,9 @@ namespace DS4WinWPF.DS4Forms.ViewModels
                 case SpecialAction.ActionTypeId.Program:
                     text = "Launch Program: " + FileNameOf(sa.details);
                     break;
+                case SpecialAction.ActionTypeId.FocusWindow:
+                    text = "Focus Window: " + FocusTargetOf(sa.details, sa.extra);
+                    break;
                 case SpecialAction.ActionTypeId.Profile:
                     text = "Load Profile: " + ProfileLabel(sa.details, profileExists) + (sa.automaticUntrigger ? " (Auto untrigger)" : string.Empty);
                     break;
@@ -177,6 +182,16 @@ namespace DS4WinWPF.DS4Forms.ViewModels
             => profileExists != null && !string.IsNullOrEmpty(name) && !profileExists(name) ? NoProfileText : name;
 
         public const string NoProfileText = "(none)";
+
+        /// <summary>Focus Window の対象の表示。パスとタイトルを、書かれたまま（^ ... $ * の印を含む）出す。両方空なら "(none)"。</summary>
+        private static string FocusTargetOf(string path, string title)
+        {
+            bool hasPath = !string.IsNullOrWhiteSpace(path);
+            bool hasTitle = !string.IsNullOrWhiteSpace(title);
+            if (hasPath && hasTitle) return path + " / " + title;
+            if (hasPath) return path;
+            return hasTitle ? title : "(none)";
+        }
 
         private static string FileNameOf(string path)
         {

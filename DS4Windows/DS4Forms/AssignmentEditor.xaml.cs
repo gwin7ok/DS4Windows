@@ -47,6 +47,7 @@ namespace DS4WinWPF.DS4Forms
         private CheckBatteryViewModel checkBatteryVM;
         private MultiActButtonViewModel multiActButtonVM;
         private SpecialActionViewModel calibrateGyroVM;
+        private FocusWindowViewModel focusWindowVM;
 
         // Phase10-Step6 I5c: SA のモードで編集中の SA に付ける Extras（SpecialAction.outputExtras と同じ書式。付けないときは null）。
         // Press Key の出力ピッカー（BindingWindow）で編集する（Controls のモードと同じ）。SA の保存のあとに SaveActionExtras で書く
@@ -156,6 +157,7 @@ namespace DS4WinWPF.DS4Forms
             checkBatteryVM = new CheckBatteryViewModel(specialActionRepository, environmentService);
             multiActButtonVM = new MultiActButtonViewModel(specialActionRepository);
             calibrateGyroVM = new SpecialActionViewModel(9, specialActionRepository);
+            focusWindowVM = new FocusWindowViewModel(specialActionRepository);
 
             // Phase10-Step6 後の Step5: アナログな出力の強さの入力は、SA のモードだけに出す（Controls は、入力のアナログ値で強さが決まる）
             pressKeyVM.StrengthApplies = !controlMode;
@@ -171,6 +173,7 @@ namespace DS4WinWPF.DS4Forms
                 [DS4Windows.SpecialAction.ActionTypeId.BatteryCheck] = checkBatteryVM,
                 [DS4Windows.SpecialAction.ActionTypeId.MultiAction] = multiActButtonVM,
                 [DS4Windows.SpecialAction.ActionTypeId.GyroCalibrate] = calibrateGyroVM,
+                [DS4Windows.SpecialAction.ActionTypeId.FocusWindow] = focusWindowVM,   // Phase12-Step2 2e（R-4）
             });
 
             // Hide tab headers. Tab content will still be visible
@@ -183,6 +186,7 @@ namespace DS4WinWPF.DS4Forms
             checkBatteryTab.Visibility = Visibility.Collapsed;
             multiActTab.Visibility = Visibility.Collapsed;
             gyroCalibrateTab.Visibility = Visibility.Collapsed;
+            focusWindowTab.Visibility = Visibility.Collapsed;
             defaultActTab.Visibility = Visibility.Collapsed;
             unboundActTab.Visibility = Visibility.Collapsed;
 
@@ -236,6 +240,7 @@ namespace DS4WinWPF.DS4Forms
             checkBatteryTab.DataContext = checkBatteryVM;
             multiActTab.DataContext = multiActButtonVM;
             gyroCalibrateTab.DataContext = calibrateGyroVM;
+            focusWindowTab.DataContext = focusWindowVM;
 
             SetupLateEvents();
         }
@@ -260,6 +265,7 @@ namespace DS4WinWPF.DS4Forms
             checkBatteryTab.DataContext = null;
             multiActTab.DataContext = null;
             gyroCalibrateTab.DataContext = null;
+            focusWindowTab.DataContext = null;
         }
 
         private void LoadAction(DS4Windows.SpecialAction specialAction)

@@ -46,6 +46,7 @@ namespace DS4WinWPF.DS4Forms.ViewModels
                 new ActionTypeDescriptor(6, SpecialAction.ActionTypeId.BatteryCheck, "SpecialActionEdit.CheckBattery", Both, ControlsSavable(SpecialAction.ActionTypeId.BatteryCheck)),
                 new ActionTypeDescriptor(7, SpecialAction.ActionTypeId.MultiAction, "SpecialActionEdit.MultiAction", Both, ControlsSavable(SpecialAction.ActionTypeId.MultiAction)),
                 new ActionTypeDescriptor(8, SpecialAction.ActionTypeId.GyroCalibrate, "SpecialActionEdit.CalibrateGyro", Both, ControlsSavable(SpecialAction.ActionTypeId.GyroCalibrate)),
+                new ActionTypeDescriptor(9, SpecialAction.ActionTypeId.FocusWindow, "SpecialActionEdit.FocusWindow", Both, ControlsSavable(SpecialAction.ActionTypeId.FocusWindow)),   // Phase12-Step2 2e（R-4）
             };
 
             DefaultIndex = -1;

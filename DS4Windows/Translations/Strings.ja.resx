@@ -147,6 +147,12 @@
   <data name="Browse" xml:space="preserve">
     <value>参照</value>
   </data>
+  <data name="SpecialActionEdit.FocusWindow" xml:space="preserve">
+    <value>ウインドウを前面に出す</value>
+  </data>
+  <data name="SpecialActionEdit.FocusWindowPath" xml:space="preserve">
+    <value>プログラムのパス</value>
+  </data>
   <data name="BrowseOtherPrograms" xml:space="preserve">
     <value>その他のプログラムを参照</value>
   </data>

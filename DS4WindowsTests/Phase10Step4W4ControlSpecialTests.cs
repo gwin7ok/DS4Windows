@@ -365,7 +365,7 @@ namespace DS4WindowsTests
             var rig = new Rig();
             var target = new ControlSettingsEditTarget(SpecialSettings(Item(SpecialAction.ActionTypeId.GyroCalibrate, 1)), rig.Profile);
 
-            target.WriteFrom(9, rig.PressKey, rig.Macro, rig.Editors);   // Default
+            target.WriteFrom(10, rig.PressKey, rig.Macro, rig.Editors);   // Default
 
             Assert.Null(target.Working.special);
             Assert.Equal(DS4ControlSettings.ActionType.Default, target.Working.actionType);

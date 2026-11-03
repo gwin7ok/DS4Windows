@@ -62,6 +62,7 @@
                         <ComboBoxItem Content="{lex:Loc SpecialActionEdit.CheckBattery}" />
                         <ComboBoxItem Content="{lex:Loc SpecialActionEdit.MultiAction}" />
                         <ComboBoxItem Content="{lex:Loc SpecialActionEdit.CalibrateGyro}" />
+                        <ComboBoxItem Content="{lex:Loc SpecialActionEdit.FocusWindow}" />
                         <!-- Phase10-Step3: Controls のモードだけ（SA のモードでは、コードビハインドで隠す）。出力ピッカーの Default／Unbound ボタンと同じ設定 -->
                         <ComboBoxItem x:Name="defaultTypeItem" Content="{lex:Loc Default}" />
                         <ComboBoxItem x:Name="unboundTypeItem" Content="{lex:Loc Unbound}" />
@@ -227,6 +228,18 @@
                                 <Label Content="{lex:Loc HoldFor}" ContentStringFormat="{}{0} "></Label>
                                 <xctk:DecimalUpDown Value="{Binding HoldInterval,ValidatesOnNotifyDataErrors=True}" Width="60" Minimum="0" Maximum="60" FormatString= "F2" Increment="0.5" />
                                 <Label Content="secs" />
+                            </StackPanel>
+                        </TabItem>
+                        <!-- Phase12-Step2 2e（R-4）: ウィンドウのフォーカス。対象はプログラムのパスとウィンドウタイトル（Auto-Profile と同じ書式）。両方が空は保存できない -->
+                        <TabItem x:Name="focusWindowTab" Header="{lex:Loc SpecialActionEdit.FocusWindow}">
+                            <StackPanel Margin="{StaticResource spaceMargin}">
+                                <StackPanel Orientation="Horizontal" Margin="{StaticResource spaceMargin}">
+                                    <Label Content="{lex:Loc SpecialActionEdit.HoldFor}" ContentStringFormat="{}{0} "></Label>
+                                    <xctk:DecimalUpDown Value="{Binding Delay}" Width="60" Minimum="0" Maximum="60" FormatString= "F2" Increment="0.5" />
+                                    <Label Content="secs" />
+                                </StackPanel>
+                                <local:WindowTargetEditor Path="{Binding WindowPath, ValidatesOnNotifyDataErrors=True}"
+                                                          Title="{Binding WindowTitle, ValidatesOnNotifyDataErrors=True}" />
                             </StackPanel>
                         </TabItem>
                         <!-- Phase10-Step3: 種別の「Default」「Unbound」（Controls のモードだけ）。入力欄はない -->

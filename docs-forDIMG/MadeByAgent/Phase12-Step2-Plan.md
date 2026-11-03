@@ -94,7 +94,12 @@
   - `ControlsSpecialTypeTable`: `FocusWindow` を追加。`ControlBindingBuilder.TryInterpretSpecial`: パスもタイトルも空の Controls の割り当ては、束縛を作らない（どのウィンドウにも一致してしまうため）。
   - 単体テスト 15 件。Debug は警告 0・エラー 0、全 2,877 件合格。
   - 未接続（2e）: `ActionTypeCatalog`／`AssignmentEditor`／`AssignmentDescriber`／`MappedControl`（画面と表示名）。
-- 実機でのフォーカスの確認は、2d（実行）と 2e（画面）が揃ってから 2f で行う（この時点では、画面からも実行からも呼ばれない）。
+- 2e 完了（2026-11-03）: 編集画面まで接続。
+  - 新規: `WindowTargetEditor`（Path・Title の依存関係プロパティ、参照ボタン。ツールチップは Auto-Profile の `AutoProfPathTip`／`AutoProfTitleTip` を再利用）、`FocusWindowViewModel`（モード 11 で保存。パスもタイトルも空は保存を止め、両方の欄に赤い枠）。
+  - 変更: `ActionTypeCatalog` に添字 9 の FocusWindow を追加（Default は 10、Unbound は 11 に移る）、`AssignmentEditor`（XAML の項目とタブ、コードビハインド）、`AssignmentDescriber`（"Focus Window: パス / タイトル"）、`MappedControl`、翻訳（`SpecialActionEdit.FocusWindow`、`SpecialActionEdit.FocusWindowPath`。英語・日本語）。
+  - 既存テストの添字の更新: 種別の一覧の件数と、Default／Unbound の添字（9→10、10→11）に依存していた 8 件。
+  - 検証: Debug ALL（警告 0・エラー 0）、DS4WindowsTests 2,888 件（+11）と StandaloneTests 11 件がすべて合格。画面の目視は 2f の実機確認で行う。
+- 実機でのフォーカスの確認は、2d（実行）と 2e（画面）が揃ったため、2f で行う。
 
 ## 6. 完了条件
 

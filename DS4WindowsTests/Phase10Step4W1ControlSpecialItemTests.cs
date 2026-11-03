@@ -368,7 +368,7 @@ namespace DS4WindowsTests
             var repo = new RecordingSpecialActionRepository();
             var pressKey = new PressKeyViewModel(repo, profile, TestRepositoryFactory.CreateOutputSlotService());
             var macro = new MacroViewModel(repo);
-            target.WriteFrom(9, pressKey, macro);   // 添字 10＝Default（Controls のモードの項目）
+            target.WriteFrom(10, pressKey, macro);   // 添字 10＝Default（Controls のモードの項目）
             Assert.Null(target.Working.special);
             Assert.NotNull(original.special);   // Save（Apply）するまで、元は変わらない
 
