@@ -88,6 +88,12 @@
   - 古い版との互換: 古い版は、未知の種別として読み飛ばす（SA は一覧に入らず、Controls はそのボタンが未割り当てのまま）。**古い版で開いて保存し直すと、その割り当ては消える**（既存の読込の仕様。R-2 の `MacroExecuteMode` と違い、種別そのものが未知のため、劣化した形では残らない）。
   - 単体テスト 8 件。Debug は警告 0・エラー 0、全 2,862 件合格。
   - 未接続（2d・2e で接続）: `ControlsSpecialTypeTable`（Controls で実行時に束縛を作る種別の表）、`SpecialActionOutputFactory`（実行）、`ActionTypeCatalog`／`AssignmentEditor`／`AssignmentDescriber`／`MappedControl`（画面と表示名）。
+- 2d 完了（2026-11-03）: 実行まで接続。
+  - `FocusWindowAction`（`DS4Windows/Actions/`）: 立ち上がりの 1 回。対象は `sa.details`（パス）と `sa.extra`（タイトル）から `WindowTargetMatcher` を作る。前面化は `Task.Run` の別スレッドで行い、入力処理を止めない。前の前面化が終わっていないうちの再実行は捨てる（連打・押しっぱなしで並ばない）。例外は握りつぶして警告ログ。
+  - `SpecialActionOutputFactory`: `IWindowFocuser`（省略可）を受け、`FocusWindow` の束縛を作る。実行方針は既定（Fresh-press ガードあり、実行中のブロックなし、離したときの Stop あり）。窓口が未接続なら束縛を作らない。SA と Controls の両方（Controls は、既存の Controls の方針）。
+  - `ControlsSpecialTypeTable`: `FocusWindow` を追加。`ControlBindingBuilder.TryInterpretSpecial`: パスもタイトルも空の Controls の割り当ては、束縛を作らない（どのウィンドウにも一致してしまうため）。
+  - 単体テスト 15 件。Debug は警告 0・エラー 0、全 2,877 件合格。
+  - 未接続（2e）: `ActionTypeCatalog`／`AssignmentEditor`／`AssignmentDescriber`／`MappedControl`（画面と表示名）。
 - 実機でのフォーカスの確認は、2d（実行）と 2e（画面）が揃ってから 2f で行う（この時点では、画面からも実行からも呼ばれない）。
 
 ## 6. 完了条件

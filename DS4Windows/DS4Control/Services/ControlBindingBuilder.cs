@@ -375,6 +375,10 @@ namespace DS4Windows.Services
             // Phase10-Step4 W6: 切り替え先のない Load Profile は、束縛を作らない（作ると、切り替えに失敗し続けながら、割り当てたボタンの元の出力だけが消える）
             if (dcs.special.Type == SpecialAction.ActionTypeId.Profile && string.IsNullOrWhiteSpace(dcs.special.ProfileName)) return false;
 
+            // Phase12-Step2 2d（R-4）: パスもタイトルも空のフォーカスは、どのウィンドウにも一致してしまうため、束縛を作らない
+            if (dcs.special.Type == SpecialAction.ActionTypeId.FocusWindow
+                && string.IsNullOrWhiteSpace(dcs.special.WindowPath) && string.IsNullOrWhiteSpace(dcs.special.WindowTitle)) return false;
+
             item = dcs.special;
             return true;
         }

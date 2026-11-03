@@ -19,6 +19,7 @@ namespace DS4Windows.Actions
                 case SpecialAction.ActionTypeId.GyroCalibrate:
                 case SpecialAction.ActionTypeId.BatteryCheck:   // Phase10-Step6 W7 相当
                 case SpecialAction.ActionTypeId.MultiAction:   // Phase10-Step6 W8 相当
+                case SpecialAction.ActionTypeId.FocusWindow:   // Phase12-Step2 2d（R-4）
                     return true;
                 default:
                     return false;
