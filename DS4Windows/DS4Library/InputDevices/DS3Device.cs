@@ -34,8 +34,6 @@ namespace DS4Windows.InputDevices
         private byte[] featureReport;
 
         public override event ReportHandler<EventArgs> Report = null;
-        public override event EventHandler BatteryChanged;
-        public override event EventHandler ChargingChanged;
 
         public DS3Device(HidDevice hidDevice, string disName, VidPidFeatureSet featureSet = VidPidFeatureSet.DefaultDS4) :
             base(hidDevice, disName, featureSet)
@@ -218,11 +216,7 @@ namespace DS4Windows.InputDevices
                     {
                         tempByte = featureReport[30 + reportOffset];
                         tempCharging = tempByte == 0xEE;
-                        if (tempCharging != charging)
-                        {
-                            charging = tempCharging;
-                            ChargingChanged?.Invoke(this, EventArgs.Empty);
-                        }
+                        UpdateCharging(tempCharging);
 
                         tempFull = tempByte == 0xEF; // Check for Full status
                         if (tempFull)
@@ -260,8 +254,7 @@ namespace DS4Windows.InputDevices
 
                         if (tempBattery != battery)
                         {
-                            battery = tempBattery;
-                            BatteryChanged?.Invoke(this, EventArgs.Empty);
+                            UpdateBattery(tempBattery);
                             outputDirty = true;
                         }
 

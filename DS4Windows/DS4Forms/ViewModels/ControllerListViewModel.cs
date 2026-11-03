@@ -122,6 +122,16 @@ namespace DS4WinWPF.DS4Forms.ViewModels
         {
             using (WriteLocker readLock = new WriteLocker(_colListLocker))
             {
+                // Phase11 電池残量の一本化: 再接続の通知が、前のデバイスの Removal より先に来ても、前のデバイスの行を残さない
+                // （残ると、新しいデバイスの行が作られず、一覧が前の残量のまま止まっていた）
+                if (controllerDict.TryGetValue(index, out CompositeDeviceModel staleRow) && staleRow.Device != device)
+                {
+                    AppLogger.LogDebug($"[DI] ControllerListViewModel: replacing stale row of slot {index} on hotplug");
+                    staleRow.Device.Removal -= Controller_Removal;
+                    controllerCol.Remove(staleRow);
+                    controllerDict.Remove(index);
+                }
+
                 if (!controllerDict.ContainsKey(index) && !device.IsRemoving)
                 {
                     CompositeDeviceModel temp = new CompositeDeviceModel(device,
@@ -233,7 +243,9 @@ namespace DS4WinWPF.DS4Forms.ViewModels
             {
                 _colListLocker.EnterWriteLock();
                 controllerCol.Remove(found);
-                controllerDict.Remove(found.DevIndex);
+                // 同じスロットに新しいデバイスの行が先に入っていたら、その行は消さない
+                if (controllerDict.TryGetValue(found.DevIndex, out CompositeDeviceModel registered) && registered == found)
+                    controllerDict.Remove(found.DevIndex);
                 System.Windows.Application.Current.Dispatcher.Invoke(() =>
                 {
                     appSettings?.Save();

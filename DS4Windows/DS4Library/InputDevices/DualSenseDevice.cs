@@ -210,8 +210,6 @@ namespace DS4Windows.InputDevices
         public DualSenseControllerOptions NativeOptionsStore { get => nativeOptionsStore; }
 
         public override event ReportHandler<EventArgs> Report = null;
-        public override event EventHandler BatteryChanged;
-        public override event EventHandler ChargingChanged;
 
         public DualSenseDevice(HidDevice hidDevice, string disName, VidPidFeatureSet featureSet = VidPidFeatureSet.DefaultDS4) :
             base(hidDevice, disName, featureSet)
@@ -727,11 +725,7 @@ namespace DS4Windows.InputDevices
                     {
                         tempByte = inputReport[54 + reportOffset];
                         tempCharging = (tempByte & 0x08) != 0;
-                        if (tempCharging != charging)
-                        {
-                            charging = tempCharging;
-                            ChargingChanged?.Invoke(this, EventArgs.Empty);
-                        }
+                        UpdateCharging(tempCharging);
 
                         tempByte = inputReport[53 + reportOffset];
                         tempFull = (tempByte & 0x20) != 0; // Check for Full status
@@ -748,11 +742,7 @@ namespace DS4Windows.InputDevices
                             tempBattery = Math.Min(tempBattery, 100);
                         }
 
-                        if (tempBattery != battery)
-                        {
-                            battery = tempBattery;
-                            BatteryChanged?.Invoke(this, EventArgs.Empty);
-                        }
+                        UpdateBattery(tempBattery);
 
                         cState.Battery = (byte)battery;
                         //System.Diagnostics.Debug.WriteLine("CURRENT BATTERY: " + (inputReport[30] & 0x0f) + " | " + tempBattery + " | " + battery);

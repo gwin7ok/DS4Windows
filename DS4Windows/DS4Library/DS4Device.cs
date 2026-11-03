@@ -276,14 +276,32 @@ namespace DS4Windows
 
         public int Battery => battery;
         public delegate void BatteryUpdateHandler(object sender, EventArgs e);
-        public virtual event EventHandler BatteryChanged;
+        // Phase11 電池残量の一本化: 通知用のイベントは基底の 1 組だけ（各機種の override 再宣言は廃止）。
+        // 書き込みは UpdateBattery／UpdateCharging を通す（値が変わったときだけ通知する）
+        public event EventHandler BatteryChanged;
         public int getBattery()
         {
             return battery;
         }
 
+        protected void UpdateBattery(int percent)
+        {
+            if (percent == battery) return;
+
+            battery = percent;
+            BatteryChanged?.Invoke(this, EventArgs.Empty);
+        }
+
+        protected void UpdateCharging(bool isCharging)
+        {
+            if (isCharging == charging) return;
+
+            charging = isCharging;
+            ChargingChanged?.Invoke(this, EventArgs.Empty);
+        }
+
         public bool Charging => charging;
-        public virtual event EventHandler ChargingChanged;
+        public event EventHandler ChargingChanged;
         public bool isCharging()
         {
             return charging;
@@ -1215,20 +1233,12 @@ namespace DS4Windows
                     {
                         tempByte = inputReport[30];
                         tempCharging = (tempByte & 0x10) != 0;
-                        if (tempCharging != charging)
-                        {
-                            charging = tempCharging;
-                            ChargingChanged?.Invoke(this, EventArgs.Empty);
-                        }
+                        UpdateCharging(tempCharging);
 
                         maxBatteryValue = charging ? BATTERY_MAX_USB : BATTERY_MAX;
                         tempBattery = (tempByte & 0x0f) * 100 / maxBatteryValue;
                         tempBattery = Math.Min(tempBattery, 100);
-                        if (tempBattery != battery)
-                        {
-                            battery = tempBattery;
-                            BatteryChanged?.Invoke(this, EventArgs.Empty);
-                        }
+                        UpdateBattery(tempBattery);
 
                         cState.Battery = (byte)battery;
                         //Debug.WriteLine("CURRENT BATTERY: " + (inputReport[30] & 0x0f) + " | " + tempBattery + " | " + battery);

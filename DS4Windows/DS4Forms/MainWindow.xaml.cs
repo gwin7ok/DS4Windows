@@ -794,13 +794,17 @@ Suspend support not enabled.", true);
                 {
                     int devIndex = e.DeviceIndex;
                     string prof = e.ProfileName ?? string.Empty;
-                    string battery = "0";
+                    // Phase11 電池残量の一本化: 残量は一覧のモデルを経由せず、スロットのデバイスから直接読む
+                    // （再接続の直後は一覧の行がまだ無く、"0" と表示されていた）
+                    string battery = "N/A";
+                    DS4Device batteryDevice = devIndex >= 0 && devIndex < controlService.DS4Controllers.Length
+                        ? controlService.DS4Controllers[devIndex] : null;
+                    if (batteryDevice != null)
+                        battery = $"{batteryDevice.Battery}";
+
                     CompositeDeviceModel item = null;
                     if (conLvViewModel != null && conLvViewModel.ControllerDict != null && conLvViewModel.ControllerDict.ContainsKey(devIndex))
                         item = conLvViewModel.ControllerDict[devIndex];
-
-                    if (item != null && item.Device != null)
-                        battery = $"{item.Device.Battery}";
 
                     string prolog;
                     // If the event is from AutoProfile, use the AutoTempProfile resource

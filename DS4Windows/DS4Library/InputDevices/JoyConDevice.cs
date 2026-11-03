@@ -284,8 +284,6 @@ namespace DS4Windows.InputDevices
         public override event ReportHandler<EventArgs> Report = null;
         public override event EventHandler<EventArgs> Removal = null;
         #pragma warning disable CS0067 // events declared for compatibility but may be unused
-        public override event EventHandler BatteryChanged;
-        public override event EventHandler ChargingChanged;
         #pragma warning restore CS0067
 
         public JoyConDevice(HidDevice hidDevice,
@@ -788,20 +786,12 @@ namespace DS4Windows.InputDevices
                         // Strip out LSB from high nibble. Used as Charging flag and will be checked later
                         tempBattery = ((tempByte & 0xE0) >> 4) * 100 / 8;
                         tempBattery = Math.Min(tempBattery, 100);
-                        if (tempBattery != battery)
-                        {
-                            battery = tempBattery;
-                            BatteryChanged?.Invoke(this, EventArgs.Empty);
-                        }
+                        UpdateBattery(tempBattery);
 
                         cState.Battery = (byte)tempBattery;
 
                         tempCharging = (tempByte & 0x10) != 0;
-                        if (tempCharging != charging)
-                        {
-                            charging = tempCharging;
-                            ChargingChanged?.Invoke(this, EventArgs.Empty);
-                        }
+                        UpdateCharging(tempCharging);
                     }
                     else
                     {
