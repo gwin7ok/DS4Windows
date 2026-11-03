@@ -78,6 +78,12 @@
 - ウィンドウの列挙は `EnumWindows` を使い、可視で、タイトルを持ち、cloaked（`DwmGetWindowAttribute`）でないトップレベルのウィンドウを対象にする。パスは、`DefaultProcessInspector` と同じ方法（プロセス ID → 実行ファイルのフルパス）で求める。
 - 注意: Alt の擬似入力は、前面のアプリのメニューを一瞬アクティブにすることがある。最後の手段に限る。管理者権限のウィンドウは、UIPI により擬似入力も効かないため、失敗は警告ログのみで終える（仕様 5）。
 
+## 5c. 進捗
+
+- 2a 完了（§5b）。2b-1 完了（`WindowTargetMatcher`。コミット 5dd6fd00）。
+- 2b-2 完了（2026-11-03）: `IWindowFocuser`／`IWindowSystem`／`WindowFocusResult`／`WindowCandidate`（`DS4Windows/DI/`）、`WindowFocuser`／`Win32WindowSystem`（`DS4Control/Services/`）、`ServiceRegistration` に登録。`WindowTargetMatcher.IsEmpty` を追加。単体テスト 15 件（偽の `IWindowSystem` による手順の検査と、Win32 の列挙の煙テスト）。Debug は警告 0・エラー 0、全 2,854 件合格。
+- 実機でのフォーカスの確認は、2d（実行）と 2e（画面）が揃ってから 2f で行う（この時点では、画面からも実行からも呼ばれない）。
+
 ## 6. 完了条件
 
 - 仕様が承認されている。

@@ -107,6 +107,9 @@ namespace DS4Windows.DI
             // Phase 3 Step 3-6: プロセス検査・昇格起動サービスの登録
             services.AddSingleton<IProcessInspector, DefaultProcessInspector>();
             services.AddSingleton<IElevatedProcessLauncher, DefaultElevatedProcessLauncher>();
+            // Phase12-Step2 2b-2（R-4）: ウィンドウのフォーカス（Win32 の操作と、手順を分ける）
+            services.AddSingleton<IWindowSystem, Win32WindowSystem>();
+            services.AddSingleton<IWindowFocuser, WindowFocuser>();
 
 
             // プロファイルのアクション取得（ControlService が使用）。Phase6-Step10-4-2d: アクション連鎖サービスは廃止

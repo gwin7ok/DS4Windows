@@ -30,6 +30,9 @@ namespace DS4Windows
         /// <summary>設定された指定（記号を含む、入力のまま）。</summary>
         public string Title { get => title; set => SetSearchTitle(value); }
 
+        /// <summary>パスもタイトルも省略されている（どのウィンドウにも一致してしまう）。フォーカスの対象としては無効。</summary>
+        public bool IsEmpty => string.IsNullOrEmpty(path_lowercase) && string.IsNullOrEmpty(title_lowercase);
+
         public bool IsMatch(string searchPath, string searchTitle)
         {
             bool bPathMatched = true;
