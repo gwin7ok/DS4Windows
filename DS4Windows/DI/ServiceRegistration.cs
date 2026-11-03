@@ -199,7 +199,6 @@ namespace DS4Windows.DI
             services.AddSingleton<IHidHideService, HidHideService>();   // Phase9 9-E E-2: HidHide（ホワイトリストの確認、影響を受けるデバイスの判定）
             services.AddSingleton<IVirtualPadService, VirtualPadService>();   // Phase9 9-E E-4: 仮想パッド（ViGEm）の出力。OutputSlotManager、割り当て、振動・ライトバーの戻り
             services.AddSingleton<Func<IVirtualPadService>>(sp => () => sp.GetRequiredService<IVirtualPadService>());   // OutputSlotService が遅延で取得する（循環を避ける）
-            services.AddSingleton<Func<IVirtualPadHost>>(sp => () => sp.GetRequiredService<IVirtualPadHost>());   // VirtualPadService が遅延で取得する（実体は ControlService）
             services.AddSingleton<Func<IOutputSlotService>>(sp => () => sp.GetRequiredService<IOutputSlotService>());   // VirtualPadService が遅延で取得する（循環を避ける）
             services.AddSingleton<IUdpMotionServerFactory, UdpMotionServerFactory>();   // Phase9 9-E E-3: UDP サーバー（UdpServer）の生成
             services.AddSingleton<IUdpMotionService, UdpMotionService>();   // Phase9 9-E E-3: UDP モーションの送出（サーバーの作成・開始・停止、ハンドラー、スムージング）
@@ -214,8 +213,10 @@ namespace DS4Windows.DI
             services.AddSingleton<IInputDeviceModule, JoyConDeviceModule>();
             services.AddSingleton<IInputDeviceModule, Ds3DeviceModule>();
             services.AddSingleton<IInputDeviceModuleRegistry, InputDeviceModuleRegistry>();
+            services.AddSingleton<IEventThreadDispatcher, EventThreadDispatcher>();   // Phase13-Step3: 専用のイベントスレッド
+            services.AddSingleton<IDeviceRumbleService, DeviceRumbleService>();   // Phase13-Step3: ブースト・反転つきの振動
+            services.AddSingleton<IOutputKbmInitializer, OutputKbmInitializer>();   // Phase13-Step3: KBM 出力の初期化
             services.AddSingleton<IServiceLifecycle, ServiceLifecycle>();   // Phase9 9-E E-6f2: 開始・停止・ホットプラグと、その状態・イベント
-            services.AddSingleton<Func<IServiceLifecycleHost>>(sp => () => sp.GetRequiredService<IServiceLifecycleHost>());   // ServiceLifecycle が遅延で取得する（実体は ControlService）
             services.AddSingleton<IDeviceConnector, DeviceConnector>();   // Phase9 9-E E-6f1: 接続の組み立て
             services.AddSingleton<IDeviceDisconnectHandler, DeviceDisconnectHandler>();   // Phase9 9-E E-6e: 切断・同期・シリアル変更の処理
             services.AddSingleton<Func<IDeviceSlotHost>>(sp => () => sp.GetRequiredService<IDeviceSlotHost>());   // DeviceDisconnectHandler が遅延で取得する（実体は ControlService）
@@ -263,15 +264,7 @@ namespace DS4Windows.DI
             {
                 // Phase7-Step5 W2（Q2＝A）: 旧 Program.rootHub ?? の分岐を削除した。シングルトンの生成は、このファクトリーだけが行う
                 return new ControlService(
-                    // Phase6-Step7-4（決定5＝A、決定7＝案H）: AppHost.CreateHost(config, parser) が IStartupArguments に
-                    // 設定した実際の起動引数を渡す。2026-09-04（4c89cd91）以降は常に空の new ArgumentParser() を渡していたため、
-                    // 起動引数 -virtualkbm（キーボード・マウス出力方式の指定）が無視されていた。
-                    // ホストが起動引数なしに先に作られる順序（-driverinstall 分岐など）でも動くよう、コンテナへの登録
-                    // （AddSingleton(parser)）ではなく、登録済みの保持役を経由する（Phase6-Step7-Plan.md §0.4・決定7）。
-                    // 起動引数が設定されていない場合（引数なしの CreateHost()、テスト）は、従来どおり空のパーサーを使う。
-                    // 注意: ControlService はこの時点の値を保持するため、CreateHost(config, parser) より前に解決してはならない
-                    // （現在は App.CreateControlService で、明示的なホスト構築の後に解決している）。
-                    sp.GetRequiredService<IStartupArguments>().Parser ?? new ArgumentParser(),
+                    // Phase13-Step3: 起動引数（-virtualkbm）は OutputKbmInitializer が Initialize() の時点で IStartupArguments から読む（旧: ここで渡していた）
                     sp.GetRequiredService<IDs4DeviceRegistry>(),
                     sp.GetRequiredService<IProfileSettingsService>(),
                     sp.GetRequiredService<IAppSettingsService>(),
@@ -281,7 +274,6 @@ namespace DS4Windows.DI
                     sp.GetRequiredService<IProfileRepository>(),
                     sp.GetRequiredService<IDeviceStateService>(),
                     sp.GetRequiredService<IVirtualKBM>(),
-                    sp.GetRequiredService<IVirtualKBMLifecycle>(),
                     sp.GetRequiredService<IAppearanceSettingsService>(),
                     sp.GetRequiredService<IProfileActionProvider>(),
                     sp.GetRequiredService<ISpecialActionRepository>(),
@@ -299,14 +291,14 @@ namespace DS4Windows.DI
                     sp.GetRequiredService<IDeviceConnectionSetup>(),   // Phase9 9-E E-6b
                     sp.GetRequiredService<IInputDeviceModuleRegistry>(),   // Phase9 9-E E-6c
                     sp.GetRequiredService<IDeviceDisconnectHandler>(),   // Phase9 9-E E-6e
-                    sp.GetRequiredService<IServiceLifecycle>()   // Phase9 9-E E-6f2
+                    sp.GetRequiredService<IServiceLifecycle>(),   // Phase9 9-E E-6f2
+                    sp.GetRequiredService<IEventThreadDispatcher>(),   // Phase13-Step3
+                    sp.GetRequiredService<IDeviceRumbleService>()   // Phase13-Step3
                 );
             });
             services.AddSingleton<IDeviceStateAccessor>(sp => sp.GetRequiredService<ControlService>());
             services.AddSingleton<IUdpMotionHost>(sp => sp.GetRequiredService<ControlService>());   // Phase9 9-E E-3
-            services.AddSingleton<IVirtualPadHost>(sp => sp.GetRequiredService<ControlService>());
             services.AddSingleton<IDeviceSlotHost>(sp => sp.GetRequiredService<ControlService>());   // Phase9 9-E E-6e
-            services.AddSingleton<IServiceLifecycleHost>(sp => sp.GetRequiredService<ControlService>());   // Phase9 9-E E-6f2   // Phase9 9-E E-4
 
             return services;
         }

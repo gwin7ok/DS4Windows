@@ -114,7 +114,7 @@ namespace DS4WindowsTests
             {
                 "InServiceTask = true;",
                 "_virtualPad.StartViGEm();",
-                "InitializeOutputKbmHandler();",
+                "_kbmInitializer.Initialize();",
                 "Thread.Sleep(2000);",
                 "_deviceRegistry.IsExclusiveMode = _appSettings.UseExclusiveMode;",
                 "_hidHideService.UpdateAttributes();",
@@ -197,14 +197,14 @@ namespace DS4WindowsTests
             var lifecycle = TestHost.GetService<IServiceLifecycle>();
             Assert.IsType<ServiceLifecycle>(lifecycle);
             Assert.Same(lifecycle, TestHost.GetService<IServiceLifecycle>());
-            Assert.Same(TestHost.GetService<ControlService>(), TestHost.GetService<IServiceLifecycleHost>());
 
             // 起動直後の状態（旧: running = false、loopControllers = true、inServiceTask = false、activeControllers = 0）
             var fresh = new ServiceLifecycle(TestHost.GetService<IAppSettingsService>(), TestHost.GetService<IEnvironmentService>(),
                 TestHost.GetService<IProfileSettingsService>(), TestHost.GetService<IDs4DeviceRegistry>(), TestHost.GetService<IVirtualKBM>(),
                 TestHost.GetService<IOscService>(), TestHost.GetService<IUdpMotionService>(), TestHost.GetService<IHidHideService>(),
                 TestHost.GetService<IVirtualPadService>(), TestHost.GetService<ILatencyMonitor>(), TestHost.GetService<IJoyConLinker>(),
-                TestHost.GetService<IDeviceConnector>(), () => TestHost.GetService<IDeviceSlotHost>(), () => TestHost.GetService<IServiceLifecycleHost>());
+                TestHost.GetService<IDeviceConnector>(), () => TestHost.GetService<IDeviceSlotHost>(),
+                TestHost.GetService<IEventThreadDispatcher>(), TestHost.GetService<IOutputKbmInitializer>());
             Assert.False(fresh.Running);
             Assert.True(fresh.LoopControllers);
             Assert.False(fresh.InServiceTask);

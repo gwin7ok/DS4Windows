@@ -101,9 +101,8 @@ namespace DS4WindowsTests
         {
             Assert.IsType<VirtualPadService>(TestHost.GetService<IVirtualPadService>());
             Assert.Same(TestHost.GetService<IVirtualPadService>(), TestHost.GetService<IVirtualPadService>());
-            Assert.Same(TestHost.GetService<ControlService>(), TestHost.GetService<IVirtualPadHost>());
+            Assert.IsType<EventThreadDispatcher>(TestHost.GetService<IEventThreadDispatcher>());
             Assert.Same(TestHost.GetService<IVirtualPadService>(), TestHost.GetService<System.Func<IVirtualPadService>>()());
-            Assert.Same(TestHost.GetService<IVirtualPadHost>(), TestHost.GetService<System.Func<IVirtualPadHost>>()());
         }
     }
 }

@@ -32,7 +32,8 @@ namespace DS4Windows.Services
         private readonly IJoyConLinker _joyConLinker;
         private readonly IDeviceConnector _deviceConnector;
         private readonly Func<IDeviceSlotHost> _slots;
-        private readonly Func<IServiceLifecycleHost> _lifecycleHost;
+        private readonly IEventThreadDispatcher _eventThread;
+        private readonly IOutputKbmInitializer _kbmInitializer;
         private readonly int _controllerSlotLimit;
 
         public bool Running { get; set; }
@@ -60,7 +61,8 @@ namespace DS4Windows.Services
         public ServiceLifecycle(IAppSettingsService appSettings, IEnvironmentService environmentService, IProfileSettingsService profileSettings,
             IDs4DeviceRegistry deviceRegistry, IVirtualKBM virtualKBM, IOscService oscService, IUdpMotionService udpMotion,
             IHidHideService hidHideService, IVirtualPadService virtualPad, ILatencyMonitor latencyMonitor, IJoyConLinker joyConLinker,
-            IDeviceConnector deviceConnector, Func<IDeviceSlotHost> slots, Func<IServiceLifecycleHost> lifecycleHost)
+            IDeviceConnector deviceConnector, Func<IDeviceSlotHost> slots,
+            IEventThreadDispatcher eventThread, IOutputKbmInitializer kbmInitializer)
         {
             _appSettings = appSettings ?? throw new ArgumentNullException(nameof(appSettings));
             _environmentService = environmentService ?? throw new ArgumentNullException(nameof(environmentService));
@@ -75,7 +77,8 @@ namespace DS4Windows.Services
             _joyConLinker = joyConLinker ?? throw new ArgumentNullException(nameof(joyConLinker));
             _deviceConnector = deviceConnector ?? throw new ArgumentNullException(nameof(deviceConnector));
             _slots = slots ?? throw new ArgumentNullException(nameof(slots));
-            _lifecycleHost = lifecycleHost ?? throw new ArgumentNullException(nameof(lifecycleHost));
+            _eventThread = eventThread ?? throw new ArgumentNullException(nameof(eventThread));
+            _kbmInitializer = kbmInitializer ?? throw new ArgumentNullException(nameof(kbmInitializer));
             _controllerSlotLimit = environmentService.ControllerSlotLimit;
         }
 
@@ -93,7 +96,7 @@ namespace DS4Windows.Services
             //if (x360Bus.Open() && x360Bus.Start())
             {
                 // Initialize output KBM handler at start of ControlService
-                _lifecycleHost().InitializeOutputKbmHandler();
+                _kbmInitializer.Initialize();
 
                 if (showlog)
                     LogDebug(DS4WinWPF.Properties.Resources.Starting);
@@ -144,7 +147,7 @@ namespace DS4Windows.Services
                     LoopControllers = true;
                     _virtualPad.AssignInitialDevices();   // Phase9 9-E E-4: 旧 AssignInitialDevices（恒久スロットの割り当て）は VirtualPadService へ移した
 
-                    _lifecycleHost().InvokeOnEventThread(() =>
+                    _eventThread.Invoke(() =>
                     {
                         _deviceRegistry.FindControllers();
                     });
@@ -340,7 +343,7 @@ namespace DS4Windows.Services
             {
                 InServiceTask = true;
                 LoopControllers = true;
-                _lifecycleHost().InvokeOnEventThread(() =>
+                _eventThread.Invoke(() =>
                 {
                     _deviceRegistry.FindControllers();
                 });

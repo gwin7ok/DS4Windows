@@ -48,7 +48,6 @@ namespace DS4WindowsTests
     {
         public readonly DS4State[] Current = new DS4State[ControllerLimits.MaxControllerCount];
         public readonly DS4State[] Temp = new DS4State[ControllerLimits.MaxControllerCount];
-        public int Queued;
 
         public FakeUdpMotionHost()
         {
@@ -62,12 +61,5 @@ namespace DS4WindowsTests
         public void GetPadDetailForIdx(int padIdx, ref DualShockPadMeta meta) { meta.PadId = (byte)padIdx; }
         public DS4State GetCurrentState(int ind) => Current[ind];
         public DS4State GetTempState(int ind) => Temp[ind];
-
-        /// <summary>イベントスレッドの代わりに、その場で（同期して）実行する。</summary>
-        public void QueueOnEventThread(Action action)
-        {
-            Queued++;
-            action?.Invoke();
-        }
     }
 }

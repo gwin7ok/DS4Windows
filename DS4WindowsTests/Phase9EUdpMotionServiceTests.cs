@@ -24,6 +24,7 @@ namespace DS4WindowsTests
             public readonly IAppSettingsService Settings = TestHost.GetService<IAppSettingsService>();
             public readonly FakeUdpMotionServerFactory Factory = new FakeUdpMotionServerFactory();
             public readonly FakeUdpMotionHost Host = new FakeUdpMotionHost();
+            public readonly FakeEventThreadDispatcher Events = new FakeEventThreadDispatcher();
             public readonly UdpMotionService Service;
             public readonly List<(string Text, bool Warning)> Logs = new List<(string, bool)>();
             private readonly int _savedPort;
@@ -35,7 +36,7 @@ namespace DS4WindowsTests
                 _savedPort = Settings.UdpServerPort;
                 _savedAddress = Settings.UdpServerListenAddress;
                 _savedSmoothing = Settings.UseUdpServerSmoothing;
-                Service = new UdpMotionService(Settings, TestHost.GetService<IDs4DeviceRegistry>(), Factory, () => Host);
+                Service = new UdpMotionService(Settings, TestHost.GetService<IDs4DeviceRegistry>(), Factory, () => Host, Events);
                 Service.DebugMessage += (text, warning) => Logs.Add((text, warning));
             }
 
@@ -65,7 +66,7 @@ namespace DS4WindowsTests
 
             f.Service.ChangeStatus(true);
 
-            Assert.Equal(1, f.Host.Queued);
+            Assert.Equal(1, f.Events.Queued);
             Assert.Equal(1, f.Factory.Created);
             Assert.True(f.Service.HasServer);
             Assert.False(f.Service.IsChangingStatus);   // 作成が終わると、処理中の印が戻る
@@ -106,7 +107,7 @@ namespace DS4WindowsTests
             f.Service.ChangeStatus(true);
 
             Assert.Equal(1, f.Factory.Created);
-            Assert.Equal(1, f.Host.Queued);
+            Assert.Equal(1, f.Events.Queued);
         }
 
         [Fact]
@@ -132,7 +133,7 @@ namespace DS4WindowsTests
         {
             using var f = new Fixture();
             f.Service.ChangeStatus(false);
-            Assert.Equal(0, f.Host.Queued);
+            Assert.Equal(0, f.Events.Queued);
             Assert.Equal(0, f.Factory.Server.Stops);
         }
 
@@ -272,10 +273,12 @@ namespace DS4WindowsTests
             IDs4DeviceRegistry registry = TestHost.GetService<IDs4DeviceRegistry>();
             var factory = new FakeUdpMotionServerFactory();
             Func<IUdpMotionHost> host = () => new FakeUdpMotionHost();
-            Assert.Throws<ArgumentNullException>(() => new UdpMotionService(null, registry, factory, host));
-            Assert.Throws<ArgumentNullException>(() => new UdpMotionService(settings, null, factory, host));
-            Assert.Throws<ArgumentNullException>(() => new UdpMotionService(settings, registry, null, host));
-            Assert.Throws<ArgumentNullException>(() => new UdpMotionService(settings, registry, factory, null));
+            IEventThreadDispatcher events = new FakeEventThreadDispatcher();
+            Assert.Throws<ArgumentNullException>(() => new UdpMotionService(null, registry, factory, host, events));
+            Assert.Throws<ArgumentNullException>(() => new UdpMotionService(settings, null, factory, host, events));
+            Assert.Throws<ArgumentNullException>(() => new UdpMotionService(settings, registry, null, host, events));
+            Assert.Throws<ArgumentNullException>(() => new UdpMotionService(settings, registry, factory, null, events));
+            Assert.Throws<ArgumentNullException>(() => new UdpMotionService(settings, registry, factory, host, null));
         }
     }
 }

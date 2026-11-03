@@ -5,8 +5,9 @@
 | Step | 内容 | 状態 |
 |---|---|---|
 | 1 | トリガー系クラスの未使用 `profileSettings` 引数の削除 | 完了（`d0729a8c`） |
-| 2 | `ControlService` の未使用引数 6 個の削除（34→28） | **実装完了（2026-11-04）。未コミット** |
-| 3〜12 | 計画書 §4 のとおり | 未着手 |
+| 2 | `ControlService` の未使用引数 6 個の削除（34→28） | 完了（`668bdea6`） |
+| 3 | 状態を持たないホストの分離（イベントスレッド・振動・KBM 初期化） | **実装完了（2026-11-04）。未コミット** |
+| 4〜12 | 計画書 §4 のとおり | 未着手 |
 
 ## Step1 の結果
 
@@ -22,3 +23,13 @@
 - `ServiceRegistration.cs` の `new ControlService(…)` から対応する 6 行を削除。
 - テスト: 新規 `Phase13Step2ControlServiceConstructorGuardTests`（引数 28 個・削除した型の不在・6 型の Singleton 解決）。削除した引数を前提にしていた既存テストの行（`ControlServicePr2DiWiringTests` の 2 行、`ControlServiceStep3Step2DiWiringTests` の 1 行、`Phase7Step8W4NoSharedGuardTests` の `_syntheticInput` 検査 1 行）を削除。
 - 検証: 警告 0・エラー 0。Actions 3,042 件、Standalone 11 件が合格。ラチェットの基準値の変更なし。
+
+## Step3 の結果
+
+- 新設: `IEventThreadDispatcher`／`EventThreadDispatcher`（スレッド名・優先度・`IsBackground`・破棄の順序は旧 `ControlService` と同じ。停止後の呼び出しは何もしない。生成直後の使用に備えて Dispatcher の確定を待つ）、`IDeviceRumbleService`／`DeviceRumbleService`（式は `Adjust` に切り出し、テスト可能に）、`IOutputKbmInitializer`／`OutputKbmInitializer`（起動引数は `Initialize()` の時点で `IStartupArguments` から読む）。
+- 廃止: `IVirtualPadHost`、`IServiceLifecycleHost`、`Func<IVirtualPadHost>`／`Func<IServiceLifecycleHost>`、`IUdpMotionHost.QueueOnEventThread`、`ControlService` の `QueueOnEventThread`／`EventDispatcher`／`SetDevRumble`／`RefreshOutputKBMHandler`（呼び出し元 0 件の残骸）／`InitOutputKBMHandler`。
+- `ControlService` の引数: 28 のまま（`cmdParser`・`kbmLifecycle` を削除、`eventThread`・`rumble` を追加）。
+- テスト: 新規 `EventThreadDispatcherTests`、`DeviceRumbleServiceTests`、`Phase13Step3HostRemovalGuardTests`、`FakeEventThreadDispatcher`。更新: `Phase9EVirtualPadServiceTests`／`Phase9EVirtualPadGuardTests`／`Phase9E6LifecycleGuardTests`／`Phase9EUdpMotionServiceTests`／`FakeUdpMotion`／`ControlServicePr3DiWiringTests`／`ServiceRegistrationArgumentParserTests`（`-virtualkbm` の経路の検査を、`OutputKbmInitializer` の `ResolveParser` に付け替えた）。
+- 検証: 警告 0・エラー 0。Actions 3,053 件、Standalone 11 件が合格。ラチェットの基準値の変更なし。
+- 計画書からの差: `OutputKbmInitializer` に `ResolveParser`（private）を足した（テストのため）。`OutputKbmInitializer` の生成・実機での KBM 出力の確認は Phase 末の H9。
+- モデル図 03・04 の更新は、Step3 では未実施（図の更新は Step 群のまとまりごとに行い、Step12 で最終確認する）。

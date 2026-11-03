@@ -14,11 +14,18 @@ namespace DS4WindowsTests
     /// </summary>
     public class Phase9EVirtualPadServiceTests
     {
-        private sealed class RecordingHost : IVirtualPadHost
+        // Phase13-Step3: 旧 IVirtualPadHost の偽実装を、イベントスレッドと振動の偽実装へ分けた
+        private sealed class RecordingHost : IEventThreadDispatcher
         {
             public readonly List<Action> Queued = new List<Action>();
+            public void Queue(Action action) { Queued.Add(action); }
+            public void Invoke(Action action) { action(); }
+            public void Shutdown() { }
+        }
+
+        private sealed class NoRumble : IDeviceRumbleService
+        {
             public void SetDevRumble(DS4Device device, byte heavyMotor, byte lightMotor, int deviceNum) { }
-            public void QueueOnEventThread(Action action) { Queued.Add(action); }
         }
 
         private sealed class NoControllers : IDeviceStateAccessor
@@ -32,7 +39,7 @@ namespace DS4WindowsTests
                 settings ?? TestHost.GetService<IProfileSettingsService>(),
                 () => TestHost.GetService<IOutputSlotService>(),
                 () => new NoControllers(),
-                () => host ?? new RecordingHost());
+                host ?? new RecordingHost(), new NoRumble());
         }
 
         [Fact]
@@ -117,12 +124,14 @@ namespace DS4WindowsTests
             IProfileSettingsService settings = TestHost.GetService<IProfileSettingsService>();
             Func<IOutputSlotService> slots = () => null;
             Func<IDeviceStateAccessor> accessor = () => null;
-            Func<IVirtualPadHost> host = () => null;
-            Assert.Throws<ArgumentNullException>(() => new VirtualPadService(null, settings, slots, accessor, host));
-            Assert.Throws<ArgumentNullException>(() => new VirtualPadService(env, null, slots, accessor, host));
-            Assert.Throws<ArgumentNullException>(() => new VirtualPadService(env, settings, null, accessor, host));
-            Assert.Throws<ArgumentNullException>(() => new VirtualPadService(env, settings, slots, null, host));
-            Assert.Throws<ArgumentNullException>(() => new VirtualPadService(env, settings, slots, accessor, null));
+            IEventThreadDispatcher host = new RecordingHost();
+            IDeviceRumbleService rumble = new NoRumble();
+            Assert.Throws<ArgumentNullException>(() => new VirtualPadService(null, settings, slots, accessor, host, rumble));
+            Assert.Throws<ArgumentNullException>(() => new VirtualPadService(env, null, slots, accessor, host, rumble));
+            Assert.Throws<ArgumentNullException>(() => new VirtualPadService(env, settings, null, accessor, host, rumble));
+            Assert.Throws<ArgumentNullException>(() => new VirtualPadService(env, settings, slots, null, host, rumble));
+            Assert.Throws<ArgumentNullException>(() => new VirtualPadService(env, settings, slots, accessor, null, rumble));
+            Assert.Throws<ArgumentNullException>(() => new VirtualPadService(env, settings, slots, accessor, host, null));
         }
 
         [Fact]

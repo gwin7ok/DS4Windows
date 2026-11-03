@@ -34,7 +34,6 @@ namespace DS4WindowsTests
 
         [Theory]
         [InlineData("virtualKBM")]
-        [InlineData("kbmLifecycle")]
         public void Constructor_NullRequiredParameter_ThrowsArgumentNullException(string parameterName)
         {
             var ex = Assert.Throws<ArgumentNullException>(() => ControlServiceTestFactory.Create(parameterName));

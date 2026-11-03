@@ -36,7 +36,7 @@ using DS4WinWPF.DS4Forms;
 namespace DS4Windows
 {
 #pragma warning disable CS0219 // some local variables are assigned but not read in legacy handlers
-    public class ControlService : IInstanceIdentifiable, DS4Windows.Services.IDeviceStateAccessor, DI.IUdpMotionHost, DI.IVirtualPadHost, DI.IDeviceSlotHost, DI.IServiceLifecycleHost
+    public class ControlService : IInstanceIdentifiable, DS4Windows.Services.IDeviceStateAccessor, DI.IUdpMotionHost, DI.IDeviceSlotHost
     {
         public int InstanceId => this.GetHashCode();
         // Might be useful for ScpVBus build
@@ -79,9 +79,7 @@ namespace DS4Windows
         int DI.IDeviceSlotHost.ActiveControllers => _lifecycle.ActiveControllers;
         void DI.IDeviceSlotHost.OnReport(DS4Device device, EventArgs e, int ind) => On_Report(device, e, ind);
 
-        // Phase9 9-E E-6f2: サービスの開始・停止（ServiceLifecycle）が頼る、イベントスレッドの実行とキーボード／マウス出力の初期化
-        void DI.IServiceLifecycleHost.InvokeOnEventThread(Action action) => eventDispatcher.Invoke(action);
-        void DI.IServiceLifecycleHost.InitializeOutputKbmHandler() => InitOutputKBMHandler();
+        // Phase13-Step3: イベントスレッドは IEventThreadDispatcher、KBM 出力の初期化は IOutputKbmInitializer へ移した（IServiceLifecycleHost は廃止）
 
         // ControllerReadings タブ表示中のみ有効化される遅延計測用
         public bool IsMeasuringProcessingDelay = false;
@@ -96,8 +94,9 @@ namespace DS4Windows
 #pragma warning disable CS0169 // tempBusThread is intentionally unused currently
         Thread tempBusThread;
 #pragma warning restore CS0169
-        Thread eventDispatchThread;
-        Dispatcher eventDispatcher;
+        // Phase13-Step3: 旧 eventDispatchThread／eventDispatcher（イベントスレッド）は EventThreadDispatcher へ移した
+        private readonly DI.IEventThreadDispatcher _eventThread;
+        private readonly DI.IDeviceRumbleService _rumble;
         public bool suspending { get => _lifecycle.Suspending; set => _lifecycle.Suspending = value; }
 
         // Phase9 9-E E-3: 旧 _udpServer／udpOutBuffers／udpChangeStatus などは UdpMotionService へ移した
@@ -130,7 +129,6 @@ namespace DS4Windows
 
         // Phase6-Step2-3 (PR-3): KBM 出力の送出（IVirtualKBM）とハンドラのライフサイクル（IVirtualKBMLifecycle）を分離（決定D3）
         private readonly Services.IVirtualKBM _virtualKBM;
-        private readonly Services.IVirtualKBMLifecycle _kbmLifecycle;
 
         // Phase6-Step2-5 (PR-5): 入力処理ホットパス（On_Report）で参照するサービス。
         // いずれも呼び出し1回あたりの新規オブジェクト割り当て・ログ・キャッシュを行わない（ゼロアロケーション方針）。
@@ -183,8 +181,6 @@ namespace DS4Windows
 
         private ControlServiceDeviceOptions deviceOptions;
         public ControlServiceDeviceOptions DeviceOptions { get => deviceOptions; }
-
-        private DS4WinWPF.ArgumentParser cmdParser;
 
         public event EventHandler ServiceStarted;
         public event EventHandler PreServiceStop;
@@ -264,7 +260,7 @@ namespace DS4Windows
             //return meta;
         }
 
-        public ControlService(DS4WinWPF.ArgumentParser cmdParser, IDs4DeviceRegistry deviceRegistry,
+        public ControlService(IDs4DeviceRegistry deviceRegistry,
             DI.IProfileSettingsService profileSettings,
             DI.IAppSettingsService appSettings,
             DI.IEnvironmentService environmentService,
@@ -273,7 +269,6 @@ namespace DS4Windows
             DI.IProfileRepository profileRepository,
             DI.IDeviceStateService deviceStateService,
             Services.IVirtualKBM virtualKBM,
-            Services.IVirtualKBMLifecycle kbmLifecycle,
             DI.IAppearanceSettingsService appearanceSettings,
             DI.IProfileActionProvider profileActionProvider,
             DI.ISpecialActionRepository specialActionRepository,
@@ -290,9 +285,10 @@ namespace DS4Windows
             DI.IDeviceConnectionSetup deviceConnectionSetup,
             DI.IInputDeviceModuleRegistry deviceModules,
             DI.IDeviceDisconnectHandler deviceDisconnect,
-            DI.IServiceLifecycle lifecycle)
+            DI.IServiceLifecycle lifecycle,
+            DI.IEventThreadDispatcher eventThread,
+            DI.IDeviceRumbleService rumble)
         {
-            this.cmdParser = cmdParser;
             this._deviceRegistry = deviceRegistry;
             // TODO(技術的負債): 過渡期の防御コード。DI 経由の生成（ServiceRegistration）では profileSettings は常に非 null。
             // 旧シグネチャ（profileSettings = null）との互換のために残している。Phase6-Step12 で削除判断（Phase6-Step2-Plan.md 決定D2）。
@@ -307,7 +303,6 @@ namespace DS4Windows
             // 適用のたびに、そのスロットのコントローラー（MAC）に、適用したプロファイルを記憶する（再接続で使う）
             this._profileRepository.SelectedProfileChanged += RememberAppliedProfile;
             this._virtualKBM = virtualKBM ?? throw new ArgumentNullException(nameof(virtualKBM));
-            this._kbmLifecycle = kbmLifecycle ?? throw new ArgumentNullException(nameof(kbmLifecycle));
             this._appearanceSettings = appearanceSettings ?? throw new ArgumentNullException(nameof(appearanceSettings));
             this._profileActionProvider = profileActionProvider ?? throw new ArgumentNullException(nameof(profileActionProvider));
             this._specialActionRepository = specialActionRepository ?? throw new ArgumentNullException(nameof(specialActionRepository));
@@ -325,6 +320,8 @@ namespace DS4Windows
             this._deviceModules = deviceModules ?? throw new ArgumentNullException(nameof(deviceModules));
             this._deviceDisconnect = deviceDisconnect ?? throw new ArgumentNullException(nameof(deviceDisconnect));
             this._lifecycle = lifecycle ?? throw new ArgumentNullException(nameof(lifecycle));
+            this._eventThread = eventThread ?? throw new ArgumentNullException(nameof(eventThread));
+            this._rumble = rumble ?? throw new ArgumentNullException(nameof(rumble));
             // 開始・停止のログとイベントも、これまでどおり ControlService の Debug イベント／公開イベント（送り主は ControlService）へ流す
             this._lifecycle.DebugMessage += (data, warning) => LogDebug(data, warning);
             this._lifecycle.ServiceStarted += (sender, e) => ServiceStarted?.Invoke(this, e);
@@ -348,16 +345,7 @@ namespace DS4Windows
 
             Crc32Algorithm.InitializeTable(DS4Device.DefaultPolynomial);
 
-            eventDispatchThread = new Thread(() =>
-            {
-                Dispatcher currentDis = Dispatcher.CurrentDispatcher;
-                eventDispatcher = currentDis;
-                Dispatcher.Run();
-            });
-            eventDispatchThread.IsBackground = true;
-            eventDispatchThread.Priority = ThreadPriority.BelowNormal;
-            eventDispatchThread.Name = "ControlService Events";
-            eventDispatchThread.Start();
+            // Phase13-Step3: イベントスレッドの生成は EventThreadDispatcher のコンストラクターへ移した
 
             for (int i = 0, arlength = DS4Controllers.Length; i < arlength; i++)
             {
@@ -404,53 +392,11 @@ namespace DS4Windows
 
         // Phase9 9-E E-1: 旧 MapMonitoringOscMessageToCommand／CreateOSCCallback（OSC の受信の解釈）は OscService へ移した。
 
-        public void RefreshOutputKBMHandler()
-        {
-            // ハンドラの Disconnect と破棄（null 判定を含む）は IVirtualKBMLifecycle が担う（決定D3）。
-            _kbmLifecycle.ReleaseHandler();
-
-            if (_profileSettings.OutputKBMMapping != null)
-            {
-                _profileSettings.OutputKBMMapping = null;
-            }
-
-            InitOutputKBMHandler();
-        }
-
-        private void InitOutputKBMHandler()
-        {
-            string attemptVirtualkbmHandler = cmdParser.VirtualkbmHandler;
-            _kbmLifecycle.DetermineHandler(attemptVirtualkbmHandler);
-
-            bool handlerConnected = false;
-            try
-            {
-                handlerConnected = _virtualKBM.Connect();
-            }
-            catch { }
-
-            if (!handlerConnected &&
-                attemptVirtualkbmHandler != VirtualKBMFactory.GetFallbackHandlerIdentifier())
-            {
-                _kbmLifecycle.SwitchToFallbackHandler();
-            }
-            else
-            {
-                // Connection was made. Check if version number should get populated
-                if (_virtualKBM.GetIdentifier() == FakerInputHandler.IDENTIFIER)
-                {
-                    _kbmLifecycle.ApplyFakerInputVersion();
-                }
-            }
-
-            _kbmLifecycle.InitializeMapping(_virtualKBM.GetIdentifier());
-            _profileSettings.OutputKBMMapping.PopulateConstants();
-            _profileSettings.OutputKBMMapping.PopulateMappings();
-        }
+        // Phase13-Step3: 旧 RefreshOutputKBMHandler（呼び出し元 0 件。38a41ffa で呼び出し元が削除された残骸）は削除、旧 InitOutputKBMHandler は OutputKbmInitializer へ移した。
 
         private void OutputslotMan_ViGEmFailure(object sender, int errorCode)
         {
-            eventDispatcher.BeginInvoke((Action)(() =>
+            _eventThread.Queue((Action)(() =>
             {
                 _lifecycle.LoopControllers = false;
                 while (_lifecycle.InServiceTask)
@@ -487,11 +433,7 @@ namespace DS4Windows
             // Phase7-Step5 W3（Q9＝A）: 契約（IOutputSlotService）経由に切り替えた。同じスロット管理と保存先で OutputSlotPersist.WriteConfig を呼ぶ
             _outputSlotServiceFactory().SaveOutputSlots();
 
-            eventDispatcher.InvokeShutdown();
-            eventDispatcher = null;
-
-            eventDispatchThread.Join();
-            eventDispatchThread = null;
+            _eventThread.Shutdown();
         }
 
         private void DS4Devices_RequestElevation(RequestElevationArgs args)
@@ -564,14 +506,7 @@ namespace DS4Windows
 
         // Phase9 9-E E-2: 旧 ChangeExclusiveStatus は HidHideService.MarkAffected へ移した。
 
-        // Phase9 9-E E-3: 旧 TestQueueBus（イベントスレッドでの実行）は IUdpMotionHost.QueueOnEventThread として公開した
-        public void QueueOnEventThread(Action temp)
-        {
-            eventDispatcher.BeginInvoke(() =>
-            {
-                temp?.Invoke();
-            });
-        }
+        // Phase13-Step3: 旧 QueueOnEventThread（イベントスレッドでの実行）は IEventThreadDispatcher.Queue へ移した
 
         // IUdpMotionHost: UDP モーションの部品が使う、このクラスが持つ状態への窓口
         public DS4State GetCurrentState(int ind) => CurrentState[ind];
@@ -935,7 +870,7 @@ namespace DS4Windows
 
                         if (processingData[ind].Rumble[1] == 0x08)
                         {
-                            SetDevRumble(device, Big, Small, ind);
+                            _rumble.SetDevRumble(device, Big, Small, ind);
                         }
                     }
                     */
@@ -969,7 +904,6 @@ namespace DS4Windows
             return _activeInputProbe.GetActive(CurrentState[ind], touchPad[ind], DS4Controllers[ind] != null);
         }
 
-        public Dispatcher EventDispatcher { get => eventDispatcher; }
         public OutputSlotManager OutputslotMan { get => _virtualPad.OutputSlotManager; }
 
         // Phase9 9-E E-5: 判定の本体は TouchpadToggleService へ移した（状態 touchreleased／touchslid も）
@@ -1011,29 +945,12 @@ namespace DS4Windows
             {
                 DS4Device device = DS4Controllers[deviceNum];
                 if (device != null)
-                    SetDevRumble(device, heavyMotor, lightMotor, deviceNum);
+                    _rumble.SetDevRumble(device, heavyMotor, lightMotor, deviceNum);
                 //device.setRumble((byte)lightBoosted, (byte)heavyBoosted);
             }
         }
 
-        // sets the rumble adjusted with rumble boost. Method more used for
-        // report handling. Avoid constant checking for a device.
-        public void SetDevRumble(DS4Device device,
-            byte heavyMotor, byte lightMotor, int deviceNum)
-        {
-            byte boost = _profileSettings.GetRumbleBoost(deviceNum);
-            uint lightBoosted = ((uint)lightMotor * (uint)boost) / 100;
-            if (lightBoosted > 255)
-                lightBoosted = 255;
-            uint heavyBoosted = ((uint)heavyMotor * (uint)boost) / 100;
-            if (heavyBoosted > 255)
-                heavyBoosted = 255;
-
-            if (_profileSettings.InverseRumbleMotors[deviceNum])
-                device.setRumble((byte)heavyBoosted, (byte)lightBoosted);
-            else
-                device.setRumble((byte)lightBoosted, (byte)heavyBoosted);
-        }
+        // Phase13-Step3: 旧 SetDevRumble（ブースト・反転つきの振動）は IDeviceRumbleService へ移した
 
         public DS4State getDS4State(int ind)
         {

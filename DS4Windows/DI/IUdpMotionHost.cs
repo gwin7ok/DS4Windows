@@ -17,8 +17,5 @@ namespace DS4Windows.DI
 
         /// <summary>そのスロットの作業用の入力（旧: <c>ControlService.TempState[ind]</c>）。UDP へ送る前の加工に使う。</summary>
         DS4State GetTempState(int ind);
-
-        /// <summary>イベントスレッド（<c>ControlService</c> のディスパッチャー）で、非同期に実行する（旧 <c>TestQueueBus</c>）。</summary>
-        void QueueOnEventThread(Action action);
     }
 }

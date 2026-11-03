@@ -22,7 +22,8 @@ namespace DS4Windows.Services
         private readonly IProfileSettingsService _profileSettings;
         private readonly Func<IOutputSlotService> _outputSlotServiceFactory;
         private readonly Func<IDeviceStateAccessor> _deviceAccessor;
-        private readonly Func<IVirtualPadHost> _host;
+        private readonly IEventThreadDispatcher _eventThread;
+        private readonly IDeviceRumbleService _rumble;
 
         private readonly OutputSlotManager outputslotMan;
         private readonly OutputDevice[] outputDevices = new OutputDevice[ControllerLimits.MaxControllerCount];
@@ -37,13 +38,15 @@ namespace DS4Windows.Services
         public event Action<string, bool> DebugMessage;
 
         public VirtualPadService(IEnvironmentService environmentService, IProfileSettingsService profileSettings,
-            Func<IOutputSlotService> outputSlotServiceFactory, Func<IDeviceStateAccessor> deviceAccessor, Func<IVirtualPadHost> host)
+            Func<IOutputSlotService> outputSlotServiceFactory, Func<IDeviceStateAccessor> deviceAccessor,
+            IEventThreadDispatcher eventThread, IDeviceRumbleService rumble)
         {
             _environmentService = environmentService ?? throw new ArgumentNullException(nameof(environmentService));
             _profileSettings = profileSettings ?? throw new ArgumentNullException(nameof(profileSettings));
             _outputSlotServiceFactory = outputSlotServiceFactory ?? throw new ArgumentNullException(nameof(outputSlotServiceFactory));
             _deviceAccessor = deviceAccessor ?? throw new ArgumentNullException(nameof(deviceAccessor));
-            _host = host ?? throw new ArgumentNullException(nameof(host));
+            _eventThread = eventThread ?? throw new ArgumentNullException(nameof(eventThread));
+            _rumble = rumble ?? throw new ArgumentNullException(nameof(rumble));
 
             // 旧 ControlService のコンストラクターにあった生成
             outputslotMan = new OutputSlotManager(() => _environmentService.ViGEmBusVersion, _environmentService.ControllerSlotLimit);
@@ -57,7 +60,7 @@ namespace DS4Windows.Services
 
         public void QueueOnEventThread(Action action)
         {
-            _host().QueueOnEventThread(action);
+            _eventThread.Queue(action);
         }
 
         // 旧 ControlService.LogDebug(string, bool)。購読者（ControlService）が Debug イベントへ流す
@@ -158,7 +161,7 @@ namespace DS4Windows.Services
                 {
                     //Trace.WriteLine(string.Format("Rumble ({0}, {1}) {2}",
                     //    args.LargeMotor, args.SmallMotor, DateTime.Now.ToString("hh:mm:ss.FFFF")));
-                    _host().SetDevRumble(device, args.LargeMotor, args.SmallMotor, devIndex);
+                    _rumble.SetDevRumble(device, args.LargeMotor, args.SmallMotor, devIndex);
                 };
                 tempXbox.cont.FeedbackReceived += p;
                 tempXbox.forceFeedbacksDict.Add(index, p);

@@ -24,11 +24,13 @@ namespace DS4WindowsTests
     /// </summary>
     public class ServiceRegistrationArgumentParserTests
     {
-        private static ArgumentParser GetCmdParser(ControlService controlService)
+        // Phase13-Step3: 起動引数の読み取りは、ControlService の cmdParser から OutputKbmInitializer（Initialize の時点で読む）へ移った。
+        // 検査の対象も、ControlService が保持する値から、初期化部品が Initialize() で使うパーサー（ResolveParser）に変えた。
+        private static ArgumentParser GetCmdParser(IOutputKbmInitializer initializer)
         {
-            FieldInfo field = typeof(ControlService).GetField("cmdParser", BindingFlags.NonPublic | BindingFlags.Instance);
-            Assert.NotNull(field);
-            return (ArgumentParser)field.GetValue(controlService);
+            MethodInfo method = typeof(OutputKbmInitializer).GetMethod("ResolveParser", BindingFlags.NonPublic | BindingFlags.Instance);
+            Assert.NotNull(method);
+            return (ArgumentParser)method.Invoke(initializer, null);
         }
 
         private static ArgumentParser CreateVirtualKbmParser()
@@ -61,10 +63,11 @@ namespace DS4WindowsTests
             var parser = CreateVirtualKbmParser();
             provider.GetRequiredService<IStartupArguments>().SetParser(parser);
 
-            ControlService controlService = provider.GetRequiredService<ControlService>();
+            IOutputKbmInitializer initializer = provider.GetRequiredService<IOutputKbmInitializer>();
+            Assert.NotNull(provider.GetRequiredService<ControlService>());
 
-            Assert.Same(parser, GetCmdParser(controlService));
-            Assert.Equal("sendinput", GetCmdParser(controlService).VirtualkbmHandler);
+            Assert.Same(parser, GetCmdParser(initializer));
+            Assert.Equal("sendinput", GetCmdParser(initializer).VirtualkbmHandler);
         }
 
         [Fact]
@@ -75,9 +78,9 @@ namespace DS4WindowsTests
             services.RegisterServices();
 
             ServiceProvider provider = services.BuildServiceProvider();
-            ControlService controlService = provider.GetRequiredService<ControlService>();
+            Assert.NotNull(provider.GetRequiredService<ControlService>());
 
-            ArgumentParser cmdParser = GetCmdParser(controlService);
+            ArgumentParser cmdParser = GetCmdParser(provider.GetRequiredService<IOutputKbmInitializer>());
             Assert.NotNull(cmdParser);
             Assert.Equal(VirtualKBMFactory.DEFAULT_IDENTIFIER, cmdParser.VirtualkbmHandler);
         }

@@ -19,6 +19,7 @@ namespace DS4Windows.Services
         private readonly IDs4DeviceRegistry _deviceRegistry;
         private readonly IUdpMotionServerFactory _serverFactory;
         private readonly Func<IUdpMotionHost> _host;
+        private readonly IEventThreadDispatcher _eventThread;
 
         private OneEuroFilter3D[] udpEuroPairAccel = new OneEuroFilter3D[UdpServer.NUMBER_SLOTS]
         {
@@ -41,12 +42,13 @@ namespace DS4Windows.Services
         public event Action<string, bool> DebugMessage;
 
         public UdpMotionService(IAppSettingsService appSettings, IDs4DeviceRegistry deviceRegistry,
-            IUdpMotionServerFactory serverFactory, Func<IUdpMotionHost> host)
+            IUdpMotionServerFactory serverFactory, Func<IUdpMotionHost> host, IEventThreadDispatcher eventThread)
         {
             _appSettings = appSettings ?? throw new ArgumentNullException(nameof(appSettings));
             _deviceRegistry = deviceRegistry ?? throw new ArgumentNullException(nameof(deviceRegistry));
             _serverFactory = serverFactory ?? throw new ArgumentNullException(nameof(serverFactory));
             _host = host ?? throw new ArgumentNullException(nameof(host));
+            _eventThread = eventThread ?? throw new ArgumentNullException(nameof(eventThread));
 
             // 旧 ControlService のコンストラクターにあった購読
             _appSettings.UDPServerSmoothingMincutoffChanged += ChangeUdpSmoothingAttrs;
@@ -71,7 +73,7 @@ namespace DS4Windows.Services
             if (state && _udpServer == null)
             {
                 udpChangeStatus = true;
-                _host().QueueOnEventThread(() =>
+                _eventThread.Queue(() =>
                 {
                     _udpServer = _serverFactory.Create(_host().GetPadDetailForIdx);
                     if (openPort)
@@ -102,7 +104,7 @@ namespace DS4Windows.Services
             }
             else if (!state && _udpServer != null)
             {
-                _host().QueueOnEventThread(() =>
+                _eventThread.Queue(() =>
                 {
                     udpChangeStatus = true;
                     _udpServer.Stop();
