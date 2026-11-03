@@ -10,8 +10,8 @@
 |---|---|---|---|
 | R-1 | 機能追加 | SA（特殊アクション）の複製ボタン | **実装済み・実機確認 OK（d857afa）**（複製は無効で追加。名前は「元の名前 (Copy)」） |
 | R-2 | 機能追加 | マクロの再生モードに、「繰り返し実行する状態をトグルする」機能（押すたびに、繰り返しの開始・停止が切り替わる）を追加 | **実装済み・実機確認 OK（チェックリスト §51）**（`R2-MacroToggleRepeat-Plan.md`、[Issue #1](https://github.com/gwin7ok/DS4Windows/issues/1)） |
-| R-3 | 機能追加 | マクロに、マウスポインタを移動する機能を追加 | **実装済み・実機確認 OK（Phase12-Step3。`Phase12-Step3-Plan.md`）**（[Issue #2](https://github.com/gwin7ok/DS4Windows/issues/2)。絶対／ウィンドウ基準の移動、記録画面での記録・数値編集。リリース［版番号］は未定） |
-| R-4 | 機能追加 | 割り当て機能（SA）に、プログラム（ウィンドウ）をフォーカスする機能を追加 | **実装済み・実機確認 OK（Phase12-Step2。`Phase12-Step2-Plan.md`）**（[Issue #3](https://github.com/gwin7ok/DS4Windows/issues/3)。リリース［版番号］は未定） |
+| R-3 | 機能追加 | マクロに、マウスポインタを移動する機能を追加 | **実装済み・実機確認 OK（Phase12-Step3。`Phase12-Step3-Plan.md`）**（[Issue #2](https://github.com/gwin7ok/DS4Windows/issues/2)。絶対／ウィンドウ基準の移動、記録画面での記録・数値編集。**4.3.0 で公開済み**、Issue クローズ済み） |
+| R-4 | 機能追加 | 割り当て機能（SA）に、プログラム（ウィンドウ）をフォーカスする機能を追加 | **実装済み・実機確認 OK（Phase12-Step2。`Phase12-Step2-Plan.md`）**（[Issue #3](https://github.com/gwin7ok/DS4Windows/issues/3)。**4.3.0 で公開済み**、Issue クローズ済み） |
 | R-5 | 修正（仕様の見直し） | SA 側の割り当てで、アナログのボタン（トリガー、スティックの軸など）の押下判定を、デジタルにする。①複数トリガーの場合: 押下判定はデジタル（閾値なし）。②割り当て先のボタンがデジタルの場合: 押下判定はデジタル（閾値なし）。③Controls、または SA で、トリガーが単体で、割り当て先のボタンがアナログの場合: 押下判定はアナログ | **実装済み・実機確認 OK（391419b、76a68a3: Controls のデジタルな出力も同じ判定）**（ユーザー決定: 閾値なし＝L2／R2 は 0 超、スティックは少しでも傾いたら。デッドゾーン後の値で判定。デジタルな割り当て先は、SA も Controls も同じ判定） |
 | R-6 | 修正 | UI を操作するときの、マウスホイールの挙動を、Windows の設定に合わせる | **実装済み・実機確認 OK（d523f55）**（現象: Windows の設定が「1 画面ずつ」なのに、数行ずつ送られる） |
 | R-7 | 修正 | 設定の「画面で変えても保存されない／反映が漏れる」4 件（`UseDs3PitchRollSim`、`Keepsize`、`CustomSteamFolder`、`CheckEvery`）。[Issue #4](https://github.com/gwin7ok/DS4Windows/issues/4)。再照合済み（`Phase11-Plan.md` §1.1。`UseDs3PitchRollSim` は補正の欠落） | **実装済み・実機確認 OK（Phase11。4.2.4）**（1: 補正と再起動を復元、2: 死んだバインディングを外した、3: 警告を出し保存は続ける、4: 仕様として閉じた。`Phase11-Completion-Report.md`） |
@@ -62,9 +62,11 @@
 | 4.2.1 | 2026-10-24 | ダークテーマの配色の整理（挙動の変更なし）。README に AI 支援開発の節 | — |
 | 4.2.2 | 2026-10-24 | 修正: DS4 BT ポーリングレートの変更が反映されない（`ProfileSettingsViewModel`） | 台帳外の不具合修正 |
 | 4.2.3 | 2026-10-25 | 修正: ログタブの一部メッセージと Output Delay の表示が、言語設定にかかわらず日本語だった（リソース化、`UiCulture` の修正） | 台帳外の不具合修正 |
+| 4.2.4 | 2026-11-03 | 安定化と不具合修正（Phase11）。Debouncing の廃止、Issue #4 の4件、電池残量の一本化ほか | R-7 |
+| 4.3.0 | 2026-11-03 | 機能追加（Phase12）: マクロのマウスポインター移動と記録、記録画面の一覧編集、割り当てのウィンドウのフォーカス | R-3、R-4 |
 
 - 4.2.2・4.2.3 は、リリース後に見つかった不具合の修正で、台帳（R-n）の項目ではない。DI 化との関係（回帰かどうか）は、記録していない。
-- **実装済み・未リリース（2026-11-03）**: R-3（マクロでマウスポインタを移動。[Issue #2](https://github.com/gwin7ok/DS4Windows/issues/2)）、R-4（ウィンドウのフォーカス。[Issue #3](https://github.com/gwin7ok/DS4Windows/issues/3)）。Phase12 のブランチにあり、GitHub へは未公開。
+- **4.3.0 で公開済み（2026-11-03）**: R-3（マクロでマウスポインタを移動。[Issue #2](https://github.com/gwin7ok/DS4Windows/issues/2)）、R-4（ウィンドウのフォーカス。[Issue #3](https://github.com/gwin7ok/DS4Windows/issues/3)）。どちらの Issue もクローズ済み。
 
 ## 5. K7b-1 の観察の状況（2026-11-02 追記）
 

@@ -1,7 +1,7 @@
 ﻿# Phase12 完了報告書: 機能追加（ログ方針・ウィンドウのフォーカス・マクロのマウス移動）
 
 作成日: 2026-11-03
-対象: Phase12（Step1〜Step3）。リリース: **未定**（CHANGELOG の `[Unreleased]` に記載済み。版番号の決定と公開はユーザーが行う）
+対象: Phase12（Step1〜Step3）。リリース: **4.3.0**（2026-11-03 公開済み）
 個別計画書: `Phase12-Step1-Plan.md`、`Phase12-Step2-Plan.md`、`Phase12-Step3-Plan.md`
 関連: `Release-Backlog.md`（R-3・R-4）、`Log-Policy.md`、`Phase12-Step1-Log-Inventory.md`
 進捗: `Phase12-Status.md`
@@ -67,7 +67,7 @@
 
 ## 6. 残した項目・後続の作業
 
-- **リリース**: 版番号（4.3.0 など）の決定、`Directory.Build.props` の更新、Release ビルド、GitHub への公開、Issue #2・#3 のクローズ（ユーザーが行う）。CHANGELOG の `[Unreleased]` は記入済み。
+- **リリース**: 4.3.0 として公開済み（2026-11-03。ユーザーが実施）。Issue #2・#3 もクローズ済み。
 - **先送り**（`Release-Backlog.md` §6）: S9-17（電池表示の定期更新の実機確認）、最終の Release ビルドの確認。
 - 2g（Auto-Profile 画面の置き換え）は見送り。
 - ログの一括整理は Phase13b。`ControlService` の整理とトリガー系 4 クラスの引数整理は Phase13。
