@@ -227,7 +227,8 @@ namespace DS4WindowsTests
             var list = new List<int> { 0, 1, 8, 13, 65, 90, 160, 255, 256, 257, 258, 259, 260, 261, 262, 273, 285, 286, 299 };
             list.Add(DS4ControlSettings.MAX_MACRO_VALUE + 1);   // ゲームパッドの範囲の外（キーとして扱われる）
             list.AddRange(new[] { 300, 301, 350, 5000, 999999 });                // 待ち
-            list.AddRange(new[] { 1000000000, 1255128064, 1000000001, 1999999999 });   // ライトバー（消灯・色）
+            // 1,300,000,000 以上は、Phase12-Step3 3c でマウスポインターの移動に割り当てた（旧実装は、それも「ライトバー」と読む）。ライトバーの最大は 1,255,255,255
+            list.AddRange(new[] { 1000000000, 1255128064, 1000000001, 1255255255, 1299999999 });   // ライトバー（消灯・色）
             return list.Distinct().ToArray();
         }
 
@@ -264,7 +265,7 @@ namespace DS4WindowsTests
             var newKbm = new LogKbm();
             var oldImpl = new OldMacroStep(oldKbm, settings, () => null);
             var state = new MacroRuntimeState();
-            var newImpl = new MacroStepExecutor(newKbm, settings, state, () => null);
+            var newImpl = new MacroStepExecutor(newKbm, settings, state, () => null, new RecordingWindowSystem());
             var oldKeydown = new bool[512];
             var newKeydown = new bool[512];
 
@@ -302,7 +303,7 @@ namespace DS4WindowsTests
             // 旧実装の癖（計画書 M4）: コントローラーが取れないと NullReferenceException になる。そのまま移した
             IProfileSettingsService settings = TestHost.GetService<IProfileSettingsService>();
             var oldImpl = new OldMacroStep(new LogKbm(), settings, () => null);
-            var newImpl = new MacroStepExecutor(new LogKbm(), settings, new MacroRuntimeState(), () => null);
+            var newImpl = new MacroStepExecutor(new LogKbm(), settings, new MacroRuntimeState(), () => null, new RecordingWindowSystem());
 
             Exception expected = Record.Exception(() => oldImpl.PlayMacroCodeValue(OldDevice, DS4KeyType.None, code, new bool[512]));
             Exception actual = Record.Exception(() => newImpl.Execute(NewDevice, DS4KeyType.None, code, new bool[512]));
@@ -324,7 +325,7 @@ namespace DS4WindowsTests
             Assert.IsType<IndexOutOfRangeException>(Record.Exception(() => oldImpl.PlayMacroCodeValue(OldDevice, DS4KeyType.None, code, new bool[512])));
 
             var state = new MacroRuntimeState();
-            var newImpl = new MacroStepExecutor(new LogKbm(), settings, state, () => null);
+            var newImpl = new MacroStepExecutor(new LogKbm(), settings, state, () => null, new RecordingWindowSystem());
             var keydown = new bool[512];
 
             newImpl.Execute(NewDevice, DS4KeyType.None, code, keydown);   // 押下: 例外にならない
@@ -345,7 +346,7 @@ namespace DS4WindowsTests
         {
             IProfileSettingsService settings = TestHost.GetService<IProfileSettingsService>();
             var state = new MacroRuntimeState();
-            var executor = new MacroStepExecutor(new LogKbm(), settings, state, () => null);
+            var executor = new MacroStepExecutor(new LogKbm(), settings, state, () => null, new RecordingWindowSystem());
             var keydown = new bool[512];
 
             executor.Execute(2, DS4KeyType.None, 261, keydown);   // 261 = フラグ 0（Cross）の押下

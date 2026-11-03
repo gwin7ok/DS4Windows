@@ -19,14 +19,17 @@ namespace DS4Windows.Services
         private readonly MacroRuntimeState _macroRuntime;
         // ControlService が IDeviceStateAccessor の実装者のため、循環を避けて遅延で取得する（マクロの振動イベントで使う）
         private readonly Func<IDeviceStateAccessor> _deviceStateAccessor;
+        // Phase12-Step3 3c（R-3）: マウスポインターの移動（絶対／前面ウィンドウ基準）
+        private readonly IWindowSystem _windowSystem;
 
         public MacroStepExecutor(IVirtualKBM virtualKbm, IProfileSettingsService profileSettings,
-            MacroRuntimeState macroRuntime, Func<IDeviceStateAccessor> deviceStateAccessor)
+            MacroRuntimeState macroRuntime, Func<IDeviceStateAccessor> deviceStateAccessor, IWindowSystem windowSystem)
         {
             _virtualKbm = virtualKbm ?? throw new ArgumentNullException(nameof(virtualKbm));
             _profileSettings = profileSettings ?? throw new ArgumentNullException(nameof(profileSettings));
             _macroRuntime = macroRuntime ?? throw new ArgumentNullException(nameof(macroRuntime));
             _deviceStateAccessor = deviceStateAccessor ?? throw new ArgumentNullException(nameof(deviceStateAccessor));
+            _windowSystem = windowSystem ?? throw new ArgumentNullException(nameof(windowSystem));
         }
 
         public bool Execute(int device, DS4KeyType keyType, int macroCodeValue, bool[] keydown)
@@ -34,7 +37,12 @@ namespace DS4Windows.Services
             // Phase6-Step3-6c（決定P2）: 非同期マクロ経路（別スレッド、ctrl を持たない連鎖）のため、Mapping が保持する profileSettings から読む。
             // Phase7-Step8 W2 で instance 化（コンストラクター注入）済み。この経路も instance の profileSettings を読む（Phase7c W3 でコメントを訂正）。
             bool doDelayOnCaller = false;
-            if (macroCodeValue >= 261 && macroCodeValue <= DS4ControlSettings.MAX_MACRO_VALUE)
+            if (MacroPointerMove.IsPointerMoveValue(macroCodeValue))
+            {
+                // Phase12-Step3 3c（R-3）: マウスポインターの移動。ライトバー（1,000,000,000〜）より上の範囲なので、先に判定する
+                MovePointer(device, macroCodeValue);
+            }
+            else if (macroCodeValue >= 261 && macroCodeValue <= DS4ControlSettings.MAX_MACRO_VALUE)
             {
                 // Gamepad button up or down macro event. macroCodeValue index value is the button identifier (codeValue-261 = idx in 0..24 range)
                 if (!keydown[macroCodeValue])
@@ -109,6 +117,36 @@ namespace DS4Windows.Services
             }
 
             return doDelayOnCaller;
+        }
+
+        /// <summary>
+        /// マウスポインターの移動ステップを実行する。ウィンドウ基準は、そのとき前面にあるウィンドウの外枠の左上を原点にする
+        /// （前面ウィンドウがない・最小化のときは動かさない）。失敗しても、マクロは止めない（Debug ログのみ）。
+        /// </summary>
+        private void MovePointer(int device, int macroCodeValue)
+        {
+            if (!MacroPointerMove.TryFromMacroValue(macroCodeValue, out MacroPointerMove move))
+            {
+                if (AppLogger.IsDebugEnabled) AppLogger.LogDebug($"[MacroMove] Skipped: unsupported value, device={device}, value={macroCodeValue}");
+                return;
+            }
+
+            int x = move.X;
+            int y = move.Y;
+            if (move.Mode == MacroPointerMoveMode.WindowRelative)
+            {
+                if (!_windowSystem.TryGetForegroundWindowOrigin(out int originX, out int originY))
+                {
+                    if (AppLogger.IsDebugEnabled) AppLogger.LogDebug($"[MacroMove] Skipped: no foreground window, device={device}, mode={move.Mode}, x={move.X}, y={move.Y}");
+                    return;
+                }
+
+                x += originX;
+                y += originY;
+            }
+
+            bool moved = _windowSystem.MoveCursorTo(x, y);
+            if (AppLogger.IsDebugEnabled) AppLogger.LogDebug($"[MacroMove] Moved: device={device}, mode={move.Mode}, x={x}, y={y}, moved={moved}");
         }
 
         /// <summary>キー（0〜255）またはマウスボタン（256〜260）の押下／離上を送出する。旧 <c>PlayMacroCodeValue</c> の、押下と離上の 2 つの switch の共通部分。</summary>

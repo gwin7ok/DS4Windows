@@ -43,6 +43,8 @@ namespace DS4WindowsTests
             public List<IntPtr> CursorMovedTo = new List<IntPtr>();
             public bool CursorMoveResult = true;
 
+            public bool MoveCursorTo(int x, int y) => throw new NotSupportedException();
+            public bool TryGetForegroundWindowOrigin(out int x, out int y) => throw new NotSupportedException();
             public bool MoveCursorToCenter(IntPtr window)
             {
                 Calls.Add("MoveCursorToCenter");

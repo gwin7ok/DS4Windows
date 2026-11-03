@@ -112,6 +112,23 @@ namespace DS4Windows.Services
             return SetCursorPos(rect.Left + (rect.Right - rect.Left) / 2, rect.Top + (rect.Bottom - rect.Top) / 2);
         }
 
+        public bool MoveCursorTo(int x, int y) => SetCursorPos(x, y);
+
+        public bool TryGetForegroundWindowOrigin(out int x, out int y)
+        {
+            x = 0;
+            y = 0;
+
+            IntPtr window = GetForegroundWindow();
+            if (window == IntPtr.Zero || IsIconic(window)) return false;
+            if (!GetWindowRect(window, out RECT rect)) return false;
+            if (rect.Right <= rect.Left || rect.Bottom <= rect.Top) return false;
+
+            x = rect.Left;
+            y = rect.Top;
+            return true;
+        }
+
         public CapturedWindow GetWindowUnderCursor()
         {
             if (!GetCursorPos(out POINT point)) return null;

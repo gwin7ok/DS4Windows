@@ -51,5 +51,17 @@ namespace DS4Windows.Services
         /// 位置は画面の座標（物理ピクセル）で、カーソルの取得と同じ座標系のため、画面の拡大率の変換は要らない。
         /// </summary>
         CapturedWindow GetWindowUnderCursor();
+
+        /// <summary>
+        /// Phase12-Step3 3c（R-3）: マウスポインターを、画面（仮想スクリーン）の座標 (<paramref name="x"/>, <paramref name="y"/>) へ移動する（物理ピクセル。
+        /// 範囲外は Windows が端に丸める）。マクロのマウス移動ステップが使う。動かせたら true。
+        /// </summary>
+        bool MoveCursorTo(int x, int y);
+
+        /// <summary>
+        /// Phase12-Step3 3c（R-3）: 今の前面ウィンドウの外枠（タイトルバーを含む）の左上の、画面の座標。マクロの「ウィンドウ基準」の原点。
+        /// 前面ウィンドウがない・最小化されている・外枠が取れない・面積がないときは false。
+        /// </summary>
+        bool TryGetForegroundWindowOrigin(out int x, out int y);
     }
 }
