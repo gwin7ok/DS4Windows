@@ -67,6 +67,19 @@ namespace DS4WindowsTests
             Assert.Equal("Move to (0, 0)", vm.MacroSteps[2].Step.Name);
         }
 
+        [Theory]
+        [InlineData(MacroPointerMoveMode.Absolute, "Move to (0, 0)")]
+        [InlineData(MacroPointerMoveMode.WindowRelative, "Move in window (0, 0)")]
+        public void AddPointerMoveStep_UsesTheModeOfTheList(MacroPointerMoveMode mode, string expectedName)
+        {
+            RecordBoxViewModel vm = CreateViewModel();
+
+            vm.AddPointerMoveStep(-1, mode);
+
+            Assert.Equal(expectedName, vm.MacroSteps[0].Step.Name);
+            Assert.Equal((int)mode, vm.MacroSteps[0].PointerModeIndex);
+        }
+
         [Fact]
         public void AddPointerMoveStep_WithASelection_InsertsBeforeIt()
         {

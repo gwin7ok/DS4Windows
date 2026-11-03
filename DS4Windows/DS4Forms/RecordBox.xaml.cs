@@ -767,7 +767,8 @@ namespace DS4WinWPF.DS4Forms
                 UpdateDataRevertTemplate();
             }
 
-            int index = recordBoxVM.AddPointerMoveStep(recordBoxVM.MacroStepIndex);
+            // 追加するステップの基準は、「Record mouse movement」の下の一覧の、そのときの選択に合わせる
+            int index = recordBoxVM.AddPointerMoveStep(recordBoxVM.MacroStepIndex, (DS4Windows.MacroPointerMoveMode)recordBoxVM.PointerRecordModeIndex);
             macroListBox.SelectedIndex = index;
             macroListBox.ScrollIntoView(recordBoxVM.MacroSteps[index]);
         }

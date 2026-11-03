@@ -307,12 +307,12 @@ namespace DS4WinWPF.DS4Forms.ViewModels
         }
 
         /// <summary>
-        /// Phase12-Step3 3d（R-3）: マウスポインターの移動ステップ（絶対の (0, 0)）を、選択した位置の前へ入れる。選択がなければ末尾へ足す。入れた位置を返す。
-        /// 座標は、リストのダブルクリックで直す。
+        /// Phase12-Step3 3d（R-3）: マウスポインターの移動ステップ（<paramref name="mode"/> の (0, 0)）を、選択した位置の前へ入れる。選択がなければ末尾へ足す。入れた位置を返す。
+        /// モードは、記録の基準の一覧（<see cref="PointerRecordModeIndex"/>）の選択に合わせる。座標は、リストのダブルクリックで直す。
         /// </summary>
-        public int AddPointerMoveStep(int index)
+        public int AddPointerMoveStep(int index, MacroPointerMoveMode mode = MacroPointerMoveMode.Absolute)
         {
-            var move = new MacroPointerMove(MacroPointerMoveMode.Absolute, 0, 0);
+            var move = new MacroPointerMove(mode, 0, 0);
             var step = new MacroStep(move.ToMacroValue(), move.DisplayName, MacroStep.StepType.ActDown, MacroStep.StepOutput.PointerMove);
             if (index < 0 || index > macroSteps.Count) index = macroSteps.Count;
             InsertMacroStep(index, step);
