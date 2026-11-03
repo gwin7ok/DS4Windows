@@ -1,7 +1,7 @@
 # Phase11 以降のロードマップ（FurtherImprovements 01〜06 と GitHub Issue の統合）
 
 作成日: 2026-11-02（同日、Issue #2〜#4 を取り込んで Phase を組み直し）。2026-11-03: ログ整理（L1＝Phase12 の最初、L2＝Phase13b）とトリガー系 4 クラスの引数整理（Phase13）を追加
-状態: **案（ユーザーの承認待ち）。実装は、各 Phase／Step の個別計画書を作り、承認を得てから行う（copilot-instructions §4）**
+状態: **Phase の構成と順序は承認済みで運用中（Phase11・12 は完了。2026-11-04 時点）。§8 の追加案のみ承認待ち。実装は、各 Phase／Step の個別計画書を作り、承認を得てから行う（copilot-instructions §4）**
 ブランチ: `ArrangementRoadmap`
 関連: `Phase9-Completion-Report.md` §7、`Phase9-Deferred-Ledger.md`、`../FurtherImprovements/01〜06`、`Release-Backlog.md`
 
@@ -22,7 +22,7 @@
 | **11** | 安定化と不具合修正 | 先送りの実機確認の消化、K7b-1 の締め、**Issue #4（R-7）**、テスト整備（XAML のセマンティック検証）、数値の見切れの修正 | #4、FI の Phase A、台帳 §27〜§30 | S〜M |
 | **12**（完了 2026-11-03） | 機能追加 | **L1（ログの方針の策定）** → **R-4（#3）プログラムのフォーカス** → **R-3（#2）マクロのマウスポインタ移動** | #3、#2、Phase11 W6 の所見 | S＋M＋L |
 | **13** | `ControlService` の整理 | コンストラクタ引数の集約、`Func<T>` の削減、`ServiceProviderHolder` の撤廃。F-5c・F-1c・F-2c を含む。**トリガー系 4 クラスの未使用コンストラクター引数の整理**を Step に含む | FI の Phase C、Phase11 の Debouncing 削除 | L |
-| **13b** | ログの一括整理（L2） | 方針（Phase12 の L1）に沿って、ログのレベルの振り分けと文言を統一。ログを検査するテスト・黄金ファイルの更新 | Phase12 の L1 | M〜L（約 624 か所・96 ファイル） |
+| **13b** | ログの一括整理（L2） | 方針（Phase12 の L1）に沿って、ログのレベルの振り分けと文言を統一。ログを検査するテスト・黄金ファイルの更新 | Phase12 の L1 | L（実測 666 か所・101 ファイル。当初の見積りは約 624 か所・96 ファイル） |
 | **14** | 名前空間・フォルダの再編（旧 Phase11） | 名前空間をフォルダと一致、`DI/` を Composition Root 専用に | 規約 §3.3 原則 3・§3.4 | L（機械的） |
 | **15** | UI 共通化 | コントローラー描画の共通化、デザインシステム、F-4（`ProfileEditor.xaml.cs` の分割）、G-1（`ProfileSettingsViewModel` の分割） | FI の Phase B・06 | L |
 | **16** | Layer 1 のカートリッジ化 | 第 1 層のデバイスクラスの分離（9-H）、プラグイン化。05 の整備 | FI の Phase D、9-H | L |
@@ -73,7 +73,7 @@ Issue #4 の 4 件と、2026-11-02 時点のコードとの照合:
 ### Phase13b: ログの一括整理（L2）
 
 - 2026-11-03 追加。**Phase13 の後、Phase14 の前**。
-- 範囲: アプリ全体のログ出力（実測: 約 624 か所・96 ファイル。`LogToGui`／`LogTrace`／`LogDebug` ほか）のレベルの振り分けと文言の統一。Phase12 の L1 で決めた方針に従う。
+- 範囲: アプリ全体のログ出力（実測: 666 か所・101 ファイル［当初の見積りは約 624 か所・96 ファイル］。`LogToGui`／`LogTrace`／`LogDebug` ほか）のレベルの振り分けと文言の統一。Phase12 の L1 で決めた方針に従う。
 - ログの内容を検査するテストと黄金ファイルを更新する。規約 §2.3 の改定（L1）が前提。
 - **L1 の結果（2026-11-03 追記）**: 方針は `Log-Policy.md`、現状の実測は `Phase12-Step1-Log-Inventory.md`、規約 §2.3 は改定済み。**実測は 666 か所・101 ファイル**（NLog 直接、`Console`／`Debug.WriteLine`、`LogToTray` を含む。`AppLogger` の 6 メソッドだけでは 546 か所）。API を汎用 `Log(level, message, options)` に集約するため、変更量は当初の見積り（M〜L）より大きい（**L**）。旧 API は薄いシムで残す期間を設け、段階的に移行する。旧 `LogToGui(warning, temporary)` と新 API の対応表、GUI・トレイに見えるログの変更一覧（承認用）、ログを検査する 14 テストファイルの書き換え（レベルと主要語で検査）を、13b の個別計画書で扱う。
 - Phase13 の後にする理由: Phase13 は `ControlService` から引数やサービスを整理し、ログ文も一緒に動く。先に文言を揃えても、移動で無駄になる。
@@ -129,5 +129,28 @@ Issue #4 の 4 件と、2026-11-02 時点のコードとの照合:
 
 ## 7. 次の作業
 
-1. 本書の承認（Phase の構成と順序、Issue #4 の各項目の仕様）。
-2. Phase11 の個別計画書の作成（実機確認の消化の計画、Issue #4 の再照合、テスト整備）。
+1. 済み: 本書の承認、Phase11（4.2.4）、Phase12（4.3.0。`Phase12-Completion-Report.md`）。
+2. 次: §8 の追加案の判断 → Phase13 の個別計画書の作成（着手前に `ControlService` の引数・`Func<T>`・`ServiceProviderHolder` の現状を再照合する。§5）。
+
+## 8. 追加案（2026-11-04。FurtherImprovements との照合で見つかった抜け。承認待ち）
+
+`FurtherImprovements/01` の指摘のうち、Phase に明記されていないものと、モデル図の更新の扱い。Phase の順序と構成は変えない。
+
+### 8.1 ViGEm 密結合の解消（01 の 3.3(2)）— 案: Phase16 に追加
+
+- 内容: `VirtualPadService` が `Nefarius.ViGEm.Client` の具象型を直接参照している。仮想パッドの出力を、ViGEm を包むポート（例: `IVirtualPadBackend`）の背後へ移し、`VirtualPadService` は抽象にだけ依存させる。ドライバなしでテストできる偽の実装を用意する。
+- Phase16 に置く理由: 第 1 層（入力）の通信／解析の分離（9-H）と対になる、第 3 層（出力）側の分離。第 3 層の依存方向の規約（第 2 層は第 3 層をポート経由で使う）にも合う。
+- 規模: M。効果は、テスト容易性と将来のドライバ移行。利用者に見える変更はない。優先度は低い（任意としてもよい）。
+
+### 8.2 Phase15 の内容の明記（01 の 3.2(2)(3)、3.4(2)）— 案: Phase15 の範囲に追記
+
+- 数値入力の共通部品（`SettingAxisRow`／`InputNumberBox`。02 §2.2、06 §4.1）: Phase11 では、見切れの修正（幅・余白）だけを行った。部品の導入は未実施。
+- テーマの対称化とインラインカラーの除去（06 §1・§5）: `DarkTheme.xaml` と `DefaultTheme.xaml` のキーを 1 対 1 にし、トリガー内の色の直書きをトークンにする。
+- Color／Brush のリソース命名規則（06 §3.1）: `ForegroundColor` が Brush を指すような型の取り違えを防ぐ。新規の XAML の検査（`XamlTestHelper` を使う）に規則を加える。
+- 既存の描画・見た目を変えない範囲で行い、利用者に見える変更が出る場合は、項目ごとに承認を得る。
+
+### 8.3 モデル図の更新の扱い（`Model-Diagram/01〜04`）— 案: 完了条件と専用の Step
+
+- 常時のルール（案）: 各 Phase の完了報告書の条件に「モデル図への反映」を加える（規約には「構造に関わる変更はモデル図に反映する」とあるが、Phase の完了条件には入っていない）。
+- Phase13 の前に 1 回（案）: モデル図の現状合わせ。内容は、(1) Phase11・12 の反映（`IWindowFocuser`、`IWindowSystem`、`IMouseInputHook`、`WindowTargetMatcher`、`MacroPointerRecorder`、`FocusWindow`、`Debouncer` の廃止、電池の `UpdateBattery`）、(2) Phase8 の `ITriggerDispatchEngine`／`IActionRegistry`／`IActionBindingBuilder` を「未実装（点線）」から実線へ、(3) 行数の更新（`DS4Device.cs` 約 2,068、`ProfileSettingsViewModel.cs` 約 3,469 ほか）。コードの変更はなく、文書だけ。
+- 各 Phase での更新: Phase13（`ControlService`、`Func<T>`、`ServiceProviderHolder`）、Phase14（名前空間・フォルダ。`DI/` の位置づけ）、Phase16（`IHidTransport` など）で、該当の図を更新する。
