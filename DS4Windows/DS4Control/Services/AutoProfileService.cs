@@ -120,6 +120,15 @@ namespace DS4Windows
             return controllers != null && slot >= 0 && slot < controllers.Length && controllers[slot] != null;
         }
 
+        // S9-5 の確認で判明: 元のプロファイルへ戻すときの通知が、バッテリー残量を常に「N/A」と出していた。
+        // 手動の切り替え・SA の Load Profile と同じく、接続中のコントローラーの Battery を使う（未接続のときだけ「N/A」）
+        private string BatteryText(int slot)
+        {
+            var controllers = Control?.DS4Controllers;
+            var device = controllers != null && slot >= 0 && slot < controllers.Length ? controllers[slot] : null;
+            return device != null ? $"{device.Battery}" : "N/A";
+        }
+
         // 最後に取得できた前景ウィンドウの情報。前景が変わらないと GetForegroundProcessInfo が false を返すため、
         // コントローラーの接続時の再確認（CheckProfilesForConnectedController）はこの値を使う。
         private string _lastProcessName;
@@ -265,7 +274,7 @@ namespace DS4Windows
                                 if (AutoProfileDebugLogLevel > 0)
                                     AppLogger.LogToGui($"DEBUG: Auto-Profile. Unknown process. Reverting to default profile. Controller {j + 1}={defaultProfile} (default)", false, true);
 
-                                string prolog = string.Format(DS4WinWPF.Properties.Resources.UsingProfile, (j + 1).ToString(), defaultProfile, "N/A");
+                                string prolog = string.Format(DS4WinWPF.Properties.Resources.UsingProfile, (j + 1).ToString(), defaultProfile, BatteryText(j));
 
                                 // Step 3 & Step 4 申し送り事項:
                                 // 一時プロファイル解除復帰（isTemp: false）、displayNotification: null で自動解決
