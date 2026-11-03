@@ -2723,6 +2723,42 @@ namespace DS4WinWPF.Translations {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Add Mouse Move.
+        /// </summary>
+        public static string RecordBox_AddMouseMove {
+            get {
+                return ResourceManager.GetString("RecordBox.AddMouseMove", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to Screen position.
+        /// </summary>
+        public static string RecordBox_MoveModeAbsolute {
+            get {
+                return ResourceManager.GetString("RecordBox.MoveModeAbsolute", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to In window.
+        /// </summary>
+        public static string RecordBox_MoveModeWindow {
+            get {
+                return ResourceManager.GetString("RecordBox.MoveModeWindow", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to Double click on a mouse move to edit its position.
+        /// </summary>
+        public static string RecordBox_DoubleClickMoveEdit {
+            get {
+                return ResourceManager.GetString("RecordBox.DoubleClickMoveEdit", resourceCulture);
+            }
+        }
+
+        /// <summary>
         ///   Looks up a localized string similar to Insert Wait.
         /// </summary>
         public static string RecordBox_InsertWait {

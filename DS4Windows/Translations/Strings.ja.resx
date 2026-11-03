@@ -687,4 +687,16 @@ Bluetooth接続の設定（オプション）：PSボタンとShareボタンを3
   <data name="CustomSteamFolderNotFound" xml:space="preserve">
     <value>カスタム Steam フォルダーが見つかりません: {0}。入力したパスは保存しましたが、フォルダーが存在するまでは使われません（代わりに既定の Steam フォルダーを使います）。</value>
   </data>
+  <data name="RecordBox.AddMouseMove" xml:space="preserve">
+    <value>マウス移動を追加</value>
+  </data>
+  <data name="RecordBox.MoveModeAbsolute" xml:space="preserve">
+    <value>画面の座標</value>
+  </data>
+  <data name="RecordBox.MoveModeWindow" xml:space="preserve">
+    <value>ウィンドウ内の座標</value>
+  </data>
+  <data name="RecordBox.DoubleClickMoveEdit" xml:space="preserve">
+    <value>マウス移動をダブルクリックすると、座標を編集できます</value>
+  </data>
 </root>

@@ -1144,6 +1144,18 @@ Disabled:
   <data name="RecordBox.ChangeLightbarColor" xml:space="preserve">
     <value>Change Lightbar Color</value>
   </data>
+  <data name="RecordBox.AddMouseMove" xml:space="preserve">
+    <value>Add Mouse Move</value>
+  </data>
+  <data name="RecordBox.MoveModeAbsolute" xml:space="preserve">
+    <value>Screen position</value>
+  </data>
+  <data name="RecordBox.MoveModeWindow" xml:space="preserve">
+    <value>In window</value>
+  </data>
+  <data name="RecordBox.DoubleClickMoveEdit" xml:space="preserve">
+    <value>Double click on a mouse move to edit its position</value>
+  </data>
   <data name="RecordBox.DoubleClickWaitEdit" xml:space="preserve">
     <value>Double click on a wait to edit the time</value>
   </data>

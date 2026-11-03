@@ -138,6 +138,10 @@ namespace DS4WinWPF.DS4Forms
 
         private void MacroListBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
+            // Phase12-Step3 3d: 編集部品の中の ComboBox（マウス移動のモード）の SelectionChanged も、ここまで伝わってくる。
+            // それで編集部品を確定・差し替えると、ComboBox の操作の最中に木が壊れてクラッシュするため、ListBox 自身の選択の変更だけを扱う
+            if (!ReferenceEquals(e.OriginalSource, macroListBox)) return;
+
             if (!recordBoxVM.Recording)
             {
                 if (recordBoxVM.MacroStepIndex >= 0)
@@ -271,6 +275,7 @@ namespace DS4WinWPF.DS4Forms
             playbackPanel.AllowModeEdit = on;
             clearStepsBtn.IsEnabled = on;
             addWaitTimeBtn.IsEnabled = on;
+            addMouseMoveBtn.IsEnabled = on;
         }
 
         private void ChangeLightbarAction()
@@ -430,6 +435,14 @@ namespace DS4WinWPF.DS4Forms
                     lbitem.ContentTemplate = this.FindResource("EditTemplate") as DataTemplate;
                     recordBoxVM.EditMacroIndex = recordBoxVM.MacroStepIndex;
                 }
+                else if (item.Step.OutputType == DS4Windows.MacroStep.StepOutput.PointerMove)
+                {
+                    // Phase12-Step3 3d（R-3）: マウス移動の座標の編集
+                    ListBoxItem lbitem = macroListBox.ItemContainerGenerator.ContainerFromIndex(recordBoxVM.MacroStepIndex)
+                        as ListBoxItem;
+                    lbitem.ContentTemplate = this.FindResource("EditPointerMoveTemplate") as DataTemplate;
+                    recordBoxVM.EditMacroIndex = recordBoxVM.MacroStepIndex;
+                }
                 else if (item.Step.OutputType == DS4Windows.MacroStep.StepOutput.Rumble &&
                     item.Step.ActType == DS4Windows.MacroStep.StepType.ActDown)
                 {
@@ -490,6 +503,16 @@ namespace DS4WinWPF.DS4Forms
                     bindExp.UpdateSource();
                 }
             }
+            else if (item.Step.OutputType == DS4Windows.MacroStep.StepOutput.PointerMove)
+            {
+                // モードを先に確定する（座標は、そのモードの範囲へ丸められる）
+                ComboBox modeBox = oldDataTemplate.FindName("pointerModeCb", contentPresenter) as ComboBox;
+                IntegerUpDown pointerX = oldDataTemplate.FindName("pointerXUD", contentPresenter) as IntegerUpDown;
+                IntegerUpDown pointerY = oldDataTemplate.FindName("pointerYUD", contentPresenter) as IntegerUpDown;
+                modeBox?.GetBindingExpression(ComboBox.SelectedIndexProperty)?.UpdateSource();
+                pointerX?.GetBindingExpression(IntegerUpDown.ValueProperty)?.UpdateSource();
+                pointerY?.GetBindingExpression(IntegerUpDown.ValueProperty)?.UpdateSource();
+            }
             else if (item.Step.OutputType == DS4Windows.MacroStep.StepOutput.Rumble)
             {
                 IntegerUpDown heavyRumble = oldDataTemplate.FindName("heavyRumbleUD", contentPresenter) as IntegerUpDown;
@@ -506,6 +529,20 @@ namespace DS4WinWPF.DS4Forms
 
             lbitem.ContentTemplate = this.FindResource("DisplayTemplate") as DataTemplate;
             recordBoxVM.EditMacroIndex = -1;
+        }
+
+        private void PointerModeCb_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            e.Handled = true;
+        }
+
+        private void PointerMoveEdit_KeyDown(object sender, KeyEventArgs e)
+        {
+            if (e.Key == Key.Enter && recordBoxVM.EditMacroIndex > -1)
+            {
+                UpdateDataRevertTemplate();
+                e.Handled = true;
+            }
         }
 
         private void WaitIUD_KeyDown(object sender, KeyEventArgs e)
@@ -617,6 +654,21 @@ namespace DS4WinWPF.DS4Forms
                 recordBoxVM.KeysdownMap.Remove(value);
                 e.Handled = true;
             }
+        }
+
+        // Phase12-Step3 3d（R-3）: マウス移動のステップを、選択した位置の前（選択がなければ末尾）へ入れ、選択する。座標は、ダブルクリックで直す
+        private void AddMouseMoveBtn_Click(object sender, RoutedEventArgs e)
+        {
+            if (recordBoxVM.Recording) return;
+
+            if (recordBoxVM.EditMacroIndex > -1)
+            {
+                UpdateDataRevertTemplate();
+            }
+
+            int index = recordBoxVM.AddPointerMoveStep(recordBoxVM.MacroStepIndex);
+            recordBoxVM.MacroStepIndex = index;
+            macroListBox.ScrollIntoView(recordBoxVM.MacroSteps[index]);
         }
 
         private void AddWaitTimeBtn_Click(object sender, RoutedEventArgs e)

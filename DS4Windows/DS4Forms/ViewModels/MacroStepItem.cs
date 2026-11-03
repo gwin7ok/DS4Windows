@@ -122,6 +122,37 @@ namespace DS4WinWPF.DS4Forms.ViewModels
             }
         }
 
+        // Phase12-Step3 3d（R-3）: マウス移動ステップの編集（モード、X、Y）。範囲外の座標は MacroPointerMove が端に丸める
+        public int PointerModeIndex
+        {
+            get => MacroPointerMove.TryFromMacroValue(step.Value, out MacroPointerMove move) ? (int)move.Mode : 0;
+            set
+            {
+                MacroPointerMove.TryFromMacroValue(step.Value, out MacroPointerMove move);
+                step.Value = new MacroPointerMove((MacroPointerMoveMode)Math.Min(Math.Max(value, 0), 1), move.X, move.Y).ToMacroValue();
+            }
+        }
+
+        public int PointerX
+        {
+            get => MacroPointerMove.TryFromMacroValue(step.Value, out MacroPointerMove move) ? move.X : 0;
+            set
+            {
+                MacroPointerMove.TryFromMacroValue(step.Value, out MacroPointerMove move);
+                step.Value = new MacroPointerMove(move.Mode, value, move.Y).ToMacroValue();
+            }
+        }
+
+        public int PointerY
+        {
+            get => MacroPointerMove.TryFromMacroValue(step.Value, out MacroPointerMove move) ? move.Y : 0;
+            set
+            {
+                MacroPointerMove.TryFromMacroValue(step.Value, out MacroPointerMove move);
+                step.Value = new MacroPointerMove(move.Mode, move.X, value).ToMacroValue();
+            }
+        }
+
         public MacroStepItem(MacroStep step)
         {
             this.step = step;
