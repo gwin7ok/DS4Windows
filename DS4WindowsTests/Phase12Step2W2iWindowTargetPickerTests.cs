@@ -30,6 +30,7 @@ namespace DS4WindowsTests
             public void SendAltUp() => throw new NotSupportedException();
             public void SendAltTap() => throw new NotSupportedException();
             public void BringToTop(IntPtr window) => throw new NotSupportedException();
+            public bool MoveCursorToCenter(IntPtr window) => throw new NotSupportedException();
         }
 
         private static WindowTargetPicker NewPicker(CapturedWindow under)

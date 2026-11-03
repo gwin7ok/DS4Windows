@@ -21,8 +21,11 @@ namespace DS4WindowsTests
             public WindowFocusResult Result = WindowFocusResult.Focused;
             public Exception ToThrow;
 
-            public WindowFocusResult Focus(WindowTargetMatcher target)
+            public readonly List<bool> CenterCursorFlags = new List<bool>();
+
+            public WindowFocusResult Focus(WindowTargetMatcher target, bool centerCursor = false)
             {
+                CenterCursorFlags.Add(centerCursor);
                 Targets.Add((target.Path, target.Title));
                 if (ToThrow != null) throw ToThrow;
                 return Result;
@@ -86,7 +89,7 @@ namespace DS4WindowsTests
             private readonly Action onFocus;
             public ThreadRecordingFocuser(Action onFocus) { this.onFocus = onFocus; }
 
-            public WindowFocusResult Focus(WindowTargetMatcher target)
+            public WindowFocusResult Focus(WindowTargetMatcher target, bool centerCursor = false)
             {
                 onFocus();
                 return WindowFocusResult.Focused;

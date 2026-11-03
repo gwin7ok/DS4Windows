@@ -100,7 +100,7 @@ namespace DS4WinWPF.DS4Forms.ViewModels
                 case SpecialAction.ActionTypeId.Program:
                     return "Launch Program: " + FileNameOf(item.ProgramPath) + Hold(item.HoldSeconds);
                 case SpecialAction.ActionTypeId.FocusWindow:
-                    return "Focus Window: " + FocusTargetOf(item.WindowPath, item.WindowTitle) + Hold(item.HoldSeconds);
+                    return "Focus Window: " + FocusTargetOf(item.WindowPath, item.WindowTitle) + (item.CenterCursor ? " (center cursor)" : string.Empty) + Hold(item.HoldSeconds);
                 case SpecialAction.ActionTypeId.Profile:
                     return "Load Profile: " + ProfileLabel(item.ProfileName, profileExists) + (item.AutomaticUntrigger ? " (Auto untrigger)" : string.Empty) + Hold(item.HoldSeconds);
                 case SpecialAction.ActionTypeId.DisconnectBT:
@@ -152,7 +152,7 @@ namespace DS4WinWPF.DS4Forms.ViewModels
                     text = "Launch Program: " + FileNameOf(sa.details);
                     break;
                 case SpecialAction.ActionTypeId.FocusWindow:
-                    text = "Focus Window: " + FocusTargetOf(sa.details, sa.extra);
+                    text = "Focus Window: " + FocusTargetOf(sa.details, sa.extra) + (sa.centerCursor ? " (center cursor)" : string.Empty);
                     break;
                 case SpecialAction.ActionTypeId.Profile:
                     text = "Load Profile: " + ProfileLabel(sa.details, profileExists) + (sa.automaticUntrigger ? " (Auto untrigger)" : string.Empty);

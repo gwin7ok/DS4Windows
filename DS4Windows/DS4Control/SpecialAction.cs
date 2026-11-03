@@ -76,6 +76,8 @@ namespace DS4Windows
         public string ucontrols;
         public double delayTime = 0;
         public string extra;
+        /// <summary>Phase12-Step2 2j（R-4）: FocusWindow で、前面化に成功したあと、そのウィンドウの中央へマウスポインターを移動する。他の種別では使わない。</summary>
+        public bool centerCursor = false;
         // null when not applicable (type != Key && type != Button) or not set
         public KeyButtonSwitchModeEnum? KeyButtonSwitchMode = null;
         public bool pressRelease = false;

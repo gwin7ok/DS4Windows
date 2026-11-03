@@ -93,6 +93,9 @@ namespace DS4WinWPF.DS4Forms.ViewModels.SpecialActions
 
         public double Delay { get => delay; set => delay = value; }
 
+        /// <summary>Phase12-Step2 2j: 前面化のあと、ウィンドウの中央へマウスポインターを移動する。</summary>
+        public bool CenterCursor { get; set; }
+
         public FocusWindowViewModel(ISpecialActionRepository specialActionRepository)
         {
             this.specialActionRepository = specialActionRepository ?? throw new ArgumentNullException(nameof(specialActionRepository));
@@ -103,6 +106,7 @@ namespace DS4WinWPF.DS4Forms.ViewModels.SpecialActions
             WindowPath = action.details;
             WindowTitle = action.extra;
             delay = action.delayTime;
+            CenterCursor = action.centerCursor;
         }
 
         public void LoadControlItem(ControlSpecialItem item)
@@ -112,6 +116,7 @@ namespace DS4WinWPF.DS4Forms.ViewModels.SpecialActions
             WindowPath = item.WindowPath;
             WindowTitle = item.WindowTitle;
             Delay = item.HoldSeconds;
+            CenterCursor = item.CenterCursor;
         }
 
         public ControlSpecialItem ToControlItem(SpecialAction.ActionTypeId type)
@@ -122,12 +127,13 @@ namespace DS4WinWPF.DS4Forms.ViewModels.SpecialActions
                 WindowPath = windowPath,
                 WindowTitle = WindowTitle,
                 HoldSeconds = Delay,
+                CenterCursor = CenterCursor,
             };
         }
 
         public void SaveAction(SpecialAction action, bool edit = false)
         {
-            specialActionRepository.SaveAction(action.name, action.controls, 11, windowPath, edit, delay, WindowTitle, actionId: action.id);
+            specialActionRepository.SaveAction(action.name, action.controls, 11, windowPath, edit, delay, WindowTitle, actionId: action.id, centerCursor: CenterCursor);
         }
 
         public override bool IsValid(SpecialAction action)

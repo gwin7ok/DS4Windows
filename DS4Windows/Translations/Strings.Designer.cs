@@ -3237,6 +3237,15 @@ namespace DS4WinWPF.Translations {
         }
 
         /// <summary>
+        ///   Looks up a localized string similar to Move the mouse pointer to the center of the window after focusing.
+        /// </summary>
+        public static string SpecialActionEdit_FocusWindowCenterCursor {
+            get {
+                return ResourceManager.GetString("SpecialActionEdit.FocusWindowCenterCursor", resourceCulture);
+            }
+        }
+
+        /// <summary>
         ///   Looks up a localized string similar to Drag this mark onto a window and release to set its program path and window title.
         /// </summary>
         public static string SpecialActionEdit_FocusWindowDragTip {

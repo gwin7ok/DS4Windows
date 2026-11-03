@@ -22,7 +22,7 @@ namespace DS4Windows.Services
             this.windowSystem = windowSystem ?? throw new ArgumentNullException(nameof(windowSystem));
         }
 
-        public WindowFocusResult Focus(WindowTargetMatcher target)
+        public WindowFocusResult Focus(WindowTargetMatcher target, bool centerCursor = false)
         {
             if (target == null) throw new ArgumentNullException(nameof(target));
 
@@ -55,12 +55,17 @@ namespace DS4Windows.Services
                     if (AppLogger.IsDebugEnabled) AppLogger.LogDebug($"[WindowFocus] Restored minimized window: title={found.Title}");
                 }
 
-                if (windowSystem.IsForeground(window)) return WindowFocusResult.Focused;
+                if (windowSystem.IsForeground(window))
+                {
+                    if (centerCursor) MoveCursorToCenter(window, found);
+                    return WindowFocusResult.Focused;
+                }
 
                 if (TryActivate(window))
                 {
                     windowSystem.BringToTop(window);
                     if (AppLogger.IsDebugEnabled) AppLogger.LogDebug($"[WindowFocus] Focused window: path={found.ProcessPath}, title={found.Title}");
+                    if (centerCursor) MoveCursorToCenter(window, found);
                     return WindowFocusResult.Focused;
                 }
 
@@ -72,6 +77,13 @@ namespace DS4Windows.Services
                 AppLogger.LogWarn($"[WindowFocus] Unexpected error: {ex.GetType().Name}: {ex.Message}");
                 return WindowFocusResult.Failed;
             }
+        }
+
+        /// <summary>前面化に成功したウィンドウの中央へ、マウスポインターを移動する。動かせなかったとき（最小化など）は、Debug ログだけ。</summary>
+        private void MoveCursorToCenter(IntPtr window, WindowCandidate found)
+        {
+            bool moved = windowSystem.MoveCursorToCenter(window);
+            if (AppLogger.IsDebugEnabled) AppLogger.LogDebug($"[WindowFocus] Cursor moved to window center: moved={moved}, title={found.Title}");
         }
 
         private WindowCandidate Find(WindowTargetMatcher target)

@@ -51,9 +51,13 @@ namespace DS4Windows.DI
         /// R-2: マクロ（<paramref name="mode"/>＝1）の Execute Mode（Once／Held／Toggle）。<c>Actions.xml</c> の <c>MacroExecuteMode</c> 要素に保存される
         /// （<paramref name="extras"/> には書かない）。マクロ以外では使わない。
         /// </param>
+        /// <param name="centerCursor">
+        /// Phase12-Step2 2j（R-4）: FocusWindow（<paramref name="mode"/>＝11）で、前面化のあと、ウィンドウの中央へマウスポインターを移動する。
+        /// <c>Actions.xml</c> の <c>CenterCursor</c> 要素（true のときだけ）に保存される。他の種別では使わない。
+        /// </param>
         void SaveAction(string name, string controls, int mode, string details, bool edit,
             double delayTime = 0.0, string extras = "", string actionId = null,
-            MacroExecuteMode macroExecuteMode = MacroExecuteMode.Once);
+            MacroExecuteMode macroExecuteMode = MacroExecuteMode.Once, bool centerCursor = false);
 
         /// <summary>
         /// Phase10-Step6 I5a: 名前で探した SA に、Extras（<see cref="SpecialAction.outputExtras"/>。Controls の Extras と同じ書式）を設定して <c>Actions.xml</c> へ保存する。

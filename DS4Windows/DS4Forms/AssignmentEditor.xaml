@@ -241,6 +241,9 @@
                                 <local:WindowTargetEditor x:Name="focusWindowTarget" Path="{Binding WindowPath, ValidatesOnNotifyDataErrors=True}"
                                                           Title="{Binding TitleText, ValidatesOnNotifyDataErrors=True}"
                                                           TitleMatchMode="{Binding TitleMatchMode}" />
+                                <!-- Phase12-Step2 2j: 前面化に成功したあと、そのウィンドウの中央へマウスポインターを移動する -->
+                                <CheckBox Content="{lex:Loc SpecialActionEdit.FocusWindowCenterCursor}" Margin="0,8,0,0"
+                                          IsChecked="{Binding CenterCursor}" />
                             </StackPanel>
                         </TabItem>
                         <!-- Phase10-Step3: 種別の「Default」「Unbound」（Controls のモードだけ）。入力欄はない -->

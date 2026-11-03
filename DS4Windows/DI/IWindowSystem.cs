@@ -41,6 +41,12 @@ namespace DS4Windows.Services
         void BringToTop(IntPtr window);
 
         /// <summary>
+        /// Phase12-Step2 2j: マウスポインターを、ウィンドウの外枠の中央へ移動する（画面の座標。複数モニターでも、仮想スクリーンの座標のまま）。
+        /// 最小化されている・外枠が取れない・面積がないときは動かさず、false。
+        /// </summary>
+        bool MoveCursorToCenter(IntPtr window);
+
+        /// <summary>
         /// Phase12-Step2 2i: 今のマウスカーソルの位置にあるウィンドウの、最上位の親（トップレベル）。ウィンドウがない・取得できないときは null。
         /// 位置は画面の座標（物理ピクセル）で、カーソルの取得と同じ座標系のため、画面の拡大率の変換は要らない。
         /// </summary>

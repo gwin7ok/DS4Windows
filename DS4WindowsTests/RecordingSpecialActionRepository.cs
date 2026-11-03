@@ -26,13 +26,16 @@ namespace DS4WindowsTests
         public List<SpecialAction> ActionList { get; } = new List<SpecialAction>();
         /// <summary>R-2: 最後の <c>SaveAction</c> に渡された、マクロの Execute Mode。</summary>
         public MacroExecuteMode SavedMacroExecuteMode { get; private set; }
+        /// <summary>Phase12-Step2 2j: 最後の <c>SaveAction</c> に渡された、FocusWindow の「中央へマウスポインターを移動する」。</summary>
+        public bool SavedCenterCursor { get; private set; }
         public bool LoadActions() => true;
         public void CreateStandardActions() { }
         public SpecialAction GetActionOrPlaceholder(string actionName) => null;
 
         public void SaveAction(string name, string controls, int mode, string details, bool edit, double delayTime = 0.0, string extras = "", string actionId = null,
-            MacroExecuteMode macroExecuteMode = MacroExecuteMode.Once)
+            MacroExecuteMode macroExecuteMode = MacroExecuteMode.Once, bool centerCursor = false)
         {
+            SavedCenterCursor = centerCursor;
             SavedMacroExecuteMode = macroExecuteMode;
             SavedActionId = actionId;
             SaveCount++;

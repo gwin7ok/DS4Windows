@@ -48,6 +48,7 @@ namespace DS4Windows.Services
             if (item.HideWindow) Child("HideWindow", "true");
             if (!string.IsNullOrEmpty(item.WindowPath)) Child("WindowPath", item.WindowPath);
             if (!string.IsNullOrEmpty(item.WindowTitle)) Child("WindowTitle", item.WindowTitle);
+            if (item.CenterCursor) Child("CenterCursor", "true");   // Phase12-Step2 2j
             if (!string.IsNullOrEmpty(item.ProfileName)) Child("ProfileName", item.ProfileName);
             if (!string.IsNullOrEmpty(item.ProfileId)) Child("ProfileId", item.ProfileId);   // Phase10-Step4d W3
             if (item.AutomaticUntrigger) Child("AutomaticUntrigger", "true");
@@ -106,6 +107,7 @@ namespace DS4Windows.Services
                     case "HideWindow": result.HideWindow = IsTrue(text); break;
                     case "WindowPath": result.WindowPath = text; break;
                     case "WindowTitle": result.WindowTitle = text; break;
+                    case "CenterCursor": result.CenterCursor = IsTrue(text); break;   // Phase12-Step2 2j
                     case "ProfileName": result.ProfileName = text; break;
                     case "ProfileId": result.ProfileId = text; break;   // Phase10-Step4d W3
                     case "AutomaticUntrigger": result.AutomaticUntrigger = IsTrue(text); break;

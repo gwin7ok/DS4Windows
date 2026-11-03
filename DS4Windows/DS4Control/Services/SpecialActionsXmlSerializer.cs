@@ -240,7 +240,7 @@ namespace DS4Windows.Services
         /// null のときは、編集（<paramref name="edit"/>）なら同じ名前の SA の ID を、新規なら新しい ID を使う。
         /// </param>
         public void SaveActionNew(string name, string controls, int mode, string details, bool edit, double delayTime = 0.0, string extras = "",
-            string actionId = null, MacroExecuteMode macroExecuteMode = MacroExecuteMode.Once)
+            string actionId = null, MacroExecuteMode macroExecuteMode = MacroExecuteMode.Once, bool centerCursor = false)
         {
             SpecialAction tempAction = null;
 
@@ -283,6 +283,7 @@ namespace DS4Windows.Services
                 case 11:
                     // Phase12-Step2 2c（R-4）: ウィンドウのフォーカス。details＝プログラムのパス、extras＝ウィンドウタイトル
                     tempAction = new SpecialAction(name, controls, "FocusWindow", details, delayTime, extras);
+                    tempAction.centerCursor = centerCursor;   // 2j: 前面化のあと、ウィンドウの中央へマウスポインターを移動する
                     break;
                 default:
                     break;

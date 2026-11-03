@@ -128,9 +128,9 @@ namespace DS4Windows
         // Global と同じ実体に対して動作する。
         public void SaveAction(string name, string controls, int mode, string details, bool edit,
             double delayTime = 0.0, string extras = "", string actionId = null,
-            MacroExecuteMode macroExecuteMode = MacroExecuteMode.Once)
+            MacroExecuteMode macroExecuteMode = MacroExecuteMode.Once, bool centerCursor = false)
         {
-            SaveActionAndReload(name, controls, mode, details, edit, delayTime, extras, actionId, macroExecuteMode);
+            SaveActionAndReload(name, controls, mode, details, edit, delayTime, extras, actionId, macroExecuteMode, centerCursor);
 
             // Phase7-Step8 W1: 旧 Global.SaveAction の末尾の処理。キー型（mode==4）を保存したときだけ、当該キーの実行時状態をリセットする
             try
@@ -234,13 +234,13 @@ namespace DS4Windows
         }
 
         private void SaveActionAndReload(string name, string controls, int mode, string details, bool edit, double delayTime, string extras, string actionId,
-            MacroExecuteMode macroExecuteMode)
+            MacroExecuteMode macroExecuteMode, bool centerCursor)
         {
             // Mark actionDone as uninitialized before mutating actions to reduce
             // the window where MapCustomAction can observe an inconsistent size.
             ClearAllActionEntries();
 
-            _actionsXml.SaveActionNew(name, controls, mode, details, edit, delayTime, extras, actionId, macroExecuteMode);
+            _actionsXml.SaveActionNew(name, controls, mode, details, edit, delayTime, extras, actionId, macroExecuteMode, centerCursor);
 
             // Reload actions from file and verify counts to avoid duplicated in-memory entries.
             ReloadActionsAndVerify("SaveAction");

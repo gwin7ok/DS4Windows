@@ -153,6 +153,9 @@
   <data name="SpecialActionEdit.FocusWindowPath" xml:space="preserve">
     <value>プログラムのパス</value>
   </data>
+  <data name="SpecialActionEdit.FocusWindowCenterCursor" xml:space="preserve">
+    <value>フォーカスしたあと、ウインドウの中央へマウスポインターを移動する</value>
+  </data>
   <data name="SpecialActionEdit.FocusWindowDragTip" xml:space="preserve">
     <value>このマークをウインドウの上までドラッグして離すと、そのウインドウのプログラムのパスとウインドウ名を設定します</value>
   </data>

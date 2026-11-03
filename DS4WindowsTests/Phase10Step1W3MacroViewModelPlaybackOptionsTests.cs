@@ -28,7 +28,7 @@ namespace DS4WindowsTests
             public SpecialAction GetActionOrPlaceholder(string actionName) => null;
 
             public void SaveAction(string name, string controls, int mode, string details, bool edit, double delayTime = 0.0, string extras = "", string actionId = null,
-                MacroExecuteMode macroExecuteMode = MacroExecuteMode.Once)
+                MacroExecuteMode macroExecuteMode = MacroExecuteMode.Once, bool centerCursor = false)
             {
                 SavedDetails = details;
                 SavedExtras = extras;

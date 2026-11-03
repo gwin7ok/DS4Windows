@@ -103,6 +103,15 @@ namespace DS4Windows.Services
 
         public void BringToTop(IntPtr window) => BringWindowToTop(window);
 
+        public bool MoveCursorToCenter(IntPtr window)
+        {
+            if (IsIconic(window)) return false;
+            if (!GetWindowRect(window, out RECT rect)) return false;
+            if (rect.Right <= rect.Left || rect.Bottom <= rect.Top) return false;
+
+            return SetCursorPos(rect.Left + (rect.Right - rect.Left) / 2, rect.Top + (rect.Bottom - rect.Top) / 2);
+        }
+
         public CapturedWindow GetWindowUnderCursor()
         {
             if (!GetCursorPos(out POINT point)) return null;
@@ -204,7 +213,22 @@ namespace DS4Windows.Services
             public int Y;
         }
 
+        [StructLayout(LayoutKind.Sequential)]
+        private struct RECT
+        {
+            public int Left;
+            public int Top;
+            public int Right;
+            public int Bottom;
+        }
+
         private const uint GA_ROOT = 2;
+
+        [DllImport("user32.dll")]
+        private static extern bool GetWindowRect(IntPtr hWnd, out RECT lpRect);
+
+        [DllImport("user32.dll")]
+        private static extern bool SetCursorPos(int x, int y);
 
         [DllImport("user32.dll")]
         private static extern bool GetCursorPos(out POINT lpPoint);

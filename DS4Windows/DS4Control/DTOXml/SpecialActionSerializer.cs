@@ -145,6 +145,14 @@ namespace DS4WinWPF.DS4Control.DTOXml
             return TypeString == "FocusWindow" && !string.IsNullOrEmpty(WindowTitle);
         }
 
+        // Phase12-Step2 2j（R-4）: FocusWindow の、前面化のあとにウィンドウの中央へマウスポインターを移動するか。true のときだけ書く（古いバージョンは未知の要素として読み飛ばす）
+        [XmlElement("CenterCursor")]
+        public bool CenterCursor { get; set; }
+        public bool ShouldSerializeCenterCursor()
+        {
+            return TypeString == "FocusWindow" && CenterCursor;
+        }
+
         [XmlElement("UnloadTrigger")]
         public string UnloadTrigger
         {

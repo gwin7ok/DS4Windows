@@ -11,6 +11,10 @@ namespace DS4Windows.Services
     /// </summary>
     public interface IWindowFocuser
     {
-        WindowFocusResult Focus(WindowTargetMatcher target);
+        /// <param name="centerCursor">
+        /// Phase12-Step2 2j: 前面化に成功したとき（すでに前面だった場合も含む）、そのウィンドウの中央へマウスポインターを移動する。
+        /// 見つからない・失敗のときは動かさない。
+        /// </param>
+        WindowFocusResult Focus(WindowTargetMatcher target, bool centerCursor = false);
     }
 }

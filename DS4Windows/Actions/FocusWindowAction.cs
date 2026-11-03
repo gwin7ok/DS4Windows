@@ -50,7 +50,7 @@ namespace DS4Windows.Actions
                 {
                     try
                     {
-                        WindowFocusResult result = _focuser.Focus(_target);
+                        WindowFocusResult result = _focuser.Focus(_target, _sa.centerCursor);
                         if (AppLogger.IsDebugEnabled) AppLogger.LogDebug($"[WindowFocus] Executed: id={Id}, path={_target.Path}, title={_target.Title}, result={result}");
                     }
                     catch (Exception ex)

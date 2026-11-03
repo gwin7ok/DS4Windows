@@ -51,6 +51,9 @@ namespace DS4Windows
         /// <summary>前面へ出すウィンドウのタイトル（SA の <c>extra</c>）。<see cref="WindowPath"/> と同じ規則。省略可（パスとタイトルの両方が空の指定は無効）。</summary>
         public string WindowTitle { get; set; } = string.Empty;
 
+        /// <summary>Phase12-Step2 2j: 前面化に成功したあと、そのウィンドウの中央へマウスポインターを移動する（SA の <c>centerCursor</c>）。</summary>
+        public bool CenterCursor { get; set; }
+
         // ---- Profile ----
 
         /// <summary>切り替え先のプロファイル名（SA の <c>details</c>）。</summary>
@@ -111,6 +114,7 @@ namespace DS4Windows
                 HideWindow = HideWindow,
                 WindowPath = WindowPath,
                 WindowTitle = WindowTitle,
+                CenterCursor = CenterCursor,
                 ProfileName = ProfileName,
                 ProfileId = ProfileId,
                 AutomaticUntrigger = AutomaticUntrigger,

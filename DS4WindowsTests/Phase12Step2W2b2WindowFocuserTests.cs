@@ -40,6 +40,16 @@ namespace DS4WindowsTests
 
             public CapturedWindow GetWindowUnderCursor() => null;
 
+            public List<IntPtr> CursorMovedTo = new List<IntPtr>();
+            public bool CursorMoveResult = true;
+
+            public bool MoveCursorToCenter(IntPtr window)
+            {
+                Calls.Add("MoveCursorToCenter");
+                CursorMovedTo.Add(window);
+                return CursorMoveResult;
+            }
+
             public bool IsMinimized(IntPtr window) => Minimized.Contains(window);
 
             public void Restore(IntPtr window)
@@ -98,6 +108,70 @@ namespace DS4WindowsTests
 
         private static WindowFocusResult Focus(FakeWindowSystem system, string path, string title)
             => new WindowFocuser(system).Focus(new WindowTargetMatcher(path, title));
+
+        // ---- Phase12-Step2 2j: 前面化のあと、ウィンドウの中央へマウスポインターを移動する ----
+
+        private static WindowFocusResult FocusCentering(FakeWindowSystem system, bool centerCursor, string path = "c:\\games\\game.exe")
+            => new WindowFocuser(system).Focus(new WindowTargetMatcher(path, null), centerCursor);
+
+        [Fact]
+        public void Focus_WithCenterCursor_MovesThePointerAfterTheWindowIsInFront()
+        {
+            var system = Windows(Game(A));
+            system.SucceedOnAttempt = 1;
+
+            Assert.Equal(WindowFocusResult.Focused, FocusCentering(system, true));
+
+            Assert.Equal(new[] { A }, system.CursorMovedTo);
+            Assert.True(system.Calls.IndexOf("BringToTop") < system.Calls.IndexOf("MoveCursorToCenter"));
+        }
+
+        [Fact]
+        public void Focus_WithoutCenterCursor_DoesNotMoveThePointer()
+        {
+            var system = Windows(Game(A));
+            system.SucceedOnAttempt = 1;
+
+            Assert.Equal(WindowFocusResult.Focused, FocusCentering(system, false));
+            Assert.Empty(system.CursorMovedTo);
+        }
+
+        [Fact]
+        public void Focus_WithCenterCursor_AlsoMovesThePointer_WhenTheWindowWasAlreadyInFront()
+        {
+            var system = Windows(Game(A));
+            system.Foreground = A;
+
+            Assert.Equal(WindowFocusResult.Focused, FocusCentering(system, true));
+            Assert.Equal(new[] { A }, system.CursorMovedTo);
+        }
+
+        [Fact]
+        public void Focus_WithCenterCursor_DoesNotMoveThePointer_WhenNotFoundOrFailed()
+        {
+            var notFound = Windows(Game(A));
+            Assert.Equal(WindowFocusResult.NotFound, FocusCentering(notFound, true, "c:\\other\\app.exe"));
+            Assert.Empty(notFound.CursorMovedTo);
+
+            var failed = Windows(Game(A));   // 前面化が一度も成功しない
+            Assert.Equal(WindowFocusResult.Failed, FocusCentering(failed, true));
+            Assert.Empty(failed.CursorMovedTo);
+
+            var hung = Windows(Game(A));
+            hung.Hung.Add(A);
+            Assert.Equal(WindowFocusResult.Failed, FocusCentering(hung, true));
+            Assert.Empty(hung.CursorMovedTo);
+        }
+
+        [Fact]
+        public void Focus_WithCenterCursor_StillReturnsFocused_WhenThePointerCouldNotBeMoved()
+        {
+            var system = Windows(Game(A));
+            system.SucceedOnAttempt = 1;
+            system.CursorMoveResult = false;   // 最小化のままなど
+
+            Assert.Equal(WindowFocusResult.Focused, FocusCentering(system, true));
+        }
 
         [Fact]
         public void Focus_EmptyTarget_ReturnsInvalidTarget_WithoutEnumerating()

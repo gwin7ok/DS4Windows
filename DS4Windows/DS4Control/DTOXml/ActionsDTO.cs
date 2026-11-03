@@ -71,6 +71,7 @@ namespace DS4WinWPF.DS4Control.DTOXml
                         actionSerializer.TypeString = action.type;
                         actionSerializer.Details = action.details;
                         actionSerializer.WindowTitle = action.extra ?? string.Empty;
+                        actionSerializer.CenterCursor = action.centerCursor;
                         actionSerializer.Delay = action.delayTime;
                         break;
                     case SpecialAction.ActionTypeId.Profile:
@@ -185,6 +186,7 @@ namespace DS4WinWPF.DS4Control.DTOXml
                             actionSerializer.Trigger, actionSerializer.TypeString,
                             actionSerializer.Details, actionSerializer.Delay,
                             actionSerializer.WindowTitle);
+                        tempAction.centerCursor = actionSerializer.CenterCursor;
                         break;
                     case "Profile":
                         {

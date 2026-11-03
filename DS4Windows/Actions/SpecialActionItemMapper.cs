@@ -54,6 +54,7 @@ namespace DS4Windows.Actions
                 case SpecialAction.ActionTypeId.FocusWindow:
                     item.WindowPath = sa.details ?? string.Empty;
                     item.WindowTitle = sa.extra ?? string.Empty;
+                    item.CenterCursor = sa.centerCursor;
                     break;
                 case SpecialAction.ActionTypeId.Profile:
                     item.ProfileName = sa.details ?? string.Empty;
@@ -113,6 +114,7 @@ namespace DS4Windows.Actions
                 case SpecialAction.ActionTypeId.FocusWindow:
                     sa.details = item.WindowPath ?? string.Empty;
                     sa.extra = item.WindowTitle ?? string.Empty;
+                    sa.centerCursor = item.CenterCursor;
                     break;
                 case SpecialAction.ActionTypeId.Profile:
                     sa.details = item.ProfileName;
