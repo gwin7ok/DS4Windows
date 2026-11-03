@@ -955,6 +955,10 @@ namespace DS4WinWPF.DS4Forms
 
         private void HoverConBtn_Click(object sender, RoutedEventArgs e)
         {
+            // 500ms の遅延の前にクリックされたときも、クリックしたボタンの割り当てを開く（選択を先に確定する）
+            CancelHoverSelect();
+            if (sender is Button clicked) SelectHoveredControl(clicked);
+
             MappedControl mpControl = mappingListVM.Mappings[mappingListVM.SelectedIndex];
             ShowControlAssignmentEditor(mpControl, updateHighlight: true);
         }

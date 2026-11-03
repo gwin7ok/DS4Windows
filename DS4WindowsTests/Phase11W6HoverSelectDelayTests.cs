@@ -49,6 +49,21 @@ namespace DS4WindowsTests
         }
 
         [Fact]
+        public void AClickBeforeTheDelay_SelectsTheClickedButtonFirst()
+        {
+            string code = Code();
+            if (code == null) return;
+
+            int click = code.IndexOf("private void HoverConBtn_Click(", System.StringComparison.Ordinal);
+            Assert.True(click >= 0);
+            string body = code.Substring(click, 300);
+            int cancel = body.IndexOf("CancelHoverSelect();", System.StringComparison.Ordinal);
+            int select = body.IndexOf("SelectHoveredControl(clicked);", System.StringComparison.Ordinal);
+            int open = body.IndexOf("mappingListVM.Mappings[mappingListVM.SelectedIndex]", System.StringComparison.Ordinal);
+            Assert.True(cancel >= 0 && select > cancel && open > select);
+        }
+
+        [Fact]
         public void TheControllerInputHighlight_StaysImmediate()
         {
             string code = Code();
