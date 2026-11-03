@@ -769,19 +769,13 @@ namespace DS4Windows
                     if (btReport)
                     {
                         if (hDevice.ReadFile(btInputReport) != HidDevice.ReadStatus.Success) return;
-                        if (btInputReport[0] != 0x11)
-                        {
-                            AppLogger.LogInfo($"[DI][BatteryDiag] prime attempt {attempt}: report id 0x{btInputReport[0]:X2} skipped");
-                            continue;
-                        }
+                        if (btInputReport[0] != 0x11) continue;
                         battery = DecodeBatteryPercent(btInputReport[2 + 30], out _);   // inputReport[30] は btInputReport[2 + 30]
-                        AppLogger.LogInfo($"[DI][BatteryDiag] prime attempt {attempt} (BT): power byte 0x{btInputReport[2 + 30]:X2} -> {battery}%");
                     }
                     else
                     {
                         if (hDevice.ReadFile(inputReport) != HidDevice.ReadStatus.Success) return;
                         battery = DecodeBatteryPercent(inputReport[30], out _);
-                        AppLogger.LogInfo($"[DI][BatteryDiag] prime attempt {attempt} (USB): power byte 0x{inputReport[30]:X2} -> {battery}%");
                     }
 
                     return;
@@ -1244,8 +1238,6 @@ namespace DS4Windows
                         maxBatteryValue = charging ? BATTERY_MAX_USB : BATTERY_MAX;
                         tempBattery = (tempByte & 0x0f) * 100 / maxBatteryValue;
                         tempBattery = Math.Min(tempBattery, 100);
-                        if (tempBattery != battery)
-                            AppLogger.LogInfo($"[DI][BatteryDiag] loop: power byte 0x{tempByte:X2} -> {tempBattery}% (was {battery}%, frame {cState.FrameCounter})");
                         UpdateBattery(tempBattery);
 
                         cState.Battery = (byte)battery;
