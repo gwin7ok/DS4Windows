@@ -1,7 +1,7 @@
 # Phase12-Step3 個別計画書: R-3（マクロのマウスポインター移動）
 
 作成日: 2026-11-03
-状態: **承認済み（2026-11-03。D1〜D6 はそのまま）。着手中（3e まで実装・実機確認済み。残りは 3f）**
+状態: **完了（2026-11-03。3b〜3e と §10・§11 の追加要望を実装・実機確認済み。3f で文書を更新）**
 関連: `Release-Backlog.md` R-3、[Issue #2](https://github.com/gwin7ok/DS4Windows/issues/2)（本文は取得できず。台帳のタイトル「マクロに、マウスポインタを移動する機能を追加」を正とする）、`Log-Policy.md`、`Phase12-Step2-Plan.md`（2h〜2j の部品を再利用する）
 ブランチ: `Phase12`
 
@@ -114,3 +114,15 @@
 - 実装済み・実機確認 OK（2026-11-03）: 一覧を `SelectionMode="Extended"` にし、`MacroStepIndex` は「選択行のうちいちばん上の行（なければ -1）」に変えた（`RecordBoxViewModel.FirstIndexOf`）。Record／Insert Wait／Add Mouse Move は、選択がなければいちばん下へ、複数選択ならいちばん上の選択行の前へ入れる（Insert Wait は、以前は選択がないと何もしなかった）。削除は `RemoveSteps`、並べ替えは `MoveSteps`（選んだ行を元の順のまま 1 かたまりで移す。同じ位置へ落としたら何も変えない）。複数選択の行を押してドラッグするときは、ドラッグせずに離すまで選択を 1 行にしない。行の編集中は Delete で行を消さない。
 - 検証: Debug ALL 警告 0・エラー 0、DS4WindowsTests 3,041 件（+18）と StandaloneTests 11 件が合格。
 
+## 11. 追加要望: 記録画面の右側ボタンの並び順と Add Mouse Move の基準（2026-11-03）
+
+- 要望: 右側のボタンを、Record → Record Delays → Record mouse movement → 基準の一覧 → Add Mouse Move（説明）→ Insert Wait（説明）→ Clear → Load／Save の順にする。Add Mouse Move が追加するステップのモードを、基準の一覧の選択に合わせる。
+- 実装済み・実機確認 OK（コミット 37d34173）: `RecordBox.xaml` の並べ替え、`RecordBoxViewModel.AddPointerMoveStep(index, mode)`（既定は絶対）、`AddMouseMoveBtn_Click` が `PointerRecordModeIndex` を渡す。検証: Debug ALL 警告 0・エラー 0、DS4WindowsTests 3,043 件と StandaloneTests 11 件が合格。
+
+## 12. 完了の記録（3f）
+
+- 完了条件 §8 の ①〜⑤ は、3d・3e・§10・§11 の実機確認（DS4 実機）で確認済み。
+- 決定事項の結果: D1（値の体系）・D2（前面ウィンドウの外枠の左上を原点）・D3（`WH_MOUSE_LL` で記録。既定オフ）・D4（5 px・20 ms で間引き。上限 2,000）・D5（`SetCursorPos`。実機で動作を確認したため `SendInput` への切り替えは不要）・D6（失敗は Debug ログのみ）は、すべて計画どおり。
+- 古い版との互換: 保存形式（XML）は変えていない。移動を含むマクロを古い版に戻すと、移動の値はライトバーの色として解釈される（色が崩れるだけ）。
+- ログ: 移動の実行は `[MacroMove]`（Debug）。`Log-Policy.md` に沿う。既存のログは変えていない。
+- 残り: GitHub への公開とバージョン番号（4.3.0 など）の決定は、ユーザーの指示を待つ。
