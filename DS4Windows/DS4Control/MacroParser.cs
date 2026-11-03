@@ -157,7 +157,14 @@ namespace DS4Windows
             MacroStep.StepType type = MacroStep.StepType.ActDown;
             MacroStep.StepOutput outType = MacroStep.StepOutput.Key;
 
-            if (value >= 1000000000)
+            if (MacroPointerMove.IsPointerMoveValue(value))
+            {
+                // Phase12-Step3 3b（R-3）: マウスポインターの移動。ライトバー（最大 1,255,255,255）より上の範囲なので、先に判定する
+                outType = MacroStep.StepOutput.PointerMove;
+                type = MacroStep.StepType.ActDown;
+                name = MacroPointerMove.TryFromMacroValue(value, out MacroPointerMove move) ? move.DisplayName : "Move (unsupported)";
+            }
+            else if (value >= 1000000000)
             {
                 outType = MacroStep.StepOutput.Lightbar;
                 if (value > 1000000000)

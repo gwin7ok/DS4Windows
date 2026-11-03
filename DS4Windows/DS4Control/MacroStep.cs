@@ -41,6 +41,8 @@ namespace DS4Windows
             Button,
             Rumble,
             Lightbar,
+            // Phase12-Step3 3b（R-3）: マウスポインターの移動（MacroPointerMove）。既存の値は変えないため、末尾に足す
+            PointerMove,
         }
 
         private string name;
@@ -86,6 +88,10 @@ namespace DS4Windows
             if (actType == StepType.Wait)
             {
                 Name = $"Wait {value - 300}ms";
+            }
+            else if (outputType == StepOutput.PointerMove)
+            {
+                Name = MacroPointerMove.TryFromMacroValue(value, out MacroPointerMove move) ? move.DisplayName : "Move (unsupported)";
             }
             else if (outputType == StepOutput.Rumble)
             {
