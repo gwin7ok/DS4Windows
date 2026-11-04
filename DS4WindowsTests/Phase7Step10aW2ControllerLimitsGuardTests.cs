@@ -16,23 +16,23 @@ namespace DS4WindowsTests
     {
         private static readonly string[] Files =
         {
-            "DS4Windows/DS4Control/BackingStore.cs",
-            "DS4Windows/Actions/ActionEntry.cs",
-            "DS4Windows/Actions/DefaultActionManager.cs",
-            "DS4Windows/Actions/DefaultMacroPlayer.cs",
+            "DS4Windows/Core/Settings/BackingStore.cs",
+            "DS4Windows/Processing/Actions/ActionEntry.cs",
+            "DS4Windows/Processing/Actions/DefaultActionManager.cs",
+            "DS4Windows/Processing/Actions/DefaultMacroPlayer.cs",
             "DS4Windows/App.xaml.cs",
-            "DS4Windows/DS4Control/ControlService.cs",
-            "DS4Windows/DS4Control/DS4LightBar.cs",
-            "DS4Windows/DS4Control/DTOXml/AppSettingsDTO.cs",
-            "DS4Windows/DS4Control/DTOXml/AutoProfileEntrySerializer.cs",
-            "DS4Windows/DS4Control/OutputSlotManager.cs",
-            "DS4Windows/DS4Control/Profiles/AutoProfileEntity.cs",
-            "DS4Windows/DS4Control/Services/DeviceStateService.cs",
-            "DS4Windows/DS4Control/Services/EnvironmentService.cs",
-            "DS4Windows/DS4Control/Services/OutputSlotService.cs",
-            "DS4Windows/DS4Forms/MainWindow.xaml.cs",
-            "DS4Windows/DS4Forms/MainWindow.Ipc.cs",   // Phase9 9-F F-2b: IPC の処理を移した
-            "DS4Windows/DS4Forms/ProfileEditor.xaml.cs",
+            "DS4Windows/Processing/ControlService.cs",
+            "DS4Windows/Input/DS4LightBar.cs",
+            "DS4Windows/Core/Persistence/Dto/AppSettingsDTO.cs",
+            "DS4Windows/Core/Persistence/Dto/AutoProfileEntrySerializer.cs",
+            "DS4Windows/Output/OutputSlotManager.cs",
+            "DS4Windows/Core/Profiles/AutoProfileEntity.cs",
+            "DS4Windows/Processing/Services/DeviceStateService.cs",
+            "DS4Windows/Core/Platform/EnvironmentService.cs",
+            "DS4Windows/Output/Services/OutputSlotService.cs",
+            "DS4Windows/UI/MainWindow.xaml.cs",
+            "DS4Windows/UI/MainWindow.Ipc.cs",   // Phase9 9-F F-2b: IPC の処理を移した
+            "DS4Windows/UI/ProfileEditor.xaml.cs",
         };
 
         private static readonly Regex Constant = new Regex(
@@ -49,14 +49,14 @@ namespace DS4WindowsTests
         [Fact]
         public void TheFiles_DoNotReferenceTheGlobalConstants()
         {
-            string anchor = SourceFileLocator.Find("DS4Windows/DS4Control/BackingStore.cs"); // Phase7-Step10d W5: Global.cs は削除したため、同じフォルダーの BackingStore.cs を起点にする
+            string anchor = SourceFileLocator.Find("DS4Windows/Core/Settings/BackingStore.cs"); // Phase7-Step10d W5: Global.cs は削除したため、同じフォルダーの BackingStore.cs を起点にする
             if (anchor == null)
             {
                 _output.WriteLine("ソースが見つからないため検査を省略した。");
                 return;
             }
 
-            string root = Path.GetFullPath(Path.Combine(Path.GetDirectoryName(anchor), "..", ".."));
+            string root = SourceFileLocator.RootFromAnchor(anchor);
             var offenders = Files
                 .Where(f => Constant.IsMatch(StripComments(File.ReadAllText(Path.Combine(root, f)))))
                 .ToArray();

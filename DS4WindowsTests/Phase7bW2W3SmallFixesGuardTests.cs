@@ -31,7 +31,7 @@ namespace DS4WindowsTests
         [Fact]
         public void Mouse_ReadsTheGyroMouseStickHorizontalAxis_OfItsOwnDevice()
         {
-            string path = SourceFileLocator.Find("DS4Windows/DS4Control/Mouse.cs");
+            string path = SourceFileLocator.Find("DS4Windows/Processing/Mouse.cs");
             if (path == null)
             {
                 _output.WriteLine("ソースが見つからないため検査を省略した。");

@@ -46,17 +46,17 @@ namespace DS4WindowsTests
         [Fact]
         public void KeptButUnconnectedMembers_CarryAPhase8Todo()
         {
-            string anchor = SourceFileLocator.Find("DS4Windows/DS4Control/BackingStore.cs");
+            string anchor = SourceFileLocator.Find("DS4Windows/Core/Settings/BackingStore.cs");
             if (anchor == null)
             {
                 _output.WriteLine("ソースが見つからないため検査を省略した。");
                 return;
             }
 
-            string root = Path.GetFullPath(Path.Combine(Path.GetDirectoryName(anchor), "..", ".."));
-            AssertTodoBefore(root, "DS4Windows/DI/IAppSettingsService.cs", "event EventHandler<string> SettingChanged;");
-            AssertTodoBefore(root, "DS4Windows/DI/ISpecialActionRepository.cs", "event EventHandler ActionsChanged;");
-            AssertTodoBefore(root, "DS4Windows/DI/IProfileSettingsService.cs", "bool[] UseTempProfileArray { get; set; }");
+            string root = SourceFileLocator.RootFromAnchor(anchor);
+            AssertTodoBefore(root, "DS4Windows/Processing/Abstractions/IAppSettingsService.cs", "event EventHandler<string> SettingChanged;");
+            AssertTodoBefore(root, "DS4Windows/Core/Abstractions/ISpecialActionRepository.cs", "event EventHandler ActionsChanged;");
+            AssertTodoBefore(root, "DS4Windows/Core/Abstractions/IProfileSettingsService.cs", "bool[] UseTempProfileArray { get; set; }");
         }
 
         private static void AssertTodoBefore(string root, string relative, string declaration)

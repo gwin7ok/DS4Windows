@@ -37,7 +37,7 @@ namespace DS4WindowsTests
         [Fact]
         public void TheDisconnectHandler_ClearsTheTempProfileState_OfTheDisconnectedSlot()
         {
-            string code = Normalized("DS4Windows/DS4Control/Services/DeviceDisconnectHandler.cs");
+            string code = Normalized("DS4Windows/Processing/Services/DeviceDisconnectHandler.cs");
             if (code == null) return;
 
             int release = code.IndexOf("_profileSlotApplier.ReleaseSlot(ind);", StringComparison.Ordinal);
@@ -51,7 +51,7 @@ namespace DS4WindowsTests
         public void TheRememberedProfileOfAReconnect_IgnoresTemporaryProfiles()
         {
             // S9-5（実機）: 自動プロファイルの verifyG が「直前のプロファイル」として記憶され、再接続で最初から適用されていた
-            string code = Normalized("DS4Windows/DS4Control/ControlService.cs");
+            string code = Normalized("DS4Windows/Processing/ControlService.cs");
             if (code == null) return;
 
             int method = code.IndexOf("private void RememberAppliedProfile(", StringComparison.Ordinal);
@@ -65,8 +65,8 @@ namespace DS4WindowsTests
         public void AfterTheClear_ReconnectUsesTheNormalRule_ThenTheRecheckAppliesTheAutoProfile()
         {
             // 再接続の通常適用は useAutoProfile=false の経路（GetUseTempProfile が false）、再照合は !useTemp && tempname != currentProfile で適用する
-            string selector = Normalized("DS4Windows/DS4Control/Services/ConnectionProfileSelector.cs");
-            string auto = Normalized("DS4Windows/DS4Control/Services/AutoProfileService.cs");
+            string selector = Normalized("DS4Windows/Processing/Services/ConnectionProfileSelector.cs");
+            string auto = Normalized("DS4Windows/Processing/Services/AutoProfileService.cs");
             if (selector == null || auto == null) return;
 
             Assert.Contains("if (!useAutoProfile) {", selector);

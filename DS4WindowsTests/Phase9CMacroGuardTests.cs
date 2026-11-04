@@ -51,15 +51,15 @@ namespace DS4WindowsTests
         [InlineData(@"\bEmptyMacroRepeatIntervalMs\b")]
         public void Mapping_NoLongerContains_TheMovedMembers(string pattern)
         {
-            string text = ReadWithoutComments("DS4Windows/DS4Control/Mapping.cs");
+            string text = ReadWithoutComments("DS4Windows/Processing/Mapping.cs");
             if (text == null) return;
 
             Assert.False(Regex.IsMatch(text, pattern), $"Mapping.cs に '{pattern}' が残っている（9-C で移した）");
         }
 
         [Theory]
-        [InlineData("DS4Windows/DS4Control/Services/MacroStepExecutor.cs")]
-        [InlineData("DS4Windows/DS4Control/Services/MacroPlayback.cs")]
+        [InlineData("DS4Windows/Processing/Services/MacroStepExecutor.cs")]
+        [InlineData("DS4Windows/Processing/Services/MacroPlayback.cs")]
         public void NewComponents_DoNotReferenceStaticEntryPoints(string relativePath)
         {
             string text = ReadWithoutComments(relativePath);
@@ -92,7 +92,7 @@ namespace DS4WindowsTests
         public void MacroStepExecutor_ExecuteIsAtMostTwoHundredLines_AfterTheFolding()
         {
             // Phase9 完了条件: 巨大メソッドは 200 行以下。畳み込み（Q4）の前は約 160 行で、既に満たしている
-            string path = SourceFileLocator.Find("DS4Windows/DS4Control/Services/MacroStepExecutor.cs");
+            string path = SourceFileLocator.Find("DS4Windows/Processing/Services/MacroStepExecutor.cs");
             if (path == null) return;
 
             string text = File.ReadAllText(path);

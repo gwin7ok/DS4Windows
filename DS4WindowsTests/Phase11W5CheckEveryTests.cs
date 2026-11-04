@@ -19,7 +19,7 @@ namespace DS4WindowsTests
     /// </summary>
     public class Phase11W5CheckEveryTests
     {
-        private const string MainWindowXaml = "DS4Windows/DS4Forms/MainWindow.xaml";
+        private const string MainWindowXaml = "DS4Windows/UI/MainWindow.xaml";
 
         static Phase11W5CheckEveryTests()
         {

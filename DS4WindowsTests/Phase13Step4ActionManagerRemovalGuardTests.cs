@@ -33,10 +33,10 @@ namespace DS4WindowsTests
         [Fact]
         public void ProductionSources_DoNotReferenceTheRemovedTypes()
         {
-            string anchor = SourceFileLocator.Find("DS4Windows/DS4Control/BackingStore.cs");
+            string anchor = SourceFileLocator.Find("DS4Windows/Core/Settings/BackingStore.cs");
             if (anchor == null) return;
 
-            string root = Path.GetFullPath(Path.Combine(Path.GetDirectoryName(anchor), "..", ".."));
+            string root = SourceFileLocator.RootFromAnchor(anchor);
             string sourceDir = Path.Combine(root, "DS4Windows");
             var pattern = new Regex(@"(?<![\w.])(?:DS4Windows\.)?ActionManager\.(?!ToggledOnChanged:)\w+|ServiceProviderHolder|ButtonSpecialActionOutput\.|SetProvider\s*\(");
 

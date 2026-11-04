@@ -96,7 +96,7 @@ namespace DS4WindowsTests
         [Fact]
         public void AppSettingsService_DoesNotReferenceRemovedGlobalForwarders()
         {
-            string text = Read("DS4Windows/DS4Control/Services/AppSettingsService.cs");
+            string text = Read("DS4Windows/Core/Settings/AppSettingsService.cs");
             if (text == null) return;
 
             List<string> used = Removed

@@ -44,7 +44,7 @@ namespace DS4WindowsTests
         [Fact]
         public void ServiceProviderHolderReferences_DoNotExceedBaseline()
         {
-            string anchor = SourceFileLocator.Find("DS4Windows/DS4Control/BackingStore.cs"); // Phase7-Step10d W5: Global.cs は削除したため、同じフォルダーの BackingStore.cs を起点にする
+            string anchor = SourceFileLocator.Find("DS4Windows/Core/Settings/BackingStore.cs"); // Phase7-Step10d W5: Global.cs は削除したため、同じフォルダーの BackingStore.cs を起点にする
             if (anchor == null)
             {
                 _output.WriteLine("ソースが見つからないため検査を省略した。");
@@ -52,7 +52,7 @@ namespace DS4WindowsTests
             }
 
             // <root>/DS4Windows/DS4Control/Global.cs → <root>
-            string root = Path.GetFullPath(Path.Combine(Path.GetDirectoryName(anchor), "..", ".."));
+            string root = SourceFileLocator.RootFromAnchor(anchor);
             string sourceDir = Path.Combine(root, "DS4Windows");
 
             var violations = new List<string>();

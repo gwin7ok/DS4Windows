@@ -193,7 +193,7 @@ namespace DS4WindowsTests
         {
             // Controls の Save（AssignmentEditor.SaveControlMode）は、SA のモードと同じく、種別ごとの入力の IsValid を呼ぶ（Default と Unbound は入力がないため除く）。
             // W6 の暫定の CanWrite（Load Profile の未選択だけ止める）は、IsValid が偽を返すことで不要になり、削除した
-            string path = SourceFileLocator.Find("DS4Windows/DS4Forms/AssignmentEditor.xaml.cs");
+            string path = SourceFileLocator.Find("DS4Windows/UI/AssignmentEditor.xaml.cs");
             if (path == null) return;
 
             string source = System.IO.File.ReadAllText(path);
@@ -211,7 +211,7 @@ namespace DS4WindowsTests
         public void TheErrorsAreShownWithARedBorder_OnTheTargetOfEachRequiredValue()
         {
             // 名前欄・トリガー欄と同じ仕組み（ValidatesOnNotifyDataErrors）で、必須の値がない入力を赤い枠で示す（Phase10-Step4c W3）
-            string path = SourceFileLocator.Find("DS4Windows/DS4Forms/AssignmentEditor.xaml");
+            string path = SourceFileLocator.Find("DS4Windows/UI/AssignmentEditor.xaml");
             if (path == null) return;
 
             string xaml = System.IO.File.ReadAllText(path);

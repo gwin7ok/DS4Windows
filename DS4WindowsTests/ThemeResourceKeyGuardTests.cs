@@ -24,8 +24,8 @@ namespace DS4WindowsTests
         }
 
         [Theory]
-        [InlineData("DS4Windows/DS4Forms/Themes/DarkTheme.xaml")]
-        [InlineData("DS4Windows/DS4Forms/Themes/DefaultTheme.xaml")]
+        [InlineData("DS4Windows/UI/Themes/DarkTheme.xaml")]
+        [InlineData("DS4Windows/UI/Themes/DefaultTheme.xaml")]
         public void ThemeDictionary_HasNoDuplicateKeys(string relativePath)
         {
             string path = SourceFileLocator.Find(relativePath);
@@ -62,8 +62,8 @@ namespace DS4WindowsTests
         [Fact]
         public void DarkTheme_DefinesEveryColorKeyThatTheLightThemeDefines()
         {
-            string dark = SourceFileLocator.Find("DS4Windows/DS4Forms/Themes/DarkTheme.xaml");
-            string light = SourceFileLocator.Find("DS4Windows/DS4Forms/Themes/DefaultTheme.xaml");
+            string dark = SourceFileLocator.Find("DS4Windows/UI/Themes/DarkTheme.xaml");
+            string light = SourceFileLocator.Find("DS4Windows/UI/Themes/DefaultTheme.xaml");
             if (dark == null || light == null)
             {
                 _output.WriteLine("テーマの XAML が見つからないため検査を省略した。");

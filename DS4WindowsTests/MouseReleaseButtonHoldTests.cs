@@ -13,7 +13,7 @@ namespace DS4WindowsTests
         [Fact]
         public void ReleaseButtonFlags_AreClearedOnlyAfterHoldTime()
         {
-            string path = SourceFileLocator.Find("DS4Windows/DS4Control/Mouse.cs");
+            string path = SourceFileLocator.Find("DS4Windows/Processing/Mouse.cs");
             if (path == null) return;
             string text = File.ReadAllText(path);
             text = Regex.Replace(text, @"/\*.*?\*/", string.Empty, RegexOptions.Singleline);

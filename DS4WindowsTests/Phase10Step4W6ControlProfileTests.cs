@@ -407,7 +407,7 @@ namespace DS4WindowsTests
         [Fact]
         public void TheRename_IsCalledFromTheMainWindowRename_NextToTheSaTargetUpdate()
         {
-            string path = SourceFileLocator.Find("DS4Windows/DS4Forms/MainWindow.xaml.cs");
+            string path = SourceFileLocator.Find("DS4Windows/UI/MainWindow.xaml.cs");
             if (path == null) return;
 
             string source = File.ReadAllText(path);

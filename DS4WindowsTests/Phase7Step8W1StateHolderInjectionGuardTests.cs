@@ -78,7 +78,7 @@ namespace DS4WindowsTests
         [Fact]
         public void Mapping_NoLongerHasTheMovedOrDeadMembers()
         {
-            string mapping = Read("DS4Windows/DS4Control/Mapping.cs");
+            string mapping = Read("DS4Windows/Processing/Mapping.cs");
             if (mapping == null) return;
 
             foreach (string name in new[]
@@ -94,9 +94,9 @@ namespace DS4WindowsTests
         [Fact]
         public void MouseAndControlService_ReceiveTheHoldersByConstructor()
         {
-            string mouse = Read("DS4Windows/DS4Control/Mouse.cs");
-            string control = Read("DS4Windows/DS4Control/ControlService.cs");
-            string registration = Read("DS4Windows/DI/ServiceRegistration.cs");
+            string mouse = Read("DS4Windows/Processing/Mouse.cs");
+            string control = Read("DS4Windows/Processing/ControlService.cs");
+            string registration = Read("DS4Windows/Composition/ServiceRegistration.cs");
             if (mouse == null || control == null || registration == null) return;
 
             Assert.DoesNotContain("StickMotionState.Shared", mouse);
@@ -111,7 +111,7 @@ namespace DS4WindowsTests
         [Fact]
         public void SpecialActionRepository_ResetsTheKeyStateAfterGlobalSaveAction_AndGlobalHasNoMappingReference()
         {
-            string repository = Read("DS4Windows/DS4Control/Services/SpecialActionRepository.cs");
+            string repository = Read("DS4Windows/Core/Persistence/SpecialActionRepository.cs");
             if (repository == null) return;
 
             int save = repository.IndexOf("SaveActionAndReload(", System.StringComparison.Ordinal);

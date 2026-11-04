@@ -16,7 +16,7 @@ namespace DS4WindowsTests
         [Fact]
         public void Mapping_EveryGetProfileActionsRawCall_CopiesTheListWithToArray()
         {
-            string path = SourceFileLocator.Find("DS4Windows/DS4Control/Mapping.cs");
+            string path = SourceFileLocator.Find("DS4Windows/Processing/Mapping.cs");
             if (path == null) return;
             string text = File.ReadAllText(path);
             text = Regex.Replace(text, @"/\*.*?\*/", string.Empty, RegexOptions.Singleline);

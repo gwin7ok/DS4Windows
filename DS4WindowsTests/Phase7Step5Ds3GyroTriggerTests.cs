@@ -88,7 +88,7 @@ namespace DS4WindowsTests
         [Fact]
         public void DS4SixAxis_DoesNotReferenceControlServiceOrRootHub()
         {
-            string text = Read("DS4Windows/DS4Library/DS4SixAxis.cs");
+            string text = Read("DS4Windows/Input/DS4SixAxis.cs");
             if (text == null) return;
 
             Assert.DoesNotContain("Program.rootHub", text);
@@ -101,7 +101,7 @@ namespace DS4WindowsTests
         public void ControlService_WiresTheTriggerFunctionWhenConnectingADevice()
         {
             // Phase9 9-E E-6f1: 接続の組み立ては DeviceConnector へ移った
-            string text = Read("DS4Windows/DS4Control/Services/DeviceConnector.cs");
+            string text = Read("DS4Windows/Processing/Services/DeviceConnector.cs");
             if (text == null) return;
 
             Assert.Matches(@"device\.SixAxis\.GyroControlsTriggerActive\s*=", text);

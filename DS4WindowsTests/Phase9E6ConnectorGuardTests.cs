@@ -48,7 +48,7 @@ namespace DS4WindowsTests
         [InlineData(@"\bPrepareDeviceMotion\(")]
         public void ControlService_NoLongerContains_TheMovedConnection(string pattern)
         {
-            string text = ReadWithoutComments("DS4Windows/DS4Control/ControlService.cs");
+            string text = ReadWithoutComments("DS4Windows/Processing/ControlService.cs");
             if (text == null) return;
 
             Assert.False(Regex.IsMatch(text, pattern), $"ControlService.cs に '{pattern}' が残っている（9-E E-6f1 で DeviceConnector へ移した）");
@@ -57,27 +57,27 @@ namespace DS4WindowsTests
         [Fact]
         public void ControlService_NoLongerHoldsOnReport_AndTheLifecycleCallsTheConnector()
         {
-            string text = ReadWithoutComments("DS4Windows/DS4Control/ControlService.cs");
+            string text = ReadWithoutComments("DS4Windows/Processing/ControlService.cs");
             if (text == null) return;
 
             // Phase9 9-E E-6f2: Start／HotPlug の本体が ServiceLifecycle へ移ったため、薄い委譲は不要になった（ライフサイクルが DeviceConnector を直接呼ぶ）
             Assert.DoesNotContain("PrepareConnectedInputControllerSettingEvents", text);
             Assert.DoesNotContain("BeginPrepareConnectedInputController", text);
-            string lifecycle = ReadWithoutComments("DS4Windows/DS4Control/Services/ServiceLifecycle.cs");
+            string lifecycle = ReadWithoutComments("DS4Windows/Processing/Services/ServiceLifecycle.cs");
             if (lifecycle == null) return;
             Assert.Contains("_deviceConnector.PrepareConnected(numControllers, device, index: i)", lifecycle);
             Assert.Contains("_deviceConnector.PrepareConnected(numControllers, device, Index)", lifecycle);
             // Phase13-Step5b: 入力レポートの処理（ホットパス）は InputReportProcessor へ移した。ControlService には窓口（IDeviceSlotHost）も残っていない
             Assert.DoesNotContain("On_Report", text);
             Assert.DoesNotContain("IDeviceSlotHost", text.Replace("IDeviceSlotHost（ActiveControllers", ""));
-            string processor = ReadWithoutComments("DS4Windows/DS4Control/Services/InputReportProcessor.cs");
+            string processor = ReadWithoutComments("DS4Windows/Processing/Services/InputReportProcessor.cs");
             Assert.Contains("public void OnReport(DS4Device device, EventArgs e, int ind)", processor);
         }
 
         [Fact]
         public void TheConnection_KeepsTheOriginalOrder()
         {
-            string text = ReadWithoutComments("DS4Windows/DS4Control/Services/DeviceConnector.cs");
+            string text = ReadWithoutComments("DS4Windows/Processing/Services/DeviceConnector.cs");
             if (text == null) return;
 
             string[] order =
@@ -115,7 +115,7 @@ namespace DS4WindowsTests
         [Fact]
         public void TheReportSubscription_CallsTheProcessorOnReport_WithTheSlotIndex()
         {
-            string text = ReadWithoutComments("DS4Windows/DS4Control/Services/DeviceConnector.cs");
+            string text = ReadWithoutComments("DS4Windows/Processing/Services/DeviceConnector.cs");
             if (text == null) return;
 
             Assert.Contains("inputReport.OnReport(sender, e, tempIdx);", text);   // Phase13-Step5b: 旧 host.OnReport
@@ -127,7 +127,7 @@ namespace DS4WindowsTests
             Assert.IsType<DeviceConnector>(TestHost.GetService<IDeviceConnector>());
             Assert.Same(TestHost.GetService<IDeviceConnector>(), TestHost.GetService<IDeviceConnector>());
 
-            string text = ReadWithoutComments("DS4Windows/DS4Control/Services/DeviceConnector.cs");
+            string text = ReadWithoutComments("DS4Windows/Processing/Services/DeviceConnector.cs");
             if (text == null) return;
 
             Assert.DoesNotContain("AppHost", text);

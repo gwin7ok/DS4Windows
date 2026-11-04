@@ -6,8 +6,8 @@
     <Application.Resources>
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
-                <ResourceDictionary Source="DS4Forms/Themes/DefaultTheme.xaml" />
-                <!--<ResourceDictionary Source="DS4Forms/Themes/DarkTheme.xaml" />-->
+                <ResourceDictionary Source="UI/Themes/DefaultTheme.xaml" />
+                <!--<ResourceDictionary Source="UI/Themes/DarkTheme.xaml" />-->
             </ResourceDictionary.MergedDictionaries>
 
             <!--<SolidColorBrush x:Key="ForegroundColor" Color="{x:Static SystemColors.ActiveCaptionTextColor}" />-->

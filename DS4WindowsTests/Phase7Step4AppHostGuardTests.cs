@@ -66,7 +66,7 @@ namespace DS4WindowsTests
         [Fact]
         public void AppHost_DoesNotDeclareRemovedOverloads()
         {
-            string text = Read("DS4Windows/DI/AppHost.cs");
+            string text = Read("DS4Windows/Composition/AppHost.cs");
             if (text == null) return;
 
             Assert.DoesNotMatch(@"CreateHost\s*\(\s*string\[\]", text);
@@ -78,7 +78,7 @@ namespace DS4WindowsTests
         [Fact]
         public void AppHost_DoesNotRecreateTheHostAfterDispose()
         {
-            string text = Read("DS4Windows/DI/AppHost.cs");
+            string text = Read("DS4Windows/Composition/AppHost.cs");
             if (text == null) return;
 
             // Phase7-Step10e W3: Dispose 後だけでなく、未構築のときも暗黙に作らない（_disposed フラグは不要になった）
@@ -130,7 +130,7 @@ namespace DS4WindowsTests
         [Fact]
         public void WelcomeDialog_NoLongerLoadsConfigItself()
         {
-            string text = Read("DS4Windows/DS4Forms/WelcomeDialog.xaml.cs");
+            string text = Read("DS4Windows/UI/WelcomeDialog.xaml.cs");
             if (text == null) return;
 
             Assert.DoesNotContain("loadConfig", text);

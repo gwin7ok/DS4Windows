@@ -37,7 +37,7 @@ namespace DS4WindowsTests
         [Fact]
         public void TheEditor_SwitchesTheTypeListToDefault_OnlyWhenDefaultWasPickedOrChanged()
         {
-            string code = Normalized("DS4Windows/DS4Forms/AssignmentEditor.xaml.cs");
+            string code = Normalized("DS4Windows/UI/AssignmentEditor.xaml.cs");
             if (code == null) return;
 
             Assert.Contains("bool wasDefault = pressKeyVM.SelectedActionType == DS4Windows.DS4ControlSettings.ActionType.Default; controlWindow.ShowDialog();", code);
@@ -47,7 +47,7 @@ namespace DS4WindowsTests
         [Fact]
         public void ThePicker_SetsDefaultPicked_OnlyWhereDefaultIsChosen()
         {
-            string code = Normalized("DS4Windows/DS4Forms/BindingWindow.xaml.cs");
+            string code = Normalized("DS4Windows/UI/BindingWindow.xaml.cs");
             if (code == null) return;
 
             Assert.Contains("public bool DefaultPicked { get; private set; }", code);

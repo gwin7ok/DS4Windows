@@ -19,8 +19,8 @@ namespace DS4WindowsTests
     /// </summary>
     public class MainWindowsAndTrayViewModelGlobalReferenceGuardTests
     {
-        private const string MainVmPath = "DS4Windows/DS4Forms/ViewModels/MainWindowsViewModel.cs";
-        private const string TrayVmPath = "DS4Windows/DS4Forms/ViewModels/TrayIconViewModel.cs";
+        private const string MainVmPath = "DS4Windows/UI/ViewModels/MainWindowsViewModel.cs";
+        private const string TrayVmPath = "DS4Windows/UI/ViewModels/TrayIconViewModel.cs";
 
         private readonly ITestOutputHelper _output;
 

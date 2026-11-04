@@ -244,14 +244,14 @@ namespace DS4WindowsTests
         [Fact]
         public void NoSourceFile_ReferencesRemovedMembersThroughGlobal()
         {
-            string anchor = SourceFileLocator.Find("DS4Windows/DS4Control/BackingStore.cs"); // Phase7-Step10d W5: Global.cs は削除したため、同じフォルダーの BackingStore.cs を起点にする
+            string anchor = SourceFileLocator.Find("DS4Windows/Core/Settings/BackingStore.cs"); // Phase7-Step10d W5: Global.cs は削除したため、同じフォルダーの BackingStore.cs を起点にする
             if (anchor == null)
             {
                 _output.WriteLine("ソースが見つからないため検査を省略した。");
                 return;
             }
 
-            string root = Path.GetFullPath(Path.Combine(Path.GetDirectoryName(anchor), "..", ".."));
+            string root = SourceFileLocator.RootFromAnchor(anchor);
             string sourceDir = Path.Combine(root, "DS4Windows");
             var offenders = new List<string>();
             foreach (string file in Directory.GetFiles(sourceDir, "*.cs", SearchOption.AllDirectories))
@@ -273,7 +273,7 @@ namespace DS4WindowsTests
         [Fact]
         public void PathService_StaticInitialization_DoesNotReferenceGlobal()
         {
-            string text = Read("DS4Windows/DS4Control/Services/PathService.cs");
+            string text = Read("DS4Windows/Core/Platform/PathService.cs");
             if (text == null) return;
 
             // Phase7-Step10d W5: Global を削除した。PathService は Global を一切参照しない（省略時の Global.store もやめ、config は呼び出し側が渡す）。

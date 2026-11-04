@@ -38,7 +38,7 @@ namespace DS4WindowsTests
         public void OutputSlotPersistence_GoesThroughTheContract()
         {
             string app = Read("DS4Windows/App.xaml.cs");
-            string control = Read("DS4Windows/DS4Control/ControlService.cs");
+            string control = Read("DS4Windows/Processing/ControlService.cs");
             if (app == null || control == null) return;
 
             Assert.Contains("_outputSlotService.LoadOutputSlots()", app);
@@ -58,9 +58,9 @@ namespace DS4WindowsTests
         [Fact]
         public void ControlServiceAndBackingStore_ReceiveTheirCollaborators()
         {
-            string control = Read("DS4Windows/DS4Control/ControlService.cs");
-            string store = Read("DS4Windows/DS4Control/BackingStore.cs");
-            string registration = Read("DS4Windows/DI/ServiceRegistration.cs");
+            string control = Read("DS4Windows/Processing/ControlService.cs");
+            string store = Read("DS4Windows/Core/Settings/BackingStore.cs");
+            string registration = Read("DS4Windows/Composition/ServiceRegistration.cs");
             if (control == null || store == null || registration == null) return;
 
             Assert.DoesNotContain("AppHost", control);
@@ -86,10 +86,10 @@ namespace DS4WindowsTests
         [Fact]
         public void MainWindowAndProfileEditor_DoNotUseTheLocator_AndAreCreatedThroughFactories()
         {
-            string main = Read("DS4Windows/DS4Forms/MainWindow.xaml.cs");
-            string editor = Read("DS4Windows/DS4Forms/ProfileEditor.xaml.cs");
+            string main = Read("DS4Windows/UI/MainWindow.xaml.cs");
+            string editor = Read("DS4Windows/UI/ProfileEditor.xaml.cs");
             string app = Read("DS4Windows/App.xaml.cs");
-            string registration = Read("DS4Windows/DI/ServiceRegistration.cs");
+            string registration = Read("DS4Windows/Composition/ServiceRegistration.cs");
             if (main == null || editor == null || app == null || registration == null) return;
 
             Assert.DoesNotContain("AppHost", main);
@@ -103,7 +103,7 @@ namespace DS4WindowsTests
         [Fact]
         public void AppLogger_UsesItsOwnNotificationService_SetByTheApp()
         {
-            string logger = Read("DS4Windows/DS4Control/AppLogger.cs");
+            string logger = Read("DS4Windows/Core/Logging/AppLogger.cs");
             string app = Read("DS4Windows/App.xaml.cs");
             if (logger == null || app == null) return;
 

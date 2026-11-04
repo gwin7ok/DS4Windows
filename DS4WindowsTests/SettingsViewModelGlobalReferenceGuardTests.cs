@@ -21,7 +21,7 @@ namespace DS4WindowsTests
     /// </summary>
     public class SettingsViewModelGlobalReferenceGuardTests
     {
-        private const string VmPath = "DS4Windows/DS4Forms/ViewModels/SettingsViewModel.cs";
+        private const string VmPath = "DS4Windows/UI/ViewModels/SettingsViewModel.cs";
 
         // Step9-3a・3b で置換済み（SettingsViewModel の非定数 Global 参照は 0 件。定数も使っていない）。
         private static readonly string[] ResolvedMembers =

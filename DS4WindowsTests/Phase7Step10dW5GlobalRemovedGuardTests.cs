@@ -41,14 +41,14 @@ namespace DS4WindowsTests
         [Fact]
         public void NoSource_UsesTheStaticGlobalDirective_OrAGlobalMemberInCode()
         {
-            string anchor = SourceFileLocator.Find("DS4Windows/DS4Control/BackingStore.cs");
+            string anchor = SourceFileLocator.Find("DS4Windows/Core/Settings/BackingStore.cs");
             if (anchor == null)
             {
                 _output.WriteLine("ソースが見つからないため検査を省略した。");
                 return;
             }
 
-            string root = Path.GetFullPath(Path.Combine(Path.GetDirectoryName(anchor), "..", ".."));
+            string root = SourceFileLocator.RootFromAnchor(anchor);
             // ログ文言の文字列（LanguageSelectDialog／LanguagePackViewModel の "Global.UseLang"）は、ログ内容の維持のために残してあり、参照ではない
             var logLiteral = new Regex("\"[^\"\\r\\n]*Global\\.UseLang[^\"\\r\\n]*\"");
             var offenders = Directory.GetFiles(Path.Combine(root, "DS4Windows"), "*.cs", SearchOption.AllDirectories)

@@ -86,7 +86,7 @@ namespace DS4WindowsTests
         [Fact]
         public void Mapping_HoldsNoStickMotionStateOfItsOwn_AndNoNestedStateTypes()
         {
-            string mapping = Read("DS4Windows/DS4Control/Mapping.cs");
+            string mapping = Read("DS4Windows/Processing/Mapping.cs");
             if (mapping == null) return;
 
             // Phase7-Step8 W2: 転送プロパティは削除し、コンストラクターで受けた保持クラスの配列を readonly で複製して持つ
@@ -111,8 +111,8 @@ namespace DS4WindowsTests
         [Fact]
         public void MouseAndControlService_UseTheHolderAndTheTopLevelTypes()
         {
-            string mouse = Read("DS4Windows/DS4Control/Mouse.cs");
-            string control = Read("DS4Windows/DS4Control/ControlService.cs");
+            string mouse = Read("DS4Windows/Processing/Mouse.cs");
+            string control = Read("DS4Windows/Processing/ControlService.cs");
             if (mouse == null || control == null) return;
 
             Assert.DoesNotContain("Mapping.gyroStick", mouse);
@@ -133,7 +133,7 @@ namespace DS4WindowsTests
         [Fact]
         public void Registration_RegistersTheSharedState()
         {
-            string registration = Read("DS4Windows/DI/ServiceRegistration.cs");
+            string registration = Read("DS4Windows/Composition/ServiceRegistration.cs");
             if (registration == null) return;
 
             Assert.Contains("services.AddSingleton<StickMotionState>();", registration); // Phase7-Step8 W4: Shared は削除した

@@ -222,7 +222,7 @@ namespace DS4WindowsTests
         [Fact]
         public void TheSources_NoLongerMentionTheRemovedFeature_OutsideTheKeptHolder()
         {
-            string repo = SourceFileLocator.Find("DS4Windows/DS4Control/Mapping.cs");
+            string repo = SourceFileLocator.Find("DS4Windows/Processing/Mapping.cs");
             if (repo == null) return;
             string product = Path.GetDirectoryName(Path.GetDirectoryName(repo));   // DS4Windows/
 

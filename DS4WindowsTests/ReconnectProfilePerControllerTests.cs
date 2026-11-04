@@ -116,12 +116,12 @@ namespace DS4WindowsTests
         [Fact]
         public void TheControlService_DecidesPerController_AndRemembersEveryAppliedProfile()
         {
-            string path = SourceFileLocator.Find("DS4Windows/DS4Control/ControlService.cs");
+            string path = SourceFileLocator.Find("DS4Windows/Processing/ControlService.cs");
             if (path == null) return;
 
             string controlServiceText = File.ReadAllText(path);
             // Phase9 9-E E-6a: 判定の本体は ConnectionProfileSelector へ移った
-            string selectorPath = SourceFileLocator.Find("DS4Windows/DS4Control/Services/ConnectionProfileSelector.cs");
+            string selectorPath = SourceFileLocator.Find("DS4Windows/Processing/Services/ConnectionProfileSelector.cs");
             if (selectorPath == null) return;
             string text = File.ReadAllText(selectorPath);
             int first = text.IndexOf("_deviceStateService.IsFirstConnection(index, connectedMac)", StringComparison.Ordinal);

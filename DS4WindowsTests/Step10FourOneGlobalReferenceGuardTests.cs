@@ -17,9 +17,9 @@ namespace DS4WindowsTests
     {
         private static readonly string[] Files =
         {
-            "DS4Windows/DS4Control/WindowPlacementHelper.cs",
-            "DS4Windows/DS4Control/Profiles/ProfileList.cs",
-            "DS4Windows/DS4Control/Profiles/ProfileEntity.cs",
+            "DS4Windows/Core/Utilities/WindowPlacementHelper.cs",
+            "DS4Windows/Core/Profiles/ProfileList.cs",
+            "DS4Windows/Core/Profiles/ProfileEntity.cs",
         };
 
         private static string ReadWithoutComments(string relativePath)

@@ -65,7 +65,7 @@ namespace DS4WindowsTests
         [Fact]
         public void OscServiceSource_HasNoDirectSenderSend_AndControlServiceHasNoSendOsc()
         {
-            string path = SourceFileLocator.Find("DS4Windows/DS4Control/Services/OscService.cs");
+            string path = SourceFileLocator.Find("DS4Windows/Output/Services/OscService.cs");
             if (path == null) return;
 
             string text = StripComments(File.ReadAllText(path));
@@ -74,7 +74,7 @@ namespace DS4WindowsTests
             Assert.DoesNotContain("_sender.Send(", text);
             Assert.Contains("private void SendOsc(string address, object value)", text);
 
-            string controlPath = SourceFileLocator.Find("DS4Windows/DS4Control/ControlService.cs");
+            string controlPath = SourceFileLocator.Find("DS4Windows/Processing/ControlService.cs");
             if (controlPath == null) return;
             string control = StripComments(File.ReadAllText(controlPath));
             Assert.DoesNotContain("SendOsc(", control);

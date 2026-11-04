@@ -64,7 +64,7 @@ namespace DS4WindowsTests
         [InlineData(@"\bRunHotPlug\b")]
         public void ControlService_NoLongerContains_TheMovedLifecycle(string pattern)
         {
-            string text = ReadWithoutComments("DS4Windows/DS4Control/ControlService.cs");
+            string text = ReadWithoutComments("DS4Windows/Processing/ControlService.cs");
             if (text == null) return;
 
             Assert.False(Regex.IsMatch(text, pattern), $"ControlService.cs に '{pattern}' が残っている（9-E E-6f2 で ServiceLifecycle へ移した）");
@@ -73,7 +73,7 @@ namespace DS4WindowsTests
         [Fact]
         public void ControlService_KeepsTheForwarders_ForTheUiAndTheTests()
         {
-            string text = ReadWithoutComments("DS4Windows/DS4Control/ControlService.cs");
+            string text = ReadWithoutComments("DS4Windows/Processing/ControlService.cs");
             if (text == null) return;
 
             Assert.Contains("public bool Start(bool showlog = true)", text);
@@ -104,7 +104,7 @@ namespace DS4WindowsTests
         [Fact]
         public void Start_KeepsTheSafetyOrder()
         {
-            string text = ReadWithoutComments("DS4Windows/DS4Control/Services/ServiceLifecycle.cs");
+            string text = ReadWithoutComments("DS4Windows/Processing/Services/ServiceLifecycle.cs");
             if (text == null) return;
 
             int start = text.IndexOf("public bool Start(");
@@ -140,7 +140,7 @@ namespace DS4WindowsTests
         [Fact]
         public void Stop_KeepsTheSafetyOrder_IncludingTheDriverDestructionOrder()
         {
-            string text = ReadWithoutComments("DS4Windows/DS4Control/Services/ServiceLifecycle.cs");
+            string text = ReadWithoutComments("DS4Windows/Processing/Services/ServiceLifecycle.cs");
             if (text == null) return;
 
             int stop = text.IndexOf("public bool Stop(");
@@ -176,9 +176,9 @@ namespace DS4WindowsTests
         [Fact]
         public void TheProcessPriorityList_IsDefinedOnlyInProcessPriorityOptions_AndKeepsTheSavedOrder()
         {
-            string ui = ReadWithoutComments("DS4Windows/DS4Forms/MainWindow.xaml.cs");
-            string lifecycle = ReadWithoutComments("DS4Windows/DS4Control/Services/ServiceLifecycle.cs");
-            string options = ReadWithoutComments("DS4Windows/DS4Control/Services/ProcessPriorityOptions.cs");
+            string ui = ReadWithoutComments("DS4Windows/UI/MainWindow.xaml.cs");
+            string lifecycle = ReadWithoutComments("DS4Windows/Processing/Services/ServiceLifecycle.cs");
+            string options = ReadWithoutComments("DS4Windows/Core/Platform/ProcessPriorityOptions.cs");
             if (ui == null || lifecycle == null || options == null) return;
 
             Assert.DoesNotContain("ProcessPriorityClass.AboveNormal", ui);
@@ -212,7 +212,7 @@ namespace DS4WindowsTests
             Assert.Equal(0, fresh.ActiveControllers);
             Assert.False(fresh.Suspending);
 
-            string text = ReadWithoutComments("DS4Windows/DS4Control/Services/ServiceLifecycle.cs");
+            string text = ReadWithoutComments("DS4Windows/Processing/Services/ServiceLifecycle.cs");
             if (text == null) return;
 
             Assert.DoesNotContain("AppHost", text);

@@ -163,14 +163,14 @@ namespace DS4WindowsTests
         [Fact]
         public void RemovedFiles_DoNotExist()
         {
-            string anchor = SourceFileLocator.Find("DS4Windows/DS4Control/BackingStore.cs"); // Phase7-Step10d W5: Global.cs は削除したため、同じフォルダーの BackingStore.cs を起点にする
+            string anchor = SourceFileLocator.Find("DS4Windows/Core/Settings/BackingStore.cs"); // Phase7-Step10d W5: Global.cs は削除したため、同じフォルダーの BackingStore.cs を起点にする
             if (anchor == null)
             {
                 _output.WriteLine("ソースが見つからないため検査を省略した。");
                 return;
             }
 
-            string root = Path.GetFullPath(Path.Combine(Path.GetDirectoryName(anchor), "..", ".."));
+            string root = SourceFileLocator.RootFromAnchor(anchor);
             List<string> existing = RemovedFiles.Where(f => File.Exists(Path.Combine(root, f))).ToList();
             Assert.True(existing.Count == 0, "削除済みのファイルが再び存在する: " + string.Join(", ", existing));
         }
@@ -178,7 +178,7 @@ namespace DS4WindowsTests
         [Fact]
         public void Wave5_RemovedApiSurface_DoesNotReappear()
         {
-            string pathServiceInterface = SourceFileLocator.Find("DS4Windows/DI/IPathService.cs");
+            string pathServiceInterface = SourceFileLocator.Find("DS4Windows/Core/Abstractions/IPathService.cs");
             if (pathServiceInterface == null)
             {
                 _output.WriteLine("ソースが見つからないため検査を省略した。");

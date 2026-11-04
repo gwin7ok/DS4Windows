@@ -156,8 +156,8 @@ namespace DS4WindowsTests
         [Fact]
         public void TheRenamePath_SavesTheFiles_ThroughTheCommonSyncPath()
         {
-            string main = SourceFileLocator.Find("DS4Windows/DS4Forms/MainWindow.xaml.cs");
-            string editor = SourceFileLocator.Find("DS4Windows/DS4Forms/ProfileEditor.xaml.cs");
+            string main = SourceFileLocator.Find("DS4Windows/UI/MainWindow.xaml.cs");
+            string editor = SourceFileLocator.Find("DS4Windows/UI/ProfileEditor.xaml.cs");
             if (main == null || editor == null) return;
 
             string source = File.ReadAllText(main);

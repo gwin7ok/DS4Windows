@@ -34,9 +34,9 @@ namespace DS4WindowsTests
         }
 
         [Theory]
-        [InlineData("DS4Windows/DS4Control/Xbox360OutDevice.cs", "cont.LeftThumbX = AxisScale(state.LX, false);", "cont.RightThumbY = AxisScale(state.RY, true);")]
-        [InlineData("DS4Windows/DS4Control/DS4OutDevices/DS4OutDeviceBasic.cs", "cont.LeftThumbX = state.LX;", "cont.RightThumbY = state.RY;")]
-        [InlineData("DS4Windows/DS4Control/DS4OutDevices/DS4OutDeviceExt.cs", "outDS4Report.bThumbLX = state.LX;", "outDS4Report.bThumbRY = state.RY;")]
+        [InlineData("DS4Windows/Output/Devices/Xbox360OutDevice.cs", "cont.LeftThumbX = AxisScale(state.LX, false);", "cont.RightThumbY = AxisScale(state.RY, true);")]
+        [InlineData("DS4Windows/Output/Devices/DS4OutDeviceBasic.cs", "cont.LeftThumbX = state.LX;", "cont.RightThumbY = state.RY;")]
+        [InlineData("DS4Windows/Output/Devices/DS4OutDeviceExt.cs", "outDS4Report.bThumbLX = state.LX;", "outDS4Report.bThumbRY = state.RY;")]
         public void TheOutputDevice_WritesTheNormalAxes_AndHasNoSteeringBranch(string relativePath, string firstAxis, string lastAxis)
         {
             string code = ReadCode(relativePath);
@@ -50,10 +50,10 @@ namespace DS4WindowsTests
         }
 
         [Theory]
-        [InlineData("DS4Windows/DS4Control/ControlService.cs")]
-        [InlineData("DS4Windows/DS4Control/OutputDevice.cs")]
-        [InlineData("DS4Windows/DS4Control/OutputSlotManager.cs")]
-        [InlineData("DS4Windows/DS4Library/DS4State.cs")]
+        [InlineData("DS4Windows/Processing/ControlService.cs")]
+        [InlineData("DS4Windows/Output/OutputDevice.cs")]
+        [InlineData("DS4Windows/Output/OutputSlotManager.cs")]
+        [InlineData("DS4Windows/Input/DS4State.cs")]
         public void TheVJoyAndTheSteeringUnit_AreGone(string relativePath)
         {
             string code = ReadCode(relativePath);

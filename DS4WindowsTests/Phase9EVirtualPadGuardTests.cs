@@ -52,7 +52,7 @@ namespace DS4WindowsTests
         [InlineData(@"\bDetachUnboundOutDev\b")]
         public void ControlService_NoLongerContains_TheMovedMembers(string pattern)
         {
-            string text = ReadWithoutComments("DS4Windows/DS4Control/ControlService.cs");
+            string text = ReadWithoutComments("DS4Windows/Processing/ControlService.cs");
             if (text == null) return;
 
             Assert.False(Regex.IsMatch(text, pattern), $"ControlService.cs に '{pattern}' が残っている（9-E E-4 で VirtualPadService へ移した）");
@@ -61,7 +61,7 @@ namespace DS4WindowsTests
         [Fact]
         public void ControlService_KeepsTheThinDelegates_ForTheCallers()
         {
-            string text = ReadWithoutComments("DS4Windows/DS4Control/ControlService.cs");
+            string text = ReadWithoutComments("DS4Windows/Processing/ControlService.cs");
             if (text == null) return;
 
             // Phase13-Step10 10-b: 利用者が 0 件だった PluginOutDev／UnplugOutDev の転送は削除した（IVirtualPadService／IProfileLoadTarget が持つ）
@@ -73,7 +73,7 @@ namespace DS4WindowsTests
         [Fact]
         public void OutputSlotService_NoLongerDependsOnControlService()
         {
-            string text = ReadWithoutComments("DS4Windows/DS4Control/Services/OutputSlotService.cs");
+            string text = ReadWithoutComments("DS4Windows/Output/Services/OutputSlotService.cs");
             if (text == null) return;
 
             Assert.DoesNotContain("ControlService", text);
@@ -85,7 +85,7 @@ namespace DS4WindowsTests
         [Fact]
         public void VirtualPadService_DoesNotReferenceStaticEntryPoints_OrControlService()
         {
-            string text = ReadWithoutComments("DS4Windows/DS4Control/Services/VirtualPadService.cs");
+            string text = ReadWithoutComments("DS4Windows/Output/Services/VirtualPadService.cs");
             if (text == null) return;
 
             Assert.DoesNotContain("AppHost", text);

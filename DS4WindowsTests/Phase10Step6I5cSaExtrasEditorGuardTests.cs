@@ -19,7 +19,7 @@ namespace DS4WindowsTests
         [Fact]
         public void BindingWindow_SaMode_ShowsTheExtrasPanel_AndOnlyHidesTheDefaultAndUnboundPanel()
         {
-            string text = Read("DS4Windows/DS4Forms/BindingWindow.xaml.cs");
+            string text = Read("DS4Windows/UI/BindingWindow.xaml.cs");
             if (text == null) return;
 
             int start = text.IndexOf("else if (expose == ExposeMode.SpecialAction)", System.StringComparison.Ordinal);
@@ -35,7 +35,7 @@ namespace DS4WindowsTests
         [Fact]
         public void AssignmentEditor_PassesTheSaExtrasToThePicker_AndSavesThemAfterTheAction()
         {
-            string text = Read("DS4Windows/DS4Forms/AssignmentEditor.xaml.cs");
+            string text = Read("DS4Windows/UI/AssignmentEditor.xaml.cs");
             if (text == null) return;
 
             Assert.Contains("saExtras = specialAction.outputExtras;", text);

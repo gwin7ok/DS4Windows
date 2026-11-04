@@ -38,10 +38,10 @@ namespace DS4WindowsTests
         [Fact]
         public void LazyServiceFuncs_AreOnlyTheAllowedOnes()
         {
-            string anchor = SourceFileLocator.Find("DS4Windows/DS4Control/BackingStore.cs");
+            string anchor = SourceFileLocator.Find("DS4Windows/Core/Settings/BackingStore.cs");
             if (anchor == null) return;
 
-            string root = Path.GetFullPath(Path.Combine(Path.GetDirectoryName(anchor), "..", ".."));
+            string root = SourceFileLocator.RootFromAnchor(anchor);
             var found = Directory.GetFiles(Path.Combine(root, "DS4Windows"), "*.cs", SearchOption.AllDirectories)
                 .Where(f => !f.Replace('\\', '/').Contains("/obj/") && !f.Replace('\\', '/').Contains("/bin/"))
                 .SelectMany(f => LazyService.Matches(StripComments(File.ReadAllText(f))).Cast<Match>()

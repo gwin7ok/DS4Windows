@@ -34,7 +34,7 @@ namespace DS4WindowsTests
 
         private string ReadSourceWithoutComments()
         {
-            string path = SourceFileLocator.Find("DS4Windows/DS4Forms/ProfileEditor.xaml.cs");
+            string path = SourceFileLocator.Find("DS4Windows/UI/ProfileEditor.xaml.cs");
             if (path == null)
             {
                 _output.WriteLine("ProfileEditor.xaml.cs が見つからないため検査を省略した。");

@@ -38,10 +38,10 @@ namespace DS4WindowsTests
         [Fact]
         public void TheThreeSaOnlyCheckBoxes_AreNamedInTheXaml_AndBoundToTheMacroViewModel()
         {
-            XDocument xaml = XamlTestHelper.Load("DS4Windows/DS4Forms/AssignmentEditor.xaml");
+            XDocument xaml = XamlTestHelper.Load("DS4Windows/UI/AssignmentEditor.xaml");
             if (xaml == null)
             {
-                _output.WriteLine("DS4Windows/DS4Forms/AssignmentEditor.xaml が見つからないため検査を省略した。");
+                _output.WriteLine("DS4Windows/UI/AssignmentEditor.xaml が見つからないため検査を省略した。");
                 return;
             }
 
@@ -55,7 +55,7 @@ namespace DS4WindowsTests
         public void NoMode_CollapsesThem_SinceControlsCanSaveThemNow()
         {
             // Phase10-Step4 W3: Controls にも保存できるようになったため、Controls のモードでも隠さない（Step3 W3 までは、保存する場所がなく、隠していた）
-            string source = Read("DS4Windows/DS4Forms/AssignmentEditor.xaml.cs");
+            string source = Read("DS4Windows/UI/AssignmentEditor.xaml.cs");
             if (source == null)
             {
                 return;

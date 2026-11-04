@@ -19,8 +19,8 @@ namespace DS4WindowsTests
     /// </summary>
     public class Phase11W4SaveApplyWiringGuardTests
     {
-        private const string EditorCode = "DS4Windows/DS4Forms/ProfileEditor.xaml.cs";
-        private const string MainWindowCode = "DS4Windows/DS4Forms/MainWindow.xaml.cs";
+        private const string EditorCode = "DS4Windows/UI/ProfileEditor.xaml.cs";
+        private const string MainWindowCode = "DS4Windows/UI/MainWindow.xaml.cs";
 
         private readonly ITestOutputHelper _output;
 

@@ -48,7 +48,7 @@ namespace DS4WindowsTests
         {
             Assert.True(typeof(IRemovedShiftPrompt).IsAssignableFrom(typeof(DS4WinWPF.DS4Forms.MessageBoxRemovedShiftPrompt)));
 
-            string editor = SourceFileLocator.Find("DS4Windows/DS4Forms/ProfileEditor.xaml.cs");
+            string editor = SourceFileLocator.Find("DS4Windows/UI/ProfileEditor.xaml.cs");
             if (editor == null) return;
 
             string text = File.ReadAllText(editor);

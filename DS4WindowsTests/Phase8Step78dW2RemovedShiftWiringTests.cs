@@ -143,10 +143,10 @@ namespace DS4WindowsTests
         [Fact]
         public void TheSources_NoLongerMentionTheShiftModifier()
         {
-            string mapping = SourceFileLocator.Find("DS4Windows/DS4Control/Mapping.cs");
-            string settings = SourceFileLocator.Find("DS4Windows/DS4Control/DS4ControlSettings.cs");
-            string misc = SourceFileLocator.Find("DS4Windows/DS4Control/Services/ProfileSections/ProfileMiscLoadSection.cs");
-            string bindingWindow = SourceFileLocator.Find("DS4Windows/DS4Forms/BindingWindow.xaml");
+            string mapping = SourceFileLocator.Find("DS4Windows/Processing/Mapping.cs");
+            string settings = SourceFileLocator.Find("DS4Windows/Core/Settings/DS4ControlSettings.cs");
+            string misc = SourceFileLocator.Find("DS4Windows/Core/Persistence/ProfileSections/ProfileMiscLoadSection.cs");
+            string bindingWindow = SourceFileLocator.Find("DS4Windows/UI/BindingWindow.xaml");
             if (mapping == null || settings == null || misc == null || bindingWindow == null) return;
 
             string mappingText = File.ReadAllText(mapping);

@@ -90,7 +90,7 @@ namespace DS4WindowsTests
         [Fact]
         public void TheRealProfileEditorXaml_CanBeLoadedAsXml()
         {
-            XDocument doc = XamlTestHelper.Load("DS4Windows/DS4Forms/ProfileEditor.xaml");
+            XDocument doc = XamlTestHelper.Load("DS4Windows/UI/ProfileEditor.xaml");
             if (doc == null)
             {
                 return;

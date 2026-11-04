@@ -71,14 +71,14 @@ namespace DS4WindowsTests
         [Fact]
         public void NoSourceFile_ReferencesTheRemovedSharedWindows()
         {
-            string anchor = SourceFileLocator.Find("DS4Windows/DS4Control/BackingStore.cs"); // Phase7-Step10d W5: Global.cs は削除したため、同じフォルダーの BackingStore.cs を起点にする
+            string anchor = SourceFileLocator.Find("DS4Windows/Core/Settings/BackingStore.cs"); // Phase7-Step10d W5: Global.cs は削除したため、同じフォルダーの BackingStore.cs を起点にする
             if (anchor == null)
             {
                 _output.WriteLine("ソースが見つからないため検査を省略した。");
                 return;
             }
 
-            string root = Path.GetDirectoryName(Path.GetDirectoryName(anchor)); // DS4Windows プロジェクト
+            string root = SourceFileLocator.ProjectDirFromAnchor(anchor); // DS4Windows プロジェクト
             var shared = new Regex(@"\b(SyntheticInputState|MacroRuntimeState|StickMotionState)\.Shared\b");
             var offenders = Directory.GetFiles(root, "*.cs", SearchOption.AllDirectories)
                 .Where(f => !f.Contains(@"\obj\") && !f.Contains(@"\bin\"))

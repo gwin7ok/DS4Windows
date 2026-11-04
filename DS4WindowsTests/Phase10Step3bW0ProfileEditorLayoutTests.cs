@@ -37,7 +37,7 @@ namespace DS4WindowsTests
             return File.ReadAllText(path).Replace("\r\n", "\n");
         }
 
-        private const string ProfileEditorXaml = "DS4Windows/DS4Forms/ProfileEditor.xaml";
+        private const string ProfileEditorXaml = "DS4Windows/UI/ProfileEditor.xaml";
 
         private XDocument LoadXaml(string relative)
         {
@@ -83,7 +83,7 @@ namespace DS4WindowsTests
         public void ControlsIsTheFirstLeftTab_SoThePresetButtonsIndexZeroStillMeansControls()
         {
             XDocument xaml = LoadXaml(ProfileEditorXaml);
-            string code = Read("DS4Windows/DS4Forms/ProfileEditor.xaml.cs");
+            string code = Read("DS4Windows/UI/ProfileEditor.xaml.cs");
             if (xaml == null || code == null) return;
 
             Assert.Equal("Controls", TopLevelTabs(LeftPane(xaml)).First());
@@ -93,7 +93,7 @@ namespace DS4WindowsTests
         [Fact]
         public void NoCodeDependsOnTheRightPanesTabNumberOrSelection()
         {
-            string code = Read("DS4Windows/DS4Forms/ProfileEditor.xaml.cs");
+            string code = Read("DS4Windows/UI/ProfileEditor.xaml.cs");
             if (code == null) return;
 
             // 右ペインのタブの移動で壊れるコード（番号、選択中の項目、項目の一覧への依存）がない
@@ -148,7 +148,7 @@ namespace DS4WindowsTests
         [Fact]
         public void TheLeftTabSelectionHandler_IgnoresEventsBubblingUpFromTheTabsContents()
         {
-            string code = Read("DS4Windows/DS4Forms/ProfileEditor.xaml.cs");
+            string code = Read("DS4Windows/UI/ProfileEditor.xaml.cs");
             if (code == null) return;
 
             // Touchpad・ジャイロの Output Mode（ComboBox）や入れ子の TabControl の選択変更が、左ペインのタブの選択変更として扱われない
@@ -184,7 +184,7 @@ namespace DS4WindowsTests
         [Fact]
         public void TheAssignmentNameLabels_GetTheirDataContextFromTheMappingList()
         {
-            string code = Read("DS4Windows/DS4Forms/ProfileEditor.xaml.cs");
+            string code = Read("DS4Windows/UI/ProfileEditor.xaml.cs");
             if (code == null) return;
 
             // Axis Config の読み取り専用のラベルと、Controls タブの入口の横のラベル（Phase10-Step3b W2）。どちらも、同じ割り当て名を結ぶ
@@ -227,7 +227,7 @@ namespace DS4WindowsTests
         [Fact]
         public void TheFourEntries_AreTheLastItemsOfTheMappingList_InTheSameFormatAsTheOtherButtons()
         {
-            string vm = Read("DS4Windows/DS4Forms/ViewModels/MappingListViewModel.cs");
+            string vm = Read("DS4Windows/UI/ViewModels/MappingListViewModel.cs");
             if (vm == null) return;
 
             // 一覧の末尾に、4 つを、ほかのボタンと同じ MappedControl（表示名: 「LS Outer: …」の形式）で加える。コントローラーの入力による選択の添字（0〜33）は、変わらない
@@ -265,7 +265,7 @@ namespace DS4WindowsTests
         public void NoEntryClickHandlerIsLeftInTheXaml_ExceptTheOnesOfTheLeftPane()
         {
             XDocument xaml = LoadXaml(ProfileEditorXaml);
-            string code = Read("DS4Windows/DS4Forms/ProfileEditor.xaml.cs");
+            string code = Read("DS4Windows/UI/ProfileEditor.xaml.cs");
             if (xaml == null || code == null) return;
 
             // 専用のボタンがなくなったため、Full Pull・Outer Bind のクリックのハンドラーも、なくなった（入口は、一覧のダブルクリック）

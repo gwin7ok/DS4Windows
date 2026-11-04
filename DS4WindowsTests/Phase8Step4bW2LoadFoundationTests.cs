@@ -54,10 +54,10 @@ namespace DS4WindowsTests
         public void Sections_AreInternalSealedAndNotRegisteredInTheContainer()
         {
             string root = Repo();
-            string registration = File.ReadAllText(Path.Combine(root, "DS4Windows", "DI", "ServiceRegistration.cs"));
+            string registration = File.ReadAllText(Path.Combine(root, "DS4Windows", "Composition", "ServiceRegistration.cs"));
             Assert.DoesNotContain("LoadSection", registration);
 
-            foreach (string file in Directory.GetFiles(Path.Combine(root, "DS4Windows", "DS4Control", "Services", "ProfileSections"), "Profile*LoadSection.cs"))
+            foreach (string file in Directory.GetFiles(Path.Combine(root, "DS4Windows", "Core", "Persistence", "ProfileSections"), "Profile*LoadSection.cs"))
             {
                 string text = File.ReadAllText(file);
                 string name = Path.GetFileNameWithoutExtension(file);
@@ -68,7 +68,7 @@ namespace DS4WindowsTests
         [Fact]
         public void TheSerializer_CallsTheSectionsInFileOrder()
         {
-            string text = File.ReadAllText(Path.Combine(Repo(), "DS4Windows", "DS4Control", "Services", "LegacyProfileXmlSerializer.cs"));
+            string text = File.ReadAllText(Path.Combine(Repo(), "DS4Windows", "Core", "Persistence", "LegacyProfileXmlSerializer.cs"));
             string[] order =
             {
                 "_generalSection", "LoadLegacyExtraSettings(device, rootname);", "_touchpadBasicSection", "_triggerStickBasicSection",
@@ -95,7 +95,7 @@ namespace DS4WindowsTests
         public void TheSerializer_CallsTheSaveSectionsInTheXmlOrder()
         {
             // W6: 保存の節は、保存の順序（XML の要素の並び。ゴールデンが固定している）で呼ぶ。追加設定の保存は、全般の節の直後
-            string text = File.ReadAllText(Path.Combine(Repo(), "DS4Windows", "DS4Control", "Services", "LegacyProfileXmlSerializer.cs"));
+            string text = File.ReadAllText(Path.Combine(Repo(), "DS4Windows", "Core", "Persistence", "LegacyProfileXmlSerializer.cs"));
             string[] order =
             {
                 "_generalSaveSection.Save(context);", "SaveLegacyExtraSettings(rootElement, device);", "_triggerStickSaveSection.Save(context);",

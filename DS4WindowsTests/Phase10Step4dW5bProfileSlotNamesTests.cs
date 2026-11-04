@@ -188,7 +188,7 @@ namespace DS4WindowsTests
         [Fact]
         public void TheContainer_TiesTheRegistryToTheBackingStore()
         {
-            string path = SourceFileLocator.Find("DS4Windows/DI/ServiceRegistration.cs");
+            string path = SourceFileLocator.Find("DS4Windows/Composition/ServiceRegistration.cs");
             if (path == null) return;
 
             string source = File.ReadAllText(path);

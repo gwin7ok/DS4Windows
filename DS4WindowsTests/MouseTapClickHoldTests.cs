@@ -11,7 +11,7 @@ namespace DS4WindowsTests
     {
         private static string LoadMouseSource()
         {
-            string path = SourceFileLocator.Find("DS4Windows/DS4Control/Mouse.cs");
+            string path = SourceFileLocator.Find("DS4Windows/Processing/Mouse.cs");
             if (path == null) return null;
             string text = File.ReadAllText(path);
             text = Regex.Replace(text, @"/\*.*?\*/", string.Empty, RegexOptions.Singleline);

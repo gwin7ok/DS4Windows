@@ -21,7 +21,7 @@ namespace DS4WindowsTests
 
         private string ReadMethod(string signature)
         {
-            string path = SourceFileLocator.Find("DS4Windows/HidLibrary/HidDevice.cs");
+            string path = SourceFileLocator.Find("DS4Windows/Input/Hid/HidDevice.cs");
             if (path == null)
             {
                 _output.WriteLine("HidDevice.cs が見つからないため検査を省略した。");

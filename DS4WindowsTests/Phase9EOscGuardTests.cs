@@ -51,7 +51,7 @@ namespace DS4WindowsTests
         [InlineData(@"\bMapMonitoringOscMessageToCommand\b")]
         public void ControlService_NoLongerContains_TheMovedMembers(string pattern)
         {
-            string text = ReadWithoutComments("DS4Windows/DS4Control/ControlService.cs");
+            string text = ReadWithoutComments("DS4Windows/Processing/ControlService.cs");
             if (text == null) return;
 
             Assert.False(Regex.IsMatch(text, pattern), $"ControlService.cs に '{pattern}' が残っている（9-E E-1 で OscService へ移した）");
@@ -60,23 +60,23 @@ namespace DS4WindowsTests
         [Fact]
         public void ControlService_KeepsTheThinDelegates_ForTheCallers()
         {
-            string text = ReadWithoutComments("DS4Windows/DS4Control/ControlService.cs");
+            string text = ReadWithoutComments("DS4Windows/Processing/ControlService.cs");
             if (text == null) return;
 
             // Phase13-Step10 10-c: 転送は削除した。利用者は IRuntimeFeatureSwitch（RuntimeFeatureSwitch）を使う
             Assert.DoesNotContain("public void ChangeOSCListenerStatus(", text);
             Assert.DoesNotContain("public void ChangeOSCSenderStatus(", text);
-            string sw = ReadWithoutComments("DS4Windows/DS4Control/Services/RuntimeFeatureSwitch.cs");
+            string sw = ReadWithoutComments("DS4Windows/Processing/Services/RuntimeFeatureSwitch.cs");
             if (sw == null) return;
             Assert.Contains("_osc.ChangeListenerStatus(state)", sw);
             Assert.Contains("_osc.ChangeSenderStatus(state)", sw);
         }
 
         [Theory]
-        [InlineData("DS4Windows/DS4Control/Services/OscService.cs")]
-        [InlineData("DS4Windows/DS4Control/Services/SharpOscTransportFactory.cs")]
-        [InlineData("DS4Windows/DS4Control/Services/SharpOscListenerHandle.cs")]
-        [InlineData("DS4Windows/DS4Control/Services/SharpOscMessageSender.cs")]
+        [InlineData("DS4Windows/Output/Services/OscService.cs")]
+        [InlineData("DS4Windows/Output/Services/SharpOscTransportFactory.cs")]
+        [InlineData("DS4Windows/Output/Services/SharpOscListenerHandle.cs")]
+        [InlineData("DS4Windows/Output/Services/SharpOscMessageSender.cs")]
         public void NewComponents_DoNotReferenceStaticEntryPoints(string relativePath)
         {
             string text = ReadWithoutComments(relativePath);
@@ -94,8 +94,8 @@ namespace DS4WindowsTests
             // SharpOSC の型は、通信の実装（SharpOsc*）の中に閉じる。テストプロジェクトが SharpOSC を参照せずに済むための境界
             foreach (string file in new[]
             {
-                "DS4Windows/DS4Control/Services/OscService.cs", "DS4Windows/DI/IOscService.cs",
-                "DS4Windows/DI/IOscTransportFactory.cs", "DS4Windows/DI/IOscMessageSender.cs", "DS4Windows/DI/IOscListenerHandle.cs",
+                "DS4Windows/Output/Services/OscService.cs", "DS4Windows/Processing/Abstractions/IOscService.cs",
+                "DS4Windows/Processing/Abstractions/IOscTransportFactory.cs", "DS4Windows/Processing/Abstractions/IOscMessageSender.cs", "DS4Windows/Processing/Abstractions/IOscListenerHandle.cs",
             })
             {
                 string text = ReadWithoutComments(file);

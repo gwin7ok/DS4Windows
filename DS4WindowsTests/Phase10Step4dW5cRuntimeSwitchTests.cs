@@ -80,7 +80,7 @@ namespace DS4WindowsTests
         [Fact]
         public void TheContainer_TiesTheRegistryToTheTempProfileName()
         {
-            string path = SourceFileLocator.Find("DS4Windows/DI/ServiceRegistration.cs");
+            string path = SourceFileLocator.Find("DS4Windows/Composition/ServiceRegistration.cs");
             if (path == null) return;
 
             Assert.Contains("ProfileSettingsService)?.AttachProfileIdentity(service)", File.ReadAllText(path));
@@ -137,7 +137,7 @@ namespace DS4WindowsTests
         public void TheApplyPath_UsesTheResolvedTarget()
         {
             // ApplyFromAction は、解決した名前で切り替える（details をそのまま使わない）
-            string path = SourceFileLocator.Find("DS4Windows/DS4Control/Services/ProfileApplicationService.cs");
+            string path = SourceFileLocator.Find("DS4Windows/Processing/Services/ProfileApplicationService.cs");
             if (path == null) return;
 
             string source = File.ReadAllText(path);

@@ -93,14 +93,14 @@ namespace DS4WindowsTests
         [Fact]
         public void TheSource_NoLongerReferencesTheMovedMembersOnGlobal_AndBackingStoreHasNoCopy()
         {
-            string anchor = SourceFileLocator.Find("DS4Windows/DS4Control/BackingStore.cs"); // Phase7-Step10d W5: Global.cs は削除したため、同じフォルダーの BackingStore.cs を起点にする
+            string anchor = SourceFileLocator.Find("DS4Windows/Core/Settings/BackingStore.cs"); // Phase7-Step10d W5: Global.cs は削除したため、同じフォルダーの BackingStore.cs を起点にする
             if (anchor == null)
             {
                 _output.WriteLine("ソースが見つからないため検査を省略した。");
                 return;
             }
 
-            string root = Path.GetFullPath(Path.Combine(Path.GetDirectoryName(anchor), "..", ".."));
+            string root = SourceFileLocator.RootFromAnchor(anchor);
             var pattern = new Regex(@"(?<![\w])(?:DS4Windows\.)?Global\.(defaultButtonMapping|reverseX360ButtonMapping|xboxDefaultNames|ds4DefaultNames|ds4inputNames|macroDS4Values|getX360ControlString)\b");
             string Strip(string t) => Regex.Replace(Regex.Replace(t, @"/\*.*?\*/", string.Empty, RegexOptions.Singleline), @"//[^\r\n]*", string.Empty);
             var offenders = Directory.GetFiles(Path.Combine(root, "DS4Windows"), "*.cs", SearchOption.AllDirectories)
@@ -110,7 +110,7 @@ namespace DS4WindowsTests
                 .ToArray();
             Assert.True(offenders.Length == 0, "Global の移動済みメンバーへの参照が残っている: " + string.Join(", ", offenders));
 
-            string backing = Strip(File.ReadAllText(Path.Combine(root, "DS4Windows", "DS4Control", "BackingStore.cs")));
+            string backing = Strip(File.ReadAllText(Path.Combine(root, "DS4Windows", "Core", "Settings", "BackingStore.cs")));
             Assert.False(Regex.IsMatch(backing, @"\bstring\s+getX360ControlString\s*\("), "BackingStore に getX360ControlString の宣言が残っている");
         }
     }

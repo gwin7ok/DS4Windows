@@ -23,7 +23,7 @@ namespace DS4WindowsTests
         [Fact]
         public void TheNameField_BindsItsReadOnlyFlag_ToTheViewModel()
         {
-            string path = SourceFileLocator.Find("DS4Windows/DS4Forms/AssignmentEditor.xaml");
+            string path = SourceFileLocator.Find("DS4Windows/UI/AssignmentEditor.xaml");
             if (path == null)
             {
                 _output.WriteLine("AssignmentEditor.xaml が見つからないため検査を省略した。");
@@ -36,7 +36,7 @@ namespace DS4WindowsTests
         [Fact]
         public void TheControlModeEditor_IsOpenedOnlyFromTheProfileEditor()
         {
-            string profileEditor = SourceFileLocator.Find("DS4Windows/DS4Forms/ProfileEditor.xaml.cs");
+            string profileEditor = SourceFileLocator.Find("DS4Windows/UI/ProfileEditor.xaml.cs");
             if (profileEditor == null)
             {
                 _output.WriteLine("ソースが見つからないため検査を省略した。");

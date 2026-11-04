@@ -216,9 +216,9 @@ namespace DS4WindowsTests
 
             foreach (string relative in new[]
             {
-                "DS4Windows/DS4Control/Services/AppSettingsXmlSerializer.cs",
-                "DS4Windows/DS4Control/Services/LinkedProfilesXmlSerializer.cs",
-                "DS4Windows/DS4Control/Profiles/AutoProfileHolder.cs",
+                "DS4Windows/Core/Persistence/AppSettingsXmlSerializer.cs",
+                "DS4Windows/Core/Persistence/LinkedProfilesXmlSerializer.cs",
+                "DS4Windows/Core/Profiles/AutoProfileHolder.cs",
             })
             {
                 string path = SourceFileLocator.Find(relative);

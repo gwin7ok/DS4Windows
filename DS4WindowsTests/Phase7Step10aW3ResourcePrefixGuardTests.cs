@@ -49,16 +49,16 @@ namespace DS4WindowsTests
         [Fact]
         public void TheFormsFiles_DoNotReferenceTheGlobalPrefixes()
         {
-            string anchor = SourceFileLocator.Find("DS4Windows/DS4Control/BackingStore.cs"); // Phase7-Step10d W5: Global.cs は削除したため、同じフォルダーの BackingStore.cs を起点にする
+            string anchor = SourceFileLocator.Find("DS4Windows/Core/Settings/BackingStore.cs"); // Phase7-Step10d W5: Global.cs は削除したため、同じフォルダーの BackingStore.cs を起点にする
             if (anchor == null)
             {
                 _output.WriteLine("ソースが見つからないため検査を省略した。");
                 return;
             }
 
-            string root = Path.GetFullPath(Path.Combine(Path.GetDirectoryName(anchor), "..", ".."));
+            string root = SourceFileLocator.RootFromAnchor(anchor);
             var pattern = new Regex(@"(?<![\w])(?:DS4Windows\.)?Global\.(RESOURCES_PREFIX|ASSEMBLY_RESOURCE_PREFIX)\b");
-            var offenders = Directory.GetFiles(Path.Combine(root, "DS4Windows", "DS4Forms"), "*.cs", SearchOption.AllDirectories)
+            var offenders = Directory.GetFiles(Path.Combine(root, "DS4Windows", "UI"), "*.cs", SearchOption.AllDirectories)
                 .Where(f => pattern.IsMatch(Regex.Replace(Regex.Replace(File.ReadAllText(f), @"/\*.*?\*/", string.Empty, RegexOptions.Singleline), @"//[^\r\n]*", string.Empty)))
                 .Select(f => Path.GetFileName(f))
                 .ToArray();

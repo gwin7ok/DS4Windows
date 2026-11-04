@@ -96,7 +96,7 @@ namespace DS4WindowsTests
         [Fact]
         public void TheDuplicateBox_AssignsANewIdRightAfterTheCopy_BeforeNotifyingTheSave()
         {
-            string path = SourceFileLocator.Find("DS4Windows/DS4Forms/DupBox.xaml.cs");
+            string path = SourceFileLocator.Find("DS4Windows/UI/DupBox.xaml.cs");
             if (path == null)
             {
                 _output.WriteLine("DupBox.xaml.cs が見つからないため検査を省略した。");

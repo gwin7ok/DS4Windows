@@ -12,7 +12,7 @@ namespace DS4WindowsTests
     {
         private static string Code()
         {
-            string path = SourceFileLocator.Find("DS4Windows/DS4Forms/ViewModels/CompositeDeviceModel.cs");
+            string path = SourceFileLocator.Find("DS4Windows/UI/ViewModels/CompositeDeviceModel.cs");
             if (path == null) return null;
 
             string text = File.ReadAllText(path);

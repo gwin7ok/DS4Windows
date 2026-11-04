@@ -63,9 +63,9 @@ namespace DS4WindowsTests
         }
 
         [Theory]
-        [InlineData("DS4Windows/DS4Control/Services/SpecialActionsXmlSerializer.cs")]
-        [InlineData("DS4Windows/DS4Control/Services/LinkedProfilesXmlSerializer.cs")]
-        [InlineData("DS4Windows/DS4Control/Services/ControllerConfigsXmlSerializer.cs")]
+        [InlineData("DS4Windows/Core/Persistence/SpecialActionsXmlSerializer.cs")]
+        [InlineData("DS4Windows/Core/Persistence/LinkedProfilesXmlSerializer.cs")]
+        [InlineData("DS4Windows/Core/Persistence/ControllerConfigsXmlSerializer.cs")]
         public void TheSerializer_DoesNotReferenceGlobal_AndKeepsTheStoreAsTheOnlyState(string relativePath)
         {
             string path = SourceFileLocator.Find(relativePath);
@@ -83,9 +83,9 @@ namespace DS4WindowsTests
         [Fact]
         public void TheRepositories_UseTheSerializers_NotTheStore()
         {
-            string repo = SourceFileLocator.Find("DS4Windows/DS4Control/Services/ProfileRepository.cs");
-            string actions = SourceFileLocator.Find("DS4Windows/DS4Control/Services/SpecialActionRepository.cs");
-            string xmlStore = SourceFileLocator.Find("DS4Windows/DS4Control/Services/ProfileXmlStore.cs");
+            string repo = SourceFileLocator.Find("DS4Windows/Core/Persistence/ProfileRepository.cs");
+            string actions = SourceFileLocator.Find("DS4Windows/Core/Persistence/SpecialActionRepository.cs");
+            string xmlStore = SourceFileLocator.Find("DS4Windows/Core/Persistence/ProfileXmlStore.cs");
             if (repo == null || actions == null || xmlStore == null)
             {
                 _output.WriteLine("ソースが見つからないため検査を省略した。");

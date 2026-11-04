@@ -13,7 +13,7 @@ namespace DS4WindowsTests
         [Fact]
         public void TheRevertNotice_UsesTheDeviceBattery_NotAFixedNA()
         {
-            string path = SourceFileLocator.Find("DS4Windows/DS4Control/Services/AutoProfileService.cs");
+            string path = SourceFileLocator.Find("DS4Windows/Processing/Services/AutoProfileService.cs");
             if (path == null) return;
 
             string text = File.ReadAllText(path);

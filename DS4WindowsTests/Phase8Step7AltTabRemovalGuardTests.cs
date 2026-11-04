@@ -26,10 +26,10 @@ namespace DS4WindowsTests
         public void TheAltTabSpecialCase_IsGoneFromMapping()
         {
             // Phase9 9-C: 旧 PlayMacroTask ほかは MacroPlayback／MacroStepExecutor へ移したため、移し先も含めて検査する
-            string text = Read("DS4Windows/DS4Control/Mapping.cs");
+            string text = Read("DS4Windows/Processing/Mapping.cs");
             if (text == null) return;
-            text += Read("DS4Windows/DS4Control/Services/MacroPlayback.cs") ?? string.Empty;
-            text += Read("DS4Windows/DS4Control/Services/MacroStepExecutor.cs") ?? string.Empty;
+            text += Read("DS4Windows/Processing/Services/MacroPlayback.cs") ?? string.Empty;
+            text += Read("DS4Windows/Processing/Services/MacroStepExecutor.cs") ?? string.Empty;
 
             foreach (string token in new[] { "AltTabSwapping", "altTabDone", "altTabNow", "oldAltTabNow", "164/9/9/164", "18/9/9/18", "macro[0] == 164", "macroLst[0] == 164", "macroArr[0] == 164" })
                 Assert.DoesNotContain(token, text);
@@ -38,7 +38,7 @@ namespace DS4WindowsTests
         [Fact]
         public void TheCyclePrograms_Preset_IsGone()
         {
-            foreach (string file in new[] { "DS4Windows/DS4Forms/RecordBox.xaml", "DS4Windows/DS4Forms/RecordBox.xaml.cs", "DS4Windows/DS4Forms/ViewModels/RecordBoxViewModel.cs" })
+            foreach (string file in new[] { "DS4Windows/UI/RecordBox.xaml", "DS4Windows/UI/RecordBox.xaml.cs", "DS4Windows/UI/ViewModels/RecordBoxViewModel.cs" })
             {
                 string text = Read(file);
                 if (text == null) return;
@@ -49,8 +49,8 @@ namespace DS4WindowsTests
             }
 
             // 「Load Preset」のボタンは、メニューを出さず、ファイルの選択を直接表示する（保存のボタンと同じ）
-            string xaml = Read("DS4Windows/DS4Forms/RecordBox.xaml");
-            string code = Read("DS4Windows/DS4Forms/RecordBox.xaml.cs");
+            string xaml = Read("DS4Windows/UI/RecordBox.xaml");
+            string code = Read("DS4Windows/UI/RecordBox.xaml.cs");
             if (xaml == null || code == null) return;
 
             Assert.DoesNotContain("ContextMenu", xaml);

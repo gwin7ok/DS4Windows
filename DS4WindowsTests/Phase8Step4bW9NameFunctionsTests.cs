@@ -53,8 +53,8 @@ namespace DS4WindowsTests
         [Fact]
         public void BackingStore_NoLongerDeclaresTheNameFunctions_AndNoCallerUsesTheStore()
         {
-            string store = SourceFileLocator.Find("DS4Windows/DS4Control/BackingStore.cs");
-            string sections = SourceFileLocator.Find("DS4Windows/DS4Control/Services/ProfileSections/ProfileButtonControlLoadSection.cs");
+            string store = SourceFileLocator.Find("DS4Windows/Core/Settings/BackingStore.cs");
+            string sections = SourceFileLocator.Find("DS4Windows/Core/Persistence/ProfileSections/ProfileButtonControlLoadSection.cs");
             if (store == null || sections == null) return;
 
             string text = File.ReadAllText(store);

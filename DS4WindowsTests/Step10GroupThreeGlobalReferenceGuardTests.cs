@@ -27,17 +27,17 @@ namespace DS4WindowsTests
         private static readonly Dictionary<string, string[]> AllowedGlobalMembers = new Dictionary<string, string[]>
         {
             // Step10-3-2
-            ["DS4Windows/DS4Forms/ViewModels/SpecialActEditorViewModel.cs"] = new string[0],
-            ["DS4Windows/DS4Forms/ViewModels/SpecialActions/CheckBatteryViewModel.cs"] = new string[0],
-            ["DS4Windows/DS4Forms/ViewModels/SpecialActions/LaunchProgramViewModel.cs"] = new string[0],
-            ["DS4Windows/DS4Forms/ViewModels/SpecialActions/LoadProfileViewModel.cs"] = new string[0],
-            ["DS4Windows/DS4Forms/ViewModels/SpecialActions/MacroViewModel.cs"] = new string[0],
-            ["DS4Windows/DS4Forms/ViewModels/SpecialActions/MultiActButtonViewModel.cs"] = new string[0],
-            ["DS4Windows/DS4Forms/ViewModels/SpecialActions/PressKeyViewModel.cs"] = new[] { "getX360ControlString" },
-            ["DS4Windows/DS4Forms/ViewModels/SpecialActions/SpecialActionViewModel.cs"] = new string[0],
-            ["DS4Windows/DS4Forms/AssignmentEditor.xaml.cs"] = new string[0],
+            ["DS4Windows/UI/ViewModels/SpecialActEditorViewModel.cs"] = new string[0],
+            ["DS4Windows/UI/ViewModels/SpecialActions/CheckBatteryViewModel.cs"] = new string[0],
+            ["DS4Windows/UI/ViewModels/SpecialActions/LaunchProgramViewModel.cs"] = new string[0],
+            ["DS4Windows/UI/ViewModels/SpecialActions/LoadProfileViewModel.cs"] = new string[0],
+            ["DS4Windows/UI/ViewModels/SpecialActions/MacroViewModel.cs"] = new string[0],
+            ["DS4Windows/UI/ViewModels/SpecialActions/MultiActButtonViewModel.cs"] = new string[0],
+            ["DS4Windows/UI/ViewModels/SpecialActions/PressKeyViewModel.cs"] = new[] { "getX360ControlString" },
+            ["DS4Windows/UI/ViewModels/SpecialActions/SpecialActionViewModel.cs"] = new string[0],
+            ["DS4Windows/UI/AssignmentEditor.xaml.cs"] = new string[0],
             // Step10-3-3
-            ["DS4Windows/DS4Forms/ViewModels/SpecialActionsListViewModel.cs"] = new string[0],
+            ["DS4Windows/UI/ViewModels/SpecialActionsListViewModel.cs"] = new string[0],
         };
 
         private readonly ITestOutputHelper _output;
@@ -131,8 +131,8 @@ namespace DS4WindowsTests
         [Fact]
         public void RemoveActionFlow_ConfirmsAndPropagatesToAllProfiles_ThroughSingleReapplyPath()
         {
-            string editor = ReadSourceWithoutComments("DS4Windows/DS4Forms/ProfileEditor.xaml.cs");
-            string main = ReadSourceWithoutComments("DS4Windows/DS4Forms/MainWindow.xaml.cs");
+            string editor = ReadSourceWithoutComments("DS4Windows/UI/ProfileEditor.xaml.cs");
+            string main = ReadSourceWithoutComments("DS4Windows/UI/MainWindow.xaml.cs");
             if (editor == null || main == null) return;
 
             // 確認のプロンプトを出し、全プロファイルの参照を取り除き、MainWindow へ通知する

@@ -185,10 +185,10 @@ namespace DS4WindowsTests
         [Fact]
         public void NoSourceFile_ReferencesTheRemovedGlobalMembers_OrTheStaticResetMethod()
         {
-            string anchor = SourceFileLocator.Find("DS4Windows/DS4Control/BackingStore.cs"); // Phase7-Step10d W5: Global.cs は削除したため、同じフォルダーの BackingStore.cs を起点にする
+            string anchor = SourceFileLocator.Find("DS4Windows/Core/Settings/BackingStore.cs"); // Phase7-Step10d W5: Global.cs は削除したため、同じフォルダーの BackingStore.cs を起点にする
             if (anchor == null) return;
 
-            string root = Path.GetDirectoryName(Path.GetDirectoryName(anchor)); // DS4Windows プロジェクト（本体のみ。テストの文字列は対象外）
+            string root = SourceFileLocator.ProjectDirFromAnchor(anchor); // DS4Windows プロジェクト（本体のみ。テストの文字列は対象外）
             var removed = new Regex(@"Global\.(outputKBMHandler|outputKBMMapping|InitOutputKBMHandler|InitOutputKBMMapping)\b|ActionsLoadedRuntimeReset\.Reset\b");
             var offenders = Directory.GetFiles(root, "*.cs", SearchOption.AllDirectories)
                 .Where(f => !f.Contains(@"\obj\") && !f.Contains(@"\bin\"))

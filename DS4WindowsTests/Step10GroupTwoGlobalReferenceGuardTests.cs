@@ -27,30 +27,30 @@ namespace DS4WindowsTests
         private static readonly Dictionary<string, string[]> AllowedGlobalMembers = new Dictionary<string, string[]>
         {
             // Step10-2-2
-            ["DS4Windows/DS4Forms/ViewModels/ControllerListViewModel.cs"] = new[] { "RESOURCES_PREFIX" },
-            ["DS4Windows/DS4Forms/ViewModels/ControllerRegDeviceOptsViewModel.cs"] = new string[0],
-            ["DS4Windows/DS4Forms/ControllerRegisterOptionsWindow.xaml.cs"] = new string[0],
+            ["DS4Windows/UI/ViewModels/ControllerListViewModel.cs"] = new[] { "RESOURCES_PREFIX" },
+            ["DS4Windows/UI/ViewModels/ControllerRegDeviceOptsViewModel.cs"] = new string[0],
+            ["DS4Windows/UI/ControllerRegisterOptionsWindow.xaml.cs"] = new string[0],
             // Step10-2-3
-            ["DS4Windows/DS4Forms/AutoProfiles.xaml.cs"] = new string[0],
-            ["DS4Windows/DS4Forms/ViewModels/AutoProfilesViewModel.cs"] = new string[0],
-            ["DS4Windows/DS4Forms/DupBox.xaml.cs"] = new string[0],
-            ["DS4Windows/DS4Forms/RenameProfileWindow.xaml.cs"] = new string[0],
-            ["DS4Windows/DS4Forms/ViewModels/RenameProfileViewModel.cs"] = new string[0],
+            ["DS4Windows/UI/AutoProfiles.xaml.cs"] = new string[0],
+            ["DS4Windows/UI/ViewModels/AutoProfilesViewModel.cs"] = new string[0],
+            ["DS4Windows/UI/DupBox.xaml.cs"] = new string[0],
+            ["DS4Windows/UI/RenameProfileWindow.xaml.cs"] = new string[0],
+            ["DS4Windows/UI/ViewModels/RenameProfileViewModel.cs"] = new string[0],
             // Step10-2-4b（RESOURCES_PREFIX・ASSEMBLY_RESOURCE_PREFIX は定数、ds4inputNames などの名前表と macroDS4Values は不変の静的表）
-            ["DS4Windows/DS4Forms/BindingWindow.xaml.cs"] = new[] { "RESOURCES_PREFIX", "ASSEMBLY_RESOURCE_PREFIX", "ds4inputNames", "xboxDefaultNames", "ds4DefaultNames" },
-            ["DS4Windows/DS4Forms/ViewModels/BindingWindowViewModel.cs"] = new string[0],
-            ["DS4Windows/DS4Forms/RecordBox.xaml.cs"] = new[] { "RESOURCES_PREFIX" },
-            ["DS4Windows/DS4Forms/ViewModels/RecordBoxViewModel.cs"] = new[] { "RESOURCES_PREFIX", "macroDS4Values" },
-            ["DS4Windows/DS4Forms/StickCalibrationWindow.xaml.cs"] = new string[0],
-            ["DS4Windows/DS4Control/Services/EditorWindowFactory.cs"] = new string[0],
+            ["DS4Windows/UI/BindingWindow.xaml.cs"] = new[] { "RESOURCES_PREFIX", "ASSEMBLY_RESOURCE_PREFIX", "ds4inputNames", "xboxDefaultNames", "ds4DefaultNames" },
+            ["DS4Windows/UI/ViewModels/BindingWindowViewModel.cs"] = new string[0],
+            ["DS4Windows/UI/RecordBox.xaml.cs"] = new[] { "RESOURCES_PREFIX" },
+            ["DS4Windows/UI/ViewModels/RecordBoxViewModel.cs"] = new[] { "RESOURCES_PREFIX", "macroDS4Values" },
+            ["DS4Windows/UI/StickCalibrationWindow.xaml.cs"] = new string[0],
+            ["DS4Windows/UI/Services/EditorWindowFactory.cs"] = new string[0],
             // Step10-2-5（getX360ControlString は、名前表を引くだけの純粋関数のため温存）
-            ["DS4Windows/DS4Forms/ViewModels/MappingListViewModel.cs"] = new[] { "getX360ControlString" },
-            ["DS4Windows/DS4Forms/ViewModels/TouchButtonUserControlViewModel.cs"] = new string[0],
-            ["DS4Windows/DS4Forms/TouchButtonUserControl.xaml.cs"] = new string[0],
-            ["DS4Windows/DS4Control/PresetOption.cs"] = new string[0],
-            ["DS4Windows/DS4Forms/PresetOptionWindow.xaml.cs"] = new string[0],
-            ["DS4Windows/DS4Forms/ViewModels/PresetOptionViewModel.cs"] = new string[0],
-            ["DS4Windows/DS4Forms/ControllerReadingsControl.xaml.cs"] = new string[0],
+            ["DS4Windows/UI/ViewModels/MappingListViewModel.cs"] = new[] { "getX360ControlString" },
+            ["DS4Windows/UI/ViewModels/TouchButtonUserControlViewModel.cs"] = new string[0],
+            ["DS4Windows/UI/TouchButtonUserControl.xaml.cs"] = new string[0],
+            ["DS4Windows/Core/Settings/PresetOption.cs"] = new string[0],
+            ["DS4Windows/UI/PresetOptionWindow.xaml.cs"] = new string[0],
+            ["DS4Windows/UI/ViewModels/PresetOptionViewModel.cs"] = new string[0],
+            ["DS4Windows/UI/ControllerReadingsControl.xaml.cs"] = new string[0],
         };
 
         private readonly ITestOutputHelper _output;

@@ -13,8 +13,8 @@ namespace DS4WindowsTests
         private static string LoadSource()
         {
             // Phase8-Step4b W10: ホバーの表を組み立てる関数は、同じ部分クラスの別ファイル（ProfileEditor.HoverTables.cs）へ移した
-            string path = SourceFileLocator.Find("DS4Windows/DS4Forms/ProfileEditor.xaml.cs");
-            string tablesPath = SourceFileLocator.Find("DS4Windows/DS4Forms/ProfileEditor.HoverTables.cs");
+            string path = SourceFileLocator.Find("DS4Windows/UI/ProfileEditor.xaml.cs");
+            string tablesPath = SourceFileLocator.Find("DS4Windows/UI/ProfileEditor.HoverTables.cs");
             if (path == null || tablesPath == null) return null;
             string text = File.ReadAllText(path) + File.ReadAllText(tablesPath);
             text = Regex.Replace(text, @"/\*.*?\*/", string.Empty, RegexOptions.Singleline);

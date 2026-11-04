@@ -41,8 +41,8 @@ namespace DS4WindowsTests
         [Fact]
         public void TheSources_NoLongerMentionTheRemovedType()
         {
-            string mapping = SourceFileLocator.Find("DS4Windows/DS4Control/Mapping.cs");
-            string specialAction = SourceFileLocator.Find("DS4Windows/DS4Control/SpecialAction.cs");
+            string mapping = SourceFileLocator.Find("DS4Windows/Processing/Mapping.cs");
+            string specialAction = SourceFileLocator.Find("DS4Windows/Processing/SpecialAction.cs");
             if (mapping == null || specialAction == null) return;
 
             Assert.DoesNotContain("XboxGameDVR", File.ReadAllText(mapping));

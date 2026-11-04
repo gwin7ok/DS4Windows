@@ -39,7 +39,7 @@ namespace DS4WindowsTests
         /// <summary>コメント（ブロック・行）を除いた Mapping.cs 全体のテキスト。見つからなければ null。</summary>
         private string ReadSourceWithoutComments()
         {
-            string path = SourceFileLocator.Find("DS4Windows/DS4Control/Mapping.cs");
+            string path = SourceFileLocator.Find("DS4Windows/Processing/Mapping.cs");
             if (path == null)
             {
                 _output.WriteLine("Mapping.cs が見つからないため検査を省略した。");
@@ -115,7 +115,7 @@ namespace DS4WindowsTests
             // Phase9 9-B: 旧 Mapping.IsUsingGyroForControls は ControlActivityReader（引数の settings）へ移った。Mapping.cs には残っていないことと、移し先の判定を確かめる
             Assert.DoesNotContain("IsUsingGyroForControls", text);
 
-            string readerPath = SourceFileLocator.Find("DS4Windows/DS4Control/Services/ControlActivityReader.cs");
+            string readerPath = SourceFileLocator.Find("DS4Windows/Processing/Services/ControlActivityReader.cs");
             if (readerPath == null) return;
             string reader = File.ReadAllText(readerPath);
             Assert.Contains("settings.GyroOutputMode[device] == GyroOutMode.Controls", reader);

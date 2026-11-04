@@ -19,8 +19,8 @@ namespace DS4WindowsTests
     /// </summary>
     public class ProfileSettingsViewModelGlobalReferenceGuardTests
     {
-        private const string VmPath = "DS4Windows/DS4Forms/ViewModels/ProfileSettingsViewModel.cs";
-        private const string FactoryPath = "DS4Windows/DS4Control/Services/ViewModelFactory.cs";
+        private const string VmPath = "DS4Windows/UI/ViewModels/ProfileSettingsViewModel.cs";
+        private const string FactoryPath = "DS4Windows/UI/Services/ViewModelFactory.cs";
 
         private readonly ITestOutputHelper _output;
 
@@ -84,10 +84,10 @@ namespace DS4WindowsTests
             string[] relatedPaths =
             {
                 VmPath,
-                "DS4Windows/DS4Forms/ViewModels/PresetMenuHelper.cs",
-                "DS4Windows/DS4Forms/ViewModels/TriggerModeChoice.cs",
-                "DS4Windows/DS4Forms/ViewModels/TwoStageChoice.cs",
-                "DS4Windows/DS4Forms/ViewModels/TriggerEffectChoice.cs",
+                "DS4Windows/UI/ViewModels/PresetMenuHelper.cs",
+                "DS4Windows/UI/ViewModels/TriggerModeChoice.cs",
+                "DS4Windows/UI/ViewModels/TwoStageChoice.cs",
+                "DS4Windows/UI/ViewModels/TriggerEffectChoice.cs",
             };
             foreach (string relative in relatedPaths)
             {
@@ -121,7 +121,7 @@ namespace DS4WindowsTests
             Assert.Single(Regex.Matches(args, "="));
 
             // PresetMenuHelper は Phase6-Step10b W3 で別ファイルへ分離した
-            string helperText = ReadSourceWithoutComments("DS4Windows/DS4Forms/ViewModels/PresetMenuHelper.cs");
+            string helperText = ReadSourceWithoutComments("DS4Windows/UI/ViewModels/PresetMenuHelper.cs");
             if (helperText == null) return;
             Match helper = Regex.Match(helperText, @"public PresetMenuHelper\(([^)]*)\)");
             Assert.True(helper.Success);

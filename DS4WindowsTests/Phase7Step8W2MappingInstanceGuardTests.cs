@@ -150,7 +150,7 @@ namespace DS4WindowsTests
         [Fact]
         public void Mapping_HasNoServiceLocatorOrGlobalFallbacks()
         {
-            string mapping = Read("DS4Windows/DS4Control/Mapping.cs");
+            string mapping = Read("DS4Windows/Processing/Mapping.cs");
             if (mapping == null) return;
 
             Assert.DoesNotContain("AppHost", mapping);
@@ -167,9 +167,9 @@ namespace DS4WindowsTests
             var staticCall = new Regex(@"\bMapping\.(Commit|MapCustom|SetCurveAndDeadzone|TempMouseJoystick|HandleDeviceDisconnect|GetBoolMappingExternal|PlayMacroDirect|EndMacroDirect|ClearKeyButtonControllersForDevice|GetOrCreateKeyButtonControllerForAction)\b");
             foreach (string file in new[]
             {
-                "DS4Windows/DS4Control/ControlService.cs", "DS4Windows/Actions/ActionManager.cs", "DS4Windows/Actions/DefaultActionManager.cs",
-                "DS4Windows/Actions/DefaultMacroPlayer.cs", "DS4Windows/DS4Control/Services/ProfileApplicationService.cs",
-                "DS4Windows/DS4Forms/ControllerReadingsControl.xaml.cs", "DS4Windows/DS4Forms/ViewModels/RecordBoxViewModel.cs",
+                "DS4Windows/Processing/ControlService.cs", "DS4Windows/Actions/ActionManager.cs", "DS4Windows/Processing/Actions/DefaultActionManager.cs",
+                "DS4Windows/Processing/Actions/DefaultMacroPlayer.cs", "DS4Windows/Processing/Services/ProfileApplicationService.cs",
+                "DS4Windows/UI/ControllerReadingsControl.xaml.cs", "DS4Windows/UI/ViewModels/RecordBoxViewModel.cs",
             })
             {
                 string text = Read(file);

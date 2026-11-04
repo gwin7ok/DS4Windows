@@ -20,7 +20,7 @@ namespace DS4WindowsTests
 
         private static readonly Regex StaticResourceReference = new Regex(@"\{StaticResource\s+(?<key>[^\s}]+)\s*\}", RegexOptions.Compiled);
 
-        /// <param name="relativePath">リポジトリのルートからの相対パス（例: DS4Windows/DS4Forms/ProfileEditor.xaml）。</param>
+        /// <param name="relativePath">リポジトリのルートからの相対パス（例: DS4Windows/UI/ProfileEditor.xaml）。</param>
         public static XDocument Load(string relativePath)
         {
             string path = SourceFileLocator.Find(relativePath);

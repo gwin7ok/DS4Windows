@@ -10,7 +10,7 @@ namespace DS4WindowsTests
     /// </summary>
     public class Phase9SteeringW2ControllerConfigsGuardTests
     {
-        private const string SerializerPath = "DS4Windows/DS4Control/Services/ControllerConfigsXmlSerializer.cs";
+        private const string SerializerPath = "DS4Windows/Core/Persistence/ControllerConfigsXmlSerializer.cs";
         private readonly ITestOutputHelper _output;
 
         public Phase9SteeringW2ControllerConfigsGuardTests(ITestOutputHelper output)

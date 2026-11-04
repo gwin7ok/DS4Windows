@@ -172,8 +172,8 @@ namespace DS4WindowsTests
         [Fact]
         public void TheSources_CarryTheAnalogMouseWiring()
         {
-            string registration = SourceFileLocator.Find("DS4Windows/DI/ServiceRegistration.cs");
-            string mapping = SourceFileLocator.Find("DS4Windows/DS4Control/Mapping.cs");
+            string registration = SourceFileLocator.Find("DS4Windows/Composition/ServiceRegistration.cs");
+            string mapping = SourceFileLocator.Find("DS4Windows/Processing/Mapping.cs");
             if (registration == null || mapping == null) return;
 
             string text = File.ReadAllText(mapping);

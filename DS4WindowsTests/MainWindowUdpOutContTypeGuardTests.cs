@@ -23,7 +23,7 @@ namespace DS4WindowsTests
 
         private string ReadSourceWithoutComments()
         {
-            string path = SourceFileLocator.Find("DS4Windows/DS4Control/Services/IpcCommandProcessor.cs");   // Phase13-Step11 11-b: IPC コマンドの実行は IpcCommandProcessor へ移した
+            string path = SourceFileLocator.Find("DS4Windows/Processing/Services/IpcCommandProcessor.cs");   // Phase13-Step11 11-b: IPC コマンドの実行は IpcCommandProcessor へ移した
             if (path == null)
             {
                 _output.WriteLine("MainWindow.xaml.cs が見つからないため検査を省略した。");

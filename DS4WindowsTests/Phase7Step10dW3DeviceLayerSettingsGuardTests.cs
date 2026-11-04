@@ -19,14 +19,14 @@ namespace DS4WindowsTests
     {
         private static readonly string[] LowerLayerFiles =
         {
-            "DS4Windows/DS4Library/DS4Devices.cs",
-            "DS4Windows/DS4Library/DS4Device.cs",
-            "DS4Windows/DS4Library/DS4SixAxis.cs",
-            "DS4Windows/HidLibrary/HidDevices.cs",
-            "DS4Windows/DS4Control/OutputDevice.cs",
-            "DS4Windows/DS4Control/DS4OutDevices/DS4OutDeviceBasic.cs",
-            "DS4Windows/DS4Control/DS4OutDevices/DS4OutDeviceExt.cs",
-            "DS4Windows/DS4Control/Xbox360OutDevice.cs",
+            "DS4Windows/Input/DS4Devices.cs",
+            "DS4Windows/Input/DS4Device.cs",
+            "DS4Windows/Input/DS4SixAxis.cs",
+            "DS4Windows/Input/Hid/HidDevices.cs",
+            "DS4Windows/Output/OutputDevice.cs",
+            "DS4Windows/Output/Devices/DS4OutDeviceBasic.cs",
+            "DS4Windows/Output/Devices/DS4OutDeviceExt.cs",
+            "DS4Windows/Output/Devices/Xbox360OutDevice.cs",
         };
 
         private readonly ITestOutputHelper _output;

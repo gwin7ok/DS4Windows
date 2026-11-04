@@ -55,10 +55,10 @@ namespace DS4WindowsTests
         }
 
         [Theory]
-        [InlineData("DS4Windows/DS4Control/Mapping.cs")]
-        [InlineData("DS4Windows/DS4Control/SyntheticInputState.cs")]
-        [InlineData("DS4Windows/DS4Control/MacroRuntimeState.cs")]
-        [InlineData("DS4Windows/DS4Control/StickMotionState.cs")]
+        [InlineData("DS4Windows/Processing/Mapping.cs")]
+        [InlineData("DS4Windows/Processing/SyntheticInputState.cs")]
+        [InlineData("DS4Windows/Processing/MacroRuntimeState.cs")]
+        [InlineData("DS4Windows/Processing/StickMotionState.cs")]
         public void TheFile_DoesNotReferenceGlobal(string relativePath)
         {
             string path = SourceFileLocator.Find(relativePath);

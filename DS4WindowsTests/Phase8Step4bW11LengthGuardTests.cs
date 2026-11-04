@@ -23,7 +23,7 @@ namespace DS4WindowsTests
             while (dir != null && !File.Exists(Path.Combine(dir, "DS4Windows", "DS4WinWPF.csproj")))
                 dir = Path.GetDirectoryName(dir);
             Assert.NotNull(dir);
-            return Path.Combine(dir, "DS4Windows", "DS4Control", "Services");
+            return Path.Combine(dir, "DS4Windows", "Core", "Persistence");
         }
 
         private static int MethodLines(string[] lines, string signature)

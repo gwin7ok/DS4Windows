@@ -48,7 +48,7 @@ namespace DS4WindowsTests
         [InlineData(@"\bbool\[\] lag\b")]
         public void ControlService_NoLongerContains_TheMovedMembers(string pattern)
         {
-            string text = ReadWithoutComments("DS4Windows/DS4Control/ControlService.cs");
+            string text = ReadWithoutComments("DS4Windows/Processing/ControlService.cs");
             if (text == null) return;
 
             Assert.False(Regex.IsMatch(text, pattern), $"ControlService.cs に '{pattern}' が残っている（9-E E-5 で部品へ移した）");
@@ -57,22 +57,22 @@ namespace DS4WindowsTests
         [Fact]
         public void ControlService_KeepsTheThinDelegates_ForTheCallers()
         {
-            string text = ReadWithoutComments("DS4Windows/DS4Control/ControlService.cs");
+            string text = ReadWithoutComments("DS4Windows/Processing/ControlService.cs");
             if (text == null) return;
 
             // Phase13-Step10 10-d: GetActiveInputControl の転送も削除した。利用者は IRuntimeFeatureSwitch を使う
             Assert.DoesNotContain("public DS4Controls GetActiveInputControl(", text);
-            string rfs = ReadWithoutComments("DS4Windows/DS4Control/Services/RuntimeFeatureSwitch.cs");
+            string rfs = ReadWithoutComments("DS4Windows/Processing/Services/RuntimeFeatureSwitch.cs");
             if (rfs != null) Assert.Contains("_activeInputProbe.GetActive(", rfs);
             // Phase13-Step10 10-b: 利用者が 0 件だった StartTPOff／CheckForTouchToggle の転送は削除した（ITouchpadToggleService／IProfileLoadTarget が持つ）
             Assert.DoesNotContain("public void StartTPOff(", text);
             Assert.DoesNotContain("CheckForTouchToggle(", text);
             // Phase13-Step10 10-c: TouchpadSlide の転送も削除した。利用者は IRuntimeFeatureSwitch を使う
             Assert.DoesNotContain("public string TouchpadSlide(", text);
-            string sw = ReadWithoutComments("DS4Windows/DS4Control/Services/RuntimeFeatureSwitch.cs");
+            string sw = ReadWithoutComments("DS4Windows/Processing/Services/RuntimeFeatureSwitch.cs");
             if (sw != null) Assert.Contains("_touchpadToggle.Slide(", sw);
             // Phase13-Step5b: _latencyMonitor.OnReport は On_Report と一緒に InputReportProcessor へ移した
-            string processor = ReadWithoutComments("DS4Windows/DS4Control/Services/InputReportProcessor.cs");
+            string processor = ReadWithoutComments("DS4Windows/Processing/Services/InputReportProcessor.cs");
             Assert.Contains("_latencyMonitor.OnReport(device, ind);", processor);
         }
 
@@ -80,7 +80,7 @@ namespace DS4WindowsTests
         public void OnReport_KeepsTheOriginalOrder_OfTheCallsToTheNewParts()
         {
             // Phase13-Step5b: On_Report は InputReportProcessor へ移した（順序の検査は新しいファイルに対して維持する）
-            string text = ReadWithoutComments("DS4Windows/DS4Control/Services/InputReportProcessor.cs");
+            string text = ReadWithoutComments("DS4Windows/Processing/Services/InputReportProcessor.cs");
             if (text == null) return;
 
             int monitor = text.IndexOf("_latencyMonitor.OnReport(device, ind);");
@@ -101,9 +101,9 @@ namespace DS4WindowsTests
         }
 
         [Theory]
-        [InlineData("DS4Windows/DS4Control/Services/LatencyMonitor.cs")]
-        [InlineData("DS4Windows/DS4Control/Services/TouchpadToggleService.cs")]
-        [InlineData("DS4Windows/DS4Control/Services/ActiveInputProbe.cs")]
+        [InlineData("DS4Windows/Processing/Services/LatencyMonitor.cs")]
+        [InlineData("DS4Windows/Processing/Services/TouchpadToggleService.cs")]
+        [InlineData("DS4Windows/Processing/Services/ActiveInputProbe.cs")]
         public void NewComponents_DoNotReferenceStaticEntryPoints_OrControlService(string relativePath)
         {
             string text = ReadWithoutComments(relativePath);

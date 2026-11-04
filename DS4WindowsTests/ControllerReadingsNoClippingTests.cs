@@ -20,7 +20,7 @@ namespace DS4WindowsTests
     /// </summary>
     public class ControllerReadingsNoClippingTests
     {
-        private const string ReadingsXaml = "DS4Windows/DS4Forms/ControllerReadingsControl.xaml";
+        private const string ReadingsXaml = "DS4Windows/UI/ControllerReadingsControl.xaml";
 
         // 左ペインの幅。Controls タブ（ProfileEditor.xaml の Grid Width=470）が決める。実際の幅はこれ以上
         private const double PaneWidth = 470;

@@ -70,14 +70,14 @@ namespace DS4WindowsTests
         [Fact]
         public void NoSourceFile_ReferencesRemovedProbesThroughGlobal()
         {
-            string anchor = SourceFileLocator.Find("DS4Windows/DS4Control/BackingStore.cs"); // Phase7-Step10d W5: Global.cs は削除したため、同じフォルダーの BackingStore.cs を起点にする
+            string anchor = SourceFileLocator.Find("DS4Windows/Core/Settings/BackingStore.cs"); // Phase7-Step10d W5: Global.cs は削除したため、同じフォルダーの BackingStore.cs を起点にする
             if (anchor == null)
             {
                 _output.WriteLine("ソースが見つからないため検査を省略した。");
                 return;
             }
 
-            string root = Path.GetFullPath(Path.Combine(Path.GetDirectoryName(anchor), "..", ".."));
+            string root = SourceFileLocator.RootFromAnchor(anchor);
             string sourceDir = Path.Combine(root, "DS4Windows");
             var offenders = new List<string>();
             foreach (string file in Directory.GetFiles(sourceDir, "*.cs", SearchOption.AllDirectories))
@@ -99,7 +99,7 @@ namespace DS4WindowsTests
         [Fact]
         public void EnvironmentService_OwnsTheProbesAndTheirState()
         {
-            string text = Read("DS4Windows/DS4Control/Services/EnvironmentService.cs");
+            string text = Read("DS4Windows/Core/Platform/EnvironmentService.cs");
             if (text == null) return;
 
             foreach (string member in new[]

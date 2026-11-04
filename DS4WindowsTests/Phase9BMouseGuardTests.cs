@@ -55,17 +55,17 @@ namespace DS4WindowsTests
         [InlineData(@"\bMOUSESTICKMINVELOCITY\b")]
         public void Mapping_NoLongerContains_TheMovedMembers(string pattern)
         {
-            string text = ReadWithoutComments("DS4Windows/DS4Control/Mapping.cs");
+            string text = ReadWithoutComments("DS4Windows/Processing/Mapping.cs");
             if (text == null) return;
 
             Assert.False(Regex.IsMatch(text, pattern), $"Mapping.cs に '{pattern}' が残っている（9-B で移した／削除した）");
         }
 
         [Theory]
-        [InlineData("DS4Windows/DS4Control/Services/ButtonMouseMovementCalculator.cs")]
-        [InlineData("DS4Windows/DS4Control/Services/MouseMotionQuantizer.cs")]
-        [InlineData("DS4Windows/DS4Control/Services/GyroMouseStickBlender.cs")]
-        [InlineData("DS4Windows/DS4Control/Services/ControlActivityReader.cs")]
+        [InlineData("DS4Windows/Processing/Services/ButtonMouseMovementCalculator.cs")]
+        [InlineData("DS4Windows/Processing/Services/MouseMotionQuantizer.cs")]
+        [InlineData("DS4Windows/Processing/Services/GyroMouseStickBlender.cs")]
+        [InlineData("DS4Windows/Processing/Services/ControlActivityReader.cs")]
         public void NewComponents_DoNotReferenceStaticEntryPoints(string relativePath)
         {
             string text = ReadWithoutComments(relativePath);
@@ -107,7 +107,7 @@ namespace DS4WindowsTests
         public void ButtonMouseMovementCalculator_CalculateIsAtMostTwoHundredLines()
         {
             // Phase9 完了条件: 巨大メソッドは 200 行以下（getMouseMapping 相当は 318 行 → Q5 の畳み込みで縮小）
-            string path = SourceFileLocator.Find("DS4Windows/DS4Control/Services/ButtonMouseMovementCalculator.cs");
+            string path = SourceFileLocator.Find("DS4Windows/Processing/Services/ButtonMouseMovementCalculator.cs");
             if (path == null) return;
 
             string text = File.ReadAllText(path);

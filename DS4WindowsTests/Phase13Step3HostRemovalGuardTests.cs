@@ -40,7 +40,7 @@ namespace DS4WindowsTests
             Assert.IsType<DeviceRumbleService>(TestHost.GetService<IDeviceRumbleService>());
             Assert.IsType<OutputKbmInitializer>(TestHost.GetService<IOutputKbmInitializer>());
 
-            string anchor = SourceFileLocator.Find("DS4Windows/DI/ServiceRegistration.cs");
+            string anchor = SourceFileLocator.Find("DS4Windows/Composition/ServiceRegistration.cs");
             if (anchor == null) return;
             string text = System.IO.File.ReadAllText(anchor);
             Assert.DoesNotContain("Func<IVirtualPadHost>", text);

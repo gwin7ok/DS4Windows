@@ -17,11 +17,11 @@ namespace DS4WindowsTests
     {
         private static readonly string[] Files =
         {
-            "DS4Windows/DS4Control/OutputSlotManager.cs",
-            "DS4Windows/DS4Control/Services/LegacyProfileXmlSerializer.cs",
-            "DS4Windows/DS4Control/Services/ProfileRepository.cs",
-            "DS4Windows/DS4Control/Services/ProfileSlotApplier.cs",
-            "DS4Windows/DS4Control/DTOXml/AutoProfilesDTO.cs",
+            "DS4Windows/Output/OutputSlotManager.cs",
+            "DS4Windows/Core/Persistence/LegacyProfileXmlSerializer.cs",
+            "DS4Windows/Core/Persistence/ProfileRepository.cs",
+            "DS4Windows/Processing/Services/ProfileSlotApplier.cs",
+            "DS4Windows/Core/Persistence/Dto/AutoProfilesDTO.cs",
         };
 
         private readonly ITestOutputHelper _output;

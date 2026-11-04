@@ -216,8 +216,8 @@ namespace DS4WindowsTests
         [Fact]
         public void TheSources_CarryTheMouseWiring()
         {
-            string registration = SourceFileLocator.Find("DS4Windows/DI/ServiceRegistration.cs");
-            string frameOutput = SourceFileLocator.Find("DS4Windows/Actions/FrameOutput.cs");
+            string registration = SourceFileLocator.Find("DS4Windows/Composition/ServiceRegistration.cs");
+            string frameOutput = SourceFileLocator.Find("DS4Windows/Processing/Actions/FrameOutput.cs");
             if (registration == null || frameOutput == null) return;
 
             Assert.Contains("IToggleFrameOutput", File.ReadAllText(frameOutput));

@@ -15,9 +15,9 @@ namespace DS4WindowsTests
     {
         private static readonly string[] Files =
         {
-            "DS4Windows/DS4Control/Mouse.cs",
-            "DS4Windows/DS4Control/MouseCursor.cs",
-            "DS4Windows/DS4Control/MouseWheel.cs",
+            "DS4Windows/Processing/Mouse.cs",
+            "DS4Windows/Processing/MouseCursor.cs",
+            "DS4Windows/Processing/MouseWheel.cs",
         };
 
         private static readonly Regex GlobalReference = new Regex(@"\bGlobal\.(\w+)");

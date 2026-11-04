@@ -22,19 +22,19 @@ namespace DS4WindowsTests
         private static readonly Dictionary<string, string[]> AllowedGlobalMembers = new Dictionary<string, string[]>
         {
             // WelcomeDialog: Pre-Host の手動分岐（FindConfigLocation／Load）と定数
-            ["DS4Windows/DS4Forms/WelcomeDialog.xaml.cs"] = new[] { "FindConfigLocation", "Load", "RESOURCES_PREFIX" },
-            ["DS4Windows/DS4Forms/SaveWhere.xaml.cs"] = new string[0],
-            ["DS4Windows/DS4Forms/LanguageSelectDialog.xaml.cs"] = new string[0],
-            ["DS4Windows/DS4Forms/About.xaml.cs"] = new string[0],
-            ["DS4Windows/DS4Forms/UpdaterWindow.xaml.cs"] = new string[0],
-            ["DS4Windows/DS4Forms/LanguagePackControl.xaml.cs"] = new string[0],
-            ["DS4Windows/DS4Forms/ViewModels/AboutViewModel.cs"] = new string[0],
-            ["DS4Windows/DS4Forms/ViewModels/LogViewModel.cs"] = new string[0],
-            ["DS4Windows/DS4Forms/ViewModels/UpdaterWindowViewModel.cs"] = new string[0],
+            ["DS4Windows/UI/WelcomeDialog.xaml.cs"] = new[] { "FindConfigLocation", "Load", "RESOURCES_PREFIX" },
+            ["DS4Windows/UI/SaveWhere.xaml.cs"] = new string[0],
+            ["DS4Windows/UI/LanguageSelectDialog.xaml.cs"] = new string[0],
+            ["DS4Windows/UI/About.xaml.cs"] = new string[0],
+            ["DS4Windows/UI/UpdaterWindow.xaml.cs"] = new string[0],
+            ["DS4Windows/UI/LanguagePackControl.xaml.cs"] = new string[0],
+            ["DS4Windows/UI/ViewModels/AboutViewModel.cs"] = new string[0],
+            ["DS4Windows/UI/ViewModels/LogViewModel.cs"] = new string[0],
+            ["DS4Windows/UI/ViewModels/UpdaterWindowViewModel.cs"] = new string[0],
             // LanguagePackViewModel: 定数のみ
-            ["DS4Windows/DS4Forms/ViewModels/LanguagePackViewModel.cs"] = new[] { "PROBING_PATH", "LANGUAGE_ASSEMBLY_NAME" },
+            ["DS4Windows/UI/ViewModels/LanguagePackViewModel.cs"] = new[] { "PROBING_PATH", "LANGUAGE_ASSEMBLY_NAME" },
             ["DS4Windows/StartupMethods.cs"] = new string[0],
-            ["DS4Windows/DS4Forms/ViewModels/TrayIconViewModel.cs"] = new[] { "RESOURCES_PREFIX" },
+            ["DS4Windows/UI/ViewModels/TrayIconViewModel.cs"] = new[] { "RESOURCES_PREFIX" },
         };
 
         // ログ文言として残している文字列（コードの参照ではない）
@@ -47,17 +47,17 @@ namespace DS4WindowsTests
         // Service Locator・静的フォールバックを持たないこと（検査対象）
         private static readonly string[] NoServiceLocatorFiles =
         {
-            "DS4Windows/DS4Forms/SaveWhere.xaml.cs",
-            "DS4Windows/DS4Forms/LanguageSelectDialog.xaml.cs",
-            "DS4Windows/DS4Forms/About.xaml.cs",
-            "DS4Windows/DS4Forms/UpdaterWindow.xaml.cs",
-            "DS4Windows/DS4Forms/WelcomeDialog.xaml.cs",
-            "DS4Windows/DS4Forms/ViewModels/AboutViewModel.cs",
-            "DS4Windows/DS4Forms/ViewModels/LogViewModel.cs",
-            "DS4Windows/DS4Forms/ViewModels/UpdaterWindowViewModel.cs",
-            "DS4Windows/DS4Forms/ViewModels/LanguagePackViewModel.cs",
-            "DS4Windows/DS4Forms/ViewModels/SettingsViewModel.cs",
-            "DS4Windows/DS4Forms/ViewModels/TrayIconViewModel.cs",
+            "DS4Windows/UI/SaveWhere.xaml.cs",
+            "DS4Windows/UI/LanguageSelectDialog.xaml.cs",
+            "DS4Windows/UI/About.xaml.cs",
+            "DS4Windows/UI/UpdaterWindow.xaml.cs",
+            "DS4Windows/UI/WelcomeDialog.xaml.cs",
+            "DS4Windows/UI/ViewModels/AboutViewModel.cs",
+            "DS4Windows/UI/ViewModels/LogViewModel.cs",
+            "DS4Windows/UI/ViewModels/UpdaterWindowViewModel.cs",
+            "DS4Windows/UI/ViewModels/LanguagePackViewModel.cs",
+            "DS4Windows/UI/ViewModels/SettingsViewModel.cs",
+            "DS4Windows/UI/ViewModels/TrayIconViewModel.cs",
             "DS4Windows/StartupMethods.cs",
         };
 
@@ -130,7 +130,7 @@ namespace DS4WindowsTests
         public void LanguagePackControl_DoesNotUseServiceLocator()
         {
             // Application.Current as App（ApplyLanguageSettingPublic の呼び出し）は温存（Global ではない。App の言語適用処理は Phase7 で整理する）
-            string text = ReadSourceWithoutComments("DS4Windows/DS4Forms/LanguagePackControl.xaml.cs");
+            string text = ReadSourceWithoutComments("DS4Windows/UI/LanguagePackControl.xaml.cs");
             if (text == null) return;
 
             Assert.DoesNotContain("AppHost", text);
@@ -152,7 +152,7 @@ namespace DS4WindowsTests
         [Fact]
         public void RemovedOrphanMethods_DoNotComeBack()
         {
-            string util = ReadSourceWithoutComments("DS4Windows/DS4Control/Util.cs");
+            string util = ReadSourceWithoutComments("DS4Windows/Core/Utilities/Util.cs");
             if (util == null) return;
 
             // Phase6-Step10-1-5: 呼出元 0 件の旧 DS4Updater 差し替え処理（コミット b55d160b で UpdaterWindow の方式へ置き換え済み）
@@ -163,8 +163,8 @@ namespace DS4WindowsTests
         [Fact]
         public void LanguagePackControl_IsInitializedByMainWindow()
         {
-            string xaml = SourceFileLocator.Find("DS4Windows/DS4Forms/MainWindow.xaml");
-            string code = ReadSourceWithoutComments("DS4Windows/DS4Forms/MainWindow.xaml.cs");
+            string xaml = SourceFileLocator.Find("DS4Windows/UI/MainWindow.xaml");
+            string code = ReadSourceWithoutComments("DS4Windows/UI/MainWindow.xaml.cs");
             if (xaml == null || code == null) return;
 
             Assert.Contains("x:Name=\"languagePackControl\"", File.ReadAllText(xaml));

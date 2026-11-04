@@ -44,14 +44,14 @@ namespace DS4WindowsTests
         [Fact]
         public void NoSourceFile_ReferencesProgramRootHub_AndProgramCsIsGone()
         {
-            string anchor = SourceFileLocator.Find("DS4Windows/DS4Control/BackingStore.cs"); // Phase7-Step10d W5: Global.cs は削除したため、同じフォルダーの BackingStore.cs を起点にする
+            string anchor = SourceFileLocator.Find("DS4Windows/Core/Settings/BackingStore.cs"); // Phase7-Step10d W5: Global.cs は削除したため、同じフォルダーの BackingStore.cs を起点にする
             if (anchor == null)
             {
                 _output.WriteLine("ソースが見つからないため検査を省略した。");
                 return;
             }
 
-            string root = Path.GetFullPath(Path.Combine(Path.GetDirectoryName(anchor), "..", ".."));
+            string root = SourceFileLocator.RootFromAnchor(anchor);
             string sourceDir = Path.Combine(root, "DS4Windows");
             Assert.False(File.Exists(Path.Combine(sourceDir, "DS4Control", "Program.cs")), "Program.cs が再び作られている。");
 
@@ -82,7 +82,7 @@ namespace DS4WindowsTests
         [Fact]
         public void ServiceRegistration_AlwaysCreatesTheControlService()
         {
-            string text = Read("DS4Windows/DI/ServiceRegistration.cs");
+            string text = Read("DS4Windows/Composition/ServiceRegistration.cs");
             if (text == null) return;
 
             Assert.DoesNotContain("rootHub", text);

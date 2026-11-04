@@ -84,8 +84,8 @@ namespace DS4WindowsTests
         [Fact]
         public void TheSerializer_DoesNotReferenceGlobal_AndTheXmlStoreUsesIt()
         {
-            string serializer = SourceFileLocator.Find("DS4Windows/DS4Control/Services/AppSettingsXmlSerializer.cs");
-            string xmlStore = SourceFileLocator.Find("DS4Windows/DS4Control/Services/ProfileXmlStore.cs");
+            string serializer = SourceFileLocator.Find("DS4Windows/Core/Persistence/AppSettingsXmlSerializer.cs");
+            string xmlStore = SourceFileLocator.Find("DS4Windows/Core/Persistence/ProfileXmlStore.cs");
             if (serializer == null || xmlStore == null)
             {
                 _output.WriteLine("ソースが見つからないため検査を省略した。");

@@ -365,9 +365,9 @@ namespace DS4WindowsTests
         [Fact]
         public void TheSources_CarryTheExtrasWiring_AndTheLightbarMacroIsGone()
         {
-            string engine = SourceFileLocator.Find("DS4Windows/Actions/TriggerDispatchEngine.cs");
-            string registration = SourceFileLocator.Find("DS4Windows/DI/ServiceRegistration.cs");
-            string mapping = SourceFileLocator.Find("DS4Windows/DS4Control/Mapping.cs");
+            string engine = SourceFileLocator.Find("DS4Windows/Processing/Actions/TriggerDispatchEngine.cs");
+            string registration = SourceFileLocator.Find("DS4Windows/Composition/ServiceRegistration.cs");
+            string mapping = SourceFileLocator.Find("DS4Windows/Processing/Mapping.cs");
             if (engine == null || registration == null || mapping == null) return;
 
             string engineText = File.ReadAllText(engine);

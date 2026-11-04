@@ -46,7 +46,7 @@ namespace DS4WindowsTests
         [Fact]
         public void RecordBtn_ShowsAllFourButtonsWhileRecording_RegardlessOfRecordDelays()
         {
-            string path = SourceFileLocator.Find("DS4Windows/DS4Forms/RecordBox.xaml.cs");
+            string path = SourceFileLocator.Find("DS4Windows/UI/RecordBox.xaml.cs");
             if (path == null)
             {
                 _output.WriteLine("RecordBox.xaml.cs が見つからないため検査を省略した。");

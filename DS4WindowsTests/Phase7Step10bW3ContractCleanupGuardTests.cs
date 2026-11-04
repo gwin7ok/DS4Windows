@@ -70,7 +70,7 @@ namespace DS4WindowsTests
         {
             Assert.NotNull(typeof(IOutputSlotService).GetEvent("OutputSlotChanged"));
 
-            string path = SourceFileLocator.Find("DS4Windows/DI/IOutputSlotService.cs");
+            string path = SourceFileLocator.Find("DS4Windows/Processing/Abstractions/IOutputSlotService.cs");
             if (path == null)
             {
                 _output.WriteLine("ソースが見つからないため検査を省略した。");

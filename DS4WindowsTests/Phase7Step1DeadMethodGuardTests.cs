@@ -51,7 +51,7 @@ namespace DS4WindowsTests
         [Fact]
         public void RemovedMethods_DoNotReappearInBackingStore()
         {
-            string path = SourceFileLocator.Find("DS4Windows/DS4Control/BackingStore.cs");
+            string path = SourceFileLocator.Find("DS4Windows/Core/Settings/BackingStore.cs");
             if (path == null)
             {
                 _output.WriteLine("ソースが見つからないため検査を省略した。");
@@ -67,7 +67,7 @@ namespace DS4WindowsTests
         [Fact]
         public void KeptMethods_StillExistInBackingStore()
         {
-            string path = SourceFileLocator.Find("DS4Windows/DS4Control/BackingStore.cs");
+            string path = SourceFileLocator.Find("DS4Windows/Core/Settings/BackingStore.cs");
             if (path == null)
             {
                 _output.WriteLine("ソースが見つからないため検査を省略した。");

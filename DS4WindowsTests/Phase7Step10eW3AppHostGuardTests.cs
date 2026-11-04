@@ -31,7 +31,7 @@ namespace DS4WindowsTests
         [Fact]
         public void AppHost_GetService_DoesNotCreateTheHostImplicitly()
         {
-            string path = SourceFileLocator.Find("DS4Windows/DI/AppHost.cs");
+            string path = SourceFileLocator.Find("DS4Windows/Composition/AppHost.cs");
             if (path == null)
             {
                 _output.WriteLine("ソースが見つからないため検査を省略した。");
@@ -65,14 +65,14 @@ namespace DS4WindowsTests
         [Fact]
         public void Tests_DoNotCallAppHostGetServiceDirectly()
         {
-            string anchor = SourceFileLocator.Find("DS4Windows/DS4Control/BackingStore.cs");
+            string anchor = SourceFileLocator.Find("DS4Windows/Core/Settings/BackingStore.cs");
             if (anchor == null)
             {
                 _output.WriteLine("ソースが見つからないため検査を省略した。");
                 return;
             }
 
-            string root = Path.GetFullPath(Path.Combine(Path.GetDirectoryName(anchor), "..", ".."));
+            string root = SourceFileLocator.RootFromAnchor(anchor);
             var offenders = new System.Collections.Generic.List<string>();
             foreach (string file in Directory.GetFiles(Path.Combine(root, "DS4WindowsTests"), "*.cs", SearchOption.AllDirectories))
             {

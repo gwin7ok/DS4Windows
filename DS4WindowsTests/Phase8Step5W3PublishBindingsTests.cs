@@ -222,8 +222,8 @@ namespace DS4WindowsTests
         [Fact]
         public void TheSource_PublishesAfterTheCleanup_AndThePipePathPublishesAfterALoadSuccess()
         {
-            string service = SourceFileLocator.Find("DS4Windows/DS4Control/Services/ProfileApplicationService.cs");
-            string window = SourceFileLocator.Find("DS4Windows/DS4Control/Services/IpcCommandProcessor.cs");   // Phase13-Step11 11-b: IPC コマンド（loadtempprofile）の実行は IpcCommandProcessor へ移した
+            string service = SourceFileLocator.Find("DS4Windows/Processing/Services/ProfileApplicationService.cs");
+            string window = SourceFileLocator.Find("DS4Windows/Processing/Services/IpcCommandProcessor.cs");   // Phase13-Step11 11-b: IPC コマンド（loadtempprofile）の実行は IpcCommandProcessor へ移した
             if (service == null || window == null) return;
 
             string text = File.ReadAllText(service);

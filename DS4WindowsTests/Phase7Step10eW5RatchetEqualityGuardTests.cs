@@ -54,14 +54,14 @@ namespace DS4WindowsTests
 
         private string FindRoot()
         {
-            string anchor = SourceFileLocator.Find("DS4Windows/DS4Control/BackingStore.cs");
+            string anchor = SourceFileLocator.Find("DS4Windows/Core/Settings/BackingStore.cs");
             if (anchor == null)
             {
                 _output.WriteLine("ソースが見つからないため検査を省略した。");
                 return null;
             }
 
-            return Path.GetFullPath(Path.Combine(Path.GetDirectoryName(anchor), "..", ".."));
+            return SourceFileLocator.RootFromAnchor(anchor);
         }
 
         private static object ReadBaseline(Type owner)

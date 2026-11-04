@@ -18,12 +18,12 @@ namespace DS4WindowsTests
     public class MappingCommitAndCalibrationGlobalReferenceGuardTests
     {
         // Phase9 9-A(2)-B: ドリフト補正は Mapping.ApplyStickCalibration から StickInputConditioner.ApplyDrift へ移した（検査の対象も、移動先のファイルにした）
-        private const string CalibrationPath = "DS4Windows/DS4Control/Services/StickInputConditioner.cs";
+        private const string CalibrationPath = "DS4Windows/Processing/Services/StickInputConditioner.cs";
         private const string CalibrationStart = "public DS4State ApplyDrift(";
         // Phase8-Step8 8a: held の表を削除したため、較正の直後の文書コメント（Map DS4 Buttons/Axes…）を終端にする
         private const string CalibrationEnd = "public void Fuzz(";
         // Phase9 MapCustom の分割 M1: Commit の本体は SyntheticInputCommitter へ移した（検査の対象も、移動先のファイルにした）
-        private const string CommitPath = "DS4Windows/DS4Control/Services/SyntheticInputCommitter.cs";
+        private const string CommitPath = "DS4Windows/Processing/Services/SyntheticInputCommitter.cs";
         private const string CommitStart = "public void Commit(";
         // Phase7-Step8 W1: MapClick を SyntheticInputState.CountClick へ移したため、Commit の次のメンバーを終端にする
         // Phase8-Fix-MacroRepeatUnify（D5）: DS4ControltoInt を削除したため、次のメンバー（TValue）を終端にする
@@ -50,7 +50,7 @@ namespace DS4WindowsTests
         }
 
         /// <summary>コメント（ブロック・行）を除いた、指定範囲のソーステキストを返す。ファイルが見つからなければ null。</summary>
-        private string ReadRangeWithoutComments(string startMarker, string endMarker, string relativePath = "DS4Windows/DS4Control/Mapping.cs")
+        private string ReadRangeWithoutComments(string startMarker, string endMarker, string relativePath = "DS4Windows/Processing/Mapping.cs")
         {
             string path = SourceFileLocator.Find(relativePath);
             if (path == null)

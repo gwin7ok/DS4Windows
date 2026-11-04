@@ -81,18 +81,18 @@ namespace DS4WindowsTests
         [Fact]
         public void OnlyThePhysicalRemoval_CallsHandleDeviceDisconnect_AndTheServiceStopDoesNot()
         {
-            string path = SourceFileLocator.Find("DS4Windows/DS4Control/ControlService.cs");
+            string path = SourceFileLocator.Find("DS4Windows/Processing/ControlService.cs");
             if (path == null) return;
             string text = File.ReadAllText(path);
 
             // Phase9 9-E E-6e: 切断の処理は DeviceDisconnectHandler.OnRemoval へ移った（ControlService.On_DS4Removal は委譲）
-            string handlerPath = SourceFileLocator.Find("DS4Windows/DS4Control/Services/DeviceDisconnectHandler.cs");
+            string handlerPath = SourceFileLocator.Find("DS4Windows/Processing/Services/DeviceDisconnectHandler.cs");
             if (handlerPath == null) return;
             string removal = MethodBody(File.ReadAllText(handlerPath), "public void OnRemoval(");
             Assert.Contains("_mapping.HandleDeviceDisconnect(ind);", removal);
 
             // Phase9 9-E E-6f2: Stop の本体は ServiceLifecycle へ移った
-            string lifecyclePath = SourceFileLocator.Find("DS4Windows/DS4Control/Services/ServiceLifecycle.cs");
+            string lifecyclePath = SourceFileLocator.Find("DS4Windows/Processing/Services/ServiceLifecycle.cs");
             if (lifecyclePath == null) return;
             string stop = MethodBody(File.ReadAllText(lifecyclePath), "public bool Stop(");
             Assert.DoesNotContain("HandleDeviceDisconnect", stop);
@@ -103,7 +103,7 @@ namespace DS4WindowsTests
         public void TheFirstConnection_UsesTheOlderProfilePath_AndAReconnectionUsesTheSelectedProfile()
         {
             // Phase9 9-E E-6a: プロファイルの選択は ConnectionProfileSelector へ移った
-            string path = SourceFileLocator.Find("DS4Windows/DS4Control/Services/ConnectionProfileSelector.cs");
+            string path = SourceFileLocator.Find("DS4Windows/Processing/Services/ConnectionProfileSelector.cs");
             if (path == null) return;
 
             string body = MethodBody(File.ReadAllText(path), "public bool ApplyOnConnect(");
@@ -143,15 +143,15 @@ namespace DS4WindowsTests
             Assert.Equal(new[]
             {
                 "DS4Windows/App.xaml.cs",                                        // 起動時の既定の設定
-                "DS4Windows/DI/IProfileRepository.cs",
-                "DS4Windows/DS4Control/BackingStore.cs",
-                "DS4Windows/DS4Control/DTOXml/AppSettingsDTO.cs",                // アプリ設定の読込
-                "DS4Windows/DS4Control/Services/AppSettingsXmlSerializer.cs",
-                "DS4Windows/DS4Control/Services/ConnectionProfileSelector.cs",   // 初回接続の既定（Phase9 9-E E-6a: ControlService から移した）
-                "DS4Windows/DS4Control/Services/ProfileApplicationService.cs",   // 適用での更新、RestoreFromAction
-                "DS4Windows/DS4Control/Services/ProfileRepository.cs",
-                "DS4Windows/DS4Forms/ViewModels/CompositeDeviceModel.cs",        // 画面の選択、リンクの解除
-            }, files);
+                "DS4Windows/Core/Abstractions/IProfileRepository.cs",
+                "DS4Windows/Core/Settings/BackingStore.cs",
+                "DS4Windows/Core/Persistence/Dto/AppSettingsDTO.cs",                // アプリ設定の読込
+                "DS4Windows/Core/Persistence/AppSettingsXmlSerializer.cs",
+                "DS4Windows/Processing/Services/ConnectionProfileSelector.cs",   // 初回接続の既定（Phase9 9-E E-6a: ControlService から移した）
+                "DS4Windows/Processing/Services/ProfileApplicationService.cs",   // 適用での更新、RestoreFromAction
+                "DS4Windows/Core/Persistence/ProfileRepository.cs",
+                "DS4Windows/UI/ViewModels/CompositeDeviceModel.cs",        // 画面の選択、リンクの解除
+            }.OrderBy(x => x).ToArray(), files);
         }
 
         [Fact]
@@ -169,7 +169,7 @@ namespace DS4WindowsTests
 
         private static string RepoRoot()
         {
-            string controlService = SourceFileLocator.Find("DS4Windows/DS4Control/ControlService.cs");
+            string controlService = SourceFileLocator.Find("DS4Windows/Processing/ControlService.cs");
             if (controlService == null) return null;
             return Path.GetDirectoryName(Path.GetDirectoryName(Path.GetDirectoryName(controlService)));
         }

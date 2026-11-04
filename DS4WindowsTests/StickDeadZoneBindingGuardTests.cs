@@ -34,10 +34,10 @@ namespace DS4WindowsTests
         }
 
         [Theory]
-        [InlineData("DS4Windows/DS4Forms/ProfileEditor.xaml", "LSDeadZone")]
-        [InlineData("DS4Windows/DS4Forms/ProfileEditor.xaml", "RSDeadZone")]
-        [InlineData("DS4Windows/DS4Forms/AxialStickUserControl.xaml", "DeadZoneX")]
-        [InlineData("DS4Windows/DS4Forms/AxialStickUserControl.xaml", "DeadZoneY")]
+        [InlineData("DS4Windows/UI/ProfileEditor.xaml", "LSDeadZone")]
+        [InlineData("DS4Windows/UI/ProfileEditor.xaml", "RSDeadZone")]
+        [InlineData("DS4Windows/UI/AxialStickUserControl.xaml", "DeadZoneX")]
+        [InlineData("DS4Windows/UI/AxialStickUserControl.xaml", "DeadZoneY")]
         public void StickDeadZone_IsWrittenOnEveryChange(string relativePath, string property)
         {
             string xaml = ReadXamlWithoutComments(relativePath);

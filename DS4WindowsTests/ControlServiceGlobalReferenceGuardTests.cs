@@ -32,7 +32,7 @@ namespace DS4WindowsTests
         };
 
         private static string FindControlServiceSource()
-            => SourceFileLocator.Find("DS4Windows/DS4Control/ControlService.cs");
+            => SourceFileLocator.Find("DS4Windows/Processing/ControlService.cs");
 
         private static string StripComment(string line)
         {

@@ -41,7 +41,7 @@ namespace DS4WindowsTests
         [Fact]
         public void TheLightsOffWrite_RunsBeforeTheFlagIsSet_AndOnlyWhenTurnedOff()
         {
-            string code = Source("DS4Windows/DS4Control/Services/DeviceConnectionSetup.cs");
+            string code = Source("DS4Windows/Processing/Services/DeviceConnectionSetup.cs");
             if (code == null) return;
 
             int off = code.IndexOf("if (!_profileSettings.GetEnableOutputDataToDS4(ind)) device.WriteOutputOffOnce();", StringComparison.Ordinal);
@@ -52,7 +52,7 @@ namespace DS4WindowsTests
         [Fact]
         public void TheLightsOffWrite_SkipsPadsThatCannotWrite_NonDs4Types_AndNeverThrows()
         {
-            string code = Source("DS4Windows/DS4Library/DS4Device.cs");
+            string code = Source("DS4Windows/Input/DS4Device.cs");
             if (code == null) return;
 
             int start = code.IndexOf("public void WriteOutputOffOnce()", StringComparison.Ordinal);
@@ -69,7 +69,7 @@ namespace DS4WindowsTests
         [Fact]
         public void TheEditor_NoLongerForcesTheEmulatedControllerToDs4_WhenOutputDataIsOn()
         {
-            string vm = Source("DS4Windows/DS4Forms/ViewModels/ProfileSettingsViewModel.cs");
+            string vm = Source("DS4Windows/UI/ViewModels/ProfileSettingsViewModel.cs");
             if (vm == null) return;
 
             int start = vm.IndexOf("public Ds4OutputCorrectionReason CorrectOutputTypeToDs4()", StringComparison.Ordinal);

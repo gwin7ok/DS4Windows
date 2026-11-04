@@ -23,16 +23,16 @@ namespace DS4WindowsTests
 
         private static readonly string[] DeviceFiles =
         {
-            "DS4Windows/DS4Library/InputDevices/DS3Device.cs",
-            "DS4Windows/DS4Library/InputDevices/DualSenseDevice.cs",
-            "DS4Windows/DS4Library/InputDevices/SwitchProDevice.cs",
-            "DS4Windows/DS4Library/InputDevices/JoyConDevice.cs",
+            "DS4Windows/Input/Devices/DS3Device.cs",
+            "DS4Windows/Input/Devices/DualSenseDevice.cs",
+            "DS4Windows/Input/Devices/SwitchProDevice.cs",
+            "DS4Windows/Input/Devices/JoyConDevice.cs",
         };
 
         [Fact]
         public void TheBase_OwnsTheOnlyPairOfEvents_AndTheWriters()
         {
-            string code = Code("DS4Windows/DS4Library/DS4Device.cs");
+            string code = Code("DS4Windows/Input/DS4Device.cs");
             if (code == null) return;
 
             Assert.Contains("public event EventHandler BatteryChanged;", code);
@@ -45,7 +45,7 @@ namespace DS4WindowsTests
         [Fact]
         public void TheDs4ReadLoop_WritesThroughTheUpdateMethods()
         {
-            string code = Code("DS4Windows/DS4Library/DS4Device.cs");
+            string code = Code("DS4Windows/Input/DS4Device.cs");
             if (code == null) return;
 
             Assert.Contains("UpdateCharging(tempCharging);", code);
@@ -73,7 +73,7 @@ namespace DS4WindowsTests
         [Fact]
         public void TheProfileChangedNotification_ReadsTheBatteryFromTheDevice_NotFromTheListRow()
         {
-            string code = Code("DS4Windows/DS4Forms/MainWindow.xaml.cs");
+            string code = Code("DS4Windows/UI/MainWindow.xaml.cs");
             if (code == null) return;
 
             int start = code.IndexOf("private void OnProfileChanged(", System.StringComparison.Ordinal);
@@ -87,7 +87,7 @@ namespace DS4WindowsTests
         [Fact]
         public void TheList_ReplacesAStaleRow_OnHotplug_AndKeepsTheNewRowWhenTheOldDeviceIsRemoved()
         {
-            string code = Code("DS4Windows/DS4Forms/ViewModels/ControllerListViewModel.cs");
+            string code = Code("DS4Windows/UI/ViewModels/ControllerListViewModel.cs");
             if (code == null) return;
 
             Assert.Contains("controllerDict.TryGetValue(index, out CompositeDeviceModel staleRow) && staleRow.Device != device", code);

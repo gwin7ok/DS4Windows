@@ -43,14 +43,14 @@ namespace DS4WindowsTests
         [Fact]
         public void AppSources_DoNotHardCodeReleaseRepositories()
         {
-            string marker = SourceFileLocator.Find("DS4Windows/Updater/ReleaseSource.cs");
+            string marker = SourceFileLocator.Find("DS4Windows/Core/Updater/ReleaseSource.cs");
             if (marker == null)
             {
                 _output.WriteLine("ReleaseSource.cs が見つからないため検査を省略した。");
                 return;
             }
 
-            string appDir = Path.GetFullPath(Path.Combine(Path.GetDirectoryName(marker), ".."));
+            string appDir = Path.GetFullPath(Path.Combine(Path.GetDirectoryName(marker), "..", ".."));
             string sep = Path.DirectorySeparatorChar.ToString();
             var offenders = Directory.EnumerateFiles(appDir, "*.*", SearchOption.AllDirectories)
                 .Where(f => f.EndsWith(".cs", StringComparison.OrdinalIgnoreCase)

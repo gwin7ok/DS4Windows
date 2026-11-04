@@ -75,7 +75,7 @@ namespace DS4WindowsTests
         [Fact]
         public void ProfileSettingsViewModel_BackendOperations_TargetOnlyTheEditSlotAndDoNotApplyToControllers()
         {
-            string path = SourceFileLocator.Find("DS4Windows/DS4Forms/ViewModels/ProfileSettingsViewModel.cs");
+            string path = SourceFileLocator.Find("DS4Windows/UI/ViewModels/ProfileSettingsViewModel.cs");
             if (path == null)
             {
                 _output.WriteLine("ProfileSettingsViewModel.cs が見つからないため検査を省略した。");
@@ -98,7 +98,7 @@ namespace DS4WindowsTests
         [Fact]
         public void ProfileEditor_UsesViewModelForBackendOperations()
         {
-            string path = SourceFileLocator.Find("DS4Windows/DS4Forms/ProfileEditor.xaml.cs");
+            string path = SourceFileLocator.Find("DS4Windows/UI/ProfileEditor.xaml.cs");
             if (path == null)
             {
                 _output.WriteLine("ProfileEditor.xaml.cs が見つからないため検査を省略した。");

@@ -64,9 +64,9 @@ namespace DS4WindowsTests
         [Fact]
         public void TheSource_PresetsDoNotReferenceGlobal_AndTheLoaderDoesNotCallTheStore()
         {
-            string presets = SourceFileLocator.Find("DS4Windows/DS4Control/Services/ProfilePresets.cs");
-            string loader = SourceFileLocator.Find("DS4Windows/DS4Control/Services/ProfilePresetLoader.cs");
-            string store = SourceFileLocator.Find("DS4Windows/DS4Control/BackingStore.cs");
+            string presets = SourceFileLocator.Find("DS4Windows/Core/Persistence/ProfilePresets.cs");
+            string loader = SourceFileLocator.Find("DS4Windows/Core/Persistence/ProfilePresetLoader.cs");
+            string store = SourceFileLocator.Find("DS4Windows/Core/Settings/BackingStore.cs");
             if (presets == null || loader == null || store == null)
             {
                 _output.WriteLine("ソースが見つからないため検査を省略した。");

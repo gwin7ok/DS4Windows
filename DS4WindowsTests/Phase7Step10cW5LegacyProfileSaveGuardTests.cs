@@ -62,9 +62,9 @@ namespace DS4WindowsTests
         [Fact]
         public void TheSource_UsesTheSerializerEverywhere()
         {
-            string serializer = SourceFileLocator.Find("DS4Windows/DS4Control/Services/LegacyProfileXmlSerializer.cs");
-            string xmlStore = SourceFileLocator.Find("DS4Windows/DS4Control/Services/ProfileXmlStore.cs");
-            string repository = SourceFileLocator.Find("DS4Windows/DS4Control/Services/ProfileRepository.cs");
+            string serializer = SourceFileLocator.Find("DS4Windows/Core/Persistence/LegacyProfileXmlSerializer.cs");
+            string xmlStore = SourceFileLocator.Find("DS4Windows/Core/Persistence/ProfileXmlStore.cs");
+            string repository = SourceFileLocator.Find("DS4Windows/Core/Persistence/ProfileRepository.cs");
             if (serializer == null || xmlStore == null || repository == null)
             {
                 _output.WriteLine("ソースが見つからないため検査を省略した。");

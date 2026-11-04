@@ -36,10 +36,10 @@ namespace DS4WindowsTests
         [Fact]
         public void TheHost_SitsInTheSameCellAsTheLeftPane_AndStartsCollapsed()
         {
-            XDocument xaml = XamlTestHelper.Load("DS4Windows/DS4Forms/ProfileEditor.xaml");
+            XDocument xaml = XamlTestHelper.Load("DS4Windows/UI/ProfileEditor.xaml");
             if (xaml == null)
             {
-                _output.WriteLine("DS4Windows/DS4Forms/ProfileEditor.xaml が見つからないため検査を省略した。");
+                _output.WriteLine("DS4Windows/UI/ProfileEditor.xaml が見つからないため検査を省略した。");
                 return;
             }
 
@@ -60,7 +60,7 @@ namespace DS4WindowsTests
         [Fact]
         public void ShowControlAssignmentEditor_SwapsTheLeftPaneForTheEditor_AndKeepsTheColumnWidth()
         {
-            string source = Read("DS4Windows/DS4Forms/ProfileEditor.xaml.cs");
+            string source = Read("DS4Windows/UI/ProfileEditor.xaml.cs");
             if (source == null)
             {
                 return;
@@ -75,7 +75,7 @@ namespace DS4WindowsTests
         [Fact]
         public void SaveAndCancel_BothCloseTheEditor_AndOnlySaveRefreshes()
         {
-            string source = Read("DS4Windows/DS4Forms/ProfileEditor.xaml.cs");
+            string source = Read("DS4Windows/UI/ProfileEditor.xaml.cs");
             if (source == null)
             {
                 return;
@@ -99,7 +99,7 @@ namespace DS4WindowsTests
         [Fact]
         public void WhileTheEditorIsOpen_NothingElseOpensIt()
         {
-            string source = Read("DS4Windows/DS4Forms/ProfileEditor.xaml.cs");
+            string source = Read("DS4Windows/UI/ProfileEditor.xaml.cs");
             if (source == null)
             {
                 return;
@@ -116,7 +116,7 @@ namespace DS4WindowsTests
         [Fact]
         public void TheEditor_UnregistersItsDataContexts_OnControlModeSave()
         {
-            string source = Read("DS4Windows/DS4Forms/AssignmentEditor.xaml.cs");
+            string source = Read("DS4Windows/UI/AssignmentEditor.xaml.cs");
             if (source == null)
             {
                 return;

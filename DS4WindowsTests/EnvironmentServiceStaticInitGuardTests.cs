@@ -68,7 +68,7 @@ namespace DS4WindowsTests
         [Fact]
         public void SlotLimitCalculation_DoesNotReferenceNonConstGlobalMembers()
         {
-            string path = SourceFileLocator.Find("DS4Windows/DS4Control/Services/EnvironmentService.cs");
+            string path = SourceFileLocator.Find("DS4Windows/Core/Platform/EnvironmentService.cs");
             if (path == null)
             {
                 _output.WriteLine("EnvironmentService.cs が見つからないため検査を省略した。");
@@ -96,7 +96,7 @@ namespace DS4WindowsTests
         [Fact]
         public void ProcessControllerSlotLimit_IsInitializedFromTheSelfContainedCalculation()
         {
-            string path = SourceFileLocator.Find("DS4Windows/DS4Control/Services/EnvironmentService.cs");
+            string path = SourceFileLocator.Find("DS4Windows/Core/Platform/EnvironmentService.cs");
             if (path == null)
             {
                 _output.WriteLine("EnvironmentService.cs が見つからないため検査を省略した。");

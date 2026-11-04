@@ -52,7 +52,7 @@ namespace DS4WindowsTests
         [InlineData(@"\bnew UdpServer\(")]
         public void ControlService_NoLongerContains_TheMovedMembers(string pattern)
         {
-            string text = ReadWithoutComments("DS4Windows/DS4Control/ControlService.cs");
+            string text = ReadWithoutComments("DS4Windows/Processing/ControlService.cs");
             if (text == null) return;
 
             Assert.False(Regex.IsMatch(text, pattern), $"ControlService.cs に '{pattern}' が残っている（9-E E-3 で UdpMotionService へ移した）");
@@ -61,22 +61,22 @@ namespace DS4WindowsTests
         [Fact]
         public void ControlService_KeepsTheThinDelegates_ForTheCallers()
         {
-            string text = ReadWithoutComments("DS4Windows/DS4Control/ControlService.cs");
+            string text = ReadWithoutComments("DS4Windows/Processing/ControlService.cs");
             if (text == null) return;
 
             // Phase13-Step10 10-c: 転送は削除した。利用者は IRuntimeFeatureSwitch（RuntimeFeatureSwitch）を使う
             Assert.DoesNotContain("public void ChangeUDPStatus(", text);
             Assert.DoesNotContain("public void ChangeMotionEventStatus(", text);
-            string sw = ReadWithoutComments("DS4Windows/DS4Control/Services/RuntimeFeatureSwitch.cs");
+            string sw = ReadWithoutComments("DS4Windows/Processing/Services/RuntimeFeatureSwitch.cs");
             if (sw == null) return;
             Assert.Contains("_udpMotion.ChangeStatus(state, openPort)", sw);
             Assert.Contains("_udpMotion.ChangeMotionEventStatus(state)", sw);
         }
 
         [Theory]
-        [InlineData("DS4Windows/DS4Control/Services/UdpMotionService.cs")]
-        [InlineData("DS4Windows/DS4Control/Services/UdpMotionServerAdapter.cs")]
-        [InlineData("DS4Windows/DS4Control/Services/UdpMotionServerFactory.cs")]
+        [InlineData("DS4Windows/Output/Services/UdpMotionService.cs")]
+        [InlineData("DS4Windows/Output/Services/UdpMotionServerAdapter.cs")]
+        [InlineData("DS4Windows/Output/Services/UdpMotionServerFactory.cs")]
         public void NewComponents_DoNotReferenceStaticEntryPoints(string relativePath)
         {
             string text = ReadWithoutComments(relativePath);

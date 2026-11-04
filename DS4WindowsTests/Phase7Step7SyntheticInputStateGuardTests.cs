@@ -36,7 +36,7 @@ namespace DS4WindowsTests
         [Fact]
         public void Mapping_HoldsNoSyntheticStateOfItsOwn_OnlyForwarders()
         {
-            string mapping = Read("DS4Windows/DS4Control/Mapping.cs");
+            string mapping = Read("DS4Windows/Processing/Mapping.cs");
             if (mapping == null) return;
 
             Assert.DoesNotContain("public class SyntheticState", mapping);
@@ -54,14 +54,14 @@ namespace DS4WindowsTests
         [Fact]
         public void BackingStore_DoesNotReferenceMapping_AndRaisesActionsLoadedInBothPaths()
         {
-            string store = Read("DS4Windows/DS4Control/BackingStore.cs");
+            string store = Read("DS4Windows/Core/Settings/BackingStore.cs");
             if (store == null) return;
 
             Assert.False(Regex.IsMatch(store, @"\bMapping\."), "BackingStore が Mapping を参照している");
             Assert.Contains("public event Action ActionsLoaded;", store);
             // Phase7-Step10c W2: Actions.xml の読込（2 経路）は SpecialActionsXmlSerializer へ移した。発行元（イベントとメソッド）は BackingStore のまま
             Assert.Contains("public void RaiseActionsLoaded()", store);
-            string actionsXml = Read("DS4Windows/DS4Control/Services/SpecialActionsXmlSerializer.cs");
+            string actionsXml = Read("DS4Windows/Core/Persistence/SpecialActionsXmlSerializer.cs");
             if (actionsXml == null) return;
             Assert.Equal(2, Regex.Matches(actionsXml, @"store\.RaiseActionsLoaded\(\);").Count);
         }
@@ -69,7 +69,7 @@ namespace DS4WindowsTests
         [Fact]
         public void Registration_SubscribesTheResetOnce_AndRegistersTheSharedState()
         {
-            string registration = Read("DS4Windows/DI/ServiceRegistration.cs");
+            string registration = Read("DS4Windows/Composition/ServiceRegistration.cs");
             if (registration == null) return;
 
             // Phase7-Step8 W3: 購読者は instance（保持クラスをコンストラクターで受ける）。前回の購読者を外してから登録する
@@ -81,7 +81,7 @@ namespace DS4WindowsTests
         [Fact]
         public void ResetHandler_KeepsTheOrderAndTheLogMessage()
         {
-            string reset = Read("DS4Windows/DS4Control/Services/ActionsLoadedRuntimeReset.cs");
+            string reset = Read("DS4Windows/Processing/Services/ActionsLoadedRuntimeReset.cs");
             if (reset == null) return;
 
             int state = reset.IndexOf("_syntheticInput.ResetAll();");
@@ -95,8 +95,8 @@ namespace DS4WindowsTests
         [Fact]
         public void SyntheticDispatcherService_UsesTheInjectedHolder_AndTheStaticBridgeHoldsNoState()
         {
-            string service = Read("DS4Windows/DS4Control/Services/SyntheticDispatcherService.cs");
-            string bridge = Read("DS4Windows/DS4Control/SyntheticDispatcher.cs");
+            string service = Read("DS4Windows/Processing/Services/SyntheticDispatcherService.cs");
+            string bridge = Read("DS4Windows/Processing/SyntheticDispatcher.cs");
             if (service == null || bridge == null) return;
 
             Assert.DoesNotContain("Mapping.deviceState", service);

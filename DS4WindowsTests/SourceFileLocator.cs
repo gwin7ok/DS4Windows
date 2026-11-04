@@ -11,7 +11,7 @@ namespace DS4WindowsTests
     /// </summary>
     internal static class SourceFileLocator
     {
-        /// <param name="relativePath">リポジトリのルートからの相対パス（例: DS4Windows/DS4Control/ControlService.cs）。</param>
+        /// <param name="relativePath">リポジトリのルートからの相対パス（例: DS4Windows/Processing/ControlService.cs）。</param>
         public static string Find(string relativePath, [CallerFilePath] string callerFile = "")
         {
             var starts = new List<string>();
@@ -35,6 +35,27 @@ namespace DS4WindowsTests
                 }
             }
 
+            return null;
+        }
+
+        /// <summary>Phase14: アンカー（DS4Windows 配下のソースファイル）から、リポジトリのルートを深さに依存せず求める。</summary>
+        public static string ProjectDirFromAnchor(string anchor)
+        {
+            string root = RootFromAnchor(anchor);
+            return root == null ? null : Path.Combine(root, "DS4Windows");
+        }
+
+        public static string RootFromAnchor(string anchor)
+        {
+            string dir = Path.GetDirectoryName(anchor);
+            while (!string.IsNullOrEmpty(dir))
+            {
+                if (File.Exists(Path.Combine(dir, "DS4Windows", "DS4WinWPF.csproj")))
+                {
+                    return dir;
+                }
+                dir = Path.GetDirectoryName(dir);
+            }
             return null;
         }
     }

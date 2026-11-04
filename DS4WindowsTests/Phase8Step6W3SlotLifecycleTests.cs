@@ -185,25 +185,25 @@ namespace DS4WindowsTests
         [Fact]
         public void TheSource_ReleasesTheSlotOnlyOnThePhysicalRemoval_AndPublishesOnAReconnectionWithoutAnApply()
         {
-            string controlService = SourceFileLocator.Find("DS4Windows/DS4Control/ControlService.cs");
-            string mapping = SourceFileLocator.Find("DS4Windows/DS4Control/Mapping.cs");
+            string controlService = SourceFileLocator.Find("DS4Windows/Processing/ControlService.cs");
+            string mapping = SourceFileLocator.Find("DS4Windows/Processing/Mapping.cs");
             if (controlService == null || mapping == null) return;
 
             string text = File.ReadAllText(controlService);
             // Phase9 9-E E-6e: 切断の処理は DeviceDisconnectHandler.OnRemoval へ移った
-            string handlerPath = SourceFileLocator.Find("DS4Windows/DS4Control/Services/DeviceDisconnectHandler.cs");
+            string handlerPath = SourceFileLocator.Find("DS4Windows/Processing/Services/DeviceDisconnectHandler.cs");
             if (handlerPath == null) return;
             string removal = MethodBody(File.ReadAllText(handlerPath), "public void OnRemoval(");
             int handle = removal.IndexOf("_mapping.HandleDeviceDisconnect(ind);", StringComparison.Ordinal);
             int release = removal.IndexOf("_profileSlotApplier.ReleaseSlot(ind);", StringComparison.Ordinal);
             Assert.True(handle >= 0 && release > handle, "ReleaseSlot は HandleDeviceDisconnect の後に呼ぶ");
             // Phase9 9-E E-6f2: Stop の本体は ServiceLifecycle へ移った
-            string lifecyclePath = SourceFileLocator.Find("DS4Windows/DS4Control/Services/ServiceLifecycle.cs");
+            string lifecyclePath = SourceFileLocator.Find("DS4Windows/Processing/Services/ServiceLifecycle.cs");
             if (lifecyclePath == null) return;
             Assert.DoesNotContain("ReleaseSlot", MethodBody(File.ReadAllText(lifecyclePath), "public bool Stop("));
 
             // Phase9 9-E E-6a: 接続時のプロファイルの適用と束縛の差し替えは ConnectionProfileSelector へ移った
-            string selectorPath = SourceFileLocator.Find("DS4Windows/DS4Control/Services/ConnectionProfileSelector.cs");
+            string selectorPath = SourceFileLocator.Find("DS4Windows/Processing/Services/ConnectionProfileSelector.cs");
             if (selectorPath == null) return;
             string connect = MethodBody(File.ReadAllText(selectorPath), "public bool ApplyOnConnect(");
             int apply = connect.IndexOf("_profileSlotApplier.ApplyToSlot(index, profileToApply", StringComparison.Ordinal);

@@ -47,7 +47,7 @@ namespace DS4WindowsTests
         /// <summary>コメント（ブロック・行）を除いた Mapping.cs 全体のテキスト。見つからなければ null。</summary>
         private string ReadSourceWithoutComments()
         {
-            string path = SourceFileLocator.Find("DS4Windows/DS4Control/Mapping.cs");
+            string path = SourceFileLocator.Find("DS4Windows/Processing/Mapping.cs");
             if (path == null)
             {
                 _output.WriteLine("Mapping.cs が見つからないため検査を省略した。");

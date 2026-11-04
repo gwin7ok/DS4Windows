@@ -49,7 +49,7 @@ namespace DS4WindowsTests
         /// <summary>コメント（ブロック・行）を除いた `SetCurveAndDeadzone` 本体のテキストを返す。見つからなければ null。</summary>
         private string ReadMethodSourceWithoutComments()
         {
-            string path = SourceFileLocator.Find("DS4Windows/DS4Control/Mapping.cs");
+            string path = SourceFileLocator.Find("DS4Windows/Processing/Mapping.cs");
             if (path == null)
             {
                 _output.WriteLine("Mapping.cs が見つからないため検査を省略した。");

@@ -188,8 +188,8 @@ namespace DS4WindowsTests
         public void TheOutputs_DoNotInterpretTheSettingsThemselves()
         {
             // 解釈は変換層（ビルダー）の責務。出力のソースに、details の読み取りが残っていないこと（互換のコンストラクターはビルダーの関数を呼ぶ）
-            string key = SourceFileLocator.Find("DS4Windows/Actions/KeyOutputAction.cs");
-            string button = SourceFileLocator.Find("DS4Windows/Actions/ButtonOutputAction.cs");
+            string key = SourceFileLocator.Find("DS4Windows/Processing/Actions/KeyOutputAction.cs");
+            string button = SourceFileLocator.Find("DS4Windows/Processing/Actions/ButtonOutputAction.cs");
             if (key == null || button == null) return;
 
             string keyText = File.ReadAllText(key);
@@ -243,7 +243,7 @@ namespace DS4WindowsTests
         [Fact]
         public void TheMapping_ConsultsTheEngine_OnceBeforeTheLegacyBody()
         {
-            string mapping = SourceFileLocator.Find("DS4Windows/DS4Control/Mapping.cs");
+            string mapping = SourceFileLocator.Find("DS4Windows/Processing/Mapping.cs");
             if (mapping == null) return;
 
             string text = File.ReadAllText(mapping);

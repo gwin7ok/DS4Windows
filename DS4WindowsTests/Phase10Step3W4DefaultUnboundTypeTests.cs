@@ -217,9 +217,9 @@ namespace DS4WindowsTests
         [Fact]
         public void TheModesLimitTheInput_OnlyByShowingOrHidingTheDropdownItems()
         {
-            string xaml = Read("DS4Windows/DS4Forms/AssignmentEditor.xaml");
-            string source = Read("DS4Windows/DS4Forms/AssignmentEditor.xaml.cs");
-            string editorVm = Read("DS4Windows/DS4Forms/ViewModels/ActionEditorViewModel.cs");
+            string xaml = Read("DS4Windows/UI/AssignmentEditor.xaml");
+            string source = Read("DS4Windows/UI/AssignmentEditor.xaml.cs");
+            string editorVm = Read("DS4Windows/UI/ViewModels/ActionEditorViewModel.cs");
             if (xaml == null || source == null || editorVm == null)
             {
                 return;
@@ -249,7 +249,7 @@ namespace DS4WindowsTests
         [Fact]
         public void TheAssignmentEditorFromTheSaTab_AlsoCoversTheLeftPane()
         {
-            string source = Read("DS4Windows/DS4Forms/ProfileEditor.xaml.cs");
+            string source = Read("DS4Windows/UI/ProfileEditor.xaml.cs");
             if (source == null)
             {
                 return;

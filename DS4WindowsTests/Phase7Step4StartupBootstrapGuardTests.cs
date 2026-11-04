@@ -66,7 +66,7 @@ namespace DS4WindowsTests
         [Fact]
         public void AppHost_RegistersTheBootstrapInstancesAfterTheDefaults()
         {
-            string path = SourceFileLocator.Find("DS4Windows/DI/AppHost.cs");
+            string path = SourceFileLocator.Find("DS4Windows/Composition/AppHost.cs");
             if (path == null) return;
 
             string text = StripComments(File.ReadAllText(path));

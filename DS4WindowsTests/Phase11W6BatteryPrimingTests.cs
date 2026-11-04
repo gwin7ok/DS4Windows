@@ -41,7 +41,7 @@ namespace DS4WindowsTests
         [Fact]
         public void TheConnector_PrimesTheBattery_BeforeApplyingTheProfile_AndBeforeStartUpdate()
         {
-            string code = ReadNormalizedSource("DS4Windows/DS4Control/Services/DeviceConnector.cs");
+            string code = ReadNormalizedSource("DS4Windows/Processing/Services/DeviceConnector.cs");
             if (code == null) return;
 
             int prime = code.IndexOf("device.PrimeBatteryReading();", StringComparison.Ordinal);
@@ -53,7 +53,7 @@ namespace DS4WindowsTests
         [Fact]
         public void PrimeBatteryReading_DoesNotTouchTheChargingState_OrRaiseEvents()
         {
-            string code = ReadNormalizedSource("DS4Windows/DS4Library/DS4Device.cs");
+            string code = ReadNormalizedSource("DS4Windows/Input/DS4Device.cs");
             if (code == null) return;
 
             int start = code.IndexOf("public void PrimeBatteryReading()", StringComparison.Ordinal);

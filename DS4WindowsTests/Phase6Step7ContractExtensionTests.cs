@@ -175,7 +175,7 @@ namespace DS4WindowsTests
         [Fact]
         public void ProfileRepository_NewMembers_DelegateToGlobal()
         {
-            string text = ReadSourceWithoutComments("DS4Windows/DS4Control/Services/ProfileRepository.cs");
+            string text = ReadSourceWithoutComments("DS4Windows/Core/Persistence/ProfileRepository.cs");
             if (text == null) return;
 
             // Phase7-Step10c W5: プロファイルの保存は LegacyProfileXmlSerializer へ移した
@@ -187,7 +187,7 @@ namespace DS4WindowsTests
         [Fact]
         public void SpecialActionRepository_CreateStandardActions_DelegatesToGlobal_AndLoadActionsHasNoFileExistsShortcut()
         {
-            string text = ReadSourceWithoutComments("DS4Windows/DS4Control/Services/SpecialActionRepository.cs");
+            string text = ReadSourceWithoutComments("DS4Windows/Core/Persistence/SpecialActionRepository.cs");
             if (text == null) return;
 
             Assert.Matches(@"public void CreateStandardActions\(\)\s*\{\s*CreateStdActions\(\);", text);

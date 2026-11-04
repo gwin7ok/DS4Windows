@@ -21,10 +21,10 @@ namespace DS4WindowsTests
 
         private static string[] FilesContaining(string pattern)
         {
-            string anchor = SourceFileLocator.Find("DS4Windows/DS4Control/BackingStore.cs");
+            string anchor = SourceFileLocator.Find("DS4Windows/Core/Settings/BackingStore.cs");
             if (anchor == null) return null;
 
-            string root = Path.GetFullPath(Path.Combine(Path.GetDirectoryName(anchor), "..", ".."));
+            string root = SourceFileLocator.RootFromAnchor(anchor);
             string sourceDir = Path.Combine(root, "DS4Windows");
             var regex = new Regex(pattern);
             return Directory.GetFiles(sourceDir, "*.cs", SearchOption.AllDirectories)

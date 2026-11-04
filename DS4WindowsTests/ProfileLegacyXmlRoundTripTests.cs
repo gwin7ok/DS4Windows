@@ -162,8 +162,8 @@ namespace DS4WindowsTests
         {
             // 往復テストは補助メソッド単体の確認。SaveProfile／LoadProfile から呼ばれていることは、ソース走査で固定する。
             // Phase7-Step10c W4: 読込側は LegacyProfileXmlSerializer へ移した（保存側は W5 まで BackingStore）。両方のソースを合わせて確認する
-            string path = SourceFileLocator.Find("DS4Windows/DS4Control/BackingStore.cs");
-            string serializerPath = SourceFileLocator.Find("DS4Windows/DS4Control/Services/LegacyProfileXmlSerializer.cs");
+            string path = SourceFileLocator.Find("DS4Windows/Core/Settings/BackingStore.cs");
+            string serializerPath = SourceFileLocator.Find("DS4Windows/Core/Persistence/LegacyProfileXmlSerializer.cs");
             if (path == null || serializerPath == null) return;
 
             string text = File.ReadAllText(path) + File.ReadAllText(serializerPath);

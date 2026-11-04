@@ -139,7 +139,7 @@ namespace DS4WindowsTests
         [Fact]
         public void ProfilePresetLoader_EachMethodDelegatesToTheMatchingGlobalMethod()
         {
-            string path = SourceFileLocator.Find("DS4Windows/DS4Control/Services/ProfilePresetLoader.cs");
+            string path = SourceFileLocator.Find("DS4Windows/Core/Persistence/ProfilePresetLoader.cs");
             if (path == null)
             {
                 _output.WriteLine("ProfilePresetLoader.cs が見つからないため検査を省略した。");

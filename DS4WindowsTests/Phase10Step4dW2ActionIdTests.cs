@@ -244,7 +244,7 @@ namespace DS4WindowsTests
         public void EveryTypeEditor_PassesTheActionsIdToTheRepository()
         {
             // 8 か所の保存の呼び出しが、actionId: action.id を渡す（名前の変更で ID が変わらないようにするため）
-            string folder = SourceFileLocator.Find("DS4Windows/DS4Forms/ViewModels/SpecialActions/MacroViewModel.cs");
+            string folder = SourceFileLocator.Find("DS4Windows/UI/ViewModels/SpecialActions/MacroViewModel.cs");
             if (folder == null) return;
 
             string dir = Path.GetDirectoryName(folder);

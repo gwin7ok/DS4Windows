@@ -51,7 +51,7 @@ namespace DS4WindowsTests
         [Fact]
         public void TheWndProc_DispatchesTheTwoMessageKinds()
         {
-            string main = Read("DS4Windows/DS4Forms/MainWindow.xaml.cs");
+            string main = Read("DS4Windows/UI/MainWindow.xaml.cs");
             if (main == null) return;
 
             Assert.Matches(@"case Util\.WM_DEVICECHANGE:\s*HandleDeviceChange\(wParam\);\s*break;\s*case WM_COPYDATA:\s*HandleCopyData\(lParam\);", main);
@@ -61,7 +61,7 @@ namespace DS4WindowsTests
         public void TheCommands_AreDispatchedInTheOriginalOrder_WithTheOriginalConditions()
         {
             // Phase13-Step11 11-b: コマンドの実行は IpcCommandProcessor へ移した（受け付けの順序と条件は同じ）
-            string ipc = Read("DS4Windows/DS4Control/Services/IpcCommandProcessor.cs");
+            string ipc = Read("DS4Windows/Processing/Services/IpcCommandProcessor.cs");
             if (ipc == null) return;
 
             string[] order =
@@ -89,7 +89,7 @@ namespace DS4WindowsTests
         [Fact]
         public void TheCopyData_StillEatsEveryException_AndChecksTheSizeFirst()
         {
-            string ipc = Read("DS4Windows/DS4Forms/MainWindow.Ipc.cs");
+            string ipc = Read("DS4Windows/UI/MainWindow.Ipc.cs");
             if (ipc == null) return;
 
             Match m = Regex.Match(ipc, @"private void HandleCopyData\(IntPtr lParam\)\s*\{\s*try\s*\{(?<body>.*?)\}\s*catch\s*\{", RegexOptions.Singleline);
@@ -101,7 +101,7 @@ namespace DS4WindowsTests
         [Fact]
         public void TheOldWndProcBody_IsGone()
         {
-            string main = Read("DS4Windows/DS4Forms/MainWindow.xaml.cs");
+            string main = Read("DS4Windows/UI/MainWindow.xaml.cs");
             if (main == null) return;
 
             Assert.DoesNotContain("strData[0]", main);
