@@ -24,7 +24,6 @@
             "L1|DS4Windows.Core.Abstractions.IWindowSystem|DS4Windows.Processing.Abstractions.WindowCandidate",
             "L1|DS4Windows.Core.Logging.AppLogger|DS4Windows.Processing.ProfileChangeSource",
             "L1|DS4Windows.Core.Logging.AppLogger|DS4Windows.Processing.ProfileChangedEventArgs",
-            "L1|DS4Windows.Core.Logging.AppLogger|DS4Windows.UI.Services.AppNotificationService",
             "L1|DS4Windows.Core.Logging.LoggerHolder|DS4Windows.Processing.Abstractions.IAppSettingsService",
             "L1|DS4Windows.Core.Persistence.ControlSpecialItemXml|DS4Windows.Processing.SpecialAction",
             "L1|DS4Windows.Core.Persistence.Dto.ActionsDTO|DS4Windows.Processing.MacroExecuteMode",

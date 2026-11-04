@@ -18,10 +18,7 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 using System;
 using NLog;
-using DS4Windows.Core.Platform;
-using DS4Windows.Core.Settings;
 using DS4Windows.Processing;
-using DS4Windows.UI.Services;
 
 namespace DS4Windows.Core.Logging
 {
@@ -96,13 +93,14 @@ namespace DS4Windows.Core.Logging
         }
 
         // Phase7-Step5 W3（Q7＝A）: 旧 Global.NotificationServiceInstance。静的なロガーは注入できないため、App が起動時に
-        // DI のシングルトンを設定する。設定前（ホスト構築より前、テスト）は、BackingStore を使う既定の実装に退避する
-        // （旧: コンテナが無いときのフォールバック）。
+        // DI のシングルトンを設定する。設定前（ホスト構築より前、テスト）は、何もしない実装（NullNotificationService）を返す。
+        // Phase14b-Step3（R-03）: 旧フォールバックは new AppNotificationService(new BackingStore(new EnvironmentService())) で、
+        // 2 つ目の BackingStore を作っていた（購読者がいないため通知は表示されず、表示の挙動は同じ）。
         private static DS4Windows.Core.Abstractions.INotificationService _notificationService;
 
         public static DS4Windows.Core.Abstractions.INotificationService NotificationService
         {
-            get => _notificationService ?? (_notificationService = new AppNotificationService(new BackingStore(new EnvironmentService())));
+            get => _notificationService ?? (_notificationService = new NullNotificationService());
             set => _notificationService = value;
         }
 

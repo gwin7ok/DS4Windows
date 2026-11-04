@@ -176,5 +176,22 @@
 - 2-6（IDE0005 による未使用の `using` の計測）: 未実施（任意）。必要なら別途行う。
 - Debug ALL: 緑（ビルド 警告 0・エラー 0、`DS4Windows.Actions.Tests` 3,224 件合格、`StandaloneTests` 11 件合格）。
 
-### 8.3 Step 14b-3（R-03）
-（未着手。R7 により、`INotificationService` の移動［3-1］と名前空間の書き換え［3-2］を別のコミットにするため、Step 1・2 のコミットの後に始める）
+### 8.3 Step 14b-3（R-03）— 完了（2026-11-05）
+- 3-1（D4）: `INotificationService.cs`・`NotificationEventArgs.cs` を `Processing/Abstractions` → `Core/Abstractions` へ `git mv`（移動だけのコミット。`git show -M100%` で 100% の名前の変更）。
+- 3-2: 名前空間を `DS4Windows.Core.Abstractions` に書き換え。利用者の更新は `AppNotificationService`、`MainWindow`（完全修飾名）、`AppLogger`（完全修飾名）、テストの `MockNotificationService`・`NotificationServiceTests`（`using` の置き換え）、`Phase7Step5ServiceLocatorGuardTests`（正規表現）。`App`・`ServiceRegistration`・`MainWindowFactory` と 2 つのテストは両方の名前空間の `using` を既に持ち、`Processing.Abstractions` もほかの型で使い続けている（確認済み）。許可リスト 104 → 103 件。
+- 3-3〜3-5: `Core/Logging/NullNotificationService.cs` を追加し、`AppLogger.NotificationService` のフォールバックを差し替えた。`AppLogger` から `using DS4Windows.Core.Platform／Core.Settings／UI.Services` が不要になり削除。落とした通知があれば、最初の 1 回だけ Debug のログ「[DI] AppLogger.NotificationService: not set yet; notification dropped」を出す。テスト `AppLoggerNotificationFallbackTests`（未設定時は `NullNotificationService`、`LogToTray` が例外を出さない、イベントが発火しない、`AppLogger` から `BackingStore`／`EnvironmentService`／`AppNotificationService` への辺がない）。許可リスト 103 → **102 件**（`AppLogger` → `UI.Services.AppNotificationService` が解消）。
+- 3-6（`BackingStore.ProfileSettings` のフォールバックの調査。コードは変えていない）: 読解の結果、**通常の起動では通らない**と判断した。
+  - ホスト構築より前（`RunPreHostBootstrap`／`RotateLogsAndLogStartupDiagnostics`／`CheckOptions` の言語・テーマ）は、ブートストラップの `BackingStore` の単純なフィールド（`useLang`、`logMaxArchiveFiles`、`logMinLevel`、`useCurrentTheme`）だけを読む。
+  - フォールバックを通りうる 3 つの経路（`EmitMissingActionLogsForDevice`、`UpdateDS4CSetting`、`CheckOldDevicestatus`）は、プロファイルの読込・プリセット・入力の処理からだけ呼ばれ、いずれも `App.xaml.cs:234` の `BuildHostAndServices` の後（`LoadAppSettings` は 252 行目）。`BuildHostAndServices` の `CreateControlService` が `ControlService` → `IProfileSettingsService` を解決し、`ProfileSettingsService` のコンストラクターが `LinkProfileSettings` で先に結ばれる。
+  - `-driverinstall` の分岐（`CheckOptions`）はアプリ設定（`AppSettingsXmlSerializer`）だけを読み、これらの経路を通らない。
+  - テスト（`TestGlobals`、`Phase7Step10dW5GlobalRemovedGuardTests`）はこのフォールバックに依存している。扱いは §9 の確認事項とした。
+- Debug ALL: 緑（ビルド 警告 0・エラー 0、`DS4Windows.Actions.Tests` 3,229 件合格、`StandaloneTests` 11 件合格）。
+
+### 8.4 許可リストの件数の推移
+| 時点 | 禁止の規則 | 内訳 |
+|---|---|---|
+| Step 14b-1 | 108 | L1 81、L3 5、L4 1、L5 15、L6 6 |
+| Step 14b-2 | 104 | L1 77 |
+| Step 14b-3（3-2） | 103 | L1 76 |
+| Step 14b-3（3-3） | 102 | L1 75 |
+記録のみ: L2 70、L7 80（変化なし）。
