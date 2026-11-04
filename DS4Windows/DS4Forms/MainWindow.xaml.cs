@@ -87,6 +87,7 @@ namespace DS4WinWPF.DS4Forms
         private readonly DS4Windows.Services.IProfileSlotApplier profileSlotApplier;
         private readonly DS4Windows.DI.INotificationService notificationService;
         private readonly ControlService controlService;
+        private readonly DS4Windows.DI.IServiceLifecycle lifecycle;   // Phase13-Step9: 旧 ControlService.running／suspending の転送
         private readonly DS4Windows.DI.IProfileLoadTarget loadTarget;   // Phase13-Step6 6-e: IPC の LoadTempProfile に渡す窓口
         private ProfileEditor editor;
         private int previousTabIndex = 0;
@@ -116,6 +117,7 @@ namespace DS4WinWPF.DS4Forms
             DS4Windows.DI.IProfileRepository profileRepo,
             DS4Windows.DI.INotificationService notificationService,
             ControlService controlService,
+            DS4Windows.DI.IServiceLifecycle lifecycle,
             DS4Windows.DI.IProfileLoadTarget loadTarget,
             DS4Windows.Services.IProfileSlotApplier profileSlotApplier,
             MainWindowsViewModel mainWindowsViewModel,
@@ -142,6 +144,7 @@ namespace DS4WinWPF.DS4Forms
             this.profileRepo = profileRepo ?? throw new ArgumentNullException(nameof(profileRepo));
             this.notificationService = notificationService ?? throw new ArgumentNullException(nameof(notificationService));
             this.controlService = controlService ?? throw new ArgumentNullException(nameof(controlService));
+            this.lifecycle = lifecycle ?? throw new ArgumentNullException(nameof(lifecycle));
             this.loadTarget = loadTarget ?? throw new ArgumentNullException(nameof(loadTarget));
             this.profileSlotApplier = profileSlotApplier ?? throw new ArgumentNullException(nameof(profileSlotApplier));
 
@@ -169,7 +172,7 @@ namespace DS4WinWPF.DS4Forms
             profileListHolder.Refresh();
             profilesListBox.ItemsSource = profileListHolder.ProfileListCol;
 
-            StartStopBtn.Content = controlService.running ? Translations.Strings.StopText :
+            StartStopBtn.Content = lifecycle.Running ? Translations.Strings.StopText :
                 Translations.Strings.StartText;
 
             conLvViewModel = new ControllerListViewModel(controlService, profileListHolder,
@@ -184,7 +187,7 @@ namespace DS4WinWPF.DS4Forms
             view.SortDescriptions.Add(new SortDescription("DevIndex", ListSortDirection.Ascending));
             view.Refresh();
 
-            trayIconVM = new TrayIconViewModel(controlService, profileListHolder,
+            trayIconVM = new TrayIconViewModel(controlService, lifecycle, profileListHolder,
                 appearanceSettingsService, profileRepo, environmentService, pathService, Dispatcher);
 
             // Need to define before calling TaskbarIcon.ForceCreate
@@ -612,7 +615,7 @@ Suspend support not enabled.", true);
                 case POWER_RESUME:
                     {
                         DS4LightBar.shuttingdown = false;
-                        controlService.suspending = false;
+                        lifecycle.Suspending = false;
 
                         if (wasrunning)
                         {
@@ -644,9 +647,9 @@ Suspend support not enabled.", true);
                 case POWER_SUSPEND:
                     {
                         DS4LightBar.shuttingdown = true;
-                        controlService.suspending = true;
+                        lifecycle.Suspending = true;
 
-                        if (controlService.running)
+                        if (lifecycle.Running)
                         {
                             //Dispatcher.Invoke(() =>
                             //{
@@ -921,7 +924,7 @@ Suspend support not enabled.", true);
                     }
                 }
 
-                if (controlService.running)
+                if (lifecycle.Running)
                     trayIconVM.PopulateContextMenu();
             }));
         }
@@ -952,7 +955,7 @@ Suspend support not enabled.", true);
             ControlService service = sender as ControlService;
             Dispatcher.BeginInvoke((Action)(() =>
             {
-                if (service.running)
+                if (lifecycle.Running)
                 {
                     StartStopBtn.Content = Translations.Strings.StopText;
                 }
@@ -962,7 +965,7 @@ Suspend support not enabled.", true);
                 }
 
                 StartStopBtn.IsEnabled = true;
-                slotManControl.IsEnabled = service.running;
+                slotManControl.IsEnabled = lifecycle.Running;
             }));
         }
 
@@ -986,7 +989,7 @@ Suspend support not enabled.", true);
             ControlService service = controlService;
             Task serviceTask = Task.Run(() =>
             {
-                if (service.running)
+                if (lifecycle.Running)
                     service.Stop(immediateUnplug: true);
                 else
                     service.Start();
@@ -1445,7 +1448,7 @@ Suspend support not enabled.", true);
             StartStopBtn.IsEnabled = false;
             await Task.Run(() =>
             {
-                if (controlService.running)
+                if (lifecycle.Running)
                     controlService.Stop();
             });
 
@@ -1890,7 +1893,7 @@ Suspend support not enabled.", true);
         private async void RestartService()
         {
             ControlService service = controlService;
-            if (!service.running) { return; }
+            if (!lifecycle.Running) { return; }
 
             AppLogger.LogDebug("[MainWindow] UseDs3PitchRollSim の変更を反映するため、サービスを再起動する");
             StartStopBtn.IsEnabled = false;

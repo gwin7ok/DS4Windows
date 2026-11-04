@@ -85,7 +85,7 @@ namespace DS4WinWPF.DS4Forms
         /// </summary>
         private void IpcStart()
         {
-            if (!controlService.running)
+            if (!lifecycle.Running)
                 ChangeService();
         }
 
@@ -94,7 +94,7 @@ namespace DS4WinWPF.DS4Forms
         /// </summary>
         private void IpcStop()
         {
-            if (controlService.running)
+            if (lifecycle.Running)
                 ChangeService();
         }
 
@@ -112,7 +112,7 @@ namespace DS4WinWPF.DS4Forms
         private void IpcShutdown()
         {
             // Force disconnect all gamepads before closing the app to avoid "Are you sure you want to close the app" messagebox
-            if (controlService.running)
+            if (lifecycle.Running)
                 ChangeService();
 
             // Call closing method and let it to close editor wnd (if it is open) before proceeding to the actual "app closed" handler
@@ -317,7 +317,7 @@ namespace DS4WinWPF.DS4Forms
                     propValue = controlService.OutputslotMan.OutputSlots[tdevice].CurrentInputBound.ToString();
 
                 else if (propName == "apprunning")
-                    propValue = controlService.running.ToString(); // Controller idx value is ignored, but it still needs to be in 1..4 range in a cmdline call
+                    propValue = lifecycle.Running.ToString(); // Controller idx value is ignored, but it still needs to be in 1..4 range in a cmdline call
             }
 
             // Write out the property value to MMF result data file and notify a client process that the data is available

@@ -87,6 +87,7 @@ namespace DS4WinWPF.DS4Forms.ViewModels
         private List<ControllerHolder> controllerList = new List<ControllerHolder>();
         private ProfileList profileListHolder;
         private ControlService controlService;
+        private readonly DS4Windows.DI.IServiceLifecycle lifecycle;
         private readonly IAppearanceSettingsService appearanceSettings;
         private readonly IProfileRepository profileRepository;
         private readonly IPathService pathService;
@@ -98,7 +99,7 @@ namespace DS4WinWPF.DS4Forms.ViewModels
         public event ProfileSelectedHandler ProfileSelected;
 
         //public TrayIconViewModel(Tester tester)
-        public TrayIconViewModel(ControlService service, ProfileList profileListHolder,
+        public TrayIconViewModel(ControlService service, DS4Windows.DI.IServiceLifecycle lifecycle, ProfileList profileListHolder,
             IAppearanceSettingsService appearanceSettings, IProfileRepository profileRepository,
             IEnvironmentService environmentService, IPathService pathService,
             System.Windows.Threading.Dispatcher dispatcher)
@@ -113,6 +114,7 @@ namespace DS4WinWPF.DS4Forms.ViewModels
 
             this.profileListHolder = profileListHolder;
             this.controlService = service;
+            this.lifecycle = lifecycle ?? throw new ArgumentNullException(nameof(lifecycle));   // Phase13-Step9: 旧 ControlService.running の転送
             trayTitle = $"DS4Windows v{environmentService.ApplicationVersion}";
             contextMenu = new ContextMenu();
             iconSource = appearanceSettings.GetIconResourcePath(appearanceSettings.UseIconChoice);
@@ -157,7 +159,7 @@ namespace DS4WinWPF.DS4Forms.ViewModels
 
         private void Service_RunningChanged(object sender, EventArgs e)
         {
-            string temp = controlService.running ? "Stop" : "Start";
+            string temp = lifecycle.Running ? "Stop" : "Start";
             uiDispatcher.BeginInvoke((Action)(() =>
             {
                 changeServiceItem.Header = temp;

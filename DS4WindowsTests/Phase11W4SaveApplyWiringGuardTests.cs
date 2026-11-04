@@ -132,7 +132,7 @@ namespace DS4WindowsTests
 
             string restart = ExtractMethod(code, "private async void RestartService()");
             // 止まっているときは何もしない（ユーザーが止めたサービスを、勝手に開始しない。設定は、次の開始で効く）
-            int guard = restart.IndexOf("if (!service.running) { return; }", StringComparison.Ordinal);
+            int guard = restart.IndexOf("if (!lifecycle.Running) { return; }", StringComparison.Ordinal);
             int disable = restart.IndexOf("StartStopBtn.IsEnabled = false;", StringComparison.Ordinal);
             Assert.True(guard >= 0, "サービスが止まっているときの早期終了がない");
             Assert.True(disable > guard, "ボタンを無効にするのは、早期終了のあと（戻らないと、ボタンが有効に戻らない）");

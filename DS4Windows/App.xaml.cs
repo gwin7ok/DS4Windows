@@ -95,6 +95,7 @@ namespace DS4WinWPF
         // 呼び出し元がスレッドの終了を待ってから読む（以降は LoggerHolder の生成、起動後の処理、未処理例外の処理、終了処理が使う）。
         // 別スレッド（未処理例外、セッション終了）からも読まれるため volatile にする。
         private volatile DS4Windows.ControlService _controlService;
+        private volatile DS4Windows.DI.IServiceLifecycle _lifecycle;   // Phase13-Step9: 旧 ControlService.running の転送
 
         // Phase7-Step4 W4（D3＝S1）: コンテナの構築より前に作るブートストラップのサービス。Pre-Host の起動処理（保存場所の決定、
         // ViGEmBus 情報の取得）で使い、CreateHost に渡して、コンテナへ同じインスタンスを登録する。
@@ -991,6 +992,7 @@ namespace DS4WinWPF
                 // is the same adapter class already registered, not a second implementation.
                 // Phase7-Step5 W4: 解決の窓口（ResolvePostHostService）を通す。解決できなければ InvalidOperationException（従来と同じ）
                 _controlService = ResolvePostHostService<DS4Windows.ControlService>();
+                _lifecycle = ResolvePostHostService<DS4Windows.DI.IServiceLifecycle>();
 
                 requestClient = new HttpClient();
                 requestClient.DefaultRequestHeaders.Add("User-Agent", "DS4Windows");
@@ -1255,7 +1257,7 @@ namespace DS4WinWPF
                 {
                     Task.Run(() =>
                     {
-                        if (_controlService.running)
+                        if (_lifecycle != null && _lifecycle.Running)
                         {
                             _controlService.Stop(immediateUnplug: true);
                             _controlService.ShutDown();
