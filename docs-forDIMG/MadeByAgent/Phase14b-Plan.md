@@ -241,6 +241,10 @@
 - 残る違反（18 件）: L1 11（`AppLogger` → `ProfileChangedEventArgs`／`ProfileChangeSource`、`SpecialActionRepository`／`SpecialActionsXmlSerializer` → Actions の `IManagedActionManager`／`SyntheticInputState`、`AppearanceSettingsService` → `UI.TrayIconResources`、`ProfileSettingsService` → `IDeviceStateAccessor`、`RemovedGyroSwipeNotice`／`RemovedShiftNotice` → 第2層の Prompt の契約、`Changelog` → `App`、`WindowPlacementHelper` → `UI.MainWindow`）、L4 1（`OutputSlotManager` → `IInstanceIdentifiable`）、L6 6（UI → `App`／`StartupMethods`）。いずれも小さく、次の是正の候補（§9）。
 - Debug ALL: 緑（ビルド 警告 0・エラー 0、`DS4Windows.Actions.Tests` 3,229 件合格、`StandaloneTests` 11 件合格）。
 
+### 8.6 Step 14b-11（実機確認）— Release ビルド出力済み・確認待ち（2026-11-05）
+- Release ビルド 2 か所: `DS4Windows\bin\x64\Release\`（`dotnet build DS4WindowsWPF.sln -c Release /p:platform=x64`、警告 0・エラー 0）と、`DS4Windows\bin\x64\DS4Windows\`（`publish-win-x64.ps1` → `post-build.ps1`。`CopyDS4WindowsToJK.bat` が導入するもの）。`DS4Windows.exe`／`DS4Windows.dll` はどちらも 2026-11-05 08:44 のビルド。v4.3.1。
+- 確認項目: (1) 起動、(2) コントローラーの接続時のトレイ通知（14b-5）と切断・電池の通知、(3) プロファイルの保存・読込（タッチパッドのボタンのモード［14b-2］、ジャイロのトグル・デッドゾーン［14b-7 の `ITouchPadGyroToggles`］、出力カーブ［`BezierCurve`］）、(4) 割り当て編集画面・出力ピッカー・マクロ記録・プリセット・スティック較正の各画面が開くこと（14b-6 のファクトリー）、(5) 特殊アクションの一覧・編集・保存と、ウィンドウのフォーカス（14b-7・14b-8）、(6) 自動プロファイルの切り替え（`WindowTargetMatcher`）。
+
 ## 9. 次の候補（Phase14b の残り、または後続）
 - 残る違反 18 件の是正（多くは 1 型の移動か、小さな契約の切り出しで済む）。
 - `SpecialActionRepository`・`SpecialActionsXmlSerializer`（Core/Persistence）が第2層の `IManagedActionManager`・`SyntheticInputState` を使う件は、読み込み後の実行時状態のリセットを第2層へ寄せる設計が要る（R-02 の残り）。
