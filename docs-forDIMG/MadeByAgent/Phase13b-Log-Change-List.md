@@ -114,3 +114,10 @@
 - **削除**: 開発中の残骸で、情報のない出力 — 空の `Console.WriteLine()` 3 か所（`DS4Device`、`DS3Device`、`DualSenseDevice`）、`"CURRENT: …"`（`DualSenseDevice`）、`"RESET NFC/IR MCU"`・`"FINISHED"`（`JoyConDevice`）、`"FINISHED"`（`SwitchProDevice`）の計 7 か所。WPF アプリでは `Console` の出力は見えないため、利用者への影響はなし。
 - **維持**: `App.xaml.cs` 962 の `Console.WriteLine(WaitAndReadIPCResultDataMMF(...))` は、CLI の `-command` の結果を標準出力へ返す機能の出力であり、ログではない。
 - ブロックコメント内（`/* … */`）の `Console.WriteLine` は対象外。
+
+### 13b-7（F5: Updater の NLog 直接呼び出しを AppLogger へ）
+
+- 調査: `NLog.config` のレイアウトは `${longdate} [${level}] ${message}` で、ロガー名も例外も含まない。AppLogger 経由にしても、ファイルの出力は同じ（`logger.Warn(ex, …)` の例外は元々出ていなかったため、メッセージに `ex.Message` を足した）。昇格プロセス（`--complete-install`）でも、同じ NLog 構成を AppLogger が使うため、動作に違いはない。
+- **削除（重複）**: `UpdaterInstaller` は、同じ出来事を NLog 直接と `AppLogger.LogDebug` の 2 行で出していた。15 組を 1 行にまとめ、NLog 直接の 15 か所を削除。残す 1 行のレベルは、2 行のうち高いほうに合わせた（**レベルのみ**）— Debug → Error: 4（空パス、ソース無し、昇格プロセス起動失敗 null ほか）、Debug → Info: 4（インストール成功、昇格プロセスの終了コード）、Debug → Warn: 2（権限不足）。
+- **文言**: `UpdaterElevatedHelper` の NLog 直接 9 か所を `AppLogger` へ、接頭辞 `[UpdaterInstall]` を付与（例外は `: {ex.Message}` を追記）。
+- `UpdaterInstaller`／`UpdaterElevatedHelper` の NLog の `logger` フィールドと `using NLog;` を削除。これで NLog の直接呼び出しは、基盤（`AppLogger`、`LoggerHolder`）の内部だけになる。

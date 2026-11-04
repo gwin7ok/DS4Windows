@@ -2,7 +2,6 @@ using System;
 using System.ComponentModel;
 using System.Diagnostics;
 using System.IO;
-using NLog;
 using DS4Windows;
 
 namespace DS4WinWPF
@@ -12,7 +11,6 @@ namespace DS4WinWPF
     // --complete-install and --complete-install-target arguments and wait for result.
     public static class UpdaterInstaller
     {
-        private static readonly Logger logger = LogManager.GetCurrentClassLogger();
 
         // Try to install; returns true on success.
         // If allowElevation is false, do not attempt to relaunch elevated and simply return false on permission errors.
@@ -22,8 +20,7 @@ namespace DS4WinWPF
             {
                 if (string.IsNullOrEmpty(sourcePath) || string.IsNullOrEmpty(targetPath))
                 {
-                    logger.Error("TryInstall called with empty paths");
-                    AppLogger.LogDebug("[UpdaterInstall] TryInstall called with empty source/target");
+                    AppLogger.LogError("[UpdaterInstall] TryInstall called with empty source/target");
                     return false;
                 }
 
@@ -41,14 +38,12 @@ namespace DS4WinWPF
                     }
                     File.Copy(sourcePath, targetPath, true);
                     try { File.Delete(sourcePath); } catch { }
-                    logger.Info($"Installed without elevation: {targetPath}");
-                    AppLogger.LogDebug($"[UpdaterInstall] Installed without elevation: {targetPath}");
+                    AppLogger.LogInfo($"[UpdaterInstall] Installed without elevation: {targetPath}");
                     return true;
                 }
                 catch (UnauthorizedAccessException ex)
                 {
-                    AppLogger.LogDebug($"[UpdaterInstall] Non-elevated install failed due to permissions: {ex.Message}");
-                    logger.Warn("Non-elevated install failed due to permissions");
+                    AppLogger.LogWarn($"[UpdaterInstall] Non-elevated install failed due to permissions: {ex.Message}");
                     if (!allowElevation)
                     {
                         // Caller requested no elevation attempt
@@ -77,21 +72,18 @@ namespace DS4WinWPF
                     var proc = Process.Start(psi);
                     if (proc == null)
                     {
-                        logger.Error("Failed to start elevated process (null)");
                         AppLogger.LogWarn("[UpdaterInstall] Failed to start elevated process: null returned");
                         return false;
                     }
 
                     proc.WaitForExit();
                     int code = proc.ExitCode;
-                    logger.Info($"Elevated installer exited with code {code}");
-                    AppLogger.LogDebug($"[UpdaterInstall] Elevated installer exited with code {code}");
+                    AppLogger.LogInfo($"[UpdaterInstall] Elevated installer exited with code {code}");
                     return code == 0;
                 }
                 catch (Win32Exception ex)
                 {
                     // This is thrown when user cancels UAC or process cannot be started
-                    logger.Warn(ex, "Elevation cancelled or failed");
                     AppLogger.LogError($"[UpdaterInstall] Elevation start failure: {ex.Message}");
                     return false;
                 }
@@ -99,7 +91,6 @@ namespace DS4WinWPF
             catch (Exception ex)
             {
                 AppLogger.LogError($"[UpdaterInstall] TryInstall failed: {ex.Message}");
-                logger.Error(ex, "TryInstall failed");
                 return false;
             }
         }
@@ -111,15 +102,13 @@ namespace DS4WinWPF
             {
                 if (string.IsNullOrEmpty(sourceDir) || string.IsNullOrEmpty(targetDir))
                 {
-                    logger.Error("TryInstallDirectory called with empty paths");
-                    AppLogger.LogDebug("[UpdaterInstall] TryInstallDirectory called with empty source/target");
+                    AppLogger.LogError("[UpdaterInstall] TryInstallDirectory called with empty source/target");
                     return false;
                 }
 
                 if (!Directory.Exists(sourceDir))
                 {
-                    logger.Error($"Source directory not found: {sourceDir}");
-                    AppLogger.LogDebug($"[UpdaterInstall] Source directory missing: {sourceDir}");
+                    AppLogger.LogError($"[UpdaterInstall] Source directory missing: {sourceDir}");
                     return false;
                 }
 
@@ -135,14 +124,12 @@ namespace DS4WinWPF
                     }
                     // Copy recursively
                     CopyDirectoryRecursive(sourceDir, targetDir);
-                    logger.Info($"Installed directory without elevation: {targetDir}");
-                    AppLogger.LogDebug($"[UpdaterInstall] Installed directory without elevation: {targetDir}");
+                    AppLogger.LogInfo($"[UpdaterInstall] Installed directory without elevation: {targetDir}");
                     return true;
                 }
                 catch (UnauthorizedAccessException ex)
                 {
-                    AppLogger.LogDebug($"[UpdaterInstall] Non-elevated directory install failed due to permissions: {ex.Message}");
-                    logger.Warn("Non-elevated directory install failed due to permissions");
+                    AppLogger.LogWarn($"[UpdaterInstall] Non-elevated directory install failed due to permissions: {ex.Message}");
                     if (!allowElevation)
                     {
                         AppLogger.LogDebug("[UpdaterInstall] Caller requested no elevation; returning false from TryInstallDirectory");
@@ -171,28 +158,24 @@ namespace DS4WinWPF
                     var proc = Process.Start(psi);
                     if (proc == null)
                     {
-                        logger.Error("Failed to start elevated process (null)");
-                        AppLogger.LogWarn("[UpdaterInstall] Failed to start elevated process (null)");
+                        AppLogger.LogError("[UpdaterInstall] Failed to start elevated process (null)");
                         return false;
                     }
 
                     proc.WaitForExit();
                     int code = proc.ExitCode;
-                    logger.Info($"Elevated installer exited with code {code}");
-                    AppLogger.LogDebug($"[UpdaterInstall] Elevated installer exited with code {code}");
+                    AppLogger.LogInfo($"[UpdaterInstall] Elevated installer exited with code {code}");
                     return code == 0;
                 }
                 catch (Win32Exception ex)
                 {
                     AppLogger.LogError($"[UpdaterInstall] Elevation cancelled or failed: {ex.Message}");
-                    logger.Warn(ex, "Elevation cancelled or failed");
                     return false;
                 }
             }
             catch (Exception ex)
             {
                 AppLogger.LogError($"[UpdaterInstall] TryInstallDirectory failed: {ex.Message}");
-                logger.Error(ex, "TryInstallDirectory failed");
                 return false;
             }
         }

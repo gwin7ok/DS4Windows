@@ -1,13 +1,12 @@
 using System;
 using System.IO;
-using NLog;
+using DS4Windows;
 
 namespace DS4WinWPF
 {
     // Helper used when process is started elevated to complete file move/install
     public static class UpdaterElevatedHelper
     {
-        private static readonly NLog.Logger logger = NLog.LogManager.GetCurrentClassLogger();
 
         // Return 0 on success, non-zero error codes otherwise
         public static int CompleteInstall(string sourcePath, string targetPath)
@@ -16,7 +15,7 @@ namespace DS4WinWPF
             {
                 if (string.IsNullOrEmpty(sourcePath) || string.IsNullOrEmpty(targetPath))
                 {
-                    logger.Error("CompleteInstall called with empty paths");
+                    AppLogger.LogError("[UpdaterInstall] CompleteInstall called with empty paths");
                     return 4; // cannot_save_download / invalid args
                 }
 
@@ -28,17 +27,17 @@ namespace DS4WinWPF
                         if (!Directory.Exists(targetPath)) Directory.CreateDirectory(targetPath);
                         CopyDirectoryRecursive(sourcePath, targetPath);
                         try { Directory.Delete(sourcePath, true); } catch { }
-                        logger.Info($"CompleteInstall succeeded (dir): {sourcePath} -> {targetPath}");
+                        AppLogger.LogInfo($"[UpdaterInstall] CompleteInstall succeeded (dir): {sourcePath} -> {targetPath}");
                         return 0;
                     }
                     catch (UnauthorizedAccessException ex)
                     {
-                        logger.Error(ex, "Unauthorized while completing directory install");
+                        AppLogger.LogError($"[UpdaterInstall] Unauthorized while completing directory install: {ex.Message}");
                         return 3; // admin_required
                     }
                     catch (Exception ex)
                     {
-                        logger.Error(ex, "Failed to complete directory install");
+                        AppLogger.LogError($"[UpdaterInstall] Failed to complete directory install: {ex.Message}");
                         return 5;
                     }
                 }
@@ -56,26 +55,26 @@ namespace DS4WinWPF
                     catch (Exception ex)
                     {
                         // not fatal; log and continue
-                        logger.Warn(ex, $"Failed to delete temp file {sourcePath}");
+                        AppLogger.LogWarn($"[UpdaterInstall] Failed to delete temp file {sourcePath}: {ex.Message}");
                     }
 
-                    logger.Info($"CompleteInstall succeeded: {sourcePath} -> {targetPath}");
+                    AppLogger.LogInfo($"[UpdaterInstall] CompleteInstall succeeded: {sourcePath} -> {targetPath}");
                     return 0;
                 }
                 else
                 {
-                    logger.Error($"Source path not found: {sourcePath}");
+                    AppLogger.LogError($"[UpdaterInstall] Source path not found: {sourcePath}");
                     return 2; // missing source
                 }
             }
             catch (UnauthorizedAccessException ex)
             {
-                logger.Error(ex, $"Unauthorized while completing install {sourcePath} -> {targetPath}");
+                AppLogger.LogError($"[UpdaterInstall] Unauthorized while completing install {sourcePath} -> {targetPath}: {ex.Message}");
                 return 3; // admin_required
             }
             catch (Exception ex)
             {
-                logger.Error(ex, $"Failed to complete install {sourcePath} -> {targetPath}");
+                AppLogger.LogError($"[UpdaterInstall] Failed to complete install {sourcePath} -> {targetPath}: {ex.Message}");
                 return 5; // replace_failed / general failure
             }
         }
