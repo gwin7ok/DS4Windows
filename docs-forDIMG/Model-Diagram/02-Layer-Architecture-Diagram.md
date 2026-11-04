@@ -5,7 +5,7 @@
 
 ---
 
-> **実装状況の注記（2026-10-23 Phase9 9-I）**: 上のスタック図は目標像である。実在する部品と未実装の部品の対応は `01-Component-Dependency-Diagram.md` §2.1、登録されているサービスの一覧は `04-Service-Lifecycle-Spec.md` §2.5 を参照。特に、第4層の `StickSettingsSubVM` などのサブ ViewModel（9-G）と、第1層の通信・解析の分離（9-H）は未実装である。依存の向き（第4層 → 第2層 → { 第1層、第3層、横断基盤 }）は、実コードと一致している。
+> **実装状況の注記（2026-10-23 Phase9 9-I）**: 上のスタック図は目標像である。実在する部品と未実装の部品の対応は `01-Component-Dependency-Diagram.md` §2.1、登録されているサービスの一覧は `04-Service-Lifecycle-Spec.md` §2.5 を参照。特に、第4層の `StickSettingsSubVM` などのサブ ViewModel（9-G）と、第1層の通信・解析の分離（9-H）は未実装である。依存の向き（第4層 → 第2層 → { 第1層、第3層、横断基盤 }）は、**サービスの単位では**実コードと一致しているが、**型の参照の単位では違反が残る**（2026-11-05 Phase14b の実測。`LayerDependencyRuleTests` が許可リスト `LayerDependencyBaseline` で凍結し、件数の一致を検査する。内訳は末尾の注釈）。
 
 ## 1. 実行時スタック構造図
 
@@ -176,3 +176,12 @@
 %%     横断基盤・永続化  Core/（Abstractions、Logging、Utilities、Platform、Settings、Persistence〔Dto、ProfileSections〕、Profiles、Updater）
 %% - ルート名前空間は DS4Windows に統一した（DS4WinWPF は廃止。csproj の RootNamespace／StartupObject も DS4Windows）。
 %% - インターフェースの置き場所: 実装と同じ層の Abstractions/。第2層が第1・3層・UI の実装を使うポートは、使う側（Processing/Abstractions）に置いた（依存の向きを保つため）。
+
+%% ---- Phase14b-Step1〜3（2026-11-05。層の依存の検査と、最初の是正）----
+%% - 層の依存を、アセンブリの実際の型参照（メソッド本体を含む）で検査するテスト LayerDependencyRuleTests（ArchUnitNET）を加えた。規則は L1〜L7（Phase14b-Plan.md §4）。
+%%     禁止（許可リストで凍結・件数の一致を検査）: L1 Core → 第2層・UI・起点、L3 第1層 → 上位、L4 第3層 → 第2層の具象・UI、L5 第2層 → UI・起点、L6 UI → 起点（App／StartupMethods）
+%%     記録のみ: L2 Core → 第1層・第3層、L7 UI → 第1層・第3層
+%% - 実測: 禁止 108 件（L1 81、L3 5、L4 1、L5 15、L6 6）→ Phase14b-Step3 の時点で 102 件。記録のみ L2 70、L7 80。
+%% - 主な原因: 共有のデータ型（SpecialAction、BezierCurve、MacroExecuteMode ほか）と、Core が実装する契約（IAppSettingsService、IProfileLoadTarget）が第2層にある。
+%%   UI のファクトリーの契約（IEditorWindowFactory／IMainWindowFactory／IViewModelFactory）が Processing/Abstractions にあり、UI の型を参照している（L5 の 15 件のすべて）。
+%% - 是正済み: Mouse のネスト型 TouchButtonActivationMode → Core/Settings、INotificationService／NotificationEventArgs → Core/Abstractions、AppLogger のフォールバック（2 つ目の BackingStore）→ NullNotificationService。

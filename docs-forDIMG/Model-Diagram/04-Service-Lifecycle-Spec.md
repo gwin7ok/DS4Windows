@@ -26,7 +26,7 @@
 | :--- | :--- | :--- | :--- | :--- | :--- |
 | **基盤** | `IPathService` | `PathService` | **Singleton** | プロファイル・アプリデータ保存先パスの動的解決。プログラムフォルダ（`ProgramDirectory`。ジャンクション解決済みの実行ファイルの親フォルダで、`ExecutableDirectory`＝`AppContext.BaseDirectory` とは別） | なし |
 | **基盤** | `IEnvironmentService` | `EnvironmentService` | **Singleton** | OS種別、管理者権限、ディスプレイ解像度情報、HidHide／FakerInput の導入状態、デバイスインスタンスID解決、コントローラースロット上限（同時に扱えるスロット数の上限。接続台数ではない）、ViGEmBus の導入・サポートバージョン・最小バージョン判定、プログラムフォルダへの書き込みに管理者権限が要るかの判定の提供 | なし |
-| **基盤** | `INotificationService` | `AppNotificationService` | **Singleton** | OSトースト通知、ステータス通知の統一発行 | なし |
+| **基盤** | `INotificationService`（`Core.Abstractions`。Phase14b） | `AppNotificationService` | **Singleton** | OSトースト通知、ステータス通知の統一発行 | なし |
 | **基盤** | `IStartupArguments` | `StartupArguments` | **Singleton** | アプリの起動引数（`ArgumentParser`）の保持役。`AppHost.CreateHost(config, parser)` が値を設定する。`OutputKbmInitializer` が `Initialize()` の時点で読む（Phase13-Step3。以前は `ControlService` の生成時に渡していた） | なし |
 | **基盤** | `XmlIoLock` | `XmlIoLock` | **Singleton** | プロセス内・スレッド間のファイル排他制御ロック | なし |
 | **基盤** | `IAppSettingsService` | `AppSettingsService` | **Singleton** | `AppSettings.xml` の永続化・設定値管理（OSC・UDP・Steam フォルダ・偽装 exe 名・ログ保持数などを含む） | `IPathService`, `XmlIoLock` |
@@ -341,3 +341,5 @@
 - Phase13b（2026-11-04）: ログの入口を `AppLogger.Log` に一本化。サービスの `DebugMessage` イベントと `IServiceDebugRelay` を廃止し、`ControlService` は 17 → 16 引数。`LoggerHolder`（Singleton 相当・`App` が生成）は `IAppSettingsService` だけを受け、`GuiLog` を購読してファイルへ書く。`LogViewModel`（Transient）も `ControlService` を受けない。
 
 - Phase14（2026-11-04）: 名前空間・フォルダを層別に再編した（サービスの生成・破棄の順序は不変）。`ServiceRegistration`／`AppHost` は `Composition/`（名前空間 `DS4Windows.Composition`）。サービス実装は層ごとのフォルダ（`Processing/Services`、`Output/Services`、`Core/*`、`UI/Services`）へ移った。
+
+- Phase14b（2026-11-05）: `INotificationService`／`NotificationEventArgs` の名前空間を `DS4Windows.Core.Abstractions` に移した（実装 `AppNotificationService` は UI、Singleton のまま）。`AppLogger.NotificationService`（静的）の未設定時のフォールバックは、`new AppNotificationService(new BackingStore(...))` から `NullNotificationService`（何もしない。最初の 1 回だけ Debug ログ）に替えた。生成・破棄の順序は不変。

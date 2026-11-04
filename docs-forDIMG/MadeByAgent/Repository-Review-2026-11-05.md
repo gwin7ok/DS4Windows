@@ -267,7 +267,15 @@
 | 5 | Phase15（UI 共通化）に、UI 向けの窓口・ViewModel のファクトリー・変更通知の基底を含める | R-09、R-12、R-14、（R-10 の一部） | L | 既存の Phase15・G-1・F-4 と同じ画面を触る |
 | 6 | Phase16 の最初に入力カートリッジの記述子と設定の共通化、最後に出力カートリッジ | R-07、R-11、R-08、R-17 | L | 9-H の前に「機種の追加コスト」を先に下げられる |
 
-順 1・2（R-01・R-03・R-04）の個別計画書: `Phase14b-Plan.md`（2026-11-05 作成、承認待ち）。
+順 1・2（R-01・R-03・R-04）の個別計画書: `Phase14b-Plan.md`（2026-11-05 承認、同日 Step 14b-1〜3 を実施）。
+
+### 4.1 対応状況（2026-11-05 追記）
+| 指摘 | 状況 |
+|---|---|
+| R-01 | **対応済み**（Phase14b-Step1）。`LayerDependencyRuleTests`（ArchUnitNET 0.13.4）。禁止の規則の違反 108 件を凍結 → Step3 の時点で 102 件 |
+| R-04 | **対応済み**（Phase14b-Step2）。`TouchButtonActivationMode` → `Core/Settings`、`using static` 54 件を削除 |
+| R-03 | **対応済み**（Phase14b-Step3）。`NullNotificationService`。`INotificationService` を `Core/Abstractions` へ。`BackingStore.ProfileSettings` のフォールバックは「通常の起動では通らない」と判断（計画書 §8.3） |
+| R-02 | 未着手。新しい発見: L5 の 15 件はすべて UI のファクトリーの契約が `Processing/Abstractions` にあることによる（計画書 §8.1） |
 
 運用ルールの追加（R-15、R-16 の命名）は、規約 `.github/copilot-instructions.md` の改定として別途承認を得る。
 
