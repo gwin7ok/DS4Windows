@@ -116,3 +116,20 @@
 ```
 
 注: `Disconnect`（番号なし）は全ワイヤレスコントローラーを切断する。`Shutdown` は本体を終了するので、最後に実行する。
+
+## 7. 結果（2026-11-04）
+
+### 7.1 リリース済み v4.3.0
+
+| 区分 | 結果 |
+|---|---|
+| Stop／Start／Cycle | ○ |
+| ChangeLedColor（赤・緑・青） | ライトバーは変化なし |
+| LoadProfile／LoadTempProfile | ○（プロファイル切換は正常） |
+| OutputSlot、Query（全項目）、Disconnect／Shutdown | ○ |
+
+### 7.2 読解による分析
+
+- `ChangeLedColor` の処理は、Phase13-Step11 の前後（`937a7c52^` の `MainWindow.Ipc.cs` と現在の `IpcCommandProcessor`＋`MainWindow.Ipc.cs`）で同一。引数検査・呼び出し先（`CompositeDeviceModel.UpdateCustomLightColor`）とも変わっていない。回帰ではない。
+- `UpdateCustomLightColor` は、プロファイル設定の `m_CustomLed`（カスタム色）を書き換えて `LightColorChanged` を発火するだけで、購読者がコード上に無い。ライトバーのモードがカスタム色のプロファイルでないと、見た目には効かない可能性が高い。
+- 現 master のビルドでの実測は未実施（上の結論は読解による）。
