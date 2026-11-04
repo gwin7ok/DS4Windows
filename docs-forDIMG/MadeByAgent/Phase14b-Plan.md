@@ -1,7 +1,7 @@
 # Phase14b 個別計画書: 依存の向きの是正（第1弾: 物差しと即効の整理）
 
 作成日: 2026-11-05
-状態: **承認済み（2026-11-05。D1〜D5 はすべて推奨案）→ 実施中**
+状態: **承認済み（2026-11-05。D1〜D9）→ 完了（2026-11-05、実機確認済み）。結果は Phase14b-Completion-Report.md**
 ブランチ: `Phase14b`（master から作成。D1）
 根拠: `Repository-Review-2026-11-05.md`（R-01・R-03・R-04）、規約 §1（依存の向き）、§2.3（ログ）、§3.1（ラチェットの一致検査）、§3.3 原則3（`using` は使う名前空間だけ）、§3.4 R2・R5・R7、モデル図 `Model-Diagram/02-Layer-Architecture-Diagram.md`
 
@@ -241,7 +241,7 @@
 - 残る違反（18 件）: L1 11（`AppLogger` → `ProfileChangedEventArgs`／`ProfileChangeSource`、`SpecialActionRepository`／`SpecialActionsXmlSerializer` → Actions の `IManagedActionManager`／`SyntheticInputState`、`AppearanceSettingsService` → `UI.TrayIconResources`、`ProfileSettingsService` → `IDeviceStateAccessor`、`RemovedGyroSwipeNotice`／`RemovedShiftNotice` → 第2層の Prompt の契約、`Changelog` → `App`、`WindowPlacementHelper` → `UI.MainWindow`）、L4 1（`OutputSlotManager` → `IInstanceIdentifiable`）、L6 6（UI → `App`／`StartupMethods`）。いずれも小さく、次の是正の候補（§9）。
 - Debug ALL: 緑（ビルド 警告 0・エラー 0、`DS4Windows.Actions.Tests` 3,229 件合格、`StandaloneTests` 11 件合格）。
 
-### 8.6 Step 14b-11（実機確認）— Release ビルド出力済み・確認待ち（2026-11-05）
+### 8.6 Step 14b-11（実機確認）— 完了（2026-11-05。ユーザー確認: 問題なし）
 - Release ビルド 2 か所: `DS4Windows\bin\x64\Release\`（`dotnet build DS4WindowsWPF.sln -c Release /p:platform=x64`、警告 0・エラー 0）と、`DS4Windows\bin\x64\DS4Windows\`（`publish-win-x64.ps1` → `post-build.ps1`。`CopyDS4WindowsToJK.bat` が導入するもの）。`DS4Windows.exe`／`DS4Windows.dll` はどちらも 2026-11-05 08:44 のビルド。v4.3.1。
 - 確認項目: (1) 起動、(2) コントローラーの接続時のトレイ通知（14b-5）と切断・電池の通知、(3) プロファイルの保存・読込（タッチパッドのボタンのモード［14b-2］、ジャイロのトグル・デッドゾーン［14b-7 の `ITouchPadGyroToggles`］、出力カーブ［`BezierCurve`］）、(4) 割り当て編集画面・出力ピッカー・マクロ記録・プリセット・スティック較正の各画面が開くこと（14b-6 のファクトリー）、(5) 特殊アクションの一覧・編集・保存と、ウィンドウのフォーカス（14b-7・14b-8）、(6) 自動プロファイルの切り替え（`WindowTargetMatcher`）。
 
