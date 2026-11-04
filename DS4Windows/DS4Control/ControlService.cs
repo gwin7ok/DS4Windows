@@ -86,7 +86,6 @@ namespace DS4Windows
         private readonly DI.IEventThreadDispatcher _eventThread;
 
         // Phase9 9-E E-3: 旧 _udpServer／udpOutBuffers／udpChangeStatus などは UdpMotionService へ移した
-        private readonly DI.IUdpMotionService _udpMotion;
         // Phase9 9-E E-4: 旧 outputslotMan／vigemTestClient／tempThread は VirtualPadService へ移した
         private readonly DI.IVirtualPadService _virtualPad;
         public DI.IVirtualPadService VirtualPadService => _virtualPad;
@@ -138,20 +137,15 @@ namespace DS4Windows
         internal DI.IProfileSettingsService ProfileSettingsService => _profileSettings;
 
         // Phase9 9-E E-2: 旧 hidDeviceHiding*（HidHide の状態）は HidHideService へ移した
-        private readonly DI.IHidHideService _hidHideService;
 
         // Phase9 9-E E-5: 入力レポートの処理から切り出した部品（遅延の監視、タッチパッドの切り替え、押されている入力の探索）
-        private readonly DI.ILatencyMonitor _latencyMonitor;
-        private readonly DI.ITouchpadToggleService _touchpadToggle;
 
         // Phase9 9-E E-6b: 接続時の設定の反映とイベントの配線
-        private readonly DI.IDeviceConnectionSetup _deviceConnectionSetup;
 
         // Phase9 9-E E-6c: デバイスの種類ごとの部品（カートリッジ）
         private readonly DI.IInputDeviceModuleRegistry _deviceModules;
 
         // Phase9 9-E E-6e: 切断・同期・シリアル変更の処理
-        private readonly DI.IDeviceDisconnectHandler _deviceDisconnect;
 
         // Phase9 9-E E-6f2: 開始・停止・ホットプラグと、その状態・イベント
         private readonly DI.IServiceLifecycle _lifecycle;
@@ -181,14 +175,9 @@ namespace DS4Windows
             Services.IElevatedProcessLauncher elevatedProcessLauncher,
             StickMotionState stickMotion,
             DI.IMapping mapping,
-            DI.IHidHideService hidHideService,
-            DI.IUdpMotionService udpMotionService,
             DI.IVirtualPadService virtualPadService,
-            DI.ILatencyMonitor latencyMonitor,
-            DI.ITouchpadToggleService touchpadToggle,
-            DI.IDeviceConnectionSetup deviceConnectionSetup,
+            DI.IServiceDebugRelay debugRelay,
             DI.IInputDeviceModuleRegistry deviceModules,
-            DI.IDeviceDisconnectHandler deviceDisconnect,
             DI.IServiceLifecycle lifecycle,
             DI.IEventThreadDispatcher eventThread,
             DI.IDeviceSlotState slots,
@@ -218,14 +207,8 @@ namespace DS4Windows
             this._elevatedProcessLauncher = elevatedProcessLauncher ?? throw new ArgumentNullException(nameof(elevatedProcessLauncher));
             this._stickMotion = stickMotion ?? throw new ArgumentNullException(nameof(stickMotion));
             this._mapping = mapping ?? throw new ArgumentNullException(nameof(mapping));
-            this._hidHideService = hidHideService ?? throw new ArgumentNullException(nameof(hidHideService));
-            this._udpMotion = udpMotionService ?? throw new ArgumentNullException(nameof(udpMotionService));
             this._virtualPad = virtualPadService ?? throw new ArgumentNullException(nameof(virtualPadService));
-            this._latencyMonitor = latencyMonitor ?? throw new ArgumentNullException(nameof(latencyMonitor));
-            this._touchpadToggle = touchpadToggle ?? throw new ArgumentNullException(nameof(touchpadToggle));
-            this._deviceConnectionSetup = deviceConnectionSetup ?? throw new ArgumentNullException(nameof(deviceConnectionSetup));
             this._deviceModules = deviceModules ?? throw new ArgumentNullException(nameof(deviceModules));
-            this._deviceDisconnect = deviceDisconnect ?? throw new ArgumentNullException(nameof(deviceDisconnect));
             this._lifecycle = lifecycle ?? throw new ArgumentNullException(nameof(lifecycle));
             this._eventThread = eventThread ?? throw new ArgumentNullException(nameof(eventThread));
             // 開始・停止のログとイベントも、これまでどおり ControlService の Debug イベント／公開イベント（送り主は ControlService）へ流す
@@ -235,19 +218,12 @@ namespace DS4Windows
             this._lifecycle.ServiceStopped += (sender, e) => ServiceStopped?.Invoke(this, e);
             this._lifecycle.RunningChanged += (sender, e) => RunningChanged?.Invoke(this, e);
             this._lifecycle.HotplugController += (device, index) => HotplugController?.Invoke(this, device, index);
-            // 切断・同期の処理のログも、これまでどおり ControlService の Debug イベントへ流す
-            this._deviceDisconnect.DebugMessage += (data, warning) => LogDebug(data, warning);
-            // 設定の反映のログも、これまでどおり ControlService の Debug イベントへ流す
-            this._deviceConnectionSetup.DebugMessage += (data, warning) => LogDebug(data, warning);
-            // 遅延の監視・タッチパッドの切り替えのログも、これまでどおり ControlService の Debug イベントへ流す
-            this._latencyMonitor.DebugMessage += (data, warning) => LogDebug(data, warning);
-            this._touchpadToggle.DebugMessage += (data, warning) => LogDebug(data, warning);
+            // HidHide、UDP モーション、遅延の監視、タッチパッドの切り替え、接続時の設定、切断・同期のログも、これまでどおり ControlService の Debug イベントへ流す
+            // （Phase13-Step10 10-e: 6 つのサービスの DebugMessage は IServiceDebugRelay がまとめて受ける）
+            if (debugRelay == null) throw new ArgumentNullException(nameof(debugRelay));
+            debugRelay.DebugMessage += (data, warning) => LogDebug(data, warning);
             // 仮想パッド系のログも、これまでどおり ControlService の Debug イベントへ流す
             this._virtualPad.DebugMessage += (data, warning) => LogDebug(data, warning);
-            // UDP モーションのログも、これまでどおり ControlService の Debug イベントへ流す
-            this._udpMotion.DebugMessage += (data, warning) => LogDebug(data, warning);
-            // HidHide のログは、これまでどおり ControlService の Debug イベント（GUI のログ、ログファイル）へ流す
-            this._hidHideService.DebugMessage += (data, warning) => LogDebug(data, warning);
 
             Crc32Algorithm.InitializeTable(DS4Device.DefaultPolynomial);
 
