@@ -54,12 +54,25 @@ namespace DS4Windows
         protected string m_Data = string.Empty;
         protected bool warning = false;
         protected bool temporary = false;
+        protected AppLogLevel level = AppLogLevel.Info;
         public DebugEventArgs(string Data, bool warn, bool temporary = false)
         {
             m_Data = Data;
             warning = warn;
             this.temporary = temporary;
+            level = warn ? AppLogLevel.Warn : AppLogLevel.Info;
         }
+
+        // Phase13b-Step1: 新 API（AppLogger.Log）が、利用者向けのログのレベルを運ぶために追加。Warning は Warn 以上で真。
+        public DebugEventArgs(string Data, AppLogLevel level, bool temporary = false)
+        {
+            m_Data = Data;
+            this.level = level;
+            warning = level >= AppLogLevel.Warn;
+            this.temporary = temporary;
+        }
+
+        public AppLogLevel Level => level;
 
         public DateTime Time => m_Time;
         public string Data => m_Data;

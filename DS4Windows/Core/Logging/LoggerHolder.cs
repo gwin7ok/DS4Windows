@@ -273,14 +273,8 @@ namespace DS4WinWPF
             }
 
             using WriteLocker locker = new WriteLocker(logLock);
-            if (!e.Warning)
-            {
-                logger.Info(e.Data);
-            }
-            else
-            {
-                logger.Warn(e.Data);
-            }
+            // Phase13b-Step1: Level を尊重する（旧 API 由来は Info／Warn のみで、従来と同じ出力）。
+            logger.Log(DS4Windows.AppLogger.ToNLogLevel(e.Level), e.Data);
         }
     }
 }

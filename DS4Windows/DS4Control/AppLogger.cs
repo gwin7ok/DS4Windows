@@ -37,24 +37,49 @@ namespace DS4Windows
         public static event EventHandler<ProfileChangedEventArgs> ProfileChanged;
 
         // GUI表示用ログ（LoggerHolderがGuiLogイベントを受け取ってファイル出力）
+        // Phase13b-Step1: 汎用のログ API（Log-Policy.md §1・§7）。旧 API（LogToGui／LogDebug／LogTrace／LogInfo／LogWarn／LogError）は、
+        // この API へ委譲する薄いシム（規約 §2.1）。全呼び出しの移行後（Phase13b-Step9）にシムを削除する。
+        //  - options が利用者向け（IsUserFacing）: GuiLog を発火する。ファイルへの出力は LoggerHolder が行う（一時表示は出さない）。画面の購読者は従来どおり GuiLog を受ける。
+        //  - それ以外: ファイル（NLog）のみ。
+        public static void Log(AppLogLevel level, string data, LogOptions options = null)
+        {
+            if (options != null && options.IsUserFacing)
+            {
+                GuiLog?.Invoke(null, new DebugEventArgs(data, level, options.IsTemporary));
+                return;
+            }
+
+            Logger.Log(ToNLogLevel(level), data);
+        }
+
+        public static NLog.LogLevel ToNLogLevel(AppLogLevel level)
+        {
+            switch (level)
+            {
+                case AppLogLevel.Trace: return NLog.LogLevel.Trace;
+                case AppLogLevel.Debug: return NLog.LogLevel.Debug;
+                case AppLogLevel.Warn: return NLog.LogLevel.Warn;
+                case AppLogLevel.Error: return NLog.LogLevel.Error;
+                default: return NLog.LogLevel.Info;
+            }
+        }
+
+        // 旧 API（シム）。warning=true → Warn、false → Info、temporary → 一時表示。
         public static void LogToGui(string data, bool warning, bool temporary = false)
         {
-            if (GuiLog != null)
-            {
-                GuiLog(null, new DebugEventArgs(data, warning, temporary));
-            }
+            Log(warning ? AppLogLevel.Warn : AppLogLevel.Info, data, temporary ? LogOptions.Temporary : LogOptions.UserFacing);
         }
 
         // Debugレベルログ専用メソッド（GUI表示なし、ログファイルのみ）
         public static void LogDebug(string data)
         {
-            Logger.Debug(data);
+            Log(AppLogLevel.Debug, data);
         }
 
         // Traceレベルログ専用メソッド（より詳細なデバッグ情報用）
         public static void LogTrace(string data)
         {
-            Logger.Trace(data);
+            Log(AppLogLevel.Trace, data);
         }
 
         // Expose trace-enabled flag to avoid expensive string formatting when trace is off
@@ -67,17 +92,17 @@ namespace DS4Windows
         // Warnレベルログ専用メソッド（警告情報用）
         public static void LogWarn(string data)
         {
-            Logger.Warn(data);
+            Log(AppLogLevel.Warn, data);
         }
         public static void LogError(string data)
         {
-            Logger.Error(data);
+            Log(AppLogLevel.Error, data);
         }
 
         // Infoレベルログ専用メソッド（情報ログ用）
         public static void LogInfo(string data)
         {
-            Logger.Info(data);
+            Log(AppLogLevel.Info, data);
         }
 
         // Phase7-Step5 W3（Q7＝A）: 旧 Global.NotificationServiceInstance。静的なロガーは注入できないため、App が起動時に
