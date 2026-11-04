@@ -129,7 +129,7 @@
 
 %% 注釈補強（2026-09-19 Phase6-Step2 実地確認・決定D1〜D3反映）
 %% - 方針4（3-b の送出とライフサイクルの分離、`IVirtualKBMLifecycle`）を追加（決定D3）。スタック図・依存方向図の構造は変更なし。
-%% - 依存方向（上位→下位）に反する過渡期の逆依存（`OutputSlotService` → `ControlService` 等）が現状実装に存在する。目標構造は変更せず、04-Service-Lifecycle-Spec.md §4 で技術的負債として管理する。
+%% - [Phase13 で解消] 依存方向（上位→下位）に反する過渡期の逆依存（`OutputSlotService` → `ControlService` 等）は、Phase13（Step5〜7）で `IDeviceSlotState`／`IProfileLoadTarget`／`IOutputDeviceTypeState` を介する形に置き換え、なくなった。経緯は 04-Service-Lifecycle-Spec.md §4。
 
 %% 注釈補強（2026-09-18監査結果反映、構造変更なし）
 %% - データパイプライン（生HID→変換→仮想パッド/OS入力）は現状のホットパス（ControlService入力ループ、Mouse系加速度処理）と一致。Zero-GCインプレース更新（MappingPipelineContext）の原則を維持。
@@ -145,12 +145,12 @@
 %% 注釈補強（2026-10-18 Phase7-Step10e 反映、構造の目標は変更なし）
 %% - 依存方向（上位 → 下位、またはインターフェース経由）に反する静的な窓口は、Phase7 で解消した: 第 1 層の設定は IDeviceLayerSettings（10d）、スロット数の上限は IEnvironmentService.ControllerSlotLimit（10e）。
 %% - 第 4-b 層（Composition Root）の AppHost は、暗黙にホストを作らない。起動（App.xaml.cs）が明示的に作る。
-%% - 持ち越し（Phase8）: 第 1 層（DS4Devices／DS4LightBar／HidDevices）の静的な状態と、Actions の ServiceProviderHolder。
+%% - 持ち越し: 第 1 層（DS4Devices／DS4LightBar／HidDevices）の静的な状態。（Actions の ServiceProviderHolder は Phase13-Step4 で撤廃済み）
 %% 注釈補強（2026-10-18 Phase7 完了時点のまとめ。構造の目標は変更なし。各 Step の詳細は 03・04 の注釈と Phase7-Completion-Report.md）
 %% - 第 4-b 層（Composition Root）: App の起動が EnvironmentService → BackingStore → PathService の順にブートストラップのインスタンスを作り、CreateHost(config, parser) でコンテナに渡して同じインスタンスを登録する。AppHost は暗黙にホストを作らず、終了時に Dispose する。
 %% - 第 4-c 層（サービス群）: BackingStore（設定の唯一の実体）と、永続化の型、プロファイル適用（ProfileApplicationService）、出力デバイス種別の所有（OutputSlotService）。
 %% - 第 2 層: Mapping が DI の Singleton の instance になり、第 3 層（IVirtualKBM）への依存はインターフェース経由のまま。
-%% - 依存方向に反する静的な窓口は、起動前に必要なもの（PathService／EnvironmentService の状態）を除いて解消した。残りは Phase8（第 1 層の静的な状態、Actions の ServiceProviderHolder）。
+%% - 依存方向に反する静的な窓口は、起動前に必要なもの（PathService／EnvironmentService の状態）を除いて解消した。残りは第 1 層の静的な状態のみ（Actions の ServiceProviderHolder は Phase13-Step4 で撤廃）。
 %% 注釈補強（2026-10-19 依存図の検証［Phase8 前レビュー］。依存の向きの是正のみ）
 %% - IProfileSwitcher を、第3層（3-c）から第2層（【切替制御】）へ移した。プロファイルの切替はアプリ内部の状態遷移で、IProfileApplicationService（第2層）に依存するため、第3層に置くと第3層 → 第2層の上向きの辺と循環ができる。詳細は 01 の注釈。
 %% - 依存の規則: UI層(4) → 信号変換層(2) → { 入力監視層(1)、信号出力層(3)、横断基盤 }。第1層・第3層・横断基盤から第2層への参照は禁止（`.github/copilot-instructions.md` §1 も同様に書き直した）。
@@ -161,3 +161,7 @@
 %% 注釈補強（2026-11-04 モデル図の現状合わせ）
 %% - Phase8 の統一トリガーディスパッチは実装済み（スタック図の「※Phase8 目標像」を「※Phase8 実装済」に改めた）。
 %% - Phase12: 第1層に IMouseInputHook（マクロ記録用の画面全体のマウス監視）、第3層に IWindowFocuser／IWindowSystem（ウィンドウの前面化・カーソル移動）が加わった。依存の向き（第4層 → 第2層 → { 第1層、第3層、横断基盤 }）は変えていない。ただし RecordBox は IMouseInputHook／IWindowSystem を直接受けており、是正候補（01 の凡例を参照）。
+
+%% ---- Phase13 完了（2026-11-04）----
+%% - ControlService は 17 引数の統括役に縮小した（Phase13 開始時は 34 引数）。第 2 層から第 1 層・第 3 層への依存は、IDeviceSlotState／IInputReportProcessor／IOutputDeviceTypeState などのポート経由。
+%% - 依存方向に反する逆依存と、Host 窓口 4 本（IVirtualPadHost／IServiceLifecycleHost／IUdpMotionHost／IDeviceSlotHost）はなくなった。残る Func による遅延取得は、本物の循環の 2 件のみ。

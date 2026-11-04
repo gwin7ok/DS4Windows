@@ -27,7 +27,7 @@
 | **基盤** | `IPathService` | `PathService` | **Singleton** | プロファイル・アプリデータ保存先パスの動的解決。プログラムフォルダ（`ProgramDirectory`。ジャンクション解決済みの実行ファイルの親フォルダで、`ExecutableDirectory`＝`AppContext.BaseDirectory` とは別） | なし |
 | **基盤** | `IEnvironmentService` | `EnvironmentService` | **Singleton** | OS種別、管理者権限、ディスプレイ解像度情報、HidHide／FakerInput の導入状態、デバイスインスタンスID解決、コントローラースロット上限（同時に扱えるスロット数の上限。接続台数ではない）、ViGEmBus の導入・サポートバージョン・最小バージョン判定、プログラムフォルダへの書き込みに管理者権限が要るかの判定の提供 | なし |
 | **基盤** | `INotificationService` | `AppNotificationService` | **Singleton** | OSトースト通知、ステータス通知の統一発行 | なし |
-| **基盤** | `IStartupArguments` | `StartupArguments` | **Singleton** | アプリの起動引数（`ArgumentParser`）の保持役。`AppHost.CreateHost(config, parser)` が値を設定し、`ControlService` の生成時に渡す（Phase6-Step7-4） | なし |
+| **基盤** | `IStartupArguments` | `StartupArguments` | **Singleton** | アプリの起動引数（`ArgumentParser`）の保持役。`AppHost.CreateHost(config, parser)` が値を設定する。`OutputKbmInitializer` が `Initialize()` の時点で読む（Phase13-Step3。以前は `ControlService` の生成時に渡していた） | なし |
 | **基盤** | `XmlIoLock` | `XmlIoLock` | **Singleton** | プロセス内・スレッド間のファイル排他制御ロック | なし |
 | **基盤** | `IAppSettingsService` | `AppSettingsService` | **Singleton** | `AppSettings.xml` の永続化・設定値管理（OSC・UDP・Steam フォルダ・偽装 exe 名・ログ保持数などを含む） | `IPathService`, `XmlIoLock` |
 | **基盤** | `IAppearanceSettingsService`| `AppearanceSettingsService` | **Singleton** | UIテーマ（Dark/Default）、フォントスケール、トレイアイコン選択、バッテリー変化通知（発行 `InvokeBatteryChanged`／購読 `BatteryChanged`） | `IAppSettingsService` |
@@ -56,7 +56,7 @@
 | **2.変換**| `IAutoProfileService` | `AutoProfileService` | **Singleton** | フォアグラウンドアプリ監視とプロファイル自動切替 | `IProcessInspector`, `IProfileApplicationService` |
 | **2.変換**| `IManagedActionManager` | `DefaultActionManager` | **Singleton** | マクロ・キー・プロファイル切替アクションの実行統括。2026-09-04〜2026-10-14 は登録が欠落していた（Phase6-Step9b-2 で再登録）。【Phase8】アクションの状態（`ActionInstanceState`）の管理に縮小し、実行の統括は `ITriggerDispatchEngine` へ移行済み（Phase8-Step8 の 8c で、系統 B の `IActionFactory` ほかを撤去し、コンストラクターは `Func<IMapping>` のみになった） | `Func<IMapping>` |
 | **2.変換**| `IControllerRegistry` | `DefaultControllerRegistry` | **Singleton** | `KeyButtonActionController` の登録と、デバイス単位・終了時の破棄（Phase6-Step9b-2 で再登録）。【Phase8】使うか廃止するかを Step6 で確定 | なし |
-| **2.変換**| `IMapping` | `Mapping` | **Singleton** | 入力の評価（カーブ・割り当て・合成入力の確定・切断の後始末・マクロ）。旧: メンバーのほぼすべてが static（Phase7-Step8）。`DefaultActionManager`／`DefaultMacroPlayer` は `Func<IMapping>` で遅延して受ける | `ITriggerDispatchEngine`※2, `SyntheticInputState`, `MacroRuntimeState`, `StickMotionState`, `IProfileSettingsService`, `IProfileApplicationService`, `IVirtualKBM`, `IKeyButtonControllerRegistry`, `IProcessLauncher`, `IProfileSwitcher`, `ISyntheticDispatcher`, `Func<IDeviceStateAccessor>`※1 |
+| **2.変換**| `IMapping` | `Mapping` | **Singleton** | 入力の評価（カーブ・割り当て・合成入力の確定・切断の後始末・マクロ）。旧: メンバーのほぼすべてが static（Phase7-Step8）。`DefaultActionManager`／`DefaultMacroPlayer` は `Func<IMapping>` で遅延して受ける | `ITriggerDispatchEngine`※2, `SyntheticInputState`, `MacroRuntimeState`, `StickMotionState`, `IProfileSettingsService`, `IProfileApplicationService`, `IVirtualKBM`, `IKeyButtonControllerRegistry`, `IProcessLauncher`, `IProfileSwitcher`, `ISyntheticDispatcher`, `IDeviceSlotState`, `IProfileActionProvider`, `ISpecialActionRepository`（Phase13-Step5b で `Func<IDeviceStateAccessor>` から直接注入に） |
 | **2.変換**| `ITriggerDispatchEngine` | `TriggerDispatchEngine` | **Singleton** | 【Phase8・実装済み】特殊アクションと Controls タブの判定→実行の統一。エッジ検出・Fresh-press ガード・実行中の再実行防止・抑制・復帰の合図を一元的に担う。`Mapping` が毎フレーム呼ぶ（通常の割り当ての前後に 2 回） | `IActionRegistry`, `IManagedActionManager` |
 | **2.変換**| `IActionRegistry` | `ActionBindingRegistry` | **Singleton** | 【Phase8・実装済み】スロット別の不変の束縛リスト（`TriggerBinding`）。更新は参照ごとの差し替え（読込中の競合を排除）。切断で空にする | なし |
 | **2.変換**| `IActionBindingBuilder` | `ActionBindingBuilder` | **Singleton** | 【Phase8・実装済み】プロファイルのスペシャルアクションと Controls タブの割り当てから、束縛を組み立てる（プロファイル適用の完了後） | `IProfileActionProvider`, `IProfileSettingsService`, `IMacroPlayer`, `IProcessLauncher`, `IProfileSwitcher`, `IKeyActionCreator`（`BindingMigrationOptions` は Phase8-Step8 の 8d で撤去） |
@@ -66,7 +66,7 @@
 | **2.変換**| `MacroRuntimeState` | `MacroRuntimeState` | **Singleton** | マクロの実行時状態（実行済みフラグ、二重実行防止、出力フラグ、実行 Task の連鎖） | なし |
 | **2.変換**| `StickMotionState` | `StickMotionState` | **Singleton** | スティック・ジャイロ・トリガーの処理状態（フリック、2 段トリガー、ホイールのフィルターほか） | なし |
 | **2.変換**| `ActionsLoadedRuntimeReset` | `ActionsLoadedRuntimeReset` | **Singleton** | `BackingStore.ActionsLoaded` の購読者。Actions.xml の読み込み後に、合成状態・トグル状態・マクロの実行済みフラグをリセット | `SyntheticInputState`, `MacroRuntimeState` |
-| **2.変換**| `ControlService` | `ControlService` | **Singleton** | 入力・変換・出力パイプライン全体の開始・停止統括（ファサード） | `IDs4DeviceRegistry`, `IInputLoopCoordinator`, `IOutputSlotService`※1, `IProfileSettingsService`, `IAppSettingsService`, `IEnvironmentService`, `IPathService`, `IVirtualKBM`, `IVirtualKBMLifecycle`, `IProfileRepository`, `IDeviceStateService`, `IAppearanceSettingsService`, `IProfileXmlStore`, `IProfileActionProvider`, `IProfileSlotApplier` |
+| **2.変換**| `ControlService` | `ControlService` | **Singleton** | 入力・変換・出力パイプライン全体の統括役（ファサード。Phase13 で状態と窓口を分離し、スロットの配列・接続／切断・ログの窓口に縮小） | 17 引数（Phase13 完了時点。開始時は 34）: `IDs4DeviceRegistry`, `IProfileSettingsService`, `IAppSettingsService`, `IPathService`, `IOutputSlotService`, `IProfileRepository`, `IDeviceStateService`, `IElevatedProcessLauncher`, `StickMotionState`, `IMapping`, `IVirtualPadService`, `IServiceDebugRelay`, `IInputDeviceModuleRegistry`, `IServiceLifecycle`, `IEventThreadDispatcher`, `IDeviceSlotState`, `IInputReportProcessor`。`Func<>` なし |
 | **3.出力**| `IOutputSlotService` | `OutputSlotService` | **Singleton** | 仮想Xbox360/DS4（ViGEm）の生成、割当、切替 | `IOutputSlotStore` |
 | **3.出力**| `IVirtualKBM` | `OutputKBMHandlerAdapter` | **Singleton** | SendInput / FakerInput によるキー・マウス送出。出力ハンドラの実体（`Handler`）を所有する（Phase7-Step8 W3。旧 `Global.outputKBMHandler`） | なし |
 | **3.出力**| `IVirtualKBMLifecycle` | `OutputKBMHandlerLifecycle` | **Singleton** | KBM出力ハンドラの生成・破棄・フォールバック切替・マッピング初期化（送出は `IVirtualKBM` が担当） | `IEnvironmentService`, `OutputKBMHandlerAdapter`, `IProfileSettingsService` |
@@ -76,12 +76,12 @@
 | **3.出力**| `IElevatedProcessLauncher` | `DefaultElevatedProcessLauncher` | **Singleton** | UAC昇格を伴う外部ツールの起動 | なし |
 | **3.出力**| `IProcessInspector` | `DefaultProcessInspector` | **Singleton** | 実行中プロセスのパス・ウィンドウ名調査 | なし |
 | **2.変換**| `IProfileSwitcher` | `DefaultProfileSwitcher` | **Singleton** | アクションからのプロファイル切替実行（2026-10-19: 第3層から第2層へ移した。理由は 01 の注釈を参照。コードの配置は変えない） | `IProfileApplicationService` |
-| **3.出力**| `IUdpMotionService` | `UdpMotionService` | **Singleton** | Cemuhook 互換 UDP モーションデータ配信（旧 `IUdpServerService`／`UdpServerService` は Phase9 9-E E-3 で削除。`ControlService` の UDP 系を移した） | `IAppSettingsService`、`IDs4DeviceRegistry`、`IUdpMotionServerFactory`、`Func<IUdpMotionHost>`（実体は `ControlService`） |
-| **4.UI** | `IViewModelFactory` | `ViewModelFactory` | **Singleton** | パラメータ付きViewModel / 複合ViewModelの生成ファクトリ | `IProfileSettingsService`, `IProfileRepository`, `ISpecialActionRepository`, `IOutputSlotService`, `IEnvironmentService`, `IPathService`, `IAppSettingsService`, `Func<IAutoProfileService>`・`Func<ControlService>`（生成のたびに遅延解決） |
-| **4.UI** | `IEditorWindowFactory` | `EditorWindowFactory` | **Singleton** | 補助ウィンドウ（ボタン割り当て・マクロ記録・プリセット・スティック校正・スペシャルアクション編集）の生成の窓口。UI スレッドで生成する | `IProfileSettingsService`, `IOutputSlotService`, `IPathService`, `IViewModelFactory`, `IProfilePresetLoader`, `Func<ControlService>`（生成のたびに遅延解決） |
+| **3.出力**| `IUdpMotionService` | `UdpMotionService` | **Singleton** | Cemuhook 互換 UDP モーションデータ配信（旧 `IUdpServerService`／`UdpServerService` は Phase9 9-E E-3 で削除。`ControlService` の UDP 系を移した） | `IAppSettingsService`、`IDs4DeviceRegistry`、`IUdpMotionServerFactory`、`IDeviceSlotState`、`IEventThreadDispatcher`（Phase13-Step5d で `Func<IUdpMotionHost>` を廃止） |
+| **4.UI** | `IViewModelFactory` | `ViewModelFactory` | **Singleton** | パラメータ付きViewModel / 複合ViewModelの生成ファクトリ | `IProfileSettingsService`, `IProfileRepository`, `ISpecialActionRepository`, `IOutputSlotService`, `IEnvironmentService`, `IPathService`, `IAppSettingsService`, `IAutoProfileService`, `ControlService`, `IProfileLoadTarget`, `IRuntimeFeatureSwitch`（Phase13 で `Func` を廃止し直接注入） |
+| **4.UI** | `IEditorWindowFactory` | `EditorWindowFactory` | **Singleton** | 補助ウィンドウ（ボタン割り当て・マクロ記録・プリセット・スティック校正・スペシャルアクション編集）の生成の窓口。UI スレッドで生成する | `IProfileSettingsService`, `IOutputSlotService`, `IPathService`, `IViewModelFactory`, `IProfilePresetLoader`, `ISpecialActionRepository`, `ControlService`, `IProfileLoadTarget` ほか（Phase13 で `Func<ControlService>` を廃止し直接注入） |
 | **4.UI** | `MainWindowsViewModel` | `MainWindowsViewModel` | **Singleton** | メインウィンドウ（ヘッダー、タブ切替、ステータス、ViGEmBus ドライバーの確認） | `IEnvironmentService`, `IPathService` |
 | **4.UI** | `SettingsViewModel` | `SettingsViewModel` | **Transient** | アプリ全般設定画面（開くたびに最新値取得） | `IAppSettingsService`, `IAppearanceSettingsService`, `IEnvironmentService`, `IPathService`, `ILogSettingsApplier` |
-| **4.UI** | `TrayIconViewModel` | `TrayIconViewModel` | **`MainWindow` が生成（アプリ存続期間）** | タスクトレイのアイコン・ツールチップ・コンテキストメニュー（バッテリー表示、プロファイル選択） | `ControlService`, `ProfileList`, `IAppearanceSettingsService`, `IProfileRepository`, `IEnvironmentService`, `IPathService`, UI スレッドの `Dispatcher` |
+| **4.UI** | `TrayIconViewModel` | `TrayIconViewModel` | **`MainWindow` が生成（アプリ存続期間）** | タスクトレイのアイコン・ツールチップ・コンテキストメニュー（バッテリー表示、プロファイル選択） | `ControlService`, `IServiceLifecycle`（Phase13-Step9）, `ProfileList`, `IAppearanceSettingsService`, `IProfileRepository`, `IEnvironmentService`, `IPathService`, UI スレッドの `Dispatcher` |
 | **4.UI** | `LogViewModel` | `LogViewModel` | **Transient** | ログ表示画面 | なし |
 | **4.UI** | `AboutViewModel` | `AboutViewModel` | **Transient** | バージョン・クレジット表示画面 | `IEnvironmentService` |
 | **4.UI** | `ProfileSettingsViewModel` | `ProfileSettingsViewModel` | **Factory生成 (親Mediator)**| プロファイル編集画面（配下の各サブVMを調停・集約。編集スロットの保存・ブランク読込・キャッシュ更新） | サブVM群, `IProfileSettingsService`, `IProfileRepository`, `IOutputSlotService`, `IEnvironmentService`, `IPathService`, `ControlService`（ジャイロ系 setter への引数。null 許容） |
@@ -90,7 +90,7 @@
 | **4.UI** | `ButtonMappingSubViewModel` | `ButtonMappingSubViewModel` | **Factory生成 (サブVM)** | ボタン割り当て・シフトモディファイア設定タブ | `IProfileSettingsService` |
 | **4.UI** | `SpecialActionsSubViewModel`| `SpecialActionsSubViewModel`| **Factory生成 (サブVM)** | スペシャルアクション一覧・登録タブ（有効アクション名の編集スロットへの反映を含む） | `ISpecialActionRepository`, `IProfileRepository`, `IDs4DeviceRegistry` |
 
-※1 `ControlService` は過渡期に `IOutputSlotService` を直接ではなく `Func<IOutputSlotService>`（遅延解決）で受け取る。理由は §4 を参照。目標構造は直接注入であり、変更しない。
+※1 [Phase13 で解消] `ControlService` は `IOutputSlotService` を直接注入で受け取る（Step7 で `Func<IOutputSlotService>` を廃止）。残る `Func<>` は `DefaultActionManager` の `Func<IMapping>` と `ProfileApplicationService` の `Func<IActionBindingBuilder>` の 2 件のみ（本物の循環。`Phase13FuncRatchetGuardTests` が固定）。
 
 ---
 
@@ -134,13 +134,17 @@
 | | `IJoyConLinker` → `JoyConLinker` | Joy-Con の L と R の結合（E-6d） | |
 | | `IDeviceConnector` → `DeviceConnector` | 接続の組み立て（E-6f1） | |
 | | `IDeviceDisconnectHandler` → `DeviceDisconnectHandler` | 切断・同期・シリアル変更の処理（E-6e） | |
-| | `IServiceLifecycle` → `ServiceLifecycle` | 開始・停止・ホットプラグと、その状態・イベント（E-6f2） | `ControlService` は `running` などを転送（`Phase9-Deferred-Ledger.md` F-5c） |
+| | `IServiceLifecycle` → `ServiceLifecycle` | 開始・停止・ホットプラグと、その状態・イベント（E-6f2） | [Phase13-Step9 で F-5c 完了] 利用者は `IServiceLifecycle` を直接注入で受ける。`ControlService` の `running` などの転送は削除 |
 | | `ILatencyMonitor` → `LatencyMonitor` | 入力レポートのエラーのログと遅延の監視（E-5） | |
 | | `ITouchpadToggleService` → `TouchpadToggleService` | タッチパッドの切り替え・スライドの判定（E-5） | |
 | 3. 仮想出力・外部連携（Phase9 9-E） | `IVirtualPadService` → `VirtualPadService` | 仮想パッド（ViGEm）の出力、`OutputSlotManager`、割り当て、振動（E-4） | `IOutputSlotService` は、ここから `OutputSlotManager` を引く |
 | | `IHidHideService` → `HidHideService`、`IHidHideApiFactory` → `HidHideApiFactory` | HidHide との連携（E-2） | |
 | | `IOscService` → `OscService`、`IOscTransportFactory` → `SharpOscTransportFactory` | OSC の受信・送信・入力への重ね合わせ（E-1） | SharpOSC の型は境界の内側に閉じる |
-| 窓口（ホスト）。`ControlService` が実装 | `IVirtualPadHost`、`IDeviceSlotHost`、`IServiceLifecycleHost`（`Func` で遅延して解決） | 部品が `ControlService` に頼る機能（スロットの配列、イベントスレッド、キーボード／マウス出力の初期化など）の窓口 | **過渡期の逆依存**。`ControlService` の残りの分割（先送り台帳 F-5c）と同時に解消する |
+| 窓口・状態の持ち主（Phase13）。以前の Host 窓口 4 本（`IVirtualPadHost`／`IDeviceSlotHost`／`IServiceLifecycleHost`／`IUdpMotionHost`）の置き換え | `IEventThreadDispatcher` → `EventThreadDispatcher`、`IDeviceRumbleService` → `DeviceRumbleService`、`IOutputKbmInitializer` → `OutputKbmInitializer`（Step3） | イベントスレッド（名前 "ControlService Events"、`BelowNormal`、`IsBackground`。停止は `Shutdown`＝`InvokeShutdown`→`Join`。旧 `ControlService` と同じ）、振動の補正、キーボード／マウス出力の初期化 | 生成直後に使っても失われないよう Dispatcher の確定を待つ |
+| | `IDeviceSlotState` → `DeviceSlotState`、`IInputReportProcessor` → `InputReportProcessor`（Step5） | スロットの配列（接続中のコントローラー、状態）の持ち主と、入力レポート（`On_Report`）の処理 | `ControlService.DS4Controllers` などは同じ配列への参照を保持（転送の削除は約 50 利用者のため見送り） |
+| | `IProfileLoadTarget` → `ProfileLoadTarget`（Step6）、`IOutputDeviceTypeState` → `OutputDeviceTypeState`（Step7） | プロファイル読み込みの対象窓口、出力デバイス種別の状態 | `ControlService` への逆依存の解消 |
+| | `IRuntimeFeatureSwitch` → `RuntimeFeatureSwitch`、`IServiceDebugRelay` → `ServiceDebugRelay`（Step10） | OSC／UDP／HidHide／タッチパッドのスライド／振動の切り替え窓口、6 サービスのデバッグ文を `ControlService.LogDebug` に集約 | ログの文言・レベルは不変 |
+| | `IIpcCommandProcessor` → `IpcCommandProcessor`、`IIpcCommandHost`（`MainWindow` が実装）（Step11） | CLI からの IPC コマンド（start／stop／cycle／shutdown／disconnect／changeledcolor／loadprofile／loadtempprofile／outputslot／query）の実行 | UI なしで単体テスト可能 |
 
 ## 3. リソース破棄と安全な終了手順
 
@@ -152,9 +156,9 @@
 
 ---
 
-## 4. 過渡期の既知の逆依存（2026-09-19 Phase6-Step2 実地確認）
+## 4. 過渡期の既知の逆依存（2026-09-19 Phase6-Step2 実地確認。**Phase13 完了時点＝2026-11-04 で、下表の 3 件はすべて解消した**）
 
-本仕様書の目標構造では、下位（出力・基盤）サービスは `ControlService` に依存しない。現状の実装には以下の逆依存が残っており、**技術的負債として管理する**（目標構造は変更しない）。
+本仕様書の目標構造では、下位（出力・基盤）サービスは `ControlService` に依存しない。以下は Phase13 以前に残っていた逆依存の記録である。**解消済み**: `OutputSlotService` は `IVirtualPadService`／`IOutputDeviceTypeState` に、`ProfileApplicationService`／`ProfileRepository` は `IProfileLoadTarget` に依存する形へ置き換えた（Phase13-Step6・7）。ただし `EditorWindowFactory`／`ViewModelFactory`／`TrayIconViewModel` など第 4 層の UI は、引き続き `ControlService` を直接受ける（上位→下位の正しい向き）。
 
 | 逆依存（現状） | 実装上の根拠 | 影響 | 暫定措置 | 解消予定 |
 | :--- | :--- | :--- | :--- | :--- |
@@ -325,3 +329,11 @@
 %% - Phase8 の ITriggerDispatchEngine／IActionRegistry／IActionBindingBuilder の行を「実装済み」に改め、IActionBindingBuilder の依存から撤去済みの BindingMigrationOptions を外した。
 %% - Phase12: IWindowSystem／IWindowFocuser／IMouseInputHook を §2.5 に追加した（すべて Singleton。ServiceRegistration.cs に登録）。MacroStepExecutor は IWindowSystem を最後の引数で受ける。EditorWindowFactory は IMouseInputHook を受ける。
 %% - Phase11: ライフタイム・登録の変更はない（電池の一本化は DS4Device 基底の内部。Debouncing の廃止で、登録していたサービスはなかった）。
+
+## 5. Phase13 完了時点の更新（2026-11-04）
+
+- `ControlService`: 34 → 17 引数。`Func<>` なし。転送メンバー（`running` など）と Host 窓口 4 本を削除。
+- 残る `Func<>`: `DefaultActionManager` の `Func<IMapping>`、`ProfileApplicationService` の `Func<IActionBindingBuilder>`（本物の循環）。
+- イベントスレッドの持ち主は `EventThreadDispatcher`。生成は DI の生成時（旧 `ControlService` のコンストラクター内と同じタイミング）、破棄は `ControlService.ShutDown`（`OutputSlotManager.ShutDown` → `SaveOutputSlots` → `Shutdown`）で、順序は変えていない。
+- `ServiceProviderHolder`・静的 `ActionManager` は撤廃（Step4）。
+- 先送り: `ControlService` の状態の転送（`DS4Controllers`／`touchPad`／`slotManager` ほか約 50 利用者）、F-1c（起動手順の分離）。

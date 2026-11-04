@@ -12,7 +12,7 @@
 
 **凡例と読み方（2026-10-19 追記）**
 - **依存の方向**: UI層(4) → 信号変換層(2) → { 入力監視層(1)、信号・アクション出力層(3)、横断基盤・永続化層 }。信号変換層が核で、層の番号の大小ではなく、この向きが依存の規則である。第1層・第3層・横断基盤から第2層への参照は禁止（`.github/copilot-instructions.md` §1）。
-- **横断基盤・永続化層への依存は、図では大半を省略している**。実際には、ほぼすべてのサービスが設定・パス・環境・ストアに依存する（例: `ControlService` のコンストラクターは 34 引数［2026-11-04 実測］で、半数以上が基盤）。基盤は「どの層からも使える」ものとして扱い、辺を描かない（図の辺は、特定の部品が特定の基盤を使うことを説明したいものだけ）。
+- **横断基盤・永続化層への依存は、図では大半を省略している**。実際には、ほぼすべてのサービスが設定・パス・環境・ストアに依存する（例: `ControlService` のコンストラクターは 17 引数［Phase13 完了時点。Phase13 開始時は 34 引数］で、半数以上が基盤）。基盤は「どの層からも使える」ものとして扱い、辺を描かない（図の辺は、特定の部品が特定の基盤を使うことを説明したいものだけ）。
 - **ノードの実在（2026-11-04 現状合わせ）**: 本図は目標構造である。コードに実在しないノードは、`InputLoopCoordinator`、`MappingPipelineContext`、`IInputMappingPipeline` と各 Processor、`IMouseEngine`、`IHidTransport`、各機種のパーサー、`IDeviceHotplugMonitor`、`ILightbarService`、`IDeviceOptionRepository`、`XmlIoLock`、サブ ViewModel 群。それ以外は実在する（Phase8 の統一トリガーディスパッチ、Phase12 のウィンドウ操作・マウス監視を含む）。実在／未実装の対応は §2.1。
 - **層をまたぐ辺**: 第2層 → 第3層の辺は、第2層が出力のポート（インターフェース）を使うことを表す。向きは常に「第2層から出る」だけで、第3層から第2層へ戻る辺はない。
 - **統一トリガーディスパッチ（Phase8。2026-11-04 に実線化）**: `ITriggerDispatchEngine`、`IActionRegistry`、`IActionBindingBuilder`、`TriggerBinding` は実装済み（Phase8 の Step7・Step8 で、旧い辺［`IManagedActionManager` から出力・切替への辺。系統 B］を撤去した）。点線は、残る「未接続・過渡期」の辺（`IProfileSlotApplier` から `IProfileApplicationService` への委譲のみ）に使う。
@@ -66,7 +66,7 @@ flowchart TD
         Core_Coordinator["ControlService / InputLoopCoordinator<br>(パイプライン統括・ループ実行)"]:::coreLayer
         Core_ContextPool["MappingPipelineContext Pool<br>(スロット別常駐バッファ・Zero-GC)"]:::coreLayer
         Core_ProfileApp["IProfileApplicationService<br>(プロファイル切替/復帰/Halt保護)"]:::coreLayer
-        Core_SlotApplier["IProfileSlotApplier<br>(接続時プロファイル適用の出力ポート。ControlService が定義)"]:::coreLayer
+        Core_SlotApplier["IProfileSlotApplier<br>(接続時プロファイル適用の出力ポート。Phase13-Step2 で ControlService の引数からは外れた)"]:::coreLayer
         Core_AutoProfile["IAutoProfileService<br>(プロセス監視切替)"]:::coreLayer
         Core_ActionMgr["IManagedActionManager<br>(アクションの状態: BeingTriggered／IsToggledOn／ガード。<br>実行の統括は Core_Engine が担う)"]:::coreLayer
         Core_Switcher["IProfileSwitcher<br>(アクション内のプロファイル切替。第2層の内部契約)"]:::coreLayer
@@ -211,11 +211,11 @@ flowchart TD
     UI_Record -.->|是正候補| Out_WinSys
 
 %% 注釈補強（2026-09-19 Phase6-Step2 決定O1=B／O4=B-2 反映）
-%% - `ControlService` は `IProfileApplicationService` に直接依存せず、自身が定義する出力ポート `IProfileSlotApplier` のみに依存する（依存の逆転）。現状の実装は `Global.ApplyProfileToSlot` へ委譲し、K1（`IProfileApplicationService.ApplyProfile` のスロット上限ハードコード等）の是正後に `IProfileApplicationService` へ委譲する（点線）。
+%% - [Phase13 で変更] `ControlService` は `IProfileSlotApplier` を引数に取らなくなった（Step2 で未使用引数を削除）。以下は経緯として残す。旧記述: `ControlService` は `IProfileApplicationService` に直接依存せず、自身が定義する出力ポート `IProfileSlotApplier` のみに依存する（依存の逆転）。現状の実装は `Global.ApplyProfileToSlot` へ委譲し、K1（`IProfileApplicationService.ApplyProfile` のスロット上限ハードコード等）の是正後に `IProfileApplicationService` へ委譲する（点線）。
 
 %% 注釈補強（2026-09-19 Phase6-Step2 実地確認・決定D1〜D3反映）
-%% - 3-b に `IVirtualKBMLifecycle` を追加（決定D3）。`ControlService` が送出（`IVirtualKBM`）とライフサイクル（`IVirtualKBMLifecycle`）の両方を利用する。
-%% - 過渡期は `OutputSlotService` / `ProfileApplicationService` が `ControlService` に逆依存している（目標構造には存在しない辺）。`ControlService` は `Func<IOutputSlotService>` で遅延解決する（決定D1）。詳細は 04-Service-Lifecycle-Spec.md §4。
+%% - [Phase13-Step3 で変更] `ControlService` の `IVirtualKBMLifecycle` 引数は削除され、KBM 初期化は `IOutputKbmInitializer` へ移った。旧記述: 3-b に `IVirtualKBMLifecycle` を追加（決定D3）。`ControlService` が送出（`IVirtualKBM`）とライフサイクル（`IVirtualKBMLifecycle`）の両方を利用する。
+%% - [Phase13 で解消] 過渡期にあった `OutputSlotService` / `ProfileApplicationService` から `ControlService` への逆依存は、Step5〜7（`IDeviceSlotState`／`IProfileLoadTarget`／`IOutputDeviceTypeState`）で解消した。`Func<IOutputSlotService>` もなくなった。旧記述: 決定D1。詳細は 04-Service-Lifecycle-Spec.md §4。
 
 %% 注釈補強（2026-09-18監査結果反映）
 %% - ScpUtil.cs の255件は「Global型の参照」ではなく「ScpUtil内の静的宣言」（§2抽出問題記録済み）。横断基盤層（XmlIoLock, PathService等）への分解は理想構造と一致するが、参照と宣言の区別を維持する必要がある。
@@ -248,7 +248,7 @@ flowchart TD
 | `ScpUtil.cs` | 解体済み（`Global` 削除） | `ProfileXmlStore`, `AppSettingsService`, `PathService`, `EnvironmentService` ほか（Phase6〜7） | `DeviceOptionRepository`, `XmlIoLock`（この名前の型は実在しない。同じ XML への排他は、`ProfileXmlStore` などの保存処理が担う） |
 | `Mapping.cs` | 約 1,100（7,322 から削減。実測 1,102 行） | `StickDeadZoneProcessor`, `TriggerDeadZoneProcessor`, `OutputCurveProcessor`, `GyroControlsProcessor`, `StickInputConditioner`, `FlickStickProcessor`, `TwoStageTriggerProcessor`, `ButtonMouseMovementCalculator`, `MouseMotionQuantizer`, `GyroMouseStickBlender`, `SyntheticInputCommitter`, `MacroPlayback`, `MacroStepExecutor`（Phase12 でマウスポインターの移動を実行）, `ControlActivityReader`、統一トリガーディスパッチ（Phase8。実装済み）。`Mapping` 自体は `IMapping` の Singleton として残り、各部品を順に呼ぶ | `IInputMappingPipeline`, `ButtonProcessor`, `StickProcessor`, `TriggerProcessor`, `TouchGyroProcessor`（名前と形は、実在の部品へ読み替える） |
 | `Mouse.cs` | 1,808（未着手） | `OneEuroFilter3D`, `MouseCursor`, `MouseWheel` などは別ファイルとして実在 | `IMouseEngine`（未着手。9-I の後に判断） |
-| `ControlService.cs` | 約 1,077（約 3,400 から削減。コンストラクター 34 引数、`Func<>` 2 件） | `IServiceLifecycle`／`DeviceConnector`／`DeviceDisconnectHandler`／`JoyConLinker`／`VirtualPadService`／`HidHideService`／`OscService`／`LatencyMonitor`／`TouchpadToggleService`／`ActiveInputProbe`／`IInputDeviceModule`（5 種） | `InputLoopCoordinator`, `IDeviceHotplugMonitor`（ホットプラグは `ServiceLifecycle`／`MainWindow.HandleDeviceChange` が担う）, `ILightbarService`。`ControlService` はスロットの配列と `Func` 経由の窓口を持つ統括役として残る（先送り台帳 F-5c） |
+| `ControlService.cs` | 約 527（約 3,400 から削減。Phase13 でコンストラクター 34 → 17 引数、`Func<>` 0 件） | `IServiceLifecycle`／`DeviceConnector`／`DeviceDisconnectHandler`／`JoyConLinker`／`VirtualPadService`／`HidHideService`／`OscService`／`LatencyMonitor`／`TouchpadToggleService`／`ActiveInputProbe`／`IInputDeviceModule`（5 種） | `InputLoopCoordinator`, `IDeviceHotplugMonitor`（ホットプラグは `ServiceLifecycle`／`MainWindow.HandleDeviceChange` が担う）, `ILightbarService`。`ControlService` はスロットの配列（`DS4Controllers` ほか）と接続・切断・ログの窓口を持つ統括役として残る（F-5c は Phase13-Step9 で完了。残る状態の転送は約 50 利用者があるため Phase13 では見送り） |
 | `ProfileSettingsViewModel.cs` | 3,469（未着手） | 親 `ProfileSettingsViewModel` のみ（`IViewModelFactory` 経由の生成は実在） | `StickSubVM`, `TriggerSubVM`, `ButtonSubVM`, `SpecialActionsSubVM`（9-G。効果とコストの判断待ち） |
 | `DS4Device.cs` | 2,068（未着手。電池は Phase11 で `UpdateBattery` に一本化） | 種類ごとの `IInputDeviceModule`（接続時の処理）。通信・解析は未分離 | `IHidTransport`, `DS4ReportParser`, `DS4OutputReportEncoder`（9-H。K7b-1 の切り分けが済むまで着手しない） |
 
@@ -276,12 +276,12 @@ flowchart TD
 %% - 境界ルール 1（Global の完全根絶）: Global 型は削除済み（10d）。コード中の Global.* の記述は、ログ文言の文字列 2 件のみ。
 %% - 横断基盤層の静的な窓口は、PathService／EnvironmentService の「起動前に必要な状態」だけが残る。静的な ControlService.CURRENT_DS4_CONTROLLER_LIMIT は削除し、スロット数の上限は IEnvironmentService.ControllerSlotLimit を注入して使う。
 %% - AppHost は、ホストが未構築のとき暗黙に作らない（GetService は null を返す）。ホストは App の起動（CreateHost(config, parser)）だけが作る。
-%% - 残る持ち越し（Phase8）: Actions の ServiceProviderHolder 17 件、第 1 層（DS4Devices／DS4LightBar）の静的な状態。目録は Phase7-Residual-Ledger.md §17.3。
+%% - 残る持ち越し: （Phase13-Step4 で `ServiceProviderHolder` は 0 件になった）第 1 層（DS4Devices／DS4LightBar）の静的な状態。目録は Phase7-Residual-Ledger.md §17.3。
 %% 注釈補強（2026-10-18 Phase7 完了時点のまとめ。構造の目標は変更なし。各 Step の詳細は 03・04 の注釈と Phase7-Completion-Report.md）
 %% - 横断基盤・永続化層（ScpUtil／Global の解体先）の現状: Global 型は削除済み。設定の唯一の実体は BackingStore（BackingStore(IEnvironmentService) のコンストラクター注入。DI の Singleton）で、永続化は AppSettingsXmlSerializer／LegacyProfileXmlSerializer／ProfilePresets ほかの型に切り出した（保存形式は変えていない）。環境・保存場所は EnvironmentService／PathService（起動前に必要な状態は静的に残す）。
 %% - 信号変換層: Mapping は DI の Singleton（IMapping）の instance。状態は SyntheticInputState／MacroRuntimeState／StickMotionState に分かれる。出力 KBM ハンドラの実体は OutputKBMHandlerAdapter（第 3 層）。
 %% - 入力監視層: 設定は IDeviceLayerSettings（Singleton）を Ds4DeviceRegistryAdapter が DS4Devices.LayerSettings へ渡す。DS4Devices／DS4LightBar／HidDevices の静的な状態は Phase8 以降。
-%% - Service Locator: Program.rootHub は 0、AppHost.GetService は App の窓口 1 件。ServiceProviderHolder の 17 件（Actions/）は Phase8。
+%% - Service Locator: Program.rootHub は 0、AppHost.GetService は App の窓口 1 件。ServiceProviderHolder は Phase13-Step4 で撤廃した（0 件）。
 %% 注釈補強（2026-10-19 依存図の検証［Phase8 前レビュー］。依存の向きの是正のみ。構造の目標は変更しない）
 %% - IProfileSwitcher を、第3層（3-c）から第2層へ移した。理由: プロファイルの切替は外部への副作用ではなく、アプリ内部の状態遷移であり、IProfileApplicationService（第2層）に依存する。第3層に置くと「第3層 → 第2層」の上向きの辺と、IManagedActionManager → IProfileSwitcher → IProfileApplicationService の第2層・第3層間の循環ができた。実コードの DefaultProfileSwitcher も IProfileApplicationService を受け取る。
 %% - 「UI_VM_Main → 入力監視層（Layer1）」の辺を削除した。UI層は第2層だけに依存する（02 の依存方向図と一致）。実コードで、UI（DS4Forms）が IDs4DeviceRegistry／DS4Devices を使う箇所は、コメントアウトされた行のみ（IDs4DeviceRegistry の利用者は ControlService と、構築側の App／ServiceRegistration）。
@@ -297,3 +297,8 @@ flowchart TD
 %% - Phase12: 第1層に IMouseInputHook（LowLevelMouseHook）、第3層 3-c に IWindowFocuser／IWindowSystem（Win32WindowSystem）、UI にマクロ記録画面（RecordBox）を追加した。RecordBox から第1層・第3層への直接の参照は是正候補（破線）。FocusWindowAction（Actions/）は Core_Engine の束縛が持つ出力アクションで、WindowTargetMatcher（照合）と IWindowFocuser（前面化）を使う。
 %% - Phase11: 電池の書き込みの入口を DS4Device 基底の UpdateBattery／UpdateCharging に一本化した（第1層。構造の変更なし）。Debouncing は機能廃止（Debouncer と入力フィルターを削除。図に該当のノードはなかった）。「物理コントローラーへ出力データを送る」設定は、Emulated Controller に関係なく働く。
 %% - 行数・引数の数は 2026-11-04 の実測（§2.1）。
+
+%% ---- Phase13 完了（2026-11-04）----
+%% - ControlService のコンストラクターは 34 → 17 引数。`Func<>` は DefaultActionManager の `Func<IMapping>` と ProfileApplicationService の `Func<IActionBindingBuilder>` の 2 件のみ（本物の循環。Phase13FuncRatchetGuardTests が固定）。
+%% - 新設: IEventThreadDispatcher、IDeviceRumbleService、IOutputKbmInitializer（Step3）、IDeviceSlotState、IInputReportProcessor（Step5）、IProfileLoadTarget（Step6）、IOutputDeviceTypeState（Step7）、IRuntimeFeatureSwitch、IServiceDebugRelay（Step10）、IIpcCommandProcessor／IIpcCommandHost（Step11）。
+%% - 廃止: 静的 ActionManager、ServiceProviderHolder（Step4）、IVirtualPadHost／IServiceLifecycleHost／IUdpMotionHost／IDeviceSlotHost ほか Host 窓口 4 本。

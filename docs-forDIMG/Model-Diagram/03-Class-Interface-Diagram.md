@@ -110,19 +110,96 @@ classDiagram
     InputMappingPipeline ..> MappingPipelineContext : mutates
 
     class ControlService {
+        <<統括役。Phase13 完了時点: コンストラクター 17 引数>>
         -IDs4DeviceRegistry _deviceRegistry
-        -IInputLoopCoordinator _loopCoordinator
-        -IInputMappingPipeline _pipeline
+        -IServiceLifecycle _lifecycle
+        -IDeviceSlotState _slots
+        -IInputReportProcessor _inputReport
+        -IVirtualPadService _virtualPad
         -IOutputSlotService _outputSlotService
-        -IVirtualKBM _virtualKBM
-        -IVirtualKBMLifecycle _kbmLifecycle
-        -IProfileSlotApplier _profileSlotApplier
+        -IMapping _mapping
+        -IServiceDebugRelay debugRelay
         -IProfileSettingsService _profileSettings
         -IAppSettingsService _appSettings
-        -IEnvironmentService _environmentService
-        -MappingPipelineContext[] _contextPool
         +Start()
         +Stop()
+        +HotPlug()
+        +LogDebug(string data, bool warning)
+    }
+    class IEventThreadDispatcher {
+        <<interface>>
+        +Queue(Action action)
+        +Shutdown()
+    }
+    class IDeviceRumbleService {
+        <<interface>>
+        +SetDevRumble(DS4Device device, byte heavyMotor, byte lightMotor, int deviceNum)
+    }
+    class IOutputKbmInitializer {
+        <<interface>>
+        +Initialize()
+    }
+    class IDeviceSlotState {
+        <<interface>>
+        +DS4Controllers DS4Device[]
+        +CurrentStates DS4State[]
+        +PreviousStates DS4State[]
+        +TempStates DS4State[]
+        +TouchPads Mouse[]
+        +SlotManager ControllerSlotManager
+        +ActiveControllers int
+        +GetController(int deviceIndex) DS4Device
+    }
+    class IInputReportProcessor {
+        <<interface>>
+        +OnReport(DS4Device device, EventArgs e, int ind)
+        +ProcessingDelayMs double[]
+    }
+    class IProfileLoadTarget {
+        <<interface>>
+        +PluginOutDev(int index, DS4Device device)
+        +UnplugOutDev(int index, DS4Device device, bool immediate, bool force)
+        +CheckProfileOptions(int ind, DS4Device device, bool startUp)
+        +StartTPOff(int deviceID)
+        +PreLoadReset(int ind, DS4Device device)
+    }
+    class IOutputDeviceTypeState {
+        <<interface>>
+        +OutDevTypeTemp OutContType[]
+        +ActiveOutDevType OutContType[]
+    }
+    class IRuntimeFeatureSwitch {
+        <<interface>>
+        +ChangeOscListenerStatus(bool state)
+        +ChangeOscSenderStatus(bool state)
+        +ChangeUdpStatus(bool state, bool openPort)
+        +ChangeMotionEventStatus(bool state)
+        +CheckHidHidePresence(string exePath, string exeName, bool addExe)
+        +UpdateHidHiddenAttributes()
+        +TouchpadSlide(int ind) string
+        +GetActiveInputControl(int ind) DS4Controls
+        +SetRumble(byte heavyMotor, byte lightMotor, int deviceNum)
+    }
+    class IServiceDebugRelay {
+        <<interface>>
+        +DebugMessage event
+    }
+    class IIpcCommandProcessor {
+        <<interface>>
+        +Execute(IIpcCommandHost host, string[] strData)
+    }
+    class IIpcCommandHost {
+        <<interface>>
+        +ToggleService()
+        +CloseApplication()
+        +DisconnectAllControllers()
+        +DisconnectController(int index)
+        +SetLightColor(int index, byte red, byte green, byte blue)
+        +FindProfileIndex(string profileName) int
+        +ControllerCount int
+        +GetControllerDevice(int index) DS4Device
+        +LogDebug(string message)
+        +WriteQueryResult(string value)
     }
     ControlService --> IDs4DeviceRegistry : uses
     ControlService --> IInputMappingPipeline : uses
@@ -308,11 +385,6 @@ classDiagram
         +RemoveOutFeedback(OutContType contType, OutputDevice outDevice, int inIdx)
         +QueueOnEventThread(Action action)
     }
-    class IVirtualPadHost {
-        <<interface>>
-        +SetDevRumble(DS4Device device, byte heavyMotor, byte lightMotor, int deviceNum)
-        +QueueOnEventThread(Action action)
-    }
     class VirtualPadService
     class ILatencyMonitor {
         <<interface>>
@@ -378,16 +450,6 @@ classDiagram
         +OnSyncChange(object sender, EventArgs e)
         +OnSerialChange(object sender, EventArgs e)
     }
-    class IDeviceSlotHost {
-        <<interface>>
-        +DS4Controllers DS4Device[]
-        +CurrentStates DS4State[]
-        +PreviousStates DS4State[]
-        +TouchPads Mouse[]
-        +SlotManager ControllerSlotManager
-        +ActiveControllers int
-        +OnReport(DS4Device device, EventArgs e, int ind)
-    }
     class DeviceDisconnectHandler
     class IDeviceConnector {
         <<interface>>
@@ -412,11 +474,6 @@ classDiagram
         +HotPlug() bool
         +PrepareAbort()
     }
-    class IServiceLifecycleHost {
-        <<interface>>
-        +InvokeOnEventThread(Action action)
-        +InitializeOutputKbmHandler()
-    }
     class ServiceLifecycle
     class JoinableDeviceAdapter
     class Ds4DeviceModule
@@ -437,13 +494,6 @@ classDiagram
         +ChangeMotionEventStatus(bool state)
         +PrepareDeviceMotion(DS4Device device, int index)
         +ResetSmoothingFilters(int idx)
-    }
-    class IUdpMotionHost {
-        <<interface>>
-        +GetPadDetailForIdx(int padIdx, ref DualShockPadMeta meta)
-        +GetCurrentState(int ind) DS4State
-        +GetTempState(int ind) DS4State
-        +QueueOnEventThread(Action action)
     }
     class IUdpMotionServerFactory {
         <<interface>>
@@ -494,8 +544,6 @@ classDiagram
     IHidHideService <|.. HidHideService : implements
     IUdpMotionService <|.. UdpMotionService : implements
     IVirtualPadService <|.. VirtualPadService : implements
-    ControlService ..|> IVirtualPadHost : implements（Phase9 9-E E-4）
-    VirtualPadService --> IVirtualPadHost : Func による遅延取得（循環を避ける）
     VirtualPadService --> OutputSlotManager : 所有（旧: ControlService）
     OutputSlotService --> IVirtualPadService : 抜き差しの窓口（Phase9 9-E E-4。旧: ControlService への逆依存）
     ILatencyMonitor <|.. LatencyMonitor : implements
@@ -504,27 +552,27 @@ classDiagram
     IConnectionProfileSelector <|.. ConnectionProfileSelector : implements
     IDeviceConnectionSetup <|.. DeviceConnectionSetup : implements
     IServiceLifecycle <|.. ServiceLifecycle : implements
-    ServiceLifecycle --> IServiceLifecycleHost : Func による遅延取得（実体は ControlService。イベントスレッド、KBM 出力の初期化）
-    ServiceLifecycle --> IDeviceSlotHost : Func による遅延取得（スロットの配列）
+    ServiceLifecycle --> IEventThreadDispatcher : ctor injection（Phase13-Step3。旧: IServiceLifecycleHost）
+    ServiceLifecycle --> IOutputKbmInitializer : ctor injection（Phase13-Step3）
+    ServiceLifecycle --> IDeviceSlotState : ctor injection（Phase13-Step5。旧: Func による IDeviceSlotHost）
     ServiceLifecycle --> IDeviceConnector : 接続の組み立て
     ServiceLifecycle --> IJoyConLinker : Joy-Con の結合
     ServiceLifecycle --> IVirtualPadService : ViGEm の開始・破棄、仮想パッドの取り外し
-    ControlService --> IServiceLifecycle : ctor injection（Phase9 9-E E-6f2。Start／Stop／HotPlug と状態・イベントの転送）
+    ControlService --> IServiceLifecycle : ctor injection（Start／Stop／HotPlug と公開イベントの転送。running／suspending の転送は Phase13-Step9 で削除し、App／MainWindow／TrayIconViewModel／AutoProfileService が直接使う）
     IDeviceConnector <|.. DeviceConnector : implements
-    DeviceConnector --> IDeviceSlotHost : Func による遅延取得（スロットの配列、On_Report への橋渡し）
+    DeviceConnector --> IDeviceSlotState : ctor injection（Phase13-Step5）
+    DeviceConnector --> IInputReportProcessor : ctor injection（Phase13-Step5b。旧: IDeviceSlotHost.OnReport）
     DeviceConnector --> IConnectionProfileSelector : プロファイルの選択と適用
     DeviceConnector --> IDeviceConnectionSetup : 設定の反映とイベントの配線
     DeviceConnector --> IInputDeviceModuleRegistry : 種類ごとの追加ボタン・設定の変更への反応
     DeviceConnector --> IDeviceDisconnectHandler : Removal／SyncChange／SerialChange の購読
-    ControlService --> IDeviceConnector : ctor injection（Phase9 9-E E-6f1。Start／HotPlug の接続の組み立て）
     IDeviceDisconnectHandler <|.. DeviceDisconnectHandler : implements
-    DeviceDisconnectHandler --> IDeviceSlotHost : Func による遅延取得（実体は ControlService。配列の所有者）
+    DeviceDisconnectHandler --> IDeviceSlotState : ctor injection（Phase13-Step5。配列の所有者）
     DeviceDisconnectHandler --> IVirtualPadService : 仮想パッドの取り外し
-    ControlService --> IDeviceDisconnectHandler : ctor injection（Phase9 9-E E-6e。切断・同期・シリアル変更。イベントの購読先は薄い委譲）
+    ServiceDebugRelay --> IDeviceDisconnectHandler : DebugMessage を中継（Phase13-Step10 10-e）
     IJoyConLinker <|.. JoyConLinker : implements
     IJoinableDevice <|.. JoinableDeviceAdapter : implements（実機の DS4Device を包む。テストでは偽物を差し込む）
     JoyConLinker --> IJoinableDevice : 結合が触る最小の窓口
-    ControlService --> IJoyConLinker : ctor injection（Phase9 9-E E-6d。Start／HotPlug の Joy-Con の結合）
     IInputDeviceModuleRegistry <|.. InputDeviceModuleRegistry : implements
     IInputDeviceModule <|.. Ds4DeviceModule : implements（デバイス種類のカートリッジ）
     IInputDeviceModule <|.. DualSenseDeviceModule : implements
@@ -534,23 +582,39 @@ classDiagram
     InputDeviceModuleRegistry --> IInputDeviceModule : 全部を受け取り、種類から引き当てる
     DeviceConnectionSetup --> IInputDeviceModuleRegistry : 種類ごとの設定の反映
     ControlService --> IInputDeviceModuleRegistry : ctor injection（Phase9 9-E E-6c。種類ごとの判定・初期化・追加ボタン）
-    ControlService --> IDeviceConnectionSetup : ctor injection（Phase9 9-E E-6b。接続時の設定の反映とイベントの配線）
-    ControlService --> IConnectionProfileSelector : ctor injection（Phase9 9-E E-6a。接続時のプロファイルの選択と適用）
-    ControlService --> ILatencyMonitor : ctor injection（Phase9 9-E E-5。On_Report の遅延の監視）
-    ControlService --> ITouchpadToggleService : ctor injection（Phase9 9-E E-5。タッチパッドの切り替え・スライド）
-    ControlService --> IActiveInputProbe : ctor injection（Phase9 9-E E-5。押されている入力の探索）
-    ControlService --> IVirtualPadService : ctor injection（PluginOutDev／UnplugOutDev／OutputslotMan／outputDevices は窓口）
+    ServiceDebugRelay --> IDeviceConnectionSetup : DebugMessage を中継（Phase13-Step10 10-e）
+    ServiceDebugRelay --> ILatencyMonitor : DebugMessage を中継
+    ServiceDebugRelay --> ITouchpadToggleService : DebugMessage を中継
+    ControlService --> IServiceDebugRelay : ctor injection（6 サービスのログを ControlService.Debug へ流す）
+    ControlService --> IVirtualPadService : ctor injection（OutputslotMan／outputDevices は窓口。PluginOutDev／UnplugOutDev の転送は Phase13-Step10 10-b で削除）
     IUdpMotionServerFactory <|.. UdpMotionServerFactory : implements
-    ControlService ..|> IUdpMotionHost : implements（Phase9 9-E E-3）
-    UdpMotionService --> IUdpMotionHost : Func による遅延取得（循環を避ける）
+    UdpMotionService --> IDeviceSlotState : ctor injection（Phase13-Step5。旧: Func による IUdpMotionHost）
+    ServiceDebugRelay --> IUdpMotionService : DebugMessage を中継
     UdpMotionService --> IUdpMotionServerFactory : UdpServer（internal）の窓口
-    ControlService --> IUdpMotionService : ctor injection（ChangeUDPStatus／ChangeMotionEventStatus は薄い委譲）
+    RuntimeFeatureSwitch --> IUdpMotionService : ChangeStatus／ChangeMotionEventStatus（Phase13-Step10 10-c）
     IHidHideApiFactory <|.. HidHideApiFactory : implements
     HidHideService --> IHidHideApiFactory : ドライバー（HidHideAPIDevice）の窓口（Phase9 9-E E-2）
-    ControlService --> IHidHideService : ctor injection（CheckHidHidePresence／UpdateHidHiddenAttributes は薄い委譲）
+    RuntimeFeatureSwitch --> IHidHideService : CheckPresence／UpdateAttributes（Phase13-Step10 10-c）
+    ServiceDebugRelay --> IHidHideService : DebugMessage を中継
     IOscTransportFactory <|.. SharpOscTransportFactory : implements
     OscService --> IOscTransportFactory : SharpOSC の型は SharpOsc* の中に閉じる（Phase9 9-E E-1）
-    ControlService --> IOscService : ctor injection（OSC 系の本体。ChangeOSC*Status は薄い委譲）
+    RuntimeFeatureSwitch --> IOscService : ChangeListenerStatus／ChangeSenderStatus（Phase13-Step10 10-c）
+    IRuntimeFeatureSwitch <|.. RuntimeFeatureSwitch : implements
+    RuntimeFeatureSwitch --> ITouchpadToggleService : Slide
+    RuntimeFeatureSwitch --> IActiveInputProbe : GetActive
+    RuntimeFeatureSwitch --> IDeviceRumbleService : SetDevRumble
+    RuntimeFeatureSwitch --> IDeviceSlotState : 状態の配列
+    IServiceDebugRelay <|.. ServiceDebugRelay : implements
+    IIpcCommandProcessor <|.. IpcCommandProcessor : implements（Phase13-Step11）
+    IpcCommandProcessor --> IIpcCommandHost : UI に頼む操作（実装は MainWindow）
+    IpcCommandProcessor --> IServiceLifecycle : Running
+    IpcCommandProcessor --> IOutputSlotService : PluginSlot／UnplugSlot
+    IpcCommandProcessor --> IProfileApplicationService : ApplyProfile／PublishBindings
+    ControlService --> IDeviceSlotState : ctor injection（Phase13-Step5）
+    ControlService --> IInputReportProcessor : ctor injection（Phase13-Step5b。On_Report の本文を移した）
+    OutputSlotService --> IOutputDeviceTypeState : ActiveOutDevType の持ち主（Phase13-Step7。VirtualPadService との循環を一方向に）
+    VirtualPadService --> IOutputDeviceTypeState : OutDevTypeTemp
+    IProfileLoadTarget <|.. ProfileLoadTarget : implements（Phase13-Step6。ProfileRepository の読込先。旧: ControlService）
     IMacroPlayback <|.. MacroPlayback : implements
     Mapping --> IMacroPlayback : ctor injection (Phase9 9-C)
     MacroPlayback --> IMacroStepExecutor
@@ -587,9 +651,6 @@ classDiagram
     InputMappingPipeline --> IOutputSlotService : outputs pad
     IMouseEngine --> IVirtualKBM : outputs mouse
     ControlService --> ILightbarService : updates LED
-    ControlService --> IVirtualKBM : identify / Sync
-    ControlService --> IVirtualKBMLifecycle : manages KBM handler lifecycle
-    ControlService --> IProfileSlotApplier : applies connect-time profile
 
     %% ==========================================
     %% 4. UI層 (Sub-ViewModels Mediator構成)
@@ -693,7 +754,8 @@ classDiagram
         -IPathService _pathService
         -IViewModelFactory _viewModelFactory
         -IProfilePresetLoader _presetLoader
-        -Func~ControlService~ _controlServiceAccessor
+        -ControlService _controlService
+        -IRuntimeFeatureSwitch _runtimeFeatures
     }
     IEditorWindowFactory <|.. EditorWindowFactory : implements
     EditorWindowFactory --> IProfilePresetLoader : プリセットを PresetOptionWindow へ渡す
@@ -719,8 +781,9 @@ classDiagram
         -IEnvironmentService _environmentService
         -IPathService _pathService
         -IAppSettingsService _appSettings
-        -Func~IAutoProfileService~ _autoProfileServiceAccessor
-        -Func~ControlService~ _controlServiceAccessor
+        -IAutoProfileService _autoProfileService
+        -ControlService _controlService
+        -IRuntimeFeatureSwitch _runtimeFeatures
     }
     IViewModelFactory <|.. ViewModelFactory : implements
     class ISpecialActionRepository {
@@ -1233,3 +1296,10 @@ classDiagram
 %% - Phase12（R-4）: IWindowSystem（Win32WindowSystem。列挙・前面化・MoveCursorTo・TryGetForegroundWindowOrigin・TryGetWindowAtPoint）、IWindowFocuser（WindowFocuser。手順）、WindowTargetMatcher（Path／Title の照合。AutoProfileEntity と共有）、WindowCandidate／WindowFocusResult／CapturedWindow（DI/）、FocusWindowAction（Actions/。IOutputAction）、ActionTypeId.FocusWindow、FocusWindowViewModel／WindowTargetEditor／WindowTargetPicker／WindowTitleMatchMode／WindowTargetText（UI）。SpecialActionOutputFactory が IWindowFocuser を受けて FocusWindow の束縛を作る。
 %% - Phase12（R-3）: MacroPointerMove／MacroPointerMoveMode（値の体系。1,300,000,000 以上。MacroParser が StepOutput.PointerMove として解釈）、MacroStepExecutor が IWindowSystem を受けて移動を実行、IMouseInputHook（LowLevelMouseHook。WH_MOUSE_LL）、MacroPointerRecorder（記録の間引きの純粋なロジック）、RecordBox／RecordBoxViewModel（記録画面。IMouseInputHook／IWindowSystem を EditorWindowFactory 経由で受ける）。
 %% - Phase11: DS4Device 基底に UpdateBattery／UpdateCharging（電池の書き込みの入口。全機種で共通のイベント 1 組）。Debouncer と入力フィルター、DebouncingMs は削除（機能廃止）。ControlButtonInputAction／ComboTriggerInputAction／MultiTapInputAction／TwoStageTriggerProcessor には、DebouncingMs を使わなくなった引数が残る（Phase13 で整理）。
+
+%% Phase13 完了（2026-11-04。ControlService の整理）: 上のクラス図を現状に合わせた。詳細は Phase13-Completion-Report.md。
+%% - ControlService のコンストラクターは 34 → 17 引数。running／suspending の転送、PluginOutDev／UnplugOutDev／CheckProfileOptions／TouchPadOn／StartTPOff／ChangeUDPStatus／ChangeOSC*Status／CheckHidHidePresence／UpdateHidHiddenAttributes／TouchpadSlide／GetActiveInputControl／setRumble の転送を削除した（利用者は IServiceLifecycle／IRuntimeFeatureSwitch／IProfileLoadTarget などを直接使う）。
+%% - ホスト IF（IVirtualPadHost／IDeviceSlotHost／IServiceLifecycleHost／IUdpMotionHost）は廃止。代わりに IEventThreadDispatcher／IDeviceRumbleService／IOutputKbmInitializer（Step3）、IDeviceSlotState（Step5）、IInputReportProcessor（Step5b）、IProfileLoadTarget（Step6）、IOutputDeviceTypeState（Step7）、IRuntimeFeatureSwitch／IServiceDebugRelay（Step10）、IIpcCommandProcessor／IIpcCommandHost（Step11）。
+%% - 遅延取得（Func）が残るのは、本物の循環の 2 件のみ: DefaultActionManager の Func<IMapping>、ProfileApplicationService の Func<IActionBindingBuilder>（Phase13FuncRatchetGuardTests の許可リスト）。UI ファクトリーの Func<ControlService>／Func<IAutoProfileService> は直接注入になった。
+%% - ServiceProviderHolder（クラス、SetProvider、静的 ActionManager）は削除済み（Step4）。IManagedActionManager／IKeyButtonControllerRegistry をコンストラクターで注入する。
+%% - MainWindow のコンストラクターは 23 引数（ArgumentParser を含む）、ProfileEditor は 9 引数。
