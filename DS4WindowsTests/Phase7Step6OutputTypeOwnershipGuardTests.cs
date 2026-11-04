@@ -67,15 +67,18 @@ namespace DS4WindowsTests
         }
 
         [Fact]
-        public void OutputSlotService_OwnsTheArrays_AsReadonlyFields()
+        public void TheArrays_AreOwnedByTheDeviceTypeState_AndTheServiceForwardsThem()
         {
+            // Phase13-Step7 7-b: 配列の持ち主は OutputSlotService から IOutputDeviceTypeState（OutputDeviceTypeState）へ移った
+            string state = Read("DS4Windows/DS4Control/Services/OutputDeviceTypeState.cs");
             string service = Read("DS4Windows/DS4Control/Services/OutputSlotService.cs");
-            if (service == null) return;
+            if (state == null || service == null) return;
 
-            Assert.Matches(@"private\s+readonly\s+OutContType\[\]\s+_outDevTypeTemp\s*=\s*CreateFilled\(OutContType\.X360\)", service);
-            Assert.Matches(@"private\s+readonly\s+OutContType\[\]\s+_activeOutDevType\s*=\s*CreateFilled\(OutContType\.None\)", service);
-            Assert.Contains("OutContType[] OutDevTypeTemp => _outDevTypeTemp;", service);
-            Assert.Contains("OutContType[] ActiveOutDevType => _activeOutDevType;", service);
+            Assert.Matches(@"OutContType\[\]\s+OutDevTypeTemp\s*\{\s*get;\s*\}\s*=\s*CreateFilled\(OutContType\.X360\)", state);
+            Assert.Matches(@"OutContType\[\]\s+ActiveOutDevType\s*\{\s*get;\s*\}\s*=\s*CreateFilled\(OutContType\.None\)", state);
+            Assert.DoesNotContain("CreateFilled", service);
+            Assert.Contains("OutContType[] OutDevTypeTemp => _types.OutDevTypeTemp;", service);
+            Assert.Contains("OutContType[] ActiveOutDevType => _types.ActiveOutDevType;", service);
         }
 
         [Fact]
@@ -84,7 +87,8 @@ namespace DS4WindowsTests
             string registration = Read("DS4Windows/DI/ServiceRegistration.cs");
             if (registration == null) return;
 
-            Assert.Contains("sp.GetRequiredService<BackingStore>().ActiveOutDevType = service.ActiveOutDevType;", registration);
+            // Phase13-Step7 7-b: 配線は IOutputDeviceTypeState の登録が行う（依存なしのホルダー）
+            Assert.Contains("sp.GetRequiredService<BackingStore>().ActiveOutDevType = state.ActiveOutDevType;", registration);
 
             // BackingStore の登録のラムダの中で IOutputSlotService を解決しない
             int start = registration.IndexOf("services.AddSingleton<BackingStore>(sp =>");

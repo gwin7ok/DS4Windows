@@ -17,6 +17,7 @@ namespace DS4Windows
         private readonly Func<OutputSlotManager> _slotManagerProvider;
         private readonly IOutputSlotStore _store;
         private readonly Func<IVirtualPadService> _virtualPadProvider;
+        private readonly IOutputDeviceTypeState _types;   // Phase13-Step7 7-b: 出力種別の 2 本の配列の持ち主（旧: 本サービスのフィールド）
         private OutputSlotManager SlotManager => _slotManagerProvider();
         private IVirtualPadService VirtualPad => _virtualPadProvider();
         private readonly object _syncLock = new object();
@@ -30,11 +31,12 @@ namespace DS4Windows
         // 実行時接続状態＝ActiveOutDevType、UI一時状態＝OutDevTypeTemp を参照すること。
 
         public OutputSlotService(Func<OutputSlotManager> slotManagerProvider, IOutputSlotStore store,
-            Func<IVirtualPadService> virtualPadProvider)
+            Func<IVirtualPadService> virtualPadProvider, IOutputDeviceTypeState types)
         {
             _slotManagerProvider = slotManagerProvider ?? throw new ArgumentNullException(nameof(slotManagerProvider));
             _store = store ?? throw new ArgumentNullException(nameof(store));
             _virtualPadProvider = virtualPadProvider ?? throw new ArgumentNullException(nameof(virtualPadProvider));
+            _types = types ?? throw new ArgumentNullException(nameof(types));
         }
 
         /// <summary>
@@ -163,26 +165,15 @@ namespace DS4Windows
             return _store.Save(SlotManager);
         }
 
-        // Phase7-Step6 W1（Q1＝A）: 2 つの配列の実体を本サービスが持つ（旧 Global.outDevTypeTemp／Global.activeOutDevType）。
-        // 本サービスは Singleton なので、プロセス内で 1 つの配列になる（従来の静的配列と同じ）。要素の読み書きにロックはない（従来どおり）。
-        // 配列の参照は再代入しないこと（ControlService.ActiveOutDevType のキャッシュが無効になるため）。
-        // BackingStore は、ServiceRegistration の登録を通じて ActiveOutDevType の同じ配列を受け取る。
-        private readonly OutContType[] _outDevTypeTemp = CreateFilled(OutContType.X360);
-        private readonly OutContType[] _activeOutDevType = CreateFilled(OutContType.None);
-
-        private static OutContType[] CreateFilled(OutContType value)
-        {
-            var array = new OutContType[ControllerLimits.TestProfileItemCount];
-            for (int i = 0; i < array.Length; i++) array[i] = value;
-            return array;
-        }
+        // Phase13-Step7 7-b: 2 つの配列（旧 Global.outDevTypeTemp／Global.activeOutDevType → Phase7-Step6 W1 で本サービスが保持）の実体は IOutputDeviceTypeState が持つ。
+        // 本サービスは、IOutputSlotService の公開 API（UI・IPC の利用者がいる）として、同じ配列を返すだけにした。
 
         // ---- Phase5-Step13-6: Profile Editor で選択中の未確定(Temp)出力デバイスタイプ ----
         // 三態の「UI一時状態」。永続設定（IProfileSettingsService.OutContType）とは別物。初期値は全スロット X360。
-        public OutContType[] OutDevTypeTemp => _outDevTypeTemp;
+        public OutContType[] OutDevTypeTemp => _types.OutDevTypeTemp;
 
         // ---- Phase5-Step13-7: スロット別・現在稼働中の出力デバイスタイプ ----
         // 三態の「実行時接続状態」。未接続時は None。永続設定（IProfileSettingsService.OutContType）とは別物。
-        public OutContType[] ActiveOutDevType => _activeOutDevType;
+        public OutContType[] ActiveOutDevType => _types.ActiveOutDevType;
     }
 }

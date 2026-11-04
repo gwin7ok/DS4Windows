@@ -81,7 +81,8 @@ namespace DS4WindowsTests
             OutputSlotManager mgr = manager ?? ctl?.OutputslotMan ?? CreateOutputSlotManager();
             return new OutputSlotService(() => mgr,
                 store ?? new OutputSlotStore(new PathService()),
-                () => ctl?.VirtualPadService);   // Phase9 9-E E-4: 抜き差しの窓口は ControlService ではなく VirtualPadService
+                () => ctl?.VirtualPadService,   // Phase9 9-E E-4: 抜き差しの窓口は ControlService ではなく VirtualPadService
+                new DS4Windows.Services.OutputDeviceTypeState());   // Phase13-Step7 7-b: 出力種別の配列の持ち主
         }
 
         public static ProfileActionProvider CreateProfileActionProvider(BackingStore store = null)

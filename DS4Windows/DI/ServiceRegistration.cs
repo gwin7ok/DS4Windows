@@ -71,6 +71,15 @@ namespace DS4Windows.DI
 
             // Phase 5 Step 12: 出力スロット永続化・管理サービス
             services.AddSingleton<IOutputSlotStore, OutputSlotStore>();
+            // Phase13-Step7 7-b: 出力種別の 2 本の配列の持ち主（依存なし）。BackingStore へは、本サービスの生成時に ActiveOutDevType の同じ配列を渡す
+            // （旧: IOutputSlotService の登録ラムダで渡していた）。BackingStore の登録側から IOutputSlotService を解決してはならない
+            // （IOutputSlotStore → IPathService → BackingStore と循環し、実行時にスタックオーバーフローになる）が、このホルダーは依存がなく、循環しない。
+            services.AddSingleton<IOutputDeviceTypeState>(sp =>
+            {
+                var state = new OutputDeviceTypeState();
+                sp.GetRequiredService<BackingStore>().ActiveOutDevType = state.ActiveOutDevType;
+                return state;
+            });
             // Phase6-Step10-4-3: スロット管理の実体は ControlService が所有する。循環を避けるため、遅延で取得する
             // Phase7-Step6 W1: 出力種別の配列は OutputSlotService が持ち、BackingStore へは本サービスの生成時に渡す。
             // BackingStore の登録側から IOutputSlotService を解決してはならない（IOutputSlotStore → IPathService → BackingStore と循環し、
@@ -80,8 +89,8 @@ namespace DS4Windows.DI
                 var service = new OutputSlotService(
                     () => sp.GetRequiredService<IVirtualPadService>().OutputSlotManager,   // Phase9 9-E E-4: スロット管理の実体は VirtualPadService が持つ（旧: ControlService.OutputslotMan）
                     sp.GetRequiredService<IOutputSlotStore>(),
-                    sp.GetRequiredService<Func<IVirtualPadService>>());
-                sp.GetRequiredService<BackingStore>().ActiveOutDevType = service.ActiveOutDevType;
+                    sp.GetRequiredService<Func<IVirtualPadService>>(),
+                    sp.GetRequiredService<IOutputDeviceTypeState>());   // BackingStore への配線は IOutputDeviceTypeState の登録が行う
                 return service;
             });
 

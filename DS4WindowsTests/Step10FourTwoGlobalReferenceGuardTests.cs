@@ -189,12 +189,14 @@ namespace DS4WindowsTests
             var store = new OutputSlotStore(new PathService());
             Func<OutputSlotManager> manager = () => null;
             Func<IVirtualPadService> control = () => null;   // Phase9 9-E E-4: 旧 Func<ControlService>
+            var types = new DS4Windows.Services.OutputDeviceTypeState();
 
             Assert.Throws<ArgumentNullException>(() => new OutputSlotStore(null));
             Assert.Throws<ArgumentNullException>(() => new OutputSlotManager(null, 4));
-            Assert.Throws<ArgumentNullException>(() => new OutputSlotService(null, store, control));
-            Assert.Throws<ArgumentNullException>(() => new OutputSlotService(manager, null, control));
-            Assert.Throws<ArgumentNullException>(() => new OutputSlotService(manager, store, null));
+            Assert.Throws<ArgumentNullException>(() => new OutputSlotService(null, store, control, types));
+            Assert.Throws<ArgumentNullException>(() => new OutputSlotService(manager, null, control, types));
+            Assert.Throws<ArgumentNullException>(() => new OutputSlotService(manager, store, null, types));
+            Assert.Throws<ArgumentNullException>(() => new OutputSlotService(manager, store, control, null));
         }
 
         [Fact]
@@ -274,7 +276,7 @@ namespace DS4WindowsTests
         {
             // ControlService が無い（ホストが無い）場合は、何もできないため false を返し、変更の通知も出さない
             var service = new OutputSlotService(() => TestRepositoryFactory.CreateOutputSlotManager(),
-                new OutputSlotStore(new PathService()), () => null);
+                new OutputSlotStore(new PathService()), () => null, new DS4Windows.Services.OutputDeviceTypeState());
             int fired = 0;
             service.OutputSlotChanged += (s, e) => fired++;
 
