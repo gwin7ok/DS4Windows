@@ -85,7 +85,7 @@ namespace DS4WindowsTests
             string text = File.ReadAllText(path);
 
             Assert.Matches(new Regex(@"public bool SaveProfile\(string profileName\)\s*\{\s*return profileRepo\.SaveProfile\(device, profileName\);\s*\}"), text);
-            Assert.Matches(new Regex(@"public void LoadBlankProfile\(ControlService control\)\s*\{\s*presetLoader\.LoadBlank\(device, false, control, false\);\s*\}"), text);
+            Assert.Matches(new Regex(@"public void LoadBlankProfile\(\)\s*\{\s*presetLoader\.LoadBlank\(device, false, loadTarget, false\);\s*\}"), text);
             Assert.Matches(new Regex(@"public void RefreshCustomsFlags\(\)\s*\{\s*profileRepo\.CacheProfileCustomsFlags\(device\);\s*\}"), text);
             Assert.Matches(new Regex(@"public void RefreshExtraProfileInfo\(\)\s*\{\s*profileRepo\.CacheExtraProfileInfo\(device\);\s*\}"), text);
 
@@ -112,7 +112,7 @@ namespace DS4WindowsTests
             Assert.DoesNotContain("profileRepository.LoadBlankProfile(", text);
             Assert.DoesNotContain("profileRepository.CacheProfileCustomsFlags(", text);
             Assert.DoesNotContain("profileRepository.CacheExtraProfileInfo(", text);
-            Assert.Contains("profileSettingsVM.LoadBlankProfile(controlService)", text);
+            Assert.Contains("profileSettingsVM.LoadBlankProfile()", text);
             Assert.Contains("profileSettingsVM.SaveProfile(profileName)", text);
             Assert.Contains("specialActionsVM.CommitEnabledActionsToProfile()", text);
         }

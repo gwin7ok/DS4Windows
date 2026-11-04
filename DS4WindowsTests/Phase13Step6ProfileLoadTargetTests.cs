@@ -58,19 +58,17 @@ namespace DS4WindowsTests
         }
 
         [Fact]
-        public void GetController_OutOfRange_IsNull_AndTheArraysThrowAsBefore()
+        public void OutOfRange_ThrowsLikeTheArraysOfControlService()
         {
             var target = TestHost.GetService<IProfileLoadTarget>();
-            Assert.Null(target.GetController(-1));
-            Assert.Null(target.GetController(ControllerLimits.MaxControllerCount));
+            Assert.Throws<IndexOutOfRangeException>(() => target.GetController(ControllerLimits.MaxControllerCount));
             Assert.Throws<IndexOutOfRangeException>(() => target.GetTouchPad(ControllerLimits.MaxControllerCount));
         }
 
         [Fact]
-        public void PreLoadReset_ResetsTheFlickProgress_LikeControlService()
+        public void PreLoadReset_ResetsTheFlickProgress()
         {
             var target = TestHost.GetService<IProfileLoadTarget>();
-            var control = TestHost.GetService<ControlService>();
             var stick = TestHost.GetService<StickMotionState>();
             const int ind = 0;
 
@@ -80,9 +78,6 @@ namespace DS4WindowsTests
             Assert.Equal(FlickStickMappingData.DEFAULT_FLICK_PROGRESS, stick.FlickMappingData[ind].flickProgress);
             Assert.Equal(FlickStickMappingData.DEFAULT_FLICK_SIZE, stick.FlickMappingData[ind].flickSize);
 
-            stick.FlickMappingData[ind].flickProgress = 5.0;
-            control.PreLoadReset(ind);   // 旧経路（6-e で削除するまで残す）。同じ結果になる
-            Assert.Equal(FlickStickMappingData.DEFAULT_FLICK_PROGRESS, stick.FlickMappingData[ind].flickProgress);
         }
 
         [Fact]

@@ -792,7 +792,7 @@ namespace DS4WinWPF.DS4Forms
                 presetWin.ShowDialog();
                 if (presetWin.Result == MessageBoxResult.Cancel)
                 {
-                    profileSettingsVM.LoadBlankProfile(controlService);
+                    profileSettingsVM.LoadBlankProfile();
                 }
             }
 

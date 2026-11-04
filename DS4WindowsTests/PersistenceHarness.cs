@@ -1,6 +1,7 @@
 using System;
 using System.IO;
 using DS4Windows;
+using DS4Windows.DI;
 using Xunit;
 
 namespace DS4WindowsTests
@@ -37,7 +38,7 @@ namespace DS4WindowsTests
             string path = Path.Combine(ctx.AppData, "Profiles", name + ".xml");
             File.WriteAllText(path, xml);
             BackingStore store = NewStore();
-            Assert.True(TestRepositoryFactory.CreateLegacyProfileXml(store).LoadProfile(Slot, false, ctx.Control, path, false, false), "プロファイルの読込に失敗した");
+            Assert.True(TestRepositoryFactory.CreateLegacyProfileXml(store).LoadProfile(Slot, false, ctx.LoadTarget, path, false, false), "プロファイルの読込に失敗した");
             return store;
         }
 
@@ -128,7 +129,7 @@ namespace DS4WindowsTests
         {
             BackingStore store = NewStore();
             var s = new DS4Windows.Services.ProfilePresets(store);
-            ControlService c = ctx.Control;
+            IProfileLoadTarget c = ctx.LoadTarget;
             switch (presetName)
             {
                 case "LoadBlankDS4Profile": s.LoadBlankDS4Profile(Slot, false, c, "", false, false); break;

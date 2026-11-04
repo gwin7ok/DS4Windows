@@ -126,7 +126,7 @@ namespace DS4WindowsTests
             {
                 Assert.DoesNotContain("Mapping." + name, control);
             }
-            Assert.Contains("_stickMotion.FlickMappingData", control); // Phase7-Step8 W1: コンストラクター注入
+            Assert.Contains("_stickMotion.L2TwoStageMappingData", control); // Phase7-Step8 W1: コンストラクター注入（Phase13-Step6 6-e: FlickMappingData の参照は PreLoadReset とともに ProfileLoadTarget へ移った）
             Assert.DoesNotContain("StickMotionState.Shared", control);
         }
 

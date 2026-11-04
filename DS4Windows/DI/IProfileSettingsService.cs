@@ -4,6 +4,7 @@ using System.Globalization;
 using DS4Windows.DS4Control;
 using DS4Windows.InputDevices;
 using static DS4Windows.Mouse;
+using DS4Windows.DI;
 
 namespace DS4Windows.DI
 {
@@ -124,10 +125,10 @@ namespace DS4Windows.DI
         bool GetGyroTriggerTurns(int deviceIndex);
         int GetGyroMouseHorizontalAxis(int deviceIndex);
         GyroControlsInfo GetGyroControlsInfo(int deviceIndex);
-        void SetGyroMouseDeadZone(int index, int value, ControlService control);
-        void SetGyroMouseToggle(int index, bool value, ControlService control);
-        void SetGyroControlsToggle(int index, bool value, ControlService control);
-        void SetGyroMouseStickToggle(int index, bool value, ControlService control);
+        void SetGyroMouseDeadZone(int index, int value, IProfileLoadTarget control);
+        void SetGyroMouseToggle(int index, bool value, IProfileLoadTarget control);
+        void SetGyroControlsToggle(int index, bool value, IProfileLoadTarget control);
+        void SetGyroMouseStickToggle(int index, bool value, IProfileLoadTarget control);
 
         // ---- Step10-2-A-5: ライトバー・ランブル関連 (m_Config委譲) ----
         LightbarSettingInfo[] LightbarSettingsInfo { get; }

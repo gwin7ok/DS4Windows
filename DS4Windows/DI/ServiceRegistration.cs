@@ -181,9 +181,7 @@ namespace DS4Windows.DI
             // Phase8-Step7 7.8a: Controls タブの束縛のビルダー（空の配線。区分ごとの組み立ては 7.8b 以降）
             services.AddSingleton<IControlBindingBuilder, ControlBindingBuilder>();
 
-            // Phase6-Step9-4（決定2＝C1）: ViewModelFactory が ControlService を生成のたびに遅延解決するための Func
-            // （ControlService は Singleton。明示的なホスト構築より前に解決しないため、構築時には解決しない）
-            services.AddSingleton<Func<ControlService>>(sp => () => sp.GetRequiredService<ControlService>());
+            // Phase13-Step6 6-e: 旧 Func<ControlService> の登録（Phase6-Step9-4 決定2＝C1。ViewModelFactory などの遅延解決用）は、利用者 9 件がすべて直接注入に替わったため削除した
             // Phase7-Step8 W2（Q1＝A・Q4＝A・Q8＝A）: 入力の評価の窓口（Singleton）。Mapping の ControlService への逆依存は Phase13-Step5b（5b-b）で解消した［IDeviceSlotState／IProfileActionProvider／ISpecialActionRepository をコンストラクターで受ける］。
             // DefaultActionManager／DefaultMacroPlayer は Func<IMapping> で受ける（ホスト構築時に Mapping とその依存を作らないため。Phase5-Plan §5.4）。
             services.AddSingleton<IStickDeadZoneProcessor, StickDeadZoneProcessor>();   // Phase9 9-A(1) (b): スティックのデッドゾーンの補正（状態なし）

@@ -87,6 +87,7 @@ namespace DS4WinWPF.DS4Forms
         private readonly DS4Windows.Services.IProfileSlotApplier profileSlotApplier;
         private readonly DS4Windows.DI.INotificationService notificationService;
         private readonly ControlService controlService;
+        private readonly DS4Windows.DI.IProfileLoadTarget loadTarget;   // Phase13-Step6 6-e: IPC の LoadTempProfile に渡す窓口
         private ProfileEditor editor;
         private int previousTabIndex = 0;
 #pragma warning disable CS0414 // preserveSize kept for behavior compatibility with older logic
@@ -115,6 +116,7 @@ namespace DS4WinWPF.DS4Forms
             DS4Windows.DI.IProfileRepository profileRepo,
             DS4Windows.DI.INotificationService notificationService,
             ControlService controlService,
+            DS4Windows.DI.IProfileLoadTarget loadTarget,
             DS4Windows.Services.IProfileSlotApplier profileSlotApplier,
             MainWindowsViewModel mainWindowsViewModel,
             DS4Windows.DI.ILogSettingsApplier logSettingsApplier,
@@ -140,6 +142,7 @@ namespace DS4WinWPF.DS4Forms
             this.profileRepo = profileRepo ?? throw new ArgumentNullException(nameof(profileRepo));
             this.notificationService = notificationService ?? throw new ArgumentNullException(nameof(notificationService));
             this.controlService = controlService ?? throw new ArgumentNullException(nameof(controlService));
+            this.loadTarget = loadTarget ?? throw new ArgumentNullException(nameof(loadTarget));
             this.profileSlotApplier = profileSlotApplier ?? throw new ArgumentNullException(nameof(profileSlotApplier));
 
             // Initialize log settings ComboBox

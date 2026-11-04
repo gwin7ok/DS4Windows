@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Xml;
+using DS4Windows.DI;
 
 namespace DS4Windows.Services
 {
@@ -10,7 +11,7 @@ namespace DS4Windows.Services
     /// </summary>
     internal sealed class ProfileLoadContext
     {
-        public ProfileLoadContext(BackingStore store, XmlDocument xdoc, string rootName, int device, ControlService control,
+        public ProfileLoadContext(BackingStore store, XmlDocument xdoc, string rootName, int device, IProfileLoadTarget control,
             LightbarSettingInfo lightbarSettings, LightbarDS4WinInfo lightInfo)
         {
             Store = store ?? throw new ArgumentNullException(nameof(store));
@@ -26,7 +27,7 @@ namespace DS4Windows.Services
         public XmlDocument Xdoc { get; }
         public string RootName { get; }
         public int Device { get; }
-        public ControlService Control { get; }
+        public IProfileLoadTarget Control { get; }
         public LightbarSettingInfo LightbarSettings { get; }
         public LightbarDS4WinInfo LightInfo { get; }
 

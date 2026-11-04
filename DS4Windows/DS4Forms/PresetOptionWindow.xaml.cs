@@ -28,12 +28,12 @@ namespace DS4WinWPF.DS4Forms
         private bool delayPresetApply;
         public bool DelayPresetApply { get => delayPresetApply; set => delayPresetApply = value; }
 
-        public PresetOptionWindow(DS4Windows.DI.IProfilePresetLoader presetLoader, DS4Windows.ControlService controlService)
+        public PresetOptionWindow(DS4Windows.DI.IProfilePresetLoader presetLoader, DS4Windows.DI.IProfileLoadTarget loadTarget)
         {
             InitializeComponent();
 
             // Phase6-Step10-2-5: プリセット読み込みと ControlService は、窓口（EditorWindowFactory）から必須引数で渡される
-            presetOptionVM = new PresetOptionViewModel(presetLoader, controlService);
+            presetOptionVM = new PresetOptionViewModel(presetLoader, loadTarget);
 
             // Hide tab headers. Tab content will still be visible
             IntroTab.Visibility = Visibility.Collapsed;

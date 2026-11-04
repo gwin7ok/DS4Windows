@@ -523,32 +523,7 @@ namespace DS4Windows
         /// Perform Mapping property resetting as needed before loading profile settings
         /// </summary>
         /// <param name="device">Input device instance</param>
-        // TODO(Phase13-Step6 6-e): 同じ本体を IProfileLoadTarget.PreLoadReset（ProfileLoadTarget）へ複製した（6-d）。ControlService のコンストラクター引数を
-        // 増やさないため、ここは元の本体のまま残す。呼び出し元は LegacyProfileXmlSerializer.LoadProfile だけで、6-e で IProfileLoadTarget に切り替えるときに、
-        // このメソッドを削除する（呼び出し元 0 件。§2.4: 使うべき API は IProfileLoadTarget 側）。
-        public void PreLoadReset(int ind)
-        {
-            //DS4Device inputDevice = DS4Controllers[ind];
-            //if (inputDevice == null)
-            //{
-            //    return;
-            //}
-            // Skip running for test profile with no mapping data
-            if (ind >= ControllerLimits.TestProfileIndex)
-            {
-                return;
-            }
-
-            // Reset current flick stick progress from previous profile
-            _stickMotion.FlickMappingData[ind].Reset();
-
-            // Reset delta accel processors for sticks
-            _stickMotion.DeltaAccelProcessors[ind].LSProcessor.Reset();
-            _stickMotion.DeltaAccelProcessors[ind].RSProcessor.Reset();
-
-            // Reset some elements of current Mouse instance
-            touchPad[ind]?.Reset();
-        }
+        // Phase13-Step6 6-e: 旧 PreLoadReset（プロファイル読込前のリセット）は IProfileLoadTarget.PreLoadReset（ProfileLoadTarget）へ移した（呼び出し元は LegacyProfileXmlSerializer だけだった）。
 
         public void TouchPadOn(int ind, DS4Device device)
         {

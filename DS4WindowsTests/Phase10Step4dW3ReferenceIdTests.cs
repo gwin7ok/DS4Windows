@@ -43,7 +43,7 @@ namespace DS4WindowsTests
             File.WriteAllText(path, xml);
             BackingStore store = PersistenceHarness.NewStore();
             store.actions.AddRange(actions);
-            Assert.True(TestRepositoryFactory.CreateLegacyProfileXml(store).LoadProfile(Slot, false, ctx.Control, path, false, false));
+            Assert.True(TestRepositoryFactory.CreateLegacyProfileXml(store).LoadProfile(Slot, false, ctx.LoadTarget, path, false, false));
             return store;
         }
 
@@ -279,7 +279,7 @@ namespace DS4WindowsTests
             // 切り替え先のプロファイルの名前を変えて、保存したプロファイルを読み込む
             File.Move(Path.Combine(ctx.AppData, "Profiles", "Target.xml"), Path.Combine(ctx.AppData, "Profiles", "Renamed.xml"));
             BackingStore loaded = PersistenceHarness.NewStore();
-            Assert.True(TestRepositoryFactory.CreateLegacyProfileXml(loaded, null, null, identity).LoadProfile(Slot, false, ctx.Control, path, false, false));
+            Assert.True(TestRepositoryFactory.CreateLegacyProfileXml(loaded, null, null, identity).LoadProfile(Slot, false, ctx.LoadTarget, path, false, false));
 
             Assert.Equal("Renamed", loaded.GetDS4CSetting(Slot, DS4Controls.Cross).special.ProfileName);   // ID が勝つ
             Assert.Equal(id, loaded.GetDS4CSetting(Slot, DS4Controls.Cross).special.ProfileId);
@@ -295,7 +295,7 @@ namespace DS4WindowsTests
             Assert.True(TestRepositoryFactory.CreateLegacyProfileXml(store, null, null, Identity(ctx)).SaveProfile(Slot, "Step4dW3Gone"));
             string path = Path.Combine(ctx.AppData, "Profiles", "Step4dW3Gone.xml");
             BackingStore loaded = PersistenceHarness.NewStore();
-            Assert.True(TestRepositoryFactory.CreateLegacyProfileXml(loaded, null, null, Identity(ctx)).LoadProfile(Slot, false, ctx.Control, path, false, false));
+            Assert.True(TestRepositoryFactory.CreateLegacyProfileXml(loaded, null, null, Identity(ctx)).LoadProfile(Slot, false, ctx.LoadTarget, path, false, false));
             Assert.Equal("Missing", loaded.GetDS4CSetting(Slot, DS4Controls.Cross).special.ProfileName);
 
             // 登録簿なし: ID は書かず、名前だけで読み書きする（従来どおり）

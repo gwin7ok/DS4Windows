@@ -40,7 +40,7 @@ namespace DS4WinWPF.DS4Control
         // Phase5-Step13-7: 全サブクラス共通のControlService注入(Program.rootHubフォールバック)。
         // これらのPresetクラスはPresetOptionViewModelで new() 経由でパラメータレスに生成されるため、
         // サブクラス側の変更は不要(既定のフォールバック付きコンストラクタが暗黙的に呼ばれる)。
-        protected readonly DS4Windows.ControlService controlService;
+        protected readonly DS4Windows.DI.IProfileLoadTarget loadTarget;
         // Phase6-Step10-2-5: Global.Load…Profile への直接呼び出しを、プリセット読み込みの契約経由に置き換えた（必須引数）。
         protected readonly DS4Windows.DI.IProfilePresetLoader presetLoader;
 
@@ -53,10 +53,10 @@ namespace DS4WinWPF.DS4Control
             set => outputCont = value;
         }
 
-        protected PresetOption(DS4Windows.DI.IProfilePresetLoader presetLoader, DS4Windows.ControlService controlService)
+        protected PresetOption(DS4Windows.DI.IProfilePresetLoader presetLoader, DS4Windows.DI.IProfileLoadTarget loadTarget)
         {
             this.presetLoader = presetLoader ?? throw new ArgumentNullException(nameof(presetLoader));
-            this.controlService = controlService ?? throw new ArgumentNullException(nameof(controlService));
+            this.loadTarget = loadTarget ?? throw new ArgumentNullException(nameof(loadTarget));
         }
 
         public abstract void ApplyPreset(int idx);

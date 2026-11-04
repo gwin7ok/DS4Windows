@@ -27,8 +27,8 @@ namespace DS4WinWPF.DS4Control
 
     public class MixedPreset : PresetOption
     {
-        public MixedPreset(DS4Windows.DI.IProfilePresetLoader presetLoader, DS4Windows.ControlService controlService)
-            : base(presetLoader, controlService)
+        public MixedPreset(DS4Windows.DI.IProfilePresetLoader presetLoader, DS4Windows.DI.IProfileLoadTarget loadTarget)
+            : base(presetLoader, loadTarget)
         {
             name = Translations.Strings.MixedPresetName;
             description = Translations.Strings.MixedPresetDescription;
@@ -40,11 +40,11 @@ namespace DS4WinWPF.DS4Control
         {
             if (outputCont == OutputContChoice.Xbox360)
             {
-                presetLoader.LoadDefaultMixedControls(idx, false, controlService, false);
+                presetLoader.LoadDefaultMixedControls(idx, false, loadTarget, false);
             }
             else if (outputCont == OutputContChoice.DualShock4)
             {
-                presetLoader.LoadDefaultDS4MixedControls(idx, false, controlService, false);
+                presetLoader.LoadDefaultDS4MixedControls(idx, false, loadTarget, false);
             }
         }
     }

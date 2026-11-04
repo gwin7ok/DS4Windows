@@ -175,3 +175,16 @@ interface IProfileLoadTarget   // DS4Windows/DI/
 **計画からの変更**: 計画（§4.1）は `ControlService.PreLoadReset` を転送にするとしていたが、`ControlService` のコンストラクター引数（26）を増やさないため、**6-d では元の本体のまま残し**（TODO［Phase13-Step6 6-e］つき）、呼び出し元（`LegacyProfileXmlSerializer.LoadProfile` のみ）を切り替える 6-e で削除する（呼び出し元 0 件。規約 §2.4: 使うべき API は `IProfileLoadTarget` 側）。
 **テスト**: `Phase13Step6ProfileLoadTargetTests`（6 件）。配列が `ControlService` と同一、範囲外の挙動（`GetController` は null、配列は例外）、`PreLoadReset` が旧経路と同じ結果（テストプロファイル添字では何もしない）、コンストラクターの null 検査。
 **結果**: `Debug ALL` 警告 0／エラー 0。Actions.Tests 3,105 件、Standalone 11 件、すべて合格。
+
+## 14. 6-e／6-f の結果（2026-11-04。6-e と 6-f の中核を 1 コミットにまとめた）
+
+**まとめた理由**: `ProfileRepository`／`ProfileApplicationService` は、鎖の `control` 引数の型を `IProfileLoadTarget` に替えると、`Func<ControlService>` から得た `ControlService` を渡せなくなる。そのため、型置換（6-e）と、この 2 クラスの直接注入・UI 呼び出し元の切り替え・`Func<ControlService>` の登録削除（6-f）を同時に行った（分けるとビルドが通らない）。
+**型の置換（機械的）**: `ControlService control` → `IProfileLoadTarget control`（引数名 `control` は変えず、差分を最小にした。名前の整理は Step10 以降）。対象 15 ファイル: `IProfilePresetLoader`／`ProfilePresetLoader`／`ProfilePresets`／`BackingStore`（`SetGyro*`・`ResetMouseProperties`・`CheckOldDevicestatus`・`PostLoadSnippet`。ピンポイント置換）／`IProfileSettingsService`／`ProfileSettingsService`／`IProfileXmlStore`／`ProfileXmlStore`／`IProfileRepository`／`LegacyProfileXmlSerializer`／`ProfileLoadContext`／`Profile*LoadSection` 4 件。本文は `control.touchPad[i]`→`GetTouchPad(i)`、`control.DS4Controllers[i]`→`GetController(i)`、`control.outputDevices[i]`→`GetOutputDevice(i)` のみ（他のメンバー呼び出しは同名）。
+**挙動の保持**: `ProfileLoadTarget.GetController` は配列を直接参照する（範囲外は例外のまま）。`PostLoadSnippet` などが範囲の検査をしないため。`GetTouchPad`／`GetOutputDevice` も元と同じ。
+**直接注入**: `ProfileRepository`／`ProfileApplicationService` の `Func<ControlService>` → `IProfileLoadTarget`。`ProfileRepository.LoadProfile` の `control == null` の分岐（遅延解決が null を返したとき）は、直接注入では起きないため削除した。`ProfileApplicationService` の `_control?.DS4Controllers?[i]` → `_control.GetController(i)`。
+**UI（案 A）**: `PresetOption` ほか 6 クラス・`PresetOptionViewModel`・`PresetOptionWindow` は `IProfileLoadTarget` を受ける。`ProfileSettingsViewModel` は `ControlService` の代わりに `IProfileLoadTarget` を受け、`LoadBlankProfile()` は呼び出し元から渡さず自分の窓口を使う（`ProfileEditor` の呼び出しも更新）。`EditorWindowFactory`／`MainWindowFactory`／`ViewModelFactory` は `IProfileLoadTarget` を追加で注入。`MainWindow` は IPC の `LoadTempProfile` に `loadTarget` を渡す。
+**削除**: `ControlService.PreLoadReset`（呼び出し元 0 件）、`ServiceRegistration` の `Func<ControlService>` の登録。
+**ガード**: `Phase13Step5FuncRemovalGuardTests.FuncOfControlService_NoLongerAppears`（本番ソースに `Func<ControlService>` が 0 件）。
+**テスト側**: 遅延（`Func`）の意味を保つ `LazyProfileLoadTarget`（初回使用時にホストから解決）を新設し、`TestRepositoryFactory` などの既定値にした。`PersistenceGoldenContext.LoadTarget` を追加。ソース文字列を検査するガード 3 件（`Phase8Step5W3PublishBindingsTests`、`ProfileEditorBackendViewModelTests`、`Phase7Step7StickMotionStateGuardTests`）の期待を更新。
+**結果**: `Debug ALL` 警告 0／エラー 0。Actions.Tests 3,106 件、Standalone 11 件、すべて合格。`Func<ControlService>` は本番ソースで 0 件。
+**実機で見る点（Phase 末の 1 回）**: (1) 起動直後のプロファイル読込（`ControlService` の生成より前に `ProfileRepository.LoadProfile` が呼ばれても、`touchPad` が null のときは `SetGyro*` が何もしない）、(2) プロファイルの適用・一時プロファイル・自動プロファイル・IPC（`LoadTempProfile`）、(3) 新規プロファイルのプリセット選択（キャンセルで空プロファイル）、(4) ジャイロ設定のトグル（`SetGyro*`）、(5) 振動（アクションの Rumble）、電池残量の表示。

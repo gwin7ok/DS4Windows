@@ -22,6 +22,7 @@ namespace DS4Windows.Services
         private readonly ISpecialActionRepository _specialActionRepository;
         private readonly IProfilePresetLoader _presetLoader;
         private readonly ControlService _controlService;
+        private readonly IProfileLoadTarget _loadTarget;   // Phase13-Step6 6-e: プリセットの読込先の窓口
         // Phase7-Step5 W5: CreateProfileEditor が ProfileEditor へ渡すサービス
         private readonly IAppSettingsService _appSettings;
         private readonly IProfileRepository _profileRepository;
@@ -41,6 +42,7 @@ namespace DS4Windows.Services
             ISpecialActionRepository specialActionRepository,
             IProfilePresetLoader presetLoader,
             ControlService controlService,
+            IProfileLoadTarget loadTarget,
             IAppSettingsService appSettings,
             IProfileRepository profileRepository,
             IProfileSwitcher profileSwitcher,
@@ -58,6 +60,7 @@ namespace DS4Windows.Services
             _specialActionRepository = specialActionRepository ?? throw new ArgumentNullException(nameof(specialActionRepository));
             _presetLoader = presetLoader ?? throw new ArgumentNullException(nameof(presetLoader));
             _controlService = controlService ?? throw new ArgumentNullException(nameof(controlService));
+            _loadTarget = loadTarget ?? throw new ArgumentNullException(nameof(loadTarget));
             _appSettings = appSettings ?? throw new ArgumentNullException(nameof(appSettings));
             _profileRepository = profileRepository ?? throw new ArgumentNullException(nameof(profileRepository));
             _profileSwitcher = profileSwitcher ?? throw new ArgumentNullException(nameof(profileSwitcher));
@@ -78,7 +81,7 @@ namespace DS4Windows.Services
             => new RecordBoxWindow(deviceNum, settings, targetDevice, this, repeatable, showPlaybackOptions);
 
         public PresetOptionWindow CreatePresetOptionWindow()
-            => new PresetOptionWindow(_presetLoader, _controlService);
+            => new PresetOptionWindow(_presetLoader, _loadTarget);
 
         public StickCalibrationWindow CreateStickCalibrationWindow(Stick stick, int device,
             ProfileSettingsViewModel profileSettingsViewModel)

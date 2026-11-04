@@ -27,8 +27,8 @@ namespace DS4WinWPF.DS4Control
 
     public class MixedGyroMousePreset : PresetOption
     {
-        public MixedGyroMousePreset(DS4Windows.DI.IProfilePresetLoader presetLoader, DS4Windows.ControlService controlService)
-            : base(presetLoader, controlService)
+        public MixedGyroMousePreset(DS4Windows.DI.IProfilePresetLoader presetLoader, DS4Windows.DI.IProfileLoadTarget loadTarget)
+            : base(presetLoader, loadTarget)
         {
             name = Translations.Strings.MixedGyroMousePresetName;
             description = Translations.Strings.MixedGyroMousePresetDescription;
@@ -40,11 +40,11 @@ namespace DS4WinWPF.DS4Control
         {
             if (outputCont == OutputContChoice.Xbox360)
             {
-                presetLoader.LoadDefaultMixedGyroMouse(idx, false, controlService, false);
+                presetLoader.LoadDefaultMixedGyroMouse(idx, false, loadTarget, false);
             }
             else if (outputCont == OutputContChoice.DualShock4)
             {
-                presetLoader.LoadDefaultDS4MixedGyroMouse(idx, false, controlService, false);
+                presetLoader.LoadDefaultDS4MixedGyroMouse(idx, false, loadTarget, false);
             }
         }
     }

@@ -53,7 +53,7 @@ namespace DS4WinWPF.DS4Forms.ViewModels
         private int device;
         public int Device { get => device; }
         private readonly IProfileSettingsService profileSettings;
-        private readonly ControlService controlService;
+        private readonly IProfileLoadTarget loadTarget;   // Phase13-Step6 6-e: 旧 ControlService controlService（ジャイロ系 setter と空プロファイルの読込に渡すだけだった）
         private readonly IEnvironmentService environmentService;
         private readonly IPathService pathService;
         private readonly IOutputSlotService outputSlotService;
@@ -883,11 +883,11 @@ namespace DS4WinWPF.DS4Forms.ViewModels
 
         /// <summary>
         /// 編集スロットへ空のプロファイルを読み込む（新規作成でプリセット選択をキャンセルしたとき）。
-        /// 呼び出し元（ProfileEditor）が使っている <see cref="ControlService"/> をそのまま渡す。
+        /// Phase13-Step6 6-e: 読込先の窓口（<see cref="IProfileLoadTarget"/>）は、呼び出し元から渡さず、この ViewModel が持つものを使う。
         /// </summary>
-        public void LoadBlankProfile(ControlService control)
+        public void LoadBlankProfile()
         {
-            presetLoader.LoadBlank(device, false, control, false);
+            presetLoader.LoadBlank(device, false, loadTarget, false);
         }
 
         /// <summary>編集スロットのカスタムフラグのキャッシュを更新する（ボタン設定画面を閉じた後など）。</summary>
@@ -2520,7 +2520,7 @@ namespace DS4WinWPF.DS4Forms.ViewModels
             get => profileSettings.GyroMouseDeadZone[device];
             set
             {
-                profileSettings.SetGyroMouseDeadZone(device, value, controlService);
+                profileSettings.SetGyroMouseDeadZone(device, value, loadTarget);
 
             }
         }
@@ -2530,7 +2530,7 @@ namespace DS4WinWPF.DS4Forms.ViewModels
             get => profileSettings.GyroMouseToggle[device];
             set
             {
-                profileSettings.SetGyroMouseToggle(device, value, controlService);
+                profileSettings.SetGyroMouseToggle(device, value, loadTarget);
             }
         }
 
@@ -2554,7 +2554,7 @@ namespace DS4WinWPF.DS4Forms.ViewModels
             get => profileSettings.GyroMouseStickToggle[device];
             set
             {
-                profileSettings.SetGyroMouseStickToggle(device, value, controlService);
+                profileSettings.SetGyroMouseStickToggle(device, value, loadTarget);
             }
         }
 
@@ -2733,7 +2733,7 @@ namespace DS4WinWPF.DS4Forms.ViewModels
             get => profileSettings.GyroControlsInf[device].triggerToggle;
             set
             {
-                profileSettings.SetGyroControlsToggle(device, value, controlService);
+                profileSettings.SetGyroControlsToggle(device, value, loadTarget);
             }
         }
 
@@ -2821,12 +2821,12 @@ namespace DS4WinWPF.DS4Forms.ViewModels
 
         // Phase6-Step9-4: 依存はコンストラクタで必須引数として受け取る（Pure DI。決定1＝S9-A）。
         // 以前は ?? AppHost.GetService／Global.*Instance／Program.rootHub のフォールバックを持っていた。
-        // controlService は、ジャイロ系 setter が IProfileSettingsService へ渡す引数としてだけ使われ、従来も
-        // Program.rootHub が null の環境（テスト等）では null だったため、null を許容する（決定2＝C1: 生成側の
-        // ViewModelFactory が Func<ControlService> で遅延解決して渡す）。
+        // loadTarget は、ジャイロ系 setter が IProfileSettingsService へ渡す引数と、空プロファイルの読込にだけ使われ、従来も
+        // Program.rootHub が null の環境（テスト等）では null だったため、null を許容する（Phase13-Step6 6-e: 旧 ControlService controlService。
+        // 生成側の ViewModelFactory が IProfileLoadTarget を直接渡す）。
         // targetDevice は、編集スロット（device）と実機を分けて渡す引数（Phase6-Step7b）。変更しない。
         public ProfileSettingsViewModel(int device, IProfileSettingsService profileSettings,
-            ControlService controlService,
+            IProfileLoadTarget loadTarget,
             IOutputSlotService outputSlotService,
             IProfileRepository profileRepo,
             IProfilePresetLoader presetLoader,
@@ -2837,7 +2837,7 @@ namespace DS4WinWPF.DS4Forms.ViewModels
             this.device = device;
             this.targetDevice = targetDevice;
             this.profileSettings = profileSettings ?? throw new ArgumentNullException(nameof(profileSettings));
-            this.controlService = controlService;
+            this.loadTarget = loadTarget;
             this.outputSlotService = outputSlotService ?? throw new ArgumentNullException(nameof(outputSlotService));
             this.profileRepo = profileRepo ?? throw new ArgumentNullException(nameof(profileRepo));
             this.presetLoader = presetLoader ?? throw new ArgumentNullException(nameof(presetLoader));

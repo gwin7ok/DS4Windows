@@ -8,7 +8,7 @@ namespace DS4Windows.DI
     /// </summary>
     public interface IProfileLoadTarget
     {
-        /// <summary>スロットのコントローラー（旧: <c>control.DS4Controllers[ind]</c>。範囲外は例外にせず null）。</summary>
+        /// <summary>スロットのコントローラー（旧: <c>control.DS4Controllers[ind]</c> と同じ。範囲外は元と同じく例外。鎖の呼び出しの一部は範囲の検査をしないため、挙動を変えない）。</summary>
         DS4Device GetController(int ind);
 
         /// <summary>スロットのタッチパッドのマウス（旧: <c>control.touchPad[ind]</c>。範囲外は元と同じく例外）。</summary>

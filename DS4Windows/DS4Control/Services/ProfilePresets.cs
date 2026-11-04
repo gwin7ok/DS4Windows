@@ -27,6 +27,7 @@ using DS4WinWPF.ApiDTO;
 using WpfScreenHelper;
 using static DS4Windows.Mouse;
 using static DS4Windows.Util;
+using DS4Windows.DI;
 
 namespace DS4Windows.Services
 {
@@ -44,7 +45,7 @@ namespace DS4Windows.Services
             this.store = store ?? throw new ArgumentNullException(nameof(store));
         }
 
-        private void PrepareBlankingProfile(int device, ControlService control, out bool xinputPlug, out bool xinputStatus, bool xinputChange = true)
+        private void PrepareBlankingProfile(int device, IProfileLoadTarget control, out bool xinputPlug, out bool xinputStatus, bool xinputChange = true)
         {
             xinputPlug = false;
             xinputStatus = false;
@@ -71,7 +72,7 @@ namespace DS4Windows.Services
             store.containsCustomExtras[device] = false;
         }
 
-        public void LoadBlankDS4Profile(int device, bool launchprogram, ControlService control,
+        public void LoadBlankDS4Profile(int device, bool launchprogram, IProfileLoadTarget control,
             string propath = "", bool xinputChange = true, bool postLoad = true)
         {
             PrepareBlankingProfile(device, control, out bool xinputPlug, out bool xinputStatus, xinputChange);
@@ -102,7 +103,7 @@ namespace DS4Windows.Services
             }
         }
 
-        public void LoadBlankProfile(int device, bool launchprogram, ControlService control,
+        public void LoadBlankProfile(int device, bool launchprogram, IProfileLoadTarget control,
             string propath = "", bool xinputChange = true, bool postLoad = true)
         {
             bool xinputPlug = false;
@@ -137,7 +138,7 @@ namespace DS4Windows.Services
             }
         }
 
-        public void LoadDefaultGamepadGyroProfile(int device, bool launchprogram, ControlService control,
+        public void LoadDefaultGamepadGyroProfile(int device, bool launchprogram, IProfileLoadTarget control,
             string propath = "", bool xinputChange = true, bool postLoad = true)
         {
             bool xinputPlug = false;
@@ -179,7 +180,7 @@ namespace DS4Windows.Services
             }
         }
 
-        public void LoadDefaultDS4GamepadGyroProfile(int device, bool launchprogram, ControlService control,
+        public void LoadDefaultDS4GamepadGyroProfile(int device, bool launchprogram, IProfileLoadTarget control,
             string propath = "", bool xinputChange = true, bool postLoad = true)
         {
             PrepareBlankingProfile(device, control, out bool xinputPlug, out bool xinputStatus, xinputChange);
@@ -217,7 +218,7 @@ namespace DS4Windows.Services
             }
         }
 
-        public void LoadDefaultMixedGyroMouseProfile(int device, bool launchprogram, ControlService control,
+        public void LoadDefaultMixedGyroMouseProfile(int device, bool launchprogram, IProfileLoadTarget control,
             string propath = "", bool xinputChange = true, bool postLoad = true)
         {
             bool xinputPlug = false;
@@ -264,7 +265,7 @@ namespace DS4Windows.Services
             }
         }
 
-        public void LoadDefaultDS4MixedGyroMouseProfile(int device, bool launchprogram, ControlService control,
+        public void LoadDefaultDS4MixedGyroMouseProfile(int device, bool launchprogram, IProfileLoadTarget control,
             string propath = "", bool xinputChange = true, bool postLoad = true)
         {
             PrepareBlankingProfile(device, control, out bool xinputPlug, out bool xinputStatus, xinputChange);
@@ -302,7 +303,7 @@ namespace DS4Windows.Services
             }
         }
 
-        public void LoadDefaultDS4MixedControlsProfile(int device, bool launchprogram, ControlService control,
+        public void LoadDefaultDS4MixedControlsProfile(int device, bool launchprogram, IProfileLoadTarget control,
             string propath = "", bool xinputChange = true, bool postLoad = true)
         {
             PrepareBlankingProfile(device, control, out bool xinputPlug, out bool xinputStatus, xinputChange);
@@ -331,7 +332,7 @@ namespace DS4Windows.Services
             }
         }
 
-        public void LoadDefaultMixedControlsProfile(int device, bool launchprogram, ControlService control,
+        public void LoadDefaultMixedControlsProfile(int device, bool launchprogram, IProfileLoadTarget control,
             string propath = "", bool xinputChange = true, bool postLoad = true)
         {
             bool xinputPlug = false;
@@ -380,7 +381,7 @@ namespace DS4Windows.Services
             }
         }
 
-        public void LoadDefaultKBMProfile(int device, bool launchprogram, ControlService control,
+        public void LoadDefaultKBMProfile(int device, bool launchprogram, IProfileLoadTarget control,
             string propath = "", bool xinputChange = true, bool postLoad = true)
         {
             bool xinputPlug = false;
@@ -486,7 +487,7 @@ namespace DS4Windows.Services
             }
         }
 
-        public void LoadDefaultKBMGyroMouseProfile(int device, bool launchprogram, ControlService control,
+        public void LoadDefaultKBMGyroMouseProfile(int device, bool launchprogram, IProfileLoadTarget control,
             string propath = "", bool xinputChange = true, bool postLoad = true)
         {
             bool xinputPlug = false;

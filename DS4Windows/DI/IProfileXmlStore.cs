@@ -1,10 +1,11 @@
 using DS4Windows;
+using DS4Windows.DI;
 
 namespace DS4Windows.DI
 {
     public interface IProfileXmlStore
     {
-        bool LoadProfileXml(int deviceIndex, bool launchProgram, ControlService control,
+        bool LoadProfileXml(int deviceIndex, bool launchProgram, IProfileLoadTarget control,
             string overridePath = "", bool xinputChange = true, bool postLoad = true);
         bool SaveProfileXml(int deviceIndex, string profileName);
 

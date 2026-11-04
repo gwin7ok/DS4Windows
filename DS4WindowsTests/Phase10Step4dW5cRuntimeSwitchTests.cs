@@ -91,7 +91,7 @@ namespace DS4WindowsTests
         private ProfileApplicationService NewApplicationService(IProfileIdentityService identity)
         {
             IProfileSettingsService settings = TestRepositoryFactory.CreateProfileSettingsService();
-            return TestRepositoryFactory.CreateProfileApplicationService(settings, () => null,
+            return TestRepositoryFactory.CreateProfileApplicationService(settings, new LazyProfileLoadTarget(),
                 TestRepositoryFactory.CreateProfileRepository(settings), new EnvironmentService(), profileIdentity: identity);
         }
 

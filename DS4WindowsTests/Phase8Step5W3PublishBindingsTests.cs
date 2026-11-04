@@ -48,7 +48,7 @@ namespace DS4WindowsTests
 
         private readonly string _dir;
         private readonly string _originalAppData;
-        private readonly ControlService _control;
+        private readonly IProfileLoadTarget _control;   // Phase13-Step6 6-e: 旧 ControlService（プロファイル読込の窓口）
         private readonly IProfileSettingsService _settings;
         private readonly ProfileRepository _repo;
         private readonly BackingStore _store;
@@ -66,7 +66,8 @@ namespace DS4WindowsTests
             TestGlobals.AppDataPath = _dir;
 
             DS4WinWPF.AppHost.CreateHost();
-            _control = TestHost.GetService<ControlService>();
+            TestHost.GetService<ControlService>();   // TempStates などは ControlService のコンストラクターが作る
+            _control = TestHost.GetService<IProfileLoadTarget>();
             _settings = TestGlobals.ProfileSettingsServiceInstance;
             _store = TestGlobals.Store;
             _repo = TestRepositoryFactory.CreateProfileRepository(_settings);
@@ -96,7 +97,7 @@ namespace DS4WindowsTests
         }
 
         private ProfileApplicationService Service(IActionRegistry registry = null, IActionBindingBuilder builder = null)
-            => TestRepositoryFactory.CreateProfileApplicationService(_settings, () => _control, _repo, new EnvironmentService(),
+            => TestRepositoryFactory.CreateProfileApplicationService(_settings, _control, _repo, new EnvironmentService(),
                 actionRegistry: registry, bindingBuilderProvider: builder == null ? (Func<IActionBindingBuilder>)null : () => builder);
 
         // ---- 偽の登録簿・ビルダーで、呼び出しを数える ----
@@ -232,7 +233,7 @@ namespace DS4WindowsTests
             Assert.True(complete > 0 && prealloc > complete && publish > prealloc, "束縛の差し替えは、掃除（PreallocateForProfileApply）の後に行う");
 
             string main = File.ReadAllText(window);
-            Assert.Matches(@"if \(profileRepo\.LoadTempProfile\(tdevice, strData\[2\], true, controlService\)\)\s*profileAppService\.PublishBindings\(tdevice\);", main);
+            Assert.Matches(@"if \(profileRepo\.LoadTempProfile\(tdevice, strData\[2\], true, loadTarget\)\)\s*profileAppService\.PublishBindings\(tdevice\);", main);
         }
     }
 }

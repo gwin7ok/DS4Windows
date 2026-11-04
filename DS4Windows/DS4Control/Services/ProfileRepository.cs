@@ -18,8 +18,8 @@ namespace DS4Windows
         private readonly IEnvironmentService _environment;
 
         // Phase6-Step10-4-2b: 全ての依存を必須化（Global.*Instance／AppHost のフォールバックを廃止）。
-        // ControlService は ControlService → IProfileRepository の依存循環を避けるため、遅延解決（Func）で受け取る。
-        private readonly Func<ControlService> _controlProvider;
+        // Phase13-Step6 6-e: 旧 Func<ControlService>（ControlService → IProfileRepository の依存循環を避ける遅延解決）。プロファイル読込の鎖が使う窓口を直接受ける
+        private readonly IProfileLoadTarget _loadTarget;
         // Phase7-Step10c W2: リンクプロファイル・Actions.xml の保存・読込（旧: BackingStore のメソッド）
         private readonly Services.LinkedProfilesXmlSerializer _linkedProfilesXml;
         private readonly Services.SpecialActionsXmlSerializer _actionsXml;
@@ -28,7 +28,7 @@ namespace DS4Windows
 
         public ProfileRepository(BackingStore config, IProfileSettingsService profileSettings,
             IProfileXmlStore profileXmlStore, IPathService pathService,
-            Func<ControlService> controlProvider,
+            IProfileLoadTarget loadTarget,
             Services.LinkedProfilesXmlSerializer linkedProfilesXml, Services.SpecialActionsXmlSerializer actionsXml,
             Services.LegacyProfileXmlSerializer legacyProfileXml, IEnvironmentService environment)
         {
@@ -40,7 +40,7 @@ namespace DS4Windows
             _profileSettings = profileSettings ?? throw new ArgumentNullException(nameof(profileSettings));
             _profileXmlStore = profileXmlStore ?? throw new ArgumentNullException(nameof(profileXmlStore));
             _pathService = pathService ?? throw new ArgumentNullException(nameof(pathService));
-            _controlProvider = controlProvider ?? throw new ArgumentNullException(nameof(controlProvider));
+            _loadTarget = loadTarget ?? throw new ArgumentNullException(nameof(loadTarget));
         }
 
         private IPathService PathSvc => _pathService;
@@ -70,15 +70,11 @@ namespace DS4Windows
 
                     string normalizedName = Path.GetFileNameWithoutExtension(profileName);
                     ProfilePath[deviceIndex] = normalizedName;
-                    ControlService control = _controlProvider();
-                    if (control == null)
-                        return false;
-
                     // Phase5-Step2: Global.LoadProfileへの委譲をやめ、XML I/O(IProfileXmlStore)と
                     // 状態調整ロジック(旧Global.LoadProfile内で行っていたもの)をここに直接内包する。
                     // 挙動はGlobal.LoadProfileと完全に同一に維持する。
                     _config.loggedInvalidActions.Clear();
-                    _profileXmlStore.LoadProfileXml(deviceIndex, false, control, "", false, true);
+                    _profileXmlStore.LoadProfileXml(deviceIndex, false, _loadTarget, "", false, true);
                     _profileSettings?.SetTempProfileName(deviceIndex, string.Empty);
                     _profileSettings?.SetUseTempProfile(deviceIndex, false);
                     _profileSettings?.SetTempProfileDistance(deviceIndex, false);
@@ -279,7 +275,7 @@ namespace DS4Windows
 
         // ---- Phase5-Step13-7: 一時プロファイル読込（スワイプ操作等での即時切替用） ----
         // Phase7-Step3c W3: 旧 Global.LoadTempProfile の処理をここへ移した（xinputChange は従来どおり読み込みへ渡さない）。
-        public bool LoadTempProfile(int deviceIndex, string profileName, bool launchProgram, ControlService control, bool xinputChange = true)
+        public bool LoadTempProfile(int deviceIndex, string profileName, bool launchProgram, IProfileLoadTarget control, bool xinputChange = true)
         {
             _config.loggedInvalidActions.Clear();
             bool result = _legacyProfileXml.LoadProfile(deviceIndex, launchProgram, control, Path.Combine(ProfilesPath, $"{profileName}.xml"));

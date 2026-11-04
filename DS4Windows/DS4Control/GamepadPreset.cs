@@ -27,8 +27,8 @@ namespace DS4WinWPF.DS4Control
 
     public class GamepadPreset : PresetOption
     {
-        public GamepadPreset(DS4Windows.DI.IProfilePresetLoader presetLoader, DS4Windows.ControlService controlService)
-            : base(presetLoader, controlService)
+        public GamepadPreset(DS4Windows.DI.IProfilePresetLoader presetLoader, DS4Windows.DI.IProfileLoadTarget loadTarget)
+            : base(presetLoader, loadTarget)
         {
             name = Translations.Strings.GamepadPresetName;
             description = Translations.Strings.GamepadPresetDescription;
@@ -40,11 +40,11 @@ namespace DS4WinWPF.DS4Control
         {
             if (outputCont == OutputContChoice.Xbox360)
             {
-                presetLoader.LoadBlank(idx, false, controlService, false);
+                presetLoader.LoadBlank(idx, false, loadTarget, false);
             }
             else if (outputCont == OutputContChoice.DualShock4)
             {
-                presetLoader.LoadBlankDS4(idx, false, controlService, false);
+                presetLoader.LoadBlankDS4(idx, false, loadTarget, false);
             }
         }
     }

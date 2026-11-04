@@ -18,6 +18,7 @@ namespace DS4Windows
         private readonly IAppSettingsService _appSettings;
         private readonly Func<IAutoProfileService> _autoProfileServiceAccessor;
         private readonly ControlService _controlService;
+        private readonly IProfileLoadTarget _loadTarget;   // Phase13-Step6 6-e: ProfileSettingsViewModel のプロファイル読込の窓口
 
         // Phase6-Step9-4: 依存はすべて必須引数（Pure DI。決定1＝S9-A）。
         // Phase13-Step6 6-c: ControlService は、Func による遅延解決（決定2＝C1。K7-1 対策）をやめ、直接受ける。K7-1 は 2026-10-17 に解消済みで、
@@ -32,7 +33,8 @@ namespace DS4Windows
             IPathService pathService,
             IAppSettingsService appSettings,
             Func<IAutoProfileService> autoProfileServiceAccessor,
-            ControlService controlService)
+            ControlService controlService,
+            IProfileLoadTarget loadTarget)
         {
             _profileSettings = profileSettings ?? throw new ArgumentNullException(nameof(profileSettings));
             _profileRepo = profileRepo ?? throw new ArgumentNullException(nameof(profileRepo));
@@ -46,13 +48,14 @@ namespace DS4Windows
             // ため、生成のたびに Func で遅延解決する。
             _autoProfileServiceAccessor = autoProfileServiceAccessor ?? throw new ArgumentNullException(nameof(autoProfileServiceAccessor));
             _controlService = controlService ?? throw new ArgumentNullException(nameof(controlService));
+            _loadTarget = loadTarget ?? throw new ArgumentNullException(nameof(loadTarget));
         }
 
         public ProfileSettingsViewModel CreateProfileSettingsViewModel(int device, int targetDevice = -1)
         {
             if (AppLogger.IsTraceEnabled)
                 AppLogger.LogTrace($"[DI] ViewModelFactory: Created ProfileSettingsViewModel for Device {device}, targetDevice {targetDevice}");
-            return new ProfileSettingsViewModel(device, _profileSettings, _controlService,
+            return new ProfileSettingsViewModel(device, _profileSettings, _loadTarget,
                 _outputSlotService, _profileRepo, _presetLoader, _environmentService, _pathService, targetDevice);
         }
 

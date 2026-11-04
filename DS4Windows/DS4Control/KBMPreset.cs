@@ -27,8 +27,8 @@ namespace DS4WinWPF.DS4Control
 
     public class KBMPreset : PresetOption
     {
-        public KBMPreset(DS4Windows.DI.IProfilePresetLoader presetLoader, DS4Windows.ControlService controlService)
-            : base(presetLoader, controlService)
+        public KBMPreset(DS4Windows.DI.IProfilePresetLoader presetLoader, DS4Windows.DI.IProfileLoadTarget loadTarget)
+            : base(presetLoader, loadTarget)
         {
             name = Translations.Strings.KBMPresetName;
             description = Translations.Strings.KBMPresetDescription;
@@ -36,7 +36,7 @@ namespace DS4WinWPF.DS4Control
 
         public override void ApplyPreset(int idx)
         {
-            presetLoader.LoadDefaultKBM(idx, false, controlService, false);
+            presetLoader.LoadDefaultKBM(idx, false, loadTarget, false);
         }
     }
 }

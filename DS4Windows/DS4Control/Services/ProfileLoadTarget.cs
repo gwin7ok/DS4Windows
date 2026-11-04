@@ -32,7 +32,8 @@ namespace DS4Windows.Services
             _stickMotion = stickMotion ?? throw new ArgumentNullException(nameof(stickMotion));
         }
 
-        public DS4Device GetController(int ind) => _slots.GetController(ind);
+        // 旧 control.DS4Controllers[ind] と同じ（範囲外は例外）。IDeviceStateAccessor.GetController（範囲外は null）にしない: 鎖の PostLoadSnippet などは範囲の検査をしないため、挙動を保つ
+        public DS4Device GetController(int ind) => _slots.DS4Controllers[ind];
 
         public Mouse GetTouchPad(int ind) => _slots.TouchPads[ind];
 

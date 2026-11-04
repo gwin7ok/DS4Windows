@@ -27,6 +27,7 @@ using DS4WinWPF.ApiDTO;
 using WpfScreenHelper;
 using static DS4Windows.Mouse;
 using static DS4Windows.Util;
+using DS4Windows.DI;
 
 namespace DS4Windows.Services
 {
@@ -89,7 +90,7 @@ namespace DS4Windows.Services
             _profileSettings = profileSettings ?? throw new ArgumentNullException(nameof(profileSettings));
         }
 
-        public bool LoadProfile(int device, bool launchprogram, ControlService control,
+        public bool LoadProfile(int device, bool launchprogram, IProfileLoadTarget control,
                 string propath = "", bool xinputChange = true, bool postLoad = true)
         {
             bool Loaded = true;
@@ -199,12 +200,12 @@ namespace DS4Windows.Services
 
                 // Unplug existing output device if requested profile does not exist
                 OutputDevice tempOutDev = device < _environment.ControllerSlotLimit ?
-                    control.outputDevices[device] : null;
+                    control.GetOutputDevice(device) : null;
                 if (tempOutDev != null)
                 {
                     tempOutDev = null;
                     //Global.activeOutDevType[device] = OutContType.None;
-                    DS4Device tempDev = control.DS4Controllers[device];
+                    DS4Device tempDev = control.GetController(device);
                     if (tempDev != null)
                     {
                         tempDev.queueEvent(() =>
@@ -228,18 +229,18 @@ namespace DS4Windows.Services
                 store.buttonMouseInfos[device].activeButtonSensitivity =
                     store.buttonMouseInfos[device].buttonSensitivity;
 
-                //if (device < Global.MAX_DS4_CONTROLLER_COUNT && control.touchPad[device] != null)
+                //if (device < Global.MAX_DS4_CONTROLLER_COUNT && control.GetTouchPad(device) != null)
                 //{
-                //    control.touchPad[device]?.ResetToggleGyroModes();
+                //    control.GetTouchPad(device)?.ResetToggleGyroModes();
                 //    GyroOutMode currentGyro = gyroOutMode[device];
                 //    if (currentGyro == GyroOutMode.Mouse)
                 //    {
-                //        control.touchPad[device].ToggleGyroMouse =
+                //        control.GetTouchPad(device).ToggleGyroMouse =
                 //            gyroMouseToggle[device];
                 //    }
                 //    else if (currentGyro == GyroOutMode.MouseJoystick)
                 //    {
-                //        control.touchPad[device].ToggleGyroMouse =
+                //        control.GetTouchPad(device).ToggleGyroMouse =
                 //            gyroMouseStickToggle[device];
                 //    }
                 //}

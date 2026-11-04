@@ -45,6 +45,7 @@ using DS4WinWPF.ApiDTO;
 using WpfScreenHelper;
 using static DS4Windows.Mouse;
 using static DS4Windows.Util;
+using DS4Windows.DI;
 namespace DS4Windows
 {
 
@@ -1033,32 +1034,32 @@ namespace DS4Windows
             sAMouseStickTriggerCond[index] = SaTriggerCondValue(text);
         }
 
-        public void SetGyroMouseDZ(int index, int value, ControlService control)
+        public void SetGyroMouseDZ(int index, int value, IProfileLoadTarget control)
         {
             gyroMouseDZ[index] = value;
-            if (index < _environmentService.ControllerSlotLimit && control.touchPad[index] != null)
-                control.touchPad[index].CursorGyroDead = value;
+            if (index < _environmentService.ControllerSlotLimit && control.GetTouchPad(index) != null)
+                control.GetTouchPad(index).CursorGyroDead = value;
         }
 
-        public void SetGyroControlsToggle(int index, bool value, ControlService control)
+        public void SetGyroControlsToggle(int index, bool value, IProfileLoadTarget control)
         {
             gyroControlsInf[index].triggerToggle = value;
-            if (index < _environmentService.ControllerSlotLimit && control.touchPad[index] != null)
-                control.touchPad[index].ToggleGyroControls = value;
+            if (index < _environmentService.ControllerSlotLimit && control.GetTouchPad(index) != null)
+                control.GetTouchPad(index).ToggleGyroControls = value;
         }
 
-        public void SetGyroMouseToggle(int index, bool value, ControlService control)
+        public void SetGyroMouseToggle(int index, bool value, IProfileLoadTarget control)
         {
             gyroMouseToggle[index] = value;
-            if (index < _environmentService.ControllerSlotLimit && control.touchPad[index] != null)
-                control.touchPad[index].ToggleGyroMouse = value;
+            if (index < _environmentService.ControllerSlotLimit && control.GetTouchPad(index) != null)
+                control.GetTouchPad(index).ToggleGyroMouse = value;
         }
 
-        public void SetGyroMouseStickToggle(int index, bool value, ControlService control)
+        public void SetGyroMouseStickToggle(int index, bool value, IProfileLoadTarget control)
         {
             gyroMouseStickToggle[index] = value;
-            if (index < _environmentService.ControllerSlotLimit && control.touchPad[index] != null)
-                control.touchPad[index].ToggleGyroStick = value;
+            if (index < _environmentService.ControllerSlotLimit && control.GetTouchPad(index) != null)
+                control.GetTouchPad(index).ToggleGyroStick = value;
         }
 
 
@@ -1268,12 +1269,12 @@ namespace DS4Windows
 
 
         // Phase7-Step10c W4: プロファイルの読込を担う LegacyProfileXmlSerializer が呼ぶため公開にした（プリセットの読込［Phase7-Step10c W6 まで BackingStore］も使う）
-        public void ResetMouseProperties(int device, ControlService control)
+        public void ResetMouseProperties(int device, IProfileLoadTarget control)
         {
             if (device < ControllerLimits.MaxControllerCount &&
-                    control.touchPad[device] != null)
+                    control.GetTouchPad(device) != null)
             {
-                control.touchPad[device]?.ResetToggleGyroModes();
+                control.GetTouchPad(device)?.ResetToggleGyroModes();
             }
         }
 
@@ -1419,7 +1420,7 @@ namespace DS4Windows
 
 
         // Phase7-Step10c W4: プロファイルの読込を担う LegacyProfileXmlSerializer が呼ぶため公開にした（プリセットの読込［Phase7-Step10c W6 まで BackingStore］も使う）
-        public void CheckOldDevicestatus(int device, ControlService control,
+        public void CheckOldDevicestatus(int device, IProfileLoadTarget control,
             OutContType oldContType, out bool xinputPlug, out bool xinputStatus)
         {
             xinputPlug = false;
@@ -1428,7 +1429,7 @@ namespace DS4Windows
             if (device < _environmentService.ControllerSlotLimit)
             {
                 bool oldUseDInputOnly = ProfileSettings.UseDInputOnlyArray[device];
-                DS4Device tempDevice = control.DS4Controllers[device];
+                DS4Device tempDevice = control.GetController(device);
                 bool exists = tempBool = (tempDevice != null);
                 bool synced = tempBool = exists ? tempDevice.isSynced() : false;
                 bool isAlive = tempBool = exists ? tempDevice.IsAlive() : false;
@@ -1455,9 +1456,9 @@ namespace DS4Windows
         }
 
         // Phase7-Step10c W4: プロファイルの読込を担う LegacyProfileXmlSerializer が呼ぶため公開にした（プリセットの読込［Phase7-Step10c W6 まで BackingStore］も使う）
-        public void PostLoadSnippet(int device, ControlService control, bool xinputStatus, bool xinputPlug)
+        public void PostLoadSnippet(int device, IProfileLoadTarget control, bool xinputStatus, bool xinputPlug)
         {
-            DS4Device tempDev = control.DS4Controllers[device];
+            DS4Device tempDev = control.GetController(device);
             if (tempDev != null && tempDev.isSynced())
             {
                 tempDev.queueEvent(() =>
@@ -1468,7 +1469,7 @@ namespace DS4Windows
                     {
                         if (xinputPlug)
                         {
-                            OutputDevice tempOutDev = control.outputDevices[device];
+                            OutputDevice tempOutDev = control.GetOutputDevice(device);
                             if (tempOutDev != null)
                             {
                                 tempOutDev = null;

@@ -27,8 +27,8 @@ namespace DS4WinWPF.DS4Control
 
     public class KBMGyroMouse : PresetOption
     {
-        public KBMGyroMouse(DS4Windows.DI.IProfilePresetLoader presetLoader, DS4Windows.ControlService controlService)
-            : base(presetLoader, controlService)
+        public KBMGyroMouse(DS4Windows.DI.IProfilePresetLoader presetLoader, DS4Windows.DI.IProfileLoadTarget loadTarget)
+            : base(presetLoader, loadTarget)
         {
             name = Translations.Strings.KBMGyroMouseName;
             description = Translations.Strings.KBMGyroMouseDescription;
@@ -36,7 +36,7 @@ namespace DS4WinWPF.DS4Control
 
         public override void ApplyPreset(int idx)
         {
-            presetLoader.LoadDefaultKBMGyroMouse(idx, false, controlService, false);
+            presetLoader.LoadDefaultKBMGyroMouse(idx, false, loadTarget, false);
         }
     }
 }

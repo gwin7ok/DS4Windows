@@ -99,7 +99,7 @@ namespace DS4WindowsTests
             var actionsXml = TestRepositoryFactory.CreateActionsXml(config);
             var legacyXml = TestRepositoryFactory.CreateLegacyProfileXml(config);
             var path = new PathService();
-            Func<ControlService> control = () => null;
+            IProfileLoadTarget control = new LazyProfileLoadTarget();   // Phase13-Step6 6-e: 旧 Func<ControlService>
 
             Assert.Throws<ArgumentNullException>(() => new ProfileRepository(null, settings, store, path, control, linkedXml, actionsXml, legacyXml, new EnvironmentService()));
             Assert.Throws<ArgumentNullException>(() => new ProfileXmlStore(null, new DS4Windows.Services.ControllerConfigsXmlSerializer(config), TestRepositoryFactory.CreateAppSettingsXml(config), TestRepositoryFactory.CreateLegacyProfileXml(config)));
@@ -145,7 +145,7 @@ namespace DS4WindowsTests
             var holder = new DS4WinWPF.AutoProfileHolder(path, new EnvironmentService());
             var settings = TestRepositoryFactory.CreateProfileSettingsService();
             var app = TestRepositoryFactory.CreateProfileApplicationService(settings,
-                () => null,
+                new LazyProfileLoadTarget(),
                 TestRepositoryFactory.CreateProfileRepository(settings), new EnvironmentService());
             var repo = TestRepositoryFactory.CreateProfileRepository(settings);
             var env = new EnvironmentService();
@@ -313,7 +313,7 @@ namespace DS4WindowsTests
         public void ProfileApplicationService_RequiresAllDependencies()
         {
             var settings = TestRepositoryFactory.CreateProfileSettingsService();
-            Func<ControlService> control = () => null;
+            IProfileLoadTarget control = new LazyProfileLoadTarget();   // Phase13-Step6 6-e: 旧 Func<ControlService>
             var repo = TestRepositoryFactory.CreateProfileRepository(settings, null, null);
             var env = new EnvironmentService();
 
@@ -330,7 +330,7 @@ namespace DS4WindowsTests
             var settings = TestRepositoryFactory.CreateProfileSettingsService();
             var repo = TestRepositoryFactory.CreateProfileRepository(settings);
             var env = new EnvironmentService();
-            var service = TestRepositoryFactory.CreateProfileApplicationService(settings, () => null, repo, env);
+            var service = TestRepositoryFactory.CreateProfileApplicationService(settings, new LazyProfileLoadTarget(), repo, env);
             int limit = env.ControllerSlotLimit;
 
             // 上限（範囲外）は拒否され、何も変更されない（Phase8-Step6 W3: ClearPendingRestore の削除に伴い、保留中の復帰先の検査は外した）

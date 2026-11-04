@@ -27,6 +27,7 @@ using DS4WinWPF.ApiDTO;
 using WpfScreenHelper;
 using static DS4Windows.Mouse;
 using static DS4Windows.Util;
+using DS4Windows.DI;
 
 namespace DS4Windows.Services
 {
@@ -42,7 +43,7 @@ namespace DS4Windows.Services
             XmlDocument m_Xdoc = context.Xdoc;
             string rootname = context.RootName;
             int device = context.Device;
-            ControlService control = context.Control;
+            IProfileLoadTarget control = context.Control;
             bool missingSetting = context.MissingSetting;
             XmlNode Item;
 

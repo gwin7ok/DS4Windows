@@ -28,7 +28,7 @@ namespace DS4WindowsTests
 
         private readonly string _dir;
         private readonly string _originalAppData;
-        private readonly ControlService _control;
+        private readonly IProfileLoadTarget _control;   // Phase13-Step6 6-e: 旧 ControlService（プロファイル読込の窓口）
         private readonly IProfileSettingsService _settings;
         private readonly ProfileRepository _repo;
         private readonly ProfileApplicationService _service;
@@ -50,12 +50,13 @@ namespace DS4WindowsTests
             TestGlobals.AppDataPath = _dir;
 
             DS4WinWPF.AppHost.CreateHost();
-            _control = TestHost.GetService<ControlService>();
+            TestHost.GetService<ControlService>();   // TempStates などは ControlService のコンストラクターが作る
+            _control = TestHost.GetService<IProfileLoadTarget>();
             _settings = TestGlobals.ProfileSettingsServiceInstance;
 
             _repo = TestRepositoryFactory.CreateProfileRepository(_settings);
             _service = TestRepositoryFactory.CreateProfileApplicationService(_settings,
-                () => _control, _repo, new EnvironmentService());
+                _control, _repo, new EnvironmentService());
             _slotApplier = new ProfileSlotApplier(_service, new EnvironmentService(), TestHost.GetService<DS4Windows.Actions.ITriggerDispatchEngine>());
 
             _origProfilePath = _repo.ProfilePath[Slot];

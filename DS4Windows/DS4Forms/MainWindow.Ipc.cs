@@ -214,7 +214,7 @@ namespace DS4WinWPF.DS4Forms
                             device.HaltReportingRunAction(() =>
                             {
                                 // Phase8-Step5 W2（Q6＝A）: この経路は適用の後始末を通らないため、読込の成功後に束縛を差し替える
-                                if (profileRepo.LoadTempProfile(tdevice, strData[2], true, controlService))
+                                if (profileRepo.LoadTempProfile(tdevice, strData[2], true, loadTarget))
                                     profileAppService.PublishBindings(tdevice);
                             });
                         }

@@ -27,8 +27,8 @@ namespace DS4WinWPF.DS4Control
 
     public class GamepadGyroCamera : PresetOption
     {
-        public GamepadGyroCamera(DS4Windows.DI.IProfilePresetLoader presetLoader, DS4Windows.ControlService controlService)
-            : base(presetLoader, controlService)
+        public GamepadGyroCamera(DS4Windows.DI.IProfilePresetLoader presetLoader, DS4Windows.DI.IProfileLoadTarget loadTarget)
+            : base(presetLoader, loadTarget)
         {
             name = Translations.Strings.GamepadGyroCameraName;
             description = Translations.Strings.GamepadGyroCameraDescription;
@@ -40,11 +40,11 @@ namespace DS4WinWPF.DS4Control
         {
             if (outputCont == OutputContChoice.Xbox360)
             {
-                presetLoader.LoadDefaultGamepadGyro(idx, false, controlService, false);
+                presetLoader.LoadDefaultGamepadGyro(idx, false, loadTarget, false);
             }
             else if (outputCont == OutputContChoice.DualShock4)
             {
-                presetLoader.LoadDefaultDS4GamepadGyro(idx, false, controlService, false);
+                presetLoader.LoadDefaultDS4GamepadGyro(idx, false, loadTarget, false);
             }
         }
     }

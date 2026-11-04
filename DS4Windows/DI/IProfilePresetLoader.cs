@@ -1,3 +1,4 @@
+using DS4Windows.DI;
 namespace DS4Windows.DI
 {
     /// <summary>
@@ -13,33 +14,33 @@ namespace DS4Windows.DI
     public interface IProfilePresetLoader
     {
         /// <summary>旧 <c>Global.LoadBlankDevProfile</c>（空のプロファイル。Xbox 360 出力）。</summary>
-        void LoadBlank(int deviceIndex, bool launchProgram, ControlService control, bool xinputChange = true, bool postLoad = true);
+        void LoadBlank(int deviceIndex, bool launchProgram, IProfileLoadTarget control, bool xinputChange = true, bool postLoad = true);
 
         /// <summary>旧 <c>Global.LoadBlankDS4Profile</c>（空のプロファイル。DualShock 4 出力）。</summary>
-        void LoadBlankDS4(int deviceIndex, bool launchProgram, ControlService control, bool xinputChange = true, bool postLoad = true);
+        void LoadBlankDS4(int deviceIndex, bool launchProgram, IProfileLoadTarget control, bool xinputChange = true, bool postLoad = true);
 
         /// <summary>旧 <c>Global.LoadDefaultGamepadGyroProfile</c>。</summary>
-        void LoadDefaultGamepadGyro(int deviceIndex, bool launchProgram, ControlService control, bool xinputChange = true, bool postLoad = true);
+        void LoadDefaultGamepadGyro(int deviceIndex, bool launchProgram, IProfileLoadTarget control, bool xinputChange = true, bool postLoad = true);
 
         /// <summary>旧 <c>Global.LoadDefaultDS4GamepadGyroProfile</c>。</summary>
-        void LoadDefaultDS4GamepadGyro(int deviceIndex, bool launchProgram, ControlService control, bool xinputChange = true, bool postLoad = true);
+        void LoadDefaultDS4GamepadGyro(int deviceIndex, bool launchProgram, IProfileLoadTarget control, bool xinputChange = true, bool postLoad = true);
 
         /// <summary>旧 <c>Global.LoadDefaultMixedControlsProfile</c>。</summary>
-        void LoadDefaultMixedControls(int deviceIndex, bool launchProgram, ControlService control, bool xinputChange = true, bool postLoad = true);
+        void LoadDefaultMixedControls(int deviceIndex, bool launchProgram, IProfileLoadTarget control, bool xinputChange = true, bool postLoad = true);
 
         /// <summary>旧 <c>Global.LoadDefaultDS4MixedControlsProfile</c>。</summary>
-        void LoadDefaultDS4MixedControls(int deviceIndex, bool launchProgram, ControlService control, bool xinputChange = true, bool postLoad = true);
+        void LoadDefaultDS4MixedControls(int deviceIndex, bool launchProgram, IProfileLoadTarget control, bool xinputChange = true, bool postLoad = true);
 
         /// <summary>旧 <c>Global.LoadDefaultMixedGyroMouseProfile</c>。</summary>
-        void LoadDefaultMixedGyroMouse(int deviceIndex, bool launchProgram, ControlService control, bool xinputChange = true, bool postLoad = true);
+        void LoadDefaultMixedGyroMouse(int deviceIndex, bool launchProgram, IProfileLoadTarget control, bool xinputChange = true, bool postLoad = true);
 
         /// <summary>旧 <c>Global.LoadDefaultDS4MixedGyroMouseProfile</c>。</summary>
-        void LoadDefaultDS4MixedGyroMouse(int deviceIndex, bool launchProgram, ControlService control, bool xinputChange = true, bool postLoad = true);
+        void LoadDefaultDS4MixedGyroMouse(int deviceIndex, bool launchProgram, IProfileLoadTarget control, bool xinputChange = true, bool postLoad = true);
 
         /// <summary>旧 <c>Global.LoadDefaultKBMProfile</c>。</summary>
-        void LoadDefaultKBM(int deviceIndex, bool launchProgram, ControlService control, bool xinputChange = true, bool postLoad = true);
+        void LoadDefaultKBM(int deviceIndex, bool launchProgram, IProfileLoadTarget control, bool xinputChange = true, bool postLoad = true);
 
         /// <summary>旧 <c>Global.LoadDefaultKBMGyroMouseProfile</c>。</summary>
-        void LoadDefaultKBMGyroMouse(int deviceIndex, bool launchProgram, ControlService control, bool xinputChange = true, bool postLoad = true);
+        void LoadDefaultKBMGyroMouse(int deviceIndex, bool launchProgram, IProfileLoadTarget control, bool xinputChange = true, bool postLoad = true);
     }
 }

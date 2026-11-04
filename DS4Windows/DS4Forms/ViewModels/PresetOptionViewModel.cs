@@ -71,17 +71,17 @@ namespace DS4WinWPF.DS4Forms.ViewModels
 
         public List<EnumChoiceSelection<PresetOption.OutputContChoice>> OutputChoices { get => outputChoices; }
 
-        public PresetOptionViewModel(DS4Windows.DI.IProfilePresetLoader presetLoader, DS4Windows.ControlService controlService)
+        public PresetOptionViewModel(DS4Windows.DI.IProfilePresetLoader presetLoader, DS4Windows.DI.IProfileLoadTarget loadTarget)
         {
             if (presetLoader == null) throw new ArgumentNullException(nameof(presetLoader));
-            if (controlService == null) throw new ArgumentNullException(nameof(controlService));
+            if (loadTarget == null) throw new ArgumentNullException(nameof(loadTarget));
             presetList = new List<PresetOption>();
-            presetList.Add(new GamepadPreset(presetLoader, controlService));
-            presetList.Add(new GamepadGyroCamera(presetLoader, controlService));
-            presetList.Add(new MixedPreset(presetLoader, controlService));
-            presetList.Add(new MixedGyroMousePreset(presetLoader, controlService));
-            presetList.Add(new KBMPreset(presetLoader, controlService));
-            presetList.Add(new KBMGyroMouse(presetLoader, controlService));
+            presetList.Add(new GamepadPreset(presetLoader, loadTarget));
+            presetList.Add(new GamepadGyroCamera(presetLoader, loadTarget));
+            presetList.Add(new MixedPreset(presetLoader, loadTarget));
+            presetList.Add(new MixedGyroMousePreset(presetLoader, loadTarget));
+            presetList.Add(new KBMPreset(presetLoader, loadTarget));
+            presetList.Add(new KBMGyroMouse(presetLoader, loadTarget));
 
             PresetIndexChanged += PresetOptionViewModel_PresetIndexChanged;
         }

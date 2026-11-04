@@ -7,7 +7,7 @@ namespace DS4WindowsTests
 {
     /// <summary>
     /// Phase13-Step5: スロット状態の窓口の <c>Func</c>（ロードマップ #6・#7・#8）を撤廃したことのガード。
-    /// <c>Func&lt;IDeviceStateAccessor&gt;</c>／<c>Func&lt;IUdpMotionHost&gt;</c> は本番のソースに 0 件、
+    /// <c>Func&lt;IDeviceStateAccessor&gt;</c>／<c>Func&lt;IUdpMotionHost&gt;</c> は本番のソースに 0 件、Phase13-Step6 で <c>Func&lt;ControlService&gt;</c> も 0 件にした、
     /// <c>Func&lt;IDeviceSlotHost&gt;</c> も、Phase13-Step5b（5b-d）で 0 件にした（<c>IDeviceSlotHost</c> ごと削除）。
     /// ソースが見つからない環境では、ソースの検査を行わず合格とする。
     /// </summary>
@@ -51,6 +51,15 @@ namespace DS4WindowsTests
             string[] files = FilesContaining(@"Func<\s*(?:DS4Windows\.DI\.)?IDeviceSlotHost\s*>");
             if (files == null) return;
             Assert.True(files.Length == 0, "撤廃した Func<IDeviceSlotHost> が残っている: " + string.Join(", ", files));
+        }
+
+        /// <summary>Phase13-Step6 6-e: 9 利用者の <c>Func&lt;ControlService&gt;</c> と、その登録をすべて撤廃した（ロードマップ #1〜#5）。</summary>
+        [Fact]
+        public void FuncOfControlService_NoLongerAppears()
+        {
+            string[] files = FilesContaining(@"Func<\s*(?:DS4Windows\.)?ControlService\s*>");
+            if (files == null) return;
+            Assert.True(files.Length == 0, "撤廃した Func<ControlService> が残っている: " + string.Join(", ", files));
         }
     }
 }

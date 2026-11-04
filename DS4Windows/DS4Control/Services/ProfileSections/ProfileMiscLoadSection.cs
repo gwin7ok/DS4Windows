@@ -27,6 +27,7 @@ using DS4WinWPF.ApiDTO;
 using WpfScreenHelper;
 using static DS4Windows.Mouse;
 using static DS4Windows.Util;
+using DS4Windows.DI;
 
 namespace DS4Windows.Services
 {
@@ -45,7 +46,7 @@ namespace DS4Windows.Services
             LightbarDS4WinInfo lightInfo = context.LightInfo;
             bool launchprogram = context.LaunchProgram;
             DS4Windows.DI.IProfileSettingsService _profileSettings = context.ProfileSettings;
-            ControlService control = context.Control;
+            IProfileLoadTarget control = context.Control;
             bool missingSetting = context.MissingSetting;
             XmlNode Item;
 

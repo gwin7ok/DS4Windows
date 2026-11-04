@@ -8,9 +8,7 @@ namespace DS4Windows
     public class ProfileApplicationService : IProfileApplicationService
     {
         private readonly IProfileSettingsService _profileSettings;
-        private readonly Func<ControlService> _controlProvider;
-        // Phase6-Step10-4-2a: ControlService は遅延解決（Func）で受け取る（Program.rootHub/AppHost 参照の廃止。決定 D4-3）
-        private ControlService _control => _controlProvider();
+        private readonly IProfileLoadTarget _control;   // Phase13-Step6 6-e: 旧 Func<ControlService>（遅延解決）。プロファイル読込の鎖が使う窓口を直接受ける
         private readonly IProfileRepository _profileRepo;
         // Phase10-Step4d W5c: Load Profile の切り替え先を、実行の直前に ID から現在の名前に引く。省略可（なければ、従来どおり details の名前）
         private readonly DS4Windows.DI.IProfileIdentityService _profileIdentity;
@@ -30,7 +28,7 @@ namespace DS4Windows
 
         public ProfileApplicationService(
             IProfileSettingsService profileSettings,
-            Func<ControlService> controlProvider,
+            IProfileLoadTarget loadTarget,
             IProfileRepository profileRepo,
             IEnvironmentService environmentService,
             IProfileXmlStore profileXmlStore,
@@ -52,7 +50,7 @@ namespace DS4Windows
             _config = config ?? throw new ArgumentNullException(nameof(config));
             _profileSettings = profileSettings ?? throw new ArgumentNullException(nameof(profileSettings));
             // Phase7-Step10b W3: 未使用だった依存 IDeviceStateService（フィールドを保持するだけ。234e20f9 で DI コンテナ化の途中に追加）を外した。
-            _controlProvider = controlProvider ?? throw new ArgumentNullException(nameof(controlProvider));
+            _control = loadTarget ?? throw new ArgumentNullException(nameof(loadTarget));
             _profileRepo = profileRepo ?? throw new ArgumentNullException(nameof(profileRepo));
             _environmentService = environmentService ?? throw new ArgumentNullException(nameof(environmentService));
         }
@@ -97,7 +95,7 @@ namespace DS4Windows
                 return;
             }
 
-            DS4Device device = _control?.DS4Controllers?[deviceIndex];
+            DS4Device device = _control.GetController(deviceIndex);
 
             // Phase10-Step4d W5c: 切り替え先の名前は、ID があれば ID から引く（プロファイルの名前を変えたあとも、SA を作り直さずに、現在の名前で切り替える）
             string target = ResolveTarget(action);
@@ -197,7 +195,7 @@ namespace DS4Windows
             bool success = false;
             try
             {
-                DS4Device device = _control?.DS4Controllers?[deviceIndex];
+                DS4Device device = _control.GetController(deviceIndex);
 
                 Action applyAction = () =>
                 {
@@ -241,7 +239,7 @@ namespace DS4Windows
         // 静的な ActionManager／Mapping の呼び出しは、それぞれ Phase8／Phase7-Step7〜9 で解消するまで残す。
 
         private bool ApplyCore(int device, string profileName, bool isTemp, bool launchProgram,
-            ControlService control, ProfileChangeSource source, string prolog)
+            IProfileLoadTarget control, ProfileChangeSource source, string prolog)
         {
             // Debug: ApplyProfile呼び出しログ
             string stackTrace = new System.Diagnostics.StackTrace(1, true).ToString();
@@ -276,7 +274,7 @@ namespace DS4Windows
         }
 
         // 旧 Global.LoadProfile（ProfilePath[device] のプロファイルを読み込み、一時プロファイルの状態を戻す）
-        private bool LoadNormalProfile(int device, bool launchProgram, ControlService control)
+        private bool LoadNormalProfile(int device, bool launchProgram, IProfileLoadTarget control)
         {
             _config.loggedInvalidActions.Clear();
             bool result = _profileXmlStore.LoadProfileXml(device, launchProgram, control, "", true, true);
@@ -288,7 +286,7 @@ namespace DS4Windows
         }
 
         private void CompleteProfileApplication(int device, string profileName, bool isTemp,
-            ControlService control, ProfileChangeSource source, string prolog)
+            IProfileLoadTarget control, ProfileChangeSource source, string prolog)
         {
             AppLogger.LogDebug($"ApplyProfile: Profile loaded successfully. Updating state...");
             _profileRepo.SelectedProfile[device] = profileName;
@@ -305,7 +303,7 @@ namespace DS4Windows
 
             if (prolog == null)
             {
-                DS4Device ds4Device = control.DS4Controllers[device];
+                DS4Device ds4Device = control.GetController(device);
                 string battery = ds4Device != null ? $"{ds4Device.Battery}" : "N/A";
                 prolog = $"Controller {device + 1} is now using Profile \"{profileName}\" (Battery: {battery}%)";
             }

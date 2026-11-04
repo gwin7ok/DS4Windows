@@ -301,16 +301,16 @@ namespace DS4Windows
         public int GetGyroMouseHorizontalAxis(int deviceIndex) => SafeConfig != null && SafeConfig.gyroMouseHorizontalAxis != null ? SafeConfig.gyroMouseHorizontalAxis[deviceIndex] : 0;
         public GyroControlsInfo GetGyroControlsInfo(int deviceIndex) => SafeConfig?.gyroControlsInf?[deviceIndex];
 
-        public void SetGyroMouseDeadZone(int index, int value, ControlService control)
+        public void SetGyroMouseDeadZone(int index, int value, IProfileLoadTarget control)
             => SafeConfig?.SetGyroMouseDZ(index, value, control);
 
-        public void SetGyroMouseToggle(int index, bool value, ControlService control)
+        public void SetGyroMouseToggle(int index, bool value, IProfileLoadTarget control)
             => SafeConfig?.SetGyroMouseToggle(index, value, control);
 
-        public void SetGyroControlsToggle(int index, bool value, ControlService control)
+        public void SetGyroControlsToggle(int index, bool value, IProfileLoadTarget control)
             => SafeConfig?.SetGyroControlsToggle(index, value, control);
 
-        public void SetGyroMouseStickToggle(int index, bool value, ControlService control)
+        public void SetGyroMouseStickToggle(int index, bool value, IProfileLoadTarget control)
             => SafeConfig?.SetGyroMouseStickToggle(index, value, control);
 
         // ---- Step10-2-A-5: ライトバー・ランブル関連 (m_Config委譲) ----

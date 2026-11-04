@@ -27,7 +27,7 @@ namespace DS4Windows
             _backingStore = backingStore ?? throw new ArgumentNullException(nameof(backingStore));
         }
 
-        public bool LoadProfileXml(int deviceIndex, bool launchProgram, ControlService control,
+        public bool LoadProfileXml(int deviceIndex, bool launchProgram, IProfileLoadTarget control,
             string overridePath = "", bool xinputChange = true, bool postLoad = true)
         {
             lock (XmlIoLock)

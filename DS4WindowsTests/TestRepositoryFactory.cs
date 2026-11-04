@@ -48,7 +48,7 @@ namespace DS4WindowsTests
             => new DS4Windows.Services.AppSettingsXmlSerializer(store ?? TestGlobals.Store, pathService ?? new PathService(), environment ?? new EnvironmentService());
 
         public static ProfileRepository CreateProfileRepository(IProfileSettingsService settings = null,
-            IProfileXmlStore xmlStore = null, IPathService pathService = null, Func<ControlService> control = null,
+            IProfileXmlStore xmlStore = null, IPathService pathService = null, IProfileLoadTarget loadTarget = null,
             BackingStore store = null)
         {
             return new ProfileRepository(
@@ -56,7 +56,7 @@ namespace DS4WindowsTests
                 settings ?? TestGlobals.ProfileSettingsServiceInstance,
                 xmlStore ?? CreateProfileXmlStore(store),
                 pathService ?? new PathService(),
-                control ?? new Func<ControlService>(() => TestHost.GetService<ControlService>()),
+                loadTarget ?? new LazyProfileLoadTarget(),   // Phase13-Step6 6-e: 旧 Func<ControlService>（遅延）。ホストから初回使用時に解決する
                 CreateLinkedProfilesXml(store), CreateActionsXml(store), CreateLegacyProfileXml(store, settings, pathService), new EnvironmentService());
         }
 
@@ -126,7 +126,7 @@ namespace DS4WindowsTests
         }
 
         public static ProfileApplicationService CreateProfileApplicationService(IProfileSettingsService settings,
-            Func<ControlService> control, IProfileRepository profileRepository,
+            IProfileLoadTarget control, IProfileRepository profileRepository,
             IEnvironmentService environmentService, IProfileXmlStore xmlStore = null,
             IProfileActionProvider actionProvider = null, BackingStore store = null,
             IKeyButtonControllerRegistry keyButtonControllers = null,
@@ -150,7 +150,7 @@ namespace DS4WindowsTests
         {
             var settings = TestGlobals.ProfileSettingsServiceInstance;
             return new ProfileSlotApplier(profileApplication ?? CreateProfileApplicationService(settings,
-                () => null, CreateProfileRepository(settings), new EnvironmentService()), new EnvironmentService(),
+                new LazyProfileLoadTarget(), CreateProfileRepository(settings), new EnvironmentService()), new EnvironmentService(),
                 engine ?? TestHost.GetService<DS4Windows.Actions.ITriggerDispatchEngine>());
         }
 
