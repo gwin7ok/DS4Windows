@@ -14,7 +14,7 @@
 | 13b-8 | 接頭辞の統一、毎フレーム経路のガード | 完了（`592dc658`） |
 | 13b-9 | `LogToGui`・`TrayIconLog` の削除（61 か所の書き換え） | 完了（`2cde72f3`） |
 | 13b-10 | モデル図 03・04・01、`Log-Policy.md`、ロードマップ §7、先送り台帳 | 完了（コミット待ち→本コミット） |
-| 13b-11 | Release ビルド 2 か所 → 実機確認（1 回）→ 完了報告書 | Release ビルドの後、実機確認待ち |
+| 13b-11 | Release ビルド 2 か所 → 実機確認（1 回）→ 完了報告書 | Release ビルド 2 か所は出力済み（`DS4WindowsbindRelease`、`DS4WindowsbindDS4Windows`、v4.3.0）。実機確認待ち（その後、完了報告書） |
 
 検証（各 Step）: Debug ALL で警告 0・エラー 0。13b-9 時点で Actions 3,150 件、Standalone 11 件が合格（13b-3 で `ServiceDebugRelay` のテストを削除、13b-9 で `LogToGui` の対応表のテスト 4 ケースを新 API のテストに置換）。ラチェットの基準値の変更なし。
 
