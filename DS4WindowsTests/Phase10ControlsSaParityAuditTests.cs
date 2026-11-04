@@ -35,7 +35,7 @@ namespace DS4WindowsTests
             provider.Add(sa);
             var builder = new ActionBindingBuilder(provider, TestHost.GetService<IProfileSettingsService>(), TestHost.GetService<IManagedActionManager>(),
                 TestHost.GetService<IMacroPlayer>(), TestHost.GetService<IProcessLauncher>(), TestHost.GetService<IProfileSwitcher>(),
-                TestHost.GetService<ISpecialActionRepository>(), TestHost.GetService<Func<IMapping>>(),
+                TestHost.GetService<ISpecialActionRepository>(), TestHost.GetService<IMapping>(),
                 TestHost.GetService<IGyroCalibrationPort>(), TestHost.GetService<IControllerDisconnectPort>(), TestHost.GetService<IBatteryCheckPort>(),
                 TestHost.GetService<IMacroStringPlayer>(), outputFactory: TestHost.GetService<ISpecialActionOutputFactory>(),
                 extrasPort: TestHost.GetService<IControlExtrasPort>(), controllers: TestActions.Controllers);

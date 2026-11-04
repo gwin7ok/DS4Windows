@@ -219,7 +219,7 @@ namespace DS4WindowsTests
             => new ActionBindingBuilder(TestHost.GetService<IProfileActionProvider>(), TestHost.GetService<IProfileSettingsService>(),
                 TestHost.GetService<IManagedActionManager>(), TestHost.GetService<IMacroPlayer>(), TestHost.GetService<IProcessLauncher>(),
                 TestHost.GetService<IProfileSwitcher>(), TestHost.GetService<ISpecialActionRepository>(),
-                TestHost.GetService<Func<IMapping>>(), null, null, null, player, controllers: TestActions.Controllers);
+                TestHost.GetService<IMapping>(), null, null, null, player, controllers: TestActions.Controllers);
 
         private static void Publish(SpecialActionTestScope t, IMacroStringPlayer player)
             => TestHost.GetService<IActionRegistry>().Replace(t.Device, NewBuilder(player).Build(t.Device));
@@ -301,7 +301,7 @@ namespace DS4WindowsTests
             player.PlayMacroString(-1, "65/65");
             player.PlayMacroString(99, "65/65");
 
-            new DefaultMacroStringPlayer(() => null).PlayMacroString(0, "65/65");   // Mapping がなくても、例外にしない
+            Assert.Throws<ArgumentNullException>(() => new DefaultMacroStringPlayer(null));   // Phase13-Step8 8-b: 直接注入にしたため、Mapping は必須（旧: 遅延取得デリゲートが null を返しても例外にしない）
         }
 
         [Fact]

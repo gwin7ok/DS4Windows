@@ -229,14 +229,14 @@ namespace DS4WindowsTests
         public void Actions_RequireAllDependencies()
         {
             var sa = new SpecialAction("a", "Cross", "Key", "1", 0);
-            var player = new DefaultMacroPlayer(new MockVirtualKBM(), TestRepositoryFactory.MappingProvider);
+            var player = new DefaultMacroPlayer(new MockVirtualKBM(), TestHost.GetService<IMapping>());
             var launcher = new DefaultProcessLauncher();
             var switcher = new DefaultProfileSwitcher();
 
             Assert.Throws<ArgumentNullException>(() => new MacroAction(sa, (IMacroPlayer)null));
             Assert.Throws<ArgumentNullException>(() => new ProfileSwitchAction(sa, (IProfileSwitcher)null));
             Assert.Throws<ArgumentNullException>(() => new LaunchProcessAction(sa, null));
-            Assert.Throws<ArgumentNullException>(() => new DefaultMacroPlayer(null, TestRepositoryFactory.MappingProvider));
+            Assert.Throws<ArgumentNullException>(() => new DefaultMacroPlayer(null, TestHost.GetService<IMapping>()));
             Assert.Throws<ArgumentNullException>(() => new DefaultMacroPlayer(new MockVirtualKBM(), null));
             Assert.Throws<ArgumentNullException>(() => new DefaultActionManager(null));
         }

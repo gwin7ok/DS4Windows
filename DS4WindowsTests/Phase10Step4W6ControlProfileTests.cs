@@ -74,7 +74,7 @@ namespace DS4WindowsTests
         private static SpecialActionOutputFactory NewFactory(IProfileSwitcher switcher)
             => new SpecialActionOutputFactory(TestHost.GetService<IProfileSettingsService>(), TestHost.GetService<IManagedActionManager>(), TestHost.GetService<IKeyButtonControllerRegistry>(),
                 TestHost.GetService<IMacroPlayer>(), TestHost.GetService<IProcessLauncher>(), switcher,
-                TestHost.GetService<ISpecialActionRepository>(), TestHost.GetService<Func<IMapping>>());
+                TestHost.GetService<ISpecialActionRepository>(), TestHost.GetService<IMapping>());
 
         private static ControlBindingBuilder NewBuilder(IProfileSwitcher switcher)
             => new ControlBindingBuilder(TestHost.GetService<IProfileSettingsService>(), null, null, NewFactory(switcher));

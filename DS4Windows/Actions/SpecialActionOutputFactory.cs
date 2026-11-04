@@ -18,7 +18,7 @@ namespace DS4Windows.Actions
         private readonly IProcessLauncher _processLauncher;
         private readonly IProfileSwitcher _profileSwitcher;
         private readonly ISpecialActionRepository _actionRepository;   // Key のログ（ActionEntries の数）用。省略可（テスト）
-        private readonly Func<IMapping> _mappingProvider;               // Profile の連鎖の防止（復帰の合図の参照）用。省略可（テスト）
+        private readonly IMapping _mapping;               // Profile の連鎖の防止（復帰の合図の参照）用。省略可（テスト）
         private readonly IGyroCalibrationPort _gyroCalibration;         // GyroCalibrate（7.6a）。省略時（テスト）は束縛を作らない
         private readonly IControllerDisconnectPort _disconnectPort;     // DisconnectBT（7.6b）。同上
         private readonly IBatteryCheckPort _batteryCheckPort;           // BatteryCheck（7.6c）。同上
@@ -28,7 +28,7 @@ namespace DS4Windows.Actions
         public SpecialActionOutputFactory(IProfileSettingsService profileSettings,
             IManagedActionManager manager, IKeyButtonControllerRegistry controllers, IMacroPlayer macroPlayer, IProcessLauncher processLauncher,
             IProfileSwitcher profileSwitcher, ISpecialActionRepository actionRepository = null,
-            Func<IMapping> mappingProvider = null, IGyroCalibrationPort gyroCalibration = null,
+            IMapping mapping = null, IGyroCalibrationPort gyroCalibration = null,
             IControllerDisconnectPort disconnectPort = null, IBatteryCheckPort batteryCheckPort = null,
             IMacroStringPlayer macroStringPlayer = null, IWindowFocuser windowFocuser = null)
             : this(profileSettings, manager ?? throw new ArgumentNullException(nameof(manager)),
@@ -36,7 +36,7 @@ namespace DS4Windows.Actions
                 macroPlayer ?? throw new ArgumentNullException(nameof(macroPlayer)),
                 processLauncher ?? throw new ArgumentNullException(nameof(processLauncher)),
                 profileSwitcher ?? throw new ArgumentNullException(nameof(profileSwitcher)),
-                actionRepository, mappingProvider, gyroCalibration, disconnectPort, batteryCheckPort, macroStringPlayer, windowFocuser, true)
+                actionRepository, mapping, gyroCalibration, disconnectPort, batteryCheckPort, macroStringPlayer, windowFocuser, true)
         {
         }
 
@@ -52,13 +52,13 @@ namespace DS4Windows.Actions
         private SpecialActionOutputFactory(IProfileSettingsService profileSettings,
             IManagedActionManager manager, IKeyButtonControllerRegistry controllers, IMacroPlayer macroPlayer, IProcessLauncher processLauncher,
             IProfileSwitcher profileSwitcher, ISpecialActionRepository actionRepository,
-            Func<IMapping> mappingProvider, IGyroCalibrationPort gyroCalibration,
+            IMapping mapping, IGyroCalibrationPort gyroCalibration,
             IControllerDisconnectPort disconnectPort, IBatteryCheckPort batteryCheckPort,
             IMacroStringPlayer macroStringPlayer, IWindowFocuser windowFocuser, bool bypassesRequiredChecks)
         {
             _windowFocuser = windowFocuser;
             _actionRepository = actionRepository;
-            _mappingProvider = mappingProvider;
+            _mapping = mapping;
             _gyroCalibration = gyroCalibration;
             _disconnectPort = disconnectPort;
             _batteryCheckPort = batteryCheckPort;
@@ -121,7 +121,7 @@ namespace DS4Windows.Actions
                     // （a7277da9 で「Set Unload Trigger」を削除）、旧データ（Actions.xml）にだけ残っていた。uTrigger を持つ Profile も束縛を作り、
                     // 切替は行う。復帰は、自動（AutomaticUntrigger）のときだけ。uTrigger の値は読み込みも保存もそのまま（ファイルは変えない）。
                     UntriggerPolicy untrigger = item != null && item.AutomaticUntrigger ? UntriggerPolicy.Automatic : UntriggerPolicy.None;
-                    return new SpecialActionOutputs(new IOutputAction[] { new ProfileSwitchAction(sa, device, _profileSwitcher, index, _actionRepository, _profileSettings, _mappingProvider) },
+                    return new SpecialActionOutputs(new IOutputAction[] { new ProfileSwitchAction(sa, device, _profileSwitcher, index, _actionRepository, _profileSettings, _mapping) },
                         Policy(origin, definition, blocksWhileExecuting: true, untrigger: untrigger,
                             stopOnRelease: untrigger == UntriggerPolicy.None));   // 復帰を持つ Profile は、離したエッジの Stop を呼ばない。復帰は ProcessUntrigger だけが担う（二重の復帰を防ぐ。Q4）
                 }

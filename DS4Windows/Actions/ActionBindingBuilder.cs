@@ -28,7 +28,7 @@ namespace DS4Windows.Actions
         public ActionBindingBuilder(IProfileActionProvider profileActions, IProfileSettingsService profileSettings,
             IManagedActionManager manager, IMacroPlayer macroPlayer, IProcessLauncher processLauncher,
             IProfileSwitcher profileSwitcher, ISpecialActionRepository actionRepository = null,
-            Func<IMapping> mappingProvider = null, IGyroCalibrationPort gyroCalibration = null,
+            IMapping mapping = null, IGyroCalibrationPort gyroCalibration = null,
             IControllerDisconnectPort disconnectPort = null, IBatteryCheckPort batteryCheckPort = null,
             IMacroStringPlayer macroStringPlayer = null,
             IControlBindingBuilder controlBuilder = null, ISpecialActionOutputFactory outputFactory = null,
@@ -43,7 +43,7 @@ namespace DS4Windows.Actions
             if (profileSwitcher == null) throw new ArgumentNullException(nameof(profileSwitcher));
 
             _outputFactory = outputFactory ?? new SpecialActionOutputFactory(profileSettings, manager, controllers, macroPlayer, processLauncher,
-                profileSwitcher, actionRepository, mappingProvider, gyroCalibration, disconnectPort, batteryCheckPort,
+                profileSwitcher, actionRepository, mapping, gyroCalibration, disconnectPort, batteryCheckPort,
                 macroStringPlayer);
             _assignmentBuilder = new AssignmentBindingBuilder(_outputFactory, extrasPort);   // Phase10-Step6 I4c: 束縛の組み立ては、共通の部品が行う
         }

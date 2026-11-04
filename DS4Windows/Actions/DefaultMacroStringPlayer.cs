@@ -10,16 +10,16 @@ namespace DS4Windows.Actions
     /// </summary>
     public sealed class DefaultMacroStringPlayer : IMacroStringPlayer
     {
-        private readonly Func<IMapping> _mapping;
+        private readonly IMapping _mapping;   // Phase13-Step8 8-b: 旧 遅延取得デリゲート（循環なし）
 
-        public DefaultMacroStringPlayer(Func<IMapping> mapping)
+        public DefaultMacroStringPlayer(IMapping mapping)
         {
             _mapping = mapping ?? throw new ArgumentNullException(nameof(mapping));
         }
 
         public void PlayMacroString(int deviceIndex, string macro)
         {
-            (_mapping() as IMacroStringPlayer)?.PlayMacroString(deviceIndex, macro);
+            (_mapping as IMacroStringPlayer)?.PlayMacroString(deviceIndex, macro);
         }
     }
 }

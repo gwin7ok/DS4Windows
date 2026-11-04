@@ -122,7 +122,7 @@ namespace DS4WindowsTests
                 t.MapSpecial(DS4Controls.Share, new ControlSpecialItem { Type = SpecialAction.ActionTypeId.GyroCalibrate });
                 var factory = new SpecialActionOutputFactory(TestHost.GetService<IProfileSettingsService>(), TestHost.GetService<IManagedActionManager>(), TestHost.GetService<IKeyButtonControllerRegistry>(),
                     TestHost.GetService<IMacroPlayer>(), TestHost.GetService<IProcessLauncher>(), TestHost.GetService<IProfileSwitcher>(),
-                    TestHost.GetService<ISpecialActionRepository>(), TestHost.GetService<Func<IMapping>>(), gyroCalibration: gyro);
+                    TestHost.GetService<ISpecialActionRepository>(), TestHost.GetService<IMapping>(), gyroCalibration: gyro);
                 t.PublishWith(new ControlBindingBuilder(TestHost.GetService<IProfileSettingsService>(), null, null, factory));
 
                 RunFor(t, Pressed(), 150);

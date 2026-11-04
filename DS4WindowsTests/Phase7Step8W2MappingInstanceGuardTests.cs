@@ -136,13 +136,15 @@ namespace DS4WindowsTests
         }
 
         [Fact]
-        public void DefaultActionManagerAndMacroPlayer_ReceiveALazyMapping_NotTheMappingItself()
+        public void OnlyTheDefaultActionManager_ReceivesALazyMapping_TheOthersReceiveTheMappingDirectly()
         {
-            // ホスト構築時（PreallocateActionEntries）に Mapping とその依存を作らないため、Func<IMapping> で受ける（Phase5-Plan §5.4）
+            // DefaultActionManager は Mapping の依存グラフの内側にあり（Mapping → … → ActionManager）、直接受けると循環する。
+            // ホスト構築時（PreallocateActionEntries）に Mapping とその依存を作らない理由も兼ねる（Phase5-Plan §5.4）。
             Assert.Contains(typeof(DefaultActionManager).GetConstructors().Single().GetParameters(), p => p.ParameterType == typeof(Func<IMapping>));
-            Assert.Contains(typeof(DefaultMacroPlayer).GetConstructors().Single().GetParameters(), p => p.ParameterType == typeof(Func<IMapping>));
             Assert.DoesNotContain(typeof(DefaultActionManager).GetConstructors().Single().GetParameters(), p => p.ParameterType == typeof(IMapping));
-            Assert.DoesNotContain(typeof(DefaultMacroPlayer).GetConstructors().Single().GetParameters(), p => p.ParameterType == typeof(IMapping));
+            // Phase13-Step8 8-b: 他の利用者は循環がない（Phase13Step8ResolutionGraphProbeTests）ため、直接受ける
+            Assert.Contains(typeof(DefaultMacroPlayer).GetConstructors().Single().GetParameters(), p => p.ParameterType == typeof(IMapping));
+            Assert.DoesNotContain(typeof(DefaultMacroPlayer).GetConstructors().Single().GetParameters(), p => p.ParameterType == typeof(Func<IMapping>));
         }
 
         [Fact]

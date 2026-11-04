@@ -19,7 +19,7 @@ namespace DS4Windows.Actions
         private readonly int _actionIndex;
         private readonly ISpecialActionRepository _actionRepository;
         private readonly IProfileSettingsService _settings;
-        private readonly Func<IMapping> _mappingProvider;
+        private readonly IMapping _mapping;   // Phase13-Step8 8-b: 旧 遅延取得デリゲート。省略可（テスト）
         private readonly TriggerButtonKeyReleaser _keyReleaser;
 
         public SpecialAction sa { get; }
@@ -29,9 +29,9 @@ namespace DS4Windows.Actions
         // Phase6-Step10-4-4: プロファイル切替役は必須の依存（AppHost／new DefaultProfileSwitcher のフォールバックを廃止）
         public ProfileSwitchAction(SpecialAction sa, IProfileSwitcher profileSwitcher) : this(sa, -1, profileSwitcher) { }
 
-        /// <summary>エンジン用。<paramref name="actionIndex"/>・<paramref name="actionRepository"/> は、ログの「index」「ActionEntries」用。<paramref name="mappingProvider"/> は、連鎖の防止（復帰の合図の参照）用。</summary>
+        /// <summary>エンジン用。<paramref name="actionIndex"/>・<paramref name="actionRepository"/> は、ログの「index」「ActionEntries」用。<paramref name="mapping"/> は、連鎖の防止（復帰の合図の参照）用。</summary>
         public ProfileSwitchAction(SpecialAction sa, int deviceIndex, IProfileSwitcher profileSwitcher, int actionIndex,
-            ISpecialActionRepository actionRepository, IProfileSettingsService settings, Func<IMapping> mappingProvider)
+            ISpecialActionRepository actionRepository, IProfileSettingsService settings, IMapping mapping)
             : this(sa, deviceIndex, profileSwitcher)
         {
             _engineMode = true;
@@ -39,7 +39,7 @@ namespace DS4Windows.Actions
             _actionRepository = actionRepository;
             _settings = settings ?? throw new ArgumentNullException(nameof(settings));
             _keyReleaser = new TriggerButtonKeyReleaser(_settings);
-            _mappingProvider = mappingProvider;
+            _mapping = mapping;
         }
 
         public ProfileSwitchAction(SpecialAction sa, int deviceIndex, IProfileSwitcher profileSwitcher)
@@ -90,7 +90,7 @@ namespace DS4Windows.Actions
             SpecialAction pending = (ctx as IPendingUntriggerQuery)?.PendingUntriggerAction;
             if (pending != null && pending.typeID == SpecialAction.ActionTypeId.Profile) return false;
 
-            pending = _mappingProvider?.Invoke()?.CaptureProfileUntrigger(dev).Action;
+            pending = _mapping?.CaptureProfileUntrigger(dev).Action;
             return pending == null || pending.typeID != SpecialAction.ActionTypeId.Profile;
         }
 

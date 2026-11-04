@@ -44,7 +44,7 @@ namespace DS4WindowsTests
         {
             var factory = new SpecialActionOutputFactory(TestHost.GetService<IProfileSettingsService>(), TestHost.GetService<IManagedActionManager>(), TestHost.GetService<IKeyButtonControllerRegistry>(),
                 TestHost.GetService<IMacroPlayer>(), TestHost.GetService<IProcessLauncher>(), TestHost.GetService<IProfileSwitcher>(),
-                TestHost.GetService<ISpecialActionRepository>(), TestHost.GetService<Func<IMapping>>(), macroStringPlayer: player);
+                TestHost.GetService<ISpecialActionRepository>(), TestHost.GetService<IMapping>(), macroStringPlayer: player);
             return new ControlBindingBuilder(TestHost.GetService<IProfileSettingsService>(), null, null, factory);
         }
 

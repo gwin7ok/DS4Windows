@@ -171,7 +171,7 @@ namespace DS4WindowsTests
         public void DefaultMacroPlayer_InitializesWithVirtualKBM_AndTracksState()
         {
             var mockKBM = new MockVirtualKBM();
-            var player = new DefaultMacroPlayer(mockKBM, TestRepositoryFactory.MappingProvider);
+            var player = new DefaultMacroPlayer(mockKBM, TestHost.GetService<DS4Windows.DI.IMapping>());
 
             Assert.False(player.IsPlaying(0));
             Assert.False(player.IsPlaying(-1));
@@ -187,7 +187,7 @@ namespace DS4WindowsTests
         [Fact]
         public void DefaultMacroPlayer_HandlesAllControllerSlots_NotJustFour()
         {
-            var player = new DefaultMacroPlayer(new MockVirtualKBM(), TestRepositoryFactory.MappingProvider);
+            var player = new DefaultMacroPlayer(new MockVirtualKBM(), TestHost.GetService<DS4Windows.DI.IMapping>());
 
             var field = typeof(DefaultMacroPlayer).GetField("_isPlaying",
                 System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.NonPublic);

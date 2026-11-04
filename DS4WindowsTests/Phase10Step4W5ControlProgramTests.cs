@@ -166,7 +166,7 @@ namespace DS4WindowsTests
         private static SpecialActionOutputFactory NewFactory(IProcessLauncher launcher)
             => new SpecialActionOutputFactory(TestHost.GetService<IProfileSettingsService>(), TestHost.GetService<IManagedActionManager>(), TestHost.GetService<IKeyButtonControllerRegistry>(),
                 TestHost.GetService<IMacroPlayer>(), launcher, TestHost.GetService<IProfileSwitcher>(),
-                TestHost.GetService<ISpecialActionRepository>(), TestHost.GetService<Func<IMapping>>());
+                TestHost.GetService<ISpecialActionRepository>(), TestHost.GetService<IMapping>());
 
         [Fact]
         public void ABatchFile_Hidden_IsRunThroughTheCommandInterpreter_LikeTheSa()

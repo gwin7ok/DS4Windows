@@ -17,12 +17,12 @@ namespace DS4Windows.Actions
         private readonly bool[] _isPlaying = new bool[ControllerLimits.MaxControllerCount];
         private readonly object _lock = new object();
         private readonly IVirtualKBM _virtualKBM;
-        // Phase7-Step8 W2: 旧 Mapping.PlayMacroDirect／EndMacroDirect の静的呼び出し。遅延（Func）で受ける（Phase5-Plan §5.4）
-        private readonly Func<DS4Windows.DI.IMapping> _mappingProvider;
+        // Phase7-Step8 W2: 旧 Mapping.PlayMacroDirect／EndMacroDirect の静的呼び出し。Phase13-Step8 8-b: 旧 遅延取得デリゲートをやめ、直接受ける（循環なし）
+        private readonly DS4Windows.DI.IMapping _mapping;
 
-        public DefaultMacroPlayer(IVirtualKBM virtualKBM, Func<DS4Windows.DI.IMapping> mappingProvider)
+        public DefaultMacroPlayer(IVirtualKBM virtualKBM, DS4Windows.DI.IMapping mapping)
         {
-            _mappingProvider = mappingProvider ?? throw new ArgumentNullException(nameof(mappingProvider));
+            _mapping = mapping ?? throw new ArgumentNullException(nameof(mapping));
             _virtualKBM = virtualKBM ?? throw new ArgumentNullException(nameof(virtualKBM)); // Phase6-Step10-4-4: 必須の依存
         }
 
@@ -44,7 +44,7 @@ namespace DS4Windows.Actions
                 _isPlaying[deviceIndex] = true;
             }
 
-            _mappingProvider().PlayMacroDirect(deviceIndex, action);
+            _mapping.PlayMacroDirect(deviceIndex, action);
         }
 
         public void Stop(int deviceIndex)
@@ -56,7 +56,7 @@ namespace DS4Windows.Actions
                 _isPlaying[deviceIndex] = false;
             }
 
-            _mappingProvider().EndMacroDirect(deviceIndex);
+            _mapping.EndMacroDirect(deviceIndex);
         }
     }
 }

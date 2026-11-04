@@ -32,7 +32,7 @@ namespace DS4WindowsTests
             => new ActionBindingBuilder(TestHost.GetService<IProfileActionProvider>(), TestHost.GetService<IProfileSettingsService>(),
                 TestHost.GetService<IManagedActionManager>(), TestHost.GetService<IMacroPlayer>(), TestHost.GetService<IProcessLauncher>(),
                 TestHost.GetService<IProfileSwitcher>(), TestHost.GetService<ISpecialActionRepository>(),
-                TestHost.GetService<Func<IMapping>>(), null, port, controllers: TestActions.Controllers);
+                TestHost.GetService<IMapping>(), null, port, controllers: TestActions.Controllers);
 
         private static void Publish(SpecialActionTestScope t, IControllerDisconnectPort port)
             => TestHost.GetService<IActionRegistry>().Replace(t.Device, NewBuilder(port).Build(t.Device));
