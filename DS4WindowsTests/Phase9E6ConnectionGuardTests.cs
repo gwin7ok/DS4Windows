@@ -99,10 +99,9 @@ namespace DS4WindowsTests
             string text = ReadWithoutComments("DS4Windows/DS4Control/ControlService.cs");
             if (text == null) return;
 
-            Assert.Contains("public void CheckProfileOptions(int ind, DS4Device device, bool startUp = false)", text);
-            Assert.Contains("_deviceConnectionSetup.ApplyProfileOptions(ind, device, touchPad[ind], startUp);", text);
-            Assert.Contains("public void TouchPadOn(int ind, DS4Device device)", text);
-            Assert.Contains("_deviceConnectionSetup.AttachTouchpad(ind, device, touchPad);", text);
+            // Phase13-Step10 10-b: 利用者が 0 件だった CheckProfileOptions／TouchPadOn の転送は削除した（IProfileLoadTarget が別に持つ）
+            Assert.DoesNotContain("public void CheckProfileOptions(", text);
+            Assert.DoesNotContain("public void TouchPadOn(", text);
 
             // 接続時の順序: 設定の反映 → イベントの配線（旧: CheckProfileOptions → SetupInitialHookEvents）。接続の組み立ては DeviceConnector へ移った（E-6f1）
             string connector = ReadWithoutComments("DS4Windows/DS4Control/Services/DeviceConnector.cs");

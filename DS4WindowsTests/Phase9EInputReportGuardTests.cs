@@ -62,11 +62,11 @@ namespace DS4WindowsTests
 
             Assert.Contains("public DS4Controls GetActiveInputControl(int ind)", text);
             Assert.Contains("_activeInputProbe.GetActive(", text);
-            Assert.Contains("public void StartTPOff(int deviceID)", text);
-            Assert.Contains("_touchpadToggle.StartTouchpadOff(deviceID);", text);
+            // Phase13-Step10 10-b: 利用者が 0 件だった StartTPOff／CheckForTouchToggle の転送は削除した（ITouchpadToggleService／IProfileLoadTarget が持つ）
+            Assert.DoesNotContain("public void StartTPOff(", text);
+            Assert.DoesNotContain("CheckForTouchToggle(", text);
             Assert.Contains("public string TouchpadSlide(int ind)", text);
             Assert.Contains("_touchpadToggle.Slide(", text);
-            Assert.Contains("_touchpadToggle.CheckForToggle(", text);
             // Phase13-Step5b: _latencyMonitor.OnReport は On_Report と一緒に InputReportProcessor へ移した
             string processor = ReadWithoutComments("DS4Windows/DS4Control/Services/InputReportProcessor.cs");
             Assert.Contains("_latencyMonitor.OnReport(device, ind);", processor);

@@ -467,16 +467,7 @@ namespace DS4Windows
 
         // Phase9 9-E E-4: 旧 StartViGEm／StopViGEm／AssignInitialDevices／EstablishOutDevice／EstablishOutFeedback／RemoveOutFeedback／AttachNewUnboundOutDev／
         // AttachUnboundOutDev／DetachUnboundOutDev／PluginOutDev／UnplugOutDev の本体は VirtualPadService へ移した。
-        // PluginOutDev／UnplugOutDev は、外部からの呼び出し（BackingStore、LegacyProfileXmlSerializer）があるため、薄い委譲として残す（呼び出し側は 9-F まで変えない）。
-        public void PluginOutDev(int index, DS4Device device)
-        {
-            _virtualPad.PluginOutDev(index, device);
-        }
-
-        public void UnplugOutDev(int index, DS4Device device, bool immediate = false, bool force = false)
-        {
-            _virtualPad.UnplugOutDev(index, device, immediate, force);
-        }
+        // Phase13-Step10 10-b: PluginOutDev／UnplugOutDev の転送は削除した（外部の利用者は 0 件。BackingStore／LegacyProfileXmlSerializer は IProfileLoadTarget を使う）。
 
         // Phase9 9-E E-6f2: 本体は ServiceLifecycle へ移した（薄い委譲。呼び出し側は 9-F まで変えない）
         public bool Start(bool showlog = true)
@@ -510,11 +501,7 @@ namespace DS4Windows
         // Phase9 9-E E-3: 旧 ResetUdpSmoothingFilters／ChangeUdpSmoothingAttrs（スムージングのフィルター）は UdpMotionService へ移した。
 
         // Phase9 9-E E-6b: 設定の反映（CheckProfileOptions／CheckLauchProfileOption）とイベントの配線（SetupInitialHookEvents）は DeviceConnectionSetup へ移した
-        // CheckProfileOptions は外部の呼び出し（BackingStore）があるため、薄い委譲として残す
-        public void CheckProfileOptions(int ind, DS4Device device, bool startUp = false)
-        {
-            _deviceConnectionSetup.ApplyProfileOptions(ind, device, touchPad[ind], startUp);
-        }
+        // Phase13-Step10 10-b: CheckProfileOptions の転送は削除した（外部の利用者は 0 件。BackingStore は IProfileLoadTarget を使う）。
 
         /// <summary>
         /// Perform Mapping property resetting as needed before loading profile settings
@@ -522,10 +509,7 @@ namespace DS4Windows
         /// <param name="device">Input device instance</param>
         // Phase13-Step6 6-e: 旧 PreLoadReset（プロファイル読込前のリセット）は IProfileLoadTarget.PreLoadReset（ProfileLoadTarget）へ移した（呼び出し元は LegacyProfileXmlSerializer だけだった）。
 
-        public void TouchPadOn(int ind, DS4Device device)
-        {
-            _deviceConnectionSetup.AttachTouchpad(ind, device, touchPad);
-        }
+        // Phase13-Step10 10-b: TouchPadOn の転送は削除した（外部の利用者は 0 件）。
 
         // Phase13-Step6 6-b: 旧 GetDS4Battery（電池残量の文言）は IDeviceBatteryText へ移した（呼び出し元は DefaultBatteryCheckPort だけだった）
 
@@ -577,15 +561,7 @@ namespace DS4Windows
         public OutputSlotManager OutputslotMan { get => _virtualPad.OutputSlotManager; }
 
         // Phase9 9-E E-5: 判定の本体は TouchpadToggleService へ移した（状態 touchreleased／touchslid も）
-        protected void CheckForTouchToggle(int deviceID, DS4State cState, DS4State pState)
-        {
-            _touchpadToggle.CheckForToggle(deviceID, cState, pState);
-        }
-
-        public void StartTPOff(int deviceID)
-        {
-            _touchpadToggle.StartTouchpadOff(deviceID);
-        }
+        // Phase13-Step10 10-b: CheckForTouchToggle／StartTPOff の転送は削除した（外部の利用者は 0 件。StartTPOff は IProfileLoadTarget が持つ）。
 
         public string TouchpadSlide(int ind)
         {
