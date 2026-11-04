@@ -82,6 +82,8 @@ Issue #4 の 4 件と、2026-11-02 時点のコードとの照合:
 
 ### Phase14: 名前空間・フォルダの再編（旧 Phase11）
 
+- **実装完了（2026-11-04。実機確認待ち）**: 層別フォルダへ再編し、名前空間を `DS4Windows.<フォルダ>` に統一。詳細は `Phase14-Completion-Report.md`。
+
 - 名前空間をフォルダパスと一致させる。`DI/` を Composition Root 専用にする（インターフェースは層別のフォルダへ）。
 - 移動は `git mv` のみで、同じコミットで内容を変えない（R7）。名前空間の書き換えは、別のコミットにする。
 - 現状（実測）: `DS4Windows` 195 ファイル、`DS4Windows.Actions` 108、`DS4Windows.Services` 103、`DS4Windows.DI` 72、`DS4WinWPF.*` 約 200。`DI/` に 81 ファイル。
