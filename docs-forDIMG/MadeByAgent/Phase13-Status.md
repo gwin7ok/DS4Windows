@@ -13,7 +13,8 @@
 | 6 | `Func<ControlService>` の 9 利用者の置き換え（`IProfileLoadTarget` の新設ほか） | `Phase13-Step6-Plan.md` 作成済み（2026-11-04）。承認済み（§9 の 1〜7）。**6-a 完了（`80973e90`）**、**6-e／6-f 完了（`Func<ControlService>` 本番ソース 0 件。鎖の型を `IProfileLoadTarget` に置換、`ProfileRepository`／`ProfileApplicationService` を直接注入、`ControlService.PreLoadReset` を削除）。Step6 完了**、**6-d 完了（`IProfileLoadTarget`／`ProfileLoadTarget` を追加。`PreLoadReset` は 6-e で ControlService 側を削除）**、**6-c 完了（UI ファクトリー 3 件を直接注入へ）**、**6-b 完了（コミット済み。2 ポート・ProfileSettingsService・AutoProfileService を直接注入へ。電池文言は `IDeviceBatteryText` に分離）**。次: Step7 |
 | 7 | `Func<IOutputSlotService>`／`Func<IVirtualPadService>`／`Func<OutputSlotManager>` の相互参照の解消（`IOutputDeviceTypeState` の新設） | `Phase13-Step7-Plan.md` 作成済み（2026-11-04）。**完了**（2026-11-04。7-a〜7-d。本番ソースの Func 3 種は 0 件、3113 件合格。結果は `Phase13-Step7-Plan.md` §10。実機確認は最後にまとめて） |
 | 8 | 残る `Func<IMapping>`／`Func<IAutoProfileService>`／`Func<IActionBindingBuilder>` の再判定 | **完了**（2026-11-04。8-a〜8-d。残る遅延取得は本物の循環の 2 件のみ。許可リスト検査つき。結果は `Phase13-Step8-Plan.md` §10） |
-| 9〜12 | 計画書 §4 のとおり | 未着手 |
+| 9 | `running`／`suspending` の転送の削除（F-5c。`IServiceLifecycle` の直接注入） | **完了**（2026-11-04。9-a〜9-d。3126 件合格。結果は `Phase13-Step9-Plan.md` §10。実機確認は最後にまとめて） |
+| 10〜12 | 計画書 §4 のとおり | 未着手 |
 
 ## Step1 の結果
 

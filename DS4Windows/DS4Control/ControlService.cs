@@ -52,10 +52,8 @@ namespace DS4Windows
         public readonly DS4Device[] DS4Controllers;
         public DS4Device GetController(int deviceIndex) => _slots.GetController(deviceIndex);
         // Phase9 9-E E-6f2: 状態は ServiceLifecycle が持つ。Phase9 9-F F-5b: 外部の参照が 0 件の activeControllers／loopControllers／inServiceTask の転送を削除した。
-        // TODO(Phase9 9-F F-5c 以降): running は、外部の 4 つの利用者（AutoProfileService／App／MainWindow／TrayIconViewModel）がまだ ControlService を直接持つため、転送を残している。
-        //   利用者が IServiceLifecycle.Running を受けるように切り替えた時点で削除する（Start／Stop／slotManager など、ControlService の他のメンバーの切り離しと同時に行う）。
+        // Phase13-Step9: running／suspending の転送は削除した（利用者の App／MainWindow／TrayIconViewModel は IServiceLifecycle を直接使う）。
         public readonly Mouse[] touchPad;
-        public bool running { get => _lifecycle.Running; set => _lifecycle.Running = value; }
         private readonly DS4State[] CurrentState;
         private readonly DS4State[] PreviousState;
         private readonly DS4State[] TempState;
@@ -87,7 +85,6 @@ namespace DS4Windows
         // Phase13-Step3: 旧 eventDispatchThread／eventDispatcher（イベントスレッド）は EventThreadDispatcher へ移した
         private readonly DI.IEventThreadDispatcher _eventThread;
         private readonly DI.IDeviceRumbleService _rumble;
-        public bool suspending { get => _lifecycle.Suspending; set => _lifecycle.Suspending = value; }
 
         // Phase9 9-E E-3: 旧 _udpServer／udpOutBuffers／udpChangeStatus などは UdpMotionService へ移した
         private readonly DI.IUdpMotionService _udpMotion;

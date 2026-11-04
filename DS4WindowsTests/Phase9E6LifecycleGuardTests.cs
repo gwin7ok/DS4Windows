@@ -83,8 +83,9 @@ namespace DS4WindowsTests
             Assert.Contains("public bool HotPlug()", text);
             Assert.Contains("return _lifecycle.HotPlug();", text);
             Assert.Contains("public void PrepareAbort()", text);
-            Assert.Contains("public bool running { get => _lifecycle.Running; set => _lifecycle.Running = value; }", text);
-            Assert.Contains("public bool suspending { get => _lifecycle.Suspending; set => _lifecycle.Suspending = value; }", text);
+            // Phase13-Step9: running／suspending の転送も削除した（Phase13Step9RunningForwardRemovalGuardTests）
+            Assert.DoesNotContain("public bool running", text);
+            Assert.DoesNotContain("public bool suspending", text);
             // Phase9 9-F F-5b: 外部の参照が 0 件の転送は削除した。内部は _lifecycle を直接使う
             Assert.DoesNotContain("public bool loopControllers", text);
             Assert.DoesNotContain("public bool inServiceTask", text);

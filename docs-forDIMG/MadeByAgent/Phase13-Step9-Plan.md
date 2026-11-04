@@ -73,3 +73,19 @@
 2. **転送の削除範囲**: `ControlService` の `running`／`suspending` を**削除**する（案 A）。`Start`／`Stop` や他のイベントの転送は残す（Step10）。
 3. **終了時の扱い**: `CleanShutdown` で `IServiceLifecycle` が取れないときは、従来どおり何もしない。
 4. **分割**: 4 コミット（9-a〜9-d）で、以後は自動進行（Step7・8 と同じ）。
+
+---
+
+## 10. 実施結果（2026-11-04）
+
+決定 1〜4 は、すべて推奨案で承認済み（2026-11-04）。
+
+| サブステップ | コミット | 内容 |
+|---|---|---|
+| 9-a | `a129c9c1` | 本計画書 |
+| 9-b／9-c | `f07eea06` | `App`／`MainWindow`／`MainWindow.Ipc`／`TrayIconViewModel` が `IServiceLifecycle` を直接使う。`MainWindowFactory`・`MainWindow`・`TrayIconViewModel` の引数が 1 つ増えた（依存の都合で、9-b と 9-c は 1 コミットにまとめた） |
+| 9-d | （本コミット） | `ControlService` の `running`／`suspending` と F-5c の TODO を削除。`Phase13Step9RunningForwardRemovalGuardTests` を新設。`Phase9E6LifecycleGuardTests` の転送の検査を「無いこと」の検査へ更新 |
+
+- `CleanShutdown` は、`_lifecycle` が null のときは従来どおり何もしない（決定 3）。
+- `Debug ALL`: 警告 0、エラー 0、3126 件合格。
+- 実機確認（最後にまとめて）: 開始・停止、トレイの「開始／停止」表示、PC のサスペンド・復帰、終了時の停止。
