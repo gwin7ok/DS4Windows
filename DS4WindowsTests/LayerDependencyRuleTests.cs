@@ -69,11 +69,11 @@ namespace DS4WindowsTests
         [Fact]
         public void Scanner_SeesReferencesInsideMethodBodies()
         {
-            // 検査そのものが働くことの確認。第1層の DS4Devices.findControllers は、本体の中で UI の静的な NotificationService.ShowToast を呼ぶ
+            // 検査そのものが働くことの確認。AppLogger.NotificationService の getter は、本体の中でだけ new NullNotificationService() を行う
             // （シグネチャやフィールドには現れない、メソッド本体だけの参照）。
-            // この違反を是正したら（レビュー R-02）、ほかのメソッド本体だけの参照に置き換えること。
+            // Phase14b-Step5: 旧対象（DS4Devices → UI の NotificationService.ShowToast）は是正したため差し替えた
             Assert.Contains(LayerDependencyScanner.Edges,
-                e => e.Source == "DS4Windows.Input.DS4Devices" && e.Target == "DS4Windows.UI.Services.NotificationService");
+                e => e.Source == "DS4Windows.Core.Logging.AppLogger" && e.Target == "DS4Windows.Core.Logging.NullNotificationService");
         }
 
         [Fact]

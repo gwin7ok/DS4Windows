@@ -86,7 +86,6 @@
             "L1|DS4Windows.Core.Utilities.WindowPlacementHelper|DS4Windows.Processing.Abstractions.IAppSettingsService",
             "L1|DS4Windows.Core.Utilities.WindowPlacementHelper|DS4Windows.UI.MainWindow",
             "L3|DS4Windows.Input.DS4Devices|DS4Windows.Processing.Abstractions.IDeviceLayerSettings",
-            "L3|DS4Windows.Input.DS4Devices|DS4Windows.UI.Services.NotificationService",
             "L3|DS4Windows.Input.DS4Device|DS4Windows.Processing.Abstractions.IDeviceLayerSettings",
             "L3|DS4Windows.Input.DS4SixAxis|DS4Windows.Processing.Abstractions.IDeviceLayerSettings",
             "L3|DS4Windows.Input.Hid.HidDevices|DS4Windows.Processing.Abstractions.IDeviceLayerSettings",

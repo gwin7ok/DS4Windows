@@ -26,6 +26,19 @@
 | D4 | `INotificationService`／`NotificationEventArgs` の置き場所 | **Step 3 で `Processing/Abstractions` → `Core/Abstractions` へ移す**（実装は UI、利用者は `Core` の `AppLogger`。R2「契約は使う側・実装側の層」に照らして、最下層の利用者に合わせる）。利用は本体 6 ファイル・テスト 6 ファイル | 移さない（R-02 の本体でまとめて行う） |
 | D5 | `TouchButtonActivationMode` の置き場所 | **`Core/Settings/TouchButtonActivationMode.cs`**（プロファイルの設定値の型。R5） | `Core/Abstractions` |
 
+### 2.1 追加の決定事項（2026-11-05、Step 1〜3 の後にまとめて確認。ユーザー承認済み）
+
+| # | 項目 | 決定 |
+|---|---|---|
+| D6 | R-02 本体の範囲 | **4 項目すべて**: UI のファクトリーの契約、小さな共有型と契約、第1層 → UI の通知、`SpecialAction` の `Core` への移動 |
+| D7 | UI のファクトリーの契約の置き場所 | **`UI/Abstractions` を新設**（名前空間 `DS4Windows.UI.Abstractions`。規約 §3.4 R1 の UI の一覧に追記する） |
+| D8 | `BackingStore.ProfileSettings` のフォールバック | **撤去する**（テスト側で明示的に設定する） |
+| D9 | 実機確認 | **Phase14b の最後に 1 回** |
+
+エージェントの判断（既定値で進めたもの。§8 に記録）:
+- `IDeviceLayerSettings`（第1層が読む設定の契約。実装は第2層）は、使う側の **`Input/Abstractions`** を新設して置く（§3.4 R2 と同じ考え方: 契約は使う側。`Core` に置くと「第1層の設定」という意味が薄れる）。
+- `IProfileLoadTarget` の `Mouse GetTouchPad(int)` は、`Core` が使う 5 つの操作（`CursorGyroDead`、`ToggleGyroControls`、`ToggleGyroMouse`、`ToggleGyroStick`、`ResetToggleGyroModes`）だけを持つ契約 `ITouchPadGyroToggles`（`Core/Abstractions`）を返す形にし、`Mouse` がそれを実装する（同じインスタンスを返すので挙動は同じ）。
+
 ## 3. 現状（2026-11-05 実測）
 
 ### 3.1 R-04
@@ -128,6 +141,20 @@
 - `Phase11-and-Beyond-Roadmap.md` に Phase14b を追加（Phase14 と Phase15 の間）。
 - モデル図 02（Step 1-6 の注記の書き直し）、必要なら 04（`NullNotificationService`）。
 - `Phase9-Deferred-Ledger.md` に、3-6 の結果が「別途判断」になった場合の行を追加。
+
+### Step 14b-5〜9（R-02 本体と D8。2026-11-05 追加。D6〜D8）
+
+各 Step は、移動（`git mv` のみ）と名前空間の書き換えを別コミットにし（R7）、書き換えのコミットで許可リストを実数に合わせる。各 Step の終わりに Debug ALL を緑にしてコミットする。
+
+| Step | 内容 | 移動先 |
+|---|---|---|
+| 14b-5 | 第1層 → UI の通知: `DS4Devices` の `UI.Services.NotificationService.ShowToast` を `AppLogger.LogToTray` の直接呼び出しへ（`ShowToast` は中で `LogToTray` を呼ぶだけ。挙動は同じ）。検査の確認テストの対象を、別のメソッド本体だけの参照へ差し替え | — |
+| 14b-6 | UI のファクトリーの契約: `IEditorWindowFactory`・`IMainWindowFactory`・`IViewModelFactory` | `UI/Abstractions`（D7） |
+| 14b-7 | 小さな共有型と契約: `BezierCurve`（`Core/Utilities`）、`MacroExecuteMode`・`MacroExecuteModes`・`ProfileActions`・`ControlActionData`（`Core/Settings`）、`SelectedProfileChangedEventArgs`・`WindowCandidate`・`WindowFocusResult`・`CapturedWindow`・`IAppSettingsService`・`IProfileLoadTarget`（`Core/Abstractions`）、`WindowTargetMatcher`（`Core/Platform`）、`IDeviceLayerSettings`（`Input/Abstractions`）。`IProfileLoadTarget.GetTouchPad` は `ITouchPadGyroToggles` を返す形へ（§2.1） | 左記 |
+| 14b-8 | `SpecialAction` | `Core/Settings`（依存は `Core.Settings` と `Input` だけ。データの型で、実行は Actions サブシステムが持つ） |
+| 14b-9 | `BackingStore.ProfileSettings` のフォールバックの撤去（D8）。未設定のまま使われたら例外にし、テスト（`TestGlobals`、`PersistenceHarness`、`Phase7Step10dW5GlobalRemovedGuardTests`）は明示的に設定する | — |
+| 14b-10 | 規約 §3.4 R1（`UI/Abstractions`・`Input/Abstractions` の追記）、モデル図 01〜04、ロードマップ、レビュー報告書、本書 §8 | — |
+| 14b-11 | Release ビルド 2 か所 → 実機確認（D9。§5） | — |
 
 ## 5. 実機確認
 
