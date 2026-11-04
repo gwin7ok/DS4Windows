@@ -36,7 +36,6 @@ using System.Windows.Input;
 using System.Xml;
 using System.Xml.Serialization;
 using WpfScreenHelper;
-using static DS4Windows.Processing.Mouse;
 using static DS4Windows.Core.Utilities.Util;
 namespace DS4Windows.Output
 {

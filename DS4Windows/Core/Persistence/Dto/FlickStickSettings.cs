@@ -23,7 +23,6 @@ using System.Text;
 using System.Xml;
 using System.Xml.Schema;
 using System.Xml.Serialization;
-using static DS4Windows.Processing.Mouse;
 
 namespace DS4Windows.Core.Persistence.Dto
 {

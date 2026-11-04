@@ -21,7 +21,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using static DS4Windows.Processing.Mouse;
+using DS4Windows.Core.Settings;
 using DS4Windows.UI.ViewModels.Util;
 
 namespace DS4Windows.UI.ViewModels

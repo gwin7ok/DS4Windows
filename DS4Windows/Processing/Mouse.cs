@@ -91,12 +91,8 @@ namespace DS4Windows.Processing
         private bool trackballTouchStickActive = false;
 
 
-        public enum TouchButtonActivationMode : ushort
-        {
-            Click,
-            Touch,
-            Release,
-        }
+        // Phase14b-Step2（R-04）: 旧ネスト型 Mouse.TouchButtonActivationMode は、プロファイルの設定値の型として
+        // Core/Settings/TouchButtonActivationMode.cs（トップレベル）へ移した（値と基底型は同じ）
 
         private enum TouchButtonModeCandidate : ushort
         {

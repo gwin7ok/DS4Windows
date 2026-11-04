@@ -1,7 +1,7 @@
 # Phase14b 個別計画書: 依存の向きの是正（第1弾: 物差しと即効の整理）
 
 作成日: 2026-11-05
-状態: **承認待ち**（§2 の決定事項 D1〜D5 の承認を得てから着手する）
+状態: **承認済み（2026-11-05。D1〜D5 はすべて推奨案）→ 実施中**
 ブランチ: `Phase14b`（master から作成。D1）
 根拠: `Repository-Review-2026-11-05.md`（R-01・R-03・R-04）、規約 §1（依存の向き）、§2.3（ログ）、§3.1（ラチェットの一致検査）、§3.3 原則3（`using` は使う名前空間だけ）、§3.4 R2・R5・R7、モデル図 `Model-Diagram/02-Layer-Architecture-Diagram.md`
 
@@ -156,4 +156,25 @@
 
 ## 8. 実施記録（実施時に追記）
 
-（未着手）
+### 8.1 Step 14b-1（R-01）— 完了（2026-11-05）
+- パッケージ: `TngTech.ArchUnitNET` **0.13.4**（2026-08-20 公開。最新の 0.13.5 は 2026-10-26 公開で 2 週間に満たないため見送り）。計画の `TngTech.ArchUnitNET.xUnit` ではなく本体のパッケージだけにした（違反の照合を自前で行い、xUnit 拡張の `Check()` を使わないため。依存が少ない）。
+- 追加したファイル（テスト、1 型 1 ファイル）: `ArchLayer.cs`、`LayerMap.cs`、`LayerDependencyScanner.cs`、`LayerDependencyBaseline.cs`、`LayerDependencyRuleTests.cs`、`LayerMapTests.cs`。
+- 走査の時間: 約 3 秒（アセンブリの読み込みを含む。1 回だけ読み、テスト間で使い回す）。
+- 検査が働くことの確認: `DS4Devices` → `UI.Services.NotificationService`（メソッド本体だけの静的呼び出し）と、`ServiceRegistration` の登録ラムダ（コンパイラー生成のネスト型）からの `ProfileIdentityService` が、それぞれ辺として出ること。
+- 実測（Step 14b-1 時点）: 禁止の規則 **108 件**（L1: 81［参照元の型 49］、L3: 5、L4: 1、L5: 15、L6: 6）。記録のみ: L2 **70 件**（参照元 37）、L7 **80 件**（参照元 33）。
+- 新しく分かったこと（レビューに未記載）:
+  - **L5 の 15 件はすべて、UI のファクトリーの契約が `Processing/Abstractions` にあることによる**（`IEditorWindowFactory` → `AssignmentEditor`／`BindingWindow`／`ProfileEditor`／`RecordBox` ほか 9、`IMainWindowFactory` → `MainWindow`、`IViewModelFactory` → 5 つの ViewModel）。実装も利用者も UI なので、契約は `UI/` 側（例: `UI/Abstractions`）に置くのが §3.4 R2 に合う。R-02 の本体で扱う。
+  - L4 の 1 件: `Output.OutputSlotManager` → `Processing.IInstanceIdentifiable`（汎用の小さな契約が第2層にある）。
+  - L6 の 6 件: UI（`MainWindow`、`ProfileEditor`、`ImageLocationPaths`、`LanguagePackControl`、`WelcomeDialog`、`SettingsViewModel`）がアプリの起点（`App`、`StartupMethods`）を直接参照。
+- Debug ALL: 緑。
+
+### 8.2 Step 14b-2（R-04）— 完了（2026-11-05）
+- `Core/Settings/TouchButtonActivationMode.cs` を新規作成し、`Processing/Mouse.cs` のネスト型を削除（経緯のコメントを残した）。
+- `using static DS4Windows.Processing.Mouse;` を **54 ファイルから削除**（53 は行の削除、`UI/ViewModels/TouchButtonUserControlViewModel.cs` は `using DS4Windows.Core.Settings;` へ置き換え）。残り 0 件。差分は削除 54 行・置換 1 行のみ（改行コードは CRLF のまま）。`BackingStore`・`ProfileSettingsService` は同じ名前空間のため `using` の追加は不要だった。
+- テスト: `TouchButtonActivationModeTests`（型の形、`Mouse` にネスト型がないこと、保存・読込で 3 つの値と XML の値の名前が往復すること）。
+- ラチェット: 一致検査が「減った違反 4 件」（`IProfileSettingsService`／`ProfileSettingsService`／`ProfileOutputCurveSaveSection`／`ProfileTouchpadMouseLoadSection` → `Mouse`）を検出し、許可リストを **108 → 104 件**（L1: 81 → 77）に更新した。`BackingStore` → `Mouse` は、列挙型以外の参照があるため残る。
+- 2-6（IDE0005 による未使用の `using` の計測）: 未実施（任意）。必要なら別途行う。
+- Debug ALL: 緑（ビルド 警告 0・エラー 0、`DS4Windows.Actions.Tests` 3,224 件合格、`StandaloneTests` 11 件合格）。
+
+### 8.3 Step 14b-3（R-03）
+（未着手。R7 により、`INotificationService` の移動［3-1］と名前空間の書き換え［3-2］を別のコミットにするため、Step 1・2 のコミットの後に始める）

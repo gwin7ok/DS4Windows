@@ -18,7 +18,6 @@ using System.Windows.Input;
 using System.Xml;
 using System.Xml.Serialization;
 using WpfScreenHelper;
-using static DS4Windows.Processing.Mouse;
 using static DS4Windows.Core.Utilities.Util;
 using DS4Windows.Core.Settings;
 using DS4Windows.Processing;

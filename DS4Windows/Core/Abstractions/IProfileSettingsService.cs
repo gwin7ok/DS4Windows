@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using System.Globalization;
-using static DS4Windows.Processing.Mouse;
 using DS4Windows.Core.Settings;
 using DS4Windows.Input;
 using DS4Windows.Input.Devices;
