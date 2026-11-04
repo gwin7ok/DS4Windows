@@ -1,8 +1,8 @@
 # ログ出力の方針（Log-Policy）
 
 作成日: 2026-11-03
-状態: **承認済み（2026-11-03）。規約 §2.3 に反映済み**。決定の経緯は `Phase12-Step1-Plan.md` §6、現状の実測は `Phase12-Step1-Log-Inventory.md`。
-適用: 新しいコードは、この方針に最初から従う。既存コードの一括整理は Phase13b（L2）で行う。**L2 までは、既存のログの文言・レベルを変えない**（規約 §2.3。改定案は §9）。
+状態: **承認済み（2026-11-03）。規約 §2.3 に反映済み。L2（Phase13b）で既存コードを整理済み（2026-11-04。`Phase13b-Log-Change-List.md`）**。決定の経緯は `Phase12-Step1-Plan.md` §6、現状の実測は `Phase12-Step1-Log-Inventory.md`。
+適用: 新しいコードは、この方針に最初から従う。既存コードの一括整理は Phase13b（L2）で行う。L2 までは既存のログの文言・レベルを変えなかった（規約 §2.3）。
 
 ## 1. 基本原則（出し先とレベル）
 
@@ -68,3 +68,11 @@
 
 - 対象は 666 か所・101 ファイル（`Phase12-Step1-Log-Inventory.md`）。API の集約（§7）は変更量が最大のため、旧 API を薄いシムとして残す期間を設けて段階的に移行する（規約 §2.1）。1e で作業量を再見積りする。
 - 旧 API の GUI・トレイの挙動（`warning` の真偽による Info／Warn の振り分け、`temporary`）は、新 API で同じ出力になるよう対応表を作る。
+
+## 11. L2（Phase13b）の結果と、方針からの差（2026-11-04）
+
+- API は `AppLogger.Log(AppLogLevel, string, LogOptions)` に集約した（`LogOptions`: `FileOnly`／`UserFacing`／`Temporary`）。**§7 からの差**: `LogTrace`／`LogDebug`／`LogInfo`／`LogWarn`／`LogError` は、`Log()` を呼ぶレベル名付きの短縮形として残した（出し先は名前で分けていない。ユーザー承認）。`LogToGui`、各サービスの private `LogDebug`（`DebugMessage` イベントごと）、`AppLogger.TrayIconLog` は廃止した。
+- `LogToTray`（トレイ通知）は、ログではなく通知として別 API のまま。
+- `[Diag-Toast]` は削除（例外を記録する 2 か所は `[Toast]` に改めた）。`Console`／`Debug.WriteLine` は AppLogger へ移すか削除した（CLI の結果を標準出力へ返す `App.xaml.cs` の 1 か所は機能のため維持）。Updater の NLog 直接は AppLogger 経由にした。
+- 残る NLog の直接呼び出しは、基盤（`AppLogger`、`LoggerHolder`）の内部だけ。
+- §3 の「利用者向けの文言はリソース化」は、今回は実施していない（GUI の文言を変えない方針。`Phase13b-Log-Change-List.md` §1）。必要になったら別 Phase で扱う。

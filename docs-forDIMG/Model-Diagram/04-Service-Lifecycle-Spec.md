@@ -143,7 +143,7 @@
 | 窓口・状態の持ち主（Phase13）。以前の Host 窓口 4 本（`IVirtualPadHost`／`IDeviceSlotHost`／`IServiceLifecycleHost`／`IUdpMotionHost`）の置き換え | `IEventThreadDispatcher` → `EventThreadDispatcher`、`IDeviceRumbleService` → `DeviceRumbleService`、`IOutputKbmInitializer` → `OutputKbmInitializer`（Step3） | イベントスレッド（名前 "ControlService Events"、`BelowNormal`、`IsBackground`。停止は `Shutdown`＝`InvokeShutdown`→`Join`。旧 `ControlService` と同じ）、振動の補正、キーボード／マウス出力の初期化 | 生成直後に使っても失われないよう Dispatcher の確定を待つ |
 | | `IDeviceSlotState` → `DeviceSlotState`、`IInputReportProcessor` → `InputReportProcessor`（Step5） | スロットの配列（接続中のコントローラー、状態）の持ち主と、入力レポート（`On_Report`）の処理 | `ControlService.DS4Controllers` などは同じ配列への参照を保持（転送の削除は約 50 利用者のため見送り） |
 | | `IProfileLoadTarget` → `ProfileLoadTarget`（Step6）、`IOutputDeviceTypeState` → `OutputDeviceTypeState`（Step7） | プロファイル読み込みの対象窓口、出力デバイス種別の状態 | `ControlService` への逆依存の解消 |
-| | `IRuntimeFeatureSwitch` → `RuntimeFeatureSwitch`、`IServiceDebugRelay` → `ServiceDebugRelay`（Step10） | OSC／UDP／HidHide／タッチパッドのスライド／振動の切り替え窓口、6 サービスのデバッグ文を `ControlService.LogDebug` に集約 | ログの文言・レベルは不変 |
+| | `IRuntimeFeatureSwitch` → `RuntimeFeatureSwitch`（Step10。Phase13b-Step3 で `IServiceDebugRelay` を廃止） | OSC／UDP／HidHide／タッチパッドのスライド／振動の切り替え窓口 | ログの文言・レベルは不変 |
 | | `IIpcCommandProcessor` → `IpcCommandProcessor`、`IIpcCommandHost`（`MainWindow` が実装）（Step11） | CLI からの IPC コマンド（start／stop／cycle／shutdown／disconnect／changeledcolor／loadprofile／loadtempprofile／outputslot／query）の実行 | UI なしで単体テスト可能 |
 
 ## 3. リソース破棄と安全な終了手順
@@ -337,3 +337,5 @@
 - イベントスレッドの持ち主は `EventThreadDispatcher`。生成は DI の生成時（旧 `ControlService` のコンストラクター内と同じタイミング）、破棄は `ControlService.ShutDown`（`OutputSlotManager.ShutDown` → `SaveOutputSlots` → `Shutdown`）で、順序は変えていない。
 - `ServiceProviderHolder`・静的 `ActionManager` は撤廃（Step4）。
 - 先送り: `ControlService` の状態の転送（`DS4Controllers`／`touchPad`／`slotManager` ほか約 50 利用者）、F-1c（起動手順の分離）。
+
+- Phase13b（2026-11-04）: ログの入口を `AppLogger.Log` に一本化。サービスの `DebugMessage` イベントと `IServiceDebugRelay` を廃止し、`ControlService` は 17 → 16 引数。`LoggerHolder`（Singleton 相当・`App` が生成）は `IAppSettingsService` だけを受け、`GuiLog` を購読してファイルへ書く。`LogViewModel`（Transient）も `ControlService` を受けない。

@@ -110,7 +110,7 @@ classDiagram
     InputMappingPipeline ..> MappingPipelineContext : mutates
 
     class ControlService {
-        <<統括役。Phase13 完了時点: コンストラクター 17 引数>>
+        <<統括役。Phase13 完了時点: コンストラクター 16 引数。Phase13b-Step3 で IServiceDebugRelay を廃止>>
         -IDs4DeviceRegistry _deviceRegistry
         -IServiceLifecycle _lifecycle
         -IDeviceSlotState _slots
@@ -118,13 +118,11 @@ classDiagram
         -IVirtualPadService _virtualPad
         -IOutputSlotService _outputSlotService
         -IMapping _mapping
-        -IServiceDebugRelay debugRelay
         -IProfileSettingsService _profileSettings
         -IAppSettingsService _appSettings
         +Start()
         +Stop()
         +HotPlug()
-        +LogDebug(string data, bool warning)
     }
     class IEventThreadDispatcher {
         <<interface>>
@@ -179,10 +177,6 @@ classDiagram
         +TouchpadSlide(int ind) string
         +GetActiveInputControl(int ind) DS4Controls
         +SetRumble(byte heavyMotor, byte lightMotor, int deviceNum)
-    }
-    class IServiceDebugRelay {
-        <<interface>>
-        +DebugMessage event
     }
     class IIpcCommandProcessor {
         <<interface>>
@@ -569,7 +563,6 @@ classDiagram
     IDeviceDisconnectHandler <|.. DeviceDisconnectHandler : implements
     DeviceDisconnectHandler --> IDeviceSlotState : ctor injection（Phase13-Step5。配列の所有者）
     DeviceDisconnectHandler --> IVirtualPadService : 仮想パッドの取り外し
-    ServiceDebugRelay --> IDeviceDisconnectHandler : DebugMessage を中継（Phase13-Step10 10-e）
     IJoyConLinker <|.. JoyConLinker : implements
     IJoinableDevice <|.. JoinableDeviceAdapter : implements（実機の DS4Device を包む。テストでは偽物を差し込む）
     JoyConLinker --> IJoinableDevice : 結合が触る最小の窓口
@@ -582,20 +575,14 @@ classDiagram
     InputDeviceModuleRegistry --> IInputDeviceModule : 全部を受け取り、種類から引き当てる
     DeviceConnectionSetup --> IInputDeviceModuleRegistry : 種類ごとの設定の反映
     ControlService --> IInputDeviceModuleRegistry : ctor injection（Phase9 9-E E-6c。種類ごとの判定・初期化・追加ボタン）
-    ServiceDebugRelay --> IDeviceConnectionSetup : DebugMessage を中継（Phase13-Step10 10-e）
-    ServiceDebugRelay --> ILatencyMonitor : DebugMessage を中継
-    ServiceDebugRelay --> ITouchpadToggleService : DebugMessage を中継
-    ControlService --> IServiceDebugRelay : ctor injection（6 サービスのログを ControlService.Debug へ流す）
     ControlService --> IVirtualPadService : ctor injection（OutputslotMan／outputDevices は窓口。PluginOutDev／UnplugOutDev の転送は Phase13-Step10 10-b で削除）
     IUdpMotionServerFactory <|.. UdpMotionServerFactory : implements
     UdpMotionService --> IDeviceSlotState : ctor injection（Phase13-Step5。旧: Func による IUdpMotionHost）
-    ServiceDebugRelay --> IUdpMotionService : DebugMessage を中継
     UdpMotionService --> IUdpMotionServerFactory : UdpServer（internal）の窓口
     RuntimeFeatureSwitch --> IUdpMotionService : ChangeStatus／ChangeMotionEventStatus（Phase13-Step10 10-c）
     IHidHideApiFactory <|.. HidHideApiFactory : implements
     HidHideService --> IHidHideApiFactory : ドライバー（HidHideAPIDevice）の窓口（Phase9 9-E E-2）
     RuntimeFeatureSwitch --> IHidHideService : CheckPresence／UpdateAttributes（Phase13-Step10 10-c）
-    ServiceDebugRelay --> IHidHideService : DebugMessage を中継
     IOscTransportFactory <|.. SharpOscTransportFactory : implements
     OscService --> IOscTransportFactory : SharpOSC の型は SharpOsc* の中に閉じる（Phase9 9-E E-1）
     RuntimeFeatureSwitch --> IOscService : ChangeListenerStatus／ChangeSenderStatus（Phase13-Step10 10-c）
@@ -604,7 +591,6 @@ classDiagram
     RuntimeFeatureSwitch --> IActiveInputProbe : GetActive
     RuntimeFeatureSwitch --> IDeviceRumbleService : SetDevRumble
     RuntimeFeatureSwitch --> IDeviceSlotState : 状態の配列
-    IServiceDebugRelay <|.. ServiceDebugRelay : implements
     IIpcCommandProcessor <|.. IpcCommandProcessor : implements（Phase13-Step11）
     IpcCommandProcessor --> IIpcCommandHost : UI に頼む操作（実装は MainWindow）
     IpcCommandProcessor --> IServiceLifecycle : Running
@@ -1303,3 +1289,8 @@ classDiagram
 %% - 遅延取得（Func）が残るのは、本物の循環の 2 件のみ: DefaultActionManager の Func<IMapping>、ProfileApplicationService の Func<IActionBindingBuilder>（Phase13FuncRatchetGuardTests の許可リスト）。UI ファクトリーの Func<ControlService>／Func<IAutoProfileService> は直接注入になった。
 %% - ServiceProviderHolder（クラス、SetProvider、静的 ActionManager）は削除済み（Step4）。IManagedActionManager／IKeyButtonControllerRegistry をコンストラクターで注入する。
 %% - MainWindow のコンストラクターは 23 引数（ArgumentParser を含む）、ProfileEditor は 9 引数。
+
+%% Phase13b（ログの一括整理）の反映（2026-11-04）:
+%% - ログの入口は AppLogger.Log(AppLogLevel, string, LogOptions) に一本化した（LogOptions: FileOnly／UserFacing／Temporary）。LogTrace／LogDebug／LogInfo／LogWarn／LogError はそれを呼ぶ短縮形。LogToGui と AppLogger.TrayIconLog は削除した。LogToTray（トレイ通知）は通知として別 API のまま。
+%% - 各サービスの private LogDebug と DebugMessage イベント（8 インターフェース）、IServiceDebugRelay／ServiceDebugRelay、ControlService.Debug／LogDebug／OnDebug を廃止した。ログは AppLogger.GuiLog（画面）と NLog（ファイル）へ直接出る。ControlService のコンストラクターは 17 → 16 引数。LoggerHolder／LogViewModel のコンストラクターから ControlService 引数を削除した（GuiLog だけを購読する）。
+%% - DebugEventArgs に Level（AppLogLevel）を追加した。LoggerHolder は Level に応じてファイルへ書く（一時表示はファイルに出さない）。
