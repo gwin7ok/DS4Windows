@@ -739,7 +739,7 @@ namespace DS4Windows
                         _oscService.PreMappingStep(ind, cState, tempMapState);
                     }
 
-                    _mapping.MapCustom(ind, cState, tempMapState, ExposedState[ind], touchPad[ind], this);
+                    _mapping.MapCustom(ind, cState, tempMapState, ExposedState[ind], touchPad[ind]);
 
                     // Copy current Touchpad and Gyro data
                     // Might change to use new DS4State.CopyExtrasTo method

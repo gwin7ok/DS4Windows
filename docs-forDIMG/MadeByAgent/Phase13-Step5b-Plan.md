@@ -170,3 +170,12 @@ Step5 計画書 §3 のとおり（ゲームパッド周りの OSS に類似の�
 - **`Mapping` の `ctrl` の使用箇所（5b-b の対象）**: `_sampleControl`（291, 298, 314, 539）、`ctrl.ProfileSettingsService`（303–317）、`ctrl.DS4Controllers`（307, 533, 649, 688）、`ctrl.ProfileActionProvider`（542, 923, 937, 938）、`ctrl.SpecialActionRepository`（920）、`ctrl` を受け渡す private メソッド（516, 642, 714, 887, 915）。想定どおり 4 メンバー（`ProfileSettingsService`／`DS4Controllers`／`ProfileActionProvider`／`SpecialActionRepository`）。`ProfileSettingsService` は `Mapping` が既に `IProfileSettingsService` を持つか 5b-b で確認する。
 - **`CurrentStates` の初期化順**: プロダクションで `CurrentStates[i]` を読むのは `DeviceDisconnectHandler`（接続切断時）と `ServiceLifecycle`（`Start` 時）だけで、いずれも `ControlService` 構築後の実行時。構築中に読む部品はなく、`InputReportProcessor` のコンストラクターへ初期化をまとめても順序の問題は生じない。
 - **Debug ALL**: Actions.Tests 3081 件すべて合格（3071 → +10）、警告 0・エラー 0 のビルド。
+
+## 11. 5b-b の結果（2026-11-04）
+
+- `IMapping.MapCustom` から `ControlService ctrl` を廃止し、`Mapping` の private メソッド（`ProcessStick`／`ProcessTriggerWithTwoStage`／`ProcessControlSettingAction`／`MapCustomAction`）の `ctrl` 引数も削除。`_sampleControl` を削除。
+- `Mapping` のコンストラクターは 25 → 28（`IDeviceSlotState`、`IProfileActionProvider`、`ISpecialActionRepository` を追加）。`ctrl.ProfileSettingsService` は、`Mapping` が既に持つ `profileSettings`（同じ Singleton）に置き換えた。
+- 挙動の差: 旧 `SampleMouseMovement`／`SampleFixedMouseMovement` の「`_sampleControl` が null なら 0」は、最初の `MapCustom` 前だけの防御だった。`_sampleState` が null のときの 0 は維持。`SampleFixedMouseMovement` は `ctrl` の null 判定が不要になった（`profileSettings` は常にある）。
+- 呼び出し元（`ControlService.On_Report`）、`MappingCharacterizationScope`、Standalone の `IMapping` スタブ 2 件、`TestMappingFactory`、`Phase7Step8W2MappingInstanceGuardTests`（28 件／null 検査）を更新。
+- `ControlService.ProfileActionProvider`／`SpecialActionRepository` は `Mapping` から使われなくなった。コンストラクターの引数ごと 5b-e で削除する。
+- Debug ALL: Actions.Tests 3081 件・Standalone 11 件すべて合格、警告 0・エラー 0。

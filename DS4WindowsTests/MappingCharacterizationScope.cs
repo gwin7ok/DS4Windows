@@ -90,7 +90,7 @@ namespace DS4WindowsTests
             var exposed = new DS4StateExposed(input);
             var mapped = new DS4State();
 
-            Mapper.MapCustom(Device, input, mapped, exposed, mouse, Control);
+            Mapper.MapCustom(Device, input, mapped, exposed, mouse);
             return mapped;
         }
 

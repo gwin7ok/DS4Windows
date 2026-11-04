@@ -13,7 +13,7 @@ namespace DS4Windows.DI
         DS4State SetCurveAndDeadzone(int device, DS4State cState, DS4State dState, IProfileSettingsService settings);
 
         /// <summary>プロファイルの割り当てを評価して <paramref name="MappedState"/> に書く（通常入力の評価の本体）。</summary>
-        void MapCustom(int device, DS4State cState, DS4State MappedState, DS4StateExposed eState, Mouse tp, ControlService ctrl);
+        void MapCustom(int device, DS4State cState, DS4State MappedState, DS4StateExposed eState, Mouse tp);
 
         /// <summary>タッチパッドをジョイスティックとして扱うときの補助。</summary>
         void TempMouseJoystick(int device, DS4State MappedState);

@@ -21,7 +21,7 @@ namespace StandaloneTests
             public ProfileUntriggerSnapshot CaptureProfileUntrigger(int device) { return default; }
             public void RestoreProfileUntrigger(int device, ProfileUntriggerSnapshot snapshot) { }
             public DS4State SetCurveAndDeadzone(int device, DS4State cState, DS4State dState, DS4Windows.DI.IProfileSettingsService settings) { throw new NotSupportedException(); }
-            public void MapCustom(int device, DS4State cState, DS4State MappedState, DS4StateExposed eState, Mouse tp, ControlService ctrl) { throw new NotSupportedException(); }
+            public void MapCustom(int device, DS4State cState, DS4State MappedState, DS4StateExposed eState, Mouse tp) { throw new NotSupportedException(); }
             public void TempMouseJoystick(int device, DS4State MappedState) { throw new NotSupportedException(); }
             public void Commit(int device, DS4Windows.DI.IProfileSettingsService settings) { throw new NotSupportedException(); }
             public bool GetBoolMappingExternal(int device, DS4Controls control, DS4State cState, DS4StateExposed eState, Mouse tp) { throw new NotSupportedException(); }

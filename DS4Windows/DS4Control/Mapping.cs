@@ -47,6 +47,9 @@ namespace DS4Windows
         // Phase7-Step8 W2: 旧 静的な束縛（AppHost／Global のフォールバックつき）。コンストラクターで受ける（フォールバックは廃止）。
         private readonly DS4Windows.DI.IProfileSettingsService profileSettings;
         private readonly DS4Windows.DI.IProfileApplicationService profileApplication;
+        private readonly DS4Windows.DI.IDeviceSlotState _slots;   // Phase13-Step5b: デバイス・状態の窓口（旧: MapCustom の ctrl.DS4Controllers）
+        private readonly DS4Windows.DI.IProfileActionProvider _profileActionProvider;   // Phase13-Step5b: 旧 ctrl.ProfileActionProvider
+        private readonly DS4Windows.DI.ISpecialActionRepository _specialActionRepository;   // Phase13-Step5b: 旧 ctrl.SpecialActionRepository
         private readonly IVirtualKBM VirtualKBM;
         private readonly DS4Windows.DI.IKeyButtonControllerRegistry _keyButtonControllers;
         private readonly DS4Windows.Actions.IProcessLauncher _processLauncher;
@@ -123,7 +126,10 @@ namespace DS4Windows
             DS4Windows.DI.IControlActivityReader controlActivityReader,
             DS4Windows.DI.ISyntheticInputCommitter syntheticCommitter,
             DS4Windows.DI.ITwoStageTriggerProcessor twoStageTrigger,
-            DS4Windows.Actions.IManagedActionManager actionManager)
+            DS4Windows.Actions.IManagedActionManager actionManager,
+            DS4Windows.DI.IDeviceSlotState slots,
+            DS4Windows.DI.IProfileActionProvider profileActionProvider,
+            DS4Windows.DI.ISpecialActionRepository specialActionRepository)
         {
             // Phase13-Step4: ログ出力だけの購読。旧: 静的コンストラクターで静的イベントを購読していた（本番の Mapping は Singleton のため、購読は 1 回で変わらない）
             if (actionManager == null) throw new ArgumentNullException(nameof(actionManager));
@@ -135,6 +141,11 @@ namespace DS4Windows
                 };
             }
             catch { }
+
+            // Phase13-Step5b: 旧 MapCustom の ControlService 引数（逆依存）の代わりに、必要な 3 つの窓口をコンストラクターで受ける
+            _slots = slots ?? throw new ArgumentNullException(nameof(slots));
+            _profileActionProvider = profileActionProvider ?? throw new ArgumentNullException(nameof(profileActionProvider));
+            _specialActionRepository = specialActionRepository ?? throw new ArgumentNullException(nameof(specialActionRepository));
 
             _syntheticInput = syntheticInput ?? throw new ArgumentNullException(nameof(syntheticInput));
             _macroRuntime = macroRuntime ?? throw new ArgumentNullException(nameof(macroRuntime));
@@ -288,33 +299,29 @@ namespace DS4Windows
         private readonly DS4State[] _sampleState = new DS4State[ControllerLimits.MaxControllerCount];
         private readonly DS4StateExposed[] _sampleExposed = new DS4StateExposed[ControllerLimits.MaxControllerCount];
         private readonly DS4StateFieldMapping[] _sampleFields = new DS4StateFieldMapping[ControllerLimits.MaxControllerCount];
-        private readonly ControlService[] _sampleControl = new ControlService[ControllerLimits.MaxControllerCount];
+        // Phase13-Step5b: 旧 _sampleControl（MapCustom が毎フレーム受け取る ControlService の保持）は削除した。必要なものはコンストラクターで受ける（逆依存の解消）
 
         // 新経路のマウスの移動（ControlMouseMoveOutputAction）が、TriggerInput 経由で呼ぶ。旧 getMouseMapping と同じ計算
         private double SampleMouseMovement(int device, DS4Controls control, int direction)
         {
             DS4State state = _sampleState[device];
             DS4StateFieldMapping fields = _sampleFields[device];
-            ControlService ctrl = _sampleControl[device];
-            if (state == null || fields == null || ctrl == null) return 0.0;
+            if (state == null || fields == null) return 0.0;
 
             // Phase9 9-B: 旧 getMouseMapping（ctrl から設定と経過時間を読んでいた）は ButtonMouseMovementCalculator へ移した。設定と経過時間は、ここで読んで渡す
             return _buttonMouseMovement.Calculate(device, control, direction, state, fields,
-                ctrl.ProfileSettingsService.ButtonMouseInfos[device],
-                ctrl.ProfileSettingsService.LSModInfo[device].deadZone,
-                ctrl.ProfileSettingsService.RSModInfo[device].deadZone,
+                profileSettings.ButtonMouseInfos[device],
+                profileSettings.LSModInfo[device].deadZone,
+                profileSettings.RSModInfo[device].deadZone,
                 deltaAccelProcessors[device],
-                ctrl.DS4Controllers[device].lastTimeElapsedDouble);
+                _slots.DS4Controllers[device].lastTimeElapsedDouble);
         }
 
         // Phase10-Step6 後の Step5: SA のマウス移動（強さの固定値）が、TriggerInput 経由で呼ぶ。getMouseMapping の「ボタンが元のとき」（押している）の量
         // （感度 activeButtonSensitivity と、縦方向の倍率 buttonVerticalScale）に、強さ（0〜1）を掛ける。1 は、Controls のボタンからのマウス移動と同じ量
         private double SampleFixedMouseMovement(int device, int direction, double fraction)
         {
-            ControlService ctrl = _sampleControl[device];
-            if (ctrl == null) return 0.0;
-
-            ButtonMouseInfo buttonMouseInfo = ctrl.ProfileSettingsService.ButtonMouseInfos[device];
+            ButtonMouseInfo buttonMouseInfo = profileSettings.ButtonMouseInfos[device];
             const double root = 1.002;
             const double divide = 10000d;
             double value = Math.Pow(root + buttonMouseInfo.activeButtonSensitivity / divide, 100) - 1;
@@ -513,7 +520,7 @@ namespace DS4Windows
         /// </summary>
 
         public void MapCustom(int device, DS4State cState, DS4State MappedState, DS4StateExposed eState,
-            Mouse tp, ControlService ctrl)
+            Mouse tp)
         {
             /* TODO: This method is slow sauce. Find ways to speed up action execution */
             double tempMouseDeltaX = 0.0;
@@ -530,35 +537,34 @@ namespace DS4Windows
             // Phase8-Step7 7.7b: 前フレームの状態（MultiAction のエッジ判定用）は、デバイスの前回のレポート（旧経路の getPreviousStateRef と同じ）を渡す。
             // 前フレームの表は、WasActive が最初に呼ばれたときにだけ作る（遅延）ため、MultiAction がなければ費用は増えない。デバイスがなければ null（従来どおり）
             DS4State previousState = null;
-            try { previousState = ctrl?.DS4Controllers[device]?.getPreviousStateRef(); } catch { }
+            try { previousState = _slots.DS4Controllers[device]?.getPreviousStateRef(); } catch { }
             _triggerInputs[device].Update(cState, previousState, eState, tp, fieldMapping);
             _frameOutputs[device].Bind(outputfieldMapping, this.deviceState[device]);
             _sampleState[device] = cState;
             _sampleExposed[device] = eState;
             _sampleFields[device] = fieldMapping;
-            _sampleControl[device] = ctrl;
 
             SyntheticState deviceState = this.deviceState[device];
-            if (ctrl.ProfileActionProvider.GetProfileActionCount(device) > 0 || profileSettings.GetUseTempProfile(device))
-                MapCustomAction(device, ctrl);
+            if (_profileActionProvider.GetProfileActionCount(device) > 0 || profileSettings.GetUseTempProfile(device))
+                MapCustomAction(device);
 
             ControlSettingsGroup controlSetGroup = profileSettings.GetControlSettingsGroup(device);
 
             // Process LS／RS（Phase9 MapCustom の分割 M3c: 左右で似たコードが 2 回あった。LS → RS の順は変えない）
             ProcessStick(device, cState, MappedState, eState, tp, fieldMapping, outputfieldMapping, deviceState,
-                ref tempMouseDeltaX, ref tempMouseDeltaY, ctrl,
+                ref tempMouseDeltaX, ref tempMouseDeltaY,
                 profileSettings.LSOutputSettings[device], controlSetGroup.LS, false);
             ProcessStick(device, cState, MappedState, eState, tp, fieldMapping, outputfieldMapping, deviceState,
-                ref tempMouseDeltaX, ref tempMouseDeltaY, ctrl,
+                ref tempMouseDeltaX, ref tempMouseDeltaY,
                 profileSettings.RSOutputSettings[device], controlSetGroup.RS, true);
 
             // Process L2／R2（Phase9 MapCustom の分割 M3b: 左右で同じコードが 2 回あった［約 130 行］。L2 → R2 の順は変えない）
             ProcessTriggerWithTwoStage(device, cState, MappedState, eState, tp, fieldMapping, outputfieldMapping, deviceState,
-                ref tempMouseDeltaX, ref tempMouseDeltaY, ctrl,
+                ref tempMouseDeltaX, ref tempMouseDeltaY,
                 controlSetGroup.L2, controlSetGroup.L2FullPull, DS4Controls.L2, DS4Controls.L2FullPull,
                 cState.L2, cState.L2Raw, profileSettings.L2OutputSettings[device], l2TwoStageMappingData[device]);
             ProcessTriggerWithTwoStage(device, cState, MappedState, eState, tp, fieldMapping, outputfieldMapping, deviceState,
-                ref tempMouseDeltaX, ref tempMouseDeltaY, ctrl,
+                ref tempMouseDeltaX, ref tempMouseDeltaY,
                 controlSetGroup.R2, controlSetGroup.R2FullPull, DS4Controls.R2, DS4Controls.R2FullPull,
                 cState.R2, cState.R2Raw, profileSettings.R2OutputSettings[device], r2TwoStageMappingData[device]);
 
@@ -568,7 +574,7 @@ namespace DS4Windows
                 DS4ControlSettings dcs = settingEnum.Current;
                 ProcessControlSettingAction(dcs, device, cState, MappedState, eState,
                     tp, fieldMapping, outputfieldMapping, deviceState, ref tempMouseDeltaX,
-                    ref tempMouseDeltaY, ctrl);
+                    ref tempMouseDeltaY);
             }
 
             // Process Extra Device specific buttons
@@ -577,7 +583,7 @@ namespace DS4Windows
                 DS4ControlSettings dcs = settingEnum.Current;
                 ProcessControlSettingAction(dcs, device, cState, MappedState, eState,
                     tp, fieldMapping, outputfieldMapping, deviceState, ref tempMouseDeltaX,
-                    ref tempMouseDeltaY, ctrl);
+                    ref tempMouseDeltaY);
             }
 
             // Phase8-Step4 W4: 移行済みの種別（既定は空）の毎フレームの出力。Stage3 の直後（通常の割り当ての後）の位置を保つ
@@ -639,14 +645,14 @@ namespace DS4Windows
         // 左右の違い: 軸の添字、フリックスティックの読む軸、RS だけの「デルタ加速」（Controls モードのとき、割り当ての処理の前に実行）。ホットパスのため割り当てを増やさない
         private void ProcessStick(int device, DS4State cState, DS4State MappedState, DS4StateExposed eState,
             Mouse tp, DS4StateFieldMapping fieldMapping, DS4StateFieldMapping outputfieldMapping, SyntheticState deviceState,
-            ref double tempMouseDeltaX, ref double tempMouseDeltaY, ControlService ctrl,
+            ref double tempMouseDeltaX, ref double tempMouseDeltaY,
             StickOutputSetting stickSettings, List<DS4ControlSettings> stickControls, bool isRightStick)
         {
             if (stickSettings.mode == StickMode.Controls)
             {
                 if (isRightStick && stickSettings.outputSettings.controlSettings.deltaAccelSettings.enabled)
                 {
-                    DS4Device d = ctrl.DS4Controllers[device];
+                    DS4Device d = _slots.DS4Controllers[device];
                     DS4State cRawState = d.getCurrentStateRef();
                     cRawState.calculateStickAngles();
 
@@ -670,7 +676,7 @@ namespace DS4Windows
                     DS4ControlSettings dcs = settingEnum.Current;
                     ProcessControlSettingAction(dcs, device, cState, MappedState, eState,
                         tp, fieldMapping, outputfieldMapping, deviceState, ref tempMouseDeltaX,
-                        ref tempMouseDeltaY, ctrl);
+                        ref tempMouseDeltaY);
                 }
             }
             else
@@ -685,7 +691,7 @@ namespace DS4Windows
                     case StickMode.None:
                         break;
                     case StickMode.FlickStick:
-                        DS4Device d = ctrl.DS4Controllers[device];
+                        DS4Device d = _slots.DS4Controllers[device];
                         DS4State cRawState = d.getCurrentStateRef();
                         DS4State pState = d.getPreviousStateRef();
 
@@ -711,7 +717,7 @@ namespace DS4Windows
         // ホットパスのため、ラムダや割り当てを使わない
         private void ProcessTriggerWithTwoStage(int device, DS4State cState, DS4State MappedState, DS4StateExposed eState,
             Mouse tp, DS4StateFieldMapping fieldMapping, DS4StateFieldMapping outputfieldMapping, SyntheticState deviceState,
-            ref double tempMouseDeltaX, ref double tempMouseDeltaY, ControlService ctrl,
+            ref double tempMouseDeltaX, ref double tempMouseDeltaY,
             DS4ControlSettings dcsTemp, DS4ControlSettings fullPullSettings, DS4Controls softControl, DS4Controls fullControl,
             byte triggerValue, byte triggerRawValue, TriggerOutputSettings triggerSettings, TwoStageTriggerMappingData twoStageData)
         {
@@ -719,7 +725,7 @@ namespace DS4Windows
             {
                 ProcessControlSettingAction(dcsTemp, device, cState, MappedState, eState,
                     tp, fieldMapping, outputfieldMapping, deviceState, ref tempMouseDeltaX,
-                    ref tempMouseDeltaY, ctrl);
+                    ref tempMouseDeltaY);
             }
             else
             {
@@ -749,7 +755,7 @@ namespace DS4Windows
 
                     ProcessControlSettingAction(dcsTemp, device, cState, MappedState, eState,
                         tp, fieldMapping, outputfieldMapping, deviceState, ref tempMouseDeltaX,
-                        ref tempMouseDeltaY, ctrl);
+                        ref tempMouseDeltaY);
                 }
                 else
                 {
@@ -774,7 +780,7 @@ namespace DS4Windows
 
                     ProcessControlSettingAction(fullPull, device, cState, MappedState, eState,
                         tp, fieldMapping, outputfieldMapping, deviceState, ref tempMouseDeltaX,
-                        ref tempMouseDeltaY, ctrl);
+                        ref tempMouseDeltaY);
                 }
 
                 // Store active buttons state
@@ -883,8 +889,7 @@ namespace DS4Windows
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private void ProcessControlSettingAction(DS4ControlSettings dcs, int device, DS4State cState, DS4State MappedState, DS4StateExposed eState,
-            Mouse tp, DS4StateFieldMapping fieldMapping, DS4StateFieldMapping outputfieldMapping, SyntheticState deviceState, ref double tempMouseDeltaX, ref double tempMouseDeltaY,
-            ControlService ctrl)
+            Mouse tp, DS4StateFieldMapping fieldMapping, DS4StateFieldMapping outputfieldMapping, SyntheticState deviceState, ref double tempMouseDeltaX, ref double tempMouseDeltaY)
         {
             // Check if this control press would trigger a Special Action
             // If so, suppress the normal mapping to prevent conflict
@@ -912,15 +917,15 @@ namespace DS4Windows
         // Phase8-Step8 8b: SA の種別ごとの旧枝（トリガーの判定、Key／Macro／Button／Program／Profile／DisconnectBT／BatteryCheck／ステアリング較正／
         // GyroCalibrate／MultiAction の実行、押し続けの解除、uTrigger の復帰）を削除した。移行済みの束縛をエンジンが処理する。束縛を持たない SA は、何もしない
         // （Phase8-Step8-Plan.md Q2）。以前は async void だったが、初期化待ちは完了済みの Task で、実際の await はタップ判定の遅延だけだったため、同期の void にした。
-        private void MapCustomAction(int device, ControlService ctrl)
+        private void MapCustomAction(int device)
         {
             try
             {
                 // 例外（プロファイルの編集との競合など）はここで記録して、フレームを続ける。
-                int totalActionCount = ctrl.SpecialActionRepository.ActionList.Count;
+                int totalActionCount = _specialActionRepository.ActionList.Count;
 
                 // プロファイルのアクション名のスナップショット（UI スレッドが一覧を変更しても、列挙中に壊れないように）
-                string[] profileActions = ctrl.ProfileActionProvider.GetProfileActionsRaw(device)?.ToArray() ?? Array.Empty<string>();
+                string[] profileActions = _profileActionProvider.GetProfileActionsRaw(device)?.ToArray() ?? Array.Empty<string>();
 
                 // Issue8-1(3)是正: 抑制中のボタンのうち、実際に離されたものを解除する（デバイスにつき 1 回）。
                 // 詳細: docs-forDIMG/MadeByAgent/Phase5-Step14-Issue8-1-3-Fix-Plan.md §2.3
@@ -934,8 +939,8 @@ namespace DS4Windows
                      actionIndex < profileListLen; actionIndex++)
                 {
                     string actionname = profileActions[actionIndex];
-                    SpecialAction action = ctrl.ProfileActionProvider.GetProfileAction(device, actionname);
-                    int index = ctrl.ProfileActionProvider.GetProfileActionIndexOf(device, actionname);
+                    SpecialAction action = _profileActionProvider.GetProfileAction(device, actionname);
+                    int index = _profileActionProvider.GetProfileActionIndexOf(device, actionname);
 
                     if (index < 0 || index >= totalActionCount)
                         continue;
