@@ -191,7 +191,7 @@ namespace DS4Windows.DI
 
             // Phase13-Step6 6-e: 旧 Func<ControlService> の登録（Phase6-Step9-4 決定2＝C1。ViewModelFactory などの遅延解決用）は、利用者 9 件がすべて直接注入に替わったため削除した
             // Phase7-Step8 W2（Q1＝A・Q4＝A・Q8＝A）: 入力の評価の窓口（Singleton）。Mapping の ControlService への逆依存は Phase13-Step5b（5b-b）で解消した［IDeviceSlotState／IProfileActionProvider／ISpecialActionRepository をコンストラクターで受ける］。
-            // DefaultActionManager／DefaultMacroPlayer は Func<IMapping> で受ける（ホスト構築時に Mapping とその依存を作らないため。Phase5-Plan §5.4）。
+            // Phase13-Step8: 遅延取得（Func<I…>）で受けるのは、本物の循環がある DefaultActionManager（IMapping）と ProfileApplicationService（IActionBindingBuilder）だけ（Phase13FuncRatchetGuardTests の許可リスト）。
             services.AddSingleton<IStickDeadZoneProcessor, StickDeadZoneProcessor>();   // Phase9 9-A(1) (b): スティックのデッドゾーンの補正（状態なし）
             services.AddSingleton<IOutputCurveProcessor, OutputCurveProcessor>();   // Phase9 9-A(1) (c): スクエアスティックと出力カーブ（状態なし）
             services.AddSingleton<ITriggerDeadZoneProcessor, TriggerDeadZoneProcessor>();   // Phase9 9-A(1) (d): トリガーのデッドゾーンの補正（状態なし）

@@ -18,6 +18,8 @@ namespace DS4Windows.Actions
         private const int ToggleReleaseHoldMsLocal = 200;
         // Phase7-Step8 W2（Q8＝A）: 切断時の後始末（旧: Mapping.HandleDeviceDisconnect の静的呼び出し）。ホスト構築時（PreallocateEntries）に Mapping とその依存を
         // 作らないよう、遅延（Func）で受ける（Phase5-Plan §5.4）。
+        // Phase13-Step8: 遅延取得のまま残す（意図的）。Mapping の依存グラフの内側（Mapping → … → ActionManager）にあり、直接受けると循環する。
+        // ホスト構築時（AppHost.PreallocateActionEntries）に Mapping を作らない理由も兼ねる。再検討条件: Mapping が IManagedActionManager に依存しなくなったとき。許可リスト: Phase13FuncRatchetGuardTests
         private readonly Func<DS4Windows.DI.IMapping> _mappingProvider;
 
         public event Action<SpecialAction, int, bool, bool> ToggledOnChanged;

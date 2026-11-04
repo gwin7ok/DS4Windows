@@ -22,6 +22,8 @@ namespace DS4Windows
         private readonly IKeyButtonControllerRegistry _keyButtonControllers;
         // Phase8-Step5 W2（Q3＝A）: 束縛の登録簿と、ビルダーの遅延解決（ビルダー → IProfileSwitcher → 本サービス、の循環を避ける）
         private readonly DS4Windows.Actions.IActionRegistry _actionRegistry;
+        // Phase13-Step8: 遅延取得のまま残す（意図的）。ActionBindingBuilder → IProfileSwitcher → IProfileApplicationService と循環する。
+        // 再検討条件: 束縛の構築を ProfileApplicationService の外へ出したとき。許可リスト: Phase13FuncRatchetGuardTests
         private readonly Func<DS4Windows.Actions.IActionBindingBuilder> _bindingBuilderProvider;
         // Phase13-Step4: 旧 静的 ActionManager（ClearAllEntries／ClearDeviceState／PreallocateForProfileApply）の代わり
         private readonly DS4Windows.Actions.IManagedActionManager _actionManager;

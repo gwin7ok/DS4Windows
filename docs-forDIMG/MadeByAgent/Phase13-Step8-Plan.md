@@ -82,3 +82,21 @@ Step5〜7 で `ControlService` の持つ状態と相互参照を解消した。�
 3. **#6（`IAutoProfileService`）も同様に、実測して問題がなければ直接注入**、問題があれば残して記録。
 4. **`Phase13FuncRatchetGuardTests`（許可リスト方式）を 8-d で追加**する。
 5. **4 コミット（8-a〜8-d）で、以後は自動進行**（Step7 と同じ）。
+
+---
+
+## 10. 実施結果（2026-11-04）
+
+決定 1〜5 は承認済み（2026-11-04）。
+
+| サブステップ | コミット | 内容 |
+|---|---|---|
+| 8-a | `01c3d301` | 本計画書、`Phase13Step8ResolutionGraphProbeTests` |
+| 8-b | `5b4bb123` | `DefaultMacroPlayer`／`DefaultMacroStringPlayer`／`ProfileSwitchAction`／`SpecialActionOutputFactory`／`ActionBindingBuilder` が `IMapping` を直接受ける。`Phase7Step8W2MappingInstanceGuardTests` を現状（`DefaultActionManager` だけが遅延）に更新 |
+| 8-c | `7a3ee103` | `MainWindowFactory`／`ViewModelFactory` が `IAutoProfileService` を直接受ける。登録を撤廃（メイン画面の生成は設定の読込後。`App.ResolvePostHostService`） |
+| 8-d | （本コミット） | `Phase13FuncRatchetGuardTests`（許可リスト）、`ServiceRegistration.cs` の古いコメントの修正、残す 2 件に TODO と再検討条件を記録 |
+
+- 残る遅延取得は 2 件（本物の循環）: `DefaultActionManager` の `Func<IMapping>`、`ProfileApplicationService` の `Func<IActionBindingBuilder>`。
+- **完了条件**「循環を理由とする `Func` が 0 件」: 残る 2 件は循環が理由であり、「循環が消えたものは直接注入へ」の趣旨を満たす（消えない循環のみが残った）。
+- 実行時にホスト構築時の `Mapping` の生成が前倒しになるかは、`ControlService` の登録がすでに `IMapping` を受けているため、起動の流れは実質変わらない。`DefaultActionManager` は遅延のまま。
+- `Debug ALL`: 警告 0、エラー 0、全テスト合格。実機確認（最後にまとめて）: 起動、自動プロファイル、マクロ、プロファイル切替アクション。
