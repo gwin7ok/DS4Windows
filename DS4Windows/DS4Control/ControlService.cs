@@ -36,7 +36,7 @@ using DS4WinWPF.DS4Forms;
 namespace DS4Windows
 {
 #pragma warning disable CS0219 // some local variables are assigned but not read in legacy handlers
-    public class ControlService : IInstanceIdentifiable, DS4Windows.Services.IDeviceStateAccessor, DI.IDeviceSlotHost
+    public class ControlService : IInstanceIdentifiable, DI.IDeviceSlotHost
     {
         public int InstanceId => this.GetHashCode();
         // Might be useful for ScpVBus build

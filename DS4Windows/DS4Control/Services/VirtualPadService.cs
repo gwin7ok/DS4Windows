@@ -21,7 +21,7 @@ namespace DS4Windows.Services
         private readonly IEnvironmentService _environmentService;
         private readonly IProfileSettingsService _profileSettings;
         private readonly Func<IOutputSlotService> _outputSlotServiceFactory;
-        private readonly Func<IDeviceStateAccessor> _deviceAccessor;
+        private readonly IDeviceStateAccessor _deviceAccessor;
         private readonly IEventThreadDispatcher _eventThread;
         private readonly IDeviceRumbleService _rumble;
 
@@ -38,7 +38,7 @@ namespace DS4Windows.Services
         public event Action<string, bool> DebugMessage;
 
         public VirtualPadService(IEnvironmentService environmentService, IProfileSettingsService profileSettings,
-            Func<IOutputSlotService> outputSlotServiceFactory, Func<IDeviceStateAccessor> deviceAccessor,
+            Func<IOutputSlotService> outputSlotServiceFactory, IDeviceStateAccessor deviceAccessor,
             IEventThreadDispatcher eventThread, IDeviceRumbleService rumble)
         {
             _environmentService = environmentService ?? throw new ArgumentNullException(nameof(environmentService));
@@ -510,7 +510,7 @@ namespace DS4Windows.Services
 
                 if (device.JointDeviceSlotNumber != -1)
                 {
-                    DS4Device tempDS4Device = _deviceAccessor().GetController(device.JointDeviceSlotNumber);
+                    DS4Device tempDS4Device = _deviceAccessor.GetController(device.JointDeviceSlotNumber);
                     if (tempDS4Device != null)
                     {
                         EstablishOutFeedback(device.JointDeviceSlotNumber, contType, outDevice, tempDS4Device);

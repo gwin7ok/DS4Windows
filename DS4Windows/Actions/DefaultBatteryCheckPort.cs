@@ -4,23 +4,23 @@ using DS4Windows.Services;
 namespace DS4Windows.Actions
 {
     /// <summary>
-    /// Phase8-Step7 7.6c: <see cref="IBatteryCheckPort"/> の本番の実装。<c>IDeviceStateAccessor</c>（＝ControlService）越しに <c>DS4Device</c> を操作し、
+    /// Phase8-Step7 7.6c: <see cref="IBatteryCheckPort"/> の本番の実装。<c>IDeviceStateAccessor</c>（＝IDeviceSlotState。Phase13-Step5 で直接注入に変更）越しに <c>DS4Device</c> を操作し、
     /// ライトバーの強制色は静的な <c>DS4LightBar</c> を、通知は <c>AppLogger.LogToTray</c> を、この窓口の内側に閉じ込めて使う（Q6＝A）。
     /// 電池残量の文言は <c>ControlService.GetDS4Battery</c>（旧 <c>Mapping</c> と同じ）。ControlService は後から作られるため、遅延（<c>Func</c>）で受ける。
     /// 旧経路と違い、コントローラーがいなくても例外にしない。
     /// </summary>
     public sealed class DefaultBatteryCheckPort : IBatteryCheckPort
     {
-        private readonly Func<IDeviceStateAccessor> _deviceStateAccessor;
+        private readonly IDeviceStateAccessor _deviceStateAccessor;
         private readonly Func<ControlService> _controlService;
 
-        public DefaultBatteryCheckPort(Func<IDeviceStateAccessor> deviceStateAccessor, Func<ControlService> controlService)
+        public DefaultBatteryCheckPort(IDeviceStateAccessor deviceStateAccessor, Func<ControlService> controlService)
         {
             _deviceStateAccessor = deviceStateAccessor ?? throw new ArgumentNullException(nameof(deviceStateAccessor));
             _controlService = controlService ?? throw new ArgumentNullException(nameof(controlService));
         }
 
-        private DS4Device Controller(int deviceIndex) => _deviceStateAccessor()?.GetController(deviceIndex);
+        private DS4Device Controller(int deviceIndex) => _deviceStateAccessor.GetController(deviceIndex);
 
         private static bool InRange(int deviceIndex) => deviceIndex >= 0 && deviceIndex < DS4LightBar.forcelight.Length;
 

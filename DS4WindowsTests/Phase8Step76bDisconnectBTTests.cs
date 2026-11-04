@@ -387,7 +387,7 @@ namespace DS4WindowsTests
         [Fact]
         public void TheDefaultPort_DoesNothingWhenThereIsNoController()
         {
-            var port = new DefaultControllerDisconnectPort(() => new NoControllerAccessor());
+            var port = new DefaultControllerDisconnectPort(new NoControllerAccessor());
 
             Assert.Equal(DisconnectTargetKind.None, port.GetTargetKind(0));
             Assert.False(port.DisconnectBluetooth(0));
@@ -397,9 +397,8 @@ namespace DS4WindowsTests
             Assert.Equal(DisconnectTargetKind.None, port.GetTargetKind(-1));
             Assert.Equal(DisconnectTargetKind.None, port.GetTargetKind(99));
 
-            var nullAccessor = new DefaultControllerDisconnectPort(() => null);
-            Assert.Equal(DisconnectTargetKind.None, nullAccessor.GetTargetKind(0));
-            Assert.False(nullAccessor.DisconnectBluetooth(0));
+            // Phase13-Step5: 窓口は直接注入（必須）。null は受け付けない
+            Assert.Throws<ArgumentNullException>(() => new DefaultControllerDisconnectPort(null));
         }
 
         private sealed class NoControllerAccessor : IDeviceStateAccessor

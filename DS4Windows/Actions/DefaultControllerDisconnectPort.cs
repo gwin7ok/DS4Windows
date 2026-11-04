@@ -4,20 +4,20 @@ using DS4Windows.Services;
 namespace DS4Windows.Actions
 {
     /// <summary>
-    /// Phase8-Step7 7.6b: <see cref="IControllerDisconnectPort"/> の本番の実装。<c>IDeviceStateAccessor</c>（＝ControlService）越しに <c>DS4Device</c> を操作する。
+    /// Phase8-Step7 7.6b: <see cref="IControllerDisconnectPort"/> の本番の実装。<c>IDeviceStateAccessor</c>（＝IDeviceSlotState。Phase13-Step5 で直接注入に変更）越しに <c>DS4Device</c> を操作する。
     /// ControlService は後から作られるため、遅延（<c>Func</c>）で受ける（<see cref="DefaultGyroCalibrationPort"/> と同じ方式）。
     /// 旧経路と違い、コントローラーがいなくても例外にしない。
     /// </summary>
     public sealed class DefaultControllerDisconnectPort : IControllerDisconnectPort
     {
-        private readonly Func<IDeviceStateAccessor> _deviceStateAccessor;
+        private readonly IDeviceStateAccessor _deviceStateAccessor;
 
-        public DefaultControllerDisconnectPort(Func<IDeviceStateAccessor> deviceStateAccessor)
+        public DefaultControllerDisconnectPort(IDeviceStateAccessor deviceStateAccessor)
         {
             _deviceStateAccessor = deviceStateAccessor ?? throw new ArgumentNullException(nameof(deviceStateAccessor));
         }
 
-        private DS4Device Controller(int deviceIndex) => _deviceStateAccessor()?.GetController(deviceIndex);
+        private DS4Device Controller(int deviceIndex) => _deviceStateAccessor.GetController(deviceIndex);
 
         public DisconnectTargetKind GetTargetKind(int deviceIndex)
         {

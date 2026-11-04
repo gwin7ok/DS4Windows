@@ -14,7 +14,7 @@ namespace DS4WindowsTests
     {
         private static MacroStepExecutor NewExecutor(RecordingWindowSystem windowSystem)
             => new MacroStepExecutor(TestHost.GetService<IVirtualKBM>(), TestHost.GetService<IProfileSettingsService>(),
-                new MacroRuntimeState(), () => null, windowSystem);
+                new MacroRuntimeState(), new DS4Windows.Services.DeviceSlotState(), windowSystem);
 
         private static int Value(MacroPointerMoveMode mode, int x, int y) => new MacroPointerMove(mode, x, y).ToMacroValue();
 

@@ -17,13 +17,13 @@ namespace DS4Windows.Services
         private readonly IVirtualKBM _virtualKbm;
         private readonly IProfileSettingsService _profileSettings;
         private readonly MacroRuntimeState _macroRuntime;
-        // ControlService が IDeviceStateAccessor の実装者のため、循環を避けて遅延で取得する（マクロの振動イベントで使う）
-        private readonly Func<IDeviceStateAccessor> _deviceStateAccessor;
+        // Phase13-Step5: IDeviceStateAccessor の実装者はスロット状態（依存なし）になったため、直接注入で受ける（マクロの振動イベントで使う。旧: 循環を避けて Func で遅延取得）
+        private readonly IDeviceStateAccessor _deviceStateAccessor;
         // Phase12-Step3 3c（R-3）: マウスポインターの移動（絶対／前面ウィンドウ基準）
         private readonly IWindowSystem _windowSystem;
 
         public MacroStepExecutor(IVirtualKBM virtualKbm, IProfileSettingsService profileSettings,
-            MacroRuntimeState macroRuntime, Func<IDeviceStateAccessor> deviceStateAccessor, IWindowSystem windowSystem)
+            MacroRuntimeState macroRuntime, IDeviceStateAccessor deviceStateAccessor, IWindowSystem windowSystem)
         {
             _virtualKbm = virtualKbm ?? throw new ArgumentNullException(nameof(virtualKbm));
             _profileSettings = profileSettings ?? throw new ArgumentNullException(nameof(profileSettings));
@@ -97,7 +97,7 @@ namespace DS4Windows.Services
                 DS4Device d = null;
                 try
                 {
-                    var accessor = _deviceStateAccessor();
+                    var accessor = _deviceStateAccessor;
                     if (accessor != null) d = accessor.GetController(device);
                 }
                 catch { }

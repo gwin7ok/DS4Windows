@@ -1,7 +1,7 @@
 # Phase13-Step5 個別計画書: スロット状態の持ち主の新設（ゲート付き）
 
 作成日: 2026-11-04（改訂: 同日。ユーザー指示「Step5 を 5 と 5b に2分割」を反映。`On_Report` の分離と `Mapping` の逆依存の解消は `Phase13-Step5b-Plan.md` へ移した）
-状態: **承認済み（2026-11-04。§9 の 1〜6 すべて）。5a〜5d 完了（5d はコミット待ち）。次は 5e**
+状態: **承認済み（2026-11-04。§9 の 1〜6 すべて）。5a〜5e 完了（5e はコミット待ち）。Step5 の実装は完了**
 親計画: `Phase13-Plan.md` §4 Step5、§9 R1、§2.2 の `Func` #6・#7・#8
 前提: Step4 コミット済み（`1a3f8273`）。注: 「Step5b」は Phase13 の中の Step の名前で、ロードマップの「Phase13b（ログ整理）」とは別物。
 
@@ -175,3 +175,20 @@ _touchPad     = slots.TouchPads;       // …ほか
 - `ControlService` から `GetPadDetailForIdx`／`GetCurrentState`／`GetTempState` と `IUdpMotionHost` の実装を削除。`IUdpMotionHost.cs` を削除し、`ServiceRegistration` の `Func<IUdpMotionHost>`／`IUdpMotionHost` の登録 2 件を削除（`Func` 登録は #6 が 0 に）。
 - テスト: `FakeUdpMotionHost`（`FakeUdpMotion.cs`）を削除し、`Phase9EUdpMotionServiceTests` は実物の `DeviceSlotState`（空の入力を入れたもの）を使う。`Phase9EUdpMotionGuardTests`・`Phase13Step3HostRemovalGuardTests` は「`IUdpMotionHost` が存在しない」の検査に更新。`Phase13Step5ControlServiceSlotStateGuardTests` から削除したメンバーの検査を除去。
 - Debug ALL: 警告 0・エラー 0、Actions.Tests 3071 件・Standalone 11 件すべて合格。
+
+## 14. 5e の結果（2026-11-04）と Step5 の総括
+
+- `VirtualPadService`・`MacroStepExecutor`・`DefaultBatteryCheckPort`・`DefaultControllerDisconnectPort`・`DefaultGyroCalibrationPort` の `Func<IDeviceStateAccessor>` を、`IDeviceStateAccessor`（実体は `DeviceSlotState`）の直接注入へ。窓口は必須になり、`null` は `ArgumentNullException`（旧: `Func` が null を返す場合の黙殺が不要になったため、`?.` も削除）。`ServiceRegistration` の `Func<IDeviceStateAccessor>` の登録と、古いコメント（`Mapping` が `IDeviceStateAccessor` を受けるという記述）を修正。`ControlService` は `IDeviceStateAccessor` の実装をやめた（`GetController` は `_slots` へ委譲する公開メソッドとして残る）。
+- テスト: 5 利用者の生成呼び出し（`Phase8Step76a/b/c*`、`Phase9CMacroStepExecutorDifferentialTests`、`Phase12Step3W3c*`、`Phase9EVirtualPadServiceTests`、`TestMappingFactory`）を更新。旧テストの「窓口が null を返す」確認は、「null を拒否する」確認に置き換え。`Phase13Step5FuncRemovalGuardTests`（`Func<IDeviceStateAccessor>`／`Func<IUdpMotionHost>` が本番のソースに 0 件、`Func<IDeviceSlotHost>` は `DeviceConnector` と登録だけ）を追加。
+- Debug ALL: 警告 0・エラー 0、Actions.Tests 3084 件・Standalone 11 件すべて合格。
+
+### Step5 の総括
+
+| ロードマップの `Func` | 結果 |
+|---|---|
+| #6 `Func<IUdpMotionHost>` | **撤廃**（5d） |
+| #8 `Func<IDeviceStateAccessor>`（5 利用者） | **撤廃**（5e） |
+| #7 `Func<IDeviceSlotHost>`（3 利用者） | 2 者は直接注入へ（5c）。**`DeviceConnector` の 1 件が残る**（`ActiveControllers`＋`OnReport`。Step5b で撤廃） |
+
+- `ControlService` の引数は 28 → 29（`IDeviceSlotState`）。Step5b で `On_Report` 専用の引数を減らす。
+- 残る作業: 実機での確認（接続・切断・UDP・`ProcessingDelayMs`）は、Step5b の後にまとめて行う（Phase13 の方針）。モデル図 01〜04 への反映（`IDeviceSlotState`、`IUdpMotionHost` の廃止、`Func` の撤廃）は Step12 で最終確認。

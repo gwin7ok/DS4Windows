@@ -217,14 +217,14 @@ namespace DS4WindowsTests
         [Fact]
         public void TheDefaultPort_DoesNothingWhenThereIsNoController()
         {
-            var port = new DefaultGyroCalibrationPort(() => new NoControllerAccessor());
+            var port = new DefaultGyroCalibrationPort(new NoControllerAccessor());
 
             port.ResetContinuousCalibration(0);
             port.ResetContinuousCalibration(-1);
             port.ResetContinuousCalibration(99);
 
-            var nullAccessor = new DefaultGyroCalibrationPort(() => null);
-            nullAccessor.ResetContinuousCalibration(0);
+            // Phase13-Step5: 窓口は直接注入（必須）。null は受け付けない
+            Assert.Throws<ArgumentNullException>(() => new DefaultGyroCalibrationPort(null));
         }
 
         private sealed class NoControllerAccessor : IDeviceStateAccessor
