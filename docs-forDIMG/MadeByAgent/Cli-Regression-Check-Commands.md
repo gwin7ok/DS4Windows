@@ -133,3 +133,9 @@
 - `ChangeLedColor` の処理は、Phase13-Step11 の前後（`937a7c52^` の `MainWindow.Ipc.cs` と現在の `IpcCommandProcessor`＋`MainWindow.Ipc.cs`）で同一。引数検査・呼び出し先（`CompositeDeviceModel.UpdateCustomLightColor`）とも変わっていない。回帰ではない。
 - `UpdateCustomLightColor` は、プロファイル設定の `m_CustomLed`（カスタム色）を書き換えて `LightColorChanged` を発火するだけで、購読者がコード上に無い。ライトバーのモードがカスタム色のプロファイルでないと、見た目には効かない可能性が高い。
 - 現 master のビルドでの実測は未実施（上の結論は読解による）。
+
+### 7.3 現 master での LoadProfile（実機）と原因（2026-11-04）
+
+- `LoadProfile.1.VerifyA`（ASCII）: ログには出る。`LoadProfile.1.マイクラダンジョンズxbox`（日本語）: ログも出ず、切り替わらない。
+- 原因: 送信側が `StringToHGlobalAnsi`＋`cbData`＝文字数（バイト数ではない）、受信側が `Encoding.ASCII` だったため、日本語のプロファイル名が壊れる／切れる（以前からの不具合。回帰ではない）。
+- 対応: 送信を UTF-8 のバイト列（`cbData`＝バイト数）、受信を UTF-8 に変更。ASCII のみのコマンドは従来と同一。`IpcCommandParserUtf8Tests` を追加。

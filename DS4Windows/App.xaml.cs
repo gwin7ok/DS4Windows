@@ -958,8 +958,12 @@ namespace DS4Windows
                         if (bDoSendMsg)
                         {
                             cds.dwData = IntPtr.Zero;
-                            cds.cbData = parser.CommandArgs.Length;
-                            cds.lpData = Marshal.StringToHGlobalAnsi(parser.CommandArgs);
+                            // UTF-8 のバイト列で送る（日本語などの非 ASCII のプロファイル名を通すため。cbData は文字数ではなくバイト数）。ASCII だけの場合は従来と同一
+                            byte[] cmdBytes = System.Text.Encoding.UTF8.GetBytes(parser.CommandArgs);
+                            cds.cbData = cmdBytes.Length;
+                            cds.lpData = Marshal.AllocHGlobal(cmdBytes.Length + 1);
+                            Marshal.Copy(cmdBytes, 0, cds.lpData, cmdBytes.Length);
+                            Marshal.WriteByte(cds.lpData, cmdBytes.Length, 0);
                             SendMessage(hWndDS4WindowsForm, DS4Windows.UI.MainWindow.WM_COPYDATA, IntPtr.Zero, ref cds);
 
                             if (bWaitResultData)

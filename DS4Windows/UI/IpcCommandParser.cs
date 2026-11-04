@@ -14,12 +14,12 @@ namespace DS4Windows.UI
         public static bool IsValidSize(int byteCount) => byteCount >= MinCommandBytes && byteCount <= MaxCommandBytes;
 
         /// <summary>
-        /// ASCII の文字列を「.」で分け、先頭（コマンド名）を小文字にして返す（旧コードと同じ。小文字化は、現在のカルチャーの規則）。
+        /// UTF-8 の文字列（ASCII を含む）を「.」で分け、先頭（コマンド名）を小文字にして返す（旧コードと同じ。小文字化は、現在のカルチャーの規則）。
         /// 例: 「Disconnect.1」→ { "disconnect", "1" }。
         /// </summary>
         public static string[] Parse(byte[] buffer)
         {
-            string[] strData = Encoding.ASCII.GetString(buffer).Split('.');
+            string[] strData = Encoding.UTF8.GetString(buffer).Split('.'); // UTF-8（ASCII 互換。非 ASCII のプロファイル名を通す）
             if (strData.Length >= 1)
             {
                 strData[0] = strData[0].ToLower();
