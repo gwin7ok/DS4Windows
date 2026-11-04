@@ -16,11 +16,27 @@ namespace DS4WindowsTests
             Assembly assembly = typeof(BuildStampReader).Assembly;
             string stamp = BuildStampReader.FromAssembly(assembly);
             Assert.NotNull(stamp);
-            Assert.Matches(@"^\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2} commit=\S+$", stamp);
+            Assert.Matches(@"^\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2} [+-]\d{2}:\d{2} commit=\S+$", stamp);
 
             string message = BuildStampReader.BuildLogMessage(stamp);
             Assert.StartsWith("This binary was built at ", message);
             Assert.Contains("(commit ", message);
+        }
+
+        [Theory]
+        [InlineData("Tokyo Standard Time", "2026-11-04T12:54:01Z", "2026-11-04 21:54:01 +09:00")]
+        [InlineData("UTC", "2026-11-04T12:54:01Z", "2026-11-04 12:54:01 +00:00")]
+        [InlineData("Pacific Standard Time", "2026-11-04T12:54:01Z", "2026-11-04 04:54:01 -08:00")]
+        public void ToLocalTimeText_ConvertsUtcToTheZoneWithOffset(string zoneId, string utc, string expected)
+        {
+            var zone = System.TimeZoneInfo.FindSystemTimeZoneById(zoneId);
+            Assert.Equal(expected, BuildStampReader.ToLocalTimeText(utc, zone));
+        }
+
+        [Fact]
+        public void ToLocalTimeText_ReturnsTheTextAsIs_WhenItIsNotADate()
+        {
+            Assert.Equal("unknown", BuildStampReader.ToLocalTimeText("unknown", System.TimeZoneInfo.Utc));
         }
 
         [Fact]

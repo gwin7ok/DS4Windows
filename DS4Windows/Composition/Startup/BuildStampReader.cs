@@ -1,4 +1,5 @@
 using System;
+using System.Globalization;
 using System.Linq;
 using System.Reflection;
 using System.Text.RegularExpressions;
@@ -23,7 +24,16 @@ namespace DS4Windows.Composition.Startup
             string timestamp = metadata.FirstOrDefault(m => m.Key == "BuildTimestamp")?.Value;
             if (string.IsNullOrWhiteSpace(timestamp)) return null;
             string commit = metadata.FirstOrDefault(m => m.Key == "BuildCommit")?.Value;
+            // 埋め込まれた値は UTC（例: 2026-11-04T12:54:01Z）。実行している環境のタイムゾーンへ直し、オフセットつきで表示する（例: 2026-11-04 21:54:01 +09:00）
+            timestamp = ToLocalTimeText(timestamp, TimeZoneInfo.Local);
             return string.IsNullOrWhiteSpace(commit) ? timestamp : $"{timestamp} commit={commit}";
+        }
+
+        /// <summary>UTC の日時文字列を、指定のタイムゾーンの「yyyy-MM-dd HH:mm:ss +09:00」形式にする。読めなければそのまま返す。</summary>
+        public static string ToLocalTimeText(string utcText, TimeZoneInfo zone)
+        {
+            if (!DateTimeOffset.TryParse(utcText, CultureInfo.InvariantCulture, DateTimeStyles.AssumeUniversal, out DateTimeOffset utc)) return utcText;
+            return TimeZoneInfo.ConvertTime(utc, zone).ToString("yyyy-MM-dd HH:mm:ss zzz", CultureInfo.InvariantCulture);
         }
 
         /// <summary>
@@ -38,7 +48,7 @@ namespace DS4Windows.Composition.Startup
                 string summary = (fileContent ?? string.Empty).Trim();
                 string single = summary.Replace(Environment.NewLine, " ").Replace('\n', ' ');
 
-                Match m = Regex.Match(single, @"(?<date>\d{4}-\d{2}-\d{2}[ T]\d{2}:\d{2}:\d{2})");
+                Match m = Regex.Match(single, @"(?<date>\d{4}-\d{2}-\d{2}[ T]\d{2}:\d{2}:\d{2}(?: ?[+-]\d{2}:\d{2})?)");
                 if (m.Success)
                 {
                     Match commit = Regex.Match(single, @"commit=(?<hash>\S+)");
