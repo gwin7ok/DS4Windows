@@ -134,6 +134,22 @@ namespace DS4WindowsTests
             Assert.Single(closure);
         }
 
+        /// <summary>
+        /// Phase13-Step7 7-a: <c>VirtualPadService</c> ⇄ <c>OutputSlotService</c> の相互参照は、<c>Func</c> を辺にしない閉包では、どちらからも他方・
+        /// <c>ControlService</c> に届かない（<c>Func</c> が循環の回避のためだけに使われていることの確認。7-d で <c>Func</c> を撤廃しても循環しない根拠）。
+        /// </summary>
+        [Fact]
+        public void TheVirtualPadService_AndTheOutputSlotService_DoNotReachEachOtherOrTheControlService()
+        {
+            IServiceCollection services = Registrations();
+            HashSet<Type> pad = Closure(services, typeof(VirtualPadService));
+            Assert.DoesNotContain(typeof(OutputSlotService), pad);
+            Assert.DoesNotContain(typeof(ControlService), pad);
+
+            HashSet<Type> slot = Closure(services, typeof(OutputSlotService));
+            Assert.DoesNotContain(typeof(ControlService), slot);
+        }
+
         /// <summary>6-c: 3 つの UI ファクトリーを、ホスト構築より前に解決する経路がない（ファクトリーは ControlService の依存グラフの外）。</summary>
         [Fact]
         public void TheUiFactories_AreNotReachableFromTheGraphOfAnyFuncFreeService()
