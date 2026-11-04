@@ -60,8 +60,10 @@ namespace DS4WindowsTests
             string text = ReadWithoutComments("DS4Windows/DS4Control/ControlService.cs");
             if (text == null) return;
 
-            Assert.Contains("public DS4Controls GetActiveInputControl(int ind)", text);
-            Assert.Contains("_activeInputProbe.GetActive(", text);
+            // Phase13-Step10 10-d: GetActiveInputControl の転送も削除した。利用者は IRuntimeFeatureSwitch を使う
+            Assert.DoesNotContain("public DS4Controls GetActiveInputControl(", text);
+            string rfs = ReadWithoutComments("DS4Windows/DS4Control/Services/RuntimeFeatureSwitch.cs");
+            if (rfs != null) Assert.Contains("_activeInputProbe.GetActive(", rfs);
             // Phase13-Step10 10-b: 利用者が 0 件だった StartTPOff／CheckForTouchToggle の転送は削除した（ITouchpadToggleService／IProfileLoadTarget が持つ）
             Assert.DoesNotContain("public void StartTPOff(", text);
             Assert.DoesNotContain("CheckForTouchToggle(", text);

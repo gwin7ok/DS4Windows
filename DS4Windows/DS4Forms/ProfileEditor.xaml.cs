@@ -175,6 +175,7 @@ namespace DS4WinWPF.DS4Forms
         private readonly DS4Windows.DI.IProfileRepository profileRepository;
         private readonly DS4Windows.Actions.IProfileSwitcher profileSwitcher;
         private readonly DS4Windows.ControlService controlService;
+        private readonly DS4Windows.DI.IRuntimeFeatureSwitch runtimeFeatures;
         private MappingListViewModel mappingListVM;
 
         // 一覧（メイン画面のプロファイル一覧）に名前があるか。一覧が取れないときは、あるものとして扱う
@@ -317,9 +318,10 @@ namespace DS4WinWPF.DS4Forms
         public ProfileEditor(int targetDevice, IAppSettingsService appSettingsService, IProfileSettingsService profileSettingsService,
             DS4Windows.DI.IEditorWindowFactory editorWindowFactory, IProfileRepository profileRepository,
             IProfileSwitcher profileSwitcher, ControlService controlService, IViewModelFactory viewModelFactory,
-            DS4Windows.DI.IEnvironmentService environmentService)
+            DS4Windows.DI.IEnvironmentService environmentService, DS4Windows.DI.IRuntimeFeatureSwitch runtimeFeatures)
         {
             this.environmentService = environmentService ?? throw new ArgumentNullException(nameof(environmentService));
+            this.runtimeFeatures = runtimeFeatures ?? throw new ArgumentNullException(nameof(runtimeFeatures));   // Phase13-Step10 10-d: 旧 ControlService.setRumble／GetActiveInputControl の転送
             // Phase6-Step10-2-4a: 補助ウィンドウの生成を窓口へ依頼する（必須引数）
             this.editorWindowFactory = editorWindowFactory ?? throw new ArgumentNullException(nameof(editorWindowFactory));
             this.targetDevice = targetDevice;
@@ -941,7 +943,7 @@ namespace DS4WinWPF.DS4Forms
         {
             if (profileSettingsVM.FuncDevNum < environmentService.ControllerSlotLimit)
             {
-                controlService.setRumble(0, 0, profileSettingsVM.FuncDevNum);
+                runtimeFeatures.SetRumble(0, 0, profileSettingsVM.FuncDevNum);
             }
 
             profileSettingsVM.ResetOutDevTypeTemp();
@@ -1171,7 +1173,7 @@ namespace DS4WinWPF.DS4Forms
         {
             if (profileSettingsVM.FuncDevNum < environmentService.ControllerSlotLimit)
             {
-                controlService.setRumble(0, 0, profileSettingsVM.FuncDevNum);
+                runtimeFeatures.SetRumble(0, 0, profileSettingsVM.FuncDevNum);
             }
 
             // 画面サイズ保持チェックが有効な場合のみレイアウト保存
@@ -1714,7 +1716,7 @@ namespace DS4WinWPF.DS4Forms
                 int index = -1;
                 // Phase5-Step15-2-d: 281行目で解決済みのcontrolServiceフィールドを使わず、
                 // ここだけProgram.rootHubを直接呼んでいた置換漏れを修正。
-                switch (controlService.GetActiveInputControl(tempDeviceNum))
+                switch (runtimeFeatures.GetActiveInputControl(tempDeviceNum))
                 {
                     case DS4Controls.None: break;
                     case DS4Controls.Cross: index = 0; break;

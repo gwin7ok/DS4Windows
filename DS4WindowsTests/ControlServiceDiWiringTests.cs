@@ -1,4 +1,5 @@
 using System;
+using System.Linq;
 using Xunit;
 using DS4Windows;
 using DS4Windows.DI;
@@ -58,7 +59,14 @@ namespace DS4WindowsTests
         [Fact]
         public void Constructor_NullEnvironmentService_ThrowsArgumentNullException()
         {
-            var ex = Assert.Throws<ArgumentNullException>(() => ControlServiceTestFactory.Create("environmentService"));
+            // Phase13-Step10 10-d: ControlService は IEnvironmentService を受けなくなった（スロットの上限は RuntimeFeatureSwitch が読む）。
+            // 引数が無いことを固定し、必須の検査は RuntimeFeatureSwitch のコンストラクターで行う
+            Assert.DoesNotContain(typeof(ControlService).GetConstructors().Single().GetParameters(), p => p.Name == "environmentService");
+            var ex = Assert.Throws<ArgumentNullException>(() => new DS4Windows.Services.RuntimeFeatureSwitch(
+                TestHost.GetService<DS4Windows.DI.IOscService>(), TestHost.GetService<DS4Windows.DI.IUdpMotionService>(),
+                TestHost.GetService<DS4Windows.DI.IHidHideService>(), TestHost.GetService<DS4Windows.DI.ITouchpadToggleService>(),
+                TestHost.GetService<DS4Windows.DI.IDeviceSlotState>(), TestHost.GetService<DS4Windows.DI.IActiveInputProbe>(),
+                TestHost.GetService<DS4Windows.DI.IDeviceRumbleService>(), null));
 
             Assert.Equal("environmentService", ex.ParamName);
         }

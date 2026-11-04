@@ -84,7 +84,6 @@ namespace DS4Windows
 #pragma warning restore CS0169
         // Phase13-Step3: 旧 eventDispatchThread／eventDispatcher（イベントスレッド）は EventThreadDispatcher へ移した
         private readonly DI.IEventThreadDispatcher _eventThread;
-        private readonly DI.IDeviceRumbleService _rumble;
 
         // Phase9 9-E E-3: 旧 _udpServer／udpOutBuffers／udpChangeStatus などは UdpMotionService へ移した
         private readonly DI.IUdpMotionService _udpMotion;
@@ -99,7 +98,6 @@ namespace DS4Windows
         // Phase6-Step2-1 (PR-1): Global 直接参照の解消。SSOT は Global/BackingStore のまま、
         // 薄い委譲サービス経由で参照する（Pure DI: コンストラクタ注入のみ。AppHost.Services は使用しない）。
         private readonly DI.IAppSettingsService _appSettings;
-        private readonly DI.IEnvironmentService _environmentService;
         private readonly DI.IPathService _pathService;
 
         // Phase6-Step2-2 (PR-2)
@@ -127,7 +125,6 @@ namespace DS4Windows
         private readonly DI.IMapping _mapping;
         public DI.IMapping MappingService => _mapping;
         // コントローラースロット上限（現在接続台数ではない）。プロセス内で不変のためコンストラクタで1回だけ取得する。
-        private readonly int _controllerSlotLimit;
 
         // ---- Phase6-Step3-2: Mapping.cs への引数渡し（S3方針）用の読み取り専用アクセサ ----
         // Mapping.cs の各メソッドは既に ControlService（ctrl）を引数として受け取っているため、
@@ -146,7 +143,6 @@ namespace DS4Windows
         // Phase9 9-E E-5: 入力レポートの処理から切り出した部品（遅延の監視、タッチパッドの切り替え、押されている入力の探索）
         private readonly DI.ILatencyMonitor _latencyMonitor;
         private readonly DI.ITouchpadToggleService _touchpadToggle;
-        private readonly DI.IActiveInputProbe _activeInputProbe;
 
         // Phase9 9-E E-6b: 接続時の設定の反映とイベントの配線
         private readonly DI.IDeviceConnectionSetup _deviceConnectionSetup;
@@ -178,7 +174,6 @@ namespace DS4Windows
         public ControlService(IDs4DeviceRegistry deviceRegistry,
             DI.IProfileSettingsService profileSettings,
             DI.IAppSettingsService appSettings,
-            DI.IEnvironmentService environmentService,
             DI.IPathService pathService,
             DI.IOutputSlotService outputSlotService,
             DI.IProfileRepository profileRepository,
@@ -191,13 +186,11 @@ namespace DS4Windows
             DI.IVirtualPadService virtualPadService,
             DI.ILatencyMonitor latencyMonitor,
             DI.ITouchpadToggleService touchpadToggle,
-            DI.IActiveInputProbe activeInputProbe,
             DI.IDeviceConnectionSetup deviceConnectionSetup,
             DI.IInputDeviceModuleRegistry deviceModules,
             DI.IDeviceDisconnectHandler deviceDisconnect,
             DI.IServiceLifecycle lifecycle,
             DI.IEventThreadDispatcher eventThread,
-            DI.IDeviceRumbleService rumble,
             DI.IDeviceSlotState slots,
             DI.IInputReportProcessor inputReport)
         {
@@ -216,9 +209,7 @@ namespace DS4Windows
             // 旧シグネチャ（profileSettings = null）との互換のために残している。Phase6-Step12 で削除判断（Phase6-Step2-Plan.md 決定D2）。
             this._profileSettings = profileSettings ?? throw new ArgumentNullException(nameof(profileSettings)); // Phase6-Step10-4-5: Global のフォールバックを廃止
             this._appSettings = appSettings ?? throw new ArgumentNullException(nameof(appSettings));
-            this._environmentService = environmentService ?? throw new ArgumentNullException(nameof(environmentService));
             this._pathService = pathService ?? throw new ArgumentNullException(nameof(pathService));
-            this._controllerSlotLimit = _environmentService.ControllerSlotLimit;
             this._outputSlotService = outputSlotService ?? throw new ArgumentNullException(nameof(outputSlotService));
             this._profileRepository = profileRepository ?? throw new ArgumentNullException(nameof(profileRepository));
             this._deviceStateService = deviceStateService ?? throw new ArgumentNullException(nameof(deviceStateService));
@@ -232,13 +223,11 @@ namespace DS4Windows
             this._virtualPad = virtualPadService ?? throw new ArgumentNullException(nameof(virtualPadService));
             this._latencyMonitor = latencyMonitor ?? throw new ArgumentNullException(nameof(latencyMonitor));
             this._touchpadToggle = touchpadToggle ?? throw new ArgumentNullException(nameof(touchpadToggle));
-            this._activeInputProbe = activeInputProbe ?? throw new ArgumentNullException(nameof(activeInputProbe));
             this._deviceConnectionSetup = deviceConnectionSetup ?? throw new ArgumentNullException(nameof(deviceConnectionSetup));
             this._deviceModules = deviceModules ?? throw new ArgumentNullException(nameof(deviceModules));
             this._deviceDisconnect = deviceDisconnect ?? throw new ArgumentNullException(nameof(deviceDisconnect));
             this._lifecycle = lifecycle ?? throw new ArgumentNullException(nameof(lifecycle));
             this._eventThread = eventThread ?? throw new ArgumentNullException(nameof(eventThread));
-            this._rumble = rumble ?? throw new ArgumentNullException(nameof(rumble));
             // 開始・停止のログとイベントも、これまでどおり ControlService の Debug イベント／公開イベント（送り主は ControlService）へ流す
             this._lifecycle.DebugMessage += (data, warning) => LogDebug(data, warning);
             this._lifecycle.ServiceStarted += (sender, e) => ServiceStarted?.Invoke(this, e);
@@ -521,11 +510,7 @@ namespace DS4Windows
 
         // Phase9 9-E E-1: 旧 OSCPostMappingStep／OSCPreMappingStep／CompareAndSendChangesToOSC（OSC の入力への重ね合わせと変化の送信）は OscService へ移した。
 
-        // Phase9 9-E E-5: 判定の本体（約 70 行）は ActiveInputProbe へ移した
-        public DS4Controls GetActiveInputControl(int ind)
-        {
-            return _activeInputProbe.GetActive(CurrentState[ind], touchPad[ind], DS4Controllers[ind] != null);
-        }
+        // Phase13-Step10 10-d: GetActiveInputControl の転送は削除した（利用者は IRuntimeFeatureSwitch を使う）。
 
         public OutputSlotManager OutputslotMan { get => _virtualPad.OutputSlotManager; }
 
@@ -550,17 +535,7 @@ namespace DS4Windows
                 Debug(this, args);
         }
 
-        // sets the rumble adjusted with rumble boost. General use method
-        public void setRumble(byte heavyMotor, byte lightMotor, int deviceNum)
-        {
-            if (deviceNum < _controllerSlotLimit)
-            {
-                DS4Device device = DS4Controllers[deviceNum];
-                if (device != null)
-                    _rumble.SetDevRumble(device, heavyMotor, lightMotor, deviceNum);
-                //device.setRumble((byte)lightBoosted, (byte)heavyBoosted);
-            }
-        }
+        // Phase13-Step10 10-d: setRumble の転送は削除した（利用者は IRuntimeFeatureSwitch.SetRumble を使う）。
 
         // Phase13-Step3: 旧 SetDevRumble（ブースト・反転つきの振動）は IDeviceRumbleService へ移した
 

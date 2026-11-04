@@ -24,7 +24,7 @@ namespace DS4WindowsTests
         public void ControlService_Constructor_HasNoUnusedParameters()
         {
             var parameters = typeof(ControlService).GetConstructors().Single().GetParameters();
-            Assert.Equal(25, parameters.Length);   // Phase13-Step10 10-c: IOscService を外した（26 → 25）。 Phase13-Step5b-5b-e: 使われなくなった IVirtualKBM／IAppearanceSettingsService／IProfileActionProvider／ISpecialActionRepository を外した（30 → 26）。 Phase13-Step5b-5b-c: IInputReportProcessor を足した（29 → 30）。 Phase13-Step5: スロット状態の持ち主（IDeviceSlotState）を足した（28 → 29。Step5b 以降で減らす）
+            Assert.Equal(22, parameters.Length);   // Phase13-Step10 10-d: IActiveInputProbe／IDeviceRumbleService／IEnvironmentService を外した（25 → 22）。 Phase13-Step10 10-c: IOscService を外した（26 → 25）。 Phase13-Step5b-5b-e: 使われなくなった IVirtualKBM／IAppearanceSettingsService／IProfileActionProvider／ISpecialActionRepository を外した（30 → 26）。 Phase13-Step5b-5b-c: IInputReportProcessor を足した（29 → 30）。 Phase13-Step5: スロット状態の持ち主（IDeviceSlotState）を足した（28 → 29。Step5b 以降で減らす）
             foreach (Type t in Removed)
                 Assert.DoesNotContain(parameters, p => p.ParameterType == t);
         }

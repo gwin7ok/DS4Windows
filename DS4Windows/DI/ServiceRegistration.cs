@@ -273,7 +273,6 @@ namespace DS4Windows.DI
                     sp.GetRequiredService<IDs4DeviceRegistry>(),
                     sp.GetRequiredService<IProfileSettingsService>(),
                     sp.GetRequiredService<IAppSettingsService>(),
-                    sp.GetRequiredService<IEnvironmentService>(),
                     sp.GetRequiredService<IPathService>(),
                     sp.GetRequiredService<IOutputSlotService>(),   // Phase13-Step7 7-d: 旧: 遅延取得デリゲート（逆依存は Phase9 E-4 で解消済み）
                     sp.GetRequiredService<IProfileRepository>(),
@@ -288,13 +287,11 @@ namespace DS4Windows.DI
                     sp.GetRequiredService<IVirtualPadService>(),   // Phase9 9-E E-4
                     sp.GetRequiredService<ILatencyMonitor>(),   // Phase9 9-E E-5
                     sp.GetRequiredService<ITouchpadToggleService>(),   // Phase9 9-E E-5
-                    sp.GetRequiredService<IActiveInputProbe>(),   // Phase9 9-E E-5
                     sp.GetRequiredService<IDeviceConnectionSetup>(),   // Phase9 9-E E-6b
                     sp.GetRequiredService<IInputDeviceModuleRegistry>(),   // Phase9 9-E E-6c
                     sp.GetRequiredService<IDeviceDisconnectHandler>(),   // Phase9 9-E E-6e
                     sp.GetRequiredService<IServiceLifecycle>(),   // Phase9 9-E E-6f2
                     sp.GetRequiredService<IEventThreadDispatcher>(),   // Phase13-Step3
-                    sp.GetRequiredService<IDeviceRumbleService>(),   // Phase13-Step3
                     sp.GetRequiredService<IDeviceSlotState>(),   // Phase13-Step5
                     sp.GetRequiredService<IInputReportProcessor>()   // Phase13-Step5b
                 );

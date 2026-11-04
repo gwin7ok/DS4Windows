@@ -33,6 +33,8 @@ namespace DS4Windows.Services
         private readonly IWindowSystem _windowSystem;
         // Phase12-Step3 3e: マクロの記録で、画面全体のマウス入力（移動・ボタン）を記録するための監視
         private readonly IMouseInputHook _mouseHook;
+        // Phase13-Step10 10-d: ProfileEditor の振動の停止・入力の取得の窓口（旧 ControlService.setRumble／GetActiveInputControl）
+        private readonly IRuntimeFeatureSwitch _runtimeFeatures;
 
         public EditorWindowFactory(
             IProfileSettingsService profileSettings,
@@ -48,9 +50,11 @@ namespace DS4Windows.Services
             IProfileSwitcher profileSwitcher,
             IEnvironmentService environmentService,
             IWindowSystem windowSystem,
-            IMouseInputHook mouseHook)
+            IMouseInputHook mouseHook,
+            IRuntimeFeatureSwitch runtimeFeatures)
         {
             _mouseHook = mouseHook ?? throw new ArgumentNullException(nameof(mouseHook));
+            _runtimeFeatures = runtimeFeatures ?? throw new ArgumentNullException(nameof(runtimeFeatures));
             _environmentService = environmentService ?? throw new ArgumentNullException(nameof(environmentService));
             _windowSystem = windowSystem ?? throw new ArgumentNullException(nameof(windowSystem));
             _profileSettings = profileSettings ?? throw new ArgumentNullException(nameof(profileSettings));
@@ -99,6 +103,6 @@ namespace DS4Windows.Services
 
         public ProfileEditor CreateProfileEditor(int targetDevice)
             => new ProfileEditor(targetDevice, _appSettings, _profileSettings, this, _profileRepository,
-                _profileSwitcher, _controlService, _viewModelFactory, _environmentService);
+                _profileSwitcher, _controlService, _viewModelFactory, _environmentService, _runtimeFeatures);
     }
 }

@@ -13,15 +13,22 @@ namespace DS4Windows.Services
         private readonly IHidHideService _hidHide;
         private readonly ITouchpadToggleService _touchpadToggle;
         private readonly IDeviceSlotState _slots;
+        private readonly IActiveInputProbe _activeInputProbe;
+        private readonly IDeviceRumbleService _rumble;
+        private readonly int _controllerSlotLimit;
 
         public RuntimeFeatureSwitch(IOscService osc, IUdpMotionService udpMotion, IHidHideService hidHide,
-            ITouchpadToggleService touchpadToggle, IDeviceSlotState slots)
+            ITouchpadToggleService touchpadToggle, IDeviceSlotState slots,
+            IActiveInputProbe activeInputProbe, IDeviceRumbleService rumble, IEnvironmentService environmentService)
         {
             _osc = osc ?? throw new ArgumentNullException(nameof(osc));
             _udpMotion = udpMotion ?? throw new ArgumentNullException(nameof(udpMotion));
             _hidHide = hidHide ?? throw new ArgumentNullException(nameof(hidHide));
             _touchpadToggle = touchpadToggle ?? throw new ArgumentNullException(nameof(touchpadToggle));
             _slots = slots ?? throw new ArgumentNullException(nameof(slots));
+            _activeInputProbe = activeInputProbe ?? throw new ArgumentNullException(nameof(activeInputProbe));
+            _rumble = rumble ?? throw new ArgumentNullException(nameof(rumble));
+            _controllerSlotLimit = (environmentService ?? throw new ArgumentNullException(nameof(environmentService))).ControllerSlotLimit;
         }
 
         public void ChangeOscListenerStatus(bool state) => _osc.ChangeListenerStatus(state);
@@ -40,5 +47,19 @@ namespace DS4Windows.Services
 
         public string TouchpadSlide(int ind)
             => _touchpadToggle.Slide(ind, _slots.CurrentStates[ind], _slots.TouchPads[ind], _slots.DS4Controllers[ind] != null);
+
+        public DS4Controls GetActiveInputControl(int ind)
+            => _activeInputProbe.GetActive(_slots.CurrentStates[ind], _slots.TouchPads[ind], _slots.DS4Controllers[ind] != null);
+
+        // 旧 ControlService.setRumble と同じ（スロット上限の検査 → コントローラーがいれば、ブースト・反転つきの振動）
+        public void SetRumble(byte heavyMotor, byte lightMotor, int deviceNum)
+        {
+            if (deviceNum < _controllerSlotLimit)
+            {
+                DS4Device device = _slots.DS4Controllers[deviceNum];
+                if (device != null)
+                    _rumble.SetDevRumble(device, heavyMotor, lightMotor, deviceNum);
+            }
+        }
     }
 }
