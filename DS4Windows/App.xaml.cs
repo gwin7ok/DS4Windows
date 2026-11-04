@@ -582,20 +582,19 @@ namespace DS4Windows
             }
             AppLogger.LogInfo("Logger created");
 
-            // Startup summary: read from build_timestamp.txt in the executable folder
+            // Startup summary: DS4Windows.exe（アセンブリ）に埋め込まれたビルド日時とコミットを読む（csproj の EmbedBuildStamp）
             try
             {
-                string fp = Path.Combine(AppContext.BaseDirectory, "build_timestamp.txt");
-                fp = Path.GetFullPath(fp);
-                if (File.Exists(fp))
+                string stamp = BuildStampReader.FromAssembly(typeof(App).Assembly);
+                if (stamp != null)
                 {
                     // Phase9 9-F F-1a: 文言づくりは BuildStampReader（解釈中の例外は、これまでどおり握りつぶす）
-                    string buildMessage = BuildStampReader.BuildLogMessage(File.ReadAllText(fp));
+                    string buildMessage = BuildStampReader.BuildLogMessage(stamp);
                     if (buildMessage != null) AppLogger.LogInfo(buildMessage);
                 }
                 else
                 {
-                    try { AppLogger.LogInfo("Build summary file not found in the executable folder"); } catch { }
+                    try { AppLogger.LogInfo("Build summary not found in the executable"); } catch { }
                 }
             }
             catch (Exception ex)

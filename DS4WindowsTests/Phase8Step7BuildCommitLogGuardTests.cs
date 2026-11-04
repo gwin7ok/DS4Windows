@@ -12,7 +12,7 @@ namespace DS4WindowsTests
     public class Phase8Step7BuildCommitLogGuardTests
     {
         [Fact]
-        public void TheBuildWritesTheCommitIntoTheTimestampFile()
+        public void TheBuildEmbedsTheCommitIntoTheAssembly()
         {
             string path = SourceFileLocator.Find("DS4Windows/DS4WinWPF.csproj");
             if (path == null) return;
@@ -20,7 +20,10 @@ namespace DS4WindowsTests
 
             Assert.Contains("git rev-parse --short=7 HEAD", text);
             Assert.Contains("git status --porcelain", text);
-            Assert.Contains("commit=$(BuildCommit)", text);
+            Assert.Contains("AssemblyMetadataAttribute", text);   // Phase14: build_timestamp.txt をやめ、アセンブリに埋め込む
+            Assert.Contains("<_Parameter1>BuildCommit</_Parameter1>", text);
+            Assert.Contains("<_Parameter1>BuildTimestamp</_Parameter1>", text);
+            Assert.DoesNotContain("Name=\"UpdateLatestBuildSummary\"", text);
             Assert.Contains("$(BuildCommit)-dirty", text);
             Assert.Contains(">unknown</BuildCommit>", text);   // git がないときも、ビルドは失敗しない
         }

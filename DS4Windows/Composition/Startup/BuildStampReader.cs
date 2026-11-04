@@ -1,4 +1,6 @@
 using System;
+using System.Linq;
+using System.Reflection;
 using System.Text.RegularExpressions;
 
 namespace DS4Windows.Composition.Startup
@@ -10,7 +12,22 @@ namespace DS4Windows.Composition.Startup
     public static class BuildStampReader
     {
         /// <summary>
-        /// ファイルの内容（前後の空白は取り除く）から、ログの文言を返す。日時（ISO 風）が読めれば「This binary was built at 日時 (commit …)」
+        /// アセンブリ（DS4Windows.exe）に埋め込まれたビルド情報（csproj の EmbedBuildStamp が書く AssemblyMetadata の
+        /// BuildTimestamp／BuildCommit）から、<see cref="BuildLogMessage"/> に渡す形の文字列（「日時 commit=ハッシュ」）を返す。
+        /// 埋め込みがなければ null。
+        /// </summary>
+        public static string FromAssembly(Assembly assembly)
+        {
+            if (assembly == null) return null;
+            var metadata = assembly.GetCustomAttributes<AssemblyMetadataAttribute>().ToList();
+            string timestamp = metadata.FirstOrDefault(m => m.Key == "BuildTimestamp")?.Value;
+            if (string.IsNullOrWhiteSpace(timestamp)) return null;
+            string commit = metadata.FirstOrDefault(m => m.Key == "BuildCommit")?.Value;
+            return string.IsNullOrWhiteSpace(commit) ? timestamp : $"{timestamp} commit={commit}";
+        }
+
+        /// <summary>
+        /// 文字列の内容（前後の空白は取り除く）から、ログの文言を返す。日時（ISO 風）が読めれば「This binary was built at 日時 (commit …)」
         /// （commit は、あれば。未コミットの変更があれば「-dirty」つき。古い形式のファイルにはない）、読めなければ「This binary was built: 内容（1 行にしたもの）」。
         /// 解釈中の例外は、旧コードと同じく握りつぶして null を返す（ログを出さない）。
         /// </summary>
