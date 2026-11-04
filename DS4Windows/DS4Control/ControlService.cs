@@ -36,7 +36,7 @@ using DS4WinWPF.DS4Forms;
 namespace DS4Windows
 {
 #pragma warning disable CS0219 // some local variables are assigned but not read in legacy handlers
-    public class ControlService : IInstanceIdentifiable, DI.IDeviceSlotHost
+    public class ControlService : IInstanceIdentifiable
     {
         public int InstanceId => this.GetHashCode();
         // Might be useful for ScpVBus build
@@ -71,9 +71,7 @@ namespace DS4Windows
         // Phase9 9-E E-4: 旧 公開フィールド outputDevices は VirtualPadService が持つ（同じ配列を返す窓口。呼び出し側は 9-F まで変えない）
         public OutputDevice[] outputDevices => _virtualPad.OutputDevices;
 
-        // Phase9 9-E E-6e → Phase13-Step5: スロットごとの状態は IDeviceSlotState（直接注入）へ移した。残るのは DeviceConnector が使う ActiveControllers と OnReport だけ（Step5b で撤廃）
-        int DI.IDeviceSlotHost.ActiveControllers => _lifecycle.ActiveControllers;
-        void DI.IDeviceSlotHost.OnReport(DS4Device device, EventArgs e, int ind) => _inputReport.OnReport(device, e, ind);   // Phase13-Step5b: 5b-d で DeviceConnector が IInputReportProcessor を直接使うようになり、この IF ごと削除する
+        // Phase13-Step5b: IDeviceSlotHost（ActiveControllers と OnReport の窓口）は削除した。接続中の数は IDeviceSlotState、入力レポートの処理は IInputReportProcessor
 
         // Phase13-Step3: イベントスレッドは IEventThreadDispatcher、KBM 出力の初期化は IOutputKbmInitializer へ移した（IServiceLifecycleHost は廃止）
 

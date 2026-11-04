@@ -219,7 +219,6 @@ namespace DS4Windows.DI
             services.AddSingleton<IServiceLifecycle, ServiceLifecycle>();   // Phase9 9-E E-6f2: 開始・停止・ホットプラグと、その状態・イベント
             services.AddSingleton<IDeviceConnector, DeviceConnector>();   // Phase9 9-E E-6f1: 接続の組み立て
             services.AddSingleton<IDeviceDisconnectHandler, DeviceDisconnectHandler>();   // Phase9 9-E E-6e: 切断・同期・シリアル変更の処理
-            services.AddSingleton<Func<IDeviceSlotHost>>(sp => () => sp.GetRequiredService<IDeviceSlotHost>());   // Phase13-Step5: DeviceConnector だけが使う（ActiveControllers と OnReport。実体は ControlService）。Step5b で撤廃
             services.AddSingleton<IJoyConLinker, JoyConLinker>();   // Phase9 9-E E-6d: Joy-Con の結合の手順（実機なしでも偽物のデバイスでテストできる）
             services.AddSingleton<IDeviceConnectionSetup, DeviceConnectionSetup>();   // Phase9 9-E E-6b: 接続時の設定の反映とイベントの配線
             services.AddSingleton<IActiveInputProbe, ActiveInputProbe>();   // Phase9 9-E E-5: 押されている入力の探索（状態なし）
@@ -316,7 +315,6 @@ namespace DS4Windows.DI
                 sp.GetRequiredService<IOscService>(),
                 sp.GetRequiredService<IVirtualPadService>(),
                 () => sp.GetRequiredService<IOutputSlotService>()));
-            services.AddSingleton<IDeviceSlotHost>(sp => sp.GetRequiredService<ControlService>());   // Phase9 9-E E-6e
 
             return services;
         }

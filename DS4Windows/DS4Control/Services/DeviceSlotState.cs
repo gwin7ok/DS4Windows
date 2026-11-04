@@ -15,6 +15,8 @@ namespace DS4Windows.Services
         public DS4State[] TempStates { get; } = new DS4State[ControllerLimits.MaxControllerCount];
         public Mouse[] TouchPads { get; } = new Mouse[ControllerLimits.MaxControllerCount];
         public ControllerSlotManager SlotManager { get; } = new ControllerSlotManager();
+        /// <summary>接続中のコントローラーの数。Phase13-Step5b: 旧 <c>ServiceLifecycle</c> の自動プロパティを、ここへ移した（<c>IDeviceSlotHost</c> の廃止で、<c>DeviceConnector</c> が直接読む）。</summary>
+        public int ActiveControllers { get; set; }
 
         /// <summary>範囲外は null（旧 <c>ControlService.GetController</c> と同じ）。</summary>
         public DS4Device GetController(int deviceIndex)

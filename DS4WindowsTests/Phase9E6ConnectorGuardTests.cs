@@ -55,7 +55,7 @@ namespace DS4WindowsTests
         }
 
         [Fact]
-        public void ControlService_KeepsOnReport_AndTheLifecycleCallsTheConnector()
+        public void ControlService_NoLongerHoldsOnReport_AndTheLifecycleCallsTheConnector()
         {
             string text = ReadWithoutComments("DS4Windows/DS4Control/ControlService.cs");
             if (text == null) return;
@@ -67,10 +67,9 @@ namespace DS4WindowsTests
             if (lifecycle == null) return;
             Assert.Contains("_deviceConnector.PrepareConnected(numControllers, device, index: i)", lifecycle);
             Assert.Contains("_deviceConnector.PrepareConnected(numControllers, device, Index)", lifecycle);
-            // 入力レポートの処理（ホットパス）は ControlService に残り、窓口から呼ばれる
-            // Phase13-Step5b: On_Report は InputReportProcessor へ移した。ControlService の窓口は、それへ転送するだけ（5b-d で窓口ごと削除する）
+            // Phase13-Step5b: 入力レポートの処理（ホットパス）は InputReportProcessor へ移した。ControlService には窓口（IDeviceSlotHost）も残っていない
             Assert.DoesNotContain("On_Report", text);
-            Assert.Contains("=> _inputReport.OnReport(device, e, ind);", text);
+            Assert.DoesNotContain("IDeviceSlotHost", text.Replace("IDeviceSlotHost（ActiveControllers", ""));
             string processor = ReadWithoutComments("DS4Windows/DS4Control/Services/InputReportProcessor.cs");
             Assert.Contains("public void OnReport(DS4Device device, EventArgs e, int ind)", processor);
         }
@@ -114,12 +113,12 @@ namespace DS4WindowsTests
         }
 
         [Fact]
-        public void TheReportSubscription_CallsTheHostOnReport_WithTheSlotIndex()
+        public void TheReportSubscription_CallsTheProcessorOnReport_WithTheSlotIndex()
         {
             string text = ReadWithoutComments("DS4Windows/DS4Control/Services/DeviceConnector.cs");
             if (text == null) return;
 
-            Assert.Contains("host.OnReport(sender, e, tempIdx);", text);
+            Assert.Contains("inputReport.OnReport(sender, e, tempIdx);", text);   // Phase13-Step5b: 旧 host.OnReport
         }
 
         [Fact]

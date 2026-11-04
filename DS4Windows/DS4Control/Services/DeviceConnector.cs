@@ -6,7 +6,7 @@ namespace DS4Windows.Services
     /// <summary>
     /// Phase9 9-E E-6f1（Phase9-E6-Plan.md §9.2）: <see cref="IDeviceConnector"/> の実装（DI の Singleton。状態なし）。
     /// 旧 <c>ControlService</c> の <c>PrepareConnectedInputControllerSettingEvents</c>／<c>BeginPrepareConnectedInputController</c>／<c>CheckQuickCharge</c> を、そのまま移したもの
-    /// （E-6a〜E-6e で部品へ移した処理は、その部品を呼ぶ。スロットの配列は <see cref="IDeviceSlotHost"/> から、呼び出しのたびに引く。呼び出しの順序は変えない）。
+    /// （E-6a〜E-6e で部品へ移した処理は、その部品を呼ぶ。スロットの配列と接続中の数は <see cref="IDeviceSlotState"/>、入力レポートの処理は <see cref="IInputReportProcessor"/> を直接注入で受ける［Phase13-Step5b。旧: <c>Func&lt;IDeviceSlotHost&gt;</c>］。呼び出しの順序は変えない）。
     /// </summary>
     public sealed class DeviceConnector : IDeviceConnector
     {
@@ -27,13 +27,13 @@ namespace DS4Windows.Services
         private readonly IUdpMotionService _udpMotion;
         private readonly IHidHideService _hidHideService;
         private readonly IDeviceSlotState _slots;   // Phase13-Step5: スロットの配列（直接注入）
-        private readonly Func<IDeviceSlotHost> _host;   // Phase13-Step5: 残るのは ActiveControllers と OnReport だけ（Step5b で撤廃）
+        private readonly IInputReportProcessor _inputReport;   // Phase13-Step5b: 旧 Func<IDeviceSlotHost>.OnReport（入力レポートの処理）
 
         public DeviceConnector(IProfileSettingsService profileSettings, IProfileXmlStore profileXmlStore, IAppSettingsService appSettings,
             IOscService oscService, IDs4DeviceRegistry deviceRegistry, IDeviceDisconnectHandler deviceDisconnect, IVirtualKBM virtualKBM,
             StickMotionState stickMotion, SyntheticInputState syntheticInput, IConnectionProfileSelector connectionProfileSelector,
             IVirtualPadService virtualPad, Func<IOutputSlotService> outputSlotService, IDeviceConnectionSetup deviceConnectionSetup,
-            IInputDeviceModuleRegistry deviceModules, IUdpMotionService udpMotion, IHidHideService hidHideService, IDeviceSlotState slots, Func<IDeviceSlotHost> host)
+            IInputDeviceModuleRegistry deviceModules, IUdpMotionService udpMotion, IHidHideService hidHideService, IDeviceSlotState slots, IInputReportProcessor inputReport)
         {
             _profileSettings = profileSettings ?? throw new ArgumentNullException(nameof(profileSettings));
             _profileXmlStore = profileXmlStore ?? throw new ArgumentNullException(nameof(profileXmlStore));
@@ -52,7 +52,7 @@ namespace DS4Windows.Services
             _udpMotion = udpMotion ?? throw new ArgumentNullException(nameof(udpMotion));
             _hidHideService = hidHideService ?? throw new ArgumentNullException(nameof(hidHideService));
             _slots = slots ?? throw new ArgumentNullException(nameof(slots));
-            _host = host ?? throw new ArgumentNullException(nameof(host));
+            _inputReport = inputReport ?? throw new ArgumentNullException(nameof(inputReport));
         }
 
         // ActiveOutDevType の配列参照は再代入されない（OutputSlotService の配列は要素書込みのみ）。旧 ControlService と同じ配列を指す
@@ -69,12 +69,12 @@ namespace DS4Windows.Services
             //Task task = new Task(() => { Thread.Sleep(5); WarnExclusiveModeFailure(device); });
             //task.Start();
 
-            _deviceModules.Resolve(device.DeviceType).HookSettings(device, () => _host().ActiveControllers);
+            _deviceModules.Resolve(device.DeviceType).HookSettings(device, () => _slots.ActiveControllers);
         }
 
         public void PrepareConnected(int numControllers, DS4Device device, int index)
         {
-            IDeviceSlotHost host = _host();
+            IInputReportProcessor inputReport = _inputReport;
             IDeviceSlotState slots = _slots;
             Mouse[] touchPads = slots.TouchPads;
             _profileSettings.RefreshExtrasButtons(index, _deviceModules.Resolve(device.DeviceType).GetKnownExtraButtons(device));
@@ -165,7 +165,7 @@ namespace DS4Windows.Services
             int tempIdx = index;
             device.Report += (sender, e) =>
             {
-                host.OnReport(sender, e, tempIdx);
+                inputReport.OnReport(sender, e, tempIdx);
             };
 
             if (_udpMotion.HasServer && index < _udpMotion.SlotCount)

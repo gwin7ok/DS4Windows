@@ -107,10 +107,10 @@ namespace DS4WindowsTests
         }
 
         [Fact]
-        public void TheHandler_IsRegistered_TheHostIsTheControlService_AndThereAreNoStaticEntryPoints()
+        public void TheHandler_IsRegistered_AndThereAreNoStaticEntryPoints()
         {
             Assert.IsType<DeviceDisconnectHandler>(TestHost.GetService<IDeviceDisconnectHandler>());
-            Assert.Same(TestHost.GetService<ControlService>(), TestHost.GetService<IDeviceSlotHost>());
+            Assert.Null(typeof(IDeviceDisconnectHandler).Assembly.GetType("DS4Windows.DI.IDeviceSlotHost"));   // Phase13-Step5b: ホストの窓口は削除した
 
             string text = ReadWithoutComments("DS4Windows/DS4Control/Services/DeviceDisconnectHandler.cs");
             if (text == null) return;

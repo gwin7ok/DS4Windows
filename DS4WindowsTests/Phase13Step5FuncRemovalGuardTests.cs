@@ -8,7 +8,7 @@ namespace DS4WindowsTests
     /// <summary>
     /// Phase13-Step5: スロット状態の窓口の <c>Func</c>（ロードマップ #6・#7・#8）を撤廃したことのガード。
     /// <c>Func&lt;IDeviceStateAccessor&gt;</c>／<c>Func&lt;IUdpMotionHost&gt;</c> は本番のソースに 0 件、
-    /// <c>Func&lt;IDeviceSlotHost&gt;</c> は <c>DeviceConnector</c> と登録（<c>ServiceRegistration</c>）だけ（Step5b で 0 にする）。
+    /// <c>Func&lt;IDeviceSlotHost&gt;</c> も、Phase13-Step5b（5b-d）で 0 件にした（<c>IDeviceSlotHost</c> ごと削除）。
     /// ソースが見つからない環境では、ソースの検査を行わず合格とする。
     /// </summary>
     public class Phase13Step5FuncRemovalGuardTests
@@ -46,11 +46,11 @@ namespace DS4WindowsTests
         }
 
         [Fact]
-        public void FuncOfTheSlotHost_RemainsOnlyForTheConnectorAndTheRegistration()
+        public void FuncOfTheSlotHost_NoLongerAppears()
         {
             string[] files = FilesContaining(@"Func<\s*(?:DS4Windows\.DI\.)?IDeviceSlotHost\s*>");
             if (files == null) return;
-            Assert.Equal(new[] { "DeviceConnector.cs", "ServiceRegistration.cs" }, files);
+            Assert.True(files.Length == 0, "撤廃した Func<IDeviceSlotHost> が残っている: " + string.Join(", ", files));
         }
     }
 }

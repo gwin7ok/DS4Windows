@@ -42,7 +42,7 @@ namespace DS4Windows.Services
 
         public bool InServiceTask { get; set; }
 
-        public int ActiveControllers { get; set; }
+        public int ActiveControllers { get => _slots.ActiveControllers; set => _slots.ActiveControllers = value; }   // Phase13-Step5b: 実体は IDeviceSlotState（DeviceConnector も直接読む）
 
         public bool Suspending { get; set; }
 

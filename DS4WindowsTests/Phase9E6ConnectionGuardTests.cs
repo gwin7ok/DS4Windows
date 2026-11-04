@@ -158,7 +158,7 @@ namespace DS4WindowsTests
             // 接続の組み立て（E-6f1 で DeviceConnector へ移った）が呼ぶもの
             string connector = ReadWithoutComments("DS4Windows/DS4Control/Services/DeviceConnector.cs");
             if (connector == null) return;
-            Assert.Contains("_deviceModules.Resolve(device.DeviceType).HookSettings(device, () => _host().ActiveControllers);", connector);
+            Assert.Contains("_deviceModules.Resolve(device.DeviceType).HookSettings(device, () => _slots.ActiveControllers);", connector);
             Assert.Contains("_deviceModules.Resolve(device.DeviceType).GetKnownExtraButtons(device)", connector);
         }
 

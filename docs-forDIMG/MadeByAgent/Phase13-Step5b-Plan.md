@@ -189,3 +189,11 @@ Step5 計画書 §3 のとおり（ゲームパッド周りの OSS に類似の�
 - **after の計測（Release、`Phase13Step5bOnReportTimingBenchmark`、3 回実行）**: 中央値 666.0／471.8／614.8 ns（before: 692.9／574.2）、最小 247.3／333.8／317.0 ns（before: 257.9／253.0）、**割り当て 0 bytes／200,000 回**。揺れが大きい（最小と最大で約 3〜4 倍）環境のため、中央値は before と同等かやや良く、最小値は同等〜やや大きい範囲に収まる。本文の命令列は同じで（差はフィールドの参照元のみ）、構造上の悪化の要因はない。**判定: 合格（割り当て 0、有意な悪化なし）**。実機の `ProcessingDelayMs` の比較は、計画どおり 5b-e の後に H 系の実機確認とあわせて 1 回行う。
 - **更新したテスト**: `Phase13Step5bOnReportCharacterizationTests`（入口を `IInputReportProcessor.OnReport` の直接呼び出しに変更、割り当て 0 を合格基準に）、`Phase13Step5bOnReportTimingBenchmark`、`Phase9EInputReportGuardTests`（順序・`_latencyMonitor.OnReport` の検査を新ファイルに）、`Phase9E6ConnectorGuardTests`、`Phase10Step4dW0RuntimeKeyRatchetTests`（基準値を `ControlService.cs` から `InputReportProcessor.cs` へ。合計は増えていない）、ctor 数のガード 2 件（29 → 30）。
 - **Debug ALL**: Actions.Tests 3081 件・Standalone 11 件すべて合格、警告 0・エラー 0。
+
+## 13. 5b-d の結果（2026-11-04）
+
+- `IDeviceSlotState` に `int ActiveControllers { get; set; }` を追加（実体は `DeviceSlotState` の自動プロパティ）。`ServiceLifecycle.ActiveControllers`（`IServiceLifecycle` の契約はそのまま）は `IDeviceSlotState` へ転送する。
+- `DeviceConnector` は `Func<IDeviceSlotHost>` をやめ、`IInputReportProcessor` を直接注入で受ける（`ActiveControllers` は `_slots.ActiveControllers`、`Report` の購読は `inputReport.OnReport`）。循環（ControlService → ServiceLifecycle → DeviceConnector → ControlService）は、`InputReportProcessor` が `ControlService` に依存しないため解消している。
+- `IDeviceSlotHost`（ファイルごと）と、その登録 2 行（`IDeviceSlotHost`、`Func<IDeviceSlotHost>`）、`ControlService` の実装を削除。`Func<IDeviceSlotHost>` は本番ソースで 0 件（`Phase13Step5FuncRemovalGuardTests` を 0 件の検査に更新）。Step5 のロードマップ #6〜#8 の `Func` 撤廃がすべて完了。
+- 更新したテスト: `Phase9E6ConnectorGuardTests`（2 件）、`Phase9E6ConnectionGuardTests`、`Phase9E6DisconnectGuardTests`（`IDeviceSlotHost` が存在しないことの検査に）、`Phase13Step5FuncRemovalGuardTests`。
+- Debug ALL: Actions.Tests 3081 件・Standalone 11 件すべて合格、警告 0・エラー 0。
