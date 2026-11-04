@@ -4,6 +4,19 @@ All notable changes to this project are recorded in this file.
 
 ## [Unreleased]
 
+## [4.3.1] - 2026-11-04
+
+### Changed
+- The log line "This binary was built at …" now reads the build time and commit from the program itself, so `build_timestamp.txt` is no longer needed (it was missing from the release archive).
+- Internal: source files were re-organized into layer folders and namespaces now match the folders. No change in behavior.
+
+### Fixed
+- Command line: `-command LoadProfile.<n>.<name>` / `LoadTempProfile` did not work with profile names that contain non-ASCII characters (for example Japanese). Command text is now sent as UTF-8.
+- Command line: `LoadProfile` did not switch the profile when the name differed from the profile's name only in upper/lower case (for example `VerifyA` for `verifyA`). The name is now matched case-insensitively. A warning is also written to the log when a `LoadProfile` command could not be applied.
+
+### Known issues
+- Command line: `-command ChangeLedColor` only changes the profile's custom light bar color; the light bar does not change visibly unless the profile's light bar mode is a custom color.
+
 ## [4.3.0] - 2026-11-03
 
 ### Added
