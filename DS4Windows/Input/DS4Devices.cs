@@ -108,7 +108,7 @@ namespace DS4Windows.Input
 
         // Phase7-Step10d W3（Q4＝A）: 第 1 層が読む設定値（Moonlight／詳細ログ）。Ds4DeviceRegistryAdapter が設定する。
         // 未設定のとき（テスト）は、Moonlight 無効・詳細ログ無効として扱う（旧: Global が BackingStore の既定値を返していた）。
-        public static DS4Windows.Processing.Abstractions.IDeviceLayerSettings LayerSettings { get; set; }
+        public static DS4Windows.Input.Abstractions.IDeviceLayerSettings LayerSettings { get; set; }
 
         private static bool detectNewControllers = true;
         private static long timestamp;

@@ -1,9 +1,9 @@
 using System;
 using System.IO;
 using Xunit;
+using DS4Windows.Core.Abstractions;
 using DS4Windows.Core.Persistence;
 using DS4Windows.Core.Platform;
-using DS4Windows.Processing.Abstractions;
 
 namespace DS4WindowsTests
 {

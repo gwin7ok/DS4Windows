@@ -47,7 +47,7 @@ namespace DS4Windows.UI
         // Phase6-Step10-2-3: 本コントロールは MainWindow.xaml から生成されるため、引数なしのコンストラクタが必要。
         // 依存は Initialize で受け取る（MainWindow のコンストラクタが、AutoProfileHolder を読む前に 1 回だけ呼ぶ）。
         private DS4Windows.Core.Abstractions.IPathService pathService;
-        private DS4Windows.Processing.Abstractions.IAppSettingsService appSettingsService;
+        private DS4Windows.Core.Abstractions.IAppSettingsService appSettingsService;
         private DS4Windows.Processing.Abstractions.IAutoProfileService autoProfileService;
         private DS4Windows.UI.Abstractions.IViewModelFactory viewModelFactory;
         protected String m_Profile;
@@ -79,7 +79,7 @@ namespace DS4Windows.UI
         /// MainWindow のコンストラクタから、AutoProfileHolder を読む前に 1 回だけ呼ぶ。
         /// </summary>
         public void Initialize(DS4Windows.Core.Abstractions.IPathService pathService,
-            DS4Windows.Processing.Abstractions.IAppSettingsService appSettingsService,
+            DS4Windows.Core.Abstractions.IAppSettingsService appSettingsService,
             DS4Windows.Processing.Abstractions.IAutoProfileService autoProfileService,
             DS4Windows.UI.Abstractions.IViewModelFactory viewModelFactory,
             DS4Windows.Core.Abstractions.IEnvironmentService environmentService)

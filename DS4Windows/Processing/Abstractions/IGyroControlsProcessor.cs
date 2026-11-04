@@ -1,3 +1,5 @@
+using DS4Windows.Core.Utilities;
+
 namespace DS4Windows.Processing.Abstractions
 {
     /// <summary>

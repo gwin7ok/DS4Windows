@@ -2,13 +2,13 @@ using System;
 using System.Collections.Generic;
 using System.Globalization;
 using DS4Windows.Core.Settings;
+using DS4Windows.Core.Utilities;
 using DS4Windows.Input;
 using DS4Windows.Input.Devices;
 using DS4Windows.Output;
 using DS4Windows.Output.Devices;
 using DS4Windows.Output.Kbm;
 using DS4Windows.Processing;
-using DS4Windows.Processing.Abstractions;
 
 namespace DS4Windows.Core.Abstractions
 {

@@ -414,8 +414,8 @@ namespace DS4Windows.Input
 
         // Phase7-Step10d W3（Q4＝A）: デバウンス時間と DS3 の pitch／roll 疑似計算の設定値。DS4Devices が、デバイスの生成直後（入力の開始前）に設定する。
         // 未設定のとき（テスト）は、デバウンス 0ms・疑似計算なしとして扱う。
-        private DS4Windows.Processing.Abstractions.IDeviceLayerSettings layerSettings;
-        public DS4Windows.Processing.Abstractions.IDeviceLayerSettings LayerSettings
+        private DS4Windows.Input.Abstractions.IDeviceLayerSettings layerSettings;
+        public DS4Windows.Input.Abstractions.IDeviceLayerSettings LayerSettings
         {
             get => layerSettings;
             set { layerSettings = value; sixAxis.LayerSettings = value; }

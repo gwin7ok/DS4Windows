@@ -1,5 +1,4 @@
-using DS4Windows.Processing;
-using DS4Windows.Processing.Abstractions;
+using DS4Windows.Core.Platform;
 
 namespace DS4Windows.Core.Abstractions
 {

@@ -1,7 +1,6 @@
 using System;
-using DS4Windows.Core.Abstractions;
 
-namespace DS4Windows.Processing.Abstractions
+namespace DS4Windows.Core.Abstractions
 {
     /// <summary>
     /// Phase12-Step2 2b-2: 列挙されたトップレベルのウィンドウ 1 つ。照合に使う値は、<see cref="IProcessInspector.GetForegroundProcessInfo"/> と

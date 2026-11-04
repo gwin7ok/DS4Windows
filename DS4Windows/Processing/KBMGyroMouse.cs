@@ -28,7 +28,7 @@ namespace DS4Windows.Processing
 
     public class KBMGyroMouse : PresetOption
     {
-        public KBMGyroMouse(DS4Windows.Core.Abstractions.IProfilePresetLoader presetLoader, DS4Windows.Processing.Abstractions.IProfileLoadTarget loadTarget)
+        public KBMGyroMouse(DS4Windows.Core.Abstractions.IProfilePresetLoader presetLoader, DS4Windows.Core.Abstractions.IProfileLoadTarget loadTarget)
             : base(presetLoader, loadTarget)
         {
             name = Translations.Strings.KBMGyroMouseName;

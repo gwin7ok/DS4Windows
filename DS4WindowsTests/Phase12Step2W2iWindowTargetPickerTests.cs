@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using Xunit;
 using DS4Windows.Core.Abstractions;
 using DS4Windows.Core.Platform;
-using DS4Windows.Processing.Abstractions;
 using DS4Windows.UI.ViewModels.SpecialActions;
 
 namespace DS4WindowsTests

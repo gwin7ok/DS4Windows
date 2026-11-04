@@ -34,9 +34,8 @@
 using System;
 using System.Globalization;
 using DS4Windows.Core.Logging;
-using DS4Windows.Core.Utilities;
 
-namespace DS4Windows.Processing
+namespace DS4Windows.Core.Utilities
 {
     public class BezierCurve
     {

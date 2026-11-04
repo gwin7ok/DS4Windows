@@ -1,7 +1,6 @@
 using System;
 using DS4Windows.Core.Abstractions;
 using DS4Windows.Core.Settings;
-using DS4Windows.Processing.Abstractions;
 
 namespace DS4Windows.Core.Persistence
 {

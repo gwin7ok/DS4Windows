@@ -132,7 +132,7 @@ namespace DS4Windows.Core.Utilities
 
         private static IntPtr mainWindowHandle = IntPtr.Zero;
 
-        internal static void ApplyPlacement(MainWindow mainWindow, DS4Windows.Processing.Abstractions.IAppSettingsService appSettingsService, bool startMinimized)
+        internal static void ApplyPlacement(MainWindow mainWindow, DS4Windows.Core.Abstractions.IAppSettingsService appSettingsService, bool startMinimized)
         {
             if(mainWindowHandle == IntPtr.Zero)
             {

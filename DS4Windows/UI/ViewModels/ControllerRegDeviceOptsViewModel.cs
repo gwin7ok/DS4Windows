@@ -25,7 +25,6 @@ using DS4Windows.Core.Abstractions;
 using DS4Windows.Core.Settings;
 using DS4Windows.Input;
 using DS4Windows.Processing;
-using DS4Windows.Processing.Abstractions;
 using LEDBarMode = DS4Windows.Core.Settings.DualSenseControllerOptions.LEDBarMode;
 using MuteLEDMode = DS4Windows.Core.Settings.DualSenseControllerOptions.MuteLEDMode;
 using LinkMode = DS4Windows.Core.Settings.JoyConDeviceOptions.LinkMode;

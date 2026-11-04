@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using DS4Windows.Core.Settings;
 using DS4Windows.Processing;
-using DS4Windows.Processing.Abstractions;
 
 namespace DS4Windows.Core.Abstractions
 {

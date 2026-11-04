@@ -3,7 +3,6 @@ using System.IO;
 using Xunit;
 using DS4Windows.Core.Abstractions;
 using DS4Windows.Input;
-using DS4Windows.Processing;
 
 namespace DS4WindowsTests
 {
@@ -18,7 +17,7 @@ namespace DS4WindowsTests
             public int LoadCallCount;
             public int SaveCallCount;
 
-            public bool LoadProfileXml(int deviceIndex, bool launchProgram, DS4Windows.Processing.Abstractions.IProfileLoadTarget control,
+            public bool LoadProfileXml(int deviceIndex, bool launchProgram, DS4Windows.Core.Abstractions.IProfileLoadTarget control,
                 string overridePath = "", bool xinputChange = true, bool postLoad = true)
             {
                 LoadCallCount++;

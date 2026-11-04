@@ -36,7 +36,7 @@ namespace DS4Windows.Input
         public Func<int, bool> GyroControlsTriggerActive { get; set; }
 
         // Phase7-Step10d W3（Q4＝A）: DS3 の pitch／roll 疑似計算の設定値。DS4Device.LayerSettings から引き継ぐ。未設定のとき（テスト）は「無効」として扱う。
-        public DS4Windows.Processing.Abstractions.IDeviceLayerSettings LayerSettings { get; set; }
+        public DS4Windows.Input.Abstractions.IDeviceLayerSettings LayerSettings { get; set; }
         private CalibData[] calibrationData = new CalibData[6] { new CalibData(), new CalibData(),
             new CalibData(), new CalibData(), new CalibData(), new CalibData()
         };

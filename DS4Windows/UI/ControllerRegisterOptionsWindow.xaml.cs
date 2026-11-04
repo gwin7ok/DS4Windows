@@ -47,7 +47,7 @@ namespace DS4Windows.UI
 
         // Phase6-Step10-2-2: 呼び出し側（MainWindow）が保持済みのサービスを渡す（Pure DI）
         public ControllerRegisterOptionsWindow(ControlServiceDeviceOptions deviceOptions, ControlService service,
-            DS4Windows.Processing.Abstractions.IAppSettingsService appSettingsService, DS4Windows.Core.Abstractions.IProfileXmlStore profileXmlStore)
+            DS4Windows.Core.Abstractions.IAppSettingsService appSettingsService, DS4Windows.Core.Abstractions.IProfileXmlStore profileXmlStore)
         {
             InitializeComponent();
             moonlightDocLink.NavigateUri = new Uri(ReleaseSource.MoonlightDocPageUri);

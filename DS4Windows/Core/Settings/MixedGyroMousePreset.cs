@@ -27,7 +27,7 @@ namespace DS4Windows.Core.Settings
 
     public class MixedGyroMousePreset : PresetOption
     {
-        public MixedGyroMousePreset(DS4Windows.Core.Abstractions.IProfilePresetLoader presetLoader, DS4Windows.Processing.Abstractions.IProfileLoadTarget loadTarget)
+        public MixedGyroMousePreset(DS4Windows.Core.Abstractions.IProfilePresetLoader presetLoader, DS4Windows.Core.Abstractions.IProfileLoadTarget loadTarget)
             : base(presetLoader, loadTarget)
         {
             name = Translations.Strings.MixedGyroMousePresetName;

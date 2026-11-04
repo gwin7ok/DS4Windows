@@ -56,7 +56,7 @@ namespace DS4WindowsTests
             }
 
             string root = SourceFileLocator.RootFromAnchor(anchor);
-            AssertTodoBefore(root, "DS4Windows/Processing/Abstractions/IAppSettingsService.cs", "event EventHandler<string> SettingChanged;");
+            AssertTodoBefore(root, "DS4Windows/Core/Abstractions/IAppSettingsService.cs", "event EventHandler<string> SettingChanged;");
             AssertTodoBefore(root, "DS4Windows/Core/Abstractions/ISpecialActionRepository.cs", "event EventHandler ActionsChanged;");
             AssertTodoBefore(root, "DS4Windows/Core/Abstractions/IProfileSettingsService.cs", "bool[] UseTempProfileArray { get; set; }");
         }

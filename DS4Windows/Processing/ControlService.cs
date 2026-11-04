@@ -28,6 +28,7 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Threading;
+using DS4Windows.Core.Abstractions;
 using DS4Windows.Core.Logging;
 using DS4Windows.Core.Persistence;
 using DS4Windows.Core.Settings;
@@ -99,7 +100,7 @@ namespace DS4Windows.Processing
 
         // Phase6-Step2-1 (PR-1): Global 直接参照の解消。SSOT は Global/BackingStore のまま、
         // 薄い委譲サービス経由で参照する（Pure DI: コンストラクタ注入のみ。AppHost.Services は使用しない）。
-        private readonly DS4Windows.Processing.Abstractions.IAppSettingsService _appSettings;
+        private readonly DS4Windows.Core.Abstractions.IAppSettingsService _appSettings;
         private readonly DS4Windows.Core.Abstractions.IPathService _pathService;
 
         // Phase6-Step2-2 (PR-2)
@@ -170,7 +171,7 @@ namespace DS4Windows.Processing
 
         public ControlService(IDs4DeviceRegistry deviceRegistry,
             DS4Windows.Core.Abstractions.IProfileSettingsService profileSettings,
-            DS4Windows.Processing.Abstractions.IAppSettingsService appSettings,
+            DS4Windows.Core.Abstractions.IAppSettingsService appSettings,
             DS4Windows.Core.Abstractions.IPathService pathService,
             DS4Windows.Processing.Abstractions.IOutputSlotService outputSlotService,
             DS4Windows.Core.Abstractions.IProfileRepository profileRepository,

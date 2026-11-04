@@ -1,4 +1,5 @@
 using System;
+using DS4Windows.Core.Utilities;
 using DS4Windows.Processing.Abstractions;
 
 namespace DS4Windows.Processing.Services

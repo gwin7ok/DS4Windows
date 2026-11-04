@@ -37,7 +37,7 @@ using System.Xml;
 using System.Xml.Serialization;
 using WpfScreenHelper;
 using static DS4Windows.Core.Utilities.Util;
-namespace DS4Windows.Processing
+namespace DS4Windows.Core.Abstractions
 {
 
     // Event args for UI profile change notification

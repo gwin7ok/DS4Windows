@@ -1,4 +1,4 @@
-namespace DS4Windows.Processing.Abstractions
+namespace DS4Windows.Input.Abstractions
 {
     /// <summary>
     /// Phase7-Step10d W3（Q4＝A）: 第 1 層（<c>DS4Devices</c>／<c>DS4Device</c>／<c>DS4SixAxis</c>／<c>HidDevices</c>）が実行時に読む設定値の、

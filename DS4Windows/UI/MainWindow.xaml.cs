@@ -77,7 +77,7 @@ namespace DS4Windows.UI
         // [Phase 5 Step 13-9] 廃止: DIコンテナ注入の _autoProfileService を直接利用
         private readonly IAutoProfileService _autoProfileService;
         private readonly DS4Windows.Core.Abstractions.IProfileSettingsService profileSettingsService;
-        private readonly DS4Windows.Processing.Abstractions.IAppSettingsService appSettingsService;
+        private readonly DS4Windows.Core.Abstractions.IAppSettingsService appSettingsService;
         // Phase6-Step10-2-2: ControllerRegisterOptionsWindow（コントローラー固有設定の保存）へ渡す
         private readonly DS4Windows.Core.Abstractions.IProfileXmlStore profileXmlStore;
         // Phase6-Step10-2-4a: ProfileEditor へ渡す、補助ウィンドウの生成の窓口
@@ -95,7 +95,7 @@ namespace DS4Windows.UI
         private readonly DS4Windows.Processing.Abstractions.IIpcCommandProcessor ipcProcessor;   // Phase13-Step11 11-c: 旧 MainWindow.Ipc.cs の Ipc*
         private readonly DS4Windows.Processing.Abstractions.IRuntimeFeatureSwitch runtimeFeatures;   // Phase13-Step10 10-c: 旧 ControlService の OSC／UDP／HidHide／TouchpadSlide の転送
         private readonly DS4Windows.Processing.Abstractions.IServiceLifecycle lifecycle;   // Phase13-Step9: 旧 ControlService.running／suspending の転送
-        private readonly DS4Windows.Processing.Abstractions.IProfileLoadTarget loadTarget;   // Phase13-Step6 6-e: IPC の LoadTempProfile に渡す窓口
+        private readonly DS4Windows.Core.Abstractions.IProfileLoadTarget loadTarget;   // Phase13-Step6 6-e: IPC の LoadTempProfile に渡す窓口
         private ProfileEditor editor;
         private int previousTabIndex = 0;
 #pragma warning disable CS0414 // preserveSize kept for behavior compatibility with older logic
@@ -113,7 +113,7 @@ namespace DS4Windows.UI
         // IMainWindowFactory（実装は MainWindowFactory）が DI から解決して渡す。
         public MainWindow(ArgumentParser parser,
             DS4Windows.Core.Abstractions.IProfileSettingsService profileSettingsService,
-            DS4Windows.Processing.Abstractions.IAppSettingsService appSettingsService,
+            DS4Windows.Core.Abstractions.IAppSettingsService appSettingsService,
             DS4Windows.Core.Abstractions.IProfileXmlStore profileXmlStore,
             DS4Windows.UI.Abstractions.IEditorWindowFactory editorWindowFactory,
             DS4Windows.Core.Abstractions.IPathService pathService,
@@ -127,7 +127,7 @@ namespace DS4Windows.UI
             DS4Windows.Processing.Abstractions.IServiceLifecycle lifecycle,
             DS4Windows.Processing.Abstractions.IRuntimeFeatureSwitch runtimeFeatures,
             DS4Windows.Processing.Abstractions.IIpcCommandProcessor ipcProcessor,
-            DS4Windows.Processing.Abstractions.IProfileLoadTarget loadTarget,
+            DS4Windows.Core.Abstractions.IProfileLoadTarget loadTarget,
             DS4Windows.Processing.Abstractions.IProfileSlotApplier profileSlotApplier,
             MainWindowsViewModel mainWindowsViewModel,
             DS4Windows.Core.Abstractions.ILogSettingsApplier logSettingsApplier,

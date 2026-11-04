@@ -40,7 +40,7 @@ namespace DS4Windows.UI
     public partial class LanguagePackControl : UserControl
     {
         private LanguagePackViewModel langPackVM;
-        private DS4Windows.Processing.Abstractions.IAppSettingsService _appSettingsService;
+        private DS4Windows.Core.Abstractions.IAppSettingsService _appSettingsService;
 
         // Phase6-Step10-1-4: 本コントロールは MainWindow.xaml から生成されるため、引数なしのコンストラクタが必要。
         // 依存は Initialize で受け取る（MainWindow のコンストラクタが、生成直後に呼ぶ）。
@@ -53,7 +53,7 @@ namespace DS4Windows.UI
         /// 依存を受け取り、言語パックの一覧の取得を開始する（置換前はコンストラクタで行っていた処理）。
         /// MainWindow のコンストラクタから 1 回だけ呼ぶ。
         /// </summary>
-        public void Initialize(DS4Windows.Processing.Abstractions.IAppSettingsService appSettingsService)
+        public void Initialize(DS4Windows.Core.Abstractions.IAppSettingsService appSettingsService)
         {
             if (appSettingsService == null) throw new ArgumentNullException(nameof(appSettingsService));
             if (_appSettingsService != null) throw new InvalidOperationException("LanguagePackControl is already initialized.");

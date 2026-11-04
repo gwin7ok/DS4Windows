@@ -1,4 +1,4 @@
-namespace DS4Windows.Processing
+namespace DS4Windows.Core.Platform
 {
     /// <summary>
     /// Phase12-Step2 2b-1: ウィンドウの「対象の指定」（実行ファイルのパスとウィンドウタイトル）と、その照合の規則。

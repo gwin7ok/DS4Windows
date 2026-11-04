@@ -149,7 +149,7 @@ namespace DS4WindowsTests
             _appSettings.RunHotPlug = false;
             Assert.False(_appSettings.RunHotPlug);
 
-            Assert.Equal(2, changed.FindAll(n => n == nameof(DS4Windows.Processing.Abstractions.IAppSettingsService.RunHotPlug)).Count);
+            Assert.Equal(2, changed.FindAll(n => n == nameof(DS4Windows.Core.Abstractions.IAppSettingsService.RunHotPlug)).Count);
         }
 
         [Fact]

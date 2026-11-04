@@ -32,7 +32,6 @@ using System.Runtime.InteropServices;
 using static DS4Windows.Core.Utilities.Util;
 using DS4Windows.Core.Abstractions;
 using DS4Windows.Core.Logging;
-using DS4Windows.Processing.Abstractions;
 
 namespace DS4Windows.UI.ViewModels
 {

@@ -28,7 +28,7 @@ namespace DS4Windows.Processing
 
     public class GamepadGyroCamera : PresetOption
     {
-        public GamepadGyroCamera(DS4Windows.Core.Abstractions.IProfilePresetLoader presetLoader, DS4Windows.Processing.Abstractions.IProfileLoadTarget loadTarget)
+        public GamepadGyroCamera(DS4Windows.Core.Abstractions.IProfilePresetLoader presetLoader, DS4Windows.Core.Abstractions.IProfileLoadTarget loadTarget)
             : base(presetLoader, loadTarget)
         {
             name = Translations.Strings.GamepadGyroCameraName;

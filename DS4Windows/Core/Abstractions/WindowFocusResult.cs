@@ -1,6 +1,5 @@
-using DS4Windows.Core.Abstractions;
 
-namespace DS4Windows.Processing.Abstractions
+namespace DS4Windows.Core.Abstractions
 {
     /// <summary>Phase12-Step2 2b-2: <see cref="IWindowFocuser.Focus"/> の結果。</summary>
     public enum WindowFocusResult

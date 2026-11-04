@@ -19,8 +19,8 @@ using System.Xml;
 using System.Xml.Serialization;
 using WpfScreenHelper;
 using static DS4Windows.Core.Utilities.Util;
+using DS4Windows.Core.Abstractions;
 using DS4Windows.Core.Settings;
-using DS4Windows.Processing.Abstractions;
 
 namespace DS4Windows.Core.Persistence.ProfileSections
 {

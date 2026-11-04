@@ -26,8 +26,8 @@ using System.Threading.Tasks;
 using System.Windows.Data;
 using System.Xml;
 using System.Xml.Serialization;
+using DS4Windows.Core.Platform;
 using DS4Windows.Core.Settings;
-using DS4Windows.Processing;
 
 namespace DS4Windows.Core.Profiles
 {

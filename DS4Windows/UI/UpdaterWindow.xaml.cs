@@ -43,7 +43,7 @@ namespace DS4Windows.UI
         private readonly DS4Windows.Core.Abstractions.IEnvironmentService _environmentService;
 
         public UpdaterWindow(string newversion, DS4Windows.Core.Abstractions.IEnvironmentService environmentService,
-            DS4Windows.Processing.Abstractions.IAppSettingsService appSettingsService)
+            DS4Windows.Core.Abstractions.IAppSettingsService appSettingsService)
         {
             _environmentService = environmentService ?? throw new ArgumentNullException(nameof(environmentService));
             if (appSettingsService == null) throw new ArgumentNullException(nameof(appSettingsService));

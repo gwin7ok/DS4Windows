@@ -44,7 +44,7 @@ namespace DS4Windows.Input.Hid
                                                                                   productIds.Contains(x.Attributes.ProductId));
         }
 
-        public static IEnumerable<HidDevice> EnumerateDS4(VidPidInfo[] devInfo, DS4Windows.Processing.Abstractions.IDeviceLayerSettings layerSettings)
+        public static IEnumerable<HidDevice> EnumerateDS4(VidPidInfo[] devInfo, DS4Windows.Input.Abstractions.IDeviceLayerSettings layerSettings)
         {
             int iEnumeratedDevCount = 0;
             List<HidDevice> foundDevs = new List<HidDevice>();

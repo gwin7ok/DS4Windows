@@ -9,7 +9,7 @@ namespace DS4Windows.UI
 {
     /// <summary>
     /// Phase12-Step2 2e（R-4）: 対象のウィンドウを指定する入力欄（プログラムのパスとウィンドウタイトル）。FocusWindow の編集画面で使う。
-    /// 書式は Auto-Profile と同じ（<see cref="DS4Windows.Processing.WindowTargetMatcher"/>）。
+    /// 書式は Auto-Profile と同じ（<see cref="DS4Windows.Core.Platform.WindowTargetMatcher"/>）。
     /// </summary>
     public partial class WindowTargetEditor : UserControl
     {

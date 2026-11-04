@@ -37,9 +37,9 @@ namespace DS4Windows.Core.Logging
         private ReaderWriterLockSlim logLock = new ReaderWriterLockSlim();
 
         // Phase7-Step10d W5: ログ設定（保管数・最小レベル）は、旧 Global.LogMaxArchiveFiles／LogMinLevel（BackingStore の値）に替えて、注入された設定サービスから読む
-        private readonly DS4Windows.Processing.Abstractions.IAppSettingsService appSettings;
+        private readonly DS4Windows.Core.Abstractions.IAppSettingsService appSettings;
 
-        public LoggerHolder(DS4Windows.Processing.Abstractions.IAppSettingsService appSettings)
+        public LoggerHolder(DS4Windows.Core.Abstractions.IAppSettingsService appSettings)
         {
             this.appSettings = appSettings ?? throw new ArgumentNullException(nameof(appSettings));
             var configuration = LogManager.Configuration;

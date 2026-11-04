@@ -1,7 +1,7 @@
 using System;
 using DS4Windows.Core.Settings;
 
-namespace DS4Windows.Processing.Abstractions
+namespace DS4Windows.Core.Abstractions
 {
     /// <summary>
     /// アプリ全体設定（Profiles.xml）の永続化・状態管理および変更通知を提供するサービス。

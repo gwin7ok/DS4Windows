@@ -28,7 +28,7 @@ namespace DS4Windows.UI
         private bool delayPresetApply;
         public bool DelayPresetApply { get => delayPresetApply; set => delayPresetApply = value; }
 
-        public PresetOptionWindow(DS4Windows.Core.Abstractions.IProfilePresetLoader presetLoader, DS4Windows.Processing.Abstractions.IProfileLoadTarget loadTarget)
+        public PresetOptionWindow(DS4Windows.Core.Abstractions.IProfilePresetLoader presetLoader, DS4Windows.Core.Abstractions.IProfileLoadTarget loadTarget)
         {
             InitializeComponent();
 

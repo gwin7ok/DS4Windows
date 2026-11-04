@@ -1,6 +1,5 @@
-using DS4Windows.Core.Settings;
 
-namespace DS4Windows.Processing
+namespace DS4Windows.Core.Settings
 {
     /// <summary>
     /// R-2（R2-MacroToggleRepeat-Plan.md §3.1）: マクロの Execute Mode（画面のラベル「Execute Mode」）。保存形式（SA は Actions.xml の

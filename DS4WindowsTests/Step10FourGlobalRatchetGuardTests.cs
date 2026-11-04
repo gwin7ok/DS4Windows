@@ -32,7 +32,7 @@ namespace DS4WindowsTests
             // Phase7-Step5 W4: App の AppHost.GetService は ResolvePostHostService の 1 件だけ（4 → 1）
             ["DS4Windows/App.xaml.cs"] = (0, 1, 0),
             // Phase7-Step10a W4: Global.Clamp の残りの呼び出し元を NumericUtil.Clamp に替えた（BezierCurve 1、DS4State 4、Mouse 2、MouseCursor 2 → すべて 0）
-            ["DS4Windows/Processing/BezierCurve.cs"] = (0, 0, 0),
+            ["DS4Windows/Core/Utilities/BezierCurve.cs"] = (0, 0, 0),
             // Phase6-Step10b W2: DS4Windows.AppHost（互換ラッパー）を DI/Compat/AppHost.cs へ分離。件数を引き継いだ（4＝2＋2。合計は不変）
             // Phase7-Step9 W1: 互換ラッパー（DI/Compat/AppHost.cs）を削除（呼び出し元 0 件。AppHost 合計 5 → 4）
             ["DS4Windows/Composition/AppHost.cs"] = (0, 2, 0),

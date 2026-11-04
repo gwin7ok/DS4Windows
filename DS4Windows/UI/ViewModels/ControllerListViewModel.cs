@@ -34,7 +34,6 @@ using DS4Windows.Core.Profiles;
 using DS4Windows.Core.Utilities;
 using DS4Windows.Input;
 using DS4Windows.Processing;
-using DS4Windows.Processing.Abstractions;
 
 namespace DS4Windows.UI.ViewModels
 {

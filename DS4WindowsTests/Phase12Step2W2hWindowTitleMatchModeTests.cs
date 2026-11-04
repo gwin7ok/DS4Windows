@@ -1,4 +1,5 @@
 using Xunit;
+using DS4Windows.Core.Platform;
 using DS4Windows.Processing;
 using DS4Windows.UI.ViewModels.SpecialActions;
 

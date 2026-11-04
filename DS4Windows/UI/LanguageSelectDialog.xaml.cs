@@ -38,9 +38,9 @@ namespace DS4Windows.UI
         public string SelectedCulture { get; private set; }
 
         // Phase6-Step10-1-2: Global.UseLang／Global.SetCulture の置換先。呼び出し側（App）が保持済みのサービスを渡す（Pure DI）。
-        private readonly DS4Windows.Processing.Abstractions.IAppSettingsService _appSettingsService;
+        private readonly DS4Windows.Core.Abstractions.IAppSettingsService _appSettingsService;
 
-        public LanguageSelectDialog(DS4Windows.Processing.Abstractions.IAppSettingsService appSettingsService)
+        public LanguageSelectDialog(DS4Windows.Core.Abstractions.IAppSettingsService appSettingsService)
         {
             _appSettingsService = appSettingsService ?? throw new ArgumentNullException(nameof(appSettingsService));
             InitializeComponent();

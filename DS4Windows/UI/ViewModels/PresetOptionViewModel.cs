@@ -72,7 +72,7 @@ namespace DS4Windows.UI.ViewModels
 
         public List<EnumChoiceSelection<PresetOption.OutputContChoice>> OutputChoices { get => outputChoices; }
 
-        public PresetOptionViewModel(DS4Windows.Core.Abstractions.IProfilePresetLoader presetLoader, DS4Windows.Processing.Abstractions.IProfileLoadTarget loadTarget)
+        public PresetOptionViewModel(DS4Windows.Core.Abstractions.IProfilePresetLoader presetLoader, DS4Windows.Core.Abstractions.IProfileLoadTarget loadTarget)
         {
             if (presetLoader == null) throw new ArgumentNullException(nameof(presetLoader));
             if (loadTarget == null) throw new ArgumentNullException(nameof(loadTarget));

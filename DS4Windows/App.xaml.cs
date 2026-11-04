@@ -874,8 +874,8 @@ namespace DS4Windows
                 var driverInstallHost = AppHost.CreateHost(
                     new Microsoft.Extensions.Configuration.ConfigurationBuilder().Build(), parser,
                     _bootstrapPathService, _bootstrapEnvironmentService, _bootstrapBackingStore);
-                var driverInstallSettings = (DS4Windows.Processing.Abstractions.IAppSettingsService)driverInstallHost.Services
-                    .GetService(typeof(DS4Windows.Processing.Abstractions.IAppSettingsService));
+                var driverInstallSettings = (DS4Windows.Core.Abstractions.IAppSettingsService)driverInstallHost.Services
+                    .GetService(typeof(DS4Windows.Core.Abstractions.IAppSettingsService));
                 bool readAppConfig = driverInstallSettings.Load();
                 if (readAppConfig)
                 {
