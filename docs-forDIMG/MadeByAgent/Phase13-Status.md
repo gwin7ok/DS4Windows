@@ -9,7 +9,7 @@
 | 3 | 状態を持たないホストの分離（イベントスレッド・振動・KBM 初期化） | 完了（`b8ba2fca`） |
 | 4 | `ServiceProviderHolder` の撤廃（静的 `ActionManager` の廃止と注入） | **実装完了（2026-11-04。コミット待ち）。** 静的 `ActionManager`・`ServiceProviderHolder`・`ButtonSpecialActionOutput`（とそのテスト）を削除し、`IManagedActionManager`／`IKeyButtonControllerRegistry` をコンストラクターで注入。Debug ALL: 警告 0・エラー 0、Actions.Tests 3054 件・Standalone 11 件すべて合格。残り: テストの `[Collection("ServiceProviderHolder")]` の改名（別コミット） |
 | 5 | スロット状態の持ち主の新設（`IDeviceSlotState`。`Func<IUdpMotionHost>`／`Func<IDeviceStateAccessor>` の撤廃） | `Phase13-Step5-Plan.md` 承認済み（2026-11-04）。**5a（`2befe9d9`）・5b（`c1e7b452`）・5c（`89c61b78`）完了、5d（`080879ac`）完了、**5e 完了（コミット待ち）で Step5 の実装は完了**。5d: `UdpMotionService` が `IDeviceSlotState` を直接注入、`GetPadDetailForIdx` を移設、`IUdpMotionHost` 削除。5e: `Func<IDeviceStateAccessor>` の 5 利用者を直接注入に。5c の内容：`ServiceLifecycle`／`DeviceDisconnectHandler`／`DeviceConnector` が `IDeviceSlotState` を直接注入。`IDeviceSlotHost` は `ActiveControllers`＋`OnReport` に縮小）**。Step5 の残り: `Func<IDeviceSlotHost>` が `DeviceConnector` の 1 件（Step5b で撤廃）。実機確認は Step5b の後 |
-| 5b | `On_Report` の `InputReportProcessor` への分離、`Mapping` の逆依存の解消、`IDeviceSlotHost` の削除 | `Phase13-Step5b-Plan.md` 骨子（Step5 の後に詳細化して再承認） |
+| 5b | `On_Report` の `InputReportProcessor` への分離、`Mapping` の逆依存の解消、`IDeviceSlotHost` の削除 | `Phase13-Step5b-Plan.md` 承認済み（2026-11-04）。**5b-a 完了（コミット待ち）**: `On_Report` の特性テスト 6 件、before 計測（約 570〜690 ns／回、割り当て 0）、`Mapping` の `ctrl` 4 メンバーの洗い出し。次: 5b-b |
 | 6〜12 | 計画書 §4 のとおり | 未着手 |
 
 ## Step1 の結果
