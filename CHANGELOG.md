@@ -8,7 +8,8 @@ All notable changes to this project are recorded in this file.
 
 ### Changed
 - The log line "This binary was built at …" now reads the build time and commit from the program itself, so `build_timestamp.txt` is no longer needed (it was missing from the release archive).
-- Internal: source files were re-organized into layer folders and namespaces now match the folders. No change in behavior.
+- Log messages were reorganized into one logging API with consistent levels and prefixes. In the log shown in the window: messages about failures that were shown as warnings are now errors, some informational messages are now warnings, and a few short-lived diagnostic messages (for example some in profile settings) are no longer shown in the window and are written to the log file at Debug level only. The tray notifications are unchanged. Debug-only `[Diag-Toast]` lines were removed, and messages that were written to the console or the debugger output now go to the log file.
+- Internal (no change in behavior): the service layer was rewired to receive its dependencies directly (removing the static action manager, the service locator holder, lazy lookups and many forwarding members of the control service), the IPC command handling (`-command`) moved into its own class, input report processing was moved out of the control service, and source files were re-organized into layer folders with namespaces matching the folders.
 
 ### Fixed
 - Command line: `-command LoadProfile.<n>.<name>` / `LoadTempProfile` did not work with profile names that contain non-ASCII characters (for example Japanese). Command text is now sent as UTF-8.
