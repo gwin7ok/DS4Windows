@@ -294,10 +294,13 @@ namespace DS4Windows.DI
                     sp.GetRequiredService<IDeviceDisconnectHandler>(),   // Phase9 9-E E-6e
                     sp.GetRequiredService<IServiceLifecycle>(),   // Phase9 9-E E-6f2
                     sp.GetRequiredService<IEventThreadDispatcher>(),   // Phase13-Step3
-                    sp.GetRequiredService<IDeviceRumbleService>()   // Phase13-Step3
+                    sp.GetRequiredService<IDeviceRumbleService>(),   // Phase13-Step3
+                    sp.GetRequiredService<IDeviceSlotState>()   // Phase13-Step5
                 );
             });
-            services.AddSingleton<IDeviceStateAccessor>(sp => sp.GetRequiredService<ControlService>());
+            // Phase13-Step5: スロット状態の持ち主。IDeviceStateAccessor（GetController）も同じインスタンスを返す
+            services.AddSingleton<IDeviceSlotState, DeviceSlotState>();
+            services.AddSingleton<IDeviceStateAccessor>(sp => sp.GetRequiredService<IDeviceSlotState>());
             services.AddSingleton<IUdpMotionHost>(sp => sp.GetRequiredService<ControlService>());   // Phase9 9-E E-3
             services.AddSingleton<IDeviceSlotHost>(sp => sp.GetRequiredService<ControlService>());   // Phase9 9-E E-6e
 

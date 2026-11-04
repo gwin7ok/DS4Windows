@@ -56,7 +56,7 @@ namespace DS4WindowsTests
         }
 
         [Fact]
-        public void AppHost_ResolvesIDeviceStateAccessor_FromControlServiceSingleton()
+        public void AppHost_ResolvesIDeviceStateAccessor_FromTheDeviceSlotStateSingleton()
         {
             DS4WinWPF.AppHost.CreateHost();
 
@@ -66,7 +66,11 @@ namespace DS4WindowsTests
 
             Assert.Null(ex);
             Assert.NotNull(accessor);
-            Assert.Same(controlService, accessor);
+            // Phase13-Step5: 持ち主は IDeviceSlotState（DeviceSlotState）。ControlService は同じ配列を保持する
+            Assert.Same(TestHost.GetService<DS4Windows.DI.IDeviceSlotState>(), accessor);
+            Assert.Same(((DS4Windows.DI.IDeviceSlotState)accessor).DS4Controllers, controlService.DS4Controllers);
+            Assert.Same(((DS4Windows.DI.IDeviceSlotState)accessor).TouchPads, controlService.touchPad);
+            Assert.Same(((DS4Windows.DI.IDeviceSlotState)accessor).SlotManager, controlService.slotManager);
         }
     }
 }

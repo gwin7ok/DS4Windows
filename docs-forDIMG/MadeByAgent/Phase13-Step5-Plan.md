@@ -1,7 +1,7 @@
 # Phase13-Step5 個別計画書: スロット状態の持ち主の新設（ゲート付き）
 
 作成日: 2026-11-04（改訂: 同日。ユーザー指示「Step5 を 5 と 5b に2分割」を反映。`On_Report` の分離と `Mapping` の逆依存の解消は `Phase13-Step5b-Plan.md` へ移した）
-状態: **承認済み（2026-11-04。§9 の 1〜6 すべて）。5a 完了（コミット待ち）。次は 5b**
+状態: **承認済み（2026-11-04。§9 の 1〜6 すべて）。5a・5b 完了（5b はコミット待ち）。次は 5c**
 親計画: `Phase13-Plan.md` §4 Step5、§9 R1、§2.2 の `Func` #6・#7・#8
 前提: Step4 コミット済み（`1a3f8273`）。注: 「Step5b」は Phase13 の中の Step の名前で、ロードマップの「Phase13b（ログ整理）」とは別物。
 
@@ -151,3 +151,12 @@ _touchPad     = slots.TouchPads;       // …ほか
 - **追加したもの（まだ接続していない）**: `IDeviceSlotState`、`DeviceSlotState`、`DeviceSlotStateTests`（7 件）、`Phase13Step5SlotStateHotPathAllocationTests`（割り当て 0。JIT の段階的な最適化の割り当てを避けるため、ウォームアップは測定と同じ 20 万回）、`Phase13Step5SlotStateTimingBenchmark`（手動計測）。
 - **before の計測（Release、`DS4W_RUN_BENCH=1`、中央値、3 回）**: (a) 旧形（private フィールドの配列）4.1〜4.5 ns／回、(c) 窓口を毎回通す 9.6〜10.8 ns／回（(a) の約 2 倍。接続・切断の経路では問題にならないが、ホットパスでは窓口を毎回通さず、保持した配列を使う）。(b) 保持した `readonly` の配列は、順序を入れ替えて測ると (b)/(a) = 93〜98%（測定順による揺れが ±20% あり、(a) と (b) の差は有意ではない）。→ 命令列が同じであることの確認として十分。**5b の after は、実際の `ControlService` で測り直す**（実機の `ProcessingDelayMs` は Step5b の後にまとめて）。
 - Debug ALL: 警告 0・エラー 0、Actions.Tests 3063 件・Standalone 11 件すべて合格。
+
+## 11. 5b の結果（2026-11-04）
+
+- `ControlService` のコンストラクターに `IDeviceSlotState slots` を追加（28 → 29。Step5b 以降で `On_Report` 専用の引数を減らす）。`DS4Controllers`／`touchPad`／`slotManager` は **`public readonly` のフィールド**（同名のまま。Q2 の転送を、プロパティではなくフィールドで行った。ホットパスの読み取りは従来のフィールド参照と同じ命令で、`readonly` のため再代入できない）、`CurrentState`／`PreviousState`／`TempState` は `private readonly`。コンストラクターの先頭で `slots` から一度だけ取得する。`GetController` は `_slots.GetController` へ委譲。
+- `ServiceRegistration`: `IDeviceSlotState` を Singleton で登録し、`IDeviceStateAccessor` はそれを返す（旧: `ControlService`）。`IUdpMotionHost`／`IDeviceSlotHost` は `ControlService` のまま（5c・5d で撤廃）。
+- 配列の初期化（`new DS4State()` の for ループ）は、`ControlService` のコンストラクターのまま（位置を変えない）。
+- テスト: `Phase13Step5ControlServiceSlotStateGuardTests`（フィールドが `readonly`、`DeviceSlotState` と同じ配列を保持、`GetController` の範囲外は null）を追加。引数の数を検査する 2 件（28 → 29）と、`IDeviceStateAccessor` の登録元を検査する 1 件（`Phase3ServiceRegistrationTests`）を更新。
+- **after の計測（§6 ②）**: `On_Report` の本文は変えておらず（フィールド名も同じ）、読み取りはコンストラクターで保持した `readonly` の配列。§10 の計測 (b)（保持した `readonly` の配列）が after に相当し、(a) の 93〜98%（有意な差なし）。実際の `On_Report` 全体の遅延（`ProcessingDelayMs`）は、Step5b の後に実機でまとめて比較する。アロケーションは `Phase13Step5SlotStateHotPathAllocationTests` で 0。
+- Debug ALL: 警告 0・エラー 0、Actions.Tests 3071 件・Standalone 11 件すべて合格。**ゲートは合格**（5c へ進める）。

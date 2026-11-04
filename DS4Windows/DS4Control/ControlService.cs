@@ -45,23 +45,22 @@ namespace DS4Windows
         // Phase7-Step10e W2: 静的な互換シム CURRENT_DS4_CONTROLLER_LIMIT は削除した。値の SSOT は IEnvironmentService.ControllerSlotLimit / UsingMaxControllers。
         // ControlService 内部は注入値 _controllerSlotLimit を使用する（Phase6-Step2-Plan.md 決定O2/O3）。
         // Phase7-Step10b W4: USING_MAX_CONTROLLERS（静的シム）は、呼び出し元 3 箇所を IEnvironmentService.UsingMaxControllers の注入に替えて削除した。
-        public DS4Device[] DS4Controllers = new DS4Device[MAX_DS4_CONTROLLER_COUNT];
-        public DS4Device GetController(int deviceIndex)
-        {
-            if (deviceIndex < 0 || deviceIndex >= DS4Controllers.Length) return null;
-            return DS4Controllers[deviceIndex];
-        }
+        // Phase13-Step5: スロット状態の配列は IDeviceSlotState（DeviceSlotState）が所有する。ここは、コンストラクターで一度だけ取得した参照を保持する（ホットパス［On_Report］は従来どおりこのフィールドを読む。配列の参照は再代入されない）。
+        // TODO(Phase13-Step10): 公開の DS4Controllers／touchPad／slotManager は、UI など約 50 か所が ControlService 経由で読んでいるため、同名のまま温存している。呼び出し側を IDeviceSlotState の直接注入へ切り替えた時点で削除する。
+        private readonly DI.IDeviceSlotState _slots;
+        public readonly DS4Device[] DS4Controllers;
+        public DS4Device GetController(int deviceIndex) => _slots.GetController(deviceIndex);
         // Phase9 9-E E-6f2: 状態は ServiceLifecycle が持つ。Phase9 9-F F-5b: 外部の参照が 0 件の activeControllers／loopControllers／inServiceTask の転送を削除した。
         // TODO(Phase9 9-F F-5c 以降): running は、外部の 4 つの利用者（AutoProfileService／App／MainWindow／TrayIconViewModel）がまだ ControlService を直接持つため、転送を残している。
         //   利用者が IServiceLifecycle.Running を受けるように切り替えた時点で削除する（Start／Stop／slotManager など、ControlService の他のメンバーの切り離しと同時に行う）。
-        public Mouse[] touchPad = new Mouse[MAX_DS4_CONTROLLER_COUNT];
+        public readonly Mouse[] touchPad;
         public bool running { get => _lifecycle.Running; set => _lifecycle.Running = value; }
         private DS4State[] MappedState = new DS4State[MAX_DS4_CONTROLLER_COUNT];
-        private DS4State[] CurrentState = new DS4State[MAX_DS4_CONTROLLER_COUNT];
-        private DS4State[] PreviousState = new DS4State[MAX_DS4_CONTROLLER_COUNT];
-        private DS4State[] TempState = new DS4State[MAX_DS4_CONTROLLER_COUNT];
+        private readonly DS4State[] CurrentState;
+        private readonly DS4State[] PreviousState;
+        private readonly DS4State[] TempState;
         public DS4StateExposed[] ExposedState = new DS4StateExposed[MAX_DS4_CONTROLLER_COUNT];
-        public ControllerSlotManager slotManager = new ControllerSlotManager();
+        public readonly ControllerSlotManager slotManager;
         public bool recordingMacro = false;
         public event EventHandler<DebugEventArgs> Debug = null;
         bool[] buttonsdown = new bool[MAX_DS4_CONTROLLER_COUNT] { false, false, false, false, false, false, false, false };
@@ -287,8 +286,17 @@ namespace DS4Windows
             DI.IDeviceDisconnectHandler deviceDisconnect,
             DI.IServiceLifecycle lifecycle,
             DI.IEventThreadDispatcher eventThread,
-            DI.IDeviceRumbleService rumble)
+            DI.IDeviceRumbleService rumble,
+            DI.IDeviceSlotState slots)
         {
+            // Phase13-Step5: スロット状態の配列の参照を一度だけ取得して保持する（以降の読み書きは、従来どおりこれらのフィールドを通す）
+            this._slots = slots ?? throw new ArgumentNullException(nameof(slots));
+            this.DS4Controllers = slots.DS4Controllers;
+            this.touchPad = slots.TouchPads;
+            this.CurrentState = slots.CurrentStates;
+            this.PreviousState = slots.PreviousStates;
+            this.TempState = slots.TempStates;
+            this.slotManager = slots.SlotManager;
             this._deviceRegistry = deviceRegistry;
             // TODO(技術的負債): 過渡期の防御コード。DI 経由の生成（ServiceRegistration）では profileSettings は常に非 null。
             // 旧シグネチャ（profileSettings = null）との互換のために残している。Phase6-Step12 で削除判断（Phase6-Step2-Plan.md 決定D2）。

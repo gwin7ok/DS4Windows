@@ -8,7 +8,7 @@
 | 2 | `ControlService` の未使用引数 6 個の削除（34→28） | 完了（`668bdea6`） |
 | 3 | 状態を持たないホストの分離（イベントスレッド・振動・KBM 初期化） | 完了（`b8ba2fca`） |
 | 4 | `ServiceProviderHolder` の撤廃（静的 `ActionManager` の廃止と注入） | **実装完了（2026-11-04。コミット待ち）。** 静的 `ActionManager`・`ServiceProviderHolder`・`ButtonSpecialActionOutput`（とそのテスト）を削除し、`IManagedActionManager`／`IKeyButtonControllerRegistry` をコンストラクターで注入。Debug ALL: 警告 0・エラー 0、Actions.Tests 3054 件・Standalone 11 件すべて合格。残り: テストの `[Collection("ServiceProviderHolder")]` の改名（別コミット） |
-| 5 | スロット状態の持ち主の新設（`IDeviceSlotState`。`Func<IUdpMotionHost>`／`Func<IDeviceStateAccessor>` の撤廃） | `Phase13-Step5-Plan.md` 承認済み（2026-11-04）。**5a 完了（コミット待ち）**: `IDeviceSlotState`／`DeviceSlotState` とテストを追加、before 計測を採取。次は 5b（`ControlService` の切り替えと after 計測） |
+| 5 | スロット状態の持ち主の新設（`IDeviceSlotState`。`Func<IUdpMotionHost>`／`Func<IDeviceStateAccessor>` の撤廃） | `Phase13-Step5-Plan.md` 承認済み（2026-11-04）。**5a 完了（`2befe9d9`）、5b 完了（コミット待ち。`ControlService` が `IDeviceSlotState` の配列を `readonly` で保持。ゲート合格）**。次は 5c（`ServiceLifecycle`／`DeviceDisconnectHandler`／`DeviceConnector` の直接注入） |
 | 5b | `On_Report` の `InputReportProcessor` への分離、`Mapping` の逆依存の解消、`IDeviceSlotHost` の削除 | `Phase13-Step5b-Plan.md` 骨子（Step5 の後に詳細化して再承認） |
 | 6〜12 | 計画書 §4 のとおり | 未着手 |
 

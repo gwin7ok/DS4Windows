@@ -24,7 +24,7 @@ namespace DS4WindowsTests
         public void ControlService_Constructor_HasNoUnusedParameters()
         {
             var parameters = typeof(ControlService).GetConstructors().Single().GetParameters();
-            Assert.Equal(28, parameters.Length);
+            Assert.Equal(29, parameters.Length);   // Phase13-Step5: スロット状態の持ち主（IDeviceSlotState）を足した（28 → 29。Step5b 以降で減らす）
             foreach (Type t in Removed)
                 Assert.DoesNotContain(parameters, p => p.ParameterType == t);
         }
