@@ -104,6 +104,12 @@
 		<WriteLinesToFile File="$(OutDir)build_timestamp.txt" Lines="$(BuildTimestamp);commit=$(BuildCommit)" Overwrite="true" Encoding="UTF-8" />
 	</Target>
 
+	<!-- dotnet publish -o <別フォルダー> のとき、build_timestamp.txt はビルド出力（OutDir）にだけ書かれ、公開先（PublishDir）に入らず、
+	     リリースのアーカイブ（scripts/release-and-publish.ps1 → utils/post-build.py）に含まれなかった。公開先へも複製する。 -->
+	<Target Name="CopyBuildStampToPublishDir" AfterTargets="Publish">
+		<Copy SourceFiles="$(OutDir)build_timestamp.txt" DestinationFolder="$(PublishDir)" Condition="Exists('$(OutDir)build_timestamp.txt') And '$(PublishDir)' != '$(OutDir)'" />
+	</Target>
+
 
   <ItemGroup>
     <Compile Remove="Resources\**" />
