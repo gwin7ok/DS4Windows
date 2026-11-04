@@ -148,3 +148,16 @@ interface IProfileLoadTarget   // DS4Windows/DI/
 - **特性テスト**（`Phase13Step6CharacterizationTests`）: 電池残量の文言（デバイスなし → `NA`、充電なし → `55%`、充電中 → `55%+`、100% で充電中 → `Full`）、`GetRumbleBoost`（DualSense で汎用の再スケールなし → 100 固定、ほかは設定値）。入口は置き換え前の経路（`ControlService.GetDS4Battery`、`ProfileSettingsService.GetRumbleBoost`）。
   - **書けなかったもの**: `setRumble`・`RumbleAutostopTime` の実デバイスへの反映は、`DS4Device` の内部（`testRumble`、タイマー）が未初期化のテスト用デバイスでは動かないため。6-b では `IDeviceRumbleService` の差し替え（フェイク）で、スロットの範囲検査と null 検査を固定する。`AutoProfileService` の接続判定と `ProfileRepository.LoadProfile` は、既存のテスト（`AutoProfileService*Tests`、`ProfileRepository*Tests`）が固定しているため、新規には足さない（6-b／6-f で入口を替えて再実行）。
 - **Debug ALL**: Actions.Tests 3095 件（3075 → +20）・Standalone 11 件すべて合格、警告 0・エラー 0。
+
+## 11. 6-b の結果（2026-11-04）
+
+**変更**
+- `IDeviceBatteryText`（`DS4Windows/DI/`）／`DeviceBatteryText`（`DS4Windows/DS4Control/Services/`）を新設。旧 `ControlService.GetDS4Battery` の本体をそのまま移した（文言の組み立ては不変）。`GetDS4Battery` は削除（呼び出し元は `DefaultBatteryCheckPort` だけだった）。
+- `DefaultBatteryCheckPort`: `Func<ControlService>` → `IDeviceBatteryText`。
+- `DefaultControlExtrasPort`: `Func<ControlService>` → `IDeviceStateAccessor`＋`IDeviceRumbleService`＋`IEnvironmentService`。`SetRumble` は旧 `ControlService.setRumble` と同じ検査（スロット上限 → コントローラーの有無）を経て `SetDevRumble` を呼ぶ。
+- `ProfileSettingsService`: `Func<ControlService>` → `IDeviceStateAccessor`（使うのは `GetController` だけ）。`BackingStore` 内の暫定生成は `new DeviceSlotState()`（旧 `() => null` と同じ「コントローラーなし」）。
+- `AutoProfileService`: `Func<ControlService>` → `IServiceLifecycle`＋`IDeviceStateAccessor`。`Control` プロパティを削除。旧「ControlService が未解決なら接続とみなす」は、直接注入で常に解決済みのため不要になった（本番の挙動は不変）。
+- テスト: `TestRepositoryFactory.CreateAutoProfileService` は既定で `SlotConnectedProbe = _ => true`（旧テストの前提「ControlService 未解決＝全スロット接続」を保つ）。`Phase13Step6ControlExtrasPortRumbleTests`（4 件）を追加。
+
+**結果**: `Debug ALL` 警告 0／エラー 0。Actions.Tests 3,099 件、Standalone 11 件、すべて合格。
+**残る `Func<ControlService>`**: `ProfileRepository`／`ProfileApplicationService`／UI ファクトリー 3 件（6-c〜6-f）。

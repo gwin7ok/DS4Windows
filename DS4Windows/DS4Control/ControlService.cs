@@ -552,32 +552,7 @@ namespace DS4Windows
             _deviceConnectionSetup.AttachTouchpad(ind, device, touchPad);
         }
 
-        public string GetDS4Battery(int index)
-        {
-            DS4Device d = DS4Controllers[index];
-            if (d != null)
-            {
-                string battery;
-                if (!d.IsAlive())
-                    battery = "...";
-
-                if (d.isCharging())
-                {
-                    if (d.getBattery() >= 100)
-                        battery = DS4WinWPF.Properties.Resources.Full;
-                    else
-                        battery = d.getBattery() + "%+";
-                }
-                else
-                {
-                    battery = d.getBattery() + "%";
-                }
-
-                return battery;
-            }
-            else
-                return DS4WinWPF.Properties.Resources.NA;
-        }
+        // Phase13-Step6 6-b: 旧 GetDS4Battery（電池残量の文言）は IDeviceBatteryText へ移した（呼び出し元は DefaultBatteryCheckPort だけだった）
 
         // プロファイルを適用したとき（SelectedProfileChanged は、適用のたびに発火する）、そのスロットのコントローラーに、適用したプロファイルを記憶する。
         // 再接続（同じコントローラー）のとき、切断前のプロファイルを適用するため（Reconnect-Profile-PerController-Fix-Plan.md）。適用のスレッドから呼ばれる。

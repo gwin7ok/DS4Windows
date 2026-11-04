@@ -1,4 +1,5 @@
 using System;
+using DS4Windows.DI;
 using DS4Windows.Services;
 
 namespace DS4Windows.Actions
@@ -6,18 +7,18 @@ namespace DS4Windows.Actions
     /// <summary>
     /// Phase8-Step7 7.6c: <see cref="IBatteryCheckPort"/> の本番の実装。<c>IDeviceStateAccessor</c>（＝IDeviceSlotState。Phase13-Step5 で直接注入に変更）越しに <c>DS4Device</c> を操作し、
     /// ライトバーの強制色は静的な <c>DS4LightBar</c> を、通知は <c>AppLogger.LogToTray</c> を、この窓口の内側に閉じ込めて使う（Q6＝A）。
-    /// 電池残量の文言は <c>ControlService.GetDS4Battery</c>（旧 <c>Mapping</c> と同じ）。ControlService は後から作られるため、遅延（<c>Func</c>）で受ける。
+    /// 電池残量の文言は <see cref="IDeviceBatteryText"/>（旧 <c>ControlService.GetDS4Battery</c>。Phase13-Step6 6-b で移し、<c>Func&lt;ControlService&gt;</c> をやめた）。
     /// 旧経路と違い、コントローラーがいなくても例外にしない。
     /// </summary>
     public sealed class DefaultBatteryCheckPort : IBatteryCheckPort
     {
         private readonly IDeviceStateAccessor _deviceStateAccessor;
-        private readonly Func<ControlService> _controlService;
+        private readonly IDeviceBatteryText _batteryText;
 
-        public DefaultBatteryCheckPort(IDeviceStateAccessor deviceStateAccessor, Func<ControlService> controlService)
+        public DefaultBatteryCheckPort(IDeviceStateAccessor deviceStateAccessor, IDeviceBatteryText batteryText)
         {
             _deviceStateAccessor = deviceStateAccessor ?? throw new ArgumentNullException(nameof(deviceStateAccessor));
-            _controlService = controlService ?? throw new ArgumentNullException(nameof(controlService));
+            _batteryText = batteryText ?? throw new ArgumentNullException(nameof(batteryText));
         }
 
         private DS4Device Controller(int deviceIndex) => _deviceStateAccessor.GetController(deviceIndex);
@@ -28,7 +29,7 @@ namespace DS4Windows.Actions
 
         public void NotifyBattery(int deviceIndex)
         {
-            string text = _controlService()?.GetDS4Battery(deviceIndex);
+            string text = _batteryText.GetBatteryText(deviceIndex);
             if (text == null) return;
 
             AppLogger.LogToTray("Controller " + (deviceIndex + 1) + ": " + text, true);

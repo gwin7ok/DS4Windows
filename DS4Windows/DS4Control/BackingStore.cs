@@ -764,7 +764,7 @@ namespace DS4Windows
                     if (_profileSettings == null)
                     {
                         // 生成された ProfileSettingsService が、自分のコンストラクターで LinkProfileSettings を呼ぶ
-                        _ = new ProfileSettingsService(this, _environmentService, () => null);
+                        _ = new ProfileSettingsService(this, _environmentService, new DS4Windows.Services.DeviceSlotState());   // Phase13-Step6 6-b: 旧 () => null（コントローラーなし）と同じ
                     }
 
                     return _profileSettings;

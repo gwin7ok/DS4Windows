@@ -122,7 +122,7 @@ namespace DS4WindowsTests
         {
             var store = new DS4Windows.BackingStore(new DS4Windows.EnvironmentService());
             var env = new EnvironmentService();
-            Func<ControlService> control = () => null;
+            IDeviceStateAccessor control = new DS4Windows.Services.DeviceSlotState();
 
             Assert.Throws<ArgumentNullException>(() => new ProfileSettingsService(null, env, control));
             Assert.Throws<ArgumentNullException>(() => new ProfileSettingsService(store, null, control));
@@ -132,7 +132,7 @@ namespace DS4WindowsTests
         [Fact]
         public void ProfileSettingsService_GetRumbleBoost_UsesInjectedControlProvider()
         {
-            var settings = TestRepositoryFactory.CreateProfileSettingsService(new DS4Windows.BackingStore(new DS4Windows.EnvironmentService()), null, () => null);
+            var settings = TestRepositoryFactory.CreateProfileSettingsService(new DS4Windows.BackingStore(new DS4Windows.EnvironmentService()), null, new DS4Windows.Services.DeviceSlotState());
             // コントローラーが無い場合も、注入された関数だけを参照して例外なく値を返す（Program.rootHub を参照しない）
             var ex = Record.Exception(() => settings.GetRumbleBoost(0));
             Assert.Null(ex);
@@ -150,18 +150,20 @@ namespace DS4WindowsTests
             var repo = TestRepositoryFactory.CreateProfileRepository(settings);
             var env = new EnvironmentService();
             var appSettings = TestRepositoryFactory.CreateAppSettingsService();
-            Func<ControlService> control = () => null;
+            IServiceLifecycle lifecycle = TestHost.GetService<IServiceLifecycle>();
+            IDeviceStateAccessor deviceState = new DS4Windows.Services.DeviceSlotState();
             IProcessInspector inspector = new NullProcessInspector();
 
-            Assert.Throws<ArgumentNullException>(() => new AutoProfileService(null, app, settings, inspector, env, appSettings, repo, control, TestGlobals.Store));
-            Assert.Throws<ArgumentNullException>(() => new AutoProfileService(holder, null, settings, inspector, env, appSettings, repo, control, TestGlobals.Store));
-            Assert.Throws<ArgumentNullException>(() => new AutoProfileService(holder, app, null, inspector, env, appSettings, repo, control, TestGlobals.Store));
-            Assert.Throws<ArgumentNullException>(() => new AutoProfileService(holder, app, settings, null, env, appSettings, repo, control, TestGlobals.Store));
-            Assert.Throws<ArgumentNullException>(() => new AutoProfileService(holder, app, settings, inspector, null, appSettings, repo, control, TestGlobals.Store));
-            Assert.Throws<ArgumentNullException>(() => new AutoProfileService(holder, app, settings, inspector, env, null, repo, control, TestGlobals.Store));
-            Assert.Throws<ArgumentNullException>(() => new AutoProfileService(holder, app, settings, inspector, env, appSettings, null, control, TestGlobals.Store));
-            Assert.Throws<ArgumentNullException>(() => new AutoProfileService(holder, app, settings, inspector, env, appSettings, repo, null, TestGlobals.Store));
-            Assert.Throws<ArgumentNullException>(() => new AutoProfileService(holder, app, settings, inspector, env, appSettings, repo, control, null));
+            Assert.Throws<ArgumentNullException>(() => new AutoProfileService(null, app, settings, inspector, env, appSettings, repo, lifecycle, deviceState, TestGlobals.Store));
+            Assert.Throws<ArgumentNullException>(() => new AutoProfileService(holder, null, settings, inspector, env, appSettings, repo, lifecycle, deviceState, TestGlobals.Store));
+            Assert.Throws<ArgumentNullException>(() => new AutoProfileService(holder, app, null, inspector, env, appSettings, repo, lifecycle, deviceState, TestGlobals.Store));
+            Assert.Throws<ArgumentNullException>(() => new AutoProfileService(holder, app, settings, null, env, appSettings, repo, lifecycle, deviceState, TestGlobals.Store));
+            Assert.Throws<ArgumentNullException>(() => new AutoProfileService(holder, app, settings, inspector, null, appSettings, repo, lifecycle, deviceState, TestGlobals.Store));
+            Assert.Throws<ArgumentNullException>(() => new AutoProfileService(holder, app, settings, inspector, env, null, repo, lifecycle, deviceState, TestGlobals.Store));
+            Assert.Throws<ArgumentNullException>(() => new AutoProfileService(holder, app, settings, inspector, env, appSettings, null, lifecycle, deviceState, TestGlobals.Store));
+            Assert.Throws<ArgumentNullException>(() => new AutoProfileService(holder, app, settings, inspector, env, appSettings, repo, null, deviceState, TestGlobals.Store));
+            Assert.Throws<ArgumentNullException>(() => new AutoProfileService(holder, app, settings, inspector, env, appSettings, repo, lifecycle, deviceState, null));
+            Assert.Throws<ArgumentNullException>(() => new AutoProfileService(holder, app, settings, inspector, env, appSettings, repo, lifecycle, null, TestGlobals.Store));
         }
 
         [Fact]

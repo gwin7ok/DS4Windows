@@ -1,21 +1,26 @@
 using System;
 using DS4Windows.DI;
+using DS4Windows.Services;
 
 namespace DS4Windows.Actions
 {
     /// <summary>
     /// Phase8-Step7 7.8e: <see cref="IControlExtrasPort"/> の本番の実装。旧 <c>Mapping.ProcessControlSettingAction</c> の Extras の枝と同じ操作を、この窓口の内側に閉じ込める。
-    /// 振動は <c>ControlService.setRumble</c>（ブースト込み。コントローラーがいなければ何もしない）、ライトバーは静的な <c>DS4LightBar</c> の配列、感度は <c>ButtonMouseInfo</c>。
-    /// <c>ControlService</c> は後から作られるため、遅延（<c>Func</c>）で受ける。
+    /// 振動は <see cref="IDeviceRumbleService"/>（ブースト込み。旧 <c>ControlService.setRumble</c> と同じ、スロット上限・コントローラーの有無の検査つき。コントローラーがいなければ何もしない）、ライトバーは静的な <c>DS4LightBar</c> の配列、感度は <c>ButtonMouseInfo</c>。
+    /// Phase13-Step6 6-b: <c>Func&lt;ControlService&gt;</c> をやめ、狭い窓口を直接注入で受ける。
     /// </summary>
     public sealed class DefaultControlExtrasPort : IControlExtrasPort
     {
-        private readonly Func<ControlService> _controlService;
+        private readonly IDeviceStateAccessor _devices;
+        private readonly IDeviceRumbleService _rumble;
+        private readonly IEnvironmentService _environment;
         private readonly IProfileSettingsService _profileSettings;
 
-        public DefaultControlExtrasPort(Func<ControlService> controlService, IProfileSettingsService profileSettings)
+        public DefaultControlExtrasPort(IDeviceStateAccessor devices, IDeviceRumbleService rumble, IEnvironmentService environment, IProfileSettingsService profileSettings)
         {
-            _controlService = controlService ?? throw new ArgumentNullException(nameof(controlService));
+            _devices = devices ?? throw new ArgumentNullException(nameof(devices));
+            _rumble = rumble ?? throw new ArgumentNullException(nameof(rumble));
+            _environment = environment ?? throw new ArgumentNullException(nameof(environment));
             _profileSettings = profileSettings ?? throw new ArgumentNullException(nameof(profileSettings));
         }
 
@@ -24,7 +29,13 @@ namespace DS4Windows.Actions
         public void SetRumble(int deviceIndex, byte heavy, byte light)
         {
             if (!InRange(deviceIndex)) return;
-            _controlService()?.setRumble(heavy, light, deviceIndex);
+            // 旧 ControlService.setRumble と同じ（スロット上限の検査 → コントローラーがいれば、ブースト・反転つきの振動）
+            if (deviceIndex < _environment.ControllerSlotLimit)
+            {
+                DS4Device device = _devices.GetController(deviceIndex);
+                if (device != null)
+                    _rumble.SetDevRumble(device, heavy, light, deviceIndex);
+            }
         }
 
         public void ForceLightbar(int deviceIndex, DS4Color color, byte flash)

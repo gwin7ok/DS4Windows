@@ -85,9 +85,9 @@ namespace DS4Windows.DI
                 return service;
             });
 
-            // ControlService は遅延解決（循環の回避）
+            // Phase13-Step6 6-b: 旧 Func<ControlService>（遅延）をやめ、依存のない IDeviceStateAccessor を直接受ける
             services.AddSingleton<IProfileSettingsService>(sp => new ProfileSettingsService(
-                sp.GetRequiredService<BackingStore>(), sp.GetRequiredService<IEnvironmentService>(), sp.GetRequiredService<Func<ControlService>>()));
+                sp.GetRequiredService<BackingStore>(), sp.GetRequiredService<IEnvironmentService>(), sp.GetRequiredService<IDeviceStateAccessor>()));
             // Phase7-Step10c W2: 設定ファイルの保存・読込を担う型（旧: BackingStore のメソッド）。BackingStore を受ける具象クラスの Singleton
             services.AddSingleton<SpecialActionsXmlSerializer>();
             services.AddSingleton<LinkedProfilesXmlSerializer>();
@@ -147,6 +147,7 @@ namespace DS4Windows.DI
             // Phase8-Step7 7.6b: DisconnectBT が実機のコントローラーを操作する窓口（同上）
             services.AddSingleton<IControllerDisconnectPort, DefaultControllerDisconnectPort>();
             // Phase8-Step7 7.6c: BatteryCheck が実機のコントローラー・ライトバーの強制色・通知を操作する窓口（同上。ControlService も遅延で解決する）
+            services.AddSingleton<IDeviceBatteryText, DeviceBatteryText>();   // Phase13-Step6 6-b: 電池残量の文言（旧 ControlService.GetDS4Battery）
             services.AddSingleton<IBatteryCheckPort, DefaultBatteryCheckPort>();
             // Phase8-Step7 7.6d: ステアリング較正が実機のコントローラーの較正の状態を読み書きする窓口（同上）
             // Phase8-Step7 7.7b: MultiAction が、マクロを文字列で直接実行する窓口（Mapping へ遅延で委譲する）

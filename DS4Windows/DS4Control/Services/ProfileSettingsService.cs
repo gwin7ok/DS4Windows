@@ -27,16 +27,16 @@ namespace DS4Windows
         private readonly IEnvironmentService _environmentService;
 
         // Phase6-Step10-4-2c: 全ての依存を必須化（Global.store／new EnvironmentService／Program.rootHub の参照を廃止）。
-        // ControlService は ControlService → IProfileSettingsService の依存循環を避けるため、遅延解決（Func）で受け取る（決定 D4-3）。
-        private readonly Func<ControlService> _controlProvider;
+        // Phase13-Step6 6-b: 旧 Func<ControlService>（ControlService → IProfileSettingsService の依存循環を避ける遅延。決定 D4-3）。使うのは GetController だけだったため、依存のない IDeviceStateAccessor を直接受ける
+        private readonly IDeviceStateAccessor _deviceState;
 
         public ProfileSettingsService(BackingStore backingStore,
             IEnvironmentService environmentService,
-            Func<ControlService> controlProvider)
+            IDeviceStateAccessor deviceState)
         {
             _config = backingStore ?? throw new ArgumentNullException(nameof(backingStore));
             _environmentService = environmentService ?? throw new ArgumentNullException(nameof(environmentService));
-            _controlProvider = controlProvider ?? throw new ArgumentNullException(nameof(controlProvider));
+            _deviceState = deviceState ?? throw new ArgumentNullException(nameof(deviceState));
             // Phase7-Step10d W5（Q8＝A）: BackingStore が、一時プロファイル・DInput のみ・出力 KBM のマッピングを読むための登録（最初の 1 つが有効）
             _config.LinkProfileSettings(this);
         }
@@ -358,7 +358,7 @@ namespace DS4Windows
 
         public byte GetRumbleBoost(int deviceIndex)
         {
-            if (_controlProvider()?.GetController(deviceIndex) is DualSenseDevice &&
+            if (_deviceState.GetController(deviceIndex) is DualSenseDevice &&
                 UseGenericRumbleStrRescaleForDualSenses != null &&
                 !UseGenericRumbleStrRescaleForDualSenses[deviceIndex])
                 return 100;
@@ -388,7 +388,7 @@ namespace DS4Windows
             if (SafeConfig != null && SafeConfig.rumbleAutostopTime != null && index < SafeConfig.rumbleAutostopTime.Length)
             {
                 SafeConfig.rumbleAutostopTime[index] = value;
-                DS4Device tempDev = _controlProvider()?.GetController(index);
+                DS4Device tempDev = _deviceState.GetController(index);
                 if (tempDev != null && tempDev.isSynced())
                     tempDev.RumbleAutostopTime = value;
             }

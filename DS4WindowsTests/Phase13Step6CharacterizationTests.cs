@@ -63,27 +63,27 @@ namespace DS4WindowsTests
         [Fact]
         public void BatteryText_NoDevice_IsNotAvailable()
         {
-            var control = TestHost.GetService<ControlService>();
+            var battery = TestHost.GetService<IDeviceBatteryText>();
             using (new SlotScope(Slot, null))
-                Assert.Equal(DS4WinWPF.Properties.Resources.NA, control.GetDS4Battery(Slot));
+                Assert.Equal(DS4WinWPF.Properties.Resources.NA, battery.GetBatteryText(Slot));
         }
 
         [Fact]
         public void BatteryText_NotCharging_IsThePercent()
         {
-            var control = TestHost.GetService<ControlService>();
+            var battery = TestHost.GetService<IDeviceBatteryText>();
             using (new SlotScope(Slot, DeviceWithBattery(55, false)))
-                Assert.Equal("55%", control.GetDS4Battery(Slot));
+                Assert.Equal("55%", battery.GetBatteryText(Slot));
         }
 
         [Fact]
         public void BatteryText_Charging_HasAPlus_AndFullAtOneHundred()
         {
-            var control = TestHost.GetService<ControlService>();
+            var battery = TestHost.GetService<IDeviceBatteryText>();
             using (new SlotScope(Slot, DeviceWithBattery(55, true)))
-                Assert.Equal("55%+", control.GetDS4Battery(Slot));
+                Assert.Equal("55%+", battery.GetBatteryText(Slot));
             using (new SlotScope(Slot, DeviceWithBattery(100, true)))
-                Assert.Equal(DS4WinWPF.Properties.Resources.Full, control.GetDS4Battery(Slot));
+                Assert.Equal(DS4WinWPF.Properties.Resources.Full, battery.GetBatteryText(Slot));
         }
 
         [Fact]

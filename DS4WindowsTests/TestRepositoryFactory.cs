@@ -61,11 +61,11 @@ namespace DS4WindowsTests
         }
 
         public static ProfileSettingsService CreateProfileSettingsService(BackingStore store = null,
-            IEnvironmentService environmentService = null, Func<ControlService> control = null)
+            IEnvironmentService environmentService = null, IDeviceStateAccessor deviceState = null)
         {
             return new ProfileSettingsService(store ?? TestGlobals.Store,
                 environmentService ?? new EnvironmentService(),
-                control ?? new Func<ControlService>(() => null));
+                deviceState ?? new DeviceSlotState());
         }
 
         public static OutputSlotManager CreateOutputSlotManager()
@@ -104,14 +104,18 @@ namespace DS4WindowsTests
             IProfileApplicationService profileAppService, IProfileSettingsService profileSettings,
             IProcessInspector processInspector, IEnvironmentService environmentService = null,
             IAppSettingsService appSettings = null, IProfileRepository profileRepository = null,
-            Func<ControlService> control = null, BackingStore store = null)
+            IServiceLifecycle lifecycle = null, IDeviceStateAccessor deviceState = null, BackingStore store = null)
         {
-            return new AutoProfileService(holder, profileAppService, profileSettings, processInspector,
+            var service = new AutoProfileService(holder, profileAppService, profileSettings, processInspector,
                 environmentService ?? new EnvironmentService(),
                 appSettings ?? CreateAppSettingsService(),
                 profileRepository ?? CreateProfileRepository(profileSettings),
-                control ?? new Func<ControlService>(() => null),
+                lifecycle ?? TestHost.GetService<IServiceLifecycle>(),   // 実体（Running=false）。停止中のサービスとして扱う
+                deviceState ?? new DeviceSlotState(),
                 store ?? TestGlobals.Store);
+            // 旧実装は ControlService が未解決（テスト）のとき「全スロット接続」とみなしていた。既存テストの前提を保つため、既定は全スロット接続（個別のテストは SlotConnectedProbe で差し替える）
+            service.SlotConnectedProbe = _ => true;
+            return service;
         }
 
         public static ProfilePresetLoader CreateProfilePresetLoader(BackingStore store = null,

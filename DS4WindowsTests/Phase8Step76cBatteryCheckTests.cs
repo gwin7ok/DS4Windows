@@ -309,7 +309,7 @@ namespace DS4WindowsTests
         [Fact]
         public void TheDefaultPort_DoesNothingWhenThereIsNoController()
         {
-            var port = new DefaultBatteryCheckPort(new NoControllerAccessor(), () => null);
+            var port = new DefaultBatteryCheckPort(new NoControllerAccessor(), new DS4Windows.Services.DeviceBatteryText(new NoControllerAccessor()));
 
             Assert.False(port.HasController(0));
             port.NotifyBattery(0);   // ControlService がなくても、例外にしない
@@ -319,13 +319,13 @@ namespace DS4WindowsTests
             port.SetForcedColor(99, new DS4Color(1, 2, 3));   // 範囲外は何もしない
 
             // Phase13-Step5: 窓口は直接注入（必須）。null は受け付けない
-            Assert.Throws<ArgumentNullException>(() => new DefaultBatteryCheckPort(null, () => null));
+            Assert.Throws<ArgumentNullException>(() => new DefaultBatteryCheckPort(null, new DS4Windows.Services.DeviceBatteryText(new NoControllerAccessor())));
         }
 
         [Fact]
         public void TheDefaultPort_WritesTheLightBarStatics_ForTheGivenDevice()
         {
-            var port = new DefaultBatteryCheckPort(new NoControllerAccessor(), () => null);
+            var port = new DefaultBatteryCheckPort(new NoControllerAccessor(), new DS4Windows.Services.DeviceBatteryText(new NoControllerAccessor()));
             int device = 6;
             bool savedLight = DS4LightBar.forcelight[device];
             DS4Color savedColor = DS4LightBar.forcedColor[device];

@@ -76,11 +76,11 @@ namespace DS4Windows
         public event Action<bool> RequestServiceChange;
 
         // Phase6-Step10-4-2b: 全ての依存を必須化（new／AppHost／Program.rootHub／Global の設定参照を廃止）。
-        // ControlService は、起動順序と依存循環を避けるため、遅延解決（Func）で受け取る（決定 D4-3）。
-        private readonly Func<ControlService> _controlProvider;
+        // Phase13-Step6 6-b: 旧 Func<ControlService>（決定 D4-3）。使うのは running と DS4Controllers だけだったため、IServiceLifecycle と IDeviceStateAccessor を直接受ける
+        private readonly IServiceLifecycle _lifecycle;
+        private readonly IDeviceStateAccessor _deviceState;
         private readonly IAppSettingsService _appSettings;
         private readonly IProfileRepository _profileRepository;
-        private ControlService Control => _controlProvider();
 
         public AutoProfileService(AutoProfileHolder holder,
             IProfileApplicationService profileAppService,
@@ -89,7 +89,8 @@ namespace DS4Windows
             IEnvironmentService environmentService,
             IAppSettingsService appSettings,
             IProfileRepository profileRepository,
-            Func<ControlService> controlProvider,
+            IServiceLifecycle lifecycle,
+            IDeviceStateAccessor deviceState,
             BackingStore config)
         {
             _config = config ?? throw new ArgumentNullException(nameof(config));
@@ -100,12 +101,12 @@ namespace DS4Windows
             _environmentService = environmentService ?? throw new ArgumentNullException(nameof(environmentService));
             _appSettings = appSettings ?? throw new ArgumentNullException(nameof(appSettings));
             _profileRepository = profileRepository ?? throw new ArgumentNullException(nameof(profileRepository));
-            _controlProvider = controlProvider ?? throw new ArgumentNullException(nameof(controlProvider));
+            _lifecycle = lifecycle ?? throw new ArgumentNullException(nameof(lifecycle));
+            _deviceState = deviceState ?? throw new ArgumentNullException(nameof(deviceState));
         }
 
         // 2026-10-19（AutoProfile-NoController-Investigation.md 案B）: 自動プロファイルは、接続中のスロットにだけ適用する。
-        // テストなどで差し替える。未設定（null）なら ControlService の DS4Controllers[slot] が null でないことを接続とみなす。
-        // ControlService が未解決のとき（起動前）は判定できないため接続とみなし、従来どおり適用する。
+        // テストなどで差し替える。未設定（null）なら DS4Controllers[slot] が null でないことを接続とみなす（Phase13-Step6 6-b: 旧「ControlService が未解決なら接続とみなす」は、直接注入で常に解決済みのため不要）。
         public Func<int, bool> SlotConnectedProbe { get; set; }
 
         private bool IsSlotConnected(int slot)
@@ -113,19 +114,14 @@ namespace DS4Windows
             if (SlotConnectedProbe != null)
                 return SlotConnectedProbe(slot);
 
-            var control = Control;
-            if (control == null)
-                return true;
-            var controllers = control.DS4Controllers;
-            return controllers != null && slot >= 0 && slot < controllers.Length && controllers[slot] != null;
+            return _deviceState.GetController(slot) != null;   // 範囲外は null（旧: 範囲検査つきの DS4Controllers[slot] と同じ）
         }
 
         // S9-5 の確認で判明: 元のプロファイルへ戻すときの通知が、バッテリー残量を常に「N/A」と出していた。
         // 手動の切り替え・SA の Load Profile と同じく、接続中のコントローラーの Battery を使う（未接続のときだけ「N/A」）
         private string BatteryText(int slot)
         {
-            var controllers = Control?.DS4Controllers;
-            var device = controllers != null && slot >= 0 && slot < controllers.Length ? controllers[slot] : null;
+            var device = _deviceState.GetController(slot);
             return device != null ? $"{device.Battery}" : "N/A";
         }
 
@@ -239,7 +235,7 @@ namespace DS4Windows
                     if (turnOffDS4WinApp)
                     {
                         _turnOffTemp = true;
-                        if (Control != null && Control.running)
+                        if (_lifecycle.Running)
                         {
                             if (AutoProfileDebugLogLevel > 0)
                                 AppLogger.LogToGui("DEBUG: Auto-Profile. Turning DS4Windows temporarily off", false, true);
@@ -254,7 +250,7 @@ namespace DS4Windows
                     if (_turnOffTemp && _appSettings.AutoProfileRevertDefaultProfile)
                     {
                         _turnOffTemp = false;
-                        if (Control != null && !Control.running)
+                        if (!_lifecycle.Running)
                         {
                             if (AutoProfileDebugLogLevel > 0)
                                 AppLogger.LogToGui("DEBUG: Auto-Profile. Turning DS4Windows on before reverting to default profile", false, true);
@@ -294,11 +290,11 @@ namespace DS4Windows
 
         private void SetAndWaitServiceStatus(bool serviceRunningStatus)
         {
-            if (Control != null && Control.running != serviceRunningStatus)
+            if (_lifecycle.Running != serviceRunningStatus)
             {
                 RequestServiceChange?.Invoke(serviceRunningStatus);
                 Stopwatch sw = Stopwatch.StartNew();
-                while (Control.running != serviceRunningStatus && sw.Elapsed.TotalSeconds < 10)
+                while (_lifecycle.Running != serviceRunningStatus && sw.Elapsed.TotalSeconds < 10)
                 {
                     Thread.SpinWait(1000);
                 }

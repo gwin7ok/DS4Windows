@@ -4,6 +4,7 @@ using System.Linq;
 using DS4Windows;
 using DS4Windows.Actions;
 using DS4Windows.DI;
+using DS4Windows.Services;
 
 namespace DS4WindowsTests
 {
@@ -19,7 +20,7 @@ namespace DS4WindowsTests
 
         public ControlsKeyTestScope()
         {
-            ExtrasPort = new RecordingControlExtrasPort(new DefaultControlExtrasPort(() => _inner.Control, _inner.Settings));
+            ExtrasPort = new RecordingControlExtrasPort(new DefaultControlExtrasPort(TestHost.GetService<IDeviceStateAccessor>(), TestHost.GetService<IDeviceRumbleService>(), TestHost.GetService<IEnvironmentService>(), _inner.Settings));
             Mapping = _inner.Mapper as Mapping;
             if (Mapping == null)
                 throw new InvalidOperationException("IMapping の実体が Mapping ではない");

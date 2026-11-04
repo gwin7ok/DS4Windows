@@ -73,8 +73,8 @@ namespace DS4WindowsTests
             var env = new EnvironmentService();
             var store = new BackingStore(env);
 
-            var first = new ProfileSettingsService(store, env, () => null);
-            var second = new ProfileSettingsService(store, env, () => null);
+            var first = new ProfileSettingsService(store, env, new DS4Windows.Services.DeviceSlotState());
+            var second = new ProfileSettingsService(store, env, new DS4Windows.Services.DeviceSlotState());
             Assert.Same(first, store.ProfileSettings);
 
             store.ProfileSettings = second;
@@ -95,7 +95,7 @@ namespace DS4WindowsTests
         {
             var env = new EnvironmentService();
             var store = new BackingStore(env);
-            var service = new ProfileSettingsService(store, env, () => null);
+            var service = new ProfileSettingsService(store, env, new DS4Windows.Services.DeviceSlotState());
 
             var setting = new DS4ControlSettings(DS4Controls.Cross);
             setting.action.actionAlias = 99;
@@ -109,7 +109,7 @@ namespace DS4WindowsTests
         {
             var env = new EnvironmentService();
             var store = new BackingStore(env);
-            var service = new ProfileSettingsService(store, env, () => null);
+            var service = new ProfileSettingsService(store, env, new DS4Windows.Services.DeviceSlotState());
             Assert.Same(store.distanceProfiles, service.DistanceProfiles);
         }
 
