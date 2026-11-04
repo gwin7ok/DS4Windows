@@ -1,5 +1,5 @@
 
-using DS4Windows.Processing;
+using DS4Windows.Core.Settings;
 
 namespace StandaloneTests
 {
