@@ -16,7 +16,6 @@
             "L1|DS4Windows.Core.Persistence.SpecialActionRepository|DS4Windows.Processing.SyntheticInputState",
             "L1|DS4Windows.Core.Persistence.SpecialActionsXmlSerializer|DS4Windows.Processing.Actions.IManagedActionManager",
             "L1|DS4Windows.Core.Settings.AppearanceSettingsService|DS4Windows.UI.TrayIconResources",
-            "L1|DS4Windows.Core.Settings.BackingStore|DS4Windows.Processing.Services.DeviceSlotState",
             "L1|DS4Windows.Core.Settings.ProfileSettingsService|DS4Windows.Processing.Abstractions.IDeviceStateAccessor",
             "L1|DS4Windows.Core.Settings.RemovedGyroSwipeNotice|DS4Windows.Processing.IRemovedGyroSwipePrompt",
             "L1|DS4Windows.Core.Settings.RemovedShiftNotice|DS4Windows.Processing.IRemovedShiftPrompt",

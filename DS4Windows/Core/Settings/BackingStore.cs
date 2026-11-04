@@ -744,8 +744,10 @@ namespace DS4Windows.Core.Settings
         // Phase7-Step10d W5（Q8＝A）: 旧 Global.ProfileSettingsServiceInstance（静的に最初のコンテナの実体を保持していた）の置き換え。
         // 一時プロファイル・DInput のみの配列と、出力 KBM のマッピング（RefreshActionAlias が使う）は ProfileSettingsService が持つ。
         // ProfileSettingsService が BackingStore を受け取る（逆向きの依存）ため、コンストラクターでは渡せない。ProfileSettingsService が
-        // 自分の生成時に LinkProfileSettings で登録する（最初の 1 つが有効）。登録がないまま使われたときは、従来のフォールバックと同じく、
-        // コントローラー（ControlService）を持たない ProfileSettingsService を作る。
+        // 自分の生成時に LinkProfileSettings で登録する（最初の 1 つが有効）。
+        // Phase14b-Step9（決定 D8）: 登録がないまま使われたときのフォールバック（コントローラーを持たない ProfileSettingsService を自分で作る）は撤去した。
+        // 通常の起動では、プロファイルの読込より前に BuildHostAndServices の CreateControlService が DI の ProfileSettingsService を結ぶため通らない
+        // （Phase14b-Plan.md §8.3）。登録がないまま使われたら、組み立ての誤りとして例外にする。テストは明示的に設定する。
         private readonly object _profileSettingsLock = new object();
         private DS4Windows.Core.Abstractions.IProfileSettingsService _profileSettings;
 
@@ -757,18 +759,15 @@ namespace DS4Windows.Core.Settings
                 if (linked != null)
                     return linked;
 
-                AppLogger.LogTrace("[Legacy] BackingStore.ProfileSettings: Fallback instance used");
-                AppLogger.Log(AppLogLevel.Debug, "[Legacy] BackingStore.ProfileSettings: Fallback instance used");
                 lock (_profileSettingsLock)
                 {
-                    if (_profileSettings == null)
-                    {
-                        // 生成された ProfileSettingsService が、自分のコンストラクターで LinkProfileSettings を呼ぶ
-                        _ = new ProfileSettingsService(this, _environmentService, new DS4Windows.Processing.Services.DeviceSlotState());   // Phase13-Step6 6-b: 旧 () => null（コントローラーなし）と同じ
-                    }
-
-                    return _profileSettings;
+                    if (_profileSettings != null)
+                        return _profileSettings;
                 }
+
+                const string message = "[DI] BackingStore.ProfileSettings: no IProfileSettingsService is linked (create ProfileSettingsService for this store first)";
+                AppLogger.Log(AppLogLevel.Error, message);
+                throw new InvalidOperationException(message);
             }
             set
             {

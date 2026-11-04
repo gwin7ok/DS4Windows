@@ -84,12 +84,11 @@ namespace DS4WindowsTests
         }
 
         [Fact]
-        public void ProfileSettings_WithoutAService_CreatesTheFallbackOnce()
+        public void ProfileSettings_WithoutAService_Throws()
         {
+            // Phase14b-Step9（決定 D8）: 旧「登録がないときはフォールバックを 1 回だけ作る」は撤去した。組み立ての誤りとして例外にする
             var store = new BackingStore(new EnvironmentService());
-            var fallback = store.ProfileSettings;
-            Assert.NotNull(fallback);
-            Assert.Same(fallback, store.ProfileSettings);
+            Assert.Throws<InvalidOperationException>(() => store.ProfileSettings);
         }
 
         [Fact]

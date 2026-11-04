@@ -44,7 +44,9 @@ namespace DS4WindowsTests
         /// <summary>共有の BackingStore が使うプロファイル設定サービス（旧 <c>Global.ProfileSettingsServiceInstance</c>）。</summary>
         public static IProfileSettingsService ProfileSettingsServiceInstance
         {
-            get => Store.ProfileSettings;
+            // Phase14b-Step9（D8）: BackingStore のフォールバックを撤去したため、コンテナの ProfileSettingsService を解決して結んでから読む
+            // （生成時に共有の BackingStore へ自分を結ぶ。setter で差し替えた後は、その値が優先される）
+            get { TestHost.GetService<IProfileSettingsService>(); return Store.ProfileSettings; }
             set => Store.ProfileSettings = value;
         }
     }
