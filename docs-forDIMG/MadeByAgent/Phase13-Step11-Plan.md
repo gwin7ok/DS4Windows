@@ -3,7 +3,7 @@
 作成日: 2026-11-04
 対象ブランチ: `Phase13`
 上位計画: `Phase13-Plan.md` §4 Step11（Q3）
-状態: **承認待ち**（§9）
+状態: **完了**（2026-11-04。§10）
 
 ---
 
@@ -61,3 +61,20 @@
 1. **範囲**: F-2c のみ実施（推奨）／F-1c と F-2c の両方／両方とも見送り。
 2. **F-1c を見送る場合**: 台帳に理由と再開条件を記録して閉じる（推奨）。
 3. **進め方**: 4 コミット（11-a〜11-d）で以後は自動進行。
+
+---
+
+## 10. 実施結果（2026-11-04）
+
+決定は、F-2c のみ実施（推奨）、4 コミットで自動進行（推奨）で承認済み。F-1c は見送り（台帳に記録）。
+
+| サブステップ | コミット | 内容 |
+|---|---|---|
+| 11-a | `f15a3945` | 本計画書 |
+| 11-b／11-c | `937a7c52` | `IIpcCommandHost`・`IIpcCommandProcessor`（`DS4Windows/DI/`）と `IpcCommandProcessor`（`DS4Windows/DS4Control/Services/`）を新設。9 コマンドを、受け付け順・条件・範囲検査・ログの文言を変えずに移した。`MainWindow` が `IIpcCommandHost` を実装し（`MainWindow.Ipc.cs`。旧 `Ipc*` は削除）、`HandleCopyData` は解析のあと `ipcProcessor.Execute(this, strData)` を呼ぶ。`Phase13Step11IpcCommandProcessorTests`（UI なしの単体テスト）を追加。ソース文字列を見ていた 4 つのガードを、移動先に合わせて更新 |
+| 11-d | （本コミット） | 台帳（F-1c は見送り、F-2c は実施）、本書、`Phase13-Status.md` |
+
+- **`MainWindow` の引数が 1 つ増えた**（`IIpcCommandProcessor`。`ArgumentParser` を含めて 22 → 23）。計画書 §6 では「増やさない」案としていたが、プロセッサーは DI のサービス（9 個の依存を持つ）であり、`MainWindow` が自分で生成できないため、`MainWindowFactory` 経由で 1 つ受ける形にした。
+- 旧コードの癖（`int.TryParse` が失敗すると out の値が 0 になり、1 を引かない）は、そのまま保存した（テストで固定）。
+- F-1c は見送り。再開の条件は台帳のとおり（起動処理を頻繁に変更する必要が出たとき）。
+- `Debug ALL`: 警告 0、エラー 0、3147 件合格。実機確認（最後にまとめて）: CLI からの `start`／`stop`／`cycle`／`disconnect`／`changeledcolor`／`loadprofile`／`loadtempprofile`／`outputslot`／`query`。
