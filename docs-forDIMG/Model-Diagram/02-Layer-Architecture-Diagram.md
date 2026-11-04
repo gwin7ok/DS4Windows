@@ -165,3 +165,14 @@
 %% ---- Phase13 完了（2026-11-04）----
 %% - ControlService は 17 引数の統括役に縮小した（Phase13 開始時は 34 引数）。第 2 層から第 1 層・第 3 層への依存は、IDeviceSlotState／IInputReportProcessor／IOutputDeviceTypeState などのポート経由。
 %% - 依存方向に反する逆依存と、Host 窓口 4 本（IVirtualPadHost／IServiceLifecycleHost／IUdpMotionHost／IDeviceSlotHost）はなくなった。残る Func による遅延取得は、本物の循環の 2 件のみ。
+
+%% ---- Phase14 完了（2026-11-04。名前空間・フォルダの再編）----
+%% - フォルダ＝名前空間（DS4Windows.<フォルダ>）に統一した。層とフォルダの対応は次のとおり（Phase14NamespaceFolderGuardTests が検査）。
+%%     第1層  Input/（Devices、Hid）                     … DS4Device、InputDevices/*、HidLibrary
+%%     第2層  Processing/（Abstractions、Actions、Services）… Mapping、ControlService、SyntheticDispatcher、Actions サブシステム、入力処理サービス、第2層が使うポート（IWindowSystem 等の利用側の契約）
+%%     第3層  Output/（Devices、Kbm、Services）           … DS4OutDevice／Xbox360OutDevice、OutputKBM、OutputSlotManager、仮想パッド・HidHide・UDP・OSC のサービス
+%%     第4-a  UI/（ViewModels、Converters、Themes、Services）… DS4Forms 一式、通知、ウィンドウ／ViewModel のファクトリ
+%%     第4-b  Composition/（Startup）                     … AppHost、ServiceRegistration、起動手順（Startup）。App.xaml(.cs)・StartupMethods.cs はアプリの起点としてルートに残した（DI/ フォルダは廃止）
+%%     横断基盤・永続化  Core/（Abstractions、Logging、Utilities、Platform、Settings、Persistence〔Dto、ProfileSections〕、Profiles、Updater）
+%% - ルート名前空間は DS4Windows に統一した（DS4WinWPF は廃止。csproj の RootNamespace／StartupObject も DS4Windows）。
+%% - インターフェースの置き場所: 実装と同じ層の Abstractions/。第2層が第1・3層・UI の実装を使うポートは、使う側（Processing/Abstractions）に置いた（依存の向きを保つため）。

@@ -1294,3 +1294,7 @@ classDiagram
 %% - ログの入口は AppLogger.Log(AppLogLevel, string, LogOptions) に一本化した（LogOptions: FileOnly／UserFacing／Temporary）。LogTrace／LogDebug／LogInfo／LogWarn／LogError はそれを呼ぶ短縮形。LogToGui と AppLogger.TrayIconLog は削除した。LogToTray（トレイ通知）は通知として別 API のまま。
 %% - 各サービスの private LogDebug と DebugMessage イベント（8 インターフェース）、IServiceDebugRelay／ServiceDebugRelay、ControlService.Debug／LogDebug／OnDebug を廃止した。ログは AppLogger.GuiLog（画面）と NLog（ファイル）へ直接出る。ControlService のコンストラクターは 17 → 16 引数。LoggerHolder／LogViewModel のコンストラクターから ControlService 引数を削除した（GuiLog だけを購読する）。
 %% - DebugEventArgs に Level（AppLogLevel）を追加した。LoggerHolder は Level に応じてファイルへ書く（一時表示はファイルに出さない）。
+
+%% Phase14（名前空間・フォルダの再編）の反映（2026-11-04）:
+%% - クラス名・インターフェース名・メンバーは不変。名前空間が DS4Windows.<フォルダ> に変わった（例: IProfileSwitcher は DS4Windows.Processing.Abstractions、ProfileRepository は DS4Windows.Core.Persistence、MainWindow は DS4Windows.UI、AppHost は DS4Windows.Composition）。
+%% - 上の注記に出てくる旧パス（DI/、DS4Control/Services/、DS4Forms/ など）は、当時の場所の記録として残した。現在の対応は 02 の末尾を参照。

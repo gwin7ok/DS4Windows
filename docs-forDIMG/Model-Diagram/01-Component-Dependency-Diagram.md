@@ -302,3 +302,7 @@ flowchart TD
 %% - ControlService のコンストラクターは 34 → 17 引数。`Func<>` は DefaultActionManager の `Func<IMapping>` と ProfileApplicationService の `Func<IActionBindingBuilder>` の 2 件のみ（本物の循環。Phase13FuncRatchetGuardTests が固定）。
 %% - 新設: IEventThreadDispatcher、IDeviceRumbleService、IOutputKbmInitializer（Step3）、IDeviceSlotState、IInputReportProcessor（Step5）、IProfileLoadTarget（Step6）、IOutputDeviceTypeState（Step7）、IRuntimeFeatureSwitch、IServiceDebugRelay（Step10）、IIpcCommandProcessor／IIpcCommandHost（Step11）。
 %% - 廃止: 静的 ActionManager、ServiceProviderHolder（Step4）、IVirtualPadHost／IServiceLifecycleHost／IUdpMotionHost／IDeviceSlotHost ほか Host 窓口 4 本。
+
+%% ---- Phase14 完了（2026-11-04）----
+%% - 構成要素の依存関係は変えていない。ファイルの配置と名前空間を層別に再編した（Input／Processing／Output／UI／Composition／Core。対応表は 02 の末尾を参照）。
+%% - 図中のクラス名・インターフェース名は不変。名前空間が DS4Windows.DI／DS4Windows.Services／DS4WinWPF.* から DS4Windows.<フォルダ> に変わった。

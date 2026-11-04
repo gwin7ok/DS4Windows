@@ -339,3 +339,5 @@
 - 先送り: `ControlService` の状態の転送（`DS4Controllers`／`touchPad`／`slotManager` ほか約 50 利用者）、F-1c（起動手順の分離）。
 
 - Phase13b（2026-11-04）: ログの入口を `AppLogger.Log` に一本化。サービスの `DebugMessage` イベントと `IServiceDebugRelay` を廃止し、`ControlService` は 17 → 16 引数。`LoggerHolder`（Singleton 相当・`App` が生成）は `IAppSettingsService` だけを受け、`GuiLog` を購読してファイルへ書く。`LogViewModel`（Transient）も `ControlService` を受けない。
+
+- Phase14（2026-11-04）: 名前空間・フォルダを層別に再編した（サービスの生成・破棄の順序は不変）。`ServiceRegistration`／`AppHost` は `Composition/`（名前空間 `DS4Windows.Composition`）。サービス実装は層ごとのフォルダ（`Processing/Services`、`Output/Services`、`Core/*`、`UI/Services`）へ移った。

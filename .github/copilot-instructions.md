@@ -1,7 +1,7 @@
 # エージェント向け作業ルール (copilot-instructions)
 
 作成日: 2026-03-01
-最終更新日: 2026-11-03（2.3 ログ出力の維持に、Phase13b での方針に沿った変更の例外を追記［Phase12-Step1 の承認済み］。2026-10-27: 調査指示の追記を反映。2026-10-22: 3.2 の巨大ファイルの行数を Phase9 の責務分割［9-B・9-C・9-E・MapCustom の M1〜M3］の後に更新。2026-10-21: 3.2 の Mapping.cs の行数を Phase8-Fix-MacroRepeatUnify の削除後に更新。2026-10-20: 3.2 の Mapping.cs の行数を Phase8-Step8 の削減後に更新。2026-10-18: 2.1 のシム維持の原則を過渡期の記述に改め、3.1 に暗黙のホスト構築の禁止とラチェットの一致検査を追記［Phase7-Step10e の承認済み］。2026-10-15: 3.3 原則1の過渡期ルールを終了し、既存ファイルを含む厳格適用へ更新［Phase6-Step10b の完了］。2026-10-14: 2.2 のカスケードループ防止ガードの記述を現行の機構へ更新［Phase6-Step9b の決定6］。2026-09-24: 2.4 未参照コードの扱いを追記。2026-09-20: 3.3 原則1に過渡期ルールを追記、3.4 ファイル配置ルールを追記。2026-09-03: 3.3 ファイル構成・クラス・名前空間の原則と過渡期ルールを追記）
+最終更新日: 2026-11-04（3.3 原則3 を達成済みに、3.4 を層別フォルダの規則 R1〜R7 へ全面改定［Phase14］。2026-11-03: 2.3 ログ出力の維持に、Phase13b での方針に沿った変更の例外を追記［Phase12-Step1 の承認済み］。2026-10-27: 調査指示の追記を反映。2026-10-22: 3.2 の巨大ファイルの行数を Phase9 の責務分割［9-B・9-C・9-E・MapCustom の M1〜M3］の後に更新。2026-10-21: 3.2 の Mapping.cs の行数を Phase8-Fix-MacroRepeatUnify の削除後に更新。2026-10-20: 3.2 の Mapping.cs の行数を Phase8-Step8 の削減後に更新。2026-10-18: 2.1 のシム維持の原則を過渡期の記述に改め、3.1 に暗黙のホスト構築の禁止とラチェットの一致検査を追記［Phase7-Step10e の承認済み］。2026-10-15: 3.3 原則1の過渡期ルールを終了し、既存ファイルを含む厳格適用へ更新［Phase6-Step10b の完了］。2026-10-14: 2.2 のカスケードループ防止ガードの記述を現行の機構へ更新［Phase6-Step9b の決定6］。2026-09-24: 2.4 未参照コードの扱いを追記。2026-09-20: 3.3 原則1に過渡期ルールを追記、3.4 ファイル配置ルールを追記。2026-09-03: 3.3 ファイル構成・クラス・名前空間の原則と過渡期ルールを追記）
 対象ブランチ: `For-DI-migration-work`
 全体計画書: `docs-forDIMG/DI-App-Wide-Migration-Plan.md`
 ＤＩ化移行後の理想構造のモデル図：`docs-forDIMG\Model-Diagram\01-Component-Dependency-Diagram.md`,`docs-forDIMG\Model-Diagram\02-Layer-Architecture-Diagram.md`,`docs-forDIMG\Model-Diagram\03-Class-Interface-Diagram.md`,`docs-forDIMG\Model-Diagram\04-Service-Lifecycle-Spec.md` ← これら4文書は全体の構造に関わる部分の意思決定を行う場合は必ず参照し、また実装作業の中で変更があった場合はその内容をこれらの文書に反映すること
@@ -79,28 +79,28 @@
    - 型を追加・分割するときは、`Step10FourGlobalRatchetGuardTests` の基準値（ファイル別の `Global`／`AppHost`／`Program.rootHub` の件数）も、新しいファイルへ引き継ぐこと（合計を増やさない）。
 2. **原則2: ファイル名 ＝ クラス名（完全一致）**【厳格順守】:
    - `ProfileRepository.cs` には `ProfileRepository` のみを定義する。
-3. **原則3: 名前空間 ＝ フォルダパス**【過渡期の戦略的例外ルール】:
-   - **最終目標**: 全移行完了後のクリーンアップフェーズにて、プロジェクトパスと完全に一致させる。
-   - **移行期間中のルール**: 既存レガシーコードへの `using` 汚染や無用な差分（Git diff）爆発を防ぐため、サービス実装クラスにおいて戦略的に浅い名前空間（例: `namespace DS4Windows` や `namespace DS4Windows.Services`）を採用することを明示的に許可する。
-   - **禁止事項**: 既存の動作しているクラスの名前空間を、単に「フォルダパスと一致させるためだけ」の目的で勝手に変更してはならない。
+3. **原則3: 名前空間 ＝ フォルダパス**【Phase14 で達成。厳格順守】:
+   - 名前空間は `DS4Windows.<フォルダパス（ドット区切り）>` とする（例: `Processing/Services/` → `DS4Windows.Processing.Services`、ルート直下 → `DS4Windows`）。`Phase14NamespaceFolderGuardTests` が全 `.cs` と XAML の `x:Class` を検査する。
+   - ファイルを移動するときは、同じ Step で名前空間を新しいフォルダへ合わせる（移動と書き換えは別コミット。3.4 R7）。
+   - 例外は、第三者由来の名前空間 `Sensorit.Base`（`Core/Utilities/LowpassFilter.cs`、`OneEuroFilter.cs`）のみ。例外を増やさない。
+   - `using` は、そのファイルで使う名前空間だけを明示する（`global using` は使わない）。
 4. **原則4: 過渡期の段階で実際には使わないが削除せず意図的に残すクラスやメソッドについて**
    - 誤って使用されないよう、その理由や残してある経緯や最終的な対応予定フェーズ を明記した TODO/技術的負債コメントををコード部分にコメントとして残すこと
    - 既存コメントの消失防止： PowerShell 更新スクリプト作成時は、対象ファイル内の既存コメント（特に設計意図や TODO 等）を誤って削ったり上書き消滅させたりしないよう、厳密に置換・追記範囲を限定すること
 
-### 3.4 ファイル配置ルール（フォルダ構成の基準）
-`.cs` ファイルを新規作成・移動するときは、次の基準でフォルダを決める（詳細と既存ファイルの移行手順は `docs-forDIMG/MadeByAgent/Phase6-Step13-Plan.md` を参照）。判定は「インターフェースか、実装か」「DI 登録されるか」という機械的な問いで行う。
+### 3.4 ファイル配置ルール（フォルダ構成の基準。Phase14 で改定）
+`.cs` ファイルを新規作成・移動するときは、次の基準でフォルダを決める（経緯と全ファイルの移行は `docs-forDIMG/MadeByAgent/Phase14-Plan.md`、層とフォルダの対応は `docs-forDIMG/Model-Diagram/02-Layer-Architecture-Diagram.md` の末尾を参照）。
 
 | ID | ルール |
 |---|---|
-| R1 | `ServiceRegistration` に登録される型の**インターフェース**は `DS4Windows/DI/` に置く |
-| R2 | その**実装**（アダプタを含む）は `DS4Windows/DS4Control/Services/` に置く |
-| R3 | Actions サブシステム（名前空間 `DS4Windows.Actions`、`Action*`、`*ActionController`）は、インターフェースも実装も `DS4Windows/Actions/` に置く |
-| R4 | `DS4Windows/DS4Control/` 直下は、DI 登録しないレガシー本体・ドメイン部品だけを置く。DI 登録される型は置かない |
-| R5 | `DS4Windows/` 直下はアプリの起点（`App.xaml.cs`、`StartupMethods.cs` など）だけを置く。機能ファイルは機能フォルダ（`Updater/`、`Core/Logging/`、`Core/Utilities/`、`DS4Control/Profiles/` など）に置く |
-| R6 | 名前空間は 3.3 の原則3（過渡期ルール）に従い、移動しても変更しない。新規の実装は `DS4Windows.Services`、契約は `DS4Windows.DI` を用いる |
-| R7 | ファイルの移動は `git mv` のみで行い、同じコミットでファイルの内容を変更しない（移動を `git diff -M100%` で検証できるようにする） |
+| R1 | 最上位のフォルダは層に対応する: `Input/`（第1層。`Devices`、`Hid`）、`Processing/`（第2層。`Abstractions`、`Actions`、`Services`）、`Output/`（第3層。`Devices`、`Kbm`、`Services`）、`UI/`（4-a。`ViewModels`、`Converters`、`Themes`、`Services`）、`Composition/`（4-b。`AppHost`、`ServiceRegistration`、`Startup`）、`Core/`（横断基盤・永続化。`Abstractions`、`Logging`、`Utilities`、`Platform`、`Settings`、`Persistence`、`Profiles`、`Updater`）。ルート直下は `App.xaml(.cs)`、`StartupMethods.cs` などアプリの起点だけ |
+| R2 | インターフェースは、実装と同じ層の `Abstractions/` に置く。第2層が第1層・第3層・UI の実装を使うポートの契約は、使う側の `Processing/Abstractions/` に置く（依存の向きを保つ。1 章） |
+| R3 | `ServiceRegistration`（DI 登録）と `AppHost` は `Composition/` に置く。`Composition/` は組み立て専用で、業務ロジックを置かない |
+| R4 | 第2層の Actions サブシステム（`Action*`、`*ActionController`）は `Processing/Actions/` に置く |
+| R5 | 設定値・プロファイルの型とその永続化（XML、DTO、プロファイルの節）は `Core/Settings`・`Core/Persistence` に置く。層をまたいで共有する基盤は `Core/` に置き、`Core/` から第2層以上を参照しない |
+| R6 | 名前空間は 3.3 の原則3 に従い、`DS4Windows.<フォルダ>` とする。フォルダを移したら名前空間も合わせる |
+| R7 | ファイルの移動は `git mv` のみで行い、同じコミットでファイルの内容を変更しない（移動を `git diff -M100%` で検証できるようにする）。名前空間の書き換えは別コミットにする |
 
-- **最終目標**: 全移行完了後のクリーンアップフェーズで、層別のフォルダ構成へ再編し、名前空間をフォルダと一致させる（`DI/` は Composition Root 専用にする）。それまでは上記 R1〜R7 を適用する。
 ---
 
 ## 4. 開発プロセス
