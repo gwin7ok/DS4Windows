@@ -13,6 +13,8 @@
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="18.0.1" />
     <PackageReference Include="xunit" Version="2.4.2" />
     <PackageReference Include="xunit.runner.visualstudio" Version="2.4.5" />
+    <!-- Phase14b-Step1（R-01）: 層の依存の検査（LayerDependencyRuleTests）。型の実際の参照（メソッド本体を含む）を読む。Apache-2.0、テスト専用（配布物には入らない） -->
+    <PackageReference Include="TngTech.ArchUnitNET" Version="0.13.4" />
   </ItemGroup>
 
   <ItemGroup>
