@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using DS4Windows.Core.Abstractions;
 using DS4Windows.Core.Logging;
 using DS4Windows.Core.Platform;
+using DS4Windows.Core.Settings;
 
 namespace DS4Windows.Processing.Actions
 {

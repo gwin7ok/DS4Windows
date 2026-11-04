@@ -1,6 +1,7 @@
 using System.IO;
 using Xunit;
 using Xunit.Abstractions;
+using DS4Windows.Core.Settings;
 using DS4Windows.Processing;
 using DS4Windows.UI.ViewModels.SpecialActions;
 

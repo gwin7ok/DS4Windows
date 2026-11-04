@@ -30,7 +30,6 @@ using System.Windows.Input;
 using System.Windows;
 using DS4Windows.Core.Abstractions;
 using DS4Windows.Core.Settings;
-using DS4Windows.Processing;
 
 namespace DS4Windows.UI.ViewModels
 {

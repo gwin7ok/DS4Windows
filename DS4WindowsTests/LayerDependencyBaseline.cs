@@ -10,22 +10,13 @@
     {
         public static readonly string[] Entries =
         {
-            "L1|DS4Windows.Core.Abstractions.ISpecialActionRepository|DS4Windows.Processing.SpecialAction",
             "L1|DS4Windows.Core.Logging.AppLogger|DS4Windows.Processing.ProfileChangeSource",
             "L1|DS4Windows.Core.Logging.AppLogger|DS4Windows.Processing.ProfileChangedEventArgs",
-            "L1|DS4Windows.Core.Persistence.ControlSpecialItemXml|DS4Windows.Processing.SpecialAction",
-            "L1|DS4Windows.Core.Persistence.Dto.ActionsDTO|DS4Windows.Processing.SpecialAction",
-            "L1|DS4Windows.Core.Persistence.ProfileSections.ProfileActionsLoadSection|DS4Windows.Processing.SpecialAction",
-            "L1|DS4Windows.Core.Persistence.ProfileSections.ProfileActionsSaveSection|DS4Windows.Processing.SpecialAction",
             "L1|DS4Windows.Core.Persistence.SpecialActionRepository|DS4Windows.Processing.Actions.IManagedActionManager",
-            "L1|DS4Windows.Core.Persistence.SpecialActionRepository|DS4Windows.Processing.SpecialAction",
             "L1|DS4Windows.Core.Persistence.SpecialActionRepository|DS4Windows.Processing.SyntheticInputState",
             "L1|DS4Windows.Core.Persistence.SpecialActionsXmlSerializer|DS4Windows.Processing.Actions.IManagedActionManager",
-            "L1|DS4Windows.Core.Persistence.SpecialActionsXmlSerializer|DS4Windows.Processing.SpecialAction",
             "L1|DS4Windows.Core.Settings.AppearanceSettingsService|DS4Windows.UI.TrayIconResources",
             "L1|DS4Windows.Core.Settings.BackingStore|DS4Windows.Processing.Services.DeviceSlotState",
-            "L1|DS4Windows.Core.Settings.BackingStore|DS4Windows.Processing.SpecialAction",
-            "L1|DS4Windows.Core.Settings.ControlSpecialItem|DS4Windows.Processing.SpecialAction",
             "L1|DS4Windows.Core.Settings.ProfileSettingsService|DS4Windows.Processing.Abstractions.IDeviceStateAccessor",
             "L1|DS4Windows.Core.Settings.RemovedGyroSwipeNotice|DS4Windows.Processing.IRemovedGyroSwipePrompt",
             "L1|DS4Windows.Core.Settings.RemovedShiftNotice|DS4Windows.Processing.IRemovedShiftPrompt",

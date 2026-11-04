@@ -5,7 +5,6 @@ using Xunit;
 using DS4Windows.Core.Logging;
 using DS4Windows.Core.Settings;
 using DS4Windows.Input;
-using DS4Windows.Processing;
 
 namespace DS4WindowsTests
 {

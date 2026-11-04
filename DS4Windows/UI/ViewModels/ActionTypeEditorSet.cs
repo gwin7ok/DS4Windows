@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using DS4Windows.Core.Settings;
-using DS4Windows.Processing;
 using DS4Windows.UI.ViewModels.SpecialActions;
 
 namespace DS4Windows.UI.ViewModels

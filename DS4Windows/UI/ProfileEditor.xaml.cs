@@ -1579,7 +1579,7 @@ namespace DS4Windows.UI
                         idx = currentIndex;
                     }
 
-                    DS4Windows.Processing.SpecialAction action = specialActionsVM.GetActionOrPlaceholder(newName);
+                    DS4Windows.Core.Settings.SpecialAction action = specialActionsVM.GetActionOrPlaceholder(newName);
                     SpecialActionItem newitem = specialActionsVM.CreateActionItem(action);
                     newitem.Active = item.Active;
                     newitem.Index = idx;

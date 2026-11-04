@@ -83,7 +83,7 @@ namespace DS4WindowsTests
         [InlineData("DS4Windows.Processing.Mouse+TouchButtonActivationMode", "DS4Windows.Processing.Mouse")]
         [InlineData("DS4Windows.Composition.ServiceRegistration+<>c", "DS4Windows.Composition.ServiceRegistration")]
         [InlineData("DS4Windows.Composition.ServiceRegistration/<>c__DisplayClass1_0", "DS4Windows.Composition.ServiceRegistration")]
-        [InlineData("System.Collections.Generic.List`1[[DS4Windows.Processing.SpecialAction]]", "System.Collections.Generic.List`1")]
+        [InlineData("System.Collections.Generic.List`1[[DS4Windows.Core.Settings.SpecialAction]]", "System.Collections.Generic.List`1")]
         public void ToTopLevelTypeName_StripsNestedAndGenericParts(string fullName, string expected)
         {
             Assert.Equal(expected, LayerMap.ToTopLevelTypeName(fullName));

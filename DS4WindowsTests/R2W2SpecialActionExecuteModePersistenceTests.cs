@@ -2,7 +2,6 @@ using System.IO;
 using System.Xml;
 using Xunit;
 using DS4Windows.Core.Settings;
-using DS4Windows.Processing;
 
 namespace DS4WindowsTests
 {

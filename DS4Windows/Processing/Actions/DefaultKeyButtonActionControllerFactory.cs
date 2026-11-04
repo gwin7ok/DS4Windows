@@ -30,7 +30,7 @@ namespace DS4Windows.Processing.Actions
             return inst;
         }
 
-        public DS4Windows.Processing.Actions.KeyButtonActionController Create(int device, DS4Windows.Processing.SpecialAction sa, string actionName = null)
+        public DS4Windows.Processing.Actions.KeyButtonActionController Create(int device, DS4Windows.Core.Settings.SpecialAction sa, string actionName = null)
         {
             var inst = new DS4Windows.Processing.Actions.KeyButtonActionController(device, sa, _manager, actionName);
             try

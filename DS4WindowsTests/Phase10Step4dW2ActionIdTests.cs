@@ -6,7 +6,6 @@ using System.Xml;
 using Xunit;
 using DS4Windows.Core.Persistence;
 using DS4Windows.Core.Settings;
-using DS4Windows.Processing;
 using DS4Windows.UI.ViewModels;
 
 namespace DS4WindowsTests

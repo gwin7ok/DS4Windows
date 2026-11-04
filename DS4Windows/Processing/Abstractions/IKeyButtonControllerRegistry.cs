@@ -1,3 +1,4 @@
+using DS4Windows.Core.Settings;
 using DS4Windows.Processing.Actions;
 
 namespace DS4Windows.Processing.Abstractions

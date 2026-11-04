@@ -1,7 +1,7 @@
 using System;
 using System.Collections.Generic;
+using DS4Windows.Core.Settings;
 using DS4Windows.Input;
-using DS4Windows.Processing;
 
 namespace DS4Windows.UI.ViewModels
 {

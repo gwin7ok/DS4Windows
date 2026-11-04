@@ -6,7 +6,6 @@ using DS4Windows.Core.Persistence;
 using DS4Windows.Core.Settings;
 using DS4Windows.Output.Devices;
 using DS4Windows.Output.Kbm;
-using DS4Windows.Processing;
 using DS4Windows.Processing.Actions;
 using DS4Windows.UI.ViewModels.SpecialActions;
 

@@ -5,8 +5,8 @@ using System.Windows.Media;
 using Xunit;
 using DS4Windows.Core.Abstractions;
 using DS4Windows.Core.Platform;
+using DS4Windows.Core.Settings;
 using DS4Windows.Output.Kbm;
-using DS4Windows.Processing;
 using DS4Windows.UI.ViewModels.SpecialActions;
 
 namespace DS4WindowsTests

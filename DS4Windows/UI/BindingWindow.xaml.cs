@@ -30,6 +30,7 @@ using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
+using DS4Windows.Core.Settings;
 using DS4Windows.Processing;
 using DS4Windows.UI.ViewModels;
 

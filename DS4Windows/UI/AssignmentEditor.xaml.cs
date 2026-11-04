@@ -63,7 +63,7 @@ namespace DS4Windows.UI
         public event EventHandler ControlSaved;
 
         /// <summary>Controls のモードで、保存が押されたときに選ばれていた種別。</summary>
-        public DS4Windows.Processing.SpecialAction.ActionTypeId ControlSaveTypeId { get; private set; }
+        public DS4Windows.Core.Settings.SpecialAction.ActionTypeId ControlSaveTypeId { get; private set; }
         public delegate void SaveHandler(object sender, string actionName);
         public event SaveHandler Saved;
 
@@ -97,7 +97,7 @@ namespace DS4Windows.UI
             DS4Windows.Processing.Abstractions.IOutputSlotService outputSlotService,
             DS4Windows.Core.Abstractions.IEnvironmentService environmentService,
             DS4Windows.Core.Abstractions.IWindowSystem windowSystem,
-            DS4Windows.Processing.SpecialAction specialAction = null)
+            DS4Windows.Core.Settings.SpecialAction specialAction = null)
             : this(deviceNum, (DS4Windows.Core.Settings.DS4ControlSettings)null, profileList, targetDevice, editorWindowFactory, viewModelFactory,
                 specialActionRepository, profileSettingsService, outputSlotService, environmentService, windowSystem, specialAction)
         {
@@ -130,7 +130,7 @@ namespace DS4Windows.UI
             DS4Windows.Processing.Abstractions.IOutputSlotService outputSlotService,
             DS4Windows.Core.Abstractions.IEnvironmentService environmentService,
             DS4Windows.Core.Abstractions.IWindowSystem windowSystem,
-            DS4Windows.Processing.SpecialAction specialAction)
+            DS4Windows.Core.Settings.SpecialAction specialAction)
         {
             this.environmentService = environmentService ?? throw new ArgumentNullException(nameof(environmentService));
             this.editorWindowFactory = editorWindowFactory ?? throw new ArgumentNullException(nameof(editorWindowFactory));
@@ -170,17 +170,17 @@ namespace DS4Windows.UI
             pressKeyVM.StrengthApplies = !controlMode;
 
             // Phase10-Step2 W1: 種別ごとの入力の対応は、ActionTypeEditorSet に 1 か所で持つ（旧: LoadAction／CheckActionValid／SaveBtn_Click の 3 つの switch）
-            typeEditors = new ActionTypeEditorSet(new Dictionary<DS4Windows.Processing.SpecialAction.ActionTypeId, IActionTypeEditor>
+            typeEditors = new ActionTypeEditorSet(new Dictionary<DS4Windows.Core.Settings.SpecialAction.ActionTypeId, IActionTypeEditor>
             {
-                [DS4Windows.Processing.SpecialAction.ActionTypeId.Macro] = macroActVM,
-                [DS4Windows.Processing.SpecialAction.ActionTypeId.Program] = launchProgVM,
-                [DS4Windows.Processing.SpecialAction.ActionTypeId.Profile] = loadProfileVM,
-                [DS4Windows.Processing.SpecialAction.ActionTypeId.Key] = pressKeyVM,   // Button も、Press Key のタブで編集する
-                [DS4Windows.Processing.SpecialAction.ActionTypeId.DisconnectBT] = disconnectBtVM,
-                [DS4Windows.Processing.SpecialAction.ActionTypeId.BatteryCheck] = checkBatteryVM,
-                [DS4Windows.Processing.SpecialAction.ActionTypeId.MultiAction] = multiActButtonVM,
-                [DS4Windows.Processing.SpecialAction.ActionTypeId.GyroCalibrate] = calibrateGyroVM,
-                [DS4Windows.Processing.SpecialAction.ActionTypeId.FocusWindow] = focusWindowVM,   // Phase12-Step2 2e（R-4）
+                [DS4Windows.Core.Settings.SpecialAction.ActionTypeId.Macro] = macroActVM,
+                [DS4Windows.Core.Settings.SpecialAction.ActionTypeId.Program] = launchProgVM,
+                [DS4Windows.Core.Settings.SpecialAction.ActionTypeId.Profile] = loadProfileVM,
+                [DS4Windows.Core.Settings.SpecialAction.ActionTypeId.Key] = pressKeyVM,   // Button も、Press Key のタブで編集する
+                [DS4Windows.Core.Settings.SpecialAction.ActionTypeId.DisconnectBT] = disconnectBtVM,
+                [DS4Windows.Core.Settings.SpecialAction.ActionTypeId.BatteryCheck] = checkBatteryVM,
+                [DS4Windows.Core.Settings.SpecialAction.ActionTypeId.MultiAction] = multiActButtonVM,
+                [DS4Windows.Core.Settings.SpecialAction.ActionTypeId.GyroCalibrate] = calibrateGyroVM,
+                [DS4Windows.Core.Settings.SpecialAction.ActionTypeId.FocusWindow] = focusWindowVM,   // Phase12-Step2 2e（R-4）
             });
 
             // Hide tab headers. Tab content will still be visible
@@ -275,7 +275,7 @@ namespace DS4Windows.UI
             focusWindowTab.DataContext = null;
         }
 
-        private void LoadAction(DS4Windows.Processing.SpecialAction specialAction)
+        private void LoadAction(DS4Windows.Core.Settings.SpecialAction specialAction)
         {
             // Phase10-Step2 W2: トリガーの読み込みと、一覧にない名前の除外は、ViewModel が行う（旧: チェックボックス 49＋49 個を、ここで 1 つずつ照合）
             specialActVM.LoadAction(specialAction);
@@ -304,7 +304,7 @@ namespace DS4Windows.UI
         // Phase10-Step3 W4: ControlSaved の受け手は、ProfileEditor（ShowControlAssignmentEditor）
         private void SaveControlMode()
         {
-            DS4Windows.Processing.SpecialAction tempAct = new DS4Windows.Processing.SpecialAction("null", "null", "null", "null");
+            DS4Windows.Core.Settings.SpecialAction tempAct = new DS4Windows.Core.Settings.SpecialAction("null", "null", "null", "null");
             if (!specialActVM.IsValid(tempAct)) return;
             if (!specialActVM.IsTypeEnabled(specialActVM.ActionTypeIndex)) return;   // Controls に、まだ保存できない種別
 
@@ -337,8 +337,8 @@ namespace DS4Windows.UI
                 return;
             }
 
-            DS4Windows.Processing.SpecialAction.ActionTypeId typeId = specialActVM.TypeAssoc[specialActVM.ActionTypeIndex];
-            DS4Windows.Processing.SpecialAction tempAct = new DS4Windows.Processing.SpecialAction("null", "null", "null", "null");
+            DS4Windows.Core.Settings.SpecialAction.ActionTypeId typeId = specialActVM.TypeAssoc[specialActVM.ActionTypeIndex];
+            DS4Windows.Core.Settings.SpecialAction tempAct = new DS4Windows.Core.Settings.SpecialAction("null", "null", "null", "null");
             bool valid = specialActVM.IsValid(tempAct);
             if (valid)
             {

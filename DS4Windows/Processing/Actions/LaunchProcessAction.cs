@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using DS4Windows.Core.Abstractions;
 using DS4Windows.Core.Logging;
+using DS4Windows.Core.Settings;
 
 namespace DS4Windows.Processing.Actions
 {

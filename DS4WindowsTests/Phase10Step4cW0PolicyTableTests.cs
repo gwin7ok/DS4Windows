@@ -5,7 +5,6 @@ using Xunit;
 using DS4Windows.Core.Settings;
 using DS4Windows.Input;
 using DS4Windows.Output.Devices;
-using DS4Windows.Processing;
 using DS4Windows.Processing.Abstractions;
 using DS4Windows.Processing.Actions;
 

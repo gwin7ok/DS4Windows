@@ -35,8 +35,8 @@ namespace DS4Windows.Actions.Tests
             var registry = p.Registry;
 
             // create a SpecialAction configured as Toggle
-            var sa = new DS4Windows.Processing.SpecialAction("toggletest", "0", "Key", "0");
-            sa.KeyButtonSwitchMode = DS4Windows.Processing.SpecialAction.KeyButtonSwitchModeEnum.Toggle;
+            var sa = new DS4Windows.Core.Settings.SpecialAction("toggletest", "0", "Key", "0");
+            sa.KeyButtonSwitchMode = DS4Windows.Core.Settings.SpecialAction.KeyButtonSwitchModeEnum.Toggle;
 
             var ka = new DS4Windows.Processing.Actions.KeyAction(sa, 0, dam, registry);
             var handler = new FakeKBMHandler();
@@ -75,9 +75,9 @@ namespace DS4Windows.Actions.Tests
             var p = new Parts();
             var dam = p.Manager;
 
-            var sa = new DS4Windows.Processing.SpecialAction("presstest", "0", "Key", "0");
+            var sa = new DS4Windows.Core.Settings.SpecialAction("presstest", "0", "Key", "0");
             // ensure Press mode
-            sa.KeyButtonSwitchMode = DS4Windows.Processing.SpecialAction.KeyButtonSwitchModeEnum.Press;
+            sa.KeyButtonSwitchMode = DS4Windows.Core.Settings.SpecialAction.KeyButtonSwitchModeEnum.Press;
 
             var ka = new DS4Windows.Processing.Actions.KeyAction(sa, 0, dam, p.Registry);
             var handler = new FakeKBMHandler();
@@ -96,14 +96,14 @@ namespace DS4Windows.Actions.Tests
         {
             var dam = new DefaultActionManager(TestRepositoryFactory.MappingProvider);
 
-            var sa = new DS4Windows.Processing.SpecialAction("invarianttest", "0", "Key", "0");
-            sa.KeyButtonSwitchMode = DS4Windows.Processing.SpecialAction.KeyButtonSwitchModeEnum.Toggle;
+            var sa = new DS4Windows.Core.Settings.SpecialAction("invarianttest", "0", "Key", "0");
+            sa.KeyButtonSwitchMode = DS4Windows.Core.Settings.SpecialAction.KeyButtonSwitchModeEnum.Toggle;
 
             dam.ClearAllToggledOn();
             dam.ClearAllEntries();
 
             bool eventFired = false;
-            Action<DS4Windows.Processing.SpecialAction, int, bool, bool> handler = (a, d, oldv, newv) => { eventFired = true; };
+            Action<DS4Windows.Core.Settings.SpecialAction, int, bool, bool> handler = (a, d, oldv, newv) => { eventFired = true; };
             dam.ToggledOnChanged += handler;
 
             // Directly mutate state: should NOT fire ToggledOnChanged event
@@ -134,8 +134,8 @@ namespace DS4Windows.Actions.Tests
             try
             {
                 // Create a SpecialAction configured as Toggle to drive controller path
-                var sa = new DS4Windows.Processing.SpecialAction("repeattest", "0", "Key", "0");
-                sa.KeyButtonSwitchMode = DS4Windows.Processing.SpecialAction.KeyButtonSwitchModeEnum.Toggle;
+                var sa = new DS4Windows.Core.Settings.SpecialAction("repeattest", "0", "Key", "0");
+                sa.KeyButtonSwitchMode = DS4Windows.Core.Settings.SpecialAction.KeyButtonSwitchModeEnum.Toggle;
                 var ka = new DS4Windows.Processing.Actions.KeyAction(sa, 0, dam, registry);
                 var handler = new FakeKBMHandler();
 
@@ -184,8 +184,8 @@ namespace DS4Windows.Actions.Tests
         {
             var dam = new DefaultActionManager(TestRepositoryFactory.MappingProvider);
 
-            var sa = new DS4Windows.Processing.SpecialAction("adaptertoggle", "0", "Key", "0");
-            sa.KeyButtonSwitchMode = DS4Windows.Processing.SpecialAction.KeyButtonSwitchModeEnum.Toggle;
+            var sa = new DS4Windows.Core.Settings.SpecialAction("adaptertoggle", "0", "Key", "0");
+            sa.KeyButtonSwitchMode = DS4Windows.Core.Settings.SpecialAction.KeyButtonSwitchModeEnum.Toggle;
 
             dam.ClearAllToggledOn();
             dam.ClearAllEntries();
@@ -219,8 +219,8 @@ namespace DS4Windows.Actions.Tests
         {
             var dam = new DefaultActionManager(TestRepositoryFactory.MappingProvider);
 
-            var sa = new DS4Windows.Processing.SpecialAction("adaptertoggle_handle", "0", "Key", "0");
-            sa.KeyButtonSwitchMode = DS4Windows.Processing.SpecialAction.KeyButtonSwitchModeEnum.Toggle;
+            var sa = new DS4Windows.Core.Settings.SpecialAction("adaptertoggle_handle", "0", "Key", "0");
+            sa.KeyButtonSwitchMode = DS4Windows.Core.Settings.SpecialAction.KeyButtonSwitchModeEnum.Toggle;
 
             dam.ClearAllToggledOn();
             dam.ClearAllEntries();
@@ -269,8 +269,8 @@ namespace DS4Windows.Actions.Tests
         public void KeyButtonActionController_SubscribesToTheInjectedManager_AndUnsubscribesOnDispose()
         {
             var dam = new DefaultActionManager(TestRepositoryFactory.MappingProvider);
-            var sa = new DS4Windows.Processing.SpecialAction("injectedsub", "0", "Key", "0");
-            sa.KeyButtonSwitchMode = DS4Windows.Processing.SpecialAction.KeyButtonSwitchModeEnum.Toggle;
+            var sa = new DS4Windows.Core.Settings.SpecialAction("injectedsub", "0", "Key", "0");
+            sa.KeyButtonSwitchMode = DS4Windows.Core.Settings.SpecialAction.KeyButtonSwitchModeEnum.Toggle;
 
             var controller = new DS4Windows.Processing.Actions.KeyButtonActionController(0, sa, dam, "injectedsub");
             var handler = new FakeKBMHandler();
@@ -292,7 +292,7 @@ namespace DS4Windows.Actions.Tests
         [Fact]
         public void Constructors_RequireTheirManager()
         {
-            var sa = new DS4Windows.Processing.SpecialAction("ctorreq", "0", "Key", "0");
+            var sa = new DS4Windows.Core.Settings.SpecialAction("ctorreq", "0", "Key", "0");
             Assert.Throws<ArgumentNullException>(() => new DS4Windows.Processing.Actions.KeyButtonActionController(0, sa, null, "x"));
             Assert.Throws<ArgumentNullException>(() => new DS4Windows.Processing.Actions.KeyButtonActionController(0, DS4Windows.Processing.Actions.KeyButtonActionController.Mode.Press, null, "x"));
             Assert.Throws<ArgumentNullException>(() => new DefaultKeyButtonActionControllerFactory(new DefaultControllerRegistry(), null));

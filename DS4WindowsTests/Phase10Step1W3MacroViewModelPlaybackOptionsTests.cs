@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using Xunit;
 using DS4Windows.Core.Abstractions;
 using DS4Windows.Core.Settings;
-using DS4Windows.Processing;
 using DS4Windows.Processing.Actions;
 using DS4Windows.UI.ViewModels.SpecialActions;
 

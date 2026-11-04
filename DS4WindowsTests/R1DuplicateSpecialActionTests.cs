@@ -5,7 +5,6 @@ using Xunit;
 using DS4Windows.Core.Persistence;
 using DS4Windows.Core.Settings;
 using DS4Windows.Output.Devices;
-using DS4Windows.Processing;
 
 namespace DS4WindowsTests
 {

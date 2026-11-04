@@ -8,7 +8,6 @@ using DS4Windows.Core.Persistence;
 using DS4Windows.Core.Platform;
 using DS4Windows.Core.Profiles;
 using DS4Windows.Core.Settings;
-using DS4Windows.Processing;
 
 namespace DS4WindowsTests
 {

@@ -43,7 +43,7 @@ namespace DS4Windows.UI.ViewModels.Util
             ErrorsChanged?.Invoke(this, new DataErrorsChangedEventArgs(propertyName));
         }
 
-        public abstract bool IsValid(DS4Windows.Processing.SpecialAction action);
+        public abstract bool IsValid(DS4Windows.Core.Settings.SpecialAction action);
         public abstract void ClearOldErrors();
     }
 }

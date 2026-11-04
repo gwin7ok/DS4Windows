@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using DS4Windows.Core.Settings;
 using DS4Windows.Input;
 
 namespace DS4Windows.Processing.Actions

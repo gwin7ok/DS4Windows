@@ -20,7 +20,6 @@ using System.Xml.Serialization;
 using WpfScreenHelper;
 using static DS4Windows.Core.Utilities.Util;
 using DS4Windows.Core.Settings;
-using DS4Windows.Processing;
 
 namespace DS4Windows.Core.Persistence.ProfileSections
 {

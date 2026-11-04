@@ -1,7 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Threading;
-using DS4Windows.Processing;
+using DS4Windows.Core.Settings;
 using DS4Windows.Processing.Actions;
 
 namespace DS4WindowsTests

@@ -23,7 +23,6 @@ using System.Xml;
 using System.Xml.Serialization;
 using DS4Windows.Core.Logging;
 using DS4Windows.Core.Settings;
-using DS4Windows.Processing;
 
 namespace DS4Windows.Core.Persistence.Dto
 {

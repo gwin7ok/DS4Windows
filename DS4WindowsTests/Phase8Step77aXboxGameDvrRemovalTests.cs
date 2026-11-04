@@ -2,6 +2,7 @@ using System;
 using System.IO;
 using System.Linq;
 using Xunit;
+using DS4Windows.Core.Settings;
 using DS4Windows.Processing;
 
 namespace DS4WindowsTests
@@ -42,7 +43,7 @@ namespace DS4WindowsTests
         public void TheSources_NoLongerMentionTheRemovedType()
         {
             string mapping = SourceFileLocator.Find("DS4Windows/Processing/Mapping.cs");
-            string specialAction = SourceFileLocator.Find("DS4Windows/Processing/SpecialAction.cs");
+            string specialAction = SourceFileLocator.Find("DS4Windows/Core/Settings/SpecialAction.cs");
             if (mapping == null || specialAction == null) return;
 
             Assert.DoesNotContain("XboxGameDVR", File.ReadAllText(mapping));
