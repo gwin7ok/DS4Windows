@@ -87,6 +87,7 @@ namespace DS4WinWPF.DS4Forms
         private readonly DS4Windows.Services.IProfileSlotApplier profileSlotApplier;
         private readonly DS4Windows.DI.INotificationService notificationService;
         private readonly ControlService controlService;
+        private readonly DS4Windows.DI.IIpcCommandProcessor ipcProcessor;   // Phase13-Step11 11-c: 旧 MainWindow.Ipc.cs の Ipc*
         private readonly DS4Windows.DI.IRuntimeFeatureSwitch runtimeFeatures;   // Phase13-Step10 10-c: 旧 ControlService の OSC／UDP／HidHide／TouchpadSlide の転送
         private readonly DS4Windows.DI.IServiceLifecycle lifecycle;   // Phase13-Step9: 旧 ControlService.running／suspending の転送
         private readonly DS4Windows.DI.IProfileLoadTarget loadTarget;   // Phase13-Step6 6-e: IPC の LoadTempProfile に渡す窓口
@@ -120,6 +121,7 @@ namespace DS4WinWPF.DS4Forms
             ControlService controlService,
             DS4Windows.DI.IServiceLifecycle lifecycle,
             DS4Windows.DI.IRuntimeFeatureSwitch runtimeFeatures,
+            DS4Windows.DI.IIpcCommandProcessor ipcProcessor,
             DS4Windows.DI.IProfileLoadTarget loadTarget,
             DS4Windows.Services.IProfileSlotApplier profileSlotApplier,
             MainWindowsViewModel mainWindowsViewModel,
@@ -148,6 +150,7 @@ namespace DS4WinWPF.DS4Forms
             this.controlService = controlService ?? throw new ArgumentNullException(nameof(controlService));
             this.lifecycle = lifecycle ?? throw new ArgumentNullException(nameof(lifecycle));
             this.runtimeFeatures = runtimeFeatures ?? throw new ArgumentNullException(nameof(runtimeFeatures));
+            this.ipcProcessor = ipcProcessor ?? throw new ArgumentNullException(nameof(ipcProcessor));
             this.loadTarget = loadTarget ?? throw new ArgumentNullException(nameof(loadTarget));
             this.profileSlotApplier = profileSlotApplier ?? throw new ArgumentNullException(nameof(profileSlotApplier));
 

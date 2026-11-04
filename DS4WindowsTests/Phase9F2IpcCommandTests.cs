@@ -60,20 +60,21 @@ namespace DS4WindowsTests
         [Fact]
         public void TheCommands_AreDispatchedInTheOriginalOrder_WithTheOriginalConditions()
         {
-            string ipc = Read("DS4Windows/DS4Forms/MainWindow.Ipc.cs");
+            // Phase13-Step11 11-b: コマンドの実行は IpcCommandProcessor へ移した（受け付けの順序と条件は同じ）
+            string ipc = Read("DS4Windows/DS4Control/Services/IpcCommandProcessor.cs");
             if (ipc == null) return;
 
             string[] order =
             {
-                "strData[0] == \"start\"", "IpcStart();",
-                "strData[0] == \"stop\"", "IpcStop();",
-                "strData[0] == \"cycle\"", "IpcCycle();",
-                "strData[0] == \"shutdown\"", "IpcShutdown();",
-                "strData[0] == \"disconnect\"", "IpcDisconnect(strData);",
-                "(strData[0] == \"changeledcolor\") && strData.Length >= 5", "IpcChangeLedColor(strData);",
-                "(strData[0] == \"loadprofile\" || strData[0] == \"loadtempprofile\") && strData.Length >= 3", "IpcLoadProfile(strData);",
-                "strData[0] == \"outputslot\" && strData.Length >= 3", "IpcOutputSlot(strData);",
-                "strData[0] == \"query\" && strData.Length >= 3", "IpcQuery(strData);",
+                "strData[0] == \"start\"",
+                "strData[0] == \"stop\"",
+                "strData[0] == \"cycle\"",
+                "strData[0] == \"shutdown\"",
+                "strData[0] == \"disconnect\"", "Disconnect(host, strData);",
+                "(strData[0] == \"changeledcolor\") && strData.Length >= 5", "ChangeLedColor(host, strData);",
+                "(strData[0] == \"loadprofile\" || strData[0] == \"loadtempprofile\") && strData.Length >= 3", "LoadProfile(host, strData);",
+                "strData[0] == \"outputslot\" && strData.Length >= 3", "OutputSlot(strData);",
+                "strData[0] == \"query\" && strData.Length >= 3", "Query(host, strData);",
             };
 
             int at = -1;

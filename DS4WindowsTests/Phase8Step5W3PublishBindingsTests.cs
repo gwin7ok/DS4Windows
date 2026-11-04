@@ -223,7 +223,7 @@ namespace DS4WindowsTests
         public void TheSource_PublishesAfterTheCleanup_AndThePipePathPublishesAfterALoadSuccess()
         {
             string service = SourceFileLocator.Find("DS4Windows/DS4Control/Services/ProfileApplicationService.cs");
-            string window = SourceFileLocator.Find("DS4Windows/DS4Forms/MainWindow.Ipc.cs");   // Phase9 9-F F-2b: IPC コマンド（loadtempprofile）の処理は MainWindow.Ipc.cs へ移した
+            string window = SourceFileLocator.Find("DS4Windows/DS4Control/Services/IpcCommandProcessor.cs");   // Phase13-Step11 11-b: IPC コマンド（loadtempprofile）の実行は IpcCommandProcessor へ移した
             if (service == null || window == null) return;
 
             string text = File.ReadAllText(service);
@@ -233,7 +233,7 @@ namespace DS4WindowsTests
             Assert.True(complete > 0 && prealloc > complete && publish > prealloc, "束縛の差し替えは、掃除（PreallocateForProfileApply）の後に行う");
 
             string main = File.ReadAllText(window);
-            Assert.Matches(@"if \(profileRepo\.LoadTempProfile\(tdevice, strData\[2\], true, loadTarget\)\)\s*profileAppService\.PublishBindings\(tdevice\);", main);
+            Assert.Matches(@"if \(_profileRepo\.LoadTempProfile\(tdevice, strData\[2\], true, _loadTarget\)\)\s*_profileApplication\.PublishBindings\(tdevice\);", main);
         }
     }
 }

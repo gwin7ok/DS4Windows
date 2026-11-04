@@ -23,7 +23,7 @@ namespace DS4WindowsTests
 
         private string ReadSourceWithoutComments()
         {
-            string path = SourceFileLocator.Find("DS4Windows/DS4Forms/MainWindow.Ipc.cs");   // Phase9 9-F F-2b: IPC コマンドの処理は MainWindow.Ipc.cs へ移した
+            string path = SourceFileLocator.Find("DS4Windows/DS4Control/Services/IpcCommandProcessor.cs");   // Phase13-Step11 11-b: IPC コマンドの実行は IpcCommandProcessor へ移した
             if (path == null)
             {
                 _output.WriteLine("MainWindow.xaml.cs が見つからないため検査を省略した。");
@@ -45,7 +45,7 @@ namespace DS4WindowsTests
             Match m = Regex.Match(text,
                 @"propName\s*==\s*""outconttype""\s*\)\s*propValue\s*=\s*([^;]+);");
             Assert.True(m.Success, "outconttype の分岐が見つからない（分岐の書き方の変更？ガードの見直しが必要）");
-            Assert.Equal("profileSettingsService.OutContType[tdevice].ToString()", m.Groups[1].Value.Trim());
+            Assert.Equal("_profileSettings.OutContType[tdevice].ToString()", m.Groups[1].Value.Trim());
         }
 
         [Fact]
