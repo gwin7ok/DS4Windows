@@ -98,7 +98,7 @@
 			<Output TaskParameter="ConsoleOutput" PropertyName="GitDirtyOutput" />
 		</Exec>
 		<PropertyGroup>
-			<BuildTimestamp>$([System.DateTime]::Now.ToString('yyyy-MM-dd HH:mm:ss'))</BuildTimestamp>
+			<BuildTimestamp>$([System.DateTime]::UtcNow.AddHours(9).ToString('yyyy-MM-dd HH:mm:ss'))</BuildTimestamp>
 			<BuildCommit Condition="'$(GitHashExitCode)' == '0' And '$(GitCommitHash)' != ''">$(GitCommitHash.Trim())</BuildCommit>
 			<BuildCommit Condition="'$(BuildCommit)' == ''">unknown</BuildCommit>
 			<BuildCommit Condition="'$(BuildCommit)' != 'unknown' And '$(GitDirtyOutput)' != ''">$(BuildCommit)-dirty</BuildCommit>
