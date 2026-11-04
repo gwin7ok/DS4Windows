@@ -90,7 +90,7 @@ namespace DS4Windows.UI
         private readonly DS4Windows.Core.Abstractions.IProfileRepository profileRepo;
         // Phase6-Step10-4-5: Global.ApplyProfileToSlot の直接呼び出しの置換先（Global への薄い委譲）
         private readonly DS4Windows.Processing.Abstractions.IProfileSlotApplier profileSlotApplier;
-        private readonly DS4Windows.Processing.Abstractions.INotificationService notificationService;
+        private readonly DS4Windows.Core.Abstractions.INotificationService notificationService;
         private readonly ControlService controlService;
         private readonly DS4Windows.Processing.Abstractions.IIpcCommandProcessor ipcProcessor;   // Phase13-Step11 11-c: 旧 MainWindow.Ipc.cs の Ipc*
         private readonly DS4Windows.Processing.Abstractions.IRuntimeFeatureSwitch runtimeFeatures;   // Phase13-Step10 10-c: 旧 ControlService の OSC／UDP／HidHide／TouchpadSlide の転送
@@ -122,7 +122,7 @@ namespace DS4Windows.UI
             DS4Windows.Processing.Abstractions.IProfileApplicationService profileAppService,
             DS4Windows.Processing.Abstractions.IOutputSlotService outputSlotService,
             DS4Windows.Core.Abstractions.IProfileRepository profileRepo,
-            DS4Windows.Processing.Abstractions.INotificationService notificationService,
+            DS4Windows.Core.Abstractions.INotificationService notificationService,
             ControlService controlService,
             DS4Windows.Processing.Abstractions.IServiceLifecycle lifecycle,
             DS4Windows.Processing.Abstractions.IRuntimeFeatureSwitch runtimeFeatures,
@@ -417,7 +417,7 @@ namespace DS4Windows.UI
 
         // 構想1: 情報通知の本体。切替のきっかけは Global.Notifications のみ。outputDestination is modern toast only.
         // 1. イベント登録用のオーバーロード（購読先を INotificationService.NotificationTriggered へ変更、Phase5-Step14）
-        private void ShowSystemNotification(object sender, DS4Windows.Processing.Abstractions.NotificationEventArgs e)
+        private void ShowSystemNotification(object sender, DS4Windows.Core.Abstractions.NotificationEventArgs e)
         {
             ShowSystemNotification(e.Message, e.Warning);
         }

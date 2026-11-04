@@ -108,7 +108,7 @@ namespace DS4WindowsTests
             if (logger == null || app == null) return;
 
             Assert.DoesNotContain("NotificationServiceInstance", logger);
-            Assert.Matches(@"public\s+static\s+DS4Windows\.Processing\.Abstractions\.INotificationService\s+NotificationService", logger);
+            Assert.Matches(@"public\s+static\s+DS4Windows\.Core\.Abstractions\.INotificationService\s+NotificationService", logger);
             Assert.Matches(@"AppLogger\.NotificationService\s*=\s*ResolvePostHostService<INotificationService>\(\)", app);
         }
     }

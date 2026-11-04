@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace DS4Windows.Processing.Abstractions
+namespace DS4Windows.Core.Abstractions
 {
 
     public interface INotificationService
