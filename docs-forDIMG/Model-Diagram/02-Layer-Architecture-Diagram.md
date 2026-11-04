@@ -185,3 +185,9 @@
 %% - 主な原因: 共有のデータ型（SpecialAction、BezierCurve、MacroExecuteMode ほか）と、Core が実装する契約（IAppSettingsService、IProfileLoadTarget）が第2層にある。
 %%   UI のファクトリーの契約（IEditorWindowFactory／IMainWindowFactory／IViewModelFactory）が Processing/Abstractions にあり、UI の型を参照している（L5 の 15 件のすべて）。
 %% - 是正済み: Mouse のネスト型 TouchButtonActivationMode → Core/Settings、INotificationService／NotificationEventArgs → Core/Abstractions、AppLogger のフォールバック（2 つ目の BackingStore）→ NullNotificationService。
+%% ---- Phase14b-Step5〜9（2026-11-05。R-02 本体）----
+%% - フォルダの追加: Input/Abstractions（第1層が使い、第2層が実装する契約。IDeviceLayerSettings）、UI/Abstractions（UI のファクトリーの契約。IEditorWindowFactory／IMainWindowFactory／IViewModelFactory）。
+%% - Core へ移した型: SpecialAction、MacroExecuteMode(s)、ProfileActions、ControlActionData（Core/Settings）、BezierCurve（Core/Utilities）、WindowTargetMatcher（Core/Platform）、
+%%   SelectedProfileChangedEventArgs、WindowCandidate、WindowFocusResult、CapturedWindow、IAppSettingsService、IProfileLoadTarget、ITouchPadGyroToggles（新設。Mouse が実装）（Core/Abstractions）。
+%% - 第1層 DS4Devices の UI 参照（静的な ShowToast）は AppLogger.LogToTray の直接呼び出しへ。BackingStore.ProfileSettings のフォールバック（第2層の具象を new）は撤去（未登録なら例外）。
+%% - 禁止の規則の違反: 108 → 18 件（L1 11、L4 1、L6 6。L3・L5 は 0）。残りは Core → Actions の IManagedActionManager／SyntheticInputState、AppLogger → ProfileChangedEventArgs ほか、Core/UI → App（起点）など。

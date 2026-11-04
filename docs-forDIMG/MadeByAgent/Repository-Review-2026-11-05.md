@@ -275,7 +275,7 @@
 | R-01 | **対応済み**（Phase14b-Step1）。`LayerDependencyRuleTests`（ArchUnitNET 0.13.4）。禁止の規則の違反 108 件を凍結 → Step3 の時点で 102 件 |
 | R-04 | **対応済み**（Phase14b-Step2）。`TouchButtonActivationMode` → `Core/Settings`、`using static` 54 件を削除 |
 | R-03 | **対応済み**（Phase14b-Step3）。`NullNotificationService`。`INotificationService` を `Core/Abstractions` へ。`BackingStore.ProfileSettings` のフォールバックは「通常の起動では通らない」と判断（計画書 §8.3） |
-| R-02 | 未着手。新しい発見: L5 の 15 件はすべて UI のファクトリーの契約が `Processing/Abstractions` にあることによる（計画書 §8.1） |
+| R-02 | **大半を対応**（Phase14b-Step5〜9）。UI のファクトリーの契約 → `UI/Abstractions`、共有の値の型と Core・第1層が使う契約 → `Core`・`Input/Abstractions`、`SpecialAction` → `Core/Settings`、第1層の UI 参照の解消、`BackingStore.ProfileSettings` のフォールバックの撤去。禁止の規則の違反は 108 → **18 件**（計画書 §8.4・§8.5）。残りは計画書 §9 |
 
 運用ルールの追加（R-15、R-16 の命名）は、規約 `.github/copilot-instructions.md` の改定として別途承認を得る。
 

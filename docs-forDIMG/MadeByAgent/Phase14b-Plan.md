@@ -221,4 +221,26 @@
 | Step 14b-2 | 104 | L1 77 |
 | Step 14b-3（3-2） | 103 | L1 76 |
 | Step 14b-3（3-3） | 102 | L1 75 |
-記録のみ: L2 70、L7 80（変化なし）。
+| Step 14b-5 | 101 | L3 4 |
+| Step 14b-6 | 86 | L5 0 |
+| Step 14b-7（7-0） | 85 | L1 74 |
+| Step 14b-7（7-2） | 28 | L1 21、L3 0 |
+| Step 14b-8 | 19 | L1 12 |
+| Step 14b-9 | **18** | **L1 11、L4 1、L6 6** |
+
+記録のみ（L2・L7）は、型の移動に伴って数え直しになる（Core へ移した型が第1層・第3層を参照すると L2 に入る）。Step 14b-9 の時点: L2 **74 件**（参照元 40。Step 14b-1 の 70 件から、Core へ移した型の第1層・第3層への参照の分だけ増えた）、L7 **80 件**（変化なし）。
+
+### 8.5 Step 14b-5〜9（R-02 本体と D8）— 完了（2026-11-05）
+- 14b-5: `DS4Devices` の `UI.Services.NotificationService.ShowToast` を `AppLogger.LogToTray` の直接呼び出しへ（`ShowToast` は中で `LogToTray` を呼ぶだけで、`LogToTray` は例外を自分で捕まえるため挙動は同じ）。`ShowToast` 自体は `UpdaterWindow`（UI）が使うので残した。検査の確認テストの対象を `AppLogger` → `NullNotificationService`（メソッド本体だけの参照）へ差し替え。
+- 14b-6: `UI/Abstractions` を新設し、ファクトリーの契約 3 つを移した（移動のコミットと書き換えのコミット）。移した契約が、元の場所では暗黙に見えていた親の名前空間 `DS4Windows.Processing` の `SpecialAction` を使っていたため `using` を追加（14b-8 で `Core.Settings` へ）。書き換えの対象のうち、もともと未使用だった `using DS4Windows.Processing.Abstractions` を 10 ファイルから削除（完全修飾名で参照していたもの）。
+- 14b-7: 先に `ITouchPadGyroToggles`（`Core/Abstractions`）を作り、`IProfileLoadTarget.GetTouchPad` の戻り値を `Mouse` から替えた（7-0。`Mouse` が実装し、同じインスタンスを返す）。その後に 13 ファイルを移動（7-1、7-1b。1 件は `index.lock` の競合で移動に失敗したため、移動だけの追加コミットにした）、名前空間の書き換え（7-2。101 ファイル）。パスを文字列で持つテスト 3 件（`Step10FourGlobalRatchetGuardTests`・`Phase10Step4dW0RuntimeKeyRatchetTests` の基準値、`Phase7Step10eW4OrphanMembersGuardTests` の TODO の検査）を新しい場所へ引き継いだ。
+- 14b-8: `SpecialAction` を `Core/Settings` へ（185 ファイルの書き換え、パスの文字列 1 件）。
+- 14b-9（D8）: `BackingStore.ProfileSettings` のフォールバックを撤去。未登録のまま使われたら `[DI]` の Error ログを出して `InvalidOperationException`。旧フォールバックの Trace／Debug ログ（`[Legacy] BackingStore.ProfileSettings: Fallback instance used`、利用者には見えない）は経路ごと削除。テストは `TestGlobals.ProfileSettingsServiceInstance` がコンテナの `ProfileSettingsService` を解決して結んでから読む形にした。**フォールバックに依存していたテストはほかになかった**（全 3,229 件が合格）。
+- 書き換えには scratchpad の補助スクリプト（`nsmove.py`: 名前空間・完全修飾名・`using` の追加と不要な `using` の削除。BOM を保つ）を使った。途中で、文字列の除去の取りこぼしから使用中の `using` を 1 件消す誤りがあり（テストのビルドで検出）、`using` の削除は「残る型の名前がファイルのどこにも出ない」ときだけにする安全側の判定に直した。
+- 作業コピーの改行: Git Bash の `sed -i` が作業コピーを LF にしたが、リポジトリは `text=auto` で LF として保存するため、コミットの内容には影響しない。
+- 残る違反（18 件）: L1 11（`AppLogger` → `ProfileChangedEventArgs`／`ProfileChangeSource`、`SpecialActionRepository`／`SpecialActionsXmlSerializer` → Actions の `IManagedActionManager`／`SyntheticInputState`、`AppearanceSettingsService` → `UI.TrayIconResources`、`ProfileSettingsService` → `IDeviceStateAccessor`、`RemovedGyroSwipeNotice`／`RemovedShiftNotice` → 第2層の Prompt の契約、`Changelog` → `App`、`WindowPlacementHelper` → `UI.MainWindow`）、L4 1（`OutputSlotManager` → `IInstanceIdentifiable`）、L6 6（UI → `App`／`StartupMethods`）。いずれも小さく、次の是正の候補（§9）。
+- Debug ALL: 緑（ビルド 警告 0・エラー 0、`DS4Windows.Actions.Tests` 3,229 件合格、`StandaloneTests` 11 件合格）。
+
+## 9. 次の候補（Phase14b の残り、または後続）
+- 残る違反 18 件の是正（多くは 1 型の移動か、小さな契約の切り出しで済む）。
+- `SpecialActionRepository`・`SpecialActionsXmlSerializer`（Core/Persistence）が第2層の `IManagedActionManager`・`SyntheticInputState` を使う件は、読み込み後の実行時状態のリセットを第2層へ寄せる設計が要る（R-02 の残り）。

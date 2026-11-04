@@ -1298,3 +1298,9 @@ classDiagram
 %% Phase14（名前空間・フォルダの再編）の反映（2026-11-04）:
 %% - クラス名・インターフェース名・メンバーは不変。名前空間が DS4Windows.<フォルダ> に変わった（例: IProfileSwitcher は DS4Windows.Processing.Abstractions、ProfileRepository は DS4Windows.Core.Persistence、MainWindow は DS4Windows.UI、AppHost は DS4Windows.Composition）。
 %% - 上の注記に出てくる旧パス（DI/、DS4Control/Services/、DS4Forms/ など）は、当時の場所の記録として残した。現在の対応は 02 の末尾を参照。
+
+%% Phase14b（依存の向きの是正）の反映（2026-11-05）:
+%% - 名前空間の変更（クラス名・メンバーは不変）: INotificationService・NotificationEventArgs・IAppSettingsService・IProfileLoadTarget・SelectedProfileChangedEventArgs・WindowCandidate・WindowFocusResult・CapturedWindow → DS4Windows.Core.Abstractions、
+%%   SpecialAction・MacroExecuteMode(s)・ProfileActions・ControlActionData・TouchButtonActivationMode（旧 Mouse のネスト型）→ DS4Windows.Core.Settings、BezierCurve → DS4Windows.Core.Utilities、WindowTargetMatcher → DS4Windows.Core.Platform、
+%%   IDeviceLayerSettings → DS4Windows.Input.Abstractions、IEditorWindowFactory・IMainWindowFactory・IViewModelFactory → DS4Windows.UI.Abstractions。
+%% - 契約の変更: IProfileLoadTarget.GetTouchPad の戻り値を Mouse から ITouchPadGyroToggles（新設。Mouse が実装、同じインスタンス）へ。追加: NullNotificationService（AppLogger の未設定時の通知）。

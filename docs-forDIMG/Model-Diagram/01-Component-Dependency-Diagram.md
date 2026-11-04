@@ -306,3 +306,7 @@ flowchart TD
 %% ---- Phase14 完了（2026-11-04）----
 %% - 構成要素の依存関係は変えていない。ファイルの配置と名前空間を層別に再編した（Input／Processing／Output／UI／Composition／Core。対応表は 02 の末尾を参照）。
 %% - 図中のクラス名・インターフェース名は不変。名前空間が DS4Windows.DI／DS4Windows.Services／DS4WinWPF.* から DS4Windows.<フォルダ> に変わった。
+
+%% ---- Phase14b（2026-11-05。依存の向きの是正）----
+%% - 構成要素と辺は変えていない。契約・共有型の置き場所を、使う側の層へ移した（UI のファクトリーの契約 → UI/Abstractions、IDeviceLayerSettings → Input/Abstractions、IAppSettingsService／IProfileLoadTarget ほか → Core/Abstractions、SpecialAction ほかの値の型 → Core/Settings）。
+%% - 層の依存は LayerDependencyRuleTests が型の参照の単位で検査する（02 の末尾の注釈）。

@@ -138,7 +138,8 @@ Issue #4 の 4 件と、2026-11-02 時点のコードとの照合:
 2. 済み（2026-11-04）: モデル図の現状合わせ（§8.3。`Model-Diagram/01〜04`。Phase8 の部品を実線化、Phase11・12 を反映、行数を更新）。
 3. 済み（2026-11-04）: Phase13（`ControlService` の整理。34 → 17 引数、`Func<T>` 2 件のみ、`ServiceProviderHolder` 撤廃、F-5c／F-2c 完了、F-1c 見送り）。`Phase13-Completion-Report.md`。実機確認（1 回）は Release ビルドの後に実施。
 4. 済み（2026-11-04。実機確認済み・`Phase13b-Completion-Report.md`。CLI の件は未解決で台帳に記録）: Phase13b（ログの一括整理 L2。`Phase13b-Plan.md`、`Phase13b-Status.md`、`Phase13b-Log-Change-List.md`）。API を `AppLogger.Log` に集約し、`LogToGui`・サービスの `DebugMessage`・`ServiceDebugRelay` を廃止した。次: Phase14（名前空間・フォルダの再編）。
-5. 小作業の持ち越し: テストの `[Collection("ServiceProviderHolder")]` の改名。`ControlService` のスロット状態の転送（約 50 利用者）の整理は、Phase14 または必要になったときに。
+5. 実施中（2026-11-05）: Phase14b（依存の向きの是正。`Phase14b-Plan.md`）。Step 14b-1〜9 を実施し、層の依存の違反は 108 → 18 件。実機確認（14b-11）の後に master へ取り込む。
+6. 小作業の持ち越し: テストの `[Collection("ServiceProviderHolder")]` の改名。`ControlService` のスロット状態の転送（約 50 利用者）の整理は、Phase14 または必要になったときに。
 
 ## 8. 追加案（2026-11-04。FurtherImprovements との照合で見つかった抜け。**承認済み: 8.1〜8.3 すべて採用**）
 
