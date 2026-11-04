@@ -145,7 +145,7 @@ namespace DS4WinWPF.DS4Forms
             catch (Exception ex)
             {
                 // Defensive: log and continue to close the dialog
-                Debug.WriteLine($"WelcomeDialog.FinishedBtn_Click: failed to stop monitorTimer: {ex.Message}");
+                DS4Windows.AppLogger.LogDebug($"WelcomeDialog.FinishedBtn_Click: failed to stop monitorTimer: {ex.Message}");
             }
 
             this.Close();

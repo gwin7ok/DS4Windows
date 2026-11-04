@@ -764,7 +764,6 @@ namespace DS4Windows.InputDevices
             //Thread.Sleep(1000);
             CalibrationData();
 
-            Console.WriteLine("FINISHED");
 
             //if (connectionType == ConnectionType.USB)
             //{
@@ -1238,7 +1237,7 @@ namespace DS4Windows.InputDevices
             }
 
             NativeMethods.BluetoothFindRadioClose(searchHandle);
-            Console.WriteLine("Disconnect successful: " + success);
+            AppLogger.LogDebug("Disconnect successful: " + success);
             success = true;
 
             if (callRemoval)

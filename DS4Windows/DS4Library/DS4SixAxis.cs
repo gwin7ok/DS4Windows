@@ -380,7 +380,7 @@ namespace DS4Windows
                     gyroAverageTimer.Stop();
                     AverageGyro(ref gyro_offset_x, ref gyro_offset_y, ref gyro_offset_z, ref gyro_accel_magnitude);
 #if DEBUG
-                    Console.WriteLine("AverageGyro {0} {1} {2} {3}", gyro_offset_x, gyro_offset_y, gyro_offset_z, gyro_accel_magnitude);
+                    AppLogger.LogDebug($"AverageGyro {gyro_offset_x} {gyro_offset_y} {gyro_offset_z} {gyro_accel_magnitude}");
 #endif
                 }
             }
@@ -432,8 +432,7 @@ namespace DS4Windows
 
             if (windowPointer.StopIfElapsed(gyro_average_window_ms))
             {
-                Console.WriteLine("GyroAvg[{0}], numSamples: {1}", gyro_average_window_front_index,
-                    windowPointer.numSamples);
+                AppLogger.LogDebug($"GyroAvg[{gyro_average_window_front_index}], numSamples: {windowPointer.numSamples}");
 
                 // next
                 gyro_average_window_front_index = (gyro_average_window_front_index + num_gyro_average_windows - 1) % num_gyro_average_windows;

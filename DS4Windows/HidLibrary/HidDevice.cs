@@ -105,7 +105,7 @@ namespace DS4Windows
             }
             catch (Exception exception)
             {
-                Console.WriteLine(exception.Message);
+                AppLogger.LogDebug($"HidDevice: query failed: {exception.Message}");
                 throw new Exception(string.Format("Error querying HID device '{0}'.", devicePath), exception);
             }
         }

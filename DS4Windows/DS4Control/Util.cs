@@ -198,7 +198,7 @@ namespace DS4Windows
             }
             catch (Exception ex)
             {
-                Console.WriteLine("{0} {1}", ex.HelpLink, ex.Message);
+                AppLogger.LogDebug($"{ex.HelpLink} {ex.Message}");
                 throw;
             }
             finally
@@ -218,7 +218,7 @@ namespace DS4Windows
             }
             catch (Exception ex)
             {
-                Console.WriteLine("{0} {1}", ex.HelpLink, ex.Message);
+                AppLogger.LogDebug($"{ex.HelpLink} {ex.Message}");
                 throw;
             }
         }

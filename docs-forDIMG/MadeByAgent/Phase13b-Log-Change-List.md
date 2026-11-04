@@ -107,3 +107,10 @@
 - **G1（実施・レベルのみ）**: `ProfileEditor` 1128、`ControllerListViewModel` 3 か所、`ProfileSettingsViewModel` 3445、`SettingsViewModel` 466、`JoyConDevice` 599、`SwitchProDevice` 312、`HidDevice` 380（計 9）。
 - **G2（実施・GUI が警告表示になる）**: `DS4Device` の「CRC-32 失敗で切断」「バッファ未初期化」「書き込み接続の喪失」（計 3）。
 - **F1（レベルのみ・ファイル）**: Debug／Trace → Warn — `ProfileEditor` 291、`CompositeDeviceModel` 278、`App` 598、`UpdaterInstaller` 81／175、`DS4Device` 263／786（計 7）。Trace → Debug — `MainWindow` の PostApply の計測の失敗 1 か所。
+
+### 13b-6（F4: `Console`／`Debug.WriteLine` の整理）
+
+- **文言（`AppLogger.LogDebug` へ移行、ファイルの Debug に出るようになる）**: `DS4Device` 830（Thread already running）／852／875（例外。接頭辞 `[DS4Device] {Mac}` を付与）／1113／1143（read failure）／1724／1759（BT 切断）、`DS4SixAxis` 383／435（ジャイロの平均）、`DS3Device` 96、`DualSenseDevice` 471／605／634、`JoyConDevice` 1687、`SwitchProDevice` 1241、`HidDevice` 108（例外の記録）、`Util` 201／221（例外）、`WelcomeDialog` 148、`LoggerHolder` 149（NLog の `logger?.Debug` へ。ログ基盤の内部）。
+- **削除**: 開発中の残骸で、情報のない出力 — 空の `Console.WriteLine()` 3 か所（`DS4Device`、`DS3Device`、`DualSenseDevice`）、`"CURRENT: …"`（`DualSenseDevice`）、`"RESET NFC/IR MCU"`・`"FINISHED"`（`JoyConDevice`）、`"FINISHED"`（`SwitchProDevice`）の計 7 か所。WPF アプリでは `Console` の出力は見えないため、利用者への影響はなし。
+- **維持**: `App.xaml.cs` 962 の `Console.WriteLine(WaitAndReadIPCResultDataMMF(...))` は、CLI の `-command` の結果を標準出力へ返す機能の出力であり、ログではない。
+- ブロックコメント内（`/* … */`）の `Console.WriteLine` は対象外。

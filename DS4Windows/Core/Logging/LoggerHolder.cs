@@ -146,7 +146,7 @@ namespace DS4WinWPF
             }
             
             // Log the applied settings for debugging
-            System.Diagnostics.Debug.WriteLine($"NLog settings applied: MaxArchiveFiles={fileTarget.MaxArchiveFiles}, MinLevel={minLevel}");
+            logger?.Debug($"NLog settings applied: MaxArchiveFiles={fileTarget.MaxArchiveFiles}, MinLevel={minLevel}");
         }
 
         /// <summary>

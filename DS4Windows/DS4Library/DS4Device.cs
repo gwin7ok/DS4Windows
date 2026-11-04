@@ -827,7 +827,7 @@ namespace DS4Windows
             }
             else
             {
-                Debug.WriteLine("Thread already running for DS4: " + Mac);
+                AppLogger.LogDebug("Thread already running for DS4: " + Mac);
             }
         }
 
@@ -849,7 +849,7 @@ namespace DS4Windows
                 }
                 catch (Exception e)
                 {
-                    Console.WriteLine(e.Message);
+                    AppLogger.LogDebug($"[DS4Device] {Mac}: exception: {e.Message}");
                 }
             }
 
@@ -872,7 +872,7 @@ namespace DS4Windows
                     }
                     catch (Exception e)
                     {
-                        Console.WriteLine(e.Message);
+                        AppLogger.LogDebug($"[DS4Device] {Mac}: exception: {e.Message}");
                     }
                 }
             }
@@ -1110,7 +1110,7 @@ namespace DS4Windows
                             else
                             {
                                 int winError = Marshal.GetLastWin32Error();
-                                Console.WriteLine($"{Mac} {DateTime.UtcNow.ToString("o")}> disconnect due to read failure: {winError.ToString("x8")}");
+                                AppLogger.LogDebug($"{Mac} {DateTime.UtcNow.ToString("o")}> disconnect due to read failure: {winError.ToString("x8")}");
                                 //Log.LogToGui(Mac.ToString() + " disconnected due to read failure: " + winError, true);
                                 AppLogger.LogToGui(Mac.ToString() + " disconnected due to read failure: " + winError, true);
                             }
@@ -1140,7 +1140,7 @@ namespace DS4Windows
                             else
                             {
                                 int winError = Marshal.GetLastWin32Error();
-                                Console.WriteLine($"{Mac} {DateTime.UtcNow.ToString("o")}> disconnect due to read failure: {winError.ToString("x8")}");
+                                AppLogger.LogDebug($"{Mac} {DateTime.UtcNow.ToString("o")}> disconnect due to read failure: {winError.ToString("x8")}");
                                 //Log.LogToGui(Mac.ToString() + " disconnected due to read failure: " + winError, true);
                             }
 
@@ -1382,7 +1382,6 @@ namespace DS4Windows
                             Debug.Write(" " + inputReport[i].ToString("x2"));
                         }
 
-                        Console.WriteLine();
                     }
                     */
 
@@ -1721,7 +1720,7 @@ namespace DS4Windows
             {
                 // Wait for output report to be written
                 StopOutputUpdate();
-                Console.WriteLine("Trying to disconnect BT device " + Mac);
+                AppLogger.LogDebug("Trying to disconnect BT device " + Mac);
                 IntPtr btHandle = IntPtr.Zero;
                 uint IOCTL_BTH_DISCONNECT_DEVICE = 0x41000c;
 
@@ -1756,7 +1755,7 @@ namespace DS4Windows
                     }
 
                     NativeMethods.BluetoothFindRadioClose(searchHandle);
-                    Console.WriteLine("Disconnect successful: " + success);
+                    AppLogger.LogDebug("Disconnect successful: " + success);
                 }
 
                 success = true; // XXX return value indicates failure, but it still works?

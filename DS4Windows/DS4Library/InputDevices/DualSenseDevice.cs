@@ -468,7 +468,7 @@ namespace DS4Windows.InputDevices
                 ds4Input.Start();
             }
             else
-                Console.WriteLine("Thread already running for DS4: " + Mac);
+                AppLogger.LogDebug("Thread already running for DS4: " + Mac);
         }
 
         private void TimeoutTestThread()
@@ -602,7 +602,7 @@ namespace DS4Windows.InputDevices
                             else
                             {
                                 int winError = Marshal.GetLastWin32Error();
-                                Console.WriteLine($"{Mac} {DateTime.UtcNow.ToString("o")} > disconnect due to read failure: {winError.ToString("x8")}");
+                                AppLogger.LogDebug($"{Mac} {DateTime.UtcNow.ToString("o")} > disconnect due to read failure: {winError.ToString("x8")}");
                                 //Log.LogToGui(Mac.ToString() + " disconnected due to read failure: " + winError, true);
                                 AppLogger.LogToGui(Mac.ToString() + " disconnected due to read failure: " + winError, true);
                             }
@@ -631,7 +631,7 @@ namespace DS4Windows.InputDevices
                             else
                             {
                                 int winError = Marshal.GetLastWin32Error();
-                                Console.WriteLine($"{Mac} {DateTime.UtcNow.ToString("o")} > disconnect due to read failure: {winError.ToString("x8")}");
+                                AppLogger.LogDebug($"{Mac} {DateTime.UtcNow.ToString("o")} > disconnect due to read failure: {winError.ToString("x8")}");
                                 //Log.LogToGui(Mac.ToString() + " disconnected due to read failure: " + winError, true);
                             }
 
@@ -867,7 +867,6 @@ namespace DS4Windows.InputDevices
                         Console.Write(MacAddress.ToString() + " " + System.DateTime.UtcNow.ToString("o") + ">");
                         for (int i = 0; i < inputReport.Length; i++)
                             Console.Write(" " + inputReport[i].ToString("x2"));
-                        Console.WriteLine();
                     }
                     ///*/
 
@@ -1327,7 +1326,6 @@ namespace DS4Windows.InputDevices
                 }
                 else if (outputPendCount >= 1)
                 {
-                    Console.WriteLine("CURRENT: {0}", outputPendCount);
                     outputPendCount--;
                     outputDirty = outputPendCount >= 1;
                 }

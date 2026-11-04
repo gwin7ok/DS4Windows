@@ -1178,7 +1178,6 @@ namespace DS4Windows.InputDevices
             if (sideType == JoyConSide.Right)
             {
                 // Suspend NFC/IR MCU state. Don't know if it will matter
-                Console.WriteLine("RESET NFC/IR MCU");
                 byte[] shitBuffer = new byte[] { 0x00 };
                 Subcommand(0x22, shitBuffer, 0, checkResponse: true);
                 Thread.Sleep(1000);
@@ -1196,7 +1195,6 @@ namespace DS4Windows.InputDevices
             //Thread.Sleep(500);
             CalibrationData();
 
-            Console.WriteLine("FINISHED");
 
             //if (connectionType == ConnectionType.USB)
             //{
@@ -1684,7 +1682,7 @@ namespace DS4Windows.InputDevices
             }
 
             NativeMethods.BluetoothFindRadioClose(searchHandle);
-            Console.WriteLine("Disconnect successful: " + success);
+            AppLogger.LogDebug("Disconnect successful: " + success);
             success = true;
 
             // Need to grab reference here as Removal call would

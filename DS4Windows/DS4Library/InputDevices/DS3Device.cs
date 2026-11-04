@@ -93,7 +93,7 @@ namespace DS4Windows.InputDevices
                 ds4Input.Start();
             }
             else
-                Console.WriteLine("Thread already running for DS4: " + Mac);
+                AppLogger.LogDebug("Thread already running for DS4: " + Mac);
         }
 
         private unsafe void ReadInput()
@@ -334,7 +334,6 @@ namespace DS4Windows.InputDevices
                         Console.Write(MacAddress.ToString() + " " + System.DateTime.UtcNow.ToString("o") + ">");
                         for (int i = 0; i < featureReport.Length; i++)
                             Console.Write(" " + featureReport[i].ToString("x2"));
-                        Console.WriteLine();
                     }
                     ///*/
 
