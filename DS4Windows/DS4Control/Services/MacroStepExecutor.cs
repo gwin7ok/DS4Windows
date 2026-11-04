@@ -127,7 +127,7 @@ namespace DS4Windows.Services
         {
             if (!MacroPointerMove.TryFromMacroValue(macroCodeValue, out MacroPointerMove move))
             {
-                if (AppLogger.IsDebugEnabled) AppLogger.LogDebug($"[MacroMove] Skipped: unsupported value, device={device}, value={macroCodeValue}");
+                if (AppLogger.IsDebugEnabled) AppLogger.LogDebug($"[Macro] Skipped: unsupported value, device={device}, value={macroCodeValue}");
                 return;
             }
 
@@ -137,7 +137,7 @@ namespace DS4Windows.Services
             {
                 if (!_windowSystem.TryGetForegroundWindowOrigin(out int originX, out int originY))
                 {
-                    if (AppLogger.IsDebugEnabled) AppLogger.LogDebug($"[MacroMove] Skipped: no foreground window, device={device}, mode={move.Mode}, x={move.X}, y={move.Y}");
+                    if (AppLogger.IsDebugEnabled) AppLogger.LogDebug($"[Macro] Skipped: no foreground window, device={device}, mode={move.Mode}, x={move.X}, y={move.Y}");
                     return;
                 }
 
@@ -146,7 +146,7 @@ namespace DS4Windows.Services
             }
 
             bool moved = _windowSystem.MoveCursorTo(x, y);
-            if (AppLogger.IsDebugEnabled) AppLogger.LogDebug($"[MacroMove] Moved: device={device}, mode={move.Mode}, x={x}, y={y}, moved={moved}");
+            if (AppLogger.IsDebugEnabled) AppLogger.LogDebug($"[Macro] Moved: device={device}, mode={move.Mode}, x={x}, y={y}, moved={moved}");
         }
 
         /// <summary>キー（0〜255）またはマウスボタン（256〜260）の押下／離上を送出する。旧 <c>PlayMacroCodeValue</c> の、押下と離上の 2 つの switch の共通部分。</summary>

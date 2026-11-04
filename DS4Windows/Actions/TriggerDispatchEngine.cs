@@ -205,7 +205,7 @@ namespace DS4Windows.Actions
                 try
                 {
                     SpecialAction action = binding.Source;
-                    AppLogger.LogDebug($"SpecialAction UNTRIGGER check: device={device}, untriggeraction={(action != null ? action.name : "null")}, untriggerindex={binding.Index}");
+                    if (AppLogger.IsDebugEnabled) AppLogger.LogDebug($"SpecialAction UNTRIGGER check: device={device}, untriggeraction={(action != null ? action.name : "null")}, untriggerindex={binding.Index}");
 
                     // 自動（Unload on trigger release）: トリガーのうち、どれか 1 つでも離れたら成立（旧 Mapping と同じ）
                     bool activated = false;

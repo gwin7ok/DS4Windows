@@ -1773,7 +1773,7 @@ Suspend support not enabled.", true);
                 }
                 catch (Exception ex)
                 {
-                    AppLogger.LogError($"[MainWindow.EditProfile] Failed to emit missing action logs: {ex.Message}");
+                    AppLogger.LogError($"[MainWindow] Failed to emit missing action logs: {ex.Message}");
                 }
             }
 

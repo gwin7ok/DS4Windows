@@ -88,25 +88,25 @@ namespace DS4WinWPF.DS4Forms
                 // Active
                 if (specialActionsHeaderTextBlocks.Length > 0 && specialActionsHeaderTextBlocks[0] != null)
                 {
-                    SetAndLogHeaderText(specialActionsHeaderTextBlocks[0], 0, "ActiveHeader", ActiveSortButtonContent ?? string.Empty, "[SortSpecialActionsList] Updated:");
+                    SetAndLogHeaderText(specialActionsHeaderTextBlocks[0], 0, "ActiveHeader", ActiveSortButtonContent ?? string.Empty, "[SpecialActions] Updated:");
                 }
 
                 // Name
                 if (specialActionsHeaderTextBlocks.Length > 1 && specialActionsHeaderTextBlocks[1] != null)
                 {
-                    SetAndLogHeaderText(specialActionsHeaderTextBlocks[1], 1, "NameHeader", NameSortButtonContent ?? string.Empty, "[SortSpecialActionsList] Updated:");
+                    SetAndLogHeaderText(specialActionsHeaderTextBlocks[1], 1, "NameHeader", NameSortButtonContent ?? string.Empty, "[SpecialActions] Updated:");
                 }
 
                 // Trigger
                 if (specialActionsHeaderTextBlocks.Length > 2 && specialActionsHeaderTextBlocks[2] != null)
                 {
-                    SetAndLogHeaderText(specialActionsHeaderTextBlocks[2], 2, "TriggerHeader", TriggerSortButtonContent ?? string.Empty, "[SortSpecialActionsList] Updated:");
+                    SetAndLogHeaderText(specialActionsHeaderTextBlocks[2], 2, "TriggerHeader", TriggerSortButtonContent ?? string.Empty, "[SpecialActions] Updated:");
                 }
 
                 // Action
                 if (specialActionsHeaderTextBlocks.Length > 3 && specialActionsHeaderTextBlocks[3] != null)
                 {
-                    SetAndLogHeaderText(specialActionsHeaderTextBlocks[3], 3, "ActionHeader", ActionSortButtonContent ?? string.Empty, "[SortSpecialActionsList] Updated:");
+                    SetAndLogHeaderText(specialActionsHeaderTextBlocks[3], 3, "ActionHeader", ActionSortButtonContent ?? string.Empty, "[SpecialActions] Updated:");
                 }
             }
             catch (Exception ex)
@@ -117,7 +117,7 @@ namespace DS4WinWPF.DS4Forms
 
         // 共通ヘッダ更新ヘルパー: TextBlock を設定し、old/new を一貫した形式でログ出力する。
         // prefix はログの先頭（例: "[EnsureSpecialActionsHeadersAssigned] Loaded:" や
-        // "[SortSpecialActionsList] Updated:") を渡します。
+        // "[SpecialActions] Updated:") を渡します。
         private void SetAndLogHeaderText(TextBlock tb, int idx, string logicalName, string newText, string prefix)
         {
             try
@@ -247,19 +247,19 @@ namespace DS4WinWPF.DS4Forms
             // Phase6系の是正: 「直前のソート列・方向」は SpecialActionsListViewModel が
             // 唯一の実体として保持する（CurrentSortColumn/CurrentSortAscending）。
             // ここでは SortActions 呼び出し前の値をログ用に読むだけで、View 側では保持しない。
-            AppLogger.LogDebug($"[SortSpecialActionsList] Called: column={columnName}, asc={asc}, prevCol={specialActionsVM?.CurrentSortColumn}, prevAsc={specialActionsVM?.CurrentSortAscending}");
+            AppLogger.LogDebug($"[SpecialActions] Called: column={columnName}, asc={asc}, prevCol={specialActionsVM?.CurrentSortColumn}, prevAsc={specialActionsVM?.CurrentSortAscending}");
 
             // 1) ViewModel-side sort execution
-            AppLogger.LogDebug($"[SortSpecialActionsList] Calling specialActionsVM.SortActions");
+            AppLogger.LogDebug($"[SpecialActions] Calling specialActionsVM.SortActions");
             ListSortDirection sortDirection = asc ? ListSortDirection.Ascending : ListSortDirection.Descending;
             specialActionsVM.SortActions(columnName, sortDirection);
-            AppLogger.LogDebug($"[SortSpecialActionsList] specialActionsVM.SortActions completed");
+            AppLogger.LogDebug($"[SpecialActions] specialActionsVM.SortActions completed");
 
             // 2) CollectionView の準備と状態ログ
             var view = (CollectionView)CollectionViewSource.GetDefaultView(specialActionsVM.ActionCol);
             if (view == null)
             {
-                AppLogger.LogDebug("[SortSpecialActionsList] CollectionView is null. Aborting.");
+                AppLogger.LogDebug("[SpecialActions] CollectionView is null. Aborting.");
                 return;
             }
 
@@ -267,13 +267,13 @@ namespace DS4WinWPF.DS4Forms
             try
             {
                 var preItems = specialActionsVM.ActionCol?.Cast<object>().Take(5).Select(x => x.ToString()).ToArray() ?? Array.Empty<string>();
-                AppLogger.LogDebug($"[SortSpecialActionsList] ActionCol count before Refresh={(specialActionsVM.ActionCol == null ? 0 : specialActionsVM.ActionCol.Count)}, head sample=" + string.Join(",", preItems));
+                AppLogger.LogDebug($"[SpecialActions] ActionCol count before Refresh={(specialActionsVM.ActionCol == null ? 0 : specialActionsVM.ActionCol.Count)}, head sample=" + string.Join(",", preItems));
             }
             catch { /* 安全のため無視 */ }
 
-            AppLogger.LogDebug("[SortSpecialActionsList] Executing CollectionView.Refresh");
+            AppLogger.LogDebug("[SpecialActions] Executing CollectionView.Refresh");
             view.Refresh();
-            AppLogger.LogDebug($"[SortSpecialActionsList] Item count after Refresh={view.Count}");
+            AppLogger.LogDebug($"[SpecialActions] Item count after Refresh={view.Count}");
 
             // 既存のバインディング更新（残して互換性を保つ）
             OnPropertyChanged(nameof(ActiveSortButtonContent));
@@ -288,11 +288,11 @@ namespace DS4WinWPF.DS4Forms
             }
             catch (Exception ex)
             {
-                AppLogger.LogWarn($"[SortSpecialActionsList] UpdateSpecialActionsHeaderTexts failed: {ex.Message}");
+                AppLogger.LogWarn($"[SpecialActions] UpdateSpecialActionsHeaderTexts failed: {ex.Message}");
             }
 
             // ヘッダーの表示更新は Loaded ハンドラでキャッシュした TextBlock により行われます。
-            AppLogger.LogDebug("[SortSpecialActionsList] Header updates are handled via cached TextBlocks and Loaded handlers.");
+            AppLogger.LogDebug("[SpecialActions] Header updates are handled via cached TextBlocks and Loaded handlers.");
         }
 
         // NOTE: Local visual-tree helper methods were removed in favor of the shared
@@ -2213,11 +2213,11 @@ namespace DS4WinWPF.DS4Forms
                 string currentCol = specialActionsVM?.CurrentSortColumn ?? "Name";
                 bool currentAsc = specialActionsVM?.CurrentSortAscending ?? true;
                 // Log: sort state just before click
-                AppLogger.LogDebug($"[SpecialActionsHeader_Click] Click: col={col}, currentSortColumn={currentCol}, currentSortAsc={currentAsc}");
+                AppLogger.LogDebug($"[SpecialActions] Click: col={col}, currentSortColumn={currentCol}, currentSortAsc={currentAsc}");
                 bool asc = col != currentCol ? true : !currentAsc;
-                AppLogger.LogDebug($"[SpecialActionsHeader_Click] Determined sort direction: col={col}, asc={asc}");
+                AppLogger.LogDebug($"[SpecialActions] Determined sort direction: col={col}, asc={asc}");
                 SortSpecialActionsList(col, asc);
-                AppLogger.LogDebug($"[SpecialActionsHeader_Click] Column click handling complete: {col}");
+                AppLogger.LogDebug($"[SpecialActions] Column click handling complete: {col}");
             }
         }
     } // ← ProfileEditorクラスの閉じ括弧を追加

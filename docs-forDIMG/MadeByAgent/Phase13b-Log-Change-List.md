@@ -121,3 +121,8 @@
 - **削除（重複）**: `UpdaterInstaller` は、同じ出来事を NLog 直接と `AppLogger.LogDebug` の 2 行で出していた。15 組を 1 行にまとめ、NLog 直接の 15 か所を削除。残す 1 行のレベルは、2 行のうち高いほうに合わせた（**レベルのみ**）— Debug → Error: 4（空パス、ソース無し、昇格プロセス起動失敗 null ほか）、Debug → Info: 4（インストール成功、昇格プロセスの終了コード）、Debug → Warn: 2（権限不足）。
 - **文言**: `UpdaterElevatedHelper` の NLog 直接 9 か所を `AppLogger` へ、接頭辞 `[UpdaterInstall]` を付与（例外は `: {ex.Message}` を追記）。
 - `UpdaterInstaller`／`UpdaterElevatedHelper` の NLog の `logger` フィールドと `using NLog;` を削除。これで NLog の直接呼び出しは、基盤（`AppLogger`、`LoggerHolder`）の内部だけになる。
+
+### 13b-8（F2 接頭辞、F6 ガード）
+
+- **F2（文言・ファイルのみ）**: メソッド名・診断名だった接頭辞を機能名へ統一 — `[SortSpecialActionsList]`（9）・`[SpecialActionsHeader_Click]`（3）→ `[SpecialActions]`、`[MacroMove]`（3）→ `[Macro]`、`[MainWindow.EditProfile]`（1）→ `[MainWindow]`、`[ApplyProfile]`（1）→ `[Profile]`（`ProfileEditor`、`MacroStepExecutor`、`ProfileApplicationService`、`MainWindow`）。`[Legacy]`・`[DI]` は、ログタブが画面に出さない印として使っているため維持。
+- **F6（ガード）**: 補間文字列の Trace／Debug（約 340 か所）を、実行頻度で調べた。毎フレーム実行されうるのは `TriggerDispatchEngine.ProcessUntrigger` の `SpecialAction UNTRIGGER check`（トリガー待ちの間、毎フレーム）だけが無防備だったため、`IsDebugEnabled` のガードを付けた。他は、①すでにガード済み（`ButtonOutputAction.ApplyFrame` は `bool trace = IsTraceEnabled`）、②例外時だけ実行、③押下・解放などのイベントの分岐の中（`SyntheticInputCommitter.Commit` の 34 か所は、イベントが起きたときだけ組み立てる）で、毎フレームの割り当てはない。ガードは付けない。

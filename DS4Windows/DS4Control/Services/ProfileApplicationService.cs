@@ -318,7 +318,7 @@ namespace DS4Windows
             }
             catch (Exception ex)
             {
-                AppLogger.LogError($"[ApplyProfile] Failed to log profile change: {ex.Message}");
+                AppLogger.LogError($"[Profile] Failed to log profile change: {ex.Message}");
             }
 
             AppLogger.LogDebug($"ApplyProfile: Raising SelectedProfileChanged event");
