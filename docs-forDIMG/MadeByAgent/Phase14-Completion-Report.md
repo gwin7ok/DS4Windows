@@ -62,7 +62,7 @@
 
 ## 7. 実機確認
 
-Release ビルド（`DS4Windowsind\Release\DS4Windows.exe`）で、ユーザーが実施（2026-11-04）。
+Release ビルド（`DS4Windows\bin\x64\Release\DS4Windows.exe`）で、ユーザーが実施（2026-11-04）。
 
 | # | 項目 | 結果 |
 |---|---|---|
