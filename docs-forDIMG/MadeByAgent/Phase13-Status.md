@@ -16,7 +16,7 @@
 | 9 | `running`／`suspending` の転送の削除（F-5c。`IServiceLifecycle` の直接注入） | **完了**（2026-11-04。9-a〜9-d。3126 件合格。結果は `Phase13-Step9-Plan.md` §10。実機確認は最後にまとめて） |
 | 10 | 転送メンバーの削除と引数の整理（`ControlService` 26 → 17 引数。`IRuntimeFeatureSwitch`／`IServiceDebugRelay` を新設） | **完了**（2026-11-04。10-a〜10-f。3137 件合格。結果は `Phase13-Step10-Plan.md` §10。実機確認は最後にまとめて） |
 | 11 | （任意）F-2c: IPC コマンドの実行を `IpcCommandProcessor`／`IIpcCommandHost` へ。F-1c は見送り | **完了**（2026-11-04。11-a〜11-d。3147 件合格。結果は `Phase13-Step11-Plan.md` §10。実機確認は最後にまとめて） |
-| 12 | 完了作業（モデル図 01〜04、台帳、完了報告書、Release ビルド、実機確認） | 未着手 |
+| 12 | 完了作業（モデル図 01〜04、台帳、完了報告書、Release ビルド、実機確認） | **進行中**（モデル図 01〜04 更新済み［`407f9445`］、台帳・ロードマップ更新済み、`Phase13-Completion-Report.md` 作成。残り: Release ビルド 2 か所と実機確認 1 回） |
 
 ## Step1 の結果
 

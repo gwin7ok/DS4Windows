@@ -224,3 +224,10 @@
 - 実機確認: 総合検証の手順をチェックリスト §12（T-1〜T-14、約 105 分）に作成した。10e の変更の確認は U-22（新設・未）。
 - 持ち越し（Phase8）: `Actions/` の `ServiceProviderHolder` 17 件、第 1 層の静的な状態（§17.3 の B・C）、維持して TODO を付けた 3 メンバー（`SettingChanged`、`ActionsChanged`、`UseTempProfileArray`）の画面への接続、`BackingStore` の分割、`Mapping` の依存 11・`MainWindow` の引数 18 の整理。
 - `copilot-instructions.md`（Q10。承認済み）: §2.1 のシム維持を過渡期の記述に改め、§3.1 に暗黙のホスト構築の禁止とラチェットの一致検査を追記した。
+
+### 17.6 Phase13 完了時点の更新（2026-11-04）
+- §17.3 の C（Actions サブシステム）のうち、静的 `ActionManager` と `ServiceProviderHolder`（クラス、`SetProvider`）は **Phase13-Step4 で撤廃した（0 件）**。`ActionRegistry`／`RepeaterFactoryOverride` ほかの静的な状態は、引き続き持ち越し。
+- `Func<T>`（遅延取得）は **2 件のみ**（本物の循環）: `DefaultActionManager` の `Func<IMapping>`、`ProfileApplicationService` の `Func<IActionBindingBuilder>`。許可リスト検査 `Phase13FuncRatchetGuardTests` で固定。
+- `ControlService` のコンストラクター引数は 34 → **17**、`MainWindow` は 23（`ArgumentParser` を含む。§17.4 の 18 から増減）。
+- 第 1 層（`DS4Devices`／`DS4LightBar`／`HidDevices`）の静的な状態（§17.3 の B）は変わらず持ち越し（Phase16 の候補）。
+- `[Collection("ServiceProviderHolder")]` というテストのコレクション名は、実体の撤廃後も名前だけ残っている。改名は別コミットの小作業（持ち越し）。
