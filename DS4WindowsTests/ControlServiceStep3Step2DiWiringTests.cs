@@ -38,14 +38,7 @@ namespace DS4WindowsTests
             Assert.NotNull(TestHost.GetService<ISpecialActionRepository>());
         }
 
-        [Fact]
-        public void Constructor_NullSpecialActionRepository_ThrowsArgumentNullException()
-        {
-            var ex = Assert.Throws<ArgumentNullException>(
-                () => ControlServiceTestFactory.Create("specialActionRepository"));
-
-            Assert.Equal("specialActionRepository", ex.ParamName);
-        }
+        // Phase13-Step5b-5b-e: 該当の引数（ControlService のコンストラクター）は、使われなくなったため削除した。null 検査のテストも不要になった
 
         private static object GetInternalProperty(ControlService controlService, string propertyName)
         {
@@ -57,9 +50,7 @@ namespace DS4WindowsTests
         }
 
         [Theory]
-        [InlineData("ProfileActionProvider", typeof(IProfileActionProvider))]
         [InlineData("ProfileRepository", typeof(IProfileRepository))]
-        [InlineData("SpecialActionRepository", typeof(ISpecialActionRepository))]
         public void InternalAccessor_ReturnsSameInstanceAsAppHost(string propertyName, Type serviceType)
         {
             DS4WinWPF.AppHost.CreateHost();

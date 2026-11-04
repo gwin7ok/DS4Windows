@@ -271,10 +271,7 @@ namespace DS4Windows.DI
                     () => sp.GetRequiredService<IOutputSlotService>(), // 決定D1: 遅延解決（OutputSlotService → ControlService の逆依存を回避）
                     sp.GetRequiredService<IProfileRepository>(),
                     sp.GetRequiredService<IDeviceStateService>(),
-                    sp.GetRequiredService<IVirtualKBM>(),
-                    sp.GetRequiredService<IAppearanceSettingsService>(),
-                    sp.GetRequiredService<IProfileActionProvider>(),
-                    sp.GetRequiredService<ISpecialActionRepository>(),
+                    // Phase13-Step5b-5b-e: IVirtualKBM／IAppearanceSettingsService／IProfileActionProvider／ISpecialActionRepository は、使われなくなったため外した
                     sp.GetRequiredService<IElevatedProcessLauncher>(),
                     // Phase7-Step8 W1: 保持クラスをコンストラクターで受ける（旧: ControlService／Mouse が Shared を参照）
                     sp.GetRequiredService<StickMotionState>(),

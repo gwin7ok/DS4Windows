@@ -118,14 +118,10 @@ namespace DS4Windows
         private readonly DI.IDeviceStateService _deviceStateService;
 
         // Phase6-Step2-3 (PR-3): KBM 出力の送出（IVirtualKBM）とハンドラのライフサイクル（IVirtualKBMLifecycle）を分離（決定D3）
-        private readonly Services.IVirtualKBM _virtualKBM;
+        // Phase13-Step5b-5b-e: 旧 _virtualKBM／_appearanceSettings／_profileActionProvider／_specialActionRepository は、On_Report（InputReportProcessor へ移設）と Mapping の逆依存の解消で、使われなくなったため削除した
 
         // Phase6-Step2-5 (PR-5): 入力処理ホットパス（On_Report）で参照するサービス。
         // いずれも呼び出し1回あたりの新規オブジェクト割り当て・ログ・キャッシュを行わない（ゼロアロケーション方針）。
-        private readonly DI.IAppearanceSettingsService _appearanceSettings;
-        private readonly DI.IProfileActionProvider _profileActionProvider;
-        // Phase6-Step3-2: Mapping.cs からの引数渡し（S3方針）用。ControlService 自体はこの値を使わない。
-        private readonly DI.ISpecialActionRepository _specialActionRepository;
         // Phase7-Step5 W4（Q6＝A）: 旧 AppHost.GetService<IElevatedProcessLauncher>()。デバイス再有効化の昇格要求で使う
         private readonly Services.IElevatedProcessLauncher _elevatedProcessLauncher;
         // Phase7-Step8 W1: 旧 StickMotionState.Shared／SyntheticInputState.Shared（静的な窓口）。コンストラクターで受ける。
@@ -139,9 +135,7 @@ namespace DS4Windows
         // ---- Phase6-Step3-2: Mapping.cs への引数渡し（S3方針）用の読み取り専用アクセサ ----
         // Mapping.cs の各メソッドは既に ControlService（ctrl）を引数として受け取っているため、
         // 新たな static Service Locator を追加せず、この既存の受け渡し経路を通じてサービスを渡す。
-        internal DI.IProfileActionProvider ProfileActionProvider => _profileActionProvider;
         internal DI.IProfileRepository ProfileRepository => _profileRepository;
-        internal DI.ISpecialActionRepository SpecialActionRepository => _specialActionRepository;
         // Phase6-Step3-3: MapCustom の ButtonAbsMouseInfos（絶対マウス出力の座標系設定）参照を
         // ctrl 経由の引数渡しへ切り替えるために追加。既存の _profileSettings フィールドをそのまま公開するのみで、
         // 新規サービス・新規フィールドは追加していない。ButtonAbsMouseInfos 自体はその後の機能廃止
@@ -193,10 +187,6 @@ namespace DS4Windows
             Func<DI.IOutputSlotService> outputSlotServiceFactory,
             DI.IProfileRepository profileRepository,
             DI.IDeviceStateService deviceStateService,
-            Services.IVirtualKBM virtualKBM,
-            DI.IAppearanceSettingsService appearanceSettings,
-            DI.IProfileActionProvider profileActionProvider,
-            DI.ISpecialActionRepository specialActionRepository,
             Services.IElevatedProcessLauncher elevatedProcessLauncher,
             StickMotionState stickMotion,
             DI.IMapping mapping,
@@ -239,10 +229,6 @@ namespace DS4Windows
             this._deviceStateService = deviceStateService ?? throw new ArgumentNullException(nameof(deviceStateService));
             // 適用のたびに、そのスロットのコントローラー（MAC）に、適用したプロファイルを記憶する（再接続で使う）
             this._profileRepository.SelectedProfileChanged += RememberAppliedProfile;
-            this._virtualKBM = virtualKBM ?? throw new ArgumentNullException(nameof(virtualKBM));
-            this._appearanceSettings = appearanceSettings ?? throw new ArgumentNullException(nameof(appearanceSettings));
-            this._profileActionProvider = profileActionProvider ?? throw new ArgumentNullException(nameof(profileActionProvider));
-            this._specialActionRepository = specialActionRepository ?? throw new ArgumentNullException(nameof(specialActionRepository));
             this._elevatedProcessLauncher = elevatedProcessLauncher ?? throw new ArgumentNullException(nameof(elevatedProcessLauncher));
             this._stickMotion = stickMotion ?? throw new ArgumentNullException(nameof(stickMotion));
             this._mapping = mapping ?? throw new ArgumentNullException(nameof(mapping));

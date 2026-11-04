@@ -32,14 +32,6 @@ namespace DS4WindowsTests
             Assert.NotNull(TestHost.GetService<IProfileActionProvider>());
         }
 
-        [Theory]
-        [InlineData("appearanceSettings")]
-        [InlineData("profileActionProvider")]
-        public void Constructor_NullRequiredParameter_ThrowsArgumentNullException(string parameterName)
-        {
-            var ex = Assert.Throws<ArgumentNullException>(() => ControlServiceTestFactory.Create(parameterName));
-
-            Assert.Equal(parameterName, ex.ParamName);
-        }
+        // Phase13-Step5b-5b-e: 該当の引数（ControlService のコンストラクター）は、使われなくなったため削除した。null 検査のテストも不要になった
     }
 }

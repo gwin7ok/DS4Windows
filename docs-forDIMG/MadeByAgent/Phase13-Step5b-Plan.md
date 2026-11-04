@@ -197,3 +197,12 @@ Step5 計画書 §3 のとおり（ゲームパッド周りの OSS に類似の�
 - `IDeviceSlotHost`（ファイルごと）と、その登録 2 行（`IDeviceSlotHost`、`Func<IDeviceSlotHost>`）、`ControlService` の実装を削除。`Func<IDeviceSlotHost>` は本番ソースで 0 件（`Phase13Step5FuncRemovalGuardTests` を 0 件の検査に更新）。Step5 のロードマップ #6〜#8 の `Func` 撤廃がすべて完了。
 - 更新したテスト: `Phase9E6ConnectorGuardTests`（2 件）、`Phase9E6ConnectionGuardTests`、`Phase9E6DisconnectGuardTests`（`IDeviceSlotHost` が存在しないことの検査に）、`Phase13Step5FuncRemovalGuardTests`。
 - Debug ALL: Actions.Tests 3081 件・Standalone 11 件すべて合格、警告 0・エラー 0。
+
+## 14. 5b-e の結果（2026-11-04）
+
+- `ControlService` のコンストラクターから、使われなくなった 4 引数（`IVirtualKBM`、`IAppearanceSettingsService`、`IProfileActionProvider`、`ISpecialActionRepository`）と、対応するフィールド、内部プロパティ `ProfileActionProvider`／`SpecialActionRepository` を削除。**引数は 30 → 26**（Step4 開始時の 29 から見ても、Step5a 前の 28 より少ない）。`ServiceRegistration` のファクトリーも同じ。`ProfileRepository`／`ProfileSettingsService` の内部プロパティは、利用者（`ControllerReadingsControl`、テスト）が残るため温存。
+- 削除した引数に対する null 検査のテスト（`virtualKBM`／`appearanceSettings`／`profileActionProvider`／`specialActionRepository`）と、削除した内部プロパティの同一性検査 2 件を削除（合計 6 件。3081 → 3075）。ctor 数のガード 2 件は 26 に更新。
+- `Step10FourGlobalRatchetGuardTests`・`Phase7Step10eW5RatchetEqualityGuardTests` の基準値は、`Global`／`AppHost`／`Program.rootHub` の件数が変わらないため更新不要（5b-c で `Phase10Step4dW0RuntimeKeyRatchetTests` の基準値を `InputReportProcessor.cs` へ移し済み）。
+- **Debug ALL**: Actions.Tests 3075 件・Standalone 11 件すべて合格、警告 0・エラー 0。
+- **モデル図 01〜04**: `IDeviceSlotHost`（03 の 381・508・514・521 行目、04 の 143 行目）などの記述は、Step5（`IDeviceSlotState`）と今回（`IInputReportProcessor`、`IDeviceSlotHost` の削除）で古くなっている。計画どおり **Step12 でまとめて更新**する（Step5 の分も含む）。
+- **Step5b の総括**: `Func<IDeviceSlotHost>` は 0 件、`Mapping` → `ControlService` の逆依存は解消、`On_Report`（約 200 行）は `InputReportProcessor` へ移設、`ControlService` のコンストラクター引数は 26。実機での `ProcessingDelayMs` の比較は、H 系の実機確認とあわせて 1 回（Step4 のコミット `1a3f8273` との比較）。

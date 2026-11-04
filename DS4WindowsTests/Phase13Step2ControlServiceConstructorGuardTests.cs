@@ -24,7 +24,7 @@ namespace DS4WindowsTests
         public void ControlService_Constructor_HasNoUnusedParameters()
         {
             var parameters = typeof(ControlService).GetConstructors().Single().GetParameters();
-            Assert.Equal(30, parameters.Length);   // Phase13-Step5b-5b-c: IInputReportProcessor を足した（29 → 30。5b-e で不要な引数を外して 26 にする）。 Phase13-Step5: スロット状態の持ち主（IDeviceSlotState）を足した（28 → 29。Step5b 以降で減らす）
+            Assert.Equal(26, parameters.Length);   // Phase13-Step5b-5b-e: 使われなくなった IVirtualKBM／IAppearanceSettingsService／IProfileActionProvider／ISpecialActionRepository を外した（30 → 26）。 Phase13-Step5b-5b-c: IInputReportProcessor を足した（29 → 30）。 Phase13-Step5: スロット状態の持ち主（IDeviceSlotState）を足した（28 → 29。Step5b 以降で減らす）
             foreach (Type t in Removed)
                 Assert.DoesNotContain(parameters, p => p.ParameterType == t);
         }
