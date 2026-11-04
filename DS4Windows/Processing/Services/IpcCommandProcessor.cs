@@ -2,6 +2,7 @@ using System;
 using System.IO;
 using System.Threading.Tasks;
 using DS4Windows.Core.Abstractions;
+using DS4Windows.Core.Logging;
 using DS4Windows.Input;
 using DS4Windows.Output;
 using DS4Windows.Processing.Abstractions;
@@ -138,12 +139,18 @@ namespace DS4Windows.Processing.Services
                         {
                             string prolog = string.Format(DS4Windows.Properties.Resources.UsingProfile,
                                 (tdevice + 1).ToString(), strData[2], $"{devitem.Battery}");
-                            _profileApplication.ApplyProfile(tdevice, strData[2], false, true,
-                                ProfileChangeSource.Manual, prolog);
+                            if (!_profileApplication.ApplyProfile(tdevice, strData[2], false, true,
+                                ProfileChangeSource.Manual, prolog))
+                                AppLogger.LogWarn($"[IPC] LoadProfile: ApplyProfile failed (device={tdevice + 1}, profile='{strData[2]}')");
+                        }
+                        else
+                        {
+                            AppLogger.LogWarn($"[IPC] LoadProfile: no controller device at list position {tdevice} (profile='{strData[2]}'); the profile was not applied");
                         }
                     }
                     else
                     {
+                        AppLogger.LogWarn($"[IPC] LoadProfile: not applied now (profileIndex={idx}, controllerCount={host.ControllerCount}, device={tdevice + 1}); only the profile path for later was set");
                         // Preset profile name for later loading
                         _profileRepo.ProfilePath[tdevice] = strData[2];
                     }
