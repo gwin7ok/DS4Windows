@@ -1,8 +1,7 @@
 
 using DS4Windows.Core.Utilities;
-using DS4Windows.UI;
 
-namespace DS4Windows.Processing.Abstractions
+namespace DS4Windows.UI.Abstractions
 {
     /// <summary>
     /// メイン画面（<see cref="MainWindow"/>）を生成する窓口（Phase7-Step5 W5）。

@@ -70,7 +70,7 @@ namespace DS4Windows.UI
         public RecordBox(int deviceNum, DS4Windows.Core.Settings.DS4ControlSettings controlSettings, int targetDevice,
             bool showscan, bool repeatable, bool showPlaybackOptions,
             DS4Windows.Processing.ControlService controlService, DS4Windows.Core.Abstractions.IPathService pathService,
-            DS4Windows.Processing.Abstractions.IViewModelFactory viewModelFactory,
+            DS4Windows.UI.Abstractions.IViewModelFactory viewModelFactory,
             DS4Windows.Core.Abstractions.IWindowSystem windowSystem, DS4Windows.Core.Abstractions.IMouseInputHook mouseHook)
         {
             this.windowSystem = windowSystem ?? throw new ArgumentNullException(nameof(windowSystem));

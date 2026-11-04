@@ -1,7 +1,7 @@
 using System;
 using Xunit;
 using DS4Windows.Core.Profiles;
-using DS4Windows.Processing.Abstractions;
+using DS4Windows.UI.Abstractions;
 using DS4Windows.UI.ViewModels;
 
 namespace DS4WindowsTests

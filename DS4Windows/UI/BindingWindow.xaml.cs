@@ -52,7 +52,7 @@ namespace DS4Windows.UI
         // Phase6-Step10-2-4b: Global.defaultButtonMapping／InverseRumbleMotors の置換先（必須引数）
         private readonly DS4Windows.Core.Abstractions.IProfileSettingsService profileSettingsService;
         // Phase6-Step10-2-4a: RecordBox の生成を窓口へ依頼する（必須引数）
-        private readonly DS4Windows.Processing.Abstractions.IEditorWindowFactory editorWindowFactory;
+        private readonly DS4Windows.UI.Abstractions.IEditorWindowFactory editorWindowFactory;
         private Button highlightBtn;
         private ExposeMode expose;
 
@@ -74,7 +74,7 @@ namespace DS4Windows.UI
         /// 渡し忘れをコンパイルで検出するため必須引数とする（Phase6-Step7b-Plan.md 決定2）
         /// </param>
         public BindingWindow(int deviceNum, DS4Windows.Core.Settings.DS4ControlSettings settings, int targetDevice,
-            DS4Windows.Processing.Abstractions.IEditorWindowFactory editorWindowFactory,
+            DS4Windows.UI.Abstractions.IEditorWindowFactory editorWindowFactory,
             DS4Windows.Core.Abstractions.IProfileSettingsService profileSettingsService,
             DS4Windows.Processing.Abstractions.IOutputSlotService outputSlotService,
             DS4Windows.Core.Abstractions.IEnvironmentService environmentService,

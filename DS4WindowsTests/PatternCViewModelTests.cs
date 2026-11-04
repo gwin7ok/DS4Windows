@@ -9,6 +9,7 @@ using DS4Windows.Core.Settings;
 using DS4Windows.Input;
 using DS4Windows.Output;
 using DS4Windows.Processing.Abstractions;
+using DS4Windows.UI.Abstractions;
 using DS4Windows.UI.ViewModels;
 
 namespace DS4WindowsTests

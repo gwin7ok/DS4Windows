@@ -11,6 +11,7 @@ using DS4Windows.Processing;
 using DS4Windows.Processing.Abstractions;
 using DS4Windows.Processing.Actions;
 using DS4Windows.Processing.Services;
+using DS4Windows.UI.Abstractions;
 using DS4Windows.UI.Services;
 using DS4Windows.UI.ViewModels;
 

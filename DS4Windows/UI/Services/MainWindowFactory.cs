@@ -3,6 +3,7 @@ using DS4Windows.Core.Abstractions;
 using DS4Windows.Core.Utilities;
 using DS4Windows.Processing;
 using DS4Windows.Processing.Abstractions;
+using DS4Windows.UI.Abstractions;
 using DS4Windows.UI.ViewModels;
 
 namespace DS4Windows.UI.Services

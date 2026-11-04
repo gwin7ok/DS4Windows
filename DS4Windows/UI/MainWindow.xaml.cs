@@ -81,7 +81,7 @@ namespace DS4Windows.UI
         // Phase6-Step10-2-2: ControllerRegisterOptionsWindow（コントローラー固有設定の保存）へ渡す
         private readonly DS4Windows.Core.Abstractions.IProfileXmlStore profileXmlStore;
         // Phase6-Step10-2-4a: ProfileEditor へ渡す、補助ウィンドウの生成の窓口
-        private readonly DS4Windows.Processing.Abstractions.IEditorWindowFactory editorWindowFactory;
+        private readonly DS4Windows.UI.Abstractions.IEditorWindowFactory editorWindowFactory;
         private readonly DS4Windows.Core.Abstractions.IPathService pathService;
         private readonly DS4Windows.Core.Abstractions.IEnvironmentService environmentService;
         private readonly DS4Windows.Core.Abstractions.IAppearanceSettingsService appearanceSettingsService;
@@ -115,7 +115,7 @@ namespace DS4Windows.UI
             DS4Windows.Core.Abstractions.IProfileSettingsService profileSettingsService,
             DS4Windows.Processing.Abstractions.IAppSettingsService appSettingsService,
             DS4Windows.Core.Abstractions.IProfileXmlStore profileXmlStore,
-            DS4Windows.Processing.Abstractions.IEditorWindowFactory editorWindowFactory,
+            DS4Windows.UI.Abstractions.IEditorWindowFactory editorWindowFactory,
             DS4Windows.Core.Abstractions.IPathService pathService,
             DS4Windows.Core.Abstractions.IEnvironmentService environmentService,
             DS4Windows.Core.Abstractions.IAppearanceSettingsService appearanceSettingsService,
@@ -132,7 +132,7 @@ namespace DS4Windows.UI
             MainWindowsViewModel mainWindowsViewModel,
             DS4Windows.Core.Abstractions.ILogSettingsApplier logSettingsApplier,
             IAutoProfileService autoProfileService,
-            DS4Windows.Processing.Abstractions.IViewModelFactory viewModelFactory,
+            DS4Windows.UI.Abstractions.IViewModelFactory viewModelFactory,
             DS4Windows.Core.Abstractions.IProfileIdentityService profileIdentityService)
         {
             // XAML初期化前にウィンドウサイズを設定（WindowLayoutDefaults から）

@@ -27,6 +27,7 @@ using DS4Windows.Output;
 using DS4Windows.Processing;
 using DS4Windows.Processing.Abstractions;
 using DS4Windows.Processing.Actions;
+using DS4Windows.UI.Abstractions;
 using DS4Windows.UI.ViewModels;
 using Application = System.Windows.Application;
 using Button = System.Windows.Controls.Button;
@@ -170,7 +171,7 @@ namespace DS4Windows.UI
         // Phase6-Step8-3: 編集スロットの LS／RS 補正値・出力種別の読み書き先（Global.LSModInfo 等の置換先）
         private readonly IProfileSettingsService profileSettingsService;
         // Phase6-Step10-2-4a: 補助ウィンドウ（ボタン割り当て、プリセット、スティック校正、スペシャルアクション編集）の生成の窓口
-        private readonly DS4Windows.Processing.Abstractions.IEditorWindowFactory editorWindowFactory;
+        private readonly DS4Windows.UI.Abstractions.IEditorWindowFactory editorWindowFactory;
         // Phase7-Step10e W2: スロット数の上限は、静的な environmentService.ControllerSlotLimit ではなく、注入された環境サービスから読む
         private readonly DS4Windows.Core.Abstractions.IEnvironmentService environmentService;
 
@@ -322,7 +323,7 @@ namespace DS4Windows.UI
         /// Phase6-Step8-3: プロファイル設定（LSModInfo／RSModInfo／OutContType）。MainWindow から渡す
         /// </param>
         public ProfileEditor(int targetDevice, IAppSettingsService appSettingsService, IProfileSettingsService profileSettingsService,
-            DS4Windows.Processing.Abstractions.IEditorWindowFactory editorWindowFactory, IProfileRepository profileRepository,
+            DS4Windows.UI.Abstractions.IEditorWindowFactory editorWindowFactory, IProfileRepository profileRepository,
             IProfileSwitcher profileSwitcher, ControlService controlService, IViewModelFactory viewModelFactory,
             DS4Windows.Core.Abstractions.IEnvironmentService environmentService, DS4Windows.Processing.Abstractions.IRuntimeFeatureSwitch runtimeFeatures)
         {

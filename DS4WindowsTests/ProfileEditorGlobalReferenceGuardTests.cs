@@ -89,7 +89,7 @@ namespace DS4WindowsTests
             // 引数が複数行に折り返されていても一致するよう、空白を正規化して比較する
             string normalizedEditor = Regex.Replace(editor, @"\s+", " ");
             // Phase7-Step5 W5: 旧 AppHost.GetService の 4 件をコンストラクター引数に替えた
-            Assert.Contains("public ProfileEditor(int targetDevice, IAppSettingsService appSettingsService, IProfileSettingsService profileSettingsService, DS4Windows.Processing.Abstractions.IEditorWindowFactory editorWindowFactory, IProfileRepository profileRepository, IProfileSwitcher profileSwitcher, ControlService controlService, IViewModelFactory viewModelFactory, DS4Windows.Core.Abstractions.IEnvironmentService environmentService, DS4Windows.Processing.Abstractions.IRuntimeFeatureSwitch runtimeFeatures)", normalizedEditor);
+            Assert.Contains("public ProfileEditor(int targetDevice, IAppSettingsService appSettingsService, IProfileSettingsService profileSettingsService, DS4Windows.UI.Abstractions.IEditorWindowFactory editorWindowFactory, IProfileRepository profileRepository, IProfileSwitcher profileSwitcher, ControlService controlService, IViewModelFactory viewModelFactory, DS4Windows.Core.Abstractions.IEnvironmentService environmentService, DS4Windows.Processing.Abstractions.IRuntimeFeatureSwitch runtimeFeatures)", normalizedEditor);
             Assert.Contains("throw new ArgumentNullException(nameof(appSettingsService))", editor);
             Assert.Contains("appSettingsService.UseLang", editor);
 

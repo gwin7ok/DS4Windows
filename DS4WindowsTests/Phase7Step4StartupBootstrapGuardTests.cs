@@ -6,7 +6,6 @@ using Xunit.Abstractions;
 using DS4Windows.Composition;
 using DS4Windows.Core.Abstractions;
 using DS4Windows.Core.Platform;
-using DS4Windows.Processing.Abstractions;
 
 namespace DS4WindowsTests
 {

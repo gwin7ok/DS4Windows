@@ -1,6 +1,4 @@
-﻿using DS4Windows.Processing.Abstractions;
-
-namespace DS4Windows.Core.Abstractions
+﻿namespace DS4Windows.Core.Abstractions
 {
     /// <summary>
     /// 実行時の環境情報プローブ（管理者権限判定、アプリバージョン、HidHide/FakerInput状態の再取得）を

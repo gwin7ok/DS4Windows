@@ -1,9 +1,10 @@
 ﻿using System;
 using DS4Windows.Core.Profiles;
 using DS4Windows.Core.Settings;
+using DS4Windows.Processing;
 using DS4Windows.UI.ViewModels;
 
-namespace DS4Windows.Processing.Abstractions
+namespace DS4Windows.UI.Abstractions
 {
     public interface IViewModelFactory
     {

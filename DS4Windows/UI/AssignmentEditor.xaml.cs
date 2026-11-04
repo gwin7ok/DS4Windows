@@ -83,15 +83,15 @@ namespace DS4Windows.UI
         /// </param>
         // Phase6-Step10-2-4a: BindingWindow／RecordBoxWindow の生成を窓口へ依頼する（必須引数）。
         // Phase6-Step10-3-2: 種別ごとの ViewModel の生成と、名前変更時の旧名の削除に必要なサービスも必須引数で受け取る。
-        private readonly DS4Windows.Processing.Abstractions.IEditorWindowFactory editorWindowFactory;
+        private readonly DS4Windows.UI.Abstractions.IEditorWindowFactory editorWindowFactory;
         private readonly DS4Windows.Core.Abstractions.ISpecialActionRepository specialActionRepository;
         // Phase7-Step10e W2: スロット数の上限は、静的な ControlService.CURRENT_DS4_CONTROLLER_LIMIT ではなく、注入された環境サービスから読む
         private readonly DS4Windows.Core.Abstractions.IEnvironmentService environmentService;
 
         /// <summary>SA のモード（従来どおり。SA の新規作成・編集）。</summary>
         public AssignmentEditor(int deviceNum, ProfileList profileList, int targetDevice,
-            DS4Windows.Processing.Abstractions.IEditorWindowFactory editorWindowFactory,
-            DS4Windows.Processing.Abstractions.IViewModelFactory viewModelFactory,
+            DS4Windows.UI.Abstractions.IEditorWindowFactory editorWindowFactory,
+            DS4Windows.UI.Abstractions.IViewModelFactory viewModelFactory,
             DS4Windows.Core.Abstractions.ISpecialActionRepository specialActionRepository,
             DS4Windows.Core.Abstractions.IProfileSettingsService profileSettingsService,
             DS4Windows.Processing.Abstractions.IOutputSlotService outputSlotService,
@@ -110,8 +110,8 @@ namespace DS4Windows.UI
         /// コントローラーの入力。Phase10-Step3-Plan.md §3.4）。保存（<see cref="ControlSaved"/>）は、編集用のコピーを元の設定へ反映してから発生する。
         /// </summary>
         public AssignmentEditor(int deviceNum, DS4Windows.Core.Settings.DS4ControlSettings controlSettings, ProfileList profileList, int targetDevice,
-            DS4Windows.Processing.Abstractions.IEditorWindowFactory editorWindowFactory,
-            DS4Windows.Processing.Abstractions.IViewModelFactory viewModelFactory,
+            DS4Windows.UI.Abstractions.IEditorWindowFactory editorWindowFactory,
+            DS4Windows.UI.Abstractions.IViewModelFactory viewModelFactory,
             DS4Windows.Core.Abstractions.ISpecialActionRepository specialActionRepository,
             DS4Windows.Core.Abstractions.IProfileSettingsService profileSettingsService,
             DS4Windows.Processing.Abstractions.IOutputSlotService outputSlotService,
@@ -123,8 +123,8 @@ namespace DS4Windows.UI
         }
 
         private AssignmentEditor(int deviceNum, DS4Windows.Core.Settings.DS4ControlSettings controlSettings, ProfileList profileList, int targetDevice,
-            DS4Windows.Processing.Abstractions.IEditorWindowFactory editorWindowFactory,
-            DS4Windows.Processing.Abstractions.IViewModelFactory viewModelFactory,
+            DS4Windows.UI.Abstractions.IEditorWindowFactory editorWindowFactory,
+            DS4Windows.UI.Abstractions.IViewModelFactory viewModelFactory,
             DS4Windows.Core.Abstractions.ISpecialActionRepository specialActionRepository,
             DS4Windows.Core.Abstractions.IProfileSettingsService profileSettingsService,
             DS4Windows.Processing.Abstractions.IOutputSlotService outputSlotService,

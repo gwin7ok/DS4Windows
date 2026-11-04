@@ -49,7 +49,7 @@ namespace DS4Windows.UI
         private DS4Windows.Core.Abstractions.IPathService pathService;
         private DS4Windows.Processing.Abstractions.IAppSettingsService appSettingsService;
         private DS4Windows.Processing.Abstractions.IAutoProfileService autoProfileService;
-        private DS4Windows.Processing.Abstractions.IViewModelFactory viewModelFactory;
+        private DS4Windows.UI.Abstractions.IViewModelFactory viewModelFactory;
         protected String m_Profile;
         public const string steamCommx86Loc = @"C:\Program Files (x86)\Steam\steamapps\common";
         public const string steamCommLoc = @"C:\Program Files\Steam\steamapps\common";
@@ -81,7 +81,7 @@ namespace DS4Windows.UI
         public void Initialize(DS4Windows.Core.Abstractions.IPathService pathService,
             DS4Windows.Processing.Abstractions.IAppSettingsService appSettingsService,
             DS4Windows.Processing.Abstractions.IAutoProfileService autoProfileService,
-            DS4Windows.Processing.Abstractions.IViewModelFactory viewModelFactory,
+            DS4Windows.UI.Abstractions.IViewModelFactory viewModelFactory,
             DS4Windows.Core.Abstractions.IEnvironmentService environmentService)
         {
             if (environmentService == null) throw new ArgumentNullException(nameof(environmentService));

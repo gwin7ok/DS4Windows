@@ -1,10 +1,10 @@
 
 using DS4Windows.Core.Profiles;
 using DS4Windows.Core.Settings;
-using DS4Windows.UI;
+using DS4Windows.Processing;
 using DS4Windows.UI.ViewModels;
 
-namespace DS4Windows.Processing.Abstractions
+namespace DS4Windows.UI.Abstractions
 {
     /// <summary>
     /// プロファイル編集画面などから開く、補助ウィンドウ（ボタン割り当て、マクロ記録、プリセット、スティック校正、

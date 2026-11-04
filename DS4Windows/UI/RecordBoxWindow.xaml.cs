@@ -45,7 +45,7 @@ namespace DS4Windows.UI
         /// </param>
         // Phase6-Step10-2-4a: RecordBox の生成を窓口へ依頼する（必須引数）
         public RecordBoxWindow(int deviceNum, DS4Windows.Core.Settings.DS4ControlSettings settings, int targetDevice,
-            DS4Windows.Processing.Abstractions.IEditorWindowFactory editorWindowFactory, bool repeatable = true,
+            DS4Windows.UI.Abstractions.IEditorWindowFactory editorWindowFactory, bool repeatable = true,
             bool showPlaybackOptions = true)
         {
             if (editorWindowFactory == null) throw new ArgumentNullException(nameof(editorWindowFactory));
