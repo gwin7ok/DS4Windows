@@ -1,11 +1,13 @@
 using System;
 using System.IO;
 using System.Text.RegularExpressions;
-using DS4Windows;
-using DS4Windows.DI;
-using DS4Windows.Services;
 using Xunit;
 using Xunit.Abstractions;
+using DS4Windows.Core.Abstractions;
+using DS4Windows.Core.Platform;
+using DS4Windows.Output;
+using DS4Windows.Processing;
+using DS4Windows.Processing.Services;
 
 namespace DS4WindowsTests
 {
@@ -77,7 +79,7 @@ namespace DS4WindowsTests
         {
             Assert.Throws<ArgumentNullException>(() => new ProfileSlotApplier(TestRepositoryFactory.CreateProfileApplicationService(
                 TestGlobals.ProfileSettingsServiceInstance, new LazyProfileLoadTarget(), TestRepositoryFactory.CreateProfileRepository(), new EnvironmentService()), null,
-                TestHost.GetService<DS4Windows.Actions.ITriggerDispatchEngine>()));
+                TestHost.GetService<DS4Windows.Processing.Actions.ITriggerDispatchEngine>()));
         }
     }
 }

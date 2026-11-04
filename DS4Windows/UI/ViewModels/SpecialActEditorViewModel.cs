@@ -18,10 +18,10 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 using System;
 using System.Collections.Generic;
-using DS4Windows;
-using DS4Windows.DI;
+using DS4Windows.Core.Abstractions;
+using DS4Windows.Processing;
 
-namespace DS4WinWPF.DS4Forms.ViewModels
+namespace DS4Windows.UI.ViewModels
 {
     /// <summary>
     /// SA の編集画面（<c>AssignmentEditor</c>）の ViewModel。Phase10-Step2 W1（Phase10-Step2-Plan.md §3.1）で、中身を

@@ -1,10 +1,12 @@
 using System.IO;
 using System.Linq;
 using System.Text.RegularExpressions;
-using DS4Windows;
-using DS4WinWPF.DS4Forms;
 using Xunit;
 using Xunit.Abstractions;
+using DS4Windows.Core.Settings;
+using DS4Windows.Core.Utilities;
+using DS4Windows.Input;
+using DS4Windows.UI;
 
 namespace DS4WindowsTests
 {
@@ -37,7 +39,7 @@ namespace DS4WindowsTests
         [Fact]
         public void TheAppearanceService_ResolvesThePathFromTheMovedTable()
         {
-            var service = TestHost.GetService<DS4Windows.DI.IAppearanceSettingsService>();
+            var service = TestHost.GetService<DS4Windows.Core.Abstractions.IAppearanceSettingsService>();
             Assert.Equal(TrayIconResources.iconChoiceResources[TrayIconChoice.White], service.GetIconResourcePath(TrayIconChoice.White));
         }
 

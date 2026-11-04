@@ -21,7 +21,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.ComponentModel;
 
-namespace DS4WinWPF.DS4Forms.ViewModels.Util
+namespace DS4Windows.UI.ViewModels.Util
 {
     public abstract class NotifyDataErrorBase : INotifyDataErrorInfo
     {
@@ -43,7 +43,7 @@ namespace DS4WinWPF.DS4Forms.ViewModels.Util
             ErrorsChanged?.Invoke(this, new DataErrorsChangedEventArgs(propertyName));
         }
 
-        public abstract bool IsValid(DS4Windows.SpecialAction action);
+        public abstract bool IsValid(DS4Windows.Processing.SpecialAction action);
         public abstract void ClearOldErrors();
     }
 }

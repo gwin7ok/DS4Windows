@@ -1,6 +1,7 @@
 using System.Collections.Generic;
+using DS4Windows.Input;
 
-namespace DS4Windows.Actions
+namespace DS4Windows.Processing.Actions
 {
     // TODO(Phase8-Step4 W3〜W4): 実装（TriggerDispatchEngine）は W3、Mapping への配線は W4。ProcessTriggers は最終形の入口で、Step7 の全種別の切替後（Step8）に旧ループのフック（Owns／ProcessOwned）と入れ替わる。
     // OnProfileApplied は Step5、OnDeviceDisconnected は Step6 で本番に接続する（それまでは単体テストからのみ呼ばれる。規約 2.4）。

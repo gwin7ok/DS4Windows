@@ -1,6 +1,6 @@
 using System;
 
-namespace DS4Windows.DI
+namespace DS4Windows.Processing.Abstractions
 {
     /// <summary>
     /// Phase13-Step3: 専用のイベントスレッド（旧 <c>ControlService</c> が所有していた "ControlService Events"）の窓口。

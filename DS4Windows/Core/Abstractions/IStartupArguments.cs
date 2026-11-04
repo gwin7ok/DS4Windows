@@ -1,6 +1,8 @@
-using DS4WinWPF;
 
-namespace DS4Windows.DI
+using DS4Windows.Core.Utilities;
+using DS4Windows.Processing;
+
+namespace DS4Windows.Core.Abstractions
 {
     /// <summary>
     /// Phase6-Step7-4（決定7＝案H）: アプリの起動引数（<see cref="ArgumentParser"/>）を、DI コンテナ経由で

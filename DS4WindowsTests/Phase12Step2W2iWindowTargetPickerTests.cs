@@ -1,8 +1,10 @@
 using System;
 using System.Collections.Generic;
-using DS4Windows.Services;
-using DS4WinWPF.DS4Forms.ViewModels.SpecialActions;
 using Xunit;
+using DS4Windows.Core.Abstractions;
+using DS4Windows.Core.Platform;
+using DS4Windows.Processing.Abstractions;
+using DS4Windows.UI.ViewModels.SpecialActions;
 
 namespace DS4WindowsTests
 {

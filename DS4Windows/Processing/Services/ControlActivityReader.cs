@@ -1,13 +1,17 @@
-namespace DS4Windows.Services
+using DS4Windows.Core.Settings;
+using DS4Windows.Input;
+using DS4Windows.Processing.Abstractions;
+
+namespace DS4Windows.Processing.Services
 {
     /// <summary>
-    /// Phase9 9-B（Phase9-B-Plan.md）: <see cref="DS4Windows.DI.IControlActivityReader"/> の実装（DI の Singleton。状態は持たない）。
+    /// Phase9 9-B（Phase9-B-Plan.md）: <see cref="DS4Windows.Processing.Abstractions.IControlActivityReader"/> の実装（DI の Singleton。状態は持たない）。
     /// 旧 <c>Mapping.GetBoolMappingExternal</c>（と、その補助 <c>IsUsingGyroForControls</c>）を、そのまま移したもの（設定は引数で受ける）。
     /// 値の特性化は <c>Phase9BControlActivityReaderTests</c> が守る。
     /// </summary>
-    public sealed class ControlActivityReader : DS4Windows.DI.IControlActivityReader
+    public sealed class ControlActivityReader : DS4Windows.Processing.Abstractions.IControlActivityReader
     {
-        public bool IsActive(DS4Windows.DI.IProfileSettingsService settings, int device, DS4Controls control,
+        public bool IsActive(DS4Windows.Core.Abstractions.IProfileSettingsService settings, int device, DS4Controls control,
             DS4State cState, DS4StateExposed eState, Mouse tp)
         {
             bool result = false;

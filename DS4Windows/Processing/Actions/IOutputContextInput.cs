@@ -1,4 +1,4 @@
-namespace DS4Windows.Actions
+namespace DS4Windows.Processing.Actions
 {
     /// <summary>
     /// Phase8-Step7 7.2-W2（Q3＝A）: エンジンが渡す <see cref="IOutputContext"/> が、このフレームの入力も持つときの口。

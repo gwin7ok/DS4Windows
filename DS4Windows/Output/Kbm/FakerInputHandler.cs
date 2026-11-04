@@ -22,7 +22,7 @@ using System.Runtime.InteropServices;
 using System.Threading;
 using FakerInputWrapper;
 
-namespace DS4Windows.DS4Control
+namespace DS4Windows.Output.Kbm
 {
     public class FakerInputHandler : VirtualKBMBase
     {

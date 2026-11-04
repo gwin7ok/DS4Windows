@@ -1,6 +1,6 @@
 using System;
 
-namespace DS4Windows.Actions
+namespace DS4Windows.Processing.Actions
 {
     /// <summary>
     /// Phase8-Step3 W1: <c>delayTime</c> つきの特殊アクションが共有する、デバイスごとの基準時刻

@@ -1,8 +1,11 @@
 using System;
-using DS4Windows;
-using DS4Windows.DI;
+using DS4Windows.Core.Abstractions;
+using DS4Windows.Core.Logging;
+using DS4Windows.Core.Platform;
+using DS4Windows.Core.Utilities;
+using DS4Windows.Processing.Abstractions;
 
-namespace DS4Windows.Services
+namespace DS4Windows.Core.Settings
 {
     // ★ IDE0290 根本解決: C# 12 プライマリコンストラクタ構文を適用
     public class AppSettingsService(BackingStore config, IProfileXmlStore xmlStore = null, IPathService pathService = null) : IAppSettingsService

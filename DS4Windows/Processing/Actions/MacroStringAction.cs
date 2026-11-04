@@ -1,7 +1,8 @@
 using System;
 using System.Collections.Generic;
+using DS4Windows.Core.Logging;
 
-namespace DS4Windows.Actions
+namespace DS4Windows.Processing.Actions
 {
     /// <summary>
     /// Phase8-Step7 7.7b（W2b。<c>MultiActionOutput</c> の置き換え）: 「このマクロの文字列を再生する」だけの、汎用の出力（信号・アクション出力層）。

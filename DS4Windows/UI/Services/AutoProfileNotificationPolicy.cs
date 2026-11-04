@@ -1,4 +1,7 @@
-namespace DS4Windows.Services
+using DS4Windows.Core.Settings;
+using DS4Windows.Processing;
+
+namespace DS4Windows.UI.Services
 {
     /// <summary>
     /// プロファイル切替の通知（独自ウィンドウ／トースト）を出すかどうかの判定（純粋関数）。

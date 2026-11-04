@@ -1,6 +1,7 @@
-using DS4Windows;
-using DS4Windows.DI;
-using DS4WinWPF.DS4Forms.ViewModels;
+
+using DS4Windows.Core.Abstractions;
+using DS4Windows.Processing.Abstractions;
+using DS4Windows.UI.ViewModels;
 
 namespace DS4WindowsTests
 {
@@ -27,7 +28,7 @@ namespace DS4WindowsTests
 
             if (System.Windows.Application.ResourceAssembly == null)
             {
-                try { System.Windows.Application.ResourceAssembly = typeof(DS4WinWPF.AppHost).Assembly; }
+                try { System.Windows.Application.ResourceAssembly = typeof(DS4Windows.Composition.AppHost).Assembly; }
                 catch { }
             }
         }
@@ -38,7 +39,7 @@ namespace DS4WindowsTests
             IOutputSlotService outputSlotService = null,
             int targetDevice = -1)
         {
-            DS4WinWPF.AppHost.CreateHost();
+            DS4Windows.Composition.AppHost.CreateHost();
 
             return new ProfileSettingsViewModel(
                 device,

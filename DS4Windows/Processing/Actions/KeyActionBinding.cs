@@ -1,7 +1,6 @@
 using System.Collections.Generic;
-using DS4Windows.DS4Control;
 
-namespace DS4Windows.Actions
+namespace DS4Windows.Processing.Actions
 {
     // TODO(Phase8-Step4〜5): 使うべき型だが、現状は SpecialAction に直結した実装（Input は未実装で null）。Controls タブ由来のデータも扱える TriggerBinding（Step3 W1 で新設）が
     // 統一ディスパッチの束縛になるため、Step5（ビルダー）で TriggerBinding に置き換えて削除する見込み。それまでは、コントローラー（IActionController）へ渡す引数として使われる。

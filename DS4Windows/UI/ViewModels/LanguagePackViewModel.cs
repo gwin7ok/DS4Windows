@@ -25,9 +25,9 @@ using System.Reflection;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
-using DS4Windows;
+using DS4Windows.Core.Logging;
 
-namespace DS4WinWPF.DS4Forms.ViewModels
+namespace DS4Windows.UI.ViewModels
 {
     public class LanguagePackViewModel
     {
@@ -56,9 +56,9 @@ namespace DS4WinWPF.DS4Forms.ViewModels
         public event EventHandler ScanFinished;
 
         // Phase6-Step10-1-4: Global.UseLang の置換先（必須引数。null は拒否する）
-        private readonly DS4Windows.DI.IAppSettingsService _appSettingsService;
+        private readonly DS4Windows.Processing.Abstractions.IAppSettingsService _appSettingsService;
 
-        public LanguagePackViewModel(DS4Windows.DI.IAppSettingsService appSettingsService)
+        public LanguagePackViewModel(DS4Windows.Processing.Abstractions.IAppSettingsService appSettingsService)
         {
             _appSettingsService = appSettingsService ?? throw new ArgumentNullException(nameof(appSettingsService));
         }

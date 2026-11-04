@@ -31,8 +31,8 @@ namespace DS4WindowsTests
             object reference = null;
             try { reference = Activator.CreateInstance(root.GetType()); } catch { }
             // Phase7-Step10d W5: BackingStore は引数なしでは作れない（環境サービスが必須）
-            if (reference == null && root is DS4Windows.BackingStore)
-                reference = new DS4Windows.BackingStore(new DS4Windows.EnvironmentService());
+            if (reference == null && root is DS4Windows.Core.Settings.BackingStore)
+                reference = new DS4Windows.Core.Settings.BackingStore(new DS4Windows.Core.Platform.EnvironmentService());
             FillObject(root, reference, slot, 0);
         }
 

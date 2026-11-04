@@ -1,7 +1,6 @@
 using System;
-using DS4Windows.DS4Control;
 
-namespace DS4Windows.Actions
+namespace DS4Windows.Processing.Actions
 {
     /// <summary>
     /// Adapter that wraps existing <see cref="RepeatHelper"/> instances
@@ -37,7 +36,7 @@ namespace DS4Windows.Actions
             {
                 if (tickAction != null)
                 {
-                    try { DS4Windows.AppLogger.LogTrace("RepeatHelperToIRepeaterAdapter: supplied tickAction will be ignored; using RepeatHelper behavior"); } catch { }
+                    try { DS4Windows.Core.Logging.AppLogger.LogTrace("RepeatHelperToIRepeaterAdapter: supplied tickAction will be ignored; using RepeatHelper behavior"); } catch { }
                 }
 
                 // If tests provided an override factory, prefer creating an IRepeater wrapper

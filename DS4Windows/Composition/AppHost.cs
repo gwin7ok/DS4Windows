@@ -2,9 +2,10 @@ using System;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using DS4Windows;
+using DS4Windows.Core.Abstractions;
+using DS4Windows.Core.Logging;
 
-namespace DS4WinWPF
+namespace DS4Windows.Composition
 {
     public static class AppHost
     {
@@ -38,7 +39,7 @@ namespace DS4WinWPF
                 var builder = Microsoft.Extensions.Hosting.Host.CreateDefaultBuilder()
                     .ConfigureServices((context, services) =>
                     {
-                        DS4Windows.DI.ServiceRegistration.RegisterServices(services);
+                        DS4Windows.Composition.ServiceRegistration.RegisterServices(services);
                     });
 
                 _host = builder.Build();
@@ -56,10 +57,10 @@ namespace DS4WinWPF
         /// Phase7-Step4 W4（D3＝S1）: コンテナの構築より前に作ったブートストラップのサービスを渡すと、同じインスタンスをコンテナへ登録する
         /// （Pre-Host の起動処理と、コンテナから解決するサービスが同じインスタンスになる）。ホストが構築済みのときは、登録は変えられない。
         /// </summary>
-        public static IHost CreateHost(IConfiguration configuration, DS4WinWPF.ArgumentParser parser,
-            DS4Windows.DI.IPathService bootstrapPathService = null,
-            DS4Windows.DI.IEnvironmentService bootstrapEnvironmentService = null,
-            DS4Windows.BackingStore bootstrapBackingStore = null)
+        public static IHost CreateHost(IConfiguration configuration, DS4Windows.Core.Utilities.ArgumentParser parser,
+            DS4Windows.Core.Abstractions.IPathService bootstrapPathService = null,
+            DS4Windows.Core.Abstractions.IEnvironmentService bootstrapEnvironmentService = null,
+            DS4Windows.Core.Settings.BackingStore bootstrapBackingStore = null)
         {
             lock (_loggedResolvedTypes) { _loggedResolvedTypes.Clear(); }
             lock (_syncLock)
@@ -83,13 +84,13 @@ namespace DS4WinWPF
                     .ConfigureServices((context, services) =>
                     {
                         // Phase7-Step10d W5: ブートストラップの BackingStore は、登録の中で（IProcessInspector などの配線つきで）コンテナへ登録する
-                        DS4Windows.DI.ServiceRegistration.RegisterServices(services, bootstrapBackingStore);
+                        DS4Windows.Composition.ServiceRegistration.RegisterServices(services, bootstrapBackingStore);
                         services.AddSingleton(parser);
                         // 後から登録した実装が、同じ型の解決で優先される（既定の登録を、ブートストラップのインスタンスで置き換える）
                         if (bootstrapPathService != null)
-                            services.AddSingleton<DS4Windows.DI.IPathService>(bootstrapPathService);
+                            services.AddSingleton<DS4Windows.Core.Abstractions.IPathService>(bootstrapPathService);
                         if (bootstrapEnvironmentService != null)
-                            services.AddSingleton<DS4Windows.DI.IEnvironmentService>(bootstrapEnvironmentService);
+                            services.AddSingleton<DS4Windows.Core.Abstractions.IEnvironmentService>(bootstrapEnvironmentService);
                     });
 
                 _host = builder.Build();
@@ -104,15 +105,15 @@ namespace DS4WinWPF
         }
 
         /// <summary>
-        /// Phase6-Step7-4（決定7＝案H）: 起動引数を、登録済みの <see cref="DS4Windows.DI.IStartupArguments"/> へ設定する。
+        /// Phase6-Step7-4（決定7＝案H）: 起動引数を、登録済みの <see cref="DS4Windows.Core.Abstractions.IStartupArguments"/> へ設定する。
         /// ControlService の生成（ServiceRegistration）はここで設定された値を使う。
         /// </summary>
-        private static void ApplyStartupArguments(DS4WinWPF.ArgumentParser parser, bool hostAlreadyCreated)
+        private static void ApplyStartupArguments(DS4Windows.Core.Utilities.ArgumentParser parser, bool hostAlreadyCreated)
         {
             if (parser == null)
                 return;
 
-            var startupArguments = _host?.Services.GetService<DS4Windows.DI.IStartupArguments>();
+            var startupArguments = _host?.Services.GetService<DS4Windows.Core.Abstractions.IStartupArguments>();
             if (startupArguments == null)
                 return;
 
@@ -127,15 +128,15 @@ namespace DS4WinWPF
         /// </summary>
         private static void BindSyntheticDispatcher()
         {
-            try { _host?.Services.GetService<DS4Windows.DI.ISyntheticDispatcher>(); } catch { }
+            try { _host?.Services.GetService<DS4Windows.Processing.Abstractions.ISyntheticDispatcher>(); } catch { }
         }
 
         private static void PreallocateActionEntries()
         {
             try
             {
-                var manager = _host?.Services.GetService<DS4Windows.Actions.IManagedActionManager>()
-                    as DS4Windows.Actions.DefaultActionManager;
+                var manager = _host?.Services.GetService<DS4Windows.Processing.Actions.IManagedActionManager>()
+                    as DS4Windows.Processing.Actions.DefaultActionManager;
                 manager?.PreallocateEntries();
             }
             catch { }

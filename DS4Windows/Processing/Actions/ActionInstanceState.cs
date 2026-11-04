@@ -1,12 +1,9 @@
-using DS4Windows.Services;
 using System;
 using System.Diagnostics;
 using System.Linq;
 using System.Collections.Generic;
-using DS4Windows.DS4Control;
-using DS4Windows.Actions;
 
-namespace DS4Windows
+namespace DS4Windows.Processing.Actions
 {
     // Per-action per-device instance state
     public class ActionInstanceState

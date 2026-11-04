@@ -1,6 +1,6 @@
 using System;
 using Xunit;
-using DS4Windows;
+using DS4Windows.Processing;
 
 namespace DS4WindowsTests
 {
@@ -16,7 +16,7 @@ namespace DS4WindowsTests
         [Fact]
         public void TouchMoveCursor_AllocatesZeroBytes()
         {
-            var store = new DS4Windows.BackingStore(new DS4Windows.EnvironmentService());
+            var store = new DS4Windows.Core.Settings.BackingStore(new DS4Windows.Core.Platform.EnvironmentService());
             store.touchSensitivity[Slot] = 100;
             var settings = TestRepositoryFactory.CreateProfileSettingsService(store);
             var kbm = new RecordingVirtualKbm { Recording = false };

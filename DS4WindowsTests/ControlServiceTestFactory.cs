@@ -2,8 +2,7 @@ using System;
 using System.Linq;
 using System.Reflection;
 using System.Runtime.ExceptionServices;
-using DS4Windows;
-using DS4Windows.DI;
+using DS4Windows.Processing;
 
 namespace DS4WindowsTests
 {
@@ -19,7 +18,7 @@ namespace DS4WindowsTests
         /// </param>
         public static ControlService Create(string nullParameterName = null)
         {
-            DS4WinWPF.AppHost.CreateHost();
+            DS4Windows.Composition.AppHost.CreateHost();
 
             ConstructorInfo constructor = typeof(ControlService).GetConstructors().Single();
             ParameterInfo[] parameters = constructor.GetParameters();
@@ -57,9 +56,9 @@ namespace DS4WindowsTests
 
         private static object Resolve(Type parameterType)
         {
-            if (parameterType == typeof(DS4WinWPF.ArgumentParser))
+            if (parameterType == typeof(DS4Windows.Core.Utilities.ArgumentParser))
             {
-                return new DS4WinWPF.ArgumentParser();
+                return new DS4Windows.Core.Utilities.ArgumentParser();
             }
 
             return TestHost.GetService(parameterType);

@@ -20,8 +20,10 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Threading;
+using DS4Windows.Core.Logging;
+using DS4Windows.Input.Hid;
 
-namespace DS4Windows.InputDevices
+namespace DS4Windows.Input.Devices
 {
     public class DS3Device : DS4Device
     {

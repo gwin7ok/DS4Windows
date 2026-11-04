@@ -1,4 +1,4 @@
-namespace DS4Windows.Actions
+namespace DS4Windows.Processing.Actions
 {
     /// <summary>
     /// Phase8-Step7 7.8f-2（Phase8-Step7-8f-Plan.md §3.2。Q8＝A）: 1 フレームの出力への、Toggle の書き込み口。

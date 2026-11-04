@@ -1,7 +1,7 @@
 using System;
 using System.Collections.Generic;
 
-namespace DS4Windows.DI
+namespace DS4Windows.Processing.Abstractions
 {
     /// <summary>
     /// Phase9 9-E E-1（Phase9-E-Plan.md）: OSC の通信（SharpOSC の <c>UDPListener</c>／<c>UDPSender</c>）の生成。

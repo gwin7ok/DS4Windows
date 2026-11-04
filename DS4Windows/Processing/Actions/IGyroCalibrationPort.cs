@@ -1,4 +1,4 @@
-namespace DS4Windows.Actions
+namespace DS4Windows.Processing.Actions
 {
     /// <summary>
     /// Phase8-Step7 7.6a（Phase8-Step7-6-Plan.md Q2＝A）: GyroCalibrate の出力が、実機のコントローラー（<c>DS4Device</c>）を操作するための窓口。

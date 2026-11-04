@@ -1,10 +1,10 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
-using DS4Windows.DI;
-using DS4Windows.Services;
+using DS4Windows.Core.Abstractions;
+using DS4Windows.Core.Logging;
 
-namespace DS4Windows.Actions
+namespace DS4Windows.Processing.Actions
 {
     /// <summary>
     /// Phase8-Step7 7.4-W2（Q1＝A）: 統一ディスパッチ（エンジン）から使うときは、旧 <c>MapCustomAction</c> の Program の分岐が出していたログ

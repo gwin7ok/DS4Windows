@@ -1,6 +1,7 @@
-using DS4Windows;
 
-namespace DS4WinWPF.DS4Forms.ViewModels
+using DS4Windows.Input;
+
+namespace DS4Windows.UI.ViewModels
 {
     /// <summary>
     /// Phase10-Step2 W3（Phase10-Step2-Plan.md §3.3）: 共通の編集画面の、Controls のモードの ViewModel。割り当てを編集する対象のボタン 1 つについて、

@@ -2,11 +2,12 @@ using System;
 using System.IO;
 using System.Linq;
 using System.Xml;
-using DS4Windows;
-using DS4Windows.DI;
-using DS4Windows.Services;
-using DS4WinWPF;
 using Xunit;
+using DS4Windows.Core.Abstractions;
+using DS4Windows.Core.Persistence;
+using DS4Windows.Core.Platform;
+using DS4Windows.Core.Profiles;
+using DS4Windows.Core.Settings;
 
 namespace DS4WindowsTests
 {

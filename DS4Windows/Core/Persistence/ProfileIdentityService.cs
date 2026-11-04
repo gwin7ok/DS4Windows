@@ -2,9 +2,10 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using DS4Windows.DI;
+using DS4Windows.Core.Abstractions;
+using DS4Windows.Core.Logging;
 
-namespace DS4Windows.Services
+namespace DS4Windows.Core.Persistence
 {
     /// <summary>
     /// Phase10-Step4d W1（Phase10-Step4d-Plan.md §3）: <see cref="IProfileIdentityService"/> の実装（DI の Singleton）。

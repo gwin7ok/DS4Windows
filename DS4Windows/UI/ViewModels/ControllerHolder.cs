@@ -23,10 +23,9 @@ using System.Text.RegularExpressions;
 using System.Threading;
 using System.Windows;
 using System.Windows.Controls;
-using DS4Windows;
-using DS4Windows.DI;
+using DS4Windows.Input;
 
-namespace DS4WinWPF.DS4Forms.ViewModels
+namespace DS4Windows.UI.ViewModels
 {
 
     public class ControllerHolder

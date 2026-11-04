@@ -1,6 +1,7 @@
 using System;
+using DS4Windows.Input;
 
-namespace DS4Windows.Actions
+namespace DS4Windows.Processing.Actions
 {
     /// <summary>
     /// Phase8-Step7 7.8f-3（Phase8-Step7-8f-Plan.md §3.2。Q6＝A）: Controls タブの Button のうち、マウスの移動（MouseUp／Down／Left／Right）への割り当ての出力。

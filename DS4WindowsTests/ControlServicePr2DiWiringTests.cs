@@ -1,8 +1,8 @@
 using System;
 using Xunit;
-using DS4Windows;
-using DS4Windows.DI;
-using DS4Windows.Services;
+using DS4Windows.Processing;
+using DS4Windows.Processing.Abstractions;
+using DS4Windows.Processing.Services;
 
 namespace DS4WindowsTests
 {
@@ -17,7 +17,7 @@ namespace DS4WindowsTests
         [Fact]
         public void AppHost_ResolvesProfileSlotApplier_AsDefaultImplementation()
         {
-            DS4WinWPF.AppHost.CreateHost();
+            DS4Windows.Composition.AppHost.CreateHost();
 
             Assert.IsType<ProfileSlotApplier>(TestHost.GetService<IProfileSlotApplier>());
         }
@@ -25,7 +25,7 @@ namespace DS4WindowsTests
         [Fact]
         public void AppHost_ResolvesControlService_WithPr2Dependencies()
         {
-            DS4WinWPF.AppHost.CreateHost();
+            DS4Windows.Composition.AppHost.CreateHost();
 
             ControlService controlService = null;
             var ex = Record.Exception(() => controlService = TestHost.GetService<ControlService>());

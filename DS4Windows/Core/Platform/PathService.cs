@@ -2,9 +2,11 @@ using System;
 using System.Diagnostics;
 using System.IO;
 using System.Xml;
-using DS4Windows.DI;
+using DS4Windows.Core.Abstractions;
+using DS4Windows.Core.Settings;
+using DS4Windows.UI;
 
-namespace DS4Windows
+namespace DS4Windows.Core.Platform
 {
     /// <summary>
     /// <see cref="IPathService"/> の実装。

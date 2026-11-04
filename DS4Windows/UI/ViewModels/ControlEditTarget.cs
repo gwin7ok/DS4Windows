@@ -1,8 +1,9 @@
 using System;
 using System.Collections.Generic;
-using DS4Windows;
+using DS4Windows.Input;
+using DS4Windows.Processing;
 
-namespace DS4WinWPF.DS4Forms.ViewModels
+namespace DS4Windows.UI.ViewModels
 {
     /// <summary>
     /// Phase10-Step2 W3（Phase10-Step2-Plan.md §3.3）: Controls のモードの編集の対象。名前は、対象のボタンの表示名で固定（編集不可）で、

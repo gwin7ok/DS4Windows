@@ -3,8 +3,9 @@ using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Resources;
-using DS4Windows;
 using Xunit;
+using DS4Windows.Core.Settings;
+using DS4Windows.Processing;
 
 namespace DS4WindowsTests
 {
@@ -28,7 +29,7 @@ namespace DS4WindowsTests
         [Fact]
         public void TheWarningText_ExistsInEnglishAndJapanese_AndTakesTheProfileName()
         {
-            var manager = new ResourceManager("DS4WinWPF.Properties.Resources", typeof(DS4WinWPF.DS4Forms.MessageBoxRemovedShiftPrompt).Assembly);
+            var manager = new ResourceManager("DS4Windows.Properties.Resources", typeof(DS4Windows.UI.MessageBoxRemovedShiftPrompt).Assembly);
             string english = manager.GetString("RemovedShiftWarning", System.Globalization.CultureInfo.InvariantCulture);
 
             Assert.False(string.IsNullOrEmpty(english));
@@ -46,7 +47,7 @@ namespace DS4WindowsTests
         [Fact]
         public void ThePrompt_IsAnIRemovedShiftPrompt_AndTheEditorCallsTheNoticeRightAfterTheLoad()
         {
-            Assert.True(typeof(IRemovedShiftPrompt).IsAssignableFrom(typeof(DS4WinWPF.DS4Forms.MessageBoxRemovedShiftPrompt)));
+            Assert.True(typeof(IRemovedShiftPrompt).IsAssignableFrom(typeof(DS4Windows.UI.MessageBoxRemovedShiftPrompt)));
 
             string editor = SourceFileLocator.Find("DS4Windows/UI/ProfileEditor.xaml.cs");
             if (editor == null) return;

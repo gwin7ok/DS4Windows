@@ -27,10 +27,13 @@ using System.Threading.Tasks;
 using System.Windows.Data;
 using System.Windows.Input;
 using System.Windows.Media;
-using DS4Windows;
-using DS4Windows.DI;
+using DS4Windows.Core.Abstractions;
+using DS4Windows.Core.Settings;
+using DS4Windows.Input;
+using DS4Windows.Output;
+using DS4Windows.Processing;
 
-namespace DS4WinWPF.DS4Forms.ViewModels
+namespace DS4Windows.UI.ViewModels
 {
     public class RecordBoxViewModel
     {
@@ -419,7 +422,7 @@ namespace DS4WinWPF.DS4Forms.ViewModels
             {
                 DS4Device dev = controlService.DS4Controllers[0];
                 DS4State cState = dev.getCurrentStateRef();
-                DS4Windows.Mouse tp = controlService.touchPad[0];
+                DS4Windows.Processing.Mouse tp = controlService.touchPad[0];
                 for (DS4Controls dc = DS4Controls.LXNeg; dc < DS4Controls.Mute; dc++)
                 {
                     int macroValue = DS4ControlNames.macroDS4Values[dc];

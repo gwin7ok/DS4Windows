@@ -3,7 +3,7 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
 
-namespace DS4WinWPF.DS4Forms
+namespace DS4Windows.UI
 {
     /// <summary>
     /// R-6（Release-Backlog.md）: マウスホイールの挙動を、Windows の設定「マウスホイールで 1 回にスクロールする量」に合わせる。

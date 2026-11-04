@@ -1,8 +1,7 @@
-using DS4Windows;
 using System.ComponentModel;
 using System.Linq;
 using Xunit;
-using DS4WinWPF.DS4Forms.ViewModels;
+using DS4Windows.UI.ViewModels;
 
 namespace DS4WindowsTests
 {

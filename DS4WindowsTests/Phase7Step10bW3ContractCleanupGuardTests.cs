@@ -3,10 +3,11 @@ using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Text.RegularExpressions;
-using DS4Windows;
-using DS4Windows.DI;
 using Xunit;
 using Xunit.Abstractions;
+using DS4Windows.Core.Settings;
+using DS4Windows.Processing.Abstractions;
+using DS4Windows.Processing.Services;
 
 namespace DS4WindowsTests
 {
@@ -61,7 +62,7 @@ namespace DS4WindowsTests
         [Fact]
         public void TheHost_StillResolvesTheProfileApplicationService()
         {
-            DS4WinWPF.AppHost.CreateHost();
+            DS4Windows.Composition.AppHost.CreateHost();
             Assert.NotNull(TestHost.GetService<IProfileApplicationService>());
         }
 

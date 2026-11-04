@@ -1,4 +1,7 @@
-namespace DS4Windows.Actions
+using DS4Windows.Input;
+using DS4Windows.Output.Devices;
+
+namespace DS4Windows.Processing.Actions
 {
     /// <summary>
     /// Phase8-Step4 W1: 1 フレームの出力への書き込み口（Phase8-Step2-Design.md §5）。Button の毎フレームの出力と、成立中のトリガーのボタンの出力の消去に使う。

@@ -1,4 +1,4 @@
-namespace DS4WinWPF.DS4Forms.ViewModels
+namespace DS4Windows.UI.ViewModels
 {
     /// <summary>
     /// Phase11 W4（Issue #4 の 1）: <see cref="ProfileSettingsViewModel.CorrectOutputTypeToDs4"/> が、出力の種類を DS4 へ変えた理由。

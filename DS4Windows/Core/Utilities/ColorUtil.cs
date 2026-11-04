@@ -1,6 +1,7 @@
 ﻿using System;
+using DS4Windows.Input;
 
-namespace DS4Windows
+namespace DS4Windows.Core.Utilities
 {
     /// <summary>
     /// Phase7-Step10b W2（Q2＝A）: 色の純粋な計算（旧: <c>Global</c> の静的メンバー。宣言は移動のみ）。

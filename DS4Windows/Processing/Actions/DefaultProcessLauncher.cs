@@ -1,8 +1,9 @@
 using System;
 using System.Diagnostics;
 using System.IO;
+using DS4Windows.Core.Logging;
 
-namespace DS4Windows.Actions
+namespace DS4Windows.Processing.Actions
 {
     /// <summary>
     /// IProcessLauncher の標準実装

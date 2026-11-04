@@ -25,18 +25,18 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Data;
 
-namespace DS4WinWPF
+namespace DS4Windows.Core.Profiles
 {
     public class ProfileList
     {
         private object _proLockobj = new object();
         private ObservableCollection<ProfileEntity> profileListCol =
             new ObservableCollection<ProfileEntity>();
-        private readonly DS4Windows.DI.IPathService pathService;
+        private readonly DS4Windows.Core.Abstractions.IPathService pathService;
 
         public ObservableCollection<ProfileEntity> ProfileListCol { get => profileListCol; set => profileListCol = value; }
 
-        public ProfileList(DS4Windows.DI.IPathService pathService)
+        public ProfileList(DS4Windows.Core.Abstractions.IPathService pathService)
         {
             this.pathService = pathService ?? throw new ArgumentNullException(nameof(pathService));
             BindingOperations.EnableCollectionSynchronization(profileListCol, _proLockobj);

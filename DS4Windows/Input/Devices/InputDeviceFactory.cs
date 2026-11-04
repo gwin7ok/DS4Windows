@@ -21,8 +21,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using DS4Windows.Input.Hid;
 
-namespace DS4Windows.InputDevices
+namespace DS4Windows.Input.Devices
 {
 
     public abstract class InputDeviceFactory

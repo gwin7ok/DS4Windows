@@ -1,7 +1,9 @@
 using System;
-using DS4Windows;
 using Xunit;
 using Xunit.Abstractions;
+using DS4Windows.Core.Settings;
+using DS4Windows.Input;
+using DS4Windows.Output.Devices;
 
 namespace DS4WindowsTests
 {

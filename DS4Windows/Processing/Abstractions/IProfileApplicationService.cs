@@ -1,6 +1,5 @@
-using DS4Windows;
 
-namespace DS4Windows.DI
+namespace DS4Windows.Processing.Abstractions
 {
     public interface IProfileApplicationService
     {

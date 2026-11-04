@@ -1,7 +1,9 @@
 using System;
 using System.IO;
-using DS4Windows;
 using Xunit;
+using DS4Windows.Core.Platform;
+using DS4Windows.Core.Settings;
+using DS4Windows.Core.Utilities;
 
 namespace DS4WindowsTests
 {
@@ -27,7 +29,7 @@ namespace DS4WindowsTests
             _originalExeDirPath = TestGlobals.ExeDirPath;
             TestGlobals.ExeDirPath = _tempDir;
             _profilesXml = Path.Combine(_tempDir, "Profiles.xml");
-            _fakeExeFile = Path.Combine(_tempDir, DS4Windows.Services.AppSettingsXmlSerializer.CustomExeConfigFileName);
+            _fakeExeFile = Path.Combine(_tempDir, DS4Windows.Core.Persistence.AppSettingsXmlSerializer.CustomExeConfigFileName);
         }
 
         public void Dispose()

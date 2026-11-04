@@ -1,6 +1,7 @@
-using DS4Windows;
 
-namespace DS4WinWPF.DS4Forms.ViewModels
+using DS4Windows.Input;
+
+namespace DS4Windows.UI.ViewModels
 {
     /// <summary>
     /// Phase9 UI 変更: 入力ボタンのカタログ（<see cref="InputControlCatalog"/>）の 1 項目。

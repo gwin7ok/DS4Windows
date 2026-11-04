@@ -1,4 +1,4 @@
-namespace DS4Windows.Services
+namespace DS4Windows.Processing.Abstractions
 {
     /// <summary>
     /// 仮想キーボード・マウス（KBM）出力の抽象化インターフェース。

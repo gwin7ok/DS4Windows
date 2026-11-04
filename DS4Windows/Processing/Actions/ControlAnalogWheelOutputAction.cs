@@ -1,8 +1,9 @@
 using System;
-using DS4Windows.DI;
-using DS4Windows.DS4Control;
+using DS4Windows.Core.Abstractions;
+using DS4Windows.Input;
+using DS4Windows.Output.Kbm;
 
-namespace DS4Windows.Actions
+namespace DS4Windows.Processing.Actions
 {
     /// <summary>
     /// Phase8-Step7 7.8f-3（Phase8-Step7-8f-Plan.md §3.2。Q5＝B）: Controls タブの Button のうち、元がスティック・トリガー・ジャイロのアナログのホイール（WUP／WDOWN）の出力。

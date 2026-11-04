@@ -1,8 +1,10 @@
 using System;
 using System.Collections.Generic;
-using DS4Windows.DI;
+using DS4Windows.Core.Abstractions;
+using DS4Windows.Core.Logging;
+using DS4Windows.Processing.Abstractions;
 
-namespace DS4Windows.Actions
+namespace DS4Windows.Processing.Actions
 {
     /// <summary>
     /// Phase8-Step3 W4: Key 種別の出力。<see cref="KeyAction"/> へ委譲する（Phase8-Step2-Design.md §7）。押下／解放の意味（Press か Toggle か、リピート）は

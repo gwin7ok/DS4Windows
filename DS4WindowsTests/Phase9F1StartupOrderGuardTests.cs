@@ -116,7 +116,7 @@ namespace DS4WindowsTests
 
             // Pre-Host: ブートストラップのサービス → 設定の場所
             AssertOrder(BodyOf(text, "private void RunPreHostBootstrap("),
-                "new DS4Windows.EnvironmentService()", "FindConfigLocation()");
+                "new DS4Windows.Core.Platform.EnvironmentService()", "FindConfigLocation()");
 
             // ログのローテーション → 診断ログ（単一起動の確認の後。Phase9 9-F、ユーザー指示 2026-10-23）
             AssertOrder(BodyOf(text, "private void RotateLogsAndLogStartupDiagnostics("),

@@ -30,7 +30,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
 
-namespace DS4WinWPF.DS4Forms
+namespace DS4Windows.UI
 {
     /// <summary>
     /// Interaction logic for ColorPickerWindow.xaml

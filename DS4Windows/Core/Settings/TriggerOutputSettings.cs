@@ -17,19 +17,16 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
 
 using System;
-using DS4Windows.StickModifiers;
-using DS4WinWPF.DS4Control;
 using Sensorit.Base;
-using DS4Windows.InputDevices;
 
-namespace DS4Windows
+namespace DS4Windows.Core.Settings
 {
 
     public class TriggerOutputSettings
     {
         public const TwoStageTriggerMode DEFAULT_TRIG_MODE = TwoStageTriggerMode.Disabled;
         public const int DEFAULT_HIP_TIME = 100;
-        public const InputDevices.TriggerEffects DEFAULT_TRIGGER_EFFECT = InputDevices.TriggerEffects.None;
+        public const DS4Windows.Input.Devices.TriggerEffects DEFAULT_TRIGGER_EFFECT = DS4Windows.Input.Devices.TriggerEffects.None;
 
         public TwoStageTriggerMode twoStageMode = DEFAULT_TRIG_MODE;
         public TwoStageTriggerMode TwoStageMode
@@ -45,8 +42,8 @@ namespace DS4Windows
         public event EventHandler TwoStageModeChanged;
 
         public int hipFireMS = DEFAULT_HIP_TIME;
-        public InputDevices.TriggerEffects triggerEffect = DEFAULT_TRIGGER_EFFECT;
-        public InputDevices.TriggerEffects TriggerEffect
+        public DS4Windows.Input.Devices.TriggerEffects triggerEffect = DEFAULT_TRIGGER_EFFECT;
+        public DS4Windows.Input.Devices.TriggerEffects TriggerEffect
         {
             get => triggerEffect;
             set
@@ -58,8 +55,8 @@ namespace DS4Windows
         }
         public event EventHandler TriggerEffectChanged;
 
-        public InputDevices.TriggerEffectSettings effectSettings = new InputDevices.TriggerEffectSettings();
-        public ref InputDevices.TriggerEffectSettings TrigEffectSettings => ref effectSettings;
+        public DS4Windows.Input.Devices.TriggerEffectSettings effectSettings = new DS4Windows.Input.Devices.TriggerEffectSettings();
+        public ref DS4Windows.Input.Devices.TriggerEffectSettings TrigEffectSettings => ref effectSettings;
 
         public void ResetSettings()
         {

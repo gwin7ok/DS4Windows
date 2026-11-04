@@ -1,9 +1,8 @@
 using System;
 using System.Collections.Generic;
-using DS4Windows;
-using DS4WinWPF.DS4Control;
+using DS4Windows.Output;
 
-namespace DS4Windows.DI
+namespace DS4Windows.Processing.Abstractions
 {
     public class OutputSlotChangedEventArgs : EventArgs
     {

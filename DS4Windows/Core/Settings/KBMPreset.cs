@@ -22,12 +22,12 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace DS4WinWPF.DS4Control
+namespace DS4Windows.Core.Settings
 {
 
     public class KBMPreset : PresetOption
     {
-        public KBMPreset(DS4Windows.DI.IProfilePresetLoader presetLoader, DS4Windows.DI.IProfileLoadTarget loadTarget)
+        public KBMPreset(DS4Windows.Core.Abstractions.IProfilePresetLoader presetLoader, DS4Windows.Processing.Abstractions.IProfileLoadTarget loadTarget)
             : base(presetLoader, loadTarget)
         {
             name = Translations.Strings.KBMPresetName;

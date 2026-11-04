@@ -1,9 +1,10 @@
 using System.Collections.Generic;
-using DS4Windows;
-using DS4Windows.Actions;
-using DS4WinWPF.DS4Forms.ViewModels;
-using DS4WinWPF.DS4Forms.ViewModels.SpecialActions;
 using Xunit;
+using DS4Windows.Core.Settings;
+using DS4Windows.Processing;
+using DS4Windows.Processing.Actions;
+using DS4Windows.UI.ViewModels;
+using DS4Windows.UI.ViewModels.SpecialActions;
 
 namespace DS4WindowsTests
 {

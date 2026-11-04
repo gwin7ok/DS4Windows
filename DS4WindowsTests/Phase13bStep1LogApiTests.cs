@@ -1,6 +1,6 @@
 using System.Collections.Generic;
-using DS4Windows;
 using Xunit;
+using DS4Windows.Core.Logging;
 
 namespace DS4WindowsTests
 {

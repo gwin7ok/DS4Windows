@@ -10,11 +10,11 @@
 		<Platform>x64</Platform>
 		<PlatformTarget>x64</PlatformTarget>
 		<RuntimeIdentifiers>win-x64</RuntimeIdentifiers>
-		<RootNamespace>DS4WinWPF</RootNamespace>
+		<RootNamespace>DS4Windows</RootNamespace>
 		<AssemblyName>DS4Windows</AssemblyName>
 		<ApplicationIcon>DS4W.ico</ApplicationIcon>
 		<ApplicationManifest>app.manifest</ApplicationManifest>
-		<StartupObject>DS4WinWPF.App</StartupObject>
+		<StartupObject>DS4Windows.App</StartupObject>
 		<NeutralLanguage>en</NeutralLanguage>
 		<RunAnalyzersDuringBuild>true</RunAnalyzersDuringBuild>
 		<EnableNETAnalyzers>false</EnableNETAnalyzers>

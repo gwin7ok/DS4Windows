@@ -1,6 +1,7 @@
 using System;
+using DS4Windows.Core.Settings;
 
-namespace DS4Windows
+namespace DS4Windows.Processing
 {
     /// <summary>
     /// R-2: <see cref="MacroExecuteMode"/> と、実行時の表現（<see cref="DS4KeyType"/> の <c>RepeatMacro</c>／<c>RepeatLatchMacro</c>）・保存する文字列の変換。

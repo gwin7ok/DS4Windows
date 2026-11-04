@@ -1,9 +1,9 @@
 using System;
 using System.Collections.Generic;
-using DS4Windows.DI;
-using DS4Windows.Services;
+using DS4Windows.Core.Abstractions;
+using DS4Windows.Core.Logging;
 
-namespace DS4Windows.Actions
+namespace DS4Windows.Processing.Actions
 {
     /// <summary>
     /// Phase8-Step7 7.6b: DisconnectBT（コントローラーの無線接続の切断）の出力。

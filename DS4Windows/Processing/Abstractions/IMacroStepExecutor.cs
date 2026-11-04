@@ -1,4 +1,6 @@
-namespace DS4Windows.DI
+using DS4Windows.Core.Settings;
+
+namespace DS4Windows.Processing.Abstractions
 {
     /// <summary>
     /// Phase9 9-C（Phase9-C-Plan.md）: マクロの 1 つの値（キー、マウスボタン、ゲームパッドのボタン、ライトバーの色、振動、待ち）の実行。

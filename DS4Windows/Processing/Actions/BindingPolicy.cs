@@ -1,4 +1,4 @@
-namespace DS4Windows.Actions
+namespace DS4Windows.Processing.Actions
 {
     /// <summary>
     /// Phase8-Step3 W1: 束縛（<see cref="IActionBinding"/>）の実行方針。種別ごとの安全弁の差を、エンジンの分岐ではなく設定で表す

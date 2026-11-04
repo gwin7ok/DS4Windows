@@ -1,7 +1,9 @@
 using System;
 using System.Collections.Generic;
+using DS4Windows.Core.Settings;
+using DS4Windows.Input;
 
-namespace DS4Windows.Actions
+namespace DS4Windows.Processing.Actions
 {
     /// <summary>
     /// Phase10-Step6 I1（Phase10-Step6-Plan.md §4。目標モデルは Phase10-Integration-Target-Model.md §3）: 共通の割り当て定義。

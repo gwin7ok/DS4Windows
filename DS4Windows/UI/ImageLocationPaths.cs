@@ -1,4 +1,3 @@
-using DS4Windows.DI;
 /*
 DS4Windows
 Copyright (C) 2023  Travis Nickles
@@ -37,14 +36,10 @@ using NonFormTimer = System.Timers.Timer;
 using System.Runtime.InteropServices;
 using System.ComponentModel;
 using HttpProgress;
-
-using DS4WinWPF.DS4Forms.ViewModels;
-using DS4Windows;
-using DS4WinWPF.DS4Control;
-using DS4WinWPF.Translations;
+using DS4Windows.Translations;
 
 
-namespace DS4WinWPF.DS4Forms
+namespace DS4Windows.UI
 {
 
     public class ImageLocationPaths

@@ -2,7 +2,7 @@ using System;
 using System.IO;
 using System.Linq;
 
-namespace DS4WinWPF
+namespace DS4Windows.Core.Logging
 {
     public static class LogRotator
     {

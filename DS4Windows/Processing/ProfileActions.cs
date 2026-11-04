@@ -17,12 +17,9 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
 
 using System;
-using DS4Windows.StickModifiers;
-using DS4WinWPF.DS4Control;
 using Sensorit.Base;
-using DS4Windows.InputDevices;
 
-namespace DS4Windows
+namespace DS4Windows.Processing
 {
     // ==========================================
     // パターン A: ProfileActions および Sensitivity

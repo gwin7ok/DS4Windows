@@ -1,6 +1,6 @@
 using System;
 
-namespace DS4Windows.Actions
+namespace DS4Windows.Processing.Actions
 {
     /// <summary>
     /// 外部プロセス起動の抽象化（分類① SpecialAction起動、分類② 権限昇格、分類⑥ 多重起動チェック共通）

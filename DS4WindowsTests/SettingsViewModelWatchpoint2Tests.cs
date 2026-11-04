@@ -1,10 +1,8 @@
 using System;
 using System.Threading.Tasks;
 using Xunit;
-using DS4Windows;
-using DS4Windows.DI;
-using DS4WinWPF;
-using DS4WinWPF.DS4Forms.ViewModels;
+using DS4Windows.Processing.Abstractions;
+using DS4Windows.UI.ViewModels;
 
 namespace DS4WindowsTests
 {
@@ -28,7 +26,7 @@ namespace DS4WindowsTests
         public async Task Watchpoint2_WorkerThread_EventFiring_HandlesThreadSafetyWithoutCrash()
         {
             // Arrange: AppHost から DI 経由で解決
-            DS4WinWPF.AppHost.CreateHost();
+            DS4Windows.Composition.AppHost.CreateHost();
             var settingsService = TestHost.GetService<IAppSettingsService>();
             var vm = TestHost.GetService<SettingsViewModel>();
             Assert.NotNull(vm);
@@ -63,7 +61,7 @@ namespace DS4WindowsTests
         public void Watchpoint2_Dispose_UnsubscribesAndIsIdempotent()
         {
             // Arrange: AppHost から DI 経由で解決
-            DS4WinWPF.AppHost.CreateHost();
+            DS4Windows.Composition.AppHost.CreateHost();
             var vm = TestHost.GetService<SettingsViewModel>();
             Assert.NotNull(vm);
 

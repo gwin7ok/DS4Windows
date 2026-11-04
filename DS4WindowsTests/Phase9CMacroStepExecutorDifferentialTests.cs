@@ -1,11 +1,15 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using DS4Windows;
-using DS4Windows.DI;
-using DS4Windows.DS4Control;
-using DS4Windows.Services;
 using Xunit;
+using DS4Windows.Core.Abstractions;
+using DS4Windows.Core.Logging;
+using DS4Windows.Core.Settings;
+using DS4Windows.Input;
+using DS4Windows.Output.Kbm;
+using DS4Windows.Processing;
+using DS4Windows.Processing.Abstractions;
+using DS4Windows.Processing.Services;
 
 namespace DS4WindowsTests
 {
@@ -265,7 +269,7 @@ namespace DS4WindowsTests
             var newKbm = new LogKbm();
             var oldImpl = new OldMacroStep(oldKbm, settings, () => null);
             var state = new MacroRuntimeState();
-            var newImpl = new MacroStepExecutor(newKbm, settings, state, new DS4Windows.Services.DeviceSlotState(), new RecordingWindowSystem());
+            var newImpl = new MacroStepExecutor(newKbm, settings, state, new DS4Windows.Processing.Services.DeviceSlotState(), new RecordingWindowSystem());
             var oldKeydown = new bool[512];
             var newKeydown = new bool[512];
 
@@ -303,7 +307,7 @@ namespace DS4WindowsTests
             // 旧実装の癖（計画書 M4）: コントローラーが取れないと NullReferenceException になる。そのまま移した
             IProfileSettingsService settings = TestHost.GetService<IProfileSettingsService>();
             var oldImpl = new OldMacroStep(new LogKbm(), settings, () => null);
-            var newImpl = new MacroStepExecutor(new LogKbm(), settings, new MacroRuntimeState(), new DS4Windows.Services.DeviceSlotState(), new RecordingWindowSystem());
+            var newImpl = new MacroStepExecutor(new LogKbm(), settings, new MacroRuntimeState(), new DS4Windows.Processing.Services.DeviceSlotState(), new RecordingWindowSystem());
 
             Exception expected = Record.Exception(() => oldImpl.PlayMacroCodeValue(OldDevice, DS4KeyType.None, code, new bool[512]));
             Exception actual = Record.Exception(() => newImpl.Execute(NewDevice, DS4KeyType.None, code, new bool[512]));
@@ -325,7 +329,7 @@ namespace DS4WindowsTests
             Assert.IsType<IndexOutOfRangeException>(Record.Exception(() => oldImpl.PlayMacroCodeValue(OldDevice, DS4KeyType.None, code, new bool[512])));
 
             var state = new MacroRuntimeState();
-            var newImpl = new MacroStepExecutor(new LogKbm(), settings, state, new DS4Windows.Services.DeviceSlotState(), new RecordingWindowSystem());
+            var newImpl = new MacroStepExecutor(new LogKbm(), settings, state, new DS4Windows.Processing.Services.DeviceSlotState(), new RecordingWindowSystem());
             var keydown = new bool[512];
 
             newImpl.Execute(NewDevice, DS4KeyType.None, code, keydown);   // 押下: 例外にならない
@@ -346,7 +350,7 @@ namespace DS4WindowsTests
         {
             IProfileSettingsService settings = TestHost.GetService<IProfileSettingsService>();
             var state = new MacroRuntimeState();
-            var executor = new MacroStepExecutor(new LogKbm(), settings, state, new DS4Windows.Services.DeviceSlotState(), new RecordingWindowSystem());
+            var executor = new MacroStepExecutor(new LogKbm(), settings, state, new DS4Windows.Processing.Services.DeviceSlotState(), new RecordingWindowSystem());
             var keydown = new bool[512];
 
             executor.Execute(2, DS4KeyType.None, 261, keydown);   // 261 = フラグ 0（Cross）の押下

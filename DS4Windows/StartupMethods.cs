@@ -22,7 +22,7 @@ using System.Runtime.InteropServices;
 using Microsoft.Win32.TaskScheduler;
 using Task = Microsoft.Win32.TaskScheduler.Task;
 
-namespace DS4WinWPF
+namespace DS4Windows
 {
     [System.Security.SuppressUnmanagedCodeSecurity]
     public static class StartupMethods

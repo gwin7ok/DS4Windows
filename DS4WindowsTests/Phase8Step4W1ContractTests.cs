@@ -1,9 +1,11 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using DS4Windows;
-using DS4Windows.Actions;
 using Xunit;
+using DS4Windows.Core.Settings;
+using DS4Windows.Input;
+using DS4Windows.Output.Devices;
+using DS4Windows.Processing.Actions;
 
 namespace DS4WindowsTests
 {

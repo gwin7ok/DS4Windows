@@ -2,8 +2,9 @@ using System;
 using System.Windows;
 using System.Windows.Media;
 using Xunit;
-using DS4Windows;
-using DS4WinWPF.DS4Forms.ViewModels;
+using DS4Windows.Core.Settings;
+using DS4Windows.Input;
+using DS4Windows.UI.ViewModels;
 
 namespace DS4WindowsTests
 {
@@ -41,7 +42,7 @@ namespace DS4WindowsTests
             {
                 try
                 {
-                    Application.ResourceAssembly = typeof(DS4WinWPF.AppHost).Assembly;
+                    Application.ResourceAssembly = typeof(DS4Windows.Composition.AppHost).Assembly;
                 }
                 catch { }
             }
@@ -95,7 +96,7 @@ namespace DS4WindowsTests
 
         private static ProfileSettingsService CreateIsolatedSettings()
         {
-            var settings = TestRepositoryFactory.CreateProfileSettingsService(new DS4Windows.BackingStore(new DS4Windows.EnvironmentService()));
+            var settings = TestRepositoryFactory.CreateProfileSettingsService(new DS4Windows.Core.Settings.BackingStore(new DS4Windows.Core.Platform.EnvironmentService()));
             for (int i = 0; i < settings.TouchOutMode.Length; i++)
             {
                 settings.TouchOutMode[i] = TouchpadOutMode.Mouse;
@@ -105,8 +106,8 @@ namespace DS4WindowsTests
 
         private static RecordBoxViewModel CreateViewModel(ProfileSettingsService settings, int targetDevice)
         {
-            return new RecordBoxViewModel(DS4Windows.ControllerLimits.TestProfileIndex, new DS4ControlSettings(DS4Controls.Cross),
-                true, settings, new DS4Windows.EnvironmentService(), null, targetDevice);
+            return new RecordBoxViewModel(DS4Windows.Core.Settings.ControllerLimits.TestProfileIndex, new DS4ControlSettings(DS4Controls.Cross),
+                true, settings, new DS4Windows.Core.Platform.EnvironmentService(), null, targetDevice);
         }
 
         [Fact]
@@ -116,7 +117,7 @@ namespace DS4WindowsTests
 
             var vm = CreateViewModel(settings, TargetSlot);
 
-            Assert.Equal(DS4Windows.ControllerLimits.TestProfileIndex, vm.DeviceNum);
+            Assert.Equal(DS4Windows.Core.Settings.ControllerLimits.TestProfileIndex, vm.DeviceNum);
             Assert.Equal(TargetSlot, vm.TargetDevice);
             Assert.Equal(TouchpadOutMode.Passthru, settings.TouchOutMode[TargetSlot]);
             // 編集スロットとほかのスロットの設定は変えない
@@ -152,8 +153,8 @@ namespace DS4WindowsTests
         {
             var settings = CreateIsolatedSettings();
 
-            var vm = new RecordBoxViewModel(DS4Windows.ControllerLimits.TestProfileIndex, new DS4ControlSettings(DS4Controls.Cross),
-                true, settings, new DS4Windows.EnvironmentService(), null);
+            var vm = new RecordBoxViewModel(DS4Windows.Core.Settings.ControllerLimits.TestProfileIndex, new DS4ControlSettings(DS4Controls.Cross),
+                true, settings, new DS4Windows.Core.Platform.EnvironmentService(), null);
 
             Assert.Equal(-1, vm.TargetDevice);
             Assert.All(settings.TouchOutMode, m => Assert.Equal(TouchpadOutMode.Mouse, m));

@@ -22,7 +22,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace DS4Windows.StickModifiers
+namespace DS4Windows.Core.Settings
 {
     public static class StickOutCurve
     {

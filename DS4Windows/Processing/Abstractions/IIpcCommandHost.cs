@@ -1,4 +1,6 @@
-namespace DS4Windows.DI
+using DS4Windows.Input;
+
+namespace DS4Windows.Processing.Abstractions
 {
     /// <summary>
     /// Phase13-Step11 11-b（Phase13-Step11-Plan.md、台帳 F-2c）: IPC コマンドの実行（<see cref="IIpcCommandProcessor"/>）が、UI（メイン画面）に頼む操作の窓口。

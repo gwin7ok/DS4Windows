@@ -1,7 +1,7 @@
 using System;
-using DS4Windows.InputDevices;
+using DS4Windows.Input.Devices;
 
-namespace DS4Windows.DI
+namespace DS4Windows.Processing.Abstractions
 {
     /// <summary>
     /// Phase9 9-E E-6d（Phase9-E6-Plan.md §3.2）: Joy-Con の結合（2 つのデバイスを 1 つの入力にする）が触る、最小のメンバーだけの窓口。

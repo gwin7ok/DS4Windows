@@ -1,9 +1,4 @@
-﻿using DS4Windows.DS4Control;
-using DS4Windows.InputDevices;
-using DS4Windows.StickModifiers;
-using DS4WinWPF.DS4Control.DTOXml;
-using DS4WinWPF.DS4Forms.ViewModels;
-using Sensorit.Base;
+﻿using Sensorit.Base;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -22,13 +17,12 @@ using System.Windows;
 using System.Windows.Input;
 using System.Xml;
 using System.Xml.Serialization;
-using DS4WinWPF;
-using DS4WinWPF.ApiDTO;
 using WpfScreenHelper;
-using static DS4Windows.Mouse;
-using static DS4Windows.Util;
+using static DS4Windows.Processing.Mouse;
+using static DS4Windows.Core.Utilities.Util;
+using DS4Windows.Core.Settings;
 
-namespace DS4Windows.Services
+namespace DS4Windows.Core.Persistence.ProfileSections
 {
     /// <summary>
     /// Phase8-Step4b W6（Phase8-Step4b-Plan.md §3.3）: BT のポーリング・スティックとトリガーの出力（曲線、四角形、アンチスナップバック、出力モード）・タッチパッドのマウス／スティック・DualSense（BTPollRate〜）の保存。

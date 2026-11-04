@@ -1,9 +1,11 @@
 using System;
 using Xunit;
 using Xunit.Abstractions;
-using DS4Windows;
-using DS4Windows.DI;
-using DS4Windows.Services;
+using DS4Windows.Core.Settings;
+using DS4Windows.Input;
+using DS4Windows.Processing;
+using DS4Windows.Processing.Abstractions;
+using DS4Windows.Processing.Services;
 
 namespace DS4WindowsTests
 {
@@ -60,7 +62,7 @@ namespace DS4WindowsTests
         [Fact]
         public void SetCurveAndDeadzone_DoesNotAllocate()
         {
-            var settings = TestRepositoryFactory.CreateProfileSettingsService(new DS4Windows.BackingStore(new DS4Windows.EnvironmentService()));
+            var settings = TestRepositoryFactory.CreateProfileSettingsService(new DS4Windows.Core.Settings.BackingStore(new DS4Windows.Core.Platform.EnvironmentService()));
             var cState = new DS4State();
             var dState = new DS4State();
 
@@ -84,7 +86,7 @@ namespace DS4WindowsTests
         public void SetCurveAndDeadzone_WithGyroControlsActive_DoesNotAllocate()
         {
             // ジャイロ→コントロール変換（Step3-5 で引数渡しへ移した SX/SZ 系）の分岐を実際に通す。
-            var store = new DS4Windows.BackingStore(new DS4Windows.EnvironmentService());
+            var store = new DS4Windows.Core.Settings.BackingStore(new DS4Windows.Core.Platform.EnvironmentService());
             store.gyroOutMode[Slot] = GyroOutMode.Controls;
             store.setSXOutCurveMode(Slot, 2); // 出力カーブの分岐も通す
             store.setSZOutCurveMode(Slot, 2);
@@ -116,7 +118,7 @@ namespace DS4WindowsTests
         [Fact]
         public void ApplyStickCalibration_DoesNotAllocate()
         {
-            var store = new DS4Windows.BackingStore(new DS4Windows.EnvironmentService());
+            var store = new DS4Windows.Core.Settings.BackingStore(new DS4Windows.Core.Platform.EnvironmentService());
             // 4軸すべてで補正の分岐（減算とクランプ）を通す。
             store.rightStickDriftXAxis[Slot] = 3;
             store.rightStickDriftYAxis[Slot] = -3;

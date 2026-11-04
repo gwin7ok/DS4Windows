@@ -2,7 +2,7 @@ using System;
 using System.Globalization;
 using System.IO;
 
-namespace DS4WinWPF
+namespace DS4Windows.Composition.Startup
 {
     /// <summary>
     /// Phase9 9-F F-1a: 起動時の診断ログの文言。旧 <c>App.Application_Startup</c> の中の同じ文言を、そのまま移した（ログの出力は、呼び出し側が行う。文言とレベルは変えない）。

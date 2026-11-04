@@ -1,6 +1,8 @@
-using DS4Windows.DS4Control;
 
-namespace DS4Windows.Services
+using DS4Windows.Output.Kbm;
+using DS4Windows.Processing.Abstractions;
+
+namespace DS4Windows.Output.Services
 {
     /// <summary>
     /// 出力 KBM ハンドラの所有者であり、<see cref="IVirtualKBM"/> の実装。

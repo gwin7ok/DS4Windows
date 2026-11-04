@@ -65,7 +65,7 @@ namespace DS4WindowsTests
 
             Assert.DoesNotContain("AppHost", control);
             Assert.DoesNotContain("AppHost", store);
-            Assert.Contains("Services.IElevatedProcessLauncher elevatedProcessLauncher", control);
+            Assert.Contains("DS4Windows.Core.Abstractions.IElevatedProcessLauncher elevatedProcessLauncher", control);
             Assert.Contains("sp.GetRequiredService<IElevatedProcessLauncher>()", registration);
             Assert.Contains("store.ProcessInspector = sp.GetRequiredService<IProcessInspector>();", registration);
             Assert.DoesNotContain("Global.store", registration);
@@ -95,7 +95,7 @@ namespace DS4WindowsTests
             Assert.DoesNotContain("AppHost", main);
             Assert.DoesNotContain("AppHost", editor);
             Assert.DoesNotContain("new MainWindow(", app);
-            Assert.DoesNotContain("new DS4Forms.MainWindow(", app);
+            Assert.DoesNotContain("new DS4Windows.UI.MainWindow(", app);
             Assert.Contains("ResolvePostHostService<IMainWindowFactory>().Create(parser)", app);
             Assert.Contains("services.AddSingleton<IMainWindowFactory, MainWindowFactory>();", registration);
         }
@@ -108,7 +108,7 @@ namespace DS4WindowsTests
             if (logger == null || app == null) return;
 
             Assert.DoesNotContain("NotificationServiceInstance", logger);
-            Assert.Matches(@"public\s+static\s+DS4Windows\.DI\.INotificationService\s+NotificationService", logger);
+            Assert.Matches(@"public\s+static\s+DS4Windows\.Processing\.Abstractions\.INotificationService\s+NotificationService", logger);
             Assert.Matches(@"AppLogger\.NotificationService\s*=\s*ResolvePostHostService<INotificationService>\(\)", app);
         }
     }

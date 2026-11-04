@@ -31,7 +31,7 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 
-namespace DS4WinWPF.DS4Forms
+namespace DS4Windows.UI
 {
     /// <summary>
     /// Interaction logic for DupBox.xaml
@@ -58,16 +58,16 @@ namespace DS4WinWPF.DS4Forms
 
         // Phase6-Step10-2-3: 本コントロールは MainWindow.xaml から生成されるため、引数なしのコンストラクタが必要。
         // 依存は Initialize で受け取る（MainWindow のコンストラクタが 1 回だけ呼ぶ）。
-        private DS4Windows.DI.IPathService pathService;
+        private DS4Windows.Core.Abstractions.IPathService pathService;
         // Phase11 W6 K-W6-8: 複製の直後に、コピー側へ新しい ProfileId を振るために使う
-        private DS4Windows.DI.IProfileIdentityService profileIdentity;
+        private DS4Windows.Core.Abstractions.IProfileIdentityService profileIdentity;
 
         public DupBox()
         {
             InitializeComponent();
         }
 
-        public void Initialize(DS4Windows.DI.IPathService pathService, DS4Windows.DI.IProfileIdentityService profileIdentity)
+        public void Initialize(DS4Windows.Core.Abstractions.IPathService pathService, DS4Windows.Core.Abstractions.IProfileIdentityService profileIdentity)
         {
             if (this.pathService != null) throw new InvalidOperationException("DupBox is already initialized.");
             this.pathService = pathService ?? throw new ArgumentNullException(nameof(pathService));

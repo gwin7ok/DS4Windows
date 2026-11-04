@@ -1,5 +1,5 @@
-using DS4WinWPF;
 using Xunit;
+using DS4Windows.Core.Updater;
 
 namespace DS4WindowsTests
 {

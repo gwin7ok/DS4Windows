@@ -21,9 +21,8 @@ using System.Collections.Generic;
 using System.Xml;
 using System.Xml.Schema;
 using System.Xml.Serialization;
-using DS4Windows;
 
-namespace DS4WinWPF.DS4Control.DTOXml
+namespace DS4Windows.Core.Persistence.Dto
 {
 
     public class LinkedProfileItem

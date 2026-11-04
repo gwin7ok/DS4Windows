@@ -1,4 +1,4 @@
-namespace DS4Windows.Actions
+namespace DS4Windows.Processing.Actions
 {
     /// <summary>
     /// Phase10-Step4c W1（Phase10-Step4c-Plan.md §2 項目 2）: Fresh-press ガード（<see cref="BindingPolicy.RespectsFreshPressGuard"/>）を見るかの規則を、1 か所にまとめた表。

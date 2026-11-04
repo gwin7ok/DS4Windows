@@ -2,9 +2,8 @@ using System;
 using System.Reflection;
 using System.Runtime.CompilerServices;
 using Xunit;
-using DS4Windows;
-using DS4Windows.DI;
-using DS4Windows.Services;
+using DS4Windows.Input;
+using DS4Windows.Processing;
 
 namespace DS4WindowsTests
 {
@@ -40,7 +39,7 @@ namespace DS4WindowsTests
         [Fact]
         public void Constructor_NullVirtualKbm_Throws()
         {
-            var settings = TestRepositoryFactory.CreateProfileSettingsService(new DS4Windows.BackingStore(new DS4Windows.EnvironmentService()));
+            var settings = TestRepositoryFactory.CreateProfileSettingsService(new DS4Windows.Core.Settings.BackingStore(new DS4Windows.Core.Platform.EnvironmentService()));
             Assert.Throws<ArgumentNullException>(() =>
                 new Mouse(Slot, CreateUninitializedDevice(), settings, null, new StickMotionState(), new SyntheticInputState()));
         }
@@ -49,7 +48,7 @@ namespace DS4WindowsTests
         [Fact]
         public void Constructor_NullStateHolders_Throws()
         {
-            var settings = TestRepositoryFactory.CreateProfileSettingsService(new DS4Windows.BackingStore(new DS4Windows.EnvironmentService()));
+            var settings = TestRepositoryFactory.CreateProfileSettingsService(new DS4Windows.Core.Settings.BackingStore(new DS4Windows.Core.Platform.EnvironmentService()));
             var kbm = new RecordingVirtualKbm();
             Assert.Throws<ArgumentNullException>(() =>
                 new Mouse(Slot, CreateUninitializedDevice(), settings, kbm, null, new SyntheticInputState()));
@@ -60,7 +59,7 @@ namespace DS4WindowsTests
         [Fact]
         public void Constructor_PropagatesServicesToCursorAndWheel()
         {
-            var settings = TestRepositoryFactory.CreateProfileSettingsService(new DS4Windows.BackingStore(new DS4Windows.EnvironmentService()));
+            var settings = TestRepositoryFactory.CreateProfileSettingsService(new DS4Windows.Core.Settings.BackingStore(new DS4Windows.Core.Platform.EnvironmentService()));
             var kbm = new RecordingVirtualKbm();
 
             var mouse = new Mouse(Slot, CreateUninitializedDevice(), settings, kbm, new StickMotionState(), new SyntheticInputState());

@@ -2,9 +2,13 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using DS4Windows.DI;
+using DS4Windows.Core.Abstractions;
+using DS4Windows.Core.Logging;
+using DS4Windows.Core.Settings;
+using DS4Windows.Processing;
+using DS4Windows.Processing.Abstractions;
 
-namespace DS4Windows
+namespace DS4Windows.Core.Persistence
 {
     public class ProfileRepository : IProfileRepository
     {
@@ -21,16 +25,16 @@ namespace DS4Windows
         // Phase13-Step6 6-e: 旧 Func<ControlService>（ControlService → IProfileRepository の依存循環を避ける遅延解決）。プロファイル読込の鎖が使う窓口を直接受ける
         private readonly IProfileLoadTarget _loadTarget;
         // Phase7-Step10c W2: リンクプロファイル・Actions.xml の保存・読込（旧: BackingStore のメソッド）
-        private readonly Services.LinkedProfilesXmlSerializer _linkedProfilesXml;
-        private readonly Services.SpecialActionsXmlSerializer _actionsXml;
+        private readonly DS4Windows.Core.Persistence.LinkedProfilesXmlSerializer _linkedProfilesXml;
+        private readonly DS4Windows.Core.Persistence.SpecialActionsXmlSerializer _actionsXml;
         // Phase7-Step10c W4: プロファイル（旧形式の XML）の読込（旧: BackingStore.LoadProfile）
-        private readonly Services.LegacyProfileXmlSerializer _legacyProfileXml;
+        private readonly DS4Windows.Core.Persistence.LegacyProfileXmlSerializer _legacyProfileXml;
 
         public ProfileRepository(BackingStore config, IProfileSettingsService profileSettings,
             IProfileXmlStore profileXmlStore, IPathService pathService,
             IProfileLoadTarget loadTarget,
-            Services.LinkedProfilesXmlSerializer linkedProfilesXml, Services.SpecialActionsXmlSerializer actionsXml,
-            Services.LegacyProfileXmlSerializer legacyProfileXml, IEnvironmentService environment)
+            DS4Windows.Core.Persistence.LinkedProfilesXmlSerializer linkedProfilesXml, DS4Windows.Core.Persistence.SpecialActionsXmlSerializer actionsXml,
+            DS4Windows.Core.Persistence.LegacyProfileXmlSerializer legacyProfileXml, IEnvironmentService environment)
         {
             _environment = environment ?? throw new ArgumentNullException(nameof(environment));
             _legacyProfileXml = legacyProfileXml ?? throw new ArgumentNullException(nameof(legacyProfileXml));

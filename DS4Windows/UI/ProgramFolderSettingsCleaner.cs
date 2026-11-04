@@ -1,7 +1,7 @@
 using System;
 using System.IO;
 
-namespace DS4WinWPF.DS4Forms
+namespace DS4Windows.UI
 {
     /// <summary>
     /// 保存先に「Appdata」を選んだとき、プログラムフォルダに残っている設定ファイルを削除する。

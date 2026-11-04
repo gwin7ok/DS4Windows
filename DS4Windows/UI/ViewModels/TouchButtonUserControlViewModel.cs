@@ -21,16 +21,15 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using DS4WinWPF.DS4Forms.ViewModels.Util;
-using DS4Windows;
-using static DS4Windows.Mouse;
+using static DS4Windows.Processing.Mouse;
+using DS4Windows.UI.ViewModels.Util;
 
-namespace DS4WinWPF.DS4Forms.ViewModels
+namespace DS4Windows.UI.ViewModels
 {
     public class TouchButtonUserControlViewModel
     {
         // Phase6-Step10-2-5: Global.TouchpadButtonMode の置換先（必須引数）
-        private readonly DS4Windows.DI.IProfileSettingsService profileSettingsService;
+        private readonly DS4Windows.Core.Abstractions.IProfileSettingsService profileSettingsService;
         private int deviceIndex;
         public int DeviceIndex
         {
@@ -52,7 +51,7 @@ namespace DS4WinWPF.DS4Forms.ViewModels
             set => profileSettingsService.TouchpadButtonMode[deviceIndex] = value;
         }
 
-        public TouchButtonUserControlViewModel(int deviceIndex, DS4Windows.DI.IProfileSettingsService profileSettingsService)
+        public TouchButtonUserControlViewModel(int deviceIndex, DS4Windows.Core.Abstractions.IProfileSettingsService profileSettingsService)
         {
             this.profileSettingsService = profileSettingsService ?? throw new ArgumentNullException(nameof(profileSettingsService));
             this.deviceIndex = deviceIndex;

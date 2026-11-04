@@ -2,7 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using Xunit;
-using DS4Windows;
+using DS4Windows.Processing;
 
 namespace DS4WindowsTests
 {

@@ -1,9 +1,13 @@
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using DS4Windows.DI;
+using DS4Windows.Core.Logging;
+using DS4Windows.Core.Settings;
+using DS4Windows.Input;
+using DS4Windows.Processing.Abstractions;
+using DS4Windows.Processing.Actions;
 
-namespace DS4Windows.Services
+namespace DS4Windows.Processing.Services
 {
     /// <summary>
     /// Phase9 9-C（Phase9-C-Plan.md）: <see cref="IMacroPlayback"/> の実装（DI の Singleton）。
@@ -17,9 +21,9 @@ namespace DS4Windows.Services
     {
         private readonly IMacroStepExecutor _stepExecutor;
         private readonly MacroRuntimeState _macroRuntime;
-        private readonly DS4Windows.Actions.IManagedActionManager _manager;
+        private readonly DS4Windows.Processing.Actions.IManagedActionManager _manager;
 
-        public MacroPlayback(IMacroStepExecutor stepExecutor, MacroRuntimeState macroRuntime, DS4Windows.Actions.IManagedActionManager manager)
+        public MacroPlayback(IMacroStepExecutor stepExecutor, MacroRuntimeState macroRuntime, DS4Windows.Processing.Actions.IManagedActionManager manager)
         {
             _manager = manager ?? throw new ArgumentNullException(nameof(manager));
             _stepExecutor = stepExecutor ?? throw new ArgumentNullException(nameof(stepExecutor));

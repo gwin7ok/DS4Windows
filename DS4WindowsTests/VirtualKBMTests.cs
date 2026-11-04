@@ -1,8 +1,6 @@
 using Xunit;
-using DS4Windows;
-using DS4Windows.Services;
-using DS4Windows.Actions;
-using DS4Windows.DS4Control;
+using DS4Windows.Output.Services;
+using DS4Windows.Processing.Actions;
 
 namespace DS4WindowsTests
 {
@@ -58,7 +56,7 @@ namespace DS4WindowsTests
         [Fact]
         public void DefaultMacroPlayer_StateTracking_WorksProperly()
         {
-            var player = new DefaultMacroPlayer(new MockVirtualKBM(), TestHost.GetService<DS4Windows.DI.IMapping>());
+            var player = new DefaultMacroPlayer(new MockVirtualKBM(), TestHost.GetService<DS4Windows.Processing.Abstractions.IMapping>());
 
             Assert.False(player.IsPlaying(0));
             Assert.False(player.IsPlaying(-1));

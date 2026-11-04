@@ -1,4 +1,5 @@
-using DS4Windows;
+
+using DS4Windows.Processing;
 
 namespace StandaloneTests
 {

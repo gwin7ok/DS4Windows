@@ -16,7 +16,6 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
 
-using DS4Windows.InputDevices;
 using NLog.Targets;
 using System;
 using System.Collections.Generic;
@@ -25,7 +24,7 @@ using System.Linq;
 using System.Runtime.InteropServices;
 using System.Security.Principal;
 
-namespace DS4Windows
+namespace DS4Windows.Input
 {
 
     public delegate void RequestElevationDelegate(RequestElevationArgs args);

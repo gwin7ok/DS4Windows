@@ -2,8 +2,9 @@ using System;
 using System.Diagnostics;
 using System.Runtime.InteropServices;
 using System.Text;
+using DS4Windows.Core.Abstractions;
 
-namespace DS4Windows.Services
+namespace DS4Windows.Core.Platform
 {
     public class DefaultProcessInspector : IProcessInspector
     {

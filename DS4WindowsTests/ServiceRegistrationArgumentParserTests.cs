@@ -1,18 +1,21 @@
 using System.Reflection;
 using Microsoft.Extensions.DependencyInjection;
 using Xunit;
-using DS4Windows;
-using DS4Windows.DI;
-using DS4Windows.DS4Control;
-using DS4Windows.Services;
-using DS4WinWPF;
+using DS4Windows.Composition;
+using DS4Windows.Core.Abstractions;
+using DS4Windows.Core.Platform;
+using DS4Windows.Core.Utilities;
+using DS4Windows.Output.Kbm;
+using DS4Windows.Output.Services;
+using DS4Windows.Processing;
+using DS4Windows.Processing.Abstractions;
 
 namespace DS4WindowsTests
 {
     /// <summary>
     /// Phase6-Step7-4（決定5＝A、決定7＝案H）: ServiceRegistration が ControlService を生成するとき、
     /// <see cref="IStartupArguments"/> に設定された実際の起動引数（<see cref="ArgumentParser"/>）を渡すこと、
-    /// および DS4WinWPF.AppHost.CreateHost(config, parser) が、ホストが既に構築済みの場合も起動引数を設定することを検証する。
+    /// および DS4Windows.Composition.AppHost.CreateHost(config, parser) が、ホストが既に構築済みの場合も起動引数を設定することを検証する。
     ///
     /// 経緯: 2026-09-04（4c89cd91）以降、ControlService には常に空の new ArgumentParser() が渡され、起動引数 -virtualkbm が
     /// 無視されていた。最初の是正（コンテナに登録した ArgumentParser を使う）は、ホストが Global の静的初期化で起動引数なしに
@@ -73,7 +76,7 @@ namespace DS4WindowsTests
         [Fact]
         public void ControlService_WithoutStartupArguments_UsesEmptyParser()
         {
-            // 引数なしの DS4WinWPF.AppHost.CreateHost() やテストのホストでは、従来どおり空のパーサー（既定の出力方式）で生成できる。
+            // 引数なしの DS4Windows.Composition.AppHost.CreateHost() やテストのホストでは、従来どおり空のパーサー（既定の出力方式）で生成できる。
             var services = new ServiceCollection();
             services.RegisterServices();
 
@@ -97,9 +100,9 @@ namespace DS4WindowsTests
             try
             {
                 var parser = CreateVirtualKbmParser();
-                var host = DS4WinWPF.AppHost.CreateHost(new Microsoft.Extensions.Configuration.ConfigurationBuilder().Build(), parser);
+                var host = DS4Windows.Composition.AppHost.CreateHost(new Microsoft.Extensions.Configuration.ConfigurationBuilder().Build(), parser);
 
-                Assert.Same(DS4WinWPF.AppHost.Host, host);
+                Assert.Same(DS4Windows.Composition.AppHost.Host, host);
                 Assert.Same(parser, startupArguments.Parser);
             }
             finally
@@ -112,7 +115,7 @@ namespace DS4WindowsTests
         {
             // Phase7-Step10e W3: AppHost.GetService は暗黙にホストを作らなくなったため、TestHost が（未構築なら）引数なしの CreateHost() で明示的に構築する。
             Assert.NotNull(TestHost.GetService<IStartupArguments>());
-            Assert.NotNull(DS4WinWPF.AppHost.Host);
+            Assert.NotNull(DS4Windows.Composition.AppHost.Host);
         }
     }
 }

@@ -16,10 +16,11 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
 
-using DS4Windows;
 using System.Windows;
+using DS4Windows.Core.Updater;
+using DS4Windows.Core.Utilities;
 
-namespace DS4WinWPF.DS4Forms
+namespace DS4Windows.UI
 {
     /// <summary>
     /// Interaction logic for About.xaml
@@ -27,7 +28,7 @@ namespace DS4WinWPF.DS4Forms
     public partial class About : Window
     {
         // Phase6-Step10-1-3: Global.exeversion の置換先。MainWindow が保持済みのサービスを渡す（Pure DI）。
-        public About(DS4Windows.DI.IEnvironmentService environmentService)
+        public About(DS4Windows.Core.Abstractions.IEnvironmentService environmentService)
         {
             if (environmentService == null) throw new System.ArgumentNullException(nameof(environmentService));
 

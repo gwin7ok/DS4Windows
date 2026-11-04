@@ -1,12 +1,13 @@
 using System;
 using System.Collections.Generic;
 using System.Globalization;
-using DS4Windows.DI;
-using DS4Windows.Services;
 using System.Text;
-using DS4Windows;
 using Xunit;
 using Xunit.Abstractions;
+using DS4Windows.Core.Settings;
+using DS4Windows.Processing;
+using DS4Windows.Processing.Abstractions;
+using DS4Windows.Processing.Services;
 
 namespace DS4WindowsTests
 {

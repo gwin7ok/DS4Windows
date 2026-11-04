@@ -33,10 +33,11 @@ using System.Windows.Navigation;
 using System.Windows.Shapes;
 using System.ComponentModel;
 using Ookii.Dialogs.Wpf;
-using DS4WinWPF.DS4Forms.ViewModels;
 using Microsoft.Win32;
+using DS4Windows.Core.Profiles;
+using DS4Windows.UI.ViewModels;
 
-namespace DS4WinWPF.DS4Forms
+namespace DS4Windows.UI
 {
     /// <summary>
     /// Interaction logic for AutoProfiles.xaml
@@ -45,10 +46,10 @@ namespace DS4WinWPF.DS4Forms
     {
         // Phase6-Step10-2-3: 本コントロールは MainWindow.xaml から生成されるため、引数なしのコンストラクタが必要。
         // 依存は Initialize で受け取る（MainWindow のコンストラクタが、AutoProfileHolder を読む前に 1 回だけ呼ぶ）。
-        private DS4Windows.DI.IPathService pathService;
-        private DS4Windows.DI.IAppSettingsService appSettingsService;
-        private DS4Windows.DI.IAutoProfileService autoProfileService;
-        private DS4Windows.DI.IViewModelFactory viewModelFactory;
+        private DS4Windows.Core.Abstractions.IPathService pathService;
+        private DS4Windows.Processing.Abstractions.IAppSettingsService appSettingsService;
+        private DS4Windows.Processing.Abstractions.IAutoProfileService autoProfileService;
+        private DS4Windows.Processing.Abstractions.IViewModelFactory viewModelFactory;
         protected String m_Profile;
         public const string steamCommx86Loc = @"C:\Program Files (x86)\Steam\steamapps\common";
         public const string steamCommLoc = @"C:\Program Files\Steam\steamapps\common";
@@ -77,11 +78,11 @@ namespace DS4WinWPF.DS4Forms
         /// 行数の調整）を行う。置換前はコンストラクタで行っていた処理で、順序は同じ。
         /// MainWindow のコンストラクタから、AutoProfileHolder を読む前に 1 回だけ呼ぶ。
         /// </summary>
-        public void Initialize(DS4Windows.DI.IPathService pathService,
-            DS4Windows.DI.IAppSettingsService appSettingsService,
-            DS4Windows.DI.IAutoProfileService autoProfileService,
-            DS4Windows.DI.IViewModelFactory viewModelFactory,
-            DS4Windows.DI.IEnvironmentService environmentService)
+        public void Initialize(DS4Windows.Core.Abstractions.IPathService pathService,
+            DS4Windows.Processing.Abstractions.IAppSettingsService appSettingsService,
+            DS4Windows.Processing.Abstractions.IAutoProfileService autoProfileService,
+            DS4Windows.Processing.Abstractions.IViewModelFactory viewModelFactory,
+            DS4Windows.Core.Abstractions.IEnvironmentService environmentService)
         {
             if (environmentService == null) throw new ArgumentNullException(nameof(environmentService));
             if (this.pathService != null) throw new InvalidOperationException("AutoProfiles is already initialized.");

@@ -17,9 +17,9 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
 
 using System.Collections.Generic;
-using DS4Windows.DS4Control;
+using DS4Windows.Output.Kbm;
 
-namespace DS4WinWPF
+namespace DS4Windows.Core.Utilities
 {
     public class ArgumentParser
     {

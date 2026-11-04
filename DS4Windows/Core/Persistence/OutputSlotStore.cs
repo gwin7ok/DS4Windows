@@ -1,8 +1,9 @@
 using System;
-using DS4Windows.DI;
-using DS4WinWPF.DS4Control;
+using DS4Windows.Core.Abstractions;
+using DS4Windows.Core.Logging;
+using DS4Windows.Output;
 
-namespace DS4Windows.Services
+namespace DS4Windows.Core.Persistence
 {
     public class OutputSlotStore : IOutputSlotStore
     {

@@ -1,4 +1,4 @@
-namespace DS4Windows.Actions
+namespace DS4Windows.Processing.Actions
 {
     /// <summary>
     /// Phase8-Step7 7.8a（Phase8-Step2b-ControlsTab-Design.md §3.4）: Controls タブの割り当ての、新経路（エンジン）へ移行する区分。

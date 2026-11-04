@@ -1,6 +1,6 @@
 using System.Text.RegularExpressions;
-using DS4Windows;
 using Xunit;
+using DS4Windows.Core.Settings;
 
 namespace DS4WindowsTests
 {

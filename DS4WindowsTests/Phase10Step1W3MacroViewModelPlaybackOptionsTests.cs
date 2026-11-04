@@ -1,9 +1,11 @@
 using System;
 using System.Collections.Generic;
-using DS4Windows;
-using DS4Windows.DI;
-using DS4WinWPF.DS4Forms.ViewModels.SpecialActions;
 using Xunit;
+using DS4Windows.Core.Abstractions;
+using DS4Windows.Core.Settings;
+using DS4Windows.Processing;
+using DS4Windows.Processing.Actions;
+using DS4Windows.UI.ViewModels.SpecialActions;
 
 namespace DS4WindowsTests
 {
@@ -104,8 +106,8 @@ namespace DS4WindowsTests
             vm.PlaybackOptions.UseScanCode = true;
             DS4ControlSettings settings = vm.PrepareSettings();
 
-            DS4WinWPF.DS4Forms.ViewModels.MacroPlaybackOptions seenByRecordBox =
-                DS4WinWPF.DS4Forms.ViewModels.MacroPlaybackOptions.FromKeyType(settings.keyType);
+            DS4Windows.UI.ViewModels.MacroPlaybackOptions seenByRecordBox =
+                DS4Windows.UI.ViewModels.MacroPlaybackOptions.FromKeyType(settings.keyType);
             DS4KeyType exported = seenByRecordBox.ApplyTo(DS4KeyType.Macro);
 
             Assert.Equal(settings.keyType, exported);

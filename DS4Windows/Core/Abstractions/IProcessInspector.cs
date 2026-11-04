@@ -1,4 +1,4 @@
-namespace DS4Windows.Services
+namespace DS4Windows.Core.Abstractions
 {
     /// <summary>
     /// プロセス状態およびアクティブウィンドウを調査するサービスのインターフェース。

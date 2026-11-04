@@ -1,11 +1,20 @@
 using System;
 using Microsoft.Extensions.DependencyInjection;
-using DS4Windows.Actions;
-using DS4Windows.Services;
-using DS4WinWPF;
-using DS4WinWPF.DS4Forms.ViewModels;
+using DS4Windows.Core.Abstractions;
+using DS4Windows.Core.Logging;
+using DS4Windows.Core.Persistence;
+using DS4Windows.Core.Platform;
+using DS4Windows.Core.Profiles;
+using DS4Windows.Core.Settings;
+using DS4Windows.Output.Services;
+using DS4Windows.Processing;
+using DS4Windows.Processing.Abstractions;
+using DS4Windows.Processing.Actions;
+using DS4Windows.Processing.Services;
+using DS4Windows.UI.Services;
+using DS4Windows.UI.ViewModels;
 
-namespace DS4Windows.DI
+namespace DS4Windows.Composition
 {
     /// <summary>
     /// Phase 3 / Phase 4 / Phase 5: アプリケーション全体のDIコンテナ初期登録を一元管理する。
@@ -111,7 +120,7 @@ namespace DS4Windows.DI
             services.AddSingleton<ISpecialActionRepository>(sp => new SpecialActionRepository(
                 sp.GetRequiredService<BackingStore>(), sp.GetRequiredService<IPathService>(),
                 sp.GetRequiredService<SyntheticInputState>(), sp.GetRequiredService<SpecialActionsXmlSerializer>(),
-                sp.GetRequiredService<DS4Windows.Actions.IManagedActionManager>()));
+                sp.GetRequiredService<DS4Windows.Processing.Actions.IManagedActionManager>()));
 
             // Phase 3 Step 3-6: プロセス検査・昇格起動サービスの登録
             services.AddSingleton<IProcessInspector, DefaultProcessInspector>();
@@ -140,7 +149,7 @@ namespace DS4Windows.DI
             // services.AddSingleton<IAppSettingsService, AppSettingsService>();
 
             // 修正後（完全修飾名で確実にバインド）:
-            services.AddSingleton<IAppSettingsService, DS4Windows.Services.AppSettingsService>();
+            services.AddSingleton<IAppSettingsService, DS4Windows.Core.Settings.AppSettingsService>();
 
             // Phase 5 Step 10: UDP サーバーサービス（Cemuhook モーションサーバー境界化）
             // Phase9 9-E E-3: 旧 IUdpServerService／UdpServerService（未接続の並行実装）は削除した（ユーザー承認）。UDP の窓口は IUdpMotionService

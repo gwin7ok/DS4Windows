@@ -60,7 +60,7 @@ namespace DS4WindowsTests
             Assert.True(start >= 0 && end > start);
             string body = code.Substring(start, end - start);
 
-            Assert.Contains("deviceType != InputDevices.InputDeviceType.DS4", body);
+            Assert.Contains("deviceType != DS4Windows.Input.Devices.InputDeviceType.DS4", body);
             Assert.Contains("(featureSet & VidPidFeatureSet.NoOutputData) != 0", body);
             Assert.Contains("sendOutputReport(true, true, false);", body);   // 書けなくても切断しない
             Assert.Contains("catch (Exception", body);

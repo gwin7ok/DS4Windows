@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Windows;
-using DS4Windows;
-using DS4WinWPF.DS4Forms.ViewModels;
+using DS4Windows.Processing;
+using DS4Windows.UI.ViewModels;
 
-namespace DS4WinWPF.DS4Forms;
+namespace DS4Windows.UI;
 
 public partial class StickCalibrationWindow : Window
 {

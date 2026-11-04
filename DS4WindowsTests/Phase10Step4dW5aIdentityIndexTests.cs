@@ -2,10 +2,10 @@ using System;
 using System.Diagnostics;
 using System.IO;
 using System.Xml;
-using DS4Windows;
-using DS4Windows.DI;
-using DS4Windows.Services;
 using Xunit;
+using DS4Windows.Core.Abstractions;
+using DS4Windows.Core.Persistence;
+using DS4Windows.Core.Platform;
 
 namespace DS4WindowsTests
 {

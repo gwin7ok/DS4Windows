@@ -1,8 +1,8 @@
 using System;
 using System.Collections.Generic;
-using DS4Windows.DI;
+using DS4Windows.Input;
 
-namespace DS4Windows.Actions
+namespace DS4Windows.Processing.Actions
 {
     /// <summary>
     /// Phase8-Step3 W3: 1 つ以上のボタンの AND 条件で成立するトリガー（Phase8-Step2-Design.md §4。D2＝B1: Controls タブとスペシャルアクションの両方を扱う汎用クラス）。

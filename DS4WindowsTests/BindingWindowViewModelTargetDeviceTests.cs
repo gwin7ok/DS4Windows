@@ -2,8 +2,9 @@ using System;
 using System.Windows;
 using System.Windows.Media;
 using Xunit;
-using DS4Windows;
-using DS4WinWPF.DS4Forms.ViewModels;
+using DS4Windows.Core.Settings;
+using DS4Windows.Input;
+using DS4Windows.UI.ViewModels;
 
 namespace DS4WindowsTests
 {
@@ -63,9 +64,9 @@ namespace DS4WindowsTests
 
         private static BindingWindowViewModel CreateViewModel(int targetDevice)
         {
-            return new BindingWindowViewModel(DS4Windows.ControllerLimits.TestProfileIndex,
+            return new BindingWindowViewModel(DS4Windows.Core.Settings.ControllerLimits.TestProfileIndex,
                 new DS4ControlSettings(DS4Controls.Cross),
-                TestRepositoryFactory.CreateProfileSettingsService(), TestRepositoryFactory.CreateOutputSlotService(), new DS4Windows.EnvironmentService(), targetDevice);
+                TestRepositoryFactory.CreateProfileSettingsService(), TestRepositoryFactory.CreateOutputSlotService(), new DS4Windows.Core.Platform.EnvironmentService(), targetDevice);
         }
 
         [Fact]
@@ -73,7 +74,7 @@ namespace DS4WindowsTests
         {
             var vm = CreateViewModel(TargetSlot);
 
-            Assert.Equal(DS4Windows.ControllerLimits.TestProfileIndex, vm.DeviceNum);
+            Assert.Equal(DS4Windows.Core.Settings.ControllerLimits.TestProfileIndex, vm.DeviceNum);
             Assert.Equal(TargetSlot, vm.TargetDevice);
             Assert.True(vm.HasTargetDevice);
         }
@@ -81,8 +82,8 @@ namespace DS4WindowsTests
         [Fact]
         public void TargetDeviceIsOptional_DefaultsToNoTargetDevice()
         {
-            var vm = new BindingWindowViewModel(DS4Windows.ControllerLimits.TestProfileIndex, new DS4ControlSettings(DS4Controls.Cross),
-                TestRepositoryFactory.CreateProfileSettingsService(), TestRepositoryFactory.CreateOutputSlotService(), new DS4Windows.EnvironmentService());
+            var vm = new BindingWindowViewModel(DS4Windows.Core.Settings.ControllerLimits.TestProfileIndex, new DS4ControlSettings(DS4Controls.Cross),
+                TestRepositoryFactory.CreateProfileSettingsService(), TestRepositoryFactory.CreateOutputSlotService(), new DS4Windows.Core.Platform.EnvironmentService());
 
             Assert.Equal(-1, vm.TargetDevice);
             Assert.False(vm.HasTargetDevice);
@@ -93,7 +94,7 @@ namespace DS4WindowsTests
         {
             using var scope = new LightBarStateScope();
 
-            var vm = CreateViewModel(new DS4Windows.EnvironmentService().ControllerSlotLimit);
+            var vm = CreateViewModel(new DS4Windows.Core.Platform.EnvironmentService().ControllerSlotLimit);
 
             Assert.False(vm.HasTargetDevice);
             // 範囲外の添字で DS4LightBar の配列に触れない（例外にならず、何も変えない）

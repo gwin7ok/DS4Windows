@@ -5,10 +5,8 @@ using System.Linq;
 using System.Text.RegularExpressions;
 using Xunit;
 using Xunit.Abstractions;
-using DS4Windows;
-using DS4Windows.DI;
-using DS4WinWPF.DS4Forms.ViewModels;
-using DS4WinWPF.DS4Forms.ViewModels.SpecialActions;
+using DS4Windows.UI.ViewModels;
+using DS4Windows.UI.ViewModels.SpecialActions;
 
 namespace DS4WindowsTests
 {
@@ -100,7 +98,7 @@ namespace DS4WindowsTests
         {
             Assert.Throws<ArgumentNullException>(() => new MacroViewModel(null));
             Assert.Throws<ArgumentNullException>(() => new LaunchProgramViewModel(null));
-            Assert.Throws<ArgumentNullException>(() => new CheckBatteryViewModel(null, new DS4Windows.EnvironmentService()));
+            Assert.Throws<ArgumentNullException>(() => new CheckBatteryViewModel(null, new DS4Windows.Core.Platform.EnvironmentService()));
             Assert.Throws<ArgumentNullException>(() => new MultiActButtonViewModel(null));
             Assert.Throws<ArgumentNullException>(() => new SpecialActionViewModel(5, null));
             Assert.Throws<ArgumentNullException>(() => new LoadProfileViewModel(null, null));

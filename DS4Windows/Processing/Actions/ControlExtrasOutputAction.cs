@@ -1,6 +1,7 @@
 using System;
+using DS4Windows.Input;
 
-namespace DS4Windows.Actions
+namespace DS4Windows.Processing.Actions
 {
     /// <summary>
     /// Phase8-Step7 7.8e（Phase8-Step7-8e-Plan.md §3.2）: Controls タブの Extras（振動、ライトバーの強制色と点滅、ボタン感度の一時変更）の出力。

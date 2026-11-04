@@ -24,9 +24,11 @@ using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
-using DS4Windows;
+using DS4Windows.Core.Logging;
+using DS4Windows.Core.Settings;
+using DS4Windows.Input.Hid;
 
-namespace DS4Windows.InputDevices
+namespace DS4Windows.Input.Devices
 {
     public class DualSenseDevice : DS4Device
     {
@@ -570,7 +572,7 @@ namespace DS4Windows.InputDevices
                                 {
                                     exitInputThread = true;
 
-                                    AppLogger.Log(AppLogLevel.Warn, DS4WinWPF.Translations.Strings.CRC32Fail, LogOptions.UserFacing);
+                                    AppLogger.Log(AppLogLevel.Warn, DS4Windows.Translations.Strings.CRC32Fail, LogOptions.UserFacing);
                                     readWaitEv.Reset();
                                     //sendOutputReport(true, true); // Kick Windows into noticing the disconnection.
                                     StopOutputUpdate();

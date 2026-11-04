@@ -1,7 +1,7 @@
 using System;
 using System.Collections.Generic;
 
-namespace DS4WinWPF.DS4Forms.ViewModels
+namespace DS4Windows.UI.ViewModels
 {
     /// <summary>
     /// Phase10-Step2 W3（Phase10-Step2-Plan.md §3.3）: Controls のモードのトリガーの供給元。割り当てを編集する対象のボタン 1 つに固定で、

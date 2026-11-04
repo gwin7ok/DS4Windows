@@ -1,10 +1,11 @@
 using System;
 using System.IO;
 using System.Xml;
-using DS4Windows;
-using DS4Windows.DS4Control;
-using DS4Windows.Services;
 using Xunit;
+using DS4Windows.Core.Persistence;
+using DS4Windows.Core.Settings;
+using DS4Windows.Output.Devices;
+using DS4Windows.Processing;
 
 namespace DS4WindowsTests
 {

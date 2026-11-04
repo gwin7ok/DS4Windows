@@ -1,4 +1,4 @@
-﻿namespace DS4Windows.Services
+﻿namespace DS4Windows.Core.Persistence.ProfileSections
 {
     /// <summary>
     /// Phase8-Step4b W6（Phase8-Step4b-Plan.md §3.3）: <c>LegacyProfileXmlSerializer.SaveProfile</c> の節（保存の順序で連続した要素の範囲）の契約。

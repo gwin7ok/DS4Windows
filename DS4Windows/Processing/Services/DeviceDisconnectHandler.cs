@@ -1,8 +1,13 @@
 using System;
 using System.Threading.Tasks;
-using DS4Windows.DI;
+using DS4Windows.Core.Abstractions;
+using DS4Windows.Core.Logging;
+using DS4Windows.Core.Settings;
+using DS4Windows.Input;
+using DS4Windows.Output;
+using DS4Windows.Processing.Abstractions;
 
-namespace DS4Windows.Services
+namespace DS4Windows.Processing.Services
 {
     /// <summary>
     /// Phase9 9-E E-6e（Phase9-E6-Plan.md §3.4）: <see cref="IDeviceDisconnectHandler"/> の実装（DI の Singleton。状態なし）。
@@ -100,11 +105,11 @@ namespace DS4Windows.Services
                     // Phase8-Step6 W2: 物理的な切断だけが、エンジンの状態と登録簿の束縛を消す（HandleDeviceDisconnect は適用のたびにも呼ばれるため、そこには足さない）
                     _profileSlotApplier.ReleaseSlot(ind);
 
-                    string removed = DS4WinWPF.Properties.Resources.ControllerWasRemoved.Replace("*Mac address*", (ind + 1).ToString());
+                    string removed = DS4Windows.Properties.Resources.ControllerWasRemoved.Replace("*Mac address*", (ind + 1).ToString());
                     if (device.getBattery() <= 20 &&
                         device.getConnectionType() == ConnectionType.BT && !device.isCharging())
                     {
-                        removed += ". " + DS4WinWPF.Properties.Resources.ChargeController;
+                        removed += ". " + DS4Windows.Properties.Resources.ChargeController;
                     }
 
                     AppLogger.Log(AppLogLevel.Info, removed, LogOptions.UserFacing);

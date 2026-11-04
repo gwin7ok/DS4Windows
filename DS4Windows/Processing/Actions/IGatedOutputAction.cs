@@ -1,4 +1,4 @@
-namespace DS4Windows.Actions
+namespace DS4Windows.Processing.Actions
 {
     /// <summary>
     /// Phase8-Step7 7.5a-W2（Q2＝A）: 出力アクションが、立ち上がりの実行の直前に「実行してよいか」を答えるための口（任意）。

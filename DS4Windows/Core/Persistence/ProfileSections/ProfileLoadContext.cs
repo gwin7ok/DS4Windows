@@ -1,8 +1,10 @@
 ﻿using System;
 using System.Xml;
-using DS4Windows.DI;
+using DS4Windows.Core.Settings;
+using DS4Windows.Output;
+using DS4Windows.Processing.Abstractions;
 
-namespace DS4Windows.Services
+namespace DS4Windows.Core.Persistence.ProfileSections
 {
     /// <summary>
     /// Phase8-Step4b W2（Phase8-Step4b-Plan.md §3.2、Q4＝A）: プロファイル 1 回分の読込で、節をまたいで共有する状態。
@@ -34,13 +36,13 @@ namespace DS4Windows.Services
         /// <summary>読込の引数 <c>launchprogram</c>（プロファイルの起動プログラムを、読込時に起動するか）。</summary>
         public bool LaunchProgram { get; set; }
 
-        public DS4Windows.DI.IProfileSettingsService ProfileSettings { get; set; }
+        public DS4Windows.Core.Abstractions.IProfileSettingsService ProfileSettings { get; set; }
 
 
         /// <summary><c>UseTPforControls</c> 要素の有無。雑多の節が書き、<c>TouchpadOutputMode</c> を読む節が読む。</summary>
         public bool TpForControlsPresent { get; set; }
 
-        public DS4Windows.DI.IEnvironmentService Environment { get; set; }
+        public DS4Windows.Core.Abstractions.IEnvironmentService Environment { get; set; }
 
         /// <summary>読込の引数 <c>xinputChange</c>（起動前の読込では、出力デバイスの状態を確認しない）。</summary>
         public bool XinputChange { get; set; }

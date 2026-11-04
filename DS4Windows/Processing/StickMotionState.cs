@@ -1,6 +1,7 @@
 using System.Collections.Generic;
+using DS4Windows.Core.Settings;
 
-namespace DS4Windows
+namespace DS4Windows.Processing
 {
     /// <summary>
     /// Phase7-Step7 W4（Q2＝A）: スティック・ジャイロ・トリガーの処理状態のうち、<c>Mapping</c> の外から触られるものの保持クラス

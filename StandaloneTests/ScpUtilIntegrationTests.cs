@@ -1,7 +1,6 @@
 using System;
 using System.IO;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using DS4Windows;
 
 [TestClass]
 public class ScpUtilIntegrationTests
@@ -24,9 +23,9 @@ public class ScpUtilIntegrationTests
 
             File.WriteAllText(tempPath, xml);
 
-            var bs = new DS4Windows.BackingStore(new DS4Windows.EnvironmentService());
+            var bs = new DS4Windows.Core.Settings.BackingStore(new DS4Windows.Core.Platform.EnvironmentService());
             bs.m_Profile = tempPath;
-            bool loaded = new DS4Windows.Services.AppSettingsXmlSerializer(bs, new DS4Windows.PathService(), new DS4Windows.EnvironmentService()).Load();
+            bool loaded = new DS4Windows.Core.Persistence.AppSettingsXmlSerializer(bs, new DS4Windows.Core.Platform.PathService(), new DS4Windows.Core.Platform.EnvironmentService()).Load();
             Assert.IsTrue(loaded, "Initial Load failed");
 
             Assert.AreEqual(760, bs.profileEditorLeftWidth);
@@ -43,13 +42,13 @@ public class ScpUtilIntegrationTests
             bs.specialActionTriggerColWidth = 22;
             bs.specialActionDetailColWidth = 33;
 
-            bool saved = new DS4Windows.Services.AppSettingsXmlSerializer(bs, new DS4Windows.PathService(), new DS4Windows.EnvironmentService()).Save();
+            bool saved = new DS4Windows.Core.Persistence.AppSettingsXmlSerializer(bs, new DS4Windows.Core.Platform.PathService(), new DS4Windows.Core.Platform.EnvironmentService()).Save();
             Assert.IsTrue(saved, "Save failed");
 
             // Load into a new instance
-            var bs2 = new DS4Windows.BackingStore(new DS4Windows.EnvironmentService());
+            var bs2 = new DS4Windows.Core.Settings.BackingStore(new DS4Windows.Core.Platform.EnvironmentService());
             bs2.m_Profile = tempPath;
-            bool loaded2 = new DS4Windows.Services.AppSettingsXmlSerializer(bs2, new DS4Windows.PathService(), new DS4Windows.EnvironmentService()).Load();
+            bool loaded2 = new DS4Windows.Core.Persistence.AppSettingsXmlSerializer(bs2, new DS4Windows.Core.Platform.PathService(), new DS4Windows.Core.Platform.EnvironmentService()).Load();
             Assert.IsTrue(loaded2, "Reload failed");
 
             Assert.AreEqual(123, bs2.profileEditorLeftWidth);

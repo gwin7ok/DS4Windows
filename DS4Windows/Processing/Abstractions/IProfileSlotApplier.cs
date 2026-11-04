@@ -1,4 +1,4 @@
-namespace DS4Windows.Services
+namespace DS4Windows.Processing.Abstractions
 {
     /// <summary>
     /// 接続時などに、指定スロットへプロファイルを適用するための <see cref="ControlService"/> 側の出力ポート。

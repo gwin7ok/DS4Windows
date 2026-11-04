@@ -1,4 +1,4 @@
-namespace DS4WinWPF
+namespace DS4Windows.Core.Updater
 {
     /// <summary>
     /// DS4Updater.exe を起動するときのコマンドライン引数を組み立てる（起動の 3 か所で共通）。

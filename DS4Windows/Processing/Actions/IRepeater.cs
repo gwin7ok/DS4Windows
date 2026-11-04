@@ -1,6 +1,6 @@
 using System;
 
-namespace DS4Windows.Actions
+namespace DS4Windows.Processing.Actions
 {
     /// <summary>
     /// Abstracts periodic invocation used for key repeats.

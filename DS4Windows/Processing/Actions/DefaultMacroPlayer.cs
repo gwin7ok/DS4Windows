@@ -1,9 +1,9 @@
 using System;
 using System.Threading;
-using DS4Windows;
-using DS4Windows.Services;
+using DS4Windows.Core.Settings;
+using DS4Windows.Processing.Abstractions;
 
-namespace DS4Windows.Actions
+namespace DS4Windows.Processing.Actions
 {
     /// <summary>
     /// IMacroPlayer の標準実装
@@ -18,9 +18,9 @@ namespace DS4Windows.Actions
         private readonly object _lock = new object();
         private readonly IVirtualKBM _virtualKBM;
         // Phase7-Step8 W2: 旧 Mapping.PlayMacroDirect／EndMacroDirect の静的呼び出し。Phase13-Step8 8-b: 旧 遅延取得デリゲートをやめ、直接受ける（循環なし）
-        private readonly DS4Windows.DI.IMapping _mapping;
+        private readonly DS4Windows.Processing.Abstractions.IMapping _mapping;
 
-        public DefaultMacroPlayer(IVirtualKBM virtualKBM, DS4Windows.DI.IMapping mapping)
+        public DefaultMacroPlayer(IVirtualKBM virtualKBM, DS4Windows.Processing.Abstractions.IMapping mapping)
         {
             _mapping = mapping ?? throw new ArgumentNullException(nameof(mapping));
             _virtualKBM = virtualKBM ?? throw new ArgumentNullException(nameof(virtualKBM)); // Phase6-Step10-4-4: 必須の依存

@@ -1,9 +1,4 @@
-﻿using DS4Windows.DS4Control;
-using DS4Windows.InputDevices;
-using DS4Windows.StickModifiers;
-using DS4WinWPF.DS4Control.DTOXml;
-using DS4WinWPF.DS4Forms.ViewModels;
-using Sensorit.Base;
+﻿using Sensorit.Base;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -22,13 +17,14 @@ using System.Windows;
 using System.Windows.Input;
 using System.Xml;
 using System.Xml.Serialization;
-using DS4WinWPF;
-using DS4WinWPF.ApiDTO;
 using WpfScreenHelper;
-using static DS4Windows.Mouse;
-using static DS4Windows.Util;
+using static DS4Windows.Processing.Mouse;
+using static DS4Windows.Core.Utilities.Util;
+using DS4Windows.Core.Logging;
+using DS4Windows.Core.Persistence.Dto;
+using DS4Windows.Core.Settings;
 
-namespace DS4Windows.Services
+namespace DS4Windows.Core.Persistence
 {
     /// <summary>
     /// Phase7-Step10c W2（Q1＝A）: リンクプロファイル（<c>LinkedProfiles.xml</c>）の保存・読込。
@@ -39,9 +35,9 @@ namespace DS4Windows.Services
         private readonly BackingStore store;
 
         // Phase10-Step4d W4: 紐付けたプロファイルの ID と名前を結ぶ。省略可（登録簿がなければ、従来どおり名前だけ）
-        private readonly DS4Windows.DI.IProfileIdentityService profileIdentity;
+        private readonly DS4Windows.Core.Abstractions.IProfileIdentityService profileIdentity;
 
-        public LinkedProfilesXmlSerializer(BackingStore store, DS4Windows.DI.IProfileIdentityService profileIdentityService = null)
+        public LinkedProfilesXmlSerializer(BackingStore store, DS4Windows.Core.Abstractions.IProfileIdentityService profileIdentityService = null)
         {
             this.store = store ?? throw new ArgumentNullException(nameof(store));
             profileIdentity = profileIdentityService;

@@ -1,7 +1,9 @@
 using System;
-using DS4Windows.DI;
+using DS4Windows.Core.Abstractions;
+using DS4Windows.Input;
+using DS4Windows.Processing.Abstractions;
 
-namespace DS4Windows.Services
+namespace DS4Windows.Processing.Services
 {
     /// <summary>
     /// <see cref="IRuntimeFeatureSwitch"/> の実装。本物のサービスへ委譲するだけ（旧 <c>ControlService</c> の転送メンバーを、そのまま移したもの）。

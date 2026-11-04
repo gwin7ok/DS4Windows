@@ -1,8 +1,8 @@
 using System;
 using System.Collections.Generic;
-using DS4Windows.DI;
+using DS4Windows.Input;
 
-namespace DS4Windows.Actions
+namespace DS4Windows.Processing.Actions
 {
     /// <summary>
     /// Phase10-Step6 W8 相当: Controls タブの Multi-action（ボタン 1 つの、タップ・長押し・ダブルタップ）の入力アクション。

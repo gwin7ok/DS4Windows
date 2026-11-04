@@ -1,8 +1,8 @@
 using System;
 using System.Collections.Generic;
-using DS4Windows;
+using DS4Windows.Processing;
 
-namespace DS4WinWPF.DS4Forms.ViewModels
+namespace DS4Windows.UI.ViewModels
 {
     /// <summary>
     /// Phase10-Step2 W1（Phase10-Step2-Plan.md §3.1）: 編集画面の種別の一覧。並び・種別の ID は、従来の <c>SpecialActEditorViewModel.typeAssoc</c>
@@ -71,7 +71,7 @@ namespace DS4WinWPF.DS4Forms.ViewModels
 
         // Phase10-Step6 I6b: SA 専用の種別が Controls で保存できるかは、規則の表（ControlsSpecialTypeTable。実行時に束縛が作られる種別）に従う（以前は、ここに直書きしていた）
         private static ActionEditorModes ControlsSavable(SpecialAction.ActionTypeId type)
-            => DS4Windows.Actions.ControlsSpecialTypeTable.IsSupported(type) ? ActionEditorModes.Both : ActionEditorModes.SpecialAction;
+            => DS4Windows.Processing.Actions.ControlsSpecialTypeTable.IsSupported(type) ? ActionEditorModes.Both : ActionEditorModes.SpecialAction;
 
         /// <summary>全項目（添字の順）。</summary>
         public IReadOnlyList<ActionTypeDescriptor> All => descriptors;

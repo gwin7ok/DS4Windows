@@ -1,7 +1,10 @@
 using System;
 using System.Collections.Generic;
+using DS4Windows.Core.Logging;
+using DS4Windows.Input;
+using DS4Windows.Output.Devices;
 
-namespace DS4Windows.Actions
+namespace DS4Windows.Processing.Actions
 {
     /// <summary>
     /// Phase8-Step4 W2: Button 種別の出力（Phase8-Step2-Design.md §5）。毎フレームの出力を <see cref="IFrameOutputAction.ApplyFrame"/> で行う

@@ -1,6 +1,7 @@
 using System;
+using DS4Windows.Input;
 
-namespace DS4Windows.DI
+namespace DS4Windows.Processing.Abstractions
 {
     /// <summary>
     /// Phase9 9-E E-2（Phase9-E-Plan.md）: HidHide（コントローラーを他のアプリから隠すドライバー）との連携。

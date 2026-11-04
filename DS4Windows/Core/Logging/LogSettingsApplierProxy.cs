@@ -1,6 +1,7 @@
-using DS4Windows.DI;
 
-namespace DS4Windows.Services
+using DS4Windows.Core.Abstractions;
+
+namespace DS4Windows.Core.Logging
 {
     /// <summary>
     /// <see cref="ILogSettingsApplier"/> の DI 登録用の窓口（遅延接続）。

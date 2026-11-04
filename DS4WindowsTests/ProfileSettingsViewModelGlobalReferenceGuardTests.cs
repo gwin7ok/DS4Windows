@@ -3,9 +3,10 @@ using System.IO;
 using System.Text.RegularExpressions;
 using Xunit;
 using Xunit.Abstractions;
-using DS4Windows;
-using DS4Windows.DI;
-using DS4WinWPF.DS4Forms.ViewModels;
+using DS4Windows.Core.Abstractions;
+using DS4Windows.Core.Platform;
+using DS4Windows.Processing.Abstractions;
+using DS4Windows.UI.ViewModels;
 
 namespace DS4WindowsTests
 {
@@ -48,7 +49,7 @@ namespace DS4WindowsTests
             {
                 try
                 {
-                    System.Windows.Application.ResourceAssembly = typeof(DS4WinWPF.AppHost).Assembly;
+                    System.Windows.Application.ResourceAssembly = typeof(DS4Windows.Composition.AppHost).Assembly;
                 }
                 catch { }
             }
@@ -176,7 +177,7 @@ namespace DS4WindowsTests
         [Fact]
         public void ViewModelFactory_ResolvedFromContainer_CreatesViewModelWithEnvironmentService()
         {
-            DS4WinWPF.AppHost.CreateHost();
+            DS4Windows.Composition.AppHost.CreateHost();
             var factory = TestHost.GetService<IViewModelFactory>();
             Assert.NotNull(factory);
 

@@ -1,7 +1,7 @@
 using System;
 using System.Collections.Generic;
 
-namespace DS4Windows.Actions
+namespace DS4Windows.Processing.Actions
 {
     /// <summary>
     /// Phase8-Step3 W1: 統一トリガーディスパッチの束縛（不変）。プロファイルの読込・適用の完了後に <c>IActionBindingBuilder</c>（Step5）が組み立て、

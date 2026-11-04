@@ -1,7 +1,9 @@
-using DS4Windows;
-using DS4Windows.DI;
-using DS4Windows.Services;
-using DS4WinWPF.DS4Forms.ViewModels;
+
+using DS4Windows.Core.Logging;
+using DS4Windows.Core.Platform;
+using DS4Windows.Core.Settings;
+using DS4Windows.Processing.Abstractions;
+using DS4Windows.UI.ViewModels;
 
 namespace DS4WindowsTests
 {

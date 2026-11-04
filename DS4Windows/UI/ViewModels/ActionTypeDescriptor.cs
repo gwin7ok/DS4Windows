@@ -1,6 +1,7 @@
-using DS4Windows;
 
-namespace DS4WinWPF.DS4Forms.ViewModels
+using DS4Windows.Processing;
+
+namespace DS4Windows.UI.ViewModels
 {
     /// <summary>
     /// Phase10-Step2 W1（Phase10-Step2-Plan.md §3.1）: 編集画面の種別の一覧の 1 項目。従来は、<c>SpecialActEditorViewModel.typeAssoc</c>（種別の ID の配列）と、

@@ -3,12 +3,15 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Threading;
-using DS4Windows.DI;
-using DS4Windows.DS4Control;
-using DS4Windows.InputDevices;
-using DS4WinWPF.DS4Control;
+using DS4Windows.Core.Abstractions;
+using DS4Windows.Core.Logging;
+using DS4Windows.Core.Platform;
+using DS4Windows.Input;
+using DS4Windows.Output;
+using DS4Windows.Output.Kbm;
+using DS4Windows.Processing.Abstractions;
 
-namespace DS4Windows.Services
+namespace DS4Windows.Processing.Services
 {
     /// <summary>
     /// Phase9 9-E E-6f2（Phase9-E6-Plan.md §9）: <see cref="IServiceLifecycle"/> の実装（DI の Singleton）。
@@ -92,7 +95,7 @@ namespace DS4Windows.Services
                 _kbmInitializer.Initialize();
 
                 if (showlog)
-                    AppLogger.Log(AppLogLevel.Info, DS4WinWPF.Properties.Resources.Starting, LogOptions.UserFacing);
+                    AppLogger.Log(AppLogLevel.Info, DS4Windows.Properties.Resources.Starting, LogOptions.UserFacing);
 
                 Thread.Sleep(2000);
 
@@ -112,8 +115,8 @@ namespace DS4Windows.Services
 
                 if (showlog)
                 {
-                    AppLogger.Log(AppLogLevel.Info, DS4WinWPF.Properties.Resources.SearchingController, LogOptions.UserFacing);
-                    AppLogger.Log(AppLogLevel.Info, _deviceRegistry.IsExclusiveMode ? DS4WinWPF.Properties.Resources.UsingExclusive : DS4WinWPF.Properties.Resources.UsingShared, LogOptions.UserFacing);
+                    AppLogger.Log(AppLogLevel.Info, DS4Windows.Properties.Resources.SearchingController, LogOptions.UserFacing);
+                    AppLogger.Log(AppLogLevel.Info, _deviceRegistry.IsExclusiveMode ? DS4Windows.Properties.Resources.UsingExclusive : DS4Windows.Properties.Resources.UsingShared, LogOptions.UserFacing);
                 }
 
                 if (_appSettings.UseOscServer && !_oscService.HasListener)
@@ -220,7 +223,7 @@ namespace DS4Windows.Services
                 PreServiceStop?.Invoke(this, EventArgs.Empty);
 
                 if (showlog)
-                    AppLogger.Log(AppLogLevel.Info, DS4WinWPF.Properties.Resources.StoppingX360, LogOptions.UserFacing);
+                    AppLogger.Log(AppLogLevel.Info, DS4Windows.Properties.Resources.StoppingX360, LogOptions.UserFacing);
 
                 AppLogger.Log(AppLogLevel.Info, "Closing connection to ViGEmBus", LogOptions.UserFacing);
 
@@ -280,7 +283,7 @@ namespace DS4Windows.Services
                 }
 
                 if (showlog)
-                    AppLogger.Log(AppLogLevel.Info, DS4WinWPF.Properties.Resources.StoppingDS4, LogOptions.UserFacing);
+                    AppLogger.Log(AppLogLevel.Info, DS4Windows.Properties.Resources.StoppingDS4, LogOptions.UserFacing);
 
                 _deviceRegistry.StopControllers();
                 slots.SlotManager.ClearControllerList();
@@ -301,7 +304,7 @@ namespace DS4Windows.Services
                 }
 
                 if (showlog)
-                    AppLogger.Log(AppLogLevel.Info, DS4WinWPF.Properties.Resources.StoppedDS4Windows, LogOptions.UserFacing);
+                    AppLogger.Log(AppLogLevel.Info, DS4Windows.Properties.Resources.StoppedDS4Windows, LogOptions.UserFacing);
 
                 while (_virtualPad.OutputSlotManager.RunningQueue)
                 {

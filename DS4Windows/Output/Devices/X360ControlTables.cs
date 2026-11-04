@@ -1,7 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
+using DS4Windows.Input;
 
-namespace DS4Windows
+namespace DS4Windows.Output.Devices
 {
     /// <summary>
     /// Phase7-Step10b W1（Q1＝A）: Xbox 360／DS4 仮想コントローラーのボタンの既定割り当てと名前の表（旧: <c>Global</c> の静的メンバー。宣言は移動のみ）。
@@ -167,11 +168,11 @@ namespace DS4Windows
         public static string getX360ControlString(X360Controls key, OutContType conType)
         {
             string result = string.Empty;
-            if (conType == DS4Windows.OutContType.X360)
+            if (conType == DS4Windows.Output.OutContType.X360)
             {
                 xboxDefaultNames.TryGetValue(key, out result);
             }
-            else if (conType == DS4Windows.OutContType.DS4)
+            else if (conType == DS4Windows.Output.OutContType.DS4)
             {
                 ds4DefaultNames.TryGetValue(key, out result);
             }

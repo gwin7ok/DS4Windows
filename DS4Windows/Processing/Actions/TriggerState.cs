@@ -1,4 +1,4 @@
-namespace DS4Windows.Actions
+namespace DS4Windows.Processing.Actions
 {
     /// <summary>
     /// Phase8-Step3 W1: <see cref="IInputAction.Evaluate"/> の結果（値型。毎フレームの割り当て 0）。

@@ -1,6 +1,6 @@
 using System;
 
-namespace DS4Windows.Actions
+namespace DS4Windows.Processing.Actions
 {
     /// <summary>
     /// Runtime executor for a binding on a per-device basis. Manages repeaters and state callbacks.

@@ -1,8 +1,7 @@
-using DS4Windows.Services;
 using System;
-using DS4Windows.DS4Control;
+using DS4Windows.Processing.Abstractions;
 
-namespace DS4Windows.Actions
+namespace DS4Windows.Processing.Actions
 {
     /// <summary>
     /// Context passed to output actions containing device and handler references.

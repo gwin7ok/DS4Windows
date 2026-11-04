@@ -1,10 +1,13 @@
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using DS4Windows.DI;
 using Sensorit.Base;
+using DS4Windows.Core.Logging;
+using DS4Windows.Core.Utilities;
+using DS4Windows.Input;
+using DS4Windows.Processing.Abstractions;
 
-namespace DS4Windows.Services
+namespace DS4Windows.Output.Services
 {
     /// <summary>
     /// Phase9 9-E E-3（Phase9-E-Plan.md）: <see cref="IUdpMotionService"/> の実装（DI の Singleton）。

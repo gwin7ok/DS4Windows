@@ -1,8 +1,8 @@
 using System.IO;
 using System.Text.RegularExpressions;
-using DS4Windows;
 using Xunit;
 using Xunit.Abstractions;
+using DS4Windows.Processing;
 
 namespace DS4WindowsTests
 {
@@ -38,7 +38,7 @@ namespace DS4WindowsTests
         public void NewInstance_HasTheSameInitialValuesAsTheOldStaticFields()
         {
             var state = new StickMotionState();
-            int count = DS4Windows.ControllerLimits.MaxControllerCount;
+            int count = DS4Windows.Core.Settings.ControllerLimits.MaxControllerCount;
 
             Assert.Equal(count, state.GyroStickX.Length);
             Assert.Equal(count, state.GyroStickY.Length);

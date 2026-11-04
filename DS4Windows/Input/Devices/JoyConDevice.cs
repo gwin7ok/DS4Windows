@@ -24,8 +24,12 @@ using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using DS4Windows.Core.Logging;
+using DS4Windows.Core.Settings;
+using DS4Windows.Core.Utilities;
+using DS4Windows.Input.Hid;
 
-namespace DS4Windows.InputDevices
+namespace DS4Windows.Input.Devices
 {
     public class JoyConDevice : DS4Device
     {
@@ -998,9 +1002,9 @@ namespace DS4Windows.InputDevices
                     //tempMotion.outputAccelX = tempMotion.accelX; tempMotion.outputAccelY = tempMotion.accelY; tempMotion.outputAccelZ = tempMotion.accelZ;
                     tempMotion.outputAccelX = 0; tempMotion.outputAccelY = 0; tempMotion.outputAccelZ = 0;
                     tempMotion.outputGyroControls = false;
-                    tempMotion.accelXG = (accelX * 2) / DS4Windows.SixAxis.F_ACC_RES_PER_G;
-                    tempMotion.accelYG = (-accelZ * 2) / DS4Windows.SixAxis.F_ACC_RES_PER_G;
-                    tempMotion.accelZG = (-accelY * 2) / DS4Windows.SixAxis.F_ACC_RES_PER_G;
+                    tempMotion.accelXG = (accelX * 2) / DS4Windows.Input.SixAxis.F_ACC_RES_PER_G;
+                    tempMotion.accelYG = (-accelZ * 2) / DS4Windows.Input.SixAxis.F_ACC_RES_PER_G;
+                    tempMotion.accelZG = (-accelY * 2) / DS4Windows.Input.SixAxis.F_ACC_RES_PER_G;
 
                     tempMotion.angVelYaw = gyroYaw * GYRO_IN_DEG_SEC_FACTOR;
                     tempMotion.angVelPitch = -gyroPitch * GYRO_IN_DEG_SEC_FACTOR;

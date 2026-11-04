@@ -1,9 +1,13 @@
 using System;
 using System.Collections.Generic;
 using System.Runtime.CompilerServices;
-using DS4Windows;
-using DS4Windows.DI;
-using DS4Windows.DS4Control;
+using DS4Windows.Core.Abstractions;
+using DS4Windows.Core.Settings;
+using DS4Windows.Input;
+using DS4Windows.Output.Devices;
+using DS4Windows.Output.Kbm;
+using DS4Windows.Processing;
+using DS4Windows.Processing.Abstractions;
 
 namespace DS4WindowsTests
 {
@@ -21,8 +25,8 @@ namespace DS4WindowsTests
 
         private readonly SyntheticState _savedGlobalState;
         private readonly SyntheticState _savedDeviceState;
-        private readonly DS4Windows.DS4Control.VirtualKBMBase _savedHandler;
-        private readonly DS4Windows.Services.OutputKBMHandlerAdapter _handlerOwner;
+        private readonly DS4Windows.Output.Kbm.VirtualKBMBase _savedHandler;
+        private readonly DS4Windows.Output.Services.OutputKBMHandlerAdapter _handlerOwner;
         private readonly VirtualKBMMapping _savedMapping;
         private readonly List<DS4Controls> _touched = new List<DS4Controls>();
 
@@ -40,12 +44,12 @@ namespace DS4WindowsTests
 
         public MappingCharacterizationScope()
         {
-            DS4WinWPF.AppHost.CreateHost();
+            DS4Windows.Composition.AppHost.CreateHost();
             Settings = TestHost.GetService<IProfileSettingsService>();
             Control = TestHost.GetService<ControlService>();
             Mapper = TestHost.GetService<IMapping>();
             Dispatcher = TestHost.GetService<ISyntheticDispatcher>();
-            _handlerOwner = TestHost.GetService<DS4Windows.Services.OutputKBMHandlerAdapter>();
+            _handlerOwner = TestHost.GetService<DS4Windows.Output.Services.OutputKBMHandlerAdapter>();
             Synthetic = TestHost.GetService<SyntheticInputState>();
             _stickMotion = TestHost.GetService<StickMotionState>();
 
@@ -74,7 +78,7 @@ namespace DS4WindowsTests
             _touched.Add(control);
 
             // Phase8-Step8 8a: 旧経路（Controls タブの割り当てを Mapping が直接処理する）を削除したため、割り当てを変えたら、束縛を組み立て直して登録する
-            TestHost.GetService<DS4Windows.Actions.IActionRegistry>().Replace(Device, TestHost.GetService<DS4Windows.Actions.IActionBindingBuilder>().Build(Device));
+            TestHost.GetService<DS4Windows.Processing.Actions.IActionRegistry>().Replace(Device, TestHost.GetService<DS4Windows.Processing.Actions.IActionBindingBuilder>().Build(Device));
         }
 
         public static DS4State NeutralState()
@@ -101,7 +105,7 @@ namespace DS4WindowsTests
 
             Mapper.HandleDeviceDisconnect(Device);
             // RemapToButton が公開した束縛を残さない（次のテストの素通しの検査に影響するため）
-            TestHost.GetService<DS4Windows.Actions.ITriggerDispatchEngine>().OnDeviceDisconnected(Device);
+            TestHost.GetService<DS4Windows.Processing.Actions.ITriggerDispatchEngine>().OnDeviceDisconnected(Device);
             _handlerOwner.Handler = _savedHandler;
             Settings.OutputKBMMapping = _savedMapping;
             Synthetic.GlobalState = _savedGlobalState;

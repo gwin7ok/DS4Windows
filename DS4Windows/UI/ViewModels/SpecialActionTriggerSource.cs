@@ -1,6 +1,6 @@
 using System.Collections.Generic;
 
-namespace DS4WinWPF.DS4Forms.ViewModels
+namespace DS4Windows.UI.ViewModels
 {
     /// <summary>
     /// Phase10-Step2 W1（Phase10-Step2-Plan.md §3.1）: SA のモードのトリガーの供給元。従来の <c>SpecialActEditorViewModel</c> の

@@ -1,4 +1,6 @@
-using DS4Windows;
+
+using DS4Windows.Core.Settings;
+using DS4Windows.Processing;
 
 namespace DS4WindowsTests
 {

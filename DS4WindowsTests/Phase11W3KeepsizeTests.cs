@@ -7,9 +7,9 @@ using System.Threading;
 using System.Windows.Controls;
 using System.Windows.Data;
 using System.Xml.Linq;
-using DS4WinWPF.DS4Forms.ViewModels;
 using Xunit;
 using Xunit.Abstractions;
+using DS4Windows.UI.ViewModels;
 
 namespace DS4WindowsTests
 {

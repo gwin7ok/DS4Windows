@@ -1,7 +1,8 @@
 ﻿using System;
-using DS4Windows.Services;
+using DS4Windows.Core.Abstractions;
+using DS4Windows.Processing.Abstractions;
 
-namespace DS4WinWPF.DS4Forms.ViewModels.SpecialActions
+namespace DS4Windows.UI.ViewModels.SpecialActions
 {
     /// <summary>
     /// Phase12-Step2 2i（R-4）: ターゲットマークをドロップした位置のウィンドウから、対象の指定（実行ファイルのフルパスとタイトル全文）を取り出す。

@@ -1,4 +1,4 @@
-namespace DS4Windows.DI
+namespace DS4Windows.Processing.Abstractions
 {
     /// <summary>
     /// Phase9 9-A(2)-A（Phase9-A2-Plan.md）: 「ジャイロ → コントロール」（<c>GyroOutMode.Controls</c>）の、ジャイロの加速度 1 軸分の補正（デッドゾーン、最大ゾーン、アンチデッドゾーン、感度、出力カーブ）。

@@ -16,20 +16,26 @@ using System.Windows.Navigation;
 using System.Windows.Shapes;
 using System.Windows.Controls.Primitives;
 using NonFormTimer = System.Timers.Timer;
-using DS4WinWPF.DS4Forms.ViewModels;
-using DS4Windows;
-using DS4Windows.DI;
 using System.ComponentModel;
 using System.Windows.Forms;
+using DS4Windows.Core.Abstractions;
+using DS4Windows.Core.Logging;
+using DS4Windows.Core.Profiles;
+using DS4Windows.Core.Settings;
+using DS4Windows.Input;
+using DS4Windows.Output;
+using DS4Windows.Processing;
+using DS4Windows.Processing.Abstractions;
+using DS4Windows.Processing.Actions;
+using DS4Windows.UI.ViewModels;
 using Application = System.Windows.Application;
 using Button = System.Windows.Controls.Button;
 using MessageBox = System.Windows.MessageBox;
 using MouseEventArgs = System.Windows.Input.MouseEventArgs;
 using OpenFileDialog = Microsoft.Win32.OpenFileDialog;
 using UserControl = System.Windows.Controls.UserControl;
-using DS4Windows.Actions;
 
-namespace DS4WinWPF.DS4Forms
+namespace DS4Windows.UI
 {
     /// <summary>
     /// Interaction logic for ProfileEditor.xaml
@@ -164,18 +170,18 @@ namespace DS4WinWPF.DS4Forms
         // Phase6-Step8-3: 編集スロットの LS／RS 補正値・出力種別の読み書き先（Global.LSModInfo 等の置換先）
         private readonly IProfileSettingsService profileSettingsService;
         // Phase6-Step10-2-4a: 補助ウィンドウ（ボタン割り当て、プリセット、スティック校正、スペシャルアクション編集）の生成の窓口
-        private readonly DS4Windows.DI.IEditorWindowFactory editorWindowFactory;
+        private readonly DS4Windows.Processing.Abstractions.IEditorWindowFactory editorWindowFactory;
         // Phase7-Step10e W2: スロット数の上限は、静的な environmentService.ControllerSlotLimit ではなく、注入された環境サービスから読む
-        private readonly DS4Windows.DI.IEnvironmentService environmentService;
+        private readonly DS4Windows.Core.Abstractions.IEnvironmentService environmentService;
 
         /// <summary>実機（targetDevice）が指定され、かつ有効なコントローラースロットの範囲内であるか。</summary>
         private bool HasTargetDevice =>
             targetDevice >= 0 && targetDevice < environmentService.ControllerSlotLimit;
         private ProfileSettingsViewModel profileSettingsVM;
-        private readonly DS4Windows.DI.IProfileRepository profileRepository;
-        private readonly DS4Windows.Actions.IProfileSwitcher profileSwitcher;
-        private readonly DS4Windows.ControlService controlService;
-        private readonly DS4Windows.DI.IRuntimeFeatureSwitch runtimeFeatures;
+        private readonly DS4Windows.Core.Abstractions.IProfileRepository profileRepository;
+        private readonly DS4Windows.Processing.Actions.IProfileSwitcher profileSwitcher;
+        private readonly DS4Windows.Processing.ControlService controlService;
+        private readonly DS4Windows.Processing.Abstractions.IRuntimeFeatureSwitch runtimeFeatures;
         private MappingListViewModel mappingListVM;
 
         // 一覧（メイン画面のプロファイル一覧）に名前があるか。一覧が取れないときは、あるものとして扱う
@@ -316,9 +322,9 @@ namespace DS4WinWPF.DS4Forms
         /// Phase6-Step8-3: プロファイル設定（LSModInfo／RSModInfo／OutContType）。MainWindow から渡す
         /// </param>
         public ProfileEditor(int targetDevice, IAppSettingsService appSettingsService, IProfileSettingsService profileSettingsService,
-            DS4Windows.DI.IEditorWindowFactory editorWindowFactory, IProfileRepository profileRepository,
+            DS4Windows.Processing.Abstractions.IEditorWindowFactory editorWindowFactory, IProfileRepository profileRepository,
             IProfileSwitcher profileSwitcher, ControlService controlService, IViewModelFactory viewModelFactory,
-            DS4Windows.DI.IEnvironmentService environmentService, DS4Windows.DI.IRuntimeFeatureSwitch runtimeFeatures)
+            DS4Windows.Core.Abstractions.IEnvironmentService environmentService, DS4Windows.Processing.Abstractions.IRuntimeFeatureSwitch runtimeFeatures)
         {
             this.environmentService = environmentService ?? throw new ArgumentNullException(nameof(environmentService));
             this.runtimeFeatures = runtimeFeatures ?? throw new ArgumentNullException(nameof(runtimeFeatures));   // Phase13-Step10 10-d: 旧 ControlService.setRumble／GetActiveInputControl の転送
@@ -341,7 +347,7 @@ namespace DS4WinWPF.DS4Forms
             // SpecialActionsリスト表示前にカルチャを明示的に再設定
             var lang = appSettingsService.UseLang;
             var ci = System.Globalization.CultureInfo.GetCultureInfo(lang);
-            DS4WinWPF.Properties.Resources.Culture = ci;
+            DS4Windows.Properties.Resources.Culture = ci;
             System.Threading.Thread.CurrentThread.CurrentUICulture = ci;
             System.Threading.Thread.CurrentThread.CurrentCulture = ci;
 
@@ -670,18 +676,18 @@ namespace DS4WinWPF.DS4Forms
 
         private void AssignTiltAssociation()
         {
-            gyroZNLb.DataContext = mappingListVM.ControlMap[DS4Windows.DS4Controls.GyroZNeg];
-            gyroZPLb.DataContext = mappingListVM.ControlMap[DS4Windows.DS4Controls.GyroZPos];
-            gyroXNLb.DataContext = mappingListVM.ControlMap[DS4Windows.DS4Controls.GyroXNeg];
-            gyroXLb.DataContext = mappingListVM.ControlMap[DS4Windows.DS4Controls.GyroXPos];
+            gyroZNLb.DataContext = mappingListVM.ControlMap[DS4Windows.Input.DS4Controls.GyroZNeg];
+            gyroZPLb.DataContext = mappingListVM.ControlMap[DS4Windows.Input.DS4Controls.GyroZPos];
+            gyroXNLb.DataContext = mappingListVM.ControlMap[DS4Windows.Input.DS4Controls.GyroXNeg];
+            gyroXLb.DataContext = mappingListVM.ControlMap[DS4Windows.Input.DS4Controls.GyroXPos];
         }
 
         private void AssignSwipeAssociation()
         {
-            swipeUpLb.DataContext = mappingListVM.ControlMap[DS4Windows.DS4Controls.SwipeUp];
-            swipeDownLb.DataContext = mappingListVM.ControlMap[DS4Windows.DS4Controls.SwipeDown];
-            swipeLeftLb.DataContext = mappingListVM.ControlMap[DS4Windows.DS4Controls.SwipeLeft];
-            swipeRightLb.DataContext = mappingListVM.ControlMap[DS4Windows.DS4Controls.SwipeRight];
+            swipeUpLb.DataContext = mappingListVM.ControlMap[DS4Windows.Input.DS4Controls.SwipeUp];
+            swipeDownLb.DataContext = mappingListVM.ControlMap[DS4Windows.Input.DS4Controls.SwipeDown];
+            swipeLeftLb.DataContext = mappingListVM.ControlMap[DS4Windows.Input.DS4Controls.SwipeLeft];
+            swipeRightLb.DataContext = mappingListVM.ControlMap[DS4Windows.Input.DS4Controls.SwipeRight];
         }
 
         private void AssignTriggerFullPullAssociation()
@@ -1268,7 +1274,7 @@ namespace DS4WinWPF.DS4Forms
                         var rumbleBoost = profileSettingsVM.RumbleBoost;
 
                         // Check if device is DualSense and adjust/update accordingly
-                        if (d is DS4Windows.InputDevices.DualSenseDevice dualsense)
+                        if (d is DS4Windows.Input.Devices.DualSenseDevice dualsense)
                         {
                             UpdateDualSenseRumble(dualsense);
                             if (!profileSettingsVM.EnableGenericRumbleStrRescaleForDualSenseDevices)
@@ -1331,19 +1337,19 @@ namespace DS4WinWPF.DS4Forms
             }
         }
 
-        private void UpdateDualSenseRumble(DS4Windows.InputDevices.DualSenseDevice dualsense)
+        private void UpdateDualSenseRumble(DS4Windows.Input.Devices.DualSenseDevice dualsense)
         {
-            switch ((DS4Windows.InputDevices.DualSenseDevice.RumbleEmulationMode)profileSettingsVM.DualSenseRumbleEmulationPerIndex)
+            switch ((DS4Windows.Input.Devices.DualSenseDevice.RumbleEmulationMode)profileSettingsVM.DualSenseRumbleEmulationPerIndex)
             {
-                case DS4Windows.InputDevices.DualSenseDevice.RumbleEmulationMode.Disabled:
+                case DS4Windows.Input.Devices.DualSenseDevice.RumbleEmulationMode.Disabled:
                     dualsense.UseRumble = false;
                     dualsense.UseAccurateRumble = false;
                     break;
-                case DS4Windows.InputDevices.DualSenseDevice.RumbleEmulationMode.Legacy:
+                case DS4Windows.Input.Devices.DualSenseDevice.RumbleEmulationMode.Legacy:
                     dualsense.UseRumble = true;
                     dualsense.UseAccurateRumble = false;
                     break;
-                case DS4Windows.InputDevices.DualSenseDevice.RumbleEmulationMode.Accurate:
+                case DS4Windows.Input.Devices.DualSenseDevice.RumbleEmulationMode.Accurate:
                 default:
                     dualsense.UseRumble = true;
                     dualsense.UseAccurateRumble = true;
@@ -1572,7 +1578,7 @@ namespace DS4WinWPF.DS4Forms
                         idx = currentIndex;
                     }
 
-                    DS4Windows.SpecialAction action = specialActionsVM.GetActionOrPlaceholder(newName);
+                    DS4Windows.Processing.SpecialAction action = specialActionsVM.GetActionOrPlaceholder(newName);
                     SpecialActionItem newitem = specialActionsVM.CreateActionItem(action);
                     newitem.Active = item.Active;
                     newitem.Index = idx;
@@ -1872,7 +1878,7 @@ namespace DS4WinWPF.DS4Forms
         private void ResetAllControlsBtn_Click(object sender, RoutedEventArgs e)
         {
             MessageBoxResult confirm = MessageBox.Show(
-                DS4WinWPF.Translations.Strings.ResetAllControlsConfirm,
+                DS4Windows.Translations.Strings.ResetAllControlsConfirm,
                 "DS4Windows", MessageBoxButton.YesNo, MessageBoxImage.Question, MessageBoxResult.No);
             if (confirm != MessageBoxResult.Yes) return;
 

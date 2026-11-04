@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 
-namespace DS4Windows.Services
+namespace DS4Windows.Core.Platform
 {
     /// <summary>
     /// プロセス優先度の選択肢の表。設定（<c>IAppSettingsService.ProcessPriority</c>）は、この表の添字で保存されている。

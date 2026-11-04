@@ -2,9 +2,9 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using DS4Windows.DI;
+using DS4Windows.Core.Abstractions;
 
-namespace DS4Windows
+namespace DS4Windows.Core.Settings
 {
     /// <summary>
     /// Phase10-Step4d W5d（Phase10-Step4d-Plan.md §4 W5）: リンクプロファイル（コントローラーのシリアル → プロファイル）の、実行時の保持。<c>BackingStore.linkedProfiles</c> の型

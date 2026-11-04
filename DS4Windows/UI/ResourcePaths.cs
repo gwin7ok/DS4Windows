@@ -16,9 +16,6 @@ using System.Windows.Navigation;
 using System.Windows.Shapes;
 using System.Windows.Controls.Primitives;
 using NonFormTimer = System.Timers.Timer;
-using DS4WinWPF.DS4Forms.ViewModels;
-using DS4Windows;
-using DS4Windows.DI;
 using System.ComponentModel;
 using System.Windows.Forms;
 using Application = System.Windows.Application;
@@ -27,9 +24,8 @@ using MessageBox = System.Windows.MessageBox;
 using MouseEventArgs = System.Windows.Input.MouseEventArgs;
 using OpenFileDialog = Microsoft.Win32.OpenFileDialog;
 using UserControl = System.Windows.Controls.UserControl;
-using DS4Windows.Actions;
 
-namespace DS4WinWPF.DS4Forms
+namespace DS4Windows.UI
 {
 
     public class ResourcePaths

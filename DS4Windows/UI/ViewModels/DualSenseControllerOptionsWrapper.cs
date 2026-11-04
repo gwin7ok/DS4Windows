@@ -21,15 +21,14 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using DS4Windows;
-using DS4Windows.DI;
-using DS4WinWPF.DS4Forms.ViewModels.Util;
-using LEDBarMode = DS4Windows.DualSenseControllerOptions.LEDBarMode;
-using MuteLEDMode = DS4Windows.DualSenseControllerOptions.MuteLEDMode;
-using LinkMode = DS4Windows.JoyConDeviceOptions.LinkMode;
-using JoinedGyroProvider = DS4Windows.JoyConDeviceOptions.JoinedGyroProvider;
+using DS4Windows.Core.Settings;
+using DS4Windows.UI.ViewModels.Util;
+using LEDBarMode = DS4Windows.Core.Settings.DualSenseControllerOptions.LEDBarMode;
+using MuteLEDMode = DS4Windows.Core.Settings.DualSenseControllerOptions.MuteLEDMode;
+using LinkMode = DS4Windows.Core.Settings.JoyConDeviceOptions.LinkMode;
+using JoinedGyroProvider = DS4Windows.Core.Settings.JoyConDeviceOptions.JoinedGyroProvider;
 
-namespace DS4WinWPF.DS4Forms.ViewModels
+namespace DS4Windows.UI.ViewModels
 {
 
     public class DualSenseControllerOptionsWrapper

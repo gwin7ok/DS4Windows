@@ -3,9 +3,8 @@ using System.IO;
 using System.Text.RegularExpressions;
 using Xunit;
 using Xunit.Abstractions;
-using DS4Windows;
-using DS4Windows.DI;
-using DS4WinWPF.DS4Forms.ViewModels;
+using DS4Windows.Core.Platform;
+using DS4Windows.UI.ViewModels;
 
 namespace DS4WindowsTests
 {
@@ -119,21 +118,21 @@ namespace DS4WindowsTests
             var repo = TestRepositoryFactory.CreateProfileRepository();
 
             Assert.Throws<ArgumentNullException>(() =>
-                new TrayIconViewModel(null, TestHost.GetService<DS4Windows.DI.IServiceLifecycle>(), null, null, repo, env, path, System.Windows.Threading.Dispatcher.CurrentDispatcher));
+                new TrayIconViewModel(null, TestHost.GetService<DS4Windows.Processing.Abstractions.IServiceLifecycle>(), null, null, repo, env, path, System.Windows.Threading.Dispatcher.CurrentDispatcher));
             Assert.Throws<ArgumentNullException>(() =>
-                new TrayIconViewModel(null, TestHost.GetService<DS4Windows.DI.IServiceLifecycle>(), null, appearance, null, env, path, System.Windows.Threading.Dispatcher.CurrentDispatcher));
+                new TrayIconViewModel(null, TestHost.GetService<DS4Windows.Processing.Abstractions.IServiceLifecycle>(), null, appearance, null, env, path, System.Windows.Threading.Dispatcher.CurrentDispatcher));
             Assert.Throws<ArgumentNullException>(() =>
-                new TrayIconViewModel(null, TestHost.GetService<DS4Windows.DI.IServiceLifecycle>(), null, appearance, repo, null, path, System.Windows.Threading.Dispatcher.CurrentDispatcher));
+                new TrayIconViewModel(null, TestHost.GetService<DS4Windows.Processing.Abstractions.IServiceLifecycle>(), null, appearance, repo, null, path, System.Windows.Threading.Dispatcher.CurrentDispatcher));
             Assert.Throws<ArgumentNullException>(() =>
-                new TrayIconViewModel(null, TestHost.GetService<DS4Windows.DI.IServiceLifecycle>(), null, appearance, repo, env, null, System.Windows.Threading.Dispatcher.CurrentDispatcher));
+                new TrayIconViewModel(null, TestHost.GetService<DS4Windows.Processing.Abstractions.IServiceLifecycle>(), null, appearance, repo, env, null, System.Windows.Threading.Dispatcher.CurrentDispatcher));
             Assert.Throws<ArgumentNullException>(() =>
-                new TrayIconViewModel(null, TestHost.GetService<DS4Windows.DI.IServiceLifecycle>(), null, appearance, repo, env, path, null));
+                new TrayIconViewModel(null, TestHost.GetService<DS4Windows.Processing.Abstractions.IServiceLifecycle>(), null, appearance, repo, env, path, null));
         }
 
         [Fact]
         public void MainWindowsViewModel_ResolvesFromContainer_WithInjectedServices()
         {
-            DS4WinWPF.AppHost.CreateHost();
+            DS4Windows.Composition.AppHost.CreateHost();
 
             var vm = TestHost.GetService<MainWindowsViewModel>();
 

@@ -1,6 +1,6 @@
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
-using DS4Windows;
+using DS4Windows.Core.Utilities;
 
 namespace StandaloneTests
 {

@@ -3,10 +3,10 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
 using System.Windows.Data;
-using DS4WinWPF.DS4Forms.ViewModels;
-using DS4WinWPF.Translations;
+using DS4Windows.Translations;
+using DS4Windows.UI.ViewModels;
 
-namespace DS4WinWPF.DS4Forms
+namespace DS4Windows.UI
 {
     /// <summary>
     /// Phase10-Step1 W2（Phase10-Step1-Plan.md §3.1）: マクロの再生オプション（Execute Mode、Scan Code）の共通の画面部品。

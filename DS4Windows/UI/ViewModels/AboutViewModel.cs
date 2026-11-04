@@ -1,10 +1,9 @@
 ﻿using System;
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
-using DS4Windows;
-using DS4Windows.DI;
+using DS4Windows.Core.Abstractions;
 
-namespace DS4WinWPF.DS4Forms.ViewModels
+namespace DS4Windows.UI.ViewModels
 {
     public class AboutViewModel : INotifyPropertyChanged
     {
@@ -19,8 +18,8 @@ namespace DS4WinWPF.DS4Forms.ViewModels
 
         public string VersionText => $"v{_environmentService.ApplicationVersion}";
         public string AppTitle => "DS4Windows";
-        public string GithubUrl => DS4WinWPF.ReleaseSource.RepositoryPageUri;
-        public string ChangelogUrl => DS4WinWPF.ReleaseSource.RepositoryPageUri + "/releases";
+        public string GithubUrl => DS4Windows.Core.Updater.ReleaseSource.RepositoryPageUri;
+        public string ChangelogUrl => DS4Windows.Core.Updater.ReleaseSource.RepositoryPageUri + "/releases";
 
         public AboutViewModel(IEnvironmentService environmentService)
         {

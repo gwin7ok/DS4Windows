@@ -23,10 +23,10 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
-using DS4Windows;
-using DS4WinWPF.DS4Control;
+using DS4Windows.Output;
+using DS4Windows.Output.Devices;
 
-namespace DS4WinWPF.DS4Forms.ViewModels
+namespace DS4Windows.UI.ViewModels
 {
 
     public class SlotDeviceEntry

@@ -1,11 +1,14 @@
-namespace DS4Windows.Services
+using DS4Windows.Input;
+using DS4Windows.Processing.Abstractions;
+
+namespace DS4Windows.Processing.Services
 {
     /// <summary>
-    /// Phase9 9-E E-5（Phase9-E5-Plan.md）: <see cref="DS4Windows.DI.IActiveInputProbe"/> の実装（DI の Singleton。状態は持たない）。
+    /// Phase9 9-E E-5（Phase9-E5-Plan.md）: <see cref="DS4Windows.Processing.Abstractions.IActiveInputProbe"/> の実装（DI の Singleton。状態は持たない）。
     /// 旧 <c>ControlService.GetActiveInputControl</c> を、そのまま移したもの（判定の順序も同じ）。
     /// 値の特性化は <c>Phase9EInputReportPartsTests</c>（旧実装との差分テスト）が守る。
     /// </summary>
-    public sealed class ActiveInputProbe : DS4Windows.DI.IActiveInputProbe
+    public sealed class ActiveInputProbe : DS4Windows.Processing.Abstractions.IActiveInputProbe
     {
         public DS4Controls GetActive(DS4State cState, Mouse tp, bool connected)
         {

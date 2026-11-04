@@ -1,7 +1,7 @@
 using System;
 using System.Collections.Generic;
 
-namespace DS4Windows
+namespace DS4Windows.Processing.Actions
 {
     // Manages the collection of SpecialAction definitions and registry-level concerns
     // such as initialization, size checks and diagnostic snapshots.

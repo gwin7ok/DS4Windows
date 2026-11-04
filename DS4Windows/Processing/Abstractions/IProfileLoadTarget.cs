@@ -1,4 +1,7 @@
-namespace DS4Windows.DI
+using DS4Windows.Input;
+using DS4Windows.Output;
+
+namespace DS4Windows.Processing.Abstractions
 {
     /// <summary>
     /// Phase13-Step6 6-d（Phase13-Step6-Plan.md §4.1）: プロファイル読込の鎖（<c>ProfileRepository.LoadProfile</c> → <c>IProfileXmlStore</c> →

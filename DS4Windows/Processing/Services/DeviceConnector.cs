@@ -1,7 +1,11 @@
 using System;
-using DS4Windows.DI;
+using DS4Windows.Core.Abstractions;
+using DS4Windows.Core.Settings;
+using DS4Windows.Input;
+using DS4Windows.Output;
+using DS4Windows.Processing.Abstractions;
 
-namespace DS4Windows.Services
+namespace DS4Windows.Processing.Services
 {
     /// <summary>
     /// Phase9 9-E E-6f1（Phase9-E6-Plan.md §9.2）: <see cref="IDeviceConnector"/> の実装（DI の Singleton。状態なし）。

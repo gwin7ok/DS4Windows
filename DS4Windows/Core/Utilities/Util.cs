@@ -25,8 +25,9 @@ using System.Text;
 using System.IO;
 using System.Collections.Generic;
 using Microsoft.Win32;
+using DS4Windows.Core.Logging;
 
-namespace DS4Windows
+namespace DS4Windows.Core.Utilities
 {
     [SuppressUnmanagedCodeSecurity]
     public class Util

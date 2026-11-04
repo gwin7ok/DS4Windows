@@ -1,4 +1,6 @@
-namespace DS4Windows.Actions
+using DS4Windows.Input;
+
+namespace DS4Windows.Processing.Actions
 {
     /// <summary>
     /// Phase8-Step7 7.6c（Phase8-Step7-6-Plan.md Q2＝A・Q6＝A）: BatteryCheck の出力が、実機のコントローラー（<c>DS4Device</c>）と、ライトバーの強制色（静的な <c>DS4LightBar</c>）、

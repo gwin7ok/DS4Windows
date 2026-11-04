@@ -1,6 +1,7 @@
 using System.Collections.Generic;
+using DS4Windows.Input;
 
-namespace DS4Windows.DI
+namespace DS4Windows.Processing.Abstractions
 {
     /// <summary>
     /// Phase9 9-E E-1（Phase9-E-Plan.md）: OSC（外部ツールとのボタン・スティックのやり取り）。

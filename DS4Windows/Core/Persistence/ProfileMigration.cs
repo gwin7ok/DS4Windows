@@ -20,8 +20,10 @@ using System;
 using System.IO;
 using System.Text;
 using System.Xml;
+using DS4Windows.Core.Platform;
+using DS4Windows.Core.Settings;
 
-namespace DS4Windows
+namespace DS4Windows.Core.Persistence
 {
     public class ProfileMigration
     {
@@ -83,7 +85,7 @@ namespace DS4Windows
         public bool RequiresMigration()
         {
             bool result = false;
-            if (configFileVersion >= 1 && configFileVersion < DS4Windows.Services.LegacyProfileXmlSerializer.ConfigVersion)
+            if (configFileVersion >= 1 && configFileVersion < DS4Windows.Core.Persistence.LegacyProfileXmlSerializer.ConfigVersion)
             {
                 result = true;
             }

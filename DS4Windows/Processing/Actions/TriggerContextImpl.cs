@@ -1,9 +1,7 @@
-﻿using DS4Windows.Services;
-using System;
-using DS4Windows.Actions;
-using DS4Windows.DS4Control;
+﻿using System;
+using DS4Windows.Processing.Abstractions;
 
-namespace DS4Windows.Actions
+namespace DS4Windows.Processing.Actions
 {
     public class TriggerContextImpl : ITriggerContext
     {

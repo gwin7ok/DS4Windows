@@ -1,7 +1,9 @@
 using System;
-using DS4Windows.DI;
+using DS4Windows.Core.Abstractions;
+using DS4Windows.Core.Settings;
+using DS4Windows.Input;
 
-namespace DS4Windows.Actions
+namespace DS4Windows.Processing.Actions
 {
     /// <summary>
     /// Phase8-Step3 W2: <see cref="ITriggerInput"/> の実装（デバイスごとに 1 つ。<c>Mapping</c> が保持して毎フレーム <see cref="Update"/> する。Step4 で配線）。

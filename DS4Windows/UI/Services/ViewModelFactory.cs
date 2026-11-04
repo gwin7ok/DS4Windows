@@ -1,10 +1,13 @@
 ﻿using System;
-using DS4Windows.DI;
-using DS4WinWPF;
-using DS4WinWPF.DS4Forms.ViewModels;
-using DS4WinWPF.DS4Forms.ViewModels.SpecialActions;
+using DS4Windows.Core.Abstractions;
+using DS4Windows.Core.Logging;
+using DS4Windows.Core.Profiles;
+using DS4Windows.Core.Settings;
+using DS4Windows.Processing;
+using DS4Windows.Processing.Abstractions;
+using DS4Windows.UI.ViewModels;
 
-namespace DS4Windows
+namespace DS4Windows.UI.Services
 {
     public class ViewModelFactory : IViewModelFactory
     {

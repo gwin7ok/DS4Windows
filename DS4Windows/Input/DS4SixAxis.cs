@@ -19,9 +19,9 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
-using DS4WinWPF;
+using DS4Windows.Core.Logging;
 
-namespace DS4Windows
+namespace DS4Windows.Input
 {
 
     public class DS4SixAxis
@@ -36,7 +36,7 @@ namespace DS4Windows
         public Func<int, bool> GyroControlsTriggerActive { get; set; }
 
         // Phase7-Step10d W3（Q4＝A）: DS3 の pitch／roll 疑似計算の設定値。DS4Device.LayerSettings から引き継ぐ。未設定のとき（テスト）は「無効」として扱う。
-        public DS4Windows.DI.IDeviceLayerSettings LayerSettings { get; set; }
+        public DS4Windows.Processing.Abstractions.IDeviceLayerSettings LayerSettings { get; set; }
         private CalibData[] calibrationData = new CalibData[6] { new CalibData(), new CalibData(),
             new CalibData(), new CalibData(), new CalibData(), new CalibData()
         };

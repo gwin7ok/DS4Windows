@@ -4,10 +4,7 @@ using System.IO;
 using System.Linq;
 using System.Text.RegularExpressions;
 using Xunit;
-using DS4Windows;
-using DS4Windows.Actions;
-using DS4Windows.DI;
-using DS4Windows.Services;
+using DS4Windows.Core.Abstractions;
 
 namespace DS4WindowsTests
 {

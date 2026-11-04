@@ -27,10 +27,9 @@ using System.Threading.Tasks;
 using System.Windows.Data;
 using System.Windows.Input;
 using System.Windows.Media;
-using DS4Windows;
-using DS4Windows.DI;
+using DS4Windows.Processing;
 
-namespace DS4WinWPF.DS4Forms.ViewModels
+namespace DS4Windows.UI.ViewModels
 {
 
     public class MacroStepItem

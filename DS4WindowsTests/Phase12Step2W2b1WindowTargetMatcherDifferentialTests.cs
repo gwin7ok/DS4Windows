@@ -1,7 +1,7 @@
 using System.Collections.Generic;
-using DS4Windows;
-using DS4WinWPF;
 using Xunit;
+using DS4Windows.Core.Profiles;
+using DS4Windows.Processing;
 
 namespace DS4WindowsTests
 {

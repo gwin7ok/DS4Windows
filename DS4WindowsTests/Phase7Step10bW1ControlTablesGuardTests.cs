@@ -2,9 +2,11 @@ using System;
 using System.IO;
 using System.Linq;
 using System.Text.RegularExpressions;
-using DS4Windows;
 using Xunit;
 using Xunit.Abstractions;
+using DS4Windows.Input;
+using DS4Windows.Output;
+using DS4Windows.Output.Devices;
 
 namespace DS4WindowsTests
 {

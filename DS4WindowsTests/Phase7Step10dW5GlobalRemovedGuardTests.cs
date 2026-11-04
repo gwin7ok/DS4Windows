@@ -3,11 +3,13 @@ using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Text.RegularExpressions;
-using DS4Windows;
-using DS4Windows.DI;
 using Microsoft.Extensions.DependencyInjection;
 using Xunit;
 using Xunit.Abstractions;
+using DS4Windows.Composition;
+using DS4Windows.Core.Platform;
+using DS4Windows.Core.Settings;
+using DS4Windows.Input;
 
 namespace DS4WindowsTests
 {
@@ -73,8 +75,8 @@ namespace DS4WindowsTests
             var env = new EnvironmentService();
             var store = new BackingStore(env);
 
-            var first = new ProfileSettingsService(store, env, new DS4Windows.Services.DeviceSlotState());
-            var second = new ProfileSettingsService(store, env, new DS4Windows.Services.DeviceSlotState());
+            var first = new ProfileSettingsService(store, env, new DS4Windows.Processing.Services.DeviceSlotState());
+            var second = new ProfileSettingsService(store, env, new DS4Windows.Processing.Services.DeviceSlotState());
             Assert.Same(first, store.ProfileSettings);
 
             store.ProfileSettings = second;
@@ -95,7 +97,7 @@ namespace DS4WindowsTests
         {
             var env = new EnvironmentService();
             var store = new BackingStore(env);
-            var service = new ProfileSettingsService(store, env, new DS4Windows.Services.DeviceSlotState());
+            var service = new ProfileSettingsService(store, env, new DS4Windows.Processing.Services.DeviceSlotState());
 
             var setting = new DS4ControlSettings(DS4Controls.Cross);
             setting.action.actionAlias = 99;
@@ -109,7 +111,7 @@ namespace DS4WindowsTests
         {
             var env = new EnvironmentService();
             var store = new BackingStore(env);
-            var service = new ProfileSettingsService(store, env, new DS4Windows.Services.DeviceSlotState());
+            var service = new ProfileSettingsService(store, env, new DS4Windows.Processing.Services.DeviceSlotState());
             Assert.Same(store.distanceProfiles, service.DistanceProfiles);
         }
 
@@ -156,8 +158,8 @@ namespace DS4WindowsTests
             }
 
             string text = File.ReadAllText(path);
-            int store = text.IndexOf("_bootstrapBackingStore = new DS4Windows.BackingStore(", StringComparison.Ordinal);
-            int pathService = text.IndexOf("_bootstrapPathService = new DS4Windows.PathService(config: _bootstrapBackingStore);", StringComparison.Ordinal);
+            int store = text.IndexOf("_bootstrapBackingStore = new DS4Windows.Core.Settings.BackingStore(", StringComparison.Ordinal);
+            int pathService = text.IndexOf("_bootstrapPathService = new DS4Windows.Core.Platform.PathService(config: _bootstrapBackingStore);", StringComparison.Ordinal);
             int rotation = text.IndexOf("PerformStartupRotation(", StringComparison.Ordinal);
             Assert.True(store >= 0 && pathService > store && rotation > pathService, "BackingStore → PathService → ログのローテーションの順であること");
             Assert.Equal(2, Regex.Matches(text, @"_bootstrapEnvironmentService,\s*_bootstrapBackingStore\)").Count);

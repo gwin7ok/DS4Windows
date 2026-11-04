@@ -18,8 +18,8 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 using System;
 using System.Threading.Tasks;
-using DS4Windows;
-namespace DS4WinWPF.DS4Forms.ViewModels
+using DS4Windows.Core.Utilities;
+namespace DS4Windows.UI.ViewModels
 {
     class UpdaterWindowViewModel
     {
@@ -39,9 +39,9 @@ namespace DS4WinWPF.DS4Forms.ViewModels
         public event EventHandler MarkdownChanged;
 
         // Phase6-Step10-1-3: Global.LastVersionChecked の置換先（必須引数。null は拒否する）
-        private readonly DS4Windows.DI.IAppSettingsService _appSettingsService;
+        private readonly DS4Windows.Processing.Abstractions.IAppSettingsService _appSettingsService;
 
-        public UpdaterWindowViewModel(string version, DS4Windows.DI.IAppSettingsService appSettingsService)
+        public UpdaterWindowViewModel(string version, DS4Windows.Processing.Abstractions.IAppSettingsService appSettingsService)
         {
             _appSettingsService = appSettingsService ?? throw new ArgumentNullException(nameof(appSettingsService));
             Version = version;

@@ -29,10 +29,9 @@ using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
-using DS4Windows;
-using DS4WinWPF.DS4Control;
+using DS4Windows.Output;
 
-namespace DS4WinWPF.DS4Forms
+namespace DS4Windows.UI
 {
     /// <summary>
     /// Interaction logic for PluginOutDevWindow.xaml
@@ -42,10 +41,10 @@ namespace DS4WinWPF.DS4Forms
         private MessageBoxResult result = MessageBoxResult.Cancel;
         public MessageBoxResult Result { get => result; }
 
-        private DS4Windows.OutContType contType = DS4Windows.OutContType.None;
+        private DS4Windows.Output.OutContType contType = DS4Windows.Output.OutContType.None;
         public OutContType ContType { get => contType; }
 
-        private DS4Control.OutSlotDevice.ReserveStatus reserveType;
+        private DS4Windows.Output.OutSlotDevice.ReserveStatus reserveType;
         public OutSlotDevice.ReserveStatus ReserveType { get => reserveType; }
 
         public PluginOutDevWindow()

@@ -1,7 +1,8 @@
 using System;
 using System.Collections.Generic;
+using DS4Windows.Processing.Abstractions;
 
-namespace DS4Windows.Services
+namespace DS4Windows.Core.Abstractions
 {
     /// <summary>
     /// Phase12-Step2 2b-2: ウィンドウの列挙と前面化に使う Win32 の操作の抽象。<see cref="IWindowFocuser"/> の手順（復元→素の前面化→

@@ -1,4 +1,4 @@
-namespace DS4Windows.Actions
+namespace DS4Windows.Processing.Actions
 {
     /// <summary>
     /// Phase10-Step6 I4a（旧 <c>ControlJudgement</c> の置き換え）: Controls タブの束縛（<see cref="ControlButtonInputAction"/>）の出力の種類。

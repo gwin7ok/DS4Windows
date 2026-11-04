@@ -1,6 +1,6 @@
 using System;
 
-namespace DS4Windows.Actions
+namespace DS4Windows.Processing.Actions
 {
     /// <summary>
     /// Phase10-Step4 W2（Phase10-Step4-Plan.md §3.3）: <see cref="ISpecialActionOutputFactory"/> が、特殊アクション（<see cref="SpecialAction"/>）1 つから作る、束縛の「出力側」の組。

@@ -1,4 +1,4 @@
-namespace DS4WinWPF
+namespace DS4Windows.Composition.Startup
 {
     /// <summary>
     /// Phase9 9-F F-1a（Phase9-F-Plan.md §5）: 昇格した更新の完了モード（<c>--complete-install</c>、<c>--complete-install-target</c>）のコマンドライン引数の読み取り。

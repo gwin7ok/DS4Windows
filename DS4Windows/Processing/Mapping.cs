@@ -1,6 +1,4 @@
-using IVirtualKBM = DS4Windows.Services.IVirtualKBM;
-using DS4Windows.Services;
-using DS4WinWPF;
+using IVirtualKBM = DS4Windows.Processing.Abstractions.IVirtualKBM;
 /*
 DS4Windows
 Copyright (C) 2023  Travis Nickles
@@ -35,29 +33,31 @@ using System.Diagnostics;
 // 【Phase7c W3 追記】上記は Phase6 時点の記録。Phase7-Step10d で Global 型は削除済み（Global への参照は存在しない）。
 using System.Drawing; // Point struct
 using Sensorit.Base;
-using DS4WinWPF.DS4Control;
-using DS4Windows.DS4Control;
-using DS4WinWPF.DS4Forms.ViewModels;
+using DS4Windows.Core.Logging;
+using DS4Windows.Core.Settings;
+using DS4Windows.Core.Utilities;
+using DS4Windows.Input;
+using DS4Windows.Processing.Abstractions;
 using ThreadState = System.Threading.ThreadState;
 
-namespace DS4Windows
+namespace DS4Windows.Processing
 {
-    public class Mapping : DS4Windows.DI.IMapping, DS4Windows.Actions.IMacroStringPlayer
+    public class Mapping : DS4Windows.Processing.Abstractions.IMapping, DS4Windows.Processing.Actions.IMacroStringPlayer
     {
         // Phase7-Step8 W2: 旧 静的な束縛（AppHost／Global のフォールバックつき）。コンストラクターで受ける（フォールバックは廃止）。
-        private readonly DS4Windows.DI.IProfileSettingsService profileSettings;
-        private readonly DS4Windows.DI.IProfileApplicationService profileApplication;
-        private readonly DS4Windows.DI.IDeviceSlotState _slots;   // Phase13-Step5b: デバイス・状態の窓口（旧: MapCustom の ctrl.DS4Controllers）
-        private readonly DS4Windows.DI.IProfileActionProvider _profileActionProvider;   // Phase13-Step5b: 旧 ctrl.ProfileActionProvider
-        private readonly DS4Windows.DI.ISpecialActionRepository _specialActionRepository;   // Phase13-Step5b: 旧 ctrl.SpecialActionRepository
+        private readonly DS4Windows.Core.Abstractions.IProfileSettingsService profileSettings;
+        private readonly DS4Windows.Processing.Abstractions.IProfileApplicationService profileApplication;
+        private readonly DS4Windows.Processing.Abstractions.IDeviceSlotState _slots;   // Phase13-Step5b: デバイス・状態の窓口（旧: MapCustom の ctrl.DS4Controllers）
+        private readonly DS4Windows.Processing.Abstractions.IProfileActionProvider _profileActionProvider;   // Phase13-Step5b: 旧 ctrl.ProfileActionProvider
+        private readonly DS4Windows.Core.Abstractions.ISpecialActionRepository _specialActionRepository;   // Phase13-Step5b: 旧 ctrl.SpecialActionRepository
         private readonly IVirtualKBM VirtualKBM;
-        private readonly DS4Windows.DI.IKeyButtonControllerRegistry _keyButtonControllers;
-        private readonly DS4Windows.Actions.IProcessLauncher _processLauncher;
-        private readonly DS4Windows.Actions.IProfileSwitcher _profileSwitcher;
+        private readonly DS4Windows.Processing.Abstractions.IKeyButtonControllerRegistry _keyButtonControllers;
+        private readonly DS4Windows.Processing.Actions.IProcessLauncher _processLauncher;
+        private readonly DS4Windows.Processing.Actions.IProfileSwitcher _profileSwitcher;
         // Phase7-Step8 W3（Q6＝A）: 旧 静的クラス SyntheticDispatcher の呼び出し
-        private readonly DS4Windows.DI.ISyntheticDispatcher _syntheticDispatcher;
+        private readonly DS4Windows.Processing.Abstractions.ISyntheticDispatcher _syntheticDispatcher;
         // Phase9 9-C: 旧 _deviceStateAccessor（マクロの振動イベントで使う遅延の取得）は MacroStepExecutor へ移した。マクロの再生は IMacroPlayback が担う
-        private readonly DS4Windows.DI.IMacroPlayback _macroPlayback;
+        private readonly DS4Windows.Processing.Abstractions.IMacroPlayback _macroPlayback;
 
         // Phase7-Step8 W2（Q5＝A）: 保持クラス（コンストラクターで受ける）。Step7 の転送プロパティは削除した。
         // 配列の参照は再代入されない（要素の読み書きのみ）ため、readonly で 1 度だけ複製して持ち、毎レポートの割り当てと間接参照を増やさない。
@@ -105,31 +105,31 @@ namespace DS4Windows
             SyntheticInputState syntheticInput,
             MacroRuntimeState macroRuntime,
             StickMotionState stickMotion,
-            DS4Windows.DI.IProfileSettingsService profileSettings,
-            DS4Windows.DI.IProfileApplicationService profileApplication,
+            DS4Windows.Core.Abstractions.IProfileSettingsService profileSettings,
+            DS4Windows.Processing.Abstractions.IProfileApplicationService profileApplication,
             IVirtualKBM virtualKBM,
-            DS4Windows.DI.IKeyButtonControllerRegistry keyButtonControllers,
-            DS4Windows.Actions.IProcessLauncher processLauncher,
-            DS4Windows.Actions.IProfileSwitcher profileSwitcher,
-            DS4Windows.DI.ISyntheticDispatcher syntheticDispatcher,
-            DS4Windows.DI.IMacroPlayback macroPlayback,
-            DS4Windows.Actions.ITriggerDispatchEngine triggerEngine,
-            DS4Windows.DI.IStickDeadZoneProcessor stickDeadZone,
-            DS4Windows.DI.IOutputCurveProcessor outputCurve,
-            DS4Windows.DI.ITriggerDeadZoneProcessor triggerDeadZone,
-            DS4Windows.DI.IGyroControlsProcessor gyroControls,
-            DS4Windows.DI.IStickInputConditioner stickConditioner,
-            DS4Windows.DI.IFlickStickProcessor flickStick,
-            DS4Windows.DI.IButtonMouseMovementCalculator buttonMouseMovement,
-            DS4Windows.DI.IMouseMotionQuantizer mouseMotionQuantizer,
-            DS4Windows.DI.IGyroMouseStickBlender gyroMouseStickBlender,
-            DS4Windows.DI.IControlActivityReader controlActivityReader,
-            DS4Windows.DI.ISyntheticInputCommitter syntheticCommitter,
-            DS4Windows.DI.ITwoStageTriggerProcessor twoStageTrigger,
-            DS4Windows.Actions.IManagedActionManager actionManager,
-            DS4Windows.DI.IDeviceSlotState slots,
-            DS4Windows.DI.IProfileActionProvider profileActionProvider,
-            DS4Windows.DI.ISpecialActionRepository specialActionRepository)
+            DS4Windows.Processing.Abstractions.IKeyButtonControllerRegistry keyButtonControllers,
+            DS4Windows.Processing.Actions.IProcessLauncher processLauncher,
+            DS4Windows.Processing.Actions.IProfileSwitcher profileSwitcher,
+            DS4Windows.Processing.Abstractions.ISyntheticDispatcher syntheticDispatcher,
+            DS4Windows.Processing.Abstractions.IMacroPlayback macroPlayback,
+            DS4Windows.Processing.Actions.ITriggerDispatchEngine triggerEngine,
+            DS4Windows.Processing.Abstractions.IStickDeadZoneProcessor stickDeadZone,
+            DS4Windows.Processing.Abstractions.IOutputCurveProcessor outputCurve,
+            DS4Windows.Processing.Abstractions.ITriggerDeadZoneProcessor triggerDeadZone,
+            DS4Windows.Processing.Abstractions.IGyroControlsProcessor gyroControls,
+            DS4Windows.Processing.Abstractions.IStickInputConditioner stickConditioner,
+            DS4Windows.Processing.Abstractions.IFlickStickProcessor flickStick,
+            DS4Windows.Processing.Abstractions.IButtonMouseMovementCalculator buttonMouseMovement,
+            DS4Windows.Processing.Abstractions.IMouseMotionQuantizer mouseMotionQuantizer,
+            DS4Windows.Processing.Abstractions.IGyroMouseStickBlender gyroMouseStickBlender,
+            DS4Windows.Processing.Abstractions.IControlActivityReader controlActivityReader,
+            DS4Windows.Processing.Abstractions.ISyntheticInputCommitter syntheticCommitter,
+            DS4Windows.Processing.Abstractions.ITwoStageTriggerProcessor twoStageTrigger,
+            DS4Windows.Processing.Actions.IManagedActionManager actionManager,
+            DS4Windows.Processing.Abstractions.IDeviceSlotState slots,
+            DS4Windows.Processing.Abstractions.IProfileActionProvider profileActionProvider,
+            DS4Windows.Core.Abstractions.ISpecialActionRepository specialActionRepository)
         {
             // Phase13-Step4: ログ出力だけの購読。旧: 静的コンストラクターで静的イベントを購読していた（本番の Mapping は Singleton のため、購読は 1 回で変わらない）
             if (actionManager == null) throw new ArgumentNullException(nameof(actionManager));
@@ -172,12 +172,12 @@ namespace DS4Windows
             _syntheticCommitter = syntheticCommitter ?? throw new ArgumentNullException(nameof(syntheticCommitter));
             _twoStageTrigger = twoStageTrigger ?? throw new ArgumentNullException(nameof(twoStageTrigger));
 
-            _triggerInputs = new DS4Windows.Actions.TriggerInput[ControllerLimits.MaxControllerCount];
-            _frameOutputs = new DS4Windows.Actions.FrameOutput[ControllerLimits.MaxControllerCount];
+            _triggerInputs = new DS4Windows.Processing.Actions.TriggerInput[ControllerLimits.MaxControllerCount];
+            _frameOutputs = new DS4Windows.Processing.Actions.FrameOutput[ControllerLimits.MaxControllerCount];
             for (int device = 0; device < _triggerInputs.Length; device++)
             {
-                _triggerInputs[device] = new DS4Windows.Actions.TriggerInput(device, profileSettings);
-                _frameOutputs[device] = new DS4Windows.Actions.FrameOutput();
+                _triggerInputs[device] = new DS4Windows.Processing.Actions.TriggerInput(device, profileSettings);
+                _frameOutputs[device] = new DS4Windows.Processing.Actions.FrameOutput();
 
                 // Phase8-Step7 7.8f-3: 新経路のマウスの移動が、生の量の計算（getMouseMapping）を借りる。デバイスごとに 1 回だけ作る（フレームごとの割り当てなし）
                 int sampleDevice = device;
@@ -221,10 +221,6 @@ namespace DS4Windows
         //private static OneEuroFilter filterZ = new OneEuroFilter(minCutoff: 0.0001, beta: 0.001);
         //private static OneEuroFilter wheel360FilterX = new OneEuroFilter(minCutoff: 0.1, beta: 0.02);
         //private static OneEuroFilter wheel360FilterZ = new OneEuroFilter(minCutoff: 0.1, beta: 0.02);
-
-
-
-
 
 
         // Phase7-Step7 W2（Q2＝A・Q3＝A）: 合成入力の状態（_syntheticInput.GlobalState／deviceState／syncStateLock）の実体は SyntheticInputState が持つ。
@@ -276,24 +272,24 @@ namespace DS4Windows
         // 観測していないものの集合）の所有を、エンジン（ITriggerDispatchEngine）に一本化した。ここに含まれる間は、当該ボタン自身の通常出力を抑制し続ける
         // （トリガー全体の成立/解除とは独立に、ボタン単位で管理する。詳細: docs-forDIMG/MadeByAgent/Phase5-Step14-Issue8-1-3-Fix-Plan.md §2.1）。
         // 新旧の経路が別々の集合を持つと、通常の割り当ての抑制が食い違うため（Phase8-Step2-Design.md §23.3）。
-        private readonly DS4Windows.Actions.ITriggerDispatchEngine _engine;
-        private readonly DS4Windows.DI.IStickDeadZoneProcessor _stickDeadZone;   // Phase9 9-A(1) (b): 左右のスティックのデッドゾーン（共通の処理）
-        private readonly DS4Windows.DI.IOutputCurveProcessor _outputCurve;   // Phase9 9-A(1) (c): スクエアスティックと出力カーブ（スティック、トリガー。共通の処理）
-        private readonly DS4Windows.DI.ITriggerDeadZoneProcessor _triggerDeadZone;   // Phase9 9-A(1) (d): L2／R2 のデッドゾーン（共通の処理）
-        private readonly DS4Windows.DI.IGyroControlsProcessor _gyroControls;   // Phase9 9-A(2)-A: ジャイロ → コントロールの補正（X／Z 共通の処理）
-        private readonly DS4Windows.DI.IStickInputConditioner _stickConditioner;   // Phase9 9-A(2)-B: ドリフト補正・アンチスナップバック・ファズ（共通の処理）
-        private readonly DS4Windows.DI.IFlickStickProcessor _flickStick;   // Phase9 9-A(2)-C: フリックスティック（共通の処理）
-        private readonly DS4Windows.DI.IButtonMouseMovementCalculator _buttonMouseMovement;   // Phase9 9-B: ボタン・スティック・トリガー・ジャイロ方向 → マウスの生の移動量（旧 getMouseMapping。加速の状態はデバイスごと）
-        private readonly DS4Windows.DI.IMouseMotionQuantizer _mouseMotionQuantizer;   // Phase9 9-B: マウスの移動量の整数化と端数の持ち越し（旧 calculateFinalMouseMovement。端数はデバイスごと）
-        private readonly DS4Windows.DI.IGyroMouseStickBlender _gyroMouseStickBlender;   // Phase9 9-B: ジャイロのマウススティック出力の合成（旧 TempMouseJoystick の内側）
-        private readonly DS4Windows.DI.ITwoStageTriggerProcessor _twoStageTrigger;   // Phase9 MapCustom の分割 M2: 2 段階トリガーの状態機械（旧 ProcessTwoStageTrigger）
-        private readonly DS4Windows.DI.ISyntheticInputCommitter _syntheticCommitter;   // Phase9 MapCustom の分割 M1: 合成入力の確定（旧 Commit の本体）
-        private readonly DS4Windows.DI.IControlActivityReader _controlActivityReader;   // Phase9 9-B: コントロールが押されているかの判定（旧 GetBoolMappingExternal の本体）
+        private readonly DS4Windows.Processing.Actions.ITriggerDispatchEngine _engine;
+        private readonly DS4Windows.Processing.Abstractions.IStickDeadZoneProcessor _stickDeadZone;   // Phase9 9-A(1) (b): 左右のスティックのデッドゾーン（共通の処理）
+        private readonly DS4Windows.Processing.Abstractions.IOutputCurveProcessor _outputCurve;   // Phase9 9-A(1) (c): スクエアスティックと出力カーブ（スティック、トリガー。共通の処理）
+        private readonly DS4Windows.Processing.Abstractions.ITriggerDeadZoneProcessor _triggerDeadZone;   // Phase9 9-A(1) (d): L2／R2 のデッドゾーン（共通の処理）
+        private readonly DS4Windows.Processing.Abstractions.IGyroControlsProcessor _gyroControls;   // Phase9 9-A(2)-A: ジャイロ → コントロールの補正（X／Z 共通の処理）
+        private readonly DS4Windows.Processing.Abstractions.IStickInputConditioner _stickConditioner;   // Phase9 9-A(2)-B: ドリフト補正・アンチスナップバック・ファズ（共通の処理）
+        private readonly DS4Windows.Processing.Abstractions.IFlickStickProcessor _flickStick;   // Phase9 9-A(2)-C: フリックスティック（共通の処理）
+        private readonly DS4Windows.Processing.Abstractions.IButtonMouseMovementCalculator _buttonMouseMovement;   // Phase9 9-B: ボタン・スティック・トリガー・ジャイロ方向 → マウスの生の移動量（旧 getMouseMapping。加速の状態はデバイスごと）
+        private readonly DS4Windows.Processing.Abstractions.IMouseMotionQuantizer _mouseMotionQuantizer;   // Phase9 9-B: マウスの移動量の整数化と端数の持ち越し（旧 calculateFinalMouseMovement。端数はデバイスごと）
+        private readonly DS4Windows.Processing.Abstractions.IGyroMouseStickBlender _gyroMouseStickBlender;   // Phase9 9-B: ジャイロのマウススティック出力の合成（旧 TempMouseJoystick の内側）
+        private readonly DS4Windows.Processing.Abstractions.ITwoStageTriggerProcessor _twoStageTrigger;   // Phase9 MapCustom の分割 M2: 2 段階トリガーの状態機械（旧 ProcessTwoStageTrigger）
+        private readonly DS4Windows.Processing.Abstractions.ISyntheticInputCommitter _syntheticCommitter;   // Phase9 MapCustom の分割 M1: 合成入力の確定（旧 Commit の本体）
+        private readonly DS4Windows.Processing.Abstractions.IControlActivityReader _controlActivityReader;   // Phase9 9-B: コントロールが押されているかの判定（旧 GetBoolMappingExternal の本体）
 
         // Phase8-Step4 W4: デバイスごとのトリガー判定の入力（毎フレーム MapCustom の先頭で更新する）と、フレームの出力への書き込み口。
         // 遅延の基準時刻（旧 nowAction／oldnowAction）は、_triggerInputs[device].Delay に置き換わった。
-        private readonly DS4Windows.Actions.TriggerInput[] _triggerInputs;
-        private readonly DS4Windows.Actions.FrameOutput[] _frameOutputs;
+        private readonly DS4Windows.Processing.Actions.TriggerInput[] _triggerInputs;
+        private readonly DS4Windows.Processing.Actions.FrameOutput[] _frameOutputs;
 
         // Phase8-Step7 7.8f-3: 今のフレームの入力（getMouseMapping を新経路から借りるために、MapCustom が設定する）
         private readonly DS4State[] _sampleState = new DS4State[ControllerLimits.MaxControllerCount];
@@ -344,7 +340,7 @@ namespace DS4Windows
         //private const double MOUSESTICKMINVELOCITY = 40.0;
 
         // Phase9 MapCustom の分割 M1: 合成入力の確定（約 170 行）は SyntheticInputCommitter へ移した（薄い委譲。呼び出し側は変えない）
-        public void Commit(int device, DS4Windows.DI.IProfileSettingsService settings)
+        public void Commit(int device, DS4Windows.Core.Abstractions.IProfileSettingsService settings)
         {
             _syntheticCommitter.Commit(device, settings);
         }
@@ -362,7 +358,7 @@ namespace DS4Windows
         }
 
         public DS4State SetCurveAndDeadzone(int device, DS4State cState, DS4State dState,
-                DS4Windows.DI.IProfileSettingsService settings)
+                DS4Windows.Core.Abstractions.IProfileSettingsService settings)
         {
             double rotation = /*tempDoubleArray[device] =*/  settings.LSRotation[device];
             if (rotation > 0.0 || rotation < 0.0)
@@ -629,7 +625,7 @@ namespace DS4Windows
             }
 
             // Phase8-Step7 7.8f-3（Q6＝A）: 新経路が書いたマウスの移動量。旧経路（局所変数）が何も書いていないときだけ使う（先に書いた方が勝つ、の規則のまま）
-            DS4Windows.Actions.FrameOutput frameOutput = _frameOutputs[device];
+            DS4Windows.Processing.Actions.FrameOutput frameOutput = _frameOutputs[device];
             if (tempMouseDeltaX == 0.0) tempMouseDeltaX = frameOutput.MouseDeltaX;
             if (tempMouseDeltaY == 0.0) tempMouseDeltaY = frameOutput.MouseDeltaY;
 
@@ -951,7 +947,7 @@ namespace DS4Windows
                     // 束縛が登録されているアクションは、エンジンが処理する。プロファイル内のアクションの順序は変わらない。
                     if (_engine.Owns(device, action))
                     {
-                        if (_engine.ProcessOwned(device, action, _triggerInputs[device], _frameOutputs[device]) == DS4Windows.Actions.FrameResult.EndFrame)
+                        if (_engine.ProcessOwned(device, action, _triggerInputs[device], _frameOutputs[device]) == DS4Windows.Processing.Actions.FrameResult.EndFrame)
                             return;
                     }
                 }
@@ -1004,8 +1000,6 @@ namespace DS4Windows
             // 現状も何もしない（マクロの停止は、RepeatMacro のループが BeingTriggered を見て止まる）。インターフェース（IMapping の窓口）を保つために、空実装で残している。
             // 離したときにマクロを中断してキーを解放する必要が出たら、ここで実装する。
         }
-
-
 
 
         // Phase9 9-C: 旧 PlayMacro／PlayMacroTask／RunMacroOnce（マクロの再生の予約・繰り返し・後始末）は MacroPlayback へ、

@@ -3,9 +3,13 @@ using System.Diagnostics;
 using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
-using DS4Windows.DI;
+using DS4Windows.Core.Abstractions;
+using DS4Windows.Core.Logging;
+using DS4Windows.Core.Settings;
+using DS4Windows.Input;
+using DS4Windows.Processing.Abstractions;
 
-namespace DS4Windows.Services
+namespace DS4Windows.Processing.Services
 {
     /// <summary>
     /// Phase9 9-E E-6b（Phase9-E6-Plan.md）: <see cref="IDeviceConnectionSetup"/> の実装（DI の Singleton。状態なし）。
@@ -51,9 +55,9 @@ namespace DS4Windows.Services
             _profileSettings.L2OutputSettings[ind].TrigEffectSettings.maxValue = (byte)(Math.Max(_profileSettings.L2ModInfo[ind].maxOutput, _profileSettings.L2ModInfo[ind].maxZone) / 100.0 * 255);
             _profileSettings.R2OutputSettings[ind].TrigEffectSettings.maxValue = (byte)(Math.Max(_profileSettings.R2ModInfo[ind].maxOutput, _profileSettings.R2ModInfo[ind].maxZone) / 100.0 * 255);
 
-            device.PrepareTriggerEffect(InputDevices.TriggerId.LeftTrigger, _profileSettings.L2OutputSettings[ind].TriggerEffect,
+            device.PrepareTriggerEffect(DS4Windows.Input.Devices.TriggerId.LeftTrigger, _profileSettings.L2OutputSettings[ind].TriggerEffect,
                 _profileSettings.L2OutputSettings[ind].TrigEffectSettings);
-            device.PrepareTriggerEffect(InputDevices.TriggerId.RightTrigger, _profileSettings.R2OutputSettings[ind].TriggerEffect,
+            device.PrepareTriggerEffect(DS4Windows.Input.Devices.TriggerId.RightTrigger, _profileSettings.R2OutputSettings[ind].TriggerEffect,
                 _profileSettings.R2OutputSettings[ind].TrigEffectSettings);
 
             device.RumbleAutostopTime = _profileSettings.GetRumbleAutostopTime(ind);
@@ -128,7 +132,7 @@ namespace DS4Windows.Services
             _profileSettings.L2ModInfo[ind].ResetEvents();
             _profileSettings.L2OutputSettings[ind].TriggerEffectChanged += (sender, e) =>
             {
-                device.PrepareTriggerEffect(InputDevices.TriggerId.LeftTrigger, _profileSettings.L2OutputSettings[tempIdx].TriggerEffect,
+                device.PrepareTriggerEffect(DS4Windows.Input.Devices.TriggerId.LeftTrigger, _profileSettings.L2OutputSettings[tempIdx].TriggerEffect,
                     _profileSettings.L2OutputSettings[tempIdx].TrigEffectSettings);
             };
             _profileSettings.L2ModInfo[ind].MaxOutputChanged += (sender, e) =>
@@ -137,7 +141,7 @@ namespace DS4Windows.Services
                 _profileSettings.L2OutputSettings[tempIdx].TrigEffectSettings.maxValue = (byte)(Math.Max(tempInfo.maxOutput, tempInfo.maxZone) / 100.0 * 255.0);
 
                 // Refresh trigger effect
-                device.PrepareTriggerEffect(InputDevices.TriggerId.LeftTrigger, _profileSettings.L2OutputSettings[tempIdx].TriggerEffect,
+                device.PrepareTriggerEffect(DS4Windows.Input.Devices.TriggerId.LeftTrigger, _profileSettings.L2OutputSettings[tempIdx].TriggerEffect,
                     _profileSettings.L2OutputSettings[tempIdx].TrigEffectSettings);
             };
             _profileSettings.L2ModInfo[ind].MaxZoneChanged += (sender, e) =>
@@ -146,14 +150,14 @@ namespace DS4Windows.Services
                 _profileSettings.L2OutputSettings[tempIdx].TrigEffectSettings.maxValue = (byte)(Math.Max(tempInfo.maxOutput, tempInfo.maxZone) / 100.0 * 255.0);
 
                 // Refresh trigger effect
-                device.PrepareTriggerEffect(InputDevices.TriggerId.LeftTrigger, _profileSettings.L2OutputSettings[tempIdx].TriggerEffect,
+                device.PrepareTriggerEffect(DS4Windows.Input.Devices.TriggerId.LeftTrigger, _profileSettings.L2OutputSettings[tempIdx].TriggerEffect,
                     _profileSettings.L2OutputSettings[tempIdx].TrigEffectSettings);
             };
 
             _profileSettings.R2OutputSettings[ind].ResetEvents();
             _profileSettings.R2OutputSettings[ind].TriggerEffectChanged += (sender, e) =>
             {
-                device.PrepareTriggerEffect(InputDevices.TriggerId.RightTrigger, _profileSettings.R2OutputSettings[tempIdx].TriggerEffect,
+                device.PrepareTriggerEffect(DS4Windows.Input.Devices.TriggerId.RightTrigger, _profileSettings.R2OutputSettings[tempIdx].TriggerEffect,
                     _profileSettings.R2OutputSettings[tempIdx].TrigEffectSettings);
             };
             _profileSettings.R2ModInfo[ind].MaxOutputChanged += (sender, e) =>
@@ -162,7 +166,7 @@ namespace DS4Windows.Services
                 _profileSettings.R2OutputSettings[tempIdx].TrigEffectSettings.maxValue = (byte)(tempInfo.maxOutput / 100.0 * 255.0);
 
                 // Refresh trigger effect
-                device.PrepareTriggerEffect(InputDevices.TriggerId.RightTrigger, _profileSettings.R2OutputSettings[tempIdx].TriggerEffect,
+                device.PrepareTriggerEffect(DS4Windows.Input.Devices.TriggerId.RightTrigger, _profileSettings.R2OutputSettings[tempIdx].TriggerEffect,
                     _profileSettings.R2OutputSettings[tempIdx].TrigEffectSettings);
             };
             _profileSettings.R2ModInfo[ind].MaxZoneChanged += (sender, e) =>
@@ -171,7 +175,7 @@ namespace DS4Windows.Services
                 _profileSettings.R2OutputSettings[tempIdx].TrigEffectSettings.maxValue = (byte)(tempInfo.maxOutput / 100.0 * 255.0);
 
                 // Refresh trigger effect
-                device.PrepareTriggerEffect(InputDevices.TriggerId.RightTrigger, _profileSettings.R2OutputSettings[tempIdx].TriggerEffect,
+                device.PrepareTriggerEffect(DS4Windows.Input.Devices.TriggerId.RightTrigger, _profileSettings.R2OutputSettings[tempIdx].TriggerEffect,
                     _profileSettings.R2OutputSettings[tempIdx].TrigEffectSettings);
             };
         }

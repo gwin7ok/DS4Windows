@@ -16,16 +16,18 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
 
-using DS4WinWPF.DS4Forms.ViewModels;
 using System;
 using System.Threading.Tasks;
 using System.Windows;
 using System.IO;
 using System.Linq;
 using System.Globalization;
-using DS4Windows;
+using DS4Windows.Core.Logging;
+using DS4Windows.Core.Updater;
+using DS4Windows.Core.Utilities;
+using DS4Windows.UI.ViewModels;
 
-namespace DS4WinWPF.DS4Forms
+namespace DS4Windows.UI
 {
     /// <summary>
     /// Interaction logic for UpdaterWindow.xaml
@@ -38,10 +40,10 @@ namespace DS4WinWPF.DS4Forms
         private UpdaterWindowViewModel updaterWinVM;
 
         // Phase6-Step10-1-3: Global.IsAdministrator／Global.LastVersionChecked の置換先。MainWindow が保持済みのサービスを渡す（Pure DI）。
-        private readonly DS4Windows.DI.IEnvironmentService _environmentService;
+        private readonly DS4Windows.Core.Abstractions.IEnvironmentService _environmentService;
 
-        public UpdaterWindow(string newversion, DS4Windows.DI.IEnvironmentService environmentService,
-            DS4Windows.DI.IAppSettingsService appSettingsService)
+        public UpdaterWindow(string newversion, DS4Windows.Core.Abstractions.IEnvironmentService environmentService,
+            DS4Windows.Processing.Abstractions.IAppSettingsService appSettingsService)
         {
             _environmentService = environmentService ?? throw new ArgumentNullException(nameof(environmentService));
             if (appSettingsService == null) throw new ArgumentNullException(nameof(appSettingsService));
@@ -53,7 +55,7 @@ namespace DS4WinWPF.DS4Forms
 
             // Display main message and buttons in English
             var engCulture = CultureInfo.GetCultureInfo("en");
-            string downloadStr = DS4WinWPF.Translations.Strings.ResourceManager.GetString("DownloadVersion", engCulture) ?? "A new version *number* has been released.";
+            string downloadStr = DS4Windows.Translations.Strings.ResourceManager.GetString("DownloadVersion", engCulture) ?? "A new version *number* has been released.";
             captionTextBlock.Text = downloadStr.Replace("*number*", newversion);
             updaterWinVM = new UpdaterWindowViewModel(newversion, appSettingsService);
 
@@ -65,9 +67,9 @@ namespace DS4WinWPF.DS4Forms
             });
 
             // Use English labels for buttons regardless of app culture
-            string skipLabel = DS4WinWPF.Translations.Strings.ResourceManager.GetString("SkipVersion", engCulture) ?? "Skip Version";
-            string openLabel = DS4WinWPF.Translations.Strings.ResourceManager.GetString("Install_LatestBtn", engCulture) ?? "Install Latest";
-            string closeLabel = DS4WinWPF.Translations.Strings.ResourceManager.GetString("CloseButton", engCulture) ?? "Close";
+            string skipLabel = DS4Windows.Translations.Strings.ResourceManager.GetString("SkipVersion", engCulture) ?? "Skip Version";
+            string openLabel = DS4Windows.Translations.Strings.ResourceManager.GetString("Install_LatestBtn", engCulture) ?? "Install Latest";
+            string closeLabel = DS4Windows.Translations.Strings.ResourceManager.GetString("CloseButton", engCulture) ?? "Close";
 
             skipVersionBtn.Content = skipLabel;
             yesBtn.Content = openLabel;
@@ -90,11 +92,11 @@ namespace DS4WinWPF.DS4Forms
                     // Show notification first, then launch existing updater and monitor exit in background
                     try
                     {
-                        DS4WinWPF.NotificationService.ShowToast(string.Empty, DS4WinWPF.Translations.Strings.InstallSuccess_Notification);
+                        DS4Windows.UI.Services.NotificationService.ShowToast(string.Empty, DS4Windows.Translations.Strings.InstallSuccess_Notification);
                     }
                     catch
                     {
-                        AppLogger.LogToTray(DS4WinWPF.Translations.Strings.InstallSuccess_Notification);
+                        AppLogger.LogToTray(DS4Windows.Translations.Strings.InstallSuccess_Notification);
                     }
 
                     string ds4WindowsExe = System.Diagnostics.Process.GetCurrentProcess().MainModule.FileName;
@@ -103,7 +105,7 @@ namespace DS4WinWPF.DS4Forms
                     var psi = new System.Diagnostics.ProcessStartInfo(ds4UpdaterExe)
                     {
                         UseShellExecute = false,
-                        Arguments = DS4WinWPF.UpdaterLaunchArguments.Build(ds4WindowsDir, ds4UpdaterDir, ds4WindowsExe, launchMode)
+                        Arguments = DS4Windows.Core.Updater.UpdaterLaunchArguments.Build(ds4WindowsDir, ds4UpdaterDir, ds4WindowsExe, launchMode)
                     };
 
                     var proc = System.Diagnostics.Process.Start(psi);
@@ -117,7 +119,7 @@ namespace DS4WinWPF.DS4Forms
                                 proc.WaitForExit();
                                 if (proc.ExitCode != 0)
                                 {
-                                    Util.StartProcessHelper(DS4WinWPF.ReleaseSource.LatestReleasePageUri);
+                                    Util.StartProcessHelper(DS4Windows.Core.Updater.ReleaseSource.LatestReleasePageUri);
                                 }
                             }
                             catch { }
@@ -137,7 +139,7 @@ namespace DS4WinWPF.DS4Forms
                     try
                     {
                         // Query GitHub Releases API for the DS4Updater latest release
-                        string apiUrl = DS4WinWPF.ReleaseSource.UpdaterLatestReleaseApiUri;
+                        string apiUrl = DS4Windows.Core.Updater.ReleaseSource.UpdaterLatestReleaseApiUri;
                         using (var client = new System.Net.Http.HttpClient())
                         {
                             client.DefaultRequestHeaders.UserAgent.ParseAdd("DS4Windows-Updater-Installer");
@@ -206,8 +208,8 @@ namespace DS4WinWPF.DS4Forms
                         if (!ok)
                         {
                             // Need elevation - ask user
-                            var elevateMb = MessageBox.Show(DS4WinWPF.Translations.Strings.Elevation_Body,
-                                DS4WinWPF.Translations.Strings.Elevation_Title,
+                            var elevateMb = MessageBox.Show(DS4Windows.Translations.Strings.Elevation_Body,
+                                DS4Windows.Translations.Strings.Elevation_Title,
                                 MessageBoxButton.YesNo, MessageBoxImage.Question);
                             AppLogger.LogDebug($"[UpdaterInstall] User elevation prompt result: {elevateMb}");
                             if (elevateMb == MessageBoxResult.Yes)
@@ -219,23 +221,23 @@ namespace DS4WinWPF.DS4Forms
                                 if (!elevatedOk)
                                 {
                                     AppLogger.LogDebug("[UpdaterInstall] Elevation attempt failed; prompting to open release page");
-                                    var failMb = MessageBox.Show(DS4WinWPF.Translations.Strings.InstallFailed_Body + "\n\nOpen release page?",
-                                        DS4WinWPF.Translations.Strings.InstallFailed_Title,
+                                    var failMb = MessageBox.Show(DS4Windows.Translations.Strings.InstallFailed_Body + "\n\nOpen release page?",
+                                        DS4Windows.Translations.Strings.InstallFailed_Title,
                                         MessageBoxButton.YesNo, MessageBoxImage.Warning);
                                     AppLogger.LogDebug($"[UpdaterInstall] User chose on InstallFailed dialog: {failMb}");
                                     if (failMb == MessageBoxResult.Yes)
-                                        Util.StartProcessHelper(DS4WinWPF.ReleaseSource.LatestReleasePageUri);
+                                        Util.StartProcessHelper(DS4Windows.Core.Updater.ReleaseSource.LatestReleasePageUri);
                                 }
                                 else
                                 {
                                     // Installed successfully — use existing tray/toast notification pathway then launch updater
                                     try
                                     {
-                                        DS4WinWPF.NotificationService.ShowToast(string.Empty, DS4WinWPF.Translations.Strings.InstallSuccess_Notification);
+                                        DS4Windows.UI.Services.NotificationService.ShowToast(string.Empty, DS4Windows.Translations.Strings.InstallSuccess_Notification);
                                     }
                                     catch
                                     {
-                                        AppLogger.LogToTray(DS4WinWPF.Translations.Strings.InstallSuccess_Notification);
+                                        AppLogger.LogToTray(DS4Windows.Translations.Strings.InstallSuccess_Notification);
                                     }
                                     string ds4WindowsExe = System.Diagnostics.Process.GetCurrentProcess().MainModule.FileName;
                                     bool runningAsAdmin2 = _environmentService.IsAdministrator();
@@ -243,7 +245,7 @@ namespace DS4WinWPF.DS4Forms
                                     var psi2 = new System.Diagnostics.ProcessStartInfo(System.IO.Path.Combine(ds4UpdaterDir, "DS4Updater.exe"))
                                     {
                                         UseShellExecute = false,
-                                        Arguments = DS4WinWPF.UpdaterLaunchArguments.Build(ds4WindowsDir, ds4UpdaterDir, ds4WindowsExe, launchMode2)
+                                        Arguments = DS4Windows.Core.Updater.UpdaterLaunchArguments.Build(ds4WindowsDir, ds4UpdaterDir, ds4WindowsExe, launchMode2)
                                     };
                                     AppLogger.LogDebug($"[UpdaterInstall] ProcessStartInfo (elevated launch): FileName={psi2.FileName} Arguments={psi2.Arguments} UseShellExecute={psi2.UseShellExecute} Verb={psi2.Verb} WorkingDirectory={psi2.WorkingDirectory}");
                                     var proc2 = System.Diagnostics.Process.Start(psi2);
@@ -257,7 +259,7 @@ namespace DS4WinWPF.DS4Forms
                                                 AppLogger.LogDebug($"[UpdaterInstall] Updater process (elevated-launch) exited with code {proc2.ExitCode}");
                                                 if (proc2.ExitCode != 0)
                                                 {
-                                                    Util.StartProcessHelper(DS4WinWPF.ReleaseSource.LatestReleasePageUri);
+                                                    Util.StartProcessHelper(DS4Windows.Core.Updater.ReleaseSource.LatestReleasePageUri);
                                                 }
                                             }
                                             catch (Exception ex) { AppLogger.LogError($"[UpdaterInstall] proc2 wait error: {ex.Message}"); }
@@ -268,12 +270,12 @@ namespace DS4WinWPF.DS4Forms
                             else
                             {
                                 // User declined elevation -> offer release page
-                                var mb = MessageBox.Show(DS4WinWPF.Translations.Strings.UpdaterMissing_Body + "\n\nOpen release page?",
-                                    DS4WinWPF.Translations.Strings.UpdaterMissing_Title,
+                                var mb = MessageBox.Show(DS4Windows.Translations.Strings.UpdaterMissing_Body + "\n\nOpen release page?",
+                                    DS4Windows.Translations.Strings.UpdaterMissing_Title,
                                     MessageBoxButton.YesNo, MessageBoxImage.Information);
                                 AppLogger.LogDebug($"[UpdaterInstall] User declined elevation; chosen to open release page? {mb == MessageBoxResult.Yes}");
                                 if (mb == MessageBoxResult.Yes)
-                                    Util.StartProcessHelper(DS4WinWPF.ReleaseSource.LatestReleasePageUri);
+                                    Util.StartProcessHelper(DS4Windows.Core.Updater.ReleaseSource.LatestReleasePageUri);
                             }
                         }
                         else
@@ -281,17 +283,17 @@ namespace DS4WinWPF.DS4Forms
                             // Installed without elevation — use existing tray/toast notification pathway then launch updater
                             try
                             {
-                                DS4WinWPF.NotificationService.ShowToast(string.Empty, DS4WinWPF.Translations.Strings.InstallSuccess_Notification);
+                                DS4Windows.UI.Services.NotificationService.ShowToast(string.Empty, DS4Windows.Translations.Strings.InstallSuccess_Notification);
                             }
                             catch
                             {
-                                AppLogger.LogToTray(DS4WinWPF.Translations.Strings.InstallSuccess_Notification);
+                                AppLogger.LogToTray(DS4Windows.Translations.Strings.InstallSuccess_Notification);
                             }
                             string ds4WindowsExe = System.Diagnostics.Process.GetCurrentProcess().MainModule.FileName;
                             var psi2 = new System.Diagnostics.ProcessStartInfo(System.IO.Path.Combine(ds4UpdaterDir, "DS4Updater.exe"))
                             {
                                 UseShellExecute = false,
-                                Arguments = DS4WinWPF.UpdaterLaunchArguments.Build(ds4WindowsDir, ds4UpdaterDir, ds4WindowsExe)
+                                Arguments = DS4Windows.Core.Updater.UpdaterLaunchArguments.Build(ds4WindowsDir, ds4UpdaterDir, ds4WindowsExe)
                             };
                             AppLogger.LogDebug($"[UpdaterInstall] ProcessStartInfo (non-elevated launch): FileName={psi2.FileName} Arguments={psi2.Arguments} UseShellExecute={psi2.UseShellExecute} Verb={psi2.Verb} WorkingDirectory={psi2.WorkingDirectory}");
                             var proc2 = System.Diagnostics.Process.Start(psi2);
@@ -305,7 +307,7 @@ namespace DS4WinWPF.DS4Forms
                                         AppLogger.LogDebug($"[UpdaterInstall] Updater process (non-elevated-launch) exited with code {proc2.ExitCode}");
                                         if (proc2.ExitCode != 0)
                                         {
-                                            Util.StartProcessHelper(DS4WinWPF.ReleaseSource.LatestReleasePageUri);
+                                            Util.StartProcessHelper(DS4Windows.Core.Updater.ReleaseSource.LatestReleasePageUri);
                                         }
                                     }
                                     catch (Exception ex) { AppLogger.LogError($"[UpdaterInstall] proc2 wait error: {ex.Message}"); }
@@ -318,12 +320,12 @@ namespace DS4WinWPF.DS4Forms
                         AppLogger.LogError($"[UpdaterInstall] Download/Extraction/Install error: {ex.Message}");
                         try
                         {
-                            var mb = MessageBox.Show(DS4WinWPF.Translations.Strings.UpdaterMissing_Body + "\n\nOpen release page?\n\n" + ex.Message,
-                                DS4WinWPF.Translations.Strings.UpdaterMissing_Title,
+                            var mb = MessageBox.Show(DS4Windows.Translations.Strings.UpdaterMissing_Body + "\n\nOpen release page?\n\n" + ex.Message,
+                                DS4Windows.Translations.Strings.UpdaterMissing_Title,
                                 MessageBoxButton.YesNo, MessageBoxImage.Information);
                             AppLogger.LogDebug($"[UpdaterInstall] User selected open release on exception dialog: {mb == MessageBoxResult.Yes}");
                             if (mb == MessageBoxResult.Yes)
-                                Util.StartProcessHelper(DS4WinWPF.ReleaseSource.LatestReleasePageUri);
+                                Util.StartProcessHelper(DS4Windows.Core.Updater.ReleaseSource.LatestReleasePageUri);
                         }
                         catch (Exception ex2) { AppLogger.LogError($"[UpdaterInstall] error showing updater missing dialog: {ex2.Message}"); }
                     }
@@ -335,7 +337,7 @@ namespace DS4WinWPF.DS4Forms
             }
             catch
             {
-                try { Util.StartProcessHelper(DS4WinWPF.ReleaseSource.LatestReleasePageUri); } catch { }
+                try { Util.StartProcessHelper(DS4Windows.Core.Updater.ReleaseSource.LatestReleasePageUri); } catch { }
             }
             result = MessageBoxResult.Yes;
             Close();

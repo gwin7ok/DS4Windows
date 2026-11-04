@@ -1,10 +1,9 @@
-using DS4Windows.Services;
 using System;
-using DS4Windows.DS4Control;
-using DS4Windows.Actions;
-using DS4Windows.DI;
+using DS4Windows.Core.Logging;
+using DS4Windows.Core.Settings;
+using DS4Windows.Processing.Abstractions;
 
-namespace DS4Windows
+namespace DS4Windows.Processing.Actions
 {
     // KeyAction implementation that delegates to Mapping's KeyButtonActionController cache.
     public class KeyAction
@@ -79,7 +78,7 @@ namespace DS4Windows
                 var ctrl = GetController(device);
                 try { AppLogger.LogTrace($"KeyAction.OnTrigger: obtained controller={(ctrl==null?"<null>":ctrl.ControllerId.ToString())} for name={action?.name} device={device}"); } catch { }
 
-                var trigger = new DS4Windows.Actions.TriggerContextImpl
+                var trigger = new DS4Windows.Processing.Actions.TriggerContextImpl
                 {
                     Device = device,
                     IsEdgeEstablished = true,
@@ -89,7 +88,7 @@ namespace DS4Windows
                     Timestamp = DateTime.UtcNow
                 };
 
-                var binding = new DS4Windows.Actions.KeyActionBinding(action);
+                var binding = new DS4Windows.Processing.Actions.KeyActionBinding(action);
 
                 // Forward the trigger (established) to the controller and let it decide semantics (press vs toggle)
                 try { ctrl?.Handle(binding, trigger); } catch { }
@@ -107,7 +106,7 @@ namespace DS4Windows
             {
                 var state = manager.GetStateFor(action, device);
                 var ctrl = GetController(device);
-                var trigger = new DS4Windows.Actions.TriggerContextImpl
+                var trigger = new DS4Windows.Processing.Actions.TriggerContextImpl
                 {
                     Device = device,
                     IsEdgeEstablished = false,
@@ -116,7 +115,7 @@ namespace DS4Windows
                     OutputHandler = handler,
                     Timestamp = DateTime.UtcNow
                 };
-                var binding = new DS4Windows.Actions.KeyActionBinding(action);
+                var binding = new DS4Windows.Processing.Actions.KeyActionBinding(action);
                 // Forward release edge to controller and let controller instance decide how to handle it.
                 try { ctrl?.Handle(binding, trigger); } catch { }
             }

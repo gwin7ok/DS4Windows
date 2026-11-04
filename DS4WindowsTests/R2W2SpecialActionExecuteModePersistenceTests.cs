@@ -1,7 +1,8 @@
 using System.IO;
 using System.Xml;
-using DS4Windows;
 using Xunit;
+using DS4Windows.Core.Settings;
+using DS4Windows.Processing;
 
 namespace DS4WindowsTests
 {
@@ -22,7 +23,7 @@ namespace DS4WindowsTests
 
         private static string Save(PersistenceGoldenContext ctx, BackingStore store, string extras, MacroExecuteMode mode)
         {
-            new DS4Windows.Services.SpecialActionsXmlSerializer(store, TestActions.Manager).SaveActionNew("m", "Cross", 1, "350/256", false, extras: extras, macroExecuteMode: mode);
+            new DS4Windows.Core.Persistence.SpecialActionsXmlSerializer(store, TestActions.Manager).SaveActionNew("m", "Cross", 1, "350/256", false, extras: extras, macroExecuteMode: mode);
             return File.ReadAllText(store.m_Actions);
         }
 
@@ -82,7 +83,7 @@ namespace DS4WindowsTests
             Assert.True(loaded.keyType.HasFlag(DS4KeyType.RepeatMacro));
             Assert.True(loaded.keyType.HasFlag(DS4KeyType.ScanCode));
 
-            Assert.True(new DS4Windows.Services.SpecialActionsXmlSerializer(store, TestActions.Manager).SaveActions());
+            Assert.True(new DS4Windows.Core.Persistence.SpecialActionsXmlSerializer(store, TestActions.Manager).SaveActions());
 
             XmlNode node = ActionNode(File.ReadAllText(store.m_Actions));
             Assert.Equal("Held", node.SelectSingleNode("MacroExecuteMode")?.InnerText);
@@ -121,7 +122,7 @@ namespace DS4WindowsTests
         [InlineData("", "")]
         public void RemoveLegacyRepeatToken_RemovesOnlyTheExactToken(string extras, string expected)
         {
-            string actual = DS4WinWPF.DS4Control.DTOXml.ActionsDTO.RemoveLegacyRepeatToken(extras);
+            string actual = DS4Windows.Core.Persistence.Dto.ActionsDTO.RemoveLegacyRepeatToken(extras);
 
             Assert.Equal(expected, actual);
         }

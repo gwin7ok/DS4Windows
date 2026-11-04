@@ -1,4 +1,4 @@
-namespace DS4Windows.Actions
+namespace DS4Windows.Processing.Actions
 {
     /// <summary>
     /// Phase8-Step4 W1: 押している間も毎フレーム呼ばれる出力アクション（Phase8-Step2-Design.md §14-3）。

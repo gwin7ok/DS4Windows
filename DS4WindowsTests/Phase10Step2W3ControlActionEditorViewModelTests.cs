@@ -1,8 +1,9 @@
 using System.Collections;
 using System.Linq;
-using DS4Windows;
-using DS4WinWPF.DS4Forms.ViewModels;
 using Xunit;
+using DS4Windows.Input;
+using DS4Windows.Processing;
+using DS4Windows.UI.ViewModels;
 
 namespace DS4WindowsTests
 {

@@ -2,7 +2,7 @@ using System;
 using System.IO;
 using System.Xml;
 
-namespace DS4Windows.Services
+namespace DS4Windows.Core.Persistence
 {
     /// <summary>
     /// Phase10-Step4d W1（Phase10-Step4d-Plan.md §3.1）: プロファイルのファイルの固定 ID（<c>&lt;ProfileId&gt;</c>）の読み書き。状態を持たない。

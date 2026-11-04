@@ -21,9 +21,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Xml;
 using System.Xml.Serialization;
-using DS4Windows;
+using DS4Windows.Processing;
 
-namespace DS4WinWPF.DS4Control.DTOXml
+namespace DS4Windows.Core.Persistence.Dto
 {
 
     public class SpecialActionSerializer
@@ -121,12 +121,12 @@ namespace DS4WinWPF.DS4Control.DTOXml
         {
             get
             {
-                return Delay.ToString(DS4Windows.ConfigFileCulture.DecimalCulture);
+                return Delay.ToString(DS4Windows.Core.Settings.ConfigFileCulture.DecimalCulture);
             }
             set
             {
                 double delayTime = 0.0;
-                if (double.TryParse(value, System.Globalization.NumberStyles.Float, DS4Windows.ConfigFileCulture.DecimalCulture, out delayTime))
+                if (double.TryParse(value, System.Globalization.NumberStyles.Float, DS4Windows.Core.Settings.ConfigFileCulture.DecimalCulture, out delayTime))
                 {
                     Delay = delayTime;
                 }

@@ -21,9 +21,11 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Xml;
 using System.Xml.Serialization;
-using DS4Windows;
+using DS4Windows.Core.Logging;
+using DS4Windows.Core.Settings;
+using DS4Windows.Processing;
 
-namespace DS4WinWPF.DS4Control.DTOXml
+namespace DS4Windows.Core.Persistence.Dto
 {
     [XmlRoot("Actions")]
     public class ActionsDTO : IDTO<BackingStore>
@@ -232,7 +234,7 @@ namespace DS4WinWPF.DS4Control.DTOXml
                         {
                             double delayTime = actionSerializer.Delay;
                             string details = actionSerializer.Details;
-                            double.TryParse(details, System.Globalization.NumberStyles.Float, DS4Windows.ConfigFileCulture.DecimalCulture, out delayTime);
+                            double.TryParse(details, System.Globalization.NumberStyles.Float, DS4Windows.Core.Settings.ConfigFileCulture.DecimalCulture, out delayTime);
 
                             tempAction = new SpecialAction(actionSerializer.Name,
                                 actionSerializer.Trigger, actionSerializer.TypeString,
@@ -244,10 +246,10 @@ namespace DS4WinWPF.DS4Control.DTOXml
                         {
                             double delayTime = actionSerializer.Delay;
                             string details = actionSerializer.Details;
-                            if (double.TryParse(details.Split('|')[0], System.Globalization.NumberStyles.Float, DS4Windows.ConfigFileCulture.DecimalCulture, out delayTime))
+                            if (double.TryParse(details.Split('|')[0], System.Globalization.NumberStyles.Float, DS4Windows.Core.Settings.ConfigFileCulture.DecimalCulture, out delayTime))
                             {
                             }
-                            else if (double.TryParse(details.Split(',')[0], System.Globalization.NumberStyles.Float, DS4Windows.ConfigFileCulture.DecimalCulture, out delayTime))
+                            else if (double.TryParse(details.Split(',')[0], System.Globalization.NumberStyles.Float, DS4Windows.Core.Settings.ConfigFileCulture.DecimalCulture, out delayTime))
                             {
                             }
 
@@ -266,10 +268,10 @@ namespace DS4WinWPF.DS4Control.DTOXml
                         break;
                     case "SASteeringWheelEmulationCalibrate":
                         // Phase9 Steering 削除 W1: 廃止した種別。読み込まずに取り除く（tempAction は null のまま＝一覧に入らない。次の保存でファイルから消える）
-                        AppLogger.Log(AppLogLevel.Info, string.Format(DS4WinWPF.Properties.Resources.ObsoleteAssignmentRemovedSpecialAction, "SASteeringWheelEmulationCalibrate", actionSerializer.Name), LogOptions.UserFacing);
+                        AppLogger.Log(AppLogLevel.Info, string.Format(DS4Windows.Properties.Resources.ObsoleteAssignmentRemovedSpecialAction, "SASteeringWheelEmulationCalibrate", actionSerializer.Name), LogOptions.UserFacing);
                         break;
                     case "GyroCalibration":
-                        double.TryParse(actionSerializer.Details, System.Globalization.NumberStyles.Float, DS4Windows.ConfigFileCulture.DecimalCulture, out var delay);
+                        double.TryParse(actionSerializer.Details, System.Globalization.NumberStyles.Float, DS4Windows.Core.Settings.ConfigFileCulture.DecimalCulture, out var delay);
                         tempAction = new SpecialAction(actionSerializer.Name, actionSerializer.Trigger,
                             actionSerializer.TypeString, actionSerializer.Details, delay);
                         break;

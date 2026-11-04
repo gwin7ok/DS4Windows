@@ -1,9 +1,6 @@
 ﻿using System;
 using Xunit;
-using DS4Windows;
-using DS4Windows.DI;
-using DS4WinWPF;
-using DS4WinWPF.DS4Forms.ViewModels;
+using DS4Windows.UI.ViewModels;
 
 namespace DS4WindowsTests
 {
@@ -12,7 +9,7 @@ namespace DS4WindowsTests
         [Fact]
         public void AppHost_ShouldResolve_MainWindowsViewModel()
         {
-            DS4WinWPF.AppHost.CreateHost();
+            DS4Windows.Composition.AppHost.CreateHost();
 
             var vm = TestHost.GetService<MainWindowsViewModel>();
             Assert.NotNull(vm);
@@ -21,7 +18,7 @@ namespace DS4WindowsTests
         [Fact]
         public void MainWindowsViewModel_ShouldBeSingleton()
         {
-            DS4WinWPF.AppHost.CreateHost();
+            DS4Windows.Composition.AppHost.CreateHost();
 
             var vm1 = TestHost.GetService<MainWindowsViewModel>();
             var vm2 = TestHost.GetService<MainWindowsViewModel>();

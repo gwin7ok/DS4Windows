@@ -1,4 +1,4 @@
-namespace DS4Windows.Actions
+namespace DS4Windows.Processing.Actions
 {
     /// <summary>
     /// Phase10-Step6 I4a: Controls タブの束縛の出力の種類（<see cref="ControlOutputNature"/>）を決める、唯一の場所。

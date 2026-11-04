@@ -1,6 +1,7 @@
-using DS4Windows;
 
-namespace DS4Windows.DI
+using DS4Windows.Core.Settings;
+
+namespace DS4Windows.Core.Abstractions
 {
     /// <summary>
     /// アプリテーマおよびトレイアイコン表示設定を提供するサービス。

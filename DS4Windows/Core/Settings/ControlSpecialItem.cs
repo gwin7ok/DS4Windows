@@ -1,6 +1,8 @@
 using System.Collections.Generic;
+using DS4Windows.Input;
+using DS4Windows.Processing;
 
-namespace DS4Windows
+namespace DS4Windows.Core.Settings
 {
     /// <summary>
     /// Phase10-Step4 W1（Phase10-Step4-Plan.md §3.1）: Controls のボタン 1 つの割り当てに持たせる、SA 専用の種別と項目の、<b>型のある</b>定義。

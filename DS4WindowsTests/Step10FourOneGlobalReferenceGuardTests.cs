@@ -3,9 +3,8 @@ using System.IO;
 using System.Linq;
 using System.Text.RegularExpressions;
 using Xunit;
-using DS4Windows;
-using DS4WinWPF;
-using DS4Windows.DI;
+using DS4Windows.Core.Platform;
+using DS4Windows.Core.Profiles;
 
 namespace DS4WindowsTests
 {

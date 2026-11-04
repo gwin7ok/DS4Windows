@@ -1,8 +1,10 @@
 using System;
 using Xunit;
-using DS4Windows;
-using DS4Windows.DI;
-using DS4Windows.Services;
+using DS4Windows.Core.Settings;
+using DS4Windows.Input;
+using DS4Windows.Processing;
+using DS4Windows.Processing.Abstractions;
+using DS4Windows.Processing.Services;
 
 namespace DS4WindowsTests
 {
@@ -28,7 +30,7 @@ namespace DS4WindowsTests
 
         private static ProfileSettingsService CreateIsolatedService(out BackingStore store)
         {
-            store = new DS4Windows.BackingStore(new DS4Windows.EnvironmentService());
+            store = new DS4Windows.Core.Settings.BackingStore(new DS4Windows.Core.Platform.EnvironmentService());
             return TestRepositoryFactory.CreateProfileSettingsService(store);
         }
 

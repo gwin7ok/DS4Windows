@@ -1,9 +1,12 @@
 using System;
 using System.Collections.Generic;
-using DS4Windows.DI;
-using DS4Windows.InputDevices;
+using DS4Windows.Core.Abstractions;
+using DS4Windows.Core.Settings;
+using DS4Windows.Input;
+using DS4Windows.Input.Devices;
+using DS4Windows.Processing.Abstractions;
 
-namespace DS4Windows.Services
+namespace DS4Windows.Processing.Services
 {
     /// <summary>
     /// Phase9 9-E E-6c（Phase9-E6-Plan.md §3.1）: <see cref="IInputDeviceModule"/> の共通の土台。種類によって何もしないメンバーは、ここで何もしない（旧コードで該当する分岐がなかったもの）。

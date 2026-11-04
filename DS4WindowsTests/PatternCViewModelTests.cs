@@ -3,11 +3,13 @@ using System.IO;
 using System.Reflection;
 using System.Windows;
 using Xunit;
-using DS4Windows;
-using DS4Windows.DI;
-using DS4WinWPF;
-using DS4WinWPF.DS4Forms;
-using DS4WinWPF.DS4Forms.ViewModels;
+using DS4Windows.Core.Abstractions;
+using DS4Windows.Core.Profiles;
+using DS4Windows.Core.Settings;
+using DS4Windows.Input;
+using DS4Windows.Output;
+using DS4Windows.Processing.Abstractions;
+using DS4Windows.UI.ViewModels;
 
 namespace DS4WindowsTests
 {
@@ -33,7 +35,7 @@ namespace DS4WindowsTests
             {
                 try
                 {
-                    Application.ResourceAssembly = typeof(DS4WinWPF.AppHost).Assembly;
+                    Application.ResourceAssembly = typeof(DS4Windows.Composition.AppHost).Assembly;
                 }
                 catch { }
             }
@@ -69,7 +71,7 @@ namespace DS4WindowsTests
         [Fact]
         public void AppHost_ShouldResolve_IViewModelFactory()
         {
-            DS4WinWPF.AppHost.CreateHost();
+            DS4Windows.Composition.AppHost.CreateHost();
 
             var factory = TestHost.GetService<IViewModelFactory>();
             Assert.NotNull(factory);
@@ -78,7 +80,7 @@ namespace DS4WindowsTests
         [Fact]
         public void ViewModelFactory_ShouldCreate_ProfileSettingsViewModel()
         {
-            DS4WinWPF.AppHost.CreateHost();
+            DS4Windows.Composition.AppHost.CreateHost();
 
             var factory = TestHost.GetService<IViewModelFactory>();
             Assert.NotNull(factory);
@@ -97,32 +99,32 @@ namespace DS4WindowsTests
         [Fact]
         public void ViewModelFactory_PassesTargetDevice_ToProfileSettingsViewModel()
         {
-            DS4WinWPF.AppHost.CreateHost();
+            DS4Windows.Composition.AppHost.CreateHost();
 
             var factory = TestHost.GetService<IViewModelFactory>();
             Assert.NotNull(factory);
 
             var outputSlotService = TestHost.GetService<IOutputSlotService>();
-            OutContType savedOutDevTypeTemp = outputSlotService.OutDevTypeTemp[DS4Windows.ControllerLimits.TestProfileIndex];
+            OutContType savedOutDevTypeTemp = outputSlotService.OutDevTypeTemp[DS4Windows.Core.Settings.ControllerLimits.TestProfileIndex];
             try
             {
                 // CURRENT_DS4_CONTROLLER_LIMIT は 4 または 8 のため、どちらでも範囲内の 1 を使う
-                var vm = factory.CreateProfileSettingsViewModel(DS4Windows.ControllerLimits.TestProfileIndex, 1);
+                var vm = factory.CreateProfileSettingsViewModel(DS4Windows.Core.Settings.ControllerLimits.TestProfileIndex, 1);
                 Assert.NotNull(vm);
-                Assert.Equal(DS4Windows.ControllerLimits.TestProfileIndex, vm.Device);
+                Assert.Equal(DS4Windows.Core.Settings.ControllerLimits.TestProfileIndex, vm.Device);
                 Assert.Equal(1, vm.TargetDevice);
                 Assert.Equal(1, vm.FuncDevNum);
             }
             finally
             {
-                outputSlotService.OutDevTypeTemp[DS4Windows.ControllerLimits.TestProfileIndex] = savedOutDevTypeTemp;
+                outputSlotService.OutDevTypeTemp[DS4Windows.Core.Settings.ControllerLimits.TestProfileIndex] = savedOutDevTypeTemp;
             }
         }
 
         [Fact]
         public void ViewModelFactory_ShouldCreate_RecordBoxViewModel()
         {
-            DS4WinWPF.AppHost.CreateHost();
+            DS4Windows.Composition.AppHost.CreateHost();
 
             var factory = TestHost.GetService<IViewModelFactory>();
             Assert.NotNull(factory);
@@ -143,7 +145,7 @@ namespace DS4WindowsTests
         [Fact]
         public void ViewModelFactory_PassesTargetDevice_ToRecordBoxViewModel()
         {
-            DS4WinWPF.AppHost.CreateHost();
+            DS4Windows.Composition.AppHost.CreateHost();
 
             var factory = TestHost.GetService<IViewModelFactory>();
             Assert.NotNull(factory);
@@ -153,20 +155,20 @@ namespace DS4WindowsTests
             // CURRENT_DS4_CONTROLLER_LIMIT は 4 または 8 のため、どちらでも範囲内の 1 を使う
             const int targetSlot = 1;
             TouchpadOutMode savedTargetMode = profileSettings.TouchOutMode[targetSlot];
-            TouchpadOutMode savedEditSlotMode = profileSettings.TouchOutMode[DS4Windows.ControllerLimits.TestProfileIndex];
+            TouchpadOutMode savedEditSlotMode = profileSettings.TouchOutMode[DS4Windows.Core.Settings.ControllerLimits.TestProfileIndex];
             RecordBoxViewModel vm = null;
             try
             {
                 profileSettings.TouchOutMode[targetSlot] = TouchpadOutMode.Mouse;
-                profileSettings.TouchOutMode[DS4Windows.ControllerLimits.TestProfileIndex] = TouchpadOutMode.Mouse;
+                profileSettings.TouchOutMode[DS4Windows.Core.Settings.ControllerLimits.TestProfileIndex] = TouchpadOutMode.Mouse;
 
-                vm = factory.CreateRecordBoxViewModel(DS4Windows.ControllerLimits.TestProfileIndex,
+                vm = factory.CreateRecordBoxViewModel(DS4Windows.Core.Settings.ControllerLimits.TestProfileIndex,
                     new DS4ControlSettings(DS4Controls.Cross), false, targetSlot);
                 Assert.NotNull(vm);
-                Assert.Equal(DS4Windows.ControllerLimits.TestProfileIndex, vm.DeviceNum);
+                Assert.Equal(DS4Windows.Core.Settings.ControllerLimits.TestProfileIndex, vm.DeviceNum);
                 Assert.Equal(targetSlot, vm.TargetDevice);
                 Assert.Equal(TouchpadOutMode.Passthru, profileSettings.TouchOutMode[targetSlot]);
-                Assert.Equal(TouchpadOutMode.Mouse, profileSettings.TouchOutMode[DS4Windows.ControllerLimits.TestProfileIndex]);
+                Assert.Equal(TouchpadOutMode.Mouse, profileSettings.TouchOutMode[DS4Windows.Core.Settings.ControllerLimits.TestProfileIndex]);
 
                 vm.RevertControlsSettings();
                 Assert.Equal(TouchpadOutMode.Mouse, profileSettings.TouchOutMode[targetSlot]);
@@ -175,19 +177,19 @@ namespace DS4WindowsTests
             {
                 vm?.RevertControlsSettings();
                 profileSettings.TouchOutMode[targetSlot] = savedTargetMode;
-                profileSettings.TouchOutMode[DS4Windows.ControllerLimits.TestProfileIndex] = savedEditSlotMode;
+                profileSettings.TouchOutMode[DS4Windows.Core.Settings.ControllerLimits.TestProfileIndex] = savedEditSlotMode;
             }
         }
 
         [Fact]
         public void ViewModelFactory_ShouldCreate_AutoProfilesViewModel()
         {
-            DS4WinWPF.AppHost.CreateHost();
+            DS4Windows.Composition.AppHost.CreateHost();
 
             var factory = TestHost.GetService<IViewModelFactory>();
             Assert.NotNull(factory);
 
-            var profileList = new ProfileList(TestHost.GetService<DS4Windows.DI.IPathService>());
+            var profileList = new ProfileList(TestHost.GetService<DS4Windows.Core.Abstractions.IPathService>());
             var holder = TestRepositoryFactory.CreateAutoProfileHolder();
             var vm = factory.CreateAutoProfilesViewModel(holder, profileList);
             Assert.NotNull(vm);

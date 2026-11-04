@@ -1,6 +1,6 @@
 using System;
 
-namespace DS4Windows.DI
+namespace DS4Windows.Processing.Abstractions
 {
     /// <summary>
     /// Phase9 9-E E-3（Phase9-E-Plan.md）: UDP のモーションデータの送出（Cemuhook 互換サーバー）。
@@ -31,7 +31,7 @@ namespace DS4Windows.DI
         void ChangeMotionEventStatus(bool state);
 
         /// <summary>そのデバイスに、モーションの送出のハンドラーを付ける（設定でスムージングが有効なら、加速度とジャイロにフィルターをかけて送る）。</summary>
-        void PrepareDeviceMotion(DS4Windows.DS4Device device, int index);
+        void PrepareDeviceMotion(DS4Windows.Input.DS4Device device, int index);
 
         /// <summary>そのスロットのスムージングのフィルターを作り直す。</summary>
         void ResetSmoothingFilters(int idx);

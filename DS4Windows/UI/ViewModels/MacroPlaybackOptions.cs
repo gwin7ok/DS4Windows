@@ -1,7 +1,7 @@
 using System.ComponentModel;
-using DS4Windows;
+using DS4Windows.Core.Settings;
 
-namespace DS4WinWPF.DS4Forms.ViewModels
+namespace DS4Windows.UI.ViewModels
 {
     /// <summary>
     /// Phase10-Step1 W1（Phase10-Step1-Plan.md §3.1）: マクロの再生オプション（繰り返し、Scan Code）の共通の ViewModel。

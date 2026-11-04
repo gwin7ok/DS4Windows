@@ -1,4 +1,4 @@
-namespace DS4Windows
+namespace DS4Windows.Core.Settings
 {
     /// <summary>
     /// Phase8-Step7 7.8d: <see cref="RemovedShiftNotice.Apply"/> の結果。

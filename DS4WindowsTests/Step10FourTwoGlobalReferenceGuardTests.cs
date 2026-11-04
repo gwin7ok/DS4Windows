@@ -4,10 +4,16 @@ using System.IO;
 using System.Linq;
 using System.Text.RegularExpressions;
 using Xunit;
-using DS4Windows;
-using DS4Windows.Actions;
-using DS4Windows.DI;
-using DS4Windows.Services;
+using DS4Windows.Core.Abstractions;
+using DS4Windows.Core.Persistence;
+using DS4Windows.Core.Platform;
+using DS4Windows.Core.Settings;
+using DS4Windows.Output;
+using DS4Windows.Output.Services;
+using DS4Windows.Processing;
+using DS4Windows.Processing.Abstractions;
+using DS4Windows.Processing.Actions;
+using DS4Windows.Processing.Services;
 
 namespace DS4WindowsTests
 {
@@ -85,15 +91,15 @@ namespace DS4WindowsTests
         public void SpecialActionRepository_RequiresStoreAndPathService()
         {
             Assert.Throws<ArgumentNullException>(() => new SpecialActionRepository(null, new PathService(), new SyntheticInputState(), TestRepositoryFactory.CreateActionsXml(), TestActions.Manager));
-            Assert.Throws<ArgumentNullException>(() => new SpecialActionRepository(new DS4Windows.BackingStore(new DS4Windows.EnvironmentService()), null, new SyntheticInputState(), TestRepositoryFactory.CreateActionsXml(), TestActions.Manager));
-            Assert.Throws<ArgumentNullException>(() => new SpecialActionRepository(new DS4Windows.BackingStore(new DS4Windows.EnvironmentService()), new PathService(), new SyntheticInputState(), null, TestActions.Manager));
+            Assert.Throws<ArgumentNullException>(() => new SpecialActionRepository(new DS4Windows.Core.Settings.BackingStore(new DS4Windows.Core.Platform.EnvironmentService()), null, new SyntheticInputState(), TestRepositoryFactory.CreateActionsXml(), TestActions.Manager));
+            Assert.Throws<ArgumentNullException>(() => new SpecialActionRepository(new DS4Windows.Core.Settings.BackingStore(new DS4Windows.Core.Platform.EnvironmentService()), new PathService(), new SyntheticInputState(), null, TestActions.Manager));
         }
 
         [Fact]
         public void ProfileRepository_ProfileActionProvider_AutoProfileHolder_RequireDependencies()
         {
             var settings = TestRepositoryFactory.CreateProfileSettingsService();
-            var config = new DS4Windows.BackingStore(new DS4Windows.EnvironmentService());
+            var config = new DS4Windows.Core.Settings.BackingStore(new DS4Windows.Core.Platform.EnvironmentService());
             var store = TestRepositoryFactory.CreateProfileXmlStore(config);
             var linkedXml = TestRepositoryFactory.CreateLinkedProfilesXml(config);
             var actionsXml = TestRepositoryFactory.CreateActionsXml(config);
@@ -102,10 +108,10 @@ namespace DS4WindowsTests
             IProfileLoadTarget control = new LazyProfileLoadTarget();   // Phase13-Step6 6-e: 旧 Func<ControlService>
 
             Assert.Throws<ArgumentNullException>(() => new ProfileRepository(null, settings, store, path, control, linkedXml, actionsXml, legacyXml, new EnvironmentService()));
-            Assert.Throws<ArgumentNullException>(() => new ProfileXmlStore(null, new DS4Windows.Services.ControllerConfigsXmlSerializer(config), TestRepositoryFactory.CreateAppSettingsXml(config), TestRepositoryFactory.CreateLegacyProfileXml(config)));
+            Assert.Throws<ArgumentNullException>(() => new ProfileXmlStore(null, new DS4Windows.Core.Persistence.ControllerConfigsXmlSerializer(config), TestRepositoryFactory.CreateAppSettingsXml(config), TestRepositoryFactory.CreateLegacyProfileXml(config)));
             Assert.Throws<ArgumentNullException>(() => new ProfileXmlStore(config, null, TestRepositoryFactory.CreateAppSettingsXml(config), TestRepositoryFactory.CreateLegacyProfileXml(config)));
-            Assert.Throws<ArgumentNullException>(() => new ProfileXmlStore(config, new DS4Windows.Services.ControllerConfigsXmlSerializer(config), null, TestRepositoryFactory.CreateLegacyProfileXml(config)));
-            Assert.Throws<ArgumentNullException>(() => new ProfileXmlStore(config, new DS4Windows.Services.ControllerConfigsXmlSerializer(config), TestRepositoryFactory.CreateAppSettingsXml(config), null));
+            Assert.Throws<ArgumentNullException>(() => new ProfileXmlStore(config, new DS4Windows.Core.Persistence.ControllerConfigsXmlSerializer(config), null, TestRepositoryFactory.CreateLegacyProfileXml(config)));
+            Assert.Throws<ArgumentNullException>(() => new ProfileXmlStore(config, new DS4Windows.Core.Persistence.ControllerConfigsXmlSerializer(config), TestRepositoryFactory.CreateAppSettingsXml(config), null));
             Assert.Throws<ArgumentNullException>(() => new ProfileRepository(config, settings, store, path, null, linkedXml, actionsXml, legacyXml, new EnvironmentService()));
             Assert.Throws<ArgumentNullException>(() => new ProfileRepository(config, null, store, path, control, linkedXml, actionsXml, legacyXml, new EnvironmentService()));
             Assert.Throws<ArgumentNullException>(() => new ProfileRepository(config, settings, null, path, control, linkedXml, actionsXml, legacyXml, new EnvironmentService()));
@@ -114,15 +120,15 @@ namespace DS4WindowsTests
             Assert.Throws<ArgumentNullException>(() => new ProfileRepository(config, settings, store, path, control, linkedXml, null, legacyXml, new EnvironmentService()));
             Assert.Throws<ArgumentNullException>(() => new ProfileRepository(config, settings, store, path, control, linkedXml, actionsXml, null, new EnvironmentService()));
             Assert.Throws<ArgumentNullException>(() => new ProfileActionProvider(null));
-            Assert.Throws<ArgumentNullException>(() => new DS4WinWPF.AutoProfileHolder(null, new EnvironmentService()));
+            Assert.Throws<ArgumentNullException>(() => new DS4Windows.Core.Profiles.AutoProfileHolder(null, new EnvironmentService()));
         }
 
         [Fact]
         public void ProfileSettingsService_RequiresAllDependencies()
         {
-            var store = new DS4Windows.BackingStore(new DS4Windows.EnvironmentService());
+            var store = new DS4Windows.Core.Settings.BackingStore(new DS4Windows.Core.Platform.EnvironmentService());
             var env = new EnvironmentService();
-            IDeviceStateAccessor control = new DS4Windows.Services.DeviceSlotState();
+            IDeviceStateAccessor control = new DS4Windows.Processing.Services.DeviceSlotState();
 
             Assert.Throws<ArgumentNullException>(() => new ProfileSettingsService(null, env, control));
             Assert.Throws<ArgumentNullException>(() => new ProfileSettingsService(store, null, control));
@@ -132,7 +138,7 @@ namespace DS4WindowsTests
         [Fact]
         public void ProfileSettingsService_GetRumbleBoost_UsesInjectedControlProvider()
         {
-            var settings = TestRepositoryFactory.CreateProfileSettingsService(new DS4Windows.BackingStore(new DS4Windows.EnvironmentService()), null, new DS4Windows.Services.DeviceSlotState());
+            var settings = TestRepositoryFactory.CreateProfileSettingsService(new DS4Windows.Core.Settings.BackingStore(new DS4Windows.Core.Platform.EnvironmentService()), null, new DS4Windows.Processing.Services.DeviceSlotState());
             // コントローラーが無い場合も、注入された関数だけを参照して例外なく値を返す（Program.rootHub を参照しない）
             var ex = Record.Exception(() => settings.GetRumbleBoost(0));
             Assert.Null(ex);
@@ -142,7 +148,7 @@ namespace DS4WindowsTests
         public void AutoProfileService_RequiresAllDependencies()
         {
             var path = new PathService();
-            var holder = new DS4WinWPF.AutoProfileHolder(path, new EnvironmentService());
+            var holder = new DS4Windows.Core.Profiles.AutoProfileHolder(path, new EnvironmentService());
             var settings = TestRepositoryFactory.CreateProfileSettingsService();
             var app = TestRepositoryFactory.CreateProfileApplicationService(settings,
                 new LazyProfileLoadTarget(),
@@ -151,7 +157,7 @@ namespace DS4WindowsTests
             var env = new EnvironmentService();
             var appSettings = TestRepositoryFactory.CreateAppSettingsService();
             IServiceLifecycle lifecycle = TestHost.GetService<IServiceLifecycle>();
-            IDeviceStateAccessor deviceState = new DS4Windows.Services.DeviceSlotState();
+            IDeviceStateAccessor deviceState = new DS4Windows.Processing.Services.DeviceSlotState();
             IProcessInspector inspector = new NullProcessInspector();
 
             Assert.Throws<ArgumentNullException>(() => new AutoProfileService(null, app, settings, inspector, env, appSettings, repo, lifecycle, deviceState, TestGlobals.Store));
@@ -174,7 +180,7 @@ namespace DS4WindowsTests
             try
             {
                 // 設定ファイルが無い場合は空で生成される（注入されたパスを参照し、Global.appdatapath を参照しない）
-                var holder = new DS4WinWPF.AutoProfileHolder(new PathService(dir), new EnvironmentService());
+                var holder = new DS4Windows.Core.Profiles.AutoProfileHolder(new PathService(dir), new EnvironmentService());
                 Assert.Empty(holder.AutoProfileColl);
             }
             finally
@@ -188,7 +194,7 @@ namespace DS4WindowsTests
         {
             var store = new OutputSlotStore(new PathService());
             IVirtualPadService virtualPad = new FakeVirtualPadService(null);   // Phase13-Step7 7-d: 旧 Func<OutputSlotManager>／Func<IVirtualPadService>
-            var types = new DS4Windows.Services.OutputDeviceTypeState();
+            var types = new DS4Windows.Output.Services.OutputDeviceTypeState();
 
             Assert.Throws<ArgumentNullException>(() => new OutputSlotStore(null));
             Assert.Throws<ArgumentNullException>(() => new OutputSlotManager(null, 4));
@@ -275,7 +281,7 @@ namespace DS4WindowsTests
             // ControlService が無い（ホストが無い）場合は、何もできないため false を返し、変更の通知も出さない
             // Phase13-Step7 7-d: 操作先（スロット管理）が無い仮想パッド窓口。旧: virtualPadProvider が null を返す
             var service = new OutputSlotService(new FakeVirtualPadService(null),
-                new OutputSlotStore(new PathService()), new DS4Windows.Services.OutputDeviceTypeState());
+                new OutputSlotStore(new PathService()), new DS4Windows.Output.Services.OutputDeviceTypeState());
             int fired = 0;
             service.OutputSlotChanged += (s, e) => fired++;
 

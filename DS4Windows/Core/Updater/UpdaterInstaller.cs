@@ -2,9 +2,9 @@ using System;
 using System.ComponentModel;
 using System.Diagnostics;
 using System.IO;
-using DS4Windows;
+using DS4Windows.Core.Logging;
 
-namespace DS4WinWPF
+namespace DS4Windows.Core.Updater
 {
     // Installer helper invoked by UI flow. Attempts non-elevated move first;
     // on access denied it will relaunch the current EXE elevated with

@@ -1,11 +1,13 @@
 using System;
 using System.Collections.Generic;
-using DS4Windows;
-using DS4Windows.DI;
-using DS4Windows.Services;
-using DS4WinWPF.DS4Forms.ViewModels.SpecialActions;
+using DS4Windows.Core.Abstractions;
+using DS4Windows.Core.Settings;
+using DS4Windows.Input;
+using DS4Windows.Output.Devices;
+using DS4Windows.Processing;
+using DS4Windows.UI.ViewModels.SpecialActions;
 
-namespace DS4WinWPF.DS4Forms.ViewModels
+namespace DS4Windows.UI.ViewModels
 {
     /// <summary>
     /// Phase10-Step2 W4（Phase10-Step2-Plan.md §3.3）: Controls のモードの編集の対象。ボタン 1 つの割り当て（<see cref="DS4ControlSettings"/>）の
@@ -202,7 +204,7 @@ namespace DS4WinWPF.DS4Forms.ViewModels
                     break;
 
                 // Phase10-Step6 I6b/W7: Controls で実行時に束縛を作る SA 専用の種別（ControlsSpecialTypeTable）。種別が増えても、ここは変えない
-                case SpecialAction.ActionTypeId typeId when DS4Windows.Actions.ControlsSpecialTypeTable.IsSupported(typeId):
+                case SpecialAction.ActionTypeId typeId when DS4Windows.Processing.Actions.ControlsSpecialTypeTable.IsSupported(typeId):
                     WriteSpecial(typeId, editors);
                     break;
 

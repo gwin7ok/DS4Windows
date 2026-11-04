@@ -26,16 +26,15 @@ using System.Threading.Tasks;
 using System.Windows.Data;
 using System.Xml;
 using System.Xml.Serialization;
-using DS4Windows;
-using DS4WinWPF.DS4Control.DTOXml;
+using DS4Windows.Core.Persistence.Dto;
 
-namespace DS4WinWPF
+namespace DS4Windows.Core.Profiles
 {
     public class AutoProfileHolder
     {
         private object _colLockobj = new object();
         // Phase6-Step10-4-2b: Global.appdatapath の直接参照を廃止し、IPathService を必須の依存として受け取る
-        private readonly DS4Windows.DI.IPathService pathService;
+        private readonly DS4Windows.Core.Abstractions.IPathService pathService;
         private ObservableCollection<AutoProfileEntity> autoProfileColl;
         public ObservableCollection<AutoProfileEntity> AutoProfileColl { get => autoProfileColl; }
         //public Dictionary<string, AutoProfileEntity> AutoProfileDict { get => autoProfileDict; }
@@ -44,14 +43,14 @@ namespace DS4WinWPF
 
         // Phase7-Step10b W4: 旧 ControlService.USING_MAX_CONTROLLERS（静的シム）の置換。保存時（AutoProfilesDTO.MapFrom）に、
         // 4〜8 番目のコントローラーのプロファイルを書くかの判定に使う。
-        private readonly DS4Windows.DI.IEnvironmentService environmentService;
+        private readonly DS4Windows.Core.Abstractions.IEnvironmentService environmentService;
         public bool UsingMaxControllers => environmentService.UsingMaxControllers;
 
         // Phase10-Step4d W4: 各ルールのプロファイルの ID と名前を結ぶ。省略可（登録簿がなければ、従来どおり名前だけ）。Load が使うため、先に設定する
-        private readonly DS4Windows.DI.IProfileIdentityService profileIdentity;
+        private readonly DS4Windows.Core.Abstractions.IProfileIdentityService profileIdentity;
 
-        public AutoProfileHolder(DS4Windows.DI.IPathService pathService, DS4Windows.DI.IEnvironmentService environmentService,
-            DS4Windows.DI.IProfileIdentityService profileIdentity = null)
+        public AutoProfileHolder(DS4Windows.Core.Abstractions.IPathService pathService, DS4Windows.Core.Abstractions.IEnvironmentService environmentService,
+            DS4Windows.Core.Abstractions.IProfileIdentityService profileIdentity = null)
         {
             this.profileIdentity = profileIdentity;
             this.pathService = pathService ?? throw new System.ArgumentNullException(nameof(pathService));

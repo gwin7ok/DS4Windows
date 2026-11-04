@@ -2,10 +2,12 @@ using System;
 using System.Collections.Generic;
 using System.Reflection;
 using Xunit;
-using DS4Windows;
-using DS4Windows.DI;
-using DS4Windows.DS4Control;
-using DS4Windows.Services;
+using DS4Windows.Core.Abstractions;
+using DS4Windows.Core.Settings;
+using DS4Windows.Input;
+using DS4Windows.Output.Kbm;
+using DS4Windows.Processing;
+using DS4Windows.Processing.Abstractions;
 
 namespace DS4WindowsTests
 {
@@ -21,7 +23,7 @@ namespace DS4WindowsTests
     {
         private const int Slot = 0;
 
-        private static readonly Type WheelType = typeof(Mapping).Assembly.GetType("DS4Windows.MouseWheel");
+        private static readonly Type WheelType = typeof(Mapping).Assembly.GetType("DS4Windows.Processing.MouseWheel");
 
         private static object CreateWheel(int deviceNum, IProfileSettingsService settings, IVirtualKBM kbm)
         {
@@ -64,7 +66,7 @@ namespace DS4WindowsTests
 
         private static ProfileSettingsService CreateSettings(int scrollSensitivity, int tickUp, int tickDown)
         {
-            var store = new DS4Windows.BackingStore(new DS4Windows.EnvironmentService());
+            var store = new DS4Windows.Core.Settings.BackingStore(new DS4Windows.Core.Platform.EnvironmentService());
             store.scrollSensitivity[Slot] = scrollSensitivity;
             var settings = TestRepositoryFactory.CreateProfileSettingsService(store);
             var mapping = new SendInputMapping { WHEEL_TICK_UP = tickUp, WHEEL_TICK_DOWN = tickDown };

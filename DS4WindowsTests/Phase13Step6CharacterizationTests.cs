@@ -1,10 +1,13 @@
 using System;
 using System.Reflection;
 using System.Runtime.CompilerServices;
-using DS4Windows;
-using DS4Windows.DI;
-using DS4Windows.InputDevices;
 using Xunit;
+using DS4Windows.Core.Abstractions;
+using DS4Windows.Core.Settings;
+using DS4Windows.Input;
+using DS4Windows.Input.Devices;
+using DS4Windows.Processing;
+using DS4Windows.Processing.Abstractions;
 
 namespace DS4WindowsTests
 {
@@ -22,7 +25,7 @@ namespace DS4WindowsTests
 
         public Phase13Step6CharacterizationTests()
         {
-            DS4WinWPF.AppHost.CreateHost();
+            DS4Windows.Composition.AppHost.CreateHost();
             TestHost.GetService<ControlService>();
         }
 
@@ -65,7 +68,7 @@ namespace DS4WindowsTests
         {
             var battery = TestHost.GetService<IDeviceBatteryText>();
             using (new SlotScope(Slot, null))
-                Assert.Equal(DS4WinWPF.Properties.Resources.NA, battery.GetBatteryText(Slot));
+                Assert.Equal(DS4Windows.Properties.Resources.NA, battery.GetBatteryText(Slot));
         }
 
         [Fact]
@@ -83,7 +86,7 @@ namespace DS4WindowsTests
             using (new SlotScope(Slot, DeviceWithBattery(55, true)))
                 Assert.Equal("55%+", battery.GetBatteryText(Slot));
             using (new SlotScope(Slot, DeviceWithBattery(100, true)))
-                Assert.Equal(DS4WinWPF.Properties.Resources.Full, battery.GetBatteryText(Slot));
+                Assert.Equal(DS4Windows.Properties.Resources.Full, battery.GetBatteryText(Slot));
         }
 
         [Fact]

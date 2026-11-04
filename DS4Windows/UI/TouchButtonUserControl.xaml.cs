@@ -30,9 +30,9 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
-using DS4WinWPF.DS4Forms.ViewModels;
+using DS4Windows.UI.ViewModels;
 
-namespace DS4WinWPF.DS4Forms
+namespace DS4Windows.UI
 {
     /// <summary>
     /// Interaction logic for TouchButtonUserControl.xaml
@@ -41,7 +41,7 @@ namespace DS4WinWPF.DS4Forms
     {
         private TouchButtonUserControlViewModel touchButtonVM;
 
-        public TouchButtonUserControl(int deviceIndex, DS4Windows.DI.IProfileSettingsService profileSettingsService)
+        public TouchButtonUserControl(int deviceIndex, DS4Windows.Core.Abstractions.IProfileSettingsService profileSettingsService)
         {
             InitializeComponent();
 

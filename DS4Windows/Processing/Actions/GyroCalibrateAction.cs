@@ -1,9 +1,9 @@
 using System;
 using System.Collections.Generic;
-using DS4Windows.DI;
-using DS4Windows.Services;
+using DS4Windows.Core.Abstractions;
+using DS4Windows.Core.Logging;
 
-namespace DS4Windows.Actions
+namespace DS4Windows.Processing.Actions
 {
     /// <summary>
     /// Phase8-Step7 7.6a: GyroCalibrate（ジャイロの較正のやり直し）の出力。立ち上がりのとき 1 回だけ実行する（保持中・離したときは何もしない）。

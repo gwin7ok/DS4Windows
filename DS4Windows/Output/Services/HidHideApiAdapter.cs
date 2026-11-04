@@ -1,8 +1,7 @@
 using System.Collections.Generic;
-using DS4Windows.DI;
-using DS4WinWPF.DS4Control;
+using DS4Windows.Processing.Abstractions;
 
-namespace DS4Windows.Services
+namespace DS4Windows.Output.Services
 {
     /// <summary>Phase9 9-E E-2: <see cref="IHidHideApi"/> の実装。<c>HidHideAPIDevice</c>（ドライバーの制御デバイス）を、そのまま包む。</summary>
     public sealed class HidHideApiAdapter : IHidHideApi

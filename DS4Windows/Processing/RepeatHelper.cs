@@ -1,9 +1,9 @@
-﻿using DS4Windows.Services;
-using System;
+﻿using System;
 using System.Threading;
 using System.Threading.Tasks;
+using DS4Windows.Processing.Abstractions;
 
-namespace DS4Windows.DS4Control
+namespace DS4Windows.Processing
 {
     // RepeatHelper: creates an instance that immediately starts issuing KeyPress
     // events at a fixed interval. Call Stop() to stop repeating and send a single
@@ -44,7 +44,7 @@ namespace DS4Windows.DS4Control
             // repeating without disposing the instance so it can be reused.
             timer = new Timer(TimerCallback, null, Timeout.Infinite, Timeout.Infinite);
             isRunning = false;
-            try { DS4Windows.AppLogger.LogTrace($"RepeatHelper created: id={this.GetHashCode()} device={device} kvpKey={kvpKey} nativeKey={nativeKey} interval={IntervalMs} sendFirstImmediate={SendFirstImmediate} controllerId={(controllerId>=0?controllerId:-1)}"); } catch { }
+            try { DS4Windows.Core.Logging.AppLogger.LogTrace($"RepeatHelper created: id={this.GetHashCode()} device={device} kvpKey={kvpKey} nativeKey={nativeKey} interval={IntervalMs} sendFirstImmediate={SendFirstImmediate} controllerId={(controllerId>=0?controllerId:-1)}"); } catch { }
             if (sendFirstImmediate)
             {
                 Start();
@@ -53,7 +53,7 @@ namespace DS4Windows.DS4Control
 
         // Convenience ctor that reads the default repeat interval from KeyboardSettings
         public RepeatHelper(int device, ushort kvpKey, uint nativeKey, bool useScanCode, IVirtualKBM handler, bool sendFirstImmediate = true)
-            : this(device, kvpKey, nativeKey, useScanCode, handler, DS4Windows.KeyboardSettings.RepeatIntervalMs, sendFirstImmediate)
+            : this(device, kvpKey, nativeKey, useScanCode, handler, DS4Windows.Core.Platform.KeyboardSettings.RepeatIntervalMs, sendFirstImmediate)
         {
         }
 
@@ -75,7 +75,7 @@ namespace DS4Windows.DS4Control
 
             try
             {
-                try { DS4Windows.AppLogger.LogTrace($"RepeatHelper.Start: id={this.GetHashCode()} device={device} kvpKey={kvpKey} controllerId={(controllerId>=0?controllerId:-1)}"); } catch { }
+                try { DS4Windows.Core.Logging.AppLogger.LogTrace($"RepeatHelper.Start: id={this.GetHashCode()} device={device} kvpKey={kvpKey} controllerId={(controllerId>=0?controllerId:-1)}"); } catch { }
                 if (SendFirstImmediate)
                 {
                     try { SyntheticDispatcher.SendPress(device, kvpKey, nativeKey, useScanCode, handler); } catch { }
@@ -96,7 +96,7 @@ namespace DS4Windows.DS4Control
 
             try
             {
-                try { DS4Windows.AppLogger.LogTrace($"RepeatHelper.Stop: id={this.GetHashCode()} device={device} kvpKey={kvpKey} controllerId={(controllerId>=0?controllerId:-1)}"); } catch { }
+                try { DS4Windows.Core.Logging.AppLogger.LogTrace($"RepeatHelper.Stop: id={this.GetHashCode()} device={device} kvpKey={kvpKey} controllerId={(controllerId>=0?controllerId:-1)}"); } catch { }
                 timer.Change(Timeout.Infinite, Timeout.Infinite);
                 isRunning = false;
             }
@@ -108,7 +108,7 @@ namespace DS4Windows.DS4Control
             if (Interlocked.Exchange(ref disposed, 1) == 1) return;
             try
             {
-                try { DS4Windows.AppLogger.LogTrace($"RepeatHelper.Dispose: id={this.GetHashCode()} device={device} kvpKey={kvpKey} controllerId={(controllerId>=0?controllerId:-1)}"); } catch { }
+                try { DS4Windows.Core.Logging.AppLogger.LogTrace($"RepeatHelper.Dispose: id={this.GetHashCode()} device={device} kvpKey={kvpKey} controllerId={(controllerId>=0?controllerId:-1)}"); } catch { }
                 try { timer.Change(Timeout.Infinite, Timeout.Infinite); } catch { }
                 try { timer.Dispose(); } catch { }
             }

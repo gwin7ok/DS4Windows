@@ -1,7 +1,9 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using DS4Windows.Core.Settings;
+using DS4Windows.Input;
 
-namespace DS4Windows
+namespace DS4Windows.Processing
 {
     /// <summary>
     /// Phase7-Step7 W3（Q2＝A）: マクロの実行時状態の保持クラス（旧: <c>Mapping</c> の静的フィールド

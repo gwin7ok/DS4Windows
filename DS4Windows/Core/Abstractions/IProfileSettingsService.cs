@@ -1,12 +1,17 @@
 using System;
 using System.Collections.Generic;
 using System.Globalization;
-using DS4Windows.DS4Control;
-using DS4Windows.InputDevices;
-using static DS4Windows.Mouse;
-using DS4Windows.DI;
+using static DS4Windows.Processing.Mouse;
+using DS4Windows.Core.Settings;
+using DS4Windows.Input;
+using DS4Windows.Input.Devices;
+using DS4Windows.Output;
+using DS4Windows.Output.Devices;
+using DS4Windows.Output.Kbm;
+using DS4Windows.Processing;
+using DS4Windows.Processing.Abstractions;
 
-namespace DS4Windows.DI
+namespace DS4Windows.Core.Abstractions
 {
 
     public interface IProfileSettingsService

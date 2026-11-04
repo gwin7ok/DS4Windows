@@ -1,7 +1,11 @@
 using System;
-using DS4Windows.DI;
+using DS4Windows.Core.Abstractions;
+using DS4Windows.Core.Logging;
+using DS4Windows.Core.Settings;
+using DS4Windows.Input;
+using DS4Windows.Processing.Abstractions;
 
-namespace DS4Windows.Services
+namespace DS4Windows.Processing.Services
 {
     /// <summary>
     /// Phase9 9-E E-5（Phase9-E5-Plan.md）: <see cref="ITouchpadToggleService"/> の実装（DI の Singleton）。
@@ -34,15 +38,15 @@ namespace DS4Windows.Services
                 if (_profileSettings.TouchpadActiveArray[deviceID] && _touchreleased[deviceID])
                 {
                     _profileSettings.TouchpadActiveArray[deviceID] = false;
-                    AppLogger.Log(AppLogLevel.Info, DS4WinWPF.Properties.Resources.TouchpadMovementOff, LogOptions.UserFacing);
-                    AppLogger.LogToTray(DS4WinWPF.Properties.Resources.TouchpadMovementOff);
+                    AppLogger.Log(AppLogLevel.Info, DS4Windows.Properties.Resources.TouchpadMovementOff, LogOptions.UserFacing);
+                    AppLogger.LogToTray(DS4Windows.Properties.Resources.TouchpadMovementOff);
                     _touchreleased[deviceID] = false;
                 }
                 else if (_touchreleased[deviceID])
                 {
                     _profileSettings.TouchpadActiveArray[deviceID] = true;
-                    AppLogger.Log(AppLogLevel.Info, DS4WinWPF.Properties.Resources.TouchpadMovementOn, LogOptions.UserFacing);
-                    AppLogger.LogToTray(DS4WinWPF.Properties.Resources.TouchpadMovementOn);
+                    AppLogger.Log(AppLogLevel.Info, DS4Windows.Properties.Resources.TouchpadMovementOn, LogOptions.UserFacing);
+                    AppLogger.LogToTray(DS4Windows.Properties.Resources.TouchpadMovementOn);
                     _touchreleased[deviceID] = false;
                 }
             }

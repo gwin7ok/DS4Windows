@@ -1,9 +1,10 @@
 using System;
 using System.Collections.Generic;
-using DS4Windows.DI;
-using DS4Windows.Services;
+using DS4Windows.Core.Abstractions;
+using DS4Windows.Core.Logging;
+using DS4Windows.Core.Settings;
 
-namespace DS4Windows.Actions
+namespace DS4Windows.Processing.Actions
 {
     /// <summary>
     /// Phase8-Step7 7.3-W2（Q3＝A）: 統一ディスパッチ（エンジン）から使うときは、旧 <c>MapCustomAction</c> の Macro の分岐が出していたログ

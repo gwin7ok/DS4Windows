@@ -1,6 +1,7 @@
 using System;
+using DS4Windows.Input;
 
-namespace DS4Windows.DI
+namespace DS4Windows.Processing.Abstractions
 {
     /// <summary>
     /// Phase9 9-E E-6f2（Phase9-E6-Plan.md §9.2）: サービスの開始・停止・ホットプラグと、その状態・イベント。

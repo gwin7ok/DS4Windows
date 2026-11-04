@@ -1,6 +1,7 @@
 using System;
+using DS4Windows.Input;
 
-namespace DS4Windows.DI
+namespace DS4Windows.Processing.Abstractions
 {
     /// <summary>
     /// Phase9 9-E E-5（Phase9-E5-Plan.md）: 入力レポートごとのエラーのログと、遅延の監視（遅れたらライトバーを赤く点滅させる）。

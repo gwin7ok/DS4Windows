@@ -18,10 +18,10 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 using System;
 using System.Diagnostics;
-using DS4Windows;
-using DS4Windows.DI;
+using DS4Windows.Core.Abstractions;
+using DS4Windows.Core.Logging;
 
-namespace DS4WinWPF.DS4Forms.ViewModels
+namespace DS4Windows.UI.ViewModels
 {
     public class MainWindowsViewModel
     {

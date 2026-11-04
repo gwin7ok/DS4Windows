@@ -3,7 +3,7 @@ using System.IO;
 using System.Linq;
 using Xunit;
 using Xunit.Abstractions;
-using DS4WinWPF;
+using DS4Windows.Core.Updater;
 
 namespace DS4WindowsTests
 {

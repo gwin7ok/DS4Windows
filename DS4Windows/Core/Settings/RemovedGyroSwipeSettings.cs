@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.Xml;
 
-namespace DS4Windows
+namespace DS4Windows.Core.Settings
 {
     /// <summary>
     /// Phase8-Step8 8-0（Phase8-Step8-Plan.md §5.1。Q2＝C、Q9＝A）: 廃止された「ジャイロスワイプ」機能の設定を、<b>解釈せずに、そのまま保持する</b>入れ物（プロファイルごと）。

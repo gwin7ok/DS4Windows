@@ -1,7 +1,7 @@
 using System;
 using System.Text.RegularExpressions;
 
-namespace DS4WinWPF
+namespace DS4Windows.Composition.Startup
 {
     /// <summary>
     /// Phase9 9-F F-1a: 実行フォルダの <c>build_timestamp.txt</c> の内容から、起動時のログの文言を作る。

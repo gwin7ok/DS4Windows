@@ -1,7 +1,7 @@
 using System.Collections.Generic;
-using DS4Windows.Actions;
+using DS4Windows.Processing.Actions;
 
-namespace DS4Windows.DI
+namespace DS4Windows.Processing.Abstractions
 {
     /// <summary>
     /// Phase8-Step7 7.8a（Phase8-Step7-8a-Plan.md W3。Phase8-Step2b-ControlsTab-Design.md §3.4）: Controls タブの割り当て（<c>ControlSettingsGroup</c>）から、

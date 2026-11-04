@@ -2,14 +2,19 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
-using DS4Windows;
-using DS4Windows.Actions;
-using DS4Windows.DI;
-using DS4Windows.Services;
-using DS4WinWPF;
 using Microsoft.Extensions.DependencyInjection;
 using Xunit;
 using Xunit.Abstractions;
+using DS4Windows.Composition;
+using DS4Windows.Core.Abstractions;
+using DS4Windows.Core.Persistence;
+using DS4Windows.Core.Settings;
+using DS4Windows.Output.Services;
+using DS4Windows.Processing;
+using DS4Windows.Processing.Abstractions;
+using DS4Windows.Processing.Actions;
+using DS4Windows.Processing.Services;
+using DS4Windows.UI.Services;
 
 namespace DS4WindowsTests
 {

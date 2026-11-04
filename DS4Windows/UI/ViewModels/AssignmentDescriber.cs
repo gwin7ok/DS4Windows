@@ -2,9 +2,11 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Windows.Input;
-using DS4Windows;
+using DS4Windows.Core.Settings;
+using DS4Windows.Output.Devices;
+using DS4Windows.Processing;
 
-namespace DS4WinWPF.DS4Forms.ViewModels
+namespace DS4Windows.UI.ViewModels
 {
     /// <summary>
     /// Phase9 UI 変更（Phase9-ControlsList-Display-Proposal.md。ユーザー承認 2026-10-22）: 割り当ての説明文を作る、唯一の場所。

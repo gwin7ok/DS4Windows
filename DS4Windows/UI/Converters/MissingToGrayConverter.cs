@@ -3,7 +3,7 @@ using System.Globalization;
 using System.Windows.Data;
 using System.Windows.Media;
 
-namespace DS4WinWPF.DS4Forms.Converters
+namespace DS4Windows.UI.Converters
 {
     // TODO(technical debt): 4.0.1 で、Special Actions の一覧（ProfileEditor.xaml）は DataTrigger に置き換えた。
     // この Converter は、ProfileEditor.xaml の StaticResource の登録（MissingToGrayConverter）にだけ残っている（黒を固定で返すため、ダークテーマでは使えない）。

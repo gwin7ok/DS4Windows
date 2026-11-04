@@ -26,10 +26,12 @@ using System.Diagnostics;
 
 using System.Linq;
 using System.Drawing;
+using DS4Windows.Core.Logging;
+using DS4Windows.Core.Settings;
+using DS4Windows.Input.Hid;
 
-using DS4WinWPF.DS4Control;
 
-namespace DS4Windows
+namespace DS4Windows.Input
 {
 
     public class DS4Device
@@ -248,7 +250,7 @@ namespace DS4Windows
         /// </summary>
         public void WriteOutputOffOnce()
         {
-            if (deviceType != InputDevices.InputDeviceType.DS4 || (featureSet & VidPidFeatureSet.NoOutputData) != 0 || !postInitDone || isDisconnecting)
+            if (deviceType != DS4Windows.Input.Devices.InputDeviceType.DS4 || (featureSet & VidPidFeatureSet.NoOutputData) != 0 || !postInitDone || isDisconnecting)
                 return;
 
             try
@@ -412,8 +414,8 @@ namespace DS4Windows
 
         // Phase7-Step10d W3（Q4＝A）: デバウンス時間と DS3 の pitch／roll 疑似計算の設定値。DS4Devices が、デバイスの生成直後（入力の開始前）に設定する。
         // 未設定のとき（テスト）は、デバウンス 0ms・疑似計算なしとして扱う。
-        private DS4Windows.DI.IDeviceLayerSettings layerSettings;
-        public DS4Windows.DI.IDeviceLayerSettings LayerSettings
+        private DS4Windows.Processing.Abstractions.IDeviceLayerSettings layerSettings;
+        public DS4Windows.Processing.Abstractions.IDeviceLayerSettings LayerSettings
         {
             get => layerSettings;
             set { layerSettings = value; sixAxis.LayerSettings = value; }
@@ -463,8 +465,8 @@ namespace DS4Windows
             HidD_SetOutputReport,
         }
 
-        protected InputDevices.InputDeviceType deviceType;
-        public InputDevices.InputDeviceType DeviceType { get => deviceType; }
+        protected DS4Windows.Input.Devices.InputDeviceType deviceType;
+        public DS4Windows.Input.Devices.InputDeviceType DeviceType { get => deviceType; }
 
         protected GyroMouseSens gyroMouseSensSettings;
         public virtual GyroMouseSens GyroMouseSensSettings { get => gyroMouseSensSettings; }
@@ -554,7 +556,7 @@ namespace DS4Windows
             Mac = hDevice.ReadSerial(SerialReportID);
 
             //HidDevice hidDevice = hDevice;
-            deviceType = InputDevices.InputDeviceType.DS4;
+            deviceType = DS4Windows.Input.Devices.InputDeviceType.DS4;
             gyroMouseSensSettings = new GyroMouseSens();
             optionsStore = nativeOptionsStore = new DS4ControllerOptions(deviceType);
             SetupOptionsEvents();
@@ -750,7 +752,7 @@ namespace DS4Windows
         /// </summary>
         public void PrimeBatteryReading()
         {
-            if (deviceType != InputDevices.InputDeviceType.DS4 || !postInitDone || ds4Input != null || isDisconnecting)
+            if (deviceType != DS4Windows.Input.Devices.InputDeviceType.DS4 || !postInitDone || ds4Input != null || isDisconnecting)
                 return;
 
             if ((featureSet & VidPidFeatureSet.NoBatteryReading) != 0)
@@ -2048,8 +2050,8 @@ namespace DS4Windows
             }
         }
 
-        public virtual void PrepareTriggerEffect(InputDevices.TriggerId trigger,
-            InputDevices.TriggerEffects effect, InputDevices.TriggerEffectSettings effectSettings)
+        public virtual void PrepareTriggerEffect(DS4Windows.Input.Devices.TriggerId trigger,
+            DS4Windows.Input.Devices.TriggerEffects effect, DS4Windows.Input.Devices.TriggerEffectSettings effectSettings)
         {
         }
 

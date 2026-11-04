@@ -3,11 +3,11 @@ using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Text.RegularExpressions;
-using DS4Windows;
-using DS4Windows.DI;
-using DS4Windows.Services;
 using Xunit;
 using Xunit.Abstractions;
+using DS4Windows.Core.Abstractions;
+using DS4Windows.Core.Persistence;
+using DS4Windows.Core.Settings;
 
 namespace DS4WindowsTests
 {
@@ -53,7 +53,7 @@ namespace DS4WindowsTests
         [Fact]
         public void TheContainer_ProvidesSingletonSerializers_ToTheServices()
         {
-            DS4WinWPF.AppHost.CreateHost();
+            DS4Windows.Composition.AppHost.CreateHost();
             Assert.Same(TestHost.GetService<SpecialActionsXmlSerializer>(), TestHost.GetService<SpecialActionsXmlSerializer>());
             Assert.NotNull(TestHost.GetService<LinkedProfilesXmlSerializer>());
             Assert.NotNull(TestHost.GetService<ControllerConfigsXmlSerializer>());

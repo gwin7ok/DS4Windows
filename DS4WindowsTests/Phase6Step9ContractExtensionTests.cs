@@ -1,9 +1,12 @@
 using System;
 using System.IO;
 using Xunit;
-using DS4Windows;
-using DS4Windows.DI;
-using DS4Windows.DS4Control;
+using DS4Windows.Core.Abstractions;
+using DS4Windows.Core.Platform;
+using DS4Windows.Core.Settings;
+using DS4Windows.Input;
+using DS4Windows.Output.Kbm;
+using DS4Windows.Processing.Abstractions;
 
 namespace DS4WindowsTests
 {
@@ -144,7 +147,7 @@ namespace DS4WindowsTests
         {
             var service = new EnvironmentService();
 
-            Assert.Equal(DS4Windows.AdminCheck.AdminNeeded(), service.AdminNeeded());
+            Assert.Equal(DS4Windows.Core.Utilities.AdminCheck.AdminNeeded(), service.AdminNeeded());
         }
 
         // ---- IPathService ----

@@ -1,7 +1,7 @@
 using System;
 using System.IO;
-using DS4Windows;
 using Xunit;
+using DS4Windows.Processing.Services;
 
 namespace DS4WindowsTests
 {

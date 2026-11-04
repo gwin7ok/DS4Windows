@@ -1,9 +1,12 @@
 using System;
 using System.IO;
 using System.Threading.Tasks;
-using DS4Windows.DI;
+using DS4Windows.Core.Abstractions;
+using DS4Windows.Input;
+using DS4Windows.Output;
+using DS4Windows.Processing.Abstractions;
 
-namespace DS4Windows.Services
+namespace DS4Windows.Processing.Services
 {
     /// <summary>
     /// <see cref="IIpcCommandProcessor"/> の実装（Phase13-Step11 11-b）。旧 <c>MainWindow.Ipc.cs</c> の 9 個の <c>Ipc*</c> を、そのまま移したもの
@@ -133,7 +136,7 @@ namespace DS4Windows.Services
                         DS4Device devitem = host.GetControllerDevice(tdevice);
                         if (devitem != null)
                         {
-                            string prolog = string.Format(DS4WinWPF.Properties.Resources.UsingProfile,
+                            string prolog = string.Format(DS4Windows.Properties.Resources.UsingProfile,
                                 (tdevice + 1).ToString(), strData[2], $"{devitem.Battery}");
                             _profileApplication.ApplyProfile(tdevice, strData[2], false, true,
                                 ProfileChangeSource.Manual, prolog);
@@ -165,7 +168,7 @@ namespace DS4Windows.Services
                 DS4Device device = host.GetControllerDevice(tdevice);
                 if (device != null)
                 {
-                    string prolog = string.Format(DS4WinWPF.Properties.Resources.UsingProfile, (tdevice + 1).ToString(), strData[2], $"{device.Battery}");
+                    string prolog = string.Format(DS4Windows.Properties.Resources.UsingProfile, (tdevice + 1).ToString(), strData[2], $"{device.Battery}");
                     host.LogDebug(prolog);
                 }
             }

@@ -1,4 +1,4 @@
-namespace DS4Windows.Actions
+namespace DS4Windows.Processing.Actions
 {
     /// <summary>
     /// Phase8-Step7 7.8e（Phase8-Step7-8e-Plan.md §3.2。Q6＝B）: 束縛の一覧が差し替わる（プロファイルの適用）か、デバイスが切断されるときに、

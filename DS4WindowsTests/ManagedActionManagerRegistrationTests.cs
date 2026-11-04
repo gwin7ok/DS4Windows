@@ -1,8 +1,8 @@
 using System;
 using Xunit;
-using DS4Windows;
-using DS4Windows.Actions;
-using DS4Windows.DI;
+using DS4Windows.Core.Settings;
+using DS4Windows.Processing;
+using DS4Windows.Processing.Actions;
 
 namespace DS4WindowsTests
 {
@@ -20,7 +20,7 @@ namespace DS4WindowsTests
         [Fact]
         public void ServiceRegistration_RegistersManagedActionManagerAndControllerRegistry_AsSingletons()
         {
-            DS4WinWPF.AppHost.CreateHost();
+            DS4Windows.Composition.AppHost.CreateHost();
 
             var manager1 = TestHost.GetService<IManagedActionManager>();
             var manager2 = TestHost.GetService<IManagedActionManager>();

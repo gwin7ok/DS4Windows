@@ -24,10 +24,9 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Xml;
 using System.Xml.Serialization;
-using DS4Windows;
-using DS4WinWPF.DS4Control.DTOXml;
+using DS4Windows.Core.Persistence.Dto;
 
-namespace DS4WinWPF.DS4Control
+namespace DS4Windows.Output
 {
     public static class OutputSlotPersist
     {
@@ -75,7 +74,7 @@ namespace DS4WinWPF.DS4Control
 
                 // Write header explicitly
                 xmlWriter.WriteStartDocument();
-                xmlWriter.WriteComment(string.Format(" Made with DS4Windows version {0} ", DS4Windows.PathService.ExecutableVersionState));
+                xmlWriter.WriteComment(string.Format(" Made with DS4Windows version {0} ", DS4Windows.Core.Platform.PathService.ExecutableVersionState));
                 xmlWriter.WriteWhitespace("\r\n");
                 xmlWriter.WriteWhitespace("\r\n");
 

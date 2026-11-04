@@ -1,6 +1,7 @@
 using System;
+using DS4Windows.Processing;
 
-namespace DS4Windows
+namespace DS4Windows.Core.Settings
 {
     /// <summary>
     /// Phase8-Step7 7.8d（Phase8-Step7-8d-Plan.md §4.2）: 編集画面を開いたときの、廃止された「シフト」の設定の警告の判定（画面から独立。状態を持たない）。

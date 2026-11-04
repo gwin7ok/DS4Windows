@@ -1,9 +1,8 @@
 using System;
 using Xunit;
-using DS4Windows;
-using DS4Windows.DI;
-using DS4WinWPF;
-using DS4WinWPF.DS4Forms.ViewModels;
+using DS4Windows.Core.Profiles;
+using DS4Windows.Processing.Abstractions;
+using DS4Windows.UI.ViewModels;
 
 namespace DS4WindowsTests
 {
@@ -36,10 +35,10 @@ namespace DS4WindowsTests
         [Fact]
         public void AppHost_ShouldResolve_AutoProfilesViewModel_ViaFactory()
         {
-            DS4WinWPF.AppHost.CreateHost();
+            DS4Windows.Composition.AppHost.CreateHost();
             var factory = TestHost.GetService<IViewModelFactory>();
             var holder = TestRepositoryFactory.CreateAutoProfileHolder();
-            var profileList = new ProfileList(TestHost.GetService<DS4Windows.DI.IPathService>());
+            var profileList = new ProfileList(TestHost.GetService<DS4Windows.Core.Abstractions.IPathService>());
 
             var vm = factory.CreateAutoProfilesViewModel(holder, profileList);
 

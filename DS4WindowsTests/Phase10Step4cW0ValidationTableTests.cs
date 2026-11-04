@@ -2,12 +2,12 @@ using System;
 using System.Collections;
 using System.Linq;
 using System.Windows.Media;
-using DS4Windows;
-using DS4Windows.DI;
-using DS4Windows.DS4Control;
-using DS4Windows.Services;
-using DS4WinWPF.DS4Forms.ViewModels.SpecialActions;
 using Xunit;
+using DS4Windows.Core.Abstractions;
+using DS4Windows.Core.Platform;
+using DS4Windows.Output.Kbm;
+using DS4Windows.Processing;
+using DS4Windows.UI.ViewModels.SpecialActions;
 
 namespace DS4WindowsTests
 {
@@ -23,7 +23,7 @@ namespace DS4WindowsTests
     {
         private static readonly SpecialAction Action = new SpecialAction("n", "Cross", "Key", "65");
 
-        private static string[] Errors(DS4WinWPF.DS4Forms.ViewModels.Util.NotifyDataErrorBase vm, string property)
+        private static string[] Errors(DS4Windows.UI.ViewModels.Util.NotifyDataErrorBase vm, string property)
             => (vm.GetErrors(property) as IEnumerable)?.Cast<string>().ToArray() ?? new string[0];
 
         private static PressKeyViewModel PressKey()
@@ -123,7 +123,7 @@ namespace DS4WindowsTests
         [Fact]
         public void LoadProfile_WithoutAProfile_IsNotValid()
         {
-            var vm = new LoadProfileViewModel(new DS4WinWPF.ProfileList(new PathService()), new RecordingSpecialActionRepository());
+            var vm = new LoadProfileViewModel(new DS4Windows.Core.Profiles.ProfileList(new PathService()), new RecordingSpecialActionRepository());
 
             Assert.False(vm.IsValid(Action));
             Assert.Equal(new[] { "No profile given" }, Errors(vm, "ProfileIndex"));

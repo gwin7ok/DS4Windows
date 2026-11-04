@@ -27,13 +27,8 @@ using System.Windows.Interop;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using Microsoft.Win32;
-using DS4Windows;
-using DS4Windows.DI;
-using DS4Windows.StickModifiers;
-using DS4WinWPF.DS4Forms.ViewModels.Util;
-using DS4Windows.InputDevices;
 
-namespace DS4WinWPF.DS4Forms.ViewModels
+namespace DS4Windows.UI.ViewModels
 {
 
     public class TriggerEffectChoice
@@ -42,10 +37,10 @@ namespace DS4WinWPF.DS4Forms.ViewModels
         public string DisplayName { get => displayName; set => displayName = value; }
 
 
-        private DS4Windows.InputDevices.TriggerEffects mode;
-        public DS4Windows.InputDevices.TriggerEffects Mode { get => mode; set => mode = value; }
+        private DS4Windows.Input.Devices.TriggerEffects mode;
+        public DS4Windows.Input.Devices.TriggerEffects Mode { get => mode; set => mode = value; }
 
-        public TriggerEffectChoice(string name, DS4Windows.InputDevices.TriggerEffects mode)
+        public TriggerEffectChoice(string name, DS4Windows.Input.Devices.TriggerEffects mode)
         {
             this.displayName = name;
             this.mode = mode;

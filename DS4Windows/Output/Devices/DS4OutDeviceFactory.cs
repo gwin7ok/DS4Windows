@@ -23,7 +23,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace DS4Windows
+namespace DS4Windows.Output.Devices
 {
     static class DS4OutDeviceFactory
     {

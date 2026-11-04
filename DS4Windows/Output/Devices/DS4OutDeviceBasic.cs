@@ -23,8 +23,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using DS4Windows.Input;
 
-namespace DS4Windows
+namespace DS4Windows.Output.Devices
 {
     class DS4OutDeviceBasic : DS4OutDevice
     {

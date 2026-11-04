@@ -3,11 +3,11 @@ using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Text.RegularExpressions;
-using DS4Windows;
-using DS4Windows.DI;
-using DS4Windows.Services;
 using Xunit;
 using Xunit.Abstractions;
+using DS4Windows.Core.Abstractions;
+using DS4Windows.Core.Persistence;
+using DS4Windows.Core.Settings;
 
 namespace DS4WindowsTests
 {
@@ -54,9 +54,9 @@ namespace DS4WindowsTests
         [Fact]
         public void TheLoader_UsesThePresets_AndRequiresThem()
         {
-            Assert.Throws<ArgumentNullException>(() => new ProfilePresetLoader(new DS4Windows.BackingStore(new DS4Windows.EnvironmentService()), TestGlobals.ProfileSettingsServiceInstance, null));
+            Assert.Throws<ArgumentNullException>(() => new ProfilePresetLoader(new DS4Windows.Core.Settings.BackingStore(new DS4Windows.Core.Platform.EnvironmentService()), TestGlobals.ProfileSettingsServiceInstance, null));
 
-            DS4WinWPF.AppHost.CreateHost();
+            DS4Windows.Composition.AppHost.CreateHost();
             Assert.Same(TestHost.GetService<ProfilePresets>(), TestHost.GetService<ProfilePresets>());
             Assert.NotNull(TestHost.GetService<IProfilePresetLoader>());
         }

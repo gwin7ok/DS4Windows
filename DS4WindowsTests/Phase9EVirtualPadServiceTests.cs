@@ -1,9 +1,12 @@
 using System;
 using System.Collections.Generic;
-using DS4Windows;
-using DS4Windows.DI;
-using DS4Windows.Services;
 using Xunit;
+using DS4Windows.Core.Abstractions;
+using DS4Windows.Core.Settings;
+using DS4Windows.Input;
+using DS4Windows.Output.Services;
+using DS4Windows.Processing;
+using DS4Windows.Processing.Abstractions;
 
 namespace DS4WindowsTests
 {
@@ -122,7 +125,7 @@ namespace DS4WindowsTests
         {
             IEnvironmentService env = TestHost.GetService<IEnvironmentService>();
             IProfileSettingsService settings = TestHost.GetService<IProfileSettingsService>();
-            IOutputDeviceTypeState slots = new DS4Windows.Services.OutputDeviceTypeState();   // Phase13-Step7 7-c: 旧 Func<IOutputSlotService>
+            IOutputDeviceTypeState slots = new DS4Windows.Output.Services.OutputDeviceTypeState();   // Phase13-Step7 7-c: 旧 Func<IOutputSlotService>
             IDeviceStateAccessor accessor = new NoControllers();
             IEventThreadDispatcher host = new RecordingHost();
             IDeviceRumbleService rumble = new NoRumble();

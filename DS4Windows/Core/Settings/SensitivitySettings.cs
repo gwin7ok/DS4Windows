@@ -1,7 +1,6 @@
 using System;
-using DS4Windows;
 
-namespace DS4Windows
+namespace DS4Windows.Core.Settings
 {
     // TODO(Phase9-G): 製品コードの参照 0 件（テストのみ）。Phase5-Step14 の後続（2026-09-16、4bf31c21）で、ProfileSubSettingBase 系の同期モデルとして作られたが、ViewModel 側は未接続。
     // ProfileSettingsViewModel のサブ ViewModel 化（Phase9-G）で、使うか廃止するかを判断する。

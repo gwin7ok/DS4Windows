@@ -21,9 +21,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using DS4Windows;
 
-namespace DS4WinWPF.DS4Control
+namespace DS4Windows.Core.Settings
 {
     public class DeltaAccelSettings : ProfileSubSettingBase
     {

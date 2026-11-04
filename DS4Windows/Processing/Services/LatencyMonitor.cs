@@ -1,7 +1,11 @@
 using System;
-using DS4Windows.DI;
+using DS4Windows.Core.Abstractions;
+using DS4Windows.Core.Logging;
+using DS4Windows.Core.Settings;
+using DS4Windows.Input;
+using DS4Windows.Processing.Abstractions;
 
-namespace DS4Windows.Services
+namespace DS4Windows.Processing.Services
 {
     /// <summary>
     /// Phase9 9-E E-5（Phase9-E5-Plan.md）: <see cref="ILatencyMonitor"/> の実装（DI の Singleton）。
@@ -69,7 +73,7 @@ namespace DS4Windows.Services
             if (on)
             {
                 _lag[ind] = true;
-                AppLogger.Log(AppLogLevel.Warn, string.Format(DS4WinWPF.Properties.Resources.LatencyOverTen, (ind + 1), device.Latency), LogOptions.UserFacing);
+                AppLogger.Log(AppLogLevel.Warn, string.Format(DS4Windows.Properties.Resources.LatencyOverTen, (ind + 1), device.Latency), LogOptions.UserFacing);
                 if (_appSettings.FlashWhenLate)
                 {
                     DS4Color color = new DS4Color { red = 50, green = 0, blue = 0 };
@@ -81,7 +85,7 @@ namespace DS4Windows.Services
             else
             {
                 _lag[ind] = false;
-                AppLogger.Log(AppLogLevel.Info, DS4WinWPF.Properties.Resources.LatencyNotOverTen.Replace("*number*", (ind + 1).ToString()), LogOptions.UserFacing);
+                AppLogger.Log(AppLogLevel.Info, DS4Windows.Properties.Resources.LatencyNotOverTen.Replace("*number*", (ind + 1).ToString()), LogOptions.UserFacing);
                 DS4LightBar.forcelight[ind] = false;
                 DS4LightBar.forcedFlash[ind] = 0;
                 device.LightBarColor = _profileSettings.GetMainColor(ind);

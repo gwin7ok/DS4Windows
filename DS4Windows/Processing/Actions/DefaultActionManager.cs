@@ -1,12 +1,10 @@
-using DS4Windows.Services;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
-using DS4Windows;
-using DS4Windows.Actions;
-using DS4Windows.DS4Control;
+using DS4Windows.Core.Logging;
+using DS4Windows.Core.Settings;
 
-namespace DS4Windows.Actions
+namespace DS4Windows.Processing.Actions
 {
     // Instance-based ActionManager implementation for DI registration.
     public class DefaultActionManager : IManagedActionManager, IInstanceIdentifiable
@@ -20,11 +18,11 @@ namespace DS4Windows.Actions
         // 作らないよう、遅延（Func）で受ける（Phase5-Plan §5.4）。
         // Phase13-Step8: 遅延取得のまま残す（意図的）。Mapping の依存グラフの内側（Mapping → … → ActionManager）にあり、直接受けると循環する。
         // ホスト構築時（AppHost.PreallocateActionEntries）に Mapping を作らない理由も兼ねる。再検討条件: Mapping が IManagedActionManager に依存しなくなったとき。許可リスト: Phase13FuncRatchetGuardTests
-        private readonly Func<DS4Windows.DI.IMapping> _mappingProvider;
+        private readonly Func<DS4Windows.Processing.Abstractions.IMapping> _mappingProvider;
 
         public event Action<SpecialAction, int, bool, bool> ToggledOnChanged;
 
-        public DefaultActionManager(Func<DS4Windows.DI.IMapping> mappingProvider)
+        public DefaultActionManager(Func<DS4Windows.Processing.Abstractions.IMapping> mappingProvider)
         {
             _mappingProvider = mappingProvider ?? throw new ArgumentNullException(nameof(mappingProvider));
 

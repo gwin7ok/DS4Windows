@@ -1,10 +1,7 @@
-using DS4Windows.Services;
 using System;
 using System.Collections.Generic;
-using DS4Windows.Actions;
-using DS4Windows.DS4Control;
 
-namespace DS4Windows.Actions
+namespace DS4Windows.Processing.Actions
 {
     public interface IManagedActionManager
     {

@@ -1,7 +1,7 @@
-using DS4Windows.DI;
-using DS4Windows.Services;
 using Microsoft.Extensions.DependencyInjection;
 using Xunit;
+using DS4Windows.Core.Abstractions;
+using DS4Windows.Core.Logging;
 
 namespace DS4WindowsTests
 {
@@ -56,13 +56,13 @@ namespace DS4WindowsTests
         [Fact]
         public void LoggerHolder_ImplementsContract()
         {
-            Assert.True(typeof(ILogSettingsApplier).IsAssignableFrom(typeof(DS4WinWPF.LoggerHolder)));
+            Assert.True(typeof(ILogSettingsApplier).IsAssignableFrom(typeof(DS4Windows.Core.Logging.LoggerHolder)));
         }
 
         [Fact]
         public void Container_ResolvesSameProxyInstanceForContractAndConcreteType()
         {
-            DS4WinWPF.AppHost.CreateHost();
+            DS4Windows.Composition.AppHost.CreateHost();
 
             var contract = TestHost.GetService<ILogSettingsApplier>();
             var concrete = TestHost.GetService<LogSettingsApplierProxy>();

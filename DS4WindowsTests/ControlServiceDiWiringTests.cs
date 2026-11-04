@@ -1,9 +1,11 @@
 using System;
 using System.Linq;
 using Xunit;
-using DS4Windows;
-using DS4Windows.DI;
-using DS4Windows.Services;
+using DS4Windows.Core.Abstractions;
+using DS4Windows.Core.Platform;
+using DS4Windows.Core.Settings;
+using DS4Windows.Processing;
+using DS4Windows.Processing.Abstractions;
 
 namespace DS4WindowsTests
 {
@@ -18,7 +20,7 @@ namespace DS4WindowsTests
         [Fact]
         public void AppHost_ResolvesControlService_WithoutCircularDependencyOrMissingRegistration()
         {
-            DS4WinWPF.AppHost.CreateHost();
+            DS4Windows.Composition.AppHost.CreateHost();
 
             ControlService controlService = null;
             var ex = Record.Exception(() => controlService = TestHost.GetService<ControlService>());
@@ -30,7 +32,7 @@ namespace DS4WindowsTests
         [Fact]
         public void AppHost_ResolvedControlService_ReceivesDeviceOptionsThroughAppSettingsService()
         {
-            DS4WinWPF.AppHost.CreateHost();
+            DS4Windows.Composition.AppHost.CreateHost();
 
             var controlService = TestHost.GetService<ControlService>();
 
@@ -41,7 +43,7 @@ namespace DS4WindowsTests
         [Fact]
         public void AppHost_ResolvesPr1Services_AsExpectedImplementations()
         {
-            DS4WinWPF.AppHost.CreateHost();
+            DS4Windows.Composition.AppHost.CreateHost();
 
             Assert.IsType<AppSettingsService>(TestHost.GetService<IAppSettingsService>());
             Assert.IsType<EnvironmentService>(TestHost.GetService<IEnvironmentService>());
@@ -62,11 +64,11 @@ namespace DS4WindowsTests
             // Phase13-Step10 10-d: ControlService は IEnvironmentService を受けなくなった（スロットの上限は RuntimeFeatureSwitch が読む）。
             // 引数が無いことを固定し、必須の検査は RuntimeFeatureSwitch のコンストラクターで行う
             Assert.DoesNotContain(typeof(ControlService).GetConstructors().Single().GetParameters(), p => p.Name == "environmentService");
-            var ex = Assert.Throws<ArgumentNullException>(() => new DS4Windows.Services.RuntimeFeatureSwitch(
-                TestHost.GetService<DS4Windows.DI.IOscService>(), TestHost.GetService<DS4Windows.DI.IUdpMotionService>(),
-                TestHost.GetService<DS4Windows.DI.IHidHideService>(), TestHost.GetService<DS4Windows.DI.ITouchpadToggleService>(),
-                TestHost.GetService<DS4Windows.DI.IDeviceSlotState>(), TestHost.GetService<DS4Windows.DI.IActiveInputProbe>(),
-                TestHost.GetService<DS4Windows.DI.IDeviceRumbleService>(), null));
+            var ex = Assert.Throws<ArgumentNullException>(() => new DS4Windows.Processing.Services.RuntimeFeatureSwitch(
+                TestHost.GetService<DS4Windows.Processing.Abstractions.IOscService>(), TestHost.GetService<DS4Windows.Processing.Abstractions.IUdpMotionService>(),
+                TestHost.GetService<DS4Windows.Processing.Abstractions.IHidHideService>(), TestHost.GetService<DS4Windows.Processing.Abstractions.ITouchpadToggleService>(),
+                TestHost.GetService<DS4Windows.Processing.Abstractions.IDeviceSlotState>(), TestHost.GetService<DS4Windows.Processing.Abstractions.IActiveInputProbe>(),
+                TestHost.GetService<DS4Windows.Processing.Abstractions.IDeviceRumbleService>(), null));
 
             Assert.Equal("environmentService", ex.ParamName);
         }

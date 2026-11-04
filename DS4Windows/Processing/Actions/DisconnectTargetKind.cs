@@ -1,4 +1,4 @@
-namespace DS4Windows.Actions
+namespace DS4Windows.Processing.Actions
 {
     /// <summary>
     /// Phase8-Step7 7.6b: DisconnectBT の実行時に、そのスロットのコントローラーをどう切断できるか（<see cref="IControllerDisconnectPort.GetTargetKind"/> の戻り値）。

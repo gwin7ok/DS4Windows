@@ -24,7 +24,7 @@ using System.Windows.Documents;
 using System.Windows.Input;
 using MarkdownEngine = MdXaml.Markdown;
 
-namespace DS4WinWPF.DS4Forms
+namespace DS4Windows.UI
 {
     /// <summary>
     /// Interaction logic for LogMessageDisplay.xaml

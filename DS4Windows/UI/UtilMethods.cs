@@ -24,7 +24,7 @@ using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Media;
 
-namespace DS4WinWPF.DS4Forms
+namespace DS4Windows.UI
 {
     public static class UtilMethods
     {

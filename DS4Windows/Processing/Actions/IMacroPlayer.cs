@@ -1,7 +1,6 @@
 using System.Threading;
-using DS4Windows;
 
-namespace DS4Windows.Actions
+namespace DS4Windows.Processing.Actions
 {
     /// <summary>
     /// マクロシーケンスの再生・停止・状態管理を抽象化するインターフェース

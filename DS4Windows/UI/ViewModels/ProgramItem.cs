@@ -16,9 +16,6 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
 
-using DS4Windows;
-using DS4Windows.DI;
-using DS4WinWPF.DS4Forms.ViewModels.Util;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -34,8 +31,9 @@ using System.Windows.Data;
 using System.Windows.Interop;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
+using DS4Windows.Core.Profiles;
 
-namespace DS4WinWPF.DS4Forms.ViewModels
+namespace DS4Windows.UI.ViewModels
 {
 
     public class ProgramItem

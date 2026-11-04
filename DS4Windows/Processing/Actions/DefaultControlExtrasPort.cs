@@ -1,8 +1,10 @@
 using System;
-using DS4Windows.DI;
-using DS4Windows.Services;
+using DS4Windows.Core.Abstractions;
+using DS4Windows.Core.Settings;
+using DS4Windows.Input;
+using DS4Windows.Processing.Abstractions;
 
-namespace DS4Windows.Actions
+namespace DS4Windows.Processing.Actions
 {
     /// <summary>
     /// Phase8-Step7 7.8e: <see cref="IControlExtrasPort"/> の本番の実装。旧 <c>Mapping.ProcessControlSettingAction</c> の Extras の枝と同じ操作を、この窓口の内側に閉じ込める。

@@ -33,9 +33,9 @@ using System.Windows.Shapes;
 using NonFormTimer = System.Timers.Timer;
 using Microsoft.Win32;
 using Xceed.Wpf.Toolkit;
-using DS4WinWPF.DS4Forms.ViewModels;
+using DS4Windows.UI.ViewModels;
 
-namespace DS4WinWPF.DS4Forms
+namespace DS4Windows.UI
 {
     /// <summary>
     /// Interaction logic for RecordBox.xaml
@@ -44,9 +44,9 @@ namespace DS4WinWPF.DS4Forms
     {
         private RecordBoxViewModel recordBoxVM;
         // Phase12-Step3 3e（R-3）: マウスの移動の記録（画面全体のマウス入力の監視と、記録のロジック）
-        private readonly DS4Windows.Services.IWindowSystem windowSystem;
-        private readonly DS4Windows.Services.IMouseInputHook mouseHook;
-        private DS4Windows.MacroPointerRecorder pointerRecorder;
+        private readonly DS4Windows.Core.Abstractions.IWindowSystem windowSystem;
+        private readonly DS4Windows.Core.Abstractions.IMouseInputHook mouseHook;
+        private DS4Windows.Processing.MacroPointerRecorder pointerRecorder;
         private bool limitStopRequested;
         public RecordBoxViewModel RecordBoxVM { get => recordBoxVM; }
 
@@ -60,18 +60,18 @@ namespace DS4WinWPF.DS4Forms
         private NonFormTimer ds4 = new NonFormTimer();
 
         // Phase6-Step10-2-4b: Program.rootHub／AppHost への後退を廃止し、必要なサービスを必須引数で受け取る。
-        private readonly DS4Windows.ControlService controlService;
-        private readonly DS4Windows.DI.IPathService pathService;
+        private readonly DS4Windows.Processing.ControlService controlService;
+        private readonly DS4Windows.Core.Abstractions.IPathService pathService;
 
         /// <param name="targetDevice">
         /// Phase6-Step7b: ライトバーのプレビューと記録中のタッチパッド Passthru で使う実機のスロット番号。-1 は実機なし。
         /// 渡し忘れをコンパイルで検出するため必須引数とする（Phase6-Step7b-Plan.md 決定2）
         /// </param>
-        public RecordBox(int deviceNum, DS4Windows.DS4ControlSettings controlSettings, int targetDevice,
+        public RecordBox(int deviceNum, DS4Windows.Core.Settings.DS4ControlSettings controlSettings, int targetDevice,
             bool showscan, bool repeatable, bool showPlaybackOptions,
-            DS4Windows.ControlService controlService, DS4Windows.DI.IPathService pathService,
-            DS4Windows.DI.IViewModelFactory viewModelFactory,
-            DS4Windows.Services.IWindowSystem windowSystem, DS4Windows.Services.IMouseInputHook mouseHook)
+            DS4Windows.Processing.ControlService controlService, DS4Windows.Core.Abstractions.IPathService pathService,
+            DS4Windows.Processing.Abstractions.IViewModelFactory viewModelFactory,
+            DS4Windows.Core.Abstractions.IWindowSystem windowSystem, DS4Windows.Core.Abstractions.IMouseInputHook mouseHook)
         {
             this.windowSystem = windowSystem ?? throw new ArgumentNullException(nameof(windowSystem));
             this.mouseHook = mouseHook ?? throw new ArgumentNullException(nameof(mouseHook));
@@ -302,15 +302,15 @@ namespace DS4WinWPF.DS4Forms
             if (light)
             {
                 changeLightBtn.Content = "Reset Lightbar Color";
-                DS4Windows.MacroStep step = new DS4Windows.MacroStep(1255255255, $"Lightbar Color: 255,255,255",
-                            DS4Windows.MacroStep.StepType.ActDown, DS4Windows.MacroStep.StepOutput.Lightbar);
+                DS4Windows.Processing.MacroStep step = new DS4Windows.Processing.MacroStep(1255255255, $"Lightbar Color: 255,255,255",
+                            DS4Windows.Processing.MacroStep.StepType.ActDown, DS4Windows.Processing.MacroStep.StepOutput.Lightbar);
                 recordBoxVM.AddMacroStep(step);
             }
             else
             {
                 changeLightBtn.Content = "Change Lightbar Color";
-                DS4Windows.MacroStep step = new DS4Windows.MacroStep(1000000000, $"Reset Lightbar",
-                            DS4Windows.MacroStep.StepType.ActUp, DS4Windows.MacroStep.StepOutput.Lightbar);
+                DS4Windows.Processing.MacroStep step = new DS4Windows.Processing.MacroStep(1000000000, $"Reset Lightbar",
+                            DS4Windows.Processing.MacroStep.StepType.ActUp, DS4Windows.Processing.MacroStep.StepOutput.Lightbar);
                 recordBoxVM.AddMacroStep(step);
             }
         }
@@ -326,15 +326,15 @@ namespace DS4WinWPF.DS4Forms
             if (rumble)
             {
                 addRumbleBtn.Content = "Stop Rumble";
-                DS4Windows.MacroStep step = new DS4Windows.MacroStep(1255255, $"Rumble 255,255",
-                            DS4Windows.MacroStep.StepType.ActDown, DS4Windows.MacroStep.StepOutput.Rumble);
+                DS4Windows.Processing.MacroStep step = new DS4Windows.Processing.MacroStep(1255255, $"Rumble 255,255",
+                            DS4Windows.Processing.MacroStep.StepType.ActDown, DS4Windows.Processing.MacroStep.StepOutput.Rumble);
                 recordBoxVM.AddMacroStep(step);
             }
             else
             {
                 addRumbleBtn.Content = "Add Rumble";
-                DS4Windows.MacroStep step = new DS4Windows.MacroStep(1000000, $"Stop Rumble",
-                            DS4Windows.MacroStep.StepType.ActUp, DS4Windows.MacroStep.StepOutput.Rumble);
+                DS4Windows.Processing.MacroStep step = new DS4Windows.Processing.MacroStep(1000000, $"Stop Rumble",
+                            DS4Windows.Processing.MacroStep.StepType.ActUp, DS4Windows.Processing.MacroStep.StepOutput.Rumble);
                 recordBoxVM.AddMacroStep(step);
             }
         }
@@ -393,8 +393,8 @@ namespace DS4WinWPF.DS4Forms
                 recordBoxVM.KeysdownMap.TryGetValue(value, out bool isdown);
                 if (!isdown)
                 {
-                    DS4Windows.MacroStep step = new DS4Windows.MacroStep(value, tempKey.ToString(),
-                            DS4Windows.MacroStep.StepType.ActDown, DS4Windows.MacroStep.StepOutput.Key);
+                    DS4Windows.Processing.MacroStep step = new DS4Windows.Processing.MacroStep(value, tempKey.ToString(),
+                            DS4Windows.Processing.MacroStep.StepType.ActDown, DS4Windows.Processing.MacroStep.StepOutput.Key);
                     recordBoxVM.AddMacroStep(step);
                     recordBoxVM.KeysdownMap.Add(value, true);
                 }
@@ -422,19 +422,19 @@ namespace DS4WinWPF.DS4Forms
                 recordBoxVM.KeysdownMap.TryGetValue(value, out bool isdown);
                 if (isdown)
                 {
-                    DS4Windows.MacroStep step = new DS4Windows.MacroStep(value, tempKey.ToString(),
-                            DS4Windows.MacroStep.StepType.ActUp, DS4Windows.MacroStep.StepOutput.Key);
+                    DS4Windows.Processing.MacroStep step = new DS4Windows.Processing.MacroStep(value, tempKey.ToString(),
+                            DS4Windows.Processing.MacroStep.StepType.ActUp, DS4Windows.Processing.MacroStep.StepOutput.Key);
                     recordBoxVM.AddMacroStep(step);
                     recordBoxVM.KeysdownMap.Remove(value);
                 }
                 else if (RecordBoxViewModel.KeydownOverrides.Contains(value))
                 {
-                    DS4Windows.MacroStep step = new DS4Windows.MacroStep(value, tempKey.ToString(),
-                            DS4Windows.MacroStep.StepType.ActDown, DS4Windows.MacroStep.StepOutput.Key);
+                    DS4Windows.Processing.MacroStep step = new DS4Windows.Processing.MacroStep(value, tempKey.ToString(),
+                            DS4Windows.Processing.MacroStep.StepType.ActDown, DS4Windows.Processing.MacroStep.StepOutput.Key);
                     recordBoxVM.AddMacroStep(step, ignoreDelay: true);
 
-                    step = new DS4Windows.MacroStep(value, tempKey.ToString(),
-                            DS4Windows.MacroStep.StepType.ActUp, DS4Windows.MacroStep.StepOutput.Key);
+                    step = new DS4Windows.Processing.MacroStep(value, tempKey.ToString(),
+                            DS4Windows.Processing.MacroStep.StepType.ActUp, DS4Windows.Processing.MacroStep.StepOutput.Key);
                     recordBoxVM.AddMacroStep(step, ignoreDelay: true);
                 }
 
@@ -449,14 +449,14 @@ namespace DS4WinWPF.DS4Forms
             if (recordBoxVM.MacroStepIndex >= 0)
             {
                 MacroStepItem item = recordBoxVM.MacroSteps[recordBoxVM.MacroStepIndex];
-                if (item.Step.ActType == DS4Windows.MacroStep.StepType.Wait)
+                if (item.Step.ActType == DS4Windows.Processing.MacroStep.StepType.Wait)
                 {
                     ListBoxItem lbitem = macroListBox.ItemContainerGenerator.ContainerFromIndex(recordBoxVM.MacroStepIndex)
                         as ListBoxItem;
                     lbitem.ContentTemplate = this.FindResource("EditTemplate") as DataTemplate;
                     recordBoxVM.EditMacroIndex = recordBoxVM.MacroStepIndex;
                 }
-                else if (item.Step.OutputType == DS4Windows.MacroStep.StepOutput.PointerMove)
+                else if (item.Step.OutputType == DS4Windows.Processing.MacroStep.StepOutput.PointerMove)
                 {
                     // Phase12-Step3 3d（R-3）: マウス移動の座標の編集
                     ListBoxItem lbitem = macroListBox.ItemContainerGenerator.ContainerFromIndex(recordBoxVM.MacroStepIndex)
@@ -464,16 +464,16 @@ namespace DS4WinWPF.DS4Forms
                     lbitem.ContentTemplate = this.FindResource("EditPointerMoveTemplate") as DataTemplate;
                     recordBoxVM.EditMacroIndex = recordBoxVM.MacroStepIndex;
                 }
-                else if (item.Step.OutputType == DS4Windows.MacroStep.StepOutput.Rumble &&
-                    item.Step.ActType == DS4Windows.MacroStep.StepType.ActDown)
+                else if (item.Step.OutputType == DS4Windows.Processing.MacroStep.StepOutput.Rumble &&
+                    item.Step.ActType == DS4Windows.Processing.MacroStep.StepType.ActDown)
                 {
                     ListBoxItem lbitem = macroListBox.ItemContainerGenerator.ContainerFromIndex(recordBoxVM.MacroStepIndex)
                         as ListBoxItem;
                     lbitem.ContentTemplate = this.FindResource("EditRumbleTemplate") as DataTemplate;
                     recordBoxVM.EditMacroIndex = recordBoxVM.MacroStepIndex;
                 }
-                else if (item.Step.OutputType == DS4Windows.MacroStep.StepOutput.Lightbar &&
-                    item.Step.ActType == DS4Windows.MacroStep.StepType.ActDown)
+                else if (item.Step.OutputType == DS4Windows.Processing.MacroStep.StepOutput.Lightbar &&
+                    item.Step.ActType == DS4Windows.Processing.MacroStep.StepType.ActDown)
                 {
                     colorDialog = new ColorPickerWindow();
                     colorDialog.Owner = Application.Current.MainWindow;
@@ -515,7 +515,7 @@ namespace DS4WinWPF.DS4Forms
             DataTemplate oldDataTemplate = contentPresenter.ContentTemplate;
 
             MacroStepItem item = recordBoxVM.MacroSteps[recordBoxVM.EditMacroIndex];
-            if (item.Step.ActType == DS4Windows.MacroStep.StepType.Wait)
+            if (item.Step.ActType == DS4Windows.Processing.MacroStep.StepType.Wait)
             {
                 IntegerUpDown integerUpDown = oldDataTemplate.FindName("waitIUD", contentPresenter) as IntegerUpDown;
                 if (integerUpDown != null)
@@ -524,7 +524,7 @@ namespace DS4WinWPF.DS4Forms
                     bindExp.UpdateSource();
                 }
             }
-            else if (item.Step.OutputType == DS4Windows.MacroStep.StepOutput.PointerMove)
+            else if (item.Step.OutputType == DS4Windows.Processing.MacroStep.StepOutput.PointerMove)
             {
                 // モードを先に確定する（座標は、そのモードの範囲へ丸められる）
                 ComboBox modeBox = oldDataTemplate.FindName("pointerModeCb", contentPresenter) as ComboBox;
@@ -534,7 +534,7 @@ namespace DS4WinWPF.DS4Forms
                 pointerX?.GetBindingExpression(IntegerUpDown.ValueProperty)?.UpdateSource();
                 pointerY?.GetBindingExpression(IntegerUpDown.ValueProperty)?.UpdateSource();
             }
-            else if (item.Step.OutputType == DS4Windows.MacroStep.StepOutput.Rumble)
+            else if (item.Step.OutputType == DS4Windows.Processing.MacroStep.StepOutput.Rumble)
             {
                 IntegerUpDown heavyRumble = oldDataTemplate.FindName("heavyRumbleUD", contentPresenter) as IntegerUpDown;
                 IntegerUpDown lightRumble = oldDataTemplate.FindName("lightRumbleUD", contentPresenter) as IntegerUpDown;
@@ -587,15 +587,15 @@ namespace DS4WinWPF.DS4Forms
             recordBoxVM.KeysdownMap.TryGetValue(value, out bool isdown);
             if (!isdown)
             {
-                DS4Windows.MacroStep step = new DS4Windows.MacroStep(value, DS4Windows.MacroParser.InputName(value, recordBoxVM.MacroOutType),
-                            DS4Windows.MacroStep.StepType.ActDown, DS4Windows.MacroStep.StepOutput.Button);
+                DS4Windows.Processing.MacroStep step = new DS4Windows.Processing.MacroStep(value, DS4Windows.Processing.MacroParser.InputName(value, recordBoxVM.MacroOutType),
+                            DS4Windows.Processing.MacroStep.StepType.ActDown, DS4Windows.Processing.MacroStep.StepOutput.Button);
                 recordBoxVM.AddMacroStep(step);
                 recordBoxVM.KeysdownMap.Add(value, true);
             }
             else
             {
-                DS4Windows.MacroStep step = new DS4Windows.MacroStep(value, DS4Windows.MacroParser.InputName(value, recordBoxVM.MacroOutType),
-                            DS4Windows.MacroStep.StepType.ActUp, DS4Windows.MacroStep.StepOutput.Button);
+                DS4Windows.Processing.MacroStep step = new DS4Windows.Processing.MacroStep(value, DS4Windows.Processing.MacroParser.InputName(value, recordBoxVM.MacroOutType),
+                            DS4Windows.Processing.MacroStep.StepType.ActUp, DS4Windows.Processing.MacroStep.StepOutput.Button);
                 recordBoxVM.AddMacroStep(step);
                 recordBoxVM.KeysdownMap.Remove(value);
             }
@@ -612,15 +612,15 @@ namespace DS4WinWPF.DS4Forms
             recordBoxVM.KeysdownMap.TryGetValue(value, out bool isdown);
             if (!isdown)
             {
-                DS4Windows.MacroStep step = new DS4Windows.MacroStep(value, DS4Windows.MacroParser.InputName(value, recordBoxVM.MacroOutType),
-                            DS4Windows.MacroStep.StepType.ActDown, DS4Windows.MacroStep.StepOutput.Button);
+                DS4Windows.Processing.MacroStep step = new DS4Windows.Processing.MacroStep(value, DS4Windows.Processing.MacroParser.InputName(value, recordBoxVM.MacroOutType),
+                            DS4Windows.Processing.MacroStep.StepType.ActDown, DS4Windows.Processing.MacroStep.StepOutput.Button);
                 recordBoxVM.AddMacroStep(step);
                 recordBoxVM.KeysdownMap.Add(value, true);
             }
             else
             {
-                DS4Windows.MacroStep step = new DS4Windows.MacroStep(value, DS4Windows.MacroParser.InputName(value, recordBoxVM.MacroOutType),
-                            DS4Windows.MacroStep.StepType.ActUp, DS4Windows.MacroStep.StepOutput.Button);
+                DS4Windows.Processing.MacroStep step = new DS4Windows.Processing.MacroStep(value, DS4Windows.Processing.MacroParser.InputName(value, recordBoxVM.MacroOutType),
+                            DS4Windows.Processing.MacroStep.StepType.ActUp, DS4Windows.Processing.MacroStep.StepOutput.Button);
                 recordBoxVM.AddMacroStep(step);
                 recordBoxVM.KeysdownMap.Remove(value);
             }
@@ -646,8 +646,8 @@ namespace DS4WinWPF.DS4Forms
                     default: value = 0; break;
                 }
 
-                DS4Windows.MacroStep step = new DS4Windows.MacroStep(value, DS4Windows.MacroParser.InputName(value, recordBoxVM.MacroOutType),
-                            DS4Windows.MacroStep.StepType.ActDown, DS4Windows.MacroStep.StepOutput.Button);
+                DS4Windows.Processing.MacroStep step = new DS4Windows.Processing.MacroStep(value, DS4Windows.Processing.MacroParser.InputName(value, recordBoxVM.MacroOutType),
+                            DS4Windows.Processing.MacroStep.StepType.ActDown, DS4Windows.Processing.MacroStep.StepOutput.Button);
                 recordBoxVM.AddMacroStep(step);
                 recordBoxVM.KeysdownMap.Add(value, true);
                 e.Handled = true;
@@ -669,8 +669,8 @@ namespace DS4WinWPF.DS4Forms
                     default: value = 0; break;
                 }
 
-                DS4Windows.MacroStep step = new DS4Windows.MacroStep(value, DS4Windows.MacroParser.InputName(value, recordBoxVM.MacroOutType),
-                            DS4Windows.MacroStep.StepType.ActUp, DS4Windows.MacroStep.StepOutput.Button);
+                DS4Windows.Processing.MacroStep step = new DS4Windows.Processing.MacroStep(value, DS4Windows.Processing.MacroParser.InputName(value, recordBoxVM.MacroOutType),
+                            DS4Windows.Processing.MacroStep.StepType.ActUp, DS4Windows.Processing.MacroStep.StepOutput.Button);
                 recordBoxVM.AddMacroStep(step);
                 recordBoxVM.KeysdownMap.Remove(value);
                 e.Handled = true;
@@ -683,7 +683,7 @@ namespace DS4WinWPF.DS4Forms
             if (!recordBoxVM.RecordMouseMovement) return;
 
             limitStopRequested = false;
-            pointerRecorder = new DS4Windows.MacroPointerRecorder((DS4Windows.MacroPointerMoveMode)recordBoxVM.PointerRecordModeIndex,
+            pointerRecorder = new DS4Windows.Processing.MacroPointerRecorder((DS4Windows.Processing.MacroPointerMoveMode)recordBoxVM.PointerRecordModeIndex,
                 windowSystem, Environment.ProcessId);
             mouseHook.PointerMoved += MouseHook_PointerMoved;
             mouseHook.ButtonChanged += MouseHook_ButtonChanged;
@@ -703,9 +703,9 @@ namespace DS4WinWPF.DS4Forms
 
         private void AddPointerMoveStep(int macroValue)
         {
-            var move = DS4Windows.MacroPointerMove.TryFromMacroValue(macroValue, out DS4Windows.MacroPointerMove decoded) ? decoded.DisplayName : "Move";
-            recordBoxVM.AddMacroStep(new DS4Windows.MacroStep(macroValue, move,
-                DS4Windows.MacroStep.StepType.ActDown, DS4Windows.MacroStep.StepOutput.PointerMove));
+            var move = DS4Windows.Processing.MacroPointerMove.TryFromMacroValue(macroValue, out DS4Windows.Processing.MacroPointerMove decoded) ? decoded.DisplayName : "Move";
+            recordBoxVM.AddMacroStep(new DS4Windows.Processing.MacroStep(macroValue, move,
+                DS4Windows.Processing.MacroStep.StepType.ActDown, DS4Windows.Processing.MacroStep.StepOutput.PointerMove));
         }
 
         private void MouseHook_PointerMoved(int x, int y)
@@ -729,8 +729,8 @@ namespace DS4WinWPF.DS4Forms
                 AddPointerMoveStep(moveValue);
             }
 
-            recordBoxVM.AddMacroStep(new DS4Windows.MacroStep(value, DS4Windows.MacroParser.InputName(value, recordBoxVM.MacroOutType),
-                isDown ? DS4Windows.MacroStep.StepType.ActDown : DS4Windows.MacroStep.StepType.ActUp, DS4Windows.MacroStep.StepOutput.Button));
+            recordBoxVM.AddMacroStep(new DS4Windows.Processing.MacroStep(value, DS4Windows.Processing.MacroParser.InputName(value, recordBoxVM.MacroOutType),
+                isDown ? DS4Windows.Processing.MacroStep.StepType.ActDown : DS4Windows.Processing.MacroStep.StepType.ActUp, DS4Windows.Processing.MacroStep.StepOutput.Button));
             if (isDown)
             {
                 recordBoxVM.KeysdownMap[value] = true;
@@ -754,7 +754,7 @@ namespace DS4WinWPF.DS4Forms
                 if (!recordBoxVM.Recording) return;
 
                 RecordBtn_Click(this, new RoutedEventArgs());
-                System.Windows.MessageBox.Show(string.Format(DS4WinWPF.Translations.Strings.RecordBox_MoveRecordLimitReached, DS4Windows.MacroPointerRecorder.MaxMoveSteps));
+                System.Windows.MessageBox.Show(string.Format(DS4Windows.Translations.Strings.RecordBox_MoveRecordLimitReached, DS4Windows.Processing.MacroPointerRecorder.MaxMoveSteps));
             }));
         }
 
@@ -768,7 +768,7 @@ namespace DS4WinWPF.DS4Forms
             }
 
             // 追加するステップの基準は、「Record mouse movement」の下の一覧の、そのときの選択に合わせる
-            int index = recordBoxVM.AddPointerMoveStep(recordBoxVM.MacroStepIndex, (DS4Windows.MacroPointerMoveMode)recordBoxVM.PointerRecordModeIndex);
+            int index = recordBoxVM.AddPointerMoveStep(recordBoxVM.MacroStepIndex, (DS4Windows.Processing.MacroPointerMoveMode)recordBoxVM.PointerRecordModeIndex);
             macroListBox.SelectedIndex = index;
             macroListBox.ScrollIntoView(recordBoxVM.MacroSteps[index]);
         }
@@ -779,8 +779,8 @@ namespace DS4WinWPF.DS4Forms
 
             // 行を選択していれば、いちばん上の選択行の前へ。選択がなければ、いちばん下へ足す
             int index = recordBoxVM.MacroStepIndex >= 0 ? recordBoxVM.MacroStepIndex : recordBoxVM.MacroSteps.Count;
-            DS4Windows.MacroStep step = new DS4Windows.MacroStep(400, "Wait 100ms",
-                        DS4Windows.MacroStep.StepType.Wait, DS4Windows.MacroStep.StepOutput.None);
+            DS4Windows.Processing.MacroStep step = new DS4Windows.Processing.MacroStep(400, "Wait 100ms",
+                        DS4Windows.Processing.MacroStep.StepType.Wait, DS4Windows.Processing.MacroStep.StepOutput.None);
             recordBoxVM.InsertMacroStep(index, step);
         }
 

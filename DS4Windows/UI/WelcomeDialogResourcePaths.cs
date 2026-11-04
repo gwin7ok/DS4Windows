@@ -24,7 +24,7 @@ using System.Windows;
 using HttpProgress;
 using NonFormTimer = System.Timers.Timer;
 
-namespace DS4WinWPF.DS4Forms
+namespace DS4Windows.UI
 {
 
     public class WelcomeDialogResourcePaths

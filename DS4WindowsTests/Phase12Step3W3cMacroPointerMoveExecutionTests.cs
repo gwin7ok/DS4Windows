@@ -1,8 +1,10 @@
-using DS4Windows;
-using DS4Windows.DI;
-using DS4Windows.DS4Control;
-using DS4Windows.Services;
 using Xunit;
+using DS4Windows.Core.Abstractions;
+using DS4Windows.Core.Settings;
+using DS4Windows.Input;
+using DS4Windows.Processing;
+using DS4Windows.Processing.Abstractions;
+using DS4Windows.Processing.Services;
 
 namespace DS4WindowsTests
 {
@@ -14,7 +16,7 @@ namespace DS4WindowsTests
     {
         private static MacroStepExecutor NewExecutor(RecordingWindowSystem windowSystem)
             => new MacroStepExecutor(TestHost.GetService<IVirtualKBM>(), TestHost.GetService<IProfileSettingsService>(),
-                new MacroRuntimeState(), new DS4Windows.Services.DeviceSlotState(), windowSystem);
+                new MacroRuntimeState(), new DS4Windows.Processing.Services.DeviceSlotState(), windowSystem);
 
         private static int Value(MacroPointerMoveMode mode, int x, int y) => new MacroPointerMove(mode, x, y).ToMacroValue();
 

@@ -1,9 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using DS4Windows.DI;
+using DS4Windows.Core.Settings;
+using DS4Windows.Input;
+using DS4Windows.Processing.Abstractions;
 
-namespace DS4Windows
+namespace DS4Windows.Processing.Services
 {
     public class DeviceStateService : IDeviceStateService
     {

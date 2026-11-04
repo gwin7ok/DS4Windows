@@ -1,4 +1,7 @@
-namespace DS4Windows.DI
+using DS4Windows.Core.Settings;
+using DS4Windows.Input;
+
+namespace DS4Windows.Processing.Abstractions
 {
     /// <summary>
     /// Phase9 9-B（Phase9-B-Plan.md）: ボタン・スティック・トリガー・ジャイロ方向のコントロールを「マウスの移動」に割り当てたときの、生の移動量（符号の処理の前）の計算。

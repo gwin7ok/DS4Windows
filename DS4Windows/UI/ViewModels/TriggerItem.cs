@@ -1,4 +1,4 @@
-namespace DS4WinWPF.DS4Forms.ViewModels
+namespace DS4Windows.UI.ViewModels
 {
     /// <summary>
     /// Phase10-Step2 W2（Phase10-Step2-Plan.md §3.2）: トリガーの一覧の 1 項目。<see cref="Name"/> は、Actions.xml の <c>Trigger</c> に書く名前

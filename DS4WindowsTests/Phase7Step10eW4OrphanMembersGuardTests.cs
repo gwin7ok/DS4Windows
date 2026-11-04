@@ -3,10 +3,12 @@ using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Text.RegularExpressions;
-using DS4Windows;
-using DS4Windows.DI;
 using Xunit;
 using Xunit.Abstractions;
+using DS4Windows.Core.Abstractions;
+using DS4Windows.Core.Persistence;
+using DS4Windows.Core.Utilities;
+using DS4Windows.Processing.Abstractions;
 
 namespace DS4WindowsTests
 {

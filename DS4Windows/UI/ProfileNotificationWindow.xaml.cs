@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Media.Animation;
 
-namespace DS4WinWPF.DS4Forms
+namespace DS4Windows.UI
 {
     public partial class ProfileNotificationWindow : Window
     {

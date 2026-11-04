@@ -1,9 +1,11 @@
 using System;
 using System.Collections.Generic;
-using DS4Windows.DI;
-using DS4Windows.InputDevices;
+using DS4Windows.Core.Abstractions;
+using DS4Windows.Core.Settings;
+using DS4Windows.Input;
+using DS4Windows.Input.Devices;
 
-namespace DS4Windows.Services
+namespace DS4Windows.Processing.Services
 {
     /// <summary>
     /// Phase9 9-E E-6c: DualSense の部品。設定の有効／無効、追加ボタン（Edge の FnL／FnR／BLP／BRP）、LED モード変更への反応、振動エミュレーションと触覚の強さの反映。
@@ -18,9 +20,9 @@ namespace DS4Windows.Services
         public override List<DS4Controls> GetKnownExtraButtons(DS4Device device)
         {
             List<DS4Controls> result = new List<DS4Controls>();
-            InputDevices.DualSenseDevice tempDev = device as InputDevices.DualSenseDevice;
+            DS4Windows.Input.Devices.DualSenseDevice tempDev = device as DS4Windows.Input.Devices.DualSenseDevice;
             if (tempDev != null &&
-                tempDev.SubType == InputDevices.DualSenseDevice.DeviceSubType.DSEdge)
+                tempDev.SubType == DS4Windows.Input.Devices.DualSenseDevice.DeviceSubType.DSEdge)
             {
                 // Added extra DualSense Edge buttons as extra in the mapper.
                 // Keeps from checking non-existent buttons on other device types.
@@ -32,7 +34,7 @@ namespace DS4Windows.Services
 
         public override void HookSettings(DS4Device device, Func<int> activeControllers)
         {
-            InputDevices.DualSenseDevice tempDSDev = device as InputDevices.DualSenseDevice;
+            DS4Windows.Input.Devices.DualSenseDevice tempDSDev = device as DS4Windows.Input.Devices.DualSenseDevice;
 
             DualSenseControllerOptions dSOpts = tempDSDev.NativeOptionsStore;
             dSOpts.LedModeChanged += (sender, e) => { tempDSDev.CheckControllerNumDeviceSettings(activeControllers()); };
@@ -41,19 +43,19 @@ namespace DS4Windows.Services
         public override void ApplyProfileOptions(DS4Device device, int ind, IProfileSettingsService settings)
         {
             // DualSense specific profile settings
-            if (device is InputDevices.DualSenseDevice dualsense)
+            if (device is DS4Windows.Input.Devices.DualSenseDevice dualsense)
             {
                 switch (settings.DualSenseRumbleEmulationMode[ind])
                 {
-                    case InputDevices.DualSenseDevice.RumbleEmulationMode.Disabled:
+                    case DS4Windows.Input.Devices.DualSenseDevice.RumbleEmulationMode.Disabled:
                         dualsense.UseRumble = false;
                         dualsense.UseAccurateRumble = false;
                         break;
-                    case InputDevices.DualSenseDevice.RumbleEmulationMode.Legacy:
+                    case DS4Windows.Input.Devices.DualSenseDevice.RumbleEmulationMode.Legacy:
                         dualsense.UseRumble = true;
                         dualsense.UseAccurateRumble = false;
                         break;
-                    case InputDevices.DualSenseDevice.RumbleEmulationMode.Accurate:
+                    case DS4Windows.Input.Devices.DualSenseDevice.RumbleEmulationMode.Accurate:
                     default:
                         dualsense.UseRumble = true;
                         dualsense.UseAccurateRumble = true;

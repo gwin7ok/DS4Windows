@@ -26,7 +26,7 @@ using System.ComponentModel;
 using System.Threading;
 using System.Runtime.InteropServices;
 
-namespace DS4Windows
+namespace DS4Windows.Input
 {
 
     public enum DsBattery : byte

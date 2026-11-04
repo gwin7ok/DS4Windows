@@ -1,6 +1,8 @@
 using System.Collections.Generic;
+using DS4Windows.Core.Settings;
+using DS4Windows.Processing.Actions;
 
-namespace DS4Windows.DI
+namespace DS4Windows.Processing.Abstractions
 {
     /// <summary>
     /// Phase9 9-C（Phase9-C-Plan.md）: マクロの再生の予約と進行（同期キュー、単発、押している間の繰り返し、後始末）。

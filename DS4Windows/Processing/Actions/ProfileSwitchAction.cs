@@ -1,9 +1,10 @@
 using System;
 using System.Collections.Generic;
-using DS4Windows.DI;
-using DS4Windows.Services;
+using DS4Windows.Core.Abstractions;
+using DS4Windows.Core.Logging;
+using DS4Windows.Processing.Abstractions;
 
-namespace DS4Windows.Actions
+namespace DS4Windows.Processing.Actions
 {
     /// <summary>
     /// Phase8-Step7 7.5a-W2: 統一ディスパッチ（エンジン）から使うとき（添字などつきのコンストラクター）は、旧 <c>MapCustomAction</c> の Profile の分岐が行っていた次の処理も、同じ条件・順序で行う（Phase8-Step7-5-Plan.md Q2〜Q4）。

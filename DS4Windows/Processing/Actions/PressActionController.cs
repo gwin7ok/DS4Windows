@@ -1,9 +1,8 @@
-using DS4Windows.Services;
 // PressActionController removed — replaced by per-device `KeyButtonActionController` implementations.
 // This file is retained as a harmless informational stub to ease transition.
 using System;
 
-namespace DS4Windows
+namespace DS4Windows.Processing.Actions
 {
     [Obsolete("PressActionController removed. Use per-device KeyButtonActionController instead.")]
     public static class PressActionController

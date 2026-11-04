@@ -26,10 +26,10 @@ using System.Threading.Tasks;
 using System.Windows.Data;
 using System.Xml;
 using System.Xml.Serialization;
-using DS4Windows;
-using DS4WinWPF.DS4Control.DTOXml;
+using DS4Windows.Core.Settings;
+using DS4Windows.Processing;
 
-namespace DS4WinWPF
+namespace DS4Windows.Core.Profiles
 {
 
     public class AutoProfileEntity
@@ -50,7 +50,7 @@ namespace DS4WinWPF
         public ProfileSlotNames ProfileNames { get => profileNames; set => profileNames = value; }
 
         /// <summary>Phase10-Step4d W5d: 登録簿を結ぶ（ID ↔ 名前を引く）。null なら、結びを外す。</summary>
-        public void AttachProfileIdentity(DS4Windows.DI.IProfileIdentityService identity) => profileNames.AttachIdentity(identity);
+        public void AttachProfileIdentity(DS4Windows.Core.Abstractions.IProfileIdentityService identity) => profileNames.AttachIdentity(identity);
 
         public AutoProfileEntity(string pathStr, string titleStr)
         {

@@ -1,6 +1,7 @@
-using DS4Windows.Services;
 
-namespace DS4Windows.DI
+using DS4Windows.Input;
+
+namespace DS4Windows.Processing.Abstractions
 {
     /// <summary>
     /// Phase13-Step5（Phase13-Step5-Plan.md）: スロットごとの状態（接続中のデバイス、入力の状態、タッチパッド、スロット管理）の持ち主。

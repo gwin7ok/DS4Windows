@@ -1,7 +1,7 @@
 using System.Collections.Generic;
-using DS4Windows;
+using DS4Windows.Processing;
 
-namespace DS4WinWPF.DS4Forms.ViewModels
+namespace DS4Windows.UI.ViewModels
 {
     /// <summary>
     /// Phase10-Step2 W1（Phase10-Step2-Plan.md §3.1）: 共通の編集画面の、編集の対象（名前、新規か編集か、保存済みの値、名前の検証）。

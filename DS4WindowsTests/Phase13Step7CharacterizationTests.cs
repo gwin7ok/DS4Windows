@@ -1,6 +1,7 @@
-using DS4Windows;
-using DS4Windows.DI;
 using Xunit;
+using DS4Windows.Core.Settings;
+using DS4Windows.Output;
+using DS4Windows.Processing.Abstractions;
 
 namespace DS4WindowsTests
 {
@@ -13,7 +14,7 @@ namespace DS4WindowsTests
     {
         public Phase13Step7CharacterizationTests()
         {
-            DS4WinWPF.AppHost.CreateHost();
+            DS4Windows.Composition.AppHost.CreateHost();
         }
 
         [Fact]

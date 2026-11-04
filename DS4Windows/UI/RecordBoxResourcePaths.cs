@@ -33,9 +33,8 @@ using System.Windows.Shapes;
 using NonFormTimer = System.Timers.Timer;
 using Microsoft.Win32;
 using Xceed.Wpf.Toolkit;
-using DS4WinWPF.DS4Forms.ViewModels;
 
-namespace DS4WinWPF.DS4Forms
+namespace DS4Windows.UI
 {
 
     public class RecordBoxResourcePaths

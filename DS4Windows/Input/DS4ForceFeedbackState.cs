@@ -27,9 +27,8 @@ using System.Diagnostics;
 using System.Linq;
 using System.Drawing;
 
-using DS4WinWPF.DS4Control;
 
-namespace DS4Windows
+namespace DS4Windows.Input
 {
 
     /**

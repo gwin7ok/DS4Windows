@@ -33,12 +33,17 @@ using System.Windows;
 using System.Windows.Interop;
 using System.Windows.Media;
 using WPFLocalizeExtension.Engine;
-using DS4Windows;
-using DS4Windows.DI;
-using DS4Windows.Services;
 using Microsoft.Extensions.DependencyInjection;
+using DS4Windows.Composition;
+using DS4Windows.Composition.Startup;
+using DS4Windows.Core.Abstractions;
+using DS4Windows.Core.Logging;
+using DS4Windows.Core.Settings;
+using DS4Windows.Core.Utilities;
+using DS4Windows.Processing.Abstractions;
+using DS4Windows.UI;
 
-namespace DS4WinWPF
+namespace DS4Windows
 {
     /// <summary>
     /// Interaction logic for App.xaml
@@ -88,34 +93,34 @@ namespace DS4WinWPF
         private IDeviceStateService _deviceStateService;
         private IOutputSlotService _outputSlotService;
         // Phase7-Step5 W4: 旧 AppHost.GetService／ServiceProviderHolder の直接呼び出しの置き換え先（InitializePostHostServices で解決）
-        private DS4Windows.Services.LogSettingsApplierProxy _logSettingsApplierProxy;
-        private DS4Windows.Actions.IControllerRegistry _controllerRegistry;
+        private DS4Windows.Core.Logging.LogSettingsApplierProxy _logSettingsApplierProxy;
+        private DS4Windows.Processing.Actions.IControllerRegistry _controllerRegistry;
 
         // Phase7-Step5 W2（Q1＝A）: 旧 Program.rootHub。ControlService は CreateControlService の別スレッドで解決して代入し、
         // 呼び出し元がスレッドの終了を待ってから読む（以降は LoggerHolder の生成、起動後の処理、未処理例外の処理、終了処理が使う）。
         // 別スレッド（未処理例外、セッション終了）からも読まれるため volatile にする。
-        private volatile DS4Windows.ControlService _controlService;
-        private volatile DS4Windows.DI.IServiceLifecycle _lifecycle;   // Phase13-Step9: 旧 ControlService.running の転送
-        private DS4Windows.DI.IRuntimeFeatureSwitch _runtimeFeatures;   // Phase13-Step10 10-c: 旧 ControlService.CheckHidHidePresence の転送
+        private volatile DS4Windows.Processing.ControlService _controlService;
+        private volatile DS4Windows.Processing.Abstractions.IServiceLifecycle _lifecycle;   // Phase13-Step9: 旧 ControlService.running の転送
+        private DS4Windows.Processing.Abstractions.IRuntimeFeatureSwitch _runtimeFeatures;   // Phase13-Step10 10-c: 旧 ControlService.CheckHidHidePresence の転送
 
         // Phase7-Step4 W4（D3＝S1）: コンテナの構築より前に作るブートストラップのサービス。Pre-Host の起動処理（保存場所の決定、
         // ViGEmBus 情報の取得）で使い、CreateHost に渡して、コンテナへ同じインスタンスを登録する。
         // 状態は PathService／EnvironmentService の static（プロセス全体で 1 つ）のため、どのインスタンスでも同じ値を見る。
-        private DS4Windows.PathService _bootstrapPathService;
-        private DS4Windows.EnvironmentService _bootstrapEnvironmentService;
+        private DS4Windows.Core.Platform.PathService _bootstrapPathService;
+        private DS4Windows.Core.Platform.EnvironmentService _bootstrapEnvironmentService;
         // Phase7-Step10d W5（Q3＝A）: 旧 Global.store（静的）。コンテナの構築より前に作り、CreateHost に渡して、コンテナへ同じインスタンスを登録する
         // （起動直後のログのローテーションと最小ログレベル、-driverinstall 分岐の言語・テーマの読み取りが使う）。
-        private DS4Windows.BackingStore _bootstrapBackingStore;
+        private DS4Windows.Core.Settings.BackingStore _bootstrapBackingStore;
 
         private MemoryMappedFile ipcClassNameMMF = null; // MemoryMappedFile for inter-process communication used to hold className of DS4Form window
         private MemoryMappedFile ipcResultDataMMF = null; // MemoryMappedFile for inter-process communication used to exchange string result data between cmdline client process and the background running DS4Windows app
 
-        private static Dictionary<DS4Windows.AppThemeChoice, string> themeLocs = new
-            Dictionary<DS4Windows.AppThemeChoice, string>()
+        private static Dictionary<DS4Windows.Core.Settings.AppThemeChoice, string> themeLocs = new
+            Dictionary<DS4Windows.Core.Settings.AppThemeChoice, string>()
         {
-            [DS4Windows.AppThemeChoice.Default] = "UI/Themes/DefaultTheme.xaml",
-            [DS4Windows.AppThemeChoice.Light] = "UI/Themes/DefaultTheme.xaml",
-            [DS4Windows.AppThemeChoice.Dark] = "UI/Themes/DarkTheme.xaml",
+            [DS4Windows.Core.Settings.AppThemeChoice.Default] = "UI/Themes/DefaultTheme.xaml",
+            [DS4Windows.Core.Settings.AppThemeChoice.Light] = "UI/Themes/DefaultTheme.xaml",
+            [DS4Windows.Core.Settings.AppThemeChoice.Dark] = "UI/Themes/DarkTheme.xaml",
         };
 
         public event EventHandler ThemeChanged;
@@ -145,7 +150,7 @@ namespace DS4WinWPF
                 // （Phase7c W3: 当時は Global を直接使っていた。Global は Phase7-Step10d で削除済みで、現在は Global を参照しない。）
                 // Phase7-Step10d W5: Global は削除した。ブートストラップの BackingStore（コンテナの Singleton と同一）へ書く。
                 _bootstrapBackingStore.useLang = cultureCode;
-                DS4Windows.UiCulture.Set(cultureCode);
+                DS4Windows.Core.Settings.UiCulture.Set(cultureCode);
 
                 // Ensure thread and default thread cultures are set so UI localization applies
                 try
@@ -190,7 +195,7 @@ namespace DS4WinWPF
         private void Application_Startup(object sender, StartupEventArgs e)
         {
             // ★ 最優先で AUMID とレジストリを初期化（ポータブル通知対策）
-            DS4Windows.AppNotificationRegistration.Initialize();
+            DS4Windows.UI.Services.AppNotificationRegistration.Initialize();
 
             runShutdown = true;
             skipSave = true;
@@ -262,9 +267,9 @@ namespace DS4WinWPF
         private void RunPreHostBootstrap(StartupEventArgs e)
         {
             // Phase7-Step4 W4: ブートストラップのサービスを、コンテナの構築より前に作る
-            _bootstrapEnvironmentService = new DS4Windows.EnvironmentService();
-            _bootstrapBackingStore = new DS4Windows.BackingStore(_bootstrapEnvironmentService);
-            _bootstrapPathService = new DS4Windows.PathService(config: _bootstrapBackingStore);
+            _bootstrapEnvironmentService = new DS4Windows.Core.Platform.EnvironmentService();
+            _bootstrapBackingStore = new DS4Windows.Core.Settings.BackingStore(_bootstrapEnvironmentService);
+            _bootstrapPathService = new DS4Windows.Core.Platform.PathService(config: _bootstrapBackingStore);
 
             // Locate config location as early as possible
             try
@@ -292,12 +297,12 @@ namespace DS4WinWPF
 
                 // Perform deterministic startup rotation
                 // （Phase7-Step4 W4: appdatapath は null の可能性がある（初回起動）ため、AppDataPath（null のとき実行フォルダ）ではなく状態そのものを渡す）
-                LogRotator.PerformStartupRotation(DS4Windows.PathService.AppDataPathState, _bootstrapBackingStore.logMaxArchiveFiles);
+                LogRotator.PerformStartupRotation(DS4Windows.Core.Platform.PathService.AppDataPathState, _bootstrapBackingStore.logMaxArchiveFiles);
 
                 // Immediately apply bootstrap minimum log level so early logging honors user-configured min level
                 try
                 {
-                    DS4WinWPF.LoggerHolder.ApplyBootstrapMinLogLevel(_bootstrapBackingStore.logMinLevel);
+                    DS4Windows.Core.Logging.LoggerHolder.ApplyBootstrapMinLogLevel(_bootstrapBackingStore.logMinLevel);
                 }
                 catch { }
             }
@@ -342,7 +347,7 @@ namespace DS4WinWPF
                 if (CompleteInstallArguments.TryParse(e.Args, out string src, out string tgt))
                 {
                     // We are in elevated completion mode — perform move/copy and exit
-                    int exit = DS4WinWPF.UpdaterElevatedHelper.CompleteInstall(src, tgt);
+                    int exit = DS4Windows.Core.Updater.UpdaterElevatedHelper.CompleteInstall(src, tgt);
                     // Ensure logs flushed then exit
                     try { NLog.LogManager.Flush(); } catch { }
                     Environment.Exit(exit);
@@ -371,13 +376,13 @@ namespace DS4WinWPF
 
             // Force Normal IO Priority
             IntPtr ioPrio = new IntPtr(2);
-            DS4Windows.Util.NtSetInformationProcess(Process.GetCurrentProcess().Handle,
-                DS4Windows.Util.PROCESS_INFORMATION_CLASS.ProcessIoPriority, ref ioPrio, 4);
+            DS4Windows.Core.Utilities.Util.NtSetInformationProcess(Process.GetCurrentProcess().Handle,
+                DS4Windows.Core.Utilities.Util.PROCESS_INFORMATION_CLASS.ProcessIoPriority, ref ioPrio, 4);
 
             // Force Normal Page Priority
             IntPtr pagePrio = new IntPtr(5);
-            DS4Windows.Util.NtSetInformationProcess(Process.GetCurrentProcess().Handle,
-                DS4Windows.Util.PROCESS_INFORMATION_CLASS.ProcessPagePriority, ref pagePrio, 4);
+            DS4Windows.Core.Utilities.Util.NtSetInformationProcess(Process.GetCurrentProcess().Handle,
+                DS4Windows.Core.Utilities.Util.PROCESS_INFORMATION_CLASS.ProcessPagePriority, ref pagePrio, 4);
         }
 
         /// <summary>
@@ -414,17 +419,17 @@ namespace DS4WinWPF
         private void InitializeProcessWideSettings()
         {
             // Allow sleep time durations less than 16 ms
-            DS4Windows.Util.timeBeginPeriod(1);
+            DS4Windows.Core.Utilities.Util.timeBeginPeriod(1);
 
             // Load keyboard repeat settings from user registry so synthetic repeat matches OS behaviour
             try
             {
-                DS4Windows.KeyboardSettings.LoadFromRegistry();
+                DS4Windows.Core.Platform.KeyboardSettings.LoadFromRegistry();
             }
             catch { }
 
             // R-6: マウスホイールを、Windows の設定（1 画面ずつ／行数）に合わせる。最初の画面ができる前に、1 回だけ登録する
-            DS4WinWPF.DS4Forms.PageScrollWheelHandler.Register();
+            DS4Windows.UI.PageScrollWheelHandler.Register();
 
             // Retrieve info about installed ViGEmBus device if found
             // Phase7-Step4 W1／W4: 調べ物と状態は EnvironmentService（状態は static）が持つ。ブートストラップのインスタンスを使う。
@@ -472,7 +477,7 @@ namespace DS4WinWPF
             // On first run, show language selection dialog first
             if (firstRun)
             {
-                DS4Forms.LanguageSelectDialog langDialog = new DS4Forms.LanguageSelectDialog(_appSettingsService);
+                DS4Windows.UI.LanguageSelectDialog langDialog = new DS4Windows.UI.LanguageSelectDialog(_appSettingsService);
                 langDialog.ShowDialog();
                 if (!langDialog.ChoiceMade)
                 {
@@ -498,8 +503,8 @@ namespace DS4WinWPF
             // and profiles
             if (firstRun)
             {
-                DS4Forms.SaveWhere savewh =
-                    new DS4Forms.SaveWhere(_pathService.HasMultipleSaveLocations, _pathService, _environmentService);
+                DS4Windows.UI.SaveWhere savewh =
+                    new DS4Windows.UI.SaveWhere(_pathService.HasMultipleSaveLocations, _pathService, _environmentService);
                 savewh.ShowDialog();
                 if (!savewh.ChoiceMade)
                 {
@@ -571,7 +576,7 @@ namespace DS4WinWPF
             try { AppLogger.LogInfo($"Current working directory: {Environment.CurrentDirectory}"); } catch { }
             // Phase9 9-F F-1a: 文言は StartupDiagnostics（文言と順序は変えない）
             foreach (string environmentMessage in StartupDiagnostics.EnvironmentMessages(version, _pathService.ExecutablePath,
-                DS4Windows.Util.GetOSProductName(), DS4Windows.Util.GetOSReleaseId()))
+                DS4Windows.Core.Utilities.Util.GetOSProductName(), DS4Windows.Core.Utilities.Util.GetOSReleaseId()))
             {
                 AppLogger.LogInfo(environmentMessage);
             }
@@ -615,8 +620,8 @@ namespace DS4WinWPF
             if (firstRun)
             {
                 ApplyLanguageSetting(_appSettingsService.UseLang);
-                DS4Forms.FirstLaunchUtilWindow firstLaunchUtilWin =
-                    new DS4Forms.FirstLaunchUtilWindow(_appSettingsService.DeviceOptions);
+                DS4Windows.UI.FirstLaunchUtilWindow firstLaunchUtilWin =
+                    new DS4Windows.UI.FirstLaunchUtilWindow(_appSettingsService.DeviceOptions);
                 firstLaunchUtilWin.ShowDialog();
                 _appSettingsService.Save();
             }
@@ -629,7 +634,7 @@ namespace DS4WinWPF
                 _profileRepository.SaveAsProfile(0, "Default");
                 ProfileSlotNames profilePath = _profileRepository.ProfilePath;
                 ProfileSlotNames olderProfilePath = _profileRepository.OlderProfilePath;
-                for (int i = 0; i < DS4Windows.ControlService.MAX_DS4_CONTROLLER_COUNT; i++)
+                for (int i = 0; i < DS4Windows.Processing.ControlService.MAX_DS4_CONTROLLER_COUNT; i++)
                 {
                     profilePath[i] = olderProfilePath[i] = "Default";
                 }
@@ -665,7 +670,7 @@ namespace DS4WinWPF
             ApplyLanguageSetting(_appSettingsService.UseLang);
             AppLogger.LogInfo($"Effective UI culture after initialization: CurrentUICulture={Thread.CurrentThread.CurrentUICulture}, DefaultThreadCurrentUICulture={CultureInfo.DefaultThreadCurrentUICulture}, UseLang={_appSettingsService.UseLang}");
 
-            DS4Windows.AppThemeChoice themeChoice = _appearanceSettingsService.UseCurrentTheme;
+            DS4Windows.Core.Settings.AppThemeChoice themeChoice = _appearanceSettingsService.UseCurrentTheme;
             ChangeTheme(_appearanceSettingsService.UseCurrentTheme, false);
             // Diagnostic: log culture state after applying theme to detect theme-induced localization regressions
             AppLogger.LogDebug($"Post-ChangeTheme: LocalizeDictionary={LocalizeDictionary.Instance.Culture}, SetCurrentThreadCulture={LocalizeDictionary.Instance.SetCurrentThreadCulture}, DefaultThreadCurrentUICulture={CultureInfo.DefaultThreadCurrentUICulture}, CurrentUICulture={Thread.CurrentThread.CurrentUICulture}");
@@ -680,7 +685,7 @@ namespace DS4WinWPF
         {
             // Phase7-Step5 W5（Q4＝A）: メイン画面の生成の窓口を、生成の直前に解決する（窓口が受け取る多数のサービスの生成が
             // 設定の読込より前にならないよう、InitializePostHostServices では解決しない。旧: MainWindow のコンストラクター内で解決していた）
-            DS4Forms.MainWindow window = ResolvePostHostService<IMainWindowFactory>().Create(parser);
+            DS4Windows.UI.MainWindow window = ResolvePostHostService<IMainWindowFactory>().Create(parser);
             MainWindow = window;
             window.IsInitialShow = true;
             window.Show();
@@ -726,9 +731,9 @@ namespace DS4WinWPF
             _outputSlotService = ResolvePostHostService<IOutputSlotService>();
             // Phase7-Step5 W3（Q7＝A）: 静的なロガー（AppLogger.LogToTray）が使う通知サービスを、DI のシングルトンに設定する
             AppLogger.NotificationService = ResolvePostHostService<INotificationService>();
-            _logSettingsApplierProxy = ResolvePostHostService<DS4Windows.Services.LogSettingsApplierProxy>();
-            _controllerRegistry = ResolvePostHostService<DS4Windows.Actions.IControllerRegistry>();
-            _runtimeFeatures = ResolvePostHostService<DS4Windows.DI.IRuntimeFeatureSwitch>();
+            _logSettingsApplierProxy = ResolvePostHostService<DS4Windows.Core.Logging.LogSettingsApplierProxy>();
+            _controllerRegistry = ResolvePostHostService<DS4Windows.Processing.Actions.IControllerRegistry>();
+            _runtimeFeatures = ResolvePostHostService<DS4Windows.Processing.Abstractions.IRuntimeFeatureSwitch>();
 
             if (AppLogger.IsTraceEnabled)
                 AppLogger.LogTrace("[DI] App.InitializePostHostServices: Post-Host services resolved");
@@ -840,7 +845,7 @@ namespace DS4WinWPF
                 // 置き換え先にならず、保存先の状態を直接書き換えていた。
                 // Phase7-Step4 W4: 保存先の所有を PathService へ移した。状態そのものを null に戻す（旧 Global.appdatapath = null と同じ）。
                 // （Phase7c W3: 本行の TODO は Phase7-Step4 W4 で解消済みのため、TODO 表記を外した。）
-                DS4Windows.PathService.AppDataPathState = null;
+                DS4Windows.Core.Platform.PathService.AppDataPathState = null;
                 skipSave = true;
                 Current.Shutdown();
                 return;
@@ -869,20 +874,20 @@ namespace DS4WinWPF
                 var driverInstallHost = AppHost.CreateHost(
                     new Microsoft.Extensions.Configuration.ConfigurationBuilder().Build(), parser,
                     _bootstrapPathService, _bootstrapEnvironmentService, _bootstrapBackingStore);
-                var driverInstallSettings = (DS4Windows.DI.IAppSettingsService)driverInstallHost.Services
-                    .GetService(typeof(DS4Windows.DI.IAppSettingsService));
+                var driverInstallSettings = (DS4Windows.Processing.Abstractions.IAppSettingsService)driverInstallHost.Services
+                    .GetService(typeof(DS4Windows.Processing.Abstractions.IAppSettingsService));
                 bool readAppConfig = driverInstallSettings.Load();
                 if (readAppConfig)
                 {
                     // Have app use selected culture
                     SetUICulture(_bootstrapBackingStore.useLang);
                     ApplyLanguageSetting(_bootstrapBackingStore.useLang);
-                    DS4Windows.AppThemeChoice themeChoice = _bootstrapBackingStore.useCurrentTheme;
+                    DS4Windows.Core.Settings.AppThemeChoice themeChoice = _bootstrapBackingStore.useCurrentTheme;
                     ChangeTheme(_bootstrapBackingStore.useCurrentTheme, false);
                 }
 
                 CreateBaseThread();
-                DS4Forms.WelcomeDialog dialog = new DS4Forms.WelcomeDialog(
+                DS4Windows.UI.WelcomeDialog dialog = new DS4Windows.UI.WelcomeDialog(
                     _bootstrapEnvironmentService);
                 dialog.ShowDialog();
                 runShutdown = false;
@@ -894,7 +899,7 @@ namespace DS4WinWPF
                 // Phase7-Step4 W4（Q4＝A）: 第 1 層の静的な DS4Devices.reEnableDevice の直接呼び出しをやめ、IDs4DeviceRegistry の契約を通す。
                 // この分岐はホストを構築しない昇格した補助プロセスのため、状態を持たないアダプタを直接作る。
                 // 差: デバイスのインスタンス ID が空のときは、アダプタが何もせず戻る（旧: 例外で終了していた。不正な起動引数の場合のみ）。
-                DS4Windows.Services.IDs4DeviceRegistry reEnableRegistry = new DS4Windows.Services.Ds4DeviceRegistryAdapter();
+                DS4Windows.Processing.Abstractions.IDs4DeviceRegistry reEnableRegistry = new DS4Windows.Processing.Services.Ds4DeviceRegistryAdapter();
                 reEnableRegistry.ReEnableDevice(parser.DeviceInstanceId);
                 runShutdown = false;
                 exitApp = true;
@@ -956,7 +961,7 @@ namespace DS4WinWPF
                             cds.dwData = IntPtr.Zero;
                             cds.cbData = parser.CommandArgs.Length;
                             cds.lpData = Marshal.StringToHGlobalAnsi(parser.CommandArgs);
-                            SendMessage(hWndDS4WindowsForm, DS4Forms.MainWindow.WM_COPYDATA, IntPtr.Zero, ref cds);
+                            SendMessage(hWndDS4WindowsForm, DS4Windows.UI.MainWindow.WM_COPYDATA, IntPtr.Zero, ref cds);
 
                             if (bWaitResultData)
                                 Console.WriteLine(WaitAndReadIPCResultDataMMF(ipcNotifyEvent));
@@ -993,8 +998,8 @@ namespace DS4WinWPF
                 // startup-order safety net only, and 'new Ds4DeviceRegistryAdapter()' here
                 // is the same adapter class already registered, not a second implementation.
                 // Phase7-Step5 W4: 解決の窓口（ResolvePostHostService）を通す。解決できなければ InvalidOperationException（従来と同じ）
-                _controlService = ResolvePostHostService<DS4Windows.ControlService>();
-                _lifecycle = ResolvePostHostService<DS4Windows.DI.IServiceLifecycle>();
+                _controlService = ResolvePostHostService<DS4Windows.Processing.ControlService>();
+                _lifecycle = ResolvePostHostService<DS4Windows.Processing.Abstractions.IServiceLifecycle>();
 
                 requestClient = new HttpClient();
                 requestClient.DefaultRequestHeaders.Add("User-Agent", "DS4Windows");
@@ -1199,7 +1204,7 @@ namespace DS4WinWPF
                 // fixes the culture in threads
                 CultureInfo.DefaultThreadCurrentCulture = ci;
                 CultureInfo.DefaultThreadCurrentUICulture = ci;
-                DS4WinWPF.Properties.Resources.Culture = ci;
+                DS4Windows.Properties.Resources.Culture = ci;
                 Thread.CurrentThread.CurrentCulture = ci;
                 Thread.CurrentThread.CurrentUICulture = ci;
                 AppLogger.LogDebug($"SetUICulture applied: LocalizeDictionary={LocalizeDictionary.Instance.Culture}, SetCurrentThreadCulture={LocalizeDictionary.Instance.SetCurrentThreadCulture}, DefaultThreadCurrentUICulture={CultureInfo.DefaultThreadCurrentUICulture}, CurrentUICulture={Thread.CurrentThread.CurrentUICulture}");
@@ -1207,16 +1212,16 @@ namespace DS4WinWPF
             catch (CultureNotFoundException) { /* Skip setting culture that we cannot set */ }
         }
 
-        public void ChangeTheme(DS4Windows.AppThemeChoice themeChoice,
+        public void ChangeTheme(DS4Windows.Core.Settings.AppThemeChoice themeChoice,
             bool fireChanged = true)
         {
-            if (themeChoice == DS4Windows.AppThemeChoice.Default)
+            if (themeChoice == DS4Windows.Core.Settings.AppThemeChoice.Default)
             {
                 Application.Current.Resources.MergedDictionaries.Clear();
 
                 // 4.0.1: Default is the light theme (it used to follow the Windows apps theme mode, which made the
                 // dark theme the default for many users). Choose Dark explicitly to use the dark theme.
-                themeLocs.TryGetValue(DS4Windows.AppThemeChoice.Light, out string loc);
+                themeLocs.TryGetValue(DS4Windows.Core.Settings.AppThemeChoice.Light, out string loc);
                 Application.Current.Resources.MergedDictionaries.Add(new ResourceDictionary() { Source = new Uri(loc, uriKind: UriKind.Relative) });
 
                 if (fireChanged)
@@ -1276,7 +1281,7 @@ namespace DS4WinWPF
                 }
 
                 // Reset timer
-                DS4Windows.Util.timeEndPeriod(1);
+                DS4Windows.Core.Utilities.Util.timeEndPeriod(1);
 
                 exitComThread = true;
                 if (threadComEvent != null)

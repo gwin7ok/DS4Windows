@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
-using DS4Windows;
+using DS4Windows.Core.Settings;
 
-namespace DS4WinWPF.DS4Forms
+namespace DS4Windows.UI
 {
     /// <summary>
     /// Phase7-Step10b W2（Q1＝A）: トレイアイコンの選択ごとの資源パスの表（旧: <c>Global.iconChoiceResources</c>。宣言は移動のみ）。
@@ -13,11 +13,11 @@ namespace DS4WinWPF.DS4Forms
     {
         public static Dictionary<TrayIconChoice, string> iconChoiceResources = new Dictionary<TrayIconChoice, string>
         {
-            [TrayIconChoice.Default] = $"{DS4WinWPF.DS4Forms.ResourcePaths.ResourcesPrefix}/DS4W.ico",
-            [TrayIconChoice.Colored] = $"{DS4WinWPF.DS4Forms.ResourcePaths.ResourcesPrefix}/DS4W.ico",
-            [TrayIconChoice.White] = $"{DS4WinWPF.DS4Forms.ResourcePaths.ResourcesPrefix}/DS4W - White.ico",
-            [TrayIconChoice.Black] = $"{DS4WinWPF.DS4Forms.ResourcePaths.ResourcesPrefix}/DS4W - Black.ico",
-            [TrayIconChoice.Battery] = $"{DS4WinWPF.DS4Forms.ResourcePaths.ResourcesPrefix}/DS4W.ico"
+            [TrayIconChoice.Default] = $"{DS4Windows.UI.ResourcePaths.ResourcesPrefix}/DS4W.ico",
+            [TrayIconChoice.Colored] = $"{DS4Windows.UI.ResourcePaths.ResourcesPrefix}/DS4W.ico",
+            [TrayIconChoice.White] = $"{DS4Windows.UI.ResourcePaths.ResourcesPrefix}/DS4W - White.ico",
+            [TrayIconChoice.Black] = $"{DS4Windows.UI.ResourcePaths.ResourcesPrefix}/DS4W - Black.ico",
+            [TrayIconChoice.Battery] = $"{DS4Windows.UI.ResourcePaths.ResourcesPrefix}/DS4W.ico"
         };
     }
 }

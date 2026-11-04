@@ -1,4 +1,4 @@
-namespace DS4Windows.Actions
+namespace DS4Windows.Processing.Actions
 {
     /// <summary>
     /// Phase10-Step4 W2（Phase10-Step4-Plan.md §3.3）: 特殊アクション（<see cref="SpecialAction"/>）の種別ごとの、出力アクションと実行方針の作り方。

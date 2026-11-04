@@ -1,6 +1,6 @@
 using System;
 
-namespace DS4Windows
+namespace DS4Windows.Processing
 {
     /// <summary>
     /// Phase12-Step3 3b（R-3）: マクロの「マウスポインターの移動」ステップ（モード、X、Y）と、マクロの整数 1 個との相互変換。

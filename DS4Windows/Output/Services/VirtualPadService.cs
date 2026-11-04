@@ -1,11 +1,14 @@
 using System;
 using System.Threading;
-using DS4Windows.DI;
-using DS4Windows.DS4Control;
-using DS4WinWPF.DS4Control;
 using Nefarius.ViGEm.Client;
+using DS4Windows.Core.Abstractions;
+using DS4Windows.Core.Logging;
+using DS4Windows.Core.Settings;
+using DS4Windows.Input;
+using DS4Windows.Output.Devices;
+using DS4Windows.Processing.Abstractions;
 
-namespace DS4Windows.Services
+namespace DS4Windows.Output.Services
 {
     /// <summary>
     /// Phase9 9-E E-4（Phase9-E-Plan.md）: <see cref="IVirtualPadService"/> の実装（DI の Singleton）。

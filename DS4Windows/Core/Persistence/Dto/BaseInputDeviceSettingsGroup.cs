@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Xml.Serialization;
 using System.Globalization;
-using DS4Windows;
+using DS4Windows.Core.Persistence.Dto;
+
+namespace DS4Windows.Core.Persistence.Dto;
 
 public abstract class BaseInputDeviceSettingsGroup
 {

@@ -1,4 +1,6 @@
-namespace DS4Windows.Actions
+using DS4Windows.Output.Devices;
+
+namespace DS4Windows.Processing.Actions
 {
     /// <summary>
     /// Phase10-Step6 後の Step5（SA 側のアナログ出力）: Button の出力先（<see cref="X360Controls"/>）の、アナログな出力の種類。

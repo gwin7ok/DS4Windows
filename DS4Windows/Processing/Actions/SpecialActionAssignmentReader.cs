@@ -1,6 +1,7 @@
 using System;
+using DS4Windows.Input;
 
-namespace DS4Windows.Actions
+namespace DS4Windows.Processing.Actions
 {
     /// <summary>
     /// Phase10-Step6 I3（Phase10-Step6-Plan.md §4）: 読み込みの部品（SpecialActions タブ側）。<see cref="SpecialAction"/> を、共通の割り当て定義（<see cref="AssignmentDefinition"/>）にする。
@@ -31,6 +32,6 @@ namespace DS4Windows.Actions
 
         // Phase10-Step6 I5b: SA に付けた Extras（Controls と同じ書式）。付けていない・読めないときは null
         private static ExtrasBindingValues? ReadExtras(SpecialAction sa)
-            => Services.ControlBindingBuilder.TryInterpretExtras(sa.outputExtras, out ExtrasBindingValues values) ? values : (ExtrasBindingValues?)null;
+            => DS4Windows.Processing.Services.ControlBindingBuilder.TryInterpretExtras(sa.outputExtras, out ExtrasBindingValues values) ? values : (ExtrasBindingValues?)null;
     }
 }

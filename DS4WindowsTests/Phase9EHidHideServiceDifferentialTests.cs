@@ -5,10 +5,12 @@ using System.Linq;
 using System.Reflection;
 using System.Runtime.InteropServices;
 using System.Text;
-using DS4Windows;
-using DS4Windows.DI;
-using DS4Windows.Services;
 using Xunit;
+using DS4Windows.Core.Abstractions;
+using DS4Windows.Core.Logging;
+using DS4Windows.Core.Platform;
+using DS4Windows.Output.Services;
+using DS4Windows.Processing.Abstractions;
 
 namespace DS4WindowsTests
 {
@@ -209,7 +211,7 @@ namespace DS4WindowsTests
                 string where = $"installed={installed} opened={opened} inverse={inverse} exists={exists} add={addExe} empty={emptyPath}";
                 string path = emptyPath ? "" : exe;
                 old.CheckHidHidePresence(path, "TestExe", addExe);
-                System.EventHandler<DS4Windows.DebugEventArgs> sink = (s, e) => { if (e.Data != null && e.Data.Contains("HidHide")) logs.Add(e.Data); };
+                System.EventHandler<DS4Windows.Core.Logging.DebugEventArgs> sink = (s, e) => { if (e.Data != null && e.Data.Contains("HidHide")) logs.Add(e.Data); };
                 AppLogger.GuiLog += sink;
                 try { service.CheckPresence(path, "TestExe", addExe); }
                 finally { AppLogger.GuiLog -= sink; }

@@ -1,7 +1,7 @@
 using System;
 using System.IO;
-using DS4WinWPF.DS4Forms;
 using Xunit;
+using DS4Windows.UI;
 
 namespace DS4WindowsTests
 {

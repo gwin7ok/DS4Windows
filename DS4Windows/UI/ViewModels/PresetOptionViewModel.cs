@@ -18,10 +18,11 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 using System;
 using System.Collections.Generic;
-using DS4WinWPF.DS4Control;
-using DS4WinWPF.DS4Forms.ViewModels.Util;
+using DS4Windows.Core.Settings;
+using DS4Windows.Processing;
+using DS4Windows.UI.ViewModels.Util;
 
-namespace DS4WinWPF.DS4Forms.ViewModels
+namespace DS4Windows.UI.ViewModels
 {
     public class PresetOptionViewModel
     {
@@ -71,7 +72,7 @@ namespace DS4WinWPF.DS4Forms.ViewModels
 
         public List<EnumChoiceSelection<PresetOption.OutputContChoice>> OutputChoices { get => outputChoices; }
 
-        public PresetOptionViewModel(DS4Windows.DI.IProfilePresetLoader presetLoader, DS4Windows.DI.IProfileLoadTarget loadTarget)
+        public PresetOptionViewModel(DS4Windows.Core.Abstractions.IProfilePresetLoader presetLoader, DS4Windows.Processing.Abstractions.IProfileLoadTarget loadTarget)
         {
             if (presetLoader == null) throw new ArgumentNullException(nameof(presetLoader));
             if (loadTarget == null) throw new ArgumentNullException(nameof(loadTarget));

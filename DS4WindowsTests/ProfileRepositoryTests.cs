@@ -1,8 +1,9 @@
 using System;
 using System.IO;
 using Xunit;
-using DS4Windows;
-using DS4Windows.DI;
+using DS4Windows.Core.Abstractions;
+using DS4Windows.Input;
+using DS4Windows.Processing;
 
 namespace DS4WindowsTests
 {
@@ -17,7 +18,7 @@ namespace DS4WindowsTests
             public int LoadCallCount;
             public int SaveCallCount;
 
-            public bool LoadProfileXml(int deviceIndex, bool launchProgram, DS4Windows.DI.IProfileLoadTarget control,
+            public bool LoadProfileXml(int deviceIndex, bool launchProgram, DS4Windows.Processing.Abstractions.IProfileLoadTarget control,
                 string overridePath = "", bool xinputChange = true, bool postLoad = true)
             {
                 LoadCallCount++;
@@ -103,7 +104,7 @@ namespace DS4WindowsTests
         [Fact]
         public void LoadProfile_ExistingFile_ShouldDelegateToXmlStoreAndResetTempProfileState()
         {
-            DS4WinWPF.AppHost.CreateHost();
+            DS4Windows.Composition.AppHost.CreateHost();
 
             var settings = TestRepositoryFactory.CreateProfileSettingsService();
             var fakeXmlStore = new FakeProfileXmlStore();

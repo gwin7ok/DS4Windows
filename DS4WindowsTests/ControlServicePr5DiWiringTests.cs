@@ -1,7 +1,8 @@
 using System;
 using Xunit;
-using DS4Windows;
-using DS4Windows.DI;
+using DS4Windows.Core.Abstractions;
+using DS4Windows.Processing;
+using DS4Windows.Processing.Abstractions;
 
 namespace DS4WindowsTests
 {
@@ -14,7 +15,7 @@ namespace DS4WindowsTests
         [Fact]
         public void AppHost_ResolvesControlService_WithPr5Dependencies()
         {
-            DS4WinWPF.AppHost.CreateHost();
+            DS4Windows.Composition.AppHost.CreateHost();
 
             ControlService controlService = null;
             var ex = Record.Exception(() => controlService = TestHost.GetService<ControlService>());
@@ -26,7 +27,7 @@ namespace DS4WindowsTests
         [Fact]
         public void AppHost_ResolvesPr5Services()
         {
-            DS4WinWPF.AppHost.CreateHost();
+            DS4Windows.Composition.AppHost.CreateHost();
 
             Assert.NotNull(TestHost.GetService<IAppearanceSettingsService>());
             Assert.NotNull(TestHost.GetService<IProfileActionProvider>());

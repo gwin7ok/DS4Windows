@@ -22,7 +22,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace DS4WinWPF
+namespace DS4Windows.Core.Logging
 {
     public class LogItem
     {

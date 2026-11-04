@@ -1,6 +1,10 @@
 using System;
+using DS4Windows.Core.Abstractions;
+using DS4Windows.Core.Logging;
+using DS4Windows.Processing;
+using DS4Windows.Processing.Abstractions;
 
-namespace DS4Windows.Services
+namespace DS4Windows.Core.Platform
 {
     /// <summary>
     /// Phase12-Step2 2b-2（R-4）: <see cref="IWindowFocuser"/> の実装。手順は AutoHotkey の <c>SetForegroundWindowEx</c> を参考にした

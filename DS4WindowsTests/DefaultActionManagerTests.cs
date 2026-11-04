@@ -1,9 +1,7 @@
 using System;
 using Xunit;
-using DS4Windows;
-using DS4Windows.Actions;
-using DS4Windows.DS4Control;
-using DS4Windows.Services;
+using DS4Windows.Processing;
+using DS4Windows.Processing.Actions;
 
 namespace DS4WindowsTests
 {
@@ -171,7 +169,7 @@ namespace DS4WindowsTests
         public void DefaultMacroPlayer_InitializesWithVirtualKBM_AndTracksState()
         {
             var mockKBM = new MockVirtualKBM();
-            var player = new DefaultMacroPlayer(mockKBM, TestHost.GetService<DS4Windows.DI.IMapping>());
+            var player = new DefaultMacroPlayer(mockKBM, TestHost.GetService<DS4Windows.Processing.Abstractions.IMapping>());
 
             Assert.False(player.IsPlaying(0));
             Assert.False(player.IsPlaying(-1));
@@ -187,18 +185,18 @@ namespace DS4WindowsTests
         [Fact]
         public void DefaultMacroPlayer_HandlesAllControllerSlots_NotJustFour()
         {
-            var player = new DefaultMacroPlayer(new MockVirtualKBM(), TestHost.GetService<DS4Windows.DI.IMapping>());
+            var player = new DefaultMacroPlayer(new MockVirtualKBM(), TestHost.GetService<DS4Windows.Processing.Abstractions.IMapping>());
 
             var field = typeof(DefaultMacroPlayer).GetField("_isPlaying",
                 System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.NonPublic);
             var states = (bool[])field.GetValue(player);
-            Assert.Equal(DS4Windows.ControllerLimits.MaxControllerCount, states.Length);
+            Assert.Equal(DS4Windows.Core.Settings.ControllerLimits.MaxControllerCount, states.Length);
             Assert.True(states.Length >= 8);
 
             // 範囲内の最後のスロット（7）は範囲内として扱い、範囲外（8）は常に false
             states[7] = true;
             Assert.True(player.IsPlaying(7));
-            Assert.False(player.IsPlaying(DS4Windows.ControllerLimits.MaxControllerCount));
+            Assert.False(player.IsPlaying(DS4Windows.Core.Settings.ControllerLimits.MaxControllerCount));
 
             player.Stop(7);
             Assert.False(player.IsPlaying(7));

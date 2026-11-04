@@ -3,14 +3,17 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Threading;
-using DS4Windows;
-using DS4Windows.Actions;
-using DS4Windows.DI;
-using DS4Windows.DS4Control;
-using DS4Windows.Services;
-using DS4WinWPF.DS4Forms.ViewModels;
-using DS4WinWPF.DS4Forms.ViewModels.SpecialActions;
 using Xunit;
+using DS4Windows.Core.Abstractions;
+using DS4Windows.Core.Settings;
+using DS4Windows.Input;
+using DS4Windows.Output.Kbm;
+using DS4Windows.Processing;
+using DS4Windows.Processing.Abstractions;
+using DS4Windows.Processing.Actions;
+using DS4Windows.Processing.Services;
+using DS4Windows.UI.ViewModels;
+using DS4Windows.UI.ViewModels.SpecialActions;
 
 namespace DS4WindowsTests
 {

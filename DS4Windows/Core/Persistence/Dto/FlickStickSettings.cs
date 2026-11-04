@@ -23,13 +23,9 @@ using System.Text;
 using System.Xml;
 using System.Xml.Schema;
 using System.Xml.Serialization;
-using DS4Windows;
-using DS4Windows.InputDevices;
-using DS4Windows.StickModifiers;
-using DS4WinWPF.DS4Forms.ViewModels;
-using static DS4Windows.Mouse;
+using static DS4Windows.Processing.Mouse;
 
-namespace DS4WinWPF.DS4Control.DTOXml
+namespace DS4Windows.Core.Persistence.Dto
 {
 
     public class FlickStickSettings

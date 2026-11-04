@@ -1,6 +1,6 @@
-using DS4Windows;
-using DS4Windows.Services;
 using Xunit;
+using DS4Windows.Core.Platform;
+using DS4Windows.Processing;
 
 namespace DS4WindowsTests
 {

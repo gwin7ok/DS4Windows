@@ -1,7 +1,7 @@
 using System;
 using Xunit;
-using DS4Windows;
-using DS4Windows.DI;
+using DS4Windows.Core.Abstractions;
+using DS4Windows.Output;
 
 namespace DS4WindowsTests
 {
@@ -79,7 +79,7 @@ namespace DS4WindowsTests
         {
             var service = TestRepositoryFactory.CreateOutputSlotService();
             Assert.Same(service.OutDevTypeTemp, service.OutDevTypeTemp);
-            Assert.Equal(DS4Windows.ControllerLimits.TestProfileItemCount, service.OutDevTypeTemp.Length);
+            Assert.Equal(DS4Windows.Core.Settings.ControllerLimits.TestProfileItemCount, service.OutDevTypeTemp.Length);
             Assert.All(service.OutDevTypeTemp, t => Assert.Equal(OutContType.X360, t));
         }
 
@@ -88,7 +88,7 @@ namespace DS4WindowsTests
         {
             var service = TestRepositoryFactory.CreateOutputSlotService();
             Assert.Same(service.ActiveOutDevType, service.ActiveOutDevType);
-            Assert.Equal(DS4Windows.ControllerLimits.TestProfileItemCount, service.ActiveOutDevType.Length);
+            Assert.Equal(DS4Windows.Core.Settings.ControllerLimits.TestProfileItemCount, service.ActiveOutDevType.Length);
             Assert.All(service.ActiveOutDevType, t => Assert.Equal(OutContType.None, t));
         }
 

@@ -1,4 +1,4 @@
-namespace DS4Windows.DI
+namespace DS4Windows.Processing.Abstractions
 {
     /// <summary>
     /// Phase9 9-E E-1（Phase9-E-Plan.md）: OSC メッセージ（アドレス 1 つと値 1 つ）の送信。実装は SharpOSC の <c>UDPSender</c> を包む

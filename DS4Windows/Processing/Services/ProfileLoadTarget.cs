@@ -1,7 +1,10 @@
 using System;
-using DS4Windows.DI;
+using DS4Windows.Core.Settings;
+using DS4Windows.Input;
+using DS4Windows.Output;
+using DS4Windows.Processing.Abstractions;
 
-namespace DS4Windows.Services
+namespace DS4Windows.Processing.Services
 {
     /// <summary>
     /// Phase13-Step6 6-d: <see cref="IProfileLoadTarget"/> の実装（DI の Singleton。状態なし）。

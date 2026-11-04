@@ -1,4 +1,4 @@
-namespace DS4Windows
+namespace DS4Windows.Core.Settings
 {
     /// <summary>
     /// Phase7-Step9 W2（Q2＝A）: コントローラーの台数・スティックの中点などの定数（旧: <c>Global</c> の const）。

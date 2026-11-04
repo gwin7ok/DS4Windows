@@ -1,8 +1,11 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using DS4Windows;
 using Xunit;
+using DS4Windows.Input;
+using DS4Windows.Output.Devices;
+using DS4Windows.Processing;
+using DS4Windows.Processing.Actions;
 
 namespace DS4WindowsTests
 {
@@ -145,7 +148,7 @@ namespace DS4WindowsTests
         [Fact]
         public void TheScope_RestoresTheRegistry()
         {
-            var registry = TestHost.GetService<DS4Windows.Actions.IActionRegistry>();
+            var registry = TestHost.GetService<DS4Windows.Processing.Actions.IActionRegistry>();
             int device;
 
             using (var t = new SpecialActionTestScope())

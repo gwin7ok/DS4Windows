@@ -3,11 +3,12 @@ using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Text.RegularExpressions;
-using DS4Windows;
-using DS4Windows.DI;
-using DS4Windows.Services;
 using Xunit;
 using Xunit.Abstractions;
+using DS4Windows.Core.Abstractions;
+using DS4Windows.Core.Persistence;
+using DS4Windows.Core.Platform;
+using DS4Windows.Core.Settings;
 
 namespace DS4WindowsTests
 {
@@ -51,7 +52,7 @@ namespace DS4WindowsTests
         [Fact]
         public void TheSerializer_RequiresAllItsDependencies()
         {
-            var store = new DS4Windows.BackingStore(new DS4Windows.EnvironmentService());
+            var store = new DS4Windows.Core.Settings.BackingStore(new DS4Windows.Core.Platform.EnvironmentService());
             var settings = TestGlobals.ProfileSettingsServiceInstance;
             Assert.Throws<ArgumentNullException>(() => new LegacyProfileXmlSerializer(null, new PathService(), settings, new EnvironmentService()));
             Assert.Throws<ArgumentNullException>(() => new LegacyProfileXmlSerializer(store, null, settings, new EnvironmentService()));
@@ -62,7 +63,7 @@ namespace DS4WindowsTests
         [Fact]
         public void TheContainer_ProvidesTheSerializer_ToTheXmlStoreAndTheRepository()
         {
-            DS4WinWPF.AppHost.CreateHost();
+            DS4Windows.Composition.AppHost.CreateHost();
             Assert.Same(TestHost.GetService<LegacyProfileXmlSerializer>(), TestHost.GetService<LegacyProfileXmlSerializer>());
             Assert.NotNull(TestHost.GetService<IProfileXmlStore>());
             Assert.NotNull(TestHost.GetService<IProfileRepository>());

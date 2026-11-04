@@ -1,8 +1,9 @@
 using System;
-using DS4Windows.DI;
-using DS4Windows.Services;
+using DS4Windows.Core.Abstractions;
+using DS4Windows.Core.Settings;
+using DS4Windows.Processing.Abstractions;
 
-namespace DS4Windows.Actions
+namespace DS4Windows.Processing.Actions
 {
     /// <summary>
     /// Phase8-Step7 7.6b（Phase8-Step7-6-Plan.md Q5＝A）: 特殊アクションのトリガーのボタンの通常の割り当て（キー、マクロ）のキーを離す。

@@ -1,4 +1,4 @@
-namespace DS4Windows.DI
+namespace DS4Windows.Processing.Abstractions
 {
     /// <summary>
     /// Phase13-Step6 6-b: スロットのコントローラーの電池残量の文言（旧 <c>ControlService.GetDS4Battery</c>）。

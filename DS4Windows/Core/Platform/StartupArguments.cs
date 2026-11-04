@@ -1,7 +1,8 @@
-using DS4Windows.DI;
-using DS4WinWPF;
 
-namespace DS4Windows.Services
+using DS4Windows.Core.Abstractions;
+using DS4Windows.Core.Utilities;
+
+namespace DS4Windows.Core.Platform
 {
     /// <summary>
     /// Phase6-Step7-4（決定7＝案H）: <see cref="IStartupArguments"/> の実装。起動引数を保持するだけで、解析はしない。

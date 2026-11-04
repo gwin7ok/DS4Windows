@@ -1,12 +1,14 @@
 using System.IO;
 using System.Linq;
 using System.Text.RegularExpressions;
-using DS4Windows;
-using DS4Windows.DI;
-using DS4Windows.DS4Control;
-using DS4Windows.Services;
 using Xunit;
 using Xunit.Abstractions;
+using DS4Windows.Core.Settings;
+using DS4Windows.Output.Kbm;
+using DS4Windows.Output.Services;
+using DS4Windows.Processing;
+using DS4Windows.Processing.Abstractions;
+using DS4Windows.Processing.Services;
 
 namespace DS4WindowsTests
 {
@@ -48,7 +50,7 @@ namespace DS4WindowsTests
         {
             state = new SyntheticInputState();
             owner = new OutputKBMHandlerAdapter();
-            settings = TestRepositoryFactory.CreateProfileSettingsService(new DS4Windows.BackingStore(new DS4Windows.EnvironmentService()));
+            settings = TestRepositoryFactory.CreateProfileSettingsService(new DS4Windows.Core.Settings.BackingStore(new DS4Windows.Core.Platform.EnvironmentService()));
             return new SyntheticDispatcherService(state, owner, settings);
         }
 
@@ -149,7 +151,7 @@ namespace DS4WindowsTests
         [Fact]
         public void Host_SharesOneAdapterBetweenTheSenderAndTheLifecycle_AndBindsTheBridge()
         {
-            DS4WinWPF.AppHost.CreateHost();
+            DS4Windows.Composition.AppHost.CreateHost();
             var adapter = TestHost.GetService<OutputKBMHandlerAdapter>();
             Assert.Same(adapter, TestHost.GetService<IVirtualKBM>());
             Assert.NotNull(TestHost.GetService<IVirtualKBMLifecycle>());

@@ -1,4 +1,7 @@
-namespace DS4Windows.Services
+using DS4Windows.Processing;
+using DS4Windows.Processing.Abstractions;
+
+namespace DS4Windows.Core.Abstractions
 {
     /// <summary>
     /// Phase12-Step2 2b-2（R-4）: 指定に一致するウィンドウを探して、前面へ出す（フォーカスする）サービス。

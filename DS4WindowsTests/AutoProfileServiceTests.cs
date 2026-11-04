@@ -1,10 +1,13 @@
 using System;
 using System.Collections.Generic;
 using Xunit;
-using DS4Windows;
-using DS4Windows.DI;
-using DS4Windows.Services;
-using DS4WinWPF;
+using DS4Windows.Core.Abstractions;
+using DS4Windows.Core.Platform;
+using DS4Windows.Core.Profiles;
+using DS4Windows.Core.Settings;
+using DS4Windows.Processing;
+using DS4Windows.Processing.Abstractions;
+using DS4Windows.UI.Services;
 
 namespace DS4WindowsTests
 {
@@ -61,7 +64,6 @@ namespace DS4WindowsTests
 
         private record ApplyCall(int DeviceIndex, string ProfileName, bool IsTemp,
             bool LaunchProgram, ProfileChangeSource Source, string Prolog);
-
 
 
         [Fact]

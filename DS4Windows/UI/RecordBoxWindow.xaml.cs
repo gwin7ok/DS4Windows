@@ -30,7 +30,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
 
-namespace DS4WinWPF.DS4Forms
+namespace DS4Windows.UI
 {
     /// <summary>
     /// Interaction logic for RecordBoxWindow.xaml
@@ -44,8 +44,8 @@ namespace DS4WinWPF.DS4Forms
         /// 渡し忘れをコンパイルで検出するため必須引数とする（Phase6-Step7b-Plan.md 決定2）
         /// </param>
         // Phase6-Step10-2-4a: RecordBox の生成を窓口へ依頼する（必須引数）
-        public RecordBoxWindow(int deviceNum, DS4Windows.DS4ControlSettings settings, int targetDevice,
-            DS4Windows.DI.IEditorWindowFactory editorWindowFactory, bool repeatable = true,
+        public RecordBoxWindow(int deviceNum, DS4Windows.Core.Settings.DS4ControlSettings settings, int targetDevice,
+            DS4Windows.Processing.Abstractions.IEditorWindowFactory editorWindowFactory, bool repeatable = true,
             bool showPlaybackOptions = true)
         {
             if (editorWindowFactory == null) throw new ArgumentNullException(nameof(editorWindowFactory));

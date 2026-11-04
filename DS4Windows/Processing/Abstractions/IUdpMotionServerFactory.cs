@@ -1,4 +1,4 @@
-namespace DS4Windows.DI
+namespace DS4Windows.Processing.Abstractions
 {
     /// <summary>Phase9 9-E E-3（Phase9-E-Plan.md）: <see cref="IUdpMotionServer"/> を作る（作るだけで、待ち受けは <c>Start</c> まで始めない）。</summary>
     public interface IUdpMotionServerFactory

@@ -1,7 +1,9 @@
 using System;
 using System.Collections.Generic;
+using DS4Windows.Input;
+using DS4Windows.Output.Devices;
 
-namespace DS4Windows.Actions
+namespace DS4Windows.Processing.Actions
 {
     /// <summary>
     /// Phase8-Step4 W2: <see cref="IFrameOutput"/> の実装（デバイスごとに 1 つ。<c>Mapping</c> が持ち、毎フレーム <see cref="Bind"/> で出力の表を差し替える。割り当て 0）。

@@ -1,9 +1,15 @@
 using System;
-using DS4WinWPF;
-using DS4Windows;
-using DS4Windows.Actions;
-using DS4Windows.DI;
-using DS4Windows.Services;
+using DS4Windows.Core.Abstractions;
+using DS4Windows.Core.Persistence;
+using DS4Windows.Core.Platform;
+using DS4Windows.Core.Profiles;
+using DS4Windows.Core.Settings;
+using DS4Windows.Output;
+using DS4Windows.Output.Services;
+using DS4Windows.Processing;
+using DS4Windows.Processing.Abstractions;
+using DS4Windows.Processing.Services;
+using DS4Windows.UI.Services;
 
 namespace DS4WindowsTests
 {
@@ -23,29 +29,29 @@ namespace DS4WindowsTests
         }
 
         /// <summary>Phase7-Step10c W2: Actions.xml の保存・読込（旧: BackingStore のメソッド）。</summary>
-        public static DS4Windows.Services.SpecialActionsXmlSerializer CreateActionsXml(BackingStore store = null,
+        public static DS4Windows.Core.Persistence.SpecialActionsXmlSerializer CreateActionsXml(BackingStore store = null,
             IProfileIdentityService profileIdentity = null)
-            => new DS4Windows.Services.SpecialActionsXmlSerializer(store ?? TestGlobals.Store, TestActions.Manager, profileIdentity);
+            => new DS4Windows.Core.Persistence.SpecialActionsXmlSerializer(store ?? TestGlobals.Store, TestActions.Manager, profileIdentity);
 
         /// <summary>Phase7-Step10c W2: リンクプロファイルの保存・読込（旧: BackingStore のメソッド）。</summary>
-        public static DS4Windows.Services.LinkedProfilesXmlSerializer CreateLinkedProfilesXml(BackingStore store = null)
-            => new DS4Windows.Services.LinkedProfilesXmlSerializer(store ?? TestGlobals.Store);
+        public static DS4Windows.Core.Persistence.LinkedProfilesXmlSerializer CreateLinkedProfilesXml(BackingStore store = null)
+            => new DS4Windows.Core.Persistence.LinkedProfilesXmlSerializer(store ?? TestGlobals.Store);
 
         /// <summary>Phase7-Step10c W2: ProfileXmlStore（コントローラー固有設定の保存・読込を含む）。</summary>
         public static ProfileXmlStore CreateProfileXmlStore(BackingStore store = null)
-            => new ProfileXmlStore(store ?? TestGlobals.Store, new DS4Windows.Services.ControllerConfigsXmlSerializer(store ?? TestGlobals.Store),
+            => new ProfileXmlStore(store ?? TestGlobals.Store, new DS4Windows.Core.Persistence.ControllerConfigsXmlSerializer(store ?? TestGlobals.Store),
                 CreateAppSettingsXml(store), CreateLegacyProfileXml(store));
 
         /// <summary>Phase7-Step10c W4: プロファイル（旧形式の XML）の保存・読込（旧: BackingStore のメソッド）。</summary>
-        public static DS4Windows.Services.LegacyProfileXmlSerializer CreateLegacyProfileXml(BackingStore store = null,
+        public static DS4Windows.Core.Persistence.LegacyProfileXmlSerializer CreateLegacyProfileXml(BackingStore store = null,
             IProfileSettingsService settings = null, IPathService pathService = null, IProfileIdentityService profileIdentity = null)
-            => new DS4Windows.Services.LegacyProfileXmlSerializer(store ?? TestGlobals.Store, pathService ?? new PathService(),
+            => new DS4Windows.Core.Persistence.LegacyProfileXmlSerializer(store ?? TestGlobals.Store, pathService ?? new PathService(),
                 settings ?? TestGlobals.ProfileSettingsServiceInstance, new EnvironmentService(), profileIdentity);
 
         /// <summary>Phase7-Step10c W3: アプリ設定（Profiles.xml）の保存・読込（旧: BackingStore.Load／Save）。</summary>
-        public static DS4Windows.Services.AppSettingsXmlSerializer CreateAppSettingsXml(BackingStore store = null,
+        public static DS4Windows.Core.Persistence.AppSettingsXmlSerializer CreateAppSettingsXml(BackingStore store = null,
             IPathService pathService = null, IEnvironmentService environment = null)
-            => new DS4Windows.Services.AppSettingsXmlSerializer(store ?? TestGlobals.Store, pathService ?? new PathService(), environment ?? new EnvironmentService());
+            => new DS4Windows.Core.Persistence.AppSettingsXmlSerializer(store ?? TestGlobals.Store, pathService ?? new PathService(), environment ?? new EnvironmentService());
 
         public static ProfileRepository CreateProfileRepository(IProfileSettingsService settings = null,
             IProfileXmlStore xmlStore = null, IPathService pathService = null, IProfileLoadTarget loadTarget = null,
@@ -82,7 +88,7 @@ namespace DS4WindowsTests
             return new OutputSlotService(
                 new FakeVirtualPadService(mgr, ctl?.VirtualPadService),   // Phase13-Step7 7-d: 旧 Func<OutputSlotManager>／Func<IVirtualPadService>。抜き差しは VirtualPadService（Phase9 E-4）
                 store ?? new OutputSlotStore(new PathService()),
-                new DS4Windows.Services.OutputDeviceTypeState());   // Phase13-Step7 7-b: 出力種別の配列の持ち主
+                new DS4Windows.Output.Services.OutputDeviceTypeState());   // Phase13-Step7 7-b: 出力種別の配列の持ち主
         }
 
         public static ProfileActionProvider CreateProfileActionProvider(BackingStore store = null)
@@ -123,7 +129,7 @@ namespace DS4WindowsTests
             IProfileSettingsService profileSettings = null)
         {
             return new ProfilePresetLoader(store ?? TestGlobals.Store, profileSettings ?? TestGlobals.ProfileSettingsServiceInstance,
-                new DS4Windows.Services.ProfilePresets(store ?? TestGlobals.Store));
+                new DS4Windows.Core.Persistence.ProfilePresets(store ?? TestGlobals.Store));
         }
 
         public static ProfileApplicationService CreateProfileApplicationService(IProfileSettingsService settings,
@@ -131,8 +137,8 @@ namespace DS4WindowsTests
             IEnvironmentService environmentService, IProfileXmlStore xmlStore = null,
             IProfileActionProvider actionProvider = null, BackingStore store = null,
             IKeyButtonControllerRegistry keyButtonControllers = null,
-            DS4Windows.Actions.IActionRegistry actionRegistry = null,
-            Func<DS4Windows.Actions.IActionBindingBuilder> bindingBuilderProvider = null,
+            DS4Windows.Processing.Actions.IActionRegistry actionRegistry = null,
+            Func<DS4Windows.Processing.Actions.IActionBindingBuilder> bindingBuilderProvider = null,
             IProfileIdentityService profileIdentity = null)
         {
             return new ProfileApplicationService(settings, control, profileRepository, environmentService,
@@ -140,19 +146,19 @@ namespace DS4WindowsTests
                 actionProvider ?? CreateProfileActionProvider(store ?? TestGlobals.Store),
                 store ?? TestGlobals.Store,
                 keyButtonControllers ?? TestHost.GetService<IKeyButtonControllerRegistry>(),
-                actionRegistry ?? TestHost.GetService<DS4Windows.Actions.IActionRegistry>(),
-                bindingBuilderProvider ?? (() => TestHost.GetService<DS4Windows.Actions.IActionBindingBuilder>()),
+                actionRegistry ?? TestHost.GetService<DS4Windows.Processing.Actions.IActionRegistry>(),
+                bindingBuilderProvider ?? (() => TestHost.GetService<DS4Windows.Processing.Actions.IActionBindingBuilder>()),
                 TestActions.Manager,
                 profileIdentity);
         }
 
         public static ProfileSlotApplier CreateProfileSlotApplier(IProfileApplicationService profileApplication = null,
-            DS4Windows.Actions.ITriggerDispatchEngine engine = null)
+            DS4Windows.Processing.Actions.ITriggerDispatchEngine engine = null)
         {
             var settings = TestGlobals.ProfileSettingsServiceInstance;
             return new ProfileSlotApplier(profileApplication ?? CreateProfileApplicationService(settings,
                 new LazyProfileLoadTarget(), CreateProfileRepository(settings), new EnvironmentService()), new EnvironmentService(),
-                engine ?? TestHost.GetService<DS4Windows.Actions.ITriggerDispatchEngine>());
+                engine ?? TestHost.GetService<DS4Windows.Processing.Actions.ITriggerDispatchEngine>());
         }
 
         public static AppearanceSettingsService CreateAppearanceSettingsService(BackingStore store = null)

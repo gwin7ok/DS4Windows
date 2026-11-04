@@ -3,9 +3,10 @@ using System.Collections;
 using System.Collections.ObjectModel;
 using System.Threading;
 using System.Windows.Data;
-using DS4Windows;
+using DS4Windows.Core.Logging;
+using DS4Windows.Core.Utilities;
 
-namespace DS4WinWPF.DS4Forms.ViewModels
+namespace DS4Windows.UI.ViewModels
 {
     public class LogViewModel
     {
@@ -20,7 +21,7 @@ namespace DS4WinWPF.DS4Forms.ViewModels
 
         // Phase6-Step10-1-3: Global.exeversion の置換先（必須引数）。引数なしのコンストラクタは、DI の解決テスト
         // （PatternAViewModelTests）と ServiceRegistration の Transient 登録のために残している。
-        public LogViewModel(DS4Windows.DI.IEnvironmentService environmentService)
+        public LogViewModel(DS4Windows.Core.Abstractions.IEnvironmentService environmentService)
         {
             if (environmentService == null) throw new ArgumentNullException(nameof(environmentService));
 
@@ -28,12 +29,12 @@ namespace DS4WinWPF.DS4Forms.ViewModels
             logItems.Add(new LogItem { Datetime = DateTime.Now, Message = $"DS4Windows version {version}" });
             logItems.Add(new LogItem { Datetime = DateTime.Now, Message = $"DS4Windows Assembly Architecture: {(Environment.Is64BitProcess ? "x64" : "x86")}" });
             logItems.Add(new LogItem { Datetime = DateTime.Now, Message = $"OS Version: {Environment.OSVersion}" });
-            logItems.Add(new LogItem { Datetime = DateTime.Now, Message = $"OS Product Name: {DS4Windows.Util.GetOSProductName()}" });
-            logItems.Add(new LogItem { Datetime = DateTime.Now, Message = $"OS Release ID: {DS4Windows.Util.GetOSReleaseId()}" });
+            logItems.Add(new LogItem { Datetime = DateTime.Now, Message = $"OS Product Name: {DS4Windows.Core.Utilities.Util.GetOSProductName()}" });
+            logItems.Add(new LogItem { Datetime = DateTime.Now, Message = $"OS Release ID: {DS4Windows.Core.Utilities.Util.GetOSReleaseId()}" });
             logItems.Add(new LogItem { Datetime = DateTime.Now, Message = $"System Architecture: {(Environment.Is64BitOperatingSystem ? "x64" : "x32")}" });
 
             BindingOperations.EnableCollectionSynchronization(logItems, _logListLocker, LogLockCallback);
-            DS4Windows.AppLogger.GuiLog += AddLogMessage;
+            DS4Windows.Core.Logging.AppLogger.GuiLog += AddLogMessage;
         }
 
         private void LogLockCallback(IEnumerable collection, object context, Action accessMethod, bool writeAccess)
@@ -54,7 +55,7 @@ namespace DS4WinWPF.DS4Forms.ViewModels
             }
         }
 
-        private void AddLogMessage(object sender, DS4Windows.DebugEventArgs e)
+        private void AddLogMessage(object sender, DS4Windows.Core.Logging.DebugEventArgs e)
         {
             // 一時ログや [DI]/[Legacy] トレースログは GUI 画面には表示せずファイル出力のみとする
             if (e.Temporary)

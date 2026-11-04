@@ -24,10 +24,13 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Threading;
-using DS4WinWPF.DS4Control;
 using Nefarius.ViGEm.Client;
+using DS4Windows.Core.Logging;
+using DS4Windows.Core.Utilities;
+using DS4Windows.Output.Devices;
+using DS4Windows.Processing;
 
-namespace DS4Windows
+namespace DS4Windows.Output
 {
     public class OutputSlotManager : IInstanceIdentifiable
     {

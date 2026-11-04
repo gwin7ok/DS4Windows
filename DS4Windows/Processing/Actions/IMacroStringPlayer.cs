@@ -1,4 +1,4 @@
-namespace DS4Windows.Actions
+namespace DS4Windows.Processing.Actions
 {
     /// <summary>
     /// Phase8-Step7 7.7b（Phase8-Step7-7-Plan.md Q4＝A。W2b で <c>IMultiActionMacroPlayer</c> から改名）: マクロを**文字列で直接指定して**実行する窓口。

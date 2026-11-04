@@ -1,9 +1,8 @@
-using DS4Windows.Services;
 using System;
-using DS4Windows.DS4Control;
-using DS4Windows;
+using DS4Windows.Core.Logging;
+using DS4Windows.Core.Settings;
 
-namespace DS4Windows.Actions
+namespace DS4Windows.Processing.Actions
 {
     // Adapter that wraps existing KeyButtonActionController and exposes IActionController
     public class KeyButtonActionControllerAdapter : IActionController

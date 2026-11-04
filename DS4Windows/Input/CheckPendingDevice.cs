@@ -16,7 +16,6 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
 
-using DS4Windows.InputDevices;
 using NLog.Targets;
 using System;
 using System.Collections.Generic;
@@ -24,8 +23,9 @@ using System.Diagnostics;
 using System.Linq;
 using System.Runtime.InteropServices;
 using System.Security.Principal;
+using DS4Windows.Input.Hid;
 
-namespace DS4Windows
+namespace DS4Windows.Input
 {
     public delegate bool CheckPendingDevice(HidDevice device, VidPidInfo vidPidInfo);
 }

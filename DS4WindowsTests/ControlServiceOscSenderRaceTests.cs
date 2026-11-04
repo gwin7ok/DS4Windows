@@ -2,9 +2,9 @@ using System;
 using System.IO;
 using System.Text.RegularExpressions;
 using Xunit;
-using DS4Windows;
-using DS4Windows.DI;
-using DS4Windows.Services;
+using DS4Windows.Input;
+using DS4Windows.Output.Services;
+using DS4Windows.Processing.Abstractions;
 
 namespace DS4WindowsTests
 {
@@ -55,7 +55,7 @@ namespace DS4WindowsTests
         {
             // Phase13-Step10 10-c: 旧 ControlService.ChangeOSCSenderStatus は削除した。画面が使う IRuntimeFeatureSwitch を経由する
             ControlServiceTestFactory.Create();
-            var service = TestHost.GetService<DS4Windows.DI.IRuntimeFeatureSwitch>();
+            var service = TestHost.GetService<DS4Windows.Processing.Abstractions.IRuntimeFeatureSwitch>();
 
             Exception ex = Record.Exception(() => service.ChangeOscSenderStatus(false));
 

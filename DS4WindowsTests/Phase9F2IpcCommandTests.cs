@@ -2,8 +2,8 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
-using DS4WinWPF.DS4Forms;
 using Xunit;
+using DS4Windows.UI;
 
 namespace DS4WindowsTests
 {

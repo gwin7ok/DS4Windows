@@ -17,9 +17,9 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
 
 using System;
-using DS4Windows;
+using DS4Windows.Core.Settings;
 
-namespace DS4WinWPF.DS4Forms.ViewModels
+namespace DS4Windows.UI.ViewModels
 {
     public class AxialStickControlViewModel
     {

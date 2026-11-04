@@ -1,6 +1,6 @@
 using System.Runtime.CompilerServices;
 
-namespace DS4Windows
+namespace DS4Windows.Core.Utilities
 {
     /// <summary>
     /// Phase7-Step9 W2（Q2＝A）: 数値の純粋な計算（旧: <c>Global.Clamp</c>）。<c>Global.Clamp</c> は、この関数へ委譲する薄いシムとして残してある。

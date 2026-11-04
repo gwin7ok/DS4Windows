@@ -1,4 +1,4 @@
-namespace DS4Windows.DI
+namespace DS4Windows.Processing.Abstractions
 {
     /// <summary>
     /// Phase9 9-E E-6a（Phase9-E6-Plan.md）: コントローラーをスロットへつなぐときの、プロファイルの選択と適用。

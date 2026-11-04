@@ -2,8 +2,9 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.InteropServices;
+using DS4Windows.Core.Logging;
 
-namespace DS4Windows
+namespace DS4Windows.Input.Hid
 {
     public class HidDevices
     {
@@ -43,7 +44,7 @@ namespace DS4Windows
                                                                                   productIds.Contains(x.Attributes.ProductId));
         }
 
-        public static IEnumerable<HidDevice> EnumerateDS4(VidPidInfo[] devInfo, DS4Windows.DI.IDeviceLayerSettings layerSettings)
+        public static IEnumerable<HidDevice> EnumerateDS4(VidPidInfo[] devInfo, DS4Windows.Processing.Abstractions.IDeviceLayerSettings layerSettings)
         {
             int iEnumeratedDevCount = 0;
             List<HidDevice> foundDevs = new List<HidDevice>();

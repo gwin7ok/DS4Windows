@@ -3,8 +3,9 @@ using System.IO;
 using System.Reflection;
 using System.Runtime.InteropServices;
 using Microsoft.Win32;
+using DS4Windows.Core.Logging;
 
-namespace DS4Windows
+namespace DS4Windows.UI.Services
 {
     /// <summary>
     /// ポータブル実行時でもWindows通知システムにアプリを認識させ、

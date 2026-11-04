@@ -1,7 +1,8 @@
 using Microsoft.Win32;
 using System;
+using DS4Windows.Core.Logging;
 
-namespace DS4Windows
+namespace DS4Windows.Core.Platform
 {
     // Simple holder that maps Windows keyboard settings to milliseconds used by RepeatHelper
     public static class KeyboardSettings

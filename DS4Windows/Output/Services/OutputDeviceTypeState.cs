@@ -1,6 +1,8 @@
-using DS4Windows.DI;
 
-namespace DS4Windows.Services
+using DS4Windows.Core.Settings;
+using DS4Windows.Processing.Abstractions;
+
+namespace DS4Windows.Output.Services
 {
     /// <summary>
     /// Phase13-Step7 7-b: <see cref="IOutputDeviceTypeState"/> の実装（DI の Singleton。依存なし）。

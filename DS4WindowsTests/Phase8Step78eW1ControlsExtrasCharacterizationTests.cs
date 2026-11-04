@@ -1,7 +1,9 @@
 using System;
-using DS4Windows;
 using Xunit;
 using Xunit.Abstractions;
+using DS4Windows.Core.Settings;
+using DS4Windows.Input;
+using DS4Windows.Processing;
 
 namespace DS4WindowsTests
 {
@@ -298,7 +300,7 @@ namespace DS4WindowsTests
             dcs.Reset();   // 新しいプロファイル（Extras なし）
             t.PublishControlsOnly();
             TestActions.Manager.ClearDeviceState(t.Device);
-            TestHost.GetService<DS4Windows.Actions.ITriggerDispatchEngine>().OnProfileApplied(t.Device);
+            TestHost.GetService<DS4Windows.Processing.Actions.ITriggerDispatchEngine>().OnProfileApplied(t.Device);
             t.Run(State(cross: true));
             t.Run(State());
 

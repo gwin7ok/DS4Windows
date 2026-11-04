@@ -1,7 +1,7 @@
 using System;
 using System.Collections.Generic;
 
-namespace DS4WinWPF.DS4Forms.ViewModels
+namespace DS4Windows.UI.ViewModels
 {
     /// <summary>
     /// Phase10-Step2 W2（Phase10-Step2-Plan.md §3.2）: トリガーの一覧。引数なしの構築は、SA のモードの全トリガー（51 項目）。並び・名前・表示名は、

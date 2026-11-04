@@ -1,4 +1,6 @@
-namespace DS4Windows.Actions
+using DS4Windows.Input;
+
+namespace DS4Windows.Processing.Actions
 {
     /// <summary>
     /// Phase8-Step7 7.8b（Phase8-Step7-8b-Plan.md Q2＝A）: Controls タブの割り当て用の押下の判定を持つ入力。

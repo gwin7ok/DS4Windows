@@ -1,6 +1,7 @@
 using System.Collections.Generic;
+using DS4Windows.Input;
 
-namespace DS4Windows.Actions
+namespace DS4Windows.Processing.Actions
 {
     /// <summary>
     /// トリガー条件の判定（副作用なし。<c>delayTime</c> の基準時刻の更新だけは、判定の一部として <see cref="ITriggerInput.Delay"/> を更新する）。

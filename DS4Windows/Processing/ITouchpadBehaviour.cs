@@ -17,8 +17,9 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
 
 using System;
+using DS4Windows.Input;
 
-namespace DS4Windows
+namespace DS4Windows.Processing
 {
     // TODO(Phase9-B): 利用者のいない契約（Mouse が実装するのみ。ControlService の利用はコメントアウト済み）。上流の設計（2014 年）。
     // Mouse の分割（IMouseEngine、Phase9-Responsibility-Split-Plan.md）で、この契約を使うか廃止するかを判断する。

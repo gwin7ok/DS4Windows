@@ -25,10 +25,9 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Xml;
 using System.Xml.Serialization;
-using DS4Windows.InputDevices;
-using DS4WinWPF.DS4Control.DTOXml;
+using DS4Windows.Input.Devices;
 
-namespace DS4Windows
+namespace DS4Windows.Core.Settings
 {
 
     public abstract class ControllerOptionsStore

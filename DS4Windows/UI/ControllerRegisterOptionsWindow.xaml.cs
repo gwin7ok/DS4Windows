@@ -31,10 +31,12 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
-using DS4WinWPF.DS4Forms.ViewModels;
-using DS4Windows;
+using DS4Windows.Core.Settings;
+using DS4Windows.Core.Updater;
+using DS4Windows.Processing;
+using DS4Windows.UI.ViewModels;
 
-namespace DS4WinWPF.DS4Forms
+namespace DS4Windows.UI
 {
     /// <summary>
     /// Interaction logic for ControllerRegisterOptions.xaml
@@ -45,7 +47,7 @@ namespace DS4WinWPF.DS4Forms
 
         // Phase6-Step10-2-2: 呼び出し側（MainWindow）が保持済みのサービスを渡す（Pure DI）
         public ControllerRegisterOptionsWindow(ControlServiceDeviceOptions deviceOptions, ControlService service,
-            DS4Windows.DI.IAppSettingsService appSettingsService, DS4Windows.DI.IProfileXmlStore profileXmlStore)
+            DS4Windows.Processing.Abstractions.IAppSettingsService appSettingsService, DS4Windows.Core.Abstractions.IProfileXmlStore profileXmlStore)
         {
             InitializeComponent();
             moonlightDocLink.NavigateUri = new Uri(ReleaseSource.MoonlightDocPageUri);

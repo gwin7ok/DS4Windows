@@ -16,8 +16,6 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
 
-using DS4Windows;
-using DS4WinWPF.DS4Forms.ViewModels;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -31,8 +29,11 @@ using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
+using DS4Windows.Core.Settings;
+using DS4Windows.Core.Utilities;
+using DS4Windows.UI.ViewModels;
 
-namespace DS4WinWPF.DS4Forms
+namespace DS4Windows.UI
 {
     /// <summary>
     /// Interaction logic for FirstLaunchHelper.xaml

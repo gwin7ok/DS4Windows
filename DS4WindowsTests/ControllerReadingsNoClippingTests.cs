@@ -7,9 +7,9 @@ using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
 using System.Windows.Media;
 using System.Xml.Linq;
-using DS4WinWPF.DS4Forms;
 using Xunit;
 using Xunit.Abstractions;
+using DS4Windows.UI;
 
 namespace DS4WindowsTests
 {

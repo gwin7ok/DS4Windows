@@ -1,8 +1,11 @@
 using System;
 using System.Linq;
-using DS4Windows;
 using Xunit;
 using Xunit.Abstractions;
+using DS4Windows.Core.Settings;
+using DS4Windows.Input;
+using DS4Windows.Processing;
+using DS4Windows.Processing.Actions;
 
 namespace DS4WindowsTests
 {
@@ -175,7 +178,7 @@ namespace DS4WindowsTests
             dcs.extras = "1,2,0,0,0,0,0,0,0";
             t.Publish();
 
-            Assert.Equal(2, TestHost.GetService<DS4Windows.DI.IControlBindingBuilder>().Build(t.Device).Count);
+            Assert.Equal(2, TestHost.GetService<DS4Windows.Processing.Abstractions.IControlBindingBuilder>().Build(t.Device).Count);
         }
 
         [Fact]

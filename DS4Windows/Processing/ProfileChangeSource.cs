@@ -19,7 +19,7 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 using System;
 using NLog;
 
-namespace DS4Windows
+namespace DS4Windows.Processing
 {
 
     public enum ProfileChangeSource : byte

@@ -1,4 +1,6 @@
-namespace DS4Windows.Actions
+using DS4Windows.Input;
+
+namespace DS4Windows.Processing.Actions
 {
     /// <summary>
     /// Phase8-Step7 7.8f-1（Phase8-Step7-8f-Plan.md §3.2）: 1 フレームの出力への、パッド（X360 の軸・トリガー・ボタン）の書き込み口。

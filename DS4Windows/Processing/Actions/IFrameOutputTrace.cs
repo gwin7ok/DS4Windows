@@ -1,6 +1,6 @@
 using System.Collections.Generic;
 
-namespace DS4Windows.Actions
+namespace DS4Windows.Processing.Actions
 {
     /// <summary>
     /// Phase8-Step7 7.1-W2（Q6＝A）: <see cref="IFrameOutput"/> の実装が、TRACE ログ用に、このフレームの出力の組み合わせを読み出すための口。

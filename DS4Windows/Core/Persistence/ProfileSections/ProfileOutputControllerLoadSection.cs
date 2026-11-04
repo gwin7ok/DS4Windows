@@ -1,9 +1,4 @@
-﻿using DS4Windows.DS4Control;
-using DS4Windows.InputDevices;
-using DS4Windows.StickModifiers;
-using DS4WinWPF.DS4Control.DTOXml;
-using DS4WinWPF.DS4Forms.ViewModels;
-using Sensorit.Base;
+﻿using Sensorit.Base;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -22,14 +17,14 @@ using System.Windows;
 using System.Windows.Input;
 using System.Xml;
 using System.Xml.Serialization;
-using DS4WinWPF;
-using DS4WinWPF.ApiDTO;
 using WpfScreenHelper;
-using static DS4Windows.Mouse;
-using static DS4Windows.Util;
-using DS4Windows.DI;
+using static DS4Windows.Processing.Mouse;
+using static DS4Windows.Core.Utilities.Util;
+using DS4Windows.Core.Settings;
+using DS4Windows.Output;
+using DS4Windows.Processing.Abstractions;
 
-namespace DS4Windows.Services
+namespace DS4Windows.Core.Persistence.ProfileSections
 {
     /// <summary>
     /// Phase8-Step4b W5（Phase8-Step4b-Plan.md §3.2）: 出力コントローラーの種別（OutputContDevice）の読込と、必要なときの出力デバイスの状態確認。確認の結果（xinputPlug／xinputStatus）は文脈に書き戻し、読込の最後の PostLoadSnippet が使う。
@@ -47,7 +42,7 @@ namespace DS4Windows.Services
             bool missingSetting = context.MissingSetting;
             XmlNode Item;
 
-            DS4Windows.DI.IEnvironmentService _environment = context.Environment;
+            DS4Windows.Core.Abstractions.IEnvironmentService _environment = context.Environment;
             bool xinputChange = context.XinputChange;
             OutContType oldContType = context.OldContType;
             bool xinputPlug = false;

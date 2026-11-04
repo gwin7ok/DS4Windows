@@ -1,9 +1,9 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using DS4Windows.DI;
+using DS4Windows.Core.Abstractions;
 
-namespace DS4Windows
+namespace DS4Windows.Core.Settings
 {
     /// <summary>
     /// Phase10-Step4d W5b（Phase10-Step4d-Plan.md §4 W5）: スロットごとのプロファイルの<b>名前を読み書きする窓口</b>で、保管は<b>プロファイルの固定 ID</b>

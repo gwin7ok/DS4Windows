@@ -1,7 +1,9 @@
 using System.Collections.Generic;
-using DS4Windows.Actions;
+using DS4Windows.Core.Settings;
+using DS4Windows.Input;
+using DS4Windows.Processing.Actions;
 
-namespace DS4Windows.Services
+namespace DS4Windows.Processing.Services
 {
     /// <summary>
     /// Phase10-Step6 I3（Phase10-Step6-Plan.md §4）: 読み込みの部品（Controls タブ側）。Controls のボタン 1 つの割り当て（<see cref="DS4ControlSettings"/>）のうち、

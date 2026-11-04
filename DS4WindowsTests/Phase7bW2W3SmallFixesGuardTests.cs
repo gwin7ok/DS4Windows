@@ -1,9 +1,9 @@
 using System.IO;
 using System.Text.RegularExpressions;
-using DS4Windows;
-using DS4Windows.DS4Control;
 using Xunit;
 using Xunit.Abstractions;
+using DS4Windows.Core.Platform;
+using DS4Windows.Output.Kbm;
 
 namespace DS4WindowsTests
 {

@@ -1,6 +1,8 @@
-using DS4Windows.DI;
 
-namespace DS4Windows.Services
+using DS4Windows.Input;
+using DS4Windows.Processing.Abstractions;
+
+namespace DS4Windows.Output.Services
 {
     /// <summary>Phase9 9-E E-3: <see cref="IUdpMotionServer"/> の実装。<c>UdpServer</c>（internal）を、そのまま包む。</summary>
     public sealed class UdpMotionServerAdapter : IUdpMotionServer

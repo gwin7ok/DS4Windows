@@ -1,4 +1,4 @@
-namespace DS4WinWPF
+namespace DS4Windows.Core.Updater
 {
     /// <summary>
     /// 更新チェック・更新ダウンロード・「リリースページを開く」が参照する GitHub リポジトリの定義（1 か所）。

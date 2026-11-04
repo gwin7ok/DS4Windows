@@ -1,7 +1,7 @@
 using System.Linq;
 using System.Reflection;
-using DS4Windows;
 using Xunit;
+using DS4Windows.Processing;
 
 namespace DS4WindowsTests
 {
@@ -23,7 +23,7 @@ namespace DS4WindowsTests
         [Fact]
         public void TheLifecycle_StillHoldsTheState()
         {
-            var lifecycle = TestHost.GetService<DS4Windows.DI.IServiceLifecycle>();
+            var lifecycle = TestHost.GetService<DS4Windows.Processing.Abstractions.IServiceLifecycle>();
             Assert.NotNull(lifecycle);
             bool before = lifecycle.Suspending;
             lifecycle.Suspending = !before;

@@ -27,13 +27,12 @@ using System.Windows.Interop;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using Microsoft.Win32;
-using DS4Windows;
-using DS4Windows.DI;
-using DS4Windows.StickModifiers;
-using DS4WinWPF.DS4Forms.ViewModels.Util;
-using DS4Windows.InputDevices;
+using DS4Windows.Core.Abstractions;
+using DS4Windows.Core.Settings;
+using DS4Windows.Input;
+using DS4Windows.Output.Devices;
 
-namespace DS4WinWPF.DS4Forms.ViewModels
+namespace DS4Windows.UI.ViewModels
 {
 
     public class PresetMenuHelper

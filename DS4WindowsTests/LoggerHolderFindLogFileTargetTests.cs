@@ -1,8 +1,8 @@
-using DS4WinWPF;
 using NLog.Config;
 using NLog.Targets;
 using NLog.Targets.Wrappers;
 using Xunit;
+using DS4Windows.Core.Logging;
 
 namespace DS4WindowsTests
 {

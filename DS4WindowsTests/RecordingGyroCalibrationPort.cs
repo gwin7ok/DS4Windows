@@ -1,5 +1,5 @@
 using System.Collections.Generic;
-using DS4Windows.Actions;
+using DS4Windows.Processing.Actions;
 
 namespace DS4WindowsTests
 {

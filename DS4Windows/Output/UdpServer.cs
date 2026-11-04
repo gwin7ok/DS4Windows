@@ -25,8 +25,9 @@ using System.Net.Sockets;
 using System.ComponentModel;
 using System.Threading;
 using System.Runtime.InteropServices;
+using DS4Windows.Input;
 
-namespace DS4Windows
+namespace DS4Windows.Output
 {
 
     class UdpServer

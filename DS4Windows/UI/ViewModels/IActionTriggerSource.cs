@@ -1,6 +1,6 @@
 using System.Collections.Generic;
 
-namespace DS4WinWPF.DS4Forms.ViewModels
+namespace DS4Windows.UI.ViewModels
 {
     /// <summary>
     /// Phase10-Step2 W1（Phase10-Step2-Plan.md §3.1）: 共通の編集画面の、トリガーの供給元。SA のモード（<see cref="SpecialActionTriggerSource"/>）は、

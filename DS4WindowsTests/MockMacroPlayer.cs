@@ -1,8 +1,8 @@
 using System;
 using System.Collections.Generic;
 using System.Threading;
-using DS4Windows;
-using DS4Windows.Actions;
+using DS4Windows.Processing;
+using DS4Windows.Processing.Actions;
 
 namespace DS4WindowsTests
 {

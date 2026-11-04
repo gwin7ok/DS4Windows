@@ -1,11 +1,13 @@
 using System;
 using System.Collections.Generic;
 using System.Threading;
-using DS4Windows;
-using DS4Windows.Actions;
-using DS4Windows.DI;
-using DS4Windows.Services;
 using Xunit;
+using DS4Windows.Core.Abstractions;
+using DS4Windows.Core.Settings;
+using DS4Windows.Input;
+using DS4Windows.Processing;
+using DS4Windows.Processing.Abstractions;
+using DS4Windows.Processing.Actions;
 
 namespace DS4WindowsTests
 {
@@ -207,7 +209,7 @@ namespace DS4WindowsTests
                 special = new ControlSpecialItem { Type = SpecialAction.ActionTypeId.FocusWindow, WindowPath = path, WindowTitle = title },
             };
 
-            Assert.Equal(expected, DS4Windows.Services.ControlBindingBuilder.TryInterpretSpecial(dcs, out _));
+            Assert.Equal(expected, DS4Windows.Processing.Services.ControlBindingBuilder.TryInterpretSpecial(dcs, out _));
         }
     }
 }

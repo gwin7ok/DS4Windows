@@ -16,14 +16,16 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
 
-using DS4Windows.DI;
-using DS4Windows.Services;
-using DS4Windows.StickModifiers;
 //using System.Diagnostics;
-using DS4WinWPF.DS4Control;
 using System;
+using DS4Windows.Core.Abstractions;
+using DS4Windows.Core.Logging;
+using DS4Windows.Core.Settings;
+using DS4Windows.Core.Utilities;
+using DS4Windows.Input;
+using DS4Windows.Processing.Abstractions;
 
-namespace DS4Windows
+namespace DS4Windows.Processing
 {
     public class Mouse : ITouchpadBehaviour
     {
@@ -87,7 +89,6 @@ namespace DS4Windows
         private double trackballDYRemain = 0.0;
 
         private bool trackballTouchStickActive = false;
-
 
 
         public enum TouchButtonActivationMode : ushort

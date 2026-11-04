@@ -1,7 +1,8 @@
 using System;
-using DS4Windows.DI;
+using DS4Windows.Core.Settings;
+using DS4Windows.Processing.Abstractions;
 
-namespace DS4Windows.Services
+namespace DS4Windows.Processing.Services
 {
     /// <summary>
     /// Phase9 MapCustom の分割 M2（Phase9-MapCustom-Plan.md §3）: <see cref="ITwoStageTriggerProcessor"/> の実装（DI の Singleton。状態なし）。

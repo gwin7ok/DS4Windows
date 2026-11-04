@@ -1,7 +1,8 @@
 using System;
-using DS4WinWPF.DS4Control;   // OutSlotDevice
+using DS4Windows.Input;
+using DS4Windows.Output;
 
-namespace DS4Windows.DI
+namespace DS4Windows.Processing.Abstractions
 {
     /// <summary>
     /// Phase9 9-E E-4（Phase9-E-Plan.md）: 仮想パッド（Xbox 360／DS4。ViGEmBus 経由）の出力。

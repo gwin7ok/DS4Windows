@@ -1,12 +1,12 @@
 using System;
 using System.Linq;
 using System.Reflection;
-using DS4Windows;
-using DS4Windows.Actions;
-using DS4Windows.DI;
-using DS4Windows.DS4Control;
-using DS4Windows.Services;
 using Xunit;
+using DS4Windows.Input;
+using DS4Windows.Output.Devices;
+using DS4Windows.Processing;
+using DS4Windows.Processing.Abstractions;
+using DS4Windows.Processing.Actions;
 
 namespace DS4WindowsTests
 {
@@ -39,7 +39,7 @@ namespace DS4WindowsTests
 
         private static IManagedActionManager Manager()
         {
-            DS4WinWPF.AppHost.CreateHost();
+            DS4Windows.Composition.AppHost.CreateHost();
             return TestHost.GetService<IManagedActionManager>();
         }
 

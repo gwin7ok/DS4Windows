@@ -6,8 +6,8 @@ using System.Text.RegularExpressions;
 using System.Xml;
 using Xunit;
 using Xunit.Abstractions;
-using DS4Windows;
-using DS4Windows.DI;
+using DS4Windows.Core.Abstractions;
+using DS4Windows.Processing.Abstractions;
 
 namespace DS4WindowsTests
 {
@@ -91,14 +91,14 @@ namespace DS4WindowsTests
             bool appDataPathWasSet = string.IsNullOrEmpty(originalAppDataPath);
             if (appDataPathWasSet)
             {
-                TestGlobals.AppDataPath = new DS4Windows.PathService().AppDataPath;
+                TestGlobals.AppDataPath = new DS4Windows.Core.Platform.PathService().AppDataPath;
             }
 
             string dir = Path.Combine(Path.GetTempPath(), "Phase6Step10_AutoProfiles_" + Guid.NewGuid().ToString("N"));
             Directory.CreateDirectory(dir);
             try
             {
-                DS4WinWPF.AppHost.CreateHost();
+                DS4Windows.Composition.AppHost.CreateHost();
                 IAutoProfileService service = TestHost.GetService<IAutoProfileService>();
                 Assert.NotNull(service);
 
@@ -128,12 +128,12 @@ namespace DS4WindowsTests
         [Fact]
         public void ProfilePresetLoader_IsRegisteredInContainer()
         {
-            DS4WinWPF.AppHost.CreateHost();
+            DS4Windows.Composition.AppHost.CreateHost();
 
             var loader = TestHost.GetService<IProfilePresetLoader>();
 
             Assert.NotNull(loader);
-            Assert.IsType<DS4Windows.Services.ProfilePresetLoader>(loader);
+            Assert.IsType<DS4Windows.Core.Persistence.ProfilePresetLoader>(loader);
         }
 
         [Fact]

@@ -1,8 +1,10 @@
-﻿namespace DS4WinWPF.DS4Forms.ViewModels.SpecialActions
+﻿using DS4Windows.Processing;
+
+namespace DS4Windows.UI.ViewModels.SpecialActions
 {
     /// <summary>
     /// Phase12-Step2 2h（R-4）: FocusWindow の対象の指定（保存用の文字列）と、画面の入力（本文＋一致方法）の相互変換。
-    /// 保存用の文字列は、<see cref="DS4Windows.WindowTargetMatcher"/> の規則（先頭 <c>^</c>＝前方、末尾 <c>$</c>＝後方、先頭 <c>*</c>＝部分、印なし＝完全。2 文字以上のときだけ印とみなす）のまま。
+    /// 保存用の文字列は、<see cref="DS4Windows.Processing.WindowTargetMatcher"/> の規則（先頭 <c>^</c>＝前方、末尾 <c>$</c>＝後方、先頭 <c>*</c>＝部分、印なし＝完全。2 文字以上のときだけ印とみなす）のまま。
     /// 印と同じ文字で始まる・終わる完全一致の本文は、照合の規則が表せないため、扱わない。
     /// </summary>
     public static class WindowTargetText

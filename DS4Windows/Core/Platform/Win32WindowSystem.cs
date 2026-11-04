@@ -3,8 +3,10 @@ using System.Collections.Generic;
 using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading;
+using DS4Windows.Core.Abstractions;
+using DS4Windows.Processing.Abstractions;
 
-namespace DS4Windows.Services
+namespace DS4Windows.Core.Platform
 {
     /// <summary>
     /// Phase12-Step2 2b-2: <see cref="IWindowSystem"/> の実装（Win32 の P/Invoke）。手順の判断は <see cref="WindowFocuser"/> が持ち、

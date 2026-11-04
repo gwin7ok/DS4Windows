@@ -1,6 +1,6 @@
 using System;
 
-namespace DS4Windows
+namespace DS4Windows.Core.Utilities
 {
     /// <summary>
     /// Phase7-Step10c W3（Q1＝A）: バージョン文字列の数値化（旧: <c>Global.CompileVersionNumberFromString</c>／<c>CompileVersionNumber</c>。本体は同一）。

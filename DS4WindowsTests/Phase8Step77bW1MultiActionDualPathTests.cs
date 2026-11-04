@@ -1,8 +1,10 @@
 using System;
 using System.Diagnostics;
 using System.Threading;
-using DS4Windows;
 using Xunit;
+using DS4Windows.Input;
+using DS4Windows.Processing;
+using DS4Windows.Processing.Actions;
 
 namespace DS4WindowsTests
 {

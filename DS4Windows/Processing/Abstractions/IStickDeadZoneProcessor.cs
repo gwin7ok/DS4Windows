@@ -1,4 +1,6 @@
-namespace DS4Windows.DI
+using DS4Windows.Core.Settings;
+
+namespace DS4Windows.Processing.Abstractions
 {
     /// <summary>
     /// Phase9 9-A(1) (b)（Phase9-A1-Plan.md §2）: スティック 1 本のデッドゾーンの補正（Radial と Axial。Radial のときは外側の出力［Outer Binding］も）。

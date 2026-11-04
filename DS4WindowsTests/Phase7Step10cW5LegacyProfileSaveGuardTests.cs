@@ -3,10 +3,11 @@ using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Text.RegularExpressions;
-using DS4Windows;
-using DS4Windows.Services;
 using Xunit;
 using Xunit.Abstractions;
+using DS4Windows.Core.Persistence;
+using DS4Windows.Core.Platform;
+using DS4Windows.Core.Settings;
 
 namespace DS4WindowsTests
 {
@@ -48,7 +49,7 @@ namespace DS4WindowsTests
             foreach (string name in new[] { "SaveProfile", "SaveAsProfile", "LoadProfile", "SaveLegacyExtraSettings", "LoadLegacyExtraSettings" })
                 Assert.NotNull(typeof(LegacyProfileXmlSerializer).GetMethod(name, BindingFlags.Instance | BindingFlags.Public));
 
-            var store = new DS4Windows.BackingStore(new DS4Windows.EnvironmentService());
+            var store = new DS4Windows.Core.Settings.BackingStore(new DS4Windows.Core.Platform.EnvironmentService());
             Assert.Throws<ArgumentNullException>(() => new LegacyProfileXmlSerializer(store, new PathService(), TestGlobals.ProfileSettingsServiceInstance, null));
         }
 

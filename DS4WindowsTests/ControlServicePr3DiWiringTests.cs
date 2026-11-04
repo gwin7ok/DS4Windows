@@ -1,7 +1,8 @@
 using System;
 using Xunit;
-using DS4Windows;
-using DS4Windows.Services;
+using DS4Windows.Output.Services;
+using DS4Windows.Processing;
+using DS4Windows.Processing.Abstractions;
 
 namespace DS4WindowsTests
 {
@@ -14,7 +15,7 @@ namespace DS4WindowsTests
         [Fact]
         public void AppHost_ResolvesVirtualKBMServices_AsExpectedImplementations()
         {
-            DS4WinWPF.AppHost.CreateHost();
+            DS4Windows.Composition.AppHost.CreateHost();
 
             Assert.IsType<OutputKBMHandlerAdapter>(TestHost.GetService<IVirtualKBM>());
             Assert.IsType<OutputKBMHandlerLifecycle>(TestHost.GetService<IVirtualKBMLifecycle>());
@@ -23,7 +24,7 @@ namespace DS4WindowsTests
         [Fact]
         public void AppHost_ResolvesControlService_WithPr3Dependencies()
         {
-            DS4WinWPF.AppHost.CreateHost();
+            DS4Windows.Composition.AppHost.CreateHost();
 
             ControlService controlService = null;
             var ex = Record.Exception(() => controlService = TestHost.GetService<ControlService>());

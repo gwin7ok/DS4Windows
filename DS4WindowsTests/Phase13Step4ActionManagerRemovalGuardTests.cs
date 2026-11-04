@@ -13,7 +13,7 @@ namespace DS4WindowsTests
     /// </summary>
     public class Phase13Step4ActionManagerRemovalGuardTests
     {
-        private static readonly Type[] Asm = { typeof(DS4Windows.Actions.IManagedActionManager) };
+        private static readonly Type[] Asm = { typeof(DS4Windows.Processing.Actions.IManagedActionManager) };
 
         private static string StripComments(string text)
         {
@@ -58,7 +58,7 @@ namespace DS4WindowsTests
         [Fact]
         public void ManagedActionManager_ExposesIsBeingTriggered()
         {
-            Assert.NotNull(typeof(DS4Windows.Actions.IManagedActionManager).GetMethod("IsBeingTriggered"));
+            Assert.NotNull(typeof(DS4Windows.Processing.Actions.IManagedActionManager).GetMethod("IsBeingTriggered"));
         }
     }
 }

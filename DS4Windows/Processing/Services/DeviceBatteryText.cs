@@ -1,7 +1,8 @@
 using System;
-using DS4Windows.DI;
+using DS4Windows.Input;
+using DS4Windows.Processing.Abstractions;
 
-namespace DS4Windows.Services
+namespace DS4Windows.Processing.Services
 {
     /// <summary>
     /// Phase13-Step6 6-b: <see cref="IDeviceBatteryText"/> の実装（DI の Singleton。状態なし）。
@@ -29,7 +30,7 @@ namespace DS4Windows.Services
                 if (d.isCharging())
                 {
                     if (d.getBattery() >= 100)
-                        battery = DS4WinWPF.Properties.Resources.Full;
+                        battery = DS4Windows.Properties.Resources.Full;
                     else
                         battery = d.getBattery() + "%+";
                 }
@@ -41,7 +42,7 @@ namespace DS4Windows.Services
                 return battery;
             }
             else
-                return DS4WinWPF.Properties.Resources.NA;
+                return DS4Windows.Properties.Resources.NA;
         }
     }
 }

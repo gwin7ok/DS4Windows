@@ -1,8 +1,8 @@
 using System;
 using System.IO;
-using DS4Windows;
+using DS4Windows.Core.Logging;
 
-namespace DS4WinWPF
+namespace DS4Windows.Core.Updater
 {
     // Helper used when process is started elevated to complete file move/install
     public static class UpdaterElevatedHelper

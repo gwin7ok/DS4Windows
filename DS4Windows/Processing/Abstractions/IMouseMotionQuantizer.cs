@@ -1,4 +1,4 @@
-namespace DS4Windows.DI
+namespace DS4Windows.Processing.Abstractions
 {
     /// <summary>
     /// Phase9 9-B（Phase9-B-Plan.md）: マウスの移動量（小数）を、整数のピクセル数にそろえる。切り捨てた端数は次のフレームへ持ち越す。

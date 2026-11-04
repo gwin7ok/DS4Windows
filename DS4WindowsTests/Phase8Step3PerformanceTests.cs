@@ -1,10 +1,11 @@
 using System;
 using System.Diagnostics;
-using DS4Windows;
-using DS4Windows.Actions;
-using DS4Windows.DI;
 using Xunit;
 using Xunit.Abstractions;
+using DS4Windows.Core.Abstractions;
+using DS4Windows.Input;
+using DS4Windows.Processing;
+using DS4Windows.Processing.Actions;
 
 namespace DS4WindowsTests
 {
@@ -29,7 +30,7 @@ namespace DS4WindowsTests
 
         private static IProfileSettingsService Settings()
         {
-            DS4WinWPF.AppHost.CreateHost();
+            DS4Windows.Composition.AppHost.CreateHost();
             return TestHost.GetService<IProfileSettingsService>();
         }
 

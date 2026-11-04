@@ -1,7 +1,7 @@
 using System;
 using System.Threading;
-using DS4Windows.Actions;
 using Xunit;
+using DS4Windows.Processing.Actions;
 
 namespace DS4Windows.Actions.Tests
 {
@@ -28,12 +28,12 @@ namespace DS4Windows.Actions.Tests
         }
 
         // Explicit interface implementations to ensure correct interface mapping
-        void DS4Windows.Actions.IRepeater.Start(TimeSpan initialDelay, TimeSpan interval, System.Action tickAction)
+        void DS4Windows.Processing.Actions.IRepeater.Start(TimeSpan initialDelay, TimeSpan interval, System.Action tickAction)
         {
             Start(initialDelay, interval, tickAction);
         }
 
-        void DS4Windows.Actions.IRepeater.Stop()
+        void DS4Windows.Processing.Actions.IRepeater.Stop()
         {
             Stop();
         }

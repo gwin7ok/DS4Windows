@@ -5,7 +5,8 @@ using System.Linq;
 using System.Text.RegularExpressions;
 using Xunit;
 using Xunit.Abstractions;
-using DS4Windows.DI;
+using DS4Windows.Core.Abstractions;
+using DS4Windows.Processing.Abstractions;
 
 namespace DS4WindowsTests
 {

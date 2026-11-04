@@ -1,8 +1,11 @@
 using System;
 using System.Collections.Generic;
-using DS4Windows.DI;
+using DS4Windows.Core.Abstractions;
+using DS4Windows.Core.Logging;
+using DS4Windows.Output.Services;
+using DS4Windows.Processing.Abstractions;
 
-namespace DS4Windows.Services
+namespace DS4Windows.Processing.Services
 {
     /// <summary>
     /// Phase7-Step8 W3（Q6＝A）: <see cref="ISyntheticDispatcher"/> の実装。旧 静的クラス <c>SyntheticDispatcher</c> の処理を、

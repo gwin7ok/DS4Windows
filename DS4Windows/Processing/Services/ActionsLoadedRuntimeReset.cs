@@ -1,6 +1,7 @@
 using System;
+using DS4Windows.Core.Logging;
 
-namespace DS4Windows.Services
+namespace DS4Windows.Processing.Services
 {
     /// <summary>
     /// Phase7-Step7 W2（Q4＝A）: <c>BackingStore.ActionsLoaded</c> の購読者。Actions.xml の読み込み後に、合成入力とマクロの実行時状態を新品へ戻す。
@@ -12,10 +13,10 @@ namespace DS4Windows.Services
     public class ActionsLoadedRuntimeReset
     {
         private readonly SyntheticInputState _syntheticInput;
-        private readonly DS4Windows.Actions.IManagedActionManager _actionManager;   // Phase13-Step4: 旧 静的 ActionManager.ClearAllToggledOn の代わり
+        private readonly DS4Windows.Processing.Actions.IManagedActionManager _actionManager;   // Phase13-Step4: 旧 静的 ActionManager.ClearAllToggledOn の代わり
 
         // Phase8-Fix-MacroRepeatUnify（D5）: macrodone の解除を削除したため、MacroRuntimeState への依存（コンストラクターの引数）も削除した
-        public ActionsLoadedRuntimeReset(SyntheticInputState syntheticInput, DS4Windows.Actions.IManagedActionManager actionManager)
+        public ActionsLoadedRuntimeReset(SyntheticInputState syntheticInput, DS4Windows.Processing.Actions.IManagedActionManager actionManager)
         {
             _actionManager = actionManager ?? throw new ArgumentNullException(nameof(actionManager));
             _syntheticInput = syntheticInput ?? throw new ArgumentNullException(nameof(syntheticInput));

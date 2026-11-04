@@ -1,6 +1,7 @@
 using System.Collections.Generic;
+using DS4Windows.Core.Settings;
 
-namespace DS4Windows.DI
+namespace DS4Windows.Processing.Abstractions
 {
     /// <summary>
     /// Phase9 9-E E-6d（Phase9-E6-Plan.md §3.2）: Joy-Con の L と R を 1 つに結合する手順。

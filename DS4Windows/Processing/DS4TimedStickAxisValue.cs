@@ -1,4 +1,4 @@
-namespace DS4Windows
+namespace DS4Windows.Processing
 {
     /// <summary>
     /// スティックの 1 点と、その時刻（アンチスナップバックの履歴の 1 件）。

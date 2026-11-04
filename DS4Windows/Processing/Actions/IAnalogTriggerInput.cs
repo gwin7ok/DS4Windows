@@ -1,4 +1,6 @@
-namespace DS4Windows.Actions
+using DS4Windows.Input;
+
+namespace DS4Windows.Processing.Actions
 {
     /// <summary>
     /// Phase8-Step7 7.8f-1（Phase8-Step7-8f-Plan.md §3.2。Q4＝A）: Controls タブの Button（パッドの軸・トリガー）が、元のコントロールの「値」（押した／押さないではなく、倒し具合・押し込み）を読むための入力。

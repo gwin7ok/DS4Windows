@@ -1,5 +1,5 @@
-using DS4Windows.Services;
 using Xunit;
+using DS4Windows.Output.Services;
 
 namespace DS4WindowsTests
 {

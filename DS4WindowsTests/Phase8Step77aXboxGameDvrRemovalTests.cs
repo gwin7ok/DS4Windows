@@ -1,8 +1,8 @@
 using System;
 using System.IO;
 using System.Linq;
-using DS4Windows;
 using Xunit;
+using DS4Windows.Processing;
 
 namespace DS4WindowsTests
 {

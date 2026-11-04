@@ -1,8 +1,9 @@
 using System;
 using System.Collections.Generic;
-using DS4Windows;
-using DS4Windows.Actions;
 using Xunit;
+using DS4Windows.Core.Settings;
+using DS4Windows.Input;
+using DS4Windows.Processing;
 
 namespace DS4WindowsTests
 {

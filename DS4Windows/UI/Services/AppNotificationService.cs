@@ -1,7 +1,9 @@
 using System;
-using DS4Windows.DI;
+using DS4Windows.Core.Logging;
+using DS4Windows.Core.Settings;
+using DS4Windows.Processing.Abstractions;
 
-namespace DS4Windows
+namespace DS4Windows.UI.Services
 {
     public class AppNotificationService : INotificationService
     {

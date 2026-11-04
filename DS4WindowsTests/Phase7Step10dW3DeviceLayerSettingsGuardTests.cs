@@ -1,11 +1,13 @@
 using System;
 using System.IO;
 using System.Text.RegularExpressions;
-using DS4Windows;
-using DS4Windows.DI;
-using DS4Windows.Services;
 using Xunit;
 using Xunit.Abstractions;
+using DS4Windows.Core.Abstractions;
+using DS4Windows.Input;
+using DS4Windows.Output;
+using DS4Windows.Processing.Abstractions;
+using DS4Windows.Processing.Services;
 
 namespace DS4WindowsTests
 {
@@ -58,7 +60,7 @@ namespace DS4WindowsTests
         [Fact]
         public void Container_ResolvesTheSingletonLayerSettings()
         {
-            DS4WinWPF.AppHost.CreateHost();
+            DS4Windows.Composition.AppHost.CreateHost();
             var first = TestHost.GetService<IDeviceLayerSettings>();
             Assert.NotNull(first);
             Assert.IsType<DeviceLayerSettings>(first);
@@ -68,7 +70,7 @@ namespace DS4WindowsTests
         [Fact]
         public void Constructors_RejectNull()
         {
-            DS4WinWPF.AppHost.CreateHost();
+            DS4Windows.Composition.AppHost.CreateHost();
             Assert.Throws<ArgumentNullException>(() => new DeviceLayerSettings(null, TestHost.GetService<IProfileSettingsService>()));
             Assert.Throws<ArgumentNullException>(() => new Ds4DeviceRegistryAdapter(null));
             Assert.Throws<ArgumentNullException>(() => new OutputSlotManager(null, 4));   // Phase9 Steering 削除 W3: 軸の取得口（第 2 引数）を削除した。バージョンの取得口の null を検査する

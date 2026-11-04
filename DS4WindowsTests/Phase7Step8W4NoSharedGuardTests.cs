@@ -3,10 +3,10 @@ using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Text.RegularExpressions;
-using DS4Windows;
-using DS4Windows.DI;
 using Xunit;
 using Xunit.Abstractions;
+using DS4Windows.Processing;
+using DS4Windows.Processing.Abstractions;
 
 namespace DS4WindowsTests
 {
@@ -43,7 +43,7 @@ namespace DS4WindowsTests
         [Fact]
         public void TheHost_SharesOneInstanceOfEachHolder_WithMappingAndTheControlService()
         {
-            DS4WinWPF.AppHost.CreateHost();
+            DS4Windows.Composition.AppHost.CreateHost();
             var synthetic = TestHost.GetService<SyntheticInputState>();
             var macro = TestHost.GetService<MacroRuntimeState>();
             var stick = TestHost.GetService<StickMotionState>();

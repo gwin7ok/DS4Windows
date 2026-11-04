@@ -1,4 +1,4 @@
-namespace DS4Windows.DI
+namespace DS4Windows.Processing.Abstractions
 {
     /// <summary>
     /// Phase13-Step3: キーボード／マウス出力のハンドラの選択・接続・フォールバック・マッピングの初期化

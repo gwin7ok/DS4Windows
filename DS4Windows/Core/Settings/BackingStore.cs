@@ -16,11 +16,6 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
 
-using DS4Windows.DS4Control;
-using DS4Windows.InputDevices;
-using DS4Windows.StickModifiers;
-using DS4WinWPF.DS4Control.DTOXml;
-using DS4WinWPF.DS4Forms.ViewModels;
 using Sensorit.Base;
 using System;
 using System.Collections.Generic;
@@ -40,13 +35,18 @@ using System.Windows;
 using System.Windows.Input;
 using System.Xml;
 using System.Xml.Serialization;
-using DS4WinWPF;
-using DS4WinWPF.ApiDTO;
 using WpfScreenHelper;
-using static DS4Windows.Mouse;
-using static DS4Windows.Util;
-using DS4Windows.DI;
-namespace DS4Windows
+using static DS4Windows.Processing.Mouse;
+using static DS4Windows.Core.Utilities.Util;
+using DS4Windows.Core.Logging;
+using DS4Windows.Core.Platform;
+using DS4Windows.Core.Utilities;
+using DS4Windows.Input;
+using DS4Windows.Input.Devices;
+using DS4Windows.Output;
+using DS4Windows.Processing;
+using DS4Windows.Processing.Abstractions;
+namespace DS4Windows.Core.Settings
 {
 
     public class BackingStore
@@ -164,7 +164,7 @@ namespace DS4Windows
         public ProfileSlotNames selectedProfile = new ProfileSlotNames(ControllerLimits.TestProfileItemCount);
         // Phase10-Step4d W5b: 上の 3 つ（現在・直前・選択のプロファイル）は、保管がプロファイルの固定 ID で、名前を読み書きする窓口（ProfileSlotNames）。
         // 登録簿は、DI の登録が結ぶ（登録簿が BackingStore に依存しない向き）。結ばなければ、名前の控えだけで、従来の配列と同じに動く
-        public void AttachProfileIdentity(DS4Windows.DI.IProfileIdentityService identity)
+        public void AttachProfileIdentity(DS4Windows.Core.Abstractions.IProfileIdentityService identity)
         {
             profilePath.AttachIdentity(identity);
             olderProfilePath.AttachIdentity(identity);
@@ -334,7 +334,6 @@ namespace DS4Windows
             new TriggerOutputSettings(), new TriggerOutputSettings(), new TriggerOutputSettings(),
             new TriggerOutputSettings(), new TriggerOutputSettings(), new TriggerOutputSettings(),
         };
-
 
 
         // Start of DualSense specific profile options
@@ -733,7 +732,7 @@ namespace DS4Windows
         // 未設定のとき（コンテナを通らないテストなど）は、LoadProfile が従来のフォールバック（プロセス一覧の走査）を使う。
         // Phase7-Step10d W5: コンストラクター注入にしない理由 → ProcessInspector は、ブートストラップで先に作る BackingStore（起動直後の設定の読み取りに使う）に、
         // コンテナの構築後に ServiceRegistration の登録が設定する（コンテナより前に BackingStore を作るため、コンストラクターでは渡せない）。
-        public DS4Windows.Services.IProcessInspector ProcessInspector { get; set; }
+        public DS4Windows.Core.Abstractions.IProcessInspector ProcessInspector { get; set; }
 
         // Phase7-Step6 W1（Q2＝A）: 旧 Global.activeOutDevType。スロットごとの、現在接続中の出力種別（実体は OutputSlotService が持つ）。
         // ServiceRegistration の IOutputSlotService の登録が、OutputSlotService の生成時に ActiveOutDevType の配列を設定する。
@@ -748,9 +747,9 @@ namespace DS4Windows
         // 自分の生成時に LinkProfileSettings で登録する（最初の 1 つが有効）。登録がないまま使われたときは、従来のフォールバックと同じく、
         // コントローラー（ControlService）を持たない ProfileSettingsService を作る。
         private readonly object _profileSettingsLock = new object();
-        private DS4Windows.DI.IProfileSettingsService _profileSettings;
+        private DS4Windows.Core.Abstractions.IProfileSettingsService _profileSettings;
 
-        public DS4Windows.DI.IProfileSettingsService ProfileSettings
+        public DS4Windows.Core.Abstractions.IProfileSettingsService ProfileSettings
         {
             get
             {
@@ -765,7 +764,7 @@ namespace DS4Windows
                     if (_profileSettings == null)
                     {
                         // 生成された ProfileSettingsService が、自分のコンストラクターで LinkProfileSettings を呼ぶ
-                        _ = new ProfileSettingsService(this, _environmentService, new DS4Windows.Services.DeviceSlotState());   // Phase13-Step6 6-b: 旧 () => null（コントローラーなし）と同じ
+                        _ = new ProfileSettingsService(this, _environmentService, new DS4Windows.Processing.Services.DeviceSlotState());   // Phase13-Step6 6-b: 旧 () => null（コントローラーなし）と同じ
                     }
 
                     return _profileSettings;
@@ -778,7 +777,7 @@ namespace DS4Windows
         }
 
         /// <summary>ProfileSettingsService が、自分の生成時に呼ぶ。まだ登録がないときだけ登録する（最初の 1 つが有効）。</summary>
-        internal void LinkProfileSettings(DS4Windows.DI.IProfileSettingsService service)
+        internal void LinkProfileSettings(DS4Windows.Core.Abstractions.IProfileSettingsService service)
         {
             lock (_profileSettingsLock)
             {
@@ -788,9 +787,9 @@ namespace DS4Windows
         }
 
         // Phase7-Step10d W5（Q3・Q9＝A）: スロット数の上限は、静的な _environmentService.ControllerSlotLimit ではなく、注入された環境サービスから読む。
-        private readonly DS4Windows.DI.IEnvironmentService _environmentService;
+        private readonly DS4Windows.Core.Abstractions.IEnvironmentService _environmentService;
 
-        public BackingStore(DS4Windows.DI.IEnvironmentService environmentService)
+        public BackingStore(DS4Windows.Core.Abstractions.IEnvironmentService environmentService)
         {
             _environmentService = environmentService ?? throw new ArgumentNullException(nameof(environmentService));
             ds4controlSettings = new ControlSettingsGroup[ControllerLimits.TestProfileItemCount];
@@ -1061,8 +1060,6 @@ namespace DS4Windows
             if (index < _environmentService.ControllerSlotLimit && control.GetTouchPad(index) != null)
                 control.GetTouchPad(index).ToggleGyroStick = value;
         }
-
-
 
 
         // Phase7-Step10b W1: getX360ControlString（XML 保存用の名前）は X360ControlTables へ移した。

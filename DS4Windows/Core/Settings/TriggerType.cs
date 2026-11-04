@@ -1,8 +1,6 @@
-using DS4Windows.Services;
 using System;
-using DS4Windows.DS4Control;
 
-namespace DS4Windows
+namespace DS4Windows.Core.Settings
 {
 
     public enum TriggerType

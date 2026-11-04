@@ -1,12 +1,13 @@
 using System;
 using System.Collections.Generic;
 using System.Threading;
+using DS4Windows.Core.Settings;
 
-namespace DS4Windows.Actions
+namespace DS4Windows.Processing.Actions
 {
     /// <summary>
     /// Phase8-Step4 W1: <see cref="IActionRegistry"/> の実装（DI の Singleton）。デバイスごとの不変のスナップショットを、参照の差し替えで更新する。
-    /// 既存の静的クラス <c>DS4Windows.ActionRegistry</c>（<c>SpecialAction</c> の一覧）とは別物。
+    /// 既存の静的クラス <c>DS4Windows.Processing.Actions.ActionRegistry</c>（<c>SpecialAction</c> の一覧）とは別物。
     /// </summary>
     public sealed class ActionBindingRegistry : IActionRegistry
     {

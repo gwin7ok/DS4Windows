@@ -1,11 +1,10 @@
-﻿using DS4Windows.Services;
-using System;
+﻿using System;
 
-namespace DS4Windows.Actions
+namespace DS4Windows.Processing.Actions
 {
     public interface IKeyButtonActionControllerFactory
     {
-        DS4Windows.KeyButtonActionController Create(int device, DS4Windows.KeyButtonActionController.Mode mode, string actionName = null);
-        DS4Windows.KeyButtonActionController Create(int device, DS4Windows.SpecialAction sa, string actionName = null);
+        DS4Windows.Processing.Actions.KeyButtonActionController Create(int device, DS4Windows.Processing.Actions.KeyButtonActionController.Mode mode, string actionName = null);
+        DS4Windows.Processing.Actions.KeyButtonActionController Create(int device, DS4Windows.Processing.SpecialAction sa, string actionName = null);
     }
 }

@@ -4,11 +4,13 @@ using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Text.RegularExpressions;
-using DS4Windows;
-using DS4Windows.DI;
-using DS4WinWPF.DS4Forms.ViewModels;
 using Xunit;
 using Xunit.Abstractions;
+using DS4Windows.Core.Logging;
+using DS4Windows.Core.Platform;
+using DS4Windows.Core.Settings;
+using DS4Windows.Processing.Abstractions;
+using DS4Windows.UI.ViewModels;
 
 namespace DS4WindowsTests
 {
@@ -101,7 +103,7 @@ namespace DS4WindowsTests
             // 空に戻すときは、警告しない（空文字は「指定なし」。旧コードも空文字は保存していた）。
             // 警告の文言に空のパスを入れた文は、どこにも出ていない
             string warningForEmpty = string.Format(
-                DS4WinWPF.Translations.Strings.ResourceManager.GetString("CustomSteamFolderNotFound", CultureInfo.CurrentUICulture),
+                DS4Windows.Translations.Strings.ResourceManager.GetString("CustomSteamFolderNotFound", CultureInfo.CurrentUICulture),
                 string.Empty);
             lock (_gate) { Assert.DoesNotContain(_guiLog, e => e.Data == warningForEmpty); }
             Assert.Empty(LogsAbout(_existingFolder));
@@ -141,7 +143,7 @@ namespace DS4WindowsTests
         public void TheWarningText_ExistsInEnglishAndJapanese_WithTheFolderPlaceholder()
         {
             const string key = "CustomSteamFolderNotFound";
-            var resources = DS4WinWPF.Translations.Strings.ResourceManager;
+            var resources = DS4Windows.Translations.Strings.ResourceManager;
 
             string english = resources.GetString(key, CultureInfo.InvariantCulture);
             string japanese = resources.GetString(key, new CultureInfo("ja"));
@@ -159,8 +161,8 @@ namespace DS4WindowsTests
         public void TheDesignerAccessor_ReturnsTheResourceText()
         {
             Assert.Equal(
-                DS4WinWPF.Translations.Strings.ResourceManager.GetString("CustomSteamFolderNotFound", CultureInfo.CurrentUICulture),
-                DS4WinWPF.Translations.Strings.CustomSteamFolderNotFound);
+                DS4Windows.Translations.Strings.ResourceManager.GetString("CustomSteamFolderNotFound", CultureInfo.CurrentUICulture),
+                DS4Windows.Translations.Strings.CustomSteamFolderNotFound);
         }
 
         [Fact]

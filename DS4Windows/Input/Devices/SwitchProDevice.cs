@@ -24,8 +24,11 @@ using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using DS4Windows.Core.Logging;
+using DS4Windows.Core.Settings;
+using DS4Windows.Input.Hid;
 
-namespace DS4Windows.InputDevices
+namespace DS4Windows.Input.Devices
 {
     public class SwitchProDevice : DS4Device
     {
@@ -598,9 +601,9 @@ namespace DS4Windows.InputDevices
                     tempMotion.outputAccelX = 0; tempMotion.outputAccelY = 0; tempMotion.outputAccelZ = 0;
                     tempMotion.outputGyroControls = false;
                     //Console.WriteLine(gyroRoll);
-                    tempMotion.accelXG = (accelX * 2) / DS4Windows.SixAxis.F_ACC_RES_PER_G;
-                    tempMotion.accelYG = (-accelZ * 2) / DS4Windows.SixAxis.F_ACC_RES_PER_G;
-                    tempMotion.accelZG = (-accelY * 2) / DS4Windows.SixAxis.F_ACC_RES_PER_G;
+                    tempMotion.accelXG = (accelX * 2) / DS4Windows.Input.SixAxis.F_ACC_RES_PER_G;
+                    tempMotion.accelYG = (-accelZ * 2) / DS4Windows.Input.SixAxis.F_ACC_RES_PER_G;
+                    tempMotion.accelZG = (-accelY * 2) / DS4Windows.Input.SixAxis.F_ACC_RES_PER_G;
 
                     tempMotion.angVelYaw = gyroYaw * GYRO_IN_DEG_SEC_FACTOR;
                     tempMotion.angVelPitch = -gyroPitch * GYRO_IN_DEG_SEC_FACTOR;

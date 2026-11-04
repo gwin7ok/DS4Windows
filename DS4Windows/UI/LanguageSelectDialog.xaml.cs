@@ -17,7 +17,6 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
 
 using System;
-using DS4Windows;
 using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
@@ -25,8 +24,9 @@ using System.Linq;
 using System.Reflection;
 using System.Windows;
 using System.Windows.Input;
+using DS4Windows.Core.Logging;
 
-namespace DS4WinWPF.DS4Forms
+namespace DS4Windows.UI
 {
 
     /// <summary>
@@ -38,9 +38,9 @@ namespace DS4WinWPF.DS4Forms
         public string SelectedCulture { get; private set; }
 
         // Phase6-Step10-1-2: Global.UseLang／Global.SetCulture の置換先。呼び出し側（App）が保持済みのサービスを渡す（Pure DI）。
-        private readonly DS4Windows.DI.IAppSettingsService _appSettingsService;
+        private readonly DS4Windows.Processing.Abstractions.IAppSettingsService _appSettingsService;
 
-        public LanguageSelectDialog(DS4Windows.DI.IAppSettingsService appSettingsService)
+        public LanguageSelectDialog(DS4Windows.Processing.Abstractions.IAppSettingsService appSettingsService)
         {
             _appSettingsService = appSettingsService ?? throw new ArgumentNullException(nameof(appSettingsService));
             InitializeComponent();

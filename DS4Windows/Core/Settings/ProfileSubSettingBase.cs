@@ -2,7 +2,7 @@ using System;
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
 
-namespace DS4Windows
+namespace DS4Windows.Core.Settings
 {
     /// <summary>
     /// プロファイルのネストされたサブ設定クラス（スティック詳細、トリガー、ジャイロなど）向けの抽象基底クラス。

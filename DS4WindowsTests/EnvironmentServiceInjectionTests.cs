@@ -1,6 +1,7 @@
 using Xunit;
-using DS4Windows;
-using DS4Windows.DI;
+using DS4Windows.Core.Abstractions;
+using DS4Windows.Core.Platform;
+using DS4Windows.Processing.Abstractions;
 
 namespace DS4WindowsTests
 {
@@ -45,7 +46,7 @@ namespace DS4WindowsTests
         [Fact]
         public void AppHost_ResolvesProfileSettingsAndAutoProfileServices_WithEnvironmentService()
         {
-            DS4WinWPF.AppHost.CreateHost();
+            DS4Windows.Composition.AppHost.CreateHost();
 
             Assert.NotNull(TestHost.GetService<IProfileSettingsService>());
             Assert.NotNull(TestHost.GetService<IAutoProfileService>());

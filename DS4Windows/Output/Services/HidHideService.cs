@@ -2,9 +2,13 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Text;
-using DS4Windows.DI;
+using DS4Windows.Core.Abstractions;
+using DS4Windows.Core.Logging;
+using DS4Windows.Input;
+using DS4Windows.Input.Hid;
+using DS4Windows.Processing.Abstractions;
 
-namespace DS4Windows.Services
+namespace DS4Windows.Output.Services
 {
     /// <summary>
     /// Phase9 9-E E-2（Phase9-E-Plan.md）: <see cref="IHidHideService"/> の実装（DI の Singleton）。

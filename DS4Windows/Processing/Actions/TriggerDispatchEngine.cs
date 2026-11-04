@@ -1,9 +1,12 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using DS4Windows.Services;
+using DS4Windows.Core.Logging;
+using DS4Windows.Core.Settings;
+using DS4Windows.Input;
+using DS4Windows.Processing.Abstractions;
 
-namespace DS4Windows.Actions
+namespace DS4Windows.Processing.Actions
 {
     // TODO(Phase8-Step4 W4〜Step8): W4 で Mapping に注入する（旧ループのフック Owns／ProcessOwned、抑制の集合の所有、Stage3 の後の ApplyFrameOutputs）。
     // OnProfileApplied は Step5（ProfileApplicationService の完了処理へ接続）、OnDeviceDisconnected は Step6（ControlService の切断処理へ接続）で本番に接続する。

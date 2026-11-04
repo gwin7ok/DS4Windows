@@ -11,9 +11,9 @@ using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
-using DS4WinWPF.DS4Forms.ViewModels;
+using DS4Windows.UI.ViewModels;
 
-namespace DS4WinWPF.DS4Forms
+namespace DS4Windows.UI
 {
     /// <summary>
     /// Interaction logic for PresetOptionWindow.xaml
@@ -28,7 +28,7 @@ namespace DS4WinWPF.DS4Forms
         private bool delayPresetApply;
         public bool DelayPresetApply { get => delayPresetApply; set => delayPresetApply = value; }
 
-        public PresetOptionWindow(DS4Windows.DI.IProfilePresetLoader presetLoader, DS4Windows.DI.IProfileLoadTarget loadTarget)
+        public PresetOptionWindow(DS4Windows.Core.Abstractions.IProfilePresetLoader presetLoader, DS4Windows.Processing.Abstractions.IProfileLoadTarget loadTarget)
         {
             InitializeComponent();
 

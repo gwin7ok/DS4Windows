@@ -1,6 +1,7 @@
 using System;
+using DS4Windows.Processing;
 
-namespace DS4Windows
+namespace DS4Windows.Core.Settings
 {
     /// <summary>
     /// Phase8-Step8 8-0（Q9＝A）: 編集画面を開いたときの、廃止された「ジャイロスワイプ」の設定の警告の判定（画面から独立。状態を持たない）。

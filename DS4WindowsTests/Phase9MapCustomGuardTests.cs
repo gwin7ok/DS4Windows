@@ -1,9 +1,9 @@
 using System.IO;
 using System.Text.RegularExpressions;
-using DS4Windows.DI;
-using DS4Windows.Services;
 using Xunit;
 using Xunit.Abstractions;
+using DS4Windows.Processing.Abstractions;
+using DS4Windows.Processing.Services;
 
 namespace DS4WindowsTests
 {
@@ -58,7 +58,7 @@ namespace DS4WindowsTests
             string text = ReadWithoutComments("DS4Windows/Processing/Mapping.cs");
             if (text == null) return;
 
-            Assert.Contains("public void Commit(int device, DS4Windows.DI.IProfileSettingsService settings)", text);
+            Assert.Contains("public void Commit(int device, DS4Windows.Core.Abstractions.IProfileSettingsService settings)", text);
             Assert.Contains("_syntheticCommitter.Commit(device, settings);", text);
         }
 

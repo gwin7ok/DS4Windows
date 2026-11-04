@@ -8,7 +8,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace DS4WinWPF.Properties {
+namespace DS4Windows.Properties {
     
     
     [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]

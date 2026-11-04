@@ -1,4 +1,6 @@
-namespace DS4Windows.DI
+using DS4Windows.Input;
+
+namespace DS4Windows.Processing.Abstractions
 {
     /// <summary>
     /// Phase13-Step3: ブースト（<c>GetRumbleBoost</c>）と反転（<c>InverseRumbleMotors</c>）を適用した振動の設定

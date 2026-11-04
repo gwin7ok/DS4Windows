@@ -16,7 +16,7 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
 
-namespace DS4Windows
+namespace DS4Windows.Core.Utilities
 {
     /// <summary>
     /// ウィンドウレイアウトとUI要素の初期サイズを一元管理するクラス

@@ -1,6 +1,6 @@
 using System;
 
-namespace DS4Windows.Services
+namespace DS4Windows.Core.Abstractions
 {
     /// <summary>
     /// Phase12-Step3 3e（R-3）: 画面全体のマウス入力（移動、ボタンの押下・離上）の監視。マクロの記録で、ほかのウィンドウの上の操作も記録するために使う。

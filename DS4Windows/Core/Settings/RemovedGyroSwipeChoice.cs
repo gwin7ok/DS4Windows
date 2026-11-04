@@ -1,4 +1,4 @@
-namespace DS4Windows
+namespace DS4Windows.Core.Settings
 {
     /// <summary>
     /// Phase8-Step8 8-0（Q9＝A）: 廃止された「ジャイロスワイプ」機能の設定がプロファイルに残っているとき、編集画面でユーザーが選ぶ内容。

@@ -1,9 +1,4 @@
-﻿using DS4Windows.DS4Control;
-using DS4Windows.InputDevices;
-using DS4Windows.StickModifiers;
-using DS4WinWPF.DS4Control.DTOXml;
-using DS4WinWPF.DS4Forms.ViewModels;
-using Sensorit.Base;
+﻿using Sensorit.Base;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -22,21 +17,25 @@ using System.Windows;
 using System.Windows.Input;
 using System.Xml;
 using System.Xml.Serialization;
-using DS4WinWPF;
-using DS4WinWPF.ApiDTO;
 using WpfScreenHelper;
-using static DS4Windows.Mouse;
-using static DS4Windows.Util;
-using DS4Windows.DI;
+using static DS4Windows.Processing.Mouse;
+using static DS4Windows.Core.Utilities.Util;
+using DS4Windows.Core.Abstractions;
+using DS4Windows.Core.Persistence.ProfileSections;
+using DS4Windows.Core.Settings;
+using DS4Windows.Input;
+using DS4Windows.Output;
+using DS4Windows.Processing;
+using DS4Windows.Processing.Abstractions;
 
-namespace DS4Windows.Services
+namespace DS4Windows.Core.Persistence
 {
     /// <summary>
     /// Phase7-Step10c W4・W5（Q1＝A）: プロファイル（旧形式の XML）の保存・読込。
     /// 旧: <c>BackingStore</c> の <c>LoadProfile</c>／<c>LoadLegacyExtraSettings</c>／<c>ReadLegacyElement</c>／<c>axisOutputCurveId</c>／<c>OutContDeviceId</c>／
     /// <c>GetLightbarModeType</c>／<c>PortOldGyroSettings</c>（W4。読込側）と、保存側（W5）。移動のみで、ロジック・ログ・要素の順序は変えない。
-    /// <c>BackingStore</c> の公開状態を <c>store.</c> で読み書きする。プロファイルの置き場所は <see cref="DS4Windows.DI.IPathService"/>、
-    /// 実行時の「DInput のみ」の配列は <see cref="DS4Windows.DI.IProfileSettingsService"/> から得る。
+    /// <c>BackingStore</c> の公開状態を <c>store.</c> で読み書きする。プロファイルの置き場所は <see cref="DS4Windows.Core.Abstractions.IPathService"/>、
+    /// 実行時の「DInput のみ」の配列は <see cref="DS4Windows.Core.Abstractions.IProfileSettingsService"/> から得る。
     /// 排他は呼び出し側（<c>ProfileXmlStore.XmlIoLock</c>）が行う。
     /// </summary>
     public class LegacyProfileXmlSerializer
@@ -46,9 +45,9 @@ namespace DS4Windows.Services
         public const string XmlExtension = ".xml";
 
         private readonly BackingStore store;
-        private readonly DS4Windows.DI.IPathService _pathService;
-        private readonly DS4Windows.DI.IProfileSettingsService _profileSettings;
-        private readonly DS4Windows.DI.IEnvironmentService _environment;
+        private readonly DS4Windows.Core.Abstractions.IPathService _pathService;
+        private readonly DS4Windows.Core.Abstractions.IProfileSettingsService _profileSettings;
+        private readonly DS4Windows.Core.Abstractions.IEnvironmentService _environment;
         private readonly XmlDocument m_Xdoc = new XmlDocument(); // 旧 BackingStore.m_Xdoc と同じ使い方（排他は呼び出し側のロック）
         // Phase8-Step4b W2: LoadProfile の節（Q3＝A。DI 登録せず、直列化の中で使う状態を持たない）
         private readonly IProfileLoadSection _generalSection = new ProfileGeneralLoadSection();
@@ -78,10 +77,10 @@ namespace DS4Windows.Services
 
 
         // Phase10-Step4d W3: Controls の Load Profile の切り替え先の ID と名前を結ぶ。省略可（登録簿がなければ、従来どおり名前だけ）
-        private readonly DS4Windows.DI.IProfileIdentityService _profileIdentity;
+        private readonly DS4Windows.Core.Abstractions.IProfileIdentityService _profileIdentity;
 
-        public LegacyProfileXmlSerializer(BackingStore store, DS4Windows.DI.IPathService pathService, DS4Windows.DI.IProfileSettingsService profileSettings,
-            DS4Windows.DI.IEnvironmentService environment, DS4Windows.DI.IProfileIdentityService profileIdentity = null)
+        public LegacyProfileXmlSerializer(BackingStore store, DS4Windows.Core.Abstractions.IPathService pathService, DS4Windows.Core.Abstractions.IProfileSettingsService profileSettings,
+            DS4Windows.Core.Abstractions.IEnvironmentService environment, DS4Windows.Core.Abstractions.IProfileIdentityService profileIdentity = null)
         {
             _profileIdentity = profileIdentity;
             _environment = environment ?? throw new ArgumentNullException(nameof(environment));

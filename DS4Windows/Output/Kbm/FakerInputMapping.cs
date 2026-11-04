@@ -1,4 +1,3 @@
-using DS4Windows.Services;
 /*
 DS4Windows
 Copyright (C) 2023  Travis Nickles
@@ -23,7 +22,7 @@ using System.Windows.Input;
 using FakerInputWrapper;
 using MouseButton = FakerInputWrapper.MouseButton;
 
-namespace DS4Windows.DS4Control
+namespace DS4Windows.Output.Kbm
 {
     public class FakerInputMapping : VirtualKBMMapping
     {

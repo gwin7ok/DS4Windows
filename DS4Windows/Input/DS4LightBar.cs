@@ -20,8 +20,10 @@ using System;
 using System.Drawing;
 using static System.Math;
 using System.Diagnostics;
+using DS4Windows.Core.Settings;
+using DS4Windows.Core.Utilities;
 
-namespace DS4Windows
+namespace DS4Windows.Input
 {
     public class DS4LightBar
     {
@@ -64,7 +66,7 @@ namespace DS4Windows
 
         // Phase7-Step10d W5: 旧 Global の転送（getLightbarSettingsInfo／getMainColor／getIdleDisconnectTimeout／DistanceProfiles／tempprofileDistance）に替えて、
         // 呼び出し元（ControlService）が持つプロファイル設定サービスを引数で受け取る。
-        public static void updateLightBar(DS4Device device, int deviceNum, DS4Windows.DI.IProfileSettingsService profileSettings)
+        public static void updateLightBar(DS4Device device, int deviceNum, DS4Windows.Core.Abstractions.IProfileSettingsService profileSettings)
         {
             DS4Color color = new DS4Color();
             bool useForceLight = forcelight[deviceNum];

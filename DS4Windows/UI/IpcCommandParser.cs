@@ -1,6 +1,6 @@
 using System.Text;
 
-namespace DS4WinWPF.DS4Forms
+namespace DS4Windows.UI
 {
     /// <summary>
     /// Phase9 9-F F-2a（Phase9-F-Plan.md §6）: IPC コマンド（WM_COPYDATA）の文字列の読み取り。旧 <c>MainWindow.WndProc</c> の中の同じ処理を、そのまま移した（状態なし）。

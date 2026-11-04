@@ -5,7 +5,7 @@ using System.Text;
 using System.Xml;
 using System.Xml.Serialization;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using DS4Windows;
+using DS4Windows.Core.Persistence.Dto;
 
 [TestClass]
 public class XmlCompatibilityCheckerTests
@@ -112,9 +112,9 @@ public class XmlCompatibilityCheckerTests
                     {
                         try
                         {
-                            var bs = new DS4Windows.BackingStore(new DS4Windows.EnvironmentService());
+                            var bs = new DS4Windows.Core.Settings.BackingStore(new DS4Windows.Core.Platform.EnvironmentService());
                             bs.m_Profile = file;
-                            bool loaded = new DS4Windows.Services.AppSettingsXmlSerializer(bs, new DS4Windows.PathService(), new DS4Windows.EnvironmentService()).Load();
+                            bool loaded = new DS4Windows.Core.Persistence.AppSettingsXmlSerializer(bs, new DS4Windows.Core.Platform.PathService(), new DS4Windows.Core.Platform.EnvironmentService()).Load();
                             backingLoad = loaded ? "OK" : "FAILED";
                             notes += "BackingStore.Load:" + backingLoad + ";";
                         }

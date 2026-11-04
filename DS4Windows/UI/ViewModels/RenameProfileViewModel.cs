@@ -22,16 +22,15 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.IO;
-using DS4Windows;
 
-namespace DS4WinWPF.DS4Forms.ViewModels
+namespace DS4Windows.UI.ViewModels
 {
     public class RenameProfileViewModel
     {
         // Phase6-Step10-2-3: Global.appdatapath の置換先（必須引数。null は拒否する）
-        private readonly DS4Windows.DI.IPathService pathService;
+        private readonly DS4Windows.Core.Abstractions.IPathService pathService;
 
-        public RenameProfileViewModel(DS4Windows.DI.IPathService pathService)
+        public RenameProfileViewModel(DS4Windows.Core.Abstractions.IPathService pathService)
         {
             this.pathService = pathService ?? throw new ArgumentNullException(nameof(pathService));
         }

@@ -1,8 +1,8 @@
 using System;
 using System.Reflection;
 using Xunit;
-using DS4Windows;
-using DS4Windows.DI;
+using DS4Windows.Core.Abstractions;
+using DS4Windows.Processing;
 
 namespace DS4WindowsTests
 {
@@ -21,7 +21,7 @@ namespace DS4WindowsTests
         [Fact]
         public void AppHost_ResolvesControlService_WithSpecialActionRepository()
         {
-            DS4WinWPF.AppHost.CreateHost();
+            DS4Windows.Composition.AppHost.CreateHost();
 
             ControlService controlService = null;
             var ex = Record.Exception(() => controlService = TestHost.GetService<ControlService>());
@@ -33,7 +33,7 @@ namespace DS4WindowsTests
         [Fact]
         public void AppHost_ResolvesISpecialActionRepository()
         {
-            DS4WinWPF.AppHost.CreateHost();
+            DS4Windows.Composition.AppHost.CreateHost();
 
             Assert.NotNull(TestHost.GetService<ISpecialActionRepository>());
         }
@@ -53,7 +53,7 @@ namespace DS4WindowsTests
         [InlineData("ProfileRepository", typeof(IProfileRepository))]
         public void InternalAccessor_ReturnsSameInstanceAsAppHost(string propertyName, Type serviceType)
         {
-            DS4WinWPF.AppHost.CreateHost();
+            DS4Windows.Composition.AppHost.CreateHost();
             var controlService = TestHost.GetService<ControlService>();
 
             var expected = TestHost.GetService(serviceType);

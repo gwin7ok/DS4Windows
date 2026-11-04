@@ -1,7 +1,8 @@
-using DS4WinWPF;
-using DS4WinWPF.DS4Forms;
 
-namespace DS4Windows.DI
+using DS4Windows.Core.Utilities;
+using DS4Windows.UI;
+
+namespace DS4Windows.Processing.Abstractions
 {
     /// <summary>
     /// メイン画面（<see cref="MainWindow"/>）を生成する窓口（Phase7-Step5 W5）。

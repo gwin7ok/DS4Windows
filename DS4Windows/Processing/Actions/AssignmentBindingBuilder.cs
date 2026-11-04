@@ -1,7 +1,6 @@
 using System;
-using DS4Windows.DI;
 
-namespace DS4Windows.Actions
+namespace DS4Windows.Processing.Actions
 {
     /// <summary>
     /// Phase10-Step6 I4c（Phase10-Step6-Plan.md §4）: 共通の割り当て定義（<see cref="AssignmentDefinition"/>）から、束縛（<see cref="TriggerBinding"/>）を組み立てる、1 つの部品。

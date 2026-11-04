@@ -17,10 +17,11 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
 
 using System;
-using DS4Windows.DI;
-using DS4Windows.Services;
+using DS4Windows.Core.Abstractions;
+using DS4Windows.Input;
+using DS4Windows.Processing.Abstractions;
 
-namespace DS4Windows
+namespace DS4Windows.Processing
 {
     class MouseWheel
     {

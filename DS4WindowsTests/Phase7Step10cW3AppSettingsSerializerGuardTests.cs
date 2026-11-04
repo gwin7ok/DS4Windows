@@ -3,11 +3,13 @@ using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Text.RegularExpressions;
-using DS4Windows;
-using DS4Windows.DI;
-using DS4Windows.Services;
 using Xunit;
 using Xunit.Abstractions;
+using DS4Windows.Core.Abstractions;
+using DS4Windows.Core.Persistence;
+using DS4Windows.Core.Platform;
+using DS4Windows.Core.Settings;
+using DS4Windows.Core.Utilities;
 
 namespace DS4WindowsTests
 {
@@ -40,7 +42,7 @@ namespace DS4WindowsTests
         [Fact]
         public void TheSerializer_RequiresAllItsDependencies()
         {
-            var store = new DS4Windows.BackingStore(new DS4Windows.EnvironmentService());
+            var store = new DS4Windows.Core.Settings.BackingStore(new DS4Windows.Core.Platform.EnvironmentService());
             Assert.Throws<ArgumentNullException>(() => new AppSettingsXmlSerializer(null, new PathService(), new EnvironmentService()));
             Assert.Throws<ArgumentNullException>(() => new AppSettingsXmlSerializer(store, null, new EnvironmentService()));
             Assert.Throws<ArgumentNullException>(() => new AppSettingsXmlSerializer(store, new PathService(), null));
@@ -49,7 +51,7 @@ namespace DS4WindowsTests
         [Fact]
         public void TheContainer_ProvidesTheSerializer_AndTheXmlStoreUsesIt()
         {
-            DS4WinWPF.AppHost.CreateHost();
+            DS4Windows.Composition.AppHost.CreateHost();
             Assert.Same(TestHost.GetService<AppSettingsXmlSerializer>(), TestHost.GetService<AppSettingsXmlSerializer>());
             Assert.NotNull(TestHost.GetService<IProfileXmlStore>());
         }

@@ -1,6 +1,7 @@
-using DS4Windows.DI;
 
-namespace DS4Windows.Services
+using DS4Windows.Processing.Abstractions;
+
+namespace DS4Windows.Output.Services
 {
     /// <summary>Phase9 9-E E-2: <see cref="IHidHideApiFactory"/> の実装（DI の Singleton。状態は持たない）。呼ぶたびに制御デバイスを開く。</summary>
     public sealed class HidHideApiFactory : IHidHideApiFactory

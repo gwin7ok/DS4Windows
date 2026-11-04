@@ -1,11 +1,12 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using DS4Windows;
 using NLog;
 using NLog.Config;
 using NLog.Targets;
 using Xunit;
+using DS4Windows.Input;
+using DS4Windows.Processing;
 
 namespace DS4WindowsTests
 {

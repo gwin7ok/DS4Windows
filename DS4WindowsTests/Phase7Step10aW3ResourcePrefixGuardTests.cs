@@ -1,9 +1,9 @@
 using System.IO;
 using System.Linq;
 using System.Text.RegularExpressions;
-using DS4WinWPF.DS4Forms;
 using Xunit;
 using Xunit.Abstractions;
+using DS4Windows.UI;
 
 namespace DS4WindowsTests
 {
@@ -42,8 +42,8 @@ namespace DS4WindowsTests
         [Fact]
         public void TheIconTable_UsesTheSamePrefix()
         {
-            Assert.Equal("/DS4Windows;component/Resources/DS4W.ico", DS4WinWPF.DS4Forms.TrayIconResources.iconChoiceResources[DS4Windows.TrayIconChoice.Default]);
-            Assert.Equal("/DS4Windows;component/Resources/DS4W - White.ico", DS4WinWPF.DS4Forms.TrayIconResources.iconChoiceResources[DS4Windows.TrayIconChoice.White]);
+            Assert.Equal("/DS4Windows;component/Resources/DS4W.ico", DS4Windows.UI.TrayIconResources.iconChoiceResources[DS4Windows.Core.Settings.TrayIconChoice.Default]);
+            Assert.Equal("/DS4Windows;component/Resources/DS4W - White.ico", DS4Windows.UI.TrayIconResources.iconChoiceResources[DS4Windows.Core.Settings.TrayIconChoice.White]);
         }
 
         [Fact]

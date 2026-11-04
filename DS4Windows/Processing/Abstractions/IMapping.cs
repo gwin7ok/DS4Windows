@@ -1,8 +1,11 @@
-namespace DS4Windows.DI
+using DS4Windows.Core.Abstractions;
+using DS4Windows.Input;
+
+namespace DS4Windows.Processing.Abstractions
 {
     /// <summary>
     /// Phase7-Step8 W2（Q1＝A）: 入力の評価（<c>Mapping</c>）の窓口。外部の利用者が使うメンバーだけを持つ。
-    /// 実装は <c>DS4Windows.Mapping</c>（DI の Singleton。旧: メンバーのほぼすべてが static だった）。
+    /// 実装は <c>DS4Windows.Processing.Mapping</c>（DI の Singleton。旧: メンバーのほぼすべてが static だった）。
     /// 状態を持たない純粋な関数（<c>getBool*Mapping</c>、<c>remainderCutoff</c> ほか）と定数は、<c>Mapping</c> の static のまま残す（Q2＝A）。
     /// </summary>
     public interface IMapping

@@ -1,8 +1,8 @@
 using System.IO;
 using System.Reflection;
 using System.Xml;
-using DS4Windows;
 using Xunit;
+using DS4Windows.Core.Settings;
 
 namespace DS4WindowsTests
 {
@@ -19,9 +19,9 @@ namespace DS4WindowsTests
 
         // Phase7-Step10c W4: 読込（LoadLegacyExtraSettings）は LegacyProfileXmlSerializer へ移した。作業用の XmlDocument はその m_Xdoc
         private static readonly FieldInfo SerializerXdocField =
-            typeof(DS4Windows.Services.LegacyProfileXmlSerializer).GetField("m_Xdoc", BindingFlags.Instance | BindingFlags.NonPublic);
+            typeof(DS4Windows.Core.Persistence.LegacyProfileXmlSerializer).GetField("m_Xdoc", BindingFlags.Instance | BindingFlags.NonPublic);
 
-        private static DS4Windows.Services.LegacyProfileXmlSerializer NewSerializer(BackingStore store, XmlDocument doc)
+        private static DS4Windows.Core.Persistence.LegacyProfileXmlSerializer NewSerializer(BackingStore store, XmlDocument doc)
         {
             var serializer = TestRepositoryFactory.CreateLegacyProfileXml(store);
             SerializerXdocField.SetValue(serializer, doc);
@@ -48,7 +48,7 @@ namespace DS4WindowsTests
         [Fact]
         public void SaveThenLoad_RestoresAllTenSettings()
         {
-            var source = new DS4Windows.BackingStore(new DS4Windows.EnvironmentService());
+            var source = new DS4Windows.Core.Settings.BackingStore(new DS4Windows.Core.Platform.EnvironmentService());
             source.inverseRumbleMotors[Device] = true;
             source.useDs3PitchRollSim = true;
             source.leftStickDriftXAxis[Device] = -5;
@@ -62,7 +62,7 @@ namespace DS4WindowsTests
             XmlDocument doc = NewDocument(source);
             NewSerializer(source, doc).SaveLegacyExtraSettings(doc.DocumentElement, Device);
 
-            var target = new DS4Windows.BackingStore(new DS4Windows.EnvironmentService());
+            var target = new DS4Windows.Core.Settings.BackingStore(new DS4Windows.Core.Platform.EnvironmentService());
             var targetXml = NewSerializer(target, doc);
             ResetProfile(target);
             targetXml.LoadLegacyExtraSettings(Device, Root);
@@ -93,7 +93,7 @@ namespace DS4WindowsTests
         public void Load_WithoutElements_KeepsDefaultsAfterReset()
         {
             // 古いプロファイル（10 要素が無い）を読み込んでも、既定値になること（前のプロファイルの値を引き継がない）
-            var store = new DS4Windows.BackingStore(new DS4Windows.EnvironmentService());
+            var store = new DS4Windows.Core.Settings.BackingStore(new DS4Windows.Core.Platform.EnvironmentService());
             store.inverseRumbleMotors[Device] = true;
             store.leftStickDriftXAxis[Device] = -5;
             store.rightStickDriftYAxis[Device] = 9;
@@ -116,7 +116,7 @@ namespace DS4WindowsTests
         [Fact]
         public void Load_WithInvalidValues_IgnoresThem()
         {
-            var store = new DS4Windows.BackingStore(new DS4Windows.EnvironmentService());
+            var store = new DS4Windows.Core.Settings.BackingStore(new DS4Windows.Core.Platform.EnvironmentService());
             XmlDocument doc = NewDocument(store);
             var xml = NewSerializer(store, doc);
             ResetProfile(store);
@@ -143,7 +143,7 @@ namespace DS4WindowsTests
         public void Save_DoesNotWriteDebouncingMs_AndLoad_IgnoresAnOldDebouncingMsElement()
         {
             // Phase11 K-W6-10: デバウンス機能の廃止。保存はしない。古いプロファイルの <DebouncingMs> は、読み捨てる（エラーにしない）
-            var store = new DS4Windows.BackingStore(new DS4Windows.EnvironmentService());
+            var store = new DS4Windows.Core.Settings.BackingStore(new DS4Windows.Core.Platform.EnvironmentService());
             XmlDocument doc = NewDocument(store);
             var xml = NewSerializer(store, doc);
             xml.SaveLegacyExtraSettings(doc.DocumentElement, Device);

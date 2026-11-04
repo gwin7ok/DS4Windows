@@ -2,12 +2,15 @@ using System;
 using System.IO;
 using System.Text.RegularExpressions;
 using System.Windows;
-using DS4Windows;
-using DS4Windows.DS4Control;
-using DS4WinWPF.DS4Forms.ViewModels;
-using DS4WinWPF.DS4Forms.ViewModels.SpecialActions;
 using Xunit;
 using Xunit.Abstractions;
+using DS4Windows.Core.Settings;
+using DS4Windows.Input;
+using DS4Windows.Output.Devices;
+using DS4Windows.Output.Kbm;
+using DS4Windows.Processing;
+using DS4Windows.UI.ViewModels;
+using DS4Windows.UI.ViewModels.SpecialActions;
 
 namespace DS4WindowsTests
 {
@@ -112,7 +115,7 @@ namespace DS4WindowsTests
         {
             var rig = new Rig();
             var target = new ControlSettingsEditTarget(Settings(DS4ControlSettings.ActionType.Default), rig.Profile);
-            var vm = new ControlActionEditorViewModel(DS4Windows.ControllerLimits.TestProfileIndex, target);
+            var vm = new ControlActionEditorViewModel(DS4Windows.Core.Settings.ControllerLimits.TestProfileIndex, target);
 
             Assert.True(vm.IsTypeEnabled(DefaultIndex));
             Assert.True(vm.IsTypeEnabled(UnboundIndex));

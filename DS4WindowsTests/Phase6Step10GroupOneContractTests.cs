@@ -4,8 +4,9 @@ using System.IO;
 using System.Threading;
 using System.Xml;
 using Xunit;
-using DS4Windows;
-using DS4Windows.DI;
+using DS4Windows.Core.Abstractions;
+using DS4Windows.Core.Platform;
+using DS4Windows.Processing.Abstractions;
 
 namespace DS4WindowsTests
 {

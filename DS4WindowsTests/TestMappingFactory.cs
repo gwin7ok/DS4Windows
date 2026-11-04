@@ -1,8 +1,10 @@
 using System;
-using DS4Windows;
-using DS4Windows.Actions;
-using DS4Windows.DI;
-using DS4Windows.Services;
+using DS4Windows.Core.Abstractions;
+using DS4Windows.Output.Services;
+using DS4Windows.Processing;
+using DS4Windows.Processing.Abstractions;
+using DS4Windows.Processing.Actions;
+using DS4Windows.Processing.Services;
 
 namespace DS4WindowsTests
 {
@@ -33,7 +35,7 @@ namespace DS4WindowsTests
             ISyntheticDispatcher syntheticDispatcher = null,
             ITriggerDispatchEngine engine = null)
         {
-            DS4WinWPF.AppHost.CreateHost();
+            DS4Windows.Composition.AppHost.CreateHost();
             var synthetic = syntheticInput ?? new SyntheticInputState();
             var macroState = macroRuntime ?? new MacroRuntimeState();
             var profileSettings = settings ?? TestHost.GetService<IProfileSettingsService>();

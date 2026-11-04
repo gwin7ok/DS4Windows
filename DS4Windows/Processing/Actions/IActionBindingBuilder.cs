@@ -1,6 +1,6 @@
 using System.Collections.Generic;
 
-namespace DS4Windows.Actions
+namespace DS4Windows.Processing.Actions
 {
     /// <summary>
     /// Phase8-Step5 W1（Phase8-Step5-Plan.md §3.1。Phase8-Step2-Design.md §8）: プロファイルの特殊アクション（<c>ProfileActions</c>）から、

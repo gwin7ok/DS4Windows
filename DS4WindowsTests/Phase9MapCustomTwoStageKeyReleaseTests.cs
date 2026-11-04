@@ -1,6 +1,7 @@
 using System.Threading;
-using DS4Windows;
 using Xunit;
+using DS4Windows.Core.Settings;
+using DS4Windows.Input;
 
 namespace DS4WindowsTests
 {

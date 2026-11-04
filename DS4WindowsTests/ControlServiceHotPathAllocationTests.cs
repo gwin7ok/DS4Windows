@@ -2,9 +2,8 @@ using System;
 using System.Diagnostics;
 using Xunit;
 using Xunit.Abstractions;
-using DS4Windows;
-using DS4Windows.DI;
-using DS4Windows.Services;
+using DS4Windows.Core.Settings;
+using DS4Windows.Processing.Services;
 
 namespace DS4WindowsTests
 {

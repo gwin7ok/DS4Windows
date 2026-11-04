@@ -23,10 +23,14 @@ using System.Text.RegularExpressions;
 using System.Threading;
 using System.Windows;
 using System.Windows.Controls;
-using DS4Windows;
-using DS4Windows.DI;
+using DS4Windows.Core.Abstractions;
+using DS4Windows.Core.Logging;
+using DS4Windows.Core.Profiles;
+using DS4Windows.Core.Utilities;
+using DS4Windows.Input;
+using DS4Windows.Processing;
 
-namespace DS4WinWPF.DS4Forms.ViewModels
+namespace DS4Windows.UI.ViewModels
 {
     public class TrayIconViewModel
     {
@@ -87,7 +91,7 @@ namespace DS4WinWPF.DS4Forms.ViewModels
         private List<ControllerHolder> controllerList = new List<ControllerHolder>();
         private ProfileList profileListHolder;
         private ControlService controlService;
-        private readonly DS4Windows.DI.IServiceLifecycle lifecycle;
+        private readonly DS4Windows.Processing.Abstractions.IServiceLifecycle lifecycle;
         private readonly IAppearanceSettingsService appearanceSettings;
         private readonly IProfileRepository profileRepository;
         private readonly IPathService pathService;
@@ -99,7 +103,7 @@ namespace DS4WinWPF.DS4Forms.ViewModels
         public event ProfileSelectedHandler ProfileSelected;
 
         //public TrayIconViewModel(Tester tester)
-        public TrayIconViewModel(ControlService service, DS4Windows.DI.IServiceLifecycle lifecycle, ProfileList profileListHolder,
+        public TrayIconViewModel(ControlService service, DS4Windows.Processing.Abstractions.IServiceLifecycle lifecycle, ProfileList profileListHolder,
             IAppearanceSettingsService appearanceSettings, IProfileRepository profileRepository,
             IEnvironmentService environmentService, IPathService pathService,
             System.Windows.Threading.Dispatcher dispatcher)

@@ -1,11 +1,12 @@
 using System.IO;
 using System.Text.RegularExpressions;
-using DS4Windows;
-using DS4Windows.DI;
-using DS4Windows.Services;
 using Microsoft.Extensions.DependencyInjection;
 using Xunit;
 using Xunit.Abstractions;
+using DS4Windows.Composition;
+using DS4Windows.Core.Abstractions;
+using DS4Windows.Core.Platform;
+using DS4Windows.Processing.Abstractions;
 
 namespace DS4WindowsTests
 {
@@ -73,8 +74,8 @@ namespace DS4WindowsTests
             // Phase7-Step10d W5: 既定の登録は RegisterServices(services, bootstrapBackingStore) になった（BackingStore は登録の中で配線する）
             var defaultsMatch = System.Text.RegularExpressions.Regex.Match(text, @"RegisterServices\(services, bootstrapBackingStore\);\s*services\.AddSingleton\(parser\);");
             int defaults = defaultsMatch.Success ? defaultsMatch.Index : -1;
-            int bootstrap = text.IndexOf("AddSingleton<DS4Windows.DI.IPathService>(bootstrapPathService)", System.StringComparison.Ordinal);
-            int bootstrapEnv = text.IndexOf("AddSingleton<DS4Windows.DI.IEnvironmentService>(bootstrapEnvironmentService)", System.StringComparison.Ordinal);
+            int bootstrap = text.IndexOf("AddSingleton<DS4Windows.Core.Abstractions.IPathService>(bootstrapPathService)", System.StringComparison.Ordinal);
+            int bootstrapEnv = text.IndexOf("AddSingleton<DS4Windows.Core.Abstractions.IEnvironmentService>(bootstrapEnvironmentService)", System.StringComparison.Ordinal);
 
             Assert.True(defaults >= 0, "既定の登録が見つからない。");
             Assert.True(bootstrap > defaults && bootstrapEnv > defaults, "ブートストラップのインスタンスの登録が、既定の登録より前にある（既定が優先されてしまう）。");
@@ -87,14 +88,14 @@ namespace DS4WindowsTests
             if (text == null) return;
 
             // ブートストラップは、Application_Startup の最初（FindConfigLocation より前）に作る
-            int create = text.IndexOf("_bootstrapPathService = new DS4Windows.PathService(config: _bootstrapBackingStore);", System.StringComparison.Ordinal);
-            int createEnv = text.IndexOf("_bootstrapEnvironmentService = new DS4Windows.EnvironmentService();", System.StringComparison.Ordinal);
+            int create = text.IndexOf("_bootstrapPathService = new DS4Windows.Core.Platform.PathService(config: _bootstrapBackingStore);", System.StringComparison.Ordinal);
+            int createEnv = text.IndexOf("_bootstrapEnvironmentService = new DS4Windows.Core.Platform.EnvironmentService();", System.StringComparison.Ordinal);
             int find = text.IndexOf("_bootstrapPathService.FindConfigLocation();", System.StringComparison.Ordinal);
             Assert.True(create >= 0 && createEnv >= 0 && find > create && find > createEnv, "ブートストラップの生成が、使用より前にない。");
 
             // 個別の new をしない（生成はブートストラップの 2 箇所だけ）
-            Assert.Single(Regex.Matches(text, @"new\s+DS4Windows\.PathService\("));
-            Assert.Single(Regex.Matches(text, @"new\s+DS4Windows\.EnvironmentService\(\)"));
+            Assert.Single(Regex.Matches(text, @"new\s+DS4Windows\.Core\.Platform\.PathService\("));
+            Assert.Single(Regex.Matches(text, @"new\s+DS4Windows\.Core\.Platform\.EnvironmentService\(\)"));
 
             // 2 箇所のホスト構築（通常の起動と -driverinstall）が、ブートストラップのインスタンスを渡す
             Assert.Equal(2, Regex.Matches(text, @"_bootstrapPathService,\s*_bootstrapEnvironmentService,\s*_bootstrapBackingStore\)").Count);
@@ -112,7 +113,7 @@ namespace DS4WindowsTests
             if (text == null) return;
 
             Assert.DoesNotContain("DS4Devices.reEnableDevice", text);
-            Assert.Contains("new DS4Windows.Services.Ds4DeviceRegistryAdapter()", text);
+            Assert.Contains("new DS4Windows.Processing.Services.Ds4DeviceRegistryAdapter()", text);
             Assert.Contains(".ReEnableDevice(parser.DeviceInstanceId)", text);
         }
     }

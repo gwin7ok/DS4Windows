@@ -1,4 +1,4 @@
-namespace DS4Windows.Actions
+namespace DS4Windows.Processing.Actions
 {
     /// <summary>
     /// Phase8-Step3 W1: プロファイル切替アクションの「復帰」のポリシー（Phase8-Step2-Intent-Decisions.md 項目 11。明示的な仕様にする）。

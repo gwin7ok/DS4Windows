@@ -1,8 +1,8 @@
 using System;
-using DS4Windows;
-using DS4WinWPF;
+using DS4Windows.Core.Profiles;
+using DS4Windows.Core.Settings;
 
-namespace DS4Windows.DI
+namespace DS4Windows.Processing.Abstractions
 {
     public interface IAutoProfileService
     {

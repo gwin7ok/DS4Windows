@@ -3,8 +3,9 @@ using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Xml;
-using DS4Windows;
 using Xunit;
+using DS4Windows.Core.Settings;
+using DS4Windows.Input;
 
 namespace DS4WindowsTests
 {

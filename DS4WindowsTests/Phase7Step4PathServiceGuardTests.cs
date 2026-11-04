@@ -3,9 +3,10 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text.RegularExpressions;
-using DS4Windows;
 using Xunit;
 using Xunit.Abstractions;
+using DS4Windows.Core.Platform;
+using DS4Windows.Core.Settings;
 
 namespace DS4WindowsTests
 {
@@ -81,7 +82,7 @@ namespace DS4WindowsTests
         {
             using (new StateScope())
             {
-                var config = new DS4Windows.BackingStore(new DS4Windows.EnvironmentService());
+                var config = new DS4Windows.Core.Settings.BackingStore(new DS4Windows.Core.Platform.EnvironmentService());
                 PathService.AppDataPathState = "untouched";
                 PathService.FirstRunState = false;
                 PathService.MultipleSaveLocationsState = false;
@@ -99,7 +100,7 @@ namespace DS4WindowsTests
         {
             using (new StateScope())
             {
-                var config = new DS4Windows.BackingStore(new DS4Windows.EnvironmentService());
+                var config = new DS4Windows.Core.Settings.BackingStore(new DS4Windows.Core.Platform.EnvironmentService());
                 PathService.FirstRunState = false;
                 PathService.MultipleSaveLocationsState = false;
 
@@ -120,7 +121,7 @@ namespace DS4WindowsTests
         {
             using (new StateScope())
             {
-                var config = new DS4Windows.BackingStore(new DS4Windows.EnvironmentService());
+                var config = new DS4Windows.Core.Settings.BackingStore(new DS4Windows.Core.Platform.EnvironmentService());
                 PathService.FirstRunState = true;
                 PathService.MultipleSaveLocationsState = true;
 
@@ -139,7 +140,7 @@ namespace DS4WindowsTests
         {
             using (new StateScope())
             {
-                var config = new DS4Windows.BackingStore(new DS4Windows.EnvironmentService());
+                var config = new DS4Windows.Core.Settings.BackingStore(new DS4Windows.Core.Platform.EnvironmentService());
                 PathService.AppDataPathState = "untouched";
                 PathService.FirstRunState = false;
                 PathService.MultipleSaveLocationsState = true;
@@ -157,7 +158,7 @@ namespace DS4WindowsTests
         {
             using (new StateScope())
             {
-                var config = new DS4Windows.BackingStore(new DS4Windows.EnvironmentService());
+                var config = new DS4Windows.Core.Settings.BackingStore(new DS4Windows.Core.Platform.EnvironmentService());
                 PathService.FirstRunState = false;
                 PathService.MultipleSaveLocationsState = false;
                 Func<string, bool> both = path => path == Path.Combine(Exe, "Auto Profiles.xml");
@@ -175,7 +176,7 @@ namespace DS4WindowsTests
         {
             using (new StateScope())
             {
-                var config = new DS4Windows.BackingStore(new DS4Windows.EnvironmentService());
+                var config = new DS4Windows.Core.Settings.BackingStore(new DS4Windows.Core.Platform.EnvironmentService());
 
                 PathService.SaveWhere(config, @"C:\Phase7SaveWhere");
 

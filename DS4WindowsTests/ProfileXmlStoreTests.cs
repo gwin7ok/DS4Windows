@@ -1,8 +1,9 @@
 using System;
 using System.IO;
 using Xunit;
-using DS4Windows;
-using DS4Windows.DI;
+using DS4Windows.Core.Persistence;
+using DS4Windows.Core.Platform;
+using DS4Windows.Processing.Abstractions;
 
 namespace DS4WindowsTests
 {
@@ -23,7 +24,7 @@ namespace DS4WindowsTests
                 try { Directory.CreateDirectory(profilesDir); } catch { }
             }
 
-            var store = TestRepositoryFactory.CreateProfileXmlStore(new DS4Windows.BackingStore(new DS4Windows.EnvironmentService()));
+            var store = TestRepositoryFactory.CreateProfileXmlStore(new DS4Windows.Core.Settings.BackingStore(new DS4Windows.Core.Platform.EnvironmentService()));
             string profileName = "Phase5Step2_ProfileXmlStore_SaveTest";
             string path = pathService.GetProfilePath(profileName);
 
@@ -50,10 +51,10 @@ namespace DS4WindowsTests
                 TestGlobals.AppDataPath = pathService.AppDataPath;
             }
 
-            DS4WinWPF.AppHost.CreateHost();
+            DS4Windows.Composition.AppHost.CreateHost();
             var control = TestHost.GetService<IProfileLoadTarget>();
 
-            var store = TestRepositoryFactory.CreateProfileXmlStore(new DS4Windows.BackingStore(new DS4Windows.EnvironmentService()));
+            var store = TestRepositoryFactory.CreateProfileXmlStore(new DS4Windows.Core.Settings.BackingStore(new DS4Windows.Core.Platform.EnvironmentService()));
 
             var exception = Record.Exception(() =>
             {
@@ -74,7 +75,7 @@ namespace DS4WindowsTests
         public void Constructor_WithNullBackingStore_Throws()
         {
             // Phase7-Step3 W1: Global.store へのフォールバックを廃止した
-            Assert.Throws<System.ArgumentNullException>(() => new ProfileXmlStore(null, new DS4Windows.Services.ControllerConfigsXmlSerializer(new DS4Windows.BackingStore(new DS4Windows.EnvironmentService())), TestRepositoryFactory.CreateAppSettingsXml(new DS4Windows.BackingStore(new DS4Windows.EnvironmentService())), TestRepositoryFactory.CreateLegacyProfileXml(new DS4Windows.BackingStore(new DS4Windows.EnvironmentService()))));
+            Assert.Throws<System.ArgumentNullException>(() => new ProfileXmlStore(null, new DS4Windows.Core.Persistence.ControllerConfigsXmlSerializer(new DS4Windows.Core.Settings.BackingStore(new DS4Windows.Core.Platform.EnvironmentService())), TestRepositoryFactory.CreateAppSettingsXml(new DS4Windows.Core.Settings.BackingStore(new DS4Windows.Core.Platform.EnvironmentService())), TestRepositoryFactory.CreateLegacyProfileXml(new DS4Windows.Core.Settings.BackingStore(new DS4Windows.Core.Platform.EnvironmentService()))));
         }
     }
 }

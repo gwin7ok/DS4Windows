@@ -24,7 +24,7 @@ using System.Windows;
 using HttpProgress;
 using NonFormTimer = System.Timers.Timer;
 
-namespace DS4WinWPF.DS4Forms
+namespace DS4Windows.UI
 {
     /// <summary>
     /// Interaction logic for WelcomeDialog.xaml
@@ -60,12 +60,12 @@ namespace DS4WinWPF.DS4Forms
         NonFormTimer monitorTimer;
 
         // Phase6-Step10-1-2: Global 直接参照の置換先。呼び出し側（App の -driverinstall 分岐）が渡す（Pure DI）。
-        private readonly DS4Windows.DI.IEnvironmentService _environmentService;
+        private readonly DS4Windows.Core.Abstractions.IEnvironmentService _environmentService;
 
         // Phase7-Step4 W2: 旧 loadConfig 引数（唯一の呼び出し元 App.xaml.cs の -driverinstall 分岐が true を渡していた）と、
         // 中の Global.FindConfigLocation／Global.Load を削除した。呼び出し元が、直前に同じ処理（FindConfigLocation と設定の読込）を
         // すでに実行しているため、重複していた再実行をやめただけで、動作は変わらない。
-        public WelcomeDialog(DS4Windows.DI.IEnvironmentService environmentService)
+        public WelcomeDialog(DS4Windows.Core.Abstractions.IEnvironmentService environmentService)
         {
             _environmentService = environmentService ?? throw new ArgumentNullException(nameof(environmentService));
 
@@ -145,7 +145,7 @@ namespace DS4WinWPF.DS4Forms
             catch (Exception ex)
             {
                 // Defensive: log and continue to close the dialog
-                DS4Windows.AppLogger.LogDebug($"WelcomeDialog.FinishedBtn_Click: failed to stop monitorTimer: {ex.Message}");
+                DS4Windows.Core.Logging.AppLogger.LogDebug($"WelcomeDialog.FinishedBtn_Click: failed to stop monitorTimer: {ex.Message}");
             }
 
             this.Close();

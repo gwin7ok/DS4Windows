@@ -2,11 +2,10 @@ using System;
 using System.Collections.Generic;
 using System.Reflection;
 using Xunit;
-using DS4Windows;
-using DS4Windows.Actions;
-using DS4Windows.DI;
-using DS4WinWPF;
-using DS4WinWPF.DS4Forms.ViewModels;
+using DS4Windows.Core.Abstractions;
+using DS4Windows.Processing.Abstractions;
+using DS4Windows.Processing.Actions;
+using DS4Windows.UI.ViewModels;
 
 namespace DS4WindowsTests
 {
@@ -74,7 +73,7 @@ namespace DS4WindowsTests
             // Watchpoint 2 監査テスト（動作による検証）:
             // SpecialActionsListViewModel が Singleton サービスのイベントを購読していないことを、
             // 発行側（サービス）のデリゲートの購読者を調べて証明する（Singleton からの強参照によるメモリリーク経路が無いこと）。
-            DS4WinWPF.AppHost.CreateHost();
+            DS4Windows.Composition.AppHost.CreateHost();
 
             var specialActionRepo = TestHost.GetService<ISpecialActionRepository>();
             var profileRepo = TestHost.GetService<IProfileRepository>();
@@ -104,7 +103,7 @@ namespace DS4WindowsTests
         [Fact]
         public void SpecialActionsListViewModel_CanBeInstantiatedWithInjectedServices()
         {
-            DS4WinWPF.AppHost.CreateHost();
+            DS4Windows.Composition.AppHost.CreateHost();
 
             var specialActionRepo = TestHost.GetService<ISpecialActionRepository>();
             var profileRepo = TestHost.GetService<IProfileRepository>();

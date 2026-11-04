@@ -1,9 +1,11 @@
 using System;
 using System.Threading;
 using System.Threading.Tasks;
-using DS4Windows.Services;
+using DS4Windows.Core.Abstractions;
+using DS4Windows.Core.Logging;
+using DS4Windows.Processing.Abstractions;
 
-namespace DS4Windows.Actions
+namespace DS4Windows.Processing.Actions
 {
     /// <summary>
     /// Phase12-Step2 2d（R-4）: FocusWindow（指定のウィンドウを前面へ出す）の出力。立ち上がりの 1 回だけ実行する。

@@ -2,6 +2,7 @@ using System;
 using System.IO;
 using System.Xml.Serialization;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using DS4Windows.Core.Persistence.Dto;
 
 [TestClass]
 public class AppSettingsDtoTests

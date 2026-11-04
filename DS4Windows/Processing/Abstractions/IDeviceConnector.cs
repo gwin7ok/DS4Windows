@@ -1,4 +1,6 @@
-namespace DS4Windows.DI
+using DS4Windows.Input;
+
+namespace DS4Windows.Processing.Abstractions
 {
     /// <summary>
     /// Phase9 9-E E-6f1（Phase9-E6-Plan.md §9.2）: コントローラーをスロットへつなぐときの組み立て（設定の読み込み、イベントの購読、マウスの作成、プロファイルの適用、仮想パッドの接続、レポートの購読、更新の開始）。

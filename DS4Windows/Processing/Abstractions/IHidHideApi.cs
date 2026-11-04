@@ -1,7 +1,7 @@
 using System;
 using System.Collections.Generic;
 
-namespace DS4Windows.DI
+namespace DS4Windows.Processing.Abstractions
 {
     /// <summary>
     /// Phase9 9-E E-2（Phase9-E-Plan.md）: HidHide ドライバーの制御デバイス（<c>\\.\HidHide</c>）の窓口。HidHide の設定を読み書きする。

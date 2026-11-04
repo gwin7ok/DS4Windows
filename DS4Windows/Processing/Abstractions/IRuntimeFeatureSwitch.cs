@@ -1,4 +1,6 @@
-namespace DS4Windows.DI
+using DS4Windows.Input;
+
+namespace DS4Windows.Processing.Abstractions
 {
     /// <summary>
     /// Phase13-Step10 10-c（Phase13-Step10-Plan.md）: 画面（メイン画面、自動プロファイル画面、起動処理）が使う、実行中の機能の切り替えの窓口。

@@ -2,7 +2,6 @@ using System;
 using System.IO;
 using System.Linq;
 using System.Xml;
-using DS4Windows;
 using Xunit;
 
 namespace DS4WindowsTests
@@ -62,7 +61,7 @@ namespace DS4WindowsTests
             try
             {
                 TestGlobals.AppDataPath = tempDir;
-                var store = new DS4Windows.BackingStore(new DS4Windows.EnvironmentService());
+                var store = new DS4Windows.Core.Settings.BackingStore(new DS4Windows.Core.Platform.EnvironmentService());
 
                 Assert.True(TestRepositoryFactory.CreateLegacyProfileXml(store).SaveProfile(0, "Completeness"));
 
@@ -92,7 +91,7 @@ namespace DS4WindowsTests
             try
             {
                 TestGlobals.AppDataPath = tempDir;
-                var store = new DS4Windows.BackingStore(new DS4Windows.EnvironmentService());
+                var store = new DS4Windows.Core.Settings.BackingStore(new DS4Windows.Core.Platform.EnvironmentService());
 
                 Assert.True(TestRepositoryFactory.CreateLegacyProfileXml(store).SaveProfile(0, "OutputStick"));
 

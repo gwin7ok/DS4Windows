@@ -1,5 +1,5 @@
 using System;
-using DS4WinWPF;
+using DS4Windows.Composition;
 
 namespace DS4WindowsTests
 {

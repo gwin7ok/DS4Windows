@@ -33,8 +33,10 @@
 */
 using System;
 using System.Globalization;
+using DS4Windows.Core.Logging;
+using DS4Windows.Core.Utilities;
 
-namespace DS4Windows
+namespace DS4Windows.Processing
 {
     public class BezierCurve
     {

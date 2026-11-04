@@ -1,8 +1,8 @@
 using System;
 using Xunit;
-using DS4Windows;
-using DS4Windows.DI;
-using DS4WinWPF.DS4Forms.ViewModels;
+using DS4Windows.Core.Platform;
+using DS4Windows.Processing.Abstractions;
+using DS4Windows.UI.ViewModels;
 
 namespace DS4WindowsTests
 {
@@ -27,7 +27,7 @@ namespace DS4WindowsTests
 
         // UpdaterWindowViewModel は internal のため、リフレクションで生成・呼び出す（本番コードの可視性は変えない）。
         private static readonly Type UpdaterVmType = typeof(AboutViewModel).Assembly
-            .GetType("DS4WinWPF.DS4Forms.ViewModels.UpdaterWindowViewModel", throwOnError: true);
+            .GetType("DS4Windows.UI.ViewModels.UpdaterWindowViewModel", throwOnError: true);
 
         private static object CreateUpdaterVm(string version, IAppSettingsService settings)
         {

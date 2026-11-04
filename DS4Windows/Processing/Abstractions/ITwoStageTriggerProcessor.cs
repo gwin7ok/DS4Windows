@@ -1,4 +1,6 @@
-namespace DS4Windows.DI
+using DS4Windows.Core.Settings;
+
+namespace DS4Windows.Processing.Abstractions
 {
     /// <summary>
     /// Phase9 MapCustom の分割 M2（Phase9-MapCustom-Plan.md §3）: 2 段階トリガー（L2／R2 の浅い引きと深い引き）の状態機械。

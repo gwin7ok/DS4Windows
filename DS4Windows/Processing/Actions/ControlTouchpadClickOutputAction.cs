@@ -1,6 +1,8 @@
 using System;
+using DS4Windows.Input;
+using DS4Windows.Output.Devices;
 
-namespace DS4Windows.Actions
+namespace DS4Windows.Processing.Actions
 {
     /// <summary>
     /// Phase8-Step7 7.8f-2（Phase8-Step7-8f-Plan.md §3.2）: Controls タブの Button のうち、タッチパッドクリックへの割り当ての出力。

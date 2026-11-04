@@ -22,9 +22,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Xml.Serialization;
-using DS4Windows;
+using DS4Windows.Core.Settings;
 
-namespace DS4WinWPF.DS4Control.DTOXml
+namespace DS4Windows.Core.Persistence.Dto
 {
     [XmlRoot(SwitchProControllerOptions.XML_ELEMENT_NAME)]
     public class SwitchProControllerOptsDTO : IDTO<SwitchProControllerOptions>

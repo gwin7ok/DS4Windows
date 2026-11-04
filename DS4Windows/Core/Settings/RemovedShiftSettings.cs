@@ -1,7 +1,7 @@
 using System;
 using System.Xml;
 
-namespace DS4Windows
+namespace DS4Windows.Core.Settings
 {
     /// <summary>
     /// Phase8-Step7 7.8d（Phase8-Step7-8d-Plan.md §4.1）: 廃止された「シフト」機能の設定（プロファイル設定ファイルの <c>&lt;ShiftControl&gt;</c> ノード）を、

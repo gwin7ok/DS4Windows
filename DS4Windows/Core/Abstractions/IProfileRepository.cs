@@ -1,9 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
-using DS4Windows;
-using DS4Windows.DI;
+using DS4Windows.Core.Settings;
+using DS4Windows.Processing;
+using DS4Windows.Processing.Abstractions;
 
-namespace DS4Windows.DI
+namespace DS4Windows.Core.Abstractions
 {
     public interface IProfileRepository
     {

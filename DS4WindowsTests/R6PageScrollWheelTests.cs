@@ -1,8 +1,8 @@
 using System.IO;
 using System.Text.RegularExpressions;
-using DS4WinWPF.DS4Forms;
 using Xunit;
 using Xunit.Abstractions;
+using DS4Windows.UI;
 
 namespace DS4WindowsTests
 {

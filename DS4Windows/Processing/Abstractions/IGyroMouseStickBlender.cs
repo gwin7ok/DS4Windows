@@ -1,4 +1,7 @@
-namespace DS4Windows.DI
+using DS4Windows.Core.Settings;
+using DS4Windows.Input;
+
+namespace DS4Windows.Processing.Abstractions
 {
     /// <summary>
     /// Phase9 9-B（Phase9-B-Plan.md）: ジャイロのマウススティック出力（<c>GyroOutMode.MouseJoystick</c>）の合成。

@@ -19,7 +19,7 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 using System;
 using System.Threading;
 
-namespace DS4Windows
+namespace DS4Windows.Core.Utilities
 {
     public class ReadLocker : IDisposable
     {

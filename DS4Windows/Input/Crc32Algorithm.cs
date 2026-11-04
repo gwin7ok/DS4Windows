@@ -11,7 +11,7 @@
 using System;
 using System.Security.Cryptography;
 
-namespace DS4Windows
+namespace DS4Windows.Input
 {
     /// <summary>
     /// Implements a 32-bit CRC hash algorithm compatible with Zip etc.

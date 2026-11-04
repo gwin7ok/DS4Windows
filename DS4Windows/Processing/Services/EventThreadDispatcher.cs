@@ -1,9 +1,9 @@
 using System;
 using System.Threading;
 using System.Windows.Threading;
-using DS4Windows.DI;
+using DS4Windows.Processing.Abstractions;
 
-namespace DS4Windows.Services
+namespace DS4Windows.Processing.Services
 {
     /// <summary>
     /// Phase13-Step3: <see cref="IEventThreadDispatcher"/> の実装。旧 <c>ControlService</c> のコンストラクターにあったスレッドの生成

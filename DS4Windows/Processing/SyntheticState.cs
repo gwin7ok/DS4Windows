@@ -1,7 +1,7 @@
 using System;
 using System.Collections.Generic;
 
-namespace DS4Windows
+namespace DS4Windows.Processing
 {
     // Phase7-Step7 W2: 旧 Mapping.SyntheticState（入れ子の型）をトップレベルへ移した（Q5＝A。中身は変えていない）。
     /*

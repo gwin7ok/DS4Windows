@@ -1,7 +1,8 @@
 using System.Windows;
-using DS4Windows;
+using DS4Windows.Core.Settings;
+using DS4Windows.Processing;
 
-namespace DS4WinWPF.DS4Forms
+namespace DS4Windows.UI
 {
     /// <summary>
     /// Phase8-Step7 7.8d W3（Phase8-Step7-8d-Plan.md §4.2）: 廃止された「シフト」の設定が残っているプロファイルを、編集画面で開いたときの警告（<see cref="IRemovedShiftPrompt"/> の画面の実装）。

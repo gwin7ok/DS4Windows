@@ -1,4 +1,7 @@
-namespace DS4Windows.DI
+using DS4Windows.Core.Abstractions;
+using DS4Windows.Input;
+
+namespace DS4Windows.Processing.Abstractions
 {
     /// <summary>
     /// Phase9 9-B（Phase9-B-Plan.md）: 指定のコントロールが「今押されている（有効）」かを、入力の状態から判定する（マクロ記録画面が使う）。

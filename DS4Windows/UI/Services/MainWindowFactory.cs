@@ -1,10 +1,11 @@
 using System;
-using DS4Windows.DI;
-using DS4WinWPF;
-using DS4WinWPF.DS4Forms;
-using DS4WinWPF.DS4Forms.ViewModels;
+using DS4Windows.Core.Abstractions;
+using DS4Windows.Core.Utilities;
+using DS4Windows.Processing;
+using DS4Windows.Processing.Abstractions;
+using DS4Windows.UI.ViewModels;
 
-namespace DS4Windows.Services
+namespace DS4Windows.UI.Services
 {
     /// <summary>
     /// <see cref="IMainWindowFactory"/> の実装。メイン画面の生成と、画面が必要とするサービスの受け渡しを集約する（Phase7-Step5 W5）。

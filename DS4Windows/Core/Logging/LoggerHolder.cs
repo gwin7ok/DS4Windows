@@ -24,22 +24,22 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Xml.Linq;
-using DS4Windows;
 using NLog;
 using NLog.Targets.Wrappers;
+using DS4Windows.Core.Utilities;
 
-namespace DS4WinWPF
+namespace DS4Windows.Core.Logging
 {
-    public class LoggerHolder : DS4Windows.DI.ILogSettingsApplier
+    public class LoggerHolder : DS4Windows.Core.Abstractions.ILogSettingsApplier
     {
         private Logger logger;// = LogManager.GetCurrentClassLogger();
         public Logger Logger { get => logger; }
         private ReaderWriterLockSlim logLock = new ReaderWriterLockSlim();
 
         // Phase7-Step10d W5: ログ設定（保管数・最小レベル）は、旧 Global.LogMaxArchiveFiles／LogMinLevel（BackingStore の値）に替えて、注入された設定サービスから読む
-        private readonly DS4Windows.DI.IAppSettingsService appSettings;
+        private readonly DS4Windows.Processing.Abstractions.IAppSettingsService appSettings;
 
-        public LoggerHolder(DS4Windows.DI.IAppSettingsService appSettings)
+        public LoggerHolder(DS4Windows.Processing.Abstractions.IAppSettingsService appSettings)
         {
             this.appSettings = appSettings ?? throw new ArgumentNullException(nameof(appSettings));
             var configuration = LogManager.Configuration;
@@ -52,7 +52,7 @@ namespace DS4WinWPF
             if (fileTarget == null)
                 throw new InvalidOperationException("logfile target (FileTarget) not found in NLog configuration");
 
-            fileTarget.FileName = $@"{DS4Windows.PathService.AppDataPathState}\Logs\ds4windows_log.txt";
+            fileTarget.FileName = $@"{DS4Windows.Core.Platform.PathService.AppDataPathState}\Logs\ds4windows_log.txt";
 
             // Disable NLog automatic archiving by default. Manual startup rotator performs deterministic
             // archive moves; ArchiveOldFileOnStartup must remain false to avoid double-rotation.
@@ -70,7 +70,7 @@ namespace DS4WinWPF
             logger = LogManager.GetCurrentClassLogger();
             logger.Info("Logger initialized");
 
-            DS4Windows.AppLogger.GuiLog += WriteToLog;
+            DS4Windows.Core.Logging.AppLogger.GuiLog += WriteToLog;
         }
 
         /// <summary>
@@ -264,7 +264,7 @@ namespace DS4WinWPF
             }
         }
 
-        private void WriteToLog(object sender, DS4Windows.DebugEventArgs e)
+        private void WriteToLog(object sender, DS4Windows.Core.Logging.DebugEventArgs e)
         {
             if (e.Temporary)
             {
@@ -273,7 +273,7 @@ namespace DS4WinWPF
 
             using WriteLocker locker = new WriteLocker(logLock);
             // Phase13b-Step1: Level を尊重する（旧 API 由来は Info／Warn のみで、従来と同じ出力）。
-            logger.Log(DS4Windows.AppLogger.ToNLogLevel(e.Level), e.Data);
+            logger.Log(DS4Windows.Core.Logging.AppLogger.ToNLogLevel(e.Level), e.Data);
         }
     }
 }

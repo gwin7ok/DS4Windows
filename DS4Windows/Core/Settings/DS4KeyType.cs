@@ -16,11 +16,6 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
 
-using DS4Windows.DS4Control;
-using DS4Windows.InputDevices;
-using DS4Windows.StickModifiers;
-using DS4WinWPF.DS4Control.DTOXml;
-using DS4WinWPF.DS4Forms.ViewModels;
 using Sensorit.Base;
 using System;
 using System.Collections.Generic;
@@ -40,12 +35,10 @@ using System.Windows;
 using System.Windows.Input;
 using System.Xml;
 using System.Xml.Serialization;
-using DS4WinWPF;
-using DS4WinWPF.ApiDTO;
 using WpfScreenHelper;
-using static DS4Windows.Mouse;
-using static DS4Windows.Util;
-namespace DS4Windows
+using static DS4Windows.Processing.Mouse;
+using static DS4Windows.Core.Utilities.Util;
+namespace DS4Windows.Core.Settings
 {
     [Flags]
     public enum DS4KeyType : byte { None = 0, ScanCode = 1, Toggle = 2, Unbound = 4, Macro = 8, RepeatMacro = 32, RepeatLatchMacro = 64 }; // Increment by exponents of 2*, starting at 2^0。値 16（旧 HoldMacro）は欠番（Phase8-Fix-MacroRepeatUnify で RepeatMacro に統合。保存はビット値ではなく名前）。RepeatLatchMacro（R-2）は、マクロの「繰り返しをトグルする」Execute Mode の実行時の表現で、保存には書かない（保存は MacroExecuteMode の設定項目。R2-MacroToggleRepeat-Plan.md §3.1）

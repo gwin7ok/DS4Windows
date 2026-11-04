@@ -1,8 +1,10 @@
 using System;
 using System.Diagnostics;
 using System.Runtime.InteropServices;
+using DS4Windows.Core.Abstractions;
+using DS4Windows.Core.Logging;
 
-namespace DS4Windows.Services
+namespace DS4Windows.Core.Platform
 {
     /// <summary>
     /// Phase12-Step3 3e（R-3）: <see cref="IMouseInputHook"/> の実装（Win32 の <c>WH_MOUSE_LL</c>）。

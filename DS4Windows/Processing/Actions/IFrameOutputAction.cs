@@ -1,4 +1,4 @@
-namespace DS4Windows.Actions
+namespace DS4Windows.Processing.Actions
 {
     /// <summary>
     /// Phase8-Step4 W1: 毎フレームの出力を持つ出力アクション（Button の Press／Toggle。Phase8-Step2-Design.md §5）。

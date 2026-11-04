@@ -1,12 +1,12 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using DS4Windows;
-using DS4Windows.Actions;
-using DS4Windows.DI;
-using DS4Windows.DS4Control;
-using DS4Windows.Services;
 using Xunit;
+using DS4Windows.Core.Settings;
+using DS4Windows.Input;
+using DS4Windows.Output.Devices;
+using DS4Windows.Processing;
+using DS4Windows.Processing.Actions;
 
 namespace DS4WindowsTests
 {
@@ -94,7 +94,7 @@ namespace DS4WindowsTests
 
             public Harness()
             {
-                DS4WinWPF.AppHost.CreateHost();
+                DS4Windows.Composition.AppHost.CreateHost();
                 Manager = TestHost.GetService<IManagedActionManager>();
                 Engine = new TriggerDispatchEngine(Registry, Manager, null);
             }

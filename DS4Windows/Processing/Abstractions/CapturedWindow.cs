@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace DS4Windows.Services
+namespace DS4Windows.Processing.Abstractions
 {
     /// <summary>
     /// Phase12-Step2 2i: マウスの位置にあるトップレベルのウィンドウ 1 つ（ターゲットマークのドラッグ＆ドロップで取得する）。

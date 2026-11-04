@@ -1,7 +1,7 @@
-﻿using DS4Windows.Services;
-using System;
+﻿using System;
+using DS4Windows.Processing.Abstractions;
 
-namespace DS4Windows.Actions
+namespace DS4Windows.Processing.Actions
 {
     /// <summary>
     /// Lightweight DTO describing a detected trigger from input evaluation.

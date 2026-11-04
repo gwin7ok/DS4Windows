@@ -1,7 +1,8 @@
 using System;
-using DS4Windows.Services;
+using DS4Windows.Input;
+using DS4Windows.Processing.Abstractions;
 
-namespace DS4Windows.Actions
+namespace DS4Windows.Processing.Actions
 {
     /// <summary>
     /// Phase8-Step7 7.6a: <see cref="IGyroCalibrationPort"/> の本番の実装。<c>IDeviceStateAccessor</c>（＝IDeviceSlotState。Phase13-Step5 で直接注入に変更）越しに <c>DS4Device</c> を操作する。

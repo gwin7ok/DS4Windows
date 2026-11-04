@@ -1,11 +1,13 @@
 using System;
 using System.Diagnostics;
 using System.Threading;
-using DS4Windows.DI;
-using DS4Windows.Services;
-using DS4WinWPF;
+using DS4Windows.Core.Abstractions;
+using DS4Windows.Core.Logging;
+using DS4Windows.Core.Profiles;
+using DS4Windows.Core.Settings;
+using DS4Windows.Processing.Abstractions;
 
-namespace DS4Windows
+namespace DS4Windows.Processing.Services
 {
     public class AutoProfileService : IAutoProfileService
     {
@@ -216,7 +218,7 @@ namespace DS4Windows
                                 if (AutoProfileDebugLogLevel > 0)
                                     AppLogger.Log(AppLogLevel.Info, $"DEBUG: Auto-Profile. LoadProfile Controller {j + 1}={tempname}", LogOptions.Temporary);
 
-                                string prolog = string.Format(DS4WinWPF.Properties.Resources.UsingAutoTempProfile, (j + 1).ToString(), tempname);
+                                string prolog = string.Format(DS4Windows.Properties.Resources.UsingAutoTempProfile, (j + 1).ToString(), tempname);
 
                                 // Step 3 & Step 4 申し送り事項:
                                 // IProfileApplicationService.ApplyProfile を呼び出す。
@@ -270,7 +272,7 @@ namespace DS4Windows
                                 if (AutoProfileDebugLogLevel > 0)
                                     AppLogger.Log(AppLogLevel.Info, $"DEBUG: Auto-Profile. Unknown process. Reverting to default profile. Controller {j + 1}={defaultProfile} (default)", LogOptions.Temporary);
 
-                                string prolog = string.Format(DS4WinWPF.Properties.Resources.UsingProfile, (j + 1).ToString(), defaultProfile, BatteryText(j));
+                                string prolog = string.Format(DS4Windows.Properties.Resources.UsingProfile, (j + 1).ToString(), defaultProfile, BatteryText(j));
 
                                 // Step 3 & Step 4 申し送り事項:
                                 // 一時プロファイル解除復帰（isTemp: false）、displayNotification: null で自動解決

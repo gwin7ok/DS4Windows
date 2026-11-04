@@ -1,8 +1,9 @@
 using System.Collections.Generic;
-using DS4Windows.DI;
-using DS4Windows.InputDevices;
+using DS4Windows.Core.Settings;
+using DS4Windows.Input.Devices;
+using DS4Windows.Processing.Abstractions;
 
-namespace DS4Windows.Services
+namespace DS4Windows.Processing.Services
 {
     /// <summary>
     /// Phase9 9-E E-6d（Phase9-E6-Plan.md §3.2）: <see cref="IJoyConLinker"/> の実装（DI の Singleton。状態なし）。

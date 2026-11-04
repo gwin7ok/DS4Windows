@@ -25,10 +25,10 @@ using System.Threading.Tasks;
 using System.Windows.Documents;
 using HttpProgress;
 using System.Text.Json;
-using DS4Windows;
+using DS4Windows.Core.Utilities;
 using MarkdownEngine = MdXaml.Markdown;
 
-namespace DS4WinWPF.DS4Forms.ViewModels
+namespace DS4Windows.UI.ViewModels
 {
     public class ChangelogViewModel
     {

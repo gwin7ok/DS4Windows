@@ -1,6 +1,5 @@
 ﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
-using DS4Windows;
 
 namespace StandaloneTests
 {
@@ -12,7 +11,7 @@ namespace StandaloneTests
         {
             // Phase13-Step4: 静的 ActionManager（と、それを支えた ServiceProviderHolder）は廃止した。管理役（DefaultActionManager）を直接使う。
             // Func<IMapping> は切断時の後始末（ClearDeviceState）にだけ使われ、このテストでは呼ばれない。
-            var manager = new DS4Windows.Actions.DefaultActionManager(() => null);
+            var manager = new DS4Windows.Processing.Actions.DefaultActionManager(() => null);
 
             // Arrange: create a lightweight SpecialAction
             var sa = TestHelpers.CreateKeyAction("smoke_test", "L1", "32");

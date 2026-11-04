@@ -1,6 +1,7 @@
 using System;
+using DS4Windows.Input;
 
-namespace DS4Windows.Actions
+namespace DS4Windows.Processing.Actions
 {
     /// <summary>
     /// Phase8-Step3 W1: トリガー条件の判定に渡す、読み取り専用の入力（Phase8-Step2-Design.md §3。Q1＝A）。

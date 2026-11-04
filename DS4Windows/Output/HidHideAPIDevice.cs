@@ -21,9 +21,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Runtime.InteropServices;
-using DS4Windows;
+using DS4Windows.Input.Hid;
 
-namespace DS4WinWPF.DS4Control
+namespace DS4Windows.Output
 {
     class HidHideAPIDevice : IDisposable
     {

@@ -1,6 +1,6 @@
 using System;
 using Xunit;
-using DS4Windows;
+using DS4Windows.Core.Settings;
 
 namespace DS4WindowsTests
 {

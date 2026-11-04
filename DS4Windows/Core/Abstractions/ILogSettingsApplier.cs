@@ -1,4 +1,4 @@
-namespace DS4Windows.DI
+namespace DS4Windows.Core.Abstractions
 {
     /// <summary>
     /// ログ設定（保存するログの数・最小ログレベル）の変更を、ログ機能（NLog の構成）へ反映する窓口。

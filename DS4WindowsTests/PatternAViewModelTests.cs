@@ -1,9 +1,6 @@
 ﻿using System;
 using Xunit;
-using DS4Windows;
-using DS4Windows.DI;
-using DS4WinWPF;
-using DS4WinWPF.DS4Forms.ViewModels;
+using DS4Windows.UI.ViewModels;
 
 namespace DS4WindowsTests
 {
@@ -12,7 +9,7 @@ namespace DS4WindowsTests
         [Fact]
         public void AppHost_ShouldResolve_SettingsViewModel()
         {
-            DS4WinWPF.AppHost.CreateHost();
+            DS4Windows.Composition.AppHost.CreateHost();
 
             var vm = TestHost.GetService<SettingsViewModel>();
             Assert.NotNull(vm);
@@ -21,7 +18,7 @@ namespace DS4WindowsTests
         [Fact]
         public void AppHost_ShouldResolve_LogViewModel()
         {
-            DS4WinWPF.AppHost.CreateHost();
+            DS4Windows.Composition.AppHost.CreateHost();
 
             var vm = TestHost.GetService<LogViewModel>();
             Assert.NotNull(vm);
@@ -30,7 +27,7 @@ namespace DS4WindowsTests
         [Fact]
         public void AppHost_ShouldResolve_AboutViewModel()
         {
-            DS4WinWPF.AppHost.CreateHost();
+            DS4Windows.Composition.AppHost.CreateHost();
 
             var vm = TestHost.GetService<AboutViewModel>();
             Assert.NotNull(vm);
@@ -42,7 +39,7 @@ namespace DS4WindowsTests
         [Fact]
         public void PatternAViewModels_ShouldBeTransient()
         {
-            DS4WinWPF.AppHost.CreateHost();
+            DS4Windows.Composition.AppHost.CreateHost();
 
             var vm1 = TestHost.GetService<SettingsViewModel>();
             var vm2 = TestHost.GetService<SettingsViewModel>();
@@ -68,7 +65,7 @@ namespace DS4WindowsTests
         [Fact]
         public void Dispose_CalledMultipleTimes_ShouldNotThrow()
         {
-            DS4WinWPF.AppHost.CreateHost();
+            DS4Windows.Composition.AppHost.CreateHost();
             var vm = TestHost.GetService<SettingsViewModel>();
 
             var ex1 = Record.Exception(() => vm.Dispose());

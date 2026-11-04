@@ -1,7 +1,9 @@
-﻿﻿using Xunit;
-using DS4Windows.Services;
-using DS4Windows;
-using DS4WinWPF;
+﻿using Xunit;
+using DS4Windows.Core.Abstractions;
+using DS4Windows.Core.Platform;
+using DS4Windows.Processing;
+using DS4Windows.Processing.Abstractions;
+using DS4Windows.Processing.Services;
 
 namespace DS4WindowsTests
 {
@@ -25,7 +27,7 @@ namespace DS4WindowsTests
         [Fact]
         public void AppHost_ResolvesIElevatedProcessLauncher_AsDefaultImplementation()
         {
-            DS4WinWPF.AppHost.CreateHost();
+            DS4Windows.Composition.AppHost.CreateHost();
 
             var launcher = TestHost.GetService<IElevatedProcessLauncher>();
 
@@ -36,7 +38,7 @@ namespace DS4WindowsTests
         [Fact]
         public void AppHost_ResolvesIProcessInspector_AsDefaultImplementation()
         {
-            DS4WinWPF.AppHost.CreateHost();
+            DS4Windows.Composition.AppHost.CreateHost();
 
             var inspector = TestHost.GetService<IProcessInspector>();
 
@@ -47,7 +49,7 @@ namespace DS4WindowsTests
         [Fact]
         public void AppHost_ResolvesIDs4DeviceRegistry_AsAdapterImplementation()
         {
-            DS4WinWPF.AppHost.CreateHost();
+            DS4Windows.Composition.AppHost.CreateHost();
 
             var registry = TestHost.GetService<IDs4DeviceRegistry>();
 
@@ -58,7 +60,7 @@ namespace DS4WindowsTests
         [Fact]
         public void AppHost_ResolvesIDeviceStateAccessor_FromTheDeviceSlotStateSingleton()
         {
-            DS4WinWPF.AppHost.CreateHost();
+            DS4Windows.Composition.AppHost.CreateHost();
 
             IDeviceStateAccessor accessor = null;
             var ex = Record.Exception(() => accessor = TestHost.GetService<IDeviceStateAccessor>());
@@ -67,10 +69,10 @@ namespace DS4WindowsTests
             Assert.Null(ex);
             Assert.NotNull(accessor);
             // Phase13-Step5: 持ち主は IDeviceSlotState（DeviceSlotState）。ControlService は同じ配列を保持する
-            Assert.Same(TestHost.GetService<DS4Windows.DI.IDeviceSlotState>(), accessor);
-            Assert.Same(((DS4Windows.DI.IDeviceSlotState)accessor).DS4Controllers, controlService.DS4Controllers);
-            Assert.Same(((DS4Windows.DI.IDeviceSlotState)accessor).TouchPads, controlService.touchPad);
-            Assert.Same(((DS4Windows.DI.IDeviceSlotState)accessor).SlotManager, controlService.slotManager);
+            Assert.Same(TestHost.GetService<DS4Windows.Processing.Abstractions.IDeviceSlotState>(), accessor);
+            Assert.Same(((DS4Windows.Processing.Abstractions.IDeviceSlotState)accessor).DS4Controllers, controlService.DS4Controllers);
+            Assert.Same(((DS4Windows.Processing.Abstractions.IDeviceSlotState)accessor).TouchPads, controlService.touchPad);
+            Assert.Same(((DS4Windows.Processing.Abstractions.IDeviceSlotState)accessor).SlotManager, controlService.slotManager);
         }
     }
 }

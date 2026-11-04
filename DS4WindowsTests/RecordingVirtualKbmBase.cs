@@ -1,5 +1,5 @@
 using System.Collections.Generic;
-using DS4Windows.DS4Control;
+using DS4Windows.Output.Kbm;
 
 namespace DS4WindowsTests
 {

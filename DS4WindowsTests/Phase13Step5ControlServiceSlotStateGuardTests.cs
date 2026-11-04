@@ -1,8 +1,8 @@
 using System.Linq;
 using System.Reflection;
-using DS4Windows;
-using DS4Windows.DI;
 using Xunit;
+using DS4Windows.Processing;
+using DS4Windows.Processing.Abstractions;
 
 namespace DS4WindowsTests
 {
@@ -32,7 +32,7 @@ namespace DS4WindowsTests
         [Fact]
         public void ControlService_HoldsTheSameArraysAsTheSlotState()
         {
-            DS4WinWPF.AppHost.CreateHost();
+            DS4Windows.Composition.AppHost.CreateHost();
             var slots = TestHost.GetService<IDeviceSlotState>();
             var control = TestHost.GetService<ControlService>();
 
@@ -47,7 +47,7 @@ namespace DS4WindowsTests
         [Fact]
         public void GetController_ReadsTheSlotState()
         {
-            DS4WinWPF.AppHost.CreateHost();
+            DS4Windows.Composition.AppHost.CreateHost();
             var slots = TestHost.GetService<IDeviceSlotState>();
             var control = TestHost.GetService<ControlService>();
 

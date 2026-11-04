@@ -1,7 +1,9 @@
 using System;
-using DS4Windows.DI;
+using DS4Windows.Core.Abstractions;
+using DS4Windows.Core.Logging;
+using DS4Windows.Processing.Abstractions;
 
-namespace DS4Windows.Services
+namespace DS4Windows.Processing.Services
 {
     /// <summary>
     /// <see cref="IProfileSlotApplier"/> の既定実装。接続時などに、指定スロットへ通常プロファイルを適用する。
@@ -15,10 +17,10 @@ namespace DS4Windows.Services
         // Phase7-Step10e W1: スロット数の上限は、静的な ControlService.CURRENT_DS4_CONTROLLER_LIMIT ではなく、注入された環境サービスから読む
         private readonly IEnvironmentService _environment;
         // Phase8-Step6 W2: 切断の後始末（ReleaseSlot）で、エンジンの状態と登録簿の束縛を消す
-        private readonly DS4Windows.Actions.ITriggerDispatchEngine _engine;
+        private readonly DS4Windows.Processing.Actions.ITriggerDispatchEngine _engine;
 
         public ProfileSlotApplier(IProfileApplicationService profileApplication, IEnvironmentService environment,
-            DS4Windows.Actions.ITriggerDispatchEngine engine)
+            DS4Windows.Processing.Actions.ITriggerDispatchEngine engine)
         {
             _engine = engine ?? throw new ArgumentNullException(nameof(engine));
             _profileApplication = profileApplication ?? throw new ArgumentNullException(nameof(profileApplication));

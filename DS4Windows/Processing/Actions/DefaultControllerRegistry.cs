@@ -3,7 +3,7 @@ using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace DS4Windows.Actions
+namespace DS4Windows.Processing.Actions
 {
     public class DefaultControllerRegistry : IControllerRegistry
     {

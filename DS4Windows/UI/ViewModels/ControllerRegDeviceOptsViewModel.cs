@@ -21,15 +21,17 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using DS4Windows;
-using DS4Windows.DI;
-using DS4WinWPF.DS4Forms.ViewModels.Util;
-using LEDBarMode = DS4Windows.DualSenseControllerOptions.LEDBarMode;
-using MuteLEDMode = DS4Windows.DualSenseControllerOptions.MuteLEDMode;
-using LinkMode = DS4Windows.JoyConDeviceOptions.LinkMode;
-using JoinedGyroProvider = DS4Windows.JoyConDeviceOptions.JoinedGyroProvider;
+using DS4Windows.Core.Abstractions;
+using DS4Windows.Core.Settings;
+using DS4Windows.Input;
+using DS4Windows.Processing;
+using DS4Windows.Processing.Abstractions;
+using LEDBarMode = DS4Windows.Core.Settings.DualSenseControllerOptions.LEDBarMode;
+using MuteLEDMode = DS4Windows.Core.Settings.DualSenseControllerOptions.MuteLEDMode;
+using LinkMode = DS4Windows.Core.Settings.JoyConDeviceOptions.LinkMode;
+using JoinedGyroProvider = DS4Windows.Core.Settings.JoyConDeviceOptions.JoinedGyroProvider;
 
-namespace DS4WinWPF.DS4Forms.ViewModels
+namespace DS4Windows.UI.ViewModels
 {
     public class ControllerRegDeviceOptsViewModel
     {
@@ -167,20 +169,20 @@ namespace DS4WinWPF.DS4Forms.ViewModels
             int result = 0;
             switch (currentStore.DeviceType)
             {
-                case DS4Windows.InputDevices.InputDeviceType.DS3:
+                case DS4Windows.Input.Devices.InputDeviceType.DS3:
                     result = 0;
                     break;
-                case DS4Windows.InputDevices.InputDeviceType.DS4:
+                case DS4Windows.Input.Devices.InputDeviceType.DS4:
                     result = 1;
                     break;
-                case DS4Windows.InputDevices.InputDeviceType.DualSense:
+                case DS4Windows.Input.Devices.InputDeviceType.DualSense:
                     result = 2;
                     break;
-                case DS4Windows.InputDevices.InputDeviceType.SwitchPro:
+                case DS4Windows.Input.Devices.InputDeviceType.SwitchPro:
                     result = 3;
                     break;
-                case DS4Windows.InputDevices.InputDeviceType.JoyConL:
-                case DS4Windows.InputDevices.InputDeviceType.JoyConR:
+                case DS4Windows.Input.Devices.InputDeviceType.JoyConL:
+                case DS4Windows.Input.Devices.InputDeviceType.JoyConR:
                     result = 4;
                     break;
                 default:
@@ -199,20 +201,20 @@ namespace DS4WinWPF.DS4Forms.ViewModels
 
             switch (currentStore.DeviceType)
             {
-                case DS4Windows.InputDevices.InputDeviceType.DS3:
+                case DS4Windows.Input.Devices.InputDeviceType.DS3:
                     // Does not have device specific options
                     break;
-                case DS4Windows.InputDevices.InputDeviceType.DS4:
+                case DS4Windows.Input.Devices.InputDeviceType.DS4:
                     dataContextObject = new DS4ControllerOptionsWrapper(CurrentDS4Options, serviceDeviceOpts.DS4DeviceOpts);
                     break;
-                case DS4Windows.InputDevices.InputDeviceType.DualSense:
+                case DS4Windows.Input.Devices.InputDeviceType.DualSense:
                     dataContextObject = new DualSenseControllerOptionsWrapper(CurrentDSOptions, serviceDeviceOpts.DualSenseOpts);
                     break;
-                case DS4Windows.InputDevices.InputDeviceType.SwitchPro:
+                case DS4Windows.Input.Devices.InputDeviceType.SwitchPro:
                     dataContextObject = new SwitchProControllerOptionsWrapper(CurrentSwitchProOptions, serviceDeviceOpts.SwitchProDeviceOpts);
                     break;
-                case DS4Windows.InputDevices.InputDeviceType.JoyConL:
-                case DS4Windows.InputDevices.InputDeviceType.JoyConR:
+                case DS4Windows.Input.Devices.InputDeviceType.JoyConL:
+                case DS4Windows.Input.Devices.InputDeviceType.JoyConR:
                     dataContextObject = new JoyConControllerOptionsWrapper(CurrentJoyConOptions, serviceDeviceOpts.JoyConDeviceOpts);
                     break;
                 default:

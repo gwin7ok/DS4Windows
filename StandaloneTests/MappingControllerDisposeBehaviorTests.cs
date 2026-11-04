@@ -2,7 +2,9 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
 using System.Linq;
 using System.Reflection;
-using DS4Windows;
+using DS4Windows.Input;
+using DS4Windows.Processing;
+using DS4Windows.Processing.Actions;
 
 namespace StandaloneTests
 {
@@ -14,43 +16,43 @@ namespace StandaloneTests
         // ここでは IMapping の代わりに、登録簿を破棄するだけの偽物を差す。
         private class Parts
         {
-            public readonly DS4Windows.Actions.DefaultActionManager Manager;
-            public readonly DS4Windows.Services.KeyButtonControllerRegistry Registry;
+            public readonly DS4Windows.Processing.Actions.DefaultActionManager Manager;
+            public readonly DS4Windows.Processing.Services.KeyButtonControllerRegistry Registry;
 
-            public Parts(Func<DS4Windows.Actions.IManagedActionManager, DS4Windows.Actions.IKeyButtonActionControllerFactory> factoryOf)
+            public Parts(Func<DS4Windows.Processing.Actions.IManagedActionManager, DS4Windows.Processing.Actions.IKeyButtonActionControllerFactory> factoryOf)
             {
-                DS4Windows.Services.KeyButtonControllerRegistry registry = null;
-                Manager = new DS4Windows.Actions.DefaultActionManager(() => new DisconnectOnlyMapping(registry));
-                registry = new DS4Windows.Services.KeyButtonControllerRegistry(factoryOf(Manager), new DS4Windows.Actions.DefaultControllerRegistry(), Manager);
+                DS4Windows.Processing.Services.KeyButtonControllerRegistry registry = null;
+                Manager = new DS4Windows.Processing.Actions.DefaultActionManager(() => new DisconnectOnlyMapping(registry));
+                registry = new DS4Windows.Processing.Services.KeyButtonControllerRegistry(factoryOf(Manager), new DS4Windows.Processing.Actions.DefaultControllerRegistry(), Manager);
                 Registry = registry;
             }
         }
 
-        private class DisconnectOnlyMapping : DS4Windows.DI.IMapping
+        private class DisconnectOnlyMapping : DS4Windows.Processing.Abstractions.IMapping
         {
-            private readonly DS4Windows.DI.IKeyButtonControllerRegistry registry;
-            public DisconnectOnlyMapping(DS4Windows.DI.IKeyButtonControllerRegistry registry) { this.registry = registry; }
+            private readonly DS4Windows.Processing.Abstractions.IKeyButtonControllerRegistry registry;
+            public DisconnectOnlyMapping(DS4Windows.Processing.Abstractions.IKeyButtonControllerRegistry registry) { this.registry = registry; }
             public void HandleDeviceDisconnect(int device) { registry.ClearForDevice(device); }
             // Phase7b W1: 復帰の合図の退避・復元（このスタブは合図を持たない）
             public ProfileUntriggerSnapshot CaptureProfileUntrigger(int device) { return default; }
             public void RestoreProfileUntrigger(int device, ProfileUntriggerSnapshot snapshot) { }
-            public DS4State SetCurveAndDeadzone(int device, DS4State cState, DS4State dState, DS4Windows.DI.IProfileSettingsService settings) { throw new NotSupportedException(); }
+            public DS4State SetCurveAndDeadzone(int device, DS4State cState, DS4State dState, DS4Windows.Core.Abstractions.IProfileSettingsService settings) { throw new NotSupportedException(); }
             public void MapCustom(int device, DS4State cState, DS4State MappedState, DS4StateExposed eState, Mouse tp) { throw new NotSupportedException(); }
             public void TempMouseJoystick(int device, DS4State MappedState) { throw new NotSupportedException(); }
-            public void Commit(int device, DS4Windows.DI.IProfileSettingsService settings) { throw new NotSupportedException(); }
+            public void Commit(int device, DS4Windows.Core.Abstractions.IProfileSettingsService settings) { throw new NotSupportedException(); }
             public bool GetBoolMappingExternal(int device, DS4Controls control, DS4State cState, DS4StateExposed eState, Mouse tp) { throw new NotSupportedException(); }
             public void PlayMacroDirect(int device, SpecialAction action) { throw new NotSupportedException(); }
             public void EndMacroDirect(int device) { throw new NotSupportedException(); }
         }
 
-        private static System.Collections.IDictionary ControllersOf(DS4Windows.Services.KeyButtonControllerRegistry registry)
+        private static System.Collections.IDictionary ControllersOf(DS4Windows.Processing.Services.KeyButtonControllerRegistry registry)
         {
-            var field = typeof(DS4Windows.Services.KeyButtonControllerRegistry).GetField("_controllers", BindingFlags.Instance | BindingFlags.NonPublic);
+            var field = typeof(DS4Windows.Processing.Services.KeyButtonControllerRegistry).GetField("_controllers", BindingFlags.Instance | BindingFlags.NonPublic);
             Assert.IsNotNull(field, "Could not find _controllers field via reflection");
             return field.GetValue(registry) as System.Collections.IDictionary;
         }
 
-        private class TestFactory : DS4Windows.Actions.IKeyButtonActionControllerFactory
+        private class TestFactory : DS4Windows.Processing.Actions.IKeyButtonActionControllerFactory
         {
             private readonly Func<int, KeyButtonActionController.Mode, string, KeyButtonActionController> creator;
             public TestFactory(Func<int, KeyButtonActionController.Mode, string, KeyButtonActionController> creator)
@@ -72,7 +74,7 @@ namespace StandaloneTests
         {
             public bool WasDisposed { get; private set; }
             private readonly bool throwOnDispose;
-            public TestKeyButtonActionController(int device, Mode mode, DS4Windows.Actions.IManagedActionManager manager, string name = null, bool throwOnDispose = false) : base(device, mode, manager, name)
+            public TestKeyButtonActionController(int device, Mode mode, DS4Windows.Processing.Actions.IManagedActionManager manager, string name = null, bool throwOnDispose = false) : base(device, mode, manager, name)
             {
                 this.throwOnDispose = throwOnDispose;
             }

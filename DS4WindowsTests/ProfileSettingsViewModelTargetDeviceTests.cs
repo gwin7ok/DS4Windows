@@ -2,8 +2,8 @@ using System;
 using System.Windows;
 using System.Windows.Media;
 using Xunit;
-using DS4Windows;
-using DS4WinWPF.DS4Forms.ViewModels;
+using DS4Windows.Input;
+using DS4Windows.UI.ViewModels;
 
 namespace DS4WindowsTests
 {
@@ -40,7 +40,7 @@ namespace DS4WindowsTests
             {
                 try
                 {
-                    Application.ResourceAssembly = typeof(DS4WinWPF.AppHost).Assembly;
+                    Application.ResourceAssembly = typeof(DS4Windows.Composition.AppHost).Assembly;
                 }
                 catch { }
             }
@@ -85,9 +85,9 @@ namespace DS4WindowsTests
         {
             using var scope = new StaticStateScope();
 
-            var vm = CreateViewModel(DS4Windows.ControllerLimits.TestProfileIndex, TargetSlot);
+            var vm = CreateViewModel(DS4Windows.Core.Settings.ControllerLimits.TestProfileIndex, TargetSlot);
 
-            Assert.Equal(DS4Windows.ControllerLimits.TestProfileIndex, vm.Device);
+            Assert.Equal(DS4Windows.Core.Settings.ControllerLimits.TestProfileIndex, vm.Device);
             Assert.Equal(TargetSlot, vm.TargetDevice);
             Assert.Equal(TargetSlot, vm.FuncDevNum);
         }
@@ -97,7 +97,7 @@ namespace DS4WindowsTests
         {
             using var scope = new StaticStateScope();
 
-            var vm = CreateViewModel(DS4Windows.ControllerLimits.TestProfileIndex, -1);
+            var vm = CreateViewModel(DS4Windows.Core.Settings.ControllerLimits.TestProfileIndex, -1);
 
             Assert.Equal(-1, vm.TargetDevice);
             // プロファイル一覧から開いた場合の従来動作（ランブルテスト等はコントローラー0）を維持する
@@ -109,7 +109,7 @@ namespace DS4WindowsTests
         {
             using var scope = new StaticStateScope();
 
-            var vm = ProfileSettingsViewModelTestFactory.Create(DS4Windows.ControllerLimits.TestProfileIndex, TestRepositoryFactory.CreateProfileSettingsService(),
+            var vm = ProfileSettingsViewModelTestFactory.Create(DS4Windows.Core.Settings.ControllerLimits.TestProfileIndex, TestRepositoryFactory.CreateProfileSettingsService(),
                 outputSlotService: TestRepositoryFactory.CreateOutputSlotService());
 
             Assert.Equal(-1, vm.TargetDevice);
@@ -122,8 +122,8 @@ namespace DS4WindowsTests
             using var scope = new StaticStateScope();
             ResetForcedColorArrays();
 
-            int outOfRange = new DS4Windows.EnvironmentService().ControllerSlotLimit;
-            var vm = CreateViewModel(DS4Windows.ControllerLimits.TestProfileIndex, outOfRange);
+            int outOfRange = new DS4Windows.Core.Platform.EnvironmentService().ControllerSlotLimit;
+            var vm = CreateViewModel(DS4Windows.Core.Settings.ControllerLimits.TestProfileIndex, outOfRange);
 
             Assert.Equal(0, vm.FuncDevNum);
 
@@ -141,7 +141,7 @@ namespace DS4WindowsTests
             ResetForcedColorArrays();
 
             // 編集スロットに 8 を渡しても、プレビューは targetDevice に対して行われる
-            var vm = CreateViewModel(DS4Windows.ControllerLimits.TestProfileIndex, TargetSlot);
+            var vm = CreateViewModel(DS4Windows.Core.Settings.ControllerLimits.TestProfileIndex, TargetSlot);
 
             vm.StartForcedColor(Color.FromRgb(10, 20, 30));
             Assert.True(DS4LightBar.forcelight[TargetSlot]);
@@ -170,7 +170,7 @@ namespace DS4WindowsTests
             using var scope = new StaticStateScope();
             ResetForcedColorArrays();
 
-            var vm = CreateViewModel(DS4Windows.ControllerLimits.TestProfileIndex, -1);
+            var vm = CreateViewModel(DS4Windows.Core.Settings.ControllerLimits.TestProfileIndex, -1);
 
             vm.StartForcedColor(Colors.Red);
             vm.UpdateForcedColor(Colors.Blue);

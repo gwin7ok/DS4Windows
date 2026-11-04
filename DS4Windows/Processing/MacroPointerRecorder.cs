@@ -1,7 +1,7 @@
 using System;
-using DS4Windows.Services;
+using DS4Windows.Core.Abstractions;
 
-namespace DS4Windows
+namespace DS4Windows.Processing
 {
     /// <summary>
     /// Phase12-Step3 3e（R-3）: マクロの記録で、マウスのポインターの移動とボタンの位置を、移動ステップの値へ変える部分（フックから切り離した純粋なロジック）。

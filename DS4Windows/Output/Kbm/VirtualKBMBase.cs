@@ -21,9 +21,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using DS4Windows.Services;
+using DS4Windows.Processing.Abstractions;
 
-namespace DS4Windows.DS4Control
+namespace DS4Windows.Output.Kbm
 {
     public abstract class VirtualKBMBase : IVirtualKBM
     {

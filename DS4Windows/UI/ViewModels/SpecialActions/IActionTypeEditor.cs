@@ -1,6 +1,8 @@
-using DS4Windows;
 
-namespace DS4WinWPF.DS4Forms.ViewModels.SpecialActions
+using DS4Windows.Core.Settings;
+using DS4Windows.Processing;
+
+namespace DS4Windows.UI.ViewModels.SpecialActions
 {
     /// <summary>
     /// Phase10-Step2 W1（Phase10-Step2-Plan.md §3.1）: 割り当て編集画面の、種別ごとの入力（Macro、Press Key など）の共通の窓口。

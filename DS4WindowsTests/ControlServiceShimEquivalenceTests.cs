@@ -1,7 +1,7 @@
 using System;
 using Xunit;
-using DS4Windows;
-using DS4Windows.Services;
+using DS4Windows.Core.Platform;
+using DS4Windows.Core.Settings;
 
 namespace DS4WindowsTests
 {
@@ -149,7 +149,7 @@ namespace DS4WindowsTests
             _appSettings.RunHotPlug = false;
             Assert.False(_appSettings.RunHotPlug);
 
-            Assert.Equal(2, changed.FindAll(n => n == nameof(DS4Windows.DI.IAppSettingsService.RunHotPlug)).Count);
+            Assert.Equal(2, changed.FindAll(n => n == nameof(DS4Windows.Processing.Abstractions.IAppSettingsService.RunHotPlug)).Count);
         }
 
         [Fact]

@@ -30,9 +30,9 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
-using DS4WinWPF.DS4Forms.ViewModels;
+using DS4Windows.UI.ViewModels;
 
-namespace DS4WinWPF.DS4Forms
+namespace DS4Windows.UI
 {
     /// <summary>
     /// Interaction logic for OutputSlotManager.xaml
@@ -48,8 +48,8 @@ namespace DS4WinWPF.DS4Forms
         }
 
         // Phase6-Step10-5: ControlService の代わりに、抜き差しの正式な入口（IOutputSlotService）を受け取る
-        public void SetupDataContext(DS4Windows.DI.IOutputSlotService outputSlotService,
-            DS4Windows.OutputSlotManager outputMan)
+        public void SetupDataContext(DS4Windows.Processing.Abstractions.IOutputSlotService outputSlotService,
+            DS4Windows.Output.OutputSlotManager outputMan)
         {
             currentOutDevVM = new CurrentOutDeviceViewModel(outputSlotService, outputMan);
             currentOutDevVM.SelectedIndexChanged += CurrentOutDevVM_SelectedIndexChanged;
@@ -91,8 +91,8 @@ namespace DS4WinWPF.DS4Forms
 
             if (tempEntry != null &&
                 tempEntry.OutSlotDevice.CurrentReserveStatus ==
-                DS4Control.OutSlotDevice.ReserveStatus.Permanent &&
-                tempEntry.OutSlotDevice.PermanentType != DS4Windows.OutContType.None)
+                DS4Windows.Output.OutSlotDevice.ReserveStatus.Permanent &&
+                tempEntry.OutSlotDevice.PermanentType != DS4Windows.Output.OutContType.None)
             {
                 tempEntry.OutSlotDevice.CurrentType = tempEntry.OutSlotDevice.PermanentType;
                 tempEntry.RequestPlugin();
@@ -107,7 +107,7 @@ namespace DS4WinWPF.DS4Forms
                     tempEntry.OutSlotDevice.CurrentType = devWindow.ContType;
                     tempEntry.OutSlotDevice.CurrentReserveStatus = devWindow.ReserveType;
                     if (tempEntry.OutSlotDevice.CurrentReserveStatus ==
-                        DS4Control.OutSlotDevice.ReserveStatus.Permanent)
+                        DS4Windows.Output.OutSlotDevice.ReserveStatus.Permanent)
                     {
                         tempEntry.OutSlotDevice.PermanentType = devWindow.ContType;
                     }

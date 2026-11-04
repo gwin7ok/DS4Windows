@@ -2,13 +2,16 @@ using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Text.RegularExpressions;
-using DS4Windows;
-using DS4Windows.DI;
-using DS4WinWPF;
-using DS4WinWPF.DS4Control.DTOXml;
-using DS4WinWPF.DS4Forms.ViewModels;
 using Xunit;
 using Xunit.Abstractions;
+using DS4Windows.Core.Abstractions;
+using DS4Windows.Core.Persistence.Dto;
+using DS4Windows.Core.Platform;
+using DS4Windows.Core.Profiles;
+using DS4Windows.Core.Settings;
+using DS4Windows.Processing;
+using DS4Windows.Processing.Abstractions;
+using DS4Windows.UI.ViewModels;
 
 namespace DS4WindowsTests
 {
@@ -73,7 +76,7 @@ namespace DS4WindowsTests
         [Fact]
         public void TheViewModel_FollowsTheEnvironment()
         {
-            DS4WinWPF.AppHost.CreateHost();
+            DS4Windows.Composition.AppHost.CreateHost();
             var factory = TestHost.GetService<IViewModelFactory>();
             var env = TestHost.GetService<IEnvironmentService>();
             var vm = factory.CreateAutoProfilesViewModel(TestRepositoryFactory.CreateAutoProfileHolder(),
@@ -96,7 +99,7 @@ namespace DS4WindowsTests
         {
             Assert.Equal(1, BackingStore.DEFAULT_CHECK_EVERY_VALUE);
             Assert.Equal(1, BackingStore.DEFAULT_CHECK_EVERY_UNIT);
-            var fresh = new DS4Windows.BackingStore(new DS4Windows.EnvironmentService());
+            var fresh = new DS4Windows.Core.Settings.BackingStore(new DS4Windows.Core.Platform.EnvironmentService());
             Assert.Equal(BackingStore.DEFAULT_CHECK_EVERY_VALUE, fresh.checkEveryValue);
             Assert.Equal(BackingStore.DEFAULT_CHECK_EVERY_UNIT, fresh.checkEveryUnit);
 

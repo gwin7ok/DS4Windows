@@ -1,8 +1,8 @@
 using System;
 using System.Collections.Generic;
-using DS4Windows;
+using DS4Windows.Input;
 
-namespace DS4Windows.Services
+namespace DS4Windows.Processing.Abstractions
 {
     public interface IDs4DeviceRegistry
     {

@@ -1,8 +1,10 @@
 using System;
-using DS4Windows.DI;
-using DS4Windows.Services;
+using DS4Windows.Core.Abstractions;
+using DS4Windows.Core.Settings;
+using DS4Windows.Processing.Abstractions;
+using DS4Windows.Processing.Services;
 
-namespace DS4Windows.Actions
+namespace DS4Windows.Processing.Actions
 {
     /// <summary>
     /// Phase10-Step4 W2（Phase10-Step4-Plan.md §3.3）: <see cref="ISpecialActionOutputFactory"/> の実装（DI の Singleton）。

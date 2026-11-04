@@ -1,4 +1,4 @@
-namespace DS4Windows.Actions
+namespace DS4Windows.Processing.Actions
 {
     /// <summary>Phase8-Step7 7.8f-1: パッド（X360）への割り当ての出力先の種類（旧 <c>customMapQueue</c> の処理の分岐）。</summary>
     public enum PadTargetKind

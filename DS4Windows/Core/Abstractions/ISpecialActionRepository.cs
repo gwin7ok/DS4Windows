@@ -1,7 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
+using DS4Windows.Processing;
 
-namespace DS4Windows.DI
+namespace DS4Windows.Core.Abstractions
 {
     public interface ISpecialActionRepository
     {

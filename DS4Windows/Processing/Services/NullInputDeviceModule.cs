@@ -1,6 +1,8 @@
-using DS4Windows.InputDevices;
 
-namespace DS4Windows.Services
+using DS4Windows.Core.Settings;
+using DS4Windows.Input.Devices;
+
+namespace DS4Windows.Processing.Services
 {
     /// <summary>
     /// Phase9 9-E E-6c: 扱う部品がない種類のための、何もしない部品（設定は無効）。旧 <c>CheckForSupportedDevice</c>／<c>GetKnownExtraButtons</c> の <c>default:</c> と同じ結果。

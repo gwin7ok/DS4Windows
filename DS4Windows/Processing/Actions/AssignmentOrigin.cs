@@ -1,4 +1,4 @@
-namespace DS4Windows.Actions
+namespace DS4Windows.Processing.Actions
 {
     /// <summary>
     /// Phase10-Step6 I1（Phase10-Step6-Plan.md §4）: 割り当て定義（<see cref="AssignmentDefinition"/>）の由来。

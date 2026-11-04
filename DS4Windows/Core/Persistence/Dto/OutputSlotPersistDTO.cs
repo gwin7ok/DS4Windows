@@ -21,9 +21,9 @@ using System.Collections.Generic;
 using System.Windows.Documents;
 using System.Xml;
 using System.Xml.Serialization;
-using DS4Windows;
+using DS4Windows.Output;
 
-namespace DS4WinWPF.DS4Control.DTOXml
+namespace DS4Windows.Core.Persistence.Dto
 {
     [XmlRoot("OutputSlots")]
     public class OutputSlotPersistDTO : IDTO<OutputSlotManager>
@@ -31,7 +31,7 @@ namespace DS4WinWPF.DS4Control.DTOXml
         [XmlAttribute("app_version")]
         public string AppVersion
         {
-            get => DS4Windows.PathService.ExecutableVersionState;
+            get => DS4Windows.Core.Platform.PathService.ExecutableVersionState;
             set { }
         }
 

@@ -1,4 +1,6 @@
-namespace DS4Windows.Actions
+using DS4Windows.Input;
+
+namespace DS4Windows.Processing.Actions
 {
     /// <summary>
     /// Phase8-Step7 7.8e（Phase8-Step7-8e-Plan.md §3.2。Q5＝A）: Controls タブの Extras の出力（<see cref="ControlExtrasOutputAction"/>）が、

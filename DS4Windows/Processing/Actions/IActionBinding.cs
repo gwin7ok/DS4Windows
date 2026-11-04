@@ -1,6 +1,6 @@
 using System.Collections.Generic;
 
-namespace DS4Windows.Actions
+namespace DS4Windows.Processing.Actions
 {
     /// <summary>
     /// 判定（<see cref="IInputAction"/>）と実行（<see cref="IOutputAction"/>）の組と、実行方針（<see cref="BindingPolicy"/>）。不変のデータで、

@@ -21,7 +21,7 @@ using System.IO;
 using System.Windows;
 
 
-namespace DS4WinWPF.DS4Forms
+namespace DS4Windows.UI
 {
     /// <summary>
     /// Interaction logic for SaveWhere.xaml
@@ -30,12 +30,12 @@ namespace DS4WinWPF.DS4Forms
     {
         private bool multisaves;
         // Phase6-Step10-1-2: Global 直接参照の置換先。呼び出し側（App）が保持済みのサービスを渡す（Pure DI）。
-        private readonly DS4Windows.DI.IPathService _pathService;
-        private readonly DS4Windows.DI.IEnvironmentService _environmentService;
+        private readonly DS4Windows.Core.Abstractions.IPathService _pathService;
+        private readonly DS4Windows.Core.Abstractions.IEnvironmentService _environmentService;
         public bool ChoiceMade { get; set; }
 
-        public SaveWhere(bool multisavespots, DS4Windows.DI.IPathService pathService,
-            DS4Windows.DI.IEnvironmentService environmentService)
+        public SaveWhere(bool multisavespots, DS4Windows.Core.Abstractions.IPathService pathService,
+            DS4Windows.Core.Abstractions.IEnvironmentService environmentService)
         {
             _pathService = pathService ?? throw new ArgumentNullException(nameof(pathService));
             _environmentService = environmentService ?? throw new ArgumentNullException(nameof(environmentService));

@@ -21,9 +21,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using DS4Windows;
+using DS4Windows.Core.Logging;
 
-namespace DS4WinWPF.DS4Control
+namespace DS4Windows.Output
 {
     public class OutSlotDevice
     {

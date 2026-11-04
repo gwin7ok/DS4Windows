@@ -1,8 +1,7 @@
 ﻿using System;
 using System.Globalization;
 using Xunit;
-using DS4Windows;
-using DS4Windows.DI;
+using DS4Windows.Output;
 
 namespace DS4WindowsTests
 {
@@ -66,8 +65,8 @@ namespace DS4WindowsTests
             // 通知（ProfileSettingChanged）の確認を除いて移した。
             var service = TestRepositoryFactory.CreateProfileSettingsService();
 
-            var newActions = new System.Collections.Generic.List<string>[DS4Windows.ControllerLimits.MaxControllerCount];
-            for (int i = 0; i < DS4Windows.ControllerLimits.MaxControllerCount; i++)
+            var newActions = new System.Collections.Generic.List<string>[DS4Windows.Core.Settings.ControllerLimits.MaxControllerCount];
+            for (int i = 0; i < DS4Windows.Core.Settings.ControllerLimits.MaxControllerCount; i++)
             {
                 newActions[i] = new System.Collections.Generic.List<string> { $"Action_{i}_A", $"Action_{i}_B" };
             }

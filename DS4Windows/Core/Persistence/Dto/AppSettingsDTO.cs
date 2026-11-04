@@ -1,7 +1,10 @@
 ﻿using System;
 using System.Xml.Serialization;
 using System.Globalization;
-using DS4Windows;
+using DS4Windows.Core.Persistence.Dto;
+using DS4Windows.Core.Settings;
+
+namespace DS4Windows.Core.Persistence.Dto;
 /*
 DS4Windows
 Copyright (C) 2023  Travis Nickles
@@ -901,7 +904,7 @@ public class AppSettingsDTO
         LogMinLevel = !string.IsNullOrEmpty(source.logMinLevel) ? source.logMinLevel : BackingStore.DEFAULT_LOG_MIN_LEVEL;
 
         // ルート属性に現在のアプリ/設定バージョンをセット（シリアライザで属性として出力される）
-        AppVersion = DS4Windows.PathService.ExecutableVersionState;
+        AppVersion = DS4Windows.Core.Platform.PathService.ExecutableVersionState;
         ConfigVersion = AppConfigVersion.ToString();
         UseExclusiveMode = source.useExclusiveMode;
         StartMinimized = source.startMinimized;

@@ -1,4 +1,4 @@
-namespace DS4Windows.Actions
+namespace DS4Windows.Processing.Actions
 {
     /// <summary>
     /// Phase8-Step7 7.8f-1（Phase8-Step7-8f-Plan.md §3.2）: そのフレームで束縛が<b>評価された</b>ときだけ、成立の有無によらず、毎フレーム呼ばれる出力。

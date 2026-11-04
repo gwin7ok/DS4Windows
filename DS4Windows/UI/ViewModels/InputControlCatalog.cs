@@ -1,7 +1,7 @@
 using System.Collections.Generic;
-using DS4Windows;
+using DS4Windows.Input;
 
-namespace DS4WinWPF.DS4Forms.ViewModels
+namespace DS4Windows.UI.ViewModels
 {
     /// <summary>
     /// Phase9 UI 変更（ユーザー承認 2026-10-22）: 入力ボタンの一覧の、<b>表示順と表示名の唯一の定義</b>。

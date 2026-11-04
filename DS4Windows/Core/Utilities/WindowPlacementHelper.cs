@@ -16,15 +16,15 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
 
-using DS4Windows;
-using DS4WinWPF.DS4Forms;
 using System;
 using System.Linq;
 using System.Runtime.InteropServices;
 using System.Security;
 using System.Windows.Interop;
+using DS4Windows.Core.Logging;
+using DS4Windows.UI;
 
-namespace DS4WinWPF.DS4Control
+namespace DS4Windows.Core.Utilities
 {
     [SuppressUnmanagedCodeSecurity]
     internal static class WindowPlacementHelper
@@ -132,7 +132,7 @@ namespace DS4WinWPF.DS4Control
 
         private static IntPtr mainWindowHandle = IntPtr.Zero;
 
-        internal static void ApplyPlacement(MainWindow mainWindow, DS4Windows.DI.IAppSettingsService appSettingsService, bool startMinimized)
+        internal static void ApplyPlacement(MainWindow mainWindow, DS4Windows.Processing.Abstractions.IAppSettingsService appSettingsService, bool startMinimized)
         {
             if(mainWindowHandle == IntPtr.Zero)
             {

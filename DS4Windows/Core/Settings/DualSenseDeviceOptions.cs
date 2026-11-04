@@ -25,10 +25,8 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Xml;
 using System.Xml.Serialization;
-using DS4Windows.InputDevices;
-using DS4WinWPF.DS4Control.DTOXml;
 
-namespace DS4Windows
+namespace DS4Windows.Core.Settings
 {
 
     public class DualSenseDeviceOptions

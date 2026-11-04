@@ -1,10 +1,12 @@
-namespace DS4Windows.DI
+using DS4Windows.Processing.Actions;
+
+namespace DS4Windows.Processing.Abstractions
 {
     /// <summary>
     /// Phase7-Step8 W2（Q3＝A）: デバイス × アクション名ごとの <see cref="KeyButtonActionController"/> の登録簿（生成・再利用・破棄）。
     /// 旧: <c>Mapping</c> の静的フィールド <c>keyButtonControllers</c>／<c>keyButtonControllerLock</c> と関連メソッド。
     /// <c>Mapping</c>、<c>ProfileApplicationService</c>、<c>ActionManager</c>（静的ファサード）が使う。
-    /// 実装は <c>DS4Windows.Services.KeyButtonControllerRegistry</c>。
+    /// 実装は <c>DS4Windows.Processing.Services.KeyButtonControllerRegistry</c>。
     /// </summary>
     public interface IKeyButtonControllerRegistry
     {
@@ -15,7 +17,7 @@ namespace DS4Windows.DI
         KeyButtonActionController GetOrCreate(int device, SpecialAction sa);
 
         /// <summary>コントローラーを得て、<c>IActionController</c> のアダプターで包んで返す（旧: <c>Mapping.GetOrCreateKeyButtonControllerForAction</c>）。</summary>
-        DS4Windows.Actions.IActionController GetOrCreateForAction(int device, SpecialAction sa);
+        DS4Windows.Processing.Actions.IActionController GetOrCreateForAction(int device, SpecialAction sa);
 
         /// <summary>指定デバイスのコントローラーをすべて破棄して登録簿から外す（旧: <c>Mapping.ClearKeyButtonControllersForDevice</c>）。</summary>
         void ClearForDevice(int device);

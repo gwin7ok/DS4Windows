@@ -1,4 +1,4 @@
-namespace DS4Windows
+namespace DS4Windows.Core.Logging
 {
     /// <summary>
     /// ログのレベル（Phase13b-Step1。Log-Policy.md §2）。値の大小がそのまま重大度の順。

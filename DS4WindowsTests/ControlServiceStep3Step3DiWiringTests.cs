@@ -1,7 +1,7 @@
 using System.Reflection;
 using Xunit;
-using DS4Windows;
-using DS4Windows.DI;
+using DS4Windows.Core.Abstractions;
+using DS4Windows.Processing;
 
 namespace DS4WindowsTests
 {
@@ -30,7 +30,7 @@ namespace DS4WindowsTests
         [Fact]
         public void ProfileSettingsService_ReturnsSameInstanceAsAppHost()
         {
-            DS4WinWPF.AppHost.CreateHost();
+            DS4Windows.Composition.AppHost.CreateHost();
             var controlService = TestHost.GetService<ControlService>();
 
             var expected = TestHost.GetService<IProfileSettingsService>();

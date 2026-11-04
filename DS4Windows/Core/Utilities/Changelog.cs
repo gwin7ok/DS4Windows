@@ -16,11 +16,6 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
 
-using DS4Windows.DS4Control;
-using DS4Windows.InputDevices;
-using DS4Windows.StickModifiers;
-using DS4WinWPF.DS4Control.DTOXml;
-using DS4WinWPF.DS4Forms.ViewModels;
 using Sensorit.Base;
 using System;
 using System.Collections.Generic;
@@ -40,20 +35,21 @@ using System.Windows;
 using System.Windows.Input;
 using System.Xml;
 using System.Xml.Serialization;
-using DS4WinWPF;
-using DS4WinWPF.ApiDTO;
 using WpfScreenHelper;
-using static DS4Windows.Mouse;
-using static DS4Windows.Util;
-namespace DS4Windows
+using static DS4Windows.Processing.Mouse;
+using static DS4Windows.Core.Utilities.Util;
+using DS4Windows.Core.Logging;
+using DS4Windows.Core.Platform;
+using DS4Windows.Core.Updater;
+namespace DS4Windows.Core.Utilities
 {
 
     public class Changelog
     {
         // Use the GitHub REST API /repos/ path so the app queries releases for the correct repo.
         // Phase10 以降: リポジトリの定義は ReleaseSource（Updater/）の 1 か所
-        public const string GITHUB_RELEASES_API_URI = DS4WinWPF.ReleaseSource.ReleasesApiUri;
-        public const string GITHUB_LATEST_RELEASE_API_URI = DS4WinWPF.ReleaseSource.LatestReleaseApiUri;
+        public const string GITHUB_RELEASES_API_URI = DS4Windows.Core.Updater.ReleaseSource.ReleasesApiUri;
+        public const string GITHUB_LATEST_RELEASE_API_URI = DS4Windows.Core.Updater.ReleaseSource.LatestReleaseApiUri;
 
         private static bool? _newerVersionAvailable = null;
         private static Version _latestVersion;

@@ -2,14 +2,14 @@
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
-using DS4WinWPF.DS4Forms.ViewModels.SpecialActions;
 using Microsoft.Win32;
+using DS4Windows.UI.ViewModels.SpecialActions;
 
-namespace DS4WinWPF.DS4Forms
+namespace DS4Windows.UI
 {
     /// <summary>
     /// Phase12-Step2 2e（R-4）: 対象のウィンドウを指定する入力欄（プログラムのパスとウィンドウタイトル）。FocusWindow の編集画面で使う。
-    /// 書式は Auto-Profile と同じ（<see cref="DS4Windows.WindowTargetMatcher"/>）。
+    /// 書式は Auto-Profile と同じ（<see cref="DS4Windows.Processing.WindowTargetMatcher"/>）。
     /// </summary>
     public partial class WindowTargetEditor : UserControl
     {

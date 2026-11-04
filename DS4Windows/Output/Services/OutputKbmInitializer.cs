@@ -1,8 +1,9 @@
 using System;
-using DS4Windows.DI;
-using DS4Windows.DS4Control;
+using DS4Windows.Core.Abstractions;
+using DS4Windows.Output.Kbm;
+using DS4Windows.Processing.Abstractions;
 
-namespace DS4Windows.Services
+namespace DS4Windows.Output.Services
 {
     /// <summary>
     /// Phase13-Step3: <see cref="IOutputKbmInitializer"/> の実装。旧 <c>ControlService.InitOutputKBMHandler</c> の手順
@@ -29,7 +30,7 @@ namespace DS4Windows.Services
         }
 
         // 起動引数が設定されていない場合（引数なしの CreateHost()、テスト）は、従来どおり空のパーサー（既定の出力方式）
-        private DS4WinWPF.ArgumentParser ResolveParser() => _startupArguments.Parser ?? new DS4WinWPF.ArgumentParser();
+        private DS4Windows.Core.Utilities.ArgumentParser ResolveParser() => _startupArguments.Parser ?? new DS4Windows.Core.Utilities.ArgumentParser();
 
         public void Initialize()
         {

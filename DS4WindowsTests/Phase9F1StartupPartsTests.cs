@@ -1,8 +1,8 @@
 using System;
 using System.Globalization;
 using System.IO;
-using DS4WinWPF;
 using Xunit;
+using DS4Windows.Composition.Startup;
 
 namespace DS4WindowsTests
 {

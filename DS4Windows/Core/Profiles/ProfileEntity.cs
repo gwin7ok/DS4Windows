@@ -24,7 +24,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace DS4WinWPF
+namespace DS4Windows.Core.Profiles
 {
     // Phase11 W6 K-W6-9: INotifyPropertyChanged を実装した。以前は旧式の NameChanged イベントだけで名前の変更を通知しており、
     // WPF は {Binding Name} に、リフレクションによる旧式の購読（ValueChangedEventManager）を使っていた。リンクのコンボの選択項目が
@@ -48,9 +48,9 @@ namespace DS4WinWPF
         public event EventHandler NameChanged;
         public event PropertyChangedEventHandler PropertyChanged;
         // Phase6-Step10-4-1: Global.appdatapath の直接参照を廃止し、IPathService を ProfileList から受け取る
-        private readonly DS4Windows.DI.IPathService pathService;
+        private readonly DS4Windows.Core.Abstractions.IPathService pathService;
 
-        public ProfileEntity(DS4Windows.DI.IPathService pathService)
+        public ProfileEntity(DS4Windows.Core.Abstractions.IPathService pathService)
         {
             this.pathService = pathService ?? throw new ArgumentNullException(nameof(pathService));
         }

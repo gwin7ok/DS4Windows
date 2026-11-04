@@ -1,7 +1,7 @@
-using DS4Windows.DI;
-using DS4Windows.Services;
 
-namespace DS4Windows
+using DS4Windows.Processing.Abstractions;
+
+namespace DS4Windows.Processing
 {
     // TODO(Phase7-Step8 W3／Phase8 で削除): Actions サブシステム（KeyButtonActionController、KeyAction、KeyOutputAction、RepeatHelper）が
     // 静的に呼ぶための、暫定の静的な橋渡し。実体の処理は SyntheticDispatcherService（ISyntheticDispatcher。DI の Singleton）にあり、

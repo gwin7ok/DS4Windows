@@ -1,6 +1,8 @@
 using System.Collections.Generic;
+using DS4Windows.Core.Abstractions;
+using DS4Windows.Input;
 
-namespace DS4Windows.DI
+namespace DS4Windows.Processing.Abstractions
 {
     /// <summary>
     /// Phase9 9-A(2)-B（Phase9-A2-Plan.md）: スティックの入力の前処理（ドリフト補正、アンチスナップバック、ファズ）。

@@ -1,9 +1,7 @@
 using System;
 using System.Windows;
 using Xunit;
-using DS4Windows;
-using DS4Windows.DI;
-using DS4WinWPF.DS4Forms.ViewModels;
+using DS4Windows.Output;
 
 namespace DS4WindowsTests
 {
@@ -29,7 +27,7 @@ namespace DS4WindowsTests
             {
                 try
                 {
-                    Application.ResourceAssembly = typeof(DS4WinWPF.AppHost).Assembly;
+                    Application.ResourceAssembly = typeof(DS4Windows.Composition.AppHost).Assembly;
                 }
                 catch { }
             }

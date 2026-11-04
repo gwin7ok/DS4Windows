@@ -1,6 +1,6 @@
 using System;
 
-namespace DS4WinWPF
+namespace DS4Windows.UI.Services
 {
     // Simple facade kept for compatibility. Use AppLogger.LogToTray to route
     // notifications through the existing notifyIcon / tray pathway used elsewhere.
@@ -10,7 +10,7 @@ namespace DS4WinWPF
         {
             try
             {
-                DS4Windows.AppLogger.LogToTray(message);
+                DS4Windows.Core.Logging.AppLogger.LogToTray(message);
             }
             catch { }
         }

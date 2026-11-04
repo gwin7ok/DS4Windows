@@ -1,8 +1,8 @@
 using System;
 using System.Collections.Generic;
-using DS4Windows.DI;
+using DS4Windows.Input;
 
-namespace DS4Windows.Actions
+namespace DS4Windows.Processing.Actions
 {
     /// <summary>
     /// Phase8-Step7 7.7b（Phase8-Step7-7-Plan.md §3.2。Q2＝B）: MultiAction の入力アクション（独立した入力アクション）。

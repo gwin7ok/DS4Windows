@@ -1,6 +1,7 @@
 using System;
 using Xunit;
-using DS4Windows;
+using DS4Windows.Core.Settings;
+using DS4Windows.Processing;
 
 namespace DS4WindowsTests
 {
@@ -18,7 +19,7 @@ namespace DS4WindowsTests
 
         private static ProfileSettingsService CreateSettings(out BackingStore store, byte touchSensitivity = 100, int touchpadInvert = 0)
         {
-            store = new DS4Windows.BackingStore(new DS4Windows.EnvironmentService());
+            store = new DS4Windows.Core.Settings.BackingStore(new DS4Windows.Core.Platform.EnvironmentService());
             store.touchSensitivity[Slot] = touchSensitivity;
             store.touchpadInvert[Slot] = touchpadInvert;
             return TestRepositoryFactory.CreateProfileSettingsService(store);

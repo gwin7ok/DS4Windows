@@ -1,4 +1,4 @@
-namespace DS4Windows.Actions
+namespace DS4Windows.Processing.Actions
 {
     /// <summary>
     /// Phase8-Step7 7.5b: 出力アクションに渡す文脈（エンジンの <c>EngineContext</c>）が実装する、復帰の合図の問い合わせ。

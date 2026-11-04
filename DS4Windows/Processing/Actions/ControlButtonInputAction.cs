@@ -1,8 +1,8 @@
 using System;
 using System.Collections.Generic;
-using DS4Windows.DI;
+using DS4Windows.Input;
 
-namespace DS4Windows.Actions
+namespace DS4Windows.Processing.Actions
 {
     /// <summary>
     /// Phase8-Step7 7.8b（Phase8-Step7-8b-Plan.md §3.2）: Controls タブの 1 ボタンの入力アクション（D2＝B1 の「要素数 1」の特殊ケース。ただし押下の判定が

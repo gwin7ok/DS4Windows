@@ -1,9 +1,7 @@
 using System;
-using DS4Windows;
-using DS4Windows.DI;
-using DS4Windows.Services;
+using DS4Windows.Processing.Abstractions;
 
-namespace DS4Windows.Actions
+namespace DS4Windows.Processing.Actions
 {
     public class DefaultProfileSwitcher : IProfileSwitcher
     {

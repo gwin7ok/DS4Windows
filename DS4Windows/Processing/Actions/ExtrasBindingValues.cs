@@ -1,4 +1,4 @@
-namespace DS4Windows.Actions
+namespace DS4Windows.Processing.Actions
 {
     /// <summary>
     /// Phase8-Step7 7.8e（Phase8-Step7-8e-Plan.md §3.2。Q9＝A の考え方）: Controls タブの Extras の出力（<see cref="ControlExtrasOutputAction"/>）が受け取る「解釈済みの値」。

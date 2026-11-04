@@ -21,7 +21,7 @@ using System.Globalization;
 using System.Text.RegularExpressions;
 using System.Windows.Data;
 
-namespace DS4WinWPF.DS4Forms.Converters
+namespace DS4Windows.UI.Converters
 {
     public class EscapeAccessKeysConverter : IValueConverter
     {

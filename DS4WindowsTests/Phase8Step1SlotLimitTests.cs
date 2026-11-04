@@ -3,10 +3,14 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using System.Threading;
-using DS4Windows;
-using DS4WinWPF.DS4Control;
-using DS4WinWPF.DS4Control.DTOXml;
 using Xunit;
+using DS4Windows.Core.Logging;
+using DS4Windows.Core.Persistence.Dto;
+using DS4Windows.Core.Settings;
+using DS4Windows.Input;
+using DS4Windows.Output;
+using DS4Windows.Output.Devices;
+using DS4Windows.Processing;
 
 namespace DS4WindowsTests
 {

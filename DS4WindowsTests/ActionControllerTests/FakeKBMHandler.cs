@@ -1,7 +1,6 @@
 using System;
-using DS4Windows.Actions;
-using DS4Windows.DS4Control;
 using Xunit;
+using DS4Windows.Output.Kbm;
 
 namespace DS4Windows.Actions.Tests
 {

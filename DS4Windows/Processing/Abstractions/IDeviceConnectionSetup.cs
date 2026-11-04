@@ -1,6 +1,7 @@
 using System;
+using DS4Windows.Input;
 
-namespace DS4Windows.DI
+namespace DS4Windows.Processing.Abstractions
 {
     /// <summary>
     /// Phase9 9-E E-6b（Phase9-E6-Plan.md）: コントローラーをスロットへつなぐときの、プロファイルの設定のデバイスへの反映と、イベントの配線。

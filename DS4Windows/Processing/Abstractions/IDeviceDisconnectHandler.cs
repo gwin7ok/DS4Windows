@@ -1,6 +1,6 @@
 using System;
 
-namespace DS4Windows.DI
+namespace DS4Windows.Processing.Abstractions
 {
     /// <summary>
     /// Phase9 9-E E-6e（Phase9-E6-Plan.md §3.4）: デバイスの切断（Removal）、接続状態の変化（SyncChange）、シリアルの変化（SerialChange）の処理。

@@ -3,12 +3,13 @@ using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Text.RegularExpressions;
-using DS4Windows;
-using DS4Windows.Actions;
-using DS4Windows.DI;
-using DS4Windows.Services;
 using Xunit;
 using Xunit.Abstractions;
+using DS4Windows.Core.Abstractions;
+using DS4Windows.Processing;
+using DS4Windows.Processing.Abstractions;
+using DS4Windows.Processing.Actions;
+using DS4Windows.Processing.Services;
 
 namespace DS4WindowsTests
 {
@@ -127,7 +128,7 @@ namespace DS4WindowsTests
         [Fact]
         public void Host_ResolvesTheSameMappingInstance_ForControlServiceAndTheContainer()
         {
-            DS4WinWPF.AppHost.CreateHost();
+            DS4Windows.Composition.AppHost.CreateHost();
             var mapping = TestHost.GetService<IMapping>();
             Assert.NotNull(mapping);
             Assert.Same(mapping, TestHost.GetService<IMapping>());

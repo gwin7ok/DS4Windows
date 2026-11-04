@@ -1,7 +1,7 @@
 using System.Collections.Generic;
-using DS4Windows;
-using DS4WinWPF.DS4Forms.ViewModels;
 using Xunit;
+using DS4Windows.Core.Settings;
+using DS4Windows.UI.ViewModels;
 
 namespace DS4WindowsTests
 {

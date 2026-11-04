@@ -1,4 +1,4 @@
-namespace DS4Windows
+namespace DS4Windows.Processing
 {
     // Marker interface for runtime instances that expose a stable InstanceId for logging/diagnostics
     public interface IInstanceIdentifiable

@@ -27,13 +27,17 @@ using System.Windows.Interop;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using Microsoft.Win32;
-using DS4Windows;
-using DS4Windows.DI;
-using DS4Windows.StickModifiers;
-using DS4WinWPF.DS4Forms.ViewModels.Util;
-using DS4Windows.InputDevices;
+using DS4Windows.Core.Abstractions;
+using DS4Windows.Core.Logging;
+using DS4Windows.Core.Settings;
+using DS4Windows.Input;
+using DS4Windows.Input.Devices;
+using DS4Windows.Output;
+using DS4Windows.Processing;
+using DS4Windows.Processing.Abstractions;
+using DS4Windows.UI.ViewModels.Util;
 
-namespace DS4WinWPF.DS4Forms.ViewModels
+namespace DS4Windows.UI.ViewModels
 {
     public class ProfileSettingsViewModel
     {
@@ -1732,31 +1736,31 @@ namespace DS4WinWPF.DS4Forms.ViewModels
 
         private List<TriggerEffectChoice> triggerEffectChoices = new List<TriggerEffectChoice>()
         {
-            new TriggerEffectChoice("None", DS4Windows.InputDevices.TriggerEffects.None),
-            new TriggerEffectChoice("Full Click", DS4Windows.InputDevices.TriggerEffects.FullClick),
-            new TriggerEffectChoice("Rigid", DS4Windows.InputDevices.TriggerEffects.Rigid),
-            new TriggerEffectChoice("Pulse", DS4Windows.InputDevices.TriggerEffects.Pulse),
+            new TriggerEffectChoice("None", DS4Windows.Input.Devices.TriggerEffects.None),
+            new TriggerEffectChoice("Full Click", DS4Windows.Input.Devices.TriggerEffects.FullClick),
+            new TriggerEffectChoice("Rigid", DS4Windows.Input.Devices.TriggerEffects.Rigid),
+            new TriggerEffectChoice("Pulse", DS4Windows.Input.Devices.TriggerEffects.Pulse),
         };
         public List<TriggerEffectChoice> TriggerEffectChoices { get => triggerEffectChoices; }
 
-        public DS4Windows.InputDevices.TriggerEffects L2TriggerEffect
+        public DS4Windows.Input.Devices.TriggerEffects L2TriggerEffect
         {
             get => profileSettings.L2OutputSettings[device].triggerEffect;
             set
             {
-                DS4Windows.InputDevices.TriggerEffects temp = profileSettings.L2OutputSettings[device].TriggerEffect;
+                DS4Windows.Input.Devices.TriggerEffects temp = profileSettings.L2OutputSettings[device].TriggerEffect;
                 if (temp == value) return;
 
                 profileSettings.L2OutputSettings[device].TriggerEffect = value;
             }
         }
 
-        public DS4Windows.InputDevices.TriggerEffects R2TriggerEffect
+        public DS4Windows.Input.Devices.TriggerEffects R2TriggerEffect
         {
             get => profileSettings.R2OutputSettings[device].triggerEffect;
             set
             {
-                DS4Windows.InputDevices.TriggerEffects temp = profileSettings.R2OutputSettings[device].TriggerEffect;
+                DS4Windows.Input.Devices.TriggerEffects temp = profileSettings.R2OutputSettings[device].TriggerEffect;
                 if (temp == value) return;
 
                 profileSettings.R2OutputSettings[device].TriggerEffect = value;
@@ -2422,7 +2426,6 @@ namespace DS4WinWPF.DS4Forms.ViewModels
             get => profileSettings.GyroMouseInfo[device].Beta;
             set => profileSettings.GyroMouseInfo[device].Beta = value;
         }
-
 
 
         private int gyroMouseStickSmoothMethodIndex;

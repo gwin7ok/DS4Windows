@@ -1,4 +1,6 @@
-namespace DS4Windows.DI
+using DS4Windows.Core.Settings;
+
+namespace DS4Windows.Processing.Abstractions
 {
     /// <summary>
     /// Phase9 9-A(2)-C（Phase9-A2-Plan.md）: フリックスティック（スティックをはじいた角度を、マウスの X 移動量にする）の 1 フレーム分の処理。

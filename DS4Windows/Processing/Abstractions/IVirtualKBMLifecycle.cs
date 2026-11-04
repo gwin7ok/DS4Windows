@@ -1,4 +1,4 @@
-namespace DS4Windows.Services
+namespace DS4Windows.Processing.Abstractions
 {
     /// <summary>
     /// KBM 出力ハンドラの生成・破棄・フォールバック切替・マッピング初期化を担う（送出は <see cref="IVirtualKBM"/> の責務）。

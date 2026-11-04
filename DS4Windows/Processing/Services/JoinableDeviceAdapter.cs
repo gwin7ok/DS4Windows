@@ -1,8 +1,9 @@
 using System;
-using DS4Windows.DI;
-using DS4Windows.InputDevices;
+using DS4Windows.Input;
+using DS4Windows.Input.Devices;
+using DS4Windows.Processing.Abstractions;
 
-namespace DS4Windows.Services
+namespace DS4Windows.Processing.Services
 {
     /// <summary>
     /// Phase9 9-E E-6d: 実機の <see cref="DS4Device"/>（Joy-Con なら <c>JoyConDevice</c>）を <see cref="IJoinableDevice"/> として包む。

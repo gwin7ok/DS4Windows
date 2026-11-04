@@ -1,9 +1,15 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using DS4Windows.DI;
+using DS4Windows.Core.Abstractions;
+using DS4Windows.Core.Settings;
+using DS4Windows.Core.Utilities;
+using DS4Windows.Input;
+using DS4Windows.Input.Hid;
+using DS4Windows.Processing;
+using DS4Windows.Processing.Abstractions;
 
-namespace DS4Windows
+namespace DS4Windows.Core.Platform
 {
     /// <summary>
     /// <see cref="IEnvironmentService"/> の実装。

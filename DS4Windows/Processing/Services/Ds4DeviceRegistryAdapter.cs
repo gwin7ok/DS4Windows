@@ -1,10 +1,11 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using DS4Windows;
-using DS4Windows.DI;
+using DS4Windows.Core.Logging;
+using DS4Windows.Input;
+using DS4Windows.Processing.Abstractions;
 
-namespace DS4Windows.Services
+namespace DS4Windows.Processing.Services
 {
     public class Ds4DeviceRegistryAdapter : IDs4DeviceRegistry
     {

@@ -4,9 +4,8 @@ using System.Linq;
 using System.Text.RegularExpressions;
 using Xunit;
 using Xunit.Abstractions;
-using DS4Windows;
-using DS4Windows.DI;
-using DS4WinWPF.DS4Forms.ViewModels;
+using DS4Windows.Core.Platform;
+using DS4Windows.UI.ViewModels;
 
 namespace DS4WindowsTests
 {
@@ -101,7 +100,7 @@ namespace DS4WindowsTests
             var appearance = TestRepositoryFactory.CreateAppearanceSettingsService();
             var app = TestRepositoryFactory.CreateAppSettingsService();
             var path = new PathService();
-            var logApplier = new DS4Windows.Services.LogSettingsApplierProxy();
+            var logApplier = new DS4Windows.Core.Logging.LogSettingsApplierProxy();
             Assert.Throws<ArgumentNullException>(() => new SettingsViewModel(null, appearance, env, path, logApplier));
             Assert.Throws<ArgumentNullException>(() => new SettingsViewModel(app, null, env, path, logApplier));
             Assert.Throws<ArgumentNullException>(() => new SettingsViewModel(app, appearance, null, path, logApplier));
@@ -121,7 +120,7 @@ namespace DS4WindowsTests
         [Fact]
         public void Properties_ReadAndWriteThroughToGlobal()
         {
-            DS4WinWPF.AppHost.CreateHost();
+            DS4Windows.Composition.AppHost.CreateHost();
             var vm = TestHost.GetService<SettingsViewModel>();
             Assert.NotNull(vm);
 

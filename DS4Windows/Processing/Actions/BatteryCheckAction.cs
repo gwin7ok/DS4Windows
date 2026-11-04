@@ -1,9 +1,11 @@
 using System;
 using System.Collections.Generic;
-using DS4Windows.DI;
-using DS4Windows.Services;
+using DS4Windows.Core.Abstractions;
+using DS4Windows.Core.Logging;
+using DS4Windows.Core.Utilities;
+using DS4Windows.Input;
 
-namespace DS4Windows.Actions
+namespace DS4Windows.Processing.Actions
 {
     /// <summary>
     /// Phase8-Step7 7.6c: BatteryCheck（電池残量の通知と、ライトバーの色による表示）の出力。

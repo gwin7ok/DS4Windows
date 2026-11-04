@@ -1,8 +1,11 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using DS4Windows;
-using DS4Windows.DI;
+using DS4Windows.Core.Settings;
+using DS4Windows.Input;
+using DS4Windows.Output.Devices;
+using DS4Windows.Processing;
+using DS4Windows.Processing.Actions;
 
 namespace DS4WindowsTests
 {
@@ -32,15 +35,15 @@ namespace DS4WindowsTests
         public Mapping Mapping { get; }
 
         /// <summary>Phase8-Step4 W4: ホストの <c>Mapping</c> が使うエンジン（抑制の集合の所有者）。</summary>
-        public DS4Windows.Actions.ITriggerDispatchEngine Engine { get; } = TestHost.GetService<DS4Windows.Actions.ITriggerDispatchEngine>();
+        public DS4Windows.Processing.Actions.ITriggerDispatchEngine Engine { get; } = TestHost.GetService<DS4Windows.Processing.Actions.ITriggerDispatchEngine>();
 
         /// <summary>Phase8-Step4 W4: このデバイスの遅延の基準時刻（旧 <c>Mapping.nowAction</c>／<c>oldnowAction</c>）。</summary>
-        public DS4Windows.Actions.DelayClock Delay
+        public DS4Windows.Processing.Actions.DelayClock Delay
         {
             get
             {
                 var field = typeof(Mapping).GetField("_triggerInputs", System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.NonPublic);
-                var inputs = (DS4Windows.Actions.TriggerInput[])field.GetValue(Mapping);
+                var inputs = (DS4Windows.Processing.Actions.TriggerInput[])field.GetValue(Mapping);
                 return inputs[Device].Delay;
             }
         }
@@ -95,8 +98,8 @@ namespace DS4WindowsTests
         /// <summary>Phase8-Step7: 登録済みの特殊アクションから、本番と同じ経路で束縛を作って登録簿へ差し替える（新経路のときだけ使う）。</summary>
         public void PublishBindings()
         {
-            var builder = TestHost.GetService<DS4Windows.Actions.IActionBindingBuilder>();
-            TestHost.GetService<DS4Windows.Actions.IActionRegistry>().Replace(Device, builder.Build(Device));
+            var builder = TestHost.GetService<DS4Windows.Processing.Actions.IActionBindingBuilder>();
+            TestHost.GetService<DS4Windows.Processing.Actions.IActionRegistry>().Replace(Device, builder.Build(Device));
         }
 
         /// <summary>ボタン種別の特殊アクション（Press。出力は X360 の A ボタン＝DS4 の Cross）を作って登録する。</summary>
@@ -125,11 +128,11 @@ namespace DS4WindowsTests
             if (_switcherField != null)
                 return _recorder;
 
-            var switcher = TestHost.GetService<DS4Windows.Actions.IProfileSwitcher>() as DS4Windows.Actions.DefaultProfileSwitcher;
+            var switcher = TestHost.GetService<DS4Windows.Processing.Actions.IProfileSwitcher>() as DS4Windows.Processing.Actions.DefaultProfileSwitcher;
             if (switcher == null)
                 throw new InvalidOperationException("IProfileSwitcher の実体が DefaultProfileSwitcher ではない");
 
-            _switcherField = typeof(DS4Windows.Actions.DefaultProfileSwitcher).GetField("profileAppService",
+            _switcherField = typeof(DS4Windows.Processing.Actions.DefaultProfileSwitcher).GetField("profileAppService",
                 System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance);
             if (_switcherField == null)
                 throw new InvalidOperationException("DefaultProfileSwitcher.profileAppService が見つからない");

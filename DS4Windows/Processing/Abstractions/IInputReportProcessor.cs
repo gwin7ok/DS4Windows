@@ -1,6 +1,7 @@
 using System;
+using DS4Windows.Input;
 
-namespace DS4Windows.DI
+namespace DS4Windows.Processing.Abstractions
 {
     /// <summary>
     /// Phase13-Step5b: 入力レポートの処理の窓口。旧 <c>ControlService.On_Report</c>（約 200 行）と、その作業用の状態

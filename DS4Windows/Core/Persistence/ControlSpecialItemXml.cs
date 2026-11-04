@@ -3,8 +3,12 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 using System.Xml;
+using DS4Windows.Core.Logging;
+using DS4Windows.Core.Settings;
+using DS4Windows.Input;
+using DS4Windows.Processing;
 
-namespace DS4Windows.Services
+namespace DS4Windows.Core.Persistence
 {
     /// <summary>
     /// Phase10-Step4 W1（Phase10-Step4-Plan.md §3.2）: <see cref="ControlSpecialItem"/> の、プロファイル XML（<c>&lt;Control&gt;&lt;Special&gt;</c>）への書き出しと読み込み。
@@ -77,7 +81,7 @@ namespace DS4Windows.Services
             if (typeText == "SASteeringWheelEmulationCalibrate")
             {
                 // Phase9 Steering 削除 W1: 廃止した種別。読み込まずに取り除く（次の保存でファイルから消え、そのボタンは既定に戻る）
-                AppLogger.Log(AppLogLevel.Info, string.Format(DS4WinWPF.Properties.Resources.ObsoleteAssignmentRemovedProfile, typeText, node.Name), LogOptions.UserFacing);
+                AppLogger.Log(AppLogLevel.Info, string.Format(DS4Windows.Properties.Resources.ObsoleteAssignmentRemovedProfile, typeText, node.Name), LogOptions.UserFacing);
                 return false;
             }
 

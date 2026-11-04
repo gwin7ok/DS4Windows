@@ -1,4 +1,6 @@
-namespace DS4Windows.DI
+using DS4Windows.Core.Settings;
+
+namespace DS4Windows.Processing.Abstractions
 {
     /// <summary>
     /// Phase9 9-A(1) (c)（Phase9-A1-Plan.md §2）: スティックのスクエア化と出力カーブ、トリガーの出力カーブ。

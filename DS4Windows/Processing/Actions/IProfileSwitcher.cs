@@ -1,7 +1,6 @@
 using System;
-using DS4Windows;
 
-namespace DS4Windows.Actions
+namespace DS4Windows.Processing.Actions
 {
     public interface IProfileSwitcher
     {

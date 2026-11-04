@@ -1,6 +1,6 @@
 using System.Collections.Generic;
 
-namespace DS4Windows.DI
+namespace DS4Windows.Core.Abstractions
 {
     /// <summary>
     /// Phase10-Step4d W1（Phase10-Step4d-Plan.md §3）: プロファイルの固定 ID と名前（ファイル名）を結ぶ登録簿。

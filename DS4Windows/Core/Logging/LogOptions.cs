@@ -1,4 +1,4 @@
-namespace DS4Windows
+namespace DS4Windows.Core.Logging
 {
     /// <summary>
     /// <see cref="AppLogger.Log(AppLogLevel, string, LogOptions)"/> の付加情報（Phase13b-Step1。Log-Policy.md §3）。

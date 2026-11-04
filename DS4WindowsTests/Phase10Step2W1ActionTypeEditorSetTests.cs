@@ -1,9 +1,13 @@
 using System;
 using System.Collections.Generic;
-using DS4Windows;
-using DS4WinWPF.DS4Forms.ViewModels;
-using DS4WinWPF.DS4Forms.ViewModels.SpecialActions;
 using Xunit;
+using DS4Windows.Core.Platform;
+using DS4Windows.Core.Settings;
+using DS4Windows.Input;
+using DS4Windows.Output.Devices;
+using DS4Windows.Processing;
+using DS4Windows.UI.ViewModels;
+using DS4Windows.UI.ViewModels.SpecialActions;
 
 namespace DS4WindowsTests
 {
@@ -151,8 +155,8 @@ namespace DS4WindowsTests
         {
             var repo = new RecordingSpecialActionRepository();
             var pathService = new PathService();
-            var profiles = new DS4WinWPF.ProfileList(pathService);
-            profiles.ProfileListCol.Add(new DS4WinWPF.ProfileEntity(pathService) { Name = "ProfileA" });
+            var profiles = new DS4Windows.Core.Profiles.ProfileList(pathService);
+            profiles.ProfileListCol.Add(new DS4Windows.Core.Profiles.ProfileEntity(pathService) { Name = "ProfileA" });
             var editor = new LoadProfileViewModel(profiles, repo) { ProfileIndex = 1, AutoUntrigger = true };
             var set = new ActionTypeEditorSet(new Dictionary<SpecialAction.ActionTypeId, IActionTypeEditor> { [SpecialAction.ActionTypeId.Profile] = editor });
 
@@ -166,7 +170,7 @@ namespace DS4WindowsTests
         public void Profile_WithoutAProfile_SavesNothing()
         {
             var repo = new RecordingSpecialActionRepository();
-            var editor = new LoadProfileViewModel(new DS4WinWPF.ProfileList(new PathService()), repo);
+            var editor = new LoadProfileViewModel(new DS4Windows.Core.Profiles.ProfileList(new PathService()), repo);
             var set = new ActionTypeEditorSet(new Dictionary<SpecialAction.ActionTypeId, IActionTypeEditor> { [SpecialAction.ActionTypeId.Profile] = editor });
 
             set.Save(SpecialAction.ActionTypeId.Profile, Target(SpecialAction.ActionTypeId.Profile), edit: false);

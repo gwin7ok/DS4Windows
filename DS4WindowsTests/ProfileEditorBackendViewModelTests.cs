@@ -4,8 +4,9 @@ using System.IO;
 using System.Text.RegularExpressions;
 using Xunit;
 using Xunit.Abstractions;
-using DS4Windows;
-using DS4WinWPF.DS4Forms.ViewModels;
+using DS4Windows.Core.Settings;
+using DS4Windows.Processing;
+using DS4Windows.UI.ViewModels;
 
 namespace DS4WindowsTests
 {
@@ -30,13 +31,13 @@ namespace DS4WindowsTests
         [Fact]
         public void CommitEnabledActionsToProfile_WritesEnabledNamesToEditSlotOnly()
         {
-            const int editSlot = DS4Windows.ControllerLimits.TestProfileIndex;
+            const int editSlot = DS4Windows.Core.Settings.ControllerLimits.TestProfileIndex;
             // 既存テスト（ProfileSettingsServiceSubSettingsTests.ProfileActions_GetSet_ShouldPersistAndNotify）が
             // Global.store.profileActions を 8 要素の配列に置き換えたまま戻さないため、実行順によって
             // Global.store.profileActions の長さが変わる。独立した 9 要素の配列に差し替えて検証し、終了時に戻す。
             BackingStore store = TestGlobals.Store;
             List<string>[] originalArray = store.profileActions;
-            List<string>[] profileActions = new List<string>[DS4Windows.ControllerLimits.TestProfileItemCount];
+            List<string>[] profileActions = new List<string>[DS4Windows.Core.Settings.ControllerLimits.TestProfileItemCount];
             store.profileActions = profileActions;
             try
             {

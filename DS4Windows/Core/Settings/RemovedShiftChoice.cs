@@ -1,4 +1,4 @@
-namespace DS4Windows
+namespace DS4Windows.Core.Settings
 {
     /// <summary>
     /// Phase8-Step7 7.8d: 廃止された「シフト」機能の設定がプロファイルに残っているとき、編集画面でユーザーが選ぶ内容。

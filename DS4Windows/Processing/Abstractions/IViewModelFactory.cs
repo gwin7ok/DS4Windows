@@ -1,10 +1,9 @@
 ﻿using System;
-using DS4Windows;
-using DS4WinWPF;
-using DS4WinWPF.DS4Forms;
-using DS4WinWPF.DS4Forms.ViewModels;
+using DS4Windows.Core.Profiles;
+using DS4Windows.Core.Settings;
+using DS4Windows.UI.ViewModels;
 
-namespace DS4Windows.DI
+namespace DS4Windows.Processing.Abstractions
 {
     public interface IViewModelFactory
     {

@@ -1,4 +1,6 @@
-namespace DS4Windows.Actions
+using DS4Windows.Core.Settings;
+
+namespace DS4Windows.Processing.Actions
 {
     /// <summary>
     /// Phase10-Step6 I6b: Controls タブに割り当てられる、SA 専用の種別（<see cref="DS4ControlSettings.ActionType.Special"/>）のうち、<b>実行時に束縛を作る種別</b>の規則の表。

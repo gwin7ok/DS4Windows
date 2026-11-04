@@ -1,8 +1,10 @@
 using System;
 using System.Collections.Generic;
 using System.Globalization;
+using DS4Windows.Core.Settings;
+using DS4Windows.Input;
 
-namespace DS4Windows.Actions
+namespace DS4Windows.Processing.Actions
 {
     /// <summary>
     /// Phase10-Step6 I2（Phase10-Step6-Plan.md §4）: <see cref="SpecialAction"/>（<c>details</c>／<c>extra</c> の文字列に種別ごとの意味を詰めた形）と、

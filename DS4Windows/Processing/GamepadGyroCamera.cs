@@ -21,13 +21,14 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using DS4Windows.Core.Settings;
 
-namespace DS4WinWPF.DS4Control
+namespace DS4Windows.Processing
 {
 
     public class GamepadGyroCamera : PresetOption
     {
-        public GamepadGyroCamera(DS4Windows.DI.IProfilePresetLoader presetLoader, DS4Windows.DI.IProfileLoadTarget loadTarget)
+        public GamepadGyroCamera(DS4Windows.Core.Abstractions.IProfilePresetLoader presetLoader, DS4Windows.Processing.Abstractions.IProfileLoadTarget loadTarget)
             : base(presetLoader, loadTarget)
         {
             name = Translations.Strings.GamepadGyroCameraName;

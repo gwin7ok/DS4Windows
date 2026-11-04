@@ -18,7 +18,7 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 using System;
 
-namespace DS4WinWPF
+namespace DS4Windows.Core.Logging
 {
     public class StatusLogMsg
     {

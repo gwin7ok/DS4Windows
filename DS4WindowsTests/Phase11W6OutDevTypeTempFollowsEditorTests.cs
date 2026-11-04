@@ -1,8 +1,10 @@
 using System;
 using System.Windows;
-using DS4Windows;
-using DS4WinWPF.DS4Forms.ViewModels;
 using Xunit;
+using DS4Windows.Core.Platform;
+using DS4Windows.Core.Settings;
+using DS4Windows.Output;
+using DS4Windows.UI.ViewModels;
 
 namespace DS4WindowsTests
 {
@@ -30,11 +32,11 @@ namespace DS4WindowsTests
             }
         }
 
-        private static (ProfileSettingsViewModel Vm, ProfileSettingsService Service, DS4Windows.DI.IOutputSlotService Slots) Create(OutContType type)
+        private static (ProfileSettingsViewModel Vm, ProfileSettingsService Service, DS4Windows.Processing.Abstractions.IOutputSlotService Slots) Create(OutContType type)
         {
             ProfileSettingsService service = TestRepositoryFactory.CreateProfileSettingsService(new BackingStore(new EnvironmentService()));
             service.OutContType[Device] = type;
-            var slots = TestHost.GetService<DS4Windows.DI.IOutputSlotService>();
+            var slots = TestHost.GetService<DS4Windows.Processing.Abstractions.IOutputSlotService>();
             return (ProfileSettingsViewModelTestFactory.Create(Device, service, slots), service, slots);
         }
 

@@ -2,11 +2,13 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
-using DS4Windows;
-using DS4Windows.DI;
-using DS4Windows.Services;
-using DS4WinWPF.DS4Forms;
 using Xunit;
+using DS4Windows.Core.Abstractions;
+using DS4Windows.Input;
+using DS4Windows.Processing;
+using DS4Windows.Processing.Abstractions;
+using DS4Windows.Processing.Services;
+using DS4Windows.UI;
 
 namespace DS4WindowsTests
 {

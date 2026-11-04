@@ -2,9 +2,12 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using Xunit;
-using DS4Windows;
-using DS4Windows.DI;
-using DS4Windows.Services;
+using DS4Windows.Core.Abstractions;
+using DS4Windows.Core.Persistence;
+using DS4Windows.Core.Platform;
+using DS4Windows.Processing;
+using DS4Windows.Processing.Abstractions;
+using DS4Windows.Processing.Services;
 
 namespace DS4WindowsTests
 {
@@ -49,7 +52,7 @@ namespace DS4WindowsTests
             _originalAppData = TestGlobals.AppDataPath;
             TestGlobals.AppDataPath = _dir;
 
-            DS4WinWPF.AppHost.CreateHost();
+            DS4Windows.Composition.AppHost.CreateHost();
             TestHost.GetService<ControlService>();   // TempStates などは ControlService のコンストラクターが作る
             _control = TestHost.GetService<IProfileLoadTarget>();
             _settings = TestGlobals.ProfileSettingsServiceInstance;
@@ -57,7 +60,7 @@ namespace DS4WindowsTests
             _repo = TestRepositoryFactory.CreateProfileRepository(_settings);
             _service = TestRepositoryFactory.CreateProfileApplicationService(_settings,
                 _control, _repo, new EnvironmentService());
-            _slotApplier = new ProfileSlotApplier(_service, new EnvironmentService(), TestHost.GetService<DS4Windows.Actions.ITriggerDispatchEngine>());
+            _slotApplier = new ProfileSlotApplier(_service, new EnvironmentService(), TestHost.GetService<DS4Windows.Processing.Actions.ITriggerDispatchEngine>());
 
             _origProfilePath = _repo.ProfilePath[Slot];
             _origOlder = _repo.OlderProfilePath[Slot];
@@ -227,7 +230,7 @@ namespace DS4WindowsTests
             _repo.SelectedProfile[Slot] = "SelectedSentinel";
 
             Assert.False(_slotApplier.ApplyToSlot(-1, Normal, ProfileChangeSource.Manual));
-            Assert.False(_slotApplier.ApplyToSlot(new DS4Windows.EnvironmentService().ControllerSlotLimit, Normal, ProfileChangeSource.Manual));
+            Assert.False(_slotApplier.ApplyToSlot(new DS4Windows.Core.Platform.EnvironmentService().ControllerSlotLimit, Normal, ProfileChangeSource.Manual));
             Assert.False(_slotApplier.ApplyToSlot(Slot, "", ProfileChangeSource.Manual));
             Assert.False(_slotApplier.ApplyToSlot(Slot, "   ", ProfileChangeSource.Manual));
             Assert.False(_slotApplier.ApplyToSlot(Slot, null, ProfileChangeSource.Manual));

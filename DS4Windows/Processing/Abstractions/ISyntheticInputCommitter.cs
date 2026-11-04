@@ -1,4 +1,6 @@
-namespace DS4Windows.DI
+using DS4Windows.Core.Abstractions;
+
+namespace DS4Windows.Processing.Abstractions
 {
     /// <summary>
     /// Phase9 MapCustom の分割 M1（Phase9-MapCustom-Plan.md §3）: 合成入力（マウスのクリック・ホイール）の確定と出力。

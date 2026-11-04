@@ -1,4 +1,4 @@
-namespace DS4Windows
+namespace DS4Windows.Processing
 {
     /// <summary>
     /// Phase7b W1: プロファイル切替の特殊アクション（「Unload on trigger release」など）の「復帰の合図」の退避用。

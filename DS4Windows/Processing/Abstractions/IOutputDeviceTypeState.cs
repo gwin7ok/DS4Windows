@@ -1,4 +1,6 @@
-namespace DS4Windows.DI
+using DS4Windows.Output;
+
+namespace DS4Windows.Processing.Abstractions
 {
     /// <summary>
     /// Phase13-Step7 7-b（Phase13-Step7-Plan.md §3.1）: 出力デバイス種別の 2 本の配列の持ち主（依存なし）。

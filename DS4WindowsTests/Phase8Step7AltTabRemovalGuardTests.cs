@@ -3,8 +3,8 @@ using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Threading;
-using DS4Windows;
 using Xunit;
+using DS4Windows.Processing;
 
 namespace DS4WindowsTests
 {

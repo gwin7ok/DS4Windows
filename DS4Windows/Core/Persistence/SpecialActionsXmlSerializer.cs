@@ -1,9 +1,4 @@
-﻿using DS4Windows.DS4Control;
-using DS4Windows.InputDevices;
-using DS4Windows.StickModifiers;
-using DS4WinWPF.DS4Control.DTOXml;
-using DS4WinWPF.DS4Forms.ViewModels;
-using Sensorit.Base;
+﻿using Sensorit.Base;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -22,13 +17,15 @@ using System.Windows;
 using System.Windows.Input;
 using System.Xml;
 using System.Xml.Serialization;
-using DS4WinWPF;
-using DS4WinWPF.ApiDTO;
 using WpfScreenHelper;
-using static DS4Windows.Mouse;
-using static DS4Windows.Util;
+using static DS4Windows.Processing.Mouse;
+using static DS4Windows.Core.Utilities.Util;
+using DS4Windows.Core.Logging;
+using DS4Windows.Core.Persistence.Dto;
+using DS4Windows.Core.Settings;
+using DS4Windows.Processing;
 
-namespace DS4Windows.Services
+namespace DS4Windows.Core.Persistence
 {
     /// <summary>
     /// Phase7-Step10c W2（Q1＝A）: スペシャルアクション（<c>Actions.xml</c>）の保存・読込。
@@ -42,13 +39,13 @@ namespace DS4Windows.Services
         private readonly XmlDocument m_Xdoc = new XmlDocument(); // 旧 BackingStore.m_Xdoc と同じ使い方（排他は呼び出し側のロック）
 
         // Phase10-Step4d W3: Load Profile の切り替え先の ID と名前を結ぶ。省略可（登録簿がなければ、従来どおり名前だけ）
-        private readonly DS4Windows.DI.IProfileIdentityService profileIdentity;
+        private readonly DS4Windows.Core.Abstractions.IProfileIdentityService profileIdentity;
 
         // Phase13-Step4: 旧 静的 ActionManager.ClearAllEntries の代わり
-        private readonly DS4Windows.Actions.IManagedActionManager _actionManager;
+        private readonly DS4Windows.Processing.Actions.IManagedActionManager _actionManager;
 
-        public SpecialActionsXmlSerializer(BackingStore store, DS4Windows.Actions.IManagedActionManager actionManager,
-            DS4Windows.DI.IProfileIdentityService profileIdentityService = null)
+        public SpecialActionsXmlSerializer(BackingStore store, DS4Windows.Processing.Actions.IManagedActionManager actionManager,
+            DS4Windows.Core.Abstractions.IProfileIdentityService profileIdentityService = null)
         {
             _actionManager = actionManager ?? throw new ArgumentNullException(nameof(actionManager));
             this.store = store ?? throw new ArgumentNullException(nameof(store));
@@ -366,7 +363,7 @@ namespace DS4Windows.Services
             catch (XmlException)
             {
                 // XML file has become corrupt. Start from scratch
-                AppLogger.Log(AppLogLevel.Warn, DS4WinWPF.Properties.Resources.XMLActionsCorrupt, LogOptions.UserFacing);
+                AppLogger.Log(AppLogLevel.Warn, DS4Windows.Properties.Resources.XMLActionsCorrupt, LogOptions.UserFacing);
                 m_Xdoc.RemoveAll();
                 PrepareActionsXml(m_Xdoc);
             }

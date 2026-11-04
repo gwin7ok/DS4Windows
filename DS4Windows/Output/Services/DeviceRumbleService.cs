@@ -1,7 +1,9 @@
 using System;
-using DS4Windows.DI;
+using DS4Windows.Core.Abstractions;
+using DS4Windows.Input;
+using DS4Windows.Processing.Abstractions;
 
-namespace DS4Windows.Services
+namespace DS4Windows.Output.Services
 {
     /// <summary>Phase13-Step3: <see cref="IDeviceRumbleService"/> の実装。旧 <c>ControlService.SetDevRumble</c> の本体をそのまま移した。</summary>
     public sealed class DeviceRumbleService : IDeviceRumbleService

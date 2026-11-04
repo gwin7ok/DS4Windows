@@ -1,8 +1,11 @@
 using System;
 using System.Collections.Generic;
-using DS4Windows.InputDevices;
+using DS4Windows.Core.Abstractions;
+using DS4Windows.Core.Settings;
+using DS4Windows.Input;
+using DS4Windows.Input.Devices;
 
-namespace DS4Windows.DI
+namespace DS4Windows.Processing.Abstractions
 {
     /// <summary>
     /// Phase9 9-E E-6c（Phase9-E6-Plan.md §3.1）: デバイスの種類（DS4／DualSense／Switch Pro／Joy-Con／DS3）ごとの処理を持つ部品（カートリッジ）。

@@ -1,10 +1,12 @@
 using System;
 using System.Diagnostics;
 using System.Reflection;
-using DS4Windows;
-using DS4Windows.DI;
 using Xunit;
 using Xunit.Abstractions;
+using DS4Windows.Core.Abstractions;
+using DS4Windows.Input;
+using DS4Windows.Processing;
+using DS4Windows.Processing.Abstractions;
 
 namespace DS4WindowsTests
 {
@@ -24,7 +26,7 @@ namespace DS4WindowsTests
         public Phase13Step5bOnReportCharacterizationTests(ITestOutputHelper output)
         {
             _output = output;
-            DS4WinWPF.AppHost.CreateHost();
+            DS4Windows.Composition.AppHost.CreateHost();
             TestHost.GetService<ControlService>();   // TempStates／PreviousStates は ControlService のコンストラクターが作る（本番では起動時に必ず構築される）
         }
 

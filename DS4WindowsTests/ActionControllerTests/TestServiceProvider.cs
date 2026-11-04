@@ -1,6 +1,4 @@
 using System;
-using DS4Windows.Actions;
-using DS4Windows.DS4Control;
 using Xunit;
 
 namespace DS4Windows.Actions.Tests

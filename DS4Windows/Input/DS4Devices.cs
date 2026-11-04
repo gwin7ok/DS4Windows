@@ -16,7 +16,6 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
 
-using DS4Windows.InputDevices;
 using NLog.Targets;
 using System;
 using System.Collections.Generic;
@@ -24,8 +23,11 @@ using System.Diagnostics;
 using System.Linq;
 using System.Runtime.InteropServices;
 using System.Security.Principal;
+using DS4Windows.Core.Logging;
+using DS4Windows.Input.Devices;
+using DS4Windows.Input.Hid;
 
-namespace DS4Windows
+namespace DS4Windows.Input
 {
 
     public class DS4Devices
@@ -106,7 +108,7 @@ namespace DS4Windows
 
         // Phase7-Step10d W3（Q4＝A）: 第 1 層が読む設定値（Moonlight／詳細ログ）。Ds4DeviceRegistryAdapter が設定する。
         // 未設定のとき（テスト）は、Moonlight 無効・詳細ログ無効として扱う（旧: Global が BackingStore の既定値を返していた）。
-        public static DS4Windows.DI.IDeviceLayerSettings LayerSettings { get; set; }
+        public static DS4Windows.Processing.Abstractions.IDeviceLayerSettings LayerSettings { get; set; }
 
         private static bool detectNewControllers = true;
         private static long timestamp;
@@ -315,11 +317,11 @@ namespace DS4Windows
                                 DevicePaths.Add(hDevice.DevicePath);
                                 deviceSerials.Add(serial);
                                 serialDevices.Add(serial, ds4Device);
-                                string foundMsg = $"{DS4WinWPF.Properties.Resources.FoundController} {ds4Device.getMacAddress()} ({ds4Device.getConnectionType()}) ({ds4Device.DisplayName}).";
+                                string foundMsg = $"{DS4Windows.Properties.Resources.FoundController} {ds4Device.getMacAddress()} ({ds4Device.getConnectionType()}) ({ds4Device.DisplayName}).";
                                 AppLogger.Log(AppLogLevel.Info, foundMsg, LogOptions.UserFacing);
                                 try
                                 {
-                                    DS4WinWPF.NotificationService.ShowToast(string.Empty, foundMsg);
+                                    DS4Windows.UI.Services.NotificationService.ShowToast(string.Empty, foundMsg);
                                 }
                                 catch
                                 {

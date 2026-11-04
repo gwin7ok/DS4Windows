@@ -29,11 +29,12 @@ using System.Windows.Interop;
 using System.Windows;
 using System.Windows.Media.Imaging;
 using System.Runtime.InteropServices;
-using DS4Windows;
-using DS4Windows.DI;
-using static DS4Windows.Util;
+using static DS4Windows.Core.Utilities.Util;
+using DS4Windows.Core.Abstractions;
+using DS4Windows.Core.Logging;
+using DS4Windows.Processing.Abstractions;
 
-namespace DS4WinWPF.DS4Forms.ViewModels
+namespace DS4Windows.UI.ViewModels
 {
     public class SettingsViewModel : IDisposable
     {
@@ -141,7 +142,7 @@ namespace DS4WinWPF.DS4Forms.ViewModels
             {
                 int temp = (int)_appearanceSettings.UseIconChoice;
                 if (temp == value) return;
-                _appearanceSettings.UseIconChoice = (DS4Windows.TrayIconChoice)value;
+                _appearanceSettings.UseIconChoice = (DS4Windows.Core.Settings.TrayIconChoice)value;
                 IconChoiceIndexChanged?.Invoke(this, EventArgs.Empty);
             }
         }
@@ -154,7 +155,7 @@ namespace DS4WinWPF.DS4Forms.ViewModels
             {
                 int temp = (int)_appearanceSettings.UseCurrentTheme;
                 if (temp == value) return;
-                _appearanceSettings.UseCurrentTheme = (DS4Windows.AppThemeChoice)value;
+                _appearanceSettings.UseCurrentTheme = (DS4Windows.Core.Settings.AppThemeChoice)value;
                 AppChoiceIndexChanged?.Invoke(this, EventArgs.Empty);
             }
         }
@@ -395,7 +396,7 @@ namespace DS4WinWPF.DS4Forms.ViewModels
             get
             {
                 bool result = _environmentService.HidHideInstalled &&
-                    !string.IsNullOrEmpty(DS4Windows.Util.GetHidHideClientPath());
+                    !string.IsNullOrEmpty(DS4Windows.Core.Utilities.Util.GetHidHideClientPath());
 
                 return result;
             }
@@ -463,7 +464,7 @@ namespace DS4WinWPF.DS4Forms.ViewModels
             }
             catch (COMException ex)
             {
-                DS4Windows.AppLogger.Log(AppLogLevel.Error, string.Format("Error in TaskService. Check WinOS TaskScheduler service functionality. {0}", ex.Message), LogOptions.UserFacing);
+                DS4Windows.Core.Logging.AppLogger.Log(AppLogLevel.Error, string.Format("Error in TaskService. Check WinOS TaskScheduler service functionality. {0}", ex.Message), LogOptions.UserFacing);
             }
 
             runAtStartup = runStartProg || runStartTask;

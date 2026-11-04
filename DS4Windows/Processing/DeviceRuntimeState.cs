@@ -1,7 +1,8 @@
 using System;
 using System.Collections.Generic;
+using DS4Windows.Input;
 
-namespace DS4Windows
+namespace DS4Windows.Processing
 {
     // Represents per-device runtime items that previously lived as globals in Mapping (eg. untriggeraction/untriggerindex, macro queues, lightbar state).
     public class DeviceRuntimeState

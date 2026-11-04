@@ -1,9 +1,9 @@
 using System;
 using System.Collections.Generic;
-using DS4Windows.DI;
 using SharpOSC;
+using DS4Windows.Processing.Abstractions;
 
-namespace DS4Windows.Services
+namespace DS4Windows.Output.Services
 {
     /// <summary>
     /// Phase9 9-E E-1: <see cref="IOscListenerHandle"/> の実装。SharpOSC の <c>UDPListener</c> を包む（旧 <c>ControlService.oscListener</c>）。

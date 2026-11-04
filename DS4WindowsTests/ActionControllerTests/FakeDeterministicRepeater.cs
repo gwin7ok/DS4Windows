@@ -1,5 +1,5 @@
 using System;
-using DS4Windows.Actions;
+using DS4Windows.Processing.Actions;
 
 namespace DS4Windows.Actions.Tests
 {

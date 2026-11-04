@@ -1,8 +1,10 @@
 using System;
 using System.Windows;
-using DS4Windows;
-using DS4WinWPF.DS4Forms.ViewModels;
 using Xunit;
+using DS4Windows.Core.Platform;
+using DS4Windows.Core.Settings;
+using DS4Windows.Input;
+using DS4Windows.UI.ViewModels;
 
 namespace DS4WindowsTests
 {
@@ -28,7 +30,7 @@ namespace DS4WindowsTests
 
             if (Application.ResourceAssembly == null)
             {
-                try { Application.ResourceAssembly = typeof(DS4WinWPF.AppHost).Assembly; } catch { }
+                try { Application.ResourceAssembly = typeof(DS4Windows.Composition.AppHost).Assembly; } catch { }
             }
 
             // RecordBoxViewModel のコンストラクター（MacroStepItem.CacheImgLocations）が参照するリソースキー（実際の画像は不要）

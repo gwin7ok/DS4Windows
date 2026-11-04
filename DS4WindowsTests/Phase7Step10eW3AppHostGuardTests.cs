@@ -84,7 +84,7 @@ namespace DS4WindowsTests
                 // 文字列の中の記述（ガードの期待値など）は対象外とするため、引用符で囲まれていない呼び出しだけを数える
                 foreach (string line in code.Split('\n'))
                 {
-                    if (!Regex.IsMatch(line, @"(?<![\w])(?:DS4WinWPF\.)?AppHost\.GetService\s*[<(]")) continue;
+                    if (!Regex.IsMatch(line, @"(?<![\w])(?:DS4Windows\.Composition\.)?AppHost\.GetService\s*[<(]")) continue;
                     if (line.Contains("\"")) continue;
                     offenders.Add(Path.GetFileName(file));
                     break;
@@ -98,8 +98,8 @@ namespace DS4WindowsTests
         public void TestHost_CreatesTheSharedHostOnDemand()
         {
             Assert.NotNull(TestHost.Ensure());
-            Assert.NotNull(TestHost.GetService<DS4Windows.DI.IEnvironmentService>());
-            Assert.Same(DS4WinWPF.AppHost.Host, TestHost.Ensure());
+            Assert.NotNull(TestHost.GetService<DS4Windows.Core.Abstractions.IEnvironmentService>());
+            Assert.Same(DS4Windows.Composition.AppHost.Host, TestHost.Ensure());
         }
     }
 }

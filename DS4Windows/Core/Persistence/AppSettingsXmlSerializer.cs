@@ -1,9 +1,4 @@
-﻿using DS4Windows.DS4Control;
-using DS4Windows.InputDevices;
-using DS4Windows.StickModifiers;
-using DS4WinWPF.DS4Control.DTOXml;
-using DS4WinWPF.DS4Forms.ViewModels;
-using Sensorit.Base;
+﻿using Sensorit.Base;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -22,20 +17,24 @@ using System.Windows;
 using System.Windows.Input;
 using System.Xml;
 using System.Xml.Serialization;
-using DS4WinWPF;
-using DS4WinWPF.ApiDTO;
 using WpfScreenHelper;
-using static DS4Windows.Mouse;
-using static DS4Windows.Util;
+using static DS4Windows.Processing.Mouse;
+using static DS4Windows.Core.Utilities.Util;
+using DS4Windows.Core.Abstractions;
+using DS4Windows.Core.Logging;
+using DS4Windows.Core.Persistence.Dto;
+using DS4Windows.Core.Settings;
+using DS4Windows.Core.Utilities;
+using DS4Windows.Input;
 
-namespace DS4Windows.Services
+namespace DS4Windows.Core.Persistence
 {
     /// <summary>
     /// Phase7-Step10c W3（Q1＝A）: アプリ設定（<c>Profiles.xml</c>）の保存・読込。
     /// 旧: <c>BackingStore</c> の <c>Load</c>／<c>Save</c>／<c>LoadFakeExeName</c>（移動のみ。ロジック・ログ・要素の順序は変えない。
     /// 旧形式の読込の互換を含む。<c>BackingStore</c> の公開状態を <c>store.</c> で読み書きする）。
     /// <c>PostProcessLoad</c>（読込後の値の丸め）は状態の整形のため <c>BackingStore</c> に残し、<c>store.PostProcessLoad()</c> として呼ぶ。
-    /// パス・環境の窓口は、<c>Global</c> ではなく <see cref="DS4Windows.DI.IPathService"/>／<see cref="DS4Windows.DI.IEnvironmentService"/> から得る。
+    /// パス・環境の窓口は、<c>Global</c> ではなく <see cref="DS4Windows.Core.Abstractions.IPathService"/>／<see cref="DS4Windows.Core.Abstractions.IEnvironmentService"/> から得る。
     /// </summary>
     public class AppSettingsXmlSerializer
     {
@@ -43,15 +42,15 @@ namespace DS4Windows.Services
         // 偽の exe 名を保存するファイルの名前（旧: CustomExeConfigFileName。Global の同名の定数は、この値を指す別名）
         public const string CustomExeConfigFileName = "custom_exe_name.txt";
 
-        private readonly DS4Windows.DI.IPathService _pathService;
-        private readonly DS4Windows.DI.IEnvironmentService _environment;
+        private readonly DS4Windows.Core.Abstractions.IPathService _pathService;
+        private readonly DS4Windows.Core.Abstractions.IEnvironmentService _environment;
         private readonly XmlDocument m_Xdoc = new XmlDocument(); // 旧 BackingStore.m_Xdoc と同じ使い方（排他は呼び出し側のロック）
 
         // Phase10-Step4d W4: スロットの選択のプロファイルの ID と名前を結ぶ。省略可（登録簿がなければ、従来どおり名前だけ）
-        private readonly DS4Windows.DI.IProfileIdentityService _profileIdentity;
+        private readonly DS4Windows.Core.Abstractions.IProfileIdentityService _profileIdentity;
 
-        public AppSettingsXmlSerializer(BackingStore store, DS4Windows.DI.IPathService pathService, DS4Windows.DI.IEnvironmentService environment,
-            DS4Windows.DI.IProfileIdentityService profileIdentity = null)
+        public AppSettingsXmlSerializer(BackingStore store, DS4Windows.Core.Abstractions.IPathService pathService, DS4Windows.Core.Abstractions.IEnvironmentService environment,
+            DS4Windows.Core.Abstractions.IProfileIdentityService profileIdentity = null)
         {
             _profileIdentity = profileIdentity;
             this.store = store ?? throw new ArgumentNullException(nameof(store));

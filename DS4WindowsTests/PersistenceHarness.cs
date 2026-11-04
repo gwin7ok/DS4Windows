@@ -1,8 +1,8 @@
 using System;
 using System.IO;
-using DS4Windows;
-using DS4Windows.DI;
 using Xunit;
+using DS4Windows.Core.Settings;
+using DS4Windows.Processing.Abstractions;
 
 namespace DS4WindowsTests
 {
@@ -20,7 +20,7 @@ namespace DS4WindowsTests
         // （プロファイルの読込・保存が、一時プロファイル・DInput のみ・タッチパッドの配列をこのサービスから読むため）
         public static BackingStore NewStore()
         {
-            var store = new DS4Windows.BackingStore(new DS4Windows.EnvironmentService());
+            var store = new DS4Windows.Core.Settings.BackingStore(new DS4Windows.Core.Platform.EnvironmentService());
             store.ProfileSettings = TestGlobals.ProfileSettingsServiceInstance;
             return store;
         }
@@ -68,7 +68,7 @@ namespace DS4WindowsTests
         {
             string path = Path.Combine(ctx.AppData, "Actions.xml");
             store.m_Actions = path;
-            var xml = new DS4Windows.Services.SpecialActionsXmlSerializer(store, TestActions.Manager);
+            var xml = new DS4Windows.Core.Persistence.SpecialActionsXmlSerializer(store, TestActions.Manager);
             // モード: 1＝マクロ、2＝プログラム、3＝プロファイル、4＝キー、5＝切断、6＝バッテリー確認、7＝複数アクション、9＝ジャイロ較正、10＝ボタン（8＝ホイール較正は Phase9 Steering 削除 W1 で廃止）
             xml.SaveAction("Golden_Macro", "Cross", 1, "65/66/67", false, "Hold");
             xml.SaveAction("Golden_Program", "Circle", 2, "C:/golden/a.exe?3", false, "-arg");
@@ -88,7 +88,7 @@ namespace DS4WindowsTests
             File.WriteAllText(path, xml);
             BackingStore store = NewStore();
             store.m_Actions = path;
-            Assert.True(new DS4Windows.Services.SpecialActionsXmlSerializer(store, TestActions.Manager).LoadActions(), "アクションの読込に失敗した");
+            Assert.True(new DS4Windows.Core.Persistence.SpecialActionsXmlSerializer(store, TestActions.Manager).LoadActions(), "アクションの読込に失敗した");
             return store;
         }
 
@@ -98,7 +98,7 @@ namespace DS4WindowsTests
         {
             string path = Path.Combine(ctx.AppData, "LinkedProfiles.xml");
             store.m_linkedProfiles = path;
-            var linked = new DS4Windows.Services.LinkedProfilesXmlSerializer(store);
+            var linked = new DS4Windows.Core.Persistence.LinkedProfilesXmlSerializer(store);
             Assert.True(linked.createLinkedProfiles(), "リンクプロファイルの新規作成に失敗した");
             store.linkedProfiles["0123456789AB"] = "Golden_ProfileA";
             store.linkedProfiles["BA9876543210"] = "Golden_ProfileB";
@@ -112,7 +112,7 @@ namespace DS4WindowsTests
             File.WriteAllText(path, xml);
             BackingStore store = NewStore();
             store.m_linkedProfiles = path;
-            Assert.True(new DS4Windows.Services.LinkedProfilesXmlSerializer(store).LoadLinkedProfiles(), "リンクプロファイルの読込に失敗した");
+            Assert.True(new DS4Windows.Core.Persistence.LinkedProfilesXmlSerializer(store).LoadLinkedProfiles(), "リンクプロファイルの読込に失敗した");
             return store;
         }
 
@@ -128,7 +128,7 @@ namespace DS4WindowsTests
         public static BackingStore LoadPreset(PersistenceGoldenContext ctx, string presetName)
         {
             BackingStore store = NewStore();
-            var s = new DS4Windows.Services.ProfilePresets(store);
+            var s = new DS4Windows.Core.Persistence.ProfilePresets(store);
             IProfileLoadTarget c = ctx.LoadTarget;
             switch (presetName)
             {

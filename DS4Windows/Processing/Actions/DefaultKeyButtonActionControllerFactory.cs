@@ -1,7 +1,6 @@
-﻿using DS4Windows.Services;
-using System;
+﻿using System;
 
-namespace DS4Windows.Actions
+namespace DS4Windows.Processing.Actions
 {
     /// <summary>
     /// <see cref="IKeyButtonActionControllerFactory"/> の既定の実装。
@@ -19,9 +18,9 @@ namespace DS4Windows.Actions
             _manager = manager ?? throw new ArgumentNullException(nameof(manager));
         }
 
-        public DS4Windows.KeyButtonActionController Create(int device, DS4Windows.KeyButtonActionController.Mode mode, string actionName = null)
+        public DS4Windows.Processing.Actions.KeyButtonActionController Create(int device, DS4Windows.Processing.Actions.KeyButtonActionController.Mode mode, string actionName = null)
         {
-            var inst = new DS4Windows.KeyButtonActionController(device, mode, _manager, actionName);
+            var inst = new DS4Windows.Processing.Actions.KeyButtonActionController(device, mode, _manager, actionName);
             try
             {
                 var key = device + ":" + (string.IsNullOrEmpty(actionName) ? "<default>" : actionName);
@@ -31,9 +30,9 @@ namespace DS4Windows.Actions
             return inst;
         }
 
-        public DS4Windows.KeyButtonActionController Create(int device, DS4Windows.SpecialAction sa, string actionName = null)
+        public DS4Windows.Processing.Actions.KeyButtonActionController Create(int device, DS4Windows.Processing.SpecialAction sa, string actionName = null)
         {
-            var inst = new DS4Windows.KeyButtonActionController(device, sa, _manager, actionName);
+            var inst = new DS4Windows.Processing.Actions.KeyButtonActionController(device, sa, _manager, actionName);
             try
             {
                 var name = actionName ?? (sa?.name ?? "<sa>");

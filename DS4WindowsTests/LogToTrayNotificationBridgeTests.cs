@@ -1,5 +1,5 @@
 using Xunit;
-using DS4Windows;
+using DS4Windows.Core.Logging;
 
 namespace DS4WindowsTests
 {

@@ -1,4 +1,6 @@
-namespace DS4Windows.Actions
+using DS4Windows.Input;
+
+namespace DS4Windows.Processing.Actions
 {
     /// <summary>
     /// Phase8-Step7 7.8f-1（Phase8-Step7-8f-Plan.md §3.2。Q9＝A の考え方）: Controls タブの Button（パッド）の出力が受け取る「解釈済みの値」。

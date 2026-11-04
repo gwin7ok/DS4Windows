@@ -25,7 +25,7 @@ using Nefarius.ViGEm.Client;
 using Nefarius.ViGEm.Client.Targets;
 using Nefarius.ViGEm.Client.Targets.DualShock4;
 
-namespace DS4Windows
+namespace DS4Windows.Output
 {
     abstract class DS4OutDevice : OutputDevice
     {

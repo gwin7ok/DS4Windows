@@ -3,9 +3,12 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Xml;
-using DS4Windows.DI;
+using DS4Windows.Core.Abstractions;
+using DS4Windows.Core.Logging;
+using DS4Windows.Core.Settings;
+using DS4Windows.Processing;
 
-namespace DS4Windows
+namespace DS4Windows.Core.Persistence
 {
     public class SpecialActionRepository : ISpecialActionRepository
     {
@@ -15,15 +18,15 @@ namespace DS4Windows
         // Phase7-Step8 W1: キー型スペシャルアクションの保存後に、合成入力の状態をリセットするために使う（旧: Global.SaveAction → Mapping）
         private readonly SyntheticInputState _syntheticInput;
         // Phase7-Step10c W2: Actions.xml の保存・読込（旧: BackingStore のメソッド）
-        private readonly Services.SpecialActionsXmlSerializer _actionsXml;
+        private readonly DS4Windows.Core.Persistence.SpecialActionsXmlSerializer _actionsXml;
 
         public event EventHandler ActionsChanged;
 
         // Phase13-Step4: 旧 静的 ActionManager（ClearAllEntries、ResetRuntimeStateForKey のトグル状態の解除）の代わり
-        private readonly DS4Windows.Actions.IManagedActionManager _actionManager;
+        private readonly DS4Windows.Processing.Actions.IManagedActionManager _actionManager;
 
         public SpecialActionRepository(BackingStore config, IPathService pathService, SyntheticInputState syntheticInput,
-            Services.SpecialActionsXmlSerializer actionsXml, DS4Windows.Actions.IManagedActionManager actionManager)
+            DS4Windows.Core.Persistence.SpecialActionsXmlSerializer actionsXml, DS4Windows.Processing.Actions.IManagedActionManager actionManager)
         {
             _actionManager = actionManager ?? throw new ArgumentNullException(nameof(actionManager));
             _actionsXml = actionsXml ?? throw new ArgumentNullException(nameof(actionsXml));

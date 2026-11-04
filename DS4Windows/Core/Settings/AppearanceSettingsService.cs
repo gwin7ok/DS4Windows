@@ -1,11 +1,13 @@
-namespace DS4Windows.Services
+using DS4Windows.Core.Abstractions;
+
+namespace DS4Windows.Core.Settings
 {
     /// <summary>
-    /// <see cref="DS4Windows.DI.IAppearanceSettingsService"/> の実装。
+    /// <see cref="DS4Windows.Core.Abstractions.IAppearanceSettingsService"/> の実装。
     /// Global(ScpUtil.cs) が保持する実体（テーマ・トレイアイコン設定）への薄いシムであり、
     /// 独自フィールドを持たない（Notifications 等と同一の Strangler Fig パターン）。
     /// </summary>
-    public class AppearanceSettingsService : DS4Windows.DI.IAppearanceSettingsService
+    public class AppearanceSettingsService : DS4Windows.Core.Abstractions.IAppearanceSettingsService
     {
         // Phase7-Step3 W5: Global 経由をやめ、注入された BackingStore（設定の唯一の実体）を直接使う。
         private readonly BackingStore _config;
@@ -27,7 +29,7 @@ namespace DS4Windows.Services
             set => _config.useIconChoice = value;
         }
 
-        public string GetIconResourcePath(TrayIconChoice choice) => DS4WinWPF.DS4Forms.TrayIconResources.iconChoiceResources[choice];
+        public string GetIconResourcePath(TrayIconChoice choice) => DS4Windows.UI.TrayIconResources.iconChoiceResources[choice];
 
         // ---- Phase6-Step2-5 (PR-5): バッテリー残量の変化通知 ----
         // Phase7-Step10d W4: 旧 Global.BatteryChanged（static イベント）の実体をこのサービスへ移した。

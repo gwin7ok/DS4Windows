@@ -1,10 +1,10 @@
 using System;
 using System.IO;
 using System.Text.RegularExpressions;
-using DS4Windows;
-using DS4Windows.DI;
-using DS4Windows.DS4Control;
-using DS4Windows.Services;
+using DS4Windows.Core.Abstractions;
+using DS4Windows.Output.Kbm;
+using DS4Windows.Processing;
+using DS4Windows.Processing.Abstractions;
 
 namespace DS4WindowsTests
 {
@@ -41,7 +41,7 @@ namespace DS4WindowsTests
             TestGlobals.AppDataPath = AppData;
             TestGlobals.ExeDirPath = ExeDir;
 
-            DS4WinWPF.AppHost.CreateHost();
+            DS4Windows.Composition.AppHost.CreateHost();
             Control = TestHost.GetService<ControlService>();
             LoadTarget = TestHost.GetService<IProfileLoadTarget>();
 

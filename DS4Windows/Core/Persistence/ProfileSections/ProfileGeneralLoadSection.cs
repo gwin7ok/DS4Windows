@@ -1,7 +1,8 @@
 ﻿using System;
 using System.Xml;
+using DS4Windows.Core.Settings;
 
-namespace DS4Windows.Services
+namespace DS4Windows.Core.Persistence.ProfileSections
 {
     /// <summary>
     /// Phase8-Step4b W2（Phase8-Step4b-Plan.md §3.2）: 全般・ライトバー・振動・バッテリー・タッチパッドのジッター補正（<c>touchToggle</c>〜<c>touchpadJitterCompensation</c>）の読込。

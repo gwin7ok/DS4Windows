@@ -23,7 +23,7 @@ using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace DS4Windows
+namespace DS4Windows.Output.Devices
 {
 
     internal static class DS4OutDeviceExtras

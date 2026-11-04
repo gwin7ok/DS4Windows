@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
-using DS4Windows.Services;
+using DS4Windows.Core.Abstractions;
+using DS4Windows.Processing.Abstractions;
 
 namespace DS4WindowsTests
 {

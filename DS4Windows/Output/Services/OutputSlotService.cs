@@ -1,11 +1,11 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using DS4Windows.DI;
-using DS4Windows.Services;
-using DS4WinWPF.DS4Control;
+using DS4Windows.Core.Abstractions;
+using DS4Windows.Core.Logging;
+using DS4Windows.Processing.Abstractions;
 
-namespace DS4Windows
+namespace DS4Windows.Output.Services
 {
     public class OutputSlotService : IOutputSlotService
     {

@@ -1,6 +1,7 @@
-﻿﻿using System.Diagnostics;
+﻿using System.Diagnostics;
+using DS4Windows.Core.Abstractions;
 
-namespace DS4Windows.Services
+namespace DS4Windows.Core.Platform
 {
     /// <summary>
     /// IElevatedProcessLauncher の既定実装。
@@ -11,7 +12,7 @@ namespace DS4Windows.Services
     {
         public int? RelaunchElevated(string arguments, int timeoutMs = 30000)
         {
-            ProcessStartInfo startInfo = new ProcessStartInfo(DS4Windows.PathService.ExecutableLocationState);
+            ProcessStartInfo startInfo = new ProcessStartInfo(DS4Windows.Core.Platform.PathService.ExecutableLocationState);
             startInfo.Verb = "runas";
             startInfo.Arguments = arguments;
             startInfo.UseShellExecute = true;

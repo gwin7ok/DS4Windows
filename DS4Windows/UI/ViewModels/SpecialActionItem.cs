@@ -28,11 +28,10 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Input;
 using System.Windows;
-using DS4Windows;
-using DS4Windows.DI;
-using DS4Windows.Actions;
+using DS4Windows.Output.Devices;
+using DS4Windows.Processing;
 
-namespace DS4WinWPF.DS4Forms.ViewModels
+namespace DS4Windows.UI.ViewModels
 {
 
     public class SpecialActionItem : INotifyPropertyChanged

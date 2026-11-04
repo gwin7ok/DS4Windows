@@ -1,7 +1,7 @@
 using System;
-using DS4Windows.DI;
+using DS4Windows.Processing.Abstractions;
 
-namespace DS4Windows.Actions
+namespace DS4Windows.Processing.Actions
 {
     /// <summary>
     /// Phase8-Step7 7.7b（W2b で <c>DefaultMultiActionMacroPlayer</c> から改名）: <see cref="IMacroStringPlayer"/> の本番の実装。

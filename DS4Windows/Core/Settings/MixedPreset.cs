@@ -22,12 +22,12 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace DS4WinWPF.DS4Control
+namespace DS4Windows.Core.Settings
 {
 
     public class MixedPreset : PresetOption
     {
-        public MixedPreset(DS4Windows.DI.IProfilePresetLoader presetLoader, DS4Windows.DI.IProfileLoadTarget loadTarget)
+        public MixedPreset(DS4Windows.Core.Abstractions.IProfilePresetLoader presetLoader, DS4Windows.Processing.Abstractions.IProfileLoadTarget loadTarget)
             : base(presetLoader, loadTarget)
         {
             name = Translations.Strings.MixedPresetName;

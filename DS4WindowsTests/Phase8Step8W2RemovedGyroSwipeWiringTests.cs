@@ -3,8 +3,10 @@ using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Xml;
-using DS4Windows;
 using Xunit;
+using DS4Windows.Core.Settings;
+using DS4Windows.Input;
+using DS4Windows.Processing;
 
 namespace DS4WindowsTests
 {
@@ -214,8 +216,8 @@ namespace DS4WindowsTests
             Assert.DoesNotContain("DirectionalSwipe", Enum.GetNames(typeof(GyroOutMode)));
             Assert.Null(typeof(BackingStore).GetField("gyroSwipeInfo", BindingFlags.Public | BindingFlags.Instance));
             Assert.Null(typeof(ControlSettingsGroup).GetField("GyroSwipeLeft"));
-            Assert.Null(typeof(DS4Windows.DI.IProfileSettingsService).GetProperty("GyroSwipeInf"));
-            Assert.Null(typeof(DS4Windows.DI.IProfileSettingsService).GetMethod("GetGyroSwipeInfo"));
+            Assert.Null(typeof(DS4Windows.Core.Abstractions.IProfileSettingsService).GetProperty("GyroSwipeInf"));
+            Assert.Null(typeof(DS4Windows.Core.Abstractions.IProfileSettingsService).GetMethod("GetGyroSwipeInfo"));
             Assert.Null(typeof(Mouse).GetField("gyroSwipe"));
         }
 

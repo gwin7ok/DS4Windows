@@ -1,4 +1,3 @@
-using DS4Windows.DI;
 /*
 DS4Windows
 Copyright (C) 2023  Travis Nickles
@@ -37,14 +36,20 @@ using NonFormTimer = System.Timers.Timer;
 using System.Runtime.InteropServices;
 using System.ComponentModel;
 using HttpProgress;
+using DS4Windows.Core.Logging;
+using DS4Windows.Core.Profiles;
+using DS4Windows.Core.Settings;
+using DS4Windows.Core.Utilities;
+using DS4Windows.Input;
+using DS4Windows.Input.Hid;
+using DS4Windows.Processing;
+using DS4Windows.Processing.Abstractions;
+using DS4Windows.Translations;
+using DS4Windows.UI.Services;
+using DS4Windows.UI.ViewModels;
 
-using DS4WinWPF.DS4Forms.ViewModels;
-using DS4Windows;
-using DS4WinWPF.DS4Control;
-using DS4WinWPF.Translations;
 
-
-namespace DS4WinWPF.DS4Forms
+namespace DS4Windows.UI
 {
     /// <summary>
     /// Interaction logic for MainWindow.xaml
@@ -71,26 +76,26 @@ namespace DS4WinWPF.DS4Forms
         private NonFormTimer autoProfilesTimer;
         // [Phase 5 Step 13-9] 廃止: DIコンテナ注入の _autoProfileService を直接利用
         private readonly IAutoProfileService _autoProfileService;
-        private readonly DS4Windows.DI.IProfileSettingsService profileSettingsService;
-        private readonly DS4Windows.DI.IAppSettingsService appSettingsService;
+        private readonly DS4Windows.Core.Abstractions.IProfileSettingsService profileSettingsService;
+        private readonly DS4Windows.Processing.Abstractions.IAppSettingsService appSettingsService;
         // Phase6-Step10-2-2: ControllerRegisterOptionsWindow（コントローラー固有設定の保存）へ渡す
-        private readonly DS4Windows.DI.IProfileXmlStore profileXmlStore;
+        private readonly DS4Windows.Core.Abstractions.IProfileXmlStore profileXmlStore;
         // Phase6-Step10-2-4a: ProfileEditor へ渡す、補助ウィンドウの生成の窓口
-        private readonly DS4Windows.DI.IEditorWindowFactory editorWindowFactory;
-        private readonly DS4Windows.DI.IPathService pathService;
-        private readonly DS4Windows.DI.IEnvironmentService environmentService;
-        private readonly DS4Windows.DI.IAppearanceSettingsService appearanceSettingsService;
-        private readonly DS4Windows.DI.IProfileApplicationService profileAppService;
-        private readonly DS4Windows.DI.IOutputSlotService outputSlotService;
-        private readonly DS4Windows.DI.IProfileRepository profileRepo;
+        private readonly DS4Windows.Processing.Abstractions.IEditorWindowFactory editorWindowFactory;
+        private readonly DS4Windows.Core.Abstractions.IPathService pathService;
+        private readonly DS4Windows.Core.Abstractions.IEnvironmentService environmentService;
+        private readonly DS4Windows.Core.Abstractions.IAppearanceSettingsService appearanceSettingsService;
+        private readonly DS4Windows.Processing.Abstractions.IProfileApplicationService profileAppService;
+        private readonly DS4Windows.Processing.Abstractions.IOutputSlotService outputSlotService;
+        private readonly DS4Windows.Core.Abstractions.IProfileRepository profileRepo;
         // Phase6-Step10-4-5: Global.ApplyProfileToSlot の直接呼び出しの置換先（Global への薄い委譲）
-        private readonly DS4Windows.Services.IProfileSlotApplier profileSlotApplier;
-        private readonly DS4Windows.DI.INotificationService notificationService;
+        private readonly DS4Windows.Processing.Abstractions.IProfileSlotApplier profileSlotApplier;
+        private readonly DS4Windows.Processing.Abstractions.INotificationService notificationService;
         private readonly ControlService controlService;
-        private readonly DS4Windows.DI.IIpcCommandProcessor ipcProcessor;   // Phase13-Step11 11-c: 旧 MainWindow.Ipc.cs の Ipc*
-        private readonly DS4Windows.DI.IRuntimeFeatureSwitch runtimeFeatures;   // Phase13-Step10 10-c: 旧 ControlService の OSC／UDP／HidHide／TouchpadSlide の転送
-        private readonly DS4Windows.DI.IServiceLifecycle lifecycle;   // Phase13-Step9: 旧 ControlService.running／suspending の転送
-        private readonly DS4Windows.DI.IProfileLoadTarget loadTarget;   // Phase13-Step6 6-e: IPC の LoadTempProfile に渡す窓口
+        private readonly DS4Windows.Processing.Abstractions.IIpcCommandProcessor ipcProcessor;   // Phase13-Step11 11-c: 旧 MainWindow.Ipc.cs の Ipc*
+        private readonly DS4Windows.Processing.Abstractions.IRuntimeFeatureSwitch runtimeFeatures;   // Phase13-Step10 10-c: 旧 ControlService の OSC／UDP／HidHide／TouchpadSlide の転送
+        private readonly DS4Windows.Processing.Abstractions.IServiceLifecycle lifecycle;   // Phase13-Step9: 旧 ControlService.running／suspending の転送
+        private readonly DS4Windows.Processing.Abstractions.IProfileLoadTarget loadTarget;   // Phase13-Step6 6-e: IPC の LoadTempProfile に渡す窓口
         private ProfileEditor editor;
         private int previousTabIndex = 0;
 #pragma warning disable CS0414 // preserveSize kept for behavior compatibility with older logic
@@ -107,28 +112,28 @@ namespace DS4WinWPF.DS4Forms
         // Phase7-Step5 W5（Q4＝A）: 旧 AppHost.GetService の 17 件を、コンストラクター引数に替えた。
         // IMainWindowFactory（実装は MainWindowFactory）が DI から解決して渡す。
         public MainWindow(ArgumentParser parser,
-            DS4Windows.DI.IProfileSettingsService profileSettingsService,
-            DS4Windows.DI.IAppSettingsService appSettingsService,
-            DS4Windows.DI.IProfileXmlStore profileXmlStore,
-            DS4Windows.DI.IEditorWindowFactory editorWindowFactory,
-            DS4Windows.DI.IPathService pathService,
-            DS4Windows.DI.IEnvironmentService environmentService,
-            DS4Windows.DI.IAppearanceSettingsService appearanceSettingsService,
-            DS4Windows.DI.IProfileApplicationService profileAppService,
-            DS4Windows.DI.IOutputSlotService outputSlotService,
-            DS4Windows.DI.IProfileRepository profileRepo,
-            DS4Windows.DI.INotificationService notificationService,
+            DS4Windows.Core.Abstractions.IProfileSettingsService profileSettingsService,
+            DS4Windows.Processing.Abstractions.IAppSettingsService appSettingsService,
+            DS4Windows.Core.Abstractions.IProfileXmlStore profileXmlStore,
+            DS4Windows.Processing.Abstractions.IEditorWindowFactory editorWindowFactory,
+            DS4Windows.Core.Abstractions.IPathService pathService,
+            DS4Windows.Core.Abstractions.IEnvironmentService environmentService,
+            DS4Windows.Core.Abstractions.IAppearanceSettingsService appearanceSettingsService,
+            DS4Windows.Processing.Abstractions.IProfileApplicationService profileAppService,
+            DS4Windows.Processing.Abstractions.IOutputSlotService outputSlotService,
+            DS4Windows.Core.Abstractions.IProfileRepository profileRepo,
+            DS4Windows.Processing.Abstractions.INotificationService notificationService,
             ControlService controlService,
-            DS4Windows.DI.IServiceLifecycle lifecycle,
-            DS4Windows.DI.IRuntimeFeatureSwitch runtimeFeatures,
-            DS4Windows.DI.IIpcCommandProcessor ipcProcessor,
-            DS4Windows.DI.IProfileLoadTarget loadTarget,
-            DS4Windows.Services.IProfileSlotApplier profileSlotApplier,
+            DS4Windows.Processing.Abstractions.IServiceLifecycle lifecycle,
+            DS4Windows.Processing.Abstractions.IRuntimeFeatureSwitch runtimeFeatures,
+            DS4Windows.Processing.Abstractions.IIpcCommandProcessor ipcProcessor,
+            DS4Windows.Processing.Abstractions.IProfileLoadTarget loadTarget,
+            DS4Windows.Processing.Abstractions.IProfileSlotApplier profileSlotApplier,
             MainWindowsViewModel mainWindowsViewModel,
-            DS4Windows.DI.ILogSettingsApplier logSettingsApplier,
+            DS4Windows.Core.Abstractions.ILogSettingsApplier logSettingsApplier,
             IAutoProfileService autoProfileService,
-            DS4Windows.DI.IViewModelFactory viewModelFactory,
-            DS4Windows.DI.IProfileIdentityService profileIdentityService)
+            DS4Windows.Processing.Abstractions.IViewModelFactory viewModelFactory,
+            DS4Windows.Core.Abstractions.IProfileIdentityService profileIdentityService)
         {
             // XAML初期化前にウィンドウサイズを設定（WindowLayoutDefaults から）
             Width = WindowLayoutDefaults.MAIN_WINDOW_WIDTH;
@@ -173,7 +178,7 @@ namespace DS4WinWPF.DS4Forms
             //logListView.ItemsSource = logvm.LogItems;
             logListView.DataContext = logvm;
             lastMsgLb.DataContext = lastLogMsg;
-            ProcessPriorityComboBox.ItemsSource = DS4Windows.Services.ProcessPriorityOptions.Classes;
+            ProcessPriorityComboBox.ItemsSource = DS4Windows.Core.Platform.ProcessPriorityOptions.Classes;
 
             profileListHolder.Refresh();
             profilesListBox.ItemsSource = profileListHolder.ProfileListCol;
@@ -406,13 +411,13 @@ namespace DS4WinWPF.DS4Forms
                 string prolog = string.Format(Properties.Resources.UsingProfile,
                     (idx + 1).ToString(), profile, $"{devitem.Device.Battery}");
                 profileAppService.ApplyProfile(idx, profile, false, true,
-                    DS4Windows.ProfileChangeSource.Manual, prolog);
+                    DS4Windows.Processing.ProfileChangeSource.Manual, prolog);
             }
         }
 
         // 構想1: 情報通知の本体。切替のきっかけは Global.Notifications のみ。outputDestination is modern toast only.
         // 1. イベント登録用のオーバーロード（購読先を INotificationService.NotificationTriggered へ変更、Phase5-Step14）
-        private void ShowSystemNotification(object sender, DS4Windows.DI.NotificationEventArgs e)
+        private void ShowSystemNotification(object sender, DS4Windows.Processing.Abstractions.NotificationEventArgs e)
         {
             ShowSystemNotification(e.Message, e.Warning);
         }
@@ -434,7 +439,7 @@ namespace DS4WinWPF.DS4Forms
                 }
                 catch (Exception ex)
                 {
-                    DS4Windows.AppLogger.LogWarn($"[Toast] ShowModernToast failed: {ex.GetType().Name}: {ex.Message}");
+                    DS4Windows.Core.Logging.AppLogger.LogWarn($"[Toast] ShowModernToast failed: {ex.GetType().Name}: {ex.Message}");
                 }
             }
         }
@@ -625,7 +630,7 @@ Suspend support not enabled.", LogOptions.UserFacing);
                                 StartStopBtn.IsEnabled = false;
                             });
 
-                            AppLogger.Log(AppLogLevel.Info, DS4WinWPF.Translations.Strings.WakeupFromSuspend, LogOptions.UserFacing);
+                            AppLogger.Log(AppLogLevel.Info, DS4Windows.Translations.Strings.WakeupFromSuspend, LogOptions.UserFacing);
                             //controlService.LogDebug($"{Thread.CurrentThread.ManagedThreadId}");
 
                             //Thread.Sleep(60000);
@@ -746,7 +751,7 @@ Suspend support not enabled.", LogOptions.UserFacing);
             // ProfileChangedNotification を基準に一元判定する。
             try
             {
-                AppLogger.LogProfileChanged(-1, message, false, DS4Windows.ProfileChangeSource.Hotkey);
+                AppLogger.LogProfileChanged(-1, message, false, DS4Windows.Processing.ProfileChangeSource.Hotkey);
             }
             catch
             {
@@ -780,7 +785,7 @@ Suspend support not enabled.", LogOptions.UserFacing);
             this.Close();
         }
 
-        private void UpdateLastStatusMessage(object sender, DS4Windows.DebugEventArgs e)
+        private void UpdateLastStatusMessage(object sender, DS4Windows.Core.Logging.DebugEventArgs e)
         {
             if (e.Temporary)
                 return;
@@ -792,7 +797,7 @@ Suspend support not enabled.", LogOptions.UserFacing);
             lastLogMsg.Warning = e.Warning;
         }
 
-        private void OnProfileChanged(object sender, DS4Windows.ProfileChangedEventArgs e)
+        private void OnProfileChanged(object sender, DS4Windows.Processing.ProfileChangedEventArgs e)
         {
             Dispatcher.BeginInvoke((Action)(() =>
             {
@@ -814,8 +819,8 @@ Suspend support not enabled.", LogOptions.UserFacing);
 
                     string prolog;
                     // If the event is from AutoProfile, use the AutoTempProfile resource
-                    if (e.Source == DS4Windows.ProfileChangeSource.AutoProfile)
-                        prolog = string.Format(DS4WinWPF.Properties.Resources.UsingAutoTempProfile, (devIndex + 1).ToString(), prof);
+                    if (e.Source == DS4Windows.Processing.ProfileChangeSource.AutoProfile)
+                        prolog = string.Format(DS4Windows.Properties.Resources.UsingAutoTempProfile, (devIndex + 1).ToString(), prof);
                     else
                         prolog = string.Format(Properties.Resources.UsingProfile, (devIndex + 1).ToString(), prof, battery);
 
@@ -827,7 +832,7 @@ Suspend support not enabled.", LogOptions.UserFacing);
 
                     // 修正後（判定をメソッド側に委譲し、シンプルに1行で呼ぶ）:
                     // 2026-10-19: 自動プロファイル由来は AutoProfileSwitchNotifyChoice と接続の有無で判定する（AutoProfileNotificationPolicy）
-                    if (DS4Windows.Services.AutoProfileNotificationPolicy.ShouldNotify(
+                    if (DS4Windows.UI.Services.AutoProfileNotificationPolicy.ShouldNotify(
                             e.Source, _autoProfileService.AutoProfileSwitchNotifyChoice, item != null))
                         ShowProfileSwitchNotification(prolog);
                 }
@@ -879,7 +884,7 @@ Suspend support not enabled.", LogOptions.UserFacing);
             }
         }
 
-        private void ControlService_HotplugControllerRecheckAutoProfile(DS4Windows.ControlService sender, DS4Windows.DS4Device device, int index)
+        private void ControlService_HotplugControllerRecheckAutoProfile(DS4Windows.Processing.ControlService sender, DS4Windows.Input.DS4Device device, int index)
         {
             if (!_autoProfileService.Running)
                 return;
@@ -888,7 +893,7 @@ Suspend support not enabled.", LogOptions.UserFacing);
             System.Threading.Tasks.Task.Run(() =>
             {
                 try { _autoProfileService.CheckProfilesForConnectedController(); }
-                catch (Exception ex) { DS4Windows.AppLogger.LogError($"[DI] CheckProfilesForConnectedController failed: {ex.Message}"); }
+                catch (Exception ex) { DS4Windows.Core.Logging.AppLogger.LogError($"[DI] CheckProfilesForConnectedController failed: {ex.Message}"); }
             });
         }
 
@@ -1103,7 +1108,7 @@ Suspend support not enabled.", LogOptions.UserFacing);
                 // ★統合抑制フラグ: バックエンドからのプロファイル変更同期中は手動適用をスキップ（無限ループ防止）
                 if (item.suppressSelectedIndexChanged)
                 {
-                    DS4Windows.AppLogger.LogDebug($"SelectProfCombo_SelectionChanged: Suppressed for device {idx}");
+                    DS4Windows.Core.Logging.AppLogger.LogDebug($"SelectProfCombo_SelectionChanged: Suppressed for device {idx}");
                     return;
                 }
 
@@ -1114,11 +1119,11 @@ Suspend support not enabled.", LogOptions.UserFacing);
                     // 既に同じプロファイルが適用されていればスキップ
                     if (profileRepo.SelectedProfile[idx] == prof)
                     {
-                        DS4Windows.AppLogger.LogDebug($"SelectProfCombo_SelectionChanged: Profile '{prof}' already applied for device {idx}, skipping");
+                        DS4Windows.Core.Logging.AppLogger.LogDebug($"SelectProfCombo_SelectionChanged: Profile '{prof}' already applied for device {idx}, skipping");
                         return;
                     }
 
-                    DS4Windows.AppLogger.LogDebug($"SelectProfCombo_SelectionChanged: Applying profile '{prof}' for device {idx}");
+                    DS4Windows.Core.Logging.AppLogger.LogDebug($"SelectProfCombo_SelectionChanged: Applying profile '{prof}' for device {idx}");
 
                     // ★共通適用窓口 ApplyProfileToSlot を呼び出す（すべての切り替え手段を統一）
                     profileSlotApplier.ApplyToSlot(idx, prof, ProfileChangeSource.Manual);
@@ -2077,7 +2082,7 @@ Suspend support not enabled.", LogOptions.UserFacing);
             {
                 MessageBox.Show(Strings.RealTimeNoAdmin);
                 selectedPriority = ProcessPriorityClass.High;
-                settingsWrapVM.ProcessPriorityIndex = DS4Windows.Services.ProcessPriorityOptions.IndexOf(ProcessPriorityClass.High);
+                settingsWrapVM.ProcessPriorityIndex = DS4Windows.Core.Platform.ProcessPriorityOptions.IndexOf(ProcessPriorityClass.High);
             }
             process.PriorityClass = selectedPriority;
         }

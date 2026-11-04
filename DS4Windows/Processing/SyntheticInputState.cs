@@ -1,7 +1,9 @@
 using System;
 using System.Threading;
+using DS4Windows.Core.Logging;
+using DS4Windows.Core.Settings;
 
-namespace DS4Windows
+namespace DS4Windows.Processing
 {
     /// <summary>
     /// Phase7-Step7 W2（Q2＝A）: 合成キー・マウス入力の状態の保持クラス（旧: <c>Mapping</c> の静的フィールド <c>globalState</c>／<c>deviceState</c>／<c>syncStateLock</c>）。
@@ -59,7 +61,7 @@ namespace DS4Windows
         /// Phase7-Step8 W1: 旧 <c>Mapping.ResetRuntimeStateForKey</c>。キー型スペシャルアクションの保存直後に、当該キーの合成キーの記録と
         /// トグル状態を全デバイスから消す（古い合成キューや押下フラグの残留を防ぐ）。ログは従来どおり。
         /// </summary>
-        public void ResetRuntimeStateForKey(ushort key, DS4Windows.Actions.IManagedActionManager actionManager)
+        public void ResetRuntimeStateForKey(ushort key, DS4Windows.Processing.Actions.IManagedActionManager actionManager)
         {
             try
             {

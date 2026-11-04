@@ -1,8 +1,8 @@
 using System;
 using System.Collections.Generic;
-using DS4Windows.DI;
+using DS4Windows.Processing.Abstractions;
 
-namespace DS4Windows.Services
+namespace DS4Windows.Output.Services
 {
     /// <summary>Phase9 9-E E-1: <see cref="IOscTransportFactory"/> の実装（DI の Singleton。状態は持たない）。SharpOSC の通信を作る。</summary>
     public sealed class SharpOscTransportFactory : IOscTransportFactory

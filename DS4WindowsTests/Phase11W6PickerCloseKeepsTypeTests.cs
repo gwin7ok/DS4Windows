@@ -40,7 +40,7 @@ namespace DS4WindowsTests
             string code = Normalized("DS4Windows/UI/AssignmentEditor.xaml.cs");
             if (code == null) return;
 
-            Assert.Contains("bool wasDefault = pressKeyVM.SelectedActionType == DS4Windows.DS4ControlSettings.ActionType.Default; controlWindow.ShowDialog();", code);
+            Assert.Contains("bool wasDefault = pressKeyVM.SelectedActionType == DS4Windows.Core.Settings.DS4ControlSettings.ActionType.Default; controlWindow.ShowDialog();", code);
             Assert.Contains("ActionType.Default && (!wasDefault || controlWindow.DefaultPicked)) { actionTypeCombo.SelectedIndex = specialActVM.TypeCatalog.DefaultIndex;", code);
         }
 

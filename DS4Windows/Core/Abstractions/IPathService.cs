@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace DS4Windows.DI
+namespace DS4Windows.Core.Abstractions
 {
     public interface IPathService
     {

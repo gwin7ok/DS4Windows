@@ -1,6 +1,5 @@
 ﻿using Xunit;
-using DS4Windows;
-using DS4Windows.DI;
+using DS4Windows.Core.Platform;
 
 namespace DS4WindowsTests
 {
@@ -17,7 +16,7 @@ namespace DS4WindowsTests
         {
             var service = new EnvironmentService();
 
-            Assert.Equal(DS4Windows.PathService.ExecutableVersionState, service.ApplicationVersion);
+            Assert.Equal(DS4Windows.Core.Platform.PathService.ExecutableVersionState, service.ApplicationVersion);
         }
 
         [Fact]

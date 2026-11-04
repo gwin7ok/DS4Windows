@@ -1,6 +1,7 @@
 using System;
+using DS4Windows.Input;
 
-namespace DS4Windows.DI
+namespace DS4Windows.Processing.Abstractions
 {
     /// <summary>
     /// Phase9 9-E E-5（Phase9-E5-Plan.md）: いま押されている（倒されている）入力を 1 つ探す。プロファイル編集画面の「どのボタンを押した?」が使う。

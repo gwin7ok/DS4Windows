@@ -17,7 +17,6 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
 
 using System;
-using DS4Windows;
 using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
@@ -26,7 +25,7 @@ using System.Reflection;
 using System.Windows;
 using System.Windows.Input;
 
-namespace DS4WinWPF.DS4Forms
+namespace DS4Windows.UI
 {
     public class LanguageInfo
     {

@@ -1,4 +1,6 @@
-namespace DS4Windows.DI
+using DS4Windows.Core.Settings;
+
+namespace DS4Windows.Processing.Abstractions
 {
     /// <summary>
     /// Phase9 9-A(1) (d)（Phase9-A1-Plan.md §6）: トリガー 1 本のデッドゾーンの補正（デッドゾーン、アンチデッドゾーン、最大ゾーン、最大出力）。

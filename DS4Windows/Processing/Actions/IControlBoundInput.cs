@@ -1,4 +1,4 @@
-namespace DS4Windows.Actions
+namespace DS4Windows.Processing.Actions
 {
     /// <summary>
     /// Phase10-Step6 W8 相当: Controls タブの束縛（ボタン 1 つの割り当て）の入力アクションの印。<see cref="TriggerDispatchEngine"/> は、この印を持つ入力の束縛を、

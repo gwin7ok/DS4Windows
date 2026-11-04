@@ -1,7 +1,8 @@
 using System;
-using DS4Windows.DI;
+using DS4Windows.Core.Abstractions;
+using DS4Windows.Processing.Abstractions;
 
-namespace DS4Windows.Services
+namespace DS4Windows.Processing.Services
 {
     /// <summary>
     /// Phase9 9-E E-6a（Phase9-E6-Plan.md）: <see cref="IConnectionProfileSelector"/> の実装（DI の Singleton。状態なし）。
@@ -34,7 +35,7 @@ namespace DS4Windows.Services
             // 有効なシリアルがない（MAC が使えない）ときは、従来のスロット単位。
             string connectedMac = isValidSerial ? macAddress : null;
 
-            DS4Windows.AppLogger.LogDebug($"PrepareConnectedInputController: device={index}, useAutoProfile={useAutoProfile}, isFirstConnection={_deviceStateService.IsFirstConnection(index, connectedMac)}");
+            DS4Windows.Core.Logging.AppLogger.LogDebug($"PrepareConnectedInputController: device={index}, useAutoProfile={useAutoProfile}, isFirstConnection={_deviceStateService.IsFirstConnection(index, connectedMac)}");
 
             if (!useAutoProfile)
             {
@@ -44,19 +45,19 @@ namespace DS4Windows.Services
                 if (_deviceStateService.IsFirstConnection(index, connectedMac))
                 {
                     // 初回接続: LinkedProfiles.xmlまたはOlderProfilePathからプロファイルを選択
-                    DS4Windows.AppLogger.LogDebug($"FIRST CONNECTION detected for device {index}");
+                    DS4Windows.Core.Logging.AppLogger.LogDebug($"FIRST CONNECTION detected for device {index}");
 
                     if (isValidSerial && _profileRepository.ContainsLinkedProfile(macAddress))
                     {
                         // Linked登録済み → Linkedを適用
                         profileToApply = _profileRepository.GetLinkedProfile(macAddress);
-                        DS4Windows.AppLogger.LogDebug($"Using LINKED profile: '{profileToApply}' for device {index}");
+                        DS4Windows.Core.Logging.AppLogger.LogDebug($"Using LINKED profile: '{profileToApply}' for device {index}");
                     }
                     else
                     {
                         // Linked未登録 → OlderProfilePathを使用
                         profileToApply = _profileRepository.OlderProfilePath[index];
-                        DS4Windows.AppLogger.LogDebug($"Using OLDER profile: '{profileToApply}' for device {index}");
+                        DS4Windows.Core.Logging.AppLogger.LogDebug($"Using OLDER profile: '{profileToApply}' for device {index}");
                     }
 
                     _deviceStateService.MarkConnected(index, connectedMac); // 初回接続完了マーク
@@ -67,7 +68,7 @@ namespace DS4Windows.Services
                     profileToApply = _deviceStateService.GetRememberedProfile(connectedMac);
                     if (string.IsNullOrWhiteSpace(profileToApply))
                         profileToApply = _profileRepository.SelectedProfile[index];
-                    DS4Windows.AppLogger.LogDebug($"RECONNECTION detected for device {index}, using existing profile: '{profileToApply}'");
+                    DS4Windows.Core.Logging.AppLogger.LogDebug($"RECONNECTION detected for device {index}, using existing profile: '{profileToApply}'");
                 }
 
                 // ===== 共通処理: プロファイル設定とUI状態の更新 =====
@@ -88,9 +89,9 @@ namespace DS4Windows.Services
                 }
 
                 // プロファイル適用（Phase5-Step14 フェーズD: 共通窓口 Global.ApplyProfileToSlot 経由に統一。契機5統合）
-                DS4Windows.AppLogger.LogDebug($"PrepareConnectedInputController: About to call ApplyProfileToSlot with '{profileToApply}'");
+                DS4Windows.Core.Logging.AppLogger.LogDebug($"PrepareConnectedInputController: About to call ApplyProfileToSlot with '{profileToApply}'");
                 profileLoaded = _profileSlotApplier.ApplyToSlot(index, profileToApply, ProfileChangeSource.ControlService);
-                DS4Windows.AppLogger.LogDebug($"PrepareConnectedInputController: ApplyProfileToSlot returned {profileLoaded}");
+                DS4Windows.Core.Logging.AppLogger.LogDebug($"PrepareConnectedInputController: ApplyProfileToSlot returned {profileLoaded}");
             }
             else
             {

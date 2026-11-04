@@ -1,9 +1,9 @@
 using System.Collections.Generic;
 using System.Linq;
-using DS4Windows;
-using DS4WinWPF.DS4Forms.ViewModels.Util;
+using DS4Windows.Processing;
+using DS4Windows.UI.ViewModels.Util;
 
-namespace DS4WinWPF.DS4Forms.ViewModels
+namespace DS4Windows.UI.ViewModels
 {
     /// <summary>
     /// Phase10-Step2 W1（Phase10-Step2-Plan.md §3.1）: 共通の編集画面の ViewModel の土台。名前・トリガー・種別の添字と、その検証を持つ。

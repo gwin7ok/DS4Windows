@@ -1,4 +1,6 @@
-namespace DS4Windows.Actions
+using DS4Windows.Output.Devices;
+
+namespace DS4Windows.Processing.Actions
 {
     /// <summary>
     /// Phase8-Step7 7.8a（Phase8-Step7-8a-Plan.md W2。Q9＝A）: Button の出力が受け取る「解釈済みの値」。

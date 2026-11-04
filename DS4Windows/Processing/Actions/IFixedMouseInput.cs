@@ -1,4 +1,4 @@
-namespace DS4Windows.Actions
+namespace DS4Windows.Processing.Actions
 {
     /// <summary>
     /// Phase10-Step6 後の Step5（SA 側のアナログ出力）: SA のマウス移動（強さの固定値）が、マウスの移動量を借りる窓口。

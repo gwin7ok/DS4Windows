@@ -2,9 +2,10 @@ using System;
 using System.Diagnostics;
 using System.Linq;
 using System.Reflection;
-using DS4Windows;
 using Xunit;
 using Xunit.Abstractions;
+using DS4Windows.Input;
+using DS4Windows.Processing;
 
 namespace DS4WindowsTests
 {
@@ -48,12 +49,12 @@ namespace DS4WindowsTests
                 return;
             }
 
-            DS4WinWPF.AppHost.CreateHost();
+            DS4Windows.Composition.AppHost.CreateHost();
             // before（5b-a）は ControlService.On_Report のデリゲート。after（5b-c 以降）は IInputReportProcessor.OnReport のデリゲート
             TestHost.GetService<ControlService>();   // TempStates／PreviousStates は ControlService のコンストラクターが作る（本番では起動時に必ず構築される）
-            var processor = TestHost.GetService<DS4Windows.DI.IInputReportProcessor>();
+            var processor = TestHost.GetService<DS4Windows.Processing.Abstractions.IInputReportProcessor>();
             var onReport = (Action<DS4Device, EventArgs, int>)Delegate.CreateDelegate(
-                typeof(Action<DS4Device, EventArgs, int>), processor, typeof(DS4Windows.DI.IInputReportProcessor).GetMethod("OnReport"));
+                typeof(Action<DS4Device, EventArgs, int>), processor, typeof(DS4Windows.Processing.Abstractions.IInputReportProcessor).GetMethod("OnReport"));
 
             TestDs4Device d = TestDs4Device.Create();
             var cState = new DS4State { LX = 130, LY = 120 };

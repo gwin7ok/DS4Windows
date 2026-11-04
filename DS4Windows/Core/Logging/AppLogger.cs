@@ -18,8 +18,12 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 using System;
 using NLog;
+using DS4Windows.Core.Platform;
+using DS4Windows.Core.Settings;
+using DS4Windows.Processing;
+using DS4Windows.UI.Services;
 
-namespace DS4Windows
+namespace DS4Windows.Core.Logging
 {
     public class AppLogger
     {
@@ -94,9 +98,9 @@ namespace DS4Windows
         // Phase7-Step5 W3（Q7＝A）: 旧 Global.NotificationServiceInstance。静的なロガーは注入できないため、App が起動時に
         // DI のシングルトンを設定する。設定前（ホスト構築より前、テスト）は、BackingStore を使う既定の実装に退避する
         // （旧: コンテナが無いときのフォールバック）。
-        private static DS4Windows.DI.INotificationService _notificationService;
+        private static DS4Windows.Processing.Abstractions.INotificationService _notificationService;
 
-        public static DS4Windows.DI.INotificationService NotificationService
+        public static DS4Windows.Processing.Abstractions.INotificationService NotificationService
         {
             get => _notificationService ?? (_notificationService = new AppNotificationService(new BackingStore(new EnvironmentService())));
             set => _notificationService = value;

@@ -23,10 +23,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
-using DS4Windows;
-using DS4WinWPF.DS4Control;
+using DS4Windows.Output;
 
-namespace DS4WinWPF.DS4Forms.ViewModels
+namespace DS4Windows.UI.ViewModels
 {
     public class CurrentOutDeviceViewModel
     {
@@ -102,15 +101,15 @@ namespace DS4WinWPF.DS4Forms.ViewModels
         }
         public event EventHandler UnpluginEnabledChanged;
 
-        private DS4Windows.OutputSlotManager outSlotManager;
+        private DS4Windows.Output.OutputSlotManager outSlotManager;
         private List<SlotDeviceEntry> slotDeviceEntries;
 
         public List<SlotDeviceEntry> SlotDeviceEntries { get => slotDeviceEntries; }
 
         // Phase6-Step10-5: ControlService の直接呼び出しを廃止し、抜き差しの正式な入口（IOutputSlotService）を使う
-        private readonly DS4Windows.DI.IOutputSlotService outputSlotService;
+        private readonly DS4Windows.Processing.Abstractions.IOutputSlotService outputSlotService;
 
-        public CurrentOutDeviceViewModel(DS4Windows.DI.IOutputSlotService outputSlotService,
+        public CurrentOutDeviceViewModel(DS4Windows.Processing.Abstractions.IOutputSlotService outputSlotService,
             OutputSlotManager outputMan)
         {
             outSlotManager = outputMan;

@@ -22,7 +22,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace DS4Windows.InputDevices
+namespace DS4Windows.Input.Devices
 {
     public enum TriggerEffects : ushort
     {

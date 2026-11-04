@@ -1,6 +1,6 @@
 using System.Collections.Generic;
 
-namespace DS4Windows.Actions
+namespace DS4Windows.Processing.Actions
 {
     // Phase8-Step4 W1 で改訂した（旧: Register／Unregister／GetBindingsForDevice。実装がなく、呼び出し元は 0 件だった）。
     // 実装は ActionBindingRegistry。束縛の組み立てと Replace の呼び出し（プロファイルの読込・適用の完了後）は Step5、切断時の Clear は Step6。

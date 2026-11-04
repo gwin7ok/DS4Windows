@@ -1,9 +1,7 @@
 ﻿using System;
 using Xunit;
-using DS4Windows;
-using DS4Windows.DI;
-using DS4Windows.Services;
-using DS4WinWPF;
+using DS4Windows.Core.Abstractions;
+using DS4Windows.Processing.Abstractions;
 
 namespace DS4WindowsTests
 {
@@ -12,15 +10,15 @@ namespace DS4WindowsTests
         [Fact]
         public void AppHost_CreateHost_ShouldBuildHost()
         {
-            var host = DS4WinWPF.AppHost.CreateHost();
+            var host = DS4Windows.Composition.AppHost.CreateHost();
             Assert.NotNull(host);
-            Assert.NotNull(DS4WinWPF.AppHost.Host);
+            Assert.NotNull(DS4Windows.Composition.AppHost.Host);
         }
 
         [Fact]
         public void AppHost_AllServices_ShouldResolveSuccessfully()
         {
-            DS4WinWPF.AppHost.CreateHost();
+            DS4Windows.Composition.AppHost.CreateHost();
 
             // 第4層 4-c 設定・永続化・環境・通知サービス
             Assert.NotNull(TestHost.GetService<IProfileSettingsService>());
@@ -43,7 +41,7 @@ namespace DS4WindowsTests
         [Fact]
         public void AppHost_Singletons_ShouldReturnSameInstance()
         {
-            DS4WinWPF.AppHost.CreateHost();
+            DS4Windows.Composition.AppHost.CreateHost();
 
             var instance1 = TestHost.GetService<IProfileSettingsService>();
             var instance2 = TestHost.GetService<IProfileSettingsService>();

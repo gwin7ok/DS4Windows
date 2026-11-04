@@ -1,7 +1,9 @@
 using System;
-using DS4Windows.DI;
+using DS4Windows.Core.Abstractions;
+using DS4Windows.Core.Settings;
+using DS4Windows.Processing.Abstractions;
 
-namespace DS4Windows.Services
+namespace DS4Windows.Core.Persistence
 {
     /// <summary>
     /// <see cref="IProfilePresetLoader"/> の実装。プリセットを読み込み、既定のスペシャルアクションの作成、エクストラ情報のキャッシュ更新、

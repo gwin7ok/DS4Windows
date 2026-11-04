@@ -1,12 +1,11 @@
-using DS4Windows.Services;
 using System;
 using System.Diagnostics;
 using System.Linq;
 using System.Collections.Generic;
-using DS4Windows.DS4Control;
-using DS4Windows.Actions;
+using DS4Windows.Core.Logging;
+using DS4Windows.Core.Settings;
 
-namespace DS4Windows
+namespace DS4Windows.Processing.Actions
 {
 
     internal class ActionEntry

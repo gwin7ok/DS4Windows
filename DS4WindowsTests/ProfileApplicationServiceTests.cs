@@ -1,10 +1,9 @@
 using System;
 using System.Collections.Generic;
 using Xunit;
-using DS4Windows;
-using DS4Windows.Actions;
-using DS4Windows.DI;
-using DS4Windows.Services;
+using DS4Windows.Processing;
+using DS4Windows.Processing.Abstractions;
+using DS4Windows.Processing.Actions;
 
 namespace DS4WindowsTests
 {

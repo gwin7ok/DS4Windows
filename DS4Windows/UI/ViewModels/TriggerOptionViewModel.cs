@@ -2,7 +2,7 @@ using System;
 using System.ComponentModel;
 using System.Linq;
 
-namespace DS4WinWPF.DS4Forms.ViewModels
+namespace DS4Windows.UI.ViewModels
 {
     /// <summary>
     /// Phase10-Step2 W2（Phase10-Step2-Plan.md §3.2）: トリガーの一覧の 1 行（チェックボックス 1 つ）の ViewModel。チェックの状態は、

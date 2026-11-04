@@ -31,10 +31,10 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 using System.Windows.Threading;
+using DS4Windows.Input;
 using NonFormTimer = System.Timers.Timer;
-using DS4Windows;
 
-namespace DS4WinWPF.DS4Forms
+namespace DS4Windows.UI
 {
     /// <summary>
     /// Interaction logic for ControllerReadingsControl.xaml
@@ -230,7 +230,7 @@ namespace DS4WinWPF.DS4Forms
 
         // Phase6-Step10-2-5: XAML から生成されるため、ControlService は Initialize で受け取る（AppHost/Program.rootHub の後退を廃止）。
         // Initialize の前は null（null の間は、ControlService を使う処理をすべてスキップする既存の null 検査が働く）。
-        private DS4Windows.ControlService controlService;
+        private DS4Windows.Processing.ControlService controlService;
 
         /// <summary>現在のテーマの文字色（テーマの ForegroundColor。見つからなければ SystemColors.WindowTextColor）。</summary>
         private static Color ThemeForegroundColor()
@@ -239,7 +239,7 @@ namespace DS4WinWPF.DS4Forms
                 ?? SystemColors.WindowTextColor;
         }
 
-        public void Initialize(DS4Windows.ControlService controlService)
+        public void Initialize(DS4Windows.Processing.ControlService controlService)
         {
             this.controlService = controlService ?? throw new ArgumentNullException(nameof(controlService));
         }

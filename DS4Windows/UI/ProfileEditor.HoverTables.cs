@@ -16,20 +16,17 @@ using System.Windows.Navigation;
 using System.Windows.Shapes;
 using System.Windows.Controls.Primitives;
 using NonFormTimer = System.Timers.Timer;
-using DS4WinWPF.DS4Forms.ViewModels;
-using DS4Windows;
-using DS4Windows.DI;
 using System.ComponentModel;
 using System.Windows.Forms;
+using DS4Windows.Input;
 using Application = System.Windows.Application;
 using Button = System.Windows.Controls.Button;
 using MessageBox = System.Windows.MessageBox;
 using MouseEventArgs = System.Windows.Input.MouseEventArgs;
 using OpenFileDialog = Microsoft.Win32.OpenFileDialog;
 using UserControl = System.Windows.Controls.UserControl;
-using DS4Windows.Actions;
 
-namespace DS4WinWPF.DS4Forms
+namespace DS4Windows.UI
 {
     /// <summary>
     /// Phase8-Step4b W10（Phase8-Step4b-Plan.md §3.4、Q7＝A）: プロファイル編集画面のホバー表示用の表（ボタンごとの画像・位置・割り当て一覧の番号）を組み立てる関数。

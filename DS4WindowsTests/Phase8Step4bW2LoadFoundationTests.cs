@@ -1,9 +1,10 @@
 ﻿using System;
 using System.IO;
 using System.Xml;
-using DS4Windows;
-using DS4Windows.Services;
 using Xunit;
+using DS4Windows.Core.Persistence;
+using DS4Windows.Core.Persistence.ProfileSections;
+using DS4Windows.Core.Settings;
 
 namespace DS4WindowsTests
 {
@@ -23,7 +24,7 @@ namespace DS4WindowsTests
         }
 
         // 節の型は internal（Q3＝A）で、テストのアセンブリからは直接見えないため、リフレクションで検査する
-        private static readonly Type ContextType = typeof(LegacyProfileXmlSerializer).Assembly.GetType("DS4Windows.Services.ProfileLoadContext", true);
+        private static readonly Type ContextType = typeof(LegacyProfileXmlSerializer).Assembly.GetType("DS4Windows.Core.Persistence.ProfileSections.ProfileLoadContext", true);
 
         [Fact]
         public void Context_StartsWithoutAMissingSetting_AndRejectsNullCollaborators()

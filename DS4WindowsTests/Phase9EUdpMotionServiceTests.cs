@@ -3,10 +3,12 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Net.Sockets;
 using System.Reflection;
-using DS4Windows;
-using DS4Windows.DI;
-using DS4Windows.Services;
 using Xunit;
+using DS4Windows.Core.Logging;
+using DS4Windows.Input;
+using DS4Windows.Output.Services;
+using DS4Windows.Processing.Abstractions;
+using DS4Windows.Processing.Services;
 
 namespace DS4WindowsTests
 {
@@ -24,11 +26,11 @@ namespace DS4WindowsTests
         {
             public readonly IAppSettingsService Settings = TestHost.GetService<IAppSettingsService>();
             public readonly FakeUdpMotionServerFactory Factory = new FakeUdpMotionServerFactory();
-            public readonly DS4Windows.Services.DeviceSlotState Host = NewSlots();
+            public readonly DS4Windows.Processing.Services.DeviceSlotState Host = NewSlots();
 
-            private static DS4Windows.Services.DeviceSlotState NewSlots()
+            private static DS4Windows.Processing.Services.DeviceSlotState NewSlots()
             {
-                var slots = new DS4Windows.Services.DeviceSlotState();
+                var slots = new DS4Windows.Processing.Services.DeviceSlotState();
                 for (int i = 0; i < slots.CurrentStates.Length; i++)
                 {
                     slots.CurrentStates[i] = new DS4State();
@@ -39,7 +41,7 @@ namespace DS4WindowsTests
             public readonly FakeEventThreadDispatcher Events = new FakeEventThreadDispatcher();
             public readonly UdpMotionService Service;
             public readonly List<(string Text, bool Warning)> Logs = new List<(string, bool)>();
-            private System.EventHandler<DS4Windows.DebugEventArgs> _sink;
+            private System.EventHandler<DS4Windows.Core.Logging.DebugEventArgs> _sink;
             private readonly int _savedPort;
             private readonly string _savedAddress;
             private readonly bool _savedSmoothing;
@@ -287,7 +289,7 @@ namespace DS4WindowsTests
             IAppSettingsService settings = TestHost.GetService<IAppSettingsService>();
             IDs4DeviceRegistry registry = TestHost.GetService<IDs4DeviceRegistry>();
             var factory = new FakeUdpMotionServerFactory();
-            IDeviceSlotState host = new DS4Windows.Services.DeviceSlotState();
+            IDeviceSlotState host = new DS4Windows.Processing.Services.DeviceSlotState();
             IEventThreadDispatcher events = new FakeEventThreadDispatcher();
             Assert.Throws<ArgumentNullException>(() => new UdpMotionService(null, registry, factory, host, events));
             Assert.Throws<ArgumentNullException>(() => new UdpMotionService(settings, null, factory, host, events));

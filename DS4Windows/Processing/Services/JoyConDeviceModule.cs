@@ -1,7 +1,9 @@
 using System.Collections.Generic;
-using DS4Windows.InputDevices;
+using DS4Windows.Core.Settings;
+using DS4Windows.Input;
+using DS4Windows.Input.Devices;
 
-namespace DS4Windows.Services
+namespace DS4Windows.Processing.Services
 {
     /// <summary>
     /// Phase9 9-E E-6c: Joy-Con（L／R／Grip）の部品。設定の有効／無効、追加ボタン、結合（Joined）の初期値。
@@ -35,7 +37,7 @@ namespace DS4Windows.Services
                 if (DecideJoin(device.DeviceType, options.JoyConDeviceOpts.LinkedMode, options.JoyConDeviceOpts.JoinGyroProv,
                     out bool primaryDevice, out bool outputMapGyro))
                 {
-                    InputDevices.JoyConDevice tempJoyDev = device as InputDevices.JoyConDevice;
+                    DS4Windows.Input.Devices.JoyConDevice tempJoyDev = device as DS4Windows.Input.Devices.JoyConDevice;
                     tempJoyDev.PerformStateMerge = true;
                     tempJoyDev.PrimaryDevice = primaryDevice;
                     tempJoyDev.OutputMapGyro = outputMapGyro;

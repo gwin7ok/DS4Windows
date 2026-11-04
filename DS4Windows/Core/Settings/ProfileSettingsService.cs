@@ -1,14 +1,18 @@
-using DS4Windows.Services;
 using System;
 using System.Collections.Generic;
 using System.Globalization;
-using DS4Windows.DI;
-using DS4Windows.DS4Control;
-using DS4Windows.InputDevices;
-using DS4WinWPF.DS4Control;
-using static DS4Windows.Mouse;
+using static DS4Windows.Processing.Mouse;
+using DS4Windows.Core.Abstractions;
+using DS4Windows.Core.Logging;
+using DS4Windows.Input;
+using DS4Windows.Input.Devices;
+using DS4Windows.Output;
+using DS4Windows.Output.Devices;
+using DS4Windows.Output.Kbm;
+using DS4Windows.Processing;
+using DS4Windows.Processing.Abstractions;
 
-namespace DS4Windows
+namespace DS4Windows.Core.Settings
 {
     public class ProfileSettingsService : IProfileSettingsService
     {
@@ -49,7 +53,7 @@ namespace DS4Windows
         private ProfileSlotNames _tempProfileName = new ProfileSlotNames(TEST_PROFILE_ITEM_COUNT);
 
         /// <summary>Phase10-Step4d W5c: 登録簿を結ぶ（DI の登録が、登録簿を作るときに呼ぶ。BackingStore のスロットの保管と同じ）。</summary>
-        public void AttachProfileIdentity(DS4Windows.DI.IProfileIdentityService identity) => _tempProfileName.AttachIdentity(identity);
+        public void AttachProfileIdentity(DS4Windows.Core.Abstractions.IProfileIdentityService identity) => _tempProfileName.AttachIdentity(identity);
         private bool[] _tempProfileDistance = new bool[TEST_PROFILE_ITEM_COUNT] { false, false, false, false, false, false, false, false, false };
         private bool[] _useDInputOnly = new bool[TEST_PROFILE_ITEM_COUNT] { true, true, true, true, true, true, true, true, true };
         private bool[] _linkedProfileCheck = new bool[MAX_DS4_CONTROLLER_COUNT] { false, false, false, false, false, false, false, false };

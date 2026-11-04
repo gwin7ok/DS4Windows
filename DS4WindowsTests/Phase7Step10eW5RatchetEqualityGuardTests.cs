@@ -6,6 +6,7 @@ using System.Reflection;
 using System.Text.RegularExpressions;
 using Xunit;
 using Xunit.Abstractions;
+using DS4Windows.Composition;
 
 namespace DS4WindowsTests
 {

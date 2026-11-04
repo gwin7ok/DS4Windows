@@ -1,4 +1,3 @@
-using DS4Windows.Services;
 /*
 DS4Windows
 Copyright (C) 2023  Travis Nickles
@@ -17,7 +16,7 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
 
-namespace DS4Windows.DS4Control
+namespace DS4Windows.Output.Kbm
 {
     public abstract class VirtualKBMMapping
     {

@@ -75,8 +75,8 @@ namespace DS4WindowsTests
             string text = Read("DS4Windows/App.xaml.cs");
             if (text == null) return;
 
-            Assert.Matches(@"private\s+volatile\s+DS4Windows\.ControlService\s+_controlService\s*;", text);
-            Assert.Matches(@"_controlService\s*=\s*ResolvePostHostService<DS4Windows\.ControlService>\(\)", text);
+            Assert.Matches(@"private\s+volatile\s+DS4Windows\.Processing\.ControlService\s+_controlService\s*;", text);
+            Assert.Matches(@"_controlService\s*=\s*ResolvePostHostService<DS4Windows\.Processing\.ControlService>\(\)", text);
         }
 
         [Fact]

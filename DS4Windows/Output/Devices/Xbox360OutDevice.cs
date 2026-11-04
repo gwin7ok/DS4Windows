@@ -25,8 +25,9 @@ using System.Threading.Tasks;
 using Nefarius.ViGEm.Client;
 using Nefarius.ViGEm.Client.Targets;
 using Nefarius.ViGEm.Client.Targets.Xbox360;
+using DS4Windows.Input;
 
-namespace DS4Windows
+namespace DS4Windows.Output.Devices
 {
     public class Xbox360OutDevice : OutputDevice
     {

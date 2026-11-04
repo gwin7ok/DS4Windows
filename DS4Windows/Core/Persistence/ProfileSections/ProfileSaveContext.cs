@@ -1,7 +1,8 @@
 ﻿using System;
 using System.Xml;
+using DS4Windows.Core.Settings;
 
-namespace DS4Windows.Services
+namespace DS4Windows.Core.Persistence.ProfileSections
 {
     /// <summary>
     /// Phase8-Step4b W6（Phase8-Step4b-Plan.md §3.3、Q4＝A）: プロファイル 1 回分の保存で、節が共有する状態。

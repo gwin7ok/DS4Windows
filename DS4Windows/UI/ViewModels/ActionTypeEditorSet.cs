@@ -1,9 +1,10 @@
 using System;
 using System.Collections.Generic;
-using DS4Windows;
-using DS4WinWPF.DS4Forms.ViewModels.SpecialActions;
+using DS4Windows.Core.Settings;
+using DS4Windows.Processing;
+using DS4Windows.UI.ViewModels.SpecialActions;
 
-namespace DS4WinWPF.DS4Forms.ViewModels
+namespace DS4Windows.UI.ViewModels
 {
     /// <summary>
     /// Phase10-Step2 W1（Phase10-Step2-Plan.md §3.1）: 種別ごとの入力（<see cref="IActionTypeEditor"/>）の一式。種別（<c>ActionTypeId</c>）から、
