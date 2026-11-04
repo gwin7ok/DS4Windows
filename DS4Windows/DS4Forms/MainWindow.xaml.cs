@@ -87,6 +87,7 @@ namespace DS4WinWPF.DS4Forms
         private readonly DS4Windows.Services.IProfileSlotApplier profileSlotApplier;
         private readonly DS4Windows.DI.INotificationService notificationService;
         private readonly ControlService controlService;
+        private readonly DS4Windows.DI.IRuntimeFeatureSwitch runtimeFeatures;   // Phase13-Step10 10-c: 旧 ControlService の OSC／UDP／HidHide／TouchpadSlide の転送
         private readonly DS4Windows.DI.IServiceLifecycle lifecycle;   // Phase13-Step9: 旧 ControlService.running／suspending の転送
         private readonly DS4Windows.DI.IProfileLoadTarget loadTarget;   // Phase13-Step6 6-e: IPC の LoadTempProfile に渡す窓口
         private ProfileEditor editor;
@@ -118,6 +119,7 @@ namespace DS4WinWPF.DS4Forms
             DS4Windows.DI.INotificationService notificationService,
             ControlService controlService,
             DS4Windows.DI.IServiceLifecycle lifecycle,
+            DS4Windows.DI.IRuntimeFeatureSwitch runtimeFeatures,
             DS4Windows.DI.IProfileLoadTarget loadTarget,
             DS4Windows.Services.IProfileSlotApplier profileSlotApplier,
             MainWindowsViewModel mainWindowsViewModel,
@@ -145,6 +147,7 @@ namespace DS4WinWPF.DS4Forms
             this.notificationService = notificationService ?? throw new ArgumentNullException(nameof(notificationService));
             this.controlService = controlService ?? throw new ArgumentNullException(nameof(controlService));
             this.lifecycle = lifecycle ?? throw new ArgumentNullException(nameof(lifecycle));
+            this.runtimeFeatures = runtimeFeatures ?? throw new ArgumentNullException(nameof(runtimeFeatures));
             this.loadTarget = loadTarget ?? throw new ArgumentNullException(nameof(loadTarget));
             this.profileSlotApplier = profileSlotApplier ?? throw new ArgumentNullException(nameof(profileSlotApplier));
 
@@ -692,7 +695,7 @@ Suspend support not enabled.", true);
                 foreach (CompositeDeviceModel item in conLvViewModel.ControllerCol)
                 //for (int i = 0; i < 4; i++)
                 {
-                    string slide = controlService.TouchpadSlide(item.DevIndex);
+                    string slide = runtimeFeatures.TouchpadSlide(item.DevIndex);
                     if (slide == "left")
                     {
                         //int ind = i;
@@ -1320,7 +1323,7 @@ Suspend support not enabled.", true);
                 hotplugCounter = 0;
             }
 
-            controlService.UpdateHidHiddenAttributes();
+            runtimeFeatures.UpdateHidHiddenAttributes();
             while (loopHotplug == true)
             {
                 Thread.Sleep(HOTPLUG_CHECK_DELAY);
@@ -1395,13 +1398,13 @@ Suspend support not enabled.", true);
         private void UseOscServerCk_Click(object sender, RoutedEventArgs e)
         {
             bool status = useOscServerCk.IsChecked == true;
-            controlService.ChangeOSCListenerStatus(status);
+            runtimeFeatures.ChangeOscListenerStatus(status);
         }
 
         private void UseOscSenderCk_Click(object sender, RoutedEventArgs e)
         {
             bool status = useOscSenderCk.IsChecked == true;
-            controlService.ChangeOSCSenderStatus(status);
+            runtimeFeatures.ChangeOscSenderStatus(status);
         }
 
         private async void UseUdpServerCk_Click(object sender, RoutedEventArgs e)
@@ -1409,18 +1412,18 @@ Suspend support not enabled.", true);
             bool status = useUdpServerCk.IsChecked == true;
             if (!status)
             {
-                controlService.ChangeMotionEventStatus(status);
+                runtimeFeatures.ChangeMotionEventStatus(status);
                 await Task.Delay(200).ContinueWith((t) =>
                 {
-                    controlService.ChangeUDPStatus(status);
+                    runtimeFeatures.ChangeUdpStatus(status);
                 });
             }
             else
             {
-                controlService.ChangeUDPStatus(status);
+                runtimeFeatures.ChangeUdpStatus(status);
                 await Task.Delay(200).ContinueWith((t) =>
                 {
-                    controlService.ChangeMotionEventStatus(status);
+                    runtimeFeatures.ChangeMotionEventStatus(status);
                 });
             }
         }

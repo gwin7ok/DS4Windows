@@ -31,6 +31,7 @@ namespace DS4Windows.Services
         private readonly IViewModelFactory _viewModelFactory;
         private readonly IProfileIdentityService _profileIdentityService;
         private readonly ControlService _controlService;
+        private readonly IRuntimeFeatureSwitch _runtimeFeatures;   // Phase13-Step10 10-c: OSC／UDP／HidHide／タッチパッドの切り替えの窓口
         private readonly IServiceLifecycle _lifecycle;   // Phase13-Step9: MainWindow が running／suspending を直接読み書きする
         private readonly IProfileLoadTarget _loadTarget;   // Phase13-Step6 6-e: IPC の LoadTempProfile に渡す窓口
         private readonly IAutoProfileService _autoProfileService;   // Phase13-Step8 8-c: 旧 遅延取得デリゲート。画面の生成時（設定の場所の確定後）に解決される
@@ -54,6 +55,7 @@ namespace DS4Windows.Services
             IProfileIdentityService profileIdentityService,
             ControlService controlService,
             IServiceLifecycle lifecycle,
+            IRuntimeFeatureSwitch runtimeFeatures,
             IProfileLoadTarget loadTarget,
             IAutoProfileService autoProfileService)
         {
@@ -75,6 +77,7 @@ namespace DS4Windows.Services
             _profileIdentityService = profileIdentityService ?? throw new ArgumentNullException(nameof(profileIdentityService));
             _controlService = controlService ?? throw new ArgumentNullException(nameof(controlService));
             _lifecycle = lifecycle ?? throw new ArgumentNullException(nameof(lifecycle));
+            _runtimeFeatures = runtimeFeatures ?? throw new ArgumentNullException(nameof(runtimeFeatures));
             _loadTarget = loadTarget ?? throw new ArgumentNullException(nameof(loadTarget));
             _autoProfileService = autoProfileService ?? throw new ArgumentNullException(nameof(autoProfileService));
         }
@@ -82,7 +85,7 @@ namespace DS4Windows.Services
         public MainWindow Create(ArgumentParser parser)
             => new MainWindow(parser, _profileSettings, _appSettings, _profileXmlStore, _editorWindowFactory,
                 _pathService, _environmentService, _appearanceSettings, _profileApplication, _outputSlotService,
-                _profileRepository, _notificationService, _controlService, _lifecycle, _loadTarget, _profileSlotApplier,
+                _profileRepository, _notificationService, _controlService, _lifecycle, _runtimeFeatures, _loadTarget, _profileSlotApplier,
                 _mainWindowsViewModel, _logSettingsApplier, _autoProfileService, _viewModelFactory, _profileIdentityService);
     }
 }

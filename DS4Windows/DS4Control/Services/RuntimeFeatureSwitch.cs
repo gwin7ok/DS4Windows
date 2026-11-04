@@ -1,0 +1,44 @@
+using System;
+using DS4Windows.DI;
+
+namespace DS4Windows.Services
+{
+    /// <summary>
+    /// <see cref="IRuntimeFeatureSwitch"/> の実装。本物のサービスへ委譲するだけ（旧 <c>ControlService</c> の転送メンバーを、そのまま移したもの）。
+    /// </summary>
+    public class RuntimeFeatureSwitch : IRuntimeFeatureSwitch
+    {
+        private readonly IOscService _osc;
+        private readonly IUdpMotionService _udpMotion;
+        private readonly IHidHideService _hidHide;
+        private readonly ITouchpadToggleService _touchpadToggle;
+        private readonly IDeviceSlotState _slots;
+
+        public RuntimeFeatureSwitch(IOscService osc, IUdpMotionService udpMotion, IHidHideService hidHide,
+            ITouchpadToggleService touchpadToggle, IDeviceSlotState slots)
+        {
+            _osc = osc ?? throw new ArgumentNullException(nameof(osc));
+            _udpMotion = udpMotion ?? throw new ArgumentNullException(nameof(udpMotion));
+            _hidHide = hidHide ?? throw new ArgumentNullException(nameof(hidHide));
+            _touchpadToggle = touchpadToggle ?? throw new ArgumentNullException(nameof(touchpadToggle));
+            _slots = slots ?? throw new ArgumentNullException(nameof(slots));
+        }
+
+        public void ChangeOscListenerStatus(bool state) => _osc.ChangeListenerStatus(state);
+
+        public void ChangeOscSenderStatus(bool state) => _osc.ChangeSenderStatus(state);
+
+        public void ChangeUdpStatus(bool state, bool openPort = true) => _udpMotion.ChangeStatus(state, openPort);
+
+        public void ChangeMotionEventStatus(bool state) => _udpMotion.ChangeMotionEventStatus(state);
+
+        public void CheckHidHidePresence(string exePath = "", string exeName = "Autoprofile Exe", bool addExe = true)
+            => _hidHide.CheckPresence(exePath, exeName, addExe);
+
+        // 旧: HidHideInstalled の確認のあと UpdateHidHideAttributes（確認は HidHideService.UpdateAttributes の中に 1 つにまとめてある）
+        public void UpdateHidHiddenAttributes() => _hidHide.UpdateAttributes();
+
+        public string TouchpadSlide(int ind)
+            => _touchpadToggle.Slide(ind, _slots.CurrentStates[ind], _slots.TouchPads[ind], _slots.DS4Controllers[ind] != null);
+    }
+}

@@ -96,6 +96,7 @@ namespace DS4WinWPF
         // 別スレッド（未処理例外、セッション終了）からも読まれるため volatile にする。
         private volatile DS4Windows.ControlService _controlService;
         private volatile DS4Windows.DI.IServiceLifecycle _lifecycle;   // Phase13-Step9: 旧 ControlService.running の転送
+        private DS4Windows.DI.IRuntimeFeatureSwitch _runtimeFeatures;   // Phase13-Step10 10-c: 旧 ControlService.CheckHidHidePresence の転送
 
         // Phase7-Step4 W4（D3＝S1）: コンテナの構築より前に作るブートストラップのサービス。Pre-Host の起動処理（保存場所の決定、
         // ViGEmBus 情報の取得）で使い、CreateHost に渡して、コンテナへ同じインスタンスを登録する。
@@ -698,7 +699,7 @@ namespace DS4WinWPF
 
             if (_environmentService.HidHideInstalled)
             {
-                _controlService.CheckHidHidePresence();
+                _runtimeFeatures.CheckHidHidePresence();
             }
 
             // Phase7-Step5 W3（Q9＝A）: 契約（IOutputSlotService）経由に切り替えた。旧 ControlService.LoadPermanentSlotsConfig と同じ処理
@@ -727,6 +728,7 @@ namespace DS4WinWPF
             AppLogger.NotificationService = ResolvePostHostService<INotificationService>();
             _logSettingsApplierProxy = ResolvePostHostService<DS4Windows.Services.LogSettingsApplierProxy>();
             _controllerRegistry = ResolvePostHostService<DS4Windows.Actions.IControllerRegistry>();
+            _runtimeFeatures = ResolvePostHostService<DS4Windows.DI.IRuntimeFeatureSwitch>();
 
             if (AppLogger.IsTraceEnabled)
                 AppLogger.LogTrace("[DI] App.InitializePostHostServices: Post-Host services resolved");

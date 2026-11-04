@@ -63,10 +63,13 @@ namespace DS4WindowsTests
             string text = ReadWithoutComments("DS4Windows/DS4Control/ControlService.cs");
             if (text == null) return;
 
-            Assert.Contains("public void ChangeOSCListenerStatus(bool state)", text);
-            Assert.Contains("public void ChangeOSCSenderStatus(bool state)", text);
-            Assert.Contains("_oscService.ChangeListenerStatus(state);", text);
-            Assert.Contains("_oscService.ChangeSenderStatus(state);", text);
+            // Phase13-Step10 10-c: 転送は削除した。利用者は IRuntimeFeatureSwitch（RuntimeFeatureSwitch）を使う
+            Assert.DoesNotContain("public void ChangeOSCListenerStatus(", text);
+            Assert.DoesNotContain("public void ChangeOSCSenderStatus(", text);
+            string sw = ReadWithoutComments("DS4Windows/DS4Control/Services/RuntimeFeatureSwitch.cs");
+            if (sw == null) return;
+            Assert.Contains("_osc.ChangeListenerStatus(state)", sw);
+            Assert.Contains("_osc.ChangeSenderStatus(state)", sw);
         }
 
         [Theory]

@@ -172,7 +172,6 @@ namespace DS4Windows
         public event HotplugControllerHandler HotplugController;
 
         // Phase9 9-E E-1: 旧 oscState／oscCallback／oscListener／oscSender（OSC の状態・受信・送信）は OscService へ移した
-        private readonly DI.IOscService _oscService;
 
         // Phase13-Step5: 旧 GetPadDetailForIdx（UDP モーションのパッドの情報）は UdpMotionService へ移した
 
@@ -187,7 +186,6 @@ namespace DS4Windows
             Services.IElevatedProcessLauncher elevatedProcessLauncher,
             StickMotionState stickMotion,
             DI.IMapping mapping,
-            DI.IOscService oscService,
             DI.IHidHideService hidHideService,
             DI.IUdpMotionService udpMotionService,
             DI.IVirtualPadService virtualPadService,
@@ -229,7 +227,6 @@ namespace DS4Windows
             this._elevatedProcessLauncher = elevatedProcessLauncher ?? throw new ArgumentNullException(nameof(elevatedProcessLauncher));
             this._stickMotion = stickMotion ?? throw new ArgumentNullException(nameof(stickMotion));
             this._mapping = mapping ?? throw new ArgumentNullException(nameof(mapping));
-            this._oscService = oscService ?? throw new ArgumentNullException(nameof(oscService));
             this._hidHideService = hidHideService ?? throw new ArgumentNullException(nameof(hidHideService));
             this._udpMotion = udpMotionService ?? throw new ArgumentNullException(nameof(udpMotionService));
             this._virtualPad = virtualPadService ?? throw new ArgumentNullException(nameof(virtualPadService));
@@ -400,17 +397,7 @@ namespace DS4Windows
             }
         }
 
-        // Phase9 9-E E-2: 旧 CheckHidHidePresence／UpdateHidHideAttributes の本体は HidHideService へ移した（薄い委譲。呼び出し側は 9-F まで変えない）
-        public void CheckHidHidePresence(string ExePath = "", string ExeName = "Autoprofile Exe", bool AddExe = true) // Default value for D4W Startup
-        {
-            _hidHideService.CheckPresence(ExePath, ExeName, AddExe);
-        }
-
-        public void UpdateHidHiddenAttributes()
-        {
-            // 旧: HidHideInstalled の確認のあと UpdateHidHideAttributes（その中でも同じ確認）。確認は HidHideService.UpdateAttributes の中に 1 つにまとめた
-            _hidHideService.UpdateAttributes();
-        }
+        // Phase13-Step10 10-c: CheckHidHidePresence／UpdateHidHiddenAttributes の転送は削除した（利用者は IRuntimeFeatureSwitch を使う）。
 
         // Phase9 9-E E-2: 旧 CheckAffected は HidHideService.IsAffected へ移した。
 
@@ -428,29 +415,11 @@ namespace DS4Windows
 
         // Phase13-Step5: 旧 IUdpMotionHost の GetCurrentState／GetTempState は IDeviceSlotState へ移した
 
-        // Phase9 9-E E-3: 旧 ChangeUDPStatus の本体は UdpMotionService.ChangeStatus へ移した（薄い委譲。呼び出し側は 9-F まで変えない）
-        public void ChangeUDPStatus(bool state, bool openPort = true)
-        {
-            _udpMotion.ChangeStatus(state, openPort);
-        }
-
-        public void ChangeOSCListenerStatus(bool state)
-        {
-            // Phase9 9-E E-1: 本体は OscService へ移した（薄い委譲。呼び出し側は 9-F まで変えない）
-            _oscService.ChangeListenerStatus(state);
-        }
-
-        public void ChangeOSCSenderStatus(bool state)
-        {
-            _oscService.ChangeSenderStatus(state);
-        }
+        // Phase13-Step10 10-c: ChangeUDPStatus／ChangeOSCListenerStatus／ChangeOSCSenderStatus の転送は削除した（利用者は IRuntimeFeatureSwitch を使う）。
 
         // Phase9 9-E E-1: 旧 SendOsc（Phase6-Step9-3c の K9-1 の競合対策つき）は OscService.SendOsc へ移した。
 
-        public void ChangeMotionEventStatus(bool state)
-        {
-            _udpMotion.ChangeMotionEventStatus(state);
-        }
+        // Phase13-Step10 10-c: ChangeMotionEventStatus の転送も削除した。
 
         // Phase9 9-E E-3: 旧 udpChangeStatus／changingUDPPort／UseUDPPort は UdpMotionService へ移した（UseUDPPort は呼び出し元 0 件のため、ここには委譲を残さない）。
 
@@ -563,10 +532,7 @@ namespace DS4Windows
         // Phase9 9-E E-5: 判定の本体は TouchpadToggleService へ移した（状態 touchreleased／touchslid も）
         // Phase13-Step10 10-b: CheckForTouchToggle／StartTPOff の転送は削除した（外部の利用者は 0 件。StartTPOff は IProfileLoadTarget が持つ）。
 
-        public string TouchpadSlide(int ind)
-        {
-            return _touchpadToggle.Slide(ind, CurrentState[ind], touchPad[ind], DS4Controllers[ind] != null);
-        }
+        // Phase13-Step10 10-c: TouchpadSlide の転送は削除した（利用者は IRuntimeFeatureSwitch を使う）。
 
         public void LogDebug(String Data, bool warning = false)
         {

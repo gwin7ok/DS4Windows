@@ -58,10 +58,13 @@ namespace DS4WindowsTests
             string text = ReadWithoutComments("DS4Windows/DS4Control/ControlService.cs");
             if (text == null) return;
 
-            Assert.Contains("public void CheckHidHidePresence(", text);
-            Assert.Contains("_hidHideService.CheckPresence(ExePath, ExeName, AddExe);", text);
-            Assert.Contains("public void UpdateHidHiddenAttributes()", text);
-            Assert.Contains("_hidHideService.UpdateAttributes();", text);
+            // Phase13-Step10 10-c: 転送は削除した。利用者は IRuntimeFeatureSwitch（RuntimeFeatureSwitch）を使う
+            Assert.DoesNotContain("public void CheckHidHidePresence(", text);
+            Assert.DoesNotContain("public void UpdateHidHiddenAttributes()", text);
+            string sw = ReadWithoutComments("DS4Windows/DS4Control/Services/RuntimeFeatureSwitch.cs");
+            if (sw == null) return;
+            Assert.Contains("_hidHide.CheckPresence(exePath, exeName, addExe)", sw);
+            Assert.Contains("_hidHide.UpdateAttributes()", sw);
         }
 
         [Theory]

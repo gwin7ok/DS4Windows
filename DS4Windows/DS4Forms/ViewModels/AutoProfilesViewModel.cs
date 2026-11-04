@@ -48,7 +48,7 @@ namespace DS4WinWPF.DS4Forms.ViewModels
         private HashSet<string> existingapps;
         private readonly IAppSettingsService _appSettings;
         private readonly IAutoProfileService _autoProfileService;
-        private readonly ControlService _controlService;
+        private readonly IRuntimeFeatureSwitch _runtimeFeatures;   // Phase13-Step10 10-c: 旧 ControlService.CheckHidHidePresence の転送
 
         public ObservableCollection<ProgramItem> ProgramColl { get => programColl; }
 
@@ -110,12 +110,12 @@ namespace DS4WinWPF.DS4Forms.ViewModels
         public AutoProfilesViewModel(AutoProfileHolder autoProfileHolder, ProfileList profileList,
             IAppSettingsService appSettings,
             IAutoProfileService autoProfileService,
-            ControlService controlService,
+            IRuntimeFeatureSwitch runtimeFeatures,
             IEnvironmentService environmentService)
         {
             _appSettings = appSettings ?? throw new ArgumentNullException(nameof(appSettings));
             _autoProfileService = autoProfileService ?? throw new ArgumentNullException(nameof(autoProfileService));
-            _controlService = controlService ?? throw new ArgumentNullException(nameof(controlService));
+            _runtimeFeatures = runtimeFeatures ?? throw new ArgumentNullException(nameof(runtimeFeatures));
             _environmentService = environmentService ?? throw new ArgumentNullException(nameof(environmentService));
             programColl = new ObservableCollection<ProgramItem>();
             existingapps = new HashSet<string>();
@@ -450,7 +450,7 @@ namespace DS4WinWPF.DS4Forms.ViewModels
         {
             if (autoProf.Path.Substring((autoProf.Path.Length) - 4, 4) == ".exe") //Filter out autoprofiles that do not lead to EXEs.
             {
-                _controlService?.CheckHidHidePresence(autoProf.Path, autoProf.Filename, addExe);
+                _runtimeFeatures.CheckHidHidePresence(autoProf.Path, autoProf.Filename, addExe);
             }
         }
     }

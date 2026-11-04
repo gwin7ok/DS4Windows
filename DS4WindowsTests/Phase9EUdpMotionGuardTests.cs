@@ -64,10 +64,13 @@ namespace DS4WindowsTests
             string text = ReadWithoutComments("DS4Windows/DS4Control/ControlService.cs");
             if (text == null) return;
 
-            Assert.Contains("public void ChangeUDPStatus(bool state, bool openPort = true)", text);
-            Assert.Contains("_udpMotion.ChangeStatus(state, openPort);", text);
-            Assert.Contains("public void ChangeMotionEventStatus(bool state)", text);
-            Assert.Contains("_udpMotion.ChangeMotionEventStatus(state);", text);
+            // Phase13-Step10 10-c: 転送は削除した。利用者は IRuntimeFeatureSwitch（RuntimeFeatureSwitch）を使う
+            Assert.DoesNotContain("public void ChangeUDPStatus(", text);
+            Assert.DoesNotContain("public void ChangeMotionEventStatus(", text);
+            string sw = ReadWithoutComments("DS4Windows/DS4Control/Services/RuntimeFeatureSwitch.cs");
+            if (sw == null) return;
+            Assert.Contains("_udpMotion.ChangeStatus(state, openPort)", sw);
+            Assert.Contains("_udpMotion.ChangeMotionEventStatus(state)", sw);
         }
 
         [Theory]

@@ -53,9 +53,11 @@ namespace DS4WindowsTests
         [Fact]
         public void ControlService_ChangeOSCSenderStatus_Disable_WhenSenderNotCreated_DoesNotThrow()
         {
-            ControlService service = ControlServiceTestFactory.Create();
+            // Phase13-Step10 10-c: 旧 ControlService.ChangeOSCSenderStatus は削除した。画面が使う IRuntimeFeatureSwitch を経由する
+            ControlServiceTestFactory.Create();
+            var service = TestHost.GetService<DS4Windows.DI.IRuntimeFeatureSwitch>();
 
-            Exception ex = Record.Exception(() => service.ChangeOSCSenderStatus(false));
+            Exception ex = Record.Exception(() => service.ChangeOscSenderStatus(false));
 
             Assert.Null(ex);
         }

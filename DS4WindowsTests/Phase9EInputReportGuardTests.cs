@@ -65,8 +65,10 @@ namespace DS4WindowsTests
             // Phase13-Step10 10-b: 利用者が 0 件だった StartTPOff／CheckForTouchToggle の転送は削除した（ITouchpadToggleService／IProfileLoadTarget が持つ）
             Assert.DoesNotContain("public void StartTPOff(", text);
             Assert.DoesNotContain("CheckForTouchToggle(", text);
-            Assert.Contains("public string TouchpadSlide(int ind)", text);
-            Assert.Contains("_touchpadToggle.Slide(", text);
+            // Phase13-Step10 10-c: TouchpadSlide の転送も削除した。利用者は IRuntimeFeatureSwitch を使う
+            Assert.DoesNotContain("public string TouchpadSlide(", text);
+            string sw = ReadWithoutComments("DS4Windows/DS4Control/Services/RuntimeFeatureSwitch.cs");
+            if (sw != null) Assert.Contains("_touchpadToggle.Slide(", sw);
             // Phase13-Step5b: _latencyMonitor.OnReport は On_Report と一緒に InputReportProcessor へ移した
             string processor = ReadWithoutComments("DS4Windows/DS4Control/Services/InputReportProcessor.cs");
             Assert.Contains("_latencyMonitor.OnReport(device, ind);", processor);

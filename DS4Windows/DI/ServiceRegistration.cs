@@ -211,6 +211,7 @@ namespace DS4Windows.DI
             services.AddSingleton<IUdpMotionService, UdpMotionService>();   // Phase9 9-E E-3: UDP モーションの送出（サーバーの作成・開始・停止、ハンドラー、スムージング）
             services.AddSingleton<ILatencyMonitor, LatencyMonitor>();   // Phase9 9-E E-5: 入力レポートのエラーのログと遅延の監視
             services.AddSingleton<ITouchpadToggleService, TouchpadToggleService>();   // Phase9 9-E E-5: タッチパッドの切り替え・スライドの判定
+            services.AddSingleton<IRuntimeFeatureSwitch, RuntimeFeatureSwitch>();   // Phase13-Step10 10-c: 画面が使う OSC／UDP／HidHide／タッチパッドの切り替えの窓口
             services.AddSingleton<IConnectionProfileSelector, ConnectionProfileSelector>();   // Phase9 9-E E-6a: 接続時のプロファイルの選択と適用
             // Phase9 9-E E-6c: デバイスの種類ごとの部品（カートリッジ）。新しい種類は、IInputDeviceModule を実装してここへ足すだけ
             services.AddSingleton<IInputDeviceModule, Ds4DeviceModule>();
@@ -282,7 +283,6 @@ namespace DS4Windows.DI
                     // Phase7-Step8 W1: 保持クラスをコンストラクターで受ける（旧: ControlService／Mouse が Shared を参照）
                     sp.GetRequiredService<StickMotionState>(),
                     sp.GetRequiredService<IMapping>(),
-                    sp.GetRequiredService<IOscService>(),   // Phase9 9-E E-1
                     sp.GetRequiredService<IHidHideService>(),   // Phase9 9-E E-2
                     sp.GetRequiredService<IUdpMotionService>(),   // Phase9 9-E E-3
                     sp.GetRequiredService<IVirtualPadService>(),   // Phase9 9-E E-4

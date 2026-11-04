@@ -19,6 +19,7 @@ namespace DS4Windows
         private readonly IAutoProfileService _autoProfileService;
         private readonly ControlService _controlService;
         private readonly IProfileLoadTarget _loadTarget;   // Phase13-Step6 6-e: ProfileSettingsViewModel のプロファイル読込の窓口
+        private readonly IRuntimeFeatureSwitch _runtimeFeatures;   // Phase13-Step10 10-c: AutoProfilesViewModel の HidHide 登録の窓口
 
         // Phase6-Step9-4: 依存はすべて必須引数（Pure DI。決定1＝S9-A）。
         // Phase13-Step6 6-c: ControlService は、Func による遅延解決（決定2＝C1。K7-1 対策）をやめ、直接受ける。K7-1 は 2026-10-17 に解消済みで、
@@ -34,7 +35,8 @@ namespace DS4Windows
             IAppSettingsService appSettings,
             IAutoProfileService autoProfileService,
             ControlService controlService,
-            IProfileLoadTarget loadTarget)
+            IProfileLoadTarget loadTarget,
+            IRuntimeFeatureSwitch runtimeFeatures)
         {
             _profileSettings = profileSettings ?? throw new ArgumentNullException(nameof(profileSettings));
             _profileRepo = profileRepo ?? throw new ArgumentNullException(nameof(profileRepo));
@@ -49,6 +51,7 @@ namespace DS4Windows
             _autoProfileService = autoProfileService ?? throw new ArgumentNullException(nameof(autoProfileService));
             _controlService = controlService ?? throw new ArgumentNullException(nameof(controlService));
             _loadTarget = loadTarget ?? throw new ArgumentNullException(nameof(loadTarget));
+            _runtimeFeatures = runtimeFeatures ?? throw new ArgumentNullException(nameof(runtimeFeatures));
         }
 
         public ProfileSettingsViewModel CreateProfileSettingsViewModel(int device, int targetDevice = -1)
@@ -86,7 +89,7 @@ namespace DS4Windows
             if (AppLogger.IsTraceEnabled)
                 AppLogger.LogTrace("[DI] ViewModelFactory: Created AutoProfilesViewModel");
             return new AutoProfilesViewModel(autoProfileHolder, profileList,
-                _appSettings, _autoProfileService, _controlService, _environmentService);
+                _appSettings, _autoProfileService, _runtimeFeatures, _environmentService);
         }
     }
 }
