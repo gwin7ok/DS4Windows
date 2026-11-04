@@ -11,7 +11,7 @@ namespace DS4Windows.Services
     /// <see cref="IEditorWindowFactory"/> の実装。補助ウィンドウの生成を集約する。
     /// Phase6-Step10-2-4a: 生成箇所を窓口へ集約した（ウィンドウ側のコンストラクタは、窓口を必須引数で受け取るだけの変更）。
     /// Phase6-Step10-2-4b: 各ウィンドウが必要とするサービスを、本クラスの必須引数として保持して渡す。
-    /// ControlService は、生成のたびに Func で遅延解決する（ViewModelFactory と同じ形。決定 Step9-4 C1）。
+    /// Phase13-Step6 6-c: ControlService は、生成のたびの Func による遅延解決をやめ、コンストラクターで直接受ける（このクラスは ControlService の依存グラフの外のため循環しない）。
     /// </summary>
     public class EditorWindowFactory : IEditorWindowFactory
     {
@@ -21,7 +21,7 @@ namespace DS4Windows.Services
         private readonly IViewModelFactory _viewModelFactory;
         private readonly ISpecialActionRepository _specialActionRepository;
         private readonly IProfilePresetLoader _presetLoader;
-        private readonly Func<ControlService> _controlServiceAccessor;
+        private readonly ControlService _controlService;
         // Phase7-Step5 W5: CreateProfileEditor が ProfileEditor へ渡すサービス
         private readonly IAppSettingsService _appSettings;
         private readonly IProfileRepository _profileRepository;
@@ -40,7 +40,7 @@ namespace DS4Windows.Services
             IViewModelFactory viewModelFactory,
             ISpecialActionRepository specialActionRepository,
             IProfilePresetLoader presetLoader,
-            Func<ControlService> controlServiceAccessor,
+            ControlService controlService,
             IAppSettingsService appSettings,
             IProfileRepository profileRepository,
             IProfileSwitcher profileSwitcher,
@@ -57,7 +57,7 @@ namespace DS4Windows.Services
             _viewModelFactory = viewModelFactory ?? throw new ArgumentNullException(nameof(viewModelFactory));
             _specialActionRepository = specialActionRepository ?? throw new ArgumentNullException(nameof(specialActionRepository));
             _presetLoader = presetLoader ?? throw new ArgumentNullException(nameof(presetLoader));
-            _controlServiceAccessor = controlServiceAccessor ?? throw new ArgumentNullException(nameof(controlServiceAccessor));
+            _controlService = controlService ?? throw new ArgumentNullException(nameof(controlService));
             _appSettings = appSettings ?? throw new ArgumentNullException(nameof(appSettings));
             _profileRepository = profileRepository ?? throw new ArgumentNullException(nameof(profileRepository));
             _profileSwitcher = profileSwitcher ?? throw new ArgumentNullException(nameof(profileSwitcher));
@@ -66,23 +66,23 @@ namespace DS4Windows.Services
         public BindingWindow CreateBindingWindow(int deviceNum, DS4ControlSettings settings, int targetDevice,
             BindingWindow.ExposeMode expose)
             => new BindingWindow(deviceNum, settings, targetDevice, this, _profileSettings, _outputSlotService,
-                _environmentService, _controlServiceAccessor(), expose);
+                _environmentService, _controlService, expose);
 
         public RecordBox CreateRecordBox(int deviceNum, DS4ControlSettings controlSettings, int targetDevice,
             bool showscan = true, bool repeatable = true, bool showPlaybackOptions = true)
             => new RecordBox(deviceNum, controlSettings, targetDevice, showscan, repeatable, showPlaybackOptions,
-                _controlServiceAccessor(), _pathService, _viewModelFactory, _windowSystem, _mouseHook);
+                _controlService, _pathService, _viewModelFactory, _windowSystem, _mouseHook);
 
         public RecordBoxWindow CreateRecordBoxWindow(int deviceNum, DS4ControlSettings settings, int targetDevice,
             bool repeatable = true, bool showPlaybackOptions = true)
             => new RecordBoxWindow(deviceNum, settings, targetDevice, this, repeatable, showPlaybackOptions);
 
         public PresetOptionWindow CreatePresetOptionWindow()
-            => new PresetOptionWindow(_presetLoader, _controlServiceAccessor());
+            => new PresetOptionWindow(_presetLoader, _controlService);
 
         public StickCalibrationWindow CreateStickCalibrationWindow(Stick stick, int device,
             ProfileSettingsViewModel profileSettingsViewModel)
-            => new StickCalibrationWindow(stick, device, profileSettingsViewModel, _controlServiceAccessor());
+            => new StickCalibrationWindow(stick, device, profileSettingsViewModel, _controlService);
 
         public AssignmentEditor CreateAssignmentEditor(int deviceNum, ProfileList profileList, int targetDevice,
             SpecialAction specialAction = null)
@@ -96,6 +96,6 @@ namespace DS4Windows.Services
 
         public ProfileEditor CreateProfileEditor(int targetDevice)
             => new ProfileEditor(targetDevice, _appSettings, _profileSettings, this, _profileRepository,
-                _profileSwitcher, _controlServiceAccessor(), _viewModelFactory, _environmentService);
+                _profileSwitcher, _controlService, _viewModelFactory, _environmentService);
     }
 }

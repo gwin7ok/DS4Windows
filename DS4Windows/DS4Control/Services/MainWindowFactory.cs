@@ -8,8 +8,9 @@ namespace DS4Windows.Services
 {
     /// <summary>
     /// <see cref="IMainWindowFactory"/> の実装。メイン画面の生成と、画面が必要とするサービスの受け渡しを集約する（Phase7-Step5 W5）。
-    /// <see cref="ControlService"/> と <see cref="IAutoProfileService"/> は、生成のたびに Func で遅延解決する
+    /// <see cref="IAutoProfileService"/> は、生成のたびに Func で遅延解決する
     /// （自動プロファイルの設定コレクションは、設定の場所が決まった後でなければ生成できないため。ViewModelFactory と同じ形）。
+    /// Phase13-Step6 6-c: <see cref="ControlService"/> は Func をやめ、コンストラクターで直接受ける（ホスト構築後に解決されるため K7-1 の懸念はない）。
     /// </summary>
     public class MainWindowFactory : IMainWindowFactory
     {
@@ -29,7 +30,7 @@ namespace DS4Windows.Services
         private readonly ILogSettingsApplier _logSettingsApplier;
         private readonly IViewModelFactory _viewModelFactory;
         private readonly IProfileIdentityService _profileIdentityService;
-        private readonly Func<ControlService> _controlServiceAccessor;
+        private readonly ControlService _controlService;
         private readonly Func<IAutoProfileService> _autoProfileServiceAccessor;
 
         public MainWindowFactory(
@@ -49,7 +50,7 @@ namespace DS4Windows.Services
             ILogSettingsApplier logSettingsApplier,
             IViewModelFactory viewModelFactory,
             IProfileIdentityService profileIdentityService,
-            Func<ControlService> controlServiceAccessor,
+            ControlService controlService,
             Func<IAutoProfileService> autoProfileServiceAccessor)
         {
             _profileSettings = profileSettings ?? throw new ArgumentNullException(nameof(profileSettings));
@@ -68,14 +69,14 @@ namespace DS4Windows.Services
             _logSettingsApplier = logSettingsApplier ?? throw new ArgumentNullException(nameof(logSettingsApplier));
             _viewModelFactory = viewModelFactory ?? throw new ArgumentNullException(nameof(viewModelFactory));
             _profileIdentityService = profileIdentityService ?? throw new ArgumentNullException(nameof(profileIdentityService));
-            _controlServiceAccessor = controlServiceAccessor ?? throw new ArgumentNullException(nameof(controlServiceAccessor));
+            _controlService = controlService ?? throw new ArgumentNullException(nameof(controlService));
             _autoProfileServiceAccessor = autoProfileServiceAccessor ?? throw new ArgumentNullException(nameof(autoProfileServiceAccessor));
         }
 
         public MainWindow Create(ArgumentParser parser)
             => new MainWindow(parser, _profileSettings, _appSettings, _profileXmlStore, _editorWindowFactory,
                 _pathService, _environmentService, _appearanceSettings, _profileApplication, _outputSlotService,
-                _profileRepository, _notificationService, _controlServiceAccessor(), _profileSlotApplier,
+                _profileRepository, _notificationService, _controlService, _profileSlotApplier,
                 _mainWindowsViewModel, _logSettingsApplier, _autoProfileServiceAccessor(), _viewModelFactory, _profileIdentityService);
     }
 }

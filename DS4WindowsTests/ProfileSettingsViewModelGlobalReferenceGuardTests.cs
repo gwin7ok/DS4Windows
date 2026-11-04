@@ -143,7 +143,9 @@ namespace DS4WindowsTests
 
             Assert.DoesNotContain("AppHost", ctor);
             Assert.DoesNotContain("= null", ctor);
-            Assert.Contains("Func<ControlService>", ctor);
+            // Phase13-Step6 6-c: 遅延（Func）をやめ、ControlService を直接受ける
+            Assert.DoesNotContain("Func<ControlService>", ctor);
+            Assert.Contains("ControlService controlService", ctor);
         }
 
         [Fact]

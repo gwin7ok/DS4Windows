@@ -161,7 +161,8 @@ namespace DS4WindowsTests
             var settings = TestRepositoryFactory.CreateProfileSettingsService();
             var slots = TestRepositoryFactory.CreateOutputSlotService();
             var path = new PathService();
-            Func<ControlService> cs = () => null;
+            // Phase13-Step6 6-c: 旧 Func<ControlService>。コンストラクターは引数を保持するだけなので、未初期化のインスタンスで足りる
+            var cs = (ControlService)System.Runtime.CompilerServices.RuntimeHelpers.GetUninitializedObject(typeof(ControlService));
             var loader = TestRepositoryFactory.CreateProfilePresetLoader();
             var repo = TestRepositoryFactory.CreateSpecialActionRepository();
             // Phase7-Step5 W5: CreateProfileEditor のために、アプリ設定・プロファイルリポジトリ・プロファイル切替の 3 つを追加した

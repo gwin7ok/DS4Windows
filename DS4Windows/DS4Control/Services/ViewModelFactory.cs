@@ -17,11 +17,11 @@ namespace DS4Windows
         private readonly IPathService _pathService;
         private readonly IAppSettingsService _appSettings;
         private readonly Func<IAutoProfileService> _autoProfileServiceAccessor;
-        private readonly Func<ControlService> _controlServiceAccessor;
+        private readonly ControlService _controlService;
 
         // Phase6-Step9-4: 依存はすべて必須引数（Pure DI。決定1＝S9-A）。
-        // ControlService は、構築時ではなく生成のたびに Func で遅延解決する（決定2＝C1。Step2 決定D1 と同じ形。
-        // 明示的なホスト構築より前に ControlService を解決しない: Phase6-Status.md K7-1）。
+        // Phase13-Step6 6-c: ControlService は、Func による遅延解決（決定2＝C1。K7-1 対策）をやめ、直接受ける。K7-1 は 2026-10-17 に解消済みで、
+        // このクラスはホスト構築後にしか解決されない。
         public ViewModelFactory(
             IProfileSettingsService profileSettings,
             IProfileRepository profileRepo,
@@ -32,7 +32,7 @@ namespace DS4Windows
             IPathService pathService,
             IAppSettingsService appSettings,
             Func<IAutoProfileService> autoProfileServiceAccessor,
-            Func<ControlService> controlServiceAccessor)
+            ControlService controlService)
         {
             _profileSettings = profileSettings ?? throw new ArgumentNullException(nameof(profileSettings));
             _profileRepo = profileRepo ?? throw new ArgumentNullException(nameof(profileRepo));
@@ -43,16 +43,16 @@ namespace DS4Windows
             _pathService = pathService ?? throw new ArgumentNullException(nameof(pathService));
             _appSettings = appSettings ?? throw new ArgumentNullException(nameof(appSettings));
             // Phase6-Step10-2-3: IAutoProfileService は、生成時に AutoProfileHolder を読む（設定の場所が決まった後でなければ生成できない）
-            // ため、ControlService と同じく生成のたびに Func で遅延解決する。
+            // ため、生成のたびに Func で遅延解決する。
             _autoProfileServiceAccessor = autoProfileServiceAccessor ?? throw new ArgumentNullException(nameof(autoProfileServiceAccessor));
-            _controlServiceAccessor = controlServiceAccessor ?? throw new ArgumentNullException(nameof(controlServiceAccessor));
+            _controlService = controlService ?? throw new ArgumentNullException(nameof(controlService));
         }
 
         public ProfileSettingsViewModel CreateProfileSettingsViewModel(int device, int targetDevice = -1)
         {
             if (AppLogger.IsTraceEnabled)
                 AppLogger.LogTrace($"[DI] ViewModelFactory: Created ProfileSettingsViewModel for Device {device}, targetDevice {targetDevice}");
-            return new ProfileSettingsViewModel(device, _profileSettings, _controlServiceAccessor(),
+            return new ProfileSettingsViewModel(device, _profileSettings, _controlService,
                 _outputSlotService, _profileRepo, _presetLoader, _environmentService, _pathService, targetDevice);
         }
 
@@ -61,7 +61,7 @@ namespace DS4Windows
             if (AppLogger.IsTraceEnabled)
                 AppLogger.LogTrace($"[DI] ViewModelFactory: Created RecordBoxViewModel for Device {device}, targetDevice {targetDevice}");
             return new RecordBoxViewModel(device, controlSettings, repeatable,
-                _profileSettings, _environmentService, _controlServiceAccessor(), targetDevice);
+                _profileSettings, _environmentService, _controlService, targetDevice);
         }
 
         public SpecialActEditorViewModel CreateSpecialActEditorViewModel(int device, SpecialAction action = null)
@@ -83,7 +83,7 @@ namespace DS4Windows
             if (AppLogger.IsTraceEnabled)
                 AppLogger.LogTrace("[DI] ViewModelFactory: Created AutoProfilesViewModel");
             return new AutoProfilesViewModel(autoProfileHolder, profileList,
-                _appSettings, _autoProfileServiceAccessor(), _controlServiceAccessor(), _environmentService);
+                _appSettings, _autoProfileServiceAccessor(), _controlService, _environmentService);
         }
     }
 }

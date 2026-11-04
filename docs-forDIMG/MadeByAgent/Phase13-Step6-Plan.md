@@ -161,3 +161,10 @@ interface IProfileLoadTarget   // DS4Windows/DI/
 
 **結果**: `Debug ALL` 警告 0／エラー 0。Actions.Tests 3,099 件、Standalone 11 件、すべて合格。
 **残る `Func<ControlService>`**: `ProfileRepository`／`ProfileApplicationService`／UI ファクトリー 3 件（6-c〜6-f）。
+
+## 12. 6-c の結果（2026-11-04）
+
+**変更**: `EditorWindowFactory`／`MainWindowFactory`／`ViewModelFactory` の `Func<ControlService>` を `ControlService` の直接注入へ。3 クラスは `ControlService` の依存グラフの外（6-a のプローブで確認）のため循環しない。K7-1（ホストの暗黙構築）は 2026-10-17 に解消済みで、`MainWindowFactory` の解決は `App.xaml.cs` のホスト構築後（`ResolvePostHostService`）。
+**テスト**: `Step10GroupTwoGlobalReferenceGuardTests.EditorWindowFactory_RequiresAllServices` の引数を未初期化の `ControlService` に、`ProfileSettingsViewModelGlobalReferenceGuardTests.ViewModelFactory_HasNoServiceLocatorInConstructor` の期待を「`Func<ControlService>` なし・`ControlService controlService` あり」に更新。
+**結果**: `Debug ALL` 警告 0／エラー 0。Actions.Tests 3,099 件、Standalone 11 件、すべて合格。
+**実機で見る点（Phase 末の 1 回）**: 起動直後のメイン画面の表示と、エディター・補助ウィンドウが開くこと（`ControlService` の生成時期が「生成のたび」から「ファクトリーの解決時」へ早まったため）。
