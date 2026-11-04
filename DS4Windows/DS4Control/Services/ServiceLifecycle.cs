@@ -92,7 +92,7 @@ namespace DS4Windows.Services
                 _kbmInitializer.Initialize();
 
                 if (showlog)
-                    AppLogger.LogToGui(DS4WinWPF.Properties.Resources.Starting, false);
+                    AppLogger.Log(AppLogLevel.Info, DS4WinWPF.Properties.Resources.Starting, LogOptions.UserFacing);
 
                 Thread.Sleep(2000);
 
@@ -100,11 +100,11 @@ namespace DS4Windows.Services
                 if (_virtualKBM.GetIdentifier() != FakerInputHandler.IDENTIFIER && !runningAsAdmin)
                 {
                     string helpURL = @"https://ryochan7.github.io/ds4windows-site/troubleshooting/kb-mouse-issues/#windows-not-responding-to-ds4ws-kb-m-commands-in-some-situations";
-                    AppLogger.LogToGui($"Some applications may block controller inputs. (Windows UAC Conflictions). Please go to {helpURL} for more information and workarounds.", false);
+                    AppLogger.Log(AppLogLevel.Info, $"Some applications may block controller inputs. (Windows UAC Conflictions). Please go to {helpURL} for more information and workarounds.", LogOptions.UserFacing);
                 }
 
-                AppLogger.LogToGui($"Using output KB+M handler: {_virtualKBM.GetFullDisplayName()}", false);
-                AppLogger.LogToGui($"Connection to ViGEmBus {_environmentService.ViGEmBusVersion} established", false);
+                AppLogger.Log(AppLogLevel.Info, $"Using output KB+M handler: {_virtualKBM.GetFullDisplayName()}", LogOptions.UserFacing);
+                AppLogger.Log(AppLogLevel.Info, $"Connection to ViGEmBus {_environmentService.ViGEmBusVersion} established", LogOptions.UserFacing);
 
                 _deviceRegistry.IsExclusiveMode = _appSettings.UseExclusiveMode; //Re-enable Exclusive Mode
 
@@ -112,8 +112,8 @@ namespace DS4Windows.Services
 
                 if (showlog)
                 {
-                    AppLogger.LogToGui(DS4WinWPF.Properties.Resources.SearchingController, false);
-                    AppLogger.LogToGui(_deviceRegistry.IsExclusiveMode ? DS4WinWPF.Properties.Resources.UsingExclusive : DS4WinWPF.Properties.Resources.UsingShared, false);
+                    AppLogger.Log(AppLogLevel.Info, DS4WinWPF.Properties.Resources.SearchingController, LogOptions.UserFacing);
+                    AppLogger.Log(AppLogLevel.Info, _deviceRegistry.IsExclusiveMode ? DS4WinWPF.Properties.Resources.UsingExclusive : DS4WinWPF.Properties.Resources.UsingShared, LogOptions.UserFacing);
                 }
 
                 if (_appSettings.UseOscServer && !_oscService.HasListener)
@@ -172,7 +172,7 @@ namespace DS4Windows.Services
                 }
                 catch (Exception e)
                 {
-                    AppLogger.LogToGui(e.Message, true);
+                    AppLogger.Log(AppLogLevel.Warn, e.Message, LogOptions.UserFacing);
                     AppLogger.LogToTray(e.Message, true);
                 }
 
@@ -196,7 +196,7 @@ namespace DS4Windows.Services
                     logMessage = "Could not connect to ViGEmBus. Please check the status of the System device in Device Manager and if Visual C++ 2017 Redistributable is installed.";
                 }
 
-                AppLogger.LogToGui(logMessage, false);
+                AppLogger.Log(AppLogLevel.Info, logMessage, LogOptions.UserFacing);
                 AppLogger.LogToTray(logMessage);
             }
 
@@ -220,9 +220,9 @@ namespace DS4Windows.Services
                 PreServiceStop?.Invoke(this, EventArgs.Empty);
 
                 if (showlog)
-                    AppLogger.LogToGui(DS4WinWPF.Properties.Resources.StoppingX360, false);
+                    AppLogger.Log(AppLogLevel.Info, DS4WinWPF.Properties.Resources.StoppingX360, LogOptions.UserFacing);
 
-                AppLogger.LogToGui("Closing connection to ViGEmBus", false);
+                AppLogger.Log(AppLogLevel.Info, "Closing connection to ViGEmBus", LogOptions.UserFacing);
 
                 bool anyUnplugged = false;
                 for (int i = 0, arlength = slots.DS4Controllers.Length; i < arlength; i++)
@@ -280,7 +280,7 @@ namespace DS4Windows.Services
                 }
 
                 if (showlog)
-                    AppLogger.LogToGui(DS4WinWPF.Properties.Resources.StoppingDS4, false);
+                    AppLogger.Log(AppLogLevel.Info, DS4WinWPF.Properties.Resources.StoppingDS4, LogOptions.UserFacing);
 
                 _deviceRegistry.StopControllers();
                 slots.SlotManager.ClearControllerList();
@@ -301,7 +301,7 @@ namespace DS4Windows.Services
                 }
 
                 if (showlog)
-                    AppLogger.LogToGui(DS4WinWPF.Properties.Resources.StoppedDS4Windows, false);
+                    AppLogger.Log(AppLogLevel.Info, DS4WinWPF.Properties.Resources.StoppedDS4Windows, LogOptions.UserFacing);
 
                 while (_virtualPad.OutputSlotManager.RunningQueue)
                 {
@@ -317,7 +317,7 @@ namespace DS4Windows.Services
                 _virtualPad.StopViGEm();
 
                 // Disconnect from KBM system when stopping ControlService
-                AppLogger.LogToGui($"Closing connection to output handler {_virtualKBM.GetDisplayName()}", false);
+                AppLogger.Log(AppLogLevel.Info, $"Closing connection to output handler {_virtualKBM.GetDisplayName()}", LogOptions.UserFacing);
                 _virtualKBM.Disconnect();
                 InServiceTask = false;
                 ActiveControllers = 0;

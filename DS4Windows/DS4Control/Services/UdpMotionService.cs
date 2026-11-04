@@ -79,13 +79,13 @@ namespace DS4Windows.Services
                             try
                             {
                                 _udpServer.Start(UDP_SERVER_PORT, UDP_SERVER_LISTEN_ADDRESS);
-                                AppLogger.LogToGui($"UDP server listening on address {UDP_SERVER_LISTEN_ADDRESS} port {UDP_SERVER_PORT}", false);
+                                AppLogger.Log(AppLogLevel.Info, $"UDP server listening on address {UDP_SERVER_LISTEN_ADDRESS} port {UDP_SERVER_PORT}", LogOptions.UserFacing);
                             }
                             catch (System.Net.Sockets.SocketException ex)
                             {
                                 var errMsg = String.Format("Couldn't start UDP server on address {0}:{1}, outside applications won't be able to access pad data ({2})", UDP_SERVER_LISTEN_ADDRESS, UDP_SERVER_PORT, ex.SocketErrorCode);
 
-                                AppLogger.LogToGui(errMsg, true);
+                                AppLogger.Log(AppLogLevel.Warn, errMsg, LogOptions.UserFacing);
                                 AppLogger.LogToTray(errMsg, true, true);
                             }
                         }).Wait();
@@ -101,7 +101,7 @@ namespace DS4Windows.Services
                     udpChangeStatus = true;
                     _udpServer.Stop();
                     _udpServer = null;
-                    AppLogger.LogToGui("Closed UDP server", false);
+                    AppLogger.Log(AppLogLevel.Info, "Closed UDP server", LogOptions.UserFacing);
                     udpChangeStatus = false;
 
                     for (int i = 0; i < UdpServer.NUMBER_SLOTS; i++)
@@ -124,13 +124,13 @@ namespace DS4Windows.Services
                 try
                 {
                     _udpServer.Start(UDP_SERVER_PORT, UDP_SERVER_LISTEN_ADDRESS);
-                    AppLogger.LogToGui($"UDP server listening on address {UDP_SERVER_LISTEN_ADDRESS} port {UDP_SERVER_PORT}", false);
+                    AppLogger.Log(AppLogLevel.Info, $"UDP server listening on address {UDP_SERVER_LISTEN_ADDRESS} port {UDP_SERVER_PORT}", LogOptions.UserFacing);
                 }
                 catch (System.Net.Sockets.SocketException ex)
                 {
                     var errMsg = string.Format("Couldn't start UDP server on address {0}:{1}, outside applications won't be able to access pad data ({2})", UDP_SERVER_LISTEN_ADDRESS, UDP_SERVER_PORT, ex.SocketErrorCode);
 
-                    AppLogger.LogToGui(errMsg, true);
+                    AppLogger.Log(AppLogLevel.Warn, errMsg, LogOptions.UserFacing);
                     AppLogger.LogToTray(errMsg, true, true);
                 }
             }
@@ -211,13 +211,13 @@ namespace DS4Windows.Services
                         }
                     });
                 }
-                AppLogger.LogToGui($"UDP server listening on address {UDP_SERVER_LISTEN_ADDRESS} port {UDP_SERVER_PORT}", false);
+                AppLogger.Log(AppLogLevel.Info, $"UDP server listening on address {UDP_SERVER_LISTEN_ADDRESS} port {UDP_SERVER_PORT}", LogOptions.UserFacing);
             }
             catch (System.Net.Sockets.SocketException ex)
             {
                 var errMsg = String.Format("Couldn't start UDP server on address {0}:{1}, outside applications won't be able to access pad data ({2})", UDP_SERVER_LISTEN_ADDRESS, UDP_SERVER_PORT, ex.SocketErrorCode);
 
-                AppLogger.LogToGui(errMsg, true);
+                AppLogger.Log(AppLogLevel.Warn, errMsg, LogOptions.UserFacing);
                 AppLogger.LogToTray(errMsg, true, true);
             }
 

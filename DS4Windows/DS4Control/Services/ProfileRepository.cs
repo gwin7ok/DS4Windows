@@ -260,7 +260,7 @@ namespace DS4Windows
 
             if (changed.Count > 0)
             {
-                AppLogger.LogToGui($"[DI] Controls profile switch target renamed '{oldName}' to '{newName}' in {changed.Count} profile(s): {string.Join(", ", changed)}", false);
+                AppLogger.Log(AppLogLevel.Info, $"[DI] Controls profile switch target renamed '{oldName}' to '{newName}' in {changed.Count} profile(s): {string.Join(", ", changed)}", LogOptions.UserFacing);
             }
 
             return changed;
@@ -401,7 +401,7 @@ namespace DS4Windows
             if (changed.Count > 0)
             {
                 string action = newName == null ? $"removed '{oldName}'" : $"renamed '{oldName}' to '{newName}'";
-                AppLogger.LogToGui($"[DI] Action reference {action} in {changed.Count} profile(s): {string.Join(", ", changed)}", false);
+                AppLogger.Log(AppLogLevel.Info, $"[DI] Action reference {action} in {changed.Count} profile(s): {string.Join(", ", changed)}", LogOptions.UserFacing);
             }
 
             return changed;

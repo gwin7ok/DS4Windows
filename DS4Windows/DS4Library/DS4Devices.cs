@@ -316,7 +316,7 @@ namespace DS4Windows
                                 deviceSerials.Add(serial);
                                 serialDevices.Add(serial, ds4Device);
                                 string foundMsg = $"{DS4WinWPF.Properties.Resources.FoundController} {ds4Device.getMacAddress()} ({ds4Device.getConnectionType()}) ({ds4Device.DisplayName}).";
-                                AppLogger.LogToGui(foundMsg, false);
+                                AppLogger.Log(AppLogLevel.Info, foundMsg, LogOptions.UserFacing);
                                 try
                                 {
                                     DS4WinWPF.NotificationService.ShowToast(string.Empty, foundMsg);

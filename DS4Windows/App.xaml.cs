@@ -695,7 +695,7 @@ namespace DS4WinWPF
             window.CheckMinStatus();
 
             bool runningAsAdmin = _environmentService.IsAdministrator();
-            AppLogger.LogToGui($"Running as {(runningAsAdmin ? "Admin" : "User")}", false);
+            AppLogger.Log(AppLogLevel.Info, $"Running as {(runningAsAdmin ? "Admin" : "User")}", LogOptions.UserFacing);
 
             if (_environmentService.HidHideInstalled)
             {

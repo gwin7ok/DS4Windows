@@ -540,7 +540,7 @@ namespace DS4Windows
             }
 
             if (this.FeatureSet != VidPidFeatureSet.DefaultDS4)
-                AppLogger.LogToGui($"The gamepad {displayName} ({conType}) uses custom feature set ({this.FeatureSet.ToString("F")})", false);
+                AppLogger.Log(AppLogLevel.Info, $"The gamepad {displayName} ({conType}) uses custom feature set ({this.FeatureSet.ToString("F")})", LogOptions.UserFacing);
 
             runCalib = (this.featureSet & VidPidFeatureSet.NoGyroCalib) == 0;
 
@@ -708,7 +708,7 @@ namespace DS4Windows
                     bool validCrc = recvCrc32 == calcCrc32;
                     if (!validCrc && tries >= 5)
                     {
-                        AppLogger.LogToGui("Gyro Calibration Failed", true);
+                        AppLogger.Log(AppLogLevel.Warn, "Gyro Calibration Failed", LogOptions.UserFacing);
                         continue;
                     }
                     else if (validCrc)
@@ -721,7 +721,7 @@ namespace DS4Windows
 
                 if (hDevice.Attributes.ProductId == 0x5C4 && hDevice.Attributes.VendorId == 0x054C &&
                     sixAxis.fixupInvertedGyroAxis())
-                    AppLogger.LogToGui($"Automatically fixed inverted YAW gyro axis in DS4 v.1 BT gamepad ({Mac.ToString()})", false);
+                    AppLogger.Log(AppLogLevel.Info, $"Automatically fixed inverted YAW gyro axis in DS4 v.1 BT gamepad ({Mac.ToString()})", LogOptions.UserFacing);
             }
             else
             {
@@ -1105,14 +1105,14 @@ namespace DS4Windows
                         {
                             if (res == HidDevice.ReadStatus.WaitTimedOut)
                             {
-                                AppLogger.LogToGui(Mac.ToString() + " disconnected due to timeout", true);
+                                AppLogger.Log(AppLogLevel.Warn, Mac.ToString() + " disconnected due to timeout", LogOptions.UserFacing);
                             }
                             else
                             {
                                 int winError = Marshal.GetLastWin32Error();
                                 AppLogger.LogDebug($"{Mac} {DateTime.UtcNow.ToString("o")}> disconnect due to read failure: {winError.ToString("x8")}");
                                 //Log.LogToGui(Mac.ToString() + " disconnected due to read failure: " + winError, true);
-                                AppLogger.LogToGui(Mac.ToString() + " disconnected due to read failure: " + winError, true);
+                                AppLogger.Log(AppLogLevel.Warn, Mac.ToString() + " disconnected due to read failure: " + winError, LogOptions.UserFacing);
                             }
 
                             readWaitEv.Reset();
@@ -1135,7 +1135,7 @@ namespace DS4Windows
                         {
                             if (res == HidDevice.ReadStatus.WaitTimedOut)
                             {
-                                AppLogger.LogToGui(Mac.ToString() + " disconnected due to timeout", true);
+                                AppLogger.Log(AppLogLevel.Warn, Mac.ToString() + " disconnected due to timeout", LogOptions.UserFacing);
                             }
                             else
                             {
@@ -1430,7 +1430,7 @@ namespace DS4Windows
 
                         if (shouldDisconnect)
                         {
-                            AppLogger.LogToGui(Mac.ToString() + " disconnecting due to idle disconnect", false);
+                            AppLogger.Log(AppLogLevel.Info, Mac.ToString() + " disconnecting due to idle disconnect", LogOptions.UserFacing);
 
                             if (conType == ConnectionType.BT)
                             {

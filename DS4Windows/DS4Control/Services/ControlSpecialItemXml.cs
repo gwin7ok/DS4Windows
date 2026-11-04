@@ -77,7 +77,7 @@ namespace DS4Windows.Services
             if (typeText == "SASteeringWheelEmulationCalibrate")
             {
                 // Phase9 Steering 削除 W1: 廃止した種別。読み込まずに取り除く（次の保存でファイルから消え、そのボタンは既定に戻る）
-                AppLogger.LogToGui(string.Format(DS4WinWPF.Properties.Resources.ObsoleteAssignmentRemovedProfile, typeText, node.Name), false);
+                AppLogger.Log(AppLogLevel.Info, string.Format(DS4WinWPF.Properties.Resources.ObsoleteAssignmentRemovedProfile, typeText, node.Name), LogOptions.UserFacing);
                 return false;
             }
 

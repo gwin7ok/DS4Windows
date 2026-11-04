@@ -33,7 +33,7 @@ namespace DS4Windows.Services
         {
             if (_environmentService.HidHideInstalled)
             {
-                AppLogger.LogToGui("HidHide control device found", false);
+                AppLogger.Log(AppLogLevel.Info, "HidHide control device found", LogOptions.UserFacing);
                 using (IHidHideApi hidHideDevice = _apiFactory.Open())
                 {
                     if (!hidHideDevice.IsOpen())
@@ -87,13 +87,13 @@ namespace DS4Windows.Services
                     bool exists = dosPaths.Contains(realPath);
                     if (!exists && AddExe)
                     {
-                        AppLogger.LogToGui($"{ExeName} not found in HidHide whitelist. Adding to list", false);
+                        AppLogger.Log(AppLogLevel.Info, $"{ExeName} not found in HidHide whitelist. Adding to list", LogOptions.UserFacing);
                         dosPaths.Add(realPath);
                         hidHideDevice.SetWhitelist(dosPaths);
                     }
                     if (exists && !AddExe)
                     {
-                        AppLogger.LogToGui($"{ExeName} found in HidHide whitelist. Removing from list", false);
+                        AppLogger.Log(AppLogLevel.Info, $"{ExeName} found in HidHide whitelist. Removing from list", LogOptions.UserFacing);
                         dosPaths.Remove(realPath);
                         hidHideDevice.SetWhitelist(dosPaths);
                     }

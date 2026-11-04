@@ -287,16 +287,16 @@ namespace DS4Windows
                 {
                     if (memCount != fileCount)
                     {
-                        AppLogger.LogToGui($"Warning: action count mismatch after {caller}: memory={memCount} file={fileCount}", true);
+                        AppLogger.Log(AppLogLevel.Warn, $"Warning: action count mismatch after {caller}: memory={memCount} file={fileCount}", LogOptions.UserFacing);
                     }
                     else
                     {
-                        AppLogger.LogToGui($"Action list reloaded ({memCount} entries) after {caller}.", false);
+                        AppLogger.Log(AppLogLevel.Info, $"Action list reloaded ({memCount} entries) after {caller}.", LogOptions.UserFacing);
                     }
                 }
                 else
                 {
-                    AppLogger.LogToGui($"Action list reloaded ({memCount} entries) after {caller}. (file count unknown)", false);
+                    AppLogger.Log(AppLogLevel.Info, $"Action list reloaded ({memCount} entries) after {caller}. (file count unknown)", LogOptions.UserFacing);
                 }
             }
             catch (Exception ex)

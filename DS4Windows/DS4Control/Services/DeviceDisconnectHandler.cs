@@ -107,7 +107,7 @@ namespace DS4Windows.Services
                         removed += ". " + DS4WinWPF.Properties.Resources.ChargeController;
                     }
 
-                    AppLogger.LogToGui(removed, false);
+                    AppLogger.Log(AppLogLevel.Info, removed, LogOptions.UserFacing);
                     AppLogger.LogToTray(removed);
                     /*Stopwatch sw = new Stopwatch();
                     sw.Start();

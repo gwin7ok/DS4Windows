@@ -366,7 +366,7 @@ namespace DS4Windows.Services
             catch (XmlException)
             {
                 // XML file has become corrupt. Start from scratch
-                AppLogger.LogToGui(DS4WinWPF.Properties.Resources.XMLActionsCorrupt, true);
+                AppLogger.Log(AppLogLevel.Warn, DS4WinWPF.Properties.Resources.XMLActionsCorrupt, LogOptions.UserFacing);
                 m_Xdoc.RemoveAll();
                 PrepareActionsXml(m_Xdoc);
             }

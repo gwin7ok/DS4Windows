@@ -75,11 +75,11 @@ namespace DS4Windows
                 {
                     if (found)
                     {
-                        AppLogger.LogToGui($"HID#{iEnumeratedDevCount} CONNECTING to {x.Description}  VID={tempDev.Attributes.VendorHexId}  PID={tempDev.Attributes.ProductHexId}  Usage=0x{tempDev.Capabilities.Usage.ToString("X")}  Version=0x{tempDev.Attributes.Version.ToString("X")}  Path={x.Path}", false);
+                        AppLogger.Log(AppLogLevel.Info, $"HID#{iEnumeratedDevCount} CONNECTING to {x.Description}  VID={tempDev.Attributes.VendorHexId}  PID={tempDev.Attributes.ProductHexId}  Usage=0x{tempDev.Capabilities.Usage.ToString("X")}  Version=0x{tempDev.Attributes.Version.ToString("X")}  Path={x.Path}", LogOptions.UserFacing);
                     }
                     else
                     {
-                        AppLogger.LogToGui($"HID#{iEnumeratedDevCount} Unknown device {x.Description}  VID={tempDev.Attributes.VendorHexId}  PID={tempDev.Attributes.ProductHexId}  Usage=0x{tempDev.Capabilities.Usage.ToString("X")}  Version=0x{tempDev.Attributes.Version.ToString("X")}  Path={x.Path}", false);
+                        AppLogger.Log(AppLogLevel.Info, $"HID#{iEnumeratedDevCount} Unknown device {x.Description}  VID={tempDev.Attributes.VendorHexId}  PID={tempDev.Attributes.ProductHexId}  Usage=0x{tempDev.Capabilities.Usage.ToString("X")}  Version=0x{tempDev.Attributes.Version.ToString("X")}  Path={x.Path}", LogOptions.UserFacing);
                     }
                 }
             }
@@ -87,7 +87,7 @@ namespace DS4Windows
             if (layerSettings != null && layerSettings.VerboseLogMessages && iEnumeratedDevCount > 0)
             {
                 // This EnumerateDS4 method is called 3-4 times when a gamepad is connected. Print out "separator" log msg line between different enumeration loops to make the logfile easier to read
-                AppLogger.LogToGui($"-------------------------", false);
+                AppLogger.Log(AppLogLevel.Info, $"-------------------------", LogOptions.UserFacing);
             }
 
             return foundDevs;

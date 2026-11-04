@@ -32,7 +32,7 @@ namespace DS4Windows.Services
             string devError = _tempStrings[ind] = device.error;
             if (!string.IsNullOrEmpty(devError))
             {
-                AppLogger.LogToGui(devError, false);
+                AppLogger.Log(AppLogLevel.Info, devError, LogOptions.UserFacing);
             }
 
             if (_inWarnMonitor[ind])
@@ -69,7 +69,7 @@ namespace DS4Windows.Services
             if (on)
             {
                 _lag[ind] = true;
-                AppLogger.LogToGui(string.Format(DS4WinWPF.Properties.Resources.LatencyOverTen, (ind + 1), device.Latency), true);
+                AppLogger.Log(AppLogLevel.Warn, string.Format(DS4WinWPF.Properties.Resources.LatencyOverTen, (ind + 1), device.Latency), LogOptions.UserFacing);
                 if (_appSettings.FlashWhenLate)
                 {
                     DS4Color color = new DS4Color { red = 50, green = 0, blue = 0 };
@@ -81,7 +81,7 @@ namespace DS4Windows.Services
             else
             {
                 _lag[ind] = false;
-                AppLogger.LogToGui(DS4WinWPF.Properties.Resources.LatencyNotOverTen.Replace("*number*", (ind + 1).ToString()), false);
+                AppLogger.Log(AppLogLevel.Info, DS4WinWPF.Properties.Resources.LatencyNotOverTen.Replace("*number*", (ind + 1).ToString()), LogOptions.UserFacing);
                 DS4LightBar.forcelight[ind] = false;
                 DS4LightBar.forcedFlash[ind] = 0;
                 device.LightBarColor = _profileSettings.GetMainColor(ind);

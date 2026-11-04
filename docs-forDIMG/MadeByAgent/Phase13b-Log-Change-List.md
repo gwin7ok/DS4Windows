@@ -126,3 +126,9 @@
 
 - **F2（文言・ファイルのみ）**: メソッド名・診断名だった接頭辞を機能名へ統一 — `[SortSpecialActionsList]`（9）・`[SpecialActionsHeader_Click]`（3）→ `[SpecialActions]`、`[MacroMove]`（3）→ `[Macro]`、`[MainWindow.EditProfile]`（1）→ `[MainWindow]`、`[ApplyProfile]`（1）→ `[Profile]`（`ProfileEditor`、`MacroStepExecutor`、`ProfileApplicationService`、`MainWindow`）。`[Legacy]`・`[DI]` は、ログタブが画面に出さない印として使っているため維持。
 - **F6（ガード）**: 補間文字列の Trace／Debug（約 340 か所）を、実行頻度で調べた。毎フレーム実行されうるのは `TriggerDispatchEngine.ProcessUntrigger` の `SpecialAction UNTRIGGER check`（トリガー待ちの間、毎フレーム）だけが無防備だったため、`IsDebugEnabled` のガードを付けた。他は、①すでにガード済み（`ButtonOutputAction.ApplyFrame` は `bool trace = IsTraceEnabled`）、②例外時だけ実行、③押下・解放などのイベントの分岐の中（`SyntheticInputCommitter.Commit` の 34 か所は、イベントが起きたときだけ組み立てる）で、毎フレームの割り当てはない。ガードは付けない。
+
+### 13b-9（シムの削除。決定: 2026-11-04「LogToGui だけ削除」）
+
+- `AppLogger.LogToGui` の呼び出し 61 か所（テスト内の旧実装の再現 3 か所を含む）を `AppLogger.Log(level, msg, LogOptions.UserFacing／Temporary)` へ書き換え。`warning=true` → Warn、`false` → Info、`temporary` → `LogOptions.Temporary`。出力（画面・ファイル）は変わらない（**文言・レベルの変更なし**。G1〜G3 で個別に変えたものを除く）。
+- `LogToGui` と、発火元のない `AppLogger.TrayIconLog` イベント（`[Obsolete]`）を削除。
+- `LogTrace`／`LogDebug`／`LogInfo`／`LogWarn`／`LogError` は、`Log()` を呼ぶレベル名付きの短縮形として残す（出し先は名前で分けていない）。

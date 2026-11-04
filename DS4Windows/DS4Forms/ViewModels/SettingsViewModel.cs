@@ -353,7 +353,7 @@ namespace DS4WinWPF.DS4Forms.ViewModels
                 _appSettings.CustomSteamFolder = value;
                 if (value != string.Empty && !Directory.Exists(value))
                 {
-                    AppLogger.LogToGui(string.Format(Translations.Strings.CustomSteamFolderNotFound, value), true);
+                    AppLogger.Log(AppLogLevel.Warn, string.Format(Translations.Strings.CustomSteamFolderNotFound, value), LogOptions.UserFacing);
                 }
             }
         }

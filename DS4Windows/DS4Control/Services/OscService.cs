@@ -46,13 +46,13 @@ namespace DS4Windows.Services
             {
                 _listener = _transportFactory.CreateListener(_appSettings.OscServerPort, HandleMessage);
 
-                AppLogger.LogToGui("OSC LISTENER STARTED AT PORT: " + _appSettings.OscServerPort, false);
+                AppLogger.Log(AppLogLevel.Info, "OSC LISTENER STARTED AT PORT: " + _appSettings.OscServerPort, LogOptions.UserFacing);
             }
             else
             {
                 _listener.Close();
                 _listener = null;
-                AppLogger.LogToGui("OSC LISTENER STOPPED", false);
+                AppLogger.Log(AppLogLevel.Info, "OSC LISTENER STOPPED", LogOptions.UserFacing);
             }
         }
 
@@ -60,12 +60,12 @@ namespace DS4Windows.Services
         {
             if (state)
             {
-                AppLogger.LogToGui("OSC SENDER STARTED AT IP: " + _appSettings.OscSenderAddress + " PORT: " + _appSettings.OscSenderPort, false);
+                AppLogger.Log(AppLogLevel.Info, "OSC SENDER STARTED AT IP: " + _appSettings.OscSenderAddress + " PORT: " + _appSettings.OscSenderPort, LogOptions.UserFacing);
                 _sender = _transportFactory.CreateSender(_appSettings.OscSenderAddress, _appSettings.OscSenderPort);
             }
             else
             {
-                AppLogger.LogToGui("OSC SENDER STOPPED", false);
+                AppLogger.Log(AppLogLevel.Info, "OSC SENDER STOPPED", LogOptions.UserFacing);
                 // Phase6-Step9-3c: フィールドを先に null にしてから閉じる（入力スレッドが閉じたソケットへ送らないようにする）
                 IOscMessageSender sender = _sender;
                 if (sender == null) { return; }
@@ -125,7 +125,7 @@ namespace DS4Windows.Services
             }
             catch (Exception e)
             {
-                AppLogger.LogToGui("Error Receiving OSC Message: " + e.Message, false, true);
+                AppLogger.Log(AppLogLevel.Info, "Error Receiving OSC Message: " + e.Message, LogOptions.Temporary);
             }
 
             if (command == null)

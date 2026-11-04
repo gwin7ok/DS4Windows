@@ -71,7 +71,7 @@ namespace DS4WindowsTests
                 }
                 catch (Exception e)
                 {
-                    AppLogger.LogToGui("Error Receiving OSC Message: " + e.Message, false, true);
+                    AppLogger.Log(AppLogLevel.Info, "Error Receiving OSC Message: " + e.Message, LogOptions.Temporary);
                 }
 
                 if (command == null)
@@ -104,7 +104,7 @@ namespace DS4WindowsTests
 
                 if (stateInd == -1)
                 {
-                    AppLogger.LogToGui("Received malformed OSC address: " + address, false);
+                    AppLogger.Log(AppLogLevel.Info, "Received malformed OSC address: " + address, LogOptions.UserFacing);
                     return;
                 }
 
@@ -112,7 +112,7 @@ namespace DS4WindowsTests
                 {
                     if (!UseOscSender)
                     {
-                        AppLogger.LogToGui("Battery level requested, but the OSC Sender isn't active. Turn it on in Settings.", false);
+                        AppLogger.Log(AppLogLevel.Info, "Battery level requested, but the OSC Sender isn't active. Turn it on in Settings.", LogOptions.UserFacing);
                     }
                     else
                     {

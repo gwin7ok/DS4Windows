@@ -266,7 +266,7 @@ namespace DS4WinWPF.DS4Control.DTOXml
                         break;
                     case "SASteeringWheelEmulationCalibrate":
                         // Phase9 Steering 削除 W1: 廃止した種別。読み込まずに取り除く（tempAction は null のまま＝一覧に入らない。次の保存でファイルから消える）
-                        AppLogger.LogToGui(string.Format(DS4WinWPF.Properties.Resources.ObsoleteAssignmentRemovedSpecialAction, "SASteeringWheelEmulationCalibrate", actionSerializer.Name), false);
+                        AppLogger.Log(AppLogLevel.Info, string.Format(DS4WinWPF.Properties.Resources.ObsoleteAssignmentRemovedSpecialAction, "SASteeringWheelEmulationCalibrate", actionSerializer.Name), LogOptions.UserFacing);
                         break;
                     case "GyroCalibration":
                         double.TryParse(actionSerializer.Details, System.Globalization.NumberStyles.Float, DS4Windows.ConfigFileCulture.DecimalCulture, out var delay);

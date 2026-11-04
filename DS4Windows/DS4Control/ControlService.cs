@@ -273,7 +273,7 @@ namespace DS4Windows
                 while (_lifecycle.InServiceTask)
                     Thread.SpinWait(1000);
 
-                AppLogger.LogToGui(string.Format(DS4WinWPF.Translations.Strings.ViGEmPluginFailure, errorCode), true);
+                AppLogger.Log(AppLogLevel.Warn, string.Format(DS4WinWPF.Translations.Strings.ViGEmPluginFailure, errorCode), LogOptions.UserFacing);
                 Stop();
             }));
         }
@@ -384,7 +384,7 @@ namespace DS4Windows
             {
                 string message = DS4WinWPF.Properties.Resources.CouldNotOpenDS4.Replace("*Mac address*", device.getMacAddress()) + " " +
                     DS4WinWPF.Properties.Resources.QuitOtherPrograms;
-                AppLogger.LogToGui(message, true);
+                AppLogger.Log(AppLogLevel.Warn, message, LogOptions.UserFacing);
                 AppLogger.LogToTray(message, true);
             }
         }

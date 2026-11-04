@@ -34,14 +34,14 @@ namespace DS4Windows.Services
                 if (_profileSettings.TouchpadActiveArray[deviceID] && _touchreleased[deviceID])
                 {
                     _profileSettings.TouchpadActiveArray[deviceID] = false;
-                    AppLogger.LogToGui(DS4WinWPF.Properties.Resources.TouchpadMovementOff, false);
+                    AppLogger.Log(AppLogLevel.Info, DS4WinWPF.Properties.Resources.TouchpadMovementOff, LogOptions.UserFacing);
                     AppLogger.LogToTray(DS4WinWPF.Properties.Resources.TouchpadMovementOff);
                     _touchreleased[deviceID] = false;
                 }
                 else if (_touchreleased[deviceID])
                 {
                     _profileSettings.TouchpadActiveArray[deviceID] = true;
-                    AppLogger.LogToGui(DS4WinWPF.Properties.Resources.TouchpadMovementOn, false);
+                    AppLogger.Log(AppLogLevel.Info, DS4WinWPF.Properties.Resources.TouchpadMovementOn, LogOptions.UserFacing);
                     AppLogger.LogToTray(DS4WinWPF.Properties.Resources.TouchpadMovementOn);
                     _touchreleased[deviceID] = false;
                 }

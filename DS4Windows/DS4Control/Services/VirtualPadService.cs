@@ -459,7 +459,7 @@ namespace DS4Windows.Services
                         }
                         else
                         {
-                            AppLogger.LogToGui("Failed. No open output slot found", true);
+                            AppLogger.Log(AppLogLevel.Warn, "Failed. No open output slot found", LogOptions.UserFacing);
                         }
                     }
                     else
@@ -479,7 +479,7 @@ namespace DS4Windows.Services
                 // Need to check for possible ViGEmBus failure here
                 if (success && slotDevice.OutputDevice != null)
                 {
-                    AppLogger.LogToGui($"Associated input controller #{index + 1} ({device.DisplayName}) to virtual {slotDevice.OutputDevice.GetDeviceType()} Controller in{(slotDevice.PermanentType != OutContType.None ? " permanent" : "")} output slot #{slotDevice.Index + 1}", false);
+                    AppLogger.Log(AppLogLevel.Info, $"Associated input controller #{index + 1} ({device.DisplayName}) to virtual {slotDevice.OutputDevice.GetDeviceType()} Controller in{(slotDevice.PermanentType != OutContType.None ? " permanent" : "")} output slot #{slotDevice.Index + 1}", LogOptions.UserFacing);
                     _profileSettings.UseDInputOnlyArray[index] = false;
                 }
             }
@@ -519,7 +519,7 @@ namespace DS4Windows.Services
                 if (dev != null && slotDevice != null)
                 {
                     string tempType = dev.GetDeviceType();
-                    AppLogger.LogToGui($"Disassociated virtual {tempType} Controller in{(slotDevice.CurrentReserveStatus == OutSlotDevice.ReserveStatus.Permanent ? " permanent" : "")} output slot #{slotDevice.Index + 1} from input controller #{index + 1} ({device.DisplayName})", false, false);
+                    AppLogger.Log(AppLogLevel.Info, $"Disassociated virtual {tempType} Controller in{(slotDevice.CurrentReserveStatus == OutSlotDevice.ReserveStatus.Permanent ? " permanent" : "")} output slot #{slotDevice.Index + 1} from input controller #{index + 1} ({device.DisplayName})", LogOptions.UserFacing);
 
                     OutContType currentType = ActiveOutDevType[index];
                     outputDevices[index] = null;

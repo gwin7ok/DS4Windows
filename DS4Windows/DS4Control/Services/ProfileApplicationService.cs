@@ -310,7 +310,7 @@ namespace DS4Windows
                 prolog = $"Controller {device + 1} is now using Profile \"{profileName}\" (Battery: {battery}%)";
             }
 
-            AppLogger.LogToGui(prolog, false);
+            AppLogger.Log(AppLogLevel.Info, prolog, LogOptions.UserFacing);
             AppLogger.LogDebug($"ApplyProfile: Calling LogProfileChanged...");
             try
             {

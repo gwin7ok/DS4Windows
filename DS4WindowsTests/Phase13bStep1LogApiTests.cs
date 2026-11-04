@@ -5,7 +5,7 @@ using Xunit;
 namespace DS4WindowsTests
 {
     /// <summary>
-    /// Phase13b-Step1: 新 API <c>AppLogger.Log</c> と、旧 <c>LogToGui</c> の対応表（Phase13b-Plan.md §4）を固定する。
+    /// Phase13b-Step1: 新 API <c>AppLogger.Log</c> との出力（レベル、利用者向け、一時表示）を固定する。旧 <c>LogToGui</c> は Phase13b-Step9 で削除した。
     /// GuiLog は静的イベントのため、他のテストと並行しないよう同じコレクションに入れる。
     /// </summary>
     [Collection("GuiLogSubscribers")]
@@ -19,22 +19,6 @@ namespace DS4WindowsTests
             try { act(); }
             finally { AppLogger.GuiLog -= sink; }
             return got;
-        }
-
-        [Theory]
-        [InlineData(false, false, AppLogLevel.Info, false)]
-        [InlineData(true, false, AppLogLevel.Warn, false)]
-        [InlineData(false, true, AppLogLevel.Info, true)]
-        [InlineData(true, true, AppLogLevel.Warn, true)]
-        public void LogToGui_MapsToUserFacingLog(bool warning, bool temporary, AppLogLevel level, bool expectTemporary)
-        {
-            var got = Capture(() => AppLogger.LogToGui("P13b-msg", warning, temporary));
-
-            var e = Assert.Single(got);
-            Assert.Equal("P13b-msg", e.Data);
-            Assert.Equal(warning, e.Warning);
-            Assert.Equal(expectTemporary, e.Temporary);
-            Assert.Equal(level, e.Level);
         }
 
         [Theory]

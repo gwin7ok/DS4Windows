@@ -192,7 +192,7 @@ namespace DS4WinWPF.DS4Control
                     {
                         targetDpiX = primaryScreen.ScaleFactor;
                         targetDpiY = primaryScreen.ScaleFactor;
-                        AppLogger.LogToGui($"ApplyPlacement: Using Primary Monitor DPI Scale = {targetDpiX:F3}", false);
+                        AppLogger.Log(AppLogLevel.Info, $"ApplyPlacement: Using Primary Monitor DPI Scale = {targetDpiX:F3}", LogOptions.UserFacing);
                     }
                 }
             }

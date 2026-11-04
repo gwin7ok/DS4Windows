@@ -77,7 +77,7 @@ namespace DS4Windows
                 // 押下済みフラグをクリア（ActionManager が持つ IsToggledOn）。Phase13-Step4: 管理役は引数で受ける（旧: 静的 ActionManager）
                 try { actionManager?.ClearToggledOnForKey(key); } catch { }
 
-                AppLogger.LogToGui($"Runtime state for key {key} cleared on all devices.", false);
+                AppLogger.Log(AppLogLevel.Info, $"Runtime state for key {key} cleared on all devices.", LogOptions.UserFacing);
             }
             catch (Exception ex)
             {

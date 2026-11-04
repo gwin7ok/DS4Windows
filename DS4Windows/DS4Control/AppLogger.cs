@@ -24,21 +24,13 @@ namespace DS4Windows
     public class AppLogger
     {
         private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
-        // 2026-09: MainWindowの購読先を INotificationService.NotificationTriggered へ移行済みのため、
-        // このイベント自体は発火されなくなった。次回クリーンアップで削除予定（Phase5-Step14 通知経路統合参照）。
-        // CS0067（未使用イベント）を意図的に抑制する。削除ではなく[Obsolete]付きで一旦残す判断は
-        // 過渡期の安全策（3.3原則4）であり、警告放置ではなく明示的な抑制であることを示す。
-        [Obsolete("MainWindowの購読先をINotificationService.NotificationTriggeredへ移行済み。次回クリーンアップで削除予定。")]
-#pragma warning disable CS0067 // 発火元を撤去済み。次回クリーンアップでイベント自体を削除するまでの意図的な残置。
-        public static event EventHandler<DebugEventArgs> TrayIconLog;
-#pragma warning restore CS0067
         public static event EventHandler<DebugEventArgs> GuiLog;
         // 型付きプロファイル変更イベント
         public static event EventHandler<ProfileChangedEventArgs> ProfileChanged;
 
         // GUI表示用ログ（LoggerHolderがGuiLogイベントを受け取ってファイル出力）
-        // Phase13b-Step1: 汎用のログ API（Log-Policy.md §1・§7）。旧 API（LogToGui／LogDebug／LogTrace／LogInfo／LogWarn／LogError）は、
-        // この API へ委譲する薄いシム（規約 §2.1）。全呼び出しの移行後（Phase13b-Step9）にシムを削除する。
+        // Phase13b-Step1: 汎用のログ API（Log-Policy.md §1・§7）。レベル名付きの短縮形（LogTrace／LogDebug／LogInfo／LogWarn／LogError）は、
+        // この API へ委譲する（決定: 2026-11-04。LogToGui とトレイ用の TrayIconLog イベントは Phase13b-Step9 で削除した）。
         //  - options が利用者向け（IsUserFacing）: GuiLog を発火する。ファイルへの出力は LoggerHolder が行う（一時表示は出さない）。画面の購読者は従来どおり GuiLog を受ける。
         //  - それ以外: ファイル（NLog）のみ。
         public static void Log(AppLogLevel level, string data, LogOptions options = null)
@@ -62,12 +54,6 @@ namespace DS4Windows
                 case AppLogLevel.Error: return NLog.LogLevel.Error;
                 default: return NLog.LogLevel.Info;
             }
-        }
-
-        // 旧 API（シム）。warning=true → Warn、false → Info、temporary → 一時表示。
-        public static void LogToGui(string data, bool warning, bool temporary = false)
-        {
-            Log(warning ? AppLogLevel.Warn : AppLogLevel.Info, data, temporary ? LogOptions.Temporary : LogOptions.UserFacing);
         }
 
         // Debugレベルログ専用メソッド（GUI表示なし、ログファイルのみ）

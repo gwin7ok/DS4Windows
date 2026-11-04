@@ -175,7 +175,7 @@ namespace DS4Windows
                     if (tempEntity.IsMatch(topProcessName, topWindowTitle))
                     {
                         if (AutoProfileDebugLogLevel > 0)
-                            AppLogger.LogToGui($"DEBUG: Auto-Profile. Rule#{i + 1} Path={tempEntity.path} Title={tempEntity.title}", false, true);
+                            AppLogger.Log(AppLogLevel.Info, $"DEBUG: Auto-Profile. Rule#{i + 1} Path={tempEntity.path} Title={tempEntity.title}", LogOptions.Temporary);
 
                         turnOffDS4WinApp = tempEntity.Turnoff;
                         matchedProfileEntity = tempEntity;
@@ -201,7 +201,7 @@ namespace DS4Windows
                             if (!IsSlotConnected(j))
                             {
                                 if (AutoProfileDebugLogLevel > 0)
-                                    AppLogger.LogToGui($"DEBUG: Auto-Profile. Controller {j + 1} is not connected. Skipping LoadProfile {tempname}", false, true);
+                                    AppLogger.Log(AppLogLevel.Info, $"DEBUG: Auto-Profile. Controller {j + 1} is not connected. Skipping LoadProfile {tempname}", LogOptions.Temporary);
                                 continue;
                             }
 
@@ -214,7 +214,7 @@ namespace DS4Windows
                                 forceLoadProfile)
                             {
                                 if (AutoProfileDebugLogLevel > 0)
-                                    AppLogger.LogToGui($"DEBUG: Auto-Profile. LoadProfile Controller {j + 1}={tempname}", false, true);
+                                    AppLogger.Log(AppLogLevel.Info, $"DEBUG: Auto-Profile. LoadProfile Controller {j + 1}={tempname}", LogOptions.Temporary);
 
                                 string prolog = string.Format(DS4WinWPF.Properties.Resources.UsingAutoTempProfile, (j + 1).ToString(), tempname);
 
@@ -227,7 +227,7 @@ namespace DS4Windows
                             }
                             else if (AutoProfileDebugLogLevel > 0)
                             {
-                                AppLogger.LogToGui($"DEBUG: Auto-Profile. LoadProfile Controller {j + 1}={tempname} (already loaded)", false, true);
+                                AppLogger.Log(AppLogLevel.Info, $"DEBUG: Auto-Profile. LoadProfile Controller {j + 1}={tempname} (already loaded)", LogOptions.Temporary);
                             }
                         }
                     }
@@ -238,7 +238,7 @@ namespace DS4Windows
                         if (_lifecycle.Running)
                         {
                             if (AutoProfileDebugLogLevel > 0)
-                                AppLogger.LogToGui("DEBUG: Auto-Profile. Turning DS4Windows temporarily off", false, true);
+                                AppLogger.Log(AppLogLevel.Info, "DEBUG: Auto-Profile. Turning DS4Windows temporarily off", LogOptions.Temporary);
                             SetAndWaitServiceStatus(false);
                         }
                     }
@@ -253,7 +253,7 @@ namespace DS4Windows
                         if (!_lifecycle.Running)
                         {
                             if (AutoProfileDebugLogLevel > 0)
-                                AppLogger.LogToGui("DEBUG: Auto-Profile. Turning DS4Windows on before reverting to default profile", false, true);
+                                AppLogger.Log(AppLogLevel.Info, "DEBUG: Auto-Profile. Turning DS4Windows on before reverting to default profile", LogOptions.Temporary);
                             SetAndWaitServiceStatus(true);
                         }
                     }
@@ -268,7 +268,7 @@ namespace DS4Windows
                             {
                                 string defaultProfile = _profileRepository.ProfilePath[j];
                                 if (AutoProfileDebugLogLevel > 0)
-                                    AppLogger.LogToGui($"DEBUG: Auto-Profile. Unknown process. Reverting to default profile. Controller {j + 1}={defaultProfile} (default)", false, true);
+                                    AppLogger.Log(AppLogLevel.Info, $"DEBUG: Auto-Profile. Unknown process. Reverting to default profile. Controller {j + 1}={defaultProfile} (default)", LogOptions.Temporary);
 
                                 string prolog = string.Format(DS4WinWPF.Properties.Resources.UsingProfile, (j + 1).ToString(), defaultProfile, BatteryText(j));
 
@@ -280,7 +280,7 @@ namespace DS4Windows
                             else if (AutoProfileDebugLogLevel > 0)
                             {
                                 string tempName = _profileSettings?.GetTempProfileName(j) ?? string.Empty;
-                                AppLogger.LogToGui($"DEBUG: Auto-Profile. Unknown process. Existing profile left as active. Controller {j + 1}={tempName}", false, true);
+                                AppLogger.Log(AppLogLevel.Info, $"DEBUG: Auto-Profile. Unknown process. Existing profile left as active. Controller {j + 1}={tempName}", LogOptions.Temporary);
                             }
                         }
                     }

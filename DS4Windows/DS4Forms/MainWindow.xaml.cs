@@ -518,8 +518,8 @@ namespace DS4WinWPF.DS4Forms
 
             if (!wmiConnected)
             {
-                AppLogger.LogToGui(@"Could not connect to Windows Management Instrumentation service.
-Suspend support not enabled.", true);
+                AppLogger.Log(AppLogLevel.Warn, @"Could not connect to Windows Management Instrumentation service.
+Suspend support not enabled.", LogOptions.UserFacing);
             }
         }
 
@@ -625,7 +625,7 @@ Suspend support not enabled.", true);
                                 StartStopBtn.IsEnabled = false;
                             });
 
-                            AppLogger.LogToGui(DS4WinWPF.Translations.Strings.WakeupFromSuspend, false);
+                            AppLogger.Log(AppLogLevel.Info, DS4WinWPF.Translations.Strings.WakeupFromSuspend, LogOptions.UserFacing);
                             //controlService.LogDebug($"{Thread.CurrentThread.ManagedThreadId}");
 
                             //Thread.Sleep(60000);

@@ -329,7 +329,7 @@ namespace DS4Windows.InputDevices
                 bool validCrc = recvCrc32 == calcCrc32;
                 if (!validCrc && tries >= 5)
                 {
-                    AppLogger.LogToGui("Feature report read failure", true);
+                    AppLogger.Log(AppLogLevel.Warn, "Feature report read failure", LogOptions.UserFacing);
                     continue;
                 }
                 else if (validCrc)
@@ -414,7 +414,7 @@ namespace DS4Windows.InputDevices
                     bool validCrc = recvCrc32 == calcCrc32;
                     if (!validCrc && tries >= 5)
                     {
-                        AppLogger.LogToGui("Gyro Calibration Failed", true);
+                        AppLogger.Log(AppLogLevel.Warn, "Gyro Calibration Failed", LogOptions.UserFacing);
                         continue;
                     }
                     else if (validCrc)
@@ -570,7 +570,7 @@ namespace DS4Windows.InputDevices
                                 {
                                     exitInputThread = true;
 
-                                    AppLogger.LogToGui(DS4WinWPF.Translations.Strings.CRC32Fail, true);
+                                    AppLogger.Log(AppLogLevel.Warn, DS4WinWPF.Translations.Strings.CRC32Fail, LogOptions.UserFacing);
                                     readWaitEv.Reset();
                                     //sendOutputReport(true, true); // Kick Windows into noticing the disconnection.
                                     StopOutputUpdate();
@@ -597,14 +597,14 @@ namespace DS4Windows.InputDevices
                         {
                             if (res == HidDevice.ReadStatus.WaitTimedOut)
                             {
-                                AppLogger.LogToGui(Mac.ToString() + " disconnected due to timeout", true);
+                                AppLogger.Log(AppLogLevel.Warn, Mac.ToString() + " disconnected due to timeout", LogOptions.UserFacing);
                             }
                             else
                             {
                                 int winError = Marshal.GetLastWin32Error();
                                 AppLogger.LogDebug($"{Mac} {DateTime.UtcNow.ToString("o")} > disconnect due to read failure: {winError.ToString("x8")}");
                                 //Log.LogToGui(Mac.ToString() + " disconnected due to read failure: " + winError, true);
-                                AppLogger.LogToGui(Mac.ToString() + " disconnected due to read failure: " + winError, true);
+                                AppLogger.Log(AppLogLevel.Warn, Mac.ToString() + " disconnected due to read failure: " + winError, LogOptions.UserFacing);
                             }
 
                             exitInputThread = true;
@@ -626,7 +626,7 @@ namespace DS4Windows.InputDevices
                         {
                             if (res == HidDevice.ReadStatus.WaitTimedOut)
                             {
-                                AppLogger.LogToGui(Mac.ToString() + " disconnected due to timeout", true);
+                                AppLogger.Log(AppLogLevel.Warn, Mac.ToString() + " disconnected due to timeout", LogOptions.UserFacing);
                             }
                             else
                             {
@@ -909,7 +909,7 @@ namespace DS4Windows.InputDevices
 
                         if (shouldDisconnect)
                         {
-                            AppLogger.LogToGui(Mac.ToString() + " disconnecting due to idle disconnect", false);
+                            AppLogger.Log(AppLogLevel.Info, Mac.ToString() + " disconnecting due to idle disconnect", LogOptions.UserFacing);
 
                             if (conType == ConnectionType.BT)
                             {

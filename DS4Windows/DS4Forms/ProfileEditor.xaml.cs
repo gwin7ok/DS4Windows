@@ -1113,7 +1113,7 @@ namespace DS4WinWPF.DS4Forms
 
             if (saved)
             {
-                AppLogger.LogToGui($"[DI] Profile '{profileName}' saved successfully.", false);
+                AppLogger.Log(AppLogLevel.Info, $"[DI] Profile '{profileName}' saved successfully.", LogOptions.UserFacing);
                 // Phase6-Step7b（決定8）: 保存（Save）と適用（Apply）の違いは、画面を閉じるかどうかだけ。
                 // どちらも親画面へ ProfileSaved を通知し、MainWindow.SyncProfileListAndControllers が、
                 // プロファイル一覧を読み込み直したうえで、このプロファイルを使っているスロットにだけ再適用する。
@@ -1884,7 +1884,7 @@ namespace DS4WinWPF.DS4Forms
 
             profileSettingsVM.RefreshCustomsFlags();
             highlightControlDisplayLb.Content = "";
-            AppLogger.LogToGui("[DI] Controls tab: reset all assignments to Default", false);
+            AppLogger.Log(AppLogLevel.Info, "[DI] Controls tab: reset all assignments to Default", LogOptions.UserFacing);
         }
 
         private void MappingListBox_MouseDoubleClick(object sender, MouseButtonEventArgs e)

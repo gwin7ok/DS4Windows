@@ -37,7 +37,7 @@ namespace DS4Windows.Services
                 device.WriteOutputOffOnce();
             device.ModifyFeatureSetFlag(VidPidFeatureSet.NoOutputData, !_profileSettings.GetEnableOutputDataToDS4(ind));
             if (!_profileSettings.GetEnableOutputDataToDS4(ind))
-                AppLogger.LogToGui("Output data to DS4 disabled. Lightbar and rumble events are not written to DS4 gamepad. If the gamepad is connected over BT then IdleDisconnect option is recommended to let DS4Windows to close the connection after long period of idling.", false);
+                AppLogger.Log(AppLogLevel.Info, "Output data to DS4 disabled. Lightbar and rumble events are not written to DS4 gamepad. If the gamepad is connected over BT then IdleDisconnect option is recommended to let DS4Windows to close the connection after long period of idling.", LogOptions.UserFacing);
 
             device.setIdleTimeout(_profileSettings.GetIdleDisconnectTimeout(ind));
             device.setBTPollRate(_profileSettings.GetBTPollRate(ind));

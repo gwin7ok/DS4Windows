@@ -339,7 +339,7 @@ namespace DS4Windows
 
             if (serial == null)
             {
-                AppLogger.LogToGui($"WARNING: Failed to read serial# from a gamepad ({this._deviceAttributes.VendorHexId}/{this._deviceAttributes.ProductHexId}). Generating MAC address from a device path. From now on you should connect this gamepad always into the same USB port or BT pairing host to keep the same device path.", true);
+                AppLogger.Log(AppLogLevel.Warn, $"WARNING: Failed to read serial# from a gamepad ({this._deviceAttributes.VendorHexId}/{this._deviceAttributes.ProductHexId}). Generating MAC address from a device path. From now on you should connect this gamepad always into the same USB port or BT pairing host to keep the same device path.", LogOptions.UserFacing);
                 serial = GenerateFakeHwSerial();
             }
 

@@ -28,7 +28,7 @@ namespace DS4Windows.Services
                 _syntheticInput.ResetAll();
                 try { _actionManager.ClearAllToggledOn(); } catch { }
                 // Phase8-Fix-MacroRepeatUnify（D5）: 旧 macrodone の解除は削除した（macrodone 自体を削除。本番では到達しない経路だった）
-                AppLogger.LogToGui("Runtime synthetic state reset after Actions load", false);
+                AppLogger.Log(AppLogLevel.Info, "Runtime synthetic state reset after Actions load", LogOptions.UserFacing);
             }
             catch { }
         }

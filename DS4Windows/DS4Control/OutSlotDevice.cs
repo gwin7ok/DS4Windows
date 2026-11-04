@@ -120,7 +120,7 @@ namespace DS4WinWPF.DS4Control
                 if (permanentType == value) return;
 
                 if(value != OutContType.None)
-                    AppLogger.LogToGui($"Output slot #{this.index+1} has permanent type {value}", false);
+                    AppLogger.Log(AppLogLevel.Info, $"Output slot #{this.index+1} has permanent type {value}", LogOptions.UserFacing);
 
                 permanentType = value;
                 PermanentTypeChanged?.Invoke(this, EventArgs.Empty);

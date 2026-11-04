@@ -3,7 +3,7 @@ namespace DS4Windows
     /// <summary>
     /// <see cref="AppLogger.Log(AppLogLevel, string, LogOptions)"/> の付加情報（Phase13b-Step1。Log-Policy.md §3）。
     /// 「利用者向け」の印が付いたログだけが画面（ログタブ・ステータス）に出る。Temporary は一時表示で、ファイルには出さない。
-    /// 旧 <c>LogToGui(data, warning, temporary)</c> の対応: warning → Level（Warn／Info）、temporary → <see cref="Temporary"/>。
+    /// 旧 <c>LogToGui(data, warning, temporary)</c>（Phase13b-Step9 で削除）の対応: warning → Level（Warn／Info）、temporary → <see cref="Temporary"/>。
     /// </summary>
     public sealed class LogOptions
     {
