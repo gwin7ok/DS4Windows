@@ -18,6 +18,7 @@ namespace DS4WindowsTests
     /// ホワイトリストの確認（HidHide の未導入、制御デバイスが開けない、インバース、既にある／ない × 追加／削除）の書き込みとログ、有効状態と非表示の一覧の読み直しを調べる。
     /// ドライバーと DS4Device が必要な <c>IsAffected</c> の判定そのものは、実機でなければ確かめられないため、ここでは「無効のとき false」だけを調べる。
     /// </summary>
+    [Collection("GuiLogSubscribers")]
     public class Phase9EHidHideServiceDifferentialTests
     {
         [DllImport("kernel32.dll", CharSet = CharSet.Auto, SetLastError = true, EntryPoint = "QueryDosDeviceW")]
@@ -203,14 +204,15 @@ namespace DS4WindowsTests
                 FakeHidHideApi oldApi = NewFake(opened, inverse, whitelist);
                 FakeHidHideApi newApi = NewFake(opened, inverse, whitelist);
                 var old = new OldHidHide(env, paths, oldApi.Open);
-                var logs = new List<string>();
-                var service = new HidHideService(env, paths, newApi);
-                service.DebugMessage += (data, warning) => logs.Add(data);
+                var logs = new List<string>();                var service = new HidHideService(env, paths, newApi);
 
                 string where = $"installed={installed} opened={opened} inverse={inverse} exists={exists} add={addExe} empty={emptyPath}";
                 string path = emptyPath ? "" : exe;
                 old.CheckHidHidePresence(path, "TestExe", addExe);
-                service.CheckPresence(path, "TestExe", addExe);
+                System.EventHandler<DS4Windows.DebugEventArgs> sink = (s, e) => { if (e.Data != null && e.Data.Contains("HidHide")) logs.Add(e.Data); };
+                AppLogger.GuiLog += sink;
+                try { service.CheckPresence(path, "TestExe", addExe); }
+                finally { AppLogger.GuiLog -= sink; }
 
                 Assert.True(oldApi.SetCalls.Count == newApi.SetCalls.Count, where + ": 書き込みの回数が違う");
                 for (int i = 0; i < oldApi.SetCalls.Count; i++)

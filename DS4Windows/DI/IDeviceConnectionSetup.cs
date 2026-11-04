@@ -9,9 +9,6 @@ namespace DS4Windows.DI
     /// </summary>
     public interface IDeviceConnectionSetup
     {
-        /// <summary>ログ（これまでの <c>ControlService.LogDebug</c>）。<c>ControlService</c> が購読して Debug イベントへ流す。</summary>
-        event Action<string, bool> DebugMessage;
-
         /// <summary>
         /// プロファイルの設定（出力データ、アイドル切断、BT のポーリング、デバウンス、トラックボール、トリガー効果、振動の自動停止、ライトバー、DualSense の設定）を
         /// デバイスへ反映する。<paramref name="startUp"/> が false のときは、プロファイルの「起動するプログラム」も扱う。

@@ -211,7 +211,6 @@ namespace DS4Windows.DI
             services.AddSingleton<IUdpMotionService, UdpMotionService>();   // Phase9 9-E E-3: UDP モーションの送出（サーバーの作成・開始・停止、ハンドラー、スムージング）
             services.AddSingleton<ILatencyMonitor, LatencyMonitor>();   // Phase9 9-E E-5: 入力レポートのエラーのログと遅延の監視
             services.AddSingleton<ITouchpadToggleService, TouchpadToggleService>();   // Phase9 9-E E-5: タッチパッドの切り替え・スライドの判定
-            services.AddSingleton<IServiceDebugRelay, ServiceDebugRelay>();   // Phase13-Step10 10-e: 6 つのサービスのログを ControlService.Debug へ流す中継
             services.AddSingleton<IIpcCommandProcessor, IpcCommandProcessor>();   // Phase13-Step11 11-b: IPC コマンドの実行（UI に頼む操作は IIpcCommandHost）
             services.AddSingleton<IRuntimeFeatureSwitch, RuntimeFeatureSwitch>();   // Phase13-Step10 10-c: 画面が使う OSC／UDP／HidHide／タッチパッドの切り替えの窓口
             services.AddSingleton<IConnectionProfileSelector, ConnectionProfileSelector>();   // Phase9 9-E E-6a: 接続時のプロファイルの選択と適用
@@ -285,7 +284,6 @@ namespace DS4Windows.DI
                     sp.GetRequiredService<StickMotionState>(),
                     sp.GetRequiredService<IMapping>(),
                     sp.GetRequiredService<IVirtualPadService>(),   // Phase9 9-E E-4
-                    sp.GetRequiredService<IServiceDebugRelay>(),   // Phase13-Step10 10-e: HidHide／UDP／遅延の監視／タッチパッド／接続時の設定／切断・同期のログの中継
                     sp.GetRequiredService<IInputDeviceModuleRegistry>(),   // Phase9 9-E E-6c
                     sp.GetRequiredService<IServiceLifecycle>(),   // Phase9 9-E E-6f2
                     sp.GetRequiredService<IEventThreadDispatcher>(),   // Phase13-Step3

@@ -9,9 +9,6 @@ namespace DS4Windows.DI
     /// </summary>
     public interface IUdpMotionService
     {
-        /// <summary>ログ（これまでの <c>ControlService.LogDebug</c>）。<c>ControlService</c> が購読して Debug イベントへ流す。</summary>
-        event Action<string, bool> DebugMessage;
-
         /// <summary>モーションを送れるスロット数（旧: <c>UdpServer.NUMBER_SLOTS</c>）。</summary>
         int SlotCount { get; }
 

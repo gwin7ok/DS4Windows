@@ -169,7 +169,7 @@ namespace DS4WinWPF.DS4Forms
             settingsTab.DataContext = settingsWrapVM;
             // Phase6-Step10-1-4: XAML から生成される LanguagePackControl へ、保持済みのサービスを渡す（Pure DI）。
             languagePackControl.Initialize(appSettingsService);
-            logvm = new LogViewModel(controlService, environmentService);
+            logvm = new LogViewModel(environmentService);
             //logListView.ItemsSource = logvm.LogItems;
             logListView.DataContext = logvm;
             lastMsgLb.DataContext = lastLogMsg;
@@ -480,7 +480,6 @@ namespace DS4WinWPF.DS4Forms
 
             AppLogger.GuiLog += UpdateLastStatusMessage;
             logvm.LogItems.CollectionChanged += LogItems_CollectionChanged;
-            controlService.Debug += UpdateLastStatusMessage;
             trayIconVM.RequestShutdown += TrayIconVM_RequestShutdown;
             trayIconVM.ProfileSelected += TrayIconVM_ProfileSelected;
             trayIconVM.RequestMinimize += TrayIconVM_RequestMinimize;
@@ -631,7 +630,7 @@ Suspend support not enabled.", true);
                                 StartStopBtn.IsEnabled = false;
                             });
 
-                            controlService.LogDebug(DS4WinWPF.Translations.Strings.WakeupFromSuspend);
+                            AppLogger.LogToGui(DS4WinWPF.Translations.Strings.WakeupFromSuspend, false);
                             //controlService.LogDebug($"{Thread.CurrentThread.ManagedThreadId}");
 
                             //Thread.Sleep(60000);

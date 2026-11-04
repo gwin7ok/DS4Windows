@@ -51,7 +51,6 @@ namespace DS4WindowsTests
             {
                 Assert.DoesNotContain(removed, types);
             }
-            Assert.Contains(typeof(IServiceDebugRelay), types);
         }
 
         [Fact]

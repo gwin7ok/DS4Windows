@@ -9,8 +9,7 @@ namespace DS4Windows.Services
     /// <summary>
     /// Phase9 9-E E-2（Phase9-E-Plan.md）: <see cref="IHidHideService"/> の実装（DI の Singleton）。
     /// 旧 <c>ControlService</c> の HidHide 系（<c>CheckHidHidePresence</c>、<c>UpdateHidHideAttributes</c>、<c>CheckAffected</c>、<c>ChangeExclusiveStatus</c>、
-    /// 状態 <c>hidDeviceHiding*</c>）を、そのまま移したもの（ドライバーの窓口 <c>HidHideAPIDevice</c> は <see cref="IHidHideApiFactory"/> 経由。ログは <see cref="DebugMessage"/> で
-    /// <c>ControlService</c> の Debug イベントへ流す）。値の特性化は <c>Phase9EHidHideServiceDifferentialTests</c>（旧実装との差分テスト）が守る。
+    /// 状態 <c>hidDeviceHiding*</c>）を、そのまま移したもの（ドライバーの窓口 <c>HidHideAPIDevice</c> は <see cref="IHidHideApiFactory"/> 経由。ログは <c>AppLogger</c> へ出す［Phase13b-Step3］）。値の特性化は <c>Phase9EHidHideServiceDifferentialTests</c>（旧実装との差分テスト）が守る。
     /// </summary>
     public sealed class HidHideService : IHidHideService
     {
@@ -23,8 +22,6 @@ namespace DS4Windows.Services
         private bool hidDeviceHidingForced = false;
         private bool hidDeviceHidingEnabled = false;
 
-        public event Action<string, bool> DebugMessage;
-
         public HidHideService(IEnvironmentService environmentService, IPathService pathService, IHidHideApiFactory apiFactory)
         {
             _environmentService = environmentService ?? throw new ArgumentNullException(nameof(environmentService));
@@ -32,17 +29,11 @@ namespace DS4Windows.Services
             _apiFactory = apiFactory ?? throw new ArgumentNullException(nameof(apiFactory));
         }
 
-        // 旧 ControlService.LogDebug(string, bool)。購読者（ControlService）が Debug イベントへ流す
-        private void LogDebug(string data, bool warning = false)
-        {
-            DebugMessage?.Invoke(data, warning);
-        }
-
         public void CheckPresence(string ExePath = "", string ExeName = "Autoprofile Exe", bool AddExe = true) // Default value for D4W Startup
         {
             if (_environmentService.HidHideInstalled)
             {
-                LogDebug("HidHide control device found");
+                AppLogger.LogToGui("HidHide control device found", false);
                 using (IHidHideApi hidHideDevice = _apiFactory.Open())
                 {
                     if (!hidHideDevice.IsOpen())
@@ -96,13 +87,13 @@ namespace DS4Windows.Services
                     bool exists = dosPaths.Contains(realPath);
                     if (!exists && AddExe)
                     {
-                        LogDebug($"{ExeName} not found in HidHide whitelist. Adding to list");
+                        AppLogger.LogToGui($"{ExeName} not found in HidHide whitelist. Adding to list", false);
                         dosPaths.Add(realPath);
                         hidHideDevice.SetWhitelist(dosPaths);
                     }
                     if (exists && !AddExe)
                     {
-                        LogDebug($"{ExeName} found in HidHide whitelist. Removing from list");
+                        AppLogger.LogToGui($"{ExeName} found in HidHide whitelist. Removing from list", false);
                         dosPaths.Remove(realPath);
                         hidHideDevice.SetWhitelist(dosPaths);
                     }

@@ -62,7 +62,6 @@ namespace DS4Windows
         //   Phase13-Step5b で IInputReportProcessor へ移した。画面（RecordBox、ControllerReadingsControl）がまだ ControlService 経由で使うため、転送だけ残している
         //   （外部の利用者を IInputReportProcessor の直接注入へ切り替えた時点で、Step10 で削除する。決定: Phase13-Step5b-Plan §9 の 4）。
         public bool recordingMacro { get => _inputReport.RecordingMacro; set => _inputReport.RecordingMacro = value; }
-        public event EventHandler<DebugEventArgs> Debug = null;
         bool[] buttonsdown = new bool[MAX_DS4_CONTROLLER_COUNT] { false, false, false, false, false, false, false, false };
         bool[] held = new bool[MAX_DS4_CONTROLLER_COUNT];
         int[] oldmouse = new int[MAX_DS4_CONTROLLER_COUNT] { -1, -1, -1, -1, -1, -1, -1, -1 };
@@ -176,7 +175,6 @@ namespace DS4Windows
             StickMotionState stickMotion,
             DI.IMapping mapping,
             DI.IVirtualPadService virtualPadService,
-            DI.IServiceDebugRelay debugRelay,
             DI.IInputDeviceModuleRegistry deviceModules,
             DI.IServiceLifecycle lifecycle,
             DI.IEventThreadDispatcher eventThread,
@@ -211,19 +209,12 @@ namespace DS4Windows
             this._deviceModules = deviceModules ?? throw new ArgumentNullException(nameof(deviceModules));
             this._lifecycle = lifecycle ?? throw new ArgumentNullException(nameof(lifecycle));
             this._eventThread = eventThread ?? throw new ArgumentNullException(nameof(eventThread));
-            // 開始・停止のログとイベントも、これまでどおり ControlService の Debug イベント／公開イベント（送り主は ControlService）へ流す
-            this._lifecycle.DebugMessage += (data, warning) => LogDebug(data, warning);
+            // 開始・停止のイベントは、これまでどおり ControlService の公開イベント（送り主は ControlService）へ流す。ログは各サービスが AppLogger へ直接出す（Phase13b-Step3）
             this._lifecycle.ServiceStarted += (sender, e) => ServiceStarted?.Invoke(this, e);
             this._lifecycle.PreServiceStop += (sender, e) => PreServiceStop?.Invoke(this, e);
             this._lifecycle.ServiceStopped += (sender, e) => ServiceStopped?.Invoke(this, e);
             this._lifecycle.RunningChanged += (sender, e) => RunningChanged?.Invoke(this, e);
             this._lifecycle.HotplugController += (device, index) => HotplugController?.Invoke(this, device, index);
-            // HidHide、UDP モーション、遅延の監視、タッチパッドの切り替え、接続時の設定、切断・同期のログも、これまでどおり ControlService の Debug イベントへ流す
-            // （Phase13-Step10 10-e: 6 つのサービスの DebugMessage は IServiceDebugRelay がまとめて受ける）
-            if (debugRelay == null) throw new ArgumentNullException(nameof(debugRelay));
-            debugRelay.DebugMessage += (data, warning) => LogDebug(data, warning);
-            // 仮想パッド系のログも、これまでどおり ControlService の Debug イベントへ流す
-            this._virtualPad.DebugMessage += (data, warning) => LogDebug(data, warning);
 
             Crc32Algorithm.InitializeTable(DS4Device.DefaultPolynomial);
 
@@ -282,8 +273,7 @@ namespace DS4Windows
                 while (_lifecycle.InServiceTask)
                     Thread.SpinWait(1000);
 
-                LogDebug(string.Format(DS4WinWPF.Translations.Strings.ViGEmPluginFailure, errorCode),
-                    true);
+                AppLogger.LogToGui(string.Format(DS4WinWPF.Translations.Strings.ViGEmPluginFailure, errorCode), true);
                 Stop();
             }));
         }
@@ -394,7 +384,7 @@ namespace DS4Windows
             {
                 string message = DS4WinWPF.Properties.Resources.CouldNotOpenDS4.Replace("*Mac address*", device.getMacAddress()) + " " +
                     DS4WinWPF.Properties.Resources.QuitOtherPrograms;
-                LogDebug(message, true);
+                AppLogger.LogToGui(message, true);
                 AppLogger.LogToTray(message, true);
             }
         }
@@ -494,22 +484,6 @@ namespace DS4Windows
         // Phase13-Step10 10-b: CheckForTouchToggle／StartTPOff の転送は削除した（外部の利用者は 0 件。StartTPOff は IProfileLoadTarget が持つ）。
 
         // Phase13-Step10 10-c: TouchpadSlide の転送は削除した（利用者は IRuntimeFeatureSwitch を使う）。
-
-        public void LogDebug(String Data, bool warning = false)
-        {
-            //Console.WriteLine(System.DateTime.Now.ToString("G") + "> " + Data);
-            if (Debug != null)
-            {
-                DebugEventArgs args = new DebugEventArgs(Data, warning);
-                OnDebug(this, args);
-            }
-        }
-
-        public void OnDebug(object sender, DebugEventArgs args)
-        {
-            if (Debug != null)
-                Debug(this, args);
-        }
 
         // Phase13-Step10 10-d: setRumble の転送は削除した（利用者は IRuntimeFeatureSwitch.SetRumble を使う）。
 

@@ -39,7 +39,7 @@ namespace DS4WinWPF
         // Phase7-Step10d W5: ログ設定（保管数・最小レベル）は、旧 Global.LogMaxArchiveFiles／LogMinLevel（BackingStore の値）に替えて、注入された設定サービスから読む
         private readonly DS4Windows.DI.IAppSettingsService appSettings;
 
-        public LoggerHolder(DS4Windows.ControlService service, DS4Windows.DI.IAppSettingsService appSettings)
+        public LoggerHolder(DS4Windows.DI.IAppSettingsService appSettings)
         {
             this.appSettings = appSettings ?? throw new ArgumentNullException(nameof(appSettings));
             var configuration = LogManager.Configuration;
@@ -70,7 +70,6 @@ namespace DS4WinWPF
             logger = LogManager.GetCurrentClassLogger();
             logger.Info("Logger initialized");
 
-            service.Debug += WriteToLog;
             DS4Windows.AppLogger.GuiLog += WriteToLog;
         }
 

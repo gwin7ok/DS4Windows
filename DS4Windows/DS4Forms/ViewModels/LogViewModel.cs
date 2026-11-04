@@ -20,7 +20,7 @@ namespace DS4WinWPF.DS4Forms.ViewModels
 
         // Phase6-Step10-1-3: Global.exeversion の置換先（必須引数）。引数なしのコンストラクタは、DI の解決テスト
         // （PatternAViewModelTests）と ServiceRegistration の Transient 登録のために残している。
-        public LogViewModel(DS4Windows.ControlService service, DS4Windows.DI.IEnvironmentService environmentService)
+        public LogViewModel(DS4Windows.DI.IEnvironmentService environmentService)
         {
             if (environmentService == null) throw new ArgumentNullException(nameof(environmentService));
 
@@ -33,7 +33,6 @@ namespace DS4WinWPF.DS4Forms.ViewModels
             logItems.Add(new LogItem { Datetime = DateTime.Now, Message = $"System Architecture: {(Environment.Is64BitOperatingSystem ? "x64" : "x32")}" });
 
             BindingOperations.EnableCollectionSynchronization(logItems, _logListLocker, LogLockCallback);
-            service.Debug += AddLogMessage;
             DS4Windows.AppLogger.GuiLog += AddLogMessage;
         }
 

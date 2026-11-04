@@ -17,6 +17,7 @@ namespace DS4WindowsTests
     /// 出力バッファーの再利用）、スムージングのフィルターの作り直しを調べる。
     /// 旧実装は <c>ControlService</c> の private メンバーで、検査できる入口がなかったため、旧実装との差分テストではなく、期待する動作を直接確かめる。
     /// </summary>
+    [Collection("GuiLogSubscribers")]
     public class Phase9EUdpMotionServiceTests
     {
         private sealed class Fixture : IDisposable
@@ -38,6 +39,7 @@ namespace DS4WindowsTests
             public readonly FakeEventThreadDispatcher Events = new FakeEventThreadDispatcher();
             public readonly UdpMotionService Service;
             public readonly List<(string Text, bool Warning)> Logs = new List<(string, bool)>();
+            private System.EventHandler<DS4Windows.DebugEventArgs> _sink;
             private readonly int _savedPort;
             private readonly string _savedAddress;
             private readonly bool _savedSmoothing;
@@ -48,11 +50,13 @@ namespace DS4WindowsTests
                 _savedAddress = Settings.UdpServerListenAddress;
                 _savedSmoothing = Settings.UseUdpServerSmoothing;
                 Service = new UdpMotionService(Settings, TestHost.GetService<IDs4DeviceRegistry>(), Factory, Host, Events);
-                Service.DebugMessage += (text, warning) => Logs.Add((text, warning));
+                _sink = (s, e) => { if (e.Data != null && e.Data.Contains("UDP")) Logs.Add((e.Data, e.Warning)); };
+                AppLogger.GuiLog += _sink;
             }
 
             public void Dispose()
             {
+                AppLogger.GuiLog -= _sink;
                 Settings.UdpServerPort = _savedPort;
                 Settings.UdpServerListenAddress = _savedAddress;
                 Settings.UseUdpServerSmoothing = _savedSmoothing;

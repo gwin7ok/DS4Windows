@@ -12,9 +12,6 @@ namespace DS4Windows.DI
     /// </summary>
     public interface IVirtualPadService
     {
-        /// <summary>ログ（これまでの <c>ControlService.LogDebug</c>）。<c>ControlService</c> が購読して Debug イベントへ流す。</summary>
-        event Action<string, bool> DebugMessage;
-
         /// <summary>仮想パッドのスロット管理（旧: <c>ControlService.OutputslotMan</c>）。</summary>
         OutputSlotManager OutputSlotManager { get; }
 

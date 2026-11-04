@@ -23,8 +23,6 @@ namespace DS4Windows.Services
         private readonly IDeviceSlotState _host;
         private readonly int _controllerSlotLimit;
 
-        public event Action<string, bool> DebugMessage;
-
         public DeviceDisconnectHandler(IProfileSettingsService profileSettings, IMapping mapping, IProfileSlotApplier profileSlotApplier,
             IOscService oscService, IAppSettingsService appSettings, ILatencyMonitor latencyMonitor, IDeviceStateService deviceStateService,
             IVirtualPadService virtualPad, IOutputDeviceTypeState outputDeviceTypes, IEnvironmentService environmentService,
@@ -46,11 +44,6 @@ namespace DS4Windows.Services
 
         // ActiveOutDevType の配列参照は再代入されない（要素書込みのみ）。旧 ControlService と同じ配列を指す
         private OutContType[] ActiveOutDevType => _activeOutDevType;
-
-        private void LogDebug(string data, bool warning = false)
-        {
-            DebugMessage?.Invoke(data, warning);
-        }
 
         public void OnRemoval(object sender, EventArgs e)
         {
@@ -114,7 +107,7 @@ namespace DS4Windows.Services
                         removed += ". " + DS4WinWPF.Properties.Resources.ChargeController;
                     }
 
-                    LogDebug(removed);
+                    AppLogger.LogToGui(removed, false);
                     AppLogger.LogToTray(removed);
                     /*Stopwatch sw = new Stopwatch();
                     sw.Start();

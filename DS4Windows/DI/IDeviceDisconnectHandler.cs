@@ -10,9 +10,6 @@ namespace DS4Windows.DI
     /// </summary>
     public interface IDeviceDisconnectHandler
     {
-        /// <summary>ログ（これまでの <c>ControlService.LogDebug</c>）。<c>ControlService</c> が購読して Debug イベントへ流す。</summary>
-        event Action<string, bool> DebugMessage;
-
         /// <summary>デバイスが切断された、またはタイムアウトしたとき（旧 <c>On_DS4Removal</c>）。</summary>
         void OnRemoval(object sender, EventArgs e);
 

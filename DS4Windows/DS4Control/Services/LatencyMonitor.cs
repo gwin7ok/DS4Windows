@@ -17,8 +17,6 @@ namespace DS4Windows.Services
         private readonly bool[] _inWarnMonitor = new bool[ControllerLimits.MaxControllerCount];
         private readonly string[] _tempStrings = new string[ControllerLimits.MaxControllerCount];
 
-        public event Action<string, bool> DebugMessage;
-
         public LatencyMonitor(IAppSettingsService appSettings, IProfileSettingsService profileSettings)
         {
             _appSettings = appSettings ?? throw new ArgumentNullException(nameof(appSettings));
@@ -34,7 +32,7 @@ namespace DS4Windows.Services
             string devError = _tempStrings[ind] = device.error;
             if (!string.IsNullOrEmpty(devError))
             {
-                LogDebug(devError);
+                AppLogger.LogToGui(devError, false);
             }
 
             if (_inWarnMonitor[ind])
@@ -71,7 +69,7 @@ namespace DS4Windows.Services
             if (on)
             {
                 _lag[ind] = true;
-                LogDebug(string.Format(DS4WinWPF.Properties.Resources.LatencyOverTen, (ind + 1), device.Latency), true);
+                AppLogger.LogToGui(string.Format(DS4WinWPF.Properties.Resources.LatencyOverTen, (ind + 1), device.Latency), true);
                 if (_appSettings.FlashWhenLate)
                 {
                     DS4Color color = new DS4Color { red = 50, green = 0, blue = 0 };
@@ -83,16 +81,12 @@ namespace DS4Windows.Services
             else
             {
                 _lag[ind] = false;
-                LogDebug(DS4WinWPF.Properties.Resources.LatencyNotOverTen.Replace("*number*", (ind + 1).ToString()));
+                AppLogger.LogToGui(DS4WinWPF.Properties.Resources.LatencyNotOverTen.Replace("*number*", (ind + 1).ToString()), false);
                 DS4LightBar.forcelight[ind] = false;
                 DS4LightBar.forcedFlash[ind] = 0;
                 device.LightBarColor = _profileSettings.GetMainColor(ind);
             }
         }
 
-        private void LogDebug(string data, bool warning = false)
-        {
-            DebugMessage?.Invoke(data, warning);
-        }
     }
 }

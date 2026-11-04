@@ -85,3 +85,9 @@
 ## 5. 実施の記録
 
 （各 Step の完了時に追記）
+
+### 13b-3（サービス群の private `LogDebug` の廃止）
+
+- **経路**: 8 サービスの private `LogDebug`＋`DebugMessage` イベント（8 インターフェース）を廃止し、`AppLogger.LogToGui`（利用者向け）を直接呼ぶ形へ。`IServiceDebugRelay`／`ServiceDebugRelay`（Phase13-Step10 10-e で新設）と、`ControlService` の `Debug` イベント・`LogDebug`・`OnDebug` を削除。`ControlService` のコンストラクター引数は 17 → 16。`LoggerHolder`・`LogViewModel` のコンストラクターから `ControlService` 引数を削除（`GuiLog` だけを購読）。画面・ファイルへの出力は不変。
+- **G2（実施）**: `VirtualPadService` の「Failed. No open output slot found」を Info → Warn（GUI が警告表示になる。承認済み）。
+- 文言の変更・削除: なし。

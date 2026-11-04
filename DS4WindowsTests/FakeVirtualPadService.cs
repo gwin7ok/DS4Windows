@@ -20,7 +20,6 @@ namespace DS4WindowsTests
             _inner = inner;
         }
 
-        public event Action<string, bool> DebugMessage { add { } remove { } }
 
         public OutputSlotManager OutputSlotManager { get; }
 

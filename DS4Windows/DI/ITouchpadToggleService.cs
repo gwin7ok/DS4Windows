@@ -9,9 +9,6 @@ namespace DS4Windows.DI
     /// </summary>
     public interface ITouchpadToggleService
     {
-        /// <summary>ログ（これまでの <c>ControlService.LogDebug</c>）。<c>ControlService</c> が購読して Debug イベントへ流す。</summary>
-        event Action<string, bool> DebugMessage;
-
         /// <summary>PS ボタンを押しながらタッチされたら、タッチパッドの動作を ON／OFF する（レポートごとに呼ばれる）。</summary>
         void CheckForToggle(int deviceID, DS4State cState, DS4State pState);
 

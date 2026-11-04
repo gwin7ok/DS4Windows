@@ -20,8 +20,6 @@ namespace DS4Windows.Services
         private readonly StickMotionState _stickMotion;
         private readonly IInputDeviceModuleRegistry _deviceModules;
 
-        public event Action<string, bool> DebugMessage;
-
         public DeviceConnectionSetup(IProfileSettingsService profileSettings, IUdpMotionService udpMotion, StickMotionState stickMotion,
             IInputDeviceModuleRegistry deviceModules)
         {
@@ -29,11 +27,6 @@ namespace DS4Windows.Services
             _udpMotion = udpMotion ?? throw new ArgumentNullException(nameof(udpMotion));
             _stickMotion = stickMotion ?? throw new ArgumentNullException(nameof(stickMotion));
             _deviceModules = deviceModules ?? throw new ArgumentNullException(nameof(deviceModules));
-        }
-
-        private void LogDebug(string data, bool warning = false)
-        {
-            DebugMessage?.Invoke(data, warning);
         }
 
         public void ApplyProfileOptions(int ind, DS4Device device, Mouse touchPad, bool startUp = false)
@@ -44,7 +37,7 @@ namespace DS4Windows.Services
                 device.WriteOutputOffOnce();
             device.ModifyFeatureSetFlag(VidPidFeatureSet.NoOutputData, !_profileSettings.GetEnableOutputDataToDS4(ind));
             if (!_profileSettings.GetEnableOutputDataToDS4(ind))
-                LogDebug("Output data to DS4 disabled. Lightbar and rumble events are not written to DS4 gamepad. If the gamepad is connected over BT then IdleDisconnect option is recommended to let DS4Windows to close the connection after long period of idling.");
+                AppLogger.LogToGui("Output data to DS4 disabled. Lightbar and rumble events are not written to DS4 gamepad. If the gamepad is connected over BT then IdleDisconnect option is recommended to let DS4Windows to close the connection after long period of idling.", false);
 
             device.setIdleTimeout(_profileSettings.GetIdleDisconnectTimeout(ind));
             device.setBTPollRate(_profileSettings.GetBTPollRate(ind));

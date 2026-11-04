@@ -24,9 +24,6 @@ namespace DS4Windows.DI
         /// <summary>システムのサスペンド中か（旧 <c>suspending</c>。MainWindow が設定する。停止時に Bluetooth を切断する判断に使う）。</summary>
         bool Suspending { get; set; }
 
-        /// <summary>ログ（これまでの <c>ControlService.LogDebug</c>）。<c>ControlService</c> が購読して Debug イベントへ流す。</summary>
-        event Action<string, bool> DebugMessage;
-
         event EventHandler ServiceStarted;
 
         event EventHandler PreServiceStop;

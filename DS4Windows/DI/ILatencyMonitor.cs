@@ -9,9 +9,6 @@ namespace DS4Windows.DI
     /// </summary>
     public interface ILatencyMonitor
     {
-        /// <summary>ログ（これまでの <c>ControlService.LogDebug</c>）。<c>ControlService</c> が購読して Debug イベントへ流す。</summary>
-        event Action<string, bool> DebugMessage;
-
         /// <summary>レポートが届くたびに呼ぶ。デバイスのエラーをログに出し、接続 5 秒後から遅延を監視する。</summary>
         void OnReport(DS4Device device, int ind);
 

@@ -33,8 +33,6 @@ namespace DS4Windows.Services
         private readonly OutContType[] _activeOutDevType;
         private OutContType[] ActiveOutDevType => _activeOutDevType;
 
-        public event Action<string, bool> DebugMessage;
-
         public VirtualPadService(IEnvironmentService environmentService, IProfileSettingsService profileSettings,
             IOutputDeviceTypeState outputDeviceTypes, IDeviceStateAccessor deviceAccessor,
             IEventThreadDispatcher eventThread, IDeviceRumbleService rumble)
@@ -59,12 +57,6 @@ namespace DS4Windows.Services
         public void QueueOnEventThread(Action action)
         {
             _eventThread.Queue(action);
-        }
-
-        // 旧 ControlService.LogDebug(string, bool)。購読者（ControlService）が Debug イベントへ流す
-        private void LogDebug(string data, bool warning = false)
-        {
-            DebugMessage?.Invoke(data, warning);
         }
 
         public void StartViGEm()
@@ -467,7 +459,7 @@ namespace DS4Windows.Services
                         }
                         else
                         {
-                            LogDebug("Failed. No open output slot found");
+                            AppLogger.LogToGui("Failed. No open output slot found", true);
                         }
                     }
                     else
@@ -487,7 +479,7 @@ namespace DS4Windows.Services
                 // Need to check for possible ViGEmBus failure here
                 if (success && slotDevice.OutputDevice != null)
                 {
-                    LogDebug($"Associated input controller #{index + 1} ({device.DisplayName}) to virtual {slotDevice.OutputDevice.GetDeviceType()} Controller in{(slotDevice.PermanentType != OutContType.None ? " permanent" : "")} output slot #{slotDevice.Index + 1}");
+                    AppLogger.LogToGui($"Associated input controller #{index + 1} ({device.DisplayName}) to virtual {slotDevice.OutputDevice.GetDeviceType()} Controller in{(slotDevice.PermanentType != OutContType.None ? " permanent" : "")} output slot #{slotDevice.Index + 1}", false);
                     _profileSettings.UseDInputOnlyArray[index] = false;
                 }
             }
@@ -527,7 +519,7 @@ namespace DS4Windows.Services
                 if (dev != null && slotDevice != null)
                 {
                     string tempType = dev.GetDeviceType();
-                    LogDebug($"Disassociated virtual {tempType} Controller in{(slotDevice.CurrentReserveStatus == OutSlotDevice.ReserveStatus.Permanent ? " permanent" : "")} output slot #{slotDevice.Index + 1} from input controller #{index + 1} ({device.DisplayName})", false);
+                    AppLogger.LogToGui($"Disassociated virtual {tempType} Controller in{(slotDevice.CurrentReserveStatus == OutSlotDevice.ReserveStatus.Permanent ? " permanent" : "")} output slot #{slotDevice.Index + 1} from input controller #{index + 1} ({device.DisplayName})", false, false);
 
                     OutContType currentType = ActiveOutDevType[index];
                     outputDevices[index] = null;

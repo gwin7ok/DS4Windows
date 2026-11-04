@@ -559,7 +559,7 @@ namespace DS4WinWPF
         /// </summary>
         private void ConfigureLoggingAndDiagnostics(bool firstRun, bool readAppConfig)
         {
-            logHolder = new LoggerHolder(_controlService, _appSettingsService);
+            logHolder = new LoggerHolder(_appSettingsService);
             // Phase6-Step10-1-5（決定D7＝A）: 設定画面がログ設定の変更を反映する窓口（ILogSettingsApplier）へ、生成した LoggerHolder を接続する
             _logSettingsApplierProxy.Attach(logHolder);
             DispatcherUnhandledException += App_DispatcherUnhandledException;
@@ -695,7 +695,7 @@ namespace DS4WinWPF
             window.CheckMinStatus();
 
             bool runningAsAdmin = _environmentService.IsAdministrator();
-            _controlService.LogDebug($"Running as {(runningAsAdmin ? "Admin" : "User")}");
+            AppLogger.LogToGui($"Running as {(runningAsAdmin ? "Admin" : "User")}", false);
 
             if (_environmentService.HidHideInstalled)
             {

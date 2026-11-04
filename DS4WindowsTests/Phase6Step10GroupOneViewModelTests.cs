@@ -107,7 +107,7 @@ namespace DS4WindowsTests
         [Fact]
         public void LogViewModel_RequiresEnvironmentService()
         {
-            Assert.Throws<ArgumentNullException>(() => new LogViewModel(null, null));
+            Assert.Throws<ArgumentNullException>(() => new LogViewModel(null));
         }
     }
 }

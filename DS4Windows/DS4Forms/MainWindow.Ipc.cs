@@ -84,7 +84,7 @@ namespace DS4WinWPF.DS4Forms
         DS4Device DS4Windows.DI.IIpcCommandHost.GetControllerDevice(int index)
             => conLvViewModel.ControllerCol[index]?.Device;
 
-        void DS4Windows.DI.IIpcCommandHost.LogDebug(string message) => controlService.LogDebug(message);
+        void DS4Windows.DI.IIpcCommandHost.LogDebug(string message) => AppLogger.LogToGui(message, false);
 
         void DS4Windows.DI.IIpcCommandHost.WriteQueryResult(string value)
             => ((Application.Current) as App).WriteIPCResultDataMMF(value);

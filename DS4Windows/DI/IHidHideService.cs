@@ -9,9 +9,6 @@ namespace DS4Windows.DI
     /// </summary>
     public interface IHidHideService
     {
-        /// <summary>ログ（これまでの <c>ControlService.LogDebug</c>）。<c>ControlService</c> が購読して Debug イベントへ流す。</summary>
-        event Action<string, bool> DebugMessage;
-
         /// <summary>
         /// HidHide のアプリケーションのホワイトリストに、実行ファイルがあるかを確かめ、<paramref name="AddExe"/> に従って追加／削除する。
         /// 空のパスのときは DS4Windows 自身を追加する（起動時）。HidHide が未導入、制御デバイスが開けない、インバースのときは何もしない。

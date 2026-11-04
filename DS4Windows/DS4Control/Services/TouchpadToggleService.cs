@@ -16,8 +16,6 @@ namespace DS4Windows.Services
         private readonly bool[] _touchreleased = new bool[ControllerLimits.MaxControllerCount];
         private readonly bool[] _touchslid = new bool[ControllerLimits.MaxControllerCount];
 
-        public event Action<string, bool> DebugMessage;
-
         public TouchpadToggleService(IProfileSettingsService profileSettings, IEnvironmentService environmentService)
         {
             _profileSettings = profileSettings ?? throw new ArgumentNullException(nameof(profileSettings));
@@ -36,14 +34,14 @@ namespace DS4Windows.Services
                 if (_profileSettings.TouchpadActiveArray[deviceID] && _touchreleased[deviceID])
                 {
                     _profileSettings.TouchpadActiveArray[deviceID] = false;
-                    LogDebug(DS4WinWPF.Properties.Resources.TouchpadMovementOff);
+                    AppLogger.LogToGui(DS4WinWPF.Properties.Resources.TouchpadMovementOff, false);
                     AppLogger.LogToTray(DS4WinWPF.Properties.Resources.TouchpadMovementOff);
                     _touchreleased[deviceID] = false;
                 }
                 else if (_touchreleased[deviceID])
                 {
                     _profileSettings.TouchpadActiveArray[deviceID] = true;
-                    LogDebug(DS4WinWPF.Properties.Resources.TouchpadMovementOn);
+                    AppLogger.LogToGui(DS4WinWPF.Properties.Resources.TouchpadMovementOn, false);
                     AppLogger.LogToTray(DS4WinWPF.Properties.Resources.TouchpadMovementOn);
                     _touchreleased[deviceID] = false;
                 }
@@ -85,9 +83,5 @@ namespace DS4Windows.Services
             return slidedir;
         }
 
-        private void LogDebug(string data, bool warning = false)
-        {
-            DebugMessage?.Invoke(data, warning);
-        }
     }
 }
