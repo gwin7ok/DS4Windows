@@ -44,7 +44,7 @@ namespace DS4WindowsTests
             Assert.Contains("_outputSlotService.LoadOutputSlots()", app);
             Assert.DoesNotContain("LoadPermanentSlotsConfig", app);
             Assert.DoesNotContain("LoadPermanentSlotsConfig", control);
-            Assert.Contains("_outputSlotServiceFactory().SaveOutputSlots()", control);
+            Assert.Contains("_outputSlotService.SaveOutputSlots()", control);
             Assert.DoesNotContain("OutputSlotPersist.", control);
         }
 

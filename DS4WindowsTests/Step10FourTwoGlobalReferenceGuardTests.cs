@@ -187,16 +187,14 @@ namespace DS4WindowsTests
         public void OutputSlot_Services_RequireAllDependencies()
         {
             var store = new OutputSlotStore(new PathService());
-            Func<OutputSlotManager> manager = () => null;
-            Func<IVirtualPadService> control = () => null;   // Phase9 9-E E-4: 旧 Func<ControlService>
+            IVirtualPadService virtualPad = new FakeVirtualPadService(null);   // Phase13-Step7 7-d: 旧 Func<OutputSlotManager>／Func<IVirtualPadService>
             var types = new DS4Windows.Services.OutputDeviceTypeState();
 
             Assert.Throws<ArgumentNullException>(() => new OutputSlotStore(null));
             Assert.Throws<ArgumentNullException>(() => new OutputSlotManager(null, 4));
-            Assert.Throws<ArgumentNullException>(() => new OutputSlotService(null, store, control, types));
-            Assert.Throws<ArgumentNullException>(() => new OutputSlotService(manager, null, control, types));
-            Assert.Throws<ArgumentNullException>(() => new OutputSlotService(manager, store, null, types));
-            Assert.Throws<ArgumentNullException>(() => new OutputSlotService(manager, store, control, null));
+            Assert.Throws<ArgumentNullException>(() => new OutputSlotService(null, store, types));
+            Assert.Throws<ArgumentNullException>(() => new OutputSlotService(virtualPad, null, types));
+            Assert.Throws<ArgumentNullException>(() => new OutputSlotService(virtualPad, store, null));
         }
 
         [Fact]
@@ -275,8 +273,9 @@ namespace DS4WindowsTests
         public void OutputSlotService_PluginAndUnplug_AreRejectedWithoutControlService_AndRaiseNoEvent()
         {
             // ControlService が無い（ホストが無い）場合は、何もできないため false を返し、変更の通知も出さない
-            var service = new OutputSlotService(() => TestRepositoryFactory.CreateOutputSlotManager(),
-                new OutputSlotStore(new PathService()), () => null, new DS4Windows.Services.OutputDeviceTypeState());
+            // Phase13-Step7 7-d: 操作先（スロット管理）が無い仮想パッド窓口。旧: virtualPadProvider が null を返す
+            var service = new OutputSlotService(new FakeVirtualPadService(null),
+                new OutputSlotStore(new PathService()), new DS4Windows.Services.OutputDeviceTypeState());
             int fired = 0;
             service.OutputSlotChanged += (s, e) => fired++;
 

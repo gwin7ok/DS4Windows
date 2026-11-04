@@ -86,12 +86,11 @@ namespace DS4Windows.DI
             // 実行時にスタックオーバーフローになる）。配列を書き込むのは ControlService だけで、IOutputSlotService を通すため、書き込みの前に必ず接続済みになる。
             services.AddSingleton<IOutputSlotService>(sp =>
             {
-                var service = new OutputSlotService(
-                    () => sp.GetRequiredService<IVirtualPadService>().OutputSlotManager,   // Phase9 9-E E-4: スロット管理の実体は VirtualPadService が持つ（旧: ControlService.OutputslotMan）
+                // Phase13-Step7 7-d: スロット管理の実体は VirtualPadService が持つ（Phase9 E-4）。旧: 遅延取得のデリゲート 2 本は直接注入にした
+                return new OutputSlotService(
+                    sp.GetRequiredService<IVirtualPadService>(),
                     sp.GetRequiredService<IOutputSlotStore>(),
-                    sp.GetRequiredService<Func<IVirtualPadService>>(),
                     sp.GetRequiredService<IOutputDeviceTypeState>());   // BackingStore への配線は IOutputDeviceTypeState の登録が行う
-                return service;
             });
 
             // Phase13-Step6 6-b: 旧 Func<ControlService>（遅延）をやめ、依存のない IDeviceStateAccessor を直接受ける
@@ -207,8 +206,7 @@ namespace DS4Windows.DI
             services.AddSingleton<IHidHideApiFactory, HidHideApiFactory>();   // Phase9 9-E E-2: HidHide ドライバーの窓口の生成
             services.AddSingleton<IHidHideService, HidHideService>();   // Phase9 9-E E-2: HidHide（ホワイトリストの確認、影響を受けるデバイスの判定）
             services.AddSingleton<IVirtualPadService, VirtualPadService>();   // Phase9 9-E E-4: 仮想パッド（ViGEm）の出力。OutputSlotManager、割り当て、振動・ライトバーの戻り
-            services.AddSingleton<Func<IVirtualPadService>>(sp => () => sp.GetRequiredService<IVirtualPadService>());   // OutputSlotService が遅延で取得する（循環を避ける）
-            services.AddSingleton<Func<IOutputSlotService>>(sp => () => sp.GetRequiredService<IOutputSlotService>());   // VirtualPadService が遅延で取得する（循環を避ける）
+            // Phase13-Step7 7-d: 遅延取得デリゲート 2 本の登録は撤廃した（VirtualPadService ⇄ OutputSlotService の循環は、出力種別の配列を IOutputDeviceTypeState へ移して解消）
             services.AddSingleton<IUdpMotionServerFactory, UdpMotionServerFactory>();   // Phase9 9-E E-3: UDP サーバー（UdpServer）の生成
             services.AddSingleton<IUdpMotionService, UdpMotionService>();   // Phase9 9-E E-3: UDP モーションの送出（サーバーの作成・開始・停止、ハンドラー、スムージング）
             services.AddSingleton<ILatencyMonitor, LatencyMonitor>();   // Phase9 9-E E-5: 入力レポートのエラーのログと遅延の監視
@@ -277,7 +275,7 @@ namespace DS4Windows.DI
                     sp.GetRequiredService<IAppSettingsService>(),
                     sp.GetRequiredService<IEnvironmentService>(),
                     sp.GetRequiredService<IPathService>(),
-                    () => sp.GetRequiredService<IOutputSlotService>(), // 決定D1: 遅延解決（OutputSlotService → ControlService の逆依存を回避）
+                    sp.GetRequiredService<IOutputSlotService>(),   // Phase13-Step7 7-d: 旧: 遅延取得デリゲート（逆依存は Phase9 E-4 で解消済み）
                     sp.GetRequiredService<IProfileRepository>(),
                     sp.GetRequiredService<IDeviceStateService>(),
                     // Phase13-Step5b-5b-e: IVirtualKBM／IAppearanceSettingsService／IProfileActionProvider／ISpecialActionRepository は、使われなくなったため外した
@@ -305,7 +303,7 @@ namespace DS4Windows.DI
             // Phase13-Step5: スロット状態の持ち主。IDeviceStateAccessor（GetController）も同じインスタンスを返す
             services.AddSingleton<IDeviceSlotState, DeviceSlotState>();
             services.AddSingleton<IDeviceStateAccessor>(sp => sp.GetRequiredService<IDeviceSlotState>());
-            // Phase13-Step5b: 入力レポートの処理（旧 ControlService.On_Report）と、その作業用の状態の持ち主。Func<IOutputSlotService> は遅延解決（OutputSlotService → ControlService の逆依存を避ける）
+            // Phase13-Step5b: 入力レポートの処理（旧 ControlService.On_Report）と、その作業用の状態の持ち主。出力種別の配列は IOutputDeviceTypeState から直接受ける
             services.AddSingleton<IInputReportProcessor>(sp => new InputReportProcessor(
                 sp.GetRequiredService<IDeviceSlotState>(),
                 sp.GetRequiredService<ILatencyMonitor>(),
@@ -320,7 +318,7 @@ namespace DS4Windows.DI
                 sp.GetRequiredService<IAppSettingsService>(),
                 sp.GetRequiredService<IOscService>(),
                 sp.GetRequiredService<IVirtualPadService>(),
-                sp.GetRequiredService<IOutputDeviceTypeState>()));   // Phase13-Step7 7-c: 旧 Func<IOutputSlotService>
+                sp.GetRequiredService<IOutputDeviceTypeState>()));   // Phase13-Step7 7-c: 旧: 遅延取得デリゲート
 
             return services;
         }

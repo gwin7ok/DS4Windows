@@ -34,25 +34,11 @@ namespace DS4WindowsTests
             Assert.NotNull(controlService);
         }
 
-        [Fact]
-        public void Constructor_DoesNotInvokeOutputSlotServiceFactory()
-        {
-            // 決定D1: OutputSlotService → ControlService の逆依存があるため、
-            // コンストラクタ内で IOutputSlotService を解決してはならない（生成中の解決は二重実体化の恐れがある）。
-            int factoryCalls = 0;
-
-            var controlService = ControlServiceTestFactory.Create(outputSlotServiceFactory: () =>
-            {
-                factoryCalls++;
-                return TestHost.GetService<IOutputSlotService>();
-            });
-
-            Assert.NotNull(controlService);
-            Assert.Equal(0, factoryCalls);
-        }
+        // Phase13-Step7 7-d: 旧 Constructor_DoesNotInvokeOutputSlotServiceFactory（Func<IOutputSlotService> を生成中に呼ばない検査）は、
+        // Func をやめて直接注入にしたため不要になった（逆依存は Phase9 E-4 で解消済み。循環しないことは Phase13Step6ResolutionGraphProbeTests が検査する）。
 
         [Theory]
-        [InlineData("outputSlotServiceFactory")]
+        [InlineData("outputSlotService")]
         [InlineData("profileRepository")]
         [InlineData("deviceStateService")]
         public void Constructor_NullRequiredParameter_ThrowsArgumentNullException(string parameterName)

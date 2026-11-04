@@ -79,7 +79,7 @@ namespace DS4WindowsTests
 
             Assert.DoesNotContain("ControlService", text);
             Assert.DoesNotContain("EventDispatcher", text);
-            Assert.Contains("Func<IVirtualPadService>", text);
+            Assert.Contains("IVirtualPadService virtualPad", text);   // Phase13-Step7 7-d: 旧 Func<IVirtualPadService>（直接注入にした）
             Assert.Contains("virtualPad.QueueOnEventThread(", text);
         }
 
@@ -102,7 +102,6 @@ namespace DS4WindowsTests
             Assert.IsType<VirtualPadService>(TestHost.GetService<IVirtualPadService>());
             Assert.Same(TestHost.GetService<IVirtualPadService>(), TestHost.GetService<IVirtualPadService>());
             Assert.IsType<EventThreadDispatcher>(TestHost.GetService<IEventThreadDispatcher>());
-            Assert.Same(TestHost.GetService<IVirtualPadService>(), TestHost.GetService<System.Func<IVirtualPadService>>()());
         }
     }
 }

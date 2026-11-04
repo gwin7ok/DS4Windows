@@ -33,7 +33,7 @@ namespace DS4Windows.Services
         private readonly IOscService _oscService;
         private readonly IVirtualPadService _virtualPad;
 
-        // Phase13-Step7 7-c: 旧 Func<IOutputSlotService>（遅延取得）。配列の参照は再代入されないため、コンストラクターで保持する（ホットパスは読み取りだけ）
+        // Phase13-Step7 7-c: 旧: 遅延取得デリゲート（遅延取得）。配列の参照は再代入されないため、コンストラクターで保持する（ホットパスは読み取りだけ）
         private readonly OutContType[] _activeOutDevType;
         private OutContType[] ActiveOutDevType => _activeOutDevType;
 

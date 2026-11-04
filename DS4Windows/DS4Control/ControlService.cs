@@ -106,14 +106,14 @@ namespace DS4Windows
         private readonly DI.IPathService _pathService;
 
         // Phase6-Step2-2 (PR-2)
-        // TODO(技術的負債): OutputSlotService → ControlService の逆依存を避けるための遅延解決（決定D1）。
-        // ControlService のコンストラクタ内では呼ばない。逆依存の除去は Phase6-Step5 で行い、その時点で直接注入へ戻す。
-        private readonly Func<DI.IOutputSlotService> _outputSlotServiceFactory;
+        // Phase13-Step7 7-d: 旧: 遅延取得デリゲート（OutputSlotService → ControlService の逆依存の回避）をやめ、直接注入にした。
+        // 逆依存は Phase9 E-4 で解消済みで、OutputSlotService は VirtualPadService だけを見る。
+        private readonly DI.IOutputSlotService _outputSlotService;
         private OutContType[] _activeOutDevType;
         // ActiveOutDevType の配列参照は再代入されない（OutputSlotService の配列は要素書込みのみ）ため、初回に1回だけ取得する。
         // 以降は null 合体の1分岐のみで、ホットパスでもアロケーションは発生しない。
         private OutContType[] ActiveOutDevType
-            => _activeOutDevType ?? (_activeOutDevType = _outputSlotServiceFactory().ActiveOutDevType);
+            => _activeOutDevType ?? (_activeOutDevType = _outputSlotService.ActiveOutDevType);
         private readonly DI.IProfileRepository _profileRepository;
         private readonly DI.IDeviceStateService _deviceStateService;
 
@@ -184,7 +184,7 @@ namespace DS4Windows
             DI.IAppSettingsService appSettings,
             DI.IEnvironmentService environmentService,
             DI.IPathService pathService,
-            Func<DI.IOutputSlotService> outputSlotServiceFactory,
+            DI.IOutputSlotService outputSlotService,
             DI.IProfileRepository profileRepository,
             DI.IDeviceStateService deviceStateService,
             Services.IElevatedProcessLauncher elevatedProcessLauncher,
@@ -224,7 +224,7 @@ namespace DS4Windows
             this._environmentService = environmentService ?? throw new ArgumentNullException(nameof(environmentService));
             this._pathService = pathService ?? throw new ArgumentNullException(nameof(pathService));
             this._controllerSlotLimit = _environmentService.ControllerSlotLimit;
-            this._outputSlotServiceFactory = outputSlotServiceFactory ?? throw new ArgumentNullException(nameof(outputSlotServiceFactory));
+            this._outputSlotService = outputSlotService ?? throw new ArgumentNullException(nameof(outputSlotService));
             this._profileRepository = profileRepository ?? throw new ArgumentNullException(nameof(profileRepository));
             this._deviceStateService = deviceStateService ?? throw new ArgumentNullException(nameof(deviceStateService));
             // 適用のたびに、そのスロットのコントローラー（MAC）に、適用したプロファイルを記憶する（再接続で使う）
@@ -352,7 +352,7 @@ namespace DS4Windows
         {
             _virtualPad.OutputSlotManager.ShutDown();
             // Phase7-Step5 W3（Q9＝A）: 契約（IOutputSlotService）経由に切り替えた。同じスロット管理と保存先で OutputSlotPersist.WriteConfig を呼ぶ
-            _outputSlotServiceFactory().SaveOutputSlots();
+            _outputSlotService.SaveOutputSlots();
 
             _eventThread.Shutdown();
         }

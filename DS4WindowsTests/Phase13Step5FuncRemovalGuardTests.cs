@@ -61,5 +61,17 @@ namespace DS4WindowsTests
             if (files == null) return;
             Assert.True(files.Length == 0, "撤廃した Func<ControlService> が残っている: " + string.Join(", ", files));
         }
+
+        /// <summary>Phase13-Step7 7-d: <c>VirtualPadService</c> ⇄ <c>OutputSlotService</c> の循環の Func（ロードマップ #6〜#8）を撤廃した。</summary>
+        [Theory]
+        [InlineData(@"Func<\s*(?:DS4Windows\.DI\.)?IOutputSlotService\s*>")]
+        [InlineData(@"Func<\s*(?:DS4Windows\.DI\.)?IVirtualPadService\s*>")]
+        [InlineData(@"Func<\s*OutputSlotManager\s*>")]
+        public void FuncsOfTheOutputSlotCycle_NoLongerAppear(string pattern)
+        {
+            string[] files = FilesContaining(pattern);
+            if (files == null) return;
+            Assert.True(files.Length == 0, "撤廃した Func が残っている: " + string.Join(", ", files));
+        }
     }
 }

@@ -29,7 +29,7 @@ namespace DS4Windows.Services
         private ViGEmClient vigemTestClient = null;
         private Thread tempThread;
 
-        // Phase13-Step7 7-c: 旧 Func<IOutputSlotService>（初回に1回だけ取得）。配列の参照は再代入されないため、コンストラクターで保持する
+        // Phase13-Step7 7-c: 旧: 遅延取得デリゲート（初回に1回だけ取得）。配列の参照は再代入されないため、コンストラクターで保持する
         private readonly OutContType[] _activeOutDevType;
         private OutContType[] ActiveOutDevType => _activeOutDevType;
 

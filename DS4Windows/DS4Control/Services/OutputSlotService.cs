@@ -10,16 +10,15 @@ namespace DS4Windows
     public class OutputSlotService : IOutputSlotService
     {
         // Phase6-Step10-4-3: 全ての依存を必須化（Program.rootHub／AppHost／new のフォールバックを廃止。Phase6-Step10 §8 の TODO を解消）。
-        // ControlService は Func<IOutputSlotService> で本サービスへ依存している（Phase6-Step2 決定D1）ため、直接のコンストラクタ注入は
-        // 循環する。Func による遅延解決で受け取る（決定 D4-3）。
         // Phase9 9-E E-4: スロット管理（OutputSlotManager）の実体と、仮想スロットの抜き差しは、ControlService ではなく VirtualPadService が持つ
         // （過渡期の逆依存 OutputSlotService → ControlService を解消した）。
-        private readonly Func<OutputSlotManager> _slotManagerProvider;
+        // Phase13-Step7 7-d: 旧: 遅延取得デリゲート 2 本をやめ、IVirtualPadService を直接受ける。
+        // VirtualPadService は出力種別の配列を IOutputDeviceTypeState から受けるため、本サービスへ依存せず、循環しない。
+        private readonly IVirtualPadService _virtualPad;
         private readonly IOutputSlotStore _store;
-        private readonly Func<IVirtualPadService> _virtualPadProvider;
         private readonly IOutputDeviceTypeState _types;   // Phase13-Step7 7-b: 出力種別の 2 本の配列の持ち主（旧: 本サービスのフィールド）
-        private OutputSlotManager SlotManager => _slotManagerProvider();
-        private IVirtualPadService VirtualPad => _virtualPadProvider();
+        private OutputSlotManager SlotManager => _virtualPad.OutputSlotManager;
+        private IVirtualPadService VirtualPad => _virtualPad;
         private readonly object _syncLock = new object();
         public const int MAX_SLOTS = 8;
 
@@ -30,12 +29,10 @@ namespace DS4Windows
         // 出力デバイス種別の三態は、永続設定＝IProfileSettingsService.OutContType、
         // 実行時接続状態＝ActiveOutDevType、UI一時状態＝OutDevTypeTemp を参照すること。
 
-        public OutputSlotService(Func<OutputSlotManager> slotManagerProvider, IOutputSlotStore store,
-            Func<IVirtualPadService> virtualPadProvider, IOutputDeviceTypeState types)
+        public OutputSlotService(IVirtualPadService virtualPad, IOutputSlotStore store, IOutputDeviceTypeState types)
         {
-            _slotManagerProvider = slotManagerProvider ?? throw new ArgumentNullException(nameof(slotManagerProvider));
+            _virtualPad = virtualPad ?? throw new ArgumentNullException(nameof(virtualPad));
             _store = store ?? throw new ArgumentNullException(nameof(store));
-            _virtualPadProvider = virtualPadProvider ?? throw new ArgumentNullException(nameof(virtualPadProvider));
             _types = types ?? throw new ArgumentNullException(nameof(types));
         }
 

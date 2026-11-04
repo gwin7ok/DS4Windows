@@ -108,3 +108,21 @@ interface IOutputDeviceTypeState   // DS4Windows/DI/、namespace DS4Windows.DI
 5. **実装の分割**: 7-a〜7-d を別コミットにする（§4）。
 6. **A/B 計測**: 0 アロケーションの特性テストと `DS4W_RUN_BENCH=1` の計測を確認として行うが、合否のゲートにはしない（悪化は想定していないため）。
 7. **偽 `IVirtualPadService`** をテスト側に用意する（`OutputSlotManager` を差し替えるテストのため）。
+
+---
+
+## 10. 実施結果（2026-11-04）
+
+| サブステップ | コミット | 内容 |
+|---|---|---|
+| 7-a | `25578598` | 計画の承認反映、解決グラフのプローブと出力種別配列の特性テストを追加 |
+| 7-b | `830bed84` | `IOutputDeviceTypeState`／`OutputDeviceTypeState` を新設（配列の持ち主。`OutputSlotService` は転送のみ） |
+| 7-c | `8a3b32d2` | `VirtualPadService`／`DeviceConnector`／`DeviceDisconnectHandler`／`InputReportProcessor` が `IOutputDeviceTypeState` を直接受ける |
+| 7-d | （本コミット） | `OutputSlotService` のコンストラクターを `(IVirtualPadService, IOutputSlotStore, IOutputDeviceTypeState)` に。`ControlService` は `IOutputSlotService` を直接受ける（引数 26 のまま）。`Func<IVirtualPadService>`／`Func<IOutputSlotService>` の登録と `Func<OutputSlotManager>` を撤廃 |
+
+- 本番ソースの `Func<IOutputSlotService>`／`Func<IVirtualPadService>`／`Func<OutputSlotManager>` は 0 件（`Phase13Step5FuncRemovalGuardTests.FuncsOfTheOutputSlotCycle_NoLongerAppear` が検査）。
+- 解決グラフに循環がないことは `Phase13Step6ResolutionGraphProbeTests` で確認。
+- `On_Report` の計測（参考）: 中央値 1242.6 ns／回、割り当て 0 bytes（合否のゲートにはしない）。
+- テスト側は `FakeVirtualPadService`（`OutputSlotManager` を差し替え、他は転送）を新設。`ControlServiceTestFactory` の Func 差し替え引数と、Func を呼ばないことの検査（`Constructor_DoesNotInvokeOutputSlotServiceFactory`）は、Func の撤廃に伴い削除。
+- `Debug ALL`: 警告 0、エラー 0、3113 件合格。
+- 実機確認（最後にまとめて）: スロットの抜き差し、接続・切断、X360⇄DS4 の切替、IPC の `ActiveOutDevType`。

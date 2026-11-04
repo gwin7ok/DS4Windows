@@ -17,10 +17,7 @@ namespace DS4WindowsTests
         /// <param name="nullParameterName">
         /// 指定した引数だけに null を渡して生成する（必須引数の null 拒否を検証する用途）。null なら全引数を解決して生成する。
         /// </param>
-        /// <param name="outputSlotServiceFactory">Func&lt;IOutputSlotService&gt; 引数を差し替える（遅延解決の検証用）。</param>
-        public static ControlService Create(
-            string nullParameterName = null,
-            Func<IOutputSlotService> outputSlotServiceFactory = null)
+        public static ControlService Create(string nullParameterName = null)
         {
             DS4WinWPF.AppHost.CreateHost();
 
@@ -38,7 +35,7 @@ namespace DS4WindowsTests
                     continue;
                 }
 
-                arguments[i] = Resolve(parameters[i].ParameterType, outputSlotServiceFactory);
+                arguments[i] = Resolve(parameters[i].ParameterType);
             }
 
             if (!nullTargetFound)
@@ -58,17 +55,11 @@ namespace DS4WindowsTests
             }
         }
 
-        private static object Resolve(Type parameterType, Func<IOutputSlotService> outputSlotServiceFactory)
+        private static object Resolve(Type parameterType)
         {
             if (parameterType == typeof(DS4WinWPF.ArgumentParser))
             {
                 return new DS4WinWPF.ArgumentParser();
-            }
-
-            if (parameterType == typeof(Func<IOutputSlotService>))
-            {
-                return outputSlotServiceFactory
-                    ?? (Func<IOutputSlotService>)(() => TestHost.GetService<IOutputSlotService>());
             }
 
             return TestHost.GetService(parameterType);

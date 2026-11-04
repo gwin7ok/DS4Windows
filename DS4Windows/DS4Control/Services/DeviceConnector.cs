@@ -21,7 +21,7 @@ namespace DS4Windows.Services
         private readonly SyntheticInputState _syntheticInput;
         private readonly IConnectionProfileSelector _connectionProfileSelector;
         private readonly IVirtualPadService _virtualPad;
-        private readonly OutContType[] _activeOutDevType;   // Phase13-Step7 7-c: 旧 Func<IOutputSlotService>。配列の参照は再代入されない
+        private readonly OutContType[] _activeOutDevType;   // Phase13-Step7 7-c: 旧: 遅延取得デリゲート。配列の参照は再代入されない
         private readonly IDeviceConnectionSetup _deviceConnectionSetup;
         private readonly IInputDeviceModuleRegistry _deviceModules;
         private readonly IUdpMotionService _udpMotion;
