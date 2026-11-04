@@ -78,7 +78,7 @@ namespace DS4WinWPF
                     if (proc == null)
                     {
                         logger.Error("Failed to start elevated process (null)");
-                        AppLogger.LogDebug("[UpdaterInstall] Failed to start elevated process: null returned");
+                        AppLogger.LogWarn("[UpdaterInstall] Failed to start elevated process: null returned");
                         return false;
                     }
 
@@ -172,7 +172,7 @@ namespace DS4WinWPF
                     if (proc == null)
                     {
                         logger.Error("Failed to start elevated process (null)");
-                        AppLogger.LogDebug("[UpdaterInstall] Failed to start elevated process (null)");
+                        AppLogger.LogWarn("[UpdaterInstall] Failed to start elevated process (null)");
                         return false;
                     }
 

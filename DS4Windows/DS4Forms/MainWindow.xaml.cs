@@ -434,7 +434,7 @@ namespace DS4WinWPF.DS4Forms
                 }
                 catch (Exception ex)
                 {
-                    DS4Windows.AppLogger.LogDebug($"[Diag-Toast] ShowModernToast exception: {ex.Message}");
+                    DS4Windows.AppLogger.LogWarn($"[Toast] ShowModernToast failed: {ex.GetType().Name}: {ex.Message}");
                 }
             }
         }
@@ -445,24 +445,19 @@ namespace DS4WinWPF.DS4Forms
             bool isProfileWinOn = appSettingsService.ProfileChangedNotification;
             int notifLevel = appSettingsService.Notifications;
 
-            DS4Windows.AppLogger.LogDebug($"[Diag-Toast] ShowProfileSwitchNotification 呼び出し: message='{message}', ProfileChangedNotification={isProfileWinOn}, Notifications={notifLevel}");
-
             if (isProfileWinOn)
             {
                 // ケース 1, 2, 3: チェックボックスが ON -> 独自デスクトップウィンドウを表示
-                DS4Windows.AppLogger.LogDebug("[Diag-Toast] 独自ウィンドウ表示へ分岐");
                 ProfileNotificationWindow.ShowNotification(message);
             }
             else if (notifLevel == 2)
             {
                 // ケース 4: チェックボックスが OFF かつ 通知設定が「すべて(2)」 -> トースト通知を表示
-                DS4Windows.AppLogger.LogDebug("[Diag-Toast] トースト通知(ShowSystemNotification)へ分岐");
                 ShowSystemNotification(message, false);
             }
             else
             {
                 // ケース 5, 6: 抑制（非表示）
-                DS4Windows.AppLogger.LogDebug("[Diag-Toast] プロファイル変更通知を抑制（非表示）");
             }
         }
         private void SetupEvents()
@@ -1245,7 +1240,7 @@ Suspend support not enabled.", true);
                     }
                     catch (Exception ex)
                     {
-                        AppLogger.LogTrace($"PostApply: Failed to log post-apply window metrics: {ex.Message}");
+                        AppLogger.LogDebug($"PostApply: Failed to log post-apply window metrics: {ex.Message}");
                     }
                 }), System.Windows.Threading.DispatcherPriority.ApplicationIdle);
             }

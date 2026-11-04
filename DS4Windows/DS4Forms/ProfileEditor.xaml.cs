@@ -288,7 +288,7 @@ namespace DS4WinWPF.DS4Forms
             }
             catch (Exception ex)
             {
-                AppLogger.LogDebug($"[SortSpecialActionsList] UpdateSpecialActionsHeaderTexts failed: {ex.Message}");
+                AppLogger.LogWarn($"[SortSpecialActionsList] UpdateSpecialActionsHeaderTexts failed: {ex.Message}");
             }
 
             // ヘッダーの表示更新は Loaded ハンドラでキャッシュした TextBlock により行われます。
@@ -1125,7 +1125,7 @@ namespace DS4WinWPF.DS4Forms
             }
             else
             {
-                AppLogger.LogToGui($"[DI] Failed to save profile '{profileName}'.", true);
+                AppLogger.Log(AppLogLevel.Error, $"[DI] Failed to save profile '{profileName}'.", LogOptions.UserFacing);
                 return false;
             }
         }

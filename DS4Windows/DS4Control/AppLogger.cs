@@ -122,7 +122,6 @@ namespace DS4Windows
             // sender引数を一切参照していなかったため実質未配線だった。今回のリファクタでも
             // 意図的に配線しない（挙動を変えないため）。将来対応が必要になった場合は、
             // INotificationService.SendNotification 側にも同等の引数追加を検討すること。
-            Logger.Debug($"[Diag-Toast] LogToTray 呼び出し: data='{data}', warning={warning}, ignoreSettings={ignoreSettings}");
 
             try
             {
@@ -135,7 +134,7 @@ namespace DS4Windows
             }
             catch (Exception ex)
             {
-                Logger.Debug($"[Diag-Toast] LogToTray から SendNotification 呼び出しで例外発生: {ex.GetType().Name}: {ex.Message}");
+                Logger.Warn($"[Toast] LogToTray: SendNotification failed: {ex.GetType().Name}: {ex.Message}");
             }
         }
 

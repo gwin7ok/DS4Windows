@@ -179,7 +179,7 @@ namespace DS4WinWPF.DS4Forms.ViewModels
             }
             catch (Exception ex)
             {
-                AppLogger.LogToGui($"ControllerListViewModel.Dispose: ClearControllerList failed: {ex}", true);
+                AppLogger.Log(AppLogLevel.Error, $"ControllerListViewModel.Dispose: ClearControllerList failed: {ex}", LogOptions.UserFacing);
             }
             finally
             {
@@ -313,7 +313,7 @@ namespace DS4WinWPF.DS4Forms.ViewModels
                     }
                     catch (Exception ex)
                     {
-                        AppLogger.LogToGui($"ERROR in Global_SelectedProfileChanged Dispatcher callback: {ex.Message}", true);
+                        AppLogger.Log(AppLogLevel.Error, $"ERROR in Global_SelectedProfileChanged Dispatcher callback: {ex.Message}", LogOptions.UserFacing);
                         AppLogger.LogDebug($"Global_SelectedProfileChanged Dispatcher exception: {ex}");
                     }
                 });
@@ -322,7 +322,7 @@ namespace DS4WinWPF.DS4Forms.ViewModels
             }
             catch (Exception ex)
             {
-                AppLogger.LogToGui($"ERROR in Global_SelectedProfileChanged: {ex.Message}", true);
+                AppLogger.Log(AppLogLevel.Error, $"ERROR in Global_SelectedProfileChanged: {ex.Message}", LogOptions.UserFacing);
                 AppLogger.LogDebug($"Global_SelectedProfileChanged exception: {ex}");
             }
         }

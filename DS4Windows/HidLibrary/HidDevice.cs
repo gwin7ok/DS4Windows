@@ -377,7 +377,7 @@ namespace DS4Windows
             }
             catch (Exception e)
             {
-                AppLogger.LogToGui($"ERROR: Failed to generate runtime MAC address from device path {this.DevicePath}. {e.Message}", true);
+                AppLogger.Log(AppLogLevel.Error, $"ERROR: Failed to generate runtime MAC address from device path {this.DevicePath}. {e.Message}", LogOptions.UserFacing);
                 MACAddr = BLANK_SERIAL;
             }
 

@@ -260,7 +260,7 @@ namespace DS4Windows
             }
             catch (Exception ex)
             {
-                AppLogger.LogDebug($"[DI] WriteOutputOffOnce failed: {ex.Message}");
+                AppLogger.LogWarn($"[DI] WriteOutputOffOnce failed: {ex.Message}");
             }
         }
 
@@ -783,7 +783,7 @@ namespace DS4Windows
             }
             catch (Exception ex)
             {
-                AppLogger.LogDebug($"[DI] PrimeBatteryReading failed: {ex.Message}");
+                AppLogger.LogWarn($"[DI] PrimeBatteryReading failed: {ex.Message}");
             }
         }
 
@@ -1077,7 +1077,7 @@ namespace DS4Windows
                                 // If the incoming data packet does not have the native DS4 type or CRC-32 checks keep failing. Fail out and disconnect controller.
                                 if (this.inputReportErrorCount >= CRC32_NUM_ATTEMPTS)
                                 {
-                                    AppLogger.LogToGui($"{Mac.ToString()} failed CRC-32 checks {CRC32_NUM_ATTEMPTS} times. Disconnecting", false);
+                                    AppLogger.Log(AppLogLevel.Warn, $"{Mac.ToString()} failed CRC-32 checks {CRC32_NUM_ATTEMPTS} times. Disconnecting", LogOptions.UserFacing);
 
                                     readWaitEv.Reset();
                                     sendOutputReport(true, true); // Kick Windows into noticing the disconnection.
@@ -1560,7 +1560,7 @@ namespace DS4Windows
             // If they are not yet initialized (race or early call), log and skip to avoid NRE.
             if (outputReport == null || outReportBuffer == null)
             {
-                AppLogger.LogToGui($"sendOutputReport: output buffers not initialized (outputReport={(outputReport == null)}, outReportBuffer={(outReportBuffer == null)})", false);
+                AppLogger.Log(AppLogLevel.Warn, $"sendOutputReport: output buffers not initialized (outputReport={(outputReport == null)}, outReportBuffer={(outReportBuffer == null)})", LogOptions.UserFacing);
                 return;
             }
 
@@ -1633,7 +1633,7 @@ namespace DS4Windows
 
                                 // Logfile notification that the gamepad is force disconnected because of writeOutput failed
                                 if (quitOutputThread == false && !isDisconnecting)
-                                    AppLogger.LogToGui($"Gamepad data write connection is lost. Disconnecting the gamepad. LastErrorCode={winError}", false);
+                                    AppLogger.Log(AppLogLevel.Warn, $"Gamepad data write connection is lost. Disconnecting the gamepad. LastErrorCode={winError}", LogOptions.UserFacing);
 
                                 quitOutputThread = true;
                             }

@@ -595,7 +595,7 @@ namespace DS4WinWPF
             }
             catch (Exception ex)
             {
-                AppLogger.LogTrace($"Startup summary read failed: {ex}");
+                AppLogger.LogWarn($"Startup summary read failed: {ex}");
             }
 
             if (!firstRun && !readAppConfig)

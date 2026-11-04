@@ -100,3 +100,10 @@
 - **F1（レベルのみ・ファイル）**: 握りつぶした例外を表す Trace／Debug を Warn へ — `BatteryCheckAction.Execute`、`ButtonOutputAction`、`DisconnectBTAction.Execute`、`GyroCalibrateAction`、`KeyAction` 2、`KeyButtonActionController`、`LaunchProcessAction`、`Changelog`、`OutputSlotService` 4、`OutputSlotStore` 2、`ProfileApplicationService` 4（計 19）。
   GUI に Error を出す処理の詳細（スタック）を持つ Trace は Debug へ — `ProfileRepository` 2、`ProfileXmlStore` 2、`AppSettingsService` 1、`SyntheticDispatcherService` 2（計 7）。
   **毎フレームの経路は Trace のまま**（ログの洪水を避けるため）: `BatteryCheckAction.WhileHeld`、`DisconnectBTAction.ApplyFrame`。
+
+### 13b-5（UI・入力層・Updater の G1／G2／F1／F3）
+
+- **F3（削除）**: `[Diag-Toast]` の診断行 7 か所のうち、`MainWindow` の呼び出し記録・分岐記録 4 か所と `AppLogger.LogToTray` の呼び出し記録 1 か所を削除。例外を記録する 2 か所（`MainWindow` の `ShowModernToast`、`AppLogger.LogToTray` の `SendNotification`）は、診断用の接頭辞を `[Toast]` に改め、Debug → Warn にした（文言の変更＋レベル）。
+- **G1（実施・レベルのみ）**: `ProfileEditor` 1128、`ControllerListViewModel` 3 か所、`ProfileSettingsViewModel` 3445、`SettingsViewModel` 466、`JoyConDevice` 599、`SwitchProDevice` 312、`HidDevice` 380（計 9）。
+- **G2（実施・GUI が警告表示になる）**: `DS4Device` の「CRC-32 失敗で切断」「バッファ未初期化」「書き込み接続の喪失」（計 3）。
+- **F1（レベルのみ・ファイル）**: Debug／Trace → Warn — `ProfileEditor` 291、`CompositeDeviceModel` 278、`App` 598、`UpdaterInstaller` 81／175、`DS4Device` 263／786（計 7）。Trace → Debug — `MainWindow` の PostApply の計測の失敗 1 か所。

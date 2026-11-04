@@ -309,7 +309,7 @@ namespace DS4Windows.InputDevices
             }
             catch (System.IO.IOException)
             {
-                AppLogger.LogToGui($"Controller {MacAddress} failed to initialize. Closing device", true);
+                AppLogger.Log(AppLogLevel.Error, $"Controller {MacAddress} failed to initialize. Closing device", LogOptions.UserFacing);
             }
 
             if (!connectionOpened)

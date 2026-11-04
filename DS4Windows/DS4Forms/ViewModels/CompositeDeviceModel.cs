@@ -275,7 +275,7 @@ namespace DS4WinWPF.DS4Forms.ViewModels
                     }
                     else
                     {
-                        AppLogger.LogDebug($"LinkEnabled ON: Could not save - linkedValue='{linkedValue}', validSerial={device?.isValidSerial()}");
+                        AppLogger.LogWarn($"LinkEnabled ON: Could not save - linkedValue='{linkedValue}', validSerial={device?.isValidSerial()}");
                     }
 
                     LinkedProfileNameChanged?.Invoke(this, EventArgs.Empty);
