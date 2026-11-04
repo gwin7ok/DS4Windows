@@ -1,4 +1,5 @@
 
+using DS4Windows.Core.Abstractions;
 using DS4Windows.Input;
 using DS4Windows.Output;
 using DS4Windows.Processing;
@@ -17,7 +18,7 @@ namespace DS4WindowsTests
 
         public DS4Device GetController(int ind) => Target.GetController(ind);
 
-        public Mouse GetTouchPad(int ind) => Target.GetTouchPad(ind);
+        public ITouchPadGyroToggles GetTouchPad(int ind) => Target.GetTouchPad(ind);
 
         public OutputDevice GetOutputDevice(int ind) => Target.GetOutputDevice(ind);
 

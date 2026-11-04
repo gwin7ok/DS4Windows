@@ -1,4 +1,5 @@
 using System;
+using DS4Windows.Core.Abstractions;
 using DS4Windows.Core.Settings;
 using DS4Windows.Input;
 using DS4Windows.Output;
@@ -38,7 +39,7 @@ namespace DS4Windows.Processing.Services
         // 旧 control.DS4Controllers[ind] と同じ（範囲外は例外）。IDeviceStateAccessor.GetController（範囲外は null）にしない: 鎖の PostLoadSnippet などは範囲の検査をしないため、挙動を保つ
         public DS4Device GetController(int ind) => _slots.DS4Controllers[ind];
 
-        public Mouse GetTouchPad(int ind) => _slots.TouchPads[ind];
+        public ITouchPadGyroToggles GetTouchPad(int ind) => _slots.TouchPads[ind];
 
         public OutputDevice GetOutputDevice(int ind) => _virtualPad.OutputDevices[ind];
 

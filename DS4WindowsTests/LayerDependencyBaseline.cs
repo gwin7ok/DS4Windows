@@ -66,7 +66,6 @@
             "L1|DS4Windows.Core.Settings.AppearanceSettingsService|DS4Windows.UI.TrayIconResources",
             "L1|DS4Windows.Core.Settings.BackingStore|DS4Windows.Processing.Abstractions.IProfileLoadTarget",
             "L1|DS4Windows.Core.Settings.BackingStore|DS4Windows.Processing.BezierCurve",
-            "L1|DS4Windows.Core.Settings.BackingStore|DS4Windows.Processing.Mouse",
             "L1|DS4Windows.Core.Settings.BackingStore|DS4Windows.Processing.Services.DeviceSlotState",
             "L1|DS4Windows.Core.Settings.BackingStore|DS4Windows.Processing.SpecialAction",
             "L1|DS4Windows.Core.Settings.ControlSpecialItem|DS4Windows.Processing.SpecialAction",

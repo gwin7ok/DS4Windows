@@ -27,7 +27,7 @@ using DS4Windows.Processing.Abstractions;
 
 namespace DS4Windows.Processing
 {
-    public class Mouse : ITouchpadBehaviour
+    public class Mouse : ITouchpadBehaviour, ITouchPadGyroToggles
     {
         protected DateTime pastTime, firstTap, TimeofEnd;
         protected Touch firstTouch, secondTouch;

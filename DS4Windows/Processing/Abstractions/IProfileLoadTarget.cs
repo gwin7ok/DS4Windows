@@ -1,3 +1,4 @@
+using DS4Windows.Core.Abstractions;
 using DS4Windows.Input;
 using DS4Windows.Output;
 
@@ -14,8 +15,8 @@ namespace DS4Windows.Processing.Abstractions
         /// <summary>スロットのコントローラー（旧: <c>control.DS4Controllers[ind]</c> と同じ。範囲外は元と同じく例外。鎖の呼び出しの一部は範囲の検査をしないため、挙動を変えない）。</summary>
         DS4Device GetController(int ind);
 
-        /// <summary>スロットのタッチパッドのマウス（旧: <c>control.touchPad[ind]</c>。範囲外は元と同じく例外）。</summary>
-        Mouse GetTouchPad(int ind);
+        /// <summary>スロットのタッチパッドのマウス（旧: <c>control.touchPad[ind]</c>。範囲外は元と同じく例外）。Phase14b-Step7: <c>Mouse</c> ではなく、プロファイルの読込が使う操作だけの <see cref="ITouchPadGyroToggles"/> を返す（同じインスタンス）。</summary>
+        ITouchPadGyroToggles GetTouchPad(int ind);
 
         /// <summary>スロットの仮想パッド（旧: <c>control.outputDevices[ind]</c>。範囲外は元と同じく例外）。</summary>
         OutputDevice GetOutputDevice(int ind);
