@@ -3,7 +3,7 @@
 作成日: 2026-11-04
 対象ブランチ: `Phase13`
 上位計画: `Phase13-Plan.md` §4 Step10（Q6: 努力目標 `ControlService` の引数 20 以下）
-状態: **承認待ち**（§9）
+状態: **完了**（2026-11-04。§10）
 
 ---
 
@@ -92,3 +92,26 @@ HidHide の登録、OSC／UDP モーションの切り替え、タッチパッ�
 1. **範囲**: 案 A／B／C のどれにするか（推奨: C）。
 2. **`MainWindow` の渡し方**: 4 つを直接受ける（24 引数）か、`IRuntimeFeatureSwitch` にまとめる（21 引数）か（推奨: まとめる）。
 3. **分割**: 6 コミット（10-a〜10-f）で、以後は自動進行。
+
+---
+
+## 10. 実施結果（2026-11-04）
+
+決定 1〜3 は、すべて推奨案（案 C、`IRuntimeFeatureSwitch` にまとめる、6 コミットで自動進行）で承認済み（2026-11-04）。
+
+| サブステップ | コミット | 内容 |
+|---|---|---|
+| 10-a | `07d16e99` | 本計画書 |
+| 10-b | `5925c9d6` | 利用者 0 件の転送（`PluginOutDev`／`UnplugOutDev`／`CheckProfileOptions`／`TouchPadOn`／`StartTPOff`／`CheckForTouchToggle`）を削除 |
+| 10-c | `63761cab` | `IRuntimeFeatureSwitch`／`RuntimeFeatureSwitch` を新設。OSC・UDP・HidHide・`TouchpadSlide` の利用者（`MainWindow`／`App`／`AutoProfilesViewModel`）を切り替え、`ControlService` の転送と `IOscService` 引数を削除（26 → 25） |
+| 10-d | `5c557e94` | `setRumble`／`GetActiveInputControl` の転送を `IRuntimeFeatureSwitch` へ移し、`ProfileEditor`／`EditorWindowFactory` を切り替え。`IActiveInputProbe`／`IDeviceRumbleService`／`IEnvironmentService` 引数を削除（25 → 22） |
+| 10-e | `e589e0ed` | `IServiceDebugRelay`／`ServiceDebugRelay` を新設し、ログ中継の 6 引数を 1 つにまとめた（22 → 17） |
+| 10-f | （本コミット） | `Phase13Step10ForwardRemovalGuardTests`、結果の記録、`ControlService.cs` の古い TODO の更新 |
+
+- **`ControlService` の引数: 26 → 17**（努力目標 20 以下を達成）。
+- **`MainWindow` の引数: `ArgumentParser` を含めて 21 → 22**（`IRuntimeFeatureSwitch` の +1。4 サービスを直接受ける場合の +4 を回避）。`ProfileEditor`・`EditorWindowFactory`・`ViewModelFactory`・`MainWindowFactory` も `IRuntimeFeatureSwitch` を 1 つ受ける。
+- 新設は 2 組（`IRuntimeFeatureSwitch`／`RuntimeFeatureSwitch`、`IServiceDebugRelay`／`ServiceDebugRelay`）。配置は R1・R2。ラチェット（`Global`／`AppHost`／`Program.rootHub`）の件数は変えていない。
+- **残した転送（§2.3）**: `Start`／`Stop`／`HotPlug`／`PrepareAbort` と公開イベント、`DS4Controllers`／`touchPad`／`slotManager`／`CurrentState` などの状態（利用者が約 50 か所）、`OutputslotMan`、`LogDebug`、`getDS4State`／`getDS4StateTemp`、`MappingService`。`ControlService.cs` の TODO は「Phase13 完了後に再判断」に更新した。
+- ログの文言・レベル・経路は変えていない（`ServiceDebugRelayTests` で 6 サービスの中継を固定）。
+- `Debug ALL`: 警告 0、エラー 0、3137 件合格。
+- 実機確認（最後にまとめて）: OSC／UDP の切り替え、HidHide の登録、タッチパッドのスライド表示、プロファイル編集の入力取得と振動の停止、ログの表示。

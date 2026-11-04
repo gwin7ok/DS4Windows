@@ -46,7 +46,7 @@ namespace DS4Windows
         // ControlService 内部は注入値 _controllerSlotLimit を使用する（Phase6-Step2-Plan.md 決定O2/O3）。
         // Phase7-Step10b W4: USING_MAX_CONTROLLERS（静的シム）は、呼び出し元 3 箇所を IEnvironmentService.UsingMaxControllers の注入に替えて削除した。
         // Phase13-Step5: スロット状態の配列は IDeviceSlotState（DeviceSlotState）が所有する。ここは、コンストラクターで一度だけ取得した参照を保持する（ホットパス［On_Report］は従来どおりこのフィールドを読む。配列の参照は再代入されない）。
-        // TODO(Phase13-Step10): 公開の DS4Controllers／touchPad／slotManager は、UI など約 50 か所が ControlService 経由で読んでいるため、同名のまま温存している。呼び出し側を IDeviceSlotState の直接注入へ切り替えた時点で削除する。
+        // TODO(Phase13 完了後に再判断。Step10 では状態の転送を対象外とした［Phase13-Step10-Plan.md §2.3］): 公開の DS4Controllers／touchPad／slotManager は、UI など約 50 か所が ControlService 経由で読んでいるため、同名のまま温存している。呼び出し側を IDeviceSlotState の直接注入へ切り替えた時点で削除する。
         private readonly DI.IDeviceSlotState _slots;
         private readonly DI.IInputReportProcessor _inputReport;   // Phase13-Step5b
         public readonly DS4Device[] DS4Controllers;
@@ -58,7 +58,7 @@ namespace DS4Windows
         private readonly DS4State[] PreviousState;
         private readonly DS4State[] TempState;
         public readonly ControllerSlotManager slotManager;
-        // TODO(Phase13-Step10): 旧 recordingMacro／IsMeasuringProcessingDelay／ProcessingDelayMs／GetProcessingDelay（入力レポートの処理の作業用の状態）は、
+        // TODO(Phase13 完了後に再判断。Step10 では状態の転送を対象外とした［Phase13-Step10-Plan.md §2.3］): 旧 recordingMacro／IsMeasuringProcessingDelay／ProcessingDelayMs／GetProcessingDelay（入力レポートの処理の作業用の状態）は、
         //   Phase13-Step5b で IInputReportProcessor へ移した。画面（RecordBox、ControllerReadingsControl）がまだ ControlService 経由で使うため、転送だけ残している
         //   （外部の利用者を IInputReportProcessor の直接注入へ切り替えた時点で、Step10 で削除する。決定: Phase13-Step5b-Plan §9 の 4）。
         public bool recordingMacro { get => _inputReport.RecordingMacro; set => _inputReport.RecordingMacro = value; }
