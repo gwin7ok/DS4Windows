@@ -293,12 +293,29 @@ namespace DS4Windows.DI
                     sp.GetRequiredService<IServiceLifecycle>(),   // Phase9 9-E E-6f2
                     sp.GetRequiredService<IEventThreadDispatcher>(),   // Phase13-Step3
                     sp.GetRequiredService<IDeviceRumbleService>(),   // Phase13-Step3
-                    sp.GetRequiredService<IDeviceSlotState>()   // Phase13-Step5
+                    sp.GetRequiredService<IDeviceSlotState>(),   // Phase13-Step5
+                    sp.GetRequiredService<IInputReportProcessor>()   // Phase13-Step5b
                 );
             });
             // Phase13-Step5: スロット状態の持ち主。IDeviceStateAccessor（GetController）も同じインスタンスを返す
             services.AddSingleton<IDeviceSlotState, DeviceSlotState>();
             services.AddSingleton<IDeviceStateAccessor>(sp => sp.GetRequiredService<IDeviceSlotState>());
+            // Phase13-Step5b: 入力レポートの処理（旧 ControlService.On_Report）と、その作業用の状態の持ち主。Func<IOutputSlotService> は遅延解決（OutputSlotService → ControlService の逆依存を避ける）
+            services.AddSingleton<IInputReportProcessor>(sp => new InputReportProcessor(
+                sp.GetRequiredService<IDeviceSlotState>(),
+                sp.GetRequiredService<ILatencyMonitor>(),
+                sp.GetRequiredService<IPathService>(),
+                sp.GetRequiredService<IProfileRepository>(),
+                sp.GetRequiredService<IAppearanceSettingsService>(),
+                sp.GetRequiredService<IProfileSettingsService>(),
+                sp.GetRequiredService<IVirtualKBM>(),
+                sp.GetRequiredService<IMapping>(),
+                sp.GetRequiredService<ITouchpadToggleService>(),
+                sp.GetRequiredService<IProfileActionProvider>(),
+                sp.GetRequiredService<IAppSettingsService>(),
+                sp.GetRequiredService<IOscService>(),
+                sp.GetRequiredService<IVirtualPadService>(),
+                () => sp.GetRequiredService<IOutputSlotService>()));
             services.AddSingleton<IDeviceSlotHost>(sp => sp.GetRequiredService<ControlService>());   // Phase9 9-E E-6e
 
             return services;

@@ -67,13 +67,16 @@ namespace DS4WindowsTests
             Assert.Contains("public string TouchpadSlide(int ind)", text);
             Assert.Contains("_touchpadToggle.Slide(", text);
             Assert.Contains("_touchpadToggle.CheckForToggle(", text);
-            Assert.Contains("_latencyMonitor.OnReport(device, ind);", text);
+            // Phase13-Step5b: _latencyMonitor.OnReport は On_Report と一緒に InputReportProcessor へ移した
+            string processor = ReadWithoutComments("DS4Windows/DS4Control/Services/InputReportProcessor.cs");
+            Assert.Contains("_latencyMonitor.OnReport(device, ind);", processor);
         }
 
         [Fact]
         public void OnReport_KeepsTheOriginalOrder_OfTheCallsToTheNewParts()
         {
-            string text = ReadWithoutComments("DS4Windows/DS4Control/ControlService.cs");
+            // Phase13-Step5b: On_Report は InputReportProcessor へ移した（順序の検査は新しいファイルに対して維持する）
+            string text = ReadWithoutComments("DS4Windows/DS4Control/Services/InputReportProcessor.cs");
             if (text == null) return;
 
             int monitor = text.IndexOf("_latencyMonitor.OnReport(device, ind);");

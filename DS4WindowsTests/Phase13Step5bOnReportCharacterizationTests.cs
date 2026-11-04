@@ -9,9 +9,9 @@ using Xunit.Abstractions;
 namespace DS4WindowsTests
 {
     /// <summary>
-    /// Phase13-Step5b 5b-a: 入力レポートの処理（<c>ControlService.On_Report</c>。5b-c で <c>InputReportProcessor</c> へ移す）の特性テスト。
+    /// Phase13-Step5b 5b-a: 入力レポートの処理（旧 <c>ControlService.On_Report</c>。5b-c で <c>InputReportProcessor</c> へ移した）の特性テスト。
     /// 移す前の挙動を固定し、移した後も同じ結果になることを確かめる。入口は <see cref="Invoke"/> に集約している
-    /// （5b-c で、呼び出し先を <c>IInputReportProcessor.OnReport</c> に替える）。
+    /// （5b-c で、呼び出し先を <c>IInputReportProcessor.OnReport</c> に替えた）。
     /// デバイスは <see cref="TestDs4Device"/>（実機の HID なし）に、レポート処理が読む保護フィールドをリフレクションで与えて使う。
     /// </summary>
     [Collection("ServiceProviderHolder")]
@@ -25,6 +25,7 @@ namespace DS4WindowsTests
         {
             _output = output;
             DS4WinWPF.AppHost.CreateHost();
+            TestHost.GetService<ControlService>();   // TempStates／PreviousStates は ControlService のコンストラクターが作る（本番では起動時に必ず構築される）
         }
 
         /// <summary>レポート処理が読む、保護フィールドを持つテスト用デバイス（受信した 1 回分の入力［cState］を指定できる）。</summary>
@@ -54,14 +55,10 @@ namespace DS4WindowsTests
             f.SetValue(target, value);
         }
 
-        /// <summary>入口。5b-c で IInputReportProcessor.OnReport に替える。</summary>
+        /// <summary>入口。5b-c で、ControlService.On_Report（リフレクション）から IInputReportProcessor.OnReport の直接呼び出しに替えた。</summary>
         private static void Invoke(DS4Device device, int ind)
         {
-            var control = TestHost.GetService<ControlService>();
-            MethodInfo m = typeof(ControlService).GetMethod("On_Report", All);
-            Assert.NotNull(m);
-            try { m.Invoke(control, new object[] { device, EventArgs.Empty, ind }); }
-            catch (TargetInvocationException ex) { System.Runtime.ExceptionServices.ExceptionDispatchInfo.Capture(ex.InnerException).Throw(); }
+            TestHost.GetService<IInputReportProcessor>().OnReport(device, EventArgs.Empty, ind);
         }
 
         private static DS4State Current(int ind) => TestHost.GetService<IDeviceSlotState>().CurrentStates[ind];
@@ -145,7 +142,7 @@ namespace DS4WindowsTests
         }
 
         [Fact]
-        public void TheReportPath_AllocationsPerReport_ArePrintedForTheRecord()
+        public void TheReportPath_AllocatesNothingPerReport()
         {
             DS4Device d = NewDevice(s => { s.LX = 130; s.LY = 120; });
             for (int i = 0; i < 2000; i++) Invoke(d, Slot);   // ウォームアップ
@@ -154,7 +151,8 @@ namespace DS4WindowsTests
             long before = GC.GetAllocatedBytesForCurrentThread();
             for (int i = 0; i < n; i++) Invoke(d, Slot);
             long allocated = GC.GetAllocatedBytesForCurrentThread() - before;
-            _output.WriteLine($"On_Report の割り当て（リフレクション経由の呼び出しを含む）: {allocated} bytes / {n} 回 = {allocated / (double)n:F1} bytes／回");
+            _output.WriteLine($"OnReport の割り当て: {allocated} bytes / {n} 回");
+            Assert.Equal(0, allocated);   // 合格基準（Phase13-Step5b-Plan §6）: 1 レポートあたりの割り当ては 0
         }
     }
 }

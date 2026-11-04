@@ -179,3 +179,13 @@ Step5 計画書 §3 のとおり（ゲームパッド周りの OSS に類似の�
 - 呼び出し元（`ControlService.On_Report`）、`MappingCharacterizationScope`、Standalone の `IMapping` スタブ 2 件、`TestMappingFactory`、`Phase7Step8W2MappingInstanceGuardTests`（28 件／null 検査）を更新。
 - `ControlService.ProfileActionProvider`／`SpecialActionRepository` は `Mapping` から使われなくなった。コンストラクターの引数ごと 5b-e で削除する。
 - Debug ALL: Actions.Tests 3081 件・Standalone 11 件すべて合格、警告 0・エラー 0。
+
+## 12. 5b-c の結果（2026-11-04）
+
+- **新設**: `DI/IInputReportProcessor.cs`（`OnReport`／`GetMappedState`／`ExposedState`／`RecordingMacro`／`IsMeasuringProcessingDelay`／`ProcessingDelayMs`／`GetProcessingDelay`）、`DS4Control/Services/InputReportProcessor.cs`（Singleton。コンストラクター引数 14）。`ServiceRegistration` に登録し、`ControlService` のファクトリーへ渡した。
+- **`On_Report` の移設**: 旧 `ControlService.On_Report` を削除し、本文を `InputReportProcessor.OnReport` へ移した。`diff -w` で、フィールド名の置換以外の差がないことを確認した（置換: `CurrentState`→`_currentState`、`TempState`→`_tempState`、`MappedState`→`_mappedState`、`ExposedState`→`_exposedState`、`touchPad`→`_touchPad`、`outputDevices[`→`_virtualPad.OutputDevices[`、`recordingMacro`→`RecordingMacro`、`ProcessingDelayMs`→`_processingDelayMs`。呼び出しの順序・条件・ログは同一）。
+- **初期化**: `MappedState`／`CurrentState`／`ExposedState` の作成は `InputReportProcessor` のコンストラクターへ移した（`CurrentStates[i]` を作った後に `DS4StateExposed` を作る順序は同じ）。`TempState`／`PreviousState` は `ControlService` のコンストラクターに残している。→ `TempStates` は `ControlService` の構築までは未作成のため、テストで `InputReportProcessor` だけを使うときは `ControlService` も解決する（本番は起動時に必ず構築される）。
+- **`ControlService`**: `recordingMacro`／`IsMeasuringProcessingDelay`／`ProcessingDelayMs`／`GetProcessingDelay` は転送だけ残した（§3.3 原則4 の TODO つき。Step10 で削除）。`ExposedState`／`getDS4StateMapped` は削除（外部の利用者 0 件）。`IDeviceSlotHost.OnReport` は `_inputReport.OnReport` へ転送（5b-d で IF ごと削除）。コンストラクターは 29 → 30（5b-e で不要な引数を外して 26）。
+- **after の計測（Release、`Phase13Step5bOnReportTimingBenchmark`、3 回実行）**: 中央値 666.0／471.8／614.8 ns（before: 692.9／574.2）、最小 247.3／333.8／317.0 ns（before: 257.9／253.0）、**割り当て 0 bytes／200,000 回**。揺れが大きい（最小と最大で約 3〜4 倍）環境のため、中央値は before と同等かやや良く、最小値は同等〜やや大きい範囲に収まる。本文の命令列は同じで（差はフィールドの参照元のみ）、構造上の悪化の要因はない。**判定: 合格（割り当て 0、有意な悪化なし）**。実機の `ProcessingDelayMs` の比較は、計画どおり 5b-e の後に H 系の実機確認とあわせて 1 回行う。
+- **更新したテスト**: `Phase13Step5bOnReportCharacterizationTests`（入口を `IInputReportProcessor.OnReport` の直接呼び出しに変更、割り当て 0 を合格基準に）、`Phase13Step5bOnReportTimingBenchmark`、`Phase9EInputReportGuardTests`（順序・`_latencyMonitor.OnReport` の検査を新ファイルに）、`Phase9E6ConnectorGuardTests`、`Phase10Step4dW0RuntimeKeyRatchetTests`（基準値を `ControlService.cs` から `InputReportProcessor.cs` へ。合計は増えていない）、ctor 数のガード 2 件（29 → 30）。
+- **Debug ALL**: Actions.Tests 3081 件・Standalone 11 件すべて合格、警告 0・エラー 0。

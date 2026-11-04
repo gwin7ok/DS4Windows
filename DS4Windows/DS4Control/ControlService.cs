@@ -48,6 +48,7 @@ namespace DS4Windows
         // Phase13-Step5: スロット状態の配列は IDeviceSlotState（DeviceSlotState）が所有する。ここは、コンストラクターで一度だけ取得した参照を保持する（ホットパス［On_Report］は従来どおりこのフィールドを読む。配列の参照は再代入されない）。
         // TODO(Phase13-Step10): 公開の DS4Controllers／touchPad／slotManager は、UI など約 50 か所が ControlService 経由で読んでいるため、同名のまま温存している。呼び出し側を IDeviceSlotState の直接注入へ切り替えた時点で削除する。
         private readonly DI.IDeviceSlotState _slots;
+        private readonly DI.IInputReportProcessor _inputReport;   // Phase13-Step5b
         public readonly DS4Device[] DS4Controllers;
         public DS4Device GetController(int deviceIndex) => _slots.GetController(deviceIndex);
         // Phase9 9-E E-6f2: 状態は ServiceLifecycle が持つ。Phase9 9-F F-5b: 外部の参照が 0 件の activeControllers／loopControllers／inServiceTask の転送を削除した。
@@ -55,13 +56,14 @@ namespace DS4Windows
         //   利用者が IServiceLifecycle.Running を受けるように切り替えた時点で削除する（Start／Stop／slotManager など、ControlService の他のメンバーの切り離しと同時に行う）。
         public readonly Mouse[] touchPad;
         public bool running { get => _lifecycle.Running; set => _lifecycle.Running = value; }
-        private DS4State[] MappedState = new DS4State[MAX_DS4_CONTROLLER_COUNT];
         private readonly DS4State[] CurrentState;
         private readonly DS4State[] PreviousState;
         private readonly DS4State[] TempState;
-        public DS4StateExposed[] ExposedState = new DS4StateExposed[MAX_DS4_CONTROLLER_COUNT];
         public readonly ControllerSlotManager slotManager;
-        public bool recordingMacro = false;
+        // TODO(Phase13-Step10): 旧 recordingMacro／IsMeasuringProcessingDelay／ProcessingDelayMs／GetProcessingDelay（入力レポートの処理の作業用の状態）は、
+        //   Phase13-Step5b で IInputReportProcessor へ移した。画面（RecordBox、ControllerReadingsControl）がまだ ControlService 経由で使うため、転送だけ残している
+        //   （外部の利用者を IInputReportProcessor の直接注入へ切り替えた時点で、Step10 で削除する。決定: Phase13-Step5b-Plan §9 の 4）。
+        public bool recordingMacro { get => _inputReport.RecordingMacro; set => _inputReport.RecordingMacro = value; }
         public event EventHandler<DebugEventArgs> Debug = null;
         bool[] buttonsdown = new bool[MAX_DS4_CONTROLLER_COUNT] { false, false, false, false, false, false, false, false };
         bool[] held = new bool[MAX_DS4_CONTROLLER_COUNT];
@@ -71,19 +73,15 @@ namespace DS4Windows
 
         // Phase9 9-E E-6e → Phase13-Step5: スロットごとの状態は IDeviceSlotState（直接注入）へ移した。残るのは DeviceConnector が使う ActiveControllers と OnReport だけ（Step5b で撤廃）
         int DI.IDeviceSlotHost.ActiveControllers => _lifecycle.ActiveControllers;
-        void DI.IDeviceSlotHost.OnReport(DS4Device device, EventArgs e, int ind) => On_Report(device, e, ind);
+        void DI.IDeviceSlotHost.OnReport(DS4Device device, EventArgs e, int ind) => _inputReport.OnReport(device, e, ind);   // Phase13-Step5b: 5b-d で DeviceConnector が IInputReportProcessor を直接使うようになり、この IF ごと削除する
 
         // Phase13-Step3: イベントスレッドは IEventThreadDispatcher、KBM 出力の初期化は IOutputKbmInitializer へ移した（IServiceLifecycleHost は廃止）
 
         // ControllerReadings タブ表示中のみ有効化される遅延計測用
-        public bool IsMeasuringProcessingDelay = false;
-        public double[] ProcessingDelayMs = new double[MAX_DS4_CONTROLLER_COUNT];
-        public double GetProcessingDelay(int deviceIndex)
-        {
-            if (deviceIndex >= 0 && deviceIndex < ProcessingDelayMs.Length)
-                return ProcessingDelayMs[deviceIndex];
-            return 0.0;
-        }
+        // Phase13-Step5b: 実体は IInputReportProcessor へ移した（上の recordingMacro の TODO を参照。Step10 で削除）
+        public bool IsMeasuringProcessingDelay { get => _inputReport.IsMeasuringProcessingDelay; set => _inputReport.IsMeasuringProcessingDelay = value; }
+        public double[] ProcessingDelayMs => _inputReport.ProcessingDelayMs;
+        public double GetProcessingDelay(int deviceIndex) => _inputReport.GetProcessingDelay(deviceIndex);
         // Phase9 9-E E-3: 旧 udpEuroPairAccel／udpEuroPairGyro（UDP モーションのスムージングのフィルター）は UdpMotionService へ移した
 #pragma warning disable CS0169 // tempBusThread is intentionally unused currently
         Thread tempBusThread;
@@ -217,8 +215,11 @@ namespace DS4Windows
             DI.IServiceLifecycle lifecycle,
             DI.IEventThreadDispatcher eventThread,
             DI.IDeviceRumbleService rumble,
-            DI.IDeviceSlotState slots)
+            DI.IDeviceSlotState slots,
+            DI.IInputReportProcessor inputReport)
         {
+            // Phase13-Step5b: 入力レポートの処理は InputReportProcessor が持つ（MappedState／CurrentStates／ExposedState の初期化も、その先頭で済んでいる）
+            this._inputReport = inputReport ?? throw new ArgumentNullException(nameof(inputReport));
             // Phase13-Step5: スロット状態の配列の参照を一度だけ取得して保持する（以降の読み書きは、従来どおりこれらのフィールドを通す）
             this._slots = slots ?? throw new ArgumentNullException(nameof(slots));
             this.DS4Controllers = slots.DS4Controllers;
@@ -287,11 +288,9 @@ namespace DS4Windows
 
             for (int i = 0, arlength = DS4Controllers.Length; i < arlength; i++)
             {
-                MappedState[i] = new DS4State();
-                CurrentState[i] = new DS4State();
+                // Phase13-Step5b: MappedState／CurrentState／ExposedState の作成は InputReportProcessor のコンストラクターへ移した
                 TempState[i] = new DS4State();
                 PreviousState[i] = new DS4State();
-                ExposedState[i] = new DS4StateExposed(CurrentState[i]);
 
                 int tempDev = i;
                 _profileSettings.L2OutputSettings[i].TwoStageModeChanged += (sender, e) =>
@@ -631,205 +630,7 @@ namespace DS4Windows
         // Phase9 9-E E-5: 旧 lag／inWarnMonitor／tempStrings（遅延の監視の状態）は LatencyMonitor へ移した。
 
         // Called every time a new input report has arrived
-        protected void On_Report(DS4Device device, EventArgs e, int ind)
-        {
-            if (ind != -1)
-            {
-                _latencyMonitor.OnReport(device, ind);
-
-                DS4State cState, tempControlState;
-                if (!device.PerformStateMerge)
-                {
-                    cState = CurrentState[ind];
-                    device.getRawCurrentState(cState);
-                    tempControlState = CurrentState[ind];
-                }
-                else
-                {
-                    cState = device.JointState;
-                    device.MergeStateData(cState);
-                    // Need to copy state object info for use in UDP server
-                    cState.CopyTo(CurrentState[ind]);
-                    tempControlState = CurrentState[ind];
-                }
-
-                DS4State pState = device.getPreviousStateRef();
-                //device.getPreviousState(PreviousState[ind]);
-                //DS4State pState = PreviousState[ind];
-
-
-                if (device.firstReport && device.isSynced())
-                {
-                    // Only send Log message when device is considered a primary device
-                    if (device.PrimaryDevice)
-                    {
-                        // Emit missing-action logs once per profile-apply (respect suppression).
-                        // Note: Profile logging is already done by ApplyProfile in PrepareConnectedInputControllerSettingEvents
-                        if (File.Exists(Path.Combine(_pathService.AppDataPath, "Profiles", $"{_profileRepository.ProfilePath[ind]}.xml")))
-                        {
-                            try
-                            {
-                                _profileRepository.EmitMissingActionLogsForDevice(ind, false);
-                            }
-                            catch { }
-                        }
-                    }
-
-                    device.firstReport = false;
-                }
-
-                if (device.PrimaryDevice && _appearanceSettings.UseIconChoice == TrayIconChoice.Battery)
-                {
-                    _appearanceSettings.InvokeBatteryChanged(cState.Battery);
-                }
-
-                if (!device.PrimaryDevice)
-                {
-                    // Make sure a joined device is still linked
-                    int jointInd = device.JointDeviceSlotNumber;
-                    if (device.OutputMapGyro &&
-                        jointInd != DS4Device.DEFAULT_JOINT_SLOT_NUMBER)
-                    {
-                        // Output changes from Gyro data early. Seems better to ME... REE
-                        GyroOutMode imuOutMode = _profileSettings.GetGyroOutMode(device.JointDeviceSlotNumber);
-                        if (imuOutMode != GyroOutMode.None)
-                        {
-                            if (imuOutMode == GyroOutMode.Mouse)
-                            {
-                                _virtualKBM.Sync();
-                            }
-                            else if (imuOutMode == GyroOutMode.MouseJoystick)
-                            {
-                                // Add new Mapping method and add data to
-                                // parent device state
-                                DS4State tempMapState = MappedState[jointInd];
-                                _mapping.TempMouseJoystick(jointInd, tempMapState);
-                                if (!_profileSettings.UseDInputOnlyArray[jointInd])
-                                {
-                                    outputDevices[jointInd]?.ConvertandSendReport(tempMapState, jointInd);
-                                }
-                            }
-                        }
-                    }
-                    else if (!device.OutputMapGyro)
-                    {
-                        // Copy for use in UDP
-                        tempControlState.Motion = device.GetRawCurrentStateRef().Motion;
-                    }
-
-                    // Skip mapping routine if part of a joined device
-                    return;
-                }
-
-                if (_profileSettings.GetEnableTouchToggle(ind))
-                {
-                    _touchpadToggle.CheckForToggle(ind, cState, pState);
-                }
-
-                cState = _mapping.SetCurveAndDeadzone(ind, cState, TempState[ind], _profileSettings);
-
-                if (!recordingMacro && (_profileSettings.GetUseTempProfile(ind) ||
-                    _profileSettings.ContainsCustomAction(ind) || _profileSettings.ContainsCustomExtras(ind) ||
-                    _profileActionProvider.GetProfileActionCount(ind) > 0))
-                {
-                    DS4State tempMapState = MappedState[ind];
-
-                    if (_appSettings.UseOscSender)
-                    {
-                        _oscService.PreMappingStep(ind, cState, tempMapState);
-                    }
-
-                    _mapping.MapCustom(ind, cState, tempMapState, ExposedState[ind], touchPad[ind]);
-
-                    // Copy current Touchpad and Gyro data
-                    // Might change to use new DS4State.CopyExtrasTo method
-                    tempMapState.Motion = cState.Motion;
-                    tempMapState.ds4Timestamp = cState.ds4Timestamp;
-                    tempMapState.FrameCounter = cState.FrameCounter;
-                    tempMapState.TouchPacketCounter = cState.TouchPacketCounter;
-                    tempMapState.TrackPadTouch0 = cState.TrackPadTouch0;
-                    tempMapState.TrackPadTouch1 = cState.TrackPadTouch1;
-
-                    if (_appSettings.UseOscServer)
-                    {
-                        _oscService.PostMappingStep(ind, tempMapState);
-                    }
-
-                    cState = tempMapState;
-
-                }
-
-                if (!_profileSettings.UseDInputOnlyArray[ind])
-                {
-                    // Perform this virtual trigger button check in post
-                    if (ActiveOutDevType[ind] == OutContType.DS4)
-                    {
-                        DS4TriggerOutputMode trigMode = _profileSettings.OutputDS4TriggerMode[ind];
-                        if (trigMode == DS4TriggerOutputMode.Default)
-                        {
-                            cState.L2Btn = cState.L2 > 0;
-                            cState.R2Btn = cState.R2 > 0;
-                        }
-                        else if (trigMode == DS4TriggerOutputMode.Buttons)
-                        {
-                            cState.L2Btn = cState.L2 > 0;
-                            cState.R2Btn = cState.R2 > 0;
-                            // Disable analog output
-                            cState.L2 = 0;
-                            cState.R2 = 0;
-                        }
-                    }
-
-                    outputDevices[ind]?.ConvertandSendReport(cState, ind);
-
-                    // 仮想コントローラー出力完了時の処理遅延を計測
-                    if (IsMeasuringProcessingDelay)
-                    {
-                        long start = device.lastInputReportTimestamp;
-                        if (start > 0)
-                        {
-                            long end = Stopwatch.GetTimestamp();
-                            ProcessingDelayMs[ind] = (end - start) * (1000.0 / Stopwatch.Frequency);
-                        }
-                    }
-                    //testNewReport(ref x360reports[ind], cState, ind);
-                    //x360controls[ind]?.SendReport(x360reports[ind]);
-
-                    //x360Bus.Parse(cState, processingData[ind].Report, ind);
-                    // We push the translated Xinput state, and simultaneously we
-                    // pull back any possible rumble data coming from Xinput consumers.
-                    /*if (x360Bus.Report(processingData[ind].Report, processingData[ind].Rumble))
-                    {
-                        byte Big = processingData[ind].Rumble[3];
-                        byte Small = processingData[ind].Rumble[4];
-
-                        if (processingData[ind].Rumble[1] == 0x08)
-                        {
-                            _rumble.SetDevRumble(device, Big, Small, ind);
-                        }
-                    }
-                    */
-                }
-                // Phase9 Steering 削除 W3: 旧「出力デバイスがないとき［UseDInputOnly］の、ステアリングの vJoy 軸への送出」（else 側）は、機能ごと削除した（vJoy も削除）。
-
-                // Output any synthetic events.
-                _mapping.Commit(ind, _profileSettings);
-
-                // Update the Lightbar color
-                DS4LightBar.updateLightBar(device, ind, _profileSettings);
-
-                if (device.PerformStateMerge)
-                {
-                    device.PreserveMergedStateData();
-                }
-
-                if (device.PerformStateMerge && !device.OutputMapGyro)
-                {
-                    // Copy for use in UDP
-                    tempControlState.Motion = device.GetRawCurrentStateRef().Motion;
-                }
-            }
-        }
+        // Phase13-Step5b: 旧 On_Report（入力レポートの処理。約 200 行）は InputReportProcessor へ移した
 
         // Phase9 9-E E-1: 旧 OSCPostMappingStep／OSCPreMappingStep／CompareAndSendChangesToOSC（OSC の入力への重ね合わせと変化の送信）は OscService へ移した。
 
@@ -890,11 +691,6 @@ namespace DS4Windows
         public DS4State getDS4State(int ind)
         {
             return CurrentState[ind];
-        }
-
-        public DS4State getDS4StateMapped(int ind)
-        {
-            return MappedState[ind];
         }
 
         public DS4State getDS4StateTemp(int ind)

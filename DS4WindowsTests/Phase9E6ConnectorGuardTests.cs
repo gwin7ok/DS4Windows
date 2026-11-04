@@ -68,8 +68,11 @@ namespace DS4WindowsTests
             Assert.Contains("_deviceConnector.PrepareConnected(numControllers, device, index: i)", lifecycle);
             Assert.Contains("_deviceConnector.PrepareConnected(numControllers, device, Index)", lifecycle);
             // 入力レポートの処理（ホットパス）は ControlService に残り、窓口から呼ばれる
-            Assert.Contains("protected void On_Report(DS4Device device, EventArgs e, int ind)", text);
-            Assert.Contains("=> On_Report(device, e, ind);", text);
+            // Phase13-Step5b: On_Report は InputReportProcessor へ移した。ControlService の窓口は、それへ転送するだけ（5b-d で窓口ごと削除する）
+            Assert.DoesNotContain("On_Report", text);
+            Assert.Contains("=> _inputReport.OnReport(device, e, ind);", text);
+            string processor = ReadWithoutComments("DS4Windows/DS4Control/Services/InputReportProcessor.cs");
+            Assert.Contains("public void OnReport(DS4Device device, EventArgs e, int ind)", processor);
         }
 
         [Fact]

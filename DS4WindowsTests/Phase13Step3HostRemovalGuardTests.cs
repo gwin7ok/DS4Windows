@@ -26,7 +26,7 @@ namespace DS4WindowsTests
         public void ControlService_HasNoKbmInitializationParameters_AndStill29Parameters()
         {
             var parameters = typeof(ControlService).GetConstructors().Single().GetParameters();
-            Assert.Equal(29, parameters.Length);   // Phase13-Step5: IDeviceSlotState を足した（28 → 29）
+            Assert.Equal(30, parameters.Length);   // Phase13-Step5b-5b-c: IInputReportProcessor を足した（29 → 30。5b-e で 26 にする）。 Phase13-Step5: IDeviceSlotState を足した（28 → 29）
             Assert.DoesNotContain(parameters, p => p.ParameterType == typeof(IVirtualKBMLifecycle) || p.ParameterType.Name == "ArgumentParser");
             Assert.Contains(parameters, p => p.ParameterType == typeof(IEventThreadDispatcher));
             Assert.Contains(parameters, p => p.ParameterType == typeof(IDeviceRumbleService));
