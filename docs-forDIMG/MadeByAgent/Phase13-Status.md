@@ -16,7 +16,7 @@
 | 9 | `running`／`suspending` の転送の削除（F-5c。`IServiceLifecycle` の直接注入） | **完了**（2026-11-04。9-a〜9-d。3126 件合格。結果は `Phase13-Step9-Plan.md` §10。実機確認は最後にまとめて） |
 | 10 | 転送メンバーの削除と引数の整理（`ControlService` 26 → 17 引数。`IRuntimeFeatureSwitch`／`IServiceDebugRelay` を新設） | **完了**（2026-11-04。10-a〜10-f。3137 件合格。結果は `Phase13-Step10-Plan.md` §10。実機確認は最後にまとめて） |
 | 11 | （任意）F-2c: IPC コマンドの実行を `IpcCommandProcessor`／`IIpcCommandHost` へ。F-1c は見送り | **完了**（2026-11-04。11-a〜11-d。3147 件合格。結果は `Phase13-Step11-Plan.md` §10。実機確認は最後にまとめて） |
-| 12 | 完了作業（モデル図 01〜04、台帳、完了報告書、Release ビルド、実機確認） | **進行中**（モデル図 01〜04 更新済み［`407f9445`］、台帳・ロードマップ更新済み、`Phase13-Completion-Report.md` 作成。Release ビルド 2 か所は出力済み［2026-11-04 17:13。v4.3.0］。実機確認は実施済み［結果は `Phase13-Completion-Report.md` §9］。**未解決: CLI の `ChangeLedColor`／`LoadProfile` が反応せず（旧版との比較は未実施）**。見送り: スリープ復帰、OSC／UDP、タッチパッド、振動、エディターの入力取得） |
+| 12 | 完了作業（モデル図 01〜04、台帳、完了報告書、Release ビルド、実機確認） | **完了**（2026-11-04。CLI の件は未解決のまま記録して完了とした）（モデル図 01〜04 更新済み［`407f9445`］、台帳・ロードマップ更新済み、`Phase13-Completion-Report.md` 作成。Release ビルド 2 か所は出力済み［2026-11-04 17:13。v4.3.0］。実機確認は実施済み［結果は `Phase13-Completion-Report.md` §9］。**未解決: CLI の `ChangeLedColor`／`LoadProfile` が反応せず（旧版との比較は未実施）**。見送り: スリープ復帰、OSC／UDP、タッチパッド、振動、エディターの入力取得） |
 
 ## Step1 の結果
 
