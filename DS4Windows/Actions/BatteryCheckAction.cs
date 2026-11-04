@@ -66,7 +66,7 @@ namespace DS4Windows.Actions
             }
             catch (Exception ex)
             {
-                try { AppLogger.LogTrace($"BatteryCheckAction.Execute failed: {ex}"); } catch { }
+                try { AppLogger.LogWarn($"BatteryCheckAction.Execute failed: {ex}"); } catch { }
             }
 
             LogRising(ctx, dev);

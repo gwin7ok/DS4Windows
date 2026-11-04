@@ -38,7 +38,7 @@ namespace DS4Windows.Actions
             }
             catch (Exception ex)
             {
-                AppLogger.LogToGui($"Process launch failed for '{fileName}': {ex.Message}", true);
+                AppLogger.Log(AppLogLevel.Error, $"Process launch failed for '{fileName}': {ex.Message}", LogOptions.UserFacing);
             }
         }
     }

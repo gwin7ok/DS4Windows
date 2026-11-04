@@ -81,7 +81,7 @@ namespace DS4Windows
             }
             catch (Exception ex)
             {
-                AppLogger.LogToGui($"Failed to reset runtime key state for {key}: {ex.Message}", true);
+                AppLogger.Log(AppLogLevel.Error, $"Failed to reset runtime key state for {key}: {ex.Message}", LogOptions.UserFacing);
             }
         }
 

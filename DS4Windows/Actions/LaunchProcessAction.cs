@@ -102,7 +102,7 @@ namespace DS4Windows.Actions
             }
             catch (Exception ex)
             {
-                try { AppLogger.LogTrace($"LaunchProcessAction.Execute failed: {ex}"); } catch { }
+                try { AppLogger.LogWarn($"LaunchProcessAction.Execute failed: {ex}"); } catch { }
             }
         }
 

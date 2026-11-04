@@ -268,7 +268,7 @@ namespace DS4Windows
                 CompleteProfileApplication(device, profileName, isTemp, control, source, prolog);
             else
             {
-                AppLogger.LogDebug($"ApplyProfile: Profile load FAILED for '{profileName}'");
+                AppLogger.LogWarn($"ApplyProfile: Profile load FAILED for '{profileName}'");
             }
 
             AppLogger.LogDebug($"ApplyProfile COMPLETED: device={device}, profile={profileName}, result={result}");
@@ -331,7 +331,7 @@ namespace DS4Windows
             }
             catch (Exception ex)
             {
-                AppLogger.LogTrace($"ApplyProfile: Failed to clear ActionManager entries: {ex}");
+                AppLogger.LogWarn($"ApplyProfile: Failed to clear ActionManager entries: {ex}");
             }
 
             try
@@ -342,7 +342,7 @@ namespace DS4Windows
             }
             catch (Exception ex)
             {
-                AppLogger.LogTrace($"ApplyProfile: Failed to clear per-device controllers: {ex}");
+                AppLogger.LogWarn($"ApplyProfile: Failed to clear per-device controllers: {ex}");
             }
 
             try { PreallocateForProfileApply(device); } catch { }
@@ -383,7 +383,7 @@ namespace DS4Windows
             }
             catch (Exception ex)
             {
-                AppLogger.LogTrace($"ApplyProfile: Controller activation check failed: {ex}");
+                AppLogger.LogWarn($"ApplyProfile: Controller activation check failed: {ex}");
             }
 
             // Phase8-Step5 W2: 後始末（掃除）の最後に、このプロファイルの束縛を組み立てて登録簿へ差し替える。

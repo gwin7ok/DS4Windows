@@ -212,7 +212,7 @@ namespace DS4Windows
             if (SafeConfig != null)
             {
                 SafeConfig.setLsOutCurveMode(index, value);
-                AppLogger.LogToGui($"[DI] ProfileSettingsService.SetLsOutCurveMode: Slot {index} = {value}", false, true);
+                AppLogger.Log(AppLogLevel.Debug, $"[DI] ProfileSettingsService.SetLsOutCurveMode: Slot {index} = {value}");
             }
         }
 
@@ -223,7 +223,7 @@ namespace DS4Windows
             if (SafeConfig != null)
             {
                 SafeConfig.setRsOutCurveMode(index, value);
-                AppLogger.LogToGui($"[DI] ProfileSettingsService.SetRsOutCurveMode: Slot {index} = {value}", false, true);
+                AppLogger.Log(AppLogLevel.Debug, $"[DI] ProfileSettingsService.SetRsOutCurveMode: Slot {index} = {value}");
             }
         }
 
@@ -246,7 +246,7 @@ namespace DS4Windows
             if (SafeConfig != null)
             {
                 SafeConfig.setL2OutCurveMode(index, value);
-                AppLogger.LogToGui($"[DI] ProfileSettingsService.SetL2OutCurveMode: Slot {index} = {value}", false, true);
+                AppLogger.Log(AppLogLevel.Debug, $"[DI] ProfileSettingsService.SetL2OutCurveMode: Slot {index} = {value}");
             }
         }
 
@@ -257,7 +257,7 @@ namespace DS4Windows
             if (SafeConfig != null)
             {
                 SafeConfig.setR2OutCurveMode(index, value);
-                AppLogger.LogToGui($"[DI] ProfileSettingsService.SetR2OutCurveMode: Slot {index} = {value}", false, true);
+                AppLogger.Log(AppLogLevel.Debug, $"[DI] ProfileSettingsService.SetR2OutCurveMode: Slot {index} = {value}");
             }
         }
 

@@ -91,3 +91,12 @@
 - **経路**: 8 サービスの private `LogDebug`＋`DebugMessage` イベント（8 インターフェース）を廃止し、`AppLogger.LogToGui`（利用者向け）を直接呼ぶ形へ。`IServiceDebugRelay`／`ServiceDebugRelay`（Phase13-Step10 10-e で新設）と、`ControlService` の `Debug` イベント・`LogDebug`・`OnDebug` を削除。`ControlService` のコンストラクター引数は 17 → 16。`LoggerHolder`・`LogViewModel` のコンストラクターから `ControlService` 引数を削除（`GuiLog` だけを購読）。画面・ファイルへの出力は不変。
 - **G2（実施）**: `VirtualPadService` の「Failed. No open output slot found」を Info → Warn（GUI が警告表示になる。承認済み）。
 - 文言の変更・削除: なし。
+
+### 13b-4（`Actions/`・`DS4Control/`）
+
+- **G1（実施・レベルのみ）**: 失敗系 `LogToGui(…, true)` を `Log(Error, …, UserFacing)` へ — `DefaultProcessLauncher` 41、`TriggerDispatchEngine` 673、`Mapping` 591／963、`AppSettingsService` 34、`ProfileRepository` 7 か所、`ProfileXmlStore` 4 か所、`SpecialActionRepository` 304、`SyntheticInputState` 84、`Util` 293、`WindowPlacementHelper` 4 か所（計 23）。GUI の見た目は不変。
+- **G2（実施・GUI が警告表示になる）**: `LogToGui(…, false)` → `Log(Warn, …, UserFacing)` — `BackingStore` 932、`AppSettingsXmlSerializer` 2、`ControllerConfigsXmlSerializer` 3、`LinkedProfilesXmlSerializer` 5、`SpecialActionRepository` 283、`SpecialActionsXmlSerializer` 2、`OscService` 144／192／200（計 17）。
+- **G3（実施・GUI の一時表示が消え、ファイルに Debug）**: `ProfileSettingsService` 4 か所、`BackingStore` 762（計 5）。
+- **F1（レベルのみ・ファイル）**: 握りつぶした例外を表す Trace／Debug を Warn へ — `BatteryCheckAction.Execute`、`ButtonOutputAction`、`DisconnectBTAction.Execute`、`GyroCalibrateAction`、`KeyAction` 2、`KeyButtonActionController`、`LaunchProcessAction`、`Changelog`、`OutputSlotService` 4、`OutputSlotStore` 2、`ProfileApplicationService` 4（計 19）。
+  GUI に Error を出す処理の詳細（スタック）を持つ Trace は Debug へ — `ProfileRepository` 2、`ProfileXmlStore` 2、`AppSettingsService` 1、`SyntheticDispatcherService` 2（計 7）。
+  **毎フレームの経路は Trace のまま**（ログの洪水を避けるため）: `BatteryCheckAction.WhileHeld`、`DisconnectBTAction.ApplyFrame`。

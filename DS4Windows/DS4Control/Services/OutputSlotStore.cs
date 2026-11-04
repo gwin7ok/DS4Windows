@@ -26,7 +26,7 @@ namespace DS4Windows.Services
             catch (Exception ex)
             {
                 if (AppLogger.IsTraceEnabled)
-                    AppLogger.LogTrace($"[DI] OutputSlotStore.Load failed: {ex}");
+                    AppLogger.LogWarn($"[DI] OutputSlotStore.Load failed: {ex}");
                 return false;
             }
         }
@@ -44,7 +44,7 @@ namespace DS4Windows.Services
             catch (Exception ex)
             {
                 if (AppLogger.IsTraceEnabled)
-                    AppLogger.LogTrace($"[DI] OutputSlotStore.Save failed: {ex}");
+                    AppLogger.LogWarn($"[DI] OutputSlotStore.Save failed: {ex}");
                 return false;
             }
         }

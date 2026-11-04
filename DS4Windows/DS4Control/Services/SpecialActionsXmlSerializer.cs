@@ -555,12 +555,12 @@ namespace DS4Windows.Services
                 }
                 catch (InvalidOperationException e)
                 {
-                    AppLogger.LogToGui($"Actions.xml contains invalid data. Could not be read. {e.InnerException.Message}", false);
+                    AppLogger.Log(AppLogLevel.Warn, $"Actions.xml contains invalid data. Could not be read. {e.InnerException.Message}", LogOptions.UserFacing);
                     loaded = false;
                 }
                 catch (XmlException e)
                 {
-                    AppLogger.LogToGui($"Actions.xml could not be read. Invalid XML syntax. {e.InnerException.Message}", false);
+                    AppLogger.Log(AppLogLevel.Warn, $"Actions.xml could not be read. Invalid XML syntax. {e.InnerException.Message}", LogOptions.UserFacing);
                     loaded = false;
                 }
             }

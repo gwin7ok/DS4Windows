@@ -89,7 +89,7 @@ namespace DS4Windows.Services
             }
             catch (Exception ex)
             {
-                AppLogger.LogTrace($"SyntheticDispatcher.SendPress failed: {ex}");
+                AppLogger.LogDebug($"SyntheticDispatcher.SendPress failed: {ex}");
             }
         }
 
@@ -137,7 +137,7 @@ namespace DS4Windows.Services
             }
             catch (Exception ex)
             {
-                AppLogger.LogTrace($"SyntheticDispatcher.SendRelease failed: {ex}");
+                AppLogger.LogDebug($"SyntheticDispatcher.SendRelease failed: {ex}");
             }
         }
 

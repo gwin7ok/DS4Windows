@@ -280,7 +280,7 @@ namespace DS4Windows
                 }
                 catch (Exception ex)
                 {
-                    AppLogger.LogToGui($"Could not count Actions.xml entries: {ex.Message}", false);
+                    AppLogger.Log(AppLogLevel.Warn, $"Could not count Actions.xml entries: {ex.Message}", LogOptions.UserFacing);
                 }
 
                 if (fileCount >= 0)
@@ -301,7 +301,7 @@ namespace DS4Windows
             }
             catch (Exception ex)
             {
-                AppLogger.LogToGui($"Error reloading Actions.xml after {caller}: {ex.Message}", true);
+                AppLogger.Log(AppLogLevel.Error, $"Error reloading Actions.xml after {caller}: {ex.Message}", LogOptions.UserFacing);
             }
         }
 

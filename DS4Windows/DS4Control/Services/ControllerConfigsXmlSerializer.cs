@@ -62,7 +62,7 @@ namespace DS4Windows.Services
             configXdoc.AppendChild(Node);
 
             try { configXdoc.Save(store.m_controllerConfigs); }
-            catch (UnauthorizedAccessException) { AppLogger.LogToGui("Unauthorized Access - Save failed to path: " + store.m_controllerConfigs, false); saved = false; }
+            catch (UnauthorizedAccessException) { AppLogger.Log(AppLogLevel.Warn, "Unauthorized Access - Save failed to path: " + store.m_controllerConfigs, LogOptions.UserFacing); saved = false; }
 
             return saved;
         }
@@ -91,7 +91,7 @@ namespace DS4Windows.Services
             }
             catch
             {
-                AppLogger.LogToGui("ControllerConfigs.xml can't be found.", false);
+                AppLogger.Log(AppLogLevel.Warn, "ControllerConfigs.xml can't be found.", LogOptions.UserFacing);
                 loaded = false;
             }
 
@@ -155,7 +155,7 @@ namespace DS4Windows.Services
             }
             catch (UnauthorizedAccessException)
             {
-                AppLogger.LogToGui("Unauthorized Access - Save failed to path: " + store.m_controllerConfigs, false);
+                AppLogger.Log(AppLogLevel.Warn, "Unauthorized Access - Save failed to path: " + store.m_controllerConfigs, LogOptions.UserFacing);
                 saved = false;
             }
 

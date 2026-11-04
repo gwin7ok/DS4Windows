@@ -759,7 +759,7 @@ namespace DS4Windows
                     return linked;
 
                 AppLogger.LogTrace("[Legacy] BackingStore.ProfileSettings: Fallback instance used");
-                AppLogger.LogToGui("[Legacy] BackingStore.ProfileSettings: Fallback instance used", false, true);
+                AppLogger.Log(AppLogLevel.Debug, "[Legacy] BackingStore.ProfileSettings: Fallback instance used");
                 lock (_profileSettingsLock)
                 {
                     if (_profileSettings == null)
@@ -929,7 +929,7 @@ namespace DS4Windows
                         }
 
                         string displayProfile = string.IsNullOrEmpty(profName) ? "(unknown)" : profName;
-                        AppLogger.LogToGui($"Profile '{displayProfile}' contains an invalid special action '{actionname}'.", false);
+                        AppLogger.Log(AppLogLevel.Warn, $"Profile '{displayProfile}' contains an invalid special action '{actionname}'.", LogOptions.UserFacing);
                         try
                         {
                             loggedInvalidActions.Add(actionname);

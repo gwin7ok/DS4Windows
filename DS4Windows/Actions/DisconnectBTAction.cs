@@ -98,7 +98,7 @@ namespace DS4Windows.Actions
             }
             catch (Exception ex)
             {
-                try { AppLogger.LogTrace($"DisconnectBTAction.Execute failed: {ex}"); } catch { }
+                try { AppLogger.LogWarn($"DisconnectBTAction.Execute failed: {ex}"); } catch { }
             }
         }
 

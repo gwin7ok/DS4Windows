@@ -109,7 +109,7 @@ namespace DS4Windows
                     }
                     catch (Exception ex)
                     {
-                        AppLogger.LogDebug($"[Changelog] Skip-check parse error: {ex.Message}");
+                        AppLogger.LogWarn($"[Changelog] Skip-check parse error: {ex.Message}");
                         // If anything goes wrong reading skip info, fall back to normal behavior
                     }
                 }

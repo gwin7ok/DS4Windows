@@ -97,7 +97,7 @@ namespace DS4Windows
             }
             catch (Exception ex)
             {
-                AppLogger.LogTrace($"KeyAction.OnTrigger failed: {ex}");
+                AppLogger.LogWarn($"KeyAction.OnTrigger failed: {ex}");
             }
         }
 
@@ -122,7 +122,7 @@ namespace DS4Windows
             }
             catch (Exception ex)
             {
-                AppLogger.LogTrace($"KeyAction.OnRelease failed: {ex}");
+                AppLogger.LogWarn($"KeyAction.OnRelease failed: {ex}");
             }
         }
     }

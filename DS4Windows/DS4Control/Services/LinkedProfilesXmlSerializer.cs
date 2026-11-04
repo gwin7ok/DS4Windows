@@ -93,7 +93,7 @@ namespace DS4Windows.Services
             }
             catch (UnauthorizedAccessException)
             {
-                AppLogger.LogToGui("Unauthorized Access - Save failed to path: " + store.m_linkedProfiles, false);
+                AppLogger.Log(AppLogLevel.Warn, "Unauthorized Access - Save failed to path: " + store.m_linkedProfiles, LogOptions.UserFacing);
                 saved = false;
             }
 
@@ -136,16 +136,16 @@ namespace DS4Windows.Services
                 }
                 catch (InvalidOperationException e)
                 {
-                    AppLogger.LogToGui($"LinkedProfiles.xml contains invalid data. Could not be read. {e.InnerException.Message}", false);
+                    AppLogger.Log(AppLogLevel.Warn, $"LinkedProfiles.xml contains invalid data. Could not be read. {e.InnerException.Message}", LogOptions.UserFacing);
                 }
                 catch (XmlException e)
                 {
-                    AppLogger.LogToGui($"LinkedProfiles.xml could not be read. Invalid XML syntax. {e.InnerException.Message}", false);
+                    AppLogger.Log(AppLogLevel.Warn, $"LinkedProfiles.xml could not be read. Invalid XML syntax. {e.InnerException.Message}", LogOptions.UserFacing);
                 }
             }
             else
             {
-                AppLogger.LogToGui("LinkedProfiles.xml can't be found.", false);
+                AppLogger.Log(AppLogLevel.Warn, "LinkedProfiles.xml can't be found.", LogOptions.UserFacing);
                 loaded = false;
             }
 
@@ -231,7 +231,7 @@ namespace DS4Windows.Services
                 }
                 catch (UnauthorizedAccessException)
                 {
-                    AppLogger.LogToGui("Unauthorized Access - Save failed to path: " + store.m_linkedProfiles, false);
+                    AppLogger.Log(AppLogLevel.Warn, "Unauthorized Access - Save failed to path: " + store.m_linkedProfiles, LogOptions.UserFacing);
                     saved = false;
                 }
             }

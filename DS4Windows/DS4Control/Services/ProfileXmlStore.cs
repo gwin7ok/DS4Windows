@@ -39,7 +39,7 @@ namespace DS4Windows
                 }
                 catch (Exception ex)
                 {
-                    AppLogger.LogToGui($"Failed to load profile XML: {ex.Message}", true);
+                    AppLogger.Log(AppLogLevel.Error, $"Failed to load profile XML: {ex.Message}", LogOptions.UserFacing);
                     return false;
                 }
             }
@@ -55,7 +55,7 @@ namespace DS4Windows
                 }
                 catch (Exception ex)
                 {
-                    AppLogger.LogToGui($"Failed to save profile XML: {ex.Message}", true);
+                    AppLogger.Log(AppLogLevel.Error, $"Failed to save profile XML: {ex.Message}", LogOptions.UserFacing);
                     return false;
                 }
             }
@@ -74,9 +74,9 @@ namespace DS4Windows
                 }
                 catch (Exception ex)
                 {
-                    AppLogger.LogToGui($"Failed to load application settings XML: {ex.Message}", true);
+                    AppLogger.Log(AppLogLevel.Error, $"Failed to load application settings XML: {ex.Message}", LogOptions.UserFacing);
                     if (AppLogger.IsTraceEnabled)
-                        AppLogger.LogTrace($"[DI] ProfileXmlStore.LoadAppSettingsXml failed: {ex}");
+                        AppLogger.LogDebug($"[DI] ProfileXmlStore.LoadAppSettingsXml failed: {ex}");
                     return false;
                 }
             }
@@ -95,9 +95,9 @@ namespace DS4Windows
                 }
                 catch (Exception ex)
                 {
-                    AppLogger.LogToGui($"Failed to save application settings XML: {ex.Message}", true);
+                    AppLogger.Log(AppLogLevel.Error, $"Failed to save application settings XML: {ex.Message}", LogOptions.UserFacing);
                     if (AppLogger.IsTraceEnabled)
-                        AppLogger.LogTrace($"[DI] ProfileXmlStore.SaveAppSettingsXml failed: {ex}");
+                        AppLogger.LogDebug($"[DI] ProfileXmlStore.SaveAppSettingsXml failed: {ex}");
                     return false;
                 }
             }

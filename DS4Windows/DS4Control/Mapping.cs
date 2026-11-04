@@ -588,7 +588,7 @@ namespace DS4Windows
 
             // Phase8-Step4 W4: 移行済みの種別（既定は空）の毎フレームの出力。Stage3 の直後（通常の割り当ての後）の位置を保つ
             try { _engine.ApplyFrameOutputs(device, _triggerInputs[device], _frameOutputs[device]); }
-            catch (Exception ex) { AppLogger.LogToGui($"Synchronous Button SA handling error: {ex}", true); }
+            catch (Exception ex) { AppLogger.Log(AppLogLevel.Error, $"Synchronous Button SA handling error: {ex}", LogOptions.UserFacing); }
 
             outputfieldMapping.PopulateState(MappedState);
 
@@ -960,7 +960,7 @@ namespace DS4Windows
             {
                 try
                 {
-                    AppLogger.LogToGui($"MapCustomAction exception: {ex}", true);
+                    AppLogger.Log(AppLogLevel.Error, $"MapCustomAction exception: {ex}", LogOptions.UserFacing);
                 }
                 catch { }
 

@@ -141,7 +141,7 @@ namespace DS4Windows.Services
             }
             catch (Exception ex)
             {
-                AppLogger.LogToGui("Received malformed OSC message: " + address + " (" + ex.GetType().Name + ": " + ex.Message + ")", false);
+                AppLogger.Log(AppLogLevel.Warn, "Received malformed OSC message: " + address + " (" + ex.GetType().Name + ": " + ex.Message + ")", LogOptions.UserFacing);
             }
         }
 
@@ -189,7 +189,7 @@ namespace DS4Windows.Services
             // Phase9 9-E E-1 の是正: 範囲外のコントローラー番号（負、スロット数以上）も不正なアドレスとして捨てる（旧実装は IndexOutOfRangeException）
             if (stateInd < 0 || stateInd >= _oscState.Length)
             {
-                AppLogger.LogToGui("Received malformed OSC address: " + address, false);
+                AppLogger.Log(AppLogLevel.Warn, "Received malformed OSC address: " + address, LogOptions.UserFacing);
                 return;
             }
 
@@ -197,7 +197,7 @@ namespace DS4Windows.Services
             {
                 if (!_appSettings.UseOscSender)
                 {
-                    AppLogger.LogToGui("Battery level requested, but the OSC Sender isn't active. Turn it on in Settings.", false);
+                    AppLogger.Log(AppLogLevel.Warn, "Battery level requested, but the OSC Sender isn't active. Turn it on in Settings.", LogOptions.UserFacing);
                 }
                 else
                 {

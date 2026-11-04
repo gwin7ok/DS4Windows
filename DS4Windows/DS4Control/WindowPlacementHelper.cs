@@ -165,7 +165,7 @@ namespace DS4WinWPF.DS4Control
             }
             catch (Exception ex)
             {
-                AppLogger.LogToGui($"ApplyPlacement: Failed while enumerating screens for debug: {ex.Message}", true);
+                AppLogger.Log(AppLogLevel.Error, $"ApplyPlacement: Failed while enumerating screens for debug: {ex.Message}", LogOptions.UserFacing);
             }
 
             // 保存された論理座標から、配置先モニタのDPIを取得
@@ -198,7 +198,7 @@ namespace DS4WinWPF.DS4Control
             }
             catch (Exception ex)
             {
-                AppLogger.LogToGui($"ApplyPlacement: Failed to get target monitor DPI: {ex.Message}", true);
+                AppLogger.Log(AppLogLevel.Error, $"ApplyPlacement: Failed to get target monitor DPI: {ex.Message}", LogOptions.UserFacing);
             }
 
             // 論理ピクセル → 物理ピクセルに変換
@@ -297,7 +297,7 @@ namespace DS4WinWPF.DS4Control
                 if (!setRes)
                 {
                     var err = Marshal.GetLastWin32Error();
-                    AppLogger.LogToGui($"ApplyPlacement: SetWindowPlacement returned false, Win32Error={err}", true);
+                    AppLogger.Log(AppLogLevel.Error, $"ApplyPlacement: SetWindowPlacement returned false, Win32Error={err}", LogOptions.UserFacing);
                 }
                 else
                 {
@@ -306,7 +306,7 @@ namespace DS4WinWPF.DS4Control
             }
             catch(Exception ex)
             {
-                AppLogger.LogToGui($"Failed to apply window placement: {ex.Message}", true);
+                AppLogger.Log(AppLogLevel.Error, $"Failed to apply window placement: {ex.Message}", LogOptions.UserFacing);
             }
         }
 

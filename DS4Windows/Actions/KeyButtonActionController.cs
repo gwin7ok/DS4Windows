@@ -303,7 +303,7 @@ namespace DS4Windows
                         // Primary behavior: send one immediate press (hold). Release will be sent on OnUp.
                         SyntheticDispatcher.SendPress(device, kvpKey, e.nativeKey, e.useScanCode, e.handler);
                     }
-                    catch (Exception ex) { AppLogger.LogTrace($"PressImpl.OnDown failed: {ex}"); }
+                    catch (Exception ex) { AppLogger.LogWarn($"PressImpl.OnDown failed: {ex}"); }
 
                     // Start delayed creation of repeater after InitialRepeatDelayMs for press-repeat semantics
                     try

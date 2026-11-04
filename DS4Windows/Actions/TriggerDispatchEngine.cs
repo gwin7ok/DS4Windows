@@ -670,7 +670,7 @@ namespace DS4Windows.Actions
         {
             try
             {
-                AppLogger.LogToGui($"MapCustomAction exception: {ex}", true);
+                AppLogger.Log(AppLogLevel.Error, $"MapCustomAction exception: {ex}", LogOptions.UserFacing);
             }
             catch { }
         }

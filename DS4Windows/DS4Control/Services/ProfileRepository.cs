@@ -99,7 +99,7 @@ namespace DS4Windows
                     string path = GetProfilePath(profileName);
                     if (string.IsNullOrEmpty(path))
                     {
-                        AppLogger.LogToGui($"Failed to save profile: invalid path for '{profileName}'", true);
+                        AppLogger.Log(AppLogLevel.Error, $"Failed to save profile: invalid path for '{profileName}'", LogOptions.UserFacing);
                         return false;
                     }
 
@@ -112,18 +112,18 @@ namespace DS4Windows
                     }
                     else
                     {
-                        AppLogger.LogToGui($"Failed to save profile '{profileName}' for device {deviceIndex + 1}", true);
+                        AppLogger.Log(AppLogLevel.Error, $"Failed to save profile '{profileName}' for device {deviceIndex + 1}", LogOptions.UserFacing);
                         if (AppLogger.IsTraceEnabled)
-                            AppLogger.LogTrace($"[DI] SaveProfile failed: Slot {deviceIndex}, Profile '{profileName}'");
+                            AppLogger.LogDebug($"[DI] SaveProfile failed: Slot {deviceIndex}, Profile '{profileName}'");
                     }
 
                     return saveSuccess;
                 }
                 catch (Exception ex)
                 {
-                    AppLogger.LogToGui($"Failed to save profile '{profileName}' for device {deviceIndex + 1}: {ex.Message}", true);
+                    AppLogger.Log(AppLogLevel.Error, $"Failed to save profile '{profileName}' for device {deviceIndex + 1}: {ex.Message}", LogOptions.UserFacing);
                     if (AppLogger.IsTraceEnabled)
-                        AppLogger.LogTrace($"[DI] SaveProfile failed with exception: Slot {deviceIndex}, Profile '{profileName}', error={ex}");
+                        AppLogger.LogDebug($"[DI] SaveProfile failed with exception: Slot {deviceIndex}, Profile '{profileName}', error={ex}");
                     return false;
                 }
             }
@@ -218,7 +218,7 @@ namespace DS4Windows
             }
             catch (Exception ex)
             {
-                AppLogger.LogToGui($"[DI] ProfileRepository: cannot enumerate profiles for Controls profile switch target update: {ex.Message}", true);
+                AppLogger.Log(AppLogLevel.Error, $"[DI] ProfileRepository: cannot enumerate profiles for Controls profile switch target update: {ex.Message}", LogOptions.UserFacing);
                 return changed;
             }
 
@@ -254,7 +254,7 @@ namespace DS4Windows
                 }
                 catch (Exception ex)
                 {
-                    AppLogger.LogToGui($"[DI] ProfileRepository: failed to update the Controls profile switch target in '{Path.GetFileName(file)}': {ex.Message}", true);
+                    AppLogger.Log(AppLogLevel.Error, $"[DI] ProfileRepository: failed to update the Controls profile switch target in '{Path.GetFileName(file)}': {ex.Message}", LogOptions.UserFacing);
                 }
             }
 
@@ -358,7 +358,7 @@ namespace DS4Windows
             }
             catch (Exception ex)
             {
-                AppLogger.LogToGui($"[DI] ProfileRepository: cannot enumerate profiles for action reference update: {ex.Message}", true);
+                AppLogger.Log(AppLogLevel.Error, $"[DI] ProfileRepository: cannot enumerate profiles for action reference update: {ex.Message}", LogOptions.UserFacing);
                 return changed;
             }
 
@@ -394,7 +394,7 @@ namespace DS4Windows
                 }
                 catch (Exception ex)
                 {
-                    AppLogger.LogToGui($"[DI] ProfileRepository: failed to update action reference in '{Path.GetFileName(file)}': {ex.Message}", true);
+                    AppLogger.Log(AppLogLevel.Error, $"[DI] ProfileRepository: failed to update action reference in '{Path.GetFileName(file)}': {ex.Message}", LogOptions.UserFacing);
                 }
             }
 

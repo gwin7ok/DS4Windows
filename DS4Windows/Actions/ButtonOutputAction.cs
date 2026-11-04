@@ -122,7 +122,7 @@ namespace DS4Windows.Actions
             }
             catch (Exception ex)
             {
-                AppLogger.LogTrace($"Failed to build output combo log for SA '{_sa.name}': {ex}");
+                AppLogger.LogWarn($"Failed to build output combo log for SA '{_sa.name}': {ex}");
             }
         }
 

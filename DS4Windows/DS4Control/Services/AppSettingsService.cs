@@ -31,9 +31,9 @@ namespace DS4Windows.Services
             }
             else
             {
-                AppLogger.LogToGui("Failed to save application settings", true);
+                AppLogger.Log(AppLogLevel.Error, "Failed to save application settings", LogOptions.UserFacing);
                 if (AppLogger.IsTraceEnabled)
-                    AppLogger.LogTrace("[DI] AppSettingsService.Save failed");
+                    AppLogger.LogDebug("[DI] AppSettingsService.Save failed");
             }
             return success;
         }

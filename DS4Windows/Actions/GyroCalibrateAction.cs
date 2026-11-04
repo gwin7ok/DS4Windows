@@ -57,7 +57,7 @@ namespace DS4Windows.Actions
             }
             catch (Exception ex)
             {
-                try { AppLogger.LogTrace($"GyroCalibrateAction.Execute failed: {ex}"); } catch { }
+                try { AppLogger.LogWarn($"GyroCalibrateAction.Execute failed: {ex}"); } catch { }
             }
 
             try

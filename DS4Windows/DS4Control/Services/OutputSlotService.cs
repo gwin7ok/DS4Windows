@@ -97,7 +97,7 @@ namespace DS4Windows
                     catch (Exception ex)
                     {
                         if (AppLogger.IsTraceEnabled)
-                            AppLogger.LogTrace($"[DI] OutputSlotService.PluginSlot dispatch failed: {ex}");
+                            AppLogger.LogWarn($"[DI] OutputSlotService.PluginSlot dispatch failed: {ex}");
                     }
                 });
                 return true;
@@ -105,7 +105,7 @@ namespace DS4Windows
             catch (Exception ex)
             {
                 if (AppLogger.IsTraceEnabled)
-                    AppLogger.LogTrace($"[DI] OutputSlotService.PluginSlot failed: {ex}");
+                    AppLogger.LogWarn($"[DI] OutputSlotService.PluginSlot failed: {ex}");
                 return false;
             }
         }
@@ -137,7 +137,7 @@ namespace DS4Windows
                     catch (Exception ex)
                     {
                         if (AppLogger.IsTraceEnabled)
-                            AppLogger.LogTrace($"[DI] OutputSlotService.UnplugSlot dispatch failed: {ex}");
+                            AppLogger.LogWarn($"[DI] OutputSlotService.UnplugSlot dispatch failed: {ex}");
                     }
                 });
                 return true;
@@ -145,7 +145,7 @@ namespace DS4Windows
             catch (Exception ex)
             {
                 if (AppLogger.IsTraceEnabled)
-                    AppLogger.LogTrace($"[DI] OutputSlotService.UnplugSlot failed: {ex}");
+                    AppLogger.LogWarn($"[DI] OutputSlotService.UnplugSlot failed: {ex}");
                 return false;
             }
         }
