@@ -203,7 +203,7 @@ namespace DS4WindowsTests
                 TestHost.GetService<IProfileSettingsService>(), TestHost.GetService<IDs4DeviceRegistry>(), TestHost.GetService<IVirtualKBM>(),
                 TestHost.GetService<IOscService>(), TestHost.GetService<IUdpMotionService>(), TestHost.GetService<IHidHideService>(),
                 TestHost.GetService<IVirtualPadService>(), TestHost.GetService<ILatencyMonitor>(), TestHost.GetService<IJoyConLinker>(),
-                TestHost.GetService<IDeviceConnector>(), () => TestHost.GetService<IDeviceSlotHost>(),
+                TestHost.GetService<IDeviceConnector>(), TestHost.GetService<IDeviceSlotState>(),
                 TestHost.GetService<IEventThreadDispatcher>(), TestHost.GetService<IOutputKbmInitializer>());
             Assert.False(fresh.Running);
             Assert.True(fresh.LoopControllers);

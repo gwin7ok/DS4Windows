@@ -7,7 +7,7 @@ namespace DS4Windows.Services
     /// <summary>
     /// Phase9 9-E E-6e（Phase9-E6-Plan.md §3.4）: <see cref="IDeviceDisconnectHandler"/> の実装（DI の Singleton。状態なし）。
     /// 旧 <c>ControlService</c> の <c>On_DS4Removal</c>／<c>On_SyncChange</c>／<c>On_SerialChange</c> を、そのまま移したもの
-    /// （スロットの配列は、<see cref="IDeviceSlotHost"/> から、呼び出しのたびに引く）。切断の後始末の順序は、旧コードのまま保つ（ガードレール: 切断時クリーンアップ）。
+    /// （スロットの配列は、<see cref="IDeviceSlotState"/> から受ける。Phase13-Step5 で直接注入に変更。旧: <c>Func&lt;IDeviceSlotHost&gt;</c>）。切断の後始末の順序は、旧コードのまま保つ（ガードレール: 切断時クリーンアップ）。
     /// </summary>
     public sealed class DeviceDisconnectHandler : IDeviceDisconnectHandler
     {
@@ -20,7 +20,7 @@ namespace DS4Windows.Services
         private readonly IDeviceStateService _deviceStateService;
         private readonly IVirtualPadService _virtualPad;
         private readonly Func<IOutputSlotService> _outputSlotService;
-        private readonly Func<IDeviceSlotHost> _host;
+        private readonly IDeviceSlotState _host;
         private readonly int _controllerSlotLimit;
 
         public event Action<string, bool> DebugMessage;
@@ -28,7 +28,7 @@ namespace DS4Windows.Services
         public DeviceDisconnectHandler(IProfileSettingsService profileSettings, IMapping mapping, IProfileSlotApplier profileSlotApplier,
             IOscService oscService, IAppSettingsService appSettings, ILatencyMonitor latencyMonitor, IDeviceStateService deviceStateService,
             IVirtualPadService virtualPad, Func<IOutputSlotService> outputSlotService, IEnvironmentService environmentService,
-            Func<IDeviceSlotHost> host)
+            IDeviceSlotState host)
         {
             _profileSettings = profileSettings ?? throw new ArgumentNullException(nameof(profileSettings));
             _mapping = mapping ?? throw new ArgumentNullException(nameof(mapping));
@@ -54,7 +54,7 @@ namespace DS4Windows.Services
 
         public void OnRemoval(object sender, EventArgs e)
         {
-            IDeviceSlotHost host = _host();
+            IDeviceSlotState host = _host;
             DS4Device device = (DS4Device)sender;
             int ind = -1;
             for (int i = 0, arlength = host.DS4Controllers.Length; ind == -1 && i < arlength; i++)
@@ -162,7 +162,7 @@ namespace DS4Windows.Services
 
         public void OnSyncChange(object sender, EventArgs e)
         {
-            IDeviceSlotHost host = _host();
+            IDeviceSlotState host = _host;
             DS4Device device = (DS4Device)sender;
             int ind = -1;
             for (int i = 0, arlength = _controllerSlotLimit; ind == -1 && i < arlength; i++)
@@ -201,7 +201,7 @@ namespace DS4Windows.Services
 
         public void OnSerialChange(object sender, EventArgs e)
         {
-            IDeviceSlotHost host = _host();
+            IDeviceSlotState host = _host;
             DS4Device device = (DS4Device)sender;
             int ind = -1;
             for (int i = 0, arlength = ControllerLimits.MaxControllerCount; ind == -1 && i < arlength; i++)
@@ -213,7 +213,7 @@ namespace DS4Windows.Services
 
             if (ind >= 0)
             {
-                _deviceStateService.OnDeviceSerialChange(host, ind, device.getMacAddress());
+                _deviceStateService.OnDeviceSerialChange(host, ind, device.getMacAddress());   // Phase13-Step5: 送り主は IDeviceSlotState（旧: ControlService）。購読者はいない
             }
         }
     }

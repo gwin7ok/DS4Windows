@@ -69,12 +69,7 @@ namespace DS4Windows
         // Phase9 9-E E-4: 旧 公開フィールド outputDevices は VirtualPadService が持つ（同じ配列を返す窓口。呼び出し側は 9-F まで変えない）
         public OutputDevice[] outputDevices => _virtualPad.OutputDevices;
 
-        // Phase9 9-E E-6e: 切断・同期の処理（DeviceDisconnectHandler）へ、スロットごとの状態を渡す窓口（配列の参照は再代入されない）
-        DS4Device[] DI.IDeviceSlotHost.DS4Controllers => DS4Controllers;
-        DS4State[] DI.IDeviceSlotHost.CurrentStates => CurrentState;
-        DS4State[] DI.IDeviceSlotHost.PreviousStates => PreviousState;
-        Mouse[] DI.IDeviceSlotHost.TouchPads => touchPad;
-        ControllerSlotManager DI.IDeviceSlotHost.SlotManager => slotManager;
+        // Phase9 9-E E-6e → Phase13-Step5: スロットごとの状態は IDeviceSlotState（直接注入）へ移した。残るのは DeviceConnector が使う ActiveControllers と OnReport だけ（Step5b で撤廃）
         int DI.IDeviceSlotHost.ActiveControllers => _lifecycle.ActiveControllers;
         void DI.IDeviceSlotHost.OnReport(DS4Device device, EventArgs e, int ind) => On_Report(device, e, ind);
 

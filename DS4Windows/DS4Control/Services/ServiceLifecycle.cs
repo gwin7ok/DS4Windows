@@ -15,7 +15,7 @@ namespace DS4Windows.Services
     /// 旧 <c>ControlService</c> の <c>Start</c>／<c>Stop</c>／<c>HotPlug</c>／<c>PrepareAbort</c> と、その状態
     /// （<c>running</c>／<c>loopControllers</c>／<c>inServiceTask</c>／<c>activeControllers</c>／<c>suspending</c>）、イベントを、そのまま移したもの。
     /// 安全弁（ViGEm の開始・破棄順序、<c>inServiceTask</c> による直列化、<c>Thread.Sleep</c>、イベントの発火順序）は、逐語で保つ（順序はソース走査のテストで固定）。
-    /// スロットの配列は <see cref="IDeviceSlotHost"/>、イベントスレッドの実行とキーボード／マウス出力の初期化は <see cref="IServiceLifecycleHost"/>（いずれも <c>ControlService</c>）から、遅延して引く。
+    /// スロットの配列は <see cref="IDeviceSlotState"/>（Phase13-Step5 で直接注入に変更。旧: <c>Func&lt;IDeviceSlotHost&gt;</c>）から受ける。イベントスレッドの実行とキーボード／マウス出力の初期化は、Phase13-Step3 で <see cref="IEventThreadDispatcher"/>／<see cref="IOutputKbmInitializer"/> へ移した。
     /// </summary>
     public sealed class ServiceLifecycle : IServiceLifecycle
     {
@@ -31,7 +31,7 @@ namespace DS4Windows.Services
         private readonly ILatencyMonitor _latencyMonitor;
         private readonly IJoyConLinker _joyConLinker;
         private readonly IDeviceConnector _deviceConnector;
-        private readonly Func<IDeviceSlotHost> _slots;
+        private readonly IDeviceSlotState _slots;
         private readonly IEventThreadDispatcher _eventThread;
         private readonly IOutputKbmInitializer _kbmInitializer;
         private readonly int _controllerSlotLimit;
@@ -61,7 +61,7 @@ namespace DS4Windows.Services
         public ServiceLifecycle(IAppSettingsService appSettings, IEnvironmentService environmentService, IProfileSettingsService profileSettings,
             IDs4DeviceRegistry deviceRegistry, IVirtualKBM virtualKBM, IOscService oscService, IUdpMotionService udpMotion,
             IHidHideService hidHideService, IVirtualPadService virtualPad, ILatencyMonitor latencyMonitor, IJoyConLinker joyConLinker,
-            IDeviceConnector deviceConnector, Func<IDeviceSlotHost> slots,
+            IDeviceConnector deviceConnector, IDeviceSlotState slots,
             IEventThreadDispatcher eventThread, IOutputKbmInitializer kbmInitializer)
         {
             _appSettings = appSettings ?? throw new ArgumentNullException(nameof(appSettings));
@@ -89,7 +89,7 @@ namespace DS4Windows.Services
 
         public bool Start(bool showlog = true)
         {
-            IDeviceSlotHost slots = _slots();
+            IDeviceSlotState slots = _slots;
             InServiceTask = true;
             _virtualPad.StartViGEm();
             if (_virtualPad.HasViGEmClient)
@@ -218,7 +218,7 @@ namespace DS4Windows.Services
 
         public bool Stop(bool showlog = true, bool immediateUnplug = false)
         {
-            IDeviceSlotHost slots = _slots();
+            IDeviceSlotState slots = _slots;
             if (Running)
             {
                 Running = false;
@@ -338,7 +338,7 @@ namespace DS4Windows.Services
 
         public bool HotPlug()
         {
-            IDeviceSlotHost slots = _slots();
+            IDeviceSlotState slots = _slots;
             if (Running)
             {
                 InServiceTask = true;
@@ -413,7 +413,7 @@ namespace DS4Windows.Services
 
         public void PrepareAbort()
         {
-            IDeviceSlotHost slots = _slots();
+            IDeviceSlotState slots = _slots;
             for (int i = 0, arlength = slots.DS4Controllers.Length; i < arlength; i++)
             {
                 DS4Device tempDevice = slots.DS4Controllers[i];

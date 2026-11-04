@@ -1,7 +1,7 @@
 # Phase13-Step5 個別計画書: スロット状態の持ち主の新設（ゲート付き）
 
 作成日: 2026-11-04（改訂: 同日。ユーザー指示「Step5 を 5 と 5b に2分割」を反映。`On_Report` の分離と `Mapping` の逆依存の解消は `Phase13-Step5b-Plan.md` へ移した）
-状態: **承認済み（2026-11-04。§9 の 1〜6 すべて）。5a・5b 完了（5b はコミット待ち）。次は 5c**
+状態: **承認済み（2026-11-04。§9 の 1〜6 すべて）。5a・5b・5c 完了（5c はコミット待ち）。次は 5d**
 親計画: `Phase13-Plan.md` §4 Step5、§9 R1、§2.2 の `Func` #6・#7・#8
 前提: Step4 コミット済み（`1a3f8273`）。注: 「Step5b」は Phase13 の中の Step の名前で、ロードマップの「Phase13b（ログ整理）」とは別物。
 
@@ -160,3 +160,11 @@ _touchPad     = slots.TouchPads;       // …ほか
 - テスト: `Phase13Step5ControlServiceSlotStateGuardTests`（フィールドが `readonly`、`DeviceSlotState` と同じ配列を保持、`GetController` の範囲外は null）を追加。引数の数を検査する 2 件（28 → 29）と、`IDeviceStateAccessor` の登録元を検査する 1 件（`Phase3ServiceRegistrationTests`）を更新。
 - **after の計測（§6 ②）**: `On_Report` の本文は変えておらず（フィールド名も同じ）、読み取りはコンストラクターで保持した `readonly` の配列。§10 の計測 (b)（保持した `readonly` の配列）が after に相当し、(a) の 93〜98%（有意な差なし）。実際の `On_Report` 全体の遅延（`ProcessingDelayMs`）は、Step5b の後に実機でまとめて比較する。アロケーションは `Phase13Step5SlotStateHotPathAllocationTests` で 0。
 - Debug ALL: 警告 0・エラー 0、Actions.Tests 3071 件・Standalone 11 件すべて合格。**ゲートは合格**（5c へ進める）。
+
+## 12. 5c の結果（2026-11-04）
+
+- `ServiceLifecycle`・`DeviceDisconnectHandler` の `Func<IDeviceSlotHost>` を `IDeviceSlotState` の直接注入へ。`DeviceConnector` は状態を `IDeviceSlotState` から読む（`Func<IDeviceSlotHost>` は `ActiveControllers` と `OnReport` のために残る）。
+- `IDeviceSlotHost` は **`ActiveControllers` と `OnReport` の 2 つ**に縮小（計画書は `OnReport` だけとしていたが、`DeviceConnector` が `ServiceLifecycle` の `activeControllers` を `HookSettings` で読む［70 行］ため、これも残る。`ServiceLifecycle` → `DeviceConnector` の依存があるので、`DeviceConnector` から `ServiceLifecycle` は直接引けない）。`ActiveControllers` の持ち主は Step5b で決める（案: `DeviceSlotState` に移すか、`InputReportProcessor` と合わせて整理）。`ControlService` の状態 5 メンバーの明示実装は削除。
+- `DeviceDisconnectHandler` の `OnDeviceSerialChange` の送り主が `ControlService` から `IDeviceSlotState` に変わった（購読者はいない）。
+- テスト更新: `Phase9E6LifecycleGuardTests`（生成呼び出し）、`Phase9E6ConnectorGuardTests`（検査する文字列 `slots.SlotManager.AddController`）。
+- Debug ALL: 警告 0・エラー 0、Actions.Tests 3071 件・Standalone 11 件すべて合格。

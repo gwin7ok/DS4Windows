@@ -26,13 +26,14 @@ namespace DS4Windows.Services
         private readonly IInputDeviceModuleRegistry _deviceModules;
         private readonly IUdpMotionService _udpMotion;
         private readonly IHidHideService _hidHideService;
-        private readonly Func<IDeviceSlotHost> _host;
+        private readonly IDeviceSlotState _slots;   // Phase13-Step5: スロットの配列（直接注入）
+        private readonly Func<IDeviceSlotHost> _host;   // Phase13-Step5: 残るのは ActiveControllers と OnReport だけ（Step5b で撤廃）
 
         public DeviceConnector(IProfileSettingsService profileSettings, IProfileXmlStore profileXmlStore, IAppSettingsService appSettings,
             IOscService oscService, IDs4DeviceRegistry deviceRegistry, IDeviceDisconnectHandler deviceDisconnect, IVirtualKBM virtualKBM,
             StickMotionState stickMotion, SyntheticInputState syntheticInput, IConnectionProfileSelector connectionProfileSelector,
             IVirtualPadService virtualPad, Func<IOutputSlotService> outputSlotService, IDeviceConnectionSetup deviceConnectionSetup,
-            IInputDeviceModuleRegistry deviceModules, IUdpMotionService udpMotion, IHidHideService hidHideService, Func<IDeviceSlotHost> host)
+            IInputDeviceModuleRegistry deviceModules, IUdpMotionService udpMotion, IHidHideService hidHideService, IDeviceSlotState slots, Func<IDeviceSlotHost> host)
         {
             _profileSettings = profileSettings ?? throw new ArgumentNullException(nameof(profileSettings));
             _profileXmlStore = profileXmlStore ?? throw new ArgumentNullException(nameof(profileXmlStore));
@@ -50,6 +51,7 @@ namespace DS4Windows.Services
             _deviceModules = deviceModules ?? throw new ArgumentNullException(nameof(deviceModules));
             _udpMotion = udpMotion ?? throw new ArgumentNullException(nameof(udpMotion));
             _hidHideService = hidHideService ?? throw new ArgumentNullException(nameof(hidHideService));
+            _slots = slots ?? throw new ArgumentNullException(nameof(slots));
             _host = host ?? throw new ArgumentNullException(nameof(host));
         }
 
@@ -73,13 +75,14 @@ namespace DS4Windows.Services
         public void PrepareConnected(int numControllers, DS4Device device, int index)
         {
             IDeviceSlotHost host = _host();
-            Mouse[] touchPads = host.TouchPads;
+            IDeviceSlotState slots = _slots;
+            Mouse[] touchPads = slots.TouchPads;
             _profileSettings.RefreshExtrasButtons(index, _deviceModules.Resolve(device.DeviceType).GetKnownExtraButtons(device));
             _profileXmlStore.LoadControllerConfigsForDevice(device);
             device.LoadStoreSettings();
             device.CheckControllerNumDeviceSettings(numControllers);
 
-            host.SlotManager.AddController(device, index);
+            slots.SlotManager.AddController(device, index);
             if (_appSettings.UseOscSender)
             {
                 _oscService.SendPlug(index, true);
@@ -143,7 +146,7 @@ namespace DS4Windows.Services
                 else if (device.JointDeviceSlotNumber != DS4Device.DEFAULT_JOINT_SLOT_NUMBER)
                 {
                     int otherIdx = device.JointDeviceSlotNumber;
-                    DS4Device tempDev = host.DS4Controllers[otherIdx];
+                    DS4Device tempDev = slots.DS4Controllers[otherIdx];
                     if (tempDev != null)
                     {
                         int mappedIdx = tempDev.PrimaryDevice ? otherIdx : index;

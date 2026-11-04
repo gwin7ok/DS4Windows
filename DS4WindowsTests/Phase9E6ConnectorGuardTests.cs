@@ -84,7 +84,7 @@ namespace DS4WindowsTests
                 "_profileXmlStore.LoadControllerConfigsForDevice(device);",
                 "device.LoadStoreSettings();",
                 "device.CheckControllerNumDeviceSettings(numControllers);",
-                "host.SlotManager.AddController(device, index);",
+                "slots.SlotManager.AddController(device, index);",   // Phase13-Step5: スロット状態は IDeviceSlotState（slots）から読む
                 "_oscService.SendPlug(index, true);",
                 "device.Removal += _deviceDisconnect.OnRemoval;",
                 "device.SyncChange += _deviceDisconnect.OnSyncChange;",
