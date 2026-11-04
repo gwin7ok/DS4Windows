@@ -236,8 +236,7 @@ namespace DS4Windows.DI
             services.AddSingleton<IControlActivityReader, ControlActivityReader>();   // Phase9 9-B: コントロールが押されているかの判定（状態なし）
             services.AddSingleton<IMapping, Mapping>();
             services.AddSingleton<Func<IMapping>>(sp => () => sp.GetRequiredService<IMapping>());
-            // Phase6-Step10-2-3: IAutoProfileService の遅延解決（AutoProfileHolder は設定の場所が決まった後でなければ生成できない）
-            services.AddSingleton<Func<IAutoProfileService>>(sp => () => sp.GetRequiredService<IAutoProfileService>());
+            // Phase13-Step8 8-c: IAutoProfileService の遅延取得デリゲートの登録は撤廃した（利用者 2 件の UI ファクトリーは、設定の場所の確定後に解決される）
 
             // Phase 4: UI層 ViewModel ファクトリの登録
             services.AddSingleton<IViewModelFactory, ViewModelFactory>();

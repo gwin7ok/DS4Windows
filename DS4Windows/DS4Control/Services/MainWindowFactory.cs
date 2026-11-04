@@ -32,7 +32,7 @@ namespace DS4Windows.Services
         private readonly IProfileIdentityService _profileIdentityService;
         private readonly ControlService _controlService;
         private readonly IProfileLoadTarget _loadTarget;   // Phase13-Step6 6-e: IPC の LoadTempProfile に渡す窓口
-        private readonly Func<IAutoProfileService> _autoProfileServiceAccessor;
+        private readonly IAutoProfileService _autoProfileService;   // Phase13-Step8 8-c: 旧 遅延取得デリゲート。画面の生成時（設定の場所の確定後）に解決される
 
         public MainWindowFactory(
             IProfileSettingsService profileSettings,
@@ -53,7 +53,7 @@ namespace DS4Windows.Services
             IProfileIdentityService profileIdentityService,
             ControlService controlService,
             IProfileLoadTarget loadTarget,
-            Func<IAutoProfileService> autoProfileServiceAccessor)
+            IAutoProfileService autoProfileService)
         {
             _profileSettings = profileSettings ?? throw new ArgumentNullException(nameof(profileSettings));
             _appSettings = appSettings ?? throw new ArgumentNullException(nameof(appSettings));
@@ -73,13 +73,13 @@ namespace DS4Windows.Services
             _profileIdentityService = profileIdentityService ?? throw new ArgumentNullException(nameof(profileIdentityService));
             _controlService = controlService ?? throw new ArgumentNullException(nameof(controlService));
             _loadTarget = loadTarget ?? throw new ArgumentNullException(nameof(loadTarget));
-            _autoProfileServiceAccessor = autoProfileServiceAccessor ?? throw new ArgumentNullException(nameof(autoProfileServiceAccessor));
+            _autoProfileService = autoProfileService ?? throw new ArgumentNullException(nameof(autoProfileService));
         }
 
         public MainWindow Create(ArgumentParser parser)
             => new MainWindow(parser, _profileSettings, _appSettings, _profileXmlStore, _editorWindowFactory,
                 _pathService, _environmentService, _appearanceSettings, _profileApplication, _outputSlotService,
                 _profileRepository, _notificationService, _controlService, _loadTarget, _profileSlotApplier,
-                _mainWindowsViewModel, _logSettingsApplier, _autoProfileServiceAccessor(), _viewModelFactory, _profileIdentityService);
+                _mainWindowsViewModel, _logSettingsApplier, _autoProfileService, _viewModelFactory, _profileIdentityService);
     }
 }
