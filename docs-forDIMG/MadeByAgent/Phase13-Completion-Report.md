@@ -87,6 +87,25 @@
 - 起動時のログの順序、`ProcessingDelayMs` の比較（Step5b）
 - 引き継ぎ: Phase11 の S9-17（電池表示の文言）
 
+## 9. 実機確認の結果（2026-11-04。DS4 実機、Release v4.3.0）
+
+| # | 項目 | 結果 |
+|---|---|---|
+| 1 | 起動と接続（USB／Bluetooth、起動前後） | 正常 |
+| 2 | 切断と再接続（PS+↓、ケーブル抜き、ログ） | 正常 |
+| 3 | サービス操作（開始・停止、トレイ表示、終了時のハング） | 正常（**スリープ復帰は見送り**） |
+| 4 | プロファイル（切替、トリガー、一時、Fresh-press、自動プロファイル） | 正常 |
+| 5 | 割り当て（Key のトグル、Macro、Button、Program、Profile） | 正常 |
+| 6 | 出力と機能の切替 | Plug/Unplug と HidHide は正常。**OSC／UDP、タッチパッドのスライド表示、振動、プロファイルエディターの入力取得と振動停止は見送り** |
+| 7 | CLI（`-command`） | `stop`／`start`／`cycle`／`Disconnect.1`／`OutputSlot.1.Unplug|PlugX360`／`Query.1.AppRunning` は正常。**`ChangeLedColor.1.255.0.0` と `LoadProfile.1.<名前>` は反応せず（ログもなし）。** `LoadTempProfile` は未確認 |
+| 8 | 表示とログ（電池表示、ログ、入力の遅れ） | 正常（S9-17 を含む） |
+
+### 未解決: CLI の `ChangeLedColor`／`LoadProfile`
+- Step11 の前後でロジックは同一（`git show 937a7c52^` の旧 `MainWindow.Ipc.cs` と `IpcCommandProcessor` を突き合わせて確認）。単体テストは緑。
+- 両者に共通するのは、`conLvViewModel.ControllerCol[index]`（`UpdateCustomLightColor`、`Device`）を使う点。正常だった `Disconnect`（`ControllerDict`）、`OutputSlot`、`Query` とは経路が違う。
+- Phase13 より前の版との比較は、ユーザーが見送り。**回帰かどうかは未確定**。再開の条件: 旧版（`master` のビルド）で同じコマンドを実行して比較する。
+- 見送り分（スリープ復帰、OSC／UDP、タッチパッド、振動、エディターの入力取得、`LoadTempProfile`）は、Phase13 の完了条件ではなく、次の実機確認の機会に行う。
+
 ## 8. 次の作業
 
 Phase13b（ログの一括整理）。その後 Phase14（名前空間・フォルダの再編）。詳細は `Phase11-and-Beyond-Roadmap.md` §7。
