@@ -78,7 +78,10 @@ namespace DS4Windows.UI
 
         int DS4Windows.Processing.Abstractions.IIpcCommandHost.FindProfileIndex(string profileName)
             => profileListHolder.ProfileListCol.Select((item, index) => new { item, index }).
-                Where(x => x.item.Name == profileName).Select(x => x.index).DefaultIfEmpty(-1).First();
+                Where(x => string.Equals(x.item.Name, profileName, StringComparison.OrdinalIgnoreCase)).Select(x => x.index).DefaultIfEmpty(-1).First();
+
+        string DS4Windows.Processing.Abstractions.IIpcCommandHost.GetProfileName(int index)
+            => index >= 0 && index < profileListHolder.ProfileListCol.Count ? profileListHolder.ProfileListCol[index].Name : null;
 
         int DS4Windows.Processing.Abstractions.IIpcCommandHost.ControllerCount => conLvViewModel.ControllerCol.Count;
 

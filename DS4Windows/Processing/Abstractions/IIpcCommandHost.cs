@@ -24,8 +24,11 @@ namespace DS4Windows.Processing.Abstractions
         /// <summary>指定のスロットのライトバーのカスタム色を変える（範囲外の例外は呼び出し側が握る）。</summary>
         void SetLightColor(int index, byte red, byte green, byte blue);
 
-        /// <summary>プロファイル一覧での、そのプロファイル名の位置（無ければ -1）。</summary>
+        /// <summary>プロファイル一覧での、そのプロファイル名の位置（無ければ -1。大文字小文字は区別しない）。</summary>
         int FindProfileIndex(string profileName);
+
+        /// <summary>プロファイル一覧のその位置の、正式なプロファイル名（大文字小文字は一覧のとおり）。範囲外は null。</summary>
+        string GetProfileName(int index);
 
         /// <summary>コントローラー一覧の行数。</summary>
         int ControllerCount { get; }

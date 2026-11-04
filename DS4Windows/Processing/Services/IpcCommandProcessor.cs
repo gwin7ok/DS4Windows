@@ -131,6 +131,12 @@ namespace DS4Windows.Processing.Services
                 if (strData[0] == "loadprofile")
                 {
                     int idx = host.FindProfileIndex(strData[2]);
+                    // 一覧にある正式な名前（大文字小文字）へ揃える（Windows のファイルは区別しないが、一覧・選択状態は区別するため）
+                    if (idx >= 0)
+                    {
+                        string canonical = host.GetProfileName(idx);
+                        if (!string.IsNullOrEmpty(canonical)) strData[2] = canonical;
+                    }
 
                     if (idx >= 0 && tdevice < host.ControllerCount)
                     {

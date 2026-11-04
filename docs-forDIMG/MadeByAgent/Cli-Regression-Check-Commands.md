@@ -139,3 +139,10 @@
 - `LoadProfile.1.VerifyA`（ASCII）: ログには出る。`LoadProfile.1.マイクラダンジョンズxbox`（日本語）: ログも出ず、切り替わらない。
 - 原因: 送信側が `StringToHGlobalAnsi`＋`cbData`＝文字数（バイト数ではない）、受信側が `Encoding.ASCII` だったため、日本語のプロファイル名が壊れる／切れる（以前からの不具合。回帰ではない）。
 - 対応: 送信を UTF-8 のバイト列（`cbData`＝バイト数）、受信を UTF-8 に変更。ASCII のみのコマンドは従来と同一。`IpcCommandParserUtf8Tests` を追加。
+
+### 7.4 実機の結果と最終的な原因（2026-11-04、commit 4b43f13 のビルド）
+
+- 日本語名（`マイクラダンジョンズxbox`）: UTF-8 化により切り替わるようになった（○）。
+- `LoadProfile.1.VerifyA`: 切り替わらなかった。実ファイルは `verifyA`。警告ログ `[IPC] LoadProfile: not applied now (profileIndex=-1, …)` で判明: 一覧との照合（`FindProfileIndex`）が大文字小文字を区別して不一致となり、`ProfilePath` を書き換えるだけで終わっていた（`File.Exists` は Windows で区別しないため通る）。`verifyA` は切り替わる（○）。以前からの不具合で回帰ではない。
+- 対応: 照合を大文字小文字を区別しない形にし、一覧の正式な名前（`GetProfileName`）へ揃えてから適用する。
+- `ChangeLedColor` は §7.2 のとおり（カスタム色モード以外では見た目に効かない可能性）。
