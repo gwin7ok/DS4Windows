@@ -523,6 +523,9 @@ namespace DS4Windows
         /// Perform Mapping property resetting as needed before loading profile settings
         /// </summary>
         /// <param name="device">Input device instance</param>
+        // TODO(Phase13-Step6 6-e): 同じ本体を IProfileLoadTarget.PreLoadReset（ProfileLoadTarget）へ複製した（6-d）。ControlService のコンストラクター引数を
+        // 増やさないため、ここは元の本体のまま残す。呼び出し元は LegacyProfileXmlSerializer.LoadProfile だけで、6-e で IProfileLoadTarget に切り替えるときに、
+        // このメソッドを削除する（呼び出し元 0 件。§2.4: 使うべき API は IProfileLoadTarget 側）。
         public void PreLoadReset(int ind)
         {
             //DS4Device inputDevice = DS4Controllers[ind];

@@ -168,3 +168,10 @@ interface IProfileLoadTarget   // DS4Windows/DI/
 **テスト**: `Step10GroupTwoGlobalReferenceGuardTests.EditorWindowFactory_RequiresAllServices` の引数を未初期化の `ControlService` に、`ProfileSettingsViewModelGlobalReferenceGuardTests.ViewModelFactory_HasNoServiceLocatorInConstructor` の期待を「`Func<ControlService>` なし・`ControlService controlService` あり」に更新。
 **結果**: `Debug ALL` 警告 0／エラー 0。Actions.Tests 3,099 件、Standalone 11 件、すべて合格。
 **実機で見る点（Phase 末の 1 回）**: 起動直後のメイン画面の表示と、エディター・補助ウィンドウが開くこと（`ControlService` の生成時期が「生成のたび」から「ファクトリーの解決時」へ早まったため）。
+
+## 13. 6-d の結果（2026-11-04）
+
+**変更（追加のみ）**: `IProfileLoadTarget`（`DS4Windows/DI/`）と `ProfileLoadTarget`（`DS4Windows/DS4Control/Services/`）を新設し、`ServiceRegistration` に Singleton で登録。依存は `IDeviceSlotState`／`IVirtualPadService`／`IDeviceConnectionSetup`／`ITouchpadToggleService`／`StickMotionState`（6-a のプローブで、`ProfileRepository`／`ProfileApplicationService`／`ControlService` に届かないことを確認済み）。`PreLoadReset` の本体は `ProfileLoadTarget` へ複製した。
+**計画からの変更**: 計画（§4.1）は `ControlService.PreLoadReset` を転送にするとしていたが、`ControlService` のコンストラクター引数（26）を増やさないため、**6-d では元の本体のまま残し**（TODO［Phase13-Step6 6-e］つき）、呼び出し元（`LegacyProfileXmlSerializer.LoadProfile` のみ）を切り替える 6-e で削除する（呼び出し元 0 件。規約 §2.4: 使うべき API は `IProfileLoadTarget` 側）。
+**テスト**: `Phase13Step6ProfileLoadTargetTests`（6 件）。配列が `ControlService` と同一、範囲外の挙動（`GetController` は null、配列は例外）、`PreLoadReset` が旧経路と同じ結果（テストプロファイル添字では何もしない）、コンストラクターの null 検査。
+**結果**: `Debug ALL` 警告 0／エラー 0。Actions.Tests 3,105 件、Standalone 11 件、すべて合格。
