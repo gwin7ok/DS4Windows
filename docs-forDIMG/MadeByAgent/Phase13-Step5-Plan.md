@@ -1,7 +1,7 @@
 # Phase13-Step5 個別計画書: スロット状態の持ち主の新設（ゲート付き）
 
 作成日: 2026-11-04（改訂: 同日。ユーザー指示「Step5 を 5 と 5b に2分割」を反映。`On_Report` の分離と `Mapping` の逆依存の解消は `Phase13-Step5b-Plan.md` へ移した）
-状態: **承認済み（2026-11-04。§9 の 1〜6 すべて）。5a・5b・5c 完了（5c はコミット待ち）。次は 5d**
+状態: **承認済み（2026-11-04。§9 の 1〜6 すべて）。5a〜5d 完了（5d はコミット待ち）。次は 5e**
 親計画: `Phase13-Plan.md` §4 Step5、§9 R1、§2.2 の `Func` #6・#7・#8
 前提: Step4 コミット済み（`1a3f8273`）。注: 「Step5b」は Phase13 の中の Step の名前で、ロードマップの「Phase13b（ログ整理）」とは別物。
 
@@ -167,4 +167,11 @@ _touchPad     = slots.TouchPads;       // …ほか
 - `IDeviceSlotHost` は **`ActiveControllers` と `OnReport` の 2 つ**に縮小（計画書は `OnReport` だけとしていたが、`DeviceConnector` が `ServiceLifecycle` の `activeControllers` を `HookSettings` で読む［70 行］ため、これも残る。`ServiceLifecycle` → `DeviceConnector` の依存があるので、`DeviceConnector` から `ServiceLifecycle` は直接引けない）。`ActiveControllers` の持ち主は Step5b で決める（案: `DeviceSlotState` に移すか、`InputReportProcessor` と合わせて整理）。`ControlService` の状態 5 メンバーの明示実装は削除。
 - `DeviceDisconnectHandler` の `OnDeviceSerialChange` の送り主が `ControlService` から `IDeviceSlotState` に変わった（購読者はいない）。
 - テスト更新: `Phase9E6LifecycleGuardTests`（生成呼び出し）、`Phase9E6ConnectorGuardTests`（検査する文字列 `slots.SlotManager.AddController`）。
+- Debug ALL: 警告 0・エラー 0、Actions.Tests 3071 件・Standalone 11 件すべて合格。
+
+## 13. 5d の結果（2026-11-04）
+
+- `UdpMotionService` の `Func<IUdpMotionHost>` を `IDeviceSlotState` の直接注入へ。`GetPadDetailForIdx`（約 50 行）は**本文を変えずに** `UdpMotionService` の公開メソッドへ移し、UDP サーバーの工場へ渡すデリゲートは `GetPadDetailForIdx`（メソッドグループ）に変更。`GetCurrentState`／`GetTempState` は `_slots`（`IDeviceSlotState`）から読む。
+- `ControlService` から `GetPadDetailForIdx`／`GetCurrentState`／`GetTempState` と `IUdpMotionHost` の実装を削除。`IUdpMotionHost.cs` を削除し、`ServiceRegistration` の `Func<IUdpMotionHost>`／`IUdpMotionHost` の登録 2 件を削除（`Func` 登録は #6 が 0 に）。
+- テスト: `FakeUdpMotionHost`（`FakeUdpMotion.cs`）を削除し、`Phase9EUdpMotionServiceTests` は実物の `DeviceSlotState`（空の入力を入れたもの）を使う。`Phase9EUdpMotionGuardTests`・`Phase13Step3HostRemovalGuardTests` は「`IUdpMotionHost` が存在しない」の検査に更新。`Phase13Step5ControlServiceSlotStateGuardTests` から削除したメンバーの検査を除去。
 - Debug ALL: 警告 0・エラー 0、Actions.Tests 3071 件・Standalone 11 件すべて合格。

@@ -42,8 +42,6 @@ namespace DS4WindowsTests
             Assert.Same(slots.CurrentStates, typeof(ControlService).GetField("CurrentState", All).GetValue(control));
             Assert.Same(slots.PreviousStates, typeof(ControlService).GetField("PreviousState", All).GetValue(control));
             Assert.Same(slots.TempStates, typeof(ControlService).GetField("TempState", All).GetValue(control));
-            Assert.Same(slots.CurrentStates[0], control.GetCurrentState(0));
-            Assert.Same(slots.TempStates[0], control.GetTempState(0));
         }
 
         [Fact]

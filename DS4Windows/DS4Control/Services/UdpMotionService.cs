@@ -10,7 +10,7 @@ namespace DS4Windows.Services
     /// Phase9 9-E E-3（Phase9-E-Plan.md）: <see cref="IUdpMotionService"/> の実装（DI の Singleton）。
     /// 旧 <c>ControlService</c> の UDP モーション系（Cemuhook 互換サーバーの作成・開始・停止、モーションの送出のハンドラー <c>PrepareDevUDPMotion</c>、
     /// スムージングのフィルター、出力バッファー、状態 <c>_udpServer</c>／<c>udpChangeStatus</c>）を、そのまま移したもの。
-    /// <c>ControlService</c> が持つもの（デバイスの状態、イベントスレッド、パッドの情報）は <see cref="IUdpMotionHost"/> 経由で受ける（循環を避けて遅延で取得）。
+    /// <c>ControlService</c> が持つもの（デバイスの状態、イベントスレッド、パッドの情報）は <see cref="IDeviceSlotState"/>（スロットごとの状態。Phase13-Step5 で直接注入に変更。旧: <c>Func&lt;IUdpMotionHost&gt;</c>）から受ける。パッドの情報（<c>GetPadDetailForIdx</c>）は、旧 <c>ControlService</c> から本クラスへ移した。
     /// 値の特性化は <c>Phase9EUdpMotionServiceTests</c> が守る。
     /// </summary>
     public sealed class UdpMotionService : IUdpMotionService
@@ -18,7 +18,7 @@ namespace DS4Windows.Services
         private readonly IAppSettingsService _appSettings;
         private readonly IDs4DeviceRegistry _deviceRegistry;
         private readonly IUdpMotionServerFactory _serverFactory;
-        private readonly Func<IUdpMotionHost> _host;
+        private readonly IDeviceSlotState _slots;
         private readonly IEventThreadDispatcher _eventThread;
 
         private OneEuroFilter3D[] udpEuroPairAccel = new OneEuroFilter3D[UdpServer.NUMBER_SLOTS]
@@ -42,12 +42,12 @@ namespace DS4Windows.Services
         public event Action<string, bool> DebugMessage;
 
         public UdpMotionService(IAppSettingsService appSettings, IDs4DeviceRegistry deviceRegistry,
-            IUdpMotionServerFactory serverFactory, Func<IUdpMotionHost> host, IEventThreadDispatcher eventThread)
+            IUdpMotionServerFactory serverFactory, IDeviceSlotState slots, IEventThreadDispatcher eventThread)
         {
             _appSettings = appSettings ?? throw new ArgumentNullException(nameof(appSettings));
             _deviceRegistry = deviceRegistry ?? throw new ArgumentNullException(nameof(deviceRegistry));
             _serverFactory = serverFactory ?? throw new ArgumentNullException(nameof(serverFactory));
-            _host = host ?? throw new ArgumentNullException(nameof(host));
+            _slots = slots ?? throw new ArgumentNullException(nameof(slots));
             _eventThread = eventThread ?? throw new ArgumentNullException(nameof(eventThread));
 
             // 旧 ControlService のコンストラクターにあった購読
@@ -75,7 +75,7 @@ namespace DS4Windows.Services
                 udpChangeStatus = true;
                 _eventThread.Queue(() =>
                 {
-                    _udpServer = _serverFactory.Create(_host().GetPadDetailForIdx);
+                    _udpServer = _serverFactory.Create(GetPadDetailForIdx);
                     if (openPort)
                     {
                         // Change thread affinity of object to have normal priority
@@ -232,14 +232,85 @@ namespace DS4Windows.Services
             ChangingPort = false;
         }
 
+        /// <summary>
+        /// そのスロットのパッドの情報を <paramref name="meta"/> に書く（UDP モーションのサーバーが問い合わせる）。
+        /// Phase13-Step5: 旧 <c>ControlService.GetPadDetailForIdx</c> を、本文を変えずにここへ移した（読むのは <see cref="IDeviceSlotState.DS4Controllers"/> と <c>DS4Device</c> のメソッドだけ）。
+        /// </summary>
+        public void GetPadDetailForIdx(int padIdx, ref DualShockPadMeta meta)
+        {
+            //meta = new DualShockPadMeta();
+            meta.PadId = (byte)padIdx;
+            meta.Model = DsModel.DS4;
+
+            var d = _slots.DS4Controllers[padIdx];
+            if (d == null)
+            {
+                meta.PadMacAddress = null;
+                meta.PadState = DsState.Disconnected;
+                meta.ConnectionType = DsConnection.None;
+                meta.Model = DsModel.None;
+                meta.BatteryStatus = 0;
+                meta.IsActive = false;
+                return;
+                //return meta;
+            }
+
+            bool isValidSerial = false;
+            string stringMac = d.getMacAddress();
+            if (!string.IsNullOrEmpty(stringMac))
+            {
+                stringMac = string.Join("", stringMac.Split(':'));
+                //stringMac = stringMac.Replace(":", "").Trim();
+                meta.PadMacAddress = System.Net.NetworkInformation.PhysicalAddress.Parse(stringMac);
+                isValidSerial = d.isValidSerial();
+            }
+
+            if (!isValidSerial)
+            {
+                //meta.PadMacAddress = null;
+                meta.PadState = DsState.Disconnected;
+            }
+            else
+            {
+                if (d.isSynced() || d.IsAlive())
+                    meta.PadState = DsState.Connected;
+                else
+                    meta.PadState = DsState.Reserved;
+            }
+
+            meta.ConnectionType = (d.getConnectionType() == ConnectionType.USB) ? DsConnection.Usb : DsConnection.Bluetooth;
+            meta.IsActive = !d.isDS4Idle();
+
+            int batteryLevel = d.getBattery();
+            if (d.isCharging() && batteryLevel >= 100)
+                meta.BatteryStatus = DsBattery.Charged;
+            else
+            {
+                if (batteryLevel >= 95)
+                    meta.BatteryStatus = DsBattery.Full;
+                else if (batteryLevel >= 70)
+                    meta.BatteryStatus = DsBattery.High;
+                else if (batteryLevel >= 50)
+                    meta.BatteryStatus = DsBattery.Medium;
+                else if (batteryLevel >= 20)
+                    meta.BatteryStatus = DsBattery.Low;
+                else if (batteryLevel >= 5)
+                    meta.BatteryStatus = DsBattery.Dying;
+                else
+                    meta.BatteryStatus = DsBattery.None;
+            }
+
+            //return meta;
+        }
+
         public void PrepareDeviceMotion(DS4Device device, int index)
         {
-            IUdpMotionHost host = _host();
+            IDeviceSlotState host = _slots;
             int tempIdx = index;
             DS4Device.ReportHandler<EventArgs> tempEvnt = (sender, args) =>
             {
                 DualShockPadMeta padDetail = new DualShockPadMeta();
-                host.GetPadDetailForIdx(tempIdx, ref padDetail);
+                GetPadDetailForIdx(tempIdx, ref padDetail);
                 DS4State stateForUdp = host.GetTempState(tempIdx);
 
                 host.GetCurrentState(tempIdx).CopyTo(stateForUdp);

@@ -11,7 +11,7 @@ namespace DS4WindowsTests
     /// <summary>
     /// Phase9 9-E E-3（Phase9-E-Plan.md）: UDP モーションの切り出しの守り。
     /// (1) <c>ControlService</c> から、移したメンバーが無くなっていること（ソースの走査。コメントは除く）。
-    /// (2) 新しい部品が DI の Singleton として登録され、<c>ControlService</c> が <see cref="IUdpMotionHost"/> として解決できること。
+    /// (2) 新しい部品が DI の Singleton として登録され、<c>IDeviceSlotState</c> を直接注入で受けること（Phase13-Step5 で <c>IUdpMotionHost</c> を廃止）。
     /// (3) 部品が静的な窓口（<c>Global</c>／<c>AppHost</c>）を参照しないこと。
     /// </summary>
     public class Phase9EUdpMotionGuardTests
@@ -86,13 +86,13 @@ namespace DS4WindowsTests
         }
 
         [Fact]
-        public void NewComponents_AreRegistered_AndTheHostIsTheControlService()
+        public void NewComponents_AreRegistered_AndTheUdpHostInterfaceIsGone()
         {
             Assert.IsType<UdpMotionService>(TestHost.GetService<IUdpMotionService>());
             Assert.IsType<UdpMotionServerFactory>(TestHost.GetService<IUdpMotionServerFactory>());
             Assert.Same(TestHost.GetService<IUdpMotionService>(), TestHost.GetService<IUdpMotionService>());
-            Assert.Same(TestHost.GetService<ControlService>(), TestHost.GetService<IUdpMotionHost>());
-            Assert.Same(TestHost.GetService<IUdpMotionHost>(), TestHost.GetService<System.Func<IUdpMotionHost>>()());
+            Assert.Null(typeof(ControlService).Assembly.GetType("DS4Windows.DI.IUdpMotionHost"));
+            Assert.DoesNotContain(typeof(ControlService).GetInterfaces(), i => i.Name == "IUdpMotionHost");
         }
     }
 }

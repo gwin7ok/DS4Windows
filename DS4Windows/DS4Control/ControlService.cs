@@ -36,7 +36,7 @@ using DS4WinWPF.DS4Forms;
 namespace DS4Windows
 {
 #pragma warning disable CS0219 // some local variables are assigned but not read in legacy handlers
-    public class ControlService : IInstanceIdentifiable, DS4Windows.Services.IDeviceStateAccessor, DI.IUdpMotionHost, DI.IDeviceSlotHost
+    public class ControlService : IInstanceIdentifiable, DS4Windows.Services.IDeviceStateAccessor, DI.IDeviceSlotHost
     {
         public int InstanceId => this.GetHashCode();
         // Might be useful for ScpVBus build
@@ -187,72 +187,7 @@ namespace DS4Windows
         // Phase9 9-E E-1: 旧 oscState／oscCallback／oscListener／oscSender（OSC の状態・受信・送信）は OscService へ移した
         private readonly DI.IOscService _oscService;
 
-        public void GetPadDetailForIdx(int padIdx, ref DualShockPadMeta meta)
-        {
-            //meta = new DualShockPadMeta();
-            meta.PadId = (byte)padIdx;
-            meta.Model = DsModel.DS4;
-
-            var d = DS4Controllers[padIdx];
-            if (d == null)
-            {
-                meta.PadMacAddress = null;
-                meta.PadState = DsState.Disconnected;
-                meta.ConnectionType = DsConnection.None;
-                meta.Model = DsModel.None;
-                meta.BatteryStatus = 0;
-                meta.IsActive = false;
-                return;
-                //return meta;
-            }
-
-            bool isValidSerial = false;
-            string stringMac = d.getMacAddress();
-            if (!string.IsNullOrEmpty(stringMac))
-            {
-                stringMac = string.Join("", stringMac.Split(':'));
-                //stringMac = stringMac.Replace(":", "").Trim();
-                meta.PadMacAddress = System.Net.NetworkInformation.PhysicalAddress.Parse(stringMac);
-                isValidSerial = d.isValidSerial();
-            }
-
-            if (!isValidSerial)
-            {
-                //meta.PadMacAddress = null;
-                meta.PadState = DsState.Disconnected;
-            }
-            else
-            {
-                if (d.isSynced() || d.IsAlive())
-                    meta.PadState = DsState.Connected;
-                else
-                    meta.PadState = DsState.Reserved;
-            }
-
-            meta.ConnectionType = (d.getConnectionType() == ConnectionType.USB) ? DsConnection.Usb : DsConnection.Bluetooth;
-            meta.IsActive = !d.isDS4Idle();
-
-            int batteryLevel = d.getBattery();
-            if (d.isCharging() && batteryLevel >= 100)
-                meta.BatteryStatus = DsBattery.Charged;
-            else
-            {
-                if (batteryLevel >= 95)
-                    meta.BatteryStatus = DsBattery.Full;
-                else if (batteryLevel >= 70)
-                    meta.BatteryStatus = DsBattery.High;
-                else if (batteryLevel >= 50)
-                    meta.BatteryStatus = DsBattery.Medium;
-                else if (batteryLevel >= 20)
-                    meta.BatteryStatus = DsBattery.Low;
-                else if (batteryLevel >= 5)
-                    meta.BatteryStatus = DsBattery.Dying;
-                else
-                    meta.BatteryStatus = DsBattery.None;
-            }
-
-            //return meta;
-        }
+        // Phase13-Step5: 旧 GetPadDetailForIdx（UDP モーションのパッドの情報）は UdpMotionService へ移した
 
         public ControlService(IDs4DeviceRegistry deviceRegistry,
             DI.IProfileSettingsService profileSettings,
@@ -511,10 +446,7 @@ namespace DS4Windows
 
         // Phase13-Step3: 旧 QueueOnEventThread（イベントスレッドでの実行）は IEventThreadDispatcher.Queue へ移した
 
-        // IUdpMotionHost: UDP モーションの部品が使う、このクラスが持つ状態への窓口
-        public DS4State GetCurrentState(int ind) => CurrentState[ind];
-
-        public DS4State GetTempState(int ind) => TempState[ind];
+        // Phase13-Step5: 旧 IUdpMotionHost の GetCurrentState／GetTempState は IDeviceSlotState へ移した
 
         // Phase9 9-E E-3: 旧 ChangeUDPStatus の本体は UdpMotionService.ChangeStatus へ移した（薄い委譲。呼び出し側は 9-F まで変えない）
         public void ChangeUDPStatus(bool state, bool openPort = true)

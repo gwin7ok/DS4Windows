@@ -43,23 +43,4 @@ namespace DS4WindowsTests
             return Server;
         }
     }
-
-    public sealed class FakeUdpMotionHost : IUdpMotionHost
-    {
-        public readonly DS4State[] Current = new DS4State[ControllerLimits.MaxControllerCount];
-        public readonly DS4State[] Temp = new DS4State[ControllerLimits.MaxControllerCount];
-
-        public FakeUdpMotionHost()
-        {
-            for (int i = 0; i < Current.Length; i++)
-            {
-                Current[i] = new DS4State();
-                Temp[i] = new DS4State();
-            }
-        }
-
-        public void GetPadDetailForIdx(int padIdx, ref DualShockPadMeta meta) { meta.PadId = (byte)padIdx; }
-        public DS4State GetCurrentState(int ind) => Current[ind];
-        public DS4State GetTempState(int ind) => Temp[ind];
-    }
 }

@@ -203,7 +203,6 @@ namespace DS4Windows.DI
             services.AddSingleton<Func<IOutputSlotService>>(sp => () => sp.GetRequiredService<IOutputSlotService>());   // VirtualPadService が遅延で取得する（循環を避ける）
             services.AddSingleton<IUdpMotionServerFactory, UdpMotionServerFactory>();   // Phase9 9-E E-3: UDP サーバー（UdpServer）の生成
             services.AddSingleton<IUdpMotionService, UdpMotionService>();   // Phase9 9-E E-3: UDP モーションの送出（サーバーの作成・開始・停止、ハンドラー、スムージング）
-            services.AddSingleton<Func<IUdpMotionHost>>(sp => () => sp.GetRequiredService<IUdpMotionHost>());   // ControlService が部品を受けるため、遅延で取得（循環を避ける）
             services.AddSingleton<ILatencyMonitor, LatencyMonitor>();   // Phase9 9-E E-5: 入力レポートのエラーのログと遅延の監視
             services.AddSingleton<ITouchpadToggleService, TouchpadToggleService>();   // Phase9 9-E E-5: タッチパッドの切り替え・スライドの判定
             services.AddSingleton<IConnectionProfileSelector, ConnectionProfileSelector>();   // Phase9 9-E E-6a: 接続時のプロファイルの選択と適用
@@ -301,7 +300,6 @@ namespace DS4Windows.DI
             // Phase13-Step5: スロット状態の持ち主。IDeviceStateAccessor（GetController）も同じインスタンスを返す
             services.AddSingleton<IDeviceSlotState, DeviceSlotState>();
             services.AddSingleton<IDeviceStateAccessor>(sp => sp.GetRequiredService<IDeviceSlotState>());
-            services.AddSingleton<IUdpMotionHost>(sp => sp.GetRequiredService<ControlService>());   // Phase9 9-E E-3
             services.AddSingleton<IDeviceSlotHost>(sp => sp.GetRequiredService<ControlService>());   // Phase9 9-E E-6e
 
             return services;

@@ -12,7 +12,7 @@ namespace DS4WindowsTests
 {
     /// <summary>
     /// Phase9 9-E E-3（Phase9-E-Plan.md）: <see cref="UdpMotionService"/> の特性化テスト。
-    /// ソケットとイベントスレッドは、スタブ（<see cref="FakeUdpMotionServerFactory"/>、<see cref="FakeUdpMotionHost"/>）に替える。
+    /// ソケットとイベントスレッドは、スタブ（<see cref="FakeUdpMotionServerFactory"/>）に替える。スロットの状態は、実物の <see cref="DeviceSlotState"/>（Phase13-Step5）に、空の入力を入れて使う。
     /// サーバーの作成・開始・停止（イベントスレッドで実行、ポートの開始の失敗のログ）、モーションの送出のハンドラー（スムージングの有無、経過時間 0 の読み飛ばし、
     /// 出力バッファーの再利用）、スムージングのフィルターの作り直しを調べる。
     /// 旧実装は <c>ControlService</c> の private メンバーで、検査できる入口がなかったため、旧実装との差分テストではなく、期待する動作を直接確かめる。
@@ -23,7 +23,18 @@ namespace DS4WindowsTests
         {
             public readonly IAppSettingsService Settings = TestHost.GetService<IAppSettingsService>();
             public readonly FakeUdpMotionServerFactory Factory = new FakeUdpMotionServerFactory();
-            public readonly FakeUdpMotionHost Host = new FakeUdpMotionHost();
+            public readonly DS4Windows.Services.DeviceSlotState Host = NewSlots();
+
+            private static DS4Windows.Services.DeviceSlotState NewSlots()
+            {
+                var slots = new DS4Windows.Services.DeviceSlotState();
+                for (int i = 0; i < slots.CurrentStates.Length; i++)
+                {
+                    slots.CurrentStates[i] = new DS4State();
+                    slots.TempStates[i] = new DS4State();
+                }
+                return slots;
+            }
             public readonly FakeEventThreadDispatcher Events = new FakeEventThreadDispatcher();
             public readonly UdpMotionService Service;
             public readonly List<(string Text, bool Warning)> Logs = new List<(string, bool)>();
@@ -36,7 +47,7 @@ namespace DS4WindowsTests
                 _savedPort = Settings.UdpServerPort;
                 _savedAddress = Settings.UdpServerListenAddress;
                 _savedSmoothing = Settings.UseUdpServerSmoothing;
-                Service = new UdpMotionService(Settings, TestHost.GetService<IDs4DeviceRegistry>(), Factory, () => Host, Events);
+                Service = new UdpMotionService(Settings, TestHost.GetService<IDs4DeviceRegistry>(), Factory, Host, Events);
                 Service.DebugMessage += (text, warning) => Logs.Add((text, warning));
             }
 
@@ -174,8 +185,8 @@ namespace DS4WindowsTests
             using (f)
             {
                 Assert.NotNull(device.MotionEvent);
-                f.Host.Current[2].Motion.accelXG = 0.5;
-                f.Host.Current[2].Motion.angVelYaw = 12.0;
+                f.Host.CurrentStates[2].Motion.accelXG = 0.5;
+                f.Host.CurrentStates[2].Motion.angVelYaw = 12.0;
 
                 Fire(device);
 
@@ -207,7 +218,7 @@ namespace DS4WindowsTests
             var (device, f) = PreparedDevice(smoothing: true);
             using (f)
             {
-                f.Host.Current[2].elapsedTime = 0;   // タイムスタンプがない: 旧実装は何も送らず抜ける
+                f.Host.CurrentStates[2].elapsedTime = 0;   // タイムスタンプがない: 旧実装は何も送らず抜ける
 
                 Fire(device);
 
@@ -225,7 +236,7 @@ namespace DS4WindowsTests
                 f.Settings.UDPServerSmoothingBeta = 0.2;
                 f.Service.ResetSmoothingFilters(2);   // 設定を反映した、新しいフィルターから始める
 
-                DS4State s = f.Host.Current[2];
+                DS4State s = f.Host.CurrentStates[2];
                 s.elapsedTime = 0.004;
                 s.Motion.accelXG = 1.0;
                 Fire(device);
@@ -272,7 +283,7 @@ namespace DS4WindowsTests
             IAppSettingsService settings = TestHost.GetService<IAppSettingsService>();
             IDs4DeviceRegistry registry = TestHost.GetService<IDs4DeviceRegistry>();
             var factory = new FakeUdpMotionServerFactory();
-            Func<IUdpMotionHost> host = () => new FakeUdpMotionHost();
+            IDeviceSlotState host = new DS4Windows.Services.DeviceSlotState();
             IEventThreadDispatcher events = new FakeEventThreadDispatcher();
             Assert.Throws<ArgumentNullException>(() => new UdpMotionService(null, registry, factory, host, events));
             Assert.Throws<ArgumentNullException>(() => new UdpMotionService(settings, null, factory, host, events));

@@ -19,7 +19,7 @@ namespace DS4WindowsTests
             Assert.Null(asm.GetType("DS4Windows.DI.IVirtualPadHost"));
             Assert.Null(asm.GetType("DS4Windows.DI.IServiceLifecycleHost"));
             Assert.DoesNotContain(typeof(ControlService).GetInterfaces(), i => i.Name == "IVirtualPadHost" || i.Name == "IServiceLifecycleHost");
-            Assert.Null(typeof(IUdpMotionHost).GetMethod("QueueOnEventThread"));
+            Assert.Null(asm.GetType("DS4Windows.DI.IUdpMotionHost"));   // Phase13-Step5 で IUdpMotionHost ごと廃止した
         }
 
         [Fact]
