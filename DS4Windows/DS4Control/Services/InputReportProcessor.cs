@@ -33,12 +33,9 @@ namespace DS4Windows.Services
         private readonly IOscService _oscService;
         private readonly IVirtualPadService _virtualPad;
 
-        // OutputSlotService → ControlService の逆依存を避けるための遅延解決（旧 ControlService の _outputSlotServiceFactory と同じ。決定D1）。コンストラクターでは呼ばない
-        private readonly Func<IOutputSlotService> _outputSlotServiceFactory;
-        private OutContType[] _activeOutDevType;
-        // ActiveOutDevType の配列参照は再代入されない（OutputSlotService の配列は要素書込みのみ）ため、初回に 1 回だけ取得する。以降は null 合体の 1 分岐のみ（割り当てなし）
-        private OutContType[] ActiveOutDevType
-            => _activeOutDevType ?? (_activeOutDevType = _outputSlotServiceFactory().ActiveOutDevType);
+        // Phase13-Step7 7-c: 旧 Func<IOutputSlotService>（遅延取得）。配列の参照は再代入されないため、コンストラクターで保持する（ホットパスは読み取りだけ）
+        private readonly OutContType[] _activeOutDevType;
+        private OutContType[] ActiveOutDevType => _activeOutDevType;
 
         public bool RecordingMacro { get; set; }
         public bool IsMeasuringProcessingDelay { get; set; }
@@ -59,7 +56,7 @@ namespace DS4Windows.Services
             IAppSettingsService appSettings,
             IOscService oscService,
             IVirtualPadService virtualPad,
-            Func<IOutputSlotService> outputSlotServiceFactory)
+            IOutputDeviceTypeState outputDeviceTypes)
         {
             if (slots == null) throw new ArgumentNullException(nameof(slots));
             _currentState = slots.CurrentStates;
@@ -77,7 +74,7 @@ namespace DS4Windows.Services
             _appSettings = appSettings ?? throw new ArgumentNullException(nameof(appSettings));
             _oscService = oscService ?? throw new ArgumentNullException(nameof(oscService));
             _virtualPad = virtualPad ?? throw new ArgumentNullException(nameof(virtualPad));
-            _outputSlotServiceFactory = outputSlotServiceFactory ?? throw new ArgumentNullException(nameof(outputSlotServiceFactory));
+            _activeOutDevType = (outputDeviceTypes ?? throw new ArgumentNullException(nameof(outputDeviceTypes))).ActiveOutDevType;
 
             // 旧 ControlService のコンストラクターの for ループ（MappedState／CurrentState／ExposedState）を、ここへまとめた。
             // ExposedState は CurrentStates[i] を参照するため、同じ場所で、CurrentStates[i] を作った後に作る（順序は旧と同じ）

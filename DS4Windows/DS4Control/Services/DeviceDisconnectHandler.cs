@@ -19,7 +19,7 @@ namespace DS4Windows.Services
         private readonly ILatencyMonitor _latencyMonitor;
         private readonly IDeviceStateService _deviceStateService;
         private readonly IVirtualPadService _virtualPad;
-        private readonly Func<IOutputSlotService> _outputSlotService;
+        private readonly OutContType[] _activeOutDevType;   // Phase13-Step7 7-c: 旧 Func<IOutputSlotService>。配列の参照は再代入されない
         private readonly IDeviceSlotState _host;
         private readonly int _controllerSlotLimit;
 
@@ -27,7 +27,7 @@ namespace DS4Windows.Services
 
         public DeviceDisconnectHandler(IProfileSettingsService profileSettings, IMapping mapping, IProfileSlotApplier profileSlotApplier,
             IOscService oscService, IAppSettingsService appSettings, ILatencyMonitor latencyMonitor, IDeviceStateService deviceStateService,
-            IVirtualPadService virtualPad, Func<IOutputSlotService> outputSlotService, IEnvironmentService environmentService,
+            IVirtualPadService virtualPad, IOutputDeviceTypeState outputDeviceTypes, IEnvironmentService environmentService,
             IDeviceSlotState host)
         {
             _profileSettings = profileSettings ?? throw new ArgumentNullException(nameof(profileSettings));
@@ -38,14 +38,14 @@ namespace DS4Windows.Services
             _latencyMonitor = latencyMonitor ?? throw new ArgumentNullException(nameof(latencyMonitor));
             _deviceStateService = deviceStateService ?? throw new ArgumentNullException(nameof(deviceStateService));
             _virtualPad = virtualPad ?? throw new ArgumentNullException(nameof(virtualPad));
-            _outputSlotService = outputSlotService ?? throw new ArgumentNullException(nameof(outputSlotService));
+            _activeOutDevType = (outputDeviceTypes ?? throw new ArgumentNullException(nameof(outputDeviceTypes))).ActiveOutDevType;
             if (environmentService == null) throw new ArgumentNullException(nameof(environmentService));
             _controllerSlotLimit = environmentService.ControllerSlotLimit;
             _host = host ?? throw new ArgumentNullException(nameof(host));
         }
 
-        // ActiveOutDevType の配列参照は再代入されない（OutputSlotService の配列は要素書込みのみ）。旧 ControlService と同じ配列を指す
-        private OutContType[] ActiveOutDevType => _outputSlotService().ActiveOutDevType;
+        // ActiveOutDevType の配列参照は再代入されない（要素書込みのみ）。旧 ControlService と同じ配列を指す
+        private OutContType[] ActiveOutDevType => _activeOutDevType;
 
         private void LogDebug(string data, bool warning = false)
         {

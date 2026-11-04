@@ -21,7 +21,7 @@ namespace DS4Windows.Services
         private readonly SyntheticInputState _syntheticInput;
         private readonly IConnectionProfileSelector _connectionProfileSelector;
         private readonly IVirtualPadService _virtualPad;
-        private readonly Func<IOutputSlotService> _outputSlotService;
+        private readonly OutContType[] _activeOutDevType;   // Phase13-Step7 7-c: 旧 Func<IOutputSlotService>。配列の参照は再代入されない
         private readonly IDeviceConnectionSetup _deviceConnectionSetup;
         private readonly IInputDeviceModuleRegistry _deviceModules;
         private readonly IUdpMotionService _udpMotion;
@@ -32,7 +32,7 @@ namespace DS4Windows.Services
         public DeviceConnector(IProfileSettingsService profileSettings, IProfileXmlStore profileXmlStore, IAppSettingsService appSettings,
             IOscService oscService, IDs4DeviceRegistry deviceRegistry, IDeviceDisconnectHandler deviceDisconnect, IVirtualKBM virtualKBM,
             StickMotionState stickMotion, SyntheticInputState syntheticInput, IConnectionProfileSelector connectionProfileSelector,
-            IVirtualPadService virtualPad, Func<IOutputSlotService> outputSlotService, IDeviceConnectionSetup deviceConnectionSetup,
+            IVirtualPadService virtualPad, IOutputDeviceTypeState outputDeviceTypes, IDeviceConnectionSetup deviceConnectionSetup,
             IInputDeviceModuleRegistry deviceModules, IUdpMotionService udpMotion, IHidHideService hidHideService, IDeviceSlotState slots, IInputReportProcessor inputReport)
         {
             _profileSettings = profileSettings ?? throw new ArgumentNullException(nameof(profileSettings));
@@ -46,7 +46,7 @@ namespace DS4Windows.Services
             _syntheticInput = syntheticInput ?? throw new ArgumentNullException(nameof(syntheticInput));
             _connectionProfileSelector = connectionProfileSelector ?? throw new ArgumentNullException(nameof(connectionProfileSelector));
             _virtualPad = virtualPad ?? throw new ArgumentNullException(nameof(virtualPad));
-            _outputSlotService = outputSlotService ?? throw new ArgumentNullException(nameof(outputSlotService));
+            _activeOutDevType = (outputDeviceTypes ?? throw new ArgumentNullException(nameof(outputDeviceTypes))).ActiveOutDevType;
             _deviceConnectionSetup = deviceConnectionSetup ?? throw new ArgumentNullException(nameof(deviceConnectionSetup));
             _deviceModules = deviceModules ?? throw new ArgumentNullException(nameof(deviceModules));
             _udpMotion = udpMotion ?? throw new ArgumentNullException(nameof(udpMotion));
@@ -55,8 +55,8 @@ namespace DS4Windows.Services
             _inputReport = inputReport ?? throw new ArgumentNullException(nameof(inputReport));
         }
 
-        // ActiveOutDevType の配列参照は再代入されない（OutputSlotService の配列は要素書込みのみ）。旧 ControlService と同じ配列を指す
-        private OutContType[] ActiveOutDevType => _outputSlotService().ActiveOutDevType;
+        // ActiveOutDevType の配列参照は再代入されない（要素書込みのみ）。旧 ControlService と同じ配列を指す
+        private OutContType[] ActiveOutDevType => _activeOutDevType;
 
         public void BeginPrepare(DS4Device device, bool showlog = false)
         {

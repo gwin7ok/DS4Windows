@@ -20,7 +20,6 @@ namespace DS4Windows.Services
     {
         private readonly IEnvironmentService _environmentService;
         private readonly IProfileSettingsService _profileSettings;
-        private readonly Func<IOutputSlotService> _outputSlotServiceFactory;
         private readonly IDeviceStateAccessor _deviceAccessor;
         private readonly IEventThreadDispatcher _eventThread;
         private readonly IDeviceRumbleService _rumble;
@@ -30,20 +29,19 @@ namespace DS4Windows.Services
         private ViGEmClient vigemTestClient = null;
         private Thread tempThread;
 
-        // ActiveOutDevType の配列参照は再代入されない（OutputSlotService の配列は要素書込みのみ）ため、初回に1回だけ取得する（旧 ControlService と同じ）
-        private OutContType[] _activeOutDevType;
-        private OutContType[] ActiveOutDevType
-            => _activeOutDevType ?? (_activeOutDevType = _outputSlotServiceFactory().ActiveOutDevType);
+        // Phase13-Step7 7-c: 旧 Func<IOutputSlotService>（初回に1回だけ取得）。配列の参照は再代入されないため、コンストラクターで保持する
+        private readonly OutContType[] _activeOutDevType;
+        private OutContType[] ActiveOutDevType => _activeOutDevType;
 
         public event Action<string, bool> DebugMessage;
 
         public VirtualPadService(IEnvironmentService environmentService, IProfileSettingsService profileSettings,
-            Func<IOutputSlotService> outputSlotServiceFactory, IDeviceStateAccessor deviceAccessor,
+            IOutputDeviceTypeState outputDeviceTypes, IDeviceStateAccessor deviceAccessor,
             IEventThreadDispatcher eventThread, IDeviceRumbleService rumble)
         {
             _environmentService = environmentService ?? throw new ArgumentNullException(nameof(environmentService));
             _profileSettings = profileSettings ?? throw new ArgumentNullException(nameof(profileSettings));
-            _outputSlotServiceFactory = outputSlotServiceFactory ?? throw new ArgumentNullException(nameof(outputSlotServiceFactory));
+            _activeOutDevType = (outputDeviceTypes ?? throw new ArgumentNullException(nameof(outputDeviceTypes))).ActiveOutDevType;
             _deviceAccessor = deviceAccessor ?? throw new ArgumentNullException(nameof(deviceAccessor));
             _eventThread = eventThread ?? throw new ArgumentNullException(nameof(eventThread));
             _rumble = rumble ?? throw new ArgumentNullException(nameof(rumble));

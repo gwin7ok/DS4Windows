@@ -37,7 +37,7 @@ namespace DS4WindowsTests
         {
             return new VirtualPadService(TestHost.GetService<IEnvironmentService>(),
                 settings ?? TestHost.GetService<IProfileSettingsService>(),
-                () => TestHost.GetService<IOutputSlotService>(),
+                TestHost.GetService<IOutputDeviceTypeState>(),   // Phase13-Step7 7-c: 旧 Func<IOutputSlotService>
                 new NoControllers(),
                 host ?? new RecordingHost(), new NoRumble());
         }
@@ -122,7 +122,7 @@ namespace DS4WindowsTests
         {
             IEnvironmentService env = TestHost.GetService<IEnvironmentService>();
             IProfileSettingsService settings = TestHost.GetService<IProfileSettingsService>();
-            Func<IOutputSlotService> slots = () => null;
+            IOutputDeviceTypeState slots = new DS4Windows.Services.OutputDeviceTypeState();   // Phase13-Step7 7-c: 旧 Func<IOutputSlotService>
             IDeviceStateAccessor accessor = new NoControllers();
             IEventThreadDispatcher host = new RecordingHost();
             IDeviceRumbleService rumble = new NoRumble();

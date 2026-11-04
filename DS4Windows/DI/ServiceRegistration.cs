@@ -320,7 +320,7 @@ namespace DS4Windows.DI
                 sp.GetRequiredService<IAppSettingsService>(),
                 sp.GetRequiredService<IOscService>(),
                 sp.GetRequiredService<IVirtualPadService>(),
-                () => sp.GetRequiredService<IOutputSlotService>()));
+                sp.GetRequiredService<IOutputDeviceTypeState>()));   // Phase13-Step7 7-c: 旧 Func<IOutputSlotService>
 
             return services;
         }
