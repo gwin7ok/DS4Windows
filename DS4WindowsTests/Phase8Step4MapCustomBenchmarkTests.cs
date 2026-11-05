@@ -43,7 +43,7 @@ namespace DS4WindowsTests
             return list;
         }
 
-        [Trait("Category", "Slow")]   // 0.3 秒以上（実時間で待つ）。途中の確認では除外し、Debug ALL では実行する
+        [Trait("Category", "Benchmark")]   // Phase14d-Step4: 時間を出力するだけ（Assert なし）。通常の実行（Debug ALL を含む）から外し、性能を比べるときだけ --filter "Category=Benchmark" で流す
         [Fact]
         public void MapCustom_PerFrameTime_IsReported()
         {
@@ -61,7 +61,7 @@ namespace DS4WindowsTests
             }
         }
 
-        [Trait("Category", "Slow")]   // 0.3 秒以上（実時間で待つ）。途中の確認では除外し、Debug ALL では実行する
+        [Trait("Category", "Benchmark")]   // Phase14d-Step4: 時間を出力するだけ（Assert なし）。通常の実行（Debug ALL を含む）から外し、性能を比べるときだけ --filter "Category=Benchmark" で流す
         /// <summary>Phase8-Step7 7.1-W3: Button を新経路（エンジン）で処理した状態の <c>MapCustom</c> の費用（出力のみ。旧経路の <see cref="MapCustom_PerFrameTime_IsReported"/> と並べて見る。許容: +5% 以内）。</summary>
         [Fact]
         public void MapCustom_ButtonMigrated_PerFrameTime_IsReported()

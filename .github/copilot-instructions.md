@@ -117,6 +117,8 @@
   - 各 Step ごとに必ず単体テストを作成・実行し、`dotnet test` で常時グリーン（合格）を確認しながら進める。
   - **テストの命名**（2026-11-05 追記。Phase14c-Step7、レビュー R-16）: 新しいテストのファイル名・クラス名は、守る機能や振る舞いの名前にする（例: `BackingStoreActionsLoadedHandlerTests`）。Phase 名・Step 名は付けず、経緯は XML コメントに書く。層・名前空間・型の参照の検査は、ソースを文字列で読まず、`LayerDependencyRuleTests`（ArchUnitNET）などの型の検査で書く。既存の Phase 名のテストの整理は Phase14d で行う。
   - **遅いテストの印**（2026-11-05 追記。Phase14c-0）: 1 件 0.3 秒以上かかるテストには `[Trait("Category", "Slow")]` を付ける。Step の途中の確認は `--filter "Category!=Slow"`、Step の終わりの確認（Debug ALL）は全件で行う。
+  - **性能の計測の印**（2026-11-05 追記。Phase14d-Step4）: 時間を出力するだけで Assert を持たない性能の計測には `[Trait("Category", "Benchmark")]` を付け、通常の実行から外す（Debug ALL の「Execute Test (Actions)」は `--filter "Category!=Benchmark"`。途中の確認は `--filter "Category!=Slow&Category!=Benchmark"`）。性能を比べるときだけ `--filter "Category=Benchmark"` で流す。Assert で守る性能の検査（割り当てが 0 など）は Benchmark にしない。
+  - **OS の状態に触れない**（2026-11-05 追記。Phase14d-Step4）: 単体テストで部品を直接作るときは、タスク スケジューラー・スタートアップ フォルダー・レジストリなど利用者の環境に触れる実物を渡さず、偽物を渡す（例: `FakeStartupEntryService`）。実物の振る舞いを確かめるテストは、そのことをクラスの説明に書く。
 - **アーキテクチャ・ガードレールの順守**:
   - `Phase5-Plan.md` §5 に規定された 6 大ガードレール（同一XML排他ロック、適用時Halt停止、スレッド直列化、On-Demandパス評価、ドライバ破棄順序、切断時クリーンアップ）を確実に設計に組み込む。
 ・慣れない機能はゼロから書かず、まずGitHubでオープンソースプロジェクトを検索してアプローチを比較してから手を動かす

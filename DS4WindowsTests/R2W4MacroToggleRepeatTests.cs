@@ -118,17 +118,17 @@ namespace DS4WindowsTests
             WaitForPresses(t, 1);
             Assert.True(Presses(t) >= 1);
 
-            RunFor(t, Cross(false), 300);   // 離しても、続く
+            RunFor(t, Cross(false), 150);   // 離しても、続く（Phase14d-Step4: 観察の窓を詰めた。マクロの 1 周は約 20ms）
             int afterRelease = Presses(t);
-            RunFor(t, Cross(false), 500);
+            RunFor(t, Cross(false), 250);
             int stillRunning = Presses(t);
             _output.WriteLine($"[R-2 W4] 離した直後={afterRelease} 500ms 後={stillRunning}");
             Assert.True(stillRunning > afterRelease);
 
             RunFor(t, Cross(true), 200);    // 2 回目の押下: 止まる
-            RunFor(t, Cross(false), 300);   // 実行中の 1 回分を終える時間
+            RunFor(t, Cross(false), 200);   // 実行中の 1 回分を終える時間
             int stopped = Presses(t);
-            RunFor(t, Cross(false), 500);
+            RunFor(t, Cross(false), 250);
             int afterStop = Presses(t);
             _output.WriteLine($"[R-2 W4] 止まった後={stopped} 500ms 後={afterStop}");
             Assert.Equal(stopped, afterStop);
@@ -144,13 +144,13 @@ namespace DS4WindowsTests
 
             RunFor(t, Cross(false), 150);
             RunFor(t, Cross(true), 200);    // 開始
-            RunFor(t, Cross(false), 300);
+            RunFor(t, Cross(false), 150);
             RunFor(t, Cross(true), 200);    // 停止
-            RunFor(t, Cross(false), 400);
+            RunFor(t, Cross(false), 250);
             int stopped = Presses(t);
 
             RunFor(t, Cross(true), 200);    // もう一度開始
-            RunFor(t, Cross(false), 500);
+            RunFor(t, Cross(false), 250);
 
             Assert.True(Presses(t) > stopped);
         }

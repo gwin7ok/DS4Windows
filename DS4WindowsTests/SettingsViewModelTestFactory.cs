@@ -23,7 +23,7 @@ namespace DS4WindowsTests
                 new EnvironmentService(),
                 new PathService(),
                 new LogSettingsApplierProxy(),
-                new StartupEntryService());   // Phase14b-Step15（D12）: 旧 静的 StartupMethods と同じ実物（コンストラクターは読み取りだけ）
+                new FakeStartupEntryService());   // Phase14b-Step15（D12）の実物は、コンストラクターでタスク スケジューラーを読む（1 回約 0.35 秒）。Phase14d-Step4 で偽物に替えた
         }
     }
 }

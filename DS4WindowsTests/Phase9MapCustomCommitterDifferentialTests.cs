@@ -291,10 +291,15 @@ namespace DS4WindowsTests
             int checkedCount = 0;
 
             // 全種類は 2 ティックまで（11^4 通り）、主要な 6 種類は 3 ティックまで（6^6 通り）。組み合わせの爆発を避ける
-            foreach (var (length, masks) in new[] { (1, allMasks), (2, allMasks), (3, fewMasks) })
+            // Phase14d-Step4: 3 ティックの列は 5 つおきに選ぶ（46,656 → 9,332 通り。全体で約 5.8 秒 → 約 2 秒）。5 は 6 と互いに素なので、
+            // どの位置（ティック × デバイス）でも 6 種類の押し方がすべて現れ、ホイールの繰り返し（150ms。3 ティック目の 200ms で起きる）の列も残る
+            foreach (var (length, masks, stride) in new[] { (1, allMasks, 1), (2, allMasks, 1), (3, fewMasks, 5) })
             {
+                int index = 0;
                 foreach (int[] codes in Sequences(length * 2, masks.Length))
                 {
+                    if (index++ % stride != 0) continue;
+
                     var oldRig = new Rig();
                     var newRig = new Rig();
                     var oldCommitter = new OldCommitter(oldRig.State, oldRig.Recorder, oldRig.Clock.Get);
