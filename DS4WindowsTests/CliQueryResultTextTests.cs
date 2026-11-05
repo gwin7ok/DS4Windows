@@ -50,6 +50,17 @@ namespace DS4WindowsTests
             Assert.Equal(new string('x', IpcResultText.BufferSize), IpcResultText.Decode(full));
         }
 
+        [Theory]
+        [InlineData(false, 0u, false)]        // GUI アプリを cmd から |more なしで起動: ハンドルが無い → 起動元のコンソールへ（再確認で発覚した不具合の場合）
+        [InlineData(true, 0x0002u, false)]    // コンソール（文字デバイス）
+        [InlineData(true, 0x0003u, true)]     // パイプ（|more、findstr、PowerShell の取り込み）
+        [InlineData(true, 0x0001u, true)]     // ファイル（> out.txt）
+        [InlineData(true, 0x8003u, true)]     // リモートのパイプ
+        public void IsRedirectedOutput_TreatsAMissingHandleAsTheConsole(bool hasHandle, uint fileType, bool expected)
+        {
+            Assert.Equal(expected, CliResultConsoleWriter.IsRedirectedOutput(hasHandle, fileType));
+        }
+
         [Fact]
         public void SelectEncoding_UsesTheConsoleCodePage_WithoutABom()
         {
