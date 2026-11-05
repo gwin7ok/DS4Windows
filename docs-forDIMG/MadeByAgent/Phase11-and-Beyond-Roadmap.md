@@ -26,7 +26,7 @@
 | **14** | 名前空間・フォルダの再編（旧 Phase11） | 名前空間をフォルダと一致、`DI/` を Composition Root 専用に | 規約 §3.3 原則 3・§3.4 | L（機械的） |
 | **14b**（2026-11-05 追加・完了） | 依存の向きの是正 | リポジトリ全体レビュー（`Repository-Review-2026-11-05.md`）の R-01〜R-04 ほか。層の依存のアーキテクチャテスト（許可リストのラチェット）、共有型の `Core/` への移動、UI のファクトリーの契約の移動。Phase15 の前に名前空間を確定させる | レビュー R-01〜R-04、`Phase14b-Plan.md` | M |
 | **14c**（2026-11-05 追加・完了） | 共有の値の型の確定と、UI に触れない静的な状態の撤廃 | 値の型 8 つを `Core/Model` へ、`SyntheticDispatcher`・ライトバーの静的な配列・`ActionRegistry` の整理、`ServiceRegistration` の分割、L2・L7 の件数のラチェット、運用ルール（R-15・R-16）。Phase15 の前に名前空間を確定させる | `Phase14c-Plan.md`、レビュー R-05・R-06・R-13・R-15〜R-18 | M |
-| **14d**（2026-11-05 追加。計画承認済み・`Phase14d-Plan.md`） | テストの整理 | 不要なテストの削除・統合（ソースの文字列を読むガード 171 ファイル・1,061 件の見直し。層の依存の検査などで置き換えられるものを畳む）、遅いテスト（実時間で待つ 177 件・約 28 秒）の待ち時間の短縮、テストの命名（R-16）、必要なら並列実行。Phase15 で UI のファイルを動かす前に、パスを文字列で持つ検査を減らす | 2026-11-05 の実測（合計 58.7 秒のうち 0.3 秒以上の 53 件で 44 秒）、レビュー R-16 | M |
+| **14d**（2026-11-05 追加。実装済み・`Phase14d-Plan.md`） | テストの整理 | 不要なテストの削除・統合（ソースの文字列を読むガード 171 ファイル・1,061 件の見直し。層の依存の検査などで置き換えられるものを畳む）、遅いテスト（実時間で待つ 177 件・約 28 秒）の待ち時間の短縮、テストの命名（R-16）、必要なら並列実行。Phase15 で UI のファイルを動かす前に、パスを文字列で持つ検査を減らす | 2026-11-05 の実測（合計 58.7 秒のうち 0.3 秒以上の 53 件で 44 秒）、レビュー R-16 | M |
 | **15** | UI 共通化 | コントローラー描画の共通化、デザインシステム（数値入力の共通部品、テーマの対称化、Color／Brush の命名規則。§8.2）、F-4（`ProfileEditor.xaml.cs` の分割）、G-1（`ProfileSettingsViewModel` の分割） | FI の Phase B・06 | L |
 | **16** | Layer 1 のカートリッジ化 | 第 1 層のデバイスクラスの分離（9-H）、仮想パッド出力の ViGEm 分離（§8.1）、プラグイン化。05 の整備 | FI の Phase D、9-H | L |
 | 任意 | 性能 | 入力パイプラインの高速化（04） | 実測で問題が出たとき | — |
@@ -105,6 +105,7 @@ Issue #4 の 4 件と、2026-11-02 時点のコードとの照合:
 - 9-H（第 1 層のデバイスクラスの分離）と、FI の Phase D（`IHidTransport` と `IInputReportParser` の分離）を統合する。K7b-1 の締め（Phase11）が前提。
 - **追加（2026-11-04 承認。§8.1）**: 仮想パッド出力の ViGEm 分離。`VirtualPadService` を、ViGEm を包むポート（例: `IVirtualPadBackend`）の背後へ移し、偽の実装でドライバなしにテストできるようにする。利用者に見える変更はない。
 - 05（プラグイン開発ガイド）は、この Phase の完了後に実装に合わせて整備する。
+- **追加（2026-11-05。`Phase14d-Plan.md` §10）**: マクロの再生・繰り返し・タップ間隔の時間の扱いを `TimeProvider` 経由にし、テストが実時間で待たずに済むようにする（Debug ALL のテストの時間の残りの大半。本体の変更のため実機確認が要る）。
 - **追加（2026-11-05。`Phase14c-Plan.md` §7）**: R-05 の後半（ライトバーの色の計算を第1層の `DS4LightBar.updateLightBar` から第2層の `ILightbarService` へ。強制表示の状態は Phase14c で `LightbarOverrides` にした）、`DS4Devices` のインスタンス化、R-17（`DS4State` など層間の状態の型）、記録のみの規則 L2（Core → 第1層・第3層。Phase14c の後 29 件）の残り、R-07・R-08・R-11（入力・出力のカートリッジ化と機種の設定の共通化。Phase14c で層ごとに分けた `ServiceRegistration` の partial ファイルを、カートリッジの登録の受け皿にする）。
 
 ## 4. FurtherImprovements 01〜06 の扱い
@@ -144,7 +145,8 @@ Issue #4 の 4 件と、2026-11-02 時点のコードとの照合:
 4. 済み（2026-11-04。実機確認済み・`Phase13b-Completion-Report.md`。CLI の件は未解決で台帳に記録）: Phase13b（ログの一括整理 L2。`Phase13b-Plan.md`、`Phase13b-Status.md`、`Phase13b-Log-Change-List.md`）。API を `AppLogger.Log` に集約し、`LogToGui`・サービスの `DebugMessage`・`ServiceDebugRelay` を廃止した。次: Phase14（名前空間・フォルダの再編）。
 5. 済み（2026-11-05。実機確認済み・`Phase14b-Completion-Report.md`）: Phase14b（依存の向きの是正）。層の依存の違反は 108 → 18 件。続く Phase14b-2（残りの片付け。計画書 §10）で 0 件。次: Phase15（UI 共通化）。
 6. 済み（2026-11-05。実機確認済み）: Phase14c（`Phase14c-Plan.md`）。値の型 8 つを `Core/Model` へ、`SyntheticDispatcher`・ライトバーの静的な配列・`ActionRegistry` を撤廃、`ServiceRegistration` の分割、記録のみの規則 L2・L7 は 155 → 59 件（件数のラチェット）、運用ルール（規約 §3.3 原則5、§4 のテストの命名）。次: Phase14d（テストの整理）→ Phase15。
-7. 小作業の持ち越し: テストの `[Collection("ServiceProviderHolder")]` の改名。`ControlService` のスロット状態の転送（約 50 利用者）の整理は、Phase14 または必要になったときに。
+7. 実装済み（2026-11-05）: Phase14d（テストの整理。`Phase14d-Plan.md` §10）。ソースを文字列で読むテストメソッド 391 → 275、撤去済み API の検査を `RemovedApiRuleTests` 1 か所へ、空振り 0（見つからないファイルで失敗）、Debug ALL のテスト 65.6 → 約 50 秒。本体の変更なし。次: Phase15。
+8. 小作業の持ち越し: テストの `[Collection("ServiceProviderHolder")]` の改名。`ControlService` のスロット状態の転送（約 50 利用者）の整理は、Phase14 または必要になったときに。
 
 ## 8. 追加案（2026-11-04。FurtherImprovements との照合で見つかった抜け。**承認済み: 8.1〜8.3 すべて採用**）
 

@@ -1,7 +1,7 @@
 # Phase14d 個別計画書: テストの整理
 
 作成日: 2026-11-05
-状態: **承認済み（2026-11-05。F1〜F4 はユーザーがすべて推奨案を選択）→ 14d-0〜14d-5 実施済み（§9）**。F5・F6 は未確認のため、14d-6 の取り込みの前に確認する
+状態: **承認済み（2026-11-05。F1〜F4 はユーザーがすべて推奨案を選択）→ 14d-0〜14d-5 実施済み、14d-6（記録・取り込み）中（§9・§10）**。F5・F6 は未確認のため、14d-6 の取り込みの前に確認する
 ブランチ: `Phase14d`（master 4a0f83b3 から作成）
 根拠: `Phase11-and-Beyond-Roadmap.md`（14d の行）、`Repository-Review-2026-11-05.md`（R-16）、`Phase14c-Plan.md`（14c-0 の Slow の印）、規約 `.github/copilot-instructions.md` §2.2・§2.3・§4
 
@@ -139,6 +139,22 @@ Phase15（UI 共通化）で UI のファイルを大きく動かす前に、パ
 | 14d-2 | 371dae57 | `RemovedApiRuleTests`（撤去した型 35、撤去・移動したメンバーの表 20 型、`AppHost` を使うのは `App` と `DS4Windows.Composition` だけ［`LayerDependencyScanner` の辺を使い、App → AppHost の辺があることも確かめて空振りを防ぐ］）を追加。棚卸し表の F 71・D 16（14d-1 の 10 件を除く）を削除し、9 ファイルはテストがなくなったため削除（`Step10FourGlobalRatchetGuardTests`・`Phase7Step1ServiceLocatorRatchetGuardTests`・`Phase7Step10eW5RatchetEqualityGuardTests`、Global の参照の検査 6 ファイル）。15 メソッドで撤去済みの名前の Assert だけを外し、使われなくなった補助・一覧 42 個を削除。判定の見直し: リフレクションの検査 16 件と Phase9 の責務の検査を K に（棚卸し表の冒頭）。規約 §3.1・§3.3 原則1 の、撤去したラチェットの記述を置き換えの説明に更新。Debug ALL: 警告 0・エラー 0、3,151 件（103 件減）＋11 件。途中の確認 3,086 件・15 秒 |
 | 14d-3 | 04fb128e | R の 27 件を置き換えた: 引数・フィールド・修飾子（volatile）・多重定義はリフレクション、登録の行はコンテナの解決（同じインスタンス、配線の結果、購読者が ActionsLoadedRuntimeReset であること）、外部・本体の型への依存（SharpOSC、HidHideAPIDevice、ControlService）は `LayerDependencyScanner.AllTargetsOf`（新設。外部の型も含めて、メソッド本体の参照まで見る。空振りを防ぐため、使う側から参照が見えることも確かめる）。`Func<ControlService>` は `Phase13FuncRatchetGuardTests` の対象に加え、`Phase13Step5FuncRemovalGuardTests` を削除。循環の制約（BackingStore の登録から IOutputSlotService を解決しない。実行するとスタックオーバーフロー）と、WPF の画面の配線（ProfileEditor・MainWindow）は、実行では確かめられないため、ソースの検査を残した。Debug ALL: 警告 0・エラー 0、3,150 件＋11 件 |
 | 14d-4 | f18d880c | (1) 設定画面の ViewModel を直接作るテストが、本物の `StartupEntryService` 経由で Windows のタスク スケジューラーへ 1 回約 0.35 秒問い合わせていた → 偽物 `FakeStartupEntryService`（12 件が 0.3 秒未満に）。(2) 差分テスト（旧 Mapping.Commit との比較）の 3 ティックの列を 5 つおきに（6 と互いに素なので、どの位置でも全種類の押し方が現れる。5.8 → 約 2 秒）。(3) Assert を持たないベンチマーク 2 件を `Category=Benchmark` にし、Debug ALL（`.vscode/tasks.json`）と途中の確認から外した（割り当て 0 を守る 1 件は残す）。(4) マクロのトグルの繰り返しの観察の窓を、マクロの周期（約 20ms）に対して余裕を残して詰めた（Fresh-press ガードの待ちと押す時間は変えない）。(5) 0.3 秒を切った 13 メソッドから Slow の印を外した。遅いテストを 5 回続けて流し、すべて合格。結果: Debug ALL のテスト 65.6 秒 → 約 50 秒、途中の確認 約 18 秒 → 約 15 秒（目標の 40 秒・12 秒には届かない）。残りの遅いテストの大半は、本体のタイマー（マクロの待ち、マルチアクションのタップ間隔、ジャイロ較正の保持秒、Fresh-press ガード）を実時間で待つもので、テストの側で詰めると不安定になる。本体の時間の扱いを `TimeProvider` 経由にする案（F2 の B）は、マクロの再生・繰り返しのコードを触る Phase（Phase16 など）の候補として記録する。規約 §4 に Benchmark の印と「OS の状態に触れない」を追記 |
-| 14d-5 | （本コミット） | 共有のコレクション名 `ServiceProviderHolder`（Phase13 で撤廃した型の名前）を `SharedHostState` に改名（140 ファイル）。定義クラス `SharedHostStateCollection`（何を共有するかを説明に書き、`DisableParallelization = true`）を追加し、名前は定数で参照する。並列実行（`parallelizeTestCollections: true`）を計測: 全件 37〜39 秒（直列 約 50 秒。約 24% 短い）だが、2 回とも別々のテストが失敗した（`Phase6Step10GroupOneContractTests`、`Phase9E6ConnectionProfileSelectorTests`、`BindingWindowViewModelTargetDeviceTests`、`TouchButtonActivationModeTests`。共有の状態に触れるのに、直列のコレクションに入っていないクラス）。F4 の条件（5 回続けて合格、かつ 3 割以上短い）を満たさないため、直列のまま戻した。落ちたクラスを直列のコレクションへ移すと短縮の幅も縮むため、深追いしない。不安定な `ProfileRepositoryTests.LinkedProfile_ChangeAndRemove...` は今回も再現しなかった（前のテストが残す状態に依存すると見られる。持ち越し）。Debug ALL: 警告 0・エラー 0、3,148 件＋11 件 |
+| 14d-5 | 8e904df9 | 共有のコレクション名 `ServiceProviderHolder`（Phase13 で撤廃した型の名前）を `SharedHostState` に改名（140 ファイル）。定義クラス `SharedHostStateCollection`（何を共有するかを説明に書き、`DisableParallelization = true`）を追加し、名前は定数で参照する。並列実行（`parallelizeTestCollections: true`）を計測: 全件 37〜39 秒（直列 約 50 秒。約 24% 短い）だが、2 回とも別々のテストが失敗した（`Phase6Step10GroupOneContractTests`、`Phase9E6ConnectionProfileSelectorTests`、`BindingWindowViewModelTargetDeviceTests`、`TouchButtonActivationModeTests`。共有の状態に触れるのに、直列のコレクションに入っていないクラス）。F4 の条件（5 回続けて合格、かつ 3 割以上短い）を満たさないため、直列のまま戻した。落ちたクラスを直列のコレクションへ移すと短縮の幅も縮むため、深追いしない。不安定な `ProfileRepositoryTests.LinkedProfile_ChangeAndRemove...` は今回も再現しなかった（前のテストが残す状態に依存すると見られる。持ち越し）。Debug ALL: 警告 0・エラー 0、3,148 件＋11 件 |
 
 - 不安定なテスト: `ProfileRepositoryTests.LinkedProfile_ChangeAndRemove_ShouldNotThrowAndShouldPersist` が、途中の確認で時々失敗する（単独では合格。テストは直列で動くため、並行ではなく、前のテストが残した状態［アプリデータのフォルダー］に左右されると見られる）。14d-5 で共有の状態として調べる。
+
+## 10. 前後の比較（2026-11-05）
+
+| 項目 | 前（master 4a0f83b3） | 後（Phase14d） | 目標 |
+|---|---|---|---|
+| テストの件数（Actions） | 3,264 | 3,150（うち Benchmark 2 件は通常の実行から外す） | — |
+| Debug ALL のテストの時間 | 65.6 秒（実行全体 約 70 秒） | 約 49〜50 秒 | 40 秒以下（未達） |
+| 途中の確認（`Category!=Slow`） | 3,196 件・約 18 秒 | 3,103 件・約 15 秒 | 12 秒以下（未達） |
+| ソースを文字列で読むテストメソッド（§2.3 と同じ数え方） | 391 | 275 | 棚卸し表の数え方で 467 → 約 312（達成） |
+| 自前の読み取り補助（ソースを読むもの） | 62（コメント除去の複製 88） | 約 23（テスト固有の処理を持つもの。複製 0） | 0（一部未達。残りは固有の処理） |
+| 空振り（存在しないファイルを読み、何も検査せずに合格） | 9（＋パスの書き換え漏れで黙って省略されていた 4） | 0（見つからなければ失敗する） | 0 |
+| 本体（`DS4Windows/`）の変更 | — | なし | なし |
+
+- 時間の目標に届かなかった理由: 残りの遅いテストは、本体のタイマー（マクロの待ち、マルチアクションのタップ間隔、ジャイロ較正の保持秒、Fresh-press ガードの 80ms）を実時間で待つ。テストの側で詰めると不安定になる。本体の時間の扱いを `TimeProvider` 経由にすれば大きく縮むが、本体の変更と実機確認が要る（F2 の B）。マクロの再生・繰り返しを触る Phase（Phase16 など）の候補としてロードマップに記録した。
+- 並列実行は、計測の結果、条件を満たさず直列のまま（14d-5）。
+- 持ち越し: 不安定な `ProfileRepositoryTests.LinkedProfile_ChangeAndRemove...`（前のテストが残す状態に依存すると見られる）。Phase 名のテストの改名は、中身を触るときに行う（F3＝B）。
