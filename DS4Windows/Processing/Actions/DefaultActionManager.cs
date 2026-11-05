@@ -53,14 +53,8 @@ namespace DS4Windows.Processing.Actions
         {
             try
             {
-                // Initialize ActionEntry for every SpecialAction
-                lock (actions)
-                {
-                    foreach (var sa in ActionRegistry.AllActions())
-                    {
-                        try { GetOrCreateEntryInternal(actions, sa); } catch { }
-                    }
-                }
+                // Phase14c-Step5（決定 E3）: 旧「静的な ActionRegistry の全アクションの ActionEntry を先に作る」ループは削除した。
+                // ActionRegistry は本番では一度も Initialize されず（作られた 2025-12-18 から呼び出しなし）、ループは常に空だった。ActionEntry は GetStateFor が必要な時に作る
 
                 // Initialize button state table for all devices × supported control indices
                 try

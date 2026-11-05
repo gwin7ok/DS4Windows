@@ -191,7 +191,7 @@ namespace DS4Windows.Composition
             // （KeyButtonActionController が握りつぶす）IsToggledOn が true にならず、IControllerRegistry が未登録だと
             // KeyButtonActionController の登録と終了時の破棄が行われない。
             // AppHost.PreallocateActionEntries は、登録された DefaultActionManager を前提にしている。
-            // IActionRegistry（系統A）は、実装が静的クラスで呼び出し元もないため再登録しない。
+            // 旧 系統A の静的な ActionRegistry は、本番で未初期化のため Phase14c-Step5（決定 E3）で削除した（IActionRegistry は統一トリガーディスパッチの ActionBindingRegistry）。
             services.AddSingleton<IManagedActionManager, DefaultActionManager>();
             services.AddSingleton<IControllerRegistry, DefaultControllerRegistry>();
 

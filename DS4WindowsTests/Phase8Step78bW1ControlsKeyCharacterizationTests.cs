@@ -187,10 +187,9 @@ namespace DS4WindowsTests
         {
             // 旧経路の癖（FindSpecialActionForLogicalKey）: 同じ論理キーの Key 特殊アクションが登録されていれば、Controls の Key はその状態を使う。
             // Q4＝B（Phase8-Step2b-ControlsTab-Design.md §10）で、新経路では共有をやめる。W2 で、新経路の期待値をこのテストで切り替える
-            var saved = ActionRegistry.AllActions().ToList();
+            // Phase14c-Step5（決定 E3）: 旧 静的な ActionRegistry（本番では一度も初期化されない）への登録は、型ごと削除したため外した。
+            // 同じ論理キーの Key 特殊アクションがあっても、新経路は共有しないことを確かめる
             var keyAction = new SpecialAction("p8s78b_shared_" + Guid.NewGuid().ToString("N"), "R1", "Key", Key.ToString(), 0, "Press\n");
-            ActionRegistry.Initialize(new[] { keyAction });
-            try
             {
                 using var t = new ControlsKeyTestScope();
                 t.MapKey(DS4Controls.Cross, Key);
@@ -204,10 +203,6 @@ namespace DS4WindowsTests
                 bool shares = false;   // Q4＝B（W2）: 新経路は共有しない（自分専用の状態を使う）
                 Assert.Equal(shares, t.IsBeingTriggered(keyAction));
                 Assert.Equal(!shares, t.IsBeingTriggered(synthetic));
-            }
-            finally
-            {
-                ActionRegistry.Initialize(saved);
             }
         }
 
