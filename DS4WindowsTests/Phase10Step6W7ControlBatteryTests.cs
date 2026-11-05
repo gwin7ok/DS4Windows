@@ -95,7 +95,7 @@ namespace DS4WindowsTests
         }
 
         private static CheckBatteryViewModel NewVm()
-            => new CheckBatteryViewModel(new RecordingSpecialActionRepository(), TestHost.GetService<IEnvironmentService>());
+            => new CheckBatteryViewModel(TestLightbar.State, new RecordingSpecialActionRepository(), TestHost.GetService<IEnvironmentService>());
 
         [Fact]
         public void TheInput_RoundTripsTheItem_IncludingTheColors()

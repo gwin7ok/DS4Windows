@@ -72,9 +72,9 @@ namespace DS4Windows.UI.ViewModels.SpecialActions
             if (device < environmentService.ControllerSlotLimit)
             {
                 DS4Color dcolor = new DS4Color() { red = color.R, green = color.G, blue = color.B };
-                DS4LightBar.forcedColor[device] = dcolor;
-                DS4LightBar.forcedFlash[device] = 0;
-                DS4LightBar.forcelight[device] = true;
+                _lightbar.forcedColor[device] = dcolor;
+                _lightbar.forcedFlash[device] = 0;
+                _lightbar.forcelight[device] = true;
             }
         }
 
@@ -83,9 +83,9 @@ namespace DS4Windows.UI.ViewModels.SpecialActions
             if (device < environmentService.ControllerSlotLimit)
             {
                 DS4Color dcolor = new DS4Color() { red = color.R, green = color.G, blue = color.B };
-                DS4LightBar.forcedColor[device] = dcolor;
-                DS4LightBar.forcedFlash[device] = 0;
-                DS4LightBar.forcelight[device] = true;
+                _lightbar.forcedColor[device] = dcolor;
+                _lightbar.forcedFlash[device] = 0;
+                _lightbar.forcelight[device] = true;
             }
         }
 
@@ -93,9 +93,9 @@ namespace DS4Windows.UI.ViewModels.SpecialActions
         {
             if (device < environmentService.ControllerSlotLimit)
             {
-                DS4LightBar.forcedColor[device] = new DS4Color(0, 0, 0);
-                DS4LightBar.forcedFlash[device] = 0;
-                DS4LightBar.forcelight[device] = false;
+                _lightbar.forcedColor[device] = new DS4Color(0, 0, 0);
+                _lightbar.forcedFlash[device] = 0;
+                _lightbar.forcelight[device] = false;
             }
         }
 
@@ -144,8 +144,12 @@ namespace DS4Windows.UI.ViewModels.SpecialActions
         // Phase7-Step10e W2: スロット数の上限は、静的な ControlService.CURRENT_DS4_CONTROLLER_LIMIT ではなく、注入された環境サービスから読む
         private readonly IEnvironmentService environmentService;
 
-        public CheckBatteryViewModel(ISpecialActionRepository specialActionRepository, IEnvironmentService environmentService)
+        // Phase14c-Step4（R-05 の前半）: ライトバーの強制表示の状態（旧: DS4LightBar の静的な配列）
+        private readonly DS4Windows.Core.Model.LightbarOverrides _lightbar;
+
+        public CheckBatteryViewModel(DS4Windows.Core.Model.LightbarOverrides lightbar, ISpecialActionRepository specialActionRepository, IEnvironmentService environmentService)
         {
+            _lightbar = lightbar ?? throw new System.ArgumentNullException(nameof(lightbar));
             this.environmentService = environmentService ?? throw new ArgumentNullException(nameof(environmentService));
             this.specialActionRepository = specialActionRepository ?? throw new ArgumentNullException(nameof(specialActionRepository));
         }

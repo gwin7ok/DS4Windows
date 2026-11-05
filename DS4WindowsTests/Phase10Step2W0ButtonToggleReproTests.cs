@@ -40,7 +40,7 @@ namespace DS4WindowsTests
 
         private static void OpenAndCloseTheDialog(DS4ControlSettings settings)
         {
-            var vm = new BindingWindowViewModel(ControllerLimits.TestProfileIndex, settings,
+            var vm = new BindingWindowViewModel(TestLightbar.State, ControllerLimits.TestProfileIndex, settings,
                 SettingsWithKeyboardMapping(), TestRepositoryFactory.CreateOutputSlotService(),
                 new EnvironmentService(), -1);
             vm.WriteBinds();   // BindingWindow.Window_Closing と同じ（閉じるたびに書き込む）

@@ -89,7 +89,10 @@ namespace DS4Windows.UI
         private readonly DS4Windows.Core.Abstractions.IEnvironmentService environmentService;
 
         /// <summary>SA のモード（従来どおり。SA の新規作成・編集）。</summary>
-        public AssignmentEditor(int deviceNum, ProfileList profileList, int targetDevice,
+        // Phase14c-Step4（R-05 の前半）: ライトバーの強制表示の状態（旧: DS4LightBar の静的な配列）
+        private readonly DS4Windows.Core.Model.LightbarOverrides _lightbar;
+
+        public AssignmentEditor(DS4Windows.Core.Model.LightbarOverrides lightbar, int deviceNum, ProfileList profileList, int targetDevice,
             DS4Windows.UI.Abstractions.IEditorWindowFactory editorWindowFactory,
             DS4Windows.UI.Abstractions.IViewModelFactory viewModelFactory,
             DS4Windows.Core.Abstractions.ISpecialActionRepository specialActionRepository,
@@ -98,7 +101,7 @@ namespace DS4Windows.UI
             DS4Windows.Core.Abstractions.IEnvironmentService environmentService,
             DS4Windows.Core.Abstractions.IWindowSystem windowSystem,
             DS4Windows.Core.Settings.SpecialAction specialAction = null)
-            : this(deviceNum, (DS4Windows.Core.Settings.DS4ControlSettings)null, profileList, targetDevice, editorWindowFactory, viewModelFactory,
+            : this(lightbar, deviceNum, (DS4Windows.Core.Settings.DS4ControlSettings)null, profileList, targetDevice, editorWindowFactory, viewModelFactory,
                 specialActionRepository, profileSettingsService, outputSlotService, environmentService, windowSystem, specialAction)
         {
         }
@@ -109,7 +112,7 @@ namespace DS4Windows.UI
         /// Phase10-Step3 W4: <c>ProfileEditor</c> の <c>ShowControlAssignmentEditor</c> が、これを左ペイン全体に重ねて表示する（Controls の絵のボタン・一覧、Tilt、Swipe、Full Pull、Outer Bind、
         /// コントローラーの入力。Phase10-Step3-Plan.md §3.4）。保存（<see cref="ControlSaved"/>）は、編集用のコピーを元の設定へ反映してから発生する。
         /// </summary>
-        public AssignmentEditor(int deviceNum, DS4Windows.Core.Settings.DS4ControlSettings controlSettings, ProfileList profileList, int targetDevice,
+        public AssignmentEditor(DS4Windows.Core.Model.LightbarOverrides lightbar, int deviceNum, DS4Windows.Core.Settings.DS4ControlSettings controlSettings, ProfileList profileList, int targetDevice,
             DS4Windows.UI.Abstractions.IEditorWindowFactory editorWindowFactory,
             DS4Windows.UI.Abstractions.IViewModelFactory viewModelFactory,
             DS4Windows.Core.Abstractions.ISpecialActionRepository specialActionRepository,
@@ -117,12 +120,12 @@ namespace DS4Windows.UI
             DS4Windows.Processing.Abstractions.IOutputSlotService outputSlotService,
             DS4Windows.Core.Abstractions.IEnvironmentService environmentService,
             DS4Windows.Core.Abstractions.IWindowSystem windowSystem)
-            : this(deviceNum, controlSettings ?? throw new ArgumentNullException(nameof(controlSettings)), profileList, targetDevice,
+            : this(lightbar, deviceNum, controlSettings ?? throw new ArgumentNullException(nameof(controlSettings)), profileList, targetDevice,
                 editorWindowFactory, viewModelFactory, specialActionRepository, profileSettingsService, outputSlotService, environmentService, windowSystem, null)
         {
         }
 
-        private AssignmentEditor(int deviceNum, DS4Windows.Core.Settings.DS4ControlSettings controlSettings, ProfileList profileList, int targetDevice,
+        private AssignmentEditor(DS4Windows.Core.Model.LightbarOverrides lightbar, int deviceNum, DS4Windows.Core.Settings.DS4ControlSettings controlSettings, ProfileList profileList, int targetDevice,
             DS4Windows.UI.Abstractions.IEditorWindowFactory editorWindowFactory,
             DS4Windows.UI.Abstractions.IViewModelFactory viewModelFactory,
             DS4Windows.Core.Abstractions.ISpecialActionRepository specialActionRepository,
@@ -132,6 +135,7 @@ namespace DS4Windows.UI
             DS4Windows.Core.Abstractions.IWindowSystem windowSystem,
             DS4Windows.Core.Settings.SpecialAction specialAction)
         {
+            _lightbar = lightbar ?? throw new ArgumentNullException(nameof(lightbar));
             this.environmentService = environmentService ?? throw new ArgumentNullException(nameof(environmentService));
             this.editorWindowFactory = editorWindowFactory ?? throw new ArgumentNullException(nameof(editorWindowFactory));
             if (viewModelFactory == null) throw new ArgumentNullException(nameof(viewModelFactory));
@@ -161,7 +165,7 @@ namespace DS4Windows.UI
             pressKeyVM = new PressKeyViewModel(specialActionRepository, profileSettingsService, outputSlotService);
             pressKeyVM.SetDeviceNum(deviceNum);
             disconnectBtVM = new SpecialActionViewModel(5, specialActionRepository);
-            checkBatteryVM = new CheckBatteryViewModel(specialActionRepository, environmentService);
+            checkBatteryVM = new CheckBatteryViewModel(_lightbar, specialActionRepository, environmentService);
             multiActButtonVM = new MultiActButtonViewModel(specialActionRepository);
             calibrateGyroVM = new SpecialActionViewModel(9, specialActionRepository);
             focusWindowVM = new FocusWindowViewModel(specialActionRepository);

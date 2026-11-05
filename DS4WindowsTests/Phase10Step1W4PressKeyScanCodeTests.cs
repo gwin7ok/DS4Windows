@@ -73,7 +73,7 @@ namespace DS4WindowsTests
             // WriteBind（Key）は、actionAlias の更新（RefreshActionAlias）で OutputKBMMapping を使う。この service だけに設定する
             ProfileSettingsService profileSettings = TestRepositoryFactory.CreateProfileSettingsService();
             profileSettings.OutputKBMMapping = new SendInputMapping();
-            var dialogVm = new BindingWindowViewModel(ControllerLimits.TestProfileIndex, settings,
+            var dialogVm = new BindingWindowViewModel(TestLightbar.State, ControllerLimits.TestProfileIndex, settings,
                 profileSettings, TestRepositoryFactory.CreateOutputSlotService(),
                 new EnvironmentService(), -1);
             dialogVm.CurrentOutBind.outputType = OutBinding.OutType.Key;

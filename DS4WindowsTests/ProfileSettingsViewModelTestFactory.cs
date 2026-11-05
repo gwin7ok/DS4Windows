@@ -41,7 +41,7 @@ namespace DS4WindowsTests
         {
             DS4Windows.Composition.AppHost.CreateHost();
 
-            return new ProfileSettingsViewModel(
+            return new ProfileSettingsViewModel(TestLightbar.State, 
                 device,
                 profileSettings ?? TestGlobals.ProfileSettingsServiceInstance,
                 null,

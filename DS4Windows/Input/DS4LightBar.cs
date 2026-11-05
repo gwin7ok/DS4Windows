@@ -57,9 +57,6 @@ namespace DS4Windows.Input
             DateTime.UtcNow, DateTime.UtcNow, DateTime.UtcNow, DateTime.UtcNow,
         };
 
-        public static bool[] forcelight = new bool[ControllerLimits.MaxControllerCount] { false, false, false, false, false, false, false, false };
-        public static DS4Color[] forcedColor = new DS4Color[ControllerLimits.MaxControllerCount];
-        public static byte[] forcedFlash = new byte[ControllerLimits.MaxControllerCount];
         internal const int PULSE_FLASH_DURATION = 2000;
         internal const double PULSE_FLASH_SEGMENTS = PULSE_FLASH_DURATION / 40;
         internal const int PULSE_CHARGING_DURATION = 4000;
@@ -67,15 +64,15 @@ namespace DS4Windows.Input
 
         // Phase7-Step10d W5: 旧 Global の転送（getLightbarSettingsInfo／getMainColor／getIdleDisconnectTimeout／DistanceProfiles／tempprofileDistance）に替えて、
         // 呼び出し元（ControlService）が持つプロファイル設定サービスを引数で受け取る。
-        public static void updateLightBar(DS4Device device, int deviceNum, DS4Windows.Core.Abstractions.IProfileSettingsService profileSettings)
+        public static void updateLightBar(DS4Device device, int deviceNum, DS4Windows.Core.Abstractions.IProfileSettingsService profileSettings, DS4Windows.Core.Model.LightbarOverrides overrides)
         {
             DS4Color color = new DS4Color();
-            bool useForceLight = forcelight[deviceNum];
+            bool useForceLight = overrides.forcelight[deviceNum];
             LightbarSettingInfo lightbarSettingInfo = profileSettings.GetLightbarSettingsInfo(deviceNum);
             LightbarDS4WinInfo lightModeInfo = lightbarSettingInfo.ds4winSettings;
             bool useLightRoutine = lightbarSettingInfo.mode == LightbarMode.DS4Win;
             //bool useLightRoutine = false;
-            if (!defaultLight && !useForceLight && useLightRoutine)
+            if (!overrides.defaultLight && !useForceLight && useLightRoutine)
             {
                 if (lightModeInfo.useCustomLed)
                 {
@@ -130,7 +127,7 @@ namespace DS4Windows.Input
                     }
                 }
 
-                if (device.getBattery() <= lightModeInfo.flashAt && !defaultLight && !device.isCharging())
+                if (device.getBattery() <= lightModeInfo.flashAt && !overrides.defaultLight && !device.isCharging())
                 {
                     ref DS4Color flashColor = ref lightModeInfo.m_FlashLed; //ref getFlashColor(deviceNum);
                     if (!(flashColor.red == 0 &&
@@ -281,10 +278,10 @@ namespace DS4Windows.Input
             }
             else if (useForceLight)
             {
-                color = forcedColor[deviceNum];
+                color = overrides.forcedColor[deviceNum];
                 useLightRoutine = true;
             }
-            else if (shuttingdown)
+            else if (overrides.shuttingdown)
             {
                 color = new DS4Color(0, 0, 0);
                 useLightRoutine = true;
@@ -301,7 +298,7 @@ namespace DS4Windows.Input
             {
                 bool distanceprofile = profileSettings.DistanceProfiles[deviceNum] || profileSettings.TempProfileDistanceArray[deviceNum];
                 //distanceprofile = (ProfilePath[deviceNum].ToLower().Contains("distance") || tempprofilename[deviceNum].ToLower().Contains("distance"));
-                if (distanceprofile && !defaultLight)
+                if (distanceprofile && !overrides.defaultLight)
                 {
                     // Thing I did for Distance
                     float rumble = device.getLeftHeavySlowRumble() / 2.55f;
@@ -335,12 +332,12 @@ namespace DS4Windows.Input
 
                 if (lightState.IsLightBarSet())
                 {
-                    if (useForceLight && forcedFlash[deviceNum] > 0)
+                    if (useForceLight && overrides.forcedFlash[deviceNum] > 0)
                     {
-                        lightState.LightBarFlashDurationOff = lightState.LightBarFlashDurationOn = (byte)(25 - forcedFlash[deviceNum]);
+                        lightState.LightBarFlashDurationOff = lightState.LightBarFlashDurationOn = (byte)(25 - overrides.forcedFlash[deviceNum]);
                         lightState.LightBarExplicitlyOff = true;
                     }
-                    else if (device.getBattery() <= lightModeInfo.flashAt && lightModeInfo.flashType == 0 && !defaultLight && !device.isCharging())
+                    else if (device.getBattery() <= lightModeInfo.flashAt && lightModeInfo.flashType == 0 && !overrides.defaultLight && !device.isCharging())
                     {
                         int level = device.getBattery() / 10;
                         if (level >= 10)
@@ -376,7 +373,8 @@ namespace DS4Windows.Input
             }
         }
 
-        public static bool defaultLight = false, shuttingdown = false;
+        // Phase14c-Step4（R-05 の前半）: 旧 public static の forcelight／forcedColor／forcedFlash／defaultLight／shuttingdown は、
+        // DS4Windows.Core.Model.LightbarOverrides（DI の Singleton）へ移した。updateLightBar は引数で受け取る
       
         public static DS4Color HuetoRGB(float hue, byte sat)
         {

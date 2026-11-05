@@ -50,15 +50,15 @@ namespace DS4WindowsTests
         /// <summary>DS4LightBar の強制色関連の静的配列と、OutDevTypeTemp の編集スロットの値を保存・復元する。</summary>
         private sealed class StaticStateScope : IDisposable
         {
-            private readonly bool[] forcelight = (bool[])DS4LightBar.forcelight.Clone();
-            private readonly DS4Color[] forcedColor = (DS4Color[])DS4LightBar.forcedColor.Clone();
-            private readonly byte[] forcedFlash = (byte[])DS4LightBar.forcedFlash.Clone();
+            private readonly bool[] forcelight = (bool[])TestLightbar.State.forcelight.Clone();
+            private readonly DS4Color[] forcedColor = (DS4Color[])TestLightbar.State.forcedColor.Clone();
+            private readonly byte[] forcedFlash = (byte[])TestLightbar.State.forcedFlash.Clone();
 
             public void Dispose()
             {
-                Array.Copy(forcelight, DS4LightBar.forcelight, forcelight.Length);
-                Array.Copy(forcedColor, DS4LightBar.forcedColor, forcedColor.Length);
-                Array.Copy(forcedFlash, DS4LightBar.forcedFlash, forcedFlash.Length);
+                Array.Copy(forcelight, TestLightbar.State.forcelight, forcelight.Length);
+                Array.Copy(forcedColor, TestLightbar.State.forcedColor, forcedColor.Length);
+                Array.Copy(forcedFlash, TestLightbar.State.forcedFlash, forcedFlash.Length);
             }
         }
 
@@ -73,11 +73,11 @@ namespace DS4WindowsTests
 
         private static void ResetForcedColorArrays()
         {
-            for (int i = 0; i < DS4LightBar.forcelight.Length; i++)
+            for (int i = 0; i < TestLightbar.State.forcelight.Length; i++)
             {
-                DS4LightBar.forcelight[i] = false;
-                DS4LightBar.forcedColor[i] = new DS4Color(0, 0, 0);
-                DS4LightBar.forcedFlash[i] = 0;
+                TestLightbar.State.forcelight[i] = false;
+                TestLightbar.State.forcedColor[i] = new DS4Color(0, 0, 0);
+                TestLightbar.State.forcedFlash[i] = 0;
             }
         }
 
@@ -132,7 +132,7 @@ namespace DS4WindowsTests
             vm.StartForcedColor(Colors.Red);
             vm.UpdateForcedColor(Colors.Blue);
             vm.EndForcedColor();
-            Assert.All(DS4LightBar.forcelight, b => Assert.False(b));
+            Assert.All(TestLightbar.State.forcelight, b => Assert.False(b));
         }
 
         [Fact]
@@ -145,24 +145,24 @@ namespace DS4WindowsTests
             var vm = CreateViewModel(DS4Windows.Core.Settings.ControllerLimits.TestProfileIndex, TargetSlot);
 
             vm.StartForcedColor(Color.FromRgb(10, 20, 30));
-            Assert.True(DS4LightBar.forcelight[TargetSlot]);
-            Assert.Equal(new DS4Color(10, 20, 30), DS4LightBar.forcedColor[TargetSlot]);
-            Assert.Equal((byte)0, DS4LightBar.forcedFlash[TargetSlot]);
+            Assert.True(TestLightbar.State.forcelight[TargetSlot]);
+            Assert.Equal(new DS4Color(10, 20, 30), TestLightbar.State.forcedColor[TargetSlot]);
+            Assert.Equal((byte)0, TestLightbar.State.forcedFlash[TargetSlot]);
 
             vm.UpdateForcedColor(Color.FromRgb(40, 50, 60));
-            Assert.True(DS4LightBar.forcelight[TargetSlot]);
-            Assert.Equal(new DS4Color(40, 50, 60), DS4LightBar.forcedColor[TargetSlot]);
+            Assert.True(TestLightbar.State.forcelight[TargetSlot]);
+            Assert.Equal(new DS4Color(40, 50, 60), TestLightbar.State.forcedColor[TargetSlot]);
 
-            for (int i = 0; i < DS4LightBar.forcelight.Length; i++)
+            for (int i = 0; i < TestLightbar.State.forcelight.Length; i++)
             {
                 if (i == TargetSlot) continue;
-                Assert.False(DS4LightBar.forcelight[i], $"slot {i} の forcelight が変わった");
-                Assert.Equal(new DS4Color(0, 0, 0), DS4LightBar.forcedColor[i]);
+                Assert.False(TestLightbar.State.forcelight[i], $"slot {i} の forcelight が変わった");
+                Assert.Equal(new DS4Color(0, 0, 0), TestLightbar.State.forcedColor[i]);
             }
 
             vm.EndForcedColor();
-            Assert.False(DS4LightBar.forcelight[TargetSlot]);
-            Assert.Equal(new DS4Color(0, 0, 0), DS4LightBar.forcedColor[TargetSlot]);
+            Assert.False(TestLightbar.State.forcelight[TargetSlot]);
+            Assert.Equal(new DS4Color(0, 0, 0), TestLightbar.State.forcedColor[TargetSlot]);
         }
 
         [Fact]
@@ -175,11 +175,11 @@ namespace DS4WindowsTests
 
             vm.StartForcedColor(Colors.Red);
             vm.UpdateForcedColor(Colors.Blue);
-            Assert.All(DS4LightBar.forcelight, b => Assert.False(b));
-            Assert.All(DS4LightBar.forcedColor, c => Assert.Equal(new DS4Color(0, 0, 0), c));
+            Assert.All(TestLightbar.State.forcelight, b => Assert.False(b));
+            Assert.All(TestLightbar.State.forcedColor, c => Assert.Equal(new DS4Color(0, 0, 0), c));
 
             vm.EndForcedColor();
-            Assert.All(DS4LightBar.forcelight, b => Assert.False(b));
+            Assert.All(TestLightbar.State.forcelight, b => Assert.False(b));
         }
     }
 }

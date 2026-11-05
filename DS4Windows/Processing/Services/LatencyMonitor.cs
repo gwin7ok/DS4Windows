@@ -22,8 +22,12 @@ namespace DS4Windows.Processing.Services
         private readonly bool[] _inWarnMonitor = new bool[ControllerLimits.MaxControllerCount];
         private readonly string[] _tempStrings = new string[ControllerLimits.MaxControllerCount];
 
-        public LatencyMonitor(IAppSettingsService appSettings, IProfileSettingsService profileSettings)
+        // Phase14c-Step4（R-05 の前半）: ライトバーの強制表示の状態（旧: DS4LightBar の静的な配列）
+        private readonly DS4Windows.Core.Model.LightbarOverrides _lightbar;
+
+        public LatencyMonitor(DS4Windows.Core.Model.LightbarOverrides lightbar, IAppSettingsService appSettings, IProfileSettingsService profileSettings)
         {
+            _lightbar = lightbar ?? throw new System.ArgumentNullException(nameof(lightbar));
             _appSettings = appSettings ?? throw new ArgumentNullException(nameof(appSettings));
             _profileSettings = profileSettings ?? throw new ArgumentNullException(nameof(profileSettings));
             for (int i = 0; i < _tempStrings.Length; i++)
@@ -78,17 +82,17 @@ namespace DS4Windows.Processing.Services
                 if (_appSettings.FlashWhenLate)
                 {
                     DS4Color color = new DS4Color { red = 50, green = 0, blue = 0 };
-                    DS4LightBar.forcedColor[ind] = color;
-                    DS4LightBar.forcedFlash[ind] = 2;
-                    DS4LightBar.forcelight[ind] = true;
+                    _lightbar.forcedColor[ind] = color;
+                    _lightbar.forcedFlash[ind] = 2;
+                    _lightbar.forcelight[ind] = true;
                 }
             }
             else
             {
                 _lag[ind] = false;
                 AppLogger.Log(AppLogLevel.Info, DS4Windows.Properties.Resources.LatencyNotOverTen.Replace("*number*", (ind + 1).ToString()), LogOptions.UserFacing);
-                DS4LightBar.forcelight[ind] = false;
-                DS4LightBar.forcedFlash[ind] = 0;
+                _lightbar.forcelight[ind] = false;
+                _lightbar.forcedFlash[ind] = 0;
                 device.LightBarColor = _profileSettings.GetMainColor(ind);
             }
         }

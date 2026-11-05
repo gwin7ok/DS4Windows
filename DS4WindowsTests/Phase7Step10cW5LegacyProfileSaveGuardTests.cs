@@ -50,7 +50,7 @@ namespace DS4WindowsTests
                 Assert.NotNull(typeof(LegacyProfileXmlSerializer).GetMethod(name, BindingFlags.Instance | BindingFlags.Public));
 
             var store = new DS4Windows.Core.Settings.BackingStore(new DS4Windows.Core.Platform.EnvironmentService());
-            Assert.Throws<ArgumentNullException>(() => new LegacyProfileXmlSerializer(store, new PathService(), TestGlobals.ProfileSettingsServiceInstance, null));
+            Assert.Throws<ArgumentNullException>(() => new LegacyProfileXmlSerializer(TestLightbar.State, store, new PathService(), TestGlobals.ProfileSettingsServiceInstance, null));
         }
 
         [Fact]

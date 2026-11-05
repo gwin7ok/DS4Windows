@@ -228,7 +228,7 @@ namespace DS4WindowsTests
         public void BatteryCheck_SavesMode6_WithTheOptionsAndTheColors()
         {
             var repo = new RecordingSpecialActionRepository();
-            var editor = new CheckBatteryViewModel(repo, new EnvironmentService()) { Delay = 2, Notification = true };
+            var editor = new CheckBatteryViewModel(TestLightbar.State, repo, new EnvironmentService()) { Delay = 2, Notification = true };
             var set = new ActionTypeEditorSet(new Dictionary<SpecialAction.ActionTypeId, IActionTypeEditor> { [SpecialAction.ActionTypeId.BatteryCheck] = editor });
 
             set.Save(SpecialAction.ActionTypeId.BatteryCheck, Target(SpecialAction.ActionTypeId.BatteryCheck), edit: false);

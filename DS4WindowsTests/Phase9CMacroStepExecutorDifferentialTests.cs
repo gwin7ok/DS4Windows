@@ -188,14 +188,14 @@ namespace DS4WindowsTests
                         byte r = (byte)(int.Parse(lb[0].ToString()) * 100 + int.Parse(lb[1].ToString()) * 10 + int.Parse(lb[2].ToString()));
                         byte g = (byte)(int.Parse(lb[3].ToString()) * 100 + int.Parse(lb[4].ToString()) * 10 + int.Parse(lb[5].ToString()));
                         byte b = (byte)(int.Parse(lb[6].ToString()) * 100 + int.Parse(lb[7].ToString()) * 10 + int.Parse(lb[8].ToString()));
-                        DS4LightBar.forcelight[device] = true;
-                        DS4LightBar.forcedFlash[device] = 0;
-                        DS4LightBar.forcedColor[device] = new DS4Color(r, g, b);
+                        TestLightbar.State.forcelight[device] = true;
+                        TestLightbar.State.forcedFlash[device] = 0;
+                        TestLightbar.State.forcedColor[device] = new DS4Color(r, g, b);
                     }
                     else
                     {
-                        DS4LightBar.forcedFlash[device] = 0;
-                        DS4LightBar.forcelight[device] = false;
+                        TestLightbar.State.forcedFlash[device] = 0;
+                        TestLightbar.State.forcelight[device] = false;
                     }
                 }
                 else if (macroCodeValue >= 1000000)
@@ -270,7 +270,7 @@ namespace DS4WindowsTests
             var newKbm = new LogKbm();
             var oldImpl = new OldMacroStep(oldKbm, settings, () => null);
             var state = new MacroRuntimeState();
-            var newImpl = new MacroStepExecutor(newKbm, settings, state, new DS4Windows.Processing.Services.DeviceSlotState(), new RecordingWindowSystem());
+            var newImpl = new MacroStepExecutor(TestLightbar.State, newKbm, settings, state, new DS4Windows.Processing.Services.DeviceSlotState(), new RecordingWindowSystem());
             var oldKeydown = new bool[512];
             var newKeydown = new bool[512];
 
@@ -290,11 +290,11 @@ namespace DS4WindowsTests
                     Assert.True(oldImpl.macroControl.SequenceEqual(state.MacroControl[NewDevice].Take(oldImpl.macroControl.Length)), where + ": ボタンの出力フラグが違う");
                     Assert.False(state.MacroControl[NewDevice][26] || state.MacroControl[NewDevice][27], where + ": 広げたフラグが立っている");
                     Assert.True(oldImpl.MacroCount == state.MacroCount[NewDevice], where + ": 個数が違う");
-                    Assert.True(DS4LightBar.forcelight[OldDevice] == DS4LightBar.forcelight[NewDevice], where + ": 強制点灯が違う");
-                    Assert.True(DS4LightBar.forcedFlash[OldDevice] == DS4LightBar.forcedFlash[NewDevice], where + ": 強制の点滅が違う");
-                    if (DS4LightBar.forcelight[NewDevice])
+                    Assert.True(TestLightbar.State.forcelight[OldDevice] == TestLightbar.State.forcelight[NewDevice], where + ": 強制点灯が違う");
+                    Assert.True(TestLightbar.State.forcedFlash[OldDevice] == TestLightbar.State.forcedFlash[NewDevice], where + ": 強制の点滅が違う");
+                    if (TestLightbar.State.forcelight[NewDevice])
                     {
-                        Assert.True(DS4LightBar.forcedColor[OldDevice].Equals(DS4LightBar.forcedColor[NewDevice]), where + ": 強制色が違う");
+                        Assert.True(TestLightbar.State.forcedColor[OldDevice].Equals(TestLightbar.State.forcedColor[NewDevice]), where + ": 強制色が違う");
                     }
                 }
             }
@@ -308,7 +308,7 @@ namespace DS4WindowsTests
             // 旧実装の癖（計画書 M4）: コントローラーが取れないと NullReferenceException になる。そのまま移した
             IProfileSettingsService settings = TestHost.GetService<IProfileSettingsService>();
             var oldImpl = new OldMacroStep(new LogKbm(), settings, () => null);
-            var newImpl = new MacroStepExecutor(new LogKbm(), settings, new MacroRuntimeState(), new DS4Windows.Processing.Services.DeviceSlotState(), new RecordingWindowSystem());
+            var newImpl = new MacroStepExecutor(TestLightbar.State, new LogKbm(), settings, new MacroRuntimeState(), new DS4Windows.Processing.Services.DeviceSlotState(), new RecordingWindowSystem());
 
             Exception expected = Record.Exception(() => oldImpl.PlayMacroCodeValue(OldDevice, DS4KeyType.None, code, new bool[512]));
             Exception actual = Record.Exception(() => newImpl.Execute(NewDevice, DS4KeyType.None, code, new bool[512]));
@@ -330,7 +330,7 @@ namespace DS4WindowsTests
             Assert.IsType<IndexOutOfRangeException>(Record.Exception(() => oldImpl.PlayMacroCodeValue(OldDevice, DS4KeyType.None, code, new bool[512])));
 
             var state = new MacroRuntimeState();
-            var newImpl = new MacroStepExecutor(new LogKbm(), settings, state, new DS4Windows.Processing.Services.DeviceSlotState(), new RecordingWindowSystem());
+            var newImpl = new MacroStepExecutor(TestLightbar.State, new LogKbm(), settings, state, new DS4Windows.Processing.Services.DeviceSlotState(), new RecordingWindowSystem());
             var keydown = new bool[512];
 
             newImpl.Execute(NewDevice, DS4KeyType.None, code, keydown);   // 押下: 例外にならない
@@ -351,7 +351,7 @@ namespace DS4WindowsTests
         {
             IProfileSettingsService settings = TestHost.GetService<IProfileSettingsService>();
             var state = new MacroRuntimeState();
-            var executor = new MacroStepExecutor(new LogKbm(), settings, state, new DS4Windows.Processing.Services.DeviceSlotState(), new RecordingWindowSystem());
+            var executor = new MacroStepExecutor(TestLightbar.State, new LogKbm(), settings, state, new DS4Windows.Processing.Services.DeviceSlotState(), new RecordingWindowSystem());
             var keydown = new bool[512];
 
             executor.Execute(2, DS4KeyType.None, 261, keydown);   // 261 = フラグ 0（Cross）の押下

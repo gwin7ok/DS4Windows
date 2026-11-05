@@ -51,7 +51,7 @@ namespace DS4WindowsTests
         [Fact]
         public void TheViewModels_RequireTheEnvironmentService()
         {
-            Assert.Throws<ArgumentNullException>(() => new DS4Windows.UI.ViewModels.SpecialActions.CheckBatteryViewModel(
+            Assert.Throws<ArgumentNullException>(() => new DS4Windows.UI.ViewModels.SpecialActions.CheckBatteryViewModel(TestLightbar.State, 
                 TestRepositoryFactory.CreateSpecialActionRepository(), null));
         }
 
@@ -60,8 +60,8 @@ namespace DS4WindowsTests
         {
             var settings = TestRepositoryFactory.CreateProfileSettingsService();
             var slots = TestRepositoryFactory.CreateOutputSlotService();
-            Assert.Throws<ArgumentNullException>(() => new BindingWindowViewModel(0, new DS4ControlSettings(DS4Controls.Cross), settings, slots, null));
-            Assert.Throws<ArgumentNullException>(() => new RecordBoxViewModel(0, new DS4ControlSettings(DS4Controls.Cross), true, settings, null, null));
+            Assert.Throws<ArgumentNullException>(() => new BindingWindowViewModel(TestLightbar.State, 0, new DS4ControlSettings(DS4Controls.Cross), settings, slots, null));
+            Assert.Throws<ArgumentNullException>(() => new RecordBoxViewModel(TestLightbar.State, 0, new DS4ControlSettings(DS4Controls.Cross), true, settings, null, null));
         }
     }
 }

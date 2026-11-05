@@ -200,7 +200,7 @@ namespace DS4WindowsTests
             Assert.Same(lifecycle, TestHost.GetService<IServiceLifecycle>());
 
             // 起動直後の状態（旧: running = false、loopControllers = true、inServiceTask = false、activeControllers = 0）
-            var fresh = new ServiceLifecycle(TestHost.GetService<IAppSettingsService>(), TestHost.GetService<IEnvironmentService>(),
+            var fresh = new ServiceLifecycle(TestLightbar.State, TestHost.GetService<IAppSettingsService>(), TestHost.GetService<IEnvironmentService>(),
                 TestHost.GetService<IProfileSettingsService>(), TestHost.GetService<IDs4DeviceRegistry>(), TestHost.GetService<IVirtualKBM>(),
                 TestHost.GetService<IOscService>(), TestHost.GetService<IUdpMotionService>(), TestHost.GetService<IHidHideService>(),
                 TestHost.GetService<IVirtualPadService>(), TestHost.GetService<ILatencyMonitor>(), TestHost.GetService<IJoyConLinker>(),

@@ -39,7 +39,10 @@ namespace DS4Windows.UI.Services
         // Phase13-Step10 10-d: ProfileEditor の振動の停止・入力の取得の窓口（旧 ControlService.setRumble／GetActiveInputControl）
         private readonly IRuntimeFeatureSwitch _runtimeFeatures;
 
-        public EditorWindowFactory(
+        // Phase14c-Step4（R-05 の前半）: ライトバーの強制表示の状態（旧: DS4LightBar の静的な配列）
+        private readonly DS4Windows.Core.Model.LightbarOverrides _lightbar;
+
+        public EditorWindowFactory(DS4Windows.Core.Model.LightbarOverrides lightbar, 
             IProfileSettingsService profileSettings,
             IOutputSlotService outputSlotService,
             IPathService pathService,
@@ -56,6 +59,7 @@ namespace DS4Windows.UI.Services
             IMouseInputHook mouseHook,
             IRuntimeFeatureSwitch runtimeFeatures)
         {
+            _lightbar = lightbar ?? throw new System.ArgumentNullException(nameof(lightbar));
             _mouseHook = mouseHook ?? throw new ArgumentNullException(nameof(mouseHook));
             _runtimeFeatures = runtimeFeatures ?? throw new ArgumentNullException(nameof(runtimeFeatures));
             _environmentService = environmentService ?? throw new ArgumentNullException(nameof(environmentService));
@@ -75,7 +79,7 @@ namespace DS4Windows.UI.Services
 
         public BindingWindow CreateBindingWindow(int deviceNum, DS4ControlSettings settings, int targetDevice,
             BindingWindow.ExposeMode expose)
-            => new BindingWindow(deviceNum, settings, targetDevice, this, _profileSettings, _outputSlotService,
+            => new BindingWindow(_lightbar, deviceNum, settings, targetDevice, this, _profileSettings, _outputSlotService,
                 _environmentService, _controlService, expose);
 
         public RecordBox CreateRecordBox(int deviceNum, DS4ControlSettings controlSettings, int targetDevice,
@@ -96,12 +100,12 @@ namespace DS4Windows.UI.Services
 
         public AssignmentEditor CreateAssignmentEditor(int deviceNum, ProfileList profileList, int targetDevice,
             SpecialAction specialAction = null)
-            => new AssignmentEditor(deviceNum, profileList, targetDevice, this, _viewModelFactory,
+            => new AssignmentEditor(_lightbar, deviceNum, profileList, targetDevice, this, _viewModelFactory,
                 _specialActionRepository, _profileSettings, _outputSlotService, _environmentService, _windowSystem, specialAction);
 
         // Phase10-Step3 W4: ProfileEditor.ShowControlAssignmentEditor が呼ぶ
         public AssignmentEditor CreateControlActionEditor(int deviceNum, DS4ControlSettings controlSettings, ProfileList profileList, int targetDevice)
-            => new AssignmentEditor(deviceNum, controlSettings, profileList, targetDevice, this, _viewModelFactory,
+            => new AssignmentEditor(_lightbar, deviceNum, controlSettings, profileList, targetDevice, this, _viewModelFactory,
                 _specialActionRepository, _profileSettings, _outputSlotService, _environmentService, _windowSystem);
 
         public ProfileEditor CreateProfileEditor(int targetDevice)

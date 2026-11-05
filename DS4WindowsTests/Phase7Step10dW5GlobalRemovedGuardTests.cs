@@ -170,7 +170,8 @@ namespace DS4WindowsTests
         {
             var method = typeof(DS4LightBar).GetMethod("updateLightBar");
             Assert.NotNull(method);
-            Assert.Equal(new[] { "device", "deviceNum", "profileSettings" }, method.GetParameters().Select(p => p.Name).ToArray());
+            // Phase14c-Step4（R-05 の前半）: 強制表示の状態（旧: 静的な配列）も引数で受ける
+            Assert.Equal(new[] { "device", "deviceNum", "profileSettings", "overrides" }, method.GetParameters().Select(p => p.Name).ToArray());
         }
     }
 }

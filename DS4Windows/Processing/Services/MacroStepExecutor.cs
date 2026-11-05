@@ -27,9 +27,13 @@ namespace DS4Windows.Processing.Services
         // Phase12-Step3 3c（R-3）: マウスポインターの移動（絶対／前面ウィンドウ基準）
         private readonly IWindowSystem _windowSystem;
 
-        public MacroStepExecutor(IVirtualKBM virtualKbm, IProfileSettingsService profileSettings,
+        // Phase14c-Step4（R-05 の前半）: ライトバーの強制表示の状態（旧: DS4LightBar の静的な配列）
+        private readonly DS4Windows.Core.Model.LightbarOverrides _lightbar;
+
+        public MacroStepExecutor(DS4Windows.Core.Model.LightbarOverrides lightbar, IVirtualKBM virtualKbm, IProfileSettingsService profileSettings,
             MacroRuntimeState macroRuntime, IDeviceStateAccessor deviceStateAccessor, IWindowSystem windowSystem)
         {
+            _lightbar = lightbar ?? throw new System.ArgumentNullException(nameof(lightbar));
             _virtualKbm = virtualKbm ?? throw new ArgumentNullException(nameof(virtualKbm));
             _profileSettings = profileSettings ?? throw new ArgumentNullException(nameof(profileSettings));
             _macroRuntime = macroRuntime ?? throw new ArgumentNullException(nameof(macroRuntime));
@@ -86,14 +90,14 @@ namespace DS4Windows.Processing.Services
                     byte r = (byte)(int.Parse(lb[0].ToString()) * 100 + int.Parse(lb[1].ToString()) * 10 + int.Parse(lb[2].ToString()));
                     byte g = (byte)(int.Parse(lb[3].ToString()) * 100 + int.Parse(lb[4].ToString()) * 10 + int.Parse(lb[5].ToString()));
                     byte b = (byte)(int.Parse(lb[6].ToString()) * 100 + int.Parse(lb[7].ToString()) * 10 + int.Parse(lb[8].ToString()));
-                    DS4LightBar.forcelight[device] = true;
-                    DS4LightBar.forcedFlash[device] = 0;
-                    DS4LightBar.forcedColor[device] = new DS4Color(r, g, b);
+                    _lightbar.forcelight[device] = true;
+                    _lightbar.forcedFlash[device] = 0;
+                    _lightbar.forcedColor[device] = new DS4Color(r, g, b);
                 }
                 else
                 {
-                    DS4LightBar.forcedFlash[device] = 0;
-                    DS4LightBar.forcelight[device] = false;
+                    _lightbar.forcedFlash[device] = 0;
+                    _lightbar.forcelight[device] = false;
                 }
             }
             else if (macroCodeValue >= 1000000)

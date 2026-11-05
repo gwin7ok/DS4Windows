@@ -15,7 +15,7 @@ namespace DS4WindowsTests
     public class Phase12Step3W3cMacroPointerMoveExecutionTests
     {
         private static MacroStepExecutor NewExecutor(RecordingWindowSystem windowSystem)
-            => new MacroStepExecutor(TestHost.GetService<IVirtualKBM>(), TestHost.GetService<IProfileSettingsService>(),
+            => new MacroStepExecutor(TestLightbar.State, TestHost.GetService<IVirtualKBM>(), TestHost.GetService<IProfileSettingsService>(),
                 new MacroRuntimeState(), new DS4Windows.Processing.Services.DeviceSlotState(), windowSystem);
 
         private static int Value(MacroPointerMoveMode mode, int x, int y) => new MacroPointerMove(mode, x, y).ToMacroValue();
@@ -91,12 +91,12 @@ namespace DS4WindowsTests
         {
             var window = new RecordingWindowSystem();
             var keydown = new bool[512];
-            bool forcelightBefore = DS4LightBar.forcelight[0];
+            bool forcelightBefore = TestLightbar.State.forcelight[0];
 
             NewExecutor(window).Execute(0, DS4KeyType.None, Value(MacroPointerMoveMode.Absolute, 100, 100), keydown);
 
             Assert.DoesNotContain(true, keydown);
-            Assert.Equal(forcelightBefore, DS4LightBar.forcelight[0]);
+            Assert.Equal(forcelightBefore, TestLightbar.State.forcelight[0]);
         }
 
         [Fact]

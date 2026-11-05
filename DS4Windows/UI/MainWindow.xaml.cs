@@ -114,7 +114,10 @@ namespace DS4Windows.UI
 
         // Phase7-Step5 W5（Q4＝A）: 旧 AppHost.GetService の 17 件を、コンストラクター引数に替えた。
         // IMainWindowFactory（実装は MainWindowFactory）が DI から解決して渡す。
-        public MainWindow(ArgumentParser parser,
+        // Phase14c-Step4（R-05 の前半）: ライトバーの強制表示の状態（旧: DS4LightBar の静的な配列）
+        private readonly DS4Windows.Core.Model.LightbarOverrides _lightbar;
+
+        public MainWindow(DS4Windows.Core.Model.LightbarOverrides lightbar, ArgumentParser parser,
             DS4Windows.Core.Abstractions.IProfileSettingsService profileSettingsService,
             DS4Windows.Core.Abstractions.IAppSettingsService appSettingsService,
             DS4Windows.Core.Abstractions.IProfileXmlStore profileXmlStore,
@@ -142,6 +145,7 @@ namespace DS4Windows.UI
             DS4Windows.UI.Abstractions.IIpcResultWriter ipcResultWriter,
             DS4Windows.Core.Abstractions.IChangelogService changelogService)
         {
+            _lightbar = lightbar ?? throw new System.ArgumentNullException(nameof(lightbar));
             this.changelogService = changelogService ?? throw new ArgumentNullException(nameof(changelogService));   // Phase14b-Step17（D10）
             this.ipcResultWriter = ipcResultWriter ?? throw new ArgumentNullException(nameof(ipcResultWriter));   // Phase14b-Step16: CLI の問い合わせの結果の書き込み
             // Phase14b-Step16（決定 D11）: テーマ・言語の切り替え（旧: Application.Current as App の直接呼び出し）
@@ -629,7 +633,7 @@ Suspend support not enabled.", LogOptions.UserFacing);
                 // Wakeup from Suspend
                 case POWER_RESUME:
                     {
-                        DS4LightBar.shuttingdown = false;
+                        _lightbar.shuttingdown = false;
                         lifecycle.Suspending = false;
 
                         if (wasrunning)
@@ -661,7 +665,7 @@ Suspend support not enabled.", LogOptions.UserFacing);
                 // Entering Suspend
                 case POWER_SUSPEND:
                     {
-                        DS4LightBar.shuttingdown = true;
+                        _lightbar.shuttingdown = true;
                         lifecycle.Suspending = true;
 
                         if (lifecycle.Running)

@@ -101,7 +101,7 @@ namespace DS4WindowsTests
         [Fact]
         public void LatencyMonitor_Reset_DoesNotThrow_ForEverySlot()
         {
-            var monitor = new LatencyMonitor(TestHost.GetService<IAppSettingsService>(), TestRepositoryFactory.CreateProfileSettingsService());
+            var monitor = new LatencyMonitor(TestLightbar.State, TestHost.GetService<IAppSettingsService>(), TestRepositoryFactory.CreateProfileSettingsService());
             for (int i = 0; i < ControllerLimits.MaxControllerCount; i++)
             {
                 int slot = i;

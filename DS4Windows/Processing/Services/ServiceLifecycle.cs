@@ -59,12 +59,16 @@ namespace DS4Windows.Processing.Services
 
         public event Action<DS4Device, int> HotplugController;
 
-        public ServiceLifecycle(IAppSettingsService appSettings, IEnvironmentService environmentService, IProfileSettingsService profileSettings,
+        // Phase14c-Step4（R-05 の前半）: ライトバーの強制表示の状態（旧: DS4LightBar の静的な配列）
+        private readonly DS4Windows.Core.Model.LightbarOverrides _lightbar;
+
+        public ServiceLifecycle(DS4Windows.Core.Model.LightbarOverrides lightbar, IAppSettingsService appSettings, IEnvironmentService environmentService, IProfileSettingsService profileSettings,
             IDs4DeviceRegistry deviceRegistry, IVirtualKBM virtualKBM, IOscService oscService, IUdpMotionService udpMotion,
             IHidHideService hidHideService, IVirtualPadService virtualPad, ILatencyMonitor latencyMonitor, IJoyConLinker joyConLinker,
             IDeviceConnector deviceConnector, IDeviceSlotState slots,
             IEventThreadDispatcher eventThread, IOutputKbmInitializer kbmInitializer)
         {
+            _lightbar = lightbar ?? throw new System.ArgumentNullException(nameof(lightbar));
             _appSettings = appSettings ?? throw new ArgumentNullException(nameof(appSettings));
             _environmentService = environmentService ?? throw new ArgumentNullException(nameof(environmentService));
             _profileSettings = profileSettings ?? throw new ArgumentNullException(nameof(profileSettings));
@@ -151,7 +155,7 @@ namespace DS4Windows.Processing.Services
                     IEnumerable<DS4Device> devices = _deviceRegistry.GetDS4Controllers();
                     int numControllers = devices.Count();
                     ActiveControllers = numControllers;
-                    DS4LightBar.defaultLight = false;
+                    _lightbar.defaultLight = false;
                     int i = 0;
                     IJoinableDevice tempPrimaryJoyDev = null;
                     for (var devEnum = devices.GetEnumerator();
@@ -253,10 +257,10 @@ namespace DS4Windows.Processing.Services
                         }
                         else
                         {
-                            DS4LightBar.forcelight[i] = false;
-                            DS4LightBar.forcedFlash[i] = 0;
-                            DS4LightBar.defaultLight = true;
-                            DS4LightBar.updateLightBar(slots.DS4Controllers[i], i, _profileSettings);
+                            _lightbar.forcelight[i] = false;
+                            _lightbar.forcedFlash[i] = 0;
+                            _lightbar.defaultLight = true;
+                            DS4LightBar.updateLightBar(slots.DS4Controllers[i], i, _profileSettings, _lightbar);
                             tempDevice.IsRemoved = true;
                             tempDevice.StopUpdate();
                             _deviceRegistry.RemoveDevice(tempDevice);

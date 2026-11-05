@@ -34,7 +34,7 @@ namespace DS4WindowsTests
         {
             var profile = TestRepositoryFactory.CreateProfileSettingsService();
             profile.OutputKBMMapping = new SendInputMapping();
-            return new BindingWindowViewModel(ControllerLimits.TestProfileIndex, settings,
+            return new BindingWindowViewModel(TestLightbar.State, ControllerLimits.TestProfileIndex, settings,
                 profile, TestRepositoryFactory.CreateOutputSlotService(), new EnvironmentService(), -1);
         }
 

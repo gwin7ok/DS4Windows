@@ -28,7 +28,10 @@ namespace DS4Windows.UI.Services
         // Phase6-Step9-4: 依存はすべて必須引数（Pure DI。決定1＝S9-A）。
         // Phase13-Step6 6-c: ControlService は、Func による遅延解決（決定2＝C1。K7-1 対策）をやめ、直接受ける。K7-1 は 2026-10-17 に解消済みで、
         // このクラスはホスト構築後にしか解決されない。
-        public ViewModelFactory(
+        // Phase14c-Step4（R-05 の前半）: ライトバーの強制表示の状態（旧: DS4LightBar の静的な配列）
+        private readonly DS4Windows.Core.Model.LightbarOverrides _lightbar;
+
+        public ViewModelFactory(DS4Windows.Core.Model.LightbarOverrides lightbar, 
             IProfileSettingsService profileSettings,
             IProfileRepository profileRepo,
             IProfilePresetLoader presetLoader,
@@ -42,6 +45,7 @@ namespace DS4Windows.UI.Services
             IProfileLoadTarget loadTarget,
             IRuntimeFeatureSwitch runtimeFeatures)
         {
+            _lightbar = lightbar ?? throw new System.ArgumentNullException(nameof(lightbar));
             _profileSettings = profileSettings ?? throw new ArgumentNullException(nameof(profileSettings));
             _profileRepo = profileRepo ?? throw new ArgumentNullException(nameof(profileRepo));
             _presetLoader = presetLoader ?? throw new ArgumentNullException(nameof(presetLoader));
@@ -62,7 +66,7 @@ namespace DS4Windows.UI.Services
         {
             if (AppLogger.IsTraceEnabled)
                 AppLogger.LogTrace($"[DI] ViewModelFactory: Created ProfileSettingsViewModel for Device {device}, targetDevice {targetDevice}");
-            return new ProfileSettingsViewModel(device, _profileSettings, _loadTarget,
+            return new ProfileSettingsViewModel(_lightbar, device, _profileSettings, _loadTarget,
                 _outputSlotService, _profileRepo, _presetLoader, _environmentService, _pathService, targetDevice);
         }
 
@@ -70,7 +74,7 @@ namespace DS4Windows.UI.Services
         {
             if (AppLogger.IsTraceEnabled)
                 AppLogger.LogTrace($"[DI] ViewModelFactory: Created RecordBoxViewModel for Device {device}, targetDevice {targetDevice}");
-            return new RecordBoxViewModel(device, controlSettings, repeatable,
+            return new RecordBoxViewModel(_lightbar, device, controlSettings, repeatable,
                 _profileSettings, _environmentService, _controlService, targetDevice);
         }
 

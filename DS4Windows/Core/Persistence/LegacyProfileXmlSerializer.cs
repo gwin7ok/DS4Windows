@@ -78,9 +78,13 @@ namespace DS4Windows.Core.Persistence
         // Phase10-Step4d W3: Controls の Load Profile の切り替え先の ID と名前を結ぶ。省略可（登録簿がなければ、従来どおり名前だけ）
         private readonly DS4Windows.Core.Abstractions.IProfileIdentityService _profileIdentity;
 
-        public LegacyProfileXmlSerializer(BackingStore store, DS4Windows.Core.Abstractions.IPathService pathService, DS4Windows.Core.Abstractions.IProfileSettingsService profileSettings,
+        // Phase14c-Step4（R-05 の前半）: ライトバーの強制表示の状態（旧: DS4LightBar の静的な配列）
+        private readonly DS4Windows.Core.Model.LightbarOverrides _lightbar;
+
+        public LegacyProfileXmlSerializer(DS4Windows.Core.Model.LightbarOverrides lightbar, BackingStore store, DS4Windows.Core.Abstractions.IPathService pathService, DS4Windows.Core.Abstractions.IProfileSettingsService profileSettings,
             DS4Windows.Core.Abstractions.IEnvironmentService environment, DS4Windows.Core.Abstractions.IProfileIdentityService profileIdentity = null)
         {
+            _lightbar = lightbar ?? throw new System.ArgumentNullException(nameof(lightbar));
             _profileIdentity = profileIdentity;
             _environment = environment ?? throw new ArgumentNullException(nameof(environment));
             this.store = store ?? throw new ArgumentNullException(nameof(store));
@@ -127,8 +131,8 @@ namespace DS4Windows.Core.Persistence
 
                 if (device < ControllerLimits.MaxControllerCount)
                 {
-                    DS4LightBar.forcelight[device] = false;
-                    DS4LightBar.forcedFlash[device] = 0;
+                    _lightbar.forcelight[device] = false;
+                    _lightbar.forcedFlash[device] = 0;
                 }
 
                 OutContType oldContType = store.ActiveOutDevType[device];

@@ -160,17 +160,17 @@ namespace DS4WindowsTests
             var path = new PathService();
 
             Assert.Throws<ArgumentNullException>(() =>
-                new ProfileSettingsViewModel(0, null, null, outputSlots, repo, loader, env, path));
+                new ProfileSettingsViewModel(TestLightbar.State, 0, null, null, outputSlots, repo, loader, env, path));
             Assert.Throws<ArgumentNullException>(() =>
-                new ProfileSettingsViewModel(0, settings, null, null, repo, loader, env, path));
+                new ProfileSettingsViewModel(TestLightbar.State, 0, settings, null, null, repo, loader, env, path));
             Assert.Throws<ArgumentNullException>(() =>
-                new ProfileSettingsViewModel(0, settings, null, outputSlots, null, loader, env, path));
+                new ProfileSettingsViewModel(TestLightbar.State, 0, settings, null, outputSlots, null, loader, env, path));
             Assert.Throws<ArgumentNullException>(() =>
-                new ProfileSettingsViewModel(0, settings, null, outputSlots, repo, null, env, path));
+                new ProfileSettingsViewModel(TestLightbar.State, 0, settings, null, outputSlots, repo, null, env, path));
             Assert.Throws<ArgumentNullException>(() =>
-                new ProfileSettingsViewModel(0, settings, null, outputSlots, repo, loader, null, path));
+                new ProfileSettingsViewModel(TestLightbar.State, 0, settings, null, outputSlots, repo, loader, null, path));
             Assert.Throws<ArgumentNullException>(() =>
-                new ProfileSettingsViewModel(0, settings, null, outputSlots, repo, loader, env, null));
+                new ProfileSettingsViewModel(TestLightbar.State, 0, settings, null, outputSlots, repo, loader, env, null));
             Assert.Throws<ArgumentNullException>(() => new PresetMenuHelper(0, null));
         }
 

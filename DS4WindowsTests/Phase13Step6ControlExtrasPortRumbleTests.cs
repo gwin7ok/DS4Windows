@@ -28,7 +28,7 @@ namespace DS4WindowsTests
         }
 
         private static DefaultControlExtrasPort Create(FakeAccessor accessor, FakeRumble rumble)
-            => new DefaultControlExtrasPort(accessor, rumble, new EnvironmentService(), TestRepositoryFactory.CreateProfileSettingsService());
+            => new DefaultControlExtrasPort(TestLightbar.State, accessor, rumble, new EnvironmentService(), TestRepositoryFactory.CreateProfileSettingsService());
 
         [Fact]
         public void SetRumble_WithAController_CallsTheRumbleService()
@@ -65,10 +65,10 @@ namespace DS4WindowsTests
             var rumble = new FakeRumble();
             var env = new EnvironmentService();
             var settings = TestRepositoryFactory.CreateProfileSettingsService();
-            Assert.Throws<ArgumentNullException>(() => new DefaultControlExtrasPort(null, rumble, env, settings));
-            Assert.Throws<ArgumentNullException>(() => new DefaultControlExtrasPort(accessor, null, env, settings));
-            Assert.Throws<ArgumentNullException>(() => new DefaultControlExtrasPort(accessor, rumble, null, settings));
-            Assert.Throws<ArgumentNullException>(() => new DefaultControlExtrasPort(accessor, rumble, env, null));
+            Assert.Throws<ArgumentNullException>(() => new DefaultControlExtrasPort(TestLightbar.State, null, rumble, env, settings));
+            Assert.Throws<ArgumentNullException>(() => new DefaultControlExtrasPort(TestLightbar.State, accessor, null, env, settings));
+            Assert.Throws<ArgumentNullException>(() => new DefaultControlExtrasPort(TestLightbar.State, accessor, rumble, null, settings));
+            Assert.Throws<ArgumentNullException>(() => new DefaultControlExtrasPort(TestLightbar.State, accessor, rumble, env, null));
         }
     }
 }

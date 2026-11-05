@@ -23,7 +23,7 @@ namespace DS4WindowsTests
 
         public ControlsKeyTestScope()
         {
-            ExtrasPort = new RecordingControlExtrasPort(new DefaultControlExtrasPort(TestHost.GetService<IDeviceStateAccessor>(), TestHost.GetService<IDeviceRumbleService>(), TestHost.GetService<IEnvironmentService>(), _inner.Settings));
+            ExtrasPort = new RecordingControlExtrasPort(new DefaultControlExtrasPort(TestLightbar.State, TestHost.GetService<IDeviceStateAccessor>(), TestHost.GetService<IDeviceRumbleService>(), TestHost.GetService<IEnvironmentService>(), _inner.Settings));
             Mapping = _inner.Mapper as Mapping;
             if (Mapping == null)
                 throw new InvalidOperationException("IMapping の実体が Mapping ではない");
@@ -94,9 +94,9 @@ namespace DS4WindowsTests
         }
 
         // ---- Phase8-Step7 7.8e: Extras の観察窓口（旧経路が書く、公開の状態・静的配列） ----
-        public bool ForceLight => DS4LightBar.forcelight[Device];
-        public DS4Color ForcedColor => DS4LightBar.forcedColor[Device];
-        public byte ForcedFlash => DS4LightBar.forcedFlash[Device];
+        public bool ForceLight => TestLightbar.State.forcelight[Device];
+        public DS4Color ForcedColor => TestLightbar.State.forcedColor[Device];
+        public byte ForcedFlash => TestLightbar.State.forcedFlash[Device];
         /// <summary>振動が出ているか。旧経路は <c>extrasRumbleActive</c>、新経路は窓口の記録（最後の呼び出しが 0 でない）。</summary>
         public bool RumbleActive => ExtrasPort.RumbleOn;
         public ButtonMouseInfo MouseInfo => _inner.Settings.ButtonMouseInfos[Device];
@@ -105,9 +105,9 @@ namespace DS4WindowsTests
         public void ResetExtrasObservables()
         {
             ExtrasPort.RumbleCalls.Clear();
-            DS4LightBar.forcelight[Device] = false;
-            DS4LightBar.forcedFlash[Device] = 0;
-            DS4LightBar.forcedColor[Device] = default;
+            TestLightbar.State.forcelight[Device] = false;
+            TestLightbar.State.forcedFlash[Device] = 0;
+            TestLightbar.State.forcedColor[Device] = default;
             _inner.Settings.ButtonMouseInfos[Device].Reset();
 
         }

@@ -23,8 +23,12 @@ namespace DS4Windows.Processing.Services
         private readonly MacroRuntimeState _macroRuntime;
         private readonly DS4Windows.Processing.Actions.IManagedActionManager _manager;
 
-        public MacroPlayback(IMacroStepExecutor stepExecutor, MacroRuntimeState macroRuntime, DS4Windows.Processing.Actions.IManagedActionManager manager)
+        // Phase14c-Step4（R-05 の前半）: ライトバーの強制表示の状態（旧: DS4LightBar の静的な配列）
+        private readonly DS4Windows.Core.Model.LightbarOverrides _lightbar;
+
+        public MacroPlayback(DS4Windows.Core.Model.LightbarOverrides lightbar, IMacroStepExecutor stepExecutor, MacroRuntimeState macroRuntime, DS4Windows.Processing.Actions.IManagedActionManager manager)
         {
+            _lightbar = lightbar ?? throw new System.ArgumentNullException(nameof(lightbar));
             _manager = manager ?? throw new ArgumentNullException(nameof(manager));
             _stepExecutor = stepExecutor ?? throw new ArgumentNullException(nameof(stepExecutor));
             _macroRuntime = macroRuntime ?? throw new ArgumentNullException(nameof(macroRuntime));
@@ -226,8 +230,8 @@ namespace DS4Windows.Processing.Services
                 }
 
                 // Reset lightbar back to a default value (if the macro modified the color) because keepKeyState macro option was not set
-                DS4LightBar.forcedFlash[device] = 0;
-                DS4LightBar.forcelight[device] = false;
+                _lightbar.forcedFlash[device] = 0;
+                _lightbar.forcelight[device] = false;
             }
 
             // Commented out rumble reset. No need to zero out rumble after a macro because it may conflict with a game generated rumble events (ie. macro would stop a game generated rumble effect).

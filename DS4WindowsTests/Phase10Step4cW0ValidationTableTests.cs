@@ -132,7 +132,7 @@ namespace DS4WindowsTests
         [Fact]
         public void CheckBattery_WithoutAnyStatusOption_IsNotValid()
         {
-            var vm = new CheckBatteryViewModel(new RecordingSpecialActionRepository(), TestHost.GetService<IEnvironmentService>())
+            var vm = new CheckBatteryViewModel(TestLightbar.State, new RecordingSpecialActionRepository(), TestHost.GetService<IEnvironmentService>())
             {
                 Notification = false,
                 Lightbar = false,
@@ -146,7 +146,7 @@ namespace DS4WindowsTests
         [Fact]
         public void CheckBattery_WithTheSameTwoColors_IsNotValid_AndWithDifferentOnes_IsValid()
         {
-            var vm = new CheckBatteryViewModel(new RecordingSpecialActionRepository(), TestHost.GetService<IEnvironmentService>())
+            var vm = new CheckBatteryViewModel(TestLightbar.State, new RecordingSpecialActionRepository(), TestHost.GetService<IEnvironmentService>())
             {
                 Notification = false,
                 Lightbar = true,

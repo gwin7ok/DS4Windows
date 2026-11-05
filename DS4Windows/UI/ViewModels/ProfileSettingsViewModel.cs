@@ -2829,7 +2829,10 @@ namespace DS4Windows.UI.ViewModels
         // Program.rootHub が null の環境（テスト等）では null だったため、null を許容する（Phase13-Step6 6-e: 旧 ControlService controlService。
         // 生成側の ViewModelFactory が IProfileLoadTarget を直接渡す）。
         // targetDevice は、編集スロット（device）と実機を分けて渡す引数（Phase6-Step7b）。変更しない。
-        public ProfileSettingsViewModel(int device, IProfileSettingsService profileSettings,
+        // Phase14c-Step4（R-05 の前半）: ライトバーの強制表示の状態（旧: DS4LightBar の静的な配列）
+        private readonly DS4Windows.Core.Model.LightbarOverrides _lightbar;
+
+        public ProfileSettingsViewModel(DS4Windows.Core.Model.LightbarOverrides lightbar, int device, IProfileSettingsService profileSettings,
             IProfileLoadTarget loadTarget,
             IOutputSlotService outputSlotService,
             IProfileRepository profileRepo,
@@ -2838,6 +2841,7 @@ namespace DS4Windows.UI.ViewModels
             IPathService pathService,
             int targetDevice = -1)
         {
+            _lightbar = lightbar ?? throw new System.ArgumentNullException(nameof(lightbar));
             this.device = device;
             this.targetDevice = targetDevice;
             this.profileSettings = profileSettings ?? throw new ArgumentNullException(nameof(profileSettings));
@@ -3053,9 +3057,9 @@ namespace DS4Windows.UI.ViewModels
             if (HasTargetDevice)
             {
                 DS4Color dcolor = new DS4Color() { red = color.R, green = color.G, blue = color.B };
-                DS4LightBar.forcedColor[targetDevice] = dcolor;
-                DS4LightBar.forcedFlash[targetDevice] = 0;
-                DS4LightBar.forcelight[targetDevice] = true;
+                _lightbar.forcedColor[targetDevice] = dcolor;
+                _lightbar.forcedFlash[targetDevice] = 0;
+                _lightbar.forcelight[targetDevice] = true;
             }
         }
 
@@ -3064,9 +3068,9 @@ namespace DS4Windows.UI.ViewModels
             if (HasTargetDevice)
             {
                 DS4Color dcolor = new DS4Color() { red = color.R, green = color.G, blue = color.B };
-                DS4LightBar.forcedColor[targetDevice] = dcolor;
-                DS4LightBar.forcedFlash[targetDevice] = 0;
-                DS4LightBar.forcelight[targetDevice] = true;
+                _lightbar.forcedColor[targetDevice] = dcolor;
+                _lightbar.forcedFlash[targetDevice] = 0;
+                _lightbar.forcelight[targetDevice] = true;
             }
         }
 
@@ -3074,9 +3078,9 @@ namespace DS4Windows.UI.ViewModels
         {
             if (HasTargetDevice)
             {
-                DS4LightBar.forcedColor[targetDevice] = new DS4Color(0, 0, 0);
-                DS4LightBar.forcedFlash[targetDevice] = 0;
-                DS4LightBar.forcelight[targetDevice] = false;
+                _lightbar.forcedColor[targetDevice] = new DS4Color(0, 0, 0);
+                _lightbar.forcedFlash[targetDevice] = 0;
+                _lightbar.forcelight[targetDevice] = false;
             }
         }
 

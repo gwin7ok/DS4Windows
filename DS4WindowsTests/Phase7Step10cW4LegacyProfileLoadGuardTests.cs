@@ -54,10 +54,10 @@ namespace DS4WindowsTests
         {
             var store = new DS4Windows.Core.Settings.BackingStore(new DS4Windows.Core.Platform.EnvironmentService());
             var settings = TestGlobals.ProfileSettingsServiceInstance;
-            Assert.Throws<ArgumentNullException>(() => new LegacyProfileXmlSerializer(null, new PathService(), settings, new EnvironmentService()));
-            Assert.Throws<ArgumentNullException>(() => new LegacyProfileXmlSerializer(store, null, settings, new EnvironmentService()));
-            Assert.Throws<ArgumentNullException>(() => new LegacyProfileXmlSerializer(store, new PathService(), null, new EnvironmentService()));
-            Assert.Throws<ArgumentNullException>(() => new LegacyProfileXmlSerializer(store, new PathService(), settings, null));
+            Assert.Throws<ArgumentNullException>(() => new LegacyProfileXmlSerializer(TestLightbar.State, null, new PathService(), settings, new EnvironmentService()));
+            Assert.Throws<ArgumentNullException>(() => new LegacyProfileXmlSerializer(TestLightbar.State, store, null, settings, new EnvironmentService()));
+            Assert.Throws<ArgumentNullException>(() => new LegacyProfileXmlSerializer(TestLightbar.State, store, new PathService(), null, new EnvironmentService()));
+            Assert.Throws<ArgumentNullException>(() => new LegacyProfileXmlSerializer(TestLightbar.State, store, new PathService(), settings, null));
         }
 
         [Fact]

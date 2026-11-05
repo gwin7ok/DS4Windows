@@ -14,7 +14,7 @@ namespace DS4WindowsTests
     /// W2 で新経路が入るとき、承認済みの動作の変更（Q3＝B: 2 つ同時のとき、ボタンごとに元に戻す。Q6＝B: 押したままの適用・切断で元に戻す）の
     /// （Phase8-Step8 8d: 旧経路は削除した。期待値は、新経路のもの）。
     /// 観察は、旧経路が書く状態で行う: <c>Mapping.extrasRumbleActive</c>（振動を出したかの記録。デバイスがいないため、実際の振動は起きない）、
-    /// <c>DS4LightBar.forcelight／forcedColor／forcedFlash</c>（静的配列）、<c>ButtonMouseInfo.tempButtonSensitivity／activeButtonSensitivity</c>。
+    /// <c>TestLightbar.State.forcelight／forcedColor／forcedFlash</c>（静的配列）、<c>ButtonMouseInfo.tempButtonSensitivity／activeButtonSensitivity</c>。
     /// 値は「強い振動, 弱い振動, ライトバー(1=有効), R, G, B, 点滅, 感度(1=有効), 感度」の 9 個。
     /// 他の Host 構築テストと同じコレクションで直列に実行する（静的配列を使うため）。
     /// </summary>
@@ -107,7 +107,7 @@ namespace DS4WindowsTests
             t.PublishControlsOnly();
 
             t.Run(State());
-            DS4LightBar.forcelight[t.Device] = true;   // ほかの強制色の使い手がいる、と仮定する
+            TestLightbar.State.forcelight[t.Device] = true;   // ほかの強制色の使い手がいる、と仮定する
             t.Run(State(cross: true));
             Assert.True(t.RumbleActive);
             Assert.True(t.ForceLight);   // 外から立てたものは、そのまま
@@ -143,8 +143,8 @@ namespace DS4WindowsTests
 
             t.Run(State());
             t.Run(State(cross: true));
-            DS4LightBar.forcelight[t.Device] = false;
-            DS4LightBar.forcedColor[t.Device] = default;
+            TestLightbar.State.forcelight[t.Device] = false;
+            TestLightbar.State.forcedColor[t.Device] = default;
             t.Run(State(cross: true));
 
             Assert.True(t.ForceLight);

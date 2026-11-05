@@ -313,7 +313,7 @@ namespace DS4WindowsTests
         [Fact]
         public void TheDefaultPort_DoesNothingWhenThereIsNoController()
         {
-            var port = new DefaultBatteryCheckPort(new NoControllerAccessor(), new DS4Windows.Processing.Services.DeviceBatteryText(new NoControllerAccessor()));
+            var port = new DefaultBatteryCheckPort(TestLightbar.State, new NoControllerAccessor(), new DS4Windows.Processing.Services.DeviceBatteryText(new NoControllerAccessor()));
 
             Assert.False(port.HasController(0));
             port.NotifyBattery(0);   // ControlService がなくても、例外にしない
@@ -323,31 +323,31 @@ namespace DS4WindowsTests
             port.SetForcedColor(99, new DS4Color(1, 2, 3));   // 範囲外は何もしない
 
             // Phase13-Step5: 窓口は直接注入（必須）。null は受け付けない
-            Assert.Throws<ArgumentNullException>(() => new DefaultBatteryCheckPort(null, new DS4Windows.Processing.Services.DeviceBatteryText(new NoControllerAccessor())));
+            Assert.Throws<ArgumentNullException>(() => new DefaultBatteryCheckPort(TestLightbar.State, null, new DS4Windows.Processing.Services.DeviceBatteryText(new NoControllerAccessor())));
         }
 
         [Fact]
         public void TheDefaultPort_WritesTheLightBarStatics_ForTheGivenDevice()
         {
-            var port = new DefaultBatteryCheckPort(new NoControllerAccessor(), new DS4Windows.Processing.Services.DeviceBatteryText(new NoControllerAccessor()));
+            var port = new DefaultBatteryCheckPort(TestLightbar.State, new NoControllerAccessor(), new DS4Windows.Processing.Services.DeviceBatteryText(new NoControllerAccessor()));
             int device = 6;
-            bool savedLight = DS4LightBar.forcelight[device];
-            DS4Color savedColor = DS4LightBar.forcedColor[device];
+            bool savedLight = TestLightbar.State.forcelight[device];
+            DS4Color savedColor = TestLightbar.State.forcedColor[device];
             try
             {
                 port.SetForceLight(device, true);
                 port.SetForcedColor(device, new DS4Color(1, 2, 3));
 
-                Assert.True(DS4LightBar.forcelight[device]);
-                Assert.Equal(new DS4Color(1, 2, 3), DS4LightBar.forcedColor[device]);
+                Assert.True(TestLightbar.State.forcelight[device]);
+                Assert.Equal(new DS4Color(1, 2, 3), TestLightbar.State.forcedColor[device]);
 
                 port.SetForceLight(device, false);
-                Assert.False(DS4LightBar.forcelight[device]);
+                Assert.False(TestLightbar.State.forcelight[device]);
             }
             finally
             {
-                DS4LightBar.forcelight[device] = savedLight;
-                DS4LightBar.forcedColor[device] = savedColor;
+                TestLightbar.State.forcelight[device] = savedLight;
+                TestLightbar.State.forcedColor[device] = savedColor;
             }
         }
 

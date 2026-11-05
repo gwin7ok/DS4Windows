@@ -48,7 +48,7 @@ namespace DS4WindowsTests
         private static RecordBoxViewModel CreateViewModel()
         {
             ProfileSettingsService settings = TestRepositoryFactory.CreateProfileSettingsService(new BackingStore(new EnvironmentService()));
-            return new RecordBoxViewModel(ControllerLimits.TestProfileIndex, new DS4ControlSettings(DS4Controls.Cross), false,
+            return new RecordBoxViewModel(TestLightbar.State, ControllerLimits.TestProfileIndex, new DS4ControlSettings(DS4Controls.Cross), false,
                 settings, new EnvironmentService(), null);
         }
 

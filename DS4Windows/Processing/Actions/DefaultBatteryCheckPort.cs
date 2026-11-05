@@ -18,15 +18,19 @@ namespace DS4Windows.Processing.Actions
         private readonly IDeviceStateAccessor _deviceStateAccessor;
         private readonly IDeviceBatteryText _batteryText;
 
-        public DefaultBatteryCheckPort(IDeviceStateAccessor deviceStateAccessor, IDeviceBatteryText batteryText)
+        // Phase14c-Step4（R-05 の前半）: ライトバーの強制表示の状態（旧: DS4LightBar の静的な配列）
+        private readonly DS4Windows.Core.Model.LightbarOverrides _lightbar;
+
+        public DefaultBatteryCheckPort(DS4Windows.Core.Model.LightbarOverrides lightbar, IDeviceStateAccessor deviceStateAccessor, IDeviceBatteryText batteryText)
         {
+            _lightbar = lightbar ?? throw new System.ArgumentNullException(nameof(lightbar));
             _deviceStateAccessor = deviceStateAccessor ?? throw new ArgumentNullException(nameof(deviceStateAccessor));
             _batteryText = batteryText ?? throw new ArgumentNullException(nameof(batteryText));
         }
 
         private DS4Device Controller(int deviceIndex) => _deviceStateAccessor.GetController(deviceIndex);
 
-        private static bool InRange(int deviceIndex) => deviceIndex >= 0 && deviceIndex < DS4LightBar.forcelight.Length;
+        private static bool InRange(int deviceIndex) => deviceIndex >= 0 && deviceIndex < DS4Windows.Core.Settings.ControllerLimits.MaxControllerCount;   // 旧 DS4LightBar.forcelight.Length（同じ値）
 
         public bool HasController(int deviceIndex) => Controller(deviceIndex) != null;
 
@@ -44,12 +48,12 @@ namespace DS4Windows.Processing.Actions
 
         public void SetForceLight(int deviceIndex, bool on)
         {
-            if (InRange(deviceIndex)) DS4LightBar.forcelight[deviceIndex] = on;
+            if (InRange(deviceIndex)) _lightbar.forcelight[deviceIndex] = on;
         }
 
         public void SetForcedColor(int deviceIndex, DS4Color color)
         {
-            if (InRange(deviceIndex)) DS4LightBar.forcedColor[deviceIndex] = color;
+            if (InRange(deviceIndex)) _lightbar.forcedColor[deviceIndex] = color;
         }
     }
 }

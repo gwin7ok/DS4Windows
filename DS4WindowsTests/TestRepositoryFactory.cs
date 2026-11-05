@@ -46,7 +46,7 @@ namespace DS4WindowsTests
         /// <summary>Phase7-Step10c W4: プロファイル（旧形式の XML）の保存・読込（旧: BackingStore のメソッド）。</summary>
         public static DS4Windows.Core.Persistence.LegacyProfileXmlSerializer CreateLegacyProfileXml(BackingStore store = null,
             IProfileSettingsService settings = null, IPathService pathService = null, IProfileIdentityService profileIdentity = null)
-            => new DS4Windows.Core.Persistence.LegacyProfileXmlSerializer(store ?? TestGlobals.Store, pathService ?? new PathService(),
+            => new DS4Windows.Core.Persistence.LegacyProfileXmlSerializer(TestLightbar.State, store ?? TestGlobals.Store, pathService ?? new PathService(),
                 settings ?? TestGlobals.ProfileSettingsServiceInstance, new EnvironmentService(), profileIdentity);
 
         /// <summary>Phase7-Step10c W3: アプリ設定（Profiles.xml）の保存・読込（旧: BackingStore.Load／Save）。</summary>

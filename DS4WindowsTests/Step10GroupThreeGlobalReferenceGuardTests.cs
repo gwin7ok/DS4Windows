@@ -98,7 +98,7 @@ namespace DS4WindowsTests
         {
             Assert.Throws<ArgumentNullException>(() => new MacroViewModel(null));
             Assert.Throws<ArgumentNullException>(() => new LaunchProgramViewModel(null));
-            Assert.Throws<ArgumentNullException>(() => new CheckBatteryViewModel(null, new DS4Windows.Core.Platform.EnvironmentService()));
+            Assert.Throws<ArgumentNullException>(() => new CheckBatteryViewModel(TestLightbar.State, null, new DS4Windows.Core.Platform.EnvironmentService()));
             Assert.Throws<ArgumentNullException>(() => new MultiActButtonViewModel(null));
             Assert.Throws<ArgumentNullException>(() => new SpecialActionViewModel(5, null));
             Assert.Throws<ArgumentNullException>(() => new LoadProfileViewModel(null, null));

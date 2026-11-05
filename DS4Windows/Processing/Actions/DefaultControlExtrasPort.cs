@@ -19,15 +19,19 @@ namespace DS4Windows.Processing.Actions
         private readonly IEnvironmentService _environment;
         private readonly IProfileSettingsService _profileSettings;
 
-        public DefaultControlExtrasPort(IDeviceStateAccessor devices, IDeviceRumbleService rumble, IEnvironmentService environment, IProfileSettingsService profileSettings)
+        // Phase14c-Step4（R-05 の前半）: ライトバーの強制表示の状態（旧: DS4LightBar の静的な配列）
+        private readonly DS4Windows.Core.Model.LightbarOverrides _lightbar;
+
+        public DefaultControlExtrasPort(DS4Windows.Core.Model.LightbarOverrides lightbar, IDeviceStateAccessor devices, IDeviceRumbleService rumble, IEnvironmentService environment, IProfileSettingsService profileSettings)
         {
+            _lightbar = lightbar ?? throw new System.ArgumentNullException(nameof(lightbar));
             _devices = devices ?? throw new ArgumentNullException(nameof(devices));
             _rumble = rumble ?? throw new ArgumentNullException(nameof(rumble));
             _environment = environment ?? throw new ArgumentNullException(nameof(environment));
             _profileSettings = profileSettings ?? throw new ArgumentNullException(nameof(profileSettings));
         }
 
-        private static bool InRange(int deviceIndex) => deviceIndex >= 0 && deviceIndex < DS4LightBar.forcelight.Length;
+        private static bool InRange(int deviceIndex) => deviceIndex >= 0 && deviceIndex < DS4Windows.Core.Settings.ControllerLimits.MaxControllerCount;   // 旧 DS4LightBar.forcelight.Length（同じ値）
 
         public void SetRumble(int deviceIndex, byte heavy, byte light)
         {
@@ -44,16 +48,16 @@ namespace DS4Windows.Processing.Actions
         public void ForceLightbar(int deviceIndex, DS4Color color, byte flash)
         {
             if (!InRange(deviceIndex)) return;
-            DS4LightBar.forcedColor[deviceIndex] = color;
-            DS4LightBar.forcedFlash[deviceIndex] = flash;
-            DS4LightBar.forcelight[deviceIndex] = true;
+            _lightbar.forcedColor[deviceIndex] = color;
+            _lightbar.forcedFlash[deviceIndex] = flash;
+            _lightbar.forcelight[deviceIndex] = true;
         }
 
         public void ClearForcedLightbar(int deviceIndex)
         {
             if (!InRange(deviceIndex)) return;
-            DS4LightBar.forcelight[deviceIndex] = false;
-            DS4LightBar.forcedFlash[deviceIndex] = 0;
+            _lightbar.forcelight[deviceIndex] = false;
+            _lightbar.forcedFlash[deviceIndex] = 0;
         }
 
         public void TrySetTemporarySensitivity(int deviceIndex, int sensitivity)

@@ -74,7 +74,10 @@ namespace DS4Windows.UI
         /// Phase6-Step7b: ランブルテスト・ライトバーのプレビュー・マクロ記録で使う実機のスロット番号。-1 は実機なし。
         /// 渡し忘れをコンパイルで検出するため必須引数とする（Phase6-Step7b-Plan.md 決定2）
         /// </param>
-        public BindingWindow(int deviceNum, DS4Windows.Core.Settings.DS4ControlSettings settings, int targetDevice,
+        // Phase14c-Step4（R-05 の前半）: ライトバーの強制表示の状態（旧: DS4LightBar の静的な配列）
+        private readonly DS4Windows.Core.Model.LightbarOverrides _lightbar;
+
+        public BindingWindow(DS4Windows.Core.Model.LightbarOverrides lightbar, int deviceNum, DS4Windows.Core.Settings.DS4ControlSettings settings, int targetDevice,
             DS4Windows.UI.Abstractions.IEditorWindowFactory editorWindowFactory,
             DS4Windows.Core.Abstractions.IProfileSettingsService profileSettingsService,
             DS4Windows.Processing.Abstractions.IOutputSlotService outputSlotService,
@@ -82,6 +85,7 @@ namespace DS4Windows.UI
             DS4Windows.Processing.ControlService controlService,
             ExposeMode expose)
         {
+            _lightbar = lightbar ?? throw new System.ArgumentNullException(nameof(lightbar));
             this.editorWindowFactory = editorWindowFactory ?? throw new ArgumentNullException(nameof(editorWindowFactory));
             InitializeComponent();
 
@@ -89,7 +93,7 @@ namespace DS4Windows.UI
 
             this.controlService = controlService ?? throw new ArgumentNullException(nameof(controlService));
             this.expose = expose;
-            bindingVM = new BindingWindowViewModel(deviceNum, settings, profileSettingsService, outputSlotService, environmentService, targetDevice);
+            bindingVM = new BindingWindowViewModel(_lightbar, deviceNum, settings, profileSettingsService, outputSlotService, environmentService, targetDevice);
 
             if (settings.control != DS4Windows.Core.Model.DS4Controls.None)
             {

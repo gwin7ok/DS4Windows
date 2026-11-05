@@ -31,7 +31,7 @@ namespace DS4WindowsTests
         private static DS4KeyType SaveMacroThroughTheWindow(DS4KeyType keyTypeFromRecordBox, bool pickerScanCodeWasChecked)
         {
             var settings = new DS4ControlSettings(DS4Controls.Cross);
-            var vm = new BindingWindowViewModel(ControllerLimits.TestProfileIndex, settings,
+            var vm = new BindingWindowViewModel(TestLightbar.State, ControllerLimits.TestProfileIndex, settings,
                 TestRepositoryFactory.CreateProfileSettingsService(), TestRepositoryFactory.CreateOutputSlotService(),
                 new EnvironmentService(), -1);
             vm.CurrentOutBind.hasScanCode = pickerScanCodeWasChecked;

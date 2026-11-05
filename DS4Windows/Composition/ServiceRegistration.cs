@@ -52,6 +52,7 @@ namespace DS4Windows.Composition
             services.AddSingleton<SyntheticInputState>();
             services.AddSingleton<MacroRuntimeState>();
             services.AddSingleton<StickMotionState>();
+            services.AddSingleton<DS4Windows.Core.Model.LightbarOverrides>();   // Phase14c-Step4（R-05 の前半）: ライトバーの強制表示の状態（旧: DS4LightBar の静的な配列）
             // Phase7-Step8 W3: Actions.xml の読み込み後のリセットの購読者（保持クラスをコンストラクターで受ける）
             services.AddSingleton<ActionsLoadedRuntimeReset>();
             // Phase7-Step8 W3: 合成キーの送出。Phase14c-Step3（R-06）: 静的な橋渡し SyntheticDispatcher（Bind）は撤廃し、利用者（キーの操作の部品）は
@@ -315,6 +316,7 @@ namespace DS4Windows.Composition
             services.AddSingleton<IDeviceStateAccessor>(sp => sp.GetRequiredService<IDeviceSlotState>());
             // Phase13-Step5b: 入力レポートの処理（旧 ControlService.On_Report）と、その作業用の状態の持ち主。出力種別の配列は IOutputDeviceTypeState から直接受ける
             services.AddSingleton<IInputReportProcessor>(sp => new InputReportProcessor(
+                sp.GetRequiredService<DS4Windows.Core.Model.LightbarOverrides>(),   // Phase14c-Step4
                 sp.GetRequiredService<IDeviceSlotState>(),
                 sp.GetRequiredService<ILatencyMonitor>(),
                 sp.GetRequiredService<IPathService>(),
