@@ -123,7 +123,7 @@ namespace DS4Windows.Core.Persistence.ProfileSections
             try
             {
                 Item = m_Xdoc.SelectSingleNode("/" + rootname + "/L2TriggerEffect");
-                if (Enum.TryParse(Item?.InnerText, out DS4Windows.Input.Devices.TriggerEffects tempMode))
+                if (Enum.TryParse(Item?.InnerText, out DS4Windows.Core.Model.TriggerEffects tempMode))
                 {
                     store.l2OutputSettings[device].TriggerEffect = tempMode;
                 }
@@ -158,7 +158,7 @@ namespace DS4Windows.Core.Persistence.ProfileSections
             try
             {
                 Item = m_Xdoc.SelectSingleNode("/" + rootname + "/R2TriggerEffect");
-                if (Enum.TryParse(Item?.InnerText, out DS4Windows.Input.Devices.TriggerEffects tempMode))
+                if (Enum.TryParse(Item?.InnerText, out DS4Windows.Core.Model.TriggerEffects tempMode))
                 {
                     store.r2OutputSettings[device].TriggerEffect = tempMode;
                 }

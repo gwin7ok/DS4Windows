@@ -21,7 +21,7 @@ using System.Collections.Generic;
 using System.Windows.Documents;
 using System.Xml;
 using System.Xml.Serialization;
-using DS4Windows.Output;
+using DS4Windows.Core.Model;
 
 namespace DS4Windows.Core.Persistence.Dto
 {

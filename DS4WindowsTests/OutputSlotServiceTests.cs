@@ -1,6 +1,7 @@
 using System;
 using Xunit;
 using DS4Windows.Core.Abstractions;
+using DS4Windows.Core.Model;
 using DS4Windows.Output;
 
 namespace DS4WindowsTests

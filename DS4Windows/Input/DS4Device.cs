@@ -27,6 +27,7 @@ using System.Diagnostics;
 using System.Linq;
 using System.Drawing;
 using DS4Windows.Core.Logging;
+using DS4Windows.Core.Model;
 using DS4Windows.Core.Settings;
 using DS4Windows.Input.Hid;
 
@@ -250,7 +251,7 @@ namespace DS4Windows.Input
         /// </summary>
         public void WriteOutputOffOnce()
         {
-            if (deviceType != DS4Windows.Input.Devices.InputDeviceType.DS4 || (featureSet & VidPidFeatureSet.NoOutputData) != 0 || !postInitDone || isDisconnecting)
+            if (deviceType != DS4Windows.Core.Model.InputDeviceType.DS4 || (featureSet & VidPidFeatureSet.NoOutputData) != 0 || !postInitDone || isDisconnecting)
                 return;
 
             try
@@ -465,8 +466,8 @@ namespace DS4Windows.Input
             HidD_SetOutputReport,
         }
 
-        protected DS4Windows.Input.Devices.InputDeviceType deviceType;
-        public DS4Windows.Input.Devices.InputDeviceType DeviceType { get => deviceType; }
+        protected DS4Windows.Core.Model.InputDeviceType deviceType;
+        public DS4Windows.Core.Model.InputDeviceType DeviceType { get => deviceType; }
 
         protected GyroMouseSens gyroMouseSensSettings;
         public virtual GyroMouseSens GyroMouseSensSettings { get => gyroMouseSensSettings; }
@@ -556,7 +557,7 @@ namespace DS4Windows.Input
             Mac = hDevice.ReadSerial(SerialReportID);
 
             //HidDevice hidDevice = hDevice;
-            deviceType = DS4Windows.Input.Devices.InputDeviceType.DS4;
+            deviceType = DS4Windows.Core.Model.InputDeviceType.DS4;
             gyroMouseSensSettings = new GyroMouseSens();
             optionsStore = nativeOptionsStore = new DS4ControllerOptions(deviceType);
             SetupOptionsEvents();
@@ -752,7 +753,7 @@ namespace DS4Windows.Input
         /// </summary>
         public void PrimeBatteryReading()
         {
-            if (deviceType != DS4Windows.Input.Devices.InputDeviceType.DS4 || !postInitDone || ds4Input != null || isDisconnecting)
+            if (deviceType != DS4Windows.Core.Model.InputDeviceType.DS4 || !postInitDone || ds4Input != null || isDisconnecting)
                 return;
 
             if ((featureSet & VidPidFeatureSet.NoBatteryReading) != 0)
@@ -2051,7 +2052,7 @@ namespace DS4Windows.Input
         }
 
         public virtual void PrepareTriggerEffect(DS4Windows.Input.Devices.TriggerId trigger,
-            DS4Windows.Input.Devices.TriggerEffects effect, DS4Windows.Input.Devices.TriggerEffectSettings effectSettings)
+            DS4Windows.Core.Model.TriggerEffects effect, DS4Windows.Input.Devices.TriggerEffectSettings effectSettings)
         {
         }
 

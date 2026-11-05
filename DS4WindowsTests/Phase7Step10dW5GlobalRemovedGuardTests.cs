@@ -7,6 +7,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Xunit;
 using Xunit.Abstractions;
 using DS4Windows.Composition;
+using DS4Windows.Core.Model;
 using DS4Windows.Core.Platform;
 using DS4Windows.Core.Settings;
 using DS4Windows.Input;

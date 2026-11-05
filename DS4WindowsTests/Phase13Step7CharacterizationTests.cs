@@ -1,6 +1,6 @@
 using Xunit;
+using DS4Windows.Core.Model;
 using DS4Windows.Core.Settings;
-using DS4Windows.Output;
 using DS4Windows.Processing.Abstractions;
 
 namespace DS4WindowsTests

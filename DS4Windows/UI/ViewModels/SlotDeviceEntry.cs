@@ -23,6 +23,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
+using DS4Windows.Core.Model;
 using DS4Windows.Output;
 using DS4Windows.Output.Devices;
 

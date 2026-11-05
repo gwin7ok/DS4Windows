@@ -1,6 +1,6 @@
 using System;
+using DS4Windows.Core.Model;
 using DS4Windows.Core.Settings;
-using DS4Windows.Output.Devices;
 
 namespace DS4Windows.Processing.Actions
 {

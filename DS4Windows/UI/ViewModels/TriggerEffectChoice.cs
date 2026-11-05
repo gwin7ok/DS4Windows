@@ -37,10 +37,10 @@ namespace DS4Windows.UI.ViewModels
         public string DisplayName { get => displayName; set => displayName = value; }
 
 
-        private DS4Windows.Input.Devices.TriggerEffects mode;
-        public DS4Windows.Input.Devices.TriggerEffects Mode { get => mode; set => mode = value; }
+        private DS4Windows.Core.Model.TriggerEffects mode;
+        public DS4Windows.Core.Model.TriggerEffects Mode { get => mode; set => mode = value; }
 
-        public TriggerEffectChoice(string name, DS4Windows.Input.Devices.TriggerEffects mode)
+        public TriggerEffectChoice(string name, DS4Windows.Core.Model.TriggerEffects mode)
         {
             this.displayName = name;
             this.mode = mode;

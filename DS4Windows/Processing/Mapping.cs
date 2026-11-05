@@ -34,6 +34,7 @@ using System.Diagnostics;
 using System.Drawing; // Point struct
 using Sensorit.Base;
 using DS4Windows.Core.Logging;
+using DS4Windows.Core.Model;
 using DS4Windows.Core.Settings;
 using DS4Windows.Core.Utilities;
 using DS4Windows.Input;

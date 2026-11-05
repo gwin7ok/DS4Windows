@@ -30,6 +30,7 @@ using System.Windows.Data;
 using System.Windows.Media;
 using DS4Windows.Core.Abstractions;
 using DS4Windows.Core.Logging;
+using DS4Windows.Core.Model;
 using DS4Windows.Core.Profiles;
 using DS4Windows.Input;
 

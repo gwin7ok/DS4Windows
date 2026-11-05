@@ -21,10 +21,8 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Windows.Input;
 using DS4Windows.Core.Abstractions;
+using DS4Windows.Core.Model;
 using DS4Windows.Core.Settings;
-using DS4Windows.Input;
-using DS4Windows.Output;
-using DS4Windows.Output.Devices;
 
 namespace DS4Windows.UI.ViewModels
 {

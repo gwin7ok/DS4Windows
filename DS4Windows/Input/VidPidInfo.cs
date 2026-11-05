@@ -23,7 +23,7 @@ using System.Diagnostics;
 using System.Linq;
 using System.Runtime.InteropServices;
 using System.Security.Principal;
-using DS4Windows.Input.Devices;
+using DS4Windows.Core.Model;
 
 namespace DS4Windows.Input
 {

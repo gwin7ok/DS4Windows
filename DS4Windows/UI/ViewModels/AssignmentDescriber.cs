@@ -2,8 +2,8 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Windows.Input;
+using DS4Windows.Core.Model;
 using DS4Windows.Core.Settings;
-using DS4Windows.Output.Devices;
 using DS4Windows.Processing;
 
 namespace DS4Windows.UI.ViewModels

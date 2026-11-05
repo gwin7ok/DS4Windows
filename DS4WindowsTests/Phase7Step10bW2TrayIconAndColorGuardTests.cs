@@ -3,9 +3,9 @@ using System.Linq;
 using System.Text.RegularExpressions;
 using Xunit;
 using Xunit.Abstractions;
+using DS4Windows.Core.Model;
 using DS4Windows.Core.Settings;
 using DS4Windows.Core.Utilities;
-using DS4Windows.Input;
 using DS4Windows.UI;
 
 namespace DS4WindowsTests

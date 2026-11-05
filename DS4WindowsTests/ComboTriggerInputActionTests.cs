@@ -1,6 +1,7 @@
 using System;
 using Xunit;
 using DS4Windows.Core.Abstractions;
+using DS4Windows.Core.Model;
 using DS4Windows.Input;
 using DS4Windows.Processing;
 using DS4Windows.Processing.Actions;

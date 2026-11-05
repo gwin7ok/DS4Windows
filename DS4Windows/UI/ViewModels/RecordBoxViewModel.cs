@@ -28,9 +28,9 @@ using System.Windows.Data;
 using System.Windows.Input;
 using System.Windows.Media;
 using DS4Windows.Core.Abstractions;
+using DS4Windows.Core.Model;
 using DS4Windows.Core.Settings;
 using DS4Windows.Input;
-using DS4Windows.Output;
 using DS4Windows.Processing;
 
 namespace DS4Windows.UI.ViewModels

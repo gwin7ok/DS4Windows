@@ -37,7 +37,7 @@ using System.Xml;
 using System.Xml.Serialization;
 using WpfScreenHelper;
 using static DS4Windows.Core.Utilities.Util;
-namespace DS4Windows.Output
+namespace DS4Windows.Core.Model
 {
     public enum OutContType : uint { None = 0, X360, DS4 }
 }

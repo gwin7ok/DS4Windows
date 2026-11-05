@@ -168,20 +168,20 @@ namespace DS4Windows.UI.ViewModels
             int result = 0;
             switch (currentStore.DeviceType)
             {
-                case DS4Windows.Input.Devices.InputDeviceType.DS3:
+                case DS4Windows.Core.Model.InputDeviceType.DS3:
                     result = 0;
                     break;
-                case DS4Windows.Input.Devices.InputDeviceType.DS4:
+                case DS4Windows.Core.Model.InputDeviceType.DS4:
                     result = 1;
                     break;
-                case DS4Windows.Input.Devices.InputDeviceType.DualSense:
+                case DS4Windows.Core.Model.InputDeviceType.DualSense:
                     result = 2;
                     break;
-                case DS4Windows.Input.Devices.InputDeviceType.SwitchPro:
+                case DS4Windows.Core.Model.InputDeviceType.SwitchPro:
                     result = 3;
                     break;
-                case DS4Windows.Input.Devices.InputDeviceType.JoyConL:
-                case DS4Windows.Input.Devices.InputDeviceType.JoyConR:
+                case DS4Windows.Core.Model.InputDeviceType.JoyConL:
+                case DS4Windows.Core.Model.InputDeviceType.JoyConR:
                     result = 4;
                     break;
                 default:
@@ -200,20 +200,20 @@ namespace DS4Windows.UI.ViewModels
 
             switch (currentStore.DeviceType)
             {
-                case DS4Windows.Input.Devices.InputDeviceType.DS3:
+                case DS4Windows.Core.Model.InputDeviceType.DS3:
                     // Does not have device specific options
                     break;
-                case DS4Windows.Input.Devices.InputDeviceType.DS4:
+                case DS4Windows.Core.Model.InputDeviceType.DS4:
                     dataContextObject = new DS4ControllerOptionsWrapper(CurrentDS4Options, serviceDeviceOpts.DS4DeviceOpts);
                     break;
-                case DS4Windows.Input.Devices.InputDeviceType.DualSense:
+                case DS4Windows.Core.Model.InputDeviceType.DualSense:
                     dataContextObject = new DualSenseControllerOptionsWrapper(CurrentDSOptions, serviceDeviceOpts.DualSenseOpts);
                     break;
-                case DS4Windows.Input.Devices.InputDeviceType.SwitchPro:
+                case DS4Windows.Core.Model.InputDeviceType.SwitchPro:
                     dataContextObject = new SwitchProControllerOptionsWrapper(CurrentSwitchProOptions, serviceDeviceOpts.SwitchProDeviceOpts);
                     break;
-                case DS4Windows.Input.Devices.InputDeviceType.JoyConL:
-                case DS4Windows.Input.Devices.InputDeviceType.JoyConR:
+                case DS4Windows.Core.Model.InputDeviceType.JoyConL:
+                case DS4Windows.Core.Model.InputDeviceType.JoyConR:
                     dataContextObject = new JoyConControllerOptionsWrapper(CurrentJoyConOptions, serviceDeviceOpts.JoyConDeviceOpts);
                     break;
                 default:

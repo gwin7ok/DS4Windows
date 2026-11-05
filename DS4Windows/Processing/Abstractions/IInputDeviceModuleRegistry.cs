@@ -1,5 +1,5 @@
 
-using DS4Windows.Input.Devices;
+using DS4Windows.Core.Model;
 
 namespace DS4Windows.Processing.Abstractions
 {

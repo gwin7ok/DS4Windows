@@ -1,7 +1,7 @@
 using System;
 using System.Collections.Generic;
+using DS4Windows.Core.Model;
 using DS4Windows.Input;
-using DS4Windows.Output.Devices;
 
 namespace DS4Windows.Processing.Actions
 {

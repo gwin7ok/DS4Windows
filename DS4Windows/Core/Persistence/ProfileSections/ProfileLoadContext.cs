@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Xml;
 using DS4Windows.Core.Abstractions;
+using DS4Windows.Core.Model;
 using DS4Windows.Core.Settings;
-using DS4Windows.Output;
 
 namespace DS4Windows.Core.Persistence.ProfileSections
 {

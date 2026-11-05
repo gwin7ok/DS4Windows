@@ -20,6 +20,7 @@ using System.Xml.Serialization;
 using WpfScreenHelper;
 using static DS4Windows.Core.Utilities.Util;
 using DS4Windows.Core.Abstractions;
+using DS4Windows.Core.Model;
 using DS4Windows.Core.Persistence.ProfileSections;
 using DS4Windows.Core.Settings;
 using DS4Windows.Input;

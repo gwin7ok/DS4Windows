@@ -1,4 +1,4 @@
-using DS4Windows.Output.Devices;
+using DS4Windows.Core.Model;
 
 namespace DS4Windows.Processing.Actions
 {

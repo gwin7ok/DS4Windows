@@ -22,6 +22,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using DS4Windows.Core.Logging;
+using DS4Windows.Core.Model;
 
 namespace DS4Windows.Output
 {

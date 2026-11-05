@@ -20,8 +20,7 @@ using System;
 using System.Collections.Generic;
 using System.Windows.Input;
 using DS4Windows.Core.Abstractions;
-using DS4Windows.Output;
-using DS4Windows.Output.Devices;
+using DS4Windows.Core.Model;
 
 namespace DS4Windows.Processing
 {

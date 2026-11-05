@@ -21,6 +21,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Threading;
 using DS4Windows.Core.Logging;
+using DS4Windows.Core.Model;
 using DS4Windows.Input.Hid;
 
 namespace DS4Windows.Input.Devices

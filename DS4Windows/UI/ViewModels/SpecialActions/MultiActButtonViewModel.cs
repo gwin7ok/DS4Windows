@@ -22,8 +22,8 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using DS4Windows.Core.Abstractions;
+using DS4Windows.Core.Model;
 using DS4Windows.Core.Settings;
-using DS4Windows.Input;
 using DS4Windows.UI.ViewModels.Util;
 
 namespace DS4Windows.UI.ViewModels.SpecialActions

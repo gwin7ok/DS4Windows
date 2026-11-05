@@ -1,6 +1,6 @@
 using System;
 using System.Collections.Generic;
-using DS4Windows.Input.Devices;
+using DS4Windows.Core.Model;
 using DS4Windows.Processing.Abstractions;
 
 namespace DS4Windows.Processing.Services

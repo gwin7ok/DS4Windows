@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace DS4Windows.Input
+namespace DS4Windows.Core.Model
 {
     /// <summary>
     /// Phase7-Step10b W1（Q1＝A）: DS4 入力の表示名と、マクロ記録用の値の表（旧: <c>Global</c> の静的メンバー。宣言は移動のみ）。

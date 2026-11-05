@@ -2,6 +2,7 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
 using System.Linq;
 using System.Reflection;
+using DS4Windows.Core.Model;
 using DS4Windows.Core.Settings;
 using DS4Windows.Input;
 using DS4Windows.Processing;

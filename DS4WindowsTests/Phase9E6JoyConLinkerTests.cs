@@ -3,9 +3,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using Xunit;
+using DS4Windows.Core.Model;
 using DS4Windows.Core.Settings;
 using DS4Windows.Input;
-using DS4Windows.Input.Devices;
 using DS4Windows.Processing.Abstractions;
 using DS4Windows.Processing.Services;
 

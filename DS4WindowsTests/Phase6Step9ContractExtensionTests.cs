@@ -2,9 +2,9 @@ using System;
 using System.IO;
 using Xunit;
 using DS4Windows.Core.Abstractions;
+using DS4Windows.Core.Model;
 using DS4Windows.Core.Platform;
 using DS4Windows.Core.Settings;
-using DS4Windows.Input;
 using DS4Windows.Output.Kbm;
 
 namespace DS4WindowsTests

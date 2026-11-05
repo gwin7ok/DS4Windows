@@ -20,10 +20,10 @@ using System.ComponentModel;
 using System.Windows.Forms;
 using DS4Windows.Core.Abstractions;
 using DS4Windows.Core.Logging;
+using DS4Windows.Core.Model;
 using DS4Windows.Core.Profiles;
 using DS4Windows.Core.Settings;
 using DS4Windows.Input;
-using DS4Windows.Output;
 using DS4Windows.Processing;
 using DS4Windows.Processing.Abstractions;
 using DS4Windows.Processing.Actions;
@@ -677,18 +677,18 @@ namespace DS4Windows.UI
 
         private void AssignTiltAssociation()
         {
-            gyroZNLb.DataContext = mappingListVM.ControlMap[DS4Windows.Input.DS4Controls.GyroZNeg];
-            gyroZPLb.DataContext = mappingListVM.ControlMap[DS4Windows.Input.DS4Controls.GyroZPos];
-            gyroXNLb.DataContext = mappingListVM.ControlMap[DS4Windows.Input.DS4Controls.GyroXNeg];
-            gyroXLb.DataContext = mappingListVM.ControlMap[DS4Windows.Input.DS4Controls.GyroXPos];
+            gyroZNLb.DataContext = mappingListVM.ControlMap[DS4Windows.Core.Model.DS4Controls.GyroZNeg];
+            gyroZPLb.DataContext = mappingListVM.ControlMap[DS4Windows.Core.Model.DS4Controls.GyroZPos];
+            gyroXNLb.DataContext = mappingListVM.ControlMap[DS4Windows.Core.Model.DS4Controls.GyroXNeg];
+            gyroXLb.DataContext = mappingListVM.ControlMap[DS4Windows.Core.Model.DS4Controls.GyroXPos];
         }
 
         private void AssignSwipeAssociation()
         {
-            swipeUpLb.DataContext = mappingListVM.ControlMap[DS4Windows.Input.DS4Controls.SwipeUp];
-            swipeDownLb.DataContext = mappingListVM.ControlMap[DS4Windows.Input.DS4Controls.SwipeDown];
-            swipeLeftLb.DataContext = mappingListVM.ControlMap[DS4Windows.Input.DS4Controls.SwipeLeft];
-            swipeRightLb.DataContext = mappingListVM.ControlMap[DS4Windows.Input.DS4Controls.SwipeRight];
+            swipeUpLb.DataContext = mappingListVM.ControlMap[DS4Windows.Core.Model.DS4Controls.SwipeUp];
+            swipeDownLb.DataContext = mappingListVM.ControlMap[DS4Windows.Core.Model.DS4Controls.SwipeDown];
+            swipeLeftLb.DataContext = mappingListVM.ControlMap[DS4Windows.Core.Model.DS4Controls.SwipeLeft];
+            swipeRightLb.DataContext = mappingListVM.ControlMap[DS4Windows.Core.Model.DS4Controls.SwipeRight];
         }
 
         private void AssignTriggerFullPullAssociation()

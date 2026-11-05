@@ -1,8 +1,7 @@
 using System;
 using System.IO;
 using Xunit;
-using DS4Windows.Input;
-using DS4Windows.Output.Devices;
+using DS4Windows.Core.Model;
 
 namespace DS4WindowsTests
 {

@@ -37,6 +37,7 @@ using System.Xml;
 using System.Xml.Serialization;
 using WpfScreenHelper;
 using static DS4Windows.Core.Utilities.Util;
+using DS4Windows.Core.Model;
 using DS4Windows.Input;
 namespace DS4Windows.Core.Settings
 {

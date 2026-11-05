@@ -4,8 +4,8 @@ using System.Globalization;
 using System.Linq;
 using System.Xml;
 using DS4Windows.Core.Logging;
+using DS4Windows.Core.Model;
 using DS4Windows.Core.Settings;
-using DS4Windows.Input;
 
 namespace DS4Windows.Core.Persistence
 {

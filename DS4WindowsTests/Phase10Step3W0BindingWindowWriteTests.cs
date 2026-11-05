@@ -1,10 +1,9 @@
 using System;
 using System.Windows;
 using Xunit;
+using DS4Windows.Core.Model;
 using DS4Windows.Core.Platform;
 using DS4Windows.Core.Settings;
-using DS4Windows.Input;
-using DS4Windows.Output.Devices;
 using DS4Windows.Output.Kbm;
 using DS4Windows.UI.ViewModels;
 

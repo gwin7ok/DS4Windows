@@ -28,7 +28,7 @@ using System.Linq;
 using System.Drawing;
 
 
-namespace DS4Windows.Input
+namespace DS4Windows.Core.Model
 {
     public struct DS4Color : IEquatable<DS4Color>
     {

@@ -1,7 +1,6 @@
 using System.Linq;
 using Xunit;
-using DS4Windows.Input;
-using DS4Windows.Output;
+using DS4Windows.Core.Model;
 using DS4Windows.UI.ViewModels;
 
 namespace DS4WindowsTests

@@ -28,9 +28,8 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using Microsoft.Win32;
 using DS4Windows.Core.Abstractions;
+using DS4Windows.Core.Model;
 using DS4Windows.Core.Settings;
-using DS4Windows.Input;
-using DS4Windows.Output.Devices;
 
 namespace DS4Windows.UI.ViewModels
 {

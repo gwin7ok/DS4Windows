@@ -532,7 +532,7 @@ namespace DS4Windows.UI
                     actionTypeCombo.SelectedIndex = specialActVM.TypeCatalog.DefaultIndex;
                 }
                 else if (pressKeyVM.SelectedActionType == DS4Windows.Core.Settings.DS4ControlSettings.ActionType.Button
-                    && pressKeyVM.SelectedButton == (int)DS4Windows.Output.Devices.X360Controls.Unbound)
+                    && pressKeyVM.SelectedButton == (int)DS4Windows.Core.Model.X360Controls.Unbound)
                 {
                     actionTypeCombo.SelectedIndex = specialActVM.TypeCatalog.UnboundIndex;
                 }

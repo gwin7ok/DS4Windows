@@ -20,6 +20,7 @@ using System;
 using System.Drawing;
 using static System.Math;
 using System.Diagnostics;
+using DS4Windows.Core.Model;
 using DS4Windows.Core.Settings;
 using DS4Windows.Core.Utilities;
 

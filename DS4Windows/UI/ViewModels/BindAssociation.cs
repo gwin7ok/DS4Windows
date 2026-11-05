@@ -24,7 +24,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Media;
-using DS4Windows.Output.Devices;
+using DS4Windows.Core.Model;
 
 namespace DS4Windows.UI.ViewModels
 {

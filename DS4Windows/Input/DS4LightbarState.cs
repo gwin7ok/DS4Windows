@@ -26,6 +26,7 @@ using System.Diagnostics;
 
 using System.Linq;
 using System.Drawing;
+using DS4Windows.Core.Model;
 
 
 namespace DS4Windows.Input

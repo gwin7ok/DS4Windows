@@ -26,7 +26,7 @@ namespace DS4Windows.Core.Settings
     {
         public const TwoStageTriggerMode DEFAULT_TRIG_MODE = TwoStageTriggerMode.Disabled;
         public const int DEFAULT_HIP_TIME = 100;
-        public const DS4Windows.Input.Devices.TriggerEffects DEFAULT_TRIGGER_EFFECT = DS4Windows.Input.Devices.TriggerEffects.None;
+        public const DS4Windows.Core.Model.TriggerEffects DEFAULT_TRIGGER_EFFECT = DS4Windows.Core.Model.TriggerEffects.None;
 
         public TwoStageTriggerMode twoStageMode = DEFAULT_TRIG_MODE;
         public TwoStageTriggerMode TwoStageMode
@@ -42,8 +42,8 @@ namespace DS4Windows.Core.Settings
         public event EventHandler TwoStageModeChanged;
 
         public int hipFireMS = DEFAULT_HIP_TIME;
-        public DS4Windows.Input.Devices.TriggerEffects triggerEffect = DEFAULT_TRIGGER_EFFECT;
-        public DS4Windows.Input.Devices.TriggerEffects TriggerEffect
+        public DS4Windows.Core.Model.TriggerEffects triggerEffect = DEFAULT_TRIGGER_EFFECT;
+        public DS4Windows.Core.Model.TriggerEffects TriggerEffect
         {
             get => triggerEffect;
             set

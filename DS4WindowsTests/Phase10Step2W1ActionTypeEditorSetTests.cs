@@ -1,10 +1,9 @@
 using System;
 using System.Collections.Generic;
 using Xunit;
+using DS4Windows.Core.Model;
 using DS4Windows.Core.Platform;
 using DS4Windows.Core.Settings;
-using DS4Windows.Input;
-using DS4Windows.Output.Devices;
 using DS4Windows.UI.ViewModels;
 using DS4Windows.UI.ViewModels.SpecialActions;
 

@@ -2,6 +2,7 @@ using System;
 using System.Threading.Tasks;
 using DS4Windows.Core.Abstractions;
 using DS4Windows.Core.Logging;
+using DS4Windows.Core.Model;
 using DS4Windows.Core.Settings;
 using DS4Windows.Input;
 using DS4Windows.Output;

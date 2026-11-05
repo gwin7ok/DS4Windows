@@ -92,7 +92,7 @@ namespace DS4Windows.UI
             if (tempEntry != null &&
                 tempEntry.OutSlotDevice.CurrentReserveStatus ==
                 DS4Windows.Output.OutSlotDevice.ReserveStatus.Permanent &&
-                tempEntry.OutSlotDevice.PermanentType != DS4Windows.Output.OutContType.None)
+                tempEntry.OutSlotDevice.PermanentType != DS4Windows.Core.Model.OutContType.None)
             {
                 tempEntry.OutSlotDevice.CurrentType = tempEntry.OutSlotDevice.PermanentType;
                 tempEntry.RequestPlugin();

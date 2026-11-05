@@ -25,7 +25,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Xml;
 using System.Xml.Serialization;
-using DS4Windows.Input.Devices;
+using DS4Windows.Core.Model;
 
 namespace DS4Windows.Core.Settings
 {
