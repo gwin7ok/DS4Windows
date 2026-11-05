@@ -16,7 +16,7 @@ namespace DS4WindowsTests
     /// 保存結果の同一性は <c>Phase7Step10cGoldenPersistenceTests</c>（プロファイルの既定／変化させた状態）と
     /// <c>ProfileLegacyXmlCompletenessTests</c> が固定する。ソースが見つからない環境では、ソースの検査を行わず合格とする。
     /// </summary>
-    [Collection("ServiceProviderHolder")]
+    [Collection(SharedHostStateCollection.Name)]
     public class Phase7Step10cW5LegacyProfileSaveGuardTests
     {
         private static readonly string[] MovedMethods =

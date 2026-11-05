@@ -11,7 +11,7 @@ namespace DS4WindowsTests
     /// スペシャルアクション一覧に「トリガー・アクション欄が空のグレーの項目」として表示されること
     /// （36d124a6 のリファクタで失われていた 40011c12 の動作の復活）。
     /// </summary>
-    [Collection("ServiceProviderHolder")]
+    [Collection(SharedHostStateCollection.Name)]
     public class SpecialActionsListViewModelMissingActionTests
     {
         private static SpecialActionsListViewModel CreateVm() =>

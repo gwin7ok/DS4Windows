@@ -8,7 +8,7 @@ namespace DS4WindowsTests
     /// Phase9 Steering 削除 W4（Phase9-SteeringWheel-Removal-Plan.md）: ステアリングの設定（<c>SASteeringWheelEmulationAxis</c>／<c>SASteeringWheelEmulationRange</c>／<c>SASteeringWheelFuzz</c>／<c>SASteeringWheelSmoothingOptions</c>）は、
     /// プロファイル XML に書かれなくなり、古いプロファイルにこれらの要素が残っていても、無視されて、ほかの設定が正しく読み込まれること。
     /// </summary>
-    [Collection("ServiceProviderHolder")]
+    [Collection(SharedHostStateCollection.Name)]
     public class Phase9SteeringW4LegacyProfileTests
     {
         private static readonly string[] RemovedElements =

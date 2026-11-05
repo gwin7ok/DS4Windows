@@ -13,7 +13,7 @@ namespace DS4WindowsTests
     /// 強さ（0〜100%）の固定値で出す。Controls のボタンが元のときの出力（軸は端［255／0］、トリガーは 255、マウス移動はボタンが元のときの量）を 100% とし、比例させる。
     /// デジタルな出力先（ボタン、マウスのボタン、ホイール）は、従来どおり <c>PressX360</c>。
     /// </summary>
-    [Collection("ServiceProviderHolder")]
+    [Collection(SharedHostStateCollection.Name)]
     public class Phase10Step5SaAnalogOutputTests
     {
         private sealed class RecordingFrame : IPadFrameOutput, IMouseMoveFrameOutput

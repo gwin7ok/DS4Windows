@@ -14,7 +14,7 @@ namespace DS4WindowsTests
     /// Phase9（Phase9-ControlsPadToggle-Plan.md）: Controls のパッドボタンの Toggle。SA の Button と同じ部品（<c>ButtonOutputAction</c>）で処理する。
     /// 押すたびに ON／OFF が切り替わり、ON の間は、仮想パッドのそのボタンが押され続ける（元のボタンの通常の出力は消える）。
     /// </summary>
-    [Collection("ServiceProviderHolder")]
+    [Collection(SharedHostStateCollection.Name)]
     public class Phase9ControlsPadToggleTests
     {
         [Fact]

@@ -20,7 +20,7 @@ namespace DS4WindowsTests
     ///   （メモリ上のリストだけを変えていた旧 RemoveAction は Phase7-Step2 W6 で削除した。別物）
     /// Global 状態を変更するため、保存先とアクションの一覧を必ず元に戻す（Phase6-Status.md §6.4-1）。
     /// </summary>
-    [Collection("ServiceProviderHolder")]
+    [Collection(SharedHostStateCollection.Name)]
     public class Phase6Step10GroupThreeContractTests
     {
         private readonly ITestOutputHelper _output;

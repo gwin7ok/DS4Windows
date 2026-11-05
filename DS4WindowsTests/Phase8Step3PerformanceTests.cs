@@ -15,7 +15,7 @@ namespace DS4WindowsTests
     /// 割り当てが 0 であることは厳密に検査する。処理時間は出力するだけで、失敗条件にしない（環境依存のため）。
     /// Step7 の各 PR の前後で、このテストの出力（1 フレームあたりの時間）を比較する。
     /// </summary>
-    [Collection("ServiceProviderHolder")]
+    [Collection(SharedHostStateCollection.Name)]
     public class Phase8Step3PerformanceTests
     {
         private const int Device = 2;

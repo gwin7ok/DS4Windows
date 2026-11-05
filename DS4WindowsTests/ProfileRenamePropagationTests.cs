@@ -10,7 +10,7 @@ namespace DS4WindowsTests
     /// Phase6-Step10-4-5d: プロファイルの名前変更が、プロファイル切替のスペシャルアクションの切替先へ伝わること。
     /// </summary>
     // Global.store（静的）を一時的に差し替えるため、同じコレクションで直列に実行する
-    [Collection("ServiceProviderHolder")]
+    [Collection(SharedHostStateCollection.Name)]
     public class ProfileRenamePropagationTests
     {
         [Fact]

@@ -11,7 +11,7 @@ namespace DS4WindowsTests
     /// <summary>
     /// Phase8-Step4 W1（Phase8-Step4-Plan.md §2.1）: 契約・登録簿・移行スイッチのテスト。
     /// </summary>
-    [Collection("ServiceProviderHolder")]
+    [Collection(SharedHostStateCollection.Name)]
     public class Phase8Step4W1ContractTests
     {
         private sealed class FakeInputAction : IInputAction

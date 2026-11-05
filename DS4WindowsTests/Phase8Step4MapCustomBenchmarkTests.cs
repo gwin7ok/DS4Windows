@@ -19,7 +19,7 @@ namespace DS4WindowsTests
     /// （配線の前のコードを別に実行しなくても、割合を比べられる。許容: +5% 以内）。
     /// 結果は標準出力に出る。コンソールに出すには <c>--logger "console;verbosity=detailed"</c> を付けて実行する。
     /// </summary>
-    [Collection("ServiceProviderHolder")]
+    [Collection(SharedHostStateCollection.Name)]
     public class Phase8Step4MapCustomBenchmarkTests
     {
         private const int Actions = 30;

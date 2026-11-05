@@ -16,7 +16,7 @@ namespace DS4WindowsTests
     /// 上書き保存では保ち、別名で保存・新規作成では新しい ID を振る。名前の変更（ファイル名の変更）では変わらない。
     /// 登録簿（<see cref="IProfileIdentityService"/>）は、起動時に、ID のないファイルへ ID を書き、ファイルのコピーで重複した ID に新しい ID を振って書く。参照は、まだ名前のまま。
     /// </summary>
-    [Collection("ServiceProviderHolder")]
+    [Collection(SharedHostStateCollection.Name)]
     public class Phase10Step4dW1ProfileIdTests : IDisposable
     {
         private readonly string _dir;

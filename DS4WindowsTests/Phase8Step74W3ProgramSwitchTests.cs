@@ -13,7 +13,7 @@ namespace DS4WindowsTests
     /// Phase8-Step7 7.4-W3（Phase8-Step7-4-Plan.md §3 W3）: Program をスイッチに入れた状態の、ロールバック・割り当て・性能の確認。
     /// 実際のプログラムは起動しない（存在しない実行ファイルのパス）。他の Host 構築テストと同じコレクションで直列に実行する。
     /// </summary>
-    [Collection("ServiceProviderHolder")]
+    [Collection(SharedHostStateCollection.Name)]
     public class Phase8Step74W3ProgramSwitchTests
     {
         private readonly ITestOutputHelper _output;

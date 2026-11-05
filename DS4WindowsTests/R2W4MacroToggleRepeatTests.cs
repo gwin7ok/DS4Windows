@@ -14,7 +14,7 @@ namespace DS4WindowsTests
     /// <c>MacroAction</c> は、立ち上がりのたびにトグルを反転し、ON になったときだけ再生を始める。
     /// 再生（<c>MacroPlayback</c>）は、トグルが ON の間、繰り返す。Controls のマクロを通して、押す→離しても続く→もう一度押すと止まる、を確かめる。
     /// </summary>
-    [Collection("ServiceProviderHolder")]
+    [Collection(SharedHostStateCollection.Name)]
     public class R2W4MacroToggleRepeatTests
     {
         private static readonly int[] StepsWithWait = { 65, 65, 320 };   // 320 ＝ 20ms の待ち

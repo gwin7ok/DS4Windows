@@ -24,7 +24,7 @@ namespace DS4WindowsTests
     /// W2（ユーザー承認、2026-10-21）で、既存の種別も、立ち上がりと離したときのログ（Trace の <c>Trigger released for SA '…'</c> ほか）を出す形へ書き換えた。
     /// NLog の設定をテストの間だけ Trace 有効のメモリ出力へ差し替える（既存のログのテストと同じ方式）。他の Host 構築テストと同じコレクションで直列に実行する。
     /// </summary>
-    [Collection("ServiceProviderHolder")]
+    [Collection(SharedHostStateCollection.Name)]
     public class Phase10Step4cW0LogTableTests
     {
         private const int Device = MappingCharacterizationScope.Device;

@@ -18,7 +18,7 @@ namespace DS4WindowsTests
     /// 偽のエンジンで呼び出しを数え、実ホストで、登録簿とエンジンの状態が消えること、スロットのプロファイル選択が不変であること、再接続で束縛が戻ることを確かめる。
     /// 他の Host 構築テストと同じコレクションで直列に実行する。
     /// </summary>
-    [Collection("ServiceProviderHolder")]
+    [Collection(SharedHostStateCollection.Name)]
     public class Phase8Step6W3SlotLifecycleTests : IDisposable
     {
         private const int Slot = 0;

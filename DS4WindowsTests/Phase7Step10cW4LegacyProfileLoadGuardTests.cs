@@ -18,7 +18,7 @@ namespace DS4WindowsTests
     /// 読込後の状態の同一性は <c>Phase7Step10cGoldenPersistenceTests</c>（プロファイル・プリセット）が固定する。
     /// ソースが見つからない環境では、ソースの検査を行わず合格とする。
     /// </summary>
-    [Collection("ServiceProviderHolder")]
+    [Collection(SharedHostStateCollection.Name)]
     public class Phase7Step10cW4LegacyProfileLoadGuardTests
     {
         private static readonly string[] MovedMethods =

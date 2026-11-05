@@ -16,7 +16,7 @@ namespace DS4WindowsTests
     /// 実行例（PowerShell）:
     /// <c>$env:DS4W_RUN_BENCH='1'; dotnet test ./DS4WindowsTests/DS4Windows.Actions.Tests.csproj -c Release /p:platform=x64 --filter FullyQualifiedName~Phase13Step5bOnReportTimingBenchmark -v n</c>
     /// </summary>
-    [Collection("ServiceProviderHolder")]
+    [Collection(SharedHostStateCollection.Name)]
     public class Phase13Step5bOnReportTimingBenchmark
     {
         private const int Iterations = 200_000;

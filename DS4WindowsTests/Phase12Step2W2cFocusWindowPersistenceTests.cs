@@ -13,7 +13,7 @@ namespace DS4WindowsTests
     /// SA は Actions.xml（Details＝プログラムのパス、WindowTitle＝ウィンドウタイトル、Delay）、Controls はプロファイル XML の
     /// <c>WindowPath</c>／<c>WindowTitle</c>。古いバージョンは、未知の種別として読み飛ばす（既存の寛容な読込）ことも確かめる。
     /// </summary>
-    [Collection("ServiceProviderHolder")]
+    [Collection(SharedHostStateCollection.Name)]
     public class Phase12Step2W2cFocusWindowPersistenceTests
     {
         private const int Slot = PersistenceHarness.Slot;

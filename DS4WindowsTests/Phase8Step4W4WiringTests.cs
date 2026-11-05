@@ -15,7 +15,7 @@ namespace DS4WindowsTests
     /// ホストの <c>Mapping</c>・エンジン・登録簿・移行スイッチを使い、<c>MapCustom</c> を実走行させる。
     /// Step7.1（Button の切替）の予行も兼ねる: 同じ入力の列を、旧経路（移行なし）と新経路（Button を移行し、実物の束縛を登録）で流し、出力を比較する。
     /// </summary>
-    [Collection("ServiceProviderHolder")]
+    [Collection(SharedHostStateCollection.Name)]
     public class Phase8Step4W4WiringTests
     {
         private sealed class FakeInputAction : IInputAction

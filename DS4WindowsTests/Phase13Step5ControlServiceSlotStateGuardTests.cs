@@ -10,7 +10,7 @@ namespace DS4WindowsTests
     /// Phase13-Step5 5b: <c>ControlService</c> が、スロット状態の配列を <see cref="IDeviceSlotState"/> から一度だけ取得し、
     /// <c>readonly</c> のフィールドとして保持していること（ホットパスの命令列を変えない。再代入できない）の検査。
     /// </summary>
-    [Collection("ServiceProviderHolder")]
+    [Collection(SharedHostStateCollection.Name)]
     public class Phase13Step5ControlServiceSlotStateGuardTests
     {
         private const BindingFlags All = BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic;

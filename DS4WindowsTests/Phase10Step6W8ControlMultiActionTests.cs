@@ -20,7 +20,7 @@ namespace DS4WindowsTests
     /// Phase10-Step6 W8 相当（Multi-action を Controls へ）: 入力（Controls 由来でも、タップ・長押し・ダブルタップを判定する独立した入力。エンジンのボタンごとの表に載る）、
     /// 方針（元のボタンの出力は、待ち時間のあいだだけでなく常に消す。ユーザー決定）、未設定のマクロ（保存を止めず、実行自体を行わない）、保存、画面の入力。
     /// </summary>
-    [Collection("ServiceProviderHolder")]
+    [Collection(SharedHostStateCollection.Name)]
     public class Phase10Step6W8ControlMultiActionTests
     {
         private sealed class RecordingMacroStringPlayer : IMacroStringPlayer

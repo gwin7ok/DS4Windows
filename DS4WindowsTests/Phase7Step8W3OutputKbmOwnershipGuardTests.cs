@@ -18,7 +18,7 @@ namespace DS4WindowsTests
     /// <c>ActionsLoadedRuntimeReset</c> を instance にしたことの回帰ガード。
     /// ソースが見つからない環境では、ソースの検査を行わず合格とする。判断の根拠は Phase7-Step8-Plan.md（Q6）。
     /// </summary>
-    [Collection("ServiceProviderHolder")]
+    [Collection(SharedHostStateCollection.Name)]
     public class Phase7Step8W3OutputKbmOwnershipGuardTests
     {
         private const int Device = 4;

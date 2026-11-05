@@ -22,7 +22,7 @@ namespace DS4WindowsTests
     /// 保存し、実行し、画面で編集できるようにした縦通しの検査。入力（離したとき成立）、builder の写し、編集用の対象の往復、保存と再読み込み、実際の再生。
     /// 項目のない従来の Macro は、変わらない。
     /// </summary>
-    [Collection("ServiceProviderHolder")]
+    [Collection(SharedHostStateCollection.Name)]
     public class Phase10Step4W3ControlMacroOptionsTests
     {
         private const int Device = MappingCharacterizationScope.Device;

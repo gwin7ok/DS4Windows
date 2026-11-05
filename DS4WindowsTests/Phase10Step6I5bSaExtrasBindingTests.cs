@@ -14,7 +14,7 @@ namespace DS4WindowsTests
     /// Phase10-Step6 I5b（Phase10-Step6-Plan.md §4）: SA に付けた Extras の実行。読み込みの部品が定義の <c>Extras</c> に解釈済みの値を入れ、
     /// <see cref="AssignmentBindingBuilder.BuildExtras"/> が Extras 用の別の束縛を作り、<see cref="ActionBindingBuilder"/> が SA の束縛の<b>前</b>に並べる。
     /// </summary>
-    [Collection("ServiceProviderHolder")]
+    [Collection(SharedHostStateCollection.Name)]
     public class Phase10Step6I5bSaExtrasBindingTests
     {
         private const string Extras = "10,20,1,255,0,0,5,1,30";

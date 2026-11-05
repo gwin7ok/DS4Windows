@@ -9,7 +9,7 @@ namespace DS4WindowsTests
     /// Phase13-Step7 7-a: 出力種別の 2 本の配列（<c>ActiveOutDevType</c>／<c>OutDevTypeTemp</c>）の現状の挙動を固定する特性テスト。
     /// 7-b 以降で配列の持ち主を <c>IOutputDeviceTypeState</c> へ移しても、<c>IOutputSlotService</c> 経由で見える結果が同じであることを確かめる。
     /// </summary>
-    [Collection("ServiceProviderHolder")]
+    [Collection(SharedHostStateCollection.Name)]
     public class Phase13Step7CharacterizationTests
     {
         public Phase13Step7CharacterizationTests()

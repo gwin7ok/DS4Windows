@@ -18,7 +18,7 @@ namespace DS4WindowsTests
     /// プロファイル XML（<c>&lt;Control&gt;&lt;Special&gt;</c>）への保存・読み込み（往復、既定の値は書かない、文化に依らない、壊れた要素の扱い、優先順位）と、
     /// <see cref="DS4ControlSettings"/> のリセット・編集用のコピーでの扱い。画面・実行は、まだ関係しない。
     /// </summary>
-    [Collection("ServiceProviderHolder")]
+    [Collection(SharedHostStateCollection.Name)]
     public class Phase10Step4W1ControlSpecialItemTests
     {
         private const int Slot = PersistenceHarness.Slot;

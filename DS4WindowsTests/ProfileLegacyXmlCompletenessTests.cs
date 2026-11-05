@@ -15,7 +15,7 @@ namespace DS4WindowsTests
     /// 変更した Global 状態は必ず元に戻す。
     /// </summary>
     // 共有のアプリデータのパス（PathService の静的な状態）を書き換える/読むテストが並行すると、一時フォルダーが消えて失敗する（Phase8-Step4 W5 で観測）ため、同じコレクションで直列に実行する
-    [Xunit.Collection("ServiceProviderHolder")]
+    [Xunit.Collection(SharedHostStateCollection.Name)]
     public class ProfileLegacyXmlCompletenessTests
     {
         private static readonly string[] ExpectedRootElements =

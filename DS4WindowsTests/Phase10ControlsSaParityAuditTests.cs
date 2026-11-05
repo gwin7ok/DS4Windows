@@ -17,7 +17,7 @@ namespace DS4WindowsTests
     /// 出力ピッカーで選べる X360 の出力先（Toggle あり・なし）と、種別（Key、Macro、Program、Profile、Disconnect BT、Check Battery、Multi-action、較正 2 種）を総当たりで調べる。
     /// SA の出力先のうち、パッドのボタンは <c>PressX360</c> が DS4 の同じ添字へ書くため、Controls の写し（<c>reverseX360ButtonMapping</c>）と同じ出力先になることも調べる。
     /// </summary>
-    [Collection("ServiceProviderHolder")]
+    [Collection(SharedHostStateCollection.Name)]
     public class Phase10ControlsSaParityAuditTests
     {
         private sealed class FakeProvider : IProfileActionProvider

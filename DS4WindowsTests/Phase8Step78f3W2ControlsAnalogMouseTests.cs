@@ -18,7 +18,7 @@ namespace DS4WindowsTests
     /// 旧・新の比べは <c>Phase8Step78f3W1ControlsAnalogMouseCharacterizationTests</c>（同じテストが新経路を走らせる）。
     /// 他の Host 構築テストと同じコレクションで直列に実行する。
     /// </summary>
-    [Collection("ServiceProviderHolder")]
+    [Collection(SharedHostStateCollection.Name)]
     public class Phase8Step78f3W2ControlsAnalogMouseTests
     {
         private const int Device = MappingCharacterizationScope.Device;

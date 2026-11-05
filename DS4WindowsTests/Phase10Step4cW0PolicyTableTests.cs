@@ -15,7 +15,7 @@ namespace DS4WindowsTests
     /// SA の種別ごとの表は <c>Phase10Step4W0SaBindingTableTests</c>。W1（項目 2: Fresh-press ガードの規則を 1 か所の表にまとめる。挙動は変えない）は、
     /// この表が変わらないことで守る。
     /// </summary>
-    [Collection("ServiceProviderHolder")]
+    [Collection(SharedHostStateCollection.Name)]
     public class Phase10Step4cW0PolicyTableTests
     {
         private const int Device = MappingCharacterizationScope.Device;

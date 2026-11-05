@@ -11,7 +11,7 @@ namespace DS4WindowsTests
     /// Phase10-Step6 I5a（Phase10-Step6-Plan.md §4）: SA に付ける Extras の保存・読み込み。<c>Actions.xml</c> の <c>OutputExtras</c> 要素（あるときだけ）に、Controls と同じ書式
     /// （カンマ区切りの 9 個）で保存する。旧ファイル（要素なし）は、Extras なしとして読む。SA の保存は SA を作り直すため、Extras は別の呼び出し（<c>SetActionExtras</c>）で設定する。
     /// </summary>
-    [Collection("ServiceProviderHolder")]
+    [Collection(SharedHostStateCollection.Name)]
     public class Phase10Step6I5aSaExtrasStorageTests
     {
         private const string Extras = "10,20,1,255,0,0,5,1,30";

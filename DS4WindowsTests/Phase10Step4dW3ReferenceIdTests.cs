@@ -18,7 +18,7 @@ namespace DS4WindowsTests
     /// Controls の Load Profile の切り替え先（<c>&lt;Control&gt;&lt;Special&gt;</c> の <c>ProfileId</c>）。読み込みでは、ID が見つかれば現在の名前に引き直し（ID が勝つ）、
     /// ない・見つからないときは名前のまま。実行時の内部（<c>profileActions</c> ほか）は名前のまま。
     /// </summary>
-    [Collection("ServiceProviderHolder")]
+    [Collection(SharedHostStateCollection.Name)]
     public class Phase10Step4dW3ReferenceIdTests
     {
         private const int Slot = PersistenceHarness.Slot;

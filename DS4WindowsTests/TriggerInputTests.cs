@@ -15,7 +15,7 @@ namespace DS4WindowsTests
     /// 最重要は、<c>IsActive</c> が現行の <c>Mapping.getBoolSpecialActionMapping</c>（private）と、全コントロール・多数の入力で同じ結果になること
     /// （テスト専用のリフレクションで直接比較する。Step8 で <c>Mapping</c> の元のメソッドを消すときは、境界値の表に切り替える）。
     /// </summary>
-    [Collection("ServiceProviderHolder")]
+    [Collection(SharedHostStateCollection.Name)]
     public class TriggerInputTests
     {
         private const int Device = 5;

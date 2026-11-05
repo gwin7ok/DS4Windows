@@ -14,7 +14,7 @@ namespace DS4WindowsTests
     /// <b>現行の差</b>を、同じ入力で並べて固定する特性化テスト。製品コードは変えない。
     /// W4（項目 1: デジタルな出力だけ SA の閾値に揃える）で、Controls 側の期待値のうち、デジタルな出力に使う判定の分を書き換える。
     /// </summary>
-    [Collection("ServiceProviderHolder")]
+    [Collection(SharedHostStateCollection.Name)]
     public class Phase10Step4cW0JudgementTableTests
     {
         private const int Device = 5;

@@ -18,7 +18,7 @@ namespace DS4WindowsTests
     /// Phase7-Step10d W5（Q1・Q3・Q8・Q9＝A）: <c>Global</c> を削除し、<see cref="BackingStore"/> をコンストラクター注入で生成する形にしたことの回帰ガード。
     /// ソースが見つからない環境では、ソースの検査を行わず合格とする。
     /// </summary>
-    [Collection("ServiceProviderHolder")]
+    [Collection(SharedHostStateCollection.Name)]
     public class Phase7Step10dW5GlobalRemovedGuardTests
     {
         private readonly ITestOutputHelper _output;

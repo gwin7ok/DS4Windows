@@ -16,7 +16,7 @@ namespace DS4WindowsTests
     /// <c>ProfilePresets</c> へ移したことの回帰ガード。読込後の状態の同一性は <c>Phase7Step10cGoldenPersistenceTests.Presets_LoadedState_MatchesGolden</c>
     /// （10 種）が固定する。ソースが見つからない環境では、ソースの検査を行わず合格とする。
     /// </summary>
-    [Collection("ServiceProviderHolder")]
+    [Collection(SharedHostStateCollection.Name)]
     public class Phase7Step10cW6ProfilePresetsGuardTests
     {
         private static readonly string[] MovedMethods =

@@ -11,7 +11,7 @@ namespace DS4WindowsTests
     /// <summary>
     /// R-1（Release-Backlog.md）: SA の複製。要素の複製（設定をすべて引き継ぐ）、新しい固定 ID、名前の重複の回避。
     /// </summary>
-    [Collection("ServiceProviderHolder")]
+    [Collection(SharedHostStateCollection.Name)]
     public class R1DuplicateSpecialActionTests
     {
         private sealed class Rig : IDisposable

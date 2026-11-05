@@ -26,7 +26,7 @@ namespace DS4WindowsTests
     /// builder の合成 <see cref="SpecialAction"/>（切り替え先、離したら戻る）、実際の切り替えと復帰、編集対象の往復（見つからない名前を含む）、Save の可否、保存と再読み込み、
     /// プロファイルの名前変更への追従（全プロファイルの <c>&lt;Control&gt;&lt;Special&gt;</c> の書き換え）。
     /// </summary>
-    [Collection("ServiceProviderHolder")]
+    [Collection(SharedHostStateCollection.Name)]
     public class Phase10Step4W6ControlProfileTests : IDisposable
     {
         private const int Device = MappingCharacterizationScope.Device;

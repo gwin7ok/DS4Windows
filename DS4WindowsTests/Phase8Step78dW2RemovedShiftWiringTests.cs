@@ -15,7 +15,7 @@ namespace DS4WindowsTests
     /// 実行・設定: シフトの設定は、割り当てに反映されない。シフトのメンバー（<c>DS4ControlSettings</c> の欄、<c>Mapping</c> の処理）は存在しない。
     /// 他の Host 構築テストと同じコレクションで直列に実行する。
     /// </summary>
-    [Collection("ServiceProviderHolder")]
+    [Collection(SharedHostStateCollection.Name)]
     public class Phase8Step78dW2RemovedShiftWiringTests
     {
         private const int Slot = PersistenceHarness.Slot;

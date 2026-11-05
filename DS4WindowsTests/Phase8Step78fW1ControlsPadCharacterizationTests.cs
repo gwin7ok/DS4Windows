@@ -13,7 +13,7 @@ namespace DS4WindowsTests
     /// 「押した」判定を SA と同じにする。差はジャイロの閾値だけ）以外は、同じ期待値で通ること。
     /// 他の Host 構築テストと同じコレクションで直列に実行する。
     /// </summary>
-    [Collection("ServiceProviderHolder")]
+    [Collection(SharedHostStateCollection.Name)]
     public class Phase8Step78fW1ControlsPadCharacterizationTests
     {
         private readonly ITestOutputHelper _output;

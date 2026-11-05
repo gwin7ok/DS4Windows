@@ -14,7 +14,7 @@ namespace DS4WindowsTests
     /// ID ↔ 名前を索引から引く。索引の鮮度は、プロファイルのフォルダーの最終更新時刻で判定する（追加・削除・名前変更・コピーは、次の検索で反映される）。
     /// フォルダーの時刻が 1 秒以内に新しいあいだは、時刻の粗さで直後の変更を見逃さないよう、毎回作り直す。挙動（引数・戻り値）は W1 から変わらない（W1 のテストが守る）。
     /// </summary>
-    [Collection("ServiceProviderHolder")]
+    [Collection(SharedHostStateCollection.Name)]
     public class Phase10Step4dW5aIdentityIndexTests : IDisposable
     {
         private readonly string _dir;

@@ -22,7 +22,7 @@ namespace DS4WindowsTests
     /// 5. <c>ClearState</c>／<c>ClearPendingRestore</c> の本番の呼び出しは 0 件だった（W3 で削除した。Q3＝A）。
     /// 専用のデバイス添字（7）を使い、終了時に状態を戻す。
     /// </summary>
-    [Collection("ServiceProviderHolder")]
+    [Collection(SharedHostStateCollection.Name)]
     public class Phase8Step6W1DisconnectCharacterizationTests
     {
         private const int Device = 7;

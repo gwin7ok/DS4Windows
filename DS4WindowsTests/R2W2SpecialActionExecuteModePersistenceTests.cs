@@ -10,7 +10,7 @@ namespace DS4WindowsTests
     /// （<c>Held</c>／<c>Toggle</c>。<c>Once</c> は書かない）へ保存し、Extras には書かない。読込は、要素があればそれを使い、
     /// なければ（古いファイル）Extras の <c>Repeat</c> を <c>Held</c> として読む（保存し直すと新しい形になる）。
     /// </summary>
-    [Collection("ServiceProviderHolder")]
+    [Collection(SharedHostStateCollection.Name)]
     public class R2W2SpecialActionExecuteModePersistenceTests
     {
         private static BackingStore NewStoreFor(PersistenceGoldenContext ctx)

@@ -18,7 +18,7 @@ namespace DS4WindowsTests
     /// - 削除済みの <c>Global</c> のメンバーが再び宣言されないこと。静的初期化の循環を作らないこと。
     /// 静的な状態（AppDataPathState、FirstRunState ほか）を書き換えるため、同じ状態を使うテストと直列に実行し、必ず元へ戻す。
     /// </summary>
-    [Collection("ServiceProviderHolder")]
+    [Collection(SharedHostStateCollection.Name)]
     public class Phase7Step4PathServiceGuardTests
     {
         private const string Exe = @"C:\Phase7Exe";

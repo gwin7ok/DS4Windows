@@ -23,7 +23,7 @@ namespace DS4WindowsTests
     /// （<see cref="BindingPolicy.LogsReleaseEdge"/>。素通しと Unbound の消すだけの束縛を除く）。既存のログの文言・順序は変えない（増やすだけ）。
     /// 各種別の立ち上がり・離したときが 1 回ずつ出ることは <c>Phase10Step4cW0LogTableTests</c> が確かめる。
     /// </summary>
-    [Collection("ServiceProviderHolder")]
+    [Collection(SharedHostStateCollection.Name)]
     public class Phase10Step4cW2EdgeLogTests
     {
         private const int Device = MappingCharacterizationScope.Device;

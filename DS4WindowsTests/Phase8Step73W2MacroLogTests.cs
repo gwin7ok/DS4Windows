@@ -17,7 +17,7 @@ namespace DS4WindowsTests
     /// 他の Host 構築テストと同じコレクションで直列に実行する。
     /// Phase8-Step8 8d（持ち越し C-2）: 旧経路は削除済み。以前の「旧・新の両経路の比べ」は、新経路の期待値の固定（比べを除いた、残りの検査）に変えた。
     /// </summary>
-    [Collection("ServiceProviderHolder")]
+    [Collection(SharedHostStateCollection.Name)]
     public class Phase8Step73W2MacroLogTests
     {
         private static DS4State Frame(bool l1)

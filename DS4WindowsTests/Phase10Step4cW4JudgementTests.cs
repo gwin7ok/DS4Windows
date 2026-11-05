@@ -14,7 +14,7 @@ namespace DS4WindowsTests
     /// <b>アナログな出力</b>（パッドの軸・トリガー、マウスの移動、アナログのホイール、Default の軸の素通し）は従来の判定（<see cref="ControlOutputNature.Analog"/>）のままであることを固定する。
     /// 閾値そのものの値は <c>Phase10Step4cW0JudgementTableTests</c> が固定する。
     /// </summary>
-    [Collection("ServiceProviderHolder")]
+    [Collection(SharedHostStateCollection.Name)]
     public class Phase10Step4cW4JudgementTests
     {
         private const int Device = MappingCharacterizationScope.Device;

@@ -18,7 +18,7 @@ namespace DS4WindowsTests
     /// バージョンの数値化を <c>VersionUtil</c> へ移したことの回帰ガード。内容の同一性はゴールデン（<c>Phase7Step10cGoldenPersistenceTests</c>）と
     /// <c>BackingStoreAppSettingsLoadTests</c> が固定する。ソースが見つからない環境では、ソースの検査を行わず合格とする。
     /// </summary>
-    [Collection("ServiceProviderHolder")]
+    [Collection(SharedHostStateCollection.Name)]
     public class Phase7Step10cW3AppSettingsSerializerGuardTests
     {
         private readonly ITestOutputHelper _output;

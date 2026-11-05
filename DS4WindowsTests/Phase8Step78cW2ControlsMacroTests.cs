@@ -19,7 +19,7 @@ namespace DS4WindowsTests
     /// 所有の条件、ビルダー、押下の判定の種類、ロールバック、割り当て。動作の旧・新の比べは <c>Phase8Step78cW1ControlsMacroCharacterizationTests</c>。
     /// 他の Host 構築テストと同じコレクションで直列に実行する。
     /// </summary>
-    [Collection("ServiceProviderHolder")]
+    [Collection(SharedHostStateCollection.Name)]
     public class Phase8Step78cW2ControlsMacroTests
     {
         private const int Device = MappingCharacterizationScope.Device;

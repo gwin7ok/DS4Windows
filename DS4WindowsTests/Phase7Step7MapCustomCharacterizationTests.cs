@@ -11,7 +11,7 @@ namespace DS4WindowsTests
     /// 範囲外: ボタン → キー（<c>ActionManager</c> 経由。Phase8 の対象）、マクロ、ジャイロ、フリックスティック、タッチ（実機確認 U-17）。
     /// <c>Mapping</c> の静的な状態を共有するため、<c>ServiceProviderHolder</c> のコレクションで直列に実行する。
     /// </summary>
-    [Collection("ServiceProviderHolder")]
+    [Collection(SharedHostStateCollection.Name)]
     public class Phase7Step7MapCustomCharacterizationTests
     {
         [Fact]

@@ -10,7 +10,7 @@ using DS4Windows.Processing.Services;
 namespace DS4WindowsTests
 {
     /// <summary>Phase13-Step3: IVirtualPadHost／IServiceLifecycleHost と、その Func の撤廃、新サービスの配線を固定する。</summary>
-    [Xunit.Collection("ServiceProviderHolder")]
+    [Xunit.Collection(SharedHostStateCollection.Name)]
     public class Phase13Step3HostRemovalGuardTests
     {
         [Fact]

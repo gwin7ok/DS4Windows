@@ -17,7 +17,7 @@ namespace DS4WindowsTests
     /// 押下の判定は <c>GetBoolActionMapping</c>（スティックは角度の扇形、L2／R2 は 0 より大きい）で、特殊アクションのトリガー判定（±55、100 より大きい）とは違う。
     /// 他の Host 構築テストと同じコレクションで直列に実行する。
     /// </summary>
-    [Collection("ServiceProviderHolder")]
+    [Collection(SharedHostStateCollection.Name)]
     public class Phase8Step78bW1ControlsKeyCharacterizationTests
     {
         private const int Key = 65;

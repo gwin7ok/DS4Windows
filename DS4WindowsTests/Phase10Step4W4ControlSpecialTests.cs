@@ -22,7 +22,7 @@ namespace DS4WindowsTests
     /// Phase10-Step4 W4（Phase10-Step4-Plan.md §5）: 第 2 群（Disconnect BT、Calibrate gyro、Calibrate sixaxis wheel。設定は押し続ける秒数だけ）を、
     /// Controls で保存・実行・編集できるようにした縦通しの検査。入力の押し続ける秒数、builder の束縛、編集対象の往復、種別の保存可否、保存と再読み込み、実際の実行。
     /// </summary>
-    [Collection("ServiceProviderHolder")]
+    [Collection(SharedHostStateCollection.Name)]
     public class Phase10Step4W4ControlSpecialTests
     {
         private const int Device = MappingCharacterizationScope.Device;

@@ -19,7 +19,7 @@ namespace DS4WindowsTests
     /// キー／ボタンのコントローラー登録簿を <c>KeyButtonControllerRegistry</c> に切り出したことの回帰ガード。
     /// ソースが見つからない環境では、ソースの検査を行わず合格とする。判断の根拠は Phase7-Step8-Plan.md（Q1〜Q4・Q8）。
     /// </summary>
-    [Collection("ServiceProviderHolder")]
+    [Collection(SharedHostStateCollection.Name)]
     public class Phase7Step8W2MappingInstanceGuardTests
     {
         // 状態を持たない表（読み取り専用の運用）。Q2＝A により static のまま残すもの

@@ -11,7 +11,7 @@ namespace DS4WindowsTests
     /// Phase13-Step2: <see cref="ControlService"/> のコンストラクター引数から、保持するだけで使っていなかった 6 つを削除した（34 → 28）。
     /// 引数の数と、削除した型が戻っていないこと、削除した型が従来どおり ControlService 以外の経路でも生成されることを固定する。
     /// </summary>
-    [Xunit.Collection("ServiceProviderHolder")]
+    [Xunit.Collection(SharedHostStateCollection.Name)]
     public class Phase13Step2ControlServiceConstructorGuardTests
     {
         private static readonly Type[] Removed =

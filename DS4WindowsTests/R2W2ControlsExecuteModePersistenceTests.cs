@@ -9,7 +9,7 @@ namespace DS4WindowsTests
     /// R-2 W2（R2-MacroToggleRepeat-Plan.md §3.1）: Controls のマクロの Execute Mode は、プロファイルの独立したノード <c>Control/MacroExecuteMode</c>
     /// （<c>Held</c>／<c>Toggle</c>。<c>Once</c> は書かない）へ保存し、読込では、あれば KeyType の旧形式（<c>RepeatMacro</c>／<c>HoldMacro</c>）より優先する。
     /// </summary>
-    [Collection("ServiceProviderHolder")]
+    [Collection(SharedHostStateCollection.Name)]
     public class R2W2ControlsExecuteModePersistenceTests
     {
         private const int Slot = PersistenceHarness.Slot;

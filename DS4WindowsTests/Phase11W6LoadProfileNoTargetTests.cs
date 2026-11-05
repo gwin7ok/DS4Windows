@@ -12,7 +12,7 @@ namespace DS4WindowsTests
     /// Phase11 W6 K-W6-7: Load Profile の切り替え先が空・削除済み（割り当て編集画面で (none) 表示）のとき、ボタンを押しても何もせず、
     /// 離しても元のプロファイルを適用し直さない（以前は、押すと仮想コントローラーが切断され、離すと再適用で再接続した）。
     /// </summary>
-    [Collection("ServiceProviderHolder")]
+    [Collection(SharedHostStateCollection.Name)]
     public class Phase11W6LoadProfileNoTargetTests
     {
         private sealed class StubSwitcher : IProfileSwitcher

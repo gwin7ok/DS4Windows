@@ -14,7 +14,7 @@ namespace DS4WindowsTests
     /// 記録画面の「Cycle Programs」プリセットが、ソースに残っていないこと。Alt-Tab の並びのマクロが、通常のマクロとして手順どおりに再生されること。
     /// 他の Host 構築テストと同じコレクションで直列に実行する。
     /// </summary>
-    [Collection("ServiceProviderHolder")]
+    [Collection(SharedHostStateCollection.Name)]
     public class Phase8Step7AltTabRemovalGuardTests
     {
         private static string Read(string relativePath)

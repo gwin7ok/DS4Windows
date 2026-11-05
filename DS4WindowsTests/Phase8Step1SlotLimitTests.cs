@@ -20,7 +20,7 @@ namespace DS4WindowsTests
     ///  - A-1: <c>Mapping.nowAction</c>／<c>oldnowAction</c> が 4 要素で、<c>delayTime</c> のアクションがデバイス 4〜7 で例外になっていた（上流の 2015 年から。8 スロット化の更新漏れ）。
     ///  - B-1: <c>OutputSlotPersistDTO.MapTo</c> が出力スロットの添字を 0〜3 に限り、5〜8 番目の恒久スロットが復元されなかった。
     /// </summary>
-    [Collection("ServiceProviderHolder")]
+    [Collection(SharedHostStateCollection.Name)]
     public class Phase8Step1SlotLimitTests
     {
         // ---- 配列の長さのガード ----

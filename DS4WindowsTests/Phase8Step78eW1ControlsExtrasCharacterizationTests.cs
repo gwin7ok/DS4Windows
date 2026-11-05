@@ -18,7 +18,7 @@ namespace DS4WindowsTests
     /// 値は「強い振動, 弱い振動, ライトバー(1=有効), R, G, B, 点滅, 感度(1=有効), 感度」の 9 個。
     /// 他の Host 構築テストと同じコレクションで直列に実行する（静的配列を使うため）。
     /// </summary>
-    [Collection("ServiceProviderHolder")]
+    [Collection(SharedHostStateCollection.Name)]
     public class Phase8Step78eW1ControlsExtrasCharacterizationTests
     {
         private const string Full = "100,50,1,10,20,30,5,1,7";   // 振動あり、ライトバー(10,20,30)、点滅 5、感度 7

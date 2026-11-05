@@ -16,7 +16,7 @@ namespace DS4WindowsTests
     /// （5b-c で、呼び出し先を <c>IInputReportProcessor.OnReport</c> に替えた）。
     /// デバイスは <see cref="TestDs4Device"/>（実機の HID なし）に、レポート処理が読む保護フィールドをリフレクションで与えて使う。
     /// </summary>
-    [Collection("ServiceProviderHolder")]
+    [Collection(SharedHostStateCollection.Name)]
     public class Phase13Step5bOnReportCharacterizationTests
     {
         private const int Slot = 0;

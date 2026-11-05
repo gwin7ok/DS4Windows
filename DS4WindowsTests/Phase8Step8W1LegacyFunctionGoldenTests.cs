@@ -12,7 +12,7 @@ namespace DS4WindowsTests
     /// <c>NewFunctionsMatchTheGolden</c>: 新経路（<c>TriggerInput</c>）の表が、ゴールデンの該当の列と一致する。旧関数を削除した後も、これが「旧と同じ値」の根拠になる。
     /// ゴールデンは <c>DS4WindowsTests/Golden/Phase7Step10c/step8-legacy-functions-*.txt</c>。他の Host 構築テストと同じコレクションで直列に実行する。
     /// </summary>
-    [Collection("ServiceProviderHolder")]
+    [Collection(SharedHostStateCollection.Name)]
     public class Phase8Step8W1LegacyFunctionGoldenTests
     {
         private readonly ITestOutputHelper _output;

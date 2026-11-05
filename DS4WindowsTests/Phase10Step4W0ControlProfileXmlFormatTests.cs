@@ -11,7 +11,7 @@ namespace DS4WindowsTests
     /// Step4 の W1 で、SA 専用の割り当ての節（<c>&lt;Special&gt;</c>）を足す。そのとき、既存の節（Button／Macro／Key／Extras／KeyType）の形式・要素の順序が、
     /// 変わらないことを、この検査で守る。また、将来の節（未知の要素）を、現在は読み飛ばして、保存し直すと失う、という互換の事実を固定する。製品コードは変えない。
     /// </summary>
-    [Collection("ServiceProviderHolder")]
+    [Collection(SharedHostStateCollection.Name)]
     public class Phase10Step4W0ControlProfileXmlFormatTests
     {
         private const int Slot = PersistenceHarness.Slot;

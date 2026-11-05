@@ -9,7 +9,7 @@ namespace DS4WindowsTests
     /// ホイールは <c>Commit</c> が実時間（150ms）で連続送出するため、フレーク防止のため範囲外とする。
     /// <c>Mapping</c> の静的な状態を共有するため、<c>ServiceProviderHolder</c> のコレクションで直列に実行する。
     /// </summary>
-    [Collection("ServiceProviderHolder")]
+    [Collection(SharedHostStateCollection.Name)]
     public class Phase7Step7CommitCharacterizationTests
     {
         private const int Device = MappingCharacterizationScope.Device;

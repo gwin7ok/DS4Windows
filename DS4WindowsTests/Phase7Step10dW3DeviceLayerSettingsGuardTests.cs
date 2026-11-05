@@ -16,7 +16,7 @@ namespace DS4WindowsTests
     /// <c>Global</c> を参照せず、設定値を <see cref="IDeviceLayerSettings"/>／関数で受け取ることの回帰ガード。
     /// ソースが見つからない環境では、ソースの検査を行わず合格とする。
     /// </summary>
-    [Collection("ServiceProviderHolder")]
+    [Collection(SharedHostStateCollection.Name)]
     public class Phase7Step10dW3DeviceLayerSettingsGuardTests
     {
 

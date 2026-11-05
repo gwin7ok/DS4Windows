@@ -16,7 +16,7 @@ namespace DS4WindowsTests
     /// 保存: 保持した内容をそのまま書き出す（削除したら、従来と同じ既定値の設定の要素だけ）。実行・設定: ジャイロスワイプの割り当て・設定・モードは存在しない。
     /// 他の Host 構築テストと同じコレクションで直列に実行する。
     /// </summary>
-    [Collection("ServiceProviderHolder")]
+    [Collection(SharedHostStateCollection.Name)]
     public class Phase8Step8W2RemovedGyroSwipeWiringTests
     {
         private const int Slot = PersistenceHarness.Slot;

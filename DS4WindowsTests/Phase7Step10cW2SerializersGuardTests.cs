@@ -17,7 +17,7 @@ namespace DS4WindowsTests
     /// 内容（保存結果と読込後の状態）の同一性は <c>Phase7Step10cGoldenPersistenceTests</c> が固定する。
     /// ソースが見つからない環境では、ソースの検査を行わず合格とする。
     /// </summary>
-    [Collection("ServiceProviderHolder")]
+    [Collection(SharedHostStateCollection.Name)]
     public class Phase7Step10cW2SerializersGuardTests
     {
         private static readonly string[] MovedMethods =

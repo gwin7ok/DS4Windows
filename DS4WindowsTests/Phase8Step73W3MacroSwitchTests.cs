@@ -16,7 +16,7 @@ namespace DS4WindowsTests
     /// Phase8-Step7 7.3-W3（Phase8-Step7-3-Plan.md §3 W3）: Macro をスイッチに入れた状態の、ロールバック・割り当て・性能の確認。
     /// 他の Host 構築テストと同じコレクションで直列に実行する。
     /// </summary>
-    [Collection("ServiceProviderHolder")]
+    [Collection(SharedHostStateCollection.Name)]
     public class Phase8Step73W3MacroSwitchTests
     {
         private readonly ITestOutputHelper _output;

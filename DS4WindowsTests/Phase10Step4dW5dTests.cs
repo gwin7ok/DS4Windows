@@ -16,7 +16,7 @@ namespace DS4WindowsTests
     /// リンクプロファイル（<c>BackingStore.linkedProfiles</c>、画面表示用の <c>linkedProfileUI</c>）の、実行時の保持を ID に。名前を読み書きする窓口で、保管は固定 ID と名前の控え。
     /// プロファイルの名前を変えても、読み出す名前は現在の名前になる。登録簿がなければ、従来の配列・辞書と同じに動く。
     /// </summary>
-    [Collection("ServiceProviderHolder")]
+    [Collection(SharedHostStateCollection.Name)]
     public class Phase10Step4dW5dTests : IDisposable
     {
         private readonly string _dir;

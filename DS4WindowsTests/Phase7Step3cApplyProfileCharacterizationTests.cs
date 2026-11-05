@@ -20,7 +20,7 @@ namespace DS4WindowsTests
     /// 静的な状態（<c>Global.appdatapath</c>、スロット 0 の状態、<c>Program.rootHub</c>）は退避して復元する。
     /// 他の Host 構築テストと同じコレクションで直列に実行する。
     /// </summary>
-    [Collection("ServiceProviderHolder")]
+    [Collection(SharedHostStateCollection.Name)]
     public class Phase7Step3cApplyProfileCharacterizationTests : IDisposable
     {
         private const int Slot = 0;

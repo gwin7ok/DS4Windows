@@ -10,7 +10,7 @@ namespace DS4WindowsTests
     /// プロファイル XML の KeyType に <c>RepeatMacro</c> と書く（SA と同じ値）。旧版が書いた <c>HoldMacro</c> は、読込だけ受け付けて RepeatMacro として読み、保存時に RepeatMacro へ置き換える。
     /// R-2 W2: 保存は、Execute Mode を独立した <c>Control/MacroExecuteMode</c> ノード（<c>Held</c>）へ書き、KeyType には <c>Macro</c> だけを書く。旧形式（KeyType の <c>RepeatMacro</c>／<c>HoldMacro</c>）の読込は、そのまま受け付ける。
     /// </summary>
-    [Collection("ServiceProviderHolder")]
+    [Collection(SharedHostStateCollection.Name)]
     public class Phase8FixMacroRepeatUnifyPersistenceTests
     {
         private const int Slot = PersistenceHarness.Slot;

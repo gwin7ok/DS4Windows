@@ -14,7 +14,7 @@ namespace DS4WindowsTests
     ///      管理役を注入して直接使う形に書き換えた。
     /// </summary>
     // 共有のテスト用ホストを使うテストは同じコレクションで直列に実行する
-    [Collection("ServiceProviderHolder")]
+    [Collection(SharedHostStateCollection.Name)]
     public class ManagedActionManagerRegistrationTests
     {
         [Fact]

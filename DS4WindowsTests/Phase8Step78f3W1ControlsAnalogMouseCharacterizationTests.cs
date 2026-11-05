@@ -15,7 +15,7 @@ namespace DS4WindowsTests
     /// 実機がないため、スロットにテスト用のデバイス（経過時間つき）を置く（<see cref="AnalogMouseTestHarness"/>）。
     /// 他の Host 構築テストと同じコレクションで直列に実行する。
     /// </summary>
-    [Collection("ServiceProviderHolder")]
+    [Collection(SharedHostStateCollection.Name)]
     public class Phase8Step78f3W1ControlsAnalogMouseCharacterizationTests
     {
         private readonly ITestOutputHelper _output;

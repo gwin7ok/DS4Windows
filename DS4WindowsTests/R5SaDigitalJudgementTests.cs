@@ -18,7 +18,7 @@ namespace DS4WindowsTests
     /// Controls のデジタルな出力も、同じ判定（<see cref="ITriggerInput.IsDigitalActive"/>。ユーザー決定 2026-10-23。Phase10-Step4c W4 の「SA と同じ判定」は維持し、閾値だけをなくした）。
     /// アナログな出力（Controls のパッドの軸・トリガー、マウスの移動）は、従来の Controls の判定（<c>IsControlActive</c>）のまま。
     /// </summary>
-    [Collection("ServiceProviderHolder")]
+    [Collection(SharedHostStateCollection.Name)]
     public class R5SaDigitalJudgementTests
     {
         private const int Device = 5;

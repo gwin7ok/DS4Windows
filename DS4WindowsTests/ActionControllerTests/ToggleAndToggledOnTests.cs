@@ -7,7 +7,7 @@ namespace DS4Windows.Actions.Tests
 {
 
     // 共有のテスト用ホストのサービスを使うテストは同じコレクションで直列に実行する
-    [Collection("ServiceProviderHolder")]
+    [Collection(SharedHostStateCollection.Name)]
     public class ToggleAndToggledOnTests
     {
         /// <summary>

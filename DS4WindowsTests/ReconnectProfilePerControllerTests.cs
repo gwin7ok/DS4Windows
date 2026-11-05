@@ -11,7 +11,7 @@ namespace DS4WindowsTests
     /// 同じスロットの「再接続」と判定されて A が適用された（初回／再接続の判定と直前のプロファイルが、スロット番号で管理されていたため）。
     /// 初回接続のフラグ（BackingStore の配列）を共有するため、他の Host 構築テストと同じコレクションで直列に実行し、終了時に元へ戻す。
     /// </summary>
-    [Collection("ServiceProviderHolder")]
+    [Collection(SharedHostStateCollection.Name)]
     public class ReconnectProfilePerControllerTests : IDisposable
     {
         private const string Mac1 = "A4:53:85:3A:D5:84";

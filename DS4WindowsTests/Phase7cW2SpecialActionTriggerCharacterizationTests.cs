@@ -22,7 +22,7 @@ namespace DS4WindowsTests
     /// 新経路（実物のビルダーが作る束縛を登録簿へ登録）で流す。Phase8-Step8 8d: 移行のスイッチは削除した（Phase8-Step7-Plan.md §3・Q3）。
     /// `Mapping` の静的な状態と `ActionManager`（静的）を共有するため、<c>ServiceProviderHolder</c> のコレクションで直列に実行する。
     /// </summary>
-    [Collection("ServiceProviderHolder")]
+    [Collection(SharedHostStateCollection.Name)]
     public class Phase7cW2SpecialActionTriggerCharacterizationTests
     {
         // ---- ボタン種別: Press の出力と AND 条件 ----

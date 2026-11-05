@@ -17,7 +17,7 @@ namespace DS4WindowsTests
     /// <b>押し続けたときの再実行の有無</b>など、読むだけでは断定できない挙動は、回数を <c>ITestOutputHelper</c> に出力して記録する（W2 で、SA の仕様に合わせたときの変更点を確定する材料）。
     /// 他の Host 構築テストと同じコレクションで直列に実行する。
     /// </summary>
-    [Collection("ServiceProviderHolder")]
+    [Collection(SharedHostStateCollection.Name)]
     public class Phase8Step78cW1ControlsMacroCharacterizationTests
     {
         private static readonly int[] Steps = { 65, 65 };

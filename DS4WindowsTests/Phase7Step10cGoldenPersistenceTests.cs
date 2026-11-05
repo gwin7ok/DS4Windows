@@ -13,7 +13,7 @@ namespace DS4WindowsTests
     /// 対象: プロファイル（既定／変化させた状態）、アプリ設定、スペシャルアクション、リンクプロファイル、プリセット 10 種。
     /// 対象外: コントローラー固有設定（実機のデバイス実体が要る。移動の規模が小さい）。
     /// </summary>
-    [Collection("ServiceProviderHolder")]
+    [Collection(SharedHostStateCollection.Name)]
     public class Phase7Step10cGoldenPersistenceTests
     {
         private readonly ITestOutputHelper _output;

@@ -24,7 +24,7 @@ namespace DS4WindowsTests
     /// 動作の旧・新の比べは <c>Phase8Step78bW1ControlsKeyCharacterizationTests</c>（同じテストが新経路を走らせる）。
     /// 他の Host 構築テストと同じコレクションで直列に実行する。
     /// </summary>
-    [Collection("ServiceProviderHolder")]
+    [Collection(SharedHostStateCollection.Name)]
     public class Phase8Step78bW2ControlsKeyTests
     {
         private const int Device = MappingCharacterizationScope.Device;

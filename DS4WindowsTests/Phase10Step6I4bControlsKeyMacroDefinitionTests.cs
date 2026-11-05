@@ -12,7 +12,7 @@ namespace DS4WindowsTests
     /// Phase10-Step6 I4b: Controls の Key と Macro が、読み込みの部品（<see cref="ControlsAssignmentReader"/>）と出力の部品
     /// （<see cref="SpecialActionOutputFactory"/>。方針は種別 × 由来の表）を通ること。Controls の束縛としての挙動は、Phase8 の特性化テストが守る。
     /// </summary>
-    [Collection("ServiceProviderHolder")]
+    [Collection(SharedHostStateCollection.Name)]
     public class Phase10Step6I4bControlsKeyMacroDefinitionTests
     {
         private sealed class NoMacroPlayer : IMacroPlayer

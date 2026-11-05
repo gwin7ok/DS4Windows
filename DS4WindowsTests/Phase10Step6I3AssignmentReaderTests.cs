@@ -14,7 +14,7 @@ namespace DS4WindowsTests
     /// 定義を受ける <see cref="ISpecialActionOutputFactory.Create(int, AssignmentDefinition, SpecialAction, int)"/> の検査。
     /// 全種別 × 由来の出力・方針が、旧 <c>Create(device, sa, index, forControls)</c> と同じであることは、<c>Phase10Step4W2SpecialActionOutputFactoryTests</c> ほか既存のテストが守る。
     /// </summary>
-    [Collection("ServiceProviderHolder")]
+    [Collection(SharedHostStateCollection.Name)]
     public class Phase10Step6I3AssignmentReaderTests
     {
         private sealed class NoMacroPlayer : IMacroPlayer

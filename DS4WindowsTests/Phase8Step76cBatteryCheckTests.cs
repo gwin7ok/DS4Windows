@@ -21,7 +21,7 @@ namespace DS4WindowsTests
     /// 実機のコントローラーがないため、旧経路は効果の分岐（<c>ctrl.DS4Controllers[device]</c>）で止まる。効果は記録用のポートで確かめる。
     /// 他の Host 構築テストと同じコレクションで直列に実行する。
     /// </summary>
-    [Collection("ServiceProviderHolder")]
+    [Collection(SharedHostStateCollection.Name)]
     public class Phase8Step76cBatteryCheckTests
     {
         private const string FullDetails = "|True|True|255|0|0|0|255|0";   // 通知あり、ライトバーあり、空＝赤、満タン＝緑

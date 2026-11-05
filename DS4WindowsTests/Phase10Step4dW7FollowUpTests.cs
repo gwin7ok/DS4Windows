@@ -18,7 +18,7 @@ namespace DS4WindowsTests
     /// SA の切り替え先は、ID から現在の名前に引き直して保存する（<c>RefreshProfileSwitchTargets</c>）。ID のない古いプロファイルのファイルのため、
     /// <c>ReplaceControlProfileSwitchTarget</c>（Controls）と <c>ReplaceActionReference</c>（SA の名前変更）は残す。
     /// </summary>
-    [Collection("ServiceProviderHolder")]
+    [Collection(SharedHostStateCollection.Name)]
     public class Phase10Step4dW7FollowUpTests
     {
         private static string NewId() => Guid.NewGuid().ToString("N");

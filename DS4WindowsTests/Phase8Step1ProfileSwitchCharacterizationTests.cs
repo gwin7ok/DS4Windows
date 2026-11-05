@@ -17,7 +17,7 @@ namespace DS4WindowsTests
     ///  - 解除トリガー（<c>uTrigger</c>）あり: 解除トリガーがすべて押されたときだけ復帰する。
     /// 台帳: <c>Phase8-Step1-Trigger-Spec-Ledger.md</c> §3・§5（Profile）。
     /// </summary>
-    [Collection("ServiceProviderHolder")]
+    [Collection(SharedHostStateCollection.Name)]
     public class Phase8Step1ProfileSwitchCharacterizationTests
     {
         private static SpecialAction AddProfile(SpecialActionTestScope t, string triggers, string extras)

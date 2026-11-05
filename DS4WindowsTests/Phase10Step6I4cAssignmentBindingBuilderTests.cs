@@ -12,7 +12,7 @@ namespace DS4WindowsTests
     /// Phase10-Step6 I4c（Phase10-Step6-Plan.md §4）: 共通の組み立て（<see cref="AssignmentBindingBuilder"/>）の検査。入力の型と設定が、由来 × 種別で従来どおりであること。
     /// Controls の束縛としての挙動は Phase8・Phase10 Step4 系の特性化テストが、出力と方針は <c>Phase10Step4W2SpecialActionOutputFactoryTests</c> が守る。
     /// </summary>
-    [Collection("ServiceProviderHolder")]
+    [Collection(SharedHostStateCollection.Name)]
     public class Phase10Step6I4cAssignmentBindingBuilderTests
     {
         private sealed class NoMacroPlayer : IMacroPlayer

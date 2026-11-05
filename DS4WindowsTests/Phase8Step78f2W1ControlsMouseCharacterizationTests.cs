@@ -15,7 +15,7 @@ namespace DS4WindowsTests
     /// <c>MapCustom</c> は <c>Commit</c> を呼ばないため、フレームの区切りは <c>SaveToPrevious(true)</c>（Commit のデバイスごとの後始末）で再現する。
     /// 他の Host 構築テストと同じコレクションで直列に実行する。
     /// </summary>
-    [Collection("ServiceProviderHolder")]
+    [Collection(SharedHostStateCollection.Name)]
     public class Phase8Step78f2W1ControlsMouseCharacterizationTests
     {
         private readonly ITestOutputHelper _output;

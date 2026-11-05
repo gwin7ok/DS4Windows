@@ -20,7 +20,7 @@ namespace DS4WindowsTests
     /// (2) SA／Controls の Load Profile は、実行の直前に、切り替え先の ID から現在の名前を引く（SA の定義・束縛を作り直さなくても、名前変更に追従する）。
     /// ID がない・引けないときは、従来どおり名前（<c>details</c>）。
     /// </summary>
-    [Collection("ServiceProviderHolder")]
+    [Collection(SharedHostStateCollection.Name)]
     public class Phase10Step4dW5cRuntimeSwitchTests : IDisposable
     {
         private const int Device = MappingCharacterizationScope.Device;

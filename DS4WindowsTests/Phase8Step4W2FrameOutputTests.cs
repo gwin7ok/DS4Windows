@@ -16,7 +16,7 @@ namespace DS4WindowsTests
     /// 現行の <c>Mapping.ResetToDefaultValue</c>（private。リフレクション）・<c>ButtonSpecialActionOutput.ResolveOutputActive</c> と同じ結果になることを確認する。
     /// Stage3 全体との比較（<c>MapCustom</c> の出力）は、配線後の W4 の結合テストで行う。
     /// </summary>
-    [Collection("ServiceProviderHolder")]
+    [Collection(SharedHostStateCollection.Name)]
     public class Phase8Step4W2FrameOutputTests
     {
         private const int Device = 6;

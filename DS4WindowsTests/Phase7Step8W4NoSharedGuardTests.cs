@@ -15,7 +15,7 @@ namespace DS4WindowsTests
     /// 暫定の静的な窓口 <c>Shared</c> を削除したことと、コンテナの Singleton を利用者が共有していることの回帰ガード。
     /// ソースが見つからない環境では、ソースの検査を行わず合格とする。判断の根拠は Phase7-Step8-Plan.md（Q5）。
     /// </summary>
-    [Collection("ServiceProviderHolder")]
+    [Collection(SharedHostStateCollection.Name)]
     public class Phase7Step8W4NoSharedGuardTests
     {
         private readonly ITestOutputHelper _output;

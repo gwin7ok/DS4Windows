@@ -22,7 +22,7 @@ namespace DS4WindowsTests
     /// ビルダー、ログ、割り当ての確認。旧・新の両経路の比べは <c>Phase8Step77bW1MultiActionDualPathTests</c>。
     /// 入力アクションは、時刻と押下を差し込める偽の入力（待たない）で確かめる。他の Host 構築テストと同じコレクションで直列に実行する。
     /// </summary>
-    [Collection("ServiceProviderHolder")]
+    [Collection(SharedHostStateCollection.Name)]
     public class Phase8Step77bW2MultiTapTests
     {
         private static readonly DateTime T0 = new DateTime(2026, 10, 20, 12, 0, 0, DateTimeKind.Utc);

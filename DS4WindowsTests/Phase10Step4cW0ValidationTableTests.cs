@@ -18,7 +18,7 @@ namespace DS4WindowsTests
     /// 止めないもの: 「ファイルが存在しない」（警告のみ）、Toggle の「解除トリガーなし」（機能廃止済みで入力する画面がない）、Multi-action の未設定のマクロ（空のジェスチャーは何もしない）。
     /// <c>LaunchProgramViewModel</c> のパス未選択（null）の <see cref="NullReferenceException"/> も直した（空と同じエラー）。
     /// </summary>
-    [Collection("ServiceProviderHolder")]
+    [Collection(SharedHostStateCollection.Name)]
     public class Phase10Step4cW0ValidationTableTests
     {
         private static readonly SpecialAction Action = new SpecialAction("n", "Cross", "Key", "65");

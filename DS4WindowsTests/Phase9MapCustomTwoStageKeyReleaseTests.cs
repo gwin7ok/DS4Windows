@@ -11,7 +11,7 @@ namespace DS4WindowsTests
     /// 2 段階トリガーの状態機械が、トリガーを離したフレームで <c>previousActiveButtons</c> を Reset() してしまい、
     /// 「前のフレームで出力していた」ことが分からなくなるため、Key の割り当てに離した値（0）が渡らず、キーが押されたままになる不具合の再現と固定。
     /// </summary>
-    [Collection("ServiceProviderHolder")]
+    [Collection(SharedHostStateCollection.Name)]
     public class Phase9MapCustomTwoStageKeyReleaseTests
     {
         private static void Frame(ControlsKeyTestScope scope, bool isL2, byte value, byte raw)

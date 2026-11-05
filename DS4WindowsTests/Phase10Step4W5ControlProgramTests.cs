@@ -19,7 +19,7 @@ namespace DS4WindowsTests
     /// 引数の欄の <c>$hidden</c>（SA の書式）の分離と合成、builder の合成 <see cref="SpecialAction"/>（details／extra）、起動処理に渡る最終的な引数が SA と同じになること、
     /// 編集対象の往復、保存と再読み込み。
     /// </summary>
-    [Collection("ServiceProviderHolder")]
+    [Collection(SharedHostStateCollection.Name)]
     public class Phase10Step4W5ControlProgramTests
     {
         private const int Device = MappingCharacterizationScope.Device;

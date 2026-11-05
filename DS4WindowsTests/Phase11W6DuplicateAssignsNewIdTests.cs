@@ -15,7 +15,7 @@ namespace DS4WindowsTests
     /// Phase11 W6 K-W6-8: アプリの「複製（Duplicate）」は、ファイルをコピーするだけで、コピー側が元と同じ ProfileId のままだった（再起動の補正まで）。
     /// 複製の直後に、コピー側へ新しい ID を振る（<see cref="IProfileIdentityService.AssignNewId"/>）。
     /// </summary>
-    [Collection("ServiceProviderHolder")]
+    [Collection(SharedHostStateCollection.Name)]
     public class Phase11W6DuplicateAssignsNewIdTests : IDisposable
     {
         private readonly string _dir;

@@ -14,7 +14,7 @@ namespace DS4WindowsTests
     /// 旧・新の両経路の比べは <c>Phase8Step75bW1ProfileUntriggerDualPathTests</c>。
     /// プロファイルの適用は、記録用の実装で置き換える。他の Host 構築テストと同じコレクションで直列に実行する。
     /// </summary>
-    [Collection("ServiceProviderHolder")]
+    [Collection(SharedHostStateCollection.Name)]
     public class Phase8Step75bW2ProfileUntriggerEngineTests
     {
         private static DS4State Frame(bool l1, bool r1 = false)

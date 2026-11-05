@@ -15,7 +15,7 @@ namespace DS4WindowsTests
     /// Phase10-Step5 S5a（Phase10-Step6 後の Step5。SA 側のアナログ出力）: アナログな出力の種類の規則（<see cref="AnalogOutputTargets"/>）、強さ（0〜100%）の保存・読み込み
     /// （<c>Actions.xml</c> の Button の <c>Strength</c> 要素。100 のときは書かない。古いファイルは 100）、割り当て編集画面の入力（<see cref="PressKeyViewModel"/>）。
     /// </summary>
-    [Collection("ServiceProviderHolder")]
+    [Collection(SharedHostStateCollection.Name)]
     public class Phase10Step5SaAnalogStrengthStorageTests
     {
         [Theory]

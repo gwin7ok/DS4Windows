@@ -14,7 +14,7 @@ namespace DS4WindowsTests
     /// Phase8-Step7 7.3-W1: 3 本とも旧経路・新経路の <c>[Theory]</c>。<c>firstTouch</c> の検査は旧経路だけ（Q2＝A）。
     /// 台帳: <c>Phase8-Step1-Trigger-Spec-Ledger.md</c> §5（Macro）。マクロの二重実行防止（K3）は <c>Phase7Step9W3MacroDispatchGuardTests</c> が固定している。
     /// </summary>
-    [Collection("ServiceProviderHolder")]
+    [Collection(SharedHostStateCollection.Name)]
     public class Phase8Step1MacroBranchCharacterizationTests
     {
         private static SpecialAction AddMacro(SpecialActionTestScope t, string extras)

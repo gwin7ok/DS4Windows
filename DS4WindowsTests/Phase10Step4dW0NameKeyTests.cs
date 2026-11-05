@@ -18,7 +18,7 @@ namespace DS4WindowsTests
     /// W1 以降で ID を足し、参照を ID に替えるとき、変わらないべき部分（既存の形式、名前の併記）と、替わる部分（追従）を、このテストで見分ける。
     /// SA／Controls の Load Profile の切り替え先の追従は、<c>ProfileRenamePropagationTests</c>・<c>Phase10Step4W6ControlProfileTests</c> が固定している。
     /// </summary>
-    [Collection("ServiceProviderHolder")]
+    [Collection(SharedHostStateCollection.Name)]
     public class Phase10Step4dW0NameKeyTests
     {
         private static ProfileRepository NewRepository(PersistenceGoldenContext ctx, BackingStore store)

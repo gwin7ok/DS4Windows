@@ -15,7 +15,7 @@ namespace DS4WindowsTests
     /// 編集では保ち、名前の変更（古い名前を削除して作り直す経路）でも引き継ぎ、新規は新しい ID を振る。読み込みでは、ID のない・不正な・重複した SA に新しい ID を割り当てて、
     /// <c>Actions.xml</c> へ 1 回保存する（変更がなければ書き換えない）。参照（<c>&lt;ProfileActions&gt;</c> ほか）は、まだ名前のまま。
     /// </summary>
-    [Collection("ServiceProviderHolder")]
+    [Collection(SharedHostStateCollection.Name)]
     public class Phase10Step4dW2ActionIdTests
     {
         private sealed class Rig : IDisposable

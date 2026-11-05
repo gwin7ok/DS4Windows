@@ -16,7 +16,7 @@ namespace DS4WindowsTests
     /// 書くときは名前の控えと ID を保存し、読むときは ID から現在の名前を返す（名前を変えても、保管を書き換えなくてよい）。ID が引けないとき（削除、未登録）は名前の控え。
     /// 登録簿がなければ、従来の <c>string[]</c> と同じに動く。
     /// </summary>
-    [Collection("ServiceProviderHolder")]
+    [Collection(SharedHostStateCollection.Name)]
     public class Phase10Step4dW5bProfileSlotNamesTests : IDisposable
     {
         private readonly string _dir;

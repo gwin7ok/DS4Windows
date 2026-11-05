@@ -12,7 +12,7 @@ namespace DS4WindowsTests
     /// Phase9 Steering 削除 W1（Phase9-SteeringWheel-Removal-Plan.md Q3＝A）: 廃止した割り当て種別「Steering Wheel Calibrate」（<c>SASteeringWheelEmulationCalibrate</c>）が、
     /// 古い Actions.xml・プロファイルに残っていても、読み込み時に取り除かれ（ほかの項目は壊れず）、<c>[DI]</c> 接頭辞付きのログで通知されること。
     /// </summary>
-    [Collection("ServiceProviderHolder")]
+    [Collection(SharedHostStateCollection.Name)]
     public class Phase9SteeringW1LegacyAssignmentTests
     {
         private sealed class LogCapture : IDisposable

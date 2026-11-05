@@ -18,7 +18,7 @@ namespace DS4WindowsTests
     /// ゴールデンは、製品のコードを変えない W1 の時点で生成する（初回はファイルを生成して失敗する。内容を確認してコミットし、再実行すること）。
     /// 分解の各 Wave では、これらのゴールデンの文面を更新しない。
     /// </summary>
-    [Collection("ServiceProviderHolder")]
+    [Collection(SharedHostStateCollection.Name)]
     public class Phase8Step4bProfileGoldenGapTests
     {
         private readonly ITestOutputHelper _output;

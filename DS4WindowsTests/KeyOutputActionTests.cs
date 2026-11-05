@@ -12,7 +12,7 @@ namespace DS4WindowsTests
     /// Phase8-Step3 W4（Phase8-Step3-Plan.md §2.4）: 書き直した <see cref="KeyOutputAction"/> が、系統 B（<c>KeyActionAdapter</c> 経由）と
     /// 同じ押下・解放の列になること、ネイティブキーの求め方（Q7＝A）が現行の経路と一致することを確認する。
     /// </summary>
-    [Collection("ServiceProviderHolder")]
+    [Collection(SharedHostStateCollection.Name)]
     public class KeyOutputActionTests
     {
         private const int Device = 3;

@@ -14,7 +14,7 @@ namespace DS4WindowsTests
     /// Controls に足した Touch Started／Touch Ended は、束縛が作られ、プロファイル XML に保存・読み込みされる。
     /// SA に足した LS Outer／RS Outer は、トリガーとして保存した名前から読み戻せる。一覧の項目数と差は <c>Phase10Step4cW0InputSetTests</c> が固定する。
     /// </summary>
-    [Collection("ServiceProviderHolder")]
+    [Collection(SharedHostStateCollection.Name)]
     public class Phase10Step4cW5InputSetTests
     {
         private const int Device = MappingCharacterizationScope.Device;

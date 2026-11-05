@@ -21,7 +21,7 @@ namespace DS4WindowsTests
     /// 適用サービスには偽の登録簿・偽のビルダーを渡して呼び出しを数え、実ホストでは、移行対象が空／一部のときの登録簿の中身を確かめる。
     /// 他の Host 構築テストと同じコレクションで直列に実行する。
     /// </summary>
-    [Collection("ServiceProviderHolder")]
+    [Collection(SharedHostStateCollection.Name)]
     public class Phase8Step5W3PublishBindingsTests : IDisposable
     {
         private const int Slot = 0;

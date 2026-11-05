@@ -17,7 +17,7 @@ namespace DS4WindowsTests
     /// 以前は、Extras の束縛（合成の SA）が SA の一覧になく、一度も処理されず、ライトバー・振動・感度が動かなかった（束縛を作るところしか検査していなかった）。
     /// 付随する束縛（<see cref="TriggerBinding.PrimarySource"/>）は、SA 本体の <c>ProcessOwned</c> が、一緒に処理する。
     /// </summary>
-    [Collection("ServiceProviderHolder")]
+    [Collection(SharedHostStateCollection.Name)]
     public class Phase10Step6I5SaExtrasEngineTests
     {
         private const int Device = 5;

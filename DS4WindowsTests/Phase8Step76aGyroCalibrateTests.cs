@@ -19,7 +19,7 @@ namespace DS4WindowsTests
     /// 旧経路とは、立ち上がりのログの文言（Trace の 4 行）だけを比べる。ポートの本番の実装は、コントローラーがいない場合の安全性を確かめる。
     /// 他の Host 構築テストと同じコレクションで直列に実行する。
     /// </summary>
-    [Collection("ServiceProviderHolder")]
+    [Collection(SharedHostStateCollection.Name)]
     public class Phase8Step76aGyroCalibrateTests
     {
         private static DS4State Frame(bool l1, bool r1 = false)

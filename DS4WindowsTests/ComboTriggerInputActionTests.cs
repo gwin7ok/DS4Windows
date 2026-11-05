@@ -12,7 +12,7 @@ namespace DS4WindowsTests
     /// Phase8-Step3 W3（Phase8-Step3-Plan.md §2.3）: <see cref="ComboTriggerInputAction"/> のテスト。
     /// 時刻は <see cref="TriggerInput"/> に注入し、実時間のスリープは使わない。
     /// </summary>
-    [Collection("ServiceProviderHolder")]
+    [Collection(SharedHostStateCollection.Name)]
     public class ComboTriggerInputActionTests
     {
         private const int Device = 5;

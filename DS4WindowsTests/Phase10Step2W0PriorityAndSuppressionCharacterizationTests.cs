@@ -19,7 +19,7 @@ namespace DS4WindowsTests
     /// 現行の挙動が §7 と食い違うテストが見つかった場合は、期待値を変えず、結果を報告する（Q5）。
     /// 再現できない規則（遅延つき・Run on release・MultiAction の時間依存、R8 のプロファイル切替、R10 の Controls の SA 専用の種別）は、計画書の台帳に記す。
     /// </summary>
-    [Collection("ServiceProviderHolder")]
+    [Collection(SharedHostStateCollection.Name)]
     public class Phase10Step2W0PriorityAndSuppressionCharacterizationTests
     {
         private const int ControlsKeyCross = 70;

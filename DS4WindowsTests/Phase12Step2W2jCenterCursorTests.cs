@@ -19,7 +19,7 @@ namespace DS4WindowsTests
     /// 保存（Actions.xml の <c>CenterCursor</c>、Controls の <c>CenterCursor</c>）、読込、古い版との互換、編集、実行への受け渡し、説明文。
     /// 中央への移動そのもの（<c>WindowFocuser</c>）は <c>Phase12Step2W2b2WindowFocuserTests</c>。
     /// </summary>
-    [Collection("ServiceProviderHolder")]
+    [Collection(SharedHostStateCollection.Name)]
     public class Phase12Step2W2jCenterCursorTests
     {
         private const int Slot = PersistenceHarness.Slot;

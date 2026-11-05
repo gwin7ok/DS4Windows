@@ -22,7 +22,7 @@ namespace DS4WindowsTests
     /// 評価されたフレームだけの出力、ロールバック、割り当て、ソースのガード。動作の旧・新の比べは <c>Phase8Step78fW1ControlsPadCharacterizationTests</c>（同じテストが新経路を走らせる）。
     /// 他の Host 構築テストと同じコレクションで直列に実行する。
     /// </summary>
-    [Collection("ServiceProviderHolder")]
+    [Collection(SharedHostStateCollection.Name)]
     public class Phase8Step78fW2ControlsPadTests
     {
         private const int Device = MappingCharacterizationScope.Device;

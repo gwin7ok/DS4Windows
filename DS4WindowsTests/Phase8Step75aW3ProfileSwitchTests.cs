@@ -13,7 +13,7 @@ namespace DS4WindowsTests
     /// Phase8-Step7 7.5a-W3（Phase8-Step7-5-Plan.md §3 7.5a の W3）: Profile（切替のみ）をスイッチに入れた状態の、ロールバック・復帰つきの扱い・割り当て・性能の確認。
     /// プロファイルの適用は、記録用の実装で置き換える。他の Host 構築テストと同じコレクションで直列に実行する。
     /// </summary>
-    [Collection("ServiceProviderHolder")]
+    [Collection(SharedHostStateCollection.Name)]
     public class Phase8Step75aW3ProfileSwitchTests
     {
         private readonly ITestOutputHelper _output;
