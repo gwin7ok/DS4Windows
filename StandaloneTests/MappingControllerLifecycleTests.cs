@@ -42,8 +42,8 @@ namespace StandaloneTests
             DS4Windows.Processing.Services.KeyButtonControllerRegistry registry = null;
             var manager = new DS4Windows.Processing.Actions.DefaultActionManager(() => new DisconnectOnlyMapping(registry));
             registry = new DS4Windows.Processing.Services.KeyButtonControllerRegistry(
-                new DS4Windows.Processing.Actions.DefaultKeyButtonActionControllerFactory(new DS4Windows.Processing.Actions.DefaultControllerRegistry(), manager),
-                new DS4Windows.Processing.Actions.DefaultControllerRegistry(), manager);
+                new DS4Windows.Processing.Actions.DefaultKeyButtonActionControllerFactory(new DS4Windows.Processing.Actions.DefaultControllerRegistry(), manager, new NoOpSyntheticDispatcher()),
+                new DS4Windows.Processing.Actions.DefaultControllerRegistry(), manager, new NoOpSyntheticDispatcher());
             var dictField = typeof(DS4Windows.Processing.Services.KeyButtonControllerRegistry).GetField("_controllers", BindingFlags.Instance | BindingFlags.NonPublic);
             Assert.IsNotNull(dictField, "Could not find _controllers field via reflection");
             var dict = dictField.GetValue(registry) as System.Collections.IDictionary;
