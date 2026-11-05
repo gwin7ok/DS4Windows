@@ -1,7 +1,7 @@
 # Phase14c 個別計画書: 共有の値の型の確定と、UI に触れない静的な状態の撤廃
 
 作成日: 2026-11-05
-状態: **承認済み（2026-11-05。E1〜E4 はユーザーがすべて推奨案を選択、E5・E6 は Phase14b-2 の D15・D16 と同じ扱い）→ 14c-0〜14c-7 実施済み、14c-8（実機確認・取り込み）待ち（§9）**
+状態: **承認済み（2026-11-05。E1〜E4 はユーザーがすべて推奨案を選択、E5・E6 は Phase14b-2 の D15・D16 と同じ扱い）→ 完了（2026-11-05。実機確認済み、master へ取り込み・push。§9）**
 ブランチ: `Phase14c`（master 341d202c から作成）
 根拠: `Repository-Review-2026-11-05.md`（R-05・R-06・R-09・R-13・R-15〜R-18）、`Phase14b-Plan.md`（§1 の対象外、§10）、`Phase11-and-Beyond-Roadmap.md`（Phase15・16）
 
@@ -111,8 +111,8 @@ L7 の参照元の上位: `RecordBoxViewModel` 7、`BindingWindow` 5、`Controll
 | 14c-4 | 5bf8b802 | `DS4LightBar` の静的な配列を `LightbarOverrides`（`Core/Model`、Singleton）へ。利用者 13 クラス＋受け渡し 5 クラス。`MainWindow` の引数 27 → 28。L2 30 → 29、L7 35 → 30 |
 | 14c-5 | 996e461d | 静的な `ActionRegistry` を削除（規約 §2.4 の調査: 本番で `Initialize` を呼んだ履歴なし。正規の経路と重複する孤立実装と判断） |
 | 14c-6 | c15d5ab1 | `ServiceRegistration` を層ごとの partial ファイル（Wiring／Core／Processing／Output／Ui）に分割。登録 127 件は前後で同じ、`IInputDeviceModule` の並びも同じ。後付けの配線 3 つを `AddWiredServices` に集め、静的フィールド `_subscribedReset` を `BackingStore.ReplaceActionsLoadedHandler` に置き換えた。配線の時点（遅延）は変えていない |
-| 14c-7 | （本コミット） | 規約: §3.1（登録の分割・後付けの配線の置き場所）、§3.3 原則5（R-15）、§3.4 R1・R2（`Core/Model`）、§4（テストの命名［R-16］、Slow の印）。モデル図 01〜04、ロードマップ（Phase15・16 への追記）、レビューの対応状況 |
-| 14c-8 | — | Debug ALL、Release ビルド 2 か所、実機確認（E5）、取り込みと push（E6） |
+| 14c-7 | dcee985b | 規約: §3.1（登録の分割・後付けの配線の置き場所）、§3.3 原則5（R-15）、§3.4 R1・R2（`Core/Model`）、§4（テストの命名［R-16］、Slow の印）。モデル図 01〜04、ロードマップ（Phase15・16 への追記）、レビューの対応状況 |
+| 14c-8 | （本コミット） | Release ビルド（`DS4WindowsWPF.sln` の Release と、publish・post-build の `DS4Windows/bin/x64/DS4Windows`）は警告 0・エラー 0。実機確認（E5）はユーザーが「問題なし」（起動・接続、Controls と特殊アクションのキーの出力、ライトバーの強制色、特殊アクションの保存の後の動作）。master へ fast-forward で取り込み push（E6） |
 
 - 層の依存: 禁止の規則は 0 件のまま。記録のみは 155 → 59 件（L2 29、L7 30。見込みの約 66 件より少ない）。
 - 各 Step の終わりの Debug ALL は、警告 0・エラー 0、全テスト合格（14c-6 の時点で 3,264 件＋StandaloneTests 11 件）。
