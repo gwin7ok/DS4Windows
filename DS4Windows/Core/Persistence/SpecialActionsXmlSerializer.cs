@@ -40,13 +40,13 @@ namespace DS4Windows.Core.Persistence
         // Phase10-Step4d W3: Load Profile の切り替え先の ID と名前を結ぶ。省略可（登録簿がなければ、従来どおり名前だけ）
         private readonly DS4Windows.Core.Abstractions.IProfileIdentityService profileIdentity;
 
-        // Phase13-Step4: 旧 静的 ActionManager.ClearAllEntries の代わり
-        private readonly DS4Windows.Processing.Actions.IManagedActionManager _actionManager;
+        // Phase13-Step4: 旧 静的 ActionManager.ClearAllEntries の代わり。Phase14b-Step14（D14）: 第2層の IManagedActionManager の代わりに、リセットだけの契約を受ける
+        private readonly DS4Windows.Core.Abstractions.ISpecialActionRuntimeReset _runtimeReset;
 
-        public SpecialActionsXmlSerializer(BackingStore store, DS4Windows.Processing.Actions.IManagedActionManager actionManager,
+        public SpecialActionsXmlSerializer(BackingStore store, DS4Windows.Core.Abstractions.ISpecialActionRuntimeReset runtimeReset,
             DS4Windows.Core.Abstractions.IProfileIdentityService profileIdentityService = null)
         {
-            _actionManager = actionManager ?? throw new ArgumentNullException(nameof(actionManager));
+            _runtimeReset = runtimeReset ?? throw new ArgumentNullException(nameof(runtimeReset));
             this.store = store ?? throw new ArgumentNullException(nameof(store));
             profileIdentity = profileIdentityService;
         }
@@ -515,7 +515,7 @@ namespace DS4Windows.Core.Persistence
             bool loaded = true;
 
             store.actions.Clear();
-            try { _actionManager.ClearAllEntries(); } catch { }
+            try { _runtimeReset.ClearAllActionStates(); } catch { }
 
             //string configFile = Path.Combine(Global.appdatapath, "Actions.xml");
             if (!File.Exists(store.m_Actions))
@@ -528,7 +528,7 @@ namespace DS4Windows.Core.Persistence
                 {
                     try
                     {
-                        try { _actionManager.ClearAllEntries(); } catch { }
+                        try { _runtimeReset.ClearAllActionStates(); } catch { }
                         // Phase7-Step7 W2（Q4＝A）: 合成入力・マクロの実行時状態のリセット（旧: Mapping の静的な状態を直接書き換え）は、
                         // ActionsLoaded の購読者（ServiceRegistration が登録する ActionsLoadedRuntimeReset）が行う。
                         store.RaiseActionsLoaded();
@@ -576,7 +576,7 @@ namespace DS4Windows.Core.Persistence
             {
                 try
                 {
-                    try { _actionManager.ClearAllEntries(); } catch { }
+                    try { _runtimeReset.ClearAllActionStates(); } catch { }
                     store.RaiseActionsLoaded();
                 }
                 catch { }

@@ -116,7 +116,7 @@ namespace DS4WindowsTests
             IProfileIdentityService identity = new ProfileIdentityService(new PathService(ctx.AppData));
             BackingStore store = PersistenceHarness.NewStore();
             store.m_Actions = Path.Combine(ctx.AppData, "Actions.xml");
-            var serializer = new SpecialActionsXmlSerializer(store, TestActions.Manager, identity);
+            var serializer = new SpecialActionsXmlSerializer(store, TestActions.RuntimeReset, identity);
             serializer.SaveActionNew("Switch", "Cross", 3, "SwitchBefore", false);
             SpecialAction action = store.actions.Single(a => a.name == "Switch");
             Assert.False(string.IsNullOrEmpty(action.profileId));
@@ -138,7 +138,7 @@ namespace DS4WindowsTests
             IProfileIdentityService identity = new ProfileIdentityService(new PathService(ctx.AppData));
             BackingStore store = PersistenceHarness.NewStore();
             store.m_Actions = Path.Combine(ctx.AppData, "Actions.xml");
-            var serializer = new SpecialActionsXmlSerializer(store, TestActions.Manager, identity);
+            var serializer = new SpecialActionsXmlSerializer(store, TestActions.RuntimeReset, identity);
             var noId = new SpecialAction("NoId", "Cross", "Profile", "OldTarget");   // 切り替え先が存在せず、ID を引けなかった SA
             var other = new SpecialAction("Other", "Circle", "Profile", "Unrelated");
             store.actions.Add(noId);

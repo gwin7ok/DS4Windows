@@ -45,7 +45,7 @@ namespace DS4WindowsTests
         [Fact]
         public void TheSerializers_RequireTheBackingStore()
         {
-            Assert.Throws<ArgumentNullException>(() => new SpecialActionsXmlSerializer(null, TestActions.Manager));
+            Assert.Throws<ArgumentNullException>(() => new SpecialActionsXmlSerializer(null, TestActions.RuntimeReset));
             Assert.Throws<ArgumentNullException>(() => new LinkedProfilesXmlSerializer(null));
             Assert.Throws<ArgumentNullException>(() => new ControllerConfigsXmlSerializer(null));
         }

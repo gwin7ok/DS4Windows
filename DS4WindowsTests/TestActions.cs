@@ -12,6 +12,9 @@ namespace DS4WindowsTests
     {
         public static IManagedActionManager Manager => TestHost.GetService<IManagedActionManager>();
 
+        /// <summary>Phase14b-Step14（D14）: 特殊アクションの保存・読込の後の実行時状態のリセット（コンテナの Singleton。<see cref="Manager"/> と同じ管理役を使う）。</summary>
+        public static DS4Windows.Core.Abstractions.ISpecialActionRuntimeReset RuntimeReset => TestHost.GetService<DS4Windows.Core.Abstractions.ISpecialActionRuntimeReset>();
+
         public static IKeyButtonControllerRegistry Controllers => TestHost.GetService<IKeyButtonControllerRegistry>();
 
         /// <summary>

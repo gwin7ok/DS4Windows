@@ -119,10 +119,11 @@ namespace DS4Windows.Composition
             // Phase6-Step10-2（決定 E2＝A）: プリセットの読み込み（Global.Load…Profile への薄い委譲）
             services.AddSingleton<IProfilePresetLoader, ProfilePresetLoader>();
             services.AddSingleton<IProfileSlotApplier, ProfileSlotApplier>();
+            // Phase14b-Step14（D14）: 保存・読込の後の実行時状態のリセット（Core の契約、第2層の実装）
+            services.AddSingleton<ISpecialActionRuntimeReset, SpecialActionRuntimeReset>();
             services.AddSingleton<ISpecialActionRepository>(sp => new SpecialActionRepository(
                 sp.GetRequiredService<BackingStore>(), sp.GetRequiredService<IPathService>(),
-                sp.GetRequiredService<SyntheticInputState>(), sp.GetRequiredService<SpecialActionsXmlSerializer>(),
-                sp.GetRequiredService<DS4Windows.Processing.Actions.IManagedActionManager>()));
+                sp.GetRequiredService<SpecialActionsXmlSerializer>(), sp.GetRequiredService<ISpecialActionRuntimeReset>()));
 
             // Phase 3 Step 3-6: プロセス検査・昇格起動サービスの登録
             services.AddSingleton<IProcessInspector, DefaultProcessInspector>();

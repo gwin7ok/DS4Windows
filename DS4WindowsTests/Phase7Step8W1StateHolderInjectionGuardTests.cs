@@ -115,7 +115,8 @@ namespace DS4WindowsTests
             if (repository == null) return;
 
             int save = repository.IndexOf("SaveActionAndReload(", System.StringComparison.Ordinal);
-            int reset = repository.IndexOf("_syntheticInput.ResetRuntimeStateForKey(", System.StringComparison.Ordinal);
+            // Phase14b-Step14（D14）: リセットは契約 ISpecialActionRuntimeReset 経由（旧: _syntheticInput.ResetRuntimeStateForKey）。順序の検査は同じ
+            int reset = repository.IndexOf("_runtimeReset.ResetRuntimeStateForKey(", System.StringComparison.Ordinal);
             Assert.True(save >= 0 && reset > save, "SaveActionAndReload（旧 Global.SaveAction）の後に ResetRuntimeStateForKey を呼ぶこと");
             Assert.Contains("mode == 4", repository);
 

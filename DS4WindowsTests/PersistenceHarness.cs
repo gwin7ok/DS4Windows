@@ -68,7 +68,7 @@ namespace DS4WindowsTests
         {
             string path = Path.Combine(ctx.AppData, "Actions.xml");
             store.m_Actions = path;
-            var xml = new DS4Windows.Core.Persistence.SpecialActionsXmlSerializer(store, TestActions.Manager);
+            var xml = new DS4Windows.Core.Persistence.SpecialActionsXmlSerializer(store, TestActions.RuntimeReset);
             // モード: 1＝マクロ、2＝プログラム、3＝プロファイル、4＝キー、5＝切断、6＝バッテリー確認、7＝複数アクション、9＝ジャイロ較正、10＝ボタン（8＝ホイール較正は Phase9 Steering 削除 W1 で廃止）
             xml.SaveAction("Golden_Macro", "Cross", 1, "65/66/67", false, "Hold");
             xml.SaveAction("Golden_Program", "Circle", 2, "C:/golden/a.exe?3", false, "-arg");
@@ -88,7 +88,7 @@ namespace DS4WindowsTests
             File.WriteAllText(path, xml);
             BackingStore store = NewStore();
             store.m_Actions = path;
-            Assert.True(new DS4Windows.Core.Persistence.SpecialActionsXmlSerializer(store, TestActions.Manager).LoadActions(), "アクションの読込に失敗した");
+            Assert.True(new DS4Windows.Core.Persistence.SpecialActionsXmlSerializer(store, TestActions.RuntimeReset).LoadActions(), "アクションの読込に失敗した");
             return store;
         }
 

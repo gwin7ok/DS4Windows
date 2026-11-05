@@ -90,9 +90,11 @@ namespace DS4WindowsTests
         [Fact]
         public void SpecialActionRepository_RequiresStoreAndPathService()
         {
-            Assert.Throws<ArgumentNullException>(() => new SpecialActionRepository(null, new PathService(), new SyntheticInputState(), TestRepositoryFactory.CreateActionsXml(), TestActions.Manager));
-            Assert.Throws<ArgumentNullException>(() => new SpecialActionRepository(new DS4Windows.Core.Settings.BackingStore(new DS4Windows.Core.Platform.EnvironmentService()), null, new SyntheticInputState(), TestRepositoryFactory.CreateActionsXml(), TestActions.Manager));
-            Assert.Throws<ArgumentNullException>(() => new SpecialActionRepository(new DS4Windows.Core.Settings.BackingStore(new DS4Windows.Core.Platform.EnvironmentService()), new PathService(), new SyntheticInputState(), null, TestActions.Manager));
+            // Phase14b-Step14（D14）: 旧 引数の SyntheticInputState・IManagedActionManager は、リセットの契約 1 つにまとめた
+            Assert.Throws<ArgumentNullException>(() => new SpecialActionRepository(null, new PathService(), TestRepositoryFactory.CreateActionsXml(), TestActions.RuntimeReset));
+            Assert.Throws<ArgumentNullException>(() => new SpecialActionRepository(new DS4Windows.Core.Settings.BackingStore(new DS4Windows.Core.Platform.EnvironmentService()), null, TestRepositoryFactory.CreateActionsXml(), TestActions.RuntimeReset));
+            Assert.Throws<ArgumentNullException>(() => new SpecialActionRepository(new DS4Windows.Core.Settings.BackingStore(new DS4Windows.Core.Platform.EnvironmentService()), new PathService(), null, TestActions.RuntimeReset));
+            Assert.Throws<ArgumentNullException>(() => new SpecialActionRepository(new DS4Windows.Core.Settings.BackingStore(new DS4Windows.Core.Platform.EnvironmentService()), new PathService(), TestRepositoryFactory.CreateActionsXml(), null));
         }
 
         [Fact]

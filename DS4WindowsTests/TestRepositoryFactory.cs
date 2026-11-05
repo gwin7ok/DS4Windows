@@ -24,14 +24,15 @@ namespace DS4WindowsTests
 
         public static SpecialActionRepository CreateSpecialActionRepository(BackingStore store = null, IPathService pathService = null)
         {
-            return new SpecialActionRepository(store ?? TestGlobals.Store, pathService ?? new PathService(), new SyntheticInputState(),
-                CreateActionsXml(store), TestActions.Manager);
+            // Phase14b-Step14（D14）: 旧 引数（new SyntheticInputState()、TestActions.Manager）を、同じ組み合わせのリセットの実装にまとめて渡す
+            return new SpecialActionRepository(store ?? TestGlobals.Store, pathService ?? new PathService(),
+                CreateActionsXml(store), new SpecialActionRuntimeReset(new SyntheticInputState(), TestActions.Manager));
         }
 
         /// <summary>Phase7-Step10c W2: Actions.xml の保存・読込（旧: BackingStore のメソッド）。</summary>
         public static DS4Windows.Core.Persistence.SpecialActionsXmlSerializer CreateActionsXml(BackingStore store = null,
             IProfileIdentityService profileIdentity = null)
-            => new DS4Windows.Core.Persistence.SpecialActionsXmlSerializer(store ?? TestGlobals.Store, TestActions.Manager, profileIdentity);
+            => new DS4Windows.Core.Persistence.SpecialActionsXmlSerializer(store ?? TestGlobals.Store, TestActions.RuntimeReset, profileIdentity);
 
         /// <summary>Phase7-Step10c W2: リンクプロファイルの保存・読込（旧: BackingStore のメソッド）。</summary>
         public static DS4Windows.Core.Persistence.LinkedProfilesXmlSerializer CreateLinkedProfilesXml(BackingStore store = null)

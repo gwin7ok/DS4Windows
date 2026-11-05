@@ -10,9 +10,6 @@
     {
         public static readonly string[] Entries =
         {
-            "L1|DS4Windows.Core.Persistence.SpecialActionRepository|DS4Windows.Processing.Actions.IManagedActionManager",
-            "L1|DS4Windows.Core.Persistence.SpecialActionRepository|DS4Windows.Processing.SyntheticInputState",
-            "L1|DS4Windows.Core.Persistence.SpecialActionsXmlSerializer|DS4Windows.Processing.Actions.IManagedActionManager",
             "L1|DS4Windows.Core.Utilities.Changelog|DS4Windows.App",
             "L6|DS4Windows.UI.ImageLocationPaths|DS4Windows.App",
             "L6|DS4Windows.UI.LanguagePackControl|DS4Windows.App",

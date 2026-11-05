@@ -17,7 +17,7 @@ namespace DS4WindowsTests
             BackingStore saveStore = PersistenceHarness.NewStore();
             saveStore.m_Actions = path;
             // SpecialActionRepository.SaveAction が使う経路（SaveActionNew）
-            new SpecialActionsXmlSerializer(saveStore, TestActions.Manager).SaveActionNew("K", "Cross", 4, details, false, 0.0, extras);
+            new SpecialActionsXmlSerializer(saveStore, TestActions.RuntimeReset).SaveActionNew("K", "Cross", 4, details, false, 0.0, extras);
             xml = File.ReadAllText(path);
 
             BackingStore loaded = PersistenceHarness.LoadActions(ctx, xml);

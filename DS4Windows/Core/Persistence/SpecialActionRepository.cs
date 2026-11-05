@@ -6,7 +6,6 @@ using System.Xml;
 using DS4Windows.Core.Abstractions;
 using DS4Windows.Core.Logging;
 using DS4Windows.Core.Settings;
-using DS4Windows.Processing;
 
 namespace DS4Windows.Core.Persistence
 {
@@ -15,22 +14,20 @@ namespace DS4Windows.Core.Persistence
         private readonly object _actionLock = new object();
         private readonly BackingStore _config;
         private readonly IPathService _pathService;
-        // Phase7-Step8 W1: キー型スペシャルアクションの保存後に、合成入力の状態をリセットするために使う（旧: Global.SaveAction → Mapping）
-        private readonly SyntheticInputState _syntheticInput;
         // Phase7-Step10c W2: Actions.xml の保存・読込（旧: BackingStore のメソッド）
         private readonly DS4Windows.Core.Persistence.SpecialActionsXmlSerializer _actionsXml;
 
         public event EventHandler ActionsChanged;
 
-        // Phase13-Step4: 旧 静的 ActionManager（ClearAllEntries、ResetRuntimeStateForKey のトグル状態の解除）の代わり
-        private readonly DS4Windows.Processing.Actions.IManagedActionManager _actionManager;
+        // Phase7-Step8 W1／Phase13-Step4: キー型スペシャルアクションの保存後に、そのキーの実行時状態（合成入力の押下、トグル）をリセットする。
+        // Phase14b-Step14（D14）: 旧 SyntheticInputState・IManagedActionManager（第2層）の代わりに、リセットだけの契約を受ける
+        private readonly ISpecialActionRuntimeReset _runtimeReset;
 
-        public SpecialActionRepository(BackingStore config, IPathService pathService, SyntheticInputState syntheticInput,
-            DS4Windows.Core.Persistence.SpecialActionsXmlSerializer actionsXml, DS4Windows.Processing.Actions.IManagedActionManager actionManager)
+        public SpecialActionRepository(BackingStore config, IPathService pathService,
+            DS4Windows.Core.Persistence.SpecialActionsXmlSerializer actionsXml, ISpecialActionRuntimeReset runtimeReset)
         {
-            _actionManager = actionManager ?? throw new ArgumentNullException(nameof(actionManager));
             _actionsXml = actionsXml ?? throw new ArgumentNullException(nameof(actionsXml));
-            _syntheticInput = syntheticInput ?? throw new ArgumentNullException(nameof(syntheticInput));
+            _runtimeReset = runtimeReset ?? throw new ArgumentNullException(nameof(runtimeReset));
             _config = config ?? throw new ArgumentNullException(nameof(config));
             _pathService = pathService ?? throw new ArgumentNullException(nameof(pathService));
         }
@@ -144,7 +141,7 @@ namespace DS4Windows.Core.Persistence
             {
                 if (mode == 4 && ushort.TryParse(details.Split(' ')[0], out ushort savedKey))   // Scan Code つきは「65 Scan Code」
                 {
-                    _syntheticInput.ResetRuntimeStateForKey(savedKey, _actionManager);
+                    _runtimeReset.ResetRuntimeStateForKey(savedKey);
                 }
             }
             catch { }
@@ -235,7 +232,7 @@ namespace DS4Windows.Core.Persistence
         {
             try
             {
-                try { _actionManager.ClearAllEntries(); } catch { }
+                try { _runtimeReset.ClearAllActionStates(); } catch { }   // Phase14b-Step14（D14）: 旧 _actionManager.ClearAllEntries()
             }
             catch { }
         }
