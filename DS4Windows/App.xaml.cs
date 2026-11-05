@@ -964,7 +964,8 @@ namespace DS4Windows
                             SendMessage(hWndDS4WindowsForm, DS4Windows.UI.MainWindow.WM_COPYDATA, IntPtr.Zero, ref cds);
 
                             if (bWaitResultData)
-                                Console.WriteLine(WaitAndReadIPCResultDataMMF(ipcNotifyEvent));
+                                // 不具合の修正（2026-11-05）: |more なしでも表示し（起動元のコンソールに接続）、コンソールのコードページで書く（旧: Console.WriteLine）
+                                new DS4Windows.Composition.Startup.CliResultConsoleWriter().WriteLine(WaitAndReadIPCResultDataMMF(ipcNotifyEvent));
                         }
                     }
                     finally
@@ -1119,7 +1120,7 @@ namespace DS4Windows
 
             try
             {
-                ipcResultDataMMF = MemoryMappedFile.CreateNew("DS4Windows_IPCResultData.dat", 256);
+                ipcResultDataMMF = MemoryMappedFile.CreateNew("DS4Windows_IPCResultData.dat", DS4Windows.Core.Platform.IpcResultText.BufferSize);
                 // The MMF file is alive as long this process holds the file handle open
             }
             catch (Exception)
@@ -1138,15 +1139,14 @@ namespace DS4Windows
                     // Wait max 10 secs and if the result is still not available then timeout and return "empty" result
                     if (ipcNotifyEvent == null || ipcNotifyEvent.WaitOne(10000))
                     {
-                        int strNullCharIdx;
-                        byte[] buffer = new byte[256];
+                        byte[] buffer = new byte[DS4Windows.Core.Platform.IpcResultText.BufferSize];
                         // 不具合の修正（2026-10-23。Phase10-Step4d W3 の dd10cbb で混入）: 結果の MMF（ipcResultDataMMF）ではなく、クラス名の MMF（ipcClassNameMMF。
                         // クライアントのプロセスでは null）を読んでいたため、query の結果が常に空になっていた
                         MemoryMappedViewAccessor ipcResultDataMMA = ipcResultDataMMF.CreateViewAccessor(0, buffer.Length);
                         ipcResultDataMMA.ReadArray(0, buffer, 0, buffer.Length);
                         ipcResultDataMMA.Dispose();
-                        strNullCharIdx = Array.FindIndex(buffer, byteVal => byteVal == 0);
-                        return ASCIIEncoding.ASCII.GetString(buffer, 0, (strNullCharIdx <= 1 ? 1 : strNullCharIdx));
+                        // 不具合の修正（2026-11-05）: 旧 ASCII（非 ASCII の文字が「?」に化けた）→ UTF-8。最初の 0 まで
+                        return DS4Windows.Core.Platform.IpcResultText.Decode(buffer);
                     }
                 }
                 catch (Exception)
@@ -1170,10 +1170,11 @@ namespace DS4Windows
             {
                 ipcNotifyEvent = EventWaitHandle.OpenExisting("DS4Windows_IPCResultData_ReadyEvent");
 
-                byte[] buffer = ASCIIEncoding.ASCII.GetBytes(dataStr);
+                // 不具合の修正（2026-11-05）: 旧 ASCII（非 ASCII の文字が「?」に化けた）→ UTF-8。終端の 0 を残すため最大 255 バイト（文字の境目で切り詰める）
+                byte[] buffer = DS4Windows.Core.Platform.IpcResultText.Encode(dataStr);
                 mmf = MemoryMappedFile.OpenExisting("DS4Windows_IPCResultData.dat");
-                mma = mmf.CreateViewAccessor(0, 256);
-                mma.WriteArray(0, buffer, 0, (buffer.Length >= 256 ? 256 : buffer.Length));
+                mma = mmf.CreateViewAccessor(0, DS4Windows.Core.Platform.IpcResultText.BufferSize);
+                mma.WriteArray(0, buffer, 0, buffer.Length);
             }
             catch (Exception)
             {
