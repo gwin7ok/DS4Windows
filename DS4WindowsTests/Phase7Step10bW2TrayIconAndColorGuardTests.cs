@@ -37,10 +37,11 @@ namespace DS4WindowsTests
         }
 
         [Fact]
-        public void TheAppearanceService_ResolvesThePathFromTheMovedTable()
+        public void TheAppearanceService_NoLongerResolvesUiResourcePaths()
         {
-            var service = TestHost.GetService<DS4Windows.Core.Abstractions.IAppearanceSettingsService>();
-            Assert.Equal(TrayIconResources.iconChoiceResources[TrayIconChoice.White], service.GetIconResourcePath(TrayIconChoice.White));
+            // Phase14b-Step13（決定 D13）: 旧 GetIconResourcePath（UI の TrayIconResources を引いていた）は外し、UI が直接表を引く
+            Assert.Null(typeof(DS4Windows.Core.Abstractions.IAppearanceSettingsService).GetMethod("GetIconResourcePath"));
+            Assert.Null(typeof(DS4Windows.Core.Settings.AppearanceSettingsService).GetMethod("GetIconResourcePath"));
         }
 
         [Theory]

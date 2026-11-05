@@ -121,7 +121,7 @@ namespace DS4Windows.UI.ViewModels
             this.lifecycle = lifecycle ?? throw new ArgumentNullException(nameof(lifecycle));   // Phase13-Step9: 旧 ControlService.running の転送
             trayTitle = $"DS4Windows v{environmentService.ApplicationVersion}";
             contextMenu = new ContextMenu();
-            iconSource = appearanceSettings.GetIconResourcePath(appearanceSettings.UseIconChoice);
+            iconSource = TrayIconResources.iconChoiceResources[appearanceSettings.UseIconChoice];
             appearanceSettings.BatteryChanged += UpdateTrayBattery;
             if (AppLogger.IsTraceEnabled)
                 AppLogger.LogTrace("[DI] TrayIconViewModel: subscribed BatteryChanged via IAppearanceSettingsService");

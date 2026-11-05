@@ -13,10 +13,7 @@ namespace DS4Windows.Core.Abstractions
         AppThemeChoice UseCurrentTheme { get; set; }
         TrayIconChoice UseIconChoice { get; set; }
 
-        /// <summary>
-        /// 指定したトレイアイコン種別に対応するリソースパスを取得します。
-        /// </summary>
-        string GetIconResourcePath(TrayIconChoice choice);
+        // Phase14b-Step13（決定 D13）: 旧 GetIconResourcePath（トレイアイコンの画像パス）は外した。パスは UI が TrayIconResources から引く
 
         // ---- Phase6-Step2-5 (PR-5): バッテリー残量の変化通知（このサービスのイベント）----
         void InvokeBatteryChanged(byte percentage);

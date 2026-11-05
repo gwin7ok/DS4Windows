@@ -6,6 +6,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
+using DS4Windows.Core.Logging;
 using System.Windows.Controls;
 using System.Windows.Data;
 using System.Windows.Documents;
@@ -43,11 +44,11 @@ namespace DS4Windows.UI
                 {
                     reverseHoverIndexes.Add(pair.Value, pair.Key);
                 }
-                App.logHolder?.Logger?.Debug($"[PopulateReverseHoverIndexes] Built reverseHoverIndexes count={reverseHoverIndexes.Count}");
+                AppLogger.Log(AppLogLevel.Debug, $"[PopulateReverseHoverIndexes] Built reverseHoverIndexes count={reverseHoverIndexes.Count}");
             }
             catch (Exception ex)
             {
-                App.logHolder?.Logger?.Debug($"[PopulateReverseHoverIndexes] failed: {ex.Message}");
+                AppLogger.Log(AppLogLevel.Debug, $"[PopulateReverseHoverIndexes] failed: {ex.Message}");
             }
         }
 
@@ -76,7 +77,7 @@ namespace DS4Windows.UI
             // 同コミットが追加した brpConBtn = 44 は 763 行で 43 に上書きされるため削除。
             hoverIndexes[leftTouchConBtn] = mappingListVM.ControlIndexMap[DS4Controls.TouchLeft]; // 21
 
-            App.logHolder?.Logger?.Debug($"[PopulateHoverIndexes] Populated hoverIndexes count={hoverIndexes.Count}");
+            AppLogger.Log(AppLogLevel.Debug, $"[PopulateHoverIndexes] Populated hoverIndexes count={hoverIndexes.Count}");
             hoverIndexes[rightTouchConBtn] = mappingListVM.ControlIndexMap[DS4Controls.TouchRight]; // 22
             hoverIndexes[multiTouchConBtn] = mappingListVM.ControlIndexMap[DS4Controls.TouchMulti]; // 23
             hoverIndexes[topTouchConBtn] = mappingListVM.ControlIndexMap[DS4Controls.TouchUpper]; // 24
@@ -120,7 +121,7 @@ namespace DS4Windows.UI
                 size = new Size(circleConBtn.Width, circleConBtn.Height)
             };
 
-            App.logHolder?.Logger?.Debug($"[PopulateHoverLocations] Populated hoverLocations count={hoverLocations.Count}");
+            AppLogger.Log(AppLogLevel.Debug, $"[PopulateHoverLocations] Populated hoverLocations count={hoverLocations.Count}");
             hoverLocations[squareConBtn] = new HoverImageInfo()
             {
                 point = new Point(Canvas.GetLeft(squareConBtn), Canvas.GetTop(squareConBtn)),
@@ -258,7 +259,7 @@ namespace DS4Windows.UI
 
         private void PopulateHoverImages()
         {
-            App.logHolder?.Logger?.Debug("[PopulateHoverImages] loading hover images");
+            AppLogger.Log(AppLogLevel.Debug, "[PopulateHoverImages] loading hover images");
             ImageSourceConverter sourceConverter = new ImageSourceConverter();
 
             ImageSource temp =
@@ -419,7 +420,7 @@ namespace DS4Windows.UI
             hoverImages[blpConBtn] = guideHover;
             hoverImages[brpConBtn] = guideHover;
 
-            App.logHolder?.Logger?.Debug($"[PopulateHoverImages] loaded hoverImages count={hoverImages.Count}");
+            AppLogger.Log(AppLogLevel.Debug, $"[PopulateHoverImages] loaded hoverImages count={hoverImages.Count}");
         }
     }
 }

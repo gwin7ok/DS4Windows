@@ -13,12 +13,10 @@
             "L1|DS4Windows.Core.Persistence.SpecialActionRepository|DS4Windows.Processing.Actions.IManagedActionManager",
             "L1|DS4Windows.Core.Persistence.SpecialActionRepository|DS4Windows.Processing.SyntheticInputState",
             "L1|DS4Windows.Core.Persistence.SpecialActionsXmlSerializer|DS4Windows.Processing.Actions.IManagedActionManager",
-            "L1|DS4Windows.Core.Settings.AppearanceSettingsService|DS4Windows.UI.TrayIconResources",
             "L1|DS4Windows.Core.Utilities.Changelog|DS4Windows.App",
             "L6|DS4Windows.UI.ImageLocationPaths|DS4Windows.App",
             "L6|DS4Windows.UI.LanguagePackControl|DS4Windows.App",
             "L6|DS4Windows.UI.MainWindow|DS4Windows.App",
-            "L6|DS4Windows.UI.ProfileEditor|DS4Windows.App",
             "L6|DS4Windows.UI.ViewModels.SettingsViewModel|DS4Windows.StartupMethods",
             "L6|DS4Windows.UI.WelcomeDialog|DS4Windows.App",
         };

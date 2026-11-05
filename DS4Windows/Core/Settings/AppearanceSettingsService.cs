@@ -29,7 +29,7 @@ namespace DS4Windows.Core.Settings
             set => _config.useIconChoice = value;
         }
 
-        public string GetIconResourcePath(TrayIconChoice choice) => DS4Windows.UI.TrayIconResources.iconChoiceResources[choice];
+        // Phase14b-Step13（決定 D13）: 旧 GetIconResourcePath は外した（Core から UI の資源の表を参照しないため）。UI が TrayIconResources から引く
 
         // ---- Phase6-Step2-5 (PR-5): バッテリー残量の変化通知 ----
         // Phase7-Step10d W4: 旧 Global.BatteryChanged（static イベント）の実体をこのサービスへ移した。

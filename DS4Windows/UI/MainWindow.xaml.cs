@@ -167,7 +167,6 @@ namespace DS4Windows.UI
             mainWinVM = mainWindowsViewModel ?? throw new ArgumentNullException(nameof(mainWindowsViewModel));
             DataContext = mainWinVM;
 
-            App root = Application.Current as App;
             // Phase6-Step10-1-5（決定D7＝A）: ログ設定の反映の窓口（App が LoggerHolder の生成直後に接続する）
             settingsWrapVM = new SettingsViewModel(appSettingsService, appearanceSettingsService, environmentService, pathService,
                 logSettingsApplier);
@@ -467,7 +466,6 @@ namespace DS4Windows.UI
         }
         private void SetupEvents()
         {
-            App root = Application.Current as App;
             controlService.ServiceStarted += ControlServiceStarted;
             controlService.RunningChanged += ControlServiceChanged;
             controlService.PreServiceStop += PrepareForServiceStop;
@@ -538,7 +536,7 @@ Suspend support not enabled.", LogOptions.UserFacing);
 
         private void SettingsWrapVM_IconChoiceIndexChanged(object sender, EventArgs e)
         {
-            trayIconVM.IconSource = appearanceSettingsService.GetIconResourcePath(appearanceSettingsService.UseIconChoice);
+            trayIconVM.IconSource = TrayIconResources.iconChoiceResources[appearanceSettingsService.UseIconChoice];
         }
 
         private void MainWinVM_FullTabsEnabledChanged(object sender, EventArgs e)
@@ -989,7 +987,6 @@ Suspend support not enabled.", LogOptions.UserFacing);
         public async void ChangeService()
         {
             StartStopBtn.IsEnabled = false;
-            App root = Application.Current as App;
             //Tester service = root.rootHubtest;
             ControlService service = controlService;
             Task serviceTask = Task.Run(() =>

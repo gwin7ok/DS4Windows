@@ -118,7 +118,7 @@ namespace DS4Windows.UI
             }
             catch (Exception ex)
             {
-                App.logHolder?.Logger?.Debug($"[UpdateSpecialActionsHeaderTexts] failed: {ex.Message}");
+                AppLogger.Log(AppLogLevel.Debug, $"[UpdateSpecialActionsHeaderTexts] failed: {ex.Message}");
             }
         }
 
@@ -141,11 +141,11 @@ namespace DS4Windows.UI
                     tb.Text = newText ?? string.Empty;
                 }
 
-                App.logHolder?.Logger?.Debug($"{prefix} Column[{idx}] Named {logicalName} old='{oldTxt}' new='{newText}'");
+                AppLogger.Log(AppLogLevel.Debug, $"{prefix} Column[{idx}] Named {logicalName} old='{oldTxt}' new='{newText}'");
             }
             catch (Exception ex)
             {
-                App.logHolder?.Logger?.Debug($"[SetAndLogHeaderText] failed for Column[{idx}] Name={logicalName}: {ex.Message}");
+                AppLogger.Log(AppLogLevel.Debug, $"[SetAndLogHeaderText] failed for Column[{idx}] Name={logicalName}: {ex.Message}");
             }
         }
         // ...既存コード...
@@ -447,11 +447,11 @@ namespace DS4Windows.UI
                     appSettingsService.SpecialActionDetailColWidth = (int)gridView.Columns[3].Width;
                     // 必要なら他の列も追加
 
-                    App.logHolder?.Logger?.Debug($"[SaveSplitterAndColumnWidths] Saved left={appSettingsService.ProfileEditorLeftWidth} right={appSettingsService.ProfileEditorRightWidth} nameCol={appSettingsService.SpecialActionNameColWidth} trigCol={appSettingsService.SpecialActionTriggerColWidth} detailCol={appSettingsService.SpecialActionDetailColWidth}");
+                    AppLogger.Log(AppLogLevel.Debug, $"[SaveSplitterAndColumnWidths] Saved left={appSettingsService.ProfileEditorLeftWidth} right={appSettingsService.ProfileEditorRightWidth} nameCol={appSettingsService.SpecialActionNameColWidth} trigCol={appSettingsService.SpecialActionTriggerColWidth} detailCol={appSettingsService.SpecialActionDetailColWidth}");
                 }
                 catch (Exception ex)
                 {
-                    App.logHolder?.Logger?.Debug($"[SaveSplitterAndColumnWidths] failed: {ex.Message}");
+                    AppLogger.Log(AppLogLevel.Debug, $"[SaveSplitterAndColumnWidths] failed: {ex.Message}");
                 }
             }
         }
@@ -491,7 +491,7 @@ namespace DS4Windows.UI
             }
             catch (Exception ex)
             {
-                App.logHolder?.Logger?.Debug($"[RestoreSplitterAndColumnWidths] failed: {ex.Message}");
+                AppLogger.Log(AppLogLevel.Debug, $"[RestoreSplitterAndColumnWidths] failed: {ex.Message}");
             }
         }
 
@@ -1908,7 +1908,7 @@ namespace DS4Windows.UI
             // このイベントとして届く。左ペインのタブ自身の選択変更だけを扱う
             if (e.OriginalSource != sidebarTabControl) return;
 
-            App.logHolder?.Logger?.Debug($"[SidebarTabControl_SelectionChanged] SelectedItem={sidebarTabControl.SelectedItem?.GetType().Name}, SelectedIndex={sidebarTabControl.SelectedIndex}, IsLoaded={sidebarTabControl.IsLoaded}, IsVisible={sidebarTabControl.IsVisible}, Added={e.AddedItems?.Count}, Removed={e.RemovedItems?.Count}");
+            AppLogger.Log(AppLogLevel.Debug, $"[SidebarTabControl_SelectionChanged] SelectedItem={sidebarTabControl.SelectedItem?.GetType().Name}, SelectedIndex={sidebarTabControl.SelectedIndex}, IsLoaded={sidebarTabControl.IsLoaded}, IsVisible={sidebarTabControl.IsVisible}, Added={e.AddedItems?.Count}, Removed={e.RemovedItems?.Count}");
             // Special Actions タブに切り替えられたときは毎回ソートとヘッダー更新を行う。
             // ユーザーがタブを行き来したときに最新の表示状態を反映させたい。
             try
@@ -1918,23 +1918,23 @@ namespace DS4Windows.UI
 
                 if (addedContainsSpecial)
                 {
-                    App.logHolder?.Logger?.Debug("[SidebarTabControl_SelectionChanged] SpecialActions tab was added (user switched to it) - ensuring header templates are assigned");
+                    AppLogger.Log(AppLogLevel.Debug, "[SidebarTabControl_SelectionChanged] SpecialActions tab was added (user switched to it) - ensuring header templates are assigned");
                     EnsureSpecialActionsHeadersAssigned();
                 }
                 else if (removedContainsSpecial)
                 {
-                    App.logHolder?.Logger?.Debug("[SidebarTabControl_SelectionChanged] SpecialActions tab was removed (likely closing/unloading) - skipping header assignment");
+                    AppLogger.Log(AppLogLevel.Debug, "[SidebarTabControl_SelectionChanged] SpecialActions tab was removed (likely closing/unloading) - skipping header assignment");
                 }
                 else if (sidebarTabControl.SelectedItem == specialActionsTab && !specialActionsHeadersAssigned)
                 {
                     // Fallback: sometimes SelectionChanged doesn't populate AddedItems as expected
-                    App.logHolder?.Logger?.Debug("[SidebarTabControl_SelectionChanged] Fallback: SelectedItem==specialActionsTab and headers not assigned - ensuring header templates are assigned");
+                    AppLogger.Log(AppLogLevel.Debug, "[SidebarTabControl_SelectionChanged] Fallback: SelectedItem==specialActionsTab and headers not assigned - ensuring header templates are assigned");
                     EnsureSpecialActionsHeadersAssigned();
                 }
             }
             catch (Exception ex)
             {
-                App.logHolder?.Logger?.Debug($"[SidebarTabControl_SelectionChanged] header init failed: {ex.Message}");
+                AppLogger.Log(AppLogLevel.Debug, $"[SidebarTabControl_SelectionChanged] header init failed: {ex.Message}");
             }
 
             if (sidebarTabControl.SelectedItem == contReadingsTab)
@@ -1966,7 +1966,7 @@ namespace DS4Windows.UI
             {
                 if (specialActionsHeadersAssigned)
                 {
-                    App.logHolder?.Logger?.Debug("[EnsureSpecialActionsHeadersAssigned] headers already assigned - skipping");
+                    AppLogger.Log(AppLogLevel.Debug, "[EnsureSpecialActionsHeadersAssigned] headers already assigned - skipping");
                     return;
                 }
                 var lv = this.FindName("specialActionsLV") as System.Windows.Controls.ListView;
@@ -2003,7 +2003,7 @@ namespace DS4Windows.UI
                         {
                             // Loaded 時点ではテンプレート内の TextBlock 参照を取得してキャッシュするのみにする。
                             // 実際のヘッダー表示更新（▲/▼ の付与など）は SortSpecialActionsList 側で一元的に行う。
-                            App.logHolder?.Logger?.Debug($"[EnsureSpecialActionsHeadersAssigned] ContentControl.Loaded event for Column[{colIdx}] - caching header textblocks");
+                            AppLogger.Log(AppLogLevel.Debug, $"[EnsureSpecialActionsHeadersAssigned] ContentControl.Loaded event for Column[{colIdx}] - caching header textblocks");
                             var foundTbs = UtilMethods.FindVisualChildren<TextBlock>(contentCtrl).ToList();
                             var namedActiveTb2 = foundTbs.FirstOrDefault(tb => tb.Name == "ActiveHeaderTextBlock");
                             var namedNameTb2 = foundTbs.FirstOrDefault(tb => tb.Name == "NameHeaderTextBlock");
@@ -2030,7 +2030,7 @@ namespace DS4Windows.UI
                         }
                         catch (Exception ex)
                         {
-                            App.logHolder?.Logger?.Debug($"[EnsureSpecialActionsHeadersAssigned] Loaded handler exception: {ex.Message}");
+                            AppLogger.Log(AppLogLevel.Debug, $"[EnsureSpecialActionsHeadersAssigned] Loaded handler exception: {ex.Message}");
                         }
                         finally
                         {
@@ -2041,7 +2041,7 @@ namespace DS4Windows.UI
                         specialActionsHeaderLoadedCount++;
                         if (specialActionsHeaderLoadedCount >= targetCount)
                         {
-                            App.logHolder?.Logger?.Debug("[EnsureSpecialActionsHeadersAssigned] all headers loaded - calling SortSpecialActionsList");
+                            AppLogger.Log(AppLogLevel.Debug, "[EnsureSpecialActionsHeadersAssigned] all headers loaded - calling SortSpecialActionsList");
                             SortSpecialActionsList(specialActionsVM.CurrentSortColumn, specialActionsVM.CurrentSortAscending);
                         }
                     };
@@ -2053,11 +2053,11 @@ namespace DS4Windows.UI
                     try
                     {
                         var headerType = col.Header?.GetType().Name ?? "null";
-                        App.logHolder?.Logger?.Debug($"[EnsureSpecialActionsHeadersAssigned] Assigned Header template to Column[{i}] - HeaderType={headerType}");
+                        AppLogger.Log(AppLogLevel.Debug, $"[EnsureSpecialActionsHeadersAssigned] Assigned Header template to Column[{i}] - HeaderType={headerType}");
                     }
                     catch (Exception ex)
                     {
-                        App.logHolder?.Logger?.Debug($"[EnsureSpecialActionsHeadersAssigned] Assigned Header logging failed: {ex.Message}");
+                        AppLogger.Log(AppLogLevel.Debug, $"[EnsureSpecialActionsHeadersAssigned] Assigned Header logging failed: {ex.Message}");
                     }
                 }
                 if (assignedAny)
@@ -2067,7 +2067,7 @@ namespace DS4Windows.UI
             }
             catch (Exception ex)
             {
-                App.logHolder?.Logger?.Debug($"[EnsureSpecialActionsHeadersAssigned] failed: {ex.Message}");
+                AppLogger.Log(AppLogLevel.Debug, $"[EnsureSpecialActionsHeadersAssigned] failed: {ex.Message}");
             }
         }
 
