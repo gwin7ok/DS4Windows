@@ -133,6 +133,7 @@ namespace DS4WindowsTests
 
         // ---- delayTime の挙動（デバイス添字に依存しない。台帳 §2 の分岐 A）----
 
+        [Trait("Category", "Slow")]   // 0.3 秒以上（実時間で待つ）。途中の確認では除外し、Debug ALL では実行する
         [Fact]
         public void DelayedButtonPress_FiresOnlyAfterTheDelayHasPassed()
         {

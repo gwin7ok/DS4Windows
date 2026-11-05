@@ -87,6 +87,7 @@ namespace DS4WindowsTests
             Assert.True(tooNarrow.Count == 0, "最大桁の値が入りきらない数値ラベルがある:\n" + string.Join("\n", tooNarrow));
         }
 
+        [Trait("Category", "Slow")]   // 0.3 秒以上（実時間で待つ）。途中の確認では除外し、Debug ALL では実行する
         [Fact]
         public void NoReadoutLabel_NorItsContainers_AreClippedAtThePaneWidth()
         {

@@ -174,6 +174,7 @@ namespace DS4WindowsTests
             return last;
         }
 
+        [Trait("Category", "Slow")]   // 0.3 秒以上（実時間で待つ）。途中の確認では除外し、Debug ALL では実行する
         [Fact]
         public void APress_SwitchesOnce_AndAnAutomaticOneRestoresOnRelease()
         {
@@ -197,6 +198,7 @@ namespace DS4WindowsTests
             Assert.Equal(new[] { Device }, switcher.Restores.ToArray());   // 離すと、1 回だけ戻る
         }
 
+        [Trait("Category", "Slow")]   // 0.3 秒以上（実時間で待つ）。途中の確認では除外し、Debug ALL では実行する
         [Fact]
         public void WithoutTheAutomaticUntrigger_NothingIsRestoredOnRelease()
         {

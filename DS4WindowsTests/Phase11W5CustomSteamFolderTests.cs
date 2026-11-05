@@ -67,6 +67,7 @@ namespace DS4WindowsTests
             lock (_gate) { return _guiLog.Where(e => e.Data != null && e.Data.Contains(folder)).ToArray(); }
         }
 
+        [Trait("Category", "Slow")]   // 0.3 秒以上（実時間で待つ）。途中の確認では除外し、Debug ALL では実行する
         [Fact]
         public void ANonExistentFolder_IsKept_AndWarned()
         {
@@ -83,6 +84,7 @@ namespace DS4WindowsTests
             _output.WriteLine(logs[0].Data);
         }
 
+        [Trait("Category", "Slow")]   // 0.3 秒以上（実時間で待つ）。途中の確認では除外し、Debug ALL では実行する
         [Fact]
         public void AnExistingFolder_IsKept_WithoutAWarning()
         {
@@ -92,6 +94,7 @@ namespace DS4WindowsTests
             Assert.Empty(LogsAbout(_existingFolder));
         }
 
+        [Trait("Category", "Slow")]   // 0.3 秒以上（実時間で待つ）。途中の確認では除外し、Debug ALL では実行する
         [Fact]
         public void AnEmptyValue_ClearsTheFolder_WithoutAWarning()
         {
@@ -109,6 +112,7 @@ namespace DS4WindowsTests
             Assert.Empty(LogsAbout(_existingFolder));
         }
 
+        [Trait("Category", "Slow")]   // 0.3 秒以上（実時間で待つ）。途中の確認では除外し、Debug ALL では実行する
         [Fact]
         public void ANullValue_IsStoredAsEmpty()
         {
@@ -119,6 +123,7 @@ namespace DS4WindowsTests
             Assert.Equal(string.Empty, _service.CustomSteamFolder);
         }
 
+        [Trait("Category", "Slow")]   // 0.3 秒以上（実時間で待つ）。途中の確認では除外し、Debug ALL では実行する
         [Fact]
         public void TheSameNonExistentFolder_IsNotWarnedAgain()
         {
@@ -128,6 +133,7 @@ namespace DS4WindowsTests
             Assert.Single(LogsAbout(_missingFolder));
         }
 
+        [Trait("Category", "Slow")]   // 0.3 秒以上（実時間で待つ）。途中の確認では除外し、Debug ALL では実行する
         [Fact]
         public void ChangingFromAMissingFolderToAnExistingOne_ReplacesTheValue()
         {
@@ -139,6 +145,7 @@ namespace DS4WindowsTests
             Assert.Empty(LogsAbout(_existingFolder));
         }
 
+        [Trait("Category", "Slow")]   // 0.3 秒以上（実時間で待つ）。途中の確認では除外し、Debug ALL では実行する
         [Fact]
         public void TheWarningText_ExistsInEnglishAndJapanese_WithTheFolderPlaceholder()
         {
@@ -157,6 +164,7 @@ namespace DS4WindowsTests
             Assert.Matches(@"[぀-ヿ一-鿿]", japanese);
         }
 
+        [Trait("Category", "Slow")]   // 0.3 秒以上（実時間で待つ）。途中の確認では除外し、Debug ALL では実行する
         [Fact]
         public void TheDesignerAccessor_ReturnsTheResourceText()
         {
@@ -165,6 +173,7 @@ namespace DS4WindowsTests
                 DS4Windows.Translations.Strings.CustomSteamFolderNotFound);
         }
 
+        [Trait("Category", "Slow")]   // 0.3 秒以上（実時間で待つ）。途中の確認では除外し、Debug ALL では実行する
         [Fact]
         public void TheConsumer_StillChecksTheFolderExists_SoSavingAMissingFolderIsHarmless()
         {

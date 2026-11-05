@@ -83,6 +83,7 @@ namespace DS4WindowsTests
         private static bool HasSaStyleLog(IEnumerable<string> logs, string name)
             => logs.Any(l => l.Contains("Trigger detected for SA '" + name + "'") || (l.Contains("SpecialAction ") && l.Contains("name=" + name)));
 
+        [Trait("Category", "Slow")]   // 0.3 秒以上（実時間で待つ）。途中の確認では除外し、Debug ALL では実行する
         [Fact]
         public void TheExistingControlsKinds_LogTheRisingAndTheReleaseLines_OnceEach()
         {
@@ -116,6 +117,7 @@ namespace DS4WindowsTests
             }
         }
 
+        [Trait("Category", "Slow")]   // 0.3 秒以上（実時間で待つ）。途中の確認では除外し、Debug ALL では実行する
         [Fact]
         public void TheSpecialKinds_LogTheSaStyleLines_OnTheRisingEdge()
         {

@@ -93,6 +93,7 @@ namespace DS4WindowsTests
             return sa;
         }
 
+        [Trait("Category", "Slow")]   // 0.3 秒以上（実時間で待つ）。途中の確認では除外し、Debug ALL では実行する
         [Fact]
         public void ATap_PlaysTheFirstMacro_OnlyAfterTheIntervalHasPassed()
         {
@@ -114,6 +115,7 @@ namespace DS4WindowsTests
             Assert.Equal(1, h.Presses);   // 1 回だけ
         }
 
+        [Trait("Category", "Slow")]   // 0.3 秒以上（実時間で待つ）。途中の確認では除外し、Debug ALL では実行する
         [Fact]
         public void AHold_PlaysTheSecondMacroOnce_AndTheReleaseDoesNotPlayAnother()
         {
@@ -131,6 +133,7 @@ namespace DS4WindowsTests
             Assert.Equal(new[] { h.Native(66) }, h.PressedKeys);   // 離しても、タップのマクロは実行しない
         }
 
+        [Trait("Category", "Slow")]   // 0.3 秒以上（実時間で待つ）。途中の確認では除外し、Debug ALL では実行する
         [Fact]
         public void ADoubleTap_PlaysTheThirdMacroOnly()
         {
@@ -153,6 +156,7 @@ namespace DS4WindowsTests
             Assert.Equal(new[] { h.Native(67) }, h.PressedKeys);   // タップのマクロは実行しない
         }
 
+        [Trait("Category", "Slow")]   // 0.3 秒以上（実時間で待つ）。途中の確認では除外し、Debug ALL では実行する
         [Fact]
         public void EmptyMacros_PlayNothing_AndDoNotThrow()
         {
@@ -170,6 +174,7 @@ namespace DS4WindowsTests
             Assert.Equal(0, h.Presses);
         }
 
+        [Trait("Category", "Slow")]   // 0.3 秒以上（実時間で待つ）。途中の確認では除外し、Debug ALL では実行する
         [Fact]
         public void TheFreshPressGuard_IsNotConsulted()
         {
@@ -202,6 +207,7 @@ namespace DS4WindowsTests
             Assert.False(h.Step(true).L1);          // MultiAction のトリガーのボタンの通常の出力は、押している間、消える
         }
 
+        [Trait("Category", "Slow")]   // 0.3 秒以上（実時間で待つ）。途中の確認では除外し、Debug ALL では実行する
         [Fact]
         public void WhenAnEarlierSpecialActionEndsTheFrame_ThePressEdgeIsMissed()
         {

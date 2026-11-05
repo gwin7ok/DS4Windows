@@ -60,6 +60,7 @@ namespace DS4WindowsTests
                 Thread.Sleep(10);
         }
 
+        [Trait("Category", "Slow")]   // 0.3 秒以上（実時間で待つ）。途中の確認では除外し、Debug ALL では実行する
         [Fact]
         public void Press_PlaysTheMacroSteps_AndNothingMoreAfterTheRelease()
         {
@@ -90,6 +91,7 @@ namespace DS4WindowsTests
             Assert.Equal(1, stillHeld);
         }
 
+        [Trait("Category", "Slow")]   // 0.3 秒以上（実時間で待つ）。途中の確認では除外し、Debug ALL では実行する
         [Fact]
         public void RepeatWhileHeld_FlagsAreReported()
         {
@@ -118,6 +120,7 @@ namespace DS4WindowsTests
             Assert.Equal(atRelease, afterRelease);   // 離したあとは、止まる
         }
 
+        [Trait("Category", "Slow")]   // 0.3 秒以上（実時間で待つ）。途中の確認では除外し、Debug ALL では実行する
         [Fact]
         public void StickDirection_IsPressedOnAnyDeflection()
         {
@@ -134,6 +137,7 @@ namespace DS4WindowsTests
             Assert.True(Presses(t) >= 1);
         }
 
+        [Trait("Category", "Slow")]   // 0.3 秒以上（実時間で待つ）。途中の確認では除外し、Debug ALL では実行する
         [Fact]
         public void Trigger_IsPressedAboveZero()
         {
@@ -174,6 +178,7 @@ namespace DS4WindowsTests
             Assert.Equal(2, TestHost.GetService<DS4Windows.Processing.Abstractions.IControlBindingBuilder>().Build(t.Device).Count);
         }
 
+        [Trait("Category", "Slow")]   // 0.3 秒以上（実時間で待つ）。途中の確認では除外し、Debug ALL では実行する
         [Fact]
         public void ProfileApplyOrDisconnectWhileHeld_IsReported()
         {

@@ -59,6 +59,7 @@ namespace DS4WindowsTests
             return (SettingsViewModelTestFactory.Create(service), service, store);
         }
 
+        [Trait("Category", "Slow")]   // 0.3 秒以上（実時間で待つ）。途中の確認では除外し、Debug ALL では実行する
         [Fact]
         public void WhenUpdateChecksAreOff_ChangingTheNumber_IsIgnored_ByDesign()
         {
@@ -74,6 +75,7 @@ namespace DS4WindowsTests
             }
         }
 
+        [Trait("Category", "Slow")]   // 0.3 秒以上（実時間で待つ）。途中の確認では除外し、Debug ALL では実行する
         [Fact]
         public void WhenUpdateChecksAreOn_TheNumberIsStored_AndSaved()
         {
@@ -104,6 +106,7 @@ namespace DS4WindowsTests
             Assert.Null(XamlTestHelper.Attr(numberInput, "IsEnabled"));
         }
 
+        [Trait("Category", "Slow")]   // 0.3 秒以上（実時間で待つ）。途中の確認では除外し、Debug ALL では実行する
         [Fact]
         public void TheRowBinding_FollowsTheCheckBox_AtRuntime()
         {

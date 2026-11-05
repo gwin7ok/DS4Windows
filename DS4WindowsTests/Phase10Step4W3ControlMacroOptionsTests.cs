@@ -159,6 +159,7 @@ namespace DS4WindowsTests
                 Thread.Sleep(10);
         }
 
+        [Trait("Category", "Slow")]   // 0.3 秒以上（実時間で待つ）。途中の確認では除外し、Debug ALL では実行する
         [Fact]
         public void RunOnRelease_PlaysNothingWhileHeld_AndPlaysOnceAfterTheRelease()
         {
@@ -178,6 +179,7 @@ namespace DS4WindowsTests
             Assert.Single(t.Recorder.KeyPresses);   // 1 回だけ
         }
 
+        [Trait("Category", "Slow")]   // 0.3 秒以上（実時間で待つ）。途中の確認では除外し、Debug ALL では実行する
         [Fact]
         public void KeepKeyState_LeavesTheKeyDown_AndWithoutIt_TheKeyIsReleasedAtTheEnd()
         {

@@ -77,6 +77,7 @@ L7 の参照元の上位: `RecordBoxViewModel` 7、`BindingWindow` 5、`Controll
 
 | Step | 内容 |
 |---|---|
+| 14c-0 | **済み（2026-11-05、Phase14c の前の対策）**: 0.3 秒以上かかるテスト 56 メソッド（65 件、合計約 45 秒）に `[Trait("Category", "Slow")]` を付けた。途中の確認は `--filter "Category!=Slow"`（3,196 件・約 18 秒）、Step の終わりの Debug ALL は全件。あわせて、途中の確認では Remove-bin をせず差分ビルドにする（ユーザー承認） |
 | 14c-1 | 「記録のみ」の L2・L7 の件数のラチェット（E4）。今の 155 件を基準値にする |
 | 14c-2 | 値の型 8 つを `Core/Model` へ（移動のコミット → 名前空間の書き換えのコミット。E2） |
 | 14c-3 | R-06: `SyntheticDispatcher` の静的な橋渡しを撤廃（`IKeyButtonActionControllerFactory` が `ISyntheticDispatcher` を渡す） |

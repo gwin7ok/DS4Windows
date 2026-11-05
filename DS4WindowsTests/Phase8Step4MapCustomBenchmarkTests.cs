@@ -43,6 +43,7 @@ namespace DS4WindowsTests
             return list;
         }
 
+        [Trait("Category", "Slow")]   // 0.3 秒以上（実時間で待つ）。途中の確認では除外し、Debug ALL では実行する
         [Fact]
         public void MapCustom_PerFrameTime_IsReported()
         {
@@ -60,6 +61,7 @@ namespace DS4WindowsTests
             }
         }
 
+        [Trait("Category", "Slow")]   // 0.3 秒以上（実時間で待つ）。途中の確認では除外し、Debug ALL では実行する
         /// <summary>Phase8-Step7 7.1-W3: Button を新経路（エンジン）で処理した状態の <c>MapCustom</c> の費用（出力のみ。旧経路の <see cref="MapCustom_PerFrameTime_IsReported"/> と並べて見る。許容: +5% 以内）。</summary>
         [Fact]
         public void MapCustom_ButtonMigrated_PerFrameTime_IsReported()
@@ -95,6 +97,7 @@ namespace DS4WindowsTests
             return perFrame;
         }
 
+        [Trait("Category", "Slow")]   // 0.3 秒以上（実時間で待つ）。途中の確認では除外し、Debug ALL では実行する
         /// <summary>
         /// W4 で <c>MapCustom</c> に足した処理（移行対象が空の間に毎フレーム走る分）だけを取り出して計り、<c>MapCustom</c> 全体の時間と並べる:
         /// 入力の更新（<c>TriggerInput.Update</c>）、旧ループと Stage3 の <c>Owns</c>（アクションごとに 2 回）、<c>ReleaseSuppressed</c>、<c>ApplyFrameOutputs</c>。

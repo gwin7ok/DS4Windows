@@ -47,6 +47,7 @@ namespace DS4WindowsTests
             Assert.Equal(0, raised);
         }
 
+        [Trait("Category", "Slow")]   // 0.3 秒以上（実時間で待つ）。途中の確認では除外し、Debug ALL では実行する
         [Theory]
         [InlineData("DS4Windows.Core.Settings.BackingStore")]
         [InlineData("DS4Windows.Core.Platform.EnvironmentService")]

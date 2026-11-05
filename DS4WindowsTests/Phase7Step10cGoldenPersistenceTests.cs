@@ -164,6 +164,7 @@ namespace DS4WindowsTests
 
         // ---- プリセット（10 種。既定の状態との差を 1 ファイルにまとめる）----
 
+        [Trait("Category", "Slow")]   // 0.3 秒以上（実時間で待つ）。途中の確認では除外し、Debug ALL では実行する
         [Fact]
         public void Presets_LoadedState_MatchesGolden()
         {

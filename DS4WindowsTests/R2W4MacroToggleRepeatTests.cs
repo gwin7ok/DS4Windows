@@ -104,6 +104,7 @@ namespace DS4WindowsTests
                 Thread.Sleep(10);
         }
 
+        [Trait("Category", "Slow")]   // 0.3 秒以上（実時間で待つ）。途中の確認では除外し、Debug ALL では実行する
         [Fact]
         public void ControlsMacro_Toggle_StartsOnPress_ContinuesAfterRelease_AndStopsOnTheNextPress()
         {
@@ -132,6 +133,7 @@ namespace DS4WindowsTests
             Assert.Equal(stopped, afterStop);
         }
 
+        [Trait("Category", "Slow")]   // 0.3 秒以上（実時間で待つ）。途中の確認では除外し、Debug ALL では実行する
         [Fact]
         public void ControlsMacro_Toggle_CanBeStartedAgainAfterStopping()
         {

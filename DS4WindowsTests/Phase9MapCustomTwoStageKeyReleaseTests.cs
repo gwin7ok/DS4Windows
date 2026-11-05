@@ -20,6 +20,7 @@ namespace DS4WindowsTests
             scope.Scope.RunMapCustom(input);
         }
 
+        [Trait("Category", "Slow")]   // 0.3 秒以上（実時間で待つ）。途中の確認では除外し、Debug ALL では実行する
         [Theory]
         [InlineData(true, TwoStageTriggerMode.HipFire)]
         [InlineData(false, TwoStageTriggerMode.HipFire)]

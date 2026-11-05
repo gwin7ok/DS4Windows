@@ -241,6 +241,7 @@ namespace DS4WindowsTests
             return new ControlBindingBuilder(TestHost.GetService<IProfileSettingsService>(), null, null, factory);
         }
 
+        [Trait("Category", "Slow")]   // 0.3 秒以上（実時間で待つ）。途中の確認では除外し、Debug ALL では実行する
         [Fact]
         public void CalibrateGyro_RunsOncePerPress_ErasesTheButtonsOutput_AndWaitsForTheFreshPressGuard()
         {
@@ -264,6 +265,7 @@ namespace DS4WindowsTests
             Assert.Equal(2, gyro.Calls.Count);                      // 押し直して、もう 1 回
         }
 
+        [Trait("Category", "Slow")]   // 0.3 秒以上（実時間で待つ）。途中の確認では除外し、Debug ALL では実行する
         [Fact]
         public void CalibrateGyro_WithHoldSeconds_RunsOnlyAfterTheyHavePassed()
         {

@@ -6,6 +6,7 @@ namespace DS4WindowsTests
 {
     public class PatternAViewModelTests
     {
+        [Trait("Category", "Slow")]   // 0.3 秒以上（実時間で待つ）。途中の確認では除外し、Debug ALL では実行する
         [Fact]
         public void AppHost_ShouldResolve_SettingsViewModel()
         {
@@ -36,6 +37,7 @@ namespace DS4WindowsTests
             Assert.False(string.IsNullOrWhiteSpace(vm.GithubUrl));
         }
 
+        [Trait("Category", "Slow")]   // 0.3 秒以上（実時間で待つ）。途中の確認では除外し、Debug ALL では実行する
         [Fact]
         public void PatternAViewModels_ShouldBeTransient()
         {
@@ -62,6 +64,7 @@ namespace DS4WindowsTests
             Assert.True(typeof(IDisposable).IsAssignableFrom(typeof(SettingsViewModel)));
         }
 
+        [Trait("Category", "Slow")]   // 0.3 秒以上（実時間で待つ）。途中の確認では除外し、Debug ALL では実行する
         [Fact]
         public void Dispose_CalledMultipleTimes_ShouldNotThrow()
         {
