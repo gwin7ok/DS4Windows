@@ -20,26 +20,32 @@ using System;
 using System.IO;
 using System.Runtime.InteropServices;
 using Microsoft.Win32.TaskScheduler;
+using DS4Windows.Core.Abstractions;
 using Task = Microsoft.Win32.TaskScheduler.Task;
 
-namespace DS4Windows
+namespace DS4Windows.Core.Platform
 {
+    /// <summary>
+    /// Windows のスタートアップ登録（スタートアップフォルダーのショートカットと、タスクスケジューラーのタスク「RunDS4Windows」）。
+    /// Phase14b-Step15（決定 D12）: 旧 ルート直下の静的クラス <c>StartupMethods</c>（アプリの起点ではない）を、<see cref="IStartupEntryService"/> の実装（DI の Singleton）にした。
+    /// 処理の中身は変えていない。設定画面（<c>SettingsViewModel</c>）は契約だけを受ける。
+    /// </summary>
     [System.Security.SuppressUnmanagedCodeSecurity]
-    public static class StartupMethods
+    public sealed class StartupEntryService : IStartupEntryService
     {
-        public static string lnkpath = Environment.GetFolderPath(Environment.SpecialFolder.Startup) + "\\DS4Windows.lnk";
-        // Phase6-Step10-1-5（決定4＝A）: 静的クラスのまま、プログラムフォルダと実行ファイルの場所は引数で受け取る
+        private static readonly string lnkpath = Environment.GetFolderPath(Environment.SpecialFolder.Startup) + "\\DS4Windows.lnk";
+        // Phase6-Step10-1-5（決定4＝A）: プログラムフォルダと実行ファイルの場所は引数で受け取る
         // （呼び出し側が IPathService.ProgramDirectory／ExecutablePath を渡す。置換前は Global.exedirpath／exelocation／exeFileName を直接参照していた）。
         private static string GetTaskBatPath(string programDirectory) => Path.Combine(programDirectory, "task.bat");
 
-        public static bool HasStartProgEntry()
+        public bool HasStartProgEntry()
         {
             // Exception handling should not be needed here. Method handles most cases
             bool exists = File.Exists(Environment.GetFolderPath(Environment.SpecialFolder.Startup) + "\\DS4Windows.lnk");
             return exists;
         }
 
-        public static bool HasTaskEntry()
+        public bool HasTaskEntry()
         {
             TaskService ts = new TaskService();
             Task tasker = ts.FindTask("RunDS4Windows");
@@ -48,7 +54,7 @@ namespace DS4Windows
 
         /// <param name="exeLocation">実行ファイルのフルパス（IPathService.ExecutablePath）</param>
         /// <param name="programDirectory">プログラムフォルダ（IPathService.ProgramDirectory）</param>
-        public static void WriteStartProgEntry(string exeLocation, string programDirectory)
+        public void WriteStartProgEntry(string exeLocation, string programDirectory)
         {
             Type t = Type.GetTypeFromCLSID(new Guid("72C24DD5-D70A-438B-8A42-98424B88AFB8")); // Windows Script Host Shell Object
             dynamic shell = Activator.CreateInstance(t);
@@ -80,7 +86,7 @@ namespace DS4Windows
             }
         }
 
-        public static void DeleteStartProgEntry()
+        public void DeleteStartProgEntry()
         {
             if (File.Exists(lnkpath) && !new FileInfo(lnkpath).IsReadOnly)
             {
@@ -89,7 +95,7 @@ namespace DS4Windows
         }
 
         /// <param name="programDirectory">プログラムフォルダ（IPathService.ProgramDirectory）</param>
-        public static void DeleteOldTaskEntry(string programDirectory)
+        public void DeleteOldTaskEntry(string programDirectory)
         {
             string taskBatPath = GetTaskBatPath(programDirectory);
             TaskService ts = new TaskService();
@@ -111,7 +117,7 @@ namespace DS4Windows
             }
         }
 
-        public static bool CanWriteStartEntry()
+        public bool CanWriteStartEntry()
         {
             bool result = false;
             if (!new FileInfo(lnkpath).IsReadOnly)
@@ -124,7 +130,7 @@ namespace DS4Windows
 
         /// <param name="programDirectory">プログラムフォルダ（IPathService.ProgramDirectory）</param>
         /// <param name="exeFileName">実行ファイル名（Path.GetFileName(IPathService.ExecutablePath)）</param>
-        public static void WriteTaskEntry(string programDirectory, string exeFileName)
+        public void WriteTaskEntry(string programDirectory, string exeFileName)
         {
             DeleteTaskEntry();
 
@@ -146,7 +152,7 @@ namespace DS4Windows
             ts.RootFolder.RegisterTaskDefinition("RunDS4Windows", td);
         }
 
-        public static void DeleteTaskEntry()
+        public void DeleteTaskEntry()
         {
             TaskService ts = new TaskService();
             Task tasker = ts.FindTask("RunDS4Windows");
@@ -157,13 +163,13 @@ namespace DS4Windows
         }
 
         /// <param name="exeLocation">実行ファイルのフルパス（IPathService.ExecutablePath）</param>
-        public static bool CheckStartupExeLocation(string exeLocation)
+        public bool CheckStartupExeLocation(string exeLocation)
         {
             string lnkprogpath = ResolveShortcut(lnkpath);
             return lnkprogpath != exeLocation;
         }
 
-        public static void LaunchOldTask()
+        public void LaunchOldTask()
         {
             TaskService ts = new TaskService();
             Task tasker = ts.FindTask("RunDS4Windows");

@@ -59,8 +59,9 @@ namespace DS4WindowsTests
         {
             // 4 つのサービスを直接受けると +4 になるところを、IRuntimeFeatureSwitch にまとめて +1 に抑えた（決定 2）。
             // 引数は ArgumentParser を含めて 22（Step9 の終了時は 21）。Phase13-Step11 11-c で IIpcCommandProcessor が加わり 23
+            // Phase14b-Step15（決定 D12）で IStartupEntryService（設定画面のスタートアップ登録。旧 静的 StartupMethods）が加わり 24
             var parameters = typeof(MainWindow).GetConstructors().Single().GetParameters();
-            Assert.Equal(23, parameters.Length);
+            Assert.Equal(24, parameters.Length);
             Assert.Contains(parameters, p => p.ParameterType == typeof(IRuntimeFeatureSwitch));
             Assert.DoesNotContain(parameters, p => p.ParameterType == typeof(IOscService) || p.ParameterType == typeof(IUdpMotionService)
                 || p.ParameterType == typeof(IHidHideService) || p.ParameterType == typeof(ITouchpadToggleService));

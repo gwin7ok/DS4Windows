@@ -33,7 +33,7 @@ namespace DS4WindowsTests
             ["DS4Windows/UI/ViewModels/UpdaterWindowViewModel.cs"] = new string[0],
             // LanguagePackViewModel: 定数のみ
             ["DS4Windows/UI/ViewModels/LanguagePackViewModel.cs"] = new[] { "PROBING_PATH", "LANGUAGE_ASSEMBLY_NAME" },
-            ["DS4Windows/StartupMethods.cs"] = new string[0],
+            ["DS4Windows/Core/Platform/StartupEntryService.cs"] = new string[0],
             ["DS4Windows/UI/ViewModels/TrayIconViewModel.cs"] = new[] { "RESOURCES_PREFIX" },
         };
 
@@ -58,7 +58,7 @@ namespace DS4WindowsTests
             "DS4Windows/UI/ViewModels/LanguagePackViewModel.cs",
             "DS4Windows/UI/ViewModels/SettingsViewModel.cs",
             "DS4Windows/UI/ViewModels/TrayIconViewModel.cs",
-            "DS4Windows/StartupMethods.cs",
+            "DS4Windows/Core/Platform/StartupEntryService.cs",
         };
 
         private readonly ITestOutputHelper _output;
@@ -140,7 +140,7 @@ namespace DS4WindowsTests
         [Fact]
         public void StartupMethods_TakesPathsAsArguments()
         {
-            string text = ReadSourceWithoutComments("DS4Windows/StartupMethods.cs");
+            string text = ReadSourceWithoutComments("DS4Windows/Core/Platform/StartupEntryService.cs");
             if (text == null) return;
 
             Assert.Contains("WriteStartProgEntry(string exeLocation, string programDirectory)", text);

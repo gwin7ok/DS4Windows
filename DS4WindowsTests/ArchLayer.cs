@@ -26,7 +26,7 @@ namespace DS4WindowsTests
         /// <summary>4-a（<c>DS4Windows.UI</c>）。</summary>
         UI,
 
-        /// <summary>4-b（<c>DS4Windows.Composition</c> と、ルート名前空間 <c>DS4Windows</c> のアプリの起点 <c>App</c>・<c>StartupMethods</c>）。</summary>
+        /// <summary>4-b（<c>DS4Windows.Composition</c> と、ルート名前空間 <c>DS4Windows</c> のアプリの起点 <c>App</c>）。Phase14b-Step15: 旧 <c>StartupMethods</c> は <c>Core/Platform/StartupEntryService</c> へ移した。</summary>
         Composition,
 
         /// <summary>横断基盤・永続化（<c>DS4Windows.Core</c>）。</summary>

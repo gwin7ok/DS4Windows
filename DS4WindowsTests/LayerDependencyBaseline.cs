@@ -14,7 +14,6 @@
             "L6|DS4Windows.UI.ImageLocationPaths|DS4Windows.App",
             "L6|DS4Windows.UI.LanguagePackControl|DS4Windows.App",
             "L6|DS4Windows.UI.MainWindow|DS4Windows.App",
-            "L6|DS4Windows.UI.ViewModels.SettingsViewModel|DS4Windows.StartupMethods",
             "L6|DS4Windows.UI.WelcomeDialog|DS4Windows.App",
         };
     }

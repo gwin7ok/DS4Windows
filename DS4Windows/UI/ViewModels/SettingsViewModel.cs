@@ -418,10 +418,14 @@ namespace DS4Windows.UI.ViewModels
         // Phase6-Step9-3: 依存はコンストラクタで必須引数として受け取る（Pure DI。決定1＝S9-A）。
         // Phase6-Step10-1-5（決定D7＝A）: App.logHolder（静的フィールド）の直接参照の置換先。必須引数（null は拒否する）。
         private readonly ILogSettingsApplier _logSettingsApplier;
+        // Phase14b-Step15（決定 D12）: 旧 静的クラス StartupMethods（ルート直下）の直接呼び出しの置換先。必須引数
+        private readonly IStartupEntryService _startupEntries;
 
         public SettingsViewModel(IAppSettingsService appSettings, IAppearanceSettingsService appearanceSettings,
-            IEnvironmentService environmentService, IPathService pathService, ILogSettingsApplier logSettingsApplier)
+            IEnvironmentService environmentService, IPathService pathService, ILogSettingsApplier logSettingsApplier,
+            IStartupEntryService startupEntries)
         {
+            _startupEntries = startupEntries ?? throw new ArgumentNullException(nameof(startupEntries));
             _logSettingsApplier = logSettingsApplier ?? throw new ArgumentNullException(nameof(logSettingsApplier));
             _appSettings = appSettings ?? throw new ArgumentNullException(nameof(appSettings));
             _appearanceSettings = appearanceSettings ?? throw new ArgumentNullException(nameof(appearanceSettings));
@@ -456,10 +460,10 @@ namespace DS4Windows.UI.ViewModels
                       BitmapSizeOptions.FromEmptyOptions());
             questionMarkSource = wpfBitmap;
 
-            runStartProg = StartupMethods.HasStartProgEntry();
+            runStartProg = _startupEntries.HasStartProgEntry();
             try
             {
-                runStartTask = StartupMethods.HasTaskEntry();
+                runStartTask = _startupEntries.HasTaskEntry();
             }
             catch (COMException ex)
             {
@@ -476,21 +480,21 @@ namespace DS4Windows.UI.ViewModels
             else if (runStartProg && runStartTask)
             {
                 runStartProg = false;
-                if (StartupMethods.CanWriteStartEntry())
+                if (_startupEntries.CanWriteStartEntry())
                 {
-                    StartupMethods.DeleteStartProgEntry();
+                    _startupEntries.DeleteStartProgEntry();
                 }
             }
 
             if (runAtStartup && runStartProg)
             {
-                bool locChange = StartupMethods.CheckStartupExeLocation(_pathService.ExecutablePath);
+                bool locChange = _startupEntries.CheckStartupExeLocation(_pathService.ExecutablePath);
                 if (locChange)
                 {
-                    if (StartupMethods.CanWriteStartEntry())
+                    if (_startupEntries.CanWriteStartEntry())
                     {
-                        StartupMethods.DeleteStartProgEntry();
-                        StartupMethods.WriteStartProgEntry(_pathService.ExecutablePath, _pathService.ProgramDirectory);
+                        _startupEntries.DeleteStartProgEntry();
+                        _startupEntries.WriteStartProgEntry(_pathService.ExecutablePath, _pathService.ProgramDirectory);
                     }
                     else
                     {
@@ -503,8 +507,8 @@ namespace DS4Windows.UI.ViewModels
             {
                 if (canWriteTask)
                 {
-                    StartupMethods.DeleteOldTaskEntry(_pathService.ProgramDirectory);
-                    StartupMethods.WriteTaskEntry(_pathService.ProgramDirectory,
+                    _startupEntries.DeleteOldTaskEntry(_pathService.ProgramDirectory);
+                    _startupEntries.WriteTaskEntry(_pathService.ProgramDirectory,
                         System.IO.Path.GetFileName(_pathService.ExecutablePath));
                 }
             }
@@ -587,12 +591,12 @@ namespace DS4Windows.UI.ViewModels
         {
             if (runStartTask)
             {
-                StartupMethods.WriteTaskEntry(_pathService.ProgramDirectory,
+                _startupEntries.WriteTaskEntry(_pathService.ProgramDirectory,
                         System.IO.Path.GetFileName(_pathService.ExecutablePath));
             }
             else
             {
-                StartupMethods.DeleteTaskEntry();
+                _startupEntries.DeleteTaskEntry();
             }
         }
 
@@ -600,11 +604,11 @@ namespace DS4Windows.UI.ViewModels
         {
             if (runStartProg)
             {
-                StartupMethods.WriteStartProgEntry(_pathService.ExecutablePath, _pathService.ProgramDirectory);
+                _startupEntries.WriteStartProgEntry(_pathService.ExecutablePath, _pathService.ProgramDirectory);
             }
             else
             {
-                StartupMethods.DeleteStartProgEntry();
+                _startupEntries.DeleteStartProgEntry();
             }
         }
 
@@ -617,8 +621,8 @@ namespace DS4Windows.UI.ViewModels
             }
             else
             {
-                StartupMethods.DeleteStartProgEntry();
-                StartupMethods.DeleteTaskEntry();
+                _startupEntries.DeleteStartProgEntry();
+                _startupEntries.DeleteTaskEntry();
             }
         }
 

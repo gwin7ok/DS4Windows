@@ -907,7 +907,8 @@ namespace DS4Windows
             }
             else if (parser.Runtask)
             {
-                StartupMethods.LaunchOldTask();
+                // Phase14b-Step15（D12）: ホストを構築しない補助プロセスのため、起点が実装を直接作る（旧: 静的 StartupMethods.LaunchOldTask）
+                new DS4Windows.Core.Platform.StartupEntryService().LaunchOldTask();
                 runShutdown = false;
                 exitApp = true;
                 Current.Shutdown();

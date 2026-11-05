@@ -101,11 +101,12 @@ namespace DS4WindowsTests
             var app = TestRepositoryFactory.CreateAppSettingsService();
             var path = new PathService();
             var logApplier = new DS4Windows.Core.Logging.LogSettingsApplierProxy();
-            Assert.Throws<ArgumentNullException>(() => new SettingsViewModel(null, appearance, env, path, logApplier));
-            Assert.Throws<ArgumentNullException>(() => new SettingsViewModel(app, null, env, path, logApplier));
-            Assert.Throws<ArgumentNullException>(() => new SettingsViewModel(app, appearance, null, path, logApplier));
-            Assert.Throws<ArgumentNullException>(() => new SettingsViewModel(app, appearance, env, null, logApplier));
-            Assert.Throws<ArgumentNullException>(() => new SettingsViewModel(app, appearance, env, path, null));
+            var startup = new StartupEntryService();   // Phase14b-Step15（D12）
+            Assert.Throws<ArgumentNullException>(() => new SettingsViewModel(null, appearance, env, path, logApplier, startup));
+            Assert.Throws<ArgumentNullException>(() => new SettingsViewModel(app, null, env, path, logApplier, startup));
+            Assert.Throws<ArgumentNullException>(() => new SettingsViewModel(app, appearance, null, path, logApplier, startup));
+            Assert.Throws<ArgumentNullException>(() => new SettingsViewModel(app, appearance, env, null, logApplier, startup));
+            Assert.Throws<ArgumentNullException>(() => new SettingsViewModel(app, appearance, env, path, null, startup));
         }
 
         [Fact]

@@ -26,7 +26,7 @@ namespace DS4WindowsTests
         /// <summary>記録のみ（失敗させない）の規則。D3（Core → 第1層・第3層）と、UI → 第1層・第3層（レビュー R-09 で扱う目標）。</summary>
         public static readonly IReadOnlyCollection<string> RecordOnlyRules = new[] { "L2", "L7" };
 
-        /// <summary>名前空間から層を決める。ルート名前空間 <c>DS4Windows</c> はアプリの起点（<c>App</c>・<c>StartupMethods</c>）なので 4-b とする。</summary>
+        /// <summary>名前空間から層を決める。ルート名前空間 <c>DS4Windows</c> はアプリの起点（<c>App</c>）なので 4-b とする。</summary>
         public static ArchLayer Classify(string ns)
         {
             if (string.IsNullOrEmpty(ns))

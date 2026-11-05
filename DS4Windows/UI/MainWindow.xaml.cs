@@ -133,7 +133,8 @@ namespace DS4Windows.UI
             DS4Windows.Core.Abstractions.ILogSettingsApplier logSettingsApplier,
             IAutoProfileService autoProfileService,
             DS4Windows.UI.Abstractions.IViewModelFactory viewModelFactory,
-            DS4Windows.Core.Abstractions.IProfileIdentityService profileIdentityService)
+            DS4Windows.Core.Abstractions.IProfileIdentityService profileIdentityService,
+            DS4Windows.Core.Abstractions.IStartupEntryService startupEntries)
         {
             // XAML初期化前にウィンドウサイズを設定（WindowLayoutDefaults から）
             Width = WindowLayoutDefaults.MAIN_WINDOW_WIDTH;
@@ -169,7 +170,7 @@ namespace DS4Windows.UI
 
             // Phase6-Step10-1-5（決定D7＝A）: ログ設定の反映の窓口（App が LoggerHolder の生成直後に接続する）
             settingsWrapVM = new SettingsViewModel(appSettingsService, appearanceSettingsService, environmentService, pathService,
-                logSettingsApplier);
+                logSettingsApplier, startupEntries);   // Phase14b-Step15（D12）: スタートアップ登録の契約
             settingsTab.DataContext = settingsWrapVM;
             // Phase6-Step10-1-4: XAML から生成される LanguagePackControl へ、保持済みのサービスを渡す（Pure DI）。
             languagePackControl.Initialize(appSettingsService);

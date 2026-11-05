@@ -22,7 +22,8 @@ namespace DS4WindowsTests
                 TestRepositoryFactory.CreateAppearanceSettingsService(),
                 new EnvironmentService(),
                 new PathService(),
-                new LogSettingsApplierProxy());
+                new LogSettingsApplierProxy(),
+                new StartupEntryService());   // Phase14b-Step15（D12）: 旧 静的 StartupMethods と同じ実物（コンストラクターは読み取りだけ）
         }
     }
 }
