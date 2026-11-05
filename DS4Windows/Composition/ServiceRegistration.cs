@@ -261,6 +261,9 @@ namespace DS4Windows.Composition
 
             // Phase7-Step5 W5（Q4＝A）: メイン画面の生成の窓口。MainWindow のコンストラクターで AppHost.GetService を使わないための窓口
             services.AddSingleton<IMainWindowFactory, MainWindowFactory>();
+            // Phase14b-Step16（決定 D11）: 画面のテーマ・言語の切り替え（App へ委譲するアダプター）
+            services.AddSingleton<DS4Windows.UI.Abstractions.IUiThemeAndLanguage, AppThemeLanguageAdapter>();
+            services.AddSingleton<DS4Windows.UI.Abstractions.IIpcResultWriter, AppIpcResultWriterAdapter>();   // Phase14b-Step16: CLI の問い合わせの結果（App の MMF へ委譲）
 
             // Phase6-Step10-1-5（決定D7＝A）: ログ設定の反映の窓口。LoggerHolder は設定の読み込み後にしか生成できないため、
             // 遅延接続のプロキシを登録し、App が LoggerHolder の生成直後に Attach する。

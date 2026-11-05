@@ -11,9 +11,6 @@
         public static readonly string[] Entries =
         {
             "L1|DS4Windows.Core.Utilities.Changelog|DS4Windows.App",
-            "L6|DS4Windows.UI.ImageLocationPaths|DS4Windows.App",
-            "L6|DS4Windows.UI.LanguagePackControl|DS4Windows.App",
-            "L6|DS4Windows.UI.MainWindow|DS4Windows.App",
             "L6|DS4Windows.UI.WelcomeDialog|DS4Windows.App",
         };
     }

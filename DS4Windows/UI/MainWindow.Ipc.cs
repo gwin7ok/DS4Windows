@@ -26,7 +26,7 @@ namespace DS4Windows.UI
         {
             try
             {
-                App.COPYDATASTRUCT cds = (App.COPYDATASTRUCT)Marshal.PtrToStructure(lParam, typeof(App.COPYDATASTRUCT));
+                DS4Windows.Core.Platform.COPYDATASTRUCT cds = (DS4Windows.Core.Platform.COPYDATASTRUCT)Marshal.PtrToStructure(lParam, typeof(DS4Windows.Core.Platform.COPYDATASTRUCT));   // Phase14b-Step16: 旧 App.COPYDATASTRUCT
                 if (IpcCommandParser.IsValidSize(cds.cbData))
                 {
                     byte[] buffer = new byte[cds.cbData];
@@ -91,6 +91,6 @@ namespace DS4Windows.UI
         void DS4Windows.Processing.Abstractions.IIpcCommandHost.LogDebug(string message) => AppLogger.Log(AppLogLevel.Info, message, LogOptions.UserFacing);
 
         void DS4Windows.Processing.Abstractions.IIpcCommandHost.WriteQueryResult(string value)
-            => ((Application.Current) as App).WriteIPCResultDataMMF(value);
+            => ipcResultWriter.WriteQueryResult(value);   // Phase14b-Step16: 旧 ((Application.Current) as App).WriteIPCResultDataMMF
     }
 }

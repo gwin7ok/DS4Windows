@@ -91,6 +91,8 @@ namespace DS4Windows.UI
         // Phase6-Step10-4-5: Global.ApplyProfileToSlot の直接呼び出しの置換先（Global への薄い委譲）
         private readonly DS4Windows.Processing.Abstractions.IProfileSlotApplier profileSlotApplier;
         private readonly DS4Windows.Core.Abstractions.INotificationService notificationService;
+        private readonly DS4Windows.UI.Abstractions.IUiThemeAndLanguage themeLanguage;   // Phase14b-Step16（D11）
+        private readonly DS4Windows.UI.Abstractions.IIpcResultWriter ipcResultWriter;   // Phase14b-Step16（旧 App.WriteIPCResultDataMMF）
         private readonly ControlService controlService;
         private readonly DS4Windows.Processing.Abstractions.IIpcCommandProcessor ipcProcessor;   // Phase13-Step11 11-c: 旧 MainWindow.Ipc.cs の Ipc*
         private readonly DS4Windows.Processing.Abstractions.IRuntimeFeatureSwitch runtimeFeatures;   // Phase13-Step10 10-c: 旧 ControlService の OSC／UDP／HidHide／TouchpadSlide の転送
@@ -134,13 +136,20 @@ namespace DS4Windows.UI
             IAutoProfileService autoProfileService,
             DS4Windows.UI.Abstractions.IViewModelFactory viewModelFactory,
             DS4Windows.Core.Abstractions.IProfileIdentityService profileIdentityService,
-            DS4Windows.Core.Abstractions.IStartupEntryService startupEntries)
+            DS4Windows.Core.Abstractions.IStartupEntryService startupEntries,
+            DS4Windows.UI.Abstractions.IUiThemeAndLanguage themeLanguage,
+            DS4Windows.UI.Abstractions.IIpcResultWriter ipcResultWriter)
         {
+            this.ipcResultWriter = ipcResultWriter ?? throw new ArgumentNullException(nameof(ipcResultWriter));   // Phase14b-Step16: CLI の問い合わせの結果の書き込み
+            // Phase14b-Step16（決定 D11）: テーマ・言語の切り替え（旧: Application.Current as App の直接呼び出し）
+            this.themeLanguage = themeLanguage ?? throw new ArgumentNullException(nameof(themeLanguage));
             // XAML初期化前にウィンドウサイズを設定（WindowLayoutDefaults から）
             Width = WindowLayoutDefaults.MAIN_WINDOW_WIDTH;
             Height = WindowLayoutDefaults.MAIN_WINDOW_HEIGHT;
 
             InitializeComponent();
+            // Phase14b-Step16（D11）: XAML の資源 ImgLocPaths（画像のパス）に、テーマの切り替えの通知元を渡す（旧: 自分のコンストラクターで App.ThemeChanged を購読）
+            (TryFindResource("ImgLocPaths") as ImageLocationPaths)?.AttachThemeSource(themeLanguage);
             this.profileSettingsService = profileSettingsService ?? throw new ArgumentNullException(nameof(profileSettingsService));
             this.appSettingsService = appSettingsService ?? throw new ArgumentNullException(nameof(appSettingsService));
             this.profileXmlStore = profileXmlStore ?? throw new ArgumentNullException(nameof(profileXmlStore));
@@ -173,7 +182,7 @@ namespace DS4Windows.UI
                 logSettingsApplier, startupEntries);   // Phase14b-Step15（D12）: スタートアップ登録の契約
             settingsTab.DataContext = settingsWrapVM;
             // Phase6-Step10-1-4: XAML から生成される LanguagePackControl へ、保持済みのサービスを渡す（Pure DI）。
-            languagePackControl.Initialize(appSettingsService);
+            languagePackControl.Initialize(appSettingsService, themeLanguage);
             logvm = new LogViewModel(environmentService);
             //logListView.ItemsSource = logvm.LogItems;
             logListView.DataContext = logvm;
@@ -530,8 +539,7 @@ Suspend support not enabled.", LogOptions.UserFacing);
         private void SettingsWrapVM_AppChoiceIndexChanged(object sender, EventArgs e)
         {
             AppThemeChoice choice = appearanceSettingsService.UseCurrentTheme;
-            App current = App.Current as App;
-            current.ChangeTheme(choice);
+            themeLanguage.ChangeTheme(choice);   // Phase14b-Step16（D11）: 旧 (App.Current as App).ChangeTheme
             trayIconVM.PopulateContextMenu();
         }
 
@@ -1346,7 +1354,7 @@ Suspend support not enabled.", LogOptions.UserFacing);
             bool result = Util.RegisterNotify(source.Handle, hidGuid, ref regHandle);
             if (!result)
             {
-                App.Current.Shutdown();
+                Application.Current.Shutdown();   // Phase14b-Step16: 旧 App.Current（同じもの）
             }
         }
 

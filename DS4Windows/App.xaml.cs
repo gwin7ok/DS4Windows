@@ -59,15 +59,9 @@ namespace DS4Windows
         private static extern IntPtr FindWindow(string sClass, string sWindow);
 
         [DllImport("user32.dll", CharSet = CharSet.Auto, SetLastError = false)]
-        private static extern IntPtr SendMessage(IntPtr hWnd, uint Msg, IntPtr wParam, ref COPYDATASTRUCT lParam);
+        private static extern IntPtr SendMessage(IntPtr hWnd, uint Msg, IntPtr wParam, ref DS4Windows.Core.Platform.COPYDATASTRUCT lParam);
 
-        [StructLayout(LayoutKind.Sequential)]
-        public struct COPYDATASTRUCT
-        {
-            public IntPtr dwData;
-            public int cbData;
-            public IntPtr lpData;
-        }
+        // Phase14b-Step16: 旧 ネスト型 COPYDATASTRUCT は Core/Platform のトップレベルの型にした（UI の MainWindow.Ipc から App を参照しないため）
 
         private Thread controlThread;
         public static HttpClient requestClient;
@@ -925,7 +919,7 @@ namespace DS4Windows
                     Mutex ipcSingleTaskMutex = null;
                     EventWaitHandle ipcNotifyEvent = null;
 
-                    COPYDATASTRUCT cds;
+                    DS4Windows.Core.Platform.COPYDATASTRUCT cds;
                     cds.lpData = IntPtr.Zero;
 
                     try

@@ -62,13 +62,12 @@ namespace DS4Windows.UI
         public string ImportProfile { get => $"{ResourcePaths.ResourcesPrefix}/{Application.Current.FindResource("ImportImg")}"; }
         public event EventHandler ImportProfileChanged;
 
-        public ImageLocationPaths()
+        // Phase14b-Step16（決定 D11）: 旧 コンストラクターでの App.ThemeChanged の購読。XAML の資源として作られるため、
+        // MainWindow が InitializeComponent の直後に、テーマの切り替えの通知元を渡す
+        public void AttachThemeSource(DS4Windows.UI.Abstractions.IUiThemeAndLanguage themeSource)
         {
-            App current = App.Current as App;
-            if (current != null)
-            {
-                current.ThemeChanged += Current_ThemeChanged;
-            }
+            if (themeSource == null) throw new ArgumentNullException(nameof(themeSource));
+            themeSource.ThemeChanged += Current_ThemeChanged;
         }
 
         private void Current_ThemeChanged(object sender, EventArgs e)
