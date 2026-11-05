@@ -61,17 +61,18 @@
 | **2.変換**| `IActionRegistry` | `ActionBindingRegistry` | **Singleton** | 【Phase8・実装済み】スロット別の不変の束縛リスト（`TriggerBinding`）。更新は参照ごとの差し替え（読込中の競合を排除）。切断で空にする | なし |
 | **2.変換**| `IActionBindingBuilder` | `ActionBindingBuilder` | **Singleton** | 【Phase8・実装済み】プロファイルのスペシャルアクションと Controls タブの割り当てから、束縛を組み立てる（プロファイル適用の完了後） | `IProfileActionProvider`, `IProfileSettingsService`, `IMacroPlayer`, `IProcessLauncher`, `IProfileSwitcher`, `IKeyActionCreator`（`BindingMigrationOptions` は Phase8-Step8 の 8d で撤去） |
 | **2.変換**| `IKeyButtonControllerRegistry` | `KeyButtonControllerRegistry` | **Singleton** | デバイス × アクション名ごとの `KeyButtonActionController` の登録簿（生成・再利用・破棄）。旧: `Mapping` の静的フィールド | `IKeyButtonActionControllerFactory`, `IControllerRegistry` |
-| **2.変換**| `ISyntheticDispatcher` | `SyntheticDispatcherService` | **Singleton** | 合成キーの押下・解放・タイミングのリセット。静的な `SyntheticDispatcher` は、Actions サブシステム用の暫定の橋渡し（Phase8 で削除） | `SyntheticInputState`, `OutputKBMHandlerAdapter`, `IProfileSettingsService` |
+| **2.変換**| `ISyntheticDispatcher` | `SyntheticDispatcherService` | **Singleton** | 合成キーの押下・解放・タイミングのリセット。利用者（`KeyButtonActionController`・`RepeatHelper`・`KeyAction`）は、`IKeyButtonActionControllerFactory`／`IKeyButtonControllerRegistry` 経由でコンストラクターで受ける（静的な橋渡し `SyntheticDispatcher` は Phase14c-Step3 で撤廃） | `SyntheticInputState`, `OutputKBMHandlerAdapter`, `IProfileSettingsService` |
 | **2.変換**| `SyntheticInputState` | `SyntheticInputState` | **Singleton** | 合成キー・マウス入力の状態（`GlobalState`／`DeviceState`／`SyncStateLock`） | なし |
 | **2.変換**| `MacroRuntimeState` | `MacroRuntimeState` | **Singleton** | マクロの実行時状態（実行済みフラグ、二重実行防止、出力フラグ、実行 Task の連鎖） | なし |
 | **2.変換**| `StickMotionState` | `StickMotionState` | **Singleton** | スティック・ジャイロ・トリガーの処理状態（フリック、2 段トリガー、ホイールのフィルターほか） | なし |
-| **2.変換**| `ActionsLoadedRuntimeReset` | `ActionsLoadedRuntimeReset` | **Singleton** | `BackingStore.ActionsLoaded` の購読者。Actions.xml の読み込み後に、合成状態・トグル状態・マクロの実行済みフラグをリセット | `SyntheticInputState`, `MacroRuntimeState` |
+| **2.変換**| `ActionsLoadedRuntimeReset` | `ActionsLoadedRuntimeReset` | **Singleton** | `BackingStore.ActionsLoaded` の購読者。Actions.xml の読み込み後に、合成状態・トグル状態・マクロの実行済みフラグをリセット。購読は `BackingStore` の登録（`ServiceRegistration.Wiring.cs`）が `BackingStore.ReplaceActionsLoadedHandler` で行う（コンテナを作り直しても購読は 1 つ。Phase14c-Step6） | `SyntheticInputState`, `MacroRuntimeState` |
 | **2.変換**| `ControlService` | `ControlService` | **Singleton** | 入力・変換・出力パイプライン全体の統括役（ファサード。Phase13 で状態と窓口を分離し、スロットの配列・接続／切断・ログの窓口に縮小） | 17 引数（Phase13 完了時点。開始時は 34）: `IDs4DeviceRegistry`, `IProfileSettingsService`, `IAppSettingsService`, `IPathService`, `IOutputSlotService`, `IProfileRepository`, `IDeviceStateService`, `IElevatedProcessLauncher`, `StickMotionState`, `IMapping`, `IVirtualPadService`, `IServiceDebugRelay`, `IInputDeviceModuleRegistry`, `IServiceLifecycle`, `IEventThreadDispatcher`, `IDeviceSlotState`, `IInputReportProcessor`。`Func<>` なし |
 | **3.出力**| `IOutputSlotService` | `OutputSlotService` | **Singleton** | 仮想Xbox360/DS4（ViGEm）の生成、割当、切替 | `IOutputSlotStore` |
 | **3.出力**| `IVirtualKBM` | `OutputKBMHandlerAdapter` | **Singleton** | SendInput / FakerInput によるキー・マウス送出。出力ハンドラの実体（`Handler`）を所有する（Phase7-Step8 W3。旧 `Global.outputKBMHandler`） | なし |
 | **3.出力**| `IVirtualKBMLifecycle` | `OutputKBMHandlerLifecycle` | **Singleton** | KBM出力ハンドラの生成・破棄・フォールバック切替・マッピング初期化（送出は `IVirtualKBM` が担当） | `IEnvironmentService`, `OutputKBMHandlerAdapter`, `IProfileSettingsService` |
 | **3.出力**| `IMacroPlayer` | `DefaultMacroPlayer` | **Singleton** | 時系列非同期マクロの再生・停止管理 | `IVirtualKBM` |
-| **3.出力**| `ILightbarService` | `LightbarService` | **Singleton** | バッテリー・プロファイル色に応じたLED発光計算 | なし |
+| **3.出力**| `ILightbarService` | `LightbarService` | **Singleton** | バッテリー・プロファイル色に応じたLED発光計算【目標像・未実装。Phase16】。現状は第1層の静的メソッド `DS4LightBar.updateLightBar` が計算し、強制表示の状態は下の `LightbarOverrides` が持つ | なし |
+| **基盤**| `LightbarOverrides` | `LightbarOverrides` | **Singleton** | ライトバーの強制表示の状態（スロット別の強制の有無・強制色・点滅、既定の発光、終了中）。`Core/Model`。旧 `DS4LightBar` の静的な配列（Phase14c-Step4。R-05 の前半） | なし |
 | **3.出力**| `IProcessLauncher` | `DefaultProcessLauncher` | **Singleton** | 外部プロセスの通常起動 | なし |
 | **3.出力**| `IElevatedProcessLauncher` | `DefaultElevatedProcessLauncher` | **Singleton** | UAC昇格を伴う外部ツールの起動 | なし |
 | **3.出力**| `IProcessInspector` | `DefaultProcessInspector` | **Singleton** | 実行中プロセスのパス・ウィンドウ名調査 | なし |
@@ -345,3 +346,10 @@
 - Phase14b（2026-11-05）: `INotificationService`／`NotificationEventArgs` の名前空間を `DS4Windows.Core.Abstractions` に移した（実装 `AppNotificationService` は UI、Singleton のまま）。`AppLogger.NotificationService`（静的）の未設定時のフォールバックは、`new AppNotificationService(new BackingStore(...))` から `NullNotificationService`（何もしない。最初の 1 回だけ Debug ログ）に替えた。生成・破棄の順序は不変。
 
 - Phase14b-2（2026-11-05）: Singleton を追加した（生成・破棄の順序は不変）。`ISpecialActionRuntimeReset`（`SpecialActionRuntimeReset`。第2層）、`IStartupEntryService`（`StartupEntryService`。Core/Platform。旧 静的 `StartupMethods`）、`HttpClient`（User-Agent: DS4Windows。旧 `App.requestClient`）、`IChangelogService`（`Changelog`。旧 静的クラス）、`IUiThemeAndLanguage`（`AppThemeLanguageAdapter`）・`IIpcResultWriter`（`AppIpcResultWriterAdapter`）（いずれも Composition。呼び出しの時点で `Application.Current` の `App` へ委譲）。`MainWindow` の引数は 23 → 27。
+
+- Phase14c（2026-11-05）: 静的な状態を DI の Singleton へ移した（生成・破棄の順序は不変）。
+  - `LightbarOverrides`（新設。`Core/Model`）: ライトバーの強制表示の状態。旧 `DS4LightBar` の静的な配列。`DS4LightBar.updateLightBar` は引数で受ける。
+  - `ISyntheticDispatcher`: 静的な橋渡し `SyntheticDispatcher`（`AppHost.BindSyntheticDispatcher`）を撤廃。キーの操作の部品はコンストラクターで受ける。
+  - 静的な `ActionRegistry`（本番で一度も初期化されない）を削除（規約 §2.4、決定 E3）。
+  - DI の登録は層ごとの `partial` ファイル（`ServiceRegistration.Core／Processing／Output／Ui.cs`）に分けた。生成のときに別のオブジェクトへ結ぶ登録 3 つ（`BackingStore`［`ProcessInspector`・`ActionsLoaded` の購読］、`IProfileIdentityService`［`BackingStore`・`ProfileSettingsService` へ結ぶ］、`IOutputDeviceTypeState`［`BackingStore.ActiveOutDevType` へ配列を渡す］）は `ServiceRegistration.Wiring.cs` に集めた。配線は従来どおり、そのサービスが最初に解決されたときに行う。
+  - 静的フィールド `ServiceRegistration._subscribedReset` を削除。前回の `ActionsLoaded` の購読者は `BackingStore` 自身が覚える。

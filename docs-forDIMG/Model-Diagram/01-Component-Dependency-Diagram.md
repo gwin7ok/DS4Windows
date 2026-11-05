@@ -310,3 +310,10 @@ flowchart TD
 %% ---- Phase14b（2026-11-05。依存の向きの是正）----
 %% - 構成要素と辺は変えていない。契約・共有型の置き場所を、使う側の層へ移した（UI のファクトリーの契約 → UI/Abstractions、IDeviceLayerSettings → Input/Abstractions、IAppSettingsService／IProfileLoadTarget ほか → Core/Abstractions、SpecialAction ほかの値の型 → Core/Settings）。
 %% - 層の依存は LayerDependencyRuleTests が型の参照の単位で検査する（02 の末尾の注釈）。
+
+%% ---- Phase14c（2026-11-05。値の型の置き場所と、静的な状態の撤廃）----
+%% - 構成要素と辺は変えていない。層をまたいで共有する値の型 8 つ（DS4Controls、DS4Color、X360Controls ほか）を Core/Model（新設）へ移した。
+%% - 第1層 DS4LightBar の強制表示の静的な配列は、LightbarOverrides（Core/Model、DI の Singleton）へ移した（R-05 の前半）。色の計算（updateLightBar）は第1層の静的メソッドのまま。図の ILightbarService（目標像）は Phase16。
+%% - 第2層の静的な橋渡し SyntheticDispatcher と、本番で未初期化の静的な ActionRegistry を撤廃した。第1層の静的な状態で残るのは DS4Devices／HidDevices（Phase16）。
+%% - Composition Root: DI の登録を層ごとの partial ファイルに分け、生成時の後付けの配線を ServiceRegistration.Wiring.cs に集めた（R-13・R-18。Phase16 のカートリッジの登録の受け皿）。
+%% - 層の依存（LayerDependencyRuleTests）: 禁止 0 件のまま。記録のみ L2（Core → 第1層・第3層）29 件、L7（UI → 第1層・第3層）30 件（155 → 59。件数のラチェットで増加を止める）。

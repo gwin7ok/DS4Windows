@@ -1,7 +1,7 @@
 # エージェント向け作業ルール (copilot-instructions)
 
 作成日: 2026-03-01
-最終更新日: 2026-11-05（3.4 R1 のルート直下の記述を更新、3.1 に違反 0 件を追記［Phase14b-2］。同日: 3.1 に層の依存の検査［LayerDependencyRuleTests］、3.4 R1 に Input・UI の Abstractions、R2 に Core・第1層が使う契約と共有の値の型の置き場所を追記［Phase14b］。2026-11-04: 3.3 原則3 を達成済みに、3.4 を層別フォルダの規則 R1〜R7 へ全面改定［Phase14］。2026-11-03: 2.3 ログ出力の維持に、Phase13b での方針に沿った変更の例外を追記［Phase12-Step1 の承認済み］。2026-10-27: 調査指示の追記を反映。2026-10-22: 3.2 の巨大ファイルの行数を Phase9 の責務分割［9-B・9-C・9-E・MapCustom の M1〜M3］の後に更新。2026-10-21: 3.2 の Mapping.cs の行数を Phase8-Fix-MacroRepeatUnify の削除後に更新。2026-10-20: 3.2 の Mapping.cs の行数を Phase8-Step8 の削減後に更新。2026-10-18: 2.1 のシム維持の原則を過渡期の記述に改め、3.1 に暗黙のホスト構築の禁止とラチェットの一致検査を追記［Phase7-Step10e の承認済み］。2026-10-15: 3.3 原則1の過渡期ルールを終了し、既存ファイルを含む厳格適用へ更新［Phase6-Step10b の完了］。2026-10-14: 2.2 のカスケードループ防止ガードの記述を現行の機構へ更新［Phase6-Step9b の決定6］。2026-09-24: 2.4 未参照コードの扱いを追記。2026-09-20: 3.3 原則1に過渡期ルールを追記、3.4 ファイル配置ルールを追記。2026-09-03: 3.3 ファイル構成・クラス・名前空間の原則と過渡期ルールを追記）
+最終更新日: 2026-11-05（3.1 に DI の登録の層ごとの分割と後付けの配線の置き場所、3.3 に原則5［コメントには意図を書く。R-15］、3.4 R1・R2 に `Core/Model`、4 章にテストの命名［R-16］と Slow の印を追記［Phase14c-Step7］。同日: 3.4 R1 のルート直下の記述を更新、3.1 に違反 0 件を追記［Phase14b-2］。同日: 3.1 に層の依存の検査［LayerDependencyRuleTests］、3.4 R1 に Input・UI の Abstractions、R2 に Core・第1層が使う契約と共有の値の型の置き場所を追記［Phase14b］。2026-11-04: 3.3 原則3 を達成済みに、3.4 を層別フォルダの規則 R1〜R7 へ全面改定［Phase14］。2026-11-03: 2.3 ログ出力の維持に、Phase13b での方針に沿った変更の例外を追記［Phase12-Step1 の承認済み］。2026-10-27: 調査指示の追記を反映。2026-10-22: 3.2 の巨大ファイルの行数を Phase9 の責務分割［9-B・9-C・9-E・MapCustom の M1〜M3］の後に更新。2026-10-21: 3.2 の Mapping.cs の行数を Phase8-Fix-MacroRepeatUnify の削除後に更新。2026-10-20: 3.2 の Mapping.cs の行数を Phase8-Step8 の削減後に更新。2026-10-18: 2.1 のシム維持の原則を過渡期の記述に改め、3.1 に暗黙のホスト構築の禁止とラチェットの一致検査を追記［Phase7-Step10e の承認済み］。2026-10-15: 3.3 原則1の過渡期ルールを終了し、既存ファイルを含む厳格適用へ更新［Phase6-Step10b の完了］。2026-10-14: 2.2 のカスケードループ防止ガードの記述を現行の機構へ更新［Phase6-Step9b の決定6］。2026-09-24: 2.4 未参照コードの扱いを追記。2026-09-20: 3.3 原則1に過渡期ルールを追記、3.4 ファイル配置ルールを追記。2026-09-03: 3.3 ファイル構成・クラス・名前空間の原則と過渡期ルールを追記）
 対象ブランチ: `For-DI-migration-work`
 全体計画書: `docs-forDIMG/DI-App-Wide-Migration-Plan.md`
 ＤＩ化移行後の理想構造のモデル図：`docs-forDIMG\Model-Diagram\01-Component-Dependency-Diagram.md`,`docs-forDIMG\Model-Diagram\02-Layer-Architecture-Diagram.md`,`docs-forDIMG\Model-Diagram\03-Class-Interface-Diagram.md`,`docs-forDIMG\Model-Diagram\04-Service-Lifecycle-Spec.md` ← これら4文書は全体の構造に関わる部分の意思決定を行う場合は必ず参照し、また実装作業の中で変更があった場合はその内容をこれらの文書に反映すること
@@ -61,6 +61,8 @@
 
 ### 3.1 DI (Dependency Injection) の実装
 - DI コンテナへの登録は `DS4Windows/Composition/ServiceRegistration.cs` に集約する（Phase14 で `DI/` から移動）。
+  - **層ごとの分割**（2026-11-05 追記。Phase14c-Step6）: 登録は `partial` で、実装クラスの置き場所（層のフォルダ）ごとのファイルに分ける（`ServiceRegistration.Core.cs`／`.Processing.cs`／`.Output.cs`／`.Ui.cs`）。新しい登録は、実装クラスの層のファイルへ足す。同じサービス型を複数登録する `IInputDeviceModule` は、解決すると登録順の列になるため、並びを変えない。
+  - **後付けの配線**（生成のときに、別のオブジェクトへ自分や自分の持ち物を結ぶ処理。例: `BackingStore.AttachProfileIdentity`）は、`ServiceRegistration.Wiring.cs` の `AddWiredServices` だけに置き、冒頭の一覧を更新する。新しい依存は、まずコンストラクター注入で表せないかを考える（後付けの配線は、ブートストラップの `BackingStore` や循環など、コンストラクターで渡せない理由があるときだけ）。
 - インターフェースには `I` プレフィックスを付ける。
 - **Pure DI（純粋コンストラクタ注入）の堅持**: ViewModel やサービスに `AppHost.Services`（Service Locator）を持ち込ませず、コンストラクタで明示的に依存を受け取る。
 - **暗黙のホスト構築の禁止**（2026-10-18 追記）: `AppHost.GetService` は、ホストが未構築（または Dispose 済み）のとき `null` を返し、暗黙にホストを作らない。ホストは `App` の起動（`CreateHost(config, parser)`）だけが作る。テストは `TestHost` 経由で共有のホストを使う。
@@ -88,14 +90,17 @@
 4. **原則4: 過渡期の段階で実際には使わないが削除せず意図的に残すクラスやメソッドについて**
    - 誤って使用されないよう、その理由や残してある経緯や最終的な対応予定フェーズ を明記した TODO/技術的負債コメントををコード部分にコメントとして残すこと
    - 既存コメントの消失防止： PowerShell 更新スクリプト作成時は、対象ファイル内の既存コメント（特に設計意図や TODO 等）を誤って削ったり上書き消滅させたりしないよう、厳密に置換・追記範囲を限定すること
+5. **原則5: コメントには意図（なぜそうなっているか）を書く**（2026-11-05 追記。Phase14c-Step7、レビュー R-15）
+   - 新しく書くコメントは、今のコードの意図・理由・制約（循環、スレッド、呼ばれる時点など）を書く。Phase 名・Step 名と旧実装の説明（「旧: …」「…を削除した」）は、コミットメッセージと計画書へ書き、コードには書き足さない（経緯は git の履歴と `docs-forDIMG/` にある）。
+   - 既存の経緯コメントは、そのファイルを触る Step の計画書で範囲を決めたときに限り縮めてよい。設計意図・理由・原則4 の TODO は残し、縮めたことはコミットメッセージに書く（ついでの一括削除はしない。原則4 の消失防止を優先する）。
 
 ### 3.4 ファイル配置ルール（フォルダ構成の基準。Phase14 で改定）
 `.cs` ファイルを新規作成・移動するときは、次の基準でフォルダを決める（経緯と全ファイルの移行は `docs-forDIMG/MadeByAgent/Phase14-Plan.md`、層とフォルダの対応は `docs-forDIMG/Model-Diagram/02-Layer-Architecture-Diagram.md` の末尾を参照）。
 
 | ID | ルール |
 |---|---|
-| R1 | 最上位のフォルダは層に対応する: `Input/`（第1層。`Abstractions`、`Devices`、`Hid`）、`Processing/`（第2層。`Abstractions`、`Actions`、`Services`）、`Output/`（第3層。`Devices`、`Kbm`、`Services`）、`UI/`（4-a。`Abstractions`、`ViewModels`、`Converters`、`Themes`、`Services`）、`Composition/`（4-b。`AppHost`、`ServiceRegistration`、`Startup`）、`Core/`（横断基盤・永続化。`Abstractions`、`Logging`、`Utilities`、`Platform`、`Settings`、`Persistence`、`Profiles`、`Updater`）。ルート直下は `App.xaml(.cs)` などアプリの起点だけ（旧 `StartupMethods.cs` は Phase14b で `Core/Platform/StartupEntryService` へ移した。UI からルートの `App` を参照しない。`App` が持つ機能を UI が使うときは、`UI/Abstractions` の契約と `Composition` のアダプターを通す） |
-| R2 | インターフェースは、実装と同じ層の `Abstractions/` に置く。第2層が第1層・第3層・UI の実装を使うポートの契約は、使う側の `Processing/Abstractions/` に置く（依存の向きを保つ。1 章）。同様に、`Core`・第1層が使い、上の層が実装する契約は、使う側の `Core/Abstractions/`・`Input/Abstractions/` に置く（2026-11-05 Phase14b。例: `IProfileLoadTarget`、`IDeviceLayerSettings`）。層をまたいで共有する値の型（設定値・イベント引数など）は `Core/` に置く |
+| R1 | 最上位のフォルダは層に対応する: `Input/`（第1層。`Abstractions`、`Devices`、`Hid`）、`Processing/`（第2層。`Abstractions`、`Actions`、`Services`）、`Output/`（第3層。`Devices`、`Kbm`、`Services`）、`UI/`（4-a。`Abstractions`、`ViewModels`、`Converters`、`Themes`、`Services`）、`Composition/`（4-b。`AppHost`、`ServiceRegistration`、`Startup`）、`Core/`（横断基盤・永続化。`Abstractions`、`Model`、`Logging`、`Utilities`、`Platform`、`Settings`、`Persistence`、`Profiles`、`Updater`）。ルート直下は `App.xaml(.cs)` などアプリの起点だけ（旧 `StartupMethods.cs` は Phase14b で `Core/Platform/StartupEntryService` へ移した。UI からルートの `App` を参照しない。`App` が持つ機能を UI が使うときは、`UI/Abstractions` の契約と `Composition` のアダプターを通す） |
+| R2 | インターフェースは、実装と同じ層の `Abstractions/` に置く。第2層が第1層・第3層・UI の実装を使うポートの契約は、使う側の `Processing/Abstractions/` に置く（依存の向きを保つ。1 章）。同様に、`Core`・第1層が使い、上の層が実装する契約は、使う側の `Core/Abstractions/`・`Input/Abstractions/` に置く（2026-11-05 Phase14b。例: `IProfileLoadTarget`、`IDeviceLayerSettings`）。層をまたいで共有する値の型（設定値・イベント引数など）は `Core/` に置く。どの層も使うコントローラーの値の型（列挙型・色・名前の表。例: `DS4Controls`、`DS4Color`、`X360Controls`）と、層をまたいで共有する状態の持ち主（例: `LightbarOverrides`）は `Core/Model` に置く（2026-11-05 Phase14c） |
 | R3 | `ServiceRegistration`（DI 登録）と `AppHost` は `Composition/` に置く。`Composition/` は組み立て専用で、業務ロジックを置かない |
 | R4 | 第2層の Actions サブシステム（`Action*`、`*ActionController`）は `Processing/Actions/` に置く |
 | R5 | 設定値・プロファイルの型とその永続化（XML、DTO、プロファイルの節）は `Core/Settings`・`Core/Persistence` に置く。層をまたいで共有する基盤は `Core/` に置き、`Core/` から第2層以上を参照しない |
@@ -109,6 +114,8 @@
 - **マイクロステップの原則**:
   - 作業は必ず `PhaseX-StepY-Plan.md` のように個別計画書を作成し、承認を得てからマイクロタスク単位で進める。
   - 各 Step ごとに必ず単体テストを作成・実行し、`dotnet test` で常時グリーン（合格）を確認しながら進める。
+  - **テストの命名**（2026-11-05 追記。Phase14c-Step7、レビュー R-16）: 新しいテストのファイル名・クラス名は、守る機能や振る舞いの名前にする（例: `BackingStoreActionsLoadedHandlerTests`）。Phase 名・Step 名は付けず、経緯は XML コメントに書く。層・名前空間・型の参照の検査は、ソースを文字列で読まず、`LayerDependencyRuleTests`（ArchUnitNET）などの型の検査で書く。既存の Phase 名のテストの整理は Phase14d で行う。
+  - **遅いテストの印**（2026-11-05 追記。Phase14c-0）: 1 件 0.3 秒以上かかるテストには `[Trait("Category", "Slow")]` を付ける。Step の途中の確認は `--filter "Category!=Slow"`、Step の終わりの確認（Debug ALL）は全件で行う。
 - **アーキテクチャ・ガードレールの順守**:
   - `Phase5-Plan.md` §5 に規定された 6 大ガードレール（同一XML排他ロック、適用時Halt停止、スレッド直列化、On-Demandパス評価、ドライバ破棄順序、切断時クリーンアップ）を確実に設計に組み込む。
 ・慣れない機能はゼロから書かず、まずGitHubでオープンソースプロジェクトを検索してアプローチを比較してから手を動かす

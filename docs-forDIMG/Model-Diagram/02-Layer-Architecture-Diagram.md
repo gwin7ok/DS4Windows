@@ -197,3 +197,10 @@
 %% - Core が第2層・UI を使っていた箇所: 実行時状態のリセットを ISpecialActionRuntimeReset（Core の契約・第2層の実装）に、トレイアイコンの画像パスは UI が直接引く形に。
 %% - UI が起点の App を使っていた箇所: IUiThemeAndLanguage・IIpcResultWriter（UI/Abstractions）と、App へ委譲する Composition のアダプター。COPYDATASTRUCT は Core/Platform へ。
 %% - 静的な窓口の撤廃: App.requestClient → DI の HttpClient と IChangelogService（Changelog をインスタンス化）、StartupMethods → IStartupEntryService（Core/Platform/StartupEntryService）。
+
+%% ---- Phase14c（2026-11-05）----
+%% - フォルダの追加: Core/Model（層をまたいで共有する値の型と状態の持ち主）。DS4Controls・DS4Color・DS4ControlNames・InputDeviceType・TriggerEffects・OutContType・X360Controls・X360ControlTables（旧 第1層・第2層）と、
+%%   LightbarOverrides（新設。旧 DS4LightBar の静的な配列）。上の Phase14 の対応表の「横断基盤・永続化 Core/」に Model が加わる。
+%% - 第2層の SyntheticDispatcher（静的な橋渡し）は撤廃した（上の対応表の第2層の行は Phase14 時点の記録）。合成キーの送出は ISyntheticDispatcher（SyntheticDispatcherService）だけ。
+%% - 記録のみの規則は件数のラチェット（LayerDependencyRuleTests.RecordOnlyLayerDependencies_MatchTheCountRatchet）: L2 29 件、L7 30 件。値の型を Core/Model へ移したことで、Core・UI からの第1層・第3層への参照の大半が消えた。
+%%   残りの L2 は Core（永続化・設定）→ 機器と出力の型（DS4Device、DualSenseDevice、OutputDevice、OutputSlotManager ほか。Phase16）、L7 は UI → 機器・状態・出力スロットの型（DS4Device、DS4State、OutputSlotManager ほか。Phase15 の R-09、Phase16 の R-17）。

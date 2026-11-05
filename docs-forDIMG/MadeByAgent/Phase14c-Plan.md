@@ -1,7 +1,7 @@
-# Phase14c 個別計画書（案）: 共有の値の型の確定と、UI に触れない静的な状態の撤廃
+# Phase14c 個別計画書: 共有の値の型の確定と、UI に触れない静的な状態の撤廃
 
 作成日: 2026-11-05
-状態: **承認済み（2026-11-05。E1〜E4 はユーザーがすべて推奨案を選択、E5・E6 は Phase14b-2 の D15・D16 と同じ扱い）→ 未着手**
+状態: **承認済み（2026-11-05。E1〜E4 はユーザーがすべて推奨案を選択、E5・E6 は Phase14b-2 の D15・D16 と同じ扱い）→ 14c-0〜14c-7 実施済み、14c-8（実機確認・取り込み）待ち（§9）**
 ブランチ: `Phase14c`（master 341d202c から作成）
 根拠: `Repository-Review-2026-11-05.md`（R-05・R-06・R-09・R-13・R-15〜R-18）、`Phase14b-Plan.md`（§1 の対象外、§10）、`Phase11-and-Beyond-Roadmap.md`（Phase15・16）
 
@@ -99,3 +99,22 @@ L7 の参照元の上位: `RecordBoxViewModel` 7、`BindingWindow` 5、`Controll
 | `DS4Controls` は毎フレームの経路（Mapping）でも使う | 列挙型の名前空間が変わるだけで、IL の値は同じ。性能への影響はない。全テストと実機で確認 |
 | 名前の表（`DS4ControlNames`、`X360ControlTables`）は public の static な（書き換え可能な）フィールド | 移動だけで中身は変えない。読み取り専用化は別途（今回は範囲外） |
 | `SyntheticDispatcher` の撤廃でキーの送出の順序が変わる | 送出の実体（`SyntheticDispatcherService`）は同じインスタンス。既存の特性化テストで守る |
+
+## 9. 実施の記録（2026-11-05）
+
+| Step | コミット | 結果 |
+|---|---|---|
+| 14c-0 | f3d88b32 | 0.3 秒以上のテスト 56 メソッドに `Category=Slow`。途中の確認は 3,196 件・約 18 秒 |
+| 14c-1 | 3bfcacf6 | 記録のみの L2・L7 を件数のラチェットに（基準値 L2 75、L7 80） |
+| 14c-2 | 8f0b5ba6（移動）、34f21634（名前空間） | 値の型 8 つ（`DS4Controls`、`DS4Color`、`DS4ControlNames`、`InputDeviceType`、`TriggerEffects`、`OutContType`、`X360Controls`、`X360ControlTables`）を `Core/Model` へ。利用者 287 ファイル。L2 75 → 30、L7 80 → 35 |
+| 14c-3 | 0967a402、41786f9e（StandaloneTests のビルド漏れの修正） | 静的な `SyntheticDispatcher`（`AppHost.BindSyntheticDispatcher`）を撤廃。`KeyButtonActionController`・`RepeatHelper` はコンストラクターで `ISyntheticDispatcher` を受け、`IKeyButtonControllerRegistry.Dispatcher` を新設 |
+| 14c-4 | 5bf8b802 | `DS4LightBar` の静的な配列を `LightbarOverrides`（`Core/Model`、Singleton）へ。利用者 13 クラス＋受け渡し 5 クラス。`MainWindow` の引数 27 → 28。L2 30 → 29、L7 35 → 30 |
+| 14c-5 | 996e461d | 静的な `ActionRegistry` を削除（規約 §2.4 の調査: 本番で `Initialize` を呼んだ履歴なし。正規の経路と重複する孤立実装と判断） |
+| 14c-6 | c15d5ab1 | `ServiceRegistration` を層ごとの partial ファイル（Wiring／Core／Processing／Output／Ui）に分割。登録 127 件は前後で同じ、`IInputDeviceModule` の並びも同じ。後付けの配線 3 つを `AddWiredServices` に集め、静的フィールド `_subscribedReset` を `BackingStore.ReplaceActionsLoadedHandler` に置き換えた。配線の時点（遅延）は変えていない |
+| 14c-7 | （本コミット） | 規約: §3.1（登録の分割・後付けの配線の置き場所）、§3.3 原則5（R-15）、§3.4 R1・R2（`Core/Model`）、§4（テストの命名［R-16］、Slow の印）。モデル図 01〜04、ロードマップ（Phase15・16 への追記）、レビューの対応状況 |
+| 14c-8 | — | Debug ALL、Release ビルド 2 か所、実機確認（E5）、取り込みと push（E6） |
+
+- 層の依存: 禁止の規則は 0 件のまま。記録のみは 155 → 59 件（L2 29、L7 30。見込みの約 66 件より少ない）。
+- 各 Step の終わりの Debug ALL は、警告 0・エラー 0、全テスト合格（14c-6 の時点で 3,264 件＋StandaloneTests 11 件）。
+- 14c-3 の教訓: Remove-bin は本体の bin/obj だけを消すため、テストのプロジェクトがビルドに失敗しても古い DLL で合格と表示されうる。以後の Debug ALL は、テストの bin/obj も消し、ビルドの警告・エラーを確かめてからテストする。
+- 分割の前後で、既存のコメントは移し先で保った。意味を失った見出し 3 つ（「第4層: 4-c DIサービス群」「第3層: Actions基盤サービス」［層の名前の誤り］「既存Singletonインスタンスの取得登録」）と「修正前／修正後」のコメントは整理し、置き違えていた 2 つのコメントを正しい行へ戻した（コミット c15d5ab1 のメッセージに記録）。

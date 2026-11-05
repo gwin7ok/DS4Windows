@@ -268,8 +268,10 @@ classDiagram
         +GetOrCreate(int device, SpecialAction sa) KeyButtonActionController
         +GetOrCreateForAction(int device, SpecialAction sa) IActionController
         +ClearForDevice(int device)
+        +Dispatcher ISyntheticDispatcher
     }
     class KeyButtonControllerRegistry
+    %% Phase14c-Step3（R-06）: 登録簿は送出役を持ち（Dispatcher）、作るキーの操作の部品（KeyButtonActionController・RepeatHelper）へコンストラクターで渡す。KeyAction は登録簿の Dispatcher を使う
     class ISyntheticDispatcher {
         <<interface>>
         +ResolveNativeKey(ushort kvpKey) uint
@@ -281,6 +283,14 @@ classDiagram
     class SyntheticInputState
     class MacroRuntimeState
     class StickMotionState
+    %% Phase14c-Step4（R-05 の前半）: ライトバーの強制表示の状態の持ち主（Core/Model。旧 DS4LightBar の静的な配列）。利用者はコンストラクターで受け、DS4LightBar.updateLightBar へ引数で渡す
+    class LightbarOverrides {
+        +forcelight bool[]
+        +forcedColor DS4Color[]
+        +forcedFlash byte[]
+        +defaultLight bool
+        +shuttingdown bool
+    }
     %% Phase9 9-A（2026-10-22）: Mapping から切り出した、状態を持たない補正処理（Singleton。値の特性化はゴールデンテストが守る）
     class IStickDeadZoneProcessor {
         <<interface>>
@@ -624,6 +634,8 @@ classDiagram
     SyntheticDispatcherService --> SyntheticInputState
     SyntheticDispatcherService --> OutputKBMHandlerAdapter : default output (Handler)
     SyntheticDispatcherService --> IProfileSettingsService : OutputKBMMapping
+    KeyButtonControllerRegistry --> ISyntheticDispatcher : passes to key controllers
+    IInputReportProcessor --> LightbarOverrides : forced lightbar（実装 InputReportProcessor）
     ControlService --> IMapping : MappingService
     class IMacroPlayer {
         <<interface>>
@@ -1308,3 +1320,10 @@ classDiagram
 %% Phase14b-2（2026-11-05）の反映:
 %% - 名前空間の変更: IDeviceStateAccessor・IRemovedGyroSwipePrompt・IRemovedShiftPrompt・IInstanceIdentifiable → DS4Windows.Core.Abstractions、ProfileChangedEventArgs・ProfileChangeSource → DS4Windows.Core.Logging、WindowPlacementHelper → DS4Windows.UI、COPYDATASTRUCT（旧 App のネスト型）→ DS4Windows.Core.Platform。
 %% - 新しい契約: ISpecialActionRuntimeReset・IStartupEntryService・IChangelogService（Core/Abstractions）、IUiThemeAndLanguage・IIpcResultWriter（UI/Abstractions）。StartupMethods（静的）→ StartupEntryService、Changelog（静的）→ インスタンス。IAppearanceSettingsService.GetIconResourcePath は削除。
+
+%% Phase14c（2026-11-05）の反映:
+%% - 名前空間の変更（クラス名・メンバーは不変）: DS4Controls・DS4Color・DS4ControlNames・InputDeviceType・TriggerEffects・OutContType・X360Controls・X360ControlTables → DS4Windows.Core.Model（新設の Core/Model。層をまたいで共有する値の型）。
+%% - 新設: LightbarOverrides（Core/Model。ライトバーの強制表示の状態の Singleton。旧 DS4LightBar の静的な配列）。DS4LightBar.updateLightBar は (DS4Device, int, IProfileSettingsService, LightbarOverrides) を受ける。
+%% - 廃止: 静的な SyntheticDispatcher（KeyButtonActionController・RepeatHelper はコンストラクターで ISyntheticDispatcher を受け、IKeyButtonControllerRegistry に Dispatcher を追加）、静的な ActionRegistry（本番で未初期化）。
+%% - 追加: BackingStore.ReplaceActionsLoadedHandler（ActionsLoaded の購読者の差し替え。旧 ServiceRegistration の静的フィールド _subscribedReset）。
+%% - MainWindow のコンストラクターは 28 引数（LightbarOverrides を追加）。

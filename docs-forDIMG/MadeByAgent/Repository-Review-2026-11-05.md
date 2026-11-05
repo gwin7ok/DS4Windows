@@ -276,8 +276,14 @@
 | R-04 | **対応済み**（Phase14b-Step2）。`TouchButtonActivationMode` → `Core/Settings`、`using static` 54 件を削除 |
 | R-03 | **対応済み**（Phase14b-Step3）。`NullNotificationService`。`INotificationService` を `Core/Abstractions` へ。`BackingStore.ProfileSettings` のフォールバックは「通常の起動では通らない」と判断（計画書 §8.3） |
 | R-02 | **大半を対応**（Phase14b-Step5〜9）。UI のファクトリーの契約 → `UI/Abstractions`、共有の値の型と Core・第1層が使う契約 → `Core`・`Input/Abstractions`、`SpecialAction` → `Core/Settings`、第1層の UI 参照の解消、`BackingStore.ProfileSettings` のフォールバックの撤去。禁止の規則の違反は 108 → 18 件（計画書 §8.4・§8.5）→ Phase14b-2 で **0 件**（計画書 §10。実行時状態のリセットの契約、スタートアップ登録・変更履歴・HttpClient の DI 化、UI → App の契約化） |
+| R-06 | **対応済み**（Phase14c-Step3）。静的な `SyntheticDispatcher` を撤廃し、キーの操作の部品へ `ISyntheticDispatcher` を注入 |
+| R-05 | **前半を対応**（Phase14c-Step4）。強制表示の状態を `LightbarOverrides`（`Core/Model`、Singleton）へ。後半（色の計算を `ILightbarService` へ）は Phase16 |
+| R-13・R-18 | **対応済み**（Phase14c-Step6）。`ServiceRegistration` を層ごとの partial ファイルに分け、後付けの配線を `ServiceRegistration.Wiring.cs` に集めた。`_subscribedReset` は `BackingStore.ReplaceActionsLoadedHandler` へ。配線の時点（遅延）は変えていない |
+| R-15・R-16 | **運用ルールを追加**（Phase14c-Step7。規約 §3.3 原則5、§4 のテストの命名）。既存のテストの整理は Phase14d |
+| 静的な `ActionRegistry` | **削除**（Phase14c-Step5。本番で未初期化） |
+| 共有の値の型（R-02 の残り） | **対応済み**（Phase14c-Step2）。8 つを `Core/Model` へ。記録のみの規則 L2・L7 は 155 → 59 件 |
 
-運用ルールの追加（R-15、R-16 の命名）は、規約 `.github/copilot-instructions.md` の改定として別途承認を得る。
+運用ルールの追加（R-15、R-16 の命名）は、規約 `.github/copilot-instructions.md` の改定として別途承認を得る（→ Phase14c の計画の承認に含め、Step7 で追加した）。
 
 ---
 
