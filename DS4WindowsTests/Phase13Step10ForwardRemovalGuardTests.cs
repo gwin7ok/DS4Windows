@@ -62,8 +62,9 @@ namespace DS4WindowsTests
             // Phase14b-Step15（決定 D12）で IStartupEntryService（設定画面のスタートアップ登録。旧 静的 StartupMethods）が加わり 24
             // Phase14b-Step16（決定 D11）で IUiThemeAndLanguage（テーマ・言語の切り替え。旧 Application.Current as App）が加わり 25
             // 同 Step で IIpcResultWriter（CLI の問い合わせの結果の書き込み。旧 (Application.Current as App).WriteIPCResultDataMMF）が加わり 26
+            // Phase14b-Step17（決定 D10）で IChangelogService（更新の確認・変更履歴。旧 静的 Changelog）が加わり 27
             var parameters = typeof(MainWindow).GetConstructors().Single().GetParameters();
-            Assert.Equal(26, parameters.Length);
+            Assert.Equal(27, parameters.Length);
             Assert.Contains(parameters, p => p.ParameterType == typeof(IRuntimeFeatureSwitch));
             Assert.DoesNotContain(parameters, p => p.ParameterType == typeof(IOscService) || p.ParameterType == typeof(IUdpMotionService)
                 || p.ParameterType == typeof(IHidHideService) || p.ParameterType == typeof(ITouchpadToggleService));

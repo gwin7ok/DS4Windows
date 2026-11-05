@@ -39,7 +39,8 @@ namespace DS4Windows.UI.Services
         private readonly IProfileLoadTarget _loadTarget;   // Phase13-Step6 6-e: IPC の LoadTempProfile に渡す窓口
         private readonly IStartupEntryService _startupEntries;
         private readonly IUiThemeAndLanguage _themeLanguage;
-        private readonly IIpcResultWriter _ipcResultWriter;   // Phase14b-Step16: CLI の問い合わせの結果の書き込み   // Phase14b-Step16（D11）: テーマ・言語の切り替え   // Phase14b-Step15（D12）: 設定画面のスタートアップ登録
+        private readonly IIpcResultWriter _ipcResultWriter;
+        private readonly IChangelogService _changelogService;   // Phase14b-Step17（D10）: 更新の確認・変更履歴   // Phase14b-Step16: CLI の問い合わせの結果の書き込み   // Phase14b-Step16（D11）: テーマ・言語の切り替え   // Phase14b-Step15（D12）: 設定画面のスタートアップ登録
         private readonly IAutoProfileService _autoProfileService;   // Phase13-Step8 8-c: 旧 遅延取得デリゲート。画面の生成時（設定の場所の確定後）に解決される
 
         public MainWindowFactory(
@@ -67,8 +68,10 @@ namespace DS4Windows.UI.Services
             IAutoProfileService autoProfileService,
             IStartupEntryService startupEntries,
             IUiThemeAndLanguage themeLanguage,
-            IIpcResultWriter ipcResultWriter)
+            IIpcResultWriter ipcResultWriter,
+            IChangelogService changelogService)
         {
+            _changelogService = changelogService ?? throw new ArgumentNullException(nameof(changelogService));
             _ipcResultWriter = ipcResultWriter ?? throw new ArgumentNullException(nameof(ipcResultWriter));
             _themeLanguage = themeLanguage ?? throw new ArgumentNullException(nameof(themeLanguage));
             _startupEntries = startupEntries ?? throw new ArgumentNullException(nameof(startupEntries));
@@ -100,6 +103,6 @@ namespace DS4Windows.UI.Services
             => new MainWindow(parser, _profileSettings, _appSettings, _profileXmlStore, _editorWindowFactory,
                 _pathService, _environmentService, _appearanceSettings, _profileApplication, _outputSlotService,
                 _profileRepository, _notificationService, _controlService, _lifecycle, _runtimeFeatures, _ipcProcessor, _loadTarget, _profileSlotApplier,
-                _mainWindowsViewModel, _logSettingsApplier, _autoProfileService, _viewModelFactory, _profileIdentityService, _startupEntries, _themeLanguage, _ipcResultWriter);
+                _mainWindowsViewModel, _logSettingsApplier, _autoProfileService, _viewModelFactory, _profileIdentityService, _startupEntries, _themeLanguage, _ipcResultWriter, _changelogService);
     }
 }

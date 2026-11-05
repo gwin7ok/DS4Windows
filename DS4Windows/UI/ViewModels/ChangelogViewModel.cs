@@ -32,7 +32,14 @@ namespace DS4Windows.UI.ViewModels
 {
     public class ChangelogViewModel
     {
+        // Phase14b-Step17（決定 D10）: 変更履歴の取得（旧 静的 Changelog.GetChangelogMarkdown）
+        private readonly DS4Windows.Core.Abstractions.IChangelogService _changelogService;
         private string markdown;
+
+        public ChangelogViewModel(DS4Windows.Core.Abstractions.IChangelogService changelogService)
+        {
+            _changelogService = changelogService ?? throw new ArgumentNullException(nameof(changelogService));
+        }
 
         public string Markdown
         {
@@ -47,7 +54,7 @@ namespace DS4Windows.UI.ViewModels
 
         public async Task DisplayChangelog()
         {
-            var changelog = await Changelog.GetChangelogMarkdown(true);
+            var changelog = await _changelogService.GetChangelogMarkdown(true);
             Markdown = changelog;
         }
     }

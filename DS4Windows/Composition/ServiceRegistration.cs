@@ -132,7 +132,15 @@ namespace DS4Windows.Composition
             services.AddSingleton<IWindowSystem, Win32WindowSystem>();
             services.AddSingleton<IWindowFocuser, WindowFocuser>();
             services.AddSingleton<IMouseInputHook, LowLevelMouseHook>();
-            services.AddSingleton<IStartupEntryService, StartupEntryService>();   // Phase14b-Step15（D12）: Windows のスタートアップ登録（旧 静的 StartupMethods）   // Phase12-Step3 3e: マクロの記録で、画面全体のマウス入力を監視する
+            services.AddSingleton<IStartupEntryService, StartupEntryService>();
+            // Phase14b-Step17（決定 D10）: 更新の確認・変更履歴・ドライバーのダウンロードに使う HttpClient（旧 App.requestClient。User-Agent も同じ）と、変更履歴のサービス
+            services.AddSingleton<System.Net.Http.HttpClient>(_ =>
+            {
+                var client = new System.Net.Http.HttpClient();
+                client.DefaultRequestHeaders.Add("User-Agent", "DS4Windows");
+                return client;
+            });
+            services.AddSingleton<IChangelogService, DS4Windows.Core.Utilities.Changelog>();   // Phase14b-Step15（D12）: Windows のスタートアップ登録（旧 静的 StartupMethods）   // Phase12-Step3 3e: マクロの記録で、画面全体のマウス入力を監視する
 
 
             // プロファイルのアクション取得（ControlService が使用）。Phase6-Step10-4-2d: アクション連鎖サービスは廃止

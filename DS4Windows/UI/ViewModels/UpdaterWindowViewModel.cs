@@ -41,15 +41,20 @@ namespace DS4Windows.UI.ViewModels
         // Phase6-Step10-1-3: Global.LastVersionChecked の置換先（必須引数。null は拒否する）
         private readonly DS4Windows.Core.Abstractions.IAppSettingsService _appSettingsService;
 
-        public UpdaterWindowViewModel(string version, DS4Windows.Core.Abstractions.IAppSettingsService appSettingsService)
+        // Phase14b-Step17（決定 D10）: 変更履歴の取得（旧 静的 Changelog.GetChangelogMarkdown）
+        private readonly DS4Windows.Core.Abstractions.IChangelogService _changelogService;
+
+        public UpdaterWindowViewModel(string version, DS4Windows.Core.Abstractions.IAppSettingsService appSettingsService,
+            DS4Windows.Core.Abstractions.IChangelogService changelogService)
         {
+            _changelogService = changelogService ?? throw new ArgumentNullException(nameof(changelogService));
             _appSettingsService = appSettingsService ?? throw new ArgumentNullException(nameof(appSettingsService));
             Version = version;
         }
 
         public async Task DisplayChangelog()
         {
-            var changelog = await Changelog.GetChangelogMarkdown();
+            var changelog = await _changelogService.GetChangelogMarkdown();
             Markdown = changelog;
         }
 

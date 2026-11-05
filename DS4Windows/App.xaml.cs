@@ -64,7 +64,7 @@ namespace DS4Windows
         // Phase14b-Step16: 旧 ネスト型 COPYDATASTRUCT は Core/Platform のトップレベルの型にした（UI の MainWindow.Ipc から App を参照しないため）
 
         private Thread controlThread;
-        public static HttpClient requestClient;
+        // Phase14b-Step17（決定 D10）: 旧 public static HttpClient requestClient（更新の確認・ドライバーのダウンロード）は、DI の Singleton の HttpClient にした
         private bool skipSave;
         private bool runShutdown;
         private bool exitApp;
@@ -882,7 +882,8 @@ namespace DS4Windows
 
                 CreateBaseThread();
                 DS4Windows.UI.WelcomeDialog dialog = new DS4Windows.UI.WelcomeDialog(
-                    _bootstrapEnvironmentService);
+                    _bootstrapEnvironmentService,
+                    (System.Net.Http.HttpClient)driverInstallHost.Services.GetService(typeof(System.Net.Http.HttpClient)));   // Phase14b-Step17（D10）
                 dialog.ShowDialog();
                 runShutdown = false;
                 exitApp = true;
@@ -1000,8 +1001,6 @@ namespace DS4Windows
                 _controlService = ResolvePostHostService<DS4Windows.Processing.ControlService>();
                 _lifecycle = ResolvePostHostService<DS4Windows.Processing.Abstractions.IServiceLifecycle>();
 
-                requestClient = new HttpClient();
-                requestClient.DefaultRequestHeaders.Add("User-Agent", "DS4Windows");
                 collectTimer = new Timer(GarbageTask, null, 30000, 30000);
 
             });
@@ -1016,8 +1015,6 @@ namespace DS4Windows
         {
             controlThread = new Thread(() =>
             {
-                requestClient = new HttpClient();
-                requestClient.DefaultRequestHeaders.Add("User-Agent", "DS4Windows");
                 collectTimer = new Timer(GarbageTask, null, 30000, 30000);
             });
             controlThread.Priority = ThreadPriority.Normal;

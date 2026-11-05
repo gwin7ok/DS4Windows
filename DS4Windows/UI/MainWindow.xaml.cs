@@ -92,7 +92,8 @@ namespace DS4Windows.UI
         private readonly DS4Windows.Processing.Abstractions.IProfileSlotApplier profileSlotApplier;
         private readonly DS4Windows.Core.Abstractions.INotificationService notificationService;
         private readonly DS4Windows.UI.Abstractions.IUiThemeAndLanguage themeLanguage;   // Phase14b-Step16（D11）
-        private readonly DS4Windows.UI.Abstractions.IIpcResultWriter ipcResultWriter;   // Phase14b-Step16（旧 App.WriteIPCResultDataMMF）
+        private readonly DS4Windows.UI.Abstractions.IIpcResultWriter ipcResultWriter;
+        private readonly DS4Windows.Core.Abstractions.IChangelogService changelogService;   // Phase14b-Step17（D10）: 旧 静的 Changelog   // Phase14b-Step16（旧 App.WriteIPCResultDataMMF）
         private readonly ControlService controlService;
         private readonly DS4Windows.Processing.Abstractions.IIpcCommandProcessor ipcProcessor;   // Phase13-Step11 11-c: 旧 MainWindow.Ipc.cs の Ipc*
         private readonly DS4Windows.Processing.Abstractions.IRuntimeFeatureSwitch runtimeFeatures;   // Phase13-Step10 10-c: 旧 ControlService の OSC／UDP／HidHide／TouchpadSlide の転送
@@ -138,8 +139,10 @@ namespace DS4Windows.UI
             DS4Windows.Core.Abstractions.IProfileIdentityService profileIdentityService,
             DS4Windows.Core.Abstractions.IStartupEntryService startupEntries,
             DS4Windows.UI.Abstractions.IUiThemeAndLanguage themeLanguage,
-            DS4Windows.UI.Abstractions.IIpcResultWriter ipcResultWriter)
+            DS4Windows.UI.Abstractions.IIpcResultWriter ipcResultWriter,
+            DS4Windows.Core.Abstractions.IChangelogService changelogService)
         {
+            this.changelogService = changelogService ?? throw new ArgumentNullException(nameof(changelogService));   // Phase14b-Step17（D10）
             this.ipcResultWriter = ipcResultWriter ?? throw new ArgumentNullException(nameof(ipcResultWriter));   // Phase14b-Step16: CLI の問い合わせの結果の書き込み
             // Phase14b-Step16（決定 D11）: テーマ・言語の切り替え（旧: Application.Current as App の直接呼び出し）
             this.themeLanguage = themeLanguage ?? throw new ArgumentNullException(nameof(themeLanguage));
@@ -313,7 +316,7 @@ namespace DS4Windows.UI
                     {
                         try
                         {
-                            if (Changelog.CheckNewerVersionExists(out var version, appSettingsService.LastVersionChecked, false, true))
+                            if (changelogService.CheckNewerVersionExists(out var version, appSettingsService.LastVersionChecked, false, true))
                             {
                                 DisplayUpdaterWindow(version.ToString());
                             }
@@ -345,7 +348,7 @@ namespace DS4Windows.UI
             MessageBoxResult result = MessageBoxResult.No;
             Dispatcher.Invoke(() =>
             {
-                var updaterWin = new UpdaterWindow(version, environmentService, appSettingsService);
+                var updaterWin = new UpdaterWindow(version, environmentService, appSettingsService, changelogService);
                 updaterWin.ShowDialog();
                 result = updaterWin.Result;
             });
@@ -376,7 +379,7 @@ namespace DS4Windows.UI
                     if (Version.TryParse(newversion, out parsedVersion))
                     {
                         // Temporarily set cached/latest if needed - call helper allowing fresh check
-                        if (Changelog.CheckNewerVersionExists(out var latest, appSettingsService.LastVersionChecked, allowCached: false))
+                        if (changelogService.CheckNewerVersionExists(out var latest, appSettingsService.LastVersionChecked, allowCached: false))
                         {
                             Dispatcher.Invoke(() => DisplayUpdaterWindow(latest.ToString()));
                         }
@@ -1490,7 +1493,7 @@ Suspend support not enabled.", LogOptions.UserFacing);
                 try
                 {
                     // Manual check should ignore any previously skipped version
-                    if (Changelog.CheckNewerVersionExists(out var version, appSettingsService.LastVersionChecked, false, false))
+                    if (changelogService.CheckNewerVersionExists(out var version, appSettingsService.LastVersionChecked, false, false))
                         DisplayUpdaterWindow(version.ToString());
                     else
                         Dispatcher.Invoke(() => MessageBox.Show(Properties.Resources.UpToDate, "DS4Windows Updater"));
@@ -2030,7 +2033,7 @@ Suspend support not enabled.", LogOptions.UserFacing);
 
         private void ChecklogViewBtn_Click(object sender, RoutedEventArgs e)
         {
-            ChangelogWindow changelogWin = new ChangelogWindow();
+            ChangelogWindow changelogWin = new ChangelogWindow(changelogService);
             changelogWin.ShowDialog();
         }
 

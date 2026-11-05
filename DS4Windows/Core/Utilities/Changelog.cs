@@ -37,21 +37,32 @@ using System.Xml;
 using System.Xml.Serialization;
 using WpfScreenHelper;
 using static DS4Windows.Core.Utilities.Util;
+using DS4Windows.Core.Abstractions;
 using DS4Windows.Core.Logging;
 using DS4Windows.Core.Platform;
 using DS4Windows.Core.Updater;
 namespace DS4Windows.Core.Utilities
 {
 
-    public class Changelog
+    /// <summary>
+    /// <see cref="IChangelogService"/> の実装（DI の Singleton）。Phase14b-Step17（決定 D10）: 旧 静的メソッドと静的なキャッシュをインスタンスにし、
+    /// 通信には注入した HttpClient を使う（旧: App.requestClient）。処理の中身は変えていない。
+    /// </summary>
+    public sealed class Changelog : IChangelogService
     {
         // Use the GitHub REST API /repos/ path so the app queries releases for the correct repo.
         // Phase10 以降: リポジトリの定義は ReleaseSource（Updater/）の 1 か所
         public const string GITHUB_RELEASES_API_URI = DS4Windows.Core.Updater.ReleaseSource.ReleasesApiUri;
         public const string GITHUB_LATEST_RELEASE_API_URI = DS4Windows.Core.Updater.ReleaseSource.LatestReleaseApiUri;
 
-        private static bool? _newerVersionAvailable = null;
-        private static Version _latestVersion;
+        private readonly System.Net.Http.HttpClient _httpClient;
+        private bool? _newerVersionAvailable = null;
+        private Version _latestVersion;
+
+        public Changelog(System.Net.Http.HttpClient httpClient)
+        {
+            _httpClient = httpClient ?? throw new ArgumentNullException(nameof(httpClient));
+        }
 
         // Much more compact and elegant way of checking if there is a new update available than the
         // shenanigans with fetching newest.txt and using a .txt file as a DTO instead of simply
@@ -59,7 +70,7 @@ namespace DS4Windows.Core.Utilities
         // I wanted to make this method async, but these can't have an out parameter and this is the signature i wanted
         // it to have
         // Phase7-Step10d W4: lastVersionChecked は、旧 Global.LastVersionChecked（スキップ済みの更新バージョン）の値。呼び出し側が IAppSettingsService.LastVersionChecked から渡す。
-        public static bool CheckNewerVersionExists(out Version version, string lastVersionChecked, bool allowCached = true, bool respectSkip = true)
+        public bool CheckNewerVersionExists(out Version version, string lastVersionChecked, bool allowCached = true, bool respectSkip = true)
         {
             version = Version.Parse("0.0.0");
 
@@ -72,7 +83,7 @@ namespace DS4Windows.Core.Utilities
                 return (bool)_newerVersionAvailable;
             }
 
-            var request = App.requestClient.GetAsync(GITHUB_LATEST_RELEASE_API_URI);
+            var request = _httpClient.GetAsync(GITHUB_LATEST_RELEASE_API_URI);
             request.Wait();
             if (request.Result.IsSuccessStatusCode)
             {
@@ -125,13 +136,13 @@ namespace DS4Windows.Core.Utilities
             return false;
         }
 
-        public static async Task<Dictionary<Version, string>> GetChangelog(bool allVersions = false)
+        public async Task<Dictionary<Version, string>> GetChangelog(bool allVersions = false)
         {
             Dictionary<Version, string> dict = new();
 
             if (!Version.TryParse(PathService.ExecutableVersionState, out var currentVersion)) return dict;
 
-            var request = await App.requestClient.GetAsync(GITHUB_RELEASES_API_URI);
+            var request = await _httpClient.GetAsync(GITHUB_RELEASES_API_URI);
             var releases = await request.Content.ReadFromJsonAsync<GithubRelease[]>();
 
             foreach (var release in releases)
@@ -147,7 +158,7 @@ namespace DS4Windows.Core.Utilities
             return dict;
         }
 
-        public static async Task<string> GetChangelogMarkdown(bool allVersions = false)
+        public async Task<string> GetChangelogMarkdown(bool allVersions = false)
         {
             var versions = await GetChangelog(allVersions);
 
