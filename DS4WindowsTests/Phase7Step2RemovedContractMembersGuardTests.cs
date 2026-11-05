@@ -16,40 +16,6 @@ namespace DS4WindowsTests
     /// </summary>
     public class Phase7Step2RemovedContractMembersGuardTests
     {
-        // インターフェースのファイル名（拡張子なし） → 削除したメンバー
-        private static readonly Dictionary<string, string[]> Removed = new Dictionary<string, string[]>
-        {
-            ["IProfileSettingsService"] = new[]
-            {
-                "GetLowColor", "GetChargingColor", "GetCustomColor", "GetFlashColor", "GetUseCustomLed", "GetDS4CSettings",
-                "GetGyroMouseDeadZone", "GetScrollSensitivity", "GetUseDInputOnly", "SetUseDInputOnly", "GetTempProfileDistance",
-                "GetReverseX360ButtonMapping", "SAMouseStickTriggerCond", "SetTouchpadActive", "LinkedProfileCheckArray",
-                "TempProfileNameArray", "ConfigDecimalCulture", "ResetAllToDefaults", "ResetToDefaults", "RumbleAutostopTime",
-                "ProfileSettingChanged", "WireSubSettingsEvents", "UnwireSubSettingsEvents",
-            },
-            ["IDeviceStateService"] = new[]
-            {
-                "Devices", "GetDevice", "IsDeviceConnected", "ConnectedControllersCount", "GetDeviceMacAddress",
-                "GetConnectionType", "GetBatteryLevel", "SetDevice", "DeviceStateChanged",
-            },
-            ["IOutputSlotService"] = new[] { "OutputDevices", "GetOutputDevice", "IsSlotPlugin" },
-            ["IVirtualKBM"] = new[] { "ErrorMessage", "Version" },
-            ["INotificationService"] = new[] { "NotificationsEnabled", "FlashTaskbar" },
-            ["IPathService"] = new[] { "GetAutoProfilesPath", "ActionsPath" },
-            ["IProfileRepository"] = new[] { "GetProfileNames", "ProfileExists", "LoadProfileToSlot", "LoadDefaultProfile" },
-            ["ISpecialActionRepository"] = new[] { "AddAction", "ReplaceAction", "RemoveAction", "GetActionIndex", "GetAction", "ActionExists", "SaveActions" },
-            ["IDs4DeviceRegistry"] = new[] { "ConnectedDevices", "DeviceCount", "IsHidHideInstalled" },
-        };
-
-        // 削除したファイル
-        private static readonly string[] RemovedFiles =
-        {
-            "DS4Windows/DI/DeviceStateChangedEventArgs.cs",
-            "DS4Windows/DI/ProfileSettingChangedEventArgs.cs",
-            "DS4Windows/DS4Forms/ViewModels/ControllersViewModel.cs",
-            "DS4Windows/DI/IUdpServerService.cs",   // Phase9 9-E E-3: 未接続の並行実装として削除（ユーザー承認）。UDP の窓口は IUdpMotionService
-            "DS4Windows/DS4Control/Services/UdpServerService.cs",
-        };
 
         // 残した契約（本来使うべきだが、呼び出し側の切り替えが未実施。TODO 付き）
         private static readonly Dictionary<string, string[]> Kept = new Dictionary<string, string[]>
@@ -87,20 +53,6 @@ namespace DS4WindowsTests
         }
 
         [Fact]
-        public void RemovedMembers_DoNotReappearInContracts()
-        {
-            var reappeared = new List<string>();
-            foreach (var pair in Removed)
-            {
-                string text = ReadContract(pair.Key);
-                if (text == null) continue;
-                reappeared.AddRange(pair.Value.Where(m => Declares(text, m)).Select(m => pair.Key + "." + m));
-            }
-
-            Assert.True(reappeared.Count == 0, "削除済みのメンバーが契約に再び宣言されている: " + string.Join(", ", reappeared));
-        }
-
-        [Fact]
         public void KeptMembers_StillExistInContracts()
         {
             var missing = new List<string>();
@@ -112,21 +64,6 @@ namespace DS4WindowsTests
             }
 
             Assert.True(missing.Count == 0, "残すべき契約が失われている（TODO 付きの未接続の契約）: " + string.Join(", ", missing));
-        }
-
-        [Fact]
-        public void RemovedFiles_DoNotExist()
-        {
-            string anchor = SourceFileLocator.Find("DS4Windows/Core/Settings/BackingStore.cs"); // Phase7-Step10d W5: Global.cs は削除したため、同じフォルダーの BackingStore.cs を起点にする
-            if (anchor == null)
-            {
-                _output.WriteLine("ソースが見つからないため検査を省略した。");
-                return;
-            }
-
-            string root = SourceFileLocator.RootFromAnchor(anchor);
-            List<string> existing = RemovedFiles.Where(f => File.Exists(Path.Combine(root, f))).ToList();
-            Assert.True(existing.Count == 0, "削除済みのファイルが再び存在する: " + string.Join(", ", existing));
         }
     }
 }

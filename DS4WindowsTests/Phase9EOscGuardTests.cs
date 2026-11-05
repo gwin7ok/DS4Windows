@@ -56,22 +56,6 @@ namespace DS4WindowsTests
             Assert.Contains("_osc.ChangeSenderStatus(state)", sw);
         }
 
-        [Theory]
-        [InlineData("DS4Windows/Output/Services/OscService.cs")]
-        [InlineData("DS4Windows/Output/Services/SharpOscTransportFactory.cs")]
-        [InlineData("DS4Windows/Output/Services/SharpOscListenerHandle.cs")]
-        [InlineData("DS4Windows/Output/Services/SharpOscMessageSender.cs")]
-        public void NewComponents_DoNotReferenceStaticEntryPoints(string relativePath)
-        {
-            string text = SourceText.ReadCode(relativePath);
-            if (text == null) return;
-
-            Assert.DoesNotContain("AppHost", text);
-            Assert.DoesNotContain("ServiceProviderHolder", text);
-            Assert.False(Regex.IsMatch(text, @"\bGlobal\."), relativePath + " が Global を参照している");
-            Assert.False(Regex.IsMatch(text, @"\bProgram\.rootHub\b"), relativePath + " が Program.rootHub を参照している");
-        }
-
         [Fact]
         public void OscService_AndTheContracts_DoNotUseTheSharpOscTypes()
         {

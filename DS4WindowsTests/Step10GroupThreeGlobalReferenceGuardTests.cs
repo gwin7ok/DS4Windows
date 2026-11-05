@@ -20,62 +20,12 @@ namespace DS4WindowsTests
     /// </summary>
     public class Step10GroupThreeGlobalReferenceGuardTests
     {
-        // ファイルごとに、使ってよい Global メンバー（温存項目）。
-        // configFileDecimalCulture は不変の静的値、getX360ControlString はボタン名を返す純粋関数
-        private static readonly Dictionary<string, string[]> AllowedGlobalMembers = new Dictionary<string, string[]>
-        {
-            // Step10-3-2
-            ["DS4Windows/UI/ViewModels/SpecialActEditorViewModel.cs"] = new string[0],
-            ["DS4Windows/UI/ViewModels/SpecialActions/CheckBatteryViewModel.cs"] = new string[0],
-            ["DS4Windows/UI/ViewModels/SpecialActions/LaunchProgramViewModel.cs"] = new string[0],
-            ["DS4Windows/UI/ViewModels/SpecialActions/LoadProfileViewModel.cs"] = new string[0],
-            ["DS4Windows/UI/ViewModels/SpecialActions/MacroViewModel.cs"] = new string[0],
-            ["DS4Windows/UI/ViewModels/SpecialActions/MultiActButtonViewModel.cs"] = new string[0],
-            ["DS4Windows/UI/ViewModels/SpecialActions/PressKeyViewModel.cs"] = new[] { "getX360ControlString" },
-            ["DS4Windows/UI/ViewModels/SpecialActions/SpecialActionViewModel.cs"] = new string[0],
-            ["DS4Windows/UI/AssignmentEditor.xaml.cs"] = new string[0],
-            // Step10-3-3
-            ["DS4Windows/UI/ViewModels/SpecialActionsListViewModel.cs"] = new string[0],
-        };
 
         private readonly ITestOutputHelper _output;
 
         public Step10GroupThreeGlobalReferenceGuardTests(ITestOutputHelper output)
         {
             _output = output;
-        }
-
-        [Fact]
-        public void ReplacedFiles_DoNotReferenceGlobalExceptRetainedMembers()
-        {
-            foreach (var entry in AllowedGlobalMembers)
-            {
-                string text = SourceText.ReadCode(entry.Key);
-                if (text == null) continue;
-
-                var unexpected = Regex.Matches(text, @"\bGlobal\.(\w+)")
-                    .Cast<Match>()
-                    .Select(m => m.Groups[1].Value)
-                    .Where(name => !entry.Value.Contains(name))
-                    .Distinct()
-                    .ToList();
-
-                Assert.True(unexpected.Count == 0,
-                    $"{entry.Key} に温存項目以外の Global 参照がある: {string.Join(", ", unexpected)}");
-            }
-        }
-
-        [Fact]
-        public void ReplacedFiles_DoNotUseServiceLocatorOrRootHubFallbacks()
-        {
-            foreach (string file in AllowedGlobalMembers.Keys)
-            {
-                string text = SourceText.ReadCode(file);
-                if (text == null) continue;
-
-                Assert.DoesNotContain("AppHost", text);
-                Assert.DoesNotContain("Program.rootHub", text);
-            }
         }
 
         [Fact]

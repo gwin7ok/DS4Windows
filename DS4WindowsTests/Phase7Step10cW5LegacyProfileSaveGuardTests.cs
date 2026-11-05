@@ -59,25 +59,5 @@ namespace DS4WindowsTests
             Assert.Equal(5, LegacyProfileXmlSerializer.ConfigVersion);
             Assert.Equal(".xml", LegacyProfileXmlSerializer.XmlExtension);
         }
-
-        [Fact]
-        public void TheSource_UsesTheSerializerEverywhere()
-        {
-            string serializer = SourceFileLocator.Find("DS4Windows/Core/Persistence/LegacyProfileXmlSerializer.cs");
-            string xmlStore = SourceFileLocator.Find("DS4Windows/Core/Persistence/ProfileXmlStore.cs");
-            string repository = SourceFileLocator.Find("DS4Windows/Core/Persistence/ProfileRepository.cs");
-            if (serializer == null || xmlStore == null || repository == null)
-            {
-                _output.WriteLine("ソースが見つからないため検査を省略した。");
-                return;
-            }
-
-            string Strip(string t) => Regex.Replace(Regex.Replace(t, @"/\*.*?\*/", string.Empty, RegexOptions.Singleline), @"//[^\r\n]*", string.Empty);
-            string s = Strip(File.ReadAllText(serializer));
-            Assert.False(Regex.IsMatch(s, @"(?<![\w.])Global\.\w+"), "LegacyProfileXmlSerializer が Global を参照している");
-            Assert.DoesNotMatch(@"store\.SaveProfile\(", s); // 同じクラスの SaveProfile を直接呼ぶ（BackingStore へ戻らない）
-            Assert.DoesNotMatch(@"_backingStore\.SaveProfile\(", Strip(File.ReadAllText(xmlStore)));
-            Assert.DoesNotMatch(@"_config\.SaveAsProfile\(", Strip(File.ReadAllText(repository)));
-        }
     }
 }

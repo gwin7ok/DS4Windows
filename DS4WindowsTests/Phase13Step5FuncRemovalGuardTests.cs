@@ -29,24 +29,6 @@ namespace DS4WindowsTests
                 .ToArray();
         }
 
-        [Theory]
-        [InlineData(@"Func<\s*(?:DS4Windows\.Services\.|DS4Windows\.DI\.)?IDeviceStateAccessor\s*>")]
-        [InlineData(@"Func<\s*(?:DS4Windows\.DI\.)?IUdpMotionHost\s*>")]
-        public void RemovedFuncs_DoNotAppearInProductionSources(string pattern)
-        {
-            string[] files = FilesContaining(pattern);
-            if (files == null) return;
-            Assert.True(files.Length == 0, "撤廃した Func が残っている: " + string.Join(", ", files));
-        }
-
-        [Fact]
-        public void FuncOfTheSlotHost_NoLongerAppears()
-        {
-            string[] files = FilesContaining(@"Func<\s*(?:DS4Windows\.DI\.)?IDeviceSlotHost\s*>");
-            if (files == null) return;
-            Assert.True(files.Length == 0, "撤廃した Func<IDeviceSlotHost> が残っている: " + string.Join(", ", files));
-        }
-
         /// <summary>Phase13-Step6 6-e: 9 利用者の <c>Func&lt;ControlService&gt;</c> と、その登録をすべて撤廃した（ロードマップ #1〜#5）。</summary>
         [Fact]
         public void FuncOfControlService_NoLongerAppears()
@@ -54,18 +36,6 @@ namespace DS4WindowsTests
             string[] files = FilesContaining(@"Func<\s*(?:DS4Windows\.)?ControlService\s*>");
             if (files == null) return;
             Assert.True(files.Length == 0, "撤廃した Func<ControlService> が残っている: " + string.Join(", ", files));
-        }
-
-        /// <summary>Phase13-Step7 7-d: <c>VirtualPadService</c> ⇄ <c>OutputSlotService</c> の循環の Func（ロードマップ #6〜#8）を撤廃した。</summary>
-        [Theory]
-        [InlineData(@"Func<\s*(?:DS4Windows\.DI\.)?IOutputSlotService\s*>")]
-        [InlineData(@"Func<\s*(?:DS4Windows\.DI\.)?IVirtualPadService\s*>")]
-        [InlineData(@"Func<\s*OutputSlotManager\s*>")]
-        public void FuncsOfTheOutputSlotCycle_NoLongerAppear(string pattern)
-        {
-            string[] files = FilesContaining(pattern);
-            if (files == null) return;
-            Assert.True(files.Length == 0, "撤廃した Func が残っている: " + string.Join(", ", files));
         }
     }
 }

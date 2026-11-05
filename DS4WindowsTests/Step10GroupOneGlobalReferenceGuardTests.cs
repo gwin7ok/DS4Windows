@@ -18,31 +18,6 @@ namespace DS4WindowsTests
     /// </summary>
     public class Step10GroupOneGlobalReferenceGuardTests
     {
-        // ファイルごとに、使ってよい Global メンバー（温存項目。理由は各ファイルの TODO／計画書 §0A）
-        private static readonly Dictionary<string, string[]> AllowedGlobalMembers = new Dictionary<string, string[]>
-        {
-            // WelcomeDialog: Pre-Host の手動分岐（FindConfigLocation／Load）と定数
-            ["DS4Windows/UI/WelcomeDialog.xaml.cs"] = new[] { "FindConfigLocation", "Load", "RESOURCES_PREFIX" },
-            ["DS4Windows/UI/SaveWhere.xaml.cs"] = new string[0],
-            ["DS4Windows/UI/LanguageSelectDialog.xaml.cs"] = new string[0],
-            ["DS4Windows/UI/About.xaml.cs"] = new string[0],
-            ["DS4Windows/UI/UpdaterWindow.xaml.cs"] = new string[0],
-            ["DS4Windows/UI/LanguagePackControl.xaml.cs"] = new string[0],
-            ["DS4Windows/UI/ViewModels/AboutViewModel.cs"] = new string[0],
-            ["DS4Windows/UI/ViewModels/LogViewModel.cs"] = new string[0],
-            ["DS4Windows/UI/ViewModels/UpdaterWindowViewModel.cs"] = new string[0],
-            // LanguagePackViewModel: 定数のみ
-            ["DS4Windows/UI/ViewModels/LanguagePackViewModel.cs"] = new[] { "PROBING_PATH", "LANGUAGE_ASSEMBLY_NAME" },
-            ["DS4Windows/Core/Platform/StartupEntryService.cs"] = new string[0],
-            ["DS4Windows/UI/ViewModels/TrayIconViewModel.cs"] = new[] { "RESOURCES_PREFIX" },
-        };
-
-        // ログ文言として残している文字列（コードの参照ではない）
-        private static readonly string[] LogLiteralsKeptForCompatibility =
-        {
-            "Global.UseLang set to",
-            "Global.UseLang='",
-        };
 
         // Service Locator・静的フォールバックを持たないこと（検査対象）
         private static readonly string[] NoServiceLocatorFiles =
@@ -69,33 +44,6 @@ namespace DS4WindowsTests
         }
 
         [Fact]
-        public void ReplacedFiles_DoNotReferenceGlobalExceptRetainedMembers()
-        {
-            foreach (var entry in AllowedGlobalMembers)
-            {
-                string text = SourceText.ReadCode(entry.Key);
-                if (text == null) continue;
-
-                // ログ文言の文字列リテラル（LanguageSelectDialog の "Global.UseLang set to"、LanguagePackViewModel の
-                // "Global.UseLang='"）は、置換前のログ内容を維持する（§2.3）ためのもので、コードの参照ではない。
-                foreach (string logLiteral in LogLiteralsKeptForCompatibility)
-                {
-                    text = text.Replace(logLiteral, string.Empty);
-                }
-
-                var unexpected = Regex.Matches(text, @"\bGlobal\.(\w+)")
-                    .Cast<Match>()
-                    .Select(m => m.Groups[1].Value)
-                    .Where(name => !entry.Value.Contains(name))
-                    .Distinct()
-                    .ToList();
-
-                Assert.True(unexpected.Count == 0,
-                    $"{entry.Key} に温存項目以外の Global 参照がある: {string.Join(", ", unexpected)}");
-            }
-        }
-
-        [Fact]
         public void ReplacedFiles_DoNotUseServiceLocatorOrStaticFallbacks()
         {
             foreach (string file in NoServiceLocatorFiles)
@@ -103,23 +51,10 @@ namespace DS4WindowsTests
                 string text = SourceText.ReadCode(file);
                 if (text == null) continue;
 
-                Assert.DoesNotContain("AppHost", text);
-                Assert.DoesNotContain("Program.rootHub", text);
                 Assert.DoesNotContain("logHolder", text);
                 Assert.DoesNotContain("App.Current", text);
                 Assert.DoesNotContain("Application.Current", text);
             }
-        }
-
-        [Fact]
-        public void LanguagePackControl_DoesNotUseServiceLocator()
-        {
-            // Application.Current as App（ApplyLanguageSettingPublic の呼び出し）は温存（Global ではない。App の言語適用処理は Phase7 で整理する）
-            string text = SourceText.ReadCode("DS4Windows/UI/LanguagePackControl.xaml.cs");
-            if (text == null) return;
-
-            Assert.DoesNotContain("AppHost", text);
-            Assert.DoesNotContain("Program.rootHub", text);
         }
 
         [Fact]
@@ -132,17 +67,6 @@ namespace DS4WindowsTests
             Assert.Contains("DeleteOldTaskEntry(string programDirectory)", text);
             Assert.Contains("WriteTaskEntry(string programDirectory, string exeFileName)", text);
             Assert.Contains("CheckStartupExeLocation(string exeLocation)", text);
-        }
-
-        [Fact]
-        public void RemovedOrphanMethods_DoNotComeBack()
-        {
-            string util = SourceText.ReadCode("DS4Windows/Core/Utilities/Util.cs");
-            if (util == null) return;
-
-            // Phase6-Step10-1-5: 呼出元 0 件の旧 DS4Updater 差し替え処理（コミット b55d160b で UpdaterWindow の方式へ置き換え済み）
-            Assert.DoesNotContain("ElevatedCopyUpdater", util);
-            Assert.DoesNotContain("Global.exedirpath", util);
         }
 
         [Fact]

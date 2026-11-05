@@ -18,37 +18,12 @@ namespace DS4WindowsTests
     /// </summary>
     public class Phase7Step10eW1SlotLimitServicesGuardTests
     {
-        private static readonly string[] Files =
-        {
-            "DS4Windows/Output/OutputSlotManager.cs",
-            "DS4Windows/Core/Persistence/LegacyProfileXmlSerializer.cs",
-            "DS4Windows/Core/Persistence/ProfileRepository.cs",
-            "DS4Windows/Processing/Services/ProfileSlotApplier.cs",
-            "DS4Windows/Core/Persistence/Dto/AutoProfilesDTO.cs",
-        };
 
         private readonly ITestOutputHelper _output;
 
         public Phase7Step10eW1SlotLimitServicesGuardTests(ITestOutputHelper output)
         {
             _output = output;
-        }
-
-        [Fact]
-        public void TheFiles_DoNotUseTheStaticSlotLimit()
-        {
-            foreach (string rel in Files)
-            {
-                string path = SourceFileLocator.Find(rel);
-                if (path == null)
-                {
-                    _output.WriteLine(rel + " が見つからないため検査を省略した。");
-                    continue;
-                }
-
-                string text = Regex.Replace(Regex.Replace(File.ReadAllText(path), @"/\*.*?\*/", string.Empty, RegexOptions.Singleline), @"//[^\r\n]*", string.Empty);
-                Assert.DoesNotContain("CURRENT_DS4_CONTROLLER_LIMIT", text);
-            }
         }
 
         [Theory]

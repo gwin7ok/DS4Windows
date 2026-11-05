@@ -67,24 +67,5 @@ namespace DS4WindowsTests
             var control = TestHost.GetService<ControlService>();
             Assert.Same(stick, Field(typeof(ControlService), control, "_stickMotion"));
         }
-
-        [Fact]
-        public void NoSourceFile_ReferencesTheRemovedSharedWindows()
-        {
-            string anchor = SourceFileLocator.Find("DS4Windows/Core/Settings/BackingStore.cs"); // Phase7-Step10d W5: Global.cs は削除したため、同じフォルダーの BackingStore.cs を起点にする
-            if (anchor == null)
-            {
-                _output.WriteLine("ソースが見つからないため検査を省略した。");
-                return;
-            }
-
-            string root = SourceFileLocator.ProjectDirFromAnchor(anchor); // DS4Windows プロジェクト
-            var shared = new Regex(@"\b(SyntheticInputState|MacroRuntimeState|StickMotionState)\.Shared\b");
-            var offenders = Directory.GetFiles(root, "*.cs", SearchOption.AllDirectories)
-                .Where(f => !f.Contains(@"\obj\") && !f.Contains(@"\bin\"))
-                .Where(f => shared.IsMatch(Regex.Replace(Regex.Replace(File.ReadAllText(f), @"/\*.*?\*/", string.Empty, RegexOptions.Singleline), @"//[^\r\n]*", string.Empty)))
-                .ToArray();
-            Assert.True(offenders.Length == 0, "削除済みの Shared への参照が残っている: " + string.Join(", ", offenders));
-        }
     }
 }

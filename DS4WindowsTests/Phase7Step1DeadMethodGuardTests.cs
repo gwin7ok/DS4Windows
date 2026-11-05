@@ -16,12 +16,6 @@ namespace DS4WindowsTests
     /// </summary>
     public class Phase7Step1DeadMethodGuardTests
     {
-        private static readonly string[] RemovedFromBackingStore =
-        {
-            "SaveOld", "UsedSavedProfileString", "RebuildProfileActionDicts",
-            "GetDS4Action", "GetDS4Extra", "GetDS4KeyType", "GetDS4STrigger",
-            "GetGyroOutModeString", "GetGyroOutModeType", "UpdateDS4CLightbarMacro",
-        };
 
         private static readonly string[] KeptInBackingStore =
         {
@@ -39,22 +33,6 @@ namespace DS4WindowsTests
         {
             return Regex.IsMatch(strippedSource,
                 @"\b(?:public|private|internal|protected)\s+(?:static\s+)?[\w<>\[\],.? ]+?\s+" + Regex.Escape(name) + @"\s*\(");
-        }
-
-        [Fact]
-        public void RemovedMethods_DoNotReappearInBackingStore()
-        {
-            string path = SourceFileLocator.Find("DS4Windows/Core/Settings/BackingStore.cs");
-            if (path == null)
-            {
-                _output.WriteLine("ソースが見つからないため検査を省略した。");
-                return;
-            }
-
-            string text = SourceText.StripComments(File.ReadAllText(path));
-            List<string> reappeared = RemovedFromBackingStore.Where(n => DeclaresMethod(text, n)).ToList();
-            Assert.True(reappeared.Count == 0,
-                "削除済みのメソッドが BackingStore.cs に再び宣言されている: " + string.Join(", ", reappeared));
         }
 
         [Fact]

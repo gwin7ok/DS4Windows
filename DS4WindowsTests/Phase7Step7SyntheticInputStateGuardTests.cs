@@ -78,19 +78,5 @@ namespace DS4WindowsTests
             Assert.True(state >= 0 && state < toggled && toggled < log);
             Assert.DoesNotContain("ClearMacroDone", reset);
         }
-
-        [Fact]
-        public void SyntheticDispatcherService_UsesTheInjectedHolder_AndTheStaticBridgeHoldsNoState()
-        {
-            string service = SourceText.ReadCode("DS4Windows/Processing/Services/SyntheticDispatcherService.cs");
-            if (service == null) return;
-
-            Assert.DoesNotContain("Mapping.deviceState", service);
-            Assert.DoesNotContain("Mapping.globalState", service);
-            Assert.DoesNotContain("Shared", service);
-            Assert.Contains("_syntheticInput.DeviceState", service);
-
-            // Phase14c-Step3（R-06）: 旧 暫定の静的な橋渡し（SyntheticDispatcher.cs）は撤廃した（存在しないことは Phase7Step8W3OutputKbmOwnershipGuardTests が検査）
-        }
     }
 }

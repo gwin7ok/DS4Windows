@@ -68,25 +68,5 @@ namespace DS4WindowsTests
             Assert.NotNull(TestHost.GetService<IProfileXmlStore>());
             Assert.NotNull(TestHost.GetService<IProfileRepository>());
         }
-
-        [Fact]
-        public void TheSerializer_DoesNotReferenceGlobal_AndTheCallersUseIt()
-        {
-            string serializer = SourceFileLocator.Find("DS4Windows/Core/Persistence/LegacyProfileXmlSerializer.cs");
-            string xmlStore = SourceFileLocator.Find("DS4Windows/Core/Persistence/ProfileXmlStore.cs");
-            string repository = SourceFileLocator.Find("DS4Windows/Core/Persistence/ProfileRepository.cs");
-            if (serializer == null || xmlStore == null || repository == null)
-            {
-                _output.WriteLine("ソースが見つからないため検査を省略した。");
-                return;
-            }
-
-            string Strip(string t) => Regex.Replace(Regex.Replace(t, @"/\*.*?\*/", string.Empty, RegexOptions.Singleline), @"//[^\r\n]*", string.Empty);
-            string s = Strip(File.ReadAllText(serializer));
-            Assert.False(Regex.IsMatch(s, @"(?<![\w.])Global\.\w+"), "LegacyProfileXmlSerializer が Global を参照している");
-            Assert.False(Regex.IsMatch(s, @"\bthis\b(?!\.store\b|\._pathService\b|\._profileSettings\b)"), "this を直接使っている");
-            Assert.DoesNotMatch(@"_backingStore\.LoadProfile\(", Strip(File.ReadAllText(xmlStore)));
-            Assert.DoesNotMatch(@"_config\.LoadProfile\(", Strip(File.ReadAllText(repository)));
-        }
     }
 }

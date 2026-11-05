@@ -52,20 +52,6 @@ namespace DS4WindowsTests
         };
 
         [Fact]
-        public void ProfileEditor_DoesNotReferenceResolvedGlobalMembers()
-        {
-            string text = SourceText.ReadCode("DS4Windows/UI/ProfileEditor.xaml.cs");
-            if (text == null) return;
-
-            // `Global.X` と `DS4Windows.Global.X` の両方を検出する（単語境界で、別名のメンバーと区別する）。
-            string pattern = @"\bGlobal\.(" + string.Join("|", ResolvedMembers) + @")\b";
-            var hits = Regex.Matches(text, pattern).Cast<Match>().Select(m => m.Value).Distinct().ToArray();
-
-            Assert.True(hits.Length == 0,
-                "解消済みの Global メンバーが ProfileEditor.xaml.cs に再び現れた: " + string.Join(", ", hits));
-        }
-
-        [Fact]
         public void ProfileEditor_ReceivesAppSettingsServiceByConstructor_AndMainWindowPassesIt()
         {
             string editor = SourceText.ReadCode("DS4Windows/UI/ProfileEditor.xaml.cs");

@@ -29,19 +29,6 @@ namespace DS4WindowsTests
         // Phase8-Fix-MacroRepeatUnify（D5）: DS4ControltoInt を削除したため、次のメンバー（TValue）を終端にする
         private const string CommitEnd = "_virtualKbm.Sync();";
 
-        /// <summary>Step3-5 で `IProfileSettingsService` 経由へ置換済みの `Global` メンバ名（ドリフト補正）。</summary>
-        private static readonly string[] MigratedCalibrationMembers =
-        {
-            "RightStickDriftXAxis", "RightStickDriftYAxis",
-            "LeftStickDriftXAxis", "LeftStickDriftYAxis",
-        };
-
-        /// <summary>Step3-5 で `IProfileSettingsService.OutputKBMMapping` 経由へ置換済みの `Global` メンバ名（出力確定）。</summary>
-        private static readonly string[] MigratedCommitMembers =
-        {
-            "outputKBMMapping",
-        };
-
         private readonly ITestOutputHelper _output;
 
         public MappingCommitAndCalibrationGlobalReferenceGuardTests(ITestOutputHelper output)
@@ -71,19 +58,6 @@ namespace DS4WindowsTests
             return body;
         }
 
-        private static void AssertNoGlobalReference(string body, string[] members, string methodName)
-        {
-            foreach (string member in members)
-            {
-                // 非修飾（using static 経由）と Global. 修飾の両方を検出する。`settings.Xxx` のような他オブジェクト経由は対象外。
-                var bare = new Regex(@"(?<![\w.])" + Regex.Escape(member) + @"\b");
-                var qualified = new Regex(@"\bGlobal\." + Regex.Escape(member) + @"\b");
-
-                Assert.False(bare.IsMatch(body), $"{member} への非修飾参照（Global）が {methodName} に残っている");
-                Assert.False(qualified.IsMatch(body), $"Global.{member} への修飾参照が {methodName} に残っている");
-            }
-        }
-
         [Fact]
         public void ApplyDrift_TakesProfileSettingsAsParameter()
         {
@@ -95,30 +69,12 @@ namespace DS4WindowsTests
         }
 
         [Fact]
-        public void ApplyDrift_HasNoReferenceToMigratedGlobalMembers()
-        {
-            string body = ReadRangeWithoutComments(CalibrationStart, CalibrationEnd, CalibrationPath);
-            if (body == null) return;
-
-            AssertNoGlobalReference(body, MigratedCalibrationMembers, "ApplyDrift");
-        }
-
-        [Fact]
         public void Commit_TakesProfileSettingsAsParameter()
         {
             string body = ReadRangeWithoutComments(CommitStart, CommitEnd, CommitPath);
             if (body == null) return;
 
             Assert.Contains("IProfileSettingsService settings", body);
-        }
-
-        [Fact]
-        public void Commit_HasNoReferenceToMigratedGlobalMembers()
-        {
-            string body = ReadRangeWithoutComments(CommitStart, CommitEnd, CommitPath);
-            if (body == null) return;
-
-            AssertNoGlobalReference(body, MigratedCommitMembers, "Commit");
         }
 
         [Fact]

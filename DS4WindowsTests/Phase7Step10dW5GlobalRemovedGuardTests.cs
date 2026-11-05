@@ -36,29 +36,6 @@ namespace DS4WindowsTests
         }
 
         [Fact]
-        public void NoSource_UsesTheStaticGlobalDirective_OrAGlobalMemberInCode()
-        {
-            string anchor = SourceFileLocator.Find("DS4Windows/Core/Settings/BackingStore.cs");
-            if (anchor == null)
-            {
-                _output.WriteLine("ソースが見つからないため検査を省略した。");
-                return;
-            }
-
-            string root = SourceFileLocator.RootFromAnchor(anchor);
-            // ログ文言の文字列（LanguageSelectDialog／LanguagePackViewModel の "Global.UseLang"）は、ログ内容の維持のために残してあり、参照ではない
-            var logLiteral = new Regex("\"[^\"\\r\\n]*Global\\.UseLang[^\"\\r\\n]*\"");
-            var offenders = Directory.GetFiles(Path.Combine(root, "DS4Windows"), "*.cs", SearchOption.AllDirectories)
-                .Where(f => !f.Contains(@"\obj\") && !f.Contains(@"\bin\"))
-                .Select(f => (file: f, text: logLiteral.Replace(SourceText.StripComments(File.ReadAllText(f)), "\"\"")))
-                .Where(x => Regex.IsMatch(x.text, @"using\s+static\s+(DS4Windows\.)?Global\s*;")
-                         || Regex.IsMatch(x.text, @"(?<![\w])(?:DS4Windows\.)?Global\.\w+"))
-                .Select(x => Path.GetFileName(x.file))
-                .ToArray();
-            Assert.True(offenders.Length == 0, "Global の参照が残っている: " + string.Join(", ", offenders));
-        }
-
-        [Fact]
         public void BackingStore_RequiresTheEnvironmentService()
         {
             Assert.Throws<ArgumentNullException>(() => new BackingStore(null));

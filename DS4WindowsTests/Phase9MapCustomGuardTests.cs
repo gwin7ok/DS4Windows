@@ -76,9 +76,6 @@ namespace DS4WindowsTests
                 last = index;
             }
 
-            Assert.DoesNotContain("AppHost", text);
-            Assert.DoesNotContain("ServiceProviderHolder", text);
-            Assert.False(Regex.IsMatch(text, @"\bGlobal\."), "SyntheticInputCommitter が Global を参照している");
         }
 
         [Theory]
@@ -112,13 +109,7 @@ namespace DS4WindowsTests
         public void TheTwoStageProcessor_IsRegistered_AndHasNoStaticEntryPoints()
         {
             Assert.IsType<TwoStageTriggerProcessor>(TestHost.GetService<ITwoStageTriggerProcessor>());
-
-            string text = SourceText.ReadCode("DS4Windows/Processing/Services/TwoStageTriggerProcessor.cs");
-            if (text == null) return;
-
-            Assert.DoesNotContain("AppHost", text);
-            Assert.DoesNotContain("ServiceProviderHolder", text);
-            Assert.False(Regex.IsMatch(text, @"\bGlobal\."), "TwoStageTriggerProcessor が Global を参照している");
+            // Phase14d-Step2: 静的な窓口（AppHost・ServiceProviderHolder・Global）がないことの検査は RemovedApiRuleTests へ畳んだ
         }
     }
 }

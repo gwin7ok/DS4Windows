@@ -22,24 +22,6 @@ namespace DS4WindowsTests
     {
         private const string VmPath = "DS4Windows/UI/ViewModels/SettingsViewModel.cs";
 
-        // Step9-3a・3b で置換済み（SettingsViewModel の非定数 Global 参照は 0 件。定数も使っていない）。
-        private static readonly string[] ResolvedMembers =
-        {
-            "UseExclusiveMode", "SwipeProfiles", "ProfileChangedNotification", "DCBTatStop",
-            "FlashWhenLate", "FlashWhenLateAt", "QuickCharge", "UseIconChoice", "UseCurrentTheme",
-            "CheckUpdateStartupEnabled", "CheckEveryValue", "CheckEveryUnit",
-            "isUsingOSCServer", "setUsingOSCServer", "getOSCServerPortNum", "setOSCServerPort",
-            "isInterpretingOscMonitoring", "setInterpretingOscMonitoring",
-            "isUsingOSCSender", "setUsingOSCSender", "getOSCSenderPortNum", "setOSCSenderPort",
-            "getOSCSenderAddress", "setOSCSenderAddress",
-            "isUsingUDPServer", "setUsingUDPServer", "getUDPServerListenAddress", "setUDPServerListenAddress",
-            "getUDPServerPortNum", "setUDPServerPort", "UseUDPSeverSmoothing",
-            "UDPServerSmoothingMincutoff", "UDPServerSmoothingBeta",
-            "hidHideInstalled", "ProcessPriority", "IsAdministrator", "LogMinLevel",
-            "UseCustomSteamFolder", "CustomSteamFolder", "FakeExeName", "LogMaxArchiveFiles",
-            "exedirpath", "exelocation",
-        };
-
         private readonly ITestOutputHelper _output;
 
         public SettingsViewModelGlobalReferenceGuardTests(ITestOutputHelper output)
@@ -63,37 +45,11 @@ namespace DS4WindowsTests
         }
 
         [Fact]
-        public void ResolvedMembers_AreNotReferencedThroughGlobal()
-        {
-            string text = ReadSourceWithoutComments();
-            if (text == null) return;
-
-            var remaining = Regex.Matches(text, @"\bGlobal\.(\w+)")
-                .Cast<Match>()
-                .Select(m => m.Groups[1].Value)
-                .Where(name => ResolvedMembers.Contains(name))
-                .ToList();
-
-            Assert.True(remaining.Count == 0,
-                "SettingsViewModel に、置換済みの Global 参照が再混入している: " + string.Join(", ", remaining));
-        }
-
-        [Fact]
-        public void NoGlobalReferencesRemain()
-        {
-            string text = ReadSourceWithoutComments();
-            if (text == null) return;
-
-            Assert.DoesNotMatch(@"Global\.", text);
-        }
-
-        [Fact]
         public void Constructor_HasNoServiceLocator_AndRequiresServices()
         {
             string text = ReadSourceWithoutComments();
             if (text == null) return;
 
-            Assert.DoesNotContain("AppHost", text);
             Assert.DoesNotContain("appSettings = null", text);
 
             var env = new EnvironmentService();
@@ -107,15 +63,6 @@ namespace DS4WindowsTests
             Assert.Throws<ArgumentNullException>(() => new SettingsViewModel(app, appearance, null, path, logApplier, startup));
             Assert.Throws<ArgumentNullException>(() => new SettingsViewModel(app, appearance, env, null, logApplier, startup));
             Assert.Throws<ArgumentNullException>(() => new SettingsViewModel(app, appearance, env, path, null, startup));
-        }
-
-        [Fact]
-        public void RemovedUnreferencedHandler_IsNotReintroduced()
-        {
-            string text = ReadSourceWithoutComments();
-            if (text == null) return;
-
-            Assert.DoesNotContain("SettingsViewModel_CheckForUpdatesChanged", text);
         }
 
         [Trait("Category", "Slow")]   // 0.3 秒以上（実時間で待つ）。途中の確認では除外し、Debug ALL では実行する

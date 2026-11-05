@@ -25,31 +25,6 @@ namespace DS4WindowsTests
         }
 
         [Fact]
-        public void ProductionSources_DoNotReferenceTheRemovedTypes()
-        {
-            string anchor = SourceFileLocator.Find("DS4Windows/Core/Settings/BackingStore.cs");
-            if (anchor == null) return;
-
-            string root = SourceFileLocator.RootFromAnchor(anchor);
-            string sourceDir = Path.Combine(root, "DS4Windows");
-            var pattern = new Regex(@"(?<![\w.])(?:DS4Windows\.)?ActionManager\.(?!ToggledOnChanged:)\w+|ServiceProviderHolder|ButtonSpecialActionOutput\.|SetProvider\s*\(");
-
-            var violations = new System.Collections.Generic.List<string>();
-            foreach (string file in Directory.GetFiles(sourceDir, "*.cs", SearchOption.AllDirectories))
-            {
-                string normalized = file.Replace('\\', '/');
-                if (normalized.Contains("/obj/") || normalized.Contains("/bin/")) continue;
-
-                // ログの文言（"ActionManager.ToggledOnChanged: ..." など）は文字列リテラルなので、除外する
-                string code = Regex.Replace(SourceText.StripComments(File.ReadAllText(file)), @"""(?:[^""\\]|\\.)*""", "\"\"");
-                if (pattern.IsMatch(code))
-                    violations.Add(Path.GetRelativePath(sourceDir, file));
-            }
-
-            Assert.True(violations.Count == 0, "撤廃した型の参照が残っている:\n" + string.Join("\n", violations));
-        }
-
-        [Fact]
         public void ManagedActionManager_ExposesIsBeingTriggered()
         {
             Assert.NotNull(typeof(DS4Windows.Processing.Actions.IManagedActionManager).GetMethod("IsBeingTriggered"));

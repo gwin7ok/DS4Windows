@@ -83,73 +83,11 @@ namespace DS4WindowsTests
             "CompileVersionNumberFromString", "CompileVersionNumber",
         };
 
-        private static readonly string[] RemovedFiles =
-        {
-            "DS4Windows/DS4Control/BatteryReportArgs.cs",
-            "DS4Windows/DS4Control/ControllerRemovedArgs.cs",
-            "DS4Windows/DS4Control/DeviceStatusChangeEventArgs.cs",
-            // Wave 6（プロファイル用 DTO と、その専用の型）
-            "DS4Windows/DS4Control/DTOXml/DS4ControlAssignementSerializer.cs",
-            "DS4Windows/DS4Control/DTOXml/DS4ControlAssignmentSerializerBase.cs",
-            "DS4Windows/DS4Control/DTOXml/DS4ControlButtonAssignmentSerializer.cs",
-            "DS4Windows/DS4Control/DTOXml/DS4ControlExtrasAssignmentSerializer.cs",
-            "DS4Windows/DS4Control/DTOXml/DS4ControlKeyAssignmentSerializer.cs",
-            "DS4Windows/DS4Control/DTOXml/DS4ControlKeyTypeAssignmentSerializer.cs",
-            "DS4Windows/DS4Control/DTOXml/DS4ControlLightbarMacroAssignmentSerializer.cs",
-            "DS4Windows/DS4Control/DTOXml/DS4ControlMacroAssignmentSerializer.cs",
-            "DS4Windows/DS4Control/DTOXml/DualSenseControllerSettings.cs",
-            "DS4Windows/DS4Control/DTOXml/GyroControlsSettings.cs",
-            "DS4Windows/DS4Control/DTOXml/GyroMouseSmoothingSettings.cs",
-            "DS4Windows/DS4Control/DTOXml/GyroMouseStickSmoothingSettings.cs",
-            "DS4Windows/DS4Control/DTOXml/GyroSwipeSettings.cs",
-            "DS4Windows/DS4Control/DTOXml/ProfileDTO.cs",
-            "DS4Windows/DS4Control/DTOXml/SASteeringWheelSmoothingOptions.cs",
-            "DS4Windows/DS4Control/DTOXml/StickAxialDeadOptionsSerializer.cs",
-            "DS4Windows/DS4Control/DTOXml/StickDeltaAccelSettings.cs",
-            "DS4Windows/DS4Control/DTOXml/StickModeOutputSettings.cs",
-            "DS4Windows/DS4Control/DTOXml/TouchpadMouseStickSerializer.cs",
-        };
-
-        // 防壁 3（Pre-Host）、防壁 4（定数・純粋計算）、防壁 5（ViGEm クライアント依存）にあたる Global のメンバー
-        private static readonly string[] ProtectedInGlobal =
-        {
-            // Phase7-Step10a W4: 定数 5 つ・資源パスの定数 2 つ・Clamp は ControllerLimits／ResourcePaths／NumericUtil へ移し、Global から削除した
-            // Phase7-Step10b W2: getTransitionedColor／HuetoRGB／applyRatio（→ ColorUtil）、iconChoiceResources（→ TrayIconResources）は Global から削除した
-            // Phase7-Step4 W3: multisavespots／FindConfigLocation は PathService へ移した（Phase7Step4PathServiceGuardTests で確認）
-            "appdatapath", "LogMaxArchiveFiles", "LogMinLevel",
-            // Phase7-Step10d W4: SetCulture は UiCulture.Set へ移した
-            // Phase7-Step4 W1: ViGEmBus の調べ物（RefreshViGEmBusInfo／IsRunningSupportedViGEmBus／vigembusVersion／vigemInstalled）は
-            // EnvironmentService へ移した。防壁 5 の維持は EnvironmentService 側で確認する（Phase7Step4EnvironmentProbesGuardTests）
-        };
-
         private readonly ITestOutputHelper _output;
 
         public Step12DeadShimRemovalGuardTests(ITestOutputHelper output)
         {
             _output = output;
-        }
-
-        private static bool Declares(string strippedSource, string name)
-        {
-            // 「static … 名前」の宣言（メソッド、プロパティ、フィールド、定数、イベント）を検出する
-            return Regex.IsMatch(strippedSource,
-                @"\bstatic\b[^\r\n(=;{]*?\b" + Regex.Escape(name) + @"\b\s*(\(|=|;|\{|=>|\r|\n)") ||
-                Regex.IsMatch(strippedSource, @"\bconst\b[^\r\n(=;{]*?\b" + Regex.Escape(name) + @"\b\s*=");
-        }
-
-        [Fact]
-        public void RemovedFiles_DoNotExist()
-        {
-            string anchor = SourceFileLocator.Find("DS4Windows/Core/Settings/BackingStore.cs"); // Phase7-Step10d W5: Global.cs は削除したため、同じフォルダーの BackingStore.cs を起点にする
-            if (anchor == null)
-            {
-                _output.WriteLine("ソースが見つからないため検査を省略した。");
-                return;
-            }
-
-            string root = SourceFileLocator.RootFromAnchor(anchor);
-            List<string> existing = RemovedFiles.Where(f => File.Exists(Path.Combine(root, f))).ToList();
-            Assert.True(existing.Count == 0, "削除済みのファイルが再び存在する: " + string.Join(", ", existing));
         }
 
         [Fact]

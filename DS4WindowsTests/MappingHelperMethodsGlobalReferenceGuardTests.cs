@@ -17,77 +17,12 @@ namespace DS4WindowsTests
     /// </summary>
     public class MappingHelperMethodsGlobalReferenceGuardTests
     {
-        /// <summary>検査対象メソッドの宣言（一意に特定できる先頭部分）。</summary>
-        private static readonly string[] MethodMarkers =
-        {
-            "public bool GetBoolMappingExternal(",
-        };
-
-        /// <summary>Step3-6b で `profileSettings` 経由へ置換済みの `Global` メンバ名。</summary>
-        private static readonly string[] MigratedGlobalMembers =
-        {
-            "IsUsingSAForControls", "SXSens", "SZSens", "outputKBMMapping",
-        };
 
         private readonly ITestOutputHelper _output;
 
         public MappingHelperMethodsGlobalReferenceGuardTests(ITestOutputHelper output)
         {
             _output = output;
-        }
-
-        /// <summary>宣言の先頭から、対応する閉じ波括弧までのメソッド全体（シグネチャを含む）を返す。</summary>
-        private static string ExtractMethod(string text, string marker)
-        {
-            int start = text.IndexOf(marker, StringComparison.Ordinal);
-            Assert.True(start >= 0, $"{marker} が見つからない（メソッド名・修飾子の変更？）");
-            Assert.True(text.IndexOf(marker, start + marker.Length, StringComparison.Ordinal) < 0,
-                $"{marker} が複数見つかった（オーバーロードの追加？ガードの見直しが必要）");
-
-            int open = text.IndexOf('{', start);
-            Assert.True(open > start, $"{marker} の本体が見つからない");
-
-            int depth = 0;
-            for (int i = open; i < text.Length; i++)
-            {
-                if (text[i] == '{')
-                {
-                    depth++;
-                }
-                else if (text[i] == '}')
-                {
-                    depth--;
-                    if (depth == 0)
-                    {
-                        return text.Substring(start, i - start + 1);
-                    }
-                }
-            }
-
-            Assert.True(false, $"{marker} の閉じ波括弧が見つからない");
-            return null;
-        }
-
-        [Fact]
-        public void HelperMethods_HaveNoReferenceToMigratedGlobalMembers()
-        {
-            string text = SourceText.ReadCode("DS4Windows/Processing/Mapping.cs");
-            if (text == null) return;
-
-            foreach (string marker in MethodMarkers)
-            {
-                string body = ExtractMethod(text, marker);
-
-                foreach (string member in MigratedGlobalMembers)
-                {
-                    // 非修飾（using static 経由）と Global. 修飾の両方を検出する。`profileSettings.Xxx` のような他オブジェクト経由は対象外。
-                    var bare = new Regex(@"(?<![\w.])" + Regex.Escape(member) + @"\b");
-                    var qualified = new Regex(@"\bGlobal\." + Regex.Escape(member) + @"\b");
-
-                    Assert.False(bare.IsMatch(body), $"{member} への非修飾参照（Global）が {marker} に残っている");
-                    Assert.False(qualified.IsMatch(body), $"Global.{member} への修飾参照が {marker} に残っている");
-                }
-            }
         }
 
         [Fact]

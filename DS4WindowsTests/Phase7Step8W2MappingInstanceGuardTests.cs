@@ -123,32 +123,6 @@ namespace DS4WindowsTests
         }
 
         [Fact]
-        public void OnlyTheDefaultActionManager_ReceivesALazyMapping_TheOthersReceiveTheMappingDirectly()
-        {
-            // DefaultActionManager は Mapping の依存グラフの内側にあり（Mapping → … → ActionManager）、直接受けると循環する。
-            // ホスト構築時（PreallocateActionEntries）に Mapping とその依存を作らない理由も兼ねる（Phase5-Plan §5.4）。
-            Assert.Contains(typeof(DefaultActionManager).GetConstructors().Single().GetParameters(), p => p.ParameterType == typeof(Func<IMapping>));
-            Assert.DoesNotContain(typeof(DefaultActionManager).GetConstructors().Single().GetParameters(), p => p.ParameterType == typeof(IMapping));
-            // Phase13-Step8 8-b: 他の利用者は循環がない（Phase13Step8ResolutionGraphProbeTests）ため、直接受ける
-            Assert.Contains(typeof(DefaultMacroPlayer).GetConstructors().Single().GetParameters(), p => p.ParameterType == typeof(IMapping));
-            Assert.DoesNotContain(typeof(DefaultMacroPlayer).GetConstructors().Single().GetParameters(), p => p.ParameterType == typeof(Func<IMapping>));
-        }
-
-        [Fact]
-        public void Mapping_HasNoServiceLocatorOrGlobalFallbacks()
-        {
-            string mapping = SourceText.ReadCode("DS4Windows/Processing/Mapping.cs");
-            if (mapping == null) return;
-
-            Assert.DoesNotContain("AppHost", mapping);
-            Assert.DoesNotContain("ServiceProviderHolder", mapping);
-            Assert.DoesNotContain("Global.outputKBMHandler", mapping);
-            Assert.DoesNotContain("ProfileSettingsServiceInstance", mapping);
-            Assert.DoesNotContain("MouseOutputAction", mapping);
-            Assert.DoesNotContain("keyButtonControllerLock", mapping);
-        }
-
-        [Fact]
         public void Registry_ReusesTheControllerPerDeviceAndName_AndClearsOnlyTheGivenDevice()
         {
             var registry = new KeyButtonControllerRegistry(new DefaultKeyButtonActionControllerFactory(new DefaultControllerRegistry(), TestActions.Manager, TestActions.Dispatcher), new DefaultControllerRegistry(), TestActions.Manager, TestActions.Dispatcher);

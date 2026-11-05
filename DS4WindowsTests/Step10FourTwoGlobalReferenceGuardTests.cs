@@ -21,43 +21,6 @@ namespace DS4WindowsTests
 
     public class Step10FourTwoGlobalReferenceGuardTests
     {
-        // ファイルごとに、使ってよい Global メンバー（薄い委譲・本体が Global にあるもの）
-        private static readonly Dictionary<string, string[]> Allowed = new Dictionary<string, string[]>
-        {
-            // 10-4-2a
-            // ApplyProfile: 実装本体が Global にある（Phase7 で Mapping の instance 化とあわせて移す。TODO 付き）
-            ["DS4Windows/Processing/Services/ProfileApplicationService.cs"] = new[] { "ApplyProfile" },
-            // 実行中アクション状態のクリアを含む Global 側の実装への薄い委譲
-            ["DS4Windows/Core/Persistence/SpecialActionRepository.cs"] =
-                new[] { "CreateStdActions", "SaveAction", "RemoveAction", "SaveActions" },
-            // 10-4-2b
-            // 薄い委譲（IProfileRepository の契約の実体。Global 側に実装がある）と、読み込み前のクリア対象
-            ["DS4Windows/Core/Persistence/ProfileRepository.cs"] = new[]
-            {
-                "ProfilePath", "OlderProfilePath", "SelectedProfile", "LinkedProfileUI", "SelectedProfileChanged",
-                "RaiseSelectedProfileChanged", "changeLinkedProfile", "removeLinkedProfile", "SaveLinkedProfiles",
-                "ProfileActions", "CacheExtraProfileInfo", "CacheProfileCustomsFlags", "LoadTempProfile", "store",
-                "LoadLinkedProfiles", "LoadBlankDevProfile", "containsLinkedProfile", "getLinkedProfile", "loggedInvalidActions",
-            },
-            ["DS4Windows/Processing/Services/ProfileActionProvider.cs"] = new string[0],
-            ["DS4Windows/Core/Profiles/AutoProfileHolder.cs"] = new[] { "MAX_DS4_CONTROLLER_COUNT" },
-            ["DS4Windows/Processing/Services/AutoProfileService.cs"] = new[] { "autoProfileSwitchNotifyChoice" },
-            // 10-4-2c: 薄い委譲（実装本体が Global にあるもの）と、不変の定数表
-            // 10-4-3: 実行時配列の実体は Phase7-Step6 W1 で OutputSlotService へ移した。残るのは配列の長さの定数だけ
-            ["DS4Windows/Output/Services/OutputSlotService.cs"] = new[] { "TEST_PROFILE_ITEM_COUNT" },
-            ["DS4Windows/Core/Persistence/OutputSlotStore.cs"] = new string[0],
-            ["DS4Windows/Output/OutputSlotManager.cs"] = new string[0],
-            ["DS4Windows/Output/OutputSlotPersist.cs"] = new[] { "exeversion" },
-            // 10-4-4: Actions/*（ServiceProviderHolder は D4-4 により Phase7/Phase8 へ温存。MAX_DS4_CONTROLLER_COUNT は定数）
-            ["DS4Windows/Processing/Actions/MacroAction.cs"] = new string[0],
-            ["DS4Windows/Processing/Actions/ProfileSwitchAction.cs"] = new string[0],
-            ["DS4Windows/Processing/Actions/LaunchProcessAction.cs"] = new string[0],
-            ["DS4Windows/Processing/Actions/DefaultMacroPlayer.cs"] = new[] { "MAX_DS4_CONTROLLER_COUNT" },
-            ["DS4Windows/Processing/Actions/DefaultActionManager.cs"] = new[] { "MAX_DS4_CONTROLLER_COUNT" },
-            ["DS4Windows/Actions/ActionManager.cs"] = new[] { "MAX_DS4_CONTROLLER_COUNT" },
-            ["DS4Windows/Core/Settings/ProfileSettingsService.cs"] =
-                new[] { "RefreshActionAlias", "RefreshExtrasButtons", "defaultButtonMapping", "reverseX360ButtonMapping" },
-        };
 
         [Fact]
         public void SpecialActionRepository_RequiresStoreAndPathService()
@@ -219,31 +182,6 @@ namespace DS4WindowsTests
             Assert.Throws<ArgumentNullException>(() => new DefaultMacroPlayer(null, TestHost.GetService<IMapping>()));
             Assert.Throws<ArgumentNullException>(() => new DefaultMacroPlayer(new MockVirtualKBM(), null));
             Assert.Throws<ArgumentNullException>(() => new DefaultActionManager(null));
-        }
-
-        [Fact]
-        public void MainWindow_And_ControlService_UseOnlyConstGlobalMembers()
-        {
-            var allowed = new Dictionary<string, string[]>
-            {
-                // 定数のみ（RESOURCES_PREFIX/TEST_PROFILE_INDEX/MAX_DS4_CONTROLLER_COUNT）
-                ["DS4Windows/UI/MainWindow.xaml.cs"] = new[] { "RESOURCES_PREFIX", "TEST_PROFILE_INDEX" },
-                ["DS4Windows/Processing/ControlService.cs"] = new[] { "MAX_DS4_CONTROLLER_COUNT", "TEST_PROFILE_INDEX" },
-            };
-
-            foreach (var entry in allowed)
-            {
-                string text = SourceText.ReadCode(entry.Key);
-                if (text == null) continue;
-
-                var unexpected = Regex.Matches(text, @"Global.(w+)")
-                    .Cast<Match>().Select(m => m.Groups[1].Value)
-                    .Where(n => !entry.Value.Contains(n)).Distinct().ToList();
-                Assert.True(unexpected.Count == 0,
-                    $"{entry.Key} に温存項目以外の Global 参照がある: {string.Join(", ", unexpected)}");
-
-                Assert.DoesNotContain("Program.rootHub", text);
-            }
         }
 
         // Phase10-Step4d W7: 以前ここにあった、ReplaceLinkedProfileName／AutoProfileHolder.ReplaceProfileName／MainWindow の追従の検査は、撤去したメンバーのため削除した。

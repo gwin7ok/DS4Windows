@@ -61,37 +61,6 @@ namespace DS4WindowsTests
         }
 
         [Fact]
-        public void ProfileSettingsViewModel_HasOnlyConstGlobalReferences_AndNoServiceLocator()
-        {
-            string text = SourceText.ReadCode(VmPath);
-            if (text == null) return;
-
-            // Phase6-Step10b W3 で分離した型（PresetMenuHelper、各 Choice）も同じ基準で検査する
-            string[] relatedPaths =
-            {
-                VmPath,
-                "DS4Windows/UI/ViewModels/PresetMenuHelper.cs",
-                "DS4Windows/UI/ViewModels/TriggerModeChoice.cs",
-                "DS4Windows/UI/ViewModels/TwoStageChoice.cs",
-                "DS4Windows/UI/ViewModels/TriggerEffectChoice.cs",
-            };
-            foreach (string relative in relatedPaths)
-            {
-                string src = relative == VmPath ? text : SourceText.ReadCode(relative);
-                if (src == null) continue;
-
-                foreach (Match m in Regex.Matches(src, @"\bGlobal\.(\w+)"))
-                {
-                    Assert.True(m.Groups[1].Value == "ASSEMBLY_RESOURCE_PREFIX",
-                        $"{relative} に定数以外の Global 参照が残っている: Global.{m.Groups[1].Value}");
-                }
-
-                Assert.DoesNotContain("AppHost", src);
-                Assert.DoesNotContain("Program.rootHub", src);
-            }
-        }
-
-        [Fact]
         public void Constructors_HaveNoOptionalServiceArguments_AndKeepTargetDevice()
         {
             string text = SourceText.ReadCode(VmPath);

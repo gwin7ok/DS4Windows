@@ -100,15 +100,5 @@ namespace DS4WindowsTests
                 Assert.Contains("_profileSettings.OutputKBMMapping", text);
             }
         }
-
-        [Fact]
-        public void MappingSource_HasNoGlobalReferenceToOutputKbmMapping()
-        {
-            string text = ReadSourceWithoutComments();
-            if (text == null) return;
-
-            Assert.False(BareReference.IsMatch(text), "Mapping.cs に outputKBMMapping への非修飾参照（Global）が残っている");
-            Assert.False(QualifiedReference.IsMatch(text), "Mapping.cs に Global.outputKBMMapping への修飾参照が残っている");
-        }
     }
 }

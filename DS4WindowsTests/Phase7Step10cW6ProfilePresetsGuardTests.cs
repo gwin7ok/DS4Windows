@@ -60,28 +60,5 @@ namespace DS4WindowsTests
             Assert.Same(TestHost.GetService<ProfilePresets>(), TestHost.GetService<ProfilePresets>());
             Assert.NotNull(TestHost.GetService<IProfilePresetLoader>());
         }
-
-        [Fact]
-        public void TheSource_PresetsDoNotReferenceGlobal_AndTheLoaderDoesNotCallTheStore()
-        {
-            string presets = SourceFileLocator.Find("DS4Windows/Core/Persistence/ProfilePresets.cs");
-            string loader = SourceFileLocator.Find("DS4Windows/Core/Persistence/ProfilePresetLoader.cs");
-            string store = SourceFileLocator.Find("DS4Windows/Core/Settings/BackingStore.cs");
-            if (presets == null || loader == null || store == null)
-            {
-                _output.WriteLine("ソースが見つからないため検査を省略した。");
-                return;
-            }
-
-            string Strip(string t) => Regex.Replace(Regex.Replace(t, @"/\*.*?\*/", string.Empty, RegexOptions.Singleline), @"//[^\r\n]*", string.Empty);
-            string p = Strip(File.ReadAllText(presets));
-            Assert.False(Regex.IsMatch(p, @"(?<![\w.])Global\.\w+"), "ProfilePresets が Global を参照している");
-            Assert.False(Regex.IsMatch(p, @"\bthis\b(?!\.store\b)"), "this を直接使っている");
-            Assert.DoesNotMatch(@"_config\.(LoadBlank|LoadDefault)", Strip(File.ReadAllText(loader)));
-
-            // BackingStore は、設定の状態を持つ型に絞られた（永続化とプリセットを持たない）
-            int lines = File.ReadAllLines(store).Length;
-            Assert.True(lines < 2000, "BackingStore.cs が想定より大きい: " + lines + " 行");
-        }
     }
 }

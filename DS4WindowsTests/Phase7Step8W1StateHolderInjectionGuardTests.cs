@@ -62,22 +62,6 @@ namespace DS4WindowsTests
         }
 
         [Fact]
-        public void Mapping_NoLongerHasTheMovedOrDeadMembers()
-        {
-            string mapping = SourceText.ReadCode("DS4Windows/Processing/Mapping.cs");
-            if (mapping == null) return;
-
-            foreach (string name in new[]
-            {
-                "MapClick", "ResetRuntimeStateForKey", "DispatchProfileActionEdge",
-                "TakePendingRestoreProfileName", "ApplyProfileDirect", "RestoreProfileDirect",
-            })
-            {
-                Assert.DoesNotMatch(@"\b" + name + @"\b", mapping);
-            }
-        }
-
-        [Fact]
         public void MouseAndControlService_ReceiveTheHoldersByConstructor()
         {
             string mouse = SourceText.ReadCode("DS4Windows/Processing/Mouse.cs");

@@ -78,7 +78,6 @@ namespace DS4WindowsTests
             int load = body.IndexOf(".Load()", System.StringComparison.Ordinal);
             Assert.True(create >= 0, "-driverinstall 分岐に AppHost.CreateHost の明示的な呼び出しがない。");
             Assert.True(load > create, "設定の読込が、ホストの明示的な構築より前にある。");
-            Assert.DoesNotContain("Global.Load", body);
         }
 
         [Fact]
@@ -97,17 +96,6 @@ namespace DS4WindowsTests
             Assert.True(dispose > stop, "AppHost.Dispose が、コントローラーの停止より前にある（防壁 5 に反する）。");
             Assert.True(dispose > clearRegistry, "AppHost.Dispose が、レジストリの破棄より前にある。");
             Assert.True(dispose < flush, "AppHost.Dispose が、ログのフラッシュより後にある。");
-        }
-
-        [Fact]
-        public void WelcomeDialog_NoLongerLoadsConfigItself()
-        {
-            string text = SourceText.ReadCode("DS4Windows/UI/WelcomeDialog.xaml.cs");
-            if (text == null) return;
-
-            Assert.DoesNotContain("loadConfig", text);
-            Assert.DoesNotContain("Global.Load", text);
-            Assert.DoesNotContain("FindConfigLocation", text);
         }
     }
 }

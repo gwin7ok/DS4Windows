@@ -10,7 +10,7 @@ namespace DS4WindowsTests
     /// <summary>
     /// Phase10-Step4d W0（Phase10-Step4d-Plan.md §4 W0・W5・W6）: 実行時の状態を<b>名前で持っている箇所</b>の数を、ファイルごとに固定する進捗の目安（ラチェット）。
     /// 対象は、プロファイル側の <c>ProfilePath</c>／<c>OlderProfilePath</c>（W5 で ID に替える）と、SA 側の <c>profileActions</c>／<c>ProfileActions</c>（W6 で ID に替える）。
-    /// 件数が<b>実数と一致する</b>ことを検査する（<c>Phase7Step10eW5RatchetEqualityGuardTests</c> と同じ考え方）。W5・W6 で参照を ID に替えて件数が減ったら、基準値も同時に更新する。
+    /// 件数が<b>実数と一致する</b>ことを検査する（基準値を実数と一致させる考え方。旧 <c>Phase7Step10eW5RatchetEqualityGuardTests</c> と同じ。同テストは Phase14d-Step2 で、対象のラチェットとともに撤去した）。W5・W6 で参照を ID に替えて件数が減ったら、基準値も同時に更新する。
     /// コメントの行は数えない。ソースが見つからない環境では、検査を行わず合格とする。
     /// </summary>
     public class Phase10Step4dW0RuntimeKeyRatchetTests

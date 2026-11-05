@@ -19,42 +19,12 @@ namespace DS4WindowsTests
     [Collection("ServiceProviderHolder")]
     public class Phase7Step10dW3DeviceLayerSettingsGuardTests
     {
-        private static readonly string[] LowerLayerFiles =
-        {
-            "DS4Windows/Input/DS4Devices.cs",
-            "DS4Windows/Input/DS4Device.cs",
-            "DS4Windows/Input/DS4SixAxis.cs",
-            "DS4Windows/Input/Hid/HidDevices.cs",
-            "DS4Windows/Output/OutputDevice.cs",
-            "DS4Windows/Output/Devices/DS4OutDeviceBasic.cs",
-            "DS4Windows/Output/Devices/DS4OutDeviceExt.cs",
-            "DS4Windows/Output/Devices/Xbox360OutDevice.cs",
-        };
 
         private readonly ITestOutputHelper _output;
 
         public Phase7Step10dW3DeviceLayerSettingsGuardTests(ITestOutputHelper output)
         {
             _output = output;
-        }
-
-        [Fact]
-        public void LowerLayerFiles_DoNotReferenceGlobal()
-        {
-            foreach (string rel in LowerLayerFiles)
-            {
-                string path = SourceFileLocator.Find(rel);
-                if (path == null)
-                {
-                    _output.WriteLine(rel + " が見つからないため検査を省略した。");
-                    continue;
-                }
-
-                string text = File.ReadAllText(path);
-                text = Regex.Replace(text, @"/\*.*?\*/", string.Empty, RegexOptions.Singleline);
-                text = Regex.Replace(text, @"//[^\r\n]*", string.Empty);
-                Assert.False(Regex.IsMatch(text, @"(?<![\w.])Global\.\w+"), rel + " に Global の参照が残っている");
-            }
         }
 
         [Fact]

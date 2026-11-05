@@ -14,25 +14,6 @@ namespace DS4WindowsTests
     /// </summary>
     public class Step10FourOneGlobalReferenceGuardTests
     {
-        private static readonly string[] Files =
-        {
-            "DS4Windows/UI/WindowPlacementHelper.cs",
-            "DS4Windows/Core/Profiles/ProfileList.cs",
-            "DS4Windows/Core/Profiles/ProfileEntity.cs",
-        };
-
-        [Fact]
-        public void ReplacedFiles_DoNotReferenceGlobalOrServiceLocator()
-        {
-            foreach (string file in Files)
-            {
-                string text = SourceText.ReadCode(file);
-                if (text == null) continue;
-                Assert.False(Regex.IsMatch(text, @"\bGlobal\."), $"{file} に Global 参照が残っている");
-                Assert.DoesNotContain("AppHost", text);
-                Assert.DoesNotContain("Program.rootHub", text);
-            }
-        }
 
         [Fact]
         public void ProfileEntity_HasNoUnusedSaveMembers()

@@ -35,13 +35,6 @@ namespace DS4WindowsTests
         }
 
         [Fact]
-        public void GlobalInstances_AreRemoved_ExceptTheProfileSettingsOne()
-        {
-            // Phase7-Step10d W5: ProfileSettingsServiceInstance も含めて Global ごと削除した（BackingStore.ProfileSettings へ移した）
-            Assert.False(SourceFileLocator.Exists("DS4Windows/DS4Control/Global.cs"));
-        }
-
-        [Fact]
         public void ControlServiceAndBackingStore_ReceiveTheirCollaborators()
         {
             string control = SourceText.ReadCode("DS4Windows/Processing/ControlService.cs");
@@ -65,7 +58,6 @@ namespace DS4WindowsTests
 
             // AppHost.GetService は ResolvePostHostService の 1 件だけ。ServiceProviderHolder も使わない
             Assert.Single(Regex.Matches(app, @"AppHost\.GetService"));
-            Assert.DoesNotContain("ServiceProviderHolder", app);
             Assert.Contains("_logSettingsApplierProxy.Attach(logHolder)", app);
         }
 

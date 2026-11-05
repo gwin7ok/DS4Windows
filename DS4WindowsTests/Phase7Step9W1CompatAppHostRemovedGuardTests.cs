@@ -27,28 +27,5 @@ namespace DS4WindowsTests
             Assert.Null(type);
             Assert.NotNull(typeof(DS4Windows.Core.Settings.BackingStore).Assembly.GetType("DS4Windows.Composition.AppHost"));
         }
-
-        [Fact]
-        public void TheCompatFile_AndFolder_DoNotExist_AndNoSourceDeclaresIt()
-        {
-            string anchor = SourceFileLocator.Find("DS4Windows/Core/Settings/BackingStore.cs"); // Phase7-Step10d W5: Global.cs は削除したため、同じフォルダーの BackingStore.cs を起点にする
-            if (anchor == null)
-            {
-                _output.WriteLine("ソースが見つからないため検査を省略した。");
-                return;
-            }
-
-            string root = SourceFileLocator.ProjectDirFromAnchor(anchor); // DS4Windows プロジェクト
-            Assert.False(File.Exists(Path.Combine(root, "DI", "Compat", "AppHost.cs")));
-
-            var declaration = new Regex(@"\bclass\s+AppHost\b");
-            var offenders = Directory.GetFiles(root, "*.cs", SearchOption.AllDirectories)
-                .Where(f => !f.Contains(@"\obj\") && !f.Contains(@"\bin\"))
-                .Where(f => declaration.IsMatch(File.ReadAllText(f)))
-                .Select(f => f.Substring(root.Length).TrimStart('\\'))
-                .ToArray();
-            Assert.True(offenders.SequenceEqual(new[] { @"Composition\AppHost.cs" }),
-                "AppHost の宣言は Composition/AppHost.cs の 1 つだけであること: " + string.Join(", ", offenders));
-        }
     }
 }

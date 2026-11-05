@@ -61,45 +61,5 @@ namespace DS4WindowsTests
             Assert.NotNull(TestHost.GetService<IProfileRepository>());
             Assert.NotNull(TestHost.GetService<IProfileXmlStore>());
         }
-
-        [Theory]
-        [InlineData("DS4Windows/Core/Persistence/SpecialActionsXmlSerializer.cs")]
-        [InlineData("DS4Windows/Core/Persistence/LinkedProfilesXmlSerializer.cs")]
-        [InlineData("DS4Windows/Core/Persistence/ControllerConfigsXmlSerializer.cs")]
-        public void TheSerializer_DoesNotReferenceGlobal_AndKeepsTheStoreAsTheOnlyState(string relativePath)
-        {
-            string path = SourceFileLocator.Find(relativePath);
-            if (path == null)
-            {
-                _output.WriteLine("ソースが見つからないため検査を省略した。");
-                return;
-            }
-
-            string text = Regex.Replace(Regex.Replace(File.ReadAllText(path), @"/\*.*?\*/", string.Empty, RegexOptions.Singleline), @"//[^\r\n]*", string.Empty);
-            Assert.False(Regex.IsMatch(text, @"(?<![\w.])Global\.\w+"), relativePath + " が Global を参照している");
-            Assert.False(Regex.IsMatch(text, @"\bthis\b(?!\.store\b)"), relativePath + " が this を直接使っている（BackingStore は store で渡すこと）");
-        }
-
-        [Fact]
-        public void TheRepositories_UseTheSerializers_NotTheStore()
-        {
-            string repo = SourceFileLocator.Find("DS4Windows/Core/Persistence/ProfileRepository.cs");
-            string actions = SourceFileLocator.Find("DS4Windows/Core/Persistence/SpecialActionRepository.cs");
-            string xmlStore = SourceFileLocator.Find("DS4Windows/Core/Persistence/ProfileXmlStore.cs");
-            if (repo == null || actions == null || xmlStore == null)
-            {
-                _output.WriteLine("ソースが見つからないため検査を省略した。");
-                return;
-            }
-
-            string Strip(string t) => Regex.Replace(Regex.Replace(t, @"/\*.*?\*/", string.Empty, RegexOptions.Singleline), @"//[^\r\n]*", string.Empty);
-            string r = Strip(File.ReadAllText(repo));
-            Assert.DoesNotMatch(@"_config\.(SaveLinkedProfiles|LoadLinkedProfiles|SaveActions)\(", r);
-            string a = Strip(File.ReadAllText(actions));
-            Assert.DoesNotMatch(@"_config\.(LoadActions|SaveAction|RemoveAction)\(", a);
-            Assert.DoesNotMatch(@"Global\.(SaveAction|RemoveAction|CreateStdActions|LoadActions)\(", a);
-            string x = Strip(File.ReadAllText(xmlStore));
-            Assert.DoesNotMatch(@"_backingStore\.(Load|Save)ControllerConfigsForDevice\(", x);
-        }
     }
 }

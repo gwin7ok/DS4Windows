@@ -67,6 +67,7 @@
 - **Pure DI（純粋コンストラクタ注入）の堅持**: ViewModel やサービスに `AppHost.Services`（Service Locator）を持ち込ませず、コンストラクタで明示的に依存を受け取る。
 - **暗黙のホスト構築の禁止**（2026-10-18 追記）: `AppHost.GetService` は、ホストが未構築（または Dispose 済み）のとき `null` を返し、暗黙にホストを作らない。ホストは `App` の起動（`CreateHost(config, parser)`）だけが作る。テストは `TestHost` 経由で共有のホストを使う。
 - **ラチェットの一致検査**（2026-10-18 追記）: `Step10FourGlobalRatchetGuardTests`（`Global.*`／`AppHost`／`Program.rootHub`）と `Phase7Step1ServiceLocatorRatchetGuardTests`（`ServiceProviderHolder`）の基準値は、「超えない」だけでなく「実数と一致する」ことを `Phase7Step10eW5RatchetEqualityGuardTests` が検査する。件数を減らしたら、基準値も同時に更新すること。
+  - **置き換え**（2026-11-05 追記。Phase14d-Step2）: 上の 3 つのテストは撤去した（`Global`・`Program`・`ServiceProviderHolder` の型はすでになく、基準値はほぼ 0 だった）。代わりに `RemovedApiRuleTests` が、撤去した型・メンバーがないことと、`AppHost` を使うのが `App` と `DS4Windows.Composition` だけであることを、型の検査で確かめる。型やメンバーを撤去したときは、同テストの表へ 1 行足す。基準値を実数と一致させる考え方は、今あるラチェット（`LayerDependencyBaseline`、`Phase10Step4dW0RuntimeKeyRatchetTests`）で引き続き守る。
 - **層の依存の検査**（2026-11-05 追記。Phase14b）: `LayerDependencyRuleTests`（ArchUnitNET。メソッド本体を含む実際の型参照）が、1 章の依存の向きを規則 L1〜L7 で検査する。今ある違反は `LayerDependencyBaseline` に凍結し、実数との一致を検査する（多くても少なくても失敗）。新しい違反は許可リストへ足さずに是正する（2026-11-05 Phase14b で、禁止の規則の違反は 0 件になった。許可リストは空のまま保つ）。是正で減ったら同じコミットで許可リストも減らす（環境変数 `DS4W_LAYER_BASELINE_OUT` に書き出し先のパスを入れてテストを実行すると、実測から作り直せる）。
 
 ### 3.2 巨大ファイルの編集方針
@@ -79,7 +80,7 @@
    - 新規作成するファイルには複数の型（クラス／インターフェース／構造体／列挙型／デリゲート）を同居させず、単一責任で分割する。
    - **適用状況（2026-10-15 更新）**: Phase6-Step10b（`docs-forDIMG/MadeByAgent/Phase6-Step10b-Plan.md`）で、既存の複数型ファイル 55 件をすべて分割した（`DS4Windows`・`DS4WindowsTests`・`StandaloneTests` の全 `.cs` が、トップレベル型 1 つ・ファイル名＝型名）。過渡期ルール（既存の複数型ファイルを分割しない）は終了した。
    - 今後は、既存ファイルを含めて厳格に適用する。複数の型を 1 ファイルに置いてはならない（ネスト型は、親型の実装詳細として許可。`partial` による同一型の複数ファイルへの分割は、この原則の違反ではない）。
-   - 型を追加・分割するときは、`Step10FourGlobalRatchetGuardTests` の基準値（ファイル別の `Global`／`AppHost`／`Program.rootHub` の件数）も、新しいファイルへ引き継ぐこと（合計を増やさない）。
+   - 型を追加・分割するときは、`Step10FourGlobalRatchetGuardTests` の基準値（ファイル別の `Global`／`AppHost`／`Program.rootHub` の件数）も、新しいファイルへ引き継ぐこと（合計を増やさない）。（2026-11-05 Phase14d-Step2: 同テストは `RemovedApiRuleTests` に置き換えたため、引き継ぎは不要になった。ファイル別の基準値を持つ `Phase10Step4dW0RuntimeKeyRatchetTests` は、引き続き引き継ぐ）
 2. **原則2: ファイル名 ＝ クラス名（完全一致）**【厳格順守】:
    - `ProfileRepository.cs` には `ProfileRepository` のみを定義する。
 3. **原則3: 名前空間 ＝ フォルダパス**【Phase14 で達成。厳格順守】:

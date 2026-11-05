@@ -54,24 +54,5 @@ namespace DS4WindowsTests
             // 旧実装: NaN は両方の比較が false になり、そのまま返る
             Assert.True(double.IsNaN(NumericUtil.Clamp(0, double.NaN, 10)));
         }
-
-        [Theory]
-        [InlineData("DS4Windows/Processing/Mapping.cs")]
-        [InlineData("DS4Windows/Processing/SyntheticInputState.cs")]
-        [InlineData("DS4Windows/Processing/MacroRuntimeState.cs")]
-        [InlineData("DS4Windows/Processing/StickMotionState.cs")]
-        public void TheFile_DoesNotReferenceGlobal(string relativePath)
-        {
-            string path = SourceFileLocator.Find(relativePath);
-            if (path == null)
-            {
-                _output.WriteLine("ソースが見つからないため検査を省略した。");
-                return;
-            }
-
-            string text = Regex.Replace(Regex.Replace(File.ReadAllText(path), @"/\*.*?\*/", string.Empty, RegexOptions.Singleline), @"//[^\r\n]*", string.Empty);
-            var matches = Regex.Matches(text, @"(?<![\w.])Global\.\w+");
-            Assert.True(matches.Count == 0, relativePath + " に Global への参照が残っている: " + (matches.Count > 0 ? matches[0].Value : string.Empty));
-        }
     }
 }

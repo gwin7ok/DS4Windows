@@ -58,10 +58,7 @@ namespace DS4WindowsTests
             string text = SourceText.ReadCode("DS4Windows/Processing/Services/ConnectionProfileSelector.cs");
             if (text == null) return;
 
-            Assert.DoesNotContain("AppHost", text);
-            Assert.DoesNotContain("ServiceProviderHolder", text);
             Assert.False(Regex.IsMatch(text, @"(?<!ProfileChangeSource\.)\bControlService\b"), "ConnectionProfileSelector が ControlService を参照している");
-            Assert.False(Regex.IsMatch(text, @"\bGlobal\."), "ConnectionProfileSelector が Global を参照している");
         }
     
         [Theory]
@@ -107,10 +104,7 @@ namespace DS4WindowsTests
 
             // 旧 TouchPadOn と同じく、発火のたびに配列からマウスを引き直す
             Assert.Contains("touchPads[ind].populatePriorButtonStates()", text);
-            Assert.DoesNotContain("AppHost", text);
-            Assert.DoesNotContain("ServiceProviderHolder", text);
             Assert.False(Regex.IsMatch(text, @"(?<!ProfileChangeSource\.)\bControlService\b"), "DeviceConnectionSetup が ControlService を参照している");
-            Assert.False(Regex.IsMatch(text, @"\bGlobal\."), "DeviceConnectionSetup が Global を参照している");
         }
     
         [Theory]
@@ -159,10 +153,7 @@ namespace DS4WindowsTests
                 string text = SourceText.ReadCode(SourceText.RelativePathOf(file + ".cs"));   // Phase14d-Step1: 旧パス（DS4Control/Services/）のまま、黙って省略されていた
                 if (text == null) continue;
 
-                Assert.DoesNotContain("AppHost", text);
-                Assert.DoesNotContain("ServiceProviderHolder", text);
                 Assert.False(Regex.IsMatch(text, @"\bControlService\b(?!DeviceOptions)"), file + " が ControlService を参照している");
-                Assert.False(Regex.IsMatch(text, @"\bGlobal\."), file + " が Global を参照している");
             }
         }
 
@@ -212,10 +203,7 @@ namespace DS4WindowsTests
                 string text = SourceText.ReadCode(SourceText.RelativePathOf(file + ".cs"));   // Phase14d-Step1: 旧パス（DS4Control/Services/）のまま、黙って省略されていた
                 if (text == null) continue;
 
-                Assert.DoesNotContain("AppHost", text);
-                Assert.DoesNotContain("ServiceProviderHolder", text);
                 Assert.False(Regex.IsMatch(text, @"\bControlService\b"), file + " が ControlService を参照している");
-                Assert.False(Regex.IsMatch(text, @"\bGlobal\."), file + " が Global を参照している");
             }
         }
     }

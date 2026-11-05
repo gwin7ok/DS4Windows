@@ -95,28 +95,6 @@ namespace DS4WindowsTests
         }
 
         [Fact]
-        public void MouseAndControlService_UseTheHolderAndTheTopLevelTypes()
-        {
-            string mouse = SourceText.ReadCode("DS4Windows/Processing/Mouse.cs");
-            string control = SourceText.ReadCode("DS4Windows/Processing/ControlService.cs");
-            if (mouse == null || control == null) return;
-
-            Assert.DoesNotContain("Mapping.gyroStick", mouse);
-            Assert.DoesNotContain("Mapping.mapStickActionData", mouse);
-            Assert.DoesNotContain("Mapping.PostMapStickData", mouse);
-            Assert.DoesNotContain("Mapping.Click", mouse);
-            Assert.Contains("_stickMotion.GyroStickX", mouse); // Phase7-Step8 W1: コンストラクター注入
-            Assert.DoesNotContain("StickMotionState.Shared", mouse);
-
-            foreach (string name in new[] { "l2TwoStageMappingData", "r2TwoStageMappingData", "wheelFilters", "flickMappingData", "deltaAccelProcessors" })
-            {
-                Assert.DoesNotContain("Mapping." + name, control);
-            }
-            Assert.Contains("_stickMotion.L2TwoStageMappingData", control); // Phase7-Step8 W1: コンストラクター注入（Phase13-Step6 6-e: FlickMappingData の参照は PreLoadReset とともに ProfileLoadTarget へ移った）
-            Assert.DoesNotContain("StickMotionState.Shared", control);
-        }
-
-        [Fact]
         public void Registration_RegistersTheSharedState()
         {
             string registration = RegistrationSource.ReadAll(stripComments: true);   // Phase14c-Step6（R-18）: 層ごとの partial ファイルをつないだもの（コメントは除く）

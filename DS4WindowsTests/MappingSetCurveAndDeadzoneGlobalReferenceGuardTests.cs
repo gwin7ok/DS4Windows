@@ -20,25 +20,6 @@ namespace DS4WindowsTests
         // Phase9 9-A(2)-B: ApplyStickCalibration を StickInputConditioner へ移したため、次のメンバー（Map DS4 Buttons/Axes の文書コメント）を終端にする
         private const string EndMarker = "/// Map DS4 Buttons/Axes to other DS4 Buttons/Axes";
 
-        /// <summary>Step3-4／3-5 で `IProfileSettingsService` 経由へ置換済みの `Global` メンバ名。</summary>
-        private static readonly string[] MigratedGlobalMembers =
-        {
-            "getLSRotation", "getRSRotation",
-            "GetLSAntiSnapbackInfo", "GetRSAntiSnapbackInfo",
-            "GetLSDeadInfo", "GetRSDeadInfo",
-            "GetL2ModInfo", "GetR2ModInfo",
-            "getLSSens", "getRSSens", "getL2Sens", "getR2Sens",
-            "GetSquareStickInfo",
-            "getLsOutCurveMode", "getRsOutCurveMode", "getL2OutCurveMode", "getR2OutCurveMode",
-            "lsOutBezierCurveObj", "rsOutBezierCurveObj", "l2OutBezierCurveObj", "r2OutBezierCurveObj",
-            // Step3-5: ジャイロ系（SX/SZ）
-            "IsUsingSAForControls",
-            "getSXDeadzone", "getSZDeadzone", "getSXMaxzone", "getSZMaxzone",
-            "getSXAntiDeadzone", "getSZAntiDeadzone", "getSXSens", "getSZSens",
-            "getSXOutCurveMode", "getSZOutCurveMode",
-            "sxOutBezierCurveObj", "szOutBezierCurveObj",
-        };
-
         private readonly ITestOutputHelper _output;
 
         public MappingSetCurveAndDeadzoneGlobalReferenceGuardTests(ITestOutputHelper output)
@@ -75,23 +56,6 @@ namespace DS4WindowsTests
             if (body == null) return;
 
             Assert.Contains("IProfileSettingsService settings", body);
-        }
-
-        [Fact]
-        public void SetCurveAndDeadzone_HasNoReferenceToMigratedGlobalMembers()
-        {
-            string body = ReadMethodSourceWithoutComments();
-            if (body == null) return;
-
-            foreach (string member in MigratedGlobalMembers)
-            {
-                // 非修飾（using static 経由）と Global. 修飾の両方を検出する。`settings.Xxx` のような他オブジェクト経由は対象外。
-                var bare = new Regex(@"(?<![\w.])" + Regex.Escape(member) + @"\b");
-                var qualified = new Regex(@"\bGlobal\." + Regex.Escape(member) + @"\b");
-
-                Assert.False(bare.IsMatch(body), $"{member} への非修飾参照（Global）が SetCurveAndDeadzone に残っている");
-                Assert.False(qualified.IsMatch(body), $"Global.{member} への修飾参照が SetCurveAndDeadzone に残っている");
-            }
         }
     }
 }

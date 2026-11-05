@@ -80,10 +80,7 @@ namespace DS4WindowsTests
             // 2 箇所のホスト構築（通常の起動と -driverinstall）が、ブートストラップのインスタンスを渡す
             Assert.Equal(2, Regex.Matches(text, @"_bootstrapPathService,\s*_bootstrapEnvironmentService,\s*_bootstrapBackingStore\)").Count);
 
-            // 保存場所は Global 経由ではなく PathService の状態を読む
-            Assert.DoesNotContain("Global.appdatapath", text);
-            Assert.DoesNotContain("Global.FindConfigLocation", text);
-            Assert.DoesNotContain("Global.RefreshViGEmBusInfo", text);
+            // 保存場所は Global 経由ではなく PathService の状態を読む（Phase14d-Step2: Global 型の撤去により、Global を読まないことの Assert は RemovedApiRuleTests へ畳んだ）
         }
 
         [Fact]

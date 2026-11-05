@@ -56,31 +56,6 @@ namespace DS4WindowsTests
         }
 
         [Fact]
-        public void OutputSlotService_NoLongerDependsOnControlService()
-        {
-            string text = SourceText.ReadCode("DS4Windows/Output/Services/OutputSlotService.cs");
-            if (text == null) return;
-
-            Assert.DoesNotContain("ControlService", text);
-            Assert.DoesNotContain("EventDispatcher", text);
-            Assert.Contains("IVirtualPadService virtualPad", text);   // Phase13-Step7 7-d: 旧 Func<IVirtualPadService>（直接注入にした）
-            Assert.Contains("virtualPad.QueueOnEventThread(", text);
-        }
-
-        [Fact]
-        public void VirtualPadService_DoesNotReferenceStaticEntryPoints_OrControlService()
-        {
-            string text = SourceText.ReadCode("DS4Windows/Output/Services/VirtualPadService.cs");
-            if (text == null) return;
-
-            Assert.DoesNotContain("AppHost", text);
-            Assert.DoesNotContain("ServiceProviderHolder", text);
-            Assert.DoesNotContain("ControlService", text);
-            Assert.False(Regex.IsMatch(text, @"\bGlobal\."), "VirtualPadService が Global を参照している");
-            Assert.False(Regex.IsMatch(text, @"\bProgram\.rootHub\b"), "VirtualPadService が Program.rootHub を参照している");
-        }
-
-        [Fact]
         public void NewComponents_AreRegistered_AndTheHostIsTheControlService()
         {
             Assert.IsType<VirtualPadService>(TestHost.GetService<IVirtualPadService>());

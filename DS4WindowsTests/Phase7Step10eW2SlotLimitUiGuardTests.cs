@@ -25,30 +25,6 @@ namespace DS4WindowsTests
         }
 
         [Fact]
-        public void TheStaticShim_IsGone_AndNoSourceReferencesIt()
-        {
-            Assert.Null(typeof(ControlService).GetProperty("CURRENT_DS4_CONTROLLER_LIMIT"));
-
-            string anchor = SourceFileLocator.Find("DS4Windows/Core/Settings/BackingStore.cs");
-            if (anchor == null)
-            {
-                _output.WriteLine("ソースが見つからないため検査を省略した。");
-                return;
-            }
-
-            string root = SourceFileLocator.RootFromAnchor(anchor);
-            var offenders = new System.Collections.Generic.List<string>();
-            foreach (string file in Directory.GetFiles(Path.Combine(root, "DS4Windows"), "*.cs", SearchOption.AllDirectories))
-            {
-                if (file.Contains(@"\obj\") || file.Contains(@"\bin\")) continue;
-                string text = Regex.Replace(Regex.Replace(File.ReadAllText(file), @"/\*.*?\*/", string.Empty, RegexOptions.Singleline), @"//[^\r\n]*", string.Empty);
-                if (text.Contains("CURRENT_DS4_CONTROLLER_LIMIT")) offenders.Add(Path.GetFileName(file));
-            }
-
-            Assert.True(offenders.Count == 0, "静的な上限への参照が残っている: " + string.Join(", ", offenders));
-        }
-
-        [Fact]
         public void TheViewModels_RequireTheEnvironmentService()
         {
             Assert.Throws<ArgumentNullException>(() => new DS4Windows.UI.ViewModels.SpecialActions.CheckBatteryViewModel(TestLightbar.State, 

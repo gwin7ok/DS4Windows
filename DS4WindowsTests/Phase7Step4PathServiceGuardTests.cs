@@ -24,11 +24,6 @@ namespace DS4WindowsTests
         private const string Exe = @"C:\Phase7Exe";
         private const string Roaming = @"C:\Phase7Roaming";
 
-        private static readonly string[] Removed =
-        {
-            "FindConfigLocation", "SaveWhere", "SaveDefault", "firstRun", "multisavespots", "appDataPpath", "runHotPlug", "fileVersion",
-        };
-
         private readonly ITestOutputHelper _output;
 
         public Phase7Step4PathServiceGuardTests(ITestOutputHelper output)
@@ -210,46 +205,5 @@ namespace DS4WindowsTests
         }
 
         // ---- 回帰ガード ----
-
-        [Fact]
-        public void NoSourceFile_ReferencesRemovedMembersThroughGlobal()
-        {
-            string anchor = SourceFileLocator.Find("DS4Windows/Core/Settings/BackingStore.cs"); // Phase7-Step10d W5: Global.cs は削除したため、同じフォルダーの BackingStore.cs を起点にする
-            if (anchor == null)
-            {
-                _output.WriteLine("ソースが見つからないため検査を省略した。");
-                return;
-            }
-
-            string root = SourceFileLocator.RootFromAnchor(anchor);
-            string sourceDir = Path.Combine(root, "DS4Windows");
-            var offenders = new List<string>();
-            foreach (string file in Directory.GetFiles(sourceDir, "*.cs", SearchOption.AllDirectories))
-            {
-                string normalized = file.Replace('\\', '/');
-                if (normalized.Contains("/obj/") || normalized.Contains("/bin/")) continue;
-
-                string text = SourceText.StripComments(File.ReadAllText(file));
-                foreach (string name in Removed)
-                {
-                    if (Regex.IsMatch(text, @"\bGlobal\." + Regex.Escape(name) + @"\b"))
-                        offenders.Add(Path.GetRelativePath(sourceDir, file) + ": Global." + name);
-                }
-            }
-
-            Assert.True(offenders.Count == 0, "移管済みのメンバーを Global 経由で参照している: " + string.Join(", ", offenders));
-        }
-
-        [Fact]
-        public void PathService_StaticInitialization_DoesNotReferenceGlobal()
-        {
-            string text = SourceText.ReadCode("DS4Windows/Core/Platform/PathService.cs");
-            if (text == null) return;
-
-            // Phase7-Step10d W5: Global を削除した。PathService は Global を一切参照しない（省略時の Global.store もやめ、config は呼び出し側が渡す）。
-            var uses = Regex.Matches(text, @"\bGlobal\.(\w+)").Cast<Match>().Select(m => m.Groups[1].Value).ToList();
-            Assert.Empty(uses);
-            Assert.Matches(@"_config\s*=\s*config;", text);
-        }
     }
 }

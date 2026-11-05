@@ -5,18 +5,20 @@
 作り方: 補助スクリプトで、ソースを文字列で読むテストメソッドを洗い出し（DS4Windows/ のパス、`SourceFileLocator`、`RegistrationSource`、`XamlTestHelper`、`*.cs` の走査）、
 Guard テストを中心に 1 件ずつ読んで区分を決めた。表にないソースを読むメソッドは K（残す）。
 
+**見直し（2026-11-05、Step 14d-2）**: 14d-0 で F・R に入れたもののうち、(1) すでにリフレクションで型・メンバーを検査しソースを読まないもの（16 件）と、(2) Phase9 の `ControlService_NoLongerContains_*`／`Mapping_NoLongerContains_*`（パターンの多くは呼び出し・機種の分岐・ログの文言で、責務が戻らないことを守る。型の検査では表せない）を K に改めた。14d-0 の時点の件数は F 100・D 26・R 29・K 312。表の「（14d-n で削除済み）」は、その Step で消したもの。
+
 ## 1. 区分
 
 | 区分 | 意味 | 件数（メソッド） | 処理する Step |
 |---|---|---|---|
-| F | 撤去済み API（型・メンバー）がないことの検査。型の検査 1 か所（`RemovedApiRuleTests`）へ畳み、元の検査は消す | 100 | 14d-2 |
+| F | 撤去済み API（型・メンバー）がないことの検査。型の検査 1 か所（`RemovedApiRuleTests`）へ畳み、元の検査は消す | 71 | 14d-2 |
 | D | 削除（空振り、重複、旧パスの確認）。守る内容がないか、別の検査が同じものを守っている | 26 | 14d-1（空振り）・14d-2 |
-| R | 型・コンテナの検査へ置き換え（リフレクション、コンテナの解決、ArchUnitNET） | 29 | 14d-3 |
-| K | 残す（うち 16 件は、撤去済みの名前の Assert だけを外す） | 312 | 14d-1 で読み取りの部品だけ差し替え |
+| R | 型・コンテナの検査へ置き換え（リフレクション、コンテナの解決、ArchUnitNET） | 27 | 14d-3 |
+| K | 残す（うち 16 件は、撤去済みの名前の Assert だけを外す） | 325 | 14d-1 で読み取りの部品だけ差し替え |
 | S | 遅い（0.3 秒以上）。§5 の方法で短縮 | 60 | 14d-4 |
 
-ソースを読むメソッドの合計: 467（計画書 §2.3 の 391 は Assert の文字列で数えた概数。ここでは、読み取りの補助メソッド経由と、パスの一覧のフィールド経由を含めた）。
-F・D で全メソッドが消えるファイル: 10（14d-2 でファイルごと削除）。
+ソースを読むメソッドの合計: 449（計画書 §2.3 の 391 は Assert の文字列で数えた概数。ここでは、読み取りの補助メソッド経由と、パスの一覧のフィールド経由を含めた）。
+F・D で全メソッドが消えるファイル: 9（14d-2 でファイルごと削除）。
 
 ## 2. `RemovedApiRuleTests` に集める内容（F の置き換え先）
 
@@ -32,32 +34,32 @@ F・D で全メソッドが消えるファイル: 10（14d-2 でファイルご�
 
 | ファイル | メソッド | 守っていた内容・置き換え先 |
 |---|---|---|
-| `MappingStep3FinalGlobalReferenceGuardTests` | `KeepItems_TodoCommentsAreResolved` | 解決済みの TODO の文言がないことの確認。守る対象がない |
-| `Phase13Step5FuncRemovalGuardTests` | `FuncOfTheSlotHost_NoLongerAppears` | Phase13FuncRatchetGuardTests と重複（IDeviceSlotHost は型ごと撤去） |
-| `Phase13Step5FuncRemovalGuardTests` | `FuncsOfTheOutputSlotCycle_NoLongerAppear` | Phase13FuncRatchetGuardTests と重複 |
-| `Phase13Step5FuncRemovalGuardTests` | `RemovedFuncs_DoNotAppearInProductionSources` | Phase13FuncRatchetGuardTests（Func<I…> の許可リスト）と重複 |
-| `Phase7Step10bW2TrayIconAndColorGuardTests` | `TheSource_HasNoColorOrIconMembersOnGlobalAnymore` | 存在しない Global.cs を読み、何も検査せずに合格している（空振り） |
-| `Phase7Step10cW2SerializersGuardTests` | `TheRepositories_UseTheSerializers_NotTheStore` | BackingStore にそのメソッドがない（同じクラスの BackingStore_NoLongerDeclaresTheMovedMethods）ため、呼び出しはコンパイルで止まる |
-| `Phase7Step10cW5LegacyProfileSaveGuardTests` | `TheSource_UsesTheSerializerEverywhere` | BackingStore にそのメソッドがないため、呼び出しはコンパイルで止まる |
-| `Phase7Step10dW1TestGlobalsGuardTests` | `Tests_DoNotReferenceGlobalDirectly_ForTheFourWindows` | Global 型がないため、テストからも参照できない |
-| `Phase7Step10eW5RatchetEqualityGuardTests` | `FinalTotals_AreFixed` | Global・ServiceProviderHolder の 2 つのラチェットの合計の固定。対象のラチェットを F で畳むため |
-| `Phase7Step10eW5RatchetEqualityGuardTests` | `GlobalRatchetBaseline_EqualsTheActualCounts` | 対象のラチェット（Step10FourGlobalRatchetGuardTests）を F で畳むため |
-| `Phase7Step10eW5RatchetEqualityGuardTests` | `ServiceLocatorRatchetBaseline_EqualsTheActualCounts` | 対象のラチェット（Phase7Step1ServiceLocatorRatchetGuardTests）を F で畳むため |
-| `Phase7Step2RemovedContractMembersGuardTests` | `RemovedFiles_DoNotExist` | 旧パス（DS4Control/ ほか。Phase14 で再編）のファイルがないことの確認。同じパスに戻ることはない |
-| `Phase7Step3RemovedGlobalForwardersGuardTests` | `RemovedForwarders_DoNotReappearInGlobal` | 存在しない Global.cs を読み、何も検査せずに合格している（空振り） |
-| `Phase7Step4AppHostGuardTests` | `GlobalLoad_IsRemoved` | 存在しない Global.cs を読み、何も検査せずに合格している（空振り） |
-| `Phase7Step4EnvironmentProbesGuardTests` | `RemovedProbes_DoNotReappearInGlobal` | 存在しない Global.cs を読み、何も検査せずに合格している（空振り） |
-| `Phase7Step4PathServiceGuardTests` | `RemovedMembers_DoNotReappearInGlobal` | 存在しない Global.cs を読み、何も検査せずに合格している（空振り） |
-| `Phase7Step5RootHubGuardTests` | `GlobalControllerConfigWrappers_AreNotRedeclared` | 存在しない Global.cs を読み、何も検査せずに合格している（空振り） |
-| `Phase7Step5ServiceLocatorGuardTests` | `GlobalInstances_AreRemoved_ExceptTheProfileSettingsOne` | 存在しない Global.cs を読み、何も検査せずに合格している（空振り） |
-| `Phase7Step8W2MappingInstanceGuardTests` | `CallersUseTheInstance_NotStaticMappingCalls` | Mapping の静的メンバーは、同じクラスの Mapping_ImplementsIMapping_AndHasNoStaticMutableStateOtherThanTheAllowedTables（リフレクション）が守る。読むファイルの一部（ActionManager.cs）は存在しない |
-| `Phase7Step8W2MappingInstanceGuardTests` | `OnlyTheDefaultActionManager_ReceivesALazyMapping_TheOthersReceiveTheMappingDirectly` | Phase13FuncRatchetGuardTests（Func<IMapping> は DefaultActionManager だけ）と重複 |
-| `Phase7Step8W3OutputKbmOwnershipGuardTests` | `Global_NoLongerOwnsTheOutputKbmHandlerOrMapping` | 存在しない Global.cs を読み、何も検査せずに合格している（空振り） |
-| `Phase7Step9W1CompatAppHostRemovedGuardTests` | `TheCompatFile_AndFolder_DoNotExist_AndNoSourceDeclaresIt` | 旧パス（DS4Control/ ほか。Phase14 で再編）のファイルがないことの確認。同じパスに戻ることはない |
-| `Phase9EVirtualPadGuardTests` | `OutputSlotService_NoLongerDependsOnControlService` | 第3層 → 第2層の具象の参照は LayerDependencyRuleTests の L4 が禁止している（重複） |
-| `Step12DeadShimRemovalGuardTests` | `ProtectedMembers_RemainInGlobal` | 存在しない Global.cs を読み、何も検査せずに合格している（空振り） |
-| `Step12DeadShimRemovalGuardTests` | `RemovedFiles_DoNotExist` | 旧パス（DS4Control/ ほか。Phase14 で再編）のファイルがないことの確認。同じパスに戻ることはない |
-| `Step12DeadShimRemovalGuardTests` | `RemovedMembers_DoNotReappearInGlobal` | 存在しない Global.cs を読み、何も検査せずに合格している（空振り） |
+| `MappingStep3FinalGlobalReferenceGuardTests` | `KeepItems_TodoCommentsAreResolved` | 解決済みの TODO の文言がないことの確認。守る対象がない（14d-2 で削除済み） |
+| `Phase13Step5FuncRemovalGuardTests` | `FuncOfTheSlotHost_NoLongerAppears` | Phase13FuncRatchetGuardTests と重複（IDeviceSlotHost は型ごと撤去）（14d-2 で削除済み） |
+| `Phase13Step5FuncRemovalGuardTests` | `FuncsOfTheOutputSlotCycle_NoLongerAppear` | Phase13FuncRatchetGuardTests と重複（14d-2 で削除済み） |
+| `Phase13Step5FuncRemovalGuardTests` | `RemovedFuncs_DoNotAppearInProductionSources` | Phase13FuncRatchetGuardTests（Func<I…> の許可リスト）と重複（14d-2 で削除済み） |
+| `Phase7Step10bW2TrayIconAndColorGuardTests` | `TheSource_HasNoColorOrIconMembersOnGlobalAnymore` | 存在しない Global.cs を読み、何も検査せずに合格している（空振り）（14d-2 で削除済み） |
+| `Phase7Step10cW2SerializersGuardTests` | `TheRepositories_UseTheSerializers_NotTheStore` | BackingStore にそのメソッドがない（同じクラスの BackingStore_NoLongerDeclaresTheMovedMethods）ため、呼び出しはコンパイルで止まる（14d-2 で削除済み） |
+| `Phase7Step10cW5LegacyProfileSaveGuardTests` | `TheSource_UsesTheSerializerEverywhere` | BackingStore にそのメソッドがないため、呼び出しはコンパイルで止まる（14d-2 で削除済み） |
+| `Phase7Step10dW1TestGlobalsGuardTests` | `Tests_DoNotReferenceGlobalDirectly_ForTheFourWindows` | Global 型がないため、テストからも参照できない（14d-2 で削除済み） |
+| `Phase7Step10eW5RatchetEqualityGuardTests` | `FinalTotals_AreFixed` | Global・ServiceProviderHolder の 2 つのラチェットの合計の固定。対象のラチェットを F で畳むため（14d-2 で削除済み） |
+| `Phase7Step10eW5RatchetEqualityGuardTests` | `GlobalRatchetBaseline_EqualsTheActualCounts` | 対象のラチェット（Step10FourGlobalRatchetGuardTests）を F で畳むため（14d-2 で削除済み） |
+| `Phase7Step10eW5RatchetEqualityGuardTests` | `ServiceLocatorRatchetBaseline_EqualsTheActualCounts` | 対象のラチェット（Phase7Step1ServiceLocatorRatchetGuardTests）を F で畳むため（14d-2 で削除済み） |
+| `Phase7Step2RemovedContractMembersGuardTests` | `RemovedFiles_DoNotExist` | 旧パス（DS4Control/ ほか。Phase14 で再編）のファイルがないことの確認。同じパスに戻ることはない（14d-2 で削除済み） |
+| `Phase7Step3RemovedGlobalForwardersGuardTests` | `RemovedForwarders_DoNotReappearInGlobal` | 存在しない Global.cs を読み、何も検査せずに合格している（空振り）（14d-1 で削除済み） |
+| `Phase7Step4AppHostGuardTests` | `GlobalLoad_IsRemoved` | 存在しない Global.cs を読み、何も検査せずに合格している（空振り）（14d-1 で削除済み） |
+| `Phase7Step4EnvironmentProbesGuardTests` | `RemovedProbes_DoNotReappearInGlobal` | 存在しない Global.cs を読み、何も検査せずに合格している（空振り）（14d-1 で削除済み） |
+| `Phase7Step4PathServiceGuardTests` | `RemovedMembers_DoNotReappearInGlobal` | 存在しない Global.cs を読み、何も検査せずに合格している（空振り）（14d-1 で削除済み） |
+| `Phase7Step5RootHubGuardTests` | `GlobalControllerConfigWrappers_AreNotRedeclared` | 存在しない Global.cs を読み、何も検査せずに合格している（空振り）（14d-1 で削除済み） |
+| `Phase7Step5ServiceLocatorGuardTests` | `GlobalInstances_AreRemoved_ExceptTheProfileSettingsOne` | 存在しない Global.cs を読み、何も検査せずに合格している（空振り）（14d-2 で削除済み） |
+| `Phase7Step8W2MappingInstanceGuardTests` | `CallersUseTheInstance_NotStaticMappingCalls` | Mapping の静的メンバーは、同じクラスの Mapping_ImplementsIMapping_AndHasNoStaticMutableStateOtherThanTheAllowedTables（リフレクション）が守る。読むファイルの一部（ActionManager.cs）は存在しない（14d-1 で削除済み） |
+| `Phase7Step8W2MappingInstanceGuardTests` | `OnlyTheDefaultActionManager_ReceivesALazyMapping_TheOthersReceiveTheMappingDirectly` | Phase13FuncRatchetGuardTests（Func<IMapping> は DefaultActionManager だけ）と重複（14d-2 で削除済み） |
+| `Phase7Step8W3OutputKbmOwnershipGuardTests` | `Global_NoLongerOwnsTheOutputKbmHandlerOrMapping` | 存在しない Global.cs を読み、何も検査せずに合格している（空振り）（14d-1 で削除済み） |
+| `Phase7Step9W1CompatAppHostRemovedGuardTests` | `TheCompatFile_AndFolder_DoNotExist_AndNoSourceDeclaresIt` | 旧パス（DS4Control/ ほか。Phase14 で再編）のファイルがないことの確認。同じパスに戻ることはない（14d-2 で削除済み） |
+| `Phase9EVirtualPadGuardTests` | `OutputSlotService_NoLongerDependsOnControlService` | 第3層 → 第2層の具象の参照は LayerDependencyRuleTests の L4 が禁止している（重複）（14d-2 で削除済み） |
+| `Step12DeadShimRemovalGuardTests` | `ProtectedMembers_RemainInGlobal` | 存在しない Global.cs を読み、何も検査せずに合格している（空振り）（14d-1 で削除済み） |
+| `Step12DeadShimRemovalGuardTests` | `RemovedFiles_DoNotExist` | 旧パス（DS4Control/ ほか。Phase14 で再編）のファイルがないことの確認。同じパスに戻ることはない（14d-2 で削除済み） |
+| `Step12DeadShimRemovalGuardTests` | `RemovedMembers_DoNotReappearInGlobal` | 存在しない Global.cs を読み、何も検査せずに合格している（空振り）（14d-1 で削除済み） |
 
 ## 4. R（型・コンテナの検査へ置き換え）
 
@@ -66,9 +68,7 @@ F・D で全メソッドが消えるファイル: 10（14d-2 でファイルご�
 | `MappingCommitAndCalibrationGlobalReferenceGuardTests` | `ApplyDrift_TakesProfileSettingsAsParameter` | メソッドの引数の型をリフレクションで確かめる |
 | `MappingCommitAndCalibrationGlobalReferenceGuardTests` | `Commit_TakesProfileSettingsAsParameter` | メソッドの引数の型をリフレクションで確かめる |
 | `MappingSetCurveAndDeadzoneGlobalReferenceGuardTests` | `SetCurveAndDeadzone_TakesProfileSettingsAsParameter` | メソッドの引数の型をリフレクションで確かめる |
-| `Phase13Step3HostRemovalGuardTests` | `ControlService_HasNoKbmInitializationParameters_AndHas17Parameters` | コンストラクターの引数（リフレクション） |
 | `Phase13Step5FuncRemovalGuardTests` | `FuncOfControlService_NoLongerAppears` | Phase13FuncRatchetGuardTests の対象を Func<ControlService> にも広げる（I で始まらない型は今の正規表現に掛からない） |
-| `Phase7Step10bW3ContractCleanupGuardTests` | `ProfileApplicationService_DoesNotTakeIDeviceStateService` | コンストラクターの引数（リフレクション） |
 | `Phase7Step1DeadMethodGuardTests` | `KeptMethods_StillExistInBackingStore` | メソッドがあること（リフレクション） |
 | `Phase7Step2RemovedContractMembersGuardTests` | `KeptMembers_StillExistInContracts` | 契約のメンバーがあること（リフレクション） |
 | `Phase7Step4AppHostGuardTests` | `AppHost_DoesNotDeclareRemovedOverloads` | CreateHost の多重定義（リフレクション） |
@@ -97,106 +97,77 @@ F・D で全メソッドが消えるファイル: 10（14d-2 でファイルご�
 
 | ファイル | メソッド | 守っていた内容・置き換え先 |
 |---|---|---|
-| `AppPostHostGlobalReferenceGuardTests` | `GlobalReferences_MatchPlan_PerRegion` | Global 型は Phase7-Step10d で削除済み（型がないため、参照はコンパイルで止まる）。`Global` 型がないことの 1 件へ |
-| `ControlServiceGlobalReferenceGuardTests` | `ControlService_GlobalReferences_MatchExplicitExclusionList` | Global 型は Phase7-Step10d で削除済み（型がないため、参照はコンパイルで止まる）。`Global` 型がないことの 1 件へ |
-| `ControlServiceGlobalReferenceGuardTests` | `ControlService_HasNoUsingStaticGlobal` | Global 型は Phase7-Step10d で削除済み（型がないため、参照はコンパイルで止まる）。`Global` 型がないことの 1 件へ |
-| `EnvironmentServiceStaticInitGuardTests` | `SlotLimitCalculation_DoesNotReferenceNonConstGlobalMembers` | Global 型は Phase7-Step10d で削除済み（型がないため、参照はコンパイルで止まる）。`Global` 型がないことの 1 件へ |
-| `MainWindowsAndTrayViewModelGlobalReferenceGuardTests` | `MainWindowsViewModel_HasNoGlobalOrServiceLocatorReferences` | Global 型は Phase7-Step10d で削除済み（型がないため、参照はコンパイルで止まる）。`Global` 型がないことの 1 件へ。AppHost の部分は AppHost の利用者の規則（App と Composition だけ）と、ServiceProviderHolder・Program の型がないことへ |
-| `MainWindowsAndTrayViewModelGlobalReferenceGuardTests` | `MainWindowsViewModel_RemovedUnreferencedUpdaterMembers_AreNotReintroduced` | 撤去したメンバーの一覧（リフレクション）へ |
-| `MainWindowsAndTrayViewModelGlobalReferenceGuardTests` | `TrayIconViewModel_HasOnlyConstGlobalReferences_AndNoServiceLocator` | Global 型は Phase7-Step10d で削除済み（型がないため、参照はコンパイルで止まる）。`Global` 型がないことの 1 件へ |
-| `MappingCommitAndCalibrationGlobalReferenceGuardTests` | `ApplyDrift_HasNoReferenceToMigratedGlobalMembers` | Global 型は Phase7-Step10d で削除済み（型がないため、参照はコンパイルで止まる）。`Global` 型がないことの 1 件へ |
-| `MappingCommitAndCalibrationGlobalReferenceGuardTests` | `Commit_HasNoReferenceToMigratedGlobalMembers` | Global 型は Phase7-Step10d で削除済み（型がないため、参照はコンパイルで止まる）。`Global` 型がないことの 1 件へ |
-| `MappingControlPathGlobalReferenceGuardTests` | `ControlPathMethods_HaveNoReferenceToMigratedGlobalMembers` | Global 型は Phase7-Step10d で削除済み（型がないため、参照はコンパイルで止まる）。`Global` 型がないことの 1 件へ |
-| `MappingHelperMethodsGlobalReferenceGuardTests` | `HelperMethods_HaveNoReferenceToMigratedGlobalMembers` | Global 型は Phase7-Step10d で削除済み（型がないため、参照はコンパイルで止まる）。`Global` 型がないことの 1 件へ |
-| `MappingMacroPathGlobalReferenceGuardTests` | `MappingSource_HasNoGlobalReferenceToOutputKbmMapping` | Global 型は Phase7-Step10d で削除済み（型がないため、参照はコンパイルで止まる）。`Global` 型がないことの 1 件へ |
-| `MappingSetCurveAndDeadzoneGlobalReferenceGuardTests` | `SetCurveAndDeadzone_HasNoReferenceToMigratedGlobalMembers` | Global 型は Phase7-Step10d で削除済み（型がないため、参照はコンパイルで止まる）。`Global` 型がないことの 1 件へ |
-| `MappingStep3FinalGlobalReferenceGuardTests` | `KeepItems_AreGone_TheServiceBindingsAreConstructorInjected` | Global 型は Phase7-Step10d で削除済み（型がないため、参照はコンパイルで止まる）。`Global` 型がないことの 1 件へ |
-| `MappingStep3FinalGlobalReferenceGuardTests` | `UsingStaticGlobalDirective_IsStillPresent_ForGetTransitionedColor` | Global 型は Phase7-Step10d で削除済み（型がないため、参照はコンパイルで止まる）。`Global` 型がないことの 1 件へ |
-| `MouseGlobalReferenceGuardTests` | `MouseFiles_DoNotUseStaticGlobalImport` | Global 型は Phase7-Step10d で削除済み（型がないため、参照はコンパイルで止まる）。`Global` 型がないことの 1 件へ |
-| `MouseGlobalReferenceGuardTests` | `MouseFiles_HaveNoClampReferenceToGlobalAnymore` | Global 型は Phase7-Step10d で削除済み（型がないため、参照はコンパイルで止まる）。`Global` 型がないことの 1 件へ |
-| `MouseGlobalReferenceGuardTests` | `MouseFiles_HaveNoGlobalReferenceOtherThanClamp` | Global 型は Phase7-Step10d で削除済み（型がないため、参照はコンパイルで止まる）。`Global` 型がないことの 1 件へ |
-| `Phase13Step10ForwardRemovalGuardTests` | `ControlService_HasNoneOfTheRemovedForwardingMembers` | 撤去したメンバーの一覧（リフレクション）へ |
-| `Phase13Step3HostRemovalGuardTests` | `TheRemovedHostInterfaces_DoNotExist_AndControlServiceDoesNotImplementThem` | 撤去した型の一覧へ（リフレクションの検査をまとめる） |
-| `Phase13Step4ActionManagerRemovalGuardTests` | `ProductionSources_DoNotReferenceTheRemovedTypes` | 型がないため参照はコンパイルで止まる。撤去した型の一覧へ |
-| `Phase13Step4ActionManagerRemovalGuardTests` | `RemovedTypes_DoNotExist` | 撤去した型の一覧へ（リフレクションの検査をまとめる） |
-| `Phase13Step9RunningForwardRemovalGuardTests` | `ControlService_NoLongerExposesTheForward` | 撤去したメンバーの一覧（リフレクション）へ |
-| `Phase7Step10aW2ControllerLimitsGuardTests` | `TheFiles_DoNotReferenceTheGlobalConstants` | Global 型は Phase7-Step10d で削除済み（型がないため、参照はコンパイルで止まる）。`Global` 型がないことの 1 件へ |
-| `Phase7Step10aW3ResourcePrefixGuardTests` | `TheFormsFiles_DoNotReferenceTheGlobalPrefixes` | Global 型は Phase7-Step10d で削除済み（型がないため、参照はコンパイルで止まる）。`Global` 型がないことの 1 件へ |
-| `Phase7Step10bW1ControlTablesGuardTests` | `TheSource_NoLongerReferencesTheMovedMembersOnGlobal_AndBackingStoreHasNoCopy` | Global 型は Phase7-Step10d で削除済み（型がないため、参照はコンパイルで止まる）。`Global` 型がないことの 1 件へ。BackingStore の写しは 撤去したメンバーの一覧（リフレクション）へ |
-| `Phase7Step10bW4UsingMaxControllersGuardTests` | `NoSource_ReferencesTheRemovedShim` | 撤去したメンバーの一覧（リフレクション）へ |
-| `Phase7Step10cW2SerializersGuardTests` | `BackingStore_NoLongerDeclaresTheMovedMethods` | 撤去したメンバーの一覧（リフレクション）へ |
-| `Phase7Step10cW2SerializersGuardTests` | `TheSerializer_DoesNotReferenceGlobal_AndKeepsTheStoreAsTheOnlyState` | Global 型は Phase7-Step10d で削除済み（型がないため、参照はコンパイルで止まる）。`Global` 型がないことの 1 件へ |
-| `Phase7Step10cW3AppSettingsSerializerGuardTests` | `BackingStore_NoLongerDeclaresLoadSaveAndLoadFakeExeName_ButKeepsPostProcessLoad` | 撤去したメンバーの一覧（リフレクション）へ |
-| `Phase7Step10cW3AppSettingsSerializerGuardTests` | `TheSerializer_DoesNotReferenceGlobal_AndTheXmlStoreUsesIt` | Global 型は Phase7-Step10d で削除済み（型がないため、参照はコンパイルで止まる）。`Global` 型がないことの 1 件へ |
-| `Phase7Step10cW4LegacyProfileLoadGuardTests` | `BackingStore_NoLongerDeclaresTheMovedMethods_ButKeepsTheSharedHelpersPublic` | 撤去したメンバーの一覧（リフレクション）へ |
-| `Phase7Step10cW4LegacyProfileLoadGuardTests` | `TheSerializer_DoesNotReferenceGlobal_AndTheCallersUseIt` | Global 型は Phase7-Step10d で削除済み（型がないため、参照はコンパイルで止まる）。`Global` 型がないことの 1 件へ |
-| `Phase7Step10cW5LegacyProfileSaveGuardTests` | `BackingStore_NoLongerDeclaresTheMovedMethods_NorTheWorkingXmlDocument` | 撤去したメンバーの一覧（リフレクション）へ |
-| `Phase7Step10cW6ProfilePresetsGuardTests` | `BackingStore_NoLongerDeclaresThePresetMethods` | 撤去したメンバーの一覧（リフレクション）へ |
-| `Phase7Step10cW6ProfilePresetsGuardTests` | `TheSource_PresetsDoNotReferenceGlobal_AndTheLoaderDoesNotCallTheStore` | Global 型は Phase7-Step10d で削除済み（型がないため、参照はコンパイルで止まる）。`Global` 型がないことの 1 件へ |
-| `Phase7Step10dW3DeviceLayerSettingsGuardTests` | `LowerLayerFiles_DoNotReferenceGlobal` | Global 型は Phase7-Step10d で削除済み（型がないため、参照はコンパイルで止まる）。`Global` 型がないことの 1 件へ |
-| `Phase7Step10dW5GlobalRemovedGuardTests` | `NoSource_UsesTheStaticGlobalDirective_OrAGlobalMemberInCode` | Global 型は Phase7-Step10d で削除済み（型がないため、参照はコンパイルで止まる）。`Global` 型がないことの 1 件へ |
-| `Phase7Step10dW5GlobalRemovedGuardTests` | `TheGlobalType_AndFile_AreGone` | 撤去した型の一覧へ（この検査を移す） |
-| `Phase7Step10eW1SlotLimitServicesGuardTests` | `TheFiles_DoNotUseTheStaticSlotLimit` | 撤去したメンバーの一覧（リフレクション）へ |
-| `Phase7Step10eW2SlotLimitUiGuardTests` | `TheStaticShim_IsGone_AndNoSourceReferencesIt` | 撤去したメンバーの一覧（リフレクション）へ |
-| `Phase7Step10eW4OrphanMembersGuardTests` | `RemovedMembers_AreNotDeclaredAgain` | 撤去したメンバーの一覧へ（リフレクションの検査をまとめる） |
-| `Phase7Step1DeadMethodGuardTests` | `RemovedMethods_DoNotReappearInBackingStore` | 撤去したメンバーの一覧（リフレクション）へ |
-| `Phase7Step1ServiceLocatorRatchetGuardTests` | `ServiceProviderHolderReferences_DoNotExceedBaseline` | 基準値の表は空（型は Phase13 で撤廃）。AppHost の利用者の規則（App と Composition だけ）と、ServiceProviderHolder・Program の型がないことへ |
-| `Phase7Step2RemovedContractMembersGuardTests` | `RemovedMembers_DoNotReappearInContracts` | 撤去したメンバーの一覧（リフレクション）へ |
-| `Phase7Step3RemovedGlobalForwardersGuardTests` | `AppSettingsService_DoesNotReferenceRemovedGlobalForwarders` | Global 型は Phase7-Step10d で削除済み（型がないため、参照はコンパイルで止まる）。`Global` 型がないことの 1 件へ |
-| `Phase7Step4AppHostGuardTests` | `WelcomeDialog_NoLongerLoadsConfigItself` | Global 型は Phase7-Step10d で削除済み（型がないため、参照はコンパイルで止まる）。`Global` 型がないことの 1 件へ。loadConfig は 撤去したメンバーの一覧（リフレクション）へ |
-| `Phase7Step4EnvironmentProbesGuardTests` | `NoSourceFile_ReferencesRemovedProbesThroughGlobal` | Global 型は Phase7-Step10d で削除済み（型がないため、参照はコンパイルで止まる）。`Global` 型がないことの 1 件へ |
-| `Phase7Step4PathServiceGuardTests` | `NoSourceFile_ReferencesRemovedMembersThroughGlobal` | Global 型は Phase7-Step10d で削除済み（型がないため、参照はコンパイルで止まる）。`Global` 型がないことの 1 件へ |
-| `Phase7Step4PathServiceGuardTests` | `PathService_StaticInitialization_DoesNotReferenceGlobal` | Global 型は Phase7-Step10d で削除済み（型がないため、参照はコンパイルで止まる）。`Global` 型がないことの 1 件へ |
-| `Phase7Step5RootHubGuardTests` | `NoSourceFile_ReferencesProgramRootHub_AndProgramCsIsGone` | AppHost の利用者の規則（App と Composition だけ）と、ServiceProviderHolder・Program の型がないことへ |
-| `Phase7Step6OutputTypeOwnershipGuardTests` | `Global_NoLongerHoldsTheArrays_AndNoOneReadsThemFromGlobal` | Global 型は Phase7-Step10d で削除済み（型がないため、参照はコンパイルで止まる）。`Global` 型がないことの 1 件へ |
-| `Phase7Step7MacroRuntimeStateGuardTests` | `Mapping_HoldsNoMacroStateOfItsOwn_OnlyForwarders` | 撤去したメンバーの一覧（リフレクション）へ |
-| `Phase7Step7StickMotionStateGuardTests` | `MouseAndControlService_UseTheHolderAndTheTopLevelTypes` | 撤去したメンバーの一覧（リフレクション）へ |
-| `Phase7Step7SyntheticInputStateGuardTests` | `SyntheticDispatcherService_UsesTheInjectedHolder_AndTheStaticBridgeHoldsNoState` | 撤去したメンバーの一覧（リフレクション）へ |
-| `Phase7Step8W1StateHolderInjectionGuardTests` | `Mapping_NoLongerHasTheMovedOrDeadMembers` | 撤去したメンバーの一覧（リフレクション）へ |
-| `Phase7Step8W2MappingInstanceGuardTests` | `Mapping_HasNoServiceLocatorOrGlobalFallbacks` | Global 型は Phase7-Step10d で削除済み（型がないため、参照はコンパイルで止まる）。`Global` 型がないことの 1 件へ。AppHost の利用者の規則（App と Composition だけ）と、ServiceProviderHolder・Program の型がないことへ |
-| `Phase7Step8W3OutputKbmOwnershipGuardTests` | `NoSourceFile_ReferencesTheRemovedGlobalMembers_OrTheStaticResetMethod` | Global 型は Phase7-Step10d で削除済み（型がないため、参照はコンパイルで止まる）。`Global` 型がないことの 1 件へ |
-| `Phase7Step8W4NoSharedGuardTests` | `NoSourceFile_ReferencesTheRemovedSharedWindows` | 撤去したメンバーの一覧（リフレクション）へ |
-| `Phase7Step9W1CompatAppHostRemovedGuardTests` | `NoAppHostType_ExistsInTheDS4WindowsNamespace` | 撤去した型の一覧へ（リフレクションの検査をまとめる） |
-| `Phase7Step9W2NoGlobalInMappingGuardTests` | `TheFile_DoesNotReferenceGlobal` | Global 型は Phase7-Step10d で削除済み（型がないため、参照はコンパイルで止まる）。`Global` 型がないことの 1 件へ |
-| `Phase9BMouseGuardTests` | `Mapping_NoLongerContains_TheMovedMembers` | 撤去したメンバーの一覧（リフレクション）へ |
-| `Phase9BMouseGuardTests` | `Mapping_StatefulMouseFieldsAreGone_ByReflection` | 撤去したメンバーの一覧へ（リフレクションの検査をまとめる） |
-| `Phase9BMouseGuardTests` | `NewComponents_DoNotReferenceStaticEntryPoints` | AppHost の利用者の規則（App と Composition だけ）と、ServiceProviderHolder・Program の型がないことへ |
-| `Phase9CMacroGuardTests` | `DeviceRuntimeState_NoLongerHasTheUnusedMacroFields` | 撤去したメンバーの一覧（リフレクション）へ |
-| `Phase9CMacroGuardTests` | `Mapping_NoLongerContains_TheMovedMembers` | 撤去したメンバーの一覧（リフレクション）へ |
-| `Phase9CMacroGuardTests` | `NewComponents_DoNotReferenceStaticEntryPoints` | AppHost の利用者の規則（App と Composition だけ）と、ServiceProviderHolder・Program の型がないことへ |
-| `Phase9E6ConnectionGuardTests` | `ControlService_NoLongerContains_TheJoyConLinking` | 撤去したメンバーの一覧（リフレクション）へ |
-| `Phase9E6ConnectionGuardTests` | `ControlService_NoLongerContains_TheMovedProfileSelection` | 撤去したメンバーの一覧（リフレクション）へ |
-| `Phase9E6ConnectionGuardTests` | `ControlService_NoLongerContains_TheMovedSetup` | 撤去したメンバーの一覧（リフレクション）へ |
-| `Phase9E6ConnectorGuardTests` | `ControlService_NoLongerContains_TheMovedConnection` | 撤去したメンバーの一覧（リフレクション）へ |
-| `Phase9E6DisconnectGuardTests` | `ControlService_NoLongerContains_TheMovedDisconnectHandling` | 撤去したメンバーの一覧（リフレクション）へ |
-| `Phase9E6LifecycleGuardTests` | `ControlService_NoLongerContains_TheMovedLifecycle` | 撤去したメンバーの一覧（リフレクション）へ |
-| `Phase9EHidHideGuardTests` | `ControlService_NoLongerContains_TheMovedMembers` | 撤去したメンバーの一覧（リフレクション）へ |
-| `Phase9EHidHideGuardTests` | `NewComponents_DoNotReferenceStaticEntryPoints` | AppHost の利用者の規則（App と Composition だけ）と、ServiceProviderHolder・Program の型がないことへ |
-| `Phase9EInputReportGuardTests` | `ControlService_NoLongerContains_TheMovedMembers` | 撤去したメンバーの一覧（リフレクション）へ |
-| `Phase9EOscGuardTests` | `ControlService_NoLongerContains_TheMovedMembers` | 撤去したメンバーの一覧（リフレクション）へ |
-| `Phase9EOscGuardTests` | `NewComponents_DoNotReferenceStaticEntryPoints` | AppHost の利用者の規則（App と Composition だけ）と、ServiceProviderHolder・Program の型がないことへ |
-| `Phase9EUdpMotionGuardTests` | `ControlService_NoLongerContains_TheMovedMembers` | 撤去したメンバーの一覧（リフレクション）へ |
-| `Phase9EUdpMotionGuardTests` | `NewComponents_DoNotReferenceStaticEntryPoints` | AppHost の利用者の規則（App と Composition だけ）と、ServiceProviderHolder・Program の型がないことへ |
-| `Phase9EVirtualPadGuardTests` | `ControlService_NoLongerContains_TheMovedMembers` | 撤去したメンバーの一覧（リフレクション）へ |
-| `Phase9EVirtualPadGuardTests` | `VirtualPadService_DoesNotReferenceStaticEntryPoints_OrControlService` | AppHost の利用者の規則（App と Composition だけ）と、ServiceProviderHolder・Program の型がないことへ。ControlService の部分は L4 と重複 |
-| `Phase9MapCustomGuardTests` | `Mapping_NoLongerContains_TheMovedCommit` | 撤去したメンバーの一覧（リフレクション）へ |
-| `Phase9MapCustomGuardTests` | `Mapping_NoLongerContains_TheTwoStageStateMachine` | 撤去したメンバーの一覧（リフレクション）へ |
-| `ProfileEditorGlobalReferenceGuardTests` | `ProfileEditor_DoesNotReferenceResolvedGlobalMembers` | Global 型は Phase7-Step10d で削除済み（型がないため、参照はコンパイルで止まる）。`Global` 型がないことの 1 件へ |
-| `ProfileSettingsViewModelGlobalReferenceGuardTests` | `ProfileSettingsViewModel_HasOnlyConstGlobalReferences_AndNoServiceLocator` | Global 型は Phase7-Step10d で削除済み（型がないため、参照はコンパイルで止まる）。`Global` 型がないことの 1 件へ |
-| `SettingsViewModelGlobalReferenceGuardTests` | `NoGlobalReferencesRemain` | Global 型は Phase7-Step10d で削除済み（型がないため、参照はコンパイルで止まる）。`Global` 型がないことの 1 件へ |
-| `SettingsViewModelGlobalReferenceGuardTests` | `RemovedUnreferencedHandler_IsNotReintroduced` | 撤去したメンバーの一覧（リフレクション）へ |
-| `SettingsViewModelGlobalReferenceGuardTests` | `ResolvedMembers_AreNotReferencedThroughGlobal` | Global 型は Phase7-Step10d で削除済み（型がないため、参照はコンパイルで止まる）。`Global` 型がないことの 1 件へ |
-| `Step10FourGlobalRatchetGuardTests` | `DirectReferences_DoNotExceedStep10FourBaseline` | 70 行の基準値のうち 0 でないのは 4 行（AppHost 3、ログの文言の rootHub 2）。AppHost の利用者の規則（App と Composition だけ）と、ServiceProviderHolder・Program の型がないことへ |
-| `Step10FourOneGlobalReferenceGuardTests` | `ReplacedFiles_DoNotReferenceGlobalOrServiceLocator` | Global 型は Phase7-Step10d で削除済み（型がないため、参照はコンパイルで止まる）。`Global` 型がないことの 1 件へ |
-| `Step10FourTwoGlobalReferenceGuardTests` | `MainWindow_And_ControlService_UseOnlyConstGlobalMembers` | Global 型は Phase7-Step10d で削除済み（型がないため、参照はコンパイルで止まる）。`Global` 型がないことの 1 件へ |
-| `Step10FourTwoGlobalReferenceGuardTests` | `ReplacedFiles_DoNotReferenceGlobalExceptRetainedMembers` | Global 型は Phase7-Step10d で削除済み（型がないため、参照はコンパイルで止まる）。`Global` 型がないことの 1 件へ |
-| `Step10GroupOneGlobalReferenceGuardTests` | `LanguagePackControl_DoesNotUseServiceLocator` | AppHost の利用者の規則（App と Composition だけ）と、ServiceProviderHolder・Program の型がないことへ |
-| `Step10GroupOneGlobalReferenceGuardTests` | `RemovedOrphanMethods_DoNotComeBack` | 撤去したメンバーの一覧（リフレクション）へ |
-| `Step10GroupOneGlobalReferenceGuardTests` | `ReplacedFiles_DoNotReferenceGlobalExceptRetainedMembers` | Global 型は Phase7-Step10d で削除済み（型がないため、参照はコンパイルで止まる）。`Global` 型がないことの 1 件へ |
-| `Step10GroupThreeGlobalReferenceGuardTests` | `ReplacedFiles_DoNotReferenceGlobalExceptRetainedMembers` | Global 型は Phase7-Step10d で削除済み（型がないため、参照はコンパイルで止まる）。`Global` 型がないことの 1 件へ |
-| `Step10GroupThreeGlobalReferenceGuardTests` | `ReplacedFiles_DoNotUseServiceLocatorOrRootHubFallbacks` | AppHost の利用者の規則（App と Composition だけ）と、ServiceProviderHolder・Program の型がないことへ |
-| `Step10GroupTwoGlobalReferenceGuardTests` | `ReplacedFiles_DoNotReferenceGlobalExceptRetainedMembers` | Global 型は Phase7-Step10d で削除済み（型がないため、参照はコンパイルで止まる）。`Global` 型がないことの 1 件へ |
-| `Step10GroupTwoGlobalReferenceGuardTests` | `ReplacedFiles_DoNotUseServiceLocatorOrRootHubFallbacks` | AppHost の利用者の規則（App と Composition だけ）と、ServiceProviderHolder・Program の型がないことへ |
+| `AppPostHostGlobalReferenceGuardTests` | `GlobalReferences_MatchPlan_PerRegion` | Global 型は Phase7-Step10d で削除済み（型がないため、参照はコンパイルで止まる）。`Global` 型がないことの 1 件へ（14d-2 で削除済み） |
+| `ControlServiceGlobalReferenceGuardTests` | `ControlService_GlobalReferences_MatchExplicitExclusionList` | Global 型は Phase7-Step10d で削除済み（型がないため、参照はコンパイルで止まる）。`Global` 型がないことの 1 件へ（14d-2 で削除済み） |
+| `ControlServiceGlobalReferenceGuardTests` | `ControlService_HasNoUsingStaticGlobal` | Global 型は Phase7-Step10d で削除済み（型がないため、参照はコンパイルで止まる）。`Global` 型がないことの 1 件へ（14d-2 で削除済み） |
+| `EnvironmentServiceStaticInitGuardTests` | `SlotLimitCalculation_DoesNotReferenceNonConstGlobalMembers` | Global 型は Phase7-Step10d で削除済み（型がないため、参照はコンパイルで止まる）。`Global` 型がないことの 1 件へ（14d-2 で削除済み） |
+| `MainWindowsAndTrayViewModelGlobalReferenceGuardTests` | `MainWindowsViewModel_HasNoGlobalOrServiceLocatorReferences` | Global 型は Phase7-Step10d で削除済み（型がないため、参照はコンパイルで止まる）。`Global` 型がないことの 1 件へ。AppHost の部分は AppHost の利用者の規則（App と Composition だけ）と、ServiceProviderHolder・Program の型がないことへ（14d-2 で削除済み） |
+| `MainWindowsAndTrayViewModelGlobalReferenceGuardTests` | `MainWindowsViewModel_RemovedUnreferencedUpdaterMembers_AreNotReintroduced` | 撤去したメンバーの一覧（リフレクション）へ（14d-2 で削除済み） |
+| `MainWindowsAndTrayViewModelGlobalReferenceGuardTests` | `TrayIconViewModel_HasOnlyConstGlobalReferences_AndNoServiceLocator` | Global 型は Phase7-Step10d で削除済み（型がないため、参照はコンパイルで止まる）。`Global` 型がないことの 1 件へ（14d-2 で削除済み） |
+| `MappingCommitAndCalibrationGlobalReferenceGuardTests` | `ApplyDrift_HasNoReferenceToMigratedGlobalMembers` | Global 型は Phase7-Step10d で削除済み（型がないため、参照はコンパイルで止まる）。`Global` 型がないことの 1 件へ（14d-2 で削除済み） |
+| `MappingCommitAndCalibrationGlobalReferenceGuardTests` | `Commit_HasNoReferenceToMigratedGlobalMembers` | Global 型は Phase7-Step10d で削除済み（型がないため、参照はコンパイルで止まる）。`Global` 型がないことの 1 件へ（14d-2 で削除済み） |
+| `MappingControlPathGlobalReferenceGuardTests` | `ControlPathMethods_HaveNoReferenceToMigratedGlobalMembers` | Global 型は Phase7-Step10d で削除済み（型がないため、参照はコンパイルで止まる）。`Global` 型がないことの 1 件へ（14d-2 で削除済み） |
+| `MappingHelperMethodsGlobalReferenceGuardTests` | `HelperMethods_HaveNoReferenceToMigratedGlobalMembers` | Global 型は Phase7-Step10d で削除済み（型がないため、参照はコンパイルで止まる）。`Global` 型がないことの 1 件へ（14d-2 で削除済み） |
+| `MappingMacroPathGlobalReferenceGuardTests` | `MappingSource_HasNoGlobalReferenceToOutputKbmMapping` | Global 型は Phase7-Step10d で削除済み（型がないため、参照はコンパイルで止まる）。`Global` 型がないことの 1 件へ（14d-2 で削除済み） |
+| `MappingSetCurveAndDeadzoneGlobalReferenceGuardTests` | `SetCurveAndDeadzone_HasNoReferenceToMigratedGlobalMembers` | Global 型は Phase7-Step10d で削除済み（型がないため、参照はコンパイルで止まる）。`Global` 型がないことの 1 件へ（14d-2 で削除済み） |
+| `MappingStep3FinalGlobalReferenceGuardTests` | `KeepItems_AreGone_TheServiceBindingsAreConstructorInjected` | Global 型は Phase7-Step10d で削除済み（型がないため、参照はコンパイルで止まる）。`Global` 型がないことの 1 件へ（14d-2 で削除済み） |
+| `MappingStep3FinalGlobalReferenceGuardTests` | `UsingStaticGlobalDirective_IsStillPresent_ForGetTransitionedColor` | Global 型は Phase7-Step10d で削除済み（型がないため、参照はコンパイルで止まる）。`Global` 型がないことの 1 件へ（14d-2 で削除済み） |
+| `MouseGlobalReferenceGuardTests` | `MouseFiles_DoNotUseStaticGlobalImport` | Global 型は Phase7-Step10d で削除済み（型がないため、参照はコンパイルで止まる）。`Global` 型がないことの 1 件へ（14d-2 で削除済み） |
+| `MouseGlobalReferenceGuardTests` | `MouseFiles_HaveNoClampReferenceToGlobalAnymore` | Global 型は Phase7-Step10d で削除済み（型がないため、参照はコンパイルで止まる）。`Global` 型がないことの 1 件へ（14d-2 で削除済み） |
+| `MouseGlobalReferenceGuardTests` | `MouseFiles_HaveNoGlobalReferenceOtherThanClamp` | Global 型は Phase7-Step10d で削除済み（型がないため、参照はコンパイルで止まる）。`Global` 型がないことの 1 件へ（14d-2 で削除済み） |
+| `Phase13Step4ActionManagerRemovalGuardTests` | `ProductionSources_DoNotReferenceTheRemovedTypes` | 型がないため参照はコンパイルで止まる。撤去した型の一覧へ（14d-2 で削除済み） |
+| `Phase7Step10aW2ControllerLimitsGuardTests` | `TheFiles_DoNotReferenceTheGlobalConstants` | Global 型は Phase7-Step10d で削除済み（型がないため、参照はコンパイルで止まる）。`Global` 型がないことの 1 件へ（14d-2 で削除済み） |
+| `Phase7Step10aW3ResourcePrefixGuardTests` | `TheFormsFiles_DoNotReferenceTheGlobalPrefixes` | Global 型は Phase7-Step10d で削除済み（型がないため、参照はコンパイルで止まる）。`Global` 型がないことの 1 件へ（14d-2 で削除済み） |
+| `Phase7Step10bW1ControlTablesGuardTests` | `TheSource_NoLongerReferencesTheMovedMembersOnGlobal_AndBackingStoreHasNoCopy` | Global 型は Phase7-Step10d で削除済み（型がないため、参照はコンパイルで止まる）。`Global` 型がないことの 1 件へ。BackingStore の写しは 撤去したメンバーの一覧（リフレクション）へ（14d-2 で削除済み） |
+| `Phase7Step10bW4UsingMaxControllersGuardTests` | `NoSource_ReferencesTheRemovedShim` | 撤去したメンバーの一覧（リフレクション）へ（14d-2 で削除済み） |
+| `Phase7Step10cW2SerializersGuardTests` | `TheSerializer_DoesNotReferenceGlobal_AndKeepsTheStoreAsTheOnlyState` | Global 型は Phase7-Step10d で削除済み（型がないため、参照はコンパイルで止まる）。`Global` 型がないことの 1 件へ（14d-2 で削除済み） |
+| `Phase7Step10cW3AppSettingsSerializerGuardTests` | `TheSerializer_DoesNotReferenceGlobal_AndTheXmlStoreUsesIt` | Global 型は Phase7-Step10d で削除済み（型がないため、参照はコンパイルで止まる）。`Global` 型がないことの 1 件へ（14d-2 で削除済み） |
+| `Phase7Step10cW4LegacyProfileLoadGuardTests` | `TheSerializer_DoesNotReferenceGlobal_AndTheCallersUseIt` | Global 型は Phase7-Step10d で削除済み（型がないため、参照はコンパイルで止まる）。`Global` 型がないことの 1 件へ（14d-2 で削除済み） |
+| `Phase7Step10cW6ProfilePresetsGuardTests` | `TheSource_PresetsDoNotReferenceGlobal_AndTheLoaderDoesNotCallTheStore` | Global 型は Phase7-Step10d で削除済み（型がないため、参照はコンパイルで止まる）。`Global` 型がないことの 1 件へ（14d-2 で削除済み） |
+| `Phase7Step10dW3DeviceLayerSettingsGuardTests` | `LowerLayerFiles_DoNotReferenceGlobal` | Global 型は Phase7-Step10d で削除済み（型がないため、参照はコンパイルで止まる）。`Global` 型がないことの 1 件へ（14d-2 で削除済み） |
+| `Phase7Step10dW5GlobalRemovedGuardTests` | `NoSource_UsesTheStaticGlobalDirective_OrAGlobalMemberInCode` | Global 型は Phase7-Step10d で削除済み（型がないため、参照はコンパイルで止まる）。`Global` 型がないことの 1 件へ（14d-2 で削除済み） |
+| `Phase7Step10eW1SlotLimitServicesGuardTests` | `TheFiles_DoNotUseTheStaticSlotLimit` | 撤去したメンバーの一覧（リフレクション）へ（14d-2 で削除済み） |
+| `Phase7Step10eW2SlotLimitUiGuardTests` | `TheStaticShim_IsGone_AndNoSourceReferencesIt` | 撤去したメンバーの一覧（リフレクション）へ（14d-2 で削除済み） |
+| `Phase7Step1DeadMethodGuardTests` | `RemovedMethods_DoNotReappearInBackingStore` | 撤去したメンバーの一覧（リフレクション）へ（14d-2 で削除済み） |
+| `Phase7Step1ServiceLocatorRatchetGuardTests` | `ServiceProviderHolderReferences_DoNotExceedBaseline` | 基準値の表は空（型は Phase13 で撤廃）。AppHost の利用者の規則（App と Composition だけ）と、ServiceProviderHolder・Program の型がないことへ（14d-2 で削除済み） |
+| `Phase7Step2RemovedContractMembersGuardTests` | `RemovedMembers_DoNotReappearInContracts` | 撤去したメンバーの一覧（リフレクション）へ（14d-2 で削除済み） |
+| `Phase7Step3RemovedGlobalForwardersGuardTests` | `AppSettingsService_DoesNotReferenceRemovedGlobalForwarders` | Global 型は Phase7-Step10d で削除済み（型がないため、参照はコンパイルで止まる）。`Global` 型がないことの 1 件へ（14d-2 で削除済み） |
+| `Phase7Step4AppHostGuardTests` | `WelcomeDialog_NoLongerLoadsConfigItself` | Global 型は Phase7-Step10d で削除済み（型がないため、参照はコンパイルで止まる）。`Global` 型がないことの 1 件へ。loadConfig は 撤去したメンバーの一覧（リフレクション）へ（14d-2 で削除済み） |
+| `Phase7Step4EnvironmentProbesGuardTests` | `NoSourceFile_ReferencesRemovedProbesThroughGlobal` | Global 型は Phase7-Step10d で削除済み（型がないため、参照はコンパイルで止まる）。`Global` 型がないことの 1 件へ（14d-2 で削除済み） |
+| `Phase7Step4PathServiceGuardTests` | `NoSourceFile_ReferencesRemovedMembersThroughGlobal` | Global 型は Phase7-Step10d で削除済み（型がないため、参照はコンパイルで止まる）。`Global` 型がないことの 1 件へ（14d-2 で削除済み） |
+| `Phase7Step4PathServiceGuardTests` | `PathService_StaticInitialization_DoesNotReferenceGlobal` | Global 型は Phase7-Step10d で削除済み（型がないため、参照はコンパイルで止まる）。`Global` 型がないことの 1 件へ（14d-2 で削除済み） |
+| `Phase7Step5RootHubGuardTests` | `NoSourceFile_ReferencesProgramRootHub_AndProgramCsIsGone` | AppHost の利用者の規則（App と Composition だけ）と、ServiceProviderHolder・Program の型がないことへ（14d-2 で削除済み） |
+| `Phase7Step6OutputTypeOwnershipGuardTests` | `Global_NoLongerHoldsTheArrays_AndNoOneReadsThemFromGlobal` | Global 型は Phase7-Step10d で削除済み（型がないため、参照はコンパイルで止まる）。`Global` 型がないことの 1 件へ（14d-2 で削除済み） |
+| `Phase7Step7MacroRuntimeStateGuardTests` | `Mapping_HoldsNoMacroStateOfItsOwn_OnlyForwarders` | 撤去したメンバーの一覧（リフレクション）へ（14d-2 で削除済み） |
+| `Phase7Step7StickMotionStateGuardTests` | `MouseAndControlService_UseTheHolderAndTheTopLevelTypes` | 撤去したメンバーの一覧（リフレクション）へ（14d-2 で削除済み） |
+| `Phase7Step7SyntheticInputStateGuardTests` | `SyntheticDispatcherService_UsesTheInjectedHolder_AndTheStaticBridgeHoldsNoState` | 撤去したメンバーの一覧（リフレクション）へ（14d-2 で削除済み） |
+| `Phase7Step8W1StateHolderInjectionGuardTests` | `Mapping_NoLongerHasTheMovedOrDeadMembers` | 撤去したメンバーの一覧（リフレクション）へ（14d-2 で削除済み） |
+| `Phase7Step8W2MappingInstanceGuardTests` | `Mapping_HasNoServiceLocatorOrGlobalFallbacks` | Global 型は Phase7-Step10d で削除済み（型がないため、参照はコンパイルで止まる）。`Global` 型がないことの 1 件へ。AppHost の利用者の規則（App と Composition だけ）と、ServiceProviderHolder・Program の型がないことへ（14d-2 で削除済み） |
+| `Phase7Step8W3OutputKbmOwnershipGuardTests` | `NoSourceFile_ReferencesTheRemovedGlobalMembers_OrTheStaticResetMethod` | Global 型は Phase7-Step10d で削除済み（型がないため、参照はコンパイルで止まる）。`Global` 型がないことの 1 件へ（14d-2 で削除済み） |
+| `Phase7Step8W4NoSharedGuardTests` | `NoSourceFile_ReferencesTheRemovedSharedWindows` | 撤去したメンバーの一覧（リフレクション）へ（14d-2 で削除済み） |
+| `Phase7Step9W2NoGlobalInMappingGuardTests` | `TheFile_DoesNotReferenceGlobal` | Global 型は Phase7-Step10d で削除済み（型がないため、参照はコンパイルで止まる）。`Global` 型がないことの 1 件へ（14d-2 で削除済み） |
+| `Phase9BMouseGuardTests` | `NewComponents_DoNotReferenceStaticEntryPoints` | AppHost の利用者の規則（App と Composition だけ）と、ServiceProviderHolder・Program の型がないことへ（14d-2 で削除済み） |
+| `Phase9CMacroGuardTests` | `NewComponents_DoNotReferenceStaticEntryPoints` | AppHost の利用者の規則（App と Composition だけ）と、ServiceProviderHolder・Program の型がないことへ（14d-2 で削除済み） |
+| `Phase9EHidHideGuardTests` | `NewComponents_DoNotReferenceStaticEntryPoints` | AppHost の利用者の規則（App と Composition だけ）と、ServiceProviderHolder・Program の型がないことへ（14d-2 で削除済み） |
+| `Phase9EOscGuardTests` | `NewComponents_DoNotReferenceStaticEntryPoints` | AppHost の利用者の規則（App と Composition だけ）と、ServiceProviderHolder・Program の型がないことへ（14d-2 で削除済み） |
+| `Phase9EUdpMotionGuardTests` | `NewComponents_DoNotReferenceStaticEntryPoints` | AppHost の利用者の規則（App と Composition だけ）と、ServiceProviderHolder・Program の型がないことへ（14d-2 で削除済み） |
+| `Phase9EVirtualPadGuardTests` | `VirtualPadService_DoesNotReferenceStaticEntryPoints_OrControlService` | AppHost の利用者の規則（App と Composition だけ）と、ServiceProviderHolder・Program の型がないことへ。ControlService の部分は L4 と重複（14d-2 で削除済み） |
+| `ProfileEditorGlobalReferenceGuardTests` | `ProfileEditor_DoesNotReferenceResolvedGlobalMembers` | Global 型は Phase7-Step10d で削除済み（型がないため、参照はコンパイルで止まる）。`Global` 型がないことの 1 件へ（14d-2 で削除済み） |
+| `ProfileSettingsViewModelGlobalReferenceGuardTests` | `ProfileSettingsViewModel_HasOnlyConstGlobalReferences_AndNoServiceLocator` | Global 型は Phase7-Step10d で削除済み（型がないため、参照はコンパイルで止まる）。`Global` 型がないことの 1 件へ（14d-2 で削除済み） |
+| `SettingsViewModelGlobalReferenceGuardTests` | `NoGlobalReferencesRemain` | Global 型は Phase7-Step10d で削除済み（型がないため、参照はコンパイルで止まる）。`Global` 型がないことの 1 件へ（14d-2 で削除済み） |
+| `SettingsViewModelGlobalReferenceGuardTests` | `RemovedUnreferencedHandler_IsNotReintroduced` | 撤去したメンバーの一覧（リフレクション）へ（14d-2 で削除済み） |
+| `SettingsViewModelGlobalReferenceGuardTests` | `ResolvedMembers_AreNotReferencedThroughGlobal` | Global 型は Phase7-Step10d で削除済み（型がないため、参照はコンパイルで止まる）。`Global` 型がないことの 1 件へ（14d-2 で削除済み） |
+| `Step10FourGlobalRatchetGuardTests` | `DirectReferences_DoNotExceedStep10FourBaseline` | 70 行の基準値のうち 0 でないのは 4 行（AppHost 3、ログの文言の rootHub 2）。AppHost の利用者の規則（App と Composition だけ）と、ServiceProviderHolder・Program の型がないことへ（14d-2 で削除済み） |
+| `Step10FourOneGlobalReferenceGuardTests` | `ReplacedFiles_DoNotReferenceGlobalOrServiceLocator` | Global 型は Phase7-Step10d で削除済み（型がないため、参照はコンパイルで止まる）。`Global` 型がないことの 1 件へ（14d-2 で削除済み） |
+| `Step10FourTwoGlobalReferenceGuardTests` | `MainWindow_And_ControlService_UseOnlyConstGlobalMembers` | Global 型は Phase7-Step10d で削除済み（型がないため、参照はコンパイルで止まる）。`Global` 型がないことの 1 件へ（14d-2 で削除済み） |
+| `Step10FourTwoGlobalReferenceGuardTests` | `ReplacedFiles_DoNotReferenceGlobalExceptRetainedMembers` | Global 型は Phase7-Step10d で削除済み（型がないため、参照はコンパイルで止まる）。`Global` 型がないことの 1 件へ（14d-1 で削除済み） |
+| `Step10GroupOneGlobalReferenceGuardTests` | `LanguagePackControl_DoesNotUseServiceLocator` | AppHost の利用者の規則（App と Composition だけ）と、ServiceProviderHolder・Program の型がないことへ（14d-2 で削除済み） |
+| `Step10GroupOneGlobalReferenceGuardTests` | `RemovedOrphanMethods_DoNotComeBack` | 撤去したメンバーの一覧（リフレクション）へ（14d-2 で削除済み） |
+| `Step10GroupOneGlobalReferenceGuardTests` | `ReplacedFiles_DoNotReferenceGlobalExceptRetainedMembers` | Global 型は Phase7-Step10d で削除済み（型がないため、参照はコンパイルで止まる）。`Global` 型がないことの 1 件へ（14d-2 で削除済み） |
+| `Step10GroupThreeGlobalReferenceGuardTests` | `ReplacedFiles_DoNotReferenceGlobalExceptRetainedMembers` | Global 型は Phase7-Step10d で削除済み（型がないため、参照はコンパイルで止まる）。`Global` 型がないことの 1 件へ（14d-2 で削除済み） |
+| `Step10GroupThreeGlobalReferenceGuardTests` | `ReplacedFiles_DoNotUseServiceLocatorOrRootHubFallbacks` | AppHost の利用者の規則（App と Composition だけ）と、ServiceProviderHolder・Program の型がないことへ（14d-2 で削除済み） |
+| `Step10GroupTwoGlobalReferenceGuardTests` | `ReplacedFiles_DoNotReferenceGlobalExceptRetainedMembers` | Global 型は Phase7-Step10d で削除済み（型がないため、参照はコンパイルで止まる）。`Global` 型がないことの 1 件へ（14d-2 で削除済み） |
+| `Step10GroupTwoGlobalReferenceGuardTests` | `ReplacedFiles_DoNotUseServiceLocatorOrRootHubFallbacks` | AppHost の利用者の規則（App と Composition だけ）と、ServiceProviderHolder・Program の型がないことへ（14d-2 で削除済み） |
 
 ## 6. K のうち一部を畳むもの（メソッドは残す）
 
@@ -256,7 +227,7 @@ F・D で全メソッドが消えるファイル: 10（14d-2 でファイルご�
 
 ## 8. K（残す）の内訳
 
-K のメソッドは 312 件、133 ファイル。主な種類: XAML の構造（32 件）、
+K のメソッドは 325 件、130 ファイル。主な種類: XAML の構造（32 件）、
 ログの文言（規約 §2.3）、安全弁・ガードレールの順序（規約 §2.2。例: `Phase9E6LifecycleGuardTests` の Start／Stop の順序、`Phase9F1StartupOrderGuardTests`）、
 機能の配線（画面と ViewModel の接続、委譲の形）、行数の上限、TODO コメント（規約 §3.3 原則4）。
 14d-1 で、読み取りの部品（自前の `Read`・`StripComments`）だけを共通の `SourceText` に差し替える。
@@ -285,7 +256,7 @@ K のメソッドは 312 件、133 ファイル。主な種類: XAML の構造�
 - `Phase10Step3W3ControlMacroTabGuardTests`（2）
 - `Phase10Step3W3EmptyMacroTests`（3）
 - `Phase10Step3W4ControlEditorHostGuardTests`（5）
-- `Phase10Step3W4DefaultUnboundTypeTests`（3）
+- `Phase10Step3W4DefaultUnboundTypeTests`（2）
 - `Phase10Step3bW0ProfileEditorLayoutTests`（11）
 - `Phase10Step4W6ControlProfileTests`（2）
 - `Phase10Step4cW0ValidationTableTests`（3）
@@ -314,34 +285,31 @@ K のメソッドは 312 件、133 ファイル。主な種類: XAML の構造�
 - `Phase11W6ReapplyConnectedSlotsOnlyTests`（2）
 - `Phase11W6cOutputDataFlagTests`（4）
 - `Phase13FuncRatchetGuardTests`（1）
-- `Phase13Step3HostRemovalGuardTests`（1）
+- `Phase13Step10ForwardRemovalGuardTests`（1）
+- `Phase13Step3HostRemovalGuardTests`（3）
+- `Phase13Step4ActionManagerRemovalGuardTests`（1）
+- `Phase13Step9RunningForwardRemovalGuardTests`（1）
 - `Phase14NamespaceFolderGuardTests`（4）
 - `Phase6Step10GroupTwoContractTests`（2）
-- `Phase6Step7ContractExtensionTests`（3）
-- `Phase7Step10aW3ResourcePrefixGuardTests`（1）
-- `Phase7Step10bW1ControlTablesGuardTests`（2）
-- `Phase7Step10bW2TrayIconAndColorGuardTests`（1）
-- `Phase7Step10bW3ContractCleanupGuardTests`（2）
-- `Phase7Step10bW4UsingMaxControllersGuardTests`（1）
+- `Phase6Step7ContractExtensionTests`（2）
+- `Phase7Step10bW3ContractCleanupGuardTests`（3）
 - `Phase7Step10cW2SerializersGuardTests`（1）
-- `Phase7Step10cW3AppSettingsSerializerGuardTests`（2）
+- `Phase7Step10cW3AppSettingsSerializerGuardTests`（1）
 - `Phase7Step10cW4LegacyProfileLoadGuardTests`（1）
 - `Phase7Step10cW5LegacyProfileSaveGuardTests`（1）
 - `Phase7Step10cW6ProfilePresetsGuardTests`（1）
-- `Phase7Step10dW5GlobalRemovedGuardTests`（2）
+- `Phase7Step10dW5GlobalRemovedGuardTests`（3）
 - `Phase7Step10eW3AppHostGuardTests`（2）
-- `Phase7Step10eW4OrphanMembersGuardTests`（1）
+- `Phase7Step10eW4OrphanMembersGuardTests`（2）
 - `Phase7Step4AppHostGuardTests`（3）
-- `Phase7Step4PathServiceGuardTests`（1）
 - `Phase7Step4StartupBootstrapGuardTests`（3）
-- `Phase7Step5Ds3GyroTriggerTests`（4）
+- `Phase7Step5Ds3GyroTriggerTests`（3）
 - `Phase7Step5ServiceLocatorGuardTests`（3）
 - `Phase7Step6OutputTypeOwnershipGuardTests`（2）
 - `Phase7Step7MacroRuntimeStateGuardTests`（1）
 - `Phase7Step7SyntheticInputStateGuardTests`（2）
 - `Phase7Step8W1StateHolderInjectionGuardTests`（1）
-- `Phase7Step8W3OutputKbmOwnershipGuardTests`（1）
-- `Phase7Step9W2NoGlobalInMappingGuardTests`（2）
+- `Phase7Step9W1CompatAppHostRemovedGuardTests`（1）
 - `Phase7bW2W3SmallFixesGuardTests`（1）
 - `Phase7cW1Stage3ProfileActionsSnapshotGuardTests`（1）
 - `Phase8Step1ApplyProfileCleanupOrderGuardTests`（1）
@@ -363,21 +331,21 @@ K のメソッドは 312 件、133 ファイル。主な種類: XAML の構造�
 - `Phase8Step7BuildCommitLogGuardTests`（2）
 - `Phase8Step8W2RemovedGyroSwipeWiringTests`（2）
 - `Phase8Step8W3RemovedGyroSwipeNoticeWiringTests`（3）
-- `Phase9BMouseGuardTests`（2）
-- `Phase9CMacroGuardTests`（1）
-- `Phase9E6ConnectionGuardTests`（9）
-- `Phase9E6ConnectorGuardTests`（4）
-- `Phase9E6DisconnectGuardTests`（3）
-- `Phase9E6LifecycleGuardTests`（5）
-- `Phase9EHidHideGuardTests`（1）
-- `Phase9EInputReportGuardTests`（3）
-- `Phase9EOscGuardTests`（1）
-- `Phase9EUdpMotionGuardTests`（2）
-- `Phase9EVirtualPadGuardTests`（1）
+- `Phase9BMouseGuardTests`（4）
+- `Phase9CMacroGuardTests`（3）
+- `Phase9E6ConnectionGuardTests`（12）
+- `Phase9E6ConnectorGuardTests`（5）
+- `Phase9E6DisconnectGuardTests`（4）
+- `Phase9E6LifecycleGuardTests`（6）
+- `Phase9EHidHideGuardTests`（2）
+- `Phase9EInputReportGuardTests`（4）
+- `Phase9EOscGuardTests`（2）
+- `Phase9EUdpMotionGuardTests`（3）
+- `Phase9EVirtualPadGuardTests`（2）
 - `Phase9F1StartupOrderGuardTests`（4）
 - `Phase9F2IpcCommandTests`（7）
 - `Phase9F2IpcQueryResultGuardTests`（1）
-- `Phase9MapCustomGuardTests`（4）
+- `Phase9MapCustomGuardTests`（6）
 - `Phase9SteeringW2ControllerConfigsGuardTests`（2）
 - `Phase9SteeringW3OutputDeviceGuardTests`（2）
 - `ProfileEditorBackendViewModelTests`（2）

@@ -52,27 +52,6 @@ namespace DS4WindowsTests
         }
 
         [Fact]
-        public void Mapping_HoldsNoMacroStateOfItsOwn_OnlyForwarders()
-        {
-            string mapping = SourceText.ReadCode("DS4Windows/Processing/Mapping.cs");
-            if (mapping == null) return;
-
-            // Phase7-Step8 W2: 転送プロパティは削除し、コンストラクターで受けた保持クラスの配列を readonly で複製して持つ
-            Assert.Contains("private readonly MacroRuntimeState _macroRuntime;", mapping);
-            // Phase8-Fix-MacroRepeatUnify（D5）: macrodone（と、その添字の表 ds4ControlMapping／DS4ControltoInt）、二重実行防止のフラグとロックは削除した
-            Assert.DoesNotContain("macrodone", mapping);
-            Assert.DoesNotContain("DS4ControltoInt", mapping);
-            Assert.DoesNotContain("private readonly bool[] macroDispatchInFlight;", mapping);
-            Assert.DoesNotContain("private readonly object macroDispatchLock;", mapping);
-            // Phase9 9-C: macroControl／macroTaskQueue の複製は Mapping から無くなった（マクロの再生の部品と MacroRuntimeState.ApplyHeldControls へ移した）
-            Assert.DoesNotContain("private readonly bool[] macroControl;", mapping);
-            Assert.DoesNotContain("private readonly Dictionary<string, Task>[] macroTaskQueue;", mapping);
-            Assert.DoesNotContain("macroTaskQueue = macroRuntime.TaskQueue;", mapping);
-            Assert.DoesNotContain("MacroRuntimeState.Shared", mapping);
-            Assert.DoesNotContain("DS4_CONTROL_MACRO_ARRAY_LEN", mapping);
-        }
-
-        [Fact]
         public void Registration_RegistersTheSharedState()
         {
             string registration = RegistrationSource.ReadAll(stripComments: true);   // Phase14c-Step6（R-18）: 層ごとの partial ファイルをつないだもの（コメントは除く）

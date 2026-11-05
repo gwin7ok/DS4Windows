@@ -42,20 +42,6 @@ namespace DS4WindowsTests
             Assert.False(Regex.IsMatch(text, pattern), $"Mapping.cs に '{pattern}' が残っている（9-C で移した）");
         }
 
-        [Theory]
-        [InlineData("DS4Windows/Processing/Services/MacroStepExecutor.cs")]
-        [InlineData("DS4Windows/Processing/Services/MacroPlayback.cs")]
-        public void NewComponents_DoNotReferenceStaticEntryPoints(string relativePath)
-        {
-            string text = SourceText.ReadCode(relativePath);
-            if (text == null) return;
-
-            Assert.DoesNotContain("AppHost", text);
-            Assert.DoesNotContain("ServiceProviderHolder", text);
-            Assert.False(Regex.IsMatch(text, @"\bGlobal\."), relativePath + " が Global を参照している");
-            Assert.False(Regex.IsMatch(text, @"\bProgram\.rootHub\b"), relativePath + " が Program.rootHub を参照している");
-        }
-
         [Fact]
         public void NewComponents_AreRegisteredAsSingletons()
         {

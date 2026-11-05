@@ -18,7 +18,6 @@ namespace DS4WindowsTests
     /// </summary>
     public class MainWindowsAndTrayViewModelGlobalReferenceGuardTests
     {
-        private const string MainVmPath = "DS4Windows/UI/ViewModels/MainWindowsViewModel.cs";
         private const string TrayVmPath = "DS4Windows/UI/ViewModels/TrayIconViewModel.cs";
 
         private readonly ITestOutputHelper _output;
@@ -26,50 +25,6 @@ namespace DS4WindowsTests
         public MainWindowsAndTrayViewModelGlobalReferenceGuardTests(ITestOutputHelper output)
         {
             _output = output;
-        }
-
-        [Fact]
-        public void MainWindowsViewModel_HasNoGlobalOrServiceLocatorReferences()
-        {
-            string text = SourceText.ReadCode(MainVmPath);
-            if (text == null) return;
-
-            Assert.DoesNotMatch(@"\bGlobal\.", text);
-            Assert.DoesNotContain("AppHost", text);
-            Assert.DoesNotContain("Program.rootHub", text);
-        }
-
-        [Fact]
-        public void MainWindowsViewModel_RemovedUnreferencedUpdaterMembers_AreNotReintroduced()
-        {
-            string text = SourceText.ReadCode(MainVmPath);
-            if (text == null) return;
-
-            foreach (string removed in new[]
-            {
-                "RunUpdaterCheck", "DownloadUpstreamVersionInfo", "LauchDS4Updater",
-                "IsNET8Available", "DownloadUpstreamUpdaterVersion", "updaterExe",
-            })
-            {
-                Assert.DoesNotContain(removed, text);
-            }
-        }
-
-        [Fact]
-        public void TrayIconViewModel_HasOnlyConstGlobalReferences_AndNoServiceLocator()
-        {
-            string text = SourceText.ReadCode(TrayVmPath);
-            if (text == null) return;
-
-            var members = Regex.Matches(text, @"\bGlobal\.(\w+)");
-            foreach (Match m in members)
-            {
-                Assert.True(m.Groups[1].Value == "RESOURCES_PREFIX",
-                    $"TrayIconViewModel に定数以外の Global 参照が残っている: Global.{m.Groups[1].Value}");
-            }
-
-            Assert.DoesNotContain("AppHost", text);
-            Assert.DoesNotContain("Program.rootHub", text);
         }
 
         [Fact]

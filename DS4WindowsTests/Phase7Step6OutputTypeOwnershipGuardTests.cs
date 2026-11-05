@@ -23,21 +23,6 @@ namespace DS4WindowsTests
         }
 
         [Fact]
-        public void Global_NoLongerHoldsTheArrays_AndNoOneReadsThemFromGlobal()
-        {
-            string store = SourceText.ReadCode("DS4Windows/Core/Settings/BackingStore.cs");
-            string control = SourceText.ReadCode("DS4Windows/Processing/ControlService.cs");
-            string service = SourceText.ReadCode("DS4Windows/Output/Services/OutputSlotService.cs");
-            if (store == null || control == null || service == null) return;
-
-            Assert.DoesNotContain("Global.activeOutDevType", store);
-            Assert.DoesNotContain("Global.outDevTypeTemp", store);
-            Assert.DoesNotContain("Global.activeOutDevType", service);
-            Assert.DoesNotContain("Global.outDevTypeTemp", service);
-            Assert.DoesNotContain("Global.activeOutDevType", control);
-        }
-
-        [Fact]
         public void BackingStore_ReadsItsOwnActiveOutDevType()
         {
             string store = SourceText.ReadCode("DS4Windows/Core/Settings/BackingStore.cs");

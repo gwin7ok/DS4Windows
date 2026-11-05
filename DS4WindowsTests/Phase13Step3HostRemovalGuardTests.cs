@@ -40,11 +40,7 @@ namespace DS4WindowsTests
             Assert.Same(TestHost.GetService<IEventThreadDispatcher>(), TestHost.GetService<IEventThreadDispatcher>());
             Assert.IsType<DeviceRumbleService>(TestHost.GetService<IDeviceRumbleService>());
             Assert.IsType<OutputKbmInitializer>(TestHost.GetService<IOutputKbmInitializer>());
-
-            string text = RegistrationSource.ReadAll();   // Phase14c-Step6（R-18）: 層ごとの partial ファイルをつないだもの
-            if (text == null) return;
-            Assert.DoesNotContain("Func<IVirtualPadHost>", text);
-            Assert.DoesNotContain("Func<IServiceLifecycleHost>", text);
+            // Phase14d-Step2: 旧 Func<IVirtualPadHost>／Func<IServiceLifecycleHost> の登録がないことの検査は外した（型ごと撤去。RemovedApiRuleTests と Phase13FuncRatchetGuardTests が守る）
         }
     }
 }

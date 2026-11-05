@@ -21,7 +21,6 @@ namespace DS4WindowsTests
     public class AppPostHostGlobalReferenceGuardTests
     {
         private const string AppSourcePath = "DS4Windows/App.xaml.cs";
-        private const string PostHostAnchor = "CreateControlService(parser);";
 
         private readonly ITestOutputHelper _output;
 
@@ -31,45 +30,6 @@ namespace DS4WindowsTests
         }
 
         // ---- 期待値（領域ごとの Global メンバー参照の件数）----
-
-        private static readonly Dictionary<string, int> ExpectedStartupPreHost = new Dictionary<string, int>
-        {
-            // E7-01〜E7-05（起動時ログローテーション・ViGEmBus 情報。温存）
-            // Phase7-Step4 W3: FindConfigLocation は PathService へ移した（Global 参照 1 → 0）
-            // Phase7-Step4 W4: appdatapath は PathService の状態を直接読み書きする形にした（Global 参照 1 → 0）
-            // Phase7-Step10d W5: ブートストラップの BackingStore から読む形にした（Global 参照 2 → 0）
-            // Phase7-Step4 W1: RefreshViGEmBusInfo は EnvironmentService へ移した（Global 参照 1 → 0）
-        };
-
-        private static readonly Dictionary<string, int> ExpectedCheckOptions = new Dictionary<string, int>
-        {
-            // E7-06〜E7-12（-driverinstall 分岐。温存）。Phase7-Step4 W1: RefreshViGEmBusInfo は EnvironmentService へ移した（1 → 0）
-            // Phase7-Step4 W3: FindConfigLocation は PathService へ移した（Global 参照 1 → 0）
-            // Phase7-Step4 W2: Global.Load は IAppSettingsService.Load に置き換えた（1 → 0）
-            // Phase7-Step10d W5: ブートストラップの BackingStore から読む形にした（Global 参照 4 → 0）
-        };
-
-        private static readonly Dictionary<string, int> ExpectedApplyLanguageSetting = new Dictionary<string, int>
-        {
-            // E7-13〜E7-14（共用ヘルパー。決定4＝K で温存）
-            // Phase7-Step10d W4: SetCulture は UiCulture.Set へ移した
-            // Phase7-Step10d W5: ブートストラップの BackingStore へ書く形にした（Global 参照 1 → 0）
-        };
-
-        // Application_Startup の Post-Host（P7-01〜P7-25）は、Step7-2・7-3 ですべて DI サービス経由に置き換えた。
-        private static readonly Dictionary<string, int> ExpectedStartupPostHost = new Dictionary<string, int>();
-
-        private static readonly Dictionary<string, int> ExpectedCreateConfDirSkeleton = new Dictionary<string, int>();
-
-        private static readonly Dictionary<string, int> ExpectedAttemptSave = new Dictionary<string, int>
-        {
-            // P7-38（決定3＝P1 で温存。TODO 付き）
-            // Phase7-Step4 W4: appdatapath は PathService の状態を直接読み書きする形にした（Global 参照 1 → 0）
-        };
-
-        // P7-39（Save）は Step7-3 で置き換えた。Phase7-Step10a W2: 残っていた const の MAX_DS4_CONTROLLER_COUNT（E7-15）も
-        // ControllerLimits.MaxControllerCount に替えた（1 → 0）。
-        private static readonly Dictionary<string, int> ExpectedCleanShutdown = new Dictionary<string, int>();
 
         // ---- ソースの読み取りと領域の切り出し ----
 
@@ -112,50 +72,6 @@ namespace DS4WindowsTests
             throw new InvalidOperationException($"メソッド {methodName} の終わりが見つからない。");
         }
 
-        // Phase9 9-F F-1b: Application_Startup は、手順ごとのメソッドを呼ぶだけになった。従来の「Application_Startup」の領域は、それらのメソッドの合計
-        // （Pre-Host: ホストの構築の前、Post-Host: CreateControlService(parser); 以降）として扱う。順序は Phase9F1StartupOrderGuardTests が守る
-        private static readonly string[] StartupPreHostMethods =
-        {
-            "Application_Startup", "RunPreHostBootstrap", "TryHandleCompleteInstall", "SetProcessPriorities", "EnsureSingleInstance", "RotateLogsAndLogStartupDiagnostics", "InitializeProcessWideSettings",
-        };
-
-        private static readonly string[] StartupPostHostMethods =
-        {
-            "RunFirstRunLanguageSelection", "RunFirstRunSaveLocationAndSkeleton", "EnsureMacrosFolder", "LoadAppSettings", "ConfigureLoggingAndDiagnostics",
-            "RunFirstLaunchSetup", "PrepareProfilesCultureAndTheme", "ShowMainWindowAndFinish",
-        };
-
-        private static (string PreHost, string PostHost) SplitStartup(string text)
-        {
-            string buildHost = ExtractMethodBody(text, "BuildHostAndServices");
-            int anchor = buildHost.IndexOf(PostHostAnchor, StringComparison.Ordinal);
-            Assert.True(anchor >= 0, "BuildHostAndServices に CreateControlService(parser); が見つからない。");
-
-            string pre = string.Concat(StartupPreHostMethods.Select(m => ExtractMethodBody(text, m))) + buildHost.Substring(0, anchor);
-            string post = buildHost.Substring(anchor) + string.Concat(StartupPostHostMethods.Select(m => ExtractMethodBody(text, m)));
-            return (pre, post);
-        }
-
-        private static Dictionary<string, int> CountGlobalMembers(string region)
-        {
-            return Regex.Matches(region, @"\bGlobal\.(\w+)")
-                .Cast<Match>()
-                .GroupBy(m => m.Groups[1].Value)
-                .ToDictionary(g => g.Key, g => g.Count());
-        }
-
-        private void AssertRegion(string regionName, string region, Dictionary<string, int> expected)
-        {
-            Dictionary<string, int> actual = CountGlobalMembers(region);
-            string Format(Dictionary<string, int> d) =>
-                d.Count == 0 ? "(なし)" : string.Join(", ", d.OrderBy(kv => kv.Key, StringComparer.Ordinal).Select(kv => $"{kv.Key}×{kv.Value}"));
-
-            _output.WriteLine($"{regionName}: {Format(actual)}");
-            Assert.True(
-                expected.Count == actual.Count && expected.All(kv => actual.TryGetValue(kv.Key, out int n) && n == kv.Value),
-                $"{regionName} の Global 参照が計画と一致しない。期待: {Format(expected)} ／ 実際: {Format(actual)}");
-        }
-
         // ---- テスト ----
 
         [Fact]
@@ -167,38 +83,6 @@ namespace DS4WindowsTests
             string startup = ExtractMethodBody(text, "BuildHostAndServices");   // Phase9 9-F F-1b: ホストの構築の手順の中
             Assert.Matches(@"CreateControlService\(parser\);\s*InitializePostHostServices\(\);", startup);
             Assert.Single(Regex.Matches(text, @"\bInitializePostHostServices\(\);"));
-        }
-
-        [Fact]
-        public void GlobalReferences_MatchPlan_PerRegion()
-        {
-            string text = ReadSourceWithoutComments();
-            if (text == null) return;
-
-            (string startupPreHost, string startupPostHost) = SplitStartup(text);
-
-            string checkOptions = ExtractMethodBody(text, "CheckOptions");
-            string applyLanguage = ExtractMethodBody(text, "ApplyLanguageSetting");
-            string confDir = ExtractMethodBody(text, "CreateConfDirSkeleton");
-            string attemptSave = ExtractMethodBody(text, "AttemptSave");
-            string cleanShutdown = ExtractMethodBody(text, "CleanShutdown");
-
-            AssertRegion("Application_Startup（Pre-Host）", startupPreHost, ExpectedStartupPreHost);
-            AssertRegion("CheckOptions（Pre-Host）", checkOptions, ExpectedCheckOptions);
-            AssertRegion("ApplyLanguageSetting（共用ヘルパー）", applyLanguage, ExpectedApplyLanguageSetting);
-            AssertRegion("Application_Startup（Post-Host）", startupPostHost, ExpectedStartupPostHost);
-            AssertRegion("CreateConfDirSkeleton", confDir, ExpectedCreateConfDirSkeleton);
-            AssertRegion("AttemptSave", attemptSave, ExpectedAttemptSave);
-            AssertRegion("CleanShutdown", cleanShutdown, ExpectedCleanShutdown);
-
-            // 上記以外の場所に Global 参照が増えていないこと（ファイル全体の件数が各領域の合計と一致する）。
-            int expectedTotal = new[]
-            {
-                ExpectedStartupPreHost, ExpectedCheckOptions, ExpectedApplyLanguageSetting, ExpectedStartupPostHost,
-                ExpectedCreateConfDirSkeleton, ExpectedAttemptSave, ExpectedCleanShutdown,
-            }.Sum(d => d.Values.Sum());
-            int actualTotal = Regex.Matches(text, @"\bGlobal\.\w+").Count;
-            Assert.Equal(expectedTotal, actualTotal);
         }
 
         [Fact]

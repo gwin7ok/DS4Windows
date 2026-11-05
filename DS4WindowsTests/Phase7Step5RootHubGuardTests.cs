@@ -23,34 +23,6 @@ namespace DS4WindowsTests
         }
 
         [Fact]
-        public void NoSourceFile_ReferencesProgramRootHub_AndProgramCsIsGone()
-        {
-            string anchor = SourceFileLocator.Find("DS4Windows/Core/Settings/BackingStore.cs"); // Phase7-Step10d W5: Global.cs は削除したため、同じフォルダーの BackingStore.cs を起点にする
-            if (anchor == null)
-            {
-                _output.WriteLine("ソースが見つからないため検査を省略した。");
-                return;
-            }
-
-            string root = SourceFileLocator.RootFromAnchor(anchor);
-            string sourceDir = Path.Combine(root, "DS4Windows");
-            Assert.False(File.Exists(Path.Combine(sourceDir, "DS4Control", "Program.cs")), "Program.cs が再び作られている。");
-
-            var offenders = new List<string>();
-            foreach (string file in Directory.GetFiles(sourceDir, "*.cs", SearchOption.AllDirectories))
-            {
-                string normalized = file.Replace('\\', '/');
-                if (normalized.Contains("/obj/") || normalized.Contains("/bin/")) continue;
-
-                string text = SourceText.StripComments(File.ReadAllText(file));
-                if (Regex.IsMatch(text, @"\bProgram\s*\.\s*rootHub\b") || Regex.IsMatch(text, @"\bclass\s+Program\b"))
-                    offenders.Add(Path.GetRelativePath(sourceDir, file));
-            }
-
-            Assert.True(offenders.Count == 0, "Program.rootHub／Program クラスが残っている: " + string.Join(", ", offenders));
-        }
-
-        [Fact]
         public void App_HoldsTheControlServiceInAVolatileField()
         {
             string text = SourceText.ReadCode("DS4Windows/App.xaml.cs");

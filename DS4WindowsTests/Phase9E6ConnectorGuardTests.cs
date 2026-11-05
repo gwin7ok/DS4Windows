@@ -114,10 +114,7 @@ namespace DS4WindowsTests
             string text = SourceText.ReadCode("DS4Windows/Processing/Services/DeviceConnector.cs");
             if (text == null) return;
 
-            Assert.DoesNotContain("AppHost", text);
-            Assert.DoesNotContain("ServiceProviderHolder", text);
             Assert.False(Regex.IsMatch(text, @"\bControlService\b"), "DeviceConnector が ControlService を参照している");
-            Assert.False(Regex.IsMatch(text, @"\bGlobal\."), "DeviceConnector が Global を参照している");
         }
     }
 }

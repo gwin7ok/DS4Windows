@@ -200,11 +200,7 @@ namespace DS4WindowsTests
             string text = SourceText.ReadCode("DS4Windows/Processing/Services/ServiceLifecycle.cs");
             if (text == null) return;
 
-            Assert.DoesNotContain("AppHost", text);
-            Assert.DoesNotContain("ServiceProviderHolder", text);
-            Assert.DoesNotContain("MainWindow", text);
             Assert.False(Regex.IsMatch(text, @"\bControlService\b"), "ServiceLifecycle が ControlService を参照している");
-            Assert.False(Regex.IsMatch(text, @"\bGlobal\."), "ServiceLifecycle が Global を参照している");
         }
     }
 }

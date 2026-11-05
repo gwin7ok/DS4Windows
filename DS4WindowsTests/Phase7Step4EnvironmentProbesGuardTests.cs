@@ -15,54 +15,12 @@ namespace DS4WindowsTests
     /// </summary>
     public class Phase7Step4EnvironmentProbesGuardTests
     {
-        // Wave ごとに追記する（W1: 環境のプローブ。W3 以降: 保存場所・実行ファイルの情報）
-        private static readonly string[] Removed =
-        {
-            "IsWin8OrGreater", "IsWin10OrGreater",
-            "vigemInstalled", "vigembusVersion", "vigemBusVersionInfo", "minSupportedViGEmBusVersionInfo",
-            "hidHideInstalled", "fakerInputInstalled", "fakerInputVersion",
-            "BLANK_VIGEMBUS_VERSION", "MIN_SUPPORTED_VIGEMBUS_VERSION", "MIN_TOUCHPAD_PASSTHRU_VIGEMBUS_VERSION",
-            "BLANK_FAKERINPUT_VERSION", "VIGEMBUS_GUID",
-            "CheckHidHideAffectedStatus", "IsHidHideInstalled", "IsFakerInputInstalled", "IsViGEmBusInstalled",
-            "IsRunningSupportedViGEmBus", "IsUsingMinViGEm117333", "RefreshViGEmBusInfo", "RefreshHidHideInfo",
-            "RefreshFakerInputInfo", "FindViGEmDeviceInfo", "CheckForSysDevice", "PopulateFromViGEmBusInfo",
-            "FakerInputVersion",
-        };
 
         private readonly ITestOutputHelper _output;
 
         public Phase7Step4EnvironmentProbesGuardTests(ITestOutputHelper output)
         {
             _output = output;
-        }
-
-        [Fact]
-        public void NoSourceFile_ReferencesRemovedProbesThroughGlobal()
-        {
-            string anchor = SourceFileLocator.Find("DS4Windows/Core/Settings/BackingStore.cs"); // Phase7-Step10d W5: Global.cs は削除したため、同じフォルダーの BackingStore.cs を起点にする
-            if (anchor == null)
-            {
-                _output.WriteLine("ソースが見つからないため検査を省略した。");
-                return;
-            }
-
-            string root = SourceFileLocator.RootFromAnchor(anchor);
-            string sourceDir = Path.Combine(root, "DS4Windows");
-            var offenders = new List<string>();
-            foreach (string file in Directory.GetFiles(sourceDir, "*.cs", SearchOption.AllDirectories))
-            {
-                string normalized = file.Replace('\\', '/');
-                if (normalized.Contains("/obj/") || normalized.Contains("/bin/")) continue;
-
-                string text = SourceText.StripComments(File.ReadAllText(file));
-                foreach (string name in Removed)
-                {
-                    if (Regex.IsMatch(text, @"\bGlobal\." + Regex.Escape(name) + @"\b"))
-                        offenders.Add(Path.GetRelativePath(sourceDir, file) + ": Global." + name);
-                }
-            }
-
-            Assert.True(offenders.Count == 0, "移管済みの調べ物を Global 経由で参照している: " + string.Join(", ", offenders));
         }
 
         [Fact]

@@ -45,24 +45,5 @@ namespace DS4WindowsTests
             Assert.Equal("/DS4Windows;component/Resources/DS4W.ico", DS4Windows.UI.TrayIconResources.iconChoiceResources[DS4Windows.Core.Settings.TrayIconChoice.Default]);
             Assert.Equal("/DS4Windows;component/Resources/DS4W - White.ico", DS4Windows.UI.TrayIconResources.iconChoiceResources[DS4Windows.Core.Settings.TrayIconChoice.White]);
         }
-
-        [Fact]
-        public void TheFormsFiles_DoNotReferenceTheGlobalPrefixes()
-        {
-            string anchor = SourceFileLocator.Find("DS4Windows/Core/Settings/BackingStore.cs"); // Phase7-Step10d W5: Global.cs は削除したため、同じフォルダーの BackingStore.cs を起点にする
-            if (anchor == null)
-            {
-                _output.WriteLine("ソースが見つからないため検査を省略した。");
-                return;
-            }
-
-            string root = SourceFileLocator.RootFromAnchor(anchor);
-            var pattern = new Regex(@"(?<![\w])(?:DS4Windows\.)?Global\.(RESOURCES_PREFIX|ASSEMBLY_RESOURCE_PREFIX)\b");
-            var offenders = Directory.GetFiles(Path.Combine(root, "DS4Windows", "UI"), "*.cs", SearchOption.AllDirectories)
-                .Where(f => pattern.IsMatch(Regex.Replace(Regex.Replace(File.ReadAllText(f), @"/\*.*?\*/", string.Empty, RegexOptions.Singleline), @"//[^\r\n]*", string.Empty)))
-                .Select(f => Path.GetFileName(f))
-                .ToArray();
-            Assert.True(offenders.Length == 0, "Global の資源パスの定数への参照が残っている: " + string.Join(", ", offenders));
-        }
     }
 }

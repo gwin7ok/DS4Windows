@@ -106,25 +106,5 @@ namespace DS4WindowsTests
             foreach (string name in new[] { "DEFAULT_STICK_OUTPUT_CURVE", "DEFAULT_STICK_OUTPUT_CURVE_ID", "DEFAULT_SA_OUTPUT_CURVE", "DEFAULT_SA_OUTPUT_CURVE_ID" })
                 Assert.Null(typeof(BackingStore).GetField(name));
         }
-
-        [Fact]
-        public void NoSource_ReferencesTheRemovedShim()
-        {
-            string anchor = SourceFileLocator.Find("DS4Windows/Core/Settings/BackingStore.cs"); // Phase7-Step10d W5: Global.cs は削除したため、同じフォルダーの BackingStore.cs を起点にする
-            if (anchor == null)
-            {
-                _output.WriteLine("ソースが見つからないため検査を省略した。");
-                return;
-            }
-
-            string root = SourceFileLocator.RootFromAnchor(anchor);
-            string Strip(string t) => Regex.Replace(Regex.Replace(t, @"/\*.*?\*/", string.Empty, RegexOptions.Singleline), @"//[^\r\n]*", string.Empty);
-            var offenders = Directory.GetFiles(Path.Combine(root, "DS4Windows"), "*.cs", SearchOption.AllDirectories)
-                .Where(f => !f.Contains(@"\obj\") && !f.Contains(@"\bin\"))
-                .Where(f => Strip(File.ReadAllText(f)).Contains("USING_MAX_CONTROLLERS"))
-                .Select(f => Path.GetFileName(f))
-                .ToArray();
-            Assert.True(offenders.Length == 0, "削除済みの USING_MAX_CONTROLLERS への参照が残っている: " + string.Join(", ", offenders));
-        }
     }
 }

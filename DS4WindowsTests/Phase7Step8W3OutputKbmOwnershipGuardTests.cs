@@ -142,20 +142,5 @@ namespace DS4WindowsTests
             Assert.Empty(state.DeviceState[Device].keyPresses);
             Assert.NotSame(oldGlobal, state.GlobalState);
         }
-
-        [Fact]
-        public void NoSourceFile_ReferencesTheRemovedGlobalMembers_OrTheStaticResetMethod()
-        {
-            string anchor = SourceFileLocator.Find("DS4Windows/Core/Settings/BackingStore.cs"); // Phase7-Step10d W5: Global.cs は削除したため、同じフォルダーの BackingStore.cs を起点にする
-            if (anchor == null) return;
-
-            string root = SourceFileLocator.ProjectDirFromAnchor(anchor); // DS4Windows プロジェクト（本体のみ。テストの文字列は対象外）
-            var removed = new Regex(@"Global\.(outputKBMHandler|outputKBMMapping|InitOutputKBMHandler|InitOutputKBMMapping)\b|ActionsLoadedRuntimeReset\.Reset\b");
-            var offenders = Directory.GetFiles(root, "*.cs", SearchOption.AllDirectories)
-                .Where(f => !f.Contains(@"\obj\") && !f.Contains(@"\bin\"))
-                .Where(f => removed.IsMatch(Regex.Replace(Regex.Replace(File.ReadAllText(f), @"/\*.*?\*/", string.Empty, RegexOptions.Singleline), @"//[^\r\n]*", string.Empty)))
-                .ToArray();
-            Assert.True(offenders.Length == 0, "削除済みのメンバーへの参照が残っている: " + string.Join(", ", offenders));
-        }
     }
 }

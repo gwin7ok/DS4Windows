@@ -26,74 +26,12 @@ namespace DS4WindowsTests
     /// </summary>
     public class Step10GroupTwoGlobalReferenceGuardTests
     {
-        // ファイルごとに、使ってよい Global メンバー（温存項目）
-        private static readonly Dictionary<string, string[]> AllowedGlobalMembers = new Dictionary<string, string[]>
-        {
-            // Step10-2-2
-            ["DS4Windows/UI/ViewModels/ControllerListViewModel.cs"] = new[] { "RESOURCES_PREFIX" },
-            ["DS4Windows/UI/ViewModels/ControllerRegDeviceOptsViewModel.cs"] = new string[0],
-            ["DS4Windows/UI/ControllerRegisterOptionsWindow.xaml.cs"] = new string[0],
-            // Step10-2-3
-            ["DS4Windows/UI/AutoProfiles.xaml.cs"] = new string[0],
-            ["DS4Windows/UI/ViewModels/AutoProfilesViewModel.cs"] = new string[0],
-            ["DS4Windows/UI/DupBox.xaml.cs"] = new string[0],
-            ["DS4Windows/UI/RenameProfileWindow.xaml.cs"] = new string[0],
-            ["DS4Windows/UI/ViewModels/RenameProfileViewModel.cs"] = new string[0],
-            // Step10-2-4b（RESOURCES_PREFIX・ASSEMBLY_RESOURCE_PREFIX は定数、ds4inputNames などの名前表と macroDS4Values は不変の静的表）
-            ["DS4Windows/UI/BindingWindow.xaml.cs"] = new[] { "RESOURCES_PREFIX", "ASSEMBLY_RESOURCE_PREFIX", "ds4inputNames", "xboxDefaultNames", "ds4DefaultNames" },
-            ["DS4Windows/UI/ViewModels/BindingWindowViewModel.cs"] = new string[0],
-            ["DS4Windows/UI/RecordBox.xaml.cs"] = new[] { "RESOURCES_PREFIX" },
-            ["DS4Windows/UI/ViewModels/RecordBoxViewModel.cs"] = new[] { "RESOURCES_PREFIX", "macroDS4Values" },
-            ["DS4Windows/UI/StickCalibrationWindow.xaml.cs"] = new string[0],
-            ["DS4Windows/UI/Services/EditorWindowFactory.cs"] = new string[0],
-            // Step10-2-5（getX360ControlString は、名前表を引くだけの純粋関数のため温存）
-            ["DS4Windows/UI/ViewModels/MappingListViewModel.cs"] = new[] { "getX360ControlString" },
-            ["DS4Windows/UI/ViewModels/TouchButtonUserControlViewModel.cs"] = new string[0],
-            ["DS4Windows/UI/TouchButtonUserControl.xaml.cs"] = new string[0],
-            ["DS4Windows/Core/Settings/PresetOption.cs"] = new string[0],
-            ["DS4Windows/UI/PresetOptionWindow.xaml.cs"] = new string[0],
-            ["DS4Windows/UI/ViewModels/PresetOptionViewModel.cs"] = new string[0],
-            ["DS4Windows/UI/ControllerReadingsControl.xaml.cs"] = new string[0],
-        };
 
         private readonly ITestOutputHelper _output;
 
         public Step10GroupTwoGlobalReferenceGuardTests(ITestOutputHelper output)
         {
             _output = output;
-        }
-
-        [Fact]
-        public void ReplacedFiles_DoNotReferenceGlobalExceptRetainedMembers()
-        {
-            foreach (var entry in AllowedGlobalMembers)
-            {
-                string text = SourceText.ReadCode(entry.Key);
-                if (text == null) continue;
-
-                var unexpected = Regex.Matches(text, @"\bGlobal\.(\w+)")
-                    .Cast<Match>()
-                    .Select(m => m.Groups[1].Value)
-                    .Where(name => !entry.Value.Contains(name))
-                    .Distinct()
-                    .ToList();
-
-                Assert.True(unexpected.Count == 0,
-                    $"{entry.Key} に温存項目以外の Global 参照がある: {string.Join(", ", unexpected)}");
-            }
-        }
-
-        [Fact]
-        public void ReplacedFiles_DoNotUseServiceLocatorOrRootHubFallbacks()
-        {
-            foreach (string file in AllowedGlobalMembers.Keys)
-            {
-                string text = SourceText.ReadCode(file);
-                if (text == null) continue;
-
-                Assert.DoesNotContain("AppHost", text);
-                Assert.DoesNotContain("Program.rootHub", text);
-            }
         }
 
         [Fact]

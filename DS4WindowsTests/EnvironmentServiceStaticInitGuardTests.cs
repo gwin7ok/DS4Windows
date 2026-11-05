@@ -20,77 +20,12 @@ namespace DS4WindowsTests
     /// </summary>
     public class EnvironmentServiceStaticInitGuardTests
     {
-        private static readonly HashSet<string> AllowedConstMembers = new HashSet<string>
-        {
-            "MAX_DS4_CONTROLLER_COUNT",
-            "OLD_XINPUT_CONTROLLER_COUNT",
-        };
 
         private readonly ITestOutputHelper _output;
 
         public EnvironmentServiceStaticInitGuardTests(ITestOutputHelper output)
         {
             _output = output;
-        }
-
-        /// <summary>指定メソッドの本体（最初の { から対応する } まで）を返す。見つからなければ null。</summary>
-        private static string ExtractMethodBody(string source, string signature)
-        {
-            int start = source.IndexOf(signature, System.StringComparison.Ordinal);
-            if (start < 0)
-            {
-                return null;
-            }
-
-            int open = source.IndexOf('{', start);
-            if (open < 0)
-            {
-                return null;
-            }
-
-            int depth = 0;
-            for (int i = open; i < source.Length; i++)
-            {
-                if (source[i] == '{') depth++;
-                else if (source[i] == '}')
-                {
-                    depth--;
-                    if (depth == 0)
-                    {
-                        return source.Substring(open, i - open + 1);
-                    }
-                }
-            }
-
-            return null;
-        }
-
-        [Fact]
-        public void SlotLimitCalculation_DoesNotReferenceNonConstGlobalMembers()
-        {
-            string path = SourceFileLocator.Find("DS4Windows/Core/Platform/EnvironmentService.cs");
-            if (path == null)
-            {
-                _output.WriteLine("EnvironmentService.cs が見つからないため検査を省略した。");
-                return;
-            }
-
-            string source = File.ReadAllText(path);
-            string calculate = ExtractMethodBody(source, "private static int CalculateControllerSlotLimit()");
-            string osCheck = ExtractMethodBody(source, "private static bool IsWin8OrGreaterCore()");
-
-            Assert.NotNull(calculate);
-            Assert.NotNull(osCheck);
-
-            foreach (string body in new[] { calculate, osCheck })
-            {
-                foreach (Match match in Regex.Matches(body, @"(?<![\w.])Global\.(\w+)"))
-                {
-                    string member = match.Groups[1].Value;
-                    Assert.True(AllowedConstMembers.Contains(member),
-                        $"上限の計算が Global.{member} を参照している（Global の静的初期化を起こすため循環の原因になる）");
-                }
-            }
         }
 
         [Fact]

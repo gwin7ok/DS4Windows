@@ -82,24 +82,5 @@ namespace DS4WindowsTests
         {
             Assert.Equal((1UL << 48) | (2UL << 32) | (3UL << 16) | 4UL, VersionUtil.CompileVersionNumber(1, 2, 3, 4));
         }
-
-        [Fact]
-        public void TheSerializer_DoesNotReferenceGlobal_AndTheXmlStoreUsesIt()
-        {
-            string serializer = SourceFileLocator.Find("DS4Windows/Core/Persistence/AppSettingsXmlSerializer.cs");
-            string xmlStore = SourceFileLocator.Find("DS4Windows/Core/Persistence/ProfileXmlStore.cs");
-            if (serializer == null || xmlStore == null)
-            {
-                _output.WriteLine("ソースが見つからないため検査を省略した。");
-                return;
-            }
-
-            string Strip(string t) => Regex.Replace(Regex.Replace(t, @"/\*.*?\*/", string.Empty, RegexOptions.Singleline), @"//[^\r\n]*", string.Empty);
-            string s = Strip(File.ReadAllText(serializer));
-            Assert.False(Regex.IsMatch(s, @"(?<![\w.])Global\.\w+"), "AppSettingsXmlSerializer が Global を参照している");
-            Assert.False(Regex.IsMatch(s, @"\bthis\b(?!\.store\b|\._pathService\b|\._environment\b)"), "this を直接使っている");
-            string x = Strip(File.ReadAllText(xmlStore));
-            Assert.DoesNotMatch(@"_backingStore\.(Load|Save)\(", x);
-        }
     }
 }
