@@ -8,6 +8,12 @@
     /// </summary>
     public static class LayerDependencyBaseline
     {
+        /// <summary>記録のみの規則 L2（Core → 第1層・第3層）の件数の基準値。<see cref="LayerDependencyRuleTests"/> が実数との一致を検査する。</summary>
+        public const int RecordOnlyL2Count = 75;
+
+        /// <summary>記録のみの規則 L7（UI → 第1層・第3層）の件数の基準値。</summary>
+        public const int RecordOnlyL7Count = 80;
+
         public static readonly string[] Entries =
         {
         };
