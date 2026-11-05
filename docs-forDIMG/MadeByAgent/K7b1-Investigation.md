@@ -85,3 +85,9 @@ GetOverlappedResultEx(handle, ov, out _, timeout, true)   // ← 保留中の I/
 | 57596 | 10-21 11:10 | `NullReferenceException`（`DS4Device.performDs4Input`、入力スレッド） | 未特定。`!pe`／`!clrstack -a` の結果では、`performDs4Input` のフレームが例外の再スローで巻き戻されており、ローカル変数が読めない（`<no data>`）。ダンプは最も古い（10-21 11:10）ビルドのもの | **これ以上の調査は行わない**。様子見で、新しいビルドで再発したときに、新しいダンプで調べる |
 
 ヒープ破壊の 3 件（約 4 割）と、診断コードの 2 件、Gyro の校正 1 件が分かり、残りは `performDs4Input` の NullReferenceException 1 件。
+
+## 8. 解消（2026-11-05）
+
+- 是正（`7033089`、2026-10-23）の後、約 2 週間（2026-11-05 まで）、新しいダンプが出ていないことをユーザーが確認した。§5 の条件（約 3 日、ダンプが増えない）を満たすため、**K7b-1 は解消**とする。
+- 原因は、HID の非同期の読み取り・書き込みが、GC で移動した配列の古い位置へ書き込んでいたこと（§6。ヒープ破壊の 3 件）。診断用の一時ログ（2 件）と Gyro の校正（1 件）は、それぞれ是正済み（§7）。
+- ダンプ 57596（`DS4Device.performDs4Input` の NullReferenceException）は原因を特定できていない。再発したら再調査する（`Known-Issues-Ledger.md` の KI-5）。

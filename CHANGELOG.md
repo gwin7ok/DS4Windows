@@ -4,6 +4,13 @@ All notable changes to this project are recorded in this file.
 
 ## [Unreleased]
 
+### Fixed
+- Command line: the result of `-command Query…` was not shown when DS4Windows was started from a console without redirecting the output (it only appeared with `| more`). The result is now written to the console that started DS4Windows; redirected output (a pipe or a file) still goes to standard output. An interactive Command Prompt does not wait for DS4Windows to finish, so the result can appear after the next prompt; use `start "" /wait DS4Windows.exe -command …` to wait for it.
+- Command line: non-ASCII characters in the result of `-command Query…` (for example Japanese profile names) were shown as `?`. The result is now passed as UTF-8 and written in the console's code page. An empty result is now an empty line.
+
+### Changed
+- Internal (no change in behavior): dependencies between the layers were straightened out (shared value types and contracts moved to the core folders, the UI no longer refers to the application class directly), static state was removed (the bridge for sending synthetic keys, the arrays for forced light bar colors, an unused static action registry; startup entries, the change log and the HTTP client are now provided by the service container), service registration was split per layer, and the test suite was cleaned up (architecture tests for the layer dependencies, removal of obsolete and duplicate source checks, faster tests).
+
 ## [4.3.1] - 2026-11-04
 
 ### Changed
