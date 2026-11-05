@@ -1145,6 +1145,17 @@ namespace DS4Windows.Core.Settings
         // コンテナ構築前の読み込みでは購読者がいないが、その時点では実行時状態は新品であり、結果は同じ。
         public event Action ActionsLoaded;
 
+        // Phase14c-Step6（R-13）: ActionsLoaded の購読者の差し替え。ブートストラップの BackingStore はコンテナより長く生きるため、
+        // コンテナが作り直されても購読が 1 つになるよう、前回の購読者を BackingStore 自身が覚えて外す（旧: ServiceRegistration の静的フィールド _subscribedReset）
+        private Action _actionsLoadedHandler;
+
+        public void ReplaceActionsLoadedHandler(Action handler)
+        {
+            if (_actionsLoadedHandler != null) ActionsLoaded -= _actionsLoadedHandler;
+            _actionsLoadedHandler = handler;
+            if (handler != null) ActionsLoaded += handler;
+        }
+
         // Phase7-Step10c W2: Actions.xml の読込を担う SpecialActionsXmlSerializer が呼ぶため、公開にした（ActionsLoaded イベントの発行元は BackingStore のまま）
         public void RaiseActionsLoaded()
         {

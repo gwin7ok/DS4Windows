@@ -1,0 +1,39 @@
+using Microsoft.Extensions.DependencyInjection;
+using DS4Windows.Core.Abstractions;
+using DS4Windows.UI.Abstractions;
+using DS4Windows.UI.Services;
+using DS4Windows.UI.ViewModels;
+
+namespace DS4Windows.Composition
+{
+    public static partial class ServiceRegistration
+    {
+        /// <summary>
+        /// Phase14c-Step6（R-18）: 4-a（<c>UI/</c>）の実装と、App へ委譲するアダプター（<c>Composition/</c>）の登録。
+        /// </summary>
+        private static void AddUiServices(IServiceCollection services)
+        {
+            services.AddSingleton<INotificationService, AppNotificationService>();
+
+            // Phase 4: UI層 ViewModel ファクトリの登録
+            services.AddSingleton<IViewModelFactory, ViewModelFactory>();
+
+            // Phase6-Step10-2（決定 E1＝A）: 補助ウィンドウ（ボタン割り当て、マクロ記録、プリセット、スティック校正、スペシャルアクション編集）の生成の窓口
+            services.AddSingleton<IEditorWindowFactory, EditorWindowFactory>();
+
+            // Phase7-Step5 W5（Q4＝A）: メイン画面の生成の窓口。MainWindow のコンストラクターで AppHost.GetService を使わないための窓口
+            services.AddSingleton<IMainWindowFactory, MainWindowFactory>();
+            // Phase14b-Step16（決定 D11）: 画面のテーマ・言語の切り替え（App へ委譲するアダプター）
+            services.AddSingleton<IUiThemeAndLanguage, AppThemeLanguageAdapter>();
+            services.AddSingleton<IIpcResultWriter, AppIpcResultWriterAdapter>();   // Phase14b-Step16: CLI の問い合わせの結果（App の MMF へ委譲）
+
+            // Phase 4: Pattern A ViewModel (Transient)
+            services.AddTransient<SettingsViewModel>();
+            services.AddTransient<LogViewModel>();
+            services.AddTransient<AboutViewModel>();
+
+            // Phase 4: Pattern B ViewModel (Singleton)
+            services.AddSingleton<MainWindowsViewModel>();
+        }
+    }
+}

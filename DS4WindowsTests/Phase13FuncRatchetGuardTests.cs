@@ -25,8 +25,8 @@ namespace DS4WindowsTests
         {
             ("DefaultActionManager.cs", "IMapping"),            // 本物の循環（Mapping → … → ActionManager）
             ("ProfileApplicationService.cs", "IActionBindingBuilder"),   // 本物の循環（ActionBindingBuilder → … → ProfileApplicationService）
-            ("ServiceRegistration.cs", "IMapping"),             // 上の 2 つの登録
-            ("ServiceRegistration.cs", "IActionBindingBuilder"),
+            ("ServiceRegistration.Processing.cs", "IMapping"),             // 上の 2 つの登録（Phase14c-Step6: 第2層の登録のファイル）
+            ("ServiceRegistration.Processing.cs", "IActionBindingBuilder"),
         };
 
         private static string StripComments(string text)

@@ -41,9 +41,8 @@ namespace DS4WindowsTests
             Assert.IsType<DeviceRumbleService>(TestHost.GetService<IDeviceRumbleService>());
             Assert.IsType<OutputKbmInitializer>(TestHost.GetService<IOutputKbmInitializer>());
 
-            string anchor = SourceFileLocator.Find("DS4Windows/Composition/ServiceRegistration.cs");
-            if (anchor == null) return;
-            string text = System.IO.File.ReadAllText(anchor);
+            string text = RegistrationSource.ReadAll();   // Phase14c-Step6（R-18）: 層ごとの partial ファイルをつないだもの
+            if (text == null) return;
             Assert.DoesNotContain("Func<IVirtualPadHost>", text);
             Assert.DoesNotContain("Func<IServiceLifecycleHost>", text);
         }

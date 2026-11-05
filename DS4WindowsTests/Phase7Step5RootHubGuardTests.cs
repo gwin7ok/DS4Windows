@@ -82,7 +82,7 @@ namespace DS4WindowsTests
         [Fact]
         public void ServiceRegistration_AlwaysCreatesTheControlService()
         {
-            string text = Read("DS4Windows/Composition/ServiceRegistration.cs");
+            string text = RegistrationSource.ReadAll(stripComments: true);   // Phase14c-Step6（R-18）: 層ごとの partial ファイルをつないだもの（コメントは除く）
             if (text == null) return;
 
             Assert.DoesNotContain("rootHub", text);

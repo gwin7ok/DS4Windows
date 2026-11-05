@@ -69,12 +69,13 @@ namespace DS4WindowsTests
         [Fact]
         public void Registration_SubscribesTheResetOnce_AndRegistersTheSharedState()
         {
-            string registration = Read("DS4Windows/Composition/ServiceRegistration.cs");
+            string registration = RegistrationSource.ReadAll(stripComments: true);   // Phase14c-Step6（R-18）: 層ごとの partial ファイルをつないだもの（コメントは除く）
             if (registration == null) return;
 
             // Phase7-Step8 W3: 購読者は instance（保持クラスをコンストラクターで受ける）。前回の購読者を外してから登録する
-            Assert.Contains("store.ActionsLoaded -= _subscribedReset.Reset;", registration);
-            Assert.Contains("store.ActionsLoaded += reset.Reset;", registration);
+            // Phase14c-Step6（R-13）: 前回の購読者は BackingStore 自身が覚える（旧: ServiceRegistration の静的フィールド _subscribedReset）
+            Assert.Contains("store.ReplaceActionsLoadedHandler(reset.Reset);", registration);
+            Assert.DoesNotContain("_subscribedReset", registration);
             Assert.Contains("services.AddSingleton<SyntheticInputState>();", registration); // Phase7-Step8 W4: Shared は削除した
         }
 

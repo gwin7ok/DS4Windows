@@ -189,10 +189,9 @@ namespace DS4WindowsTests
         [Fact]
         public void TheContainer_TiesTheRegistryToTheBackingStore()
         {
-            string path = SourceFileLocator.Find("DS4Windows/Composition/ServiceRegistration.cs");
-            if (path == null) return;
+            string source = RegistrationSource.ReadAll();   // Phase14c-Step6（R-18）: 層ごとの partial ファイルをつないだもの
+            if (source == null) return;
 
-            string source = File.ReadAllText(path);
             Assert.Contains("AttachProfileIdentity(service)", source);
             Assert.NotNull(TestHost.GetService<IProfileIdentityService>());
         }

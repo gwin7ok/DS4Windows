@@ -1,5 +1,6 @@
 ﻿using System;
 using System.IO;
+using System.Linq;
 using System.Xml;
 using Xunit;
 using DS4Windows.Core.Persistence;
@@ -55,7 +56,8 @@ namespace DS4WindowsTests
         public void Sections_AreInternalSealedAndNotRegisteredInTheContainer()
         {
             string root = Repo();
-            string registration = File.ReadAllText(Path.Combine(root, "DS4Windows", "Composition", "ServiceRegistration.cs"));
+            // Phase14c-Step6（R-18）: 登録は層ごとの partial ファイル（ServiceRegistration*.cs）に分かれている
+            string registration = string.Join(System.Environment.NewLine, Directory.GetFiles(Path.Combine(root, "DS4Windows", "Composition"), "ServiceRegistration*.cs").Select(File.ReadAllText));
             Assert.DoesNotContain("LoadSection", registration);
 
             foreach (string file in Directory.GetFiles(Path.Combine(root, "DS4Windows", "Core", "Persistence", "ProfileSections"), "Profile*LoadSection.cs"))

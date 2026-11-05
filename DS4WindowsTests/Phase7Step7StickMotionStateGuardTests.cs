@@ -133,7 +133,7 @@ namespace DS4WindowsTests
         [Fact]
         public void Registration_RegistersTheSharedState()
         {
-            string registration = Read("DS4Windows/Composition/ServiceRegistration.cs");
+            string registration = RegistrationSource.ReadAll(stripComments: true);   // Phase14c-Step6（R-18）: 層ごとの partial ファイルをつないだもの（コメントは除く）
             if (registration == null) return;
 
             Assert.Contains("services.AddSingleton<StickMotionState>();", registration); // Phase7-Step8 W4: Shared は削除した

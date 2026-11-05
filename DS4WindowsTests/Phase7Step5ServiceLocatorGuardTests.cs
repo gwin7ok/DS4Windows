@@ -60,7 +60,7 @@ namespace DS4WindowsTests
         {
             string control = Read("DS4Windows/Processing/ControlService.cs");
             string store = Read("DS4Windows/Core/Settings/BackingStore.cs");
-            string registration = Read("DS4Windows/Composition/ServiceRegistration.cs");
+            string registration = RegistrationSource.ReadAll(stripComments: true);   // Phase14c-Step6（R-18）: 層ごとの partial ファイルをつないだもの（コメントは除く）
             if (control == null || store == null || registration == null) return;
 
             Assert.DoesNotContain("AppHost", control);
@@ -89,7 +89,7 @@ namespace DS4WindowsTests
             string main = Read("DS4Windows/UI/MainWindow.xaml.cs");
             string editor = Read("DS4Windows/UI/ProfileEditor.xaml.cs");
             string app = Read("DS4Windows/App.xaml.cs");
-            string registration = Read("DS4Windows/Composition/ServiceRegistration.cs");
+            string registration = RegistrationSource.ReadAll(stripComments: true);   // Phase14c-Step6（R-18）: 層ごとの partial ファイルをつないだもの（コメントは除く）
             if (main == null || editor == null || app == null || registration == null) return;
 
             Assert.DoesNotContain("AppHost", main);

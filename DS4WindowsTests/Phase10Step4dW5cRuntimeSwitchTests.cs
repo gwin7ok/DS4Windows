@@ -84,10 +84,10 @@ namespace DS4WindowsTests
         [Fact]
         public void TheContainer_TiesTheRegistryToTheTempProfileName()
         {
-            string path = SourceFileLocator.Find("DS4Windows/Composition/ServiceRegistration.cs");
-            if (path == null) return;
+            string source = RegistrationSource.ReadAll();   // Phase14c-Step6（R-18）: 層ごとの partial ファイルをつないだもの
+            if (source == null) return;
 
-            Assert.Contains("ProfileSettingsService)?.AttachProfileIdentity(service)", File.ReadAllText(path));
+            Assert.Contains("ProfileSettingsService)?.AttachProfileIdentity(service)", source);
         }
 
         // ---- (2) Load Profile の実行時の解決 ----

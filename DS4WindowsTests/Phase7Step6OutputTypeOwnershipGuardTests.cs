@@ -84,7 +84,7 @@ namespace DS4WindowsTests
         [Fact]
         public void Registration_HandsTheArrayToBackingStore_WithoutResolvingTheServiceFromTheStoreRegistration()
         {
-            string registration = Read("DS4Windows/Composition/ServiceRegistration.cs");
+            string registration = RegistrationSource.ReadAll(stripComments: true);   // Phase14c-Step6（R-18）: 層ごとの partial ファイルをつないだもの（コメントは除く）
             if (registration == null) return;
 
             // Phase13-Step7 7-b: 配線は IOutputDeviceTypeState の登録が行う（依存なしのホルダー）

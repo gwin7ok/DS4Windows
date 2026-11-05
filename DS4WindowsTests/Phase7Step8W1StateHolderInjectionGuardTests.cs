@@ -96,7 +96,7 @@ namespace DS4WindowsTests
         {
             string mouse = Read("DS4Windows/Processing/Mouse.cs");
             string control = Read("DS4Windows/Processing/ControlService.cs");
-            string registration = Read("DS4Windows/Composition/ServiceRegistration.cs");
+            string registration = RegistrationSource.ReadAll(stripComments: true);   // Phase14c-Step6（R-18）: 層ごとの partial ファイルをつないだもの（コメントは除く）
             if (mouse == null || control == null || registration == null) return;
 
             Assert.DoesNotContain("StickMotionState.Shared", mouse);
