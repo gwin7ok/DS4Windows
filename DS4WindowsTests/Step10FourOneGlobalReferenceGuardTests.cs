@@ -16,7 +16,7 @@ namespace DS4WindowsTests
     {
         private static readonly string[] Files =
         {
-            "DS4Windows/Core/Utilities/WindowPlacementHelper.cs",
+            "DS4Windows/UI/WindowPlacementHelper.cs",
             "DS4Windows/Core/Profiles/ProfileList.cs",
             "DS4Windows/Core/Profiles/ProfileEntity.cs",
         };

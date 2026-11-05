@@ -411,7 +411,7 @@ namespace DS4Windows.UI
                 string prolog = string.Format(Properties.Resources.UsingProfile,
                     (idx + 1).ToString(), profile, $"{devitem.Device.Battery}");
                 profileAppService.ApplyProfile(idx, profile, false, true,
-                    DS4Windows.Processing.ProfileChangeSource.Manual, prolog);
+                    DS4Windows.Core.Logging.ProfileChangeSource.Manual, prolog);
             }
         }
 
@@ -751,7 +751,7 @@ Suspend support not enabled.", LogOptions.UserFacing);
             // ProfileChangedNotification を基準に一元判定する。
             try
             {
-                AppLogger.LogProfileChanged(-1, message, false, DS4Windows.Processing.ProfileChangeSource.Hotkey);
+                AppLogger.LogProfileChanged(-1, message, false, DS4Windows.Core.Logging.ProfileChangeSource.Hotkey);
             }
             catch
             {
@@ -797,7 +797,7 @@ Suspend support not enabled.", LogOptions.UserFacing);
             lastLogMsg.Warning = e.Warning;
         }
 
-        private void OnProfileChanged(object sender, DS4Windows.Processing.ProfileChangedEventArgs e)
+        private void OnProfileChanged(object sender, DS4Windows.Core.Logging.ProfileChangedEventArgs e)
         {
             Dispatcher.BeginInvoke((Action)(() =>
             {
@@ -819,7 +819,7 @@ Suspend support not enabled.", LogOptions.UserFacing);
 
                     string prolog;
                     // If the event is from AutoProfile, use the AutoTempProfile resource
-                    if (e.Source == DS4Windows.Processing.ProfileChangeSource.AutoProfile)
+                    if (e.Source == DS4Windows.Core.Logging.ProfileChangeSource.AutoProfile)
                         prolog = string.Format(DS4Windows.Properties.Resources.UsingAutoTempProfile, (devIndex + 1).ToString(), prof);
                     else
                         prolog = string.Format(Properties.Resources.UsingProfile, (devIndex + 1).ToString(), prof, battery);

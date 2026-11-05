@@ -19,6 +19,7 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 using System;
 using System.Collections.Generic;
 using System.Windows.Input;
+using DS4Windows.Core.Abstractions;
 using DS4Windows.Output;
 using DS4Windows.Output.Devices;
 

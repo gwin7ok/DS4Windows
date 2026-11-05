@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using Xunit;
+using DS4Windows.Core.Abstractions;
 using DS4Windows.Core.Platform;
 using DS4Windows.Input;
 using DS4Windows.Processing.Abstractions;

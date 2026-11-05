@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using Xunit;
+using DS4Windows.Core.Logging;
 using DS4Windows.Core.Persistence;
 using DS4Windows.Core.Settings;
 using DS4Windows.Processing;

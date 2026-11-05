@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Threading;
 using System.Threading.Tasks;
+using DS4Windows.Core.Abstractions;
 using DS4Windows.Processing.Abstractions;
 
 namespace DS4Windows.Processing

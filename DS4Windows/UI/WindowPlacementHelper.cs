@@ -22,9 +22,8 @@ using System.Runtime.InteropServices;
 using System.Security;
 using System.Windows.Interop;
 using DS4Windows.Core.Logging;
-using DS4Windows.UI;
 
-namespace DS4Windows.Core.Utilities
+namespace DS4Windows.UI
 {
     [SuppressUnmanagedCodeSecurity]
     internal static class WindowPlacementHelper

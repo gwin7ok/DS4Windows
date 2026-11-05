@@ -1,5 +1,6 @@
 using System.Xml;
 using Xunit;
+using DS4Windows.Core.Abstractions;
 using DS4Windows.Core.Settings;
 using DS4Windows.Processing;
 

@@ -1,6 +1,6 @@
 using DS4Windows.Core.Settings;
 
-namespace DS4Windows.Processing
+namespace DS4Windows.Core.Abstractions
 {
     /// <summary>
     /// Phase8-Step7 7.8d: 廃止された「シフト」機能の設定が残っていることを、ユーザーに警告し、削除か残すかを選ばせる窓口。

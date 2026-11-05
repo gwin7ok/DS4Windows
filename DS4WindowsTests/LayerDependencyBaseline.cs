@@ -10,18 +10,11 @@
     {
         public static readonly string[] Entries =
         {
-            "L1|DS4Windows.Core.Logging.AppLogger|DS4Windows.Processing.ProfileChangeSource",
-            "L1|DS4Windows.Core.Logging.AppLogger|DS4Windows.Processing.ProfileChangedEventArgs",
             "L1|DS4Windows.Core.Persistence.SpecialActionRepository|DS4Windows.Processing.Actions.IManagedActionManager",
             "L1|DS4Windows.Core.Persistence.SpecialActionRepository|DS4Windows.Processing.SyntheticInputState",
             "L1|DS4Windows.Core.Persistence.SpecialActionsXmlSerializer|DS4Windows.Processing.Actions.IManagedActionManager",
             "L1|DS4Windows.Core.Settings.AppearanceSettingsService|DS4Windows.UI.TrayIconResources",
-            "L1|DS4Windows.Core.Settings.ProfileSettingsService|DS4Windows.Processing.Abstractions.IDeviceStateAccessor",
-            "L1|DS4Windows.Core.Settings.RemovedGyroSwipeNotice|DS4Windows.Processing.IRemovedGyroSwipePrompt",
-            "L1|DS4Windows.Core.Settings.RemovedShiftNotice|DS4Windows.Processing.IRemovedShiftPrompt",
             "L1|DS4Windows.Core.Utilities.Changelog|DS4Windows.App",
-            "L1|DS4Windows.Core.Utilities.WindowPlacementHelper|DS4Windows.UI.MainWindow",
-            "L4|DS4Windows.Output.OutputSlotManager|DS4Windows.Processing.IInstanceIdentifiable",
             "L6|DS4Windows.UI.ImageLocationPaths|DS4Windows.App",
             "L6|DS4Windows.UI.LanguagePackControl|DS4Windows.App",
             "L6|DS4Windows.UI.MainWindow|DS4Windows.App",

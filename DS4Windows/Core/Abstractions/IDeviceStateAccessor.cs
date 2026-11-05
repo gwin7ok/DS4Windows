@@ -1,6 +1,6 @@
 ﻿using DS4Windows.Input;
 
-namespace DS4Windows.Processing.Abstractions
+namespace DS4Windows.Core.Abstractions
 {
     public interface IDeviceStateAccessor
     {

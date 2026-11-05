@@ -10,7 +10,6 @@ using DS4Windows.Output;
 using DS4Windows.Output.Devices;
 using DS4Windows.Output.Kbm;
 using DS4Windows.Processing;
-using DS4Windows.Processing.Abstractions;
 
 namespace DS4Windows.Core.Settings
 {

@@ -2,8 +2,8 @@ using System;
 using System.IO;
 using System.Resources;
 using Xunit;
+using DS4Windows.Core.Abstractions;
 using DS4Windows.Core.Settings;
-using DS4Windows.Processing;
 
 namespace DS4WindowsTests
 {

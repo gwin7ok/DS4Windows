@@ -1,5 +1,5 @@
 using System;
-using DS4Windows.Processing;
+using DS4Windows.Core.Abstractions;
 
 namespace DS4Windows.Core.Settings
 {
