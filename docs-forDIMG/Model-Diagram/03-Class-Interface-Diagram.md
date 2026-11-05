@@ -1304,3 +1304,7 @@ classDiagram
 %%   SpecialAction・MacroExecuteMode(s)・ProfileActions・ControlActionData・TouchButtonActivationMode（旧 Mouse のネスト型）→ DS4Windows.Core.Settings、BezierCurve → DS4Windows.Core.Utilities、WindowTargetMatcher → DS4Windows.Core.Platform、
 %%   IDeviceLayerSettings → DS4Windows.Input.Abstractions、IEditorWindowFactory・IMainWindowFactory・IViewModelFactory → DS4Windows.UI.Abstractions。
 %% - 契約の変更: IProfileLoadTarget.GetTouchPad の戻り値を Mouse から ITouchPadGyroToggles（新設。Mouse が実装、同じインスタンス）へ。追加: NullNotificationService（AppLogger の未設定時の通知）。
+
+%% Phase14b-2（2026-11-05）の反映:
+%% - 名前空間の変更: IDeviceStateAccessor・IRemovedGyroSwipePrompt・IRemovedShiftPrompt・IInstanceIdentifiable → DS4Windows.Core.Abstractions、ProfileChangedEventArgs・ProfileChangeSource → DS4Windows.Core.Logging、WindowPlacementHelper → DS4Windows.UI、COPYDATASTRUCT（旧 App のネスト型）→ DS4Windows.Core.Platform。
+%% - 新しい契約: ISpecialActionRuntimeReset・IStartupEntryService・IChangelogService（Core/Abstractions）、IUiThemeAndLanguage・IIpcResultWriter（UI/Abstractions）。StartupMethods（静的）→ StartupEntryService、Changelog（静的）→ インスタンス。IAppearanceSettingsService.GetIconResourcePath は削除。

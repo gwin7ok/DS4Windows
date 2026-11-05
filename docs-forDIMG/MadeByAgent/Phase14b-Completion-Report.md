@@ -57,3 +57,11 @@ L2 が増えたのは、Core へ移した型が第1層・第3層の型（`DS4Con
 - `SpecialActionRepository`・`SpecialActionsXmlSerializer`（Core/Persistence）が第2層の `IManagedActionManager`・`SyntheticInputState` を使う件は、読み込み後の実行時状態のリセットを第2層へ寄せる設計が要る。
 - 記録のみの L2（Core → 第1層・第3層、74 件）と L7（UI → 第1層・第3層、80 件）は、レビュー R-17・R-09 で扱う。
 - レビューの R-05 以降（静的な状態、カートリッジ化など）は未着手。
+
+## 8. 追記: Phase14b-2（残りの片付け。2026-11-05。ブランチ `Phase14b-2`）
+
+- 決定 D10〜D16（すべて推奨案。計画書 §10.1）に沿って、§7 の残りの違反 18 件を是正し、**禁止の規則の違反を 0 件**にした（`LayerDependencyBaseline` は空）。
+- 主な変更: 小さな契約・型の Core への移動、`ISpecialActionRuntimeReset`（Core の契約・第2層の実装）、`IStartupEntryService`（旧 静的 `StartupMethods`）、`IChangelogService` と DI の `HttpClient`（旧 静的 `Changelog` と `App.requestClient`）、`IUiThemeAndLanguage`・`IIpcResultWriter`（UI の契約と、`App` へ委譲する Composition のアダプター）、トレイアイコンの画像パスを UI で引く形に。
+- 規約: §3.4 R1 のルート直下の記述（`StartupMethods` を外し、UI から `App` を参照しない旨）、§3.1 に違反 0 件。
+- Debug ALL: 緑（3,245 件・11 件）。実機確認（D15）の結果は §8.1 に記録する。
+- 残り: 記録のみの L2（Core → 第1層・第3層、75 件）・L7（UI → 第1層・第3層、80 件）、`MainWindow` の引数の多さ（27）、レビューの R-05 以降。

@@ -276,3 +276,19 @@
 | 14b-16 | D11: テーマ・言語の契約の注入 |
 | 14b-17 | D10: HttpClient と `Changelog` の DI 化 |
 | 14b-18 | 規約・モデル図・記録の更新、Debug ALL、Release ビルド 2 か所 → 実機確認（D15）→ 取り込みと push（D16） |
+
+### 10.3 実施記録（2026-11-05）
+
+| Step | 内容 | 許可リスト |
+|---|---|---|
+| 14b-12 | 小さな契約・型 7 ファイルの移動（移動 → 書き換えの 2 コミット。40 ファイル） | 18 → 11 |
+| 14b-13 | D13（`GetIconResourcePath` を外し UI が `TrayIconResources` を引く。`TrayIconResources` の旧 TODO を実施）、`Application.Current`、`AppLogger.Log`、未使用の変数 | 11 → 9 |
+| 14b-14 | D14: `ISpecialActionRuntimeReset`（Core）と `SpecialActionRuntimeReset`（第2層）。テストの生成箇所 約 25 を更新 | 9 → 6 |
+| 14b-15 | D12: `StartupMethods` → `Core/Platform/StartupEntryService`（移動 → 書き換え）、`IStartupEntryService`。`App` の `-runtask` の分岐は実装を直接作る | 6 → 5 |
+| 14b-16 | D11: `IUiThemeAndLanguage` と `AppThemeLanguageAdapter`。同じ形で `IIpcResultWriter` と `AppIpcResultWriterAdapter`（調べて分かった `MainWindow.Ipc` の `App.WriteIPCResultDataMMF`）。`App.COPYDATASTRUCT` → `Core/Platform/COPYDATASTRUCT` | 5 → 2 |
+| 14b-17 | D10: DI の `HttpClient` と `IChangelogService`（`Changelog` をインスタンス化）。`App.requestClient` を削除 | 2 → **0** |
+
+- 決定の範囲の外で、同じ形で進めたもの（挙動は同じ）: `IIpcResultWriter`（D11 と同じ「UI の契約＋Composition のアダプター」）、`COPYDATASTRUCT` の切り出し（`TouchButtonActivationMode` と同じ型の切り出し）。どちらも L6（UI → `App`）を消すために必要だった。
+- `MainWindow` のコンストラクターの引数: 23 → 27（`IStartupEntryService`、`IUiThemeAndLanguage`、`IIpcResultWriter`、`IChangelogService`）。`Phase13Step10ForwardRemovalGuardTests` の基準値を各 Step で更新した。引数が多いことは、レビュー R-09（UI 向けの窓口の整理）・Phase15 で扱う。
+- 記録のみ（L2・L7）: L2 75 件、L7 80 件。
+- Debug ALL: 緑（ビルド 警告 0・エラー 0、`DS4Windows.Actions.Tests` 3,245 件合格、`StandaloneTests` 11 件合格）。

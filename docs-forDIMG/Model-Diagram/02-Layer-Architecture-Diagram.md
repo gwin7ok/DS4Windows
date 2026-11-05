@@ -191,3 +191,9 @@
 %%   SelectedProfileChangedEventArgs、WindowCandidate、WindowFocusResult、CapturedWindow、IAppSettingsService、IProfileLoadTarget、ITouchPadGyroToggles（新設。Mouse が実装）（Core/Abstractions）。
 %% - 第1層 DS4Devices の UI 参照（静的な ShowToast）は AppLogger.LogToTray の直接呼び出しへ。BackingStore.ProfileSettings のフォールバック（第2層の具象を new）は撤去（未登録なら例外）。
 %% - 禁止の規則の違反: 108 → 18 件（L1 11、L4 1、L6 6。L3・L5 は 0）。残りは Core → Actions の IManagedActionManager／SyntheticInputState、AppLogger → ProfileChangedEventArgs ほか、Core/UI → App（起点）など。
+%% ---- Phase14b-2（2026-11-05。残りの片付け）----
+%% - 禁止の規則の違反は 18 → 0 件（LayerDependencyBaseline は空）。記録のみ: L2（Core → 第1層・第3層）75 件、L7（UI → 第1層・第3層）80 件。
+%% - 小さな契約・型の Core への移動（IDeviceStateAccessor、IRemoved*Prompt、IInstanceIdentifiable、ProfileChangedEventArgs／ProfileChangeSource）、WindowPlacementHelper → UI。
+%% - Core が第2層・UI を使っていた箇所: 実行時状態のリセットを ISpecialActionRuntimeReset（Core の契約・第2層の実装）に、トレイアイコンの画像パスは UI が直接引く形に。
+%% - UI が起点の App を使っていた箇所: IUiThemeAndLanguage・IIpcResultWriter（UI/Abstractions）と、App へ委譲する Composition のアダプター。COPYDATASTRUCT は Core/Platform へ。
+%% - 静的な窓口の撤廃: App.requestClient → DI の HttpClient と IChangelogService（Changelog をインスタンス化）、StartupMethods → IStartupEntryService（Core/Platform/StartupEntryService）。

@@ -343,3 +343,5 @@
 - Phase14（2026-11-04）: 名前空間・フォルダを層別に再編した（サービスの生成・破棄の順序は不変）。`ServiceRegistration`／`AppHost` は `Composition/`（名前空間 `DS4Windows.Composition`）。サービス実装は層ごとのフォルダ（`Processing/Services`、`Output/Services`、`Core/*`、`UI/Services`）へ移った。
 
 - Phase14b（2026-11-05）: `INotificationService`／`NotificationEventArgs` の名前空間を `DS4Windows.Core.Abstractions` に移した（実装 `AppNotificationService` は UI、Singleton のまま）。`AppLogger.NotificationService`（静的）の未設定時のフォールバックは、`new AppNotificationService(new BackingStore(...))` から `NullNotificationService`（何もしない。最初の 1 回だけ Debug ログ）に替えた。生成・破棄の順序は不変。
+
+- Phase14b-2（2026-11-05）: Singleton を追加した（生成・破棄の順序は不変）。`ISpecialActionRuntimeReset`（`SpecialActionRuntimeReset`。第2層）、`IStartupEntryService`（`StartupEntryService`。Core/Platform。旧 静的 `StartupMethods`）、`HttpClient`（User-Agent: DS4Windows。旧 `App.requestClient`）、`IChangelogService`（`Changelog`。旧 静的クラス）、`IUiThemeAndLanguage`（`AppThemeLanguageAdapter`）・`IIpcResultWriter`（`AppIpcResultWriterAdapter`）（いずれも Composition。呼び出しの時点で `Application.Current` の `App` へ委譲）。`MainWindow` の引数は 23 → 27。
