@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -29,26 +30,13 @@ namespace DS4WindowsTests
             _output = output;
         }
 
-        private static bool DeclaresMethod(string strippedSource, string name)
-        {
-            return Regex.IsMatch(strippedSource,
-                @"\b(?:public|private|internal|protected)\s+(?:static\s+)?[\w<>\[\],.? ]+?\s+" + Regex.Escape(name) + @"\s*\(");
-        }
-
         [Fact]
         public void KeptMethods_StillExistInBackingStore()
         {
-            string path = SourceFileLocator.Find("DS4Windows/Core/Settings/BackingStore.cs");
-            if (path == null)
-            {
-                _output.WriteLine("ソースが見つからないため検査を省略した。");
-                return;
-            }
-
-            string text = SourceText.StripComments(File.ReadAllText(path));
-            List<string> missing = KeptInBackingStore.Where(n => !DeclaresMethod(text, n)).ToList();
-            Assert.True(missing.Count == 0,
-                "残すべきメソッドが BackingStore.cs から失われている: " + string.Join(", ", missing));
+            // Phase14d-Step3: ソースの文字列ではなく、宣言されたメソッドを確かめる
+            var names = typeof(DS4Windows.Core.Settings.BackingStore).GetMethods(System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.Static | System.Reflection.BindingFlags.DeclaredOnly).Select(m => m.Name).ToArray();
+            var missing = KeptInBackingStore.Where(n => !names.Contains(n)).ToList();
+            Assert.True(missing.Count == 0, "残すべきメソッドが BackingStore から失われている: " + string.Join(", ", missing));
         }
     }
 }

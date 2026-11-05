@@ -1,3 +1,6 @@
+using System.Collections.Generic;
+using System.Linq;
+using System;
 using System.IO;
 using System.Text.RegularExpressions;
 using Xunit;
@@ -55,13 +58,13 @@ namespace DS4WindowsTests
         [Fact]
         public void Registration_HandsTheArrayToBackingStore_WithoutResolvingTheServiceFromTheStoreRegistration()
         {
-            string registration = RegistrationSource.ReadAll(stripComments: true);   // Phase14c-Step6（R-18）: 層ごとの partial ファイルをつないだもの（コメントは除く）
+            // Phase14d-Step3: 配線は、コンテナが組み立てた結果で確かめる（IOutputDeviceTypeState の配列を BackingStore が同じ参照で持つ）
+            var state = TestHost.GetService<DS4Windows.Processing.Abstractions.IOutputDeviceTypeState>();
+            Assert.Same(state.ActiveOutDevType, TestHost.GetService<DS4Windows.Core.Settings.BackingStore>().ActiveOutDevType);
+
+            // BackingStore の登録のラムダの中で IOutputSlotService を解決しない（解決すると循環し、スタックオーバーフローになるため、実行では確かめられない）
+            string registration = RegistrationSource.ReadAll(stripComments: true);
             if (registration == null) return;
-
-            // Phase13-Step7 7-b: 配線は IOutputDeviceTypeState の登録が行う（依存なしのホルダー）
-            Assert.Contains("sp.GetRequiredService<BackingStore>().ActiveOutDevType = state.ActiveOutDevType;", registration);
-
-            // BackingStore の登録のラムダの中で IOutputSlotService を解決しない
             int start = registration.IndexOf("services.AddSingleton<BackingStore>(sp =>");
             Assert.True(start >= 0);
             int end = registration.IndexOf("});", start);

@@ -1,3 +1,6 @@
+using System.Collections.Generic;
+using System.Linq;
+using System;
 using System.IO;
 using System.Text.RegularExpressions;
 using Xunit;
@@ -22,19 +25,25 @@ namespace DS4WindowsTests
         [Fact]
         public void Mapping_HoldsNoSyntheticStateOfItsOwn_OnlyForwarders()
         {
-            string mapping = SourceText.ReadCode("DS4Windows/Processing/Mapping.cs");
-            if (mapping == null) return;
-
-            Assert.DoesNotContain("public class SyntheticState", mapping);
-            Assert.DoesNotContain("new ReaderWriterLockSlim()", mapping);
-            Assert.DoesNotContain("new SyntheticState()", mapping);
-            // Phase7-Step8 W2: 転送プロパティは削除し、コンストラクターで受けた保持クラスの配列を readonly で複製して持つ
-            Assert.Contains("private readonly SyntheticInputState _syntheticInput;", mapping);
-            Assert.Contains("private readonly ReaderWriterLockSlim syncStateLock;", mapping);
-            Assert.Contains("private readonly SyntheticState[] deviceState;", mapping);
-            Assert.Contains("syncStateLock = syntheticInput.SyncStateLock;", mapping);
-            Assert.Contains("deviceState = syntheticInput.DeviceState;", mapping);
-            Assert.DoesNotContain("SyntheticInputState.Shared", mapping);
+            // Phase14d-Step3: ソースの文字列ではなく、Mapping のフィールド（readonly と型）と、保持クラスと同じ参照であることを確かめる
+            Type mapping = typeof(DS4Windows.Processing.Mapping);
+            Assert.DoesNotContain("SyntheticState", mapping.GetNestedTypes(System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.Static | System.Reflection.BindingFlags.DeclaredOnly).Select(t => t.Name));
+            foreach ((string field, Type type) in new[]
+            {
+                ("_syntheticInput", typeof(DS4Windows.Processing.SyntheticInputState)),
+                ("syncStateLock", typeof(System.Threading.ReaderWriterLockSlim)),
+                ("deviceState", typeof(DS4Windows.Processing.SyntheticState[])),
+            })
+            {
+                System.Reflection.FieldInfo f = mapping.GetField(field, System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.Static | System.Reflection.BindingFlags.DeclaredOnly);
+                Assert.True(f != null, "Mapping に " + field + " がない");
+                Assert.Equal(type, f.FieldType);
+                Assert.True(f.IsInitOnly, field + " が readonly でない");
+            }
+            var instance = TestHost.GetService<DS4Windows.Processing.Abstractions.IMapping>();
+            var holder = TestHost.GetService<DS4Windows.Processing.SyntheticInputState>();
+            Assert.Same(holder.SyncStateLock, mapping.GetField("syncStateLock", System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.Static | System.Reflection.BindingFlags.DeclaredOnly).GetValue(instance));
+            Assert.Same(holder.DeviceState, mapping.GetField("deviceState", System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.Static | System.Reflection.BindingFlags.DeclaredOnly).GetValue(instance));
         }
 
         [Fact]
@@ -55,14 +64,13 @@ namespace DS4WindowsTests
         [Fact]
         public void Registration_SubscribesTheResetOnce_AndRegistersTheSharedState()
         {
-            string registration = RegistrationSource.ReadAll(stripComments: true);   // Phase14c-Step6（R-18）: 層ごとの partial ファイルをつないだもの（コメントは除く）
-            if (registration == null) return;
-
-            // Phase7-Step8 W3: 購読者は instance（保持クラスをコンストラクターで受ける）。前回の購読者を外してから登録する
-            // Phase14c-Step6（R-13）: 前回の購読者は BackingStore 自身が覚える（旧: ServiceRegistration の静的フィールド _subscribedReset）
-            Assert.Contains("store.ReplaceActionsLoadedHandler(reset.Reset);", registration);
-            Assert.DoesNotContain("_subscribedReset", registration);
-            Assert.Contains("services.AddSingleton<SyntheticInputState>();", registration); // Phase7-Step8 W4: Shared は削除した
+            // Phase14d-Step3: 登録の文字列ではなく、コンテナが組み立てた BackingStore の購読者が、コンテナの ActionsLoadedRuntimeReset であることを確かめる
+            // （購読が 1 つだけになる差し替えの振る舞いは BackingStoreActionsLoadedHandlerTests）
+            var store = TestHost.GetService<DS4Windows.Core.Settings.BackingStore>();
+            var handler = (Action)typeof(DS4Windows.Core.Settings.BackingStore).GetField("_actionsLoadedHandler", System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.Static | System.Reflection.BindingFlags.DeclaredOnly).GetValue(store);
+            Assert.NotNull(handler);
+            Assert.Same(TestHost.GetService<DS4Windows.Processing.Services.ActionsLoadedRuntimeReset>(), handler.Target);
+            Assert.Same(TestHost.GetService<DS4Windows.Processing.SyntheticInputState>(), TestHost.GetService<DS4Windows.Processing.SyntheticInputState>());
         }
 
         [Fact]

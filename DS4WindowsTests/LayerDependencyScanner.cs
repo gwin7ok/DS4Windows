@@ -33,7 +33,33 @@ namespace DS4WindowsTests
             public ArchLayer TargetLayer { get; }
         }
 
+        private static readonly Lazy<Architecture> s_architecture =
+            new Lazy<Architecture>(() => new ArchLoader().LoadAssemblies(typeof(AppHost).Assembly).Build());
+
         private static readonly Lazy<IReadOnlyList<Edge>> s_edges = new Lazy<IReadOnlyList<Edge>>(Scan);
+
+        /// <summary>
+        /// Phase14d-Step3: 本体の型（トップレベル。入れ子の型の参照も含めてまとめる）が参照する型の完全名（本体の外の型も含む。例: SharpOSC の型）。
+        /// 外部のライブラリへの依存を特定の型に閉じ込めていることの検査に使う。
+        /// </summary>
+        public static IReadOnlyCollection<string> AllTargetsOf(string topLevelTypeFullName)
+        {
+            var targets = new HashSet<string>(StringComparer.Ordinal);
+            bool found = false;
+            foreach (IType type in s_architecture.Value.Types)
+            {
+                if (type.IsStub || type.IsGenericParameter) continue;
+                if (LayerMap.ToTopLevelTypeName(type.FullName) != topLevelTypeFullName) continue;
+                found = true;
+                foreach (ITypeDependency dependency in type.Dependencies)
+                    foreach (IType target in TargetsOf(dependency))
+                        if (target != null && !target.IsGenericParameter)
+                            targets.Add(target.FullName);
+            }
+            if (!found)
+                throw new InvalidOperationException($"{topLevelTypeFullName} が本体に見つからない（型の名前を変えたら、検査も直す）");
+            return targets;
+        }
 
         /// <summary>本体の型（スタブを除く）から、本体の別の型への参照の辺（重複なし、同じトップレベルの型への参照は除く）。</summary>
         public static IReadOnlyList<Edge> Edges => s_edges.Value;
@@ -52,8 +78,7 @@ namespace DS4WindowsTests
 
         private static IReadOnlyList<Edge> Scan()
         {
-            var assembly = typeof(AppHost).Assembly;
-            Architecture architecture = new ArchLoader().LoadAssemblies(assembly).Build();
+            Architecture architecture = s_architecture.Value;
 
             var seen = new HashSet<(string, string)>();
             var edges = new List<Edge>();

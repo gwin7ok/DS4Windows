@@ -1,3 +1,6 @@
+using System.Collections.Generic;
+using System.Linq;
+using System;
 using System.IO;
 using System.Text.RegularExpressions;
 using Xunit;
@@ -54,10 +57,10 @@ namespace DS4WindowsTests
         [Fact]
         public void Registration_RegistersTheSharedState()
         {
-            string registration = RegistrationSource.ReadAll(stripComments: true);   // Phase14c-Step6（R-18）: 層ごとの partial ファイルをつないだもの（コメントは除く）
-            if (registration == null) return;
-
-            Assert.Contains("services.AddSingleton<MacroRuntimeState>();", registration); // Phase7-Step8 W4: Shared は削除した
+            // Phase14d-Step3: 登録の文字列ではなく、コンテナが同じインスタンスを返すことを確かめる
+            var first = TestHost.GetService<DS4Windows.Processing.MacroRuntimeState>();
+            Assert.NotNull(first);
+            Assert.Same(first, TestHost.GetService<DS4Windows.Processing.MacroRuntimeState>());
         }
     }
 }

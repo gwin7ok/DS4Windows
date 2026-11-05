@@ -1,3 +1,6 @@
+using System.Collections.Generic;
+using System.Linq;
+using System;
 using System.IO;
 using System.Text.RegularExpressions;
 using Xunit;
@@ -72,35 +75,34 @@ namespace DS4WindowsTests
         [Fact]
         public void Mapping_HoldsNoStickMotionStateOfItsOwn_AndNoNestedStateTypes()
         {
-            string mapping = SourceText.ReadCode("DS4Windows/Processing/Mapping.cs");
-            if (mapping == null) return;
-
-            // Phase7-Step8 W2: 転送プロパティは削除し、コンストラクターで受けた保持クラスの配列を readonly で複製して持つ
-            Assert.Contains("private readonly StickMotionState _stickMotion;", mapping);
-            Assert.Contains("private readonly byte[] gyroStickX;", mapping);
-            Assert.Contains("private readonly PostMapStickData[] mapStickActionData;", mapping);
-            Assert.Contains("private readonly FlickStickMappingData[] flickMappingData;", mapping);
-            Assert.Contains("private readonly DeltaSettingsProcessorGroup[] deltaAccelProcessors;", mapping);
-            Assert.Contains("gyroStickX = stickMotion.GyroStickX;", mapping);
-            Assert.DoesNotContain("StickMotionState.Shared", mapping);
-
-            foreach (string nested in new[]
+            // Phase14d-Step3: ソースの文字列ではなく、Mapping のフィールド（readonly と型）と入れ子の型を確かめる（配列が保持クラスと同じ参照であることは MappingCopies_ReferenceTheSameArraysAsTheHolder）
+            Type mapping = typeof(DS4Windows.Processing.Mapping);
+            foreach ((string field, Type type) in new[]
             {
-                "public class PostMapStickData", "public class FlickStickMappingData", "public class TwoStageTriggerMappingData",
-                "public class DeltaSettingsProcessor", "public class DeltaSettingsProcessorGroup", "public enum Click",
+                ("_stickMotion", typeof(DS4Windows.Processing.StickMotionState)),
+                ("gyroStickX", typeof(byte[])),
+                ("mapStickActionData", typeof(DS4Windows.Processing.PostMapStickData[])),
+                ("flickMappingData", typeof(DS4Windows.Core.Settings.FlickStickMappingData[])),
+                ("deltaAccelProcessors", typeof(DS4Windows.Processing.DeltaSettingsProcessorGroup[])),
             })
             {
-                Assert.DoesNotContain(nested, mapping);
+                System.Reflection.FieldInfo f = mapping.GetField(field, System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.Static | System.Reflection.BindingFlags.DeclaredOnly);
+                Assert.True(f != null, "Mapping に " + field + " がない");
+                Assert.Equal(type, f.FieldType);
+                Assert.True(f.IsInitOnly, field + " が readonly でない");
             }
+            var nested = mapping.GetNestedTypes(System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.Static | System.Reflection.BindingFlags.DeclaredOnly).Select(t => t.Name).ToArray();
+            foreach (string name in new[] { "PostMapStickData", "FlickStickMappingData", "TwoStageTriggerMappingData", "DeltaSettingsProcessor", "DeltaSettingsProcessorGroup", "Click" })
+                Assert.DoesNotContain(name, nested);
         }
 
         [Fact]
         public void Registration_RegistersTheSharedState()
         {
-            string registration = RegistrationSource.ReadAll(stripComments: true);   // Phase14c-Step6（R-18）: 層ごとの partial ファイルをつないだもの（コメントは除く）
-            if (registration == null) return;
-
-            Assert.Contains("services.AddSingleton<StickMotionState>();", registration); // Phase7-Step8 W4: Shared は削除した
+            // Phase14d-Step3: 登録の文字列ではなく、コンテナが同じインスタンスを返すことを確かめる
+            var first = TestHost.GetService<DS4Windows.Processing.StickMotionState>();
+            Assert.NotNull(first);
+            Assert.Same(first, TestHost.GetService<DS4Windows.Processing.StickMotionState>());
         }
     }
 }

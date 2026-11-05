@@ -1,3 +1,5 @@
+using System.Linq;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Text.RegularExpressions;
@@ -25,21 +27,20 @@ namespace DS4WindowsTests
         [Fact]
         public void App_HoldsTheControlServiceInAVolatileField()
         {
-            string text = SourceText.ReadCode("DS4Windows/App.xaml.cs");
-            if (text == null) return;
-
-            Assert.Matches(@"private\s+volatile\s+DS4Windows\.Processing\.ControlService\s+_controlService\s*;", text);
-            Assert.Matches(@"_controlService\s*=\s*ResolvePostHostService<DS4Windows\.Processing\.ControlService>\(\)", text);
+            // Phase14d-Step3: ソースの文字列ではなく、フィールドの型と volatile の修飾子を確かめる（取得の経路は Phase7Step5ServiceLocatorGuardTests が守る）
+            System.Reflection.FieldInfo field = typeof(DS4Windows.App).GetField("_controlService", System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.Static | System.Reflection.BindingFlags.DeclaredOnly);
+            Assert.NotNull(field);
+            Assert.Equal(typeof(DS4Windows.Processing.ControlService), field.FieldType);
+            Assert.Contains(typeof(System.Runtime.CompilerServices.IsVolatile), field.GetRequiredCustomModifiers());
         }
 
         [Fact]
         public void ServiceRegistration_AlwaysCreatesTheControlService()
         {
-            string text = RegistrationSource.ReadAll(stripComments: true);   // Phase14c-Step6（R-18）: 層ごとの partial ファイルをつないだもの（コメントは除く）
-            if (text == null) return;
-
-            Assert.DoesNotContain("rootHub", text);
-            Assert.Matches(@"return\s+new\s+ControlService\(", text);
+            // Phase14d-Step3: 登録の文字列ではなく、コンテナが ControlService を 1 つ作って返すことを確かめる
+            var first = TestHost.GetService<DS4Windows.Processing.ControlService>();
+            Assert.NotNull(first);
+            Assert.Same(first, TestHost.GetService<DS4Windows.Processing.ControlService>());
         }
     }
 }

@@ -1,3 +1,6 @@
+using System.Collections.Generic;
+using System.Linq;
+using System;
 using System.IO;
 using System.Text.RegularExpressions;
 using Xunit;
@@ -64,20 +67,15 @@ namespace DS4WindowsTests
         [Fact]
         public void MouseAndControlService_ReceiveTheHoldersByConstructor()
         {
-            string mouse = SourceText.ReadCode("DS4Windows/Processing/Mouse.cs");
-            string control = SourceText.ReadCode("DS4Windows/Processing/ControlService.cs");
-            string registration = RegistrationSource.ReadAll(stripComments: true);   // Phase14c-Step6（R-18）: 層ごとの partial ファイルをつないだもの（コメントは除く）
-            if (mouse == null || control == null || registration == null) return;
-
-            Assert.DoesNotContain("StickMotionState.Shared", mouse);
-            Assert.DoesNotContain("SyntheticInputState.Shared", mouse);
-            Assert.DoesNotMatch(@"\bMapping\.", mouse);
-            Assert.DoesNotContain("StickMotionState.Shared", control);
-            Assert.DoesNotContain("SyntheticInputState.Shared", control);
-            Assert.Contains("sp.GetRequiredService<StickMotionState>()", registration);
-            // Phase14c-Step3（R-06）: 送出役（SyntheticDispatcherService）は登録ラムダではなく、コンテナがコンストラクターで保持クラスを渡す形にした
-            Assert.Contains("services.AddSingleton<ISyntheticDispatcher, SyntheticDispatcherService>();", registration);
-            Assert.Contains(typeof(DS4Windows.Processing.SyntheticInputState), System.Linq.Enumerable.Select(typeof(DS4Windows.Processing.Services.SyntheticDispatcherService).GetConstructors()[0].GetParameters(), p => p.ParameterType));
+            // Phase14d-Step3: ソースの文字列ではなく、コンストラクターの引数とコンテナの登録を確かめる（Shared の撤去は RemovedApiRuleTests）
+            var mouseParameters = typeof(DS4Windows.Processing.Mouse).GetConstructors().SelectMany(c => c.GetParameters()).Select(p => p.ParameterType).ToArray();
+            Assert.Contains(typeof(DS4Windows.Processing.StickMotionState), mouseParameters);
+            Assert.Contains(typeof(DS4Windows.Processing.SyntheticInputState), mouseParameters);
+            Assert.Contains(typeof(DS4Windows.Processing.StickMotionState),
+                typeof(DS4Windows.Processing.ControlService).GetConstructors().Single().GetParameters().Select(p => p.ParameterType));
+            Assert.IsType<DS4Windows.Processing.Services.SyntheticDispatcherService>(TestHost.GetService<DS4Windows.Processing.Abstractions.ISyntheticDispatcher>());
+            Assert.Contains(typeof(DS4Windows.Processing.SyntheticInputState),
+                typeof(DS4Windows.Processing.Services.SyntheticDispatcherService).GetConstructors()[0].GetParameters().Select(p => p.ParameterType));
         }
 
         [Fact]

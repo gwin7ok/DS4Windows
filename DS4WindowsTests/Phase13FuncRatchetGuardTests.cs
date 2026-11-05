@@ -18,7 +18,8 @@ namespace DS4WindowsTests
     /// </summary>
     public class Phase13FuncRatchetGuardTests
     {
-        private static readonly Regex LazyService = new Regex(@"Func<\s*[\w.]*\b(I[A-Z]\w*)\s*>");
+        // Phase14d-Step3: Func<ControlService>（I で始まらない、Phase13-Step6 で撤廃した遅延取得）も対象にした（旧 Phase13Step5FuncRemovalGuardTests の検査を引き継ぐ。許可リストにないので、現れたら失敗する）
+        private static readonly Regex LazyService = new Regex(@"Func<\s*[\w.]*\b(I[A-Z]\w*|ControlService)\s*>");
 
         // ファイル名 → そのファイルに現れてよい遅延取得の型
         private static readonly (string File, string Type)[] Allowed =

@@ -5,7 +5,7 @@
 作り方: 補助スクリプトで、ソースを文字列で読むテストメソッドを洗い出し（DS4Windows/ のパス、`SourceFileLocator`、`RegistrationSource`、`XamlTestHelper`、`*.cs` の走査）、
 Guard テストを中心に 1 件ずつ読んで区分を決めた。表にないソースを読むメソッドは K（残す）。
 
-**見直し（2026-11-05、Step 14d-2）**: 14d-0 で F・R に入れたもののうち、(1) すでにリフレクションで型・メンバーを検査しソースを読まないもの（16 件）と、(2) Phase9 の `ControlService_NoLongerContains_*`／`Mapping_NoLongerContains_*`（パターンの多くは呼び出し・機種の分岐・ログの文言で、責務が戻らないことを守る。型の検査では表せない）を K に改めた。14d-0 の時点の件数は F 100・D 26・R 29・K 312。表の「（14d-n で削除済み）」は、その Step で消したもの。
+**見直し（2026-11-05、Step 14d-2）**: 14d-0 で F・R に入れたもののうち、(1) すでにリフレクションで型・メンバーを検査しソースを読まないもの（16 件）と、(2) Phase9 の `ControlService_NoLongerContains_*`／`Mapping_NoLongerContains_*`（パターンの多くは呼び出し・機種の分岐・ログの文言で、責務が戻らないことを守る。型の検査では表せない）を K に改めた。14d-0 の時点の件数は F 100・D 26・R 29・K 312。表の「（14d-n で削除済み）」「（14d-3 で置き換え済み）」は、その Step で処理したもの。
 
 ## 1. 区分
 
@@ -14,10 +14,10 @@ Guard テストを中心に 1 件ずつ読んで区分を決めた。表にな�
 | F | 撤去済み API（型・メンバー）がないことの検査。型の検査 1 か所（`RemovedApiRuleTests`）へ畳み、元の検査は消す | 71 | 14d-2 |
 | D | 削除（空振り、重複、旧パスの確認）。守る内容がないか、別の検査が同じものを守っている | 26 | 14d-1（空振り）・14d-2 |
 | R | 型・コンテナの検査へ置き換え（リフレクション、コンテナの解決、ArchUnitNET） | 27 | 14d-3 |
-| K | 残す（うち 16 件は、撤去済みの名前の Assert だけを外す） | 325 | 14d-1 で読み取りの部品だけ差し替え |
+| K | 残す（うち 16 件は、撤去済みの名前の Assert だけを外す） | 323 | 14d-1 で読み取りの部品だけ差し替え |
 | S | 遅い（0.3 秒以上）。§5 の方法で短縮 | 60 | 14d-4 |
 
-ソースを読むメソッドの合計: 449（計画書 §2.3 の 391 は Assert の文字列で数えた概数。ここでは、読み取りの補助メソッド経由と、パスの一覧のフィールド経由を含めた）。
+ソースを読むメソッドの合計: 447（計画書 §2.3 の 391 は Assert の文字列で数えた概数。ここでは、読み取りの補助メソッド経由と、パスの一覧のフィールド経由を含めた）。
 F・D で全メソッドが消えるファイル: 9（14d-2 でファイルごと削除）。
 
 ## 2. `RemovedApiRuleTests` に集める内容（F の置き換え先）
@@ -65,33 +65,33 @@ F・D で全メソッドが消えるファイル: 9（14d-2 でファイルご�
 
 | ファイル | メソッド | 守っていた内容・置き換え先 |
 |---|---|---|
-| `MappingCommitAndCalibrationGlobalReferenceGuardTests` | `ApplyDrift_TakesProfileSettingsAsParameter` | メソッドの引数の型をリフレクションで確かめる |
-| `MappingCommitAndCalibrationGlobalReferenceGuardTests` | `Commit_TakesProfileSettingsAsParameter` | メソッドの引数の型をリフレクションで確かめる |
-| `MappingSetCurveAndDeadzoneGlobalReferenceGuardTests` | `SetCurveAndDeadzone_TakesProfileSettingsAsParameter` | メソッドの引数の型をリフレクションで確かめる |
-| `Phase13Step5FuncRemovalGuardTests` | `FuncOfControlService_NoLongerAppears` | Phase13FuncRatchetGuardTests の対象を Func<ControlService> にも広げる（I で始まらない型は今の正規表現に掛からない） |
-| `Phase7Step1DeadMethodGuardTests` | `KeptMethods_StillExistInBackingStore` | メソッドがあること（リフレクション） |
-| `Phase7Step2RemovedContractMembersGuardTests` | `KeptMembers_StillExistInContracts` | 契約のメンバーがあること（リフレクション） |
-| `Phase7Step4AppHostGuardTests` | `AppHost_DoesNotDeclareRemovedOverloads` | CreateHost の多重定義（リフレクション） |
-| `Phase7Step4EnvironmentProbesGuardTests` | `EnvironmentService_OwnsTheProbesAndTheirState` | EnvironmentService のメンバーがあること（リフレクション） |
-| `Phase7Step5RootHubGuardTests` | `App_HoldsTheControlServiceInAVolatileField` | フィールドが volatile であること（リフレクションの修飾子） |
-| `Phase7Step5RootHubGuardTests` | `ServiceRegistration_AlwaysCreatesTheControlService` | コンテナから ControlService を解決し、Singleton であること |
-| `Phase7Step5ServiceLocatorGuardTests` | `ControlServiceAndBackingStore_ReceiveTheirCollaborators` | ControlService の引数（リフレクション）と、解決した BackingStore の ProcessInspector が設定済みであること（コンテナ） |
-| `Phase7Step5ServiceLocatorGuardTests` | `MainWindowAndProfileEditor_DoNotUseTheLocator_AndAreCreatedThroughFactories` | IMainWindowFactory の解決（コンテナ）。AppHost の部分は AppHost の利用者の規則（App と Composition だけ）と、ServiceProviderHolder・Program の型がないことへ |
-| `Phase7Step6OutputTypeOwnershipGuardTests` | `Registration_HandsTheArrayToBackingStore_WithoutResolvingTheServiceFromTheStoreRegistration` | IOutputDeviceTypeState を解決すると、BackingStore.ActiveOutDevType が同じ配列になること（コンテナ） |
-| `Phase7Step7MacroRuntimeStateGuardTests` | `Registration_RegistersTheSharedState` | コンテナが同じインスタンスを返すこと |
-| `Phase7Step7StickMotionStateGuardTests` | `Mapping_HoldsNoStickMotionStateOfItsOwn_AndNoNestedStateTypes` | Mapping のフィールドの型（リフレクション）。Shared は 撤去したメンバーの一覧（リフレクション）へ |
-| `Phase7Step7StickMotionStateGuardTests` | `Registration_RegistersTheSharedState` | コンテナが同じインスタンスを返すこと |
-| `Phase7Step7SyntheticInputStateGuardTests` | `Mapping_HoldsNoSyntheticStateOfItsOwn_OnlyForwarders` | Mapping のフィールドの型（リフレクション） |
-| `Phase7Step7SyntheticInputStateGuardTests` | `Registration_SubscribesTheResetOnce_AndRegistersTheSharedState` | BackingStore.RaiseActionsLoaded で実行時状態がリセットされること（コンテナ）。差し替えの振る舞いは BackingStoreActionsLoadedHandlerTests |
-| `Phase7Step8W1StateHolderInjectionGuardTests` | `MouseAndControlService_ReceiveTheHoldersByConstructor` | コンストラクターの引数（リフレクション） |
-| `Phase9EHidHideGuardTests` | `HidHideService_DoesNotTouchTheDriverDirectly` | HidHideAPIDevice への依存は工場だけ（ArchUnitNET） |
-| `Phase9EInputReportGuardTests` | `NewComponents_DoNotReferenceStaticEntryPoints_OrControlService` | 新しい部品が ControlService に依存しないこと（ArchUnitNET）。AppHost の部分は AppHost の利用者の規則（App と Composition だけ）と、ServiceProviderHolder・Program の型がないことへ |
-| `Phase9EOscGuardTests` | `OscService_AndTheContracts_DoNotUseTheSharpOscTypes` | SharpOSC への依存は SharpOscTransportFactory だけ（ArchUnitNET） |
-| `ProfileEditorGlobalReferenceGuardTests` | `ProfileEditor_ReceivesAppSettingsServiceByConstructor_AndMainWindowPassesIt` | コンストラクターの引数（リフレクション）と、null で例外になること（振る舞い） |
-| `ProfileSettingsViewModelGlobalReferenceGuardTests` | `Constructors_HaveNoOptionalServiceArguments_AndKeepTargetDevice` | コンストラクターの引数に省略可能なサービスがないこと、targetDevice の既定値（リフレクション） |
-| `ProfileSettingsViewModelGlobalReferenceGuardTests` | `ViewModelFactory_HasNoServiceLocatorInConstructor` | コンストラクターの引数（Func<ControlService>・省略可能な引数がない）をリフレクションで。AppHost の部分は AppHost の利用者の規則（App と Composition だけ）と、ServiceProviderHolder・Program の型がないことへ |
-| `Step10GroupOneGlobalReferenceGuardTests` | `StartupMethods_TakesPathsAsArguments` | メソッドの引数をリフレクションで |
-| `Step12DeadShimRemovalGuardTests` | `Wave5_RemovedApiSurface_DoesNotReappear` | IPathService.AppDataPath に setter がないこと（リフレクション） |
+| `MappingCommitAndCalibrationGlobalReferenceGuardTests` | `ApplyDrift_TakesProfileSettingsAsParameter` | メソッドの引数の型をリフレクションで確かめる（14d-3 で置き換え済み） |
+| `MappingCommitAndCalibrationGlobalReferenceGuardTests` | `Commit_TakesProfileSettingsAsParameter` | メソッドの引数の型をリフレクションで確かめる（14d-3 で置き換え済み） |
+| `MappingSetCurveAndDeadzoneGlobalReferenceGuardTests` | `SetCurveAndDeadzone_TakesProfileSettingsAsParameter` | メソッドの引数の型をリフレクションで確かめる（14d-3 で置き換え済み） |
+| `Phase13Step5FuncRemovalGuardTests` | `FuncOfControlService_NoLongerAppears` | Phase13FuncRatchetGuardTests の対象を Func<ControlService> にも広げる（I で始まらない型は今の正規表現に掛からない）（14d-3（Phase13FuncRatchetGuardTests の対象を Func<ControlService> へ広げて） で削除済み） |
+| `Phase7Step1DeadMethodGuardTests` | `KeptMethods_StillExistInBackingStore` | メソッドがあること（リフレクション）（14d-3 で置き換え済み） |
+| `Phase7Step2RemovedContractMembersGuardTests` | `KeptMembers_StillExistInContracts` | 契約のメンバーがあること（リフレクション）（14d-3 で置き換え済み） |
+| `Phase7Step4AppHostGuardTests` | `AppHost_DoesNotDeclareRemovedOverloads` | CreateHost の多重定義（リフレクション）（14d-3 で置き換え済み） |
+| `Phase7Step4EnvironmentProbesGuardTests` | `EnvironmentService_OwnsTheProbesAndTheirState` | EnvironmentService のメンバーがあること（リフレクション）（14d-3 で置き換え済み） |
+| `Phase7Step5RootHubGuardTests` | `App_HoldsTheControlServiceInAVolatileField` | フィールドが volatile であること（リフレクションの修飾子）（14d-3 で置き換え済み） |
+| `Phase7Step5RootHubGuardTests` | `ServiceRegistration_AlwaysCreatesTheControlService` | コンテナから ControlService を解決し、Singleton であること（14d-3 で置き換え済み） |
+| `Phase7Step5ServiceLocatorGuardTests` | `ControlServiceAndBackingStore_ReceiveTheirCollaborators` | ControlService の引数（リフレクション）と、解決した BackingStore の ProcessInspector が設定済みであること（コンテナ）（14d-3 で置き換え済み） |
+| `Phase7Step5ServiceLocatorGuardTests` | `MainWindowAndProfileEditor_DoNotUseTheLocator_AndAreCreatedThroughFactories` | IMainWindowFactory の解決（コンテナ）。AppHost の部分は AppHost の利用者の規則（App と Composition だけ）と、ServiceProviderHolder・Program の型がないことへ（14d-3 で置き換え済み） |
+| `Phase7Step6OutputTypeOwnershipGuardTests` | `Registration_HandsTheArrayToBackingStore_WithoutResolvingTheServiceFromTheStoreRegistration` | IOutputDeviceTypeState を解決すると、BackingStore.ActiveOutDevType が同じ配列になること（コンテナ）（14d-3 で置き換え済み） |
+| `Phase7Step7MacroRuntimeStateGuardTests` | `Registration_RegistersTheSharedState` | コンテナが同じインスタンスを返すこと（14d-3 で置き換え済み） |
+| `Phase7Step7StickMotionStateGuardTests` | `Mapping_HoldsNoStickMotionStateOfItsOwn_AndNoNestedStateTypes` | Mapping のフィールドの型（リフレクション）。Shared は 撤去したメンバーの一覧（リフレクション）へ（14d-3 で置き換え済み） |
+| `Phase7Step7StickMotionStateGuardTests` | `Registration_RegistersTheSharedState` | コンテナが同じインスタンスを返すこと（14d-3 で置き換え済み） |
+| `Phase7Step7SyntheticInputStateGuardTests` | `Mapping_HoldsNoSyntheticStateOfItsOwn_OnlyForwarders` | Mapping のフィールドの型（リフレクション）（14d-3 で置き換え済み） |
+| `Phase7Step7SyntheticInputStateGuardTests` | `Registration_SubscribesTheResetOnce_AndRegistersTheSharedState` | BackingStore.RaiseActionsLoaded で実行時状態がリセットされること（コンテナ）。差し替えの振る舞いは BackingStoreActionsLoadedHandlerTests（14d-3 で置き換え済み） |
+| `Phase7Step8W1StateHolderInjectionGuardTests` | `MouseAndControlService_ReceiveTheHoldersByConstructor` | コンストラクターの引数（リフレクション）（14d-3 で置き換え済み） |
+| `Phase9EHidHideGuardTests` | `HidHideService_DoesNotTouchTheDriverDirectly` | HidHideAPIDevice への依存は工場だけ（ArchUnitNET）（14d-3 で置き換え済み） |
+| `Phase9EInputReportGuardTests` | `NewComponents_DoNotReferenceStaticEntryPoints_OrControlService` | 新しい部品が ControlService に依存しないこと（ArchUnitNET）。AppHost の部分は AppHost の利用者の規則（App と Composition だけ）と、ServiceProviderHolder・Program の型がないことへ（14d-3 で置き換え済み） |
+| `Phase9EOscGuardTests` | `OscService_AndTheContracts_DoNotUseTheSharpOscTypes` | SharpOSC への依存は SharpOscTransportFactory だけ（ArchUnitNET）（14d-3 で置き換え済み） |
+| `ProfileEditorGlobalReferenceGuardTests` | `ProfileEditor_ReceivesAppSettingsServiceByConstructor_AndMainWindowPassesIt` | コンストラクターの引数（リフレクション）と、null で例外になること（振る舞い）（14d-3 で置き換え済み） |
+| `ProfileSettingsViewModelGlobalReferenceGuardTests` | `Constructors_HaveNoOptionalServiceArguments_AndKeepTargetDevice` | コンストラクターの引数に省略可能なサービスがないこと、targetDevice の既定値（リフレクション）（14d-3 で置き換え済み） |
+| `ProfileSettingsViewModelGlobalReferenceGuardTests` | `ViewModelFactory_HasNoServiceLocatorInConstructor` | コンストラクターの引数（Func<ControlService>・省略可能な引数がない）をリフレクションで。AppHost の部分は AppHost の利用者の規則（App と Composition だけ）と、ServiceProviderHolder・Program の型がないことへ（14d-3 で置き換え済み） |
+| `Step10GroupOneGlobalReferenceGuardTests` | `StartupMethods_TakesPathsAsArguments` | メソッドの引数をリフレクションで（14d-3 で置き換え済み） |
+| `Step12DeadShimRemovalGuardTests` | `Wave5_RemovedApiSurface_DoesNotReappear` | IPathService.AppDataPath に setter がないこと（リフレクション）（14d-3 で置き換え済み） |
 
 ## 5. F（撤去済み API。`RemovedApiRuleTests` へ畳む）
 
@@ -227,7 +227,7 @@ F・D で全メソッドが消えるファイル: 9（14d-2 でファイルご�
 
 ## 8. K（残す）の内訳
 
-K のメソッドは 325 件、130 ファイル。主な種類: XAML の構造（32 件）、
+K のメソッドは 323 件、129 ファイル。主な種類: XAML の構造（32 件）、
 ログの文言（規約 §2.3）、安全弁・ガードレールの順序（規約 §2.2。例: `Phase9E6LifecycleGuardTests` の Start／Stop の順序、`Phase9F1StartupOrderGuardTests`）、
 機能の配線（画面と ViewModel の接続、委譲の形）、行数の上限、TODO コメント（規約 §3.3 原則4）。
 14d-1 で、読み取りの部品（自前の `Read`・`StripComments`）だけを共通の `SourceText` に差し替える。
@@ -306,7 +306,6 @@ K のメソッドは 325 件、130 ファイル。主な種類: XAML の構造�
 - `Phase7Step5Ds3GyroTriggerTests`（3）
 - `Phase7Step5ServiceLocatorGuardTests`（3）
 - `Phase7Step6OutputTypeOwnershipGuardTests`（2）
-- `Phase7Step7MacroRuntimeStateGuardTests`（1）
 - `Phase7Step7SyntheticInputStateGuardTests`（2）
 - `Phase7Step8W1StateHolderInjectionGuardTests`（1）
 - `Phase7Step9W1CompatAppHostRemovedGuardTests`（1）
@@ -338,7 +337,7 @@ K のメソッドは 325 件、130 ファイル。主な種類: XAML の構造�
 - `Phase9E6DisconnectGuardTests`（4）
 - `Phase9E6LifecycleGuardTests`（6）
 - `Phase9EHidHideGuardTests`（2）
-- `Phase9EInputReportGuardTests`（4）
+- `Phase9EInputReportGuardTests`（3）
 - `Phase9EOscGuardTests`（2）
 - `Phase9EUdpMotionGuardTests`（3）
 - `Phase9EVirtualPadGuardTests`（2）

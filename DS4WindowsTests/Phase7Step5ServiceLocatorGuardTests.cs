@@ -1,3 +1,6 @@
+using System.Collections.Generic;
+using System.Linq;
+using System;
 using System.IO;
 using System.Text.RegularExpressions;
 using Xunit;
@@ -37,17 +40,11 @@ namespace DS4WindowsTests
         [Fact]
         public void ControlServiceAndBackingStore_ReceiveTheirCollaborators()
         {
-            string control = SourceText.ReadCode("DS4Windows/Processing/ControlService.cs");
-            string store = SourceText.ReadCode("DS4Windows/Core/Settings/BackingStore.cs");
-            string registration = RegistrationSource.ReadAll(stripComments: true);   // Phase14c-Step6（R-18）: 層ごとの partial ファイルをつないだもの（コメントは除く）
-            if (control == null || store == null || registration == null) return;
-
-            Assert.DoesNotContain("AppHost", control);
-            Assert.DoesNotContain("AppHost", store);
-            Assert.Contains("DS4Windows.Core.Abstractions.IElevatedProcessLauncher elevatedProcessLauncher", control);
-            Assert.Contains("sp.GetRequiredService<IElevatedProcessLauncher>()", registration);
-            Assert.Contains("store.ProcessInspector = sp.GetRequiredService<IProcessInspector>();", registration);
-            Assert.DoesNotContain("Global.store", registration);
+            // Phase14d-Step3: ソースの文字列ではなく、コンストラクターの引数と、コンテナが組み立てた結果を確かめる（AppHost を使わないことは RemovedApiRuleTests）
+            Assert.Contains(typeof(DS4Windows.Processing.ControlService).GetConstructors().Single().GetParameters(),
+                p => p.ParameterType == typeof(DS4Windows.Core.Abstractions.IElevatedProcessLauncher));
+            var store = TestHost.GetService<DS4Windows.Core.Settings.BackingStore>();
+            Assert.Same(TestHost.GetService<DS4Windows.Core.Abstractions.IProcessInspector>(), store.ProcessInspector);
         }
 
         [Fact]

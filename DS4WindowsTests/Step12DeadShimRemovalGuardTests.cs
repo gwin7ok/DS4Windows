@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -93,18 +94,13 @@ namespace DS4WindowsTests
         [Fact]
         public void Wave5_RemovedApiSurface_DoesNotReappear()
         {
-            string pathServiceInterface = SourceFileLocator.Find("DS4Windows/Core/Abstractions/IPathService.cs");
-            if (pathServiceInterface == null)
-            {
-                _output.WriteLine("ソースが見つからないため検査を省略した。");
-                return;
-            }
-
             // IPathService.AppDataPath のセッターを再導入しない（Global.appdatapath と連動しない孤立した実装だった）
-            string pathText = SourceText.StripComments(File.ReadAllText(pathServiceInterface));
-            Assert.Matches(@"string\s+AppDataPath\s*\{\s*get;\s*\}", pathText);
-
-            // 互換ラッパー DS4Windows.AppHost は Phase7-Step9 W1 で削除した（再導入の防止は Phase7Step9W1CompatAppHostRemovedGuardTests）
+            // Phase14d-Step3: ソースの文字列ではなく、プロパティの読み書きを確かめる
+            System.Reflection.PropertyInfo property = typeof(DS4Windows.Core.Abstractions.IPathService).GetProperty("AppDataPath");
+            Assert.NotNull(property);
+            Assert.Equal(typeof(string), property.PropertyType);
+            Assert.True(property.CanRead);
+            Assert.False(property.CanWrite);
         }
     }
 }

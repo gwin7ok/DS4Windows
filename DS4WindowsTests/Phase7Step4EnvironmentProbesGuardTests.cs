@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -26,9 +27,7 @@ namespace DS4WindowsTests
         [Fact]
         public void EnvironmentService_OwnsTheProbesAndTheirState()
         {
-            string text = SourceText.ReadCode("DS4Windows/Core/Platform/EnvironmentService.cs");
-            if (text == null) return;
-
+            // Phase14d-Step3: ソースの文字列ではなく、宣言されたメンバーを確かめる。旧来の「静的初期化子から Global を呼ばない」検査は、Global 型の撤去で不要になった
             foreach (string member in new[]
             {
                 "FindViGEmDeviceInfo", "CheckForSysDevice", "QueryFakerInputVersion", "PopulateFromViGEmBusInfo",
@@ -36,16 +35,8 @@ namespace DS4WindowsTests
                 "IsWin8OrGreaterCore",
             })
             {
-                Assert.True(Regex.IsMatch(text, @"\b" + Regex.Escape(member) + @"\b"), "EnvironmentService に " + member + " が見つからない。");
-            }
-
-            // 静的初期化の循環を作らない: 静的フィールドの初期化子から Global のメソッド・フィールドを呼ばない
-            // （const の MAX_DS4_CONTROLLER_COUNT／OLD_XINPUT_CONTROLLER_COUNT だけを許可。EnvironmentServiceStaticInitGuardTests も参照）
-            foreach (Match m in Regex.Matches(text, @"static\s+(?:readonly\s+)?[\w<>?]+\s+\w+\s*=\s*[^;]*Global\.(\w+)"))
-            {
-                string member = m.Groups[1].Value;
-                Assert.True(member == "MAX_DS4_CONTROLLER_COUNT" || member == "OLD_XINPUT_CONTROLLER_COUNT",
-                    "静的フィールドの初期化子が Global." + member + " を参照している（静的初期化の循環の原因になる）。");
+                Assert.True(typeof(DS4Windows.Core.Platform.EnvironmentService).GetMember(member, System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.Static | System.Reflection.BindingFlags.DeclaredOnly).Length > 0,
+                    "EnvironmentService に " + member + " が見つからない。");
             }
         }
     }

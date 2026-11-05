@@ -1,3 +1,5 @@
+using System.Collections.Generic;
+using System.Linq;
 using System;
 using System.IO;
 using System.Text.RegularExpressions;
@@ -20,8 +22,6 @@ namespace DS4WindowsTests
     /// </summary>
     public class ProfileSettingsViewModelGlobalReferenceGuardTests
     {
-        private const string VmPath = "DS4Windows/UI/ViewModels/ProfileSettingsViewModel.cs";
-        private const string FactoryPath = "DS4Windows/UI/Services/ViewModelFactory.cs";
 
         private readonly ITestOutputHelper _output;
 
@@ -63,44 +63,27 @@ namespace DS4WindowsTests
         [Fact]
         public void Constructors_HaveNoOptionalServiceArguments_AndKeepTargetDevice()
         {
-            string text = SourceText.ReadCode(VmPath);
-            if (text == null) return;
-
-            Match ctor = Regex.Match(text, @"public ProfileSettingsViewModel\(([^)]*)\)", RegexOptions.Singleline);
-            Assert.True(ctor.Success);
-            string args = ctor.Groups[1].Value;
-            Assert.Contains("IEnvironmentService environmentService", args);
-            Assert.Contains("IPathService pathService", args);
-            Assert.Contains("int targetDevice = -1", args);
+            // Phase14d-Step3: ソースの文字列ではなく、コンストラクターの引数を確かめる
+            System.Reflection.ParameterInfo[] ps = typeof(DS4Windows.UI.ViewModels.ProfileSettingsViewModel).GetConstructors().Single().GetParameters();
+            Assert.Contains(ps, p => p.ParameterType == typeof(DS4Windows.Core.Abstractions.IEnvironmentService));
+            Assert.Contains(ps, p => p.ParameterType == typeof(DS4Windows.Core.Abstractions.IPathService));
             // targetDevice 以外は省略可能にしない（既定値の指定は 1 つだけ）
-            Assert.Single(Regex.Matches(args, "="));
-
+            System.Reflection.ParameterInfo optional = Assert.Single(ps.Where(p => p.IsOptional));
+            Assert.Equal("targetDevice", optional.Name);
+            Assert.Equal(-1, optional.DefaultValue);
             // PresetMenuHelper は Phase6-Step10b W3 で別ファイルへ分離した
-            string helperText = SourceText.ReadCode("DS4Windows/UI/ViewModels/PresetMenuHelper.cs");
-            if (helperText == null) return;
-            Match helper = Regex.Match(helperText, @"public PresetMenuHelper\(([^)]*)\)");
-            Assert.True(helper.Success);
-            Assert.DoesNotContain("=", helper.Groups[1].Value);
+            Assert.All(typeof(DS4Windows.UI.ViewModels.PresetMenuHelper).GetConstructors().Single().GetParameters(), p => Assert.False(p.IsOptional, p.Name + " が省略可能"));
         }
 
         [Fact]
         public void ViewModelFactory_HasNoServiceLocatorInConstructor()
         {
-            string text = SourceText.ReadCode(FactoryPath);
-            if (text == null) return;
-
-            // ProfileSettingsViewModel 以外の生成（Step10 の範囲）が残っているため、コンストラクタ部分だけを検査する
-            int start = text.IndexOf("public ViewModelFactory(", StringComparison.Ordinal);
-            Assert.True(start >= 0);
-            int end = text.IndexOf("public ProfileSettingsViewModel CreateProfileSettingsViewModel", start, StringComparison.Ordinal);
-            Assert.True(end > start);
-            string ctor = text.Substring(start, end - start);
-
-            Assert.DoesNotContain("AppHost", ctor);
-            Assert.DoesNotContain("= null", ctor);
+            // Phase14d-Step3: ソースの文字列ではなく、コンストラクターの引数を確かめる（AppHost を使わないことは RemovedApiRuleTests）
+            System.Reflection.ParameterInfo[] ps = typeof(DS4Windows.UI.Services.ViewModelFactory).GetConstructors().Single().GetParameters();
+            Assert.DoesNotContain(ps, p => p.IsOptional);
             // Phase13-Step6 6-c: 遅延（Func）をやめ、ControlService を直接受ける
-            Assert.DoesNotContain("Func<ControlService>", ctor);
-            Assert.Contains("ControlService controlService", ctor);
+            Assert.DoesNotContain(ps, p => p.ParameterType == typeof(Func<DS4Windows.Processing.ControlService>));
+            Assert.Contains(ps, p => p.ParameterType == typeof(DS4Windows.Processing.ControlService));
         }
 
         [Fact]

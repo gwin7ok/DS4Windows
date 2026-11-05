@@ -85,19 +85,15 @@ namespace DS4WindowsTests
         }
 
         [Theory]
-        [InlineData("DS4Windows/Processing/Services/LatencyMonitor.cs")]
-        [InlineData("DS4Windows/Processing/Services/TouchpadToggleService.cs")]
-        [InlineData("DS4Windows/Processing/Services/ActiveInputProbe.cs")]
-        public void NewComponents_DoNotReferenceStaticEntryPoints_OrControlService(string relativePath)
+        [InlineData("DS4Windows.Processing.Services.LatencyMonitor")]
+        [InlineData("DS4Windows.Processing.Services.TouchpadToggleService")]
+        [InlineData("DS4Windows.Processing.Services.ActiveInputProbe")]
+        public void NewComponents_DoNotReferenceStaticEntryPoints_OrControlService(string typeName)
         {
-            string text = SourceText.ReadCode(relativePath);
-            if (text == null) return;
-
-            Assert.DoesNotContain("AppHost", text);
-            Assert.DoesNotContain("ServiceProviderHolder", text);
-            Assert.DoesNotContain("ControlService", text);
-            Assert.False(Regex.IsMatch(text, @"\bGlobal\."), relativePath + " が Global を参照している");
-            Assert.False(Regex.IsMatch(text, @"\bProgram\.rootHub\b"), relativePath + " が Program.rootHub を参照している");
+            // Phase14d-Step3: ソースの文字列ではなく、型の参照（メソッド本体を含む）で確かめる。
+            // AppHost・ServiceProviderHolder・Global・Program を使わないことは RemovedApiRuleTests が守る
+            var targets = LayerDependencyScanner.AllTargetsOf(typeName);
+            Assert.DoesNotContain(typeof(DS4Windows.Processing.ControlService).FullName, targets);
         }
     }
 }

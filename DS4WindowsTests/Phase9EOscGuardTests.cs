@@ -1,3 +1,6 @@
+using System.Collections.Generic;
+using System.Linq;
+using System;
 using System.IO;
 using System.Text.RegularExpressions;
 using Xunit;
@@ -60,19 +63,17 @@ namespace DS4WindowsTests
         public void OscService_AndTheContracts_DoNotUseTheSharpOscTypes()
         {
             // SharpOSC の型は、通信の実装（SharpOsc*）の中に閉じる。テストプロジェクトが SharpOSC を参照せずに済むための境界
-            foreach (string file in new[]
+            // Phase14d-Step3: ソースの文字列ではなく、型の参照（メソッド本体を含む）で確かめる
+            // 空振りの防止: 通信の実装からは SharpOSC の型の参照が見えること
+            Assert.Contains(LayerDependencyScanner.AllTargetsOf("DS4Windows.Output.Services.SharpOscMessageSender"), t => t.StartsWith("SharpOSC", StringComparison.Ordinal));
+            foreach (string type in new[]
             {
-                "DS4Windows/Output/Services/OscService.cs", "DS4Windows/Processing/Abstractions/IOscService.cs",
-                "DS4Windows/Processing/Abstractions/IOscTransportFactory.cs", "DS4Windows/Processing/Abstractions/IOscMessageSender.cs", "DS4Windows/Processing/Abstractions/IOscListenerHandle.cs",
+                "DS4Windows.Output.Services.OscService", "DS4Windows.Processing.Abstractions.IOscService",
+                "DS4Windows.Processing.Abstractions.IOscTransportFactory", "DS4Windows.Processing.Abstractions.IOscMessageSender", "DS4Windows.Processing.Abstractions.IOscListenerHandle",
             })
             {
-                string text = SourceText.ReadCode(file);
-                if (text == null) continue;
-
-                Assert.DoesNotContain("using SharpOSC", text);
-                Assert.DoesNotContain("UDPSender", text);
-                Assert.DoesNotContain("UDPListener", text);
-                Assert.DoesNotContain("OscMessage(", text);
+                var sharpOsc = LayerDependencyScanner.AllTargetsOf(type).Where(t => t.StartsWith("SharpOSC", StringComparison.Ordinal)).ToList();
+                Assert.True(sharpOsc.Count == 0, type + " が SharpOSC の型を参照している: " + string.Join(", ", sharpOsc));
             }
         }
 

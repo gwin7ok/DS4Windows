@@ -1,3 +1,6 @@
+using System.Collections.Generic;
+using System.Linq;
+using System;
 using System.IO;
 using System.Text.RegularExpressions;
 using Xunit;
@@ -54,11 +57,10 @@ namespace DS4WindowsTests
         [Fact]
         public void HidHideService_DoesNotTouchTheDriverDirectly()
         {
-            string text = SourceText.ReadCode("DS4Windows/Output/Services/HidHideService.cs");
-            if (text == null) return;
-
-            Assert.DoesNotContain("HidHideAPIDevice", text);
-            Assert.Contains("_apiFactory.Open()", text);
+            // Phase14d-Step3: ソースの文字列ではなく、型の参照（メソッド本体を含む）で確かめる。ドライバーの窓口 HidHideAPIDevice に触れるのは工場（アダプター）だけ
+            var targets = LayerDependencyScanner.AllTargetsOf("DS4Windows.Output.Services.HidHideService");
+            Assert.DoesNotContain(targets, t => t.EndsWith(".HidHideAPIDevice", StringComparison.Ordinal));
+            Assert.Contains(typeof(DS4Windows.Processing.Abstractions.IHidHideApiFactory).FullName, targets);
         }
 
         [Fact]

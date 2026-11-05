@@ -1,7 +1,7 @@
 # Phase14d 個別計画書: テストの整理
 
 作成日: 2026-11-05
-状態: **承認済み（2026-11-05。F1〜F4 はユーザーがすべて推奨案を選択）→ 14d-0〜14d-2 実施済み（§9）**。F5・F6 は未確認のため、14d-6 の取り込みの前に確認する
+状態: **承認済み（2026-11-05。F1〜F4 はユーザーがすべて推奨案を選択）→ 14d-0〜14d-3 実施済み（§9）**。F5・F6 は未確認のため、14d-6 の取り込みの前に確認する
 ブランチ: `Phase14d`（master 4a0f83b3 から作成）
 根拠: `Phase11-and-Beyond-Roadmap.md`（14d の行）、`Repository-Review-2026-11-05.md`（R-16）、`Phase14c-Plan.md`（14c-0 の Slow の印）、規約 `.github/copilot-instructions.md` §2.2・§2.3・§4
 
@@ -136,6 +136,7 @@ Phase15（UI 共通化）で UI のファイルを大きく動かす前に、パ
 |---|---|---|
 | 14d-0 | 785ef416 | 棚卸し表 `Phase14d-Test-Inventory.md`。ソースを読むメソッド 467（補助メソッド・パスの一覧のフィールド経由を含めて数え直した。§2.3 の 391 は Assert の文字列で数えた概数）を、F 100・D 26・R 29・K 312（うち 16 件は撤去済みの名前の Assert だけを外す）に分けた。F・D で全メソッドが消えるファイルは 10。遅いテストは 60 件・50.7 秒（メソッド単位）。F の大半は、Phase7-Step10d で削除した `Global` 型の参照の検査（型がないため、参照はコンパイルで止まる） |
 | 14d-1 | dd4598da | `SourceFileLocator.Find` を厳しくした（リポジトリがあるのにファイルがなければ失敗。ないことの確認は新設の `Exists`）。共通の読み取り部品 `SourceText`（`Read`・`ReadCode`・`ReadNormalized`・`StripComments`・`ProductionFiles`・`RelativePathOf`）を追加し、自前の補助 80 個（コメント除去の複製 20、読み取り 60）を置き換えた。残る 23 個は、メソッドの範囲の切り出しなどテスト固有の処理を持つもの（厳しくした `Find` を通る）。空振り 9 件と、F の 1 件（`Step10FourTwoGlobalReferenceGuardTests` の Global の検査。旧パスを含み失敗するようになったため前倒し）を削除。**厳しくしたことで、Phase14 のフォルダーの再編のときにパスの書き換えが漏れ、黙って省略されていた検査が 3 ファイル・4 件見つかった**（`Phase9E6ConnectionGuardTests` の 2 件［旧 `DS4Control/Services/`］、`Phase7Step2RemovedContractMembersGuardTests` の 2 件［旧 `DI/`］）。ファイル名から引く形に直し、いずれも合格。Debug ALL: 警告 0・エラー 0、3,254 件＋11 件 |
-| 14d-2 | （本コミット） | `RemovedApiRuleTests`（撤去した型 35、撤去・移動したメンバーの表 20 型、`AppHost` を使うのは `App` と `DS4Windows.Composition` だけ［`LayerDependencyScanner` の辺を使い、App → AppHost の辺があることも確かめて空振りを防ぐ］）を追加。棚卸し表の F 71・D 16（14d-1 の 10 件を除く）を削除し、9 ファイルはテストがなくなったため削除（`Step10FourGlobalRatchetGuardTests`・`Phase7Step1ServiceLocatorRatchetGuardTests`・`Phase7Step10eW5RatchetEqualityGuardTests`、Global の参照の検査 6 ファイル）。15 メソッドで撤去済みの名前の Assert だけを外し、使われなくなった補助・一覧 42 個を削除。判定の見直し: リフレクションの検査 16 件と Phase9 の責務の検査を K に（棚卸し表の冒頭）。規約 §3.1・§3.3 原則1 の、撤去したラチェットの記述を置き換えの説明に更新。Debug ALL: 警告 0・エラー 0、3,151 件（103 件減）＋11 件。途中の確認 3,086 件・15 秒 |
+| 14d-2 | 371dae57 | `RemovedApiRuleTests`（撤去した型 35、撤去・移動したメンバーの表 20 型、`AppHost` を使うのは `App` と `DS4Windows.Composition` だけ［`LayerDependencyScanner` の辺を使い、App → AppHost の辺があることも確かめて空振りを防ぐ］）を追加。棚卸し表の F 71・D 16（14d-1 の 10 件を除く）を削除し、9 ファイルはテストがなくなったため削除（`Step10FourGlobalRatchetGuardTests`・`Phase7Step1ServiceLocatorRatchetGuardTests`・`Phase7Step10eW5RatchetEqualityGuardTests`、Global の参照の検査 6 ファイル）。15 メソッドで撤去済みの名前の Assert だけを外し、使われなくなった補助・一覧 42 個を削除。判定の見直し: リフレクションの検査 16 件と Phase9 の責務の検査を K に（棚卸し表の冒頭）。規約 §3.1・§3.3 原則1 の、撤去したラチェットの記述を置き換えの説明に更新。Debug ALL: 警告 0・エラー 0、3,151 件（103 件減）＋11 件。途中の確認 3,086 件・15 秒 |
+| 14d-3 | （本コミット） | R の 27 件を置き換えた: 引数・フィールド・修飾子（volatile）・多重定義はリフレクション、登録の行はコンテナの解決（同じインスタンス、配線の結果、購読者が ActionsLoadedRuntimeReset であること）、外部・本体の型への依存（SharpOSC、HidHideAPIDevice、ControlService）は `LayerDependencyScanner.AllTargetsOf`（新設。外部の型も含めて、メソッド本体の参照まで見る。空振りを防ぐため、使う側から参照が見えることも確かめる）。`Func<ControlService>` は `Phase13FuncRatchetGuardTests` の対象に加え、`Phase13Step5FuncRemovalGuardTests` を削除。循環の制約（BackingStore の登録から IOutputSlotService を解決しない。実行するとスタックオーバーフロー）と、WPF の画面の配線（ProfileEditor・MainWindow）は、実行では確かめられないため、ソースの検査を残した。Debug ALL: 警告 0・エラー 0、3,150 件＋11 件 |
 
 - 不安定なテスト: `ProfileRepositoryTests.LinkedProfile_ChangeAndRemove_ShouldNotThrowAndShouldPersist` が、途中の確認で時々失敗する（単独では合格。テストは直列で動くため、並行ではなく、前のテストが残した状態［アプリデータのフォルダー］に左右されると見られる）。14d-5 で共有の状態として調べる。

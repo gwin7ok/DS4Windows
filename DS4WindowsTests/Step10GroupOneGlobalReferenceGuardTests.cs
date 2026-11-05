@@ -60,13 +60,20 @@ namespace DS4WindowsTests
         [Fact]
         public void StartupMethods_TakesPathsAsArguments()
         {
-            string text = SourceText.ReadCode("DS4Windows/Core/Platform/StartupEntryService.cs");
-            if (text == null) return;
-
-            Assert.Contains("WriteStartProgEntry(string exeLocation, string programDirectory)", text);
-            Assert.Contains("DeleteOldTaskEntry(string programDirectory)", text);
-            Assert.Contains("WriteTaskEntry(string programDirectory, string exeFileName)", text);
-            Assert.Contains("CheckStartupExeLocation(string exeLocation)", text);
+            // Phase14d-Step3: ソースの文字列ではなく、メソッドの引数（名前と型）を確かめる
+            Type service = typeof(DS4Windows.Core.Platform.StartupEntryService);
+            foreach ((string method, string[] parameters) in new[]
+            {
+                ("WriteStartProgEntry", new[] { "exeLocation", "programDirectory" }),
+                ("DeleteOldTaskEntry", new[] { "programDirectory" }),
+                ("WriteTaskEntry", new[] { "programDirectory", "exeFileName" }),
+                ("CheckStartupExeLocation", new[] { "exeLocation" }),
+            })
+            {
+                System.Reflection.ParameterInfo[] ps = service.GetMethods().Single(m => m.Name == method).GetParameters();
+                Assert.Equal(parameters, ps.Select(p => p.Name).ToArray());
+                Assert.All(ps, p => Assert.Equal(typeof(string), p.ParameterType));
+            }
         }
 
         [Fact]

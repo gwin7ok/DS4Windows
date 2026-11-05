@@ -1,3 +1,5 @@
+using System.Collections.Generic;
+using System.Linq;
 using System;
 using System.IO;
 using System.Text.RegularExpressions;
@@ -16,9 +18,6 @@ namespace DS4WindowsTests
     /// </summary>
     public class MappingSetCurveAndDeadzoneGlobalReferenceGuardTests
     {
-        private const string StartMarker = "public DS4State SetCurveAndDeadzone(";
-        // Phase9 9-A(2)-B: ApplyStickCalibration を StickInputConditioner へ移したため、次のメンバー（Map DS4 Buttons/Axes の文書コメント）を終端にする
-        private const string EndMarker = "/// Map DS4 Buttons/Axes to other DS4 Buttons/Axes";
 
         private readonly ITestOutputHelper _output;
 
@@ -27,35 +26,13 @@ namespace DS4WindowsTests
             _output = output;
         }
 
-        /// <summary>コメント（ブロック・行）を除いた `SetCurveAndDeadzone` 本体のテキストを返す。見つからなければ null。</summary>
-        private string ReadMethodSourceWithoutComments()
-        {
-            string path = SourceFileLocator.Find("DS4Windows/Processing/Mapping.cs");
-            if (path == null)
-            {
-                _output.WriteLine("Mapping.cs が見つからないため検査を省略した。");
-                return null;
-            }
-
-            string text = File.ReadAllText(path);
-            int start = text.IndexOf(StartMarker, StringComparison.Ordinal);
-            int end = text.IndexOf(EndMarker, StringComparison.Ordinal);
-            Assert.True(start >= 0, "SetCurveAndDeadzone が見つからない（メソッド名の変更？）");
-            Assert.True(end > start, "次のメンバー（Map DS4 Buttons/Axes）が SetCurveAndDeadzone の後ろに見つからない（並び順の変更？）");
-
-            string body = text.Substring(start, end - start);
-            body = Regex.Replace(body, @"/\*.*?\*/", string.Empty, RegexOptions.Singleline);
-            body = Regex.Replace(body, @"//[^\r\n]*", string.Empty);
-            return body;
-        }
-
         [Fact]
         public void SetCurveAndDeadzone_TakesProfileSettingsAsParameter()
         {
-            string body = ReadMethodSourceWithoutComments();
-            if (body == null) return;
-
-            Assert.Contains("IProfileSettingsService settings", body);
+            // Phase14d-Step3: ソースの文字列ではなく、メソッドの引数の型を確かめる
+            var methods = typeof(DS4Windows.Processing.Mapping).GetMethods(System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.Static | System.Reflection.BindingFlags.DeclaredOnly).Where(m => m.Name == "SetCurveAndDeadzone").ToArray();
+            Assert.NotEmpty(methods);
+            Assert.All(methods, m => Assert.Contains(m.GetParameters(), p => p.ParameterType == typeof(DS4Windows.Core.Abstractions.IProfileSettingsService)));
         }
     }
 }

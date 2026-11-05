@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -33,36 +34,17 @@ namespace DS4WindowsTests
             _output = output;
         }
 
-        private static bool Declares(string strippedSource, string member)
-        {
-            string name = Regex.Escape(member);
-            return Regex.IsMatch(strippedSource, @"(?m)^\s*[\w<>\[\],.? ]+\s+" + name + @"\s*(\(|\{|;)")
-                || Regex.IsMatch(strippedSource, @"(?m)^\s*event\s+[\w<>\[\],.? ]+\s+" + name + @"\s*;");
-        }
-
-        private string ReadContract(string interfaceName)
-        {
-            string path = SourceFileLocator.Find(SourceText.RelativePathOf(interfaceName + ".cs") ?? "");   // Phase14d-Step1: 旧パス（DI/）のまま、黙って省略されていた
-            if (path == null)
-            {
-                _output.WriteLine("ソースが見つからないため検査を省略した: " + interfaceName);
-                return null;
-            }
-
-            return SourceText.StripComments(File.ReadAllText(path));
-        }
-
         [Fact]
         public void KeptMembers_StillExistInContracts()
         {
+            // Phase14d-Step3: ソースの文字列ではなく、契約（インターフェース）の宣言されたメンバーを確かめる。契約は名前で引く（フォルダーの再編に依存しない）
+            var types = typeof(DS4Windows.Composition.AppHost).Assembly.GetTypes();
             var missing = new List<string>();
             foreach (var pair in Kept)
             {
-                string text = ReadContract(pair.Key);
-                if (text == null) continue;
-                missing.AddRange(pair.Value.Where(m => !Declares(text, m)).Select(m => pair.Key + "." + m));
+                Type contract = types.Single(t => t.IsInterface && t.Name == pair.Key);
+                missing.AddRange(pair.Value.Where(m => contract.GetMember(m, System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.Static | System.Reflection.BindingFlags.DeclaredOnly).Length == 0).Select(m => pair.Key + "." + m));
             }
-
             Assert.True(missing.Count == 0, "残すべき契約が失われている（TODO 付きの未接続の契約）: " + string.Join(", ", missing));
         }
     }

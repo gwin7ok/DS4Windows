@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using System;
 using System.IO;
 using System.Linq;
@@ -54,19 +55,20 @@ namespace DS4WindowsTests
         [Fact]
         public void ProfileEditor_ReceivesAppSettingsServiceByConstructor_AndMainWindowPassesIt()
         {
+            // Phase7-Step5 W5: 旧 AppHost.GetService の 4 件をコンストラクター引数に替えた
+            // Phase14d-Step3: 引数の並びは、ソースの文字列ではなくリフレクションで確かめる（書式に依存しない）
+            Type[] ps = typeof(DS4Windows.UI.ProfileEditor).GetConstructors().Single().GetParameters().Select(p => p.ParameterType).ToArray();
+            Assert.Equal(typeof(int), ps[0]);
+            Assert.Equal(typeof(DS4Windows.Core.Abstractions.IAppSettingsService), ps[1]);
+            Assert.Equal(typeof(DS4Windows.Core.Abstractions.IProfileSettingsService), ps[2]);
+            Assert.Equal(typeof(DS4Windows.UI.Abstractions.IEditorWindowFactory), ps[3]);
+
+            // 受けた設定の使い方と、null の扱い・画面の開き方（コードの形。WPF の画面は単体テストで開けないため、ソースで確かめる）
             string editor = SourceText.ReadCode("DS4Windows/UI/ProfileEditor.xaml.cs");
             if (editor == null) return;
-
-            // 引数が複数行に折り返されていても一致するよう、空白を正規化して比較する
-            string normalizedEditor = Regex.Replace(editor, @"\s+", " ");
-            // Phase7-Step5 W5: 旧 AppHost.GetService の 4 件をコンストラクター引数に替えた
-            Assert.Contains("public ProfileEditor(int targetDevice, IAppSettingsService appSettingsService, IProfileSettingsService profileSettingsService, DS4Windows.UI.Abstractions.IEditorWindowFactory editorWindowFactory, IProfileRepository profileRepository, IProfileSwitcher profileSwitcher, ControlService controlService, IViewModelFactory viewModelFactory, DS4Windows.Core.Abstractions.IEnvironmentService environmentService, DS4Windows.Processing.Abstractions.IRuntimeFeatureSwitch runtimeFeatures)", normalizedEditor);
             Assert.Contains("throw new ArgumentNullException(nameof(appSettingsService))", editor);
             Assert.Contains("appSettingsService.UseLang", editor);
-
             string main = SourceText.ReadCode("DS4Windows/UI/MainWindow.xaml.cs");
-            if (main == null) return;
-
             Assert.Contains("editorWindowFactory.CreateProfileEditor(targetDevice)", main);
         }
     }

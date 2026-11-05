@@ -1,3 +1,6 @@
+using System.Collections.Generic;
+using System.Linq;
+using System;
 using System.IO;
 using System.Text.RegularExpressions;
 using Xunit;
@@ -47,13 +50,17 @@ namespace DS4WindowsTests
         [Fact]
         public void AppHost_DoesNotDeclareRemovedOverloads()
         {
-            string text = SourceText.ReadCode("DS4Windows/Composition/AppHost.cs");
-            if (text == null) return;
-
-            Assert.DoesNotMatch(@"CreateHost\s*\(\s*string\[\]", text);
-            Assert.DoesNotMatch(@"CreateHost\s*\(\s*IConfiguration\s+configuration\s*=\s*null\s*\)", text);
-            Assert.Matches(@"public\s+static\s+IHost\s+CreateHost\s*\(\s*\)", text);
-            Assert.Matches(@"public\s+static\s+IHost\s+CreateHost\s*\(\s*IConfiguration\s+configuration\s*,\s*DS4Windows\.Core\.Utilities\.ArgumentParser\s+parser\s*,", text);
+            // Phase14d-Step3: ソースの文字列ではなく、CreateHost の多重定義の引数を確かめる
+            var overloads = typeof(DS4Windows.Composition.AppHost).GetMethods(System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.Static)
+                .Where(m => m.Name == "CreateHost")
+                .Select(m => m.GetParameters().Select(p => p.ParameterType).ToArray())
+                .ToList();
+            Assert.Contains(overloads, ps => ps.Length == 0);
+            Assert.Contains(overloads, ps => ps.Length >= 2
+                && ps[0] == typeof(Microsoft.Extensions.Configuration.IConfiguration)
+                && ps[1] == typeof(DS4Windows.Core.Utilities.ArgumentParser));
+            Assert.DoesNotContain(overloads, ps => ps.Length == 1 && ps[0] == typeof(string[]));
+            Assert.DoesNotContain(overloads, ps => ps.Length == 1 && ps[0] == typeof(Microsoft.Extensions.Configuration.IConfiguration));
         }
 
         [Fact]

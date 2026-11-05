@@ -1,3 +1,5 @@
+using System.Collections.Generic;
+using System.Linq;
 using System;
 using System.IO;
 using System.Text.RegularExpressions;
@@ -17,11 +19,6 @@ namespace DS4WindowsTests
     /// </summary>
     public class MappingCommitAndCalibrationGlobalReferenceGuardTests
     {
-        // Phase9 9-A(2)-B: ドリフト補正は Mapping.ApplyStickCalibration から StickInputConditioner.ApplyDrift へ移した（検査の対象も、移動先のファイルにした）
-        private const string CalibrationPath = "DS4Windows/Processing/Services/StickInputConditioner.cs";
-        private const string CalibrationStart = "public DS4State ApplyDrift(";
-        // Phase8-Step8 8a: held の表を削除したため、較正の直後の文書コメント（Map DS4 Buttons/Axes…）を終端にする
-        private const string CalibrationEnd = "public void Fuzz(";
         // Phase9 MapCustom の分割 M1: Commit の本体は SyntheticInputCommitter へ移した（検査の対象も、移動先のファイルにした）
         private const string CommitPath = "DS4Windows/Processing/Services/SyntheticInputCommitter.cs";
         private const string CommitStart = "public void Commit(";
@@ -61,20 +58,19 @@ namespace DS4WindowsTests
         [Fact]
         public void ApplyDrift_TakesProfileSettingsAsParameter()
         {
-            // 検査範囲はシグネチャ行から始まるため、引数リストも含まれる。
-            string body = ReadRangeWithoutComments(CalibrationStart, CalibrationEnd, CalibrationPath);
-            if (body == null) return;
-
-            Assert.Contains("IProfileSettingsService settings", body);
+            // Phase14d-Step3: ソースの文字列ではなく、メソッドの引数の型を確かめる
+            var methods = typeof(DS4Windows.Processing.Services.StickInputConditioner).GetMethods(System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.Static | System.Reflection.BindingFlags.DeclaredOnly).Where(m => m.Name == "ApplyDrift").ToArray();
+            Assert.NotEmpty(methods);
+            Assert.All(methods, m => Assert.Contains(m.GetParameters(), p => p.ParameterType == typeof(DS4Windows.Core.Abstractions.IProfileSettingsService)));
         }
 
         [Fact]
         public void Commit_TakesProfileSettingsAsParameter()
         {
-            string body = ReadRangeWithoutComments(CommitStart, CommitEnd, CommitPath);
-            if (body == null) return;
-
-            Assert.Contains("IProfileSettingsService settings", body);
+            // Phase14d-Step3: ソースの文字列ではなく、メソッドの引数の型を確かめる
+            var methods = typeof(DS4Windows.Processing.Services.SyntheticInputCommitter).GetMethods(System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.Static | System.Reflection.BindingFlags.DeclaredOnly).Where(m => m.Name == "Commit").ToArray();
+            Assert.NotEmpty(methods);
+            Assert.All(methods, m => Assert.Contains(m.GetParameters(), p => p.ParameterType == typeof(DS4Windows.Core.Abstractions.IProfileSettingsService)));
         }
 
         [Fact]
