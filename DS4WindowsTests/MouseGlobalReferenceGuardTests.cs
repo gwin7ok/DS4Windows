@@ -30,27 +30,12 @@ namespace DS4WindowsTests
             _output = output;
         }
 
-        private string ReadSourceWithoutComments(string relativePath)
-        {
-            string path = SourceFileLocator.Find(relativePath);
-            if (path == null)
-            {
-                _output.WriteLine($"{relativePath} が見つからないため検査を省略した。");
-                return null;
-            }
-
-            string text = File.ReadAllText(path);
-            text = Regex.Replace(text, @"/\*.*?\*/", string.Empty, RegexOptions.Singleline);
-            text = Regex.Replace(text, @"//[^\r\n]*", string.Empty);
-            return text;
-        }
-
         [Fact]
         public void MouseFiles_HaveNoGlobalReferenceOtherThanClamp()
         {
             foreach (string file in Files)
             {
-                string text = ReadSourceWithoutComments(file);
+                string text = SourceText.ReadCode(file);
                 if (text == null) continue;
 
                 foreach (Match m in GlobalReference.Matches(text))
@@ -66,7 +51,7 @@ namespace DS4WindowsTests
         {
             foreach (string file in Files)
             {
-                string text = ReadSourceWithoutComments(file);
+                string text = SourceText.ReadCode(file);
                 if (text == null) continue;
 
                 Assert.False(UsingStaticGlobal.IsMatch(text),
@@ -81,7 +66,7 @@ namespace DS4WindowsTests
             bool anyRead = false;
             foreach (string file in Files)
             {
-                string text = ReadSourceWithoutComments(file);
+                string text = SourceText.ReadCode(file);
                 if (text == null) continue;
                 anyRead = true;
                 total += Regex.Matches(text, @"\bGlobal\.Clamp\b").Count;

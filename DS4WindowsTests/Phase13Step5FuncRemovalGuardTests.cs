@@ -13,12 +13,6 @@ namespace DS4WindowsTests
     /// </summary>
     public class Phase13Step5FuncRemovalGuardTests
     {
-        private static string StripComments(string text)
-        {
-            text = Regex.Replace(text, @"/\*.*?\*/", string.Empty, RegexOptions.Singleline);
-            return Regex.Replace(text, @"//[^\r\n]*", string.Empty);
-        }
-
         private static string[] FilesContaining(string pattern)
         {
             string anchor = SourceFileLocator.Find("DS4Windows/Core/Settings/BackingStore.cs");
@@ -29,7 +23,7 @@ namespace DS4WindowsTests
             var regex = new Regex(pattern);
             return Directory.GetFiles(sourceDir, "*.cs", SearchOption.AllDirectories)
                 .Where(f => !f.Replace('\\', '/').Contains("/obj/") && !f.Replace('\\', '/').Contains("/bin/"))
-                .Where(f => regex.IsMatch(StripComments(File.ReadAllText(f))))
+                .Where(f => regex.IsMatch(SourceText.StripComments(File.ReadAllText(f))))
                 .Select(f => Path.GetFileName(f))
                 .OrderBy(x => x)
                 .ToArray();

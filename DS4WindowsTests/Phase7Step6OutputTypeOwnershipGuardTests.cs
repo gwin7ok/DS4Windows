@@ -22,26 +22,12 @@ namespace DS4WindowsTests
             _output = output;
         }
 
-        private string Read(string relativePath)
-        {
-            string path = SourceFileLocator.Find(relativePath);
-            if (path == null)
-            {
-                _output.WriteLine("ソースが見つからないため検査を省略した: " + relativePath);
-                return null;
-            }
-
-            string text = File.ReadAllText(path);
-            text = Regex.Replace(text, @"/\*.*?\*/", string.Empty, RegexOptions.Singleline);
-            return Regex.Replace(text, @"//[^\r\n]*", string.Empty);
-        }
-
         [Fact]
         public void Global_NoLongerHoldsTheArrays_AndNoOneReadsThemFromGlobal()
         {
-            string store = Read("DS4Windows/Core/Settings/BackingStore.cs");
-            string control = Read("DS4Windows/Processing/ControlService.cs");
-            string service = Read("DS4Windows/Output/Services/OutputSlotService.cs");
+            string store = SourceText.ReadCode("DS4Windows/Core/Settings/BackingStore.cs");
+            string control = SourceText.ReadCode("DS4Windows/Processing/ControlService.cs");
+            string service = SourceText.ReadCode("DS4Windows/Output/Services/OutputSlotService.cs");
             if (store == null || control == null || service == null) return;
 
             Assert.DoesNotContain("Global.activeOutDevType", store);
@@ -54,14 +40,14 @@ namespace DS4WindowsTests
         [Fact]
         public void BackingStore_ReadsItsOwnActiveOutDevType()
         {
-            string store = Read("DS4Windows/Core/Settings/BackingStore.cs");
+            string store = SourceText.ReadCode("DS4Windows/Core/Settings/BackingStore.cs");
             if (store == null) return;
 
             Assert.Matches(@"public\s+OutContType\[\]\s+ActiveOutDevType\s*\{\s*get;\s*set;\s*\}", store);
             // Phase7-Step10c W4: プロファイルの読込（1 件）は LegacyProfileXmlSerializer へ移した（store.ActiveOutDevType）。合計は変わらない
             // Phase7-Step10c W6: プリセットの読込（7 件）も ProfilePresets へ移した。3 つのソースを合わせて 8 件
-            string serializer = Read("DS4Windows/Core/Persistence/LegacyProfileXmlSerializer.cs");
-            string presets = Read("DS4Windows/Core/Persistence/ProfilePresets.cs");
+            string serializer = SourceText.ReadCode("DS4Windows/Core/Persistence/LegacyProfileXmlSerializer.cs");
+            string presets = SourceText.ReadCode("DS4Windows/Core/Persistence/ProfilePresets.cs");
             if (serializer == null || presets == null) return;
             Assert.Equal(8, Regex.Matches(store + serializer + presets, @"OutContType oldContType = (store\.)?ActiveOutDevType\[device\];").Count);
         }
@@ -70,8 +56,8 @@ namespace DS4WindowsTests
         public void TheArrays_AreOwnedByTheDeviceTypeState_AndTheServiceForwardsThem()
         {
             // Phase13-Step7 7-b: 配列の持ち主は OutputSlotService から IOutputDeviceTypeState（OutputDeviceTypeState）へ移った
-            string state = Read("DS4Windows/Output/Services/OutputDeviceTypeState.cs");
-            string service = Read("DS4Windows/Output/Services/OutputSlotService.cs");
+            string state = SourceText.ReadCode("DS4Windows/Output/Services/OutputDeviceTypeState.cs");
+            string service = SourceText.ReadCode("DS4Windows/Output/Services/OutputSlotService.cs");
             if (state == null || service == null) return;
 
             Assert.Matches(@"OutContType\[\]\s+OutDevTypeTemp\s*\{\s*get;\s*\}\s*=\s*CreateFilled\(OutContType\.X360\)", state);

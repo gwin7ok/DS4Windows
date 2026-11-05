@@ -59,35 +59,6 @@ namespace DS4WindowsTests
                 new[] { "RefreshActionAlias", "RefreshExtrasButtons", "defaultButtonMapping", "reverseX360ButtonMapping" },
         };
 
-        private static string ReadWithoutComments(string relativePath)
-        {
-            string path = SourceFileLocator.Find(relativePath);
-            if (path == null) return null;
-            string text = File.ReadAllText(path);
-            text = Regex.Replace(text, @"/\*.*?\*/", string.Empty, RegexOptions.Singleline);
-            text = Regex.Replace(text, @"//[^\r\n]*", string.Empty);
-            return text;
-        }
-
-        [Fact]
-        public void ReplacedFiles_DoNotReferenceGlobalExceptRetainedMembers()
-        {
-            foreach (var entry in Allowed)
-            {
-                string text = ReadWithoutComments(entry.Key);
-                if (text == null) continue;
-
-                var unexpected = Regex.Matches(text, @"\bGlobal\.(\w+)")
-                    .Cast<Match>().Select(m => m.Groups[1].Value)
-                    .Where(n => !entry.Value.Contains(n)).Distinct().ToList();
-                Assert.True(unexpected.Count == 0,
-                    $"{entry.Key} に温存項目以外の Global 参照がある: {string.Join(", ", unexpected)}");
-
-                Assert.DoesNotContain("AppHost", text);
-                Assert.DoesNotContain("Program.rootHub", text);
-            }
-        }
-
         [Fact]
         public void SpecialActionRepository_RequiresStoreAndPathService()
         {
@@ -262,7 +233,7 @@ namespace DS4WindowsTests
 
             foreach (var entry in allowed)
             {
-                string text = ReadWithoutComments(entry.Key);
+                string text = SourceText.ReadCode(entry.Key);
                 if (text == null) continue;
 
                 var unexpected = Regex.Matches(text, @"Global.(w+)")
@@ -305,13 +276,13 @@ namespace DS4WindowsTests
                 "DS4Windows/UI/MainWindow.xaml.cs",
             })
             {
-                string text = ReadWithoutComments(file);
+                string text = SourceText.ReadCode(file);
                 if (text == null) continue;
                 Assert.DoesNotContain("AttachUnboundOutDev(", text);
                 Assert.DoesNotContain("DetachUnboundOutDev(", text);
             }
 
-            string vm = ReadWithoutComments("DS4Windows/UI/ViewModels/CurrentOutDeviceViewModel.cs");
+            string vm = SourceText.ReadCode("DS4Windows/UI/ViewModels/CurrentOutDeviceViewModel.cs");
             if (vm != null)
             {
                 Assert.Contains("outputSlotService.PluginSlot(", vm);

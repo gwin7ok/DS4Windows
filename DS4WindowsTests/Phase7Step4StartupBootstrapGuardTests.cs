@@ -25,25 +25,6 @@ namespace DS4WindowsTests
             _output = output;
         }
 
-        private static string StripComments(string text)
-        {
-            text = Regex.Replace(text, @"/\*.*?\*/", string.Empty, RegexOptions.Singleline);
-            text = Regex.Replace(text, @"//[^\r\n]*", string.Empty);
-            return text;
-        }
-
-        private string ReadApp()
-        {
-            string path = SourceFileLocator.Find("DS4Windows/App.xaml.cs");
-            if (path == null)
-            {
-                _output.WriteLine("App.xaml.cs が見つからないため検査を省略した。");
-                return null;
-            }
-
-            return StripComments(File.ReadAllText(path));
-        }
-
         [Fact]
         public void LaterRegistration_ReplacesTheDefault_SoTheBootstrapInstancesAreResolved()
         {
@@ -69,7 +50,7 @@ namespace DS4WindowsTests
             string path = SourceFileLocator.Find("DS4Windows/Composition/AppHost.cs");
             if (path == null) return;
 
-            string text = StripComments(File.ReadAllText(path));
+            string text = SourceText.StripComments(File.ReadAllText(path));
             // Phase7-Step10d W5: 既定の登録は RegisterServices(services, bootstrapBackingStore) になった（BackingStore は登録の中で配線する）
             var defaultsMatch = System.Text.RegularExpressions.Regex.Match(text, @"RegisterServices\(services, bootstrapBackingStore\);\s*services\.AddSingleton\(parser\);");
             int defaults = defaultsMatch.Success ? defaultsMatch.Index : -1;
@@ -83,7 +64,7 @@ namespace DS4WindowsTests
         [Fact]
         public void App_UsesTheBootstrapInstancesInPreHost()
         {
-            string text = ReadApp();
+            string text = SourceText.ReadCode("DS4Windows/App.xaml.cs");
             if (text == null) return;
 
             // ブートストラップは、Application_Startup の最初（FindConfigLocation より前）に作る
@@ -108,7 +89,7 @@ namespace DS4WindowsTests
         [Fact]
         public void ReenableDeviceBranch_GoesThroughTheRegistryContract()
         {
-            string text = ReadApp();
+            string text = SourceText.ReadCode("DS4Windows/App.xaml.cs");
             if (text == null) return;
 
             Assert.DoesNotContain("DS4Devices.reEnableDevice", text);

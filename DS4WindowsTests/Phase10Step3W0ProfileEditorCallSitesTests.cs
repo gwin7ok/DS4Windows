@@ -30,22 +30,10 @@ namespace DS4WindowsTests
             _output = output;
         }
 
-        private string ReadProfileEditor()
-        {
-            string path = SourceFileLocator.Find("DS4Windows/UI/ProfileEditor.xaml.cs");
-            if (path == null)
-            {
-                _output.WriteLine("ProfileEditor.xaml.cs が見つからないため検査を省略した。");
-                return null;
-            }
-
-            return File.ReadAllText(path);
-        }
-
         [Fact]
         public void CreateBindingWindow_IsNoLongerCalled()
         {
-            string source = ReadProfileEditor();
+            string source = SourceText.Read("DS4Windows/UI/ProfileEditor.xaml.cs");
             if (source == null)
             {
                 return;
@@ -57,7 +45,7 @@ namespace DS4WindowsTests
         [Fact]
         public void EachKnownEntryMethod_ExistsAndCallsTheAssignmentEditor()
         {
-            string source = ReadProfileEditor();
+            string source = SourceText.Read("DS4Windows/UI/ProfileEditor.xaml.cs");
             if (source == null)
             {
                 return;
@@ -79,7 +67,7 @@ namespace DS4WindowsTests
         [Fact]
         public void TheOnlyOtherCallers_AreTheSixEntryMethods()
         {
-            string source = ReadProfileEditor();
+            string source = SourceText.Read("DS4Windows/UI/ProfileEditor.xaml.cs");
             if (source == null)
             {
                 return;
@@ -92,7 +80,7 @@ namespace DS4WindowsTests
         [Fact]
         public void TheSavedHandler_DoesTheSameRefreshesAsBefore()
         {
-            string source = ReadProfileEditor();
+            string source = SourceText.Read("DS4Windows/UI/ProfileEditor.xaml.cs");
             if (source == null)
             {
                 return;

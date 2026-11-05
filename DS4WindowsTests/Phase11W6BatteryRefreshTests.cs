@@ -10,21 +10,10 @@ namespace DS4WindowsTests
     /// </summary>
     public class Phase11W6BatteryRefreshTests
     {
-        private static string Code()
-        {
-            string path = SourceFileLocator.Find("DS4Windows/UI/ViewModels/CompositeDeviceModel.cs");
-            if (path == null) return null;
-
-            string text = File.ReadAllText(path);
-            text = Regex.Replace(text, @"/\*.*?\*/", string.Empty, RegexOptions.Singleline);
-            text = Regex.Replace(text, @"//[^\r\n]*", string.Empty);
-            return Regex.Replace(text, @"\s+", " ");
-        }
-
         [Fact]
         public void TheInterval_Is60Seconds()
         {
-            string code = Code();
+            string code = SourceText.ReadNormalized("DS4Windows/UI/ViewModels/CompositeDeviceModel.cs");
             if (code == null) return;
 
             Assert.Contains("public const int BatteryRefreshIntervalMs = 60000;", code);
@@ -34,7 +23,7 @@ namespace DS4WindowsTests
         [Fact]
         public void TheRefresh_NotifiesOnlyWhenTheTextChanged()
         {
-            string code = Code();
+            string code = SourceText.ReadNormalized("DS4Windows/UI/ViewModels/CompositeDeviceModel.cs");
             if (code == null) return;
 
             int refresh = code.IndexOf("public void RefreshBatteryState()", System.StringComparison.Ordinal);
@@ -48,7 +37,7 @@ namespace DS4WindowsTests
         public void TheNotification_ReachesTheBinding_ThroughPropertyChanged()
         {
             // 根本原因: CompositeDeviceModel は INotifyPropertyChanged を実装しているため、WPF は BatteryStateChanged（旧式のイベント）を無視する
-            string code = Code();
+            string code = SourceText.ReadNormalized("DS4Windows/UI/ViewModels/CompositeDeviceModel.cs");
             if (code == null) return;
 
             int raise = code.IndexOf("private void RaiseBatteryStateChanged(", System.StringComparison.Ordinal);
@@ -60,7 +49,7 @@ namespace DS4WindowsTests
         [Fact]
         public void TheTimer_StopsWhenTheControllerIsRemoved()
         {
-            string code = Code();
+            string code = SourceText.ReadNormalized("DS4Windows/UI/ViewModels/CompositeDeviceModel.cs");
             if (code == null) return;
 
             Assert.Contains("device.Removal += (sender, e) => StopBatteryRefresh();", code);

@@ -31,20 +31,6 @@ namespace DS4WindowsTests
             _output = output;
         }
 
-        private string Read(string relativePath)
-        {
-            string path = SourceFileLocator.Find(relativePath);
-            if (path == null)
-            {
-                _output.WriteLine("ソースが見つからないため検査を省略した: " + relativePath);
-                return null;
-            }
-
-            string text = File.ReadAllText(path);
-            text = Regex.Replace(text, @"/\*.*?\*/", string.Empty, RegexOptions.Singleline);
-            return Regex.Replace(text, @"//[^\r\n]*", string.Empty);
-        }
-
         private static SyntheticDispatcherService CreateService(out SyntheticInputState state, out OutputKBMHandlerAdapter owner,
             out ProfileSettingsService settings)
         {
@@ -155,18 +141,6 @@ namespace DS4WindowsTests
 
             Assert.Empty(state.DeviceState[Device].keyPresses);
             Assert.NotSame(oldGlobal, state.GlobalState);
-        }
-
-        [Fact]
-        public void Global_NoLongerOwnsTheOutputKbmHandlerOrMapping()
-        {
-            string global = Read("DS4Windows/DS4Control/Global.cs");
-            if (global == null) return;
-
-            Assert.DoesNotMatch(@"\boutputKBMHandler\b", global);
-            Assert.DoesNotMatch(@"\boutputKBMMapping\b", global);
-            Assert.DoesNotContain("InitOutputKBMHandler", global);
-            Assert.DoesNotContain("InitOutputKBMMapping", global);
         }
 
         [Fact]

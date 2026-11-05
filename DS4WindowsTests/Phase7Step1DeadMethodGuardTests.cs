@@ -35,13 +35,6 @@ namespace DS4WindowsTests
             _output = output;
         }
 
-        private static string StripComments(string text)
-        {
-            text = Regex.Replace(text, @"/\*.*?\*/", string.Empty, RegexOptions.Singleline);
-            text = Regex.Replace(text, @"//[^\r\n]*", string.Empty);
-            return text;
-        }
-
         private static bool DeclaresMethod(string strippedSource, string name)
         {
             return Regex.IsMatch(strippedSource,
@@ -58,7 +51,7 @@ namespace DS4WindowsTests
                 return;
             }
 
-            string text = StripComments(File.ReadAllText(path));
+            string text = SourceText.StripComments(File.ReadAllText(path));
             List<string> reappeared = RemovedFromBackingStore.Where(n => DeclaresMethod(text, n)).ToList();
             Assert.True(reappeared.Count == 0,
                 "削除済みのメソッドが BackingStore.cs に再び宣言されている: " + string.Join(", ", reappeared));
@@ -74,7 +67,7 @@ namespace DS4WindowsTests
                 return;
             }
 
-            string text = StripComments(File.ReadAllText(path));
+            string text = SourceText.StripComments(File.ReadAllText(path));
             List<string> missing = KeptInBackingStore.Where(n => !DeclaresMethod(text, n)).ToList();
             Assert.True(missing.Count == 0,
                 "残すべきメソッドが BackingStore.cs から失われている: " + string.Join(", ", missing));

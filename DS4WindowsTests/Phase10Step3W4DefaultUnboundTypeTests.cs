@@ -203,24 +203,12 @@ namespace DS4WindowsTests
 
         // ---- 画面（ソース走査）----
 
-        private string Read(string relative)
-        {
-            string path = SourceFileLocator.Find(relative);
-            if (path == null)
-            {
-                _output.WriteLine(relative + " が見つからないため検査を省略した。");
-                return null;
-            }
-
-            return File.ReadAllText(path);
-        }
-
         [Fact]
         public void TheModesLimitTheInput_OnlyByShowingOrHidingTheDropdownItems()
         {
-            string xaml = Read("DS4Windows/UI/AssignmentEditor.xaml");
-            string source = Read("DS4Windows/UI/AssignmentEditor.xaml.cs");
-            string editorVm = Read("DS4Windows/UI/ViewModels/ActionEditorViewModel.cs");
+            string xaml = SourceText.Read("DS4Windows/UI/AssignmentEditor.xaml");
+            string source = SourceText.Read("DS4Windows/UI/AssignmentEditor.xaml.cs");
+            string editorVm = SourceText.Read("DS4Windows/UI/ViewModels/ActionEditorViewModel.cs");
             if (xaml == null || source == null || editorVm == null)
             {
                 return;
@@ -250,7 +238,7 @@ namespace DS4WindowsTests
         [Fact]
         public void TheAssignmentEditorFromTheSaTab_AlsoCoversTheLeftPane()
         {
-            string source = Read("DS4Windows/UI/ProfileEditor.xaml.cs");
+            string source = SourceText.Read("DS4Windows/UI/ProfileEditor.xaml.cs");
             if (source == null)
             {
                 return;

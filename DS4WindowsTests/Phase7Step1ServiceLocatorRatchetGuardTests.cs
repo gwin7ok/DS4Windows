@@ -34,13 +34,6 @@ namespace DS4WindowsTests
             _output = output;
         }
 
-        private static string StripComments(string text)
-        {
-            text = Regex.Replace(text, @"/\*.*?\*/", string.Empty, RegexOptions.Singleline);
-            text = Regex.Replace(text, @"//[^\r\n]*", string.Empty);
-            return text;
-        }
-
         [Fact]
         public void ServiceProviderHolderReferences_DoNotExceedBaseline()
         {
@@ -62,7 +55,7 @@ namespace DS4WindowsTests
                 if (normalized.Contains("/obj/") || normalized.Contains("/bin/")) continue;
 
                 string relative = "DS4Windows/" + Path.GetRelativePath(sourceDir, file).Replace('\\', '/');
-                int count = LocatorPattern.Matches(StripComments(File.ReadAllText(file))).Count;
+                int count = LocatorPattern.Matches(SourceText.StripComments(File.ReadAllText(file))).Count;
                 if (count == 0) continue;
 
                 Baseline.TryGetValue(relative, out int allowed);

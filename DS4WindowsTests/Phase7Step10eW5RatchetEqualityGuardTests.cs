@@ -34,12 +34,6 @@ namespace DS4WindowsTests
             _output = output;
         }
 
-        private static string StripComments(string text)
-        {
-            text = Regex.Replace(text, @"/\*.*?\*/", string.Empty, RegexOptions.Singleline);
-            return Regex.Replace(text, @"//[^\r\n]*", string.Empty);
-        }
-
         private static IEnumerable<(string Relative, string Code)> EnumerateSources(string root)
         {
             string sourceDir = Path.Combine(root, "DS4Windows");
@@ -49,7 +43,7 @@ namespace DS4WindowsTests
                 if (normalized.Contains("/obj/") || normalized.Contains("/bin/")) continue;
 
                 string relative = "DS4Windows/" + Path.GetRelativePath(sourceDir, file).Replace('\\', '/');
-                yield return (relative, StripComments(File.ReadAllText(file)));
+                yield return (relative, SourceText.StripComments(File.ReadAllText(file)));
             }
         }
 

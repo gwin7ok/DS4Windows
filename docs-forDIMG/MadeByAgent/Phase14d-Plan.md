@@ -1,7 +1,7 @@
 # Phase14d 個別計画書: テストの整理
 
 作成日: 2026-11-05
-状態: **承認済み（2026-11-05。F1〜F4 はユーザーがすべて推奨案を選択）→ 14d-0 実施済み（§9）**。F5・F6 は未確認のため、14d-6 の取り込みの前に確認する
+状態: **承認済み（2026-11-05。F1〜F4 はユーザーがすべて推奨案を選択）→ 14d-0・14d-1 実施済み（§9）**。F5・F6 は未確認のため、14d-6 の取り込みの前に確認する
 ブランチ: `Phase14d`（master 4a0f83b3 から作成）
 根拠: `Phase11-and-Beyond-Roadmap.md`（14d の行）、`Repository-Review-2026-11-05.md`（R-16）、`Phase14c-Plan.md`（14c-0 の Slow の印）、規約 `.github/copilot-instructions.md` §2.2・§2.3・§4
 
@@ -134,4 +134,7 @@ Phase15（UI 共通化）で UI のファイルを大きく動かす前に、パ
 
 | Step | コミット | 結果 |
 |---|---|---|
-| 14d-0 | （本コミット） | 棚卸し表 `Phase14d-Test-Inventory.md`。ソースを読むメソッド 467（補助メソッド・パスの一覧のフィールド経由を含めて数え直した。§2.3 の 391 は Assert の文字列で数えた概数）を、F 100・D 26・R 29・K 312（うち 16 件は撤去済みの名前の Assert だけを外す）に分けた。F・D で全メソッドが消えるファイルは 10。遅いテストは 60 件・50.7 秒（メソッド単位）。F の大半は、Phase7-Step10d で削除した `Global` 型の参照の検査（型がないため、参照はコンパイルで止まる） |
+| 14d-0 | 785ef416 | 棚卸し表 `Phase14d-Test-Inventory.md`。ソースを読むメソッド 467（補助メソッド・パスの一覧のフィールド経由を含めて数え直した。§2.3 の 391 は Assert の文字列で数えた概数）を、F 100・D 26・R 29・K 312（うち 16 件は撤去済みの名前の Assert だけを外す）に分けた。F・D で全メソッドが消えるファイルは 10。遅いテストは 60 件・50.7 秒（メソッド単位）。F の大半は、Phase7-Step10d で削除した `Global` 型の参照の検査（型がないため、参照はコンパイルで止まる） |
+| 14d-1 | （本コミット） | `SourceFileLocator.Find` を厳しくした（リポジトリがあるのにファイルがなければ失敗。ないことの確認は新設の `Exists`）。共通の読み取り部品 `SourceText`（`Read`・`ReadCode`・`ReadNormalized`・`StripComments`・`ProductionFiles`・`RelativePathOf`）を追加し、自前の補助 80 個（コメント除去の複製 20、読み取り 60）を置き換えた。残る 23 個は、メソッドの範囲の切り出しなどテスト固有の処理を持つもの（厳しくした `Find` を通る）。空振り 9 件と、F の 1 件（`Step10FourTwoGlobalReferenceGuardTests` の Global の検査。旧パスを含み失敗するようになったため前倒し）を削除。**厳しくしたことで、Phase14 のフォルダーの再編のときにパスの書き換えが漏れ、黙って省略されていた検査が 3 ファイル・4 件見つかった**（`Phase9E6ConnectionGuardTests` の 2 件［旧 `DS4Control/Services/`］、`Phase7Step2RemovedContractMembersGuardTests` の 2 件［旧 `DI/`］）。ファイル名から引く形に直し、いずれも合格。Debug ALL: 警告 0・エラー 0、3,254 件＋11 件 |
+
+- 不安定なテスト: `ProfileRepositoryTests.LinkedProfile_ChangeAndRemove_ShouldNotThrowAndShouldPersist` が、途中の確認で時々失敗する（単独では合格。テストは直列で動くため、並行ではなく、前のテストが残した状態［アプリデータのフォルダー］に左右されると見られる）。14d-5 で共有の状態として調べる。

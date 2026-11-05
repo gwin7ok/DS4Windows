@@ -35,22 +35,6 @@ namespace DS4WindowsTests
             _output = output;
         }
 
-        /// <summary>コメントを除き、連続する空白を 1 つにしたソース（整形に依存しない照合のため）</summary>
-        private string ReadNormalizedSource(string relativePath)
-        {
-            string path = SourceFileLocator.Find(relativePath);
-            if (path == null)
-            {
-                _output.WriteLine(relativePath + " が見つからないため検査を省略した。");
-                return null;
-            }
-
-            string text = File.ReadAllText(path);
-            text = Regex.Replace(text, @"/\*.*?\*/", string.Empty, RegexOptions.Singleline);
-            text = Regex.Replace(text, @"//[^\r\n]*", string.Empty);
-            return Regex.Replace(text, @"\s+", " ");
-        }
-
         /// <summary>
         /// 証拠: メインウィンドウの DataContext に対する「Keepsize」の TwoWay バインディングは、解決しない（PathError）。
         /// ユーザーがチェックを操作しても、例外にならず、何も書き込まれない。
@@ -100,7 +84,7 @@ namespace DS4WindowsTests
         [Fact]
         public void TheClickHandler_StoresTheCheckBoxState_AndKeepsizeIsReadOnlyToTheOutside()
         {
-            string code = ReadNormalizedSource(EditorCode);
+            string code = SourceText.ReadNormalized(EditorCode);
             if (code == null) return;
 
             // Click ハンドラー: チェックの状態を、そのままフィールドへ
@@ -113,8 +97,8 @@ namespace DS4WindowsTests
         [Fact]
         public void TheLayoutIsSavedAndTheWindowSizeIsKept_OnlyThroughKeepsize()
         {
-            string editor = ReadNormalizedSource(EditorCode);
-            string main = ReadNormalizedSource(MainWindowCode);
+            string editor = SourceText.ReadNormalized(EditorCode);
+            string main = SourceText.ReadNormalized(MainWindowCode);
             if (editor == null || main == null) return;
 
             // 編集画面: 閉じるときに、チェックが ON のときだけ、仕切り・列の幅を保存する（Close と ProfileEditor_Closed）

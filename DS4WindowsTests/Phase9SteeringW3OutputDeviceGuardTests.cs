@@ -19,27 +19,13 @@ namespace DS4WindowsTests
             _output = output;
         }
 
-        private string ReadCode(string relativePath)
-        {
-            string path = SourceFileLocator.Find(relativePath);
-            if (path == null)
-            {
-                _output.WriteLine(relativePath + " が見つからないため検査を省略した。");
-                return null;
-            }
-
-            string text = File.ReadAllText(path);
-            text = Regex.Replace(text, @"/\*.*?\*/", string.Empty, RegexOptions.Singleline);
-            return Regex.Replace(text, @"//[^\r\n]*", string.Empty);
-        }
-
         [Theory]
         [InlineData("DS4Windows/Output/Devices/Xbox360OutDevice.cs", "cont.LeftThumbX = AxisScale(state.LX, false);", "cont.RightThumbY = AxisScale(state.RY, true);")]
         [InlineData("DS4Windows/Output/Devices/DS4OutDeviceBasic.cs", "cont.LeftThumbX = state.LX;", "cont.RightThumbY = state.RY;")]
         [InlineData("DS4Windows/Output/Devices/DS4OutDeviceExt.cs", "outDS4Report.bThumbLX = state.LX;", "outDS4Report.bThumbRY = state.RY;")]
         public void TheOutputDevice_WritesTheNormalAxes_AndHasNoSteeringBranch(string relativePath, string firstAxis, string lastAxis)
         {
-            string code = ReadCode(relativePath);
+            string code = SourceText.ReadCode(relativePath);
             if (code == null) return;
 
             Assert.Contains(firstAxis, code);
@@ -56,7 +42,7 @@ namespace DS4WindowsTests
         [InlineData("DS4Windows/Input/DS4State.cs")]
         public void TheVJoyAndTheSteeringUnit_AreGone(string relativePath)
         {
-            string code = ReadCode(relativePath);
+            string code = SourceText.ReadCode(relativePath);
             if (code == null) return;
 
             Assert.DoesNotContain("VJoyFeeder", code);

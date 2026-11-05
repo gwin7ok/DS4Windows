@@ -22,12 +22,6 @@ namespace DS4WindowsTests
             _output = output;
         }
 
-        private static string StripComments(string text)
-        {
-            text = Regex.Replace(text, @"/\*.*?\*/", string.Empty, RegexOptions.Singleline);
-            return Regex.Replace(text, @"//[^\r\n]*", string.Empty);
-        }
-
         [Fact]
         public void AppHost_GetService_DoesNotCreateTheHostImplicitly()
         {
@@ -38,7 +32,7 @@ namespace DS4WindowsTests
                 return;
             }
 
-            string text = StripComments(File.ReadAllText(path));
+            string text = SourceText.StripComments(File.ReadAllText(path));
             foreach (string signature in new[] { "public static T GetService<T>()", "public static object GetService(Type serviceType)" })
             {
                 int start = text.IndexOf(signature, System.StringComparison.Ordinal);
@@ -80,7 +74,7 @@ namespace DS4WindowsTests
                 string name = Path.GetFileName(file);
                 if (name == "TestHost.cs" || name == "Phase7Step10eW3AppHostGuardTests.cs") continue;
 
-                string code = StripComments(File.ReadAllText(file));
+                string code = SourceText.StripComments(File.ReadAllText(file));
                 // 文字列の中の記述（ガードの期待値など）は対象外とするため、引用符で囲まれていない呼び出しだけを数える
                 foreach (string line in code.Split('\n'))
                 {

@@ -63,27 +63,12 @@ namespace DS4WindowsTests
             _output = output;
         }
 
-        private string ReadSourceWithoutComments(string relativePath)
-        {
-            string path = SourceFileLocator.Find(relativePath);
-            if (path == null)
-            {
-                _output.WriteLine($"{relativePath} が見つからないため検査を省略した。");
-                return null;
-            }
-
-            string text = File.ReadAllText(path);
-            text = Regex.Replace(text, @"/\*.*?\*/", string.Empty, RegexOptions.Singleline);
-            text = Regex.Replace(text, @"//[^\r\n]*", string.Empty);
-            return text;
-        }
-
         [Fact]
         public void ReplacedFiles_DoNotReferenceGlobalExceptRetainedMembers()
         {
             foreach (var entry in AllowedGlobalMembers)
             {
-                string text = ReadSourceWithoutComments(entry.Key);
+                string text = SourceText.ReadCode(entry.Key);
                 if (text == null) continue;
 
                 var unexpected = Regex.Matches(text, @"\bGlobal\.(\w+)")
@@ -103,7 +88,7 @@ namespace DS4WindowsTests
         {
             foreach (string file in AllowedGlobalMembers.Keys)
             {
-                string text = ReadSourceWithoutComments(file);
+                string text = SourceText.ReadCode(file);
                 if (text == null) continue;
 
                 Assert.DoesNotContain("AppHost", text);

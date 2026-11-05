@@ -29,21 +29,6 @@ namespace DS4WindowsTests
             _output = output;
         }
 
-        private string ReadWithoutComments(string relativePath)
-        {
-            string path = SourceFileLocator.Find(relativePath);
-            if (path == null)
-            {
-                _output.WriteLine(relativePath + " が見つからないため検査を省略した。");
-                return null;
-            }
-
-            string text = File.ReadAllText(path);
-            text = Regex.Replace(text, @"/\*.*?\*/", string.Empty, RegexOptions.Singleline);
-            text = Regex.Replace(text, @"//[^\r\n]*", string.Empty);
-            return text;
-        }
-
         [Theory]
         [InlineData(@"private double getMouseMapping\(")]
         [InlineData(@"private void calculateFinalMouseMovement\(")]
@@ -58,7 +43,7 @@ namespace DS4WindowsTests
         [InlineData(@"\bMOUSESTICKMINVELOCITY\b")]
         public void Mapping_NoLongerContains_TheMovedMembers(string pattern)
         {
-            string text = ReadWithoutComments("DS4Windows/Processing/Mapping.cs");
+            string text = SourceText.ReadCode("DS4Windows/Processing/Mapping.cs");
             if (text == null) return;
 
             Assert.False(Regex.IsMatch(text, pattern), $"Mapping.cs に '{pattern}' が残っている（9-B で移した／削除した）");
@@ -71,7 +56,7 @@ namespace DS4WindowsTests
         [InlineData("DS4Windows/Processing/Services/ControlActivityReader.cs")]
         public void NewComponents_DoNotReferenceStaticEntryPoints(string relativePath)
         {
-            string text = ReadWithoutComments(relativePath);
+            string text = SourceText.ReadCode(relativePath);
             if (text == null) return;
 
             Assert.DoesNotContain("AppHost", text);

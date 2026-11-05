@@ -22,25 +22,6 @@ namespace DS4WindowsTests
             _output = output;
         }
 
-        private static string StripComments(string text)
-        {
-            text = Regex.Replace(text, @"/\*.*?\*/", string.Empty, RegexOptions.Singleline);
-            text = Regex.Replace(text, @"//[^\r\n]*", string.Empty);
-            return text;
-        }
-
-        private string Read(string relativePath)
-        {
-            string path = SourceFileLocator.Find(relativePath);
-            if (path == null)
-            {
-                _output.WriteLine("ソースが見つからないため検査を省略した: " + relativePath);
-                return null;
-            }
-
-            return StripComments(File.ReadAllText(path));
-        }
-
         [Fact]
         public void NoSourceFile_ReferencesProgramRootHub_AndProgramCsIsGone()
         {
@@ -61,7 +42,7 @@ namespace DS4WindowsTests
                 string normalized = file.Replace('\\', '/');
                 if (normalized.Contains("/obj/") || normalized.Contains("/bin/")) continue;
 
-                string text = StripComments(File.ReadAllText(file));
+                string text = SourceText.StripComments(File.ReadAllText(file));
                 if (Regex.IsMatch(text, @"\bProgram\s*\.\s*rootHub\b") || Regex.IsMatch(text, @"\bclass\s+Program\b"))
                     offenders.Add(Path.GetRelativePath(sourceDir, file));
             }
@@ -72,7 +53,7 @@ namespace DS4WindowsTests
         [Fact]
         public void App_HoldsTheControlServiceInAVolatileField()
         {
-            string text = Read("DS4Windows/App.xaml.cs");
+            string text = SourceText.ReadCode("DS4Windows/App.xaml.cs");
             if (text == null) return;
 
             Assert.Matches(@"private\s+volatile\s+DS4Windows\.Processing\.ControlService\s+_controlService\s*;", text);
@@ -87,15 +68,6 @@ namespace DS4WindowsTests
 
             Assert.DoesNotContain("rootHub", text);
             Assert.Matches(@"return\s+new\s+ControlService\(", text);
-        }
-
-        [Fact]
-        public void GlobalControllerConfigWrappers_AreNotRedeclared()
-        {
-            string text = Read("DS4Windows/DS4Control/Global.cs");
-            if (text == null) return;
-
-            Assert.DoesNotMatch(@"static\s+bool\s+(Save|Load)ControllerConfigs\s*\(", text);
         }
     }
 }

@@ -21,18 +21,6 @@ namespace DS4WindowsTests
             _output = output;
         }
 
-        private string Read(string relative)
-        {
-            string path = SourceFileLocator.Find(relative);
-            if (path == null)
-            {
-                _output.WriteLine(relative + " が見つからないため検査を省略した。");
-                return null;
-            }
-
-            return File.ReadAllText(path);
-        }
-
         [Fact]
         public void TheHost_SitsInTheSameCellAsTheLeftPane_AndStartsCollapsed()
         {
@@ -60,7 +48,7 @@ namespace DS4WindowsTests
         [Fact]
         public void ShowControlAssignmentEditor_SwapsTheLeftPaneForTheEditor_AndKeepsTheColumnWidth()
         {
-            string source = Read("DS4Windows/UI/ProfileEditor.xaml.cs");
+            string source = SourceText.Read("DS4Windows/UI/ProfileEditor.xaml.cs");
             if (source == null)
             {
                 return;
@@ -75,7 +63,7 @@ namespace DS4WindowsTests
         [Fact]
         public void SaveAndCancel_BothCloseTheEditor_AndOnlySaveRefreshes()
         {
-            string source = Read("DS4Windows/UI/ProfileEditor.xaml.cs");
+            string source = SourceText.Read("DS4Windows/UI/ProfileEditor.xaml.cs");
             if (source == null)
             {
                 return;
@@ -99,7 +87,7 @@ namespace DS4WindowsTests
         [Fact]
         public void WhileTheEditorIsOpen_NothingElseOpensIt()
         {
-            string source = Read("DS4Windows/UI/ProfileEditor.xaml.cs");
+            string source = SourceText.Read("DS4Windows/UI/ProfileEditor.xaml.cs");
             if (source == null)
             {
                 return;
@@ -116,7 +104,7 @@ namespace DS4WindowsTests
         [Fact]
         public void TheEditor_UnregistersItsDataContexts_OnControlModeSave()
         {
-            string source = Read("DS4Windows/UI/AssignmentEditor.xaml.cs");
+            string source = SourceText.Read("DS4Windows/UI/AssignmentEditor.xaml.cs");
             if (source == null)
             {
                 return;

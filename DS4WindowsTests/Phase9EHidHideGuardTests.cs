@@ -22,21 +22,6 @@ namespace DS4WindowsTests
             _output = output;
         }
 
-        private string ReadWithoutComments(string relativePath)
-        {
-            string path = SourceFileLocator.Find(relativePath);
-            if (path == null)
-            {
-                _output.WriteLine(relativePath + " が見つからないため検査を省略した。");
-                return null;
-            }
-
-            string text = File.ReadAllText(path);
-            text = Regex.Replace(text, @"/\*.*?\*/", string.Empty, RegexOptions.Singleline);
-            text = Regex.Replace(text, @"//[^\r\n]*", string.Empty);
-            return text;
-        }
-
         [Theory]
         [InlineData(@"\bhidDeviceHiding\w+")]
         [InlineData(@"\bCheckAffected\b")]
@@ -45,7 +30,7 @@ namespace DS4WindowsTests
         [InlineData(@"\bHidHideAPIDevice\b")]
         public void ControlService_NoLongerContains_TheMovedMembers(string pattern)
         {
-            string text = ReadWithoutComments("DS4Windows/Processing/ControlService.cs");
+            string text = SourceText.ReadCode("DS4Windows/Processing/ControlService.cs");
             if (text == null) return;
 
             Assert.False(Regex.IsMatch(text, pattern), $"ControlService.cs に '{pattern}' が残っている（9-E E-2 で HidHideService へ移した）");
@@ -54,13 +39,13 @@ namespace DS4WindowsTests
         [Fact]
         public void ControlService_KeepsTheThinDelegates_ForTheCallers()
         {
-            string text = ReadWithoutComments("DS4Windows/Processing/ControlService.cs");
+            string text = SourceText.ReadCode("DS4Windows/Processing/ControlService.cs");
             if (text == null) return;
 
             // Phase13-Step10 10-c: 転送は削除した。利用者は IRuntimeFeatureSwitch（RuntimeFeatureSwitch）を使う
             Assert.DoesNotContain("public void CheckHidHidePresence(", text);
             Assert.DoesNotContain("public void UpdateHidHiddenAttributes()", text);
-            string sw = ReadWithoutComments("DS4Windows/Processing/Services/RuntimeFeatureSwitch.cs");
+            string sw = SourceText.ReadCode("DS4Windows/Processing/Services/RuntimeFeatureSwitch.cs");
             if (sw == null) return;
             Assert.Contains("_hidHide.CheckPresence(exePath, exeName, addExe)", sw);
             Assert.Contains("_hidHide.UpdateAttributes()", sw);
@@ -72,7 +57,7 @@ namespace DS4WindowsTests
         [InlineData("DS4Windows/Output/Services/HidHideApiAdapter.cs")]
         public void NewComponents_DoNotReferenceStaticEntryPoints(string relativePath)
         {
-            string text = ReadWithoutComments(relativePath);
+            string text = SourceText.ReadCode(relativePath);
             if (text == null) return;
 
             Assert.DoesNotContain("AppHost", text);
@@ -84,7 +69,7 @@ namespace DS4WindowsTests
         [Fact]
         public void HidHideService_DoesNotTouchTheDriverDirectly()
         {
-            string text = ReadWithoutComments("DS4Windows/Output/Services/HidHideService.cs");
+            string text = SourceText.ReadCode("DS4Windows/Output/Services/HidHideService.cs");
             if (text == null) return;
 
             Assert.DoesNotContain("HidHideAPIDevice", text);

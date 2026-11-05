@@ -9,20 +9,10 @@ namespace DS4WindowsTests
     /// </summary>
     public class MouseTapClickHoldTests
     {
-        private static string LoadMouseSource()
-        {
-            string path = SourceFileLocator.Find("DS4Windows/Processing/Mouse.cs");
-            if (path == null) return null;
-            string text = File.ReadAllText(path);
-            text = Regex.Replace(text, @"/\*.*?\*/", string.Empty, RegexOptions.Singleline);
-            text = Regex.Replace(text, @"//[^\r\n]*", string.Empty);
-            return text;
-        }
-
         [Fact]
         public void TapClick_UsesHoldInsteadOfSingleFramePulse()
         {
-            string text = LoadMouseSource();
+            string text = SourceText.ReadCode("DS4Windows/Processing/Mouse.cs");
             if (text == null) return;
 
             Assert.Matches(@"const\s+double\s+TapClickHoldMs\s*=\s*50\.0\s*;", text);
@@ -37,7 +27,7 @@ namespace DS4WindowsTests
         [Fact]
         public void TouchUnchanged_ContinuesSynthesis_WhileTapPendingOrHeld()
         {
-            string text = LoadMouseSource();
+            string text = SourceText.ReadCode("DS4Windows/Processing/Mouse.cs");
             if (text == null) return;
 
             Assert.Matches(@"releaseButtonActive\s*\|\|\s*releaseButtonChanged\s*\|\|\s*tappedOnce\s*\|\|\s*DateTime\.UtcNow\s*<\s*tapClickHoldUntil", text);

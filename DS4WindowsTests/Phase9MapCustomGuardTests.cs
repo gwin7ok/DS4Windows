@@ -21,21 +21,6 @@ namespace DS4WindowsTests
             _output = output;
         }
 
-        private string ReadWithoutComments(string relativePath)
-        {
-            string path = SourceFileLocator.Find(relativePath);
-            if (path == null)
-            {
-                _output.WriteLine(relativePath + " が見つからないため検査を省略した。");
-                return null;
-            }
-
-            string text = File.ReadAllText(path);
-            text = Regex.Replace(text, @"/\*.*?\*/", string.Empty, RegexOptions.Singleline);
-            text = Regex.Replace(text, @"//[^\r\n]*", string.Empty);
-            return text;
-        }
-
         [Theory]
         [InlineData(@"\bPerformMouseButtonEvent\(")]
         [InlineData(@"\bPerformMouseButtonEventAlt\(")]
@@ -46,7 +31,7 @@ namespace DS4WindowsTests
         [InlineData(@"\bMOUSEEVENTF_LEFTDOWN\b")]
         public void Mapping_NoLongerContains_TheMovedCommit(string pattern)
         {
-            string text = ReadWithoutComments("DS4Windows/Processing/Mapping.cs");
+            string text = SourceText.ReadCode("DS4Windows/Processing/Mapping.cs");
             if (text == null) return;
 
             Assert.False(Regex.IsMatch(text, pattern), $"Mapping.cs に '{pattern}' が残っている（Phase9 MapCustom の分割 M1 で SyntheticInputCommitter へ移した）");
@@ -55,7 +40,7 @@ namespace DS4WindowsTests
         [Fact]
         public void Mapping_KeepsTheThinCommit_ForTheCallers()
         {
-            string text = ReadWithoutComments("DS4Windows/Processing/Mapping.cs");
+            string text = SourceText.ReadCode("DS4Windows/Processing/Mapping.cs");
             if (text == null) return;
 
             Assert.Contains("public void Commit(int device, DS4Windows.Core.Abstractions.IProfileSettingsService settings)", text);
@@ -68,7 +53,7 @@ namespace DS4WindowsTests
             Assert.IsType<SyntheticInputCommitter>(TestHost.GetService<ISyntheticInputCommitter>());
             Assert.Same(TestHost.GetService<ISyntheticInputCommitter>(), TestHost.GetService<ISyntheticInputCommitter>());
 
-            string text = ReadWithoutComments("DS4Windows/Processing/Services/SyntheticInputCommitter.cs");
+            string text = SourceText.ReadCode("DS4Windows/Processing/Services/SyntheticInputCommitter.cs");
             if (text == null) return;
 
             // 集計 → 出力 → 全体の保存 → ロックの解放 → デバイスの保存 → Sync（ガード: ロックの範囲と、Sync が最後）
@@ -103,7 +88,7 @@ namespace DS4WindowsTests
         [InlineData(@"\bEngageButtonsMode\b")]
         public void Mapping_NoLongerContains_TheTwoStageStateMachine(string pattern)
         {
-            string text = ReadWithoutComments("DS4Windows/Processing/Mapping.cs");
+            string text = SourceText.ReadCode("DS4Windows/Processing/Mapping.cs");
             if (text == null) return;
 
             Assert.False(Regex.IsMatch(text, pattern), $"Mapping.cs に '{pattern}' が残っている（Phase9 MapCustom の分割 M2 で TwoStageTriggerProcessor へ移した）");
@@ -112,7 +97,7 @@ namespace DS4WindowsTests
         [Fact]
         public void MapCustom_CallsTheProcessor_ForL2AndR2_InTheOriginalOrder()
         {
-            string text = ReadWithoutComments("DS4Windows/Processing/Mapping.cs");
+            string text = SourceText.ReadCode("DS4Windows/Processing/Mapping.cs");
             if (text == null) return;
 
             // M3b: L2／R2 は 1 つの private メソッド（ProcessTriggerWithTwoStage）を、この順で呼ぶ
@@ -128,7 +113,7 @@ namespace DS4WindowsTests
         {
             Assert.IsType<TwoStageTriggerProcessor>(TestHost.GetService<ITwoStageTriggerProcessor>());
 
-            string text = ReadWithoutComments("DS4Windows/Processing/Services/TwoStageTriggerProcessor.cs");
+            string text = SourceText.ReadCode("DS4Windows/Processing/Services/TwoStageTriggerProcessor.cs");
             if (text == null) return;
 
             Assert.DoesNotContain("AppHost", text);

@@ -59,7 +59,7 @@ namespace DS4WindowsTests
 
             string root = SourceFileLocator.RootFromAnchor(anchor);
             var offenders = Files
-                .Where(f => Constant.IsMatch(StripComments(File.ReadAllText(Path.Combine(root, f)))))
+                .Where(f => Constant.IsMatch(SourceText.StripComments(File.ReadAllText(Path.Combine(root, f)))))
                 .ToArray();
             Assert.True(offenders.Length == 0, "Global の定数への参照が残っている: " + string.Join(", ", offenders));
         }
@@ -70,12 +70,6 @@ namespace DS4WindowsTests
             Assert.Equal(ControllerLimits.MaxControllerCount, ControlService.MAX_DS4_CONTROLLER_COUNT);
             Assert.Equal(ControllerLimits.MaxControllerCount, ProfileSettingsService.MAX_DS4_CONTROLLER_COUNT);
             Assert.Equal(ControllerLimits.TestProfileItemCount, ProfileSettingsService.TEST_PROFILE_ITEM_COUNT);
-        }
-
-        private static string StripComments(string text)
-        {
-            text = Regex.Replace(text, @"/\*.*?\*/", string.Empty, RegexOptions.Singleline);
-            return Regex.Replace(text, @"//[^\r\n]*", string.Empty);
         }
     }
 }

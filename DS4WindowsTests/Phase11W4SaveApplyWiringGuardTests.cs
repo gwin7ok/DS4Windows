@@ -29,22 +29,6 @@ namespace DS4WindowsTests
             _output = output;
         }
 
-        /// <summary>コメントを除き、連続する空白を 1 つにしたソース（整形に依存しない照合のため）</summary>
-        private string ReadNormalizedSource(string relativePath)
-        {
-            string path = SourceFileLocator.Find(relativePath);
-            if (path == null)
-            {
-                _output.WriteLine(relativePath + " が見つからないため検査を省略した。");
-                return null;
-            }
-
-            string text = File.ReadAllText(path);
-            text = Regex.Replace(text, @"/\*.*?\*/", string.Empty, RegexOptions.Singleline);
-            text = Regex.Replace(text, @"//[^\r\n]*", string.Empty);
-            return Regex.Replace(text, @"\s+", " ");
-        }
-
         /// <summary>宣言の先頭（marker）から、対応する閉じ波括弧までのメソッド全体</summary>
         private static string ExtractMethod(string text, string marker)
         {
@@ -65,7 +49,7 @@ namespace DS4WindowsTests
         [Fact]
         public void ExecuteSaveOrApply_CorrectsTheOutputType_AfterTheNameCheckAndBeforeSaving()
         {
-            string code = ReadNormalizedSource(EditorCode);
+            string code = SourceText.ReadNormalized(EditorCode);
             if (code == null) return;
 
             string method = ExtractMethod(code, "private bool ExecuteSaveOrApply(bool isApply = false)");
@@ -85,7 +69,7 @@ namespace DS4WindowsTests
         [Fact]
         public void TheEnableOutputDataToDs4Correction_IsRemoved()
         {
-            string code = ReadNormalizedSource(EditorCode);
+            string code = SourceText.ReadNormalized(EditorCode);
             if (code == null) return;
 
             // Phase11 W6c（K-W6-12）: 補正 (c) を廃止した。補正の GUI ログも出さない
@@ -96,7 +80,7 @@ namespace DS4WindowsTests
         [Fact]
         public void TheRestart_IsRequestedOnSaveOnly_ThroughAnEvent()
         {
-            string code = ReadNormalizedSource(EditorCode);
+            string code = SourceText.ReadNormalized(EditorCode);
             if (code == null) return;
 
             Assert.Contains("public event EventHandler ServiceRestartRequested;", code);
@@ -122,7 +106,7 @@ namespace DS4WindowsTests
         [Fact]
         public void TheMainWindow_RestartsTheServiceInOneStopStartStep_OnlyWhileItIsRunning()
         {
-            string code = ReadNormalizedSource(MainWindowCode);
+            string code = SourceText.ReadNormalized(MainWindowCode);
             if (code == null) return;
 
             Assert.Contains("editor.ServiceRestartRequested += Editor_ServiceRestartRequested;", code);

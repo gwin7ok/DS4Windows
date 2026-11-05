@@ -48,7 +48,7 @@ namespace DS4WindowsTests
         public void SwitchingTabs_DoesNotHideTheStatusLabel()
         {
             var xaml = XamlTestHelper.Load(MainWindowXaml);
-            string code = ReadNormalizedSource(MainWindowCode);
+            string code = SourceText.ReadNormalized(MainWindowCode);
             if (xaml == null || code == null) return;
 
             // タブの切り替えで欄を隠す処理（タブの番号に依存する SelectionChanged）を持たない
@@ -56,22 +56,6 @@ namespace DS4WindowsTests
             Assert.Null(XamlTestHelper.Attr(tabControl, "SelectionChanged"));
             Assert.DoesNotContain("MainTabCon_SelectionChanged", code);
             Assert.DoesNotContain("lastMsgLb.Visibility", code);
-        }
-
-        /// <summary>コメントを除き、連続する空白を 1 つにしたソース（整形に依存しない照合のため）</summary>
-        private string ReadNormalizedSource(string relativePath)
-        {
-            string path = SourceFileLocator.Find(relativePath);
-            if (path == null)
-            {
-                _output.WriteLine(relativePath + " が見つからないため検査を省略した。");
-                return null;
-            }
-
-            string text = File.ReadAllText(path);
-            text = Regex.Replace(text, @"/\*.*?\*/", string.Empty, RegexOptions.Singleline);
-            text = Regex.Replace(text, @"//[^\r\n]*", string.Empty);
-            return Regex.Replace(text, @"\s+", " ");
         }
     }
 }

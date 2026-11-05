@@ -384,8 +384,8 @@ namespace DS4WindowsTests
             Assert.DoesNotContain("RunLightbarMacro", mappingText);
             Assert.DoesNotContain("BoolDS4Controls", mappingText);
 
-            Assert.Null(SourceFileLocator.Find("DS4Windows/DS4Forms/ViewModels/LightbarMacro.cs"));
-            Assert.Null(SourceFileLocator.Find("DS4Windows/DS4Forms/LightbarMacroCreator.xaml"));
+            Assert.False(SourceFileLocator.Exists("DS4Windows/DS4Forms/ViewModels/LightbarMacro.cs"));
+            Assert.False(SourceFileLocator.Exists("DS4Windows/DS4Forms/LightbarMacroCreator.xaml"));
         }
     }
 }

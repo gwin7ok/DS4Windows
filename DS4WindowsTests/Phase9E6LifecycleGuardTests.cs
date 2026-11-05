@@ -24,21 +24,6 @@ namespace DS4WindowsTests
             _output = output;
         }
 
-        private string ReadWithoutComments(string relativePath)
-        {
-            string path = SourceFileLocator.Find(relativePath);
-            if (path == null)
-            {
-                _output.WriteLine(relativePath + " が見つからないため検査を省略した。");
-                return null;
-            }
-
-            string text = File.ReadAllText(path);
-            text = Regex.Replace(text, @"/\*.*?\*/", string.Empty, RegexOptions.Singleline);
-            text = Regex.Replace(text, @"//[^\r\n]*", string.Empty);
-            return text;
-        }
-
         private static void AssertOrder(string text, int from, int to, string[] steps, string what)
         {
             string region = text.Substring(from, to - from);
@@ -64,7 +49,7 @@ namespace DS4WindowsTests
         [InlineData(@"\bRunHotPlug\b")]
         public void ControlService_NoLongerContains_TheMovedLifecycle(string pattern)
         {
-            string text = ReadWithoutComments("DS4Windows/Processing/ControlService.cs");
+            string text = SourceText.ReadCode("DS4Windows/Processing/ControlService.cs");
             if (text == null) return;
 
             Assert.False(Regex.IsMatch(text, pattern), $"ControlService.cs に '{pattern}' が残っている（9-E E-6f2 で ServiceLifecycle へ移した）");
@@ -73,7 +58,7 @@ namespace DS4WindowsTests
         [Fact]
         public void ControlService_KeepsTheForwarders_ForTheUiAndTheTests()
         {
-            string text = ReadWithoutComments("DS4Windows/Processing/ControlService.cs");
+            string text = SourceText.ReadCode("DS4Windows/Processing/ControlService.cs");
             if (text == null) return;
 
             Assert.Contains("public bool Start(bool showlog = true)", text);
@@ -104,7 +89,7 @@ namespace DS4WindowsTests
         [Fact]
         public void Start_KeepsTheSafetyOrder()
         {
-            string text = ReadWithoutComments("DS4Windows/Processing/Services/ServiceLifecycle.cs");
+            string text = SourceText.ReadCode("DS4Windows/Processing/Services/ServiceLifecycle.cs");
             if (text == null) return;
 
             int start = text.IndexOf("public bool Start(");
@@ -140,7 +125,7 @@ namespace DS4WindowsTests
         [Fact]
         public void Stop_KeepsTheSafetyOrder_IncludingTheDriverDestructionOrder()
         {
-            string text = ReadWithoutComments("DS4Windows/Processing/Services/ServiceLifecycle.cs");
+            string text = SourceText.ReadCode("DS4Windows/Processing/Services/ServiceLifecycle.cs");
             if (text == null) return;
 
             int stop = text.IndexOf("public bool Stop(");
@@ -176,9 +161,9 @@ namespace DS4WindowsTests
         [Fact]
         public void TheProcessPriorityList_IsDefinedOnlyInProcessPriorityOptions_AndKeepsTheSavedOrder()
         {
-            string ui = ReadWithoutComments("DS4Windows/UI/MainWindow.xaml.cs");
-            string lifecycle = ReadWithoutComments("DS4Windows/Processing/Services/ServiceLifecycle.cs");
-            string options = ReadWithoutComments("DS4Windows/Core/Platform/ProcessPriorityOptions.cs");
+            string ui = SourceText.ReadCode("DS4Windows/UI/MainWindow.xaml.cs");
+            string lifecycle = SourceText.ReadCode("DS4Windows/Processing/Services/ServiceLifecycle.cs");
+            string options = SourceText.ReadCode("DS4Windows/Core/Platform/ProcessPriorityOptions.cs");
             if (ui == null || lifecycle == null || options == null) return;
 
             Assert.DoesNotContain("ProcessPriorityClass.AboveNormal", ui);
@@ -212,7 +197,7 @@ namespace DS4WindowsTests
             Assert.Equal(0, fresh.ActiveControllers);
             Assert.False(fresh.Suspending);
 
-            string text = ReadWithoutComments("DS4Windows/Processing/Services/ServiceLifecycle.cs");
+            string text = SourceText.ReadCode("DS4Windows/Processing/Services/ServiceLifecycle.cs");
             if (text == null) return;
 
             Assert.DoesNotContain("AppHost", text);

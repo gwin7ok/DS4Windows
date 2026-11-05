@@ -19,22 +19,10 @@ namespace DS4WindowsTests
             _output = output;
         }
 
-        private string Read(string relativePath)
-        {
-            string path = SourceFileLocator.Find(relativePath);
-            if (path == null)
-            {
-                _output.WriteLine(relativePath + " が見つからないため検査を省略した。");
-                return null;
-            }
-
-            return File.ReadAllText(path);
-        }
-
         [Fact]
         public void TheXaml_BuildsTheTriggerRowsFromTheViewModel_NotFromNamedCheckBoxes()
         {
-            string xaml = Read("DS4Windows/UI/AssignmentEditor.xaml");
+            string xaml = SourceText.Read("DS4Windows/UI/AssignmentEditor.xaml");
             if (xaml == null) return;
 
             Assert.Contains("ItemsSource=\"{Binding TriggerOptions}\"", xaml);
@@ -47,7 +35,7 @@ namespace DS4WindowsTests
         [Fact]
         public void TheCodeBehind_NoLongerMatchesOrClicksTheCheckBoxes()
         {
-            string code = Read("DS4Windows/UI/AssignmentEditor.xaml.cs");
+            string code = SourceText.Read("DS4Windows/UI/AssignmentEditor.xaml.cs");
             if (code == null) return;
 
             Assert.DoesNotContain("triggerBoxes", code);                  // triggerBoxes／unloadTriggerBoxes
@@ -62,7 +50,7 @@ namespace DS4WindowsTests
         {
             // 実機確認で発見（以前からの不具合）: 無効なとき（トリガーなし、名前が空、種別未選択）に、先に結びつきを外すと、
             // エラーが表示される前に、編集画面が空になる。結びつきを外すのは、保存できるときだけ
-            string code = Read("DS4Windows/UI/AssignmentEditor.xaml.cs");
+            string code = SourceText.Read("DS4Windows/UI/AssignmentEditor.xaml.cs");
             if (code == null) return;
 
             Assert.DoesNotMatch(new Regex(@"UnregisterDataContext\(\);\s*if \(valid\)"), code);

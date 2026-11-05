@@ -71,24 +71,10 @@ namespace DS4WindowsTests
 
         // ---- 回帰ガード（ソース）----
 
-        private string Read(string relativePath)
-        {
-            string path = SourceFileLocator.Find(relativePath);
-            if (path == null)
-            {
-                _output.WriteLine("ソースが見つからないため検査を省略した: " + relativePath);
-                return null;
-            }
-
-            string text = File.ReadAllText(path);
-            text = Regex.Replace(text, @"/\*.*?\*/", string.Empty, RegexOptions.Singleline);
-            return Regex.Replace(text, @"//[^\r\n]*", string.Empty);
-        }
-
         [Fact]
         public void DS4SixAxis_DoesNotReferenceControlServiceOrRootHub()
         {
-            string text = Read("DS4Windows/Input/DS4SixAxis.cs");
+            string text = SourceText.ReadCode("DS4Windows/Input/DS4SixAxis.cs");
             if (text == null) return;
 
             Assert.DoesNotContain("Program.rootHub", text);
@@ -101,7 +87,7 @@ namespace DS4WindowsTests
         public void ControlService_WiresTheTriggerFunctionWhenConnectingADevice()
         {
             // Phase9 9-E E-6f1: 接続の組み立ては DeviceConnector へ移った
-            string text = Read("DS4Windows/Processing/Services/DeviceConnector.cs");
+            string text = SourceText.ReadCode("DS4Windows/Processing/Services/DeviceConnector.cs");
             if (text == null) return;
 
             Assert.Matches(@"device\.SixAxis\.GyroControlsTriggerActive\s*=", text);

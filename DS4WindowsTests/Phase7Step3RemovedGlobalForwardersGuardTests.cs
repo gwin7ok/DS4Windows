@@ -62,41 +62,10 @@ namespace DS4WindowsTests
             _output = output;
         }
 
-        private static string StripComments(string text)
-        {
-            text = Regex.Replace(text, @"/\*.*?\*/", string.Empty, RegexOptions.Singleline);
-            text = Regex.Replace(text, @"//[^\r\n]*", string.Empty);
-            return text;
-        }
-
-        private string Read(string relativePath)
-        {
-            string path = SourceFileLocator.Find(relativePath);
-            if (path == null)
-            {
-                _output.WriteLine("ソースが見つからないため検査を省略した: " + relativePath);
-                return null;
-            }
-
-            return StripComments(File.ReadAllText(path));
-        }
-
-        [Fact]
-        public void RemovedForwarders_DoNotReappearInGlobal()
-        {
-            string text = Read("DS4Windows/DS4Control/Global.cs");
-            if (text == null) return;
-
-            List<string> reappeared = Removed
-                .Where(n => Regex.IsMatch(text, @"(?m)^\s*public\s+static\s+[\w<>\[\],.? ]+\s+" + Regex.Escape(n) + @"\s*(\(|\{|=>|;|=)"))
-                .ToList();
-            Assert.True(reappeared.Count == 0, "削除済みの転送メンバーが Global.cs に再び宣言されている: " + string.Join(", ", reappeared));
-        }
-
         [Fact]
         public void AppSettingsService_DoesNotReferenceRemovedGlobalForwarders()
         {
-            string text = Read("DS4Windows/Core/Settings/AppSettingsService.cs");
+            string text = SourceText.ReadCode("DS4Windows/Core/Settings/AppSettingsService.cs");
             if (text == null) return;
 
             List<string> used = Removed

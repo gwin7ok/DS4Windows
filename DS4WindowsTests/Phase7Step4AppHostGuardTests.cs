@@ -23,25 +23,6 @@ namespace DS4WindowsTests
             _output = output;
         }
 
-        private static string StripComments(string text)
-        {
-            text = Regex.Replace(text, @"/\*.*?\*/", string.Empty, RegexOptions.Singleline);
-            text = Regex.Replace(text, @"//[^\r\n]*", string.Empty);
-            return text;
-        }
-
-        private string Read(string relativePath)
-        {
-            string path = SourceFileLocator.Find(relativePath);
-            if (path == null)
-            {
-                _output.WriteLine("ソースが見つからないため検査を省略した: " + relativePath);
-                return null;
-            }
-
-            return StripComments(File.ReadAllText(path));
-        }
-
         private static string ExtractMethodBody(string text, string signaturePattern)
         {
             Match m = Regex.Match(text, signaturePattern);
@@ -66,7 +47,7 @@ namespace DS4WindowsTests
         [Fact]
         public void AppHost_DoesNotDeclareRemovedOverloads()
         {
-            string text = Read("DS4Windows/Composition/AppHost.cs");
+            string text = SourceText.ReadCode("DS4Windows/Composition/AppHost.cs");
             if (text == null) return;
 
             Assert.DoesNotMatch(@"CreateHost\s*\(\s*string\[\]", text);
@@ -78,7 +59,7 @@ namespace DS4WindowsTests
         [Fact]
         public void AppHost_DoesNotRecreateTheHostAfterDispose()
         {
-            string text = Read("DS4Windows/Composition/AppHost.cs");
+            string text = SourceText.ReadCode("DS4Windows/Composition/AppHost.cs");
             if (text == null) return;
 
             // Phase7-Step10e W3: Dispose 後だけでなく、未構築のときも暗黙に作らない（_disposed フラグは不要になった）
@@ -89,7 +70,7 @@ namespace DS4WindowsTests
         [Fact]
         public void DriverInstallBranch_CreatesTheHostExplicitlyBeforeLoadingSettings()
         {
-            string text = Read("DS4Windows/App.xaml.cs");
+            string text = SourceText.ReadCode("DS4Windows/App.xaml.cs");
             if (text == null) return;
 
             string body = ExtractMethodBody(text, @"void\s+CheckOptions\s*\(");
@@ -101,18 +82,9 @@ namespace DS4WindowsTests
         }
 
         [Fact]
-        public void GlobalLoad_IsRemoved()
-        {
-            string text = Read("DS4Windows/DS4Control/Global.cs");
-            if (text == null) return;
-
-            Assert.DoesNotMatch(@"public\s+static\s+bool\s+Load\s*\(", text);
-        }
-
-        [Fact]
         public void CleanShutdown_DisposesTheHostAfterStoppingControllersAndBeforeFlushingLogs()
         {
-            string text = Read("DS4Windows/App.xaml.cs");
+            string text = SourceText.ReadCode("DS4Windows/App.xaml.cs");
             if (text == null) return;
 
             string body = ExtractMethodBody(text, @"void\s+CleanShutdown\s*\(");
@@ -130,7 +102,7 @@ namespace DS4WindowsTests
         [Fact]
         public void WelcomeDialog_NoLongerLoadsConfigItself()
         {
-            string text = Read("DS4Windows/UI/WelcomeDialog.xaml.cs");
+            string text = SourceText.ReadCode("DS4Windows/UI/WelcomeDialog.xaml.cs");
             if (text == null) return;
 
             Assert.DoesNotContain("loadConfig", text);

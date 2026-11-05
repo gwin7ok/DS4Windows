@@ -26,33 +26,6 @@ namespace DS4WindowsTests
             _output = output;
         }
 
-        private string ReadSourceWithoutComments(string relativePath)
-        {
-            string path = SourceFileLocator.Find(relativePath);
-            if (path == null)
-            {
-                _output.WriteLine($"{relativePath} が見つからないため検査を省略した。");
-                return null;
-            }
-
-            string text = File.ReadAllText(path);
-            text = Regex.Replace(text, @"/\*.*?\*/", string.Empty, RegexOptions.Singleline);
-            text = Regex.Replace(text, @"//[^\r\n]*", string.Empty);
-            return text;
-        }
-
-        private string ReadRawSource(string relativePath)
-        {
-            string path = SourceFileLocator.Find(relativePath);
-            if (path == null)
-            {
-                _output.WriteLine($"{relativePath} が見つからないため検査を省略した。");
-                return null;
-            }
-
-            return File.ReadAllText(path);
-        }
-
         /// <summary>宣言の先頭から、対応する閉じ波括弧までのメソッド全体を返す。</summary>
         private static string ExtractMethod(string text, string marker)
         {
@@ -107,7 +80,7 @@ namespace DS4WindowsTests
         [Fact]
         public void ProfileEditor_EditSlotIsAlwaysTheWorkSlot()
         {
-            string text = ReadSourceWithoutComments("DS4Windows/UI/ProfileEditor.xaml.cs");
+            string text = SourceText.ReadCode("DS4Windows/UI/ProfileEditor.xaml.cs");
             if (text == null) return;
 
             Assert.Contains("private readonly int deviceNum = ControllerLimits.TestProfileIndex;", text);
@@ -124,7 +97,7 @@ namespace DS4WindowsTests
         [Fact]
         public void ProfileEditor_CancelDoesNotReloadControllerSlot()
         {
-            string text = ReadSourceWithoutComments("DS4Windows/UI/ProfileEditor.xaml.cs");
+            string text = SourceText.ReadCode("DS4Windows/UI/ProfileEditor.xaml.cs");
             if (text == null) return;
 
             string body = ExtractMethod(text, "private void CancelBtn_Click(");
@@ -141,7 +114,7 @@ namespace DS4WindowsTests
         [Fact]
         public void ProfileEditor_SaveAndApplyBothDelegateReapplyToMainWindow()
         {
-            string text = ReadSourceWithoutComments("DS4Windows/UI/ProfileEditor.xaml.cs");
+            string text = SourceText.ReadCode("DS4Windows/UI/ProfileEditor.xaml.cs");
             if (text == null) return;
 
             string body = ExtractMethod(text, "private bool ExecuteSaveOrApply(");
@@ -171,7 +144,7 @@ namespace DS4WindowsTests
         [Fact]
         public void MainWindow_ReappliesOnlyToSlotsUsingTheSavedProfile()
         {
-            string text = ReadSourceWithoutComments("DS4Windows/UI/MainWindow.xaml.cs");
+            string text = SourceText.ReadCode("DS4Windows/UI/MainWindow.xaml.cs");
             if (text == null) return;
 
             string saved = ExtractMethod(text, "private void Editor_ProfileSaved(");
@@ -185,7 +158,7 @@ namespace DS4WindowsTests
         [Fact]
         public void ProfileEditor_PassesTargetDeviceToControllerFeatures()
         {
-            string text = ReadSourceWithoutComments("DS4Windows/UI/ProfileEditor.xaml.cs");
+            string text = SourceText.ReadCode("DS4Windows/UI/ProfileEditor.xaml.cs");
             if (text == null) return;
 
             var checks = new (string Call, int MinCount)[]
@@ -218,7 +191,7 @@ namespace DS4WindowsTests
         [Fact]
         public void ProfileEditor_RemovedCodeIsNotReintroduced()
         {
-            string text = ReadSourceWithoutComments("DS4Windows/UI/ProfileEditor.xaml.cs");
+            string text = SourceText.ReadCode("DS4Windows/UI/ProfileEditor.xaml.cs");
             if (text == null) return;
 
             // 決定5＝D1: 常に作業スロットを返すだけになった DeviceNum は削除
@@ -228,7 +201,7 @@ namespace DS4WindowsTests
             Assert.DoesNotContain("FrictionUD_ValueChanged", text);
             Assert.DoesNotContain("touchPad[deviceNum]", text);
 
-            string xaml = ReadRawSource("DS4Windows/UI/ProfileEditor.xaml");
+            string xaml = SourceText.Read("DS4Windows/UI/ProfileEditor.xaml");
             if (xaml != null)
             {
                 Assert.DoesNotContain("FrictionUD_ValueChanged", xaml);
@@ -239,7 +212,7 @@ namespace DS4WindowsTests
         [Fact]
         public void ProfileSettingsViewModel_InstantHooksAreRemoved()
         {
-            string text = ReadSourceWithoutComments("DS4Windows/UI/ViewModels/ProfileSettingsViewModel.cs");
+            string text = SourceText.ReadCode("DS4Windows/UI/ViewModels/ProfileSettingsViewModel.cs");
             if (text == null) return;
 
             // 決定7＝H1: 編集スロット（device）で実機の状態を即時にリセットする処理を持たない
@@ -250,7 +223,7 @@ namespace DS4WindowsTests
         [Fact]
         public void MainWindow_DoesNotChooseTheEditSlot()
         {
-            string text = ReadSourceWithoutComments("DS4Windows/UI/MainWindow.xaml.cs");
+            string text = SourceText.ReadCode("DS4Windows/UI/MainWindow.xaml.cs");
             if (text == null) return;
 
             string[] calls = ExtractCallArguments(text, "ShowProfileEditor(");
@@ -264,7 +237,7 @@ namespace DS4WindowsTests
 
             // Phase7-Step5 W5: ProfileEditor の生成は IEditorWindowFactory.CreateProfileEditor に集約した（実機のスロット番号は、そのまま渡す）
             Assert.Contains("editorWindowFactory.CreateProfileEditor(targetDevice)", text);
-            string factory = ReadSourceWithoutComments("DS4Windows/UI/Services/EditorWindowFactory.cs");
+            string factory = SourceText.ReadCode("DS4Windows/UI/Services/EditorWindowFactory.cs");
             if (factory != null)
                 Assert.Contains("new ProfileEditor(targetDevice,", factory);
             Assert.Contains("editor.Reload(entity)", text);
@@ -285,7 +258,7 @@ namespace DS4WindowsTests
 
             foreach (var group in checks.GroupBy(c => c.File))
             {
-                string text = ReadSourceWithoutComments(group.Key);
+                string text = SourceText.ReadCode(group.Key);
                 if (text == null) continue;
 
                 foreach (var (_, call) in group)

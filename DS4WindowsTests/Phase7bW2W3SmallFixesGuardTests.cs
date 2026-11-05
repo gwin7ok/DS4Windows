@@ -22,12 +22,6 @@ namespace DS4WindowsTests
             _output = output;
         }
 
-        private static string StripComments(string text)
-        {
-            text = Regex.Replace(text, @"/\*.*?\*/", string.Empty, RegexOptions.Singleline);
-            return Regex.Replace(text, @"//[^\r\n]*", string.Empty);
-        }
-
         [Fact]
         public void Mouse_ReadsTheGyroMouseStickHorizontalAxis_OfItsOwnDevice()
         {
@@ -38,7 +32,7 @@ namespace DS4WindowsTests
                 return;
             }
 
-            string code = StripComments(File.ReadAllText(path));
+            string code = SourceText.StripComments(File.ReadAllText(path));
             Assert.Contains("GetGyroMouseStickHorizontalAxis(deviceNum)", code);
             Assert.DoesNotMatch(@"GetGyroMouseStickHorizontalAxis\(\s*0\s*\)", code);
         }

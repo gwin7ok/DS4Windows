@@ -10,17 +10,6 @@ namespace DS4WindowsTests
     /// </summary>
     public class Phase11BatteryUnificationTests
     {
-        private static string Code(string relativePath)
-        {
-            string path = SourceFileLocator.Find(relativePath);
-            if (path == null) return null;
-
-            string text = File.ReadAllText(path);
-            text = Regex.Replace(text, @"/\*.*?\*/", string.Empty, RegexOptions.Singleline);
-            text = Regex.Replace(text, @"//[^\r\n]*", string.Empty);
-            return Regex.Replace(text, @"\s+", " ");
-        }
-
         private static readonly string[] DeviceFiles =
         {
             "DS4Windows/Input/Devices/DS3Device.cs",
@@ -32,7 +21,7 @@ namespace DS4WindowsTests
         [Fact]
         public void TheBase_OwnsTheOnlyPairOfEvents_AndTheWriters()
         {
-            string code = Code("DS4Windows/Input/DS4Device.cs");
+            string code = SourceText.ReadNormalized("DS4Windows/Input/DS4Device.cs");
             if (code == null) return;
 
             Assert.Contains("public event EventHandler BatteryChanged;", code);
@@ -45,7 +34,7 @@ namespace DS4WindowsTests
         [Fact]
         public void TheDs4ReadLoop_WritesThroughTheUpdateMethods()
         {
-            string code = Code("DS4Windows/Input/DS4Device.cs");
+            string code = SourceText.ReadNormalized("DS4Windows/Input/DS4Device.cs");
             if (code == null) return;
 
             Assert.Contains("UpdateCharging(tempCharging);", code);
@@ -58,7 +47,7 @@ namespace DS4WindowsTests
         {
             foreach (string file in DeviceFiles)
             {
-                string code = Code(file);
+                string code = SourceText.ReadNormalized(file);
                 if (code == null) continue;
 
                 Assert.DoesNotContain("override event EventHandler BatteryChanged", code);
@@ -73,7 +62,7 @@ namespace DS4WindowsTests
         [Fact]
         public void TheProfileChangedNotification_ReadsTheBatteryFromTheDevice_NotFromTheListRow()
         {
-            string code = Code("DS4Windows/UI/MainWindow.xaml.cs");
+            string code = SourceText.ReadNormalized("DS4Windows/UI/MainWindow.xaml.cs");
             if (code == null) return;
 
             int start = code.IndexOf("private void OnProfileChanged(", System.StringComparison.Ordinal);
@@ -87,7 +76,7 @@ namespace DS4WindowsTests
         [Fact]
         public void TheList_ReplacesAStaleRow_OnHotplug_AndKeepsTheNewRowWhenTheOldDeviceIsRemoved()
         {
-            string code = Code("DS4Windows/UI/ViewModels/ControllerListViewModel.cs");
+            string code = SourceText.ReadNormalized("DS4Windows/UI/ViewModels/ControllerListViewModel.cs");
             if (code == null) return;
 
             Assert.Contains("controllerDict.TryGetValue(index, out CompositeDeviceModel staleRow) && staleRow.Device != device", code);

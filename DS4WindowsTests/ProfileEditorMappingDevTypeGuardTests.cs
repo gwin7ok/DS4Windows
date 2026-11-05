@@ -32,21 +32,6 @@ namespace DS4WindowsTests
             _output = output;
         }
 
-        private string ReadSourceWithoutComments()
-        {
-            string path = SourceFileLocator.Find("DS4Windows/UI/ProfileEditor.xaml.cs");
-            if (path == null)
-            {
-                _output.WriteLine("ProfileEditor.xaml.cs が見つからないため検査を省略した。");
-                return null;
-            }
-
-            string text = File.ReadAllText(path);
-            text = Regex.Replace(text, @"/\*.*?\*/", string.Empty, RegexOptions.Singleline);
-            text = Regex.Replace(text, @"//[^\r\n]*", string.Empty);
-            return text;
-        }
-
         /// <summary>宣言の先頭から、対応する閉じ波括弧までのメソッド全体を返す。</summary>
         private static string ExtractMethod(string text, string marker)
         {
@@ -74,7 +59,7 @@ namespace DS4WindowsTests
         [Fact]
         public void ReloadAndRefreshEditorBindings_UpdateMappingDevTypeAfterLoading()
         {
-            string text = ReadSourceWithoutComments();
+            string text = SourceText.ReadCode("DS4Windows/UI/ProfileEditor.xaml.cs");
             if (text == null) return;
 
             foreach (string marker in MethodMarkers)

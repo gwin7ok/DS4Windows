@@ -10,21 +10,10 @@ namespace DS4WindowsTests
     /// </summary>
     public class Phase11W6HoverSelectDelayTests
     {
-        private static string Code()
-        {
-            string path = SourceFileLocator.Find("DS4Windows/UI/ProfileEditor.xaml.cs");
-            if (path == null) return null;
-
-            string text = File.ReadAllText(path);
-            text = Regex.Replace(text, @"/\*.*?\*/", string.Empty, RegexOptions.Singleline);
-            text = Regex.Replace(text, @"//[^\r\n]*", string.Empty);
-            return Regex.Replace(text, @"\s+", " ");
-        }
-
         [Fact]
         public void TheDelay_Is500ms()
         {
-            string code = Code();
+            string code = SourceText.ReadNormalized("DS4Windows/UI/ProfileEditor.xaml.cs");
             if (code == null) return;
 
             Assert.Contains("private const int HoverSelectDelayMs = 500;", code);
@@ -33,7 +22,7 @@ namespace DS4WindowsTests
         [Fact]
         public void MouseEnter_DelaysTheSelection_AndMouseLeaveCancelsIt()
         {
-            string code = Code();
+            string code = SourceText.ReadNormalized("DS4Windows/UI/ProfileEditor.xaml.cs");
             if (code == null) return;
 
             int enter = code.IndexOf("private void ContBtn_MouseEnter(", System.StringComparison.Ordinal);
@@ -51,7 +40,7 @@ namespace DS4WindowsTests
         [Fact]
         public void AClickBeforeTheDelay_SelectsTheClickedButtonFirst()
         {
-            string code = Code();
+            string code = SourceText.ReadNormalized("DS4Windows/UI/ProfileEditor.xaml.cs");
             if (code == null) return;
 
             int click = code.IndexOf("private void HoverConBtn_Click(", System.StringComparison.Ordinal);
@@ -66,7 +55,7 @@ namespace DS4WindowsTests
         [Fact]
         public void TheControllerInputHighlight_StaysImmediate()
         {
-            string code = Code();
+            string code = SourceText.ReadNormalized("DS4Windows/UI/ProfileEditor.xaml.cs");
             if (code == null) return;
 
             Assert.Contains("InputControlHighlight(tempBtn);", code);

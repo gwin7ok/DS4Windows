@@ -22,21 +22,6 @@ namespace DS4WindowsTests
             _output = output;
         }
 
-        private string ReadWithoutComments(string relativePath)
-        {
-            string path = SourceFileLocator.Find(relativePath);
-            if (path == null)
-            {
-                _output.WriteLine(relativePath + " が見つからないため検査を省略した。");
-                return null;
-            }
-
-            string text = File.ReadAllText(path);
-            text = Regex.Replace(text, @"/\*.*?\*/", string.Empty, RegexOptions.Singleline);
-            text = Regex.Replace(text, @"//[^\r\n]*", string.Empty);
-            return text;
-        }
-
         [Theory]
         [InlineData(@"\boscState\b")]
         [InlineData(@"\boscCallback\b")]
@@ -50,7 +35,7 @@ namespace DS4WindowsTests
         [InlineData(@"\bMapMonitoringOscMessageToCommand\b")]
         public void ControlService_NoLongerContains_TheMovedMembers(string pattern)
         {
-            string text = ReadWithoutComments("DS4Windows/Processing/ControlService.cs");
+            string text = SourceText.ReadCode("DS4Windows/Processing/ControlService.cs");
             if (text == null) return;
 
             Assert.False(Regex.IsMatch(text, pattern), $"ControlService.cs に '{pattern}' が残っている（9-E E-1 で OscService へ移した）");
@@ -59,13 +44,13 @@ namespace DS4WindowsTests
         [Fact]
         public void ControlService_KeepsTheThinDelegates_ForTheCallers()
         {
-            string text = ReadWithoutComments("DS4Windows/Processing/ControlService.cs");
+            string text = SourceText.ReadCode("DS4Windows/Processing/ControlService.cs");
             if (text == null) return;
 
             // Phase13-Step10 10-c: 転送は削除した。利用者は IRuntimeFeatureSwitch（RuntimeFeatureSwitch）を使う
             Assert.DoesNotContain("public void ChangeOSCListenerStatus(", text);
             Assert.DoesNotContain("public void ChangeOSCSenderStatus(", text);
-            string sw = ReadWithoutComments("DS4Windows/Processing/Services/RuntimeFeatureSwitch.cs");
+            string sw = SourceText.ReadCode("DS4Windows/Processing/Services/RuntimeFeatureSwitch.cs");
             if (sw == null) return;
             Assert.Contains("_osc.ChangeListenerStatus(state)", sw);
             Assert.Contains("_osc.ChangeSenderStatus(state)", sw);
@@ -78,7 +63,7 @@ namespace DS4WindowsTests
         [InlineData("DS4Windows/Output/Services/SharpOscMessageSender.cs")]
         public void NewComponents_DoNotReferenceStaticEntryPoints(string relativePath)
         {
-            string text = ReadWithoutComments(relativePath);
+            string text = SourceText.ReadCode(relativePath);
             if (text == null) return;
 
             Assert.DoesNotContain("AppHost", text);
@@ -97,7 +82,7 @@ namespace DS4WindowsTests
                 "DS4Windows/Processing/Abstractions/IOscTransportFactory.cs", "DS4Windows/Processing/Abstractions/IOscMessageSender.cs", "DS4Windows/Processing/Abstractions/IOscListenerHandle.cs",
             })
             {
-                string text = ReadWithoutComments(file);
+                string text = SourceText.ReadCode(file);
                 if (text == null) continue;
 
                 Assert.DoesNotContain("using SharpOSC", text);

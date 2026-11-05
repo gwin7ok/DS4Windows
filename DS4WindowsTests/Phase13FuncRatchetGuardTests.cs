@@ -29,12 +29,6 @@ namespace DS4WindowsTests
             ("ServiceRegistration.Processing.cs", "IActionBindingBuilder"),
         };
 
-        private static string StripComments(string text)
-        {
-            text = Regex.Replace(text, @"/\*.*?\*/", string.Empty, RegexOptions.Singleline);
-            return Regex.Replace(text, @"//[^\r\n]*", string.Empty);
-        }
-
         [Fact]
         public void LazyServiceFuncs_AreOnlyTheAllowedOnes()
         {
@@ -44,7 +38,7 @@ namespace DS4WindowsTests
             string root = SourceFileLocator.RootFromAnchor(anchor);
             var found = Directory.GetFiles(Path.Combine(root, "DS4Windows"), "*.cs", SearchOption.AllDirectories)
                 .Where(f => !f.Replace('\\', '/').Contains("/obj/") && !f.Replace('\\', '/').Contains("/bin/"))
-                .SelectMany(f => LazyService.Matches(StripComments(File.ReadAllText(f))).Cast<Match>()
+                .SelectMany(f => LazyService.Matches(SourceText.StripComments(File.ReadAllText(f))).Cast<Match>()
                     .Select(m => (File: Path.GetFileName(f), Type: m.Groups[1].Value)))
                 .Distinct()
                 .ToList();

@@ -171,13 +171,6 @@ namespace DS4WindowsTests
             _output = output;
         }
 
-        private static string StripComments(string text)
-        {
-            text = Regex.Replace(text, @"/\*.*?\*/", string.Empty, RegexOptions.Singleline);
-            text = Regex.Replace(text, @"//[^\r\n]*", string.Empty);
-            return text;
-        }
-
         [Fact]
         public void DirectReferences_DoNotExceedStep10FourBaseline()
         {
@@ -199,7 +192,7 @@ namespace DS4WindowsTests
                 if (normalized.Contains("/obj/") || normalized.Contains("/bin/")) continue;
 
                 string relative = "DS4Windows/" + Path.GetRelativePath(sourceDir, file).Replace('\\', '/');
-                string text = StripComments(File.ReadAllText(file));
+                string text = SourceText.StripComments(File.ReadAllText(file));
 
                 int rootHub = RootHubPattern.Matches(text).Count;
                 int appHost = AppHostPattern.Matches(text).Count;

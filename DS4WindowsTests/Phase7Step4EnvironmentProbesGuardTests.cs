@@ -36,37 +36,6 @@ namespace DS4WindowsTests
             _output = output;
         }
 
-        private static string StripComments(string text)
-        {
-            text = Regex.Replace(text, @"/\*.*?\*/", string.Empty, RegexOptions.Singleline);
-            text = Regex.Replace(text, @"//[^\r\n]*", string.Empty);
-            return text;
-        }
-
-        private string Read(string relativePath)
-        {
-            string path = SourceFileLocator.Find(relativePath);
-            if (path == null)
-            {
-                _output.WriteLine("ソースが見つからないため検査を省略した: " + relativePath);
-                return null;
-            }
-
-            return StripComments(File.ReadAllText(path));
-        }
-
-        [Fact]
-        public void RemovedProbes_DoNotReappearInGlobal()
-        {
-            string text = Read("DS4Windows/DS4Control/Global.cs");
-            if (text == null) return;
-
-            List<string> reappeared = Removed
-                .Where(n => Regex.IsMatch(text, @"(?m)^\s*(public|internal|private)?\s*(static|const)\s+[\w<>\[\],.? ]+\s+" + Regex.Escape(n) + @"\s*(\(|\{|=>|;|=)"))
-                .ToList();
-            Assert.True(reappeared.Count == 0, "移管済みの調べ物が Global.cs に再び宣言されている: " + string.Join(", ", reappeared));
-        }
-
         [Fact]
         public void NoSourceFile_ReferencesRemovedProbesThroughGlobal()
         {
@@ -85,7 +54,7 @@ namespace DS4WindowsTests
                 string normalized = file.Replace('\\', '/');
                 if (normalized.Contains("/obj/") || normalized.Contains("/bin/")) continue;
 
-                string text = StripComments(File.ReadAllText(file));
+                string text = SourceText.StripComments(File.ReadAllText(file));
                 foreach (string name in Removed)
                 {
                     if (Regex.IsMatch(text, @"\bGlobal\." + Regex.Escape(name) + @"\b"))
@@ -99,7 +68,7 @@ namespace DS4WindowsTests
         [Fact]
         public void EnvironmentService_OwnsTheProbesAndTheirState()
         {
-            string text = Read("DS4Windows/Core/Platform/EnvironmentService.cs");
+            string text = SourceText.ReadCode("DS4Windows/Core/Platform/EnvironmentService.cs");
             if (text == null) return;
 
             foreach (string member in new[]

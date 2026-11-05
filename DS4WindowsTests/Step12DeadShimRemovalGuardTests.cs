@@ -129,35 +129,12 @@ namespace DS4WindowsTests
             _output = output;
         }
 
-        private static string StripComments(string text)
-        {
-            text = Regex.Replace(text, @"/\*.*?\*/", string.Empty, RegexOptions.Singleline);
-            text = Regex.Replace(text, @"//[^\r\n]*", string.Empty);
-            return text;
-        }
-
         private static bool Declares(string strippedSource, string name)
         {
             // 「static … 名前」の宣言（メソッド、プロパティ、フィールド、定数、イベント）を検出する
             return Regex.IsMatch(strippedSource,
                 @"\bstatic\b[^\r\n(=;{]*?\b" + Regex.Escape(name) + @"\b\s*(\(|=|;|\{|=>|\r|\n)") ||
                 Regex.IsMatch(strippedSource, @"\bconst\b[^\r\n(=;{]*?\b" + Regex.Escape(name) + @"\b\s*=");
-        }
-
-        [Fact]
-        public void RemovedMembers_DoNotReappearInGlobal()
-        {
-            string path = SourceFileLocator.Find("DS4Windows/DS4Control/Global.cs");
-            if (path == null)
-            {
-                _output.WriteLine("ソースが見つからないため検査を省略した。");
-                return;
-            }
-
-            string text = StripComments(File.ReadAllText(path));
-            List<string> reappeared = RemovedFromGlobal.Where(n => Declares(text, n)).ToList();
-            Assert.True(reappeared.Count == 0,
-                "削除済みの旧シムが Global.cs に再び宣言されている: " + string.Join(", ", reappeared));
         }
 
         [Fact]
@@ -186,26 +163,10 @@ namespace DS4WindowsTests
             }
 
             // IPathService.AppDataPath のセッターを再導入しない（Global.appdatapath と連動しない孤立した実装だった）
-            string pathText = StripComments(File.ReadAllText(pathServiceInterface));
+            string pathText = SourceText.StripComments(File.ReadAllText(pathServiceInterface));
             Assert.Matches(@"string\s+AppDataPath\s*\{\s*get;\s*\}", pathText);
 
             // 互換ラッパー DS4Windows.AppHost は Phase7-Step9 W1 で削除した（再導入の防止は Phase7Step9W1CompatAppHostRemovedGuardTests）
-        }
-
-        [Fact]
-        public void ProtectedMembers_RemainInGlobal()
-        {
-            string path = SourceFileLocator.Find("DS4Windows/DS4Control/Global.cs");
-            if (path == null)
-            {
-                _output.WriteLine("ソースが見つからないため検査を省略した。");
-                return;
-            }
-
-            string text = StripComments(File.ReadAllText(path));
-            List<string> missing = ProtectedInGlobal.Where(n => !Declares(text, n)).ToList();
-            Assert.True(missing.Count == 0,
-                "削除禁止の防壁にあたる Global のメンバーが見つからない: " + string.Join(", ", missing));
         }
     }
 }

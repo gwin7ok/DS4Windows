@@ -15,12 +15,6 @@ namespace DS4WindowsTests
     {
         private static readonly Type[] Asm = { typeof(DS4Windows.Processing.Actions.IManagedActionManager) };
 
-        private static string StripComments(string text)
-        {
-            text = Regex.Replace(text, @"/\*.*?\*/", string.Empty, RegexOptions.Singleline);
-            return Regex.Replace(text, @"//[^\r\n]*", string.Empty);
-        }
-
         [Theory]
         [InlineData("DS4Windows.ActionManager")]
         [InlineData("DS4Windows.DI.ServiceProviderHolder")]
@@ -47,7 +41,7 @@ namespace DS4WindowsTests
                 if (normalized.Contains("/obj/") || normalized.Contains("/bin/")) continue;
 
                 // ログの文言（"ActionManager.ToggledOnChanged: ..." など）は文字列リテラルなので、除外する
-                string code = Regex.Replace(StripComments(File.ReadAllText(file)), @"""(?:[^""\\]|\\.)*""", "\"\"");
+                string code = Regex.Replace(SourceText.StripComments(File.ReadAllText(file)), @"""(?:[^""\\]|\\.)*""", "\"\"");
                 if (pattern.IsMatch(code))
                     violations.Add(Path.GetRelativePath(sourceDir, file));
             }

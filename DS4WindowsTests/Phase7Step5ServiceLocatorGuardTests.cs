@@ -20,25 +20,11 @@ namespace DS4WindowsTests
             _output = output;
         }
 
-        private string Read(string relativePath)
-        {
-            string path = SourceFileLocator.Find(relativePath);
-            if (path == null)
-            {
-                _output.WriteLine("ソースが見つからないため検査を省略した: " + relativePath);
-                return null;
-            }
-
-            string text = File.ReadAllText(path);
-            text = Regex.Replace(text, @"/\*.*?\*/", string.Empty, RegexOptions.Singleline);
-            return Regex.Replace(text, @"//[^\r\n]*", string.Empty);
-        }
-
         [Fact]
         public void OutputSlotPersistence_GoesThroughTheContract()
         {
-            string app = Read("DS4Windows/App.xaml.cs");
-            string control = Read("DS4Windows/Processing/ControlService.cs");
+            string app = SourceText.ReadCode("DS4Windows/App.xaml.cs");
+            string control = SourceText.ReadCode("DS4Windows/Processing/ControlService.cs");
             if (app == null || control == null) return;
 
             Assert.Contains("_outputSlotService.LoadOutputSlots()", app);
@@ -52,14 +38,14 @@ namespace DS4WindowsTests
         public void GlobalInstances_AreRemoved_ExceptTheProfileSettingsOne()
         {
             // Phase7-Step10d W5: ProfileSettingsServiceInstance も含めて Global ごと削除した（BackingStore.ProfileSettings へ移した）
-            Assert.Null(SourceFileLocator.Find("DS4Windows/DS4Control/Global.cs"));
+            Assert.False(SourceFileLocator.Exists("DS4Windows/DS4Control/Global.cs"));
         }
 
         [Fact]
         public void ControlServiceAndBackingStore_ReceiveTheirCollaborators()
         {
-            string control = Read("DS4Windows/Processing/ControlService.cs");
-            string store = Read("DS4Windows/Core/Settings/BackingStore.cs");
+            string control = SourceText.ReadCode("DS4Windows/Processing/ControlService.cs");
+            string store = SourceText.ReadCode("DS4Windows/Core/Settings/BackingStore.cs");
             string registration = RegistrationSource.ReadAll(stripComments: true);   // Phase14c-Step6（R-18）: 層ごとの partial ファイルをつないだもの（コメントは除く）
             if (control == null || store == null || registration == null) return;
 
@@ -74,7 +60,7 @@ namespace DS4WindowsTests
         [Fact]
         public void App_ResolvesServicesOnlyThroughTheSingleEntryPoint()
         {
-            string app = Read("DS4Windows/App.xaml.cs");
+            string app = SourceText.ReadCode("DS4Windows/App.xaml.cs");
             if (app == null) return;
 
             // AppHost.GetService は ResolvePostHostService の 1 件だけ。ServiceProviderHolder も使わない
@@ -86,9 +72,9 @@ namespace DS4WindowsTests
         [Fact]
         public void MainWindowAndProfileEditor_DoNotUseTheLocator_AndAreCreatedThroughFactories()
         {
-            string main = Read("DS4Windows/UI/MainWindow.xaml.cs");
-            string editor = Read("DS4Windows/UI/ProfileEditor.xaml.cs");
-            string app = Read("DS4Windows/App.xaml.cs");
+            string main = SourceText.ReadCode("DS4Windows/UI/MainWindow.xaml.cs");
+            string editor = SourceText.ReadCode("DS4Windows/UI/ProfileEditor.xaml.cs");
+            string app = SourceText.ReadCode("DS4Windows/App.xaml.cs");
             string registration = RegistrationSource.ReadAll(stripComments: true);   // Phase14c-Step6（R-18）: 層ごとの partial ファイルをつないだもの（コメントは除く）
             if (main == null || editor == null || app == null || registration == null) return;
 
@@ -103,8 +89,8 @@ namespace DS4WindowsTests
         [Fact]
         public void AppLogger_UsesItsOwnNotificationService_SetByTheApp()
         {
-            string logger = Read("DS4Windows/Core/Logging/AppLogger.cs");
-            string app = Read("DS4Windows/App.xaml.cs");
+            string logger = SourceText.ReadCode("DS4Windows/Core/Logging/AppLogger.cs");
+            string app = SourceText.ReadCode("DS4Windows/App.xaml.cs");
             if (logger == null || app == null) return;
 
             Assert.DoesNotContain("NotificationServiceInstance", logger);

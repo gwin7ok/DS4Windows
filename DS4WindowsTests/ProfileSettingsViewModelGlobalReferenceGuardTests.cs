@@ -60,25 +60,10 @@ namespace DS4WindowsTests
             _output = output;
         }
 
-        private string ReadSourceWithoutComments(string relativePath)
-        {
-            string path = SourceFileLocator.Find(relativePath);
-            if (path == null)
-            {
-                _output.WriteLine($"{relativePath} が見つからないため検査を省略した。");
-                return null;
-            }
-
-            string text = File.ReadAllText(path);
-            text = Regex.Replace(text, @"/\*.*?\*/", string.Empty, RegexOptions.Singleline);
-            text = Regex.Replace(text, @"//[^\r\n]*", string.Empty);
-            return text;
-        }
-
         [Fact]
         public void ProfileSettingsViewModel_HasOnlyConstGlobalReferences_AndNoServiceLocator()
         {
-            string text = ReadSourceWithoutComments(VmPath);
+            string text = SourceText.ReadCode(VmPath);
             if (text == null) return;
 
             // Phase6-Step10b W3 で分離した型（PresetMenuHelper、各 Choice）も同じ基準で検査する
@@ -92,7 +77,7 @@ namespace DS4WindowsTests
             };
             foreach (string relative in relatedPaths)
             {
-                string src = relative == VmPath ? text : ReadSourceWithoutComments(relative);
+                string src = relative == VmPath ? text : SourceText.ReadCode(relative);
                 if (src == null) continue;
 
                 foreach (Match m in Regex.Matches(src, @"\bGlobal\.(\w+)"))
@@ -109,7 +94,7 @@ namespace DS4WindowsTests
         [Fact]
         public void Constructors_HaveNoOptionalServiceArguments_AndKeepTargetDevice()
         {
-            string text = ReadSourceWithoutComments(VmPath);
+            string text = SourceText.ReadCode(VmPath);
             if (text == null) return;
 
             Match ctor = Regex.Match(text, @"public ProfileSettingsViewModel\(([^)]*)\)", RegexOptions.Singleline);
@@ -122,7 +107,7 @@ namespace DS4WindowsTests
             Assert.Single(Regex.Matches(args, "="));
 
             // PresetMenuHelper は Phase6-Step10b W3 で別ファイルへ分離した
-            string helperText = ReadSourceWithoutComments("DS4Windows/UI/ViewModels/PresetMenuHelper.cs");
+            string helperText = SourceText.ReadCode("DS4Windows/UI/ViewModels/PresetMenuHelper.cs");
             if (helperText == null) return;
             Match helper = Regex.Match(helperText, @"public PresetMenuHelper\(([^)]*)\)");
             Assert.True(helper.Success);
@@ -132,7 +117,7 @@ namespace DS4WindowsTests
         [Fact]
         public void ViewModelFactory_HasNoServiceLocatorInConstructor()
         {
-            string text = ReadSourceWithoutComments(FactoryPath);
+            string text = SourceText.ReadCode(FactoryPath);
             if (text == null) return;
 
             // ProfileSettingsViewModel 以外の生成（Step10 の範囲）が残っているため、コンストラクタ部分だけを検査する

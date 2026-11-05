@@ -68,27 +68,12 @@ namespace DS4WindowsTests
             _output = output;
         }
 
-        private string ReadSourceWithoutComments(string relativePath)
-        {
-            string path = SourceFileLocator.Find(relativePath);
-            if (path == null)
-            {
-                _output.WriteLine($"{relativePath} が見つからないため検査を省略した。");
-                return null;
-            }
-
-            string text = File.ReadAllText(path);
-            text = Regex.Replace(text, @"/\*.*?\*/", string.Empty, RegexOptions.Singleline);
-            text = Regex.Replace(text, @"//[^\r\n]*", string.Empty);
-            return text;
-        }
-
         [Fact]
         public void ReplacedFiles_DoNotReferenceGlobalExceptRetainedMembers()
         {
             foreach (var entry in AllowedGlobalMembers)
             {
-                string text = ReadSourceWithoutComments(entry.Key);
+                string text = SourceText.ReadCode(entry.Key);
                 if (text == null) continue;
 
                 // ログ文言の文字列リテラル（LanguageSelectDialog の "Global.UseLang set to"、LanguagePackViewModel の
@@ -115,7 +100,7 @@ namespace DS4WindowsTests
         {
             foreach (string file in NoServiceLocatorFiles)
             {
-                string text = ReadSourceWithoutComments(file);
+                string text = SourceText.ReadCode(file);
                 if (text == null) continue;
 
                 Assert.DoesNotContain("AppHost", text);
@@ -130,7 +115,7 @@ namespace DS4WindowsTests
         public void LanguagePackControl_DoesNotUseServiceLocator()
         {
             // Application.Current as App（ApplyLanguageSettingPublic の呼び出し）は温存（Global ではない。App の言語適用処理は Phase7 で整理する）
-            string text = ReadSourceWithoutComments("DS4Windows/UI/LanguagePackControl.xaml.cs");
+            string text = SourceText.ReadCode("DS4Windows/UI/LanguagePackControl.xaml.cs");
             if (text == null) return;
 
             Assert.DoesNotContain("AppHost", text);
@@ -140,7 +125,7 @@ namespace DS4WindowsTests
         [Fact]
         public void StartupMethods_TakesPathsAsArguments()
         {
-            string text = ReadSourceWithoutComments("DS4Windows/Core/Platform/StartupEntryService.cs");
+            string text = SourceText.ReadCode("DS4Windows/Core/Platform/StartupEntryService.cs");
             if (text == null) return;
 
             Assert.Contains("WriteStartProgEntry(string exeLocation, string programDirectory)", text);
@@ -152,7 +137,7 @@ namespace DS4WindowsTests
         [Fact]
         public void RemovedOrphanMethods_DoNotComeBack()
         {
-            string util = ReadSourceWithoutComments("DS4Windows/Core/Utilities/Util.cs");
+            string util = SourceText.ReadCode("DS4Windows/Core/Utilities/Util.cs");
             if (util == null) return;
 
             // Phase6-Step10-1-5: 呼出元 0 件の旧 DS4Updater 差し替え処理（コミット b55d160b で UpdaterWindow の方式へ置き換え済み）
@@ -164,7 +149,7 @@ namespace DS4WindowsTests
         public void LanguagePackControl_IsInitializedByMainWindow()
         {
             string xaml = SourceFileLocator.Find("DS4Windows/UI/MainWindow.xaml");
-            string code = ReadSourceWithoutComments("DS4Windows/UI/MainWindow.xaml.cs");
+            string code = SourceText.ReadCode("DS4Windows/UI/MainWindow.xaml.cs");
             if (xaml == null || code == null) return;
 
             Assert.Contains("x:Name=\"languagePackControl\"", File.ReadAllText(xaml));

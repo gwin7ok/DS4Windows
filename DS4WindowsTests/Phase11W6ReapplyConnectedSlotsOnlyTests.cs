@@ -22,25 +22,10 @@ namespace DS4WindowsTests
             _output = output;
         }
 
-        private string ReadNormalizedSource(string relativePath)
-        {
-            string path = SourceFileLocator.Find(relativePath);
-            if (path == null)
-            {
-                _output.WriteLine(relativePath + " が見つからないため検査を省略した。");
-                return null;
-            }
-
-            string text = File.ReadAllText(path);
-            text = Regex.Replace(text, @"/\*.*?\*/", string.Empty, RegexOptions.Singleline);
-            text = Regex.Replace(text, @"//[^\r\n]*", string.Empty);
-            return Regex.Replace(text, @"\s+", " ");
-        }
-
         [Fact]
         public void TheReapplyLoop_AppliesOnlyToConnectedSlots()
         {
-            string code = ReadNormalizedSource(MainWindowCode);
+            string code = SourceText.ReadNormalized(MainWindowCode);
             if (code == null) return;
 
             // 再適用の ApplyToSlot（Manual）は、接続の判定の後ろにだけある
@@ -51,7 +36,7 @@ namespace DS4WindowsTests
         [Fact]
         public void IsSlotConnected_ReadsTheControllerOfTheSlot()
         {
-            string code = ReadNormalizedSource(MainWindowCode);
+            string code = SourceText.ReadNormalized(MainWindowCode);
             if (code == null) return;
 
             Assert.Contains("private bool IsSlotConnected(int slot) { var controllers = controlService.DS4Controllers; return controllers != null && slot >= 0 && slot < controllers.Length && controllers[slot] != null; }", code);

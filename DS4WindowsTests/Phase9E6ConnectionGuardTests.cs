@@ -23,21 +23,6 @@ namespace DS4WindowsTests
             _output = output;
         }
 
-        private string ReadWithoutComments(string relativePath)
-        {
-            string path = SourceFileLocator.Find(relativePath);
-            if (path == null)
-            {
-                _output.WriteLine(relativePath + " が見つからないため検査を省略した。");
-                return null;
-            }
-
-            string text = File.ReadAllText(path);
-            text = Regex.Replace(text, @"/\*.*?\*/", string.Empty, RegexOptions.Singleline);
-            text = Regex.Replace(text, @"//[^\r\n]*", string.Empty);
-            return text;
-        }
-
         [Theory]
         [InlineData(@"\bFIRST CONNECTION detected\b")]
         [InlineData(@"\bRECONNECTION detected\b")]
@@ -46,7 +31,7 @@ namespace DS4WindowsTests
         [InlineData(@"\bMarkConnected\(")]
         public void ControlService_NoLongerContains_TheMovedProfileSelection(string pattern)
         {
-            string text = ReadWithoutComments("DS4Windows/Processing/ControlService.cs");
+            string text = SourceText.ReadCode("DS4Windows/Processing/ControlService.cs");
             if (text == null) return;
 
             Assert.False(Regex.IsMatch(text, pattern), $"ControlService.cs に '{pattern}' が残っている（9-E E-6a で ConnectionProfileSelector へ移した）");
@@ -56,7 +41,7 @@ namespace DS4WindowsTests
         public void ControlService_DelegatesTheSelection_BeforeThePluginStep()
         {
             // Phase9 9-E E-6f1: 接続の組み立ては DeviceConnector へ移った
-            string text = ReadWithoutComments("DS4Windows/Processing/Services/DeviceConnector.cs");
+            string text = SourceText.ReadCode("DS4Windows/Processing/Services/DeviceConnector.cs");
             if (text == null) return;
 
             int select = text.IndexOf("_connectionProfileSelector.ApplyOnConnect(");
@@ -70,7 +55,7 @@ namespace DS4WindowsTests
             Assert.IsType<ConnectionProfileSelector>(TestHost.GetService<IConnectionProfileSelector>());
             Assert.Same(TestHost.GetService<IConnectionProfileSelector>(), TestHost.GetService<IConnectionProfileSelector>());
 
-            string text = ReadWithoutComments("DS4Windows/Processing/Services/ConnectionProfileSelector.cs");
+            string text = SourceText.ReadCode("DS4Windows/Processing/Services/ConnectionProfileSelector.cs");
             if (text == null) return;
 
             Assert.DoesNotContain("AppHost", text);
@@ -87,7 +72,7 @@ namespace DS4WindowsTests
         [InlineData(@"\bTouchButtonDown\b")]
         public void ControlService_NoLongerContains_TheMovedSetup(string pattern)
         {
-            string text = ReadWithoutComments("DS4Windows/Processing/ControlService.cs");
+            string text = SourceText.ReadCode("DS4Windows/Processing/ControlService.cs");
             if (text == null) return;
 
             Assert.False(Regex.IsMatch(text, pattern), $"ControlService.cs に '{pattern}' が残っている（9-E E-6b で DeviceConnectionSetup へ移した）");
@@ -96,7 +81,7 @@ namespace DS4WindowsTests
         [Fact]
         public void ControlService_KeepsTheThinDelegates_AndCallsTheSetupInTheOriginalOrder()
         {
-            string text = ReadWithoutComments("DS4Windows/Processing/ControlService.cs");
+            string text = SourceText.ReadCode("DS4Windows/Processing/ControlService.cs");
             if (text == null) return;
 
             // Phase13-Step10 10-b: 利用者が 0 件だった CheckProfileOptions／TouchPadOn の転送は削除した（IProfileLoadTarget が別に持つ）
@@ -104,7 +89,7 @@ namespace DS4WindowsTests
             Assert.DoesNotContain("public void TouchPadOn(", text);
 
             // 接続時の順序: 設定の反映 → イベントの配線（旧: CheckProfileOptions → SetupInitialHookEvents）。接続の組み立ては DeviceConnector へ移った（E-6f1）
-            string connector = ReadWithoutComments("DS4Windows/Processing/Services/DeviceConnector.cs");
+            string connector = SourceText.ReadCode("DS4Windows/Processing/Services/DeviceConnector.cs");
             if (connector == null) return;
             int options = connector.IndexOf("_deviceConnectionSetup.ApplyProfileOptions(index, device, touchPads[index]);");
             int hooks = connector.IndexOf("_deviceConnectionSetup.WireInitialHooks(index, device);");
@@ -117,7 +102,7 @@ namespace DS4WindowsTests
             Assert.IsType<DeviceConnectionSetup>(TestHost.GetService<IDeviceConnectionSetup>());
             Assert.Same(TestHost.GetService<IDeviceConnectionSetup>(), TestHost.GetService<IDeviceConnectionSetup>());
 
-            string text = ReadWithoutComments("DS4Windows/Processing/Services/DeviceConnectionSetup.cs");
+            string text = SourceText.ReadCode("DS4Windows/Processing/Services/DeviceConnectionSetup.cs");
             if (text == null) return;
 
             // 旧 TouchPadOn と同じく、発火のたびに配列からマウスを引き直す
@@ -138,7 +123,7 @@ namespace DS4WindowsTests
         [InlineData(@"\bNativeOptionsStore\b")]
         public void ControlService_NoLongerBranchesOnTheDeviceType(string pattern)
         {
-            string text = ReadWithoutComments("DS4Windows/Processing/ControlService.cs");
+            string text = SourceText.ReadCode("DS4Windows/Processing/ControlService.cs");
             if (text == null) return;
 
             // Joy-Con の結合の手順（Start／HotPlug の中）も、E-6d で JoyConLinker へ移したため、例外はない
@@ -148,14 +133,14 @@ namespace DS4WindowsTests
         [Fact]
         public void ControlService_DelegatesToTheDeviceModules()
         {
-            string text = ReadWithoutComments("DS4Windows/Processing/ControlService.cs");
+            string text = SourceText.ReadCode("DS4Windows/Processing/ControlService.cs");
             if (text == null) return;
 
             Assert.Contains("_deviceModules.Resolve(device.DeviceType).OnDeviceInit(device, deviceOptions);", text);
             Assert.Contains("_deviceModules.Resolve(metaInfo.inputDevType).IsEnabled(deviceOptions);", text);
 
             // 接続の組み立て（E-6f1 で DeviceConnector へ移った）が呼ぶもの
-            string connector = ReadWithoutComments("DS4Windows/Processing/Services/DeviceConnector.cs");
+            string connector = SourceText.ReadCode("DS4Windows/Processing/Services/DeviceConnector.cs");
             if (connector == null) return;
             Assert.Contains("_deviceModules.Resolve(device.DeviceType).HookSettings(device, () => _slots.ActiveControllers);", connector);
             Assert.Contains("_deviceModules.Resolve(device.DeviceType).GetKnownExtraButtons(device)", connector);
@@ -171,7 +156,7 @@ namespace DS4WindowsTests
 
             foreach (string file in new[] { "Ds4DeviceModule", "DualSenseDeviceModule", "SwitchProDeviceModule", "JoyConDeviceModule", "Ds3DeviceModule", "NullInputDeviceModule", "InputDeviceModuleBase", "InputDeviceModuleRegistry" })
             {
-                string text = ReadWithoutComments("DS4Windows/DS4Control/Services/" + file + ".cs");
+                string text = SourceText.ReadCode(SourceText.RelativePathOf(file + ".cs"));   // Phase14d-Step1: 旧パス（DS4Control/Services/）のまま、黙って省略されていた
                 if (text == null) continue;
 
                 Assert.DoesNotContain("AppHost", text);
@@ -187,7 +172,7 @@ namespace DS4WindowsTests
         [InlineData(@"\.JointState\s*=[^=]")]   // 代入だけ。On_Report の「cState = device.JointState」（読み取り）は残る
         public void ControlService_NoLongerContains_TheJoyConLinking(string pattern)
         {
-            string text = ReadWithoutComments("DS4Windows/Processing/ControlService.cs");
+            string text = SourceText.ReadCode("DS4Windows/Processing/ControlService.cs");
             if (text == null) return;
 
             Assert.False(Regex.IsMatch(text, pattern), $"ControlService.cs に '{pattern}' が残っている（9-E E-6d で JoyConLinker へ移した）");
@@ -197,7 +182,7 @@ namespace DS4WindowsTests
         public void ControlService_CallsTheLinker_AfterThePreparation_AndBeforeTheSlotAssignment()
         {
             // Phase9 9-E E-6f2: Start／HotPlug の本体は ServiceLifecycle へ移った
-            string text = ReadWithoutComments("DS4Windows/Processing/Services/ServiceLifecycle.cs");
+            string text = SourceText.ReadCode("DS4Windows/Processing/Services/ServiceLifecycle.cs");
             if (text == null) return;
 
             // Start: 準備（BeginPrepareConnectedInputController）→ 結合（LinkOnStart）→ スロットへの割り当て（DS4Controllers[i] = device）
@@ -224,7 +209,7 @@ namespace DS4WindowsTests
 
             foreach (string file in new[] { "JoyConLinker", "JoinableDeviceAdapter" })
             {
-                string text = ReadWithoutComments("DS4Windows/DS4Control/Services/" + file + ".cs");
+                string text = SourceText.ReadCode(SourceText.RelativePathOf(file + ".cs"));   // Phase14d-Step1: 旧パス（DS4Control/Services/）のまま、黙って省略されていた
                 if (text == null) continue;
 
                 Assert.DoesNotContain("AppHost", text);

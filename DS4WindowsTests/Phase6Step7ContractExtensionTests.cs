@@ -159,25 +159,10 @@ namespace DS4WindowsTests
         // ---- 実ファイルを書き換える委譲（SaveAsProfile／LoadLinkedProfiles／CreateStandardActions）はソース走査で確認 ----
         // Step3-1 の SaveControllerConfigsForDevice と同じ扱い。挙動は実機確認（Phase6-Step7-Plan.md §6）で担保する。
 
-        private string ReadSourceWithoutComments(string relativePath)
-        {
-            string path = SourceFileLocator.Find(relativePath);
-            if (path == null)
-            {
-                _output.WriteLine($"{relativePath} が見つからないため検査を省略した。");
-                return null;
-            }
-
-            string text = File.ReadAllText(path);
-            text = Regex.Replace(text, @"/\*.*?\*/", string.Empty, RegexOptions.Singleline);
-            text = Regex.Replace(text, @"//[^\r\n]*", string.Empty);
-            return text;
-        }
-
         [Fact]
         public void ProfileRepository_NewMembers_DelegateToGlobal()
         {
-            string text = ReadSourceWithoutComments("DS4Windows/Core/Persistence/ProfileRepository.cs");
+            string text = SourceText.ReadCode("DS4Windows/Core/Persistence/ProfileRepository.cs");
             if (text == null) return;
 
             // Phase7-Step10c W5: プロファイルの保存は LegacyProfileXmlSerializer へ移した
@@ -189,7 +174,7 @@ namespace DS4WindowsTests
         [Fact]
         public void SpecialActionRepository_CreateStandardActions_DelegatesToGlobal_AndLoadActionsHasNoFileExistsShortcut()
         {
-            string text = ReadSourceWithoutComments("DS4Windows/Core/Persistence/SpecialActionRepository.cs");
+            string text = SourceText.ReadCode("DS4Windows/Core/Persistence/SpecialActionRepository.cs");
             if (text == null) return;
 
             Assert.Matches(@"public void CreateStandardActions\(\)\s*\{\s*CreateStdActions\(\);", text);

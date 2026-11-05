@@ -51,25 +51,10 @@ namespace DS4WindowsTests
             "appdatapath",
         };
 
-        private string ReadSourceWithoutComments(string relativePath)
-        {
-            string path = SourceFileLocator.Find(relativePath);
-            if (path == null)
-            {
-                _output.WriteLine($"{relativePath} が見つからないため検査を省略した。");
-                return null;
-            }
-
-            string text = File.ReadAllText(path);
-            text = Regex.Replace(text, @"/\*.*?\*/", string.Empty, RegexOptions.Singleline);
-            text = Regex.Replace(text, @"//[^\r\n]*", string.Empty);
-            return text;
-        }
-
         [Fact]
         public void ProfileEditor_DoesNotReferenceResolvedGlobalMembers()
         {
-            string text = ReadSourceWithoutComments("DS4Windows/UI/ProfileEditor.xaml.cs");
+            string text = SourceText.ReadCode("DS4Windows/UI/ProfileEditor.xaml.cs");
             if (text == null) return;
 
             // `Global.X` と `DS4Windows.Global.X` の両方を検出する（単語境界で、別名のメンバーと区別する）。
@@ -83,7 +68,7 @@ namespace DS4WindowsTests
         [Fact]
         public void ProfileEditor_ReceivesAppSettingsServiceByConstructor_AndMainWindowPassesIt()
         {
-            string editor = ReadSourceWithoutComments("DS4Windows/UI/ProfileEditor.xaml.cs");
+            string editor = SourceText.ReadCode("DS4Windows/UI/ProfileEditor.xaml.cs");
             if (editor == null) return;
 
             // 引数が複数行に折り返されていても一致するよう、空白を正規化して比較する
@@ -93,7 +78,7 @@ namespace DS4WindowsTests
             Assert.Contains("throw new ArgumentNullException(nameof(appSettingsService))", editor);
             Assert.Contains("appSettingsService.UseLang", editor);
 
-            string main = ReadSourceWithoutComments("DS4Windows/UI/MainWindow.xaml.cs");
+            string main = SourceText.ReadCode("DS4Windows/UI/MainWindow.xaml.cs");
             if (main == null) return;
 
             Assert.Contains("editorWindowFactory.CreateProfileEditor(targetDevice)", main);

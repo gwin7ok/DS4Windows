@@ -64,7 +64,7 @@ namespace DS4WindowsTests
         public void TheSource_HasNoColorOrIconMembersOnGlobalAnymore()
         {
             // Phase7-Step10d W5: Global は削除した（Global.cs が存在しないことで、色・アイコンのメンバーが戻らないことを担保する）
-            Assert.Null(SourceFileLocator.Find("DS4Windows/DS4Control/Global.cs"));
+            Assert.False(SourceFileLocator.Exists("DS4Windows/DS4Control/Global.cs"));
             Assert.Null(typeof(BackingStore).Assembly.GetType("DS4Windows.Global"));
         }
     }

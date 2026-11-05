@@ -20,20 +20,6 @@ namespace DS4WindowsTests
             _output = output;
         }
 
-        private string Read(string relativePath)
-        {
-            string path = SourceFileLocator.Find(relativePath);
-            if (path == null)
-            {
-                _output.WriteLine("ソースが見つからないため検査を省略した: " + relativePath);
-                return null;
-            }
-
-            string text = File.ReadAllText(path);
-            text = Regex.Replace(text, @"/\*.*?\*/", string.Empty, RegexOptions.Singleline);
-            return Regex.Replace(text, @"//[^\r\n]*", string.Empty);
-        }
-
         [Fact]
         public void NewInstance_HasTheSameShapeAsTheOldStaticFields()
         {
@@ -68,7 +54,7 @@ namespace DS4WindowsTests
         [Fact]
         public void Mapping_HoldsNoMacroStateOfItsOwn_OnlyForwarders()
         {
-            string mapping = Read("DS4Windows/Processing/Mapping.cs");
+            string mapping = SourceText.ReadCode("DS4Windows/Processing/Mapping.cs");
             if (mapping == null) return;
 
             // Phase7-Step8 W2: 転送プロパティは削除し、コンストラクターで受けた保持クラスの配列を readonly で複製して持つ

@@ -19,24 +19,10 @@ namespace DS4WindowsTests
             _output = output;
         }
 
-        private string Read(string relativePath)
-        {
-            string path = SourceFileLocator.Find(relativePath);
-            if (path == null)
-            {
-                _output.WriteLine("ソースが見つからないため検査を省略した: " + relativePath);
-                return null;
-            }
-
-            string text = File.ReadAllText(path);
-            text = Regex.Replace(text, @"/\*.*?\*/", string.Empty, RegexOptions.Singleline);
-            return Regex.Replace(text, @"//[^\r\n]*", string.Empty);
-        }
-
         [Fact]
         public void Mapping_HoldsNoSyntheticStateOfItsOwn_OnlyForwarders()
         {
-            string mapping = Read("DS4Windows/Processing/Mapping.cs");
+            string mapping = SourceText.ReadCode("DS4Windows/Processing/Mapping.cs");
             if (mapping == null) return;
 
             Assert.DoesNotContain("public class SyntheticState", mapping);
@@ -54,14 +40,14 @@ namespace DS4WindowsTests
         [Fact]
         public void BackingStore_DoesNotReferenceMapping_AndRaisesActionsLoadedInBothPaths()
         {
-            string store = Read("DS4Windows/Core/Settings/BackingStore.cs");
+            string store = SourceText.ReadCode("DS4Windows/Core/Settings/BackingStore.cs");
             if (store == null) return;
 
             Assert.False(Regex.IsMatch(store, @"\bMapping\."), "BackingStore が Mapping を参照している");
             Assert.Contains("public event Action ActionsLoaded;", store);
             // Phase7-Step10c W2: Actions.xml の読込（2 経路）は SpecialActionsXmlSerializer へ移した。発行元（イベントとメソッド）は BackingStore のまま
             Assert.Contains("public void RaiseActionsLoaded()", store);
-            string actionsXml = Read("DS4Windows/Core/Persistence/SpecialActionsXmlSerializer.cs");
+            string actionsXml = SourceText.ReadCode("DS4Windows/Core/Persistence/SpecialActionsXmlSerializer.cs");
             if (actionsXml == null) return;
             Assert.Equal(2, Regex.Matches(actionsXml, @"store\.RaiseActionsLoaded\(\);").Count);
         }
@@ -82,7 +68,7 @@ namespace DS4WindowsTests
         [Fact]
         public void ResetHandler_KeepsTheOrderAndTheLogMessage()
         {
-            string reset = Read("DS4Windows/Processing/Services/ActionsLoadedRuntimeReset.cs");
+            string reset = SourceText.ReadCode("DS4Windows/Processing/Services/ActionsLoadedRuntimeReset.cs");
             if (reset == null) return;
 
             int state = reset.IndexOf("_syntheticInput.ResetAll();");
@@ -96,7 +82,7 @@ namespace DS4WindowsTests
         [Fact]
         public void SyntheticDispatcherService_UsesTheInjectedHolder_AndTheStaticBridgeHoldsNoState()
         {
-            string service = Read("DS4Windows/Processing/Services/SyntheticDispatcherService.cs");
+            string service = SourceText.ReadCode("DS4Windows/Processing/Services/SyntheticDispatcherService.cs");
             if (service == null) return;
 
             Assert.DoesNotContain("Mapping.deviceState", service);

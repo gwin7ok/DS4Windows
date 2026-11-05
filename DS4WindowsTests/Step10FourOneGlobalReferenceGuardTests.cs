@@ -21,22 +21,12 @@ namespace DS4WindowsTests
             "DS4Windows/Core/Profiles/ProfileEntity.cs",
         };
 
-        private static string ReadWithoutComments(string relativePath)
-        {
-            string path = SourceFileLocator.Find(relativePath);
-            if (path == null) return null;
-            string text = File.ReadAllText(path);
-            text = Regex.Replace(text, @"/\*.*?\*/", string.Empty, RegexOptions.Singleline);
-            text = Regex.Replace(text, @"//[^\r\n]*", string.Empty);
-            return text;
-        }
-
         [Fact]
         public void ReplacedFiles_DoNotReferenceGlobalOrServiceLocator()
         {
             foreach (string file in Files)
             {
-                string text = ReadWithoutComments(file);
+                string text = SourceText.ReadCode(file);
                 if (text == null) continue;
                 Assert.False(Regex.IsMatch(text, @"\bGlobal\."), $"{file} に Global 参照が残っている");
                 Assert.DoesNotContain("AppHost", text);

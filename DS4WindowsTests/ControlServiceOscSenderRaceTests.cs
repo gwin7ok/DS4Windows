@@ -69,7 +69,7 @@ namespace DS4WindowsTests
             string path = SourceFileLocator.Find("DS4Windows/Output/Services/OscService.cs");
             if (path == null) return;
 
-            string text = StripComments(File.ReadAllText(path));
+            string text = SourceText.StripComments(File.ReadAllText(path));
 
             // 送信はすべて SendOsc（null 安全）経由にする
             Assert.DoesNotContain("_sender.Send(", text);
@@ -77,15 +77,9 @@ namespace DS4WindowsTests
 
             string controlPath = SourceFileLocator.Find("DS4Windows/Processing/ControlService.cs");
             if (controlPath == null) return;
-            string control = StripComments(File.ReadAllText(controlPath));
+            string control = SourceText.StripComments(File.ReadAllText(controlPath));
             Assert.DoesNotContain("SendOsc(", control);
             Assert.DoesNotContain("oscSender", control);
-        }
-
-        private static string StripComments(string text)
-        {
-            text = Regex.Replace(text, @"/\*.*?\*/", string.Empty, RegexOptions.Singleline);
-            return Regex.Replace(text, @"//[^\r\n]*", string.Empty);
         }
     }
 }

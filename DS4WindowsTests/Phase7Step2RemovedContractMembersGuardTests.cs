@@ -67,13 +67,6 @@ namespace DS4WindowsTests
             _output = output;
         }
 
-        private static string StripComments(string text)
-        {
-            text = Regex.Replace(text, @"/\*.*?\*/", string.Empty, RegexOptions.Singleline);
-            text = Regex.Replace(text, @"//[^\r\n]*", string.Empty);
-            return text;
-        }
-
         private static bool Declares(string strippedSource, string member)
         {
             string name = Regex.Escape(member);
@@ -83,14 +76,14 @@ namespace DS4WindowsTests
 
         private string ReadContract(string interfaceName)
         {
-            string path = SourceFileLocator.Find("DS4Windows/DI/" + interfaceName + ".cs");
+            string path = SourceFileLocator.Find(SourceText.RelativePathOf(interfaceName + ".cs") ?? "");   // Phase14d-Step1: 旧パス（DI/）のまま、黙って省略されていた
             if (path == null)
             {
                 _output.WriteLine("ソースが見つからないため検査を省略した: " + interfaceName);
                 return null;
             }
 
-            return StripComments(File.ReadAllText(path));
+            return SourceText.StripComments(File.ReadAllText(path));
         }
 
         [Fact]

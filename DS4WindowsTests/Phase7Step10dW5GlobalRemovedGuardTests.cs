@@ -28,17 +28,11 @@ namespace DS4WindowsTests
             _output = output;
         }
 
-        private static string StripComments(string text)
-        {
-            text = Regex.Replace(text, @"/\*.*?\*/", string.Empty, RegexOptions.Singleline);
-            return Regex.Replace(text, @"//[^\r\n]*", string.Empty);
-        }
-
         [Fact]
         public void TheGlobalType_AndFile_AreGone()
         {
             Assert.Null(typeof(BackingStore).Assembly.GetType("DS4Windows.Global"));
-            Assert.Null(SourceFileLocator.Find("DS4Windows/DS4Control/Global.cs"));
+            Assert.False(SourceFileLocator.Exists("DS4Windows/DS4Control/Global.cs"));
         }
 
         [Fact]
@@ -56,7 +50,7 @@ namespace DS4WindowsTests
             var logLiteral = new Regex("\"[^\"\\r\\n]*Global\\.UseLang[^\"\\r\\n]*\"");
             var offenders = Directory.GetFiles(Path.Combine(root, "DS4Windows"), "*.cs", SearchOption.AllDirectories)
                 .Where(f => !f.Contains(@"\obj\") && !f.Contains(@"\bin\"))
-                .Select(f => (file: f, text: logLiteral.Replace(StripComments(File.ReadAllText(f)), "\"\"")))
+                .Select(f => (file: f, text: logLiteral.Replace(SourceText.StripComments(File.ReadAllText(f)), "\"\"")))
                 .Where(x => Regex.IsMatch(x.text, @"using\s+static\s+(DS4Windows\.)?Global\s*;")
                          || Regex.IsMatch(x.text, @"(?<![\w])(?:DS4Windows\.)?Global\.\w+"))
                 .Select(x => Path.GetFileName(x.file))

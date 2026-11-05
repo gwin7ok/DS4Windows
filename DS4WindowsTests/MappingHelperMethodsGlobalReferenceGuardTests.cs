@@ -36,22 +36,6 @@ namespace DS4WindowsTests
             _output = output;
         }
 
-        /// <summary>コメント（ブロック・行）を除いた Mapping.cs 全体のテキスト。見つからなければ null。</summary>
-        private string ReadSourceWithoutComments()
-        {
-            string path = SourceFileLocator.Find("DS4Windows/Processing/Mapping.cs");
-            if (path == null)
-            {
-                _output.WriteLine("Mapping.cs が見つからないため検査を省略した。");
-                return null;
-            }
-
-            string text = File.ReadAllText(path);
-            text = Regex.Replace(text, @"/\*.*?\*/", string.Empty, RegexOptions.Singleline);
-            text = Regex.Replace(text, @"//[^\r\n]*", string.Empty);
-            return text;
-        }
-
         /// <summary>宣言の先頭から、対応する閉じ波括弧までのメソッド全体（シグネチャを含む）を返す。</summary>
         private static string ExtractMethod(string text, string marker)
         {
@@ -87,7 +71,7 @@ namespace DS4WindowsTests
         [Fact]
         public void HelperMethods_HaveNoReferenceToMigratedGlobalMembers()
         {
-            string text = ReadSourceWithoutComments();
+            string text = SourceText.ReadCode("DS4Windows/Processing/Mapping.cs");
             if (text == null) return;
 
             foreach (string marker in MethodMarkers)
@@ -109,7 +93,7 @@ namespace DS4WindowsTests
         [Fact]
         public void IsUsingGyroForControls_MovedToControlActivityReader()
         {
-            string text = ReadSourceWithoutComments();
+            string text = SourceText.ReadCode("DS4Windows/Processing/Mapping.cs");
             if (text == null) return;
 
             // Phase9 9-B: 旧 Mapping.IsUsingGyroForControls は ControlActivityReader（引数の settings）へ移った。Mapping.cs には残っていないことと、移し先の判定を確かめる

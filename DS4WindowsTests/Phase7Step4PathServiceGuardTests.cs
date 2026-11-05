@@ -36,25 +36,6 @@ namespace DS4WindowsTests
             _output = output;
         }
 
-        private static string StripComments(string text)
-        {
-            text = Regex.Replace(text, @"/\*.*?\*/", string.Empty, RegexOptions.Singleline);
-            text = Regex.Replace(text, @"//[^\r\n]*", string.Empty);
-            return text;
-        }
-
-        private string Read(string relativePath)
-        {
-            string path = SourceFileLocator.Find(relativePath);
-            if (path == null)
-            {
-                _output.WriteLine("ソースが見つからないため検査を省略した: " + relativePath);
-                return null;
-            }
-
-            return StripComments(File.ReadAllText(path));
-        }
-
         /// <summary>静的な状態を退避して、テストの後で元へ戻す。</summary>
         private sealed class StateScope : IDisposable
         {
@@ -231,18 +212,6 @@ namespace DS4WindowsTests
         // ---- 回帰ガード ----
 
         [Fact]
-        public void RemovedMembers_DoNotReappearInGlobal()
-        {
-            string text = Read("DS4Windows/DS4Control/Global.cs");
-            if (text == null) return;
-
-            List<string> reappeared = Removed
-                .Where(n => Regex.IsMatch(text, @"(?m)^\s*(public|internal|private)?\s*static\s+[\w<>\[\],.? ]+\s+" + Regex.Escape(n) + @"\s*(\(|\{|=>|;|=)"))
-                .ToList();
-            Assert.True(reappeared.Count == 0, "移管済みのメンバーが Global.cs に再び宣言されている: " + string.Join(", ", reappeared));
-        }
-
-        [Fact]
         public void NoSourceFile_ReferencesRemovedMembersThroughGlobal()
         {
             string anchor = SourceFileLocator.Find("DS4Windows/Core/Settings/BackingStore.cs"); // Phase7-Step10d W5: Global.cs は削除したため、同じフォルダーの BackingStore.cs を起点にする
@@ -260,7 +229,7 @@ namespace DS4WindowsTests
                 string normalized = file.Replace('\\', '/');
                 if (normalized.Contains("/obj/") || normalized.Contains("/bin/")) continue;
 
-                string text = StripComments(File.ReadAllText(file));
+                string text = SourceText.StripComments(File.ReadAllText(file));
                 foreach (string name in Removed)
                 {
                     if (Regex.IsMatch(text, @"\bGlobal\." + Regex.Escape(name) + @"\b"))
@@ -274,7 +243,7 @@ namespace DS4WindowsTests
         [Fact]
         public void PathService_StaticInitialization_DoesNotReferenceGlobal()
         {
-            string text = Read("DS4Windows/Core/Platform/PathService.cs");
+            string text = SourceText.ReadCode("DS4Windows/Core/Platform/PathService.cs");
             if (text == null) return;
 
             // Phase7-Step10d W5: Global を削除した。PathService は Global を一切参照しない（省略時の Global.store もやめ、config は呼び出し側が渡す）。

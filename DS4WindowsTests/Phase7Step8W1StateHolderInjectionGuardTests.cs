@@ -23,20 +23,6 @@ namespace DS4WindowsTests
             _output = output;
         }
 
-        private string Read(string relativePath)
-        {
-            string path = SourceFileLocator.Find(relativePath);
-            if (path == null)
-            {
-                _output.WriteLine("ソースが見つからないため検査を省略した: " + relativePath);
-                return null;
-            }
-
-            string text = File.ReadAllText(path);
-            text = Regex.Replace(text, @"/\*.*?\*/", string.Empty, RegexOptions.Singleline);
-            return Regex.Replace(text, @"//[^\r\n]*", string.Empty);
-        }
-
         [Fact]
         public void CountClick_CountsEachKindOnTheGivenDevice_AndIgnoresNone()
         {
@@ -78,7 +64,7 @@ namespace DS4WindowsTests
         [Fact]
         public void Mapping_NoLongerHasTheMovedOrDeadMembers()
         {
-            string mapping = Read("DS4Windows/Processing/Mapping.cs");
+            string mapping = SourceText.ReadCode("DS4Windows/Processing/Mapping.cs");
             if (mapping == null) return;
 
             foreach (string name in new[]
@@ -94,8 +80,8 @@ namespace DS4WindowsTests
         [Fact]
         public void MouseAndControlService_ReceiveTheHoldersByConstructor()
         {
-            string mouse = Read("DS4Windows/Processing/Mouse.cs");
-            string control = Read("DS4Windows/Processing/ControlService.cs");
+            string mouse = SourceText.ReadCode("DS4Windows/Processing/Mouse.cs");
+            string control = SourceText.ReadCode("DS4Windows/Processing/ControlService.cs");
             string registration = RegistrationSource.ReadAll(stripComments: true);   // Phase14c-Step6（R-18）: 層ごとの partial ファイルをつないだもの（コメントは除く）
             if (mouse == null || control == null || registration == null) return;
 
@@ -113,7 +99,7 @@ namespace DS4WindowsTests
         [Fact]
         public void SpecialActionRepository_ResetsTheKeyStateAfterGlobalSaveAction_AndGlobalHasNoMappingReference()
         {
-            string repository = Read("DS4Windows/Core/Persistence/SpecialActionRepository.cs");
+            string repository = SourceText.ReadCode("DS4Windows/Core/Persistence/SpecialActionRepository.cs");
             if (repository == null) return;
 
             int save = repository.IndexOf("SaveActionAndReload(", System.StringComparison.Ordinal);

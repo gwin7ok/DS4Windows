@@ -28,25 +28,10 @@ namespace DS4WindowsTests
             _output = output;
         }
 
-        private string ReadSourceWithoutComments(string relativePath)
-        {
-            string path = SourceFileLocator.Find(relativePath);
-            if (path == null)
-            {
-                _output.WriteLine($"{relativePath} が見つからないため検査を省略した。");
-                return null;
-            }
-
-            string text = File.ReadAllText(path);
-            text = Regex.Replace(text, @"/\*.*?\*/", string.Empty, RegexOptions.Singleline);
-            text = Regex.Replace(text, @"//[^\r\n]*", string.Empty);
-            return text;
-        }
-
         [Fact]
         public void MainWindowsViewModel_HasNoGlobalOrServiceLocatorReferences()
         {
-            string text = ReadSourceWithoutComments(MainVmPath);
+            string text = SourceText.ReadCode(MainVmPath);
             if (text == null) return;
 
             Assert.DoesNotMatch(@"\bGlobal\.", text);
@@ -57,7 +42,7 @@ namespace DS4WindowsTests
         [Fact]
         public void MainWindowsViewModel_RemovedUnreferencedUpdaterMembers_AreNotReintroduced()
         {
-            string text = ReadSourceWithoutComments(MainVmPath);
+            string text = SourceText.ReadCode(MainVmPath);
             if (text == null) return;
 
             foreach (string removed in new[]
@@ -73,7 +58,7 @@ namespace DS4WindowsTests
         [Fact]
         public void TrayIconViewModel_HasOnlyConstGlobalReferences_AndNoServiceLocator()
         {
-            string text = ReadSourceWithoutComments(TrayVmPath);
+            string text = SourceText.ReadCode(TrayVmPath);
             if (text == null) return;
 
             var members = Regex.Matches(text, @"\bGlobal\.(\w+)");
@@ -90,7 +75,7 @@ namespace DS4WindowsTests
         [Fact]
         public void TrayIconViewModel_SubscribesBatteryChangedViaAppearanceService()
         {
-            string text = ReadSourceWithoutComments(TrayVmPath);
+            string text = SourceText.ReadCode(TrayVmPath);
             if (text == null) return;
 
             Assert.Contains("appearanceSettings.BatteryChanged += UpdateTrayBattery;", text);

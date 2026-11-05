@@ -21,18 +21,6 @@ namespace DS4WindowsTests
             _output = output;
         }
 
-        private string Read(string relative)
-        {
-            string path = SourceFileLocator.Find(relative);
-            if (path == null)
-            {
-                _output.WriteLine(relative + " が見つからないため検査を省略した。");
-                return null;
-            }
-
-            return File.ReadAllText(path);
-        }
-
         /// <summary>if (expose == ExposeMode.XXX) の { } の本文（波括弧の対応で切り出す）</summary>
         private static string BranchBody(string source, string mode)
         {
@@ -55,7 +43,7 @@ namespace DS4WindowsTests
         [Fact]
         public void TheModes_AreSpecialAction_AndControl_Only()
         {
-            string source = Read("DS4Windows/UI/BindingWindow.xaml.cs");
+            string source = SourceText.Read("DS4Windows/UI/BindingWindow.xaml.cs");
             if (source == null)
             {
                 return;
@@ -72,7 +60,7 @@ namespace DS4WindowsTests
         [Fact]
         public void TheAssignmentEditor_OpensThePickerInTheSpecialActionMode()
         {
-            string source = Read("DS4Windows/UI/AssignmentEditor.xaml.cs");
+            string source = SourceText.Read("DS4Windows/UI/AssignmentEditor.xaml.cs");
             if (source == null)
             {
                 return;
@@ -85,7 +73,7 @@ namespace DS4WindowsTests
         [Fact]
         public void TheControlMode_HidesRecordToggleAndScanCode_ButKeepsDefaultUnboundAndExtras()
         {
-            string source = Read("DS4Windows/UI/BindingWindow.xaml.cs");
+            string source = SourceText.Read("DS4Windows/UI/BindingWindow.xaml.cs");
             if (source == null)
             {
                 return;
@@ -103,7 +91,7 @@ namespace DS4WindowsTests
         [Fact]
         public void TheSpecialActionMode_ShowsExtras_AndStillHidesDefaultUnboundAndRecord()
         {
-            string source = Read("DS4Windows/UI/BindingWindow.xaml.cs");
+            string source = SourceText.Read("DS4Windows/UI/BindingWindow.xaml.cs");
             if (source == null)
             {
                 return;
@@ -120,7 +108,7 @@ namespace DS4WindowsTests
         [Fact]
         public void TheControlMode_BindsTheExtrasAndDefaultUnboundPanelsToTheBinding()
         {
-            string source = Read("DS4Windows/UI/BindingWindow.xaml.cs");
+            string source = SourceText.Read("DS4Windows/UI/BindingWindow.xaml.cs");
             if (source == null)
             {
                 return;
@@ -136,7 +124,7 @@ namespace DS4WindowsTests
         public void ProfileEditor_NoLongerOpensTheFullModePicker_AfterW4()
         {
             // W4 で、ProfileEditor の呼び出しは、すべて割り当てエディターへ切り替えた（BindingWindow を直接開かない）
-            string source = Read("DS4Windows/UI/ProfileEditor.xaml.cs");
+            string source = SourceText.Read("DS4Windows/UI/ProfileEditor.xaml.cs");
             if (source == null)
             {
                 return;
