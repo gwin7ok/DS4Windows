@@ -63,5 +63,9 @@ L2 が増えたのは、Core へ移した型が第1層・第3層の型（`DS4Con
 - 決定 D10〜D16（すべて推奨案。計画書 §10.1）に沿って、§7 の残りの違反 18 件を是正し、**禁止の規則の違反を 0 件**にした（`LayerDependencyBaseline` は空）。
 - 主な変更: 小さな契約・型の Core への移動、`ISpecialActionRuntimeReset`（Core の契約・第2層の実装）、`IStartupEntryService`（旧 静的 `StartupMethods`）、`IChangelogService` と DI の `HttpClient`（旧 静的 `Changelog` と `App.requestClient`）、`IUiThemeAndLanguage`・`IIpcResultWriter`（UI の契約と、`App` へ委譲する Composition のアダプター）、トレイアイコンの画像パスを UI で引く形に。
 - 規約: §3.4 R1 のルート直下の記述（`StartupMethods` を外し、UI から `App` を参照しない旨）、§3.1 に違反 0 件。
-- Debug ALL: 緑（3,245 件・11 件）。実機確認（D15）の結果は §8.1 に記録する。
+- Debug ALL: 緑（CLI の修正の後で 3,261 件・11 件）。
+
+### 8.1 実機確認（2026-11-05）
+- 問題なし。確認の中で、CLI の `-command Query…` の既存の不具合 2 件（2 バイト文字の文字化け、`|more` なしで表示されない）を見つけて修正し、実機で確認した（計画書 §10.4）。
+- 対話モードの cmd で同期して実行するには `start "" /wait DS4Windows.exe -command …`。
 - 残り: 記録のみの L2（Core → 第1層・第3層、75 件）・L7（UI → 第1層・第3層、80 件）、`MainWindow` の引数の多さ（27）、レビューの R-05 以降。

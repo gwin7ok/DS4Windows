@@ -292,3 +292,12 @@
 - `MainWindow` のコンストラクターの引数: 23 → 27（`IStartupEntryService`、`IUiThemeAndLanguage`、`IIpcResultWriter`、`IChangelogService`）。`Phase13Step10ForwardRemovalGuardTests` の基準値を各 Step で更新した。引数が多いことは、レビュー R-09（UI 向けの窓口の整理）・Phase15 で扱う。
 - 記録のみ（L2・L7）: L2 75 件、L7 80 件。
 - Debug ALL: 緑（ビルド 警告 0・エラー 0、`DS4Windows.Actions.Tests` 3,245 件合格、`StandaloneTests` 11 件合格）。
+
+### 10.4 実機確認（D15）と、確認で見つかった CLI の不具合の修正（2026-11-05）
+- 実機確認: 起動・テーマ／言語の切り替え、トレイアイコン、スタートアップ登録、更新の確認・変更履歴、特殊アクションの保存は**問題なし**。
+- CLI の `-command Query…` で見つかった既存の不具合 2 件を修正した（Phase14b-2 の変更による回帰ではない）。
+  1. 日本語などの 2 バイト文字が `??` に化けた: 結果の共有メモリの読み書きが ASCII だった → UTF-8（`Core/Platform/IpcResultText`）。7618034e。
+  2. `|more` なしでは表示されなかった: GUI アプリはコンソールを持たない → 起動元のコンソールに接続して書く（`Composition/Startup/CliResultConsoleWriter`。出力はコンソールのコードページ）。7618034e。最初の版は、標準出力のハンドルが無いことを `Console.IsOutputRedirected` が「リダイレクト」と返すため表示されず、自前の判定に直した（943091a4）。
+  - 方式の決定（ユーザー承認）: 親のコンソールに接続（コンソール用の exe は作らない）、出力の文字コードはコンソールのコードページ。
+  - 制約: 対話モードの cmd は GUI アプリの終了を待たないため、結果が次のプロンプトの後ろに出る。同期して実行するには `start "" /wait DS4Windows.exe -command …`（バッチファイルの中、PowerShell のパイプ・変数への取り込みは、何もしなくても待つ）。
+  - 実機で確認済み（`|more` あり・なしの両方で、日本語のプロファイル名を含む 10 項目の結果が表示された）。
