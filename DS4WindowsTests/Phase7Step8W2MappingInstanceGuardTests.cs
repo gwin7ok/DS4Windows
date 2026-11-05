@@ -182,7 +182,7 @@ namespace DS4WindowsTests
         [Fact]
         public void Registry_ReusesTheControllerPerDeviceAndName_AndClearsOnlyTheGivenDevice()
         {
-            var registry = new KeyButtonControllerRegistry(new DefaultKeyButtonActionControllerFactory(new DefaultControllerRegistry(), TestActions.Manager), new DefaultControllerRegistry(), TestActions.Manager);
+            var registry = new KeyButtonControllerRegistry(new DefaultKeyButtonActionControllerFactory(new DefaultControllerRegistry(), TestActions.Manager, TestActions.Dispatcher), new DefaultControllerRegistry(), TestActions.Manager, TestActions.Dispatcher);
             const int deviceA = 6;
             const int deviceB = 7;
 
@@ -208,8 +208,8 @@ namespace DS4WindowsTests
         [Fact]
         public void Registry_RequiresItsDependencies()
         {
-            Assert.Throws<ArgumentNullException>(() => new KeyButtonControllerRegistry(null, new DefaultControllerRegistry(), TestActions.Manager));
-            Assert.Throws<ArgumentNullException>(() => new KeyButtonControllerRegistry(new DefaultKeyButtonActionControllerFactory(new DefaultControllerRegistry(), TestActions.Manager), null, TestActions.Manager));
+            Assert.Throws<ArgumentNullException>(() => new KeyButtonControllerRegistry(null, new DefaultControllerRegistry(), TestActions.Manager, TestActions.Dispatcher));
+            Assert.Throws<ArgumentNullException>(() => new KeyButtonControllerRegistry(new DefaultKeyButtonActionControllerFactory(new DefaultControllerRegistry(), TestActions.Manager, TestActions.Dispatcher), null, TestActions.Manager, TestActions.Dispatcher));
             Assert.Contains(typeof(ProfileApplicationService).GetConstructors().Single().GetParameters(), p => p.ParameterType == typeof(IKeyButtonControllerRegistry));
         }
     }

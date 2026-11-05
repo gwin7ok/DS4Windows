@@ -49,7 +49,7 @@ namespace DS4Windows.Processing.Actions
             this.action = action;
             this.index = index;
             this.keyId = keyId;
-            try { nativeKey = SyntheticDispatcher.ResolveNativeKey(keyId); } catch { nativeKey = 0; }
+            try { nativeKey = this.controllers.Dispatcher.ResolveNativeKey(keyId); } catch { nativeKey = 0; }   // Phase14c-Step3（R-06）: 旧 静的 SyntheticDispatcher
             this.useScan = useScan;
             // Do not parse repeater options here; controllers handle repeat behavior.
         }

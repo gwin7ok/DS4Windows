@@ -105,7 +105,9 @@ namespace DS4WindowsTests
             Assert.DoesNotContain("StickMotionState.Shared", control);
             Assert.DoesNotContain("SyntheticInputState.Shared", control);
             Assert.Contains("sp.GetRequiredService<StickMotionState>()", registration);
-            Assert.Contains("sp.GetRequiredService<SyntheticInputState>()", registration);
+            // Phase14c-Step3（R-06）: 送出役（SyntheticDispatcherService）は登録ラムダではなく、コンテナがコンストラクターで保持クラスを渡す形にした
+            Assert.Contains("services.AddSingleton<ISyntheticDispatcher, SyntheticDispatcherService>();", registration);
+            Assert.Contains(typeof(DS4Windows.Processing.SyntheticInputState), System.Linq.Enumerable.Select(typeof(DS4Windows.Processing.Services.SyntheticDispatcherService).GetConstructors()[0].GetParameters(), p => p.ParameterType));
         }
 
         [Fact]

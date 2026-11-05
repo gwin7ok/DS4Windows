@@ -22,5 +22,8 @@ namespace DS4Windows.Processing.Abstractions
 
         /// <summary>指定デバイスのコントローラーをすべて破棄して登録簿から外す（旧: <c>Mapping.ClearKeyButtonControllersForDevice</c>）。</summary>
         void ClearForDevice(int device);
+
+        /// <summary>Phase14c-Step3（R-06）: キーの操作の部品（<c>KeyButtonActionController</c>、<c>KeyAction</c>）が使う合成キーの送出（旧: 静的な橋渡し <c>SyntheticDispatcher</c>）。</summary>
+        ISyntheticDispatcher Dispatcher { get; }
     }
 }

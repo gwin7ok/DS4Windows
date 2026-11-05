@@ -44,7 +44,6 @@ namespace DS4Windows.Composition
 
                 _host = builder.Build();
                 PreallocateActionEntries();
-                BindSyntheticDispatcher();
                 CreationNote = "explicit CreateHost() created the host";
                 if (AppLogger.IsTraceEnabled)
                     AppLogger.LogTrace("[DI] AppHost.CreateHost: Host initialized and all services registered");
@@ -95,7 +94,6 @@ namespace DS4Windows.Composition
 
                 _host = builder.Build();
                 PreallocateActionEntries();
-                BindSyntheticDispatcher();
                 CreationNote = "explicit CreateHost(config, parser) created the host";
                 ApplyStartupArguments(parser, hostAlreadyCreated: false);
                 if (AppLogger.IsTraceEnabled)
@@ -122,14 +120,7 @@ namespace DS4Windows.Composition
                 AppLogger.LogTrace($"[DI] AppHost.CreateHost: startup arguments applied to IStartupArguments (host {(hostAlreadyCreated ? "already created" : "newly created")})");
         }
 
-        /// <summary>
-        /// Phase7-Step8 W3（Q6＝A）: 合成キーの送出（ISyntheticDispatcher）を作り、Actions サブシステムが静的に呼ぶ橋渡し
-        /// （SyntheticDispatcher.Bind。ServiceRegistration の登録の中で束縛される）を、ホストの構築直後に有効にする。
-        /// </summary>
-        private static void BindSyntheticDispatcher()
-        {
-            try { _host?.Services.GetService<DS4Windows.Processing.Abstractions.ISyntheticDispatcher>(); } catch { }
-        }
+        // Phase14c-Step3（R-06）: 旧 BindSyntheticDispatcher（静的な橋渡しの束縛のための先行解決）は、橋渡しの撤廃に伴い削除した
 
         private static void PreallocateActionEntries()
         {

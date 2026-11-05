@@ -11,6 +11,7 @@ namespace DS4Windows.Processing
     // KeyRelease; the instance should then be discarded.
     public class RepeatHelper : IDisposable, IInstanceIdentifiable
     {
+        private readonly ISyntheticDispatcher _dispatcher;
         // Public instance identifier for logging consumers
         public int InstanceId => this.GetHashCode();
 
@@ -30,8 +31,10 @@ namespace DS4Windows.Processing
         // intervalMillis: repeat period in milliseconds (50ms typical)
         // sendFirstImmediate: if true, send one immediate KeyPress now and then start periodic sends
         //                     if false, first KeyPress will be issued after intervalMillis
-        public RepeatHelper(int device, ushort kvpKey, uint nativeKey, bool useScanCode, IVirtualKBM handler, int intervalMillis = 50, bool sendFirstImmediate = true, int controllerId = -1)
+        public RepeatHelper(ISyntheticDispatcher dispatcher, int device, ushort kvpKey, uint nativeKey, bool useScanCode, IVirtualKBM handler, int intervalMillis = 50, bool sendFirstImmediate = true, int controllerId = -1)
         {
+            // Phase14c-Step3（R-06）: 合成キーの送出（旧: 静的な橋渡し SyntheticDispatcher）
+            _dispatcher = dispatcher ?? throw new ArgumentNullException(nameof(dispatcher));
             this.device = device;
             this.kvpKey = kvpKey;
             this.nativeKey = nativeKey;
@@ -53,8 +56,8 @@ namespace DS4Windows.Processing
         }
 
         // Convenience ctor that reads the default repeat interval from KeyboardSettings
-        public RepeatHelper(int device, ushort kvpKey, uint nativeKey, bool useScanCode, IVirtualKBM handler, bool sendFirstImmediate = true)
-            : this(device, kvpKey, nativeKey, useScanCode, handler, DS4Windows.Core.Platform.KeyboardSettings.RepeatIntervalMs, sendFirstImmediate)
+        public RepeatHelper(ISyntheticDispatcher dispatcher, int device, ushort kvpKey, uint nativeKey, bool useScanCode, IVirtualKBM handler, bool sendFirstImmediate = true)
+            : this(dispatcher, device, kvpKey, nativeKey, useScanCode, handler, DS4Windows.Core.Platform.KeyboardSettings.RepeatIntervalMs, sendFirstImmediate)
         {
         }
 
@@ -62,7 +65,7 @@ namespace DS4Windows.Processing
         {
             try
             {
-                SyntheticDispatcher.SendPress(device, kvpKey, nativeKey, useScanCode, handler);
+                _dispatcher.SendPress(device, kvpKey, nativeKey, useScanCode, handler);
             }
             catch { }
         }
@@ -79,7 +82,7 @@ namespace DS4Windows.Processing
                 try { DS4Windows.Core.Logging.AppLogger.LogTrace($"RepeatHelper.Start: id={this.GetHashCode()} device={device} kvpKey={kvpKey} controllerId={(controllerId>=0?controllerId:-1)}"); } catch { }
                 if (SendFirstImmediate)
                 {
-                    try { SyntheticDispatcher.SendPress(device, kvpKey, nativeKey, useScanCode, handler); } catch { }
+                    try { _dispatcher.SendPress(device, kvpKey, nativeKey, useScanCode, handler); } catch { }
                 }
                 timer.Change(IntervalMs, IntervalMs);
                 isRunning = true;

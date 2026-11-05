@@ -54,14 +54,9 @@ namespace DS4Windows.Composition
             services.AddSingleton<StickMotionState>();
             // Phase7-Step8 W3: Actions.xml の読み込み後のリセットの購読者（保持クラスをコンストラクターで受ける）
             services.AddSingleton<ActionsLoadedRuntimeReset>();
-            // Phase7-Step8 W3（Q6＝A）: 合成キーの送出。Actions サブシステム（静的な呼び出し）が使う橋渡し SyntheticDispatcher へ、作成時に 1 度だけ束縛する（Phase8 で削除）
-            services.AddSingleton<ISyntheticDispatcher>(sp =>
-            {
-                var dispatcher = new SyntheticDispatcherService(
-                    sp.GetRequiredService<SyntheticInputState>(), sp.GetRequiredService<OutputKBMHandlerAdapter>(), sp.GetRequiredService<IProfileSettingsService>());
-                SyntheticDispatcher.Bind(dispatcher);
-                return dispatcher;
-            });
+            // Phase7-Step8 W3: 合成キーの送出。Phase14c-Step3（R-06）: 静的な橋渡し SyntheticDispatcher（Bind）は撤廃し、利用者（キーの操作の部品）は
+            // IKeyButtonControllerRegistry・IKeyButtonActionControllerFactory 経由で受け取る
+            services.AddSingleton<ISyntheticDispatcher, SyntheticDispatcherService>();
             services.AddSingleton<IPathService, PathService>();
             // Phase10-Step4d W1: プロファイルの固定 ID と名前（ファイル名）を結ぶ登録簿
             // W5b: 登録簿を作るとき、BackingStore のスロットの保管（ProfileSlotNames）へ結ぶ（ID ↔ 名前を引く）

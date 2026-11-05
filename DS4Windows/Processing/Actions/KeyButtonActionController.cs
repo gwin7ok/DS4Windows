@@ -24,6 +24,8 @@ namespace DS4Windows.Processing.Actions
         private readonly Action<SpecialAction, int, bool, bool> toggledOnHandler;
         // Phase13-Step4: 旧 静的 ActionManager の代わりに、トグル状態の管理役をコンストラクターで受ける
         private readonly IManagedActionManager _manager;
+        // Phase14c-Step3（R-06）: 合成キーの送出（旧: 静的な橋渡し SyntheticDispatcher）。生成する側（登録簿・ファクトリー）が渡す
+        private readonly ISyntheticDispatcher _dispatcher;
 
         // Expose assigned action name for diagnostics
         public string AssignedActionName => assignedActionName;
@@ -31,8 +33,9 @@ namespace DS4Windows.Processing.Actions
         // Expose whether this controller was created in Toggle mode (used by adapters)
         public bool IsToggleMode { get { return this.mode == Mode.Toggle; } }
 
-        public KeyButtonActionController(int device, Mode mode, IManagedActionManager manager, string actionName = "<unknown>")
+        public KeyButtonActionController(int device, Mode mode, IManagedActionManager manager, ISyntheticDispatcher dispatcher, string actionName = "<unknown>")
         {
+            _dispatcher = dispatcher ?? throw new ArgumentNullException(nameof(dispatcher));
             _manager = manager ?? throw new ArgumentNullException(nameof(manager));
             this.device = device;
             this.mode = mode;
@@ -47,9 +50,9 @@ namespace DS4Windows.Processing.Actions
             // Create concrete implementation based on mode. These implementations are lightweight wrappers
             // around the existing static controllers for now; this allows per-device instance semantics later.
             if (mode == Mode.Toggle)
-                impl = new ToggleImpl(device, this.GetHashCode(), this.assignedActionDef, _manager);
+                impl = new ToggleImpl(device, this.GetHashCode(), this.assignedActionDef, _manager, _dispatcher);
             else
-                impl = new PressImpl(device, this.GetHashCode());
+                impl = new PressImpl(device, this.GetHashCode(), _dispatcher);
 
             // Subscribe to toggled-on changes so controllers react to Action-level state changes.
             toggledOnHandler = (sa, dev, oldv, newv) =>
@@ -68,8 +71,9 @@ namespace DS4Windows.Processing.Actions
         }
 
         // New constructor: determine mode from SpecialAction info (KeyButtonSwitchMode or keyType flags)
-        public KeyButtonActionController(int device, SpecialAction sa, IManagedActionManager manager, string actionName = "<unknown>")
+        public KeyButtonActionController(int device, SpecialAction sa, IManagedActionManager manager, ISyntheticDispatcher dispatcher, string actionName = "<unknown>")
         {
+            _dispatcher = dispatcher ?? throw new ArgumentNullException(nameof(dispatcher));
             _manager = manager ?? throw new ArgumentNullException(nameof(manager));
             this.device = device;
             this.assignedActionName = actionName ?? (sa?.name ?? "<null>");
@@ -90,9 +94,9 @@ namespace DS4Windows.Processing.Actions
             catch { }
 
             if (this.mode == Mode.Toggle)
-                impl = new ToggleImpl(device, this.GetHashCode(), this.assignedActionDef, _manager);
+                impl = new ToggleImpl(device, this.GetHashCode(), this.assignedActionDef, _manager, _dispatcher);
             else
-                impl = new PressImpl(device, this.GetHashCode());
+                impl = new PressImpl(device, this.GetHashCode(), _dispatcher);
 
             // Subscribe to toggled-on changes so controllers react to Action-level state changes.
             toggledOnHandler = (sa, dev, oldv, newv) =>
@@ -128,6 +132,7 @@ namespace DS4Windows.Processing.Actions
             private readonly int controllerId;
             private readonly SpecialAction assignedActionDef;
             private readonly IManagedActionManager manager;
+            private readonly ISyntheticDispatcher _dispatcher;   // Phase14c-Step3（R-06）
 
             private class Entry
             {
@@ -139,8 +144,9 @@ namespace DS4Windows.Processing.Actions
 
             private readonly Dictionary<ushort, Entry> entries = new Dictionary<ushort, Entry>();
 
-            public ToggleImpl(int device, int controllerId, SpecialAction assignedActionDef, IManagedActionManager manager)
+            public ToggleImpl(int device, int controllerId, SpecialAction assignedActionDef, IManagedActionManager manager, ISyntheticDispatcher dispatcher)
             {
+                _dispatcher = dispatcher;
                 this.device = device;
                 this.controllerId = controllerId;
                 this.assignedActionDef = assignedActionDef;
@@ -165,15 +171,15 @@ namespace DS4Windows.Processing.Actions
                         // a second repeater here. Mapping.Commit will generate repeats for fakeKeyRepeat handlers.
                         if (e.handler != null && e.handler.fakeKeyRepeat)
                         {
-                            if (e.nativeKey == 0) e.nativeKey = SyntheticDispatcher.ResolveNativeKey(kvpKey);
-                            try { SyntheticDispatcher.SendPress(device, kvpKey, e.nativeKey, e.useScanCode, e.handler); } catch { }
+                            if (e.nativeKey == 0) e.nativeKey = _dispatcher.ResolveNativeKey(kvpKey);
+                            try { _dispatcher.SendPress(device, kvpKey, e.nativeKey, e.useScanCode, e.handler); } catch { }
                         }
                         else
                         {
                                 if (e.repeater == null)
                                 {
-                                    if (e.nativeKey == 0) e.nativeKey = SyntheticDispatcher.ResolveNativeKey(kvpKey);
-                                    e.repeater = new RepeatHelperToIRepeaterAdapter(() => new DS4Windows.Processing.RepeatHelper(device, kvpKey, e.nativeKey, e.useScanCode, e.handler, DS4Windows.Core.Platform.KeyboardSettings.RepeatIntervalMs, true, controllerId));
+                                    if (e.nativeKey == 0) e.nativeKey = _dispatcher.ResolveNativeKey(kvpKey);
+                                    e.repeater = new RepeatHelperToIRepeaterAdapter(() => new DS4Windows.Processing.RepeatHelper(_dispatcher, device, kvpKey, e.nativeKey, e.useScanCode, e.handler, DS4Windows.Core.Platform.KeyboardSettings.RepeatIntervalMs, true, controllerId));
                                     try { AppLogger.LogTrace($"ToggleImpl.OnDown: controller-repeater link controllerId={controllerId} kvpKey={kvpKey} device={device}"); } catch { }
                                     try { e.repeater.Start(TimeSpan.Zero, TimeSpan.FromMilliseconds(DS4Windows.Core.Platform.KeyboardSettings.RepeatIntervalMs), null); } catch { }
                                 }
@@ -198,7 +204,7 @@ namespace DS4Windows.Processing.Actions
             {
                     // For Toggle mode, input-edge release should not stop repeaters or clear IsToggledOn.
                     // Ignore input-level release here; rely on explicit toggle-off path.
-                try { SyntheticDispatcher.ResetKeyTiming(device, kvpKey); } catch { }
+                try { _dispatcher.ResetKeyTiming(device, kvpKey); } catch { }
             }
 
             public void OnToggleOff(ushort kvpKey, uint nativeKey, bool useScanCode, IVirtualKBM handler)
@@ -213,8 +219,8 @@ namespace DS4Windows.Processing.Actions
                         {
                             // Ensure toggled-on flag is cleared by the same component that set it true.
                             try { if (assignedActionDef != null) manager.SetToggledOn(assignedActionDef, device, false); } catch { }
-                            if (e.nativeKey == 0) e.nativeKey = SyntheticDispatcher.ResolveNativeKey(kvpKey);
-                            SyntheticDispatcher.SendRelease(device, kvpKey, e.nativeKey, e.useScanCode, e.handler);
+                            if (e.nativeKey == 0) e.nativeKey = _dispatcher.ResolveNativeKey(kvpKey);
+                            _dispatcher.SendRelease(device, kvpKey, e.nativeKey, e.useScanCode, e.handler);
                         }
                         catch { }
                     }
@@ -222,7 +228,7 @@ namespace DS4Windows.Processing.Actions
                 }
                 else
                 {
-                    try { SyntheticDispatcher.ResetKeyTiming(0, kvpKey); } catch { }
+                    try { _dispatcher.ResetKeyTiming(0, kvpKey); } catch { }
                 }
             }
 
@@ -233,13 +239,13 @@ namespace DS4Windows.Processing.Actions
                     try { e.repeater?.Stop(); } catch { }
                     try
                     {
-                        if (e.nativeKey == 0) e.nativeKey = SyntheticDispatcher.ResolveNativeKey(kvpKey);
-                        SyntheticDispatcher.SendRelease(device, kvpKey, e.nativeKey, e.useScanCode, e.handler);
+                        if (e.nativeKey == 0) e.nativeKey = _dispatcher.ResolveNativeKey(kvpKey);
+                        _dispatcher.SendRelease(device, kvpKey, e.nativeKey, e.useScanCode, e.handler);
                     }
                     catch { }
                     // keep entry for reuse; do not dispose here
                 }
-                try { SyntheticDispatcher.ResetKeyTiming(0, kvpKey); } catch { }
+                try { _dispatcher.ResetKeyTiming(0, kvpKey); } catch { }
             }
 
             public void ClearAll()
@@ -254,13 +260,13 @@ namespace DS4Windows.Processing.Actions
                             var e = entries[k];
                             try
                             {
-                                if (e.nativeKey == 0) e.nativeKey = SyntheticDispatcher.ResolveNativeKey(k);
-                                SyntheticDispatcher.SendRelease(device, k, e.nativeKey, e.useScanCode, e.handler);
+                                if (e.nativeKey == 0) e.nativeKey = _dispatcher.ResolveNativeKey(k);
+                                _dispatcher.SendRelease(device, k, e.nativeKey, e.useScanCode, e.handler);
                             }
                             catch { }
                             try { e.repeater?.Dispose(); } catch { }
                             entries.Remove(k);
-                            try { SyntheticDispatcher.ResetKeyTiming(0, k); } catch { }
+                            try { _dispatcher.ResetKeyTiming(0, k); } catch { }
                         }
                         catch { }
                     }
@@ -285,7 +291,8 @@ namespace DS4Windows.Processing.Actions
             }
             private readonly Dictionary<ushort, Entry> entries = new Dictionary<ushort, Entry>();
 
-            public PressImpl(int device, int controllerId) { this.device = device; this.controllerId = controllerId; }
+            private readonly ISyntheticDispatcher _dispatcher;   // Phase14c-Step3（R-06）
+            public PressImpl(int device, int controllerId, ISyntheticDispatcher dispatcher) { this.device = device; this.controllerId = controllerId; _dispatcher = dispatcher; }
 
             public void OnDown(ushort kvpKey, uint nativeKey, bool useScanCode, IVirtualKBM handler, bool isSpecialAction)
             {
@@ -296,13 +303,13 @@ namespace DS4Windows.Processing.Actions
                 }
                 if (!e.isPressed)
                 {
-                    if (e.nativeKey == 0) e.nativeKey = SyntheticDispatcher.ResolveNativeKey(kvpKey);
+                    if (e.nativeKey == 0) e.nativeKey = _dispatcher.ResolveNativeKey(kvpKey);
                     e.isPressed = true;
                     try
                     {
                         AppLogger.LogTrace($"PressImpl.OnDown: controllerId={controllerId} device={device} kvpKey={kvpKey} native={e.nativeKey} useScan={e.useScanCode}");
                         // Primary behavior: send one immediate press (hold). Release will be sent on OnUp.
-                        SyntheticDispatcher.SendPress(device, kvpKey, e.nativeKey, e.useScanCode, e.handler);
+                        _dispatcher.SendPress(device, kvpKey, e.nativeKey, e.useScanCode, e.handler);
                     }
                     catch (Exception ex) { AppLogger.LogWarn($"PressImpl.OnDown failed: {ex}"); }
 
@@ -323,7 +330,7 @@ namespace DS4Windows.Processing.Actions
                                     {
                                         if (localEntry.repeater == null)
                                         {
-                                            localEntry.repeater = new RepeatHelperToIRepeaterAdapter(() => new DS4Windows.Processing.RepeatHelper(device, kvpKey, localEntry.nativeKey, localEntry.useScanCode, localEntry.handler, DS4Windows.Core.Platform.KeyboardSettings.RepeatIntervalMs, true, controllerId));
+                                            localEntry.repeater = new RepeatHelperToIRepeaterAdapter(() => new DS4Windows.Processing.RepeatHelper(_dispatcher, device, kvpKey, localEntry.nativeKey, localEntry.useScanCode, localEntry.handler, DS4Windows.Core.Platform.KeyboardSettings.RepeatIntervalMs, true, controllerId));
                                             try { localEntry.repeater.Start(TimeSpan.Zero, TimeSpan.FromMilliseconds(DS4Windows.Core.Platform.KeyboardSettings.RepeatIntervalMs), null); } catch { }
                                         }
                                         else
@@ -355,14 +362,14 @@ namespace DS4Windows.Processing.Actions
                             try { e.repeater.Stop(); } catch { }
                         }
                         // Ensure release is sent now for the held press
-                        try { SyntheticDispatcher.SendRelease(device, kvpKey, e.nativeKey, e.useScanCode, e.handler); } catch { }
+                        try { _dispatcher.SendRelease(device, kvpKey, e.nativeKey, e.useScanCode, e.handler); } catch { }
                         e.isPressed = false;
                     }
                     catch { }
                 }
                 else
                 {
-                    try { SyntheticDispatcher.ResetKeyTiming(device, kvpKey); } catch { }
+                    try { _dispatcher.ResetKeyTiming(device, kvpKey); } catch { }
                 }
             }
 
@@ -378,11 +385,11 @@ namespace DS4Windows.Processing.Actions
                 {
                     try { e.delayCts?.Cancel(); } catch { }
                     try { e.repeater?.Stop(); } catch { }
-                    try { if (e.isPressed) SyntheticDispatcher.SendRelease(device, kvpKey, e.nativeKey, e.useScanCode, e.handler); } catch { }
+                    try { if (e.isPressed) _dispatcher.SendRelease(device, kvpKey, e.nativeKey, e.useScanCode, e.handler); } catch { }
                     e.isPressed = false;
                     // keep entry for reuse; do not dispose here
                 }
-                try { SyntheticDispatcher.ResetKeyTiming(0, kvpKey); } catch { }
+                try { _dispatcher.ResetKeyTiming(0, kvpKey); } catch { }
             }
                 public void ClearAll()
                 {
@@ -395,10 +402,10 @@ namespace DS4Windows.Processing.Actions
                             {
                                 var e = entries[k];
                                         try { e.delayCts?.Cancel(); } catch { }
-                                        try { if (e.isPressed) SyntheticDispatcher.SendRelease(device, k, e.nativeKey, e.useScanCode, e.handler); } catch { }
+                                        try { if (e.isPressed) _dispatcher.SendRelease(device, k, e.nativeKey, e.useScanCode, e.handler); } catch { }
                                         try { e.repeater?.Dispose(); } catch { }
                                 entries.Remove(k);
-                                try { SyntheticDispatcher.ResetKeyTiming(0, k); } catch { }
+                                try { _dispatcher.ResetKeyTiming(0, k); } catch { }
                             }
                             catch { }
                         }

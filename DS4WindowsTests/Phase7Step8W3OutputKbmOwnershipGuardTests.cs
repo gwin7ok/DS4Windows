@@ -126,26 +126,11 @@ namespace DS4WindowsTests
         }
 
         [Fact]
-        public void StaticBridge_DelegatesToTheBoundInstance_AndWithoutOneOnlyForwardsToTheGivenHandler()
+        public void TheStaticBridge_IsGone()
         {
-            var service = CreateService(out var state, out _, out _);
-            try
-            {
-                SyntheticDispatcher.Bind(null);
-                var handler = new MockVirtualKBM();
-                SyntheticDispatcher.SendPress(Device, Key, 66, false, handler);
-                Assert.Equal(new uint[] { 66 }, handler.KeyPressCalls.ToArray());
-                Assert.Empty(state.DeviceState[Device].keyPresses); // 未束縛のときは、合成状態を更新しない
-
-                SyntheticDispatcher.Bind(service);
-                SyntheticDispatcher.SendPress(Device, Key, 66, false, handler);
-                Assert.Equal(1, state.DeviceState[Device].keyPresses[Key].current.repeatCount);
-            }
-            finally
-            {
-                // ホストの送出役へ束縛し直す（他のテストへ影響を残さない）
-                SyntheticDispatcher.Bind(TestHost.GetService<ISyntheticDispatcher>());
-            }
+            // Phase14c-Step3（R-06）: 旧 静的な橋渡し SyntheticDispatcher（Bind で束縛）は撤廃した。キーの操作の部品は、登録簿・ファクトリーから送出役を受け取る
+            Assert.Null(typeof(ISyntheticDispatcher).Assembly.GetType("DS4Windows.Processing.SyntheticDispatcher"));
+            Assert.Same(TestHost.GetService<ISyntheticDispatcher>(), TestHost.GetService<DS4Windows.Processing.Abstractions.IKeyButtonControllerRegistry>().Dispatcher);
         }
 
         [Fact]

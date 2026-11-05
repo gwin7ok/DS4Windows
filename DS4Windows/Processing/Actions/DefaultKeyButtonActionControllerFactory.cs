@@ -9,18 +9,20 @@ namespace DS4Windows.Processing.Actions
     /// </summary>
     public class DefaultKeyButtonActionControllerFactory : IKeyButtonActionControllerFactory
     {
+        private readonly DS4Windows.Processing.Abstractions.ISyntheticDispatcher _dispatcher;
         private readonly IControllerRegistry _registry;
         private readonly IManagedActionManager _manager;
 
-        public DefaultKeyButtonActionControllerFactory(IControllerRegistry registry, IManagedActionManager manager)
+        public DefaultKeyButtonActionControllerFactory(IControllerRegistry registry, IManagedActionManager manager, DS4Windows.Processing.Abstractions.ISyntheticDispatcher dispatcher)
         {
+            _dispatcher = dispatcher ?? throw new ArgumentNullException(nameof(dispatcher));   // Phase14c-Step3（R-06）
             _registry = registry ?? throw new ArgumentNullException(nameof(registry));
             _manager = manager ?? throw new ArgumentNullException(nameof(manager));
         }
 
         public DS4Windows.Processing.Actions.KeyButtonActionController Create(int device, DS4Windows.Processing.Actions.KeyButtonActionController.Mode mode, string actionName = null)
         {
-            var inst = new DS4Windows.Processing.Actions.KeyButtonActionController(device, mode, _manager, actionName);
+            var inst = new DS4Windows.Processing.Actions.KeyButtonActionController(device, mode, _manager, _dispatcher, actionName);
             try
             {
                 var key = device + ":" + (string.IsNullOrEmpty(actionName) ? "<default>" : actionName);
@@ -32,7 +34,7 @@ namespace DS4Windows.Processing.Actions
 
         public DS4Windows.Processing.Actions.KeyButtonActionController Create(int device, DS4Windows.Core.Settings.SpecialAction sa, string actionName = null)
         {
-            var inst = new DS4Windows.Processing.Actions.KeyButtonActionController(device, sa, _manager, actionName);
+            var inst = new DS4Windows.Processing.Actions.KeyButtonActionController(device, sa, _manager, _dispatcher, actionName);
             try
             {
                 var name = actionName ?? (sa?.name ?? "<sa>");
