@@ -248,3 +248,31 @@
 ## 9. 次の候補（Phase14b の残り、または後続）
 - 残る違反 18 件の是正（多くは 1 型の移動か、小さな契約の切り出しで済む）。
 - `SpecialActionRepository`・`SpecialActionsXmlSerializer`（Core/Persistence）が第2層の `IManagedActionManager`・`SyntheticInputState` を使う件は、読み込み後の実行時状態のリセットを第2層へ寄せる設計が要る（R-02 の残り）。
+
+## 10. Phase14b の残りの片付け（2026-11-05 追加。ブランチ `Phase14b-2`）
+
+### 10.1 決定事項（2026-11-05、まとめて確認。ユーザー承認済み。すべて推奨案）
+
+| # | 項目 | 決定 |
+|---|---|---|
+| D10 | 更新確認の HttpClient（`App.requestClient`） | **DI で注入**。HttpClient を DI に登録し、`Changelog` をインスタンスのサービスにして、利用者（`MainWindow`、`ChangelogViewModel`、`UpdaterWindowViewModel`、`WelcomeDialog`）へ渡す |
+| D11 | テーマ・言語の切り替え（UI → `App`） | **契約を注入**。`UI/Abstractions` に契約、`Composition` のアダプターが `App` へ委譲。`MainWindow` はコンストラクターで受け、`LanguagePackControl` には `Initialize` で渡す |
+| D12 | `StartupMethods`（スタートアップ登録） | **サービス化して注入**。`Core/Abstractions` に契約、`Core/Platform` に実装（中身は今の `StartupMethods`）。`SettingsViewModel` へ注入 |
+| D13 | トレイアイコンの画像パス | **UI で直接引く**。`IAppearanceSettingsService.GetIconResourcePath` を外し、UI の 2 か所が `TrayIconResources` を引く |
+| D14 | 特殊アクションの保存・読込の後の実行時状態のリセット | **リセットの契約を置く**（`Core/Abstractions`。第2層で実装。`SpecialActionRepository`／`SpecialActionsXmlSerializer` はその契約だけを受ける） |
+| D15 | 実機確認 | **最後に 1 回** |
+| D16 | 取り込み | **実機確認の後、master へ fast-forward で取り込み、origin へ push**（その都度の確認は不要） |
+
+決定なしで進めるもの（挙動を変えない）: 小さな契約・型の移動（`IDeviceStateAccessor`・`IRemovedGyroSwipePrompt`・`IRemovedShiftPrompt`・`IInstanceIdentifiable` → `Core/Abstractions`、`ProfileChangedEventArgs`・`ProfileChangeSource` → `Core/Logging`、`WindowPlacementHelper` → `UI`）、`ImageLocationPaths` の `App.Current` → `Application.Current`（同じもの）、`ProfileEditor` の `App.logHolder.Logger.Debug` → `AppLogger.Log(Debug)`（NLog の出力の書式に Logger 名がないため、ファイルの出力は同じ）、`MainWindow` の未使用のローカル変数 `App root` の削除。
+
+### 10.2 Step 構成
+
+| Step | 内容 |
+|---|---|
+| 14b-12 | 小さな契約・型の移動（移動のコミット → 名前空間の書き換えのコミット） |
+| 14b-13 | 小さな書き換え（`Application.Current`、`AppLogger.Log`、未使用の変数）と D13 |
+| 14b-14 | D14: 実行時状態のリセットの契約 |
+| 14b-15 | D12: スタートアップ登録のサービス化 |
+| 14b-16 | D11: テーマ・言語の契約の注入 |
+| 14b-17 | D10: HttpClient と `Changelog` の DI 化 |
+| 14b-18 | 規約・モデル図・記録の更新、Debug ALL、Release ビルド 2 か所 → 実機確認（D15）→ 取り込みと push（D16） |
