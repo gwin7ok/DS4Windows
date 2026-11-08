@@ -61,6 +61,57 @@ namespace DS4Windows.Output.Services
             }
         }
 
+        private readonly System.Runtime.CompilerServices.ConditionalWeakTable<OutSlotDevice, OutputSlotView> _views =
+            new System.Runtime.CompilerServices.ConditionalWeakTable<OutSlotDevice, OutputSlotView>();
+        private EventHandler<OutputSlotAssignmentEventArgs> _slotAssigned;
+        private EventHandler<OutputSlotAssignmentEventArgs> _slotUnassigned;
+        private bool _managerHooked;
+
+        public IReadOnlyList<IOutputSlotView> SlotViews
+        {
+            get
+            {
+                HookManager();
+                OutSlotDevice[] slots = SlotManager?.OutputSlots;
+                if (slots == null) return Array.Empty<IOutputSlotView>();
+
+                var result = new IOutputSlotView[slots.Length];
+                for (int i = 0; i < slots.Length; i++)
+                    result[i] = ViewOf(slots[i]);
+                return result;
+            }
+        }
+
+        // スロット管理は IVirtualPadService が持ち、このサービスより後に作られることがある。
+        // 通知の購読が先に来ても取りこぼさないよう、スロット管理が見えた最初の機会に、一度だけ購読する。
+        public event EventHandler<OutputSlotAssignmentEventArgs> SlotAssigned
+        {
+            add { _slotAssigned += value; HookManager(); }
+            remove { _slotAssigned -= value; }
+        }
+
+        public event EventHandler<OutputSlotAssignmentEventArgs> SlotUnassigned
+        {
+            add { _slotUnassigned += value; HookManager(); }
+            remove { _slotUnassigned -= value; }
+        }
+
+        private void HookManager()
+        {
+            lock (_syncLock)
+            {
+                if (_managerHooked) return;
+                OutputSlotManager manager = SlotManager;
+                if (manager == null) return;
+
+                manager.SlotAssigned += (sender, slotNum, slot) => _slotAssigned?.Invoke(this, new OutputSlotAssignmentEventArgs(slotNum));
+                manager.SlotUnassigned += (sender, slotNum, slot) => _slotUnassigned?.Invoke(this, new OutputSlotAssignmentEventArgs(slotNum));
+                _managerHooked = true;
+            }
+        }
+
+        private OutputSlotView ViewOf(OutSlotDevice slot) => slot == null ? null : _views.GetValue(slot, s => new OutputSlotView(s));
+
         public OutSlotDevice GetOutSlotDevice(int slotNumber)
         {
             if (slotNumber < 0 || slotNumber >= MAX_SLOTS) return null;

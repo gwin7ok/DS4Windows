@@ -34,6 +34,18 @@ namespace DS4Windows.Processing.Abstractions
         IReadOnlyList<OutSlotDevice> OutputSlots { get; }
         OutSlotDevice GetOutSlotDevice(int slotNumber);
 
+        /// <summary>
+        /// UI が表示と設定に使う、全スロットの面（スロット番号の順。スロットごとに同じ面を返す）。
+        /// 仮想パッドの管理がまだないときは空。
+        /// </summary>
+        IReadOnlyList<IOutputSlotView> SlotViews { get; }
+
+        /// <summary>スロットに仮想コントローラーが割り当てられた（スロット管理が発行する。送り主はこのサービス）。</summary>
+        event EventHandler<OutputSlotAssignmentEventArgs> SlotAssigned;
+
+        /// <summary>スロットの仮想コントローラーが外れた。</summary>
+        event EventHandler<OutputSlotAssignmentEventArgs> SlotUnassigned;
+
         // Phase6-Step10-5（接続済み）: PluginSlot／UnplugSlot は、UI（出力スロット管理画面）と UDP コマンドから、仮想スロットを
         // 抜き差しする正式な入口である（Phase5-Step12 で追加。Phase6-Step6 決定1＝案R。呼び出し側の切り替えを Step10-5 で実施）。
         // 新規コードは ControlService.AttachUnboundOutDev／DetachUnboundOutDev を直接呼ばず、本 API を使うこと。

@@ -24,16 +24,15 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
 using DS4Windows.Core.Model;
-using DS4Windows.Output;
-using DS4Windows.Output.Devices;
+using DS4Windows.Processing.Abstractions;
 
 namespace DS4Windows.UI.ViewModels
 {
 
     public class SlotDeviceEntry
     {
-        private OutSlotDevice outSlotDevice;
-        public OutSlotDevice OutSlotDevice { get => outSlotDevice; }
+        private IOutputSlotView slot;
+        public IOutputSlotView Slot { get => slot; }
 
         // Phase6-Step10-5: スロット番号（IOutputSlotService.PluginSlot/UnplugSlot へ渡す）
         public int Index { get => idx; }
@@ -42,13 +41,7 @@ namespace DS4Windows.UI.ViewModels
         {
             get
             {
-                string temp = "Empty";
-                if (outSlotDevice.OutputDevice != null)
-                {
-                    temp = outSlotDevice.OutputDevice.GetDeviceType();
-                }
-
-                return temp;
+                return slot.CurrentTypeName;
             }
         }
         public event EventHandler CurrentTypeChanged;
@@ -58,10 +51,10 @@ namespace DS4Windows.UI.ViewModels
             get
             {
                 string temp = "Dynamic";
-                if (outSlotDevice.CurrentReserveStatus ==
+                if (slot.ReserveStatus ==
                     OutputSlotReserveStatus.Permanent)
                 {
-                    temp = outSlotDevice.PermanentType.ToString();
+                    temp = slot.PermanentType.ToString();
                 }
 
                 return temp;
@@ -71,7 +64,7 @@ namespace DS4Windows.UI.ViewModels
 
         public bool BoundInput
         {
-            get => outSlotDevice.CurrentInputBound == OutputSlotInputBound.Bound;
+            get => slot.InputBound == OutputSlotInputBound.Bound;
         }
         public event EventHandler BoundInputChanged;
 
@@ -122,12 +115,7 @@ namespace DS4Windows.UI.ViewModels
         {
             get
             {
-                bool result = false;
-
-                result = outSlotDevice.CurrentType == OutContType.X360 &&
-                    (outSlotDevice.OutputDevice as Xbox360OutDevice).Features.HasFlag(Xbox360OutDevice.X360Features.XInputSlotNum);
-
-                return result;
+                return slot.SupportsXInputSlotNumber;
             }
         }
 
@@ -137,10 +125,9 @@ namespace DS4Windows.UI.ViewModels
             get
             {
                 var xinputSlot = "?";
-                if (outSlotDevice.CurrentType == OutContType.X360)
+                if (slot.CurrentType == OutContType.X360)
                 {
-                    var tempX360 = outSlotDevice.OutputDevice as Xbox360OutDevice;
-                    if (tempX360.XinputSlotNum >= 0) xinputSlot = $"{tempX360.XinputSlotNum + 1}";
+                    if (slot.XInputSlotNumber >= 0) xinputSlot = $"{slot.XInputSlotNumber + 1}";
                 }
                 return xinputSlot;
             }
@@ -155,9 +142,9 @@ namespace DS4Windows.UI.ViewModels
             get
             {
                 string result = "";
-                if (outSlotDevice.InputIndex != OutSlotDevice.INPUT_INDEX_DEFAULT)
+                if (slot.InputIndex >= 0)
                 {
-                    result = $"{outSlotDevice.InputIndex+1}";
+                    result = $"{slot.InputIndex+1}";
                 }
 
                 return result;
@@ -173,18 +160,18 @@ namespace DS4Windows.UI.ViewModels
             get
             {
                 string result = "";
-                if (outSlotDevice.InputIndex != OutSlotDevice.INPUT_INDEX_DEFAULT)
+                if (slot.InputIndex >= 0)
                 {
-                    result = $"{outSlotDevice.InputIndex + 1} ({outSlotDevice.InputDisplayString})";
+                    result = $"{slot.InputIndex + 1} ({slot.InputDisplayString})";
                 }
                 return result;
             }
         }
         public event EventHandler InputSlotDisplayStringChanged;
 
-        public SlotDeviceEntry(OutSlotDevice outSlotDevice, int idx)
+        public SlotDeviceEntry(IOutputSlotView slot, int idx)
         {
-            this.outSlotDevice = outSlotDevice;
+            this.slot = slot;
             this.idx = idx;
 
             //desiredTypeChoiceIndex = DetermineDesiredChoiceIdx();
@@ -198,8 +185,8 @@ namespace DS4Windows.UI.ViewModels
             //DesiredTypeChoiceChanged += SlotDeviceEntry_FormPropChanged;
             ReserveChoiceChanged += SlotDeviceEntry_FormPropChanged;
 
-            outSlotDevice.PermanentTypeChanged += OutSlotDevice_PermanentTypeChanged;
-            outSlotDevice.CurrentInputBoundChanged += OutSlotDevice_CurrentInputBoundChanged;
+            slot.PermanentTypeChanged += OutSlotDevice_PermanentTypeChanged;
+            slot.InputBoundChanged += OutSlotDevice_CurrentInputBoundChanged;
         }
 
         private void OutSlotDevice_CurrentInputBoundChanged(object sender, EventArgs e)
@@ -220,7 +207,7 @@ namespace DS4Windows.UI.ViewModels
         private int DetermineDesiredChoiceIdx()
         {
             int result = 0;
-            switch (outSlotDevice.PermanentType)
+            switch (slot.PermanentType)
             {
                 case OutContType.None:
                     result = 0;
@@ -240,7 +227,7 @@ namespace DS4Windows.UI.ViewModels
         private int DetermineReserveChoiceIdx()
         {
             int result = 0;
-            switch (outSlotDevice.CurrentReserveStatus)
+            switch (slot.ReserveStatus)
             {
                 case OutputSlotReserveStatus.Dynamic:
                     result = 0;
@@ -330,17 +317,7 @@ namespace DS4Windows.UI.ViewModels
 
         public void ApplyChanges()
         {
-            outSlotDevice.CurrentReserveStatus = DetermineReserveChoiceFromIdx();
-            /*if (outSlotDevice.CurrentReserveStatus ==
-                OutputSlotReserveStatus.Permanent)
-            {
-                outSlotDevice.PermanentType = outSlotDevice.CurrentType;
-            }
-            else
-            {
-                outSlotDevice.PermanentType = OutContType.None;
-            }
-            */
+            slot.ReserveStatus = DetermineReserveChoiceFromIdx();
         }
     }
 }

@@ -49,10 +49,9 @@ namespace DS4Windows.UI
         }
 
         // Phase6-Step10-5: ControlService の代わりに、抜き差しの正式な入口（IOutputSlotService）を受け取る
-        public void SetupDataContext(DS4Windows.Processing.Abstractions.IOutputSlotService outputSlotService,
-            DS4Windows.Output.OutputSlotManager outputMan)
+        public void SetupDataContext(DS4Windows.Processing.Abstractions.IOutputSlotService outputSlotService)
         {
-            currentOutDevVM = new CurrentOutDeviceViewModel(outputSlotService, outputMan);
+            currentOutDevVM = new CurrentOutDeviceViewModel(outputSlotService);
             currentOutDevVM.SelectedIndexChanged += CurrentOutDevVM_SelectedIndexChanged;
             currentOutDevLV.DataContext = currentOutDevVM;
             sideStackPanel.DataContext = currentOutDevVM;
@@ -91,11 +90,11 @@ namespace DS4Windows.UI
             }
 
             if (tempEntry != null &&
-                tempEntry.OutSlotDevice.CurrentReserveStatus ==
+                tempEntry.Slot.ReserveStatus ==
                 OutputSlotReserveStatus.Permanent &&
-                tempEntry.OutSlotDevice.PermanentType != DS4Windows.Core.Model.OutContType.None)
+                tempEntry.Slot.PermanentType != DS4Windows.Core.Model.OutContType.None)
             {
-                tempEntry.OutSlotDevice.CurrentType = tempEntry.OutSlotDevice.PermanentType;
+                tempEntry.Slot.CurrentType = tempEntry.Slot.PermanentType;
                 tempEntry.RequestPlugin();
             }
             else
@@ -105,12 +104,12 @@ namespace DS4Windows.UI
                 MessageBoxResult result = devWindow.Result;
                 if (result == MessageBoxResult.OK)
                 {
-                    tempEntry.OutSlotDevice.CurrentType = devWindow.ContType;
-                    tempEntry.OutSlotDevice.CurrentReserveStatus = devWindow.ReserveType;
-                    if (tempEntry.OutSlotDevice.CurrentReserveStatus ==
+                    tempEntry.Slot.CurrentType = devWindow.ContType;
+                    tempEntry.Slot.ReserveStatus = devWindow.ReserveType;
+                    if (tempEntry.Slot.ReserveStatus ==
                         OutputSlotReserveStatus.Permanent)
                     {
-                        tempEntry.OutSlotDevice.PermanentType = devWindow.ContType;
+                        tempEntry.Slot.PermanentType = devWindow.ContType;
                     }
 
                     tempEntry.RequestPlugin();

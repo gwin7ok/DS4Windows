@@ -24,7 +24,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
 using DS4Windows.Core.Model;
-using DS4Windows.Output;
+using DS4Windows.Processing.Abstractions;
 
 namespace DS4Windows.UI.ViewModels
 {
@@ -51,7 +51,7 @@ namespace DS4Windows.UI.ViewModels
                 if (selectedIndex >= 0)
                 {
                     SlotDeviceEntry temp = slotDeviceEntries[selectedIndex];
-                    if (temp.OutSlotDevice.CurrentType != OutContType.None)
+                    if (temp.Slot.CurrentType != OutContType.None)
                     {
                         result = Visibility.Visible;
                     }
@@ -70,7 +70,7 @@ namespace DS4Windows.UI.ViewModels
                 if (selectedIndex >= 0)
                 {
                     SlotDeviceEntry temp = slotDeviceEntries[selectedIndex];
-                    if (temp.OutSlotDevice.CurrentAttachedStatus ==
+                    if (temp.Slot.AttachedStatus ==
                         OutputSlotAttachedStatus.UnAttached)
                     {
                         result = true;
@@ -90,7 +90,7 @@ namespace DS4Windows.UI.ViewModels
                 if (selectedIndex >= 0)
                 {
                     SlotDeviceEntry temp = slotDeviceEntries[selectedIndex];
-                    if (temp.OutSlotDevice.CurrentAttachedStatus ==
+                    if (temp.Slot.AttachedStatus ==
                         OutputSlotAttachedStatus.Attached)
                     {
                         result = true;
@@ -102,7 +102,6 @@ namespace DS4Windows.UI.ViewModels
         }
         public event EventHandler UnpluginEnabledChanged;
 
-        private DS4Windows.Output.OutputSlotManager outSlotManager;
         private List<SlotDeviceEntry> slotDeviceEntries;
 
         public List<SlotDeviceEntry> SlotDeviceEntries { get => slotDeviceEntries; }
@@ -110,14 +109,14 @@ namespace DS4Windows.UI.ViewModels
         // Phase6-Step10-5: ControlService の直接呼び出しを廃止し、抜き差しの正式な入口（IOutputSlotService）を使う
         private readonly DS4Windows.Processing.Abstractions.IOutputSlotService outputSlotService;
 
-        public CurrentOutDeviceViewModel(DS4Windows.Processing.Abstractions.IOutputSlotService outputSlotService,
-            OutputSlotManager outputMan)
+        public CurrentOutDeviceViewModel(DS4Windows.Processing.Abstractions.IOutputSlotService outputSlotService)
         {
-            outSlotManager = outputMan;
-            // Set initial capacity at input controller limit in app
-            slotDeviceEntries = new List<SlotDeviceEntry>(outputMan.OutputSlots.Length); // Phase7-Step10e W2: スロット数の上限どおりの長さ（OutputSlotManager が上限で作る）
+            this.outputSlotService = outputSlotService ?? throw new ArgumentNullException(nameof(outputSlotService));
+            // スロット数は、スロット管理が上限どおりの長さで作る
+            var views = outputSlotService.SlotViews;
+            slotDeviceEntries = new List<SlotDeviceEntry>(views.Count);
             int idx = 0;
-            foreach(OutSlotDevice tempDev in outputMan.OutputSlots)
+            foreach (IOutputSlotView tempDev in views)
             {
                 SlotDeviceEntry tempEntry = new SlotDeviceEntry(tempDev, idx);
                 tempEntry.PluginRequest += OutSlot_PluginRequest;
@@ -126,10 +125,8 @@ namespace DS4Windows.UI.ViewModels
                 idx++;
             }
 
-            this.outputSlotService = outputSlotService ?? throw new ArgumentNullException(nameof(outputSlotService));
-
-            outSlotManager.SlotAssigned += OutSlotManager_SlotAssigned;
-            outSlotManager.SlotUnassigned += OutSlotManager_SlotUnassigned;
+            outputSlotService.SlotAssigned += OutSlotManager_SlotAssigned;
+            outputSlotService.SlotUnassigned += OutSlotManager_SlotUnassigned;
             SelectedIndexChanged += CurrentOutDeviceViewModel_SelectedIndexChanged;
         }
 
@@ -145,7 +142,7 @@ namespace DS4Windows.UI.ViewModels
         {
             SlotDeviceEntry entry = sender as SlotDeviceEntry;
             // 事前条件の確認と UI スレッドへの切り替えは、サービスが行う
-            outputSlotService.PluginSlot(entry.Index, entry.OutSlotDevice.CurrentType);
+            outputSlotService.PluginSlot(entry.Index, entry.Slot.CurrentType);
         }
 
         private void OutSlot_UnplugRequest(object sender, EventArgs e)
@@ -154,17 +151,15 @@ namespace DS4Windows.UI.ViewModels
             outputSlotService.UnplugSlot(entry.Index);
         }
 
-        private void OutSlotManager_SlotUnassigned(OutputSlotManager sender,
-            int slotNum, OutSlotDevice _)
+        private void OutSlotManager_SlotUnassigned(object sender, OutputSlotAssignmentEventArgs e)
         {
-            slotDeviceEntries[slotNum].RemovedDevice();
+            slotDeviceEntries[e.SlotIndex].RemovedDevice();
             RefreshPanels();
         }
 
-        private void OutSlotManager_SlotAssigned(OutputSlotManager sender,
-            int slotNum, OutSlotDevice _)
+        private void OutSlotManager_SlotAssigned(object sender, OutputSlotAssignmentEventArgs e)
         {
-            slotDeviceEntries[slotNum].AssignedDevice();
+            slotDeviceEntries[e.SlotIndex].AssignedDevice();
             RefreshPanels();
         }
 

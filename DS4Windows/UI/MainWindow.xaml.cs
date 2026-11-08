@@ -267,8 +267,7 @@ namespace DS4Windows.UI
             autoProfileHolder = autoProfControl.AutoProfileHolder;
             autoProfControl.SetupDataContext(profileListHolder);
 
-            slotManControl.SetupDataContext(outputSlotService: outputSlotService,
-                controlService.OutputslotMan);
+            slotManControl.SetupDataContext(outputSlotService);
 
             SetupEvents();
 
