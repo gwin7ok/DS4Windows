@@ -301,7 +301,7 @@ namespace DS4Windows.UI
                         StartStopBtn.IsEnabled = false;
                     }));
                     Thread.Sleep(1000);
-                    controlService.Start();
+                    lifecycle.Start();
                     //root.rootHubtest.Start();
                 }
             });
@@ -654,7 +654,7 @@ namespace DS4Windows.UI
                             //Task startupTask = Task.Run(() =>
                             Task startupTask = Task.Delay(5000).ContinueWith(t =>
                             {
-                                controlService.Start();
+                                lifecycle.Start();
                             });
 
                             // Log exceptions that might occur
@@ -676,7 +676,7 @@ namespace DS4Windows.UI
                             //    StartStopBtn.IsEnabled = false;
                             //});
 
-                            controlService.Stop(immediateUnplug: true);
+                            lifecycle.Stop(immediateUnplug: true);
                             wasrunning = true;
 
                             Thread.Sleep(1000);
@@ -1003,13 +1003,12 @@ namespace DS4Windows.UI
         {
             StartStopBtn.IsEnabled = false;
             //Tester service = root.rootHubtest;
-            ControlService service = controlService;
             Task serviceTask = Task.Run(() =>
             {
                 if (lifecycle.Running)
-                    service.Stop(immediateUnplug: true);
+                    lifecycle.Stop(immediateUnplug: true);
                 else
-                    service.Start();
+                    lifecycle.Start();
             });
 
             // Log exceptions that might occur
@@ -1344,7 +1343,7 @@ namespace DS4Windows.UI
             while (loopHotplug == true)
             {
                 Thread.Sleep(HOTPLUG_CHECK_DELAY);
-                controlService.HotPlug();
+                lifecycle.HotPlug();
 
                 lock (hotplugCounterLock)
                 {
@@ -1358,9 +1357,7 @@ namespace DS4Windows.UI
 
         private void HookWindowMessages(HwndSource source)
         {
-            Guid hidGuid = new Guid();
-            NativeMethods.HidD_GetHidGuid(ref hidGuid);
-            bool result = Util.RegisterNotify(source.Handle, hidGuid, ref regHandle);
+            bool result = Util.RegisterNotify(source.Handle, environmentService.HidClassGuid, ref regHandle);
             if (!result)
             {
                 Application.Current.Shutdown();   // Phase14b-Step16: 旧 App.Current（同じもの）
@@ -1400,8 +1397,8 @@ namespace DS4Windows.UI
             hideDS4ContCk.IsEnabled = false;
             Task serviceTask = Task.Run(() =>
             {
-                controlService.Stop();
-                controlService.Start();
+                lifecycle.Stop();
+                lifecycle.Start();
             });
 
             // Log exceptions that might occur
@@ -1469,7 +1466,7 @@ namespace DS4Windows.UI
             await Task.Run(() =>
             {
                 if (lifecycle.Running)
-                    controlService.Stop();
+                    lifecycle.Stop();
             });
 
             StartStopBtn.IsEnabled = true;
@@ -1911,15 +1908,14 @@ namespace DS4Windows.UI
         /// </summary>
         private async void RestartService()
         {
-            ControlService service = controlService;
             if (!lifecycle.Running) { return; }
 
             AppLogger.LogDebug("[MainWindow] UseDs3PitchRollSim の変更を反映するため、サービスを再起動する");
             StartStopBtn.IsEnabled = false;
             Task serviceTask = Task.Run(() =>
             {
-                service.Stop(immediateUnplug: true);
-                service.Start();
+                lifecycle.Stop(immediateUnplug: true);
+                lifecycle.Start();
             });
 
             // Log exceptions that might occur
@@ -2045,7 +2041,7 @@ namespace DS4Windows.UI
         private void DeviceOptionSettingsBtn_Click(object sender, RoutedEventArgs e)
         {
             ControllerRegisterOptionsWindow optsWindow =
-                new ControllerRegisterOptionsWindow(controlService.DeviceOptions, slots,
+                new ControllerRegisterOptionsWindow(appSettingsService.DeviceOptions, slots,
                     appSettingsService);
 
             optsWindow.Owner = this;

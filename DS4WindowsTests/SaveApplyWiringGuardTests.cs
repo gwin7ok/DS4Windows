@@ -105,8 +105,8 @@ namespace DS4WindowsTests
             Assert.True(disable > guard, "ボタンを無効にするのは、早期終了のあと（戻らないと、ボタンが有効に戻らない）");
 
             // 停止→開始を、1 つの Task.Run の中で、順に行う（切り替えを 2 回呼ばない）
-            int stop = restart.IndexOf("service.Stop(immediateUnplug: true);", StringComparison.Ordinal);
-            int start = restart.IndexOf("service.Start();", StringComparison.Ordinal);
+            int stop = restart.IndexOf("lifecycle.Stop(immediateUnplug: true);", StringComparison.Ordinal);
+            int start = restart.IndexOf("lifecycle.Start();", StringComparison.Ordinal);
             Assert.True(stop >= 0 && start > stop, "停止→開始の順になっていない");
             Assert.DoesNotContain("ChangeService()", restart);
         }

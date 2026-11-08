@@ -31,6 +31,16 @@ namespace DS4Windows.Core.Platform
         // 読み取り専用のシステム状態プローブ／実行時操作であり、永続化設定ではない。
         // 管理者権限・書き込み権限・実行ファイルのバージョン・デバイスパスの変換は、他の層（BackingStore／Util／DS4Devices）も
         // 静的に呼ぶ。以前は Global に残していたが、Global は Phase7-Step10d で削除済み（AdminCheck／DevicePathProbe ほかへ再配置。Phase7c W3 でコメントを訂正）。
+        public Guid HidClassGuid
+        {
+            get
+            {
+                Guid hidGuid = new Guid();
+                NativeMethods.HidD_GetHidGuid(ref hidGuid);
+                return hidGuid;
+            }
+        }
+
         public bool IsAdministrator() => AdminCheck.IsAdministrator();
 
         public string ApplicationVersion => PathService.ExecutableVersionState;

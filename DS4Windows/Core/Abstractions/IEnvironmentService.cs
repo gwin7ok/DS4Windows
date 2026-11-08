@@ -21,6 +21,9 @@
     public interface IEnvironmentService
     {
         bool IsAdministrator();
+
+        /// <summary>HID デバイスのインターフェースクラスの GUID。ウィンドウに HID の抜き差しの通知を登録するときに使う。</summary>
+        System.Guid HidClassGuid { get; }
         string ApplicationVersion { get; }
         void RefreshHidHideInfo();
         void RefreshFakerInputInfo();
