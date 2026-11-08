@@ -136,16 +136,5 @@ namespace DS4WindowsTests
             Assert.Throws<ArgumentNullException>(() => new VirtualPadService(env, settings, slots, accessor, null, rumble));
             Assert.Throws<ArgumentNullException>(() => new VirtualPadService(env, settings, slots, accessor, host, null));
         }
-
-        [Fact]
-        public void ControlService_ExposesTheSameSlotManagerAndOutputDevices_AsTheService()
-        {
-            ControlService control = TestHost.GetService<ControlService>();
-            IVirtualPadService service = TestHost.GetService<IVirtualPadService>();
-
-            Assert.Same(service, control.VirtualPadService);
-            Assert.Same(service.OutputSlotManager, control.OutputslotMan);
-            Assert.Same(service.OutputDevices, control.outputDevices);
-        }
     }
 }

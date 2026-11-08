@@ -12,7 +12,6 @@ namespace DS4Windows.UI.Services
     /// <see cref="IMainWindowFactory"/> の実装。メイン画面の生成と、画面が必要とするサービスの受け渡しを集約する（Phase7-Step5 W5）。
     /// <see cref="IAutoProfileService"/> は、生成のたびに Func で遅延解決する
     /// （自動プロファイルの設定コレクションは、設定の場所が決まった後でなければ生成できないため。ViewModelFactory と同じ形）。
-    /// Phase13-Step6 6-c: <see cref="ControlService"/> は Func をやめ、コンストラクターで直接受ける（ホスト構築後に解決されるため K7-1 の懸念はない）。
     /// </summary>
     public class MainWindowFactory : IMainWindowFactory
     {
@@ -32,7 +31,6 @@ namespace DS4Windows.UI.Services
         private readonly ILogSettingsApplier _logSettingsApplier;
         private readonly IViewModelFactory _viewModelFactory;
         private readonly IProfileIdentityService _profileIdentityService;
-        private readonly ControlService _controlService;
         private readonly IIpcCommandProcessor _ipcProcessor;   // Phase13-Step11 11-c: IPC コマンドの実行
         private readonly IRuntimeFeatureSwitch _runtimeFeatures;   // Phase13-Step10 10-c: OSC／UDP／HidHide／タッチパッドの切り替えの窓口
         private readonly IServiceLifecycle _lifecycle;   // Phase13-Step9: MainWindow が running／suspending を直接読み書きする
@@ -64,7 +62,6 @@ namespace DS4Windows.UI.Services
             ILogSettingsApplier logSettingsApplier,
             IViewModelFactory viewModelFactory,
             IProfileIdentityService profileIdentityService,
-            ControlService controlService,
             IServiceLifecycle lifecycle,
             IRuntimeFeatureSwitch runtimeFeatures,
             IIpcCommandProcessor ipcProcessor,
@@ -98,7 +95,6 @@ namespace DS4Windows.UI.Services
             _logSettingsApplier = logSettingsApplier ?? throw new ArgumentNullException(nameof(logSettingsApplier));
             _viewModelFactory = viewModelFactory ?? throw new ArgumentNullException(nameof(viewModelFactory));
             _profileIdentityService = profileIdentityService ?? throw new ArgumentNullException(nameof(profileIdentityService));
-            _controlService = controlService ?? throw new ArgumentNullException(nameof(controlService));
             _lifecycle = lifecycle ?? throw new ArgumentNullException(nameof(lifecycle));
             _runtimeFeatures = runtimeFeatures ?? throw new ArgumentNullException(nameof(runtimeFeatures));
             _ipcProcessor = ipcProcessor ?? throw new ArgumentNullException(nameof(ipcProcessor));
@@ -109,7 +105,7 @@ namespace DS4Windows.UI.Services
         public MainWindow Create(ArgumentParser parser)
             => new MainWindow(_lightbar, parser, _profileSettings, _appSettings, _profileXmlStore, _editorWindowFactory,
                 _pathService, _environmentService, _appearanceSettings, _profileApplication, _outputSlotService,
-                _profileRepository, _notificationService, _controlService, _lifecycle, _runtimeFeatures, _ipcProcessor, _loadTarget, _profileSlotApplier,
+                _profileRepository, _notificationService, _lifecycle, _runtimeFeatures, _ipcProcessor, _loadTarget, _profileSlotApplier,
                 _mainWindowsViewModel, _logSettingsApplier, _autoProfileService, _viewModelFactory, _profileIdentityService, _startupEntries, _themeLanguage, _ipcResultWriter, _changelogService, _slots);
     }
 }

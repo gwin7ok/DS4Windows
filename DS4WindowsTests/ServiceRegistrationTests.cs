@@ -64,15 +64,11 @@ namespace DS4WindowsTests
 
             IDeviceStateAccessor accessor = null;
             var ex = Record.Exception(() => accessor = TestHost.GetService<IDeviceStateAccessor>());
-            var controlService = TestHost.GetService<ControlService>();
 
             Assert.Null(ex);
             Assert.NotNull(accessor);
             // Phase13-Step5: 持ち主は IDeviceSlotState（DeviceSlotState）。ControlService は同じ配列を保持する
             Assert.Same(TestHost.GetService<DS4Windows.Processing.Abstractions.IDeviceSlotState>(), accessor);
-            Assert.Same(((DS4Windows.Processing.Abstractions.IDeviceSlotState)accessor).DS4Controllers, controlService.DS4Controllers);
-            Assert.Same(((DS4Windows.Processing.Abstractions.IDeviceSlotState)accessor).TouchPads, controlService.touchPad);
-            Assert.Same(((DS4Windows.Processing.Abstractions.IDeviceSlotState)accessor).SlotManager, controlService.slotManager);
         }
     }
 }

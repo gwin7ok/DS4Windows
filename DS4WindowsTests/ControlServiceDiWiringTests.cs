@@ -34,10 +34,8 @@ namespace DS4WindowsTests
         {
             DS4Windows.Composition.AppHost.CreateHost();
 
-            var controlService = TestHost.GetService<ControlService>();
-
             // コンストラクタで _appSettings.DeviceOptions（= Global.DeviceOptions）を受け取っていること。
-            Assert.Same(TestGlobals.Store.deviceOptions, controlService.DeviceOptions);
+            Assert.Same(TestGlobals.Store.deviceOptions, TestHost.GetService<DS4Windows.Core.Abstractions.IAppSettingsService>().DeviceOptions);
         }
 
         [Fact]

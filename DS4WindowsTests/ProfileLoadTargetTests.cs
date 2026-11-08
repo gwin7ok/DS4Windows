@@ -36,14 +36,13 @@ namespace DS4WindowsTests
         public void TheArrays_AreTheSameAsTheOnesOfControlService()
         {
             var target = TestHost.GetService<IProfileLoadTarget>();
-            var control = TestHost.GetService<ControlService>();
             var slots = TestHost.GetService<IDeviceSlotState>();
 
             for (int i = 0; i < 4; i++)
             {
-                Assert.Same(control.touchPad[i], target.GetTouchPad(i));
-                Assert.Same(control.outputDevices[i], target.GetOutputDevice(i));
-                Assert.Same(control.DS4Controllers[i], target.GetController(i));
+                Assert.Same(slots.TouchPads[i], target.GetTouchPad(i));
+                Assert.Same(TestHost.GetService<DS4Windows.Processing.Abstractions.IVirtualPadService>().OutputDevices[i], target.GetOutputDevice(i));
+                Assert.Same(slots.DS4Controllers[i], target.GetController(i));
             }
 
             var device = TestDs4Device.Create();
@@ -52,7 +51,6 @@ namespace DS4WindowsTests
             try
             {
                 Assert.Same(device, target.GetController(0));
-                Assert.Same(device, control.GetController(0));
             }
             finally
             {

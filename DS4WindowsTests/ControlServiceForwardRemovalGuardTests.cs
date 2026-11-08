@@ -65,7 +65,7 @@ namespace DS4WindowsTests
             // Phase14b-Step17（決定 D10）で IChangelogService（更新の確認・変更履歴。旧 静的 Changelog）が加わり 27
             // Phase14c-Step4（R-05 の前半）で LightbarOverrides（ライトバーの強制表示の状態。旧: DS4LightBar の静的な配列）が加わり 28
             var parameters = typeof(MainWindow).GetConstructors().Single().GetParameters();
-            Assert.Equal(29, parameters.Length);
+            Assert.Equal(28, parameters.Length);
             Assert.Contains(parameters, p => p.ParameterType == typeof(IRuntimeFeatureSwitch));
             Assert.DoesNotContain(parameters, p => p.ParameterType == typeof(IOscService) || p.ParameterType == typeof(IUdpMotionService)
                 || p.ParameterType == typeof(IHidHideService) || p.ParameterType == typeof(ITouchpadToggleService));

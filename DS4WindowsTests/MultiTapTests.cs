@@ -338,7 +338,7 @@ namespace DS4WindowsTests
                 using (var t = new SpecialActionTestScope())
                 {
                     TestDs4Device device = TestDs4Device.Create();
-                    t.Scope.Control.DS4Controllers[t.Device] = device;
+                    TestHost.GetService<DS4Windows.Processing.Abstractions.IDeviceSlotState>().DS4Controllers[t.Device] = device;
                     try
                     {
                         SpecialAction sa = t.Add(new SpecialAction(name, "L1", "MultiAction", "65/65,,", 0, string.Empty));
@@ -369,7 +369,7 @@ namespace DS4WindowsTests
                     }
                     finally
                     {
-                        t.Scope.Control.DS4Controllers[t.Device] = null;
+                        TestHost.GetService<DS4Windows.Processing.Abstractions.IDeviceSlotState>().DS4Controllers[t.Device] = null;
                     }
                 }
 

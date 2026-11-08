@@ -94,7 +94,6 @@ namespace DS4Windows.UI
         private readonly DS4Windows.UI.Abstractions.IUiThemeAndLanguage themeLanguage;   // Phase14b-Step16（D11）
         private readonly DS4Windows.UI.Abstractions.IIpcResultWriter ipcResultWriter;
         private readonly DS4Windows.Core.Abstractions.IChangelogService changelogService;   // Phase14b-Step17（D10）: 旧 静的 Changelog   // Phase14b-Step16（旧 App.WriteIPCResultDataMMF）
-        private readonly ControlService controlService;
         private readonly DS4Windows.Processing.Abstractions.IIpcCommandProcessor ipcProcessor;   // Phase13-Step11 11-c: 旧 MainWindow.Ipc.cs の Ipc*
         private readonly DS4Windows.Processing.Abstractions.IRuntimeFeatureSwitch runtimeFeatures;   // Phase13-Step10 10-c: 旧 ControlService の OSC／UDP／HidHide／TouchpadSlide の転送
         private readonly DS4Windows.Processing.Abstractions.IServiceLifecycle lifecycle;   // Phase13-Step9: 旧 ControlService.running／suspending の転送
@@ -130,7 +129,6 @@ namespace DS4Windows.UI
             DS4Windows.Processing.Abstractions.IOutputSlotService outputSlotService,
             DS4Windows.Core.Abstractions.IProfileRepository profileRepo,
             DS4Windows.Core.Abstractions.INotificationService notificationService,
-            ControlService controlService,
             DS4Windows.Processing.Abstractions.IServiceLifecycle lifecycle,
             DS4Windows.Processing.Abstractions.IRuntimeFeatureSwitch runtimeFeatures,
             DS4Windows.Processing.Abstractions.IIpcCommandProcessor ipcProcessor,
@@ -172,7 +170,6 @@ namespace DS4Windows.UI
             this.outputSlotService = outputSlotService ?? throw new ArgumentNullException(nameof(outputSlotService));
             this.profileRepo = profileRepo ?? throw new ArgumentNullException(nameof(profileRepo));
             this.notificationService = notificationService ?? throw new ArgumentNullException(nameof(notificationService));
-            this.controlService = controlService ?? throw new ArgumentNullException(nameof(controlService));
             this.lifecycle = lifecycle ?? throw new ArgumentNullException(nameof(lifecycle));
             this.runtimeFeatures = runtimeFeatures ?? throw new ArgumentNullException(nameof(runtimeFeatures));
             this.ipcProcessor = ipcProcessor ?? throw new ArgumentNullException(nameof(ipcProcessor));

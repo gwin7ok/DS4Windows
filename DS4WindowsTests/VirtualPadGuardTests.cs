@@ -52,7 +52,8 @@ namespace DS4WindowsTests
             // Phase13-Step10 10-b: 利用者が 0 件だった PluginOutDev／UnplugOutDev の転送は削除した（IVirtualPadService／IProfileLoadTarget が持つ）
             Assert.DoesNotContain("public void PluginOutDev(", text);
             Assert.DoesNotContain("public void UnplugOutDev(", text);
-            Assert.Contains("public OutputDevice[] outputDevices => _virtualPad.OutputDevices;", text);
+            // 同様に、利用者が 0 件になった outputDevices の転送も削除した（IVirtualPadService.OutputDevices を使う）
+            Assert.DoesNotContain("outputDevices", text);
         }
 
         [Fact]

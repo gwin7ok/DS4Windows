@@ -752,7 +752,7 @@ namespace DS4Windows
                 {
                     Dispatcher.Invoke(() =>
                     {
-                        _controlService?.PrepareAbort();
+                        _lifecycle?.PrepareAbort();
                         CleanShutdown();
                     });
                 }
@@ -765,7 +765,7 @@ namespace DS4Windows
                     AppLogger.LogError($"Thread Crashed with message {exp.Message}");
                     AppLogger.LogError(exp.ToString());
 
-                    _controlService?.PrepareAbort();
+                    _lifecycle?.PrepareAbort();
                     CleanShutdown();
                 }
             }
@@ -1263,7 +1263,7 @@ namespace DS4Windows
                     {
                         if (_lifecycle != null && _lifecycle.Running)
                         {
-                            _controlService.Stop(immediateUnplug: true);
+                            _lifecycle.Stop(immediateUnplug: true);
                             _controlService.ShutDown();
                         }
                     }).Wait();

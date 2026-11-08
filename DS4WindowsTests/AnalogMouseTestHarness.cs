@@ -19,9 +19,9 @@ namespace DS4WindowsTests
         public AnalogMouseTestHarness(double elapsedMs = 5.0)
         {
             T = new ControlsKeyTestScope();
-            _savedDevice = T.Scope.Control.DS4Controllers[T.Device];
+            _savedDevice = TestHost.GetService<DS4Windows.Processing.Abstractions.IDeviceSlotState>().DS4Controllers[T.Device];
             _device.lastTimeElapsedDouble = elapsedMs;
-            T.Scope.Control.DS4Controllers[T.Device] = _device;
+            TestHost.GetService<DS4Windows.Processing.Abstractions.IDeviceSlotState>().DS4Controllers[T.Device] = _device;
             ResetSharedState();
         }
 
@@ -53,7 +53,7 @@ namespace DS4WindowsTests
 
         public void Dispose()
         {
-            T.Scope.Control.DS4Controllers[T.Device] = _savedDevice;
+            TestHost.GetService<DS4Windows.Processing.Abstractions.IDeviceSlotState>().DS4Controllers[T.Device] = _savedDevice;
             T.Dispose();
         }
     }

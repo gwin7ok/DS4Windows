@@ -37,7 +37,7 @@ namespace DS4WindowsTests
             public Harness()
             {
                 Scope = new SpecialActionTestScope();
-                Scope.Scope.Control.DS4Controllers[Scope.Device] = _device;
+                TestHost.GetService<DS4Windows.Processing.Abstractions.IDeviceSlotState>().DS4Controllers[Scope.Device] = _device;
             }
 
             public SpecialActionTestScope Scope { get; }
@@ -79,7 +79,7 @@ namespace DS4WindowsTests
 
             public void Dispose()
             {
-                Scope.Scope.Control.DS4Controllers[Scope.Device] = null;
+                TestHost.GetService<DS4Windows.Processing.Abstractions.IDeviceSlotState>().DS4Controllers[Scope.Device] = null;
                 Scope.Dispose();
             }
         }

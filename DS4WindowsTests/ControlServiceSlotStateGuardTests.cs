@@ -17,9 +17,6 @@ namespace DS4WindowsTests
 
         [Theory]
         [InlineData("DS4Controllers")]
-        [InlineData("touchPad")]
-        [InlineData("slotManager")]
-        [InlineData("CurrentState")]
         [InlineData("PreviousState")]
         [InlineData("TempState")]
         public void SlotStateFields_AreReadonly(string name)
@@ -36,24 +33,20 @@ namespace DS4WindowsTests
             var slots = TestHost.GetService<IDeviceSlotState>();
             var control = TestHost.GetService<ControlService>();
 
-            Assert.Same(slots.DS4Controllers, control.DS4Controllers);
-            Assert.Same(slots.TouchPads, control.touchPad);
-            Assert.Same(slots.SlotManager, control.slotManager);
-            Assert.Same(slots.CurrentStates, typeof(ControlService).GetField("CurrentState", All).GetValue(control));
+            Assert.Same(slots.DS4Controllers, typeof(ControlService).GetField("DS4Controllers", All).GetValue(control));
             Assert.Same(slots.PreviousStates, typeof(ControlService).GetField("PreviousState", All).GetValue(control));
             Assert.Same(slots.TempStates, typeof(ControlService).GetField("TempState", All).GetValue(control));
         }
 
         [Fact]
-        public void GetController_ReadsTheSlotState()
+        public void GetController_ReadsTheSlotArray()
         {
             DS4Windows.Composition.AppHost.CreateHost();
             var slots = TestHost.GetService<IDeviceSlotState>();
-            var control = TestHost.GetService<ControlService>();
 
-            Assert.Null(control.GetController(-1));
-            Assert.Null(control.GetController(slots.DS4Controllers.Length));
-            Assert.Same(slots.GetController(0), control.GetController(0));
+            Assert.Null(slots.GetController(-1));
+            Assert.Null(slots.GetController(slots.DS4Controllers.Length));
+            Assert.Same(slots.DS4Controllers[0], slots.GetController(0));
         }
     }
 }

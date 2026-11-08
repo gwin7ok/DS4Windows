@@ -52,37 +52,20 @@ namespace DS4Windows.Processing
         // ControlService 内部は注入値 _controllerSlotLimit を使用する（Phase6-Step2-Plan.md 決定O2/O3）。
         // Phase7-Step10b W4: USING_MAX_CONTROLLERS（静的シム）は、呼び出し元 3 箇所を IEnvironmentService.UsingMaxControllers の注入に替えて削除した。
         // Phase13-Step5: スロット状態の配列は IDeviceSlotState（DeviceSlotState）が所有する。ここは、コンストラクターで一度だけ取得した参照を保持する（ホットパス［On_Report］は従来どおりこのフィールドを読む。配列の参照は再代入されない）。
-        // TODO(Phase13 完了後に再判断。Step10 では状態の転送を対象外とした［Phase13-Step10-Plan.md §2.3］): 公開の DS4Controllers／touchPad／slotManager は、UI など約 50 か所が ControlService 経由で読んでいるため、同名のまま温存している。呼び出し側を IDeviceSlotState の直接注入へ切り替えた時点で削除する。
-        private readonly DS4Windows.Processing.Abstractions.IDeviceSlotState _slots;
         private readonly DS4Windows.Processing.Abstractions.IInputReportProcessor _inputReport;   // Phase13-Step5b
-        public readonly DS4Device[] DS4Controllers;
-        public DS4Device GetController(int deviceIndex) => _slots.GetController(deviceIndex);
+        private readonly DS4Device[] DS4Controllers;
         // Phase9 9-E E-6f2: 状態は ServiceLifecycle が持つ。Phase9 9-F F-5b: 外部の参照が 0 件の activeControllers／loopControllers／inServiceTask の転送を削除した。
         // Phase13-Step9: running／suspending の転送は削除した（利用者の App／MainWindow／TrayIconViewModel は IServiceLifecycle を直接使う）。
-        public readonly Mouse[] touchPad;
-        private readonly DS4State[] CurrentState;
         private readonly DS4State[] PreviousState;
         private readonly DS4State[] TempState;
-        public readonly ControllerSlotManager slotManager;
-        // TODO(Phase13 完了後に再判断。Step10 では状態の転送を対象外とした［Phase13-Step10-Plan.md §2.3］): 旧 recordingMacro／IsMeasuringProcessingDelay／ProcessingDelayMs／GetProcessingDelay（入力レポートの処理の作業用の状態）は、
-        //   Phase13-Step5b で IInputReportProcessor へ移した。画面（RecordBox、ControllerReadingsControl）がまだ ControlService 経由で使うため、転送だけ残している
-        //   （外部の利用者を IInputReportProcessor の直接注入へ切り替えた時点で、Step10 で削除する。決定: Phase13-Step5b-Plan §9 の 4）。
-        public bool recordingMacro { get => _inputReport.RecordingMacro; set => _inputReport.RecordingMacro = value; }
         bool[] buttonsdown = new bool[MAX_DS4_CONTROLLER_COUNT] { false, false, false, false, false, false, false, false };
         bool[] held = new bool[MAX_DS4_CONTROLLER_COUNT];
         int[] oldmouse = new int[MAX_DS4_CONTROLLER_COUNT] { -1, -1, -1, -1, -1, -1, -1, -1 };
-        // Phase9 9-E E-4: 旧 公開フィールド outputDevices は VirtualPadService が持つ（同じ配列を返す窓口。呼び出し側は 9-F まで変えない）
-        public OutputDevice[] outputDevices => _virtualPad.OutputDevices;
 
         // Phase13-Step5b: IDeviceSlotHost（ActiveControllers と OnReport の窓口）は削除した。接続中の数は IDeviceSlotState、入力レポートの処理は IInputReportProcessor
 
         // Phase13-Step3: イベントスレッドは IEventThreadDispatcher、KBM 出力の初期化は IOutputKbmInitializer へ移した（IServiceLifecycleHost は廃止）
 
-        // ControllerReadings タブ表示中のみ有効化される遅延計測用
-        // Phase13-Step5b: 実体は IInputReportProcessor へ移した（上の recordingMacro の TODO を参照。Step10 で削除）
-        public bool IsMeasuringProcessingDelay { get => _inputReport.IsMeasuringProcessingDelay; set => _inputReport.IsMeasuringProcessingDelay = value; }
-        public double[] ProcessingDelayMs => _inputReport.ProcessingDelayMs;
-        public double GetProcessingDelay(int deviceIndex) => _inputReport.GetProcessingDelay(deviceIndex);
         // Phase9 9-E E-3: 旧 udpEuroPairAccel／udpEuroPairGyro（UDP モーションのスムージングのフィルター）は UdpMotionService へ移した
 #pragma warning disable CS0169 // tempBusThread is intentionally unused currently
         Thread tempBusThread;
@@ -93,7 +76,6 @@ namespace DS4Windows.Processing
         // Phase9 9-E E-3: 旧 _udpServer／udpOutBuffers／udpChangeStatus などは UdpMotionService へ移した
         // Phase9 9-E E-4: 旧 outputslotMan／vigemTestClient／tempThread は VirtualPadService へ移した
         private readonly DS4Windows.Processing.Abstractions.IVirtualPadService _virtualPad;
-        public DS4Windows.Processing.Abstractions.IVirtualPadService VirtualPadService => _virtualPad;
 
         // Phase 3 Followup Step F-2: DS4Devices static access routed through DI.
         private readonly IDs4DeviceRegistry _deviceRegistry;
@@ -127,7 +109,6 @@ namespace DS4Windows.Processing
         private readonly StickMotionState _stickMotion;
         // Phase7-Step8 W2: 入力の評価の窓口（旧: Mapping の静的メソッド）。画面（ControllerReadingsControl、RecordBoxViewModel）も、これを経由して使う
         private readonly DS4Windows.Processing.Abstractions.IMapping _mapping;
-        public DS4Windows.Processing.Abstractions.IMapping MappingService => _mapping;
         // コントローラースロット上限（現在接続台数ではない）。プロセス内で不変のためコンストラクタで1回だけ取得する。
 
         // ---- Phase6-Step3-2: Mapping.cs への引数渡し（S3方針）用の読み取り専用アクセサ ----
@@ -156,15 +137,8 @@ namespace DS4Windows.Processing
         private readonly DS4Windows.Processing.Abstractions.IServiceLifecycle _lifecycle;
 
         private ControlServiceDeviceOptions deviceOptions;
-        public ControlServiceDeviceOptions DeviceOptions { get => deviceOptions; }
 
-        public event EventHandler ServiceStarted;
-        public event EventHandler PreServiceStop;
-        public event EventHandler ServiceStopped;
-        public event EventHandler RunningChanged;
         //public event EventHandler HotplugFinished;
-        public delegate void HotplugControllerHandler(ControlService sender, DS4Device device, int index);
-        public event HotplugControllerHandler HotplugController;
 
         // Phase9 9-E E-1: 旧 oscState／oscCallback／oscListener／oscSender（OSC の状態・受信・送信）は OscService へ移した
 
@@ -190,13 +164,9 @@ namespace DS4Windows.Processing
             // Phase13-Step5b: 入力レポートの処理は InputReportProcessor が持つ（MappedState／CurrentStates／ExposedState の初期化も、その先頭で済んでいる）
             this._inputReport = inputReport ?? throw new ArgumentNullException(nameof(inputReport));
             // Phase13-Step5: スロット状態の配列の参照を一度だけ取得して保持する（以降の読み書きは、従来どおりこれらのフィールドを通す）
-            this._slots = slots ?? throw new ArgumentNullException(nameof(slots));
             this.DS4Controllers = slots.DS4Controllers;
-            this.touchPad = slots.TouchPads;
-            this.CurrentState = slots.CurrentStates;
             this.PreviousState = slots.PreviousStates;
             this.TempState = slots.TempStates;
-            this.slotManager = slots.SlotManager;
             this._deviceRegistry = deviceRegistry;
             // TODO(技術的負債): 過渡期の防御コード。DI 経由の生成（ServiceRegistration）では profileSettings は常に非 null。
             // 旧シグネチャ（profileSettings = null）との互換のために残している。Phase6-Step12 で削除判断（Phase6-Step2-Plan.md 決定D2）。
@@ -215,12 +185,6 @@ namespace DS4Windows.Processing
             this._deviceModules = deviceModules ?? throw new ArgumentNullException(nameof(deviceModules));
             this._lifecycle = lifecycle ?? throw new ArgumentNullException(nameof(lifecycle));
             this._eventThread = eventThread ?? throw new ArgumentNullException(nameof(eventThread));
-            // 開始・停止のイベントは、これまでどおり ControlService の公開イベント（送り主は ControlService）へ流す。ログは各サービスが AppLogger へ直接出す（Phase13b-Step3）
-            this._lifecycle.ServiceStarted += (sender, e) => ServiceStarted?.Invoke(this, e);
-            this._lifecycle.PreServiceStop += (sender, e) => PreServiceStop?.Invoke(this, e);
-            this._lifecycle.ServiceStopped += (sender, e) => ServiceStopped?.Invoke(this, e);
-            this._lifecycle.RunningChanged += (sender, e) => RunningChanged?.Invoke(this, e);
-            this._lifecycle.HotplugController += (device, index) => HotplugController?.Invoke(this, device, index);
 
             Crc32Algorithm.InitializeTable(DS4Device.DefaultPolynomial);
 
@@ -280,7 +244,7 @@ namespace DS4Windows.Processing
                     Thread.SpinWait(1000);
 
                 AppLogger.Log(AppLogLevel.Warn, string.Format(DS4Windows.Translations.Strings.ViGEmPluginFailure, errorCode), LogOptions.UserFacing);
-                Stop();
+                _lifecycle.Stop();
             }));
         }
 
@@ -291,16 +255,17 @@ namespace DS4Windows.Processing
         }
 
 
+        public void PrepareDS4DeviceInit(DS4Device device)
+        {
+            // Does nothing now
+        }
+
         // Phase9 9-E E-6c: 種類ごとの有効設定の判定は IInputDeviceModule へ移した（扱う部品がない種類は false）
         public bool CheckForSupportedDevice(HidDevice device, VidPidInfo metaInfo)
         {
             return _deviceModules.Resolve(metaInfo.inputDevType).IsEnabled(deviceOptions);
         }
 
-        public void PrepareDS4DeviceInit(DS4Device device)
-        {
-            // Does nothing now
-        }
 
         public void ShutDown()
         {
@@ -399,28 +364,12 @@ namespace DS4Windows.Processing
         // Phase13-Step10 10-b: PluginOutDev／UnplugOutDev の転送は削除した（外部の利用者は 0 件。BackingStore／LegacyProfileXmlSerializer は IProfileLoadTarget を使う）。
 
         // Phase9 9-E E-6f2: 本体は ServiceLifecycle へ移した（薄い委譲。呼び出し側は 9-F まで変えない）
-        public bool Start(bool showlog = true)
-        {
-            return _lifecycle.Start(showlog);
-        }
 
         // Phase9 9-E E-3: 旧 PrepareDevUDPMotion（モーションの送出のハンドラー）は UdpMotionService.PrepareDeviceMotion へ移した。
 
 
-        public void PrepareAbort()
-        {
-            _lifecycle.PrepareAbort();
-        }
 
-        public bool Stop(bool showlog = true, bool immediateUnplug = false)
-        {
-            return _lifecycle.Stop(showlog, immediateUnplug);
-        }
 
-        public bool HotPlug()
-        {
-            return _lifecycle.HotPlug();
-        }
 
 
         // Phase9 9-E E-3: 旧 ResetUdpSmoothingFilters／ChangeUdpSmoothingAttrs（スムージングのフィルター）は UdpMotionService へ移した。
@@ -476,7 +425,6 @@ namespace DS4Windows.Processing
 
         // Phase13-Step10 10-d: GetActiveInputControl の転送は削除した（利用者は IRuntimeFeatureSwitch を使う）。
 
-        public OutputSlotManager OutputslotMan { get => _virtualPad.OutputSlotManager; }
 
         // Phase9 9-E E-5: 判定の本体は TouchpadToggleService へ移した（状態 touchreleased／touchslid も）
         // Phase13-Step10 10-b: CheckForTouchToggle／StartTPOff の転送は削除した（外部の利用者は 0 件。StartTPOff は IProfileLoadTarget が持つ）。
@@ -487,14 +435,5 @@ namespace DS4Windows.Processing
 
         // Phase13-Step3: 旧 SetDevRumble（ブースト・反転つきの振動）は IDeviceRumbleService へ移した
 
-        public DS4State getDS4State(int ind)
-        {
-            return CurrentState[ind];
-        }
-
-        public DS4State getDS4StateTemp(int ind)
-        {
-            return TempState[ind];
-        }
     }
 }

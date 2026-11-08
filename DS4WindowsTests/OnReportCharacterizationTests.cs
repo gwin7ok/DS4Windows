@@ -99,7 +99,7 @@ namespace DS4WindowsTests
         [Fact]
         public void TheProcessingDelay_IsRecorded_OnlyWhileMeasuring()
         {
-            var control = TestHost.GetService<ControlService>();
+            var control = TestHost.GetService<IInputReportProcessor>();
             DS4Device d = NewDevice(s => s.LX = 128);
             d.lastInputReportTimestamp = Stopwatch.GetTimestamp() - Stopwatch.Frequency / 100;   // 約 10 ms 前に受信した
 
@@ -129,9 +129,9 @@ namespace DS4WindowsTests
         [Fact]
         public void RecordingMacro_DoesNotStopTheReportProcessing()
         {
-            var control = TestHost.GetService<ControlService>();
+            var control = TestHost.GetService<IInputReportProcessor>();
             DS4Device d = NewDevice(s => s.LX = 99);
-            control.recordingMacro = true;
+            control.RecordingMacro = true;
             try
             {
                 Invoke(d, Slot);
@@ -139,7 +139,7 @@ namespace DS4WindowsTests
             }
             finally
             {
-                control.recordingMacro = false;
+                control.RecordingMacro = false;
             }
         }
 

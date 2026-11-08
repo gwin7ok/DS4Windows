@@ -118,7 +118,6 @@ namespace DS4WindowsTests
             var mapping = TestHost.GetService<IMapping>();
             Assert.NotNull(mapping);
             Assert.Same(mapping, TestHost.GetService<IMapping>());
-            Assert.Same(mapping, TestHost.GetService<ControlService>().MappingService);
             Assert.Same(mapping, TestHost.GetService<Func<IMapping>>()());
         }
 

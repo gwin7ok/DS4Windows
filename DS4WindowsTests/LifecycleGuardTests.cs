@@ -56,34 +56,27 @@ namespace DS4WindowsTests
         }
 
         [Fact]
-        public void ControlService_KeepsTheForwarders_ForTheUiAndTheTests()
+        public void ControlService_HasNoLifecycleForwarders_BecauseTheCallersUseIServiceLifecycle()
         {
             string text = SourceText.ReadCode("DS4Windows/Processing/ControlService.cs");
             if (text == null) return;
 
-            Assert.Contains("public bool Start(bool showlog = true)", text);
-            Assert.Contains("return _lifecycle.Start(showlog);", text);
-            Assert.Contains("public bool Stop(bool showlog = true, bool immediateUnplug = false)", text);
-            Assert.Contains("return _lifecycle.Stop(showlog, immediateUnplug);", text);
-            Assert.Contains("public bool HotPlug()", text);
-            Assert.Contains("return _lifecycle.HotPlug();", text);
-            Assert.Contains("public void PrepareAbort()", text);
-            // Phase13-Step9: running／suspending の転送も削除した（ServiceLifecycleRunningForwardRemovalGuardTests）
+            // 利用者（画面・App・テスト）は IServiceLifecycle を直接使う。開始・停止・ホットプラグと 5 つのイベントの転送は、利用者が 0 件になったため削除した
+            Assert.DoesNotContain("public bool Start(", text);
+            Assert.DoesNotContain("public bool Stop(", text);
+            Assert.DoesNotContain("public bool HotPlug()", text);
+            Assert.DoesNotContain("public void PrepareAbort()", text);
+            Assert.DoesNotContain("public event EventHandler ServiceStarted", text);
+            Assert.DoesNotContain("public event HotplugControllerHandler HotplugController", text);
             Assert.DoesNotContain("public bool running", text);
             Assert.DoesNotContain("public bool suspending", text);
-            // Phase9 9-F F-5b: 外部の参照が 0 件の転送は削除した。内部は _lifecycle を直接使う
             Assert.DoesNotContain("public bool loopControllers", text);
             Assert.DoesNotContain("public bool inServiceTask", text);
             Assert.DoesNotContain("public int activeControllers", text);
+            // 内部は _lifecycle を直接使う
             Assert.Contains("_lifecycle.LoopControllers = false;", text);
             Assert.Contains("while (_lifecycle.InServiceTask)", text);
-
-            // イベントは、送り主を ControlService にして再発火する
-            Assert.Contains("ServiceStarted?.Invoke(this, e)", text);
-            Assert.Contains("PreServiceStop?.Invoke(this, e)", text);
-            Assert.Contains("ServiceStopped?.Invoke(this, e)", text);
-            Assert.Contains("RunningChanged?.Invoke(this, e)", text);
-            Assert.Contains("HotplugController?.Invoke(this, device, index)", text);
+            Assert.Contains("_lifecycle.Stop();", text);
         }
 
         [Fact]
