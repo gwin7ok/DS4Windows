@@ -251,7 +251,7 @@ namespace DS4Windows.UI
         /// <summary>選択中の出力の色。テーマの OutputSelectedColor（ライト: LimeGreen、ダーク: 白い文字が読める緑）。無ければ LimeGreen。</summary>
         private Brush SelectedBrush()
         {
-            return TryFindResource("OutputSelectedColor") as Brush ?? new SolidColorBrush(Colors.LimeGreen);
+            return TryFindResource("OutputSelectedBrush") as Brush ?? new SolidColorBrush(Colors.LimeGreen);
         }
 
         private void FindCurrentHighlightButton()

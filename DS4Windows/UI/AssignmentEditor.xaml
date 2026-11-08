@@ -30,8 +30,8 @@
                                     <GridViewColumn.HeaderContainerStyle>
                                         <Style TargetType="{x:Type GridViewColumnHeader}">
                                             <Setter Property="HorizontalContentAlignment" Value="Left" />
-                                            <Setter Property="Background" Value="{DynamicResource BackgroundColor}" />
-                                            <Setter Property="Foreground" Value="{DynamicResource ForegroundColor}" />
+                                            <Setter Property="Background" Value="{DynamicResource BackgroundBrush}" />
+                                            <Setter Property="Foreground" Value="{DynamicResource ForegroundBrush}" />
                                         </Style>
                                     </GridViewColumn.HeaderContainerStyle>
                                     <!-- Phase10-Step2 W2: トリガーの行は、TriggerOptions（TriggerCatalog の 49 項目）から作る。旧: 名前つきのチェックボックス 49 個 -->

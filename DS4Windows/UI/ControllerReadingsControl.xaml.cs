@@ -236,7 +236,7 @@ namespace DS4Windows.UI
         /// <summary>現在のテーマの文字色（テーマの ForegroundColor。見つからなければ SystemColors.WindowTextColor）。</summary>
         private static Color ThemeForegroundColor()
         {
-            return (Application.Current?.TryFindResource("ForegroundColor") as SolidColorBrush)?.Color
+            return (Application.Current?.TryFindResource("ForegroundBrush") as SolidColorBrush)?.Color
                 ?? SystemColors.WindowTextColor;
         }
 

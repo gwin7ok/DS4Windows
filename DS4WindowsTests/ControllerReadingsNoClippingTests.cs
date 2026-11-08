@@ -151,7 +151,7 @@ namespace DS4WindowsTests
         private static ControllerReadingsControl CreateLaidOutControl(string family, double size)
         {
             var control = new ControllerReadingsControl();
-            var resources = new ResourceDictionary { ["ForegroundColor"] = new SolidColorBrush(Colors.Black) };
+            var resources = new ResourceDictionary { ["ForegroundBrush"] = new SolidColorBrush(Colors.Black) };
             control.Resources.MergedDictionaries.Add(resources);
             if (family != null)
             {

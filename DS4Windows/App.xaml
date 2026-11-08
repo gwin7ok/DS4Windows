@@ -10,7 +10,7 @@
                 <!--<ResourceDictionary Source="UI/Themes/DarkTheme.xaml" />-->
             </ResourceDictionary.MergedDictionaries>
 
-            <!--<SolidColorBrush x:Key="ForegroundColor" Color="{x:Static SystemColors.ActiveCaptionTextColor}" />-->
+            <!--<SolidColorBrush x:Key="ForegroundBrush" Color="{x:Static SystemColors.ActiveCaptionTextColor}" />-->
 
             <Style TargetType="{x:Type Button}" x:Key="NoBGHoverBtn">
                 <Setter Property="Background" Value="Transparent" />

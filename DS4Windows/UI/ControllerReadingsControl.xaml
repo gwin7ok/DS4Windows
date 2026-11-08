@@ -50,7 +50,7 @@
                 <Label x:Name="outputDelayLb"
                        Content="{x:Static props:Resources.OutputDelayNA}"
                        FontWeight="SemiBold"
-                       Foreground="{DynamicResource ForegroundColor}"
+                       Foreground="{DynamicResource ForegroundBrush}"
                        VerticalAlignment="Center"/>
             </StackPanel>
         </DockPanel>
@@ -80,31 +80,31 @@
                         HorizontalAlignment="Center">
                     <Rectangle Width="130"
                                Height="130"
-                               Stroke="{DynamicResource ForegroundColor}">
+                               Stroke="{DynamicResource ForegroundBrush}">
                     </Rectangle>
                     <Ellipse x:Name="lsDeadEllipse"
                              Width="{Binding Path=Width, ElementName=lsCanvas}"
                              Height="{Binding Path=Height, ElementName=lsCanvas}"
-                             Fill="#4FCF1F1F">
+                             Fill="{DynamicResource Readings.DeadZoneFill}">
                     </Ellipse>
                     <Ellipse x:Name="lsDriftEllipse"
                              Width="{Binding Path=Width, ElementName=lsCanvas}"
                              Height="{Binding Path=Height, ElementName=lsCanvas}"
-                             Fill="#FFCF1F1F">
+                             Fill="{DynamicResource Readings.AlertFill}">
                     </Ellipse>
                     <Rectangle x:Name="lsMapValRec"
                                Width="6"
                                Height="6"
                                Canvas.Left="62"
                                Canvas.Top="62"
-                               Fill="#FFABABAB">
+                               Fill="{DynamicResource Readings.MapValue}">
                     </Rectangle>
                     <Rectangle x:Name="lsValRec"
                                Width="6"
                                Height="6"
                                Canvas.Left="62"
                                Canvas.Top="62"
-                               Fill="{DynamicResource ForegroundColor}">
+                               Fill="{DynamicResource ForegroundBrush}">
                     </Rectangle>
                 </Canvas>
                 <!-- Phase11 W2: 数値の見切れ防止。(I)/(O) の組を WrapPanel に入れ、列の幅に収まらない大きなフォントでは 2 行に折り返す（右スティック・SixAxis も同じ） -->
@@ -170,31 +170,31 @@
                         HorizontalAlignment="Center">
                     <Rectangle Width="{Binding Path=Width, ElementName=rsCanvas}"
                                Height="{Binding Path=Height, ElementName=rsCanvas}"
-                               Stroke="{DynamicResource ForegroundColor}">
+                               Stroke="{DynamicResource ForegroundBrush}">
                     </Rectangle>
                     <Ellipse x:Name="rsDeadEllipse"
                              Width="{Binding Path=Width, ElementName=rsCanvas}"
                              Height="{Binding Path=Height, ElementName=rsCanvas}"
-                             Fill="#4FCF1F1F">
+                             Fill="{DynamicResource Readings.DeadZoneFill}">
                     </Ellipse>
                     <Ellipse x:Name="rsDriftEllipse"
                              Width="{Binding Path=Width, ElementName=rsCanvas}"
                              Height="{Binding Path=Height, ElementName=rsCanvas}"
-                             Fill="#FFCF1F1F">
+                             Fill="{DynamicResource Readings.AlertFill}">
                     </Ellipse>
                     <Rectangle x:Name="rsMapValRec"
                                Width="6"
                                Height="6"
                                Canvas.Left="62"
                                Canvas.Top="62"
-                               Fill="#FFABABAB">
+                               Fill="{DynamicResource Readings.MapValue}">
                     </Rectangle>
                     <Rectangle x:Name="rsValRec"
                                Width="6"
                                Height="6"
                                Canvas.Left="62"
                                Canvas.Top="62"
-                               Fill="{DynamicResource ForegroundColor}">
+                               Fill="{DynamicResource ForegroundBrush}">
                     </Rectangle>
                 </Canvas>
                 <WrapPanel HorizontalAlignment="Center"
@@ -257,29 +257,29 @@
                         HorizontalAlignment="Center">
                     <Rectangle Width="{Binding Path=Width, ElementName=sixaxisCanvas}"
                                Height="{Binding Path=Height, ElementName=sixaxisCanvas}"
-                               Stroke="{DynamicResource ForegroundColor}">
+                               Stroke="{DynamicResource ForegroundBrush}">
                     </Rectangle>
                     <Ellipse x:Name="sixAxisDeadEllipse"
                              Width="{Binding Path=Width, ElementName=sixaxisCanvas}"
                              Height="{Binding Path=Height, ElementName=sixaxisCanvas}"
-                             Fill="#FFCF1F1F">
+                             Fill="{DynamicResource Readings.AlertFill}">
                     </Ellipse>
                     <Rectangle x:Name="sixAxisMapValRec"
                                Width="6"
                                Height="6"
                                Canvas.Left="62"
                                Canvas.Top="62"
-                               Fill="#FFABABAB">
+                               Fill="{DynamicResource Readings.MapValue}">
                     </Rectangle>
                     <Rectangle x:Name="sixAxisValRec"
                                Width="6"
                                Height="6"
                                Canvas.Left="62"
                                Canvas.Top="62"
-                               Fill="{DynamicResource ForegroundColor}">
+                               Fill="{DynamicResource ForegroundBrush}">
                     </Rectangle>
                     <Ellipse x:Name="gyroCalEllipse"
-                             Fill="#FF1FCF1F"
+                             Fill="{DynamicResource Readings.Calibration}"
                              Height="32"
                              Canvas.Left="90"
                              Canvas.Top="10"
@@ -513,7 +513,7 @@
             </StackPanel>
             <Border Grid.Column="1"
                     BorderThickness="1"
-                    BorderBrush="{DynamicResource ForegroundColor}">
+                    BorderBrush="{DynamicResource ForegroundBrush}">
                 <StackPanel Orientation="Horizontal"
                             Margin="6"
                             HorizontalAlignment="Center">

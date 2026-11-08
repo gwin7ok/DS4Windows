@@ -14,7 +14,7 @@
             <TextBox x:Name="profileTxt" TextWrapping="Wrap" Text="" Width="160" HorizontalAlignment="Left"
                  VerticalAlignment="Center" MaxLines="1"/>
 
-            <TextBlock Margin="5,2" MinWidth="50" Text="{Binding Source={lex:Loc Resources:TypeNewName}, StringFormat='&lt;{0}&gt;'}" Foreground="{DynamicResource ForegroundColor}" Opacity="0.7" IsHitTestVisible="False">
+            <TextBlock Margin="5,2" MinWidth="50" Text="{Binding Source={lex:Loc Resources:TypeNewName}, StringFormat='&lt;{0}&gt;'}" Foreground="{DynamicResource ForegroundBrush}" Opacity="0.7" IsHitTestVisible="False">
                 <TextBlock.Style>
                     <Style TargetType="TextBlock">
                         <Style.Triggers>

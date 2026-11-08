@@ -1498,7 +1498,7 @@
                             <TabItem Header="{lex:Loc Passthru}"
                                      Visibility="Collapsed">
                                 <StackPanel>
-                                    <TextBlock Foreground="{DynamicResource WarningColor}"
+                                    <TextBlock Foreground="{DynamicResource WarningBrush}"
                                                Visibility="{Binding UsingMinViGEm173333, Mode=OneWay, Converter={StaticResource InvertBoolToVisibilityConverter}}"
                                                Text="{lex:Loc ViGEm117MinNeeded}">
                                     </TextBlock>
@@ -2042,7 +2042,7 @@
                             <TabItem Header="{lex:Loc Passthru}"
                                      Visibility="Collapsed">
                                 <StackPanel x:Name="passthruPanel">
-                                    <TextBlock Foreground="{DynamicResource WarningColor}"
+                                    <TextBlock Foreground="{DynamicResource WarningBrush}"
                                                Visibility="{Binding UsingMinViGEm173333, Mode=OneWay, Converter={StaticResource InvertBoolToVisibilityConverter}}"
                                                Text="{lex:Loc ViGEm117MinNeeded}">
                                     </TextBlock>
@@ -2089,7 +2089,7 @@
         <Border Grid.Row="1"
                 Grid.Column="1"
                 Width="10"
-                Background="{DynamicResource PaneGapColor}"
+                Background="{DynamicResource PaneGapBrush}"
                 HorizontalAlignment="Stretch"
                 VerticalAlignment="Stretch"
                 IsHitTestVisible="False"/>
@@ -2103,11 +2103,11 @@
             <GridSplitter.Template>
                 <ControlTemplate TargetType="GridSplitter">
                     <Grid>
-                        <Rectangle Fill="{DynamicResource PaneGapColor}"
+                        <Rectangle Fill="{DynamicResource PaneGapBrush}"
                                    Width="10"
                                    HorizontalAlignment="Stretch"
                                    VerticalAlignment="Stretch"/>
-                        <Rectangle Fill="{DynamicResource PaneDividerColor}"
+                        <Rectangle Fill="{DynamicResource PaneDividerBrush}"
                                    Width="2"
                                    HorizontalAlignment="Center"
                                    VerticalAlignment="Stretch"/>
@@ -4151,7 +4151,7 @@
                         <TabItem Header="{lex:Loc Passthru}"
                                  Visibility="Collapsed">
                             <StackPanel>
-                                <TextBlock Foreground="{DynamicResource WarningColor}"
+                                <TextBlock Foreground="{DynamicResource WarningBrush}"
                                            Text="{lex:Loc DS4LightbarPassthruDisabled}"
                                            TextWrapping="Wrap"
                                            Visibility="{Binding UsingMinViGEm173333, Mode=OneWay, Converter={StaticResource InvertBoolToVisibilityConverter}}">

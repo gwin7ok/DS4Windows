@@ -221,7 +221,7 @@ namespace DS4Windows.UI.ViewModels
         /// <summary>選択中の出力の色（テーマの OutputSelectedColor。無ければ LimeGreen）。</summary>
         private static string SelectedColorString()
         {
-            return (Application.Current?.TryFindResource("OutputSelectedColor") as SolidColorBrush)?.Color.ToString()
+            return (Application.Current?.TryFindResource("OutputSelectedBrush") as SolidColorBrush)?.Color.ToString()
                 ?? Colors.LimeGreen.ToString();
         }
 
@@ -236,7 +236,7 @@ namespace DS4Windows.UI.ViewModels
                 }
                 else
                 {
-                    color = Application.Current.FindResource("SecondaryColor").ToString();
+                    color = Application.Current.FindResource("SecondaryBrush").ToString();
                     //color = SystemColors.ControlBrush.Color.ToString();
                 }
 
@@ -255,7 +255,7 @@ namespace DS4Windows.UI.ViewModels
                 }
                 else
                 {
-                    color = Application.Current.FindResource("SecondaryColor").ToString();
+                    color = Application.Current.FindResource("SecondaryBrush").ToString();
                     //color = SystemColors.ControlBrush.Color.ToString();
                 }
 

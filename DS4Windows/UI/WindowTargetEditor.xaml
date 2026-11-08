@@ -22,17 +22,17 @@
         <DockPanel Margin="0,0,0,2">
             <!-- Phase12-Step2 2i: ターゲットマーク。ドラッグして他のウィンドウの上で離すと、そのウィンドウのパスとタイトルを入れる -->
             <Border x:Name="targetMark" DockPanel.Dock="Right" Width="22" Height="22" Background="Transparent"
-                    BorderBrush="{DynamicResource ForegroundColor}" BorderThickness="1.5" Cursor="Cross"
+                    BorderBrush="{DynamicResource ForegroundBrush}" BorderThickness="1.5" Cursor="Cross"
                     ToolTip="{lex:Loc SpecialActionEdit.FocusWindowDragTip}"
                     MouseLeftButtonDown="TargetMark_MouseLeftButtonDown" MouseLeftButtonUp="TargetMark_MouseLeftButtonUp"
                     LostMouseCapture="TargetMark_LostMouseCapture">
                 <Grid>
-                    <Ellipse Width="10" Height="10" Stroke="{DynamicResource ForegroundColor}" StrokeThickness="1.5"
+                    <Ellipse Width="10" Height="10" Stroke="{DynamicResource ForegroundBrush}" StrokeThickness="1.5"
                              HorizontalAlignment="Center" VerticalAlignment="Center" IsHitTestVisible="False" />
-                    <Rectangle Width="1.5" Height="6" Fill="{DynamicResource ForegroundColor}" HorizontalAlignment="Center" VerticalAlignment="Top" IsHitTestVisible="False" />
-                    <Rectangle Width="1.5" Height="6" Fill="{DynamicResource ForegroundColor}" HorizontalAlignment="Center" VerticalAlignment="Bottom" IsHitTestVisible="False" />
-                    <Rectangle Width="6" Height="1.5" Fill="{DynamicResource ForegroundColor}" HorizontalAlignment="Left" VerticalAlignment="Center" IsHitTestVisible="False" />
-                    <Rectangle Width="6" Height="1.5" Fill="{DynamicResource ForegroundColor}" HorizontalAlignment="Right" VerticalAlignment="Center" IsHitTestVisible="False" />
+                    <Rectangle Width="1.5" Height="6" Fill="{DynamicResource ForegroundBrush}" HorizontalAlignment="Center" VerticalAlignment="Top" IsHitTestVisible="False" />
+                    <Rectangle Width="1.5" Height="6" Fill="{DynamicResource ForegroundBrush}" HorizontalAlignment="Center" VerticalAlignment="Bottom" IsHitTestVisible="False" />
+                    <Rectangle Width="6" Height="1.5" Fill="{DynamicResource ForegroundBrush}" HorizontalAlignment="Left" VerticalAlignment="Center" IsHitTestVisible="False" />
+                    <Rectangle Width="6" Height="1.5" Fill="{DynamicResource ForegroundBrush}" HorizontalAlignment="Right" VerticalAlignment="Center" IsHitTestVisible="False" />
                 </Grid>
             </Border>
             <Label Content="{lex:Loc WindowTitle}" Padding="0,0,0,2" VerticalAlignment="Center" />

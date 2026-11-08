@@ -37,11 +37,11 @@
         <StackPanel DockPanel.Dock="Bottom" Height="30" VerticalAlignment="Bottom">
             <DockPanel MinHeight="30">
                 <StackPanel DockPanel.Dock="Right" Orientation="Horizontal">
-                    <Button x:Name="aboutBtn" BorderThickness="0" Background="{x:Null}" BorderBrush="{x:Null}" Foreground="{DynamicResource LinkColor}"
+                    <Button x:Name="aboutBtn" BorderThickness="0" Background="{x:Null}" BorderBrush="{x:Null}" Foreground="{DynamicResource LinkBrush}"
                             Style="{StaticResource NoBGHoverBtn}" Click="AboutBtn_Click">
-                        <TextBlock Text="{lex:Loc HotkeysAbout}" TextDecorations="Underline" Foreground="{DynamicResource LinkAccentColor}" Cursor="Hand" x:Uid="hotkeysText" />
+                        <TextBlock Text="{lex:Loc HotkeysAbout}" TextDecorations="Underline" Foreground="{DynamicResource LinkAccentBrush}" Cursor="Hand" x:Uid="hotkeysText" />
                     </Button>
-                    <Button x:Name="StartStopBtn" Content="{lex:Loc StartText}" Margin="10,4,4,4" Click="StartStopBtn_Click" Width="60" Padding="5,2" Foreground="{DynamicResource ForegroundColor}" />
+                    <Button x:Name="StartStopBtn" Content="{lex:Loc StartText}" Margin="10,4,4,4" Click="StartStopBtn_Click" Width="60" Padding="5,2" Foreground="{DynamicResource ForegroundBrush}" />
                 </StackPanel>
                 <Label x:Name="lastMsgLb" Content="{Binding Message}" ToolTip="{Binding Message}" Foreground="{Binding Color}" Margin="4,0,2,0" />
             </DockPanel>
@@ -267,7 +267,7 @@
                 </local:OutputSlotManagerControl>
             </TabItem>
             <TabItem x:Name="settingsTab" Header="{lex:Loc Settings}" IsEnabled="{Binding ViewEnabled,Mode=OneWay}">
-                <ScrollViewer HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Disabled" Background="{DynamicResource BackgroundColor}">
+                <ScrollViewer HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Disabled" Background="{DynamicResource BackgroundBrush}">
                     <WrapPanel Orientation="Vertical" Margin="8,16,8,8">
                         <WrapPanel.Resources>
                             <Thickness x:Key="spaceMargin" Left="4" Right="0" Bottom="8" Top="0" />
@@ -354,7 +354,7 @@
                             <!--<TextBox Text="0" VerticalAlignment="Center" />-->
                             <xctk:IntegerUpDown d:IsHidden="True" Value="{Binding CheckEvery, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" MinWidth="30" Margin="8,0,0,0"
                                             ButtonSpinnerLocation="Right" Increment="1" Maximum="30" Minimum="0" />
-                            <ComboBox SelectedIndex="{Binding CheckEveryUnit, Mode=TwoWay, FallbackValue=1}" Margin="8,0,0,0" Foreground="{DynamicResource ForegroundColor}" MinWidth="60">
+                            <ComboBox SelectedIndex="{Binding CheckEveryUnit, Mode=TwoWay, FallbackValue=1}" Margin="8,0,0,0" Foreground="{DynamicResource ForegroundBrush}" MinWidth="60">
                                 <ComboBoxItem Content="{lex:Loc Hours}" />
                                 <ComboBoxItem Content="{lex:Loc Days}" />
                             </ComboBox>
@@ -441,37 +441,37 @@
                             <WrapPanel HorizontalAlignment="Left" Orientation="Vertical">
                                 <Button x:Name="profFolderBtn" BorderThickness="0" Margin="0,0,4,4" Background="{x:Null}" BorderBrush="{x:Null}"
                                     Style="{StaticResource NoBGHoverBtn}" Click="ProfFolderBtn_Click">
-                                    <TextBlock Text="{lex:Loc ProfileFolder}" TextDecorations="Underline" Foreground="{DynamicResource LinkAccentColor}" Cursor="Hand" />
+                                    <TextBlock Text="{lex:Loc ProfileFolder}" TextDecorations="Underline" Foreground="{DynamicResource LinkAccentBrush}" Cursor="Hand" />
                                 </Button>
                                 <Button x:Name="controlPanelBtn" BorderThickness="0" Margin="0,0,4,4" Background="{x:Null}" BorderBrush="{x:Null}"
                                     Style="{StaticResource NoBGHoverBtn}" Click="ControlPanelBtn_Click" >
-                                    <TextBlock Text="{lex:Loc ControlPanel}" TextDecorations="Underline" Foreground="{DynamicResource LinkAccentColor}" Cursor="Hand" />
+                                    <TextBlock Text="{lex:Loc ControlPanel}" TextDecorations="Underline" Foreground="{DynamicResource LinkAccentBrush}" Cursor="Hand" />
                                 </Button>
                                 <Button x:Name="html5GameBtn" BorderThickness="0" Margin="0,0,4,4" Background="{x:Null}" BorderBrush="{x:Null}"
                                     Style="{StaticResource NoBGHoverBtn}" Click="Html5GameBtn_Click" >
-                                    <TextBlock Text="{lex:Loc GamepadTest}" TextDecorations="Underline" Foreground="{DynamicResource LinkAccentColor}" Cursor="Hand" />
+                                    <TextBlock Text="{lex:Loc GamepadTest}" TextDecorations="Underline" Foreground="{DynamicResource LinkAccentBrush}" Cursor="Hand" />
                                 </Button>
                                 <Button x:Name="xinputCheckerBtn" BorderThickness="0" Margin="0,0,4,4" Background="{x:Null}" BorderBrush="{x:Null}"
                                     Style="{StaticResource NoBGHoverBtn}" Click="XinputCheckerBtn_Click" >
-                                    <TextBlock Text="{lex:Loc XInputChecker}" TextDecorations="Underline" Foreground="{DynamicResource LinkAccentColor}" Cursor="Hand" />
+                                    <TextBlock Text="{lex:Loc XInputChecker}" TextDecorations="Underline" Foreground="{DynamicResource LinkAccentBrush}" Cursor="Hand" />
                                 </Button>
                                 <Button x:Name="hidHideBtn" BorderThickness="0" Margin="0,0,4,4" Background="{x:Null}" BorderBrush="{x:Null}"
                                     Style="{StaticResource NoBGHoverBtn}" Click="HidHideBtn_Click" Visibility="{Binding HidHideClientFound, Converter={StaticResource BooleanToVisibilityConverter}, Mode=OneWay}" >
-                                    <TextBlock Text="{lex:Loc HidHideConfigClient}" TextDecorations="Underline" Foreground="{DynamicResource LinkAccentColor}" Cursor="Hand" />
+                                    <TextBlock Text="{lex:Loc HidHideConfigClient}" TextDecorations="Underline" Foreground="{DynamicResource LinkAccentBrush}" Cursor="Hand" />
                                 </Button>
                                 <Button x:Name="driverSetupBtn" BorderThickness="0" Margin="0,0,4,4" Background="{x:Null}" BorderBrush="{x:Null}"
                                    Style="{StaticResource NoBGHoverBtn}"  Click="DriverSetupBtn_Click">
-                                    <TextBlock Text="{lex:Loc DriverSetup}" TextDecorations="Underline" Foreground="{DynamicResource LinkAccentColor}" Cursor="Hand" />
+                                    <TextBlock Text="{lex:Loc DriverSetup}" TextDecorations="Underline" Foreground="{DynamicResource LinkAccentBrush}" Cursor="Hand" />
                                 </Button>
                                 <Button x:Name="checkUpdatesBtn" BorderThickness="0" Margin="0,0,4,4" Background="{x:Null}" BorderBrush="{x:Null}"
                                     Style="{StaticResource NoBGHoverBtn}" Click="CheckUpdatesBtn_Click">
                                     <!--="CheckUpdatesBtn_Click">-->
-                                    <TextBlock Text="{lex:Loc CheckUpdateNow}" TextDecorations="Underline" Foreground="{DynamicResource LinkAccentColor}" Cursor="Hand" />
+                                    <TextBlock Text="{lex:Loc CheckUpdateNow}" TextDecorations="Underline" Foreground="{DynamicResource LinkAccentBrush}" Cursor="Hand" />
                                 </Button>
                                 <Button x:Name="checklogViewBtn" BorderThickness="0" Background="{x:Null}" BorderBrush="{x:Null}"
                                     Style="{StaticResource NoBGHoverBtn}" Click="ChecklogViewBtn_Click" Margin="0,0,4,4">
                                     <!--="CheckUpdatesBtn_Click">-->
-                                    <TextBlock Text="{lex:Loc Changelog}" TextDecorations="Underline" Foreground="{DynamicResource LinkAccentColor}" Cursor="Hand" />
+                                    <TextBlock Text="{lex:Loc Changelog}" TextDecorations="Underline" Foreground="{DynamicResource LinkAccentBrush}" Cursor="Hand" />
                                 </Button>
                             </WrapPanel>
                         </GroupBox>

@@ -712,19 +712,19 @@ Public License instead of this License.  But first, please read
                 <DockPanel>
                     <StackPanel DockPanel.Dock="Top" Margin="10,0">
                         <StackPanel Orientation="Horizontal">
-                            <!-- <TextBlock><Hyperlink x:Name="siteLink" Click="SiteLink_Click" Foreground="{DynamicResource LinkAccentColor}">Site</Hyperlink></TextBlock> -->
-                            <TextBlock Margin="20,0,0,0"><Hyperlink x:Name="sourceLink" Click="SourceLink_Click" Foreground="{DynamicResource LinkAccentColor}">Source</Hyperlink></TextBlock>
-                            <TextBlock Margin="20,0,0,0"><Hyperlink Click="gwin7okLink_Click" Foreground="{DynamicResource LinkAccentColor}">gwin7ok</Hyperlink></TextBlock>
+                            <!-- <TextBlock><Hyperlink x:Name="siteLink" Click="SiteLink_Click" Foreground="{DynamicResource LinkAccentBrush}">Site</Hyperlink></TextBlock> -->
+                            <TextBlock Margin="20,0,0,0"><Hyperlink x:Name="sourceLink" Click="SourceLink_Click" Foreground="{DynamicResource LinkAccentBrush}">Source</Hyperlink></TextBlock>
+                            <TextBlock Margin="20,0,0,0"><Hyperlink Click="gwin7okLink_Click" Foreground="{DynamicResource LinkAccentBrush}">gwin7ok</Hyperlink></TextBlock>
                         </StackPanel>
                         <StackPanel Orientation="Horizontal">
-                            <TextBlock><Hyperlink x:Name="jays2KingsLink" Click="Jays2KingsLink_Click" Foreground="{DynamicResource LinkAccentColor}">Jays2Kings</Hyperlink></TextBlock>
-                            <TextBlock Margin="20,0,0,0"><Hyperlink x:Name="inhexSTERLink" Click="InhexSTERLink_Click" Foreground="{DynamicResource LinkAccentColor}">InhexSTER (Starter of DS4Tool)</Hyperlink></TextBlock>
+                            <TextBlock><Hyperlink x:Name="jays2KingsLink" Click="Jays2KingsLink_Click" Foreground="{DynamicResource LinkAccentBrush}">Jays2Kings</Hyperlink></TextBlock>
+                            <TextBlock Margin="20,0,0,0"><Hyperlink x:Name="inhexSTERLink" Click="InhexSTERLink_Click" Foreground="{DynamicResource LinkAccentBrush}">InhexSTER (Starter of DS4Tool)</Hyperlink></TextBlock>
                         </StackPanel>
                         <StackPanel Orientation="Horizontal">
-                            <TextBlock><Hyperlink x:Name="electrobrainsLink" Click="ElectrobrainsLink_Click" Foreground="{DynamicResource LinkAccentColor}">electrobrains (Branched off of)</Hyperlink></TextBlock>
+                            <TextBlock><Hyperlink x:Name="electrobrainsLink" Click="ElectrobrainsLink_Click" Foreground="{DynamicResource LinkAccentBrush}">electrobrains (Branched off of)</Hyperlink></TextBlock>
                         </StackPanel>
                         <StackPanel Orientation="Horizontal">
-                            <TextBlock><Hyperlink Click="ContributorsLink_OnClick" Foreground="{DynamicResource LinkAccentColor}">Contributors</Hyperlink></TextBlock>
+                            <TextBlock><Hyperlink Click="ContributorsLink_OnClick" Foreground="{DynamicResource LinkAccentBrush}">Contributors</Hyperlink></TextBlock>
                         </StackPanel>
                         <Label Content="Translators:" Margin="0,20,0,0" />
                     </StackPanel>
@@ -750,13 +750,13 @@ dondrakon - Ukranian
             <TabItem Header="Extras">
                 <ScrollViewer VerticalScrollBarVisibility="Auto">
                     <StackPanel Margin="4">
-                        <Border BorderThickness="1" CornerRadius="10" BorderBrush="{DynamicResource BorderColor}">
+                        <Border BorderThickness="1" CornerRadius="10" BorderBrush="{DynamicResource BorderBrush}">
                             <StackPanel Margin="8">
                                 <TextBlock Text="ViGEmBus" FontSize="18" FontWeight="Bold" />
                                 <StackPanel Orientation="Horizontal" Margin="0,8,0,0">
                                     <TextBlock Text="Project URL:" />
                                     <TextBlock Margin="8,0,0,0">
-                                    <Hyperlink x:Name="viGEmBusLink" Click="ViGEmBusLink_Click" Foreground="{DynamicResource LinkAccentColor}">https://github.com/nefarius/ViGEmBus/</Hyperlink>
+                                    <Hyperlink x:Name="viGEmBusLink" Click="ViGEmBusLink_Click" Foreground="{DynamicResource LinkAccentBrush}">https://github.com/nefarius/ViGEmBus/</Hyperlink>
                                     </TextBlock>
                                 </StackPanel>
                                 <Expander Header="Description" Margin="0,8,0,0">
@@ -771,13 +771,13 @@ dondrakon - Ukranian
                             </StackPanel>
                         </Border>
 
-                        <Border BorderThickness="1" CornerRadius="10" Margin="0,8,0,0" BorderBrush="{DynamicResource BorderColor}">
+                        <Border BorderThickness="1" CornerRadius="10" Margin="0,8,0,0" BorderBrush="{DynamicResource BorderBrush}">
                             <StackPanel Margin="8">
                                 <TextBlock Text="HidHide" FontSize="18" FontWeight="Bold" />
                                 <StackPanel Orientation="Horizontal" Margin="0,8,0,0">
                                     <TextBlock Text="Project URL:" />
                                     <TextBlock Margin="8,0,0,0">
-                                    <Hyperlink x:Name="hidHideLink" Click="HidHideLink_Click" Foreground="{DynamicResource LinkAccentColor}">https://github.com/nefarius/HidHide/</Hyperlink>
+                                    <Hyperlink x:Name="hidHideLink" Click="HidHideLink_Click" Foreground="{DynamicResource LinkAccentBrush}">https://github.com/nefarius/HidHide/</Hyperlink>
                                     </TextBlock>
                                 </StackPanel>
                                 <Expander Header="Description" Margin="0,8,0,0">
@@ -793,13 +793,13 @@ dondrakon - Ukranian
                             </StackPanel>
                         </Border>
 
-                        <Border BorderThickness="1" CornerRadius="10" Margin="0,8,0,0" BorderBrush="{DynamicResource BorderColor}">
+                        <Border BorderThickness="1" CornerRadius="10" Margin="0,8,0,0" BorderBrush="{DynamicResource BorderBrush}">
                             <StackPanel Margin="8">
                                 <TextBlock Text="FakerInput" FontSize="18" FontWeight="Bold" />
                                 <StackPanel Orientation="Horizontal" Margin="0,8,0,0">
                                     <TextBlock Text="Project URL:" />
                                     <TextBlock Margin="8,0,0,0">
-                                    <Hyperlink x:Name="fakerInputLink" Click="FakerInputLink_Click" Foreground="{DynamicResource LinkAccentColor}">https://github.com/Ryochan7/FakerInput/</Hyperlink>
+                                    <Hyperlink x:Name="fakerInputLink" Click="FakerInputLink_Click" Foreground="{DynamicResource LinkAccentBrush}">https://github.com/Ryochan7/FakerInput/</Hyperlink>
                                     </TextBlock>
                                 </StackPanel>
                                 <Expander Header="Description" Margin="0,8,0,0">
@@ -818,37 +818,37 @@ dondrakon - Ukranian
                             </StackPanel>
                         </Border>
 
-                        <Border BorderThickness="1" CornerRadius="10" Margin="0,8,0,0" BorderBrush="{DynamicResource BorderColor}">
+                        <Border BorderThickness="1" CornerRadius="10" Margin="0,8,0,0" BorderBrush="{DynamicResource BorderBrush}">
                             <StackPanel Margin="8">
                                 <TextBlock Text="CRC32" FontSize="18" FontWeight="Bold" />
                                 <StackPanel Orientation="Horizontal" Margin="0,8,0,0">
                                     <TextBlock Text="Project URL:" />
                                     <TextBlock Margin="8,0,0,0">
-                                    <Hyperlink x:Name="crc32Link" Click="Crc32Link_Click" Foreground="{DynamicResource LinkAccentColor}">https://github.com/dariogriffo/Crc32</Hyperlink>
+                                    <Hyperlink x:Name="crc32Link" Click="Crc32Link_Click" Foreground="{DynamicResource LinkAccentBrush}">https://github.com/dariogriffo/Crc32</Hyperlink>
                                     </TextBlock>
                                 </StackPanel>
                             </StackPanel>
                         </Border>
 
-                        <Border BorderThickness="1" CornerRadius="10" Margin="0,8,0,0" BorderBrush="{DynamicResource BorderColor}">
+                        <Border BorderThickness="1" CornerRadius="10" Margin="0,8,0,0" BorderBrush="{DynamicResource BorderBrush}">
                             <StackPanel Margin="8">
                                 <TextBlock Text="1&#x20ac; Filter" FontSize="18" FontWeight="Bold" />
                                 <StackPanel Orientation="Horizontal" Margin="0,8,0,0">
                                     <TextBlock Text="Project URL:" />
                                     <TextBlock Margin="8,0,0,0">
-                                    <Hyperlink x:Name="oneEuroLink" Click="OneEuroLink_Click" Foreground="{DynamicResource LinkAccentColor}">http://cristal.univ-lille.fr/~casiez/1euro/</Hyperlink>
+                                    <Hyperlink x:Name="oneEuroLink" Click="OneEuroLink_Click" Foreground="{DynamicResource LinkAccentBrush}">http://cristal.univ-lille.fr/~casiez/1euro/</Hyperlink>
                                     </TextBlock>
                                 </StackPanel>
                             </StackPanel>
                         </Border>
 
-                        <Border BorderThickness="1" CornerRadius="10" Margin="0,8,0,0" BorderBrush="{DynamicResource BorderColor}">
+                        <Border BorderThickness="1" CornerRadius="10" Margin="0,8,0,0" BorderBrush="{DynamicResource BorderBrush}">
                             <StackPanel Margin="8">
                                 <TextBlock Text="H.NotifyIcon" FontSize="18" FontWeight="Bold" />
                                 <StackPanel Orientation="Horizontal" Margin="0,8,0,0">
                                     <TextBlock Text="Project URL:" />
                                     <TextBlock Margin="8,0,0,0">
-                                    <Hyperlink x:Name="hNotifyIconLink" Click="HNotifyIconLink_Click" Foreground="{DynamicResource LinkAccentColor}">https://github.com/HavenDV/H.NotifyIcon/</Hyperlink>
+                                    <Hyperlink x:Name="hNotifyIconLink" Click="HNotifyIconLink_Click" Foreground="{DynamicResource LinkAccentBrush}">https://github.com/HavenDV/H.NotifyIcon/</Hyperlink>
                                     </TextBlock>
                                 </StackPanel>
                             </StackPanel>

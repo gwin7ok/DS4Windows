@@ -23,7 +23,7 @@
         </Storyboard>
     </Window.Resources>
 
-    <Border Background="#2D2D30" BorderBrush="#007ACC" BorderThickness="2" CornerRadius="8">
+    <Border Background="{DynamicResource Notification.Background}" BorderBrush="{DynamicResource Notification.Border}" BorderThickness="2" CornerRadius="8">
         <Grid Margin="15">
             <Grid.RowDefinitions>
                 <RowDefinition Height="Auto"/>
@@ -35,7 +35,7 @@
                        Text="DS4Windows Profile Change"
                        FontSize="16" 
                        FontWeight="Bold"
-                       Foreground="#FFFFFF"
+                       Foreground="{DynamicResource Notification.Title}"
                        Margin="0,0,0,8"/>
             
             <!-- メッセージ -->
@@ -43,7 +43,7 @@
                        Grid.Row="1"
                        Text=""
                        FontSize="14"
-                       Foreground="#E0E0E0"
+                       Foreground="{DynamicResource Notification.Text}"
                        TextWrapping="Wrap"
                        VerticalAlignment="Center"/>
         </Grid>

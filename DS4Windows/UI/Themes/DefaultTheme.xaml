@@ -3,33 +3,70 @@
                     xmlns:local="clr-namespace:DS4Windows.UI.Themes"
                     xmlns:system="clr-namespace:System;assembly=mscorlib">
     <!-- Brushes -->
-    <SolidColorBrush x:Key="ForegroundColor"
+    <SolidColorBrush x:Key="ForegroundBrush"
                      Color="{x:Static SystemColors.ActiveCaptionTextColor}"/>
-    <SolidColorBrush x:Key="SecondaryColor"
+    <SolidColorBrush x:Key="SecondaryBrush"
                      Color="{x:Static SystemColors.ControlColor}"/>
-    <SolidColorBrush x:Key="AccentColor"
+    <SolidColorBrush x:Key="AccentBrush"
                      Color="#FF0066CC"/>
-    <SolidColorBrush x:Key="BorderColor"
+    <SolidColorBrush x:Key="BorderBrush"
                      Color="#FFC8C8C8"/>
-    <SolidColorBrush x:Key="BackgroundColor"
+    <SolidColorBrush x:Key="BackgroundBrush"
                      Color="{x:Static SystemColors.WindowColor}"/>
-    <SolidColorBrush x:Key="PaneGapColor"
+    <SolidColorBrush x:Key="PaneGapBrush"
                      Color="{x:Static SystemColors.ControlColor}"/>
-    <SolidColorBrush x:Key="PaneDividerColor"
+    <SolidColorBrush x:Key="PaneDividerBrush"
                      Color="Gray"/>
-    <SolidColorBrush x:Key="OutputSelectedColor"
+    <SolidColorBrush x:Key="OutputSelectedBrush"
                      Color="LimeGreen"/>
-    <SolidColorBrush x:Key="WarningColor"
+    <SolidColorBrush x:Key="WarningBrush"
                      Color="Red"/>
-    <SolidColorBrush x:Key="LinkColor"
+    <SolidColorBrush x:Key="LinkBrush"
                      Color="#FF3881D8"/>
-    <SolidColorBrush x:Key="LinkAccentColor"
+    <SolidColorBrush x:Key="LinkAccentBrush"
                      Color="#FF0066CC"/>
     <SolidColorBrush x:Key="ControllerCanvasBackground"
                      Color="DimGray"/>
     <!-- Select action画面: ライトモード時は透明にして白背景のままにする -->
     <SolidColorBrush x:Key="BindingCanvasBackground"
             Color="Transparent"/>
+
+    <!-- Dark にだけあった色。Default のスタイルは WPF 既定の見た目に任せているため参照されないが、色のキーを両テーマで揃える -->
+    <SolidColorBrush x:Key="ControlBrush" Color="{x:Static SystemColors.ControlColor}"/>
+    <SolidColorBrush x:Key="LinkHoverBrush" Color="#FF0066CC"/>
+    <SolidColorBrush x:Key="AltRowBrush" Color="{x:Static SystemColors.ControlLightColor}"/>
+    <SolidColorBrush x:Key="DisabledForegroundBrush" Color="{x:Static SystemColors.GrayTextColor}"/>
+    <SolidColorBrush x:Key="ScrollBar.Static.Thumb" Color="#CDCDCD"/>
+    <SolidColorBrush x:Key="ScrollBar.MouseOver.Background" Color="#DADADA"/>
+    <SolidColorBrush x:Key="ScrollBar.MouseOver.Border" Color="#DADADA"/>
+    <SolidColorBrush x:Key="ScrollBar.MouseOver.Glyph" Color="#000000"/>
+    <SolidColorBrush x:Key="ScrollBar.MouseOver.Thumb" Color="#A6A6A6"/>
+    <SolidColorBrush x:Key="ScrollBar.Pressed.Background" Color="#606060"/>
+    <SolidColorBrush x:Key="ScrollBar.Pressed.Border" Color="#606060"/>
+    <SolidColorBrush x:Key="ScrollBar.Pressed.Thumb" Color="#606060"/>
+    <SolidColorBrush x:Key="ScrollBar.Pressed.Glyph" Color="#FFFFFF"/>
+    <SolidColorBrush x:Key="ScrollBar.Disabled.Glyph" Color="LightGray"/>
+
+    <!-- 画面が持つ、テーマに左右されない表示色（現状の値のまま。テーマ別に変えたいときはここで変える） -->
+    <SolidColorBrush x:Key="Readings.DeadZoneFill" Color="#4FCF1F1F"/>
+    <SolidColorBrush x:Key="Readings.AlertFill" Color="#FFCF1F1F"/>
+    <SolidColorBrush x:Key="Readings.MapValue" Color="#FFABABAB"/>
+    <SolidColorBrush x:Key="Readings.Calibration" Color="#FF1FCF1F"/>
+    <SolidColorBrush x:Key="Notification.Background" Color="#2D2D30"/>
+    <SolidColorBrush x:Key="Notification.Border" Color="#007ACC"/>
+    <SolidColorBrush x:Key="Notification.Title" Color="#FFFFFF"/>
+    <SolidColorBrush x:Key="Notification.Text" Color="#E0E0E0"/>
+    <SolidColorBrush x:Key="KeyHighlight.Background" Color="Black"/>
+    <SolidColorBrush x:Key="KeyHighlight.Foreground" Color="White"/>
+    <!-- ドキュメント表示（DocumentStyleGithubLike）の色。Dark にも同名のキーがある -->
+    <SolidColorBrush x:Key="Template.Document.Border" Color="#DEDEDE"/>
+    <SolidColorBrush x:Key="Template.Document.CodeBackground" Color="#EEEEEE"/>
+    <SolidColorBrush x:Key="Template.Document.Heading" Color="#FF000000"/>
+    <SolidColorBrush x:Key="Template.Document.InlineCodeBackground" Color="#12181F25"/>
+    <SolidColorBrush x:Key="Template.Document.QuoteBackground" Color="#FAFAFA"/>
+    <SolidColorBrush x:Key="Template.Document.TableBorder" Color="#DFE2E5"/>
+    <SolidColorBrush x:Key="Template.Document.TableRow" Color="#FFFFFF"/>
+    <SolidColorBrush x:Key="Template.Document.TableRowAlt" Color="#F6F8FA"/>
 
     <system:String x:Key="KeyImageImg">key-solid.png</system:String>
     <system:String x:Key="CancelImg">cancel.png</system:String>
@@ -69,7 +106,7 @@
                         <Setter Property="Padding"
                                 Value="10, 5"/>
                         <Setter Property="BorderBrush"
-                                Value="#DEDEDE"/>
+                                Value="{StaticResource Template.Document.Border}"/>
                         <Setter Property="BorderThickness"
                                 Value="5,0,0,0"/>
                     </Trigger>
@@ -79,7 +116,7 @@
             <Style TargetType="avalonEdit:TextEditor"
                    xmlns:avalonEdit="http://icsharpcode.net/sharpdevelop/avalonedit">
                 <Setter Property="Background"
-                        Value="#EEEEEE"/>
+                        Value="{StaticResource Template.Document.CodeBackground}"/>
                 <Setter Property="HorizontalScrollBarVisibility"
                         Value="Auto"/>
                 <Setter Property="VerticalScrollBarVisibility"
@@ -101,7 +138,7 @@
                                 Value="0, 0, 15, 0"/>
 
                         <Setter Property="Foreground"
-                                Value="#ff000000"/>
+                                Value="{StaticResource Template.Document.Heading}"/>
                         <Setter Property="FontSize"
                                 Value="28"/>
                         <Setter Property="FontWeight"
@@ -114,7 +151,7 @@
                                 Value="0, 0, 15, 0"/>
 
                         <Setter Property="Foreground"
-                                Value="#ff000000"/>
+                                Value="{StaticResource Template.Document.Heading}"/>
                         <Setter Property="FontSize"
                                 Value="21"/>
                         <Setter Property="FontWeight"
@@ -127,7 +164,7 @@
                                 Value="0, 0, 10, 0"/>
 
                         <Setter Property="Foreground"
-                                Value="#ff000000"/>
+                                Value="{StaticResource Template.Document.Heading}"/>
                         <Setter Property="FontSize"
                                 Value="17.5"/>
                         <Setter Property="FontWeight"
@@ -140,7 +177,7 @@
                                 Value="0, 0, 5, 0"/>
 
                         <Setter Property="Foreground"
-                                Value="#ff000000"/>
+                                Value="{StaticResource Template.Document.Heading}"/>
                         <Setter Property="FontSize"
                                 Value="14"/>
                         <Setter Property="FontWeight"
@@ -154,7 +191,7 @@
                         <Setter Property="FontSize"
                                 Value="11.9"/>
                         <Setter Property="Background"
-                                Value="#12181F25"/>
+                                Value="{StaticResource Template.Document.InlineCodeBackground}"/>
                         <Setter Property="Padding"
                                 Value="20, 10"/>
                     </Trigger>
@@ -166,11 +203,11 @@
                         <Setter Property="Padding"
                                 Value="10, 5"/>
                         <Setter Property="BorderBrush"
-                                Value="#DEDEDE"/>
+                                Value="{StaticResource Template.Document.Border}"/>
                         <Setter Property="BorderThickness"
                                 Value="3,3,3,3"/>
                         <Setter Property="Background"
-                                Value="#FAFAFA"/>
+                                Value="{StaticResource Template.Document.QuoteBackground}"/>
                     </Trigger>
 
                 </Style.Triggers>
@@ -185,7 +222,7 @@
                         <Setter Property="FontSize"
                                 Value="11.9"/>
                         <Setter Property="Background"
-                                Value="#12181F25"/>
+                                Value="{StaticResource Template.Document.InlineCodeBackground}"/>
                     </Trigger>
                 </Style.Triggers>
             </Style>
@@ -198,7 +235,7 @@
                         <Setter Property="FontSize"
                                 Value="11.9"/>
                         <Setter Property="Background"
-                                Value="#12181F25"/>
+                                Value="{StaticResource Template.Document.InlineCodeBackground}"/>
                     </Trigger>
                 </Style.Triggers>
             </Style>
@@ -231,13 +268,13 @@
                 <Setter Property="BorderThickness"
                         Value="0.5"/>
                 <Setter Property="BorderBrush"
-                        Value="#DFE2E5"/>
+                        Value="{StaticResource Template.Document.TableBorder}"/>
                 <Style.Resources>
                     <Style TargetType="TableCell">
                         <Setter Property="BorderThickness"
                                 Value="0.5"/>
                         <Setter Property="BorderBrush"
-                                Value="#DFE2E5"/>
+                                Value="{StaticResource Template.Document.TableBorder}"/>
                         <Setter Property="Padding"
                                 Value="13, 6"/>
                     </Style>
@@ -253,7 +290,7 @@
                         <Setter Property="FontWeight"
                                 Value="Bold"/>
                         <Setter Property="Background"
-                                Value="#FFFFFF"/>
+                                Value="{StaticResource Template.Document.TableRow}"/>
                     </Trigger>
                 </Style.Triggers>
             </Style>
@@ -263,7 +300,7 @@
                     <Trigger Property="Tag"
                              Value="EvenTableRow">
                         <Setter Property="Background"
-                                Value="#F6F8FA"/>
+                                Value="{StaticResource Template.Document.TableRowAlt}"/>
                     </Trigger>
                 </Style.Triggers>
             </Style>
