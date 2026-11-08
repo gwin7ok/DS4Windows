@@ -26,6 +26,7 @@ using System.ComponentModel;
 using System.Threading;
 using System.Runtime.InteropServices;
 using DS4Windows.Input;
+using DS4Windows.Core.Model;
 
 namespace DS4Windows.Output
 {

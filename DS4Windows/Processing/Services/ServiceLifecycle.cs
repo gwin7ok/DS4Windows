@@ -10,6 +10,7 @@ using DS4Windows.Input;
 using DS4Windows.Output;
 using DS4Windows.Output.Kbm;
 using DS4Windows.Processing.Abstractions;
+using DS4Windows.Core.Model;
 
 namespace DS4Windows.Processing.Services
 {

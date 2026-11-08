@@ -2,6 +2,7 @@ using System;
 using DS4Windows.Core.Abstractions;
 using DS4Windows.Input;
 using DS4Windows.Processing.Abstractions;
+using DS4Windows.Core.Model;
 
 namespace DS4Windows.Processing.Actions
 {

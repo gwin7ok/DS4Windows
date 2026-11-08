@@ -16,19 +16,7 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
 
-using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Threading;
-
-using System.Runtime.InteropServices;
-using System.Diagnostics;
-
-using System.Linq;
-using System.Drawing;
-
-
-namespace DS4Windows.Input
+namespace DS4Windows.Core.Model
 {
 
     public enum ConnectionType : byte { BT, SONYWA, USB }; // Prioritize Bluetooth when both BT and USB are connected.

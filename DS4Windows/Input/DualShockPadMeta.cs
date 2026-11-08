@@ -25,6 +25,7 @@ using System.Net.Sockets;
 using System.ComponentModel;
 using System.Threading;
 using System.Runtime.InteropServices;
+using DS4Windows.Core.Model;
 
 namespace DS4Windows.Input
 {
