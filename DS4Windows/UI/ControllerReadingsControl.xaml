@@ -116,18 +116,14 @@
                                Padding="2,2"/>
                         <Label x:Name="lxInValLb"
                                Content=""
-                               Width="34"
-                               Padding="1,2"
-                               HorizontalContentAlignment="Right"/>
+                               Style="{DynamicResource ReadingValueLabel}"/>
                     </StackPanel>
                     <StackPanel Orientation="Horizontal">
                         <Label Content="LX (O):"
                                Padding="2,2"/>
                         <Label x:Name="lxOutValLb"
                                Content=""
-                               Width="34"
-                               Padding="1,2"
-                               HorizontalContentAlignment="Right"/>
+                               Style="{DynamicResource ReadingValueLabel}"/>
                     </StackPanel>
                 </WrapPanel>
                 <WrapPanel HorizontalAlignment="Center"
@@ -138,18 +134,14 @@
                                Padding="2,2"/>
                         <Label x:Name="lyInValLb"
                                Content=""
-                               Width="34"
-                               Padding="1,2"
-                               HorizontalContentAlignment="Right"/>
+                               Style="{DynamicResource ReadingValueLabel}"/>
                     </StackPanel>
                     <StackPanel Orientation="Horizontal">
                         <Label Content="LY (O):"
                                Padding="2,2"/>
                         <Label x:Name="lyOutValLb"
                                Content=""
-                               Width="34"
-                               Padding="1,2"
-                               HorizontalContentAlignment="Right"/>
+                               Style="{DynamicResource ReadingValueLabel}"/>
                     </StackPanel>
                 </WrapPanel>
             </StackPanel>
@@ -205,18 +197,14 @@
                                Padding="2,2"/>
                         <Label x:Name="rxInValLb"
                                Content=""
-                               Width="34"
-                               Padding="1,2"
-                               HorizontalContentAlignment="Right"/>
+                               Style="{DynamicResource ReadingValueLabel}"/>
                     </StackPanel>
                     <StackPanel Orientation="Horizontal">
                         <Label Content="RX (O):"
                                Padding="2,2"/>
                         <Label x:Name="rxOutValLb"
                                Content=""
-                               Width="34"
-                               Padding="1,2"
-                               HorizontalContentAlignment="Right"/>
+                               Style="{DynamicResource ReadingValueLabel}"/>
                     </StackPanel>
                 </WrapPanel>
                 <WrapPanel HorizontalAlignment="Center"
@@ -227,18 +215,14 @@
                                Padding="2,2"/>
                         <Label x:Name="ryInValLb"
                                Content=""
-                               Width="34"
-                               Padding="1,2"
-                               HorizontalContentAlignment="Right"/>
+                               Style="{DynamicResource ReadingValueLabel}"/>
                     </StackPanel>
                     <StackPanel Orientation="Horizontal">
                         <Label Content="RY (O):"
                                Padding="2,2"/>
                         <Label x:Name="ryOutValLb"
                                Content=""
-                               Width="34"
-                               Padding="1,2"
-                               HorizontalContentAlignment="Right"/>
+                               Style="{DynamicResource ReadingValueLabel}"/>
                     </StackPanel>
                 </WrapPanel>
             </StackPanel>
@@ -293,18 +277,14 @@
                                Padding="2,2"/>
                         <Label x:Name="sixAxisXInValLb"
                                Content=""
-                               Width="40"
-                               Padding="1,2"
-                               HorizontalContentAlignment="Right"/>
+                               Style="{DynamicResource ReadingValueLabelWide}"/>
                     </StackPanel>
                     <StackPanel Orientation="Horizontal">
                         <Label Content="X (O):"
                                Padding="2,2"/>
                         <Label x:Name="sixAxisXOutValLb"
                                Content=""
-                               Width="40"
-                               Padding="1,2"
-                               HorizontalContentAlignment="Right"/>
+                               Style="{DynamicResource ReadingValueLabelWide}"/>
                     </StackPanel>
                 </WrapPanel>
                 <WrapPanel HorizontalAlignment="Center"
@@ -315,18 +295,14 @@
                                Padding="2,2"/>
                         <Label x:Name="sixAxisZInValLb"
                                Content=""
-                               Width="40"
-                               Padding="1,2"
-                               HorizontalContentAlignment="Right"/>
+                               Style="{DynamicResource ReadingValueLabelWide}"/>
                     </StackPanel>
                     <StackPanel Orientation="Horizontal">
                         <Label Content="Z (O):"
                                Padding="2,2"/>
                         <Label x:Name="sixAxisZOutValLb"
                                Content=""
-                               Width="40"
-                               Padding="1,2"
-                               HorizontalContentAlignment="Right"/>
+                               Style="{DynamicResource ReadingValueLabelWide}"/>
                     </StackPanel>
                 </WrapPanel>
             </StackPanel>
@@ -392,10 +368,7 @@
                                    VerticalAlignment="Center"/>
                             <Label x:Name="l2InValLb"
                                    Content=""
-                                   Width="38"
-                                   Padding="1,1"
-                                   HorizontalContentAlignment="Right"
-                                   VerticalAlignment="Center"/>
+                                   Style="{DynamicResource ReadingValueLabelCentered}"/>
                         </StackPanel>
                         <StackPanel Orientation="Horizontal">
                             <Label Content="O:"
@@ -404,10 +377,7 @@
                                    VerticalAlignment="Center"/>
                             <Label x:Name="l2OutValLb"
                                    Content=""
-                                   Width="38"
-                                   Padding="1,1"
-                                   HorizontalContentAlignment="Right"
-                                   VerticalAlignment="Center"/>
+                                   Style="{DynamicResource ReadingValueLabelCentered}"/>
                         </StackPanel>
                     </StackPanel>
                 </StackPanel>
@@ -457,10 +427,7 @@
                                    VerticalAlignment="Center"/>
                             <Label x:Name="r2InValLb"
                                    Content=""
-                                   Width="38"
-                                   Padding="1,1"
-                                   HorizontalContentAlignment="Right"
-                                   VerticalAlignment="Center"/>
+                                   Style="{DynamicResource ReadingValueLabelCentered}"/>
                         </StackPanel>
                         <StackPanel Orientation="Horizontal">
                             <Label Content="O:"
@@ -469,10 +436,7 @@
                                    VerticalAlignment="Center"/>
                             <Label x:Name="r2OutValLb"
                                    Content=""
-                                   Width="38"
-                                   Padding="1,1"
-                                   HorizontalContentAlignment="Right"
-                                   VerticalAlignment="Center"/>
+                                   Style="{DynamicResource ReadingValueLabelCentered}"/>
                         </StackPanel>
                     </StackPanel>
                 </StackPanel>
@@ -490,10 +454,7 @@
                                    VerticalAlignment="Center"/>
                             <Label x:Name="touchXValLb"
                                    Content=""
-                                   Width="38"
-                                   Padding="1,1"
-                                   HorizontalContentAlignment="Right"
-                                   VerticalAlignment="Center"/>
+                                   Style="{DynamicResource ReadingValueLabelCentered}"/>
                         </StackPanel>
                         <StackPanel Orientation="Horizontal">
                             <Label Content="TY:"
@@ -502,10 +463,7 @@
                                    VerticalAlignment="Center"/>
                             <Label x:Name="touchYValLb"
                                    Content=""
-                                   Width="38"
-                                   Padding="1,1"
-                                   HorizontalContentAlignment="Right"
-                                   VerticalAlignment="Center"/>
+                                   Style="{DynamicResource ReadingValueLabelCentered}"/>
                         </StackPanel>
                     </StackPanel>
                 </StackPanel>

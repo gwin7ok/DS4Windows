@@ -345,4 +345,28 @@
         <Setter Property="InputMethod.PreferredImeState"
                 Value="Off"/>
     </Style>
+
+    <!-- 数値の表示と入力の大きさ（見切れ防止の寸法）。Dark／Default に同じ寸法で持つ（ThemeTokenRuleTests が一致を検査する） -->
+    <!-- 読み取り値のラベル: 3 桁（-128〜255）が欠けない幅。Dark は Label の色を引き継ぐ -->
+    <Style x:Key="ReadingValueLabel" TargetType="{x:Type Label}">
+        <Setter Property="Width" Value="34"/>
+        <Setter Property="Padding" Value="1,2"/>
+        <Setter Property="HorizontalContentAlignment" Value="Right"/>
+    </Style>
+    <Style x:Key="ReadingValueLabelWide" TargetType="{x:Type Label}">
+        <Setter Property="Width" Value="40"/>
+        <Setter Property="Padding" Value="1,2"/>
+        <Setter Property="HorizontalContentAlignment" Value="Right"/>
+    </Style>
+    <Style x:Key="ReadingValueLabelCentered" TargetType="{x:Type Label}">
+        <Setter Property="Width" Value="38"/>
+        <Setter Property="Padding" Value="1,1"/>
+        <Setter Property="HorizontalContentAlignment" Value="Right"/>
+        <Setter Property="VerticalAlignment" Value="Center"/>
+    </Style>
+    <!-- 数値入力（xctk の UpDown 全種）の最小幅 -->
+    <Style x:Key="NumberInputSmall" TargetType="{x:Type Control}"><Setter Property="MinWidth" Value="50"/></Style>
+    <Style x:Key="NumberInputMedium" TargetType="{x:Type Control}"><Setter Property="MinWidth" Value="60"/></Style>
+    <Style x:Key="NumberInputLarge" TargetType="{x:Type Control}"><Setter Property="MinWidth" Value="80"/></Style>
+    <Style x:Key="NumberInputWide" TargetType="{x:Type Control}"><Setter Property="MinWidth" Value="100"/></Style>
 </ResourceDictionary>

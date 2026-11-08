@@ -123,7 +123,9 @@ namespace DS4WindowsTests
 
             foreach (XElement tab in new[] { touchpad, gyro })
             {
-                Assert.Equal(new[] { "InvertBoolToVisibilityConverter", "controlIndexCheck", "spaceMargin" }, XamlTestHelper.StaticResourceKeys(tab));
+                // NumberInput* は、テーマが持つ数値入力の共有スタイル（最小幅）で、画面の外に定義がある
+                Assert.Equal(new[] { "InvertBoolToVisibilityConverter", "controlIndexCheck", "spaceMargin" },
+                    XamlTestHelper.StaticResourceKeys(tab).Where(k => !k.StartsWith("NumberInput", StringComparison.Ordinal)).ToArray());
             }
 
             // InvertBoolToVisibilityConverter・controlIndexCheck は、画面全体のリソース（左右のペインの外）にある

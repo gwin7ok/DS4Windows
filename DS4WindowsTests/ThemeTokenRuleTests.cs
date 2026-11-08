@@ -124,5 +124,55 @@ namespace DS4WindowsTests
             thread.Join();
             if (failure != null) throw new InvalidOperationException(theme + " を読み込めない: " + failure, failure);
         }
+
+        /// <summary>
+        /// 数値の表示・入力の寸法のスタイル（ReadingValueLabel*、NumberInput*）は、両テーマに同じ寸法で持つ。
+        /// Dark だけ、または片方だけ違う幅になると、数値の見切れがテーマによって起きる。
+        /// </summary>
+        [Fact]
+        public void NumberSizeStyles_HaveTheSameDimensionsInBothThemes()
+        {
+            XElement dark = Load(DarkPath);
+            XElement light = Load(DefaultPath);
+            if (dark == null || light == null) return;
+
+            Dictionary<string, string> Sizes(XElement root) => root.Elements().Where(e => e.Name.LocalName == "Style")
+                .Where(e => ((string)e.Attribute(Xaml + "Key") ?? "").StartsWith("ReadingValueLabel", StringComparison.Ordinal)
+                         || ((string)e.Attribute(Xaml + "Key") ?? "").StartsWith("NumberInput", StringComparison.Ordinal))
+                .ToDictionary(e => (string)e.Attribute(Xaml + "Key"),
+                    e => string.Join(";", e.Elements().Where(c => c.Name.LocalName == "Setter")
+                        .Select(c => (string)c.Attribute("Property") + "=" + (string)c.Attribute("Value"))));
+
+            Dictionary<string, string> d = Sizes(dark);
+            Dictionary<string, string> l = Sizes(light);
+            Assert.NotEmpty(d);
+            Assert.Equal(d.OrderBy(x => x.Key), l.OrderBy(x => x.Key));
+        }
+
+        /// <summary>
+        /// xctk の UpDown の最小幅は、共有スタイル（NumberInput*）で指定する。幅の数字を各所に書くと、画面ごとにばらつく。
+        /// BindingWindow は IntegerUpDown の暗黙のスタイルを持つため、対象外。
+        /// </summary>
+        [Fact]
+        public void UpDownMinWidth_UsesTheSharedStyles()
+        {
+            string themeFile = SourceFileLocator.Find(DarkPath);
+            if (themeFile == null) return;
+            string uiDir = Path.GetDirectoryName(Path.GetDirectoryName(themeFile));
+
+            var offenders = new List<string>();
+            foreach (string file in Directory.GetFiles(uiDir, "*.xaml", SearchOption.TopDirectoryOnly))
+            {
+                if (file.EndsWith("BindingWindow.xaml", StringComparison.Ordinal)) continue;
+                foreach (XElement e in XDocument.Load(file).Root.Descendants().Where(x => x.Name.LocalName.EndsWith("UpDown", StringComparison.Ordinal)))
+                {
+                    string width = (string)e.Attribute("MinWidth");
+                    if (width is "50" or "60" or "80" or "100" && e.Attribute("Style") == null)
+                        offenders.Add(Path.GetFileName(file) + ": " + e.Name.LocalName + " MinWidth=" + width);
+                }
+            }
+
+            Assert.True(offenders.Count == 0, "共有スタイルを使っていない UpDown:\n" + string.Join("\n", offenders));
+        }
     }
 }

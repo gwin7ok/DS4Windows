@@ -397,12 +397,12 @@
                                     <StackPanel Orientation="Horizontal">
                                         <Label Content="{lex:Loc MainWin.OneEuroMinCutoff}" />
                                         <xctk:DoubleUpDown d:IsHidden="True" FormatString="F5" Value="{Binding UdpSmoothMinCutoff,FallbackValue=1.0,UpdateSourceTrigger=LostFocus}"
-                                                           Minimum="0.00001" Maximum="100.0" Increment="0.1" MinWidth="60" />
+                                                           Minimum="0.00001" Maximum="100.0" Increment="0.1" Style="{StaticResource NumberInputMedium}" />
                                     </StackPanel>
                                     <StackPanel Orientation="Horizontal" Margin="30,0,0,0">
                                         <Label Content="{lex:Loc MainWin.OneEuroBeta}" />
                                         <xctk:DoubleUpDown  d:IsHidden="True" FormatString="F5" Value="{Binding UdpSmoothBeta,FallbackValue=0.0,UpdateSourceTrigger=LostFocus}"
-                                                           Minimum="0.0" Maximum="1.0" Increment="0.1" MinWidth="60" />
+                                                           Minimum="0.0" Maximum="1.0" Increment="0.1" Style="{StaticResource NumberInputMedium}" />
                                     </StackPanel>
                                 </StackPanel>
                             </StackPanel>

@@ -1,6 +1,8 @@
+﻿using System.Text.RegularExpressions;
 using System;
 using System.Collections.Generic;
 using System.Globalization;
+using System.Linq;
 using System.Threading;
 using System.Windows;
 using System.Windows.Controls;
@@ -69,8 +71,8 @@ namespace DS4WindowsTests
                 foreach (KeyValuePair<string, string> pair in WorstCase)
                 {
                     XElement label = XamlTestHelper.FindByName(xaml, pair.Key);
-                    double declared = double.Parse(XamlTestHelper.Attr(label, "Width"), CultureInfo.InvariantCulture);
-                    Thickness padding = (Thickness)new ThicknessConverter().ConvertFromInvariantString(XamlTestHelper.Attr(label, "Padding"));
+                    double declared = double.Parse(DeclaredAttr(label, "Width"), CultureInfo.InvariantCulture);
+                    Thickness padding = (Thickness)new ThicknessConverter().ConvertFromInvariantString(DeclaredAttr(label, "Padding"));
 
                     foreach ((string family, double size) in Fonts)
                     {
@@ -147,11 +149,28 @@ namespace DS4WindowsTests
             }
         }
 
+        /// <summary>ラベルに書かれた属性。無ければ、Style で指定した共有スタイル（DefaultTheme.xaml）の Setter から読む</summary>
+        private static string DeclaredAttr(XElement label, string name)
+        {
+            string direct = XamlTestHelper.Attr(label, name);
+            if (direct != null) return direct;
+
+            string style = XamlTestHelper.Attr(label, "Style");
+            Match key = style == null ? null : Regex.Match(style, @"\{(?:Static|Dynamic)Resource (\w+)\}");
+            Assert.True(key != null && key.Success, name + " の宣言が見つからない: " + label.Attribute("{http://schemas.microsoft.com/winfx/2006/xaml}Name")?.Value);
+
+            XNamespace x = "http://schemas.microsoft.com/winfx/2006/xaml";
+            XDocument theme = XDocument.Load(SourceFileLocator.Find("DS4Windows/UI/Themes/DefaultTheme.xaml"));
+            XElement styleElement = theme.Root.Elements().First(e => (string)e.Attribute(x + "Key") == key.Groups[1].Value);
+            return (string)styleElement.Elements().First(e => (string)e.Attribute("Property") == name).Attribute("Value");
+        }
+
         /// <summary>実物のコントロールに最大桁の値を入れ、左ペインの幅で配置する</summary>
         private static ControllerReadingsControl CreateLaidOutControl(string family, double size)
         {
             var control = new ControllerReadingsControl();
-            var resources = new ResourceDictionary { ["ForegroundBrush"] = new SolidColorBrush(Colors.Black) };
+            // 実物のテーマ（数値ラベルの共有スタイルを含む）を、アプリと同じく画面の外のリソースとして与える
+            var resources = (ResourceDictionary)Application.LoadComponent(new Uri("/DS4Windows;component/UI/Themes/DefaultTheme.xaml", UriKind.Relative));
             control.Resources.MergedDictionaries.Add(resources);
             if (family != null)
             {
