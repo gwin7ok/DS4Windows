@@ -123,6 +123,7 @@ Phase16（第 1 層のカートリッジ化）より前に行う理由: Phase16 
 | Step | 状態 |
 |---|---|
 | 計画書 | 草案作成・P1〜P10 回答済み（2026-11-08。P8＝全領域、P9＝最後に 1 回） |
+| 15-1-0 | 完了（2026-11-08）。`ConnectionType` を `git mv`（fe6e143e）→ 名前空間の書き換え（f195e623）。入れ子の列挙型 4 つを `Core/Model` のトップレベルへ（cb050b1a）: `DS4Device.ExclusiveStatus` → `DeviceExclusiveStatus`、`OutSlotDevice` の `AttachedStatus`／`ReserveStatus`／`InputBound` → `OutputSlotAttachedStatus`／`OutputSlotReserveStatus`／`OutputSlotInputBound`（名前が一般的すぎるため接頭辞を付けた。値は同じ）。L7 は 30 → 28（`ConnectionType` と列挙型の分、基準値を更新）。Debug ALL: 警告 0・エラー 0（基準値の更新前に L7 の一致検査だけが期待どおり失敗し、更新後に合格）。規則 L8 は `UiControlServiceReferenceRuleTests`（型参照 14 を凍結。層の規則の表ではなく型を指定する規則のため、別のテストにした） |
 
 ## 10. Step 15-1 の細部（UI 向けの窓口。R-09）
 
@@ -132,7 +133,7 @@ Phase16（第 1 層のカートリッジ化）より前に行う理由: Phase16 
 
 - UI から、具象の `ControlService` と、第 1 層の `DS4Device`、第 3 層の `OutSlotDevice`／`OutputSlotManager` などの**機器の型への参照をなくす**。UI は第 2 層の契約（`Processing/Abstractions`）だけを見る。
 - 終了時の数値の目標:
-  - UI で `ControlService` 型を参照するファイル: 24 → 0（新しい禁止の規則 L8 で固定。§10.5）
+  - UI で `ControlService` 型を参照する型: 14 → 0（新しい禁止の規則 L8 で固定。§10.5。「24 ファイル」はコメントや未使用の記述を含む文字列検索の値で、実際の型参照は 14 型。15-1-0 で実測）
   - 規則 L7（UI → 第 1 層・第 3 層）: 30 → **6**（残りは `DS4State`／`DS4StateExposed`／`SixAxis`／`DS4SixAxis` の値の型。Phase16 の R-17 で `Core/Model` へ移す。S2）
   - `MainWindow` のコンストラクター引数: 26 → できるだけ減らす（S3。引数ごとに「除去するか残すか」をユーザーが判断する）
 
