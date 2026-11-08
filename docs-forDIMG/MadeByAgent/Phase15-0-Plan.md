@@ -1,7 +1,7 @@
 # Phase15-0 個別計画書: Phase14 系の小さな持ち越しの片付け
 
 作成日: 2026-11-05
-状態: **承認済み（2026-11-05。H1〜H6 はユーザーがすべて推奨案を選択）→ 15-0-0〜15-0-5 完了（2026-11-08）。次は 15-0-6**
+状態: **承認済み（2026-11-05。H1〜H6 はユーザーがすべて推奨案を選択）→ 15-0-0〜15-0-6 完了・取り込み済み（2026-11-08）。次は Phase15**
 ブランチ: `Phase15-0`（master 67529739 から作成）
 根拠: `Phase14d-Plan.md` §10（持ち越し）、`Phase9-Deferred-Ledger.md`（Phase13b-2）、`Known-Issues-Ledger.md`（KI-4）、`Log-Policy.md` §3・§11、規約 `.github/copilot-instructions.md` §2.3・§3.3・§4
 
@@ -75,3 +75,4 @@ B（改名）を最後にするのは、C・D で中身を触るファイルの�
 | 15-0-4 | 完了。KI-4: 共有の `BackingStore.m_linkedProfiles` が消えた一時フォルダーを指すと保存が失敗する、と見て、当該テストを専用の一時フォルダーへ切り離した（再現しなかったため断定ではなく、台帳では解消済みへ移し、再発したら再オープン）。並列で落ちた 4 クラスは `SharedHostState` のコレクションへ入れた。並列実行を再計測（6 回）: 全件 38〜40 秒（直列 約 49 秒。約 20% 短い）だが、6 回中 5 回で別々のクラスが落ちた（`Phase11W6OutDevTypeTempFollowsEditorTests`、`Phase9CMacroStepExecutorDifferentialTests`、`Phase9EOscServiceDifferentialTests`、`Phase6Step9ContractExtensionTests`［3 回］、`BackingStoreAppSettingsLoadTests`、`Phase6Step10GroupThreeBContractTests`、`Phase9MapCustomCommitterDifferentialTests`）。共有の状態に触れるクラスが多く、短縮も 3 割に届かないため、H4 の条件（5 回続けて合格、かつ 3 割以上短い）を満たさず、直列のまま。Debug ALL: 警告 0・エラー 0、3,152 件合格 |
 | 15-0-5 | 完了。対応表 `Phase15-0-Test-Rename-Map.md`（17143500）→ `git mv` のみ 303 件（0f3a7aca。`git diff -M100%` で内容の変更 0 を確認）→ クラス名の書き換え（308 ファイル 510 か所）。手で名前を付けたのは 33 件（重複・機能を表さないもの）。**副産物**: テストの実行順はクラス名から決まるため、改名で順序が変わり、前のテストが残す状態に依存していた 4 件が落ちた（2 段階トリガーの状態［`MappingCharacterizationScope`］と、遅延の基準時刻［`SpecialActionTestScope`］が切断で戻らない）。いずれもテストの後始末・開始時の初期化を足して解消（本体の不具合ではない）。Debug ALL: 警告 0・エラー 0、3,152 件合格（3 回連続）。`Pr2`／`Step3Step2` などを名前に含む `ControlService*` のテストは、Phase／Step で始まらないため対象外 |
 | 15-0-6 | 規約（§2.3 の利用者向けログの書き方、§4 のテストの命名と状態の初期化）、`Log-Policy.md` §11、ロードマップ、`CHANGELOG.md` の [Unreleased] を更新。Debug ALL（Remove-bin から）: 警告 0・エラー 0、3,152 件＋11 件合格。実機確認（H5）と取り込み（H6）は、Release ビルドの後 |
+| 取り込み | 実機確認（H5）はユーザーが「問題なし」（日本語・英語のログ、トレイ通知、ログファイルの言語）。master へ fast-forward で取り込み、push（H6。master d64ff223） |
