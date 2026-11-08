@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Windows;
 using DS4Windows.Processing;
+using DS4Windows.Processing.Abstractions;
 using DS4Windows.UI.ViewModels;
 
 namespace DS4Windows.UI;
@@ -10,16 +11,16 @@ public partial class StickCalibrationWindow : Window
     private Stick _stick;
     private int _device;
     private ProfileSettingsViewModel _profileSettingsVM;
-    private readonly ControlService _controlService;
+    private readonly IControllerReadingsSource _readings;
 
     public StickCalibrationWindow(Stick stick, int device, ProfileSettingsViewModel profileSettingsVm,
-        ControlService controlService)
+        IControllerReadingsSource readings)
     {
         _stick = stick;
         _device = device;
         _profileSettingsVM = profileSettingsVm;
         // Phase6-Step10-2-4b: AppHost/Program.rootHub への後退を廃止（必須引数）
-        _controlService = controlService ?? throw new ArgumentNullException(nameof(controlService));
+        _readings = readings ?? throw new ArgumentNullException(nameof(readings));
         InitializeComponent();
     }
 
@@ -30,7 +31,7 @@ public partial class StickCalibrationWindow : Window
 
     private void SaveButton_OnClick(object sender, RoutedEventArgs e)
     {
-        var state = _controlService.getDS4State(_device);
+        var state = _readings.GetCurrentState(_device);
 
         const int neutralState = 128;
         if (_stick == Stick.Left)

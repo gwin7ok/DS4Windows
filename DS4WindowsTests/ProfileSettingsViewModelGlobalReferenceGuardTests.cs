@@ -81,9 +81,10 @@ namespace DS4WindowsTests
             // Phase14d-Step3: ソースの文字列ではなく、コンストラクターの引数を確かめる（AppHost を使わないことは RemovedApiRuleTests）
             System.Reflection.ParameterInfo[] ps = typeof(DS4Windows.UI.Services.ViewModelFactory).GetConstructors().Single().GetParameters();
             Assert.DoesNotContain(ps, p => p.IsOptional);
-            // Phase13-Step6 6-c: 遅延（Func）をやめ、ControlService を直接受ける
+            // 遅延（Func）で受けず、第 2 層の契約（マクロ記録の窓口）を直接受ける。ControlService は受けない
             Assert.DoesNotContain(ps, p => p.ParameterType == typeof(Func<DS4Windows.Processing.ControlService>));
-            Assert.Contains(ps, p => p.ParameterType == typeof(DS4Windows.Processing.ControlService));
+            Assert.DoesNotContain(ps, p => p.ParameterType == typeof(DS4Windows.Processing.ControlService));
+            Assert.Contains(ps, p => p.ParameterType == typeof(DS4Windows.Processing.Abstractions.IMacroRecordingState));
         }
 
         [Fact]

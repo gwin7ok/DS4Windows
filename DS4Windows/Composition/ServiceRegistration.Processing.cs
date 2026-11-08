@@ -166,6 +166,8 @@ namespace DS4Windows.Composition
             // UI 向けの、接続中のコントローラーの読み取りの窓口（UI は DS4Device と ControlService を持たない）
             services.AddSingleton<IControllerSlotQuery, ControllerSlotQuery>();
             services.AddSingleton<IControllerSlotCommands, ControllerSlotCommands>();
+            services.AddSingleton<IControllerReadingsSource, ControllerReadingsSource>();
+            services.AddSingleton<IMacroRecordingState, MacroRecordingState>();
             // Phase13-Step5b: 入力レポートの処理（旧 ControlService.On_Report）と、その作業用の状態の持ち主。出力種別の配列は IOutputDeviceTypeState から直接受ける
             services.AddSingleton<IInputReportProcessor>(sp => new InputReportProcessor(
                 sp.GetRequiredService<LightbarOverrides>(),   // Phase14c-Step4

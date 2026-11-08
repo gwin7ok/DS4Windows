@@ -21,7 +21,7 @@ namespace DS4Windows.UI.Services
         private readonly IPathService _pathService;
         private readonly IAppSettingsService _appSettings;
         private readonly IAutoProfileService _autoProfileService;
-        private readonly ControlService _controlService;
+        private readonly IMacroRecordingState _macroRecording;
         private readonly IProfileLoadTarget _loadTarget;   // Phase13-Step6 6-e: ProfileSettingsViewModel のプロファイル読込の窓口
         private readonly IRuntimeFeatureSwitch _runtimeFeatures;   // Phase13-Step10 10-c: AutoProfilesViewModel の HidHide 登録の窓口
 
@@ -41,7 +41,7 @@ namespace DS4Windows.UI.Services
             IPathService pathService,
             IAppSettingsService appSettings,
             IAutoProfileService autoProfileService,
-            ControlService controlService,
+            IMacroRecordingState macroRecording,
             IProfileLoadTarget loadTarget,
             IRuntimeFeatureSwitch runtimeFeatures)
         {
@@ -57,7 +57,7 @@ namespace DS4Windows.UI.Services
             // Phase13-Step8 8-c: 旧 遅延取得デリゲート（Phase6-Step10-2-3: AutoProfileHolder は設定の場所が決まった後でなければ生成できない）。
             // 本ファクトリーは、メイン画面の生成時（設定の場所の確定後。App.ResolvePostHostService）に解決されるため、直接受ける。
             _autoProfileService = autoProfileService ?? throw new ArgumentNullException(nameof(autoProfileService));
-            _controlService = controlService ?? throw new ArgumentNullException(nameof(controlService));
+            _macroRecording = macroRecording ?? throw new ArgumentNullException(nameof(macroRecording));
             _loadTarget = loadTarget ?? throw new ArgumentNullException(nameof(loadTarget));
             _runtimeFeatures = runtimeFeatures ?? throw new ArgumentNullException(nameof(runtimeFeatures));
         }
@@ -75,7 +75,7 @@ namespace DS4Windows.UI.Services
             if (AppLogger.IsTraceEnabled)
                 AppLogger.LogTrace($"[DI] ViewModelFactory: Created RecordBoxViewModel for Device {device}, targetDevice {targetDevice}");
             return new RecordBoxViewModel(_lightbar, device, controlSettings, repeatable,
-                _profileSettings, _environmentService, _controlService, targetDevice);
+                _profileSettings, _environmentService, _macroRecording, targetDevice);
         }
 
         public SpecialActEditorViewModel CreateSpecialActEditorViewModel(int device, SpecialAction action = null)

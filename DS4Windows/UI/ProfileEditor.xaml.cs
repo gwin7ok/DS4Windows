@@ -180,7 +180,6 @@ namespace DS4Windows.UI
         private ProfileSettingsViewModel profileSettingsVM;
         private readonly DS4Windows.Core.Abstractions.IProfileRepository profileRepository;
         private readonly DS4Windows.Processing.Actions.IProfileSwitcher profileSwitcher;
-        private readonly DS4Windows.Processing.ControlService controlService;
         private readonly IControllerSlotCommands slotCommands;
         private readonly DS4Windows.Processing.Abstractions.IRuntimeFeatureSwitch runtimeFeatures;
         private MappingListViewModel mappingListVM;
@@ -324,7 +323,7 @@ namespace DS4Windows.UI
         /// </param>
         public ProfileEditor(int targetDevice, IAppSettingsService appSettingsService, IProfileSettingsService profileSettingsService,
             DS4Windows.UI.Abstractions.IEditorWindowFactory editorWindowFactory, IProfileRepository profileRepository,
-            IProfileSwitcher profileSwitcher, ControlService controlService, IViewModelFactory viewModelFactory,
+            IProfileSwitcher profileSwitcher, IControllerReadingsSource readingsSource, IViewModelFactory viewModelFactory,
             DS4Windows.Core.Abstractions.IEnvironmentService environmentService, DS4Windows.Processing.Abstractions.IRuntimeFeatureSwitch runtimeFeatures,
             IControllerSlotCommands slotCommands)
         {
@@ -342,10 +341,9 @@ namespace DS4Windows.UI
             // Phase7-Step5 W5（Q5＝A）: 旧 AppHost.GetService の 4 件を、コンストラクター引数に替えた（IEditorWindowFactory.CreateProfileEditor が渡す）
             this.profileRepository = profileRepository ?? throw new ArgumentNullException(nameof(profileRepository));
             this.profileSwitcher = profileSwitcher ?? throw new ArgumentNullException(nameof(profileSwitcher));
-            this.controlService = controlService;
             this.slotCommands = slotCommands ?? throw new ArgumentNullException(nameof(slotCommands));
             // Phase6-Step10-2-5: ControllerReadingsControl は XAML から生成されるため、ControlService を Initialize で渡す
-            conReadingsUserCon.Initialize(controlService);
+            conReadingsUserCon.Initialize(readingsSource ?? throw new ArgumentNullException(nameof(readingsSource)));
 
             // SpecialActionsリスト表示前にカルチャを明示的に再設定
             var lang = appSettingsService.UseLang;

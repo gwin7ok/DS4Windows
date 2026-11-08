@@ -60,7 +60,7 @@ namespace DS4Windows.UI
         private NonFormTimer ds4 = new NonFormTimer();
 
         // Phase6-Step10-2-4b: Program.rootHub／AppHost への後退を廃止し、必要なサービスを必須引数で受け取る。
-        private readonly DS4Windows.Processing.ControlService controlService;
+        private readonly DS4Windows.Processing.Abstractions.IMacroRecordingState macroRecording;
         private readonly DS4Windows.Core.Abstractions.IPathService pathService;
 
         /// <param name="targetDevice">
@@ -69,13 +69,13 @@ namespace DS4Windows.UI
         /// </param>
         public RecordBox(int deviceNum, DS4Windows.Core.Settings.DS4ControlSettings controlSettings, int targetDevice,
             bool showscan, bool repeatable, bool showPlaybackOptions,
-            DS4Windows.Processing.ControlService controlService, DS4Windows.Core.Abstractions.IPathService pathService,
+            DS4Windows.Processing.Abstractions.IMacroRecordingState macroRecording, DS4Windows.Core.Abstractions.IPathService pathService,
             DS4Windows.UI.Abstractions.IViewModelFactory viewModelFactory,
             DS4Windows.Core.Abstractions.IWindowSystem windowSystem, DS4Windows.Core.Abstractions.IMouseInputHook mouseHook)
         {
             this.windowSystem = windowSystem ?? throw new ArgumentNullException(nameof(windowSystem));
             this.mouseHook = mouseHook ?? throw new ArgumentNullException(nameof(mouseHook));
-            this.controlService = controlService ?? throw new ArgumentNullException(nameof(controlService));
+            this.macroRecording = macroRecording ?? throw new ArgumentNullException(nameof(macroRecording));
             this.pathService = pathService ?? throw new ArgumentNullException(nameof(pathService));
             if (viewModelFactory == null) throw new ArgumentNullException(nameof(viewModelFactory));
             InitializeComponent();
@@ -206,7 +206,7 @@ namespace DS4Windows.UI
             bool recording = recordBoxVM.Recording = !recordBoxVM.Recording;
             if (recording)
             {
-                controlService.recordingMacro = true;
+                macroRecording.IsRecording = true;
                 recordBtn.Content = "Stop";
                 if (recordBoxVM.MacroStepIndex == -1)
                 {
@@ -233,7 +233,7 @@ namespace DS4Windows.UI
             }
             else
             {
-                controlService.recordingMacro = false;
+                macroRecording.IsRecording = false;
                 recordBoxVM.AppendIndex = -1;
                 StopMouseRecording();
                 ds4.Stop();

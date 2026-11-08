@@ -32,6 +32,7 @@ using System.Windows.Navigation;
 using System.Windows.Shapes;
 using System.Windows.Threading;
 using DS4Windows.Input;
+using DS4Windows.Processing.Abstractions;
 using NonFormTimer = System.Timers.Timer;
 
 namespace DS4Windows.UI
@@ -230,7 +231,7 @@ namespace DS4Windows.UI
 
         // Phase6-Step10-2-5: XAML から生成されるため、ControlService は Initialize で受け取る（AppHost/Program.rootHub の後退を廃止）。
         // Initialize の前は null（null の間は、ControlService を使う処理をすべてスキップする既存の null 検査が働く）。
-        private DS4Windows.Processing.ControlService controlService;
+        private DS4Windows.Processing.Abstractions.IControllerReadingsSource readingsSource;
 
         /// <summary>現在のテーマの文字色（テーマの ForegroundColor。見つからなければ SystemColors.WindowTextColor）。</summary>
         private static Color ThemeForegroundColor()
@@ -239,9 +240,9 @@ namespace DS4Windows.UI
                 ?? SystemColors.WindowTextColor;
         }
 
-        public void Initialize(DS4Windows.Processing.ControlService controlService)
+        public void Initialize(DS4Windows.Processing.Abstractions.IControllerReadingsSource readingsSource)
         {
-            this.controlService = controlService ?? throw new ArgumentNullException(nameof(controlService));
+            this.readingsSource = readingsSource ?? throw new ArgumentNullException(nameof(readingsSource));
         }
 
         public ControllerReadingsControl()
@@ -354,9 +355,9 @@ namespace DS4Windows.UI
             {
                 IsEnabled = true;
                 useTimer = true;
-                if (controlService != null)
+                if (readingsSource != null)
                 {
-                    controlService.IsMeasuringProcessingDelay = true;
+                    readingsSource.IsMeasuringProcessingDelay = true;
                 }
                 readingTimer.Elapsed += ControllerReadingTimer_Elapsed;
                 readingTimer.Start();
@@ -365,9 +366,9 @@ namespace DS4Windows.UI
             {
                 IsEnabled = false;
                 useTimer = false;
-                if (controlService != null)
+                if (readingsSource != null)
                 {
-                    controlService.IsMeasuringProcessingDelay = false;
+                    readingsSource.IsMeasuringProcessingDelay = false;
                 }
                 readingTimer.Stop();
                 isUiUpdating = false;
@@ -385,51 +386,25 @@ namespace DS4Windows.UI
                 return;
             }
 
-            DS4Device ds = controlService?.DS4Controllers != null && deviceNum < controlService.DS4Controllers.Length
-                ? controlService.DS4Controllers[deviceNum]
-                : null;
-
-            if (ds != null && ds.IsAlive())
+            // 状態のコピーは機器の読み取りの待機を取って行う（ControlService ではなく窓口が担う）。
+            // 割り当てを増やさないよう、コピー先はこの画面が持つ baseState／interState を渡す
+            if (readingsSource != null && readingsSource.TryRead(deviceNum, profileDeviceNum, baseState, interState, out ControllerReadingInfo info))
             {
-                DS4State tmpbaseState = controlService.getDS4State(deviceNum);
-                DS4State tmpinterState = controlService.getDS4StateTemp(deviceNum);
-                long cntCalibrating = ds.SixAxis.CntCalibrating;
+                isUiUpdating = true;
 
-                // タイムアウト付き待機 (最大10ms) でブロッキングを防止
-                if (ds.ReadWaitEv.Wait(10))
+                // UIスレッドへのディスパッチを非同期・Background優先度にすることで、
+                // マウスやWindowsの描画メッセージを最優先させ、OS全体の重さを解消
+                Dispatcher.BeginInvoke(DispatcherPriority.Background, new Action(() =>
                 {
                     try
                     {
-                        ds.ReadWaitEv.Reset();
-
-                        // 内部状態の高速メモリコピー
-                        tmpbaseState.CopyTo(baseState);
-                        tmpinterState.CopyTo(interState);
-
-                        if (deviceNum != profileDeviceNum)
-                            controlService.MappingService.SetCurveAndDeadzone(profileDeviceNum, baseState, interState, controlService.ProfileSettingsService);
+                        UpdateUiControls(info);
                     }
                     finally
                     {
-                        ds.ReadWaitEv.Set();
+                        isUiUpdating = false;
                     }
-
-                    isUiUpdating = true;
-
-                    // UIスレッドへのディスパッチを非同期・Background優先度にすることで、
-                    // マウスやWindowsの描画メッセージを最優先させ、OS全体の重さを解消
-                    Dispatcher.BeginInvoke(DispatcherPriority.Background, new Action(() =>
-                    {
-                        try
-                        {
-                            UpdateUiControls(ds, cntCalibrating);
-                        }
-                        finally
-                        {
-                            isUiUpdating = false;
-                        }
-                    }));
-                }
+                }));
             }
 
             if (useTimer)
@@ -441,7 +416,7 @@ namespace DS4Windows.UI
         /// <summary>
         /// 値が変化したコントロールのみをピンポイントで更新する差分描画処理
         /// </summary>
-        private void UpdateUiControls(DS4Device ds, long cntCalibrating)
+        private void UpdateUiControls(ControllerReadingInfo info)
         {
             int inLx = baseState.LX;
             int inLy = baseState.LY;
@@ -585,13 +560,13 @@ namespace DS4Windows.UI
             }
 
             // 入力遅延 (最大値の更新と表示)
-            double latency = ds.Latency;
+            double latency = info.Latency;
             if (latency > maxLatency) maxLatency = latency;
             int latencyInt = (int)(latency * 10);
 
             if (latencyInt != lastLatencyInt || latency >= maxLatency)
             {
-                int warnInterval = ds.getWarnInterval();
+                int warnInterval = info.WarnInterval;
 
                 // 元のリソース（言語ファイル）による「入力遅延: XX ms」の文字列を取得し、それにMaxを付与する
                 string baseText = string.Format(Properties.Resources.InputDelay, latency.ToString("0.0"));
@@ -624,6 +599,7 @@ namespace DS4Windows.UI
             }
 
             // キャリブレーションインジケータ
+            long cntCalibrating = info.CalibrationCount;
             if (cntCalibrating != lastCalibrating)
             {
                 gyroCalEllipse.Visibility = cntCalibrating > 0 && ((cntCalibrating / 250) % 2 == 1) ? Visibility.Visible : Visibility.Hidden;
@@ -631,7 +607,7 @@ namespace DS4Windows.UI
             }
 
             // 出力遅延 (最大値の更新と表示)
-            double procDelay = controlService != null ? controlService.GetProcessingDelay(deviceNum) : 0.0;
+            double procDelay = info.ProcessingDelayMs;
             if (procDelay > maxProcDelay) maxProcDelay = procDelay;
             int procDelayInt = (int)(procDelay * 100);
 

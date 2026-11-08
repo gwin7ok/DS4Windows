@@ -24,7 +24,8 @@ namespace DS4Windows.UI.Services
         private readonly IViewModelFactory _viewModelFactory;
         private readonly ISpecialActionRepository _specialActionRepository;
         private readonly IProfilePresetLoader _presetLoader;
-        private readonly ControlService _controlService;
+        private readonly IControllerReadingsSource _readings;
+        private readonly IMacroRecordingState _macroRecording;
         private readonly IControllerSlotCommands _slotCommands;
         private readonly IProfileLoadTarget _loadTarget;   // Phase13-Step6 6-e: プリセットの読込先の窓口
         // Phase7-Step5 W5: CreateProfileEditor が ProfileEditor へ渡すサービス
@@ -50,7 +51,8 @@ namespace DS4Windows.UI.Services
             IViewModelFactory viewModelFactory,
             ISpecialActionRepository specialActionRepository,
             IProfilePresetLoader presetLoader,
-            ControlService controlService,
+            IControllerReadingsSource readings,
+            IMacroRecordingState macroRecording,
             IProfileLoadTarget loadTarget,
             IAppSettingsService appSettings,
             IProfileRepository profileRepository,
@@ -73,7 +75,8 @@ namespace DS4Windows.UI.Services
             _viewModelFactory = viewModelFactory ?? throw new ArgumentNullException(nameof(viewModelFactory));
             _specialActionRepository = specialActionRepository ?? throw new ArgumentNullException(nameof(specialActionRepository));
             _presetLoader = presetLoader ?? throw new ArgumentNullException(nameof(presetLoader));
-            _controlService = controlService ?? throw new ArgumentNullException(nameof(controlService));
+            _readings = readings ?? throw new ArgumentNullException(nameof(readings));
+            _macroRecording = macroRecording ?? throw new ArgumentNullException(nameof(macroRecording));
             _loadTarget = loadTarget ?? throw new ArgumentNullException(nameof(loadTarget));
             _appSettings = appSettings ?? throw new ArgumentNullException(nameof(appSettings));
             _profileRepository = profileRepository ?? throw new ArgumentNullException(nameof(profileRepository));
@@ -88,7 +91,7 @@ namespace DS4Windows.UI.Services
         public RecordBox CreateRecordBox(int deviceNum, DS4ControlSettings controlSettings, int targetDevice,
             bool showscan = true, bool repeatable = true, bool showPlaybackOptions = true)
             => new RecordBox(deviceNum, controlSettings, targetDevice, showscan, repeatable, showPlaybackOptions,
-                _controlService, _pathService, _viewModelFactory, _windowSystem, _mouseHook);
+                _macroRecording, _pathService, _viewModelFactory, _windowSystem, _mouseHook);
 
         public RecordBoxWindow CreateRecordBoxWindow(int deviceNum, DS4ControlSettings settings, int targetDevice,
             bool repeatable = true, bool showPlaybackOptions = true)
@@ -99,7 +102,7 @@ namespace DS4Windows.UI.Services
 
         public StickCalibrationWindow CreateStickCalibrationWindow(Stick stick, int device,
             ProfileSettingsViewModel profileSettingsViewModel)
-            => new StickCalibrationWindow(stick, device, profileSettingsViewModel, _controlService);
+            => new StickCalibrationWindow(stick, device, profileSettingsViewModel, _readings);
 
         public AssignmentEditor CreateAssignmentEditor(int deviceNum, ProfileList profileList, int targetDevice,
             SpecialAction specialAction = null)
@@ -113,6 +116,6 @@ namespace DS4Windows.UI.Services
 
         public ProfileEditor CreateProfileEditor(int targetDevice)
             => new ProfileEditor(targetDevice, _appSettings, _profileSettings, this, _profileRepository,
-                _profileSwitcher, _controlService, _viewModelFactory, _environmentService, _runtimeFeatures, _slotCommands);
+                _profileSwitcher, _readings, _viewModelFactory, _environmentService, _runtimeFeatures, _slotCommands);
     }
 }

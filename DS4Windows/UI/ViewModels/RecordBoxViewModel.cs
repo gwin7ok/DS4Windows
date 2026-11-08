@@ -32,6 +32,7 @@ using DS4Windows.Core.Model;
 using DS4Windows.Core.Settings;
 using DS4Windows.Input;
 using DS4Windows.Processing;
+using DS4Windows.Processing.Abstractions;
 
 namespace DS4Windows.UI.ViewModels
 {
@@ -119,7 +120,7 @@ namespace DS4Windows.UI.ViewModels
         private readonly IProfileSettingsService profileSettingsService;
         // Phase7-Step10e W2: スロット数の上限は、静的な ControlService.CURRENT_DS4_CONTROLLER_LIMIT ではなく、注入された環境サービスから読む
         private readonly IEnvironmentService environmentService;
-        private readonly ControlService controlService;
+        private readonly IMacroRecordingState macroRecording;
 
         // Phase6-Step7b: 設定の読み書き先（DeviceNum＝編集スロット）とは別に、ライトバーのプレビューと
         // 記録中のタッチパッド Passthru で実際に使うコントローラーのスロット番号を持つ。-1 は「実機なし」。
@@ -139,7 +140,7 @@ namespace DS4Windows.UI.ViewModels
         public RecordBoxViewModel(DS4Windows.Core.Model.LightbarOverrides lightbar, int deviceNum, DS4ControlSettings controlSettings, bool repeatable,
             IProfileSettingsService profileSettingsService,
             IEnvironmentService environmentService,
-            ControlService controlService,
+            IMacroRecordingState macroRecording,
             int targetDevice = -1)
         {
             _lightbar = lightbar ?? throw new System.ArgumentNullException(nameof(lightbar));
@@ -148,7 +149,7 @@ namespace DS4Windows.UI.ViewModels
             this.profileSettingsService = profileSettingsService ?? throw new ArgumentNullException(nameof(profileSettingsService));
             // Phase6-Step10-2-4b: Program.rootHub への後退を廃止。ControlService は EditorWindowFactory から渡す。
             // null は「コントローラーを持たない」（単体テスト）を表し、記録中の入力の取り込み（ProcessDS4Tick）だけが使う。
-            this.controlService = controlService;
+            this.macroRecording = macroRecording;
 
             if (keydownOverrides == null)
             {
@@ -422,17 +423,14 @@ namespace DS4Windows.UI.ViewModels
 
         public void ProcessDS4Tick()
         {
-            if (controlService != null && controlService.DS4Controllers[0] != null)
+            if (macroRecording != null && macroRecording.CanReadInput)
             {
-                DS4Device dev = controlService.DS4Controllers[0];
-                DS4State cState = dev.getCurrentStateRef();
-                DS4Windows.Processing.Mouse tp = controlService.touchPad[0];
                 for (DS4Controls dc = DS4Controls.LXNeg; dc < DS4Controls.Mute; dc++)
                 {
                     int macroValue = DS4ControlNames.macroDS4Values[dc];
                     ds4InputMap.TryGetValue((int)dc, out bool isdown);
                     keysdownMap.TryGetValue(macroValue, out bool outputExists);
-                    if (!isdown && controlService.MappingService.GetBoolMappingExternal(0, dc, cState, null, tp))
+                    if (!isdown && macroRecording.IsPressed(dc))
                     {
                         MacroStep step = new MacroStep(macroValue, MacroParser.InputName(macroValue, MacroOutType),
                                 MacroStep.StepType.ActDown, MacroStep.StepOutput.Button);
@@ -443,7 +441,7 @@ namespace DS4Windows.UI.ViewModels
                             keysdownMap.Add(macroValue, true);
                         }
                     }
-                    else if (isdown && !controlService.MappingService.GetBoolMappingExternal(0, dc, cState, null, tp))
+                    else if (isdown && !macroRecording.IsPressed(dc))
                     {
                         MacroStep step = new MacroStep(macroValue, MacroParser.InputName(macroValue, MacroOutType),
                                 MacroStep.StepType.ActUp, MacroStep.StepOutput.Button);
