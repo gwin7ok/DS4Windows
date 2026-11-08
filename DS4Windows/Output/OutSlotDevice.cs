@@ -28,29 +28,11 @@ namespace DS4Windows.Output
 {
     public class OutSlotDevice
     {
-        public enum AttachedStatus : uint
-        {
-            UnAttached = 0,
-            Attached = 1,
-        }
-
-        public enum ReserveStatus : uint
-        {
-            Dynamic = 0,
-            Permanent = 1,
-        }
-
-        public enum InputBound : uint
-        {
-            Unbound = 0,
-            Bound = 1,
-        }
-
         public const int INPUT_INDEX_DEFAULT = -1;
-        private AttachedStatus attachedStatus;
+        private OutputSlotAttachedStatus attachedStatus;
         private OutputDevice outputDevice;
-        private ReserveStatus reserveStatus;
-        private InputBound inputBound;
+        private OutputSlotReserveStatus reserveStatus;
+        private OutputSlotInputBound inputBound;
         private OutContType permanentType;
         private OutContType currentType;
         private int index;
@@ -73,7 +55,7 @@ namespace DS4Windows.Output
         /// <summary>
         /// Connection status of virtual output controller
         /// </summary>
-        public AttachedStatus CurrentAttachedStatus { get => attachedStatus; }
+        public OutputSlotAttachedStatus CurrentAttachedStatus { get => attachedStatus; }
 
         /// <summary>
         /// Reference to output controller
@@ -83,7 +65,7 @@ namespace DS4Windows.Output
         /// <summary>
         /// Flag stating the connection preference of an output controller
         /// </summary>
-        public ReserveStatus CurrentReserveStatus
+        public OutputSlotReserveStatus CurrentReserveStatus
         {
             get => reserveStatus;
             set
@@ -98,7 +80,7 @@ namespace DS4Windows.Output
         /// <summary>
         /// Whether an input controller is associated with the slot
         /// </summary>
-        public InputBound CurrentInputBound
+        public OutputSlotInputBound CurrentInputBound
         {
             get => inputBound;
             set
@@ -142,7 +124,7 @@ namespace DS4Windows.Output
 
         private void OutSlotDevice_CurrentReserveStatusChanged(object sender, EventArgs e)
         {
-            if (reserveStatus == ReserveStatus.Dynamic)
+            if (reserveStatus == OutputSlotReserveStatus.Dynamic)
             {
                 PermanentType = OutContType.None;
             }
@@ -155,7 +137,7 @@ namespace DS4Windows.Output
         public void AttachedDevice(OutputDevice outputDevice, OutContType contType, int inIdx, string inDisplayString)
         {
             this.outputDevice = outputDevice;
-            attachedStatus = AttachedStatus.Attached;
+            attachedStatus = OutputSlotAttachedStatus.Attached;
             currentType = contType;
             inputIndex = inIdx;
             inputDisplayString = inDisplayString;
@@ -167,10 +149,10 @@ namespace DS4Windows.Output
             if (outputDevice != null)
             {
                 outputDevice = null;
-                attachedStatus = AttachedStatus.UnAttached;
+                attachedStatus = OutputSlotAttachedStatus.UnAttached;
                 currentType = OutContType.None;
-                CurrentInputBound = InputBound.Unbound;
-                if (reserveStatus == ReserveStatus.Dynamic)
+                CurrentInputBound = OutputSlotInputBound.Unbound;
+                if (reserveStatus == OutputSlotReserveStatus.Dynamic)
                 {
                     PermanentType = OutContType.None;
                 }

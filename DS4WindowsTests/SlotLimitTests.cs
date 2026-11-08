@@ -179,7 +179,7 @@ namespace DS4WindowsTests
         public void PermanentOutputSlot_IsRestored_ForEverySlotIndex(int index)
         {
             OutputSlotManager source = NewSlotManager(ControllerLimits.MaxControllerCount);
-            source.OutputSlots[index].CurrentReserveStatus = OutSlotDevice.ReserveStatus.Permanent;
+            source.OutputSlots[index].CurrentReserveStatus = OutputSlotReserveStatus.Permanent;
             source.OutputSlots[index].PermanentType = OutContType.X360;
 
             var dto = new OutputSlotPersistDTO();
@@ -190,7 +190,7 @@ namespace DS4WindowsTests
             OutputSlotManager destination = NewSlotManager(ControllerLimits.MaxControllerCount);
             dto.MapTo(destination);
 
-            Assert.Equal(OutSlotDevice.ReserveStatus.Permanent, destination.OutputSlots[index].CurrentReserveStatus);
+            Assert.Equal(OutputSlotReserveStatus.Permanent, destination.OutputSlots[index].CurrentReserveStatus);
             Assert.Equal(OutContType.X360, destination.OutputSlots[index].PermanentType);
         }
 
@@ -203,7 +203,7 @@ namespace DS4WindowsTests
 
             dto.MapTo(destination); // 例外にならず、範囲外のスロットは無視する
 
-            Assert.All(destination.OutputSlots, s => Assert.Equal(OutSlotDevice.ReserveStatus.Dynamic, s.CurrentReserveStatus));
+            Assert.All(destination.OutputSlots, s => Assert.Equal(OutputSlotReserveStatus.Dynamic, s.CurrentReserveStatus));
         }
     }
 }

@@ -7,6 +7,7 @@ using DS4Windows.Core.Logging;
 using DS4Windows.Input;
 using DS4Windows.Input.Hid;
 using DS4Windows.Processing.Abstractions;
+using DS4Windows.Core.Model;
 
 namespace DS4Windows.Output.Services
 {
@@ -153,7 +154,7 @@ namespace DS4Windows.Output.Services
         {
             if (_environmentService.HidHideInstalled)
             {
-                dev.CurrentExclusiveStatus = DS4Device.ExclusiveStatus.HidHideAffected;
+                dev.CurrentExclusiveStatus = DeviceExclusiveStatus.HidHideAffected;
             }
         }
     }

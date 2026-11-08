@@ -22,6 +22,7 @@ using System.Windows.Documents;
 using System.Xml;
 using System.Xml.Serialization;
 using DS4Windows.Output;
+using DS4Windows.Core.Model;
 
 namespace DS4Windows.Core.Persistence.Dto
 {
@@ -50,7 +51,7 @@ namespace DS4Windows.Core.Persistence.Dto
         {
             foreach (OutSlotDevice dev in source.OutputSlots)
             {
-                if (dev.CurrentReserveStatus == OutSlotDevice.ReserveStatus.Permanent)
+                if (dev.CurrentReserveStatus == OutputSlotReserveStatus.Permanent)
                 {
                     OutputSlotSerializer tempSlot = new OutputSlotSerializer()
                     {
@@ -78,7 +79,7 @@ namespace DS4Windows.Core.Persistence.Dto
 
                 if (tempDev != null)
                 {
-                    tempDev.CurrentReserveStatus = OutSlotDevice.ReserveStatus.Permanent;
+                    tempDev.CurrentReserveStatus = OutputSlotReserveStatus.Permanent;
                     tempDev.PermanentType = tempSlot.DeviceType;
                 }
             }

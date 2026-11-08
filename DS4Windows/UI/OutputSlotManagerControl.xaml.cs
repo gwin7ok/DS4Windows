@@ -31,6 +31,7 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 using DS4Windows.UI.ViewModels;
+using DS4Windows.Core.Model;
 
 namespace DS4Windows.UI
 {
@@ -91,7 +92,7 @@ namespace DS4Windows.UI
 
             if (tempEntry != null &&
                 tempEntry.OutSlotDevice.CurrentReserveStatus ==
-                DS4Windows.Output.OutSlotDevice.ReserveStatus.Permanent &&
+                OutputSlotReserveStatus.Permanent &&
                 tempEntry.OutSlotDevice.PermanentType != DS4Windows.Core.Model.OutContType.None)
             {
                 tempEntry.OutSlotDevice.CurrentType = tempEntry.OutSlotDevice.PermanentType;
@@ -107,7 +108,7 @@ namespace DS4Windows.UI
                     tempEntry.OutSlotDevice.CurrentType = devWindow.ContType;
                     tempEntry.OutSlotDevice.CurrentReserveStatus = devWindow.ReserveType;
                     if (tempEntry.OutSlotDevice.CurrentReserveStatus ==
-                        DS4Windows.Output.OutSlotDevice.ReserveStatus.Permanent)
+                        OutputSlotReserveStatus.Permanent)
                     {
                         tempEntry.OutSlotDevice.PermanentType = devWindow.ContType;
                     }

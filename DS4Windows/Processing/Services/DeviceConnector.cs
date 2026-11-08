@@ -67,7 +67,7 @@ namespace DS4Windows.Processing.Services
         {
             if (_hidHideService.IsAffected(device))
             {
-                //device.CurrentExclusiveStatus = DS4Device.ExclusiveStatus.HidGuardAffected;
+                //device.CurrentExclusiveStatus = DeviceExclusiveStatus.HidGuardAffected;
                 _hidHideService.MarkAffected(device);
             }
 

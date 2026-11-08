@@ -98,13 +98,13 @@ namespace DS4Windows.Output.Services
             }
         }
 
-        // 恒久スロット（OutSlotDevice.ReserveStatus.Permanent）を、サービスの開始時に割り当てる（ControlService.Start から呼ばれる）。
+        // 恒久スロット（OutputSlotReserveStatus.Permanent）を、サービスの開始時に割り当てる（ControlService.Start から呼ばれる）。
         public void AssignInitialDevices()
         {
             foreach (OutSlotDevice slotDevice in outputslotMan.OutputSlots)
             {
                 if (slotDevice.CurrentReserveStatus ==
-                    OutSlotDevice.ReserveStatus.Permanent)
+                    OutputSlotReserveStatus.Permanent)
                 {
                     OutputDevice outDevice = EstablishOutDevice(0, slotDevice.PermanentType);
                     outputslotMan.DeferredPlugin(outDevice, -1, "", outputDevices, slotDevice.PermanentType);
@@ -116,7 +116,7 @@ namespace DS4Windows.Output.Services
             if (slotDevice == null)
             {
                 slotDevice = outputslotMan.FindOpenSlot();
-                slotDevice.CurrentReserveStatus = OutSlotDevice.ReserveStatus.Permanent;
+                slotDevice.CurrentReserveStatus = OutputSlotReserveStatus.Permanent;
                 slotDevice.PermanentType = OutContType.X360;
                 OutputDevice outDevice = EstablishOutDevice(0, OutContType.X360);
                 Xbox360OutDevice tempXbox = outDevice as Xbox360OutDevice;
@@ -128,7 +128,7 @@ namespace DS4Windows.Output.Services
             if (slotDevice == null)
             {
                 slotDevice = outputslotMan.FindOpenSlot();
-                slotDevice.CurrentReserveStatus = OutSlotDevice.ReserveStatus.Permanent;
+                slotDevice.CurrentReserveStatus = OutputSlotReserveStatus.Permanent;
                 slotDevice.DesiredType = OutContType.X360;
                 OutputDevice outDevice = EstablishOutDevice(1, OutContType.X360);
                 Xbox360OutDevice tempXbox = outDevice as Xbox360OutDevice;
@@ -400,7 +400,7 @@ namespace DS4Windows.Output.Services
         {
             OutSlotDevice slotDevice = outputslotMan.FindOpenSlot();
             if (slotDevice != null &&
-                slotDevice.CurrentAttachedStatus == OutSlotDevice.AttachedStatus.UnAttached)
+                slotDevice.CurrentAttachedStatus == OutputSlotAttachedStatus.UnAttached)
             {
                 OutputDevice outDevice = EstablishOutDevice(-1, contType);
                 outputslotMan.DeferredPlugin(outDevice, -1, "", outputDevices, contType);
@@ -409,8 +409,8 @@ namespace DS4Windows.Output.Services
 
         public void AttachUnboundOutDev(OutSlotDevice slotDevice, OutContType contType)
         {
-            if (slotDevice.CurrentAttachedStatus == OutSlotDevice.AttachedStatus.UnAttached &&
-                slotDevice.CurrentInputBound == OutSlotDevice.InputBound.Unbound)
+            if (slotDevice.CurrentAttachedStatus == OutputSlotAttachedStatus.UnAttached &&
+                slotDevice.CurrentInputBound == OutputSlotInputBound.Unbound)
             {
                 OutputDevice outDevice = EstablishOutDevice(-1, contType);
                 outputslotMan.DeferredPlugin(outDevice, -1, "", outputDevices, contType);
@@ -419,11 +419,11 @@ namespace DS4Windows.Output.Services
 
         public void DetachUnboundOutDev(OutSlotDevice slotDevice)
         {
-            if (slotDevice.CurrentInputBound == OutSlotDevice.InputBound.Unbound)
+            if (slotDevice.CurrentInputBound == OutputSlotInputBound.Unbound)
             {
                 OutputDevice dev = slotDevice.OutputDevice;
                 string tempType = dev.GetDeviceType();
-                slotDevice.CurrentInputBound = OutSlotDevice.InputBound.Unbound;
+                slotDevice.CurrentInputBound = OutputSlotInputBound.Unbound;
                 outputslotMan.DeferredRemoval(dev, -1, outputDevices, false);
             }
         }
@@ -457,7 +457,7 @@ namespace DS4Windows.Output.Services
                             EstablishOutFeedbackIfEnabled(index, contType, tempOut, device);
 
                             outputslotMan.DeferredPlugin(tempOut, index, $"{device.DisplayName} [{device.MacAddress}]", outputDevices, contType);
-                            //slotDevice.CurrentInputBound = OutSlotDevice.InputBound.Bound;
+                            //slotDevice.CurrentInputBound = OutputSlotInputBound.Bound;
 
                             success = true;
                         }
@@ -468,7 +468,7 @@ namespace DS4Windows.Output.Services
                     }
                     else
                     {
-                        slotDevice.CurrentInputBound = OutSlotDevice.InputBound.Bound;
+                        slotDevice.CurrentInputBound = OutputSlotInputBound.Bound;
                         OutputDevice tempOut = CastOutDevice(slotDevice.OutputDevice, contType);
 
                         // Enable ViGem feedback callback handler only if lightbar/rumble data output is enabled (if those are disabled then no point enabling ViGem callback handler call)
@@ -523,20 +523,20 @@ namespace DS4Windows.Output.Services
                 if (dev != null && slotDevice != null)
                 {
                     string tempType = dev.GetDeviceType();
-                    AppLogger.LogUser(AppLogLevel.Info, slotDevice.CurrentReserveStatus == OutSlotDevice.ReserveStatus.Permanent ? "Log_Out_DisassociatedPermanent" : "Log_Out_Disassociated", tempType, slotDevice.Index + 1, index + 1, device.DisplayName);
+                    AppLogger.LogUser(AppLogLevel.Info, slotDevice.CurrentReserveStatus == OutputSlotReserveStatus.Permanent ? "Log_Out_DisassociatedPermanent" : "Log_Out_Disassociated", tempType, slotDevice.Index + 1, index + 1, device.DisplayName);
 
                     OutContType currentType = ActiveOutDevType[index];
                     outputDevices[index] = null;
                     ActiveOutDevType[index] = OutContType.None;
-                    if ((slotDevice.CurrentAttachedStatus == OutSlotDevice.AttachedStatus.Attached &&
-                        slotDevice.CurrentReserveStatus == OutSlotDevice.ReserveStatus.Dynamic) || force)
+                    if ((slotDevice.CurrentAttachedStatus == OutputSlotAttachedStatus.Attached &&
+                        slotDevice.CurrentReserveStatus == OutputSlotReserveStatus.Dynamic) || force)
                     {
-                        //slotDevice.CurrentInputBound = OutSlotDevice.InputBound.Unbound;
+                        //slotDevice.CurrentInputBound = OutputSlotInputBound.Unbound;
                         outputslotMan.DeferredRemoval(dev, index, outputDevices, immediate);
                     }
-                    else if (slotDevice.CurrentAttachedStatus == OutSlotDevice.AttachedStatus.Attached)
+                    else if (slotDevice.CurrentAttachedStatus == OutputSlotAttachedStatus.Attached)
                     {
-                        slotDevice.CurrentInputBound = OutSlotDevice.InputBound.Unbound;
+                        slotDevice.CurrentInputBound = OutputSlotInputBound.Unbound;
                         dev.ResetState();
                         dev.RemoveFeedbacks();
                         //RemoveOutFeedback(currentType, dev);

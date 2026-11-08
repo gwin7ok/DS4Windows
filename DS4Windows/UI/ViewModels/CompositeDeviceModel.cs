@@ -163,12 +163,12 @@ namespace DS4Windows.UI.ViewModels
                 string source = $"{ResourcePaths.ResourcesPrefix}/{imgName}";
                 switch (device.CurrentExclusiveStatus)
                 {
-                    case DS4Device.ExclusiveStatus.Exclusive:
+                    case DeviceExclusiveStatus.Exclusive:
                         imgName = (string)App.Current.FindResource("CheckedImg");
                         source = $"{ResourcePaths.ResourcesPrefix}/{imgName}";
                         break;
-                    case DS4Device.ExclusiveStatus.HidHideAffected:
-                    case DS4Device.ExclusiveStatus.HidGuardAffected:
+                    case DeviceExclusiveStatus.HidHideAffected:
+                    case DeviceExclusiveStatus.HidGuardAffected:
                         imgName = (string)App.Current.FindResource("KeyImageImg");
                         source = $"{ResourcePaths.ResourcesPrefix}/{imgName}";
                         break;
@@ -330,15 +330,15 @@ namespace DS4Windows.UI.ViewModels
         {
             get
             {
-                if (device.CurrentExclusiveStatus == DS4Device.ExclusiveStatus.Exclusive)
+                if (device.CurrentExclusiveStatus == DeviceExclusiveStatus.Exclusive)
                 {
                     return Translations.Strings.ExclusiveAccess;
                 }
-                else if (device.CurrentExclusiveStatus == DS4Device.ExclusiveStatus.HidHideAffected)
+                else if (device.CurrentExclusiveStatus == DeviceExclusiveStatus.HidHideAffected)
                 {
                     return Translations.Strings.HidHideAccess;
                 }
-                else if (device.CurrentExclusiveStatus == DS4Device.ExclusiveStatus.HidGuardAffected)
+                else if (device.CurrentExclusiveStatus == DeviceExclusiveStatus.HidGuardAffected)
                 {
                     return Translations.Strings.HidGuardianAccess;
                 }

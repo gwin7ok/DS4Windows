@@ -82,8 +82,8 @@ namespace DS4Windows.Output.Services
                 var virtualPad = VirtualPad;
                 if (slotDevice == null || virtualPad == null) return false;
 
-                if (slotDevice.CurrentAttachedStatus != OutSlotDevice.AttachedStatus.UnAttached ||
-                    slotDevice.CurrentInputBound != OutSlotDevice.InputBound.Unbound)
+                if (slotDevice.CurrentAttachedStatus != OutputSlotAttachedStatus.UnAttached ||
+                    slotDevice.CurrentInputBound != OutputSlotInputBound.Unbound)
                 {
                     return false;
                 }
@@ -122,8 +122,8 @@ namespace DS4Windows.Output.Services
                 var virtualPad = VirtualPad;
                 if (slotDevice == null || virtualPad == null) return false;
 
-                if (slotDevice.CurrentAttachedStatus != OutSlotDevice.AttachedStatus.Attached ||
-                    slotDevice.CurrentInputBound != OutSlotDevice.InputBound.Unbound)
+                if (slotDevice.CurrentAttachedStatus != OutputSlotAttachedStatus.Attached ||
+                    slotDevice.CurrentInputBound != OutputSlotInputBound.Unbound)
                 {
                     return false;
                 }

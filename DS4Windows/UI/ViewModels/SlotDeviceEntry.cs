@@ -59,7 +59,7 @@ namespace DS4Windows.UI.ViewModels
             {
                 string temp = "Dynamic";
                 if (outSlotDevice.CurrentReserveStatus ==
-                    OutSlotDevice.ReserveStatus.Permanent)
+                    OutputSlotReserveStatus.Permanent)
                 {
                     temp = outSlotDevice.PermanentType.ToString();
                 }
@@ -71,7 +71,7 @@ namespace DS4Windows.UI.ViewModels
 
         public bool BoundInput
         {
-            get => outSlotDevice.CurrentInputBound == OutSlotDevice.InputBound.Bound;
+            get => outSlotDevice.CurrentInputBound == OutputSlotInputBound.Bound;
         }
         public event EventHandler BoundInputChanged;
 
@@ -242,10 +242,10 @@ namespace DS4Windows.UI.ViewModels
             int result = 0;
             switch (outSlotDevice.CurrentReserveStatus)
             {
-                case OutSlotDevice.ReserveStatus.Dynamic:
+                case OutputSlotReserveStatus.Dynamic:
                     result = 0;
                     break;
-                case OutSlotDevice.ReserveStatus.Permanent:
+                case OutputSlotReserveStatus.Permanent:
                     result = 1;
                     break;
                 default:
@@ -276,16 +276,16 @@ namespace DS4Windows.UI.ViewModels
             return result;
         }
 
-        private OutSlotDevice.ReserveStatus DetermineReserveChoiceFromIdx()
+        private OutputSlotReserveStatus DetermineReserveChoiceFromIdx()
         {
-            OutSlotDevice.ReserveStatus result = OutSlotDevice.ReserveStatus.Dynamic;
+            OutputSlotReserveStatus result = OutputSlotReserveStatus.Dynamic;
             switch(reserveChoiceIndex)
             {
                 case 0:
-                    result = OutSlotDevice.ReserveStatus.Dynamic;
+                    result = OutputSlotReserveStatus.Dynamic;
                     break;
                 case 1:
-                    result = OutSlotDevice.ReserveStatus.Permanent;
+                    result = OutputSlotReserveStatus.Permanent;
                     break;
                 default:
                     break;
@@ -332,7 +332,7 @@ namespace DS4Windows.UI.ViewModels
         {
             outSlotDevice.CurrentReserveStatus = DetermineReserveChoiceFromIdx();
             /*if (outSlotDevice.CurrentReserveStatus ==
-                OutSlotDevice.ReserveStatus.Permanent)
+                OutputSlotReserveStatus.Permanent)
             {
                 outSlotDevice.PermanentType = outSlotDevice.CurrentType;
             }

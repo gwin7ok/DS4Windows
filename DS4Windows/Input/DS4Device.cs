@@ -47,14 +47,6 @@ namespace DS4Windows.Input
             public double mouseSmoothOffset = 0.2;
         }
 
-        public enum ExclusiveStatus : byte
-        {
-            Shared = 0,
-            Exclusive = 1,
-            HidGuardAffected = 2,
-            HidHideAffected = 3,
-        }
-
         //internal const int BT_OUTPUT_REPORT_LENGTH = 78;
         protected const int BT_OUTPUT_REPORT_LENGTH = 334;
         private const int BT_OUTPUT_REPORT_0x15_LENGTH = BT_OUTPUT_REPORT_LENGTH;
@@ -117,7 +109,7 @@ namespace DS4Windows.Input
         public bool ExitOutputThread => exitOutputThread;
         protected bool exitInputThread = false;
         protected object exitLocker = new object();
-        protected ExclusiveStatus exclusiveStatus = ExclusiveStatus.Shared;
+        protected DeviceExclusiveStatus exclusiveStatus = DeviceExclusiveStatus.Shared;
 
         public delegate void ReportHandler<TEventArgs>(DS4Device sender, TEventArgs args);
 
@@ -138,15 +130,15 @@ namespace DS4Windows.Input
 
         public bool IsExclusive
         {
-            get { return exclusiveStatus > ExclusiveStatus.Shared; }
+            get { return exclusiveStatus > DeviceExclusiveStatus.Shared; }
         }
 
         public bool isExclusive()
         {
-            return exclusiveStatus > ExclusiveStatus.Shared;
+            return exclusiveStatus > DeviceExclusiveStatus.Shared;
         }
 
-        public ExclusiveStatus CurrentExclusiveStatus
+        public DeviceExclusiveStatus CurrentExclusiveStatus
         {
             get => exclusiveStatus;
             set
@@ -536,10 +528,10 @@ namespace DS4Windows.Input
             displayName = disName;
             this.featureSet = featureSet;
 
-            exclusiveStatus = ExclusiveStatus.Shared;
+            exclusiveStatus = DeviceExclusiveStatus.Shared;
             if (hidDevice.IsExclusive)
             {
-                exclusiveStatus = ExclusiveStatus.Exclusive;
+                exclusiveStatus = DeviceExclusiveStatus.Exclusive;
             }
 
             if (this.FeatureSet != VidPidFeatureSet.DefaultDS4)

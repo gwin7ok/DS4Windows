@@ -45,8 +45,8 @@ namespace DS4Windows.UI
         private DS4Windows.Core.Model.OutContType contType = DS4Windows.Core.Model.OutContType.None;
         public OutContType ContType { get => contType; }
 
-        private DS4Windows.Output.OutSlotDevice.ReserveStatus reserveType;
-        public OutSlotDevice.ReserveStatus ReserveType { get => reserveType; }
+        private OutputSlotReserveStatus reserveType;
+        public OutputSlotReserveStatus ReserveType { get => reserveType; }
 
         public PluginOutDevWindow()
         {
@@ -70,10 +70,10 @@ namespace DS4Windows.UI
             switch(reserveTypeCombo.SelectedIndex)
             {
                 case 0:
-                    reserveType = OutSlotDevice.ReserveStatus.Dynamic;
+                    reserveType = OutputSlotReserveStatus.Dynamic;
                     break;
                 case 1:
-                    reserveType = OutSlotDevice.ReserveStatus.Permanent;
+                    reserveType = OutputSlotReserveStatus.Permanent;
                     break;
                 default:
                     break;

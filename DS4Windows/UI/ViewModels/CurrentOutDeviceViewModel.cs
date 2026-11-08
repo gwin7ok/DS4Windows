@@ -71,7 +71,7 @@ namespace DS4Windows.UI.ViewModels
                 {
                     SlotDeviceEntry temp = slotDeviceEntries[selectedIndex];
                     if (temp.OutSlotDevice.CurrentAttachedStatus ==
-                        OutSlotDevice.AttachedStatus.UnAttached)
+                        OutputSlotAttachedStatus.UnAttached)
                     {
                         result = true;
                     }
@@ -91,7 +91,7 @@ namespace DS4Windows.UI.ViewModels
                 {
                     SlotDeviceEntry temp = slotDeviceEntries[selectedIndex];
                     if (temp.OutSlotDevice.CurrentAttachedStatus ==
-                        OutSlotDevice.AttachedStatus.Attached)
+                        OutputSlotAttachedStatus.Attached)
                     {
                         result = true;
                     }

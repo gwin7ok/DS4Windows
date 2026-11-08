@@ -54,7 +54,7 @@ namespace DS4Windows.Output
                 for (int i = 0; i < outputSlots.Length; i++)
                 {
                     OutSlotDevice tmp = outputSlots[i];
-                    if (tmp.CurrentAttachedStatus == OutSlotDevice.AttachedStatus.Attached)
+                    if (tmp.CurrentAttachedStatus == OutputSlotAttachedStatus.Attached)
                     {
                         result++;
                     }
@@ -209,7 +209,7 @@ namespace DS4Windows.Output
                     if (inIdx != -1)
                     {
                         outdevs[inIdx] = outputDevice;
-                        outputSlots[slot].CurrentInputBound = OutSlotDevice.InputBound.Bound;
+                        outputSlots[slot].CurrentInputBound = OutputSlotInputBound.Bound;
                     }
                     SlotAssigned?.Invoke(this, slot, outputSlots[slot]);
                 }
@@ -263,8 +263,8 @@ namespace DS4Windows.Output
             for (int i = 0; i < outputSlots.Length; i++)
             {
                 OutSlotDevice tmp = outputSlots[i];
-                if (tmp.CurrentInputBound == OutSlotDevice.InputBound.Unbound &&
-                    tmp.CurrentAttachedStatus == OutSlotDevice.AttachedStatus.UnAttached)
+                if (tmp.CurrentInputBound == OutputSlotInputBound.Unbound &&
+                    tmp.CurrentAttachedStatus == OutputSlotAttachedStatus.UnAttached)
                 {
                     temp = tmp;
                     break;
@@ -283,7 +283,7 @@ namespace DS4Windows.Output
             }
 
             //slotNum -= 1;
-            result = outputSlots[slotNum].CurrentAttachedStatus == OutSlotDevice.AttachedStatus.UnAttached;
+            result = outputSlots[slotNum].CurrentAttachedStatus == OutputSlotAttachedStatus.UnAttached;
             return result;
         }
 
@@ -319,8 +319,8 @@ namespace DS4Windows.Output
             for (int i = 0; i < outputSlots.Length; i++)
             {
                 OutSlotDevice tmp = outputSlots[i];
-                if (tmp.CurrentInputBound == OutSlotDevice.InputBound.Unbound &&
-                    (tmp.CurrentAttachedStatus == OutSlotDevice.AttachedStatus.Attached &&
+                if (tmp.CurrentInputBound == OutputSlotInputBound.Unbound &&
+                    (tmp.CurrentAttachedStatus == OutputSlotAttachedStatus.Attached &&
                     (tmp.OutputDevice != null && tmp.OutputDevice.GetDeviceType() == devtype)))
                 {
                     temp = tmp;
