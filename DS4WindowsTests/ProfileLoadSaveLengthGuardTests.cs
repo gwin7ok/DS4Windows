@@ -10,7 +10,7 @@ namespace DS4WindowsTests
     /// 上限は、分解後の実測（LoadProfile 164 行、SaveProfile 55 行、節の最大 353 行、LegacyProfileXmlSerializer.cs 378 行）に余裕を足した値。
     /// 超えるときは、節を足して分けるか、Step の計画書で上限を見直すこと。
     /// </summary>
-    public class Phase8Step4bW11LengthGuardTests
+    public class ProfileLoadSaveLengthGuardTests
     {
         private const int MaxLoadProfileLines = 200;
         private const int MaxSaveProfileLines = 80;

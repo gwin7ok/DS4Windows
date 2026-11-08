@@ -6,7 +6,7 @@ using DS4Windows.UI.ViewModels;
 namespace DS4WindowsTests
 {
     /// <summary>Phase9 UI 変更: Controls タブの一覧の表示順（LS／RS Outer は LS／RS の下、L2／R2 Full Pull は L2／R2 の下）。Mappings の順序と添字は変えない。</summary>
-    public class Phase9MappingListDisplayOrderTests
+    public class MappingListDisplayOrderTests
     {
         private static MappingListViewModel Create() => new MappingListViewModel(0, OutContType.DS4, TestRepositoryFactory.CreateProfileSettingsService());
 

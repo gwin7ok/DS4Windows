@@ -11,11 +11,11 @@ namespace DS4WindowsTests
     /// Phase7-Step9 W1（Q1＝A）: 互換 <c>DS4Windows.AppHost</c>（<c>DI/Compat/AppHost.cs</c>）を削除したことの回帰ガード。
     /// 正本は <c>DS4Windows.Composition.AppHost</c> だけ。ソースが見つからない環境では、ソースの検査を行わず合格とする。
     /// </summary>
-    public class Phase7Step9W1CompatAppHostRemovedGuardTests
+    public class CompatAppHostRemovedGuardTests
     {
         private readonly ITestOutputHelper _output;
 
-        public Phase7Step9W1CompatAppHostRemovedGuardTests(ITestOutputHelper output)
+        public CompatAppHostRemovedGuardTests(ITestOutputHelper output)
         {
             _output = output;
         }

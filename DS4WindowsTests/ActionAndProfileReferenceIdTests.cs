@@ -19,7 +19,7 @@ namespace DS4WindowsTests
     /// ない・見つからないときは名前のまま。実行時の内部（<c>profileActions</c> ほか）は名前のまま。
     /// </summary>
     [Collection(SharedHostStateCollection.Name)]
-    public class Phase10Step4dW3ReferenceIdTests
+    public class ActionAndProfileReferenceIdTests
     {
         private const int Slot = PersistenceHarness.Slot;
 

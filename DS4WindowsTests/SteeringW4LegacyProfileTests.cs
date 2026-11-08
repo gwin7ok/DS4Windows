@@ -9,7 +9,7 @@ namespace DS4WindowsTests
     /// プロファイル XML に書かれなくなり、古いプロファイルにこれらの要素が残っていても、無視されて、ほかの設定が正しく読み込まれること。
     /// </summary>
     [Collection(SharedHostStateCollection.Name)]
-    public class Phase9SteeringW4LegacyProfileTests
+    public class SteeringW4LegacyProfileTests
     {
         private static readonly string[] RemovedElements =
         {

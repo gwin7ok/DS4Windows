@@ -20,7 +20,7 @@ namespace DS4WindowsTests
     /// 編集対象の往復、保存と再読み込み。
     /// </summary>
     [Collection(SharedHostStateCollection.Name)]
-    public class Phase10Step4W5ControlProgramTests
+    public class ControlProgramTests
     {
         private const int Device = MappingCharacterizationScope.Device;
 

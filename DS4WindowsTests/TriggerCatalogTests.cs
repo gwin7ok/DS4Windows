@@ -12,7 +12,7 @@ namespace DS4WindowsTests
     /// 表示名（<c>Content</c>）は、従来の <c>AssignmentEditor.xaml</c> の、名前つきのチェックボックス 49 個と同じ。既存の <c>Actions.xml</c> を
     /// 読めるように、保存する名前は、すべて <c>SpecialAction</c> が解釈できる名前であること。
     /// </summary>
-    public class Phase10Step2W2TriggerCatalogTests
+    public class TriggerCatalogTests
     {
         // 従来の XAML の (Tag, Content)。この並びで、チェックボックスが並んでいた
         private static readonly (string Name, string Label)[] LegacyCheckBoxes =

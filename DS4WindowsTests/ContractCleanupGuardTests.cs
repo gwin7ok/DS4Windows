@@ -18,11 +18,11 @@ namespace DS4WindowsTests
     /// (3) <c>IOutputSlotService.OutputSlotChanged</c> は温存し、TODO が更新されていること。
     /// ソースが見つからない環境では、ソースの検査を行わず合格とする。
     /// </summary>
-    public class Phase7Step10bW3ContractCleanupGuardTests
+    public class ContractCleanupGuardTests
     {
         private readonly ITestOutputHelper _output;
 
-        public Phase7Step10bW3ContractCleanupGuardTests(ITestOutputHelper output)
+        public ContractCleanupGuardTests(ITestOutputHelper output)
         {
             _output = output;
         }

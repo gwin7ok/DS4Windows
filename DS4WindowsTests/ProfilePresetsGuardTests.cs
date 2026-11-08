@@ -13,11 +13,11 @@ namespace DS4WindowsTests
 {
     /// <summary>
     /// Phase7-Step10c W6（Q1・Q6＝A）: プロファイルのプリセット（空のプロファイルと既定の割り当て）の読込を <c>BackingStore</c> から
-    /// <c>ProfilePresets</c> へ移したことの回帰ガード。読込後の状態の同一性は <c>Phase7Step10cGoldenPersistenceTests.Presets_LoadedState_MatchesGolden</c>
+    /// <c>ProfilePresets</c> へ移したことの回帰ガード。読込後の状態の同一性は <c>GoldenPersistenceTests.Presets_LoadedState_MatchesGolden</c>
     /// （10 種）が固定する。ソースが見つからない環境では、ソースの検査を行わず合格とする。
     /// </summary>
     [Collection(SharedHostStateCollection.Name)]
-    public class Phase7Step10cW6ProfilePresetsGuardTests
+    public class ProfilePresetsGuardTests
     {
         private static readonly string[] MovedMethods =
         {
@@ -28,7 +28,7 @@ namespace DS4WindowsTests
 
         private readonly ITestOutputHelper _output;
 
-        public Phase7Step10cW6ProfilePresetsGuardTests(ITestOutputHelper output)
+        public ProfilePresetsGuardTests(ITestOutputHelper output)
         {
             _output = output;
         }

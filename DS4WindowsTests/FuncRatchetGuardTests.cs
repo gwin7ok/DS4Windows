@@ -7,7 +7,7 @@ namespace DS4WindowsTests
 {
     /// <summary>
     /// Phase13-Step8 8-d: サービスを遅延で取る <c>Func&lt;I…&gt;</c> を、許可リスト（型 × 利用者のファイル × 理由）で固定する。増えたら失敗する。
-    /// 残るのは、依存グラフに本物の循環があるもの（Phase13Step8ResolutionGraphProbeTests で確認）だけ:
+    /// 残るのは、依存グラフに本物の循環があるもの（LazyDependencyResolutionGraphProbeTests で確認）だけ:
     /// <list type="bullet">
     /// <item><c>Func&lt;IMapping&gt;</c> ← <c>DefaultActionManager</c>: <c>Mapping</c> → … → <c>ActionManager</c>（<c>DefaultActionManager</c>）。直接受けると循環する。
     /// ホスト構築時（<c>AppHost.PreallocateActionEntries</c>）に <c>Mapping</c> を作らない理由も兼ねる。再検討条件: <c>Mapping</c> が <c>IManagedActionManager</c> に依存しなくなったとき。</item>
@@ -16,7 +16,7 @@ namespace DS4WindowsTests
     /// </list>
     /// ソースが見つからない環境では、ソースの検査を行わず合格とする。
     /// </summary>
-    public class Phase13FuncRatchetGuardTests
+    public class FuncRatchetGuardTests
     {
         // Phase14d-Step3: Func<ControlService>（I で始まらない、Phase13-Step6 で撤廃した遅延取得）も対象にした（旧 Phase13Step5FuncRemovalGuardTests の検査を引き継ぐ。許可リストにないので、現れたら失敗する）
         private static readonly Regex LazyService = new Regex(@"Func<\s*[\w.]*\b(I[A-Z]\w*|ControlService)\s*>");

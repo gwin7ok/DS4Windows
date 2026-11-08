@@ -11,7 +11,7 @@ namespace DS4WindowsTests
     /// 型が存在しないこと、<c>DS4Windows/</c> に参照が残っていないこと、<c>AppHost</c> が <c>SetProvider</c> を呼ばないこと、
     /// 管理役の契約（<c>IsBeingTriggered</c>）を検査する。ソースが見つからない環境では、ソースの検査を行わず合格とする。
     /// </summary>
-    public class Phase13Step4ActionManagerRemovalGuardTests
+    public class ActionManagerRemovalGuardTests
     {
         private static readonly Type[] Asm = { typeof(DS4Windows.Processing.Actions.IManagedActionManager) };
 

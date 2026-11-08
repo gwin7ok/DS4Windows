@@ -19,7 +19,7 @@ namespace DS4WindowsTests
     /// 他の Host 構築テストと同じコレクションで直列に実行する。
     /// </summary>
     [Collection(SharedHostStateCollection.Name)]
-    public class Phase8Step6W3SlotLifecycleTests : IDisposable
+    public class SlotLifecycleTests : IDisposable
     {
         private const int Slot = 0;
         private const string ActionName = "Phase8Step6_BtnAction";
@@ -55,7 +55,7 @@ namespace DS4WindowsTests
         private readonly SpecialAction _action;
         private readonly string _origOlder, _origSelected, _origPath;
 
-        public Phase8Step6W3SlotLifecycleTests()
+        public SlotLifecycleTests()
         {
             _origNames = _store.profileActions[Slot];
             _origDict = new Dictionary<string, SpecialAction>(_store.profileActionDict[Slot]);

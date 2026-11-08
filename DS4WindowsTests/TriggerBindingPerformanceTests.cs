@@ -16,7 +16,7 @@ namespace DS4WindowsTests
     /// Step7 の各 PR の前後で、このテストの出力（1 フレームあたりの時間）を比較する。
     /// </summary>
     [Collection(SharedHostStateCollection.Name)]
-    public class Phase8Step3PerformanceTests
+    public class TriggerBindingPerformanceTests
     {
         private const int Device = 2;
         private const int BindingCount = 30; // 1 フレームに評価する束縛の数（スペシャルアクション＋Controls タブの想定の上限寄り）
@@ -24,7 +24,7 @@ namespace DS4WindowsTests
 
         private readonly ITestOutputHelper _output;
 
-        public Phase8Step3PerformanceTests(ITestOutputHelper output)
+        public TriggerBindingPerformanceTests(ITestOutputHelper output)
         {
             _output = output;
         }

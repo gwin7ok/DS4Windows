@@ -16,11 +16,11 @@ namespace DS4WindowsTests
     /// (2) 新しい部品が DI の Singleton として登録され、静的な窓口（<c>Global</c>／<c>AppHost</c>）を参照しないこと。
     /// (3) 未使用だった <c>DeviceRuntimeState.MacroControl</c>／<c>MacroCount</c> が削除されていること（Q3）。
     /// </summary>
-    public class Phase9CMacroGuardTests
+    public class MacroGuardTests
     {
         private readonly ITestOutputHelper _output;
 
-        public Phase9CMacroGuardTests(ITestOutputHelper output)
+        public MacroGuardTests(ITestOutputHelper output)
         {
             _output = output;
         }

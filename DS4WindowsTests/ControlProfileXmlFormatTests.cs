@@ -12,7 +12,7 @@ namespace DS4WindowsTests
     /// 変わらないことを、この検査で守る。また、将来の節（未知の要素）を、現在は読み飛ばして、保存し直すと失う、という互換の事実を固定する。製品コードは変えない。
     /// </summary>
     [Collection(SharedHostStateCollection.Name)]
-    public class Phase10Step4W0ControlProfileXmlFormatTests
+    public class ControlProfileXmlFormatTests
     {
         private const int Slot = PersistenceHarness.Slot;
 

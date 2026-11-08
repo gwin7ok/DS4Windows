@@ -21,14 +21,14 @@ namespace DS4WindowsTests
     /// ID がない・引けないときは、従来どおり名前（<c>details</c>）。
     /// </summary>
     [Collection(SharedHostStateCollection.Name)]
-    public class Phase10Step4dW5cRuntimeSwitchTests : IDisposable
+    public class RuntimeSwitchTests : IDisposable
     {
         private const int Device = MappingCharacterizationScope.Device;
 
         private readonly string _dir;
         private readonly string _profiles;
 
-        public Phase10Step4dW5cRuntimeSwitchTests()
+        public RuntimeSwitchTests()
         {
             _dir = Path.Combine(Path.GetTempPath(), "Phase10Step4d_W5c_" + Guid.NewGuid().ToString("N"));
             _profiles = Path.Combine(_dir, "Profiles");

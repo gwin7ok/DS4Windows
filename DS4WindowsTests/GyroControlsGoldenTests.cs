@@ -17,14 +17,14 @@ namespace DS4WindowsTests
     /// X と Z が同じ設定のときの値の違い（X と Z の非対称）は、別のゴールデンに記録する（共通化の前に、差があるかが分かる。差があれば、そのまま保つ）。
     /// 切り出し（<c>IGyroControlsProcessor</c>）で、値が 1 つでも変わると失敗する。
     /// </summary>
-    public class Phase9A2GyroControlsGoldenTests
+    public class GyroControlsGoldenTests
     {
         private const int Slot = 0;
         private static readonly int[] AccelGrid = { -200, -128, -100, -64, -30, -10, -3, 0, 3, 10, 30, 64, 100, 128, 200 };
 
         private readonly ITestOutputHelper _output;
 
-        public Phase9A2GyroControlsGoldenTests(ITestOutputHelper output)
+        public GyroControlsGoldenTests(ITestOutputHelper output)
         {
             _output = output;
         }

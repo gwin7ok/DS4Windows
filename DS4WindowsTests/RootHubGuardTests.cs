@@ -15,11 +15,11 @@ namespace DS4WindowsTests
     /// - <c>Global.SaveControllerConfigs</c>／<c>LoadControllerConfigs</c> は再宣言されない。
     /// ソースが見つからない環境では、検査を行わず合格とする。判断の根拠は <c>Phase7-Step5-Plan.md</c> の Q1・Q2・Q8。
     /// </summary>
-    public class Phase7Step5RootHubGuardTests
+    public class RootHubGuardTests
     {
         private readonly ITestOutputHelper _output;
 
-        public Phase7Step5RootHubGuardTests(ITestOutputHelper output)
+        public RootHubGuardTests(ITestOutputHelper output)
         {
             _output = output;
         }
@@ -27,7 +27,7 @@ namespace DS4WindowsTests
         [Fact]
         public void App_HoldsTheControlServiceInAVolatileField()
         {
-            // Phase14d-Step3: ソースの文字列ではなく、フィールドの型と volatile の修飾子を確かめる（取得の経路は Phase7Step5ServiceLocatorGuardTests が守る）
+            // Phase14d-Step3: ソースの文字列ではなく、フィールドの型と volatile の修飾子を確かめる（取得の経路は ServiceLocatorGuardTests が守る）
             System.Reflection.FieldInfo field = typeof(DS4Windows.App).GetField("_controlService", System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.Static | System.Reflection.BindingFlags.DeclaredOnly);
             Assert.NotNull(field);
             Assert.Equal(typeof(DS4Windows.Processing.ControlService), field.FieldType);

@@ -19,14 +19,14 @@ namespace DS4WindowsTests
     /// ソースが見つからない環境では、ソースの検査を行わず合格とする。判断の根拠は Phase7-Step8-Plan.md（Q6）。
     /// </summary>
     [Collection(SharedHostStateCollection.Name)]
-    public class Phase7Step8W3OutputKbmOwnershipGuardTests
+    public class OutputKbmOwnershipGuardTests
     {
         private const int Device = 4;
         private const ushort Key = 77;
 
         private readonly ITestOutputHelper _output;
 
-        public Phase7Step8W3OutputKbmOwnershipGuardTests(ITestOutputHelper output)
+        public OutputKbmOwnershipGuardTests(ITestOutputHelper output)
         {
             _output = output;
         }

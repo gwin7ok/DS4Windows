@@ -8,7 +8,7 @@ namespace DS4WindowsTests
     /// 不具合の修正（2026-10-23）: コマンドラインのクライアントが、query の結果を、結果の MMF（<c>ipcResultDataMMF</c>）から読むこと。
     /// 以前は、クラス名の MMF（<c>ipcClassNameMMF</c>。クライアントのプロセスでは null）から読んでいたため、例外が握りつぶされ、結果が常に空だった。
     /// </summary>
-    public class Phase9F2IpcQueryResultGuardTests
+    public class IpcQueryResultGuardTests
     {
         [Fact]
         public void TheClient_ReadsTheQueryResultFromTheResultMmf()

@@ -13,7 +13,7 @@ namespace DS4WindowsTests
     /// 偽の入力・出力・束縛と、実物の <c>IManagedActionManager</c>（状態）を使う。時刻（<c>TickCount64</c>）は入力から注入し、実時間のスリープは使わない。
     /// </summary>
     [Collection(SharedHostStateCollection.Name)]
-    public class Phase8Step4W3EngineTests
+    public class TriggerEngineTests
     {
         private const int Device = 5;
 
@@ -22,7 +22,7 @@ namespace DS4WindowsTests
         private sealed class FakeTriggerInput : ITriggerInput
         {
             public HashSet<DS4Controls> Active { get; } = new HashSet<DS4Controls>();
-            public int Device => Phase8Step4W3EngineTests.Device;
+            public int Device => TriggerEngineTests.Device;
             public bool IsActive(DS4Controls control) => Active.Contains(control);
             public bool WasActive(DS4Controls control) => false;
             public DelayClock Delay { get; } = new DelayClock();
@@ -55,7 +55,7 @@ namespace DS4WindowsTests
             public void Execute(IOutputContext ctx)
             {
                 Events.Add("execute");
-                if (Source != null) ExecutingDuringExecute = TestActions.Manager.GetStateFor(Source, Phase8Step4W3EngineTests.Device).IsExecuting;
+                if (Source != null) ExecutingDuringExecute = TestActions.Manager.GetStateFor(Source, TriggerEngineTests.Device).IsExecuting;
                 if (ThrowOnExecute) throw new InvalidOperationException("boom");
                 if (RequestEndFrameOnExecute) ctx.RequestEndFrame();
             }

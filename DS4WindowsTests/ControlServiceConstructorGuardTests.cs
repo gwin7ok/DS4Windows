@@ -12,7 +12,7 @@ namespace DS4WindowsTests
     /// 引数の数と、削除した型が戻っていないこと、削除した型が従来どおり ControlService 以外の経路でも生成されることを固定する。
     /// </summary>
     [Xunit.Collection(SharedHostStateCollection.Name)]
-    public class Phase13Step2ControlServiceConstructorGuardTests
+    public class ControlServiceConstructorGuardTests
     {
         private static readonly Type[] Removed =
         {

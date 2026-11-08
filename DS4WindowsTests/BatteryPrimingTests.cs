@@ -12,11 +12,11 @@ namespace DS4WindowsTests
     /// 行われるため。読み取りのスレッドを始める前に、最初の入力レポートから電池残量だけを取り込む（<see cref="DS4Device.PrimeBatteryReading"/>）。
     /// HID の読み取りは単体で動かせないため、電池の式（読み取りのスレッドと共通）と、呼び出しの順序を検査する。
     /// </summary>
-    public class Phase11W6BatteryPrimingTests
+    public class BatteryPrimingTests
     {
         private readonly ITestOutputHelper _output;
 
-        public Phase11W6BatteryPrimingTests(ITestOutputHelper output)
+        public BatteryPrimingTests(ITestOutputHelper output)
         {
             _output = output;
         }

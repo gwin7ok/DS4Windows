@@ -9,7 +9,7 @@ namespace DS4WindowsTests
     /// Phase10-Step1 W4（実機確認で発見。以前からの不具合）: SA の Press Key（Key）の Scan Code は、Actions.xml に保存され、読み込みで復元される。
     /// 原因: <c>ActionsDTO</c> が、コンストラクターで「Scan Code」を除いた <c>action.details</c> をそのまま Details に書いていた（keyType の ScanCode ビットは書かれない）。
     /// </summary>
-    public class Phase10Step1W4KeyActionScanCodePersistenceTests
+    public class KeyActionScanCodePersistenceTests
     {
         private static SpecialAction SaveAndReload(PersistenceGoldenContext ctx, string details, string extras, out string xml)
         {

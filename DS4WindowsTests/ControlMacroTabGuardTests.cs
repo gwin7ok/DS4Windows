@@ -12,13 +12,13 @@ namespace DS4WindowsTests
     /// Step4 W3 で、Controls にも保存できるようになったため、どちらのモードでも出す（隠すコードがないことを検査する）。
     /// ウィンドウは WPF の STA 上でしか作れないため、ソースの構成で検査する。ソースファイルが見つからない環境では、検査を行わず合格とする。
     /// </summary>
-    public class Phase10Step3W3ControlMacroTabGuardTests
+    public class ControlMacroTabGuardTests
     {
         private static readonly string[] SaOnlyCheckBoxes = { "runTriggerReleaseChk", "syncRunChk", "keepKeyStateChk" };
 
         private readonly ITestOutputHelper _output;
 
-        public Phase10Step3W3ControlMacroTabGuardTests(ITestOutputHelper output)
+        public ControlMacroTabGuardTests(ITestOutputHelper output)
         {
             _output = output;
         }

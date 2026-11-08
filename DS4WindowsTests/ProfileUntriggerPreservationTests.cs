@@ -13,7 +13,7 @@ namespace DS4WindowsTests
     /// 是正: <c>ClearDeviceState</c> は合図を退避して戻す。実際の切断（<c>Mapping.HandleDeviceDisconnect</c> の直接呼び出し）では消える。
     /// 専用のデバイス添字（7）を使い、終了時に状態を戻す。
     /// </summary>
-    public class Phase7bW1ProfileUntriggerPreservationTests
+    public class ProfileUntriggerPreservationTests
     {
         private const int Device = 7;
 

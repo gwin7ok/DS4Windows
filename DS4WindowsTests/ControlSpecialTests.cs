@@ -23,7 +23,7 @@ namespace DS4WindowsTests
     /// Controls で保存・実行・編集できるようにした縦通しの検査。入力の押し続ける秒数、builder の束縛、編集対象の往復、種別の保存可否、保存と再読み込み、実際の実行。
     /// </summary>
     [Collection(SharedHostStateCollection.Name)]
-    public class Phase10Step4W4ControlSpecialTests
+    public class ControlSpecialTests
     {
         private const int Device = MappingCharacterizationScope.Device;
         private static readonly DateTime T = new DateTime(2026, 10, 21, 12, 0, 0, DateTimeKind.Utc);

@@ -11,7 +11,7 @@ namespace DS4WindowsTests
     /// Stage3（Button の特殊アクションの同期処理）で "Collection was modified" が起き、そのフレームの出力が打ち切られていた。
     /// 実走行の並行変更テストは、W2 の <c>MapCustomAction</c> ハーネスの追加後に加える。
     /// </summary>
-    public class Phase7cW1Stage3ProfileActionsSnapshotGuardTests
+    public class Stage3ProfileActionsSnapshotGuardTests
     {
         [Fact]
         public void Mapping_EveryGetProfileActionsRawCall_CopiesTheListWithToArray()

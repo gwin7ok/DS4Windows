@@ -23,7 +23,7 @@ namespace DS4WindowsTests
     /// 専用のデバイス添字（7）を使い、終了時に状態を戻す。
     /// </summary>
     [Collection(SharedHostStateCollection.Name)]
-    public class Phase8Step6W1DisconnectCharacterizationTests
+    public class DisconnectCharacterizationTests
     {
         private const int Device = 7;
 

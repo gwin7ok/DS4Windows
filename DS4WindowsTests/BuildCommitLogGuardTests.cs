@@ -9,7 +9,7 @@ namespace DS4WindowsTests
     /// ビルド（<c>DS4WinWPF.csproj</c> の <c>UpdateLatestBuildSummary</c>）が <c>build_timestamp.txt</c> に「commit=ハッシュ（未コミットの変更があれば -dirty）」を書き、
     /// 起動（<c>App.xaml.cs</c>）がそれを読んでログに出す。ここでは、その契約（書式と、読み取りの正規表現）をソースの照合で守る。
     /// </summary>
-    public class Phase8Step7BuildCommitLogGuardTests
+    public class BuildCommitLogGuardTests
     {
         [Fact]
         public void TheBuildEmbedsTheCommitIntoTheAssembly()

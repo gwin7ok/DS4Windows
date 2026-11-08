@@ -7,7 +7,7 @@ namespace DS4WindowsTests
     /// <summary>
     /// Phase11 W6（S9 の追加修正）: マクロの記録画面のボタン名は、Emulated Controller に合わせる（Xbox 360 は Xbox 名、DS4 は DS4 名）。
     /// </summary>
-    public class Phase11W6MacroButtonNamesTests
+    public class MacroButtonNamesTests
     {
         [Theory]
         [InlineData(261, "A Button", "Cross")]

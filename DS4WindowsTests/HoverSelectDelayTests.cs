@@ -8,7 +8,7 @@ namespace DS4WindowsTests
     /// Phase11 W6（S9 の追加要望）: Controls タブのコントローラー図のマウスオーバーは、ボタン一覧の選択の切り替えを 500ms 遅らせる。
     /// マウスが離れたら取り消す。コントローラーの入力による選択（実機）は即時のまま。
     /// </summary>
-    public class Phase11W6HoverSelectDelayTests
+    public class HoverSelectDelayTests
     {
         [Fact]
         public void TheDelay_Is500ms()

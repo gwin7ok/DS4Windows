@@ -14,9 +14,9 @@ namespace DS4WindowsTests
     /// 読み込みで <c>keyType</c> の <c>RepeatMacro</c>／<c>ScanCode</c> を復元し、<c>ExportMacro</c> が
     /// <c>Macro</c>（＋ <c>RepeatMacro</c>、<c>ScanCode</c>）だけを書く（従来と同じ。<c>HoldMacro</c> は存在しない）。
     /// </summary>
-    public class Phase10Step1W2RecordBoxPlaybackOptionsTests
+    public class RecordBoxPlaybackOptionsTests
     {
-        static Phase10Step1W2RecordBoxPlaybackOptionsTests()
+        static RecordBoxPlaybackOptionsTests()
         {
             if (string.IsNullOrEmpty(TestGlobals.AppDataPath))
             {

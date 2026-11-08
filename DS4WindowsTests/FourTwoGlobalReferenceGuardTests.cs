@@ -19,7 +19,7 @@ using DS4Windows.Processing.Services;
 namespace DS4WindowsTests
 {
 
-    public class Step10FourTwoGlobalReferenceGuardTests
+    public class FourTwoGlobalReferenceGuardTests
     {
 
         [Fact]
@@ -185,7 +185,7 @@ namespace DS4WindowsTests
         }
 
         // Phase10-Step4d W7: 以前ここにあった、ReplaceLinkedProfileName／AutoProfileHolder.ReplaceProfileName／MainWindow の追従の検査は、撤去したメンバーのため削除した。
-        // 名前変更の共通の経路（SyncProfileListAndControllers）を通ることの検査は、Phase10Step4dW7FollowUpTests に移した
+        // 名前変更の共通の経路（SyncProfileListAndControllers）を通ることの検査は、RenameFollowUpRemovalTests に移した
 
         [Fact]
         public void OutputSlotService_PluginAndUnplug_AreRejectedWithoutControlService_AndRaiseNoEvent()

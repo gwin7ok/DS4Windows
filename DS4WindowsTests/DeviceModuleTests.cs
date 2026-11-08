@@ -16,7 +16,7 @@ namespace DS4WindowsTests
     /// 旧 <c>ControlService.CheckForSupportedDevice</c>／<c>PostDS4DeviceInit</c> の判定を、このファイルの中の逐語コピーと突き合わせる（差分テスト）。
     /// <c>DS4Device</c>／<c>JoyConDevice</c> は作れないため、デバイスを必要としない判定（有効設定、結合の初期値、部品の引き当て）を調べる。
     /// </summary>
-    public class Phase9E6DeviceModuleTests
+    public class DeviceModuleTests
     {
         private static readonly InputDeviceType[] AllTypes = (InputDeviceType[])Enum.GetValues(typeof(InputDeviceType));
 

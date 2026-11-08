@@ -9,7 +9,7 @@ namespace DS4WindowsTests
     /// Phase8-Step4b W9（Phase8-Step4b-Plan.md §3.4、Q6＝A）: 名前から値を引く 2 つの関数を <c>BackingStore</c> から <c>DS4ControlNames</c>／<c>X360ControlTables</c> へ移した。
     /// 本体は移動のみ（値の対応は変えない）。呼び出し元は付け替え済みで、<c>BackingStore</c> に残していない。
     /// </summary>
-    public class Phase8Step4bW9NameFunctionsTests
+    public class NameFunctionsTests
     {
         [Theory]
         [InlineData("Cross", DS4Controls.Cross)]

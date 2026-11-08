@@ -13,12 +13,12 @@ namespace DS4WindowsTests
 {
     /// <summary>
     /// Phase8-Step7 7.4-W2（Phase8-Step7-4-Plan.md Q1＝A）: 旧 <c>MapCustomAction</c> の Program の分岐が出していたログを、新経路が同じ文言・順序で出すことを確かめる。
-    /// NLog の設定をテストの間だけ Trace 有効のメモリ出力へ差し替え、旧経路と新経路のログの行を比べる（7.3 の <c>Phase8Step73W2MacroLogTests</c> と同じ方式）。
+    /// NLog の設定をテストの間だけ Trace 有効のメモリ出力へ差し替え、旧経路と新経路のログの行を比べる（7.3 の <c>MacroLogTests</c> と同じ方式）。
     /// 実際のプログラムは起動しない（存在しない実行ファイルのパス）。他の Host 構築テストと同じコレクションで直列に実行する。
     /// Phase8-Step8 8d（持ち越し C-2）: 旧経路は削除済み。以前の「旧・新の両経路の比べ」は、新経路の期待値の固定（比べを除いた、残りの検査）に変えた。
     /// </summary>
     [Collection(SharedHostStateCollection.Name)]
-    public class Phase8Step74W2ProgramLogTests
+    public class ProgramLogTests
     {
         private static DS4State Frame(bool l1)
         {

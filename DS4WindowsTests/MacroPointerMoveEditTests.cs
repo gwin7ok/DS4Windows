@@ -13,9 +13,9 @@ namespace DS4WindowsTests
     /// Phase12-Step3 3d（R-3）: 記録画面（<c>RecordBox</c>）の、マウス移動ステップの追加（Add Mouse Move）と、座標の編集（モード、X、Y）の ViewModel の部分。
     /// ダブルクリックで出る編集部品の見た目と操作は、実機で確認する。
     /// </summary>
-    public class Phase12Step3W3dMacroPointerMoveEditTests
+    public class MacroPointerMoveEditTests
     {
-        static Phase12Step3W3dMacroPointerMoveEditTests()
+        static MacroPointerMoveEditTests()
         {
             if (string.IsNullOrEmpty(TestGlobals.AppDataPath))
             {

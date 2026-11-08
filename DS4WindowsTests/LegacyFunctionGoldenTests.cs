@@ -13,11 +13,11 @@ namespace DS4WindowsTests
     /// ゴールデンは <c>DS4WindowsTests/Golden/Phase7Step10c/step8-legacy-functions-*.txt</c>。他の Host 構築テストと同じコレクションで直列に実行する。
     /// </summary>
     [Collection(SharedHostStateCollection.Name)]
-    public class Phase8Step8W1LegacyFunctionGoldenTests
+    public class LegacyFunctionGoldenTests
     {
         private readonly ITestOutputHelper _output;
 
-        public Phase8Step8W1LegacyFunctionGoldenTests(ITestOutputHelper output)
+        public LegacyFunctionGoldenTests(ITestOutputHelper output)
         {
             _output = output;
         }

@@ -11,7 +11,7 @@ namespace DS4WindowsTests
 {
     /// <summary>Phase13-Step3: IVirtualPadHost／IServiceLifecycleHost と、その Func の撤廃、新サービスの配線を固定する。</summary>
     [Xunit.Collection(SharedHostStateCollection.Name)]
-    public class Phase13Step3HostRemovalGuardTests
+    public class HostRemovalGuardTests
     {
         [Fact]
         public void TheRemovedHostInterfaces_DoNotExist_AndControlServiceDoesNotImplementThem()
@@ -40,7 +40,7 @@ namespace DS4WindowsTests
             Assert.Same(TestHost.GetService<IEventThreadDispatcher>(), TestHost.GetService<IEventThreadDispatcher>());
             Assert.IsType<DeviceRumbleService>(TestHost.GetService<IDeviceRumbleService>());
             Assert.IsType<OutputKbmInitializer>(TestHost.GetService<IOutputKbmInitializer>());
-            // Phase14d-Step2: 旧 Func<IVirtualPadHost>／Func<IServiceLifecycleHost> の登録がないことの検査は外した（型ごと撤去。RemovedApiRuleTests と Phase13FuncRatchetGuardTests が守る）
+            // Phase14d-Step2: 旧 Func<IVirtualPadHost>／Func<IServiceLifecycleHost> の登録がないことの検査は外した（型ごと撤去。RemovedApiRuleTests と FuncRatchetGuardTests が守る）
         }
     }
 }

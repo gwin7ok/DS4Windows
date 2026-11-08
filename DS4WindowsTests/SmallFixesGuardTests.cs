@@ -13,11 +13,11 @@ namespace DS4WindowsTests
     ///   受け持つ台（<c>deviceNum</c>）の設定から読む。ソースが見つからない環境では、この検査を省略する。
     /// - W3（K7-2）: FakerInput が未導入のとき、<c>-virtualkbm fakerinput</c> の明示指定でも SendInput にする。
     /// </summary>
-    public class Phase7bW2W3SmallFixesGuardTests
+    public class SmallFixesGuardTests
     {
         private readonly ITestOutputHelper _output;
 
-        public Phase7bW2W3SmallFixesGuardTests(ITestOutputHelper output)
+        public SmallFixesGuardTests(ITestOutputHelper output)
         {
             _output = output;
         }

@@ -16,11 +16,11 @@ namespace DS4WindowsTests
     /// - <c>-reenableDevice</c> 分岐は、<c>DS4Devices</c> を静的に呼ばず、<see cref="IDs4DeviceRegistry"/> を通す。
     /// ソースが見つからない環境では、ソースの検査を行わず合格とする。判断の根拠は <c>Phase7-Step4-Plan.md</c>。
     /// </summary>
-    public class Phase7Step4StartupBootstrapGuardTests
+    public class StartupBootstrapGuardTests
     {
         private readonly ITestOutputHelper _output;
 
-        public Phase7Step4StartupBootstrapGuardTests(ITestOutputHelper output)
+        public StartupBootstrapGuardTests(ITestOutputHelper output)
         {
             _output = output;
         }

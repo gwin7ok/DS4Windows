@@ -10,7 +10,7 @@ namespace DS4WindowsTests
     /// Phase6-Step10-1-3: AboutViewModel／UpdaterWindowViewModel／LogViewModel が、依存を必須引数で受け取り
     /// （null を拒否）、Global と同じ値・動作を保つこと。
     /// </summary>
-    public class Phase6Step10GroupOneViewModelTests
+    public class AboutUpdaterLogViewModelTests
     {
         [Fact]
         public void AboutViewModel_RequiresEnvironmentService()

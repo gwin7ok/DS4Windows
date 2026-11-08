@@ -8,7 +8,7 @@ namespace DS4WindowsTests
     /// （WPF の画面は単体テストで開けないため、ソースの接続を確かめる）。2 つのモードの違いは、Default／Unbound（modePanel）の表示だけ。
     /// ソースが見つからない環境では、検査を行わず合格とする。
     /// </summary>
-    public class Phase10Step6I5cSaExtrasEditorGuardTests
+    public class SaExtrasEditorGuardTests
     {
         [Fact]
         public void BindingWindow_SaMode_ShowsTheExtrasPanel_AndOnlyHidesTheDefaultAndUnboundPanel()

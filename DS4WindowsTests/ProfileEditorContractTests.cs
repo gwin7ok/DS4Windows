@@ -16,11 +16,11 @@ namespace DS4WindowsTests
     /// - （<c>IProfileRepository.LoadBlankProfile</c> の確認は、Phase7-Step3c W2 で契約ごと削除した。<c>IProfilePresetLoader.LoadBlank</c> に統合）
     /// Global 状態を変更するテストは、変更を必ず元に戻す（Phase6-Step2 の教訓）。
     /// </summary>
-    public class Phase6Step8ContractExtensionTests
+    public class ProfileEditorContractTests
     {
         private readonly ITestOutputHelper _output;
 
-        public Phase6Step8ContractExtensionTests(ITestOutputHelper output)
+        public ProfileEditorContractTests(ITestOutputHelper output)
         {
             _output = output;
         }

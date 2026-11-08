@@ -21,7 +21,7 @@ namespace DS4WindowsTests
     /// 旧実装は private で、切り出しの後は <c>Mapping</c> から消えるため、写しをこのファイルに残す（Phase9 の後のテスト整理まで）。
     /// 旧実装は全コントローラーで 1 つのフラグと個数を共有していたが、新しい実装はデバイスごと（ユーザー判断 Q2）。1 台のときの結果は同じ。
     /// </summary>
-    public class Phase9CMacroStepExecutorDifferentialTests
+    public class MacroStepExecutorDifferentialTests
     {
         /// <summary>送出の呼び出しを文字列で記録する <see cref="IVirtualKBM"/>。</summary>
         private sealed class LogKbm : IVirtualKBM

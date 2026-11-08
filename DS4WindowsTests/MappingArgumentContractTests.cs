@@ -15,7 +15,7 @@ namespace DS4WindowsTests
     /// 従来の <see cref="Global"/> 側の実体と同一の値・同一の参照を返すことを検証する。
     /// 各テストは変更した Global 状態を必ず元に戻す（Phase6-Step2 の教訓）。
     /// </summary>
-    public class Phase6Step3ContractExtensionTests
+    public class MappingArgumentContractTests
     {
         private readonly ProfileActionProvider _actionProvider = TestRepositoryFactory.CreateProfileActionProvider();
         private readonly ProfileSettingsService _profileSettings = TestRepositoryFactory.CreateProfileSettingsService();

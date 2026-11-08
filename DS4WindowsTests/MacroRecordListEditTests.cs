@@ -15,9 +15,9 @@ namespace DS4WindowsTests
     /// 複数選択の挿入位置（いちばん上の選択行）、選択行の一括削除、ドラッグ＆ドロップによる並べ替えの ViewModel の部分。
     /// Ctrl＋クリック・Shift＋クリックの選択、空白クリックでの選択解除、ドラッグ操作そのものは、実機で確認する。
     /// </summary>
-    public class Phase12MacroRecordListEditTests
+    public class MacroRecordListEditTests
     {
-        static Phase12MacroRecordListEditTests()
+        static MacroRecordListEditTests()
         {
             if (string.IsNullOrEmpty(TestGlobals.AppDataPath))
             {

@@ -21,11 +21,11 @@ namespace DS4WindowsTests
     /// Global 状態を変更するため、保存先とアクションの一覧を必ず元に戻す（Phase6-Status.md §6.4-1）。
     /// </summary>
     [Collection(SharedHostStateCollection.Name)]
-    public class Phase6Step10GroupThreeContractTests
+    public class SpecialActionContractTests
     {
         private readonly ITestOutputHelper _output;
 
-        public Phase6Step10GroupThreeContractTests(ITestOutputHelper output)
+        public SpecialActionContractTests(ITestOutputHelper output)
         {
             _output = output;
         }

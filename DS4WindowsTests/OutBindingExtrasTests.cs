@@ -12,11 +12,11 @@ namespace DS4WindowsTests
     /// Extras は、出力ピッカー（<c>BindingWindow</c>）に残すため、<see cref="OutBinding"/> の <c>ParseExtras</c>／<c>CompileExtras</c>／<c>IsUsingExtras</c>
     /// の現在の挙動（書式、境界、不正な値）を固定する。製品コードは変えない。
     /// </summary>
-    public class Phase10Step3W0OutBindingExtrasTests
+    public class OutBindingExtrasTests
     {
         private const string Full = "10,20,1,255,128,0,100,1,40";
 
-        static Phase10Step3W0OutBindingExtrasTests()
+        static OutBindingExtrasTests()
         {
             if (string.IsNullOrEmpty(TestGlobals.AppDataPath))
             {

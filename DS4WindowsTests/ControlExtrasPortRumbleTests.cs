@@ -13,7 +13,7 @@ namespace DS4WindowsTests
     /// Phase13-Step6 6-b: <c>DefaultControlExtrasPort.SetRumble</c> は、旧 <c>ControlService.setRumble</c> と同じ検査
     /// （スロット上限 → コントローラーの有無）を経てから <see cref="IDeviceRumbleService"/> を呼ぶ。
     /// </summary>
-    public class Phase13Step6ControlExtrasPortRumbleTests
+    public class ControlExtrasPortRumbleTests
     {
         private sealed class FakeAccessor : IDeviceStateAccessor
         {

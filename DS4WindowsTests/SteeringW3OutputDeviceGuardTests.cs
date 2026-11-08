@@ -10,11 +10,11 @@ namespace DS4WindowsTests
     /// 通常の軸（左右スティックの X・Y）の出力だけが残っていること（ソースの走査。出力デバイスは ViGEmBus の実体が要るため、挙動のテストは作れない）。
     /// vJoy（<c>VJoyFeeder</c>）と <c>SASteeringWheelEmulationUnit</c> の参照が、コードから無くなっていることも調べる。
     /// </summary>
-    public class Phase9SteeringW3OutputDeviceGuardTests
+    public class SteeringW3OutputDeviceGuardTests
     {
         private readonly ITestOutputHelper _output;
 
-        public Phase9SteeringW3OutputDeviceGuardTests(ITestOutputHelper output)
+        public SteeringW3OutputDeviceGuardTests(ITestOutputHelper output)
         {
             _output = output;
         }

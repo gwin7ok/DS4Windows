@@ -14,17 +14,17 @@ namespace DS4WindowsTests
     /// 通常のテスト実行では何もせず合格する（環境変数 <c>DS4W_RUN_BENCH=1</c> のときだけ計測する。処理時間は実行環境の負荷で揺れるため、合否の基準にしない）。
     /// before＝5b-a（<c>ControlService.On_Report</c>）、after＝5b-c 後（<c>InputReportProcessor</c>）。同じ条件で測り、悪化 5% 以内を合格基準とする。
     /// 実行例（PowerShell）:
-    /// <c>$env:DS4W_RUN_BENCH='1'; dotnet test ./DS4WindowsTests/DS4Windows.Actions.Tests.csproj -c Release /p:platform=x64 --filter FullyQualifiedName~Phase13Step5bOnReportTimingBenchmark -v n</c>
+    /// <c>$env:DS4W_RUN_BENCH='1'; dotnet test ./DS4WindowsTests/DS4Windows.Actions.Tests.csproj -c Release /p:platform=x64 --filter FullyQualifiedName~OnReportTimingBenchmark -v n</c>
     /// </summary>
     [Collection(SharedHostStateCollection.Name)]
-    public class Phase13Step5bOnReportTimingBenchmark
+    public class OnReportTimingBenchmark
     {
         private const int Iterations = 200_000;
         private const int Rounds = 7;
         private const BindingFlags All = BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic;
         private readonly ITestOutputHelper _output;
 
-        public Phase13Step5bOnReportTimingBenchmark(ITestOutputHelper output)
+        public OnReportTimingBenchmark(ITestOutputHelper output)
         {
             _output = output;
         }

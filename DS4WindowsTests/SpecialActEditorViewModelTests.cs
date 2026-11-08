@@ -12,7 +12,7 @@ namespace DS4WindowsTests
     /// 中身を <see cref="ActionEditorViewModel"/> へ移しても、読み込み・書き出し・検証（名前の必須と重複、トリガーが 1 つ以上、種別の指定）と、
     /// エラーの文言・キーが、従来と同じであること。
     /// </summary>
-    public class Phase10Step2W1SpecialActEditorViewModelTests
+    public class SpecialActEditorViewModelTests
     {
         private static SpecialAction Existing(string name)
             => new SpecialAction(name, "Cross", "Macro", "65");

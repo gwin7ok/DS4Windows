@@ -15,11 +15,11 @@ namespace DS4WindowsTests
     /// <b>安全弁（ガードレール）の順序</b>: <c>Start</c>（ViGEm の開始 → KBM の初期化 → 2 秒待ち → 排他モード → HidHide → OSC／UDP → 恒久スロット → 列挙 → <c>running</c> → UDP の待ち受け → 通知）、
     /// <c>Stop</c>（<c>running = false</c> → 事前通知 → デバイス停止と仮想パッドの取り外し → 登録簿の停止 → OSC／UDP の停止 → 出力キューの待ち → <c>OutputSlotManager.Stop</c> → 待ち → <c>StopViGEm</c> → KBM の切断 → 通知）が変わっていないこと。
     /// </summary>
-    public class Phase9E6LifecycleGuardTests
+    public class LifecycleGuardTests
     {
         private readonly ITestOutputHelper _output;
 
-        public Phase9E6LifecycleGuardTests(ITestOutputHelper output)
+        public LifecycleGuardTests(ITestOutputHelper output)
         {
             _output = output;
         }
@@ -68,7 +68,7 @@ namespace DS4WindowsTests
             Assert.Contains("public bool HotPlug()", text);
             Assert.Contains("return _lifecycle.HotPlug();", text);
             Assert.Contains("public void PrepareAbort()", text);
-            // Phase13-Step9: running／suspending の転送も削除した（Phase13Step9RunningForwardRemovalGuardTests）
+            // Phase13-Step9: running／suspending の転送も削除した（ServiceLifecycleRunningForwardRemovalGuardTests）
             Assert.DoesNotContain("public bool running", text);
             Assert.DoesNotContain("public bool suspending", text);
             // Phase9 9-F F-5b: 外部の参照が 0 件の転送は削除した。内部は _lifecycle を直接使う

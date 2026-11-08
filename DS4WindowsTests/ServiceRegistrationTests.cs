@@ -22,7 +22,7 @@ namespace DS4WindowsTests
     /// 機械的に検証することで、同種の「登録し忘れたままドキュメントだけ完了扱いになる」
     /// 不具合の再発を防止する。
     /// </summary>
-    public class Phase3ServiceRegistrationTests
+    public class ServiceRegistrationTests
     {
         [Fact]
         public void AppHost_ResolvesIElevatedProcessLauncher_AsDefaultImplementation()

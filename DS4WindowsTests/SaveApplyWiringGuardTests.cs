@@ -17,14 +17,14 @@ namespace DS4WindowsTests
     ///   （旧コードは、<c>ChangeService</c>［停止／開始の切り替え］を 2 回続けて呼んでおり、1 回目の完了を待たなかった）
     /// ProfileEditor・MainWindow は WPF の画面で単体駆動が困難なため、ソースの走査で担保する。ソースファイルが見つからない環境では、検査を行わず合格とする。
     /// </summary>
-    public class Phase11W4SaveApplyWiringGuardTests
+    public class SaveApplyWiringGuardTests
     {
         private const string EditorCode = "DS4Windows/UI/ProfileEditor.xaml.cs";
         private const string MainWindowCode = "DS4Windows/UI/MainWindow.xaml.cs";
 
         private readonly ITestOutputHelper _output;
 
-        public Phase11W4SaveApplyWiringGuardTests(ITestOutputHelper output)
+        public SaveApplyWiringGuardTests(ITestOutputHelper output)
         {
             _output = output;
         }

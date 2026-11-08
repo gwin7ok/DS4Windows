@@ -10,7 +10,7 @@ namespace DS4WindowsTests
     /// Phase10-Step2 W1（Phase10-Step2-Plan.md §3.1・§5）: 種別の一覧（<see cref="ActionTypeCatalog"/>）。並び・種別の ID は、従来の
     /// <c>SpecialActEditorViewModel.typeAssoc</c> と、<c>AssignmentEditor.xaml</c> のドロップダウンの項目の並びと同じ。
     /// </summary>
-    public class Phase10Step2W1ActionTypeCatalogTests
+    public class ActionTypeCatalogTests
     {
         private static readonly SpecialAction.ActionTypeId[] LegacyTypeAssoc =
         {

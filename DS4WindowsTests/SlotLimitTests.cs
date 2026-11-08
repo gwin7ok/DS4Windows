@@ -21,7 +21,7 @@ namespace DS4WindowsTests
     ///  - B-1: <c>OutputSlotPersistDTO.MapTo</c> が出力スロットの添字を 0〜3 に限り、5〜8 番目の恒久スロットが復元されなかった。
     /// </summary>
     [Collection(SharedHostStateCollection.Name)]
-    public class Phase8Step1SlotLimitTests
+    public class SlotLimitTests
     {
         // ---- 配列の長さのガード ----
 

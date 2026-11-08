@@ -14,11 +14,11 @@ namespace DS4WindowsTests
     /// （<see cref="ControlSettingsEditTarget"/>）。Default／Key／Button／Macro の、読み込み・書き出し・往復、Toggle・Scan Code・Repeat、
     /// <c>extras</c> の保持、Save（Apply）／Cancel（Discard）で、元が変わる・変わらないこと。持ち越し C-5（Button の Toggle）の是正の土台。
     /// </summary>
-    public class Phase10Step2W4ControlSettingsEditTargetTests
+    public class ControlSettingsEditTargetTests
     {
         private const string SomeExtras = "10,20,1,255,0,0,1,0,25";
 
-        static Phase10Step2W4ControlSettingsEditTargetTests()
+        static ControlSettingsEditTargetTests()
         {
             if (string.IsNullOrEmpty(TestGlobals.AppDataPath))
             {
@@ -189,7 +189,7 @@ namespace DS4WindowsTests
         [Fact]
         public void WriteFrom_Button_WritesTheToggle_TheFixForC5()
         {
-            // 従来の選択ダイアログ（OutBinding.WriteBind）は、Button に Toggle を書かなかった（Phase10Step2W0ButtonToggleReproTests）。共通の編集画面は、書く
+            // 従来の選択ダイアログ（OutBinding.WriteBind）は、Button に Toggle を書かなかった（ButtonToggleReproTests）。共通の編集画面は、書く
             var rig = new Rig();
             var target = new ControlSettingsEditTarget(Button(X360Controls.A), rig.Profile);
             target.LoadInto(rig.PressKey, rig.Macro);

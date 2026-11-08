@@ -11,7 +11,7 @@ namespace DS4WindowsTests
     /// （<c>ShowControlAssignmentEditor</c>）を呼ぶ形に更新した（<c>CreateBindingWindow</c> は 0 か所）。
     /// ソースファイルが見つからない環境では、検査を行わず合格とする。
     /// </summary>
-    public class Phase10Step3W0ProfileEditorCallSitesTests
+    public class ProfileEditorCallSitesTests
     {
         private static readonly string[] CallerMethods =
         {
@@ -25,7 +25,7 @@ namespace DS4WindowsTests
 
         private readonly ITestOutputHelper _output;
 
-        public Phase10Step3W0ProfileEditorCallSitesTests(ITestOutputHelper output)
+        public ProfileEditorCallSitesTests(ITestOutputHelper output)
         {
             _output = output;
         }

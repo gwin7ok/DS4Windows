@@ -15,9 +15,9 @@ namespace DS4WindowsTests
     /// 最初に <c>keyType</c> を <c>None</c> にして、Toggle を書かない。そのため、Toggle つきの Button の設定は、ダイアログを開いて閉じるだけでも、Toggle が消える。
     /// ここでは、現行の挙動を固定する。Step4（共通画面の Switch Mode が Key と Button の両方に Toggle を書く）で、是正する。
     /// </summary>
-    public class Phase10Step2W0ButtonToggleReproTests
+    public class ButtonToggleReproTests
     {
-        static Phase10Step2W0ButtonToggleReproTests()
+        static ButtonToggleReproTests()
         {
             if (string.IsNullOrEmpty(TestGlobals.AppDataPath))
             {

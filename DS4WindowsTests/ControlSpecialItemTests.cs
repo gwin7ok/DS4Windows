@@ -19,7 +19,7 @@ namespace DS4WindowsTests
     /// <see cref="DS4ControlSettings"/> のリセット・編集用のコピーでの扱い。画面・実行は、まだ関係しない。
     /// </summary>
     [Collection(SharedHostStateCollection.Name)]
-    public class Phase10Step4W1ControlSpecialItemTests
+    public class ControlSpecialItemTests
     {
         private const int Slot = PersistenceHarness.Slot;
 

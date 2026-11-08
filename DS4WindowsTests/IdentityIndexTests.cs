@@ -15,13 +15,13 @@ namespace DS4WindowsTests
     /// フォルダーの時刻が 1 秒以内に新しいあいだは、時刻の粗さで直後の変更を見逃さないよう、毎回作り直す。挙動（引数・戻り値）は W1 から変わらない（W1 のテストが守る）。
     /// </summary>
     [Collection(SharedHostStateCollection.Name)]
-    public class Phase10Step4dW5aIdentityIndexTests : IDisposable
+    public class IdentityIndexTests : IDisposable
     {
         private readonly string _dir;
         private readonly string _profiles;
         private readonly DateTime _old = DateTime.UtcNow.AddHours(-1);
 
-        public Phase10Step4dW5aIdentityIndexTests()
+        public IdentityIndexTests()
         {
             _dir = Path.Combine(Path.GetTempPath(), "Phase10Step4d_W5a_" + Guid.NewGuid().ToString("N"));
             _profiles = Path.Combine(_dir, "Profiles");

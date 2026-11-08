@@ -21,7 +21,7 @@ namespace DS4WindowsTests
     /// 旧実装は <c>ControlService</c> の private メンバーで、検査できる入口がなかったため、旧実装との差分テストではなく、期待する動作を直接確かめる。
     /// </summary>
     [Collection("GuiLogSubscribers")]
-    public class Phase9EUdpMotionServiceTests
+    public class UdpMotionServiceTests
     {
         private sealed class Fixture : IDisposable
         {

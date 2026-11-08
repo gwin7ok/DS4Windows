@@ -11,11 +11,11 @@ namespace DS4WindowsTests
     /// C1: ON でも Emulated Controller を DS4 へ強制しない。C3（D2＝案 B）: ON → OFF では、フラグを立てる前に消灯・振動ゼロを 1 度だけ書く。
     /// C4: 表示名と説明文（英語・日本語）。HID の書き込みは単体で動かせないため、呼び出しの順序とガードをコードで検査する。
     /// </summary>
-    public class Phase11W6cOutputDataFlagTests
+    public class OutputDataFlagTests
     {
         private readonly ITestOutputHelper _output;
 
-        public Phase11W6cOutputDataFlagTests(ITestOutputHelper output)
+        public OutputDataFlagTests(ITestOutputHelper output)
         {
             _output = output;
         }

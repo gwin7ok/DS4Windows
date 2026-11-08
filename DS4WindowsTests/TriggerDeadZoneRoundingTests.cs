@@ -12,7 +12,7 @@ namespace DS4WindowsTests
     /// 最大ゾーン・アンチデッドゾーンの百分率への変換も、切り捨て（0.29 × 100 ＝ 28.999… → 28）から四捨五入へ。
     /// 作業スロット（<c>ControllerLimits.TestProfileIndex</c>）を使い、終了時に値を戻す。
     /// </summary>
-    public class Phase7bTriggerDeadZoneRoundingTests
+    public class TriggerDeadZoneRoundingTests
     {
         private static ProfileSettingsViewModel NewViewModel() =>
             ProfileSettingsViewModelTestFactory.Create(ControllerLimits.TestProfileIndex);

@@ -17,13 +17,13 @@ namespace DS4WindowsTests
     /// デバイスは <see cref="TestDs4Device"/>（実機の HID なし）に、レポート処理が読む保護フィールドをリフレクションで与えて使う。
     /// </summary>
     [Collection(SharedHostStateCollection.Name)]
-    public class Phase13Step5bOnReportCharacterizationTests
+    public class OnReportCharacterizationTests
     {
         private const int Slot = 0;
         private const BindingFlags All = BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic;
         private readonly ITestOutputHelper _output;
 
-        public Phase13Step5bOnReportCharacterizationTests(ITestOutputHelper output)
+        public OnReportCharacterizationTests(ITestOutputHelper output)
         {
             _output = output;
             DS4Windows.Composition.AppHost.CreateHost();

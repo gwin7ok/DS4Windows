@@ -20,7 +20,7 @@ namespace DS4WindowsTests
     /// ソースが見つからない環境では、ソースの検査を行わず合格とする。判断の根拠は Phase7-Step8-Plan.md（Q1〜Q4・Q8）。
     /// </summary>
     [Collection(SharedHostStateCollection.Name)]
-    public class Phase7Step8W2MappingInstanceGuardTests
+    public class MappingInstanceGuardTests
     {
         // 状態を持たない表（読み取り専用の運用）。Q2＝A により static のまま残すもの
         private static readonly string[] AllowedStaticFields =
@@ -31,7 +31,7 @@ namespace DS4WindowsTests
 
         private readonly ITestOutputHelper _output;
 
-        public Phase7Step8W2MappingInstanceGuardTests(ITestOutputHelper output)
+        public MappingInstanceGuardTests(ITestOutputHelper output)
         {
             _output = output;
         }

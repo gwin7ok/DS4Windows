@@ -14,11 +14,11 @@ namespace DS4WindowsTests
     /// 対象外: コントローラー固有設定（実機のデバイス実体が要る。移動の規模が小さい）。
     /// </summary>
     [Collection(SharedHostStateCollection.Name)]
-    public class Phase7Step10cGoldenPersistenceTests
+    public class GoldenPersistenceTests
     {
         private readonly ITestOutputHelper _output;
 
-        public Phase7Step10cGoldenPersistenceTests(ITestOutputHelper output)
+        public GoldenPersistenceTests(ITestOutputHelper output)
         {
             _output = output;
         }

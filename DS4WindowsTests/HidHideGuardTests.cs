@@ -16,11 +16,11 @@ namespace DS4WindowsTests
     /// (2) 新しい部品が DI の Singleton として登録され、静的な窓口（<c>Global</c>／<c>AppHost</c>）を参照しないこと。
     /// (3) ドライバーの窓口（<c>HidHideAPIDevice</c>）は、<c>HidHideApiAdapter</c> の中に閉じていること。
     /// </summary>
-    public class Phase9EHidHideGuardTests
+    public class HidHideGuardTests
     {
         private readonly ITestOutputHelper _output;
 
-        public Phase9EHidHideGuardTests(ITestOutputHelper output)
+        public HidHideGuardTests(ITestOutputHelper output)
         {
             _output = output;
         }

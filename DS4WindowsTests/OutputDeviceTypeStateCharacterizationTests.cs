@@ -10,9 +10,9 @@ namespace DS4WindowsTests
     /// 7-b 以降で配列の持ち主を <c>IOutputDeviceTypeState</c> へ移しても、<c>IOutputSlotService</c> 経由で見える結果が同じであることを確かめる。
     /// </summary>
     [Collection(SharedHostStateCollection.Name)]
-    public class Phase13Step7CharacterizationTests
+    public class OutputDeviceTypeStateCharacterizationTests
     {
-        public Phase13Step7CharacterizationTests()
+        public OutputDeviceTypeStateCharacterizationTests()
         {
             DS4Windows.Composition.AppHost.CreateHost();
         }

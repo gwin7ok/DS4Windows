@@ -19,11 +19,11 @@ namespace DS4WindowsTests
     /// Phase8-Step8 8d（持ち越し C-2）: 旧経路は削除済み。以前の「旧・新の両経路の比べ」は、新経路の期待値の固定（比べを除いた、残りの検査）に変えた。
     /// </summary>
     [Collection(SharedHostStateCollection.Name)]
-    public class Phase8Step75bW1ProfileUntriggerDualPathTests
+    public class ProfileUntriggerDualPathTests
     {
         private readonly ITestOutputHelper _output;
 
-        public Phase8Step75bW1ProfileUntriggerDualPathTests(ITestOutputHelper output)
+        public ProfileUntriggerDualPathTests(ITestOutputHelper output)
         {
             _output = output;
         }

@@ -21,13 +21,13 @@ namespace DS4WindowsTests
     /// <summary>
     /// Phase13-Step8 8-a: 残る遅延取得（IMapping／IAutoProfileService／IActionBindingBuilder）について、
     /// 利用者が対象の依存グラフの内側にあるか（＝対象を直接受けると循環するか）を、登録から静的に求める。結果は Phase13-Step8-Plan.md §2 の根拠。
-    /// 求め方は Phase13Step6ResolutionGraphProbeTests と同じ（Func は辺にしない）。
+    /// 求め方は ControlServiceResolutionGraphProbeTests と同じ（Func は辺にしない）。
     /// </summary>
-    public class Phase13Step8ResolutionGraphProbeTests
+    public class LazyDependencyResolutionGraphProbeTests
     {
         private readonly ITestOutputHelper _output;
 
-        public Phase13Step8ResolutionGraphProbeTests(ITestOutputHelper output)
+        public LazyDependencyResolutionGraphProbeTests(ITestOutputHelper output)
         {
             _output = output;
         }

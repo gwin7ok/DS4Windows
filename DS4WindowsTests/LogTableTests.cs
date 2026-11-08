@@ -25,7 +25,7 @@ namespace DS4WindowsTests
     /// NLog の設定をテストの間だけ Trace 有効のメモリ出力へ差し替える（既存のログのテストと同じ方式）。他の Host 構築テストと同じコレクションで直列に実行する。
     /// </summary>
     [Collection(SharedHostStateCollection.Name)]
-    public class Phase10Step4cW0LogTableTests
+    public class LogTableTests
     {
         private const int Device = MappingCharacterizationScope.Device;
 

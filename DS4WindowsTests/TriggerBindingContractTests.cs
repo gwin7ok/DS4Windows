@@ -14,7 +14,7 @@ namespace DS4WindowsTests
     /// 改訂した <see cref="IActionBinding"/>／<see cref="IInputAction"/>（<c>KeyActionBinding</c> の追従を含む）。
     /// 本番の挙動には配線されていない新しい型の、契約の形（不変性、既定値、削除したメンバー）を固定する。
     /// </summary>
-    public class Phase8Step3ContractTests
+    public class TriggerBindingContractTests
     {
         private sealed class FakeInputAction : IInputAction
         {

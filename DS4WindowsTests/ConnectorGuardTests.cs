@@ -11,11 +11,11 @@ namespace DS4WindowsTests
     /// Phase9 9-E E-6f1（Phase9-E6-Plan.md §9.2）: 接続の組み立て（旧 <c>PrepareConnectedInputControllerSettingEvents</c> ほか）の切り出しの守り。
     /// 本体が <c>DeviceConnector</c> へ移り、<c>ControlService</c> は薄い委譲だけを持つこと。組み立ての順序が変わっていないこと。
     /// </summary>
-    public class Phase9E6ConnectorGuardTests
+    public class ConnectorGuardTests
     {
         private readonly ITestOutputHelper _output;
 
-        public Phase9E6ConnectorGuardTests(ITestOutputHelper output)
+        public ConnectorGuardTests(ITestOutputHelper output)
         {
             _output = output;
         }

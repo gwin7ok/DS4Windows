@@ -18,7 +18,7 @@ namespace DS4WindowsTests
     /// 付随する束縛（<see cref="TriggerBinding.PrimarySource"/>）は、SA 本体の <c>ProcessOwned</c> が、一緒に処理する。
     /// </summary>
     [Collection(SharedHostStateCollection.Name)]
-    public class Phase10Step6I5SaExtrasEngineTests
+    public class SaExtrasEngineTests
     {
         private const int Device = 5;
         private const string Extras = "10,20,1,255,0,0,5,1,30";   // 強い振動 10、弱い振動 20、ライトバー（255,0,0）点滅 5、感度 30
@@ -69,7 +69,7 @@ namespace DS4WindowsTests
             public bool Held;
             public bool PreviousHeld;
             public DateTime Now = T0;
-            public int Device => Phase10Step6I5SaExtrasEngineTests.Device;
+            public int Device => SaExtrasEngineTests.Device;
             public bool IsActive(DS4Controls control) => control == DS4Controls.R1 && Held;
             public bool WasActive(DS4Controls control) => control == DS4Controls.R1 && PreviousHeld;
             public DelayClock Delay { get; } = new DelayClock();

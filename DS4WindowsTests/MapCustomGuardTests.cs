@@ -12,11 +12,11 @@ namespace DS4WindowsTests
     /// M1: 合成入力の確定（旧 <c>Mapping.Commit</c>）が <c>SyntheticInputCommitter</c> へ移り、<c>Mapping</c> は薄い委譲だけを持つこと。
     /// M2: 2 段階トリガーの状態機械（旧 <c>Mapping.ProcessTwoStageTrigger</c>）が <c>TwoStageTriggerProcessor</c> へ移り、<c>MapCustom</c> は呼び出しだけを持つこと。
     /// </summary>
-    public class Phase9MapCustomGuardTests
+    public class MapCustomGuardTests
     {
         private readonly ITestOutputHelper _output;
 
-        public Phase9MapCustomGuardTests(ITestOutputHelper output)
+        public MapCustomGuardTests(ITestOutputHelper output)
         {
             _output = output;
         }

@@ -13,11 +13,11 @@ namespace DS4WindowsTests
     /// <c>BackingStore</c> から <c>Mapping</c> への逆参照を <c>ActionsLoaded</c> イベントへ置き換えたことの回帰ガード。
     /// ソースが見つからない環境では、検査を行わず合格とする。判断の根拠は Phase7-Step7-Plan.md（Q2〜Q5）。
     /// </summary>
-    public class Phase7Step7SyntheticInputStateGuardTests
+    public class SyntheticInputStateGuardTests
     {
         private readonly ITestOutputHelper _output;
 
-        public Phase7Step7SyntheticInputStateGuardTests(ITestOutputHelper output)
+        public SyntheticInputStateGuardTests(ITestOutputHelper output)
         {
             _output = output;
         }

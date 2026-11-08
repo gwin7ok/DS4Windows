@@ -17,12 +17,12 @@ namespace DS4WindowsTests
     /// 登録簿（<see cref="IProfileIdentityService"/>）は、起動時に、ID のないファイルへ ID を書き、ファイルのコピーで重複した ID に新しい ID を振って書く。参照は、まだ名前のまま。
     /// </summary>
     [Collection(SharedHostStateCollection.Name)]
-    public class Phase10Step4dW1ProfileIdTests : IDisposable
+    public class ProfileIdTests : IDisposable
     {
         private readonly string _dir;
         private readonly string _profiles;
 
-        public Phase10Step4dW1ProfileIdTests()
+        public ProfileIdTests()
         {
             _dir = Path.Combine(Path.GetTempPath(), "Phase10Step4d_W1_" + Guid.NewGuid().ToString("N"));
             _profiles = Path.Combine(_dir, "Profiles");

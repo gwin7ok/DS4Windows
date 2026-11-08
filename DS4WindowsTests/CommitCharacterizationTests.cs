@@ -10,7 +10,7 @@ namespace DS4WindowsTests
     /// <c>Mapping</c> の静的な状態を共有するため、<c>ServiceProviderHolder</c> のコレクションで直列に実行する。
     /// </summary>
     [Collection(SharedHostStateCollection.Name)]
-    public class Phase7Step7CommitCharacterizationTests
+    public class CommitCharacterizationTests
     {
         private const int Device = MappingCharacterizationScope.Device;
 

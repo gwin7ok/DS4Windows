@@ -12,12 +12,12 @@ namespace DS4WindowsTests
     /// Phase13-Step5（Phase13-Step5-Plan.md §6 計測①）: 入力ループ（On_Report）が毎レポート読むスロット状態の取得が、
     /// ヒープ割り当て（GC Alloc）を行わないこと（ゼロアロケーション方針）。<c>ControlServiceHotPathAllocationTests</c> と同じ形式。
     /// </summary>
-    public class Phase13Step5SlotStateHotPathAllocationTests
+    public class SlotStateHotPathAllocationTests
     {
         private const int Iterations = 200000;
         private readonly ITestOutputHelper _output;
 
-        public Phase13Step5SlotStateHotPathAllocationTests(ITestOutputHelper output)
+        public SlotStateHotPathAllocationTests(ITestOutputHelper output)
         {
             _output = output;
         }

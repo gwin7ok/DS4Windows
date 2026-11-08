@@ -16,11 +16,11 @@ namespace DS4WindowsTests
     ///   （IOutputSlotStore → IPathService → BackingStore と循環し、スタックオーバーフローになる）。
     /// ソースが見つからない環境では、検査を行わず合格とする。判断の根拠は Phase7-Step6-Plan.md。
     /// </summary>
-    public class Phase7Step6OutputTypeOwnershipGuardTests
+    public class OutputTypeOwnershipGuardTests
     {
         private readonly ITestOutputHelper _output;
 
-        public Phase7Step6OutputTypeOwnershipGuardTests(ITestOutputHelper output)
+        public OutputTypeOwnershipGuardTests(ITestOutputHelper output)
         {
             _output = output;
         }

@@ -16,11 +16,11 @@ namespace DS4WindowsTests
     /// (2) 新しい部品が DI の Singleton として登録され、SharpOSC の型は通信の実装（<c>SharpOsc*</c>）の中に閉じていること。
     /// (3) 部品が静的な窓口（<c>Global</c>／<c>AppHost</c>）を参照しないこと。
     /// </summary>
-    public class Phase9EOscGuardTests
+    public class OscGuardTests
     {
         private readonly ITestOutputHelper _output;
 
-        public Phase9EOscGuardTests(ITestOutputHelper output)
+        public OscGuardTests(ITestOutputHelper output)
         {
             _output = output;
         }

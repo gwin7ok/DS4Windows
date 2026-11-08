@@ -22,7 +22,7 @@ namespace DS4WindowsTests
     /// ProfileEditor は WPF の UserControl で単体駆動が困難なため、構成はソースの走査（XAML は XDocument）で検査する。
     /// ソースファイルが見つからない環境では、その検査を行わず合格とする。
     /// </summary>
-    public class Phase11W3KeepsizeTests
+    public class KeepsizeTests
     {
         private const string EditorXaml = "DS4Windows/UI/ProfileEditor.xaml";
         private const string EditorCode = "DS4Windows/UI/ProfileEditor.xaml.cs";
@@ -30,7 +30,7 @@ namespace DS4WindowsTests
 
         private readonly ITestOutputHelper _output;
 
-        public Phase11W3KeepsizeTests(ITestOutputHelper output)
+        public KeepsizeTests(ITestOutputHelper output)
         {
             _output = output;
         }

@@ -12,7 +12,7 @@ namespace DS4WindowsTests
     /// Phase6-Step10-4-1: WindowPlacementHelper／ProfileList／ProfileEntity の Global 直接参照解消の回帰ガード
     /// （<c>Phase6-Step10-4-Plan.md</c> §11）。
     /// </summary>
-    public class Step10FourOneGlobalReferenceGuardTests
+    public class FourOneGlobalReferenceGuardTests
     {
 
         [Fact]

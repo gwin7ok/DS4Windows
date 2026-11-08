@@ -15,7 +15,7 @@ namespace DS4WindowsTests
     /// W4（項目 1: デジタルな出力だけ SA の閾値に揃える）で、Controls 側の期待値のうち、デジタルな出力に使う判定の分を書き換える。
     /// </summary>
     [Collection(SharedHostStateCollection.Name)]
-    public class Phase10Step4cW0JudgementTableTests
+    public class JudgementTableTests
     {
         private const int Device = 5;
 

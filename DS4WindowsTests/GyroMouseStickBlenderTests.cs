@@ -10,7 +10,7 @@ namespace DS4WindowsTests
     /// Phase9 9-B（Phase9-B-Plan.md）: <see cref="GyroMouseStickBlender"/>（旧 <c>Mapping.TempMouseJoystick</c> の内側）の値の特性化。
     /// 出力スティック（左／右）と軸（XY／X／Y）ごとに、ジャイロ由来の値と通常のスティックの値のうち、中心（128）から遠い方を採ることを調べる。
     /// </summary>
-    public class Phase9BGyroMouseStickBlenderTests
+    public class GyroMouseStickBlenderTests
     {
         private static GyroMouseStickInfo Info(GyroMouseStickInfo.OutputStick stick, GyroMouseStickInfo.OutputStickAxes axes)
         {

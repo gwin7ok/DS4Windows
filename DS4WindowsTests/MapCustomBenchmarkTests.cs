@@ -20,7 +20,7 @@ namespace DS4WindowsTests
     /// 結果は標準出力に出る。コンソールに出すには <c>--logger "console;verbosity=detailed"</c> を付けて実行する。
     /// </summary>
     [Collection(SharedHostStateCollection.Name)]
-    public class Phase8Step4MapCustomBenchmarkTests
+    public class MapCustomBenchmarkTests
     {
         private const int Actions = 30;
         private const int Warmup = 300;
@@ -28,7 +28,7 @@ namespace DS4WindowsTests
 
         private readonly ITestOutputHelper _output;
 
-        public Phase8Step4MapCustomBenchmarkTests(ITestOutputHelper output)
+        public MapCustomBenchmarkTests(ITestOutputHelper output)
         {
             _output = output;
         }

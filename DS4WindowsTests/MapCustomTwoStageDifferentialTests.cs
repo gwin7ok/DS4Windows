@@ -16,7 +16,7 @@ namespace DS4WindowsTests
     /// 返す割り当て（浅い引き／深い引き）と、状態（<see cref="TwoStageTriggerMappingData"/> の全項目）が各ステップで一致することを確かめる。
     /// 時刻は <c>DateTime.Now</c> から一定のずれ（0 または +100 秒）を加えた時計を両方に渡す（HipFire の待ち時間の判定を決定的にする）。
     /// </summary>
-    public class Phase9MapCustomTwoStageDifferentialTests
+    public class MapCustomTwoStageDifferentialTests
     {
         private const int Device = 3;
 

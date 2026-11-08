@@ -11,7 +11,7 @@ namespace DS4WindowsTests
     /// R-2 W2: 保存は、Execute Mode を独立した <c>Control/MacroExecuteMode</c> ノード（<c>Held</c>）へ書き、KeyType には <c>Macro</c> だけを書く。旧形式（KeyType の <c>RepeatMacro</c>／<c>HoldMacro</c>）の読込は、そのまま受け付ける。
     /// </summary>
     [Collection(SharedHostStateCollection.Name)]
-    public class Phase8FixMacroRepeatUnifyPersistenceTests
+    public class MacroRepeatUnifyPersistenceTests
     {
         private const int Slot = PersistenceHarness.Slot;
 

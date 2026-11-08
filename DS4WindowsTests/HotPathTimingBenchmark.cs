@@ -15,10 +15,10 @@ namespace DS4WindowsTests
     /// Phase9 の各 Wave（9-A の切り出しなど）の前後で実行し、中央値を比べる（許容: 悪化 5% 以内。承認済みの初期値）。
     /// 通常のテスト実行では、何もせず合格する（環境変数 <c>DS4W_RUN_BENCH=1</c> のときだけ計測する。処理時間は実行環境の負荷で揺れるため、合否の基準にしない）。
     /// 割り当て 0 の検査は <c>MappingHotPathAllocationTests</c> が担う。実行例（PowerShell）:
-    /// <c>$env:DS4W_RUN_BENCH='1'; dotnet test ./DS4WindowsTests/DS4Windows.Actions.Tests.csproj -c Release /p:platform=x64 --filter FullyQualifiedName~Phase9HotPathTimingBenchmark -v n</c>
+    /// <c>$env:DS4W_RUN_BENCH='1'; dotnet test ./DS4WindowsTests/DS4Windows.Actions.Tests.csproj -c Release /p:platform=x64 --filter FullyQualifiedName~HotPathTimingBenchmark -v n</c>
     /// （Release で計測する。Debug は最適化がなく、比較に向かない）。
     /// </summary>
-    public class Phase9HotPathTimingBenchmark
+    public class HotPathTimingBenchmark
     {
         private const int Slot = 0;
         private const int Iterations = 50000;
@@ -27,7 +27,7 @@ namespace DS4WindowsTests
         private static readonly Mapping Mapper = TestMappingFactory.Create();
         private readonly ITestOutputHelper _output;
 
-        public Phase9HotPathTimingBenchmark(ITestOutputHelper output)
+        public HotPathTimingBenchmark(ITestOutputHelper output)
         {
             _output = output;
         }

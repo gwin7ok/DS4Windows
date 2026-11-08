@@ -15,7 +15,7 @@ namespace DS4WindowsTests
     /// 押すたびに ON／OFF が切り替わり、ON の間は、仮想パッドのそのボタンが押され続ける（元のボタンの通常の出力は消える）。
     /// </summary>
     [Collection(SharedHostStateCollection.Name)]
-    public class Phase9ControlsPadToggleTests
+    public class ControlsPadToggleTests
     {
         [Fact]
         public void APadButtonWithToggle_IsBuiltWithTheSpecialActionButtonOutput()

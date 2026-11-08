@@ -17,13 +17,13 @@ namespace DS4WindowsTests
     /// 登録簿がなければ、従来の <c>string[]</c> と同じに動く。
     /// </summary>
     [Collection(SharedHostStateCollection.Name)]
-    public class Phase10Step4dW5bProfileSlotNamesTests : IDisposable
+    public class ProfileSlotNamesTests : IDisposable
     {
         private readonly string _dir;
         private readonly string _profiles;
         private readonly DateTime _old = DateTime.UtcNow.AddHours(-1);
 
-        public Phase10Step4dW5bProfileSlotNamesTests()
+        public ProfileSlotNamesTests()
         {
             _dir = Path.Combine(Path.GetTempPath(), "Phase10Step4d_W5b_" + Guid.NewGuid().ToString("N"));
             _profiles = Path.Combine(_dir, "Profiles");

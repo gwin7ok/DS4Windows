@@ -18,7 +18,7 @@ namespace DS4WindowsTests
     /// 画面の入力（<see cref="CheckBatteryViewModel"/> の型のある項目との往復）。SA と同じ処理で、Controls 固有の分岐はない。
     /// </summary>
     [Collection(SharedHostStateCollection.Name)]
-    public class Phase10Step6W7ControlBatteryTests
+    public class ControlBatteryTests
     {
 
         private static ControlSpecialItem Battery(bool notification = true, bool lightbar = true, double seconds = 0)

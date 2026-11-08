@@ -18,12 +18,12 @@ namespace DS4WindowsTests
     /// 他の Host 構築テストと同じコレクションで直列に実行する。
     /// </summary>
     [Collection(SharedHostStateCollection.Name)]
-    public class Phase8Step78bW1ControlsKeyCharacterizationTests
+    public class ControlsKeyCharacterizationTests
     {
         private const int Key = 65;
         private readonly ITestOutputHelper _output;
 
-        public Phase8Step78bW1ControlsKeyCharacterizationTests(ITestOutputHelper output)
+        public ControlsKeyCharacterizationTests(ITestOutputHelper output)
         {
             _output = output;
         }

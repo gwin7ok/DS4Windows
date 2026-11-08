@@ -14,11 +14,11 @@ namespace DS4WindowsTests
     ///   <c>Global.NotificationServiceInstance</c> の削除（<c>AppLogger.NotificationService</c> への置き換え）。
     /// ソースが見つからない環境では、検査を行わず合格とする。判断の根拠は <c>Phase7-Step5-Plan.md</c>。
     /// </summary>
-    public class Phase7Step5ServiceLocatorGuardTests
+    public class ServiceLocatorGuardTests
     {
         private readonly ITestOutputHelper _output;
 
-        public Phase7Step5ServiceLocatorGuardTests(ITestOutputHelper output)
+        public ServiceLocatorGuardTests(ITestOutputHelper output)
         {
             _output = output;
         }

@@ -15,7 +15,7 @@ namespace DS4WindowsTests
     /// Phase12-Step2 2d（R-4）: <see cref="FocusWindowAction"/>（立ち上がりの 1 回。別スレッドで前面化。重ねない）と、
     /// <see cref="SpecialActionOutputFactory"/> への接続（SA／Controls の両方）、Controls で使える種別の表。
     /// </summary>
-    public class Phase12Step2W2dFocusWindowActionTests
+    public class FocusWindowActionTests
     {
         private sealed class RecordingFocuser : IWindowFocuser
         {

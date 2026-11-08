@@ -17,7 +17,7 @@ namespace DS4WindowsTests
     /// 動作・ログは変えない（既存の 7.1・7.2 のテストが期待値を変えずに成功することが、不変の証拠）。
     /// </summary>
     [Collection(SharedHostStateCollection.Name)]
-    public class Phase8Step78aFoundationTests
+    public class KeyButtonOutputFoundationTests
     {
         private const int Device = 6;
 
@@ -32,7 +32,7 @@ namespace DS4WindowsTests
         private sealed class Context : IOutputContext
         {
             public Context(IFrameOutput frame) { Frame = frame; }
-            public int Device => Phase8Step78aFoundationTests.Device;
+            public int Device => KeyButtonOutputFoundationTests.Device;
             public IVirtualKBM OutputHandler => null;
             public IFrameOutput Frame { get; }
             public void RequestEndFrame() { }

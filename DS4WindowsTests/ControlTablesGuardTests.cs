@@ -13,11 +13,11 @@ namespace DS4WindowsTests
     /// <c>X360ControlTables</c>／<c>DS4ControlNames</c> へ移したことの回帰ガード。表の内容は従来と同じでなければならない。
     /// ソースが見つからない環境では、ソースの検査を行わず合格とする。
     /// </summary>
-    public class Phase7Step10bW1ControlTablesGuardTests
+    public class ControlTablesGuardTests
     {
         private readonly ITestOutputHelper _output;
 
-        public Phase7Step10bW1ControlTablesGuardTests(ITestOutputHelper output)
+        public ControlTablesGuardTests(ITestOutputHelper output)
         {
             _output = output;
         }

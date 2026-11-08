@@ -6,7 +6,7 @@ namespace DS4WindowsTests
     /// <summary>
     /// Phase12-Step3 3b（R-3）: マクロの「マウスポインターの移動」ステップの値の体系（整数 1 個との相互変換）と、リストの表示名。
     /// </summary>
-    public class Phase12Step3W3bMacroPointerMoveTests
+    public class MacroPointerMoveTests
     {
         [Theory]
         [InlineData(MacroPointerMoveMode.Absolute, 0, 0)]

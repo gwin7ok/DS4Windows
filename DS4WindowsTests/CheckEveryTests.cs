@@ -19,11 +19,11 @@ namespace DS4WindowsTests
     /// setter が OFF のとき何もしないのは、無効な入力欄のバインディングの再評価が、更新確認を ON に戻してしまうのを防ぐための安全弁
     /// （<c>SettingsViewModel.CheckEvery</c> のコメント）。この意図を、テストで固定する。
     /// </summary>
-    public class Phase11W5CheckEveryTests
+    public class CheckEveryTests
     {
         private const string MainWindowXaml = "DS4Windows/UI/MainWindow.xaml";
 
-        static Phase11W5CheckEveryTests()
+        static CheckEveryTests()
         {
             if (string.IsNullOrEmpty(TestGlobals.AppDataPath))
             {

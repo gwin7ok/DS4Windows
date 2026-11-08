@@ -11,7 +11,7 @@ namespace DS4WindowsTests
     /// <c>readonly</c> のフィールドとして保持していること（ホットパスの命令列を変えない。再代入できない）の検査。
     /// </summary>
     [Collection(SharedHostStateCollection.Name)]
-    public class Phase13Step5ControlServiceSlotStateGuardTests
+    public class ControlServiceSlotStateGuardTests
     {
         private const BindingFlags All = BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic;
 

@@ -21,11 +21,11 @@ namespace DS4WindowsTests
         private static readonly HashSet<string> ExcludedNames = new HashSet<string>(StringComparer.Ordinal)
         {
             "m_Profile", "m_Actions", "m_linkedProfiles", "m_controllerConfigs", "ProcessInspector", "loggedInvalidActions",
-            // Phase10-Step4d W2: SpecialAction.id（SA の固定 ID。新しく作ったものはランダム）。検査は Phase10Step4dW2ActionIdTests が持つ
+            // Phase10-Step4d W2: SpecialAction.id（SA の固定 ID。新しく作ったものはランダム）。検査は ActionIdTests が持つ
             "id",
-            "profileId",   // Phase10-Step4d W3: SpecialAction.profileId（Load Profile の切り替え先の ID）。検査は Phase10Step4dW3ReferenceIdTests が持つ
-            "outputExtras",   // Phase10-Step6 I5a: SpecialAction.outputExtras（SA に付ける Extras。ゴールデンの SA にはない。検査は Phase10Step6I5aSaExtrasStorageTests が持つ）
-            "analogStrength",   // Phase10-Step6 後の Step5: SpecialAction.analogStrength（Button のアナログな出力の強さ。既定 100。ゴールデンの SA は既定のまま。検査は Phase10Step5SaAnalogStrengthStorageTests が持つ）
+            "profileId",   // Phase10-Step4d W3: SpecialAction.profileId（Load Profile の切り替え先の ID）。検査は ActionAndProfileReferenceIdTests が持つ
+            "outputExtras",   // Phase10-Step6 I5a: SpecialAction.outputExtras（SA に付ける Extras。ゴールデンの SA にはない。検査は SaExtrasStorageTests が持つ）
+            "analogStrength",   // Phase10-Step6 後の Step5: SpecialAction.analogStrength（Button のアナログな出力の強さ。既定 100。ゴールデンの SA は既定のまま。検査は SaAnalogStrengthStorageTests が持つ）
         };
 
         public static string Dump(object root)

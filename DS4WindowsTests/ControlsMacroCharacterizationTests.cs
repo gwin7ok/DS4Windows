@@ -18,13 +18,13 @@ namespace DS4WindowsTests
     /// 他の Host 構築テストと同じコレクションで直列に実行する。
     /// </summary>
     [Collection(SharedHostStateCollection.Name)]
-    public class Phase8Step78cW1ControlsMacroCharacterizationTests
+    public class ControlsMacroCharacterizationTests
     {
         private static readonly int[] Steps = { 65, 65 };
         private static readonly int[] StepsWithWait = { 65, 65, 320 };   // 320 ＝ 20ms の待ち（繰り返しの確認で、再生が詰まらないように）
         private readonly ITestOutputHelper _output;
 
-        public Phase8Step78cW1ControlsMacroCharacterizationTests(ITestOutputHelper output)
+        public ControlsMacroCharacterizationTests(ITestOutputHelper output)
         {
             _output = output;
         }

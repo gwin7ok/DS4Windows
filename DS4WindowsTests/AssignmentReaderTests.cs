@@ -12,10 +12,10 @@ namespace DS4WindowsTests
     /// <summary>
     /// Phase10-Step6 I3（Phase10-Step6-Plan.md §4）: 読み込みの部品 2 つ（<see cref="SpecialActionAssignmentReader"/>、<see cref="ControlsAssignmentReader"/>）と、
     /// 定義を受ける <see cref="ISpecialActionOutputFactory.Create(int, AssignmentDefinition, SpecialAction, int)"/> の検査。
-    /// 全種別 × 由来の出力・方針が、旧 <c>Create(device, sa, index, forControls)</c> と同じであることは、<c>Phase10Step4W2SpecialActionOutputFactoryTests</c> ほか既存のテストが守る。
+    /// 全種別 × 由来の出力・方針が、旧 <c>Create(device, sa, index, forControls)</c> と同じであることは、<c>SpecialActionOutputFactoryTests</c> ほか既存のテストが守る。
     /// </summary>
     [Collection(SharedHostStateCollection.Name)]
-    public class Phase10Step6I3AssignmentReaderTests
+    public class AssignmentReaderTests
     {
         private sealed class NoMacroPlayer : IMacroPlayer
         {

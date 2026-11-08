@@ -15,7 +15,7 @@ namespace DS4WindowsTests
     /// Phase8-Step5 W1（Phase8-Step5-Plan.md §3.1・§4）: <see cref="ActionBindingBuilder"/> の単体テスト。
     /// 種別ごとの構成（入力・出力・方針）、順序、フィルタ（移行対象が空／一部）、未対応の種別を作らないこと。
     /// </summary>
-    public class Phase8Step5W1BuilderTests
+    public class ActionBindingBuilderTests
     {
         private sealed class FakeProvider : IProfileActionProvider
         {

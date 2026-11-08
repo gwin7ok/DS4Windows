@@ -12,11 +12,11 @@ namespace DS4WindowsTests
     /// 二重に開かない判定（コントローラーの入力［タイマー］経由を含む）。ウィンドウは WPF の STA 上でしか作れないため、ソースの構成で検査する。
     /// ソースファイルが見つからない環境では、検査を行わず合格とする。
     /// </summary>
-    public class Phase10Step3W4ControlEditorHostGuardTests
+    public class ControlEditorHostGuardTests
     {
         private readonly ITestOutputHelper _output;
 
-        public Phase10Step3W4ControlEditorHostGuardTests(ITestOutputHelper output)
+        public ControlEditorHostGuardTests(ITestOutputHelper output)
         {
             _output = output;
         }

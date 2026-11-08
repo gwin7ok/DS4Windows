@@ -13,11 +13,11 @@ namespace DS4WindowsTests
     /// 新設した <c>ControllerLimits</c>／<c>NumericUtil</c> が旧 <c>Global</c> の値・計算と同一であることの回帰ガード。
     /// ソースが見つからない環境では、ソースの検査を行わず合格とする。
     /// </summary>
-    public class Phase7Step9W2NoGlobalInMappingGuardTests
+    public class NoGlobalInMappingGuardTests
     {
         private readonly ITestOutputHelper _output;
 
-        public Phase7Step9W2NoGlobalInMappingGuardTests(ITestOutputHelper output)
+        public NoGlobalInMappingGuardTests(ITestOutputHelper output)
         {
             _output = output;
         }
@@ -32,7 +32,7 @@ namespace DS4WindowsTests
             Assert.Equal((byte)128, ControllerLimits.StickAxisMidpoint);
         }
 
-        // Phase7-Step10a W4: Global の別名（定数 5 つ・Clamp）は削除した。再導入の禁止は Step12DeadShimRemovalGuardTests が固定する。
+        // Phase7-Step10a W4: Global の別名（定数 5 つ・Clamp）は削除した。再導入の禁止は DeadShimRemovalGuardTests が固定する。
 
         [Theory]
         [InlineData(0.0, -5.0, 10.0)]

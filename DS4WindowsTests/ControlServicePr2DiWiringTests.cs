@@ -35,7 +35,7 @@ namespace DS4WindowsTests
         }
 
         // Phase13-Step7 7-d: 旧 Constructor_DoesNotInvokeOutputSlotServiceFactory（Func<IOutputSlotService> を生成中に呼ばない検査）は、
-        // Func をやめて直接注入にしたため不要になった（逆依存は Phase9 E-4 で解消済み。循環しないことは Phase13Step6ResolutionGraphProbeTests が検査する）。
+        // Func をやめて直接注入にしたため不要になった（逆依存は Phase9 E-4 で解消済み。循環しないことは ControlServiceResolutionGraphProbeTests が検査する）。
 
         [Theory]
         [InlineData("outputSlotService")]

@@ -12,7 +12,7 @@ namespace DS4WindowsTests
     /// 静的な <c>ActionManager</c> を呼ぶため、呼び出しの実行順の記録ではなく、ソースの順序で固定する。
     /// Phase8 で呼び出しをコンストラクター注入へ置き換えるときは、この順序（意味）を維持して、本テストを更新すること。
     /// </summary>
-    public class Phase8Step1ApplyProfileCleanupOrderGuardTests
+    public class ApplyProfileCleanupOrderGuardTests
     {
         [Fact]
         public void CompleteProfileApplication_CleansUpInTheFixedOrder()

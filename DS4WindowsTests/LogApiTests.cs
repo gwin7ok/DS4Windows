@@ -9,7 +9,7 @@ namespace DS4WindowsTests
     /// GuiLog は静的イベントのため、他のテストと並行しないよう同じコレクションに入れる。
     /// </summary>
     [Collection("GuiLogSubscribers")]
-    public class Phase13bStep1LogApiTests
+    public class LogApiTests
     {
         private static List<DebugEventArgs> Capture(System.Action act)
         {

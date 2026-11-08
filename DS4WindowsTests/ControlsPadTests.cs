@@ -19,16 +19,16 @@ namespace DS4WindowsTests
     /// <summary>
     /// Phase8-Step7 7.8f-1 W2/W3（Phase8-Step7-8f-Plan.md §3.2）: Controls タブの Button のうち、パッド（X360 の軸・トリガー・ボタン）への割り当てと、Default の軸の素通しの新経路。
     /// アナログ値の読み取り（<c>TriggerInput.GetAxisValue／GetByteValue</c> ＝ 現行の <c>GetXYAxisMapping</c>／<c>GetByteMapping</c>）の一致、解釈、ビルダーの所有の条件、
-    /// 評価されたフレームだけの出力、ロールバック、割り当て、ソースのガード。動作の旧・新の比べは <c>Phase8Step78fW1ControlsPadCharacterizationTests</c>（同じテストが新経路を走らせる）。
+    /// 評価されたフレームだけの出力、ロールバック、割り当て、ソースのガード。動作の旧・新の比べは <c>ControlsPadCharacterizationTests</c>（同じテストが新経路を走らせる）。
     /// 他の Host 構築テストと同じコレクションで直列に実行する。
     /// </summary>
     [Collection(SharedHostStateCollection.Name)]
-    public class Phase8Step78fW2ControlsPadTests
+    public class ControlsPadTests
     {
         private const int Device = MappingCharacterizationScope.Device;
         private readonly ITestOutputHelper _output;
 
-        public Phase8Step78fW2ControlsPadTests(ITestOutputHelper output)
+        public ControlsPadTests(ITestOutputHelper output)
         {
             _output = output;
         }

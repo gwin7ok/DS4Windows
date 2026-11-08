@@ -8,7 +8,7 @@ namespace DS4WindowsTests
 {
     /// <summary>
     /// Phase8-Step4b W1（Phase8-Step4b-Plan.md §3.1。4b-0）: プロファイルの読込・保存（<c>LegacyProfileXmlSerializer.LoadProfile</c>／<c>SaveProfile</c>）の
-    /// 節ごとの分解（W2 以降）の前に、既存のゴールデン（<c>Phase7Step10cGoldenPersistenceTests</c>）で未検証だった節を固定する。
+    /// 節ごとの分解（W2 以降）の前に、既存のゴールデン（<c>GoldenPersistenceTests</c>）で未検証だった節を固定する。
     /// <list type="bullet">
     /// <item><description>gap: 状態の自動入力（<c>BackingStoreStateFiller</c>）が変えられない項目（曲線のモード＝private なフィールド、ライトバーのモード、
     /// 特殊アクション［<c>ProfileActions</c>］、ステアリングホイールの平滑化、タッチパッドの反転の無効トリガー、外周の結合不感帯）を、明示的に変えた状態。</description></item>
@@ -19,11 +19,11 @@ namespace DS4WindowsTests
     /// 分解の各 Wave では、これらのゴールデンの文面を更新しない。
     /// </summary>
     [Collection(SharedHostStateCollection.Name)]
-    public class Phase8Step4bProfileGoldenGapTests
+    public class ProfileGoldenGapTests
     {
         private readonly ITestOutputHelper _output;
 
-        public Phase8Step4bProfileGoldenGapTests(ITestOutputHelper output)
+        public ProfileGoldenGapTests(ITestOutputHelper output)
         {
             _output = output;
         }

@@ -15,7 +15,7 @@ namespace DS4WindowsTests
     /// <see cref="AssignmentBindingBuilder.BuildExtras"/> が Extras 用の別の束縛を作り、<see cref="ActionBindingBuilder"/> が SA の束縛の<b>前</b>に並べる。
     /// </summary>
     [Collection(SharedHostStateCollection.Name)]
-    public class Phase10Step6I5bSaExtrasBindingTests
+    public class SaExtrasBindingTests
     {
         private const string Extras = "10,20,1,255,0,0,5,1,30";
 

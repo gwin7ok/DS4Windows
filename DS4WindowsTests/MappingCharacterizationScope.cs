@@ -104,6 +104,10 @@ namespace DS4WindowsTests
                 TestGlobals.Store.GetDS4CSetting(Device, control)?.Reset();
 
             Mapper.HandleDeviceDisconnect(Device);
+            // 2 段階トリガーの状態（深い引きの後の「離すまで出さない」など）は、デバイスの切断では解除されない。テストが引いたまま終わっても次のテストへ持ち越さない
+            // （テストの実行順は、クラス名から決まるため、持ち越しがあると改名で順序が変わっただけで落ちる）
+            _stickMotion.L2TwoStageMappingData[Device].Reset();
+            _stickMotion.R2TwoStageMappingData[Device].Reset();
             // RemapToButton が公開した束縛を残さない（次のテストの素通しの検査に影響するため）
             TestHost.GetService<DS4Windows.Processing.Actions.ITriggerDispatchEngine>().OnDeviceDisconnected(Device);
             _handlerOwner.Handler = _savedHandler;

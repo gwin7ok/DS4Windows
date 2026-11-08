@@ -19,7 +19,7 @@ namespace DS4WindowsTests
     /// <c>LaunchProgramViewModel</c> のパス未選択（null）の <see cref="NullReferenceException"/> も直した（空と同じエラー）。
     /// </summary>
     [Collection(SharedHostStateCollection.Name)]
-    public class Phase10Step4cW0ValidationTableTests
+    public class ValidationTableTests
     {
         private static readonly SpecialAction Action = new SpecialAction("n", "Cross", "Key", "65");
 
@@ -114,7 +114,7 @@ namespace DS4WindowsTests
         {
             var vm = new LaunchProgramViewModel(new RecordingSpecialActionRepository());
 
-            vm.Filepath = typeof(Phase10Step4cW0ValidationTableTests).Assembly.Location;
+            vm.Filepath = typeof(ValidationTableTests).Assembly.Location;
 
             Assert.True(vm.IsValid(Action));
             Assert.False(vm.HasErrors);

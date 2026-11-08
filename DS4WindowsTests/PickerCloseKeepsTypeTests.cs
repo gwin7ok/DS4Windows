@@ -10,11 +10,11 @@ namespace DS4WindowsTests
     /// Phase11 W6 K-W6-6: 割り当てエディターで、Default だったボタンの種別を Output Key などに変えて出力ピッカーを開き、何も選ばずに × で閉じると、
     /// 種別の一覧が Default に戻って見えた。ピッカーで「Default」を選んだとき（<c>DefaultPicked</c>）、または Default 以外から Default に変わったときだけ切り替える。
     /// </summary>
-    public class Phase11W6PickerCloseKeepsTypeTests
+    public class PickerCloseKeepsTypeTests
     {
         private readonly ITestOutputHelper _output;
 
-        public Phase11W6PickerCloseKeepsTypeTests(ITestOutputHelper output)
+        public PickerCloseKeepsTypeTests(ITestOutputHelper output)
         {
             _output = output;
         }

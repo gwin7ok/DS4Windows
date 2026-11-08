@@ -19,12 +19,12 @@ namespace DS4WindowsTests
     /// 他の Host 構築テストと同じコレクションで直列に実行する（静的配列を使うため）。
     /// </summary>
     [Collection(SharedHostStateCollection.Name)]
-    public class Phase8Step78eW1ControlsExtrasCharacterizationTests
+    public class ControlsExtrasCharacterizationTests
     {
         private const string Full = "100,50,1,10,20,30,5,1,7";   // 振動あり、ライトバー(10,20,30)、点滅 5、感度 7
         private readonly ITestOutputHelper _output;
 
-        public Phase8Step78eW1ControlsExtrasCharacterizationTests(ITestOutputHelper output)
+        public ControlsExtrasCharacterizationTests(ITestOutputHelper output)
         {
             _output = output;
         }

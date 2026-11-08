@@ -9,7 +9,7 @@ namespace DS4WindowsTests
     /// Phase13-Step9: <c>ControlService.running</c>／<c>suspending</c>（<c>IServiceLifecycle</c> への転送）を削除したことのガード。
     /// 利用者（App／MainWindow／TrayIconViewModel／AutoProfileService）は <c>IServiceLifecycle.Running</c>／<c>Suspending</c> を直接使う。
     /// </summary>
-    public class Phase13Step9RunningForwardRemovalGuardTests
+    public class ServiceLifecycleRunningForwardRemovalGuardTests
     {
         [Theory]
         [InlineData("running")]

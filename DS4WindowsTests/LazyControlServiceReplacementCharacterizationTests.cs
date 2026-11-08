@@ -18,12 +18,12 @@ namespace DS4WindowsTests
     /// 未初期化のテスト用デバイスでは動かないため、6-b では <c>IDeviceRumbleService</c> の差し替えで検査する。
     /// </summary>
     [Collection(SharedHostStateCollection.Name)]
-    public class Phase13Step6CharacterizationTests
+    public class LazyControlServiceReplacementCharacterizationTests
     {
         private const BindingFlags All = BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic;
         private const int Slot = 0;
 
-        public Phase13Step6CharacterizationTests()
+        public LazyControlServiceReplacementCharacterizationTests()
         {
             DS4Windows.Composition.AppHost.CreateHost();
             TestHost.GetService<ControlService>();

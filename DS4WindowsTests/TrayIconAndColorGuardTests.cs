@@ -15,11 +15,11 @@ namespace DS4WindowsTests
     /// 移したことの回帰ガード。内容・計算は従来と同じでなければならない。
     /// ソースが見つからない環境では、ソースの検査を行わず合格とする。
     /// </summary>
-    public class Phase7Step10bW2TrayIconAndColorGuardTests
+    public class TrayIconAndColorGuardTests
     {
         private readonly ITestOutputHelper _output;
 
-        public Phase7Step10bW2TrayIconAndColorGuardTests(ITestOutputHelper output)
+        public TrayIconAndColorGuardTests(ITestOutputHelper output)
         {
             _output = output;
         }

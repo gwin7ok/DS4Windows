@@ -14,7 +14,7 @@ namespace DS4WindowsTests
     /// <c>WindowPath</c>／<c>WindowTitle</c>。古いバージョンは、未知の種別として読み飛ばす（既存の寛容な読込）ことも確かめる。
     /// </summary>
     [Collection(SharedHostStateCollection.Name)]
-    public class Phase12Step2W2cFocusWindowPersistenceTests
+    public class FocusWindowPersistenceTests
     {
         private const int Slot = PersistenceHarness.Slot;
 

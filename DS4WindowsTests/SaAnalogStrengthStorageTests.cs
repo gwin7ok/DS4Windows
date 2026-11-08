@@ -16,7 +16,7 @@ namespace DS4WindowsTests
     /// （<c>Actions.xml</c> の Button の <c>Strength</c> 要素。100 のときは書かない。古いファイルは 100）、割り当て編集画面の入力（<see cref="PressKeyViewModel"/>）。
     /// </summary>
     [Collection(SharedHostStateCollection.Name)]
-    public class Phase10Step5SaAnalogStrengthStorageTests
+    public class SaAnalogStrengthStorageTests
     {
         [Theory]
         [InlineData(X360Controls.LXNeg, AnalogOutputKind.PadAxis)]

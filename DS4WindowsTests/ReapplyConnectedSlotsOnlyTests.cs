@@ -11,13 +11,13 @@ namespace DS4WindowsTests
     /// 接続していないスロットにも適用され、無意味なログ（<c>Controller 1 is now using Profile … (Battery: N/A%)</c>）と通知が出ていた。
     /// MainWindow は WPF のウィンドウで単体駆動が困難なため、ソースの走査で担保する（ソースが見つからない環境では、検査を行わず合格とする）。
     /// </summary>
-    public class Phase11W6ReapplyConnectedSlotsOnlyTests
+    public class ReapplyConnectedSlotsOnlyTests
     {
         private const string MainWindowCode = "DS4Windows/UI/MainWindow.xaml.cs";
 
         private readonly ITestOutputHelper _output;
 
-        public Phase11W6ReapplyConnectedSlotsOnlyTests(ITestOutputHelper output)
+        public ReapplyConnectedSlotsOnlyTests(ITestOutputHelper output)
         {
             _output = output;
         }

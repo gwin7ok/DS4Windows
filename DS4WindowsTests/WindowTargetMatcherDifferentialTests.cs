@@ -10,7 +10,7 @@ namespace DS4WindowsTests
     /// 取り出し前の実装（下の <c>LegacyEntity</c>。コードを変えずに写したもの）と、同じ入力に同じ結果を返すこと（差分テスト）、
     /// および <c>AutoProfileEntity</c> が部品へ委譲しても結果が変わらないことを確かめる。
     /// </summary>
-    public class Phase12Step2W2b1WindowTargetMatcherDifferentialTests
+    public class WindowTargetMatcherDifferentialTests
     {
         private class LegacyEntity
         {

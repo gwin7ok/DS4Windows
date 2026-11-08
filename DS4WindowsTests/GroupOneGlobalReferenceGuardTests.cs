@@ -16,7 +16,7 @@ namespace DS4WindowsTests
     /// - 削除した呼出元 0 件のメソッドが戻っていないこと。
     /// ソースファイルが見つからない環境では、ソース走査を行わず合格とする。
     /// </summary>
-    public class Step10GroupOneGlobalReferenceGuardTests
+    public class GroupOneGlobalReferenceGuardTests
     {
 
         // Service Locator・静的フォールバックを持たないこと（検査対象）
@@ -38,7 +38,7 @@ namespace DS4WindowsTests
 
         private readonly ITestOutputHelper _output;
 
-        public Step10GroupOneGlobalReferenceGuardTests(ITestOutputHelper output)
+        public GroupOneGlobalReferenceGuardTests(ITestOutputHelper output)
         {
             _output = output;
         }

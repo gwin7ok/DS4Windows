@@ -15,7 +15,7 @@ namespace DS4WindowsTests
     /// 他の Host 構築テストと同じコレクションで直列に実行する。
     /// </summary>
     [Collection(SharedHostStateCollection.Name)]
-    public class Phase8Step7AltTabRemovalGuardTests
+    public class AltTabRemovalGuardTests
     {
         [Fact]
         public void TheAltTabSpecialCase_IsGoneFromMapping()

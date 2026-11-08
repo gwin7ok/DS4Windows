@@ -14,11 +14,11 @@ namespace DS4WindowsTests
     /// (3) 新しい部品が DI の Singleton として登録されること。
     /// (4) 部品が静的な窓口（<c>Global</c>／<c>AppHost</c>）や <c>ControlService</c> を参照しないこと。
     /// </summary>
-    public class Phase9EInputReportGuardTests
+    public class InputReportGuardTests
     {
         private readonly ITestOutputHelper _output;
 
-        public Phase9EInputReportGuardTests(ITestOutputHelper output)
+        public InputReportGuardTests(ITestOutputHelper output)
         {
             _output = output;
         }

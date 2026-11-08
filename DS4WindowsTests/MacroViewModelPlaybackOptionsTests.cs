@@ -13,7 +13,7 @@ namespace DS4WindowsTests
     /// 繰り返し（Execute Mode）と Scan Code を共通の <c>MacroPlaybackOptions</c> で持つこと。
     /// 読み込み（<c>Actions.xml</c> の extras）、記録画面へ渡す設定（<c>PrepareSettings</c>）、保存（extras の文字列）が、従来と同じ。
     /// </summary>
-    public class Phase10Step1W3MacroViewModelPlaybackOptionsTests
+    public class MacroViewModelPlaybackOptionsTests
     {
         private sealed class RecordingRepository : ISpecialActionRepository
         {

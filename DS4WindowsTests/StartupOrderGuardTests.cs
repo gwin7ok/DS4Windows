@@ -9,7 +9,7 @@ namespace DS4WindowsTests
     /// Phase9 9-F F-1b（Phase9-F-Plan.md §5）: <c>App.Application_Startup</c> を手順ごとのメソッドに分けた後も、呼び出しの順序と、
     /// 手順の中の安全弁の順序（ログの設定の前に設定を読む、保存の許可は接続フラグのリセットの後、など）が変わらないことを、ソースの照合で守る。
     /// </summary>
-    public class Phase9F1StartupOrderGuardTests
+    public class StartupOrderGuardTests
     {
         private static void AssertOrder(string body, params string[] tokens)
         {

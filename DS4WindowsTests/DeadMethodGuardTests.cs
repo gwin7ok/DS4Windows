@@ -15,7 +15,7 @@ namespace DS4WindowsTests
     /// 削除の経緯と根拠は <c>Phase7-0-Survey.md</c> §1.1、<c>Phase7-Step1-Plan.md</c> §3 W1。
     /// ソースが見つからない環境では、検査を行わず合格とする。
     /// </summary>
-    public class Phase7Step1DeadMethodGuardTests
+    public class DeadMethodGuardTests
     {
 
         private static readonly string[] KeptInBackingStore =
@@ -25,7 +25,7 @@ namespace DS4WindowsTests
 
         private readonly ITestOutputHelper _output;
 
-        public Phase7Step1DeadMethodGuardTests(ITestOutputHelper output)
+        public DeadMethodGuardTests(ITestOutputHelper output)
         {
             _output = output;
         }

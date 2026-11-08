@@ -68,6 +68,9 @@ namespace DS4WindowsTests
             _store.profileActionIndexDict[Device].Clear();
             _store.profileActionCount[Device] = 0;
             Engine.OnDeviceDisconnected(Device); // 抑制の集合を空にする（旧: suppressedTriggerButtons のクリア）
+            // 遅延の基準時刻は、デバイスの切断では戻らない。前のテストが遅延つきのアクションを動かした後だと、初期値（最小値）を前提にした検査が落ちる。
+            // テストの実行順はクラス名から決まるため、改名で順序が変わっても結果が変わらないよう、開始時に初期状態へ戻す
+            Delay.Reset();
         }
 
         /// <summary>特殊アクションを 1 件登録する（<c>BackingStore.actions</c> の末尾に足し、その添字をプロファイル側の索引にする）。</summary>

@@ -12,7 +12,7 @@ namespace DS4WindowsTests
     /// タッチパッドの切り替え（PS＋タッチで ON／OFF、離すまで再切り替えしない）、スライド、押されている入力の探索の順序。
     /// <c>Mouse</c> と <c>DS4Device</c> は作れないため、それらを読まない経路（tp が null、デバイスなし）を調べる。
     /// </summary>
-    public class Phase9EInputReportPartsTests
+    public class InputReportPartsTests
     {
         private const int Slot = 0;
 

@@ -17,7 +17,7 @@ namespace DS4WindowsTests
     /// <see cref="ControlSettingsEditTarget"/> の Default の書き出し・読み込みと、Extras の取り込み（Save で反映、Cancel で破棄）。
     /// SA のモード（<c>allowDefault</c> が既定の <c>false</c>、<c>PrepareSettings()</c> が引数なし）は、従来どおりであること。
     /// </summary>
-    public class Phase10Step3W2ControlDefaultAndExtrasTests
+    public class ControlDefaultAndExtrasTests
     {
         private const string SomeExtras = "10,20,1,255,0,0,1,0,25";
         private const string PickerExtras = "1,2,0,0,0,0,0,1,40";
@@ -25,7 +25,7 @@ namespace DS4WindowsTests
 
         private readonly ITestOutputHelper _output;
 
-        static Phase10Step3W2ControlDefaultAndExtrasTests()
+        static ControlDefaultAndExtrasTests()
         {
             if (string.IsNullOrEmpty(TestGlobals.AppDataPath))
             {
@@ -38,7 +38,7 @@ namespace DS4WindowsTests
             }
         }
 
-        public Phase10Step3W2ControlDefaultAndExtrasTests(ITestOutputHelper output)
+        public ControlDefaultAndExtrasTests(ITestOutputHelper output)
         {
             _output = output;
         }

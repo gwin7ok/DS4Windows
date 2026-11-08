@@ -17,12 +17,12 @@ namespace DS4WindowsTests
     /// ソースが見つからない環境では、ソースの検査を行わず合格とする。
     /// </summary>
     [Collection(SharedHostStateCollection.Name)]
-    public class Phase7Step10dW3DeviceLayerSettingsGuardTests
+    public class DeviceLayerSettingsGuardTests
     {
 
         private readonly ITestOutputHelper _output;
 
-        public Phase7Step10dW3DeviceLayerSettingsGuardTests(ITestOutputHelper output)
+        public DeviceLayerSettingsGuardTests(ITestOutputHelper output)
         {
             _output = output;
         }

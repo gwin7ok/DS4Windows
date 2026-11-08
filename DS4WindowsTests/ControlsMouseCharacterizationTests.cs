@@ -16,11 +16,11 @@ namespace DS4WindowsTests
     /// 他の Host 構築テストと同じコレクションで直列に実行する。
     /// </summary>
     [Collection(SharedHostStateCollection.Name)]
-    public class Phase8Step78f2W1ControlsMouseCharacterizationTests
+    public class ControlsMouseCharacterizationTests
     {
         private readonly ITestOutputHelper _output;
 
-        public Phase8Step78f2W1ControlsMouseCharacterizationTests(ITestOutputHelper output)
+        public ControlsMouseCharacterizationTests(ITestOutputHelper output)
         {
             _output = output;
         }

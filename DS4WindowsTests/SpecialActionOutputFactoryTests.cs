@@ -14,7 +14,7 @@ namespace DS4WindowsTests
     /// Phase10-Step4 W2（Phase10-Step4-Plan.md §3.3）: 種別ごとの出力アクション・方針の作り方を、共通の部品（<see cref="SpecialActionOutputFactory"/>）へ取り出した。
     /// SA の束縛が変わらないこと（W0 の一覧表のテストが守る）に加えて、部品そのものの契約を固定する。
     /// </summary>
-    public class Phase10Step4W2SpecialActionOutputFactoryTests
+    public class SpecialActionOutputFactoryTests
     {
         private sealed class FakeProvider : IProfileActionProvider
         {

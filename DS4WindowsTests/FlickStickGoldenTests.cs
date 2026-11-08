@@ -17,12 +17,12 @@ namespace DS4WindowsTests
     /// 1 フレームごとのマウス X 移動量と、持ち越しの端数をそのまま記録する。時刻には依存しない（フレーム間隔は <c>elapsedTime</c> で与える）。
     /// 切り出し前は、private メソッド（<c>ProcessFlickStick</c>）をリフレクションで呼んでゴールデンを作った。切り出し後は、<c>IFlickStickProcessor</c> を呼ぶ（<c>Rig.Step</c> だけが違う）。ゴールデンは同じ（1 バイトも変わらない）。
     /// </summary>
-    public class Phase9A2FlickStickGoldenTests
+    public class FlickStickGoldenTests
     {
         private const int Device = 0;
         private readonly ITestOutputHelper _output;
 
-        public Phase9A2FlickStickGoldenTests(ITestOutputHelper output)
+        public FlickStickGoldenTests(ITestOutputHelper output)
         {
             _output = output;
         }

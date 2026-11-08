@@ -16,13 +16,13 @@ namespace DS4WindowsTests
     /// 複製の直後に、コピー側へ新しい ID を振る（<see cref="IProfileIdentityService.AssignNewId"/>）。
     /// </summary>
     [Collection(SharedHostStateCollection.Name)]
-    public class Phase11W6DuplicateAssignsNewIdTests : IDisposable
+    public class DuplicateAssignsNewIdTests : IDisposable
     {
         private readonly string _dir;
         private readonly string _profiles;
         private readonly ITestOutputHelper _output;
 
-        public Phase11W6DuplicateAssignsNewIdTests(ITestOutputHelper output)
+        public DuplicateAssignsNewIdTests(ITestOutputHelper output)
         {
             _output = output;
             _dir = Path.Combine(Path.GetTempPath(), "Phase11W6_Dup_" + Guid.NewGuid().ToString("N"));

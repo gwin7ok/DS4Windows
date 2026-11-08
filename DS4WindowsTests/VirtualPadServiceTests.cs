@@ -15,7 +15,7 @@ namespace DS4WindowsTests
     /// ViGEm の本物（仮想パッドの作成、振動・ライトバーの戻り）は、ViGEmBus とコントローラーが必要なため、台帳 §36 の実機確認で担保する。
     /// ここでは、ViGEm なしで確かめられる範囲（窓口、事前条件による何もしない経路、ホストへの委譲、コンストラクター）を調べる。
     /// </summary>
-    public class Phase9EVirtualPadServiceTests
+    public class VirtualPadServiceTests
     {
         // Phase13-Step3: 旧 IVirtualPadHost の偽実装を、イベントスレッドと振動の偽実装へ分けた
         private sealed class RecordingHost : IEventThreadDispatcher

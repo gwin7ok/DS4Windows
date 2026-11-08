@@ -20,7 +20,7 @@ namespace DS4WindowsTests
     /// 他の Host 構築テストと同じコレクションで直列に実行する。
     /// </summary>
     [Collection(SharedHostStateCollection.Name)]
-    public class Phase8Step76bDisconnectBTTests
+    public class DisconnectBTTests
     {
         private static DS4State Frame(bool l1, bool r1 = false)
         {
@@ -349,7 +349,7 @@ namespace DS4WindowsTests
             DS4State held = Frame(true);
             for (int i = 0; i < 300; i++) t.RunFrame(held);   // 立ち上がりと JIT は、測定の外へ
 
-            // Phase10-Step4 W4: 5 ラウンド測って最小値を使う（一度きりの割り当てが測定の窓に入っても結果が変わらないように。Phase8Step76cBatteryCheckTests と同じ）
+            // Phase10-Step4 W4: 5 ラウンド測って最小値を使う（一度きりの割り当てが測定の窓に入っても結果が変わらないように。BatteryCheckTests と同じ）
             long min = long.MaxValue;
             for (int round = 0; round < 5; round++)
             {
@@ -364,7 +364,7 @@ namespace DS4WindowsTests
         [Fact]
         public void TheNewPath_DoesNotAddAllocationsToTheFrame_WhileHeldAfterASuccess()
         {
-            // 同じ件数の DisconnectBT で、トリガーが押されていない（R1。押すのは L1）場合を基準にする（Phase8Step76aGyroCalibrateTests と同じ方式）
+            // 同じ件数の DisconnectBT で、トリガーが押されていない（R1。押すのは L1）場合を基準にする（GyroCalibrateTests と同じ方式）
             long baseline;
             using (var t = new SpecialActionTestScope())
             {

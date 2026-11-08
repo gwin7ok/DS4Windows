@@ -11,7 +11,7 @@ namespace DS4WindowsTests
     /// Phase12-Step2 2i（R-4）: ターゲットマークのドロップで、カーソル位置のウィンドウから対象（フルパスとタイトル全文）を取り出す処理。
     /// マウス操作と Win32 の取得そのものは、実機で確認する。
     /// </summary>
-    public class Phase12Step2W2iWindowTargetPickerTests
+    public class WindowTargetPickerTests
     {
         private const int OwnProcessId = 4242;
 

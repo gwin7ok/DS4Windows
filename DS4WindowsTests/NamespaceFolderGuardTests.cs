@@ -14,7 +14,7 @@ namespace DS4WindowsTests
     /// XAML の <c>x:Class</c> が実在する型で、かつフォルダと一致することを検査する。
     /// 許可リストは空に近づける方向にのみ変更する（増やさない）。
     /// </summary>
-    public class Phase14NamespaceFolderGuardTests
+    public class NamespaceFolderGuardTests
     {
         // 第三者由来の名前空間として残すもの（Sensorit.Base）。
         private static readonly string[] Allowed =

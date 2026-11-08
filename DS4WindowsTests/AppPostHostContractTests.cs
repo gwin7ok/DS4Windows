@@ -22,11 +22,11 @@ namespace DS4WindowsTests
     /// Actions.xml がないときに Global.LoadActions と同じく既定アクションを作ることを検証する。
     /// 各テストは変更した Global 状態を必ず元に戻す（Phase6-Step2 の教訓）。
     /// </summary>
-    public class Phase6Step7ContractExtensionTests
+    public class AppPostHostContractTests
     {
         private readonly ITestOutputHelper _output;
 
-        public Phase6Step7ContractExtensionTests(ITestOutputHelper output)
+        public AppPostHostContractTests(ITestOutputHelper output)
         {
             _output = output;
         }

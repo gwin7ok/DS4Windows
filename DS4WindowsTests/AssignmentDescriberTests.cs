@@ -6,7 +6,7 @@ using DS4Windows.UI.ViewModels;
 namespace DS4WindowsTests
 {
     /// <summary>Phase9 UI 変更: 割り当ての説明文（Controls の一覧、出力ピッカーのボタン、SA の一覧で共通の書式）。</summary>
-    public class Phase9AssignmentDescriberTests
+    public class AssignmentDescriberTests
     {
         private static string Name(X360Controls x) => x.ToString();
 

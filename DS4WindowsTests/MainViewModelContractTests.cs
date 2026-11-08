@@ -19,7 +19,7 @@ namespace DS4WindowsTests
     /// - IProfileSettingsService: RefreshActionAlias（Global.RefreshActionAlias と同じ結果）
     /// Global 状態を変更するテストは、変更を必ず元に戻す（Phase6-Status.md §6.4-1）。
     /// </summary>
-    public class Phase6Step9ContractExtensionTests
+    public class MainViewModelContractTests
     {
         // ---- IAppSettingsService ----
 

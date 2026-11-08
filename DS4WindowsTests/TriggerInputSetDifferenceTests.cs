@@ -15,7 +15,7 @@ namespace DS4WindowsTests
     /// W5（ユーザー承認、2026-10-21）で、SA に LS Outer／RS Outer、Controls に Touch Started／Touch Ended を足し、<b>入力の集合を同じにした</b>（差は空）。
     /// </summary>
     [Collection(SharedHostStateCollection.Name)]
-    public class Phase10Step4cW0InputSetTests
+    public class TriggerInputSetDifferenceTests
     {
         private static HashSet<DS4Controls> SaInputs()
         {

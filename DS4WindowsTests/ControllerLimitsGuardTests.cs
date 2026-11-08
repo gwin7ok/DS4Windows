@@ -13,12 +13,12 @@ namespace DS4WindowsTests
     /// <c>Global</c> ではなく <c>ControllerLimits</c> から取ることと、再宣言された定数が <c>ControllerLimits</c> と一致することの回帰ガード。
     /// ソースが見つからない環境では、ソースの検査を行わず合格とする。
     /// </summary>
-    public class Phase7Step10aW2ControllerLimitsGuardTests
+    public class ControllerLimitsGuardTests
     {
 
         private readonly ITestOutputHelper _output;
 
-        public Phase7Step10aW2ControllerLimitsGuardTests(ITestOutputHelper output)
+        public ControllerLimitsGuardTests(ITestOutputHelper output)
         {
             _output = output;
         }

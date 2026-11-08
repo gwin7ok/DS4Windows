@@ -14,9 +14,9 @@ namespace DS4WindowsTests
     /// 同じ結果を返すこと（6-e で型を置き換えても挙動が変わらないことの根拠）。
     /// </summary>
     [Collection(SharedHostStateCollection.Name)]
-    public class Phase13Step6ProfileLoadTargetTests
+    public class ProfileLoadTargetTests
     {
-        public Phase13Step6ProfileLoadTargetTests()
+        public ProfileLoadTargetTests()
         {
             DS4Windows.Composition.AppHost.CreateHost();
             TestHost.GetService<ControlService>();

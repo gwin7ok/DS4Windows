@@ -23,7 +23,7 @@ namespace DS4WindowsTests
     /// `Mapping` の静的な状態と `ActionManager`（静的）を共有するため、<c>ServiceProviderHolder</c> のコレクションで直列に実行する。
     /// </summary>
     [Collection(SharedHostStateCollection.Name)]
-    public class Phase7cW2SpecialActionTriggerCharacterizationTests
+    public class SpecialActionTriggerCharacterizationTests
     {
         // ---- ボタン種別: Press の出力と AND 条件 ----
 

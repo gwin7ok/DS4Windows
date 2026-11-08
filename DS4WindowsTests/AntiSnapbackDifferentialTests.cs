@@ -14,7 +14,7 @@ namespace DS4WindowsTests
     /// 固定の列と、決まった種の疑似乱数の列で、出力の値と履歴（キュー）の中身が、1 フレームごとに一致することを調べる。
     /// 旧実装の写しは、Phase9 の後のテスト整理まで残す（整理では、ゴールデンへの置き換えを検討する）。
     /// </summary>
-    public class Phase9A2AntiSnapbackDifferentialTests
+    public class AntiSnapbackDifferentialTests
     {
         /// <summary>旧 <c>Mapping.CalcAntiSnapbackStick</c> の逐語的な写し（<c>timestamp</c> を引数にし、<c>out</c> のまま）。</summary>
         private static void OldCalcAntiSnapbackStick(Queue<DS4TimedStickAxisValue> queue,

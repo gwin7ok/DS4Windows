@@ -11,11 +11,11 @@ namespace DS4WindowsTests
     /// Phase9 9-E E-6e（Phase9-E6-Plan.md §3.4）: 切断・同期・シリアル変更の処理の切り出しの守り。
     /// 本体が <c>DeviceDisconnectHandler</c> へ移り、<c>ControlService</c> は委譲だけを持つこと。切断の後始末の順序（ガードレール: 切断時クリーンアップ）が変わっていないこと。
     /// </summary>
-    public class Phase9E6DisconnectGuardTests
+    public class DisconnectGuardTests
     {
         private readonly ITestOutputHelper _output;
 
-        public Phase9E6DisconnectGuardTests(ITestOutputHelper output)
+        public DisconnectGuardTests(ITestOutputHelper output)
         {
             _output = output;
         }

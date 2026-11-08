@@ -19,11 +19,11 @@ namespace DS4WindowsTests
     /// ソースが見つからない環境では、ソースの検査を行わず合格とする。
     /// </summary>
     [Collection(SharedHostStateCollection.Name)]
-    public class Phase7Step10dW5GlobalRemovedGuardTests
+    public class GlobalRemovedGuardTests
     {
         private readonly ITestOutputHelper _output;
 
-        public Phase7Step10dW5GlobalRemovedGuardTests(ITestOutputHelper output)
+        public GlobalRemovedGuardTests(ITestOutputHelper output)
         {
             _output = output;
         }

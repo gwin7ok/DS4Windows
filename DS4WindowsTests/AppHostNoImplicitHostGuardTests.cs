@@ -13,11 +13,11 @@ namespace DS4WindowsTests
     /// - テストは <c>AppHost.GetService</c> を直接呼ばず、<c>TestHost</c> を通す。
     /// ソースが見つからない環境では、ソースの検査を省略する。
     /// </summary>
-    public class Phase7Step10eW3AppHostGuardTests
+    public class AppHostNoImplicitHostGuardTests
     {
         private readonly ITestOutputHelper _output;
 
-        public Phase7Step10eW3AppHostGuardTests(ITestOutputHelper output)
+        public AppHostNoImplicitHostGuardTests(ITestOutputHelper output)
         {
             _output = output;
         }
@@ -72,7 +72,7 @@ namespace DS4WindowsTests
             {
                 if (file.Contains(@"\obj\") || file.Contains(@"\bin\")) continue;
                 string name = Path.GetFileName(file);
-                if (name == "TestHost.cs" || name == "Phase7Step10eW3AppHostGuardTests.cs") continue;
+                if (name == "TestHost.cs" || name == "AppHostNoImplicitHostGuardTests.cs") continue;
 
                 string code = SourceText.StripComments(File.ReadAllText(file));
                 // 文字列の中の記述（ガードの期待値など）は対象外とするため、引用符で囲まれていない呼び出しだけを数える

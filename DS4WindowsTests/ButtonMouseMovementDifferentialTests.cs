@@ -15,7 +15,7 @@ namespace DS4WindowsTests
     /// 設定の組み合わせ（マウス加速、デルタ加速、デッドゾーン、感度、縦倍率）× コントロール × 方向 × 疑似乱数の入力の列で、戻り値が 1 回ごとに完全一致することを調べる。
     /// 加えて、マウス加速の状態がデバイスごとに独立していること（ユーザー判断 Q2）を調べる。
     /// </summary>
-    public class Phase9BButtonMouseMovementDifferentialTests
+    public class ButtonMouseMovementDifferentialTests
     {
         /// <summary>旧 <c>Mapping.getMouseMapping</c> の逐語的な写し。状態（<c>mcounter</c> ほか）は、旧実装のとおり、この instance が 1 組だけ持つ。</summary>
         private sealed class OldButtonMouseMapping

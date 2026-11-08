@@ -15,7 +15,7 @@ namespace DS4WindowsTests
     /// (3) 「使うべきだが未接続」と判断して残した契約（TODO 付き）が、削除されていないこと。
     /// 判断の根拠は <c>Phase7-Step2-Plan.md</c> §2。ソースが見つからない環境では、検査を行わず合格とする。
     /// </summary>
-    public class Phase7Step2RemovedContractMembersGuardTests
+    public class RemovedContractMembersGuardTests
     {
 
         // 残した契約（本来使うべきだが、呼び出し側の切り替えが未実施。TODO 付き）
@@ -29,7 +29,7 @@ namespace DS4WindowsTests
 
         private readonly ITestOutputHelper _output;
 
-        public Phase7Step2RemovedContractMembersGuardTests(ITestOutputHelper output)
+        public RemovedContractMembersGuardTests(ITestOutputHelper output)
         {
             _output = output;
         }

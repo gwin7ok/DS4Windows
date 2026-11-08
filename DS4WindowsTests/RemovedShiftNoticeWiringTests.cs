@@ -15,7 +15,7 @@ namespace DS4WindowsTests
     /// (2) 警告の文言（英語・日本語）が、書式として使えること、(3) <c>ProfileEditor.Reload</c> が、プロファイルの読込の直後に、警告を呼ぶことを確かめる。
     /// ダイアログそのもの（<c>MessageBoxRemovedShiftPrompt</c>）は画面なので、Step9 の実機の確認（U-43）。
     /// </summary>
-    public class Phase8Step78dW3RemovedShiftNoticeWiringTests
+    public class RemovedShiftNoticeWiringTests
     {
         private readonly ProfileSettingsService _profileSettings = TestRepositoryFactory.CreateProfileSettingsService();
 

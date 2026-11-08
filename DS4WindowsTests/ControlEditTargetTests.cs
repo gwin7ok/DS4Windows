@@ -8,7 +8,7 @@ namespace DS4WindowsTests
     /// Phase10-Step2 W3（Phase10-Step2-Plan.md §3.3・§5）: Controls のモードの編集の対象（<see cref="ControlEditTarget"/>）。
     /// 名前は、対象のボタンの表示名で固定（編集不可）。名前の検査はない。
     /// </summary>
-    public class Phase10Step2W3ControlEditTargetTests
+    public class ControlEditTargetTests
     {
         [Theory]
         [InlineData(DS4Controls.Circle)]

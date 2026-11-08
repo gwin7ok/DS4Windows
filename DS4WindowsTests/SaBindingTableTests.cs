@@ -16,7 +16,7 @@ namespace DS4WindowsTests
     /// Step4 の W2 で、種別ごとの出力アクションの作り方を、共通の部品へ取り出す。そのとき、SA の束縛が変わらないことを、この表で守る。
     /// 窓口（ポート）がないときに、束縛を作らない種別も固定する。製品コードは変えない。
     /// </summary>
-    public class Phase10Step4W0SaBindingTableTests
+    public class SaBindingTableTests
     {
         private sealed class FakeProvider : IProfileActionProvider
         {

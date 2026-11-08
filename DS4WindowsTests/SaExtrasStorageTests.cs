@@ -12,7 +12,7 @@ namespace DS4WindowsTests
     /// （カンマ区切りの 9 個）で保存する。旧ファイル（要素なし）は、Extras なしとして読む。SA の保存は SA を作り直すため、Extras は別の呼び出し（<c>SetActionExtras</c>）で設定する。
     /// </summary>
     [Collection(SharedHostStateCollection.Name)]
-    public class Phase10Step6I5aSaExtrasStorageTests
+    public class SaExtrasStorageTests
     {
         private const string Extras = "10,20,1,255,0,0,5,1,30";
 

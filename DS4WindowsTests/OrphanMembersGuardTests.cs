@@ -19,11 +19,11 @@ namespace DS4WindowsTests
     /// - 維持したメンバーのうち、未接続のもの（<c>SettingChanged</c>／<c>ActionsChanged</c>／<c>UseTempProfileArray</c>）に TODO(Phase8) が付いている。
     /// ソースが見つからない環境では、TODO の検査を省略する。
     /// </summary>
-    public class Phase7Step10eW4OrphanMembersGuardTests
+    public class OrphanMembersGuardTests
     {
         private readonly ITestOutputHelper _output;
 
-        public Phase7Step10eW4OrphanMembersGuardTests(ITestOutputHelper output)
+        public OrphanMembersGuardTests(ITestOutputHelper output)
         {
             _output = output;
         }

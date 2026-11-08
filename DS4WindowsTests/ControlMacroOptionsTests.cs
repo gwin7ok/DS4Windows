@@ -23,7 +23,7 @@ namespace DS4WindowsTests
     /// 項目のない従来の Macro は、変わらない。
     /// </summary>
     [Collection(SharedHostStateCollection.Name)]
-    public class Phase10Step4W3ControlMacroOptionsTests
+    public class ControlMacroOptionsTests
     {
         private const int Device = MappingCharacterizationScope.Device;
         private static readonly int[] Steps = { 65, 65 };

@@ -21,7 +21,7 @@ namespace DS4WindowsTests
     /// 共通化（9-A(1) の (b)〜(d)）で、値が 1 つでも変わると失敗する。値を変える意図があるときは、旧実装と比較し、承認を得てから、ゴールデンを更新する。
     /// アンチスナップバックは時刻に依存するため、対象外（9-A(2) の前に、時刻を差し替えられるようにしてから扱う）。ジャイロ→コントロールは 9-A(2)。
     /// </summary>
-    public class Phase9A1SetCurveAndDeadzoneGoldenTests
+    public class SetCurveAndDeadzoneGoldenTests
     {
         private const int Slot = 0;
         private static readonly byte[] StickGrid = { 0, 1, 32, 64, 100, 127, 128, 129, 160, 200, 254, 255 };
@@ -29,7 +29,7 @@ namespace DS4WindowsTests
 
         private readonly ITestOutputHelper _output;
 
-        public Phase9A1SetCurveAndDeadzoneGoldenTests(ITestOutputHelper output)
+        public SetCurveAndDeadzoneGoldenTests(ITestOutputHelper output)
         {
             _output = output;
         }

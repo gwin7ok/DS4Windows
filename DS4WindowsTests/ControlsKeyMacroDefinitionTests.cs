@@ -13,7 +13,7 @@ namespace DS4WindowsTests
     /// （<see cref="SpecialActionOutputFactory"/>。方針は種別 × 由来の表）を通ること。Controls の束縛としての挙動は、Phase8 の特性化テストが守る。
     /// </summary>
     [Collection(SharedHostStateCollection.Name)]
-    public class Phase10Step6I4bControlsKeyMacroDefinitionTests
+    public class ControlsKeyMacroDefinitionTests
     {
         private sealed class NoMacroPlayer : IMacroPlayer
         {

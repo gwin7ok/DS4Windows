@@ -16,7 +16,7 @@ namespace DS4WindowsTests
     /// 旧 <c>ControlService.Start</c>／<c>HotPlug</c> の結合の手順を、このファイルの中に逐語でコピーし、全ての小さな組み合わせ
     /// （デバイスの種類 × 結合の可否 × 主／副 × 結合済みか、3 台の順序、結合モード）で、結合の結果（相手、状態）と、取り外し後の結果が同じことを確かめる。
     /// </summary>
-    public class Phase9E6JoyConLinkerTests
+    public class JoyConLinkerTests
     {
         private sealed class FakeJoy : IJoinableDevice
         {

@@ -24,11 +24,11 @@ namespace DS4WindowsTests
     /// 求め方: コンストラクターの引数の型をたどる（<c>Func&lt;T&gt;</c> は遅延のため辺にしない）。ラムダで登録された型は <see cref="FactoryTypes"/> で実体の型を与える。
     /// 結果は計画書（Phase13-Step6-Plan.md §2.1）の「循環の有無」の根拠になる。
     /// </summary>
-    public class Phase13Step6ResolutionGraphProbeTests
+    public class ControlServiceResolutionGraphProbeTests
     {
         private readonly ITestOutputHelper _output;
 
-        public Phase13Step6ResolutionGraphProbeTests(ITestOutputHelper output)
+        public ControlServiceResolutionGraphProbeTests(ITestOutputHelper output)
         {
             _output = output;
         }

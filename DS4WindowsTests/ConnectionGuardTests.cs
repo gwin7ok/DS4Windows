@@ -14,11 +14,11 @@ namespace DS4WindowsTests
     /// E-6c: デバイスの種類ごとの分岐が <c>IInputDeviceModule</c>（カートリッジ）へ移り、<c>ControlService</c> には種類ごとの分岐が残らないこと。
     /// E-6d: Joy-Con の結合の手順が <c>JoyConLinker</c> へ移り、<c>ControlService</c> は呼び出しだけを持つこと。
     /// </summary>
-    public class Phase9E6ConnectionGuardTests
+    public class ConnectionGuardTests
     {
         private readonly ITestOutputHelper _output;
 
-        public Phase9E6ConnectionGuardTests(ITestOutputHelper output)
+        public ConnectionGuardTests(ITestOutputHelper output)
         {
             _output = output;
         }

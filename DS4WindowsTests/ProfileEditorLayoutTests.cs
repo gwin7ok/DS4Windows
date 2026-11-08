@@ -16,11 +16,11 @@ namespace DS4WindowsTests
     /// W2（4 つの入口の Controls タブへの追加）で、Axis Config の入口と Controls タブの行の検査を、変更後の構成へ更新する。
     /// ソースファイルが見つからない環境では、検査を行わず合格とする。
     /// </summary>
-    public class Phase10Step3bW0ProfileEditorLayoutTests
+    public class ProfileEditorLayoutTests
     {
         private readonly ITestOutputHelper _output;
 
-        public Phase10Step3bW0ProfileEditorLayoutTests(ITestOutputHelper output)
+        public ProfileEditorLayoutTests(ITestOutputHelper output)
         {
             _output = output;
         }

@@ -13,7 +13,7 @@ namespace DS4WindowsTests
     /// 件数が<b>実数と一致する</b>ことを検査する（基準値を実数と一致させる考え方。旧 <c>Phase7Step10eW5RatchetEqualityGuardTests</c> と同じ。同テストは Phase14d-Step2 で、対象のラチェットとともに撤去した）。W5・W6 で参照を ID に替えて件数が減ったら、基準値も同時に更新する。
     /// コメントの行は数えない。ソースが見つからない環境では、検査を行わず合格とする。
     /// </summary>
-    public class Phase10Step4dW0RuntimeKeyRatchetTests
+    public class RuntimeKeyRatchetTests
     {
         // (ProfilePath＋OlderProfilePath の件数, profileActions＋ProfileActions の件数)
         private static readonly Dictionary<string, (int Path, int Actions)> Baseline = new Dictionary<string, (int, int)>

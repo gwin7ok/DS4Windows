@@ -14,7 +14,7 @@ namespace DS4WindowsTests
     /// 特殊アクションを介する経路（同期キュー、押している間の繰り返し）は、入口の <c>PlayMacroDirect</c> を通る既存の挙動テストが守る。
     /// ここでは、特殊アクションなし（単発の背景 Task）の再生と、文字列・配列・リストの手順、切断時のキューのクリアを調べる。
     /// </summary>
-    public class Phase9CMacroPlaybackTests
+    public class MacroPlaybackTests
     {
         private sealed class CountingExecutor : IMacroStepExecutor
         {

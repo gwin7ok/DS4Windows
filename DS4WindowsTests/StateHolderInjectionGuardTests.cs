@@ -15,13 +15,13 @@ namespace DS4WindowsTests
     /// 本体の呼び出しが 0 件だった <c>Mapping</c> の 4 メンバーを削除したことの回帰ガード。
     /// ソースが見つからない環境では、ソースの検査を行わず合格とする。判断の根拠は Phase7-Step8-Plan.md（Q5・Q7・Q9）。
     /// </summary>
-    public class Phase7Step8W1StateHolderInjectionGuardTests
+    public class StateHolderInjectionGuardTests
     {
         private const ushort Key = 0x4B;
 
         private readonly ITestOutputHelper _output;
 
-        public Phase7Step8W1StateHolderInjectionGuardTests(ITestOutputHelper output)
+        public StateHolderInjectionGuardTests(ITestOutputHelper output)
         {
             _output = output;
         }

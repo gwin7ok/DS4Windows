@@ -19,14 +19,14 @@ namespace DS4WindowsTests
     /// 静的な状態（AppDataPathState、FirstRunState ほか）を書き換えるため、同じ状態を使うテストと直列に実行し、必ず元へ戻す。
     /// </summary>
     [Collection(SharedHostStateCollection.Name)]
-    public class Phase7Step4PathServiceGuardTests
+    public class PathServiceGuardTests
     {
         private const string Exe = @"C:\Phase7Exe";
         private const string Roaming = @"C:\Phase7Roaming";
 
         private readonly ITestOutputHelper _output;
 
-        public Phase7Step4PathServiceGuardTests(ITestOutputHelper output)
+        public PathServiceGuardTests(ITestOutputHelper output)
         {
             _output = output;
         }

@@ -23,7 +23,7 @@ namespace DS4WindowsTests
     /// WPF はこの形のオブジェクトの <c>{Binding Name}</c> に、リフレクションによるイベントの購読を使う。
     /// 修正: <see cref="ProfileEntity"/> に <see cref="INotifyPropertyChanged"/> を実装する（<c>NameChanged</c> の既存の購読先は維持）。
     /// </summary>
-    public class Phase11W6LinkedProfileComboDeleteTests
+    public class LinkedProfileComboDeleteTests
     {
         /// <summary>MainWindow.xaml の linkedProfCombo の DataContext（CompositeDeviceModel）の、必要な部分だけを持つ代役</summary>
         private sealed class LinkRowModel : INotifyPropertyChanged

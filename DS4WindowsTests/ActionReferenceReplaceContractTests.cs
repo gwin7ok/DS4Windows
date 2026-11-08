@@ -18,13 +18,13 @@ namespace DS4WindowsTests
     /// - 項目単位の完全一致であること（部分一致では書き換えない）
     /// - 一致したファイルだけが書き換わり、書き換えたプロファイル名が返ること
     /// </summary>
-    public class Phase6Step10GroupThreeBContractTests : IDisposable
+    public class ActionReferenceReplaceContractTests : IDisposable
     {
         private readonly string _dir;
         private readonly string _profiles;
         private readonly ProfileRepository _repo;
 
-        public Phase6Step10GroupThreeBContractTests()
+        public ActionReferenceReplaceContractTests()
         {
             _dir = Path.Combine(Path.GetTempPath(), "Phase6Step10_3b_" + Guid.NewGuid().ToString("N"));
             _profiles = Path.Combine(_dir, "Profiles");

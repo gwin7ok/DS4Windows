@@ -11,7 +11,7 @@ namespace DS4WindowsTests
     /// <c>MapCustom</c> の全体を通して固定する。L2 と R2 で同じ結果になること（折りたたみで取り違えがないこと）も確かめる。
     /// </summary>
     [Collection(SharedHostStateCollection.Name)]
-    public class Phase9MapCustomTwoStageCharacterizationTests
+    public class MapCustomTwoStageCharacterizationTests
     {
         private static DS4State Run(bool isL2, TwoStageTriggerMode mode, byte value, byte raw)
         {

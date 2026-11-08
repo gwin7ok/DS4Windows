@@ -13,14 +13,14 @@ namespace DS4WindowsTests
     /// 利用者の決定（2026-11-02）: すべてのタブで表示する。隠す処理は持たない。
     /// ソースの走査で担保する（画面は WPF の STA 上でしか作れない）。ソースファイルが見つからない環境では、検査を行わず合格とする。
     /// </summary>
-    public class Phase11W5StatusMessageVisibilityTests
+    public class StatusMessageVisibilityTests
     {
         private const string MainWindowXaml = "DS4Windows/UI/MainWindow.xaml";
         private const string MainWindowCode = "DS4Windows/UI/MainWindow.xaml.cs";
 
         private readonly ITestOutputHelper _output;
 
-        public Phase11W5StatusMessageVisibilityTests(ITestOutputHelper output)
+        public StatusMessageVisibilityTests(ITestOutputHelper output)
         {
             _output = output;
         }

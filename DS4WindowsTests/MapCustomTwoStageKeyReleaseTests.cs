@@ -12,7 +12,7 @@ namespace DS4WindowsTests
     /// 「前のフレームで出力していた」ことが分からなくなるため、Key の割り当てに離した値（0）が渡らず、キーが押されたままになる不具合の再現と固定。
     /// </summary>
     [Collection(SharedHostStateCollection.Name)]
-    public class Phase9MapCustomTwoStageKeyReleaseTests
+    public class MapCustomTwoStageKeyReleaseTests
     {
         private static void Frame(ControlsKeyTestScope scope, bool isL2, byte value, byte raw)
         {

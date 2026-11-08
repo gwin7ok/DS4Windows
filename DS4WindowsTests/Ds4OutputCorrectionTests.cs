@@ -20,11 +20,11 @@ namespace DS4WindowsTests
     /// 復元後は、保存・適用の合流点（<c>ExecuteSaveOrApply</c>）から、両方の補正を 1 つの判定で行う。
     /// OFF のときは何もしない（DS4 から X360 へ戻すことはしない）。
     /// </summary>
-    public class Phase11W4Ds4OutputCorrectionTests
+    public class Ds4OutputCorrectionTests
     {
         private const int Device = 0;
 
-        static Phase11W4Ds4OutputCorrectionTests()
+        static Ds4OutputCorrectionTests()
         {
             if (string.IsNullOrEmpty(TestGlobals.AppDataPath))
             {

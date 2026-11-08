@@ -15,7 +15,7 @@ namespace DS4WindowsTests
     /// 台帳: <c>Phase8-Step1-Trigger-Spec-Ledger.md</c> §5（Macro）。マクロの二重実行防止（K3）は <c>Phase7Step9W3MacroDispatchGuardTests</c> が固定している。
     /// </summary>
     [Collection(SharedHostStateCollection.Name)]
-    public class Phase8Step1MacroBranchCharacterizationTests
+    public class MacroBranchCharacterizationTests
     {
         private static SpecialAction AddMacro(SpecialActionTestScope t, string extras)
         {

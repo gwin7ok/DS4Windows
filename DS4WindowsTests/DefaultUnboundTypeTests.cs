@@ -18,7 +18,7 @@ namespace DS4WindowsTests
     /// （Controls のモードでは、添字 0 の「種別を選んでください」を隠し、SA のモードでは、足した 2 項目を隠す。検証・保存ボタンは、モードを区別しない）。
     /// SA のモードの一覧は、従来のまま。左ペインのタブを隠す表示（SA の編集画面も、Controls の割り当てエディターと同じ場所に重ねる）のソース走査も含む。
     /// </summary>
-    public class Phase10Step3W4DefaultUnboundTypeTests
+    public class DefaultUnboundTypeTests
     {
         private const string SomeExtras = "10,20,1,255,0,0,1,0,25";
         private const int KeyIndex = 4;
@@ -27,7 +27,7 @@ namespace DS4WindowsTests
 
         private readonly ITestOutputHelper _output;
 
-        static Phase10Step3W4DefaultUnboundTypeTests()
+        static DefaultUnboundTypeTests()
         {
             if (string.IsNullOrEmpty(TestGlobals.AppDataPath))
             {
@@ -40,7 +40,7 @@ namespace DS4WindowsTests
             }
         }
 
-        public Phase10Step3W4DefaultUnboundTypeTests(ITestOutputHelper output)
+        public DefaultUnboundTypeTests(ITestOutputHelper output)
         {
             _output = output;
         }

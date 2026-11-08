@@ -13,7 +13,7 @@ namespace DS4WindowsTests
     /// （<see cref="ControlActionEditorViewModel"/>）。名前は、ボタンの表示名で編集不可、トリガーは、そのボタンだけで変更不可、
     /// 種別の一覧は、Controls で現在保存できる種別（Key・Button・Macro）だけ選べる。SA のモードの ViewModel は、従来どおり。
     /// </summary>
-    public class Phase10Step2W3ControlActionEditorViewModelTests
+    public class ControlActionEditorViewModelTests
     {
         private static ControlActionEditorViewModel NewControlVm(DS4Controls control = DS4Controls.Circle)
             => new ControlActionEditorViewModel(0, control);

@@ -12,7 +12,7 @@ namespace DS4WindowsTests
     /// 割り当て編集画面の種別の一覧（<see cref="ActionTypeCatalog"/>）の「Controls で保存できる」が、同じ規則に従うこと。種別ごとの入力（<see cref="IActionTypeEditor"/>）の
     /// 型のある項目との往復の既定の動作。
     /// </summary>
-    public class Phase10Step6I6bControlsSpecialTypeTableTests
+    public class ControlsSpecialTypeTableTests
     {
         [Theory]
         [InlineData(SpecialAction.ActionTypeId.Program, true)]

@@ -22,7 +22,7 @@ namespace DS4WindowsTests
     /// 他の Host 構築テストと同じコレクションで直列に実行する。
     /// </summary>
     [Collection(SharedHostStateCollection.Name)]
-    public class Phase8Step76cBatteryCheckTests
+    public class BatteryCheckTests
     {
         private const string FullDetails = "|True|True|255|0|0|0|255|0";   // 通知あり、ライトバーあり、空＝赤、満タン＝緑
 
@@ -288,7 +288,7 @@ namespace DS4WindowsTests
         [Fact]
         public void TheNewPath_DoesNotAddAllocationsToTheFrame_WhileHeld()
         {
-            // 同じ件数の BatteryCheck で、トリガーが押されていない（R1。押すのは L1）場合を基準にする（Phase8Step76aGyroCalibrateTests と同じ方式）
+            // 同じ件数の BatteryCheck で、トリガーが押されていない（R1。押すのは L1）場合を基準にする（GyroCalibrateTests と同じ方式）
             long baseline;
             using (var t = new SpecialActionTestScope())
             {

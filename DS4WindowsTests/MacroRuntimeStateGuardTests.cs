@@ -14,11 +14,11 @@ namespace DS4WindowsTests
     /// <c>MacroRuntimeState</c> へ切り出したことの回帰ガード。
     /// ソースが見つからない環境では、ソース検査を行わず合格とする。判断の根拠は Phase7-Step7-Plan.md（Q2・Q3）。
     /// </summary>
-    public class Phase7Step7MacroRuntimeStateGuardTests
+    public class MacroRuntimeStateGuardTests
     {
         private readonly ITestOutputHelper _output;
 
-        public Phase7Step7MacroRuntimeStateGuardTests(ITestOutputHelper output)
+        public MacroRuntimeStateGuardTests(ITestOutputHelper output)
         {
             _output = output;
         }

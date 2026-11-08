@@ -11,9 +11,9 @@ namespace DS4WindowsTests
 {
     /// <summary>
     /// Phase8-Step4b W2（Phase8-Step4b-Plan.md §3.2）: <c>LoadProfile</c> の分解の基盤（<see cref="ProfileLoadContext"/>、<see cref="IProfileLoadSection"/>）の検査。
-    /// 節の中身は、W1 のゴールデン（<c>Phase8Step4bProfileGoldenGapTests</c> ほか）が担保する。
+    /// 節の中身は、W1 のゴールデン（<c>ProfileGoldenGapTests</c> ほか）が担保する。
     /// </summary>
-    public class Phase8Step4bW2LoadFoundationTests
+    public class ProfileLoadFoundationTests
     {
         // 節の型は internal（Q3＝A）で、テストのアセンブリからは直接見えないため、リフレクションで検査する
         private static readonly Type ContextType = typeof(LegacyProfileXmlSerializer).Assembly.GetType("DS4Windows.Core.Persistence.ProfileSections.ProfileLoadContext", true);

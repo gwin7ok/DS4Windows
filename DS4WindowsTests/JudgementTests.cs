@@ -12,10 +12,10 @@ namespace DS4WindowsTests
     /// Phase10-Step4c W4（Phase10-Step4c-Plan.md §2 項目 1・§4 W4、ユーザー承認 2026-10-21。案 B）: Controls の束縛のうち、<b>デジタルな出力</b>
     /// （Key、Macro、Special、Extras、パッドのボタン、マウスのボタン・タッチパッドクリック・デジタルのホイール）は SA と同じ閾値（<see cref="ControlOutputNature.Digital"/>）で判定し、
     /// <b>アナログな出力</b>（パッドの軸・トリガー、マウスの移動、アナログのホイール、Default の軸の素通し）は従来の判定（<see cref="ControlOutputNature.Analog"/>）のままであることを固定する。
-    /// 閾値そのものの値は <c>Phase10Step4cW0JudgementTableTests</c> が固定する。
+    /// 閾値そのものの値は <c>JudgementTableTests</c> が固定する。
     /// </summary>
     [Collection(SharedHostStateCollection.Name)]
-    public class Phase10Step4cW4JudgementTests
+    public class JudgementTests
     {
         private const int Device = MappingCharacterizationScope.Device;
 

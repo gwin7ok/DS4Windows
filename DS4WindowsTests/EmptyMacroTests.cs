@@ -11,11 +11,11 @@ namespace DS4WindowsTests
     /// Phase10-Step3（ユーザー承認、2026-10-21）: 手順が空のマクロも、SA として保存できる（従来は「No macro defined」で保存できなかった）。
     /// 保存できること、保存した値を読み込み直しても空のマクロになること、空のマクロを「押している間繰り返す」で空回りしないこと（ソース走査）を固定する。
     /// </summary>
-    public class Phase10Step3W3EmptyMacroTests
+    public class EmptyMacroTests
     {
         private readonly ITestOutputHelper _output;
 
-        public Phase10Step3W3EmptyMacroTests(ITestOutputHelper output)
+        public EmptyMacroTests(ITestOutputHelper output)
         {
             _output = output;
         }

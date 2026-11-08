@@ -14,11 +14,11 @@ namespace DS4WindowsTests
     /// 実際のプログラムは起動しない（存在しない実行ファイルのパス）。他の Host 構築テストと同じコレクションで直列に実行する。
     /// </summary>
     [Collection(SharedHostStateCollection.Name)]
-    public class Phase8Step74W3ProgramSwitchTests
+    public class ProgramSwitchTests
     {
         private readonly ITestOutputHelper _output;
 
-        public Phase8Step74W3ProgramSwitchTests(ITestOutputHelper output)
+        public ProgramSwitchTests(ITestOutputHelper output)
         {
             _output = output;
         }

@@ -15,7 +15,7 @@ namespace DS4WindowsTests
     /// 旧 <c>Commit</c> の逐語コピー（<c>pressagain</c> の判定を除く。常に false だった）と、同じクリックの列で、記録された出力（ボタン、拡張ボタン、ホイール、Sync）が一致することを確かめる。
     /// 時刻は、両方に同じ偽の時計を渡して決定的にする（ホイールの繰り返しは 150ms）。
     /// </summary>
-    public class Phase9MapCustomCommitterDifferentialTests
+    public class MapCustomCommitterDifferentialTests
     {
         // ---- 旧 Mapping.Commit の逐語コピー（旧 oldnow／wheel は、この中が持つ。コメントは省略）----
         private sealed class OldCommitter

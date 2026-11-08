@@ -16,16 +16,16 @@ namespace DS4WindowsTests
     /// <summary>
     /// Phase8-Step7 7.8f-2 W2/W3（Phase8-Step7-8f-Plan.md §3.2）: Controls タブの Button のうち、マウスのボタン・タッチパッドクリック・デジタルのホイール・Toggle の新経路。
     /// 解釈、ビルダーの所有の条件と束縛の形、Toggle の是正（Q8＝A: 立ち上がりで 1 回だけ反転）、ロールバック、ソースのガード。
-    /// 旧・新の比べは <c>Phase8Step78f2W1ControlsMouseCharacterizationTests</c>（同じテストが新経路を走らせる）。
+    /// 旧・新の比べは <c>ControlsMouseCharacterizationTests</c>（同じテストが新経路を走らせる）。
     /// 他の Host 構築テストと同じコレクションで直列に実行する。
     /// </summary>
     [Collection(SharedHostStateCollection.Name)]
-    public class Phase8Step78f2W2ControlsMouseTests
+    public class ControlsMouseTests
     {
         private const int Device = MappingCharacterizationScope.Device;
         private readonly ITestOutputHelper _output;
 
-        public Phase8Step78f2W2ControlsMouseTests(ITestOutputHelper output)
+        public ControlsMouseTests(ITestOutputHelper output)
         {
             _output = output;
         }

@@ -14,12 +14,12 @@ namespace DS4WindowsTests
     /// 移した先（<c>EnvironmentService</c>）が処理と状態を持つことを確かめる。判断の根拠は <c>Phase7-Step4-Plan.md</c> の Q6。
     /// ソースが見つからない環境では、検査を行わず合格とする。
     /// </summary>
-    public class Phase7Step4EnvironmentProbesGuardTests
+    public class EnvironmentProbesGuardTests
     {
 
         private readonly ITestOutputHelper _output;
 
-        public Phase7Step4EnvironmentProbesGuardTests(ITestOutputHelper output)
+        public EnvironmentProbesGuardTests(ITestOutputHelper output)
         {
             _output = output;
         }

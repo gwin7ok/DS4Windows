@@ -14,11 +14,11 @@ namespace DS4WindowsTests
     /// 以前は <c>OutContType</c> だけが変わり、<c>OutDevTypeTemp</c> は編集画面を開いたときにしか書かれなかったため、
     /// 保存せずに出力ピッカーを開くと、前の種類の表示のままだった。
     /// </summary>
-    public class Phase11W6OutDevTypeTempFollowsEditorTests
+    public class OutDevTypeTempFollowsEditorTests
     {
         private const int Device = 0;
 
-        static Phase11W6OutDevTypeTempFollowsEditorTests()
+        static OutDevTypeTempFollowsEditorTests()
         {
             if (string.IsNullOrEmpty(TestGlobals.AppDataPath))
             {

@@ -33,7 +33,7 @@ namespace DS4WindowsTests
         // イベント発行・範囲外の安全性のテストを SetOutputDevice／PluginSlot／UnplugSlot ベースへ置き換えた。
         // Phase7-Step2 W4: OutputDevices／GetOutputDevice／IsSlotPlugin／SetOutputDevice（常に null を返す孤立配列）を削除したため、
         // それらを対象としたテスト（初期状態、SetOutputDevice によるイベント発行、範囲外）も削除した。
-        // 抜き差しの要求とイベントの確認は PluginSlot／UnplugSlot を対象とする（Step10FourTwoGlobalReferenceGuardTests など）。
+        // 抜き差しの要求とイベントの確認は PluginSlot／UnplugSlot を対象とする（FourTwoGlobalReferenceGuardTests など）。
 
         [Fact]
         public void OutOfBounds_ShouldBeHandledSafely()

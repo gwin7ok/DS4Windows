@@ -15,7 +15,7 @@ namespace DS4WindowsTests
     /// 削除した名前は Wave ごとに <see cref="RemovedFromGlobal"/> へ追記する（名簿は Phase6-Step12-Plan.md §0A.8）。
     /// ソースが見つからない環境では、検査を行わず合格とする。
     /// </summary>
-    public class Step12DeadShimRemovalGuardTests
+    public class DeadShimRemovalGuardTests
     {
         private static readonly string[] RemovedFromGlobal =
         {
@@ -86,7 +86,7 @@ namespace DS4WindowsTests
 
         private readonly ITestOutputHelper _output;
 
-        public Step12DeadShimRemovalGuardTests(ITestOutputHelper output)
+        public DeadShimRemovalGuardTests(ITestOutputHelper output)
         {
             _output = output;
         }

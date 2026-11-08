@@ -17,7 +17,7 @@ namespace DS4WindowsTests
     /// ない・見つからないときは名前のまま。実行時の内部（<c>ProfilePath</c> ほか）は名前のまま。
     /// </summary>
     [Collection(SharedHostStateCollection.Name)]
-    public class Phase10Step4dW4ReferenceIdTests
+    public class SlotLinkedAutoProfileReferenceIdTests
     {
         private static string NewId() => Guid.NewGuid().ToString("N");
 

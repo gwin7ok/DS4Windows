@@ -9,7 +9,7 @@ namespace DS4WindowsTests
     /// Phase10-Step1 W1（Phase10-Step1-Plan.md §3.1・§5）: <see cref="MacroPlaybackOptions"/> の単体テスト。
     /// <c>DS4KeyType</c> との相互変換が、<c>RepeatMacro</c>／<c>ScanCode</c> のビットだけを操作し、ほかのビットを保つこと。
     /// </summary>
-    public class Phase10Step1W1MacroPlaybackOptionsTests
+    public class MacroPlaybackOptionsTests
     {
         [Theory]
         [InlineData(DS4KeyType.None, false, false)]

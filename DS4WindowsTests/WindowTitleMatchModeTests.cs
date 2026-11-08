@@ -8,7 +8,7 @@ namespace DS4WindowsTests
     /// <summary>
     /// Phase12-Step2 2h（R-4）: ウインドウ名の一致方法の一覧（保存用の印との相互変換）と、「実行ファイル名のみで判定」の変換。
     /// </summary>
-    public class Phase12Step2W2hWindowTitleMatchModeTests
+    public class WindowTitleMatchModeTests
     {
         [Theory]
         [InlineData("", "", WindowTitleMatchMode.Exact)]

@@ -17,12 +17,12 @@ namespace DS4WindowsTests
     /// プロファイルの名前を変えても、読み出す名前は現在の名前になる。登録簿がなければ、従来の配列・辞書と同じに動く。
     /// </summary>
     [Collection(SharedHostStateCollection.Name)]
-    public class Phase10Step4dW5dTests : IDisposable
+    public class AutoAndLinkedProfileRuntimeIdTests : IDisposable
     {
         private readonly string _dir;
         private readonly string _profiles;
 
-        public Phase10Step4dW5dTests()
+        public AutoAndLinkedProfileRuntimeIdTests()
         {
             _dir = Path.Combine(Path.GetTempPath(), "Phase10Step4d_W5d_" + Guid.NewGuid().ToString("N"));
             _profiles = Path.Combine(_dir, "Profiles");

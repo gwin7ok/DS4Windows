@@ -11,7 +11,7 @@ namespace DS4WindowsTests
     /// Phase12-Step2 2b-2: <see cref="WindowFocuser"/> の手順（探索→応答なし→復元→前面確認→素の前面化→入力の結び付け→Alt の擬似入力）を、
     /// 偽の <see cref="IWindowSystem"/> で確かめる。Win32 の実装（<see cref="Win32WindowSystem"/>）は、列挙が例外なく動くことだけを確かめる。
     /// </summary>
-    public class Phase12Step2W2b2WindowFocuserTests
+    public class WindowFocuserTests
     {
         private static readonly IntPtr A = new IntPtr(100);
         private static readonly IntPtr B = new IntPtr(200);

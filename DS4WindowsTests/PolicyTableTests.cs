@@ -12,11 +12,11 @@ namespace DS4WindowsTests
     /// <summary>
     /// Phase10-Step4c W0（Phase10-Step4c-Plan.md §2 項目 2・3・§4 W0）: Controls の束縛の種類ごとの<b>方針</b>
     /// （Fresh-press ガード、トリガーのボタンの抑制・出力の消去、離したときの Stop、実行中のブロック、復帰）の現行の値を、1 枚の表で固定する特性化テスト。製品コードは変えない。
-    /// SA の種別ごとの表は <c>Phase10Step4W0SaBindingTableTests</c>。W1（項目 2: Fresh-press ガードの規則を 1 か所の表にまとめる。挙動は変えない）は、
+    /// SA の種別ごとの表は <c>SaBindingTableTests</c>。W1（項目 2: Fresh-press ガードの規則を 1 か所の表にまとめる。挙動は変えない）は、
     /// この表が変わらないことで守る。
     /// </summary>
     [Collection(SharedHostStateCollection.Name)]
-    public class Phase10Step4cW0PolicyTableTests
+    public class PolicyTableTests
     {
         private const int Device = MappingCharacterizationScope.Device;
 

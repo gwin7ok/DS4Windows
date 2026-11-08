@@ -21,7 +21,7 @@ namespace DS4WindowsTests
     /// ドライバーと DS4Device が必要な <c>IsAffected</c> の判定そのものは、実機でなければ確かめられないため、ここでは「無効のとき false」だけを調べる。
     /// </summary>
     [Collection("GuiLogSubscribers")]
-    public class Phase9EHidHideServiceDifferentialTests
+    public class HidHideServiceDifferentialTests
     {
         [DllImport("kernel32.dll", CharSet = CharSet.Auto, SetLastError = true, EntryPoint = "QueryDosDeviceW")]
         private static extern uint QueryDosDevice(string lpDeviceName, StringBuilder lpTargetPath, int ucchMax);

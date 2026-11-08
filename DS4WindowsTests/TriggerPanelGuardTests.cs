@@ -10,11 +10,11 @@ namespace DS4WindowsTests
     /// 名前つきのチェックボックス 49＋49 個と、その <c>Click</c> のコードビハインド、チェックボックスの照合の再混入を検出するソース走査ガード。
     /// ソースファイルが見つからない環境では、検査を行わず合格とする。
     /// </summary>
-    public class Phase10Step2W2TriggerPanelGuardTests
+    public class TriggerPanelGuardTests
     {
         private readonly ITestOutputHelper _output;
 
-        public Phase10Step2W2TriggerPanelGuardTests(ITestOutputHelper output)
+        public TriggerPanelGuardTests(ITestOutputHelper output)
         {
             _output = output;
         }

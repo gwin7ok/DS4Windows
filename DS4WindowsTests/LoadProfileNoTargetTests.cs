@@ -13,7 +13,7 @@ namespace DS4WindowsTests
     /// 離しても元のプロファイルを適用し直さない（以前は、押すと仮想コントローラーが切断され、離すと再適用で再接続した）。
     /// </summary>
     [Collection(SharedHostStateCollection.Name)]
-    public class Phase11W6LoadProfileNoTargetTests
+    public class LoadProfileNoTargetTests
     {
         private sealed class StubSwitcher : IProfileSwitcher
         {

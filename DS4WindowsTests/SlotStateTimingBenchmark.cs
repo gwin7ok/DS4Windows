@@ -19,15 +19,15 @@ namespace DS4WindowsTests
     ///   (b) 5b 以降: 窓口から一度だけ取得して <c>readonly</c> フィールドへ保持した配列を読む
     ///   (c) 窓口（interface のプロパティ）を毎回通して読む（接続・切断の経路。ホットパスではない）
     /// 合格基準: (b) が (a) に対して悪化 5% 以内。実行例（PowerShell）:
-    /// <c>$env:DS4W_RUN_BENCH='1'; dotnet test ./DS4WindowsTests/DS4Windows.Actions.Tests.csproj -c Release /p:platform=x64 --filter FullyQualifiedName~Phase13Step5SlotStateTimingBenchmark -v n</c>
+    /// <c>$env:DS4W_RUN_BENCH='1'; dotnet test ./DS4WindowsTests/DS4Windows.Actions.Tests.csproj -c Release /p:platform=x64 --filter FullyQualifiedName~SlotStateTimingBenchmark -v n</c>
     /// </summary>
-    public class Phase13Step5SlotStateTimingBenchmark
+    public class SlotStateTimingBenchmark
     {
         private const int Iterations = 5_000_000;
         private const int Rounds = 7;
         private readonly ITestOutputHelper _output;
 
-        public Phase13Step5SlotStateTimingBenchmark(ITestOutputHelper output)
+        public SlotStateTimingBenchmark(ITestOutputHelper output)
         {
             _output = output;
         }

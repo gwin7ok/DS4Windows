@@ -13,11 +13,11 @@ namespace DS4WindowsTests
 {
     /// <summary>
     /// Phase7-Step10c W5（Q1・Q3・Q5＝A）: プロファイル（旧形式の XML）の保存を <c>BackingStore</c> から <c>LegacyProfileXmlSerializer</c> へ移したことの回帰ガード。
-    /// 保存結果の同一性は <c>Phase7Step10cGoldenPersistenceTests</c>（プロファイルの既定／変化させた状態）と
+    /// 保存結果の同一性は <c>GoldenPersistenceTests</c>（プロファイルの既定／変化させた状態）と
     /// <c>ProfileLegacyXmlCompletenessTests</c> が固定する。ソースが見つからない環境では、ソースの検査を行わず合格とする。
     /// </summary>
     [Collection(SharedHostStateCollection.Name)]
-    public class Phase7Step10cW5LegacyProfileSaveGuardTests
+    public class LegacyProfileSaveGuardTests
     {
         private static readonly string[] MovedMethods =
         {
@@ -27,7 +27,7 @@ namespace DS4WindowsTests
 
         private readonly ITestOutputHelper _output;
 
-        public Phase7Step10cW5LegacyProfileSaveGuardTests(ITestOutputHelper output)
+        public LegacyProfileSaveGuardTests(ITestOutputHelper output)
         {
             _output = output;
         }

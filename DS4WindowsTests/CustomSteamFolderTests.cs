@@ -21,7 +21,7 @@ namespace DS4WindowsTests
     /// 復元後: 値は保存し、警告（GUI ログの warning。ステータス行に目立つ色で出る）を出す。入力を黙って捨てない。
     /// 値を使う側（<c>AutoProfiles</c>）は <c>Directory.Exists</c> で確かめ、無ければ既定の Steam フォルダーへ戻るため、保存しても害はない。
     /// </summary>
-    public class Phase11W5CustomSteamFolderTests : IDisposable
+    public class CustomSteamFolderTests : IDisposable
     {
         private readonly ITestOutputHelper _output;
         private readonly object _gate = new object();
@@ -31,7 +31,7 @@ namespace DS4WindowsTests
         private readonly SettingsViewModel _vm;
         private readonly IAppSettingsService _service;
 
-        public Phase11W5CustomSteamFolderTests(ITestOutputHelper output)
+        public CustomSteamFolderTests(ITestOutputHelper output)
         {
             _output = output;
             if (string.IsNullOrEmpty(TestGlobals.AppDataPath))

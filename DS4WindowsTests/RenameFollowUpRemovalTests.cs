@@ -19,7 +19,7 @@ namespace DS4WindowsTests
     /// <c>ReplaceControlProfileSwitchTarget</c>（Controls）と <c>ReplaceActionReference</c>（SA の名前変更）は残す。
     /// </summary>
     [Collection(SharedHostStateCollection.Name)]
-    public class Phase10Step4dW7FollowUpTests
+    public class RenameFollowUpRemovalTests
     {
         private static string NewId() => Guid.NewGuid().ToString("N");
 

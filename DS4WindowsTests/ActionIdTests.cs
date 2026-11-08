@@ -16,7 +16,7 @@ namespace DS4WindowsTests
     /// <c>Actions.xml</c> へ 1 回保存する（変更がなければ書き換えない）。参照（<c>&lt;ProfileActions&gt;</c> ほか）は、まだ名前のまま。
     /// </summary>
     [Collection(SharedHostStateCollection.Name)]
-    public class Phase10Step4dW2ActionIdTests
+    public class ActionIdTests
     {
         private sealed class Rig : IDisposable
         {

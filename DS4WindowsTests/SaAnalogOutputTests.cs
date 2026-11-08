@@ -14,7 +14,7 @@ namespace DS4WindowsTests
     /// デジタルな出力先（ボタン、マウスのボタン、ホイール）は、従来どおり <c>PressX360</c>。
     /// </summary>
     [Collection(SharedHostStateCollection.Name)]
-    public class Phase10Step5SaAnalogOutputTests
+    public class SaAnalogOutputTests
     {
         private sealed class RecordingFrame : IPadFrameOutput, IMouseMoveFrameOutput
         {

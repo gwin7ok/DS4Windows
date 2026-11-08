@@ -11,12 +11,12 @@ namespace DS4WindowsTests
     /// Phase7-Step10d W4（Q7＝A）: アプリ層の静的な窓口（イベント・表示言語・自動プロファイルの作成・更新確認のスキップ判定）を
     /// 持ち主の型へ移したことの回帰ガード。
     /// </summary>
-    public class Phase7Step10dW4AppLayerStaticsGuardTests
+    public class AppLayerStaticsGuardTests
     {
         [Fact]
         public void Global_NoLongerDeclaresTheMovedMembers()
         {
-            // Phase7-Step10d W5: Global 型ごと削除した（Phase7Step10dW5GlobalRemovedGuardTests が型の不在を確認する）
+            // Phase7-Step10d W5: Global 型ごと削除した（GlobalRemovedGuardTests が型の不在を確認する）
             Assert.Null(typeof(BackingStore).Assembly.GetType("DS4Windows.Global"));
         }
 

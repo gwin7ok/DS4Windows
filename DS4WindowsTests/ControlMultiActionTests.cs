@@ -21,7 +21,7 @@ namespace DS4WindowsTests
     /// 方針（元のボタンの出力は、待ち時間のあいだだけでなく常に消す。ユーザー決定）、未設定のマクロ（保存を止めず、実行自体を行わない）、保存、画面の入力。
     /// </summary>
     [Collection(SharedHostStateCollection.Name)]
-    public class Phase10Step6W8ControlMultiActionTests
+    public class ControlMultiActionTests
     {
         private sealed class RecordingMacroStringPlayer : IMacroStringPlayer
         {

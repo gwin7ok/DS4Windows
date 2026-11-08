@@ -17,11 +17,11 @@ namespace DS4WindowsTests
     /// - <c>Dispose</c> の後は、<c>GetService</c> が暗黙にホストを作り直さない。
     /// ソースが見つからない環境では、検査を行わず合格とする。判断の根拠は <c>Phase7-Step4-Plan.md</c>。
     /// </summary>
-    public class Phase7Step4AppHostGuardTests
+    public class AppHostStartupShutdownGuardTests
     {
         private readonly ITestOutputHelper _output;
 
-        public Phase7Step4AppHostGuardTests(ITestOutputHelper output)
+        public AppHostStartupShutdownGuardTests(ITestOutputHelper output)
         {
             _output = output;
         }

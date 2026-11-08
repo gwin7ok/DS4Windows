@@ -12,11 +12,11 @@ namespace DS4WindowsTests
     /// <c>Control</c> は、Default／Unbound（<c>modePanel</c>）と Extras（<c>extrasSidePanel</c>）を出し、Record A Macro・Toggle・Scan Code を出さない。
     /// ウィンドウは WPF の STA 上でしか作れないため、ソースの構成で検査する。ソースファイルが見つからない環境では、検査を行わず合格とする。
     /// </summary>
-    public class Phase10Step3W1BindingWindowModeGuardTests
+    public class BindingWindowModeGuardTests
     {
         private readonly ITestOutputHelper _output;
 
-        public Phase10Step3W1BindingWindowModeGuardTests(ITestOutputHelper output)
+        public BindingWindowModeGuardTests(ITestOutputHelper output)
         {
             _output = output;
         }

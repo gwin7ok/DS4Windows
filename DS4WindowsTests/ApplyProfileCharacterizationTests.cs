@@ -21,7 +21,7 @@ namespace DS4WindowsTests
     /// 他の Host 構築テストと同じコレクションで直列に実行する。
     /// </summary>
     [Collection(SharedHostStateCollection.Name)]
-    public class Phase7Step3cApplyProfileCharacterizationTests : IDisposable
+    public class ApplyProfileCharacterizationTests : IDisposable
     {
         private const int Slot = 0;
         private const string Normal = "Phase7Step3c_Normal";
@@ -45,7 +45,7 @@ namespace DS4WindowsTests
         private readonly List<SelectedProfileChangedEventArgs> _events = new List<SelectedProfileChangedEventArgs>();
         private readonly EventHandler<SelectedProfileChangedEventArgs> _handler;
 
-        public Phase7Step3cApplyProfileCharacterizationTests()
+        public ApplyProfileCharacterizationTests()
         {
             _dir = Path.Combine(Path.GetTempPath(), "Phase7Step3c_" + Guid.NewGuid().ToString("N"));
             Directory.CreateDirectory(Path.Combine(_dir, "Profiles"));

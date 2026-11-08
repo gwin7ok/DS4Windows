@@ -20,11 +20,11 @@ namespace DS4WindowsTests
     /// <c>IEnvironmentService.UsingMaxControllers</c> の注入に切り替えたことと、孤立定数の整理の回帰ガード。
     /// ソースが見つからない環境では、ソースの検査を行わず合格とする。
     /// </summary>
-    public class Phase7Step10bW4UsingMaxControllersGuardTests
+    public class UsingMaxControllersGuardTests
     {
         private readonly ITestOutputHelper _output;
 
-        public Phase7Step10bW4UsingMaxControllersGuardTests(ITestOutputHelper output)
+        public UsingMaxControllersGuardTests(ITestOutputHelper output)
         {
             _output = output;
         }

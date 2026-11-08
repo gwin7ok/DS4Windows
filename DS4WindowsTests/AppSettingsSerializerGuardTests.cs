@@ -15,15 +15,15 @@ namespace DS4WindowsTests
 {
     /// <summary>
     /// Phase7-Step10c W3（Q1・Q3・Q5＝A）: アプリ設定（Profiles.xml）の保存・読込を <c>BackingStore</c> から <c>AppSettingsXmlSerializer</c> へ移し、
-    /// バージョンの数値化を <c>VersionUtil</c> へ移したことの回帰ガード。内容の同一性はゴールデン（<c>Phase7Step10cGoldenPersistenceTests</c>）と
+    /// バージョンの数値化を <c>VersionUtil</c> へ移したことの回帰ガード。内容の同一性はゴールデン（<c>GoldenPersistenceTests</c>）と
     /// <c>BackingStoreAppSettingsLoadTests</c> が固定する。ソースが見つからない環境では、ソースの検査を行わず合格とする。
     /// </summary>
     [Collection(SharedHostStateCollection.Name)]
-    public class Phase7Step10cW3AppSettingsSerializerGuardTests
+    public class AppSettingsSerializerGuardTests
     {
         private readonly ITestOutputHelper _output;
 
-        public Phase7Step10cW3AppSettingsSerializerGuardTests(ITestOutputHelper output)
+        public AppSettingsSerializerGuardTests(ITestOutputHelper output)
         {
             _output = output;
         }

@@ -12,7 +12,7 @@ namespace DS4WindowsTests
     /// <c>Mapping</c> の静的な状態を共有するため、<c>ServiceProviderHolder</c> のコレクションで直列に実行する。
     /// </summary>
     [Collection(SharedHostStateCollection.Name)]
-    public class Phase7Step7MapCustomCharacterizationTests
+    public class MapCustomCharacterizationTests
     {
         [Fact]
         public void Default_PassesButtonsSticksAndTriggersThrough()

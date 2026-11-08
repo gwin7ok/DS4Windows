@@ -20,11 +20,11 @@ namespace DS4WindowsTests
     /// (2) 新しい部品が DI の Singleton として登録され、静的な窓口（<c>Global</c>／<c>AppHost</c>）を参照しないこと。
     /// (3) 状態を持つ部品が、デバイスごとに状態を持つこと（添字の範囲がコントローラーの台数と一致）。
     /// </summary>
-    public class Phase9BMouseGuardTests
+    public class MouseGuardTests
     {
         private readonly ITestOutputHelper _output;
 
-        public Phase9BMouseGuardTests(ITestOutputHelper output)
+        public MouseGuardTests(ITestOutputHelper output)
         {
             _output = output;
         }

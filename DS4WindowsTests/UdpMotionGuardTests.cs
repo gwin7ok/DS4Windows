@@ -14,11 +14,11 @@ namespace DS4WindowsTests
     /// (2) 新しい部品が DI の Singleton として登録され、<c>IDeviceSlotState</c> を直接注入で受けること（Phase13-Step5 で <c>IUdpMotionHost</c> を廃止）。
     /// (3) 部品が静的な窓口（<c>Global</c>／<c>AppHost</c>）を参照しないこと。
     /// </summary>
-    public class Phase9EUdpMotionGuardTests
+    public class UdpMotionGuardTests
     {
         private readonly ITestOutputHelper _output;
 
-        public Phase9EUdpMotionGuardTests(ITestOutputHelper output)
+        public UdpMotionGuardTests(ITestOutputHelper output)
         {
             _output = output;
         }

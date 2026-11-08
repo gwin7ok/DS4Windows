@@ -11,11 +11,11 @@ namespace DS4WindowsTests
     /// （呼び出し元がない）。また、名前の欄は、読み取り専用の指定（<c>IsReadOnly</c>）を ViewModel に結ぶ。再混入・早すぎる接続を検出するソース走査ガード。
     /// ソースファイルが見つからない環境では、検査を行わず合格とする。
     /// </summary>
-    public class Phase10Step2W3ControlModeGuardTests
+    public class ControlModeGuardTests
     {
         private readonly ITestOutputHelper _output;
 
-        public Phase10Step2W3ControlModeGuardTests(ITestOutputHelper output)
+        public ControlModeGuardTests(ITestOutputHelper output)
         {
             _output = output;
         }

@@ -12,11 +12,11 @@ namespace DS4WindowsTests
     /// 画面側の <c>ResourcePaths</c> へ移したことの回帰ガード。値は従来と同じ文字列でなければならない。
     /// ソースが見つからない環境では、ソースの検査を行わず合格とする。
     /// </summary>
-    public class Phase7Step10aW3ResourcePrefixGuardTests
+    public class ResourcePrefixGuardTests
     {
         private readonly ITestOutputHelper _output;
 
-        public Phase7Step10aW3ResourcePrefixGuardTests(ITestOutputHelper output)
+        public ResourcePrefixGuardTests(ITestOutputHelper output)
         {
             _output = output;
         }

@@ -18,7 +18,7 @@ namespace DS4WindowsTests
     /// Global 状態を変更するテストは、変更を必ず元に戻す（Phase6-Status.md §6.4-1）。
     /// </summary>
     [Xunit.Collection(SharedHostStateCollection.Name)]
-    public class Phase6Step10GroupOneContractTests
+    public class StartupEnvironmentContractTests
     {
         // ---- IEnvironmentService ----
 

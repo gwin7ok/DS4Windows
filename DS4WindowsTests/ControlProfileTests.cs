@@ -27,7 +27,7 @@ namespace DS4WindowsTests
     /// プロファイルの名前変更への追従（全プロファイルの <c>&lt;Control&gt;&lt;Special&gt;</c> の書き換え）。
     /// </summary>
     [Collection(SharedHostStateCollection.Name)]
-    public class Phase10Step4W6ControlProfileTests : IDisposable
+    public class ControlProfileTests : IDisposable
     {
         private const int Device = MappingCharacterizationScope.Device;
         private const int ProfileIndex = 3;
@@ -35,7 +35,7 @@ namespace DS4WindowsTests
         private readonly string _dir;
         private readonly string _profiles;
 
-        public Phase10Step4W6ControlProfileTests()
+        public ControlProfileTests()
         {
             _dir = Path.Combine(Path.GetTempPath(), "Phase10Step4_W6_" + Guid.NewGuid().ToString("N"));
             _profiles = Path.Combine(_dir, "Profiles");
@@ -285,7 +285,7 @@ namespace DS4WindowsTests
         }
 
         // Phase10-Step4c W3: 以前ここにあった CanWrite（Load Profile の未選択で Save を止める暫定）は、種別ごとの入力の IsValid（偽を返す）に置き換えた。
-        // 検証は Phase10Step4cW0ValidationTableTests が持つ
+        // 検証は ValidationTableTests が持つ
 
         [Fact]
         public void WriteFrom_WithoutAChosenProfile_WritesAnEmptyName()

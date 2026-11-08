@@ -18,7 +18,7 @@ namespace DS4WindowsTests
     /// 台帳: <c>Phase8-Step1-Trigger-Spec-Ledger.md</c> §3・§5（Profile）。
     /// </summary>
     [Collection(SharedHostStateCollection.Name)]
-    public class Phase8Step1ProfileSwitchCharacterizationTests
+    public class ProfileSwitchCharacterizationTests
     {
         private static SpecialAction AddProfile(SpecialActionTestScope t, string triggers, string extras)
         {

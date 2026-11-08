@@ -12,11 +12,11 @@ namespace DS4WindowsTests
     /// ジャイロの処理が <c>NullReferenceException</c> になり得た。移行前は <c>App.rootHub.touchPad[device]</c> を静的に参照して動いていた。
     /// 修正後は、<c>ControlService</c> が設定する関数 <see cref="DS4SixAxis.GyroControlsTriggerActive"/> を使う。
     /// </summary>
-    public class Phase7Step5Ds3GyroTriggerTests
+    public class Ds3GyroTriggerTests
     {
         private readonly ITestOutputHelper _output;
 
-        public Phase7Step5Ds3GyroTriggerTests(ITestOutputHelper output)
+        public Ds3GyroTriggerTests(ITestOutputHelper output)
         {
             _output = output;
         }

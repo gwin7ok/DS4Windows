@@ -9,7 +9,7 @@ namespace DS4WindowsTests
     /// Phase9 9-B（Phase9-B-Plan.md）: <see cref="MouseMotionQuantizer"/> を、旧実装（<c>Mapping.calculateFinalMouseMovement</c> を逐語的に写したもの。
     /// 端数は、旧実装のとおり、この instance が 1 組だけ持つ）と突き合わせる差分テストと、端数がデバイスごとに独立していること（ユーザー判断 Q2）のテスト。
     /// </summary>
-    public class Phase9BMouseMotionQuantizerTests
+    public class MouseMotionQuantizerTests
     {
         /// <summary>旧 <c>Mapping.calculateFinalMouseMovement</c> の逐語的な写し。</summary>
         private sealed class OldQuantizer

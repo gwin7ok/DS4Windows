@@ -15,11 +15,11 @@ namespace DS4WindowsTests
     /// (3) 新しい部品が DI の Singleton として登録され、<c>ControlService</c> が <see cref="IVirtualPadHost"/> として解決できること。
     /// (4) 部品が静的な窓口（<c>Global</c>／<c>AppHost</c>）を参照しないこと。
     /// </summary>
-    public class Phase9EVirtualPadGuardTests
+    public class VirtualPadGuardTests
     {
         private readonly ITestOutputHelper _output;
 
-        public Phase9EVirtualPadGuardTests(ITestOutputHelper output)
+        public VirtualPadGuardTests(ITestOutputHelper output)
         {
             _output = output;
         }

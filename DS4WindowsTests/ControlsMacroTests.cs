@@ -16,17 +16,17 @@ namespace DS4WindowsTests
 {
     /// <summary>
     /// Phase8-Step7 7.8c-W2/W3（Phase8-Step7-8c-Plan.md §3〜§5）: Controls タブの Macro の新経路（SA の Macro の仕様に合わせた）。
-    /// 所有の条件、ビルダー、押下の判定の種類、ロールバック、割り当て。動作の旧・新の比べは <c>Phase8Step78cW1ControlsMacroCharacterizationTests</c>。
+    /// 所有の条件、ビルダー、押下の判定の種類、ロールバック、割り当て。動作の旧・新の比べは <c>ControlsMacroCharacterizationTests</c>。
     /// 他の Host 構築テストと同じコレクションで直列に実行する。
     /// </summary>
     [Collection(SharedHostStateCollection.Name)]
-    public class Phase8Step78cW2ControlsMacroTests
+    public class ControlsMacroTests
     {
         private const int Device = MappingCharacterizationScope.Device;
         private static readonly int[] Steps = { 65, 65 };
         private readonly ITestOutputHelper _output;
 
-        public Phase8Step78cW2ControlsMacroTests(ITestOutputHelper output)
+        public ControlsMacroTests(ITestOutputHelper output)
         {
             _output = output;
         }

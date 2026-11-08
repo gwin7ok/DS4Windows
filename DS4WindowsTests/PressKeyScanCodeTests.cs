@@ -18,9 +18,9 @@ namespace DS4WindowsTests
     /// （選択ダイアログのチェックボックスは廃止）。値は、タブ → 設定の箱（<c>PrepareSettings</c>）→ 選択ダイアログ
     /// （<c>BindingWindowViewModel.WriteBinds</c>）→ タブ（<c>ReadSettings</c>）と通っても、保たれる。
     /// </summary>
-    public class Phase10Step1W4PressKeyScanCodeTests
+    public class PressKeyScanCodeTests
     {
-        static Phase10Step1W4PressKeyScanCodeTests()
+        static PressKeyScanCodeTests()
         {
             if (string.IsNullOrEmpty(TestGlobals.AppDataPath))
             {

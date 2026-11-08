@@ -10,7 +10,7 @@ namespace DS4WindowsTests
     /// Phase9 9-F F-1a（Phase9-F-Plan.md §5）: 起動処理から切り出した、状態を持たない部品の値の特性化。
     /// 旧 <c>App.Application_Startup</c> の中の処理と同じ結果を返すこと（文言とレベルは変えない）。
     /// </summary>
-    public class Phase9F1StartupPartsTests
+    public class StartupPartsTests
     {
         // ---- CompleteInstallArguments ----
 

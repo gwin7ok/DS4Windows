@@ -19,11 +19,11 @@ namespace DS4WindowsTests
 {
     /// <summary>
     /// Phase8-Step7 7.7b-W2（Phase8-Step7-7-Plan.md §3.2。Q2＝B: 独立した入力アクション）: <see cref="MultiTapInputAction"/>、<see cref="MultiActionOutput"/>、
-    /// ビルダー、ログ、割り当ての確認。旧・新の両経路の比べは <c>Phase8Step77bW1MultiActionDualPathTests</c>。
+    /// ビルダー、ログ、割り当ての確認。旧・新の両経路の比べは <c>MultiActionDualPathTests</c>。
     /// 入力アクションは、時刻と押下を差し込める偽の入力（待たない）で確かめる。他の Host 構築テストと同じコレクションで直列に実行する。
     /// </summary>
     [Collection(SharedHostStateCollection.Name)]
-    public class Phase8Step77bW2MultiTapTests
+    public class MultiTapTests
     {
         private static readonly DateTime T0 = new DateTime(2026, 10, 20, 12, 0, 0, DateTimeKind.Utc);
 
@@ -412,7 +412,7 @@ namespace DS4WindowsTests
             held.L1 = true;
             for (int i = 0; i < 300; i++) t.RunFrame(held);   // JIT は、測定の外へ
 
-            // Phase10-Step4 W4: 5 ラウンド測って最小値を使う（一度きりの割り当てが測定の窓に入っても結果が変わらないように。Phase8Step76cBatteryCheckTests と同じ）
+            // Phase10-Step4 W4: 5 ラウンド測って最小値を使う（一度きりの割り当てが測定の窓に入っても結果が変わらないように。BatteryCheckTests と同じ）
             long min = long.MaxValue;
             for (int round = 0; round < 5; round++)
             {
@@ -427,7 +427,7 @@ namespace DS4WindowsTests
         [Fact]
         public void TheNewPath_DoesNotAddAllocationsToTheFrame_WhileHeld()
         {
-            // 同じ件数の MultiAction で、トリガーが押されていない（R1。押すのは L1）場合を基準にする（Phase8Step76aGyroCalibrateTests と同じ方式）
+            // 同じ件数の MultiAction で、トリガーが押されていない（R1。押すのは L1）場合を基準にする（GyroCalibrateTests と同じ方式）
             long baseline;
             using (var t = new SpecialActionTestScope())
             {

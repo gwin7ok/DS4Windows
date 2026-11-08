@@ -22,7 +22,7 @@ namespace DS4WindowsTests
     /// 他の Host 構築テストと同じコレクションで直列に実行する。
     /// </summary>
     [Collection(SharedHostStateCollection.Name)]
-    public class Phase8Step5W3PublishBindingsTests : IDisposable
+    public class PublishBindingsTests : IDisposable
     {
         private const int Slot = 0;
         private const string Normal = "Phase8Step5_Normal";
@@ -64,7 +64,7 @@ namespace DS4WindowsTests
         private readonly List<string> _origActions;
         private readonly SpecialAction _action;
 
-        public Phase8Step5W3PublishBindingsTests()
+        public PublishBindingsTests()
         {
             _dir = Path.Combine(Path.GetTempPath(), "Phase8Step5_" + Guid.NewGuid().ToString("N"));
             Directory.CreateDirectory(Path.Combine(_dir, "Profiles"));

@@ -17,7 +17,7 @@ namespace DS4WindowsTests
     /// Stage3 全体との比較（<c>MapCustom</c> の出力）は、配線後の W4 の結合テストで行う。
     /// </summary>
     [Collection(SharedHostStateCollection.Name)]
-    public class Phase8Step4W2FrameOutputTests
+    public class FrameOutputTests
     {
         private const int Device = 6;
 
@@ -32,7 +32,7 @@ namespace DS4WindowsTests
         private sealed class Context : IOutputContext
         {
             public Context(IFrameOutput frame) { Frame = frame; }
-            public int Device => Phase8Step4W2FrameOutputTests.Device;
+            public int Device => FrameOutputTests.Device;
             public IVirtualKBM OutputHandler => null;
             public IFrameOutput Frame { get; }
             public void RequestEndFrame() { }

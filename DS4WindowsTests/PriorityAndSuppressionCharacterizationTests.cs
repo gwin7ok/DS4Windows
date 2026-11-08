@@ -20,7 +20,7 @@ namespace DS4WindowsTests
     /// 再現できない規則（遅延つき・Run on release・MultiAction の時間依存、R8 のプロファイル切替、R10 の Controls の SA 専用の種別）は、計画書の台帳に記す。
     /// </summary>
     [Collection(SharedHostStateCollection.Name)]
-    public class Phase10Step2W0PriorityAndSuppressionCharacterizationTests
+    public class PriorityAndSuppressionCharacterizationTests
     {
         private const int ControlsKeyCross = 70;
         private const int ControlsKeyCircle = 71;
@@ -56,7 +56,7 @@ namespace DS4WindowsTests
             /// <summary>
             /// Key の SA を足す。新しい SA の状態は、Fresh-press ガード（プロファイル適用直後の押しっぱなしで連鎖発火しないための安全弁）が
             /// オンで始まり、オンのあいだは出力を実行しない（成立の判定と、トリガーのボタンの抑制は行う）。既存のテスト
-            /// （<c>Phase7cW2SpecialActionTriggerCharacterizationTests</c>）と同じく、押しっぱなしの直後ではない状況として、ガードを解除する。
+            /// （<c>SpecialActionTriggerCharacterizationTests</c>）と同じく、押しっぱなしの直後ではない状況として、ガードを解除する。
             /// </summary>
             public SpecialAction AddKey(string triggers, bool toggle = false)
             {

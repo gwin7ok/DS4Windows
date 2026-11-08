@@ -15,16 +15,16 @@ namespace DS4WindowsTests
     /// <summary>
     /// Phase8-Step7 7.8f-3 W2/W3（Phase8-Step7-8f-Plan.md §3.2）: Controls タブの Button のうち、マウスの移動とアナログのホイールの新経路。
     /// 解釈、ビルダーの所有の条件と束縛の形、加算器（Q6＝A）、ホイールの状態を束縛ごとに持つこと（Q5＝B）、ロールバック、ソースのガード。
-    /// 旧・新の比べは <c>Phase8Step78f3W1ControlsAnalogMouseCharacterizationTests</c>（同じテストが新経路を走らせる）。
+    /// 旧・新の比べは <c>ControlsAnalogMouseCharacterizationTests</c>（同じテストが新経路を走らせる）。
     /// 他の Host 構築テストと同じコレクションで直列に実行する。
     /// </summary>
     [Collection(SharedHostStateCollection.Name)]
-    public class Phase8Step78f3W2ControlsAnalogMouseTests
+    public class ControlsAnalogMouseTests
     {
         private const int Device = MappingCharacterizationScope.Device;
         private readonly ITestOutputHelper _output;
 
-        public Phase8Step78f3W2ControlsAnalogMouseTests(ITestOutputHelper output)
+        public ControlsAnalogMouseTests(ITestOutputHelper output)
         {
             _output = output;
         }

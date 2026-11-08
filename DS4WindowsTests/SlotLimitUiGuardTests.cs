@@ -15,11 +15,11 @@ namespace DS4WindowsTests
     /// Phase7-Step10e W2（Q2＝A）: 静的な <c>ControlService.CURRENT_DS4_CONTROLLER_LIMIT</c> を削除し、画面・ViewModel が注入された
     /// <see cref="DS4Windows.Core.Abstractions.IEnvironmentService.ControllerSlotLimit"/> を使うことの回帰ガード。ソースが見つからない環境では、ソースの検査を省略する。
     /// </summary>
-    public class Phase7Step10eW2SlotLimitUiGuardTests
+    public class SlotLimitUiGuardTests
     {
         private readonly ITestOutputHelper _output;
 
-        public Phase7Step10eW2SlotLimitUiGuardTests(ITestOutputHelper output)
+        public SlotLimitUiGuardTests(ITestOutputHelper output)
         {
             _output = output;
         }

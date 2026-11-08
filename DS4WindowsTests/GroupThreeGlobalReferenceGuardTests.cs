@@ -18,12 +18,12 @@ namespace DS4WindowsTests
     /// - コンストラクタの依存が必須であり、null を拒否すること。
     /// ソースファイルが見つからない環境では、ソース走査を行わず合格とする。
     /// </summary>
-    public class Step10GroupThreeGlobalReferenceGuardTests
+    public class GroupThreeGlobalReferenceGuardTests
     {
 
         private readonly ITestOutputHelper _output;
 
-        public Step10GroupThreeGlobalReferenceGuardTests(ITestOutputHelper output)
+        public GroupThreeGlobalReferenceGuardTests(ITestOutputHelper output)
         {
             _output = output;
         }

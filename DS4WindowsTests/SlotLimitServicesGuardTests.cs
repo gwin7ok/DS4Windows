@@ -16,12 +16,12 @@ namespace DS4WindowsTests
     /// Phase7-Step10e W1（Q2＝A）: サービス・シリアライザー・DTO が、静的な <c>ControlService.CURRENT_DS4_CONTROLLER_LIMIT</c> ではなく、
     /// 注入された上限（<see cref="IEnvironmentService.ControllerSlotLimit"/>）を使うことの回帰ガード。ソースが見つからない環境では、ソースの検査を省略する。
     /// </summary>
-    public class Phase7Step10eW1SlotLimitServicesGuardTests
+    public class SlotLimitServicesGuardTests
     {
 
         private readonly ITestOutputHelper _output;
 
-        public Phase7Step10eW1SlotLimitServicesGuardTests(ITestOutputHelper output)
+        public SlotLimitServicesGuardTests(ITestOutputHelper output)
         {
             _output = output;
         }

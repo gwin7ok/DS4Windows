@@ -13,7 +13,7 @@ namespace DS4WindowsTests
     /// 古い Actions.xml・プロファイルに残っていても、読み込み時に取り除かれ（ほかの項目は壊れず）、<c>[DI]</c> 接頭辞付きのログで通知されること。
     /// </summary>
     [Collection(SharedHostStateCollection.Name)]
-    public class Phase9SteeringW1LegacyAssignmentTests
+    public class SteeringW1LegacyAssignmentTests
     {
         private sealed class LogCapture : IDisposable
         {

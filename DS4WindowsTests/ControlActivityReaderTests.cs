@@ -12,7 +12,7 @@ namespace DS4WindowsTests
     /// ボタン、トリガー（100 を超える）、スティックの方向（中心から 55 を超える）、ジャイロ（Controls モードのときだけ。しきい値 67）の境界を調べる。
     /// タッチパッド・スワイプは <c>Mouse</c> を作れないため、<c>tp == null</c>（常に false）だけを調べる。
     /// </summary>
-    public class Phase9BControlActivityReaderTests
+    public class ControlActivityReaderTests
     {
         private const int Device = 7;   // 共有ホストの設定を一時的に書き換えるため、ほかのテストが使わない添字を使う
 

@@ -13,9 +13,9 @@ namespace DS4WindowsTests
     /// 開き直すとチェックが外れていた。原因は、<c>BindingWindowViewModel.PrepareSaveMacro</c> が <c>macroType</c> だけを渡し、
     /// <c>WriteBind</c>（Macro）が見る <c>hasScanCode</c> を渡していなかったこと。
     /// </summary>
-    public class Phase10Step1W2BindingWindowMacroScanCodeTests
+    public class BindingWindowMacroScanCodeTests
     {
-        static Phase10Step1W2BindingWindowMacroScanCodeTests()
+        static BindingWindowMacroScanCodeTests()
         {
             if (string.IsNullOrEmpty(TestGlobals.AppDataPath))
             {

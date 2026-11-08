@@ -15,7 +15,7 @@ namespace DS4WindowsTests
     /// 削除した転送が戻らないこと、コンストラクター引数が努力目標（20 以下）に収まっていること、
     /// 転送の行き先（<see cref="IRuntimeFeatureSwitch"/>）が本物のサービスへ委譲していること。
     /// </summary>
-    public class Phase13Step10ForwardRemovalGuardTests
+    public class ControlServiceForwardRemovalGuardTests
     {
         private static readonly string[] RemovedForwards =
         {

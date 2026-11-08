@@ -16,10 +16,10 @@ namespace DS4WindowsTests
     /// 名前変更・削除の追従（リンクプロファイル、自動プロファイル、全プロファイルの <c>&lt;ProfileActions&gt;</c>）、名前の比較規則、保存形式（ID がないこと）、
     /// 実行時の鍵（<c>ActionManager</c> の登録簿が SA の名前で状態を引くこと）を固定する。製品コードは変えない。
     /// W1 以降で ID を足し、参照を ID に替えるとき、変わらないべき部分（既存の形式、名前の併記）と、替わる部分（追従）を、このテストで見分ける。
-    /// SA／Controls の Load Profile の切り替え先の追従は、<c>ProfileRenamePropagationTests</c>・<c>Phase10Step4W6ControlProfileTests</c> が固定している。
+    /// SA／Controls の Load Profile の切り替え先の追従は、<c>ProfileRenamePropagationTests</c>・<c>ControlProfileTests</c> が固定している。
     /// </summary>
     [Collection(SharedHostStateCollection.Name)]
-    public class Phase10Step4dW0NameKeyTests
+    public class NameKeyTests
     {
         private static ProfileRepository NewRepository(PersistenceGoldenContext ctx, BackingStore store)
             => TestRepositoryFactory.CreateProfileRepository(TestRepositoryFactory.CreateProfileSettingsService(store),
@@ -44,7 +44,7 @@ namespace DS4WindowsTests
         // ---- リンクプロファイル ----
 
         // Phase10-Step4d W7: 以前ここにあった、リンクプロファイル（ReplaceLinkedProfileName）と自動プロファイル（ReplaceProfileName）の名前変更の追従のテストは、撤去したメンバーのため削除した。
-        // 同じ振る舞い（名前変更に追従し、保存し直すと新しい名前と ID が書かれる）は、Phase10Step4dW5dTests／Phase10Step4dW7FollowUpTests が固定する
+        // 同じ振る舞い（名前変更に追従し、保存し直すと新しい名前と ID が書かれる）は、AutoAndLinkedProfileRuntimeIdTests／RenameFollowUpRemovalTests が固定する
 
         [Fact]
         public void TheActionRename_RewritesEveryProfileThatListsTheOldName_ComparingByOrdinal()
@@ -129,7 +129,7 @@ namespace DS4WindowsTests
             Assert.DoesNotContain("ActionId", xml);
         }
 
-        // Phase10-Step4d W2: 以前ここにあった「Actions.xml に ID がない」の検査は、W2 で Action に Id 属性を足したため、Phase10Step4dW2ActionIdTests に置き換えた
+        // Phase10-Step4d W2: 以前ここにあった「Actions.xml に ID がない」の検査は、W2 で Action に Id 属性を足したため、ActionIdTests に置き換えた
 
         // ---- 実行時の鍵 ----
 
@@ -152,6 +152,6 @@ namespace DS4WindowsTests
 
         // ---- 画面の経路（ソースの検査）----
 
-        // Phase10-Step4d W7: MainWindow の名前変更の追従の検査は、Phase10Step4dW7FollowUpTests に置き換えた（SA の名前変更が ReplaceActionReference を呼ぶ検査は、同ファイルに移した）
+        // Phase10-Step4d W7: MainWindow の名前変更の追従の検査は、RenameFollowUpRemovalTests に置き換えた（SA の名前変更が ReplaceActionReference を呼ぶ検査は、同ファイルに移した）
     }
 }

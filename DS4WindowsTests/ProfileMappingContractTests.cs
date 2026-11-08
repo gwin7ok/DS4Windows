@@ -19,11 +19,11 @@ namespace DS4WindowsTests
     /// - IProfilePresetLoader: 10 メソッドが、それぞれ対応する Global.Load…Profile へ委譲していること
     /// Global 状態を変更するテストは、変更を必ず元に戻す（Phase6-Status.md §6.4-1）。
     /// </summary>
-    public class Phase6Step10GroupTwoContractTests
+    public class ProfileMappingContractTests
     {
         private readonly ITestOutputHelper _output;
 
-        public Phase6Step10GroupTwoContractTests(ITestOutputHelper output)
+        public ProfileMappingContractTests(ITestOutputHelper output)
         {
             _output = output;
         }

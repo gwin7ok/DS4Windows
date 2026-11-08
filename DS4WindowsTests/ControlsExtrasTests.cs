@@ -17,17 +17,17 @@ namespace DS4WindowsTests
     /// <summary>
     /// Phase8-Step7 7.8e-W3/W4（Phase8-Step7-8e-Plan.md §3.2・§4）: Controls タブの Extras の新経路。
     /// 値の解釈、出力（振動、ライトバー、感度、元に戻す、後始末）、ビルダーの所有の条件（Extras は通常の割り当てと直交する別の束縛）、エンジン（1 ボタン複数束縛、
-    /// 後始末）、ロールバック、割り当て、ソースのガード。動作の旧・新の比べは <c>Phase8Step78eW1ControlsExtrasCharacterizationTests</c>（同じテストが新経路を走らせる）。
+    /// 後始末）、ロールバック、割り当て、ソースのガード。動作の旧・新の比べは <c>ControlsExtrasCharacterizationTests</c>（同じテストが新経路を走らせる）。
     /// 他の Host 構築テストと同じコレクションで直列に実行する。
     /// </summary>
     [Collection(SharedHostStateCollection.Name)]
-    public class Phase8Step78eW2ControlsExtrasTests
+    public class ControlsExtrasTests
     {
         private const int Device = MappingCharacterizationScope.Device;
         private const string Full = "100,50,1,10,20,30,5,1,7";
         private readonly ITestOutputHelper _output;
 
-        public Phase8Step78eW2ControlsExtrasTests(ITestOutputHelper output)
+        public ControlsExtrasTests(ITestOutputHelper output)
         {
             _output = output;
         }

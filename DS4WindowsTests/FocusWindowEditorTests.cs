@@ -9,7 +9,7 @@ namespace DS4WindowsTests
     /// <summary>
     /// Phase12-Step2 2e（R-4）: FocusWindow の編集（<see cref="FocusWindowViewModel"/>）、種別の一覧の項目（添字 9）、割り当ての説明文。
     /// </summary>
-    public class Phase12Step2W2eFocusWindowEditorTests
+    public class FocusWindowEditorTests
     {
         private static SpecialAction Target() => new SpecialAction("N", "Cross", "FocusWindow", "x") { typeID = SpecialAction.ActionTypeId.FocusWindow };
 

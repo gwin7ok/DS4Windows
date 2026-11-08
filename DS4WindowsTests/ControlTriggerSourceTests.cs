@@ -8,7 +8,7 @@ namespace DS4WindowsTests
     /// Phase10-Step2 W3（Phase10-Step2-Plan.md §3.3・§5）: Controls のモードのトリガーの供給元（<see cref="ControlTriggerSource"/>）。
     /// 対象のボタン 1 つに固定で、変更できない。
     /// </summary>
-    public class Phase10Step2W3ControlTriggerSourceTests
+    public class ControlTriggerSourceTests
     {
         [Fact]
         public void HoldsOnlyTheTargetButton_AndCannotBeChanged()
