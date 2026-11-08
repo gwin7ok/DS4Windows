@@ -694,7 +694,7 @@ namespace DS4Windows
             window.CheckMinStatus();
 
             bool runningAsAdmin = _environmentService.IsAdministrator();
-            AppLogger.Log(AppLogLevel.Info, $"Running as {(runningAsAdmin ? "Admin" : "User")}", LogOptions.UserFacing);
+            AppLogger.LogUser(AppLogLevel.Info, runningAsAdmin ? "Log_App_RunningAsAdmin" : "Log_App_RunningAsUser");
 
             if (_environmentService.HidHideInstalled)
             {

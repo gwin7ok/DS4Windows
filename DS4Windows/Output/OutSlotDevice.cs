@@ -121,7 +121,7 @@ namespace DS4Windows.Output
                 if (permanentType == value) return;
 
                 if(value != OutContType.None)
-                    AppLogger.Log(AppLogLevel.Info, $"Output slot #{this.index+1} has permanent type {value}", LogOptions.UserFacing);
+                    AppLogger.LogUser(AppLogLevel.Info, "Log_Out_SlotPermanentType", this.index+1, value);
 
                 permanentType = value;
                 PermanentTypeChanged?.Invoke(this, EventArgs.Empty);

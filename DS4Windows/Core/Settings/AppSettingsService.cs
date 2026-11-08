@@ -33,7 +33,7 @@ namespace DS4Windows.Core.Settings
             }
             else
             {
-                AppLogger.Log(AppLogLevel.Error, "Failed to save application settings", LogOptions.UserFacing);
+                AppLogger.LogUser(AppLogLevel.Error, "Log_Settings_SaveFailed");
                 if (AppLogger.IsTraceEnabled)
                     AppLogger.LogDebug("[DI] AppSettingsService.Save failed");
             }

@@ -195,11 +195,11 @@ namespace DS4Windows.Output
                     if (contType == OutContType.X360)
                     {
                         var tempXbox = outputDevice as Xbox360OutDevice;
-                        AppLogger.Log(AppLogLevel.Info, $"Plugging in virtual X360 controller (XInput slot #{(tempXbox.XinputSlotNum < 0 ? "?" : tempXbox.XinputSlotNum + 1 )}) in output slot #{slot + 1}", LogOptions.UserFacing);
+                        AppLogger.LogUser(AppLogLevel.Info, "Log_Out_PluginX360", (tempXbox.XinputSlotNum < 0 ? "?" : (tempXbox.XinputSlotNum + 1).ToString()), slot + 1);
                     }
                     else
                     {
-                        AppLogger.Log(AppLogLevel.Info, $"Plugging in virtual {contType} Controller in output slot #{slot + 1}", LogOptions.UserFacing);
+                        AppLogger.LogUser(AppLogLevel.Info, "Log_Out_PluginVirtual", contType, slot + 1);
                     }
 
                     outputDevices[slot] = outputDevice;
@@ -245,7 +245,7 @@ namespace DS4Windows.Output
 
                     outputSlots[slot].DetachDevice();
                     SlotUnassigned?.Invoke(this, slot, outputSlots[slot]);
-                    AppLogger.Log(AppLogLevel.Info, $"Unplugging virtual {outputDevice.GetDeviceType()} Controller from output slot #{slot + 1}", LogOptions.UserFacing);
+                    AppLogger.LogUser(AppLogLevel.Info, "Log_Out_UnplugVirtual", outputDevice.GetDeviceType(), slot + 1);
 
                     //if (!immediate)
                     //{

@@ -42,7 +42,7 @@ namespace DS4Windows.Core.Persistence
                 }
                 catch (Exception ex)
                 {
-                    AppLogger.Log(AppLogLevel.Error, $"Failed to load profile XML: {ex.Message}", LogOptions.UserFacing);
+                    AppLogger.LogUser(AppLogLevel.Error, "Log_Xml_ProfileLoadFailed", ex.Message);
                     return false;
                 }
             }
@@ -58,7 +58,7 @@ namespace DS4Windows.Core.Persistence
                 }
                 catch (Exception ex)
                 {
-                    AppLogger.Log(AppLogLevel.Error, $"Failed to save profile XML: {ex.Message}", LogOptions.UserFacing);
+                    AppLogger.LogUser(AppLogLevel.Error, "Log_Xml_ProfileSaveFailed", ex.Message);
                     return false;
                 }
             }
@@ -77,7 +77,7 @@ namespace DS4Windows.Core.Persistence
                 }
                 catch (Exception ex)
                 {
-                    AppLogger.Log(AppLogLevel.Error, $"Failed to load application settings XML: {ex.Message}", LogOptions.UserFacing);
+                    AppLogger.LogUser(AppLogLevel.Error, "Log_Xml_SettingsLoadFailed", ex.Message);
                     if (AppLogger.IsTraceEnabled)
                         AppLogger.LogDebug($"[DI] ProfileXmlStore.LoadAppSettingsXml failed: {ex}");
                     return false;
@@ -98,7 +98,7 @@ namespace DS4Windows.Core.Persistence
                 }
                 catch (Exception ex)
                 {
-                    AppLogger.Log(AppLogLevel.Error, $"Failed to save application settings XML: {ex.Message}", LogOptions.UserFacing);
+                    AppLogger.LogUser(AppLogLevel.Error, "Log_Xml_SettingsSaveFailed", ex.Message);
                     if (AppLogger.IsTraceEnabled)
                         AppLogger.LogDebug($"[DI] ProfileXmlStore.SaveAppSettingsXml failed: {ex}");
                     return false;

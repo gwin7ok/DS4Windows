@@ -538,8 +538,7 @@ namespace DS4Windows.UI
 
             if (!wmiConnected)
             {
-                AppLogger.Log(AppLogLevel.Warn, @"Could not connect to Windows Management Instrumentation service.
-Suspend support not enabled.", LogOptions.UserFacing);
+                AppLogger.LogUser(AppLogLevel.Warn, "Log_Ui_WmiFailed");
             }
         }
 

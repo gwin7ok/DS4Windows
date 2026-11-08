@@ -340,7 +340,7 @@ namespace DS4Windows.Input.Hid
 
             if (serial == null)
             {
-                AppLogger.Log(AppLogLevel.Warn, $"WARNING: Failed to read serial# from a gamepad ({this._deviceAttributes.VendorHexId}/{this._deviceAttributes.ProductHexId}). Generating MAC address from a device path. From now on you should connect this gamepad always into the same USB port or BT pairing host to keep the same device path.", LogOptions.UserFacing);
+                AppLogger.LogUser(AppLogLevel.Warn, "Log_Hid_SerialReadFailed", this._deviceAttributes.VendorHexId, this._deviceAttributes.ProductHexId);
                 serial = GenerateFakeHwSerial();
             }
 
@@ -378,7 +378,7 @@ namespace DS4Windows.Input.Hid
             }
             catch (Exception e)
             {
-                AppLogger.Log(AppLogLevel.Error, $"ERROR: Failed to generate runtime MAC address from device path {this.DevicePath}. {e.Message}", LogOptions.UserFacing);
+                AppLogger.LogUser(AppLogLevel.Error, "Log_Hid_MacGenerationFailed", this.DevicePath, e.Message);
                 MACAddr = BLANK_SERIAL;
             }
 

@@ -53,7 +53,7 @@ namespace DS4WindowsTests
                 _savedAddress = Settings.UdpServerListenAddress;
                 _savedSmoothing = Settings.UseUdpServerSmoothing;
                 Service = new UdpMotionService(Settings, TestHost.GetService<IDs4DeviceRegistry>(), Factory, Host, Events);
-                _sink = (s, e) => { if (e.Data != null && e.Data.Contains("UDP")) Logs.Add((e.Data, e.Warning)); };
+                _sink = (s, e) => { string text = e.FileData ?? e.Data; if (text != null && text.Contains("UDP")) Logs.Add((text, e.Warning)); };
                 AppLogger.GuiLog += _sink;
             }
 

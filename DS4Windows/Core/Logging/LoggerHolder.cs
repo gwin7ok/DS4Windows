@@ -273,7 +273,7 @@ namespace DS4Windows.Core.Logging
 
             using WriteLocker locker = new WriteLocker(logLock);
             // Phase13b-Step1: Level を尊重する（旧 API 由来は Info／Warn のみで、従来と同じ出力）。
-            logger.Log(DS4Windows.Core.Logging.AppLogger.ToNLogLevel(e.Level), e.Data);
+            logger.Log(DS4Windows.Core.Logging.AppLogger.ToNLogLevel(e.Level), e.FileData ?? e.Data);
         }
     }
 }

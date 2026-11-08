@@ -102,7 +102,7 @@ namespace DS4Windows.Core.Persistence
                     string path = GetProfilePath(profileName);
                     if (string.IsNullOrEmpty(path))
                     {
-                        AppLogger.Log(AppLogLevel.Error, $"Failed to save profile: invalid path for '{profileName}'", LogOptions.UserFacing);
+                        AppLogger.LogUser(AppLogLevel.Error, "Log_Repo_SaveInvalidPath", profileName);
                         return false;
                     }
 
@@ -115,7 +115,7 @@ namespace DS4Windows.Core.Persistence
                     }
                     else
                     {
-                        AppLogger.Log(AppLogLevel.Error, $"Failed to save profile '{profileName}' for device {deviceIndex + 1}", LogOptions.UserFacing);
+                        AppLogger.LogUser(AppLogLevel.Error, "Log_Repo_SaveFailed", profileName, deviceIndex + 1);
                         if (AppLogger.IsTraceEnabled)
                             AppLogger.LogDebug($"[DI] SaveProfile failed: Slot {deviceIndex}, Profile '{profileName}'");
                     }
@@ -124,7 +124,7 @@ namespace DS4Windows.Core.Persistence
                 }
                 catch (Exception ex)
                 {
-                    AppLogger.Log(AppLogLevel.Error, $"Failed to save profile '{profileName}' for device {deviceIndex + 1}: {ex.Message}", LogOptions.UserFacing);
+                    AppLogger.LogUser(AppLogLevel.Error, "Log_Repo_SaveFailedEx", profileName, deviceIndex + 1, ex.Message);
                     if (AppLogger.IsTraceEnabled)
                         AppLogger.LogDebug($"[DI] SaveProfile failed with exception: Slot {deviceIndex}, Profile '{profileName}', error={ex}");
                     return false;
@@ -257,13 +257,13 @@ namespace DS4Windows.Core.Persistence
                 }
                 catch (Exception ex)
                 {
-                    AppLogger.Log(AppLogLevel.Error, $"[DI] ProfileRepository: failed to update the Controls profile switch target in '{Path.GetFileName(file)}': {ex.Message}", LogOptions.UserFacing);
+                    AppLogger.LogUser(AppLogLevel.Error, "Log_Repo_SwitchTargetUpdateFailed", Path.GetFileName(file), ex.Message);
                 }
             }
 
             if (changed.Count > 0)
             {
-                AppLogger.Log(AppLogLevel.Info, $"[DI] Controls profile switch target renamed '{oldName}' to '{newName}' in {changed.Count} profile(s): {string.Join(", ", changed)}", LogOptions.UserFacing);
+                AppLogger.LogUser(AppLogLevel.Info, "Log_Repo_SwitchTargetRenamed", oldName, newName, changed.Count, string.Join(", ", changed));
             }
 
             return changed;
@@ -397,14 +397,16 @@ namespace DS4Windows.Core.Persistence
                 }
                 catch (Exception ex)
                 {
-                    AppLogger.Log(AppLogLevel.Error, $"[DI] ProfileRepository: failed to update action reference in '{Path.GetFileName(file)}': {ex.Message}", LogOptions.UserFacing);
+                    AppLogger.LogUser(AppLogLevel.Error, "Log_Repo_ActionRefUpdateFailed", Path.GetFileName(file), ex.Message);
                 }
             }
 
             if (changed.Count > 0)
             {
-                string action = newName == null ? $"removed '{oldName}'" : $"renamed '{oldName}' to '{newName}'";
-                AppLogger.Log(AppLogLevel.Info, $"[DI] Action reference {action} in {changed.Count} profile(s): {string.Join(", ", changed)}", LogOptions.UserFacing);
+                if (newName == null)
+                    AppLogger.LogUser(AppLogLevel.Info, "Log_Repo_ActionRefRemoved", oldName, changed.Count, string.Join(", ", changed));
+                else
+                    AppLogger.LogUser(AppLogLevel.Info, "Log_Repo_ActionRefRenamed", oldName, newName, changed.Count, string.Join(", ", changed));
             }
 
             return changed;

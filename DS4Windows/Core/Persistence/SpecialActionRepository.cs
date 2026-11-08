@@ -280,28 +280,28 @@ namespace DS4Windows.Core.Persistence
                 }
                 catch (Exception ex)
                 {
-                    AppLogger.Log(AppLogLevel.Warn, $"Could not count Actions.xml entries: {ex.Message}", LogOptions.UserFacing);
+                    AppLogger.LogUser(AppLogLevel.Warn, "Log_Actions_CountFailed", ex.Message);
                 }
 
                 if (fileCount >= 0)
                 {
                     if (memCount != fileCount)
                     {
-                        AppLogger.Log(AppLogLevel.Warn, $"Warning: action count mismatch after {caller}: memory={memCount} file={fileCount}", LogOptions.UserFacing);
+                        AppLogger.LogUser(AppLogLevel.Warn, "Log_Actions_CountMismatch", caller, memCount, fileCount);
                     }
                     else
                     {
-                        AppLogger.Log(AppLogLevel.Info, $"Action list reloaded ({memCount} entries) after {caller}.", LogOptions.UserFacing);
+                        AppLogger.LogUser(AppLogLevel.Info, "Log_Actions_Reloaded", memCount, caller);
                     }
                 }
                 else
                 {
-                    AppLogger.Log(AppLogLevel.Info, $"Action list reloaded ({memCount} entries) after {caller}. (file count unknown)", LogOptions.UserFacing);
+                    AppLogger.LogUser(AppLogLevel.Info, "Log_Actions_ReloadedUnknown", memCount, caller);
                 }
             }
             catch (Exception ex)
             {
-                AppLogger.Log(AppLogLevel.Error, $"Error reloading Actions.xml after {caller}: {ex.Message}", LogOptions.UserFacing);
+                AppLogger.LogUser(AppLogLevel.Error, "Log_Actions_ReloadFailed", caller, ex.Message);
             }
         }
 

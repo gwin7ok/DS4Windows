@@ -88,7 +88,7 @@ namespace DS4Windows.Core.Persistence
             }
             catch (UnauthorizedAccessException)
             {
-                AppLogger.Log(AppLogLevel.Warn, "Unauthorized Access - Save failed to path: " + store.m_linkedProfiles, LogOptions.UserFacing);
+                AppLogger.LogUser(AppLogLevel.Warn, "Log_Xml_UnauthorizedSave", store.m_linkedProfiles);
                 saved = false;
             }
 
@@ -131,16 +131,16 @@ namespace DS4Windows.Core.Persistence
                 }
                 catch (InvalidOperationException e)
                 {
-                    AppLogger.Log(AppLogLevel.Warn, $"LinkedProfiles.xml contains invalid data. Could not be read. {e.InnerException.Message}", LogOptions.UserFacing);
+                    AppLogger.LogUser(AppLogLevel.Warn, "Log_Xml_LinkedInvalidData", e.InnerException.Message);
                 }
                 catch (XmlException e)
                 {
-                    AppLogger.Log(AppLogLevel.Warn, $"LinkedProfiles.xml could not be read. Invalid XML syntax. {e.InnerException.Message}", LogOptions.UserFacing);
+                    AppLogger.LogUser(AppLogLevel.Warn, "Log_Xml_LinkedInvalidSyntax", e.InnerException.Message);
                 }
             }
             else
             {
-                AppLogger.Log(AppLogLevel.Warn, "LinkedProfiles.xml can't be found.", LogOptions.UserFacing);
+                AppLogger.LogUser(AppLogLevel.Warn, "Log_Xml_LinkedNotFound");
                 loaded = false;
             }
 
@@ -226,7 +226,7 @@ namespace DS4Windows.Core.Persistence
                 }
                 catch (UnauthorizedAccessException)
                 {
-                    AppLogger.Log(AppLogLevel.Warn, "Unauthorized Access - Save failed to path: " + store.m_linkedProfiles, LogOptions.UserFacing);
+                    AppLogger.LogUser(AppLogLevel.Warn, "Log_Xml_UnauthorizedSave", store.m_linkedProfiles);
                     saved = false;
                 }
             }

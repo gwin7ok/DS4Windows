@@ -79,11 +79,11 @@ namespace DS4Windows.Processing
                 // 押下済みフラグをクリア（ActionManager が持つ IsToggledOn）。Phase13-Step4: 管理役は引数で受ける（旧: 静的 ActionManager）
                 try { actionManager?.ClearToggledOnForKey(key); } catch { }
 
-                AppLogger.Log(AppLogLevel.Info, $"Runtime state for key {key} cleared on all devices.", LogOptions.UserFacing);
+                AppLogger.LogUser(AppLogLevel.Info, "Log_Synth_StateCleared", key);
             }
             catch (Exception ex)
             {
-                AppLogger.Log(AppLogLevel.Error, $"Failed to reset runtime key state for {key}: {ex.Message}", LogOptions.UserFacing);
+                AppLogger.LogUser(AppLogLevel.Error, "Log_Synth_StateResetFailed", key, ex.Message);
             }
         }
 

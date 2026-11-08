@@ -107,11 +107,11 @@ namespace DS4Windows.Processing.Services
                 if (_virtualKBM.GetIdentifier() != FakerInputHandler.IDENTIFIER && !runningAsAdmin)
                 {
                     string helpURL = @"https://ryochan7.github.io/ds4windows-site/troubleshooting/kb-mouse-issues/#windows-not-responding-to-ds4ws-kb-m-commands-in-some-situations";
-                    AppLogger.Log(AppLogLevel.Info, $"Some applications may block controller inputs. (Windows UAC Conflictions). Please go to {helpURL} for more information and workarounds.", LogOptions.UserFacing);
+                    AppLogger.LogUser(AppLogLevel.Info, "Log_Svc_UacConflict", helpURL);
                 }
 
-                AppLogger.Log(AppLogLevel.Info, $"Using output KB+M handler: {_virtualKBM.GetFullDisplayName()}", LogOptions.UserFacing);
-                AppLogger.Log(AppLogLevel.Info, $"Connection to ViGEmBus {_environmentService.ViGEmBusVersion} established", LogOptions.UserFacing);
+                AppLogger.LogUser(AppLogLevel.Info, "Log_Svc_KbmHandler", _virtualKBM.GetFullDisplayName());
+                AppLogger.LogUser(AppLogLevel.Info, "Log_Svc_VigemConnected", _environmentService.ViGEmBusVersion);
 
                 _deviceRegistry.IsExclusiveMode = _appSettings.UseExclusiveMode; //Re-enable Exclusive Mode
 
@@ -189,22 +189,24 @@ namespace DS4Windows.Processing.Services
             }
             else
             {
-                string logMessage = string.Empty;
+                string logKey = "Log_Svc_VigemConnectFailed";
+                object[] logArgs = null;
                 if (!_environmentService.IsViGEmBusInstalled())
                 {
-                    logMessage = "ViGEmBus is not installed";
+                    logKey = "Log_Svc_VigemNotInstalled";
                 }
                 else if (!_environmentService.IsRunningSupportedViGEmBus())
                 {
-                    logMessage = string.Format("Unsupported ViGEmBus found ({0}). Please install at least ViGEmBus 1.17.333.0", _environmentService.ViGEmBusVersion);
+                    logKey = "Log_Svc_VigemUnsupported";
+                    logArgs = new object[] { _environmentService.ViGEmBusVersion };
                 }
                 else
                 {
-                    logMessage = "Could not connect to ViGEmBus. Please check the status of the System device in Device Manager and if Visual C++ 2017 Redistributable is installed.";
+                    logKey = "Log_Svc_VigemConnectFailed";
                 }
 
-                AppLogger.Log(AppLogLevel.Info, logMessage, LogOptions.UserFacing);
-                AppLogger.LogToTray(logMessage);
+                AppLogger.LogUser(AppLogLevel.Info, logKey, logArgs);
+                AppLogger.LogToTray(AppLogger.UserText(logKey, logArgs));
             }
 
             InServiceTask = false;
@@ -229,7 +231,7 @@ namespace DS4Windows.Processing.Services
                 if (showlog)
                     AppLogger.Log(AppLogLevel.Info, DS4Windows.Properties.Resources.StoppingX360, LogOptions.UserFacing);
 
-                AppLogger.Log(AppLogLevel.Info, "Closing connection to ViGEmBus", LogOptions.UserFacing);
+                AppLogger.LogUser(AppLogLevel.Info, "Log_Svc_VigemClosing");
 
                 bool anyUnplugged = false;
                 for (int i = 0, arlength = slots.DS4Controllers.Length; i < arlength; i++)
@@ -324,7 +326,7 @@ namespace DS4Windows.Processing.Services
                 _virtualPad.StopViGEm();
 
                 // Disconnect from KBM system when stopping ControlService
-                AppLogger.Log(AppLogLevel.Info, $"Closing connection to output handler {_virtualKBM.GetDisplayName()}", LogOptions.UserFacing);
+                AppLogger.LogUser(AppLogLevel.Info, "Log_Svc_KbmClosing", _virtualKBM.GetDisplayName());
                 _virtualKBM.Disconnect();
                 InServiceTask = false;
                 ActiveControllers = 0;

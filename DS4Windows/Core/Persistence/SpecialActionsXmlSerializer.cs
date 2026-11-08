@@ -551,12 +551,12 @@ namespace DS4Windows.Core.Persistence
                 }
                 catch (InvalidOperationException e)
                 {
-                    AppLogger.Log(AppLogLevel.Warn, $"Actions.xml contains invalid data. Could not be read. {e.InnerException.Message}", LogOptions.UserFacing);
+                    AppLogger.LogUser(AppLogLevel.Warn, "Log_Xml_ActionsInvalidData", e.InnerException.Message);
                     loaded = false;
                 }
                 catch (XmlException e)
                 {
-                    AppLogger.Log(AppLogLevel.Warn, $"Actions.xml could not be read. Invalid XML syntax. {e.InnerException.Message}", LogOptions.UserFacing);
+                    AppLogger.LogUser(AppLogLevel.Warn, "Log_Xml_ActionsInvalidSyntax", e.InnerException.Message);
                     loaded = false;
                 }
             }

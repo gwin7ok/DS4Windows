@@ -305,7 +305,7 @@ namespace DS4Windows.UI
             }
             catch(Exception ex)
             {
-                AppLogger.Log(AppLogLevel.Error, $"Failed to apply window placement: {ex.Message}", LogOptions.UserFacing);
+                AppLogger.LogUser(AppLogLevel.Error, "Log_Ui_PlacementFailed", ex.Message);
             }
         }
 

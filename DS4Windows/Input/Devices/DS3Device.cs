@@ -379,7 +379,7 @@ namespace DS4Windows.Input.Devices
 
                         if (shouldDisconnect)
                         {
-                            AppLogger.Log(AppLogLevel.Info, Mac.ToString() + " disconnecting due to idle disconnect", LogOptions.UserFacing);
+                            AppLogger.LogUser(AppLogLevel.Info, "Log_Device_IdleDisconnect", Mac.ToString());
 
                             if (conType == ConnectionType.BT)
                             {

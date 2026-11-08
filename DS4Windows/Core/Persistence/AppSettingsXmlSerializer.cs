@@ -462,7 +462,7 @@ namespace DS4Windows.Core.Persistence
             {
                 // Do not auto-save changes discovered during legacy load. Auto-saving
                 // at startup may overwrite files and cause conflicts (file locks).
-                AppLogger.Log(AppLogLevel.Warn, "Profiles.xml is missing some settings; not auto-saving to avoid overwriting existing file.", LogOptions.UserFacing);
+                AppLogger.LogUser(AppLogLevel.Warn, "Log_Xml_ProfilesMissingSettings");
             }
 
             if (Loaded)
@@ -537,7 +537,7 @@ namespace DS4Windows.Core.Persistence
             }
             catch (IOException ex)
             {
-                AppLogger.Log(AppLogLevel.Warn, $"Could not save Profiles.xml due to IO error: {ex.Message}", LogOptions.UserFacing);
+                AppLogger.LogUser(AppLogLevel.Warn, "Log_Xml_ProfilesIoError", ex.Message);
                 saved = false;
             }
 

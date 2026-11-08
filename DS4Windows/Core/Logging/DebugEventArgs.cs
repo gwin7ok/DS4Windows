@@ -66,6 +66,12 @@ namespace DS4Windows.Core.Logging
 
         public AppLogLevel Level => level;
 
+        /// <summary>
+        /// ファイルへ書く文字列。画面（<see cref="Data"/>）は表示言語で出し、ファイルは不具合報告を読みやすくするため英語で書くので、
+        /// 両者が異なるときだけ設定する（<see cref="AppLogger.LogUser"/>）。未設定のときは <see cref="Data"/> と同じ。
+        /// </summary>
+        public string FileData { get; set; }
+
         public DateTime Time => m_Time;
         public string Data => m_Data;
         public bool Warning => warning;

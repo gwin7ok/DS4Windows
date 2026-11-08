@@ -1583,4 +1583,266 @@ Please click OK to confirm that you have read the message. Press Cancel to be re
   <data name="InverseMotors" xml:space="preserve">
     <value>Inverse motors</value>
   </data>
+  <data name="Log_Device_CustomFeatureSet" xml:space="preserve">
+    <value>The gamepad {0} ({1}) uses custom feature set ({2})</value>
+  </data>
+  <data name="Log_Device_GyroCalibrationFailed" xml:space="preserve">
+    <value>Gyro Calibration Failed</value>
+  </data>
+  <data name="Log_Device_YawAxisFixed" xml:space="preserve">
+    <value>Automatically fixed inverted YAW gyro axis in DS4 v.1 BT gamepad ({0})</value>
+  </data>
+  <data name="Log_Device_CrcFailedDisconnect" xml:space="preserve">
+    <value>{0} failed CRC-32 checks {1} times. Disconnecting</value>
+  </data>
+  <data name="Log_Device_DisconnectedTimeout" xml:space="preserve">
+    <value>{0} disconnected due to timeout</value>
+  </data>
+  <data name="Log_Device_DisconnectedReadFailure" xml:space="preserve">
+    <value>{0} disconnected due to read failure: {1}</value>
+  </data>
+  <data name="Log_Device_IdleDisconnect" xml:space="preserve">
+    <value>{0} disconnecting due to idle disconnect</value>
+  </data>
+  <data name="Log_Device_WriteConnectionLost" xml:space="preserve">
+    <value>Gamepad data write connection is lost. Disconnecting the gamepad. LastErrorCode={0}</value>
+  </data>
+  <data name="Log_Device_FeatureReportReadFailure" xml:space="preserve">
+    <value>Feature report read failure</value>
+  </data>
+  <data name="Log_Device_InitFailed" xml:space="preserve">
+    <value>Controller {0} failed to initialize. Closing device</value>
+  </data>
+  <data name="Log_Hid_SerialReadFailed" xml:space="preserve">
+    <value>Failed to read serial# from a gamepad ({0}/{1}). Generating MAC address from a device path. From now on you should connect this gamepad always into the same USB port or BT pairing host to keep the same device path.</value>
+  </data>
+  <data name="Log_Hid_MacGenerationFailed" xml:space="preserve">
+    <value>Failed to generate runtime MAC address from device path {0}. {1}</value>
+  </data>
+  <data name="Log_Out_SlotPermanentType" xml:space="preserve">
+    <value>Output slot #{0} has permanent type {1}</value>
+  </data>
+  <data name="Log_Out_PluginX360" xml:space="preserve">
+    <value>Plugging in virtual X360 controller (XInput slot #{0}) in output slot #{1}</value>
+  </data>
+  <data name="Log_Out_PluginVirtual" xml:space="preserve">
+    <value>Plugging in virtual {0} Controller in output slot #{1}</value>
+  </data>
+  <data name="Log_Out_UnplugVirtual" xml:space="preserve">
+    <value>Unplugging virtual {0} Controller from output slot #{1}</value>
+  </data>
+  <data name="Log_Out_NoOpenSlot" xml:space="preserve">
+    <value>Failed. No open output slot found</value>
+  </data>
+  <data name="Log_Out_Associated" xml:space="preserve">
+    <value>Associated input controller #{0} ({1}) to virtual {2} Controller in output slot #{3}</value>
+  </data>
+  <data name="Log_Out_AssociatedPermanent" xml:space="preserve">
+    <value>Associated input controller #{0} ({1}) to virtual {2} Controller in permanent output slot #{3}</value>
+  </data>
+  <data name="Log_Out_Disassociated" xml:space="preserve">
+    <value>Disassociated virtual {0} Controller in output slot #{1} from input controller #{2} ({3})</value>
+  </data>
+  <data name="Log_Out_DisassociatedPermanent" xml:space="preserve">
+    <value>Disassociated virtual {0} Controller in permanent output slot #{1} from input controller #{2} ({3})</value>
+  </data>
+  <data name="Log_HidHide_Found" xml:space="preserve">
+    <value>HidHide control device found</value>
+  </data>
+  <data name="Log_HidHide_AddWhitelist" xml:space="preserve">
+    <value>{0} not found in HidHide whitelist. Adding to list</value>
+  </data>
+  <data name="Log_HidHide_RemoveWhitelist" xml:space="preserve">
+    <value>{0} found in HidHide whitelist. Removing from list</value>
+  </data>
+  <data name="Log_Udp_Listening" xml:space="preserve">
+    <value>UDP server listening on address {0} port {1}</value>
+  </data>
+  <data name="Log_Udp_StartFailed" xml:space="preserve">
+    <value>Couldn't start UDP server on address {0}:{1}, outside applications won't be able to access pad data ({2})</value>
+  </data>
+  <data name="Log_Udp_Closed" xml:space="preserve">
+    <value>Closed UDP server</value>
+  </data>
+  <data name="Log_Osc_ListenerStarted" xml:space="preserve">
+    <value>OSC LISTENER STARTED AT PORT: {0}</value>
+  </data>
+  <data name="Log_Osc_ListenerStopped" xml:space="preserve">
+    <value>OSC LISTENER STOPPED</value>
+  </data>
+  <data name="Log_Osc_SenderStarted" xml:space="preserve">
+    <value>OSC SENDER STARTED AT IP: {0} PORT: {1}</value>
+  </data>
+  <data name="Log_Osc_SenderStopped" xml:space="preserve">
+    <value>OSC SENDER STOPPED</value>
+  </data>
+  <data name="Log_Osc_MalformedMessage" xml:space="preserve">
+    <value>Received malformed OSC message: {0} ({1}: {2})</value>
+  </data>
+  <data name="Log_Osc_MalformedAddress" xml:space="preserve">
+    <value>Received malformed OSC address: {0}</value>
+  </data>
+  <data name="Log_Osc_SenderInactive" xml:space="preserve">
+    <value>Battery level requested, but the OSC Sender isn't active. Turn it on in Settings.</value>
+  </data>
+  <data name="Log_Synth_StateCleared" xml:space="preserve">
+    <value>Runtime state for key {0} cleared on all devices.</value>
+  </data>
+  <data name="Log_Synth_StateResetFailed" xml:space="preserve">
+    <value>Failed to reset runtime key state for {0}: {1}</value>
+  </data>
+  <data name="Log_Process_LaunchFailed" xml:space="preserve">
+    <value>Process launch failed for '{0}': {1}</value>
+  </data>
+  <data name="Log_Conn_OutputDisabled" xml:space="preserve">
+    <value>Output data to DS4 disabled. Lightbar and rumble events are not written to DS4 gamepad. If the gamepad is connected over BT then IdleDisconnect option is recommended to let DS4Windows to close the connection after long period of idling.</value>
+  </data>
+  <data name="Log_Profile_NowUsing" xml:space="preserve">
+    <value>Controller {0} is now using Profile "{1}" (Battery: {2}%)</value>
+  </data>
+  <data name="Log_Actions_RuntimeReset" xml:space="preserve">
+    <value>Runtime synthetic state reset after Actions load</value>
+  </data>
+  <data name="Log_Svc_UacConflict" xml:space="preserve">
+    <value>Some applications may block controller inputs. (Windows UAC Conflictions). Please go to {0} for more information and workarounds.</value>
+  </data>
+  <data name="Log_Svc_KbmHandler" xml:space="preserve">
+    <value>Using output KB+M handler: {0}</value>
+  </data>
+  <data name="Log_Svc_VigemConnected" xml:space="preserve">
+    <value>Connection to ViGEmBus {0} established</value>
+  </data>
+  <data name="Log_Svc_VigemNotInstalled" xml:space="preserve">
+    <value>ViGEmBus is not installed</value>
+  </data>
+  <data name="Log_Svc_VigemUnsupported" xml:space="preserve">
+    <value>Unsupported ViGEmBus found ({0}). Please install at least ViGEmBus 1.17.333.0</value>
+  </data>
+  <data name="Log_Svc_VigemConnectFailed" xml:space="preserve">
+    <value>Could not connect to ViGEmBus. Please check the status of the System device in Device Manager and if Visual C++ 2017 Redistributable is installed.</value>
+  </data>
+  <data name="Log_Svc_VigemClosing" xml:space="preserve">
+    <value>Closing connection to ViGEmBus</value>
+  </data>
+  <data name="Log_Svc_KbmClosing" xml:space="preserve">
+    <value>Closing connection to output handler {0}</value>
+  </data>
+  <data name="Log_Settings_InvalidSpecialAction" xml:space="preserve">
+    <value>Profile '{0}' contains an invalid special action '{1}'.</value>
+  </data>
+  <data name="Log_Xml_ActionsInvalidData" xml:space="preserve">
+    <value>Actions.xml contains invalid data. Could not be read. {0}</value>
+  </data>
+  <data name="Log_Xml_ActionsInvalidSyntax" xml:space="preserve">
+    <value>Actions.xml could not be read. Invalid XML syntax. {0}</value>
+  </data>
+  <data name="Log_Actions_CountFailed" xml:space="preserve">
+    <value>Could not count Actions.xml entries: {0}</value>
+  </data>
+  <data name="Log_Actions_CountMismatch" xml:space="preserve">
+    <value>Action count mismatch after {0}: memory={1} file={2}</value>
+  </data>
+  <data name="Log_Actions_Reloaded" xml:space="preserve">
+    <value>Action list reloaded ({0} entries) after {1}.</value>
+  </data>
+  <data name="Log_Actions_ReloadedUnknown" xml:space="preserve">
+    <value>Action list reloaded ({0} entries) after {1}. (file count unknown)</value>
+  </data>
+  <data name="Log_Actions_ReloadFailed" xml:space="preserve">
+    <value>Error reloading Actions.xml after {0}: {1}</value>
+  </data>
+  <data name="Log_Xml_ProfileLoadFailed" xml:space="preserve">
+    <value>Failed to load profile XML: {0}</value>
+  </data>
+  <data name="Log_Xml_ProfileSaveFailed" xml:space="preserve">
+    <value>Failed to save profile XML: {0}</value>
+  </data>
+  <data name="Log_Xml_SettingsLoadFailed" xml:space="preserve">
+    <value>Failed to load application settings XML: {0}</value>
+  </data>
+  <data name="Log_Xml_SettingsSaveFailed" xml:space="preserve">
+    <value>Failed to save application settings XML: {0}</value>
+  </data>
+  <data name="Log_Xml_UnauthorizedSave" xml:space="preserve">
+    <value>Unauthorized Access - Save failed to path: {0}</value>
+  </data>
+  <data name="Log_Xml_LinkedInvalidData" xml:space="preserve">
+    <value>LinkedProfiles.xml contains invalid data. Could not be read. {0}</value>
+  </data>
+  <data name="Log_Xml_LinkedInvalidSyntax" xml:space="preserve">
+    <value>LinkedProfiles.xml could not be read. Invalid XML syntax. {0}</value>
+  </data>
+  <data name="Log_Xml_LinkedNotFound" xml:space="preserve">
+    <value>LinkedProfiles.xml can't be found.</value>
+  </data>
+  <data name="Log_Xml_ControllerConfigsNotFound" xml:space="preserve">
+    <value>ControllerConfigs.xml can't be found.</value>
+  </data>
+  <data name="Log_Xml_ProfilesMissingSettings" xml:space="preserve">
+    <value>Profiles.xml is missing some settings; not auto-saving to avoid overwriting existing file.</value>
+  </data>
+  <data name="Log_Xml_ProfilesIoError" xml:space="preserve">
+    <value>Could not save Profiles.xml due to IO error: {0}</value>
+  </data>
+  <data name="Log_Repo_SaveInvalidPath" xml:space="preserve">
+    <value>Failed to save profile: invalid path for '{0}'</value>
+  </data>
+  <data name="Log_Repo_SaveFailed" xml:space="preserve">
+    <value>Failed to save profile '{0}' for device {1}</value>
+  </data>
+  <data name="Log_Repo_SaveFailedEx" xml:space="preserve">
+    <value>Failed to save profile '{0}' for device {1}: {2}</value>
+  </data>
+  <data name="Log_Repo_SwitchTargetUpdateFailed" xml:space="preserve">
+    <value>[DI] ProfileRepository: failed to update the Controls profile switch target in '{0}': {1}</value>
+  </data>
+  <data name="Log_Repo_SwitchTargetRenamed" xml:space="preserve">
+    <value>[DI] Controls profile switch target renamed '{0}' to '{1}' in {2} profile(s): {3}</value>
+  </data>
+  <data name="Log_Repo_ActionRefUpdateFailed" xml:space="preserve">
+    <value>[DI] ProfileRepository: failed to update action reference in '{0}': {1}</value>
+  </data>
+  <data name="Log_Repo_ActionRefRemoved" xml:space="preserve">
+    <value>[DI] Action reference removed '{0}' in {1} profile(s): {2}</value>
+  </data>
+  <data name="Log_Repo_ActionRefRenamed" xml:space="preserve">
+    <value>[DI] Action reference renamed '{0}' to '{1}' in {2} profile(s): {3}</value>
+  </data>
+  <data name="Log_Settings_SaveFailed" xml:space="preserve">
+    <value>Failed to save application settings</value>
+  </data>
+  <data name="Log_Bezier_Invalid" xml:space="preserve">
+    <value>Invalid custom bezier curve "{0}, {1}, {2}, {3}" in {4} axis. x1 and x2 should be in 0..1 range. Using linear curve.</value>
+  </data>
+  <data name="Log_App_RunningAsAdmin" xml:space="preserve">
+    <value>Running as Admin</value>
+  </data>
+  <data name="Log_App_RunningAsUser" xml:space="preserve">
+    <value>Running as User</value>
+  </data>
+  <data name="Log_Ui_WmiFailed" xml:space="preserve">
+    <value>Could not connect to Windows Management Instrumentation service.
+Suspend support not enabled.</value>
+  </data>
+  <data name="Log_Ui_PlacementFailed" xml:space="preserve">
+    <value>Failed to apply window placement: {0}</value>
+  </data>
+  <data name="Log_Editor_ProfileSaved" xml:space="preserve">
+    <value>[DI] Profile '{0}' saved successfully.</value>
+  </data>
+  <data name="Log_Editor_ProfileSaveFailed" xml:space="preserve">
+    <value>[DI] Failed to save profile '{0}'.</value>
+  </data>
+  <data name="Log_Editor_ControlsReset" xml:space="preserve">
+    <value>[DI] Controls tab: reset all assignments to Default</value>
+  </data>
+  <data name="Log_Ui_BezierEditorOpenFailed" xml:space="preserve">
+    <value>Failed to open {0}\BezierCurveEditor\index.html web app. Check that the web file exits or launch it outside of DS4Windows application. {1}</value>
+  </data>
+  <data name="Log_Ui_TaskServiceError" xml:space="preserve">
+    <value>Error in TaskService. Check WinOS TaskScheduler service functionality. {0}</value>
+  </data>
+  <data name="Log_Battery_Notify" xml:space="preserve">
+    <value>Controller {0}: {1}</value>
+  </data>
 </root>

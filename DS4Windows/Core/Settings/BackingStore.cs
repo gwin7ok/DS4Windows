@@ -928,7 +928,7 @@ namespace DS4Windows.Core.Settings
                         }
 
                         string displayProfile = string.IsNullOrEmpty(profName) ? "(unknown)" : profName;
-                        AppLogger.Log(AppLogLevel.Warn, $"Profile '{displayProfile}' contains an invalid special action '{actionname}'.", LogOptions.UserFacing);
+                        AppLogger.LogUser(AppLogLevel.Warn, "Log_Settings_InvalidSpecialAction", displayProfile, actionname);
                         try
                         {
                             loggedInvalidActions.Add(actionname);

@@ -705,4 +705,269 @@ Bluetooth接続の設定（オプション）：PSボタンとShareボタンを3
   <data name="RecordBox.MoveRecordLimitReached" xml:space="preserve">
     <value>記録を止めました: マウス移動のステップが上限（{0} 個）に達しました。</value>
   </data>
+  <data name="Log_Device_CustomFeatureSet" xml:space="preserve">
+    <value>ゲームパッド {0}（{1}）は独自の機能セット（{2}）を使います</value>
+  </data>
+  <data name="Log_Device_GyroCalibrationFailed" xml:space="preserve">
+    <value>ジャイロの較正に失敗しました</value>
+  </data>
+  <data name="Log_Device_YawAxisFixed" xml:space="preserve">
+    <value>DS4 v.1 の Bluetooth ゲームパッド（{0}）で反転していたヨー軸を自動で修正しました</value>
+  </data>
+  <data name="Log_Device_CrcFailedDisconnect" xml:space="preserve">
+    <value>{0} の CRC-32 検査が {1} 回失敗しました。切断します</value>
+  </data>
+  <data name="Log_Device_DisconnectedTimeout" xml:space="preserve">
+    <value>{0} はタイムアウトのため切断されました</value>
+  </data>
+  <data name="Log_Device_DisconnectedReadFailure" xml:space="preserve">
+    <value>{0} は読み取りエラーのため切断されました: {1}</value>
+  </data>
+  <data name="Log_Device_IdleDisconnect" xml:space="preserve">
+    <value>{0} を無操作切断の設定により切断します</value>
+  </data>
+  <data name="Log_Device_WriteConnectionLost" xml:space="preserve">
+    <value>ゲームパッドへのデータ書き込み接続が失われました。切断します。LastErrorCode={0}</value>
+  </data>
+  <data name="Log_Device_FeatureReportReadFailure" xml:space="preserve">
+    <value>フィーチャーレポートの読み取りに失敗しました</value>
+  </data>
+  <data name="Log_Device_InitFailed" xml:space="preserve">
+    <value>コントローラー {0} の初期化に失敗しました。デバイスを閉じます</value>
+  </data>
+  <data name="Log_Hid_SerialReadFailed" xml:space="preserve">
+    <value>ゲームパッド（{0}/{1}）からシリアル番号を読み取れませんでした。デバイスのパスから MAC アドレスを生成します。以後は、同じパスを保つために、このゲームパッドを常に同じ USB ポートまたは同じ Bluetooth ペアリング先に接続してください</value>
+  </data>
+  <data name="Log_Hid_MacGenerationFailed" xml:space="preserve">
+    <value>デバイスのパス {0} から実行時の MAC アドレスを生成できませんでした。{1}</value>
+  </data>
+  <data name="Log_Out_SlotPermanentType" xml:space="preserve">
+    <value>出力スロット #{0} は種別 {1} に固定されています</value>
+  </data>
+  <data name="Log_Out_PluginX360" xml:space="preserve">
+    <value>仮想 X360 コントローラー（XInput スロット #{0}）を出力スロット #{1} に接続します</value>
+  </data>
+  <data name="Log_Out_PluginVirtual" xml:space="preserve">
+    <value>仮想 {0} コントローラーを出力スロット #{1} に接続します</value>
+  </data>
+  <data name="Log_Out_UnplugVirtual" xml:space="preserve">
+    <value>仮想 {0} コントローラーを出力スロット #{1} から取り外します</value>
+  </data>
+  <data name="Log_Out_NoOpenSlot" xml:space="preserve">
+    <value>失敗しました。空いている出力スロットがありません</value>
+  </data>
+  <data name="Log_Out_Associated" xml:space="preserve">
+    <value>入力コントローラー #{0}（{1}）を、出力スロット #{3} の仮想 {2} コントローラーに関連付けました</value>
+  </data>
+  <data name="Log_Out_AssociatedPermanent" xml:space="preserve">
+    <value>入力コントローラー #{0}（{1}）を、固定の出力スロット #{3} の仮想 {2} コントローラーに関連付けました</value>
+  </data>
+  <data name="Log_Out_Disassociated" xml:space="preserve">
+    <value>出力スロット #{1} の仮想 {0} コントローラーを、入力コントローラー #{2}（{3}）から切り離しました</value>
+  </data>
+  <data name="Log_Out_DisassociatedPermanent" xml:space="preserve">
+    <value>固定の出力スロット #{1} の仮想 {0} コントローラーを、入力コントローラー #{2}（{3}）から切り離しました</value>
+  </data>
+  <data name="Log_HidHide_Found" xml:space="preserve">
+    <value>HidHide の制御デバイスが見つかりました</value>
+  </data>
+  <data name="Log_HidHide_AddWhitelist" xml:space="preserve">
+    <value>{0} が HidHide の許可リストにありません。リストに追加します</value>
+  </data>
+  <data name="Log_HidHide_RemoveWhitelist" xml:space="preserve">
+    <value>{0} が HidHide の許可リストにありました。リストから削除します</value>
+  </data>
+  <data name="Log_Udp_Listening" xml:space="preserve">
+    <value>UDP サーバーがアドレス {0}、ポート {1} で待ち受けています</value>
+  </data>
+  <data name="Log_Udp_StartFailed" xml:space="preserve">
+    <value>UDP サーバーをアドレス {0}:{1} で開始できませんでした。外部のアプリケーションはパッドのデータにアクセスできません（{2}）</value>
+  </data>
+  <data name="Log_Udp_Closed" xml:space="preserve">
+    <value>UDP サーバーを閉じました</value>
+  </data>
+  <data name="Log_Osc_ListenerStarted" xml:space="preserve">
+    <value>OSC リスナーをポート {0} で開始しました</value>
+  </data>
+  <data name="Log_Osc_ListenerStopped" xml:space="preserve">
+    <value>OSC リスナーを停止しました</value>
+  </data>
+  <data name="Log_Osc_SenderStarted" xml:space="preserve">
+    <value>OSC 送信を IP {0}、ポート {1} で開始しました</value>
+  </data>
+  <data name="Log_Osc_SenderStopped" xml:space="preserve">
+    <value>OSC 送信を停止しました</value>
+  </data>
+  <data name="Log_Osc_MalformedMessage" xml:space="preserve">
+    <value>不正な OSC メッセージを受信しました: {0}（{1}: {2}）</value>
+  </data>
+  <data name="Log_Osc_MalformedAddress" xml:space="preserve">
+    <value>不正な OSC アドレスを受信しました: {0}</value>
+  </data>
+  <data name="Log_Osc_SenderInactive" xml:space="preserve">
+    <value>バッテリー残量が要求されましたが、OSC 送信が有効ではありません。設定で有効にしてください</value>
+  </data>
+  <data name="Log_Synth_StateCleared" xml:space="preserve">
+    <value>キー {0} の実行時の状態を、すべてのデバイスで解除しました</value>
+  </data>
+  <data name="Log_Synth_StateResetFailed" xml:space="preserve">
+    <value>キー {0} の実行時の状態を解除できませんでした: {1}</value>
+  </data>
+  <data name="Log_Process_LaunchFailed" xml:space="preserve">
+    <value>'{0}' の起動に失敗しました: {1}</value>
+  </data>
+  <data name="Log_Conn_OutputDisabled" xml:space="preserve">
+    <value>DS4 への出力は無効です。ライトバーと振動のイベントは DS4 ゲームパッドへ書き込まれません。Bluetooth で接続している場合は、長時間操作がないときに DS4Windows が接続を閉じるよう、無操作切断の設定をおすすめします</value>
+  </data>
+  <data name="Log_Profile_NowUsing" xml:space="preserve">
+    <value>コントローラー {0} はプロファイル「{1}」を使用中です（バッテリー: {2}%）</value>
+  </data>
+  <data name="Log_Actions_RuntimeReset" xml:space="preserve">
+    <value>Actions の読み込み後に、実行時の疑似入力の状態を初期化しました</value>
+  </data>
+  <data name="Log_Svc_UacConflict" xml:space="preserve">
+    <value>一部のアプリケーションがコントローラーの入力を妨げることがあります（Windows の UAC との競合）。詳細と回避策は {0} を参照してください</value>
+  </data>
+  <data name="Log_Svc_KbmHandler" xml:space="preserve">
+    <value>出力のキーボード・マウスのハンドラー: {0}</value>
+  </data>
+  <data name="Log_Svc_VigemConnected" xml:space="preserve">
+    <value>ViGEmBus {0} に接続しました</value>
+  </data>
+  <data name="Log_Svc_VigemNotInstalled" xml:space="preserve">
+    <value>ViGEmBus がインストールされていません</value>
+  </data>
+  <data name="Log_Svc_VigemUnsupported" xml:space="preserve">
+    <value>未対応の ViGEmBus が見つかりました（{0}）。ViGEmBus 1.17.333.0 以上をインストールしてください</value>
+  </data>
+  <data name="Log_Svc_VigemConnectFailed" xml:space="preserve">
+    <value>ViGEmBus に接続できませんでした。デバイス マネージャーのシステム デバイスの状態と、Visual C++ 2017 再頒布可能パッケージのインストールを確認してください</value>
+  </data>
+  <data name="Log_Svc_VigemClosing" xml:space="preserve">
+    <value>ViGEmBus との接続を閉じます</value>
+  </data>
+  <data name="Log_Svc_KbmClosing" xml:space="preserve">
+    <value>出力ハンドラー {0} との接続を閉じます</value>
+  </data>
+  <data name="Log_Settings_InvalidSpecialAction" xml:space="preserve">
+    <value>プロファイル '{0}' に無効なスペシャルアクション '{1}' が含まれています</value>
+  </data>
+  <data name="Log_Xml_ActionsInvalidData" xml:space="preserve">
+    <value>Actions.xml に無効なデータが含まれており、読み込めませんでした。{0}</value>
+  </data>
+  <data name="Log_Xml_ActionsInvalidSyntax" xml:space="preserve">
+    <value>Actions.xml を読み込めませんでした。XML の構文が正しくありません。{0}</value>
+  </data>
+  <data name="Log_Actions_CountFailed" xml:space="preserve">
+    <value>Actions.xml の項目数を数えられませんでした: {0}</value>
+  </data>
+  <data name="Log_Actions_CountMismatch" xml:space="preserve">
+    <value>{0} の後に、アクション数が一致しません: メモリ={1} ファイル={2}</value>
+  </data>
+  <data name="Log_Actions_Reloaded" xml:space="preserve">
+    <value>{1} の後に、アクション一覧を再読み込みしました（{0} 件）</value>
+  </data>
+  <data name="Log_Actions_ReloadedUnknown" xml:space="preserve">
+    <value>{1} の後に、アクション一覧を再読み込みしました（{0} 件。ファイルの件数は不明）</value>
+  </data>
+  <data name="Log_Actions_ReloadFailed" xml:space="preserve">
+    <value>{0} の後に、Actions.xml を再読み込みできませんでした: {1}</value>
+  </data>
+  <data name="Log_Xml_ProfileLoadFailed" xml:space="preserve">
+    <value>プロファイルの XML を読み込めませんでした: {0}</value>
+  </data>
+  <data name="Log_Xml_ProfileSaveFailed" xml:space="preserve">
+    <value>プロファイルの XML を保存できませんでした: {0}</value>
+  </data>
+  <data name="Log_Xml_SettingsLoadFailed" xml:space="preserve">
+    <value>アプリケーション設定の XML を読み込めませんでした: {0}</value>
+  </data>
+  <data name="Log_Xml_SettingsSaveFailed" xml:space="preserve">
+    <value>アプリケーション設定の XML を保存できませんでした: {0}</value>
+  </data>
+  <data name="Log_Xml_UnauthorizedSave" xml:space="preserve">
+    <value>アクセスが拒否されました。次のパスへの保存に失敗しました: {0}</value>
+  </data>
+  <data name="Log_Xml_LinkedInvalidData" xml:space="preserve">
+    <value>LinkedProfiles.xml に無効なデータが含まれており、読み込めませんでした。{0}</value>
+  </data>
+  <data name="Log_Xml_LinkedInvalidSyntax" xml:space="preserve">
+    <value>LinkedProfiles.xml を読み込めませんでした。XML の構文が正しくありません。{0}</value>
+  </data>
+  <data name="Log_Xml_LinkedNotFound" xml:space="preserve">
+    <value>LinkedProfiles.xml が見つかりません</value>
+  </data>
+  <data name="Log_Xml_ControllerConfigsNotFound" xml:space="preserve">
+    <value>ControllerConfigs.xml が見つかりません</value>
+  </data>
+  <data name="Log_Xml_ProfilesMissingSettings" xml:space="preserve">
+    <value>Profiles.xml に不足している設定があるため、既存のファイルの上書きを避けて自動保存しません</value>
+  </data>
+  <data name="Log_Xml_ProfilesIoError" xml:space="preserve">
+    <value>入出力エラーのため Profiles.xml を保存できませんでした: {0}</value>
+  </data>
+  <data name="Log_Repo_SaveInvalidPath" xml:space="preserve">
+    <value>プロファイルを保存できませんでした: '{0}' のパスが無効です</value>
+  </data>
+  <data name="Log_Repo_SaveFailed" xml:space="preserve">
+    <value>デバイス {1} のプロファイル '{0}' を保存できませんでした</value>
+  </data>
+  <data name="Log_Repo_SaveFailedEx" xml:space="preserve">
+    <value>デバイス {1} のプロファイル '{0}' を保存できませんでした: {2}</value>
+  </data>
+  <data name="Log_Repo_SwitchTargetUpdateFailed" xml:space="preserve">
+    <value>[DI] Controls のプロファイル切り替え先を '{0}' で更新できませんでした: {1}</value>
+  </data>
+  <data name="Log_Repo_SwitchTargetRenamed" xml:space="preserve">
+    <value>[DI] Controls のプロファイル切り替え先 '{0}' を '{1}' に改名しました（{2} 件のプロファイル: {3}）</value>
+  </data>
+  <data name="Log_Repo_ActionRefUpdateFailed" xml:space="preserve">
+    <value>[DI] '{0}' のアクション参照を更新できませんでした: {1}</value>
+  </data>
+  <data name="Log_Repo_ActionRefRemoved" xml:space="preserve">
+    <value>[DI] アクション参照 '{0}' を削除しました（{1} 件のプロファイル: {2}）</value>
+  </data>
+  <data name="Log_Repo_ActionRefRenamed" xml:space="preserve">
+    <value>[DI] アクション参照 '{0}' を '{1}' に改名しました（{2} 件のプロファイル: {3}）</value>
+  </data>
+  <data name="Log_Settings_SaveFailed" xml:space="preserve">
+    <value>アプリケーション設定を保存できませんでした</value>
+  </data>
+  <data name="Log_Bezier_Invalid" xml:space="preserve">
+    <value>{4} 軸のカスタムベジェ曲線 "{0}, {1}, {2}, {3}" が無効です。x1 と x2 は 0〜1 の範囲にしてください。直線の曲線を使います</value>
+  </data>
+  <data name="Log_App_RunningAsAdmin" xml:space="preserve">
+    <value>管理者として実行中です</value>
+  </data>
+  <data name="Log_App_RunningAsUser" xml:space="preserve">
+    <value>ユーザーとして実行中です</value>
+  </data>
+  <data name="Log_Ui_WmiFailed" xml:space="preserve">
+    <value>Windows Management Instrumentation サービスに接続できませんでした。
+サスペンドへの対応は有効になりません</value>
+  </data>
+  <data name="Log_Ui_PlacementFailed" xml:space="preserve">
+    <value>ウィンドウの位置を適用できませんでした: {0}</value>
+  </data>
+  <data name="Log_Editor_ProfileSaved" xml:space="preserve">
+    <value>[DI] プロファイル '{0}' を保存しました</value>
+  </data>
+  <data name="Log_Editor_ProfileSaveFailed" xml:space="preserve">
+    <value>[DI] プロファイル '{0}' を保存できませんでした</value>
+  </data>
+  <data name="Log_Editor_ControlsReset" xml:space="preserve">
+    <value>[DI] Controls タブ: すべての割り当てを既定に戻しました</value>
+  </data>
+  <data name="Log_Ui_BezierEditorOpenFailed" xml:space="preserve">
+    <value>{0}\BezierCurveEditor\index.html を開けませんでした。ファイルが存在するか確認するか、DS4Windows の外から起動してください。{1}</value>
+  </data>
+  <data name="Log_Ui_TaskServiceError" xml:space="preserve">
+    <value>タスク サービスでエラーが発生しました。Windows のタスク スケジューラーの動作を確認してください。{0}</value>
+  </data>
+  <data name="Log_Battery_Notify" xml:space="preserve">
+    <value>コントローラー {0}: {1}</value>
+  </data>
+  <data name="WakeupFromSuspend" xml:space="preserve">
+    <value>スリープから復帰しました</value>
+  </data>
 </root>

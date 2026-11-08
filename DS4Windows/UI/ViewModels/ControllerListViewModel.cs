@@ -317,7 +317,7 @@ namespace DS4Windows.UI.ViewModels
                     }
                     catch (Exception ex)
                     {
-                        AppLogger.Log(AppLogLevel.Error, $"ERROR in Global_SelectedProfileChanged Dispatcher callback: {ex.Message}", LogOptions.UserFacing);
+                        AppLogger.Log(AppLogLevel.Error, $"Global_SelectedProfileChanged Dispatcher callback failed: {ex.Message}", LogOptions.UserFacing);
                         AppLogger.LogDebug($"Global_SelectedProfileChanged Dispatcher exception: {ex}");
                     }
                 });
@@ -326,7 +326,7 @@ namespace DS4Windows.UI.ViewModels
             }
             catch (Exception ex)
             {
-                AppLogger.Log(AppLogLevel.Error, $"ERROR in Global_SelectedProfileChanged: {ex.Message}", LogOptions.UserFacing);
+                AppLogger.Log(AppLogLevel.Error, $"Global_SelectedProfileChanged failed: {ex.Message}", LogOptions.UserFacing);
                 AppLogger.LogDebug($"Global_SelectedProfileChanged exception: {ex}");
             }
         }

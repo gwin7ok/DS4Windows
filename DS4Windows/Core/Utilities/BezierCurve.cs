@@ -153,7 +153,7 @@ namespace DS4Windows.Core.Utilities
             if (x1 < 0 || x1 > 1 || x2 < 0 || x2 > 1)
             {
                 // throw new Exception("INVALID VALUE. BezierCurve X1 and X2 should be in [0, 1] range");
-                AppLogger.Log(AppLogLevel.Warn, $"WARNING. Invalid custom bezier curve \"{x1}, {y1}, {x2}, {y2}\" in {gamepadAxisType} axis. x1 and x2 should be in 0..1 range. Using linear curve.", LogOptions.UserFacing);
+                AppLogger.LogUser(AppLogLevel.Warn, "Log_Bezier_Invalid", x1, y1, x2, y2, gamepadAxisType);
                 mX1 = mY1 = mX2 = mY2 = 0;
                 bRetValue = false;
             }

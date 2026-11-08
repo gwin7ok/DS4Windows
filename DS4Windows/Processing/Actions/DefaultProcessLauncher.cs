@@ -39,7 +39,7 @@ namespace DS4Windows.Processing.Actions
             }
             catch (Exception ex)
             {
-                AppLogger.Log(AppLogLevel.Error, $"Process launch failed for '{fileName}': {ex.Message}", LogOptions.UserFacing);
+                AppLogger.LogUser(AppLogLevel.Error, "Log_Process_LaunchFailed", fileName, ex.Message);
             }
         }
     }

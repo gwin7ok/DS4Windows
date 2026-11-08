@@ -467,7 +467,7 @@ namespace DS4Windows.UI.ViewModels
             }
             catch (COMException ex)
             {
-                DS4Windows.Core.Logging.AppLogger.Log(AppLogLevel.Error, string.Format("Error in TaskService. Check WinOS TaskScheduler service functionality. {0}", ex.Message), LogOptions.UserFacing);
+                DS4Windows.Core.Logging.AppLogger.LogUser(AppLogLevel.Error, "Log_Ui_TaskServiceError", ex.Message);
             }
 
             runAtStartup = runStartProg || runStartTask;

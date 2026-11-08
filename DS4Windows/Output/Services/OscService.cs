@@ -50,13 +50,13 @@ namespace DS4Windows.Output.Services
             {
                 _listener = _transportFactory.CreateListener(_appSettings.OscServerPort, HandleMessage);
 
-                AppLogger.Log(AppLogLevel.Info, "OSC LISTENER STARTED AT PORT: " + _appSettings.OscServerPort, LogOptions.UserFacing);
+                AppLogger.LogUser(AppLogLevel.Info, "Log_Osc_ListenerStarted", _appSettings.OscServerPort);
             }
             else
             {
                 _listener.Close();
                 _listener = null;
-                AppLogger.Log(AppLogLevel.Info, "OSC LISTENER STOPPED", LogOptions.UserFacing);
+                AppLogger.LogUser(AppLogLevel.Info, "Log_Osc_ListenerStopped");
             }
         }
 
@@ -64,12 +64,12 @@ namespace DS4Windows.Output.Services
         {
             if (state)
             {
-                AppLogger.Log(AppLogLevel.Info, "OSC SENDER STARTED AT IP: " + _appSettings.OscSenderAddress + " PORT: " + _appSettings.OscSenderPort, LogOptions.UserFacing);
+                AppLogger.LogUser(AppLogLevel.Info, "Log_Osc_SenderStarted", _appSettings.OscSenderAddress, _appSettings.OscSenderPort);
                 _sender = _transportFactory.CreateSender(_appSettings.OscSenderAddress, _appSettings.OscSenderPort);
             }
             else
             {
-                AppLogger.Log(AppLogLevel.Info, "OSC SENDER STOPPED", LogOptions.UserFacing);
+                AppLogger.LogUser(AppLogLevel.Info, "Log_Osc_SenderStopped");
                 // Phase6-Step9-3c: フィールドを先に null にしてから閉じる（入力スレッドが閉じたソケットへ送らないようにする）
                 IOscMessageSender sender = _sender;
                 if (sender == null) { return; }
@@ -145,7 +145,7 @@ namespace DS4Windows.Output.Services
             }
             catch (Exception ex)
             {
-                AppLogger.Log(AppLogLevel.Warn, "Received malformed OSC message: " + address + " (" + ex.GetType().Name + ": " + ex.Message + ")", LogOptions.UserFacing);
+                AppLogger.LogUser(AppLogLevel.Warn, "Log_Osc_MalformedMessage", address, ex.GetType().Name, ex.Message);
             }
         }
 
@@ -193,7 +193,7 @@ namespace DS4Windows.Output.Services
             // Phase9 9-E E-1 の是正: 範囲外のコントローラー番号（負、スロット数以上）も不正なアドレスとして捨てる（旧実装は IndexOutOfRangeException）
             if (stateInd < 0 || stateInd >= _oscState.Length)
             {
-                AppLogger.Log(AppLogLevel.Warn, "Received malformed OSC address: " + address, LogOptions.UserFacing);
+                AppLogger.LogUser(AppLogLevel.Warn, "Log_Osc_MalformedAddress", address);
                 return;
             }
 
@@ -201,7 +201,7 @@ namespace DS4Windows.Output.Services
             {
                 if (!_appSettings.UseOscSender)
                 {
-                    AppLogger.Log(AppLogLevel.Warn, "Battery level requested, but the OSC Sender isn't active. Turn it on in Settings.", LogOptions.UserFacing);
+                    AppLogger.LogUser(AppLogLevel.Warn, "Log_Osc_SenderInactive");
                 }
                 else
                 {

@@ -218,3 +218,13 @@
 1. 質問 Q1〜Q5 の選択
 2. §4 の日本語の訳（直したい行があれば ID で指定）
 3. 据え置き（D）20 件の扱い（Q2）
+
+## 9. 実施結果（Step 15-0-1。2026-11-08）
+
+- §4 の訳案は承認済み。`Strings.resx`／`Strings.ja.resx` に `Log_*` キー 87 件（Log_Repo_ActionRefRemoved／Renamed、Log_Out_Associated／AssociatedPermanent などの分岐用を含む）を追加し、`WakeupFromSuspend` の訳も足した。
+- 呼び出し箇所 85 件を `AppLogger.LogUser(level, key, args…)` へ置き換えた。画面は現在の表示言語、ファイルは英語（`DebugEventArgs.FileData`、`LoggerHolder` が `FileData ?? Data` を書く）。トレイ・変数経由の文言は `AppLogger.UserText(key, args…)`（UDP の起動失敗、ViGEmBus の 3 文言、プロファイル適用の案内、電池通知）。
+- 接頭辞（Q3）: `WARNING:`／`ERROR:`／`Warning:` を外した 6 件と、`ControllerListViewModel` の `ERROR in …` 2 件（診断文）を整理。`[DI]` は据え置き。
+- 据え置き（D）20 件と、すでにリソースだった 20 件は変更なし。
+- テスト: `UserLogTextResourceTests`（日本語の訳の有無・書式の引数の一致・使うキーと定義の一致・画面／ファイルの出し分け）を追加。英語の文言を前提にしていた 4 テストは、ファイルの文字列（`FileData ?? Data`）で照合する形に直した（期待値は変えていない）。
+- 検証: ビルド 0 警告 0 エラー、全件（Benchmark を除く）3,152 件合格。
+- 持ち越し: `DS4Device.error` など呼び出し元が組み立てる英語の文言は未リソース化（診断文、Q2）。

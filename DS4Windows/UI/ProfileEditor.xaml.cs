@@ -1120,7 +1120,7 @@ namespace DS4Windows.UI
 
             if (saved)
             {
-                AppLogger.Log(AppLogLevel.Info, $"[DI] Profile '{profileName}' saved successfully.", LogOptions.UserFacing);
+                AppLogger.LogUser(AppLogLevel.Info, "Log_Editor_ProfileSaved", profileName);
                 // Phase6-Step7b（決定8）: 保存（Save）と適用（Apply）の違いは、画面を閉じるかどうかだけ。
                 // どちらも親画面へ ProfileSaved を通知し、MainWindow.SyncProfileListAndControllers が、
                 // プロファイル一覧を読み込み直したうえで、このプロファイルを使っているスロットにだけ再適用する。
@@ -1132,7 +1132,7 @@ namespace DS4Windows.UI
             }
             else
             {
-                AppLogger.Log(AppLogLevel.Error, $"[DI] Failed to save profile '{profileName}'.", LogOptions.UserFacing);
+                AppLogger.LogUser(AppLogLevel.Error, "Log_Editor_ProfileSaveFailed", profileName);
                 return false;
             }
         }
@@ -1891,7 +1891,7 @@ namespace DS4Windows.UI
 
             profileSettingsVM.RefreshCustomsFlags();
             highlightControlDisplayLb.Content = "";
-            AppLogger.Log(AppLogLevel.Info, "[DI] Controls tab: reset all assignments to Default", LogOptions.UserFacing);
+            AppLogger.LogUser(AppLogLevel.Info, "Log_Editor_ControlsReset");
         }
 
         private void MappingListBox_MouseDoubleClick(object sender, MouseButtonEventArgs e)

@@ -41,7 +41,7 @@ namespace DS4WindowsTests
                 _path = path;
                 _sink = (sender, e) =>
                 {
-                    if (e?.Data != null && e.Data.Contains("Process launch failed for '" + _path + "'"))
+                    if (e != null && (e.FileData ?? e.Data) != null && (e.FileData ?? e.Data).Contains("Process launch failed for '" + _path + "'"))
                         System.Threading.Interlocked.Increment(ref Count);
                 };
                 AppLogger.GuiLog += _sink;

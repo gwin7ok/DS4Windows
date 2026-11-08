@@ -211,7 +211,7 @@ namespace DS4WindowsTests
                 string where = $"installed={installed} opened={opened} inverse={inverse} exists={exists} add={addExe} empty={emptyPath}";
                 string path = emptyPath ? "" : exe;
                 old.CheckHidHidePresence(path, "TestExe", addExe);
-                System.EventHandler<DS4Windows.Core.Logging.DebugEventArgs> sink = (s, e) => { if (e.Data != null && e.Data.Contains("HidHide")) logs.Add(e.Data); };
+                System.EventHandler<DS4Windows.Core.Logging.DebugEventArgs> sink = (s, e) => { string text = e.FileData ?? e.Data; if (text != null && text.Contains("HidHide")) logs.Add(text); };
                 AppLogger.GuiLog += sink;
                 try { service.CheckPresence(path, "TestExe", addExe); }
                 finally { AppLogger.GuiLog -= sink; }

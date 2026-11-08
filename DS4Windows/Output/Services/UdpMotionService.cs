@@ -83,13 +83,13 @@ namespace DS4Windows.Output.Services
                             try
                             {
                                 _udpServer.Start(UDP_SERVER_PORT, UDP_SERVER_LISTEN_ADDRESS);
-                                AppLogger.Log(AppLogLevel.Info, $"UDP server listening on address {UDP_SERVER_LISTEN_ADDRESS} port {UDP_SERVER_PORT}", LogOptions.UserFacing);
+                                AppLogger.LogUser(AppLogLevel.Info, "Log_Udp_Listening", UDP_SERVER_LISTEN_ADDRESS, UDP_SERVER_PORT);
                             }
                             catch (System.Net.Sockets.SocketException ex)
                             {
-                                var errMsg = String.Format("Couldn't start UDP server on address {0}:{1}, outside applications won't be able to access pad data ({2})", UDP_SERVER_LISTEN_ADDRESS, UDP_SERVER_PORT, ex.SocketErrorCode);
+                                var errMsg = AppLogger.UserText("Log_Udp_StartFailed", UDP_SERVER_LISTEN_ADDRESS, UDP_SERVER_PORT, ex.SocketErrorCode);
 
-                                AppLogger.Log(AppLogLevel.Warn, errMsg, LogOptions.UserFacing);
+                                AppLogger.LogUser(AppLogLevel.Warn, "Log_Udp_StartFailed", UDP_SERVER_LISTEN_ADDRESS, UDP_SERVER_PORT, ex.SocketErrorCode);
                                 AppLogger.LogToTray(errMsg, true, true);
                             }
                         }).Wait();
@@ -105,7 +105,7 @@ namespace DS4Windows.Output.Services
                     udpChangeStatus = true;
                     _udpServer.Stop();
                     _udpServer = null;
-                    AppLogger.Log(AppLogLevel.Info, "Closed UDP server", LogOptions.UserFacing);
+                    AppLogger.LogUser(AppLogLevel.Info, "Log_Udp_Closed");
                     udpChangeStatus = false;
 
                     for (int i = 0; i < UdpServer.NUMBER_SLOTS; i++)
@@ -128,13 +128,13 @@ namespace DS4Windows.Output.Services
                 try
                 {
                     _udpServer.Start(UDP_SERVER_PORT, UDP_SERVER_LISTEN_ADDRESS);
-                    AppLogger.Log(AppLogLevel.Info, $"UDP server listening on address {UDP_SERVER_LISTEN_ADDRESS} port {UDP_SERVER_PORT}", LogOptions.UserFacing);
+                    AppLogger.LogUser(AppLogLevel.Info, "Log_Udp_Listening", UDP_SERVER_LISTEN_ADDRESS, UDP_SERVER_PORT);
                 }
                 catch (System.Net.Sockets.SocketException ex)
                 {
-                    var errMsg = string.Format("Couldn't start UDP server on address {0}:{1}, outside applications won't be able to access pad data ({2})", UDP_SERVER_LISTEN_ADDRESS, UDP_SERVER_PORT, ex.SocketErrorCode);
+                    var errMsg = AppLogger.UserText("Log_Udp_StartFailed", UDP_SERVER_LISTEN_ADDRESS, UDP_SERVER_PORT, ex.SocketErrorCode);
 
-                    AppLogger.Log(AppLogLevel.Warn, errMsg, LogOptions.UserFacing);
+                    AppLogger.LogUser(AppLogLevel.Warn, "Log_Udp_StartFailed", UDP_SERVER_LISTEN_ADDRESS, UDP_SERVER_PORT, ex.SocketErrorCode);
                     AppLogger.LogToTray(errMsg, true, true);
                 }
             }
@@ -215,13 +215,13 @@ namespace DS4Windows.Output.Services
                         }
                     });
                 }
-                AppLogger.Log(AppLogLevel.Info, $"UDP server listening on address {UDP_SERVER_LISTEN_ADDRESS} port {UDP_SERVER_PORT}", LogOptions.UserFacing);
+                AppLogger.LogUser(AppLogLevel.Info, "Log_Udp_Listening", UDP_SERVER_LISTEN_ADDRESS, UDP_SERVER_PORT);
             }
             catch (System.Net.Sockets.SocketException ex)
             {
-                var errMsg = String.Format("Couldn't start UDP server on address {0}:{1}, outside applications won't be able to access pad data ({2})", UDP_SERVER_LISTEN_ADDRESS, UDP_SERVER_PORT, ex.SocketErrorCode);
+                var errMsg = AppLogger.UserText("Log_Udp_StartFailed", UDP_SERVER_LISTEN_ADDRESS, UDP_SERVER_PORT, ex.SocketErrorCode);
 
-                AppLogger.Log(AppLogLevel.Warn, errMsg, LogOptions.UserFacing);
+                AppLogger.LogUser(AppLogLevel.Warn, "Log_Udp_StartFailed", UDP_SERVER_LISTEN_ADDRESS, UDP_SERVER_PORT, ex.SocketErrorCode);
                 AppLogger.LogToTray(errMsg, true, true);
             }
 

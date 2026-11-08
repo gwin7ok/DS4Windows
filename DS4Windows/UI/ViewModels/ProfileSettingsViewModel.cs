@@ -3450,7 +3450,7 @@ namespace DS4Windows.UI.ViewModels
             }
             catch (Exception ex)
             {
-                AppLogger.Log(AppLogLevel.Error, $"ERROR. Failed to open {pathService.ProgramDirectory}\\BezierCurveEditor\\index.html web app. Check that the web file exits or launch it outside of DS4Windows application. {ex.Message}", LogOptions.UserFacing);
+                AppLogger.LogUser(AppLogLevel.Error, "Log_Ui_BezierEditorOpenFailed", pathService.ProgramDirectory, ex.Message);
             }
         }
 

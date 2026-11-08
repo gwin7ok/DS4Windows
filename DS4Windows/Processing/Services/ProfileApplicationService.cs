@@ -310,10 +310,13 @@ namespace DS4Windows.Processing.Services
             {
                 DS4Device ds4Device = control.GetController(device);
                 string battery = ds4Device != null ? $"{ds4Device.Battery}" : "N/A";
-                prolog = $"Controller {device + 1} is now using Profile \"{profileName}\" (Battery: {battery}%)";
+                prolog = AppLogger.UserText("Log_Profile_NowUsing", device + 1, profileName, battery);
+                AppLogger.LogUser(AppLogLevel.Info, "Log_Profile_NowUsing", device + 1, profileName, battery);
             }
-
-            AppLogger.Log(AppLogLevel.Info, prolog, LogOptions.UserFacing);
+            else
+            {
+                AppLogger.Log(AppLogLevel.Info, prolog, LogOptions.UserFacing);
+            }
             AppLogger.LogDebug($"ApplyProfile: Calling LogProfileChanged...");
             try
             {

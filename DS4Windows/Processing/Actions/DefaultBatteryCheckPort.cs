@@ -39,7 +39,7 @@ namespace DS4Windows.Processing.Actions
             string text = _batteryText.GetBatteryText(deviceIndex);
             if (text == null) return;
 
-            AppLogger.LogToTray("Controller " + (deviceIndex + 1) + ": " + text, true);
+            AppLogger.LogToTray(AppLogger.UserText("Log_Battery_Notify", deviceIndex + 1, text), true);
         }
 
         public DS4Color GetLightBarColor(int deviceIndex) => Controller(deviceIndex)?.LightBarColor ?? default(DS4Color);

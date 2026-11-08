@@ -463,7 +463,7 @@ namespace DS4Windows.Output.Services
                         }
                         else
                         {
-                            AppLogger.Log(AppLogLevel.Warn, "Failed. No open output slot found", LogOptions.UserFacing);
+                            AppLogger.LogUser(AppLogLevel.Warn, "Log_Out_NoOpenSlot");
                         }
                     }
                     else
@@ -483,7 +483,7 @@ namespace DS4Windows.Output.Services
                 // Need to check for possible ViGEmBus failure here
                 if (success && slotDevice.OutputDevice != null)
                 {
-                    AppLogger.Log(AppLogLevel.Info, $"Associated input controller #{index + 1} ({device.DisplayName}) to virtual {slotDevice.OutputDevice.GetDeviceType()} Controller in{(slotDevice.PermanentType != OutContType.None ? " permanent" : "")} output slot #{slotDevice.Index + 1}", LogOptions.UserFacing);
+                    AppLogger.LogUser(AppLogLevel.Info, slotDevice.PermanentType != OutContType.None ? "Log_Out_AssociatedPermanent" : "Log_Out_Associated", index + 1, device.DisplayName, slotDevice.OutputDevice.GetDeviceType(), slotDevice.Index + 1);
                     _profileSettings.UseDInputOnlyArray[index] = false;
                 }
             }
@@ -523,7 +523,7 @@ namespace DS4Windows.Output.Services
                 if (dev != null && slotDevice != null)
                 {
                     string tempType = dev.GetDeviceType();
-                    AppLogger.Log(AppLogLevel.Info, $"Disassociated virtual {tempType} Controller in{(slotDevice.CurrentReserveStatus == OutSlotDevice.ReserveStatus.Permanent ? " permanent" : "")} output slot #{slotDevice.Index + 1} from input controller #{index + 1} ({device.DisplayName})", LogOptions.UserFacing);
+                    AppLogger.LogUser(AppLogLevel.Info, slotDevice.CurrentReserveStatus == OutSlotDevice.ReserveStatus.Permanent ? "Log_Out_DisassociatedPermanent" : "Log_Out_Disassociated", tempType, slotDevice.Index + 1, index + 1, device.DisplayName);
 
                     OutContType currentType = ActiveOutDevType[index];
                     outputDevices[index] = null;

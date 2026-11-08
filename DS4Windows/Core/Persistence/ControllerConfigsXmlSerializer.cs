@@ -57,7 +57,7 @@ namespace DS4Windows.Core.Persistence
             configXdoc.AppendChild(Node);
 
             try { configXdoc.Save(store.m_controllerConfigs); }
-            catch (UnauthorizedAccessException) { AppLogger.Log(AppLogLevel.Warn, "Unauthorized Access - Save failed to path: " + store.m_controllerConfigs, LogOptions.UserFacing); saved = false; }
+            catch (UnauthorizedAccessException) { AppLogger.LogUser(AppLogLevel.Warn, "Log_Xml_UnauthorizedSave", store.m_controllerConfigs); saved = false; }
 
             return saved;
         }
@@ -86,7 +86,7 @@ namespace DS4Windows.Core.Persistence
             }
             catch
             {
-                AppLogger.Log(AppLogLevel.Warn, "ControllerConfigs.xml can't be found.", LogOptions.UserFacing);
+                AppLogger.LogUser(AppLogLevel.Warn, "Log_Xml_ControllerConfigsNotFound");
                 loaded = false;
             }
 
@@ -150,7 +150,7 @@ namespace DS4Windows.Core.Persistence
             }
             catch (UnauthorizedAccessException)
             {
-                AppLogger.Log(AppLogLevel.Warn, "Unauthorized Access - Save failed to path: " + store.m_controllerConfigs, LogOptions.UserFacing);
+                AppLogger.LogUser(AppLogLevel.Warn, "Log_Xml_UnauthorizedSave", store.m_controllerConfigs);
                 saved = false;
             }
 
