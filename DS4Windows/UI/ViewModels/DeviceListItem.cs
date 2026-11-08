@@ -27,20 +27,22 @@ using MuteLEDMode = DS4Windows.Core.Settings.DualSenseControllerOptions.MuteLEDM
 using LinkMode = DS4Windows.Core.Settings.JoyConDeviceOptions.LinkMode;
 using JoinedGyroProvider = DS4Windows.Core.Settings.JoyConDeviceOptions.JoinedGyroProvider;
 
+using DS4Windows.Processing.Abstractions;
+
 namespace DS4Windows.UI.ViewModels
 {
 
     public class DeviceListItem
     {
-        private DS4Device device;
-        public DS4Device Device { get => device; }
+        private IControllerSlotView device;
+        public IControllerSlotView Device { get => device; }
 
         public string IdText
         {
             get => $"{device.DisplayName} ({device.MacAddress})";
         }
 
-        public DeviceListItem(DS4Device device)
+        public DeviceListItem(IControllerSlotView device)
         {
             this.device = device;
         }

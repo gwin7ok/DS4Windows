@@ -85,7 +85,7 @@ namespace DS4Windows.UI
 
         int DS4Windows.Processing.Abstractions.IIpcCommandHost.ControllerCount => conLvViewModel.ControllerCol.Count;
 
-        DS4Device DS4Windows.Processing.Abstractions.IIpcCommandHost.GetControllerDevice(int index)
+        DS4Windows.Processing.Abstractions.IControllerSlotView DS4Windows.Processing.Abstractions.IIpcCommandHost.GetControllerDevice(int index)
             => conLvViewModel.ControllerCol[index]?.Device;
 
         void DS4Windows.Processing.Abstractions.IIpcCommandHost.LogDebug(string message) => AppLogger.Log(AppLogLevel.Info, message, LogOptions.UserFacing);

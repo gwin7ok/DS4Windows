@@ -69,7 +69,7 @@ namespace DS4WindowsTests
             Assert.True(start >= 0);
             string body = code.Substring(start, 1200);
             Assert.Contains("string battery = \"N/A\";", body);
-            Assert.Contains("controlService.DS4Controllers[devIndex]", body);
+            Assert.Contains("slots.GetSlot(devIndex)", body);
             Assert.DoesNotContain("battery = $\"{item.Device.Battery}\"", body);
         }
 

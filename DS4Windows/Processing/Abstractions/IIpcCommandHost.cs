@@ -34,7 +34,7 @@ namespace DS4Windows.Processing.Abstractions
         int ControllerCount { get; }
 
         /// <summary>指定のスロットのデバイス（行が無い・未接続なら null。範囲外は例外）。</summary>
-        DS4Device GetControllerDevice(int index);
+        IControllerSlotView GetControllerDevice(int index);
 
         /// <summary>ログ（GUI のログ、ログファイル。旧 <c>ControlService.LogDebug</c>）。</summary>
         void LogDebug(string message);

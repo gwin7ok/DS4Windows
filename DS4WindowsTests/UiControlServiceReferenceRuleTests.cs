@@ -20,7 +20,6 @@ namespace DS4WindowsTests
         {
             "DS4Windows.UI.BindingWindow",
             "DS4Windows.UI.ControllerReadingsControl",
-            "DS4Windows.UI.ControllerRegisterOptionsWindow",
             "DS4Windows.UI.MainWindow",
             "DS4Windows.UI.ProfileEditor",
             "DS4Windows.UI.RecordBox",
@@ -28,10 +27,7 @@ namespace DS4WindowsTests
             "DS4Windows.UI.Services.MainWindowFactory",
             "DS4Windows.UI.Services.ViewModelFactory",
             "DS4Windows.UI.StickCalibrationWindow",
-            "DS4Windows.UI.ViewModels.ControllerListViewModel",
-            "DS4Windows.UI.ViewModels.ControllerRegDeviceOptsViewModel",
             "DS4Windows.UI.ViewModels.RecordBoxViewModel",
-            "DS4Windows.UI.ViewModels.TrayIconViewModel",
         };
 
         [Fact]

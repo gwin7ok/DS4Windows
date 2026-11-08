@@ -163,6 +163,8 @@ namespace DS4Windows.Composition
             // Phase13-Step5: スロット状態の持ち主。IDeviceStateAccessor（GetController）も同じインスタンスを返す
             services.AddSingleton<IDeviceSlotState, DeviceSlotState>();
             services.AddSingleton<IDeviceStateAccessor>(sp => sp.GetRequiredService<IDeviceSlotState>());
+            // UI 向けの、接続中のコントローラーの読み取りの窓口（UI は DS4Device と ControlService を持たない）
+            services.AddSingleton<IControllerSlotQuery, ControllerSlotQuery>();
             // Phase13-Step5b: 入力レポートの処理（旧 ControlService.On_Report）と、その作業用の状態の持ち主。出力種別の配列は IOutputDeviceTypeState から直接受ける
             services.AddSingleton<IInputReportProcessor>(sp => new InputReportProcessor(
                 sp.GetRequiredService<LightbarOverrides>(),   // Phase14c-Step4

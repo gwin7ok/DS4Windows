@@ -39,7 +39,8 @@ namespace DS4WindowsTests
             string code = SourceText.ReadNormalized(MainWindowCode);
             if (code == null) return;
 
-            Assert.Contains("private bool IsSlotConnected(int slot) { var controllers = controlService.DS4Controllers; return controllers != null && slot >= 0 && slot < controllers.Length && controllers[slot] != null; }", code);
+            Assert.Contains("private bool IsSlotConnected(int slot)", code);
+            Assert.Contains("return slots.GetSlot(slot) != null;", code);
         }
     }
 }

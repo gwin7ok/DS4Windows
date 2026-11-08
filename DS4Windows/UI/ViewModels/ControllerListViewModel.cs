@@ -32,8 +32,7 @@ using DS4Windows.Core.Abstractions;
 using DS4Windows.Core.Logging;
 using DS4Windows.Core.Profiles;
 using DS4Windows.Core.Utilities;
-using DS4Windows.Input;
-using DS4Windows.Processing;
+using DS4Windows.Processing.Abstractions;
 
 namespace DS4Windows.UI.ViewModels
 {
@@ -49,7 +48,8 @@ namespace DS4Windows.UI.ViewModels
         { get => controllerCol; set => controllerCol = value; }
 
         private ProfileList profileListHolder;
-        private ControlService controlService;
+        private readonly IControllerSlotQuery slots;
+        private readonly IServiceLifecycle lifecycle;
         private readonly IProfileSettingsService profileSettingsService;
         private readonly IProfileRepository profileRepo;
         private readonly IAppSettingsService appSettings;
@@ -67,7 +67,7 @@ namespace DS4Windows.UI.ViewModels
 
         public Dictionary<int, CompositeDeviceModel> ControllerDict { get => controllerDict; set => controllerDict = value; }
 
-        public ControllerListViewModel(ControlService service, ProfileList profileListHolder,
+        public ControllerListViewModel(IControllerSlotQuery slots, IServiceLifecycle lifecycle, ProfileList profileListHolder,
             IProfileSettingsService profileSettingsService,
             IProfileRepository profileRepo,
             IAppSettingsService appSettings)
@@ -79,17 +79,19 @@ namespace DS4Windows.UI.ViewModels
             this.profileRepo = profileRepo ?? throw new ArgumentNullException(nameof(profileRepo));
             this.appSettings = appSettings ?? throw new ArgumentNullException(nameof(appSettings));
             this.profileListHolder = profileListHolder;
-            this.controlService = service;
-            service.ServiceStarted += ControllersChanged;
-            service.PreServiceStop += ClearControllerList;
-            service.HotplugController += Service_HotplugController;
+            this.slots = slots ?? throw new ArgumentNullException(nameof(slots));
+            this.lifecycle = lifecycle ?? throw new ArgumentNullException(nameof(lifecycle));
+            lifecycle.ServiceStarted += ControllersChanged;
+            lifecycle.PreServiceStop += ClearControllerList;
+            slots.SlotChanged += Service_HotplugController;
 
             // Subscribe to SelectedProfile change event (スペシャルアクション対応)
             this.profileRepo.SelectedProfileChanged += Global_SelectedProfileChanged;
 
             int idx = 0;
-            foreach (DS4Device currentDev in controlService.slotManager.ControllerColl)
+            foreach (ControllerSlotEntry entry in slots.Snapshot())
             {
+                IControllerSlotView currentDev = entry.View;
                 CompositeDeviceModel temp = new CompositeDeviceModel(currentDev,
                     idx, profileRepo.ProfilePath[idx], profileListHolder, profileSettingsService, profileRepo);
                 controllerCol.Add(temp);
@@ -121,9 +123,10 @@ namespace DS4Windows.UI.ViewModels
             }
         }
 
-        private void Service_HotplugController(ControlService sender,
-            DS4Device device, int index)
+        private void Service_HotplugController(object sender, ControllerSlotChangedEventArgs args)
         {
+            IControllerSlotView device = args.View;
+            int index = args.SlotIndex;
             using (WriteLocker readLock = new WriteLocker(_colListLocker))
             {
                 // Phase11 電池残量の一本化: 再接続の通知が、前のデバイスの Removal より先に来ても、前のデバイスの行を残さない
@@ -187,19 +190,19 @@ namespace DS4Windows.UI.ViewModels
             }
             finally
             {
-                controlService.ServiceStarted -= ControllersChanged;
-                controlService.PreServiceStop -= ClearControllerList;
-                controlService.HotplugController -= Service_HotplugController;
+                lifecycle.ServiceStarted -= ControllersChanged;
+                lifecycle.PreServiceStop -= ClearControllerList;
+                slots.SlotChanged -= Service_HotplugController;
                 profileRepo.SelectedProfileChanged -= Global_SelectedProfileChanged;
             }
         }
 
         private void ControllersChanged(object sender, EventArgs e)
         {
-            using (ReadLocker locker = new ReadLocker(controlService.slotManager.CollectionLocker))
             {
-                foreach (DS4Device currentDev in controlService.slotManager.ControllerColl)
+                foreach (ControllerSlotEntry entry in slots.Snapshot())
                 {
+                    IControllerSlotView currentDev = entry.View;
                     bool found = false;
                     _colListLocker.EnterReadLock();
                     foreach (CompositeDeviceModel temp in controllerCol)
@@ -215,7 +218,7 @@ namespace DS4Windows.UI.ViewModels
                     if (!found && !currentDev.IsRemoving)
                     {
                         _colListLocker.EnterWriteLock();
-                        int idx = controlService.slotManager.ReverseControllerDict[currentDev];
+                        int idx = entry.SlotIndex;
                         CompositeDeviceModel temp = new CompositeDeviceModel(currentDev,
                             idx, profileRepo.ProfilePath[idx], profileListHolder, profileSettingsService, profileRepo);
                         controllerCol.Add(temp);
@@ -230,7 +233,7 @@ namespace DS4Windows.UI.ViewModels
 
         private void Controller_Removal(object sender, EventArgs e)
         {
-            DS4Device currentDev = sender as DS4Device;
+            IControllerSlotView currentDev = sender as IControllerSlotView;
             CompositeDeviceModel found = null;
             _colListLocker.EnterReadLock();
             foreach (CompositeDeviceModel temp in controllerCol)

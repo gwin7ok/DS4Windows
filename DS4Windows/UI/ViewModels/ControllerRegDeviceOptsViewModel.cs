@@ -23,8 +23,7 @@ using System.Text;
 using System.Threading.Tasks;
 using DS4Windows.Core.Abstractions;
 using DS4Windows.Core.Settings;
-using DS4Windows.Input;
-using DS4Windows.Processing;
+using DS4Windows.Processing.Abstractions;
 using LEDBarMode = DS4Windows.Core.Settings.DualSenseControllerOptions.LEDBarMode;
 using MuteLEDMode = DS4Windows.Core.Settings.DualSenseControllerOptions.MuteLEDMode;
 using LinkMode = DS4Windows.Core.Settings.JoyConDeviceOptions.LinkMode;
@@ -135,25 +134,23 @@ namespace DS4Windows.UI.ViewModels
 
         // Phase6-Step10-2-2: Global.UseMoonlight／UseAdvancedMoonlight／SaveControllerConfigs の置換先（必須引数。null は拒否する）
         private readonly IAppSettingsService appSettings;
-        private readonly IProfileXmlStore profileXmlStore;
 
         public ControllerRegDeviceOptsViewModel(ControlServiceDeviceOptions serviceDeviceOpts,
-            ControlService service, IAppSettingsService appSettings, IProfileXmlStore profileXmlStore)
+            IControllerSlotQuery slots, IAppSettingsService appSettings)
         {
             this.appSettings = appSettings ?? throw new ArgumentNullException(nameof(appSettings));
-            this.profileXmlStore = profileXmlStore ?? throw new ArgumentNullException(nameof(profileXmlStore));
             this.serviceDeviceOpts = serviceDeviceOpts;
+            if (slots == null) throw new ArgumentNullException(nameof(slots));
 
-            int idx = 0;
-            foreach(DS4Device device in service.DS4Controllers)
+            for (int slot = 0; slot < slots.SlotCount; slot++)
             {
+                IControllerSlotView device = slots.GetSlot(slot);
                 if (device != null)
                 {
                     currentInputDevices.Add(new DeviceListItem(device));
-                    inputDeviceSettings.Add(device.MacAddress, device.optionsStore);
-                    controllerOptionsStores.Add(device.optionsStore);
+                    inputDeviceSettings.Add(device.MacAddress, device.OptionsStore);
+                    controllerOptionsStores.Add(device.OptionsStore);
                 }
-                idx++;
             }
         }
 
@@ -225,7 +222,7 @@ namespace DS4Windows.UI.ViewModels
         {
             foreach (DeviceListItem item in currentInputDevices)
             {
-                profileXmlStore.SaveControllerConfigsForDevice(item.Device);
+                item.Device.SaveControllerConfigs();
             }
         }
     }

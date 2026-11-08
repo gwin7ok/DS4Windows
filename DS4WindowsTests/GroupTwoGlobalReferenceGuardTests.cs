@@ -41,10 +41,10 @@ namespace DS4WindowsTests
             var repo = TestRepositoryFactory.CreateProfileRepository();
             var app = TestRepositoryFactory.CreateAppSettingsService();
 
-            // 依存の null 検査は、ControlService を使う処理より前に行われる
-            Assert.Throws<ArgumentNullException>(() => new ControllerListViewModel(null, null, null, repo, app));
-            Assert.Throws<ArgumentNullException>(() => new ControllerListViewModel(null, null, settings, null, app));
-            Assert.Throws<ArgumentNullException>(() => new ControllerListViewModel(null, null, settings, repo, null));
+            // 依存の null 検査は、機器の窓口を使う処理より前に行われる
+            Assert.Throws<ArgumentNullException>(() => new ControllerListViewModel(null, null, null, null, repo, app));
+            Assert.Throws<ArgumentNullException>(() => new ControllerListViewModel(null, null, null, settings, null, app));
+            Assert.Throws<ArgumentNullException>(() => new ControllerListViewModel(null, null, null, settings, repo, null));
         }
 
         [Fact]
@@ -145,13 +145,12 @@ namespace DS4WindowsTests
         }
 
         [Fact]
-        public void ControllerRegDeviceOptsViewModel_RequiresAppSettingsAndXmlStore()
+        public void ControllerRegDeviceOptsViewModel_RequiresAppSettingsAndSlotQuery()
         {
             var app = TestRepositoryFactory.CreateAppSettingsService();
-            var xmlStore = TestRepositoryFactory.CreateProfileXmlStore();
 
-            Assert.Throws<ArgumentNullException>(() => new ControllerRegDeviceOptsViewModel(null, null, null, xmlStore));
-            Assert.Throws<ArgumentNullException>(() => new ControllerRegDeviceOptsViewModel(null, null, app, null));
+            Assert.Throws<ArgumentNullException>(() => new ControllerRegDeviceOptsViewModel(null, null, null));
+            Assert.Throws<ArgumentNullException>(() => new ControllerRegDeviceOptsViewModel(null, null, app));
         }
     }
 }

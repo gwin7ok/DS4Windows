@@ -27,8 +27,7 @@ using DS4Windows.Core.Abstractions;
 using DS4Windows.Core.Logging;
 using DS4Windows.Core.Profiles;
 using DS4Windows.Core.Utilities;
-using DS4Windows.Input;
-using DS4Windows.Processing;
+using DS4Windows.Processing.Abstractions;
 using DS4Windows.Core.Model;
 
 namespace DS4Windows.UI.ViewModels
@@ -91,7 +90,7 @@ namespace DS4Windows.UI.ViewModels
         private ReaderWriterLockSlim _colLocker = new ReaderWriterLockSlim();
         private List<ControllerHolder> controllerList = new List<ControllerHolder>();
         private ProfileList profileListHolder;
-        private ControlService controlService;
+        private readonly IControllerSlotQuery slots;
         private readonly DS4Windows.Processing.Abstractions.IServiceLifecycle lifecycle;
         private readonly IAppearanceSettingsService appearanceSettings;
         private readonly IProfileRepository profileRepository;
@@ -104,7 +103,7 @@ namespace DS4Windows.UI.ViewModels
         public event ProfileSelectedHandler ProfileSelected;
 
         //public TrayIconViewModel(Tester tester)
-        public TrayIconViewModel(ControlService service, DS4Windows.Processing.Abstractions.IServiceLifecycle lifecycle, ProfileList profileListHolder,
+        public TrayIconViewModel(IControllerSlotQuery slots, DS4Windows.Processing.Abstractions.IServiceLifecycle lifecycle, ProfileList profileListHolder,
             IAppearanceSettingsService appearanceSettings, IProfileRepository profileRepository,
             IEnvironmentService environmentService, IPathService pathService,
             System.Windows.Threading.Dispatcher dispatcher)
@@ -118,7 +117,7 @@ namespace DS4Windows.UI.ViewModels
             if (environmentService == null) throw new ArgumentNullException(nameof(environmentService));
 
             this.profileListHolder = profileListHolder;
-            this.controlService = service;
+            this.slots = slots;
             this.lifecycle = lifecycle ?? throw new ArgumentNullException(nameof(lifecycle));   // Phase13-Step9: 旧 ControlService.running の転送
             trayTitle = $"DS4Windows v{environmentService.ApplicationVersion}";
             contextMenu = new ContextMenu();
@@ -146,14 +145,14 @@ namespace DS4Windows.UI.ViewModels
             SetupEvents();
             profileListHolder.ProfileListCol.CollectionChanged += ProfileListCol_CollectionChanged;
 
-            service.ServiceStarted += BuildControllerList;
-            service.ServiceStarted += HookEvents;
-            service.ServiceStarted += StartPopulateText;
-            service.PreServiceStop += ClearToolText;
-            service.PreServiceStop += UnhookEvents;
-            service.PreServiceStop += ClearControllerList;
-            service.RunningChanged += Service_RunningChanged;
-            service.HotplugController += Service_HotplugController;
+            lifecycle.ServiceStarted += BuildControllerList;
+            lifecycle.ServiceStarted += HookEvents;
+            lifecycle.ServiceStarted += StartPopulateText;
+            lifecycle.PreServiceStop += ClearToolText;
+            lifecycle.PreServiceStop += UnhookEvents;
+            lifecycle.PreServiceStop += ClearControllerList;
+            lifecycle.RunningChanged += Service_RunningChanged;
+            slots.SlotChanged += Service_HotplugController;
             /*tester.StartControllers += HookBatteryUpdate;
             tester.StartControllers += StartPopulateText;
             tester.PreRemoveControllers += ClearToolText;
@@ -184,14 +183,16 @@ namespace DS4Windows.UI.ViewModels
             _colLocker.EnterReadLock();
             foreach (ControllerHolder holder in controllerList)
             {
-                DS4Device currentDev = holder.Device;
+                IControllerSlotView currentDev = holder.Device;
                 RemoveDeviceEvents(currentDev);
             }
             _colLocker.ExitReadLock();
         }
 
-        private void Service_HotplugController(ControlService sender, DS4Device device, int index)
+        private void Service_HotplugController(object sender, ControllerSlotChangedEventArgs args)
         {
+            IControllerSlotView device = args.View;
+            int index = args.SlotIndex;
             SetupDeviceEvents(device);
             _colLocker.EnterWriteLock();
             controllerList.Add(new ControllerHolder(device, index));
@@ -220,7 +221,7 @@ namespace DS4Windows.UI.ViewModels
             {
                 foreach (ControllerHolder holder in controllerList)
                 {
-                    DS4Device currentDev = holder.Device;
+                    IControllerSlotView currentDev = holder.Device;
                     item = new MenuItem() { Header = $"Controller {idx + 1}" };
                     item.Tag = idx;
                     //item.ContextMenu = new ContextMenu();
@@ -250,7 +251,7 @@ namespace DS4Windows.UI.ViewModels
                 idx = 0;
                 foreach (ControllerHolder holder in controllerList)
                 {
-                    DS4Device tempDev = holder.Device;
+                    IControllerSlotView tempDev = holder.Device;
                     if (tempDev.Synced && !tempDev.Charging)
                     {
                         MenuItem subitem = new MenuItem() { Header = $"Disconnect Controller {idx + 1}" };
@@ -315,13 +316,13 @@ namespace DS4Windows.UI.ViewModels
             MenuItem item = sender as MenuItem;
             int idx = Convert.ToInt32(item.Tag);
             ControllerHolder holder = controllerList[idx];
-            DS4Device tempDev = holder?.Device;
+            IControllerSlotView tempDev = holder?.Device;
             if (tempDev != null && tempDev.Synced && !tempDev.Charging)
             {
                 if (tempDev.ConnectionType == ConnectionType.BT)
                 {
                     //tempDev.StopUpdate();
-                    tempDev.DisconnectBT();
+                    tempDev.DisconnectBluetooth();
                 }
                 else if (tempDev.ConnectionType == ConnectionType.SONYWA)
                 {
@@ -337,9 +338,9 @@ namespace DS4Windows.UI.ViewModels
             //IEnumerable<DS4Device> devices = DS4Devices.getDS4Controllers();
             int idx = 0;
             _colLocker.EnterWriteLock();
-            foreach (DS4Device currentDev in controlService.slotManager.ControllerColl)
+            foreach (ControllerSlotEntry entry in slots.Snapshot())
             {
-                controllerList.Add(new ControllerHolder(currentDev, idx));
+                controllerList.Add(new ControllerHolder(entry.View, idx));
                 idx++;
             }
             _colLocker.ExitWriteLock();
@@ -364,7 +365,7 @@ namespace DS4Windows.UI.ViewModels
             _colLocker.EnterReadLock();
             foreach (ControllerHolder holder in controllerList)
             {
-                DS4Device currentDev = holder.Device;
+                IControllerSlotView currentDev = holder.Device;
                 items.Add($"{idx}: {currentDev.ConnectionType} {currentDev.Battery}%{(currentDev.Charging ? "+" : "")}");
                 idx++;
             }
@@ -380,20 +381,20 @@ namespace DS4Windows.UI.ViewModels
             _colLocker.EnterReadLock();
             foreach (ControllerHolder holder in controllerList)
             {
-                DS4Device currentDev = holder.Device;
+                IControllerSlotView currentDev = holder.Device;
                 SetupDeviceEvents(currentDev);
             }
             _colLocker.ExitReadLock();
         }
 
-        private void SetupDeviceEvents(DS4Device device)
+        private void SetupDeviceEvents(IControllerSlotView device)
         {
             device.BatteryChanged += UpdateForBattery;
             device.ChargingChanged += UpdateForBattery;
             device.Removal += CurrentDev_Removal;
         }
 
-        private void RemoveDeviceEvents(DS4Device device)
+        private void RemoveDeviceEvents(IControllerSlotView device)
         {
             device.BatteryChanged -= UpdateForBattery;
             device.ChargingChanged -= UpdateForBattery;
@@ -402,7 +403,7 @@ namespace DS4Windows.UI.ViewModels
 
         private void CurrentDev_Removal(object sender, EventArgs e)
         {
-            DS4Device currentDev = sender as DS4Device;
+            IControllerSlotView currentDev = sender as IControllerSlotView;
             ControllerHolder item = null;
             int idx = 0;
 

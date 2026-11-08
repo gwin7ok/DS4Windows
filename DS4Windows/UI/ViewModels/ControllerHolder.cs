@@ -25,17 +25,19 @@ using System.Windows;
 using System.Windows.Controls;
 using DS4Windows.Input;
 
+using DS4Windows.Processing.Abstractions;
+
 namespace DS4Windows.UI.ViewModels
 {
 
     public class ControllerHolder
     {
-        private DS4Device device;
+        private IControllerSlotView device;
         private int index;
-        public DS4Device Device { get => device; }
+        public IControllerSlotView Device { get => device; }
         public int Index { get => index; }
 
-        public ControllerHolder(DS4Device device, int index)
+        public ControllerHolder(IControllerSlotView device, int index)
         {
             this.device = device;
             this.index = index;

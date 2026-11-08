@@ -41,6 +41,7 @@ namespace DS4Windows.UI.Services
         private readonly IUiThemeAndLanguage _themeLanguage;
         private readonly IIpcResultWriter _ipcResultWriter;
         private readonly IChangelogService _changelogService;   // Phase14b-Step17（D10）: 更新の確認・変更履歴   // Phase14b-Step16: CLI の問い合わせの結果の書き込み   // Phase14b-Step16（D11）: テーマ・言語の切り替え   // Phase14b-Step15（D12）: 設定画面のスタートアップ登録
+        private readonly IControllerSlotQuery _slots;
         private readonly IAutoProfileService _autoProfileService;   // Phase13-Step8 8-c: 旧 遅延取得デリゲート。画面の生成時（設定の場所の確定後）に解決される
 
         // Phase14c-Step4（R-05 の前半）: ライトバーの強制表示の状態（旧: DS4LightBar の静的な配列）
@@ -72,8 +73,10 @@ namespace DS4Windows.UI.Services
             IStartupEntryService startupEntries,
             IUiThemeAndLanguage themeLanguage,
             IIpcResultWriter ipcResultWriter,
-            IChangelogService changelogService)
+            IChangelogService changelogService,
+            IControllerSlotQuery slots)
         {
+            _slots = slots ?? throw new ArgumentNullException(nameof(slots));
             _lightbar = lightbar ?? throw new System.ArgumentNullException(nameof(lightbar));
             _changelogService = changelogService ?? throw new ArgumentNullException(nameof(changelogService));
             _ipcResultWriter = ipcResultWriter ?? throw new ArgumentNullException(nameof(ipcResultWriter));
@@ -107,6 +110,6 @@ namespace DS4Windows.UI.Services
             => new MainWindow(_lightbar, parser, _profileSettings, _appSettings, _profileXmlStore, _editorWindowFactory,
                 _pathService, _environmentService, _appearanceSettings, _profileApplication, _outputSlotService,
                 _profileRepository, _notificationService, _controlService, _lifecycle, _runtimeFeatures, _ipcProcessor, _loadTarget, _profileSlotApplier,
-                _mainWindowsViewModel, _logSettingsApplier, _autoProfileService, _viewModelFactory, _profileIdentityService, _startupEntries, _themeLanguage, _ipcResultWriter, _changelogService);
+                _mainWindowsViewModel, _logSettingsApplier, _autoProfileService, _viewModelFactory, _profileIdentityService, _startupEntries, _themeLanguage, _ipcResultWriter, _changelogService, _slots);
     }
 }

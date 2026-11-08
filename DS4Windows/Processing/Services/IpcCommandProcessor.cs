@@ -141,7 +141,7 @@ namespace DS4Windows.Processing.Services
 
                     if (idx >= 0 && tdevice < host.ControllerCount)
                     {
-                        DS4Device devitem = host.GetControllerDevice(tdevice);
+                        IControllerSlotView devitem = host.GetControllerDevice(tdevice);
                         if (devitem != null)
                         {
                             string prolog = string.Format(DS4Windows.Properties.Resources.UsingProfile,
@@ -166,7 +166,7 @@ namespace DS4Windows.Processing.Services
                 {
                     Task.Run(() =>
                     {
-                        DS4Device tempDevice = host.GetControllerDevice(tdevice);
+                        IControllerSlotView tempDevice = host.GetControllerDevice(tdevice);
                         if (tempDevice != null)
                         {
                             tempDevice.HaltReportingRunAction(() =>
@@ -179,7 +179,7 @@ namespace DS4Windows.Processing.Services
                     }).Wait();
                 }
 
-                DS4Device device = host.GetControllerDevice(tdevice);
+                IControllerSlotView device = host.GetControllerDevice(tdevice);
                 if (device != null)
                 {
                     string prolog = string.Format(DS4Windows.Properties.Resources.UsingProfile, (tdevice + 1).ToString(), strData[2], $"{device.Battery}");

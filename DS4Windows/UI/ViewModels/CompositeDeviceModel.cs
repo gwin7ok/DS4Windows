@@ -32,14 +32,14 @@ using DS4Windows.Core.Abstractions;
 using DS4Windows.Core.Logging;
 using DS4Windows.Core.Model;
 using DS4Windows.Core.Profiles;
-using DS4Windows.Input;
+using DS4Windows.Processing.Abstractions;
 
 namespace DS4Windows.UI.ViewModels
 {
 
     public class CompositeDeviceModel : INotifyPropertyChanged
     {
-        private DS4Device device;
+        private IControllerSlotView device;
         private string selectedProfile;
         private ProfileList profileListHolder;
         private ProfileEntity selectedEntity;
@@ -51,7 +51,7 @@ namespace DS4Windows.UI.ViewModels
 
         public event PropertyChangedEventHandler PropertyChanged;
 
-        public DS4Device Device { get => device; set => device = value; }
+        public IControllerSlotView Device { get => device; set => device = value; }
         public string SelectedProfile { get => selectedProfile; set => selectedProfile = value; }
         public ProfileList ProfileEntities { get => profileListHolder; set => profileListHolder = value; }
         public ObservableCollection<ProfileEntity> ProfileListCol => profileListHolder.ProfileListCol;
@@ -161,7 +161,7 @@ namespace DS4Windows.UI.ViewModels
             {
                 string imgName = (string)App.Current.FindResource("CancelImg");
                 string source = $"{ResourcePaths.ResourcesPrefix}/{imgName}";
-                switch (device.CurrentExclusiveStatus)
+                switch (device.ExclusiveStatus)
                 {
                     case DeviceExclusiveStatus.Exclusive:
                         imgName = (string)App.Current.FindResource("CheckedImg");
@@ -233,11 +233,11 @@ namespace DS4Windows.UI.ViewModels
 
                 profileRepo.LinkedProfileUI[devIndex] = newValue;
 
-                if (profileSettingsService.GetLinkedProfileCheck(devIndex) && device?.isValidSerial() == true)
+                if (profileSettingsService.GetLinkedProfileCheck(devIndex) && device?.HasValidSerial == true)
                 {
                     if (!string.IsNullOrEmpty(newValue))
                     {
-                        profileRepo.ChangeLinkedProfile(device.getMacAddress(), newValue);
+                        profileRepo.ChangeLinkedProfile(device.MacAddress, newValue);
                         profileRepo.SaveLinkedProfiles();
                     }
                 }
@@ -270,15 +270,15 @@ namespace DS4Windows.UI.ViewModels
 
                     AppLogger.LogDebug($"LinkEnabled ON: Registering profile '{linkedValue}' for device {devIndex}");
 
-                    if (!string.IsNullOrEmpty(linkedValue) && device?.isValidSerial() == true)
+                    if (!string.IsNullOrEmpty(linkedValue) && device?.HasValidSerial == true)
                     {
-                        profileRepo.ChangeLinkedProfile(device.getMacAddress(), linkedValue);
+                        profileRepo.ChangeLinkedProfile(device.MacAddress, linkedValue);
                         profileRepo.SaveLinkedProfiles();
-                        AppLogger.LogDebug($"LinkEnabled ON: Saved to LinkedProfiles.xml for MAC={device.getMacAddress()}");
+                        AppLogger.LogDebug($"LinkEnabled ON: Saved to LinkedProfiles.xml for MAC={device.MacAddress}");
                     }
                     else
                     {
-                        AppLogger.LogWarn($"LinkEnabled ON: Could not save - linkedValue='{linkedValue}', validSerial={device?.isValidSerial()}");
+                        AppLogger.LogWarn($"LinkEnabled ON: Could not save - linkedValue='{linkedValue}', validSerial={device?.HasValidSerial}");
                     }
 
                     LinkedProfileNameChanged?.Invoke(this, EventArgs.Empty);
@@ -286,11 +286,11 @@ namespace DS4Windows.UI.ViewModels
                 else
                 {
                     AppLogger.LogDebug($"LinkEnabled OFF: Removing from LinkedProfiles.xml for device {devIndex}");
-                    if (device?.isValidSerial() == true)
+                    if (device?.HasValidSerial == true)
                     {
-                        profileRepo.RemoveLinkedProfile(device.getMacAddress());
+                        profileRepo.RemoveLinkedProfile(device.MacAddress);
                         profileRepo.SaveLinkedProfiles();
-                        AppLogger.LogDebug($"LinkEnabled OFF: Removed from LinkedProfiles.xml for MAC={device.getMacAddress()}");
+                        AppLogger.LogDebug($"LinkEnabled OFF: Removed from LinkedProfiles.xml for MAC={device.MacAddress}");
                     }
 
                     AppLogger.LogDebug($"LinkEnabled OFF: Keeping LinkedProfileUI value '{profileRepo.LinkedProfileUI[devIndex]}' for device {devIndex}");
@@ -330,15 +330,15 @@ namespace DS4Windows.UI.ViewModels
         {
             get
             {
-                if (device.CurrentExclusiveStatus == DeviceExclusiveStatus.Exclusive)
+                if (device.ExclusiveStatus == DeviceExclusiveStatus.Exclusive)
                 {
                     return Translations.Strings.ExclusiveAccess;
                 }
-                else if (device.CurrentExclusiveStatus == DeviceExclusiveStatus.HidHideAffected)
+                else if (device.ExclusiveStatus == DeviceExclusiveStatus.HidHideAffected)
                 {
                     return Translations.Strings.HidHideAccess;
                 }
-                else if (device.CurrentExclusiveStatus == DeviceExclusiveStatus.HidGuardAffected)
+                else if (device.ExclusiveStatus == DeviceExclusiveStatus.HidGuardAffected)
                 {
                     return Translations.Strings.HidGuardianAccess;
                 }
@@ -355,7 +355,7 @@ namespace DS4Windows.UI.ViewModels
         public delegate void CustomColorHandler(CompositeDeviceModel sender);
         public event CustomColorHandler RequestColorPicker;
 
-        public CompositeDeviceModel(DS4Device device, int devIndex, string profile,
+        public CompositeDeviceModel(IControllerSlotView device, int devIndex, string profile,
             ProfileList collection, IProfileSettingsService profileSettingsService,
             IProfileRepository profileRepo)
         {
@@ -417,18 +417,18 @@ namespace DS4Windows.UI.ViewModels
 
         private void SaveLinked(bool status)
         {
-            if (device != null && device.isSynced())
+            if (device != null && device.Synced)
             {
                 if (status)
                 {
-                    if (device.isValidSerial())
+                    if (device.HasValidSerial)
                     {
-                        profileRepo.ChangeLinkedProfile(device.getMacAddress(), profileRepo.ProfilePath[devIndex]);
+                        profileRepo.ChangeLinkedProfile(device.MacAddress, profileRepo.ProfilePath[devIndex]);
                     }
                 }
                 else
                 {
-                    profileRepo.RemoveLinkedProfile(device.getMacAddress());
+                    profileRepo.RemoveLinkedProfile(device.MacAddress);
                     profileRepo.ProfilePath[devIndex] = profileRepo.OlderProfilePath[devIndex];
                 }
 
@@ -487,9 +487,9 @@ namespace DS4Windows.UI.ViewModels
             {
                 if (device.ConnectionType == ConnectionType.BT)
                 {
-                    device.queueEvent(() =>
+                    device.QueueEvent(() =>
                     {
-                        device.DisconnectBT();
+                        device.DisconnectBluetooth();
                     });
                 }
                 else if (device.ConnectionType == ConnectionType.SONYWA)

@@ -116,6 +116,7 @@ namespace DS4Windows.UI
         // IMainWindowFactory（実装は MainWindowFactory）が DI から解決して渡す。
         // Phase14c-Step4（R-05 の前半）: ライトバーの強制表示の状態（旧: DS4LightBar の静的な配列）
         private readonly DS4Windows.Core.Model.LightbarOverrides _lightbar;
+        private readonly DS4Windows.Processing.Abstractions.IControllerSlotQuery slots;
 
         public MainWindow(DS4Windows.Core.Model.LightbarOverrides lightbar, ArgumentParser parser,
             DS4Windows.Core.Abstractions.IProfileSettingsService profileSettingsService,
@@ -143,8 +144,10 @@ namespace DS4Windows.UI
             DS4Windows.Core.Abstractions.IStartupEntryService startupEntries,
             DS4Windows.UI.Abstractions.IUiThemeAndLanguage themeLanguage,
             DS4Windows.UI.Abstractions.IIpcResultWriter ipcResultWriter,
-            DS4Windows.Core.Abstractions.IChangelogService changelogService)
+            DS4Windows.Core.Abstractions.IChangelogService changelogService,
+            DS4Windows.Processing.Abstractions.IControllerSlotQuery slots)
         {
+            this.slots = slots ?? throw new System.ArgumentNullException(nameof(slots));
             _lightbar = lightbar ?? throw new System.ArgumentNullException(nameof(lightbar));
             this.changelogService = changelogService ?? throw new ArgumentNullException(nameof(changelogService));   // Phase14b-Step17（D10）
             this.ipcResultWriter = ipcResultWriter ?? throw new ArgumentNullException(nameof(ipcResultWriter));   // Phase14b-Step16: CLI の問い合わせの結果の書き込み
@@ -202,7 +205,7 @@ namespace DS4Windows.UI
             StartStopBtn.Content = lifecycle.Running ? Translations.Strings.StopText :
                 Translations.Strings.StartText;
 
-            conLvViewModel = new ControllerListViewModel(controlService, profileListHolder,
+            conLvViewModel = new ControllerListViewModel(slots, lifecycle, profileListHolder,
                 profileSettingsService, profileRepo, appSettingsService);
             controllerLV.DataContext = conLvViewModel;
             controllerLV.ItemsSource = conLvViewModel.ControllerCol;
@@ -214,7 +217,7 @@ namespace DS4Windows.UI
             view.SortDescriptions.Add(new SortDescription("DevIndex", ListSortDirection.Ascending));
             view.Refresh();
 
-            trayIconVM = new TrayIconViewModel(controlService, lifecycle, profileListHolder,
+            trayIconVM = new TrayIconViewModel(slots, lifecycle, profileListHolder,
                 appearanceSettingsService, profileRepo, environmentService, pathService, Dispatcher);
 
             // Need to define before calling TaskbarIcon.ForceCreate
@@ -483,9 +486,9 @@ namespace DS4Windows.UI
         }
         private void SetupEvents()
         {
-            controlService.ServiceStarted += ControlServiceStarted;
-            controlService.RunningChanged += ControlServiceChanged;
-            controlService.PreServiceStop += PrepareForServiceStop;
+            lifecycle.ServiceStarted += ControlServiceStarted;
+            lifecycle.RunningChanged += ControlServiceChanged;
+            lifecycle.PreServiceStop += PrepareForServiceStop;
             //root.rootHubtest.RunningChanged += ControlServiceChanged;
             conLvViewModel.ControllerCol.CollectionChanged += ControllerCol_CollectionChanged;
             notificationService.NotificationTriggered += ShowSystemNotification;
@@ -506,7 +509,7 @@ namespace DS4Windows.UI
             autoProfControl.AutoDebugChanged += AutoProfControl_AutoDebugChanged;
             _autoProfileService.RequestServiceChange += AutoprofileChecker_RequestServiceChange;
             // 自動プロファイルは接続中のスロットにだけ適用する。接続した直後に、最後の前景ウィンドウで照合し直す
-            controlService.HotplugController += ControlService_HotplugControllerRecheckAutoProfile;
+            slots.SlotChanged += ControlService_HotplugControllerRecheckAutoProfile;
             autoProfileHolder.AutoProfileColl.CollectionChanged += AutoProfileColl_CollectionChanged;
             //autoProfControl.AutoProfVM.AutoProfileSystemChange += AutoProfVM_AutoProfileSystemChange;
             mainWinVM.FullTabsEnabledChanged += MainWinVM_FullTabsEnabledChanged;
@@ -821,8 +824,7 @@ namespace DS4Windows.UI
                     // Phase11 電池残量の一本化: 残量は一覧のモデルを経由せず、スロットのデバイスから直接読む
                     // （再接続の直後は一覧の行がまだ無く、"0" と表示されていた）
                     string battery = "N/A";
-                    DS4Device batteryDevice = devIndex >= 0 && devIndex < controlService.DS4Controllers.Length
-                        ? controlService.DS4Controllers[devIndex] : null;
+                    DS4Windows.Processing.Abstractions.IControllerSlotView batteryDevice = slots.GetSlot(devIndex);
                     if (batteryDevice != null)
                         battery = $"{batteryDevice.Battery}";
 
@@ -897,7 +899,7 @@ namespace DS4Windows.UI
             }
         }
 
-        private void ControlService_HotplugControllerRecheckAutoProfile(DS4Windows.Processing.ControlService sender, DS4Windows.Input.DS4Device device, int index)
+        private void ControlService_HotplugControllerRecheckAutoProfile(object sender, DS4Windows.Processing.Abstractions.ControllerSlotChangedEventArgs args)
         {
             if (!_autoProfileService.Running)
                 return;
@@ -970,7 +972,6 @@ namespace DS4Windows.UI
         private void ControlServiceChanged(object sender, EventArgs e)
         {
             //Tester service = sender as Tester;
-            ControlService service = sender as ControlService;
             Dispatcher.BeginInvoke((Action)(() =>
             {
                 if (lifecycle.Running)
@@ -1883,8 +1884,7 @@ namespace DS4Windows.UI
         // Phase11 W6 K-W6-2: そのスロットに、接続中のコントローラーがあるか（サービス停止中は、どのスロットも false）
         private bool IsSlotConnected(int slot)
         {
-            var controllers = controlService.DS4Controllers;
-            return controllers != null && slot >= 0 && slot < controllers.Length && controllers[slot] != null;
+            return slots.GetSlot(slot) != null;
         }
 
         #endregion
@@ -2046,8 +2046,8 @@ namespace DS4Windows.UI
         private void DeviceOptionSettingsBtn_Click(object sender, RoutedEventArgs e)
         {
             ControllerRegisterOptionsWindow optsWindow =
-                new ControllerRegisterOptionsWindow(controlService.DeviceOptions, controlService,
-                    appSettingsService, profileXmlStore);
+                new ControllerRegisterOptionsWindow(controlService.DeviceOptions, slots,
+                    appSettingsService);
 
             optsWindow.Owner = this;
             optsWindow.Show();
