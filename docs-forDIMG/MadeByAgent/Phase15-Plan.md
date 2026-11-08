@@ -1,8 +1,8 @@
 # Phase15 個別計画書: UI 共通化
 
 作成日: 2026-11-08
-状態: **草案（承認待ち）。決定事項 P1〜P8 の回答を得てから Step 15-1 に着手する**
-ブランチ: `Phase15`（承認後に master c0c266f4 から作成）
+状態: **決定事項 P1〜P10 に回答済み（2026-11-08。§4.1）。Step 15-1 の細部を追記してから着手する**
+ブランチ: `Phase15`（master c0c266f4 から作成）
 根拠: `Phase11-and-Beyond-Roadmap.md` §3 Phase15・§8.2、`Repository-Review-2026-11-05.md`（R-09・R-10・R-12・R-14）、`FurtherImprovements/02` §2.1・`03` §3（Phase B）・`06`（デザインシステム）、`Phase9-Deferred-Ledger.md`（F-4・G-1）、規約 `.github/copilot-instructions.md`
 
 ## 1. 目的
