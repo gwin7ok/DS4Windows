@@ -126,7 +126,7 @@ Phase16（第 1 層のカートリッジ化）より前に行う理由: Phase16 
 
 ## 10. Step 15-1 の細部（UI 向けの窓口。R-09）
 
-作成日: 2026-11-08（草案。決定 S1〜S3 の回答後に確定）
+作成日: 2026-11-08（S1〜S3 回答済み。§10.7）
 
 ### 10.1 目的と終了時の姿
 
@@ -134,7 +134,7 @@ Phase16（第 1 層のカートリッジ化）より前に行う理由: Phase16 
 - 終了時の数値の目標:
   - UI で `ControlService` 型を参照するファイル: 24 → 0（新しい禁止の規則 L8 で固定。§10.5）
   - 規則 L7（UI → 第 1 層・第 3 層）: 30 → **6**（残りは `DS4State`／`DS4StateExposed`／`SixAxis`／`DS4SixAxis` の値の型。Phase16 の R-17 で `Core/Model` へ移す。S2）
-  - `MainWindow` のコンストラクター引数: 26 → 15 以下（S3）
+  - `MainWindow` のコンストラクター引数: 26 → できるだけ減らす（S3。引数ごとに「除去するか残すか」をユーザーが判断する）
 
 実測した L7 の 30 件の内訳: `DS4Device` 11 件（`BindingWindow`、`ControllerReadingsControl`、`MainWindow`、`ProfileEditor`、`CompositeDeviceModel`、`ControllerHolder`、`ControllerListViewModel`、`ControllerRegDeviceOptsViewModel`、`DeviceListItem`、`RecordBoxViewModel`、`TrayIconViewModel`）、`DualSenseDevice` 2 件、`DS4SixAxis`（`ProfileEditor`）1 件、`ConnectionType` 1 件、`NativeMethods` 1 件、出力側 8 件（`OutSlotDevice`／`OutputSlotManager`／`OutputDevice`／`Xbox360OutDevice`）＝計 24 件を 15-1 で消す。残り 6 件は `DS4State` 系（`ControllerReadingsControl` 4、`StickCalibrationWindow` 1、`RecordBoxViewModel` 1）。
 
@@ -170,7 +170,7 @@ Phase16（第 1 層のカートリッジ化）より前に行う理由: Phase16 
 | 15-1-4 | **出力スロットの窓口**: `IOutputSlotView`（種類・予約状態・接続状態・機能の有無・通知）を作り、`IOutputSlotService`（既存）から返す。`SlotDeviceEntry`、`CurrentOutDeviceViewModel`、`OutputSlotManagerControl`、`PluginOutDevWindow`、`MainWindow` の `OutputslotMan` の受け渡しを移す |
 | 15-1-5 | **残りの利用の置き換え**: `MainWindow` などの `Start`／`Stop`／`HotPlug`／イベントを `IServiceLifecycle` へ。`HookWindowMessages` の `NativeMethods.HidD_GetHidGuid`（HID の通知の登録）は、窓のメッセージの登録を既存の `IWindowSystem` か専用の窓口へ寄せるかを、この Step の冒頭で調べて決める（L7 の 1 件） |
 | 15-1-6 | **`ControlService` の公開メンバーの整理と、UI のファクトリーの引数から `ControlService` を外す**。利用者が 0 になったメンバー（`DS4Controllers`／`touchPad`／`slotManager` の転送ほか。約 50 利用者の残りを数える）を、規約 2.1 の過渡期の原則に従い、**利用者が本当に 0 になったものだけ**削除。L8 の許可リストを 0 にする |
-| 15-1-7 | **`MainWindow` のコンストラクター引数の整理**（S3）。他の子コントロールへ渡すだけの引数（`pathService`、`environmentService`、`profileIdentityService`、`viewModelFactory`、`editorWindowFactory` など）の洗い出しと、子の側での受け取り方の整理。L7 の基準値を 6 へ更新。モデル図（01〜04）の更新。完了の記録 |
+| 15-1-7 | **`MainWindow` のコンストラクター引数の整理**（S3）。26 個を 1 つずつ調べ、**引数ごとに「除去する案」か「残す案」かを、理由・代替案・影響の大きさ（変更するファイル数）とともに一覧で示し、ユーザーが 1 つずつ判断する**（判断前に除去しない）。除去が決まったものを実施する。L7 の基準値を 6 へ更新。モデル図（01〜04）の更新。完了の記録 |
 
 ### 10.4 契約の案（第 2 層。`Processing/Abstractions`。実装は `Processing/Services`）
 
@@ -240,10 +240,10 @@ public interface IMacroRecordingState { bool IsRecording { get; set; } }
 | 値の型の移動（`ConnectionType` など）で、第 1 層・第 3 層の多数のファイルの `using` が変わる | 移動と名前空間の書き換えは別コミット（R7）。機械的な変更として扱い、差分は `git diff -M` と型の検査で確認 |
 | 実機でしか見えない不具合（電池の表示、一覧の追加・削除、振動テスト） | P9 の対策（サブ Step ごとにアプリを起動して確認）。最後の実機確認の項目に、一覧・電池・トレイ・振動・較正・出力スロットを入れる |
 
-### 10.7 決定事項（承認待ち）
+### 10.7 決定結果（2026-11-08）
 
-| # | 項目 | 選択肢 |
+| # | 決定 | 推奨との差 |
 |---|---|---|
-| S1 | 機器の表示用の面の形 | **A**: インターフェース `IControllerSlotView`（`DS4Device` を包むアダプター。通知を転送する）／ B: 値のコピー（読み取り専用のスナップショット）。電池などの変化はポーリングか再生成が要り、通知を取りこぼしやすい／ C: `DS4Device` をそのまま第 2 層の契約で公開（UI の依存は消えない。L7 が減らない） |
-| S2 | `DS4State` 系の値の型の扱い | **A**: 15-1 では UI から消さない（L7 の残り 6 件）。Phase16 の R-17 で `Core/Model` へ移す時に消える／ B: 15-1 で `Core/Model` へ移す（第 3 層 13 ファイルと毎フレームの経路に影響。Phase16 の作業と重なる） |
-| S3 | `MainWindow` の引数の目標 | **A**: 15 以下（`controlService` の除去と、他の子へ渡すだけの引数の整理）／ B: 数を決めず、15-1-1〜6 の結果としてできるだけ減らす／ C: 見送る（引数 26 のまま） |
+| S1 | A: インターフェース `IControllerSlotView` で包む（アダプターは機器ごとに 1 つ） | 推奨どおり |
+| S2 | A: `DS4State` 系は 15-1 では残す（L7 の残り 6 件。Phase16 の R-17 で解消） | 推奨どおり |
+| S3 | **引数を 1 つずつ判断する**。なるべく減らす。除去が難しく残す場合は、残す理由と除去のための代替案を示し、ユーザーが除去か残すかを 1 つずつ決める | 推奨（15 以下の数値目標）と異なる。数値の目標は置かない |
