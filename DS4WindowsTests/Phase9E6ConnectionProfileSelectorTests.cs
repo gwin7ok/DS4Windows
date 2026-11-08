@@ -13,6 +13,7 @@ namespace DS4WindowsTests
     /// 一時プロファイルのときは束縛の差し替えだけ、初回接続は OlderProfilePath、再接続は直前のプロファイル。
     /// 共有のストアを一時的に書き換えるため、ほかのテストが使わない添字（6）を使い、終わりに元へ戻す。
     /// </summary>
+    [Xunit.Collection(SharedHostStateCollection.Name)]
     public class Phase9E6ConnectionProfileSelectorTests
     {
         private const int Slot = 6;

@@ -16,6 +16,7 @@ namespace DS4WindowsTests
     /// Step7b-3 以降、編集スロットは常に `Global.TEST_PROFILE_INDEX`（8）になるため、編集スロットに 8 を渡して確認する。
     /// `DS4LightBar` の静的配列は、テストの前後で保存・復元する（Phase6-Status.md §6.4-1）。
     /// </summary>
+    [Xunit.Collection(SharedHostStateCollection.Name)]
     public class BindingWindowViewModelTargetDeviceTests
     {
         // CURRENT_DS4_CONTROLLER_LIMIT は環境により 4 または 8 のため、どちらでも範囲内の 1 を使う

@@ -11,7 +11,6 @@
 | KI-1（旧 K9-3） | プロファイル編集画面の Controls タブで、コントローラー図のボタンを右クリックして出るプリセットのメニュー（`ProfileEditor.xaml` の `presetMenu`）で、親項目（Left Stick など）からサブメニューへマウスを移すと、メニューが消える。キーボードの操作では選べる | コードだけでは原因を特定できない（メニューは共有リソースで、右ボタンを離した直後に `IsOpen = true` で開く。閉じる処理は見当たらない。WPF の Popup の動作が絡む可能性）。上流（元の版）から同じかどうかは未確認。Phase7b でユーザー判断により先送りした | コントローラー図を作り直す Phase15（コントローラー描画の共通化）で、同じ画面を触るとき。まず元の版で再現するかを確かめる | `Phase7b-Plan.md` §9（再現の手順）、`Phase7b-Completion-Report.md` |
 | KI-2 | 特殊アクション PS＋下（DisconnectBT。コントローラーの切断）で切断すると、ときどき Windows の Alt+Tab の画面（プログラムの切り替え）が出る | 2026-10-20 の Trace のログ（PS＋下で 7 回切断）では、DisconnectBT のほかに、マクロやキーの特殊アクションは動いていなかった。仮説: Alt+Tab のマクロの特殊アクション（例: `000000name6_alttab`。Alt を押す → Tab → 500ms → Tab → Alt を離す）の実行中に切断すると、`Mapping.HandleDeviceDisconnect` がマクロの待ち行列は消すが、実行中のマクロを止めず、Alt が押されたまま残る | 再現したとき。そのときのログ（Trace）で、切断の前後に Alt／Tab の出力やマクロの実行がないかを確かめる | — |
 | KI-3（旧 Phase13b-1） | コマンドラインの `-command ChangeLedColor.<n>.<r>.<g>.<b>` で、ライトバーの色が見た目には変わらない（`LoadProfile` は正常） | v4.3.0 でも同じ（Phase13 の前後でコードは同じ）＝回帰ではない。コマンドは、プロファイルのカスタム色を書き換えるだけで、ライトバーのモードがカスタム色でないと見た目に効かない。4.3.1 の CHANGELOG の Known issues に記載済み | 仕様（カスタム色だけを変える）のままにするか、一時的な強制色として見た目に反映するかを決めるとき | `Phase9-Deferred-Ledger.md`（Phase13b-1）、`Phase13b-Completion-Report.md` §4 |
-| KI-4 | テスト `ProfileRepositoryTests.LinkedProfile_ChangeAndRemove_ShouldNotThrowAndShouldPersist` が、途中の確認（`Category!=Slow`）でときどき失敗する（2026-11-05 に 3 回。単独で流すと合格） | テストは直列で動く（`xunit.runner.json`）ため、並行の競合ではなく、前のテストが残した状態（アプリデータのフォルダー、リンクプロファイルのファイル）に左右されると見られる。本体の不具合ではない | Phase15-0（テストの共有の状態の整理。`Phase15-0-Plan.md`） | `Phase14d-Plan.md` §9（14d-1・14d-5） |
 | KI-5（K7b-1 の残り） | ダンプ 57596: 入力スレッドの `DS4Device.performDs4Input` で NullReferenceException（2026-10-21） | K7b-1 のほかのダンプは原因が分かり是正済みで、K7b-1 は 2026-11-05 に解消とした。このダンプだけは、フレームが例外の再スローで巻き戻されていて、どの変数が null だったか特定できていない。是正の後に再発していない | 同じ場所で再発したとき。`K7b1-Investigation.md` §7 の解析の手順で調べる | `K7b1-Investigation.md` §7・§8 |
 
 ## 2. 解消済み
@@ -19,3 +18,4 @@
 | ID | 症状 | 解消 | 関連 |
 |---|---|---|---|
 | K7b-1 | アプリが意図せず終了する（ヒープ破壊など、ダンプ 7 件） | 2026-11-05。是正（`7033089`、2026-10-23）の後、約 2 週間、新しいダンプなし（ユーザーが確認） | `K7b1-Investigation.md` §8 |
+| KI-4 | テスト `ProfileRepositoryTests.LinkedProfile_ChangeAndRemove_ShouldNotThrowAndShouldPersist` が、ときどき失敗する | 2026-11-08（Phase15-0-4）。共有の `BackingStore.m_linkedProfiles` が、ほかのテストの切り替えで消えた一時フォルダーを指していると保存に失敗する、と見られる（直列でも起きる。6 回の再実行では再現せず、断定はできない）。このテスト専用の一時フォルダーへ向けて切り離し、保存されたファイルの存在も確かめるようにした。再発したら再オープン | `Phase15-0-Plan.md` 15-0-4 |

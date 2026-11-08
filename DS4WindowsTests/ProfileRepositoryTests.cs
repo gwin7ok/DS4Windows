@@ -191,6 +191,13 @@ namespace DS4WindowsTests
         [Fact]
         public void LinkedProfile_ChangeAndRemove_ShouldNotThrowAndShouldPersist()
         {
+            // 共有の BackingStore の保存先（m_linkedProfiles）は、作られた時点のアプリデータのパスで決まる。ほかのテストが一時フォルダーへ
+            // 切り替えて消した後だと、保存が失敗してこのテストが不安定になった（KI-4）。このテスト専用の一時フォルダーへ向けて切り離す
+            var store = TestGlobals.Store;
+            string originalPath = store.m_linkedProfiles;
+            string tempDir = Path.Combine(Path.GetTempPath(), "ds4w-linked-" + Guid.NewGuid().ToString("N"));
+            Directory.CreateDirectory(tempDir);
+            store.m_linkedProfiles = Path.Combine(tempDir, "LinkedProfiles.xml");
             var repository = TestRepositoryFactory.CreateProfileRepository(TestRepositoryFactory.CreateProfileSettingsService());
             const string testSerial = "00:11:22:33:44:99"; // テスト専用の架空シリアル
 
@@ -201,12 +208,15 @@ namespace DS4WindowsTests
 
                 var saveEx = Record.Exception(() => repository.SaveLinkedProfiles());
                 Assert.Null(saveEx);
+                Assert.True(File.Exists(store.m_linkedProfiles));
             }
             finally
             {
                 // テスト用シリアルの紐付けを確実に除去してテスト環境を汚さない
                 Record.Exception(() => repository.RemoveLinkedProfile(testSerial));
                 Record.Exception(() => repository.SaveLinkedProfiles());
+                store.m_linkedProfiles = originalPath;
+                Record.Exception(() => Directory.Delete(tempDir, true));
             }
         }
 

@@ -1,7 +1,7 @@
 # Phase15-0 個別計画書: Phase14 系の小さな持ち越しの片付け
 
 作成日: 2026-11-05
-状態: **承認済み（2026-11-05。H1〜H6 はユーザーがすべて推奨案を選択）→ 15-0-0〜15-0-3 完了（2026-11-08）。次は 15-0-4**
+状態: **承認済み（2026-11-05。H1〜H6 はユーザーがすべて推奨案を選択）→ 15-0-0〜15-0-4 完了（2026-11-08）。次は 15-0-5**
 ブランチ: `Phase15-0`（master 67529739 から作成）
 根拠: `Phase14d-Plan.md` §10（持ち越し）、`Phase9-Deferred-Ledger.md`（Phase13b-2）、`Known-Issues-Ledger.md`（KI-4）、`Log-Policy.md` §3・§11、規約 `.github/copilot-instructions.md` §2.3・§3.3・§4
 
@@ -72,3 +72,4 @@ B（改名）を最後にするのは、C・D で中身を触るファイルの�
 | 15-0-1 | 完了（d54a0298）。リソース化と日本語の訳を同時に入れた |
 | 15-0-2 | 完了。日本語の訳（承認済み）は 15-0-1 で `Strings.ja.resx` に入れ、GUI の文言の統一（Q3）も同じ変更で済んだため、追加の変更はなし。確認: 呼び出し元が渡す案内文（`prolog`）はすべて既存リソース経由、`WakeupFromSuspend` の訳あり、`UserLogTextResourceTests` が訳の有無と書式の引数を照合 |
 | 15-0-3 | 完了。`SourceText` に `Method`（unique 指定可）・`Body`・`BodyByPattern`・`BodyOfMethodNamed`・`ReadXamlCode` を追加し、メソッドの範囲の切り出し 10 個・読み取り 5 個・ルート取得 3 個・XAML のコメント除去 1 個（計 17 個の自前の補助）を置き換えた。残すテスト固有の処理: `BranchBody`（if ブロックの内側）、`ExtractCallArguments`、`Code`／`Sources`／`Rel`（W1）、`<!--C-->` への置換（`PersistenceGoldenContext`）、`GoldenFile`／`RegistrationSource` など（ソースの読み取りではない）。Debug ALL: 警告 0・エラー 0、3,152 件合格 |
+| 15-0-4 | 完了。KI-4: 共有の `BackingStore.m_linkedProfiles` が消えた一時フォルダーを指すと保存が失敗する、と見て、当該テストを専用の一時フォルダーへ切り離した（再現しなかったため断定ではなく、台帳では解消済みへ移し、再発したら再オープン）。並列で落ちた 4 クラスは `SharedHostState` のコレクションへ入れた。並列実行を再計測（6 回）: 全件 38〜40 秒（直列 約 49 秒。約 20% 短い）だが、6 回中 5 回で別々のクラスが落ちた（`Phase11W6OutDevTypeTempFollowsEditorTests`、`Phase9CMacroStepExecutorDifferentialTests`、`Phase9EOscServiceDifferentialTests`、`Phase6Step9ContractExtensionTests`［3 回］、`BackingStoreAppSettingsLoadTests`、`Phase6Step10GroupThreeBContractTests`、`Phase9MapCustomCommitterDifferentialTests`）。共有の状態に触れるクラスが多く、短縮も 3 割に届かないため、H4 の条件（5 回続けて合格、かつ 3 割以上短い）を満たさず、直列のまま。Debug ALL: 警告 0・エラー 0、3,152 件合格 |

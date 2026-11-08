@@ -9,6 +9,7 @@ namespace DS4WindowsTests
     /// Phase14b-Step2（R-04）: <see cref="TouchButtonActivationMode"/> を <c>Mouse</c> のネスト型から <c>Core/Settings</c> のトップレベルの型へ移した。
     /// 型の形（名前空間、基底型、値）と、プロファイルの保存・読込での値の名前が変わらないことを検査する。
     /// </summary>
+    [Xunit.Collection(SharedHostStateCollection.Name)]
     public class TouchButtonActivationModeTests
     {
         [Fact]
