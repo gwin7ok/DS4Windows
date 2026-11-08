@@ -1,3 +1,4 @@
+using DS4Windows.UI.Controls;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
@@ -337,6 +338,7 @@ namespace DS4Windows.UI
             AppLogger.LogDebug($"[ProfileEditor] Opened profile editor for device={deviceNum}, targetDevice={targetDevice}");
 
             InitializeComponent();
+            InitVisualizerButtons();
 
             // Phase7-Step5 W5（Q5＝A）: 旧 AppHost.GetService の 4 件を、コンストラクター引数に替えた（IEditorWindowFactory.CreateProfileEditor が渡す）
             this.profileRepository = profileRepository ?? throw new ArgumentNullException(nameof(profileRepository));
@@ -713,6 +715,62 @@ namespace DS4Windows.UI
                 }
             }
 
+        }
+
+        // コントローラーの図のボタンは、ControllerVisualizerControl が配置表（DualShock4Editor）から生成する。元の名前のまま持つ
+        private Button crossConBtn, circleConBtn, squareConBtn, triangleConBtn, l1ConBtn, r1ConBtn, l2ConBtn, r2ConBtn, shareConBtn, optionsConBtn, guideConBtn, muteConBtn, fnlConBtn, fnrConBtn, blpConBtn, brpConBtn, leftTouchConBtn, multiTouchConBtn, rightTouchConBtn, topTouchConBtn, l3ConBtn, lsuConBtn, lsrConBtn, lsdConBtn, lslConBtn, r3ConBtn, rsuConBtn, rsrConBtn, rsdConBtn, rslConBtn, upConBtn, rightConBtn, downConBtn, leftConBtn;
+
+        /// <summary>配置表から生成されたボタンを元の名前のフィールドに持ち、クリック・ホバー・右クリックの処理を結び付ける</summary>
+        private void InitVisualizerButtons()
+        {
+            crossConBtn = conCanvas["crossConBtn"];
+            circleConBtn = conCanvas["circleConBtn"];
+            squareConBtn = conCanvas["squareConBtn"];
+            triangleConBtn = conCanvas["triangleConBtn"];
+            l1ConBtn = conCanvas["l1ConBtn"];
+            r1ConBtn = conCanvas["r1ConBtn"];
+            l2ConBtn = conCanvas["l2ConBtn"];
+            r2ConBtn = conCanvas["r2ConBtn"];
+            shareConBtn = conCanvas["shareConBtn"];
+            optionsConBtn = conCanvas["optionsConBtn"];
+            guideConBtn = conCanvas["guideConBtn"];
+            muteConBtn = conCanvas["muteConBtn"];
+            fnlConBtn = conCanvas["fnlConBtn"];
+            fnrConBtn = conCanvas["fnrConBtn"];
+            blpConBtn = conCanvas["blpConBtn"];
+            brpConBtn = conCanvas["brpConBtn"];
+            leftTouchConBtn = conCanvas["leftTouchConBtn"];
+            multiTouchConBtn = conCanvas["multiTouchConBtn"];
+            rightTouchConBtn = conCanvas["rightTouchConBtn"];
+            topTouchConBtn = conCanvas["topTouchConBtn"];
+            l3ConBtn = conCanvas["l3ConBtn"];
+            lsuConBtn = conCanvas["lsuConBtn"];
+            lsrConBtn = conCanvas["lsrConBtn"];
+            lsdConBtn = conCanvas["lsdConBtn"];
+            lslConBtn = conCanvas["lslConBtn"];
+            r3ConBtn = conCanvas["r3ConBtn"];
+            rsuConBtn = conCanvas["rsuConBtn"];
+            rsrConBtn = conCanvas["rsrConBtn"];
+            rsdConBtn = conCanvas["rsdConBtn"];
+            rslConBtn = conCanvas["rslConBtn"];
+            upConBtn = conCanvas["upConBtn"];
+            rightConBtn = conCanvas["rightConBtn"];
+            downConBtn = conCanvas["downConBtn"];
+            leftConBtn = conCanvas["leftConBtn"];
+
+            // 大きさ 0 で隠れているボタンには、処理を結び付けない
+            foreach (Button button in new[] { crossConBtn, circleConBtn, squareConBtn, triangleConBtn, l1ConBtn, r1ConBtn, l2ConBtn, r2ConBtn, shareConBtn, optionsConBtn, guideConBtn, leftTouchConBtn, multiTouchConBtn, rightTouchConBtn, topTouchConBtn, l3ConBtn, lsuConBtn, lsrConBtn, lsdConBtn, lslConBtn, r3ConBtn, rsuConBtn, rsrConBtn, rsdConBtn, rslConBtn, upConBtn, rightConBtn, downConBtn, leftConBtn })
+            {
+                button.Click += HoverConBtn_Click;
+                button.MouseEnter += ContBtn_MouseEnter;
+                button.MouseLeave += ContBtn_MouseLeave;
+            }
+
+            // プリセットのメニューを出すボタン（ABXY、スティック、十字キー）
+            foreach (Button button in new[] { crossConBtn, circleConBtn, squareConBtn, triangleConBtn, l3ConBtn, lsuConBtn, lsrConBtn, lsdConBtn, lslConBtn, r3ConBtn, rsuConBtn, rsrConBtn, rsdConBtn, rslConBtn, upConBtn, rightConBtn, downConBtn, leftConBtn })
+            {
+                button.MouseRightButtonUp += ConBtn_MouseRightButtonUp;
+            }
         }
 
         private void RemoveHoverBtnText()

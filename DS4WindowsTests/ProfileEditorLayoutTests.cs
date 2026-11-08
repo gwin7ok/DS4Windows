@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.IO;
 using System.Linq;
 using System.Text.RegularExpressions;
@@ -214,7 +214,8 @@ namespace DS4WindowsTests
             string[] heights = XamlTestHelper.ChildElements(rows, "RowDefinition").Select(r => XamlTestHelper.Attr(r, "Height")).ToArray();
             Assert.Equal(new[] { "252", "*" }, heights);   // Phase9 UI 変更: 割り当て表示の下に余白（240 → 252）
 
-            XElement canvas = XamlTestHelper.ChildElements(grid, "Canvas").Single();
+            // 絵の上のボタンは、コントローラーの図のコントロール（配置表から生成）。旧: Canvas
+            XElement canvas = XamlTestHelper.ChildElements(grid, "ControllerVisualizerControl").Single();
             Assert.Equal("0", XamlTestHelper.Attr(canvas, "Grid.Row"));
             Assert.Equal("conCanvas", XamlTestHelper.NameOf(canvas));
 
@@ -280,11 +281,15 @@ namespace DS4WindowsTests
             // 残る入口の Click ハンドラーは、すべて、左ペインのタブにある（右ペインに、入口がない）
             string[] right = XamlTestHelper.AllAttributeValues(RightPane(xaml)).ToArray();
             string[] left = XamlTestHelper.AllAttributeValues(LeftPane(xaml)).ToArray();
-            foreach (string handler in new[] { "TiltControlsButton_Click", "SwipeControlsButton_Click", "HoverConBtn_Click" })
+            foreach (string handler in new[] { "TiltControlsButton_Click", "SwipeControlsButton_Click" })
             {
                 Assert.DoesNotContain(right, v => v == handler);
                 Assert.Contains(left, v => v == handler);
             }
+
+            // 図のボタン（配置表から生成）のクリックは、XAML ではなくコードで結び付ける。入口は左ペインの図のコントロールだけ
+            Assert.Matches(@"button\.Click \+= HoverConBtn_Click;", code);
+            Assert.Contains(left, v => v.Contains("DualShock4Editor"));
         }
     }
 }

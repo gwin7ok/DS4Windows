@@ -208,3 +208,4 @@
 %% ---- Phase15-1 完了（2026-11-08）----
 %% - 第 4 層 UI から第 1 層・第 3 層の具象型（DS4Device、OutSlotDevice、Xbox360OutDevice など）と ControlService への参照をなくした。UI が見る面は第 2 層の契約（IControllerSlotView／Query／Commands、IControllerReadingsSource、IMacroRecordingState、IOutputSlotView）で、通知の送り主はその面自身。
 %% - 層の依存の記録のみの規則 L7（UI → 第 1 層・第 3 層）の基準値は 5。
+%% - Phase15-4: 4-a UI に UI/Controls を新設（ControllerVisualizerControl と、ボタンの配置表 ControllerLayouts）。BindingWindow と ProfileEditor のコントローラーの図のボタンは、この部品が配置表から生成する。

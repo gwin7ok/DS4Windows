@@ -1334,3 +1334,4 @@ classDiagram
 %% - 追加: IEnvironmentService.HidClassGuid（HID の抜き差しの通知の登録用）。IServiceLifecycle.Suspending を変えると、ライトバーの停止中の印（LightbarOverrides.shuttingdown）も一緒に切り替わる。
 %% - IViewModelFactory に CreateSettingsViewModel／CreateControllerListViewModel／CreateCurrentOutDeviceViewModel を追加した。MainWindow は 21 引数（旧 28）。
 %% - ControlService の公開メンバーのうち利用者が 0 件の転送（recordingMacro、MappingService、getDS4State、DeviceOptions、Start／Stop／HotPlug、公開イベントなど）を削除した。
+%% - Phase15-4: UI/Controls を追加: ControllerVisualizerControl（Canvas。Layout・ButtonStyle・ScaleToFit、Buttons）、ControllerLayout（名前・基準の大きさ・Regions）、HitboxRegion（Id・Tag・位置・大きさ・IsVisible）、ControllerLayouts（Xbox360・DualShock4・DualShock4Editor）。

@@ -1,4 +1,5 @@
-﻿/*
+﻿using DS4Windows.UI.Controls;
+/*
 DS4Windows
 Copyright (C) 2023  Travis Nickles
 
@@ -54,6 +55,9 @@ namespace DS4Windows.UI
         private readonly DS4Windows.Core.Abstractions.IProfileSettingsService profileSettingsService;
         // Phase6-Step10-2-4a: RecordBox の生成を窓口へ依頼する（必須引数）
         private readonly DS4Windows.UI.Abstractions.IEditorWindowFactory editorWindowFactory;
+        // コントローラーの図のボタンは、ControllerVisualizerControl が配置表から生成する。元の名前のまま持つ
+        private Button guideBtn, aBtn, bBtn, xBtn, yBtn, lbBtn, rbBtn, ltBtn, rtBtn, backBtn, startBtn, lsbBtn, lsuBtn, lsrBtn, lsdBtn, lslBtn, rsbBtn, rsuBtn, rsrBtn, rsdBtn, rslBtn, dpadUBtn, dpadRBtn, dpadDBtn, dpadLBtn, touchpadClickBtn;
+
         private Button highlightBtn;
         private ExposeMode expose;
 
@@ -88,6 +92,7 @@ namespace DS4Windows.UI
             _lightbar = lightbar ?? throw new System.ArgumentNullException(nameof(lightbar));
             this.editorWindowFactory = editorWindowFactory ?? throw new ArgumentNullException(nameof(editorWindowFactory));
             InitializeComponent();
+            InitVisualizerButtons();
 
             this.profileSettingsService = profileSettingsService ?? throw new ArgumentNullException(nameof(profileSettingsService));
 
@@ -805,58 +810,46 @@ namespace DS4Windows.UI
                 ConvertFromString($"{ResourcePaths.AssemblyResourcePrefix}component/Resources/{App.Current.FindResource("DS4ConfigImg")}") as ImageSource;
             conImageBrush.ImageSource = temp;
 
-            Canvas.SetLeft(aBtn, 442); Canvas.SetTop(aBtn, 148);
-            Canvas.SetLeft(bBtn, 474); Canvas.SetTop(bBtn, 120);
-            Canvas.SetLeft(xBtn, 408); Canvas.SetTop(xBtn, 116);
-            Canvas.SetLeft(yBtn, 440); Canvas.SetTop(yBtn, 90);
-            Canvas.SetLeft(lbBtn, 154); Canvas.SetTop(lbBtn, 24);
-            lbBtn.Width = 46; lbBtn.Height = 20;
+            // ボタンの位置・大きさ・タッチパッド クリックの表示は、配置表（ControllerLayouts.DualShock4）が持つ
+            conVisualizer.Layout = ControllerLayouts.DualShock4;
+        }
 
-            Canvas.SetLeft(rbBtn, 428); Canvas.SetTop(rbBtn, 24);
-            rbBtn.Width = 46; rbBtn.Height = 20;
+        /// <summary>配置表から生成されたボタンを元の名前のフィールドに持ち、ホバーの処理を結び付ける</summary>
+        private void InitVisualizerButtons()
+        {
+            Button Get(string id) => conVisualizer[id];
+            guideBtn = Get("guideBtn");
+            aBtn = Get("aBtn");
+            bBtn = Get("bBtn");
+            xBtn = Get("xBtn");
+            yBtn = Get("yBtn");
+            lbBtn = Get("lbBtn");
+            rbBtn = Get("rbBtn");
+            ltBtn = Get("ltBtn");
+            rtBtn = Get("rtBtn");
+            backBtn = Get("backBtn");
+            startBtn = Get("startBtn");
+            lsbBtn = Get("lsbBtn");
+            lsuBtn = Get("lsuBtn");
+            lsrBtn = Get("lsrBtn");
+            lsdBtn = Get("lsdBtn");
+            lslBtn = Get("lslBtn");
+            rsbBtn = Get("rsbBtn");
+            rsuBtn = Get("rsuBtn");
+            rsrBtn = Get("rsrBtn");
+            rsdBtn = Get("rsdBtn");
+            rslBtn = Get("rslBtn");
+            dpadUBtn = Get("dpadUBtn");
+            dpadRBtn = Get("dpadRBtn");
+            dpadDBtn = Get("dpadDBtn");
+            dpadLBtn = Get("dpadLBtn");
+            touchpadClickBtn = Get("touchpadClickBtn");
 
-            Canvas.SetLeft(ltBtn, 162); Canvas.SetTop(ltBtn, 6);
-            ltBtn.Width = 46; ltBtn.Height = 20;
-
-            Canvas.SetLeft(rtBtn, 428); Canvas.SetTop(rtBtn, 6);
-            rtBtn.Width = 46; rtBtn.Height = 20;
-
-            Canvas.SetLeft(backBtn, 218); Canvas.SetTop(backBtn, 76);
-            Canvas.SetLeft(startBtn, 395); Canvas.SetTop(startBtn, 76);
-            Canvas.SetLeft(guideBtn, 303); Canvas.SetTop(guideBtn, 162);
-
-            Canvas.SetLeft(lsbBtn, 238); Canvas.SetTop(lsbBtn, 182);
-            Canvas.SetLeft(lsuBtn, 230); Canvas.SetTop(lsuBtn, 160);
-            lsuBtn.Width = 32; lsuBtn.Height = 16;
-
-            Canvas.SetLeft(lsrBtn, 264); Canvas.SetTop(lsrBtn, 176);
-            lsrBtn.Width = 16; lsrBtn.Height = 28;
-
-            Canvas.SetLeft(lsdBtn, 232); Canvas.SetTop(lsdBtn, 202);
-            lsdBtn.Width = 32; lsdBtn.Height = 16;
-
-            Canvas.SetLeft(lslBtn, 216); Canvas.SetTop(lslBtn, 176);
-            lslBtn.Width = 16; lslBtn.Height = 28;
-
-            Canvas.SetLeft(rsbBtn, 377); Canvas.SetTop(rsbBtn, 184);
-            Canvas.SetLeft(rsuBtn, 370); Canvas.SetTop(rsuBtn, 160);
-            rsuBtn.Width = 32; rsuBtn.Height = 16;
-
-            Canvas.SetLeft(rsrBtn, 400); Canvas.SetTop(rsrBtn, 176);
-            rsrBtn.Width = 16; rsrBtn.Height = 28;
-
-            Canvas.SetLeft(rsdBtn, 370); Canvas.SetTop(rsdBtn, 200);
-            rsdBtn.Width = 32; rsdBtn.Height = 16;
-
-            Canvas.SetLeft(rslBtn, 352); Canvas.SetTop(rslBtn, 176);
-            rslBtn.Width = 16; rslBtn.Height = 28;
-
-            Canvas.SetLeft(dpadUBtn, 170); Canvas.SetTop(dpadUBtn, 100);
-            Canvas.SetLeft(dpadRBtn, 194); Canvas.SetTop(dpadRBtn, 112);
-            Canvas.SetLeft(dpadDBtn, 170); Canvas.SetTop(dpadDBtn, 144);
-            Canvas.SetLeft(dpadLBtn, 144); Canvas.SetTop(dpadLBtn, 112);
-
-            touchpadClickBtn.Visibility = Visibility.Visible;
+            foreach (Button button in conVisualizer.Buttons.Values)
+            {
+                button.MouseEnter += OutConBtn_MouseEnter;
+                button.MouseLeave += OutConBtn_MouseLeave;
+            }
         }
 
         private void TestRumbleBtn_Click(object sender, RoutedEventArgs e)
