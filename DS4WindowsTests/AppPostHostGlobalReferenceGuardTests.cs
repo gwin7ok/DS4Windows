@@ -48,30 +48,6 @@ namespace DS4WindowsTests
             return text;
         }
 
-        /// <summary>「void 名前(」で始まるメソッドの本体（最初の { から対応する } まで）を返す。</summary>
-        private static string ExtractMethodBody(string text, string methodName)
-        {
-            Match m = Regex.Match(text, @"\bvoid\s+" + Regex.Escape(methodName) + @"\s*\(");
-            if (!m.Success)
-                m = Regex.Match(text, @"\bbool\s+" + Regex.Escape(methodName) + @"\s*\(");
-            Assert.True(m.Success, $"メソッド {methodName} が見つからない。");
-
-            int open = text.IndexOf('{', m.Index);
-            int depth = 0;
-            for (int i = open; i < text.Length; i++)
-            {
-                if (text[i] == '{') depth++;
-                else if (text[i] == '}')
-                {
-                    depth--;
-                    if (depth == 0)
-                        return text.Substring(open, i - open + 1);
-                }
-            }
-
-            throw new InvalidOperationException($"メソッド {methodName} の終わりが見つからない。");
-        }
-
         // ---- テスト ----
 
         [Fact]
@@ -80,7 +56,7 @@ namespace DS4WindowsTests
             string text = ReadSourceWithoutComments();
             if (text == null) return;
 
-            string startup = ExtractMethodBody(text, "BuildHostAndServices");   // Phase9 9-F F-1b: ホストの構築の手順の中
+            string startup = SourceText.BodyOfMethodNamed(text, "BuildHostAndServices");   // Phase9 9-F F-1b: ホストの構築の手順の中
             Assert.Matches(@"CreateControlService\(parser\);\s*InitializePostHostServices\(\);", startup);
             Assert.Single(Regex.Matches(text, @"\bInitializePostHostServices\(\);"));
         }

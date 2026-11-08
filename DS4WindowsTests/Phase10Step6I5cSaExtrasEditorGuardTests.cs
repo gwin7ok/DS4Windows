@@ -10,16 +10,10 @@ namespace DS4WindowsTests
     /// </summary>
     public class Phase10Step6I5cSaExtrasEditorGuardTests
     {
-        private static string Read(string relative)
-        {
-            string path = SourceFileLocator.Find(relative);
-            return path == null ? null : File.ReadAllText(path);
-        }
-
         [Fact]
         public void BindingWindow_SaMode_ShowsTheExtrasPanel_AndOnlyHidesTheDefaultAndUnboundPanel()
         {
-            string text = Read("DS4Windows/UI/BindingWindow.xaml.cs");
+            string text = SourceText.Read("DS4Windows/UI/BindingWindow.xaml.cs");
             if (text == null) return;
 
             int start = text.IndexOf("else if (expose == ExposeMode.SpecialAction)", System.StringComparison.Ordinal);
@@ -35,7 +29,7 @@ namespace DS4WindowsTests
         [Fact]
         public void AssignmentEditor_PassesTheSaExtrasToThePicker_AndSavesThemAfterTheAction()
         {
-            string text = Read("DS4Windows/UI/AssignmentEditor.xaml.cs");
+            string text = SourceText.Read("DS4Windows/UI/AssignmentEditor.xaml.cs");
             if (text == null) return;
 
             Assert.Contains("saExtras = specialAction.outputExtras;", text);

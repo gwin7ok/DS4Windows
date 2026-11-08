@@ -81,6 +81,71 @@ namespace DS4WindowsTests
             return Path.GetRelativePath(root, hits[0]).Replace('\\', '/');
         }
 
+        /// <summary>XAML のコメント（<c>&lt;!-- --&gt;</c>）を除いた全文。ソースなしの環境では null。</summary>
+        public static string ReadXamlCode(string relativePath, [CallerFilePath] string callerFile = "")
+        {
+            string text = Read(relativePath, callerFile);
+            return text == null ? null : Regex.Replace(text, @"<!--.*?-->", string.Empty, RegexOptions.Singleline);
+        }
+
+        /// <summary>
+        /// 宣言の先頭（<paramref name="marker"/>）から、対応する閉じ波括弧までのメソッド全体（シグネチャを含む）。
+        /// 見つからない・閉じていないときは失敗する。<paramref name="unique"/> が真なら、marker が 2 か所以上にあっても失敗する（オーバーロードの追加に気づくため）。
+        /// </summary>
+        public static string Method(string text, string marker, bool unique = false)
+        {
+            int start = text.IndexOf(marker, System.StringComparison.Ordinal);
+            Xunit.Assert.True(start >= 0, $"{marker} が見つからない（メソッド名・修飾子の変更？ガードの見直しが必要）");
+            if (unique)
+            {
+                Xunit.Assert.True(text.IndexOf(marker, start + marker.Length, System.StringComparison.Ordinal) < 0,
+                    $"{marker} が複数見つかった（オーバーロードの追加？ガードの見直しが必要）");
+            }
+            return text.Substring(start, MatchingBrace(text, start, marker) + 1 - start);
+        }
+
+        /// <summary><see cref="Method"/> の本体だけ（最初の <c>{</c> から対応する <c>}</c> まで。波括弧を含む）。</summary>
+        public static string Body(string text, string marker)
+        {
+            int start = text.IndexOf(marker, System.StringComparison.Ordinal);
+            Xunit.Assert.True(start >= 0, $"{marker} が見つからない（メソッド名・修飾子の変更？ガードの見直しが必要）");
+            return BodyFrom(text, start, marker);
+        }
+
+        /// <summary>正規表現の最初の一致から始まる本体（最初の <c>{</c> から対応する <c>}</c> まで）。</summary>
+        public static string BodyByPattern(string text, string pattern)
+        {
+            Match m = Regex.Match(text, pattern);
+            Xunit.Assert.True(m.Success, "見つからない: " + pattern);
+            return BodyFrom(text, m.Index, pattern);
+        }
+
+        /// <summary>「void／bool 名前(」で始まるメソッドの本体。</summary>
+        public static string BodyOfMethodNamed(string text, string methodName)
+        {
+            return BodyByPattern(text, @"\b(?:void|bool)\s+" + Regex.Escape(methodName) + @"\s*\(");
+        }
+
+        private static string BodyFrom(string text, int from, string label)
+        {
+            int open = text.IndexOf('{', from);
+            Xunit.Assert.True(open >= 0, label + " の本体が見つからない");
+            return text.Substring(open, MatchingBrace(text, from, label) + 1 - open);
+        }
+
+        private static int MatchingBrace(string text, int from, string label)
+        {
+            int open = text.IndexOf('{', from);
+            Xunit.Assert.True(open >= 0, label + " の本体が見つからない");
+            int depth = 0;
+            for (int i = open; i < text.Length; i++)
+            {
+                if (text[i] == '{') depth++;
+                else if (text[i] == '}' && --depth == 0) return i;
+            }
+            throw new Xunit.Sdk.XunitException(label + " の閉じ波括弧が見つからない");
+        }
+
         private static bool IsBuildOutput(string path)
         {
             string p = path.Replace('\\', '/');

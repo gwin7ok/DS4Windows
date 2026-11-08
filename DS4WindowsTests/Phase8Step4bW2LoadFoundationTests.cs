@@ -15,15 +15,6 @@ namespace DS4WindowsTests
     /// </summary>
     public class Phase8Step4bW2LoadFoundationTests
     {
-        private static string Repo()
-        {
-            string dir = AppContext.BaseDirectory;
-            while (dir != null && !File.Exists(Path.Combine(dir, "DS4Windows", "DS4WinWPF.csproj")))
-                dir = Path.GetDirectoryName(dir);
-            Assert.NotNull(dir);
-            return dir;
-        }
-
         // 節の型は internal（Q3＝A）で、テストのアセンブリからは直接見えないため、リフレクションで検査する
         private static readonly Type ContextType = typeof(LegacyProfileXmlSerializer).Assembly.GetType("DS4Windows.Core.Persistence.ProfileSections.ProfileLoadContext", true);
 
@@ -55,7 +46,7 @@ namespace DS4WindowsTests
         [Fact]
         public void Sections_AreInternalSealedAndNotRegisteredInTheContainer()
         {
-            string root = Repo();
+            string root = SourceFileLocator.RepoRoot();
             // Phase14c-Step6（R-18）: 登録は層ごとの partial ファイル（ServiceRegistration*.cs）に分かれている
             string registration = string.Join(System.Environment.NewLine, Directory.GetFiles(Path.Combine(root, "DS4Windows", "Composition"), "ServiceRegistration*.cs").Select(File.ReadAllText));
             Assert.DoesNotContain("LoadSection", registration);
@@ -71,7 +62,7 @@ namespace DS4WindowsTests
         [Fact]
         public void TheSerializer_CallsTheSectionsInFileOrder()
         {
-            string text = File.ReadAllText(Path.Combine(Repo(), "DS4Windows", "Core", "Persistence", "LegacyProfileXmlSerializer.cs"));
+            string text = File.ReadAllText(Path.Combine(SourceFileLocator.RepoRoot(), "DS4Windows", "Core", "Persistence", "LegacyProfileXmlSerializer.cs"));
             string[] order =
             {
                 "_generalSection", "LoadLegacyExtraSettings(device, rootname);", "_touchpadBasicSection", "_triggerStickBasicSection",
@@ -98,7 +89,7 @@ namespace DS4WindowsTests
         public void TheSerializer_CallsTheSaveSectionsInTheXmlOrder()
         {
             // W6: 保存の節は、保存の順序（XML の要素の並び。ゴールデンが固定している）で呼ぶ。追加設定の保存は、全般の節の直後
-            string text = File.ReadAllText(Path.Combine(Repo(), "DS4Windows", "Core", "Persistence", "LegacyProfileXmlSerializer.cs"));
+            string text = File.ReadAllText(Path.Combine(SourceFileLocator.RepoRoot(), "DS4Windows", "Core", "Persistence", "LegacyProfileXmlSerializer.cs"));
             string[] order =
             {
                 "_generalSaveSection.Save(context);", "SaveLegacyExtraSettings(rootElement, device);", "_triggerStickSaveSection.Save(context);",

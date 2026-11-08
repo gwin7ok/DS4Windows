@@ -21,28 +21,6 @@ namespace DS4WindowsTests
             _output = output;
         }
 
-        /// <summary>宣言の先頭から、対応する閉じ波括弧までのメソッド全体を返す。</summary>
-        private static string ExtractMethod(string text, string marker)
-        {
-            int start = text.IndexOf(marker, StringComparison.Ordinal);
-            Assert.True(start >= 0, $"{marker} が見つからない（メソッド名・修飾子の変更？ガードの見直しが必要）");
-
-            int open = text.IndexOf('{', start);
-            int depth = 0;
-            for (int i = open; i < text.Length; i++)
-            {
-                if (text[i] == '{') depth++;
-                else if (text[i] == '}')
-                {
-                    depth--;
-                    if (depth == 0) return text.Substring(start, i - start + 1);
-                }
-            }
-
-            Assert.True(false, $"{marker} の閉じ波括弧が見つからない");
-            return null;
-        }
-
         [Fact]
         public void RecordBtn_ShowsAllFourButtonsWhileRecording_RegardlessOfRecordDelays()
         {
@@ -57,7 +35,7 @@ namespace DS4WindowsTests
             text = Regex.Replace(text, @"/\*.*?\*/", string.Empty, RegexOptions.Singleline);
             text = Regex.Replace(text, @"//[^\r\n]*", string.Empty);
 
-            string body = ExtractMethod(text, "private void RecordBtn_Click(");
+            string body = SourceText.Method(text, "private void RecordBtn_Click(");
 
             Assert.Contains("mouseButtonsPanel.Visibility = Visibility.Visible;", body);
             Assert.Contains("extraConPanel.Visibility = Visibility.Visible;", body);

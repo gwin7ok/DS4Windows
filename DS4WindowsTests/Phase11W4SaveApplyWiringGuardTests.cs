@@ -29,30 +29,13 @@ namespace DS4WindowsTests
             _output = output;
         }
 
-        /// <summary>宣言の先頭（marker）から、対応する閉じ波括弧までのメソッド全体</summary>
-        private static string ExtractMethod(string text, string marker)
-        {
-            int start = text.IndexOf(marker, StringComparison.Ordinal);
-            Assert.True(start >= 0, marker + " が見つからない（メソッド名・修飾子の変更？ガードの見直しが必要）");
-            int open = text.IndexOf('{', start);
-            Assert.True(open >= 0, marker + " の本体が見つからない");
-            int depth = 0;
-            for (int i = open; i < text.Length; i++)
-            {
-                if (text[i] == '{') depth++;
-                else if (text[i] == '}' && --depth == 0) return text.Substring(start, i - start + 1);
-            }
-
-            throw new Xunit.Sdk.XunitException(marker + " の閉じ波括弧が見つからない");
-        }
-
         [Fact]
         public void ExecuteSaveOrApply_CorrectsTheOutputType_AfterTheNameCheckAndBeforeSaving()
         {
             string code = SourceText.ReadNormalized(EditorCode);
             if (code == null) return;
 
-            string method = ExtractMethod(code, "private bool ExecuteSaveOrApply(bool isApply = false)");
+            string method = SourceText.Method(code, "private bool ExecuteSaveOrApply(bool isApply = false)");
 
             int nameCheck = method.IndexOf("return false; }", StringComparison.Ordinal);
             int correction = method.IndexOf("profileSettingsVM.CorrectOutputTypeToDs4()", StringComparison.Ordinal);
@@ -86,14 +69,14 @@ namespace DS4WindowsTests
             Assert.Contains("public event EventHandler ServiceRestartRequested;", code);
 
             // 保存: 成功したら、再起動を求めてから閉じる。適用: 求めない
-            string save = ExtractMethod(code, "private void SaveBtn_Click(object sender, RoutedEventArgs e)");
+            string save = SourceText.Method(code, "private void SaveBtn_Click(object sender, RoutedEventArgs e)");
             Assert.Contains("if (ExecuteSaveOrApply(isApply: false)) { RequestServiceRestartIfNeeded(); Close(); }", save);
 
-            string apply = ExtractMethod(code, "private void ApplyBtn_Click(object sender, RoutedEventArgs e)");
+            string apply = SourceText.Method(code, "private void ApplyBtn_Click(object sender, RoutedEventArgs e)");
             Assert.DoesNotContain("RequestServiceRestartIfNeeded", apply);
 
             // 設定が変わったときだけ求め、求めたあとは変更の印を戻す（くり返さない）
-            string request = ExtractMethod(code, "private void RequestServiceRestartIfNeeded()");
+            string request = SourceText.Method(code, "private void RequestServiceRestartIfNeeded()");
             Assert.Contains("if (!profileSettingsVM.HasUseDs3PitchRollSimChanged) { return; }", request);
             Assert.Contains("ServiceRestartRequested?.Invoke(this, EventArgs.Empty);", request);
             Assert.Contains("profileSettingsVM.AcknowledgeUseDs3PitchRollSimChange();", request);
@@ -111,10 +94,10 @@ namespace DS4WindowsTests
 
             Assert.Contains("editor.ServiceRestartRequested += Editor_ServiceRestartRequested;", code);
 
-            string handler = ExtractMethod(code, "private void Editor_ServiceRestartRequested(object sender, EventArgs e)");
+            string handler = SourceText.Method(code, "private void Editor_ServiceRestartRequested(object sender, EventArgs e)");
             Assert.Contains("RestartService();", handler);
 
-            string restart = ExtractMethod(code, "private async void RestartService()");
+            string restart = SourceText.Method(code, "private async void RestartService()");
             // 止まっているときは何もしない（ユーザーが止めたサービスを、勝手に開始しない。設定は、次の開始で効く）
             int guard = restart.IndexOf("if (!lifecycle.Running) { return; }", StringComparison.Ordinal);
             int disable = restart.IndexOf("StartStopBtn.IsEnabled = false;", StringComparison.Ordinal);

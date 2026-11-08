@@ -17,20 +17,14 @@ namespace DS4WindowsTests
     [Collection(SharedHostStateCollection.Name)]
     public class Phase8Step7AltTabRemovalGuardTests
     {
-        private static string Read(string relativePath)
-        {
-            string path = SourceFileLocator.Find(relativePath);
-            return path == null ? null : File.ReadAllText(path);
-        }
-
         [Fact]
         public void TheAltTabSpecialCase_IsGoneFromMapping()
         {
             // Phase9 9-C: 旧 PlayMacroTask ほかは MacroPlayback／MacroStepExecutor へ移したため、移し先も含めて検査する
-            string text = Read("DS4Windows/Processing/Mapping.cs");
+            string text = SourceText.Read("DS4Windows/Processing/Mapping.cs");
             if (text == null) return;
-            text += Read("DS4Windows/Processing/Services/MacroPlayback.cs") ?? string.Empty;
-            text += Read("DS4Windows/Processing/Services/MacroStepExecutor.cs") ?? string.Empty;
+            text += SourceText.Read("DS4Windows/Processing/Services/MacroPlayback.cs") ?? string.Empty;
+            text += SourceText.Read("DS4Windows/Processing/Services/MacroStepExecutor.cs") ?? string.Empty;
 
             foreach (string token in new[] { "AltTabSwapping", "altTabDone", "altTabNow", "oldAltTabNow", "164/9/9/164", "18/9/9/18", "macro[0] == 164", "macroLst[0] == 164", "macroArr[0] == 164" })
                 Assert.DoesNotContain(token, text);
@@ -41,7 +35,7 @@ namespace DS4WindowsTests
         {
             foreach (string file in new[] { "DS4Windows/UI/RecordBox.xaml", "DS4Windows/UI/RecordBox.xaml.cs", "DS4Windows/UI/ViewModels/RecordBoxViewModel.cs" })
             {
-                string text = Read(file);
+                string text = SourceText.Read(file);
                 if (text == null) return;
 
                 Assert.DoesNotContain("CycleProg", text);
@@ -50,8 +44,8 @@ namespace DS4WindowsTests
             }
 
             // 「Load Preset」のボタンは、メニューを出さず、ファイルの選択を直接表示する（保存のボタンと同じ）
-            string xaml = Read("DS4Windows/UI/RecordBox.xaml");
-            string code = Read("DS4Windows/UI/RecordBox.xaml.cs");
+            string xaml = SourceText.Read("DS4Windows/UI/RecordBox.xaml");
+            string code = SourceText.Read("DS4Windows/UI/RecordBox.xaml.cs");
             if (xaml == null || code == null) return;
 
             Assert.DoesNotContain("ContextMenu", xaml);

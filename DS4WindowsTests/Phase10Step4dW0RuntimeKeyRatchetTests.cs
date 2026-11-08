@@ -52,18 +52,10 @@ namespace DS4WindowsTests
         private static readonly Regex PathPattern = new Regex(@"\b[Pp]rofilePath\b|\b[Oo]lderProfilePath\b", RegexOptions.Compiled);
         private static readonly Regex ActionsPattern = new Regex(@"\b[Pp]rofileActions\b", RegexOptions.Compiled);
 
-        private static string FindRoot()
-        {
-            string anchor = SourceFileLocator.Find("DS4Windows/Core/Settings/BackingStore.cs");
-            if (anchor == null) return null;
-            // .../DS4Windows/Core/Settings/BackingStore.cs → リポジトリのルート
-            return SourceFileLocator.RootFromAnchor(anchor);
-        }
-
         [Fact]
         public void TheNumberOfNameKeyedRuntimeReferences_MatchesTheBaseline_PerFile()
         {
-            string root = FindRoot();
+            string root = SourceFileLocator.RepoRoot();
             if (root == null) return;
 
             var actual = new Dictionary<string, (int Path, int Actions)>();

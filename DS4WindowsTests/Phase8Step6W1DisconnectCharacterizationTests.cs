@@ -91,13 +91,13 @@ namespace DS4WindowsTests
             // Phase9 9-E E-6e: 切断の処理は DeviceDisconnectHandler.OnRemoval へ移った（ControlService.On_DS4Removal は委譲）
             string handlerPath = SourceFileLocator.Find("DS4Windows/Processing/Services/DeviceDisconnectHandler.cs");
             if (handlerPath == null) return;
-            string removal = MethodBody(File.ReadAllText(handlerPath), "public void OnRemoval(");
+            string removal = SourceText.Method(File.ReadAllText(handlerPath), "public void OnRemoval(");
             Assert.Contains("_mapping.HandleDeviceDisconnect(ind);", removal);
 
             // Phase9 9-E E-6f2: Stop の本体は ServiceLifecycle へ移った
             string lifecyclePath = SourceFileLocator.Find("DS4Windows/Processing/Services/ServiceLifecycle.cs");
             if (lifecyclePath == null) return;
-            string stop = MethodBody(File.ReadAllText(lifecyclePath), "public bool Stop(");
+            string stop = SourceText.Method(File.ReadAllText(lifecyclePath), "public bool Stop(");
             Assert.DoesNotContain("HandleDeviceDisconnect", stop);
             Assert.DoesNotContain("On_DS4Removal", stop);
         }
@@ -109,7 +109,7 @@ namespace DS4WindowsTests
             string path = SourceFileLocator.Find("DS4Windows/Processing/Services/ConnectionProfileSelector.cs");
             if (path == null) return;
 
-            string body = MethodBody(File.ReadAllText(path), "public bool ApplyOnConnect(");
+            string body = SourceText.Method(File.ReadAllText(path), "public bool ApplyOnConnect(");
             int first = body.IndexOf("IsFirstConnection(index, connectedMac)", StringComparison.Ordinal);
             int older = body.IndexOf("profileToApply = _profileRepository.OlderProfilePath[index];", StringComparison.Ordinal);
             int selected = body.IndexOf("profileToApply = _profileRepository.SelectedProfile[index];", StringComparison.Ordinal);
@@ -124,7 +124,7 @@ namespace DS4WindowsTests
         public void TheFirstConnectionFlag_IsResetOnlyAtTheAppStartup()
         {
             string app = SourceFileLocator.Find("DS4Windows/App.xaml.cs");
-            string root = RepoRoot();
+            string root = SourceFileLocator.RepoRoot();
             if (app == null || root == null) return;
 
             var callers = Sources(root)
@@ -136,7 +136,7 @@ namespace DS4WindowsTests
         [Fact]
         public void OlderProfilePath_IsUsedByTheKnownFiles_Only()
         {
-            string root = RepoRoot();
+            string root = SourceFileLocator.RepoRoot();
             if (root == null) return;
 
             string[] files = Sources(root)
@@ -170,13 +170,6 @@ namespace DS4WindowsTests
 
         // ---- 補助 ----
 
-        private static string RepoRoot()
-        {
-            string controlService = SourceFileLocator.Find("DS4Windows/Processing/ControlService.cs");
-            if (controlService == null) return null;
-            return Path.GetDirectoryName(Path.GetDirectoryName(Path.GetDirectoryName(controlService)));
-        }
-
         private static IEnumerable<string> Sources(string root)
             => Directory.GetFiles(Path.Combine(root, "DS4Windows"), "*.cs", SearchOption.AllDirectories)
                 .Where(f => !f.Contains(Path.DirectorySeparatorChar + "obj" + Path.DirectorySeparatorChar) &&
@@ -189,19 +182,5 @@ namespace DS4WindowsTests
         private static string Rel(string root, string file)
             => file.Substring(root.Length).TrimStart(Path.DirectorySeparatorChar, '/').Replace(Path.DirectorySeparatorChar, '/');
 
-        private static string MethodBody(string text, string signature)
-        {
-            int start = text.IndexOf(signature, StringComparison.Ordinal);
-            Assert.True(start >= 0, signature + " が見つからない");
-            int open = text.IndexOf('{', start);
-            int depth = 0;
-            for (int i = open; i < text.Length; i++)
-            {
-                if (text[i] == '{') depth++;
-                else if (text[i] == '}' && --depth == 0) return text.Substring(start, i - start + 1);
-            }
-
-            throw new InvalidOperationException(signature + " の終わりが見つからない");
-        }
     }
 }

@@ -26,27 +26,6 @@ namespace DS4WindowsTests
             _output = output;
         }
 
-        private static string ExtractMethodBody(string text, string signaturePattern)
-        {
-            Match m = Regex.Match(text, signaturePattern);
-            Assert.True(m.Success, "メソッドが見つからない: " + signaturePattern);
-            int open = text.IndexOf('{', m.Index);
-            int depth = 0;
-            for (int i = open; i < text.Length; i++)
-            {
-                if (text[i] == '{') depth++;
-                else if (text[i] == '}')
-                {
-                    depth--;
-                    if (depth == 0)
-                        return text.Substring(open, i - open + 1);
-                }
-            }
-
-            Assert.True(false, "メソッドの終わりが見つからない: " + signaturePattern);
-            return null;
-        }
-
         [Fact]
         public void AppHost_DoesNotDeclareRemovedOverloads()
         {
@@ -80,7 +59,7 @@ namespace DS4WindowsTests
             string text = SourceText.ReadCode("DS4Windows/App.xaml.cs");
             if (text == null) return;
 
-            string body = ExtractMethodBody(text, @"void\s+CheckOptions\s*\(");
+            string body = SourceText.BodyByPattern(text, @"void\s+CheckOptions\s*\(");
             int create = body.IndexOf("AppHost.CreateHost(", System.StringComparison.Ordinal);
             int load = body.IndexOf(".Load()", System.StringComparison.Ordinal);
             Assert.True(create >= 0, "-driverinstall 分岐に AppHost.CreateHost の明示的な呼び出しがない。");
@@ -93,7 +72,7 @@ namespace DS4WindowsTests
             string text = SourceText.ReadCode("DS4Windows/App.xaml.cs");
             if (text == null) return;
 
-            string body = ExtractMethodBody(text, @"void\s+CleanShutdown\s*\(");
+            string body = SourceText.BodyByPattern(text, @"void\s+CleanShutdown\s*\(");
             int stop = body.IndexOf("_controlService.ShutDown()", System.StringComparison.Ordinal);
             int clearRegistry = body.IndexOf("ClearControllersForDevice", System.StringComparison.Ordinal);
             int dispose = body.IndexOf("AppHost.Dispose()", System.StringComparison.Ordinal);

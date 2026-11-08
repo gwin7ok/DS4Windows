@@ -21,18 +21,6 @@ namespace DS4WindowsTests
             _output = output;
         }
 
-        private string ReadXamlWithoutComments(string relativePath)
-        {
-            string path = SourceFileLocator.Find(relativePath);
-            if (path == null)
-            {
-                _output.WriteLine($"{relativePath} が見つからないため検査を省略した。");
-                return null;
-            }
-
-            return Regex.Replace(File.ReadAllText(path), @"<!--.*?-->", string.Empty, RegexOptions.Singleline);
-        }
-
         [Theory]
         [InlineData("DS4Windows/UI/ProfileEditor.xaml", "LSDeadZone")]
         [InlineData("DS4Windows/UI/ProfileEditor.xaml", "RSDeadZone")]
@@ -40,7 +28,7 @@ namespace DS4WindowsTests
         [InlineData("DS4Windows/UI/AxialStickUserControl.xaml", "DeadZoneY")]
         public void StickDeadZone_IsWrittenOnEveryChange(string relativePath, string property)
         {
-            string xaml = ReadXamlWithoutComments(relativePath);
+            string xaml = SourceText.ReadXamlCode(relativePath);
             if (xaml == null) return;
 
             Assert.Contains($"Value=\"{{Binding {property}}}\"", xaml);

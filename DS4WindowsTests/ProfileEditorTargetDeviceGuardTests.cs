@@ -26,30 +26,6 @@ namespace DS4WindowsTests
             _output = output;
         }
 
-        /// <summary>宣言の先頭から、対応する閉じ波括弧までのメソッド全体を返す。</summary>
-        private static string ExtractMethod(string text, string marker)
-        {
-            int start = text.IndexOf(marker, StringComparison.Ordinal);
-            Assert.True(start >= 0, $"{marker} が見つからない（メソッド名・修飾子の変更？ガードの見直しが必要）");
-
-            int open = text.IndexOf('{', start);
-            Assert.True(open >= 0, $"{marker} の本体が見つからない");
-
-            int depth = 0;
-            for (int i = open; i < text.Length; i++)
-            {
-                if (text[i] == '{') depth++;
-                else if (text[i] == '}')
-                {
-                    depth--;
-                    if (depth == 0) return text.Substring(start, i - start + 1);
-                }
-            }
-
-            Assert.True(false, $"{marker} の閉じ波括弧が見つからない");
-            return null;
-        }
-
         /// <summary>`呼び出しの先頭(` から対応する `)` までの引数部分を、出現順にすべて返す。</summary>
         private static string[] ExtractCallArguments(string text, string callPrefix)
         {
@@ -100,7 +76,7 @@ namespace DS4WindowsTests
             string text = SourceText.ReadCode("DS4Windows/UI/ProfileEditor.xaml.cs");
             if (text == null) return;
 
-            string body = ExtractMethod(text, "private void CancelBtn_Click(");
+            string body = SourceText.Method(text, "private void CancelBtn_Click(");
             Assert.DoesNotContain("LoadProfile(", body);
             Assert.DoesNotContain("HaltReportingRunAction", body);
         }
@@ -117,7 +93,7 @@ namespace DS4WindowsTests
             string text = SourceText.ReadCode("DS4Windows/UI/ProfileEditor.xaml.cs");
             if (text == null) return;
 
-            string body = ExtractMethod(text, "private bool ExecuteSaveOrApply(");
+            string body = SourceText.Method(text, "private bool ExecuteSaveOrApply(");
             Assert.DoesNotContain("ApplyProfileToSlot(", body);
             Assert.DoesNotContain("ApplyProfile(", body);
             // ProfileSaved の通知が isApply で分岐していない（1 箇所で無条件に通知する）
@@ -129,10 +105,10 @@ namespace DS4WindowsTests
             // ProfileEditor のどこからも、コントローラーのスロットへ直接適用しない
             Assert.DoesNotContain("ApplyProfileToSlot(", text);
 
-            string saveBtn = ExtractMethod(text, "private void SaveBtn_Click(");
+            string saveBtn = SourceText.Method(text, "private void SaveBtn_Click(");
             Assert.Contains("ExecuteSaveOrApply(isApply: false)", saveBtn);
             Assert.Contains("Close()", saveBtn);
-            string applyBtn = ExtractMethod(text, "private void ApplyBtn_Click(");
+            string applyBtn = SourceText.Method(text, "private void ApplyBtn_Click(");
             Assert.Contains("ExecuteSaveOrApply(isApply: true)", applyBtn);
             Assert.DoesNotContain("Close()", applyBtn);
         }
@@ -147,10 +123,10 @@ namespace DS4WindowsTests
             string text = SourceText.ReadCode("DS4Windows/UI/MainWindow.xaml.cs");
             if (text == null) return;
 
-            string saved = ExtractMethod(text, "private void Editor_ProfileSaved(");
+            string saved = SourceText.Method(text, "private void Editor_ProfileSaved(");
             Assert.Contains("SyncProfileListAndControllers(oldProfile: profile, newProfile: null)", saved);
 
-            string sync = ExtractMethod(text, "private void SyncProfileListAndControllers(");
+            string sync = SourceText.Method(text, "private void SyncProfileListAndControllers(");
             Assert.Contains("string.Equals(activeProfiles[i], targetProfile, StringComparison.CurrentCultureIgnoreCase)", sync);
             Assert.Contains("profileSlotApplier.ApplyToSlot(i, activeProfiles[i], ProfileChangeSource.Manual)", sync);
         }
@@ -183,7 +159,7 @@ namespace DS4WindowsTests
 
             // スティック再校正は、実機がなければ不可とし、ウィンドウには実機（targetDevice）を渡す
             // （Phase6-Step10-2-4a: StickCalibrationWindow は IEditorWindowFactory 経由で生成する）
-            string calibrate = ExtractMethod(text, "private void CalibrateStick_OnClick(");
+            string calibrate = SourceText.Method(text, "private void CalibrateStick_OnClick(");
             Assert.Contains("if (!HasTargetDevice)", calibrate);
             Assert.Contains("CreateStickCalibrationWindow(stick, targetDevice, profileSettingsVM)", calibrate);
         }

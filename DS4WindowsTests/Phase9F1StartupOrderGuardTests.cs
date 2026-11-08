@@ -11,27 +11,6 @@ namespace DS4WindowsTests
     /// </summary>
     public class Phase9F1StartupOrderGuardTests
     {
-        private static string Read()
-        {
-            string path = SourceFileLocator.Find("DS4Windows/App.xaml.cs");
-            return path == null ? null : File.ReadAllText(path);
-        }
-
-        private static string BodyOf(string text, string signature)
-        {
-            int start = text.IndexOf(signature, StringComparison.Ordinal);
-            Assert.True(start >= 0, signature + " がない");
-            int open = text.IndexOf('{', start);
-            int depth = 0;
-            for (int i = open; i < text.Length; i++)
-            {
-                if (text[i] == '{') depth++;
-                else if (text[i] == '}' && --depth == 0) return text.Substring(open, i - open + 1);
-            }
-
-            throw new InvalidOperationException("閉じ括弧がない: " + signature);
-        }
-
         private static void AssertOrder(string body, params string[] tokens)
         {
             int at = -1;
@@ -46,10 +25,10 @@ namespace DS4WindowsTests
         [Fact]
         public void TheStartup_CallsTheStepsInTheOriginalOrder()
         {
-            string text = Read();
+            string text = SourceText.Read("DS4Windows/App.xaml.cs");
             if (text == null) return;
 
-            string body = BodyOf(text, "private void Application_Startup(");
+            string body = SourceText.Body(text, "private void Application_Startup(");
             AssertOrder(body,
                 "AppNotificationRegistration.Initialize()",
                 "runShutdown = true;",
@@ -79,10 +58,10 @@ namespace DS4WindowsTests
         [Fact]
         public void TheEarlyExits_StillStopTheStartup()
         {
-            string text = Read();
+            string text = SourceText.Read("DS4Windows/App.xaml.cs");
             if (text == null) return;
 
-            string body = BodyOf(text, "private void Application_Startup(");
+            string body = SourceText.Body(text, "private void Application_Startup(");
             // 早期の終了（完了モード、CheckOptions の終了要求、別のインスタンス、初回起動の中止）は、Application_Startup から return する
             Assert.Matches(@"if \(TryHandleCompleteInstall\(e\)\)\s*\{\s*return;", body);
             Assert.Matches(@"if \(exitApp\)\s*\{\s*return;", body);
@@ -94,56 +73,56 @@ namespace DS4WindowsTests
         [Fact]
         public void TheLogRotation_HappensOnlyAfterTheSingleInstanceCheck()
         {
-            string text = Read();
+            string text = SourceText.Read("DS4Windows/App.xaml.cs");
             if (text == null) return;
 
             // 2 つ目のインスタンスが、動いている 1 つ目のインスタンスのログをアーカイブへ回さないこと。ローテーションは、確認の後の 1 か所だけ
             Assert.Single(Regex.Matches(text, @"PerformStartupRotation\("));
-            Assert.DoesNotContain("PerformStartupRotation(", BodyOf(text, "private void RunPreHostBootstrap("));
-            Assert.DoesNotContain("PerformStartupRotation(", BodyOf(text, "private bool EnsureSingleInstance("));
-            Assert.DoesNotContain("PerformStartupRotation(", BodyOf(text, "private void CheckOptions("));
-            Assert.DoesNotContain("StartupDiagnostics.", BodyOf(text, "private void RunPreHostBootstrap("));
+            Assert.DoesNotContain("PerformStartupRotation(", SourceText.Body(text, "private void RunPreHostBootstrap("));
+            Assert.DoesNotContain("PerformStartupRotation(", SourceText.Body(text, "private bool EnsureSingleInstance("));
+            Assert.DoesNotContain("PerformStartupRotation(", SourceText.Body(text, "private void CheckOptions("));
+            Assert.DoesNotContain("StartupDiagnostics.", SourceText.Body(text, "private void RunPreHostBootstrap("));
 
-            string body = BodyOf(text, "private void Application_Startup(");
+            string body = SourceText.Body(text, "private void Application_Startup(");
             Assert.True(body.IndexOf("RotateLogsAndLogStartupDiagnostics(e);", StringComparison.Ordinal) > body.IndexOf("EnsureSingleInstance()", StringComparison.Ordinal));
         }
 
         [Fact]
         public void TheStepsKeepTheirSafetyOrder()
         {
-            string text = Read();
+            string text = SourceText.Read("DS4Windows/App.xaml.cs");
             if (text == null) return;
 
             // Pre-Host: ブートストラップのサービス → 設定の場所
-            AssertOrder(BodyOf(text, "private void RunPreHostBootstrap("),
+            AssertOrder(SourceText.Body(text, "private void RunPreHostBootstrap("),
                 "new DS4Windows.Core.Platform.EnvironmentService()", "FindConfigLocation()");
 
             // ログのローテーション → 診断ログ（単一起動の確認の後。Phase9 9-F、ユーザー指示 2026-10-23）
-            AssertOrder(BodyOf(text, "private void RotateLogsAndLogStartupDiagnostics("),
+            AssertOrder(SourceText.Body(text, "private void RotateLogsAndLogStartupDiagnostics("),
                 "PerformStartupRotation(", "ApplyBootstrapMinLogLevel(", "StartupDiagnostics.CultureMessage()");
 
             // 単一起動の通知は、ホストの構築より前
-            AssertOrder(BodyOf(text, "private void InitializeProcessWideSettings("),
+            AssertOrder(SourceText.Body(text, "private void InitializeProcessWideSettings("),
                 "timeBeginPeriod(1)", "LoadFromRegistry()", "RefreshViGEmBusInfo()", "new EventWaitHandle(", "CreateTempWorkerThread();");
 
             // ホストの構築 → ControlService → Post-Host のサービス
-            AssertOrder(BodyOf(text, "private void BuildHostAndServices("),
+            AssertOrder(SourceText.Body(text, "private void BuildHostAndServices("),
                 "AppHost.CreateHost(", "CreateControlService(parser);", "InitializePostHostServices();");
 
             // 設定の読み込みは、LoggerHolder の作成より前
-            AssertOrder(BodyOf(text, "private bool LoadAppSettings("), "_appSettingsService.Load()", "_appSettingsService.Save()");
-            AssertOrder(BodyOf(text, "private void ConfigureLoggingAndDiagnostics("),
+            AssertOrder(SourceText.Body(text, "private bool LoadAppSettings("), "_appSettingsService.Load()", "_appSettingsService.Save()");
+            AssertOrder(SourceText.Body(text, "private void ConfigureLoggingAndDiagnostics("),
                 "new LoggerHolder(", "_logSettingsApplierProxy.Attach(logHolder);", "DispatcherUnhandledException +=", "UnhandledException +=", "StartupDiagnostics.EnvironmentMessages(", "BuildStampReader.BuildLogMessage(");
 
             // 保存の許可（skipSave = false）は、接続フラグのリセットの後
-            AssertOrder(BodyOf(text, "private void RunFirstLaunchSetup("), "ResetConnectionFlags();", "skipSave = false;");
+            AssertOrder(SourceText.Body(text, "private void RunFirstLaunchSetup("), "ResetConnectionFlags();", "skipSave = false;");
 
             // プロファイルの固定 ID → SA の読み込み → 言語 → テーマ → リンクされたプロファイル（メイン画面の生成の前）
-            AssertOrder(BodyOf(text, "private void PrepareProfilesCultureAndTheme("),
+            AssertOrder(SourceText.Body(text, "private void PrepareProfilesCultureAndTheme("),
                 "EnsureAllPersisted();", "LoadActions()", "SetUICulture(", "ApplyLanguageSetting(", "ChangeTheme(", "LoadLinkedProfiles();");
 
             // メイン画面 → IPC → 出力スロット → LateChecks
-            AssertOrder(BodyOf(text, "private void ShowMainWindowAndFinish("),
+            AssertOrder(SourceText.Body(text, "private void ShowMainWindowAndFinish("),
                 "IMainWindowFactory", "window.Show();", "CreateIPCClassNameMMF(", "window.CheckMinStatus();", "CheckHidHidePresence()", "LoadOutputSlots();", "window.LateChecks(parser);");
         }
     }

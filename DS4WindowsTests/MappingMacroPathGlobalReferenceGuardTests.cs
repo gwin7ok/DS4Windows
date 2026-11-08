@@ -51,38 +51,6 @@ namespace DS4WindowsTests
             return text;
         }
 
-        /// <summary>宣言の先頭から、対応する閉じ波括弧までのメソッド全体（シグネチャを含む）を返す。</summary>
-        private static string ExtractMethod(string text, string marker)
-        {
-            int start = text.IndexOf(marker, StringComparison.Ordinal);
-            Assert.True(start >= 0, $"{marker} が見つからない（メソッド名・修飾子の変更？）");
-            Assert.True(text.IndexOf(marker, start + marker.Length, StringComparison.Ordinal) < 0,
-                $"{marker} が複数見つかった（オーバーロードの追加？ガードの見直しが必要）");
-
-            int open = text.IndexOf('{', start);
-            Assert.True(open > start, $"{marker} の本体が見つからない");
-
-            int depth = 0;
-            for (int i = open; i < text.Length; i++)
-            {
-                if (text[i] == '{')
-                {
-                    depth++;
-                }
-                else if (text[i] == '}')
-                {
-                    depth--;
-                    if (depth == 0)
-                    {
-                        return text.Substring(start, i - start + 1);
-                    }
-                }
-            }
-
-            Assert.True(false, $"{marker} の閉じ波括弧が見つからない");
-            return null;
-        }
-
         [Fact]
         public void MacroPathMethods_ReadOutputKbmMappingFromStaticProfileSettings()
         {
@@ -92,7 +60,7 @@ namespace DS4WindowsTests
 
             foreach (string marker in MethodMarkers)
             {
-                string body = ExtractMethod(text, marker);
+                string body = SourceText.Method(text, marker, unique: true);
 
                 Assert.False(BareReference.IsMatch(body), $"outputKBMMapping への非修飾参照（Global）が {marker} に残っている");
                 Assert.False(QualifiedReference.IsMatch(body), $"Global.outputKBMMapping への修飾参照が {marker} に残っている");

@@ -1,7 +1,7 @@
 # Phase15-0 個別計画書: Phase14 系の小さな持ち越しの片付け
 
 作成日: 2026-11-05
-状態: **承認済み（2026-11-05。H1〜H6 はユーザーがすべて推奨案を選択）→ 15-0-0〜15-0-2 完了（2026-11-08）。次は 15-0-3**
+状態: **承認済み（2026-11-05。H1〜H6 はユーザーがすべて推奨案を選択）→ 15-0-0〜15-0-3 完了（2026-11-08）。次は 15-0-4**
 ブランチ: `Phase15-0`（master 67529739 から作成）
 根拠: `Phase14d-Plan.md` §10（持ち越し）、`Phase9-Deferred-Ledger.md`（Phase13b-2）、`Known-Issues-Ledger.md`（KI-4）、`Log-Policy.md` §3・§11、規約 `.github/copilot-instructions.md` §2.3・§3.3・§4
 
@@ -71,3 +71,4 @@ B（改名）を最後にするのは、C・D で中身を触るファイルの�
 | 15-0-0 | 完了。一覧と決定 Q1〜Q5 は `Phase15-0-Log-Text-List.md` |
 | 15-0-1 | 完了（d54a0298）。リソース化と日本語の訳を同時に入れた |
 | 15-0-2 | 完了。日本語の訳（承認済み）は 15-0-1 で `Strings.ja.resx` に入れ、GUI の文言の統一（Q3）も同じ変更で済んだため、追加の変更はなし。確認: 呼び出し元が渡す案内文（`prolog`）はすべて既存リソース経由、`WakeupFromSuspend` の訳あり、`UserLogTextResourceTests` が訳の有無と書式の引数を照合 |
+| 15-0-3 | 完了。`SourceText` に `Method`（unique 指定可）・`Body`・`BodyByPattern`・`BodyOfMethodNamed`・`ReadXamlCode` を追加し、メソッドの範囲の切り出し 10 個・読み取り 5 個・ルート取得 3 個・XAML のコメント除去 1 個（計 17 個の自前の補助）を置き換えた。残すテスト固有の処理: `BranchBody`（if ブロックの内側）、`ExtractCallArguments`、`Code`／`Sources`／`Rel`（W1）、`<!--C-->` への置換（`PersistenceGoldenContext`）、`GoldenFile`／`RegistrationSource` など（ソースの読み取りではない）。Debug ALL: 警告 0・エラー 0、3,152 件合格 |

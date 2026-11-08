@@ -196,42 +196,28 @@ namespace DS4WindowsTests
             // Phase9 9-E E-6e: 切断の処理は DeviceDisconnectHandler.OnRemoval へ移った
             string handlerPath = SourceFileLocator.Find("DS4Windows/Processing/Services/DeviceDisconnectHandler.cs");
             if (handlerPath == null) return;
-            string removal = MethodBody(File.ReadAllText(handlerPath), "public void OnRemoval(");
+            string removal = SourceText.Method(File.ReadAllText(handlerPath), "public void OnRemoval(");
             int handle = removal.IndexOf("_mapping.HandleDeviceDisconnect(ind);", StringComparison.Ordinal);
             int release = removal.IndexOf("_profileSlotApplier.ReleaseSlot(ind);", StringComparison.Ordinal);
             Assert.True(handle >= 0 && release > handle, "ReleaseSlot は HandleDeviceDisconnect の後に呼ぶ");
             // Phase9 9-E E-6f2: Stop の本体は ServiceLifecycle へ移った
             string lifecyclePath = SourceFileLocator.Find("DS4Windows/Processing/Services/ServiceLifecycle.cs");
             if (lifecyclePath == null) return;
-            Assert.DoesNotContain("ReleaseSlot", MethodBody(File.ReadAllText(lifecyclePath), "public bool Stop("));
+            Assert.DoesNotContain("ReleaseSlot", SourceText.Method(File.ReadAllText(lifecyclePath), "public bool Stop("));
 
             // Phase9 9-E E-6a: 接続時のプロファイルの適用と束縛の差し替えは ConnectionProfileSelector へ移った
             string selectorPath = SourceFileLocator.Find("DS4Windows/Processing/Services/ConnectionProfileSelector.cs");
             if (selectorPath == null) return;
-            string connect = MethodBody(File.ReadAllText(selectorPath), "public bool ApplyOnConnect(");
+            string connect = SourceText.Method(File.ReadAllText(selectorPath), "public bool ApplyOnConnect(");
             int apply = connect.IndexOf("_profileSlotApplier.ApplyToSlot(index, profileToApply", StringComparison.Ordinal);
             int publish = connect.IndexOf("_profileSlotApplier.PublishSlot(index);", StringComparison.Ordinal);
             Assert.True(apply >= 0 && publish > apply, "適用しない経路（else）で PublishSlot を呼ぶ");
 
             // 適用のたびにも呼ばれる HandleDeviceDisconnect には、エンジンの切断を足していない
-            string handler = MethodBody(File.ReadAllText(mapping), "public void HandleDeviceDisconnect(");
+            string handler = SourceText.Method(File.ReadAllText(mapping), "public void HandleDeviceDisconnect(");
             Assert.DoesNotContain("OnDeviceDisconnected", handler);
             Assert.DoesNotContain("_engine", handler);
         }
 
-        private static string MethodBody(string text, string signature)
-        {
-            int start = text.IndexOf(signature, StringComparison.Ordinal);
-            Assert.True(start >= 0, signature + " が見つからない");
-            int open = text.IndexOf('{', start);
-            int depth = 0;
-            for (int i = open; i < text.Length; i++)
-            {
-                if (text[i] == '{') depth++;
-                else if (text[i] == '}' && --depth == 0) return text.Substring(start, i - start + 1);
-            }
-
-            throw new InvalidOperationException(signature + " の終わりが見つからない");
-        }
     }
 }
