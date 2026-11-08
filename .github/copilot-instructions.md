@@ -1,7 +1,7 @@
 # エージェント向け作業ルール (copilot-instructions)
 
 作成日: 2026-03-01
-最終更新日: 2026-11-05（3.1 に RemovedApiRuleTests への置き換え、3.3 原則1 の引き継ぎの注記、4 章に Benchmark の印と「OS の状態に触れない」を追記［Phase14d］。同日: 3.1 に DI の登録の層ごとの分割と後付けの配線の置き場所、3.3 に原則5［コメントには意図を書く。R-15］、3.4 R1・R2 に `Core/Model`、4 章にテストの命名［R-16］と Slow の印を追記［Phase14c-Step7］。同日: 3.4 R1 のルート直下の記述を更新、3.1 に違反 0 件を追記［Phase14b-2］。同日: 3.1 に層の依存の検査［LayerDependencyRuleTests］、3.4 R1 に Input・UI の Abstractions、R2 に Core・第1層が使う契約と共有の値の型の置き場所を追記［Phase14b］。2026-11-04: 3.3 原則3 を達成済みに、3.4 を層別フォルダの規則 R1〜R7 へ全面改定［Phase14］。2026-11-03: 2.3 ログ出力の維持に、Phase13b での方針に沿った変更の例外を追記［Phase12-Step1 の承認済み］。2026-10-27: 調査指示の追記を反映。2026-10-22: 3.2 の巨大ファイルの行数を Phase9 の責務分割［9-B・9-C・9-E・MapCustom の M1〜M3］の後に更新。2026-10-21: 3.2 の Mapping.cs の行数を Phase8-Fix-MacroRepeatUnify の削除後に更新。2026-10-20: 3.2 の Mapping.cs の行数を Phase8-Step8 の削減後に更新。2026-10-18: 2.1 のシム維持の原則を過渡期の記述に改め、3.1 に暗黙のホスト構築の禁止とラチェットの一致検査を追記［Phase7-Step10e の承認済み］。2026-10-15: 3.3 原則1の過渡期ルールを終了し、既存ファイルを含む厳格適用へ更新［Phase6-Step10b の完了］。2026-10-14: 2.2 のカスケードループ防止ガードの記述を現行の機構へ更新［Phase6-Step9b の決定6］。2026-09-24: 2.4 未参照コードの扱いを追記。2026-09-20: 3.3 原則1に過渡期ルールを追記、3.4 ファイル配置ルールを追記。2026-09-03: 3.3 ファイル構成・クラス・名前空間の原則と過渡期ルールを追記）
+最終更新日: 2026-11-08（2.3 に利用者向けログの書き方［AppLogger.LogUser とリソースのキー］、4 章のテストの命名に Phase 名のテストの改名とテストの状態の初期化を追記［Phase15-0］。2026-11-05（3.1 に RemovedApiRuleTests への置き換え、3.3 原則1 の引き継ぎの注記、4 章に Benchmark の印と「OS の状態に触れない」を追記［Phase14d］。同日: 3.1 に DI の登録の層ごとの分割と後付けの配線の置き場所、3.3 に原則5［コメントには意図を書く。R-15］、3.4 R1・R2 に `Core/Model`、4 章にテストの命名［R-16］と Slow の印を追記［Phase14c-Step7］。同日: 3.4 R1 のルート直下の記述を更新、3.1 に違反 0 件を追記［Phase14b-2］。同日: 3.1 に層の依存の検査［LayerDependencyRuleTests］、3.4 R1 に Input・UI の Abstractions、R2 に Core・第1層が使う契約と共有の値の型の置き場所を追記［Phase14b］。2026-11-04: 3.3 原則3 を達成済みに、3.4 を層別フォルダの規則 R1〜R7 へ全面改定［Phase14］。2026-11-03: 2.3 ログ出力の維持に、Phase13b での方針に沿った変更の例外を追記［Phase12-Step1 の承認済み］。2026-10-27: 調査指示の追記を反映。2026-10-22: 3.2 の巨大ファイルの行数を Phase9 の責務分割［9-B・9-C・9-E・MapCustom の M1〜M3］の後に更新。2026-10-21: 3.2 の Mapping.cs の行数を Phase8-Fix-MacroRepeatUnify の削除後に更新。2026-10-20: 3.2 の Mapping.cs の行数を Phase8-Step8 の削減後に更新。2026-10-18: 2.1 のシム維持の原則を過渡期の記述に改め、3.1 に暗黙のホスト構築の禁止とラチェットの一致検査を追記［Phase7-Step10e の承認済み］。2026-10-15: 3.3 原則1の過渡期ルールを終了し、既存ファイルを含む厳格適用へ更新［Phase6-Step10b の完了］。2026-10-14: 2.2 のカスケードループ防止ガードの記述を現行の機構へ更新［Phase6-Step9b の決定6］。2026-09-24: 2.4 未参照コードの扱いを追記。2026-09-20: 3.3 原則1に過渡期ルールを追記、3.4 ファイル配置ルールを追記。2026-09-03: 3.3 ファイル構成・クラス・名前空間の原則と過渡期ルールを追記）
 対象ブランチ: `For-DI-migration-work`
 全体計画書: `docs-forDIMG/DI-App-Wide-Migration-Plan.md`
 ＤＩ化移行後の理想構造のモデル図：`docs-forDIMG\Model-Diagram\01-Component-Dependency-Diagram.md`,`docs-forDIMG\Model-Diagram\02-Layer-Architecture-Diagram.md`,`docs-forDIMG\Model-Diagram\03-Class-Interface-Diagram.md`,`docs-forDIMG\Model-Diagram\04-Service-Lifecycle-Spec.md` ← これら4文書は全体の構造に関わる部分の意思決定を行う場合は必ず参照し、また実装作業の中で変更があった場合はその内容をこれらの文書に反映すること
@@ -39,7 +39,7 @@
 ### 2.3 ログ出力の厳格な維持
 - 通常の Phase では、既存の `AppLogger.LogToGui`、`AppLogger.LogTrace`、`AppLogger.LogDebug` 等のログ出力とログレベル（文言を含む）を完全に維持する。
 - **例外（2026-11-03 追記。Phase12-Step1）**: ログ整理の Phase（Phase13b＝L2）に限り、`docs-forDIMG/MadeByAgent/Log-Policy.md` に沿った変更を許可する。変更は「レベルのみ／文言／削除」に分けて記録し、利用者に見える GUI・トレイのログの変更は一覧で承認を得る（Phase8-Step8-Q7 の前例）。
-- 新規に書くコードは、最初から `Log-Policy.md` に沿って書く。
+- 新規に書くコードは、最初から `Log-Policy.md` に沿って書く。利用者向けの文言（画面・トレイに出るもの）は、文字列を直接渡さず、`AppLogger.LogUser(level, "Log_…", 引数…)`（画面は表示言語、ファイルは英語）と `Strings.resx`／`Strings.ja.resx` のキーで書く（2026-11-08 追記。Phase15-0）。開発者向けの診断文（例外の全文など）は英語のままでよい。
 - DI 境界を通過する重要操作には、標準化ログ接頭辞 `[DI]` を付与して追跡性を高める（維持）。
 
 ### 2.4 未参照コード（呼出元0件のクラス・メソッド等）の扱い
@@ -115,7 +115,7 @@
 - **マイクロステップの原則**:
   - 作業は必ず `PhaseX-StepY-Plan.md` のように個別計画書を作成し、承認を得てからマイクロタスク単位で進める。
   - 各 Step ごとに必ず単体テストを作成・実行し、`dotnet test` で常時グリーン（合格）を確認しながら進める。
-  - **テストの命名**（2026-11-05 追記。Phase14c-Step7、レビュー R-16）: 新しいテストのファイル名・クラス名は、守る機能や振る舞いの名前にする（例: `BackingStoreActionsLoadedHandlerTests`）。Phase 名・Step 名は付けず、経緯は XML コメントに書く。層・名前空間・型の参照の検査は、ソースを文字列で読まず、`LayerDependencyRuleTests`（ArchUnitNET）などの型の検査で書く。既存の Phase 名のテストの整理は Phase14d で行う。
+  - **テストの命名**（2026-11-05 追記。Phase14c-Step7、レビュー R-16）: 新しいテストのファイル名・クラス名は、守る機能や振る舞いの名前にする（例: `BackingStoreActionsLoadedHandlerTests`）。Phase 名・Step 名は付けず、経緯は XML コメントに書く。層・名前空間・型の参照の検査は、ソースを文字列で読まず、`LayerDependencyRuleTests`（ArchUnitNET）などの型の検査で書く。既存の Phase 名のテスト 303 件は Phase15-0 で機能名へ改名した（旧名 → 新名の対応表は `docs-forDIMG/MadeByAgent/Phase15-0-Test-Rename-Map.md`）。テストの実行順はクラス名で決まるため、前のテストが残す状態に依存するテストは、改名や追加で順序が変わると落ちる。テストは自分で状態を初期化し、終わりに元へ戻す。
   - **遅いテストの印**（2026-11-05 追記。Phase14c-0）: 1 件 0.3 秒以上かかるテストには `[Trait("Category", "Slow")]` を付ける。Step の途中の確認は `--filter "Category!=Slow"`、Step の終わりの確認（Debug ALL）は全件で行う。
   - **性能の計測の印**（2026-11-05 追記。Phase14d-Step4）: 時間を出力するだけで Assert を持たない性能の計測には `[Trait("Category", "Benchmark")]` を付け、通常の実行から外す（Debug ALL の「Execute Test (Actions)」は `--filter "Category!=Benchmark"`。途中の確認は `--filter "Category!=Slow&Category!=Benchmark"`）。性能を比べるときだけ `--filter "Category=Benchmark"` で流す。Assert で守る性能の検査（割り当てが 0 など）は Benchmark にしない。
   - **OS の状態に触れない**（2026-11-05 追記。Phase14d-Step4）: 単体テストで部品を直接作るときは、タスク スケジューラー・スタートアップ フォルダー・レジストリなど利用者の環境に触れる実物を渡さず、偽物を渡す（例: `FakeStartupEntryService`）。実物の振る舞いを確かめるテストは、そのことをクラスの説明に書く。

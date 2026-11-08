@@ -9,6 +9,7 @@ All notable changes to this project are recorded in this file.
 - Command line: non-ASCII characters in the result of `-command Query…` (for example Japanese profile names) were shown as `?`. The result is now passed as UTF-8 and written in the console's code page. An empty result is now an empty line.
 
 ### Changed
+- Log messages shown in the Log tab and as tray notifications are now translated: when the display language is Japanese they appear in Japanese (about 85 messages, for example controller connection and disconnection, ViGEmBus, UDP/OSC servers, HidHide and profile saving). The log files are always written in English so that reports stay readable. "WARNING:" / "ERROR:" prefixes at the start of messages were removed because the level is already shown. "Waking Up From Suspend" now has a Japanese translation.
 - Internal (no change in behavior): dependencies between the layers were straightened out (shared value types and contracts moved to the core folders, the UI no longer refers to the application class directly), static state was removed (the bridge for sending synthetic keys, the arrays for forced light bar colors, an unused static action registry; startup entries, the change log and the HTTP client are now provided by the service container), service registration was split per layer, and the test suite was cleaned up (architecture tests for the layer dependencies, removal of obsolete and duplicate source checks, faster tests).
 
 ## [4.3.1] - 2026-11-04

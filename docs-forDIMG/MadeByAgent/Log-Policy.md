@@ -75,4 +75,4 @@
 - `LogToTray`（トレイ通知）は、ログではなく通知として別 API のまま。
 - `[Diag-Toast]` は削除（例外を記録する 2 か所は `[Toast]` に改めた）。`Console`／`Debug.WriteLine` は AppLogger へ移すか削除した（CLI の結果を標準出力へ返す `App.xaml.cs` の 1 か所は機能のため維持）。Updater の NLog 直接は AppLogger 経由にした。
 - 残る NLog の直接呼び出しは、基盤（`AppLogger`、`LoggerHolder`）の内部だけ。
-- §3 の「利用者向けの文言はリソース化」は、今回は実施していない（GUI の文言を変えない方針。`Phase13b-Log-Change-List.md` §1）。必要になったら別 Phase で扱う。
+- §3 の「利用者向けの文言はリソース化」は、Phase13b では実施していない（GUI の文言を変えない方針。**Phase15-0（2026-11-08）で実施した**: `AppLogger.LogUser`／`UserText`、`Strings.resx` の `Log_*` キー、画面は表示言語・ファイルは英語。一覧は `Phase15-0-Log-Text-List.md`）。当時の記述: (`Phase13b-Log-Change-List.md` §1）。必要になったら別 Phase で扱う。
