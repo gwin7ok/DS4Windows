@@ -1033,6 +1033,9 @@ namespace DS4Windows.UI
         private void ClearLogBtn_Click(object sender, RoutedEventArgs e)
         {
             logvm.LogItems.Clear();
+            // 最下部の 1 行メッセージ欄（lastMsgLb）も、ログと一緒に消す
+            lastLogMsg.Message = string.Empty;
+            lastLogMsg.Warning = false;
         }
 
         // Phase11 W6 K-W6-1: 旧 MainTabCon_SelectionChanged（タブの番号 4 のとき、最下部の 1 行メッセージ欄 lastMsgLb を隠していた）は削除した。
