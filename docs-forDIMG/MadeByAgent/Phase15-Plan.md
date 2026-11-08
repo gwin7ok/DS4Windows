@@ -123,3 +123,127 @@ Phase16（第 1 層のカートリッジ化）より前に行う理由: Phase16 
 | Step | 状態 |
 |---|---|
 | 計画書 | 草案作成・P1〜P10 回答済み（2026-11-08。P8＝全領域、P9＝最後に 1 回） |
+
+## 10. Step 15-1 の細部（UI 向けの窓口。R-09）
+
+作成日: 2026-11-08（草案。決定 S1〜S3 の回答後に確定）
+
+### 10.1 目的と終了時の姿
+
+- UI から、具象の `ControlService` と、第 1 層の `DS4Device`、第 3 層の `OutSlotDevice`／`OutputSlotManager` などの**機器の型への参照をなくす**。UI は第 2 層の契約（`Processing/Abstractions`）だけを見る。
+- 終了時の数値の目標:
+  - UI で `ControlService` 型を参照するファイル: 24 → 0（新しい禁止の規則 L8 で固定。§10.5）
+  - 規則 L7（UI → 第 1 層・第 3 層）: 30 → **6**（残りは `DS4State`／`DS4StateExposed`／`SixAxis`／`DS4SixAxis` の値の型。Phase16 の R-17 で `Core/Model` へ移す。S2）
+  - `MainWindow` のコンストラクター引数: 26 → 15 以下（S3）
+
+実測した L7 の 30 件の内訳: `DS4Device` 11 件（`BindingWindow`、`ControllerReadingsControl`、`MainWindow`、`ProfileEditor`、`CompositeDeviceModel`、`ControllerHolder`、`ControllerListViewModel`、`ControllerRegDeviceOptsViewModel`、`DeviceListItem`、`RecordBoxViewModel`、`TrayIconViewModel`）、`DualSenseDevice` 2 件、`DS4SixAxis`（`ProfileEditor`）1 件、`ConnectionType` 1 件、`NativeMethods` 1 件、出力側 8 件（`OutSlotDevice`／`OutputSlotManager`／`OutputDevice`／`Xbox360OutDevice`）＝計 24 件を 15-1 で消す。残り 6 件は `DS4State` 系（`ControllerReadingsControl` 4、`StickCalibrationWindow` 1、`RecordBoxViewModel` 1）。
+
+### 10.2 UI の `ControlService` 利用の実測（2026-11-08）
+
+| 使うもの | 回数 | 使い道（主な場所） | 置き換え先 |
+|---|---|---|---|
+| `DS4Controllers[slot]`（`DS4Device`） | 17 | 電池の表示（`MainWindow`）、接続中か（`MainWindow.IsSlotConnected`）、振動テスト（`BindingWindow`、`ProfileEditor`）、ジャイロ較正のリセット（`ProfileEditor`）、読み取り表示（`ControllerReadingsControl`）、`RecordBoxViewModel`、`ControllerRegDeviceOptsViewModel` | `IControllerSlotQuery`／`IControllerSlotCommands`／`IControllerReadingsSource` |
+| `slotManager`（`ControllerColl`、`CollectionLocker`、`ReverseControllerDict`） | 5 | コントローラー一覧（`ControllerListViewModel`）、トレイ（`TrayIconViewModel`） | `IControllerSlotQuery`（ロックの内側で作った一覧を返す） |
+| `ServiceStarted`／`PreServiceStop`／`RunningChanged`／`Start`／`Stop`／`HotPlug` | 6／6／1／4／3／1 | 開始・停止とイベント | **既存の `IServiceLifecycle` にすでにある**。差し替えるだけ |
+| `HotplugController`（`DS4Device` を渡すイベント） | 4 | 一覧の更新、トレイ、自動プロファイルの再確認 | `IControllerSlotQuery.SlotChanged`（`IControllerSlotView` を渡す） |
+| `getDS4State`／`getDS4StateTemp` | 3 | 読み取り表示、スティックの較正 | `IControllerReadingsSource` |
+| `MappingService`（`GetBoolMappingExternal`、`SetCurveAndDeadzone`） | 3 | マクロ記録の入力判定、読み取り表示 | 既存の `IMapping`／`IControlActivityReader` を注入 |
+| `recordingMacro` | 2 | マクロ記録中の印 | `IMacroRecordingState`（新） |
+| `IsMeasuringProcessingDelay`／`GetProcessingDelay` | 2／1 | 処理遅延の表示 | `IControllerReadingsSource` |
+| `touchPad[0]` | 1 | `RecordBoxViewModel` のタッチパッドの状態 | `IControllerReadingsSource`（`GetBoolMappingExternal` の引数に使うため一緒に） |
+| `OutputslotMan` | 1 | `MainWindow` が出力スロットの画面へ渡す | `IOutputSlotService`（既存。15-1-4） |
+| `DeviceOptions` | 1 | 機種ごとの設定画面 | 設定は `Core` の型。直接注入 |
+| `ProfileSettingsService`、`LogDebug` | 1／1 | 読み取り表示 | 既存の `IProfileSettingsService`、`AppLogger` |
+
+加えて、`UI/Services` の 3 つのファクトリー（`ViewModelFactory`、`EditorWindowFactory`、`MainWindowFactory`）が `ControlService` を受けて中継している。
+
+### 10.3 サブ Step
+
+各サブ Step の終わりに Debug ALL（途中は `Category!=Slow&Category!=Benchmark`）。1 サブ Step は 1 コミット以上。
+
+| サブ Step | 内容 |
+|---|---|
+| 15-1-0 | **準備**。(a) 値の型を `Core/Model` へ: `ConnectionType`（`TrayIconViewModel` が使う）、`DS4Device.ExclusiveStatus`、`OutSlotDevice` の `ReserveStatus`／`AttachedStatus`／`InputBound`（入れ子の列挙型はトップレベルに出して移す。規約 R2）。移動は `git mv` のみのコミット → 名前空間の書き換えは別コミット（R7）。(b) 新しい禁止の規則 L8（UI → `DS4Windows.Processing.ControlService` の型）を `LayerDependencyRuleTests` に足し、今の 24 ファイルを許可リストに凍結 |
+| 15-1-1 | **機器の読み取りの窓口**: `IControllerSlotView`（1 台の表示用の情報と通知）と `IControllerSlotQuery`（一覧・スロット指定の取得・追加／取り外しの通知）を第 2 層に作る（§10.4）。`ControllerListViewModel`、`TrayIconViewModel`、`CompositeDeviceModel`、`ControllerHolder`、`DeviceListItem`、`ControllerRegDeviceOptsViewModel`、`MainWindow`（電池・接続中か）を移す |
+| 15-1-2 | **機器への操作の窓口**: `IControllerSlotCommands`（振動テスト、ジャイロ較正のリセット）。`BindingWindow`、`ProfileEditor`（`DualSenseDevice` の振動方式の分岐を含む）を移す。既存の `IDeviceRumbleService`（`DS4Device` を受ける）は、中身で使う |
+| 15-1-3 | **読み取り表示・マクロ記録の窓口**: `IControllerReadingsSource`（状態のコピー、処理遅延）と `IMacroRecordingState`。`ControllerReadingsControl`、`StickCalibrationWindow`、`RecordBox`／`RecordBoxViewModel` を移す。`DS4State` 系の型の参照は残す（S2）。**毎フレーム近くの経路なので、割り当てを増やさない**（コピー先は呼び出し側の持つ配列） |
+| 15-1-4 | **出力スロットの窓口**: `IOutputSlotView`（種類・予約状態・接続状態・機能の有無・通知）を作り、`IOutputSlotService`（既存）から返す。`SlotDeviceEntry`、`CurrentOutDeviceViewModel`、`OutputSlotManagerControl`、`PluginOutDevWindow`、`MainWindow` の `OutputslotMan` の受け渡しを移す |
+| 15-1-5 | **残りの利用の置き換え**: `MainWindow` などの `Start`／`Stop`／`HotPlug`／イベントを `IServiceLifecycle` へ。`HookWindowMessages` の `NativeMethods.HidD_GetHidGuid`（HID の通知の登録）は、窓のメッセージの登録を既存の `IWindowSystem` か専用の窓口へ寄せるかを、この Step の冒頭で調べて決める（L7 の 1 件） |
+| 15-1-6 | **`ControlService` の公開メンバーの整理と、UI のファクトリーの引数から `ControlService` を外す**。利用者が 0 になったメンバー（`DS4Controllers`／`touchPad`／`slotManager` の転送ほか。約 50 利用者の残りを数える）を、規約 2.1 の過渡期の原則に従い、**利用者が本当に 0 になったものだけ**削除。L8 の許可リストを 0 にする |
+| 15-1-7 | **`MainWindow` のコンストラクター引数の整理**（S3）。他の子コントロールへ渡すだけの引数（`pathService`、`environmentService`、`profileIdentityService`、`viewModelFactory`、`editorWindowFactory` など）の洗い出しと、子の側での受け取り方の整理。L7 の基準値を 6 へ更新。モデル図（01〜04）の更新。完了の記録 |
+
+### 10.4 契約の案（第 2 層。`Processing/Abstractions`。実装は `Processing/Services`）
+
+```csharp
+// 1 台の機器の「UI が見る面」。DS4Device を包むアダプター（DS4Device ごとに 1 つだけ作る）
+public interface IControllerSlotView
+{
+    int SlotIndex { get; }
+    string DisplayName { get; }
+    string MacAddress { get; }
+    ConnectionType ConnectionType { get; }       // Core/Model（15-1-0）
+    int Battery { get; }
+    bool Charging { get; }
+    int Latency { get; }
+    bool Synced { get; }
+    bool IsRemoving { get; }
+    ExclusiveStatus ExclusiveStatus { get; }     // Core/Model（15-1-0）
+    bool IsJoined { get; }                       // JointDeviceSlotNumber の有無
+    event EventHandler BatteryChanged;
+    event EventHandler ChargingChanged;
+    event EventHandler MacAddressChanged;
+    event EventHandler Removed;
+}
+
+public interface IControllerSlotQuery
+{
+    int SlotCount { get; }
+    IControllerSlotView GetSlot(int slot);                    // 接続なしは null
+    IReadOnlyList<IControllerSlotView> Snapshot();            // slotManager のロックの内側で作る
+    event EventHandler<ControllerSlotChangedEventArgs> SlotChanged; // 旧 HotplugController
+}
+
+public interface IControllerSlotCommands
+{
+    void SetRumble(int slot, byte heavy, byte light);         // 振動テスト（DualSense の方式の調整を含む）
+    void ResetGyroCalibration(int slot);                      // 合体したデバイスも含む
+}
+
+public interface IControllerReadingsSource
+{
+    bool TryCopyStates(int slot, DS4State baseDst, DS4State interDst, int profileSlot, out long calibratingCount); // 旧 ReadWaitEv の取り扱いを中に隠す
+    bool IsMeasuringProcessingDelay { get; set; }
+    double GetProcessingDelay(int slot);
+}
+
+public interface IMacroRecordingState { bool IsRecording { get; set; } }
+```
+
+- 名前と細部は 15-1-1〜3 の着手時に、実際の利用箇所に合わせて詰める（上は案）。
+- **アダプターは `DS4Device` ごとに 1 つだけ**（`ConditionalWeakTable`）。`CompositeDeviceModel` などが「同じ機器か」を参照の同一性で判定しているため、呼ぶたびに新しい物を返さない。
+- 一覧は、従来の `slotManager.CollectionLocker`（`ReadLocker`）の**内側で作った複製**を返す。UI が機器の集合のロックを直接持たない。
+- `IServiceLifecycle` の `HotplugController`（`DS4Device` を渡す）は第 2 層の内部のイベントとして残し、UI はもう購読しない。
+
+### 10.5 検査
+
+- 規則 L8（UI → `ControlService`）: 禁止の規則として追加。15-1-0 で 24 ファイルを許可リストに凍結し、15-1-6 で 0 にする（`LayerDependencyBaseline` の一致検査）。
+- L7 の基準値: 30 → 6（15-1-7）。途中のサブ Step ごとに実数へ更新（減ったら更新する運用）。
+- 新しい契約には単体テストを書く。アダプターの同一性（同じ機器は同じ物）、`SlotChanged` の通知、ロック下の複製、`Removed` の転送と購読の解除を確かめる。
+
+### 10.6 リスク
+
+| リスク | 対策 |
+|---|---|
+| 機器の一覧と通知の競合（接続・切断が UI の更新と重なる） | 従来のロックの取り方を変えない。複製は同じロックの内側で作る。`Removal` の購読は、アダプターの `Removed` に 1 対 1 で移し、購読の重複・解除漏れを増やさない |
+| 読み取り表示の経路（約 60 回／秒）で割り当てが増える | `TryCopyStates` は呼び出し側の配列へコピーするだけ。アダプターは作り置き。15-1-3 で、割り当てを増やさないことをテストで確認 |
+| `DS4Device` のイベントの購読元が変わる（電池・MAC・取り外し） | アダプターが元のイベントを購読して転送する。アダプターの寿命を機器と同じにする（機器が取り外されたら購読を解く） |
+| 値の型の移動（`ConnectionType` など）で、第 1 層・第 3 層の多数のファイルの `using` が変わる | 移動と名前空間の書き換えは別コミット（R7）。機械的な変更として扱い、差分は `git diff -M` と型の検査で確認 |
+| 実機でしか見えない不具合（電池の表示、一覧の追加・削除、振動テスト） | P9 の対策（サブ Step ごとにアプリを起動して確認）。最後の実機確認の項目に、一覧・電池・トレイ・振動・較正・出力スロットを入れる |
+
+### 10.7 決定事項（承認待ち）
+
+| # | 項目 | 選択肢 |
+|---|---|---|
+| S1 | 機器の表示用の面の形 | **A**: インターフェース `IControllerSlotView`（`DS4Device` を包むアダプター。通知を転送する）／ B: 値のコピー（読み取り専用のスナップショット）。電池などの変化はポーリングか再生成が要り、通知を取りこぼしやすい／ C: `DS4Device` をそのまま第 2 層の契約で公開（UI の依存は消えない。L7 が減らない） |
+| S2 | `DS4State` 系の値の型の扱い | **A**: 15-1 では UI から消さない（L7 の残り 6 件）。Phase16 の R-17 で `Core/Model` へ移す時に消える／ B: 15-1 で `Core/Model` へ移す（第 3 層 13 ファイルと毎フレームの経路に影響。Phase16 の作業と重なる） |
+| S3 | `MainWindow` の引数の目標 | **A**: 15 以下（`controlService` の除去と、他の子へ渡すだけの引数の整理）／ B: 数を決めず、15-1-1〜6 の結果としてできるだけ減らす／ C: 見送る（引数 26 のまま） |
