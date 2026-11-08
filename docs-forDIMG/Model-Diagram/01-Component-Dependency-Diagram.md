@@ -317,3 +317,8 @@ flowchart TD
 %% - 第2層の静的な橋渡し SyntheticDispatcher と、本番で未初期化の静的な ActionRegistry を撤廃した。第1層の静的な状態で残るのは DS4Devices／HidDevices（Phase16）。
 %% - Composition Root: DI の登録を層ごとの partial ファイルに分け、生成時の後付けの配線を ServiceRegistration.Wiring.cs に集めた（R-13・R-18。Phase16 のカートリッジの登録の受け皿）。
 %% - 層の依存（LayerDependencyRuleTests）: 禁止 0 件のまま。記録のみ L2（Core → 第1層・第3層）29 件、L7（UI → 第1層・第3層）30 件（155 → 59。件数のラチェットで増加を止める）。
+
+%% ---- Phase15-1 完了（UI から ControlService と第1層・第3層の具象型を外した）----
+%% - UI（4-a）は第 2 層の契約だけに依存する: IControllerSlotView／IControllerSlotQuery（機器の表示と一覧）、IControllerSlotCommands（振動テスト・ジャイロ較正）、IControllerReadingsSource／IMacroRecordingState（読み取り表示・マクロ記録）、IOutputSlotView（出力スロット）。実装は Processing/Services と Output/Services。
+%% - UI から ControlService への参照は 0 件（UiControlServiceReferenceRuleTests）。ControlService の利用者が 0 件の転送メンバーは削除した。
+%% - MainWindow は 21 引数（28 から削減）。ViewModel の生成（設定タブ・機器一覧・出力スロット）は IViewModelFactory へ移した。

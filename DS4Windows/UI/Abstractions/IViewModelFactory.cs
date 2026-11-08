@@ -20,5 +20,14 @@ namespace DS4Windows.UI.Abstractions
         AutoProfilesViewModel CreateAutoProfilesViewModel(AutoProfileHolder autoProfileHolder, ProfileList profileList);
         /// <param name="device">設定を読み書きするスロット（プロファイル編集画面では編集用の作業スロット）</param>
         SpecialActionsListViewModel CreateSpecialActionsListViewModel(int device);
+
+        /// <summary>設定タブの ViewModel。メイン画面が 1 つ作って使う。</summary>
+        SettingsViewModel CreateSettingsViewModel();
+
+        /// <summary>機器一覧（コントローラー一覧タブ）の ViewModel。プロファイルの一覧は、メイン画面が持つものを渡す。</summary>
+        ControllerListViewModel CreateControllerListViewModel(ProfileList profileListHolder);
+
+        /// <summary>出力スロット管理画面の ViewModel。</summary>
+        CurrentOutDeviceViewModel CreateCurrentOutDeviceViewModel();
     }
 }

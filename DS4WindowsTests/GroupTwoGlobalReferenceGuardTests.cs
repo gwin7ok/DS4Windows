@@ -128,6 +128,9 @@ namespace DS4WindowsTests
             public SpecialActEditorViewModel CreateSpecialActEditorViewModel(int device, SpecialAction action = null) => null;
             public AutoProfilesViewModel CreateAutoProfilesViewModel(AutoProfileHolder autoProfileHolder, ProfileList profileList) => null;
             public SpecialActionsListViewModel CreateSpecialActionsListViewModel(int device) => null;
+            public SettingsViewModel CreateSettingsViewModel() => null;
+            public ControllerListViewModel CreateControllerListViewModel(ProfileList profileListHolder) => null;
+            public CurrentOutDeviceViewModel CreateCurrentOutDeviceViewModel() => null;
         }
 
         [Fact]

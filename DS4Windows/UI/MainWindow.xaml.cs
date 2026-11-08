@@ -76,17 +76,13 @@ namespace DS4Windows.UI
         private NonFormTimer autoProfilesTimer;
         // [Phase 5 Step 13-9] 廃止: DIコンテナ注入の _autoProfileService を直接利用
         private readonly IAutoProfileService _autoProfileService;
-        private readonly DS4Windows.Core.Abstractions.IProfileSettingsService profileSettingsService;
         private readonly DS4Windows.Core.Abstractions.IAppSettingsService appSettingsService;
-        // Phase6-Step10-2-2: ControllerRegisterOptionsWindow（コントローラー固有設定の保存）へ渡す
-        private readonly DS4Windows.Core.Abstractions.IProfileXmlStore profileXmlStore;
         // Phase6-Step10-2-4a: ProfileEditor へ渡す、補助ウィンドウの生成の窓口
         private readonly DS4Windows.UI.Abstractions.IEditorWindowFactory editorWindowFactory;
         private readonly DS4Windows.Core.Abstractions.IPathService pathService;
         private readonly DS4Windows.Core.Abstractions.IEnvironmentService environmentService;
         private readonly DS4Windows.Core.Abstractions.IAppearanceSettingsService appearanceSettingsService;
         private readonly DS4Windows.Processing.Abstractions.IProfileApplicationService profileAppService;
-        private readonly DS4Windows.Processing.Abstractions.IOutputSlotService outputSlotService;
         private readonly DS4Windows.Core.Abstractions.IProfileRepository profileRepo;
         // Phase6-Step10-4-5: Global.ApplyProfileToSlot の直接呼び出しの置換先（Global への薄い委譲）
         private readonly DS4Windows.Processing.Abstractions.IProfileSlotApplier profileSlotApplier;
@@ -97,7 +93,6 @@ namespace DS4Windows.UI
         private readonly DS4Windows.Processing.Abstractions.IIpcCommandProcessor ipcProcessor;   // Phase13-Step11 11-c: 旧 MainWindow.Ipc.cs の Ipc*
         private readonly DS4Windows.Processing.Abstractions.IRuntimeFeatureSwitch runtimeFeatures;   // Phase13-Step10 10-c: 旧 ControlService の OSC／UDP／HidHide／TouchpadSlide の転送
         private readonly DS4Windows.Processing.Abstractions.IServiceLifecycle lifecycle;   // Phase13-Step9: 旧 ControlService.running／suspending の転送
-        private readonly DS4Windows.Core.Abstractions.IProfileLoadTarget loadTarget;   // Phase13-Step6 6-e: IPC の LoadTempProfile に渡す窓口
         private ProfileEditor editor;
         private int previousTabIndex = 0;
 #pragma warning disable CS0414 // preserveSize kept for behavior compatibility with older logic
@@ -113,40 +108,31 @@ namespace DS4Windows.UI
 
         // Phase7-Step5 W5（Q4＝A）: 旧 AppHost.GetService の 17 件を、コンストラクター引数に替えた。
         // IMainWindowFactory（実装は MainWindowFactory）が DI から解決して渡す。
-        // Phase14c-Step4（R-05 の前半）: ライトバーの強制表示の状態（旧: DS4LightBar の静的な配列）
-        private readonly DS4Windows.Core.Model.LightbarOverrides _lightbar;
         private readonly DS4Windows.Processing.Abstractions.IControllerSlotQuery slots;
 
-        public MainWindow(DS4Windows.Core.Model.LightbarOverrides lightbar, ArgumentParser parser,
-            DS4Windows.Core.Abstractions.IProfileSettingsService profileSettingsService,
+        public MainWindow(ArgumentParser parser,
             DS4Windows.Core.Abstractions.IAppSettingsService appSettingsService,
-            DS4Windows.Core.Abstractions.IProfileXmlStore profileXmlStore,
             DS4Windows.UI.Abstractions.IEditorWindowFactory editorWindowFactory,
             DS4Windows.Core.Abstractions.IPathService pathService,
             DS4Windows.Core.Abstractions.IEnvironmentService environmentService,
             DS4Windows.Core.Abstractions.IAppearanceSettingsService appearanceSettingsService,
             DS4Windows.Processing.Abstractions.IProfileApplicationService profileAppService,
-            DS4Windows.Processing.Abstractions.IOutputSlotService outputSlotService,
             DS4Windows.Core.Abstractions.IProfileRepository profileRepo,
             DS4Windows.Core.Abstractions.INotificationService notificationService,
             DS4Windows.Processing.Abstractions.IServiceLifecycle lifecycle,
             DS4Windows.Processing.Abstractions.IRuntimeFeatureSwitch runtimeFeatures,
             DS4Windows.Processing.Abstractions.IIpcCommandProcessor ipcProcessor,
-            DS4Windows.Core.Abstractions.IProfileLoadTarget loadTarget,
             DS4Windows.Processing.Abstractions.IProfileSlotApplier profileSlotApplier,
             MainWindowsViewModel mainWindowsViewModel,
-            DS4Windows.Core.Abstractions.ILogSettingsApplier logSettingsApplier,
             IAutoProfileService autoProfileService,
             DS4Windows.UI.Abstractions.IViewModelFactory viewModelFactory,
             DS4Windows.Core.Abstractions.IProfileIdentityService profileIdentityService,
-            DS4Windows.Core.Abstractions.IStartupEntryService startupEntries,
             DS4Windows.UI.Abstractions.IUiThemeAndLanguage themeLanguage,
             DS4Windows.UI.Abstractions.IIpcResultWriter ipcResultWriter,
             DS4Windows.Core.Abstractions.IChangelogService changelogService,
             DS4Windows.Processing.Abstractions.IControllerSlotQuery slots)
         {
             this.slots = slots ?? throw new System.ArgumentNullException(nameof(slots));
-            _lightbar = lightbar ?? throw new System.ArgumentNullException(nameof(lightbar));
             this.changelogService = changelogService ?? throw new ArgumentNullException(nameof(changelogService));   // Phase14b-Step17（D10）
             this.ipcResultWriter = ipcResultWriter ?? throw new ArgumentNullException(nameof(ipcResultWriter));   // Phase14b-Step16: CLI の問い合わせの結果の書き込み
             // Phase14b-Step16（決定 D11）: テーマ・言語の切り替え（旧: Application.Current as App の直接呼び出し）
@@ -158,22 +144,18 @@ namespace DS4Windows.UI
             InitializeComponent();
             // Phase14b-Step16（D11）: XAML の資源 ImgLocPaths（画像のパス）に、テーマの切り替えの通知元を渡す（旧: 自分のコンストラクターで App.ThemeChanged を購読）
             (TryFindResource("ImgLocPaths") as ImageLocationPaths)?.AttachThemeSource(themeLanguage);
-            this.profileSettingsService = profileSettingsService ?? throw new ArgumentNullException(nameof(profileSettingsService));
             this.appSettingsService = appSettingsService ?? throw new ArgumentNullException(nameof(appSettingsService));
-            this.profileXmlStore = profileXmlStore ?? throw new ArgumentNullException(nameof(profileXmlStore));
             this.editorWindowFactory = editorWindowFactory ?? throw new ArgumentNullException(nameof(editorWindowFactory));
             this.pathService = pathService ?? throw new ArgumentNullException(nameof(pathService));
             profileListHolder = new ProfileList(pathService);
             this.environmentService = environmentService ?? throw new ArgumentNullException(nameof(environmentService));
             this.appearanceSettingsService = appearanceSettingsService ?? throw new ArgumentNullException(nameof(appearanceSettingsService));
             this.profileAppService = profileAppService ?? throw new ArgumentNullException(nameof(profileAppService));
-            this.outputSlotService = outputSlotService ?? throw new ArgumentNullException(nameof(outputSlotService));
             this.profileRepo = profileRepo ?? throw new ArgumentNullException(nameof(profileRepo));
             this.notificationService = notificationService ?? throw new ArgumentNullException(nameof(notificationService));
             this.lifecycle = lifecycle ?? throw new ArgumentNullException(nameof(lifecycle));
             this.runtimeFeatures = runtimeFeatures ?? throw new ArgumentNullException(nameof(runtimeFeatures));
             this.ipcProcessor = ipcProcessor ?? throw new ArgumentNullException(nameof(ipcProcessor));
-            this.loadTarget = loadTarget ?? throw new ArgumentNullException(nameof(loadTarget));
             this.profileSlotApplier = profileSlotApplier ?? throw new ArgumentNullException(nameof(profileSlotApplier));
 
             // Initialize log settings ComboBox
@@ -185,8 +167,7 @@ namespace DS4Windows.UI
             DataContext = mainWinVM;
 
             // Phase6-Step10-1-5（決定D7＝A）: ログ設定の反映の窓口（App が LoggerHolder の生成直後に接続する）
-            settingsWrapVM = new SettingsViewModel(appSettingsService, appearanceSettingsService, environmentService, pathService,
-                logSettingsApplier, startupEntries);   // Phase14b-Step15（D12）: スタートアップ登録の契約
+            settingsWrapVM = viewModelFactory.CreateSettingsViewModel();
             settingsTab.DataContext = settingsWrapVM;
             // Phase6-Step10-1-4: XAML から生成される LanguagePackControl へ、保持済みのサービスを渡す（Pure DI）。
             languagePackControl.Initialize(appSettingsService, themeLanguage);
@@ -202,8 +183,7 @@ namespace DS4Windows.UI
             StartStopBtn.Content = lifecycle.Running ? Translations.Strings.StopText :
                 Translations.Strings.StartText;
 
-            conLvViewModel = new ControllerListViewModel(slots, lifecycle, profileListHolder,
-                profileSettingsService, profileRepo, appSettingsService);
+            conLvViewModel = viewModelFactory.CreateControllerListViewModel(profileListHolder);
             controllerLV.DataContext = conLvViewModel;
             controllerLV.ItemsSource = conLvViewModel.ControllerCol;
             ChangeControllerPanel();
@@ -264,7 +244,7 @@ namespace DS4Windows.UI
             autoProfileHolder = autoProfControl.AutoProfileHolder;
             autoProfControl.SetupDataContext(profileListHolder);
 
-            slotManControl.SetupDataContext(outputSlotService);
+            slotManControl.SetupDataContext(viewModelFactory.CreateCurrentOutDeviceViewModel());
 
             SetupEvents();
 
@@ -631,7 +611,6 @@ namespace DS4Windows.UI
                 // Wakeup from Suspend
                 case POWER_RESUME:
                     {
-                        _lightbar.shuttingdown = false;
                         lifecycle.Suspending = false;
 
                         if (wasrunning)
@@ -663,7 +642,6 @@ namespace DS4Windows.UI
                 // Entering Suspend
                 case POWER_SUSPEND:
                     {
-                        _lightbar.shuttingdown = true;
                         lifecycle.Suspending = true;
 
                         if (lifecycle.Running)

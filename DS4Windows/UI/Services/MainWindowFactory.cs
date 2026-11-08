@@ -15,97 +15,75 @@ namespace DS4Windows.UI.Services
     /// </summary>
     public class MainWindowFactory : IMainWindowFactory
     {
-        private readonly IProfileSettingsService _profileSettings;
         private readonly IAppSettingsService _appSettings;
-        private readonly IProfileXmlStore _profileXmlStore;
         private readonly IEditorWindowFactory _editorWindowFactory;
         private readonly IPathService _pathService;
         private readonly IEnvironmentService _environmentService;
         private readonly IAppearanceSettingsService _appearanceSettings;
         private readonly IProfileApplicationService _profileApplication;
-        private readonly IOutputSlotService _outputSlotService;
         private readonly IProfileRepository _profileRepository;
         private readonly INotificationService _notificationService;
         private readonly IProfileSlotApplier _profileSlotApplier;
         private readonly MainWindowsViewModel _mainWindowsViewModel;
-        private readonly ILogSettingsApplier _logSettingsApplier;
         private readonly IViewModelFactory _viewModelFactory;
         private readonly IProfileIdentityService _profileIdentityService;
         private readonly IIpcCommandProcessor _ipcProcessor;   // Phase13-Step11 11-c: IPC コマンドの実行
         private readonly IRuntimeFeatureSwitch _runtimeFeatures;   // Phase13-Step10 10-c: OSC／UDP／HidHide／タッチパッドの切り替えの窓口
         private readonly IServiceLifecycle _lifecycle;   // Phase13-Step9: MainWindow が running／suspending を直接読み書きする
-        private readonly IProfileLoadTarget _loadTarget;   // Phase13-Step6 6-e: IPC の LoadTempProfile に渡す窓口
-        private readonly IStartupEntryService _startupEntries;
         private readonly IUiThemeAndLanguage _themeLanguage;
         private readonly IIpcResultWriter _ipcResultWriter;
         private readonly IChangelogService _changelogService;   // Phase14b-Step17（D10）: 更新の確認・変更履歴   // Phase14b-Step16: CLI の問い合わせの結果の書き込み   // Phase14b-Step16（D11）: テーマ・言語の切り替え   // Phase14b-Step15（D12）: 設定画面のスタートアップ登録
         private readonly IControllerSlotQuery _slots;
         private readonly IAutoProfileService _autoProfileService;   // Phase13-Step8 8-c: 旧 遅延取得デリゲート。画面の生成時（設定の場所の確定後）に解決される
 
-        // Phase14c-Step4（R-05 の前半）: ライトバーの強制表示の状態（旧: DS4LightBar の静的な配列）
-        private readonly DS4Windows.Core.Model.LightbarOverrides _lightbar;
-
-        public MainWindowFactory(DS4Windows.Core.Model.LightbarOverrides lightbar, 
-            IProfileSettingsService profileSettings,
+        public MainWindowFactory(
             IAppSettingsService appSettings,
-            IProfileXmlStore profileXmlStore,
             IEditorWindowFactory editorWindowFactory,
             IPathService pathService,
             IEnvironmentService environmentService,
             IAppearanceSettingsService appearanceSettings,
             IProfileApplicationService profileApplication,
-            IOutputSlotService outputSlotService,
             IProfileRepository profileRepository,
             INotificationService notificationService,
             IProfileSlotApplier profileSlotApplier,
             MainWindowsViewModel mainWindowsViewModel,
-            ILogSettingsApplier logSettingsApplier,
             IViewModelFactory viewModelFactory,
             IProfileIdentityService profileIdentityService,
             IServiceLifecycle lifecycle,
             IRuntimeFeatureSwitch runtimeFeatures,
             IIpcCommandProcessor ipcProcessor,
-            IProfileLoadTarget loadTarget,
             IAutoProfileService autoProfileService,
-            IStartupEntryService startupEntries,
             IUiThemeAndLanguage themeLanguage,
             IIpcResultWriter ipcResultWriter,
             IChangelogService changelogService,
             IControllerSlotQuery slots)
         {
             _slots = slots ?? throw new ArgumentNullException(nameof(slots));
-            _lightbar = lightbar ?? throw new System.ArgumentNullException(nameof(lightbar));
             _changelogService = changelogService ?? throw new ArgumentNullException(nameof(changelogService));
             _ipcResultWriter = ipcResultWriter ?? throw new ArgumentNullException(nameof(ipcResultWriter));
             _themeLanguage = themeLanguage ?? throw new ArgumentNullException(nameof(themeLanguage));
-            _startupEntries = startupEntries ?? throw new ArgumentNullException(nameof(startupEntries));
-            _profileSettings = profileSettings ?? throw new ArgumentNullException(nameof(profileSettings));
             _appSettings = appSettings ?? throw new ArgumentNullException(nameof(appSettings));
-            _profileXmlStore = profileXmlStore ?? throw new ArgumentNullException(nameof(profileXmlStore));
             _editorWindowFactory = editorWindowFactory ?? throw new ArgumentNullException(nameof(editorWindowFactory));
             _pathService = pathService ?? throw new ArgumentNullException(nameof(pathService));
             _environmentService = environmentService ?? throw new ArgumentNullException(nameof(environmentService));
             _appearanceSettings = appearanceSettings ?? throw new ArgumentNullException(nameof(appearanceSettings));
             _profileApplication = profileApplication ?? throw new ArgumentNullException(nameof(profileApplication));
-            _outputSlotService = outputSlotService ?? throw new ArgumentNullException(nameof(outputSlotService));
             _profileRepository = profileRepository ?? throw new ArgumentNullException(nameof(profileRepository));
             _notificationService = notificationService ?? throw new ArgumentNullException(nameof(notificationService));
             _profileSlotApplier = profileSlotApplier ?? throw new ArgumentNullException(nameof(profileSlotApplier));
             _mainWindowsViewModel = mainWindowsViewModel ?? throw new ArgumentNullException(nameof(mainWindowsViewModel));
-            _logSettingsApplier = logSettingsApplier ?? throw new ArgumentNullException(nameof(logSettingsApplier));
             _viewModelFactory = viewModelFactory ?? throw new ArgumentNullException(nameof(viewModelFactory));
             _profileIdentityService = profileIdentityService ?? throw new ArgumentNullException(nameof(profileIdentityService));
             _lifecycle = lifecycle ?? throw new ArgumentNullException(nameof(lifecycle));
             _runtimeFeatures = runtimeFeatures ?? throw new ArgumentNullException(nameof(runtimeFeatures));
             _ipcProcessor = ipcProcessor ?? throw new ArgumentNullException(nameof(ipcProcessor));
-            _loadTarget = loadTarget ?? throw new ArgumentNullException(nameof(loadTarget));
             _autoProfileService = autoProfileService ?? throw new ArgumentNullException(nameof(autoProfileService));
         }
 
         public MainWindow Create(ArgumentParser parser)
-            => new MainWindow(_lightbar, parser, _profileSettings, _appSettings, _profileXmlStore, _editorWindowFactory,
-                _pathService, _environmentService, _appearanceSettings, _profileApplication, _outputSlotService,
-                _profileRepository, _notificationService, _lifecycle, _runtimeFeatures, _ipcProcessor, _loadTarget, _profileSlotApplier,
-                _mainWindowsViewModel, _logSettingsApplier, _autoProfileService, _viewModelFactory, _profileIdentityService, _startupEntries, _themeLanguage, _ipcResultWriter, _changelogService, _slots);
+            => new MainWindow(parser, _appSettings, _editorWindowFactory,
+                _pathService, _environmentService, _appearanceSettings, _profileApplication,
+                _profileRepository, _notificationService, _lifecycle, _runtimeFeatures, _ipcProcessor, _profileSlotApplier,
+                _mainWindowsViewModel, _autoProfileService, _viewModelFactory, _profileIdentityService, _themeLanguage, _ipcResultWriter, _changelogService, _slots);
     }
 }

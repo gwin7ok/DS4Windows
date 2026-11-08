@@ -64,8 +64,10 @@ namespace DS4WindowsTests
             // 同 Step で IIpcResultWriter（CLI の問い合わせの結果の書き込み。旧 (Application.Current as App).WriteIPCResultDataMMF）が加わり 26
             // Phase14b-Step17（決定 D10）で IChangelogService（更新の確認・変更履歴。旧 静的 Changelog）が加わり 27
             // Phase14c-Step4（R-05 の前半）で LightbarOverrides（ライトバーの強制表示の状態。旧: DS4LightBar の静的な配列）が加わり 28
+            // Phase15-1-7 で、使っていない 2 つ（IProfileXmlStore、IProfileLoadTarget）と、ViewModel の生成を IViewModelFactory へ移した 5 つ
+            // （LightbarOverrides［Suspending 経由］、IProfileSettingsService、IOutputSlotService、ILogSettingsApplier、IStartupEntryService）を除き 21
             var parameters = typeof(MainWindow).GetConstructors().Single().GetParameters();
-            Assert.Equal(28, parameters.Length);
+            Assert.Equal(21, parameters.Length);
             Assert.Contains(parameters, p => p.ParameterType == typeof(IRuntimeFeatureSwitch));
             Assert.DoesNotContain(parameters, p => p.ParameterType == typeof(IOscService) || p.ParameterType == typeof(IUdpMotionService)
                 || p.ParameterType == typeof(IHidHideService) || p.ParameterType == typeof(ITouchpadToggleService));

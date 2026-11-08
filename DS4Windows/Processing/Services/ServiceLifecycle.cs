@@ -48,7 +48,21 @@ namespace DS4Windows.Processing.Services
 
         public int ActiveControllers { get => _slots.ActiveControllers; set => _slots.ActiveControllers = value; }   // Phase13-Step5b: 実体は IDeviceSlotState（DeviceConnector も直接読む）
 
-        public bool Suspending { get; set; }
+        private bool _suspending;
+
+        /// <summary>
+        /// スリープ中か。変えるとライトバーの停止中の印（<see cref="DS4Windows.Core.Model.LightbarOverrides.shuttingdown"/>）も同じ値にする。
+        /// 画面（UI）がライトバーの状態を知らずに済むよう、両者の切り替えをここで一緒に行う。
+        /// </summary>
+        public bool Suspending
+        {
+            get => _suspending;
+            set
+            {
+                _lightbar.shuttingdown = value;
+                _suspending = value;
+            }
+        }
 
         public event EventHandler ServiceStarted;
 

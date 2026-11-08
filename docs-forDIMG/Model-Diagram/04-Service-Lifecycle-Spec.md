@@ -353,3 +353,4 @@
   - 静的な `ActionRegistry`（本番で一度も初期化されない）を削除（規約 §2.4、決定 E3）。
   - DI の登録は層ごとの `partial` ファイル（`ServiceRegistration.Core／Processing／Output／Ui.cs`）に分けた。生成のときに別のオブジェクトへ結ぶ登録 3 つ（`BackingStore`［`ProcessInspector`・`ActionsLoaded` の購読］、`IProfileIdentityService`［`BackingStore`・`ProfileSettingsService` へ結ぶ］、`IOutputDeviceTypeState`［`BackingStore.ActiveOutDevType` へ配列を渡す］）は `ServiceRegistration.Wiring.cs` に集めた。配線は従来どおり、そのサービスが最初に解決されたときに行う。
   - 静的フィールド `ServiceRegistration._subscribedReset` を削除。前回の `ActionsLoaded` の購読者は `BackingStore` 自身が覚える。
+- Phase15-1（2026-11-08）: Singleton の追加はない（生成・破棄の順序は不変）。契約と実装の追加分（`ControllerSlotView`／`ControllerSlotQuery`／`ControllerSlotCommands`／`ControllerReadingsSource`／`MacroRecordingState`／`OutputSlotView`）は、デバイスやスロットごとのアダプターで、`ConditionalWeakTable` が持ち主を保つ。`ServiceLifecycle.Suspending` はライトバーの停止中の印も切り替える（旧: `MainWindow` が両方を書いていた）。`IViewModelFactory` に設定タブ・機器一覧・出力スロット管理画面の ViewModel の生成が加わった。

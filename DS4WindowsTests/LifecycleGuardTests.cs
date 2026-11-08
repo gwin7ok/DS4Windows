@@ -195,5 +195,31 @@ namespace DS4WindowsTests
 
             Assert.False(Regex.IsMatch(text, @"\bControlService\b"), "ServiceLifecycle が ControlService を参照している");
         }
+
+        /// <summary>
+        /// スリープの出入り（<see cref="IServiceLifecycle.Suspending"/>）は、ライトバーの停止中の印も同時に切り替える。
+        /// 画面（MainWindow）はライトバーの状態を持たず、この窓口だけを操作する。
+        /// </summary>
+        [Fact]
+        public void Suspending_SwitchesTheLightbarShuttingDownFlagTogether()
+        {
+            var lightbar = new DS4Windows.Core.Model.LightbarOverrides();
+            var lifecycle = new ServiceLifecycle(lightbar, TestHost.GetService<IAppSettingsService>(), TestHost.GetService<IEnvironmentService>(),
+                TestHost.GetService<IProfileSettingsService>(), TestHost.GetService<IDs4DeviceRegistry>(), TestHost.GetService<IVirtualKBM>(),
+                TestHost.GetService<IOscService>(), TestHost.GetService<IUdpMotionService>(), TestHost.GetService<IHidHideService>(),
+                TestHost.GetService<IVirtualPadService>(), TestHost.GetService<ILatencyMonitor>(), TestHost.GetService<IJoyConLinker>(),
+                TestHost.GetService<IDeviceConnector>(), TestHost.GetService<IDeviceSlotState>(),
+                TestHost.GetService<IEventThreadDispatcher>(), TestHost.GetService<IOutputKbmInitializer>());
+
+            Assert.False(lightbar.shuttingdown);
+
+            lifecycle.Suspending = true;
+            Assert.True(lifecycle.Suspending);
+            Assert.True(lightbar.shuttingdown);
+
+            lifecycle.Suspending = false;
+            Assert.False(lifecycle.Suspending);
+            Assert.False(lightbar.shuttingdown);
+        }
     }
 }

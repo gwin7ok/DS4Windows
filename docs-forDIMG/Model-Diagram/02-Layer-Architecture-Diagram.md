@@ -204,3 +204,7 @@
 %% - 第2層の SyntheticDispatcher（静的な橋渡し）は撤廃した（上の対応表の第2層の行は Phase14 時点の記録）。合成キーの送出は ISyntheticDispatcher（SyntheticDispatcherService）だけ。
 %% - 記録のみの規則は件数のラチェット（LayerDependencyRuleTests.RecordOnlyLayerDependencies_MatchTheCountRatchet）: L2 29 件、L7 30 件。値の型を Core/Model へ移したことで、Core・UI からの第1層・第3層への参照の大半が消えた。
 %%   残りの L2 は Core（永続化・設定）→ 機器と出力の型（DS4Device、DualSenseDevice、OutputDevice、OutputSlotManager ほか。Phase16）、L7 は UI → 機器・状態・出力スロットの型（DS4Device、DS4State、OutputSlotManager ほか。Phase15 の R-09、Phase16 の R-17）。
+
+%% ---- Phase15-1 完了（2026-11-08）----
+%% - 第 4 層 UI から第 1 層・第 3 層の具象型（DS4Device、OutSlotDevice、Xbox360OutDevice など）と ControlService への参照をなくした。UI が見る面は第 2 層の契約（IControllerSlotView／Query／Commands、IControllerReadingsSource、IMacroRecordingState、IOutputSlotView）で、通知の送り主はその面自身。
+%% - 層の依存の記録のみの規則 L7（UI → 第 1 層・第 3 層）の基準値は 5。

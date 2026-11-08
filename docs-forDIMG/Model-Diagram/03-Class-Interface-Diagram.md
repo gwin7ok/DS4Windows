@@ -1327,3 +1327,10 @@ classDiagram
 %% - 廃止: 静的な SyntheticDispatcher（KeyButtonActionController・RepeatHelper はコンストラクターで ISyntheticDispatcher を受け、IKeyButtonControllerRegistry に Dispatcher を追加）、静的な ActionRegistry（本番で未初期化）。
 %% - 追加: BackingStore.ReplaceActionsLoadedHandler（ActionsLoaded の購読者の差し替え。旧 ServiceRegistration の静的フィールド _subscribedReset）。
 %% - MainWindow のコンストラクターは 28 引数（LightbarOverrides を追加）。
+
+%% ---- Phase15-1 完了（2026-11-08）----
+%% - 追加（Processing/Abstractions。実装は Processing/Services）: IControllerSlotView／ControllerSlotView（機器 1 台の表示用の情報と通知）、IControllerSlotQuery／ControllerSlotQuery（一覧・追加／取り外しの通知）、IControllerSlotCommands／ControllerSlotCommands（振動テスト・ジャイロ較正のリセット）、IControllerReadingsSource／ControllerReadingsSource（状態のコピー・処理遅延）、IMacroRecordingState／MacroRecordingState。
+%% - 追加（出力側）: IOutputSlotView／OutputSlotView（Output/Services。スロットごとに 1 つ）。IOutputSlotService に SlotViews／SlotAssigned／SlotUnassigned を追加。
+%% - 追加: IEnvironmentService.HidClassGuid（HID の抜き差しの通知の登録用）。IServiceLifecycle.Suspending を変えると、ライトバーの停止中の印（LightbarOverrides.shuttingdown）も一緒に切り替わる。
+%% - IViewModelFactory に CreateSettingsViewModel／CreateControllerListViewModel／CreateCurrentOutDeviceViewModel を追加した。MainWindow は 21 引数（旧 28）。
+%% - ControlService の公開メンバーのうち利用者が 0 件の転送（recordingMacro、MappingService、getDS4State、DeviceOptions、Start／Stop／HotPlug、公開イベントなど）を削除した。

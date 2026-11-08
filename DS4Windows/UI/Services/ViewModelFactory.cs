@@ -24,6 +24,11 @@ namespace DS4Windows.UI.Services
         private readonly IMacroRecordingState _macroRecording;
         private readonly IProfileLoadTarget _loadTarget;   // Phase13-Step6 6-e: ProfileSettingsViewModel のプロファイル読込の窓口
         private readonly IRuntimeFeatureSwitch _runtimeFeatures;   // Phase13-Step10 10-c: AutoProfilesViewModel の HidHide 登録の窓口
+        private readonly IControllerSlotQuery _slots;
+        private readonly IServiceLifecycle _lifecycle;
+        private readonly IAppearanceSettingsService _appearanceSettings;
+        private readonly ILogSettingsApplier _logSettingsApplier;
+        private readonly IStartupEntryService _startupEntries;
 
         // Phase6-Step9-4: 依存はすべて必須引数（Pure DI。決定1＝S9-A）。
         // Phase13-Step6 6-c: ControlService は、Func による遅延解決（決定2＝C1。K7-1 対策）をやめ、直接受ける。K7-1 は 2026-10-17 に解消済みで、
@@ -43,8 +48,18 @@ namespace DS4Windows.UI.Services
             IAutoProfileService autoProfileService,
             IMacroRecordingState macroRecording,
             IProfileLoadTarget loadTarget,
-            IRuntimeFeatureSwitch runtimeFeatures)
+            IRuntimeFeatureSwitch runtimeFeatures,
+            IControllerSlotQuery slots,
+            IServiceLifecycle lifecycle,
+            IAppearanceSettingsService appearanceSettings,
+            ILogSettingsApplier logSettingsApplier,
+            IStartupEntryService startupEntries)
         {
+            _slots = slots ?? throw new ArgumentNullException(nameof(slots));
+            _lifecycle = lifecycle ?? throw new ArgumentNullException(nameof(lifecycle));
+            _appearanceSettings = appearanceSettings ?? throw new ArgumentNullException(nameof(appearanceSettings));
+            _logSettingsApplier = logSettingsApplier ?? throw new ArgumentNullException(nameof(logSettingsApplier));
+            _startupEntries = startupEntries ?? throw new ArgumentNullException(nameof(startupEntries));
             _lightbar = lightbar ?? throw new System.ArgumentNullException(nameof(lightbar));
             _profileSettings = profileSettings ?? throw new ArgumentNullException(nameof(profileSettings));
             _profileRepo = profileRepo ?? throw new ArgumentNullException(nameof(profileRepo));
@@ -90,6 +105,29 @@ namespace DS4Windows.UI.Services
             if (AppLogger.IsTraceEnabled)
                 AppLogger.LogTrace($"[DI] ViewModelFactory: Created SpecialActionsListViewModel for Device {device}");
             return new SpecialActionsListViewModel(device, _actionRepo, _profileRepo);
+        }
+
+        public SettingsViewModel CreateSettingsViewModel()
+        {
+            if (AppLogger.IsTraceEnabled)
+                AppLogger.LogTrace("[DI] ViewModelFactory: Created SettingsViewModel");
+            return new SettingsViewModel(_appSettings, _appearanceSettings, _environmentService, _pathService,
+                _logSettingsApplier, _startupEntries);
+        }
+
+        public ControllerListViewModel CreateControllerListViewModel(ProfileList profileListHolder)
+        {
+            if (AppLogger.IsTraceEnabled)
+                AppLogger.LogTrace("[DI] ViewModelFactory: Created ControllerListViewModel");
+            return new ControllerListViewModel(_slots, _lifecycle, profileListHolder,
+                _profileSettings, _profileRepo, _appSettings);
+        }
+
+        public CurrentOutDeviceViewModel CreateCurrentOutDeviceViewModel()
+        {
+            if (AppLogger.IsTraceEnabled)
+                AppLogger.LogTrace("[DI] ViewModelFactory: Created CurrentOutDeviceViewModel");
+            return new CurrentOutDeviceViewModel(_outputSlotService);
         }
 
         public AutoProfilesViewModel CreateAutoProfilesViewModel(AutoProfileHolder autoProfileHolder, ProfileList profileList)

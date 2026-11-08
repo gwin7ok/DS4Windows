@@ -48,10 +48,10 @@ namespace DS4Windows.UI
             InitializeComponent();
         }
 
-        // Phase6-Step10-5: ControlService の代わりに、抜き差しの正式な入口（IOutputSlotService）を受け取る
-        public void SetupDataContext(DS4Windows.Processing.Abstractions.IOutputSlotService outputSlotService)
+        // ViewModel は IViewModelFactory が作り、メイン画面が渡す（この画面が出力スロットのサービスを知らずに済む）
+        public void SetupDataContext(CurrentOutDeviceViewModel viewModel)
         {
-            currentOutDevVM = new CurrentOutDeviceViewModel(outputSlotService);
+            currentOutDevVM = viewModel ?? throw new ArgumentNullException(nameof(viewModel));
             currentOutDevVM.SelectedIndexChanged += CurrentOutDevVM_SelectedIndexChanged;
             currentOutDevLV.DataContext = currentOutDevVM;
             sideStackPanel.DataContext = currentOutDevVM;
