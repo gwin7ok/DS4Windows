@@ -25,6 +25,7 @@ namespace DS4Windows.UI.Services
         private readonly ISpecialActionRepository _specialActionRepository;
         private readonly IProfilePresetLoader _presetLoader;
         private readonly ControlService _controlService;
+        private readonly IControllerSlotCommands _slotCommands;
         private readonly IProfileLoadTarget _loadTarget;   // Phase13-Step6 6-e: プリセットの読込先の窓口
         // Phase7-Step5 W5: CreateProfileEditor が ProfileEditor へ渡すサービス
         private readonly IAppSettingsService _appSettings;
@@ -57,8 +58,10 @@ namespace DS4Windows.UI.Services
             IEnvironmentService environmentService,
             IWindowSystem windowSystem,
             IMouseInputHook mouseHook,
-            IRuntimeFeatureSwitch runtimeFeatures)
+            IRuntimeFeatureSwitch runtimeFeatures,
+            IControllerSlotCommands slotCommands)
         {
+            _slotCommands = slotCommands ?? throw new ArgumentNullException(nameof(slotCommands));
             _lightbar = lightbar ?? throw new System.ArgumentNullException(nameof(lightbar));
             _mouseHook = mouseHook ?? throw new ArgumentNullException(nameof(mouseHook));
             _runtimeFeatures = runtimeFeatures ?? throw new ArgumentNullException(nameof(runtimeFeatures));
@@ -80,7 +83,7 @@ namespace DS4Windows.UI.Services
         public BindingWindow CreateBindingWindow(int deviceNum, DS4ControlSettings settings, int targetDevice,
             BindingWindow.ExposeMode expose)
             => new BindingWindow(_lightbar, deviceNum, settings, targetDevice, this, _profileSettings, _outputSlotService,
-                _environmentService, _controlService, expose);
+                _environmentService, _slotCommands, expose);
 
         public RecordBox CreateRecordBox(int deviceNum, DS4ControlSettings controlSettings, int targetDevice,
             bool showscan = true, bool repeatable = true, bool showPlaybackOptions = true)
@@ -110,6 +113,6 @@ namespace DS4Windows.UI.Services
 
         public ProfileEditor CreateProfileEditor(int targetDevice)
             => new ProfileEditor(targetDevice, _appSettings, _profileSettings, this, _profileRepository,
-                _profileSwitcher, _controlService, _viewModelFactory, _environmentService, _runtimeFeatures);
+                _profileSwitcher, _controlService, _viewModelFactory, _environmentService, _runtimeFeatures, _slotCommands);
     }
 }

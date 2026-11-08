@@ -1,13 +1,17 @@
 using System.IO;
 using System.Text.RegularExpressions;
+using DS4Windows.Processing.Abstractions;
+using DS4Windows.Processing.Services;
 using Xunit;
 using Xunit.Abstractions;
 
 namespace DS4WindowsTests
 {
     /// <summary>
-    /// ダンプ 28824（NullReferenceException。<c>ProfileEditor.GyroCalibration_Click</c>）の回帰ガード。
-    /// コントローラーが未接続のスロットでは <c>DS4Controllers[slot]</c> が null のため、null の確認なしに <c>SixAxis</c> を使うとアプリが終了する。
+    /// ダンプ 28824（NullReferenceException。ジャイロ較正のリセット）の回帰ガード。
+    /// コントローラーが未接続のスロットでは機器が null のため、null の確認なしに <c>SixAxis</c> を使うとアプリが終了する。
+    /// 較正のリセットは <see cref="IControllerSlotCommands"/> が行い、未接続のスロットでは false を返すだけで例外にしないこと、
+    /// 編集画面がその窓口を呼ぶこと（機器を直接触らないこと）を守る。
     /// </summary>
     public class GyroCalibrationNullDeviceGuardTests
     {
@@ -18,8 +22,19 @@ namespace DS4WindowsTests
             _output = output;
         }
 
+        [Theory]
+        [InlineData(0)]
+        [InlineData(-1)]
+        [InlineData(1000)]
+        public void ResetGyroCalibration_DoesNothing_ForEmptyOrOutOfRangeSlots(int slot)
+        {
+            var commands = new ControllerSlotCommands(new DeviceSlotState());
+
+            Assert.False(commands.ResetGyroCalibration(slot));
+        }
+
         [Fact]
-        public void GyroCalibration_Click_ChecksTheDeviceForNull_BeforeUsingTheSixAxis()
+        public void GyroCalibration_Click_GoesThroughTheSlotCommands()
         {
             string path = SourceFileLocator.Find("DS4Windows/UI/ProfileEditor.xaml.cs");
             if (path == null)
@@ -37,9 +52,8 @@ namespace DS4WindowsTests
             int end = text.IndexOf("private void GyroControlsTrigBtn_Click", start);
             string method = text.Substring(start, end - start);
 
-            int nullCheck = method.IndexOf("if (d == null) return;");
-            int use = method.IndexOf("d.SixAxis.ResetContinuousCalibration();");
-            Assert.True(nullCheck >= 0 && use > nullCheck, "d の null の確認が、SixAxis の使用より前にない");
+            Assert.Contains("slotCommands.ResetGyroCalibration(", method);
+            Assert.DoesNotContain("SixAxis", method);
         }
     }
 }

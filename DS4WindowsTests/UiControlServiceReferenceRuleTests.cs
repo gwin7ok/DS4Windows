@@ -18,7 +18,6 @@ namespace DS4WindowsTests
         /// <summary>参照元の型の完全名（序数順）。</summary>
         private static readonly string[] FrozenSources =
         {
-            "DS4Windows.UI.BindingWindow",
             "DS4Windows.UI.ControllerReadingsControl",
             "DS4Windows.UI.MainWindow",
             "DS4Windows.UI.ProfileEditor",

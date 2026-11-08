@@ -12,7 +12,7 @@
         public const int RecordOnlyL2Count = 29;
 
         /// <summary>記録のみの規則 L7（UI → 第1層・第3層）の件数の基準値。</summary>
-        public const int RecordOnlyL7Count = 21;
+        public const int RecordOnlyL7Count = 17;
 
         public static readonly string[] Entries =
         {

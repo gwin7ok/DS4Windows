@@ -49,7 +49,7 @@ namespace DS4Windows.UI
         private Dictionary<DS4Windows.Core.Model.X360Controls, Button> mouseBtnMap =
             new Dictionary<DS4Windows.Core.Model.X360Controls, Button>();
         private BindingWindowViewModel bindingVM;
-        private readonly DS4Windows.Processing.ControlService controlService;
+        private readonly DS4Windows.Processing.Abstractions.IControllerSlotCommands slotCommands;
         // Phase6-Step10-2-4b: Global.defaultButtonMapping／InverseRumbleMotors の置換先（必須引数）
         private readonly DS4Windows.Core.Abstractions.IProfileSettingsService profileSettingsService;
         // Phase6-Step10-2-4a: RecordBox の生成を窓口へ依頼する（必須引数）
@@ -82,7 +82,7 @@ namespace DS4Windows.UI
             DS4Windows.Core.Abstractions.IProfileSettingsService profileSettingsService,
             DS4Windows.Processing.Abstractions.IOutputSlotService outputSlotService,
             DS4Windows.Core.Abstractions.IEnvironmentService environmentService,
-            DS4Windows.Processing.ControlService controlService,
+            DS4Windows.Processing.Abstractions.IControllerSlotCommands slotCommands,
             ExposeMode expose)
         {
             _lightbar = lightbar ?? throw new System.ArgumentNullException(nameof(lightbar));
@@ -91,7 +91,7 @@ namespace DS4Windows.UI
 
             this.profileSettingsService = profileSettingsService ?? throw new ArgumentNullException(nameof(profileSettingsService));
 
-            this.controlService = controlService ?? throw new ArgumentNullException(nameof(controlService));
+            this.slotCommands = slotCommands ?? throw new ArgumentNullException(nameof(slotCommands));
             this.expose = expose;
             bindingVM = new BindingWindowViewModel(_lightbar, deviceNum, settings, profileSettingsService, outputSlotService, environmentService, targetDevice);
 
@@ -865,25 +865,25 @@ namespace DS4Windows.UI
             // （編集スロット DeviceNum）の値を読む（Phase6-Step7b-Plan.md 決定4 と同じ考え方）
             if (bindingVM.HasTargetDevice)
             {
-                DS4Windows.Input.DS4Device d = controlService.DS4Controllers[bindingVM.TargetDevice];
-                if (d != null)
+                int slot = bindingVM.TargetDevice;
+                if (slotCommands.IsConnected(slot))
                 {
                     if (!bindingVM.RumbleActive)
                     {
                         bindingVM.RumbleActive = true;
                         if (profileSettingsService.InverseRumbleMotors[bindingVM.DeviceNum])
-                            d.setRumble((byte)Math.Min(255, bindingVM.ActionBinding.HeavyRumble),
+                            slotCommands.SetRumble(slot, (byte)Math.Min(255, bindingVM.ActionBinding.HeavyRumble),
                                 (byte)Math.Min(255, bindingVM.ActionBinding.LightRumble));
                         else
-                            d.setRumble((byte)Math.Min(255, bindingVM.ActionBinding.LightRumble),
-                            (byte)Math.Min(255, bindingVM.ActionBinding.HeavyRumble));
+                            slotCommands.SetRumble(slot, (byte)Math.Min(255, bindingVM.ActionBinding.LightRumble),
+                                (byte)Math.Min(255, bindingVM.ActionBinding.HeavyRumble));
 
                         testRumbleBtn.Content = Properties.Resources.StopText;
                     }
                     else
                     {
                         bindingVM.RumbleActive = false;
-                        d.setRumble(0, 0);
+                        slotCommands.SetRumble(slot, 0, 0);
                         testRumbleBtn.Content = Properties.Resources.TestText;
                     }
                 }

@@ -23,7 +23,6 @@ using DS4Windows.Core.Logging;
 using DS4Windows.Core.Model;
 using DS4Windows.Core.Profiles;
 using DS4Windows.Core.Settings;
-using DS4Windows.Input;
 using DS4Windows.Processing;
 using DS4Windows.Processing.Abstractions;
 using DS4Windows.Processing.Actions;
@@ -182,6 +181,7 @@ namespace DS4Windows.UI
         private readonly DS4Windows.Core.Abstractions.IProfileRepository profileRepository;
         private readonly DS4Windows.Processing.Actions.IProfileSwitcher profileSwitcher;
         private readonly DS4Windows.Processing.ControlService controlService;
+        private readonly IControllerSlotCommands slotCommands;
         private readonly DS4Windows.Processing.Abstractions.IRuntimeFeatureSwitch runtimeFeatures;
         private MappingListViewModel mappingListVM;
 
@@ -325,7 +325,8 @@ namespace DS4Windows.UI
         public ProfileEditor(int targetDevice, IAppSettingsService appSettingsService, IProfileSettingsService profileSettingsService,
             DS4Windows.UI.Abstractions.IEditorWindowFactory editorWindowFactory, IProfileRepository profileRepository,
             IProfileSwitcher profileSwitcher, ControlService controlService, IViewModelFactory viewModelFactory,
-            DS4Windows.Core.Abstractions.IEnvironmentService environmentService, DS4Windows.Processing.Abstractions.IRuntimeFeatureSwitch runtimeFeatures)
+            DS4Windows.Core.Abstractions.IEnvironmentService environmentService, DS4Windows.Processing.Abstractions.IRuntimeFeatureSwitch runtimeFeatures,
+            IControllerSlotCommands slotCommands)
         {
             this.environmentService = environmentService ?? throw new ArgumentNullException(nameof(environmentService));
             this.runtimeFeatures = runtimeFeatures ?? throw new ArgumentNullException(nameof(runtimeFeatures));   // Phase13-Step10 10-d: 旧 ControlService.setRumble／GetActiveInputControl の転送
@@ -342,6 +343,7 @@ namespace DS4Windows.UI
             this.profileRepository = profileRepository ?? throw new ArgumentNullException(nameof(profileRepository));
             this.profileSwitcher = profileSwitcher ?? throw new ArgumentNullException(nameof(profileSwitcher));
             this.controlService = controlService;
+            this.slotCommands = slotCommands ?? throw new ArgumentNullException(nameof(slotCommands));
             // Phase6-Step10-2-5: ControllerReadingsControl は XAML から生成されるため、ControlService を Initialize で渡す
             conReadingsUserCon.Initialize(controlService);
 
@@ -1251,8 +1253,7 @@ namespace DS4Windows.UI
             int rumbleDevice = profileSettingsVM.FuncDevNum;
             if (rumbleDevice < environmentService.ControllerSlotLimit)
             {
-                DS4Device d = controlService.DS4Controllers[rumbleDevice];
-                if (d != null)
+                if (slotCommands.IsConnected(rumbleDevice))
                 {
                     RumbleType type;
                     var btn = sender as Button;
@@ -1275,9 +1276,10 @@ namespace DS4Windows.UI
                         var rumbleBoost = profileSettingsVM.RumbleBoost;
 
                         // Check if device is DualSense and adjust/update accordingly
-                        if (d is DS4Windows.Input.Devices.DualSenseDevice dualsense)
+                        if (slotCommands.ApplyDualSenseRumbleOptions(rumbleDevice,
+                            (int)profileSettingsVM.DualSenseRumbleEmulationPerIndex,
+                            (byte)profileSettingsVM.DualSenseHapticPowerLevelPerIndex))
                         {
-                            UpdateDualSenseRumble(dualsense);
                             if (!profileSettingsVM.EnableGenericRumbleStrRescaleForDualSenseDevices)
                                 rumbleBoost = 100;
                         }
@@ -1289,13 +1291,11 @@ namespace DS4Windows.UI
 
                         if (type == RumbleType.Heavy)
                         {
-                            d.setRumble(d.RightLightFastRumble,
-                                (byte)Math.Min(255, 255 * rumbleBoost / 100));
+                            slotCommands.SetHeavyRumble(rumbleDevice, (byte)Math.Min(255, 255 * rumbleBoost / 100));
                         }
                         else
                         {
-                            d.setRumble((byte)Math.Min(255, 255 * rumbleBoost / 100),
-                                d.LeftHeavySlowRumble);
+                            slotCommands.SetLightRumble(rumbleDevice, (byte)Math.Min(255, 255 * rumbleBoost / 100));
                         }
 
                         if (type == RumbleType.Heavy)
@@ -1318,7 +1318,7 @@ namespace DS4Windows.UI
                         if (type == RumbleType.Heavy)
                         {
                             profileSettingsVM.HeavyRumbleActive = false;
-                            d.setRumble(d.RightLightFastRumble, 0);
+                            slotCommands.SetHeavyRumble(rumbleDevice, 0);
                             if (!profileSettingsVM.InverseRumbleMotors)
                                 heavyRumbleTestBtn.Content = Properties.Resources.TestHText;
                             else
@@ -1327,7 +1327,7 @@ namespace DS4Windows.UI
                         else
                         {
                             profileSettingsVM.LightRumbleActive = false;
-                            d.setRumble(0, d.LeftHeavySlowRumble);
+                            slotCommands.SetLightRumble(rumbleDevice, 0);
                             if (!profileSettingsVM.InverseRumbleMotors)
                                 lightRumbleTestBtn.Content = Properties.Resources.TestLText;
                             else
@@ -1336,27 +1336,6 @@ namespace DS4Windows.UI
                     }
                 }
             }
-        }
-
-        private void UpdateDualSenseRumble(DS4Windows.Input.Devices.DualSenseDevice dualsense)
-        {
-            switch ((DS4Windows.Input.Devices.DualSenseDevice.RumbleEmulationMode)profileSettingsVM.DualSenseRumbleEmulationPerIndex)
-            {
-                case DS4Windows.Input.Devices.DualSenseDevice.RumbleEmulationMode.Disabled:
-                    dualsense.UseRumble = false;
-                    dualsense.UseAccurateRumble = false;
-                    break;
-                case DS4Windows.Input.Devices.DualSenseDevice.RumbleEmulationMode.Legacy:
-                    dualsense.UseRumble = true;
-                    dualsense.UseAccurateRumble = false;
-                    break;
-                case DS4Windows.Input.Devices.DualSenseDevice.RumbleEmulationMode.Accurate:
-                default:
-                    dualsense.UseRumble = true;
-                    dualsense.UseAccurateRumble = true;
-                    break;
-            }
-            dualsense.HapticPowerLevel = (byte)profileSettingsVM.DualSenseHapticPowerLevelPerIndex;
         }
 
         private void CustomEditorBtn_Click(object sender, RoutedEventArgs e)
@@ -2136,15 +2115,8 @@ namespace DS4Windows.UI
             int calibrationDevice = profileSettingsVM.FuncDevNum;
             if (calibrationDevice < environmentService.ControllerSlotLimit)
             {
-                DS4Device d = controlService.DS4Controllers[calibrationDevice];
-                // K7b-1 の調査（ダンプ 28824）: コントローラーが未接続のスロットでは d が null になり、NullReferenceException でアプリが終了していた
-                if (d == null) return;
-                d.SixAxis.ResetContinuousCalibration();
-                if (d.JointDeviceSlotNumber != DS4Device.DEFAULT_JOINT_SLOT_NUMBER)
-                {
-                    DS4Device tempDev = controlService.DS4Controllers[d.JointDeviceSlotNumber];
-                    tempDev?.SixAxis.ResetContinuousCalibration();
-                }
+                // 未接続のスロットでは何もしない（以前は null の機器を触って NullReferenceException でアプリが終了していた）
+                slotCommands.ResetGyroCalibration(calibrationDevice);
             }
         }
 
