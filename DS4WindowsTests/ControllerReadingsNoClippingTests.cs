@@ -20,6 +20,7 @@ namespace DS4WindowsTests
     /// 1) 各数値ラベルの宣言（幅・余白）が、最大桁の値に足りること
     /// 2) 実物のコントロールを左ペインの幅で配置し、数値ラベルとその入れ物（親の要素）が、割り当てられた幅からはみ出して切られないこと
     /// </summary>
+    [Collection(SharedHostStateCollection.Name)]
     public class ControllerReadingsNoClippingTests
     {
         private const string ReadingsXaml = "DS4Windows/UI/ControllerReadingsControl.xaml";

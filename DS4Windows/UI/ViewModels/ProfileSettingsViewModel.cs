@@ -50,6 +50,9 @@ namespace DS4Windows.UI.ViewModels
 
         /// <summary>「タッチパッド」タブの ViewModel。</summary>
         public TouchpadSettingsViewModel Touchpad { get; }
+
+        /// <summary>「L2 &amp; R2」（トリガー）の ViewModel。</summary>
+        public TriggerSettingsViewModel Triggers { get; }
         private readonly IProfileSettingsService profileSettings;
         private readonly IProfileLoadTarget loadTarget;   // Phase13-Step6 6-e: 旧 ControlService controlService（ジャイロ系 setter と空プロファイルの読込に渡すだけだった）
         private readonly IEnvironmentService environmentService;
@@ -1378,203 +1381,6 @@ namespace DS4Windows.UI.ViewModels
             }
         }
 
-        // Phase7b（既存の不具合。上流の元から）: 旧は deadZone / 255.0（丸めなし）と (byte)(value * 255.0)（切り捨て）で、
-        // 上下ボタンで 0.10 ずつ増減すると誤差が溜まり、0.20 → 0.29 のように 0.09 しか変わらない所があった。スティック（LSDeadZone）と同じく、読み出しは小数 2 桁へ丸め、設定は四捨五入する。
-        public double L2DeadZone
-        {
-            get => Math.Round(profileSettings.L2ModInfo[device].deadZone / 255.0, 2);
-            set
-            {
-                double temp = Math.Round(profileSettings.L2ModInfo[device].deadZone / 255.0, 2);
-                if (temp == value) return;
-                profileSettings.L2ModInfo[device].deadZone = (byte)Math.Min(Math.Max(Math.Round(value * 255.0), 0.0), 255.0);
-                OnPropertyChanged(nameof(L2DeadZone));
-            }
-        }
-        public double R2DeadZone
-        {
-            get => Math.Round(profileSettings.R2ModInfo[device].deadZone / 255.0, 2);
-            set
-            {
-                double temp = Math.Round(profileSettings.R2ModInfo[device].deadZone / 255.0, 2);
-                if (temp == value) return;
-                profileSettings.R2ModInfo[device].deadZone = (byte)Math.Min(Math.Max(Math.Round(value * 255.0), 0.0), 255.0);
-                OnPropertyChanged(nameof(R2DeadZone));
-            }
-        }
-        public double L2MaxZone
-        {
-            get => profileSettings.L2ModInfo[device].MaxZone / 100.0;
-            set => profileSettings.L2ModInfo[device].MaxZone = (int)Math.Round(value * 100.0);
-        }
-
-        public double R2MaxZone
-        {
-            get => profileSettings.R2ModInfo[device].MaxZone / 100.0;
-            set => profileSettings.R2ModInfo[device].MaxZone = (int)Math.Round(value * 100.0);
-        }
-
-        public double L2AntiDeadZone
-        {
-            get => profileSettings.L2ModInfo[device].antiDeadZone / 100.0;
-            set => profileSettings.L2ModInfo[device].antiDeadZone = (int)Math.Round(value * 100.0);
-        }
-
-        public double R2AntiDeadZone
-        {
-            get => profileSettings.R2ModInfo[device].antiDeadZone / 100.0;
-            set => profileSettings.R2ModInfo[device].antiDeadZone = (int)Math.Round(value * 100.0);
-        }
-
-        public double L2MaxOutput
-        {
-            get => profileSettings.L2ModInfo[device].MaxOutput / 100.0;
-            set => profileSettings.L2ModInfo[device].MaxOutput = value * 100.0;
-        }
-
-        public double R2MaxOutput
-        {
-            get => profileSettings.R2ModInfo[device].MaxOutput / 100.0;
-            set => profileSettings.R2ModInfo[device].MaxOutput = value * 100.0;
-        }
-
-        public double L2Sens
-        {
-            get => profileSettings.L2Sens[device];
-            set => profileSettings.L2Sens[device] = value;
-        }
-
-        public double R2Sens
-        {
-            get => profileSettings.R2Sens[device];
-            set => profileSettings.R2Sens[device] = value;
-        }
-
-        public int L2OutputCurveIndex
-        {
-            get => profileSettings.GetL2OutCurveMode(device);
-            set
-            {
-                profileSettings.SetL2OutCurveMode(device, value);
-                OnPropertyChanged(nameof(L2CustomCurveSelected));
-            }
-        }
-
-        public int R2OutputCurveIndex
-        {
-            get => profileSettings.GetR2OutCurveMode(device);
-            set
-            {
-                profileSettings.SetR2OutCurveMode(device, value);
-                OnPropertyChanged(nameof(R2CustomCurveSelected));
-            }
-        }
-
-        public bool L2CustomCurveSelected
-        {
-            get => profileSettings.GetL2OutCurveMode(device) == 6;
-        }
-        public bool R2CustomCurveSelected
-        {
-            get => profileSettings.GetR2OutCurveMode(device) == 6;
-        }
-        public string L2CustomCurve
-        {
-            get => profileSettings.L2OutBezierCurveObj[device].CustomDefinition;
-            set => profileSettings.L2OutBezierCurveObj[device].InitBezierCurve(value, BezierCurve.AxisType.L2R2, true);
-        }
-
-        public string R2CustomCurve
-        {
-            get => profileSettings.R2OutBezierCurveObj[device].CustomDefinition;
-            set => profileSettings.R2OutBezierCurveObj[device].InitBezierCurve(value, BezierCurve.AxisType.L2R2, true);
-        }
-
-        private List<TriggerModeChoice> triggerModeChoices = new List<TriggerModeChoice>()
-        {
-            new TriggerModeChoice("Normal", TriggerMode.Normal),
-        };
-
-        private List<TwoStageChoice> twoStageModeChoices = new List<TwoStageChoice>()
-        {
-            new TwoStageChoice("Disabled", TwoStageTriggerMode.Disabled),
-            new TwoStageChoice("Normal", TwoStageTriggerMode.Normal),
-            new TwoStageChoice("Exclusive", TwoStageTriggerMode.ExclusiveButtons),
-            new TwoStageChoice("Hair Trigger", TwoStageTriggerMode.HairTrigger),
-            new TwoStageChoice("Hip Fire", TwoStageTriggerMode.HipFire),
-            new TwoStageChoice("Hip Fire Exclusive", TwoStageTriggerMode.HipFireExclusiveButtons),
-        };
-        public List<TwoStageChoice> TwoStageModeChoices { get => twoStageModeChoices; }
-
-        public TwoStageTriggerMode L2TriggerMode
-        {
-            get => profileSettings.L2OutputSettings[device].twoStageMode;
-            set
-            {
-                TwoStageTriggerMode temp = profileSettings.L2OutputSettings[device].TwoStageMode;
-                if (temp == value) return;
-
-                profileSettings.L2OutputSettings[device].TwoStageMode = value;
-                OnPropertyChanged(nameof(L2TriggerMode));
-            }
-        }
-        public TwoStageTriggerMode R2TriggerMode
-        {
-            get => profileSettings.R2OutputSettings[device].TwoStageMode;
-            set
-            {
-                TwoStageTriggerMode temp = profileSettings.R2OutputSettings[device].TwoStageMode;
-                if (temp == value) return;
-
-                profileSettings.R2OutputSettings[device].twoStageMode = value;
-                OnPropertyChanged(nameof(R2TriggerMode));
-            }
-        }
-        public int L2HipFireTime
-        {
-            get => profileSettings.L2OutputSettings[device].hipFireMS;
-            set => profileSettings.L2OutputSettings[device].hipFireMS = value;
-        }
-
-        public int R2HipFireTime
-        {
-            get => profileSettings.R2OutputSettings[device].hipFireMS;
-            set => profileSettings.R2OutputSettings[device].hipFireMS = value;
-        }
-
-        private List<TriggerEffectChoice> triggerEffectChoices = new List<TriggerEffectChoice>()
-        {
-            new TriggerEffectChoice("None", DS4Windows.Core.Model.TriggerEffects.None),
-            new TriggerEffectChoice("Full Click", DS4Windows.Core.Model.TriggerEffects.FullClick),
-            new TriggerEffectChoice("Rigid", DS4Windows.Core.Model.TriggerEffects.Rigid),
-            new TriggerEffectChoice("Pulse", DS4Windows.Core.Model.TriggerEffects.Pulse),
-        };
-        public List<TriggerEffectChoice> TriggerEffectChoices { get => triggerEffectChoices; }
-
-        public DS4Windows.Core.Model.TriggerEffects L2TriggerEffect
-        {
-            get => profileSettings.L2OutputSettings[device].triggerEffect;
-            set
-            {
-                DS4Windows.Core.Model.TriggerEffects temp = profileSettings.L2OutputSettings[device].TriggerEffect;
-                if (temp == value) return;
-
-                profileSettings.L2OutputSettings[device].TriggerEffect = value;
-            }
-        }
-
-        public DS4Windows.Core.Model.TriggerEffects R2TriggerEffect
-        {
-            get => profileSettings.R2OutputSettings[device].triggerEffect;
-            set
-            {
-                DS4Windows.Core.Model.TriggerEffects temp = profileSettings.R2OutputSettings[device].TriggerEffect;
-                if (temp == value) return;
-
-                profileSettings.R2OutputSettings[device].TriggerEffect = value;
-            }
-        }
-
         public double SXDeadZone
         {
             get => profileSettings.SXDeadzone[device];
@@ -1784,6 +1590,7 @@ namespace DS4Windows.UI.ViewModels
             lightbarImgBrush.ImageSource = tempBitmap.Clone();
 
             presetMenuUtil = new PresetMenuHelper(device, this.profileSettings);
+            Triggers = new TriggerSettingsViewModel(this.profileSettings.ForSlot(device).Triggers);
             Touchpad = new TouchpadSettingsViewModel(this.profileSettings.ForSlot(device).Touchpad, environmentService);
             Gyro = new GyroSettingsViewModel(this.profileSettings.ForSlot(device).Gyro, loadTarget, environmentService);
             // ジャイロの出力モードを変えたら、保存用のプロファイルの印を更新する

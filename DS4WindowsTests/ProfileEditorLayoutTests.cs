@@ -184,9 +184,16 @@ namespace DS4WindowsTests
             Assert.DoesNotContain(values, v => v.Contains("TriggerFullPullBtn_Click"));
 
             // 割り当て名の表示ラベルは、読み取り専用の表示として残す
-            foreach (string label in new[] { "lsOuterBindLb", "rsOuterBindLb", "l2FullPullLb", "r2FullPullLb" })
+            foreach (string label in new[] { "lsOuterBindLb", "rsOuterBindLb" })
             {
                 Assert.True(XamlTestHelper.HasName(axis, label), label + " が Axis Config のタブにない");
+            }
+            // L2・R2 の部分は TriggerSettingsPanel（Axis Config のタブの中身の一部）にある
+            XDocument triggerXaml = LoadXaml("DS4Windows/UI/TriggerSettingsPanel.xaml");
+            if (triggerXaml == null) return;
+            foreach (string label in new[] { "l2FullPullLb", "r2FullPullLb" })
+            {
+                Assert.True(XamlTestHelper.HasName(triggerXaml.Root, label), label + " が TriggerSettingsPanel にない");
             }
         }
 
@@ -197,8 +204,12 @@ namespace DS4WindowsTests
             if (code == null) return;
 
             // Axis Config の読み取り専用のラベルと、Controls タブの入口の横のラベル（Phase10-Step3b W2）。どちらも、同じ割り当て名を結ぶ
-            Assert.Contains("l2FullPullLb.DataContext = mappingListVM.ControlMap[DS4Controls.L2FullPull];", code);
-            Assert.Contains("r2FullPullLb.DataContext = mappingListVM.ControlMap[DS4Controls.R2FullPull];", code);
+            // L2・R2 のラベルは TriggerSettingsPanel が持ち、編集画面は割り当ての一覧を渡して結ばせる
+            Assert.Contains("triggersPanel.AssignFullPullAssociation(mappingListVM);", code);
+            string panelCode = Read("DS4Windows/UI/TriggerSettingsPanel.xaml.cs");
+            if (panelCode == null) return;
+            Assert.Contains("l2FullPullLb.DataContext = mappingList.ControlMap[DS4Controls.L2FullPull];", panelCode);
+            Assert.Contains("r2FullPullLb.DataContext = mappingList.ControlMap[DS4Controls.R2FullPull];", panelCode);
             Assert.Contains("lsOuterBindLb.DataContext = mappingListVM.ControlMap[DS4Controls.LSOuter];", code);
             Assert.Contains("rsOuterBindLb.DataContext = mappingListVM.ControlMap[DS4Controls.RSOuter];", code);
         }

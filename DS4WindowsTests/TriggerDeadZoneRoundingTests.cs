@@ -27,15 +27,15 @@ namespace DS4WindowsTests
             {
                 foreach (bool isL2 in new[] { true, false })
                 {
-                    vm.GetType().GetProperty(isL2 ? "L2DeadZone" : "R2DeadZone").SetValue(vm, 0.0);
+                    vm.Triggers.GetType().GetProperty(isL2 ? "L2DeadZone" : "R2DeadZone").SetValue(vm.Triggers, 0.0);
                     for (int i = 1; i <= 10; i++)
                     {
                         // 上下ボタン（Increment=0.1）の動き: 現在の表示値に 0.1 を足して設定し、次の表示値を読む
-                        double current = (double)vm.GetType().GetProperty(isL2 ? "L2DeadZone" : "R2DeadZone").GetValue(vm);
+                        double current = (double)vm.Triggers.GetType().GetProperty(isL2 ? "L2DeadZone" : "R2DeadZone").GetValue(vm.Triggers);
                         double next = Math.Round(current + 0.1, 10);
-                        vm.GetType().GetProperty(isL2 ? "L2DeadZone" : "R2DeadZone").SetValue(vm, Math.Min(next, 1.0));
+                        vm.Triggers.GetType().GetProperty(isL2 ? "L2DeadZone" : "R2DeadZone").SetValue(vm.Triggers, Math.Min(next, 1.0));
 
-                        double shown = (double)vm.GetType().GetProperty(isL2 ? "L2DeadZone" : "R2DeadZone").GetValue(vm);
+                        double shown = (double)vm.Triggers.GetType().GetProperty(isL2 ? "L2DeadZone" : "R2DeadZone").GetValue(vm.Triggers);
                         Assert.Equal(Math.Round(i / 10.0, 2), shown);
                     }
                 }
@@ -55,13 +55,13 @@ namespace DS4WindowsTests
             var settings = TestGlobals.ProfileSettingsServiceInstance;
             try
             {
-                vm.L2DeadZone = 0.5;   // 127.5 → 128（四捨五入。旧は 127 に切り捨て）
+                vm.Triggers.L2DeadZone = 0.5;   // 127.5 → 128（四捨五入。旧は 127 に切り捨て）
                 Assert.Equal(128, settings.L2ModInfo[slot].deadZone);
-                vm.L2DeadZone = 1.0;
+                vm.Triggers.L2DeadZone = 1.0;
                 Assert.Equal(255, settings.L2ModInfo[slot].deadZone);
-                vm.L2DeadZone = 1.5;   // 範囲外でも、byte が溢れない
+                vm.Triggers.L2DeadZone = 1.5;   // 範囲外でも、byte が溢れない
                 Assert.Equal(255, settings.L2ModInfo[slot].deadZone);
-                vm.R2DeadZone = -0.5;
+                vm.Triggers.R2DeadZone = -0.5;
                 Assert.Equal(0, settings.R2ModInfo[slot].deadZone);
             }
             finally
@@ -80,8 +80,8 @@ namespace DS4WindowsTests
             try
             {
                 // 0.29 * 100.0 ＝ 28.999999999999996。旧は (int) の切り捨てで 28 になった
-                vm.L2MaxZone = 0.29; vm.R2MaxZone = 0.29;
-                vm.L2AntiDeadZone = 0.29; vm.R2AntiDeadZone = 0.29;
+                vm.Triggers.L2MaxZone = 0.29; vm.Triggers.R2MaxZone = 0.29;
+                vm.Triggers.L2AntiDeadZone = 0.29; vm.Triggers.R2AntiDeadZone = 0.29;
                 vm.LSMaxZone = 0.29; vm.RSMaxZone = 0.29;
                 vm.LSAntiDeadZone = 0.29; vm.RSAntiDeadZone = 0.29;
 

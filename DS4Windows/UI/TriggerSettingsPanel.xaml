@@ -1,0 +1,387 @@
+﻿<UserControl x:Class="DS4Windows.UI.TriggerSettingsPanel"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:local="clr-namespace:DS4Windows.UI"
+             xmlns:xctk="http://schemas.xceed.com/wpf/xaml/toolkit"
+             xmlns:lex="http://wpflocalizeextension.codeplex.com"
+             mc:Ignorable="d"
+             d:DesignHeight="450"
+             d:DesignWidth="800">
+    <UserControl.Resources>
+        <Thickness x:Key="spaceMargin"
+                   Left="10"
+                   Bottom="6"/>
+        <Style x:Key="gridRowHeight"
+               TargetType="{x:Type RowDefinition}">
+            <Setter Property="Height"
+                    Value="30"/>
+        </Style>
+    </UserControl.Resources>
+<GroupBox Header="L2 &amp; R2">
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition></RowDefinition>
+            <RowDefinition Style="{StaticResource gridRowHeight}"></RowDefinition>
+            <RowDefinition Style="{StaticResource gridRowHeight}"></RowDefinition>
+            <RowDefinition Style="{StaticResource gridRowHeight}"></RowDefinition>
+            <RowDefinition Style="{StaticResource gridRowHeight}"></RowDefinition>
+            <RowDefinition Style="{StaticResource gridRowHeight}"></RowDefinition>
+            <RowDefinition Style="{StaticResource gridRowHeight}"></RowDefinition>
+            <RowDefinition Style="{StaticResource gridRowHeight}"></RowDefinition>
+            <RowDefinition Style="{StaticResource gridRowHeight}"></RowDefinition>
+            <RowDefinition></RowDefinition>
+            <RowDefinition Style="{StaticResource gridRowHeight}"></RowDefinition>
+            <RowDefinition Style="{StaticResource gridRowHeight}"></RowDefinition>
+        </Grid.RowDefinitions>
+
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition/>
+            <ColumnDefinition/>
+            <ColumnDefinition/>
+        </Grid.ColumnDefinitions>
+
+        <TextBlock Text="L2"
+                   Grid.Column="1"
+                   FontWeight="Bold"
+                   HorizontalAlignment="Center"
+                   Margin="0,0,0,8"/>
+        <TextBlock Text="R2"
+                   Grid.Column="2"
+                   FontWeight="Bold"
+                   HorizontalAlignment="Center"
+                   Margin="0,0,0,8"/>
+
+        <Label Content="{lex:Loc DeadZone}"
+               ContentStringFormat="{}{0}:"
+               Grid.Row="1"
+               Grid.Column="0"/>
+        <xctk:DoubleUpDown d:IsHidden="True"
+                           FormatString="F2"
+                           Value="{Binding L2DeadZone}"
+                           Style="{StaticResource NumberInputSmall}"
+                           Grid.Row="1"
+                           Grid.Column="1"
+                           Maximum="1.0"
+                           Minimum="0.0"
+                           Increment="0.1"
+                           Margin="{StaticResource spaceMargin}"/>
+        <xctk:DoubleUpDown d:IsHidden="True"
+                           FormatString="F2"
+                           Value="{Binding R2DeadZone}"
+                           Style="{StaticResource NumberInputSmall}"
+                           Grid.Row="1"
+                           Grid.Column="2"
+                           Maximum="1.0"
+                           Minimum="0.0"
+                           Increment="0.1"
+                           Margin="{StaticResource spaceMargin}"/>
+
+        <Label Content="{lex:Loc MaxZone}"
+               ContentStringFormat="{}{0}:"
+               Grid.Row="2"
+               Grid.Column="0"/>
+        <xctk:DoubleUpDown d:IsHidden="True"
+                           FormatString="F2"
+                           Value="{Binding L2MaxZone}"
+                           Style="{StaticResource NumberInputSmall}"
+                           Grid.Row="2"
+                           Grid.Column="1"
+                           Maximum="1.0"
+                           Minimum="0.0"
+                           Increment="0.1"
+                           Margin="{StaticResource spaceMargin}"/>
+        <xctk:DoubleUpDown d:IsHidden="True"
+                           FormatString="F2"
+                           Value="{Binding R2MaxZone}"
+                           Style="{StaticResource NumberInputSmall}"
+                           Grid.Row="2"
+                           Grid.Column="2"
+                           Maximum="1.0"
+                           Minimum="0.0"
+                           Increment="0.1"
+                           Margin="{StaticResource spaceMargin}"/>
+
+        <Label Content="{lex:Loc AntiDeadZone}"
+               ContentStringFormat="{}{0}:"
+               Grid.Row="3"
+               Grid.Column="0"/>
+        <xctk:DoubleUpDown d:IsHidden="True"
+                           FormatString="F2"
+                           Value="{Binding L2AntiDeadZone}"
+                           Style="{StaticResource NumberInputSmall}"
+                           Grid.Row="3"
+                           Grid.Column="1"
+                           Maximum="1.0"
+                           Minimum="0.0"
+                           Increment="0.1"
+                           Margin="{StaticResource spaceMargin}"/>
+        <xctk:DoubleUpDown d:IsHidden="True"
+                           FormatString="F2"
+                           Value="{Binding R2AntiDeadZone}"
+                           Style="{StaticResource NumberInputSmall}"
+                           Grid.Row="3"
+                           Grid.Column="2"
+                           Maximum="1.0"
+                           Minimum="0.0"
+                           Increment="0.1"
+                           Margin="{StaticResource spaceMargin}"/>
+
+        <Label Content="{lex:Loc MaxOutput}"
+               ContentStringFormat="{}{0}:"
+               Grid.Row="4"
+               Grid.Column="0"/>
+        <xctk:DoubleUpDown d:IsHidden="True"
+                           FormatString="F2"
+                           Value="{Binding L2MaxOutput}"
+                           Style="{StaticResource NumberInputSmall}"
+                           Grid.Row="4"
+                           Grid.Column="1"
+                           Maximum="1.0"
+                           Minimum="0.0"
+                           Increment="0.1"
+                           Margin="{StaticResource spaceMargin}"/>
+        <xctk:DoubleUpDown d:IsHidden="True"
+                           FormatString="F2"
+                           Value="{Binding R2MaxOutput}"
+                           Style="{StaticResource NumberInputSmall}"
+                           Grid.Row="4"
+                           Grid.Column="2"
+                           Maximum="1.0"
+                           Minimum="0.0"
+                           Increment="0.1"
+                           Margin="{StaticResource spaceMargin}"/>
+
+        <Label Content="{lex:Loc Sensitivity}"
+               ContentStringFormat="{}{0}:"
+               Grid.Row="5"
+               Grid.Column="0"/>
+        <xctk:DoubleUpDown d:IsHidden="True"
+                           FormatString="F2"
+                           Value="{Binding L2Sens}"
+                           Style="{StaticResource NumberInputSmall}"
+                           Grid.Row="5"
+                           Grid.Column="1"
+                           Maximum="10.0"
+                           Minimum="0.1"
+                           Increment="0.1"
+                           Margin="{StaticResource spaceMargin}"/>
+        <xctk:DoubleUpDown d:IsHidden="True"
+                           FormatString="F2"
+                           Value="{Binding R2Sens}"
+                           Style="{StaticResource NumberInputSmall}"
+                           Grid.Row="5"
+                           Grid.Column="2"
+                           Maximum="10.0"
+                           Minimum="0.1"
+                           Increment="0.1"
+                           Margin="{StaticResource spaceMargin}"/>
+
+        <Label Content="{lex:Loc OutputCurve}"
+               ContentStringFormat="{}{0}:"
+               Grid.Row="6"
+               Grid.Column="0"/>
+        <ComboBox Grid.Row="6"
+                  Grid.Column="1"
+                  SelectedIndex="{Binding L2OutputCurveIndex}"
+                  Margin="{StaticResource spaceMargin}">
+            <ComboBoxItem Content="{lex:Loc Linear}"/>
+            <ComboBoxItem Content="{lex:Loc EnhancedPrecision}"/>
+            <ComboBoxItem Content="{lex:Loc Quadratic}"/>
+            <ComboBoxItem Content="{lex:Loc Cubic}"/>
+            <ComboBoxItem Content="{lex:Loc EaseoutQuad}"/>
+            <ComboBoxItem Content="{lex:Loc EaseoutCubic}"/>
+            <ComboBoxItem Content="{lex:Loc Custom}"/>
+        </ComboBox>
+        <ComboBox Grid.Row="6"
+                  Grid.Column="2"
+                  SelectedIndex="{Binding R2OutputCurveIndex}"
+                  Margin="{StaticResource spaceMargin}">
+            <ComboBoxItem Content="{lex:Loc Linear}"/>
+            <ComboBoxItem Content="{lex:Loc EnhancedPrecision}"/>
+            <ComboBoxItem Content="{lex:Loc Quadratic}"/>
+            <ComboBoxItem Content="{lex:Loc Cubic}"/>
+            <ComboBoxItem Content="{lex:Loc EaseoutQuad}"/>
+            <ComboBoxItem Content="{lex:Loc EaseoutCubic}"/>
+            <ComboBoxItem Content="{lex:Loc Custom}"/>
+        </ComboBox>
+
+        <DockPanel Grid.Row="7"
+                   Grid.Column="1"
+                   IsEnabled="{Binding L2CustomCurveSelected}">
+            <Button x:Name="l2CustomEditorBtn"
+                    Content="..."
+                    Tag="L2"
+                    Width="20"
+                    DockPanel.Dock="Right"
+                    Click="CustomEditorBtn_Click"
+                    Margin="{StaticResource spaceMargin}"/>
+            <TextBox Text="{Binding L2CustomCurve,FallbackValue='0.00, 0.00, 1.00, 1.00'}"
+                     DockPanel.Dock="Left"
+                     Margin="{StaticResource spaceMargin}"/>
+        </DockPanel>
+        <DockPanel Grid.Row="7"
+                   Grid.Column="2"
+                   IsEnabled="{Binding R2CustomCurveSelected}">
+            <Button x:Name="r2CustomEditorBtn"
+                    Content="..."
+                    Tag="R2"
+                    Width="20"
+                    DockPanel.Dock="Right"
+                    Click="CustomEditorBtn_Click"
+                    Margin="{StaticResource spaceMargin}"/>
+            <TextBox Text="{Binding R2CustomCurve,FallbackValue='0.00, 0.00, 1.00, 1.00'}"
+                     DockPanel.Dock="Left"
+                     Margin="{StaticResource spaceMargin}"/>
+        </DockPanel>
+
+        <Label Content="{lex:Loc TwoStageMode}"
+               ContentStringFormat="{}{0}:"
+               Grid.Row="8"
+               Grid.Column="0"/>
+        <ComboBox Grid.Row="8"
+                  Grid.Column="1"
+                  ItemsSource="{Binding Path=TwoStageModeChoices}"
+                  DisplayMemberPath="DisplayName"
+                  SelectedValuePath="Mode"
+                  SelectedValue="{Binding L2TriggerMode}"
+                  Margin="{StaticResource spaceMargin}">
+            <ComboBox.ToolTip>
+                <TextBlock TextWrapping="Wrap">
+                    <Bold>Disabled</Bold><LineBreak/>
+                    Disables use of Two Stage Triggers. Only bind one action to L2 or R2<LineBreak/>
+                    <LineBreak/>
+                    <Bold>Normal</Bold><LineBreak/>
+                    Normal (simple) Two Stage Trigger activation. Activates Soft Pull action when under maximum output. Activates Full Pull action as well when trigger reaches maximum value.<LineBreak/>
+                    <LineBreak/>
+                    <Bold>Exclusive</Bold><LineBreak/>
+                    Activates Soft Pull action when under maximum output. When trigger reaches maximum output, deactivate Soft Pull action and then activate Full Pull action<LineBreak/>
+                    <LineBreak/>
+                    <Bold>Hair Trigger</Bold><LineBreak/>
+                    Similar to Normal Two Stage Trigger mode with one difference. Activates Soft Pull action when under maximum output. Activates Full Pull action as well when trigger reaches maximum value. When the trigger is partially released from Full Pull, both Full Pull and Soft Pull actions deactivate. Activating Full Pull action will activate the Soft Pull again as well.<LineBreak/>
+                    <LineBreak/>
+                    <Bold>Hip Fire</Bold><LineBreak/>
+                    Takes the <Bold>Hip Fire Delay</Bold> time into account. The trigger will not activate an action until the time has expired. Once the time has expired, the current action for the trigger output will be determined. This mode allows skipping the activation of Soft Pull and only firing a Full Pull action.<LineBreak/>
+                    <LineBreak/>
+                    <Bold>Hip Fire Exclusive</Bold><LineBreak/>
+                    Similar to Hip Fire mode. The main difference is only one action will ever be activated.
+                </TextBlock>
+            </ComboBox.ToolTip>
+        </ComboBox>
+
+        <ComboBox Grid.Row="8"
+                  Grid.Column="2"
+                  ItemsSource="{Binding Path=TwoStageModeChoices}"
+                  DisplayMemberPath="DisplayName"
+                  SelectedValuePath="Mode"
+                  SelectedValue="{Binding R2TriggerMode}"
+                  Margin="{StaticResource spaceMargin}">
+            <ComboBox.ToolTip>
+                <TextBlock TextWrapping="Wrap">
+                    <Bold>Disabled</Bold><LineBreak/>
+                    Disables use of Two Stage Triggers. Only bind one action to L2 or R2<LineBreak/>
+                    <LineBreak/>
+                    <Bold>Normal</Bold><LineBreak/>
+                    Normal (simple) Two Stage Trigger activation. Activates Soft Pull action when under maximum output. Activates Full Pull action as well when trigger reaches maximum value.<LineBreak/>
+                    <LineBreak/>
+                    <Bold>Exclusive</Bold><LineBreak/>
+                    Activates Soft Pull action when under maximum output. When trigger reaches maximum output, deactivate Soft Pull action and then activate Full Pull action<LineBreak/>
+                    <LineBreak/>
+                    <Bold>Hair Trigger</Bold><LineBreak/>
+                    Similar to Normal Two Stage Trigger mode with one difference. Activates Soft Pull action when under maximum output. Activates Full Pull action as well when trigger reaches maximum value. When the trigger is partially released from Full Pull, both Full Pull and Soft Pull actions deactivate. Activating Full Pull action will activate the Soft Pull again as well.<LineBreak/>
+                    <LineBreak/>
+                    <Bold>Hip Fire</Bold><LineBreak/>
+                    Takes the <Bold>Hip Fire Delay</Bold> time into account. The trigger will not activate an action until the time has expired. Once the time has expired, the current action for the trigger output will be determined. This mode allows skipping the activation of Soft Pull and only firing a Full Pull action.<LineBreak/>
+                    <LineBreak/>
+                    <Bold>Hip Fire Exclusive</Bold><LineBreak/>
+                    Similar to Hip Fire mode. The main difference is only one action will ever be activated.
+                </TextBlock>
+            </ComboBox.ToolTip>
+        </ComboBox>
+
+        <Label Content="{lex:Loc FullBtnPull}"
+               ContentStringFormat="{}{0}:"
+               Grid.Row="9"
+               Grid.Column="0"/>
+        <DockPanel Grid.Row="9"
+                   Grid.Column="1">
+            <Label x:Name="l2FullPullLb"
+                   Content="{Binding MappingName,FallbackValue=Unassigned}"
+                   Margin="{StaticResource spaceMargin}"
+                   HorizontalAlignment="Center"
+                   DockPanel.Dock="Top"/>
+        </DockPanel>
+        <DockPanel Grid.Row="9"
+                   Grid.Column="2">
+            <Label x:Name="r2FullPullLb"
+                   Content="{Binding MappingName,FallbackValue=Unassigned}"
+                   Margin="{StaticResource spaceMargin}"
+                   HorizontalAlignment="Center"
+                   DockPanel.Dock="Top"/>
+        </DockPanel>
+
+        <Label Content="{lex:Loc HipFireDelay}"
+               ContentStringFormat="{}{0}:"
+               Grid.Row="10"
+               Grid.Column="0"/>
+        <DockPanel Grid.Row="10"
+                   Grid.Column="1">
+            <Label Content="ms"
+                   DockPanel.Dock="Right"/>
+            <xctk:IntegerUpDown d:IsHidden="True"
+                                Value="{Binding L2HipFireTime}"
+                                Style="{StaticResource NumberInputSmall}"
+                                Maximum="5000"
+                                Minimum="0"
+                                Increment="10"
+                                Margin="{StaticResource spaceMargin}">
+                <xctk:IntegerUpDown.ToolTip>
+                    <TextBlock TextWrapping="Wrap">
+                        Time delay used with Two State Modes <Bold>Hire Fire</Bold> and <Bold>Hip Fire Exclusive</Bold>. The time delay before an action is first executed.
+                    </TextBlock>
+                </xctk:IntegerUpDown.ToolTip>
+            </xctk:IntegerUpDown>
+        </DockPanel>
+
+        <DockPanel Grid.Row="10"
+                   Grid.Column="2">
+            <Label Content="ms"
+                   DockPanel.Dock="Right"/>
+            <xctk:IntegerUpDown d:IsHidden="True"
+                                Value="{Binding R2HipFireTime}"
+                                Style="{StaticResource NumberInputSmall}"
+                                Maximum="5000"
+                                Minimum="0"
+                                Increment="10"
+                                Margin="{StaticResource spaceMargin}">
+                <xctk:IntegerUpDown.ToolTip>
+                    <TextBlock TextWrapping="Wrap">
+                        Time delay used with Two State Modes <Bold>Hire Fire</Bold> and <Bold>Hip Fire Exclusive</Bold>. The time delay before an action is first executed.
+                    </TextBlock>
+                </xctk:IntegerUpDown.ToolTip>
+            </xctk:IntegerUpDown>
+        </DockPanel>
+
+        <Label Content="{lex:Loc TriggerEffect}"
+               ContentStringFormat="{}{0}:"
+               Grid.Row="11"
+               Grid.Column="0"/>
+
+        <ComboBox Grid.Row="11"
+                  Grid.Column="1"
+                  ItemsSource="{Binding Path=TriggerEffectChoices}"
+                  DisplayMemberPath="DisplayName"
+                  SelectedValuePath="Mode"
+                  SelectedValue="{Binding L2TriggerEffect}"
+                  Margin="{StaticResource spaceMargin}"/>
+        <ComboBox Grid.Row="11"
+                  Grid.Column="2"
+                  ItemsSource="{Binding Path=TriggerEffectChoices}"
+                  DisplayMemberPath="DisplayName"
+                  SelectedValuePath="Mode"
+                  SelectedValue="{Binding R2TriggerEffect}"
+                  Margin="{StaticResource spaceMargin}"/>
+    </Grid>
+</GroupBox>
+</UserControl>

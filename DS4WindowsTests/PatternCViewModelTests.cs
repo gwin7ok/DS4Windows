@@ -13,6 +13,7 @@ using DS4Windows.UI.ViewModels;
 
 namespace DS4WindowsTests
 {
+    [Collection(SharedHostStateCollection.Name)]
     public class PatternCViewModelTests
     {
         static PatternCViewModelTests()

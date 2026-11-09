@@ -152,47 +152,33 @@ namespace DS4WindowsTests
         [Fact]
         public void ThePanel_LoadsWithTheTheme_AndShowsTheDisInvertTriggers()
         {
-            Exception failure = null;
-            string step = "start";
-            var thread = new System.Threading.Thread(() =>
+            WpfPanelTestRunner.Run(() =>
             {
+                var vm = ProfileSettingsViewModelTestFactory.Create(0).Touchpad;
+                // アプリと同じく、テーマは Application のリソースにある（StaticResource は、読み込みの時点で解決される）
+                var theme = (System.Windows.ResourceDictionary)System.Windows.Application.LoadComponent(
+                    new Uri("/DS4Windows;component/UI/Themes/DefaultTheme.xaml", UriKind.Relative));
+                System.Windows.Application.Current.Resources.MergedDictionaries.Add(theme);
                 try
                 {
-                    var vm = ProfileSettingsViewModelTestFactory.Create(0).Touchpad;
-                    // アプリと同じく、テーマは Application のリソースにある（StaticResource は、読み込みの時点で解決される）
-                    var theme = (System.Windows.ResourceDictionary)System.Windows.Application.LoadComponent(
-                        new Uri("/DS4Windows;component/UI/Themes/DefaultTheme.xaml", UriKind.Relative));
-                    System.Windows.Application.Current.Resources.MergedDictionaries.Add(theme);
-                    try
-                    {
-                        step = "new";
-                        var panel = new DS4Windows.UI.TouchpadSettingsPanel();
-                        panel.DataContext = vm;
+                    var panel = new DS4Windows.UI.TouchpadSettingsPanel();
+                    panel.DataContext = vm;
 
-                        step = "populate";
-                        panel.PopulateDisInvertMenu(vm);
-                        step = "place";
-                        // 出力モードごとの置き場所の切り替えで落ちないこと（部品が無くても置き場所の選択はできる）
-                        for (int mode = 0; mode <= 3; mode++) panel.PlaceTouchButtonControl(null, mode);
-                        step = "measure";
-                        panel.Measure(new System.Windows.Size(1000, double.PositiveInfinity));
-                        panel.Arrange(new System.Windows.Rect(0, 0, 1000, panel.DesiredSize.Height));
-                        panel.UpdateLayout();
+                    panel.PopulateDisInvertMenu(vm);
+                    // 出力モードごとの置き場所の切り替えで落ちないこと（部品が無くても置き場所の選択はできる）
+                    for (int mode = 0; mode <= 3; mode++) panel.PlaceTouchButtonControl(null, mode);
+                    panel.Measure(new System.Windows.Size(1000, double.PositiveInfinity));
+                    panel.Arrange(new System.Windows.Rect(0, 0, 1000, panel.DesiredSize.Height));
+                    panel.UpdateLayout();
 
-                        Assert.True(panel.DesiredSize.Height > 0);
-                        Assert.False(string.IsNullOrEmpty(vm.TouchDisInvertString));
-                    }
-                    finally
-                    {
-                        System.Windows.Application.Current.Resources.MergedDictionaries.Remove(theme);
-                    }
+                    Assert.True(panel.DesiredSize.Height > 0);
+                    Assert.False(string.IsNullOrEmpty(vm.TouchDisInvertString));
                 }
-                catch (Exception ex) { failure = ex; }
+                finally
+                {
+                    System.Windows.Application.Current.Resources.MergedDictionaries.Remove(theme);
+                }
             });
-            thread.SetApartmentState(System.Threading.ApartmentState.STA);
-            thread.Start();
-            Assert.True(thread.Join(30000), "パネルの読み込みが終わらない（最後の段階: " + step + "）");
-            if (failure != null) throw new InvalidOperationException("パネルの読み込みに失敗: " + failure, failure);
         }
     }
 }

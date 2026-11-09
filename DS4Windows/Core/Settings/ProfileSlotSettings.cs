@@ -13,6 +13,7 @@ namespace DS4Windows.Core.Settings
             Slot = slot;
             Gyro = new GyroSlotSettings(settings, slot);
             Touchpad = new TouchpadSlotSettings(settings, slot);
+            Triggers = new TriggerSlotSettings(settings, slot);
         }
 
         public int Slot { get; }
@@ -20,5 +21,7 @@ namespace DS4Windows.Core.Settings
         public GyroSlotSettings Gyro { get; }
 
         public TouchpadSlotSettings Touchpad { get; }
+
+        public TriggerSlotSettings Triggers { get; }
     }
 }

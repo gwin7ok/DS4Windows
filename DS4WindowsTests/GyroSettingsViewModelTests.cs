@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
@@ -149,43 +149,34 @@ namespace DS4WindowsTests
         [Fact]
         public void ThePanel_LoadsWithTheTheme_AndBuildsTheTriggerMenus()
         {
-            Exception failure = null;
-            var thread = new System.Threading.Thread(() =>
+            WpfPanelTestRunner.Run(() =>
             {
+                var vm = ProfileSettingsViewModelTestFactory.Create(0).Gyro;
+                // アプリと同じく、テーマは Application のリソースにある（StaticResource は、読み込みの時点で解決される）
+                var theme = (System.Windows.ResourceDictionary)System.Windows.Application.LoadComponent(
+                    new Uri("/DS4Windows;component/UI/Themes/DefaultTheme.xaml", UriKind.Relative));
+                System.Windows.Application.Current.Resources.MergedDictionaries.Add(theme);
                 try
                 {
-                    var vm = ProfileSettingsViewModelTestFactory.Create(0).Gyro;
-                    // アプリと同じく、テーマは Application のリソースにある（StaticResource は、読み込みの時点で解決される）
-                    var theme = (System.Windows.ResourceDictionary)System.Windows.Application.LoadComponent(
-                        new Uri("/DS4Windows;component/UI/Themes/DefaultTheme.xaml", UriKind.Relative));
-                    System.Windows.Application.Current.Resources.MergedDictionaries.Add(theme);
-                    try
-                    {
-                    var panel = new DS4Windows.UI.GyroSettingsPanel();
-                    panel.DataContext = vm;
+                var panel = new DS4Windows.UI.GyroSettingsPanel();
+                panel.DataContext = vm;
 
-                    panel.CreateTriggerMenus(vm);
-                    panel.PopulateTriggerMenus(vm);
-                    panel.Measure(new System.Windows.Size(1000, double.PositiveInfinity));
-                    panel.Arrange(new System.Windows.Rect(0, 0, 1000, panel.DesiredSize.Height));
-                    panel.UpdateLayout();
+                panel.CreateTriggerMenus(vm);
+                panel.PopulateTriggerMenus(vm);
+                panel.Measure(new System.Windows.Size(1000, double.PositiveInfinity));
+                panel.Arrange(new System.Windows.Rect(0, 0, 1000, panel.DesiredSize.Height));
+                panel.UpdateLayout();
 
-                    Assert.True(panel.DesiredSize.Height > 0);
-                    // 既定は「常にオン」
-                    Assert.Equal("Always On", vm.GyroMouseTrigDisplay);
-                    Assert.Equal("Always On", vm.GyroControlsTrigDisplay);
-                    }
-                    finally
-                    {
-                        System.Windows.Application.Current.Resources.MergedDictionaries.Remove(theme);
-                    }
+                Assert.True(panel.DesiredSize.Height > 0);
+                // 既定は「常にオン」
+                Assert.Equal("Always On", vm.GyroMouseTrigDisplay);
+                Assert.Equal("Always On", vm.GyroControlsTrigDisplay);
                 }
-                catch (Exception ex) { failure = ex; }
+                finally
+                {
+                    System.Windows.Application.Current.Resources.MergedDictionaries.Remove(theme);
+                }
             });
-            thread.SetApartmentState(System.Threading.ApartmentState.STA);
-            thread.Start();
-            thread.Join();
-            if (failure != null) throw new InvalidOperationException("パネルの読み込みに失敗: " + failure, failure);
         }
     }
 }

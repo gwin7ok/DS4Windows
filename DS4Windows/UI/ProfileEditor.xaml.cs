@@ -521,6 +521,8 @@ namespace DS4Windows.UI
             gyroPanel.CalibrationRequested += GyroCalibration_Click;
             profileSettingsVM.Touchpad.PropertyChanged += TouchpadVM_PropertyChanged;
             touchpadPanel.SwipeControlClicked += TouchpadPanel_SwipeControlClicked;
+            profileSettingsVM.Triggers.PropertyChanged += TriggersVM_PropertyChanged;
+            triggersPanel.CustomCurveEditorRequested += TriggersPanel_CustomCurveEditorRequested;
 
         }
 
@@ -533,8 +535,6 @@ namespace DS4Windows.UI
             {
                 case nameof(ProfileSettingsViewModel.LSDeadZone): UpdateReadingsLsDeadZone(sender, EventArgs.Empty); break;
                 case nameof(ProfileSettingsViewModel.RSDeadZone): UpdateReadingsRsDeadZone(sender, EventArgs.Empty); break;
-                case nameof(ProfileSettingsViewModel.L2DeadZone): UpdateReadingsL2DeadZone(sender, EventArgs.Empty); break;
-                case nameof(ProfileSettingsViewModel.R2DeadZone): UpdateReadingsR2DeadZone(sender, EventArgs.Empty); break;
                 case nameof(ProfileSettingsViewModel.SXDeadZone): UpdateReadingsSXDeadZone(sender, EventArgs.Empty); break;
                 case nameof(ProfileSettingsViewModel.SZDeadZone): UpdateReadingsSZDeadZone(sender, EventArgs.Empty); break;
                 case nameof(ProfileSettingsViewModel.LeftStickDriftXAxis):
@@ -561,6 +561,22 @@ namespace DS4Windows.UI
                     if (left) UpdateReadingsLsDeadZoneY(sender, EventArgs.Empty); else UpdateReadingsRsDeadZoneY(sender, EventArgs.Empty);
                     break;
             }
+        }
+
+        private void TriggersVM_PropertyChanged(object sender, PropertyChangedEventArgs e)
+        {
+            // デッドゾーンを変えたら、コントローラーの読み取り値の表示（試験表示）へ反映する
+            switch (e.PropertyName)
+            {
+                case nameof(TriggerSettingsViewModel.L2DeadZone): UpdateReadingsL2DeadZone(sender, EventArgs.Empty); break;
+                case nameof(TriggerSettingsViewModel.R2DeadZone): UpdateReadingsR2DeadZone(sender, EventArgs.Empty); break;
+            }
+        }
+
+        private void TriggersPanel_CustomCurveEditorRequested(object sender, string target)
+        {
+            if (target == "L2") LaunchCurveEditor(profileSettingsVM.Triggers.L2CustomCurve);
+            else if (target == "R2") LaunchCurveEditor(profileSettingsVM.Triggers.R2CustomCurve);
         }
 
         private void TouchpadVM_PropertyChanged(object sender, PropertyChangedEventArgs e)
@@ -590,6 +606,8 @@ namespace DS4Windows.UI
             gyroPanel.CalibrationRequested -= GyroCalibration_Click;
             profileSettingsVM.Touchpad.PropertyChanged -= TouchpadVM_PropertyChanged;
             touchpadPanel.SwipeControlClicked -= TouchpadPanel_SwipeControlClicked;
+            profileSettingsVM.Triggers.PropertyChanged -= TriggersVM_PropertyChanged;
+            triggersPanel.CustomCurveEditorRequested -= TriggersPanel_CustomCurveEditorRequested;
             axialLSStickControl.AxialVM.PropertyChanged -= AxialStick_PropertyChanged;
             axialRSStickControl.AxialVM.PropertyChanged -= AxialStick_PropertyChanged;
 
@@ -623,12 +641,12 @@ namespace DS4Windows.UI
 
         private void UpdateReadingsR2DeadZone(object sender, EventArgs e)
         {
-            conReadingsUserCon.R2Dead = profileSettingsVM.R2DeadZone;
+            conReadingsUserCon.R2Dead = profileSettingsVM.Triggers.R2DeadZone;
         }
 
         private void UpdateReadingsL2DeadZone(object sender, EventArgs e)
         {
-            conReadingsUserCon.L2Dead = profileSettingsVM.L2DeadZone;
+            conReadingsUserCon.L2Dead = profileSettingsVM.Triggers.L2DeadZone;
         }
 
         private void UpdateReadingsLsDeadZone(object sender, EventArgs e)
@@ -682,8 +700,7 @@ namespace DS4Windows.UI
 
         private void AssignTriggerFullPullAssociation()
         {
-            l2FullPullLb.DataContext = mappingListVM.ControlMap[DS4Controls.L2FullPull];
-            r2FullPullLb.DataContext = mappingListVM.ControlMap[DS4Controls.R2FullPull];
+            triggersPanel.AssignFullPullAssociation(mappingListVM);
         }
 
         private void AssignStickOuterBindAssociation()
@@ -911,8 +928,8 @@ namespace DS4Windows.UI
                 conReadingsUserCon.RsDeadY = axialRSStickControl.AxialVM.DeadZoneY;
             }
 
-            conReadingsUserCon.L2Dead = profileSettingsVM.L2DeadZone;
-            conReadingsUserCon.R2Dead = profileSettingsVM.R2DeadZone;
+            conReadingsUserCon.L2Dead = profileSettingsVM.Triggers.L2DeadZone;
+            conReadingsUserCon.R2Dead = profileSettingsVM.Triggers.R2DeadZone;
             conReadingsUserCon.SixAxisXDead = profileSettingsVM.SXDeadZone;
             conReadingsUserCon.SixAxisZDead = profileSettingsVM.SZDeadZone;
 
@@ -975,8 +992,8 @@ namespace DS4Windows.UI
 
             conReadingsUserCon.LsDeadX = profileSettingsVM.LSDeadZone;
             conReadingsUserCon.RsDeadX = profileSettingsVM.RSDeadZone;
-            conReadingsUserCon.L2Dead = profileSettingsVM.L2DeadZone;
-            conReadingsUserCon.R2Dead = profileSettingsVM.R2DeadZone;
+            conReadingsUserCon.L2Dead = profileSettingsVM.Triggers.L2DeadZone;
+            conReadingsUserCon.R2Dead = profileSettingsVM.Triggers.R2DeadZone;
             conReadingsUserCon.SixAxisXDead = profileSettingsVM.SXDeadZone;
             conReadingsUserCon.SixAxisZDead = profileSettingsVM.SZDeadZone;
             conReadingsUserCon.LsDriftX = profileSettingsVM.LeftStickDriftXAxis;
@@ -1381,8 +1398,6 @@ namespace DS4Windows.UI
             string tag = btn.Tag.ToString();
             if (tag == "LS") LaunchCurveEditor(profileSettingsVM.LSCustomCurve);
             else if (tag == "RS") LaunchCurveEditor(profileSettingsVM.RSCustomCurve);
-            else if (tag == "L2") LaunchCurveEditor(profileSettingsVM.L2CustomCurve);
-            else if (tag == "R2") LaunchCurveEditor(profileSettingsVM.R2CustomCurve);
             else if (tag == "SX") LaunchCurveEditor(profileSettingsVM.SXCustomCurve);
             else if (tag == "SZ") LaunchCurveEditor(profileSettingsVM.SZCustomCurve);
         }

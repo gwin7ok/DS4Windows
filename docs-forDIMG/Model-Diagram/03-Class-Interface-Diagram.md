@@ -1340,3 +1340,4 @@ classDiagram
 %% - ViewModel の生成を `IViewModelFactory` へ集めた。画面（コードビハインド）は ViewModel を `new` せず、受け取るか、ファクトリーから得る（子画面のダイアログ、割り当て編集画面の種別ごとの ViewModel、バインド画面、ログ、トレイを含む）。
 %% - 設定サービスにスロット単位の入口 `ForSlot(int)`（`ProfileSlotSettings`）を足した。領域ごとの窓口（最初は `GyroSlotSettings`）は、既存の配列へ委譲する薄い型。ジャイロのタブは `GyroSettingsPanel`（UserControl）と `GyroSettingsViewModel`（`ProfileSettingsViewModel.Gyro`）に分けた。
 %% - 15-6b: タッチパッドも同じ形に分けた。`TouchpadSlotSettings`（`ProfileSlotSettings.Touchpad`）、`TouchpadSettingsPanel`（UserControl）、`TouchpadSettingsViewModel`（`ProfileSettingsViewModel.Touchpad`）。
+%% - 15-6c: トリガー（L2・R2）も同じ形に分けた。`TriggerSlotSettings`（`ProfileSlotSettings.Triggers`）、`TriggerSettingsPanel`（UserControl）、`TriggerSettingsViewModel`（`ProfileSettingsViewModel.Triggers`）。
