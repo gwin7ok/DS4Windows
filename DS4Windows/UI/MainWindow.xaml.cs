@@ -1,4 +1,4 @@
-/*
+﻿/*
 DS4Windows
 Copyright (C) 2023  Travis Nickles
 
@@ -479,8 +479,7 @@ namespace DS4Windows.UI
             trayIconVM.RequestMinimize += TrayIconVM_RequestMinimize;
             trayIconVM.RequestOpen += TrayIconVM_RequestOpen;
             trayIconVM.RequestServiceChange += TrayIconVM_RequestServiceChange;
-            settingsWrapVM.IconChoiceIndexChanged += SettingsWrapVM_IconChoiceIndexChanged;
-            settingsWrapVM.AppChoiceIndexChanged += SettingsWrapVM_AppChoiceIndexChanged;
+            settingsWrapVM.PropertyChanged += SettingsWrapVM_PropertyChanged;
 
             autoProfControl.AutoDebugChanged += AutoProfControl_AutoDebugChanged;
             _autoProfileService.RequestServiceChange += AutoprofileChecker_RequestServiceChange;
@@ -518,6 +517,15 @@ namespace DS4Windows.UI
             if (!wmiConnected)
             {
                 AppLogger.LogUser(AppLogLevel.Warn, "Log_Ui_WmiFailed");
+            }
+        }
+
+        private void SettingsWrapVM_PropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e)
+        {
+            switch (e.PropertyName)
+            {
+                case nameof(SettingsViewModel.AppChoiceIndex): SettingsWrapVM_AppChoiceIndexChanged(sender, EventArgs.Empty); break;
+                case nameof(SettingsViewModel.IconChoiceIndex): SettingsWrapVM_IconChoiceIndexChanged(sender, EventArgs.Empty); break;
             }
         }
 

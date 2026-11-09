@@ -40,7 +40,7 @@ using DS4Windows.UI.ViewModels.Util;
 
 namespace DS4Windows.UI.ViewModels
 {
-    public class ProfileSettingsViewModel
+    public class ProfileSettingsViewModel : ObservableObject
     {
         private List<string> gyroTriggerItems = new List<string>()
         {
@@ -106,11 +106,9 @@ namespace DS4Windows.UI.ViewModels
                 }
 
                 profileSettings.LightbarSettingsInfo[device].Mode = temp;
-                LightbarModeIndexChanged?.Invoke(this, EventArgs.Empty);
+                OnPropertyChanged(nameof(LightbarModeIndex));
             }
         }
-        public event EventHandler LightbarModeIndexChanged;
-
         public System.Windows.Media.Brush LightbarBrush
         {
             get
@@ -136,8 +134,6 @@ namespace DS4Windows.UI.ViewModels
                 return tempBrush;
             }
         }
-        public event EventHandler LightbarBrushChanged;
-
         public System.Windows.Media.Color MainColor
         {
             get
@@ -152,8 +148,6 @@ namespace DS4Windows.UI.ViewModels
                 };
             }
         }
-        public event EventHandler MainColorChanged;
-
         public string MainColorString
         {
             get
@@ -170,59 +164,45 @@ namespace DS4Windows.UI.ViewModels
                 */
             }
         }
-        public event EventHandler MainColorStringChanged;
-
         public int MainColorR
         {
             get => profileSettings.LightbarSettingsInfo[device].ds4winSettings.m_Led.red;
             set
             {
                 profileSettings.LightbarSettingsInfo[device].ds4winSettings.m_Led.red = (byte)value;
-                MainColorRChanged?.Invoke(this, EventArgs.Empty);
+                OnPropertyChanged(nameof(MainColorR));
             }
         }
-        public event EventHandler MainColorRChanged;
-
         public string MainColorRString
         {
             get => $"#{profileSettings.LightbarSettingsInfo[device].ds4winSettings.m_Led.red.ToString("X2")}FF0000";
         }
-        public event EventHandler MainColorRStringChanged;
-
         public int MainColorG
         {
             get => profileSettings.LightbarSettingsInfo[device].ds4winSettings.m_Led.green;
             set
             {
                 profileSettings.LightbarSettingsInfo[device].ds4winSettings.m_Led.green = (byte)value;
-                MainColorGChanged?.Invoke(this, EventArgs.Empty);
+                OnPropertyChanged(nameof(MainColorG));
             }
         }
-        public event EventHandler MainColorGChanged;
-
         public string MainColorGString
         {
             get => $"#{profileSettings.LightbarSettingsInfo[device].ds4winSettings.m_Led.green.ToString("X2")}00FF00";
         }
-        public event EventHandler MainColorGStringChanged;
-
         public int MainColorB
         {
             get => profileSettings.LightbarSettingsInfo[device].ds4winSettings.m_Led.blue;
             set
             {
                 profileSettings.LightbarSettingsInfo[device].ds4winSettings.m_Led.blue = (byte)value;
-                MainColorBChanged?.Invoke(this, EventArgs.Empty);
+                OnPropertyChanged(nameof(MainColorB));
             }
         }
-        public event EventHandler MainColorBChanged;
-
         public string MainColorBString
         {
             get => $"#{profileSettings.LightbarSettingsInfo[device].ds4winSettings.m_Led.blue.ToString("X2")}0000FF";
         }
-        public event EventHandler MainColorBStringChanged;
-
         public string LowColor
         {
             get
@@ -231,62 +211,48 @@ namespace DS4Windows.UI.ViewModels
                 return $"#FF{color.red.ToString("X2")}{color.green.ToString("X2")}{color.blue.ToString("X2")}";
             }
         }
-        public event EventHandler LowColorChanged;
-
         public int LowColorR
         {
             get => profileSettings.LightbarSettingsInfo[device].ds4winSettings.m_LowLed.red;
             set
             {
                 profileSettings.LightbarSettingsInfo[device].ds4winSettings.m_LowLed.red = (byte)value;
-                LowColorRChanged?.Invoke(this, EventArgs.Empty);
-                LowColorRStringChanged?.Invoke(this, EventArgs.Empty);
+                OnPropertyChanged(nameof(LowColorR));
+                OnPropertyChanged(nameof(LowColorRString));
             }
         }
-        public event EventHandler LowColorRChanged;
-
         public string LowColorRString
         {
             get => $"#{profileSettings.LightbarSettingsInfo[device].ds4winSettings.m_LowLed.red.ToString("X2")}FF0000";
         }
-        public event EventHandler LowColorRStringChanged;
-
         public int LowColorG
         {
             get => profileSettings.LightbarSettingsInfo[device].ds4winSettings.m_LowLed.green;
             set
             {
                 profileSettings.LightbarSettingsInfo[device].ds4winSettings.m_LowLed.green = (byte)value;
-                LowColorGChanged?.Invoke(this, EventArgs.Empty);
-                LowColorGStringChanged?.Invoke(this, EventArgs.Empty);
+                OnPropertyChanged(nameof(LowColorG));
+                OnPropertyChanged(nameof(LowColorGString));
             }
         }
-        public event EventHandler LowColorGChanged;
-
         public string LowColorGString
         {
             get => $"#{profileSettings.LightbarSettingsInfo[device].ds4winSettings.m_LowLed.green.ToString("X2")}00FF00";
         }
-        public event EventHandler LowColorGStringChanged;
-
         public int LowColorB
         {
             get => profileSettings.LightbarSettingsInfo[device].ds4winSettings.m_LowLed.blue;
             set
             {
                 profileSettings.LightbarSettingsInfo[device].ds4winSettings.m_LowLed.blue = (byte)value;
-                LowColorBChanged?.Invoke(this, EventArgs.Empty);
-                LowColorBStringChanged?.Invoke(this, EventArgs.Empty);
+                OnPropertyChanged(nameof(LowColorB));
+                OnPropertyChanged(nameof(LowColorBString));
             }
         }
-        public event EventHandler LowColorBChanged;
-
         public string LowColorBString
         {
             get => $"#{profileSettings.LightbarSettingsInfo[device].ds4winSettings.m_LowLed.blue.ToString("X2")}0000FF";
         }
-        public event EventHandler LowColorBStringChanged;
-
         public System.Windows.Media.Color LowColorMedia
         {
             get
@@ -327,8 +293,6 @@ namespace DS4Windows.UI.ViewModels
                 return $"#FF{color.red.ToString("X2")}{color.green.ToString("X2")}{color.blue.ToString("X2")}";
             }
         }
-        public event EventHandler FlashColorChanged;
-
         public System.Windows.Media.Color FlashColorMedia
         {
             get
@@ -355,7 +319,7 @@ namespace DS4Windows.UI.ViewModels
             set
             {
                 profileSettings.LightbarSettingsInfo[device].ds4winSettings.chargingType = value;
-                ChargingColorVisibleChanged?.Invoke(this, EventArgs.Empty);
+                OnPropertyChanged(nameof(ChargingColorVisible));
             }
         }
 
@@ -376,8 +340,6 @@ namespace DS4Windows.UI.ViewModels
                 return $"#FF{color.red.ToString("X2")}{color.green.ToString("X2")}{color.blue.ToString("X2")}";
             }
         }
-        public event EventHandler ChargingColorChanged;
-
         public System.Windows.Media.Color ChargingColorMedia
         {
             get
@@ -397,26 +359,20 @@ namespace DS4Windows.UI.ViewModels
         {
             get => profileSettings.LightbarSettingsInfo[device].ds4winSettings.chargingType == 3 ? Visibility.Visible : Visibility.Hidden;
         }
-        public event EventHandler ChargingColorVisibleChanged;
-
         public double Rainbow
         {
             get => profileSettings.LightbarSettingsInfo[device].ds4winSettings.rainbow;
             set
             {
                 profileSettings.LightbarSettingsInfo[device].ds4winSettings.rainbow = value;
-                RainbowChanged?.Invoke(this, EventArgs.Empty);
-                RainbowExistsChanged?.Invoke(this, EventArgs.Empty);
+                OnPropertyChanged(nameof(Rainbow));
+                OnPropertyChanged(nameof(RainbowExists));
             }
         }
-        public event EventHandler RainbowChanged;
-
         public bool RainbowExists
         {
             get => profileSettings.LightbarSettingsInfo[device].ds4winSettings.rainbow != 0.0;
         }
-
-        public event EventHandler RainbowExistsChanged;
 
         public double MaxSatRainbow
         {
@@ -430,11 +386,9 @@ namespace DS4Windows.UI.ViewModels
             set
             {
                 profileSettings.LeftStickDriftXAxis[device] = value;
-                LeftStickDriftXAxisChanged?.Invoke(this, EventArgs.Empty);
+                OnPropertyChanged(nameof(LeftStickDriftXAxis));
             }
         }
-
-        public event EventHandler LeftStickDriftXAxisChanged;
 
         public sbyte LeftStickDriftYAxis
         {
@@ -442,11 +396,9 @@ namespace DS4Windows.UI.ViewModels
             set
             {
                 profileSettings.LeftStickDriftYAxis[device] = value;
-                LeftStickDriftYAxisChanged?.Invoke(this, EventArgs.Empty);
+                OnPropertyChanged(nameof(LeftStickDriftYAxis));
             }
         }
-
-        public event EventHandler LeftStickDriftYAxisChanged;
 
         public sbyte RightStickDriftXAxis
         {
@@ -454,11 +406,9 @@ namespace DS4Windows.UI.ViewModels
             set
             {
                 profileSettings.RightStickDriftXAxis[device] = value;
-                RightStickDriftXAxisChanged?.Invoke(this, EventArgs.Empty);
+                OnPropertyChanged(nameof(RightStickDriftXAxis));
             }
         }
-
-        public event EventHandler RightStickDriftXAxisChanged;
 
         public sbyte RightStickDriftYAxis
         {
@@ -466,11 +416,9 @@ namespace DS4Windows.UI.ViewModels
             set
             {
                 profileSettings.RightStickDriftYAxis[device] = value;
-                RightStickDriftYAxisChanged?.Invoke(this, EventArgs.Empty);
+                OnPropertyChanged(nameof(RightStickDriftYAxis));
             }
         }
-
-        public event EventHandler RightStickDriftYAxisChanged;
 
         // Phase11 K-W6-10: DebouncingMs（デバウンス時間）のプロパティとイベントは機能廃止で削除した
 
@@ -531,11 +479,9 @@ namespace DS4Windows.UI.ViewModels
             set
             {
                 heavyRumbleActive = value;
-                HeavyRumbleActiveChanged?.Invoke(this, EventArgs.Empty);
+                OnPropertyChanged(nameof(HeavyRumbleActive));
             }
         }
-        public event EventHandler HeavyRumbleActiveChanged;
-
         private bool lightRumbleActive;
         public bool LightRumbleActive
         {
@@ -543,11 +489,9 @@ namespace DS4Windows.UI.ViewModels
             set
             {
                 lightRumbleActive = value;
-                LightRumbleActiveChanged?.Invoke(this, EventArgs.Empty);
+                OnPropertyChanged(nameof(LightRumbleActive));
             }
         }
-        public event EventHandler LightRumbleActiveChanged;
-
         public bool UseControllerReadout
         {
             get => profileSettings.DS4Mapping;
@@ -562,11 +506,9 @@ namespace DS4Windows.UI.ViewModels
                 int temp = profileSettings.ButtonMouseInfos[device].buttonSensitivity;
                 if (temp == value) return;
                 profileSettings.ButtonMouseInfos[device].ButtonSensitivity = value;
-                ButtonMouseSensitivityChanged?.Invoke(this, EventArgs.Empty);
+                OnPropertyChanged(nameof(ButtonMouseSensitivity));
             }
         }
-        public event EventHandler ButtonMouseSensitivityChanged;
-
         public int ButtonMouseVerticalScale
         {
             get => Convert.ToInt32(profileSettings.ButtonMouseInfos[device].buttonVerticalScale * 100.0);
@@ -576,11 +518,9 @@ namespace DS4Windows.UI.ViewModels
                 double attemptValue = value * 0.01;
                 if (temp == attemptValue) return;
                 profileSettings.ButtonMouseInfos[device].buttonVerticalScale = attemptValue;
-                ButtonMouseVerticalScaleChanged?.Invoke(this, EventArgs.Empty);
+                OnPropertyChanged(nameof(ButtonMouseVerticalScale));
             }
         }
-        public event EventHandler ButtonMouseVerticalScaleChanged;
-
         private double RawButtonMouseOffset
         {
             get => profileSettings.ButtonMouseInfos[device].mouseVelocityOffset;
@@ -594,11 +534,9 @@ namespace DS4Windows.UI.ViewModels
                 double temp = profileSettings.ButtonMouseInfos[device].mouseVelocityOffset * 100.0;
                 if (temp == value) return;
                 profileSettings.ButtonMouseInfos[device].mouseVelocityOffset = value * 0.01;
-                ButtonMouseOffsetChanged?.Invoke(this, EventArgs.Empty);
+                OnPropertyChanged(nameof(ButtonMouseOffset));
             }
         }
-        public event EventHandler ButtonMouseOffsetChanged;
-
         private int outputMouseSpeed;
         public int OutputMouseSpeed
         {
@@ -607,11 +545,9 @@ namespace DS4Windows.UI.ViewModels
             {
                 if (value == outputMouseSpeed) return;
                 outputMouseSpeed = value;
-                OutputMouseSpeedChanged?.Invoke(this, EventArgs.Empty);
+                OnPropertyChanged(nameof(OutputMouseSpeed));
             }
         }
-        public event EventHandler OutputMouseSpeedChanged;
-
         private double mouseOffsetSpeed;
         public double MouseOffsetSpeed
         {
@@ -620,11 +556,9 @@ namespace DS4Windows.UI.ViewModels
             {
                 if (mouseOffsetSpeed == value) return;
                 mouseOffsetSpeed = value;
-                MouseOffsetSpeedChanged?.Invoke(this, EventArgs.Empty);
+                OnPropertyChanged(nameof(MouseOffsetSpeed));
             }
         }
-        public event EventHandler MouseOffsetSpeedChanged;
-
         public bool MouseAcceleration
         {
             get => profileSettings.ButtonMouseInfos[device].mouseAccel;
@@ -651,14 +585,10 @@ namespace DS4Windows.UI.ViewModels
                 if (!value) ResetLauchProgram();
             }
         }
-        public event EventHandler LaunchProgramExistsChanged;
-
         public string LaunchProgram
         {
             get => profileSettings.LaunchProgram[device];
         }
-        public event EventHandler LaunchProgramChanged;
-
         public string LaunchProgramName
         {
             get
@@ -676,8 +606,6 @@ namespace DS4Windows.UI.ViewModels
                 return temp;
             }
         }
-        public event EventHandler LaunchProgramNameChanged;
-
         public ImageSource LaunchProgramIcon
         {
             get
@@ -697,8 +625,6 @@ namespace DS4Windows.UI.ViewModels
                 return exeicon;
             }
         }
-        public event EventHandler LaunchProgramIconChanged;
-
         public bool DInputOnly
         {
             get => profileSettings.DinputOnly[device];
@@ -708,10 +634,9 @@ namespace DS4Windows.UI.ViewModels
                 if (temp == value) return;
 
                 profileSettings.DinputOnly[device] = value;
-                DInputOnlyChanged?.Invoke(this, EventArgs.Empty);
+                OnPropertyChanged(nameof(DInputOnly));
             }
         }
-        public EventHandler DInputOnlyChanged;
 
         public bool VirtualTriggerButtons
         {
@@ -722,11 +647,9 @@ namespace DS4Windows.UI.ViewModels
                 if (temp == value) return;
 
                 profileSettings.OutputVirtualTriggerButton[device] = value;
-                VirtualTriggerButtonsChanged?.Invoke(this, EventArgs.Empty);
+                OnPropertyChanged(nameof(VirtualTriggerButtons));
             }
         }
-        public event EventHandler VirtualTriggerButtonsChanged;
-
         private List<EnumChoiceSelection<DS4TriggerOutputMode>> outputDS4TriggerModeOptions =
             new List<EnumChoiceSelection<DS4TriggerOutputMode>>
             {
@@ -746,11 +669,9 @@ namespace DS4Windows.UI.ViewModels
                 if (temp == value) return;
 
                 profileSettings.OutputDS4TriggerMode[device] = value;
-                OutputDS4TriggerModeChanged?.Invoke(this, EventArgs.Empty);
+                OnPropertyChanged(nameof(OutputDS4TriggerMode));
             }
         }
-        public event EventHandler OutputDS4TriggerModeChanged;
-
         public bool IdleDisconnectExists
         {
             get => profileSettings.IdleDisconnectTimeout[device] != 0;
@@ -761,12 +682,10 @@ namespace DS4Windows.UI.ViewModels
                 profileSettings.IdleDisconnectTimeout[device] = value ?
                     BackingStore.DEFAULT_ENABLE_IDLE_DISCONN_MINS * 60 : 0;
 
-                IdleDisconnectChanged?.Invoke(this, EventArgs.Empty);
-                IdleDisconnectExistsChanged?.Invoke(this, EventArgs.Empty);
+                OnPropertyChanged(nameof(IdleDisconnect));
+                OnPropertyChanged(nameof(IdleDisconnectExists));
             }
         }
-        public event EventHandler IdleDisconnectExistsChanged;
-
         public int IdleDisconnect
         {
             get => profileSettings.IdleDisconnectTimeout[device] / 60;
@@ -775,12 +694,10 @@ namespace DS4Windows.UI.ViewModels
                 int temp = profileSettings.IdleDisconnectTimeout[device] / 60;
                 if (temp == value) return;
                 profileSettings.IdleDisconnectTimeout[device] = value * 60;
-                IdleDisconnectChanged?.Invoke(this, EventArgs.Empty);
-                IdleDisconnectExistsChanged?.Invoke(this, EventArgs.Empty);
+                OnPropertyChanged(nameof(IdleDisconnect));
+                OnPropertyChanged(nameof(IdleDisconnectExists));
             }
         }
-        public event EventHandler IdleDisconnectChanged;
-
         private int tempBtPollRate;
         public int TempBTPollRateIndex
         {
@@ -950,13 +867,11 @@ namespace DS4Windows.UI.ViewModels
                 //GyroOutModeIndexChanging?.Invoke(this, EventArgs.Empty);
                 GyroOutModeIndexChanging?.Invoke(this, current, temp);
                 profileSettings.GyroOutputMode[device] = temp;
-                GyroOutModeIndexChanged?.Invoke(this, EventArgs.Empty);
+                OnPropertyChanged(nameof(GyroOutModeIndex));
             }
         }
         //public event EventHandler GyroOutModeIndexChanging;
         public event PropertyChangingHandler<GyroOutMode> GyroOutModeIndexChanging;
-        public event EventHandler GyroOutModeIndexChanged;
-
         public OutContType ContType
         {
             // Issue7是正（Phase5-Step14-Issue7-Fix-Plan.md タスク2）: 参照先を
@@ -974,11 +889,9 @@ namespace DS4Windows.UI.ViewModels
                 double temp = Math.Round(profileSettings.LSModInfo[device].deadZone / 127d, 2);
                 if (temp == value) return;
                 profileSettings.LSModInfo[device].deadZone = (int)Math.Round(value * 127d);
-                LSDeadZoneChanged?.Invoke(this, EventArgs.Empty);
+                OnPropertyChanged(nameof(LSDeadZone));
             }
         }
-        public event EventHandler LSDeadZoneChanged;
-
         public double RSDeadZone
         {
             get => Math.Round(profileSettings.RSModInfo[device].deadZone / 127d, 2);
@@ -987,11 +900,9 @@ namespace DS4Windows.UI.ViewModels
                 double temp = Math.Round(profileSettings.RSModInfo[device].deadZone / 127d, 2);
                 if (temp == value) return;
                 profileSettings.RSModInfo[device].deadZone = (int)Math.Round(value * 127d);
-                RSDeadZoneChanged?.Invoke(this, EventArgs.Empty);
+                OnPropertyChanged(nameof(RSDeadZone));
             }
         }
-        public event EventHandler RSDeadZoneChanged;
-
         public double LSMaxZone
         {
             get => profileSettings.LSModInfo[device].maxZone / 100.0;
@@ -1162,7 +1073,7 @@ namespace DS4Windows.UI.ViewModels
             set
             {
                 profileSettings.SetLsOutCurveMode(device, value);
-                LSCustomCurveSelectedChanged?.Invoke(this, EventArgs.Empty);
+                OnPropertyChanged(nameof(LSCustomCurveSelected));
             }
         }
 
@@ -1172,7 +1083,7 @@ namespace DS4Windows.UI.ViewModels
             set
             {
                 profileSettings.SetRsOutCurveMode(device, value);
-                RSCustomCurveSelectedChanged?.Invoke(this, EventArgs.Empty);
+                OnPropertyChanged(nameof(RSCustomCurveSelected));
             }
         }
 
@@ -1192,14 +1103,10 @@ namespace DS4Windows.UI.ViewModels
         {
             get => profileSettings.GetLsOutCurveMode(device) == 6;
         }
-        public event EventHandler LSCustomCurveSelectedChanged;
-
         public bool RSCustomCurveSelected
         {
             get => profileSettings.GetRsOutCurveMode(device) == 6;
         }
-        public event EventHandler RSCustomCurveSelectedChanged;
-
         public string LSCustomCurve
         {
             get => profileSettings.LsOutBezierCurveObj[device].CustomDefinition;
@@ -1292,11 +1199,9 @@ namespace DS4Windows.UI.ViewModels
                 if (temp == value) return;
 
                 profileSettings.LSOutputSettings[device].outputSettings.controlSettings.deltaAccelSettings.enabled = value;
-                LSDeltaAccelEnabledChanged?.Invoke(this, EventArgs.Empty);
+                OnPropertyChanged(nameof(LSDeltaAccelEnabled));
             }
         }
-        public event EventHandler LSDeltaAccelEnabledChanged;
-
         public double LSDeltaMultiplier
         {
             get => profileSettings.LSOutputSettings[device].outputSettings.controlSettings.deltaAccelSettings.multiplier;
@@ -1351,11 +1256,9 @@ namespace DS4Windows.UI.ViewModels
                 if (temp == value) return;
 
                 profileSettings.RSOutputSettings[device].outputSettings.controlSettings.deltaAccelSettings.enabled = value;
-                RSDeltaAccelEnabledChanged?.Invoke(this, EventArgs.Empty);
+                OnPropertyChanged(nameof(RSDeltaAccelEnabled));
             }
         }
-        public event EventHandler RSDeltaAccelEnabledChanged;
-
         public double RSDeltaMultiplier
         {
             get => profileSettings.RSOutputSettings[device].outputSettings.controlSettings.deltaAccelSettings.multiplier;
@@ -1439,11 +1342,9 @@ namespace DS4Windows.UI.ViewModels
                 StickMode current = profileSettings.LSOutputSettings[device].mode;
                 if (temp == current) return;
                 profileSettings.LSOutputSettings[device].mode = temp;
-                LSOutputIndexChanged?.Invoke(this, EventArgs.Empty);
+                OnPropertyChanged(nameof(LSOutputIndex));
             }
         }
-        public event EventHandler LSOutputIndexChanged;
-
         public double LSFlickRWC
         {
             get => profileSettings.LSOutputSettings[device].outputSettings.flickSettings.realWorldCalibration;
@@ -1518,11 +1419,9 @@ namespace DS4Windows.UI.ViewModels
                 StickMode current = profileSettings.RSOutputSettings[device].mode;
                 if (temp == current) return;
                 profileSettings.RSOutputSettings[device].mode = temp;
-                RSOutputIndexChanged?.Invoke(this, EventArgs.Empty);
+                OnPropertyChanged(nameof(RSOutputIndex));
             }
         }
-        public event EventHandler RSOutputIndexChanged;
-
         public double RSFlickRWC
         {
             get => profileSettings.RSOutputSettings[device].outputSettings.flickSettings.realWorldCalibration;
@@ -1569,11 +1468,9 @@ namespace DS4Windows.UI.ViewModels
                 double temp = Math.Round(profileSettings.L2ModInfo[device].deadZone / 255.0, 2);
                 if (temp == value) return;
                 profileSettings.L2ModInfo[device].deadZone = (byte)Math.Min(Math.Max(Math.Round(value * 255.0), 0.0), 255.0);
-                L2DeadZoneChanged?.Invoke(this, EventArgs.Empty);
+                OnPropertyChanged(nameof(L2DeadZone));
             }
         }
-        public event EventHandler L2DeadZoneChanged;
-
         public double R2DeadZone
         {
             get => Math.Round(profileSettings.R2ModInfo[device].deadZone / 255.0, 2);
@@ -1582,11 +1479,9 @@ namespace DS4Windows.UI.ViewModels
                 double temp = Math.Round(profileSettings.R2ModInfo[device].deadZone / 255.0, 2);
                 if (temp == value) return;
                 profileSettings.R2ModInfo[device].deadZone = (byte)Math.Min(Math.Max(Math.Round(value * 255.0), 0.0), 255.0);
-                R2DeadZoneChanged?.Invoke(this, EventArgs.Empty);
+                OnPropertyChanged(nameof(R2DeadZone));
             }
         }
-        public event EventHandler R2DeadZoneChanged;
-
         public double L2MaxZone
         {
             get => profileSettings.L2ModInfo[device].MaxZone / 100.0;
@@ -1641,7 +1536,7 @@ namespace DS4Windows.UI.ViewModels
             set
             {
                 profileSettings.SetL2OutCurveMode(device, value);
-                L2CustomCurveSelectedChanged?.Invoke(this, EventArgs.Empty);
+                OnPropertyChanged(nameof(L2CustomCurveSelected));
             }
         }
 
@@ -1651,7 +1546,7 @@ namespace DS4Windows.UI.ViewModels
             set
             {
                 profileSettings.SetR2OutCurveMode(device, value);
-                R2CustomCurveSelectedChanged?.Invoke(this, EventArgs.Empty);
+                OnPropertyChanged(nameof(R2CustomCurveSelected));
             }
         }
 
@@ -1659,14 +1554,10 @@ namespace DS4Windows.UI.ViewModels
         {
             get => profileSettings.GetL2OutCurveMode(device) == 6;
         }
-        public event EventHandler L2CustomCurveSelectedChanged;
-
         public bool R2CustomCurveSelected
         {
             get => profileSettings.GetR2OutCurveMode(device) == 6;
         }
-        public event EventHandler R2CustomCurveSelectedChanged;
-
         public string L2CustomCurve
         {
             get => profileSettings.L2OutBezierCurveObj[device].CustomDefinition;
@@ -1704,11 +1595,9 @@ namespace DS4Windows.UI.ViewModels
                 if (temp == value) return;
 
                 profileSettings.L2OutputSettings[device].TwoStageMode = value;
-                L2TriggerModeChanged?.Invoke(this, EventArgs.Empty);
+                OnPropertyChanged(nameof(L2TriggerMode));
             }
         }
-        public event EventHandler L2TriggerModeChanged;
-
         public TwoStageTriggerMode R2TriggerMode
         {
             get => profileSettings.R2OutputSettings[device].TwoStageMode;
@@ -1718,11 +1607,9 @@ namespace DS4Windows.UI.ViewModels
                 if (temp == value) return;
 
                 profileSettings.R2OutputSettings[device].twoStageMode = value;
-                R2TriggerModeChanged?.Invoke(this, EventArgs.Empty);
+                OnPropertyChanged(nameof(R2TriggerMode));
             }
         }
-        public event EventHandler R2TriggerModeChanged;
-
         public int L2HipFireTime
         {
             get => profileSettings.L2OutputSettings[device].hipFireMS;
@@ -1776,11 +1663,9 @@ namespace DS4Windows.UI.ViewModels
                 double temp = profileSettings.SXDeadzone[device];
                 if (temp == value) return;
                 profileSettings.SXDeadzone[device] = value;
-                SXDeadZoneChanged?.Invoke(this, EventArgs.Empty);
+                OnPropertyChanged(nameof(SXDeadZone));
             }
         }
-        public event EventHandler SXDeadZoneChanged;
-
         public double SZDeadZone
         {
             get => profileSettings.SZDeadzone[device];
@@ -1789,11 +1674,9 @@ namespace DS4Windows.UI.ViewModels
                 double temp = profileSettings.SZDeadzone[device];
                 if (temp == value) return;
                 profileSettings.SZDeadzone[device] = value;
-                SZDeadZoneChanged?.Invoke(this, EventArgs.Empty);
+                OnPropertyChanged(nameof(SZDeadZone));
             }
         }
-        public event EventHandler SZDeadZoneChanged;
-
         public double SXMaxZone
         {
             get => profileSettings.SXMaxzone[device];
@@ -1836,7 +1719,7 @@ namespace DS4Windows.UI.ViewModels
             set
             {
                 profileSettings.SetSxOutCurveMode(device, value);
-                SXCustomCurveSelectedChanged?.Invoke(this, EventArgs.Empty);
+                OnPropertyChanged(nameof(SXCustomCurveSelected));
             }
         }
 
@@ -1846,7 +1729,7 @@ namespace DS4Windows.UI.ViewModels
             set
             {
                 profileSettings.SetSzOutCurveMode(device, value);
-                SZCustomCurveSelectedChanged?.Invoke(this, EventArgs.Empty);
+                OnPropertyChanged(nameof(SZCustomCurveSelected));
             }
         }
 
@@ -1854,14 +1737,10 @@ namespace DS4Windows.UI.ViewModels
         {
             get => profileSettings.GetSxOutCurveMode(device) == 6;
         }
-        public event EventHandler SXCustomCurveSelectedChanged;
-
         public bool SZCustomCurveSelected
         {
             get => profileSettings.GetSzOutCurveMode(device) == 6;
         }
-        public event EventHandler SZCustomCurveSelectedChanged;
-
         public string SXCustomCurve
         {
             get => profileSettings.SxOutBezierCurveObj[device].CustomDefinition;
@@ -1913,25 +1792,21 @@ namespace DS4Windows.UI.ViewModels
                 //TouchpadOutputIndexChanging?.Invoke(this, EventArgs.Empty);
                 TouchpadOutputIndexChanging?.Invoke(this, current, temp);
                 profileSettings.TouchOutMode[device] = temp;
-                TouchpadOutputIndexChanged?.Invoke(this, EventArgs.Empty);
+                OnPropertyChanged(nameof(TouchpadOutputIndex));
             }
         }
         //public event EventHandler TouchpadOutputIndexChanging;
         public event PropertyChangingHandler<TouchpadOutMode> TouchpadOutputIndexChanging;
-        public event EventHandler TouchpadOutputIndexChanged;
-
         public bool TouchSenExists
         {
             get => profileSettings.TouchSensitivity[device] != 0;
             set
             {
                 profileSettings.TouchSensitivity[device] = value ? (byte)100 : (byte)0;
-                TouchSenExistsChanged?.Invoke(this, EventArgs.Empty);
-                TouchSensChanged?.Invoke(this, EventArgs.Empty);
+                OnPropertyChanged(nameof(TouchSenExists));
+                OnPropertyChanged(nameof(TouchSens));
             }
         }
-        public event EventHandler TouchSenExistsChanged;
-
         public int TouchSens
         {
             get => profileSettings.TouchSensitivity[device];
@@ -1940,24 +1815,20 @@ namespace DS4Windows.UI.ViewModels
                 int temp = profileSettings.TouchSensitivity[device];
                 if (temp == value) return;
                 profileSettings.TouchSensitivity[device] = (byte)value;
-                if (value == 0) TouchSenExistsChanged?.Invoke(this, EventArgs.Empty);
-                TouchSensChanged?.Invoke(this, EventArgs.Empty);
+                if (value == 0) OnPropertyChanged(nameof(TouchSenExists));
+                OnPropertyChanged(nameof(TouchSens));
             }
         }
-        public event EventHandler TouchSensChanged;
-
         public bool TouchScrollExists
         {
             get => profileSettings.ScrollSensitivity[device] != 0;
             set
             {
                 profileSettings.ScrollSensitivity[device] = value ? 100 : 0;
-                TouchScrollExistsChanged?.Invoke(this, EventArgs.Empty);
-                TouchScrollChanged?.Invoke(this, EventArgs.Empty);
+                OnPropertyChanged(nameof(TouchScrollExists));
+                OnPropertyChanged(nameof(TouchScroll));
             }
         }
-        public event EventHandler TouchScrollExistsChanged;
-
         public int TouchScroll
         {
             get => profileSettings.ScrollSensitivity[device];
@@ -1966,24 +1837,20 @@ namespace DS4Windows.UI.ViewModels
                 int temp = profileSettings.ScrollSensitivity[device];
                 if (temp == value) return;
                 profileSettings.ScrollSensitivity[device] = value;
-                if (value == 0) TouchScrollExistsChanged?.Invoke(this, EventArgs.Empty);
-                TouchScrollChanged?.Invoke(this, EventArgs.Empty);
+                if (value == 0) OnPropertyChanged(nameof(TouchScrollExists));
+                OnPropertyChanged(nameof(TouchScroll));
             }
         }
-        public event EventHandler TouchScrollChanged;
-
         public bool TouchTapExists
         {
             get => profileSettings.TapSensitivity[device] != 0;
             set
             {
                 profileSettings.TapSensitivity[device] = value ? (byte)100 : (byte)0;
-                TouchTapExistsChanged?.Invoke(this, EventArgs.Empty);
-                TouchTapChanged?.Invoke(this, EventArgs.Empty);
+                OnPropertyChanged(nameof(TouchTapExists));
+                OnPropertyChanged(nameof(TouchTap));
             }
         }
-        public event EventHandler TouchTapExistsChanged;
-
         public int TouchTap
         {
             get => profileSettings.TapSensitivity[device];
@@ -1992,12 +1859,10 @@ namespace DS4Windows.UI.ViewModels
                 int temp = profileSettings.TapSensitivity[device];
                 if (temp == value) return;
                 profileSettings.TapSensitivity[device] = (byte)value;
-                if (value == 0) TouchTapExistsChanged?.Invoke(this, EventArgs.Empty);
-                TouchTapChanged?.Invoke(this, EventArgs.Empty);
+                if (value == 0) OnPropertyChanged(nameof(TouchTapExists));
+                OnPropertyChanged(nameof(TouchTap));
             }
         }
-        public event EventHandler TouchTapChanged;
-
         public bool TouchDoubleTap
         {
             get => profileSettings.DoubleTap[device];
@@ -2143,11 +2008,9 @@ namespace DS4Windows.UI.ViewModels
                 bool temp = profileSettings.TouchMouseStickInf[device].maxOutputEnabled;
                 if (temp == value) return;
                 profileSettings.TouchMouseStickInf[device].maxOutputEnabled = value;
-                TouchMouseStickMaxOutputChanged?.Invoke(this, EventArgs.Empty);
+                OnPropertyChanged(nameof(TouchMouseStickMaxOutput));
             }
         }
-        public event EventHandler TouchMouseStickMaxOutputChanged;
-
         public double TouchMouseStickMaxOutput
         {
             get => profileSettings.TouchMouseStickInf[device].maxOutput;
@@ -2239,11 +2102,9 @@ namespace DS4Windows.UI.ViewModels
                 double temp = profileSettings.TouchMouseStickInf[device].trackballFriction;
                 if (temp == value) return;
                 profileSettings.TouchMouseStickInf[device].trackballFriction = value;
-                TouchMouseStickTrackballFrictionChanged?.Invoke(this, EventArgs.Empty);
+                OnPropertyChanged(nameof(TouchMouseStickTrackballFriction));
             }
         }
-        public event EventHandler TouchMouseStickTrackballFrictionChanged;
-
         public double TouchMouseStickRotation
         {
             get => profileSettings.TouchMouseStickInf[device].rotationRad * 180.0 / Math.PI;
@@ -2332,11 +2193,9 @@ namespace DS4Windows.UI.ViewModels
                 if (tempInfo.enableSmoothing == value) return;
 
                 profileSettings.GyroMouseInfo[device].enableSmoothing = value;
-                GyroMouseSmoothChanged?.Invoke(this, EventArgs.Empty);
+                OnPropertyChanged(nameof(GyroMouseSmooth));
             }
         }
-        public event EventHandler GyroMouseSmoothChanged;
-
         private int gyroMouseSmoothMethodIndex;
         public int GyroMouseSmoothMethodIndex
         {
@@ -2364,11 +2223,9 @@ namespace DS4Windows.UI.ViewModels
                 }
 
                 gyroMouseSmoothMethodIndex = value;
-                GyroMouseSmoothMethodIndexChanged?.Invoke(this, EventArgs.Empty);
+                OnPropertyChanged(nameof(GyroMouseSmoothMethodIndex));
             }
         }
-        public event EventHandler GyroMouseSmoothMethodIndexChanged;
-
         public Visibility GyroMouseWeightAvgPanelVisibility
         {
             get
@@ -2387,8 +2244,6 @@ namespace DS4Windows.UI.ViewModels
             }
 
         }
-        public event EventHandler GyroMouseWeightAvgPanelVisibilityChanged;
-
         public Visibility GyroMouseOneEuroPanelVisibility
         {
             get
@@ -2408,8 +2263,6 @@ namespace DS4Windows.UI.ViewModels
             }
 
         }
-        public event EventHandler GyroMouseOneEuroPanelVisibilityChanged;
-
         public double GyroMouseSmoothWeight
         {
             get => profileSettings.GyroMouseInfo[device].smoothingWeight;
@@ -2456,11 +2309,9 @@ namespace DS4Windows.UI.ViewModels
                 }
 
                 gyroMouseStickSmoothMethodIndex = value;
-                GyroMouseStickSmoothMethodIndexChanged?.Invoke(this, EventArgs.Empty);
+                OnPropertyChanged(nameof(GyroMouseStickSmoothMethodIndex));
             }
         }
-        public event EventHandler GyroMouseStickSmoothMethodIndexChanged;
-
         public Visibility GyroMouseStickWeightAvgPanelVisibility
         {
             get
@@ -2478,8 +2329,6 @@ namespace DS4Windows.UI.ViewModels
                 return result;
             }
         }
-        public event EventHandler GyroMouseStickWeightAvgPanelVisibilityChanged;
-
         public Visibility GyroMouseStickOneEuroPanelVisibility
         {
             get
@@ -2498,8 +2347,6 @@ namespace DS4Windows.UI.ViewModels
                 return result;
             }
         }
-        public event EventHandler GyroMouseStickOneEuroPanelVisibilityChanged;
-
         public double GyroMouseStickSmoothWeight
         {
             get => profileSettings.GyroMouseStickInf[device].smoothWeight;
@@ -2620,11 +2467,9 @@ namespace DS4Windows.UI.ViewModels
                 bool temp = profileSettings.GyroMouseStickInf[device].maxOutputEnabled;
                 if (temp == value) return;
                 profileSettings.GyroMouseStickInf[device].maxOutputEnabled = value;
-                GyroMouseStickMaxOutputChanged?.Invoke(this, EventArgs.Empty);
+                OnPropertyChanged(nameof(GyroMouseStickMaxOutput));
             }
         }
-        public event EventHandler GyroMouseStickMaxOutputChanged;
-
         public double GyroMouseStickMaxOutput
         {
             get => profileSettings.GyroMouseStickInf[device].maxOutput;
@@ -2702,11 +2547,9 @@ namespace DS4Windows.UI.ViewModels
             set
             {
                 touchDisInvertString = value;
-                TouchDisInvertStringChanged?.Invoke(this, EventArgs.Empty);
+                OnPropertyChanged(nameof(TouchDisInvertString));
             }
         }
-        public event EventHandler TouchDisInvertStringChanged;
-
 
         private string gyroControlsTrigDisplay = "Always On";
         public string GyroControlsTrigDisplay
@@ -2715,11 +2558,9 @@ namespace DS4Windows.UI.ViewModels
             set
             {
                 gyroControlsTrigDisplay = value;
-                GyroControlsTrigDisplayChanged?.Invoke(this, EventArgs.Empty);
+                OnPropertyChanged(nameof(GyroControlsTrigDisplay));
             }
         }
-        public event EventHandler GyroControlsTrigDisplayChanged;
-
         public bool GyroControlsTurns
         {
             get => profileSettings.GyroControlsInf[device].triggerTurns;
@@ -2749,11 +2590,9 @@ namespace DS4Windows.UI.ViewModels
             set
             {
                 gyroMouseTrigDisplay = value;
-                GyroMouseTrigDisplayChanged?.Invoke(this, EventArgs.Empty);
+                OnPropertyChanged(nameof(GyroMouseTrigDisplay));
             }
         }
-        public event EventHandler GyroMouseTrigDisplayChanged;
-
         private string gyroMouseStickTrigDisplay = "Always On";
         public string GyroMouseStickTrigDisplay
         {
@@ -2761,11 +2600,9 @@ namespace DS4Windows.UI.ViewModels
             set
             {
                 gyroMouseStickTrigDisplay = value;
-                GyroMouseStickTrigDisplayChanged?.Invoke(this, EventArgs.Empty);
+                OnPropertyChanged(nameof(GyroMouseStickTrigDisplay));
             }
         }
-
-        public event EventHandler GyroMouseStickTrigDisplayChanged;
 
         private PresetMenuHelper presetMenuUtil;
         public PresetMenuHelper PresetMenuUtil
@@ -2943,43 +2780,7 @@ namespace DS4Windows.UI.ViewModels
 
         private void SetupEvents()
         {
-            MainColorChanged += ProfileSettingsViewModel_MainColorChanged;
-            MainColorRChanged += (sender, args) =>
-            {
-                MainColorRStringChanged?.Invoke(this, EventArgs.Empty);
-                MainColorStringChanged?.Invoke(this, EventArgs.Empty);
-                LightbarBrushChanged?.Invoke(this, EventArgs.Empty);
-            };
-            MainColorGChanged += (sender, args) =>
-            {
-                MainColorGStringChanged?.Invoke(this, EventArgs.Empty);
-                MainColorStringChanged?.Invoke(this, EventArgs.Empty);
-                LightbarBrushChanged?.Invoke(this, EventArgs.Empty);
-            };
-            MainColorBChanged += (sender, args) =>
-            {
-                MainColorBStringChanged?.Invoke(this, EventArgs.Empty);
-                MainColorStringChanged?.Invoke(this, EventArgs.Empty);
-                LightbarBrushChanged?.Invoke(this, EventArgs.Empty);
-            };
-
-            RainbowChanged += (sender, args) =>
-            {
-                LightbarBrushChanged?.Invoke(this, EventArgs.Empty);
-            };
-
-            ButtonMouseSensitivityChanged += (sender, args) =>
-            {
-                OutputMouseSpeed = CalculateOutputMouseSpeed(ButtonMouseSensitivity);
-                MouseOffsetSpeed = RawButtonMouseOffset * OutputMouseSpeed;
-            };
-
-            GyroOutModeIndexChanged += CalcProfileFlags;
-            LSOutputIndexChanged += CalcProfileFlags;
-            RSOutputIndexChanged += CalcProfileFlags;
-            ButtonMouseOffsetChanged += ProfileSettingsViewModel_ButtonMouseOffsetChanged;
-            GyroMouseSmoothMethodIndexChanged += ProfileSettingsViewModel_GyroMouseSmoothMethodIndexChanged;
-            GyroMouseStickSmoothMethodIndexChanged += ProfileSettingsViewModel_GyroMouseStickSmoothMethodIndexChanged;
+            PropertyChanged += OnOwnPropertyChanged;
 
             // Phase6-Step7b（決定7＝H1）: 編集操作のたびに実機へ即時に効かせていた 6 件のフックを削除した
             // （GyroOutModeIndexChanging／TouchpadOutputIndexChanging の touchPad.Reset()、TouchpadOutputIndexChanged の
@@ -2989,16 +2790,66 @@ namespace DS4Windows.UI.ViewModels
             // ApplyProfile → ControlService.PreLoadReset／CheckProfileOptions で行われる（Phase6-Step7b-Plan.md §1A.3）
         }
 
+        /// <summary>
+        /// 自分の値が変わったときの連動（派生する表示用プロパティの再通知と、保存用の印の更新）。
+        /// 値を設定した直後に同期して実行する。
+        /// </summary>
+        private void OnOwnPropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e)
+        {
+            switch (e.PropertyName)
+            {
+                case nameof(MainColor):
+                    ProfileSettingsViewModel_MainColorChanged(sender, EventArgs.Empty);
+                    break;
+                case nameof(MainColorR):
+                    OnPropertyChanged(nameof(MainColorRString));
+                    OnPropertyChanged(nameof(MainColorString));
+                    OnPropertyChanged(nameof(LightbarBrush));
+                    break;
+                case nameof(MainColorG):
+                    OnPropertyChanged(nameof(MainColorGString));
+                    OnPropertyChanged(nameof(MainColorString));
+                    OnPropertyChanged(nameof(LightbarBrush));
+                    break;
+                case nameof(MainColorB):
+                    OnPropertyChanged(nameof(MainColorBString));
+                    OnPropertyChanged(nameof(MainColorString));
+                    OnPropertyChanged(nameof(LightbarBrush));
+                    break;
+                case nameof(Rainbow):
+                    OnPropertyChanged(nameof(LightbarBrush));
+                    break;
+                case nameof(ButtonMouseSensitivity):
+                    OutputMouseSpeed = CalculateOutputMouseSpeed(ButtonMouseSensitivity);
+                    MouseOffsetSpeed = RawButtonMouseOffset * OutputMouseSpeed;
+                    break;
+                case nameof(GyroOutModeIndex):
+                case nameof(LSOutputIndex):
+                case nameof(RSOutputIndex):
+                    CalcProfileFlags(sender, EventArgs.Empty);
+                    break;
+                case nameof(ButtonMouseOffset):
+                    ProfileSettingsViewModel_ButtonMouseOffsetChanged(sender, EventArgs.Empty);
+                    break;
+                case nameof(GyroMouseSmoothMethodIndex):
+                    ProfileSettingsViewModel_GyroMouseSmoothMethodIndexChanged(sender, EventArgs.Empty);
+                    break;
+                case nameof(GyroMouseStickSmoothMethodIndex):
+                    ProfileSettingsViewModel_GyroMouseStickSmoothMethodIndexChanged(sender, EventArgs.Empty);
+                    break;
+            }
+        }
+
         private void ProfileSettingsViewModel_GyroMouseStickSmoothMethodIndexChanged(object sender, EventArgs e)
         {
-            GyroMouseStickWeightAvgPanelVisibilityChanged?.Invoke(this, EventArgs.Empty);
-            GyroMouseStickOneEuroPanelVisibilityChanged?.Invoke(this, EventArgs.Empty);
+            OnPropertyChanged(nameof(GyroMouseStickWeightAvgPanelVisibility));
+            OnPropertyChanged(nameof(GyroMouseStickOneEuroPanelVisibility));
         }
 
         private void ProfileSettingsViewModel_GyroMouseSmoothMethodIndexChanged(object sender, EventArgs e)
         {
-            GyroMouseWeightAvgPanelVisibilityChanged?.Invoke(this, EventArgs.Empty);
-            GyroMouseOneEuroPanelVisibilityChanged?.Invoke(this, EventArgs.Empty);
+            OnPropertyChanged(nameof(GyroMouseWeightAvgPanelVisibility));
+            OnPropertyChanged(nameof(GyroMouseOneEuroPanelVisibility));
         }
 
         private void ProfileSettingsViewModel_ButtonMouseOffsetChanged(object sender,
@@ -3009,23 +2860,23 @@ namespace DS4Windows.UI.ViewModels
 
         private void ProfileSettingsViewModel_MainColorChanged(object sender, EventArgs e)
         {
-            MainColorStringChanged?.Invoke(this, EventArgs.Empty);
-            MainColorRChanged?.Invoke(this, EventArgs.Empty);
-            MainColorGChanged?.Invoke(this, EventArgs.Empty);
-            MainColorBChanged?.Invoke(this, EventArgs.Empty);
-            LightbarBrushChanged?.Invoke(this, EventArgs.Empty);
+            OnPropertyChanged(nameof(MainColorString));
+            OnPropertyChanged(nameof(MainColorR));
+            OnPropertyChanged(nameof(MainColorG));
+            OnPropertyChanged(nameof(MainColorB));
+            OnPropertyChanged(nameof(LightbarBrush));
         }
 
         public void UpdateFlashColor(System.Windows.Media.Color color)
         {
             profileSettings.LightbarSettingsInfo[device].ds4winSettings.m_FlashLed = new DS4Color() { red = color.R, green = color.G, blue = color.B };
-            FlashColorChanged?.Invoke(this, EventArgs.Empty);
+            OnPropertyChanged(nameof(FlashColor));
         }
 
         public void UpdateMainColor(System.Windows.Media.Color color)
         {
             profileSettings.LightbarSettingsInfo[device].ds4winSettings.m_Led = new DS4Color() { red = color.R, green = color.G, blue = color.B };
-            MainColorChanged?.Invoke(this, EventArgs.Empty);
+            OnPropertyChanged(nameof(MainColor));
         }
 
         public void UpdateLowColor(System.Windows.Media.Color color)
@@ -3035,13 +2886,13 @@ namespace DS4Windows.UI.ViewModels
             lowColor.green = color.G;
             lowColor.blue = color.B;
 
-            LowColorChanged?.Invoke(this, EventArgs.Empty);
-            LowColorRChanged?.Invoke(this, EventArgs.Empty);
-            LowColorGChanged?.Invoke(this, EventArgs.Empty);
-            LowColorBChanged?.Invoke(this, EventArgs.Empty);
-            LowColorRStringChanged?.Invoke(this, EventArgs.Empty);
-            LowColorGStringChanged?.Invoke(this, EventArgs.Empty);
-            LowColorBStringChanged?.Invoke(this, EventArgs.Empty);
+            OnPropertyChanged(nameof(LowColor));
+            OnPropertyChanged(nameof(LowColorR));
+            OnPropertyChanged(nameof(LowColorG));
+            OnPropertyChanged(nameof(LowColorB));
+            OnPropertyChanged(nameof(LowColorRString));
+            OnPropertyChanged(nameof(LowColorGString));
+            OnPropertyChanged(nameof(LowColorBString));
         }
 
         /// <summary>
@@ -3090,25 +2941,25 @@ namespace DS4Windows.UI.ViewModels
             chargeColor.red = color.R;
             chargeColor.green = color.G;
             chargeColor.blue = color.B;
-            ChargingColorChanged?.Invoke(this, EventArgs.Empty);
+            OnPropertyChanged(nameof(ChargingColor));
         }
 
         public void UpdateLaunchProgram(string path)
         {
             profileSettings.LaunchProgram[device] = path;
-            LaunchProgramExistsChanged?.Invoke(this, EventArgs.Empty);
-            LaunchProgramChanged?.Invoke(this, EventArgs.Empty);
-            LaunchProgramNameChanged?.Invoke(this, EventArgs.Empty);
-            LaunchProgramIconChanged?.Invoke(this, EventArgs.Empty);
+            OnPropertyChanged(nameof(LaunchProgramExists));
+            OnPropertyChanged(nameof(LaunchProgram));
+            OnPropertyChanged(nameof(LaunchProgramName));
+            OnPropertyChanged(nameof(LaunchProgramIcon));
         }
 
         public void ResetLauchProgram()
         {
             profileSettings.LaunchProgram[device] = string.Empty;
-            LaunchProgramExistsChanged?.Invoke(this, EventArgs.Empty);
-            LaunchProgramChanged?.Invoke(this, EventArgs.Empty);
-            LaunchProgramNameChanged?.Invoke(this, EventArgs.Empty);
-            LaunchProgramIconChanged?.Invoke(this, EventArgs.Empty);
+            OnPropertyChanged(nameof(LaunchProgramExists));
+            OnPropertyChanged(nameof(LaunchProgram));
+            OnPropertyChanged(nameof(LaunchProgramName));
+            OnPropertyChanged(nameof(LaunchProgramIcon));
         }
 
         public void UpdateTouchDisInvert(ContextMenu menu)
@@ -3454,8 +3305,8 @@ namespace DS4Windows.UI.ViewModels
             }
         }
 
-        // TODO(技術的負債・Phase5-Step14 タスク(c)-1関連): このViewModelはINotifyPropertyChangedを
-        // 実装していない。本メソッドが更新する各フィールド（tempControllerIndex等）がUIへ正しく反映される
+        // TODO(技術的負債・Phase5-Step14 タスク(c)-1関連): 本メソッドはフィールドを直接書き換え、
+        // PropertyChanged を出さない。本メソッドが更新する各フィールド（tempControllerIndex等）がUIへ正しく反映される
         // のは、呼び出し元（ProfileEditor.xaml.cs）が必ずDataContextをnullにしてから再代入する
         // （Reload()、およびStopEditorBindings()+RefreshEditorBindings()のペア）という規約を
         // 守っているためである。将来、本メソッドを新たな呼び出し元から呼ぶ場合、このDataContext

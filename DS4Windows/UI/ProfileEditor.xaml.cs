@@ -1,4 +1,4 @@
-using DS4Windows.UI.Controls;
+﻿using DS4Windows.UI.Controls;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
@@ -522,19 +522,48 @@ namespace DS4Windows.UI
             mappingListBox.SelectionChanged += MappingListBox_SelectionChanged;
             Closed += ProfileEditor_Closed;
 
-            profileSettingsVM.LSDeadZoneChanged += UpdateReadingsLsDeadZone;
-            profileSettingsVM.RSDeadZoneChanged += UpdateReadingsRsDeadZone;
-            profileSettingsVM.L2DeadZoneChanged += UpdateReadingsL2DeadZone;
-            profileSettingsVM.R2DeadZoneChanged += UpdateReadingsR2DeadZone;
-            profileSettingsVM.SXDeadZoneChanged += UpdateReadingsSXDeadZone;
-            profileSettingsVM.SZDeadZoneChanged += UpdateReadingsSZDeadZone;
-            profileSettingsVM.TouchpadOutputIndexChanged += TouchpadOutputDisplayChange;
+            profileSettingsVM.PropertyChanged += ProfileSettingsVM_PropertyChanged;
 
-            profileSettingsVM.LeftStickDriftXAxisChanged += UpdateReadingsLSDrift;
-            profileSettingsVM.LeftStickDriftYAxisChanged += UpdateReadingsLSDrift;
-            profileSettingsVM.RightStickDriftXAxisChanged += UpdateReadingsRSDrift;
-            profileSettingsVM.RightStickDriftYAxisChanged += UpdateReadingsRSDrift;
+        }
 
+        /// <summary>
+        /// プロファイル設定の値が変わったとき、試験表示（デッドゾーン・ドリフト・タッチパッド出力）へ反映する。
+        /// </summary>
+        private void ProfileSettingsVM_PropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e)
+        {
+            switch (e.PropertyName)
+            {
+                case nameof(ProfileSettingsViewModel.LSDeadZone): UpdateReadingsLsDeadZone(sender, EventArgs.Empty); break;
+                case nameof(ProfileSettingsViewModel.RSDeadZone): UpdateReadingsRsDeadZone(sender, EventArgs.Empty); break;
+                case nameof(ProfileSettingsViewModel.L2DeadZone): UpdateReadingsL2DeadZone(sender, EventArgs.Empty); break;
+                case nameof(ProfileSettingsViewModel.R2DeadZone): UpdateReadingsR2DeadZone(sender, EventArgs.Empty); break;
+                case nameof(ProfileSettingsViewModel.SXDeadZone): UpdateReadingsSXDeadZone(sender, EventArgs.Empty); break;
+                case nameof(ProfileSettingsViewModel.SZDeadZone): UpdateReadingsSZDeadZone(sender, EventArgs.Empty); break;
+                case nameof(ProfileSettingsViewModel.TouchpadOutputIndex): TouchpadOutputDisplayChange(sender, EventArgs.Empty); break;
+                case nameof(ProfileSettingsViewModel.LeftStickDriftXAxis):
+                case nameof(ProfileSettingsViewModel.LeftStickDriftYAxis):
+                    UpdateReadingsLSDrift(sender, EventArgs.Empty); break;
+                case nameof(ProfileSettingsViewModel.RightStickDriftXAxis):
+                case nameof(ProfileSettingsViewModel.RightStickDriftYAxis):
+                    UpdateReadingsRSDrift(sender, EventArgs.Empty); break;
+            }
+        }
+
+        /// <summary>
+        /// 左右のスティックの軸ごとのデッドゾーンが変わったとき、試験表示へ反映する。
+        /// </summary>
+        private void AxialStick_PropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e)
+        {
+            bool left = ReferenceEquals(sender, axialLSStickControl.AxialVM);
+            switch (e.PropertyName)
+            {
+                case nameof(AxialStickControlViewModel.DeadZoneX):
+                    if (left) UpdateReadingsLsDeadZoneX(sender, EventArgs.Empty); else UpdateReadingsRsDeadZoneX(sender, EventArgs.Empty);
+                    break;
+                case nameof(AxialStickControlViewModel.DeadZoneY):
+                    if (left) UpdateReadingsLsDeadZoneY(sender, EventArgs.Empty); else UpdateReadingsRsDeadZoneY(sender, EventArgs.Empty);
+                    break;
+            }
         }
 
         private void UnregisterEvents()
@@ -543,23 +572,9 @@ namespace DS4Windows.UI
             mappingListBox.SelectionChanged -= MappingListBox_SelectionChanged;
             Closed -= ProfileEditor_Closed;
 
-            profileSettingsVM.LSDeadZoneChanged -= UpdateReadingsLsDeadZone;
-            profileSettingsVM.RSDeadZoneChanged -= UpdateReadingsRsDeadZone;
-            profileSettingsVM.L2DeadZoneChanged -= UpdateReadingsL2DeadZone;
-            profileSettingsVM.R2DeadZoneChanged -= UpdateReadingsR2DeadZone;
-            profileSettingsVM.SXDeadZoneChanged -= UpdateReadingsSXDeadZone;
-            profileSettingsVM.SZDeadZoneChanged -= UpdateReadingsSZDeadZone;
-            profileSettingsVM.TouchpadOutputIndexChanged -= TouchpadOutputDisplayChange;
-
-            axialLSStickControl.AxialVM.DeadZoneXChanged -= UpdateReadingsLsDeadZoneX;
-            axialLSStickControl.AxialVM.DeadZoneYChanged -= UpdateReadingsLsDeadZoneY;
-            axialRSStickControl.AxialVM.DeadZoneXChanged -= UpdateReadingsRsDeadZoneX;
-            axialRSStickControl.AxialVM.DeadZoneYChanged -= UpdateReadingsRsDeadZoneY;
-
-            profileSettingsVM.LeftStickDriftXAxisChanged -= UpdateReadingsLSDrift;
-            profileSettingsVM.LeftStickDriftYAxisChanged -= UpdateReadingsLSDrift;
-            profileSettingsVM.RightStickDriftXAxisChanged -= UpdateReadingsRSDrift;
-            profileSettingsVM.RightStickDriftYAxisChanged -= UpdateReadingsRSDrift;
+            profileSettingsVM.PropertyChanged -= ProfileSettingsVM_PropertyChanged;
+            axialLSStickControl.AxialVM.PropertyChanged -= AxialStick_PropertyChanged;
+            axialRSStickControl.AxialVM.PropertyChanged -= AxialStick_PropertyChanged;
 
 
             inputTimer.Stop();
@@ -936,10 +951,8 @@ namespace DS4Windows.UI
             conReadingsUserCon.RsDriftX = profileSettingsVM.RightStickDriftXAxis;
             conReadingsUserCon.RsDriftY = profileSettingsVM.RightStickDriftYAxis;
 
-            axialLSStickControl.AxialVM.DeadZoneXChanged += UpdateReadingsLsDeadZoneX;
-            axialLSStickControl.AxialVM.DeadZoneYChanged += UpdateReadingsLsDeadZoneY;
-            axialRSStickControl.AxialVM.DeadZoneXChanged += UpdateReadingsRsDeadZoneX;
-            axialRSStickControl.AxialVM.DeadZoneYChanged += UpdateReadingsRsDeadZoneY;
+            axialLSStickControl.AxialVM.PropertyChanged += AxialStick_PropertyChanged;
+            axialRSStickControl.AxialVM.PropertyChanged += AxialStick_PropertyChanged;
 
             // 初期表示も統一ソートメソッドを使用
             // NOTE: 呼び出しを削除しました。レンダリング完了後に Dispatcher.BeginInvoke で

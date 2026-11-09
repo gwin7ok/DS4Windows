@@ -1,4 +1,4 @@
-# クラス図 / インターフェース関連図
+﻿# クラス図 / インターフェース関連図
 **（Class & Interface Specification）**
 
 本ドキュメントは、巨大ファイルの解体、ステートレスパイプライン、パケット解析の分離、およびUIのMediator化を反映した、DS4Windows-Vader4Pro のインターフェース構成とクラス関連性を定義する。
@@ -1335,3 +1335,5 @@ classDiagram
 %% - IViewModelFactory に CreateSettingsViewModel／CreateControllerListViewModel／CreateCurrentOutDeviceViewModel を追加した。MainWindow は 21 引数（旧 28）。
 %% - ControlService の公開メンバーのうち利用者が 0 件の転送（recordingMacro、MappingService、getDS4State、DeviceOptions、Start／Stop／HotPlug、公開イベントなど）を削除した。
 %% - Phase15-4: UI/Controls を追加: ControllerVisualizerControl（Canvas。Layout・ButtonStyle・ScaleToFit、Buttons）、ControllerLayout（名前・基準の大きさ・Regions）、HitboxRegion（Id・Tag・位置・大きさ・IsVisible）、ControllerLayouts（Xbox360・DualShock4・DualShock4Editor）。
+
+%% - ViewModel の変更通知の共通の土台 `ObservableObject`（`UI/ViewModels`。`SetProperty`・`OnPropertyChanged`）を新設した。`SettingsViewModel`・`ProfileSettingsViewModel`・`AxialStickControlViewModel` は、プロパティごとの「名前＋Changed」のイベントをやめ、`PropertyChanged` に集めた。画面のコードビハインドは `PropertyChanged` の `PropertyName` で振り分ける。

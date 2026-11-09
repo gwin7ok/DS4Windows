@@ -21,7 +21,7 @@ using DS4Windows.Core.Settings;
 
 namespace DS4Windows.UI.ViewModels
 {
-    public class AxialStickControlViewModel
+    public class AxialStickControlViewModel : ObservableObject
     {
         private StickDeadZoneInfo stickInfo;
 
@@ -33,11 +33,9 @@ namespace DS4Windows.UI.ViewModels
                 double temp = Math.Round(stickInfo.xAxisDeadInfo.deadZone / 127d, 2);
                 if (temp == value) return;
                 stickInfo.xAxisDeadInfo.deadZone = (int)Math.Round(value * 127d);
-                DeadZoneXChanged?.Invoke(this, EventArgs.Empty);
+                OnPropertyChanged(nameof(DeadZoneX));
             }
         }
-        public event EventHandler DeadZoneXChanged;
-
         public double DeadZoneY
         {
             get => Math.Round(stickInfo.yAxisDeadInfo.deadZone / 127d, 2);
@@ -46,11 +44,9 @@ namespace DS4Windows.UI.ViewModels
                 double temp = Math.Round(stickInfo.yAxisDeadInfo.deadZone / 127d, 2);
                 if (temp == value) return;
                 stickInfo.yAxisDeadInfo.deadZone = (int)Math.Round(value * 127d);
-                DeadZoneYChanged?.Invoke(this, EventArgs.Empty);
+                OnPropertyChanged(nameof(DeadZoneY));
             }
         }
-        public event EventHandler DeadZoneYChanged;
-
         public double MaxZoneX
         {
             get => stickInfo.xAxisDeadInfo.maxZone / 100.0;

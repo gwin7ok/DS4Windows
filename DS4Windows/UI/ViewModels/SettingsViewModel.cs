@@ -1,4 +1,4 @@
-/*
+﻿/*
 DS4Windows
 Copyright (C) 2023  Travis Nickles
 
@@ -35,7 +35,7 @@ using DS4Windows.Core.Logging;
 
 namespace DS4Windows.UI.ViewModels
 {
-    public class SettingsViewModel : IDisposable
+    public class SettingsViewModel : ObservableObject, IDisposable
     {
         private readonly IAppSettingsService _appSettings;
         private readonly IAppearanceSettingsService _appearanceSettings;
@@ -62,11 +62,9 @@ namespace DS4Windows.UI.ViewModels
             set
             {
                 runAtStartup = value;
-                RunAtStartupChanged?.Invoke(this, EventArgs.Empty);
+                OnPropertyChanged(nameof(RunAtStartup));
             }
         }
-        public event EventHandler RunAtStartupChanged;
-
         private bool runStartProg;
         public bool RunStartProg
         {
@@ -74,11 +72,9 @@ namespace DS4Windows.UI.ViewModels
             set
             {
                 runStartProg = value;
-                RunStartProgChanged?.Invoke(this, EventArgs.Empty);
+                OnPropertyChanged(nameof(RunStartProg));
             }
         }
-        public event EventHandler RunStartProgChanged;
-
         private bool runStartTask;
         public bool RunStartTask
         {
@@ -86,11 +82,9 @@ namespace DS4Windows.UI.ViewModels
             set
             {
                 runStartTask = value;
-                RunStartTaskChanged?.Invoke(this, EventArgs.Empty);
+                OnPropertyChanged(nameof(RunStartTask));
             }
         }
-        public event EventHandler RunStartTaskChanged;
-
         private bool canWriteTask;
         public bool CanWriteTask { get => canWriteTask; }
 
@@ -108,11 +102,9 @@ namespace DS4Windows.UI.ViewModels
             {
                 if (showRunStartPanel == value) return;
                 showRunStartPanel = value;
-                ShowRunStartPanelChanged?.Invoke(this, EventArgs.Empty);
+                OnPropertyChanged(nameof(ShowRunStartPanel));
             }
         }
-
-        public event EventHandler ShowRunStartPanelChanged;
 
         public bool ProfileChangedNotification
         {
@@ -142,11 +134,9 @@ namespace DS4Windows.UI.ViewModels
                 int temp = (int)_appearanceSettings.UseIconChoice;
                 if (temp == value) return;
                 _appearanceSettings.UseIconChoice = (DS4Windows.Core.Settings.TrayIconChoice)value;
-                IconChoiceIndexChanged?.Invoke(this, EventArgs.Empty);
+                OnPropertyChanged(nameof(IconChoiceIndex));
             }
         }
-        public event EventHandler IconChoiceIndexChanged;
-
         public int AppChoiceIndex
         {
             get => (int)_appearanceSettings.UseCurrentTheme;
@@ -155,11 +145,9 @@ namespace DS4Windows.UI.ViewModels
                 int temp = (int)_appearanceSettings.UseCurrentTheme;
                 if (temp == value) return;
                 _appearanceSettings.UseCurrentTheme = (DS4Windows.Core.Settings.AppThemeChoice)value;
-                AppChoiceIndexChanged?.Invoke(this, EventArgs.Empty);
+                OnPropertyChanged(nameof(AppChoiceIndex));
             }
         }
-        public event EventHandler AppChoiceIndexChanged;
-
         // CheckForUpdates: controls whether update checking is enabled.
         // We represent "disabled" with -1. A value of 0 means "check every startup".
         public bool CheckForUpdates
@@ -172,8 +160,6 @@ namespace DS4Windows.UI.ViewModels
                 _appSettings?.Save();
             }
         }
-        public event EventHandler CheckForUpdatesChanged;
-
         public int CheckEvery
         {
             get
@@ -206,8 +192,6 @@ namespace DS4Windows.UI.ViewModels
                 }
             }
         }
-        public event EventHandler CheckEveryChanged;
-
         private int checkEveryUnitIdx = 1;
         public int CheckEveryUnit
         {
@@ -221,12 +205,10 @@ namespace DS4Windows.UI.ViewModels
                 // Persist selection immediately to the backing store so saves include it.
                 _appSettings.CheckEveryUnit = value;
                 checkEveryUnitIdx = value;
-                CheckEveryUnitChanged?.Invoke(this, EventArgs.Empty);
+                OnPropertyChanged(nameof(CheckEveryUnit));
                 _appSettings?.Save();
             }
         }
-        public event EventHandler CheckEveryUnitChanged;
-
         public bool UseOSCServer
         {
             get => _appSettings.UseOscServer;
@@ -234,10 +216,9 @@ namespace DS4Windows.UI.ViewModels
             {
                 if (_appSettings.UseOscServer == value) return;
                 _appSettings.UseOscServer = value;
-                UseOSCServerChanged?.Invoke(this, EventArgs.Empty);
+                OnPropertyChanged(nameof(UseOSCServer));
             }
         }
-        public event EventHandler UseOSCServerChanged;
         public int OscPort { get => _appSettings.OscServerPort; set => _appSettings.OscServerPort = value; }
 
         public bool InterpretingOscMonitoring { get => _appSettings.InterpretingOscMonitoring; set => _appSettings.InterpretingOscMonitoring = value; }
@@ -249,10 +230,9 @@ namespace DS4Windows.UI.ViewModels
             {
                 if (_appSettings.UseOscSender == value) return;
                 _appSettings.UseOscSender = value;
-                UseOSCSenderChanged?.Invoke(this, EventArgs.Empty);
+                OnPropertyChanged(nameof(UseOSCSender));
             }
         }
-        public event EventHandler UseOSCSenderChanged;
         public int OscSendPort { get => _appSettings.OscSenderPort; set => _appSettings.OscSenderPort = value; }
 
         public string OscSenderAddress
@@ -269,11 +249,9 @@ namespace DS4Windows.UI.ViewModels
             {
                 if (_appSettings.UseUdpServer == value) return;
                 _appSettings.UseUdpServer = value;
-                UseUDPServerChanged?.Invoke(this, EventArgs.Empty);
+                OnPropertyChanged(nameof(UseUDPServer));
             }
         }
-        public event EventHandler UseUDPServerChanged;
-
         public string UdpIpAddress
         {
             get => _appSettings.UdpServerListenAddress;
@@ -289,17 +267,13 @@ namespace DS4Windows.UI.ViewModels
                 bool temp = _appSettings.UseUdpServerSmoothing;
                 if (temp == value) return;
                 _appSettings.UseUdpServerSmoothing = value;
-                UseUdpSmoothingChanged?.Invoke(this, EventArgs.Empty);
+                OnPropertyChanged(nameof(UseUdpSmoothing));
             }
         }
-        public event EventHandler UseUdpSmoothingChanged;
-
         public Visibility UdpServerOneEuroPanelVisibility
         {
             get => _appSettings.UseUdpServer && _appSettings.UseUdpServerSmoothing ? Visibility.Visible : Visibility.Collapsed;
         }
-        public event EventHandler UdpServerOneEuroPanelVisibilityChanged;
-
         public double UdpSmoothMinCutoff
         {
             get => _appSettings.UDPServerSmoothingMincutoff;
@@ -308,11 +282,9 @@ namespace DS4Windows.UI.ViewModels
                 double temp = _appSettings.UDPServerSmoothingMincutoff;
                 if (temp == value) return;
                 _appSettings.UDPServerSmoothingMincutoff = value;
-                UdpSmoothMinCutoffChanged?.Invoke(this, EventArgs.Empty);
+                OnPropertyChanged(nameof(UdpSmoothMinCutoff));
             }
         }
-        public event EventHandler UdpSmoothMinCutoffChanged;
-
         public double UdpSmoothBeta
         {
             get => _appSettings.UDPServerSmoothingBeta;
@@ -321,22 +293,18 @@ namespace DS4Windows.UI.ViewModels
                 double temp = _appSettings.UDPServerSmoothingBeta;
                 if (temp == value) return;
                 _appSettings.UDPServerSmoothingBeta = value;
-                UdpSmoothBetaChanged?.Invoke(this, EventArgs.Empty);
+                OnPropertyChanged(nameof(UdpSmoothBeta));
             }
         }
-        public event EventHandler UdpSmoothBetaChanged;
-
         public bool UseCustomSteamFolder
         {
             get => _appSettings.UseCustomSteamFolder;
             set
             {
                 _appSettings.UseCustomSteamFolder = value;
-                UseCustomSteamFolderChanged?.Invoke(this, EventArgs.Empty);
+                OnPropertyChanged(nameof(UseCustomSteamFolder));
             }
         }
-        public event EventHandler UseCustomSteamFolderChanged;
-
         public string CustomSteamFolder
         {
             get => _appSettings.CustomSteamFolder;
@@ -365,11 +333,9 @@ namespace DS4Windows.UI.ViewModels
             set
             {
                 viewEnabled = value;
-                ViewEnabledChanged?.Invoke(this, EventArgs.Empty);
+                OnPropertyChanged(nameof(ViewEnabled));
             }
         }
-        public event EventHandler ViewEnabledChanged;
-
         public string FakeExeName
         {
             get => _appSettings.FakeExeName;
@@ -381,10 +347,9 @@ namespace DS4Windows.UI.ViewModels
                 // Phase6-Step9-3d（K9-2）: 古いファイルの削除（Compare）を、新しいファイルの作成（Changed）より先に行う。
                 // 作成が例外になっても、古いファイルが残らないようにする（以前は作成が先で、例外で削除が実行されなかった）。
                 FakeExeNameChangeCompare?.Invoke(this, temp, value);
-                FakeExeNameChanged?.Invoke(this, EventArgs.Empty);
+                OnPropertyChanged(nameof(FakeExeName));
             }
         }
-        public event EventHandler FakeExeNameChanged;
         public event FakeExeNameChangeHandler FakeExeNameChangeCompare;
         public delegate void FakeExeNameChangeHandler(SettingsViewModel sender,
             string oldvalue, string newvalue);
@@ -400,20 +365,16 @@ namespace DS4Windows.UI.ViewModels
                 return result;
             }
         }
-        public event EventHandler HidHideClientFoundChanged;
-
         public int ProcessPriorityIndex
         {
             get => _appSettings.ProcessPriority;
             set
             {
                 _appSettings.ProcessPriority = value;
-                ProcessPriorityIndexChanged?.Invoke(this, EventArgs.Empty);
+                OnPropertyChanged(nameof(ProcessPriorityIndex));
             }
 
         }
-
-        public event EventHandler ProcessPriorityIndexChanged;
 
         // Phase6-Step9-3: 依存はコンストラクタで必須引数として受け取る（Pure DI。決定1＝S9-A）。
         // Phase6-Step10-1-5（決定D7＝A）: App.logHolder（静的フィールド）の直接参照の置換先。必須引数（null は拒否する）。
@@ -518,13 +479,25 @@ namespace DS4Windows.UI.ViewModels
                 showRunStartPanel = Visibility.Visible;
             }
 
-            RunAtStartupChanged += SettingsViewModel_RunAtStartupChanged;
-            RunStartProgChanged += SettingsViewModel_RunStartProgChanged;
-            RunStartTaskChanged += SettingsViewModel_RunStartTaskChanged;
-            FakeExeNameChanged += SettingsViewModel_FakeExeNameChanged;
+            PropertyChanged += OnOwnPropertyChanged;
             FakeExeNameChangeCompare += SettingsViewModel_FakeExeNameChangeCompare;
-            UseUdpSmoothingChanged += SettingsViewModel_UseUdpSmoothingChanged;
-            UseUDPServerChanged += SettingsViewModel_UseUDPServerChanged;
+        }
+
+        /// <summary>
+        /// 自分の値が変わったときの副作用（スタートアップの登録、偽装 exe の作成、UDP の表示の連動）。
+        /// 値を設定した直後に同期して実行する。
+        /// </summary>
+        private void OnOwnPropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e)
+        {
+            switch (e.PropertyName)
+            {
+                case nameof(RunAtStartup): SettingsViewModel_RunAtStartupChanged(sender, EventArgs.Empty); break;
+                case nameof(RunStartProg): SettingsViewModel_RunStartProgChanged(sender, EventArgs.Empty); break;
+                case nameof(RunStartTask): SettingsViewModel_RunStartTaskChanged(sender, EventArgs.Empty); break;
+                case nameof(FakeExeName): SettingsViewModel_FakeExeNameChanged(sender, EventArgs.Empty); break;
+                case nameof(UseUdpSmoothing): SettingsViewModel_UseUdpSmoothingChanged(sender, EventArgs.Empty); break;
+                case nameof(UseUDPServer): SettingsViewModel_UseUDPServerChanged(sender, EventArgs.Empty); break;
+            }
         }
 
         public void Dispose()
@@ -533,12 +506,12 @@ namespace DS4Windows.UI.ViewModels
 
         private void SettingsViewModel_UseUDPServerChanged(object sender, EventArgs e)
         {
-            UdpServerOneEuroPanelVisibilityChanged?.Invoke(this, EventArgs.Empty);
+            OnPropertyChanged(nameof(UdpServerOneEuroPanelVisibility));
         }
 
         private void SettingsViewModel_UseUdpSmoothingChanged(object sender, EventArgs e)
         {
-            UdpServerOneEuroPanelVisibilityChanged?.Invoke(this, EventArgs.Empty);
+            OnPropertyChanged(nameof(UdpServerOneEuroPanelVisibility));
         }
 
         private void SettingsViewModel_FakeExeNameChangeCompare(SettingsViewModel sender,
@@ -649,9 +622,9 @@ namespace DS4Windows.UI.ViewModels
                 checkEveryUnitIdx = _appSettings.CheckEveryUnit;
             }
 
-            CheckForUpdatesChanged?.Invoke(this, EventArgs.Empty);
-            CheckEveryChanged?.Invoke(this, EventArgs.Empty);
-            CheckEveryUnitChanged?.Invoke(this, EventArgs.Empty);
+            OnPropertyChanged(nameof(CheckForUpdates));
+            OnPropertyChanged(nameof(CheckEvery));
+            OnPropertyChanged(nameof(CheckEveryUnit));
         }
 
         public void CreateFakeExe(string filename)
@@ -691,7 +664,7 @@ namespace DS4Windows.UI.ViewModels
 
         public void DriverCheckRefresh()
         {
-            HidHideClientFoundChanged?.Invoke(this, EventArgs.Empty);
+            OnPropertyChanged(nameof(HidHideClientFound));
         }
 
         public int LogMaxArchiveFiles
@@ -706,7 +679,7 @@ namespace DS4Windows.UI.ViewModels
                     _logSettingsApplier.UpdateNLogConfig(value);
                     _appSettings?.Save();
                     _logSettingsApplier.RestoreArchiveSetting(); // Restore after all updates
-                    LogMaxArchiveFilesChanged?.Invoke(this, EventArgs.Empty);
+                    OnPropertyChanged(nameof(LogMaxArchiveFiles));
                 }
             }
         }
@@ -722,12 +695,10 @@ namespace DS4Windows.UI.ViewModels
                     _logSettingsApplier.UpdateLogSettings();
                     _appSettings?.Save();
                     _logSettingsApplier.RestoreArchiveSetting(); // Restore after all updates
-                    LogMinLevelChanged?.Invoke(this, EventArgs.Empty);
+                    OnPropertyChanged(nameof(LogMinLevel));
                 }
             }
         }
 
-        public event EventHandler LogMaxArchiveFilesChanged;
-        public event EventHandler LogMinLevelChanged;
     }
 }
