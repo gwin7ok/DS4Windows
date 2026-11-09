@@ -155,7 +155,9 @@
         </StackPanel>
         <DockPanel x:Name="mapBindingPanel"
                    DockPanel.Dock="Top">
+            <!-- ホバーの名前の表示が上の端のボタン（L2・R2）で図の外へはみ出すため、あとから描かれる下のタブより前に置く -->
             <DockPanel x:Name="bottomPanel"
+                       Panel.ZIndex="1"
                        DockPanel.Dock="Bottom"
                        Margin="0,4,0,0">
                 <StackPanel x:Name="modePanel"
@@ -220,9 +222,11 @@
                                    Source="{Binding Source={StaticResource resourcePaths}, Path=Xbox360HighlightPNG}"
                                    Canvas.Left="622"
                                    Canvas.Top="11"
+                                   Panel.ZIndex="2"
                                    IsEnabled="False"/>
                             <Label x:Name="highlightLb"
                                    Content="A"
+                                   Panel.ZIndex="2"
                                    Background="{DynamicResource KeyHighlight.Background}"
                                    Foreground="{DynamicResource KeyHighlight.Foreground}"
                                    IsEnabled="False"
