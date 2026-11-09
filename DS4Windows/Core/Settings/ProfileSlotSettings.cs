@@ -15,6 +15,7 @@ namespace DS4Windows.Core.Settings
             Touchpad = new TouchpadSlotSettings(settings, slot);
             Triggers = new TriggerSlotSettings(settings, slot);
             Sticks = new StickSlotSettings(settings, slot);
+            Lightbar = new LightbarSlotSettings(settings, slot);
         }
 
         public int Slot { get; }
@@ -26,5 +27,7 @@ namespace DS4Windows.Core.Settings
         public TriggerSlotSettings Triggers { get; }
 
         public StickSlotSettings Sticks { get; }
+
+        public LightbarSlotSettings Lightbar { get; }
     }
 }

@@ -76,7 +76,7 @@ namespace DS4WindowsTests
         [Fact]
         public void ProfileSettingsViewModel_MainColorChange_RenotifiesTheDerivedDisplayProperties()
         {
-            var vm = ProfileSettingsViewModelTestFactory.Create(0);
+            var vm = ProfileSettingsViewModelTestFactory.Create(0).Lightbar;
             var names = new List<string>();
             vm.PropertyChanged += (s, e) => names.Add(e.PropertyName);
 
@@ -84,9 +84,9 @@ namespace DS4WindowsTests
 
             foreach (string expected in new[]
             {
-                nameof(ProfileSettingsViewModel.MainColorString), nameof(ProfileSettingsViewModel.MainColorR),
-                nameof(ProfileSettingsViewModel.MainColorG), nameof(ProfileSettingsViewModel.MainColorB),
-                nameof(ProfileSettingsViewModel.LightbarBrush),
+                nameof(LightbarSettingsViewModel.MainColorString), nameof(LightbarSettingsViewModel.MainColorR),
+                nameof(LightbarSettingsViewModel.MainColorG), nameof(LightbarSettingsViewModel.MainColorB),
+                nameof(LightbarSettingsViewModel.LightbarBrush),
             })
             {
                 Assert.Contains(expected, names);

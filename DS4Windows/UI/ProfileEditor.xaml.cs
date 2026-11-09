@@ -354,7 +354,6 @@ namespace DS4Windows.UI
             System.Threading.Thread.CurrentThread.CurrentUICulture = ci;
             System.Threading.Thread.CurrentThread.CurrentCulture = ci;
 
-            emptyColorGB.Visibility = Visibility.Collapsed;
             // Phase6-Step9-4: ファクトリが解決できない場合のレガシーフォールバック（new ProfileSettingsViewModel）は削除した
             // （ViewModel の依存を必須引数にしたため、ファクトリ以外に組み立てる経路が無い）
             var vmFactory = viewModelFactory ?? throw new ArgumentNullException(nameof(viewModelFactory));
@@ -893,7 +892,7 @@ namespace DS4Windows.UI
             string currentProfileActions = currentActionsList != null ? string.Join("/", currentActionsList) : string.Empty;
             specialActionsVM.LoadActions(currentProfile == null, currentProfileActions);
 
-            ColorByBatteryPerCheck();
+            lightbarPanel.RefreshColorByBatteryLayout(profileSettingsVM.Lightbar);
 
             // Phase6-Step7b: Controller Readings は、実機（なければコントローラー0）の入力に対して、
             // 作業スロット（編集中の設定）で計算した結果を表示する
@@ -918,7 +917,7 @@ namespace DS4Windows.UI
             gyroTab.DataContext = profileSettingsVM.Gyro;
             mappingListBox.DataContext = mappingListVM;
             specialActionsTab.DataContext = specialActionsVM;
-            lightbarRect.DataContext = profileSettingsVM;
+            lightbarRect.DataContext = profileSettingsVM.Lightbar;
             // 読み込んだプロファイルのタッチパッド出力モードに合わせて、Button Activation Mode の表示位置を揃える
             // （コンストラクタでの配置は読み込み前の値で行われ、TouchpadOutputIndex の setter を通らない変更では更新されない）
             TouchpadButtonControlDisplaySetup();
@@ -1004,7 +1003,7 @@ namespace DS4Windows.UI
             gyroTab.DataContext = profileSettingsVM.Gyro;
             mappingListBox.DataContext = mappingListVM;
             specialActionsTab.DataContext = specialActionsVM;
-            lightbarRect.DataContext = profileSettingsVM;
+            lightbarRect.DataContext = profileSettingsVM.Lightbar;
             touchButtonUC.RegisterDataContext();
             // プリセット適用でタッチパッド出力モードが変わっても、Button Activation Mode の表示位置が追従するようにする
             TouchpadButtonControlDisplaySetup();
@@ -1267,52 +1266,6 @@ namespace DS4Windows.UI
             Closed?.Invoke(this, EventArgs.Empty);
         }
 
-        private void ColorByBatteryPerCk_Click(object sender, RoutedEventArgs e)
-        {
-            ColorByBatteryPerCheck();
-        }
-
-        private void ColorByBatteryPerCheck()
-        {
-            bool state = profileSettingsVM.ColorBatteryPercent;
-            if (state)
-            {
-                colorGB.Header = Translations.Strings.Full;
-                emptyColorGB.Visibility = Visibility.Visible;
-            }
-            else
-            {
-                colorGB.Header = Translations.Strings.Color;
-                emptyColorGB.Visibility = Visibility.Hidden;
-            }
-        }
-
-        private void FlashColorBtn_Click(object sender, RoutedEventArgs e)
-        {
-            ColorPickerWindow dialog = new ColorPickerWindow();
-            dialog.Owner = Application.Current.MainWindow;
-            Color tempcolor = profileSettingsVM.FlashColorMedia;
-            dialog.colorPicker.SelectedColor = tempcolor;
-            profileSettingsVM.StartForcedColor(tempcolor);
-            dialog.ColorChanged += (sender2, color) => { profileSettingsVM.UpdateForcedColor(color); };
-            dialog.ShowDialog();
-            profileSettingsVM.EndForcedColor();
-            profileSettingsVM.UpdateFlashColor(dialog.colorPicker.SelectedColor.GetValueOrDefault());
-        }
-
-        private void LowColorBtn_Click(object sender, RoutedEventArgs e)
-        {
-            ColorPickerWindow dialog = new ColorPickerWindow();
-            dialog.Owner = Application.Current.MainWindow;
-            Color tempcolor = profileSettingsVM.LowColorMedia;
-            dialog.colorPicker.SelectedColor = tempcolor;
-            profileSettingsVM.StartForcedColor(tempcolor);
-            dialog.ColorChanged += (sender2, color) => { profileSettingsVM.UpdateForcedColor(color); };
-            dialog.ShowDialog();
-            profileSettingsVM.EndForcedColor();
-            profileSettingsVM.UpdateLowColor(dialog.colorPicker.SelectedColor.GetValueOrDefault());
-        }
-
         private enum RumbleType
         {
             Light,
@@ -1438,41 +1391,6 @@ namespace DS4Windows.UI
             {
                 profileSettingsVM.UpdateLaunchProgram(dialog.FileName);
             }
-        }
-
-        private void RainbowBtn_Click(object sender, RoutedEventArgs e)
-        {
-            bool active = profileSettingsVM.Rainbow != 0.0;
-            if (active)
-            {
-                profileSettingsVM.Rainbow = 0.0;
-                colorByBatteryPerCk.Content = Properties.Resources.ColorByBattery;
-                colorGB.IsEnabled = true;
-                emptyColorGB.IsEnabled = true;
-            }
-            else
-            {
-                profileSettingsVM.Rainbow = 5.0;
-                colorByBatteryPerCk.Content = Properties.Resources.DimByBattery;
-                colorGB.IsEnabled = false;
-                emptyColorGB.IsEnabled = false;
-            }
-        }
-
-        private void ChargingColorBtn_Click(object sender, RoutedEventArgs e)
-        {
-            ColorPickerWindow dialog = new ColorPickerWindow();
-            dialog.Owner = Application.Current.MainWindow;
-            Color tempcolor = profileSettingsVM.ChargingColorMedia;
-            dialog.colorPicker.SelectedColor = tempcolor;
-            profileSettingsVM.StartForcedColor(tempcolor);
-            dialog.ColorChanged += (sender2, color) =>
-            {
-                profileSettingsVM.UpdateForcedColor(color);
-            };
-            dialog.ShowDialog();
-            profileSettingsVM.EndForcedColor();
-            profileSettingsVM.UpdateChargingColor(dialog.colorPicker.SelectedColor.GetValueOrDefault());
         }
 
         private void OutConTypeCombo_SelectionChanged(object sender, SelectionChangedEventArgs e)
@@ -1704,16 +1622,16 @@ namespace DS4Windows.UI
         {
             ColorPickerWindow dialog = new ColorPickerWindow();
             dialog.Owner = Application.Current.MainWindow;
-            Color tempcolor = profileSettingsVM.MainColor;
+            Color tempcolor = profileSettingsVM.Lightbar.MainColor;
             dialog.colorPicker.SelectedColor = tempcolor;
-            profileSettingsVM.StartForcedColor(tempcolor);
+            profileSettingsVM.Lightbar.StartForcedColor(tempcolor);
             dialog.ColorChanged += (sender2, color) =>
             {
-                profileSettingsVM.UpdateForcedColor(color);
+                profileSettingsVM.Lightbar.UpdateForcedColor(color);
             };
             dialog.ShowDialog();
-            profileSettingsVM.EndForcedColor();
-            profileSettingsVM.UpdateMainColor(dialog.colorPicker.SelectedColor.GetValueOrDefault());
+            profileSettingsVM.Lightbar.EndForcedColor();
+            profileSettingsVM.Lightbar.UpdateMainColor(dialog.colorPicker.SelectedColor.GetValueOrDefault());
         }
 
         private void InputDS4(object sender, System.Timers.ElapsedEventArgs e)

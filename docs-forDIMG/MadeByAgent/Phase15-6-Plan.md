@@ -1,7 +1,7 @@
 # Phase15-Step6 計画書: 設定サービスの分割（R-10）と ProfileSettingsViewModel／ProfileEditor の領域分割（G-1・F-4）
 
 作成日: 2026-11-09
-状態: **承認済み（2026-11-09）。15-6a〜15-6d 完了**
+状態: **承認済み（2026-11-09）。15-6a〜15-6e 完了**
 上位: `Phase15-Plan.md` §5 の 15-6、P8＝C（全領域を切り出す）、P9＝B（実機確認は Phase15 の最後に 1 回）
 
 ## 1. 目的
@@ -34,7 +34,7 @@
 | 15-6b | タッチパッド | 中 | ← **完了**（2026-11-09。`TouchpadSlotSettings`［Core/Settings。`ProfileSlotSettings.Touchpad`］、`TouchpadSettingsViewModel`［UI/ViewModels。Binding 名は元のまま。`TouchDisInvertString` と反転トリガーのメニューの更新・反映を含む］、`TouchpadSettingsPanel`［UI。タッチパッドのタブの中身。「ボタンの有効化方式」の部品の置き場所の選択、スワイプの割り当ての表示、反転トリガーのメニューを持ち、スワイプの入口は `SwipeControlClicked` イベントで編集画面へ知らせる］。`ProfileSettingsViewModel` は `Touchpad` を公開。出力モードの変更は `Touchpad.PropertyChanged` で受ける。テスト `TouchpadSettingsViewModelTests`）
 | 15-6c | トリガー | 中 | ← **完了**（2026-11-09。トリガーは独立したタブではなく、右ペインの Axis Config タブの「L2 & R2」の GroupBox。`TriggerSlotSettings`［Core/Settings。`ProfileSlotSettings.Triggers`］、`TriggerSettingsViewModel`［UI/ViewModels。Binding 名は元のまま］、`TriggerSettingsPanel`［UI。`DataContext="{Binding Triggers}"` で Axis Config の中に置く。カスタム曲線の編集は `CustomCurveEditorRequested` イベント、Full Pull の割り当て表示は `AssignFullPullAssociation`］。L2/R2 のデッドゾーン変更の試験表示への反映は `Triggers.PropertyChanged` で受ける。**パネルの XAML 根には lex:… の 3 属性を付けない**［付けると、WPFLocalizeExtension が既存の全リスナーへ通知し、別スレッドで作られた古い部品の Dispatcher を待って、テストの全体実行が止まる。実行時は編集画面の根から継承される］。パネルのテストは共有の STA スレッド `WpfPanelTestRunner` で実行）
 | 15-6d | スティック（軸別デッドゾーン、AxialStick を含む） | 大 | ← **完了**（2026-11-09。Axis Config タブの LS・RS の 2 つの GroupBox を 1 つのパネルにした。`StickSlotSettings`［Core/Settings。`ProfileSlotSettings.Sticks`。ドリフト補正の 4 項目を含む］、`StickSettingsViewModel`［UI/ViewModels。LS*／RS*／ドリフト。Binding 名は元のまま］、`StickSettingsPanel`［UI。`DataContext="{Binding Sticks}"`。`AxialLeft`／`AxialRight` で軸別デッドゾーンの部品を編集画面へ公開。曲線の編集と校正はイベント、Outer Bind の割り当て表示は `AssignOuterBindAssociation`］。デッドゾーン・ドリフトの試験表示への反映と、出力モードの変更によるプロファイルの印の更新は `Sticks.PropertyChanged` で受ける。`StickCalibrationWindow` のドリフト書き込みは `Sticks` 経由。テスト `StickSettingsViewModelTests`）
-| 15-6e | ライトバー | 中 |
+| 15-6e | ライトバー | 中 | ← **完了**（2026-11-09。`LightbarSlotSettings`［Core/Settings。`ProfileSlotSettings.Lightbar`。`Info` で設定の中身を公開］、`LightbarSettingsViewModel`［UI/ViewModels。色・点滅・充電・虹色、ライトバーの表示ブラシ、色選択中の実機への強制表示（`StartForcedColor` ほか。実機＝targetDevice に対して行う）。虹色の画像の読み込みと、色の成分の変更に伴う再通知もここ］、`LightbarSettingsPanel`［UI。タブの中身。色の選択画面の開閉と強制表示、虹色の切り替え、「バッテリー残量で色を変える」の枠の表示を持つ］。左ペインの図のライトバーの四角（`lightbarRect`）と、図の上のライトバーのボタンは、`Lightbar` を使う。テスト `LightbarSettingsViewModelTests`）
 | 15-6f | 出力（出力デバイス、振動、マウス） | 中 |
 | 15-6g | 残り（一般・その他）と `ProfileEditor` の残りの整理（`Reload`、SA 一覧の見出し・並べ替え、振動テスト） | 中 |
 | 15-6Z | 配列プロパティ・古いメソッドの削除、ラチェットの更新、設計図・規約の更新 | 中 |

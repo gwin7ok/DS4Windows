@@ -56,6 +56,9 @@ namespace DS4Windows.UI.ViewModels
 
         /// <summary>「LS」「RS」（スティック）の ViewModel。</summary>
         public StickSettingsViewModel Sticks { get; }
+
+        /// <summary>「ライトバー」タブの ViewModel。</summary>
+        public LightbarSettingsViewModel Lightbar { get; }
         private readonly IProfileSettingsService profileSettings;
         private readonly IProfileLoadTarget loadTarget;   // Phase13-Step6 6-e: 旧 ControlService controlService（ジャイロ系 setter と空プロファイルの読込に渡すだけだった）
         private readonly IEnvironmentService environmentService;
@@ -72,312 +75,6 @@ namespace DS4Windows.UI.ViewModels
         // （プロファイル一覧から開いた場合）。詳細は docs-forDIMG/MadeByAgent/Phase6-Step7b-Plan.md §2.1
         private readonly int targetDevice;
         public int TargetDevice { get => targetDevice; }
-
-        private ImageBrush lightbarImgBrush = new ImageBrush();
-        private SolidColorBrush lightbarColBrush = new SolidColorBrush();
-
-        public int LightbarModeIndex
-        {
-            get
-            {
-                int index = 0;
-                switch (profileSettings.LightbarSettingsInfo[device].Mode)
-                {
-                    case LightbarMode.DS4Win:
-                        index = 0; break;
-                    case LightbarMode.Passthru:
-                        index = 1; break;
-                    default: break;
-                }
-
-                return index;
-            }
-            set
-            {
-                LightbarMode temp = LightbarMode.DS4Win;
-                switch (value)
-                {
-                    case 0:
-                        temp = LightbarMode.DS4Win; break;
-                    case 1:
-                        temp = LightbarMode.Passthru; break;
-                    default: break;
-                }
-
-                profileSettings.LightbarSettingsInfo[device].Mode = temp;
-                OnPropertyChanged(nameof(LightbarModeIndex));
-            }
-        }
-        public System.Windows.Media.Brush LightbarBrush
-        {
-            get
-            {
-                System.Windows.Media.Brush tempBrush;
-                ref DS4Color color = ref profileSettings.LightbarSettingsInfo[device].ds4winSettings.m_Led;
-                if (!RainbowExists)
-                {
-                    lightbarColBrush.Color = new System.Windows.Media.Color()
-                    {
-                        A = 255,
-                        R = color.red,
-                        G = color.green,
-                        B = color.blue
-                    };
-                    tempBrush = lightbarColBrush as System.Windows.Media.Brush;
-                }
-                else
-                {
-                    tempBrush = lightbarImgBrush as System.Windows.Media.Brush;
-                }
-
-                return tempBrush;
-            }
-        }
-        public System.Windows.Media.Color MainColor
-        {
-            get
-            {
-                ref DS4Color color = ref profileSettings.LightbarSettingsInfo[device].ds4winSettings.m_Led; //ref Global.MainColor[device];
-                return new System.Windows.Media.Color()
-                {
-                    A = 255,
-                    R = color.red,
-                    G = color.green,
-                    B = color.blue
-                };
-            }
-        }
-        public string MainColorString
-        {
-            get
-            {
-                ref DS4Color color = ref profileSettings.LightbarSettingsInfo[device].ds4winSettings.m_Led; //ref Global.MainColor[device];
-                return $"#FF{color.red.ToString("X2")}{color.green.ToString("X2")}{color.blue.ToString("X2")}";
-                /*return new System.Windows.Media.Color()
-                {
-                    A = 255,
-                    R = color.red,
-                    G = color.green,
-                    B = color.blue
-                }.ToString();
-                */
-            }
-        }
-        public int MainColorR
-        {
-            get => profileSettings.LightbarSettingsInfo[device].ds4winSettings.m_Led.red;
-            set
-            {
-                profileSettings.LightbarSettingsInfo[device].ds4winSettings.m_Led.red = (byte)value;
-                OnPropertyChanged(nameof(MainColorR));
-            }
-        }
-        public string MainColorRString
-        {
-            get => $"#{profileSettings.LightbarSettingsInfo[device].ds4winSettings.m_Led.red.ToString("X2")}FF0000";
-        }
-        public int MainColorG
-        {
-            get => profileSettings.LightbarSettingsInfo[device].ds4winSettings.m_Led.green;
-            set
-            {
-                profileSettings.LightbarSettingsInfo[device].ds4winSettings.m_Led.green = (byte)value;
-                OnPropertyChanged(nameof(MainColorG));
-            }
-        }
-        public string MainColorGString
-        {
-            get => $"#{profileSettings.LightbarSettingsInfo[device].ds4winSettings.m_Led.green.ToString("X2")}00FF00";
-        }
-        public int MainColorB
-        {
-            get => profileSettings.LightbarSettingsInfo[device].ds4winSettings.m_Led.blue;
-            set
-            {
-                profileSettings.LightbarSettingsInfo[device].ds4winSettings.m_Led.blue = (byte)value;
-                OnPropertyChanged(nameof(MainColorB));
-            }
-        }
-        public string MainColorBString
-        {
-            get => $"#{profileSettings.LightbarSettingsInfo[device].ds4winSettings.m_Led.blue.ToString("X2")}0000FF";
-        }
-        public string LowColor
-        {
-            get
-            {
-                ref DS4Color color = ref profileSettings.LightbarSettingsInfo[device].ds4winSettings.m_LowLed; //ref Global.LowColor[device];
-                return $"#FF{color.red.ToString("X2")}{color.green.ToString("X2")}{color.blue.ToString("X2")}";
-            }
-        }
-        public int LowColorR
-        {
-            get => profileSettings.LightbarSettingsInfo[device].ds4winSettings.m_LowLed.red;
-            set
-            {
-                profileSettings.LightbarSettingsInfo[device].ds4winSettings.m_LowLed.red = (byte)value;
-                OnPropertyChanged(nameof(LowColorR));
-                OnPropertyChanged(nameof(LowColorRString));
-            }
-        }
-        public string LowColorRString
-        {
-            get => $"#{profileSettings.LightbarSettingsInfo[device].ds4winSettings.m_LowLed.red.ToString("X2")}FF0000";
-        }
-        public int LowColorG
-        {
-            get => profileSettings.LightbarSettingsInfo[device].ds4winSettings.m_LowLed.green;
-            set
-            {
-                profileSettings.LightbarSettingsInfo[device].ds4winSettings.m_LowLed.green = (byte)value;
-                OnPropertyChanged(nameof(LowColorG));
-                OnPropertyChanged(nameof(LowColorGString));
-            }
-        }
-        public string LowColorGString
-        {
-            get => $"#{profileSettings.LightbarSettingsInfo[device].ds4winSettings.m_LowLed.green.ToString("X2")}00FF00";
-        }
-        public int LowColorB
-        {
-            get => profileSettings.LightbarSettingsInfo[device].ds4winSettings.m_LowLed.blue;
-            set
-            {
-                profileSettings.LightbarSettingsInfo[device].ds4winSettings.m_LowLed.blue = (byte)value;
-                OnPropertyChanged(nameof(LowColorB));
-                OnPropertyChanged(nameof(LowColorBString));
-            }
-        }
-        public string LowColorBString
-        {
-            get => $"#{profileSettings.LightbarSettingsInfo[device].ds4winSettings.m_LowLed.blue.ToString("X2")}0000FF";
-        }
-        public System.Windows.Media.Color LowColorMedia
-        {
-            get
-            {
-                ref DS4Color color = ref profileSettings.LightbarSettingsInfo[device].ds4winSettings.m_LowLed;
-                return new System.Windows.Media.Color()
-                {
-                    A = 255,
-                    R = color.red,
-                    B = color.blue,
-                    G = color.green
-                };
-            }
-        }
-
-        public int FlashTypeIndex
-        {
-            get => profileSettings.LightbarSettingsInfo[device].ds4winSettings.flashType; //Global.FlashType[device];
-            set => profileSettings.LightbarSettingsInfo[device].ds4winSettings.flashType = (byte)value;
-        }
-
-        public int FlashAt
-        {
-            get => profileSettings.LightbarSettingsInfo[device].ds4winSettings.flashAt; //Global.FlashAt[device];
-            set => profileSettings.LightbarSettingsInfo[device].ds4winSettings.flashAt = value;
-        }
-
-        public string FlashColor
-        {
-            get
-            {
-                ref DS4Color color = ref profileSettings.LightbarSettingsInfo[device].ds4winSettings.m_FlashLed;
-                if (color.red == 0 && color.green == 0 && color.blue == 0)
-                {
-                    color = ref profileSettings.LightbarSettingsInfo[device].ds4winSettings.m_Led;
-                }
-
-                return $"#FF{color.red.ToString("X2")}{color.green.ToString("X2")}{color.blue.ToString("X2")}";
-            }
-        }
-        public System.Windows.Media.Color FlashColorMedia
-        {
-            get
-            {
-                ref DS4Color color = ref profileSettings.LightbarSettingsInfo[device].ds4winSettings.m_FlashLed;
-                if (color.red == 0 && color.green == 0 && color.blue == 0)
-                {
-                    color = ref profileSettings.LightbarSettingsInfo[device].ds4winSettings.m_Led;
-                }
-
-                return new System.Windows.Media.Color()
-                {
-                    A = 255,
-                    R = color.red,
-                    B = color.blue,
-                    G = color.green
-                };
-            }
-        }
-
-        public int ChargingType
-        {
-            get => profileSettings.LightbarSettingsInfo[device].ds4winSettings.chargingType;
-            set
-            {
-                profileSettings.LightbarSettingsInfo[device].ds4winSettings.chargingType = value;
-                OnPropertyChanged(nameof(ChargingColorVisible));
-            }
-        }
-
-        public bool ColorBatteryPercent
-        {
-            get => profileSettings.LightbarSettingsInfo[device].ds4winSettings.ledAsBattery;
-            set
-            {
-                profileSettings.LightbarSettingsInfo[device].ds4winSettings.ledAsBattery = value;
-            }
-        }
-
-        public string ChargingColor
-        {
-            get
-            {
-                ref DS4Color color = ref profileSettings.LightbarSettingsInfo[device].ds4winSettings.m_ChargingLed;
-                return $"#FF{color.red.ToString("X2")}{color.green.ToString("X2")}{color.blue.ToString("X2")}";
-            }
-        }
-        public System.Windows.Media.Color ChargingColorMedia
-        {
-            get
-            {
-                ref DS4Color color = ref profileSettings.LightbarSettingsInfo[device].ds4winSettings.m_ChargingLed;
-                return new System.Windows.Media.Color()
-                {
-                    A = 255,
-                    R = color.red,
-                    B = color.blue,
-                    G = color.green
-                };
-            }
-        }
-
-        public Visibility ChargingColorVisible
-        {
-            get => profileSettings.LightbarSettingsInfo[device].ds4winSettings.chargingType == 3 ? Visibility.Visible : Visibility.Hidden;
-        }
-        public double Rainbow
-        {
-            get => profileSettings.LightbarSettingsInfo[device].ds4winSettings.rainbow;
-            set
-            {
-                profileSettings.LightbarSettingsInfo[device].ds4winSettings.rainbow = value;
-                OnPropertyChanged(nameof(Rainbow));
-                OnPropertyChanged(nameof(RainbowExists));
-            }
-        }
-        public bool RainbowExists
-        {
-            get => profileSettings.LightbarSettingsInfo[device].ds4winSettings.rainbow != 0.0;
-        }
-
-        public double MaxSatRainbow
-        {
-            get => profileSettings.LightbarSettingsInfo[device].ds4winSettings.maxRainbowSat * 100.0;
-            set => profileSettings.LightbarSettingsInfo[device].ds4winSettings.maxRainbowSat = value / 100.0;
-        }
 
         // Phase11 K-W6-10: DebouncingMs（デバウンス時間）のプロパティとイベントは機能廃止で削除した
 
@@ -927,9 +624,6 @@ namespace DS4Windows.UI.ViewModels
         // Program.rootHub が null の環境（テスト等）では null だったため、null を許容する（Phase13-Step6 6-e: 旧 ControlService controlService。
         // 生成側の ViewModelFactory が IProfileLoadTarget を直接渡す）。
         // targetDevice は、編集スロット（device）と実機を分けて渡す引数（Phase6-Step7b）。変更しない。
-        // Phase14c-Step4（R-05 の前半）: ライトバーの強制表示の状態（旧: DS4LightBar の静的な配列）
-        private readonly DS4Windows.Core.Model.LightbarOverrides _lightbar;
-
         public ProfileSettingsViewModel(DS4Windows.Core.Model.LightbarOverrides lightbar, int device, IProfileSettingsService profileSettings,
             IProfileLoadTarget loadTarget,
             IOutputSlotService outputSlotService,
@@ -939,7 +633,7 @@ namespace DS4Windows.UI.ViewModels
             IPathService pathService,
             int targetDevice = -1)
         {
-            _lightbar = lightbar ?? throw new System.ArgumentNullException(nameof(lightbar));
+            if (lightbar == null) throw new System.ArgumentNullException(nameof(lightbar));
             this.device = device;
             this.targetDevice = targetDevice;
             this.profileSettings = profileSettings ?? throw new ArgumentNullException(nameof(profileSettings));
@@ -961,21 +655,8 @@ namespace DS4Windows.UI.ViewModels
             outputMouseSpeed = CalculateOutputMouseSpeed(ButtonMouseSensitivity);
             mouseOffsetSpeed = RawButtonMouseOffset * outputMouseSpeed;
 
-            /*ImageSourceConverter sourceConverter = new ImageSourceConverter();
-            ImageSource temp = sourceConverter.
-                ConvertFromString($"{ResourcePaths.AssemblyResourcePrefix}component/Resources/rainbowCCrop.png") as ImageSource;
-            lightbarImgBrush.ImageSource = temp.Clone();
-            */
-            Uri tempResourceUri = new Uri($"{ResourcePaths.AssemblyResourcePrefix}component/Resources/rainbowCCrop.png");
-            BitmapImage tempBitmap = new BitmapImage();
-            tempBitmap.BeginInit();
-            // Needed for some systems not using the System default color profile
-            tempBitmap.CreateOptions = BitmapCreateOptions.IgnoreColorProfile;
-            tempBitmap.UriSource = tempResourceUri;
-            tempBitmap.EndInit();
-            lightbarImgBrush.ImageSource = tempBitmap.Clone();
-
             presetMenuUtil = new PresetMenuHelper(device, this.profileSettings);
+            Lightbar = new LightbarSettingsViewModel(this.profileSettings.ForSlot(device).Lightbar, lightbar, environmentService, targetDevice);
             Sticks = new StickSettingsViewModel(this.profileSettings.ForSlot(device).Sticks);
             // スティックの出力モードを変えたら、保存用のプロファイルの印を更新する
             Sticks.PropertyChanged += (s, e) =>
@@ -1019,27 +700,6 @@ namespace DS4Windows.UI.ViewModels
         {
             switch (e.PropertyName)
             {
-                case nameof(MainColor):
-                    ProfileSettingsViewModel_MainColorChanged(sender, EventArgs.Empty);
-                    break;
-                case nameof(MainColorR):
-                    OnPropertyChanged(nameof(MainColorRString));
-                    OnPropertyChanged(nameof(MainColorString));
-                    OnPropertyChanged(nameof(LightbarBrush));
-                    break;
-                case nameof(MainColorG):
-                    OnPropertyChanged(nameof(MainColorGString));
-                    OnPropertyChanged(nameof(MainColorString));
-                    OnPropertyChanged(nameof(LightbarBrush));
-                    break;
-                case nameof(MainColorB):
-                    OnPropertyChanged(nameof(MainColorBString));
-                    OnPropertyChanged(nameof(MainColorString));
-                    OnPropertyChanged(nameof(LightbarBrush));
-                    break;
-                case nameof(Rainbow):
-                    OnPropertyChanged(nameof(LightbarBrush));
-                    break;
                 case nameof(ButtonMouseSensitivity):
                     OutputMouseSpeed = CalculateOutputMouseSpeed(ButtonMouseSensitivity);
                     MouseOffsetSpeed = RawButtonMouseOffset * OutputMouseSpeed;
@@ -1056,91 +716,12 @@ namespace DS4Windows.UI.ViewModels
             MouseOffsetSpeed = RawButtonMouseOffset * OutputMouseSpeed;
         }
 
-        private void ProfileSettingsViewModel_MainColorChanged(object sender, EventArgs e)
-        {
-            OnPropertyChanged(nameof(MainColorString));
-            OnPropertyChanged(nameof(MainColorR));
-            OnPropertyChanged(nameof(MainColorG));
-            OnPropertyChanged(nameof(MainColorB));
-            OnPropertyChanged(nameof(LightbarBrush));
-        }
-
-        public void UpdateFlashColor(System.Windows.Media.Color color)
-        {
-            profileSettings.LightbarSettingsInfo[device].ds4winSettings.m_FlashLed = new DS4Color() { red = color.R, green = color.G, blue = color.B };
-            OnPropertyChanged(nameof(FlashColor));
-        }
-
-        public void UpdateMainColor(System.Windows.Media.Color color)
-        {
-            profileSettings.LightbarSettingsInfo[device].ds4winSettings.m_Led = new DS4Color() { red = color.R, green = color.G, blue = color.B };
-            OnPropertyChanged(nameof(MainColor));
-        }
-
-        public void UpdateLowColor(System.Windows.Media.Color color)
-        {
-            ref DS4Color lowColor = ref profileSettings.LightbarSettingsInfo[device].ds4winSettings.m_LowLed;
-            lowColor.red = color.R;
-            lowColor.green = color.G;
-            lowColor.blue = color.B;
-
-            OnPropertyChanged(nameof(LowColor));
-            OnPropertyChanged(nameof(LowColorR));
-            OnPropertyChanged(nameof(LowColorG));
-            OnPropertyChanged(nameof(LowColorB));
-            OnPropertyChanged(nameof(LowColorRString));
-            OnPropertyChanged(nameof(LowColorGString));
-            OnPropertyChanged(nameof(LowColorBString));
-        }
-
         /// <summary>
         /// 実機（targetDevice）が指定され、かつ有効なコントローラースロットの範囲内であるか。
         /// Phase6-Step7b: ライトバーのプレビュー等、実機に触れる処理はこの判定を使う（編集スロット Device ではない）。
         /// </summary>
         private bool HasTargetDevice =>
             targetDevice >= 0 && targetDevice < environmentService.ControllerSlotLimit;
-
-        // Phase6-Step7b: ライトバー強制色のプレビューは、編集スロット（Device）ではなく実機（targetDevice）に対して行う
-        public void UpdateForcedColor(System.Windows.Media.Color color)
-        {
-            if (HasTargetDevice)
-            {
-                DS4Color dcolor = new DS4Color() { red = color.R, green = color.G, blue = color.B };
-                _lightbar.forcedColor[targetDevice] = dcolor;
-                _lightbar.forcedFlash[targetDevice] = 0;
-                _lightbar.forcelight[targetDevice] = true;
-            }
-        }
-
-        public void StartForcedColor(System.Windows.Media.Color color)
-        {
-            if (HasTargetDevice)
-            {
-                DS4Color dcolor = new DS4Color() { red = color.R, green = color.G, blue = color.B };
-                _lightbar.forcedColor[targetDevice] = dcolor;
-                _lightbar.forcedFlash[targetDevice] = 0;
-                _lightbar.forcelight[targetDevice] = true;
-            }
-        }
-
-        public void EndForcedColor()
-        {
-            if (HasTargetDevice)
-            {
-                _lightbar.forcedColor[targetDevice] = new DS4Color(0, 0, 0);
-                _lightbar.forcedFlash[targetDevice] = 0;
-                _lightbar.forcelight[targetDevice] = false;
-            }
-        }
-
-        public void UpdateChargingColor(System.Windows.Media.Color color)
-        {
-            ref DS4Color chargeColor = ref profileSettings.LightbarSettingsInfo[device].ds4winSettings.m_ChargingLed;
-            chargeColor.red = color.R;
-            chargeColor.green = color.G;
-            chargeColor.blue = color.B;
-            OnPropertyChanged(nameof(ChargingColor));
-        }
 
         public void UpdateLaunchProgram(string path)
         {

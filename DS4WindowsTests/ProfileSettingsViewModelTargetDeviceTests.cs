@@ -129,9 +129,9 @@ namespace DS4WindowsTests
             Assert.Equal(0, vm.FuncDevNum);
 
             // 範囲外の添字で DS4LightBar の配列に触れない（例外にならず、何も変えない）
-            vm.StartForcedColor(Colors.Red);
-            vm.UpdateForcedColor(Colors.Blue);
-            vm.EndForcedColor();
+            vm.Lightbar.StartForcedColor(Colors.Red);
+            vm.Lightbar.UpdateForcedColor(Colors.Blue);
+            vm.Lightbar.EndForcedColor();
             Assert.All(TestLightbar.State.forcelight, b => Assert.False(b));
         }
 
@@ -144,12 +144,12 @@ namespace DS4WindowsTests
             // 編集スロットに 8 を渡しても、プレビューは targetDevice に対して行われる
             var vm = CreateViewModel(DS4Windows.Core.Settings.ControllerLimits.TestProfileIndex, TargetSlot);
 
-            vm.StartForcedColor(Color.FromRgb(10, 20, 30));
+            vm.Lightbar.StartForcedColor(Color.FromRgb(10, 20, 30));
             Assert.True(TestLightbar.State.forcelight[TargetSlot]);
             Assert.Equal(new DS4Color(10, 20, 30), TestLightbar.State.forcedColor[TargetSlot]);
             Assert.Equal((byte)0, TestLightbar.State.forcedFlash[TargetSlot]);
 
-            vm.UpdateForcedColor(Color.FromRgb(40, 50, 60));
+            vm.Lightbar.UpdateForcedColor(Color.FromRgb(40, 50, 60));
             Assert.True(TestLightbar.State.forcelight[TargetSlot]);
             Assert.Equal(new DS4Color(40, 50, 60), TestLightbar.State.forcedColor[TargetSlot]);
 
@@ -160,7 +160,7 @@ namespace DS4WindowsTests
                 Assert.Equal(new DS4Color(0, 0, 0), TestLightbar.State.forcedColor[i]);
             }
 
-            vm.EndForcedColor();
+            vm.Lightbar.EndForcedColor();
             Assert.False(TestLightbar.State.forcelight[TargetSlot]);
             Assert.Equal(new DS4Color(0, 0, 0), TestLightbar.State.forcedColor[TargetSlot]);
         }
@@ -173,12 +173,12 @@ namespace DS4WindowsTests
 
             var vm = CreateViewModel(DS4Windows.Core.Settings.ControllerLimits.TestProfileIndex, -1);
 
-            vm.StartForcedColor(Colors.Red);
-            vm.UpdateForcedColor(Colors.Blue);
+            vm.Lightbar.StartForcedColor(Colors.Red);
+            vm.Lightbar.UpdateForcedColor(Colors.Blue);
             Assert.All(TestLightbar.State.forcelight, b => Assert.False(b));
             Assert.All(TestLightbar.State.forcedColor, c => Assert.Equal(new DS4Color(0, 0, 0), c));
 
-            vm.EndForcedColor();
+            vm.Lightbar.EndForcedColor();
             Assert.All(TestLightbar.State.forcelight, b => Assert.False(b));
         }
     }
