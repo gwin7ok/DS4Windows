@@ -182,8 +182,7 @@ namespace DS4Windows.UI
             profileListHolder.Refresh();
             profilesListBox.ItemsSource = profileListHolder.ProfileListCol;
 
-            StartStopBtn.Content = lifecycle.Running ? Translations.Strings.StopText :
-                Translations.Strings.StartText;
+            UpdateStartStopText();
 
             conLvViewModel = viewModelFactory.CreateControllerListViewModel(profileListHolder);
             controllerLV.DataContext = conLvViewModel;
@@ -463,6 +462,7 @@ namespace DS4Windows.UI
         }
         private void SetupEvents()
         {
+            WPFLocalizeExtension.Engine.LocalizeDictionary.Instance.PropertyChanged += OnLocalizationCultureChanged;
             lifecycle.ServiceStarted += ControlServiceStarted;
             lifecycle.RunningChanged += ControlServiceChanged;
             lifecycle.PreServiceStop += PrepareForServiceStop;
@@ -952,20 +952,26 @@ namespace DS4Windows.UI
             }));
         }
 
+        /// <summary>
+        /// 開始・停止ボタンの文字を、サービスの状態に合わせる。XAML の <c>lex:Loc</c> では状態を表せず、
+        /// 言語の切り替えのたびに「開始」へ戻されるため、文字は常にここで決める（XAML では文字を持たない）。
+        /// </summary>
+        private void UpdateStartStopText()
+        {
+            StartStopBtn.Content = lifecycle.Running ? Translations.Strings.StopText : Translations.Strings.StartText;
+        }
+
+        private void OnLocalizationCultureChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e)
+        {
+            Dispatcher.BeginInvoke((Action)UpdateStartStopText);
+        }
+
         private void ControlServiceChanged(object sender, EventArgs e)
         {
             //Tester service = sender as Tester;
             Dispatcher.BeginInvoke((Action)(() =>
             {
-                if (lifecycle.Running)
-                {
-                    StartStopBtn.Content = Translations.Strings.StopText;
-                }
-                else
-                {
-                    StartStopBtn.Content = Translations.Strings.StartText;
-                }
-
+                UpdateStartStopText();
                 StartStopBtn.IsEnabled = true;
                 slotManControl.IsEnabled = lifecycle.Running;
             }));
