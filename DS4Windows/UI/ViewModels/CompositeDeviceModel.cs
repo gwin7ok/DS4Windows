@@ -47,6 +47,10 @@ namespace DS4Windows.UI.ViewModels
         internal bool suppressSelectedIndexChanged = false; // ★統合抑制フラグ（Global_SelectedProfileChangedからアクセス可能）
         private int devIndex;
         private readonly IProfileSettingsService profileSettingsService;
+        // 領域の窓口は呼ぶたびに作られるため、ライトバーの窓口だけ一度作って使い回す（色の取得は画面の更新で頻繁に呼ばれる）
+        private DS4Windows.Core.Settings.LightbarSlotSettings lightbarWindow;
+        private DS4Windows.Core.Settings.LightbarSlotSettings LightbarWindow =>
+            lightbarWindow ??= profileSettingsService.ForSlot(devIndex).Lightbar;
         private readonly IProfileRepository profileRepo;
 
         public event PropertyChangedEventHandler PropertyChanged;
@@ -61,13 +65,13 @@ namespace DS4Windows.UI.ViewModels
             get
             {
                 DS4Color color;
-                if (profileSettingsService.LightbarSettingsInfo[devIndex].ds4winSettings.useCustomLed)
+                if (LightbarWindow.Info.ds4winSettings.useCustomLed)
                 {
-                    color = profileSettingsService.LightbarSettingsInfo[devIndex].ds4winSettings.m_CustomLed;
+                    color = LightbarWindow.Info.ds4winSettings.m_CustomLed;
                 }
                 else
                 {
-                    color = profileSettingsService.LightbarSettingsInfo[devIndex].ds4winSettings.m_Led;
+                    color = LightbarWindow.Info.ds4winSettings.m_Led;
                 }
                 return $"#FF{color.red.ToString("X2")}{color.green.ToString("X2")}{color.blue.ToString("X2")}";
             }
@@ -80,7 +84,7 @@ namespace DS4Windows.UI.ViewModels
             get
             {
                 DS4Color color;
-                color = profileSettingsService.LightbarSettingsInfo[devIndex].ds4winSettings.m_CustomLed;
+                color = LightbarWindow.Info.ds4winSettings.m_CustomLed;
                 return new Color() { R = color.red, G = color.green, B = color.blue, A = 255 };
             }
         }
@@ -385,7 +389,7 @@ namespace DS4Windows.UI.ViewModels
                 HookEvents(true);
             }
 
-            useCustomColor = profileSettingsService.LightbarSettingsInfo[devIndex].ds4winSettings.useCustomLed;
+            useCustomColor = LightbarWindow.Info.ds4winSettings.useCustomLed;
         }
 
         public void HookEvents(bool state)
@@ -450,7 +454,7 @@ namespace DS4Windows.UI.ViewModels
         {
             useCustomColor = false;
             RefreshLightContext();
-            profileSettingsService.LightbarSettingsInfo[devIndex].ds4winSettings.useCustomLed = false;
+            LightbarWindow.Info.ds4winSettings.useCustomLed = false;
             LightColorChanged?.Invoke(this, EventArgs.Empty);
         }
 
@@ -458,7 +462,7 @@ namespace DS4Windows.UI.ViewModels
         {
             useCustomColor = true;
             RefreshLightContext();
-            profileSettingsService.LightbarSettingsInfo[devIndex].ds4winSettings.useCustomLed = true;
+            LightbarWindow.Info.ds4winSettings.useCustomLed = true;
             LightColorChanged?.Invoke(this, EventArgs.Empty);
             RequestColorPicker?.Invoke(this);
         }
@@ -471,7 +475,7 @@ namespace DS4Windows.UI.ViewModels
 
         public void UpdateCustomLightColor(Color color)
         {
-            profileSettingsService.LightbarSettingsInfo[devIndex].ds4winSettings.m_CustomLed = new DS4Color() { red = color.R, green = color.G, blue = color.B };
+            LightbarWindow.Info.ds4winSettings.m_CustomLed = new DS4Color() { red = color.R, green = color.G, blue = color.B };
             LightColorChanged?.Invoke(this, EventArgs.Empty);
         }
 

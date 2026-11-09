@@ -178,8 +178,8 @@ namespace DS4Windows.UI.ViewModels
             // 実機なし（-1）の場合は何もしない
             if (HasTargetDevice)
             {
-                oldTouchpadMode = this.profileSettingsService.TouchOutMode[targetDevice];
-                this.profileSettingsService.TouchOutMode[targetDevice] = TouchpadOutMode.Passthru;
+                oldTouchpadMode = this.profileSettingsService.ForSlot(targetDevice).Touchpad.OutputMode;
+                this.profileSettingsService.ForSlot(targetDevice).Touchpad.OutputMode = TouchpadOutMode.Passthru;
                 touchpadModeOverridden = true;
             }
         }
@@ -193,7 +193,7 @@ namespace DS4Windows.UI.ViewModels
         }
 
         /// <summary>編集中のプロファイルの Emulated Controller。ボタン系のステップの表記（Xbox／DS4）を決める。</summary>
-        public OutContType MacroOutType => profileSettingsService.OutContType[deviceNum];
+        public OutContType MacroOutType => profileSettingsService.ForSlot(deviceNum).Output.OutContType;
 
         public void LoadMacro()
         {
@@ -465,7 +465,7 @@ namespace DS4Windows.UI.ViewModels
             // Save と Cancel の両方から呼ばれ得るため、2 回目以降は何もしない
             if (touchpadModeOverridden)
             {
-                profileSettingsService.TouchOutMode[targetDevice] = oldTouchpadMode;
+                profileSettingsService.ForSlot(targetDevice).Touchpad.OutputMode = oldTouchpadMode;
                 touchpadModeOverridden = false;
             }
             oldTouchpadMode = TouchpadOutMode.None;

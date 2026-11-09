@@ -168,7 +168,7 @@ namespace DS4Windows.UI.ViewModels.SpecialActions
                         string btnName;
                         if (editorDeviceNum >= 0 && editorDeviceNum < profileSettingsService.OutContType.Length)
                         {
-                            btnName = X360ControlTables.getX360ControlString((X360Controls)lastActionBtn, profileSettingsService.OutContType[editorDeviceNum]);
+                            btnName = X360ControlTables.getX360ControlString((X360Controls)lastActionBtn, profileSettingsService.ForSlot(editorDeviceNum).Output.OutContType);
                         }
                         else
                         {
@@ -211,7 +211,7 @@ namespace DS4Windows.UI.ViewModels.SpecialActions
                 if (defaultOutputInput == DS4Controls.None) return null;
                 X360Controls output = profileSettingsService.GetDefaultButtonMapping()[(int)defaultOutputInput];
                 if (editorDeviceNum >= 0 && editorDeviceNum < profileSettingsService.OutContType.Length)
-                    return X360ControlTables.getX360ControlString(output, profileSettingsService.OutContType[editorDeviceNum]);
+                    return X360ControlTables.getX360ControlString(output, profileSettingsService.ForSlot(editorDeviceNum).Output.OutContType);
                 return X360ControlTables.getX360ControlString(output);
             }
             catch
@@ -230,7 +230,7 @@ namespace DS4Windows.UI.ViewModels.SpecialActions
                     string buttonName;
                     if (editorDeviceNum >= 0 && editorDeviceNum < profileSettingsService.OutContType.Length)
                     {
-                        buttonName = X360ControlTables.getX360ControlString((X360Controls)lastActionBtn, profileSettingsService.OutContType[editorDeviceNum]);
+                        buttonName = X360ControlTables.getX360ControlString((X360Controls)lastActionBtn, profileSettingsService.ForSlot(editorDeviceNum).Output.OutContType);
                     }
                     else
                     {

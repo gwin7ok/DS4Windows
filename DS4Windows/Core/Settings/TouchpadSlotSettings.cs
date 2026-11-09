@@ -23,6 +23,12 @@ namespace DS4Windows.Core.Settings
             set => _settings.TouchOutMode[_slot] = value;
         }
 
+        public TouchButtonActivationMode ButtonMode
+        {
+            get => _settings.TouchpadButtonMode[_slot];
+            set => _settings.TouchpadButtonMode[_slot] = value;
+        }
+
         public byte TouchSensitivity
         {
             get => _settings.TouchSensitivity[_slot];

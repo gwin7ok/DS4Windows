@@ -47,8 +47,8 @@ namespace DS4Windows.UI.ViewModels
 
         public TouchButtonActivationMode CurrentMode
         {
-            get => profileSettingsService.TouchpadButtonMode[deviceIndex];
-            set => profileSettingsService.TouchpadButtonMode[deviceIndex] = value;
+            get => profileSettingsService.ForSlot(deviceIndex).Touchpad.ButtonMode;
+            set => profileSettingsService.ForSlot(deviceIndex).Touchpad.ButtonMode = value;
         }
 
         public TouchButtonUserControlViewModel(int deviceIndex, DS4Windows.Core.Abstractions.IProfileSettingsService profileSettingsService)

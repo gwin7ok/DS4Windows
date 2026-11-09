@@ -7,7 +7,7 @@ namespace DS4WindowsTests
     /// プロファイル編集画面が、設定サービスのスロット番号の配列（<c>IProfileSettingsService.XXX[slot]</c>）を直接触らず、
     /// 領域の窓口（<c>ForSlot(slot).Gyro</c> など）だけを通すことの守り。
     /// 領域のサブ ViewModel は設定サービス全体の契約を知らず、窓口だけを受け取る。
-    /// 編集画面の外（<c>CompositeDeviceModel</c> など）の配列の直接参照は、この検査の対象外（今後の整理）。
+    /// 編集画面の外で設定を読み書きする画面・ViewModel（<c>CompositeDeviceModel</c> など）も同じ。
     /// </summary>
     public class SettingsSlotWindowUsageTests
     {
@@ -17,7 +17,12 @@ namespace DS4WindowsTests
         [Theory]
         [InlineData("DS4Windows/UI/ProfileEditor.xaml.cs")]
         [InlineData("DS4Windows/UI/ViewModels/ProfileSettingsViewModel.cs")]
-        public void TheEditorAndItsViewModel_DoNotIndexTheSlotArraysDirectly(string path)
+        [InlineData("DS4Windows/UI/BindingWindow.xaml.cs")]
+        [InlineData("DS4Windows/UI/ViewModels/CompositeDeviceModel.cs")]
+        [InlineData("DS4Windows/UI/ViewModels/RecordBoxViewModel.cs")]
+        [InlineData("DS4Windows/UI/ViewModels/TouchButtonUserControlViewModel.cs")]
+        [InlineData("DS4Windows/UI/ViewModels/SpecialActions/PressKeyViewModel.cs")]
+        public void TheScreensAndViewModels_DoNotIndexTheSlotArraysDirectly(string path)
         {
             string code = SourceText.ReadCode(path);
             if (code == null) return;

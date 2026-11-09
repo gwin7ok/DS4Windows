@@ -861,7 +861,7 @@ namespace DS4Windows.UI
                     if (!bindingVM.RumbleActive)
                     {
                         bindingVM.RumbleActive = true;
-                        if (profileSettingsService.InverseRumbleMotors[bindingVM.DeviceNum])
+                        if (profileSettingsService.ForSlot(bindingVM.DeviceNum).Output.InverseRumbleMotors)
                             slotCommands.SetRumble(slot, (byte)Math.Min(255, bindingVM.ActionBinding.HeavyRumble),
                                 (byte)Math.Min(255, bindingVM.ActionBinding.LightRumble));
                         else
