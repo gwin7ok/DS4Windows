@@ -508,14 +508,7 @@ namespace DS4Windows.UI
 
         private void PopulateGyroActionsTriggersMenu()
         {
-            profileSettingsVM.CreateGyroTriggerMenuItems(gyroControlsTrigBtn.ContextMenu,
-                GyroControlsMenuItem_Click);
-
-            profileSettingsVM.CreateGyroTriggerMenuItems(gyroMouseTrigBtn.ContextMenu,
-                GyroMouseTrigMenuItem_Click);
-
-            profileSettingsVM.CreateGyroTriggerMenuItems(gyroMouseStickTrigBtn.ContextMenu,
-                GyroMouseStickTrigMenuItem_Click);
+            gyroPanel.CreateTriggerMenus(profileSettingsVM.Gyro);
         }
 
         private void SetupEvents()
@@ -525,6 +518,8 @@ namespace DS4Windows.UI
             Closed += ProfileEditor_Closed;
 
             profileSettingsVM.PropertyChanged += ProfileSettingsVM_PropertyChanged;
+            gyroPanel.TiltControlClicked += GyroPanel_TiltControlClicked;
+            gyroPanel.CalibrationRequested += GyroCalibration_Click;
 
         }
 
@@ -568,6 +563,11 @@ namespace DS4Windows.UI
             }
         }
 
+        private void GyroPanel_TiltControlClicked(object sender, DS4Controls control)
+        {
+            ShowControlAssignmentEditor(mappingListVM.ControlMap[control], updateHighlight: true);
+        }
+
         private void UnregisterEvents()
         {
             outConTypeCombo.SelectionChanged -= OutConTypeCombo_SelectionChanged;
@@ -575,6 +575,8 @@ namespace DS4Windows.UI
             Closed -= ProfileEditor_Closed;
 
             profileSettingsVM.PropertyChanged -= ProfileSettingsVM_PropertyChanged;
+            gyroPanel.TiltControlClicked -= GyroPanel_TiltControlClicked;
+            gyroPanel.CalibrationRequested -= GyroCalibration_Click;
             axialLSStickControl.AxialVM.PropertyChanged -= AxialStick_PropertyChanged;
             axialRSStickControl.AxialVM.PropertyChanged -= AxialStick_PropertyChanged;
 
@@ -696,10 +698,7 @@ namespace DS4Windows.UI
 
         private void AssignTiltAssociation()
         {
-            gyroZNLb.DataContext = mappingListVM.ControlMap[DS4Windows.Core.Model.DS4Controls.GyroZNeg];
-            gyroZPLb.DataContext = mappingListVM.ControlMap[DS4Windows.Core.Model.DS4Controls.GyroZPos];
-            gyroXNLb.DataContext = mappingListVM.ControlMap[DS4Windows.Core.Model.DS4Controls.GyroXNeg];
-            gyroXLb.DataContext = mappingListVM.ControlMap[DS4Windows.Core.Model.DS4Controls.GyroXPos];
+            gyroPanel.AssignTiltAssociation(mappingListVM);
         }
 
         private void AssignSwipeAssociation()
@@ -906,12 +905,10 @@ namespace DS4Windows.UI
             // 出力種別（Xbox 360／DS4）でボタン名表記を明示的に揃える（outConTypeCombo の SelectionChanged の発生有無に依存しない）
             mappingListVM.UpdateMappingDevType(profileSettingsVM.ContType);
             profileSettingsVM.PopulateTouchDisInver(touchDisInvertBtn.ContextMenu);
-            profileSettingsVM.PopulateGyroMouseTrig(gyroMouseTrigBtn.ContextMenu);
-            profileSettingsVM.PopulateGyroMouseStickTrig(gyroMouseStickTrigBtn.ContextMenu);
-            profileSettingsVM.PopulateGyroControlsTrig(gyroControlsTrigBtn.ContextMenu);
+            gyroPanel.PopulateTriggerMenus(profileSettingsVM.Gyro);
             profileSettingsTabCon.DataContext = profileSettingsVM;
             touchpadTab.DataContext = profileSettingsVM;
-            gyroTab.DataContext = profileSettingsVM;
+            gyroTab.DataContext = profileSettingsVM.Gyro;
             mappingListBox.DataContext = mappingListVM;
             specialActionsTab.DataContext = specialActionsVM;
             lightbarRect.DataContext = profileSettingsVM;
@@ -994,12 +991,10 @@ namespace DS4Windows.UI
             // Phase6-Step6-1: プリセット適用後の出力種別でボタン名表記を明示的に揃える（Reload と同じ理由）
             mappingListVM.UpdateMappingDevType(profileSettingsVM.ContType);
             profileSettingsVM.PopulateTouchDisInver(touchDisInvertBtn.ContextMenu);
-            profileSettingsVM.PopulateGyroMouseTrig(gyroMouseTrigBtn.ContextMenu);
-            profileSettingsVM.PopulateGyroMouseStickTrig(gyroMouseStickTrigBtn.ContextMenu);
-            profileSettingsVM.PopulateGyroControlsTrig(gyroControlsTrigBtn.ContextMenu);
+            gyroPanel.PopulateTriggerMenus(profileSettingsVM.Gyro);
             profileSettingsTabCon.DataContext = profileSettingsVM;
             touchpadTab.DataContext = profileSettingsVM;
-            gyroTab.DataContext = profileSettingsVM;
+            gyroTab.DataContext = profileSettingsVM.Gyro;
             mappingListBox.DataContext = mappingListVM;
             specialActionsTab.DataContext = specialActionsVM;
             lightbarRect.DataContext = profileSettingsVM;
@@ -1487,34 +1482,6 @@ namespace DS4Windows.UI
             profileSettingsVM.UpdateTouchDisInvert(touchDisInvertBtn.ContextMenu);
         }
 
-        private void GyroMouseTrigMenuItem_Click(object sender, RoutedEventArgs e)
-        {
-            ContextMenu menu = gyroMouseTrigBtn.ContextMenu;
-            int itemCount = menu.Items.Count;
-            MenuItem alwaysOnItem = menu.Items[itemCount - 1] as MenuItem;
-
-            profileSettingsVM.UpdateGyroMouseTrig(menu, e.OriginalSource == alwaysOnItem);
-        }
-
-        private void GyroMouseStickTrigMenuItem_Click(object sender, RoutedEventArgs e)
-        {
-            ContextMenu menu = gyroMouseStickTrigBtn.ContextMenu;
-            int itemCount = menu.Items.Count;
-            MenuItem alwaysOnItem = menu.Items[itemCount - 1] as MenuItem;
-
-            profileSettingsVM.UpdateGyroMouseStickTrig(menu, e.OriginalSource == alwaysOnItem);
-        }
-
-        private void GyroMouseTrigBtn_Click(object sender, RoutedEventArgs e)
-        {
-            gyroMouseTrigBtn.ContextMenu.IsOpen = true;
-        }
-
-        private void GyroMouseStickTrigBtn_Click(object sender, RoutedEventArgs e)
-        {
-            gyroMouseStickTrigBtn.ContextMenu.IsOpen = true;
-        }
-
         private void OutConTypeCombo_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             if (outConTypeCombo == null)
@@ -1999,14 +1966,6 @@ namespace DS4Windows.UI
             }
         }
 
-        private void TiltControlsButton_Click(object sender, RoutedEventArgs e)
-        {
-            Button btn = sender as Button;
-            DS4Controls control = (DS4Controls)Convert.ToInt32(btn.Tag);
-            MappedControl mpControl = mappingListVM.ControlMap[control];
-            ShowControlAssignmentEditor(mpControl, updateHighlight: true);
-        }
-
         // Special Actions の GridViewColumn に DataTemplate を割り当て、
         // ContentControl.Loaded ハンドラでヘッダー内部の TextBlock を初期化します。
         // すべてのカラムの Loaded が発火したらソートを実行します。
@@ -2179,7 +2138,7 @@ namespace DS4Windows.UI
             }
         }
 
-        private void GyroCalibration_Click(object sender, RoutedEventArgs e)
+        private void GyroCalibration_Click(object sender, EventArgs e)
         {
             // Phase6-Step7b: 校正するのは実機（FuncDevNum＝targetDevice、実機なしならコントローラー0）。
             // 編集スロットのフィールド deviceNum と区別するため、ローカル変数名を分けた
@@ -2189,20 +2148,6 @@ namespace DS4Windows.UI
                 // 未接続のスロットでは何もしない（以前は null の機器を触って NullReferenceException でアプリが終了していた）
                 slotCommands.ResetGyroCalibration(calibrationDevice);
             }
-        }
-
-        private void GyroControlsTrigBtn_Click(object sender, RoutedEventArgs e)
-        {
-            gyroControlsTrigBtn.ContextMenu.IsOpen = true;
-        }
-
-        private void GyroControlsMenuItem_Click(object sender, RoutedEventArgs e)
-        {
-            ContextMenu menu = gyroControlsTrigBtn.ContextMenu;
-            int itemCount = menu.Items.Count;
-            MenuItem alwaysOnItem = menu.Items[itemCount - 1] as MenuItem;
-
-            profileSettingsVM.UpdateGyroControlsTrig(menu, e.OriginalSource == alwaysOnItem);
         }
 
         private void CalibrateStick_OnClick(object sender, RoutedEventArgs e)

@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Globalization;
 using DS4Windows.Core.Model;
@@ -14,6 +14,9 @@ namespace DS4Windows.Core.Abstractions
 
     public interface IProfileSettingsService
     {
+
+        /// <summary>スロットの設定の入口。領域ごとの窓口を返す（利用者は、配列を直接使わず、こちらへ移していく）。</summary>
+        ProfileSlotSettings ForSlot(int slot);
 
         bool[] TouchpadActiveArray { get; set; }
         // TODO(Phase8): 呼び出し元が 0 件のまま維持している。BackingStore の状態の窓口として作られたが、読み手が BackingStore を直接使っているため未接続。

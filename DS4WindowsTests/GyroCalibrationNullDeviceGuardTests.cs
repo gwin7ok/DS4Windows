@@ -49,7 +49,7 @@ namespace DS4WindowsTests
 
             int start = text.IndexOf("private void GyroCalibration_Click");
             Assert.True(start >= 0);
-            int end = text.IndexOf("private void GyroControlsTrigBtn_Click", start);
+            int end = text.IndexOf("private void ", start + 10);
             string method = text.Substring(start, end - start);
 
             Assert.Contains("slotCommands.ResetGyroCalibration(", method);

@@ -17,7 +17,7 @@ namespace DS4WindowsTests
         {
             "HoverConBtn_Click",
             "ShowControlBindingWindow",
-            "TiltControlsButton_Click",
+            "GyroPanel_TiltControlClicked",   // ジャイロのタブ（GyroSettingsPanel）の傾きのボタンのイベントを受ける
             "SwipeControlsButton_Click",
         };
         // Phase10-Step3b W2: Full Pull・Outer Bind の入口は、Controls タブの一覧の項目（LS／RS Outer、L2／R2 Full Pull）になった。

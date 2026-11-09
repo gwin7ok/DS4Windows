@@ -1,0 +1,21 @@
+﻿using DS4Windows.Core.Abstractions;
+
+namespace DS4Windows.Core.Settings
+{
+    /// <summary>
+    /// 1 つのスロットの設定の入口。領域（ジャイロなど）ごとの小さな窓口を返す。
+    /// 全機能の契約（<see cref="IProfileSettingsService"/>）の代わりに、利用者が必要な領域だけを受け取れるようにする。
+    /// </summary>
+    public class ProfileSlotSettings
+    {
+        public ProfileSlotSettings(IProfileSettingsService settings, int slot)
+        {
+            Slot = slot;
+            Gyro = new GyroSlotSettings(settings, slot);
+        }
+
+        public int Slot { get; }
+
+        public GyroSlotSettings Gyro { get; }
+    }
+}

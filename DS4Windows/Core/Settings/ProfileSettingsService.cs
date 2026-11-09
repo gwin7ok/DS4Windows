@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Globalization;
 using DS4Windows.Core.Abstractions;
@@ -537,5 +537,7 @@ namespace DS4Windows.Core.Settings
 
         public RemovedShiftSettings GetRemovedShiftSettings(int deviceIndex) => SafeConfig?.removedShiftSettings[deviceIndex];
         public RemovedGyroSwipeSettings GetRemovedGyroSwipeSettings(int deviceIndex) => SafeConfig?.removedGyroSwipeSettings[deviceIndex];
+
+        public ProfileSlotSettings ForSlot(int slot) => new ProfileSlotSettings(this, slot);
     }
 }

@@ -93,10 +93,10 @@ namespace DS4Windows.UI
             hoverIndexes[rslConBtn] = 31;
             hoverIndexes[rsrConBtn] = 32;
 
-            hoverIndexes[gyroZNBtn] = 33;
-            hoverIndexes[gyroZPBtn] = 34;
-            hoverIndexes[gyroXNBtn] = 35;
-            hoverIndexes[gyroXPBtn] = 36;
+            hoverIndexes[gyroPanel.TiltZNegButton] = 33;
+            hoverIndexes[gyroPanel.TiltZPosButton] = 34;
+            hoverIndexes[gyroPanel.TiltXNegButton] = 35;
+            hoverIndexes[gyroPanel.TiltXPosButton] = 36;
 
             hoverIndexes[swipeUpBtn] = 37;
             hoverIndexes[swipeDownBtn] = 38;

@@ -105,9 +105,10 @@ namespace DS4WindowsTests
             Assert.Equal(2, Regex.Matches(code, @"profileSettingsTabCon\.DataContext = null;").Count);
 
             // Phase10-Step3b W1: 左ペインへ移した 2 つのタブにも、同じ場所で、同じ設定・解除を行う（古い参照を残さない）
-            foreach (string tab in new[] { "touchpadTab", "gyroTab" })
+            // ジャイロのタブの DataContext は、サブ ViewModel（profileSettingsVM.Gyro）
+            foreach (var (tab, value) in new[] { ("touchpadTab", "profileSettingsVM"), ("gyroTab", @"profileSettingsVM\.Gyro") })
             {
-                Assert.Equal(2, Regex.Matches(code, tab + @"\.DataContext = profileSettingsVM;").Count);
+                Assert.Equal(2, Regex.Matches(code, tab + @"\.DataContext = " + value + ";").Count);
                 Assert.Equal(2, Regex.Matches(code, tab + @"\.DataContext = null;").Count);
             }
         }
@@ -119,7 +120,10 @@ namespace DS4WindowsTests
             if (xaml == null) return;
 
             XElement touchpad = XamlTestHelper.FindByName(xaml, "touchpadTab");
-            XElement gyro = XamlTestHelper.FindByName(xaml, "gyroTab");
+            // ジャイロのタブの中身は、GyroSettingsPanel（UserControl）にある。そのリソースを自分で持つ
+            XDocument gyroXaml = LoadXaml("DS4Windows/UI/GyroSettingsPanel.xaml");
+            if (gyroXaml == null) return;
+            XElement gyro = gyroXaml.Root;
 
             foreach (XElement tab in new[] { touchpad, gyro })
             {
@@ -281,11 +285,13 @@ namespace DS4WindowsTests
             // 残る入口の Click ハンドラーは、すべて、左ペインのタブにある（右ペインに、入口がない）
             string[] right = XamlTestHelper.AllAttributeValues(RightPane(xaml)).ToArray();
             string[] left = XamlTestHelper.AllAttributeValues(LeftPane(xaml)).ToArray();
-            foreach (string handler in new[] { "TiltControlsButton_Click", "SwipeControlsButton_Click" })
-            {
-                Assert.DoesNotContain(right, v => v == handler);
-                Assert.Contains(left, v => v == handler);
-            }
+            // 傾き（ジャイロのタブ）の入口は GyroSettingsPanel にある（編集画面の左ペインのタブの中身）
+            XDocument gyroXaml = LoadXaml("DS4Windows/UI/GyroSettingsPanel.xaml");
+            string[] gyroValues = gyroXaml == null ? left : XamlTestHelper.AllAttributeValues(gyroXaml.Root).ToArray();
+            Assert.DoesNotContain(right, v => v == "TiltControlsButton_Click");
+            Assert.Contains(gyroValues, v => v == "TiltControlsButton_Click");
+            Assert.DoesNotContain(right, v => v == "SwipeControlsButton_Click");
+            Assert.Contains(left, v => v == "SwipeControlsButton_Click");
 
             // 図のボタン（配置表から生成）のクリックは、XAML ではなくコードで結び付ける。入口は左ペインの図のコントロールだけ
             Assert.Matches(@"button\.Click \+= HoverConBtn_Click;", code);
