@@ -246,7 +246,6 @@ namespace DS4Windows.UI
         private NonFormTimer inputTimer;
 
         private TouchButtonUserControl touchButtonUC;
-        private ContentControl activeTouchButtonDisplayControl;
 
         // （重複していた空のコンストラクタ宣言を削除）
         // 統一ソート処理
@@ -382,7 +381,7 @@ namespace DS4Windows.UI
             PopulateGyroActionsTriggersMenu();
 
             AssignTiltAssociation();
-            AssignSwipeAssociation();
+            touchpadPanel.AssignSwipeAssociation(mappingListVM);
             AssignTriggerFullPullAssociation();
             AssignStickOuterBindAssociation();
 
@@ -520,6 +519,8 @@ namespace DS4Windows.UI
             profileSettingsVM.PropertyChanged += ProfileSettingsVM_PropertyChanged;
             gyroPanel.TiltControlClicked += GyroPanel_TiltControlClicked;
             gyroPanel.CalibrationRequested += GyroCalibration_Click;
+            profileSettingsVM.Touchpad.PropertyChanged += TouchpadVM_PropertyChanged;
+            touchpadPanel.SwipeControlClicked += TouchpadPanel_SwipeControlClicked;
 
         }
 
@@ -536,7 +537,6 @@ namespace DS4Windows.UI
                 case nameof(ProfileSettingsViewModel.R2DeadZone): UpdateReadingsR2DeadZone(sender, EventArgs.Empty); break;
                 case nameof(ProfileSettingsViewModel.SXDeadZone): UpdateReadingsSXDeadZone(sender, EventArgs.Empty); break;
                 case nameof(ProfileSettingsViewModel.SZDeadZone): UpdateReadingsSZDeadZone(sender, EventArgs.Empty); break;
-                case nameof(ProfileSettingsViewModel.TouchpadOutputIndex): TouchpadOutputDisplayChange(sender, EventArgs.Empty); break;
                 case nameof(ProfileSettingsViewModel.LeftStickDriftXAxis):
                 case nameof(ProfileSettingsViewModel.LeftStickDriftYAxis):
                     UpdateReadingsLSDrift(sender, EventArgs.Empty); break;
@@ -563,6 +563,17 @@ namespace DS4Windows.UI
             }
         }
 
+        private void TouchpadVM_PropertyChanged(object sender, PropertyChangedEventArgs e)
+        {
+            // 出力モードを変えたら、「ボタンの有効化方式」の部品を、そのモードのタブへ移す
+            if (e.PropertyName == nameof(TouchpadSettingsViewModel.TouchpadOutputIndex)) TouchpadButtonControlDisplaySetup();
+        }
+
+        private void TouchpadPanel_SwipeControlClicked(object sender, DS4Controls control)
+        {
+            ShowControlAssignmentEditor(mappingListVM.ControlMap[control], updateHighlight: true);
+        }
+
         private void GyroPanel_TiltControlClicked(object sender, DS4Controls control)
         {
             ShowControlAssignmentEditor(mappingListVM.ControlMap[control], updateHighlight: true);
@@ -577,6 +588,8 @@ namespace DS4Windows.UI
             profileSettingsVM.PropertyChanged -= ProfileSettingsVM_PropertyChanged;
             gyroPanel.TiltControlClicked -= GyroPanel_TiltControlClicked;
             gyroPanel.CalibrationRequested -= GyroCalibration_Click;
+            profileSettingsVM.Touchpad.PropertyChanged -= TouchpadVM_PropertyChanged;
+            touchpadPanel.SwipeControlClicked -= TouchpadPanel_SwipeControlClicked;
             axialLSStickControl.AxialVM.PropertyChanged -= AxialStick_PropertyChanged;
             axialRSStickControl.AxialVM.PropertyChanged -= AxialStick_PropertyChanged;
 
@@ -595,41 +608,7 @@ namespace DS4Windows.UI
         /// </summary>
         private void TouchpadButtonControlDisplaySetup()
         {
-            ResetTouchContentControls();
-
-            switch (profileSettingsVM.TouchpadOutputIndex)
-            {
-                case 1:
-                    touchContentControl2.Content = touchButtonUC;
-                    activeTouchButtonDisplayControl = touchContentControl2;
-                    break;
-                case 2:
-                    touchContentControl4.Content = touchButtonUC;
-                    activeTouchButtonDisplayControl = touchContentControl4;
-                    break;
-                case 3:
-                    break;
-
-                case 0:
-                default:
-                    touchContentControl1.Content = touchButtonUC;
-                    activeTouchButtonDisplayControl = touchContentControl1;
-                    break;
-            }
-        }
-
-        private void ResetTouchContentControls()
-        {
-            if (activeTouchButtonDisplayControl != null)
-            {
-                activeTouchButtonDisplayControl.Content = null;
-                activeTouchButtonDisplayControl = null;
-            }
-        }
-
-        private void TouchpadOutputDisplayChange(object sender, EventArgs e)
-        {
-            TouchpadButtonControlDisplaySetup();
+            touchpadPanel.PlaceTouchButtonControl(touchButtonUC, profileSettingsVM.Touchpad.TouchpadOutputIndex);
         }
 
         private void UpdateReadingsSZDeadZone(object sender, EventArgs e)
@@ -699,14 +678,6 @@ namespace DS4Windows.UI
         private void AssignTiltAssociation()
         {
             gyroPanel.AssignTiltAssociation(mappingListVM);
-        }
-
-        private void AssignSwipeAssociation()
-        {
-            swipeUpLb.DataContext = mappingListVM.ControlMap[DS4Windows.Core.Model.DS4Controls.SwipeUp];
-            swipeDownLb.DataContext = mappingListVM.ControlMap[DS4Windows.Core.Model.DS4Controls.SwipeDown];
-            swipeLeftLb.DataContext = mappingListVM.ControlMap[DS4Windows.Core.Model.DS4Controls.SwipeLeft];
-            swipeRightLb.DataContext = mappingListVM.ControlMap[DS4Windows.Core.Model.DS4Controls.SwipeRight];
         }
 
         private void AssignTriggerFullPullAssociation()
@@ -904,10 +875,10 @@ namespace DS4Windows.UI
             // Phase6-Step6-1: mappingListVM はプロファイル読み込み前の出力種別で生成されるため、読み込み後の
             // 出力種別（Xbox 360／DS4）でボタン名表記を明示的に揃える（outConTypeCombo の SelectionChanged の発生有無に依存しない）
             mappingListVM.UpdateMappingDevType(profileSettingsVM.ContType);
-            profileSettingsVM.PopulateTouchDisInver(touchDisInvertBtn.ContextMenu);
+            touchpadPanel.PopulateDisInvertMenu(profileSettingsVM.Touchpad);
             gyroPanel.PopulateTriggerMenus(profileSettingsVM.Gyro);
             profileSettingsTabCon.DataContext = profileSettingsVM;
-            touchpadTab.DataContext = profileSettingsVM;
+            touchpadTab.DataContext = profileSettingsVM.Touchpad;
             gyroTab.DataContext = profileSettingsVM.Gyro;
             mappingListBox.DataContext = mappingListVM;
             specialActionsTab.DataContext = specialActionsVM;
@@ -990,10 +961,10 @@ namespace DS4Windows.UI
             profileSettingsVM.UpdateLateProperties();
             // Phase6-Step6-1: プリセット適用後の出力種別でボタン名表記を明示的に揃える（Reload と同じ理由）
             mappingListVM.UpdateMappingDevType(profileSettingsVM.ContType);
-            profileSettingsVM.PopulateTouchDisInver(touchDisInvertBtn.ContextMenu);
+            touchpadPanel.PopulateDisInvertMenu(profileSettingsVM.Touchpad);
             gyroPanel.PopulateTriggerMenus(profileSettingsVM.Gyro);
             profileSettingsTabCon.DataContext = profileSettingsVM;
-            touchpadTab.DataContext = profileSettingsVM;
+            touchpadTab.DataContext = profileSettingsVM.Touchpad;
             gyroTab.DataContext = profileSettingsVM.Gyro;
             mappingListBox.DataContext = mappingListVM;
             specialActionsTab.DataContext = specialActionsVM;
@@ -1470,16 +1441,6 @@ namespace DS4Windows.UI
             dialog.ShowDialog();
             profileSettingsVM.EndForcedColor();
             profileSettingsVM.UpdateChargingColor(dialog.colorPicker.SelectedColor.GetValueOrDefault());
-        }
-
-        private void TouchDisInvertBtn_Click(object sender, RoutedEventArgs e)
-        {
-            touchDisInvertBtn.ContextMenu.IsOpen = true;
-        }
-
-        private void TouchDisInvertMenuItem_Click(object sender, RoutedEventArgs e)
-        {
-            profileSettingsVM.UpdateTouchDisInvert(touchDisInvertBtn.ContextMenu);
         }
 
         private void OutConTypeCombo_SelectionChanged(object sender, SelectionChangedEventArgs e)
@@ -2078,14 +2039,6 @@ namespace DS4Windows.UI
             {
                 AppLogger.Log(AppLogLevel.Debug, $"[EnsureSpecialActionsHeadersAssigned] failed: {ex.Message}");
             }
-        }
-
-        private void SwipeControlsButton_Click(object sender, RoutedEventArgs e)
-        {
-            Button btn = sender as Button;
-            DS4Controls control = (DS4Controls)Convert.ToInt32(btn.Tag);
-            MappedControl mpControl = mappingListVM.ControlMap[control];
-            ShowControlAssignmentEditor(mpControl, updateHighlight: true);
         }
 
         private void ConBtn_MouseRightButtonUp(object sender, MouseButtonEventArgs e)

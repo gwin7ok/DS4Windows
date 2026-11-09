@@ -14,6 +14,8 @@ namespace DS4WindowsTests
     /// 設定サービスの領域の窓口（<see cref="GyroSlotSettings"/>）の守り。
     /// Binding の名前の誤りはビルドで見つからないため、パネルの XAML の Binding を、ViewModel の公開プロパティと突き合わせる。
     /// </summary>
+    // パネルのテストは Application のリソース（テーマ）を一時的に足すため、共有のホストの状態を使う他のテストとは並列に走らせない
+    [Collection(SharedHostStateCollection.Name)]
     public class GyroSettingsViewModelTests
     {
         private static readonly Regex BindingPath = new Regex(@"\{Binding\s+(?:Path=)?(?<path>[A-Za-z_][A-Za-z0-9_]*)", RegexOptions.Compiled);

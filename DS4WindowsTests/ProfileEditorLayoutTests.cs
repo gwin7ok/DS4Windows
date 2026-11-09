@@ -106,7 +106,7 @@ namespace DS4WindowsTests
 
             // Phase10-Step3b W1: 左ペインへ移した 2 つのタブにも、同じ場所で、同じ設定・解除を行う（古い参照を残さない）
             // ジャイロのタブの DataContext は、サブ ViewModel（profileSettingsVM.Gyro）
-            foreach (var (tab, value) in new[] { ("touchpadTab", "profileSettingsVM"), ("gyroTab", @"profileSettingsVM\.Gyro") })
+            foreach (var (tab, value) in new[] { ("touchpadTab", @"profileSettingsVM\.Touchpad"), ("gyroTab", @"profileSettingsVM\.Gyro") })
             {
                 Assert.Equal(2, Regex.Matches(code, tab + @"\.DataContext = " + value + ";").Count);
                 Assert.Equal(2, Regex.Matches(code, tab + @"\.DataContext = null;").Count);
@@ -119,7 +119,10 @@ namespace DS4WindowsTests
             XDocument xaml = LoadXaml(ProfileEditorXaml);
             if (xaml == null) return;
 
-            XElement touchpad = XamlTestHelper.FindByName(xaml, "touchpadTab");
+            // タッチパッドのタブの中身は、TouchpadSettingsPanel（UserControl）にある。そのリソースを自分で持つ
+            XDocument touchpadXaml = LoadXaml("DS4Windows/UI/TouchpadSettingsPanel.xaml");
+            if (touchpadXaml == null) return;
+            XElement touchpad = touchpadXaml.Root;
             // ジャイロのタブの中身は、GyroSettingsPanel（UserControl）にある。そのリソースを自分で持つ
             XDocument gyroXaml = LoadXaml("DS4Windows/UI/GyroSettingsPanel.xaml");
             if (gyroXaml == null) return;
@@ -290,8 +293,11 @@ namespace DS4WindowsTests
             string[] gyroValues = gyroXaml == null ? left : XamlTestHelper.AllAttributeValues(gyroXaml.Root).ToArray();
             Assert.DoesNotContain(right, v => v == "TiltControlsButton_Click");
             Assert.Contains(gyroValues, v => v == "TiltControlsButton_Click");
+            // スワイプ（タッチパッドのタブ）の入口は TouchpadSettingsPanel にある（編集画面の左ペインのタブの中身）
+            XDocument touchpadXaml = LoadXaml("DS4Windows/UI/TouchpadSettingsPanel.xaml");
+            string[] touchpadValues = touchpadXaml == null ? left : XamlTestHelper.AllAttributeValues(touchpadXaml.Root).ToArray();
             Assert.DoesNotContain(right, v => v == "SwipeControlsButton_Click");
-            Assert.Contains(left, v => v == "SwipeControlsButton_Click");
+            Assert.Contains(touchpadValues, v => v == "SwipeControlsButton_Click");
 
             // 図のボタン（配置表から生成）のクリックは、XAML ではなくコードで結び付ける。入口は左ペインの図のコントロールだけ
             Assert.Matches(@"button\.Click \+= HoverConBtn_Click;", code);

@@ -12,10 +12,13 @@ namespace DS4Windows.Core.Settings
         {
             Slot = slot;
             Gyro = new GyroSlotSettings(settings, slot);
+            Touchpad = new TouchpadSlotSettings(settings, slot);
         }
 
         public int Slot { get; }
 
         public GyroSlotSettings Gyro { get; }
+
+        public TouchpadSlotSettings Touchpad { get; }
     }
 }

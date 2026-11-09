@@ -98,10 +98,10 @@ namespace DS4Windows.UI
             hoverIndexes[gyroPanel.TiltXNegButton] = 35;
             hoverIndexes[gyroPanel.TiltXPosButton] = 36;
 
-            hoverIndexes[swipeUpBtn] = 37;
-            hoverIndexes[swipeDownBtn] = 38;
-            hoverIndexes[swipeLeftBtn] = 39;
-            hoverIndexes[swipeRightBtn] = 40;
+            hoverIndexes[touchpadPanel.SwipeUpButton] = 37;
+            hoverIndexes[touchpadPanel.SwipeDownButton] = 38;
+            hoverIndexes[touchpadPanel.SwipeLeftButton] = 39;
+            hoverIndexes[touchpadPanel.SwipeRightButton] = 40;
 
             hoverIndexes[fnlConBtn] = 41;
             hoverIndexes[fnrConBtn] = 42;
