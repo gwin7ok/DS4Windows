@@ -9,7 +9,7 @@ namespace DS4WindowsTests
     /// <summary>
     /// Phase6-Step6-3: `ProfileEditor.xaml.cs` の `Reload` と `RefreshEditorBindings`（プリセット適用後）が、
     /// プロファイル読み込み後の出力種別でマッピング一覧のボタン名表記を明示的に揃えている
-    /// （`mappingListVM.UpdateMappingDevType(profileSettingsVM.ContType)` を呼ぶ）ことを固定する回帰ガード。
+    /// （`mappingListVM.UpdateMappingDevType(profileSettingsVM.Output.ContType)` を呼ぶ）ことを固定する回帰ガード。
     /// `mappingListVM` はプロファイル読み込み前の出力種別で生成されるため、この呼び出しがないと、
     /// 出力種別コンボボックスの SelectionChanged が発生しない組み合わせでボタン名が食い違う（Phase6-Step6-Plan.md §0.1）。
     /// `ProfileEditor` は WPF の UserControl で単体駆動が困難なため、ソース走査で担保する。
@@ -23,7 +23,7 @@ namespace DS4WindowsTests
             "private void RefreshEditorBindings(",
         };
 
-        private const string RequiredCall = "mappingListVM.UpdateMappingDevType(profileSettingsVM.ContType)";
+        private const string RequiredCall = "mappingListVM.UpdateMappingDevType(profileSettingsVM.Output.ContType)";
 
         private readonly ITestOutputHelper _output;
 

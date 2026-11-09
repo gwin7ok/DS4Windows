@@ -47,17 +47,17 @@ namespace DS4WindowsTests
                 service.OutContType[device] = OutContType.X360;
                 var vm = ProfileSettingsViewModelTestFactory.Create(device, service);
                 Assert.Equal(0, vm.Output.ControllerTypeIndex);
-                Assert.Equal(OutContType.X360, vm.ContType);
+                Assert.Equal(OutContType.X360, vm.Output.ContType);
 
                 // 2. X360 -> DS4 への変更
                 service.OutContType[device] = OutContType.DS4;
                 Assert.Equal(1, vm.Output.ControllerTypeIndex);
-                Assert.Equal(OutContType.DS4, vm.ContType);
+                Assert.Equal(OutContType.DS4, vm.Output.ContType);
 
                 // 3. DS4 -> X360 への変更（今回の不具合再発防止の検証）
                 service.OutContType[device] = OutContType.X360;
                 Assert.Equal(0, vm.Output.ControllerTypeIndex);
-                Assert.Equal(OutContType.X360, vm.ContType);
+                Assert.Equal(OutContType.X360, vm.Output.ContType);
             }
             finally
             {
@@ -87,7 +87,7 @@ namespace DS4WindowsTests
                 Assert.Equal(OutContType.X360, service.OutContType[device]);
                 Assert.Equal(0, vm.Output.ControllerTypeIndex);
                 Assert.Equal(OutContType.X360, vm.Output.TempConType);
-                Assert.Equal(OutContType.X360, vm.ContType);
+                Assert.Equal(OutContType.X360, vm.Output.ContType);
             }
             finally
             {
@@ -117,7 +117,7 @@ namespace DS4WindowsTests
 
                 Assert.Equal(0, vm.Output.TempControllerIndex);
                 Assert.Equal(OutContType.X360, vm.Output.TempConType);
-                Assert.Equal(OutContType.X360, vm.ContType);
+                Assert.Equal(OutContType.X360, vm.Output.ContType);
 
                 // X360 -> DS4 への変更
                 service.OutContType[device] = OutContType.DS4;
@@ -125,7 +125,7 @@ namespace DS4WindowsTests
 
                 Assert.Equal(1, vm.Output.TempControllerIndex);
                 Assert.Equal(OutContType.DS4, vm.Output.TempConType);
-                Assert.Equal(OutContType.DS4, vm.ContType);
+                Assert.Equal(OutContType.DS4, vm.Output.ContType);
             }
             finally
             {

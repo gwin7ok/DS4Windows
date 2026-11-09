@@ -20,6 +20,12 @@ namespace DS4Windows.UI.ViewModels
             this.sticks = sticks ?? throw new ArgumentNullException(nameof(sticks));
         }
 
+        /// <summary>左スティックのデッドゾーンの設定（軸別デッドゾーンの部品が、中身を直接読み書きする）。</summary>
+        public StickDeadZoneInfo LSMod => sticks.LSMod;
+
+        /// <summary>右スティックのデッドゾーンの設定。</summary>
+        public StickDeadZoneInfo RSMod => sticks.RSMod;
+
         public double LSDeadZone
         {
             get => Math.Round(sticks.LSMod.deadZone / 127d, 2);

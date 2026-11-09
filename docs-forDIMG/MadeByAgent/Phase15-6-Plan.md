@@ -1,7 +1,7 @@
 # Phase15-Step6 計画書: 設定サービスの分割（R-10）と ProfileSettingsViewModel／ProfileEditor の領域分割（G-1・F-4）
 
 作成日: 2026-11-09
-状態: **承認済み（2026-11-09）。15-6a〜15-6h 完了**
+状態: **承認済み（2026-11-09）。15-6a〜15-6Z 完了（15-6 全体）**
 上位: `Phase15-Plan.md` §5 の 15-6、P8＝C（全領域を切り出す）、P9＝B（実機確認は Phase15 の最後に 1 回）
 
 ## 1. 目的
@@ -38,7 +38,7 @@
 | 15-6f | 出力（仮想コントローラー、振動） | 中 | ← **完了**（2026-11-09。「その他」タブの「仮想コントローラー」と「振動」の 2 つの GroupBox を 1 つのパネルにした。`OutputSlotSettings`［Core/Settings。`ProfileSlotSettings.Output`。出力の種類、DInput のみ、DS4 のトリガー出力、振動の強さ・自動停止、DualSense の振動、モーターの反転］、`OutputSettingsViewModel`［UI/ViewModels。Binding 名は元のまま。画面で選んだ種類 `TempControllerIndex` は、保存される値と出力ピッカー用の一時の種類 `OutDevTypeTemp` へ書く。`RefreshFromSettings`／`SyncOutDevTypeTempFromSettings`／`ResetOutDevTypeTemp`］、`OutputSettingsPanel`［UI。`DataContext="{Binding Output}"`。種類の選択 `OutConTypeCombo` と、振動のテストのボタン `HeavyRumbleTestBtn`／`LightRumbleTestBtn`、`RumbleTestClick` イベントを公開。実機を動かす振動のテストとマッピング一覧の更新は `ProfileEditor` が持つ］。`CorrectOutputTypeToDs4` は親に残し `Output` を使う。**マウス（ButtonMouse*、OutputMouseSpeed など）は 15-6g へ回した**［「その他」タブの一般項目と一緒に扱うため］。Core が `DualSenseDevice.RumbleEmulationMode`（第1層の入れ子の型）を参照する記録のみの規則 L2 が 1 件増えた［29→30。列挙型を Core/Model へ移せば消える。TODO コメントあり］。テスト `OutputSettingsViewModelTests`）
 | 15-6g | 残り（一般・その他） | 中 | ← **完了**（2026-11-09。「その他」タブの残りの項目を 1 つのパネルにした。`GeneralSlotSettings`［Core/Settings。`ProfileSlotSettings.General`。ボタンによるマウス移動、入力の表示、タッチパッドの切り替え、DS4 への出力データ、同時起動するプログラム、無操作での切断、Bluetooth のポーリング間隔］、`GeneralSettingsViewModel`［UI/ViewModels。マウス速度の表示値の連動もここ。`UpdateLaunchProgram`／`ResetLauchProgram`／`RefreshFromSettings`］、`GeneralSettingsPanel`［UI。`DataContext="{Binding General}"`。`UseControllerUD` を公開し、`UseControllerReadoutClick`／`LaunchProgramBrowseClick` で知らせる］。親の `OnOwnPropertyChanged`（マウスの連動だけだった）は不要になり削除。**残り**: 6 軸（SX／SZ）の項目と、`ProfileEditor` の整理［`Reload`、SA 一覧の見出し・並べ替え］は 15-6Z の前に扱う。テスト `GeneralSettingsViewModelTests`）
 | 15-6h | 6 軸（SX／SZ）と `ProfileEditor` の整理 | 小 | ← **完了**（2026-11-09。`SixAxisSlotSettings`［`ProfileSlotSettings.SixAxis`］、`SixAxisSettingsViewModel`、`SixAxisSettingsPanel`［`DataContext="{Binding SixAxis}"`。`CustomCurveEditorRequested` で "SX"／"SZ" を知らせる］。デッドゾーンの試験表示への反映は `SixAxis.PropertyChanged` で受ける。`ProfileEditor` は、各タブの DataContext の解除・付け直しを `ClearEditorDataContexts`／`AssignEditorDataContexts` に集約［`Reload`・`StopEditorBindings`・`RefreshEditorBindings` の重複を解消］。**特殊アクション一覧の見出し・並べ替え（`UpdateSpecialActionsHeaderTexts` ほか）は、表示の生成のタイミングに依存し、実機での見え方の確認が要るため、設定の分割とは別の整理として 15-7 以降へ回した**。テスト `SixAxisSettingsViewModelTests`）
-| 15-6Z | 配列プロパティ・古いメソッドの削除、ラチェットの更新、設計図・規約の更新 | 中 |
+| 15-6Z | 仕上げ（古い入口の整理、守りの追加、設計図・規約の更新） | 小 | ← **完了**（2026-11-09。`ProfileSettingsViewModel` と `ProfileEditor` から、設定サービスのスロット配列の直接参照を 0 にした［`ContType` を `Output` へ、`LSMod`／`RSMod` を `Sticks` へ。`OutConTypeCombo_SelectionChanged` の重複した `OutContType` の書き込みは、`Output.ControllerTypeIndex` が同じ値を書くため削除］。守り `SettingsSlotWindowUsageTests`［上の 2 ファイルが配列を直接触らないこと、8 つの領域の ViewModel が `IProfileSettingsService` を受け取らないこと］を追加。**`IProfileSettingsService` の配列プロパティ自体は削除しなかった**［調査: 157 メンバーのうち、窓口以外から使われないのは 17 件で、うち 15 件は窓口が使う。残る `ReverseX360ButtonMapping`／`UseTempProfileArray` は、規約 2.4 の未接続の記録（`OrphanMembersGuardTests`）があるため温存。他の層（処理・永続化）が使う配列が大半で、削除はできない］。編集画面の外の直接参照［`CompositeDeviceModel`、`RecordBoxViewModel`、`PressKeyViewModel`、`TouchButtonUserControlViewModel`、`BindingWindow`］は、今後の整理）
 
 各サブ Step の終わりに、そのタブの Binding 名の一覧を機械的に突き合わせる検査（XAML の Binding パスが、DataContext の型に存在することの検査）を足す。Binding の誤りはビルドで見つからないため、これを必須の守りにする。
 

@@ -362,7 +362,7 @@ namespace DS4Windows.UI
             picBoxHover.Visibility = Visibility.Hidden;
             picBoxHover2.Visibility = Visibility.Hidden;
 
-            mappingListVM = vmFactory.CreateMappingListViewModel(deviceNum, profileSettingsVM.ContType);
+            mappingListVM = vmFactory.CreateMappingListViewModel(deviceNum, profileSettingsVM.Output.ContType);
             specialActionsVM = vmFactory.CreateSpecialActionsListViewModel(deviceNum);
 
             // S9-10: 削除されたプロファイルを参照する Load Profile は、一覧でも「(none)」と表示する（割り当て編集画面と同じ）
@@ -905,14 +905,14 @@ namespace DS4Windows.UI
             contReadingsTab.IsEnabled = true;
 
             conReadingsUserCon.EnableControl(false);
-            sticksPanel.AxialLeft.UseDevice(_viewModelFactory.CreateAxialStickControlViewModel(profileSettingsService.LSModInfo[deviceNum]));
-            sticksPanel.AxialRight.UseDevice(_viewModelFactory.CreateAxialStickControlViewModel(profileSettingsService.RSModInfo[deviceNum]));
+            sticksPanel.AxialLeft.UseDevice(_viewModelFactory.CreateAxialStickControlViewModel(profileSettingsVM.Sticks.LSMod));
+            sticksPanel.AxialRight.UseDevice(_viewModelFactory.CreateAxialStickControlViewModel(profileSettingsVM.Sticks.RSMod));
 
             mappingListVM.UpdateMappings();
             profileSettingsVM.UpdateLateProperties();
             // Phase6-Step6-1: mappingListVM はプロファイル読み込み前の出力種別で生成されるため、読み込み後の
             // 出力種別（Xbox 360／DS4）でボタン名表記を明示的に揃える（出力の種類の選択の SelectionChanged の発生有無に依存しない）
-            mappingListVM.UpdateMappingDevType(profileSettingsVM.ContType);
+            mappingListVM.UpdateMappingDevType(profileSettingsVM.Output.ContType);
             touchpadPanel.PopulateDisInvertMenu(profileSettingsVM.Touchpad);
             gyroPanel.PopulateTriggerMenus(profileSettingsVM.Gyro);
             AssignEditorDataContexts();
@@ -920,7 +920,7 @@ namespace DS4Windows.UI
             // （コンストラクタでの配置は読み込み前の値で行われ、TouchpadOutputIndex の setter を通らない変更では更新されない）
             TouchpadButtonControlDisplaySetup();
 
-            StickDeadZoneInfo lsMod = profileSettingsService.LSModInfo[deviceNum];
+            StickDeadZoneInfo lsMod = profileSettingsVM.Sticks.LSMod;
             if (lsMod.deadzoneType == StickDeadZoneInfo.DeadZoneType.Radial)
             {
                 conReadingsUserCon.LsDeadX = profileSettingsVM.Sticks.LSDeadZone;
@@ -932,7 +932,7 @@ namespace DS4Windows.UI
                 conReadingsUserCon.LsDeadY = sticksPanel.AxialLeft.AxialVM.DeadZoneY;
             }
 
-            StickDeadZoneInfo rsMod = profileSettingsService.RSModInfo[deviceNum];
+            StickDeadZoneInfo rsMod = profileSettingsVM.Sticks.RSMod;
             if (rsMod.deadzoneType == StickDeadZoneInfo.DeadZoneType.Radial)
             {
                 conReadingsUserCon.RsDeadX = profileSettingsVM.Sticks.RSDeadZone;
@@ -1013,7 +1013,7 @@ namespace DS4Windows.UI
             mappingListVM.UpdateMappings();
             profileSettingsVM.UpdateLateProperties();
             // Phase6-Step6-1: プリセット適用後の出力種別でボタン名表記を明示的に揃える（Reload と同じ理由）
-            mappingListVM.UpdateMappingDevType(profileSettingsVM.ContType);
+            mappingListVM.UpdateMappingDevType(profileSettingsVM.Output.ContType);
             touchpadPanel.PopulateDisInvertMenu(profileSettingsVM.Touchpad);
             gyroPanel.PopulateTriggerMenus(profileSettingsVM.Gyro);
             AssignEditorDataContexts();
@@ -1411,9 +1411,6 @@ namespace DS4Windows.UI
                 return;
 
             OutContType selected = outConTypeCombo.SelectedIndex == 1 ? OutContType.DS4 : OutContType.X360;
-            // Phase6-Step8-3（決定5＝O1）: Global.OutContType と ProfileSettingsServiceInstance.OutContType は同じ配列で、
-            // 2 回書いていた。注入済みの IProfileSettingsService への 1 回にした
-            profileSettingsService.OutContType[deviceNum] = selected;
 
             if (profileSettingsVM != null)
             {

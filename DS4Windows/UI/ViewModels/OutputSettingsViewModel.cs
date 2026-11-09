@@ -56,6 +56,9 @@ namespace DS4Windows.UI.ViewModels
             outputSlotService.OutDevTypeTemp[slot] = OutContType.X360;
         }
 
+        /// <summary>保存されている出力の種類（Xbox 360／DS4）。マッピング一覧のボタン名の表記を決める。</summary>
+        public OutContType ContType => output.OutContType;
+
         /// <summary>保存される出力の種類（0: Xbox 360、1: DS4）。</summary>
         public int ControllerTypeIndex
         {

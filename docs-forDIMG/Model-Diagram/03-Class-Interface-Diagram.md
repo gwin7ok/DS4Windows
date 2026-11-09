@@ -1346,3 +1346,4 @@ classDiagram
 %% - 15-6f: 出力（仮想コントローラー・振動）も同じ形に分けた。`OutputSlotSettings`（`ProfileSlotSettings.Output`）、`OutputSettingsPanel`（UserControl）、`OutputSettingsViewModel`（`ProfileSettingsViewModel.Output`）。
 %% - 15-6g: 「その他」タブの一般項目も同じ形に分けた。`GeneralSlotSettings`（`ProfileSlotSettings.General`）、`GeneralSettingsPanel`（UserControl）、`GeneralSettingsViewModel`（`ProfileSettingsViewModel.General`）。
 %% - 15-6h: 6 軸（加速度 X・Z）も同じ形に分けた。`SixAxisSlotSettings`（`ProfileSlotSettings.SixAxis`）、`SixAxisSettingsPanel`（UserControl）、`SixAxisSettingsViewModel`（`ProfileSettingsViewModel.SixAxis`）。
+%% - 15-6Z: プロファイル編集画面（`ProfileEditor`、`ProfileSettingsViewModel`）は、設定サービスのスロット配列を直接触らず、領域の窓口だけを通す（`SettingsSlotWindowUsageTests`）。配列プロパティ自体は、処理・永続化の層が使うため残る。
