@@ -18,6 +18,7 @@ namespace DS4Windows.Core.Settings
             Lightbar = new LightbarSlotSettings(settings, slot);
             Output = new OutputSlotSettings(settings, slot);
             General = new GeneralSlotSettings(settings, slot);
+            SixAxis = new SixAxisSlotSettings(settings, slot);
         }
 
         public int Slot { get; }
@@ -35,5 +36,7 @@ namespace DS4Windows.Core.Settings
         public OutputSlotSettings Output { get; }
 
         public GeneralSlotSettings General { get; }
+
+        public SixAxisSlotSettings SixAxis { get; }
     }
 }

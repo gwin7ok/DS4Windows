@@ -63,6 +63,9 @@ namespace DS4Windows.UI.ViewModels
         /// <summary>「その他」タブの仮想コントローラー・振動の設定。</summary>
         public OutputSettingsViewModel Output { get; }
 
+        /// <summary>「Axis Config」タブの 6 軸（加速度）の設定。</summary>
+        public SixAxisSettingsViewModel SixAxis { get; }
+
         /// <summary>「その他」タブの一般項目（入力の表示、マウス移動、プログラムの同時起動、無操作での切断、ポーリング間隔）。</summary>
         public GeneralSettingsViewModel General { get; }
         private readonly IProfileSettingsService profileSettings;
@@ -187,103 +190,15 @@ namespace DS4Windows.UI.ViewModels
             get => profileSettings.OutContType[device];
         }
 
-        public double SXDeadZone
-        {
-            get => profileSettings.SXDeadzone[device];
-            set
-            {
-                double temp = profileSettings.SXDeadzone[device];
-                if (temp == value) return;
-                profileSettings.SXDeadzone[device] = value;
-                OnPropertyChanged(nameof(SXDeadZone));
-            }
-        }
-        public double SZDeadZone
-        {
-            get => profileSettings.SZDeadzone[device];
-            set
-            {
-                double temp = profileSettings.SZDeadzone[device];
-                if (temp == value) return;
-                profileSettings.SZDeadzone[device] = value;
-                OnPropertyChanged(nameof(SZDeadZone));
-            }
-        }
-        public double SXMaxZone
-        {
-            get => profileSettings.SXMaxzone[device];
-            set => profileSettings.SXMaxzone[device] = value;
-        }
 
-        public double SZMaxZone
-        {
-            get => profileSettings.SZMaxzone[device];
-            set => profileSettings.SZMaxzone[device] = value;
-        }
 
-        public double SXAntiDeadZone
-        {
-            get => profileSettings.SXAntiDeadzone[device];
-            set => profileSettings.SXAntiDeadzone[device] = value;
-        }
 
-        public double SZAntiDeadZone
-        {
-            get => profileSettings.SZAntiDeadzone[device];
-            set => profileSettings.SZAntiDeadzone[device] = value;
-        }
 
-        public double SXSens
-        {
-            get => profileSettings.SXSens[device];
-            set => profileSettings.SXSens[device] = value;
-        }
 
-        public double SZSens
-        {
-            get => profileSettings.SZSens[device];
-            set => profileSettings.SZSens[device] = value;
-        }
 
-        public int SXOutputCurveIndex
-        {
-            get => profileSettings.GetSxOutCurveMode(device);
-            set
-            {
-                profileSettings.SetSxOutCurveMode(device, value);
-                OnPropertyChanged(nameof(SXCustomCurveSelected));
-            }
-        }
 
-        public int SZOutputCurveIndex
-        {
-            get => profileSettings.GetSzOutCurveMode(device);
-            set
-            {
-                profileSettings.SetSzOutCurveMode(device, value);
-                OnPropertyChanged(nameof(SZCustomCurveSelected));
-            }
-        }
 
-        public bool SXCustomCurveSelected
-        {
-            get => profileSettings.GetSxOutCurveMode(device) == 6;
-        }
-        public bool SZCustomCurveSelected
-        {
-            get => profileSettings.GetSzOutCurveMode(device) == 6;
-        }
-        public string SXCustomCurve
-        {
-            get => profileSettings.SxOutBezierCurveObj[device].CustomDefinition;
-            set => profileSettings.SxOutBezierCurveObj[device].InitBezierCurve(value, BezierCurve.AxisType.SA, true);
-        }
 
-        public string SZCustomCurve
-        {
-            get => profileSettings.SzOutBezierCurveObj[device].CustomDefinition;
-            set => profileSettings.SzOutBezierCurveObj[device].InitBezierCurve(value, BezierCurve.AxisType.SA, true);
-        }
 
         private PresetMenuHelper presetMenuUtil;
         public PresetMenuHelper PresetMenuUtil
@@ -331,6 +246,7 @@ namespace DS4Windows.UI.ViewModels
             funcDevNum = HasTargetDevice ? targetDevice : 0;
 
             presetMenuUtil = new PresetMenuHelper(device, this.profileSettings);
+            SixAxis = new SixAxisSettingsViewModel(this.profileSettings.ForSlot(device).SixAxis);
             General = new GeneralSettingsViewModel(this.profileSettings.ForSlot(device).General);
             Output = new OutputSettingsViewModel(this.profileSettings.ForSlot(device).Output, this.outputSlotService, device);
             Lightbar = new LightbarSettingsViewModel(this.profileSettings.ForSlot(device).Lightbar, lightbar, environmentService, targetDevice);

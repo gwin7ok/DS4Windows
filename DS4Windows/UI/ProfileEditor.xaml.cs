@@ -518,7 +518,8 @@ namespace DS4Windows.UI
             mappingListBox.SelectionChanged += MappingListBox_SelectionChanged;
             Closed += ProfileEditor_Closed;
 
-            profileSettingsVM.PropertyChanged += ProfileSettingsVM_PropertyChanged;
+            profileSettingsVM.SixAxis.PropertyChanged += ProfileSettingsVM_PropertyChanged;
+            sixAxisPanel.CustomCurveEditorRequested += SixAxisPanel_CustomCurveEditorRequested;
             gyroPanel.TiltControlClicked += GyroPanel_TiltControlClicked;
             gyroPanel.CalibrationRequested += GyroCalibration_Click;
             profileSettingsVM.Touchpad.PropertyChanged += TouchpadVM_PropertyChanged;
@@ -532,14 +533,14 @@ namespace DS4Windows.UI
         }
 
         /// <summary>
-        /// プロファイル設定の値が変わったとき、試験表示（デッドゾーン・ドリフト・タッチパッド出力）へ反映する。
+        /// 6 軸の設定の値が変わったとき、試験表示（デッドゾーン）へ反映する。
         /// </summary>
         private void ProfileSettingsVM_PropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e)
         {
             switch (e.PropertyName)
             {
-                case nameof(ProfileSettingsViewModel.SXDeadZone): UpdateReadingsSXDeadZone(sender, EventArgs.Empty); break;
-                case nameof(ProfileSettingsViewModel.SZDeadZone): UpdateReadingsSZDeadZone(sender, EventArgs.Empty); break;
+                case nameof(SixAxisSettingsViewModel.SXDeadZone): UpdateReadingsSXDeadZone(sender, EventArgs.Empty); break;
+                case nameof(SixAxisSettingsViewModel.SZDeadZone): UpdateReadingsSZDeadZone(sender, EventArgs.Empty); break;
             }
         }
 
@@ -623,7 +624,8 @@ namespace DS4Windows.UI
             mappingListBox.SelectionChanged -= MappingListBox_SelectionChanged;
             Closed -= ProfileEditor_Closed;
 
-            profileSettingsVM.PropertyChanged -= ProfileSettingsVM_PropertyChanged;
+            profileSettingsVM.SixAxis.PropertyChanged -= ProfileSettingsVM_PropertyChanged;
+            sixAxisPanel.CustomCurveEditorRequested -= SixAxisPanel_CustomCurveEditorRequested;
             gyroPanel.TiltControlClicked -= GyroPanel_TiltControlClicked;
             gyroPanel.CalibrationRequested -= GyroCalibration_Click;
             profileSettingsVM.Touchpad.PropertyChanged -= TouchpadVM_PropertyChanged;
@@ -656,12 +658,12 @@ namespace DS4Windows.UI
 
         private void UpdateReadingsSZDeadZone(object sender, EventArgs e)
         {
-            conReadingsUserCon.SixAxisZDead = profileSettingsVM.SZDeadZone;
+            conReadingsUserCon.SixAxisZDead = profileSettingsVM.SixAxis.SZDeadZone;
         }
 
         private void UpdateReadingsSXDeadZone(object sender, EventArgs e)
         {
-            conReadingsUserCon.SixAxisXDead = profileSettingsVM.SXDeadZone;
+            conReadingsUserCon.SixAxisXDead = profileSettingsVM.SixAxis.SXDeadZone;
         }
 
         private void UpdateReadingsR2DeadZone(object sender, EventArgs e)
@@ -857,12 +859,7 @@ namespace DS4Windows.UI
 
         public void Reload(ProfileEntity profile = null)
         {
-            profileSettingsTabCon.DataContext = null;
-            touchpadTab.DataContext = null;
-            gyroTab.DataContext = null;
-            mappingListBox.DataContext = null;
-            specialActionsTab.DataContext = null;
-            lightbarRect.DataContext = null;
+            ClearEditorDataContexts();
 
             AppLogger.LogDebug($"[ProfileEditor] Reload: editSlot={deviceNum}, targetDevice={targetDevice}, profile={(profile != null ? profile.Name : "(new profile)")}");
 
@@ -918,12 +915,7 @@ namespace DS4Windows.UI
             mappingListVM.UpdateMappingDevType(profileSettingsVM.ContType);
             touchpadPanel.PopulateDisInvertMenu(profileSettingsVM.Touchpad);
             gyroPanel.PopulateTriggerMenus(profileSettingsVM.Gyro);
-            profileSettingsTabCon.DataContext = profileSettingsVM;
-            touchpadTab.DataContext = profileSettingsVM.Touchpad;
-            gyroTab.DataContext = profileSettingsVM.Gyro;
-            mappingListBox.DataContext = mappingListVM;
-            specialActionsTab.DataContext = specialActionsVM;
-            lightbarRect.DataContext = profileSettingsVM.Lightbar;
+            AssignEditorDataContexts();
             // 読み込んだプロファイルのタッチパッド出力モードに合わせて、Button Activation Mode の表示位置を揃える
             // （コンストラクタでの配置は読み込み前の値で行われ、TouchpadOutputIndex の setter を通らない変更では更新されない）
             TouchpadButtonControlDisplaySetup();
@@ -954,8 +946,8 @@ namespace DS4Windows.UI
 
             conReadingsUserCon.L2Dead = profileSettingsVM.Triggers.L2DeadZone;
             conReadingsUserCon.R2Dead = profileSettingsVM.Triggers.R2DeadZone;
-            conReadingsUserCon.SixAxisXDead = profileSettingsVM.SXDeadZone;
-            conReadingsUserCon.SixAxisZDead = profileSettingsVM.SZDeadZone;
+            conReadingsUserCon.SixAxisXDead = profileSettingsVM.SixAxis.SXDeadZone;
+            conReadingsUserCon.SixAxisZDead = profileSettingsVM.SixAxis.SZDeadZone;
 
             conReadingsUserCon.LsDriftX = profileSettingsVM.Sticks.LeftStickDriftXAxis;
             conReadingsUserCon.LsDriftY = profileSettingsVM.Sticks.LeftStickDriftYAxis;
@@ -976,7 +968,11 @@ namespace DS4Windows.UI
             }
         }
 
-        private void StopEditorBindings()
+        /// <summary>
+        /// 設定を読み直す前に、各タブの DataContext を外す。ViewModel の読み直しは PropertyChanged を出さずに値を入れ替えるため、
+        /// 外してから <see cref="AssignEditorDataContexts"/> で付け直すことで、画面へ反映する（<c>UpdateLateProperties</c> の規約）。
+        /// </summary>
+        private void ClearEditorDataContexts()
         {
             profileSettingsTabCon.DataContext = null;
             touchpadTab.DataContext = null;
@@ -984,6 +980,22 @@ namespace DS4Windows.UI
             mappingListBox.DataContext = null;
             specialActionsTab.DataContext = null;
             lightbarRect.DataContext = null;
+        }
+
+        /// <summary>読み直しのあと、各タブの DataContext を付け直す（<see cref="ClearEditorDataContexts"/> の対）。</summary>
+        private void AssignEditorDataContexts()
+        {
+            profileSettingsTabCon.DataContext = profileSettingsVM;
+            touchpadTab.DataContext = profileSettingsVM.Touchpad;
+            gyroTab.DataContext = profileSettingsVM.Gyro;
+            mappingListBox.DataContext = mappingListVM;
+            specialActionsTab.DataContext = specialActionsVM;
+            lightbarRect.DataContext = profileSettingsVM.Lightbar;
+        }
+
+        private void StopEditorBindings()
+        {
+            ClearEditorDataContexts();
 
             touchButtonUC.UnregisterDataContext();
             sticksPanel.AxialLeft.UnregisterDataContext();
@@ -1004,12 +1016,7 @@ namespace DS4Windows.UI
             mappingListVM.UpdateMappingDevType(profileSettingsVM.ContType);
             touchpadPanel.PopulateDisInvertMenu(profileSettingsVM.Touchpad);
             gyroPanel.PopulateTriggerMenus(profileSettingsVM.Gyro);
-            profileSettingsTabCon.DataContext = profileSettingsVM;
-            touchpadTab.DataContext = profileSettingsVM.Touchpad;
-            gyroTab.DataContext = profileSettingsVM.Gyro;
-            mappingListBox.DataContext = mappingListVM;
-            specialActionsTab.DataContext = specialActionsVM;
-            lightbarRect.DataContext = profileSettingsVM.Lightbar;
+            AssignEditorDataContexts();
             touchButtonUC.RegisterDataContext();
             // プリセット適用でタッチパッド出力モードが変わっても、Button Activation Mode の表示位置が追従するようにする
             TouchpadButtonControlDisplaySetup();
@@ -1018,8 +1025,8 @@ namespace DS4Windows.UI
             conReadingsUserCon.RsDeadX = profileSettingsVM.Sticks.RSDeadZone;
             conReadingsUserCon.L2Dead = profileSettingsVM.Triggers.L2DeadZone;
             conReadingsUserCon.R2Dead = profileSettingsVM.Triggers.R2DeadZone;
-            conReadingsUserCon.SixAxisXDead = profileSettingsVM.SXDeadZone;
-            conReadingsUserCon.SixAxisZDead = profileSettingsVM.SZDeadZone;
+            conReadingsUserCon.SixAxisXDead = profileSettingsVM.SixAxis.SXDeadZone;
+            conReadingsUserCon.SixAxisZDead = profileSettingsVM.SixAxis.SZDeadZone;
             conReadingsUserCon.LsDriftX = profileSettingsVM.Sticks.LeftStickDriftXAxis;
             conReadingsUserCon.LsDriftY = profileSettingsVM.Sticks.LeftStickDriftYAxis;
             conReadingsUserCon.RsDriftX = profileSettingsVM.Sticks.RightStickDriftXAxis;
@@ -1370,12 +1377,10 @@ namespace DS4Windows.UI
             }
         }
 
-        private void CustomEditorBtn_Click(object sender, RoutedEventArgs e)
+        private void SixAxisPanel_CustomCurveEditorRequested(object sender, string target)
         {
-            Button btn = sender as Button;
-            string tag = btn.Tag.ToString();
-            if (tag == "SX") LaunchCurveEditor(profileSettingsVM.SXCustomCurve);
-            else if (tag == "SZ") LaunchCurveEditor(profileSettingsVM.SZCustomCurve);
+            if (target == "SX") LaunchCurveEditor(profileSettingsVM.SixAxis.SXCustomCurve);
+            else if (target == "SZ") LaunchCurveEditor(profileSettingsVM.SixAxis.SZCustomCurve);
         }
 
         private void LaunchCurveEditor(string customDefinition)

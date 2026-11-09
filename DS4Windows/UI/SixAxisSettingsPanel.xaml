@@ -1,0 +1,209 @@
+﻿<UserControl x:Class="DS4Windows.UI.SixAxisSettingsPanel"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:xctk="http://schemas.xceed.com/wpf/xaml/toolkit"
+             xmlns:lex="http://wpflocalizeextension.codeplex.com"
+             mc:Ignorable="d"
+             d:DesignHeight="450"
+             d:DesignWidth="800">
+    <UserControl.Resources>
+        <Thickness x:Key="spaceMargin"
+                   Left="10"
+                   Bottom="6"/>
+        <Style x:Key="gridRowHeight"
+               TargetType="{x:Type RowDefinition}">
+            <Setter Property="Height"
+                    Value="30"/>
+        </Style>
+    </UserControl.Resources>
+            <GroupBox Header="{lex:Loc SixAxisAccel}">
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition></RowDefinition>
+                        <RowDefinition Style="{StaticResource gridRowHeight}"></RowDefinition>
+                        <RowDefinition Style="{StaticResource gridRowHeight}"></RowDefinition>
+                        <RowDefinition Style="{StaticResource gridRowHeight}"></RowDefinition>
+                        <RowDefinition Style="{StaticResource gridRowHeight}"></RowDefinition>
+                        <RowDefinition Style="{StaticResource gridRowHeight}"></RowDefinition>
+                        <RowDefinition Style="{StaticResource gridRowHeight}"></RowDefinition>
+                    </Grid.RowDefinitions>
+
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition/>
+                        <ColumnDefinition/>
+                        <ColumnDefinition/>
+                    </Grid.ColumnDefinitions>
+
+                    <TextBlock Text="X"
+                               Grid.Column="1"
+                               FontWeight="Bold"
+                               HorizontalAlignment="Center"
+                               Margin="0,0,0,8"/>
+                    <TextBlock Text="Z"
+                               Grid.Column="2"
+                               FontWeight="Bold"
+                               HorizontalAlignment="Center"
+                               Margin="0,0,0,8"/>
+
+                    <Label Content="{lex:Loc DeadZone}"
+                           ContentStringFormat="{}{0}:"
+                           Grid.Row="1"
+                           Grid.Column="0"/>
+                    <xctk:DoubleUpDown d:IsHidden="True"
+                                       FormatString="F2"
+                                       Value="{Binding SXDeadZone}"
+                                       Style="{StaticResource NumberInputSmall}"
+                                       Grid.Row="1"
+                                       Grid.Column="1"
+                                       Maximum="1.0"
+                                       Minimum="0.0"
+                                       Increment="0.1"
+                                       Margin="{StaticResource spaceMargin}"/>
+                    <xctk:DoubleUpDown d:IsHidden="True"
+                                       FormatString="F2"
+                                       Value="{Binding SZDeadZone}"
+                                       Style="{StaticResource NumberInputSmall}"
+                                       Grid.Row="1"
+                                       Grid.Column="2"
+                                       Maximum="1.0"
+                                       Minimum="0.0"
+                                       Increment="0.1"
+                                       Margin="{StaticResource spaceMargin}"/>
+
+                    <Label Content="{lex:Loc MaxZone}"
+                           ContentStringFormat="{}{0}:"
+                           Grid.Row="2"
+                           Grid.Column="0"/>
+                    <xctk:DoubleUpDown d:IsHidden="True"
+                                       FormatString="F2"
+                                       Value="{Binding SXMaxZone}"
+                                       Style="{StaticResource NumberInputSmall}"
+                                       Grid.Row="2"
+                                       Grid.Column="1"
+                                       Maximum="1.0"
+                                       Minimum="0.0"
+                                       Increment="0.1"
+                                       Margin="{StaticResource spaceMargin}"/>
+                    <xctk:DoubleUpDown d:IsHidden="True"
+                                       FormatString="F2"
+                                       Value="{Binding SZMaxZone}"
+                                       Style="{StaticResource NumberInputSmall}"
+                                       Grid.Row="2"
+                                       Grid.Column="2"
+                                       Maximum="1.0"
+                                       Minimum="0.0"
+                                       Increment="0.1"
+                                       Margin="{StaticResource spaceMargin}"/>
+
+                    <Label Content="{lex:Loc AntiDeadZone}"
+                           ContentStringFormat="{}{0}:"
+                           Grid.Row="3"
+                           Grid.Column="0"/>
+                    <xctk:DoubleUpDown d:IsHidden="True"
+                                       FormatString="F2"
+                                       Value="{Binding SXAntiDeadZone}"
+                                       Style="{StaticResource NumberInputSmall}"
+                                       Grid.Row="3"
+                                       Grid.Column="1"
+                                       Maximum="1.0"
+                                       Minimum="0.0"
+                                       Increment="0.1"
+                                       Margin="{StaticResource spaceMargin}"/>
+                    <xctk:DoubleUpDown d:IsHidden="True"
+                                       FormatString="F2"
+                                       Value="{Binding SZAntiDeadZone}"
+                                       Style="{StaticResource NumberInputSmall}"
+                                       Grid.Row="3"
+                                       Grid.Column="2"
+                                       Maximum="1.0"
+                                       Minimum="0.0"
+                                       Increment="0.1"
+                                       Margin="{StaticResource spaceMargin}"/>
+
+                    <Label Content="{lex:Loc Sensitivity}"
+                           ContentStringFormat="{}{0}:"
+                           Grid.Row="4"
+                           Grid.Column="0"/>
+                    <xctk:DoubleUpDown d:IsHidden="True"
+                                       FormatString="F2"
+                                       Value="{Binding SXSens}"
+                                       Style="{StaticResource NumberInputSmall}"
+                                       Grid.Row="4"
+                                       Grid.Column="1"
+                                       Maximum="5.0"
+                                       Minimum="0.0"
+                                       Increment="0.1"
+                                       Margin="{StaticResource spaceMargin}"/>
+                    <xctk:DoubleUpDown d:IsHidden="True"
+                                       FormatString="F2"
+                                       Value="{Binding SZSens}"
+                                       Style="{StaticResource NumberInputSmall}"
+                                       Grid.Row="4"
+                                       Grid.Column="2"
+                                       Maximum="5.0"
+                                       Minimum="0.0"
+                                       Increment="0.1"
+                                       Margin="{StaticResource spaceMargin}"/>
+
+                    <Label Content="{lex:Loc OutputCurve}"
+                           ContentStringFormat="{}{0}:"
+                           Grid.Row="5"
+                           Grid.Column="0"/>
+                    <ComboBox Grid.Row="5"
+                              Grid.Column="1"
+                              SelectedIndex="{Binding SXOutputCurveIndex}"
+                              Margin="{StaticResource spaceMargin}">
+                        <ComboBoxItem Content="{lex:Loc Linear}"/>
+                        <ComboBoxItem Content="{lex:Loc EnhancePrecision}"/>
+                        <ComboBoxItem Content="{lex:Loc Quadratic}"/>
+                        <ComboBoxItem Content="{lex:Loc Cubic}"/>
+                        <ComboBoxItem Content="{lex:Loc EaseoutQuad}"/>
+                        <ComboBoxItem Content="{lex:Loc EaseoutCubic}"/>
+                        <ComboBoxItem Content="{lex:Loc Custom}"/>
+                    </ComboBox>
+                    <ComboBox Grid.Row="5"
+                              Grid.Column="2"
+                              SelectedIndex="{Binding SZOutputCurveIndex}"
+                              Margin="{StaticResource spaceMargin}">
+                        <ComboBoxItem Content="{lex:Loc Linear}"/>
+                        <ComboBoxItem Content="{lex:Loc EnhancedPrecision}"/>
+                        <ComboBoxItem Content="{lex:Loc Quadratic}"/>
+                        <ComboBoxItem Content="{lex:Loc Cubic}"/>
+                        <ComboBoxItem Content="{lex:Loc EaseoutQuad}"/>
+                        <ComboBoxItem Content="{lex:Loc EaseoutCubic}"/>
+                        <ComboBoxItem Content="{lex:Loc Custom}"/>
+                    </ComboBox>
+
+                    <DockPanel Grid.Row="6"
+                               Grid.Column="1"
+                               IsEnabled="{Binding SXCustomCurveSelected}">
+                        <Button x:Name="sxCustomEditorBtn"
+                                Content="..."
+                                Tag="SX"
+                                Width="20"
+                                DockPanel.Dock="Right"
+                                Click="CustomEditorBtn_Click"
+                                Margin="{StaticResource spaceMargin}"/>
+                        <TextBox Text="{Binding SXCustomCurve,FallbackValue='0.00, 0.00, 1.00, 1.00'}"
+                                 DockPanel.Dock="Left"
+                                 Margin="{StaticResource spaceMargin}"/>
+                    </DockPanel>
+                    <DockPanel Grid.Row="6"
+                               Grid.Column="2"
+                               IsEnabled="{Binding SZCustomCurveSelected}">
+                        <Button x:Name="szCustomEditorBtn"
+                                Content="..."
+                                Tag="SZ"
+                                Width="20"
+                                DockPanel.Dock="Right"
+                                Click="CustomEditorBtn_Click"
+                                Margin="{StaticResource spaceMargin}"/>
+                        <TextBox Text="{Binding SZCustomCurve,FallbackValue='0.00, 0.00, 1.00, 1.00'}"
+                                 DockPanel.Dock="Left"
+                                 Margin="{StaticResource spaceMargin}"/>
+                    </DockPanel>
+                </Grid>
+            </GroupBox>
+</UserControl>

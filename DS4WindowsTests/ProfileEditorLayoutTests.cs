@@ -99,17 +99,17 @@ namespace DS4WindowsTests
             // 右ペインのタブの移動で壊れるコード（番号、選択中の項目、項目の一覧への依存）がない
             Assert.Empty(Regex.Matches(code, @"profileSettingsTabCon\.(SelectedIndex|SelectedItem|SelectedContent|Items|SelectionChanged)"));
 
-            // 右ペインへの参照は、DataContext の設定・解除の 4 か所だけ
-            Assert.Equal(4, Regex.Matches(code, @"profileSettingsTabCon\.").Count);
-            Assert.Equal(2, Regex.Matches(code, @"profileSettingsTabCon\.DataContext = profileSettingsVM;").Count);
-            Assert.Equal(2, Regex.Matches(code, @"profileSettingsTabCon\.DataContext = null;").Count);
+            // 右ペインへの参照は、DataContext の設定・解除の 2 か所だけ（ClearEditorDataContexts と AssignEditorDataContexts に集約）
+            Assert.Equal(2, Regex.Matches(code, @"profileSettingsTabCon\.").Count);
+            Assert.Single(Regex.Matches(code, @"profileSettingsTabCon\.DataContext = profileSettingsVM;"));
+            Assert.Single(Regex.Matches(code, @"profileSettingsTabCon\.DataContext = null;"));
 
             // Phase10-Step3b W1: 左ペインへ移した 2 つのタブにも、同じ場所で、同じ設定・解除を行う（古い参照を残さない）
             // ジャイロのタブの DataContext は、サブ ViewModel（profileSettingsVM.Gyro）
             foreach (var (tab, value) in new[] { ("touchpadTab", @"profileSettingsVM\.Touchpad"), ("gyroTab", @"profileSettingsVM\.Gyro") })
             {
-                Assert.Equal(2, Regex.Matches(code, tab + @"\.DataContext = " + value + ";").Count);
-                Assert.Equal(2, Regex.Matches(code, tab + @"\.DataContext = null;").Count);
+                Assert.Single(Regex.Matches(code, tab + @"\.DataContext = " + value + ";"));
+                Assert.Single(Regex.Matches(code, tab + @"\.DataContext = null;"));
             }
         }
 
