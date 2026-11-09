@@ -89,6 +89,7 @@ namespace DS4Windows.UI
         private readonly DS4Windows.Core.Abstractions.INotificationService notificationService;
         private readonly DS4Windows.UI.Abstractions.IUiThemeAndLanguage themeLanguage;   // Phase14b-Step16（D11）
         private readonly DS4Windows.UI.Abstractions.IIpcResultWriter ipcResultWriter;
+        private readonly DS4Windows.UI.Abstractions.IViewModelFactory _viewModelFactory;   // 子画面の ViewModel の生成
         private readonly DS4Windows.Core.Abstractions.IChangelogService changelogService;   // Phase14b-Step17（D10）: 旧 静的 Changelog   // Phase14b-Step16（旧 App.WriteIPCResultDataMMF）
         private readonly DS4Windows.Processing.Abstractions.IIpcCommandProcessor ipcProcessor;   // Phase13-Step11 11-c: 旧 MainWindow.Ipc.cs の Ipc*
         private readonly DS4Windows.Processing.Abstractions.IRuntimeFeatureSwitch runtimeFeatures;   // Phase13-Step10 10-c: 旧 ControlService の OSC／UDP／HidHide／TouchpadSlide の転送
@@ -167,11 +168,12 @@ namespace DS4Windows.UI
             DataContext = mainWinVM;
 
             // Phase6-Step10-1-5（決定D7＝A）: ログ設定の反映の窓口（App が LoggerHolder の生成直後に接続する）
+            _viewModelFactory = viewModelFactory ?? throw new ArgumentNullException(nameof(viewModelFactory));
             settingsWrapVM = viewModelFactory.CreateSettingsViewModel();
             settingsTab.DataContext = settingsWrapVM;
             // Phase6-Step10-1-4: XAML から生成される LanguagePackControl へ、保持済みのサービスを渡す（Pure DI）。
-            languagePackControl.Initialize(appSettingsService, themeLanguage);
-            logvm = new LogViewModel(environmentService);
+            languagePackControl.Initialize(appSettingsService, viewModelFactory.CreateLanguagePackViewModel(), themeLanguage);
+            logvm = viewModelFactory.CreateLogViewModel();
             //logListView.ItemsSource = logvm.LogItems;
             logListView.DataContext = logvm;
             lastMsgLb.DataContext = lastLogMsg;
@@ -194,8 +196,7 @@ namespace DS4Windows.UI
             view.SortDescriptions.Add(new SortDescription("DevIndex", ListSortDirection.Ascending));
             view.Refresh();
 
-            trayIconVM = new TrayIconViewModel(slots, lifecycle, profileListHolder,
-                appearanceSettingsService, profileRepo, environmentService, pathService, Dispatcher);
+            trayIconVM = _viewModelFactory.CreateTrayIconViewModel(profileListHolder, Dispatcher);
 
             // Need to define before calling TaskbarIcon.ForceCreate
             notifyIcon.DataContext = trayIconVM;
@@ -331,7 +332,7 @@ namespace DS4Windows.UI
             MessageBoxResult result = MessageBoxResult.No;
             Dispatcher.Invoke(() =>
             {
-                var updaterWin = new UpdaterWindow(version, environmentService, appSettingsService, changelogService);
+                var updaterWin = new UpdaterWindow(version, environmentService, _viewModelFactory.CreateUpdaterWindowViewModel(version));
                 updaterWin.ShowDialog();
                 result = updaterWin.Result;
             });
@@ -2017,15 +2018,14 @@ namespace DS4Windows.UI
 
         private void ChecklogViewBtn_Click(object sender, RoutedEventArgs e)
         {
-            ChangelogWindow changelogWin = new ChangelogWindow(changelogService);
+            ChangelogWindow changelogWin = new ChangelogWindow(_viewModelFactory.CreateChangelogViewModel());
             changelogWin.ShowDialog();
         }
 
         private void DeviceOptionSettingsBtn_Click(object sender, RoutedEventArgs e)
         {
             ControllerRegisterOptionsWindow optsWindow =
-                new ControllerRegisterOptionsWindow(appSettingsService.DeviceOptions, slots,
-                    appSettingsService);
+                new ControllerRegisterOptionsWindow(_viewModelFactory.CreateControllerRegDeviceOptsViewModel(appSettingsService.DeviceOptions));
 
             optsWindow.Owner = this;
             optsWindow.Show();
@@ -2044,7 +2044,7 @@ namespace DS4Windows.UI
                 if (entity.Name != "Default" &&
                     File.Exists(filename))
                 {
-                    RenameProfileWindow renameWin = new RenameProfileWindow(pathService);
+                    RenameProfileWindow renameWin = new RenameProfileWindow(_viewModelFactory.CreateRenameProfileViewModel());
                     renameWin.ChangeProfileName(entity.Name);
                     bool? result = renameWin.ShowDialog();
                     if (result.HasValue && result.Value)

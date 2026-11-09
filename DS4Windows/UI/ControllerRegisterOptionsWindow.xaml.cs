@@ -46,13 +46,12 @@ namespace DS4Windows.UI
         private ControllerRegDeviceOptsViewModel deviceOptsVM;
 
         // Phase6-Step10-2-2: 呼び出し側（MainWindow）が保持済みのサービスを渡す（Pure DI）
-        public ControllerRegisterOptionsWindow(ControlServiceDeviceOptions deviceOptions, DS4Windows.Processing.Abstractions.IControllerSlotQuery slots,
-            DS4Windows.Core.Abstractions.IAppSettingsService appSettingsService)
+        public ControllerRegisterOptionsWindow(ControllerRegDeviceOptsViewModel viewModel)
         {
             InitializeComponent();
             moonlightDocLink.NavigateUri = new Uri(ReleaseSource.MoonlightDocPageUri);
 
-            deviceOptsVM = new ControllerRegDeviceOptsViewModel(deviceOptions, slots, appSettingsService);
+            deviceOptsVM = viewModel ?? throw new ArgumentNullException(nameof(viewModel));
 
             devOptionsDockPanel.DataContext = deviceOptsVM;
             deviceOptsVM.ControllerSelectedIndexChanged += ChangeActiveDeviceTab;

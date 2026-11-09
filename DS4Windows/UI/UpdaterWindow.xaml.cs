@@ -43,11 +43,10 @@ namespace DS4Windows.UI
         private readonly DS4Windows.Core.Abstractions.IEnvironmentService _environmentService;
 
         public UpdaterWindow(string newversion, DS4Windows.Core.Abstractions.IEnvironmentService environmentService,
-            DS4Windows.Core.Abstractions.IAppSettingsService appSettingsService,
-            DS4Windows.Core.Abstractions.IChangelogService changelogService)   // Phase14b-Step17（D10）: 変更履歴の取得（旧 静的 Changelog）
+            UpdaterWindowViewModel viewModel)
         {
             _environmentService = environmentService ?? throw new ArgumentNullException(nameof(environmentService));
-            if (appSettingsService == null) throw new ArgumentNullException(nameof(appSettingsService));
+            if (viewModel == null) throw new ArgumentNullException(nameof(viewModel));
 
             InitializeComponent();
 
@@ -58,7 +57,7 @@ namespace DS4Windows.UI
             var engCulture = CultureInfo.GetCultureInfo("en");
             string downloadStr = DS4Windows.Translations.Strings.ResourceManager.GetString("DownloadVersion", engCulture) ?? "A new version *number* has been released.";
             captionTextBlock.Text = downloadStr.Replace("*number*", newversion);
-            updaterWinVM = new UpdaterWindowViewModel(newversion, appSettingsService, changelogService);
+            updaterWinVM = viewModel;
 
             DataContext = updaterWinVM;
 

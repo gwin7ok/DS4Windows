@@ -39,9 +39,9 @@ namespace DS4Windows.UI
             InitializeComponent();
         }
 
-        public void UseDevice(StickDeadZoneInfo stickDeadInfo)
+        public void UseDevice(AxialStickControlViewModel viewModel)
         {
-            axialVM = new AxialStickControlViewModel(stickDeadInfo);
+            axialVM = viewModel ?? throw new System.ArgumentNullException(nameof(viewModel));
             mainGrid.DataContext = axialVM;
         }
 

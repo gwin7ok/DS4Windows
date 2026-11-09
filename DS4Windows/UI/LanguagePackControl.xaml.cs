@@ -55,7 +55,7 @@ namespace DS4Windows.UI
         /// MainWindow のコンストラクタから 1 回だけ呼ぶ。
         /// </summary>
         public void Initialize(DS4Windows.Core.Abstractions.IAppSettingsService appSettingsService,
-            DS4Windows.UI.Abstractions.IUiThemeAndLanguage themeLanguage)
+            LanguagePackViewModel viewModel, DS4Windows.UI.Abstractions.IUiThemeAndLanguage themeLanguage)
         {
             if (appSettingsService == null) throw new ArgumentNullException(nameof(appSettingsService));
             if (themeLanguage == null) throw new ArgumentNullException(nameof(themeLanguage));
@@ -63,7 +63,7 @@ namespace DS4Windows.UI
 
             _appSettingsService = appSettingsService;
             _themeLanguage = themeLanguage;
-            langPackVM = new LanguagePackViewModel(appSettingsService);
+            langPackVM = viewModel ?? throw new ArgumentNullException(nameof(viewModel));
             this.DataContext = null;
             langPackVM.ScanFinished += LangPackVM_ScanFinished;
             langPackVM.SelectedIndexChanged += CheckForCultureChange;

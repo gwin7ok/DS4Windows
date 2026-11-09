@@ -79,17 +79,14 @@ namespace DS4Windows.UI
         /// 渡し忘れをコンパイルで検出するため必須引数とする（Phase6-Step7b-Plan.md 決定2）
         /// </param>
         // Phase14c-Step4（R-05 の前半）: ライトバーの強制表示の状態（旧: DS4LightBar の静的な配列）
-        private readonly DS4Windows.Core.Model.LightbarOverrides _lightbar;
 
-        public BindingWindow(DS4Windows.Core.Model.LightbarOverrides lightbar, int deviceNum, DS4Windows.Core.Settings.DS4ControlSettings settings, int targetDevice,
+        public BindingWindow(int deviceNum, DS4Windows.Core.Settings.DS4ControlSettings settings, int targetDevice,
             DS4Windows.UI.Abstractions.IEditorWindowFactory editorWindowFactory,
             DS4Windows.Core.Abstractions.IProfileSettingsService profileSettingsService,
-            DS4Windows.Processing.Abstractions.IOutputSlotService outputSlotService,
-            DS4Windows.Core.Abstractions.IEnvironmentService environmentService,
             DS4Windows.Processing.Abstractions.IControllerSlotCommands slotCommands,
+            BindingWindowViewModel viewModel,
             ExposeMode expose)
         {
-            _lightbar = lightbar ?? throw new System.ArgumentNullException(nameof(lightbar));
             this.editorWindowFactory = editorWindowFactory ?? throw new ArgumentNullException(nameof(editorWindowFactory));
             InitializeComponent();
             InitVisualizerButtons();
@@ -98,7 +95,7 @@ namespace DS4Windows.UI
 
             this.slotCommands = slotCommands ?? throw new ArgumentNullException(nameof(slotCommands));
             this.expose = expose;
-            bindingVM = new BindingWindowViewModel(_lightbar, deviceNum, settings, profileSettingsService, outputSlotService, environmentService, targetDevice);
+            bindingVM = viewModel ?? throw new ArgumentNullException(nameof(viewModel));
 
             if (settings.control != DS4Windows.Core.Model.DS4Controls.None)
             {

@@ -131,6 +131,28 @@ namespace DS4WindowsTests
             public SettingsViewModel CreateSettingsViewModel() => null;
             public ControllerListViewModel CreateControllerListViewModel(ProfileList profileListHolder) => null;
             public CurrentOutDeviceViewModel CreateCurrentOutDeviceViewModel() => null;
+            public ChangelogViewModel CreateChangelogViewModel() => null;
+            public RenameProfileViewModel CreateRenameProfileViewModel() => null;
+            public PresetOptionViewModel CreatePresetOptionViewModel() => null;
+            public FirstLauchUtilViewModel CreateFirstLaunchUtilViewModel(ControlServiceDeviceOptions deviceOptions) => null;
+            public UpdaterWindowViewModel CreateUpdaterWindowViewModel(string newVersion) => null;
+            public ControllerRegDeviceOptsViewModel CreateControllerRegDeviceOptsViewModel(ControlServiceDeviceOptions deviceOptions) => null;
+            public TouchButtonUserControlViewModel CreateTouchButtonViewModel(int deviceIndex) => null;
+            public LanguagePackViewModel CreateLanguagePackViewModel() => null;
+            public AxialStickControlViewModel CreateAxialStickControlViewModel(StickDeadZoneInfo deadZoneInfo) => null;
+            public MappingListViewModel CreateMappingListViewModel(int deviceIndex, OutContType contType) => null;
+            public LogViewModel CreateLogViewModel() => null;
+            public TrayIconViewModel CreateTrayIconViewModel(ProfileList profileListHolder, System.Windows.Threading.Dispatcher dispatcher) => null;
+            public BindingWindowViewModel CreateBindingWindowViewModel(int deviceIndex, DS4ControlSettings settings, int targetDevice) => null;
+            public ControlActionEditorViewModel CreateControlActionEditorViewModel(int deviceIndex, ControlSettingsEditTarget target) => null;
+            public DS4Windows.UI.ViewModels.SpecialActions.MacroViewModel CreateMacroViewModel() => null;
+            public DS4Windows.UI.ViewModels.SpecialActions.LaunchProgramViewModel CreateLaunchProgramViewModel() => null;
+            public DS4Windows.UI.ViewModels.SpecialActions.LoadProfileViewModel CreateLoadProfileViewModel(ProfileList profileList) => null;
+            public DS4Windows.UI.ViewModels.SpecialActions.PressKeyViewModel CreatePressKeyViewModel(int deviceIndex) => null;
+            public DS4Windows.UI.ViewModels.SpecialActions.SpecialActionViewModel CreateSpecialActionViewModel(int actionIndex) => null;
+            public DS4Windows.UI.ViewModels.SpecialActions.CheckBatteryViewModel CreateCheckBatteryViewModel() => null;
+            public DS4Windows.UI.ViewModels.SpecialActions.MultiActButtonViewModel CreateMultiActButtonViewModel() => null;
+            public DS4Windows.UI.ViewModels.SpecialActions.FocusWindowViewModel CreateFocusWindowViewModel() => null;
         }
 
         [Fact]

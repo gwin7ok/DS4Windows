@@ -90,19 +90,17 @@ namespace DS4Windows.UI
 
         /// <summary>SA のモード（従来どおり。SA の新規作成・編集）。</summary>
         // Phase14c-Step4（R-05 の前半）: ライトバーの強制表示の状態（旧: DS4LightBar の静的な配列）
-        private readonly DS4Windows.Core.Model.LightbarOverrides _lightbar;
 
-        public AssignmentEditor(DS4Windows.Core.Model.LightbarOverrides lightbar, int deviceNum, ProfileList profileList, int targetDevice,
+        public AssignmentEditor(int deviceNum, ProfileList profileList, int targetDevice,
             DS4Windows.UI.Abstractions.IEditorWindowFactory editorWindowFactory,
             DS4Windows.UI.Abstractions.IViewModelFactory viewModelFactory,
             DS4Windows.Core.Abstractions.ISpecialActionRepository specialActionRepository,
             DS4Windows.Core.Abstractions.IProfileSettingsService profileSettingsService,
-            DS4Windows.Processing.Abstractions.IOutputSlotService outputSlotService,
             DS4Windows.Core.Abstractions.IEnvironmentService environmentService,
             DS4Windows.Core.Abstractions.IWindowSystem windowSystem,
             DS4Windows.Core.Settings.SpecialAction specialAction = null)
-            : this(lightbar, deviceNum, (DS4Windows.Core.Settings.DS4ControlSettings)null, profileList, targetDevice, editorWindowFactory, viewModelFactory,
-                specialActionRepository, profileSettingsService, outputSlotService, environmentService, windowSystem, specialAction)
+            : this(deviceNum, (DS4Windows.Core.Settings.DS4ControlSettings)null, profileList, targetDevice, editorWindowFactory, viewModelFactory,
+                specialActionRepository, profileSettingsService, environmentService, windowSystem, specialAction)
         {
         }
 
@@ -112,36 +110,32 @@ namespace DS4Windows.UI
         /// Phase10-Step3 W4: <c>ProfileEditor</c> の <c>ShowControlAssignmentEditor</c> が、これを左ペイン全体に重ねて表示する（Controls の絵のボタン・一覧、Tilt、Swipe、Full Pull、Outer Bind、
         /// コントローラーの入力。Phase10-Step3-Plan.md §3.4）。保存（<see cref="ControlSaved"/>）は、編集用のコピーを元の設定へ反映してから発生する。
         /// </summary>
-        public AssignmentEditor(DS4Windows.Core.Model.LightbarOverrides lightbar, int deviceNum, DS4Windows.Core.Settings.DS4ControlSettings controlSettings, ProfileList profileList, int targetDevice,
+        public AssignmentEditor(int deviceNum, DS4Windows.Core.Settings.DS4ControlSettings controlSettings, ProfileList profileList, int targetDevice,
             DS4Windows.UI.Abstractions.IEditorWindowFactory editorWindowFactory,
             DS4Windows.UI.Abstractions.IViewModelFactory viewModelFactory,
             DS4Windows.Core.Abstractions.ISpecialActionRepository specialActionRepository,
             DS4Windows.Core.Abstractions.IProfileSettingsService profileSettingsService,
-            DS4Windows.Processing.Abstractions.IOutputSlotService outputSlotService,
             DS4Windows.Core.Abstractions.IEnvironmentService environmentService,
             DS4Windows.Core.Abstractions.IWindowSystem windowSystem)
-            : this(lightbar, deviceNum, controlSettings ?? throw new ArgumentNullException(nameof(controlSettings)), profileList, targetDevice,
-                editorWindowFactory, viewModelFactory, specialActionRepository, profileSettingsService, outputSlotService, environmentService, windowSystem, null)
+            : this(deviceNum, controlSettings ?? throw new ArgumentNullException(nameof(controlSettings)), profileList, targetDevice,
+                editorWindowFactory, viewModelFactory, specialActionRepository, profileSettingsService, environmentService, windowSystem, null)
         {
         }
 
-        private AssignmentEditor(DS4Windows.Core.Model.LightbarOverrides lightbar, int deviceNum, DS4Windows.Core.Settings.DS4ControlSettings controlSettings, ProfileList profileList, int targetDevice,
+        private AssignmentEditor(int deviceNum, DS4Windows.Core.Settings.DS4ControlSettings controlSettings, ProfileList profileList, int targetDevice,
             DS4Windows.UI.Abstractions.IEditorWindowFactory editorWindowFactory,
             DS4Windows.UI.Abstractions.IViewModelFactory viewModelFactory,
             DS4Windows.Core.Abstractions.ISpecialActionRepository specialActionRepository,
             DS4Windows.Core.Abstractions.IProfileSettingsService profileSettingsService,
-            DS4Windows.Processing.Abstractions.IOutputSlotService outputSlotService,
             DS4Windows.Core.Abstractions.IEnvironmentService environmentService,
             DS4Windows.Core.Abstractions.IWindowSystem windowSystem,
             DS4Windows.Core.Settings.SpecialAction specialAction)
         {
-            _lightbar = lightbar ?? throw new ArgumentNullException(nameof(lightbar));
             this.environmentService = environmentService ?? throw new ArgumentNullException(nameof(environmentService));
             this.editorWindowFactory = editorWindowFactory ?? throw new ArgumentNullException(nameof(editorWindowFactory));
             if (viewModelFactory == null) throw new ArgumentNullException(nameof(viewModelFactory));
             this.specialActionRepository = specialActionRepository ?? throw new ArgumentNullException(nameof(specialActionRepository));
             if (profileSettingsService == null) throw new ArgumentNullException(nameof(profileSettingsService));
-            if (outputSlotService == null) throw new ArgumentNullException(nameof(outputSlotService));
             if (windowSystem == null) throw new ArgumentNullException(nameof(windowSystem));
             InitializeComponent();
             // Phase12-Step2 2i: FocusWindow のターゲットマークで、ドロップしたウィンドウを取得する（DS4Windows 自身のウィンドウは対象にしない）
@@ -153,22 +147,21 @@ namespace DS4Windows.UI
             {
                 // Phase10-Step2 W4: 対象のボタンの設定は、編集用のコピーを編集し、Save で元へ反映する（Cancel では、元は変わらない）
                 controlTarget = new ControlSettingsEditTarget(controlSettings, profileSettingsService);
-                specialActVM = new ControlActionEditorViewModel(deviceNum, controlTarget);
+                specialActVM = viewModelFactory.CreateControlActionEditorViewModel(deviceNum, controlTarget);
             }
             else
             {
                 specialActVM = viewModelFactory.CreateSpecialActEditorViewModel(deviceNum, specialAction);
             }
-            macroActVM = new MacroViewModel(specialActionRepository);
-            launchProgVM = new LaunchProgramViewModel(specialActionRepository);
-            loadProfileVM = new LoadProfileViewModel(profileList, specialActionRepository);
-            pressKeyVM = new PressKeyViewModel(specialActionRepository, profileSettingsService, outputSlotService);
-            pressKeyVM.SetDeviceNum(deviceNum);
-            disconnectBtVM = new SpecialActionViewModel(5, specialActionRepository);
-            checkBatteryVM = new CheckBatteryViewModel(_lightbar, specialActionRepository, environmentService);
-            multiActButtonVM = new MultiActButtonViewModel(specialActionRepository);
-            calibrateGyroVM = new SpecialActionViewModel(9, specialActionRepository);
-            focusWindowVM = new FocusWindowViewModel(specialActionRepository);
+            macroActVM = viewModelFactory.CreateMacroViewModel();
+            launchProgVM = viewModelFactory.CreateLaunchProgramViewModel();
+            loadProfileVM = viewModelFactory.CreateLoadProfileViewModel(profileList);
+            pressKeyVM = viewModelFactory.CreatePressKeyViewModel(deviceNum);
+            disconnectBtVM = viewModelFactory.CreateSpecialActionViewModel(5);
+            checkBatteryVM = viewModelFactory.CreateCheckBatteryViewModel();
+            multiActButtonVM = viewModelFactory.CreateMultiActButtonViewModel();
+            calibrateGyroVM = viewModelFactory.CreateSpecialActionViewModel(9);
+            focusWindowVM = viewModelFactory.CreateFocusWindowViewModel();
 
             // Phase10-Step6 後の Step5: アナログな出力の強さの入力は、SA のモードだけに出す（Controls は、入力のアナログ値で強さが決まる）
             pressKeyVM.StrengthApplies = !controlMode;

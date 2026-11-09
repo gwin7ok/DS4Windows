@@ -225,7 +225,7 @@ namespace DS4WindowsTests
             var checks = new (string File, string Call)[]
             {
                 ("DS4Windows/UI/BindingWindow.xaml.cs", "CreateRecordBox("),
-                ("DS4Windows/UI/BindingWindow.xaml.cs", "new BindingWindowViewModel("),
+                ("DS4Windows/UI/Services/EditorWindowFactory.cs", "CreateBindingWindowViewModel("),
                 ("DS4Windows/UI/RecordBoxWindow.xaml.cs", "CreateRecordBox("),
                 ("DS4Windows/UI/RecordBox.xaml.cs", "CreateRecordBoxViewModel("),
                 ("DS4Windows/UI/AssignmentEditor.xaml.cs", "CreateRecordBoxWindow("),

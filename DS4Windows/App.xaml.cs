@@ -1,4 +1,4 @@
-/*
+﻿/*
 DS4Windows
 Copyright (C) 2023  Travis Nickles
 
@@ -615,7 +615,8 @@ namespace DS4Windows
             {
                 ApplyLanguageSetting(_appSettingsService.UseLang);
                 DS4Windows.UI.FirstLaunchUtilWindow firstLaunchUtilWin =
-                    new DS4Windows.UI.FirstLaunchUtilWindow(_appSettingsService.DeviceOptions);
+                    new DS4Windows.UI.FirstLaunchUtilWindow(ResolvePostHostService<DS4Windows.UI.Abstractions.IViewModelFactory>()
+                        .CreateFirstLaunchUtilViewModel(_appSettingsService.DeviceOptions));
                 firstLaunchUtilWin.ShowDialog();
                 _appSettingsService.Save();
             }

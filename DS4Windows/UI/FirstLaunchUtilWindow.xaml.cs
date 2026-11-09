@@ -42,11 +42,11 @@ namespace DS4Windows.UI
     {
         private FirstLauchUtilViewModel firstLaunchUtilVM;
 
-        public FirstLaunchUtilWindow(ControlServiceDeviceOptions serviceDeviceOpts)
+        public FirstLaunchUtilWindow(FirstLauchUtilViewModel viewModel)
         {
             InitializeComponent();
 
-            firstLaunchUtilVM = new FirstLauchUtilViewModel(serviceDeviceOpts);
+            firstLaunchUtilVM = viewModel ?? throw new ArgumentNullException(nameof(viewModel));
             pagesTabControl.DataContext = firstLaunchUtilVM;
         }
 

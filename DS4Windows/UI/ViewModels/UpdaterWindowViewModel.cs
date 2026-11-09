@@ -21,7 +21,7 @@ using System.Threading.Tasks;
 using DS4Windows.Core.Utilities;
 namespace DS4Windows.UI.ViewModels
 {
-    class UpdaterWindowViewModel
+    public class UpdaterWindowViewModel
     {
         private string Version { get; set; }
 

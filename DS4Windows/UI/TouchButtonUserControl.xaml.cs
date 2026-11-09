@@ -41,11 +41,11 @@ namespace DS4Windows.UI
     {
         private TouchButtonUserControlViewModel touchButtonVM;
 
-        public TouchButtonUserControl(int deviceIndex, DS4Windows.Core.Abstractions.IProfileSettingsService profileSettingsService)
+        public TouchButtonUserControl(TouchButtonUserControlViewModel viewModel)
         {
             InitializeComponent();
 
-            touchButtonVM = new TouchButtonUserControlViewModel(deviceIndex, profileSettingsService);
+            touchButtonVM = viewModel ?? throw new ArgumentNullException(nameof(viewModel));
             DataContext = touchButtonVM;
         }
 

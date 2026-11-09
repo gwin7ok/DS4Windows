@@ -33,11 +33,11 @@ namespace DS4Windows.UI
         }
 
         // Phase6-Step10-2-3: 呼び出し側（MainWindow）が保持済みのサービスを渡す（Pure DI）
-        public RenameProfileWindow(DS4Windows.Core.Abstractions.IPathService pathService)
+        public RenameProfileWindow(RenameProfileViewModel viewModel)
         {
             InitializeComponent();
 
-            renameProfileVM = new RenameProfileViewModel(pathService);
+            renameProfileVM = viewModel ?? throw new System.ArgumentNullException(nameof(viewModel));
             mainDockPanel.DataContext = renameProfileVM;
         }
 

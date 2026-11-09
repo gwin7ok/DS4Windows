@@ -40,11 +40,11 @@ namespace DS4Windows.UI
     {
         private ChangelogViewModel changelogVM;
 
-        public ChangelogWindow(DS4Windows.Core.Abstractions.IChangelogService changelogService)   // Phase14b-Step17（D10）
+        public ChangelogWindow(ChangelogViewModel viewModel)
         {
             InitializeComponent();
 
-            changelogVM = new ChangelogViewModel(changelogService);
+            changelogVM = viewModel ?? throw new ArgumentNullException(nameof(viewModel));
 
             DataContext = changelogVM;
 

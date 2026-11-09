@@ -1337,3 +1337,4 @@ classDiagram
 %% - Phase15-4: UI/Controls を追加: ControllerVisualizerControl（Canvas。Layout・ButtonStyle・ScaleToFit、Buttons）、ControllerLayout（名前・基準の大きさ・Regions）、HitboxRegion（Id・Tag・位置・大きさ・IsVisible）、ControllerLayouts（Xbox360・DualShock4・DualShock4Editor）。
 
 %% - ViewModel の変更通知の共通の土台 `ObservableObject`（`UI/ViewModels`。`SetProperty`・`OnPropertyChanged`）を新設した。`SettingsViewModel`・`ProfileSettingsViewModel`・`AxialStickControlViewModel` は、プロパティごとの「名前＋Changed」のイベントをやめ、`PropertyChanged` に集めた。画面のコードビハインドは `PropertyChanged` の `PropertyName` で振り分ける。
+%% - ViewModel の生成を `IViewModelFactory` へ集めた。画面（コードビハインド）は ViewModel を `new` せず、受け取るか、ファクトリーから得る（子画面のダイアログ、割り当て編集画面の種別ごとの ViewModel、バインド画面、ログ、トレイを含む）。

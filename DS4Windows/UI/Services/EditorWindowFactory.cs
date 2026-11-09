@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using DS4Windows.Core.Abstractions;
 using DS4Windows.Core.Profiles;
 using DS4Windows.Core.Settings;
@@ -85,8 +85,8 @@ namespace DS4Windows.UI.Services
 
         public BindingWindow CreateBindingWindow(int deviceNum, DS4ControlSettings settings, int targetDevice,
             BindingWindow.ExposeMode expose)
-            => new BindingWindow(_lightbar, deviceNum, settings, targetDevice, this, _profileSettings, _outputSlotService,
-                _environmentService, _slotCommands, expose);
+            => new BindingWindow(deviceNum, settings, targetDevice, this, _profileSettings, _slotCommands,
+                _viewModelFactory.CreateBindingWindowViewModel(deviceNum, settings, targetDevice), expose);
 
         public RecordBox CreateRecordBox(int deviceNum, DS4ControlSettings controlSettings, int targetDevice,
             bool showscan = true, bool repeatable = true, bool showPlaybackOptions = true)
@@ -98,7 +98,7 @@ namespace DS4Windows.UI.Services
             => new RecordBoxWindow(deviceNum, settings, targetDevice, this, repeatable, showPlaybackOptions);
 
         public PresetOptionWindow CreatePresetOptionWindow()
-            => new PresetOptionWindow(_presetLoader, _loadTarget);
+            => new PresetOptionWindow(_viewModelFactory.CreatePresetOptionViewModel());
 
         public StickCalibrationWindow CreateStickCalibrationWindow(Stick stick, int device,
             ProfileSettingsViewModel profileSettingsViewModel)
@@ -106,13 +106,13 @@ namespace DS4Windows.UI.Services
 
         public AssignmentEditor CreateAssignmentEditor(int deviceNum, ProfileList profileList, int targetDevice,
             SpecialAction specialAction = null)
-            => new AssignmentEditor(_lightbar, deviceNum, profileList, targetDevice, this, _viewModelFactory,
-                _specialActionRepository, _profileSettings, _outputSlotService, _environmentService, _windowSystem, specialAction);
+            => new AssignmentEditor(deviceNum, profileList, targetDevice, this, _viewModelFactory,
+                _specialActionRepository, _profileSettings, _environmentService, _windowSystem, specialAction);
 
         // Phase10-Step3 W4: ProfileEditor.ShowControlAssignmentEditor が呼ぶ
         public AssignmentEditor CreateControlActionEditor(int deviceNum, DS4ControlSettings controlSettings, ProfileList profileList, int targetDevice)
-            => new AssignmentEditor(_lightbar, deviceNum, controlSettings, profileList, targetDevice, this, _viewModelFactory,
-                _specialActionRepository, _profileSettings, _outputSlotService, _environmentService, _windowSystem);
+            => new AssignmentEditor(deviceNum, controlSettings, profileList, targetDevice, this, _viewModelFactory,
+                _specialActionRepository, _profileSettings, _environmentService, _windowSystem);
 
         public ProfileEditor CreateProfileEditor(int targetDevice)
             => new ProfileEditor(targetDevice, _appSettings, _profileSettings, this, _profileRepository,

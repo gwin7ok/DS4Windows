@@ -92,5 +92,26 @@ namespace DS4WindowsTests
                 Assert.Contains(expected, names);
             }
         }
+
+        /// <summary>
+        /// 画面（コードビハインド）は、ViewModel を自分で作らない。作るのは <c>IViewModelFactory</c> で、画面は受け取るか、ファクトリー経由で得る。
+        /// </summary>
+        [Fact]
+        public void ViewCodeBehind_DoesNotConstructViewModels()
+        {
+            string anchor = SourceFileLocator.Find("DS4Windows/UI/MainWindow.xaml.cs");
+            if (anchor == null) return;
+
+            var offenders = new List<string>();
+            foreach (string file in System.IO.Directory.GetFiles(System.IO.Path.GetDirectoryName(anchor), "*.xaml.cs"))
+            {
+                string text = SourceText.ReadCode("DS4Windows/UI/" + System.IO.Path.GetFileName(file));
+                if (text == null) continue;
+                foreach (System.Text.RegularExpressions.Match m in System.Text.RegularExpressions.Regex.Matches(text, @"new\s+\w*ViewModel\s*\("))
+                    offenders.Add(System.IO.Path.GetFileName(file) + ": " + m.Value);
+            }
+
+            Assert.True(offenders.Count == 0, "画面が ViewModel を直接作っている:" + Environment.NewLine + string.Join(Environment.NewLine, offenders));
+        }
     }
 }

@@ -170,6 +170,7 @@ namespace DS4Windows.UI
         private readonly IAppSettingsService appSettingsService;
         // Phase6-Step8-3: 編集スロットの LS／RS 補正値・出力種別の読み書き先（Global.LSModInfo 等の置換先）
         private readonly IProfileSettingsService profileSettingsService;
+        private readonly IViewModelFactory _viewModelFactory;
         // Phase6-Step10-2-4a: 補助ウィンドウ（ボタン割り当て、プリセット、スティック校正、スペシャルアクション編集）の生成の窓口
         private readonly DS4Windows.UI.Abstractions.IEditorWindowFactory editorWindowFactory;
         // Phase7-Step10e W2: スロット数の上限は、静的な environmentService.ControllerSlotLimit ではなく、注入された環境サービスから読む
@@ -358,18 +359,19 @@ namespace DS4Windows.UI
             // Phase6-Step9-4: ファクトリが解決できない場合のレガシーフォールバック（new ProfileSettingsViewModel）は削除した
             // （ViewModel の依存を必須引数にしたため、ファクトリ以外に組み立てる経路が無い）
             var vmFactory = viewModelFactory ?? throw new ArgumentNullException(nameof(viewModelFactory));
+            _viewModelFactory = vmFactory;
             profileSettingsVM = vmFactory.CreateProfileSettingsViewModel(deviceNum, targetDevice);
             picBoxHover.Visibility = Visibility.Hidden;
             picBoxHover2.Visibility = Visibility.Hidden;
 
-            mappingListVM = new MappingListViewModel(deviceNum, profileSettingsVM.ContType, profileSettingsService);
+            mappingListVM = vmFactory.CreateMappingListViewModel(deviceNum, profileSettingsVM.ContType);
             specialActionsVM = vmFactory.CreateSpecialActionsListViewModel(deviceNum);
 
             // S9-10: 削除されたプロファイルを参照する Load Profile は、一覧でも「(none)」と表示する（割り当て編集画面と同じ）
             mappingListVM.ProfileExists = LoadProfileTargetExists;
             specialActionsVM.ProfileExists = LoadProfileTargetExists;
 
-            touchButtonUC = new TouchButtonUserControl(deviceNum, profileSettingsService);
+            touchButtonUC = new TouchButtonUserControl(vmFactory.CreateTouchButtonViewModel(deviceNum));
             TouchpadButtonControlDisplaySetup();
 
             RemoveHoverBtnText();
@@ -895,8 +897,8 @@ namespace DS4Windows.UI
             contReadingsTab.IsEnabled = true;
 
             conReadingsUserCon.EnableControl(false);
-            axialLSStickControl.UseDevice(profileSettingsService.LSModInfo[deviceNum]);
-            axialRSStickControl.UseDevice(profileSettingsService.RSModInfo[deviceNum]);
+            axialLSStickControl.UseDevice(_viewModelFactory.CreateAxialStickControlViewModel(profileSettingsService.LSModInfo[deviceNum]));
+            axialRSStickControl.UseDevice(_viewModelFactory.CreateAxialStickControlViewModel(profileSettingsService.RSModInfo[deviceNum]));
 
             mappingListVM.UpdateMappings();
             profileSettingsVM.UpdateLateProperties();

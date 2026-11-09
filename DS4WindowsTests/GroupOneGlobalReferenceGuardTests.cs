@@ -84,7 +84,7 @@ namespace DS4WindowsTests
             if (xaml == null || code == null) return;
 
             Assert.Contains("x:Name=\"languagePackControl\"", File.ReadAllText(xaml));
-            Assert.Contains("languagePackControl.Initialize(appSettingsService, themeLanguage);", code);   // Phase14b-Step16（D11）: テーマ・言語の契約も渡す
+            Assert.Contains("languagePackControl.Initialize(appSettingsService, viewModelFactory.CreateLanguagePackViewModel(), themeLanguage);", code);   // Phase14b-Step16（D11）: テーマ・言語の契約も渡す
         }
     }
 }

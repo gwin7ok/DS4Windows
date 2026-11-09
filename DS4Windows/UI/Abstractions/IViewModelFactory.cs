@@ -2,6 +2,8 @@
 using DS4Windows.Core.Profiles;
 using DS4Windows.Core.Settings;
 using DS4Windows.UI.ViewModels;
+using DS4Windows.Core.Model;
+using DS4Windows.UI.ViewModels.SpecialActions;
 
 namespace DS4Windows.UI.Abstractions
 {
@@ -29,5 +31,32 @@ namespace DS4Windows.UI.Abstractions
 
         /// <summary>出力スロット管理画面の ViewModel。</summary>
         CurrentOutDeviceViewModel CreateCurrentOutDeviceViewModel();
+
+        // 子画面（ダイアログ・部品）の ViewModel。画面は ViewModel を受け取り、画面を開く側がここから作って渡す。
+        ChangelogViewModel CreateChangelogViewModel();
+        RenameProfileViewModel CreateRenameProfileViewModel();
+        PresetOptionViewModel CreatePresetOptionViewModel();
+        FirstLauchUtilViewModel CreateFirstLaunchUtilViewModel(ControlServiceDeviceOptions deviceOptions);
+        UpdaterWindowViewModel CreateUpdaterWindowViewModel(string newVersion);
+        ControllerRegDeviceOptsViewModel CreateControllerRegDeviceOptsViewModel(ControlServiceDeviceOptions deviceOptions);
+        TouchButtonUserControlViewModel CreateTouchButtonViewModel(int deviceIndex);
+        LanguagePackViewModel CreateLanguagePackViewModel();
+        AxialStickControlViewModel CreateAxialStickControlViewModel(StickDeadZoneInfo deadZoneInfo);
+        MappingListViewModel CreateMappingListViewModel(int deviceIndex, OutContType contType);
+        LogViewModel CreateLogViewModel();
+        TrayIconViewModel CreateTrayIconViewModel(ProfileList profileListHolder, System.Windows.Threading.Dispatcher dispatcher);
+        BindingWindowViewModel CreateBindingWindowViewModel(int deviceIndex, DS4ControlSettings settings, int targetDevice);
+
+        // 割り当て編集画面（AssignmentEditor）の、種別ごとの編集用 ViewModel
+        ControlActionEditorViewModel CreateControlActionEditorViewModel(int deviceIndex, ControlSettingsEditTarget target);
+        MacroViewModel CreateMacroViewModel();
+        LaunchProgramViewModel CreateLaunchProgramViewModel();
+        LoadProfileViewModel CreateLoadProfileViewModel(ProfileList profileList);
+        PressKeyViewModel CreatePressKeyViewModel(int deviceIndex);
+        /// <param name="actionIndex">特別な操作の種別の番号（切断＝5、ジャイロの校正＝9）</param>
+        SpecialActionViewModel CreateSpecialActionViewModel(int actionIndex);
+        CheckBatteryViewModel CreateCheckBatteryViewModel();
+        MultiActButtonViewModel CreateMultiActButtonViewModel();
+        FocusWindowViewModel CreateFocusWindowViewModel();
     }
 }
