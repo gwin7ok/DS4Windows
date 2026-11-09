@@ -121,6 +121,46 @@ namespace DS4Windows.UI.ViewModels
         /// <summary><see cref="CurrentSortDirection"/> が昇順かどうか（View 側の bool 引数用の簡便プロパティ）。</summary>
         public bool CurrentSortAscending => lastSortedDirection == ListSortDirection.Ascending;
 
+        /// <summary>有効列の見出し。ソート列のときだけ矢印を表示する（文字は持たない）。</summary>
+        public string ActiveHeaderText => GetHeaderText("Active");
+
+        /// <summary>名前列の見出し（ソート列のときは矢印つき）。</summary>
+        public string NameHeaderText => GetHeaderText("Name");
+
+        /// <summary>トリガー列の見出し（ソート列のときは矢印つき）。</summary>
+        public string TriggerHeaderText => GetHeaderText("Trigger");
+
+        /// <summary>アクション列の見出し（ソート列のときは矢印つき）。</summary>
+        public string ActionHeaderText => GetHeaderText("Action");
+
+        private string GetHeaderText(string column)
+        {
+            string baseName = column switch
+            {
+                // 有効列は文字を持たず、ソート列のときの矢印だけを表示する
+                "Active" => string.Empty,
+                "Name" => Translations.Strings.Name,
+                "Trigger" => Translations.Strings.Trigger,
+                "Action" => Translations.Strings.Action,
+                _ => column,
+            };
+            if (column != lastSortedPropertyName)
+            {
+                return baseName;
+            }
+
+            return baseName + (CurrentSortAscending ? "▲" : "▼");
+        }
+
+        /// <summary>見出しの文字を読み直させる。言語の切り替え後に呼ぶ（文字は表示言語で決まる）。</summary>
+        public void RefreshHeaderTexts()
+        {
+            OnPropertyChanged(nameof(ActiveHeaderText));
+            OnPropertyChanged(nameof(NameHeaderText));
+            OnPropertyChanged(nameof(TriggerHeaderText));
+            OnPropertyChanged(nameof(ActionHeaderText));
+        }
+
         public void SortActions(string propertyName, ListSortDirection direction)
         {
             List<SpecialActionItem> items = actionCol.ToList();
@@ -163,6 +203,7 @@ namespace DS4Windows.UI.ViewModels
             OnPropertyChanged(nameof(CurrentSortColumn));
             OnPropertyChanged(nameof(CurrentSortDirection));
             OnPropertyChanged(nameof(CurrentSortAscending));
+            RefreshHeaderTexts();
         }
 
         /// <summary>

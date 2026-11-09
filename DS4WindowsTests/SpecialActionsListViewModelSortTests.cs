@@ -149,5 +149,41 @@ namespace DS4WindowsTests
 
             Assert.Equal(new[] { "Key", "Macro", "ProfileSwitch" }, vm.ActionCol.Select(i => i.TypeName));
         }
+
+        [Fact]
+        public void HeaderTexts_ShowTheArrowOnlyOnTheSortedColumn()
+        {
+            var vm = CreateVm(("Alpha", true));
+
+            vm.SortActions("Trigger", ListSortDirection.Descending);
+
+            Assert.EndsWith("▼", vm.TriggerHeaderText);
+            Assert.DoesNotContain("▲", vm.NameHeaderText + vm.ActionHeaderText);
+            Assert.DoesNotContain("▼", vm.NameHeaderText + vm.ActionHeaderText);
+            Assert.Equal(string.Empty, vm.ActiveHeaderText);
+        }
+
+        [Fact]
+        public void HeaderTexts_ActiveColumnShowsOnlyTheArrow()
+        {
+            var vm = CreateVm(("Alpha", true));
+
+            vm.SortActions("Active", ListSortDirection.Ascending);
+
+            Assert.Equal("▲", vm.ActiveHeaderText);
+        }
+
+        [Fact]
+        public void SortActions_RaisesHeaderTextChanges()
+        {
+            var vm = CreateVm(("Alpha", true));
+            var changed = new System.Collections.Generic.List<string>();
+            vm.PropertyChanged += (s, e) => changed.Add(e.PropertyName);
+
+            vm.SortActions("Name", ListSortDirection.Descending);
+
+            Assert.Contains(nameof(SpecialActionsListViewModel.NameHeaderText), changed);
+            Assert.Contains(nameof(SpecialActionsListViewModel.ActiveHeaderText), changed);
+        }
     }
 }

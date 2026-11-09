@@ -23,8 +23,7 @@
                     HorizontalAlignment="Stretch"
                     VerticalAlignment="Stretch"
                     Width="{Binding RelativeSource={RelativeSource AncestorType=GridViewColumnHeader}, Path=ActualWidth}">
-                <TextBlock x:Name="NameHeaderTextBlock"
-                           Text="{lex:Loc Name}"
+                <TextBlock Text="{Binding DataContext.NameHeaderText, RelativeSource={RelativeSource AncestorType=ListView}}"
                            HorizontalAlignment="Center"
                            VerticalAlignment="Center"/>
             </Button>
@@ -38,8 +37,7 @@
                     VerticalAlignment="Stretch"
                     Width="{Binding RelativeSource={RelativeSource AncestorType=GridViewColumnHeader}, Path=ActualWidth}">
                 <!-- 初期はラベル無し。ソート列になったときのみ矢印を表示 -->
-                <TextBlock x:Name="ActiveHeaderTextBlock"
-                           Text=""
+                <TextBlock Text="{Binding DataContext.ActiveHeaderText, RelativeSource={RelativeSource AncestorType=ListView}}"
                            HorizontalAlignment="Center"
                            VerticalAlignment="Center"/>
             </Button>
@@ -52,8 +50,7 @@
                     HorizontalAlignment="Stretch"
                     VerticalAlignment="Stretch"
                     Width="{Binding RelativeSource={RelativeSource AncestorType=GridViewColumnHeader}, Path=ActualWidth}">
-                <TextBlock x:Name="TriggerHeaderTextBlock"
-                           Text="{lex:Loc Trigger}"
+                <TextBlock Text="{Binding DataContext.TriggerHeaderText, RelativeSource={RelativeSource AncestorType=ListView}}"
                            HorizontalAlignment="Center"
                            VerticalAlignment="Center"/>
             </Button>
@@ -66,8 +63,7 @@
                     HorizontalAlignment="Stretch"
                     VerticalAlignment="Stretch"
                     Width="{Binding RelativeSource={RelativeSource AncestorType=GridViewColumnHeader}, Path=ActualWidth}">
-                <TextBlock x:Name="ActionHeaderTextBlock"
-                           Text="{lex:Loc Action}"
+                <TextBlock Text="{Binding DataContext.ActionHeaderText, RelativeSource={RelativeSource AncestorType=ListView}}"
                            HorizontalAlignment="Center"
                            VerticalAlignment="Center"/>
             </Button>
