@@ -223,10 +223,12 @@
                                    Canvas.Left="622"
                                    Canvas.Top="11"
                                    Panel.ZIndex="2"
+                                   IsHitTestVisible="False"
                                    IsEnabled="False"/>
                             <Label x:Name="highlightLb"
                                    Content="A"
                                    Panel.ZIndex="2"
+                                   IsHitTestVisible="False"
                                    Background="{DynamicResource KeyHighlight.Background}"
                                    Foreground="{DynamicResource KeyHighlight.Foreground}"
                                    IsEnabled="False"
