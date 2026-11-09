@@ -58,14 +58,14 @@ namespace DS4WindowsTests
         [Fact]
         public void ProfileSettingsViewModel_RaisesPropertyChanged_WhenTheDeadZoneChanges()
         {
-            var vm = ProfileSettingsViewModelTestFactory.Create(0);
+            var vm = ProfileSettingsViewModelTestFactory.Create(0).Sticks;
             double original = vm.LSDeadZone;
             var names = new List<string>();
             vm.PropertyChanged += (s, e) => names.Add(e.PropertyName);
             try
             {
                 vm.LSDeadZone = original >= 0.5 ? 0.25 : 0.75;
-                Assert.Contains(nameof(ProfileSettingsViewModel.LSDeadZone), names);
+                Assert.Contains(nameof(StickSettingsViewModel.LSDeadZone), names);
             }
             finally
             {

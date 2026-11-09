@@ -82,8 +82,8 @@ namespace DS4WindowsTests
                 // 0.29 * 100.0 ＝ 28.999999999999996。旧は (int) の切り捨てで 28 になった
                 vm.Triggers.L2MaxZone = 0.29; vm.Triggers.R2MaxZone = 0.29;
                 vm.Triggers.L2AntiDeadZone = 0.29; vm.Triggers.R2AntiDeadZone = 0.29;
-                vm.LSMaxZone = 0.29; vm.RSMaxZone = 0.29;
-                vm.LSAntiDeadZone = 0.29; vm.RSAntiDeadZone = 0.29;
+                vm.Sticks.LSMaxZone = 0.29; vm.Sticks.RSMaxZone = 0.29;
+                vm.Sticks.LSAntiDeadZone = 0.29; vm.Sticks.RSAntiDeadZone = 0.29;
 
                 Assert.Equal(29, settings.L2ModInfo[slot].maxZone);
                 Assert.Equal(29, settings.R2ModInfo[slot].maxZone);

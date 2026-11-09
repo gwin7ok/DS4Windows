@@ -184,9 +184,12 @@ namespace DS4WindowsTests
             Assert.DoesNotContain(values, v => v.Contains("TriggerFullPullBtn_Click"));
 
             // 割り当て名の表示ラベルは、読み取り専用の表示として残す
+            // LS・RS の部分は StickSettingsPanel（Axis Config のタブの中身の一部）にある
+            XDocument stickXaml = LoadXaml("DS4Windows/UI/StickSettingsPanel.xaml");
+            if (stickXaml == null) return;
             foreach (string label in new[] { "lsOuterBindLb", "rsOuterBindLb" })
             {
-                Assert.True(XamlTestHelper.HasName(axis, label), label + " が Axis Config のタブにない");
+                Assert.True(XamlTestHelper.HasName(stickXaml.Root, label), label + " が StickSettingsPanel にない");
             }
             // L2・R2 の部分は TriggerSettingsPanel（Axis Config のタブの中身の一部）にある
             XDocument triggerXaml = LoadXaml("DS4Windows/UI/TriggerSettingsPanel.xaml");
@@ -210,8 +213,12 @@ namespace DS4WindowsTests
             if (panelCode == null) return;
             Assert.Contains("l2FullPullLb.DataContext = mappingList.ControlMap[DS4Controls.L2FullPull];", panelCode);
             Assert.Contains("r2FullPullLb.DataContext = mappingList.ControlMap[DS4Controls.R2FullPull];", panelCode);
-            Assert.Contains("lsOuterBindLb.DataContext = mappingListVM.ControlMap[DS4Controls.LSOuter];", code);
-            Assert.Contains("rsOuterBindLb.DataContext = mappingListVM.ControlMap[DS4Controls.RSOuter];", code);
+            // LS・RS のラベルは StickSettingsPanel が持ち、編集画面は割り当ての一覧を渡して結ばせる
+            Assert.Contains("sticksPanel.AssignOuterBindAssociation(mappingListVM);", code);
+            string stickCode = Read("DS4Windows/UI/StickSettingsPanel.xaml.cs");
+            if (stickCode == null) return;
+            Assert.Contains("lsOuterBindLb.DataContext = mappingList.ControlMap[DS4Controls.LSOuter];", stickCode);
+            Assert.Contains("rsOuterBindLb.DataContext = mappingList.ControlMap[DS4Controls.RSOuter];", stickCode);
         }
 
         [Fact]

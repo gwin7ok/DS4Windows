@@ -522,6 +522,9 @@ namespace DS4Windows.UI
             profileSettingsVM.Touchpad.PropertyChanged += TouchpadVM_PropertyChanged;
             touchpadPanel.SwipeControlClicked += TouchpadPanel_SwipeControlClicked;
             profileSettingsVM.Triggers.PropertyChanged += TriggersVM_PropertyChanged;
+            profileSettingsVM.Sticks.PropertyChanged += SticksVM_PropertyChanged;
+            sticksPanel.CustomCurveEditorRequested += SticksPanel_CustomCurveEditorRequested;
+            sticksPanel.CalibrationRequested += CalibrateStick_OnClick;
             triggersPanel.CustomCurveEditorRequested += TriggersPanel_CustomCurveEditorRequested;
 
         }
@@ -533,16 +536,8 @@ namespace DS4Windows.UI
         {
             switch (e.PropertyName)
             {
-                case nameof(ProfileSettingsViewModel.LSDeadZone): UpdateReadingsLsDeadZone(sender, EventArgs.Empty); break;
-                case nameof(ProfileSettingsViewModel.RSDeadZone): UpdateReadingsRsDeadZone(sender, EventArgs.Empty); break;
                 case nameof(ProfileSettingsViewModel.SXDeadZone): UpdateReadingsSXDeadZone(sender, EventArgs.Empty); break;
                 case nameof(ProfileSettingsViewModel.SZDeadZone): UpdateReadingsSZDeadZone(sender, EventArgs.Empty); break;
-                case nameof(ProfileSettingsViewModel.LeftStickDriftXAxis):
-                case nameof(ProfileSettingsViewModel.LeftStickDriftYAxis):
-                    UpdateReadingsLSDrift(sender, EventArgs.Empty); break;
-                case nameof(ProfileSettingsViewModel.RightStickDriftXAxis):
-                case nameof(ProfileSettingsViewModel.RightStickDriftYAxis):
-                    UpdateReadingsRSDrift(sender, EventArgs.Empty); break;
             }
         }
 
@@ -551,7 +546,7 @@ namespace DS4Windows.UI
         /// </summary>
         private void AxialStick_PropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e)
         {
-            bool left = ReferenceEquals(sender, axialLSStickControl.AxialVM);
+            bool left = ReferenceEquals(sender, sticksPanel.AxialLeft.AxialVM);
             switch (e.PropertyName)
             {
                 case nameof(AxialStickControlViewModel.DeadZoneX):
@@ -561,6 +556,28 @@ namespace DS4Windows.UI
                     if (left) UpdateReadingsLsDeadZoneY(sender, EventArgs.Empty); else UpdateReadingsRsDeadZoneY(sender, EventArgs.Empty);
                     break;
             }
+        }
+
+        private void SticksVM_PropertyChanged(object sender, PropertyChangedEventArgs e)
+        {
+            // デッドゾーンを変えたら、コントローラーの読み取り値の表示（試験表示）へ反映する
+            switch (e.PropertyName)
+            {
+                case nameof(StickSettingsViewModel.LSDeadZone): UpdateReadingsLsDeadZone(sender, EventArgs.Empty); break;
+                case nameof(StickSettingsViewModel.RSDeadZone): UpdateReadingsRsDeadZone(sender, EventArgs.Empty); break;
+                case nameof(StickSettingsViewModel.LeftStickDriftXAxis):
+                case nameof(StickSettingsViewModel.LeftStickDriftYAxis):
+                    UpdateReadingsLSDrift(sender, EventArgs.Empty); break;
+                case nameof(StickSettingsViewModel.RightStickDriftXAxis):
+                case nameof(StickSettingsViewModel.RightStickDriftYAxis):
+                    UpdateReadingsRSDrift(sender, EventArgs.Empty); break;
+            }
+        }
+
+        private void SticksPanel_CustomCurveEditorRequested(object sender, string target)
+        {
+            if (target == "LS") LaunchCurveEditor(profileSettingsVM.Sticks.LSCustomCurve);
+            else if (target == "RS") LaunchCurveEditor(profileSettingsVM.Sticks.RSCustomCurve);
         }
 
         private void TriggersVM_PropertyChanged(object sender, PropertyChangedEventArgs e)
@@ -607,9 +624,12 @@ namespace DS4Windows.UI
             profileSettingsVM.Touchpad.PropertyChanged -= TouchpadVM_PropertyChanged;
             touchpadPanel.SwipeControlClicked -= TouchpadPanel_SwipeControlClicked;
             profileSettingsVM.Triggers.PropertyChanged -= TriggersVM_PropertyChanged;
+            profileSettingsVM.Sticks.PropertyChanged -= SticksVM_PropertyChanged;
+            sticksPanel.CustomCurveEditorRequested -= SticksPanel_CustomCurveEditorRequested;
+            sticksPanel.CalibrationRequested -= CalibrateStick_OnClick;
             triggersPanel.CustomCurveEditorRequested -= TriggersPanel_CustomCurveEditorRequested;
-            axialLSStickControl.AxialVM.PropertyChanged -= AxialStick_PropertyChanged;
-            axialRSStickControl.AxialVM.PropertyChanged -= AxialStick_PropertyChanged;
+            sticksPanel.AxialLeft.AxialVM.PropertyChanged -= AxialStick_PropertyChanged;
+            sticksPanel.AxialRight.AxialVM.PropertyChanged -= AxialStick_PropertyChanged;
 
 
             inputTimer.Stop();
@@ -651,46 +671,46 @@ namespace DS4Windows.UI
 
         private void UpdateReadingsLsDeadZone(object sender, EventArgs e)
         {
-            conReadingsUserCon.LsDeadX = profileSettingsVM.LSDeadZone;
-            conReadingsUserCon.LsDeadY = profileSettingsVM.LSDeadZone;
+            conReadingsUserCon.LsDeadX = profileSettingsVM.Sticks.LSDeadZone;
+            conReadingsUserCon.LsDeadY = profileSettingsVM.Sticks.LSDeadZone;
         }
 
         private void UpdateReadingsLsDeadZoneX(object sender, EventArgs e)
         {
-            conReadingsUserCon.LsDeadX = axialLSStickControl.AxialVM.DeadZoneX;
+            conReadingsUserCon.LsDeadX = sticksPanel.AxialLeft.AxialVM.DeadZoneX;
         }
 
         private void UpdateReadingsLsDeadZoneY(object sender, EventArgs e)
         {
-            conReadingsUserCon.LsDeadY = axialLSStickControl.AxialVM.DeadZoneY;
+            conReadingsUserCon.LsDeadY = sticksPanel.AxialLeft.AxialVM.DeadZoneY;
         }
 
         private void UpdateReadingsRsDeadZone(object sender, EventArgs e)
         {
-            conReadingsUserCon.RsDeadX = profileSettingsVM.RSDeadZone;
-            conReadingsUserCon.RsDeadY = profileSettingsVM.RSDeadZone;
+            conReadingsUserCon.RsDeadX = profileSettingsVM.Sticks.RSDeadZone;
+            conReadingsUserCon.RsDeadY = profileSettingsVM.Sticks.RSDeadZone;
         }
 
         private void UpdateReadingsRsDeadZoneX(object sender, EventArgs e)
         {
-            conReadingsUserCon.RsDeadX = axialRSStickControl.AxialVM.DeadZoneX;
+            conReadingsUserCon.RsDeadX = sticksPanel.AxialRight.AxialVM.DeadZoneX;
         }
 
         private void UpdateReadingsRsDeadZoneY(object sender, EventArgs e)
         {
-            conReadingsUserCon.RsDeadY = axialRSStickControl.AxialVM.DeadZoneY;
+            conReadingsUserCon.RsDeadY = sticksPanel.AxialRight.AxialVM.DeadZoneY;
         }
 
         private void UpdateReadingsLSDrift(object sender, EventArgs e)
         {
-            conReadingsUserCon.LsDriftX = profileSettingsVM.LeftStickDriftXAxis;
-            conReadingsUserCon.LsDriftY = profileSettingsVM.LeftStickDriftYAxis;
+            conReadingsUserCon.LsDriftX = profileSettingsVM.Sticks.LeftStickDriftXAxis;
+            conReadingsUserCon.LsDriftY = profileSettingsVM.Sticks.LeftStickDriftYAxis;
         }
 
         private void UpdateReadingsRSDrift(object sender, EventArgs e)
         {
-            conReadingsUserCon.RsDriftX = profileSettingsVM.RightStickDriftXAxis;
-            conReadingsUserCon.RsDriftY = profileSettingsVM.RightStickDriftYAxis;
+            conReadingsUserCon.RsDriftX = profileSettingsVM.Sticks.RightStickDriftXAxis;
+            conReadingsUserCon.RsDriftY = profileSettingsVM.Sticks.RightStickDriftYAxis;
         }
 
         private void AssignTiltAssociation()
@@ -705,8 +725,7 @@ namespace DS4Windows.UI
 
         private void AssignStickOuterBindAssociation()
         {
-            lsOuterBindLb.DataContext = mappingListVM.ControlMap[DS4Controls.LSOuter];
-            rsOuterBindLb.DataContext = mappingListVM.ControlMap[DS4Controls.RSOuter];
+            sticksPanel.AssignOuterBindAssociation(mappingListVM);
         }
 
         private void MappingListBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
@@ -884,8 +903,8 @@ namespace DS4Windows.UI
             contReadingsTab.IsEnabled = true;
 
             conReadingsUserCon.EnableControl(false);
-            axialLSStickControl.UseDevice(_viewModelFactory.CreateAxialStickControlViewModel(profileSettingsService.LSModInfo[deviceNum]));
-            axialRSStickControl.UseDevice(_viewModelFactory.CreateAxialStickControlViewModel(profileSettingsService.RSModInfo[deviceNum]));
+            sticksPanel.AxialLeft.UseDevice(_viewModelFactory.CreateAxialStickControlViewModel(profileSettingsService.LSModInfo[deviceNum]));
+            sticksPanel.AxialRight.UseDevice(_viewModelFactory.CreateAxialStickControlViewModel(profileSettingsService.RSModInfo[deviceNum]));
 
             mappingListVM.UpdateMappings();
             profileSettingsVM.UpdateLateProperties();
@@ -907,25 +926,25 @@ namespace DS4Windows.UI
             StickDeadZoneInfo lsMod = profileSettingsService.LSModInfo[deviceNum];
             if (lsMod.deadzoneType == StickDeadZoneInfo.DeadZoneType.Radial)
             {
-                conReadingsUserCon.LsDeadX = profileSettingsVM.LSDeadZone;
-                conReadingsUserCon.LsDeadY = profileSettingsVM.LSDeadZone;
+                conReadingsUserCon.LsDeadX = profileSettingsVM.Sticks.LSDeadZone;
+                conReadingsUserCon.LsDeadY = profileSettingsVM.Sticks.LSDeadZone;
             }
             else if (lsMod.deadzoneType == StickDeadZoneInfo.DeadZoneType.Axial)
             {
-                conReadingsUserCon.LsDeadX = axialLSStickControl.AxialVM.DeadZoneX;
-                conReadingsUserCon.LsDeadY = axialLSStickControl.AxialVM.DeadZoneY;
+                conReadingsUserCon.LsDeadX = sticksPanel.AxialLeft.AxialVM.DeadZoneX;
+                conReadingsUserCon.LsDeadY = sticksPanel.AxialLeft.AxialVM.DeadZoneY;
             }
 
             StickDeadZoneInfo rsMod = profileSettingsService.RSModInfo[deviceNum];
             if (rsMod.deadzoneType == StickDeadZoneInfo.DeadZoneType.Radial)
             {
-                conReadingsUserCon.RsDeadX = profileSettingsVM.RSDeadZone;
-                conReadingsUserCon.RsDeadY = profileSettingsVM.RSDeadZone;
+                conReadingsUserCon.RsDeadX = profileSettingsVM.Sticks.RSDeadZone;
+                conReadingsUserCon.RsDeadY = profileSettingsVM.Sticks.RSDeadZone;
             }
             else if (rsMod.deadzoneType == StickDeadZoneInfo.DeadZoneType.Axial)
             {
-                conReadingsUserCon.RsDeadX = axialRSStickControl.AxialVM.DeadZoneX;
-                conReadingsUserCon.RsDeadY = axialRSStickControl.AxialVM.DeadZoneY;
+                conReadingsUserCon.RsDeadX = sticksPanel.AxialRight.AxialVM.DeadZoneX;
+                conReadingsUserCon.RsDeadY = sticksPanel.AxialRight.AxialVM.DeadZoneY;
             }
 
             conReadingsUserCon.L2Dead = profileSettingsVM.Triggers.L2DeadZone;
@@ -933,13 +952,13 @@ namespace DS4Windows.UI
             conReadingsUserCon.SixAxisXDead = profileSettingsVM.SXDeadZone;
             conReadingsUserCon.SixAxisZDead = profileSettingsVM.SZDeadZone;
 
-            conReadingsUserCon.LsDriftX = profileSettingsVM.LeftStickDriftXAxis;
-            conReadingsUserCon.LsDriftY = profileSettingsVM.LeftStickDriftYAxis;
-            conReadingsUserCon.RsDriftX = profileSettingsVM.RightStickDriftXAxis;
-            conReadingsUserCon.RsDriftY = profileSettingsVM.RightStickDriftYAxis;
+            conReadingsUserCon.LsDriftX = profileSettingsVM.Sticks.LeftStickDriftXAxis;
+            conReadingsUserCon.LsDriftY = profileSettingsVM.Sticks.LeftStickDriftYAxis;
+            conReadingsUserCon.RsDriftX = profileSettingsVM.Sticks.RightStickDriftXAxis;
+            conReadingsUserCon.RsDriftY = profileSettingsVM.Sticks.RightStickDriftYAxis;
 
-            axialLSStickControl.AxialVM.PropertyChanged += AxialStick_PropertyChanged;
-            axialRSStickControl.AxialVM.PropertyChanged += AxialStick_PropertyChanged;
+            sticksPanel.AxialLeft.AxialVM.PropertyChanged += AxialStick_PropertyChanged;
+            sticksPanel.AxialRight.AxialVM.PropertyChanged += AxialStick_PropertyChanged;
 
             // 初期表示も統一ソートメソッドを使用
             // NOTE: 呼び出しを削除しました。レンダリング完了後に Dispatcher.BeginInvoke で
@@ -962,8 +981,8 @@ namespace DS4Windows.UI
             lightbarRect.DataContext = null;
 
             touchButtonUC.UnregisterDataContext();
-            axialLSStickControl.UnregisterDataContext();
-            axialRSStickControl.UnregisterDataContext();
+            sticksPanel.AxialLeft.UnregisterDataContext();
+            sticksPanel.AxialRight.UnregisterDataContext();
         }
 
         private void RefreshEditorBindings()
@@ -990,16 +1009,16 @@ namespace DS4Windows.UI
             // プリセット適用でタッチパッド出力モードが変わっても、Button Activation Mode の表示位置が追従するようにする
             TouchpadButtonControlDisplaySetup();
 
-            conReadingsUserCon.LsDeadX = profileSettingsVM.LSDeadZone;
-            conReadingsUserCon.RsDeadX = profileSettingsVM.RSDeadZone;
+            conReadingsUserCon.LsDeadX = profileSettingsVM.Sticks.LSDeadZone;
+            conReadingsUserCon.RsDeadX = profileSettingsVM.Sticks.RSDeadZone;
             conReadingsUserCon.L2Dead = profileSettingsVM.Triggers.L2DeadZone;
             conReadingsUserCon.R2Dead = profileSettingsVM.Triggers.R2DeadZone;
             conReadingsUserCon.SixAxisXDead = profileSettingsVM.SXDeadZone;
             conReadingsUserCon.SixAxisZDead = profileSettingsVM.SZDeadZone;
-            conReadingsUserCon.LsDriftX = profileSettingsVM.LeftStickDriftXAxis;
-            conReadingsUserCon.LsDriftY = profileSettingsVM.LeftStickDriftYAxis;
-            conReadingsUserCon.RsDriftX = profileSettingsVM.RightStickDriftXAxis;
-            conReadingsUserCon.RsDriftY = profileSettingsVM.RightStickDriftYAxis;
+            conReadingsUserCon.LsDriftX = profileSettingsVM.Sticks.LeftStickDriftXAxis;
+            conReadingsUserCon.LsDriftY = profileSettingsVM.Sticks.LeftStickDriftYAxis;
+            conReadingsUserCon.RsDriftX = profileSettingsVM.Sticks.RightStickDriftXAxis;
+            conReadingsUserCon.RsDriftY = profileSettingsVM.Sticks.RightStickDriftYAxis;
         }
 
         private void CancelBtn_Click(object sender, RoutedEventArgs e)
@@ -1396,9 +1415,7 @@ namespace DS4Windows.UI
         {
             Button btn = sender as Button;
             string tag = btn.Tag.ToString();
-            if (tag == "LS") LaunchCurveEditor(profileSettingsVM.LSCustomCurve);
-            else if (tag == "RS") LaunchCurveEditor(profileSettingsVM.RSCustomCurve);
-            else if (tag == "SX") LaunchCurveEditor(profileSettingsVM.SXCustomCurve);
+            if (tag == "SX") LaunchCurveEditor(profileSettingsVM.SXCustomCurve);
             else if (tag == "SZ") LaunchCurveEditor(profileSettingsVM.SZCustomCurve);
         }
 
@@ -2118,7 +2135,7 @@ namespace DS4Windows.UI
             }
         }
 
-        private void CalibrateStick_OnClick(object sender, RoutedEventArgs e)
+        private void CalibrateStick_OnClick(object sender, int tag)
         {
             // Phase6-Step7b: 校正には実機が必要。旧判定 deviceNum == 8（一覧経由）は、編集スロットが常に 8 になったため
             // 実機の有無（targetDevice）の判定に置き換えた。メッセージの文言は維持
@@ -2131,8 +2148,6 @@ namespace DS4Windows.UI
                 return;
             }
 
-            var button = sender as Button;
-            var tag = Convert.ToInt32(button?.Tag);
             var stick = tag switch
             {
                 0 => Stick.Left,

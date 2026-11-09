@@ -7,7 +7,7 @@ namespace DS4WindowsTests
 {
     /// <summary>
     /// 2026-09-26（ユーザー決定、Phase6-Step7b の実機確認中に追加）: スティックの Dead Zone の入力欄 4 つ
-    /// （ProfileEditor.xaml の LSDeadZone／RSDeadZone、AxialStickUserControl.xaml の DeadZoneX／DeadZoneY）は、
+    /// （StickSettingsPanel.xaml の LSDeadZone／RSDeadZone、AxialStickUserControl.xaml の DeadZoneX／DeadZoneY）は、
     /// Six Axis の Dead Zone と同じく、値が変わるたびに設定へ書き込む（UpdateSourceTrigger=LostFocus を付けない）。
     /// LostFocus だと、▲で増やしても入力欄からフォーカスが外れるまで Controller Readings の円が更新されない。
     /// その指定の再混入を検出するソース走査ガード。ソースファイルが見つからない環境では、検査を行わず合格とする。
@@ -22,8 +22,8 @@ namespace DS4WindowsTests
         }
 
         [Theory]
-        [InlineData("DS4Windows/UI/ProfileEditor.xaml", "LSDeadZone")]
-        [InlineData("DS4Windows/UI/ProfileEditor.xaml", "RSDeadZone")]
+        [InlineData("DS4Windows/UI/StickSettingsPanel.xaml", "LSDeadZone")]
+        [InlineData("DS4Windows/UI/StickSettingsPanel.xaml", "RSDeadZone")]
         [InlineData("DS4Windows/UI/AxialStickUserControl.xaml", "DeadZoneX")]
         [InlineData("DS4Windows/UI/AxialStickUserControl.xaml", "DeadZoneY")]
         public void StickDeadZone_IsWrittenOnEveryChange(string relativePath, string property)
