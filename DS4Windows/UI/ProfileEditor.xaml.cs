@@ -357,7 +357,6 @@ namespace DS4Windows.UI
 
         private void SetupEvents()
         {
-            WPFLocalizeExtension.Engine.LocalizeDictionary.Instance.PropertyChanged += LocalizeDictionary_PropertyChanged;
             outputPanel.OutConTypeCombo.SelectionChanged += OutConTypeCombo_SelectionChanged;
             outputPanel.RumbleTestClick += RumbleTestBtn_Click;
             generalPanel.UseControllerReadoutClick += UseControllerReadoutCk_Click;
@@ -462,15 +461,8 @@ namespace DS4Windows.UI
             ShowControlAssignmentEditor(mappingListVM.ControlMap[control], updateHighlight: true);
         }
 
-        // 見出しの文字は表示言語で決まるため、言語が切り替わったら読み直させる
-        private void LocalizeDictionary_PropertyChanged(object sender, PropertyChangedEventArgs e)
-        {
-            Dispatcher.BeginInvoke((Action)(() => specialActionsVM?.RefreshHeaderTexts()));
-        }
-
         private void UnregisterEvents()
         {
-            WPFLocalizeExtension.Engine.LocalizeDictionary.Instance.PropertyChanged -= LocalizeDictionary_PropertyChanged;
             outputPanel.OutConTypeCombo.SelectionChanged -= OutConTypeCombo_SelectionChanged;
             outputPanel.RumbleTestClick -= RumbleTestBtn_Click;
             generalPanel.UseControllerReadoutClick -= UseControllerReadoutCk_Click;
