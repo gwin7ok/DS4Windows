@@ -2014,7 +2014,11 @@ namespace DS4Windows.UI
 
         private void PresetMenuItem_Click(object sender, RoutedEventArgs e)
         {
-            MenuItem item = sender as MenuItem;
+            // 項目ごとの Click ではなく、ContextMenu で受ける（MenuItem.Click は上へ伝わる）。
+            // 項目を ContextMenu のリソースに置くと、コンパイル時の接続番号と読み込み時の順序がずれて、画面を開く時に落ちるため。
+            MenuItem item = e.OriginalSource as MenuItem;
+            if (item == null || item.HasItems)
+                return;
             int baseTag = Convert.ToInt32(item.Tag);
             int subTag = Convert.ToInt32(item.CommandParameter);
             if (baseTag >= 0 && subTag >= 0)

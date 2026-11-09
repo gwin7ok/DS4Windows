@@ -21,7 +21,15 @@ namespace DS4WindowsTests
             {
                 if (worker == null)
                 {
-                    worker = new Thread(() => { foreach (Action job in Queue.GetConsumingEnumerable()) job(); });
+                    worker = new Thread(() =>
+                    {
+                        // Application は、最初に作ったスレッドに結び付く。他のテストが作っていなければ、ここで作る
+                        if (System.Windows.Application.Current == null)
+                        {
+                            new System.Windows.Application { ShutdownMode = System.Windows.ShutdownMode.OnExplicitShutdown };
+                        }
+                        foreach (Action job in Queue.GetConsumingEnumerable()) job();
+                    });
                     worker.SetApartmentState(ApartmentState.STA);
                     worker.IsBackground = true;
                     worker.Start();

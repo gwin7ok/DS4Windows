@@ -40,7 +40,7 @@
 
 - Debug ALL（`Remove-bin` から）: ビルド 警告 0・エラー 0、`DS4Windows.Actions.Tests` 3,257 件合格（Benchmark を除く）、`StandaloneTests` 11 件合格。
 - Release ビルド 2 か所を作成（2026-11-09 20:18）: `DS4Windows\bin\x64\Release\`（publish）、`DS4Windows\bin\x64\DS4Windows\`（build。`DS4Windows_4.3.1_x64.zip` を含む）。警告 0、エラー 0。
-- 実機確認: **未実施**。確認項目は §6。
+- 実機確認: 実施中。確認項目は §6。1 項目めのあと、2 項目めで下記の不具合が見つかり、直した（§8）。
 
 ## 5. 件数
 
@@ -70,3 +70,4 @@
 
 - コミット 30 件（この報告書のコミットを含む）。1 領域＝1 コミットなので、実機確認で問題が出た領域だけ戻せる。
 - Bash の heredoc で Python を書くと、バックスラッシュが解釈されて失敗することがあった。スクリプトはファイルに書いてから実行した。
+- **実機確認で見つかった不具合（2026-11-09）**: 接続したコントローラーのプロファイル編集画面を開くと、`InvalidCastException`（`ProfileEditor` の `IComponentConnector.Connect`）で落ちた。原因は、`ControllerVisualizerControl.Resources` の中の `ContextMenu`（`presetMenu`）の `MenuItem` に付けた `x:Name` と `Click` が、読み込み時に接続番号とずれたこと。ビルドと既存のテストは、XAML を実際に読み込まないため通っていた。対処: リソースの中の部品から `x:Name`・`Click` を外し、`ContextMenu` の `MenuItem.Click`（バブリング）で一括して受ける。再発防止: `ProfileEditorMarkupLoadTests`（XAML の読み込み、およびリソースの中に名前・イベントを持つ部品がないことの検査）。
