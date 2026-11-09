@@ -1,7 +1,7 @@
 # Phase15-8 計画書: Phase15 の持ち越しの片付け
 
 作成日: 2026-11-10
-状態: **承認済み（2026-11-10。C1＝A、C2＝撤去、C3＝この順）**
+状態: **作業は完了（2026-11-10。C1＝A、C2＝撤去、C3＝この順）。実機確認と取り込みは待ち**
 ブランチ: `master` から `Phase15-8` を作る
 前提: `Phase15-Completion-Report.md` §7 の 1・2。3（L2）は Phase16 で行う。
 
@@ -71,3 +71,9 @@ Phase15 で意図的に残した 2 件を片付ける。利用者に見える機
 3. 他のタブへ移って戻っても、並べ替えと矢印が保たれる。
 4. 言語を切り替えると、見出しの文字が追従する。
 5. ライトバーの色（メイン画面の一覧のカスタム色）、出力の種類、マクロの記録、タッチパッドのボタンの動作の設定が従来どおり動く（S2 の確認）。
+
+## 7. 結果
+
+- Step 15-8-1: スロット配列の直接参照 5 か所を窓口経由にした。`TouchpadSlotSettings.ButtonMode` を追加。`CompositeDeviceModel` は窓口を一度作って使い回す（`ForSlot` は呼ぶたびに作るため）。`SettingsSlotWindowUsageTests` の対象は 2 → 7 ファイル。
+- Step 15-8-2: `SpecialActionsListViewModel` に見出しの文字 4 つ（`…HeaderText`）と `RefreshHeaderTexts` を追加し、XAML の `TextBlock` から `RelativeSource AncestorType=ListView` 経由でバインドした。`ProfileEditor.xaml.cs` から約 300 行（`EnsureSpecialActionsHeadersAssigned`、`UpdateSpecialActionsHeaderTexts`、`SetAndLogHeaderText`、`*SortButtonContent`、保持用のフィールド、開発用ログ約 25 行）を除いた。最初に特殊アクションのタブを開いたときの並べ替えは一度だけ適用する（`specialActionsSorted`）。言語の切り替えでは `LocalizeDictionary` の変更を受けて読み直す。
+- Debug ALL: 警告 0・エラー 0、3,267 件合格。
