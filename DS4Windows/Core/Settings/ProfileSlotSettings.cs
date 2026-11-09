@@ -16,6 +16,7 @@ namespace DS4Windows.Core.Settings
             Triggers = new TriggerSlotSettings(settings, slot);
             Sticks = new StickSlotSettings(settings, slot);
             Lightbar = new LightbarSlotSettings(settings, slot);
+            Output = new OutputSlotSettings(settings, slot);
         }
 
         public int Slot { get; }
@@ -29,5 +30,7 @@ namespace DS4Windows.Core.Settings
         public StickSlotSettings Sticks { get; }
 
         public LightbarSlotSettings Lightbar { get; }
+
+        public OutputSlotSettings Output { get; }
     }
 }

@@ -70,9 +70,9 @@ namespace DS4WindowsTests
             Assert.Equal(expectedReason, reason);
             // 保存される値（OutContType）と、画面の選択（TempControllerIndex）が、どちらも補正後の種類
             Assert.Equal(expectedType, service.OutContType[Device]);
-            Assert.Equal(expectedType == OutContType.DS4 ? 1 : 0, vm.ControllerTypeIndex);
-            Assert.Equal(expectedType == OutContType.DS4 ? 1 : 0, vm.TempControllerIndex);
-            Assert.Equal(expectedType, vm.TempConType);
+            Assert.Equal(expectedType == OutContType.DS4 ? 1 : 0, vm.Output.ControllerTypeIndex);
+            Assert.Equal(expectedType == OutContType.DS4 ? 1 : 0, vm.Output.TempControllerIndex);
+            Assert.Equal(expectedType, vm.Output.TempConType);
         }
 
         [Fact]
@@ -81,7 +81,7 @@ namespace DS4WindowsTests
             // 画面の選択（TempControllerIndex）が DS4 でも、保存される値（OutContType）が X360 にずれていたら、DS4 へそろえる
             var (vm, service) = Create(OutContType.DS4, ds3Sim: true, enableDs4Data: false);
             service.OutContType[Device] = OutContType.X360;
-            Assert.Equal(1, vm.TempControllerIndex);
+            Assert.Equal(1, vm.Output.TempControllerIndex);
 
             Ds4OutputCorrectionReason reason = vm.CorrectOutputTypeToDs4();
 

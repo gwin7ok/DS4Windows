@@ -48,9 +48,9 @@ namespace DS4WindowsTests
             var (vm, service, slots) = Create(start);
             // 画面を開いた直後の状態（編集画面を開くと、OutDevTypeTemp は保存されている種類で始まる）
             slots.OutDevTypeTemp[Device] = start;
-            vm.TempControllerIndex = start == OutContType.DS4 ? 1 : 0;
+            vm.Output.TempControllerIndex = start == OutContType.DS4 ? 1 : 0;
 
-            vm.TempControllerIndex = newIndex;
+            vm.Output.TempControllerIndex = newIndex;
 
             Assert.Equal(expected, slots.OutDevTypeTemp[Device]);
             Assert.Equal(expected, service.OutContType[Device]);

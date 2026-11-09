@@ -511,7 +511,8 @@ namespace DS4Windows.UI
 
         private void SetupEvents()
         {
-            outConTypeCombo.SelectionChanged += OutConTypeCombo_SelectionChanged;
+            outputPanel.OutConTypeCombo.SelectionChanged += OutConTypeCombo_SelectionChanged;
+            outputPanel.RumbleTestClick += RumbleTestBtn_Click;
             mappingListBox.SelectionChanged += MappingListBox_SelectionChanged;
             Closed += ProfileEditor_Closed;
 
@@ -613,7 +614,8 @@ namespace DS4Windows.UI
 
         private void UnregisterEvents()
         {
-            outConTypeCombo.SelectionChanged -= OutConTypeCombo_SelectionChanged;
+            outputPanel.OutConTypeCombo.SelectionChanged -= OutConTypeCombo_SelectionChanged;
+            outputPanel.RumbleTestClick -= RumbleTestBtn_Click;
             mappingListBox.SelectionChanged -= MappingListBox_SelectionChanged;
             Closed -= ProfileEditor_Closed;
 
@@ -908,7 +910,7 @@ namespace DS4Windows.UI
             mappingListVM.UpdateMappings();
             profileSettingsVM.UpdateLateProperties();
             // Phase6-Step6-1: mappingListVM はプロファイル読み込み前の出力種別で生成されるため、読み込み後の
-            // 出力種別（Xbox 360／DS4）でボタン名表記を明示的に揃える（outConTypeCombo の SelectionChanged の発生有無に依存しない）
+            // 出力種別（Xbox 360／DS4）でボタン名表記を明示的に揃える（出力の種類の選択の SelectionChanged の発生有無に依存しない）
             mappingListVM.UpdateMappingDevType(profileSettingsVM.ContType);
             touchpadPanel.PopulateDisInvertMenu(profileSettingsVM.Touchpad);
             gyroPanel.PopulateTriggerMenus(profileSettingsVM.Gyro);
@@ -1027,7 +1029,7 @@ namespace DS4Windows.UI
                 runtimeFeatures.SetRumble(0, 0, profileSettingsVM.FuncDevNum);
             }
 
-            profileSettingsVM.ResetOutDevTypeTemp();
+            profileSettingsVM.Output.ResetOutDevTypeTemp();
             // Phase6-Step7b: 編集は作業スロットに対して行っており、コントローラーのスロットには届いていないため、
             // 元のプロファイルを読み込み直して取り消す処理は不要（旧: HaltReportingRunAction 内で LoadProfile していた）。
             // 作業スロットは次に編集画面を開いたときに読み込み直される
@@ -1176,7 +1178,7 @@ namespace DS4Windows.UI
             if (correction != Ds4OutputCorrectionReason.None)
             {
                 // 画面の選択も DS4 にそろえる（SelectionChanged が、設定・マッピング一覧の出力の種類も更新する）
-                outConTypeCombo.SelectedIndex = 1;
+                outputPanel.OutConTypeCombo.SelectedIndex = 1;
                 // Phase11 W6c（K-W6-12）: EnableOutputDataToDS4 による補正（と、その GUI ログ）は廃止した。残るのは UseDs3PitchRollSim の補正だけ
                 AppLogger.LogDebug("[ProfileEditor] UseDs3PitchRollSim が有効なため、Emulated Controller を DS4 へ補正した");
             }
@@ -1283,7 +1285,7 @@ namespace DS4Windows.UI
                 {
                     RumbleType type;
                     var btn = sender as Button;
-                    if (!profileSettingsVM.InverseRumbleMotors)
+                    if (!profileSettingsVM.Output.InverseRumbleMotors)
                     {
                         type = btn.Name == "heavyRumbleTestBtn" ? RumbleType.Heavy : RumbleType.Light;
                     }
@@ -1294,26 +1296,26 @@ namespace DS4Windows.UI
 
                     bool rumbleActive;
                     if (type == RumbleType.Heavy)
-                        rumbleActive = profileSettingsVM.HeavyRumbleActive;
+                        rumbleActive = profileSettingsVM.Output.HeavyRumbleActive;
                     else
-                        rumbleActive = profileSettingsVM.LightRumbleActive;
+                        rumbleActive = profileSettingsVM.Output.LightRumbleActive;
                     if (!rumbleActive)
                     {
-                        var rumbleBoost = profileSettingsVM.RumbleBoost;
+                        var rumbleBoost = profileSettingsVM.Output.RumbleBoost;
 
                         // Check if device is DualSense and adjust/update accordingly
                         if (slotCommands.ApplyDualSenseRumbleOptions(rumbleDevice,
-                            (int)profileSettingsVM.DualSenseRumbleEmulationPerIndex,
-                            (byte)profileSettingsVM.DualSenseHapticPowerLevelPerIndex))
+                            (int)profileSettingsVM.Output.DualSenseRumbleEmulationPerIndex,
+                            (byte)profileSettingsVM.Output.DualSenseHapticPowerLevelPerIndex))
                         {
-                            if (!profileSettingsVM.EnableGenericRumbleStrRescaleForDualSenseDevices)
+                            if (!profileSettingsVM.Output.EnableGenericRumbleStrRescaleForDualSenseDevices)
                                 rumbleBoost = 100;
                         }
 
                         if (type == RumbleType.Heavy)
-                            profileSettingsVM.HeavyRumbleActive = true;
+                            profileSettingsVM.Output.HeavyRumbleActive = true;
                         else
-                            profileSettingsVM.LightRumbleActive = true;
+                            profileSettingsVM.Output.LightRumbleActive = true;
 
                         if (type == RumbleType.Heavy)
                         {
@@ -1326,38 +1328,38 @@ namespace DS4Windows.UI
 
                         if (type == RumbleType.Heavy)
                         {
-                            if (!profileSettingsVM.InverseRumbleMotors)
-                                heavyRumbleTestBtn.Content = Properties.Resources.StopHText;
+                            if (!profileSettingsVM.Output.InverseRumbleMotors)
+                                outputPanel.HeavyRumbleTestBtn.Content = Properties.Resources.StopHText;
                             else
-                                lightRumbleTestBtn.Content = Properties.Resources.StopLText;
+                                outputPanel.LightRumbleTestBtn.Content = Properties.Resources.StopLText;
                         }
                         else
                         {
-                            if (!profileSettingsVM.InverseRumbleMotors)
-                                lightRumbleTestBtn.Content = Properties.Resources.StopLText;
+                            if (!profileSettingsVM.Output.InverseRumbleMotors)
+                                outputPanel.LightRumbleTestBtn.Content = Properties.Resources.StopLText;
                             else
-                                heavyRumbleTestBtn.Content = Properties.Resources.StopHText;
+                                outputPanel.HeavyRumbleTestBtn.Content = Properties.Resources.StopHText;
                         }
                     }
                     else
                     {
                         if (type == RumbleType.Heavy)
                         {
-                            profileSettingsVM.HeavyRumbleActive = false;
+                            profileSettingsVM.Output.HeavyRumbleActive = false;
                             slotCommands.SetHeavyRumble(rumbleDevice, 0);
-                            if (!profileSettingsVM.InverseRumbleMotors)
-                                heavyRumbleTestBtn.Content = Properties.Resources.TestHText;
+                            if (!profileSettingsVM.Output.InverseRumbleMotors)
+                                outputPanel.HeavyRumbleTestBtn.Content = Properties.Resources.TestHText;
                             else
-                                lightRumbleTestBtn.Content = Properties.Resources.TestLText;
+                                outputPanel.LightRumbleTestBtn.Content = Properties.Resources.TestLText;
                         }
                         else
                         {
-                            profileSettingsVM.LightRumbleActive = false;
+                            profileSettingsVM.Output.LightRumbleActive = false;
                             slotCommands.SetLightRumble(rumbleDevice, 0);
-                            if (!profileSettingsVM.InverseRumbleMotors)
-                                lightRumbleTestBtn.Content = Properties.Resources.TestLText;
+                            if (!profileSettingsVM.Output.InverseRumbleMotors)
+                                outputPanel.LightRumbleTestBtn.Content = Properties.Resources.TestLText;
                             else
-                                heavyRumbleTestBtn.Content = Properties.Resources.TestHText;
+                                outputPanel.HeavyRumbleTestBtn.Content = Properties.Resources.TestHText;
                         }
                     }
                 }
@@ -1395,6 +1397,7 @@ namespace DS4Windows.UI
 
         private void OutConTypeCombo_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
+            System.Windows.Controls.ComboBox outConTypeCombo = outputPanel.OutConTypeCombo;
             if (outConTypeCombo == null)
                 return;
 
@@ -1405,9 +1408,9 @@ namespace DS4Windows.UI
 
             if (profileSettingsVM != null)
             {
-                profileSettingsVM.ControllerTypeIndex = outConTypeCombo.SelectedIndex;
-                profileSettingsVM.TempControllerIndex = outConTypeCombo.SelectedIndex;
-                profileSettingsVM.TempConType = selected;
+                profileSettingsVM.Output.ControllerTypeIndex = outConTypeCombo.SelectedIndex;
+                profileSettingsVM.Output.TempControllerIndex = outConTypeCombo.SelectedIndex;
+                profileSettingsVM.Output.TempConType = selected;
             }
 
             if (mappingListVM != null)

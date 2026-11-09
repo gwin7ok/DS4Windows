@@ -1343,3 +1343,4 @@ classDiagram
 %% - 15-6c: トリガー（L2・R2）も同じ形に分けた。`TriggerSlotSettings`（`ProfileSlotSettings.Triggers`）、`TriggerSettingsPanel`（UserControl）、`TriggerSettingsViewModel`（`ProfileSettingsViewModel.Triggers`）。
 %% - 15-6d: スティック（LS・RS）も同じ形に分けた。`StickSlotSettings`（`ProfileSlotSettings.Sticks`）、`StickSettingsPanel`（UserControl）、`StickSettingsViewModel`（`ProfileSettingsViewModel.Sticks`）。
 %% - 15-6e: ライトバーも同じ形に分けた。`LightbarSlotSettings`（`ProfileSlotSettings.Lightbar`）、`LightbarSettingsPanel`（UserControl）、`LightbarSettingsViewModel`（`ProfileSettingsViewModel.Lightbar`。強制表示は `LightbarOverrides` を使う）。
+%% - 15-6f: 出力（仮想コントローラー・振動）も同じ形に分けた。`OutputSlotSettings`（`ProfileSlotSettings.Output`）、`OutputSettingsPanel`（UserControl）、`OutputSettingsViewModel`（`ProfileSettingsViewModel.Output`）。

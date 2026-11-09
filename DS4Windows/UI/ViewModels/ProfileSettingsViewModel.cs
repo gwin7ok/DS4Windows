@@ -59,6 +59,9 @@ namespace DS4Windows.UI.ViewModels
 
         /// <summary>「ライトバー」タブの ViewModel。</summary>
         public LightbarSettingsViewModel Lightbar { get; }
+
+        /// <summary>「その他」タブの仮想コントローラー・振動の設定。</summary>
+        public OutputSettingsViewModel Output { get; }
         private readonly IProfileSettingsService profileSettings;
         private readonly IProfileLoadTarget loadTarget;   // Phase13-Step6 6-e: 旧 ControlService controlService（ジャイロ系 setter と空プロファイルの読込に渡すだけだった）
         private readonly IEnvironmentService environmentService;
@@ -90,39 +93,8 @@ namespace DS4Windows.UI.ViewModels
         /// <summary>サービスの再起動を求めたあとに、<see cref="HasUseDs3PitchRollSimChanged"/> の印を戻す。同じ変更のために、再起動をくり返し求めないようにするため。</summary>
         public void AcknowledgeUseDs3PitchRollSimChange() => Gyro.AcknowledgeUseDs3PitchRollSimChange();
 
-        public int RumbleBoost
-        {
-            get => profileSettings.RumbleBoost[device];
-            set => profileSettings.RumbleBoost[device] = (byte)value;
-        }
 
-        public int RumbleAutostopTime
-        {
-            // RumbleAutostopTime value is in milliseconds in XML config file, but GUI uses just seconds
-            get => profileSettings.GetRumbleAutostopTime(device) / 1000;
-            set => profileSettings.SetRumbleAutostopTime(device, value * 1000);
-        }
 
-        private bool heavyRumbleActive;
-        public bool HeavyRumbleActive
-        {
-            get => heavyRumbleActive;
-            set
-            {
-                heavyRumbleActive = value;
-                OnPropertyChanged(nameof(HeavyRumbleActive));
-            }
-        }
-        private bool lightRumbleActive;
-        public bool LightRumbleActive
-        {
-            get => lightRumbleActive;
-            set
-            {
-                lightRumbleActive = value;
-                OnPropertyChanged(nameof(LightRumbleActive));
-            }
-        }
         public bool UseControllerReadout
         {
             get => profileSettings.DS4Mapping;
@@ -256,53 +228,9 @@ namespace DS4Windows.UI.ViewModels
                 return exeicon;
             }
         }
-        public bool DInputOnly
-        {
-            get => profileSettings.DinputOnly[device];
-            set
-            {
-                bool temp = profileSettings.DinputOnly[device];
-                if (temp == value) return;
 
-                profileSettings.DinputOnly[device] = value;
-                OnPropertyChanged(nameof(DInputOnly));
-            }
-        }
 
-        public bool VirtualTriggerButtons
-        {
-            get => profileSettings.OutputVirtualTriggerButton[device];
-            set
-            {
-                bool temp = profileSettings.OutputVirtualTriggerButton[device];
-                if (temp == value) return;
 
-                profileSettings.OutputVirtualTriggerButton[device] = value;
-                OnPropertyChanged(nameof(VirtualTriggerButtons));
-            }
-        }
-        private List<EnumChoiceSelection<DS4TriggerOutputMode>> outputDS4TriggerModeOptions =
-            new List<EnumChoiceSelection<DS4TriggerOutputMode>>
-            {
-                new EnumChoiceSelection<DS4TriggerOutputMode>(Translations.Strings.DS4OutputTriggersDefault, DS4TriggerOutputMode.Default),
-                new EnumChoiceSelection<DS4TriggerOutputMode>(Translations.Strings.Analog, DS4TriggerOutputMode.Analog),
-                new EnumChoiceSelection<DS4TriggerOutputMode>(Translations.Strings.Buttons, DS4TriggerOutputMode.Buttons),
-            };
-
-        public List<EnumChoiceSelection<DS4TriggerOutputMode>> OutputDS4TriggerModeOptions => outputDS4TriggerModeOptions;
-
-        public DS4TriggerOutputMode OutputDS4TriggerMode
-        {
-            get => profileSettings.OutputDS4TriggerMode[device];
-            set
-            {
-                DS4TriggerOutputMode temp = profileSettings.OutputDS4TriggerMode[device];
-                if (temp == value) return;
-
-                profileSettings.OutputDS4TriggerMode[device] = value;
-                OnPropertyChanged(nameof(OutputDS4TriggerMode));
-            }
-        }
         public bool IdleDisconnectExists
         {
             get => profileSettings.IdleDisconnectTimeout[device] != 0;
@@ -339,43 +267,8 @@ namespace DS4Windows.UI.ViewModels
                 profileSettings.BTPollRate[device] = value;
             }
         }
-        public int ControllerTypeIndex
-        {
-            get => profileSettings.OutContType[device] == OutContType.DS4 ? 1 : 0;
-            set
-            {
-                OutContType target = value == 1 ? OutContType.DS4 : OutContType.X360;
-                if (profileSettings.OutContType[device] == target) return;
-                profileSettings.OutContType[device] = target;
-            }
-        }
 
-        private int tempControllerIndex;
-        public int TempControllerIndex
-        {
-            get => tempControllerIndex;
-            set
-            {
-                if (tempControllerIndex == value) return;
-                tempControllerIndex = value;
-                OutContType type = value == 1 ? OutContType.DS4 : OutContType.X360;
-                profileSettings.OutContType[device] = type;
-                // Phase11 W6 K-W6-4: 出力ピッカー（BindingWindow）は OutDevTypeTemp から、Pad タブの表示（DS4／Xbox 360）を決める。
-                // 以前はここで更新せず、編集画面を開き直すまで前の種類のままだった
-                outputSlotService.OutDevTypeTemp[device] = type;
-            }
-        }
 
-        public OutContType TempConType
-        {
-            get => tempControllerIndex == 1 ? OutContType.DS4 : OutContType.X360;
-            set
-            {
-                int newIndex = value == OutContType.DS4 ? 1 : 0;
-                if (tempControllerIndex == newIndex) return;
-                TempControllerIndex = newIndex;
-            }
-        }
         /// <summary>
         /// Phase11 W4（Issue #4 の 1）: DS4 の出力でしか成り立たない設定が ON なのに、出力の種類（Emulated Controller）が DS4 でないとき、
         /// DS4 へ補正する。保存・適用の両方が通る <c>ProfileEditor.ExecuteSaveOrApply</c> から、保存する前に呼ぶ。
@@ -386,13 +279,13 @@ namespace DS4Windows.UI.ViewModels
         /// Phase5-Step14 (c)-2。呼び出し側が GUI ログを出す）</item>
         /// </list>
         /// OFF のときは何もしない（DS4 から X360 へ戻すことはしない）。
-        /// 「DS4 でない」の判定は、保存される値（<see cref="ControllerTypeIndex"/>）と画面の選択（<see cref="TempControllerIndex"/>）の
+        /// 「DS4 でない」の判定は、保存される値（<see cref="OutputSettingsViewModel.ControllerTypeIndex"/>）と画面の選択（<see cref="OutputSettingsViewModel.TempControllerIndex"/>）の
         /// どちらかが DS4 でなければ、とする（ずれていても、保存される値を DS4 にそろえるため）。
         /// </summary>
         /// <returns>DS4 へ変えた理由。変えなかった場合は <see cref="Ds4OutputCorrectionReason.None"/></returns>
         public Ds4OutputCorrectionReason CorrectOutputTypeToDs4()
         {
-            bool notDs4 = ControllerTypeIndex != 1 || TempControllerIndex != 1;
+            bool notDs4 = Output.ControllerTypeIndex != 1 || Output.TempControllerIndex != 1;
             if (!notDs4)
             {
                 return Ds4OutputCorrectionReason.None;
@@ -410,18 +303,9 @@ namespace DS4Windows.UI.ViewModels
                 return Ds4OutputCorrectionReason.None;
             }
 
-            ControllerTypeIndex = 1;   // 保存される値（profileSettings.OutContType）
-            TempControllerIndex = 1;   // 画面の選択
+            Output.ControllerTypeIndex = 1;   // 保存される値（profileSettings.OutContType）
+            Output.TempControllerIndex = 1;   // 画面の選択
             return reason;
-        }
-
-        /// <summary>
-        /// Phase6-Step8-3: キャンセル時に、編集中に変えた一時的な出力種別（<c>OutDevTypeTemp</c>）を X360 へ戻す。
-        /// ProfileEditor.CancelBtn_Click の 旧 <c>Global.outDevTypeTemp[deviceNum] = X360</c>（現在は OutputSlotService の配列）の置換。
-        /// </summary>
-        public void ResetOutDevTypeTemp()
-        {
-            outputSlotService.OutDevTypeTemp[device] = OutContType.X360;
         }
 
         // ---- Phase6-Step8-4: ProfileEditor のバックエンド操作（保存・ブランク読み込み・キャッシュ更新）----
@@ -568,43 +452,8 @@ namespace DS4Windows.UI.ViewModels
             get => presetMenuUtil;
         }
 
-        public int DualSenseRumbleEmulationPerIndex
-        {
-            get
-            {
-                switch (profileSettings.DualSenseRumbleEmulationMode[device])
-                {
-                    case DualSenseDevice.RumbleEmulationMode.Disabled: return 2;
-                    case DualSenseDevice.RumbleEmulationMode.Legacy: return 1;
-                    case DualSenseDevice.RumbleEmulationMode.Accurate: return 0;
-                    default: return 0;
-                }
-            }
-            set
-            {
-                DualSenseDevice.RumbleEmulationMode temp;
-                switch (value)
-                {
-                    case 2: temp = DualSenseDevice.RumbleEmulationMode.Disabled; break;
-                    case 1: temp = DualSenseDevice.RumbleEmulationMode.Legacy; break;
-                    case 0: temp = DualSenseDevice.RumbleEmulationMode.Accurate; break;
-                    default: temp = DualSenseDevice.RumbleEmulationMode.Accurate; break;
-                }
-                profileSettings.DualSenseRumbleEmulationMode[device] = temp;
-            }
-        }
 
-        public int DualSenseHapticPowerLevelPerIndex
-        {
-            get => profileSettings.DualSenseHapticPowerLevel[device];
-            set => profileSettings.DualSenseHapticPowerLevel[device] = (byte)value;
-        }
 
-        public bool EnableGenericRumbleStrRescaleForDualSenseDevices
-        {
-            get => profileSettings.UseGenericRumbleStrRescaleForDualSenses[device];
-            set => profileSettings.UseGenericRumbleStrRescaleForDualSenses[device] = value;
-        }
 
         public bool UsingMinViGEm173333
         {
@@ -612,11 +461,6 @@ namespace DS4Windows.UI.ViewModels
         }
 
 
-        public bool InverseRumbleMotors
-        {
-            get => profileSettings.InverseRumbleMotors[device];
-            set => profileSettings.InverseRumbleMotors[device] = value;
-        }
 
         // Phase6-Step9-4: 依存はコンストラクタで必須引数として受け取る（Pure DI。決定1＝S9-A）。
         // 以前は ?? AppHost.GetService／Global.*Instance／Program.rootHub のフォールバックを持っていた。
@@ -647,15 +491,13 @@ namespace DS4Windows.UI.ViewModels
             // 実機なし（-1）の場合は、プロファイル一覧から開いたときの従来動作（コントローラー0）を維持する
             funcDevNum = HasTargetDevice ? targetDevice : 0;
 
-            tempControllerIndex = ControllerTypeIndex;
-
-            this.outputSlotService.OutDevTypeTemp[device] = OutContType.X360;
             tempBtPollRate = profileSettings.BTPollRate[device];
 
             outputMouseSpeed = CalculateOutputMouseSpeed(ButtonMouseSensitivity);
             mouseOffsetSpeed = RawButtonMouseOffset * outputMouseSpeed;
 
             presetMenuUtil = new PresetMenuHelper(device, this.profileSettings);
+            Output = new OutputSettingsViewModel(this.profileSettings.ForSlot(device).Output, this.outputSlotService, device);
             Lightbar = new LightbarSettingsViewModel(this.profileSettings.ForSlot(device).Lightbar, lightbar, environmentService, targetDevice);
             Sticks = new StickSettingsViewModel(this.profileSettings.ForSlot(device).Sticks);
             // スティックの出力モードを変えたら、保存用のプロファイルの印を更新する
@@ -813,11 +655,9 @@ namespace DS4Windows.UI.ViewModels
         // 詳細: docs-forDIMG/MadeByAgent/Phase5-Step14-FormSettings-Unification-Status.md タスク(c)-1
         public void UpdateLateProperties()
         {
-            tempControllerIndex = ControllerTypeIndex;
-            // Issue7是正（Phase5-Step14-Issue7-Fix-Plan.md タスク2）: 読み取り側の参照先を
-            // profileSettings.OutContType へ修正。書き込み先の OutDevTypeTemp（Temp出力デバイス
-            // 種別の一時保持）は outputSlotService 側のまま変更しない。
-            outputSlotService.OutDevTypeTemp[device] = profileSettings.OutContType[device];
+            // 読み取り側は保存された種類（OutContType）、書き込み先の一時の種類（OutDevTypeTemp）は outputSlotService 側
+            Output.RefreshFromSettings();
+            Output.SyncOutDevTypeTempFromSettings();
             tempBtPollRate = profileSettings.BTPollRate[device];
             outputMouseSpeed = CalculateOutputMouseSpeed(ButtonMouseSensitivity);
             mouseOffsetSpeed = RawButtonMouseOffset * outputMouseSpeed;

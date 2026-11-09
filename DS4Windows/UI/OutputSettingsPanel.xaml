@@ -1,0 +1,154 @@
+﻿<UserControl x:Class="DS4Windows.UI.OutputSettingsPanel"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:xctk="http://schemas.xceed.com/wpf/xaml/toolkit"
+             xmlns:lex="http://wpflocalizeextension.codeplex.com"
+             mc:Ignorable="d"
+             d:DesignHeight="450"
+             d:DesignWidth="800">
+    <UserControl.Resources>
+        <Thickness x:Key="spaceMargin"
+                   Bottom="8"/>
+        <xctk:InverseBoolConverter x:Key="InverseBoolConverter"/>
+    </UserControl.Resources>
+    <StackPanel>
+            <GroupBox Header="{lex:Loc VirtualControllerSettings}"
+                      MinHeight="50"
+                      Margin="4,4,4,0"
+                      Padding="0,4,0,4">
+                <StackPanel>
+                    <StackPanel Orientation="Horizontal"
+                                Margin="0,0,0,5">
+                        <Label Content="{lex:Loc EmulatedController}"
+                               ToolTip="{lex:Loc OutContNotice}"/>
+                        <ComboBox x:Name="outConTypeCombo"
+                                  SelectedIndex="{Binding TempControllerIndex, FallbackValue=0}"
+                                  IsEnabled="{Binding DInputOnly, Converter={StaticResource InverseBoolConverter}}"
+                                  MinWidth="140"
+                                  ToolTip="{lex:Loc OutContNotice}">
+                            <ComboBoxItem Content="Xbox 360"/>
+                            <ComboBoxItem Content="DualShock 4"/>
+                        </ComboBox>
+                    </StackPanel>
+                    <CheckBox Content="{lex:Loc DisableVirtualController}"
+                              IsChecked="{Binding DInputOnly}"
+                              ToolTip="{lex:Loc DisableVirtualControllerTip}"/>
+                    <StackPanel Orientation="Horizontal"
+                                Margin="{StaticResource spaceMargin}">
+                        <Label Content="{lex:Loc ProfileEditor.VirtualDS4TrigOutput}"
+                               ContentStringFormat="{}{0}:"
+                               Margin="0,0,8,0"/>
+                        <ComboBox ItemsSource="{Binding Path=OutputDS4TriggerModeOptions}"
+                                  DisplayMemberPath="DisplayName"
+                                  SelectedValuePath="ChoiceValue"
+                                  SelectedValue="{Binding OutputDS4TriggerMode}"/>
+                    </StackPanel>
+
+                    <!--<CheckBox Content="{lex:Loc ProfileEditor.VirtualTrigButtonOutput}" IsChecked="{Binding VirtualTriggerButtons}"
+                      Margin="0,8,0,0" />-->
+                </StackPanel>
+            </GroupBox>
+            <GroupBox Header="{lex:Loc Rumble}"
+                      MinHeight="50"
+                      Margin="4,4,4,0"
+                      Padding="0,4,0,4">
+                <StackPanel>
+                    <UniformGrid Rows="1"
+                                 Columns="3">
+                        <UniformGrid Columns="2"
+                                     HorizontalAlignment="Left">
+                            <DockPanel>
+                                <Label Content="%"
+                                       DockPanel.Dock="Right"/>
+                                <xctk:IntegerUpDown x:Name="RumbleBoostIUD"
+                                                    d:IsHidden="True"
+                                                    Value="{Binding RumbleBoost}"
+                                                    Minimum="0"
+                                                    Maximum="200"
+                                                    Increment="10"
+                                                    Style="{StaticResource NumberInputSmall}"
+                                                    DockPanel.Dock="Left"/>
+                            </DockPanel>
+
+                            <DockPanel>
+                                <Label Content="{lex:Loc RumbleMaxSecs}"
+                                       DockPanel.Dock="Right"/>
+                                <xctk:IntegerUpDown x:Name="RumbleAutostopTimeIUD"
+                                                    d:IsHidden="True"
+                                                    Value="{Binding RumbleAutostopTime}"
+                                                    Minimum="0"
+                                                    Maximum="3600"
+                                                    Increment="1"
+                                                    ToolTip="{lex:Loc RumbleMaxSecsTip}"
+                                                    Style="{StaticResource NumberInputSmall}"
+                                                    DockPanel.Dock="Left"/>
+                            </DockPanel>
+                        </UniformGrid>
+
+                        <Button x:Name="heavyRumbleTestBtn"
+                                Content="{lex:Loc TestHeavy}"
+                                Margin="10,0,0,0"
+                                Click="RumbleTestBtn_Click"/>
+                        <Button x:Name="lightRumbleTestBtn"
+                                Content="{lex:Loc TestLight}"
+                                Margin="10,0,0,0"
+                                Click="RumbleTestBtn_Click"/>
+                    </UniformGrid>
+                    <CheckBox Content="{lex:Loc InverseMotors}"
+                              IsChecked="{Binding InverseRumbleMotors}"/>
+                    <GroupBox Header="{lex:Loc DualSRumbleSpecificSettings}"
+                              Margin="0,12,0,0"
+                              Padding="2,4">
+
+                        <StackPanel>
+                            <StackPanel Orientation="Horizontal"
+                                        Margin="0,4,0,0">
+
+                                <Label Content="{lex:Loc DualSRumbleModeNPowerLevelTxt}"
+                                       Margin="0,0,0,0"/>
+
+                                <ComboBox x:Name="dualSRumbleEmuMode"
+                                          SelectedIndex="{Binding DualSenseRumbleEmulationPerIndex, FallbackValue=0}"
+                                          MinWidth="80"
+                                          ToolTip="{lex:Loc DualSRumbleModes_Tip}"
+                                          Margin="0,0,0,0"
+                                          Width="140">
+                                    <ComboBoxItem Content="{lex:Loc DualSRumbleModeAccurate}"/>
+                                    <ComboBoxItem Content="{lex:Loc DualSRumbleModeLegacy}"/>
+                                    <ComboBoxItem Content="{lex:Loc DualSRumbleModeDisabled}"/>
+                                </ComboBox>
+
+                                <ComboBox SelectedIndex="{Binding DualSenseHapticPowerLevelPerIndex, FallbackValue=0}"
+                                          MinWidth="60"
+                                          ToolTip="{lex:Loc DualSRumblePowerLevel_Tip}"
+                                          Margin="4,0,0,0"
+                                          Width="90">
+                                    <ComboBoxItem Content="100%"/>
+                                    <ComboBoxItem Content="87%"/>
+                                    <ComboBoxItem Content="75%"/>
+                                    <ComboBoxItem Content="62%"/>
+                                    <ComboBoxItem Content="50%"/>
+                                    <ComboBoxItem Content="37%"/>
+                                    <ComboBoxItem Content="25%"/>
+                                    <ComboBoxItem Content="12%"/>
+                                </ComboBox>
+
+                            </StackPanel>
+
+                            <CheckBox x:Name="dualSForceGenRumbleRescale"
+                                      IsChecked="{Binding EnableGenericRumbleStrRescaleForDualSenseDevices}"
+                                      Content="{lex:Loc DualSRumbleForceGenericRescale}"
+                                      ToolTip="{lex:Loc DualSRumbleForceGenericRescale_Tip}"
+                                      Margin="3,8,0,0"
+                                      HorizontalAlignment="Left"/>
+
+                        </StackPanel>
+
+                    </GroupBox>
+
+                </StackPanel>
+            </GroupBox>
+    </StackPanel>
+</UserControl>

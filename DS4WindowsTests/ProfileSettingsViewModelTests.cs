@@ -46,17 +46,17 @@ namespace DS4WindowsTests
                 // 1. 初期状態: X360
                 service.OutContType[device] = OutContType.X360;
                 var vm = ProfileSettingsViewModelTestFactory.Create(device, service);
-                Assert.Equal(0, vm.ControllerTypeIndex);
+                Assert.Equal(0, vm.Output.ControllerTypeIndex);
                 Assert.Equal(OutContType.X360, vm.ContType);
 
                 // 2. X360 -> DS4 への変更
                 service.OutContType[device] = OutContType.DS4;
-                Assert.Equal(1, vm.ControllerTypeIndex);
+                Assert.Equal(1, vm.Output.ControllerTypeIndex);
                 Assert.Equal(OutContType.DS4, vm.ContType);
 
                 // 3. DS4 -> X360 への変更（今回の不具合再発防止の検証）
                 service.OutContType[device] = OutContType.X360;
-                Assert.Equal(0, vm.ControllerTypeIndex);
+                Assert.Equal(0, vm.Output.ControllerTypeIndex);
                 Assert.Equal(OutContType.X360, vm.ContType);
             }
             finally
@@ -78,15 +78,15 @@ namespace DS4WindowsTests
                 service.OutContType[device] = OutContType.DS4;
                 var vm = ProfileSettingsViewModelTestFactory.Create(device, service);
                 vm.UpdateLateProperties();
-                Assert.Equal(1, vm.TempControllerIndex);
+                Assert.Equal(1, vm.Output.TempControllerIndex);
 
                 // UI上で Xbox 360 (0) に変更された場合
-                vm.TempControllerIndex = 0;
+                vm.Output.TempControllerIndex = 0;
 
                 // SSOT (service.OutContType) および各プロパティが即座に X360 に追従すること
                 Assert.Equal(OutContType.X360, service.OutContType[device]);
-                Assert.Equal(0, vm.ControllerTypeIndex);
-                Assert.Equal(OutContType.X360, vm.TempConType);
+                Assert.Equal(0, vm.Output.ControllerTypeIndex);
+                Assert.Equal(OutContType.X360, vm.Output.TempConType);
                 Assert.Equal(OutContType.X360, vm.ContType);
             }
             finally
@@ -115,16 +115,16 @@ namespace DS4WindowsTests
                 service.OutContType[device] = OutContType.X360;
                 vm.UpdateLateProperties();
 
-                Assert.Equal(0, vm.TempControllerIndex);
-                Assert.Equal(OutContType.X360, vm.TempConType);
+                Assert.Equal(0, vm.Output.TempControllerIndex);
+                Assert.Equal(OutContType.X360, vm.Output.TempConType);
                 Assert.Equal(OutContType.X360, vm.ContType);
 
                 // X360 -> DS4 への変更
                 service.OutContType[device] = OutContType.DS4;
                 vm.UpdateLateProperties();
 
-                Assert.Equal(1, vm.TempControllerIndex);
-                Assert.Equal(OutContType.DS4, vm.TempConType);
+                Assert.Equal(1, vm.Output.TempControllerIndex);
+                Assert.Equal(OutContType.DS4, vm.Output.TempConType);
                 Assert.Equal(OutContType.DS4, vm.ContType);
             }
             finally

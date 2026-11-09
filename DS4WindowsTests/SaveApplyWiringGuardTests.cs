@@ -46,7 +46,7 @@ namespace DS4WindowsTests
             Assert.True(save > correction, "補正が、保存（SaveProfile）より後にある（補正後の値を保存すること）");
 
             // 補正したら、画面の選択も DS4 にそろえる（SelectionChanged が、設定・マッピング一覧の種類を更新する）
-            Assert.Contains("outConTypeCombo.SelectedIndex = 1;", method);
+            Assert.Contains("outputPanel.OutConTypeCombo.SelectedIndex = 1;", method);
         }
 
         [Fact]
