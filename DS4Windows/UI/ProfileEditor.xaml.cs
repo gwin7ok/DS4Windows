@@ -513,6 +513,8 @@ namespace DS4Windows.UI
         {
             outputPanel.OutConTypeCombo.SelectionChanged += OutConTypeCombo_SelectionChanged;
             outputPanel.RumbleTestClick += RumbleTestBtn_Click;
+            generalPanel.UseControllerReadoutClick += UseControllerReadoutCk_Click;
+            generalPanel.LaunchProgramBrowseClick += LaunchProgBrowseBtn_Click;
             mappingListBox.SelectionChanged += MappingListBox_SelectionChanged;
             Closed += ProfileEditor_Closed;
 
@@ -616,6 +618,8 @@ namespace DS4Windows.UI
         {
             outputPanel.OutConTypeCombo.SelectionChanged -= OutConTypeCombo_SelectionChanged;
             outputPanel.RumbleTestClick -= RumbleTestBtn_Click;
+            generalPanel.UseControllerReadoutClick -= UseControllerReadoutCk_Click;
+            generalPanel.LaunchProgramBrowseClick -= LaunchProgBrowseBtn_Click;
             mappingListBox.SelectionChanged -= MappingListBox_SelectionChanged;
             Closed -= ProfileEditor_Closed;
 
@@ -899,7 +903,7 @@ namespace DS4Windows.UI
             // Phase6-Step7b: Controller Readings は、実機（なければコントローラー0）の入力に対して、
             // 作業スロット（編集中の設定）で計算した結果を表示する
             int readingsDevice = profileSettingsVM.FuncDevNum;
-            useControllerUD.Value = readingsDevice + 1;
+            generalPanel.UseControllerUD.Value = readingsDevice + 1;
             conReadingsUserCon.UseDevice(readingsDevice, ControllerLimits.TestProfileIndex);
             contReadingsTab.IsEnabled = true;
 
@@ -966,7 +970,7 @@ namespace DS4Windows.UI
             //       `SortSpecialActionsList(currentSortColumn, currentSortAsc)` を実行して
             //       ヘッダー内の DataTemplate 部分が確実に生成されてから ▲/▼ を反映します。
 
-            if (profileSettingsVM.UseControllerReadout)
+            if (profileSettingsVM.General.UseControllerReadout)
             {
                 inputTimer.Start();
             }
@@ -1391,7 +1395,7 @@ namespace DS4Windows.UI
             dialog.InitialDirectory = Environment.GetFolderPath(Environment.SpecialFolder.ProgramFiles);
             if (dialog.ShowDialog() == true)
             {
-                profileSettingsVM.UpdateLaunchProgram(dialog.FileName);
+                profileSettingsVM.General.UpdateLaunchProgram(dialog.FileName);
             }
         }
 
@@ -1649,7 +1653,7 @@ namespace DS4Windows.UI
                 tempDeviceNum = profileSettingsVM.FuncDevNum;
             });
 
-            if (activeWin && profileSettingsVM.UseControllerReadout)
+            if (activeWin && profileSettingsVM.General.UseControllerReadout)
             {
                 int index = -1;
                 // Phase5-Step15-2-d: 281行目で解決済みのcontrolServiceフィールドを使わず、
@@ -1705,7 +1709,7 @@ namespace DS4Windows.UI
                 }
             }
 
-            if (profileSettingsVM.UseControllerReadout)
+            if (profileSettingsVM.General.UseControllerReadout)
             {
                 inputTimer.Start();
             }
@@ -1717,7 +1721,7 @@ namespace DS4Windows.UI
             {
                 SaveSplitterAndColumnWidths();
             }
-            profileSettingsVM.UseControllerReadout = false;
+            profileSettingsVM.General.UseControllerReadout = false;
             inputTimer.Stop();
             conReadingsUserCon.EnableControl(false);
             // Rebuild cached profile info for this device. CalculateProfileActionDicts
@@ -1734,7 +1738,7 @@ namespace DS4Windows.UI
         private void UseControllerReadoutCk_Click(object sender, RoutedEventArgs e)
         {
             // Phase6-Step7b: 判定は編集スロット（常に 8）ではなく実機の有無で行う（一覧経由では従来どおり開始しない）
-            if (profileSettingsVM.UseControllerReadout && HasTargetDevice)
+            if (profileSettingsVM.General.UseControllerReadout && HasTargetDevice)
             {
                 inputTimer.Start();
             }

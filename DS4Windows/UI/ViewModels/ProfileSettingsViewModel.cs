@@ -62,6 +62,9 @@ namespace DS4Windows.UI.ViewModels
 
         /// <summary>「その他」タブの仮想コントローラー・振動の設定。</summary>
         public OutputSettingsViewModel Output { get; }
+
+        /// <summary>「その他」タブの一般項目（入力の表示、マウス移動、プログラムの同時起動、無操作での切断、ポーリング間隔）。</summary>
+        public GeneralSettingsViewModel General { get; }
         private readonly IProfileSettingsService profileSettings;
         private readonly IProfileLoadTarget loadTarget;   // Phase13-Step6 6-e: 旧 ControlService controlService（ジャイロ系 setter と空プロファイルの読込に渡すだけだった）
         private readonly IEnvironmentService environmentService;
@@ -95,178 +98,14 @@ namespace DS4Windows.UI.ViewModels
 
 
 
-        public bool UseControllerReadout
-        {
-            get => profileSettings.DS4Mapping;
-            set => profileSettings.DS4Mapping = value;
-        }
-
-        public int ButtonMouseSensitivity
-        {
-            get => profileSettings.ButtonMouseInfos[device].buttonSensitivity;
-            set
-            {
-                int temp = profileSettings.ButtonMouseInfos[device].buttonSensitivity;
-                if (temp == value) return;
-                profileSettings.ButtonMouseInfos[device].ButtonSensitivity = value;
-                OnPropertyChanged(nameof(ButtonMouseSensitivity));
-            }
-        }
-        public int ButtonMouseVerticalScale
-        {
-            get => Convert.ToInt32(profileSettings.ButtonMouseInfos[device].buttonVerticalScale * 100.0);
-            set
-            {
-                double temp = profileSettings.ButtonMouseInfos[device].buttonVerticalScale;
-                double attemptValue = value * 0.01;
-                if (temp == attemptValue) return;
-                profileSettings.ButtonMouseInfos[device].buttonVerticalScale = attemptValue;
-                OnPropertyChanged(nameof(ButtonMouseVerticalScale));
-            }
-        }
-        private double RawButtonMouseOffset
-        {
-            get => profileSettings.ButtonMouseInfos[device].mouseVelocityOffset;
-        }
-
-        public double ButtonMouseOffset
-        {
-            get => profileSettings.ButtonMouseInfos[device].mouseVelocityOffset * 100.0;
-            set
-            {
-                double temp = profileSettings.ButtonMouseInfos[device].mouseVelocityOffset * 100.0;
-                if (temp == value) return;
-                profileSettings.ButtonMouseInfos[device].mouseVelocityOffset = value * 0.01;
-                OnPropertyChanged(nameof(ButtonMouseOffset));
-            }
-        }
-        private int outputMouseSpeed;
-        public int OutputMouseSpeed
-        {
-            get => outputMouseSpeed;
-            set
-            {
-                if (value == outputMouseSpeed) return;
-                outputMouseSpeed = value;
-                OnPropertyChanged(nameof(OutputMouseSpeed));
-            }
-        }
-        private double mouseOffsetSpeed;
-        public double MouseOffsetSpeed
-        {
-            get => mouseOffsetSpeed;
-            set
-            {
-                if (mouseOffsetSpeed == value) return;
-                mouseOffsetSpeed = value;
-                OnPropertyChanged(nameof(MouseOffsetSpeed));
-            }
-        }
-        public bool MouseAcceleration
-        {
-            get => profileSettings.ButtonMouseInfos[device].mouseAccel;
-            set => profileSettings.ButtonMouseInfos[device].mouseAccel = value;
-        }
-
-        public bool EnableTouchpadToggle
-        {
-            get => profileSettings.EnableTouchToggle[device];
-            set => profileSettings.EnableTouchToggle[device] = value;
-        }
-
-        public bool EnableOutputDataToDS4
-        {
-            get => profileSettings.EnableOutputDataToDS4[device];
-            set => profileSettings.EnableOutputDataToDS4[device] = value;
-        }
-
-        public bool LaunchProgramExists
-        {
-            get => !string.IsNullOrEmpty(profileSettings.LaunchProgram[device]);
-            set
-            {
-                if (!value) ResetLauchProgram();
-            }
-        }
-        public string LaunchProgram
-        {
-            get => profileSettings.LaunchProgram[device];
-        }
-        public string LaunchProgramName
-        {
-            get
-            {
-                string temp = profileSettings.LaunchProgram[device];
-                if (!string.IsNullOrEmpty(temp))
-                {
-                    temp = Path.GetFileNameWithoutExtension(temp);
-                }
-                else
-                {
-                    temp = "Browse";
-                }
-
-                return temp;
-            }
-        }
-        public ImageSource LaunchProgramIcon
-        {
-            get
-            {
-                ImageSource exeicon = null;
-                string path = profileSettings.LaunchProgram[device];
-                if (File.Exists(path) && Path.GetExtension(path).ToLower() == ".exe")
-                {
-                    using (Icon ico = Icon.ExtractAssociatedIcon(path))
-                    {
-                        exeicon = Imaging.CreateBitmapSourceFromHIcon(ico.Handle, Int32Rect.Empty,
-                            BitmapSizeOptions.FromEmptyOptions());
-                        exeicon.Freeze();
-                    }
-                }
-
-                return exeicon;
-            }
-        }
 
 
 
-        public bool IdleDisconnectExists
-        {
-            get => profileSettings.IdleDisconnectTimeout[device] != 0;
-            set
-            {
-                // If enabling Idle Disconnect, set default time.
-                // Otherwise, set time to 0 to mean disabled
-                profileSettings.IdleDisconnectTimeout[device] = value ?
-                    BackingStore.DEFAULT_ENABLE_IDLE_DISCONN_MINS * 60 : 0;
 
-                OnPropertyChanged(nameof(IdleDisconnect));
-                OnPropertyChanged(nameof(IdleDisconnectExists));
-            }
-        }
-        public int IdleDisconnect
-        {
-            get => profileSettings.IdleDisconnectTimeout[device] / 60;
-            set
-            {
-                int temp = profileSettings.IdleDisconnectTimeout[device] / 60;
-                if (temp == value) return;
-                profileSettings.IdleDisconnectTimeout[device] = value * 60;
-                OnPropertyChanged(nameof(IdleDisconnect));
-                OnPropertyChanged(nameof(IdleDisconnectExists));
-            }
-        }
-        private int tempBtPollRate;
-        public int TempBTPollRateIndex
-        {
-            get => profileSettings.BTPollRate[device];
-            set
-            {
-                if (profileSettings.BTPollRate[device] == value) return;
-                profileSettings.BTPollRate[device] = value;
-            }
-        }
+
+
+
+
 
 
         /// <summary>
@@ -275,7 +114,7 @@ namespace DS4Windows.UI.ViewModels
         /// 2026-09-14 の保存・適用の統合（<c>9da60b85</c>）で失われた、旧 <c>ProfileEditor</c> の補正の復元（旧コードの動きに合わせる）:
         /// <list type="bullet">
         /// <item>(a) <see cref="UseDs3PitchRollSim"/> が ON なら DS4（旧 <c>SaveBtn_Click</c>。GUI ログなし）</item>
-        /// <item>(c) <see cref="EnableOutputDataToDS4"/> が ON で、(a) のあとも DS4 でなければ DS4（旧 <c>SetLateProperties</c> の
+        /// <item>(c) <see cref="GeneralSettingsViewModel.EnableOutputDataToDS4"/> が ON で、(a) のあとも DS4 でなければ DS4（旧 <c>SetLateProperties</c> の
         /// Phase5-Step14 (c)-2。呼び出し側が GUI ログを出す）</item>
         /// </list>
         /// OFF のときは何もしない（DS4 から X360 へ戻すことはしない）。
@@ -491,12 +330,8 @@ namespace DS4Windows.UI.ViewModels
             // 実機なし（-1）の場合は、プロファイル一覧から開いたときの従来動作（コントローラー0）を維持する
             funcDevNum = HasTargetDevice ? targetDevice : 0;
 
-            tempBtPollRate = profileSettings.BTPollRate[device];
-
-            outputMouseSpeed = CalculateOutputMouseSpeed(ButtonMouseSensitivity);
-            mouseOffsetSpeed = RawButtonMouseOffset * outputMouseSpeed;
-
             presetMenuUtil = new PresetMenuHelper(device, this.profileSettings);
+            General = new GeneralSettingsViewModel(this.profileSettings.ForSlot(device).General);
             Output = new OutputSettingsViewModel(this.profileSettings.ForSlot(device).Output, this.outputSlotService, device);
             Lightbar = new LightbarSettingsViewModel(this.profileSettings.ForSlot(device).Lightbar, lightbar, environmentService, targetDevice);
             Sticks = new StickSettingsViewModel(this.profileSettings.ForSlot(device).Sticks);
@@ -524,8 +359,6 @@ namespace DS4Windows.UI.ViewModels
 
         private void SetupEvents()
         {
-            PropertyChanged += OnOwnPropertyChanged;
-
             // Phase6-Step7b（決定7＝H1）: 編集操作のたびに実機へ即時に効かせていた 6 件のフックを削除した
             // （GyroOutModeIndexChanging／TouchpadOutputIndexChanging の touchPad.Reset()、TouchpadOutputIndexChanged の
             // PostSetup()、TouchMouseStickTrackballFrictionChanged の ResetTouchStickAccel、LS／RSDeltaAccelEnabledChanged の
@@ -534,29 +367,7 @@ namespace DS4Windows.UI.ViewModels
             // ApplyProfile → ControlService.PreLoadReset／CheckProfileOptions で行われる（Phase6-Step7b-Plan.md §1A.3）
         }
 
-        /// <summary>
-        /// 自分の値が変わったときの連動（派生する表示用プロパティの再通知と、保存用の印の更新）。
-        /// 値を設定した直後に同期して実行する。
-        /// </summary>
-        private void OnOwnPropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e)
-        {
-            switch (e.PropertyName)
-            {
-                case nameof(ButtonMouseSensitivity):
-                    OutputMouseSpeed = CalculateOutputMouseSpeed(ButtonMouseSensitivity);
-                    MouseOffsetSpeed = RawButtonMouseOffset * OutputMouseSpeed;
-                    break;
-                case nameof(ButtonMouseOffset):
-                    ProfileSettingsViewModel_ButtonMouseOffsetChanged(sender, EventArgs.Empty);
-                    break;
-            }
-        }
 
-        private void ProfileSettingsViewModel_ButtonMouseOffsetChanged(object sender,
-            EventArgs e)
-        {
-            MouseOffsetSpeed = RawButtonMouseOffset * OutputMouseSpeed;
-        }
 
         /// <summary>
         /// 実機（targetDevice）が指定され、かつ有効なコントローラースロットの範囲内であるか。
@@ -565,29 +376,8 @@ namespace DS4Windows.UI.ViewModels
         private bool HasTargetDevice =>
             targetDevice >= 0 && targetDevice < environmentService.ControllerSlotLimit;
 
-        public void UpdateLaunchProgram(string path)
-        {
-            profileSettings.LaunchProgram[device] = path;
-            OnPropertyChanged(nameof(LaunchProgramExists));
-            OnPropertyChanged(nameof(LaunchProgram));
-            OnPropertyChanged(nameof(LaunchProgramName));
-            OnPropertyChanged(nameof(LaunchProgramIcon));
-        }
 
-        public void ResetLauchProgram()
-        {
-            profileSettings.LaunchProgram[device] = string.Empty;
-            OnPropertyChanged(nameof(LaunchProgramExists));
-            OnPropertyChanged(nameof(LaunchProgram));
-            OnPropertyChanged(nameof(LaunchProgramName));
-            OnPropertyChanged(nameof(LaunchProgramIcon));
-        }
 
-        private int CalculateOutputMouseSpeed(int mouseSpeed)
-        {
-            int result = mouseSpeed * Mapping.MOUSESPEEDFACTOR;
-            return result;
-        }
 
         public void LaunchCurveEditor(string customDefinition)
         {
@@ -658,9 +448,7 @@ namespace DS4Windows.UI.ViewModels
             // 読み取り側は保存された種類（OutContType）、書き込み先の一時の種類（OutDevTypeTemp）は outputSlotService 側
             Output.RefreshFromSettings();
             Output.SyncOutDevTypeTempFromSettings();
-            tempBtPollRate = profileSettings.BTPollRate[device];
-            outputMouseSpeed = CalculateOutputMouseSpeed(ButtonMouseSensitivity);
-            mouseOffsetSpeed = RawButtonMouseOffset * outputMouseSpeed;
+            General.RefreshFromSettings();
             Gyro.RefreshSmoothMethodIndexes();
         }
     }

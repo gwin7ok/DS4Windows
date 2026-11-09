@@ -17,6 +17,7 @@ namespace DS4Windows.Core.Settings
             Sticks = new StickSlotSettings(settings, slot);
             Lightbar = new LightbarSlotSettings(settings, slot);
             Output = new OutputSlotSettings(settings, slot);
+            General = new GeneralSlotSettings(settings, slot);
         }
 
         public int Slot { get; }
@@ -32,5 +33,7 @@ namespace DS4Windows.Core.Settings
         public LightbarSlotSettings Lightbar { get; }
 
         public OutputSlotSettings Output { get; }
+
+        public GeneralSlotSettings General { get; }
     }
 }

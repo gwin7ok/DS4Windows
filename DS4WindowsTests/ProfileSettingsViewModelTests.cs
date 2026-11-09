@@ -109,7 +109,7 @@ namespace DS4WindowsTests
                 var vm = ProfileSettingsViewModelTestFactory.Create(device, service, outputSlotService: outputSlotService);
 
                 // EnableOutputDataToDS4 (DS4にデータを出力する) が有効であっても干渉しないこと
-                vm.EnableOutputDataToDS4 = true;
+                vm.General.EnableOutputDataToDS4 = true;
 
                 // DS4 -> X360 への変更
                 service.OutContType[device] = OutContType.X360;
