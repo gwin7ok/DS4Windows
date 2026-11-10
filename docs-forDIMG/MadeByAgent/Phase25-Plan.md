@@ -28,8 +28,8 @@
 | トリガー（L2/R2 のカーブのモードを含む） | `TriggerSlotSettings` | 完了（2026-11-10） |
 | スティック（LS/RS のカーブのモードを含む） | `StickSlotSettings` | 完了（2026-11-11） |
 | ライトバー | `LightbarSlotSettings` | 完了（2026-11-11） |
-| 出力 | `OutputSlotSettings` | 未着手 |
-| 一般 | `GeneralSlotSettings` | 未着手 |
+| 出力 | `OutputSlotSettings` | 保留（2026-11-11。振動の `rumbleSettings`／`rumble`／`rumbleAutostopTime` と実機への同期が絡むため、振動の持ち主を先に整理する。下の「保留の理由」） |
+| 一般 | `GeneralSlotSettings` | 保留（2026-11-11。`UseControllerReadout` はスロットごとでなく全体の設定（`DS4Mapping`）で、窓口から外す設計が先に要る） |
 | 6 軸 | `SixAxisSlotSettings` | 完了（2026-11-11。SX/SZ のカーブのモードを含む） |
 | ボタン割り当て（`ds4controlSettings` など） | — | 領域外。最後に判断 |
 
@@ -42,3 +42,10 @@
 ## 5. 進捗
 
 - 2026-11-10: 計画書を作成。ジャイロ領域を完了（19 の配列 → `GyroSlotSettings`。`IProfileSettingsService` から 31 メンバーを削除）。全 3,380 テスト合格。
+
+## 保留の理由（2026-11-11）
+
+- **出力**: `RumbleBoost`・`RumbleAutostopTimeMs` は、`rumbleSettings`（変更通知つき）→ 生配列 `rumble`／`rumbleAutostopTime` への連動と、実機（`IConfigurableDevice`）への即時反映が絡む。振動の設定の持ち主を 1 つにする整理（`RumbleSettings` を領域の持ち主へ寄せる）を先にしてから、残りの出力の設定（種類・DInput のみ・DS4 のトリガーの出力・DualSense の振動の方式など）を移す。
+- **一般**: `UseControllerReadout`（`DS4Mapping`）は全体の設定で、スロットの窓口にあるのが不自然。ViewModel 側で別の窓口へ移してから、残りの 5 項目（ボタンのマウス、タッチの切替、DS4 への出力、起動するプログラム、無操作の切断、BT のポーリング）を移す。
+- 上の 2 領域は、Phase26（画面のコードビハインド → ViewModel）の中で ViewModel を触るときに合わせて行うのが自然なため、そちらで扱う。
+- 2026-11-11: ライトバー・6 軸（SX/SZ のカーブのモードを含む）を完了。全 3,382 テスト合格。
