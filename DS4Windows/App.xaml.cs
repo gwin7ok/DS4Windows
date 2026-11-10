@@ -83,7 +83,7 @@ namespace DS4Windows
         // Phase7-Step5 W2（Q1＝A）: 旧 Program.rootHub。ControlService は CreateControlService の別スレッドで解決して代入し、
         // 呼び出し元がスレッドの終了を待ってから読む（以降は LoggerHolder の生成、起動後の処理、未処理例外の処理、終了処理が使う）。
         // 別スレッド（未処理例外、セッション終了）からも読まれるため volatile にする。
-        private volatile DS4Windows.Processing.ControlService _controlService;
+        private volatile DS4Windows.Processing.Abstractions.IRuntimeBootstrapper _runtimeBootstrapper;
         private volatile DS4Windows.Processing.Abstractions.IServiceLifecycle _lifecycle;   // Phase13-Step9: 旧 ControlService.running の転送
         private DS4Windows.Processing.Abstractions.IRuntimeFeatureSwitch _runtimeFeatures;   // Phase13-Step10 10-c: 旧 ControlService.CheckHidHidePresence の転送
 
@@ -832,7 +832,8 @@ namespace DS4Windows
                 // startup-order safety net only, and 'new InputDeviceRegistryAdapter()' here
                 // is the same adapter class already registered, not a second implementation.
                 // Phase7-Step5 W4: 解決の窓口（ResolvePostHostService）を通す。解決できなければ InvalidOperationException（従来と同じ）
-                _controlService = ResolvePostHostService<DS4Windows.Processing.ControlService>();
+                _runtimeBootstrapper = ResolvePostHostService<DS4Windows.Processing.Abstractions.IRuntimeBootstrapper>();
+                _runtimeBootstrapper.Initialize();
                 _lifecycle = ResolvePostHostService<DS4Windows.Processing.Abstractions.IServiceLifecycle>();
 
                 collectTimer = new Timer(GarbageTask, null, 30000, 30000);
@@ -882,14 +883,14 @@ namespace DS4Windows
         {
             if (runShutdown)
             {
-                if (_controlService != null)
+                if (_runtimeBootstrapper != null)
                 {
                     Task.Run(() =>
                     {
                         if (_lifecycle != null && _lifecycle.Running)
                         {
                             _lifecycle.Stop(immediateUnplug: true);
-                            _controlService.ShutDown();
+                            _runtimeBootstrapper.Shutdown();
                         }
                     }).Wait();
                 }

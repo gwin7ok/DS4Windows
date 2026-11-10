@@ -74,7 +74,7 @@ namespace DS4WindowsTests
             Assert.Contains(typeof(DS4Windows.Processing.StickMotionState), mouseParameters);
             Assert.Contains(typeof(DS4Windows.Processing.Synthetic.SyntheticInputState), mouseParameters);
             Assert.Contains(typeof(DS4Windows.Processing.StickMotionState),
-                typeof(DS4Windows.Processing.ControlService).GetConstructors().Single().GetParameters().Select(p => p.ParameterType));
+                typeof(DS4Windows.Processing.Services.RuntimeBootstrapper).GetConstructors().Single().GetParameters().Select(p => p.ParameterType));
             Assert.IsType<DS4Windows.Processing.Services.SyntheticDispatcherService>(TestHost.GetService<DS4Windows.Processing.Abstractions.ISyntheticDispatcher>());
             Assert.Contains(typeof(DS4Windows.Processing.Synthetic.SyntheticInputState),
                 typeof(DS4Windows.Processing.Services.SyntheticDispatcherService).GetConstructors()[0].GetParameters().Select(p => p.ParameterType));

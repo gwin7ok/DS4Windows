@@ -28,7 +28,7 @@ namespace DS4WindowsTests
         {
             _output = output;
             DS4Windows.Composition.AppHost.CreateHost();
-            TestHost.GetService<ControlService>();   // TempStates／PreviousStates は ControlService のコンストラクターが作る（本番では起動時に必ず構築される）
+            TestHost.InitializeRuntime();   // 起動時の取り付け（TempStates などは DeviceSlotState が作る）
         }
 
         /// <summary>レポート処理が読む、保護フィールドを持つテスト用デバイス（受信した 1 回分の入力［cState］を指定できる）。</summary>

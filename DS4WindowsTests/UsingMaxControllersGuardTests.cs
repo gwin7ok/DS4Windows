@@ -32,9 +32,9 @@ namespace DS4WindowsTests
         [Fact]
         public void TheStaticShims_AreGone()
         {
-            Assert.Null(typeof(ControlService).GetProperty("USING_MAX_CONTROLLERS", BindingFlags.Static | BindingFlags.Public | BindingFlags.NonPublic));
+            Assert.Null(typeof(DS4Windows.Processing.Services.RuntimeBootstrapper).GetProperty("USING_MAX_CONTROLLERS", BindingFlags.Static | BindingFlags.Public | BindingFlags.NonPublic));
             // Phase7-Step10e W2: CURRENT_DS4_CONTROLLER_LIMIT も削除した
-            Assert.Null(typeof(ControlService).GetProperty("CURRENT_DS4_CONTROLLER_LIMIT", BindingFlags.Static | BindingFlags.Public | BindingFlags.NonPublic));
+            Assert.Null(typeof(DS4Windows.Processing.Services.RuntimeBootstrapper).GetProperty("CURRENT_DS4_CONTROLLER_LIMIT", BindingFlags.Static | BindingFlags.Public | BindingFlags.NonPublic));
         }
 
         [Fact]

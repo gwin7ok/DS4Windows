@@ -72,7 +72,7 @@ namespace DS4WindowsTests
             TestGlobals.AppDataPath = _dir;
 
             DS4Windows.Composition.AppHost.CreateHost();
-            TestHost.GetService<ControlService>();   // TempStates などは ControlService のコンストラクターが作る
+            TestHost.InitializeRuntime();   // 起動時の取り付け（TempStates などは DeviceSlotState が作る）
             _control = TestHost.GetService<IProfileLoadTarget>();
             _settings = TestGlobals.ProfileSettingsServiceInstance;
             _store = TestGlobals.Store;

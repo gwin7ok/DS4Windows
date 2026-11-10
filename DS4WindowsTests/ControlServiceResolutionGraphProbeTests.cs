@@ -46,7 +46,6 @@ namespace DS4WindowsTests
             [typeof(IDeviceStateAccessor)] = typeof(DeviceSlotState),
             [typeof(IInputReportProcessor)] = typeof(InputReportProcessor),
             [typeof(IInputDeviceRegistry)] = typeof(InputDeviceRegistryAdapter),
-            [typeof(ControlService)] = typeof(ControlService),
         };
 
         private static Type ImplementationOf(IServiceCollection services, Type serviceType)
@@ -105,7 +104,7 @@ namespace DS4WindowsTests
         public void TheNineUsers_AreInsideOrOutsideTheGraphOfControlService(Type user, bool inside)
         {
             IServiceCollection services = Registrations();
-            HashSet<Type> closure = Closure(services, typeof(ControlService));
+            HashSet<Type> closure = Closure(services, typeof(DS4Windows.Processing.Abstractions.IRuntimeBootstrapper));
 
             _output.WriteLine($"{user.Name}: ControlService の依存グラフの内側 = {closure.Contains(user)}（ControlService の推移的な依存は {closure.Count} 型）");
             Assert.Equal(inside, closure.Contains(user));
@@ -128,7 +127,7 @@ namespace DS4WindowsTests
 
             Assert.DoesNotContain(typeof(ProfileRepository), closure);
             Assert.DoesNotContain(typeof(ProfileApplicationService), closure);
-            Assert.DoesNotContain(typeof(ControlService), closure);
+            Assert.DoesNotContain(typeof(DS4Windows.Processing.Services.RuntimeBootstrapper), closure);
         }
 
         /// <summary>6-b: <c>IDeviceBatteryText</c>（依存: <c>IDeviceStateAccessor</c> のみ）と、<c>ProfileSettingsService</c> が受ける <c>IDeviceStateAccessor</c> は依存なし。</summary>
@@ -150,10 +149,10 @@ namespace DS4WindowsTests
             IServiceCollection services = Registrations();
             HashSet<Type> pad = Closure(services, typeof(VirtualPadService));
             Assert.DoesNotContain(typeof(OutputSlotService), pad);
-            Assert.DoesNotContain(typeof(ControlService), pad);
+            Assert.DoesNotContain(typeof(DS4Windows.Processing.Services.RuntimeBootstrapper), pad);
 
             HashSet<Type> slot = Closure(services, typeof(OutputSlotService));
-            Assert.DoesNotContain(typeof(ControlService), slot);
+            Assert.DoesNotContain(typeof(DS4Windows.Processing.Services.RuntimeBootstrapper), slot);
         }
 
         /// <summary>6-c: 3 つの UI ファクトリーを、ホスト構築より前に解決する経路がない（ファクトリーは ControlService の依存グラフの外）。</summary>

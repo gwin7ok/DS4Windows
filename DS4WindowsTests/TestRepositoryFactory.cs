@@ -83,13 +83,11 @@ namespace DS4WindowsTests
         }
 
         public static OutputSlotService CreateOutputSlotService(OutputSlotManager manager = null,
-            IOutputSlotStore store = null, ControlService control = null)
+            IOutputSlotStore store = null)
         {
-            // Phase7-Step5 W2: Program.rootHub を削除したため、control を省略したときは ControlService なし（従来のテストの既定と同じ）
-            ControlService ctl = control;
-            OutputSlotManager mgr = manager ?? (ctl != null ? TestHost.GetService<IVirtualPadService>().OutputSlotManager : null) ?? CreateOutputSlotManager();
+            OutputSlotManager mgr = manager ?? CreateOutputSlotManager();
             return new OutputSlotService(
-                new FakeVirtualPadService(mgr, ctl != null ? TestHost.GetService<IVirtualPadService>() : null),   // Phase13-Step7 7-d: 旧 Func<OutputSlotManager>／Func<IVirtualPadService>。抜き差しは VirtualPadService（Phase9 E-4）
+                new FakeVirtualPadService(mgr, null),   // Phase13-Step7 7-d: 旧 Func<OutputSlotManager>／Func<IVirtualPadService>。抜き差しは VirtualPadService（Phase9 E-4）
                 store ?? new OutputSlotStore(new PathService()),
                 new DS4Windows.Output.Services.OutputDeviceTypeState());   // Phase13-Step7 7-b: 出力種別の配列の持ち主
         }

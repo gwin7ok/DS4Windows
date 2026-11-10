@@ -10,7 +10,7 @@ namespace DS4Windows.Processing.Services
     /// <summary>
     /// Phase13-Step5: <see cref="IDeviceSlotState"/> の実装（DI の Singleton。依存なし）。
     /// 配列の長さは <see cref="ControllerLimits.MaxControllerCount"/>（旧 <c>ControlService.MAX_DS4_CONTROLLER_COUNT</c> と同じ）。
-    /// 各 <c>ControllerState</c> の初期化（<c>new ControllerState()</c>）は、これまでどおり <c>ControlService</c> のコンストラクターが行う（初期化の位置を変えない）。
+    /// 作業用・前回の <c>ControllerState</c> は、コンストラクターで作る（<c>CurrentStates</c> は <c>InputReportProcessor</c> が作る）。
     /// </summary>
     public class DeviceSlotState : IDeviceSlotState, DS4Windows.Core.Abstractions.IConfigurableDeviceLookup
     {
@@ -30,6 +30,15 @@ namespace DS4Windows.Processing.Services
         {
             if (deviceIndex < 0 || deviceIndex >= Controllers.Length) return null;
             return Controllers[deviceIndex];
+        }
+
+        public DeviceSlotState()
+        {
+            for (int i = 0; i < ControllerLimits.MaxControllerCount; i++)
+            {
+                TempStates[i] = new ControllerState();
+                PreviousStates[i] = new ControllerState();
+            }
         }
 
         public ControllerState GetCurrentState(int ind) => CurrentStates[ind];

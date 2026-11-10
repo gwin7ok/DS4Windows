@@ -18,8 +18,9 @@ Structure-Review では「実行時の管理が複数の型に分散し、責務
 |---|---|---|
 | 27-1 | 定数 2 つを `ControllerLimits` へ置き換え、`ControlService` の使っていない配列を削除 | 完了（2026-11-11） |
 | 27-2 | 使っていないコンストラクターの引数（`IProfileRepository`、`IMapping`）、内部アクセサ、使っていないフィールドを削除（12 → 10 引数） | 完了（2026-11-11） |
-| 27-3 | 取り付けの副作用（CRC の表、状態の初期化、2 段トリガーの配線、`Attach()` 3 件）を、`ControlService` から名前のついた起動の部品（例 `RuntimeWiring`）へ移し、順序の依存を型（明示の `Initialize()`）で表す | 未着手（App の起動順序に触れるため、実機確認が要る） |
-| 27-4 | `ShutDown()` を `IServiceLifecycle` 側へ移し、`ControlService` を削除する | 未着手（27-3 の後） |
+| 27-3 | 取り付けの副作用（CRC の表、2 段トリガーの配線、`Attach()` 3 件）を、名前のついた起動の部品 `RuntimeBootstrapper`（`Processing/Services`、契約は `IRuntimeBootstrapper`）の明示の `Initialize()`（何度呼んでも 1 回だけ）へ移す。前回・一時の状態の初期化は、持ち主の `DeviceSlotState` のコンストラクターへ移す | 完了（2026-11-11） |
+| 27-4 | `ShutDown()` を `RuntimeBootstrapper.Shutdown()` へ移し、`ControlService` を削除する（当初は `IServiceLifecycle` 側へ移す案だったが、`ServiceLifecycle` の依存を増やさないよう、取り付けと同じ部品に置いた） | 完了（2026-11-11） |
 
 ## 履歴
+- 2026-11-11: 27-3・27-4 を完了。`ControlService` を削除し、`App` は `IRuntimeBootstrapper` を解決して `Initialize()`（起動）・`Shutdown()`（終了）を呼ぶ。テストは `TestHost.InitializeRuntime()` で同じ取り付けを行う。`ControlService.cs` のソースを読んでいたガードテスト（移動済みの内容が残っていないことの検査）は、型ごとなくなったため撤去し、他のファイルを読む肯定の検査は `TheOtherFiles_…` として残した。`ControlService` の生成だけを検査していた旧 DI の配線テスト 9 ファイルも撤去した。全 3,291 テスト合格（テスト数の減少は撤去分）。
 - 2026-11-11: 調査と 27-1・27-2 を完了。全 3,408 テスト合格。旧 `ControlServiceStep3Step3DiWiringTests`（削除した内部アクセサだけを検査していた）を撤去し、引数の数を見る 2 つのテストを 10 に更新した。

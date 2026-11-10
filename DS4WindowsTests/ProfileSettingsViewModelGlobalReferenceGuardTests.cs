@@ -89,8 +89,6 @@ namespace DS4WindowsTests
             }.SelectMany(t => t.GetConstructors().Single().GetParameters()).ToArray();
             Assert.DoesNotContain(ps, p => p.IsOptional);
             // 遅延（Func）で受けず、第 2 層の契約（マクロ記録の窓口）を直接受ける。ControlService は受けない
-            Assert.DoesNotContain(ps, p => p.ParameterType == typeof(Func<DS4Windows.Processing.ControlService>));
-            Assert.DoesNotContain(ps, p => p.ParameterType == typeof(DS4Windows.Processing.ControlService));
             Assert.Contains(ps, p => p.ParameterType == typeof(DS4Windows.Processing.Abstractions.IMacroRecordingState));
         }
 

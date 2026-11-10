@@ -67,8 +67,8 @@ namespace DS4WindowsTests
             Assert.Same(stick.GyroStickX, Field(typeof(Mapping), mapping, "gyroStickX"));
             Assert.Same(synthetic.DeviceState, Field(typeof(Mapping), mapping, "deviceState"));
 
-            var control = TestHost.GetService<ControlService>();
-            Assert.Same(stick, Field(typeof(ControlService), control, "_stickMotion"));
+            var bootstrapper = TestHost.GetService<DS4Windows.Processing.Abstractions.IRuntimeBootstrapper>();
+            Assert.Same(stick, Field(typeof(DS4Windows.Processing.Services.RuntimeBootstrapper), bootstrapper, "_stickMotion"));
         }
     }
 }

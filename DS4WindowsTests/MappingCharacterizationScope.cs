@@ -34,7 +34,6 @@ namespace DS4WindowsTests
 
         public RecordingVirtualKbmBase Recorder { get; } = new RecordingVirtualKbmBase();
         public IProfileSettingsService Settings { get; }
-        public ControlService Control { get; }
         /// <summary>コンテナの <c>IMapping</c>（Singleton）。Phase7-Step8 W2 で static から instance になった。</summary>
         public IMapping Mapper { get; }
         /// <summary>コンテナの合成キーの送出（Mapper が使うものと同じ instance）。</summary>
@@ -48,7 +47,7 @@ namespace DS4WindowsTests
         {
             DS4Windows.Composition.AppHost.CreateHost();
             Settings = TestHost.GetService<IProfileSettingsService>();
-            Control = TestHost.GetService<ControlService>();
+            TestHost.InitializeRuntime();
             Mapper = TestHost.GetService<IMapping>();
             Dispatcher = TestHost.GetService<ISyntheticDispatcher>();
             _handlerOwner = TestHost.GetService<DS4Windows.Output.Services.OutputKBMHandlerAdapter>();

@@ -52,7 +52,7 @@ namespace DS4WindowsTests
 
             DS4Windows.Composition.AppHost.CreateHost();
             // before（5b-a）は ControlService.On_Report のデリゲート。after（5b-c 以降）は IInputReportProcessor.OnReport のデリゲート
-            TestHost.GetService<ControlService>();   // TempStates／PreviousStates は ControlService のコンストラクターが作る（本番では起動時に必ず構築される）
+            TestHost.InitializeRuntime();   // 起動時の取り付け（TempStates などは DeviceSlotState が作る）
             var processor = TestHost.GetService<DS4Windows.Processing.Abstractions.IInputReportProcessor>();
             var onReport = (Action<InputDeviceCore, EventArgs, int>)Delegate.CreateDelegate(
                 typeof(Action<InputDeviceCore, EventArgs, int>), processor, typeof(DS4Windows.Processing.Abstractions.IInputReportProcessor).GetMethod("OnReport"));

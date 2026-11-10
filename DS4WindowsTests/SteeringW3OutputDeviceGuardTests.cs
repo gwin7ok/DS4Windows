@@ -37,7 +37,6 @@ namespace DS4WindowsTests
         }
 
         [Theory]
-        [InlineData("DS4Windows/Processing/ControlService.cs")]
         [InlineData("DS4Windows/Output/OutputDevice.cs")]
         [InlineData("DS4Windows/Output/OutputSlotManager.cs")]
         [InlineData("DS4Windows/Core/Model/ControllerState.cs")]

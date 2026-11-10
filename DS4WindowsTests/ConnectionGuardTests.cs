@@ -23,20 +23,6 @@ namespace DS4WindowsTests
             _output = output;
         }
 
-        [Theory]
-        [InlineData(@"\bFIRST CONNECTION detected\b")]
-        [InlineData(@"\bRECONNECTION detected\b")]
-        [InlineData(@"\.ApplyToSlot\(")]
-        [InlineData(@"\.PublishSlot\(")]
-        [InlineData(@"\bMarkConnected\(")]
-        public void ControlService_NoLongerContains_TheMovedProfileSelection(string pattern)
-        {
-            string text = SourceText.ReadCode("DS4Windows/Processing/ControlService.cs");
-            if (text == null) return;
-
-            Assert.False(Regex.IsMatch(text, pattern), $"ControlService.cs に '{pattern}' が残っている（9-E E-6a で ConnectionProfileSelector へ移した）");
-        }
-
         [Fact]
         public void ControlService_DelegatesTheSelection_BeforeThePluginStep()
         {
@@ -61,38 +47,6 @@ namespace DS4WindowsTests
             Assert.False(Regex.IsMatch(text, @"(?<!ProfileChangeSource\.)\bControlService\b"), "ConnectionProfileSelector が ControlService を参照している");
         }
     
-        [Theory]
-        [InlineData(@"\bCheckLauchProfileOption\b")]
-        [InlineData(@"\bSetupInitialHookEvents\b")]
-        [InlineData(@"\bPrepareTriggerEffect\(")]
-        [InlineData(@"\bResetTrackAccel\(")]
-        [InlineData(@"\bTouchButtonDown\b")]
-        public void ControlService_NoLongerContains_TheMovedSetup(string pattern)
-        {
-            string text = SourceText.ReadCode("DS4Windows/Processing/ControlService.cs");
-            if (text == null) return;
-
-            Assert.False(Regex.IsMatch(text, pattern), $"ControlService.cs に '{pattern}' が残っている（9-E E-6b で DeviceConnectionSetup へ移した）");
-        }
-
-        [Fact]
-        public void ControlService_KeepsTheThinDelegates_AndCallsTheSetupInTheOriginalOrder()
-        {
-            string text = SourceText.ReadCode("DS4Windows/Processing/ControlService.cs");
-            if (text == null) return;
-
-            // Phase13-Step10 10-b: 利用者が 0 件だった CheckProfileOptions／TouchPadOn の転送は削除した（IProfileLoadTarget が別に持つ）
-            Assert.DoesNotContain("public void CheckProfileOptions(", text);
-            Assert.DoesNotContain("public void TouchPadOn(", text);
-
-            // 接続時の順序: 設定の反映 → イベントの配線（旧: CheckProfileOptions → SetupInitialHookEvents）。接続の組み立ては DeviceConnector へ移った（E-6f1）
-            string connector = SourceText.ReadCode("DS4Windows/Processing/Services/DeviceConnector.cs");
-            if (connector == null) return;
-            int options = connector.IndexOf("_deviceConnectionSetup.ApplyProfileOptions(index, device, touchPads[index]);");
-            int hooks = connector.IndexOf("_deviceConnectionSetup.WireInitialHooks(index, device);");
-            Assert.True(options > 0 && hooks > options, "設定の反映（ApplyProfileOptions）は、イベントの配線（WireInitialHooks）より前に呼ぶ");
-        }
-
         [Fact]
         public void DeviceConnectionSetup_IsRegistered_KeepsTheTouchpadLookupAtEventTime_AndHasNoStaticEntryPoints()
         {
@@ -107,23 +61,6 @@ namespace DS4WindowsTests
             Assert.False(Regex.IsMatch(text, @"(?<!ProfileChangeSource\.)\bControlService\b"), "DeviceConnectionSetup が ControlService を参照している");
         }
     
-        [Theory]
-        [InlineData(@"\bInputDeviceType\.")]
-        [InlineData(@"\bDS4DeviceOpts\b")]
-        [InlineData(@"\bDualSenseOpts\b")]
-        [InlineData(@"\bSwitchProDeviceOpts\b")]
-        [InlineData(@"\bDS3DeviceOpts\b")]
-        [InlineData(@"\bJoinGyroProv\b")]
-        [InlineData(@"\bNativeOptionsStore\b")]
-        public void ControlService_NoLongerBranchesOnTheDeviceType(string pattern)
-        {
-            string text = SourceText.ReadCode("DS4Windows/Processing/ControlService.cs");
-            if (text == null) return;
-
-            // Joy-Con の結合の手順（Start／HotPlug の中）も、E-6d で JoyConLinker へ移したため、例外はない
-            Assert.False(Regex.IsMatch(text, pattern), $"ControlService.cs に '{pattern}' が残っている（9-E E-6c で IInputDeviceModule へ移した）");
-        }
-
         [Fact]
         public void ControlService_DelegatesToTheDeviceModules()
         {
@@ -156,6 +93,20 @@ namespace DS4WindowsTests
 
                 Assert.False(Regex.IsMatch(text, @"\bControlService\b(?!DeviceOptions)"), file + " が ControlService を参照している");
             }
+        }
+
+        [Fact]
+        public void TheOtherFiles_AndCallsTheSetupInTheOriginalOrder()
+        {
+
+            // Phase13-Step10 10-b: 利用者が 0 件だった CheckProfileOptions／TouchPadOn の転送は削除した（IProfileLoadTarget が別に持つ）
+
+            // 接続時の順序: 設定の反映 → イベントの配線（旧: CheckProfileOptions → SetupInitialHookEvents）。接続の組み立ては DeviceConnector へ移った（E-6f1）
+            string connector = SourceText.ReadCode("DS4Windows/Processing/Services/DeviceConnector.cs");
+            if (connector == null) return;
+            int options = connector.IndexOf("_deviceConnectionSetup.ApplyProfileOptions(index, device, touchPads[index]);");
+            int hooks = connector.IndexOf("_deviceConnectionSetup.WireInitialHooks(index, device);");
+            Assert.True(options > 0 && hooks > options, "設定の反映（ApplyProfileOptions）は、イベントの配線（WireInitialHooks）より前に呼ぶ");
         }
     }
 }

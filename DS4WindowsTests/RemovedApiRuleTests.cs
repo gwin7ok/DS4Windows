@@ -25,6 +25,7 @@ namespace DS4WindowsTests
         /// <summary>撤去した型（単純名。どの名前空間にもないこと）。</summary>
         private static readonly string[] RemovedTypeNames =
         {
+            "ControlService",               // Phase27（取り付けは RuntimeBootstrapper へ。静的なスロット数の上限 CURRENT_DS4_CONTROLLER_LIMIT は Phase7-Step10e W1・W2 で撤去済み）
             "Global",                       // Phase7-Step10d W5（Phase6〜7 の Global の参照の検査はこの 1 行に畳んだ）
             "Program",                      // Phase7-Step5 W2（Program.rootHub）
             "ServiceProviderHolder",        // Phase13-Step4（Phase7-Step1 W4 のラチェットもこの 1 行に畳んだ）
@@ -109,8 +110,6 @@ namespace DS4WindowsTests
             ("SettingsViewModel", new[] { "SettingsViewModel_CheckForUpdatesChanged" }),
             // Phase6-Step10-1: 呼び出し元 0 件
             ("Util", new[] { "ElevatedCopyUpdater" }),
-            // Phase7-Step10e W1・W2: 静的なスロット数の上限（注入された IEnvironmentService.ControllerSlotLimit へ）
-            ("ControlService", new[] { "CURRENT_DS4_CONTROLLER_LIMIT" }),
         };
 
         [Fact]

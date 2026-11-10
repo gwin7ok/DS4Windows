@@ -90,7 +90,7 @@ namespace DS4WindowsTests
             string projectDir = ProjectDir();
             if (projectDir == null) return;
 
-            var assembly = typeof(ControlService).Assembly;
+            var assembly = typeof(DS4Windows.Processing.Abstractions.IRuntimeBootstrapper).Assembly;
             var offenders = new List<string>();
             foreach (string file in ProductionFiles(projectDir, "*.xaml"))
             {
@@ -112,7 +112,7 @@ namespace DS4WindowsTests
             string projectDir = ProjectDir();
             if (projectDir == null) return;
 
-            var assembly = typeof(ControlService).Assembly;
+            var assembly = typeof(DS4Windows.Processing.Abstractions.IRuntimeBootstrapper).Assembly;
             var known = new HashSet<string>(assembly.GetTypes().Select(t => t.Namespace).Where(n => n != null));
             var rx = new Regex("clr-namespace:(DS4Windows[\\w.]*)\"");
             var offenders = new List<string>();

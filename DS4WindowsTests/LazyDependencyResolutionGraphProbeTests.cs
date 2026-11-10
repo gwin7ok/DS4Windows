@@ -44,7 +44,6 @@ namespace DS4WindowsTests
             [typeof(IDeviceStateAccessor)] = typeof(DeviceSlotState),
             [typeof(IInputReportProcessor)] = typeof(InputReportProcessor),
             [typeof(IInputDeviceRegistry)] = typeof(InputDeviceRegistryAdapter),
-            [typeof(ControlService)] = typeof(ControlService),
             [typeof(IOutputDeviceTypeState)] = typeof(OutputDeviceTypeState),
         };
 

@@ -36,51 +36,6 @@ namespace DS4WindowsTests
             }
         }
 
-        [Theory]
-        [InlineData(@"\bStartViGEm\b")]
-        [InlineData(@"\bStopViGEm\b")]
-        [InlineData(@"\bAssignInitialDevices\b")]
-        [InlineData(@"\.FindControllers\(")]
-        [InlineData(@"\.StopControllers\(")]
-        [InlineData(@"\bClearControllerList\b")]
-        [InlineData(@"\bThread\.Sleep\(2000\)")]
-        [InlineData(@"\bProcessPriorityClass\b")]
-        [InlineData(@"\bMainWindow\b")]
-        [InlineData(@"\bRunHotPlug\b")]
-        public void ControlService_NoLongerContains_TheMovedLifecycle(string pattern)
-        {
-            string text = SourceText.ReadCode("DS4Windows/Processing/ControlService.cs");
-            if (text == null) return;
-
-            Assert.False(Regex.IsMatch(text, pattern), $"ControlService.cs に '{pattern}' が残っている（9-E E-6f2 で ServiceLifecycle へ移した）");
-        }
-
-        [Fact]
-        public void ControlService_HasNoLifecycleForwarders_BecauseTheCallersUseIServiceLifecycle()
-        {
-            string text = SourceText.ReadCode("DS4Windows/Processing/ControlService.cs");
-            if (text == null) return;
-
-            // 利用者（画面・App・テスト）は IServiceLifecycle を直接使う。開始・停止・ホットプラグと 5 つのイベントの転送は、利用者が 0 件になったため削除した
-            Assert.DoesNotContain("public bool Start(", text);
-            Assert.DoesNotContain("public bool Stop(", text);
-            Assert.DoesNotContain("public bool HotPlug()", text);
-            Assert.DoesNotContain("public void PrepareAbort()", text);
-            Assert.DoesNotContain("public event EventHandler ServiceStarted", text);
-            Assert.DoesNotContain("public event HotplugControllerHandler HotplugController", text);
-            Assert.DoesNotContain("public bool running", text);
-            Assert.DoesNotContain("public bool suspending", text);
-            Assert.DoesNotContain("public bool loopControllers", text);
-            Assert.DoesNotContain("public bool inServiceTask", text);
-            Assert.DoesNotContain("public int activeControllers", text);
-            // 仮想パッドの失敗での停止は BackendFailureHandler が _lifecycle を直接使う
-            string handler = SourceText.ReadCode("DS4Windows/Processing/Services/BackendFailureHandler.cs");
-            if (handler == null) return;
-            Assert.Contains("_lifecycle.LoopControllers = false;", handler);
-            Assert.Contains("while (_lifecycle.InServiceTask)", handler);
-            Assert.Contains("_lifecycle.Stop();", handler);
-        }
-
         [Fact]
         public void Start_KeepsTheSafetyOrder()
         {
@@ -272,6 +227,19 @@ namespace DS4WindowsTests
             lifecycle.Suspending = false;
             Assert.False(lifecycle.Suspending);
             Assert.False(lightbar.shuttingdown);
+        }
+
+        [Fact]
+        public void TheOtherFiles_HasNoLifecycleForwarders_BecauseTheCallersUseIServiceLifecycle()
+        {
+
+            // 利用者（画面・App・テスト）は IServiceLifecycle を直接使う。開始・停止・ホットプラグと 5 つのイベントの転送は、利用者が 0 件になったため削除した
+            // 仮想パッドの失敗での停止は BackendFailureHandler が _lifecycle を直接使う
+            string handler = SourceText.ReadCode("DS4Windows/Processing/Services/BackendFailureHandler.cs");
+            if (handler == null) return;
+            Assert.Contains("_lifecycle.LoopControllers = false;", handler);
+            Assert.Contains("while (_lifecycle.InServiceTask)", handler);
+            Assert.Contains("_lifecycle.Stop();", handler);
         }
     }
 }

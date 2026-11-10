@@ -26,7 +26,7 @@ namespace DS4WindowsTests
         public LazyControlServiceReplacementCharacterizationTests()
         {
             DS4Windows.Composition.AppHost.CreateHost();
-            TestHost.GetService<ControlService>();
+            TestHost.InitializeRuntime();   // 起動時の取り付け（TempStates などは DeviceSlotState が作る）
         }
 
         private static void SetField(object target, string name, object value)

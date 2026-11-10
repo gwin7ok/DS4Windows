@@ -25,35 +25,6 @@ namespace DS4WindowsTests
             _output = output;
         }
 
-        [Theory]
-        [InlineData(@"\bhidDeviceHiding\w+")]
-        [InlineData(@"\bCheckAffected\b")]
-        [InlineData(@"\bChangeExclusiveStatus\b")]
-        [InlineData(@"\bUpdateHidHideAttributes\b")]
-        [InlineData(@"\bHidHideAPIDevice\b")]
-        public void ControlService_NoLongerContains_TheMovedMembers(string pattern)
-        {
-            string text = SourceText.ReadCode("DS4Windows/Processing/ControlService.cs");
-            if (text == null) return;
-
-            Assert.False(Regex.IsMatch(text, pattern), $"ControlService.cs に '{pattern}' が残っている（9-E E-2 で HidHideService へ移した）");
-        }
-
-        [Fact]
-        public void ControlService_KeepsTheThinDelegates_ForTheCallers()
-        {
-            string text = SourceText.ReadCode("DS4Windows/Processing/ControlService.cs");
-            if (text == null) return;
-
-            // Phase13-Step10 10-c: 転送は削除した。利用者は IRuntimeFeatureSwitch（RuntimeFeatureSwitch）を使う
-            Assert.DoesNotContain("public void CheckHidHidePresence(", text);
-            Assert.DoesNotContain("public void UpdateHidHiddenAttributes()", text);
-            string sw = SourceText.ReadCode("DS4Windows/Processing/Services/RuntimeFeatureSwitch.cs");
-            if (sw == null) return;
-            Assert.Contains("_hidHide.CheckPresence(exePath, exeName, addExe)", sw);
-            Assert.Contains("_hidHide.UpdateAttributes()", sw);
-        }
-
         [Fact]
         public void HidHideService_DoesNotTouchTheDriverDirectly()
         {
@@ -69,6 +40,17 @@ namespace DS4WindowsTests
             Assert.IsType<HidHideService>(TestHost.GetService<IHidHideService>());
             Assert.IsType<HidHideApiFactory>(TestHost.GetService<IHidHideApiFactory>());
             Assert.Same(TestHost.GetService<IHidHideService>(), TestHost.GetService<IHidHideService>());
+        }
+
+        [Fact]
+        public void TheOtherFiles_ForTheCallers()
+        {
+
+            // Phase13-Step10 10-c: 転送は削除した。利用者は IRuntimeFeatureSwitch（RuntimeFeatureSwitch）を使う
+            string sw = SourceText.ReadCode("DS4Windows/Processing/Services/RuntimeFeatureSwitch.cs");
+            if (sw == null) return;
+            Assert.Contains("_hidHide.CheckPresence(exePath, exeName, addExe)", sw);
+            Assert.Contains("_hidHide.UpdateAttributes()", sw);
         }
     }
 }

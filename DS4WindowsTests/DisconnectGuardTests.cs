@@ -20,44 +20,6 @@ namespace DS4WindowsTests
             _output = output;
         }
 
-        [Theory]
-        [InlineData(@"\.HandleDeviceDisconnect\(")]
-        [InlineData(@"\.ReleaseSlot\(")]
-        [InlineData(@"\.RemoveController\(")]
-        [InlineData(@"\bControllerWasRemoved\b")]
-        [InlineData(@"\bOnDeviceSerialChange\(")]
-        [InlineData(@"\bReplaceOneEuroFilterPair\(")]
-        [InlineData(@"\bIsRemoving\b")]
-        public void ControlService_NoLongerContains_TheMovedDisconnectHandling(string pattern)
-        {
-            string text = SourceText.ReadCode("DS4Windows/Processing/ControlService.cs");
-            if (text == null) return;
-
-            Assert.False(Regex.IsMatch(text, pattern), $"ControlService.cs に '{pattern}' が残っている（9-E E-6e で DeviceDisconnectHandler へ移した）");
-        }
-
-        [Fact]
-        public void ControlService_NoLongerKeepsTheEventHandlers_AndTheConnectorSubscribesInTheOriginalOrder()
-        {
-            string text = SourceText.ReadCode("DS4Windows/Processing/ControlService.cs");
-            if (text == null) return;
-
-            // Phase9 9-E E-6f1: イベントの購読先の委譲は不要になった（接続の組み立て［DeviceConnector］が、ハンドラーを直接購読する）
-            Assert.DoesNotContain("On_DS4Removal", text);
-            Assert.DoesNotContain("On_SyncChange", text);
-            Assert.DoesNotContain("On_SerialChange", text);
-
-            string connector = SourceText.ReadCode("DS4Windows/Processing/Services/DeviceConnector.cs");
-            if (connector == null) return;
-            // イベントの購読の登録順は変えない（Removal: 自分 → レジストリ、SyncChange: 自分 → レジストリ）
-            text = connector;
-            int removal = text.IndexOf("device.Removal += _deviceDisconnect.OnRemoval;");
-            int registryRemoval = text.IndexOf("device.Removal += _deviceRegistry.OnRemoval;");
-            int sync = text.IndexOf("device.SyncChange += _deviceDisconnect.OnSyncChange;");
-            int registrySync = text.IndexOf("device.SyncChange += _deviceRegistry.UpdateSerial;");
-            Assert.True(removal > 0 && registryRemoval > removal && sync > registryRemoval && registrySync > sync);
-        }
-
         [Fact]
         public void TheRemoval_KeepsTheCleanupOrder()
         {
@@ -100,6 +62,23 @@ namespace DS4WindowsTests
             if (text == null) return;
 
             Assert.False(Regex.IsMatch(text, @"\bControlService\b"), "DeviceDisconnectHandler が ControlService を参照している");
+        }
+
+        [Fact]
+        public void TheOtherFiles_ThenConnectorSubscribesInTheOriginalOrder()
+        {
+
+            // Phase9 9-E E-6f1: イベントの購読先の委譲は不要になった（接続の組み立て［DeviceConnector］が、ハンドラーを直接購読する）
+
+            string connector = SourceText.ReadCode("DS4Windows/Processing/Services/DeviceConnector.cs");
+            if (connector == null) return;
+            // イベントの購読の登録順は変えない（Removal: 自分 → レジストリ、SyncChange: 自分 → レジストリ）
+            string text = connector;
+            int removal = text.IndexOf("device.Removal += _deviceDisconnect.OnRemoval;");
+            int registryRemoval = text.IndexOf("device.Removal += _deviceRegistry.OnRemoval;");
+            int sync = text.IndexOf("device.SyncChange += _deviceDisconnect.OnSyncChange;");
+            int registrySync = text.IndexOf("device.SyncChange += _deviceRegistry.UpdateSerial;");
+            Assert.True(removal > 0 && registryRemoval > removal && sync > registryRemoval && registrySync > sync);
         }
     }
 }

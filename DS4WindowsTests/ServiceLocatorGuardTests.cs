@@ -24,20 +24,6 @@ namespace DS4WindowsTests
         }
 
         [Fact]
-        public void OutputSlotPersistence_GoesThroughTheContract()
-        {
-            string app = SourceText.ReadCode("DS4Windows/App.xaml.cs");
-            string control = SourceText.ReadCode("DS4Windows/Processing/ControlService.cs");
-            if (app == null || control == null) return;
-
-            Assert.Contains("_outputSlotService.LoadOutputSlots()", app);
-            Assert.DoesNotContain("LoadPermanentSlotsConfig", app);
-            Assert.DoesNotContain("LoadPermanentSlotsConfig", control);
-            Assert.Contains("_outputSlotService.SaveOutputSlots()", control);
-            Assert.DoesNotContain("OutputSlotPersist.", control);
-        }
-
-        [Fact]
         public void ControlServiceAndBackingStore_ReceiveTheirCollaborators()
         {
             // Phase14d-Step3: ソースの文字列ではなく、コンストラクターの引数と、コンテナが組み立てた結果を確かめる（AppHost を使わないことは RemovedApiRuleTests）
@@ -85,6 +71,20 @@ namespace DS4WindowsTests
             Assert.DoesNotContain("NotificationServiceInstance", logger);
             Assert.Matches(@"public\s+static\s+DS4Windows\.Core\.Abstractions\.INotificationService\s+NotificationService", logger);
             Assert.Matches(@"AppLogger\.NotificationService\s*=\s*ResolvePostHostService<INotificationService>\(\)", app);
+        }
+
+        [Fact]
+        public void OutputSlotPersistence_GoesThroughTheContract()
+        {
+            string app = SourceText.ReadCode("DS4Windows/App.xaml.cs");
+            string bootstrapper = SourceText.ReadCode("DS4Windows/Processing/Services/RuntimeBootstrapper.cs");
+            if (app == null || bootstrapper == null) return;
+
+            Assert.Contains("_outputSlotService.LoadOutputSlots()", app);
+            Assert.DoesNotContain("LoadPermanentSlotsConfig", app);
+            Assert.DoesNotContain("LoadPermanentSlotsConfig", bootstrapper);
+            Assert.Contains("_outputSlotService.SaveOutputSlots()", bootstrapper);
+            Assert.DoesNotContain("OutputSlotPersist.", bootstrapper);
         }
     }
 }

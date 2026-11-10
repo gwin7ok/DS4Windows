@@ -23,9 +23,8 @@ namespace DS4WindowsTests
         public string Root { get; }
         public string AppData { get; }
         public string ExeDir { get; }
-        public ControlService Control { get; }
 
-        /// <summary>Phase13-Step6 6-e: プロファイル読込の鎖に渡す窓口（旧: <see cref="Control"/> を渡していた）。</summary>
+        /// <summary>Phase13-Step6 6-e: プロファイル読込の鎖に渡す窓口（旧: ControlService を渡していた）。</summary>
         public IProfileLoadTarget LoadTarget { get; }
 
         public PersistenceGoldenContext()
@@ -42,7 +41,7 @@ namespace DS4WindowsTests
             TestGlobals.ExeDirPath = ExeDir;
 
             DS4Windows.Composition.AppHost.CreateHost();
-            Control = TestHost.GetService<ControlService>();
+            TestHost.InitializeRuntime();
             LoadTarget = TestHost.GetService<IProfileLoadTarget>();
 
             // プロファイルの読込（LoadProfile → UpdateDS4CSetting → Global.RefreshActionAlias）は、出力 KBM のマッピングが必要。

@@ -19,7 +19,7 @@ namespace DS4WindowsTests
         public ProfileLoadTargetTests()
         {
             DS4Windows.Composition.AppHost.CreateHost();
-            TestHost.GetService<ControlService>();
+            TestHost.InitializeRuntime();   // 起動時の取り付け（TempStates などは DeviceSlotState が作る）
         }
 
         [Fact]
