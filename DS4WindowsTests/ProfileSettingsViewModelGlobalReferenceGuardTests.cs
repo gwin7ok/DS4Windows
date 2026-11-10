@@ -1,4 +1,4 @@
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using System;
 using System.IO;
@@ -79,7 +79,14 @@ namespace DS4WindowsTests
         public void ViewModelFactory_HasNoServiceLocatorInConstructor()
         {
             // Phase14d-Step3: ソースの文字列ではなく、コンストラクターの引数を確かめる（AppHost を使わないことは RemovedApiRuleTests）
-            System.Reflection.ParameterInfo[] ps = typeof(DS4Windows.UI.Services.ViewModelFactory).GetConstructors().Single().GetParameters();
+            // 窓口（ViewModelFactory）は用途別の 3 つのファクトリーへ委譲するため、4 つ全部のコンストラクターを合わせて確かめる
+            System.Reflection.ParameterInfo[] ps = new[]
+            {
+                typeof(DS4Windows.UI.Services.ViewModelFactory),
+                typeof(DS4Windows.UI.Services.ShellViewModelFactory),
+                typeof(DS4Windows.UI.Services.ProfileEditViewModelFactory),
+                typeof(DS4Windows.UI.Services.ActionViewModelFactory),
+            }.SelectMany(t => t.GetConstructors().Single().GetParameters()).ToArray();
             Assert.DoesNotContain(ps, p => p.IsOptional);
             // 遅延（Func）で受けず、第 2 層の契約（マクロ記録の窓口）を直接受ける。ControlService は受けない
             Assert.DoesNotContain(ps, p => p.ParameterType == typeof(Func<DS4Windows.Processing.ControlService>));

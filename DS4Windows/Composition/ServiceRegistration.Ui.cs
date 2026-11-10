@@ -1,4 +1,4 @@
-using Microsoft.Extensions.DependencyInjection;
+﻿using Microsoft.Extensions.DependencyInjection;
 using DS4Windows.Core.Abstractions;
 using DS4Windows.UI.Abstractions;
 using DS4Windows.UI.Services;
@@ -16,6 +16,9 @@ namespace DS4Windows.Composition
             services.AddSingleton<INotificationService, AppNotificationService>();
 
             // Phase 4: UI層 ViewModel ファクトリの登録
+            services.AddSingleton<ShellViewModelFactory>();
+            services.AddSingleton<ProfileEditViewModelFactory>();
+            services.AddSingleton<ActionViewModelFactory>();
             services.AddSingleton<IViewModelFactory, ViewModelFactory>();
 
             // Phase6-Step10-2（決定 E1＝A）: 補助ウィンドウ（ボタン割り当て、マクロ記録、プリセット、スティック校正、スペシャルアクション編集）の生成の窓口

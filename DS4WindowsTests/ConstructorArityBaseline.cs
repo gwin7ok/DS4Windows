@@ -14,7 +14,6 @@
             "DS4Windows.UI.MainWindow|21",
             "DS4Windows.UI.Services.EditorWindowFactory|18",
             "DS4Windows.UI.Services.MainWindowFactory|20",
-            "DS4Windows.UI.Services.ViewModelFactory|19",
         };
     }
 }

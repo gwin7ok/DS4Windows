@@ -792,3 +792,8 @@ HidHide の登録・解除、OSC（送信・受信）、UDP（DSU 互換）、�
 - **決定 D-13-1 からの変更（理由つき）**: `MappingFrame`（共有の `_sampleState`／`_sampleFields` を渡す入れ物）での段 2 の切り出しは、行わなかった。段 2 の中心（`ProcessStick`／`ProcessControlSettingAction`／`MapCustomAction`）は、`_slots`・各種の状態の配列・トリガーエンジンと密に絡み、毎フレームの経路で引数の受け渡しを増やす割に、`Mapping` の引数が減る量が小さいため。かわりに、**入力をマウスの動きへ変える 4 つの計算の部品**（ボタン等からの移動量、フリックスティック、整数化、ジャイロのマウススティック）を、窓口 `IMouseConversionStage`／`MouseConversionStage` にまとめた（4 引数 → 1 引数）。窓口は 4 部品への委譲だけで、計算と状態は各部品のまま。
 - **結果**: `Mapping` のコンストラクターは 20 → 17 引数（`ConstructorArityBaseline` に 17 で凍結）。15 以下には届かない。残りの依存（デバイス・状態の窓口 3 つ、合成入力の保持 3 つ、トリガーエンジン、2 段階トリガー、確定、活動の読み取り、補正の段、後始末、マクロ再生）は、どれも別々の責務で、これ以上は「何でも箱」にしかならないため、規約 3.1 と D-13-3 に従い、ここで止める。
 - **検証**: 特性化テスト（デッドゾーン・出力カーブ・マウスの移動・ジャイロの合成）と、割り当て 0 のテストは、変更なしで合格。毎フレームの経路の増加は、仮想呼び出し 1 回。Actions 3,395 件合格・警告 0。
+
+### Step 16-13b-1（2026-11-10。完了。`ViewModelFactory` 19 → 3 引数）
+- **分割（D-13-2）**: `ViewModelFactory`（`IViewModelFactory` の窓口。画面側の依存は変えない）を、用途別の 3 つのファクトリーへの委譲にした。`ShellViewModelFactory`（メイン画面の枠: 設定・機器一覧・出力スロット・自動プロファイル・トレイ・ダイアログ。依存 14）、`ProfileEditViewModelFactory`（プロファイル編集・出力ピッカー・ボタンの記録・プリセット。依存 10）、`ActionViewModelFactory`（特殊アクション・マクロなど。依存 4）。各 ViewModel の生成式と `[DI]` のトレースログの文言は移しただけで、変えていない。窓口は 30 メソッドの委譲だけを持つ。
+- 「何でも箱」にしない: 3 つは、作る ViewModel が使う依存だけを受ける（全部の依存を束ねた契約は作っていない）。
+- `ConstructorArityBaseline` から `ViewModelFactory` を削除。`ProfileSettingsViewModelGlobalReferenceGuardTests` は、4 つのコンストラクターを合わせて確かめるよう更新。Actions 3,395 件合格・警告 0。
