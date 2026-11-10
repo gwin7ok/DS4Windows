@@ -1,7 +1,7 @@
 ﻿# Phase16 個別計画書: 第 1 層・第 3 層のカートリッジ化と、コンストラクターの引数の整理
 
 作成日: 2026-11-10
-状態: **草案。決定 C2・C7・C9 と範囲のオプションは確認済み（2026-11-10。§4.1）。計画書全体の承認を待つ。承認を得るまで、コードは変更しない**
+状態: **草案（2026-11-10 に §13 の追補を追加。16-12・16-13 の承認を待つ）。決定 C2・C7・C9 と範囲のオプションは確認済み（2026-11-10。§4.1）。計画書全体の承認を待つ。承認を得るまで、コードは変更しない**
 ブランチ: `Phase16`（master 3f411707 から作成）
 根拠: `Phase11-and-Beyond-Roadmap.md` §3 Phase16・§8.1、`FurtherImprovements/01`（3.3）・`02`（4 章）・`03`（Phase D）、`Phase9-Responsibility-Split-Plan.md` 9-H、`Repository-Review-2026-11-05.md`（R-05 後半・R-07・R-08・R-11・R-17）、`Phase13-Completion-Report.md`（`ControlService` 34 → 17 引数）、`Phase15-Completion-Report.md` §7、`Phase15-8-Plan.md`、`Known-Issues-Ledger.md`、`Model-Diagram/01〜04`
 規約: `.github/copilot-instructions.md`（特に 1 章の依存の向き、2.2 機能の完全維持、2.3 ログの維持、3.3 の 5 原則、3.4 のフォルダ規則、4 章の開発プロセス）
@@ -691,3 +691,65 @@ HidHide の登録・解除、OSC（送信・受信）、UDP（DSU 互換）、�
 - **段 2（マウス・スティックの変換）は見送り**: 共有の `_sampleState`／`_sampleFields` と絡み、切り出すと状態の受け渡しが増えて、読みにくくなるため。
 - **結果**: `Mapping` のコンストラクターは 25 → 20 引数（計画の約 16 には届かず、`ConstructorArityBaseline` に 20 で凍結）。`Func<IMapping>` は増減なし。
 - **テスト**: `TestMappingFactory` と `MappingInstanceGuardTests` を新しい引数に合わせた。値は既存の特性化テスト（デッドゾーン・出力カーブ・ジャイロ・切断）が守る。Actions 3,383 件合格（警告 0）。
+
+---
+
+## 13. 追補（2026-11-10）: 入力機種のカートリッジ化の仕上げ（16-12）と、引数の整理の仕上げ（16-13）
+
+状態: **草案。承認を待つ。承認までコードは変更しない。**
+順序の根拠（ユーザーと確認済み）: 入力機種の境界を先に決める。16-12 は設定・保存・画面の引数と依存を変えるため、先に引数を減らすと手戻りになる。16-13 の対象は、機種と関係が薄い。実機確認は 16-13 の後に、DS4 で 1 回（C9）。
+
+### 13.1 訂正: 入力のカートリッジは、半分は済んでいる
+会話の中で「機種ごとの生成や VID/PID をまとめる」ことを未実施のように扱ったが、**Step 16-5b で済んでいる**（`IInputDeviceCartridge`、5 つのカートリッジ、`InputDeviceFactory` の撤去、`DeviceOptionsBase`）。残っているのは、機種ごとの分岐が散っている次の場所である（調査: 2026-11-10）。
+
+| ID | 残っている分岐 | 場所 | 規模 |
+|---|---|---|---|
+| K-a | 接続時のシリアルの読み方が種類ごとの `if` | `Input/DS4Devices.cs` 約 233〜250 行 | 4 分岐 |
+| K-b | 種類の判定が、カートリッジ（`Handles`）と第 2 層の `*DeviceModule`（`Handles`）で二重。Joy-Con の左右の判定が 5 か所に散る | `Processing/Services/*DeviceModule.cs`、`JoyConLinker.cs`、`JoyConDevice.cs` | 約 15 か所 |
+| K-c | 機種ごとの設定が、型ごとのプロパティ（`DS4DeviceOpts` など 5 つ）で、保存と画面が個別に参照する | `ControlServiceDeviceOptions`、`AppSettingsDTO`（14）、`AppSettingsXmlSerializer`（6）、`ControllerRegDeviceOptsViewModel`（14）、`FirstLauchUtilViewModel`（10）、`ControllerRegisterOptionsWindow.xaml`（4）、`ServiceLifecycle`（3） | 約 55 参照 |
+| K-d | `*ControllerOptions`（機種ごとのコントローラーの設定）の同型の重複（R-11 の残り） | `Core/Settings` の 4 クラス、UI の `*OptionsWrapper` | 4 クラス |
+| K-e | 解析器の選択がデバイス本体の中（DS4 以外は各デバイスが自分で持つ） | `DualSenseDevice`、`JoyConDevice`、`SwitchProDevice`、`DS3Device` | 4 か所 |
+
+### 13.2 Step 16-12（入力機種のカートリッジ化の仕上げ）
+| Step | 内容 | 検証 |
+|---|---|---|
+| **16-12a**（K-a・K-e） | カートリッジに「接続時のシリアルの読み出し」と「入力の解析器の選択」を持たせる（`IInputDeviceCartridge` へ 2 メンバーを足す）。`DS4Devices` の `if` を、カートリッジの呼び出しに置き換える。DS4 の `SONYWA` の判定は、DS4 のカートリッジの内側に移す。**動作は変えない** | 種類ごとのシリアルの読み方の差分テスト（偽の `IHidTransport`）、既存の解析の差分テストが緑のまま |
+| **16-12b**（K-b） | 第 2 層の `*DeviceModule` の `Handles` の重複をなくす。方針は **「種類の表を 1 か所（`InputDeviceTypeInfo`。`Core/Model`。保存キー・Joy-Con の左右・主か否かなどの定数）に集め、カートリッジとモジュールの両方がそれを引く」**。モジュール自体は第 2 層の接続フックとして残す（カートリッジは第 1 層。層をまたいで 1 型にしない）。Joy-Con の左右の判定 5 か所を `InputDeviceTypeInfo.IsJoyCon` などに置き換える | `OutContTypeInfo` と同じ形の表のテスト。既存の接続フックのテスト |
+| **16-12c**（K-c） | 機種ごとの設定を「種類 → 設定」の入れ物（`IDeviceOptions` の辞書。`ControlServiceDeviceOptions` に残す型付きのプロパティは薄い窓口として維持）にし、保存（`AppSettingsDTO`／`AppSettingsXmlSerializer`）と画面（`ControllerRegDeviceOptsViewModel` の分岐）を、種類のループにする。**XML の形式は変えない**（読み書きで吸収）。画面は、機種ごとの設定の ViewModel をカートリッジの表から作る | 保存した XML のバイト列の一致（黄金テスト。既存の設定ファイルの読み込み→保存で差がない）、画面の ViewModel のテスト |
+| **16-12d**（K-d） | `*ControllerOptions` の同型の重複を、`ControllerOptionsBase` へ。UI の `*OptionsWrapper` は、型引数の 1 つにまとめられるものだけまとめる（無理にまとめない） | 既存の設定のテスト、保存の黄金テスト |
+
+**この Step の判断（承認が必要）**
+- **D-12-1**: K-b の方針。推奨は上記（表を `Core/Model` に置いて両方が引く）。代替は「モジュールをカートリッジに統合」だが、第 1 層から第 2 層への参照になり、規則 L1 に反するため採らない。
+- **D-12-2**: K-c で、`ControlServiceDeviceOptions` の型付きのプロパティを残すか。推奨は残す（利用者が 55 参照あるため、窓口として維持し、保存と画面だけをループにする）。代替は全廃だが、変更範囲が大きい。
+- **D-12-3**: 16-12c・16-12d の画面の変更は、設定画面の見た目を変えない。実機確認は 16-13 の後の 1 回に含める（設定画面を開いて機種ごとの設定を保存・再読み込み）。
+
+**完了の指標**
+- 新しい機種を足すときの変更箇所: 第 1 層のデバイスとカートリッジ、`InputDeviceTypeInfo` の 1 行、第 2 層のモジュール、DI の 1 行、設定の入れ物（画面は自動）。`switch`／`if` で種類を分ける場所が、`DS4Devices`・設定・画面から 0 になる。
+- 見送り（正直に書く）: DS4 以外の機種は実機がないため、差分テストと保存の黄金テストで守る。実機での確認は見送り（台帳 §3 に追記する）。
+
+### 13.3 Step 16-13（コンストラクターの引数の整理の仕上げ）
+現状の `ConstructorArityBaseline`: `Mapping` 20、`MainWindow` 21、`MainWindowFactory` 20、`ViewModelFactory` 19、`EditorWindowFactory` 18。
+| Step | 内容 | 目標 |
+|---|---|---|
+| **16-13a** | `Mapping` の段 2（マウス・スティックの変換）を切り出す。16-10 で見送った、共有の `_sampleState`／`_sampleFields` は、段の入出力の値の入れ物（`MappingFrame`。割り当てを増やさない構造体または再利用のクラス）にして渡す。A/B 計測（毎フレームの経路。割り当て 0 を保つ） | 20 → 約 16。到達しなければ、そこで止めて理由を記録する |
+| **16-13b** | UI のファクトリー 3 つ（`MainWindowFactory` 20、`ViewModelFactory` 19、`EditorWindowFactory` 18）は、**束ねるだけにしない**。方針は、(1) 画面ごとの ViewModel の生成を別のファクトリーへ分ける（設定タブ用・機器一覧用・出力用。`ViewModelFactory` を 3 つに）、(2) 2 つ以上のファクトリーが共有する 3 つ以上の依存は、意味のある単位（例: ウィンドウ操作の `IWindowSystem`＋`IMouseInputHook`）があるときだけ契約にする | 各 15 以下。到達しないものは理由をクラスのコメントに書く |
+| **16-13c** | `MainWindow` の 21 引数は、`MainWindowFactory` が渡す依存の整理（16-13b）に追随して減らす。View（Window）は規約どおり、責務の分割でなく生成物側の整理に追随する | 21 → 15 以下を目標。到達しなければ理由を記録 |
+| **16-13d** | `InputReportProcessor`（15）は、目標内のため**対象外**。`ConstructorArityBaseline` と `Phase13FuncRatchetGuardTests` を更新して、実数と一致させる | 基準値の一致 |
+
+**この Step の判断（承認が必要）**
+- **D-13-1**: 16-13a の `MappingFrame` の導入。推奨は導入（段 2 を切り出せる）。代替は段 2 を見送り（Mapping 20 のまま、理由を記録）。
+- **D-13-2**: UI のファクトリーを分ける粒度。推奨は上記（ViewModel の生成を 3 つに分ける）。「何でも箱」は作らない（規約 3.1）。
+- **D-13-3**: 15 に届かないクラスが残ったときは、クラスのコメントに理由を書き、基準に凍結する（規約 3.1）。
+
+### 13.4 完了条件の追加
+- 16-12・16-13 の全 Step で、Debug ALL の警告 0・エラー 0・Actions 全件合格。層の違反は 0 件のまま。
+- 16-13 の後に、Release ビルド（2 か所）と、**DS4 での実機確認を 1 回**（§6 の項目＋設定画面の保存・再読み込み＋UI の主要な画面の表示）。その後に master へ取り込む（push は指示があるまで行わない）。
+- 文書: 16-12b で `InputDeviceTypeInfo` を `Model-Diagram/03` に、16-12c で設定の入れ物を `Model-Diagram/03・04` に反映。完了報告書（`Phase16-Completion-Report.md`）に、16-12・16-13 の結果と見送りを追記する。
+
+### 13.5 リスク
+| リスク | 影響 | 対策 |
+|---|---|---|
+| 設定の保存の形式が変わる | 利用者の設定が読めない | 黄金テスト（既存の XML を読み→保存して差分なし）。形式は変えない |
+| 毎フレームの経路（Mapping の段 2）で割り当てが増える | 入力の遅延 | 割り当て 0 のテスト、A/B 計測。値の入れ物は再利用 |
+| DS4 以外の機種の回帰 | 実機がなく気付けない | 差分テスト。台帳 §3 に未確認を記録 |
+| 画面の分岐を消すときの見た目の変化 | 利用者に見える | 16-12c は画面の ViewModel のテストと、最後の実機確認で確かめる |
