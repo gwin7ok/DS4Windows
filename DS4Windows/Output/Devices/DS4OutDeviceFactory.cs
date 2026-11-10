@@ -16,7 +16,7 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
 
-using Nefarius.ViGEm.Client;
+using DS4Windows.Output.Backend;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -32,22 +32,22 @@ namespace DS4Windows.Output.Devices
         // Temp version number for ViGEmBus version with AwaitOutputBuffer API calls
         private static Version outBuffAPIMinVersion = new Version("1.19.0.0");
 
-        public static DS4OutDevice CreateDS4Device(ViGEmClient client,
+        public static DS4OutDevice CreateDS4Device(IVirtualPadBackend backend,
             Version driverVersion)
         {
             DS4OutDevice result = null;
             if (outBuffAPIMinVersion.CompareTo(driverVersion) <= 0)
             {
-                result = new DS4OutDeviceExt(client, useAwaitOutputBuffer: true);
+                result = new DS4OutDeviceExt(backend, useAwaitOutputBuffer: true);
             }
             else if (extAPIMinVersion.CompareTo(driverVersion) <= 0)
             //if (extAPIMinVersion.CompareTo(driverVersion) <= 0)
             {
-                result = new DS4OutDeviceExt(client, useAwaitOutputBuffer: false);
+                result = new DS4OutDeviceExt(backend, useAwaitOutputBuffer: false);
             }
             else
             {
-                result = new DS4OutDeviceBasic(client);
+                result = new DS4OutDeviceBasic(backend);
             }
 
             return result;

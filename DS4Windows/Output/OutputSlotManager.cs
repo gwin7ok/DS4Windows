@@ -24,7 +24,7 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Threading;
-using Nefarius.ViGEm.Client;
+using DS4Windows.Output.Backend;
 using DS4Windows.Core.Abstractions;
 using DS4Windows.Core.Logging;
 using DS4Windows.Core.Model;
@@ -126,7 +126,7 @@ namespace DS4Windows.Output
             revDeviceDict.Clear();
         }
 
-        public OutputDevice AllocateController(OutContType contType, ViGEmClient client)
+        public OutputDevice AllocateController(OutContType contType, IVirtualPadBackend backend)
         {
             OutputDevice outputDevice = null;
             switch (contType)
@@ -134,17 +134,17 @@ namespace DS4Windows.Output
                 case OutContType.X360:
                     if (xinputSlotMinVersion.CompareTo(vigemBusVersionProvider()) <= 0)
                     {
-                        outputDevice = new Xbox360OutDevice(client,
+                        outputDevice = new Xbox360OutDevice(backend,
                             Xbox360OutDevice.X360Features.XInputSlotNum);
                     }
                     else
                     {
-                        outputDevice = new Xbox360OutDevice(client);
+                        outputDevice = new Xbox360OutDevice(backend);
                     }
 
                     break;
                 case OutContType.DS4:
-                    outputDevice = DS4OutDeviceFactory.CreateDS4Device(client, vigemBusVersionProvider());
+                    outputDevice = DS4OutDeviceFactory.CreateDS4Device(backend, vigemBusVersionProvider());
                     break;
                 case OutContType.None:
                 default:

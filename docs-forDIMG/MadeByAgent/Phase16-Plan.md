@@ -589,3 +589,12 @@ HidHide の登録・解除、OSC（送信・受信）、UDP（DSU 互換）、�
 - 型の定義は変えていない（名前空間のみ）ため、ホットパスの A/B 計測は省略した（IL は型名の違いのみ）。
 - 規約 §3.4 R2 に、入力 1 フレームの状態の型を `Core/Model` に置くことを追記した。
 - Debug ALL: 警告 0・エラー 0・Actions 3,272 件合格。
+
+### Step 16-4a（2026-11-10。完了）
+
+- `Output/Backend/` を新設: `IVirtualPadBackend`（開始・停止・パッドの対象の生成）、`IXbox360PadTarget`、`IDs4PadTarget`（ドライバーの型を使わない操作の契約）、ボタンのビットの定数（`Xbox360Buttons`、`Ds4Buttons`、`Ds4SpecialButtons`）、`Ds4DPadDirection`、ViGEm 実装（`ViGEmVirtualPadBackend`、`ViGEmXbox360Target`、`ViGEmDs4Target`）。
+- `Xbox360OutDevice`・`DS4OutDevice`（`Basic`／`Ext`）・`DS4OutDeviceFactory`・`OutputSlotManager.AllocateController`・`VirtualPadService` は、`ViGEmClient` の代わりに `IVirtualPadBackend` を受ける。`Nefarius.ViGEm` を参照するファイルは 8 → 3（`Output/Backend` の実装のみ。`ControlService` の使われていない `using` も削除）。
+- 手順は逐語で保った: クライアントの生成（優先度を上げた別スレッド＋スピン待ち）、`Stop` での破棄、`Connect` の `Win32Exception`（`ViGEmFailure` の通知）、`RemoveFeedbacks`／`Disconnect` での購読の解除（`Xbox360FeedbackReceivedEventHandler` の `-=` は `IDisposable` の破棄に置き換えた）。`DS4OutDevice` の基底の振動の戻りの辞書は、有効なコードからは登録されない（旧: コメントアウトされた経路のみ）ため、`IDisposable` の辞書にして空のまま残した。
+- 偽のバックエンド（`FakeVirtualPadBackend`、`FakeXbox360Target`、`FakeDs4Target`）を追加。テスト 12 件: ボタン・軸・トリガー・十字キーの対応、ドライバーの版による DS4 の種類の選択（基本／拡張）、購読の解除、未開始のバックエンドでの生成の失敗、`VirtualPadService` の振動の転送、定数がドライバーの値と同じことの差分、**規則 L9**（`VirtualPadBackendBoundaryTests`: ViGEm の型を参照するのは `DS4Windows.Output.Backend` の型だけ）。
+- 見送り: 計画書の「失敗の通知を `BackendFailure` イベントにする」は、名前の変更だけで効果が小さいため、`OutputSlotManager.ViGEmFailure` のまま（16-4b で `IVirtualPadService` を縮めるときに扱う）。
+- Debug ALL: 警告 0・エラー 0・Actions 3,286 件合格。

@@ -1,6 +1,6 @@
 using System;
 using System.Threading;
-using Nefarius.ViGEm.Client;
+using DS4Windows.Output.Backend;
 using DS4Windows.Core.Abstractions;
 using DS4Windows.Core.Logging;
 using DS4Windows.Core.Model;
@@ -30,8 +30,7 @@ namespace DS4Windows.Output.Services
 
         private readonly OutputSlotManager outputslotMan;
         private readonly OutputDevice[] outputDevices = new OutputDevice[ControllerLimits.MaxControllerCount];
-        private ViGEmClient vigemTestClient = null;
-        private Thread tempThread;
+        private readonly IVirtualPadBackend _backend;
 
         // Phase13-Step7 7-c: 旧: 遅延取得デリゲート（初回に1回だけ取得）。配列の参照は再代入されないため、コンストラクターで保持する
         private readonly OutContType[] _activeOutDevType;
@@ -39,8 +38,9 @@ namespace DS4Windows.Output.Services
 
         public VirtualPadService(IEnvironmentService environmentService, IProfileSettingsService profileSettings,
             IOutputDeviceTypeState outputDeviceTypes, IDeviceStateAccessor deviceAccessor,
-            IEventThreadDispatcher eventThread, IDeviceRumbleService rumble)
+            IEventThreadDispatcher eventThread, IDeviceRumbleService rumble, IVirtualPadBackend backend)
         {
+            _backend = backend ?? throw new ArgumentNullException(nameof(backend));
             _environmentService = environmentService ?? throw new ArgumentNullException(nameof(environmentService));
             _profileSettings = profileSettings ?? throw new ArgumentNullException(nameof(profileSettings));
             _activeOutDevType = (outputDeviceTypes ?? throw new ArgumentNullException(nameof(outputDeviceTypes))).ActiveOutDevType;
@@ -56,7 +56,7 @@ namespace DS4Windows.Output.Services
 
         public OutputDevice[] OutputDevices => outputDevices;
 
-        public bool HasViGEmClient => vigemTestClient != null;
+        public bool HasViGEmClient => _backend.IsStarted;
 
         public void QueueOnEventThread(Action action)
         {
@@ -69,33 +69,13 @@ namespace DS4Windows.Output.Services
             _environmentService.RefreshViGEmBusInfo();
             if (_environmentService.IsRunningSupportedViGEmBus())
             {
-                tempThread = new Thread(() =>
-                {
-                    try
-                    {
-                        vigemTestClient = new ViGEmClient();
-                    }
-                    catch { }
-                });
-                tempThread.Priority = ThreadPriority.AboveNormal;
-                tempThread.IsBackground = true;
-                tempThread.Start();
-                while (tempThread.IsAlive)
-                {
-                    Thread.SpinWait(500);
-                }
+                _backend.Start();
             }
-
-            tempThread = null;
         }
 
         public void StopViGEm()
         {
-            if (vigemTestClient != null)
-            {
-                vigemTestClient.Dispose();
-                vigemTestClient = null;
-            }
+            _backend.Stop();
         }
 
         // 恒久スロット（OutputSlotReserveStatus.Permanent）を、サービスの開始時に割り当てる（ControlService.Start から呼ばれる）。
@@ -139,7 +119,7 @@ namespace DS4Windows.Output.Services
         private OutputDevice EstablishOutDevice(int index, OutContType contType)
         {
             OutputDevice temp = null;
-            temp = outputslotMan.AllocateController(contType, vigemTestClient);
+            temp = outputslotMan.AllocateController(contType, _backend);
             return temp;
         }
 
@@ -151,13 +131,12 @@ namespace DS4Windows.Output.Services
             if (contType == OutContType.X360)
             {
                 Xbox360OutDevice tempXbox = outDevice as Xbox360OutDevice;
-                Nefarius.ViGEm.Client.Targets.Xbox360FeedbackReceivedEventHandler p = (sender, args) =>
+                IDisposable p = tempXbox.cont.SubscribeFeedback((largeMotor, smallMotor) =>
                 {
                     //Trace.WriteLine(string.Format("Rumble ({0}, {1}) {2}",
                     //    args.LargeMotor, args.SmallMotor, DateTime.Now.ToString("hh:mm:ss.FFFF")));
-                    _rumble.SetDevRumble(device, args.LargeMotor, args.SmallMotor, devIndex);
-                };
-                tempXbox.cont.FeedbackReceived += p;
+                    _rumble.SetDevRumble(device, largeMotor, smallMotor, devIndex);
+                });
                 tempXbox.forceFeedbacksDict.Add(index, p);
             }
             else if (contType == OutContType.DS4)

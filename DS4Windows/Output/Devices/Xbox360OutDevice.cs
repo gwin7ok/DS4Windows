@@ -23,9 +23,7 @@ using System.Linq;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
-using Nefarius.ViGEm.Client;
-using Nefarius.ViGEm.Client.Targets;
-using Nefarius.ViGEm.Client.Targets.Xbox360;
+using DS4Windows.Output.Backend;
 using DS4Windows.Input;
 
 namespace DS4Windows.Output.Devices
@@ -45,11 +43,11 @@ namespace DS4Windows.Output.Devices
         private const int outputResolution = 32767 - (-32768);
         public const string devType = "X360";
         private const int USER_INDEX_WAIT = 250;
-        public IXbox360Controller cont;
+        public IXbox360PadTarget cont;
         //public Xbox360FeedbackReceivedEventHandler forceFeedbackCall;
         // Input index, Xbox360FeedbackReceivedEventHandler instance
-        public Dictionary<int, Xbox360FeedbackReceivedEventHandler> forceFeedbacksDict =
-            new Dictionary<int, Xbox360FeedbackReceivedEventHandler>();
+        public Dictionary<int, IDisposable> forceFeedbacksDict =
+            new Dictionary<int, IDisposable>();
 
         private const int XINPUT_SLOT_NUM_DEFAULT = -1;
         private const int MAX_XINPUT_SLOT_NUM = 8;
@@ -66,14 +64,13 @@ namespace DS4Windows.Output.Devices
         private X360Features _features;
         public X360Features Features => _features;
 
-        public Xbox360OutDevice(ViGEmClient client)
+        public Xbox360OutDevice(IVirtualPadBackend backend)
         {
-            cont = client.CreateXbox360Controller();
-            cont.AutoSubmitReport = false;
+            cont = backend.CreateXbox360Target();
         }
 
-        public Xbox360OutDevice(ViGEmClient client, X360Features features) :
-            this(client)
+        public Xbox360OutDevice(IVirtualPadBackend backend, X360Features features) :
+            this(backend)
         {
             this._features = features;
         }
@@ -87,24 +84,24 @@ namespace DS4Windows.Output.Devices
 
             unchecked
             {
-                if (state.Share) tempButtons |= Xbox360Button.Back.Value;
-                if (state.L3) tempButtons |= Xbox360Button.LeftThumb.Value;
-                if (state.R3) tempButtons |= Xbox360Button.RightThumb.Value;
-                if (state.Options) tempButtons |= Xbox360Button.Start.Value;
+                if (state.Share) tempButtons |= Xbox360Buttons.Back;
+                if (state.L3) tempButtons |= Xbox360Buttons.LeftThumb;
+                if (state.R3) tempButtons |= Xbox360Buttons.RightThumb;
+                if (state.Options) tempButtons |= Xbox360Buttons.Start;
 
-                if (state.DpadUp) tempButtons |= Xbox360Button.Up.Value;
-                if (state.DpadRight) tempButtons |= Xbox360Button.Right.Value;
-                if (state.DpadDown) tempButtons |= Xbox360Button.Down.Value;
-                if (state.DpadLeft) tempButtons |= Xbox360Button.Left.Value;
+                if (state.DpadUp) tempButtons |= Xbox360Buttons.Up;
+                if (state.DpadRight) tempButtons |= Xbox360Buttons.Right;
+                if (state.DpadDown) tempButtons |= Xbox360Buttons.Down;
+                if (state.DpadLeft) tempButtons |= Xbox360Buttons.Left;
 
-                if (state.L1) tempButtons |= Xbox360Button.LeftShoulder.Value;
-                if (state.R1) tempButtons |= Xbox360Button.RightShoulder.Value;
+                if (state.L1) tempButtons |= Xbox360Buttons.LeftShoulder;
+                if (state.R1) tempButtons |= Xbox360Buttons.RightShoulder;
 
-                if (state.Triangle) tempButtons |= Xbox360Button.Y.Value;
-                if (state.Circle) tempButtons |= Xbox360Button.B.Value;
-                if (state.Cross) tempButtons |= Xbox360Button.A.Value;
-                if (state.Square) tempButtons |= Xbox360Button.X.Value;
-                if (state.PS) tempButtons |= Xbox360Button.Guide.Value;
+                if (state.Triangle) tempButtons |= Xbox360Buttons.Y;
+                if (state.Circle) tempButtons |= Xbox360Buttons.B;
+                if (state.Cross) tempButtons |= Xbox360Buttons.A;
+                if (state.Square) tempButtons |= Xbox360Buttons.X;
+                if (state.PS) tempButtons |= Xbox360Buttons.Guide;
                 cont.SetButtonsFull(tempButtons);
             }
 
@@ -160,9 +157,9 @@ namespace DS4Windows.Output.Devices
         }
         public override void Disconnect()
         {
-            foreach (KeyValuePair<int, Xbox360FeedbackReceivedEventHandler> pair in forceFeedbacksDict)
+            foreach (KeyValuePair<int, IDisposable> pair in forceFeedbacksDict)
             {
-                cont.FeedbackReceived -= pair.Value;
+                pair.Value.Dispose();
             }
 
             forceFeedbacksDict.Clear();
@@ -184,9 +181,9 @@ namespace DS4Windows.Output.Devices
 
         public override void RemoveFeedbacks()
         {
-            foreach (KeyValuePair<int, Xbox360FeedbackReceivedEventHandler> pair in forceFeedbacksDict)
+            foreach (KeyValuePair<int, IDisposable> pair in forceFeedbacksDict)
             {
-                cont.FeedbackReceived -= pair.Value;
+                pair.Value.Dispose();
             }
 
             forceFeedbacksDict.Clear();
@@ -194,9 +191,9 @@ namespace DS4Windows.Output.Devices
 
         public override void RemoveFeedback(int inIdx)
         {
-            if (forceFeedbacksDict.TryGetValue(inIdx, out Xbox360FeedbackReceivedEventHandler handler))
+            if (forceFeedbacksDict.TryGetValue(inIdx, out IDisposable handler))
             {
-                cont.FeedbackReceived -= handler;
+                handler.Dispose();
                 forceFeedbacksDict.Remove(inIdx);
             }
         }

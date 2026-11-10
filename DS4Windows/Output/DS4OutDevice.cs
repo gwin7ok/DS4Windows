@@ -21,9 +21,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using Nefarius.ViGEm.Client;
-using Nefarius.ViGEm.Client.Targets;
-using Nefarius.ViGEm.Client.Targets.DualShock4;
+using DS4Windows.Output.Backend;
 
 namespace DS4Windows.Output
 {
@@ -35,27 +33,17 @@ namespace DS4Windows.Output
 
         public const string devtype = "DS4";
 
-        public IDualShock4Controller cont;
-        // The ViGEm event types are marked obsolete in newer client versions.
-        // Suppress obsolete warnings here while keeping compatibility with the
-        // current usage pattern. Consider migrating to AwaitRawOutputReport()
-        // in a future refactor.
-            // Store handlers as System.Delegate to avoid directly referencing obsolete
-            // delegate types in source; removal/addition will use dynamic dispatch
-            // so the runtime will perform the correct event unsubscribe with the
-            // actual delegate instance. This is a compatibility shim while we
-            // transition to AwaitRawOutputReport() in the future.
-            public System.Collections.Generic.Dictionary<int, System.Delegate> forceFeedbacksDict =
-                new System.Collections.Generic.Dictionary<int, System.Delegate>();
+        public IDs4PadTarget cont;
+        // 振動の戻りの購読（キーは入力側の番号）。拡張 API（出力バッファ）を使えない旧ドライバー向けの経路で、破棄すると購読をやめる
+        public System.Collections.Generic.Dictionary<int, IDisposable> forceFeedbacksDict =
+            new System.Collections.Generic.Dictionary<int, IDisposable>();
 
         protected bool canUseAwaitOutputBuffer = false;
         public bool CanUseAwaitOutputBuffer => canUseAwaitOutputBuffer;
 
-        public DS4OutDevice(ViGEmClient client)
+        public DS4OutDevice(IVirtualPadBackend backend)
         {
-            cont = client.CreateDualShock4Controller();
-            //cont = client.CreateDualShock4Controller(0x054C, 0x09CC);
-            cont.AutoSubmitReport = false;
+            cont = backend.CreateDs4Target();
         }
 
         public override void Connect()
@@ -77,14 +65,9 @@ namespace DS4Windows.Output
 
         public override void RemoveFeedbacks()
         {
-            foreach (System.Collections.Generic.KeyValuePair<int, System.Delegate> pair in forceFeedbacksDict)
+            foreach (System.Collections.Generic.KeyValuePair<int, IDisposable> pair in forceFeedbacksDict)
             {
-                // Use dynamic to perform runtime event unsubscribe with the
-                // original delegate instance without referencing obsolete types.
-                dynamic d = pair.Value;
-#pragma warning disable CS0618
-                cont.FeedbackReceived -= d;
-#pragma warning restore CS0618
+                pair.Value.Dispose();
             }
 
             forceFeedbacksDict.Clear();
@@ -92,12 +75,9 @@ namespace DS4Windows.Output
 
         public override void RemoveFeedback(int inIdx)
         {
-            if (forceFeedbacksDict.TryGetValue(inIdx, out System.Delegate handler))
+            if (forceFeedbacksDict.TryGetValue(inIdx, out IDisposable handler))
             {
-                dynamic d = handler;
-#pragma warning disable CS0618
-                cont.FeedbackReceived -= d;
-#pragma warning restore CS0618
+                handler.Dispose();
                 forceFeedbacksDict.Remove(inIdx);
             }
         }

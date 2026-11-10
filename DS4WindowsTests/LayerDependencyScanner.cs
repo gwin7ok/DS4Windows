@@ -61,6 +61,25 @@ namespace DS4WindowsTests
             return targets;
         }
 
+        /// <summary>
+        /// Phase16-Step4a: 本体のトップレベルの型のうち、名前空間が <paramref name="externalNamespacePrefix"/> で始まる型（本体の外の型。例: ViGEm）を参照するものの完全名。
+        /// 外部のドライバーへの依存を特定の名前空間に閉じ込めていることの検査に使う。
+        /// </summary>
+        public static IReadOnlyCollection<string> TopLevelTypesReferencingNamespace(string externalNamespacePrefix)
+        {
+            var sources = new HashSet<string>(StringComparer.Ordinal);
+            foreach (IType type in s_architecture.Value.Types)
+            {
+                if (type.IsStub || type.IsGenericParameter) continue;
+                foreach (ITypeDependency dependency in type.Dependencies)
+                    foreach (IType target in TargetsOf(dependency))
+                        if (target != null && !target.IsGenericParameter
+                            && (target.Namespace?.FullName ?? string.Empty).StartsWith(externalNamespacePrefix, StringComparison.Ordinal))
+                            sources.Add(LayerMap.ToTopLevelTypeName(type.FullName));
+            }
+            return sources;
+        }
+
         /// <summary>本体の型（スタブを除く）から、本体の別の型への参照の辺（重複なし、同じトップレベルの型への参照は除く）。</summary>
         public static IReadOnlyList<Edge> Edges => s_edges.Value;
 
