@@ -20,7 +20,7 @@
 | 26-2 | `ProfileEditor.RumbleTestBtn_Click`（92 行）の判断を `RumbleTestController` へ出す（`SortSpecialActionsList` は既に薄く、対象から外した） | 完了（2026-11-11） |
 | 26-3 | `ProfileEditor.Reload` の、入力の表示へ渡すデッドゾーン・ドリフトの値の集め方を `ReadingsDeadZoneSnapshot` へ出す（残りの `Reload` は、画面部品の初期化の順序が中心で窓に残す） | 完了（2026-11-11） |
 | 26-4 | `MainWindow.Check_Version` の判断を `UpdateCheckPolicy` へ出す（`LateChecks` は起動の順序が中心で、Phase27 で扱う） | 完了（2026-11-11） |
-| 26-5 | `BindingWindow`・`RecordBox`・`AssignmentEditor` の同様の整理 | 未着手 |
+| 26-5 | `BindingWindow`・`RecordBox`・`AssignmentEditor` の同様の整理 | 一部完了（2026-11-11。`BindingWindow.TestRumbleBtn_Click` を `ActionRumbleTestController` へ。ほかは続く） |
 
 ## 履歴
 - 2026-11-11: 計画書を作成。26-1 を完了（`TouchpadSwipeProfileRule` と 17 件のテストを追加。全 3,399 テスト合格）。スワイプの文字列 "left"／"right" は文字 t を含むため通知も出る、という元の挙動をテストで固定した。
@@ -28,3 +28,4 @@
 - 2026-11-11: 26-1 の通知の扱いを是正。`TouchpadSlide` の返り値は "right"／"left"／""／"none" だけで、"t" を含むのは左右のスワイプのみ（タップではない）。スワイプの切替は適用処理が通知を出すため、`MainWindow` のタイマー側の通知（`ShowHotkeyNotification`）と `WantsNotification` を削除した（通知の二重を解消する挙動の変更。実機の確認は台帳へ）。
 - 2026-11-11: 26-3 を完了（`ReadingsDeadZoneSnapshot` とテスト 3 件。全テスト合格）。
 - 2026-11-11: 26-4 を完了（`UpdateCheckPolicy`・`UpdateCheckOutcome` とテスト 7 件）。版の記録が読めないときは何も知らせない、という元の挙動を固定した。共有ストアの振動の強さを書き換えるテストが、別のテストを時々落とした（並列実行の競合）ため、同じ xunit コレクションに入れて同時に走らせないようにした。
+- 2026-11-11: 26-5 の 1 件目として、出力ピッカーの振動テストを `ActionRumbleTestController` へ出した（テスト 4 件）。
