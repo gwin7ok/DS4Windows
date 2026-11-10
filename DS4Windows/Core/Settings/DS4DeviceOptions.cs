@@ -29,20 +29,12 @@ using System.Xml.Serialization;
 namespace DS4Windows.Core.Settings
 {
 
-    public class DS4DeviceOptions
+    public class DS4DeviceOptions : DeviceOptionsBase
     {
         public const bool DEFAULT_ENABLE = true;
-        private bool enabled = DEFAULT_ENABLE;
-        public bool Enabled
+
+        public DS4DeviceOptions() : base(DEFAULT_ENABLE)
         {
-            get => enabled;
-            set
-            {
-                if (enabled == value) return;
-                enabled = value;
-                EnabledChanged?.Invoke(this, EventArgs.Empty);
-            }
         }
-        public event EventHandler EnabledChanged;
     }
 }

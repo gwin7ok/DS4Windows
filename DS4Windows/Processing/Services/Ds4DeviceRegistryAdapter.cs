@@ -16,7 +16,7 @@ namespace DS4Windows.Processing.Services
         /// ホストを構築しない昇格した補助プロセス（デバイスの再有効化のみ）用。設定値は使わない（列挙はしない）。
         /// </summary>
         public Ds4DeviceRegistryAdapter()
-            : this(new DS4Devices(null))
+            : this(new DS4Devices(null, System.Array.Empty<IInputDeviceCartridge>()))
         {
         }
 

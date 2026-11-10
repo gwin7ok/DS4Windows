@@ -17,8 +17,8 @@ namespace DS4WindowsTests
         [Fact]
         public void TwoRegistries_DoNotShareState()
         {
-            var first = new DS4Devices(null);
-            var second = new DS4Devices(null);
+            var first = new DS4Devices(null, System.Array.Empty<DS4Windows.Input.Abstractions.IInputDeviceCartridge>());
+            var second = new DS4Devices(null, System.Array.Empty<DS4Windows.Input.Abstractions.IInputDeviceCartridge>());
 
             first.isExclusiveMode = true;
             first.PrepareDS4Init = device => { };
@@ -38,7 +38,7 @@ namespace DS4WindowsTests
         [Fact]
         public void Attach_ConnectsTheCallbacksToTheRegistry()
         {
-            var devices = new DS4Devices(null);
+            var devices = new DS4Devices(null, System.Array.Empty<DS4Windows.Input.Abstractions.IInputDeviceCartridge>());
             var registry = new Ds4DeviceRegistryAdapter(devices);
             var hooks = new DeviceRegistryHooks(registry, TestHost.GetService<IInputDeviceModuleRegistry>(),
                 TestHost.GetService<IAppSettingsService>(), TestHost.GetService<IElevatedProcessLauncher>(), TestHost.GetService<IPathService>());

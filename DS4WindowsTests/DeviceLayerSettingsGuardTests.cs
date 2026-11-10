@@ -50,7 +50,7 @@ namespace DS4WindowsTests
         public void RegistryAdapter_PassesTheSettingsToTheFirstLayer()
         {
             var fake = new FakeDeviceLayerSettings { UseMoonlight = true };
-            var devices = new DS4Devices(fake);
+            var devices = new DS4Devices(fake, System.Array.Empty<DS4Windows.Input.Abstractions.IInputDeviceCartridge>());
             var adapter = new Ds4DeviceRegistryAdapter(devices);
             Assert.Same(fake, devices.LayerSettings);
             Assert.NotNull(adapter);

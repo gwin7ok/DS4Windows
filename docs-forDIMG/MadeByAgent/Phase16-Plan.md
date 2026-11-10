@@ -622,3 +622,9 @@ HidHide の登録・解除、OSC（送信・受信）、UDP（DSU 互換）、�
 - **判断（2.4）**: `ControlService.WarnExclusiveModeFailure`（private。呼び出しは `DeviceConnector` でコメントアウト済みの残骸）は、使うべきでない並行の残骸として削除した。
 - 新テスト 5 件（`DeviceRegistryHooksTests`: 登録簿が状態を共有しない、Singleton の登録、`Attach` でフックが結ばれる、引数の null 検査）。引数の数・ソース文字列の守りのテスト 8 件を新しい置き場所に合わせて更新。
 - Debug ALL: 警告 0・エラー 0・Actions 3,301 件・Standalone 11 件合格。
+
+### Step 16-5b（2026-11-10。完了）
+- **入力のカートリッジ**: `IInputDeviceCartridge`（`Input/Abstractions`。VID／PID の表 `KnownDevices`、`Handles(type)`、`Create`）と、種類ごとの 5 つ（`Ds4`／`DualSense`／`SwitchPro`／`JoyCon`／`Ds3` + `DeviceCartridge`、`Input/Devices`）を作った。`DS4Devices` の静的な対応機器の表（42 件）は、種類ごとの行をそのまま（順序・コメントとも）カートリッジへ移した。`InputDeviceFactory`（種類の `switch`）は撤去し、`DS4Devices` がカートリッジの `Create` を引く。`DS4Devices` のコンストラクターはカートリッジの列を受ける。機種を足すときは、デバイスの実装とカートリッジを作り、`AddInputDeviceCartridge<T>()` を 1 行足す（`Composition/InputDeviceCartridgeServiceCollectionExtensions`）。
+- **機種ごとの設定の共通化**: `DeviceOptionsBase`（有効・無効と変更の通知）を作り、`DS4`／`DualSense`／`SwitchPro`／`JoyCon`／`DS3` の `DeviceOptions` が継承する。既定値（`DEFAULT_ENABLE`）は機種ごとのまま。保存の DTO は、すでに `BaseInputDeviceSettingsGroup` を共有していたため変更なし（XML の形式は不変）。
+- 新テスト 5 件（`InputDeviceCartridgeTests`: 分ける前の表の書き出し〈黄金。42 件〉との一致、VID／PID の一意と種類ごとに 1 カートリッジ、設定の既定値と通知）。`RemovedApiRuleTests` に `InputDeviceFactory` を追記。
+- Debug ALL: 警告 0・エラー 0・Actions 3,306 件・Standalone 11 件合格。

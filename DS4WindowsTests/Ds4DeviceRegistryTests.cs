@@ -57,7 +57,7 @@ namespace DS4WindowsTests
         [Fact]
         public void Adapter_InstantiatesAndImplementsInterfaceSafely()
         {
-            var adapter = new Ds4DeviceRegistryAdapter(new DS4Devices(new FakeDeviceLayerSettings()));
+            var adapter = new Ds4DeviceRegistryAdapter(new DS4Devices(new FakeDeviceLayerSettings(), System.Array.Empty<DS4Windows.Input.Abstractions.IInputDeviceCartridge>()));
 
             Assert.NotNull(adapter);
             Assert.NotNull(adapter.GetDS4Controllers());

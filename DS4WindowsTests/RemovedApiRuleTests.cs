@@ -28,6 +28,7 @@ namespace DS4WindowsTests
             "ServiceProviderHolder",        // Phase13-Step4（Phase7-Step1 W4 のラチェットもこの 1 行に畳んだ）
             "SyntheticDispatcher",          // Phase14c-Step3（静的な橋渡し）
             "ActionRegistry",               // Phase14c-Step5（本番で未初期化の静的な登録簿）
+            "InputDeviceFactory",           // Phase16-Step5b（種類ごとの switch は IInputDeviceCartridge の Create へ）
             "MouseOutputAction",            // Phase7-Step8 W2
             "IUdpServerService",            // Phase9 9-E E-3（未接続の並行実装）
             "UdpServerService",             // Phase9 9-E E-3

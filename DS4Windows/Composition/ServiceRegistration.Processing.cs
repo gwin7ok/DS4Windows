@@ -5,6 +5,7 @@ using DS4Windows.Core.Model;
 using DS4Windows.Core.Settings;
 using DS4Windows.Input;
 using DS4Windows.Input.Abstractions;
+using DS4Windows.Input.Devices;
 using DS4Windows.Processing;
 using DS4Windows.Processing.Abstractions;
 using DS4Windows.Processing.Actions;
@@ -138,7 +139,14 @@ namespace DS4Windows.Composition
 
             // Phase7-Step10d W3（Q4＝A）: 第 1 層が読む設定値の窓口
             services.AddSingleton<IDeviceLayerSettings, DeviceLayerSettings>();
-            services.AddSingleton<DS4Devices>(sp => new DS4Devices(sp.GetRequiredService<IDeviceLayerSettings>()));   // 接続中のコントローラーの登録簿（状態を持つ）
+            // 入力デバイスの種類ごとのカートリッジ（対応する VID／PID の表と、デバイスの生成）。機種を足すときは、ここへ 1 行足す
+            services.AddInputDeviceCartridge<Ds4DeviceCartridge>();
+            services.AddInputDeviceCartridge<DualSenseDeviceCartridge>();
+            services.AddInputDeviceCartridge<SwitchProDeviceCartridge>();
+            services.AddInputDeviceCartridge<JoyConDeviceCartridge>();
+            services.AddInputDeviceCartridge<Ds3DeviceCartridge>();
+            services.AddSingleton<DS4Devices>(sp => new DS4Devices(sp.GetRequiredService<IDeviceLayerSettings>(),
+                sp.GetServices<IInputDeviceCartridge>()));   // 接続中のコントローラーの登録簿（状態を持つ）
             services.AddSingleton<IDs4DeviceRegistry, Ds4DeviceRegistryAdapter>();
             services.AddSingleton<IDeviceRegistryHooks, DeviceRegistryHooks>();   // 登録簿が列挙・初期化の途中で呼び返すフック（対応する種類の確認、初期化の直後の処理、昇格の要求）
             services.AddSingleton<IAppliedProfileRecorder, AppliedProfileRecorder>();   // 適用のたびに、コントローラーごとにプロファイルを記憶する（再接続で使う）
