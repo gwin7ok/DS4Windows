@@ -18,50 +18,36 @@ namespace DS4Windows.Processing.Services
         private readonly IProfileSettingsService _profileSettings;
         private readonly IProfileXmlStore _profileXmlStore;
         private readonly IAppSettingsService _appSettings;
-        private readonly IOscService _oscService;
         private readonly IDs4DeviceRegistry _deviceRegistry;
         private readonly IDeviceDisconnectHandler _deviceDisconnect;
-        private readonly IVirtualKBM _virtualKBM;
-        private readonly StickMotionState _stickMotion;
-        private readonly SyntheticInputState _syntheticInput;
         private readonly IConnectionProfileSelector _connectionProfileSelector;
-        private readonly IVirtualPadService _virtualPad;
-        private readonly OutContType[] _activeOutDevType;   // Phase13-Step7 7-c: 旧: 遅延取得デリゲート。配列の参照は再代入されない
         private readonly IDeviceConnectionSetup _deviceConnectionSetup;
         private readonly IInputDeviceModuleRegistry _deviceModules;
-        private readonly IUdpMotionService _udpMotion;
         private readonly IHidHideService _hidHideService;
         private readonly IDeviceSlotState _slots;   // Phase13-Step5: スロットの配列（直接注入）
         private readonly IInputReportProcessor _inputReport;   // Phase13-Step5b: 旧 Func<IDeviceSlotHost>.OnReport（入力レポートの処理）
+        private readonly IMouseFactory _mouseFactory;
+        private readonly IConnectedDeviceOutputs _outputs;
 
         public DeviceConnector(IProfileSettingsService profileSettings, IProfileXmlStore profileXmlStore, IAppSettingsService appSettings,
-            IOscService oscService, IDs4DeviceRegistry deviceRegistry, IDeviceDisconnectHandler deviceDisconnect, IVirtualKBM virtualKBM,
-            StickMotionState stickMotion, SyntheticInputState syntheticInput, IConnectionProfileSelector connectionProfileSelector,
-            IVirtualPadService virtualPad, IOutputDeviceTypeState outputDeviceTypes, IDeviceConnectionSetup deviceConnectionSetup,
-            IInputDeviceModuleRegistry deviceModules, IUdpMotionService udpMotion, IHidHideService hidHideService, IDeviceSlotState slots, IInputReportProcessor inputReport)
+            IDs4DeviceRegistry deviceRegistry, IDeviceDisconnectHandler deviceDisconnect, IConnectionProfileSelector connectionProfileSelector,
+            IDeviceConnectionSetup deviceConnectionSetup, IInputDeviceModuleRegistry deviceModules, IHidHideService hidHideService,
+            IDeviceSlotState slots, IInputReportProcessor inputReport, IMouseFactory mouseFactory, IConnectedDeviceOutputs outputs)
         {
             _profileSettings = profileSettings ?? throw new ArgumentNullException(nameof(profileSettings));
             _profileXmlStore = profileXmlStore ?? throw new ArgumentNullException(nameof(profileXmlStore));
             _appSettings = appSettings ?? throw new ArgumentNullException(nameof(appSettings));
-            _oscService = oscService ?? throw new ArgumentNullException(nameof(oscService));
             _deviceRegistry = deviceRegistry ?? throw new ArgumentNullException(nameof(deviceRegistry));
             _deviceDisconnect = deviceDisconnect ?? throw new ArgumentNullException(nameof(deviceDisconnect));
-            _virtualKBM = virtualKBM ?? throw new ArgumentNullException(nameof(virtualKBM));
-            _stickMotion = stickMotion ?? throw new ArgumentNullException(nameof(stickMotion));
-            _syntheticInput = syntheticInput ?? throw new ArgumentNullException(nameof(syntheticInput));
             _connectionProfileSelector = connectionProfileSelector ?? throw new ArgumentNullException(nameof(connectionProfileSelector));
-            _virtualPad = virtualPad ?? throw new ArgumentNullException(nameof(virtualPad));
-            _activeOutDevType = (outputDeviceTypes ?? throw new ArgumentNullException(nameof(outputDeviceTypes))).ActiveOutDevType;
             _deviceConnectionSetup = deviceConnectionSetup ?? throw new ArgumentNullException(nameof(deviceConnectionSetup));
             _deviceModules = deviceModules ?? throw new ArgumentNullException(nameof(deviceModules));
-            _udpMotion = udpMotion ?? throw new ArgumentNullException(nameof(udpMotion));
             _hidHideService = hidHideService ?? throw new ArgumentNullException(nameof(hidHideService));
             _slots = slots ?? throw new ArgumentNullException(nameof(slots));
             _inputReport = inputReport ?? throw new ArgumentNullException(nameof(inputReport));
+            _mouseFactory = mouseFactory ?? throw new ArgumentNullException(nameof(mouseFactory));
+            _outputs = outputs ?? throw new ArgumentNullException(nameof(outputs));
         }
-
-        // ActiveOutDevType の配列参照は再代入されない（要素書込みのみ）。旧 ControlService と同じ配列を指す
-        private OutContType[] ActiveOutDevType => _activeOutDevType;
 
         public void BeginPrepare(DS4Device device, bool showlog = false)
         {
@@ -88,10 +74,7 @@ namespace DS4Windows.Processing.Services
             device.CheckControllerNumDeviceSettings(numControllers);
 
             slots.SlotManager.AddController(device, index);
-            if (_appSettings.UseOscSender)
-            {
-                _oscService.SendPlug(index, true);
-            }
+            _outputs.NotifyPlugged(index);
             device.Removal += _deviceDisconnect.OnRemoval;
             device.Removal += _deviceRegistry.OnRemoval;
             device.SyncChange += _deviceDisconnect.OnSyncChange;
@@ -99,7 +82,7 @@ namespace DS4Windows.Processing.Services
             device.SerialChange += _deviceDisconnect.OnSerialChange;
             device.ChargingChanged += OnChargingChanged;
 
-            touchPads[index] = new Mouse(index, device, _profileSettings, _virtualKBM, _stickMotion, _syntheticInput);
+            touchPads[index] = _mouseFactory.Create(index, device);
             // Phase7-Step5 W1: DS3 のジャイロトリガー（Controls モード）の判定を、このスロットの Mouse へつなぐ。
             // DS4SixAxis は ControlService を直接参照しない（旧: Program.rootHub。DI 移行後は参照が失われていた）。
             device.SixAxis.GyroControlsTriggerActive =
@@ -119,27 +102,7 @@ namespace DS4Windows.Processing.Services
             {
                 device.LightBarColor = _profileSettings.GetMainColor(index);
 
-                if (!_profileSettings.GetDInputOnly(index) && device.isSynced())
-                {
-                    if (device.PrimaryDevice)
-                    {
-                        _virtualPad.PluginOutDev(index, device);
-                    }
-                    else if (device.JointDeviceSlotNumber != DS4Device.DEFAULT_JOINT_SLOT_NUMBER)
-                    {
-                        int otherIdx = device.JointDeviceSlotNumber;
-                        OutContType tempConType = ActiveOutDevType[otherIdx];
-                        if (_virtualPad.TryShareOutputDevice(otherIdx, index, tempConType, device))
-                        {
-                            ActiveOutDevType[index] = tempConType;
-                        }
-                    }
-                }
-                else
-                {
-                    _profileSettings.UseDInputOnlyArray[index] = true;
-                    ActiveOutDevType[index] = OutContType.None;
-                }
+                _outputs.PlugVirtualPad(index, device);
 
                 if (device.PrimaryDevice && device.OutputMapGyro)
                 {
@@ -170,10 +133,7 @@ namespace DS4Windows.Processing.Services
                 inputReport.OnReport(sender, e, tempIdx);
             };
 
-            if (_udpMotion.HasServer && index < _udpMotion.SlotCount)
-            {
-                _udpMotion.PrepareDeviceMotion(device, tempIdx);
-            }
+            _outputs.PrepareMotion(tempIdx, device);
 
             device.StartUpdate();
         }

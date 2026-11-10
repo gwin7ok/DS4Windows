@@ -72,19 +72,19 @@ namespace DS4WindowsTests
                 "device.LoadStoreSettings();",
                 "device.CheckControllerNumDeviceSettings(numControllers);",
                 "slots.SlotManager.AddController(device, index);",   // Phase13-Step5: スロット状態は IDeviceSlotState（slots）から読む
-                "_oscService.SendPlug(index, true);",
+                "_outputs.NotifyPlugged(index);",
                 "device.Removal += _deviceDisconnect.OnRemoval;",
                 "device.SyncChange += _deviceDisconnect.OnSyncChange;",
                 "device.SerialChange += _deviceDisconnect.OnSerialChange;",
                 "device.ChargingChanged += OnChargingChanged;",
-                "touchPads[index] = new Mouse(",
+                "touchPads[index] = _mouseFactory.Create(index, device);",
                 "device.SixAxis.GyroControlsTriggerActive",
                 "_connectionProfileSelector.ApplyOnConnect(",
-                "_virtualPad.PluginOutDev(index, device);",
+                "_outputs.PlugVirtualPad(index, device);",
                 "_deviceConnectionSetup.ApplyProfileOptions(index, device, touchPads[index]);",
                 "_deviceConnectionSetup.WireInitialHooks(index, device);",
                 "device.Report += (sender, e) =>",
-                "_udpMotion.PrepareDeviceMotion(device, tempIdx);",
+                "_outputs.PrepareMotion(tempIdx, device);",
                 "device.StartUpdate();",
             };
 

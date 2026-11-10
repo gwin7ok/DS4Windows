@@ -21,7 +21,7 @@ namespace DS4WindowsTests
             Assert.True(Regex.Matches(text, @"\bStartTapClickHold\(\)\s*;").Count >= 2);
 
             // 保持中は synthesizeMouseButtons が毎フレーム MapClick(Left) を出す
-            Assert.Matches(@"DateTime\.UtcNow\s*<\s*tapClickHoldUntil\s*\)\s*\{\s*_syntheticInput\.CountClick\(deviceNum,\s*Click\.Left\)", text); // Phase7-Step7 W4: Mapping.Click は Click（トップレベル）へ移った
+            Assert.Matches(@"_time\.GetUtcNow\(\)\.UtcDateTime\s*<\s*tapClickHoldUntil\s*\)\s*\{\s*_syntheticInput\.CountClick\(deviceNum,\s*Click\.Left\)", text); // Phase7-Step7 W4: Mapping.Click は Click（トップレベル）へ移った
         }
 
         [Fact]
@@ -30,7 +30,7 @@ namespace DS4WindowsTests
             string text = SourceText.ReadCode("DS4Windows/Processing/Mouse.cs");
             if (text == null) return;
 
-            Assert.Matches(@"releaseButtonActive\s*\|\|\s*releaseButtonChanged\s*\|\|\s*tappedOnce\s*\|\|\s*DateTime\.UtcNow\s*<\s*tapClickHoldUntil", text);
+            Assert.Matches(@"releaseButtonActive\s*\|\|\s*releaseButtonChanged\s*\|\|\s*tappedOnce\s*\|\|\s*_time\.GetUtcNow\(\)\.UtcDateTime\s*<\s*tapClickHoldUntil", text);
         }
     }
 }

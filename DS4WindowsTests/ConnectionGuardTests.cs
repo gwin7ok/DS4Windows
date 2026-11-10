@@ -45,7 +45,7 @@ namespace DS4WindowsTests
             if (text == null) return;
 
             int select = text.IndexOf("_connectionProfileSelector.ApplyOnConnect(");
-            int plugin = text.IndexOf("PluginOutDev(index, device);", select < 0 ? 0 : select);
+            int plugin = text.IndexOf("PlugVirtualPad(index, device);", select < 0 ? 0 : select);
             Assert.True(select > 0 && plugin > select, "プロファイルの選択（ApplyOnConnect）は、仮想パッドの接続（PluginOutDev）より前に呼ばれる必要がある");
         }
 

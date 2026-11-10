@@ -13,7 +13,6 @@
             "DS4Windows.Processing.Actions.ActionBindingBuilder|16",
             "DS4Windows.Processing.ControlService|16",
             "DS4Windows.Processing.Mapping|25",
-            "DS4Windows.Processing.Services.DeviceConnector|18",
             "DS4Windows.UI.MainWindow|21",
             "DS4Windows.UI.Services.EditorWindowFactory|18",
             "DS4Windows.UI.Services.MainWindowFactory|20",

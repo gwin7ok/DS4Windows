@@ -575,7 +575,7 @@ HidHide の登録・解除、OSC（送信・受信）、UDP（DSU 互換）、�
 - `ConstructorArityBaseline` の `Mapping` を 25 に更新。ガードテスト 3 件（`MappingInstanceGuardTests`、`StickMotionStateGuardTests`、`NoSharedGuardTests`）を、削除した引数・フィールドに合わせて更新（`Mapping` が `StickMotionState` の配列の参照を共有する検査は残した）。
 - Debug ALL: 警告 0・エラー 0・Actions 3,269 件合格。
 
-### Step 16-2（2026-11-10。完了。`Mouse` は 16-4c へ）
+### Step 16-2（2026-11-10。完了。`Mouse` は 16-4c で完了）
 
 - `TimeProvider.System` を `ServiceRegistration.Core.cs` に Singleton で登録。`MacroPlayback`（`Task.Delay(TimeSpan, TimeProvider)` ×2）、`RepeatHelper`（`TimeProvider.CreateTimer`。`System.Threading.Timer` から `ITimer` へ）、`KeyButtonActionController`（初回リピートの遅延と `RepeatHelper` の生成）に、コンストラクター引数で `TimeProvider` を受ける形にした。`KeyButtonActionControllerAdapter`・`DefaultKeyButtonActionControllerFactory`・`KeyButtonControllerRegistry` は、中継のために引数を 1 つ足した。
 - **`Mouse`（タップ後の保持）は 16-4c へ送った。** `Mouse` を作る `DeviceConnector` が既に 18 引数（許可リストの対象）で、`TimeProvider` を足すと引数がさらに増えるため。`DeviceConnector` の分割（16-4c）と同時に行う。
@@ -608,3 +608,10 @@ HidHide の登録・解除、OSC（送信・受信）、UDP（DSU 互換）、�
 - **`IVirtualPadService` の縮小**: `OutputDevices`（配列）の公開をやめ、`HasOutputDevice`／`SendReport`／`TryShareOutputDevice`／`ReleaseSharedOutputDevice`／`IsOutputQueueRunning`／`StopOutputSlots`／`ShutDownOutputSlots`／`BackendFailure`／`DescribeSlot` に置き換えた。`InputReportProcessor`・`DeviceConnector`・`DeviceDisconnectHandler`・`ServiceLifecycle`・`IpcCommandProcessor`・`ControlService` から、`OutputDevice` と `OutputSlotManager` の直接の参照がなくなった（手順と順序は逐語で保った。`SendReport` は null 条件の呼び出しと同じ）。`OutputSlotManager` の公開は `OutputSlotService`（同じ第 3 層）とテストのために残した。
 - 新テスト 3 件（`SendReport`、`TryShareOutputDevice`／`ReleaseSharedOutputDevice`、`DescribeSlot`）。`LifecycleGuardTests` の順序の検査を新しい呼び出しの文字列に更新（順序そのものは変えていない）。`RemovedApiRuleTests` に撤去したメンバーを追記。
 - Debug ALL: 警告 0・エラー 0・Actions 3,289 件合格。
+
+### Step 16-4c（2026-11-10。完了）
+- **`ServiceLifecycle`（引数 16→12）**: 出力側のサービスの開始・停止の手順を `IOutputServicesLifecycle`（`Processing/Abstractions`）／`OutputServicesLifecycle`（`Processing/Services`）へ分けた。順序は逐語で保った。
+- **`DeviceConnector`（引数 18→13。`ConstructorArityBaseline` から削除）**: タッチパッドの `Mouse` の生成を `IMouseFactory`／`MouseFactory`、接続時の出力側の準備（OSC の通知、仮想パッドの割り当て、UDP の準備）を `IConnectedDeviceOutputs`／`ConnectedDeviceOutputs` へ分けた。呼ぶ位置と条件は変えていない（`ConnectorGuardTests`・`ConnectionGuardTests` の順序の文字列を新しい呼び出しに更新）。
+- **`Mouse` に `TimeProvider`**（16-2 から持ち越し）: タップのクリックを押し続ける時間（`tapClickHoldUntil`）だけを `TimeProvider` の時刻で数える。`onReleaseTime` など他の時刻は対象外。
+- 新テスト 4 件（`ConnectedDeviceOutputsTests` 3 件、`Mouse` の `TimeProvider` 2 件のうち null 検査と 50 ms の保持）。
+- Debug ALL: 警告 0・エラー 0・Actions 3,296 件・Standalone 11 件合格。

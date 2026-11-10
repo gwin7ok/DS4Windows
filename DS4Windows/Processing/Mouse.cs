@@ -50,10 +50,11 @@ namespace DS4Windows.Processing
         // 上流は 1 フレームだけの瞬間的なクリックで、フォーカスの切り替えが効かない環境があったため保持する（Phase6 変更、ユーザー承認 2026-10-15）
         private const double TapClickHoldMs = 50.0;
         private DateTime tapClickHoldUntil = DateTime.MinValue;
+        private readonly TimeProvider _time;
 
         private void StartTapClickHold()
         {
-            tapClickHoldUntil = DateTime.UtcNow + TimeSpan.FromMilliseconds(TapClickHoldMs);
+            tapClickHoldUntil = _time.GetUtcNow().UtcDateTime + TimeSpan.FromMilliseconds(TapClickHoldMs);
         }
         public bool swipeLeft, swipeRight, swipeUp, swipeDown;
         public bool priorSwipeLeft, priorSwipeRight, priorSwipeUp, priorSwipeDown;
@@ -115,8 +116,9 @@ namespace DS4Windows.Processing
         private FakeTrackball touchStickTrackball;
 
         public Mouse(int deviceID, DS4Device d, IProfileSettingsService profileSettings, IVirtualKBM virtualKBM,
-            StickMotionState stickMotion, SyntheticInputState syntheticInput)
+            StickMotionState stickMotion, SyntheticInputState syntheticInput, TimeProvider timeProvider)
         {
+            _time = timeProvider ?? throw new ArgumentNullException(nameof(timeProvider));
             _stickMotion = stickMotion ?? throw new ArgumentNullException(nameof(stickMotion));
             _syntheticInput = syntheticInput ?? throw new ArgumentNullException(nameof(syntheticInput));
             _profileSettings = profileSettings ?? throw new ArgumentNullException(nameof(profileSettings));
@@ -1522,7 +1524,7 @@ namespace DS4Windows.Processing
             // 指を離した後も処理が必要（Phase6 変更、ユーザー承認 2026-10-15）
             if (s.Touch1Finger || s.TouchButton ||
                 releaseButtonActive || releaseButtonChanged ||
-                tappedOnce || DateTime.UtcNow < tapClickHoldUntil)
+                tappedOnce || _time.GetUtcNow().UtcDateTime < tapClickHoldUntil)
             {
                 synthesizeMouseButtons();
             }
@@ -1731,7 +1733,7 @@ namespace DS4Windows.Processing
                 }
 
                 // タップのクリックを保持時間の間、押したままにする（毎フレーム MapClick。state は毎フレーム消去されるため）
-                if (DateTime.UtcNow < tapClickHoldUntil)
+                if (_time.GetUtcNow().UtcDateTime < tapClickHoldUntil)
                 {
                     _syntheticInput.CountClick(deviceNum, Click.Left);
                 }
