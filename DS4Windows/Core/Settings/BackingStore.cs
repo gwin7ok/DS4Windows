@@ -630,7 +630,6 @@ namespace DS4Windows.Core.Settings
             false, false, false, false, false, false, false, false, false
         };
 
-        public bool useDs3PitchRollSim = false;
 
         public ControlServiceDeviceOptions deviceOptions =
             new ControlServiceDeviceOptions();
@@ -1299,7 +1298,6 @@ namespace DS4Windows.Core.Settings
             enableOutputDataToDS4[device] = DEFAULT_OUTPUT_TO_DS4;
             touchpadJitterCompensation[device] = DEFAULT_TOUCHPAD_JITTER_COMP;
             // Phase6-Step12: 旧形式の読込に追加した設定の既定値（要素の無いプロファイルで、前の値を引き継がないようにする）。
-            // useDs3PitchRollSim は全体で 1 つの値のため、ここではリセットしない。
             inverseRumbleMotors[device] = false;
             leftStickDriftXAxis[device] = 0;
             leftStickDriftYAxis[device] = 0;

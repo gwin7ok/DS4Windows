@@ -177,16 +177,12 @@ namespace DS4WindowsTests
                 DS4DeviceOpts = o.Get<DS4Windows.Core.Settings.DS4DeviceOptions>(DS4Windows.Core.Model.InputDeviceFamily.DS4);
                 DualSenseOpts = o.Get<DS4Windows.Core.Settings.DualSenseDeviceOptions>(DS4Windows.Core.Model.InputDeviceFamily.DualSense);
                 SwitchProDeviceOpts = o.Get<DS4Windows.Core.Settings.SwitchProDeviceOptions>(DS4Windows.Core.Model.InputDeviceFamily.SwitchPro);
-                JoyConDeviceOpts = o.Get<DS4Windows.Core.Settings.JoyConDeviceOptions>(DS4Windows.Core.Model.InputDeviceFamily.JoyCon);
-                DS3DeviceOpts = o.Get<DS4Windows.Core.Settings.DS3DeviceOptions>(DS4Windows.Core.Model.InputDeviceFamily.DS3);
                 VerboseLogMessages = o.VerboseLogMessages;
             }
 
             public DS4Windows.Core.Settings.DS4DeviceOptions DS4DeviceOpts { get; }
             public DS4Windows.Core.Settings.DualSenseDeviceOptions DualSenseOpts { get; }
             public DS4Windows.Core.Settings.SwitchProDeviceOptions SwitchProDeviceOpts { get; }
-            public DS4Windows.Core.Settings.JoyConDeviceOptions JoyConDeviceOpts { get; }
-            public DS4Windows.Core.Settings.DS3DeviceOptions DS3DeviceOpts { get; }
             public bool VerboseLogMessages { get; }
         }
 

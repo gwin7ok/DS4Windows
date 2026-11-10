@@ -54,12 +54,5 @@ namespace DS4WindowsTests
             Assert.Same(fake, devices.LayerSettings);
             Assert.NotNull(adapter);
         }
-
-        [Fact]
-        public void SixAxis_HasNoSettingsUntilTheDeviceSetsThem()
-        {
-            var sixAxis = new DS4SixAxis();
-            Assert.Null(sixAxis.LayerSettings);
-        }
     }
 }

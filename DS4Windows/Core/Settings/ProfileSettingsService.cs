@@ -466,14 +466,6 @@ namespace DS4Windows.Core.Settings
             }
         }
 
-        public bool UseDs3PitchRollSim
-        {
-            get => SafeConfig != null && SafeConfig.useDs3PitchRollSim;
-            set
-            {
-                if (SafeConfig != null) SafeConfig.useDs3PitchRollSim = value;
-            }
-        }
         public bool[] LowerRCOn => SafeConfig?.lowerRCOn;
         public string[] LaunchProgram => SafeConfig?.launchProgram;
         public int GetBTPollRate(int deviceIndex) => SafeConfig != null && SafeConfig.btPollRate != null ? SafeConfig.btPollRate[deviceIndex] : 0;

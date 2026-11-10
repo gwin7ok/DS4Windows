@@ -21,11 +21,7 @@ namespace DS4WindowsTests
             {
                 [InputDeviceType.DS4] = InputDeviceFamily.DS4,
                 [InputDeviceType.SwitchPro] = InputDeviceFamily.SwitchPro,
-                [InputDeviceType.JoyConL] = InputDeviceFamily.JoyCon,
-                [InputDeviceType.JoyConR] = InputDeviceFamily.JoyCon,
-                [InputDeviceType.JoyConGrip] = InputDeviceFamily.JoyCon,
                 [InputDeviceType.DualSense] = InputDeviceFamily.DualSense,
-                [InputDeviceType.DS3] = InputDeviceFamily.DS3,
             };
 
             foreach (InputDeviceType type in Enum.GetValues(typeof(InputDeviceType)))
@@ -35,15 +31,6 @@ namespace DS4WindowsTests
 
             Assert.Equal(expected.Count, Enum.GetValues(typeof(InputDeviceType)).Length);
             Assert.Throws<ArgumentOutOfRangeException>(() => InputDeviceTypeInfo.FamilyOf((InputDeviceType)99));
-        }
-
-        [Fact]
-        public void JoyConSide_IsLeftOrRightOnly_NotTheGrip()
-        {
-            Assert.True(InputDeviceTypeInfo.IsJoyConSide(InputDeviceType.JoyConL));
-            Assert.True(InputDeviceTypeInfo.IsJoyConSide(InputDeviceType.JoyConR));
-            Assert.False(InputDeviceTypeInfo.IsJoyConSide(InputDeviceType.JoyConGrip));
-            Assert.False(InputDeviceTypeInfo.IsJoyConSide(InputDeviceType.DS4));
         }
 
         [Fact]

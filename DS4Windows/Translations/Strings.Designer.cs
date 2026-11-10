@@ -752,14 +752,6 @@ namespace DS4Windows.Translations {
             }
         }
         
-        /// <summary>
-        ///   Looks up a localized string similar to DS3 Controller Support.
-        /// </summary>
-        public static string ControllerSupportDS3 {
-            get {
-                return ResourceManager.GetString("ControllerSupportDS3", resourceCulture);
-            }
-        }
         
         /// <summary>
         ///   Looks up a localized string similar to DS4 Controller Support.
@@ -779,14 +771,6 @@ namespace DS4Windows.Translations {
             }
         }
         
-        /// <summary>
-        ///   Looks up a localized string similar to JoyCon Controller Support.
-        /// </summary>
-        public static string ControllerSupportJoyCon {
-            get {
-                return ResourceManager.GetString("ControllerSupportJoyCon", resourceCulture);
-            }
-        }
         
         /// <summary>
         ///   Looks up a localized string similar to Virtual Controller Support.
@@ -1441,23 +1425,7 @@ namespace DS4Windows.Translations {
             }
         }
         
-        /// <summary>
-        ///   Looks up a localized string similar to DS3 Device Support.
-        /// </summary>
-        public static string FirstLaunch_DS3EnableCkbLabel {
-            get {
-                return ResourceManager.GetString("FirstLaunch.DS3EnableCkbLabel", resourceCulture);
-            }
-        }
         
-        /// <summary>
-        ///   Looks up a localized string similar to Support for DualShock 3 (PS3) controllers. Requires the use of the DsHidMini driver from the ViGEm project (nefarius)..
-        /// </summary>
-        public static string FirstLaunch_DS3EnableText {
-            get {
-                return ResourceManager.GetString("FirstLaunch.DS3EnableText", resourceCulture);
-            }
-        }
         
         /// <summary>
         ///   Looks up a localized string similar to DS4 Device Support.
@@ -1504,23 +1472,7 @@ namespace DS4Windows.Translations {
             }
         }
         
-        /// <summary>
-        ///   Looks up a localized string similar to JoyCon Device Support.
-        /// </summary>
-        public static string FirstLaunch_JoyConEnableCkbLabel {
-            get {
-                return ResourceManager.GetString("FirstLaunch.JoyConEnableCkbLabel", resourceCulture);
-            }
-        }
         
-        /// <summary>
-        ///   Looks up a localized string similar to Support for JoyCon (Nintendo Switch) controllers.
-        /// </summary>
-        public static string FirstLaunch_JoyConEnableText {
-            get {
-                return ResourceManager.GetString("FirstLaunch.JoyConEnableText", resourceCulture);
-            }
-        }
         
         /// <summary>
         ///   Looks up a localized string similar to Switch Pro Device Support.
@@ -3913,14 +3865,6 @@ namespace DS4Windows.Translations {
             }
         }
         
-        /// <summary>
-        ///   Looks up a localized string similar to [EXPERIMENTAL] Use DS3 gyro simulation.
-        /// </summary>
-        public static string UseDs3PitchRollSim {
-            get {
-                return ResourceManager.GetString("UseDs3PitchRollSim", resourceCulture);
-            }
-        }
         
         /// <summary>
         ///   Looks up a localized string similar to Use Smoothing.

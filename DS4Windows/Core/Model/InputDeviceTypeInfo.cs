@@ -45,11 +45,5 @@ namespace DS4Windows.Core.Model
             int i = (int)type;
             return i >= 0 && i < FamilyByType.Length && FamilyByType[i] == family;
         }
-
-        /// <summary>Joy-Con の片側（左または右）か。充電グリップは含まない（グリップは、どちらかの側に付いて初めて左右になる）。</summary>
-        public static bool IsJoyConSide(InputDeviceType type)
-        {
-            return type == InputDeviceType.JoyConL || type == InputDeviceType.JoyConR;
-        }
     }
 }

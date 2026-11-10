@@ -31,13 +31,6 @@ namespace DS4Windows.Input
         public event SixAxisHandler<SixAxisEventArgs> SixAccelMoved = null;
         private SixAxis sPrev = null, now = null;
 
-        // Phase7-Step5 W1: DS3 のジャイロトリガー（Controls モード）が有効かを返す関数。引数はコントローラーのスロット番号。
-        // ControlService が、デバイスをスロットへ接続するときに設定する（旧: App.rootHub.touchPad[device] を静的に参照していた）。
-        // 未設定のとき（接続前、テスト）は「無効」として扱い、例外にしない。
-        public Func<int, bool> GyroControlsTriggerActive { get; set; }
-
-        // Phase7-Step10d W3（Q4＝A）: DS3 の pitch／roll 疑似計算の設定値。DS4Device.LayerSettings から引き継ぐ。未設定のとき（テスト）は「無効」として扱う。
-        public DS4Windows.Input.Abstractions.IDeviceLayerSettings LayerSettings { get; set; }
         private CalibData[] calibrationData = new CalibData[6] { new CalibData(), new CalibData(),
             new CalibData(), new CalibData(), new CalibData(), new CalibData()
         };
@@ -53,78 +46,6 @@ namespace DS4Windows.Input
         private int gyro_offset_z = 0;
         private double gyro_accel_magnitude = 1.0f;
         private Stopwatch gyroAverageTimer = new Stopwatch();
-
-        private class SimulatePitchRoll
-        {
-            private const int SAMPLE_WINDOW = 4;
-            private const int AVARAGE_WINDOW = 2;
-
-            private struct AccelXZ
-            {
-                public int X;
-                public int Y;
-                public int Z;
-                public ulong TimeStamp;
-            }
-
-            private Queue<AccelXZ> _cachedQueue = new();
-
-            public void PushSample(int accelX, int accelY, int accelZ, ulong timeStamp)
-            {
-                if (_cachedQueue.Count >= SAMPLE_WINDOW)
-                {
-                    var entry = _cachedQueue.Dequeue();
-                    entry.X = accelX;
-                    entry.Y = accelY;
-                    entry.Z = accelZ;
-                    entry.TimeStamp = timeStamp;
-                    _cachedQueue.Enqueue(entry);
-                }
-                else
-                {
-                    _cachedQueue.Enqueue(new AccelXZ { X = accelX, Y = accelY, Z = accelZ, TimeStamp = timeStamp });
-                }
-            }
-
-            public void GetPitchRoll(ref int pitch, ref int roll)
-            {
-                if (_cachedQueue.Count < SAMPLE_WINDOW)
-                {
-                    return;
-                }
-
-                var cachedArray = _cachedQueue.ToArray();
-                var timediff = (int)(cachedArray[SAMPLE_WINDOW - 1].TimeStamp - cachedArray[0].TimeStamp) * (SAMPLE_WINDOW - AVARAGE_WINDOW) / SAMPLE_WINDOW;
-                if (timediff > 0)
-                {
-                    int avrageX1 = 0, avrageX2 = 0, avrageY1 = 0, avrageY2 = 0, avrageZ1 = 0, avrageZ2 = 0;
-                    for (var i = 0; i < AVARAGE_WINDOW; i++)
-                    {
-                        avrageX1 += cachedArray[i].X;
-                        avrageX2 += cachedArray[SAMPLE_WINDOW - AVARAGE_WINDOW + i].X;
-                        avrageY1 += cachedArray[i].Y;
-                        avrageY2 += cachedArray[SAMPLE_WINDOW - AVARAGE_WINDOW + i].Y;
-                        avrageZ1 += cachedArray[i].Z;
-                        avrageZ2 += cachedArray[SAMPLE_WINDOW - AVARAGE_WINDOW + i].Z;
-                    }
-
-                    avrageX1 /= AVARAGE_WINDOW;
-                    avrageX2 /= AVARAGE_WINDOW;
-                    avrageY1 /= AVARAGE_WINDOW;
-                    avrageY2 /= AVARAGE_WINDOW;
-                    avrageZ1 /= AVARAGE_WINDOW;
-                    avrageZ2 /= AVARAGE_WINDOW;
-
-                    var avrageY = (avrageY1 + avrageY2) / 2;
-                    var direction = avrageY < 0 ? -1 : 1;
-
-                    pitch = direction * (int)(1000000 * Math.Atan2(avrageZ1 - avrageZ2, SixAxis.ACC_RES_PER_G) * 180 * SixAxis.GYRO_RES_IN_DEG_SEC / Math.PI) / timediff;
-                    roll = direction * (int)(1000000 * Math.Atan2(avrageX2 - avrageX1, SixAxis.ACC_RES_PER_G) * 180 * SixAxis.GYRO_RES_IN_DEG_SEC / Math.PI) / timediff;
-                }
-            }
-        }
-
-        private SimulatePitchRoll _simulatePitchRoll = new();
 
         public long CntCalibrating
         {
@@ -295,65 +216,6 @@ namespace DS4Windows.Input
             handleSixaxisVals(currentYaw, currentPitch, currentRoll, AccelX, AccelY, AccelZ, state, elapsedDelta);
         }
 
-        public unsafe void handleDS3Sixaxis(byte* gyro, byte* accel, DS4State state,
-            double elapsedDelta, int device)
-        {
-            unchecked
-            {
-                int currentYaw = (short)((ushort)(gyro[1] << 8) | gyro[0]);
-                int currentPitch = 0;
-                int currentRoll = 0;
-                int AccelX = (short)((ushort)(accel[1] << 8) | accel[0]);
-                int AccelZ = (short)((ushort)(accel[3] << 8) | accel[2]);
-                int AccelY = (short)((ushort)(accel[5] << 8) | accel[4]);
-
-                // DS3 to DS4
-                currentYaw = (int)((currentYaw - 512) * 90 * SixAxis.GYRO_RES_IN_DEG_SEC / 123.0f);
-                AccelX = (int)((512 - AccelX) * SixAxis.ACC_RES_PER_G / 113.0f);
-                AccelZ = (int)((512 - AccelZ) * SixAxis.ACC_RES_PER_G / 113.0f);
-                AccelY = (int)((512 - AccelY) * SixAxis.ACC_RES_PER_G / 113.0f);
-
-                //Console.WriteLine("AccelZ: {0}", AccelZ);
-
-                if (calibrationDone)
-                    applyCalibs(ref currentYaw, ref currentPitch, ref currentRoll, ref AccelX, ref AccelY, ref AccelZ);
-
-                // Phase7-Step5 W1: DI 移行（コミット 78ae8687）以降、_controlService は常に null で、DS3 の接続中にここで
-                // NullReferenceException になり得た（引数なしコンストラクターが選ばれ、引数つきの方は呼ばれなかった）。移行前と同じ結果を返す。
-                var triggerActive = GyroControlsTriggerActive?.Invoke(device) ?? false;
-                if (LayerSettings != null && LayerSettings.UseDs3PitchRollSim && triggerActive)
-                {
-                    _simulatePitchRoll.PushSample(AccelX, AccelY, AccelZ, state.totalMicroSec);
-                    _simulatePitchRoll.GetPitchRoll(ref currentPitch, ref currentRoll);
-                }
-
-                if (gyroAverageTimer.IsRunning)
-                {
-                    CalcSensorCamples(ref currentYaw, ref currentPitch, ref currentRoll, ref AccelX, ref AccelY, ref AccelZ);
-                }
-
-                currentYaw -= gyro_offset_x;
-                currentPitch -= gyro_offset_y;
-                currentRoll -= gyro_offset_z;
-
-                SixAxisEventArgs args = null;
-                if (AccelX != 0 || AccelY != 0 || AccelZ != 0)
-                {
-                    if (SixAccelMoved != null)
-                    {
-                        sPrev.copy(now);
-                        now.populate(currentYaw, currentPitch, currentRoll,
-                            AccelX, AccelY, AccelZ, elapsedDelta, sPrev);
-
-                        args = new SixAxisEventArgs(state.ReportTimeStamp, now);
-                        state.Motion = now;
-                        SixAccelMoved(this, args);
-                    }
-                }
-            }
-        }
-
-        // Entry point to run continuous calibration for non-DS4 input devices
         public unsafe void PrepareNonDS4SixAxis(ref int currentYaw, ref int currentPitch, ref int currentRoll,
             ref int AccelX, ref int AccelY, ref int AccelZ)
         {

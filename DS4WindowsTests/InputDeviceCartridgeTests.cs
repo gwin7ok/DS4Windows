@@ -53,14 +53,10 @@ namespace DS4WindowsTests
             "0x0F0D|0x00C9|Hori Taiko Controller|DS4|NoGyroCalib|DS4Device.HidConnectionType",
             "0x0C12|0x1E1C|SnakeByte Game:Pad 4S|DS4|NoBatteryReading, NoGyroCalib|DS4Device.HidConnectionType",
             "0x057E|0x2009|Switch Pro|SwitchPro|DefaultDS4|SwitchProDevice.DetermineConnectionType",
-            "0x057E|0x2006|JoyCon (L)|JoyConL|DefaultDS4|JoyConDevice.DetermineConnectionType",
-            "0x057E|0x2007|JoyCon (R)|JoyConR|DefaultDS4|JoyConDevice.DetermineConnectionType",
-            "0x057E|0x200E|JoyCon (Grip)|JoyConGrip|DefaultDS4|JoyConDevice.DetermineConnectionType",
             "0x7545|0x1122|Gioteck VX4|DS4|DefaultDS4|DS4Device.HidConnectionType",
             "0x7331|0x0001|DualShock 3 (DS4 Emulation)|DS4|NoGyroCalib, VendorDefinedDevice|DS4Device.HidConnectionType",
             "0x20D6|0x792A|PowerA FUSION Wired Fightpad for PS4|DS4|NoGyroCalib|DS4Device.HidConnectionType",
             "0x044F|0xD00E|Thrustmaster eSwap Pro|DS4|NoBatteryReading, NoGyroCalib|DS4Device.HidConnectionType",
-            "0x054C|0x0268|DualShock 3 (SXS)|DS3|DefaultDS4|DS3Device.DetermineConnectionType",
             "0x0C12|0x0E15|Playmax Wired Controller (PS4)|DS4|NoBatteryReading, NoGyroCalib|DS4Device.HidConnectionType",
         };
 
@@ -106,7 +102,7 @@ namespace DS4WindowsTests
         {
             var cartridges = AllCartridges().ToList();
 
-            Assert.Equal(5, cartridges.Count);
+            Assert.Equal(3, cartridges.Count);
             foreach (InputDeviceType type in Enum.GetValues(typeof(InputDeviceType)))
             {
                 Assert.Single(cartridges, c => c.Handles(type));
@@ -127,8 +123,6 @@ namespace DS4WindowsTests
             Assert.True(new DS4DeviceOptions().Enabled);
             Assert.False(new DualSenseDeviceOptions().Enabled);
             Assert.False(new SwitchProDeviceOptions().Enabled);
-            Assert.False(new JoyConDeviceOptions().Enabled);
-            Assert.False(new DS3DeviceOptions().Enabled);
 
             var options = new DualSenseDeviceOptions();
             int notified = 0;

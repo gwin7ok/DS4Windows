@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using Xunit;
 using DS4Windows.Core.Abstractions;
@@ -12,9 +12,9 @@ using DS4Windows.Processing.Services;
 namespace DS4WindowsTests
 {
     /// <summary>
-    /// Phase9 9-E E-6c（Phase9-E6-Plan.md §3.1・§3.2）: デバイスの種類ごとの部品（カートリッジ）の値の特性化。
-    /// 旧 <c>ControlService.CheckForSupportedDevice</c>／<c>PostDS4DeviceInit</c> の判定を、このファイルの中の逐語コピーと突き合わせる（差分テスト）。
-    /// <c>DS4Device</c>／<c>JoyConDevice</c> は作れないため、デバイスを必要としない判定（有効設定、結合の初期値、部品の引き当て）を調べる。
+    /// デバイスの種類ごとの部品（モジュール）の値の特性化。
+    /// 旧 <c>ControlService.CheckForSupportedDevice</c> の判定を、このファイルの中の逐語コピーと突き合わせる（差分テスト）。
+    /// <c>DS4Device</c> は作れないため、デバイスを必要としない判定（有効設定、部品の引き当て）を調べる。
     /// </summary>
     public class DeviceModuleTests
     {
@@ -35,14 +35,6 @@ namespace DS4WindowsTests
                 case InputDeviceType.SwitchPro:
                     result = deviceOptions[InputDeviceFamily.SwitchPro].Enabled;
                     break;
-                case InputDeviceType.JoyConL:
-                case InputDeviceType.JoyConR:
-                case InputDeviceType.JoyConGrip:
-                    result = deviceOptions[InputDeviceFamily.JoyCon].Enabled;
-                    break;
-                case InputDeviceType.DS3:
-                    result = deviceOptions[InputDeviceFamily.DS3].Enabled;
-                    break;
                 default:
                     break;
             }
@@ -50,52 +42,11 @@ namespace DS4WindowsTests
             return result;
         }
 
-        // ---- 旧 ControlService.PostDS4DeviceInit の判定部分（逐語。デバイスへの代入は戻り値にした）----
-        private static (bool applied, bool merge, bool primary, bool gyro) OldJoin(InputDeviceType type, ControlServiceDeviceOptions deviceOptions)
-        {
-            bool applied = false, merge = false, primary = false, gyro = false;
-            if (type == InputDeviceType.JoyConL || type == InputDeviceType.JoyConR)
-            {
-                if (deviceOptions.Get<JoyConDeviceOptions>(InputDeviceFamily.JoyCon).LinkedMode == JoyConDeviceOptions.LinkMode.Joined)
-                {
-                    applied = true;
-                    merge = true;
-
-                    if (type == InputDeviceType.JoyConL)
-                    {
-                        primary = true;
-                        if (deviceOptions.Get<JoyConDeviceOptions>(InputDeviceFamily.JoyCon).JoinGyroProv == JoyConDeviceOptions.JoinedGyroProvider.JoyConL)
-                        {
-                            gyro = true;
-                        }
-                        else
-                        {
-                            gyro = false;
-                        }
-                    }
-                    else
-                    {
-                        primary = false;
-                        if (deviceOptions.Get<JoyConDeviceOptions>(InputDeviceFamily.JoyCon).JoinGyroProv == JoyConDeviceOptions.JoinedGyroProvider.JoyConR)
-                        {
-                            gyro = true;
-                        }
-                        else
-                        {
-                            gyro = false;
-                        }
-                    }
-                }
-            }
-
-            return (applied, merge, primary, gyro);
-        }
-
         private static IInputDeviceModuleRegistry NewRegistry()
         {
             return new InputDeviceModuleRegistry(new IInputDeviceModule[]
             {
-                new Ds4DeviceModule(), new DualSenseDeviceModule(), new SwitchProDeviceModule(), new JoyConDeviceModule(), new Ds3DeviceModule(),
+                new Ds4DeviceModule(), new DualSenseDeviceModule(), new SwitchProDeviceModule(),
             });
         }
 
@@ -103,14 +54,12 @@ namespace DS4WindowsTests
         public void IsEnabled_MatchesTheOldSwitch_ForEveryTypeAndEveryCombinationOfTheFlags()
         {
             var registry = NewRegistry();
-            for (int mask = 0; mask < 32; mask++)
+            for (int mask = 0; mask < 8; mask++)
             {
                 var options = new ControlServiceDeviceOptions();
                 options[InputDeviceFamily.DS4].Enabled = (mask & 1) != 0;
                 options[InputDeviceFamily.DualSense].Enabled = (mask & 2) != 0;
                 options[InputDeviceFamily.SwitchPro].Enabled = (mask & 4) != 0;
-                options[InputDeviceFamily.JoyCon].Enabled = (mask & 8) != 0;
-                options[InputDeviceFamily.DS3].Enabled = (mask & 16) != 0;
 
                 foreach (InputDeviceType type in AllTypes)
                 {
@@ -126,8 +75,6 @@ namespace DS4WindowsTests
             options[InputDeviceFamily.DS4].Enabled = true;
             options[InputDeviceFamily.DualSense].Enabled = true;
             options[InputDeviceFamily.SwitchPro].Enabled = true;
-            options[InputDeviceFamily.JoyCon].Enabled = true;
-            options[InputDeviceFamily.DS3].Enabled = true;
 
             var unknown = (InputDeviceType)99;
             Assert.False(NewRegistry().Resolve(unknown).IsEnabled(options));
@@ -135,22 +82,18 @@ namespace DS4WindowsTests
         }
 
         [Fact]
-        public void Resolve_FindsExactlyOneModule_PerType_AndTheJoyConModuleHandlesAllThreeJoyConTypes()
+        public void Resolve_FindsExactlyOneModule_PerType()
         {
             var registry = NewRegistry();
             Assert.IsType<Ds4DeviceModule>(registry.Resolve(InputDeviceType.DS4));
             Assert.IsType<DualSenseDeviceModule>(registry.Resolve(InputDeviceType.DualSense));
             Assert.IsType<SwitchProDeviceModule>(registry.Resolve(InputDeviceType.SwitchPro));
-            Assert.IsType<Ds3DeviceModule>(registry.Resolve(InputDeviceType.DS3));
-            Assert.IsType<JoyConDeviceModule>(registry.Resolve(InputDeviceType.JoyConL));
-            Assert.IsType<JoyConDeviceModule>(registry.Resolve(InputDeviceType.JoyConR));
-            Assert.IsType<JoyConDeviceModule>(registry.Resolve(InputDeviceType.JoyConGrip));
             Assert.IsType<NullInputDeviceModule>(registry.Resolve((InputDeviceType)99));
 
             // どの種類も、扱う部品がちょうど 1 つ
             var modules = new IInputDeviceModule[]
             {
-                new Ds4DeviceModule(), new DualSenseDeviceModule(), new SwitchProDeviceModule(), new JoyConDeviceModule(), new Ds3DeviceModule(),
+                new Ds4DeviceModule(), new DualSenseDeviceModule(), new SwitchProDeviceModule(),
             };
             foreach (InputDeviceType type in AllTypes)
             {
@@ -165,52 +108,11 @@ namespace DS4WindowsTests
         }
 
         [Fact]
-        public void DecideJoin_MatchesTheOldPostInit_ForEveryTypeModeAndGyroProvider()
-        {
-            foreach (InputDeviceType type in AllTypes)
-            {
-                foreach (JoyConDeviceOptions.LinkMode mode in Enum.GetValues(typeof(JoyConDeviceOptions.LinkMode)))
-                {
-                    foreach (JoyConDeviceOptions.JoinedGyroProvider provider in Enum.GetValues(typeof(JoyConDeviceOptions.JoinedGyroProvider)))
-                    {
-                        var options = new ControlServiceDeviceOptions();
-                        options.Get<JoyConDeviceOptions>(InputDeviceFamily.JoyCon).LinkedMode = mode;
-                        options.Get<JoyConDeviceOptions>(InputDeviceFamily.JoyCon).JoinGyroProv = provider;
-
-                        var expected = OldJoin(type, options);
-
-                        // OnDeviceInit は L／R のときだけ DecideJoin を使う（Grip などは何もしない）
-                        bool isLeftOrRight = type == InputDeviceType.JoyConL || type == InputDeviceType.JoyConR;
-                        bool applied = false, primary = false, gyro = false;
-                        if (isLeftOrRight)
-                        {
-                            applied = JoyConDeviceModule.DecideJoin(type, mode, provider, out primary, out gyro);
-                        }
-
-                        if (!isLeftOrRight)
-                        {
-                            Assert.False(expected.applied);
-                            continue;
-                        }
-
-                        Assert.Equal(expected.applied, applied);
-                        if (applied)
-                        {
-                            Assert.True(expected.merge);
-                            Assert.Equal(expected.primary, primary);
-                            Assert.Equal(expected.gyro, gyro);
-                        }
-                    }
-                }
-            }
-        }
-
-        [Fact]
         public void ModulesThatHaveNoSpecificProcessing_DoNothing_AndReturnNoExtraButtons()
         {
             // デバイスを使わないメンバーだけ（null のデバイスを渡しても、何もしない）
             var options = new ControlServiceDeviceOptions();
-            foreach (IInputDeviceModule module in new IInputDeviceModule[] { new Ds4DeviceModule(), new Ds3DeviceModule(), new NullInputDeviceModule() })
+            foreach (IInputDeviceModule module in new IInputDeviceModule[] { new Ds4DeviceModule(), new NullInputDeviceModule() })
             {
                 Assert.Empty(module.GetKnownExtraButtons(null));
                 Assert.Null(Record.Exception(() => module.OnDeviceInit(null, options)));

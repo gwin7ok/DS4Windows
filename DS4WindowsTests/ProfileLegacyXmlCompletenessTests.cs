@@ -47,7 +47,7 @@ namespace DS4WindowsTests
             "SZOutputCurveCustom", "SZOutputCurveMode", "Sensitivity", "ShiftControl", "SquareRStickRoundness",
             "SquareStickRoundness", "StartTouchpadOff", "TouchDisInvTriggers", "TouchRelMouseMinThreshold", "TouchRelMouseRotation",
             "TouchpadButtonMode", "TouchpadClickPassthru", "TouchpadInvert", "TouchpadMouseStick", "TouchpadOutputMode",
-            "TrackballFriction", "TrackballMode", "UseDs3PitchRollSim", "doubleTap", "flashBatteryAt", "idleDisconnectTimeout",
+            "TrackballFriction", "TrackballMode", "doubleTap", "flashBatteryAt", "idleDisconnectTimeout",
             "ledAsBatteryIndicator", "lowerRCOn", "outputDataToDS4", "scrollSensitivity", "tapSensitivity", "touchSensitivity",
             "touchToggle", "touchpadJitterCompensation",
         };

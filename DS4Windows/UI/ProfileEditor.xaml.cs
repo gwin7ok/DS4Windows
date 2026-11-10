@@ -106,12 +106,6 @@ namespace DS4Windows.UI
         public event ProfileSavedHandler ProfileSaved;
 
         /// <summary>
-        /// Phase11 W4（Issue #4 の 1）: 保存のときに、DS3 のピッチ／ロールの擬似の設定が変わっていた場合に、サービスの再起動を求める
-        /// （旧 SaveBtn_Click の復元。受けるのは MainWindow。編集画面は、サービスを直接操作しない）。
-        /// </summary>
-        public event EventHandler ServiceRestartRequested;
-
-        /// <summary>
         /// Phase6-Step10-3b-3: アクションの除去・名前変更により、編集中以外も含むプロファイルの XML を書き換えたときに、
         /// 書き換えたプロファイル名の一覧を通知する。MainWindow が、保存時と同じ再適用の経路（SyncProfileListAndControllers）を呼ぶ。
         /// </summary>
@@ -1028,18 +1022,6 @@ namespace DS4Windows.UI
                 return false;
             }
 
-            // Phase11 W4（Issue #4 の 1）: DS4 の出力でしか成り立たない設定（DS3 のピッチ／ロール擬似、DS4 固有データの出力）が ON なのに、
-            // 出力が DS4 でないときは、保存する前に DS4 へ補正する。保存・適用の両方が通る、この合流点で行う
-            // （2026-09-14 の統合［9da60b85］で失われた、旧 SaveBtn_Click／SetLateProperties の補正の復元）。名前の検査で止まる場合は、何も変えない
-            Ds4OutputCorrectionReason correction = profileSettingsVM.CorrectOutputTypeToDs4();
-            if (correction != Ds4OutputCorrectionReason.None)
-            {
-                // 画面の選択も DS4 にそろえる（SelectionChanged が、設定・マッピング一覧の出力の種類も更新する）
-                outputPanel.OutConTypeCombo.SelectedIndex = 1;
-                // Phase11 W6c（K-W6-12）: EnableOutputDataToDS4 による補正（と、その GUI ログ）は廃止した。残るのは UseDs3PitchRollSim の補正だけ
-                AppLogger.LogDebug("[ProfileEditor] UseDs3PitchRollSim が有効なため、Emulated Controller を DS4 へ補正した");
-            }
-
             // Phase 5 Step 14: SpecialActionsListViewModel から有効なアクション名リストを取得し、Global.ProfileActions に確実に反映
             if (specialActionsVM != null)
             {
@@ -1074,31 +1056,12 @@ namespace DS4Windows.UI
         {
             if (ExecuteSaveOrApply(isApply: false))
             {
-                RequestServiceRestartIfNeeded();
                 Close();
             }
         }
         private void ApplyBtn_Click(object sender, RoutedEventArgs e)
         {
             ExecuteSaveOrApply(isApply: true);
-        }
-
-        /// <summary>
-        /// Phase11 W4（Issue #4 の 1）: DS3 のピッチ／ロールの擬似の設定が変わっていたら、サービスの再起動を求める。保存のときだけ
-        /// （旧 SaveBtn_Click の復元。旧コードのメッセージは「DS3 のジャイロ擬似を効かせるには、再起動が要る」。
-        /// 適用は、編集画面を開いたまま実機を作り直さないため、再起動を求めない）。
-        /// 再起動そのものは MainWindow が行う（編集画面は Application.Current.MainWindow を触らない）。
-        /// </summary>
-        private void RequestServiceRestartIfNeeded()
-        {
-            if (!profileSettingsVM.HasUseDs3PitchRollSimChanged)
-            {
-                return;
-            }
-
-            AppLogger.LogDebug("[ProfileEditor] UseDs3PitchRollSim が変わったため、サービスの再起動を求める");
-            ServiceRestartRequested?.Invoke(this, EventArgs.Empty);
-            profileSettingsVM.AcknowledgeUseDs3PitchRollSimChange();
         }
 
         #endregion

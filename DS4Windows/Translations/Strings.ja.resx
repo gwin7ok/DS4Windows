@@ -629,18 +629,6 @@
   <data name="FirstLaunch.SwitchProEnableText" xml:space="preserve">
     <value>Switch Pro（Nintendo Switch）コントローラーのサポート</value>
   </data>
-  <data name="FirstLaunch.JoyConEnableCkbLabel" xml:space="preserve">
-    <value>JoyCon Device Support</value>
-  </data>
-  <data name="FirstLaunch.JoyConEnableText" xml:space="preserve">
-    <value>JoyCon（Nintendo Switch）コントローラーのサポート</value>
-  </data>
-  <data name="FirstLaunch.DS3EnableCkbLabel" xml:space="preserve">
-    <value>DS3 Device Support</value>
-  </data>
-  <data name="FirstLaunch.DS3EnableText" xml:space="preserve">
-    <value>DualShock 3（PS3）コントローラーのサポート。ViGEmプロジェクト（nefarius）のDsHidMiniドライバーの使用が必要です。</value>
-  </data>
   <data name="Welcome.WinTitle" xml:space="preserve">
     <value>DS4Windowsへようこそ</value>
   </data>

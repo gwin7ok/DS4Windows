@@ -78,7 +78,6 @@ namespace DS4WindowsTests
                 "device.SerialChange += _deviceDisconnect.OnSerialChange;",
                 "device.ChargingChanged += OnChargingChanged;",
                 "touchPads[index] = _mouseFactory.Create(index, device);",
-                "device.SixAxis.GyroControlsTriggerActive",
                 "_connectionProfileSelector.ApplyOnConnect(",
                 "_outputs.PlugVirtualPad(index, device);",
                 "_deviceConnectionSetup.ApplyProfileOptions(index, device, touchPads[index]);",

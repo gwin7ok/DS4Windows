@@ -23,14 +23,9 @@ namespace DS4WindowsTests
                 serial = hid.ReadSerial(DualSenseDevice.SERIAL_FEATURE_ID);
             }
             else if (metainfo.inputDevType == InputDeviceType.DS4 &&
-                metainfo.checkConnection(hid) == ConnectionType.SONYWA ||
-                metainfo.inputDevType == InputDeviceType.DS3)
+                metainfo.checkConnection(hid) == ConnectionType.SONYWA)
             {
                 serial = hid.GenerateFakeHwSerial();
-            }
-            else if (metainfo.inputDevType == InputDeviceType.JoyConGrip)
-            {
-                return (null, -3);
             }
             else
             {
@@ -47,8 +42,6 @@ namespace DS4WindowsTests
             int checkedCount = 0;
             foreach (VidPidInfo info in cartridges.SelectMany(c => c.KnownDevices))
             {
-                if (info.inputDevType == InputDeviceType.JoyConGrip) continue; // USB のハンドシェイクは別のテストで確かめる
-
                 var legacyHid = new FakeHidTransport { Serial = "AA:BB", FakeHwSerial = "FA:KE" };
                 var newHid = new FakeHidTransport { Serial = "AA:BB", FakeHwSerial = "FA:KE" };
                 (string expected, int expectedId) = Legacy(info, legacyHid);
@@ -61,7 +54,7 @@ namespace DS4WindowsTests
                 checkedCount++;
             }
 
-            Assert.True(checkedCount >= 40);
+            Assert.Equal(38, checkedCount);
         }
 
         [Fact]
@@ -81,14 +74,5 @@ namespace DS4WindowsTests
             Assert.Equal(18, hid2.LastSerialFeatureId);
         }
 
-        [Fact]
-        public void DS3_AlwaysUsesTheFakeHardwareSerial()
-        {
-            var cartridges = TestHost.GetService<IEnumerable<IInputDeviceCartridge>>().ToList();
-            VidPidInfo ds3 = cartridges.SelectMany(c => c.KnownDevices).Single(x => x.inputDevType == InputDeviceType.DS3);
-            var hid = new FakeHidTransport { Serial = "AA:BB", FakeHwSerial = "FA:KE" };
-            Assert.Equal("FA:KE", cartridges.Single(c => c.Handles(InputDeviceType.DS3)).ReadSerial(ds3, hid));
-            Assert.Equal(-1, hid.LastSerialFeatureId);
-        }
     }
 }

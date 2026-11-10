@@ -5,7 +5,7 @@
     <UseWindowsForms>false</UseWindowsForms>
     <IsPackable>false</IsPackable>
     <RootNamespace>DS4Windows.Actions.Tests</RootNamespace>
-    <!-- Phase7-Step5 W1: DS4SixAxis.handleDS3Sixaxis（byte* を受ける）の特性化テストのため -->
+    <!-- unsafe を含むコード（byte* を受ける DS4SixAxis など）のテストのため -->
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
 

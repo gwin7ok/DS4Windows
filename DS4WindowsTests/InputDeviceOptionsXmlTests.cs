@@ -39,28 +39,20 @@ namespace DS4WindowsTests
             string compact = System.Text.RegularExpressions.Regex.Replace(xml, @">\s+<", "><");
             Assert.Contains("<DeviceOptions><DS4SupportSettings><Enabled>True</Enabled></DS4SupportSettings>"
                 + "<DualSenseSupportSettings><Enabled>False</Enabled></DualSenseSupportSettings>"
-                + "<SwitchProSupportSettings><Enabled>False</Enabled></SwitchProSupportSettings>"
-                + "<JoyConSupportSettings><Enabled>False</Enabled><LinkMode>Joined</LinkMode><JoinedGyroProvider>JoyConR</JoinedGyroProvider></JoyConSupportSettings>"
-                + "<DS3SupportSettings><Enabled>False</Enabled></DS3SupportSettings></DeviceOptions>", compact);
+                + "<SwitchProSupportSettings><Enabled>False</Enabled></SwitchProSupportSettings></DeviceOptions>", compact);
         }
 
         [Fact]
-        public void RoundTrips_EnabledFlags_AndJoyConExtras()
+        public void RoundTrips_EnabledFlags()
         {
             var holder = new Holder();
             holder.DeviceOptions.Options[InputDeviceFamily.DualSense].Enabled = true;
             holder.DeviceOptions.Options[InputDeviceFamily.DS4].Enabled = false;
-            var joy = holder.DeviceOptions.Options.Get<JoyConDeviceOptions>(InputDeviceFamily.JoyCon);
-            joy.LinkedMode = JoyConDeviceOptions.LinkMode.Split;
-            joy.JoinGyroProv = JoyConDeviceOptions.JoinedGyroProvider.JoyConL;
 
             Holder loaded = Deserialize(Serialize(holder));
 
             Assert.True(loaded.DeviceOptions.Options[InputDeviceFamily.DualSense].Enabled);
             Assert.False(loaded.DeviceOptions.Options[InputDeviceFamily.DS4].Enabled);
-            var loadedJoy = loaded.DeviceOptions.Options.Get<JoyConDeviceOptions>(InputDeviceFamily.JoyCon);
-            Assert.Equal(JoyConDeviceOptions.LinkMode.Split, loadedJoy.LinkedMode);
-            Assert.Equal(JoyConDeviceOptions.JoinedGyroProvider.JoyConL, loadedJoy.JoinGyroProv);
         }
 
         [Fact]
@@ -71,11 +63,5 @@ namespace DS4WindowsTests
             Assert.False(loaded.DeviceOptions.Options[InputDeviceFamily.DualSense].Enabled);
         }
 
-        [Fact]
-        public void UnknownEnumName_FailsTheWholeRead()
-        {
-            Assert.Throws<InvalidOperationException>(() => Deserialize(
-                "<Holder><DeviceOptions><JoyConSupportSettings><Enabled>True</Enabled><LinkMode>Bogus</LinkMode></JoyConSupportSettings></DeviceOptions></Holder>"));
-        }
     }
 }

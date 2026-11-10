@@ -367,10 +367,9 @@ namespace DS4Windows.Core.Persistence
                     if (xmlDeviceOptions != null)
                     {
                         // 系統ごとの設定（Enabled と機種固有の項目）。節の名前と項目は DeviceOptionsBase の定義が持つ。
-                        // 解析できない値はそのまま（既定値）にする。DS3 の節は、この経路ではもともと読まない（DTO の経路は読む）
+                        // 解析できない値はそのまま（既定値）にする
                         foreach (InputDeviceFamily family in store.deviceOptions.Families)
                         {
-                            if (family == InputDeviceFamily.DS3) continue;
                             DeviceOptionsBase options = store.deviceOptions[family];
                             XmlNode xmlSupport = xmlDeviceOptions.SelectSingleNode(options.SectionName);
                             if (xmlSupport == null) continue;

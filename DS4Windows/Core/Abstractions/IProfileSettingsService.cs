@@ -205,7 +205,6 @@ namespace DS4Windows.Core.Abstractions
         // ---- 課題④: ProfileActions インターフェースプロパティ ----
         List<string>[] ProfileActions { get; set; }
 
-        bool UseDs3PitchRollSim { get; set; }
         bool[] LowerRCOn { get; }
         string[] LaunchProgram { get; }
         int GetBTPollRate(int deviceIndex);

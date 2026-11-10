@@ -50,7 +50,6 @@ namespace DS4WindowsTests
         {
             var source = new DS4Windows.Core.Settings.BackingStore(new DS4Windows.Core.Platform.EnvironmentService());
             source.inverseRumbleMotors[Device] = true;
-            source.useDs3PitchRollSim = true;
             source.leftStickDriftXAxis[Device] = -5;
             source.leftStickDriftYAxis[Device] = 7;
             source.rightStickDriftXAxis[Device] = 3;
@@ -68,7 +67,6 @@ namespace DS4WindowsTests
             targetXml.LoadLegacyExtraSettings(Device, Root);
 
             Assert.True(target.inverseRumbleMotors[Device]);
-            Assert.True(target.useDs3PitchRollSim);
             Assert.Equal(-5, target.leftStickDriftXAxis[Device]);
             Assert.Equal(7, target.leftStickDriftYAxis[Device]);
             Assert.Equal(3, target.rightStickDriftXAxis[Device]);
@@ -80,7 +78,7 @@ namespace DS4WindowsTests
             // 要素名は ProfileDTO と同じ（旧版・DTO 経路との互換）
             foreach (string name in new[]
             {
-                "InverseRumbleMotors", "UseDs3PitchRollSim", "LeftStickDriftXAxis", "LeftStickDriftYAxis",
+                "InverseRumbleMotors", "LeftStickDriftXAxis", "LeftStickDriftYAxis",
                 "RightStickDriftXAxis", "RightStickDriftYAxis", "DS4OutputTriggerMode", "GyroMouseJitterCompensation",
                 "GyroMouseStickJitterCompensation",
             })

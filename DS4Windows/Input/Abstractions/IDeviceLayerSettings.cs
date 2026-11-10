@@ -15,8 +15,5 @@ namespace DS4Windows.Input.Abstractions
 
         /// <summary>HID の列挙などで詳細なログを出すか。</summary>
         bool VerboseLogMessages { get; }
-
-        /// <summary>DS3 の加速度から pitch／roll を疑似計算するか。</summary>
-        bool UseDs3PitchRollSim { get; }
     }
 }

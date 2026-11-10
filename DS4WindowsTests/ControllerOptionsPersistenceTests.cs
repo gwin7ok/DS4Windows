@@ -36,17 +36,6 @@ namespace DS4WindowsTests
         }
 
         [Fact]
-        public void JoyCon_RoundTripsTheHomeLed()
-        {
-            XmlNode parent = NewParent(out XmlDocument doc);
-            new JoyConControllerOptions(InputDeviceType.JoyConL) { EnableHomeLED = false }.PersistSettings(doc, parent);
-
-            var loaded = new JoyConControllerOptions(InputDeviceType.JoyConL);
-            loaded.LoadSettings(doc, parent);
-            Assert.False(loaded.EnableHomeLED);
-        }
-
-        [Fact]
         public void DS4_RoundTripsTheCopyCatFlag()
         {
             XmlNode parent = NewParent(out XmlDocument doc);

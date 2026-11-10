@@ -96,9 +96,7 @@ flowchart LR
 | `DS4Device` | 1 | 入力デバイスの基底（読み取りループ・出力・切断） |
 | `DS4Devices` | 1 | 接続デバイスの列挙と生成 |
 | `DualSenseDevice` | 1 | DualSense |
-| `JoyConDevice` | 1 | Joy-Con |
 | `SwitchProDevice` | 1 | Switch Pro |
-| `DS3Device` | 1 | DualShock 3 |
 | `Ds4DeviceCartridge` | 1 | DS4 の VID/PID の表と生成 |
 | `Ds4ReportParser` | 1 | DS4 のレポートの解析 |
 | `HidDevice` | 1 | HID 通信の実装 |

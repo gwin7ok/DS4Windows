@@ -113,8 +113,6 @@ namespace DS4Windows.Composition
             services.AddInputDevice<Ds4DeviceCartridge, Ds4DeviceModule>();
             services.AddInputDevice<DualSenseDeviceCartridge, DualSenseDeviceModule>();
             services.AddInputDevice<SwitchProDeviceCartridge, SwitchProDeviceModule>();
-            services.AddInputDevice<JoyConDeviceCartridge, JoyConDeviceModule>();
-            services.AddInputDevice<Ds3DeviceCartridge, Ds3DeviceModule>();
             services.AddSingleton<IInputDeviceModuleRegistry, InputDeviceModuleRegistry>();
             services.AddSingleton<IEventThreadDispatcher, EventThreadDispatcher>();   // Phase13-Step3: 専用のイベントスレッド
             // Phase13-Step3: ブースト・反転つきの振動（IDeviceRumbleService）と KBM 出力の初期化（IOutputKbmInitializer）の登録は ServiceRegistration.Output.cs
@@ -125,7 +123,6 @@ namespace DS4Windows.Composition
             services.AddSingleton<IServiceLifecycle, ServiceLifecycle>();   // Phase9 9-E E-6f2: 開始・停止・ホットプラグと、その状態・イベント
             services.AddSingleton<IDeviceConnector, DeviceConnector>();   // Phase9 9-E E-6f1: 接続の組み立て
             services.AddSingleton<IDeviceDisconnectHandler, DeviceDisconnectHandler>();   // Phase9 9-E E-6e: 切断・同期・シリアル変更の処理
-            services.AddSingleton<IJoyConLinker, JoyConLinker>();   // Phase9 9-E E-6d: Joy-Con の結合の手順（実機なしでも偽物のデバイスでテストできる）
             services.AddSingleton<IProfileLoadTarget, ProfileLoadTarget>();   // Phase13-Step6 6-d: プロファイル読込の鎖が control 引数から使う 8 メンバーの窓口（6-e で control の型を置き換える）
             services.AddSingleton<IDeviceConnectionSetup, DeviceConnectionSetup>();   // Phase9 9-E E-6b: 接続時の設定の反映とイベントの配線
             services.AddSingleton<IActiveInputProbe, ActiveInputProbe>();   // Phase9 9-E E-5: 押されている入力の探索（状態なし）

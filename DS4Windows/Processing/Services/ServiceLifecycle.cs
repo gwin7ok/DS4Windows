@@ -29,7 +29,6 @@ namespace DS4Windows.Processing.Services
         private readonly IDs4DeviceRegistry _deviceRegistry;
         private readonly IVirtualPadService _virtualPad;
         private readonly ILatencyMonitor _latencyMonitor;
-        private readonly IJoyConLinker _joyConLinker;
         private readonly IDeviceConnector _deviceConnector;
         private readonly IDeviceSlotState _slots;
         private readonly IEventThreadDispatcher _eventThread;
@@ -75,7 +74,7 @@ namespace DS4Windows.Processing.Services
         private readonly ILightbarService _lightbarService;
 
         public ServiceLifecycle(DS4Windows.Core.Model.LightbarOverrides lightbar, ILightbarService lightbarService, IAppSettingsService appSettings, IEnvironmentService environmentService, IProfileSettingsService profileSettings,
-            IDs4DeviceRegistry deviceRegistry, IVirtualPadService virtualPad, ILatencyMonitor latencyMonitor, IJoyConLinker joyConLinker,
+            IDs4DeviceRegistry deviceRegistry, IVirtualPadService virtualPad, ILatencyMonitor latencyMonitor,
             IDeviceConnector deviceConnector, IDeviceSlotState slots,
             IEventThreadDispatcher eventThread, IOutputServicesLifecycle outputs)
         {
@@ -87,7 +86,6 @@ namespace DS4Windows.Processing.Services
             _deviceRegistry = deviceRegistry ?? throw new ArgumentNullException(nameof(deviceRegistry));
             _virtualPad = virtualPad ?? throw new ArgumentNullException(nameof(virtualPad));
             _latencyMonitor = latencyMonitor ?? throw new ArgumentNullException(nameof(latencyMonitor));
-            _joyConLinker = joyConLinker ?? throw new ArgumentNullException(nameof(joyConLinker));
             _deviceConnector = deviceConnector ?? throw new ArgumentNullException(nameof(deviceConnector));
             _slots = slots ?? throw new ArgumentNullException(nameof(slots));
             _eventThread = eventThread ?? throw new ArgumentNullException(nameof(eventThread));
@@ -128,17 +126,12 @@ namespace DS4Windows.Processing.Services
                     ActiveControllers = numControllers;
                     _lightbar.defaultLight = false;
                     int i = 0;
-                    IJoinableDevice tempPrimaryJoyDev = null;
                     for (var devEnum = devices.GetEnumerator();
                         devEnum.MoveNext() && LoopControllers; i++)
                     {
                         DS4Device device = devEnum.Current;
 
                         _deviceConnector.BeginPrepare(device, showlog: true);
-
-                        // Phase9 9-E E-6d: Joy-Con の結合の手順（先に来たものを主にして順に組む）は JoyConLinker へ移した
-                        tempPrimaryJoyDev = _joyConLinker.LinkOnStart(new JoinableDeviceAdapter(device), tempPrimaryJoyDev,
-                            _appSettings.DeviceOptions.Get<DS4Windows.Core.Settings.JoyConDeviceOptions>(InputDeviceFamily.JoyCon).LinkedMode);
 
                         slots.DS4Controllers[i] = device;
                         device.DeviceSlotNumber = i;
@@ -274,12 +267,6 @@ namespace DS4Windows.Processing.Services
                 IEnumerable<DS4Device> devices = _deviceRegistry.GetDS4Controllers();
                 int numControllers = devices.Count();
                 ActiveControllers = numControllers;
-                // Phase9 9-E E-6d: Joy-Con の結合の手順（主と副を先に探してから組む）は JoyConLinker へ移した
-                IJoinableDevice tempPrimaryJoyDev = null;
-                IJoinableDevice tempSecondaryJoyDev = null;
-                _joyConLinker.FindPendingForHotPlug(devices.Select(d => (IJoinableDevice)new JoinableDeviceAdapter(d)),
-                    _appSettings.DeviceOptions.Get<DS4Windows.Core.Settings.JoyConDeviceOptions>(InputDeviceFamily.JoyCon).LinkedMode, out tempPrimaryJoyDev, out tempSecondaryJoyDev);
-
                 for (var devEnum = devices.GetEnumerator(); devEnum.MoveNext() && LoopControllers;)
                 {
                     DS4Device device = devEnum.Current;
@@ -314,9 +301,6 @@ namespace DS4Windows.Processing.Services
                         if (slots.DS4Controllers[Index] == null)
                         {
                             _deviceConnector.BeginPrepare(device);
-
-                            _joyConLinker.LinkOnHotPlug(new JoinableDeviceAdapter(device), ref tempPrimaryJoyDev, ref tempSecondaryJoyDev,
-                                _appSettings.DeviceOptions.Get<DS4Windows.Core.Settings.JoyConDeviceOptions>(InputDeviceFamily.JoyCon).LinkedMode);
 
                             slots.DS4Controllers[Index] = device;
                             device.DeviceSlotNumber = Index;

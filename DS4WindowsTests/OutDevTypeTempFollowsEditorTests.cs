@@ -56,16 +56,5 @@ namespace DS4WindowsTests
             Assert.Equal(expected, service.OutContType[Device]);
         }
 
-        [Fact]
-        public void TheCorrectionToDs4_AlsoUpdatesOutDevTypeTemp()
-        {
-            var (vm, _, slots) = Create(OutContType.X360);
-            slots.OutDevTypeTemp[Device] = OutContType.X360;
-            vm.UseDs3PitchRollSim = true;
-
-            Assert.Equal(Ds4OutputCorrectionReason.Ds3PitchRollSim, vm.CorrectOutputTypeToDs4());
-
-            Assert.Equal(OutContType.DS4, slots.OutDevTypeTemp[Device]);
-        }
     }
 }

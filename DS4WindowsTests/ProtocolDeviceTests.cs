@@ -28,7 +28,7 @@ namespace DS4WindowsTests
                 }
             }
 
-            public InputDeviceType DeviceType => InputDeviceType.DS3;
+            public InputDeviceType DeviceType => InputDeviceType.SwitchPro;
 
             public ConnectionType DetermineConnectionType(IHidTransport hidDevice) => ConnectionType.USB;
 
@@ -53,10 +53,10 @@ namespace DS4WindowsTests
         {
             private static readonly VidPidInfo[] Table =
             {
-                new VidPidInfo(0x1234, 0x5678, "Fake Gamepad", InputDeviceType.DS3, VidPidFeatureSet.DefaultDS4),
+                new VidPidInfo(0x1234, 0x5678, "Fake Gamepad", InputDeviceType.SwitchPro, VidPidFeatureSet.DefaultDS4),
             };
 
-            public override InputDeviceFamily Family => InputDeviceFamily.DS3;
+            public override InputDeviceFamily Family => InputDeviceFamily.SwitchPro;
 
             public override IReadOnlyList<VidPidInfo> KnownDevices => Table;
 
@@ -74,7 +74,7 @@ namespace DS4WindowsTests
             // 台本が尽きると切断（NotConnected）として扱われる
 
             var cartridge = new FakeGamepadCartridge();
-            DS4Device device = cartridge.Create(InputDeviceType.DS3, transport, "Fake Gamepad", VidPidFeatureSet.DefaultDS4);
+            DS4Device device = cartridge.Create(InputDeviceType.SwitchPro, transport, "Fake Gamepad", VidPidFeatureSet.DefaultDS4);
             Assert.IsType<ProtocolDevice>(device);
             device.PostInit();
 
@@ -105,7 +105,7 @@ namespace DS4WindowsTests
         public void TheCartridgeFollowsTheFamilyContract()
         {
             IInputDeviceCartridge cartridge = new FakeGamepadCartridge();
-            Assert.True(cartridge.Handles(InputDeviceType.DS3));
+            Assert.True(cartridge.Handles(InputDeviceType.SwitchPro));
             Assert.False(cartridge.Handles(InputDeviceType.DS4));
             Assert.Single(cartridge.KnownDevices);
         }

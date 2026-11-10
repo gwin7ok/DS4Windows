@@ -12,10 +12,8 @@ namespace DS4WindowsTests
     {
         private static readonly string[] DeviceFiles =
         {
-            "DS4Windows/Input/Devices/DS3Device.cs",
             "DS4Windows/Input/Devices/DualSenseDevice.cs",
             "DS4Windows/Input/Devices/SwitchProDevice.cs",
-            "DS4Windows/Input/Devices/JoyConDevice.cs",
         };
 
         [Fact]

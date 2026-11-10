@@ -23,7 +23,6 @@ namespace DS4WindowsTests
                 new DS4ControllerOptions(InputDeviceType.DS4),
                 new DualSenseControllerOptions(InputDeviceType.DualSense),
                 new SwitchProControllerOptions(InputDeviceType.SwitchPro),
-                new JoyConControllerOptions(InputDeviceType.JoyConL),
             };
             IEnumerable<ControllerSetting> all = stores.SelectMany(s => s.Settings)
                 .Concat(options.Families.SelectMany(f => options[f].Settings.Skip(1)));
@@ -48,33 +47,37 @@ namespace DS4WindowsTests
         public void PanelForTheSelectedController_ListsFamilyThenControllerItems()
         {
             var options = new ControlServiceDeviceOptions();
-            var joyCon = new JoyConControllerOptions(InputDeviceType.JoyConL);
-            var panel = new DeviceFamilyPanelModel(options[InputDeviceFamily.JoyCon], joyCon.Settings);
+            var switchPro = new SwitchProControllerOptions(InputDeviceType.SwitchPro);
+            var proPanel = new DeviceFamilyPanelModel(options[InputDeviceFamily.SwitchPro], switchPro.Settings);
 
-            Assert.Equal(3, panel.Items.Count);   // 結合の方式、ジャイロの提供側、HOME の LED
-            Assert.True(panel.ShowNewConnectionNotice);
-            Assert.True(panel.Items[0].IsChoice);
-            Assert.True(panel.Items[1].IsChoice);
-            Assert.False(panel.Items[2].IsChoice);
+            Assert.Single(proPanel.Items);   // HOME の LED
+            Assert.True(proPanel.ShowNewConnectionNotice);
+            Assert.False(proPanel.Items[0].IsChoice);
 
             // 画面の項目への書き込みが、設定へ届く
-            panel.Items[0].ChoiceValue = "Split";
-            Assert.Equal(JoyConDeviceOptions.LinkMode.Split, options.Get<JoyConDeviceOptions>(InputDeviceFamily.JoyCon).LinkedMode);
-            panel.Items[2].BoolValue = false;
-            Assert.False(joyCon.EnableHomeLED);
+            proPanel.Items[0].BoolValue = false;
+            Assert.False(switchPro.EnableHomeLED);
+
+            // 列挙型の項目（選択肢）の書き込みも届く
+            var dualSense = new DualSenseControllerOptions(InputDeviceType.DualSense);
+            var dsPanel = new DeviceFamilyPanelModel(options[InputDeviceFamily.DualSense], dualSense.Settings);
+            DeviceSettingItem choice = dsPanel.Items.First(i => i.IsChoice);
+            string other = choice.Choices.First(c => c.Value != choice.ChoiceValue).Value;
+            choice.ChoiceValue = other;
+            Assert.Equal(other, choice.ChoiceValue);
         }
 
         [Fact]
         public void FamilyWithoutSettings_GivesAnEmptyPanel_AndVisibilityFollowsEnabled()
         {
             var options = new ControlServiceDeviceOptions();
-            var panel = new DeviceFamilyPanelModel(options[InputDeviceFamily.DS3], new ControllerSetting[0]);
+            var panel = new DeviceFamilyPanelModel(options[InputDeviceFamily.DS4], new ControllerSetting[0]);
             Assert.Empty(panel.Items);
             Assert.False(panel.ShowNewConnectionNotice);
 
             var changes = new List<string>();
             panel.PropertyChanged += (s, e) => changes.Add(e.PropertyName);
-            options[InputDeviceFamily.DS3].Enabled = !options[InputDeviceFamily.DS3].Enabled;
+            options[InputDeviceFamily.DS4].Enabled = !options[InputDeviceFamily.DS4].Enabled;
             Assert.Contains(nameof(DeviceFamilyPanelModel.Visible), changes);
         }
 
@@ -85,7 +88,6 @@ namespace DS4WindowsTests
             var vm = new FirstLauchUtilViewModel(options);
             Assert.Equal(options.Families.Count(), vm.FamilyToggles.Count);
             Assert.All(vm.FamilyToggles, t => Assert.False(string.IsNullOrEmpty(t.SupportLabel)));
-            Assert.Contains(vm.FamilyToggles, t => t.Family == InputDeviceFamily.DS3 && t.HasHelpUrl);
 
             FamilyToggleItem ds4 = vm.FamilyToggles.Single(t => t.Family == InputDeviceFamily.DS4);
             bool before = options[InputDeviceFamily.DS4].Enabled;

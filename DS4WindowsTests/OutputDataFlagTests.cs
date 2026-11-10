@@ -67,18 +67,6 @@ namespace DS4WindowsTests
         }
 
         [Fact]
-        public void TheEditor_NoLongerForcesTheEmulatedControllerToDs4_WhenOutputDataIsOn()
-        {
-            string vm = Source("DS4Windows/UI/ViewModels/ProfileSettingsViewModel.cs");
-            if (vm == null) return;
-
-            int start = vm.IndexOf("public Ds4OutputCorrectionReason CorrectOutputTypeToDs4()", StringComparison.Ordinal);
-            Assert.True(start >= 0);
-            string body = vm.Substring(start, 700);
-            Assert.DoesNotContain("EnableOutputDataToDS4", body);
-        }
-
-        [Fact]
         public void TheDisplayName_IsNotTiedToDs4_InEnglishAndJapanese()
         {
             string en = Source("DS4Windows/Translations/Strings.resx", false);

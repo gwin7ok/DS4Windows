@@ -19,7 +19,6 @@
   <FlashColor>0,0,0</FlashColor>
   <touchpadJitterCompensation>True</touchpadJitterCompensation>
   <InverseRumbleMotors>False</InverseRumbleMotors>
-  <UseDs3PitchRollSim>False</UseDs3PitchRollSim>
   <LeftStickDriftXAxis>0</LeftStickDriftXAxis>
   <LeftStickDriftYAxis>0</LeftStickDriftYAxis>
   <RightStickDriftXAxis>0</RightStickDriftXAxis>

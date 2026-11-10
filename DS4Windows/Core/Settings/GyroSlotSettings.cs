@@ -111,13 +111,6 @@ namespace DS4Windows.Core.Settings
             set => _settings.SAMousestickTriggers[_slot] = value;
         }
 
-        /// <summary>DS3 の傾きの擬似。プロファイル全体の設定（スロットごとではない）だが、ジャイロのタブにある。</summary>
-        public bool UseDs3PitchRollSim
-        {
-            get => _settings.UseDs3PitchRollSim;
-            set => _settings.UseDs3PitchRollSim = value;
-        }
-
         /// <summary>廃止したジャイロのスワイプの設定（読み込み時に保持し、モードを選び直したら破棄する）。</summary>
         public RemovedGyroSwipeSettings RemovedSwipe => _settings.GetRemovedGyroSwipeSettings(_slot);
     }

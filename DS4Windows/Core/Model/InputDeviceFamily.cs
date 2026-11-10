@@ -9,7 +9,5 @@
         [InputDeviceFamilyUi("ControllerSupportDS4", "FirstLaunch.DS4EnableCkbLabel", "FirstLaunch.DS4EnableText")] DS4,
         [InputDeviceFamilyUi("ControllerSupportDualSense", "FirstLaunch.DSEnableCkbLabel", "FirstLaunch.DSEnableText")] DualSense,
         [InputDeviceFamilyUi("ControllerSupportSwitchPro", "FirstLaunch.SwitchProEnableCkbLabel", "FirstLaunch.SwitchProEnableText")] SwitchPro,
-        [InputDeviceFamilyUi("ControllerSupportJoyCon", "FirstLaunch.JoyConEnableCkbLabel", "FirstLaunch.JoyConEnableText")] JoyCon,
-        [InputDeviceFamilyUi("ControllerSupportDS3", "FirstLaunch.DS3EnableCkbLabel", "FirstLaunch.DS3EnableText", "https://vigem.org/projects/DsHidMini/")] DS3,
     }
 }

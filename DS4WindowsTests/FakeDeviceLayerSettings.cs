@@ -12,6 +12,5 @@ namespace DS4WindowsTests
         public bool UseMoonlight { get; set; }
         public bool UseAdvancedMoonlight { get; set; }
         public bool VerboseLogMessages { get; set; }
-        public bool UseDs3PitchRollSim { get; set; }
     }
 }

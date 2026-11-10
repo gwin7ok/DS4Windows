@@ -37,8 +37,6 @@ namespace DS4Windows.Core.Settings
             [InputDeviceFamily.DS4] = new DS4DeviceOptions(),
             [InputDeviceFamily.DualSense] = new DualSenseDeviceOptions(),
             [InputDeviceFamily.SwitchPro] = new SwitchProDeviceOptions(),
-            [InputDeviceFamily.JoyCon] = new JoyConDeviceOptions(),
-            [InputDeviceFamily.DS3] = new DS3DeviceOptions(),
         };
 
         /// <summary>系統の設定（有効・無効と変更の通知）。</summary>

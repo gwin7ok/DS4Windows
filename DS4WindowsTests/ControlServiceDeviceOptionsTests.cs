@@ -26,33 +26,26 @@ namespace DS4WindowsTests
             Assert.IsType<DS4DeviceOptions>(options[InputDeviceFamily.DS4]);
             Assert.IsType<DualSenseDeviceOptions>(options[InputDeviceFamily.DualSense]);
             Assert.IsType<SwitchProDeviceOptions>(options[InputDeviceFamily.SwitchPro]);
-            Assert.IsType<JoyConDeviceOptions>(options[InputDeviceFamily.JoyCon]);
-            Assert.IsType<DS3DeviceOptions>(options[InputDeviceFamily.DS3]);
-            Assert.Same(options[InputDeviceFamily.JoyCon], options.Get<JoyConDeviceOptions>(InputDeviceFamily.JoyCon));
+            Assert.Same(options[InputDeviceFamily.DS4], options.Get<DS4DeviceOptions>(InputDeviceFamily.DS4));
         }
 
         [Fact]
         public void TheTypedPerDevicePropertiesAreGone()
         {
             var names = typeof(ControlServiceDeviceOptions).GetProperties().Select(p => p.Name).ToList();
-            foreach (string removed in new[] { "DS4DeviceOpts", "DualSenseOpts", "SwitchProDeviceOpts", "JoyConDeviceOpts", "DS3DeviceOpts" })
+            foreach (string removed in new[] { "DS4DeviceOpts", "DualSenseOpts", "SwitchProDeviceOpts" })
             {
                 Assert.DoesNotContain(removed, names);
             }
         }
 
         [Fact]
-        public void TheSettingsDto_RoundTripsTheEnabledFlagsAndTheJoyConLink()
+        public void TheSettingsDto_RoundTripsTheEnabledFlags()
         {
             var source = new DS4Windows.Core.Settings.BackingStore(new DS4Windows.Core.Platform.EnvironmentService());
             source.deviceOptions[InputDeviceFamily.DS4].Enabled = false;
             source.deviceOptions[InputDeviceFamily.DualSense].Enabled = false;
             source.deviceOptions[InputDeviceFamily.SwitchPro].Enabled = true;
-            source.deviceOptions[InputDeviceFamily.DS3].Enabled = true;
-            var joy = source.deviceOptions.Get<JoyConDeviceOptions>(InputDeviceFamily.JoyCon);
-            joy.Enabled = true;
-            joy.LinkedMode = JoyConDeviceOptions.LinkMode.Joined;
-            joy.JoinGyroProv = JoyConDeviceOptions.JoinedGyroProvider.JoyConR;
 
             var dto = new AppSettingsDTO();
             dto.MapFrom(source);
@@ -64,10 +57,6 @@ namespace DS4WindowsTests
             {
                 Assert.Equal(source.deviceOptions[family].Enabled, destination.deviceOptions[family].Enabled);
             }
-
-            var back = destination.deviceOptions.Get<JoyConDeviceOptions>(InputDeviceFamily.JoyCon);
-            Assert.Equal(JoyConDeviceOptions.LinkMode.Joined, back.LinkedMode);
-            Assert.Equal(JoyConDeviceOptions.JoinedGyroProvider.JoyConR, back.JoinGyroProv);
         }
     }
 }

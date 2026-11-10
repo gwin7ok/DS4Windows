@@ -17,7 +17,7 @@ namespace DS4WindowsTests
         private static readonly Type[] Removed =
         {
             typeof(IProfileXmlStore), typeof(IProfileSlotApplier), typeof(SyntheticInputState),
-            typeof(IConnectionProfileSelector), typeof(IJoyConLinker), typeof(IDeviceConnector),
+            typeof(IConnectionProfileSelector), typeof(IDeviceConnector),
         };
 
         [Fact]

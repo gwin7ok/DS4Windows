@@ -28,10 +28,6 @@ namespace DS4Windows.Core.Model
     {
         [InputDeviceFamily(InputDeviceFamily.DS4)] DS4,
         [InputDeviceFamily(InputDeviceFamily.SwitchPro)] SwitchPro,
-        [InputDeviceFamily(InputDeviceFamily.JoyCon)] JoyConL,
-        [InputDeviceFamily(InputDeviceFamily.JoyCon)] JoyConR,
-        [InputDeviceFamily(InputDeviceFamily.JoyCon)] JoyConGrip,
-        [InputDeviceFamily(InputDeviceFamily.DualSense)] DualSense,
-        [InputDeviceFamily(InputDeviceFamily.DS3)] DS3
+        [InputDeviceFamily(InputDeviceFamily.DualSense)] DualSense
     }
 }

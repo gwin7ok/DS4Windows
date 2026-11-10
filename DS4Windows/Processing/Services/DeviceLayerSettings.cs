@@ -25,6 +25,5 @@ namespace DS4Windows.Processing.Services
 
         public bool VerboseLogMessages => _appSettings.DeviceOptions.VerboseLogMessages;
 
-        public bool UseDs3PitchRollSim => _profileSettings.UseDs3PitchRollSim;
     }
 }

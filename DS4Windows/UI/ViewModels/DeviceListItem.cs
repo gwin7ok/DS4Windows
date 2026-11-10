@@ -24,8 +24,6 @@ using System.Threading.Tasks;
 using DS4Windows.Input;
 using LEDBarMode = DS4Windows.Core.Settings.DualSenseControllerOptions.LEDBarMode;
 using MuteLEDMode = DS4Windows.Core.Settings.DualSenseControllerOptions.MuteLEDMode;
-using LinkMode = DS4Windows.Core.Settings.JoyConDeviceOptions.LinkMode;
-using JoinedGyroProvider = DS4Windows.Core.Settings.JoyConDeviceOptions.JoinedGyroProvider;
 
 using DS4Windows.Processing.Abstractions;
 
