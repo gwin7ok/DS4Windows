@@ -93,7 +93,9 @@ flowchart LR
 | `AutoProfileService` | 2 | 前面アプリによるプロファイルの自動切替 |
 | `InputDeviceModuleRegistry` | 2 | 機種ごとの接続フック（`IInputDeviceModule`）の登録簿 |
 | `Ds4DeviceModule` | 2 | DS4 の接続フック |
-| `DS4Device` | 1 | 入力デバイスの基底（読み取りループ・出力・切断） |
+| `DS4Device` | 1 | 入力デバイスの共通の基底（状態・イベント・設定・切断。読み取りのループは持たない抽象クラス） |
+| `InputLoopDevice` | 1 | 読み取りのループの骨組み（1 フレームの流れと、機種が書く差し込み口） |
+| `DualShock4Device` | 1 | DualShock 4（USB／BT／ワイヤレスアダプター） |
 | `DS4Devices` | 1 | 接続デバイスの列挙と生成 |
 | `DualSenseDevice` | 1 | DualSense |
 | `SwitchProDevice` | 1 | Switch Pro |
