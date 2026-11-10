@@ -1,3 +1,4 @@
+using DS4Windows.Processing.Touchpad;
 using DS4Windows.Core.Model;
 using System;
 using System.Diagnostics;
@@ -40,7 +41,7 @@ namespace DS4WindowsTests
         {
             private readonly DS4State[] CurrentState = new DS4State[ControllerLimits.MaxControllerCount];
             private readonly DS4State[] TempState = new DS4State[ControllerLimits.MaxControllerCount];
-            private readonly Mouse[] touchPad = new Mouse[ControllerLimits.MaxControllerCount];
+            private readonly TouchpadMouse[] touchPad = new TouchpadMouse[ControllerLimits.MaxControllerCount];
 
             public OwnerWithArrays()
             {
@@ -62,7 +63,7 @@ namespace DS4WindowsTests
         {
             private readonly DS4State[] _currentState;
             private readonly DS4State[] _tempState;
-            private readonly Mouse[] _touchPad;
+            private readonly TouchpadMouse[] _touchPad;
 
             public OwnerWithCachedReferences(IDeviceSlotState slots)
             {

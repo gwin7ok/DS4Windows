@@ -8,8 +8,8 @@ using DS4Windows.Processing.Abstractions;
 
 namespace DS4Windows.Processing.Services
 {
-    /// <summary><see cref="IMouseFactory"/> の実装（DI の Singleton。状態なし）。</summary>
-    public sealed class MouseFactory : IMouseFactory
+    /// <summary><see cref="ITouchpadMouseFactory"/> の実装（DI の Singleton。状態なし）。</summary>
+    public sealed class TouchpadMouseFactory : ITouchpadMouseFactory
     {
         private readonly IProfileSettingsService _profileSettings;
         private readonly IVirtualKBM _virtualKBM;
@@ -17,7 +17,7 @@ namespace DS4Windows.Processing.Services
         private readonly SyntheticInputState _syntheticInput;
         private readonly TimeProvider _timeProvider;
 
-        public MouseFactory(IProfileSettingsService profileSettings, IVirtualKBM virtualKBM, StickMotionState stickMotion,
+        public TouchpadMouseFactory(IProfileSettingsService profileSettings, IVirtualKBM virtualKBM, StickMotionState stickMotion,
             SyntheticInputState syntheticInput, TimeProvider timeProvider)
         {
             _profileSettings = profileSettings ?? throw new ArgumentNullException(nameof(profileSettings));

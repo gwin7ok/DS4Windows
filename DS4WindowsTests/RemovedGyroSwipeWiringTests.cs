@@ -1,3 +1,4 @@
+using DS4Windows.Processing.Touchpad;
 using System;
 using System.IO;
 using System.Linq;
@@ -218,7 +219,7 @@ namespace DS4WindowsTests
             Assert.Null(typeof(ControlSettingsGroup).GetField("GyroSwipeLeft"));
             Assert.Null(typeof(DS4Windows.Core.Abstractions.IProfileSettingsService).GetProperty("GyroSwipeInf"));
             Assert.Null(typeof(DS4Windows.Core.Abstractions.IProfileSettingsService).GetMethod("GetGyroSwipeInfo"));
-            Assert.Null(typeof(Mouse).GetField("gyroSwipe"));
+            Assert.Null(typeof(TouchpadMouse).GetField("gyroSwipe"));
         }
 
         [Fact]

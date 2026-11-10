@@ -8,7 +8,7 @@ using Xunit;
 namespace DS4WindowsTests
 {
     /// <summary>
-    /// デバイスの接続時の出力側の準備（<see cref="IConnectedDeviceOutputs"/>）と、タッチパッドの <c>Mouse</c> の工場（<see cref="IMouseFactory"/>）の、
+    /// デバイスの接続時の出力側の準備（<see cref="IConnectedDeviceOutputs"/>）と、タッチパッドの <c>Mouse</c> の工場（<see cref="ITouchpadMouseFactory"/>）の、
     /// 登録と、何もしない条件（OSC の送信なし、UDP の配信なし）の確認。接続の手順の中での順序は <c>ConnectorGuardTests</c> が固定する。
     /// </summary>
     public class ConnectedDeviceOutputsTests
@@ -18,8 +18,8 @@ namespace DS4WindowsTests
         {
             Assert.IsType<ConnectedDeviceOutputs>(TestHost.GetService<IConnectedDeviceOutputs>());
             Assert.Same(TestHost.GetService<IConnectedDeviceOutputs>(), TestHost.GetService<IConnectedDeviceOutputs>());
-            Assert.IsType<MouseFactory>(TestHost.GetService<IMouseFactory>());
-            Assert.Same(TestHost.GetService<IMouseFactory>(), TestHost.GetService<IMouseFactory>());
+            Assert.IsType<TouchpadMouseFactory>(TestHost.GetService<ITouchpadMouseFactory>());
+            Assert.Same(TestHost.GetService<ITouchpadMouseFactory>(), TestHost.GetService<ITouchpadMouseFactory>());
         }
 
         [Fact]
@@ -49,7 +49,7 @@ namespace DS4WindowsTests
             Assert.Throws<ArgumentNullException>(() => new ConnectedDeviceOutputs(settings, app, osc, null, types, udp));
             Assert.Throws<ArgumentNullException>(() => new ConnectedDeviceOutputs(settings, app, osc, pad, null, udp));
             Assert.Throws<ArgumentNullException>(() => new ConnectedDeviceOutputs(settings, app, osc, pad, types, null));
-            Assert.Throws<ArgumentNullException>(() => new MouseFactory(settings, null, new DS4Windows.Processing.StickMotionState(), new DS4Windows.Processing.Synthetic.SyntheticInputState(), TimeProvider.System));
+            Assert.Throws<ArgumentNullException>(() => new TouchpadMouseFactory(settings, null, new DS4Windows.Processing.StickMotionState(), new DS4Windows.Processing.Synthetic.SyntheticInputState(), TimeProvider.System));
         }
     }
 }

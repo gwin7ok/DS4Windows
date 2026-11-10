@@ -1,3 +1,4 @@
+using DS4Windows.Processing.Touchpad;
 using DS4Windows.Core.Model;
 using System;
 using Xunit;
@@ -23,7 +24,7 @@ namespace DS4WindowsTests
             _output = output;
         }
 
-        private static int ReadOnce(IDeviceSlotState slots, DS4State[] cachedCurrent, DS4State[] cachedTemp, Mouse[] cachedTouch, int ind)
+        private static int ReadOnce(IDeviceSlotState slots, DS4State[] cachedCurrent, DS4State[] cachedTemp, TouchpadMouse[] cachedTouch, int ind)
         {
             int acc = 0;
             // ControlService が保持する形（コンストラクターで一度だけ取得したキャッシュ済みの配列）
@@ -51,7 +52,7 @@ namespace DS4WindowsTests
 
             DS4State[] cur = slots.CurrentStates;
             DS4State[] tmp = slots.TempStates;
-            Mouse[] touch = slots.TouchPads;
+            TouchpadMouse[] touch = slots.TouchPads;
 
             int sink = 0;
             for (int i = 0; i < Iterations; i++) sink += ReadOnce(slots, cur, tmp, touch, i & 3);   // ウォームアップ（JIT の段階的な最適化が終わるまで十分に回す）

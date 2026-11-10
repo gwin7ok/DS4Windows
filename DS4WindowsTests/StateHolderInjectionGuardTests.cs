@@ -1,3 +1,4 @@
+using DS4Windows.Processing.Touchpad;
 using DS4Windows.Processing.Synthetic;
 using System.Collections.Generic;
 using System.Linq;
@@ -69,7 +70,7 @@ namespace DS4WindowsTests
         public void MouseAndControlService_ReceiveTheHoldersByConstructor()
         {
             // Phase14d-Step3: ソースの文字列ではなく、コンストラクターの引数とコンテナの登録を確かめる（Shared の撤去は RemovedApiRuleTests）
-            var mouseParameters = typeof(DS4Windows.Processing.Mouse).GetConstructors().SelectMany(c => c.GetParameters()).Select(p => p.ParameterType).ToArray();
+            var mouseParameters = typeof(DS4Windows.Processing.Touchpad.TouchpadMouse).GetConstructors().SelectMany(c => c.GetParameters()).Select(p => p.ParameterType).ToArray();
             Assert.Contains(typeof(DS4Windows.Processing.StickMotionState), mouseParameters);
             Assert.Contains(typeof(DS4Windows.Processing.Synthetic.SyntheticInputState), mouseParameters);
             Assert.Contains(typeof(DS4Windows.Processing.StickMotionState),

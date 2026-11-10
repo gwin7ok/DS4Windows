@@ -1,3 +1,4 @@
+using DS4Windows.Processing.Touchpad;
 using DS4Windows.Processing.Synthetic;
 using System;
 using System.Collections.Generic;
@@ -91,7 +92,7 @@ namespace DS4WindowsTests
         public DS4State RunMapCustom(DS4State input)
         {
             var device = (InputDeviceCore)RuntimeHelpers.GetUninitializedObject(typeof(TestDs4Device));
-            var mouse = new Mouse(Device, device, Settings, Recorder, _stickMotion, Synthetic, System.TimeProvider.System);
+            var mouse = new TouchpadMouse(Device, device, Settings, Recorder, _stickMotion, Synthetic, System.TimeProvider.System);
             var exposed = new DS4StateExposed(input);
             var mapped = new DS4State();
 

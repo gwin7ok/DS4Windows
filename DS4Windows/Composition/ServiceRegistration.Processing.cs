@@ -119,7 +119,7 @@ namespace DS4Windows.Composition
             services.AddSingleton<IEventThreadDispatcher, EventThreadDispatcher>();   // Phase13-Step3: 専用のイベントスレッド
             // Phase13-Step3: ブースト・反転つきの振動（IDeviceRumbleService）と KBM 出力の初期化（IOutputKbmInitializer）の登録は ServiceRegistration.Output.cs
             services.AddSingleton<ILightbarService, LightbarService>();   // ライトバーの色の計算（スロットごとの経過を持つ。時間は TimeProvider）
-            services.AddSingleton<IMouseFactory, MouseFactory>();   // スロットごとのタッチパッドの Mouse（TimeProvider を渡す）
+            services.AddSingleton<ITouchpadMouseFactory, TouchpadMouseFactory>();   // スロットごとのタッチパッドの Mouse（TimeProvider を渡す）
             services.AddSingleton<IConnectedDeviceOutputs, ConnectedDeviceOutputs>();   // 接続時の出力側の準備（OSC の通知、仮想パッドの割り当て、UDP の準備）
             services.AddSingleton<IOutputServicesLifecycle, OutputServicesLifecycle>();   // 出力側のサービス（仮想パッド、KBM、HidHide、OSC、UDP）の開始・停止の手順
             services.AddSingleton<IServiceLifecycle, ServiceLifecycle>();   // Phase9 9-E E-6f2: 開始・停止・ホットプラグと、その状態・イベント

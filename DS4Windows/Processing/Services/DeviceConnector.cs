@@ -27,13 +27,13 @@ namespace DS4Windows.Processing.Services
         private readonly IHidHideService _hidHideService;
         private readonly IDeviceSlotState _slots;   // Phase13-Step5: スロットの配列（直接注入）
         private readonly IInputReportProcessor _inputReport;   // Phase13-Step5b: 旧 Func<IDeviceSlotHost>.OnReport（入力レポートの処理）
-        private readonly IMouseFactory _mouseFactory;
+        private readonly ITouchpadMouseFactory _mouseFactory;
         private readonly IConnectedDeviceOutputs _outputs;
 
         public DeviceConnector(IProfileSettingsService profileSettings, IProfileXmlStore profileXmlStore, IAppSettingsService appSettings,
             IDs4DeviceRegistry deviceRegistry, IDeviceDisconnectHandler deviceDisconnect, IConnectionProfileSelector connectionProfileSelector,
             IDeviceConnectionSetup deviceConnectionSetup, IInputDeviceModuleRegistry deviceModules, IHidHideService hidHideService,
-            IDeviceSlotState slots, IInputReportProcessor inputReport, IMouseFactory mouseFactory, IConnectedDeviceOutputs outputs)
+            IDeviceSlotState slots, IInputReportProcessor inputReport, ITouchpadMouseFactory mouseFactory, IConnectedDeviceOutputs outputs)
         {
             _profileSettings = profileSettings ?? throw new ArgumentNullException(nameof(profileSettings));
             _profileXmlStore = profileXmlStore ?? throw new ArgumentNullException(nameof(profileXmlStore));

@@ -1,3 +1,4 @@
+using DS4Windows.Processing.Touchpad;
 using System;
 using DS4Windows.Core.Settings;
 using DS4Windows.Processing;
@@ -29,7 +30,7 @@ namespace DS4WindowsTests
         [Fact]
         public void Mouse_NoLongerDeclaresTheNestedType()
         {
-            Assert.Null(typeof(Mouse).GetNestedType("TouchButtonActivationMode"));
+            Assert.Null(typeof(TouchpadMouse).GetNestedType("TouchButtonActivationMode"));
         }
 
         [Theory]
