@@ -1,3 +1,4 @@
+using DS4Windows.Core.Model;
 using System.IO;
 using System.Text.RegularExpressions;
 using Xunit;
@@ -39,7 +40,7 @@ namespace DS4WindowsTests
         [InlineData("DS4Windows/Processing/ControlService.cs")]
         [InlineData("DS4Windows/Output/OutputDevice.cs")]
         [InlineData("DS4Windows/Output/OutputSlotManager.cs")]
-        [InlineData("DS4Windows/Input/DS4State.cs")]
+        [InlineData("DS4Windows/Core/Model/DS4State.cs")]
         public void TheVJoyAndTheSteeringUnit_AreGone(string relativePath)
         {
             string code = SourceText.ReadCode(relativePath);

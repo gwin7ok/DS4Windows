@@ -73,9 +73,9 @@ namespace DS4WindowsTests
         }
 
         [Fact]
-        public void RecordOnlyRules_AreL2AndL7()
+        public void RecordOnlyRules_AreL2Only()
         {
-            Assert.Equal(new[] { "L2", "L7" }, LayerMap.RecordOnlyRules);
+            Assert.Equal(new[] { "L2" }, LayerMap.RecordOnlyRules);
         }
 
         [Theory]

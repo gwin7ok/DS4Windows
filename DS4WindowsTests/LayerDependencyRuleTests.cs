@@ -11,8 +11,8 @@ namespace DS4WindowsTests
     /// <summary>
     /// Phase14b-Step1（R-01）: 層の依存の向き（規約 §1、§3.4 R2・R3・R5）を、本体のアセンブリの実際の型参照で検査する
     /// （計画書 `docs-forDIMG/MadeByAgent/Phase14b-Plan.md` §4 Step 14b-1）。
-    /// 禁止の規則（L1・L3〜L6）は、今ある違反を <see cref="LayerDependencyBaseline"/> で凍結し、実数との一致を検査する。
-    /// 記録のみの規則（L2・L7）は、件数をテストの出力に出すだけで失敗させない（D3）。
+    /// 禁止の規則（L1・L3〜L7）は、今ある違反を <see cref="LayerDependencyBaseline"/> で凍結し、実数との一致を検査する。
+    /// 記録のみの規則（L2）は、件数をテストの出力に出すだけで失敗させない（D3）。
     /// </summary>
     public class LayerDependencyRuleTests
     {
@@ -59,7 +59,7 @@ namespace DS4WindowsTests
         [Fact]
         public void RecordOnlyLayerDependencies_MatchTheCountRatchet()
         {
-            // D3: Core → 第1層・第3層（L2）と、UI → 第1層・第3層（L7）は、型ごとの許可リストは持たない（是正はレビュー R-17・R-09、Phase15・16）。
+            // D3: Core → 第1層・第3層（L2）は、型ごとの許可リストは持たない（是正はレビュー R-17・R-09、Phase16。UI → 第1層・第3層［L7］は Phase16-Step3 で 0 件になり、禁止の規則へ昇格した）。
             // Phase14c-Step1（決定 E4）: 是正までの間に増えないよう、規則ごとの件数を基準値と一致させる（増えたら是正、減ったら基準値も減らす）
             IReadOnlyList<string> recorded = LayerDependencyScanner.Violations(rule => LayerMap.RecordOnlyRules.Contains(rule));
             _output.WriteLine(Subtotals("記録のみの規則（実測）", recorded));
@@ -67,8 +67,7 @@ namespace DS4WindowsTests
                 _output.WriteLine("  " + e);
 
             int l2 = recorded.Count(e => e.StartsWith("L2|", StringComparison.Ordinal));
-            int l7 = recorded.Count(e => e.StartsWith("L7|", StringComparison.Ordinal));
-            if (l2 == LayerDependencyBaseline.RecordOnlyL2Count && l7 == LayerDependencyBaseline.RecordOnlyL7Count)
+            if (l2 == LayerDependencyBaseline.RecordOnlyL2Count)
                 return;
 
             string outPath = Environment.GetEnvironmentVariable(BaselineOutEnv);
@@ -76,7 +75,7 @@ namespace DS4WindowsTests
                 File.WriteAllText(outPath, RenderBaseline(LayerDependencyScanner.Violations(rule => !LayerMap.RecordOnlyRules.Contains(rule))), new UTF8Encoding(true));
 
             Assert.True(false,
-                $"記録のみの規則の件数が基準値と一致しません: L2 実測 {l2}（基準 {LayerDependencyBaseline.RecordOnlyL2Count}）、L7 実測 {l7}（基準 {LayerDependencyBaseline.RecordOnlyL7Count}）。" +
+                $"記録のみの規則の件数が基準値と一致しません: L2 実測 {l2}（基準 {LayerDependencyBaseline.RecordOnlyL2Count}）。" +
                 $"増えたら是正すること。減ったら基準値（LayerDependencyBaseline）も減らすこと（環境変数 {BaselineOutEnv} で作り直せる）。");
         }
 
@@ -127,13 +126,10 @@ namespace DS4WindowsTests
             sb.AppendLine("    /// </summary>");
             sb.AppendLine("    public static class LayerDependencyBaseline");
             sb.AppendLine("    {");
-            // Phase14c-Step1（E4）: 記録のみの規則（L2・L7）の件数のラチェット
+            // Phase14c-Step1（E4）: 記録のみの規則（L2）の件数のラチェット
             IReadOnlyList<string> recorded = LayerDependencyScanner.Violations(rule => LayerMap.RecordOnlyRules.Contains(rule));
             sb.AppendLine("        /// <summary>記録のみの規則 L2（Core → 第1層・第3層）の件数の基準値。<see cref=\"LayerDependencyRuleTests\"/> が実数との一致を検査する。</summary>");
             sb.AppendLine($"        public const int RecordOnlyL2Count = {recorded.Count(e => e.StartsWith("L2|", StringComparison.Ordinal))};");
-            sb.AppendLine();
-            sb.AppendLine("        /// <summary>記録のみの規則 L7（UI → 第1層・第3層）の件数の基準値。</summary>");
-            sb.AppendLine($"        public const int RecordOnlyL7Count = {recorded.Count(e => e.StartsWith("L7|", StringComparison.Ordinal))};");
             sb.AppendLine();
             sb.AppendLine("        public static readonly string[] Entries =");
             sb.AppendLine("        {");

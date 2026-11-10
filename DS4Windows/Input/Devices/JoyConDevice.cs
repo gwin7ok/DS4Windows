@@ -1003,9 +1003,9 @@ namespace DS4Windows.Input.Devices
                     //tempMotion.outputAccelX = tempMotion.accelX; tempMotion.outputAccelY = tempMotion.accelY; tempMotion.outputAccelZ = tempMotion.accelZ;
                     tempMotion.outputAccelX = 0; tempMotion.outputAccelY = 0; tempMotion.outputAccelZ = 0;
                     tempMotion.outputGyroControls = false;
-                    tempMotion.accelXG = (accelX * 2) / DS4Windows.Input.SixAxis.F_ACC_RES_PER_G;
-                    tempMotion.accelYG = (-accelZ * 2) / DS4Windows.Input.SixAxis.F_ACC_RES_PER_G;
-                    tempMotion.accelZG = (-accelY * 2) / DS4Windows.Input.SixAxis.F_ACC_RES_PER_G;
+                    tempMotion.accelXG = (accelX * 2) / DS4Windows.Core.Model.SixAxis.F_ACC_RES_PER_G;
+                    tempMotion.accelYG = (-accelZ * 2) / DS4Windows.Core.Model.SixAxis.F_ACC_RES_PER_G;
+                    tempMotion.accelZG = (-accelY * 2) / DS4Windows.Core.Model.SixAxis.F_ACC_RES_PER_G;
 
                     tempMotion.angVelYaw = gyroYaw * GYRO_IN_DEG_SEC_FACTOR;
                     tempMotion.angVelPitch = -gyroPitch * GYRO_IN_DEG_SEC_FACTOR;

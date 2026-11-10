@@ -1,3 +1,4 @@
+using DS4Windows.Core.Model;
 using Xunit;
 using DS4Windows.Core.Abstractions;
 using DS4Windows.Core.Settings;

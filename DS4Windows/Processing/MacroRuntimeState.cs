@@ -1,3 +1,4 @@
+using DS4Windows.Core.Model;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using DS4Windows.Core.Settings;

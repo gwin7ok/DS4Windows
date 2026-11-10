@@ -1,3 +1,4 @@
+using DS4Windows.Core.Model;
 using System;
 using System.Collections.Generic;
 using Xunit;

@@ -19,7 +19,7 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 using System;
 using DS4Windows.Core.Utilities;
 
-namespace DS4Windows.Input
+namespace DS4Windows.Core.Model
 {
     public class DS4State
     {

@@ -581,3 +581,11 @@ HidHide の登録・解除、OSC（送信・受信）、UDP（DSU 互換）、�
 - **`Mouse`（タップ後の保持）は 16-4c へ送った。** `Mouse` を作る `DeviceConnector` が既に 18 引数（許可リストの対象）で、`TimeProvider` を足すと引数がさらに増えるため。`DeviceConnector` の分割（16-4c）と同時に行う。
 - テスト側に `ManualTimeProvider`（`TimeProvider` の自作の派生。`Advance` で時間を進めたときだけタイマーが発火する）を追加し、`RepeatHelperTimeProviderTests`（3 件）で、タイマーがその `TimeProvider` で動くことを実時間を待たずに確かめた。既存のマクロ関連テストは、実時間の待ちが短い（数十 ms）ため、`TimeProvider.System` を渡す形のまま維持し、仮想時間への置き換えは見送った（時間の短縮が見込めず、挙動の差分を増やすだけのため）。`EmptyMacroTests` の文字列検査は、新しい呼び出しの形に合わせた。
 - Debug ALL: 警告 0・エラー 0・Actions 3,272 件合格・StandaloneTests 11 件合格。
+
+### Step 16-3（2026-11-10。完了）
+
+- `DS4State`・`DS4StateExposed`・`SixAxis` を `Input` から `Core/Model` へ移動（`git mv` のみのコミットと、名前空間の書き換えのコミットを分けた。依存の閉包はこの 3 型で、他の型は含まない）。書き換えは 73 ファイル（`using DS4Windows.Core.Model;` の追加と、完全修飾名 `DS4Windows.Input.SixAxis` の置換）。XAML に型名の参照はなく、変更なし。
+- L7（UI → 第 1 層・第 3 層）5 → 0（Step 16-1 の −1 と合わせて、見込みどおり −4）。0 になったため、**禁止の規則へ昇格**した（`LayerMap.RecordOnlyRules` は L2 のみ、`RecordOnlyL7Count` を削除）。L2 は 23 のまま（Step 16-5c・16-7 で解消）。
+- 型の定義は変えていない（名前空間のみ）ため、ホットパスの A/B 計測は省略した（IL は型名の違いのみ）。
+- 規約 §3.4 R2 に、入力 1 フレームの状態の型を `Core/Model` に置くことを追記した。
+- Debug ALL: 警告 0・エラー 0・Actions 3,272 件合格。

@@ -20,7 +20,7 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 
-namespace DS4Windows.Input
+namespace DS4Windows.Core.Model
 {
 
     public class SixAxis
