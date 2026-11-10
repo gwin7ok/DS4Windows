@@ -11,7 +11,6 @@
         public static readonly string[] Entries =
         {
             "DS4Windows.UI.MainWindow|18",
-            "DS4Windows.UI.Services.MainWindowFactory|18",
         };
     }
 }
